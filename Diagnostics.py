@@ -52,10 +52,10 @@ def boss_locals():
         grab = M.main()
     if not isinstance(grab, dict):
         raise RuntimeError(f"{M.__file__}: main() returned no state; use the latest Boss.py.")
-    need = ('stock_fwd', 'stock_cal', 'census', 'unconsented_rate', 'flow_annual',
+    need = ('stock_fwd', 'stock_cal', 'census', 'unconsented_rate', 'flow_annual', 'hist_rv_units',
             'hh_response', 'MAT_INTENSITY')
     miss = [k for k in need if k not in grab]
-    miss += [f"results['{k}']" for k in ('vac', 'repl', 'unc')
+    miss += [f"results['{k}']" for k in ('vac', 'repl', 'unc', 'rv')
              if k not in grab.get('results', {}).get('50th', {})]
     if miss:
         raise RuntimeError(
@@ -90,7 +90,7 @@ D_f = B['future_dwelling_size'].values
 S_f = DF['PopTotal_50th'].values / B['households_forecast']['50th']
 
 C = dict(growth='#3498db', split='#e67e22', extra='#8e44ad', vac='#95a5a6',
-         vchg='#f1c40f', demol='#34495e', unc='#16a085', built='black')
+         vchg='#f1c40f', demol='#34495e', unc='#16a085', rv='#b8a0d0', built='black')
 
 
 def split(ax):
@@ -217,7 +217,8 @@ finish(fig, 'diag_2_household_engines.png')
 # FIGURE 3 -- the stock bucket
 # =============================================================================
 fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
-fig.suptitle('3. The stock bucket: built = households + vacancy + demolitions - residual (RV + unconsented)',
+fig.suptitle('3. The stock bucket: built (in scope) = households + vacancy + demolitions'
+             ' - unconsented - retirement villages',
              fontsize=12)
 
 cen = B['census']
@@ -244,15 +245,16 @@ hist_parts = [('new households', B['d_hh'].loc[YH], C['split']),
               ('vacancy allowance', SC['allow'].loc[YH], C['vac']),
               ('vacancy change', SC['change'].loc[YH], C['vchg']),
               ('demolitions replaced', SC['demol'].loc[YH], C['demol']),
-              ('residual (RV units + unconsented)', SC['uncons'].loc[YH], C['unc'])]
+              ('unconsented additions', SC['uncons'].loc[YH], C['unc']),
+              ('retirement-village units (out of scope)', SC['rv'].loc[YH], C['rv'])]
 fut_parts = [('', R['d_hh'][1:], C['split']), ('', SF['allow'][1:], C['vac']),
              ('', np.zeros(len(PF)), C['vchg']), ('', SF['demol'][1:], C['demol']),
-             ('', SF['uncons'][1:], C['unc'])]
+             ('', SF['uncons'][1:], C['unc']), ('', SF['rv'][1:], C['rv'])]
 signed_bars(a, YH, [(l, v / 1e3, c) for l, v, c in hist_parts])
 signed_bars(a, PF, [(l, v / 1e3, c) for l, v, c in fut_parts], projected=True)
 built_h = BF * B['hist_total_units'].loc[YH]
 built_f = R['total'][1:] / D_f[1:]
-a.plot(YH, built_h / 1e3, color='black', lw=1.6, label='dwellings built')
+a.plot(YH, built_h / 1e3, color='black', lw=1.6, label='dwellings built (in scope)')
 a.plot(PF, built_f / 1e3, color='black', lw=1.6, ls='--')
 tidy(a, 'Dwellings per year (hatched = projected)', 'thousand dwellings')
 a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
@@ -275,7 +277,7 @@ a.plot(PF, 100 * (SF['demol'][1:] + SF['uncons'][1:]) / prev_f, color='black', l
 a.axhline(100 * B['demolition_rate'], color=C['demol'], ls='--', lw=1.2,
           label=f"demolition {100 * B['demolition_rate']:.3f}% (BRANZ, fixed)")
 a.axhline(100 * B['unconsented_rate'], color=C['unc'], ls='--', lw=1.2,
-          label=f"residual: RV units + unconsented {100 * B['unconsented_rate']:+.3f}% (calibrated)")
+          label=f"unconsented {100 * B['unconsented_rate']:+.3f}% (calibrated)")
 a.axhline(0, color='black', lw=0.7)
 tidy(a, 'Net turnover = demolition - unconsented additions\n'
         'single years noisy: vacancy known only at censuses', '% of stock per year')
@@ -306,11 +308,12 @@ hist_dem = [('growth (net of consolidation)', B['hist_growth'].loc[YH] - B['hist
             ('vacancy allowance', SC['allow'].loc[YH] * Dh, C['vac']),
             ('vacancy change', SC['change'].loc[YH] * Dh, C['vchg']),
             ('demolition replacement', SC['demol'].loc[YH] * Dh, C['demol']),
-            ('residual (RV units + unconsented)', SC['uncons'].loc[YH] * Dh, C['unc'])]
+            ('unconsented additions', SC['uncons'].loc[YH] * Dh, C['unc']),
+            ('housed in retirement villages', SC['rv'].loc[YH] * Dh, C['rv'])]
 fut_dem = [('', R['growth'][1:], C['growth']), ('', R['hs_pos'][1:], C['split']),
            ('', R['extra'][1:], C['extra']), ('', R['vac'][1:], C['vac']),
            ('', np.zeros(len(PF)), C['vchg']), ('', R['repl'][1:], C['demol']),
-           ('', R['unc'][1:], C['unc'])]
+           ('', R['unc'][1:], C['unc']), ('', R['rv'][1:], C['rv'])]
 signed_bars(a, YH, [(l, np.asarray(v) / M6, c) for l, v, c in hist_dem])
 signed_bars(a, PF, [(l, v / M6, c) for l, v, c in fut_dem], projected=True)
 a.plot(YH, B['hist_total_gfa'].loc[YH] * BF / M6, color='black', lw=1.6, label='built (net)')
@@ -423,7 +426,7 @@ cen_all = (cen['unoccupied'] / cen['total_private']).to_dict()
 v_all = pd.Series(np.interp(B['years_hist'].astype(float), list(cen_all), list(cen_all.values())),
                   index=B['years_hist'])
 prev_all = (hh_h / (1 - v_all)).shift(1)
-net_all = (BF * B['hist_total_units'] - B['d_hh'] - B['d_hh'] * v_all / (1 - v_all)
+net_all = (BF * (B['hist_total_units'] + B['hist_rv_units']) - B['d_hh'] - B['d_hh'] * v_all / (1 - v_all)
            - hh_h.shift(1) * (1 / (1 - v_all)).diff())
 unc_all = (net_all - B['demolition_rate'] * prev_all).loc[YH].mean()
 unc_emp = SC['uncons'].loc[YH].mean()

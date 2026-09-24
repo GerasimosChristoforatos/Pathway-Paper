@@ -12,6 +12,9 @@ OUTPUTS
   factors_typology.csv   one row per typology: occupancy load factor, design
                          occupants, floor space index, soil carbon loss
                          (average / low / high) and the embodied total.
+  factors_building.csv   one row per case study: in-scope materials by stage
+                         (kg/m2 GFA), soil loss, and which case (if any) it
+                         duplicates. Read by MonteCarlo.py for the bootstrap.
 
 POOLING
   Factors are intensities (kg/m2), so they are scale-invariant. Buildings are
@@ -54,6 +57,7 @@ SHEET_SOILS = '3'                        # soil carbon by soil order
 
 OUT_MATERIAL = os.path.join(DATA_DIR, 'factors_material.csv')
 OUT_TYPOLOGY = os.path.join(DATA_DIR, 'factors_typology.csv')
+OUT_BUILDING = os.path.join(DATA_DIR, 'factors_building.csv')   # for MonteCarlo.py
 
 WEIGHT_SCHEME = 'equal_subtypes'         # 'equal_subtypes' | 'equal_buildings' | 'gfa_weighted'
 
@@ -307,8 +311,17 @@ def main():
     typ_factors['emb_jackknife_min'] = [min(loo[t]) if loo[t] else np.nan for t in TYP_ORDER]
     typ_factors['emb_jackknife_max'] = [max(loo[t]) if loo[t] else np.nan for t in TYP_ORDER]
 
+    bld = lca.groupby('id')[ALL_STAGES].sum().reindex(chars.index)
+    bld.insert(0, 'Typology', chars['Typology'])
+    bld.insert(1, 'Subtype', chars['Subtype'])
+    bld.insert(2, 'GFA', chars['GFA_used'])
+    bld['FSI'] = chars['FSI']
+    bld['SOC_avg'] = chars['SOC_avg']
+    bld['duplicate_of'] = [dup_of.get(i, '') for i in bld.index]
+
     mat_factors.to_csv(OUT_MATERIAL, index=False)
     typ_factors.to_csv(OUT_TYPOLOGY, index=False)
+    bld.reset_index().to_csv(OUT_BUILDING, index=False)
 
     # ==================================================================
     # SUMMARY
@@ -355,7 +368,7 @@ def main():
 
     print("\nTYPOLOGY FACTORS")
     print(typ_factors.round(2).to_string(index=False))
-    print(f"\nWritten: {OUT_MATERIAL}, {OUT_TYPOLOGY}")
+    print(f"\nWritten: {OUT_MATERIAL}, {OUT_TYPOLOGY}, {OUT_BUILDING}")
 
 
 if __name__ == '__main__':

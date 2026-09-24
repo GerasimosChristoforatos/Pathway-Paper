@@ -33,8 +33,8 @@ OUT_CSV = os.path.join(Boss.DATA_DIR, 'sensitivity_oat.csv')
 
 # (group, label, {Boss setting: value})
 CASES = [
-    ('Household size', 'Stats NZ living-arrangement: Low', dict(HH_SIZE_VARIANT='Low')),
-    ('Household size', 'Stats NZ living-arrangement: High', dict(HH_SIZE_VARIANT='High')),
+    ('Household size', 'Stats NZ Low projection variant (S)', dict(HH_SIZE_VARIANT='Low')),
+    ('Household size', 'Stats NZ High projection variant (S)', dict(HH_SIZE_VARIANT='High')),
     ('Household size', 'No 2025 migration deviation carried', dict(HH_SIZE_RESPONSE=False)),
     ('Household size', 'Deviation persistence rho = 0', dict(DEVIATION_PERSISTENCE=0.0)),
     ('Household size', 'Deviation persistence rho = 0.9', dict(DEVIATION_PERSISTENCE=0.9)),

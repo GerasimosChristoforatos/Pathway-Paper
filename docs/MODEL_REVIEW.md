@@ -2,8 +2,9 @@
 
 Scripts reviewed: `Building_factors.py`, `Boss.py`, `Diagnostics.py`, run on the
 data in `data/` (commit `f137955`). Every number below comes from those runs
-unless marked otherwise. Changes made during the review are in commits
-`b579eb4` and `e4b7732`. Section 4 lists them.
+unless marked otherwise. Changes made during the review are listed in
+section 4. Round 2 (retirement villages, Monte Carlo) updates sections 1.4,
+3.2, 3.5 and 3.7; numbers are from the final code.
 
 ---
 
@@ -36,9 +37,17 @@ dwellings built = new households
                 + vacancy allowance   (ΔHH · v/(1−v))
                 + vacancy change      (HH(t−1) · Δ[1/(1−v)])
                 + demolitions         (0.135 % of stock, BRANZ SR214)
-                + residual            (calibrated, negative)
-floor area      = dwellings built × realised dwelling size (by typology, 2023–25)
+                + unconsented         (calibrated residual, negative)
+                − retirement-village units (out of carbon scope)
+in-scope floor area = in-scope dwellings built × realised dwelling size
+                      (by typology, 2023–25)
 ```
+
+Retirement-village (RV) units are counted in the stock identity, because they
+house private households, and they are reported. They are excluded from floor
+area and carbon, because the consent floor-area data and the case-study LCAs
+do not cover them. From 2026 they are 5.64% of all dwellings built (the
+2016–2025 ratio of sums).
 
 - **Population:** Stats NZ 2024-base stochastic projection, anchored on the
   observed 31 Dec 2025 ERP.
@@ -50,8 +59,9 @@ floor area      = dwellings built × realised dwelling size (by typology, 2023�
 - **Households** = Population / S. Declines are floored at zero.
 - **Vacancy:** census empty-dwelling share (excluding "residents away"),
   interpolated between censuses and held at the 2023 value (5.53 %) from then on.
-- **Residual:** the long-run gap in the stock identity over 1992–2025,
-  expressed as a share of stock (−0.121 %/yr).
+- **Residual (unconsented additions):** the long-run gap in the stock
+  identity over 1992–2025, expressed as a share of stock (−0.056 %/yr once RV
+  units are counted as built).
 - **Typology mix:** additive-log-ratio trend fitted from 2012 onward,
   geometrically damped (φ = 0.8).
 - **Demand bands** (growth, house-splitting, extra space, vacancy,
@@ -66,15 +76,25 @@ decarbonisation or learning is applied, which is stated as a design choice
 ("current practice" baseline). All modules (A–C) are booked in the year of
 construction.
 
-### 1.4 Headline (median, 2026–2050, after the fixes in section 4)
+### 1.4 Headline (2026–2050, final code)
 
-| | value |
-|---|---|
-| Built floor area | 76.9 Mm² |
-| Embodied carbon (A1–C4 + soil) | 29,789 kt CO2e |
-| of which upfront (A1–A5 + soil) | 21,915 kt |
-| of which later stages (B2/B4, C1–C4) | 7,874 kt |
-| Population-only band (5th–95th) | 51.3–103.3 Mm², 19,840–39,973 kt |
+| | central run | Monte Carlo median | 90 % interval (5th–95th) |
+|---|---|---|---|
+| Built floor area, in scope | 77.6 Mm² | 79.7 Mm² | 62.7–97.8 Mm² |
+| Embodied carbon (A1–C4 + soil) | 30,028 kt | 30,779 kt | 24,098–38,055 kt |
+| Upfront carbon (A1–A5 + soil) | 22,092 kt | 22,659 kt | 17,813–28,002 kt |
+| Retirement-village units built (not in carbon) | 35,658 | 38,409 | 28,408–51,191 |
+| Households, 2050 | 2.61 M | 2.62 M | 2.51–2.72 M |
+| Household size, 2050 | 2.543 | 2.541 | 2.406–2.634 |
+
+The Monte Carlo median is about 3 % above the central run. Three inputs have
+right-skewed distributions:
+- vacancy: the measured range runs from 5.3 % to 8.1 % (the 2013 census),
+  against 5.5 % in 2023;
+- the lognormal dwelling-size multiplier;
+- the truncated distribution for ρ.
+
+Report both numbers and say why they differ.
 
 ---
 
@@ -89,7 +109,7 @@ construction.
 | Life-cycle timing | All modules booked at construction | Static LCA does this. Dynamic LCA separates timing (Levasseur et al. 2010). Budget studies usually use upfront carbon (Röck et al. 2020; Chandrakumar et al. 2020) | Now reported split into upfront and later stages. Use upfront carbon when comparing with annual or sectoral budgets. |
 | Soil carbon | L_w / FSI, applied to all new floor area | Rarely included in building-stock carbon studies | A novel contribution. It assumes every new dwelling is greenfield and that disturbance equals the footprint (see 3.6). |
 | Population uncertainty | Stats NZ stochastic percentiles | Percentile paths or scenario variants. Percentiles are not additive (Lee & Tuljapurkar 1994; Stats NZ footnote) | Was wrong; now fixed (3.1). |
-| Other uncertainty | One setting per assumption; stock-term sensitivities printed | Monte Carlo propagation and global sensitivity analysis (Saltelli et al. 2008) | Main gap. Sensitivity.py is a first step (3.7). |
+| Other uncertainty | One setting per assumption; stock-term sensitivities printed | Monte Carlo propagation and global sensitivity analysis (Saltelli et al. 2008) | Was the main gap; now addressed by MonteCarlo.py (3.7). |
 | Trend methods | ALR compositional trend with damping; Theil–Sen / Mann–Kendall; moving-block bootstrap | Aitchison (1986); Gardner & McKenzie (1985); Künsch (1989) | Appropriate choices. φ is set, not estimated (3.7). |
 
 ---
@@ -117,40 +137,39 @@ households falling in 13 of 25 years. It is now 51.3–103.3 Mm². The median
 is unchanged. The remaining small offsets come from rebasing on the observed
 Dec-2025 ERP.
 
-### 3.2 [High, flagged] The "unconsented additions" residual is partly retirement-village units
+### 3.2 [High, resolved] Retirement villages were hidden in the "unconsented additions" residual
 
 The consent file's `Dwellings` column includes retirement-village (RV) units;
 the three typology columns do not. RV residents are counted in the private
-household series, so leaving RV units out of "built" pushes them into the
-residual.
+household series. Leaving RV units out of "built" had pushed them into the
+residual: they made up 54 % of it over 1992–2025 and 75 % over 2016–2025.
 
-| period | residual (dwellings/yr) | RV units built (× 0.95) |
-|---|---|---|
-| 1992–2005 | −1,905 | 483 |
-| 2006–2015 | −1,629 | 1,081 |
-| 2016–2025 | −2,703 | 2,020 |
-| 1992–2025 | −2,059 | 1,111 (54 %) |
+**How it is handled now (your decision):**
+- **Stock and demography:** RV units are counted as built dwellings in the
+  identity. The residual becomes genuinely unconsented additions: −948
+  dwellings/yr, or −0.056 % of stock, down from −2,059/yr (−0.121 %). RV
+  history is reported:
 
-Consequences:
+  | period | consented/yr | share of all new dwellings |
+  |---|---|---|
+  | 1992–2005 | 509 | 2.1 % |
+  | 2006–2015 | 1,138 | 5.7 % |
+  | 2016–2025 | 2,126 | 5.6 % |
 
-- It is wrong to call the band "met without new building". These units are
-  built, and they embody carbon outside the model's scope. Labels are now
-  corrected, and a `[check]` prints this breakdown.
-- The in-scope total stays internally consistent, but only if RV units keep
-  the same share of the stock as in 1992–2025. The RV share of new dwellings
-  rose from about 2 % to about 5.6 %, and an ageing population points
-  upward. A stock-proportional residual calibrated on the whole window may
-  therefore under-state future out-of-scope building.
-- The part that is really unconsented is about −948/yr (−0.056 % of stock).
-
-**Decision needed (yours):**
-- Option (a): count RV units as built in the calibration, then project an
-  explicit RV share and report it as out of scope. There is no RV floor area
-  in the file, so RV carbon would need an assumed size.
-- Option (b): keep the current approach and state this limitation in the
-  paper.
-
-(a) is the more defensible.
+  From 2026, RV units are 5.64 % of all dwellings built, reported every year
+  and cumulatively (35,658 units in the central run).
+- **Carbon and floor area:** out of scope. Households housed in RV units are
+  a negative band ("Housed in RV units (out of scope)"), valued at in-scope
+  dwelling size so the reader can see how much housing need they meet. RV
+  carbon is not estimated, because there is no RV floor area or LCA.
+- **Effect:** in-scope floor area goes from 76.94 to 77.56 Mm² (+0.8 %),
+  because the forward RV share is now explicit instead of the lower 1992–2025
+  average hidden in the old residual.
+- **Disclosure for the paper:** the 85+ population grows faster than the
+  total in the Stats NZ projection, so a constant RV share may understate
+  future RV building. The inputs have no historical age series to calibrate
+  against, so this is disclosed rather than modelled. The Monte Carlo samples
+  the share over its observed 2011–2025 range (4.1–8.2 %).
 
 ### 3.3 [High, flagged] The apartment carbon factor rests on one building
 
@@ -166,13 +185,35 @@ range of the pooled factors is −4.5 % to +3.8 %.
 ### 3.4 [Medium, reported] Demolition and residual are not separately identified
 
 Calibration trades them one-for-one: at demolition rates of 0.10 % and
-0.30 % the total is identical. Only their net (+1.25 Mm², 484 kt) is
-identified by the data. The split (10.9 Mm² of demolition replacement against
-−9.6 Mm² of residual) depends entirely on the BRANZ 2001–06 demolition rate.
+0.30 % the total is identical. Only their net (+6.50 Mm², 2,517 kt with RV
+units now separated) is identified by the data. The split (10.9 Mm² of
+demolition replacement against −4.4 Mm² of unconsented additions) depends
+entirely on the BRANZ 2001–06 demolition rate.
 Present the net as the result and the split as illustrative. The demand
 table now prints the net line.
 
 ### 3.5 [Medium] Household size: a single year carries a lot of weight
+
+**What the model does with 2025, and what this review recommends.** Nothing
+is removed. 2025 stays in as observed data and as the starting point.
+- In 2025, household size fell by 0.020, against the 0.0025 fall implied by
+  the Stats NZ path.
+- Low migration explains 0.005 of that fall. The model lets that part end
+  when migration recovers.
+- The unexplained remainder (e_2025 = −0.0127) is carried forward, shrinking
+  each year by the factor ρ = 0.76.
+
+That carry-forward is the standard AR(1) forecast of a persistent deviation:
+the expected deviation h years ahead is ρ^h × today's deviation. So it is a
+legitimate method, not a fudge. The weakness was only that ρ and b were
+treated as known exactly. They are estimated from 34 annual observations, and
+the result is sensitive to them: removing the carry gives −6.9 %, and
+ρ = 0.9 gives +11.9 %. The Monte Carlo now samples both from their sampling
+distributions. ρ alone explains about 21 % of the output variance (section
+3.7). Dropping the last 2–3 years instead would throw away the most recent
+evidence to fix a problem that is really about parameter uncertainty; it is
+not recommended. For the paper, show the no-carry case as a sensitivity
+alongside the Monte Carlo interval.
 
 - `e_2025` is one year's unexplained residual, carried forward. Removing it
   changes the total by −7.3 %; using ρ = 0.9 instead of 0.76 changes it by
@@ -189,9 +230,12 @@ table now prints the net line.
   result (r = +0.64) could then be partly a measurement artefact rather than
   behaviour. Check the DHE methodology note. If it is confirmed, the paper
   should discuss it and ideally test the relationship on census years only.
-- The Stats NZ living-arrangement variant (Low / High) moves the total by
-  +18.8 % / −16.2 %. This is the largest structural sensitivity, and it is not
-  in the reported band.
+- Using household size from the Stats NZ Low / High projection variants
+  moves the total by +17.7 % / −15.3 %. (The variants share one
+  living-arrangement assumption; they differ in fertility, mortality and
+  migration, so S differs through age structure.) In the Monte Carlo, S
+  follows the population rank for this reason. An earlier draft of this
+  review wrongly called these "living-arrangement" variants.
 
 ### 3.6 [Medium] Carbon-factor assumptions to state explicitly
 
@@ -208,25 +252,70 @@ table now prints the net line.
   Figure 5. That is labelled "estimated", which is correct; keep the label in
   any published figure.
 
-### 3.7 [Medium] Uncertainty is not jointly propagated
+### 3.7 [Medium, resolved] Joint uncertainty and global sensitivity (`MonteCarlo.py`)
 
-One-at-a-time results, change in the median total (`data/sensitivity_oat.csv`):
+**Engine.** The Monte Carlo re-evaluates the forward projection with Boss's
+own functions: the household-size path, stock calibration, mix and size
+blend. Before sampling, it checks itself against `Boss.main()` at the central
+values; the maximum relative difference over 2026–2050 is 3.9e-15.
 
-| assumption | ΔGFA | ΔCarbon |
+**Inputs.** Twelve inputs are sampled jointly. The distributions and their
+justification are in the script's docstring. In short:
+- population rank z: published 5/25/50/75/95th level percentiles, with the
+  Stats NZ Low/Medium/High household size tied to the same rank;
+- b: normal with its HAC standard error;
+- ρ: truncated normal with its AR(1) standard error;
+- mix damping φ: triangular(0.62, 0.80, 0.98), the conventional
+  damped-trend width;
+- ALR mix slopes: HAC standard errors;
+- dwelling size: lognormal, σ = 0.068;
+- completion rate: uniform(0.92, 0.96);
+- pre-2013 empty share: ±0.05;
+- vacancy: triangular over the measured censuses;
+- RV share: triangular over 2011–2025;
+- carbon factors: stratified bootstrap of the case studies.
+
+Demolition rate is not sampled (it cannot move the total). Soil order is not
+sampled; the extremes remain a bounding scenario.
+
+**Method.** 10,000 Latin hypercube draws (McKay et al. 1979) give the
+percentiles in 1.4. Sobol indices come from 14,336 evaluations with the
+Saltelli/Jansen estimators in `scipy.stats.sobol_indices` (Saltelli et al.
+2010), with 95 % bootstrap confidence intervals.
+
+**Total-order Sobol indices, cumulative carbon** (share of variance, including interactions):
+
+| input | ST | 95 % CI |
 |---|---|---|
-| Population 5th / 95th | −33.4 % / +34.2 % | same |
-| S variant Low / High | +18.8 % / −16.2 % | +18.7 % / −16.2 % |
-| ρ = 0.9 / no e_2025 | +12.6 % / −7.3 % | same |
-| Mix damping φ 0.5 / 0.95 | +5.7 % / −7.6 % | +4.9 % / −6.8 % |
-| Dwelling-size window 2016–25 | +4.5 % | +4.5 % |
-| Completion rate 0.92 / 0.96 | −4.7 % / +1.6 % | same |
-| Soil order Raw / Organic | 0 | −5.3 % / +22.5 % |
-| Single-case materials low / high | 0 | −20.1 % / +20.4 % |
+| population rank (with household size) | 0.42 | 0.38–0.46 |
+| dwelling size | 0.26 | 0.24–0.29 |
+| ρ (2025 deviation persistence) | 0.21 | 0.18–0.25 |
+| carbon factors (bootstrap) | 0.09 | 0.08–0.10 |
+| vacancy target | 0.04 | 0.04–0.05 |
+| mix damping φ | 0.04 | 0.03–0.04 |
+| completion rate | 0.02 | 0.01–0.02 |
+| b, RV share, pre-2013 share, mix slopes | ≤ 0.013 each | |
 
-**Recommended:** a Monte Carlo run over these inputs, with distributions you
-can justify, and a variance-based global sensitivity analysis (Sobol indices;
-Saltelli et al. 2008). This would replace a population-only band. It needs
-your judgement on the input distributions, so I have not added it.
+**Reading.** Population and household size dominate, as expected. But future
+dwelling size and the persistence of the 2025 household-size deviation
+together explain almost half the variance. These are where extra evidence
+would narrow the result most. The case-study carbon factors explain under
+10 %. That is because the bootstrap measures uncertainty in the *mean*
+intensity; one building versus another differs much more (±20 % in the
+one-at-a-time table).
+
+**Caveats to state in the paper.**
+- Population paths are comonotone across years: one draw keeps one rank
+  throughout.
+- Mapping the Low/High Stats NZ variants to the 5th/95th percentiles is an
+  assumption.
+- The inputs are treated as independent.
+- A bootstrap of 4–6 buildings per sub-type understates variance slightly.
+- The apartment spread is borrowed from the other sub-types (between-building
+  log-SD 0.203), because only one independent apartment case exists.
+
+One-at-a-time results (`Sensitivity.py`, `data/sensitivity_oat.csv`) are
+kept as a complement: they show the direction of each effect.
 
 ### 3.8 [Low] Other points
 
@@ -256,15 +345,19 @@ your judgement on the input distributions, so I have not added it.
 | Building_factors.py | Duplicate-case detection; `n_independent`; building and jackknife ranges; soil low/high exclude the aggregate row; hard-coded 1.006223 replaced by a named constant | none (existing columns identical) |
 | Diagnostics.py | Uses `Boss.main()`'s return value instead of rewriting and exec-ing Boss's source; labels | none |
 | Sensitivity.py | New one-at-a-time sensitivity runner | n/a |
+| Boss.py | Retirement villages counted in the stock identity, projected as a share, reported, excluded from floor area and carbon (`RV_IN_STOCK`) | 76.94 → 77.56 Mm² |
+| Boss.py | Household-size path moved to shared functions (`statsnz_size_shape`, `respond_household_size`, `newey_west_cov`) | none (output byte-identical) |
+| Building_factors.py | Writes `factors_building.csv` for the bootstrap | none |
+| MonteCarlo.py | New joint uncertainty (LHS) and Sobol analysis, validated against Boss | n/a |
 
 ## 5. Decisions left to you
 
-1. Retirement villages: option (a) or (b) in 3.2.
-2. Whether to keep carrying `e_2025` forward, or to show it as a scenario.
-3. Whether to verify the DHE circularity (3.5), and how to handle it if it is
-   confirmed.
-4. Input distributions for a joint Monte Carlo analysis.
-5. Whether to present demolition and residual only as a net figure.
+1. The DHE circularity (3.5): please check Stats NZ's methodology note, and
+   tell me if you want a census-years-only test of the migration response.
+2. The Monte Carlo distributions are defensible defaults, but they are your
+   assumptions in the paper. Review the docstring of `MonteCarlo.py`. The
+   vacancy range (up to 8.1 %) is the input most worth a second look.
+3. Whether to present demolition and residual only as a net figure (3.4).
 
 ---
 
@@ -281,14 +374,17 @@ References already cited in the code (BRANZ SR214; Jones, Greenaway-McGrevy
 - Chandrakumar, C., McLaren, S. J., Dowdell, D., & Jaques, R. (2020). A science-based approach to setting climate targets for buildings: the case of a New Zealand detached house. *Building and Environment*, 169.
 - De Wolf, C., Pomponi, F., & Moncaster, A. (2017). Measuring embodied carbon dioxide equivalent of buildings: a review and critique of current industry practice. *Energy and Buildings*, 140.
 - Gardner, E. S., & McKenzie, E. (1985). Forecasting trends in time series. *Management Science*, 31(10).
+- Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3rd ed.). OTexts.
 - Hertwich, E. G., et al. (2019). Material efficiency strategies to reducing greenhouse gas emissions associated with buildings, vehicles, and electronics — a review. *Environmental Research Letters*, 14.
 - Künsch, H. R. (1989). The jackknife and the bootstrap for general stationary observations. *Annals of Statistics*, 17(3).
 - Lee, R. D., & Tuljapurkar, S. (1994). Stochastic population forecasts for the United States: beyond high, medium, and low. *Journal of the American Statistical Association*, 89(428).
 - Levasseur, A., Lesage, P., Margni, M., Deschênes, L., & Samson, R. (2010). Considering time in LCA: dynamic LCA and its application to global warming impact assessments. *Environmental Science & Technology*, 44(8).
+- McKay, M. D., Beckman, R. J., & Conover, W. J. (1979). A comparison of three methods for selecting values of input variables in the analysis of output from a computer code. *Technometrics*, 21(2).
 - Müller, D. B. (2006). Stock dynamics for forecasting material flows — case study for housing in The Netherlands. *Ecological Economics*, 59(1).
 - Newey, W. K., & West, K. D. (1987). A simple, positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix. *Econometrica*, 55(3).
 - Pauliuk, S., & Müller, D. B. (2014). The role of in-use stocks in the social metabolism and in climate change mitigation. *Global Environmental Change*, 24.
 - Röck, M., et al. (2020). Embodied GHG emissions of buildings — the hidden challenge for effective climate change mitigation. *Applied Energy*, 258.
+- Saltelli, A., Annoni, P., Azzini, I., Campolongo, F., Ratto, M., & Tarantola, S. (2010). Variance based sensitivity analysis of model output: design and estimator for the total sensitivity index. *Computer Physics Communications*, 181(2).
 - Saltelli, A., et al. (2008). *Global Sensitivity Analysis: The Primer*. Wiley.
 - Sandberg, N. H., et al. (2016). Dynamic building stock modelling: application to 11 European countries to support the energy efficiency and retrofit ambitions of the EU. *Energy and Buildings*, 132.
 - Sartori, I., Bergsdal, H., Müller, D. B., & Brattebø, H. (2008). Towards modelling of construction, renovation and demolition activities: Norway's dwelling stock, 1900–2100. *Building Research & Information*, 36(5).

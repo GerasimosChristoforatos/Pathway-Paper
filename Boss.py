@@ -632,6 +632,59 @@ def smooth_interpolate_and_extend(block_df, value_col, full_year_range):
 
 
 # ============================================================
+# HOUSEHOLD SIZE (shared by main() and MonteCarlo.py)
+# ============================================================
+
+def statsnz_size_shape(variant, forecast_years):
+    """[Route A] Stats NZ household size S = Pop / HH at the shared knots of the
+    matched-vintage population and household projections for one variant,
+    PCHIP-interpolated to annual values. Returns (S_knots, S_ann, pop_ref), where
+    pop_ref is that variant's annual population (to read the growth it assumed)."""
+    pop_k = load_national_pop_projection(variant=variant).set_index('Year')['Population']
+    hh_k = extract_household_projection_block(FILE_HOUSEHOLDS_PROJ,
+                                              variant_label=variant).set_index('Year')['Households']
+    common = sorted(set(pop_k.index) & set(hh_k.index))
+    S_knots = pd.DataFrame({'Year': common, 'S': [pop_k[y] / hh_k[y] for y in common]})
+    S_ann = smooth_interpolate_and_extend(S_knots, 'S', np.arange(min(common), 2051)).set_index('Year')['S']
+    pk = pop_k.reset_index().rename(columns={'index': 'Year'})
+    pop_ref = smooth_interpolate_and_extend(pk, 'Population',
+                                            np.arange(int(pk['Year'].min()), 2051)).set_index('Year')['Population']
+    return S_knots, S_ann, pop_ref
+
+
+def respond_household_size(S_ann, pop_ref, hist_S, hist_pop, forecast_years, b, rho):
+    """Household size rebased on observed 2025 (S_matched), plus 2025's
+    unexplained deviation e_2025 fading at rho (S_resp). The part of 2025's
+    fall explained by b x (observed - assumed population growth) does not carry."""
+    S_statsnz = S_ann.reindex(forecast_years).values
+    S_matched = float(hist_S.loc[2025]) * S_statsnz / S_statsnz[0]
+    dP_ref = pop_ref.diff().reindex(forecast_years).values
+    dS_snz = np.diff(S_matched)                              # 2026..2050
+    dS_snz_2025 = float(S_matched[0] * (S_ann.loc[2025] - S_ann.loc[2024]) / S_ann.loc[2025])
+    dS_obs_2025 = float(hist_S.loc[2025] - hist_S.loc[2024])
+    dP_obs_2025 = float(hist_pop.loc[2025] - hist_pop.loc[2024])
+    e_2025 = dS_obs_2025 - (dS_snz_2025 + b * (dP_obs_2025 - dP_ref[0]))
+    fade = rho ** np.arange(1, len(forecast_years))
+    S_resp = np.concatenate([[S_matched[0]], S_matched[0] + np.cumsum(dS_snz + e_2025 * fade)])
+    return dict(S_matched=S_matched, S_resp=S_resp, e_2025=e_2025, dS_snz_2025=dS_snz_2025,
+                dS_obs_2025=dS_obs_2025, dP_obs_2025=dP_obs_2025, dP_ref=dP_ref)
+
+
+def newey_west_cov(X, resid, lag=None):
+    """Newey-West (1987) HAC covariance of OLS coefficients, Bartlett kernel,
+    default lag floor(4 (n/100)^(2/9)), small-sample factor n / (n - k)."""
+    n, k = X.shape
+    lag = int(np.floor(4 * (n / 100) ** (2 / 9))) if lag is None else lag
+    Xe = X * resid[:, None]
+    S = Xe.T @ Xe
+    for l in range(1, lag + 1):
+        G = Xe[l:].T @ Xe[:-l]
+        S += (1 - l / (lag + 1)) * (G + G.T)
+    XtXi = np.linalg.inv(X.T @ X)
+    return XtXi @ S @ XtXi * n / (n - k), lag
+
+
+# ============================================================
 # CORE HELPERS
 # ============================================================
 
@@ -1087,15 +1140,9 @@ def main():
     S_path = df_forecast['PopTotal_50th'].values / hh_paired['50th']
 
     # [Route A] household size from the (near-)matched vintage pair
-    _pop_k = load_national_pop_projection(variant=HH_SIZE_VARIANT).set_index('Year')['Population']
-    _hh_k = extract_household_projection_block(FILE_HOUSEHOLDS_PROJ,
-                                               variant_label=HH_SIZE_VARIANT).set_index('Year')['Households']
-    _common = sorted(set(_pop_k.index) & set(_hh_k.index))
-    S_knots = pd.DataFrame({'Year': _common,
-                            'S': [_pop_k[y] / _hh_k[y] for y in _common]})
-    _S_ann = smooth_interpolate_and_extend(S_knots, 'S', np.arange(min(_common), 2051)).set_index('Year')['S']
-    S_statsnz = _S_ann.reindex(forecast_years).values
-    S_matched = float(hist_S.loc[2025]) * S_statsnz / S_statsnz[0]
+    S_knots, _S_ann, _pref = statsnz_size_shape(HH_SIZE_VARIANT, forecast_years)
+    S_matched = respond_household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years,
+                                       0.0, 0.0)['S_matched']
 
     if HOUSEHOLD_METHOD == 'matched_size':
         S_used = S_matched
@@ -1119,43 +1166,26 @@ def main():
             rho = float(DEVIATION_PERSISTENCE)
         _r2 = 1 - (_res ** 2).sum() / ((_dS - _dS.mean()) ** 2).sum()
         # The residuals are autocorrelated (that is what rho measures), so the
-        # ordinary OLS standard error of b is invalid. Newey-West (1987) HAC
-        # standard error, Bartlett kernel, lag floor(4 (n/100)^(2/9)).
-        _n = len(_res)
-        _L = int(np.floor(4 * (_n / 100) ** (2 / 9)))
-        _Xe = _X * _res[:, None]
-        _S = _Xe.T @ _Xe
-        for _l in range(1, _L + 1):
-            _G = _Xe[_l:].T @ _Xe[:-_l]
-            _S += (1 - _l / (_L + 1)) * (_G + _G.T)
-        _XtXi = np.linalg.inv(_X.T @ _X)
-        _se_hac = float(np.sqrt((_XtXi @ _S @ _XtXi)[1, 1] * _n / (_n - _X.shape[1])))
-        _se_ols = float(np.sqrt((_res ** 2).sum() / (_n - _X.shape[1]) * _XtXi[1, 1]))
-        # population growth behind Stats NZ's household-size path (same vintage)
-        _pk = _pop_k.reset_index().rename(columns={'index': 'Year'})
-        _pref = smooth_interpolate_and_extend(_pk, 'Population',
-                                              np.arange(int(_pk['Year'].min()), 2051)).set_index('Year')['Population']
-        dP_ref = _pref.diff().reindex(forecast_years).values
-        dS_snz = np.diff(S_matched)                              # 2026..2050
-        dS_snz_2025 = float(S_matched[0] * (_S_ann.loc[2025] - _S_ann.loc[2024]) / _S_ann.loc[2025])
-        dS_obs_2025 = float(hist_S.loc[2025] - hist_S.loc[2024])
-        dP_obs_2025 = float(hist_pop.loc[2025] - hist_pop.loc[2024])
-        e_2025 = dS_obs_2025 - (dS_snz_2025 + b_resp * (dP_obs_2025 - dP_ref[0]))
-        fade = rho ** np.arange(1, len(forecast_years))
+        # ordinary OLS standard error of b is invalid: Newey-West HAC instead.
+        _n, _k = _X.shape
+        _cov_hac, _L = newey_west_cov(_X, _res)
+        _se_hac = float(np.sqrt(_cov_hac[1, 1]))
+        _se_ols = float(np.sqrt((_res ** 2).sum() / (_n - _k) * np.linalg.inv(_X.T @ _X)[1, 1]))
         # Migration explains part of 2025's fall (b x the migration shortfall);
         # that part does NOT continue once migration recovers. Only the
         # unexplained remainder e_2025 carries forward, fading at rho. b is not
         # applied year after year: our population differs from Stats NZ's by a
         # persistent VINTAGE gap, not a migration shock, and sustained migration
         # is housed rather than packed (2011-20: +75,800/yr, S rose only 0.002/yr).
-        dS = dS_snz + e_2025 * fade
-        S_resp = np.concatenate([[S_matched[0]], S_matched[0] + np.cumsum(dS)])
+        _hr = respond_household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years, b_resp, rho)
+        S_resp, e_2025, dP_ref = _hr['S_resp'], _hr['e_2025'], _hr['dP_ref']
+        dS_snz_2025, dS_obs_2025, dP_obs_2025 = _hr['dS_snz_2025'], _hr['dS_obs_2025'], _hr['dP_obs_2025']
         S_by_pct = {pct: S_resp for pct in ['5th', '50th', '95th']}
         hh_response = dict(b=b_resp, se_hac=_se_hac, se_ols=_se_ols, hac_lag=_L,
                            rho=rho, r2=_r2, e_2025=e_2025, dS_obs_2025=dS_obs_2025,
                            dS_snz_2025=dS_snz_2025, dP_obs_2025=dP_obs_2025, dP_ref=dP_ref,
                            S_by_pct=S_by_pct, S_snz=S_matched.copy(), dS_hist=_dS, dP_hist=_dP,
-                           years_fit=_yr)
+                           years_fit=_yr, n_fit=_n, rho_estimated=DEVIATION_PERSISTENCE == 'estimated')
 
     if S_used is not None:
         households_forecast = {pct: df_forecast[f'PopTotal_{pct}'].values

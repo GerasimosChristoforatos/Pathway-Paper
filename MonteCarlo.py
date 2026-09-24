@@ -30,10 +30,21 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
             (placed at z = -1.645 / 0 / +1.645). The variants differ only in
             fertility, mortality and migration, so low population and small
             households come together (older age structure).
-  b         Normal(b_hat, Newey-West SE): migration response of household size.
-  rho       Normal(rho_hat, sqrt((1 - rho_hat^2) / n)), truncated to [0, 0.95]:
-            persistence of 2025's unexplained household-size deviation (the
-            large-sample standard error of an AR(1) coefficient).
+  b, rho    Only when Boss.HH_SIZE_RESPONSE (a sensitivity; off by default,
+            because the 2025 deviation is a DHE estimation artefact):
+            Normal(b_hat, Newey-West SE) and Normal(rho_hat, sqrt((1-rho^2)/n))
+            truncated to [0, 0.95].
+  hh_rebase Triangular(k_occupied, k_occupied+away, 1): the factor on post-2018
+            DHE household increments. The low end rebases on census occupied
+            dwellings, the mode (Boss's choice) adds residents-away households,
+            and 1 is the DHE series as published (i.e. the 2023 census
+            undercounted households relative to 2018). The stock calibration
+            is redone with each draw's households.
+  regime    Uniform(0, 1): weight on the 2019-2023 census interval's net
+            replacement rate (+0.36%/yr of stock) against the whole
+            census-benchmarked window 1992-2023 (+0.15%/yr). It reads "how much
+            of the recent redevelopment regime persists". The census dwelling
+            counts show the same 2018-2023 rise with no household data.
   phi       Triangular(0.62, 0.80, 0.98): mix-trend damping. The width is the
             conventional damped-trend range [0.80, 0.98] (Hyndman &
             Athanasopoulos), centred on the adopted 0.80.
@@ -161,6 +172,7 @@ def build_setup():
     rs = B['hist_rv_share'].loc[2011:2025]
     su['rv_range'] = (float(rs.min()), float(B['rv_share']), float(rs.max()))
     su['pre_share'] = float(B['empty_share_measured'])
+    su['k_range'] = (Boss.household_rebase_factor(B['hh_raw_dhe'], 'occupied'), float(B['hh_rebase_k']), 1.0)
 
     # ---- carbon factors ----
     tf = pd.read_csv(Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
@@ -205,12 +217,17 @@ def carbon_bootstrap(bf, typ):
 # ============================================================
 # ENGINE
 # ============================================================
-PARAMS = ['z_pop', 'b', 'rho', 'phi', 'slope_T', 'slope_A', 'size', 'complete',
-          'pre_share', 'vacancy', 'rv_share', 'carbon']
+# b and rho enter only when the 2025 household-size deviation is carried
+# (HH_SIZE_RESPONSE, a sensitivity); hh_rebase only when households are rebased.
+PARAMS = (['z_pop'] + (['b', 'rho'] if Boss.HH_SIZE_RESPONSE else [])
+          + (['hh_rebase'] if Boss.HH_CENSUS_REBASE else [])
+          + ['regime', 'phi', 'slope_T', 'slope_A', 'size', 'complete',
+             'pre_share', 'vacancy', 'rv_share', 'carbon'])
 
 
 def central(su):
-    return dict(z_pop=0.0, b=su['b_hat'], rho=su['rho_hat'], phi=Boss.DAMPING_PHI,
+    return dict(z_pop=0.0, b=su['b_hat'], rho=su['rho_hat'], hh_rebase=su['k_range'][1],
+                regime=0.0, phi=Boss.DAMPING_PHI,
                 slope_T=0.0, slope_A=0.0, size=1.0, complete=Boss.COMPLETION_RATE,
                 pre_share=su['pre_share'], vacancy=su['v_2023'], rv_share=su['rv_range'][1],
                 carbon=None)
@@ -232,8 +249,14 @@ def project(su, p):
     B, fy, typ = su['B'], su['fy'], su['typ']
     # ---- population and household size (same rank z) ----
     pop = su['pop50'] + interp_z(p['z_pop'], Z_KNOTS, su['spreads'])
-    S_v = [Boss.respond_household_size(*su['size_shape'][v], B['hist_S'], B['hist_pop'], fy,
-                                       p['b'], p['rho'])['S_resp'] for v in VARIANT_Z]
+    # historical households under this draw's census rebase
+    k = p.get('hh_rebase', su['k_range'][1])
+    hh_hist = Boss.annual_households(Boss.rebase_households(B['hh_raw_dhe'], k)).reindex(B['years_hist'])
+    S_hist = B['hist_pop'] / hh_hist
+    key = 'S_resp' if Boss.HH_SIZE_RESPONSE else 'S_matched'
+    S_v = [Boss.respond_household_size(*su['size_shape'][v], S_hist, B['hist_pop'], fy,
+                                       p.get('b', su['b_hat']), p.get('rho', su['rho_hat']))[key]
+           for v in VARIANT_Z]
     S = interp_z(p['z_pop'], np.array(list(VARIANT_Z.values())), np.array(S_v))
     hh = pop / S
     d_hh = np.insert(np.diff(hh), 0, 0.0)
@@ -242,12 +265,19 @@ def project(su, p):
 
     # ---- stock: recalibrate for this completion rate / pre-2013 share ----
     c = p['complete']
-    cal = B['calibrate_stock'](p['pre_share'], completion=c)
-    unc = cal['rate_unc']
-    other_2025 = c * (B['hist_total_units'].loc[2025] + B['hist_rv_units'].loc[2025]) - B['d_hh'].loc[2025]
+    cal = B['calibrate_stock'](p['pre_share'], completion=c, hh=hh_hist)
+    end = B['calib_end']
+    # regime: weight on the 2019-2023 census interval's net replacement rate
+    # against the whole census-benchmarked window (0 = long run, as in Boss)
+    unc_recent = (float(cal['net'].loc[2019:end].sum() / cal['prev'].loc[2019:end].sum())
+                  - Boss.DEMOLITION_RATE) if end >= 2019 else cal['rate_unc']
+    unc = (1 - p['regime']) * cal['rate_unc'] + p['regime'] * unc_recent
+    d_hh_2025 = float(hh_hist.loc[2025] - hh_hist.loc[2024])
+    other_2025 = c * (B['hist_total_units'].loc[2025] + B['hist_rv_units'].loc[2025]) - d_hh_2025
     model_2025 = (cal['allow'].loc[2025] + cal['change'].loc[2025]
                   + (Boss.DEMOLITION_RATE + unc) * cal['stock'].shift(1).loc[2025])
-    net = cal['net'][B['years_hist'] >= Boss.DEMOLITION_CALIB_START].values
+    yh = B['years_hist']
+    net = cal['net'][(yh >= Boss.DEMOLITION_CALIB_START) & (yh <= end)].values
     rho_o = float(np.clip(np.corrcoef(net[:-1], net[1:])[0, 1], 0.0, 0.95))
     dev = (other_2025 - model_2025) * rho_o ** np.arange(len(fy))
     dev[0] = 0.0
@@ -326,6 +356,8 @@ def distributions(su):
         'z_pop': stats.norm(0, 1),
         'b': stats.norm(su['b_hat'], su['b_se']),
         'rho': stats.truncnorm(tn_a, tn_b, loc=su['rho_hat'], scale=su['rho_se']),
+        'hh_rebase': tri(*su['k_range']),
+        'regime': stats.uniform(0, 1),
         'phi': tri(PHI_RANGE[0], Boss.DAMPING_PHI, PHI_RANGE[1]),
         'slope_T': stats.norm(0, su['alr_se'][typ[1]]),
         'slope_A': stats.norm(0, su['alr_se'][typ[2]]),

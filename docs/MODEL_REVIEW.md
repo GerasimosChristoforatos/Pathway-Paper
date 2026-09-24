@@ -3,8 +3,9 @@
 Scripts reviewed: `Building_factors.py`, `Boss.py`, `Diagnostics.py`, run on the
 data in `data/` (commit `f137955`). Every number below comes from those runs
 unless marked otherwise. Changes made during the review are listed in
-section 4. Round 2 (retirement villages, Monte Carlo) updates sections 1.4,
-3.2, 3.5 and 3.7; numbers are from the final code.
+section 4. Round 2 (retirement villages, Monte Carlo) updated sections 1.4,
+3.2, 3.5 and 3.7. Round 3 (Stats NZ household-estimate methodology) rewrote
+3.5 and added 3.9. All numbers are from the final code.
 
 ---
 
@@ -37,7 +38,7 @@ dwellings built = new households
                 + vacancy allowance   (ΔHH · v/(1−v))
                 + vacancy change      (HH(t−1) · Δ[1/(1−v)])
                 + demolitions         (0.135 % of stock, BRANZ SR214)
-                + unconsented         (calibrated residual, negative)
+                + calibrated residual (census-benchmarked, 1992–2023)
                 − retirement-village units (out of carbon scope)
 in-scope floor area = in-scope dwellings built × realised dwelling size
                       (by typology, 2023–25)
@@ -51,17 +52,19 @@ do not cover them. From 2026 they are 5.64% of all dwellings built (the
 
 - **Population:** Stats NZ 2024-base stochastic projection, anchored on the
   observed 31 Dec 2025 ERP.
+- **Historical households:** the Stats NZ DHE series, with the post-2018
+  increments rebased on the 2023 census (× 0.826; see 3.9).
 - **Household size S:** the shape of the Stats NZ 2018-base Medium household
-  projection divided by the matched-vintage population, rebased on the observed
-  2025 S. Added to it is the part of 2025's unusually large fall in S that
-  low migration doesn't explain (`e_2025`), fading at the residual
-  autocorrelation ρ = 0.76.
+  projection divided by the matched-vintage population, rebased on 2025
+  (S = 2.657). The earlier carry-forward of 2025's "unexplained" fall is now
+  a sensitivity only (3.5).
 - **Households** = Population / S. Declines are floored at zero.
 - **Vacancy:** census empty-dwelling share (excluding "residents away"),
   interpolated between censuses and held at the 2023 value (5.53 %) from then on.
-- **Residual (unconsented additions):** the long-run gap in the stock
-  identity over 1992–2025, expressed as a share of stock (−0.056 %/yr once RV
-  units are counted as built).
+- **Calibrated residual:** the gap in the stock identity beyond the BRANZ
+  demolition rate, over the census-benchmarked years 1992–2023: +0.019 %/yr
+  of stock. A negative value means unconsented additions; a positive value
+  means losses above the BRANZ rate.
 - **Typology mix:** additive-log-ratio trend fitted from 2012 onward,
   geometrically damped (φ = 0.8).
 - **Demand bands** (growth, house-splitting, extra space, vacancy,
@@ -80,21 +83,29 @@ construction.
 
 | | central run | Monte Carlo median | 90 % interval (5th–95th) |
 |---|---|---|---|
-| Built floor area, in scope | 77.6 Mm² | 79.7 Mm² | 62.7–97.8 Mm² |
-| Embodied carbon (A1–C4 + soil) | 30,028 kt | 30,779 kt | 24,098–38,055 kt |
-| Upfront carbon (A1–A5 + soil) | 22,092 kt | 22,659 kt | 17,813–28,002 kt |
-| Retirement-village units built (not in carbon) | 35,658 | 38,409 | 28,408–51,191 |
-| Households, 2050 | 2.61 M | 2.62 M | 2.51–2.72 M |
-| Household size, 2050 | 2.543 | 2.541 | 2.406–2.634 |
+| Built floor area, in scope | 76.7 Mm² | 80.7 Mm² | 60.0–104.6 Mm² |
+| Embodied carbon (A1–C4 + soil) | 29,708 kt | 31,191 kt | 23,168–40,888 kt |
+| Upfront carbon (A1–A5 + soil) | 21,862 kt | 23,004 kt | 17,098–30,017 kt |
+| Retirement-village units built (not in carbon) | 35,321 | 39,052 | 27,495–54,466 |
+| Households, 2050 | 2.51 M | 2.53 M | 2.40–2.66 M |
+| Household size, 2050 | 2.641 | 2.624 | 2.563–2.679 |
 
-The Monte Carlo median is about 3 % above the central run. Three inputs have
-right-skewed distributions:
-- vacancy: the measured range runs from 5.3 % to 8.1 % (the 2013 census),
-  against 5.5 % in 2023;
-- the lognormal dwelling-size multiplier;
-- the truncated distribution for ρ.
+The Monte Carlo median is 5 % above the central run. The reason is that
+several inputs are one-sided relative to the central choice:
+- replacement regime: the central run uses the long-run rate, while the
+  Monte Carlo also allows the higher 2019–23 rate (3.9);
+- vacancy: the measured census range reaches 8.1 % (2013), against 5.5 %
+  in 2023;
+- dwelling size: the lognormal multiplier is skewed upward;
+- household rebase: the central k is near the low end of its range.
 
 Report both numbers and say why they differ.
+
+The central run gives a 2025→2026 step of −22 %. Built dwellings drop from
+33,400 (observed 2025) to about 25,700. Census-consistent household
+formation (~21,000/yr) is well below 2021–25 building. The step disappears
+only if the 2019–23 replacement regime continues (3.9). Discuss it in the
+paper rather than smoothing it away.
 
 ---
 
@@ -185,57 +196,47 @@ range of the pooled factors is −4.5 % to +3.8 %.
 ### 3.4 [Medium, reported] Demolition and residual are not separately identified
 
 Calibration trades them one-for-one: at demolition rates of 0.10 % and
-0.30 % the total is identical. Only their net (+6.50 Mm², 2,517 kt with RV
-units now separated) is identified by the data. The split (10.9 Mm² of
-demolition replacement against −4.4 Mm² of unconsented additions) depends
-entirely on the BRANZ 2001–06 demolition rate.
+0.30 % the total is identical. Only their net (+12.75 Mm², 4,936 kt in the
+final central run) is identified by the data. The split (10.5 Mm² of
+demolition replacement plus 2.3 Mm² of residual) depends entirely on the
+BRANZ 2001–06 demolition rate.
 Present the net as the result and the split as illustrative. The demand
 table now prints the net line.
 
-### 3.5 [Medium] Household size: a single year carries a lot of weight
+### 3.5 [High, resolved] Household size: the 2025 "deviation" was a product of how Stats NZ estimates households
 
-**What the model does with 2025, and what this review recommends.** Nothing
-is removed. 2025 stays in as observed data and as the starting point.
-- In 2025, household size fell by 0.020, against the 0.0025 fall implied by
-  the Stats NZ path.
-- Low migration explains 0.005 of that fall. The model lets that part end
-  when migration recovers.
-- The unexplained remainder (e_2025 = −0.0127) is carried forward, shrinking
-  each year by the factor ρ = 0.76.
+What Stats NZ's DHE note says, and what I checked in the data:
+- The household series is built from census-year **bases** (1991, 1996,
+  2001, 2006, 2013, 2018). Each base is derived from the estimated resident
+  population × living-arrangement type rates.
+- Between and after bases (Table 2, footnote 1): *"Estimates for reference
+  dates after each base are derived using weighted and lagged building
+  consents."*
+- 2019–2025: household growth = 0.887–0.889 × the previous year's consents,
+  every year (correlation 1.000). There is no 2023 household base yet.
+- 1992–2018: within each census period, household growth is a constant
+  fraction of dwelling growth (e.g. 0.73 in 1996–2000, 0.84 in 2006–12), and
+  the fraction resets at each base.
 
-That carry-forward is the standard AR(1) forecast of a persistent deviation:
-the expected deviation h years ahead is ρ^h × today's deviation. So it is a
-legitimate method, not a fudge. The weakness was only that ρ and b were
-treated as known exactly. They are estimated from 34 annual observations, and
-the result is sensitive to them: removing the carry gives −6.9 %, and
-ρ = 0.9 gives +11.9 %. The Monte Carlo now samples both from their sampling
-distributions. ρ alone explains about 21 % of the output variance (section
-3.7). Dropping the last 2–3 years instead would throw away the most recent
-evidence to fix a problem that is really about parameter uncertainty; it is
-not recommended. For the paper, show the no-carry case as a sensitivity
-alongside the Monte Carlo interval.
+Consequences:
+1. **The 2024–25 fall in S is an artefact.** Households kept rising at
+   0.888 × lagged consents while population growth slowed. The fall is not
+   observed behaviour, so carrying it forward (`e_2025`) projected a
+   measurement artefact. It is now **off by default**. Carrying it is a
+   sensitivity: +2.5 % (ρ estimated) and +10.0 % (ρ = 0.9).
+2. **The migration–household-size correlation** (r ≈ +0.6–0.7) is, between
+   censuses, consent-driven households meeting migration-driven population.
+   It describes housing supply against arrivals, not household behaviour, and
+   should not be presented as a behavioural finding ("the engines take
+   turns"). It is still fitted and reported as a diagnostic: b = 3.95e-7,
+   HAC t = 4.7, over 1992–2023.
+3. **The Low/High projection variants** now move the total by +9.6 % /
+   −7.6 % (they were +17.7 % / −15.3 % when the artefact was carried). The
+   variants share one living-arrangement assumption and differ in fertility,
+   mortality and migration. In the Monte Carlo, S follows the population rank.
 
-- `e_2025` is one year's unexplained residual, carried forward. Removing it
-  changes the total by −7.3 %; using ρ = 0.9 instead of 0.76 changes it by
-  +12.6 %. The value of 2025 may be revised by Stats NZ.
-- b is statistically robust to autocorrelation: Newey–West HAC SE 7.6e-8,
-  t = 5.2 (OLS SE 6.4e-8; Durbin–Watson 0.49). This is now printed.
-- **Circularity risk (please verify):** Stats NZ's Dwelling and Household
-  Estimates, to my understanding, are rolled forward between censuses from
-  building consents. If so, historical households are partly built from the
-  same consents the model is calibrated against. That would (i) make parts
-  of the stock identity close to tautological, and (ii) make S = Pop / HH
-  correlate with migration mechanically: population jumps with migration
-  while consent-driven households move slowly. The "engines take turns"
-  result (r = +0.64) could then be partly a measurement artefact rather than
-  behaviour. Check the DHE methodology note. If it is confirmed, the paper
-  should discuss it and ideally test the relationship on census years only.
-- Using household size from the Stats NZ Low / High projection variants
-  moves the total by +17.7 % / −15.3 %. (The variants share one
-  living-arrangement assumption; they differ in fertility, mortality and
-  migration, so S differs through age structure.) In the Monte Carlo, S
-  follows the population rank for this reason. An earlier draft of this
-  review wrongly called these "living-arrangement" variants.
+What I did **not** do: drop 2024–25. They stay as the starting point, now
+census-consistent (3.9).
 
 ### 3.6 [Medium] Carbon-factor assumptions to state explicitly
 
@@ -257,14 +258,19 @@ alongside the Monte Carlo interval.
 **Engine.** The Monte Carlo re-evaluates the forward projection with Boss's
 own functions: the household-size path, stock calibration, mix and size
 blend. Before sampling, it checks itself against `Boss.main()` at the central
-values; the maximum relative difference over 2026–2050 is 3.9e-15.
+values; the maximum relative difference over 2026–2050 is 3.8e-15.
 
 **Inputs.** Twelve inputs are sampled jointly. The distributions and their
 justification are in the script's docstring. In short:
 - population rank z: published 5/25/50/75/95th level percentiles, with the
   Stats NZ Low/Medium/High household size tied to the same rank;
-- b: normal with its HAC standard error;
-- ρ: truncated normal with its AR(1) standard error;
+- household rebase k: triangular(0.785, 0.826, 1.0), from census occupied
+  dwellings only, through occupied + away, to the DHE as published; the
+  stock is recalibrated for each draw;
+- replacement regime: a uniform weight between the 1992–2023 and 2019–23
+  net replacement rates;
+- b and ρ: sampled only when the 2025 carry-forward is switched on (a
+  sensitivity);
 - mix damping φ: triangular(0.62, 0.80, 0.98), the conventional
   damped-trend width;
 - ALR mix slopes: HAC standard errors;
@@ -287,20 +293,20 @@ Saltelli/Jansen estimators in `scipy.stats.sobol_indices` (Saltelli et al.
 
 | input | ST | 95 % CI |
 |---|---|---|
-| population rank (with household size) | 0.42 | 0.38–0.46 |
-| dwelling size | 0.26 | 0.24–0.29 |
-| ρ (2025 deviation persistence) | 0.21 | 0.18–0.25 |
-| carbon factors (bootstrap) | 0.09 | 0.08–0.10 |
-| vacancy target | 0.04 | 0.04–0.05 |
-| mix damping φ | 0.04 | 0.03–0.04 |
-| completion rate | 0.02 | 0.01–0.02 |
-| b, RV share, pre-2013 share, mix slopes | ≤ 0.013 each | |
+| population rank (with household size) | 0.58 | 0.54–0.64 |
+| dwelling size | 0.17 | 0.16–0.20 |
+| household census rebase k | 0.08 | 0.08–0.10 |
+| carbon factors (bootstrap) | 0.06 | 0.05–0.06 |
+| replacement regime | 0.05 | 0.04–0.05 |
+| vacancy target | 0.03 | 0.02–0.03 |
+| mix damping φ | 0.03 | 0.02–0.03 |
+| completion rate | 0.01 | 0.01–0.01 |
+| RV share, pre-2013 share, mix slopes | ≤ 0.003 each | |
 
-**Reading.** Population and household size dominate, as expected. But future
-dwelling size and the persistence of the 2025 household-size deviation
-together explain almost half the variance. These are where extra evidence
-would narrow the result most. The case-study carbon factors explain under
-10 %. That is because the bootstrap measures uncertainty in the *mean*
+**Reading.** Population (with household size tied to it) dominates. Future
+dwelling size comes next, then how households are benchmarked to the census.
+The earlier large role of ρ (0.21) is gone because the artefact is no longer
+carried. The case-study carbon factors explain about 6 %. That is because the bootstrap measures uncertainty in the *mean*
 intensity; one building versus another differs much more (±20 % in the
 one-at-a-time table).
 
@@ -330,6 +336,58 @@ kept as a complement: they show the direction of each effect.
   and typology carbon totals agree; and Building_factors reproduces the
   committed CSVs exactly.
 
+### 3.9 [High, resolved] Households rebased on the 2023 census; stock calibrated where households are census-benchmarked
+
+**Evidence.** Stats NZ rebased the dwelling series on the 2023 census (June
+2023: 2,025,100 vs a census count of 2,018,781), but not the household
+series. Between 2018 and 2023 the published households grew 1.099×. Census
+households grew 1.082× counting occupied dwellings plus residents away, or
+1.078× counting occupied dwellings only. So June 2023 is 31–38k households
+(1.6–2.0 %) above the census.
+
+**Fix (mirrors Stats NZ's own benchmarking).** All household increments after
+30 June 2018 are scaled by one factor, k = 0.826, so that June 2023 matches
+census growth (occupied + away, the closer match to Stats NZ's base
+definition). The same k is applied to 2024–25.
+- 2025 households: 2,011,726 (published 2,057,500).
+- S in 2025: 2.657 (published 2.598).
+- Assumption: the census undercount adjustments are proportionally equal in
+  2018 and 2023. The Monte Carlo spans k from 0.785 (occupied only) to 1.0
+  (the DHE as published).
+
+**Calibration window.** The stock residual is calibrated only on
+census-benchmarked years: 1992–2023 with the rebase, or 1992–2018 without
+it. After the last base, the identity would only recover Stats NZ's 0.888
+weight.
+
+**Independent check, from census dwelling counts only (no household data).**
+Net replacement = dwellings built − change in census private dwellings, as
+% of stock per year:
+
+| interval | net replacement | net of change in dwellings under construction |
+|---|---|---|
+| 1991–96 | +0.068 % | +0.056 % |
+| 1996–01 | −0.103 % | −0.083 % |
+| 2001–06 | +0.017 % | −0.041 % |
+| 2006–13 | +0.098 % | +0.130 % |
+| 2013–18 | +0.078 % | +0.008 % |
+| **2018–23** | **+0.334 %** | **+0.218 %** |
+
+Replacement roughly doubled to tripled in 2018–23. That fits the
+redevelopment of existing sites in the intensification era. The household
+identity shows the same: +0.154 %/yr over 1992–2023 but +0.355 %/yr in
+2019–23. **Whether that regime continues is the largest structural choice
+left.** Continuing it fully gives +18.3 % (Sensitivity.py). The central run
+uses the long-run window. The Monte Carlo samples a uniform weight between
+the two (Sobol ST ≈ 0.05). Demolition-consent data, if you can get it,
+would pin this down better than any modelling choice.
+
+**Effect on the central run:** 77.6 → 76.7 Mm², 30,028 → 29,708 kt. This is
+the net of three changes:
+- the rebase, with S starting higher: −;
+- the 2025 carry removed: −;
+- the 1992–2023 window, which includes the recent replacement: +.
+
 ---
 
 ## 4. Changes made
@@ -349,15 +407,23 @@ kept as a complement: they show the direction of each effect.
 | Boss.py | Household-size path moved to shared functions (`statsnz_size_shape`, `respond_household_size`, `newey_west_cov`) | none (output byte-identical) |
 | Building_factors.py | Writes `factors_building.csv` for the bootstrap | none |
 | MonteCarlo.py | New joint uncertainty (LHS) and Sobol analysis, validated against Boss | n/a |
+| Boss.py | Households rebased on 2023 census (`HH_CENSUS_REBASE`); stock calibrated on census-benchmarked years (`STOCK_CALIB_END`); 2025 household-size carry off by default (`HH_SIZE_RESPONSE`); census dwelling-count check printed; residual relabelled | 77.56 → 76.71 Mm² |
+| MonteCarlo.py | Adds `hh_rebase` and `regime` inputs; b and ρ sampled only when the carry is on | n/a |
+| Diagnostics.py | Figure 2 shows the DHE evidence (household growth / lagged consents) and separates census-benchmarked years; households and S panels show the published series next to the rebased one | none |
 
 ## 5. Decisions left to you
 
-1. The DHE circularity (3.5): please check Stats NZ's methodology note, and
-   tell me if you want a census-years-only test of the migration response.
-2. The Monte Carlo distributions are defensible defaults, but they are your
-   assumptions in the paper. Review the docstring of `MonteCarlo.py`. The
-   vacancy range (up to 8.1 %) is the input most worth a second look.
-3. Whether to present demolition and residual only as a net figure (3.4).
+1. **Replacement regime (3.9):** is the 2019–23 redevelopment rate expected
+   to continue? The central run uses the long run and the Monte Carlo spans
+   both. If you have a view based on policy, you could state it. Local
+   demolition data would help most.
+2. **Household rebase measure:** occupied + away (adopted) or occupied only.
+   The difference is small (+1.5 %).
+3. **Monte Carlo distributions:** they are stated assumptions; review the
+   `MonteCarlo.py` docstring. The vacancy upper bound (8.1 %) is still the
+   one most worth a second look.
+4. **Demolition and residual:** whether to present them only as a net
+   figure (3.4).
 
 ---
 

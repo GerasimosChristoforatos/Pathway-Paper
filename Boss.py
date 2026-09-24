@@ -112,34 +112,79 @@ HOUSEHOLD_METHOD = 'matched_size'
 HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S only
 
 # ---------------------------------------------------------------------------
-# HOUSEHOLD SIZE RESPONDS TO MIGRATION
+# HOUSEHOLD ESTIMATES: HOW STATS NZ BUILDS THEM, AND WHAT THAT ALLOWS
 # ---------------------------------------------------------------------------
-# New households come from two engines: more people arriving, and the same
-# people spreading into more households (household size falling). History shows
-# the engines TAKE TURNS: in low-migration years household size falls fast, in
-# high-migration years it rises (1992-2025: r = +0.64, p < 0.0001). The Stats NZ
-# household-size path is built on a different population projection and cannot
-# see this, so on its own it switches the second engine off overnight in 2026.
+# Stats NZ Dwelling and Household Estimates (DHE), Table 2 footnote 1: the
+# household series has census-year BASES (1991, 1996, 2001, 2006, 2013, 2018),
+# each derived from the estimated resident population and living-arrangement
+# type rates. "Estimates for reference dates after each base are derived using
+# weighted and lagged building consents." Checked against the data:
+#   2019-2025: household growth = 0.887-0.889 x the previous year's consents,
+#              every year (correlation 1.000). There is no 2023 household base
+#              yet; the dwelling series (Table 1) HAS been rebased on 2023.
+#   1992-2018: within each intercensal period household growth is a constant
+#              fraction of dwelling growth (e.g. 0.73 in 1996-2000, 0.84 in
+#              2006-2012), reset at each census base.
+# Consequences:
+#   (i)  Between censuses, annual household change carries no information
+#        independent of consents. Only census-to-census change does.
+#   (ii) The June 2023 estimate is 31-38k (1.6-2.0%) above the growth the 2018
+#        and 2023 censuses imply, because it has not been rebased.
+#   (iii) The 2024-25 fall in household size is consents (x 0.888, lagged a
+#        year) outrunning slowing population growth: an artefact of the
+#        estimation method, not observed behaviour.
 #
-# Household size each year is therefore:
+# HH_CENSUS_REBASE: rebase households on the 2023 census the way Stats NZ
+#   benchmarks each base. All increments after 30 June 2018 are scaled by one
+#   factor k, so that June 2023 grows over June 2018 by the census ratio
+#   (the intercensal SHAPE stays consent-driven, as in Stats NZ's own series);
+#   2024-25 keep the same k. Census households:
+#     'occupied_plus_away' (ADOPTED): occupied private dwellings + dwellings
+#        whose residents were away. Stats NZ's bases add households
+#        temporarily absent, so this is the closer definition. k = 0.826.
+#     'occupied': occupied private dwellings only. k = 0.785.
+#     None: the DHE series as published.
+#   Only the 2018->2023 RATIO is used, so the level adjustments (undercount,
+#   households overseas) are assumed proportionally equal in both censuses.
+#   This is an assumption: 2018 census coverage was poorer than usual.
+HH_CENSUS_REBASE = 'occupied_plus_away'   # 'occupied_plus_away' | 'occupied' | None
+HH_REBASE_BASE, HH_REBASE_CENSUS = '2018-06-30', '2023-06-30'
+
+# STOCK_CALIB_END: the stock-identity residual is calibrated only where
+#   households are census-benchmarked; otherwise the identity compares consents
+#   with 0.888 x lagged consents and just recovers Stats NZ's weight.
+#   'last_census_base' -> 2023 when households are rebased on the 2023 census,
+#   2018 (the last DHE base) when they are not.
+#   Census-to-census evidence (printed under STOCK): net replacement (demolition
+#   minus unconsented additions) was ~0.0-0.1% of stock/yr from 1991 to 2018 and
+#   ~0.2-0.3%/yr in 2018-2023, confirmed from census DWELLING counts alone
+#   (independent of household estimates). Whether that recent regime persists
+#   is sampled in MonteCarlo.py and shown in Sensitivity.py
+#   (DEMOLITION_CALIB_START = 2019).
+STOCK_CALIB_END = 'last_census_base'
+
+# ---------------------------------------------------------------------------
+# HOUSEHOLD SIZE AND MIGRATION (diagnostic; not applied by default)
+# ---------------------------------------------------------------------------
+# Annual household size S = population / households co-moves with migration
+# (r ~ +0.6). Given (i) above, between censuses this is how consent-driven
+# households meet migration-driven population, i.e. housing SUPPLY against
+# arrivals. It is not evidence of how households behave, and must not be
+# presented as a behavioural finding. The regression (dS on population growth
+# with a time trend, HAC standard errors) is still fitted, over 1992-2018,
+# and reported.
+#
+# HH_SIZE_RESPONSE = True restores the earlier mechanism as a SENSITIVITY: the
+# part of 2025's fall in S not explained by migration (e_2025) is carried
+# forward, fading at the residual persistence rho:
 #   dS(t) = dS_StatsNZ(t) + e_2025 x rho^(t-2025)
-#   e_2025 = 2025's observed fall MINUS the part explained by that year's low
-#            migration:  dS_obs - [dS_StatsNZ(2025) + b x (pop growth 2025 -
-#            the growth Stats NZ's path assumed for 2025)]
-#   b   = response of household size to population growth, fitted 1992-2025
-#         with a time trend (so the long decline is not attributed to migration)
-#   rho = year-to-year persistence of deviations from that fit (its residuals)
-# b has one job: removing the migration-driven part of 2025's fall, which ends
-# when migration recovers. It is NOT applied every year: tried, it drives the
-# median to 2.68 and the percentiles to 2.12-3.23, because our population differs
-# from Stats NZ's by a persistent vintage gap, not a migration shock.
-# Stats NZ's path stays the long-run anchor, so household size cannot drift
-# (a naive fit carries 1992-2025's decline forward to 2.42 by 2050).
-HH_SIZE_RESPONSE = True
+# By (iii) above, e_2025 is a product of the estimation method, so it is off in
+# the central case. Household size follows the Stats NZ path, rebased on 2025.
+HH_SIZE_RESPONSE = False
 DEVIATION_PERSISTENCE = 'estimated'   # 'estimated' | a number in [0, 1)
 # The same principle is applied to dwellings built beyond household formation:
 # 2025's deviation from the stock model fades at that series' own measured
-# persistence (lag-1 autocorrelation of its 1992-2025 residual).
+# persistence (lag-1 autocorrelation of its 1992-2018 residual).
 
 ANCHOR_SMOOTHING_YEARS = 3
 
@@ -189,7 +234,9 @@ DEMAND_COLORS = ['#3498db', '#8e44ad', '#95a5a6', '#34495e', '#e67e22', 'none']
 HOUSESPLIT_COLOR = DEMAND_COLORS[4]
 # With RV_IN_STOCK the residual is unconsented additions only; retirement-
 # village units are their own band (see RETIREMENT VILLAGES below).
-UNCONSENTED_LABEL = 'Met without new building (unconsented additions, calibrated residual)'
+# Calibrated residual of the stock identity beyond the fixed BRANZ demolition rate:
+# negative = unconsented additions, positive = losses above that rate.
+UNCONSENTED_LABEL = 'Calibrated residual (unconsented additions if < 0; losses beyond BRANZ rate if > 0)'
 RV_LABEL = 'Housed in retirement villages (out of carbon scope)'
 RV_COLOR = '#b8a0d0'
 UNCONSENTED_COLOR = '#16a085'
@@ -670,6 +717,34 @@ def respond_household_size(S_ann, pop_ref, hist_S, hist_pop, forecast_years, b, 
                 dS_obs_2025=dS_obs_2025, dP_obs_2025=dP_obs_2025, dP_ref=dP_ref)
 
 
+def household_rebase_factor(hh_q, measure):
+    """k: the factor on DHE household increments after the 2018 base that
+    makes June 2023 grow over June 2018 by the census ratio (see HH_CENSUS_REBASE)."""
+    if measure is None:
+        return 1.0
+    cols = {'occupied_plus_away': ('occupied_private', 'away'), 'occupied': ('occupied_private',)}[measure]
+    c18 = sum(CENSUS_LATER[2018][c] for c in cols)
+    c23 = sum(CENSUS_LATER[2023][c] for c in cols)
+    h = hh_q.set_index('Date')['Households']
+    h0, h1 = float(h[pd.Timestamp(HH_REBASE_BASE)]), float(h[pd.Timestamp(HH_REBASE_CENSUS)])
+    return (h0 * c23 / c18 - h0) / (h1 - h0)
+
+
+def rebase_households(hh_q, k):
+    """Scale every household increment after the 2018 base by k (quarterly)."""
+    out = hh_q.copy()
+    h0 = float(out.loc[out['Date'] == pd.Timestamp(HH_REBASE_BASE), 'Households'].iloc[0])
+    after = out['Date'] > pd.Timestamp(HH_REBASE_BASE)
+    out.loc[after, 'Households'] = h0 + k * (out.loc[after, 'Households'] - h0)
+    return out
+
+
+def annual_households(hh_q):
+    """Last quarter of each calendar year (31 December)."""
+    last = hh_q.loc[hh_q.groupby(hh_q['Date'].dt.year)['Date'].idxmax()]
+    return last.set_index(last['Date'].dt.year.rename('Year'))['Households']
+
+
 def newey_west_cov(X, resid, lag=None):
     """Newey-West (1987) HAC covariance of OLS coefficients, Bartlett kernel,
     default lag floor(4 (n/100)^(2/9)), small-sample factor n / (n - k)."""
@@ -845,14 +920,25 @@ def main():
         missing = list(hist_pop.index[hist_pop.isna()])
         raise ValueError(f"Population missing for {missing} in {FILE_POP_HIST}.")
 
-    hh_raw = load_historical_households(FILE_HOUSEHOLDS_HIST)
-    hh_raw['Year'] = hh_raw['Date'].dt.year
-    hh_annual = hh_raw.loc[hh_raw.groupby('Year')['Date'].idxmax()].set_index('Year')['Households']
+    hh_raw_dhe = load_historical_households(FILE_HOUSEHOLDS_HIST)     # as published
+    hh_rebase_k = household_rebase_factor(hh_raw_dhe, HH_CENSUS_REBASE)
+    hh_raw = rebase_households(hh_raw_dhe, hh_rebase_k)
+    hh_annual = annual_households(hh_raw)
+    calib_end = ((2023 if HH_CENSUS_REBASE else 2018) if STOCK_CALIB_END == 'last_census_base'
+                 else int(STOCK_CALIB_END))
+    if HH_CENSUS_REBASE is None and calib_end > 2018:
+        raise ValueError("Households after 2018 are consents-derived unless rebased; "
+                         "STOCK_CALIB_END must be <= 2018 with HH_CENSUS_REBASE = None.")
+    hist_hh_dhe = annual_households(hh_raw_dhe).reindex(years_hist)
     hist_hh = hh_annual.reindex(years_hist)
     if hist_hh.isna().any():
         raise ValueError("Household series has gaps over 1991-2025.")
 
     hist_S = hist_pop / hist_hh
+    print(f"[check] households: DHE series ({HH_CENSUS_REBASE or 'as published'}); "
+          f"post-2018 increments x {hh_rebase_k:.3f} -> 2025 households "
+          f"{hist_hh.loc[2025]:,.0f} (published {hist_hh_dhe.loc[2025]:,.0f}), "
+          f"S 2025 {hist_S.loc[2025]:.3f} (published {hist_pop.loc[2025] / hist_hh_dhe.loc[2025]:.3f})")
     print(f"[check] population source: {FILE_POP_HIST} (annual ERP at 31 Dec), "
           f"households at 31 Dec -> consistent basis")
 
@@ -972,7 +1058,7 @@ def main():
         empty = census['empty'].fillna(census['unoccupied'] * pre_share)
         return (empty / census['total_private']).to_dict()
 
-    def calibrate_stock(pre_share, completion=None, demol=None):
+    def calibrate_stock(pre_share, completion=None, demol=None, hh=None):
         """Vacancy path (interpolated between census years, flat outside),
         stock, and the three-term decomposition of dwellings built beyond
         household formation. Returns the long-run demolition rate."""
@@ -980,23 +1066,25 @@ def main():
         yrs = years_hist.astype(float)
         v = pd.Series(np.interp(yrs, list(knots), list(knots.values())), index=years_hist)
         inv = 1.0 / (1.0 - v)
-        stock = hist_hh / (1.0 - v)
-        allow = d_hh * v / (1.0 - v)
-        change = hist_hh.shift(1) * inv.diff()
+        hh = hist_hh if hh is None else hh                # MonteCarlo passes rebased variants
+        d_h = hh.diff().fillna(0)
+        stock = hh / (1.0 - v)
+        allow = d_h * v / (1.0 - v)
+        change = hh.shift(1) * inv.diff()
         completion = COMPLETION_RATE if completion is None else completion
         demol = DEMOLITION_RATE if demol is None else demol
         rv_built = completion * hist_rv_units           # RV units built (in the stock)
         # BUILT dwellings of every kind beyond household formation
-        beyond = completion * (hist_total_units + hist_rv_units) - d_hh
+        beyond = completion * (hist_total_units + hist_rv_units) - d_h
         net = beyond - allow - change                    # = demolitions - unconsented additions
         prev = stock.shift(1)
         demolition = demol * prev
         uncons = net - demolition                        # negative: met without new building
-        w = years_hist >= DEMOLITION_CALIB_START
+        w = (years_hist >= DEMOLITION_CALIB_START) & (years_hist <= calib_end)
         rate_unc = float(uncons[w].sum() / prev[w].sum())
         # In-scope built = d_hh + allow + change + demol + uncons + rv  (rv < 0)
         return dict(knots=knots, v=v, stock=stock, allow=allow, change=change, beyond=beyond,
-                    net=net, demol=demolition, uncons=uncons, rv=-rv_built, rate_unc=rate_unc,
+                    net=net, demol=demolition, uncons=uncons, rv=-rv_built, rate_unc=rate_unc, prev=prev,
                     completion=completion, demol_rate=demol)
 
     stock_cal = calibrate_stock(empty_share_measured)
@@ -1010,7 +1098,8 @@ def main():
 
     other_2025 = float(COMPLETION_RATE * (hist_total_units.loc[2025] + hist_rv_units.loc[2025])
                        - d_hh.loc[2025])
-    _net = stock_cal['net'][years_hist >= DEMOLITION_CALIB_START].values
+    _net = stock_cal['net'][(years_hist >= DEMOLITION_CALIB_START)
+                            & (years_hist <= calib_end)].values
     rho_other = float(np.clip(np.corrcoef(_net[:-1], _net[1:])[0, 1], 0.0, 0.95))
     other_model_2025 = float(stock_cal['allow'].loc[2025] + stock_cal['change'].loc[2025]
                              + (demolition_rate + unconsented_rate)
@@ -1152,8 +1241,9 @@ def main():
         S_used = None
     # ---- migration-responsive household size -------------------------------
     hh_response = None
-    if HOUSEHOLD_METHOD == 'matched_size' and HH_SIZE_RESPONSE:
-        _yr = years_hist[years_hist >= CALIB_START_YEAR]
+    if HOUSEHOLD_METHOD == 'matched_size':
+        # Fitted only where households are census-benchmarked (see above).
+        _yr = years_hist[(years_hist >= CALIB_START_YEAR) & (years_hist <= calib_end)]
         _dS = hist_S.diff().loc[_yr].values
         _dP = hist_pop.diff().loc[_yr].values
         _X = np.c_[np.ones(len(_yr)), _dP, _yr - _yr.mean()]
@@ -1180,8 +1270,9 @@ def main():
         _hr = respond_household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years, b_resp, rho)
         S_resp, e_2025, dP_ref = _hr['S_resp'], _hr['e_2025'], _hr['dP_ref']
         dS_snz_2025, dS_obs_2025, dP_obs_2025 = _hr['dS_snz_2025'], _hr['dS_obs_2025'], _hr['dP_obs_2025']
-        S_by_pct = {pct: S_resp for pct in ['5th', '50th', '95th']}
-        hh_response = dict(b=b_resp, se_hac=_se_hac, se_ols=_se_ols, hac_lag=_L,
+        S_used = S_resp if HH_SIZE_RESPONSE else S_matched
+        S_by_pct = {pct: S_used for pct in ['5th', '50th', '95th']}
+        hh_response = dict(applied=HH_SIZE_RESPONSE, S_resp=S_resp, b=b_resp, se_hac=_se_hac, se_ols=_se_ols, hac_lag=_L,
                            rho=rho, r2=_r2, e_2025=e_2025, dS_obs_2025=dS_obs_2025,
                            dS_snz_2025=dS_snz_2025, dP_obs_2025=dP_obs_2025, dP_ref=dP_ref,
                            S_by_pct=S_by_pct, S_snz=S_matched.copy(), dS_hist=_dS, dP_hist=_dP,
@@ -1200,8 +1291,10 @@ def main():
     print("   S      " + "  ".join(f"{v:.3f}" for v in S_knots['S']))
     if hh_response:
         h = hh_response
-        print(f"   household size responds to migration: b = {h['b']:.2e} per person "
-              f"(r2 {h['r2']:.2f}), deviations persist rho = {h['rho']:.2f}/yr")
+        print(f"   [diagnostic, {h['years_fit'][0]}-{h['years_fit'][-1]}] dS on population growth: "
+              f"b = {h['b']:.2e} per person (r2 {h['r2']:.2f}), residual persistence rho = {h['rho']:.2f}/yr")
+        print(f"   between censuses households follow lagged consents, so b measures supply vs "
+              f"arrivals, not behaviour")
         print(f"   b standard error: OLS {h['se_ols']:.2e} | Newey-West HAC (lag {h['hac_lag']}) "
               f"{h['se_hac']:.2e} -> t = {h['b'] / h['se_hac']:.1f}")
         print(f"   2025: observed dS {h['dS_obs_2025']:+.4f} vs trend {h['dS_snz_2025']:+.4f} at "
@@ -1209,11 +1302,12 @@ def main():
               f"-> deviation {h['e_2025']:+.4f}, fading")
         _mig = h['b'] * (h['dP_obs_2025'] - h['dP_ref'][0])
         print(f"   of 2025's fall: {_mig:+.4f} from low migration (ends as migration recovers), "
-              f"{h['e_2025']:+.4f} unexplained (carries, fading)")
+              f"{h['e_2025']:+.4f} unexplained -> "
+              f"{'CARRIED, fading (sensitivity)' if h['applied'] else 'not carried (a DHE estimation artefact)'}")
         print(f"   dwellings beyond formation: 2025 deviation {other_dev_2025:+,.0f}, "
               f"persistence {rho_other:.2f}/yr")
         print(f"   household size 2050: {h['S_by_pct']['50th'][-1]:.3f}  "
-              f"(Stats NZ path alone {h['S_snz'][-1]:.3f})")
+              f"(with 2025 deviation carried {h['S_resp'][-1]:.3f})")
     print(f"   rebased on observed 2025 (S = {hist_S.loc[2025]:.3f}): "
           f"2030 {S_matched[5]:.3f} | 2040 {S_matched[15]:.3f} | 2050 {S_matched[-1]:.3f}")
     if VERBOSE:   # comparison against the earlier household methods
@@ -1468,7 +1562,7 @@ def main():
     # STOCK, VACANCY AND REPLACEMENT
     # ------------------------------------------------------------------
     sc = stock_cal
-    wcal = years_hist >= DEMOLITION_CALIB_START
+    wcal = (years_hist >= DEMOLITION_CALIB_START) & (years_hist <= calib_end)
     print("\n" + "=" * 78)
     print(" STOCK, VACANCY, DEMOLITION AND UNCONSENTED ADDITIONS  (built basis)")
     print("=" * 78)
@@ -1478,18 +1572,19 @@ def main():
     print(f"   build duration (under construction / consents): " +
           " | ".join(f"{y} {d:.2f} yr" for y, d in build_duration.items()))
     nb_hist = COMPLETION_RATE * hist_total_units[wcal].mean()
-    print(f"\n   The stock bucket, {DEMOLITION_CALIB_START}-2025 mean per year (dwellings):")
+    print(f"\n   The stock bucket, {DEMOLITION_CALIB_START}-{calib_end} mean per year (census-benchmarked; dwellings):")
     print(f"     {'new households':<46}{d_hh[wcal].mean():>9,.0f}")
     print(f"     {'+ vacancy allowance':<46}{sc['allow'][wcal].mean():>9,.0f}")
     print(f"     {'+ vacancy change':<46}{sc['change'][wcal].mean():>9,.0f}")
     print(f"     {f'+ demolitions replaced ({100*DEMOLITION_RATE:.3f}% of stock, fixed)':<46}"
           f"{sc['demol'][wcal].mean():>9,.0f}")
-    print(f"     {'- unconsented additions (calibrated residual)':<46}{sc['uncons'][wcal].mean():>9,.0f}")
+    print(f"     {'+ calibrated residual (see note)':<46}{sc['uncons'][wcal].mean():>9,.0f}")
     print(f"     {'- retirement-village units built (out of scope)':<46}{sc['rv'][wcal].mean():>9,.0f}")
     print(f"     {'= dwellings built (in scope)':<46}{nb_hist:>9,.0f}")
     print(f"     {f'/ completion rate {COMPLETION_RATE:.2f} = consents':<46}"
           f"{hist_total_units[wcal].mean():>9,.0f}  (observed)")
-    print(f"   unconsented additions = {100*unconsented_rate:+.3f}% of stock per year "
+    print(f"   calibrated residual = {100*unconsented_rate:+.3f}% of stock per year "
+          f"(< 0: unconsented additions; > 0: losses beyond the BRANZ demolition rate) "
           f"({100*sc['uncons'][wcal].mean()/nb_hist:+.1f}% of building)")
     neg = int((sc['net'][wcal] < 0).sum())
     print(f"   single years where demolition < unconsented additions: {neg}/{int(wcal.sum())} "
@@ -1505,6 +1600,31 @@ def main():
     print(f"   [check] counting 'residents away' as vacant would need unconsented additions of "
           f"{_unc_all:,.0f}/yr ({100*_unc_all/nb_hist:+.0f}% of building) vs "
           f"{sc['uncons'][wcal].mean():,.0f} -> rejected as implausible")
+    # ---- household-independent check: census dwelling counts vs dwellings built ----
+    # Net replacement per census interval = dwellings built (all categories,
+    # consents x completion, June years lagged one year) - change in census
+    # private dwellings (occupied + unoccupied); '_pipe' also nets the change in
+    # dwellings under construction on census night.
+    _c = pd.read_excel(FILE_CONSENTS, sheet_name=CONSENT_SHEET)
+    _d = pd.to_datetime(_c['Date'])
+    _fy = np.where(_d.dt.month >= 7, _d.dt.year + 1, _d.dt.year)
+    if COL_DWELLINGS_TOTAL in _c.columns:
+        _cons = _c.groupby(_fy)[COL_DWELLINGS_TOTAL].sum()
+        _cy = [y for y in census.index if y >= years_hist.min()]
+        print(f"\n   [check] net replacement from census DWELLING counts (no household data), % of stock/yr:")
+        for y0, y1 in zip(_cy[:-1], _cy[1:]):
+            _b = COMPLETION_RATE * _cons.loc[y0:y1 - 1].sum()
+            _dd = census.loc[y1, 'total_private'] - census.loc[y0, 'total_private']
+            _dp = census.loc[y1, 'under_construction'] - census.loc[y0, 'under_construction']
+            _st = (census.loc[y0, 'total_private'] + census.loc[y1, 'total_private']) / 2 * (y1 - y0)
+            print(f"     {y0}-{y1}: {100 * (_b - _dd) / _st:+.3f}%  (net of pipeline change "
+                  f"{100 * (_b - _dp - _dd) / _st:+.3f}%)")
+        _r19 = float(sc['net'].loc[2019:calib_end].sum() / sc['prev'].loc[2019:calib_end].sum()) \
+            if calib_end >= 2019 else float('nan')
+        print(f"     model (household identity): {DEMOLITION_CALIB_START}-{calib_end} "
+              f"{100 * (DEMOLITION_RATE + unconsented_rate):+.3f}% (in use)"
+              + (f" | 2019-{calib_end} {100 * _r19:+.3f}%" if calib_end >= 2019 else ""))
+
     # ---- retirement villages: in the stock, out of carbon scope ----
     print(f"\n   RETIREMENT VILLAGES (counted in the stock; out of floor-area and carbon scope)")
     print(f"     consented RV units = all-category dwellings - three typologies")
@@ -1521,7 +1641,7 @@ def main():
         for lab, v_ in [('new households', results['50th']['d_hh'][1:].mean()),
                         ('+ vacancy allowance', _sf['allow'][1:].mean()),
                         ('+ demolitions replaced', _sf['demol'][1:].mean()),
-                        ('- unconsented additions', _sf['uncons'][1:].mean()),
+                        ('+ calibrated residual', _sf['uncons'][1:].mean()),
                         ('- retirement-village units', _sf['rv'][1:].mean()),
                         ('= dwellings built (in scope)', _nb)]:
             print(f"     {lab:<30}{v_:>9,.0f}{'' if lab.startswith('=') else f'{100*v_/_nb:>8.1f}%'}")
@@ -1672,7 +1792,7 @@ def main():
              ('Consumption: extra space', evol_typ_extra, carbon_extra_typ),
              ('Consumption: vacancy allowance', evol_typ_vac, carbon_vac_typ),
              ('Consumption: demolition replacement', evol_typ_repl, carbon_repl_typ),
-             ('Unconsented additions (not built)', evol_typ_unc, carbon_unc_typ),
+             ('Calibrated stock residual', evol_typ_unc, carbon_unc_typ),
              ('Housed in RV units (out of scope)', evol_typ_rv, carbon_rv_typ)]
     rows = [(lab, g.iloc[1:].sum().sum() / 1e6, c.iloc[1:].sum().sum() / 1e6) for lab, g, c in bands]
     tg = sum(r[1] for r in rows); tc = sum(r[2] for r in rows)
@@ -1908,7 +2028,7 @@ def main():
                     'Consumption: extra space': evol_typ_extra,
                     'Consumption: vacancy': evol_typ_vac,
                     'Consumption: demolition': evol_typ_repl,
-                    'Unconsented additions': evol_typ_unc,
+                    'Calibrated stock residual': evol_typ_unc,
                     'Housed in RV units (out of scope)': evol_typ_rv}
     dem_mat = pd.DataFrame(
         {lab: [sum(df[t].iloc[1:].sum() * MAT_INTENSITY.loc[m, t] for t in typ_names)

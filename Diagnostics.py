@@ -143,7 +143,10 @@ a.legend()
 
 a = ax[0, 1]
 hf = B['households_forecast']
-a.plot(hh_h.index, hh_h / M6, color='black', lw=2, label='observed')
+a.plot(B['hist_hh_dhe'].index, B['hist_hh_dhe'] / M6, color='#95a5a6', lw=1.5, ls=':',
+       label='Stats NZ DHE as published (consent-driven after 2018)')
+a.plot(hh_h.index, hh_h / M6, color='black', lw=2,
+       label=f"used: post-2018 rebased on 2023 census (x{B['hh_rebase_k']:.3f})")
 a.plot(FY, hf['50th'] / M6, color='#e67e22', lw=2, ls='--', label='median projection')
 a.fill_between(FY, hf['5th'] / M6, hf['95th'] / M6, color='#e67e22', alpha=0.15,
                label='5th-95th percentile')
@@ -152,14 +155,17 @@ a.legend()
 
 a = ax[1, 0]
 a.plot(S_h.index, S_h, color='black', lw=2, label='observed')
-a.plot(FY, HR['S_snz'], color='#95a5a6', lw=2, ls='--',
-       label=f"Stats NZ path alone -> {HR['S_snz'][-1]:.3f}")
+a.plot(B['hist_hh_dhe'].index, pop_h / B['hist_hh_dhe'], color='#95a5a6', lw=1.5, ls=':',
+       label='from DHE as published')
+a.plot(FY, HR['S_resp'], color='#95a5a6', lw=2, ls='--',
+       label=f"sensitivity: 2025 deviation carried -> {HR['S_resp'][-1]:.3f}")
 a.plot(FY, S_f, color='#c0392b', lw=2.5, label=f'model -> {S_f[-1]:.3f}')
-a.text(0.02, 0.04, f"2025 fall: {HR['b'] * (HR['dP_obs_2025'] - HR['dP_ref'][0]):+.4f} from low "
-       f"migration (ends),\n{HR['e_2025']:+.4f} unexplained (fades at {HR['rho']:.2f}/yr)",
+a.text(0.02, 0.04, "Stats NZ path, rebased on 2025 (census-rebased households).\n"
+       f"2025 deviation {HR['e_2025']:+.4f} {'CARRIED' if HR['applied'] else 'not carried'}: "
+       "a DHE estimation artefact",
        transform=a.transAxes, fontsize=8, va='bottom',
        bbox=dict(facecolor='white', alpha=0.85, edgecolor='#cccccc'))
-tidy(a, 'Household size: Stats NZ long run, 2025 momentum fading', 'people per household')
+tidy(a, 'Household size: Stats NZ path from a census-consistent 2025 start', 'people per household')
 a.legend(loc='upper right')
 
 a = ax[1, 1]
@@ -174,30 +180,42 @@ finish(fig, 'diag_1_people_households.png')
 # =============================================================================
 # FIGURE 2 -- the two household engines
 # =============================================================================
-fig, ax = plt.subplots(1, 2, figsize=(15, 5.5), gridspec_kw={'width_ratios': [1, 1.7]})
-fig.suptitle('2. Where new households come from: people arriving, or homes emptying out',
+fig, ax = plt.subplots(1, 3, figsize=(20, 5.5), gridspec_kw={'width_ratios': [1, 1, 1.7]})
+fig.suptitle('2. Where new households come from, and what the household series can tell us',
              fontsize=12)
 
 a = ax[0]
 dP, dS = HR['dP_hist'], HR['dS_hist']
 lr = stats.linregress(dP, dS)
-a.scatter(dP / 1e3, dS, color='#7f8c8d', s=26, zorder=3)
+a.scatter(dP / 1e3, dS, color='#7f8c8d', s=26, zorder=3,
+          label=f"{HR['years_fit'][0]}-{HR['years_fit'][-1]} (census-benchmarked)")
 xx = np.linspace(dP.min(), dP.max(), 50)
 a.plot(xx / 1e3, lr.intercept + lr.slope * xx, color='black', lw=1.3,
        label=f'r = {lr.rvalue:+.2f}, p = {lr.pvalue:.0e}')
-yrs_fit = list(HR['years_fit'])
-for y, c in [(2023, '#27ae60'), (2024, '#e67e22'), (2025, '#c0392b')]:
-    k = yrs_fit.index(y)
-    a.scatter(dP[k] / 1e3, dS[k], color=c, s=85, edgecolor='black', zorder=4)
-    a.annotate(str(y), (dP[k] / 1e3, dS[k]), xytext=(6, 5), textcoords='offset points',
-               fontweight='bold')
+late = [y for y in YH if y > HR['years_fit'][-1]]
+dP_l, dS_l = pop_h.diff().loc[late], S_h.diff().loc[late]
+a.scatter(dP_l / 1e3, dS_l, facecolor='none', edgecolor='#c0392b', s=60, zorder=4,
+          label=f'{late[0]}-{late[-1]} (households = lagged consents)')
+for y, off in ((2024, (6, 5)), (2025, (-30, -12))):
+    a.annotate(str(y), (dP_l[y] / 1e3, dS_l[y]), xytext=off, textcoords='offset points')
 a.axhline(0, color='black', lw=0.7)
-a.set_title('The engines take turns\nfew arrivals: homes empty out  |  many: homes fill up')
-a.set_xlabel('people arriving that year (thousand)')
+a.set_title('Household size vs arrivals\nbetween censuses: housing supply meets migration, not behaviour')
+a.set_xlabel('population growth that year (thousand)')
 a.set_ylabel('change in household size')
-a.legend()
+a.legend(fontsize=7)
 
 a = ax[1]
+cons_all = (B['hist_total_units'] + B['hist_rv_units']).shift(1)
+ratio = (B['hist_hh_dhe'].diff() / cons_all).loc[YH]
+bases = [1991, 1996, 2001, 2006, 2013, 2018]
+a.bar(YH, ratio, color=['#c0392b' if y > 2018 else '#7f8c8d' for y in YH], width=0.8)
+for y in bases:
+    a.axvline(y + 0.5, color='black', lw=0.6, ls=':')
+a.set_title('Stats NZ household growth / previous-year consents\n'
+            'flat within each census period; 0.888 every year since 2019')
+a.set_ylabel('ratio'); a.set_xlim(1991, 2026)
+
+a = ax[2]
 pop_part_h = pop_h.diff().loc[YH] / S_h.loc[YH]
 size_part_h = hh_h.diff().loc[YH] - pop_part_h
 pop_part_f = DF['PopGrowth_50th'].values[1:] / S_f[1:]
@@ -245,7 +263,7 @@ hist_parts = [('new households', B['d_hh'].loc[YH], C['split']),
               ('vacancy allowance', SC['allow'].loc[YH], C['vac']),
               ('vacancy change', SC['change'].loc[YH], C['vchg']),
               ('demolitions replaced', SC['demol'].loc[YH], C['demol']),
-              ('unconsented additions', SC['uncons'].loc[YH], C['unc']),
+              ('calibrated residual', SC['uncons'].loc[YH], C['unc']),
               ('retirement-village units (out of scope)', SC['rv'].loc[YH], C['rv'])]
 fut_parts = [('', R['d_hh'][1:], C['split']), ('', SF['allow'][1:], C['vac']),
              ('', np.zeros(len(PF)), C['vchg']), ('', SF['demol'][1:], C['demol']),
@@ -277,7 +295,7 @@ a.plot(PF, 100 * (SF['demol'][1:] + SF['uncons'][1:]) / prev_f, color='black', l
 a.axhline(100 * B['demolition_rate'], color=C['demol'], ls='--', lw=1.2,
           label=f"demolition {100 * B['demolition_rate']:.3f}% (BRANZ, fixed)")
 a.axhline(100 * B['unconsented_rate'], color=C['unc'], ls='--', lw=1.2,
-          label=f"unconsented {100 * B['unconsented_rate']:+.3f}% (calibrated)")
+          label=f"calibrated residual {100 * B['unconsented_rate']:+.3f}%")
 a.axhline(0, color='black', lw=0.7)
 tidy(a, 'Net turnover = demolition - unconsented additions\n'
         'single years noisy: vacancy known only at censuses', '% of stock per year')
@@ -308,7 +326,7 @@ hist_dem = [('growth (net of consolidation)', B['hist_growth'].loc[YH] - B['hist
             ('vacancy allowance', SC['allow'].loc[YH] * Dh, C['vac']),
             ('vacancy change', SC['change'].loc[YH] * Dh, C['vchg']),
             ('demolition replacement', SC['demol'].loc[YH] * Dh, C['demol']),
-            ('unconsented additions', SC['uncons'].loc[YH] * Dh, C['unc']),
+            ('calibrated residual', SC['uncons'].loc[YH] * Dh, C['unc']),
             ('housed in retirement villages', SC['rv'].loc[YH] * Dh, C['rv'])]
 fut_dem = [('', R['growth'][1:], C['growth']), ('', R['hs_pos'][1:], C['split']),
            ('', R['extra'][1:], C['extra']), ('', R['vac'][1:], C['vac']),
@@ -428,8 +446,9 @@ v_all = pd.Series(np.interp(B['years_hist'].astype(float), list(cen_all), list(c
 prev_all = (hh_h / (1 - v_all)).shift(1)
 net_all = (BF * (B['hist_total_units'] + B['hist_rv_units']) - B['d_hh'] - B['d_hh'] * v_all / (1 - v_all)
            - hh_h.shift(1) * (1 / (1 - v_all)).diff())
-unc_all = (net_all - B['demolition_rate'] * prev_all).loc[YH].mean()
-unc_emp = SC['uncons'].loc[YH].mean()
+YC = np.arange(1992, B['calib_end'] + 1)            # census-benchmarked calibration window
+unc_all = (net_all - B['demolition_rate'] * prev_all).loc[YC].mean()
+unc_emp = SC['uncons'].loc[YC].mean()
 nb = built_h.mean()
 bars = a.bar(['empty homes only\n(used)', "incl. 'residents away'\n(rejected)"],
              [unc_emp, unc_all], color=[C['unc'], '#e74c3c'])
@@ -437,7 +456,7 @@ for bb, v in zip(bars, [unc_emp, unc_all]):
     a.text(bb.get_x() + bb.get_width() / 2, v / 2, f'{v:,.0f}/yr\n({100 * v / nb:+.0f}% of building)',
            ha='center', va='center', fontsize=9, color='white', fontweight='bold')
 a.axhline(0, color='black', lw=0.7)
-a.set_title("Which vacancy definition is plausible?\nunconsented additions each one requires, 1992-2025")
+a.set_title(f"Which vacancy definition is plausible?\nunconsented additions each one requires, 1992-{B['calib_end']}")
 a.set_ylabel('dwellings per year')
 
 a = ax[1, 1]

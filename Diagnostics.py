@@ -47,19 +47,11 @@ def boss_locals():
     global _BOSS_CACHE
     if _BOSS_CACHE is not None:
         return _BOSS_CACHE
-    src = open(M.__file__, encoding='utf-8').read().replace(
-        'if __name__ == "__main__":\n    main()', '')
-    i = src.rfind("    plt.show()")
-    src = src[:i] + "    _GRAB_.update(locals())\n" + src[i:]
-    grab = {}
-    ns = {'_GRAB_': grab}
-    exec(compile(src, M.__file__, 'exec'), ns)
-    show = plt.show
-    plt.show = lambda *a, **k: None
+    M.SHOW_PLOTS = False
     with contextlib.redirect_stdout(io.StringIO()):
-        ns['main']()
-    plt.show = show
-    plt.close('all')
+        grab = M.main()
+    if not isinstance(grab, dict):
+        raise RuntimeError(f"{M.__file__}: main() returned no state; use the latest Boss.py.")
     need = ('stock_fwd', 'stock_cal', 'census', 'unconsented_rate', 'flow_annual',
             'hh_response', 'MAT_INTENSITY')
     miss = [k for k in need if k not in grab]
@@ -225,7 +217,7 @@ finish(fig, 'diag_2_household_engines.png')
 # FIGURE 3 -- the stock bucket
 # =============================================================================
 fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
-fig.suptitle('3. The stock bucket: built = households + vacancy + demolitions - unconsented',
+fig.suptitle('3. The stock bucket: built = households + vacancy + demolitions - residual (RV + unconsented)',
              fontsize=12)
 
 cen = B['census']
@@ -252,7 +244,7 @@ hist_parts = [('new households', B['d_hh'].loc[YH], C['split']),
               ('vacancy allowance', SC['allow'].loc[YH], C['vac']),
               ('vacancy change', SC['change'].loc[YH], C['vchg']),
               ('demolitions replaced', SC['demol'].loc[YH], C['demol']),
-              ('unconsented additions', SC['uncons'].loc[YH], C['unc'])]
+              ('residual (RV units + unconsented)', SC['uncons'].loc[YH], C['unc'])]
 fut_parts = [('', R['d_hh'][1:], C['split']), ('', SF['allow'][1:], C['vac']),
              ('', np.zeros(len(PF)), C['vchg']), ('', SF['demol'][1:], C['demol']),
              ('', SF['uncons'][1:], C['unc'])]
@@ -283,7 +275,7 @@ a.plot(PF, 100 * (SF['demol'][1:] + SF['uncons'][1:]) / prev_f, color='black', l
 a.axhline(100 * B['demolition_rate'], color=C['demol'], ls='--', lw=1.2,
           label=f"demolition {100 * B['demolition_rate']:.3f}% (BRANZ, fixed)")
 a.axhline(100 * B['unconsented_rate'], color=C['unc'], ls='--', lw=1.2,
-          label=f"unconsented {100 * B['unconsented_rate']:+.3f}% (calibrated)")
+          label=f"residual: RV units + unconsented {100 * B['unconsented_rate']:+.3f}% (calibrated)")
 a.axhline(0, color='black', lw=0.7)
 tidy(a, 'Net turnover = demolition - unconsented additions\n'
         'single years noisy: vacancy known only at censuses', '% of stock per year')
@@ -314,7 +306,7 @@ hist_dem = [('growth (net of consolidation)', B['hist_growth'].loc[YH] - B['hist
             ('vacancy allowance', SC['allow'].loc[YH] * Dh, C['vac']),
             ('vacancy change', SC['change'].loc[YH] * Dh, C['vchg']),
             ('demolition replacement', SC['demol'].loc[YH] * Dh, C['demol']),
-            ('unconsented additions', SC['uncons'].loc[YH] * Dh, C['unc'])]
+            ('residual (RV units + unconsented)', SC['uncons'].loc[YH] * Dh, C['unc'])]
 fut_dem = [('', R['growth'][1:], C['growth']), ('', R['hs_pos'][1:], C['split']),
            ('', R['extra'][1:], C['extra']), ('', R['vac'][1:], C['vac']),
            ('', np.zeros(len(PF)), C['vchg']), ('', R['repl'][1:], C['demol']),
@@ -453,7 +445,8 @@ a.bar(x + 0.2, [TB[t] for t in TYP], 0.4, color='#e67e22', label='intensity used
 a.set_xticks(x)
 a.set_xticklabels(TYP)
 dev = max(abs(tot_mat[t] - TB[t]) for t in TYP)
-a.set_title(f'Carbon factors add up\nmax |difference| = {dev:.3f} kg/m²')
+a.set_title(f'Carbon factors add up (internal consistency of the CSVs only)\n'
+            f'max |difference| = {dev:.3f} kg/m²')
 a.set_ylabel('kg CO₂e per m²')
 a.legend()
 finish(fig, 'diag_6_checks.png')

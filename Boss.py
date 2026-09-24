@@ -25,6 +25,7 @@ from scipy import stats
 # ============================================================
 DATA_DIR = 'data'
 VERBOSE = False     # True also prints historical diagnostics (occupancy, calibration)
+SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
 FILE_CONSENTS = os.path.join(DATA_DIR, 'consentdata.xlsx')
 FILE_POP_PROJ = os.path.join(DATA_DIR, 'popdata.xlsx')
 FILE_POP_HIST = os.path.join(DATA_DIR, 'histpopdata.xlsx')          # [FIX e] authoritative annual ERP
@@ -47,6 +48,27 @@ POP_SIZE_PAIR_SHEET = 'Table 1'
 
 POP_SHEET_PROJ = 'Table 1'
 POP_SHEET_HIST = 'Table 1'
+
+# ---------------------------------------------------------------------------
+# POPULATION PERCENTILES
+# ---------------------------------------------------------------------------
+# Stats NZ's stochastic projection publishes percentiles of the population
+# LEVEL and, separately, of ANNUAL GROWTH. Its own footnote: "percentiles are
+# non-additive except the 50th percentile (median)". Summing the 5th-percentile
+# growth of every year is therefore NOT the 5th-percentile population path: it
+# assumes a 1-in-20 low year every year for 25 years. On this data it put the
+# 2048 population at 5.27 M (5th) and 7.81 M (95th) against the published
+# 6.04 M and 7.01 M, roughly doubling the width of the band.
+# 'published_levels' (ADOPTED): the median path is built as before (median
+#     growth IS additive); the 5th/95th paths add the published spread of the
+#     LEVEL around the median, PCHIP-interpolated between knots and shifted so
+#     that all three paths start from the observed 2025 population:
+#         Pop_p(t) = Pop_50(t) + [spread_p(t) - spread_p(2025)]
+#     Each path then has the published marginal 5th/95th percentile width in
+#     every year. It is a band of marginal quantiles, not a simulated path, and
+#     removing the 2025 spread only approximates conditioning on observed 2025.
+# 'cumulated_growth': the previous behaviour, kept for comparison only.
+POP_PERCENTILE_METHOD = 'published_levels'
 CONSENT_SHEET = 'Sheet1'
 
 HOUSEHOLD_SHEET_HIST = 'Table 2'
@@ -165,7 +187,12 @@ DEMAND_LABELS = ['Growth demand (net of consolidation)',
 DEMAND_LABELS_LEGEND = DEMAND_LABELS[:4] + ['_nolegend_', DEMAND_LABELS[5]]
 DEMAND_COLORS = ['#3498db', '#8e44ad', '#95a5a6', '#34495e', '#e67e22', 'none']
 HOUSESPLIT_COLOR = DEMAND_COLORS[4]
-UNCONSENTED_LABEL = 'Met without new building (unconsented additions)'
+# The calibrated residual is labelled for what it is. About half of it
+# (1992-2025) is retirement-village units: they house households counted in the
+# household series, and they ARE built, but they are outside the three-typology
+# consent data. See the [check] printed under STOCK. Only the remainder is
+# plausibly unconsented additions.
+UNCONSENTED_LABEL = 'Residual: out-of-scope dwellings (retirement villages) and unconsented additions'
 UNCONSENTED_COLOR = '#16a085'
 
 TREND_WINDOW_START = 2012
@@ -343,9 +370,13 @@ DWELLING_SIZE_REF = (2023, 2025)
 # land-use change (L_w / floor space index), so no material assumption should
 # ever be applied to it.
 #
-# OCCUPANCY LOAD FACTOR is floor area per DESIGN occupant, pooled as total
-# floor area over total persons so that it conserves people when applied to a
-# floor-area stock. A plain average over buildings does not.
+# OCCUPANCY LOAD FACTOR is floor area per DESIGN occupant. The column used,
+# 'OLF_m2_per_person', is pooled like every other factor (equal-subtype mean of
+# building-level ratios; see building_factors.py). The people-conserving ratio
+# of sums, 'OLF_people_conserving', is also written; they differ by 0.3% for
+# Detached and 6.5% for Townhouses. OLF moves floor area BETWEEN the growth,
+# house-splitting and extra-space bands; it does not change the total, which is
+# (new households + vacancy + replacement - unconsented) x dwelling size.
 #
 # Setting USE_GROSS_BASIS_OLF = True instead derives it from consented dwelling
 # size divided by design occupants; the reconciliation between the two prints
@@ -964,6 +995,27 @@ def main():
             levels[i] = levels[i - 1] + df_forecast.loc[i, f'PopGrowth_{pct}']
         df_forecast[f'PopTotal_{pct}'] = levels
 
+    if POP_PERCENTILE_METHOD == 'published_levels':
+        # Published LEVEL percentiles (knots run past 2050, so no extrapolation).
+        pop_level_block = locate_projection_block(df_pop_proj_raw, section_label='Population (000)',
+                                                  min_year=2024, max_year=2078)
+        for col in ['PopGrowth_5th', 'PopGrowth_50th', 'PopGrowth_95th']:
+            pop_level_block[col] = pd.to_numeric(pop_level_block[col], errors='coerce') * 1000
+        pop_level_block = pop_level_block.dropna()
+        for pct in ['5th', '95th']:
+            spread = pd.DataFrame({'Year': pop_level_block['Year'],
+                                   'spread': pop_level_block[f'PopGrowth_{pct}']
+                                   - pop_level_block['PopGrowth_50th']})
+            sp = smooth_interpolate_and_extend(spread, 'spread', forecast_years)['spread'].values
+            levels = df_forecast['PopTotal_50th'].values + (sp - sp[0])
+            df_forecast[f'PopTotal_{pct}'] = levels
+            df_forecast.loc[1:, f'PopGrowth_{pct}'] = np.diff(levels)
+    elif POP_PERCENTILE_METHOD != 'cumulated_growth':
+        raise ValueError(f"Unknown POP_PERCENTILE_METHOD '{POP_PERCENTILE_METHOD}'.")
+    print(f"[check] population percentiles ({POP_PERCENTILE_METHOD}), 2048: "
+          + " | ".join(f"{p} {df_forecast.loc[forecast_years == 2048, f'PopTotal_{p}'].iloc[0] / 1e6:.2f} M"
+                       for p in ['5th', '50th', '95th']))
+
     if VERBOSE: print(f"[FIX e] population projection: {len(pop_growth_block)} published knots "
           f"-> PCHIP to 2050 (was linear interpolate + ffill, which froze 2049-50)")
 
@@ -1019,6 +1071,19 @@ def main():
         else:
             rho = float(DEVIATION_PERSISTENCE)
         _r2 = 1 - (_res ** 2).sum() / ((_dS - _dS.mean()) ** 2).sum()
+        # The residuals are autocorrelated (that is what rho measures), so the
+        # ordinary OLS standard error of b is invalid. Newey-West (1987) HAC
+        # standard error, Bartlett kernel, lag floor(4 (n/100)^(2/9)).
+        _n = len(_res)
+        _L = int(np.floor(4 * (_n / 100) ** (2 / 9)))
+        _Xe = _X * _res[:, None]
+        _S = _Xe.T @ _Xe
+        for _l in range(1, _L + 1):
+            _G = _Xe[_l:].T @ _Xe[:-_l]
+            _S += (1 - _l / (_L + 1)) * (_G + _G.T)
+        _XtXi = np.linalg.inv(_X.T @ _X)
+        _se_hac = float(np.sqrt((_XtXi @ _S @ _XtXi)[1, 1] * _n / (_n - _X.shape[1])))
+        _se_ols = float(np.sqrt((_res ** 2).sum() / (_n - _X.shape[1]) * _XtXi[1, 1]))
         # population growth behind Stats NZ's household-size path (same vintage)
         _pk = _pop_k.reset_index().rename(columns={'index': 'Year'})
         _pref = smooth_interpolate_and_extend(_pk, 'Population',
@@ -1039,7 +1104,8 @@ def main():
         dS = dS_snz + e_2025 * fade
         S_resp = np.concatenate([[S_matched[0]], S_matched[0] + np.cumsum(dS)])
         S_by_pct = {pct: S_resp for pct in ['5th', '50th', '95th']}
-        hh_response = dict(b=b_resp, rho=rho, r2=_r2, e_2025=e_2025, dS_obs_2025=dS_obs_2025,
+        hh_response = dict(b=b_resp, se_hac=_se_hac, se_ols=_se_ols, hac_lag=_L,
+                           rho=rho, r2=_r2, e_2025=e_2025, dS_obs_2025=dS_obs_2025,
                            dS_snz_2025=dS_snz_2025, dP_obs_2025=dP_obs_2025, dP_ref=dP_ref,
                            S_by_pct=S_by_pct, S_snz=S_matched.copy(), dS_hist=_dS, dP_hist=_dP,
                            years_fit=_yr)
@@ -1059,6 +1125,8 @@ def main():
         h = hh_response
         print(f"   household size responds to migration: b = {h['b']:.2e} per person "
               f"(r2 {h['r2']:.2f}), deviations persist rho = {h['rho']:.2f}/yr")
+        print(f"   b standard error: OLS {h['se_ols']:.2e} | Newey-West HAC (lag {h['hac_lag']}) "
+              f"{h['se_hac']:.2e} -> t = {h['b'] / h['se_hac']:.1f}")
         print(f"   2025: observed dS {h['dS_obs_2025']:+.4f} vs trend {h['dS_snz_2025']:+.4f} at "
               f"{h['dP_obs_2025']:,.0f} people (Stats NZ assumed {h['dP_ref'][0]:,.0f}) "
               f"-> deviation {h['e_2025']:+.4f}, fading")
@@ -1222,14 +1290,16 @@ def main():
     evol_typ_unc = split_typ(df_forecast['Ann_GFA_Cons_Unconsented_50th'].values)
     evol_typ_total = split_typ(df_forecast['Ann_GFA_Total_50th'].values)
 
+    # The 2025 row is the observed anchor. It is put on the same BUILT basis as
+    # the projection (consents x completion rate), as the national total is.
     for n in typ_names:
-        evol_typ_total.loc[2025, n] = hist_typ_gfa.loc[2025, n]
-        evol_typ_growth.loc[2025, n] = hist_typ_gfa.loc[2025, n] * anchor['growth']
-        evol_typ_hs_pos.loc[2025, n] = hist_typ_gfa.loc[2025, n] * anchor['housesplit']
+        evol_typ_total.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor
+        evol_typ_growth.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['growth']
+        evol_typ_hs_pos.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['housesplit']
         evol_typ_avoided.loc[2025, n] = 0.0
-        evol_typ_cons.loc[2025, n] = hist_typ_gfa.loc[2025, n] * anchor['consumption']
-        evol_typ_extra.loc[2025, n] = hist_typ_gfa.loc[2025, n] * anchor['consumption'] * anchor_extra_share
-        evol_typ_other.loc[2025, n] = hist_typ_gfa.loc[2025, n] * anchor['consumption'] * (1 - anchor_extra_share)
+        evol_typ_cons.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['consumption']
+        evol_typ_extra.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['consumption'] * anchor_extra_share
+        evol_typ_other.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['consumption'] * (1 - anchor_extra_share)
         _o1 = float(df_forecast['Ann_GFA_Cons_Other_50th'].iloc[1]) or 1.0
         for _ev, _c in ((evol_typ_vac, 'Vacancy'), (evol_typ_repl, 'Replacement'),
                         (evol_typ_unc, 'Unconsented')):
@@ -1273,7 +1343,8 @@ def main():
     for c in ['5th', '50th', '95th']:
         print(f"     {c:<5} {'OK  ' if identity_report[c] < 1e-6 else 'FAIL'}  "
               f"max relative deviation = {identity_report[c]:.2e}")
-    print(f" [3] Demographic uncertainty band, total GFA 2026-2050 (Mm2): "
+    print(f" [3] Population-only band (household size, mix, dwelling size and carbon\n"
+          f"     factors held fixed), total GFA 2026-2050 (Mm2): "
           f"5th {_band['5th']:.2f} | 50th {_band['50th']:.2f} | 95th {_band['95th']:.2f}")
     _mix_int_all = sum(evolving_gfa_shares[t].values * T_BASELINE_2025[t] for t in typ_names)
     if CONSUMPTION_BASIS == 'stock_vacancy':
@@ -1351,6 +1422,21 @@ def main():
     print(f"   [check] counting 'residents away' as vacant would need unconsented additions of "
           f"{_unc_all:,.0f}/yr ({100*_unc_all/nb_hist:+.0f}% of building) vs "
           f"{sc['uncons'][wcal].mean():,.0f} -> rejected as implausible")
+    if ext is not None:
+        # Retirement-village units: in the all-category dwelling count but not in
+        # the three typology columns. Their residents are private households, so
+        # when they are left out of 'built' they land in the residual.
+        rv_built = COMPLETION_RATE * (ext - hist_total_units)
+        rv_mean = float(rv_built[wcal].mean())
+        rest = float(sc['uncons'][wcal].mean()) + rv_mean
+        rest_rate = float((sc['uncons'] + rv_built)[wcal].sum() / sc['stock'].shift(1)[wcal].sum())
+        print(f"   [check] of the residual {sc['uncons'][wcal].mean():,.0f}/yr, retirement-village units "
+              f"built outside scope account for {-rv_mean:,.0f}/yr "
+              f"({100 * rv_mean / -sc['uncons'][wcal].mean():.0f}%); remainder {rest:,.0f}/yr "
+              f"({100 * rest_rate:+.3f}% of stock)")
+        for a_, b_ in [(1992, 2005), (2006, 2015), (2016, 2025)]:
+            print(f"            {a_}-{b_}: residual {sc['uncons'].loc[a_:b_].mean():7,.0f} | "
+                  f"retirement villages {-rv_built.loc[a_:b_].mean():7,.0f}")
     if CONSUMPTION_BASIS == 'stock_vacancy':
         _sf = stock_fwd['50th']
         _nb = (results['50th']['total'][1:] / future_dwelling_size.values[1:]).mean()
@@ -1505,7 +1591,7 @@ def main():
              ('Consumption: extra space', evol_typ_extra, carbon_extra_typ),
              ('Consumption: vacancy allowance', evol_typ_vac, carbon_vac_typ),
              ('Consumption: demolition replacement', evol_typ_repl, carbon_repl_typ),
-             ('Unconsented additions (not built)', evol_typ_unc, carbon_unc_typ)]
+             ('Residual: RV units + unconsented', evol_typ_unc, carbon_unc_typ)]
     rows = [(lab, g.iloc[1:].sum().sum() / 1e6, c.iloc[1:].sum().sum() / 1e6) for lab, g, c in bands]
     tg = sum(r[1] for r in rows); tc = sum(r[2] for r in rows)
     print("\n BY DEMAND TYPE, 2026-2050 (median)")
@@ -1514,6 +1600,13 @@ def main():
     for lab, g, c in rows:
         print(f"   {lab:<34}{g:>12.2f}{100 * g / tg:>7.1f}%{c:>12,.0f}")
     print(f"   {'TOTAL BUILT':<34}{tg:>12.2f}{100.0:>7.1f}%{tc:>12,.0f}")
+    if CONSUMPTION_BASIS == 'stock_vacancy':
+        # Demolition and the residual trade one-for-one in calibration (only
+        # their sum is identified by the stock identity), so report the sum too.
+        _net_g = rows[4][1] + rows[5][1]
+        _net_c = rows[4][2] + rows[5][2]
+        print(f"   {'(demolition + residual: identified net)':<34}{_net_g:>12.2f}"
+              f"{100 * _net_g / tg:>7.1f}%{_net_c:>12,.0f}")
     if CONSUMPTION_BASIS == 'stock_vacancy':
         print(f"   {f'(consented equivalent, /{COMPLETION_RATE:.2f})':<34}{tg / COMPLETION_RATE:>12.2f}")
     print(f"   {'(avoided by consolidation, not built)':<34}{tot_avoided_gfa:>12.2f}{'':>8}{tot_avoided_c:>12,.0f}")
@@ -1541,7 +1634,8 @@ def main():
     plt.plot(forecast_years, households_forecast['50th'], color='darkorange', linestyle='--',
              label='Projected Median')
     plt.fill_between(forecast_years, households_forecast['5th'], households_forecast['95th'],
-                     color='darkorange', alpha=0.2, label='Uncertainty (Low/High variant)')
+                     color='darkorange', alpha=0.2,
+                     label='5th-95th population percentile (household size fixed)')
     plt.axvline(2025, color='black', linestyle=':', alpha=0.6)
     plt.ylabel('Households'); plt.title('New Zealand Households (1991-2050)')
     plt.legend(); plt.grid(True, alpha=0.3); plt.tight_layout()
@@ -1723,7 +1817,7 @@ def main():
                     'Consumption: extra space': evol_typ_extra,
                     'Consumption: vacancy': evol_typ_vac,
                     'Consumption: demolition': evol_typ_repl,
-                    'Unconsented additions': evol_typ_unc}
+                    'Residual: RV + unconsented': evol_typ_unc}
     dem_mat = pd.DataFrame(
         {lab: [sum(df[t].iloc[1:].sum() * MAT_INTENSITY.loc[m, t] for t in typ_names)
                for m in MATERIALS] + [sum(df[t].iloc[1:].sum() * SOIL_INTENSITY[t]
@@ -1745,6 +1839,27 @@ def main():
     tbl.loc['TOTAL'] = [tbl['kt CO2e'].sum(), 100.0,
                         tbl['kt in 2026'].sum(), tbl['kt in 2050'].sum()]
     print(tbl.round(1).to_string())
+
+    # Upfront (A1-A5) vs later stages. B2/B4 and C1-C4 are emitted over the
+    # service life and at end of life, decades after construction; above they
+    # are booked in the construction year (a static LCA convention). The split
+    # lets upfront carbon be compared with annual budgets on its own.
+    stage_int = (mat_scope.pivot_table(index='Stage', columns='Typology',
+                                       values='kgCO2e_per_m2', aggfunc='sum')
+                 .reindex(index=STAGES_IN_SCOPE, columns=typ_names).fillna(0.0))
+    _soil = sum(evol_typ_total[t].values[1:].sum() * SOIL_INTENSITY[t] for t in typ_names)
+    print("\n BY LIFE-CYCLE STAGE  [kt CO2e, 2026-2050]  (soil = land-use change at construction)")
+    _st_tot = 0.0
+    for stg in STAGES_IN_SCOPE:
+        v = sum(evol_typ_total[t].values[1:].sum() * stage_int.loc[stg, t] for t in typ_names) / 1e6
+        _st_tot += v
+        print(f"   {stg:<10}{v:>10,.0f}")
+    print(f"   {'SOIL':<10}{_soil / 1e6:>10,.0f}")
+    _upfront = sum(evol_typ_total[t].values[1:].sum() * stage_int.loc[['A1-A3', 'A4-A5'], t].sum()
+                   for t in typ_names) / 1e6
+    print(f"   upfront (A1-A5 + soil) {_upfront + _soil / 1e6:,.0f} kt | "
+          f"later stages (B2,B4, C1-C4) {_st_tot - _upfront:,.0f} kt | "
+          f"[check] sum {_st_tot + _soil / 1e6:,.0f} vs {tot_carbon_median:,.0f}")
 
     print("\n BY DEMAND TYPE AND MATERIAL  [kt CO2e, 2026-2050]")
     dm = (dem_mat / 1e6).round(1)
@@ -1773,7 +1888,14 @@ def main():
     mx2.set_xlim(2026, 2050)
     plt.tight_layout()
 
-    plt.show()
+    # Every intermediate result is returned, so Diagnostics.py and
+    # Sensitivity.py read the same run instead of re-deriving anything.
+    state = dict(locals())
+    if SHOW_PLOTS:
+        plt.show()
+    else:
+        plt.close('all')
+    return state
 
 
 if __name__ == "__main__":

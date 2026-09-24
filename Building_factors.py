@@ -87,6 +87,10 @@ SUBTYPE_OF = {'A': 'Apartment', 'T': 'Townhouse',
               'DD': '2-storey Detached', 'SD': '1-storey Detached'}
 TYP_ORDER = ['Detached', 'Townhouses', 'Apartments']
 
+# L_w implied by the soil figures published with the case studies, kept only to
+# report the discrepancy with the soils sheet (which is the value used).
+PUBLISHED_SOIL_LW = 58.406
+
 
 # ============================================================
 # LOADERS
@@ -127,7 +131,10 @@ def load_soil_factor(path=FILE_CHARS, sheet=SHEET_SOILS):
     if row.empty:
         raise ValueError(f"No area-weighted soil row in {path}/{sheet}.")
     val = s.columns[1]
-    return float(row[val].iloc[0]), float(s[val].min()), float(s[val].max())
+    # low / high are the extreme soil ORDERS (Raw, Organic), a bounding range
+    # rather than a confidence interval; the aggregate row is excluded.
+    orders = s.loc[~s.index.isin(row.index), val].astype(float)
+    return float(row[val].iloc[0]), float(orders.min()), float(orders.max())
 
 
 # ============================================================
@@ -182,6 +189,29 @@ def main():
               f"({'OK' if worst < 0.5 else 'INVESTIGATE'})")
         if worst >= 0.5:
             print(cmp[cmp['diff_pct'].abs() >= 0.5].round(2).to_string())
+
+    # ---- duplicated case studies --------------------------------------------
+    # Two cases whose per-m2 material x stage vectors are identical are one
+    # design at two scales, not two observations. Pooling still weights them as
+    # two, so the effective sample size is reported alongside n_buildings.
+    vec = (lca.groupby(['id', 'material'])[ALL_STAGES].sum()
+              .unstack('material').fillna(0.0))
+    # Test: same non-zero pattern, and one constant ratio in every cell.
+    dup_of, dup_ratio = {}, {}
+    ids = list(vec.index)
+    for i, a in enumerate(ids):
+        for b in ids[i + 1:]:
+            va, vb = vec.loc[a].values, vec.loc[b].values
+            nz = np.abs(va) > 0
+            if b in dup_of or not np.array_equal(nz, np.abs(vb) > 0):
+                continue
+            r = vb[nz] / va[nz]
+            if np.ptp(r) < 1e-6 * abs(r.mean()) and abs(r.mean() - 1) < 0.01:
+                dup_of[b] = dup_of.get(a, a)
+                dup_ratio[b] = float(r.mean())
+    for b, a in dup_of.items():
+        print(f"[check] {b} = {a} x {dup_ratio[b]:.6f} in every material and stage "
+              f"(a rescaled copy): ONE independent case, not two.")
 
     # ---- material x stage factors, pooled ----
     bm = (lca.groupby(['id', 'Typology', 'Subtype', 'Material'])[ALL_STAGES]
@@ -254,6 +284,29 @@ def main():
     typ_factors['total_with_SOC'] = (typ_factors['embodied_materials']
                                      + typ_factors['SOC_avg'])
 
+    # ---- spread across case studies (materials, in scope) -------------------
+    # Each typology's factor rests on a handful of designs, so report how far it
+    # moves: the range over individual buildings, and the range of the pooled
+    # value when each building is left out in turn (jackknife). Neither is a
+    # confidence interval; the sample is not random.
+    b_emb = lca.groupby('id')[STAGES].sum().sum(axis=1).rename('emb').to_frame()
+    b_emb['Typology'] = chars['Typology']
+    b_emb['Subtype'] = chars['Subtype']
+    b_emb['GFA'] = chars['GFA_used']
+    loo = {t: [] for t in TYP_ORDER}
+    for i in b_emb.index:
+        t = b_emb.loc[i, 'Typology']
+        rest = b_emb.drop(index=i)
+        if (rest['Typology'] == t).any():
+            loo[t].append(float(pool(rest, ['emb']).loc[t, 'emb']))
+    independent = chars.index.difference(list(dup_of))
+    typ_factors['n_independent'] = [int((chars.loc[independent, 'Typology'] == t).sum())
+                                    for t in TYP_ORDER]
+    typ_factors['emb_building_min'] = [b_emb.loc[b_emb.Typology == t, 'emb'].min() for t in TYP_ORDER]
+    typ_factors['emb_building_max'] = [b_emb.loc[b_emb.Typology == t, 'emb'].max() for t in TYP_ORDER]
+    typ_factors['emb_jackknife_min'] = [min(loo[t]) if loo[t] else np.nan for t in TYP_ORDER]
+    typ_factors['emb_jackknife_max'] = [max(loo[t]) if loo[t] else np.nan for t in TYP_ORDER]
+
     mat_factors.to_csv(OUT_MATERIAL, index=False)
     typ_factors.to_csv(OUT_TYPOLOGY, index=False)
 
@@ -263,7 +316,8 @@ def main():
     print(f"\nPooling: {WEIGHT_SCHEME} | soil factor L_w = {soil_avg:.3f} "
           f"(range {soil_low:.2f}-{soil_high:.2f}) kg/m2 footprint")
     print(f"NOTE: the published case-study soil figures imply L_w = "
-          f"{soil_avg / 1.006223:.3f}, a systematic 0.62% difference.\n")
+          f"{PUBLISHED_SOIL_LW:.3f}, a {100 * (soil_avg / PUBLISHED_SOIL_LW - 1):.2f}% "
+          f"difference.\n")
 
     print("EMBODIED CARBON BY MATERIAL  [kg CO2e / m2 GFA, stages "
           f"{', '.join(STAGES)}]")

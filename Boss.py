@@ -187,12 +187,11 @@ DEMAND_LABELS = ['Growth demand (net of consolidation)',
 DEMAND_LABELS_LEGEND = DEMAND_LABELS[:4] + ['_nolegend_', DEMAND_LABELS[5]]
 DEMAND_COLORS = ['#3498db', '#8e44ad', '#95a5a6', '#34495e', '#e67e22', 'none']
 HOUSESPLIT_COLOR = DEMAND_COLORS[4]
-# The calibrated residual is labelled for what it is. About half of it
-# (1992-2025) is retirement-village units: they house households counted in the
-# household series, and they ARE built, but they are outside the three-typology
-# consent data. See the [check] printed under STOCK. Only the remainder is
-# plausibly unconsented additions.
-UNCONSENTED_LABEL = 'Residual: out-of-scope dwellings (retirement villages) and unconsented additions'
+# With RV_IN_STOCK the residual is unconsented additions only; retirement-
+# village units are their own band (see RETIREMENT VILLAGES below).
+UNCONSENTED_LABEL = 'Met without new building (unconsented additions, calibrated residual)'
+RV_LABEL = 'Housed in retirement villages (out of carbon scope)'
+RV_COLOR = '#b8a0d0'
 UNCONSENTED_COLOR = '#16a085'
 
 TREND_WINDOW_START = 2012
@@ -335,6 +334,31 @@ DEMOLITION_CALIB_START = 1992      # calibration window for the unconsented-addi
 #   private stock of 1,631,019 = 0.135%/yr (Finland, measured 2000-12: 0.15%).
 #   Held fixed; the unconsented-additions rate is the calibrated residual. The
 #   two trade one-for-one, so the demolition band moves the SPLIT, not totals.
+# ---------------------------------------------------------------------------
+# RETIREMENT VILLAGES -- in the stock and demographic analysis, out of carbon scope
+# ---------------------------------------------------------------------------
+# Retirement-village (RV) units are private dwellings: their residents are
+# counted in the household series, and they are built with new-dwelling
+# consents. The consent file's 'Dwellings' column includes them; the three
+# typology columns (and therefore all floor area) do not. RV units are
+# therefore:
+#   STOCK / DEMOGRAPHY: counted as built dwellings in the stock identity, so
+#     they are not mistaken for unconsented additions (they were 54% of the
+#     calibrated residual over 1992-2025 when left out), and reported forward.
+#   CARBON / FLOOR AREA: out of scope. There is no RV floor area or case-study
+#     LCA. Households housed in RV units are removed from in-scope demand and
+#     shown as their own (negative) band, valued at in-scope dwelling size, so
+#     the reader sees how much housing need they meet. Their carbon is NOT
+#     estimated.
+# Forward, RV units are a fixed SHARE of all dwellings built (RV + in-scope),
+# the ratio of sums over RV_SHARE_REF. The annual share has been 4-8% since
+# 2011 with no trend; before 2008 it was 1-4%. The population aged 85+ grows
+# faster than the total in the Stats NZ projection, so a constant share may
+# understate future RV building; this is disclosed, not modelled (there is no
+# historical age series in the inputs to calibrate against).
+RV_IN_STOCK = True
+RV_SHARE_REF = (2016, 2025)
+
 COMPLETION_RATE = 0.95
 COMPLETION_RATE_BAND = (0.92, 0.96)
 DEMOLITION_RATE = 0.00135
@@ -735,6 +759,21 @@ def main():
     else:
         hist_total_units = typ_sum
 
+    # Retirement-village units consented = all-category dwellings - 3 typologies.
+    if RV_IN_STOCK:
+        if ext is None:
+            raise ValueError(f"RV_IN_STOCK needs the '{COL_DWELLINGS_TOTAL}' column in {FILE_CONSENTS}.")
+        if DWELLING_COUNT_SOURCE == 'dwellings_column':
+            raise ValueError("RV_IN_STOCK with DWELLING_COUNT_SOURCE='dwellings_column' would "
+                             "count retirement-village units twice.")
+        hist_rv_units = (ext - typ_sum).clip(lower=0)
+    else:
+        hist_rv_units = pd.Series(0.0, index=typ_sum.index)
+    _rw = slice(*RV_SHARE_REF)
+    rv_share = float(hist_rv_units.loc[_rw].sum()
+                     / (hist_total_units.loc[_rw].sum() + hist_rv_units.loc[_rw].sum()))
+    hist_rv_share = hist_rv_units / (hist_total_units + hist_rv_units)
+
     # Reconciliation: the typology columns must sum to the published total,
     # otherwise splitting the forecast by typology share is invalid.
     recon = float((hist_total_gfa - hist_typ_gfa.sum(axis=1)).abs().max())
@@ -893,15 +932,18 @@ def main():
         change = hist_hh.shift(1) * inv.diff()
         completion = COMPLETION_RATE if completion is None else completion
         demol = DEMOLITION_RATE if demol is None else demol
-        beyond = completion * hist_total_units - d_hh   # BUILT dwellings beyond formation
+        rv_built = completion * hist_rv_units           # RV units built (in the stock)
+        # BUILT dwellings of every kind beyond household formation
+        beyond = completion * (hist_total_units + hist_rv_units) - d_hh
         net = beyond - allow - change                    # = demolitions - unconsented additions
         prev = stock.shift(1)
         demolition = demol * prev
         uncons = net - demolition                        # negative: met without new building
         w = years_hist >= DEMOLITION_CALIB_START
         rate_unc = float(uncons[w].sum() / prev[w].sum())
+        # In-scope built = d_hh + allow + change + demol + uncons + rv  (rv < 0)
         return dict(knots=knots, v=v, stock=stock, allow=allow, change=change, beyond=beyond,
-                    net=net, demol=demolition, uncons=uncons, rate_unc=rate_unc,
+                    net=net, demol=demolition, uncons=uncons, rv=-rv_built, rate_unc=rate_unc,
                     completion=completion, demol_rate=demol)
 
     stock_cal = calibrate_stock(empty_share_measured)
@@ -913,7 +955,8 @@ def main():
     build_duration = {int(yr): float(census.loc[yr, 'under_construction'] / hist_total_units.loc[yr])
                       for yr in census.index if yr in hist_total_units.index}
 
-    other_2025 = float(COMPLETION_RATE * hist_total_units.loc[2025] - d_hh.loc[2025])
+    other_2025 = float(COMPLETION_RATE * (hist_total_units.loc[2025] + hist_rv_units.loc[2025])
+                       - d_hh.loc[2025])
     _net = stock_cal['net'][years_hist >= DEMOLITION_CALIB_START].values
     rho_other = float(np.clip(np.corrcoef(_net[:-1], _net[1:])[0, 1], 0.0, 0.95))
     other_model_2025 = float(stock_cal['allow'].loc[2025] + stock_cal['change'].loc[2025]
@@ -922,9 +965,11 @@ def main():
     other_dev_2025 = other_2025 - other_model_2025
 
     def other_dwellings(hh_levels, d_households, demol=None, unc=None):
-        """Built dwellings required beyond household formation, forward:
-        vacancy allowance + demolition replacement + unconsented additions (<0).
-        Vacancy is held at its latest census value, so vacancy change is zero."""
+        """In-scope built dwellings required beyond household formation, forward:
+        vacancy allowance + demolition replacement + unconsented additions (<0)
+        + retirement-village units (<0, out of scope). Vacancy is held at its
+        latest census value, so vacancy change is zero. d_households must
+        already be floored if FLOOR_HOUSEHOLD_DECLINE applies."""
         demol = DEMOLITION_RATE if demol is None else demol
         unc = unconsented_rate if unc is None else unc
         prev = np.concatenate([[hh_levels[0]], hh_levels[:-1]]) / (1.0 - v_forward)
@@ -937,7 +982,9 @@ def main():
         dev = other_dev_2025 * rho_other ** np.arange(len(units))
         dev[0] = 0.0
         units, u_part = units + dev, u_part + dev
-        return units, allow, d_part, u_part
+        # A fixed share of ALL dwellings built are retirement-village units.
+        rv_part = -rv_share * (np.maximum(d_households, 0.0) + units)
+        return units + rv_part, allow, d_part, u_part, rv_part
 
     def consumption_gross(pop_level, d_households, extra_space=None, other_scale=1.0,
                           hh_levels=None, dwelling_size=None):
@@ -1210,14 +1257,15 @@ def main():
         c_gross = consumption_gross(pop_total, d_hh_f, extra_space,
                                     hh_levels=hh_arr, dwelling_size=future_dwelling_size.values)
         if CONSUMPTION_BASIS == 'stock_vacancy':
-            _u, _a, _d, _n = other_dwellings(hh_arr, d_hh_f)
-            stock_fwd[col] = dict(allow=_a, demol=_d, uncons=_n, repl=_d + _n,
+            _u, _a, _d, _n, _r = other_dwellings(hh_arr, d_hh_f)
+            stock_fwd[col] = dict(allow=_a, demol=_d, uncons=_n, rv=_r, repl=_d + _n,
                                   stock=hh_arr / (1.0 - v_forward))
             vac_gfa = _a * future_dwelling_size.values        # vacancy allowance, m2
             repl_gfa = _d * future_dwelling_size.values       # demolition replacement, m2
             unc_gfa = _n * future_dwelling_size.values        # unconsented additions, m2 (<0)
+            rv_gfa = _r * future_dwelling_size.values         # housed in RV units, m2 (<0)
         else:
-            vac_gfa = repl_gfa = unc_gfa = None               # 'other' not decomposed
+            vac_gfa = repl_gfa = unc_gfa = rv_gfa = None      # 'other' not decomposed
         growth_check[col] = float(g_demand[1:].min())
 
         g_demand[0] = real_2025_total * anchor['growth']
@@ -1236,10 +1284,11 @@ def main():
         if vac_gfa is None:
             vac_gfa = other_cons.copy()
             repl_gfa, unc_gfa = np.zeros_like(other_cons), np.zeros_like(other_cons)
+            rv_gfa = np.zeros_like(other_cons)
         # 2025 is the observed anchor: split its 'other' in the 2026 proportions.
-        _t1 = vac_gfa[1] + repl_gfa[1] + unc_gfa[1]
+        _t1 = vac_gfa[1] + repl_gfa[1] + unc_gfa[1] + rv_gfa[1]
         _t1 = _t1 if abs(_t1) > 1e-9 else 1.0
-        for _arr in (vac_gfa, repl_gfa, unc_gfa):
+        for _arr in (vac_gfa, repl_gfa, unc_gfa, rv_gfa):
             _arr[0] = other_cons[0] * _arr[1] / _t1
 
         total = g_demand + hs_pos + c_gross
@@ -1249,7 +1298,7 @@ def main():
 
         results[col] = dict(total=total, growth=g_demand, growth_gross=g_gross,
                             hs_pos=hs_pos, hs_avoided=hs_avoided, c_gross=c_gross,
-                            extra=extra_space, other=other_cons, vac=vac_gfa, repl=repl_gfa, unc=unc_gfa,
+                            extra=extra_space, other=other_cons, vac=vac_gfa, repl=repl_gfa, unc=unc_gfa, rv=rv_gfa,
                             structural=structural, occ_per_dw=occ_per_dw_f, d_hh=d_hh_f)
 
         df_forecast[f'Ann_GFA_Total_{col}'] = total
@@ -1262,6 +1311,7 @@ def main():
         df_forecast[f'Ann_GFA_Cons_Vacancy_{col}'] = vac_gfa
         df_forecast[f'Ann_GFA_Cons_Replacement_{col}'] = repl_gfa
         df_forecast[f'Ann_GFA_Cons_Unconsented_{col}'] = unc_gfa
+        df_forecast[f'Ann_GFA_Cons_RV_{col}'] = rv_gfa
 
     # Projections are BUILT floor area under the stock basis, so history is put on
     # the same basis (consents x completion rate) wherever the two are joined.
@@ -1288,6 +1338,7 @@ def main():
     evol_typ_vac = split_typ(df_forecast['Ann_GFA_Cons_Vacancy_50th'].values)
     evol_typ_repl = split_typ(df_forecast['Ann_GFA_Cons_Replacement_50th'].values)
     evol_typ_unc = split_typ(df_forecast['Ann_GFA_Cons_Unconsented_50th'].values)
+    evol_typ_rv = split_typ(df_forecast['Ann_GFA_Cons_RV_50th'].values)
     evol_typ_total = split_typ(df_forecast['Ann_GFA_Total_50th'].values)
 
     # The 2025 row is the observed anchor. It is put on the same BUILT basis as
@@ -1302,7 +1353,7 @@ def main():
         evol_typ_other.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['consumption'] * (1 - anchor_extra_share)
         _o1 = float(df_forecast['Ann_GFA_Cons_Other_50th'].iloc[1]) or 1.0
         for _ev, _c in ((evol_typ_vac, 'Vacancy'), (evol_typ_repl, 'Replacement'),
-                        (evol_typ_unc, 'Unconsented')):
+                        (evol_typ_unc, 'Unconsented'), (evol_typ_rv, 'RV')):
             _ev.loc[2025, n] = (evol_typ_other.loc[2025, n]
                                 * float(df_forecast[f'Ann_GFA_Cons_{_c}_50th'].iloc[1]) / _o1)
 
@@ -1319,6 +1370,7 @@ def main():
     carbon_vac_typ = evol_typ_vac * intensity
     carbon_repl_typ = evol_typ_repl * intensity
     carbon_unc_typ = evol_typ_unc * intensity
+    carbon_rv_typ = evol_typ_rv * intensity      # in-scope carbon NOT incurred; RV carbon out of scope
     carbon_total_typ = evol_typ_total * intensity
 
     tot_carbon_median = float(carbon_total_typ.iloc[1:].sum().sum() / 1e6)
@@ -1403,7 +1455,8 @@ def main():
     print(f"     {f'+ demolitions replaced ({100*DEMOLITION_RATE:.3f}% of stock, fixed)':<46}"
           f"{sc['demol'][wcal].mean():>9,.0f}")
     print(f"     {'- unconsented additions (calibrated residual)':<46}{sc['uncons'][wcal].mean():>9,.0f}")
-    print(f"     {'= dwellings built':<46}{nb_hist:>9,.0f}")
+    print(f"     {'- retirement-village units built (out of scope)':<46}{sc['rv'][wcal].mean():>9,.0f}")
+    print(f"     {'= dwellings built (in scope)':<46}{nb_hist:>9,.0f}")
     print(f"     {f'/ completion rate {COMPLETION_RATE:.2f} = consents':<46}"
           f"{hist_total_units[wcal].mean():>9,.0f}  (observed)")
     print(f"   unconsented additions = {100*unconsented_rate:+.3f}% of stock per year "
@@ -1416,27 +1469,21 @@ def main():
     _v = pd.Series(np.interp(years_hist.astype(float), list(_all), list(_all.values())),
                    index=years_hist)
     _prev = (hist_hh / (1 - _v)).shift(1)
-    _net_all = (COMPLETION_RATE * hist_total_units - d_hh - d_hh * _v / (1 - _v)
+    _net_all = (COMPLETION_RATE * (hist_total_units + hist_rv_units) - d_hh - d_hh * _v / (1 - _v)
                 - hist_hh.shift(1) * (1 / (1 - _v)).diff())
     _unc_all = (_net_all - DEMOLITION_RATE * _prev)[wcal].mean()
     print(f"   [check] counting 'residents away' as vacant would need unconsented additions of "
           f"{_unc_all:,.0f}/yr ({100*_unc_all/nb_hist:+.0f}% of building) vs "
           f"{sc['uncons'][wcal].mean():,.0f} -> rejected as implausible")
-    if ext is not None:
-        # Retirement-village units: in the all-category dwelling count but not in
-        # the three typology columns. Their residents are private households, so
-        # when they are left out of 'built' they land in the residual.
-        rv_built = COMPLETION_RATE * (ext - hist_total_units)
-        rv_mean = float(rv_built[wcal].mean())
-        rest = float(sc['uncons'][wcal].mean()) + rv_mean
-        rest_rate = float((sc['uncons'] + rv_built)[wcal].sum() / sc['stock'].shift(1)[wcal].sum())
-        print(f"   [check] of the residual {sc['uncons'][wcal].mean():,.0f}/yr, retirement-village units "
-              f"built outside scope account for {-rv_mean:,.0f}/yr "
-              f"({100 * rv_mean / -sc['uncons'][wcal].mean():.0f}%); remainder {rest:,.0f}/yr "
-              f"({100 * rest_rate:+.3f}% of stock)")
-        for a_, b_ in [(1992, 2005), (2006, 2015), (2016, 2025)]:
-            print(f"            {a_}-{b_}: residual {sc['uncons'].loc[a_:b_].mean():7,.0f} | "
-                  f"retirement villages {-rv_built.loc[a_:b_].mean():7,.0f}")
+    # ---- retirement villages: in the stock, out of carbon scope ----
+    print(f"\n   RETIREMENT VILLAGES (counted in the stock; out of floor-area and carbon scope)")
+    print(f"     consented RV units = all-category dwellings - three typologies")
+    for a_, b_ in [(1992, 2005), (2006, 2015), (2016, 2025)]:
+        print(f"     {a_}-{b_}: {hist_rv_units.loc[a_:b_].mean():6,.0f} consented/yr "
+              f"({100 * hist_rv_share.loc[a_:b_].mean():.1f}% of all new dwellings)")
+    print(f"     forward share of all dwellings built: {100 * rv_share:.2f}% "
+          f"(ratio of sums {RV_SHARE_REF[0]}-{RV_SHARE_REF[1]}; annual range since 2011 "
+          f"{100 * hist_rv_share.loc[2011:].min():.1f}-{100 * hist_rv_share.loc[2011:].max():.1f}%)")
     if CONSUMPTION_BASIS == 'stock_vacancy':
         _sf = stock_fwd['50th']
         _nb = (results['50th']['total'][1:] / future_dwelling_size.values[1:]).mean()
@@ -1445,8 +1492,12 @@ def main():
                         ('+ vacancy allowance', _sf['allow'][1:].mean()),
                         ('+ demolitions replaced', _sf['demol'][1:].mean()),
                         ('- unconsented additions', _sf['uncons'][1:].mean()),
-                        ('= dwellings built', _nb)]:
+                        ('- retirement-village units', _sf['rv'][1:].mean()),
+                        ('= dwellings built (in scope)', _nb)]:
             print(f"     {lab:<30}{v_:>9,.0f}{'' if lab.startswith('=') else f'{100*v_/_nb:>8.1f}%'}")
+        _rv_tot = -_sf['rv'][1:].sum()
+        print(f"     retirement-village units built 2026-2050: {_rv_tot:,.0f} "
+              f"(median; carbon not estimated, out of scope)")
 
     if VERBOSE or CONSUMPTION_BASIS in ('per_capita', 'extra_space_plus_other'):   # only relevant to the per-person bases
         # ------------------------------------------------------------------
@@ -1591,7 +1642,8 @@ def main():
              ('Consumption: extra space', evol_typ_extra, carbon_extra_typ),
              ('Consumption: vacancy allowance', evol_typ_vac, carbon_vac_typ),
              ('Consumption: demolition replacement', evol_typ_repl, carbon_repl_typ),
-             ('Residual: RV units + unconsented', evol_typ_unc, carbon_unc_typ)]
+             ('Unconsented additions (not built)', evol_typ_unc, carbon_unc_typ),
+             ('Housed in RV units (out of scope)', evol_typ_rv, carbon_rv_typ)]
     rows = [(lab, g.iloc[1:].sum().sum() / 1e6, c.iloc[1:].sum().sum() / 1e6) for lab, g, c in bands]
     tg = sum(r[1] for r in rows); tc = sum(r[2] for r in rows)
     print("\n BY DEMAND TYPE, 2026-2050 (median)")
@@ -1666,6 +1718,7 @@ def main():
     y_cv = df_forecast['Ann_GFA_Cons_Vacancy_50th'].iloc[1:].values / 1e6
     y_cr = df_forecast['Ann_GFA_Cons_Replacement_50th'].iloc[1:].values / 1e6
     y_cu = df_forecast['Ann_GFA_Cons_Unconsented_50th'].iloc[1:].values / 1e6
+    y_rv = df_forecast['Ann_GFA_Cons_RV_50th'].iloc[1:].values / 1e6
     y_h = df_forecast['Ann_GFA_HouseSplit_Pos_50th'].iloc[1:].values / 1e6
     y_a = df_forecast['Ann_GFA_HouseSplit_Avoided_50th'].iloc[1:].values / 1e6
     colls3 = bx2.stackplot(plot_years, y_g, y_ce, y_cv, y_cr, y_h, y_a,
@@ -1674,8 +1727,10 @@ def main():
     colls3[-1].set_hatch('//')
     bx2.fill_between(plot_years, 0, y_cu, facecolor='none', edgecolor=UNCONSENTED_COLOR,
                      hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
+    bx2.fill_between(plot_years, y_cu, y_cu + y_rv, facecolor=RV_COLOR, alpha=0.5,
+                     edgecolor='none', label=RV_LABEL)
     bx2.axhline(0, color='black', lw=0.7)
-    bx2.plot(plot_years, y_g + y_ce + y_cv + y_cr + y_h + y_cu, color='black', linestyle='--',
+    bx2.plot(plot_years, y_g + y_ce + y_cv + y_cr + y_h + y_cu + y_rv, color='black', linestyle='--',
              linewidth=1.5, label='Built floor area (net)')
     bx2.set_title('Annual GFA by Demand Type (2026-2050)')
     bx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); bx2.grid(True, alpha=0.3); bx2.set_xlim(2026, 2050)
@@ -1694,6 +1749,7 @@ def main():
     yc_cv = carbon_vac_typ.sum(axis=1).iloc[1:].values / 1e6
     yc_cr = carbon_repl_typ.sum(axis=1).iloc[1:].values / 1e6
     yc_cu = carbon_unc_typ.sum(axis=1).iloc[1:].values / 1e6
+    yc_rv = carbon_rv_typ.sum(axis=1).iloc[1:].values / 1e6
     yc_h = carbon_hs_pos_typ.sum(axis=1).iloc[1:].values / 1e6
     yc_a = carbon_avoided_typ.sum(axis=1).iloc[1:].values / 1e6
     colls4 = cx2.stackplot(plot_years, yc_g, yc_ce, yc_cv, yc_cr, yc_h, yc_a,
@@ -1702,8 +1758,10 @@ def main():
     colls4[-1].set_hatch('//')
     cx2.fill_between(plot_years, 0, yc_cu, facecolor='none', edgecolor=UNCONSENTED_COLOR,
                      hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
+    cx2.fill_between(plot_years, yc_cu, yc_cu + yc_rv, facecolor=RV_COLOR, alpha=0.5,
+                     edgecolor='none', label=RV_LABEL)
     cx2.axhline(0, color='black', lw=0.7)
-    cx2.plot(plot_years, yc_g + yc_ce + yc_cv + yc_cr + yc_h + yc_cu, color='black', linestyle='--', linewidth=1.5,
+    cx2.plot(plot_years, yc_g + yc_ce + yc_cv + yc_cr + yc_h + yc_cu + yc_rv, color='black', linestyle='--', linewidth=1.5,
              label='Actual Built Carbon')
     cx2.set_title('Annual Embodied Carbon by Demand Type (2026-2050)')
     cx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
@@ -1716,6 +1774,7 @@ def main():
     cum_cv = (carbon_vac_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
     cum_cr = (carbon_repl_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
     cum_cu = (carbon_unc_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
+    cum_rv = (carbon_rv_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
     cum_h = (carbon_hs_pos_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
     cum_a = (carbon_avoided_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
 
@@ -1732,8 +1791,10 @@ def main():
     colls5[-1].set_hatch('//')
     dx2.fill_between(plot_years, 0, cum_cu, facecolor='none', edgecolor=UNCONSENTED_COLOR,
                      hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
+    dx2.fill_between(plot_years, cum_cu, cum_cu + cum_rv, facecolor=RV_COLOR, alpha=0.5,
+                     edgecolor='none', label=RV_LABEL)
     dx2.axhline(0, color='black', lw=0.7)
-    dx2.plot(plot_years, cum_g + cum_ce + cum_cv + cum_cr + cum_h + cum_cu, color='black', linestyle='--',
+    dx2.plot(plot_years, cum_g + cum_ce + cum_cv + cum_cr + cum_h + cum_cu + cum_rv, color='black', linestyle='--',
              linewidth=1.5, label='Actual Built Carbon')
     dx2.set_title('Cumulative Embodied Carbon by Demand Type (2026-2050)')
     dx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
@@ -1817,7 +1878,8 @@ def main():
                     'Consumption: extra space': evol_typ_extra,
                     'Consumption: vacancy': evol_typ_vac,
                     'Consumption: demolition': evol_typ_repl,
-                    'Residual: RV + unconsented': evol_typ_unc}
+                    'Unconsented additions': evol_typ_unc,
+                    'Housed in RV units (out of scope)': evol_typ_rv}
     dem_mat = pd.DataFrame(
         {lab: [sum(df[t].iloc[1:].sum() * MAT_INTENSITY.loc[m, t] for t in typ_names)
                for m in MATERIALS] + [sum(df[t].iloc[1:].sum() * SOIL_INTENSITY[t]

@@ -69,9 +69,11 @@ def hindcast(B):
     end = int(B['calib_end'])
     units_all = B['hist_units_all_c']                 # consents timed as completions
     c = Boss.COMPLETION_RATE
-    cal_full = engine.calibrate_stock(yh, B['hist_hh'], engine.vacancy_knots(B['census'], B['empty_share_measured']),
+    cal_full = engine.calibrate_stock(yh, B['hist_hh'], engine.vacancy_knots(B['census'], B['empty_share_measured'],
+                                                                             B['_const_share']),
                                       units_all, B['hist_rv_units_c'], c, Boss.DEMOLITION_RATE,
                                       Boss.DEMOLITION_CALIB_START, end)
+    crates = B['census_rates']
     built = c * units_all
     need = built - cal_full['net']               # households + allowance + change (observed)
     prev = cal_full['prev']
@@ -98,6 +100,8 @@ def hindcast(B):
         A = np.c_[np.ones(len(X)), X]
         coef, *_ = np.linalg.lstsq(A, Y, rcond=None)
         preds['linked'] = (None, float((need + (coef[0] + coef[1] * th / prev) * prev)[test].sum()))
+        r_dc = engine.census_window_rate(crates, Boss.NET_REPLACEMENT_WINDOW[0], O)
+        preds['dwelling_count'] = (r_dc, float((need + r_dc * prev)[test].sum()))
         for m, (r, p) in preds.items():
             rows.append(dict(origin=O, test=f'{O + 1}-{end}', method=m,
                              rate_pct=None if r is None else 100 * r,
@@ -105,6 +109,60 @@ def hindcast(B):
                              linked_b=float(coef[1]) if m == 'linked' else None,
                              predicted=p, actual=actual, error_pct=100 * (p / actual - 1)))
     return rows
+
+
+def hindcast_stock(B):
+    """(B) Census private-dwelling stock in the last census, predicted from
+    each origin: stock_O + completions(O -> last) - rate x stock-years, with the
+    rate calibrated on census intervals up to O only (long run from the model's
+    window start, or the last interval before O). Actual completions are used,
+    so this tests the replacement term of the dwelling-count identity."""
+    cr = B['census_rates']
+    last = int(cr['y1'].max())
+    rows = []
+    for O in ORIGINS:
+        if O >= last:
+            continue
+        after = cr[cr['y0'] >= O]
+        built, sy = float(after['built'].sum()), float(after['stock_years'].sum())
+        actual = float(after['d_stock'].sum())
+        before = cr[cr['y1'] <= O]
+        for m, r in (('long run', engine.census_window_rate(cr, Boss.NET_REPLACEMENT_WINDOW[0], O)),
+                     ('recent interval', float(before.iloc[-1]['rate']))):
+            pred = built - r * sy
+            rows.append(dict(origin=O, test=f'{O}-{last}', method=m, rate_pct=100 * r,
+                             predicted=pred, actual=actual, error_pct=100 * (pred / actual - 1)))
+    return rows
+
+
+def dhe_crosscheck(B):
+    """(C) the dwelling-count identity on the Stats NZ DHE private-dwelling
+    series (Table 1; bases = census counts) at 31 March of census years, and
+    (D) the net replacement implied by Stats NZ's intercensal weighting after
+    the 2023 base (quarterly DHE growth vs lagged consents)."""
+    dq = Boss.load_historical_households(Boss.FILE_HOUSEHOLDS_HIST, sheet='Table 1').set_index('Date')['Households']
+    years = [int(y) for y in B['census'].index if pd.Timestamp(int(y), 3, 31) in dq.index]
+    stock = pd.Series({y: float(dq[pd.Timestamp(y, 3, 31)]) for y in years})
+    cm = B['consents_monthly']
+    r_dhe = engine.census_interval_rates(stock, cm, Boss.COMPLETION_RATE, B['lag_w'], day_of_year=90)
+    w0, w1 = Boss.NET_REPLACEMENT_WINDOW
+    out = dict(dhe_rate_long=engine.census_window_rate(r_dhe, w0, w1),
+               census_rate_long=engine.census_window_rate(B['census_rates'], w0, w1),
+               dhe_rates=r_dhe[['y0', 'y1', 'rate']].to_dict('records'))
+    # (D) after the 2023 base: 2023-06-30 -> last quarter
+    q = cm.resample('QE').sum()
+    ratio = (dq.diff() / q.shift(4).reindex(dq.index)).loc['2023-09-30':]
+    out['dhe_weight_mean'], out['dhe_weight_sd'] = float(ratio.mean()), float(ratio.std())
+    t0, t1 = pd.Timestamp('2023-06-30'), dq.index.max()
+    idx = cm.index
+    tm = idx.year + (idx.dayofyear - 1 + idx.days_in_month / 2.0) / 365.25
+    frac = lambda d: d.year + (d.dayofyear) / 365.25
+    m = (tm > frac(t0) - B['lag_w']) & (tm <= frac(t1) - B['lag_w'])
+    built = Boss.COMPLETION_RATE * float(cm[m].sum())
+    d_stock = float(dq[t1] - dq[t0])
+    sy = float((dq[t0] + dq[t1]) / 2 * (frac(t1) - frac(t0)))
+    out.update(dhe_post2023_period=f'{t0.date()}..{t1.date()}', dhe_post2023_rate=(built - d_stock) / sy)
+    return out
 
 
 def seasonal_shares(consents):
@@ -144,8 +202,10 @@ def check_2026(B, consents=None):
     return out
 
 
-def write(rows, chk):
-    lines = ['### Rolling-origin hindcast of dwellings built (descriptive; 3 origins)', '',
+def write(rows, chk, stock_rows=None, dhe=None):
+    lines = [f'Net replacement source in use: `{Boss.NET_REPLACEMENT_SOURCE}` '
+             f'(window {Boss.NET_REPLACEMENT_WINDOW[0]}-{Boss.NET_REPLACEMENT_WINDOW[1]}).', '',
+             '### (A) Rolling-origin hindcast of dwellings built (descriptive; 3 origins)', '',
              'Actual households and vacancy fed in; only the net-replacement term is predicted. '
              'Error = predicted / actual - 1.', '',
              '| origin | test years | method | rate used (%/yr) | predicted | actual | error |',
@@ -155,6 +215,27 @@ def write(rows, chk):
                 else f"linked: b = {r['linked_b']:.2f} on {r['n_intervals']} intervals")
         lines.append(f"| {r['origin']} | {r['test']} | {r['method']} | {rate} | {r['predicted']:,.0f} | "
                      f"{r['actual']:,.0f} | {r['error_pct']:+.1f}% |")
+    if stock_rows:
+        lines += ['', '### (B) Rolling-origin hindcast of the 2023 census private-dwelling stock '
+                  '(dwelling-count identity; descriptive)', '',
+                  'Change in census private dwellings from the origin to 2023, predicted as completions '
+                  '- rate x stock-years with the rate calibrated up to the origin.', '',
+                  '| origin | interval | rate | rate used (%/yr) | predicted change | actual change | error |',
+                  '|---|---|---|---|---|---|---|']
+        for r in stock_rows:
+            lines.append(f"| {r['origin']} | {r['test']} | {r['method']} | {r['rate_pct']:+.3f} | "
+                         f"{r['predicted']:,.0f} | {r['actual']:,.0f} | {r['error_pct']:+.1f}% |")
+    if dhe:
+        lines += ['', '### (C, D) Cross-checks of the net replacement rate', '',
+                  f"- Census dwelling counts, {Boss.NET_REPLACEMENT_WINDOW[0]}-{Boss.NET_REPLACEMENT_WINDOW[1]}: "
+                  f"{100 * dhe['census_rate_long']:+.3f}%/yr.",
+                  f"- Same identity on the Stats NZ DHE private-dwelling series at 31 March (bases = census "
+                  f"counts): {100 * dhe['dhe_rate_long']:+.3f}%/yr.",
+                  f"- Stats NZ's intercensal weighting after the 2023 base: DHE dwelling growth = "
+                  f"{dhe['dhe_weight_mean']:.4f} x consents lagged four quarters (sd {dhe['dhe_weight_sd']:.4f}); "
+                  f"with this model's completion rate and lag this implies net replacement of "
+                  f"{100 * dhe['dhe_post2023_rate']:+.3f}%/yr over {dhe['dhe_post2023_period']}. This is Stats NZ's "
+                  f"assumption, not an observation."]
     lines += ['', '### 2026 out-of-sample check against observed consents', '']
     if chk['status'] == 'pending':
         lines.append(f"PENDING: the consent file ends {chk['data_end']}. Model 2026: "
@@ -169,13 +250,15 @@ def write(rows, chk):
     with open(OUT_MD, 'w') as f:
         f.write('\n'.join(lines) + '\n')
     with open(OUT_JSON, 'w') as f:
-        json.dump(dict(hindcast=rows, check_2026=chk), f, indent=2)
+        json.dump(dict(hindcast=rows, hindcast_stock=stock_rows, net_replacement_crosscheck=dhe,
+                       model_method='dwelling_count' if Boss.NET_REPLACEMENT_SOURCE == 'dwelling_count'
+                       else 'constant', check_2026=chk), f, indent=2)
     print('\n'.join(lines))
 
 
 def main():
     B = run_boss()
-    write(hindcast(B), check_2026(B))
+    write(hindcast(B), check_2026(B), hindcast_stock(B), dhe_crosscheck(B))
 
 
 if __name__ == '__main__':

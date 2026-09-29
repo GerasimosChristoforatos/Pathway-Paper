@@ -424,6 +424,23 @@ CENSUS_LATER = {                   # CENSUS_SOURCE = 'hardcoded' only (all dwell
 PRE2013_EMPTY_SHARE_BAND = 0.05    # +/- on the empty share applied before 2013
 DEMOLITION_CALIB_START = 1992      # calibration window for the unconsented-additions rate
 
+# NET_REPLACEMENT_SOURCE: how the long-run net replacement rate (demolition +
+# residual, share of last year's stock) is calibrated. Item 4, D2.
+#   'dwelling_count' (ADOPTED): the census DWELLING-count identity, per
+#       intercensal interval: [completions - change in census private
+#       dwellings] / stock-years (engine.census_interval_rates), ratio of sums
+#       over NET_REPLACEMENT_WINDOW (census years). Uses neither the household
+#       estimates nor the census empty/away split, which breaks between 2013
+#       and 2018 (N1). Completions use the model's lag W in continuous time.
+#       Over 1991->2023 the stock changes telescope, so only the 1991 and 2023
+#       counts enter the numerator (2018 only weights the denominator).
+#   'household_constant_empty_share': the household identity with one empty
+#       share (pooled private 2018 + 2023) applied to every census.
+#   'household_identity': the original: the household identity with the
+#       census 'empty' series as published (contains the 2013->2018 break).
+NET_REPLACEMENT_SOURCE = 'dwelling_count'
+NET_REPLACEMENT_WINDOW = (1991, 2023)    # census years; (2013, 2023) is a sensitivity
+
 # ---------------------------------------------------------------------------
 # BUILT DWELLINGS, DEMOLITION AND UNCONSENTED ADDITIONS
 # ---------------------------------------------------------------------------
@@ -969,6 +986,9 @@ def main():
     # Settings used by the stock calibration, bound here once so that the
     # returned calibrate_stock() never reads the (mutable) module globals.
     _completion, _demol_rate, _calib_start = COMPLETION_RATE, DEMOLITION_RATE, DEMOLITION_CALIB_START
+    _nr_source, _nr_window = NET_REPLACEMENT_SOURCE, tuple(NET_REPLACEMENT_WINDOW)
+    if _nr_source not in ('dwelling_count', 'household_constant_empty_share', 'household_identity'):
+        raise ValueError(f"Unknown NET_REPLACEMENT_SOURCE '{_nr_source}'.")
 
     # ------------------------------------------------------------------
     # 0. CASE-STUDY FACTORS
@@ -1232,12 +1252,17 @@ def main():
     hist_gfa_c = completed(hist_total_gfa)
     hist_typ_gfa_c = hist_typ_gfa.apply(completed)
 
+    # one empty share for every census (NET_REPLACEMENT_SOURCE sensitivity)
+    _const_share = None
+    if _nr_source == 'household_constant_empty_share':
+        _const_share = float(census.loc[[2018, 2023], 'empty'].sum() / census.loc[[2018, 2023], 'unoccupied'].sum())
+
     def calibrate_stock(pre_share, completion=None, demol=None, hh=None):
         """The historical stock identity (engine.calibrate_stock) with this
         run's data and settings. In-scope built = d_hh + allow + change + demol
         + uncons + rv (rv < 0)."""
         return engine.calibrate_stock(years_hist, hist_hh if hh is None else hh,
-                                      engine.vacancy_knots(census, pre_share),
+                                      engine.vacancy_knots(census, pre_share, _const_share),
                                       hist_units_all_c, hist_rv_units_c,
                                       _completion if completion is None else completion,
                                       _demol_rate if demol is None else demol,
@@ -1245,7 +1270,22 @@ def main():
 
     stock_cal = calibrate_stock(empty_share_measured)
     demolition_rate = DEMOLITION_RATE                  # fixed (BRANZ SR214)
-    unconsented_rate = stock_cal['rate_unc']            # calibrated residual
+    # census dwelling-count identity (always computed; reported, and the default source)
+    consents_monthly = df_consents.set_index('Date')[COL_DWELLINGS_TOTAL].astype(float)
+    census_rates = engine.census_interval_rates(census['total_private'], consents_monthly, _completion, lag_w)
+
+    def net_rate(cal, completion):
+        """Long-run net replacement rate under NET_REPLACEMENT_SOURCE."""
+        if _nr_source == 'dwelling_count':
+            return engine.census_window_rate(
+                engine.census_interval_rates(census['total_private'], consents_monthly, completion, lag_w),
+                *_nr_window)
+        return cal['demol_rate'] + cal['rate_unc']
+
+    if _nr_source == 'dwelling_count':
+        unconsented_rate = engine.census_window_rate(census_rates, *_nr_window) - demolition_rate
+    else:
+        unconsented_rate = stock_cal['rate_unc']        # calibrated residual (household identity)
     v_forward = float(stock_cal['knots'][max(stock_cal['knots'])])   # latest census, held
 
     # 2025's departure from the calibrated identity, and its persistence. Carried
@@ -1659,12 +1699,13 @@ def main():
         base_net = DEMOLITION_RATE + unconsented_rate
 
         def _band_line(lab, cal, mark=''):
-            dr = (cal['demol_rate'] + cal['rate_unc']) - base_net
+            dr = net_rate(cal, cal['completion']) - base_net
             g_ = _band['50th'] + dr * (_prev * _D).sum() / 1e6
             c_ = tot_carbon_median + dr * (_prev * _D * _mix_int_all[1:]).sum() / 1e6
             print(f"     {lab:<34} demol {100*cal['demol_rate']:.3f}% | unconsented "
                   f"{100*cal['rate_unc']:+.3f}% -> built {g_:6.2f} Mm2 | {c_:9,.0f} kt{mark}")
-        print(" [4] Stock-term sensitivities (median):")
+        print(f" [4] Stock-term sensitivities (median; LINEARISED in the net rate only, "
+              f"full re-runs are in Sensitivity.py; source {_nr_source}):")
         for sh in (empty_share_measured - PRE2013_EMPTY_SHARE_BAND, empty_share_measured,
                    empty_share_measured + PRE2013_EMPTY_SHARE_BAND):
             _band_line(f"pre-2013 empty share {100*sh:.0f}%", calibrate_stock(sh),
@@ -1730,30 +1771,17 @@ def main():
     print(f"   [check] counting 'residents away' as vacant would need unconsented additions of "
           f"{_unc_all:,.0f}/yr ({100*_unc_all/nb_hist:+.0f}% of building) vs "
           f"{sc['uncons'][wcal].mean():,.0f} -> rejected as implausible")
-    # ---- household-independent check: census dwelling counts vs dwellings built ----
-    # Net replacement per census interval = dwellings built (all categories,
-    # consents x completion, June years lagged one year) - change in census
-    # private dwellings (occupied + unoccupied); '_pipe' also nets the change in
-    # dwellings under construction on census night.
-    _c = df_consents
-    _d = pd.to_datetime(_c['Date'])
-    _fy = np.where(_d.dt.month >= 7, _d.dt.year + 1, _d.dt.year)
-    if COL_DWELLINGS_TOTAL in _c.columns:
-        _cons = _c.groupby(_fy)[COL_DWELLINGS_TOTAL].sum()
-        _cy = [y for y in census.index if y >= years_hist.min()]
-        print(f"\n   [check] net replacement from census DWELLING counts (no household data), % of stock/yr:")
-        for y0, y1 in zip(_cy[:-1], _cy[1:]):
-            _b = COMPLETION_RATE * _cons.loc[y0:y1 - 1].sum()
-            _dd = census.loc[y1, 'total_private'] - census.loc[y0, 'total_private']
-            _dp = census.loc[y1, 'under_construction'] - census.loc[y0, 'under_construction']
-            _st = (census.loc[y0, 'total_private'] + census.loc[y1, 'total_private']) / 2 * (y1 - y0)
-            print(f"     {y0}-{y1}: {100 * (_b - _dd) / _st:+.3f}%  (net of pipeline change "
-                  f"{100 * (_b - _dp - _dd) / _st:+.3f}%)")
-        _r19 = float(sc['net'].loc[2019:calib_end].sum() / sc['prev'].loc[2019:calib_end].sum()) \
-            if calib_end >= 2019 else float('nan')
-        print(f"     model (household identity): {DEMOLITION_CALIB_START}-{calib_end} "
-              f"{100 * (DEMOLITION_RATE + unconsented_rate):+.3f}% (in use)"
-              + (f" | 2019-{calib_end} {100 * _r19:+.3f}%" if calib_end >= 2019 else ""))
+    # ---- net replacement by source (census dwelling counts vs household identity) ----
+    print(f"\n   Net replacement (demolition + residual), % of stock/yr, by census interval "
+          f"(completions lagged W = {lag_w:.3f} yr):")
+    for r in census_rates.itertuples():
+        _w = (years_hist > r.y0) & (years_hist <= r.y1) & sc['prev'].notna().values
+        _hh = (float(sc['net'][_w].sum() / sc['prev'][_w].sum())) if _w.any() else float('nan')
+        print(f"     {r.y0}-{r.y1}: dwelling counts {100 * r.rate:+.3f}% | household identity {100 * _hh:+.3f}%")
+    print(f"     long run {_nr_window[0]}-{_nr_window[1]}: dwelling counts "
+          f"{100 * engine.census_window_rate(census_rates, *_nr_window):+.3f}% | household identity "
+          f"{DEMOLITION_CALIB_START}-{calib_end} {100 * (DEMOLITION_RATE + sc['rate_unc']):+.3f}%")
+    print(f"     IN USE ({_nr_source}): {100 * (DEMOLITION_RATE + unconsented_rate):+.3f}%/yr")
 
     # ---- retirement villages: in the stock, out of carbon scope ----
     print(f"\n   RETIREMENT VILLAGES (counted in the stock; out of floor-area and carbon scope)")

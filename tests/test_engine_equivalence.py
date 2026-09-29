@@ -36,6 +36,7 @@ import pytest
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, 'legacy'))
 TOL = 1e-9
+from legacy_flags import LEGACY_FLAGS  # noqa: E402
 N_MC = int(os.environ.get('PATHWAY_EQUIV_MC_DRAWS', 300))
 N_BOSS = int(os.environ.get('PATHWAY_EQUIV_BOSS_DRAWS', 12))
 REPORT = os.path.join(os.path.dirname(HERE), 'outputs', 'equivalence.md')
@@ -66,6 +67,8 @@ def _mc_pair(response=False):
         importlib.reload(B)
         B.SHOW_PLOTS = False
         B.HH_SIZE_RESPONSE = response
+    for k, v in LEGACY_FLAGS.items():          # new code, old behaviour
+        setattr(Boss, k, v)
     MC, MCL = _fresh('MonteCarlo'), _fresh('MonteCarlo_legacy')
     with contextlib.redirect_stdout(io.StringIO()):
         su, sul = MC.build_setup(), MCL.build_setup()
@@ -197,7 +200,7 @@ def test_boss_equivalence():
         res = {}
         for name in ('Boss', 'Boss_legacy'):
             try:
-                res[name] = ('ok', run_module(name, s))
+                res[name] = ('ok', run_module(name, {**LEGACY_FLAGS, **s} if name == 'Boss' else s))
             except Exception as e:  # noqa: BLE001
                 res[name] = ('err', f'{type(e).__name__}: {e}')
         kinds = (res['Boss'][0], res['Boss_legacy'][0])

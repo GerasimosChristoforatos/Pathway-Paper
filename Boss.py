@@ -39,7 +39,15 @@ BOSS_FIGURE_NAMES = ['boss_01_population', 'boss_02_households', 'boss_03_cumula
                      'boss_04_annual_gfa', 'boss_05_annual_carbon', 'boss_06_cumulative_carbon',
                      'boss_07_typology_share', 'boss_08_demographic_drivers',
                      'boss_09_space_diagnostics', 'boss_10_material_flows']
+# CONSENT_SOURCE: where monthly building consents come from.
+#   'statsnz_release' (default): data/derived/consents_monthly.csv, built by
+#       data/build_consents.py from the raw Stats NZ release download
+#       (provenance in data/raw/MANIFEST.csv). Identical to the legacy file in
+#       every month 1990-04..2025-12; extends it into 2026.
+#   'legacy_xlsx': data/consentdata.xlsx as originally supplied.
+CONSENT_SOURCE = 'statsnz_release'
 FILE_CONSENTS = os.path.join(DATA_DIR, 'consentdata.xlsx')
+FILE_CONSENTS_DERIVED = os.path.join(DATA_DIR, 'derived', 'consents_monthly.csv')
 FILE_POP_PROJ = os.path.join(DATA_DIR, 'popdata.xlsx')
 FILE_POP_HIST = os.path.join(DATA_DIR, 'histpopdata.xlsx')          # [FIX e] authoritative annual ERP
 FILE_HOUSEHOLDS_HIST = os.path.join(DATA_DIR, 'oldhouseholddata.xlsx')
@@ -482,6 +490,18 @@ DEMAND_BASIS = 'bim_olf'
 # LOADERS
 # ============================================================
 
+def load_consents(source):
+    """Monthly consents with a datetime 'Date' column, from the chosen source."""
+    if source == 'legacy_xlsx':
+        df = pd.read_excel(FILE_CONSENTS, sheet_name=CONSENT_SHEET)
+    elif source == 'statsnz_release':
+        df = pd.read_csv(FILE_CONSENTS_DERIVED)
+    else:
+        raise ValueError(f"Unknown CONSENT_SOURCE '{source}'.")
+    df['Date'] = pd.to_datetime(df['Date'])
+    return df
+
+
 def load_historical_population(path=FILE_POP_HIST, sheet=POP_SHEET_HIST,
                                year_row_label='Year ended 31 December',
                                value_row_label='Estimated resident population'):
@@ -873,7 +893,7 @@ def main():
     # ------------------------------------------------------------------
     # 1. CONSENTS: floor area AND dwelling counts
     # ------------------------------------------------------------------
-    df_consents = pd.read_excel(FILE_CONSENTS, sheet_name=CONSENT_SHEET)
+    df_consents = load_consents(CONSENT_SOURCE)
     df_consents['Year'] = pd.to_datetime(df_consents['Date']).dt.year
 
     hist_typ_gfa = df_consents.groupby('Year')[list(COL_TYPOLOGIES.values())].sum()
@@ -1581,7 +1601,7 @@ def main():
     # consents x completion, June years lagged one year) - change in census
     # private dwellings (occupied + unoccupied); '_pipe' also nets the change in
     # dwellings under construction on census night.
-    _c = pd.read_excel(FILE_CONSENTS, sheet_name=CONSENT_SHEET)
+    _c = df_consents
     _d = pd.to_datetime(_c['Date'])
     _fy = np.where(_d.dt.month >= 7, _d.dt.year + 1, _d.dt.year)
     if COL_DWELLINGS_TOTAL in _c.columns:

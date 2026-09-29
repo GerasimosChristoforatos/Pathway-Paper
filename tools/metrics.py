@@ -24,6 +24,7 @@ FIELDS = [
     ('boss.upfront_kt', 'Upfront carbon A1-A5 + soil, central run (kt CO2e)', '{:,.0f}'),
     ('boss.step_2025_2026_pct', '2025 -> 2026 step in built floor area (%)', '{:+.1f}'),
     ('boss.S_2050', 'Household size 2050, central run', '{:.3f}'),
+    ('boss.RV_floor_area_Mm2_out_of_scope', 'Retirement-village floor area 2026-2050, out of scope (Mm2)', '{:.2f}'),
     ('mc.GFA_p5', 'MC floor area p5 (Mm2)', '{:.2f}'),
     ('mc.GFA_p50', 'MC floor area p50 (Mm2)', '{:.2f}'),
     ('mc.GFA_p95', 'MC floor area p95 (Mm2)', '{:.2f}'),
@@ -54,6 +55,8 @@ def boss_metrics():
         'upfront_kt': float(B['_upfront'] + B['_soil'] / 1e6),
         'step_2025_2026_pct': float(100 * (R['total'][1] / B['hist_built_gfa'].loc[2025] - 1)),
         'S_2050': float(S[-1]),
+        'RV_floor_area_Mm2_out_of_scope': (float(B['rv_floor_area']['projected'][1:].sum() / 1e6)
+                                           if B.get('rv_floor_area') else None),
     }
 
 

@@ -488,6 +488,16 @@ NET_REPLACEMENT_WINDOW = (1991, 2023)    # census years; (2013, 2023) is a sensi
 # historical age series in the inputs to calibrate against).
 RV_IN_STOCK = True
 RV_SHARE_REF = (2016, 2025)
+# RV floor area (A4). Stats NZ publishes retirement-village floor area
+# consented (building type 'Retirement village units'), extracted by
+# data/build_consents.py. It is reported as its own series: history (built
+# basis, lagged like everything else) and a projection = projected RV units x
+# RV floor area per unit over DWELLING_SIZE_REF. It stays OUT of the in-scope
+# floor area and carbon: bringing it in needs a carbon factor for RV buildings,
+# for which no case study exists (any factor would be judgement). True is not
+# implemented until that decision is made.
+RV_FLOOR_AREA_IN_SCOPE = False
+COL_RV_GFA = 'GFA - GFA/RetirementVillage'
 
 COMPLETION_RATE = 0.95
 COMPLETION_RATE_BAND = (0.92, 0.96)
@@ -1599,6 +1609,18 @@ def main():
         df_forecast[f'Ann_GFA_Cons_Unconsented_{col}'] = unc_gfa
         df_forecast[f'Ann_GFA_Cons_RV_{col}'] = rv_gfa
 
+    # ---- retirement-village floor area: reported, out of scope (A4) ----
+    if RV_FLOOR_AREA_IN_SCOPE:
+        raise NotImplementedError('RV floor area in scope needs an RV carbon factor (a judgement); '
+                                  'not implemented.')
+    rv_floor_area, rv_size_ref = None, float('nan')
+    if COL_RV_GFA in df_consents.columns and CONSUMPTION_BASIS == 'stock_vacancy':
+        _rvg = df_consents.groupby('Year')[COL_RV_GFA].sum().loc[1991:2025]
+        _rw = slice(*DWELLING_SIZE_REF)
+        rv_size_ref = float(_rvg.loc[_rw].sum() / hist_rv_units.loc[_rw].sum())
+        rv_floor_area = dict(history_built=completed(_rvg) * COMPLETION_RATE,
+                             projected=-stock_fwd['50th']['rv'] * rv_size_ref)
+
     # Projections are BUILT floor area under the stock basis, so history is put on
     # the same basis (consents x completion rate) wherever the two are joined.
     built_factor = COMPLETION_RATE if CONSUMPTION_BASIS == 'stock_vacancy' else 1.0
@@ -1806,6 +1828,12 @@ def main():
         _rv_tot = -_sf['rv'][1:].sum()
         print(f"     retirement-village units built 2026-2050: {_rv_tot:,.0f} "
               f"(median; carbon not estimated, out of scope)")
+        if rv_floor_area is not None:
+            print(f"     retirement-village FLOOR AREA (Stats NZ consents; out of scope): "
+                  f"{rv_size_ref:.1f} m2/unit ({DWELLING_SIZE_REF[0]}-{DWELLING_SIZE_REF[1]}) -> "
+                  f"{rv_floor_area['projected'][1:].sum() / 1e6:.2f} Mm2 built 2026-2050 "
+                  f"(in-scope total {results['50th']['total'][1:].sum() / 1e6:.2f} Mm2); "
+                  f"history 2016-2025 {rv_floor_area['history_built'].loc[2016:2025].sum() / 1e6:.2f} Mm2 built")
 
     if VERBOSE or CONSUMPTION_BASIS in ('per_capita', 'extra_space_plus_other'):   # only relevant to the per-person bases
         # ------------------------------------------------------------------

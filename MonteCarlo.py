@@ -152,7 +152,7 @@ def build_setup():
     su['spreads'] = np.array(spreads)                    # (5, years)
 
     # ---- household size: Stats NZ shape per variant ----
-    su['size_shape'] = {v: Boss.statsnz_size_shape(v, fy)[1:] for v in VARIANT_Z}
+    su['size_shape'] = {v: Boss.statsnz_size_shape(v, fy, tail=Boss.S_TAIL)[1:] for v in VARIANT_Z}
     hr = B['hh_response']
     su['b_hat'], su['b_se'] = hr['b'], hr['se_hac']
     su['rho_hat'] = hr['rho']

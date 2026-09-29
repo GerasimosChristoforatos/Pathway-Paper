@@ -132,6 +132,19 @@ HOUSEHOLD_VARIANT_MAP = {'5th': 'Low', '50th': 'Medium', '95th': 'High'}
 HOUSEHOLD_METHOD = 'matched_size'
 HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S only
 
+# S_TAIL: household size after the last published knot (2043).
+#   'flat' (ADOPTED, item 5): held at its 2043 value (zero-order hold): the
+#       neutral extrapolation when nothing is published beyond the horizon.
+#   'secant': continues the last published interval's slope (2038->2043).
+#   'mean_slope': continues the mean slope over all knots (2018->2043).
+#   'pchip_end_slope': the original behaviour: continues the PCHIP end
+#       derivative, which is 2.5x the 2038->2043 secant (ASSESSMENT.md C2).
+# N4 (the Low/High variants pair stochastic population percentiles with
+# deterministic household variants) and the total vs private-household
+# population question remain OPEN until the living-arrangement table (E2) is
+# obtained; see ASSUMPTIONS.md.
+S_TAIL = 'flat'
+
 # ---------------------------------------------------------------------------
 # HOUSEHOLD ESTIMATES: HOW STATS NZ BUILDS THEM, AND WHAT THAT ALLOWS
 # ---------------------------------------------------------------------------
@@ -716,17 +729,36 @@ def smooth_interpolate_and_extend(block_df, value_col, full_year_range):
 # HOUSEHOLD SIZE (shared by main() and MonteCarlo.py)
 # ============================================================
 
-def statsnz_size_shape(variant, forecast_years):
+def extend_tail(S_knots, S_ann, mode):
+    """Replace the values after the last knot according to S_TAIL (see there)."""
+    yrs_k, s_k = S_knots['Year'].values, S_knots['S'].values
+    last = int(yrs_k[-1])
+    if mode == 'pchip_end_slope':
+        return S_ann
+    slope = {'flat': 0.0,
+             'secant': (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]),
+             'mean_slope': (s_k[-1] - s_k[0]) / (yrs_k[-1] - yrs_k[0])}.get(mode)
+    if slope is None:
+        raise ValueError(f"Unknown S_TAIL '{mode}'.")
+    out = S_ann.copy()
+    after = out.index > last
+    out[after] = float(S_ann.loc[last]) + slope * (out.index[after] - last)
+    return out
+
+
+def statsnz_size_shape(variant, forecast_years, tail='pchip_end_slope'):
     """[Route A] Stats NZ household size S = Pop / HH at the shared knots of the
     matched-vintage population and household projections for one variant,
-    PCHIP-interpolated to annual values. Returns (S_knots, S_ann, pop_ref), where
-    pop_ref is that variant's annual population (to read the growth it assumed)."""
+    PCHIP-interpolated to annual values; after the last knot, see S_TAIL.
+    Returns (S_knots, S_ann, pop_ref), where pop_ref is that variant's annual
+    population (to read the growth it assumed)."""
     pop_k = load_national_pop_projection(variant=variant).set_index('Year')['Population']
     hh_k = extract_household_projection_block(FILE_HOUSEHOLDS_PROJ,
                                               variant_label=variant).set_index('Year')['Households']
     common = sorted(set(pop_k.index) & set(hh_k.index))
     S_knots = pd.DataFrame({'Year': common, 'S': [pop_k[y] / hh_k[y] for y in common]})
     S_ann = smooth_interpolate_and_extend(S_knots, 'S', np.arange(min(common), 2051)).set_index('Year')['S']
+    S_ann = extend_tail(S_knots, S_ann, tail)
     pk = pop_k.reset_index().rename(columns={'index': 'Year'})
     pop_ref = smooth_interpolate_and_extend(pk, 'Population',
                                             np.arange(int(pk['Year'].min()), 2051)).set_index('Year')['Population']
@@ -1224,7 +1256,7 @@ def main():
     S_path = df_forecast['PopTotal_50th'].values / hh_paired['50th']
 
     # [Route A] household size from the (near-)matched vintage pair
-    S_knots, _S_ann, _pref = statsnz_size_shape(HH_SIZE_VARIANT, forecast_years)
+    S_knots, _S_ann, _pref = statsnz_size_shape(HH_SIZE_VARIANT, forecast_years, tail=S_TAIL)
     S_matched = respond_household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years,
                                        0.0, 0.0)['S_matched']
 

@@ -947,3 +947,188 @@ re-checked.
 - Sandve, G. K., Nekrutenko, A., Taylor, J., & Hovig, E. (2013). Ten simple rules for reproducible computational research. *PLoS Computational Biology*, 9(10), e1003285.
 - Song, E., Nelson, B. L., & Staum, J. (2016). Shapley effects for global sensitivity analysis: theory and computation. *SIAM/ASA Journal on Uncertainty Quantification*, 4(1), 1060–1083.
 - Tashman, L. J. (2000). Out-of-sample tests of forecasting accuracy: an analysis and review. *International Journal of Forecasting*, 16(4), 437–450.
+
+---
+
+# Addendum (round 2): assessment of F1–F3, D1–D4, A1–A6
+
+Network note: every Stats NZ host (`www.`, `datainfoplus.`, `explore.data.`,
+`infoshare.`, `api.data.`, `nzdotstat.stats.govt.nz`) and the mirrors
+(`scoop.co.nz`, `figure.nz`) are blocked by this environment's egress policy.
+The facts below were checked against search-engine excerpts of the cited
+pages and against Stats NZ files already in `data/`. They were **not** checked
+against the pages themselves.
+
+**F1 (cause of N1): consistent with the evidence, but only partly verified.**
+The search excerpt of the DataInfo+ page for "Dwelling occupancy status"
+says two things:
+* administrative data used to show that non-responding dwellings were usually
+  occupied "may have contributed to the occupancy classifications";
+* "the change in the proportion of unoccupied residents away versus
+  unoccupied empty indicates a break in the time series", while national
+  occupied/unoccupied proportions are "consistent with expectations".
+
+That matches the data: the empty share was 76.2% in 2013, 49.8% in 2018 and
+49.6% in 2023, with a flat total. It also shows that 2018 and 2023 are on the
+same basis. The statement "received no quality rating" was **not visible in
+the excerpt**; please confirm the wording before it is quoted. The docs will
+cite the URL, marked "accessed via search excerpt, <date>" until confirmed.
+
+**F2 (2026 consents): confirmed in substance.**
+* The excerpt of the release gives 40,908 new dwellings consented in the year
+  ended July 2026 (+21% on 33,879).
+* Our `consentdata.xlsx` reproduces the 33,879 for the year ended July 2025
+  exactly. This shows our `Dwellings` column is the published headline series,
+  RV units included.
+* Boss's 2026 is 26,673 in-scope built = 28,266 all-category built = 29,754
+  consent-equivalents: 27.3% below the year ended July 2026.
+* The N1 correction lowers it slightly. The replacement term falls by about
+  1,300, but the carried 2025 deviation rises by about 1,260 × 0.5, which
+  partly offsets it. The exact figure is to come at item 4.
+* The June-2026 figure of 40,581 was not in any excerpt; please confirm it.
+* Download instructions are in the table at the end of this addendum.
+  Please also send the release's month and date.
+
+**F3 (2023-base household projections, late 2026): confirmed in substance.**
+The excerpt of "Dwelling and household estimates: March 2026 quarter" says:
+* household estimates will be rebased after the 2023-base family and household
+  projections, which are planned for late 2026;
+* dwelling estimates are already on a 2023 base;
+* that release revised 2018–2025 dwelling and household estimates to remove
+  dwellings under construction.
+
+Our `oldhouseholddata.xlsx` **is** that release (Contents: "March 2026
+quarter", published 7 April 2026), so the revision is already in the inputs.
+Agreed: the household-size source and the k-rebase will sit behind one input
+switch (`HOUSEHOLD_SOURCE`).
+
+**D1 (order): agree.** One dependency to note:
+* A1's gap and its decay depend on the S anchor (item 6) and the completion
+  lag (item 7).
+* Because A1's quantities are computed at run time, the CP2 state is the same
+  whatever the order; only the per-commit attribution in the CHANGELOG
+  changes.
+* I will follow your order and say so in the CP2 note.
+
+**D2 (dwelling-count identity as default): agree.** Evidence and caveats:
+1. **The 1991–2023 ratio of sums is already almost independent of 2018.** The
+   interval changes telescope: Σ(built − ΔD) = Σ built − (D₂₀₂₃ − D₁₉₉₁).
+   The 2018 count enters only through the stock-year weights in the
+   denominator, and 2013–2023 behaves the same way. The two "2018-free"
+   variants will be reported, but expect them to be close to the default.
+2. **Census totals are consistent with the DHE bases, but the split is not
+   verified.** The DHE private-dwelling series (Table 1, footnote: "base = the
+   census count of occupied private dwellings plus unoccupied dwellings")
+   agrees with the census totals to within 0.12% for 1991–2018 and 0.23% for
+   2023. For 1991–2013 the DHE figure at 31 March is 1,300–2,000 **above**
+   the census; for 2018 it is 2,219 and for 2023 4,581 **below**. That change
+   of sign is unexplained. A 6,000-dwelling error in 2023 would move the
+   1991–2023 rate by about ±0.012 percentage points.
+
+   **The empty/away split and the under-construction counts in
+   `CENSUS_LATER` cannot be verified from anything in the repository.** Per
+   D2, I stop before item 4 until E1 is supplied or the Stats NZ hosts are
+   allowed.
+3. **The DHE intercensal weight corroborates about 0.09%/yr, not 0.154%.**
+   * After the 2023 base, DHE quarterly dwelling growth = **0.8897 ×
+     consents lagged four quarters** (sd 0.004, 2023Q3–2025Q4). It is a Stats
+     NZ assumption, not an observation. The workbook gives no published factor
+     (the DataInfo+ DHE page may; it is blocked).
+   * Our identity implies net additions per consent ≈ 0.95 − (rate × stock) /
+     consents. At about 35,000 consents and a 2.0 M stock, that is ≈ 0.896 at
+     0.094% and ≈ 0.862 at 0.154%.
+   * Stats NZ's weight is therefore consistent with the dwelling-count
+     calibration. This is corroboration, not proof: completion is folded into
+     their weight.
+   * The weights implied by the revised intercensal series are 0.75–0.78 in
+     2018–23 and about 0.83 in 2013–18. The first is consistent with the
+     2018–23 redevelopment regime.
+4. **Lag consistency.** The dwelling-count identity currently pairs June-year
+   consents with March censuses, an implicit lag of about 0.75 yr. When
+   item 7 introduces W, the identity must use the same W: monthly consents in
+   (census date − W, next census date − W]. Otherwise the default and the
+   cross-check would use different lags.
+
+**D3 (Monte Carlo): agree, with one correction and two notes.**
+* **Correction:** JCGM 101:2008 takes the **expectation (mean)** of the Monte
+  Carlo output as the estimate, with a probabilistically symmetric or shortest
+  coverage interval. A median headline is defensible for skewed outputs, but it
+  is our choice, not JCGM 101's. The docs will say "propagation of
+  distributions per JCGM 101; the median is reported as the headline because
+  the output is skewed; the mean is also reported".
+* **Vacancy:** on the 2018/2023 definition there are **two** observations
+  (5.26%, 5.53%). Any distribution around them is judgement and will be
+  labelled so.
+* **The carbon-bootstrap input** has no meaningful "median". The deterministic
+  run uses the pooled central factors.
+* **φ mapping** (proposal, to be shown at CP3): the 2050 townhouse share is a
+  monotone function of φ given the fitted slopes, so a range elicited on the
+  share inverts uniquely to φ. The range will be labelled JUDGEMENT.
+
+**D4 (outputs/): agree.** `factors_*.csv` are also derived, so they move to
+`outputs/factors/`, and Boss will read them from there. `run_all` enforces
+the order.
+
+**Other defaults: agree**, with two notes:
+1. W from Little's law (≈0.5 yr; census mean 0.51 over 12 months to March)
+   measures **construction duration only**, so it is a lower bound on the
+   consent-to-completion lag. This will be stated.
+2. The flat S tail and the 2023 anchor will be replaced by the F3 switch once
+   Stats NZ publishes.
+
+**A1 (near-term join): preliminary view; the full analysis comes at item A1.**
+Evidence from the 2018–23 boom, from census counts only: 190,328 dwellings
+built (0.95 × consents, June years). They went to:
+
+| where | dwellings |
+|---|---|
+| net stock growth | 157,962 |
+| more dwellings under construction | 11,181 |
+| **net removals (redevelopment)** | **21,185** |
+| higher vacancy (empty rate +0.27 points) | only 5,518 |
+| households (occupied + away) grew by | 144,135 |
+
+So the boom's excess went mainly into redevelopment and the pipeline, not into
+vacancy: **net replacement is pro-cyclical**. This matters for the options:
+* **(a) Nowcast.** Identifiable from observed consents, W and the completion
+  rate. Excess 2026 building **adds** to the 2026–2050 total unless offset. It
+  **uses up** the 2026 out-of-sample check (A2), so A2 must run on a
+  no-nowcast diagnostic run and, once the model uses 2026, on months after the
+  data cut-off.
+* **(b) Partial adjustment.** The persistence of the gap between building and
+  requirement from modelled, census-consistent households (pop / S, with S
+  interpolated between censuses) is statistically estimable: AR(1), n ≈ 33,
+  with small-sample bias to state. But it has no stock consistency. The excess
+  simply **adds** to the total, and the estimated persistence mixes supply
+  dynamics with the redevelopment regime.
+* **(c) Stock-flow vacancy buffer.** Preserves the identity, and the excess is
+  largely **offset** within the window. But the drawdown rate is not
+  identifiable from two comparable censuses, and the 2018–23 evidence says
+  excess building went mostly to removals, not vacancy. A pure vacancy buffer
+  would misrepresent the mechanism.
+* **Likely recommendation, to be confirmed with numbers at A1:** (a) for 2026
+  with a (c)-type stock-consistent treatment, in which the excess is split
+  between vacancy and replacement in the 2018–23 proportions (a stated
+  assumption), plus (b) as a sensitivity.
+
+**A2: agree.** The 2026 check needs the extended consent file. Until then it
+reports "pending data".
+
+**A3, A6: agree.** Both will be generated by `run_all`.
+
+**A4 (RV floor area): open.** Our consent file has no RV floor area: its
+`GFA - GFA` equals the sum of the three typologies exactly. Whether Stats NZ
+publishes RV floor area could not be checked (blocked). See the table below.
+
+**A5 (E2): agree it is high priority.** The table is named on the Contents
+sheet of `Householddata.xlsx`. See the table below for what to download. N4
+will not proceed without it.
+
+## Data to download (named items)
+
+| item | where | what to select | notes |
+|---|---|---|---|
+| **A5 / E2** | NZ.Stat, or its replacement Aotearoa Data Explorer (explore.data.stats.govt.nz) if NZ.Stat has been retired; I could not check which | "National family and household projections, population by living arrangement type, age, and sex, 2018(base)-2043". Projection: Low B, Medium B, High B (other variants too, if offered). All living-arrangement categories, **including any category for people not in private households / in non-private dwellings**. Age: total **and** five-year groups. Sex: total. Years: all (2018–2043) | The key test: if the table's all-category total equals the national population projection at the same knots, it covers the whole population and the non-private share can be read off. If it is smaller, the difference is the non-private population. Please include the table's footnotes. |
+| **A4** | Stats NZ Infoshare, "Building Consents Issued – BLD", or the monthly "Building consents issued" release tables | Any table of **new dwellings by building type with floor area**. Check whether "retirement village units" appears with a floor-area measure | Please send the table name/ID. |
+| **F2** | Stats NZ building consents, latest monthly release | The same series as `consentdata.xlsx`: monthly counts, floor area and value by type, plus the all-dwellings total, to the latest month | Please keep the same column layout, or send the table IDs. |
+| **E1** | Stats NZ | 2018 and 2023 census private dwellings by occupancy status: occupied, unoccupied–empty, unoccupied–residents away, under construction | Needed before item 4. |

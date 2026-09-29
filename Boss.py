@@ -8,8 +8,9 @@ and material.
     total floor area = new dwellings required x realised dwelling size
     new dwellings    = new households + vacancy allowance + replacement
 
-All input data are read from DATA_DIR. Case-study carbon and occupancy factors
-come from building_factors.py (run it first). Figures are plotted, never saved.
+All input data are read from DATA_DIR; everything written goes to OUT_DIR.
+Case-study carbon and occupancy factors come from Building_factors.py (run it
+first; it writes them to outputs/factors/). Figures are plotted, never saved.
 """
 
 import os
@@ -23,7 +24,9 @@ from scipy import stats
 # ============================================================
 # CONFIGURATION
 # ============================================================
-DATA_DIR = 'data'
+DATA_DIR = 'data'                                  # inputs only
+OUT_DIR = 'outputs'                                # everything the scripts write
+FACTORS_DIR = os.path.join(OUT_DIR, 'factors')     # written by Building_factors.py
 VERBOSE = False     # True also prints historical diagnostics (occupancy, calibration)
 SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
 FILE_CONSENTS = os.path.join(DATA_DIR, 'consentdata.xlsx')
@@ -452,8 +455,9 @@ DWELLING_SIZE_REF = (2023, 2025)
 # Setting USE_GROSS_BASIS_OLF = True instead derives it from consented dwelling
 # size divided by design occupants; the reconciliation between the two prints
 # at runtime.
-FILE_FACTORS_MATERIAL = os.path.join(DATA_DIR, 'factors_material.csv')
-FILE_FACTORS_TYPOLOGY = os.path.join(DATA_DIR, 'factors_typology.csv')
+FILE_FACTORS_MATERIAL = os.path.join(FACTORS_DIR, 'factors_material.csv')
+FILE_FACTORS_TYPOLOGY = os.path.join(FACTORS_DIR, 'factors_typology.csv')
+FILE_FACTORS_BUILDING = os.path.join(FACTORS_DIR, 'factors_building.csv')
 STAGES_IN_SCOPE = ['A1-A3', 'A4-A5', 'B2,B4', 'C1-C4']   # Module D excluded
 USE_GROSS_BASIS_OLF = False
 DEMAND_BASIS = 'bim_olf'

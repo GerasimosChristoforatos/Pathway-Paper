@@ -14,11 +14,12 @@ Boss.py, so the two scripts can never disagree.
 
 Historical carbon is ESTIMATED by applying the 2025 case-study factors to past
 floor area; it is shown for continuity, not as a measured series.
-Figures are plotted, not saved (set SAVE_FIGURES = True to write PNGs).
+Figures are plotted, not saved (set SAVE_FIGURES = True to write PNGs to outputs/figures/).
 """
 
 import importlib
 import io
+import os
 import contextlib
 
 import numpy as np
@@ -32,6 +33,7 @@ import Boss as M
 M = importlib.reload(M)
 
 SAVE_FIGURES = False
+FIG_DIR = os.path.join(M.OUT_DIR, 'figures')
 
 plt.rcParams.update({'font.size': 9, 'axes.titlesize': 10, 'legend.fontsize': 7.5,
                      'axes.grid': True, 'grid.alpha': 0.3})
@@ -124,7 +126,8 @@ def signed_bars(ax, years, parts, projected=False):
 def finish(fig, name):
     fig.tight_layout()
     if SAVE_FIGURES:
-        fig.savefig(name, dpi=130, bbox_inches='tight')
+        os.makedirs(FIG_DIR, exist_ok=True)
+        fig.savefig(os.path.join(FIG_DIR, name), dpi=130, bbox_inches='tight')
 
 
 # =============================================================================
@@ -485,6 +488,6 @@ print(f" Household size 2050: {S_f[-1]:.3f} | vacancy {100 * B['v_forward']:.2f}
       f"demolition {100 * B['demolition_rate']:.3f}% | unconsented {100 * B['unconsented_rate']:+.3f}%")
 print("=" * 70)
 if SAVE_FIGURES:
-    print("Saved diag_1 ... diag_6 beside the script.")
+    print(f"Saved diag_1 ... diag_6 in {FIG_DIR}/.")
 
 plt.show()

@@ -84,7 +84,7 @@ import time
 
 import numpy as np
 import pandas as pd
-import matplotlib
+import matplotlib.pyplot as plt
 from scipy import stats
 from scipy.interpolate import PchipInterpolator
 from scipy.stats import qmc
@@ -96,7 +96,11 @@ N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
 N_BOOT = 4000                    # carbon-factor bootstrap replicates
 SEED = 20260924
 PHI_RANGE = (0.62, 0.98)         # triangular, mode = Boss.DAMPING_PHI
-SAVE_FIGURES = True
+SAVE_FIGURES = False             # True: also write the figures as PNGs into OUT_DIR
+SHOW_FIGURES = True
+# PLOT_ONLY: skip the ~15,000 model evaluations and redraw the figures from the
+# CSVs written by the last full run. Also: python MonteCarlo.py --plot-only
+PLOT_ONLY = False
 OUT_DIR = Boss.DATA_DIR
 Z_KNOTS = stats.norm.ppf([0.05, 0.25, 0.50, 0.75, 0.95])
 PCT_COLS = {5: 2, 25: 3, 50: 4, 75: 5, 95: 6}   # popdata.xlsx Table 1 (skiprows=5)
@@ -415,7 +419,8 @@ def main():
     pd.DataFrame(np.vstack([X, Y]).T, columns=PARAMS + OUTPUTS).to_csv(
         os.path.join(OUT_DIR, 'montecarlo_draws.csv'), index=False)
     fy = su['fy']
-    pd.DataFrame({f'{k}_{p}': np.percentile(fan[k], p, axis=0) for k in fan for p in (5, 50, 95)},
+    pd.DataFrame({f'{k}_{p}': np.percentile(fan[k], p, axis=0)
+                  for k in fan for p in (5, 25, 50, 75, 95)},
                  index=fy).to_csv(os.path.join(OUT_DIR, 'montecarlo_annual.csv'))
 
     print(f"\nJOINT UNCERTAINTY, 2026-2050 ({N_UNCERTAINTY:,} Latin hypercube draws)")
@@ -450,41 +455,188 @@ def main():
                   f"ST {r.ST:6.3f} [{r.ST_lo:6.3f}, {r.ST_hi:6.3f}]")
     print("   S1: variance explained by the input alone. ST: including interactions.")
 
-    if SAVE_FIGURES:
-        plot(su, fan, sob)
     print(f"\nWritten: montecarlo_summary.csv, montecarlo_draws.csv, montecarlo_annual.csv, "
           f"montecarlo_sobol.csv in {OUT_DIR}/  ({time.time() - t0:,.0f} s)")
+    figures()
 
 
-def plot(su, fan, sob):
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
-    fy = su['fy'][1:]
-    fig, ax = plt.subplots(1, 3, figsize=(17, 5))
-    for a, k, lab, sc in [(ax[0], 'gfa', 'million m² per year', 1e6),
-                          (ax[1], 'carbon', 'kt CO₂e per year', 1e6)]:
-        f = fan[k][:, 1:] / sc
-        a.fill_between(fy, *np.percentile(f, [5, 95], axis=0), color='#4C72B0', alpha=0.18,
-                       label='5th-95th')
-        a.fill_between(fy, *np.percentile(f, [25, 75], axis=0), color='#4C72B0', alpha=0.35,
-                       label='25th-75th')
-        a.plot(fy, np.percentile(f, 50, axis=0), color='#4C72B0', lw=2, label='median')
-        c = project(su, central(su))[k][1:] / sc
-        a.plot(fy, c, color='black', lw=1.2, ls='--', label='Boss central')
-        a.set_ylabel(lab); a.set_xlim(2026, 2050); a.grid(alpha=0.3); a.legend(fontsize=8)
-    ax[0].set_title('Annual built floor area (in scope), joint uncertainty')
-    ax[1].set_title('Annual embodied carbon, joint uncertainty')
-    t = sob[sob.output == 'carbon_kt'].sort_values('ST')
-    y = np.arange(len(t))
-    ax[2].barh(y - 0.2, t['ST'], 0.4, color='#DD8452', label='total (ST)')
-    ax[2].barh(y + 0.2, t['S1'], 0.4, color='#55A868', label='first order (S1)')
-    ax[2].set_yticks(y); ax[2].set_yticklabels(t['input'])
-    ax[2].set_title('Sobol indices, cumulative carbon 2026-2050'); ax[2].legend(fontsize=8)
-    ax[2].grid(alpha=0.3, axis='x')
+# ============================================================
+# FIGURES  (drawn from the CSVs, so PLOT_ONLY needs no re-run)
+# ============================================================
+INPUT_LABELS = {
+    'z_pop': 'Population (with household size)',
+    'hh_rebase': 'Census rebase of households, k',
+    'regime': 'Redevelopment regime (long-run -> 2019-23)',
+    'phi': 'Typology-trend damping, phi',
+    'slope_T': 'Townhouse share trend',
+    'slope_A': 'Apartment share trend',
+    'size': 'Future dwelling size',
+    'complete': 'Completion rate',
+    'pre_share': 'Pre-2013 empty share',
+    'vacancy': 'Vacancy rate',
+    'rv_share': 'Retirement-village share',
+    'carbon': 'Carbon factors (case-study bootstrap)',
+    'b': 'Migration response, b',
+    'rho': 'Deviation persistence, rho',
+}
+OUTPUT_LABELS = {
+    'GFA_Mm2': ('Built floor area, 2026-2050', 'million m²', 1),
+    'carbon_kt': ('Embodied carbon, 2026-2050', 'kt CO₂e', 1),
+    'upfront_kt': ('Upfront carbon (A1-A5 + soil)', 'kt CO₂e', 1),
+    'RV_units': ('Retirement-village units built', 'thousand units', 1e3),
+    'households_2050_M': ('Households in 2050', 'million', 1),
+    'S_2050': ('Household size in 2050', 'people per household', 1),
+}
+AXIS_LABELS = {
+    'z_pop': 'population rank (standard deviations from median)',
+    'hh_rebase': 'census rebase factor k (1 = as published)',
+    'regime': 'weight on the 2019-23 redevelopment rate',
+    'phi': 'damping phi',
+    'size': 'dwelling size multiplier',
+    'complete': 'share of consents built',
+    'vacancy': 'vacancy rate',
+    'rv_share': 'retirement-village share',
+}
+# Inputs that are an index into resampled replicates, not an ordered quantity:
+# a scatter against them shows nothing, so the driver figure skips them.
+UNORDERED_INPUTS = {'carbon'}
+BLUE = '#2E6DB4'
+
+
+def _load_results():
+    rd = lambda f: os.path.join(OUT_DIR, f)
+    need = ['montecarlo_draws.csv', 'montecarlo_annual.csv', 'montecarlo_sobol.csv',
+            'montecarlo_summary.csv']
+    miss = [f for f in need if not os.path.exists(rd(f))]
+    if miss:
+        raise FileNotFoundError(f"Missing {miss} in {OUT_DIR}: run a full Monte Carlo first.")
+    return (pd.read_csv(rd('montecarlo_draws.csv')),
+            pd.read_csv(rd('montecarlo_annual.csv'), index_col=0),
+            pd.read_csv(rd('montecarlo_sobol.csv')),
+            pd.read_csv(rd('montecarlo_summary.csv'), index_col=0))
+
+
+def _history():
+    """Observed history on the model's built basis, from one silent Boss run."""
+    Boss.SHOW_PLOTS = False
+    with contextlib.redirect_stdout(io.StringIO()):
+        st = Boss.main()
+    bf = Boss.COMPLETION_RATE
+    typ = st['typ_names']
+    gfa = st['hist_total_gfa'] * bf
+    carbon = sum(st['hist_typ_gfa'][t] * bf * st['T_BASELINE_2025'][t] for t in typ)
+    fy = np.asarray(st['forecast_years'])
+    central = {'gfa': pd.Series(st['results']['50th']['total'], index=fy),
+               'carbon': st['carbon_total_typ'].sum(axis=1)}
+    return gfa, carbon, central
+
+
+def _save(fig, name):
     fig.tight_layout()
-    fig.savefig(os.path.join(OUT_DIR, 'montecarlo.png'), dpi=130, bbox_inches='tight')
-    plt.close(fig)
+    if SAVE_FIGURES:
+        fig.savefig(os.path.join(OUT_DIR, name), dpi=140, bbox_inches='tight')
+
+
+def figures():
+    draws, annual, sob, summ = _load_results()
+    hist_gfa, hist_c, central = _history()
+    yrs = annual.index.values
+    fy = yrs[yrs >= 2026]
+    has_q = 'gfa_25' in annual.columns
+
+    # ---- 1. joint uncertainty over time ----------------------------------
+    fig, ax = plt.subplots(1, 2, figsize=(15, 5.2))
+    fig.suptitle('Monte Carlo 1: joint uncertainty over time '
+                 f'({len(draws):,} Latin hypercube draws)', fontsize=12)
+    for a, k, hist, lab in [(ax[0], 'gfa', hist_gfa, 'million m² per year'),
+                            (ax[1], 'carbon', hist_c, 'kt CO₂e per year')]:
+        hy = hist.index[hist.index >= 2005]
+        a.plot(hy, hist.loc[hy] / 1e6, color='black', lw=2, label='observed (built basis)')
+        f = annual.loc[fy]
+        a.fill_between(fy, f[f'{k}_5'] / 1e6, f[f'{k}_95'] / 1e6, color=BLUE, alpha=0.15,
+                       label='5th-95th percentile')
+        if has_q:
+            a.fill_between(fy, f[f'{k}_25'] / 1e6, f[f'{k}_75'] / 1e6, color=BLUE, alpha=0.30,
+                           label='25th-75th percentile')
+        a.plot(fy, f[f'{k}_50'] / 1e6, color=BLUE, lw=2.2, label='Monte Carlo median')
+        a.plot(fy, central[k].loc[fy] / 1e6, color='#C0392B', lw=1.5, ls='--',
+               label='Boss central run')
+        a.axvline(2025.5, color='grey', ls=':', lw=1)
+        a.set_ylabel(lab); a.set_xlim(2005, 2050); a.set_ylim(0, None)
+        a.grid(alpha=0.3); a.legend(fontsize=8, loc='upper right')
+    ax[0].set_title('Built floor area (in scope)')
+    ax[1].set_title('Embodied carbon (history estimated with 2025 factors)')
+    _save(fig, 'mc_1_fan.png')
+
+    # ---- 2. distributions of the totals ------------------------------------
+    fig, ax = plt.subplots(2, 3, figsize=(15, 8))
+    fig.suptitle('Monte Carlo 2: distribution of each result '
+                 '(dashed = 5th / 50th / 95th, red = Boss central run)', fontsize=12)
+    for a, o in zip(ax.ravel(), OUTPUT_LABELS):
+        title, unit, sc = OUTPUT_LABELS[o]
+        v = draws[o] / sc
+        a.hist(v, bins=45, color=BLUE, alpha=0.75, edgecolor='white', linewidth=0.3)
+        p5, p50, p95 = np.percentile(v, [5, 50, 95])
+        for q in (p5, p50, p95):
+            a.axvline(q, color='black', ls='--', lw=1 if q != p50 else 1.8)
+        cen = summ.loc[o, 'central'] / sc
+        a.axvline(cen, color='#C0392B', lw=2.2)
+        fmt = (lambda x: f'{x:,.0f}') if p50 >= 100 else (lambda x: f'{x:.2f}' if p50 < 10 else f'{x:.1f}')
+        a.set_title(f'{title}\nmedian {fmt(p50)}  [{fmt(p5)} - {fmt(p95)}]  |  central {fmt(cen)}')
+        a.set_xlabel(unit); a.set_yticks([]); a.grid(alpha=0.3, axis='x')
+    _save(fig, 'mc_2_distributions.png')
+
+    # ---- 3. what drives the uncertainty (Sobol) ----------------------------
+    fig, ax = plt.subplots(1, 2, figsize=(15, 6))
+    fig.suptitle('Monte Carlo 3: what drives the uncertainty (Sobol indices, 95% CI)',
+                 fontsize=12)
+    for a, o in zip(ax, ['carbon_kt', 'GFA_Mm2']):
+        t = sob[(sob.output == o) & np.isfinite(sob.ST_lo)].sort_values('ST')
+        y = np.arange(len(t))
+        a.barh(y + 0.2, t.ST, 0.4, color='#E67E22',
+               xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor='#7f4a13', capsize=2,
+               label='total effect (incl. interactions)')
+        a.barh(y - 0.2, t.S1.clip(lower=0), 0.4, color='#27AE60',
+               label='effect on its own')
+        for yi, v in zip(y, t.ST):
+            a.text(v + 0.012, yi + 0.2, f'{v:.2f}', va='center', fontsize=8)
+        a.set_yticks(y)
+        a.set_yticklabels([INPUT_LABELS.get(i, i) for i in t.input], fontsize=8.5)
+        a.set_xlim(0, max(0.7, t.ST_hi.max() + 0.08))
+        a.set_xlabel('share of output variance')
+        a.set_title(OUTPUT_LABELS[o][0]); a.grid(alpha=0.3, axis='x')
+        a.legend(fontsize=8, loc='lower right')
+    _save(fig, 'mc_3_sobol.png')
+
+    # ---- 4. how the main drivers move the result ----------------------------
+    ranked = (sob[(sob.output == 'carbon_kt') & np.isfinite(sob.ST_lo)]
+              .sort_values('ST', ascending=False).input.tolist())
+    top = [k for k in ranked if k not in UNORDERED_INPUTS][:4]
+    fig, ax = plt.subplots(1, 4, figsize=(17, 4.6), sharey=True)
+    fig.suptitle('Monte Carlo 4: how the biggest drivers move cumulative carbon '
+                 '(each dot = one draw; red = median in 12 bins; carbon-factor draws are '
+                 'unordered, see figure 3)', fontsize=11)
+    sub = draws.sample(min(4000, len(draws)), random_state=1)
+    for a, k in zip(ax, top):
+        a.scatter(sub[k], sub['carbon_kt'] / 1e3, s=4, alpha=0.18, color=BLUE)
+        bins = pd.qcut(draws[k], 12, duplicates='drop')
+        mid = draws.groupby(bins, observed=True)[k].median()
+        med = draws.groupby(bins, observed=True)['carbon_kt'].median() / 1e3
+        a.plot(mid, med, color='#C0392B', lw=2.2)
+        st_v = sob[(sob.output == 'carbon_kt') & (sob.input == k)].ST.iloc[0]
+        a.set_title(f'{INPUT_LABELS.get(k, k)}\ntotal effect {st_v:.2f}', fontsize=9.5)
+        a.set_xlabel(AXIS_LABELS.get(k, k), fontsize=8.5); a.grid(alpha=0.3)
+    ax[0].set_ylabel('embodied carbon 2026-2050 (Mt CO₂e)')
+    _save(fig, 'mc_4_drivers.png')
+
+    if SAVE_FIGURES:
+        print(f"Figures written to {OUT_DIR}/ (mc_1 ... mc_4)")
+    if SHOW_FIGURES:
+        plt.show()
 
 
 if __name__ == '__main__':
-    main()
+    if PLOT_ONLY or '--plot-only' in sys.argv:
+        figures()
+    else:
+        main()

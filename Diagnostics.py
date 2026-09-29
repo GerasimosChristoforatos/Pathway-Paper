@@ -32,7 +32,7 @@ import Boss as M
 # between runs, so an edited Boss.py would otherwise be ignored. Always reload.
 M = importlib.reload(M)
 
-SAVE_FIGURES = False
+SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # run_all.py sets this
 FIG_DIR = os.path.join(M.OUT_DIR, 'figures')
 
 plt.rcParams.update({'font.size': 9, 'axes.titlesize': 10, 'legend.fontsize': 7.5,

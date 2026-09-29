@@ -30,8 +30,8 @@ import Boss
 
 OUT_CSV = os.path.join(Boss.OUT_DIR, 'sensitivity_oat.csv')
 FIG_DIR = os.path.join(Boss.OUT_DIR, 'figures')
-SAVE_FIGURES = False     # True: also write the figures as PNGs into FIG_DIR
-SHOW_FIGURES = True
+SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: write PNGs to FIG_DIR
+SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
 N_PATHS = 6              # cases drawn in the annual-path figure (largest effects)
 
 GROUP_COLORS = {'Population': '#2E6DB4', 'Household size': '#E67E22', 'Households': '#D35400',

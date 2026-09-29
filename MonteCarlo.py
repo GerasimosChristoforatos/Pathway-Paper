@@ -96,8 +96,8 @@ N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
 N_BOOT = 4000                    # carbon-factor bootstrap replicates
 SEED = 20260924
 PHI_RANGE = (0.62, 0.98)         # triangular, mode = Boss.DAMPING_PHI
-SAVE_FIGURES = False             # True: also write the figures as PNGs into FIG_DIR
-SHOW_FIGURES = True
+SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: write PNGs to FIG_DIR
+SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
 # PLOT_ONLY: skip the ~15,000 model evaluations and redraw the figures from the
 # CSVs written by the last full run. Also: python MonteCarlo.py --plot-only
 PLOT_ONLY = False

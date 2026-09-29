@@ -5,6 +5,7 @@ saved exactly as served; nothing is edited.
 
     python data/fetch_sources.py consents july-2026   # Building consents issued: July 2026
     python data/fetch_sources.py datainfo-occupancy     # DataInfo+ page cited for N1/F1
+    python data/fetch_sources.py register FILE SOURCE DATE  # a file downloaded by hand
 
 Large archives are git-ignored; MANIFEST.csv and the derived inputs built from
 them (data/derived/) are committed, so a re-download can be checked against
@@ -42,8 +43,13 @@ def fetch(name, url):
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (research data download)'})
     with urllib.request.urlopen(req, timeout=300) as r, open(path, 'wb') as f:
         f.write(r.read())
-    row = dict(file=name, url=url, sha256=sha256(path),
-               downloaded_utc=dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d'))
+    record(name, url, dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d'))
+
+
+def record(name, url, date):
+    """Add or replace one MANIFEST row (also used for files supplied by hand)."""
+    path = os.path.join(RAW, name)
+    row = dict(file=name, url=url, sha256=sha256(path), downloaded_utc=date)
     rows = []
     if os.path.exists(MANIFEST):
         with open(MANIFEST) as f:
@@ -58,6 +64,9 @@ def fetch(name, url):
 
 def main():
     what = sys.argv[1]
+    if what == 'register':      # python data/fetch_sources.py register <file> <source> <date>
+        record(sys.argv[2], sys.argv[3], sys.argv[4])
+        return
     if what == 'consents':
         month, year = sys.argv[2].split('-')
         for ext in ('xlsx', 'zip'):

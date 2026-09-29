@@ -358,3 +358,50 @@ Actual households and vacancy fed in; only the net-replacement term is predicted
 ### 2026 out-of-sample check against observed consents
 
 Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 12,285 (annual 21,888 x seasonal share 0.561); observed / model = 1.947. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.
+
+## Census 2018/2023 occupancy built by script, private dwellings only (E1)
+
+data/build_census.py builds data/derived/census_dwellings.csv from Aotearoa Data Explorer CEN23_HOU_018 (occupancy status x dwelling type), cross-checked against CEN23_TBT_001 (all-type totals identical) and, for 2013, against the QuickStats file used for 1981-2013 (identical within random rounding, +/-3). Finding: the hard-coded CENSUS_LATER values were ALL dwelling types, i.e. they included the unoccupied non-private dwellings Stats NZ counts from 2018 (4,860 in 2018, 4,710 in 2023), while 1981-2013 are private only. New flag CENSUS_SOURCE = 'hou018_private' (default) | 'hardcoded' (original). Private-only vacancy: 2018 5.08% (was 5.26%), 2023 5.39% (was 5.53%, held forward). Private residents-away enters the census rebase: k = 0.824 (was 0.826). Private under-construction: W = 0.507. The household-identity net replacement rate rises to 0.143%/yr (the 2013->2018 fall in 'empty' is now larger, which strengthens N1). The Boss comment claiming unoccupied dwellings are private by definition is corrected.
+
+| metric | before | after | change |
+|---|---|---|---|
+| Built floor area 2026-2050, central run (Mm2) | 76.71 | 77.05 | +0.338 (+0.44%) |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 29,709 | 29,840 | +131 (+0.44%) |
+| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 21,863 | 21,959 | +96.3 (+0.44%) |
+| 2025 -> 2026 step in built floor area (%) | -19.1 | -18.9 | +0.183 |
+| Household size 2050, central run | 2.651 | 2.652 | +0.000362 (+0.01%) |
+| MC floor area p5 (Mm2) | 58.26 | 58.32 | +0.0651 (+0.11%) |
+| MC floor area p50 (Mm2) | 80.03 | 80.15 | +0.116 (+0.14%) |
+| MC floor area p95 (Mm2) | 104.96 | 104.96 | +0.00204 (+0.00%) |
+| MC carbon p5 (kt) | 22,552 | 22,580 | +27.6 (+0.12%) |
+| MC carbon p50 (kt) | 30,920 | 30,995 | +75.6 (+0.24%) |
+| MC carbon p95 (kt) | 40,937 | 40,935 | -2.78 (-0.01%) |
+| Central run percentile in MC, floor area | 40.7 | 41.3 | +0.54 |
+| Central run percentile in MC, carbon | 40.9 | 41.7 | +0.74 |
+| Hindcast error, origin 2006, model method (%) | -13.2 | -14.0 | -0.756 (+5.72%) |
+| Hindcast error, origin 2013, model method (%) | -17.3 | -18.3 | -1.04 (+6.00%) |
+| Hindcast error, origin 2018, model method (%) | -11.9 | -11.4 | +0.532 (-4.46%) |
+| 2026 model consent-equivalents (all categories) | 21,888 | 22,059 | +171 (+0.78%) |
+| 2026 observed / model consents, year to date | 1.947 | 1.932 | -0.0151 (-0.77%) |
+
+Validation (outputs/validation.md):
+
+### Rolling-origin hindcast of dwellings built (descriptive; 3 origins)
+
+Actual households and vacancy fed in; only the net-replacement term is predicted. Error = predicted / actual - 1.
+
+| origin | test years | method | rate used (%/yr) | predicted | actual | error |
+|---|---|---|---|---|---|---|
+| 2006 | 2007-2023 | constant | +0.024 | 391,522 | 455,109 | -14.0% |
+| 2006 | 2007-2023 | recent | -0.082 | 358,418 | 455,109 | -21.2% |
+| 2006 | 2007-2023 | linked | linked: b = 2.45 on 3 intervals | 473,242 | 455,109 | +4.0% |
+| 2013 | 2014-2023 | constant | +0.029 | 272,162 | 333,208 | -18.3% |
+| 2013 | 2014-2023 | recent | +0.038 | 273,820 | 333,208 | -17.8% |
+| 2013 | 2014-2023 | linked | linked: b = 0.77 on 4 intervals | 317,475 | 333,208 | -4.7% |
+| 2018 | 2019-2023 | constant | +0.101 | 177,353 | 200,146 | -11.4% |
+| 2018 | 2019-2023 | recent | +0.369 | 203,669 | 200,146 | +1.8% |
+| 2018 | 2019-2023 | linked | linked: b = 1.15 on 5 intervals | 238,447 | 200,146 | +19.1% |
+
+### 2026 out-of-sample check against observed consents
+
+Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 12,380 (annual 22,059 x seasonal share 0.561); observed / model = 1.932. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.

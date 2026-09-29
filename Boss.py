@@ -383,10 +383,11 @@ OTHER_BOOTSTRAP_SEED = 42
 # ---------------------------------------------------------------------------
 # CENSUS DWELLING OCCUPANCY  (private dwellings only)
 # ---------------------------------------------------------------------------
-# Vacancy = EMPTY dwellings / (occupied + unoccupied private dwellings).
-# Stats NZ defines unoccupied dwellings as PRIVATE dwellings that were empty or
-# whose occupants were away, so no non-private adjustment is needed: non-private
-# dwellings appear only in the occupied count and are excluded from the stock.
+# Vacancy = EMPTY private dwellings / (occupied + unoccupied PRIVATE dwellings).
+# Up to 2013 Stats NZ counted only private dwellings as unoccupied. From 2018 it
+# also counts UNOCCUPIED NON-PRIVATE dwellings (camping grounds, marae, ...; 4,860
+# in 2018, 4,710 in 2023; DataInfo+ 'Dwelling occupancy status'), so the 2018
+# and 2023 counts must be taken for private dwellings only (CENSUS_SOURCE).
 # 'Residents away' are NOT vacant: those households exist and are already in
 # the household series. Counting them fails the replacement check below.
 #
@@ -396,11 +397,25 @@ OTHER_BOOTSTRAP_SEED = 42
 #   split. Before 2013 only total unoccupied is published, so the 2013 empty
 #   share (76.2%) is applied to earlier years -- the one assumption here, with
 #   a sensitivity band. 2013 is measured.
-# 2018, 2023: Stats NZ Census dwelling occupancy tables (NZ.Stat), measured.
+# 2018, 2023: CENSUS_SOURCE
+#   'hou018_private' (ADOPTED): private dwellings only, from Aotearoa Data
+#       Explorer CEN23_HOU_018 (occupancy status x dwelling type), built by
+#       data/build_census.py into data/derived/census_dwellings.csv and
+#       cross-checked there against CEN23_TBT_001 and, for 2013, against the
+#       QuickStats file above (identical within random rounding).
+#   'hardcoded': the original CENSUS_LATER values below. They are ALL dwelling
+#       types (they equal CEN23_TBT_001's totals), i.e. they include the
+#       non-private unoccupied dwellings counted from 2018, which made 2018/2023
+#       inconsistent with the private-only 1981-2013 values.
+# The empty / residents-away split itself breaks between 2013 and 2018
+# (N1; DataInfo+: 'did not receive a quality rating in 2018', 'a break in the
+# time series').
 # Only the RATIO is used: census counts and the household estimates series
 # differ in level (census undercount), exactly as for household size.
 FILE_CENSUS_2013 = os.path.join(DATA_DIR, 'occ-unocc-2013.xlsx')
-CENSUS_LATER = {
+CENSUS_SOURCE = 'hou018_private'
+FILE_CENSUS_DERIVED = os.path.join(DATA_DIR, 'derived', 'census_dwellings.csv')
+CENSUS_LATER = {                   # CENSUS_SOURCE = 'hardcoded' only (all dwelling types)
     2018: dict(occupied_private=1664313, unoccupied=196506, empty=97842,
                away=98664, under_construction=16128),
     2023: dict(occupied_private=1793613, unoccupied=225168, empty=111666,
@@ -669,6 +684,20 @@ def load_national_pop_projection(path=None, sheet=None, variant='Medium',
     return pd.DataFrame({'Year': years, 'Population': vals})
 
 
+def census_later(source):
+    """2018 and 2023 census counts in the CENSUS_LATER layout, per CENSUS_SOURCE."""
+    if source == 'hardcoded':
+        return CENSUS_LATER
+    if source != 'hou018_private':
+        raise ValueError(f"Unknown CENSUS_SOURCE '{source}'.")
+    d = pd.read_csv(FILE_CENSUS_DERIVED)
+    d = d[d['type'] == 'private'].set_index('year')
+    return {int(y): dict(occupied_private=float(d.loc[y, 'occupied']), unoccupied=float(d.loc[y, 'unoccupied']),
+                         empty=float(d.loc[y, 'empty']), away=float(d.loc[y, 'away']),
+                         under_construction=float(d.loc[y, 'under_construction']))
+            for y in (2018, 2023)}
+
+
 def load_census_occupancy(path=None, later=None):
     """Census private-dwelling occupancy, one row per census year.
     Reads Tables 1 and 2 of the 2013 QuickStats workbook, then appends the
@@ -825,14 +854,15 @@ def respond_household_size(S_ann, pop_ref, hist_S, hist_pop, forecast_years, b, 
                 dS_obs_2025=dS_obs_2025, dP_obs_2025=dP_obs_2025, dP_ref=dP_ref)
 
 
-def household_rebase_factor(hh_q, measure):
+def household_rebase_factor(hh_q, measure, later=None):
     """k: the factor on DHE household increments after the 2018 base that
     makes June 2023 grow over June 2018 by the census ratio (see HH_CENSUS_REBASE)."""
     if measure is None:
         return 1.0
     cols = {'occupied_plus_away': ('occupied_private', 'away'), 'occupied': ('occupied_private',)}[measure]
-    c18 = sum(CENSUS_LATER[2018][c] for c in cols)
-    c23 = sum(CENSUS_LATER[2023][c] for c in cols)
+    later = CENSUS_LATER if later is None else later
+    c18 = sum(later[2018][c] for c in cols)
+    c23 = sum(later[2023][c] for c in cols)
     h = hh_q.set_index('Date')['Households']
     h0, h1 = float(h[pd.Timestamp(HH_REBASE_BASE)]), float(h[pd.Timestamp(HH_REBASE_CENSUS)])
     return (h0 * c23 / c18 - h0) / (h1 - h0)
@@ -1039,7 +1069,8 @@ def main():
         raise ValueError(f"Population missing for {missing} in {FILE_POP_HIST}.")
 
     hh_raw_dhe = load_historical_households(FILE_HOUSEHOLDS_HIST)     # as published
-    hh_rebase_k = household_rebase_factor(hh_raw_dhe, HH_CENSUS_REBASE)
+    census_18_23 = census_later(CENSUS_SOURCE)
+    hh_rebase_k = household_rebase_factor(hh_raw_dhe, HH_CENSUS_REBASE, census_18_23)
     hh_raw = rebase_households(hh_raw_dhe, hh_rebase_k)
     hh_annual = annual_households(hh_raw)
     calib_end = ((2023 if HH_CENSUS_REBASE else 2018) if STOCK_CALIB_END == 'last_census_base'
@@ -1166,7 +1197,7 @@ def main():
     # ------------------------------------------------------------------
     # STOCK, VACANCY AND REPLACEMENT  (census-based)
     # ------------------------------------------------------------------
-    census = load_census_occupancy()
+    census = load_census_occupancy(later=census_18_23)
     measured = census['empty'].notna()
     empty_share_measured = float(census.loc[measured, 'empty'].iloc[0]
                                  / census.loc[measured, 'unoccupied'].iloc[0])

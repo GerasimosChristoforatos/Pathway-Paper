@@ -6,4 +6,5 @@ LEGACY_FLAGS = {
     'S_TAIL': 'pchip_end_slope',          # item 5
     'S_ANCHOR_YEAR': 2025,                 # item 6
     'COMPLETION_LAG': 0,                   # item 7
+    'CENSUS_SOURCE': 'hardcoded',          # census private-dwelling correction
 }

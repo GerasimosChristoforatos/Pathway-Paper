@@ -195,7 +195,8 @@ def build_setup():
     rs = B['hist_rv_share'].loc[2011:2025]
     su['rv_range'] = (float(rs.min()), float(B['rv_share']), float(rs.max()))
     su['pre_share'] = float(B['empty_share_measured'])
-    su['k_range'] = (Boss.household_rebase_factor(B['hh_raw_dhe'], 'occupied'), float(B['hh_rebase_k']), 1.0)
+    su['k_range'] = (Boss.household_rebase_factor(B['hh_raw_dhe'], 'occupied', B['census_18_23']),
+                     float(B['hh_rebase_k']), 1.0)
 
     # ---- carbon factors ----
     tf = pd.read_csv(Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]

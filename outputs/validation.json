@@ -4,23 +4,23 @@
       "origin": 2006,
       "test": "2007-2023",
       "method": "constant",
-      "rate_pct": 0.024387246441600452,
+      "rate_pct": 0.024422932920106673,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 394955.5706161518,
-      "actual": 455098.572320231,
-      "error_pct": -13.215379120495129
+      "predicted": 391522.3670607347,
+      "actual": 455109.26040824264,
+      "error_pct": -13.971786311372602
     },
     {
       "origin": 2006,
       "test": "2007-2023",
       "method": "recent",
-      "rate_pct": -0.08172278011157472,
+      "rate_pct": -0.08165890645675634,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 361815.4465694536,
-      "actual": 455098.572320231,
-      "error_pct": -20.497345283944025
+      "predicted": 358417.7244146084,
+      "actual": 455109.26040824264,
+      "error_pct": -21.245785222410085
     },
     {
       "origin": 2006,
@@ -28,32 +28,32 @@
       "method": "linked",
       "rate_pct": null,
       "n_intervals": 3,
-      "linked_b": 2.4497162622742485,
-      "predicted": 476525.69707893464,
-      "actual": 455098.572320231,
-      "error_pct": 4.708238184413904
+      "linked_b": 2.4498851888441435,
+      "predicted": 473242.27815048955,
+      "actual": 455109.26040824264,
+      "error_pct": 3.9843218584436624
     },
     {
       "origin": 2013,
       "test": "2014-2023",
       "method": "constant",
-      "rate_pct": 0.029154612399336543,
+      "rate_pct": 0.02916494680122401,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 275605.996411505,
-      "actual": 333193.14637506555,
-      "error_pct": -17.283413716660434
+      "predicted": 272162.42332995456,
+      "actual": 333208.2490875398,
+      "error_pct": -18.320622591053382
     },
     {
       "origin": 2013,
       "test": "2014-2023",
       "method": "recent",
-      "rate_pct": 0.037911905786064175,
+      "rate_pct": 0.03787567032633805,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 277274.1459545997,
-      "actual": 333193.14637506555,
-      "error_pct": -16.782758297651025
+      "predicted": 273819.5113061636,
+      "actual": 333208.2490875398,
+      "error_pct": -17.823309580121972
     },
     {
       "origin": 2013,
@@ -61,32 +61,32 @@
       "method": "linked",
       "rate_pct": null,
       "n_intervals": 4,
-      "linked_b": 0.7690453420394167,
-      "predicted": 320857.28465604654,
-      "actual": 333193.14637506555,
-      "error_pct": -3.7023155647784245
+      "linked_b": 0.7694229557336949,
+      "predicted": 317474.5941595824,
+      "actual": 333208.2490875398,
+      "error_pct": -4.721868372419524
     },
     {
       "origin": 2018,
       "test": "2019-2023",
       "method": "constant",
-      "rate_pct": 0.0920687605867783,
+      "rate_pct": 0.10054955788227526,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 176284.47267170082,
-      "actual": 200142.46557586076,
-      "error_pct": -11.92050514393056
+      "predicted": 177352.99648893802,
+      "actual": 200146.48343334574,
+      "error_pct": -11.388402410776589
     },
     {
       "origin": 2018,
       "test": "2019-2023",
       "method": "recent",
-      "rate_pct": 0.3281057387008715,
+      "rate_pct": 0.3685766823338031,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 199501.5845934648,
-      "actual": 200142.46557586076,
-      "error_pct": -0.3202123949817337
+      "predicted": 203668.7850320842,
+      "actual": 200146.48343334574,
+      "error_pct": 1.7598618463419147
     },
     {
       "origin": 2018,
@@ -94,16 +94,16 @@
       "method": "linked",
       "rate_pct": null,
       "n_intervals": 5,
-      "linked_b": 1.0943656181514676,
-      "predicted": 234623.16559603083,
-      "actual": 200142.46557586076,
-      "error_pct": 17.228077969840292
+      "linked_b": 1.146026052605232,
+      "predicted": 238447.3606911112,
+      "actual": 200146.48343334574,
+      "error_pct": 19.136422784325703
     }
   ],
   "check_2026": {
     "data_end": "2026-07-01",
-    "model_built_all_2026": 27900.5096612361,
-    "model_consent_equivalent_2026": 21888.247063427923,
+    "model_built_all_2026": 27966.529923344773,
+    "model_consent_equivalent_2026": 22058.93616540499,
     "status": "observed",
     "months": [
       1,
@@ -116,8 +116,8 @@
     ],
     "observed_ytd": 23916.0,
     "seasonal_share": 0.5612383713207713,
-    "model_expected_ytd": 12284.524132944942,
-    "ratio_observed_to_model": 1.946839758803638,
+    "model_expected_ytd": 12380.321406540756,
+    "ratio_observed_to_model": 1.931775372759283,
     "last12_months": "2025-08-01..2026-07-01",
     "observed_last12": 40908.0
   }

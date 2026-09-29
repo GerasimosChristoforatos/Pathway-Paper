@@ -264,3 +264,50 @@ Actual households and vacancy fed in; only the net-replacement term is predicted
 ### 2026 out-of-sample check against observed consents
 
 Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 16,699 (annual 29,754 x seasonal share 0.561); observed / model = 1.432. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.
+
+## Household size anchored on the census-benchmarked year 2023 (item 6, C3)
+
+New flag S_ANCHOR_YEAR, default 2023: the Stats NZ household-size shape is rebased on observed S in December 2023 (the last census-benchmarked year) and carried through 2025 by the Stats NZ shape, instead of on 2025, whose households are 0.888 x lagged consents (the same DHE artefact the model already refuses to carry as e_2025). S in 2025 becomes 2.680 (observed-anchored 2.657). Caveat stated in Boss.py: the anchor is 31 December 2023, six months after the June census benchmark, and those six months are consent-derived. The 2025 anchor is a Sensitivity.py row. The 2025 stock deviation (other_dev_2025) is unchanged here; per D1 its treatment is A1.
+
+| metric | before | after | change |
+|---|---|---|---|
+| Built floor area 2026-2050, central run (Mm2) | 78.20 | 77.53 | -0.67 (-0.86%) |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 30,284 | 30,025 | -259 (-0.86%) |
+| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 22,287 | 22,096 | -191 (-0.86%) |
+| 2025 -> 2026 step in built floor area (%) | -22.1 | -22.7 | -0.608 |
+| Household size 2050, central run | 2.628 | 2.651 | +0.0229 (+0.87%) |
+| MC floor area p5 (Mm2) | 59.99 | 59.47 | -0.517 (-0.86%) |
+| MC floor area p50 (Mm2) | 82.14 | 81.31 | -0.824 (-1.00%) |
+| MC floor area p95 (Mm2) | 107.39 | 106.28 | -1.11 (-1.04%) |
+| MC carbon p5 (kt) | 23,200 | 22,983 | -217 (-0.94%) |
+| MC carbon p50 (kt) | 31,730 | 31,409 | -322 (-1.01%) |
+| MC carbon p95 (kt) | 41,899 | 41,487 | -413 (-0.99%) |
+| Central run percentile in MC, floor area | 39.3 | 39.5 | +0.27 |
+| Central run percentile in MC, carbon | 39.7 | 40.0 | +0.29 |
+| Hindcast error, origin 2006, model method (%) | -13.0 | -13.0 | 0 |
+| Hindcast error, origin 2013, model method (%) | -18.9 | -18.9 | 0 |
+| Hindcast error, origin 2018, model method (%) | -12.0 | -12.0 | 0 |
+| 2026 model consent-equivalents (all categories) | 29,754 | 29,522 | -232 (-0.78%) |
+| 2026 observed / model consents, year to date | 1.432 | 1.443 | +0.0113 (+0.79%) |
+
+Validation (outputs/validation.md):
+
+### Rolling-origin hindcast of dwellings built (descriptive; 3 origins)
+
+Actual households and vacancy fed in; only the net-replacement term is predicted. Error = predicted / actual - 1.
+
+| origin | test years | method | rate used (%/yr) | predicted | actual | error |
+|---|---|---|---|---|---|---|
+| 2006 | 2007-2023 | constant | +0.043 | 400,634 | 460,544 | -13.0% |
+| 2006 | 2007-2023 | recent | -0.049 | 371,979 | 460,544 | -19.2% |
+| 2006 | 2007-2023 | linked | linked: b = 2.54 on 3 intervals | 484,994 | 460,544 | +5.3% |
+| 2013 | 2014-2023 | constant | +0.034 | 276,609 | 340,888 | -18.9% |
+| 2013 | 2014-2023 | recent | +0.019 | 273,758 | 340,888 | -19.7% |
+| 2013 | 2014-2023 | linked | linked: b = 0.96 on 4 intervals | 333,710 | 340,888 | -2.1% |
+| 2018 | 2019-2023 | constant | +0.109 | 177,962 | 202,189 | -12.0% |
+| 2018 | 2019-2023 | recent | +0.389 | 205,531 | 202,189 | +1.7% |
+| 2018 | 2019-2023 | linked | linked: b = 1.34 on 5 intervals | 249,717 | 202,189 | +23.5% |
+
+### 2026 out-of-sample check against observed consents
+
+Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 16,569 (annual 29,522 x seasonal share 0.561); observed / model = 1.443. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.

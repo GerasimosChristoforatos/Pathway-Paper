@@ -311,3 +311,50 @@ Actual households and vacancy fed in; only the net-replacement term is predicted
 ### 2026 out-of-sample check against observed consents
 
 Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 16,569 (annual 29,522 x seasonal share 0.561); observed / model = 1.443. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.
+
+## Completion lag from Little's law (item 7, C4, N5)
+
+New flag COMPLETION_LAG, default 'littles_law': dwellings completed in year t = c x [(1 - W) consents_t + W consents_(t-1)], W estimated at run time as the mean over censuses 1986-2023 of dwellings under construction / all dwellings consented in the 12 months to March of the census year (Little 1961): 0.45, 0.46, 0.49, 0.47, 0.53, 0.56, 0.51, 0.58 -> W = 0.508 yr. The same completions series feeds the stock calibration, the 2025 deviation, the 2025 observed anchor (so the step), history plots, validation and the MC. Limitations stated at the flag: W is time under construction only (a lower bound on consent-to-completion), steady-state assumption, kernel shape assumed. Boss's old build-duration printout (0.78 yr in 2023: March stock over a calendar-year flow) is replaced. Net replacement calibrates to 0.137%/yr (was 0.154%); 2025 deviation +4,411 (was +5,494), persistence 0.68. Sensitivities: no lag (original) 77.53 Mm2; W = 0.99 74.94 Mm2. The dwelling-count census check still uses the June-year convention; item 4 rebuilds it on the same W. The 2026 check now inverts the lag: the model's 2026 completions imply 21,888 consents in 2026 against observed Jan-Jul consents 1.95 x that (seasonally apportioned).
+
+| metric | before | after | change |
+|---|---|---|---|
+| Built floor area 2026-2050, central run (Mm2) | 77.53 | 76.71 | -0.814 (-1.05%) |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 30,025 | 29,709 | -316 (-1.05%) |
+| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 22,096 | 21,863 | -233 (-1.06%) |
+| 2025 -> 2026 step in built floor area (%) | -22.7 | -19.1 | +3.59 |
+| Household size 2050, central run | 2.651 | 2.651 | 0 |
+| MC floor area p5 (Mm2) | 59.47 | 58.26 | -1.21 (-2.04%) |
+| MC floor area p50 (Mm2) | 81.31 | 80.03 | -1.28 (-1.57%) |
+| MC floor area p95 (Mm2) | 106.28 | 104.96 | -1.32 (-1.25%) |
+| MC carbon p5 (kt) | 22,983 | 22,552 | -431 (-1.87%) |
+| MC carbon p50 (kt) | 31,409 | 30,920 | -489 (-1.56%) |
+| MC carbon p95 (kt) | 41,487 | 40,937 | -549 (-1.32%) |
+| Central run percentile in MC, floor area | 39.5 | 40.7 | +1.21 |
+| Central run percentile in MC, carbon | 40.0 | 40.9 | +0.97 |
+| Hindcast error, origin 2006, model method (%) | -13.0 | -13.2 | -0.207 (+1.59%) |
+| Hindcast error, origin 2013, model method (%) | -18.9 | -17.3 | +1.57 (-8.34%) |
+| Hindcast error, origin 2018, model method (%) | -12.0 | -11.9 | +0.0619 (-0.52%) |
+| 2026 model consent-equivalents (all categories) | 29,522 | 21,888 | -7.63e+03 (-25.86%) |
+| 2026 observed / model consents, year to date | 1.443 | 1.947 | +0.503 (+34.88%) |
+
+Validation (outputs/validation.md):
+
+### Rolling-origin hindcast of dwellings built (descriptive; 3 origins)
+
+Actual households and vacancy fed in; only the net-replacement term is predicted. Error = predicted / actual - 1.
+
+| origin | test years | method | rate used (%/yr) | predicted | actual | error |
+|---|---|---|---|---|---|---|
+| 2006 | 2007-2023 | constant | +0.024 | 394,956 | 455,099 | -13.2% |
+| 2006 | 2007-2023 | recent | -0.082 | 361,815 | 455,099 | -20.5% |
+| 2006 | 2007-2023 | linked | linked: b = 2.45 on 3 intervals | 476,526 | 455,099 | +4.7% |
+| 2013 | 2014-2023 | constant | +0.029 | 275,606 | 333,193 | -17.3% |
+| 2013 | 2014-2023 | recent | +0.038 | 277,274 | 333,193 | -16.8% |
+| 2013 | 2014-2023 | linked | linked: b = 0.77 on 4 intervals | 320,857 | 333,193 | -3.7% |
+| 2018 | 2019-2023 | constant | +0.092 | 176,284 | 200,142 | -11.9% |
+| 2018 | 2019-2023 | recent | +0.328 | 199,502 | 200,142 | -0.3% |
+| 2018 | 2019-2023 | linked | linked: b = 1.09 on 5 intervals | 234,623 | 200,142 | +17.2% |
+
+### 2026 out-of-sample check against observed consents
+
+Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 12,285 (annual 21,888 x seasonal share 0.561); observed / model = 1.947. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.

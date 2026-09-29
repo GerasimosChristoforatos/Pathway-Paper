@@ -75,7 +75,7 @@ B = boss_locals()
 # ---------------------------------------------------------------------------
 TYP = list(B['typ_names'])
 TC = M.TYPOLOGY_COLORS
-BF = M.COMPLETION_RATE                         # consents -> built
+BF = M.COMPLETION_RATE                         # consents -> built (x the completion lag, see Boss)
 YH = np.arange(1992, 2026)                     # history with defined flows
 FY = np.asarray(B['forecast_years'])
 PF = FY[1:]                                    # projected years (2025 is the anchor)
@@ -273,7 +273,7 @@ fut_parts = [('', R['d_hh'][1:], C['split']), ('', SF['allow'][1:], C['vac']),
              ('', SF['uncons'][1:], C['unc']), ('', SF['rv'][1:], C['rv'])]
 signed_bars(a, YH, [(l, v / 1e3, c) for l, v, c in hist_parts])
 signed_bars(a, PF, [(l, v / 1e3, c) for l, v, c in fut_parts], projected=True)
-built_h = BF * B['hist_total_units'].loc[YH]
+built_h = B['hist_built_units'].loc[YH]          # in-scope dwellings built (lagged completions)
 built_f = R['total'][1:] / D_f[1:]
 a.plot(YH, built_h / 1e3, color='black', lw=1.6, label='dwellings built (in scope)')
 a.plot(PF, built_f / 1e3, color='black', lw=1.6, ls='--')
@@ -310,10 +310,10 @@ finish(fig, 'diag_3_stock_bucket.png')
 # =============================================================================
 fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
 fig.suptitle('4. Floor area built, 1992-2050 (history converted to built: consents x '
-             f'{BF:.2f})', fontsize=12)
+             f"{BF:.2f}, completion lag W = {B['lag_w']:.2f} yr)", fontsize=12)
 
 a = ax[0, 0]
-typ_h = B['hist_typ_gfa'].loc[YH] * BF
+typ_h = B['hist_built_typ_gfa'].loc[YH]
 typ_f = B['evol_typ_total'].loc[PF]
 a.stackplot(YH, [typ_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
 a.stackplot(PF, [typ_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
@@ -337,7 +337,7 @@ fut_dem = [('', R['growth'][1:], C['growth']), ('', R['hs_pos'][1:], C['split'])
            ('', R['unc'][1:], C['unc']), ('', R['rv'][1:], C['rv'])]
 signed_bars(a, YH, [(l, np.asarray(v) / M6, c) for l, v, c in hist_dem])
 signed_bars(a, PF, [(l, v / M6, c) for l, v, c in fut_dem], projected=True)
-a.plot(YH, B['hist_total_gfa'].loc[YH] * BF / M6, color='black', lw=1.6, label='built (net)')
+a.plot(YH, B['hist_built_gfa'].loc[YH] / M6, color='black', lw=1.6, label='built (net)')
 a.plot(PF, R['total'][1:] / M6, color='black', lw=1.6, ls='--')
 tidy(a, 'By demand type (hatched = projected)', 'million m² per year')
 a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
@@ -423,7 +423,7 @@ fig.suptitle('6. Checks', fontsize=12)
 
 a = ax[0, 0]
 recon = sum(np.asarray(v, dtype=float) for _, v, _ in hist_dem)
-obs = (B['hist_total_gfa'].loc[YH] * BF).values
+obs = (B['hist_built_units'].loc[YH] * D_h.loc[YH]).values   # built dwellings x realised size
 a.plot(YH, obs / M6, color='black', lw=2.5, label='observed (built)')
 a.plot(YH, recon / M6, color='#e74c3c', ls='', marker='o', ms=4, label='sum of demand parts')
 a.set_title(f'History reproduced by the decomposition\n'
@@ -433,7 +433,7 @@ a.legend()
 
 a = ax[0, 1]
 chg = 100 * B['hist_total_gfa'].pct_change().loc[YH].values
-step = 100 * (R['total'][1] / (B['hist_total_gfa'].loc[2025] * BF) - 1)
+step = 100 * (R['total'][1] / B['hist_built_gfa'].loc[2025] - 1)
 a.hist(chg, bins=14, color='#bdc3c7', edgecolor='white')
 a.axvline(step, color='#c0392b', lw=2.5, label=f'2025->2026 in the model: {step:+.1f}%')
 a.axvline(np.median(chg), color='black', lw=1, ls='--', label=f'median year: {np.median(chg):+.1f}%')
@@ -447,7 +447,7 @@ cen_all = (cen['unoccupied'] / cen['total_private']).to_dict()
 v_all = pd.Series(np.interp(B['years_hist'].astype(float), list(cen_all), list(cen_all.values())),
                   index=B['years_hist'])
 prev_all = (hh_h / (1 - v_all)).shift(1)
-net_all = (BF * (B['hist_total_units'] + B['hist_rv_units']) - B['d_hh'] - B['d_hh'] * v_all / (1 - v_all)
+net_all = (BF * B['hist_units_all_c'] - B['d_hh'] - B['d_hh'] * v_all / (1 - v_all)
            - hh_h.shift(1) * (1 / (1 - v_all)).diff())
 YC = np.arange(1992, B['calib_end'] + 1)            # census-benchmarked calibration window
 unc_all = (net_all - B['demolition_rate'] * prev_all).loc[YC].mean()

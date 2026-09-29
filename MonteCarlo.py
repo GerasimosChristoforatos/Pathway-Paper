@@ -173,8 +173,8 @@ def build_setup():
 
     # ---- snapshot of Boss's data and settings used in every draw ----
     su.update(years_hist=B['years_hist'], census=B['census'], hist_pop=B['hist_pop'],
-              hh_raw_dhe=B['hh_raw_dhe'], units_all=B['hist_total_units'] + B['hist_rv_units'],
-              rv_units=B['hist_rv_units'], calib_start=Boss.DEMOLITION_CALIB_START,
+              hh_raw_dhe=B['hh_raw_dhe'], units_all=B['hist_units_all_c'],
+              rv_units=B['hist_rv_units_c'], calib_start=Boss.DEMOLITION_CALIB_START,
               calib_end=B['calib_end'], demol_rate=Boss.DEMOLITION_RATE,
               completion=Boss.COMPLETION_RATE, floor_decline=Boss.FLOOR_HOUSEHOLD_DECLINE,
               size_key='S_resp' if Boss.HH_SIZE_RESPONSE else 'S_matched',
@@ -536,10 +536,9 @@ def _history():
     Boss.SHOW_PLOTS = False
     with contextlib.redirect_stdout(io.StringIO()):
         st = Boss.main()
-    bf = Boss.COMPLETION_RATE
     typ = st['typ_names']
-    gfa = st['hist_total_gfa'] * bf
-    carbon = sum(st['hist_typ_gfa'][t] * bf * st['T_BASELINE_2025'][t] for t in typ)
+    gfa = st['hist_built_gfa']
+    carbon = sum(st['hist_built_typ_gfa'][t] * st['T_BASELINE_2025'][t] for t in typ)
     fy = np.asarray(st['forecast_years'])
     central = {'gfa': pd.Series(st['results']['50th']['total'], index=fy),
                'carbon': st['carbon_total_typ'].sum(axis=1)}

@@ -459,6 +459,29 @@ RV_SHARE_REF = (2016, 2025)
 
 COMPLETION_RATE = 0.95
 COMPLETION_RATE_BAND = (0.92, 0.96)
+
+# COMPLETION_LAG: consents are not built in the calendar year they are issued.
+#   'littles_law' (ADOPTED, item 7): dwellings completed in year t =
+#       COMPLETION_RATE x [(1 - W) x consents_t + W x consents_(t-1)],
+#       a two-point distributed lag whose mean lag W (years) is estimated at
+#       run time by Little's law (Little 1961), W = L / lambda, at each census
+#       with 12 months of consent data before it (1986-2023 with the Stats NZ
+#       release series): L = dwellings under construction on census night (March),
+#       lambda = all dwellings consented in the 12 months to March of the census
+#       year (the census is in early March, so the window runs to the end of
+#       the census month). W is the mean over those censuses.
+#       LIMITATIONS: (i) W measures time UNDER CONSTRUCTION only; dwellings
+#       consented but not started are not counted, so the consent-to-completion
+#       lag is at least W (a lower bound); (ii) Little's law assumes a steady
+#       state, which 2023 (falling consents) violates, hence the mean over
+#       censuses; (iii) only the mean is identified: the two-point kernel shape
+#       (even consents within the year, one fixed duration) is an assumption.
+#       1991, the first model year, uses unlagged consents (no prior model year).
+#   0, or a number in [0, 1): a fixed W; 0 is the original behaviour.
+# The same completions series is used everywhere consents become 'built':
+# stock calibration, the 2025 deviation, the 2025 observed anchor (and so the
+# 2025 -> 2026 step), history plots and the Monte Carlo.
+COMPLETION_LAG = 'littles_law'
 DEMOLITION_RATE = 0.00135
 DEMOLITION_RATE_BAND = (0.0010, 0.0030)
 
@@ -1151,13 +1174,40 @@ def main():
 
     hist_units_all = hist_total_units + hist_rv_units       # all dwellings consented
 
+    # ---- completion lag (see COMPLETION_LAG) --------------------------------
+    # Little's law at each census: under construction / all dwellings consented
+    # in the 12 months to March of the census year.
+    _m = df_consents.set_index('Date')[COL_DWELLINGS_TOTAL]
+    build_duration = {}
+    for yr in census.index:
+        _win = _m.loc[pd.Timestamp(yr - 1, 4, 1):pd.Timestamp(yr, 3, 1)]
+        if len(_win) == 12:
+            build_duration[int(yr)] = float(census.loc[yr, 'under_construction'] / _win.sum())
+    if COMPLETION_LAG == 'littles_law':
+        lag_w = float(np.mean(list(build_duration.values())))
+    else:
+        lag_w = float(COMPLETION_LAG)
+    if not 0.0 <= lag_w < 1.0:
+        raise ValueError(f'Completion lag W = {lag_w} outside [0, 1).')
+
+    def completed(series):
+        """Consents timed as completions: (1 - W) x this year + W x last year.
+        The first year has no full prior year in the data and stays unlagged."""
+        return ((1.0 - lag_w) * series + lag_w * series.shift(1)).fillna(series)
+
+    hist_units_all_c = completed(hist_units_all)              # all categories
+    hist_rv_units_c = completed(hist_rv_units)
+    hist_total_units_c = completed(hist_total_units)          # in scope
+    hist_gfa_c = completed(hist_total_gfa)
+    hist_typ_gfa_c = hist_typ_gfa.apply(completed)
+
     def calibrate_stock(pre_share, completion=None, demol=None, hh=None):
         """The historical stock identity (engine.calibrate_stock) with this
         run's data and settings. In-scope built = d_hh + allow + change + demol
         + uncons + rv (rv < 0)."""
         return engine.calibrate_stock(years_hist, hist_hh if hh is None else hh,
                                       engine.vacancy_knots(census, pre_share),
-                                      hist_units_all, hist_rv_units,
+                                      hist_units_all_c, hist_rv_units_c,
                                       _completion if completion is None else completion,
                                       _demol_rate if demol is None else demol,
                                       _calib_start, calib_end)
@@ -1166,14 +1216,10 @@ def main():
     demolition_rate = DEMOLITION_RATE                  # fixed (BRANZ SR214)
     unconsented_rate = stock_cal['rate_unc']            # calibrated residual
     v_forward = float(stock_cal['knots'][max(stock_cal['knots'])])   # latest census, held
-    # Build duration = dwellings under construction on census night / dwellings
-    # consented that calendar year (consents from the model's own data).
-    build_duration = {int(yr): float(census.loc[yr, 'under_construction'] / hist_total_units.loc[yr])
-                      for yr in census.index if yr in hist_total_units.index}
 
     # 2025's departure from the calibrated identity, and its persistence. Carried
     # forward fading at rho, booked to the residual (see engine.forward).
-    _dv = engine.deviation_2025(stock_cal, _completion * hist_units_all.loc[2025], d_hh.loc[2025],
+    _dv = engine.deviation_2025(stock_cal, _completion * hist_units_all_c.loc[2025], d_hh.loc[2025],
                                 demolition_rate + unconsented_rate, years_hist, _calib_start, calib_end)
     other_2025, other_model_2025 = _dv['other_2025'], _dv['model_2025']
     rho_other, other_dev_2025 = _dv['rho'], _dv['dev']
@@ -1397,7 +1443,7 @@ def main():
     results = {}
     # Under the stock basis the model reports BUILT floor area, so the observed
     # 2025 consents are converted with the completion rate.
-    real_2025_total = float(hist_total_gfa.loc[2025]) * (
+    real_2025_total = float(hist_gfa_c.loc[2025]) * (
         COMPLETION_RATE if CONSUMPTION_BASIS == 'stock_vacancy' else 1.0)
 
     # Everything that does not depend on the population path (engine.forward).
@@ -1485,7 +1531,11 @@ def main():
     # Projections are BUILT floor area under the stock basis, so history is put on
     # the same basis (consents x completion rate) wherever the two are joined.
     built_factor = COMPLETION_RATE if CONSUMPTION_BASIS == 'stock_vacancy' else 1.0
-    hist_cum = (hist_total_gfa * built_factor).cumsum()
+    # Built history on the same basis as the projection (completions, x completion rate)
+    hist_built_gfa = hist_gfa_c * built_factor
+    hist_built_typ_gfa = hist_typ_gfa_c * built_factor
+    hist_built_units = hist_total_units_c * built_factor     # in-scope dwellings built
+    hist_cum = hist_built_gfa.cumsum()
     gfa_2025_cum = float(hist_cum.loc[2025])
     for col in ['5th', '50th', '95th']:
         fwd = df_forecast[f'Ann_GFA_Total_{col}'].cumsum() - df_forecast[f'Ann_GFA_Total_{col}'].iloc[0]
@@ -1514,13 +1564,13 @@ def main():
     # The 2025 row is the observed anchor. It is put on the same BUILT basis as
     # the projection (consents x completion rate), as the national total is.
     for n in typ_names:
-        evol_typ_total.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor
-        evol_typ_growth.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['growth']
-        evol_typ_hs_pos.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['housesplit']
+        evol_typ_total.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor
+        evol_typ_growth.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor * anchor['growth']
+        evol_typ_hs_pos.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor * anchor['housesplit']
         evol_typ_avoided.loc[2025, n] = 0.0
-        evol_typ_cons.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['consumption']
-        evol_typ_extra.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['consumption'] * anchor_extra_share
-        evol_typ_other.loc[2025, n] = hist_typ_gfa.loc[2025, n] * built_factor * anchor['consumption'] * (1 - anchor_extra_share)
+        evol_typ_cons.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor * anchor['consumption']
+        evol_typ_extra.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor * anchor['consumption'] * anchor_extra_share
+        evol_typ_other.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor * anchor['consumption'] * (1 - anchor_extra_share)
         _o1 = float(df_forecast['Ann_GFA_Cons_Other_50th'].iloc[1]) or 1.0
         for _ev, _c in ((evol_typ_vac, 'Vacancy'), (evol_typ_repl, 'Replacement'),
                         (evol_typ_unc, 'Unconsented'), (evol_typ_rv, 'RV')):
@@ -1617,9 +1667,10 @@ def main():
     print("   vacancy (empty / private dwellings): " +
           " | ".join(f"{y} {100*v:.2f}%" for y, v in sc['knots'].items()) +
           f"  -> held at {100*v_forward:.2f}% forward")
-    print(f"   build duration (under construction / consents): " +
-          " | ".join(f"{y} {d:.2f} yr" for y, d in build_duration.items()))
-    nb_hist = COMPLETION_RATE * hist_total_units[wcal].mean()
+    print(f"   build duration W, Little's law (under construction / all consents in the 12 months to March): " +
+          " | ".join(f"{y} {d:.2f}" for y, d in build_duration.items()) +
+          f" -> completion lag W used = {lag_w:.3f} yr ({COMPLETION_LAG})")
+    nb_hist = hist_built_units[wcal].mean()
     print(f"\n   The stock bucket, {DEMOLITION_CALIB_START}-{calib_end} mean per year (census-benchmarked; dwellings):")
     print(f"     {'new households':<46}{d_hh[wcal].mean():>9,.0f}")
     print(f"     {'+ vacancy allowance':<46}{sc['allow'][wcal].mean():>9,.0f}")
@@ -1629,8 +1680,8 @@ def main():
     print(f"     {'+ calibrated residual (see note)':<46}{sc['uncons'][wcal].mean():>9,.0f}")
     print(f"     {'- retirement-village units built (out of scope)':<46}{sc['rv'][wcal].mean():>9,.0f}")
     print(f"     {'= dwellings built (in scope)':<46}{nb_hist:>9,.0f}")
-    print(f"     {f'/ completion rate {COMPLETION_RATE:.2f} = consents':<46}"
-          f"{hist_total_units[wcal].mean():>9,.0f}  (observed)")
+    print(f"     {f'/ completion rate {COMPLETION_RATE:.2f}, lag W {lag_w:.3f} = consents':<46}"
+          f"{hist_total_units_c[wcal].mean():>9,.0f}  (observed, timed as completions)")
     print(f"   calibrated residual = {100*unconsented_rate:+.3f}% of stock per year "
           f"(< 0: unconsented additions; > 0: losses beyond the BRANZ demolition rate) "
           f"({100*sc['uncons'][wcal].mean()/nb_hist:+.1f}% of building)")
@@ -1642,7 +1693,7 @@ def main():
     _v = pd.Series(np.interp(years_hist.astype(float), list(_all), list(_all.values())),
                    index=years_hist)
     _prev = (hist_hh / (1 - _v)).shift(1)
-    _net_all = (COMPLETION_RATE * (hist_total_units + hist_rv_units) - d_hh - d_hh * _v / (1 - _v)
+    _net_all = (COMPLETION_RATE * hist_units_all_c - d_hh - d_hh * _v / (1 - _v)
                 - hist_hh.shift(1) * (1 / (1 - _v)).diff())
     _unc_all = (_net_all - DEMOLITION_RATE * _prev)[wcal].mean()
     print(f"   [check] counting 'residents away' as vacant would need unconsented additions of "
@@ -1892,7 +1943,7 @@ def main():
 
     # FIG 2 cumulative GFA
     plt.figure(figsize=(13, 7))
-    plt.plot(years_hist, hist_cum.values, color='black', linewidth=3, label=f'Historical (consents x {built_factor:.2f} = built)')
+    plt.plot(years_hist, hist_cum.values, color='black', linewidth=3, label=f'Historical (consents x {built_factor:.2f}, lagged W={lag_w:.2f} = built)')
     plt.plot(df_forecast['Year'], df_forecast['Cum_GFA_Total_50th'], color='darkred',
              linewidth=2.5, label='Projected Total GFA (Median)')
     plt.fill_between(df_forecast['Year'], df_forecast['Cum_GFA_Total_5th'],

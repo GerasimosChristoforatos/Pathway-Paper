@@ -52,8 +52,7 @@ def boss_metrics():
         'GFA_Mm2': float(R['total'][1:].sum() / 1e6),
         'carbon_kt': float(B['carbon_total_typ'].iloc[1:].sum().sum() / 1e6),
         'upfront_kt': float(B['_upfront'] + B['_soil'] / 1e6),
-        'step_2025_2026_pct': float(100 * (R['total'][1] / (B['hist_total_gfa'].loc[2025]
-                                                           * B['built_factor']) - 1)),
+        'step_2025_2026_pct': float(100 * (R['total'][1] / B['hist_built_gfa'].loc[2025] - 1)),
         'S_2050': float(S[-1]),
     }
 

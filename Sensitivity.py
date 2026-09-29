@@ -57,6 +57,8 @@ CASES = [
     ('Typology mix', 'Trend window from 2016', dict(TREND_WINDOW_START=2016)),
     ('Dwelling size', 'Reference 2016-2025', dict(DWELLING_SIZE_REF=(2016, 2025))),
     ('Dwelling size', 'Reference 2025 only', dict(DWELLING_SIZE_REF=(2025, 2025))),
+    ('Stock', 'No completion lag (original)', dict(COMPLETION_LAG=0)),
+    ('Stock', 'Completion lag W = 0.99 (about 1 yr; W is a lower bound)', dict(COMPLETION_LAG=0.99)),
     ('Stock', 'Completion rate 0.92', dict(COMPLETION_RATE=0.92)),
     ('Stock', 'Completion rate 0.96', dict(COMPLETION_RATE=0.96)),
 ]
@@ -181,7 +183,7 @@ def figures(out, base, paths):
 
     # ---- 2. annual paths: WHEN each assumption matters ---------------------
     fy = np.asarray(base['forecast_years'])
-    hist = base['hist_total_gfa'] * Boss.COMPLETION_RATE
+    hist = base['hist_built_gfa']
     adopted = base['results']['50th']['total']
     ranked = (cases[cases.group != 'Carbon factors']
               .assign(a=lambda d: d.GFA_change_pct.abs())

@@ -52,12 +52,13 @@ def test_historical_stock_identity(B):
     sc, yh = B['stock_cal'], B['years_hist']
     import Boss
     lhs = (B['d_hh'] + sc['allow'] + sc['change'] + sc['demol'] + sc['uncons'] + sc['rv']).loc[yh[1:]]
-    rhs = Boss.COMPLETION_RATE * B['hist_total_units'].loc[yh[1:]]
+    rhs = B['hist_built_units'].loc[yh[1:]]           # completion rate x lagged consents
     assert close(lhs, rhs)
 
 
 def test_history_reconstructed_by_demand_bands(B):
-    """Sum of the historical demand bands == observed built floor area, 1992-2025."""
+    """Sum of the historical demand bands == dwellings built x realised dwelling size, 1992-2025
+    (== built floor area exactly when there is no completion lag)."""
     import Boss
     YH = np.arange(1992, 2026)
     D = B['blended_dwelling_size'].loc[YH]
@@ -66,7 +67,7 @@ def test_history_reconstructed_by_demand_bands(B):
              B['hist_hs_raw'].loc[YH].clip(lower=0),
              B['d_hh'].loc[YH] * (D - B['occupied_area_per_dwelling'].loc[YH])]
     parts += [sc[k].loc[YH] * D for k in ('allow', 'change', 'demol', 'uncons', 'rv')]
-    assert close(sum(parts), B['hist_total_gfa'].loc[YH] * Boss.COMPLETION_RATE, rel=1e-12)
+    assert close(sum(parts), B['hist_built_units'].loc[YH] * D, rel=1e-12)
 
 
 # ---------------------------------------------------------------- forward ---

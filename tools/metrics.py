@@ -32,6 +32,11 @@ FIELDS = [
     ('mc.carbon_p95', 'MC carbon p95 (kt)', '{:,.0f}'),
     ('mc.central_pct_GFA', 'Central run percentile in MC, floor area', '{:.1f}'),
     ('mc.central_pct_carbon', 'Central run percentile in MC, carbon', '{:.1f}'),
+    ('validation.hindcast_2006_constant', 'Hindcast error, origin 2006, model method (%)', '{:+.1f}'),
+    ('validation.hindcast_2013_constant', 'Hindcast error, origin 2013, model method (%)', '{:+.1f}'),
+    ('validation.hindcast_2018_constant', 'Hindcast error, origin 2018, model method (%)', '{:+.1f}'),
+    ('validation.model_consents_2026', '2026 model consent-equivalents (all categories)', '{:,.0f}'),
+    ('validation.observed_to_model_2026', '2026 observed / model consents, year to date', '{:.3f}'),
 ]
 
 
@@ -69,6 +74,14 @@ def collect(out_dir=None, extra=None):
     m = {'boss': boss_metrics()}
     if os.path.exists(os.path.join(out_dir, 'montecarlo_summary.csv')):
         m['mc'] = mc_metrics(out_dir)
+    vfile = os.path.join(out_dir, 'validation.json')
+    if os.path.exists(vfile):
+        with open(vfile) as f:
+            v = json.load(f)
+        val = {f"hindcast_{r['origin']}_{r['method']}": r['error_pct'] for r in v['hindcast']}
+        val['model_consents_2026'] = v['check_2026']['model_consent_equivalent_2026']
+        val['observed_to_model_2026'] = v['check_2026'].get('ratio_observed_to_model')
+        m['validation'] = val
     if extra:
         m.update(extra)
     with open(METRICS, 'w') as f:

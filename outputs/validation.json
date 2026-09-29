@@ -1,0 +1,109 @@
+{
+  "hindcast": [
+    {
+      "origin": 2006,
+      "test": "2007-2023",
+      "method": "constant",
+      "rate_pct": 0.042568495011835225,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 400633.9108495272,
+      "actual": 460543.85,
+      "error_pct": -13.008520068278573
+    },
+    {
+      "origin": 2006,
+      "test": "2007-2023",
+      "method": "recent",
+      "rate_pct": -0.04918096472507808,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 371978.8574519569,
+      "actual": 460543.85,
+      "error_pct": -19.230523336277983
+    },
+    {
+      "origin": 2006,
+      "test": "2007-2023",
+      "method": "linked",
+      "rate_pct": null,
+      "n_intervals": 3,
+      "linked_b": 2.535779558120975,
+      "predicted": 484993.5440101007,
+      "actual": 460543.85,
+      "error_pct": 5.308874282025644
+    },
+    {
+      "origin": 2013,
+      "test": "2014-2023",
+      "method": "constant",
+      "rate_pct": 0.03441969703097537,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 276608.92598514864,
+      "actual": 340887.55,
+      "error_pct": -18.85625450822459
+    },
+    {
+      "origin": 2013,
+      "test": "2014-2023",
+      "method": "recent",
+      "rate_pct": 0.019450966855821962,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 273757.5791934293,
+      "actual": 340887.55,
+      "error_pct": -19.692702419484277
+    },
+    {
+      "origin": 2013,
+      "test": "2014-2023",
+      "method": "linked",
+      "rate_pct": null,
+      "n_intervals": 4,
+      "linked_b": 0.9614288084556545,
+      "predicted": 333710.1227026673,
+      "actual": 340887.55,
+      "error_pct": -2.105511714151098
+    },
+    {
+      "origin": 2018,
+      "test": "2019-2023",
+      "method": "constant",
+      "rate_pct": 0.10912677066555584,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 177962.33574352055,
+      "actual": 202189.44999999998,
+      "error_pct": -11.982382986095185
+    },
+    {
+      "origin": 2018,
+      "test": "2019-2023",
+      "method": "recent",
+      "rate_pct": 0.3894076361382487,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 205531.37291388685,
+      "actual": 202189.44999999998,
+      "error_pct": 1.652867107500855
+    },
+    {
+      "origin": 2018,
+      "test": "2019-2023",
+      "method": "linked",
+      "rate_pct": null,
+      "n_intervals": 5,
+      "linked_b": 1.3415634963981315,
+      "predicted": 249716.87940559426,
+      "actual": 202189.44999999998,
+      "error_pct": 23.506384435782522
+    }
+  ],
+  "check_2026": {
+    "data_end": "2025-12-01",
+    "model_built_all_2026": 28266.487495106656,
+    "model_consent_equivalent_2026": 29754.197363270167,
+    "status": "pending"
+  }
+}

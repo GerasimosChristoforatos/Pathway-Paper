@@ -60,7 +60,9 @@ flowchart LR
 
 Run order: `Building_factors.py` → `Boss.py` → `Diagnostics.py`,
 `Sensitivity.py`, `MonteCarlo.py`; `python run_all.py` runs all of them, then
-the tests, and saves every figure to `outputs/figures/`. `data/` holds inputs
+the tests and the validation harness (`validation.py`: rolling-origin
+hindcast and the 2026 check, `outputs/validation.md`), and saves every figure
+to `outputs/figures/`. `data/` holds inputs
 only; everything the scripts write goes to `outputs/`.
 
 **One engine.** The forward model lives in `engine.py`: stock calibration,

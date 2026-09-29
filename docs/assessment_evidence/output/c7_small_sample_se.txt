@@ -1,0 +1,23 @@
+ALR mix trend window 2012-2025: n = 14; Newey-West lag = 2
+  Townhouses  slope +0.2155/yr | SE OLS 0.0102 | NW-HAC 0.0138 | AR(1)-inflated 0.0156 (r1 = +0.40, n_eff ~ 6.0) | t_crit(df=12) 2.18
+     share 2025 35.5% -> 2050 56.0%
+  Apartments  slope +0.0575/yr | SE OLS 0.0149 | NW-HAC 0.0213 | AR(1)-inflated 0.0318 (r1 = +0.64, n_eff ~ 3.1) | t_crit(df=12) 2.18
+     share 2025 4.9% -> 2050 4.1%
+  phi 0.62: cumulative slopes applied by 2050 = 1.63; asymptote 1.6
+  phi 0.8: cumulative slopes applied by 2050 = 3.98; asymptote 4.0
+  phi 0.98: cumulative slopes applied by 2050 = 19.43; asymptote 49.0
+dS on dP regression: n = 32, HAC lag 3, b/SE_hac = 4.7
+dwelling size by typology 2016-2025 (m2):
+      Detached  Townhouses  Apartments
+Year                                  
+2016     208.7       118.1       118.0
+2017     207.2       115.4        98.6
+2018     201.4       118.6        97.9
+2019     194.0       109.2        93.9
+2020     192.1       109.9       104.1
+2021     194.9       109.3        97.1
+2022     193.3       108.8        92.9
+2023     184.2       106.8        98.2
+2024     176.4       107.2        93.8
+2025     178.2       109.2       102.2
+size_ref {'Detached': 179.6, 'Townhouses': 107.7, 'Apartments': 98.1}

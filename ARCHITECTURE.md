@@ -2,9 +2,9 @@
 
 This document is for a reviewer who knows statistics or modelling but not this
 code or New Zealand housing data. It describes what each script reads, what it
-calculates and in what order, and what it writes. It describes the code as it
-stands at commit `e1f98ff` (branch `claude/determined-einstein-r1zw8k`). Known
-problems are **not** discussed here; they are in `ASSESSMENT.md`.
+calculates and in what order, and what it writes. It was first written for the
+code at commit `e1f98ff` and is updated with each change in `CHANGELOG.md`.
+Known problems are **not** discussed here; they are in `ASSESSMENT.md`.
 
 All numbers quoted are from the central run (`Boss.py` with its adopted
 settings) unless marked otherwise.
@@ -48,16 +48,28 @@ flowchart LR
     BF[Building_factors.py] --> F[(factors_*.csv)]
     BD --> BF
     F --> BOSS[Boss.py<br/>one central run]
+    ENG[engine.py<br/>pure forward model] --- BOSS
+    ENG --- MC
     CD & HP & OH & PP & HH & SP & CE --> BOSS
     BOSS -->|main returns all its variables| DIAG[Diagnostics.py<br/>6 figures]
     BOSS -->|re-run with one setting changed| SENS[Sensitivity.py<br/>sensitivity_oat.csv]
-    BOSS -->|calibrated pieces + helper functions| MC[MonteCarlo.py<br/>own fast engine]
+    BOSS -->|data + settings, copied once| MC[MonteCarlo.py]
     F --> MC
-    MC --> MCO[(montecarlo_*.csv)]
+    MC --> MCO[(outputs/montecarlo_*.csv)]
 ```
 
 Run order: `Building_factors.py` → `Boss.py` → `Diagnostics.py`,
-`Sensitivity.py`, `MonteCarlo.py`. The last three import `Boss` and call
+`Sensitivity.py`, `MonteCarlo.py`; `python run_all.py` runs all of them, then
+the tests, and saves every figure to `outputs/figures/`. `data/` holds inputs
+only; everything the scripts write goes to `outputs/`.
+
+**One engine.** The forward model lives in `engine.py`: stock calibration,
+2025 deviation, typology mix, dwelling-size blend and the forward projection
+from households to carbon. These are pure functions; every input is an
+argument. `Boss.py` and `MonteCarlo.py` both call them, so they cannot
+disagree. `tests/test_engine_equivalence.py` checks the result against frozen
+copies of the code before unification (`tests/legacy/`); see
+`outputs/equivalence.md`. The last three import `Boss` and call
 `Boss.main()`. That function returns a dictionary of **all its local
 variables**, and the three scripts read what they need from it. Census counts
 for 2018 and 2023 are typed into `Boss.py` (`CENSUS_LATER`), not read from a file.
@@ -323,16 +335,16 @@ ranges are not additive and are not a joint interval.
 
 ## 7. `MonteCarlo.py`: joint uncertainty and variance-based sensitivity
 
-**Why it has its own engine.** One `Boss.main()` takes about 3 s, and about
-24,000 evaluations are needed. `project()` therefore re-computes only the
-forward chain from §4.4–4.8, re-using Boss's calibrated pieces and helper
-functions:
+**Engine.** One `Boss.main()` takes about 3 s, and about 24,000 evaluations
+are needed. `project()` therefore calls only the forward chain, through the
+same `engine.py` functions Boss uses, with Boss's data and settings copied once
+at set-up:
 
 population path → household size → households → stock identity → dwellings
 built → mix and dwelling size → floor area → carbon.
 
-Before sampling, it is checked against `Boss.main()` at the central values.
-The maximum relative difference over 2026–2050 is 3.8e-15.
+Before sampling, the central draw is checked against `Boss.main()` for floor
+area, carbon, upfront carbon, RV units, households and household size.
 
 **Inputs sampled (12).** The distributions and their justifications are in the
 script's docstring:

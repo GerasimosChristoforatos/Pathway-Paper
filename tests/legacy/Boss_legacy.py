@@ -21,8 +21,6 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import PchipInterpolator
 from scipy import stats
 
-import engine
-
 # ============================================================
 # CONFIGURATION
 # ============================================================
@@ -744,11 +742,11 @@ def household_rebase_factor(hh_q, measure):
     return (h0 * c23 / c18 - h0) / (h1 - h0)
 
 
-def rebase_households(hh_q, k, base=HH_REBASE_BASE):
+def rebase_households(hh_q, k):
     """Scale every household increment after the 2018 base by k (quarterly)."""
     out = hh_q.copy()
-    h0 = float(out.loc[out['Date'] == pd.Timestamp(base), 'Households'].iloc[0])
-    after = out['Date'] > pd.Timestamp(base)
+    h0 = float(out.loc[out['Date'] == pd.Timestamp(HH_REBASE_BASE), 'Households'].iloc[0])
+    after = out['Date'] > pd.Timestamp(HH_REBASE_BASE)
     out.loc[after, 'Households'] = h0 + k * (out.loc[after, 'Households'] - h0)
     return out
 
@@ -781,19 +779,22 @@ def fit_evolving_mix(hist_shares, shares_2025, forecast_years, phi, trend_window
                      typ_names, ref_typology='Detached'):
     """Additive log-ratio (ALR) trend with geometric damping. Shares stay positive
     and sum to one by construction."""
-    alr_2025, slope = mix_trend(hist_shares, shares_2025, trend_window_start, typ_names, ref_typology)
-    return engine.mix_shares(alr_2025, slope, phi, forecast_years, typ_names, ref_typology)
-
-
-def mix_trend(hist_shares, shares_2025, trend_window_start, typ_names, ref_typology='Detached'):
-    """2025 log-ratios and OLS slopes of log(share / reference share) over the
-    trend window, for every non-reference typology."""
     other = [n for n in typ_names if n != ref_typology]
     window = hist_shares.loc[hist_shares.index >= trend_window_start]
+
     alr_hist = {n: np.log(window[n] / window[ref_typology]) for n in other}
     slope = {n: np.polyfit(window.index.values, alr_hist[n].values, 1)[0] for n in other}
     alr_2025 = {n: np.log(shares_2025[n] / shares_2025[ref_typology]) for n in other}
-    return alr_2025, slope
+
+    years_ahead = (forecast_years - 2025).clip(min=0)
+    damp = phi * (1 - phi ** years_ahead) / (1 - phi)
+
+    alr_f = {n: alr_2025[n] + slope[n] * damp for n in other}
+    denom = 1 + sum(np.exp(alr_f[n]) for n in other)
+    shares_out = {ref_typology: 1 / denom}
+    for n in other:
+        shares_out[n] = np.exp(alr_f[n]) / denom
+    return pd.DataFrame(shares_out, index=forecast_years)[list(typ_names)]
 
 
 def blend_per_gfa_share(shares, per_unit_dict, typ_names):
@@ -808,7 +809,10 @@ def blend_per_gfa_share(shares, per_unit_dict, typ_names):
 
     Used for both m2/design-occupant (OLF) and m2/dwelling (realised size).
     """
-    return engine.blend(shares, per_unit_dict, typ_names)
+    inv = pd.Series(0.0, index=shares.index)
+    for name in typ_names:
+        inv += shares[name] / per_unit_dict[name]
+    return 1.0 / inv
 
 
 def calibrate_consumption_rate(consumption, population, years,
@@ -842,9 +846,6 @@ def main():
     print("=" * 78)
 
     typ_names = list(COL_TYPOLOGIES.keys())
-    # Settings used by the stock calibration, bound here once so that the
-    # returned calibrate_stock() never reads the (mutable) module globals.
-    _completion, _demol_rate, _calib_start = COMPLETION_RATE, DEMOLITION_RATE, DEMOLITION_CALIB_START
 
     # ------------------------------------------------------------------
     # 0. CASE-STUDY FACTORS
@@ -857,8 +858,6 @@ def main():
                          f"Run building_factors.py first.")
     mat_scope = mat_fac[mat_fac['Stage'].isin(STAGES_IN_SCOPE)]
     MATERIALS = sorted(mat_scope['Material'].unique())
-    MAT_INTENSITY_STAGE = (mat_scope[mat_scope['Stage'].isin(['A1-A3', 'A4-A5'])]
-                           .groupby('Typology')['kgCO2e_per_m2'].sum().to_dict())   # upfront materials
     # kg CO2e per m2 GFA, by typology and material (materials only; soil added
     # separately as its own line so that it is never treated as a material).
     MAT_INTENSITY = (mat_scope.pivot_table(index='Material', columns='Typology',
@@ -868,7 +867,6 @@ def main():
     OLF_NET_BIM = {t: float(typ_fac.loc[t, 'OLF_m2_per_person']) for t in typ_names}
     DESIGN_OCCUPANTS = {t: float(typ_fac.loc[t, 'design_occupants']) for t in typ_names}
     T_BASELINE_2025 = {t: float(typ_fac.loc[t, 'total_with_SOC']) for t in typ_names}
-    UPFRONT_2025 = {t: float(MAT_INTENSITY_STAGE.get(t, 0.0)) + SOIL_INTENSITY[t] for t in typ_names}
 
     # ------------------------------------------------------------------
     # 1. CONSENTS: floor area AND dwelling counts
@@ -1078,18 +1076,38 @@ def main():
                                  / census.loc[measured, 'unoccupied'].iloc[0])
     census = census[census.index >= years_hist.min() - 5]     # relevant window only
 
-    hist_units_all = hist_total_units + hist_rv_units       # all dwellings consented
+    def census_vacancy(pre_share):
+        empty = census['empty'].fillna(census['unoccupied'] * pre_share)
+        return (empty / census['total_private']).to_dict()
 
     def calibrate_stock(pre_share, completion=None, demol=None, hh=None):
-        """The historical stock identity (engine.calibrate_stock) with this
-        run's data and settings. In-scope built = d_hh + allow + change + demol
-        + uncons + rv (rv < 0)."""
-        return engine.calibrate_stock(years_hist, hist_hh if hh is None else hh,
-                                      engine.vacancy_knots(census, pre_share),
-                                      hist_units_all, hist_rv_units,
-                                      _completion if completion is None else completion,
-                                      _demol_rate if demol is None else demol,
-                                      _calib_start, calib_end)
+        """Vacancy path (interpolated between census years, flat outside),
+        stock, and the three-term decomposition of dwellings built beyond
+        household formation. Returns the long-run demolition rate."""
+        knots = census_vacancy(pre_share)
+        yrs = years_hist.astype(float)
+        v = pd.Series(np.interp(yrs, list(knots), list(knots.values())), index=years_hist)
+        inv = 1.0 / (1.0 - v)
+        hh = hist_hh if hh is None else hh                # MonteCarlo passes rebased variants
+        d_h = hh.diff().fillna(0)
+        stock = hh / (1.0 - v)
+        allow = d_h * v / (1.0 - v)
+        change = hh.shift(1) * inv.diff()
+        completion = COMPLETION_RATE if completion is None else completion
+        demol = DEMOLITION_RATE if demol is None else demol
+        rv_built = completion * hist_rv_units           # RV units built (in the stock)
+        # BUILT dwellings of every kind beyond household formation
+        beyond = completion * (hist_total_units + hist_rv_units) - d_h
+        net = beyond - allow - change                    # = demolitions - unconsented additions
+        prev = stock.shift(1)
+        demolition = demol * prev
+        uncons = net - demolition                        # negative: met without new building
+        w = (years_hist >= DEMOLITION_CALIB_START) & (years_hist <= calib_end)
+        rate_unc = float(uncons[w].sum() / prev[w].sum())
+        # In-scope built = d_hh + allow + change + demol + uncons + rv  (rv < 0)
+        return dict(knots=knots, v=v, stock=stock, allow=allow, change=change, beyond=beyond,
+                    net=net, demol=demolition, uncons=uncons, rv=-rv_built, rate_unc=rate_unc, prev=prev,
+                    completion=completion, demol_rate=demol)
 
     stock_cal = calibrate_stock(empty_share_measured)
     demolition_rate = DEMOLITION_RATE                  # fixed (BRANZ SR214)
@@ -1100,20 +1118,49 @@ def main():
     build_duration = {int(yr): float(census.loc[yr, 'under_construction'] / hist_total_units.loc[yr])
                       for yr in census.index if yr in hist_total_units.index}
 
-    # 2025's departure from the calibrated identity, and its persistence. Carried
-    # forward fading at rho, booked to the residual (see engine.forward).
-    _dv = engine.deviation_2025(stock_cal, _completion * hist_units_all.loc[2025], d_hh.loc[2025],
-                                demolition_rate + unconsented_rate, years_hist, _calib_start, calib_end)
-    other_2025, other_model_2025 = _dv['other_2025'], _dv['model_2025']
-    rho_other, other_dev_2025 = _dv['rho'], _dv['dev']
+    other_2025 = float(COMPLETION_RATE * (hist_total_units.loc[2025] + hist_rv_units.loc[2025])
+                       - d_hh.loc[2025])
+    _net = stock_cal['net'][(years_hist >= DEMOLITION_CALIB_START)
+                            & (years_hist <= calib_end)].values
+    rho_other = float(np.clip(np.corrcoef(_net[:-1], _net[1:])[0, 1], 0.0, 0.95))
+    other_model_2025 = float(stock_cal['allow'].loc[2025] + stock_cal['change'].loc[2025]
+                             + (demolition_rate + unconsented_rate)
+                             * stock_cal['stock'].shift(1).loc[2025])
+    other_dev_2025 = other_2025 - other_model_2025
 
-    def consumption_gross(pop_level, d_households, extra_space=None):
-        """Gross consumption under the legacy per-person / per-household bases
-        (the adopted 'stock_vacancy' basis is computed inside engine.forward)."""
+    def other_dwellings(hh_levels, d_households, demol=None, unc=None):
+        """In-scope built dwellings required beyond household formation, forward:
+        vacancy allowance + demolition replacement + unconsented additions (<0)
+        + retirement-village units (<0, out of scope). Vacancy is held at its
+        latest census value, so vacancy change is zero. d_households must
+        already be floored if FLOOR_HOUSEHOLD_DECLINE applies."""
+        demol = DEMOLITION_RATE if demol is None else demol
+        unc = unconsented_rate if unc is None else unc
+        prev = np.concatenate([[hh_levels[0]], hh_levels[:-1]]) / (1.0 - v_forward)
+        allow = np.maximum(d_households, 0.0) * v_forward / (1.0 - v_forward)
+        d_part, u_part = demol * prev, unc * prev
+        units = allow + d_part + u_part
+        # 2025's deviation from the stock model fades at its measured persistence.
+        # Booked to the residual term (unconsented additions), which absorbs
+        # whatever vacancy and demolition do not explain.
+        dev = other_dev_2025 * rho_other ** np.arange(len(units))
+        dev[0] = 0.0
+        units, u_part = units + dev, u_part + dev
+        # A fixed share of ALL dwellings built are retirement-village units.
+        rv_part = -rv_share * (np.maximum(d_households, 0.0) + units)
+        return units + rv_part, allow, d_part, u_part, rv_part
+
+    def consumption_gross(pop_level, d_households, extra_space=None, other_scale=1.0,
+                          hh_levels=None, dwelling_size=None):
+        """Gross consumption under the active basis. d_households must already
+        be floored if FLOOR_HOUSEHOLD_DECLINE applies."""
         if CONSUMPTION_BASIS == 'per_household':
             return np.maximum(d_households, 0.0) * rate_per_household
         if CONSUMPTION_BASIS == 'extra_space_plus_other':
-            return extra_space + other_rate * pop_level
+            return extra_space + other_rate * other_scale * pop_level
+        if CONSUMPTION_BASIS == 'stock_vacancy':
+            units = other_dwellings(hh_levels, d_households)[0]
+            return extra_space + other_scale * units * dwelling_size
         return pop_level * rate_consumption
 
     # ------------------------------------------------------------------
@@ -1328,39 +1375,41 @@ def main():
     real_2025_total = float(hist_total_gfa.loc[2025]) * (
         COMPLETION_RATE if CONSUMPTION_BASIS == 'stock_vacancy' else 1.0)
 
-    # Everything that does not depend on the population path (engine.forward).
-    fwd_inputs = dict(v=v_forward, rate_demol=demolition_rate, rate_unc=unconsented_rate,
-                      dev_2025=other_dev_2025, rho_dev=rho_other, rv_share=rv_share,
-                      shares=evolving_gfa_shares, size=size_ref, olf=OLF_USED,
-                      intensity=T_BASELINE_2025, intensity_upfront=UPFRONT_2025,
-                      floor_decline=FLOOR_HOUSEHOLD_DECLINE,
-                      olf_per_resident=(DEMAND_BASIS == 'per_resident'))
-    engine_out = {}
     for col in ['5th', '50th', '95th']:
         pop_total = df_forecast[f'PopTotal_{col}'].values
         pop_growth = df_forecast[f'PopGrowth_{col}'].clip(lower=0).values
         hh_arr = households_forecast[col]
-        override = (None if CONSUMPTION_BASIS == 'stock_vacancy' else
-                    (lambda extra, d, _p=pop_total: consumption_gross(_p, d, extra)))
-        E = engine.forward(pop_total, hh_arr, pop_growth, consumption_override=override, **fwd_inputs)
-        engine_out[col] = E
 
-        occ_per_dw_f, d_hh_f, d_hh_raw = E['occ'], E['d_hh'], E['d_hh_raw']
+        S_f = pop_total / hh_arr
+        if DEMAND_BASIS == 'per_resident':
+            olf_f = future_dwelling_size.values / S_f
+        else:
+            olf_f = future_blended_olf.values
+        occ_per_dw_f = S_f * olf_f
+        d_hh_raw = np.insert(np.diff(hh_arr), 0, 0)
+        d_hh_f = np.maximum(d_hh_raw, 0.0) if FLOOR_HOUSEHOLD_DECLINE else d_hh_raw
         floor_report[col] = {'years': int((d_hh_raw[1:] < 0).sum()),
                              'area': float((np.minimum(d_hh_raw, 0) * occ_per_dw_f)[1:].sum())}
-        # copies: the 2025 entries are overwritten with the observed anchor below
-        g_gross, structural = E['growth_gross'].copy(), E['structural'].copy()
-        hs_pos, hs_avoided = E['hs_pos'].copy(), E['hs_avoided'].copy()
-        g_demand = E['growth'].copy()             # growth net of consolidation (>= 0)
-        extra_space, c_gross = E['extra'].copy(), E['c_gross'].copy()
+
+        g_gross = pop_growth * olf_f
+        structural = d_hh_f * occ_per_dw_f
+        hs_raw = structural - g_gross
+        hs_pos = np.maximum(0, hs_raw)
+        hs_avoided = np.abs(np.minimum(0, hs_raw))
+        g_demand = g_gross - hs_avoided          # growth net of consolidation (>= 0)
+
+        # Extra space inside new dwellings beyond what their occupants require.
+        extra_space = np.clip(d_hh_f * (future_dwelling_size.values - occ_per_dw_f), 0, None)
+        c_gross = consumption_gross(pop_total, d_hh_f, extra_space,
+                                    hh_levels=hh_arr, dwelling_size=future_dwelling_size.values)
         if CONSUMPTION_BASIS == 'stock_vacancy':
-            _D = E['D']
-            stock_fwd[col] = dict(allow=E['allow'] + E['change'], demol=E['demol'], uncons=E['unc'],
-                                  rv=E['rv'], repl=E['demol'] + E['unc'], stock=E['stock'])
-            vac_gfa = (E['allow'] + E['change']) * _D   # vacancy allowance (+ change), m2
-            repl_gfa = E['demol'] * _D                 # demolition replacement, m2
-            unc_gfa = E['unc'] * _D                    # calibrated residual incl. 2025 deviation, m2
-            rv_gfa = E['rv'] * _D                      # housed in RV units, m2 (<0)
+            _u, _a, _d, _n, _r = other_dwellings(hh_arr, d_hh_f)
+            stock_fwd[col] = dict(allow=_a, demol=_d, uncons=_n, rv=_r, repl=_d + _n,
+                                  stock=hh_arr / (1.0 - v_forward))
+            vac_gfa = _a * future_dwelling_size.values        # vacancy allowance, m2
+            repl_gfa = _d * future_dwelling_size.values       # demolition replacement, m2
+            unc_gfa = _n * future_dwelling_size.values        # unconsented additions, m2 (<0)
+            rv_gfa = _r * future_dwelling_size.values         # housed in RV units, m2 (<0)
         else:
             vac_gfa = repl_gfa = unc_gfa = rv_gfa = None      # 'other' not decomposed
         growth_check[col] = float(g_demand[1:].min())
@@ -1436,8 +1485,7 @@ def main():
     evol_typ_repl = split_typ(df_forecast['Ann_GFA_Cons_Replacement_50th'].values)
     evol_typ_unc = split_typ(df_forecast['Ann_GFA_Cons_Unconsented_50th'].values)
     evol_typ_rv = split_typ(df_forecast['Ann_GFA_Cons_RV_50th'].values)
-    evol_typ_total = pd.DataFrame(engine_out['50th']['gfa_t'].T, index=forecast_years,
-                                  columns=typ_names)
+    evol_typ_total = split_typ(df_forecast['Ann_GFA_Total_50th'].values)
 
     # The 2025 row is the observed anchor. It is put on the same BUILT basis as
     # the projection (consents x completion rate), as the national total is.
@@ -1469,9 +1517,7 @@ def main():
     carbon_repl_typ = evol_typ_repl * intensity
     carbon_unc_typ = evol_typ_unc * intensity
     carbon_rv_typ = evol_typ_rv * intensity      # in-scope carbon NOT incurred; RV carbon out of scope
-    carbon_total_typ = pd.DataFrame(engine_out['50th']['carbon_t'].T, index=forecast_years,
-                                    columns=typ_names)
-    carbon_total_typ.loc[2025] = evol_typ_total.loc[2025] * intensity.loc[2025]   # observed anchor
+    carbon_total_typ = evol_typ_total * intensity
 
     tot_carbon_median = float(carbon_total_typ.iloc[1:].sum().sum() / 1e6)
 

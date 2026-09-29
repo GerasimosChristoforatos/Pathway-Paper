@@ -12,21 +12,14 @@ and reports:
      2010 / Jansen estimators, as implemented in scipy.stats.sobol_indices).
 
 ENGINE
-  One full Boss.main() takes about three seconds, too slow for ~24,000 runs.
-  Each draw therefore calls only the forward chain, through the SAME pure
-  functions Boss.main() uses (engine.py): stock calibration, 2025 deviation,
-  damped mix, dwelling-size blend, forward projection. Everything taken from
-  Boss (data series, calibration window, fixed rates, flags) is copied once in
-  build_setup(), so later changes to Boss's module settings cannot leak into a
-  draw. Before sampling, the central draw is checked against Boss.main() year
-  by year (floor area, carbon, upfront carbon, RV units, households, household
-  size); the script stops if any differs by more than 1e-9 (relative).
-  tests/test_engine_equivalence.py proves the same on random draws against the
-  frozen pre-unification code.
-  Floor area follows Boss's definition: new households x occupied area + extra
-  space (floored at zero) + other dwellings x realised size. The old MC engine
-  used (all in-scope dwellings) x realised size, which differs only in a year
-  where realised size falls below occupied area (the extra-space floor binds).
+  One full Boss.main() takes about two seconds, too slow for ~15,000 runs. The
+  forward projection is therefore re-evaluated here from Boss's own functions
+  and calibrated quantities (household-size path, stock calibration, typology
+  mix, dwelling-size blend). Before any sampling, the engine is run at the
+  central values and checked against Boss.main() year by year; the script stops
+  if floor area, carbon or retirement-village units differ by more than 1e-9
+  (relative). Total floor area is (in-scope dwellings) x (dwelling size): the
+  demand bands are an accounting split of that total and are not needed here.
 
 INPUTS AND DISTRIBUTIONS (each is a stated assumption)
   z_pop     Standard normal. Population = median + the published Stats NZ
@@ -96,8 +89,7 @@ from scipy import stats
 from scipy.interpolate import PchipInterpolator
 from scipy.stats import qmc
 
-import Boss
-import engine
+import Boss_legacy as Boss
 
 N_UNCERTAINTY = 10000            # Latin hypercube draws for the percentiles
 N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
@@ -158,28 +150,18 @@ def build_setup():
     su['rho_hat'] = hr['rho']
     su['rho_se'] = float(np.sqrt((1 - hr['rho'] ** 2) / hr['n_fit']))
 
-    # ---- typology mix: Boss's ALR slopes, plus their HAC standard errors ----
+    # ---- typology mix: ALR slopes and their HAC standard errors ----
     hs = B['hist_shares']
-    su['alr_2025'], su['alr_slope'] = Boss.mix_trend(hs, B['shares_2025'], Boss.TREND_WINDOW_START, typ)
     win = hs.loc[hs.index >= Boss.TREND_WINDOW_START]
     yrs = win.index.values.astype(float)
     X = np.c_[np.ones(len(yrs)), yrs]
-    su['alr_se'] = {}
+    su['alr_slope'], su['alr_se'] = {}, {}
     for n in typ[1:]:
         y = np.log(win[n] / win[typ[0]]).values
         beta, *_ = np.linalg.lstsq(X, y, rcond=None)
         cov, _ = Boss.newey_west_cov(X, y - X @ beta)
-        su['alr_se'][n] = float(np.sqrt(cov[1, 1]))
-
-    # ---- snapshot of Boss's data and settings used in every draw ----
-    su.update(years_hist=B['years_hist'], census=B['census'], hist_pop=B['hist_pop'],
-              hh_raw_dhe=B['hh_raw_dhe'], units_all=B['hist_total_units'] + B['hist_rv_units'],
-              rv_units=B['hist_rv_units'], calib_start=Boss.DEMOLITION_CALIB_START,
-              calib_end=B['calib_end'], demol_rate=Boss.DEMOLITION_RATE,
-              completion=Boss.COMPLETION_RATE, floor_decline=Boss.FLOOR_HOUSEHOLD_DECLINE,
-              size_key='S_resp' if Boss.HH_SIZE_RESPONSE else 'S_matched',
-              olf=dict(B['OLF_USED']), olf_per_resident=(Boss.DEMAND_BASIS == 'per_resident'),
-              phi=Boss.DAMPING_PHI)
+        su['alr_slope'][n], su['alr_se'][n] = float(beta[1]), float(np.sqrt(cov[1, 1]))
+    su['alr_2025'] = {n: float(np.log(B['shares_2025'][n] / B['shares_2025'][typ[0]])) for n in typ[1:]}
 
     # ---- dwelling size ----
     su['size_ref'] = np.array([B['size_ref'][t] for t in typ])
@@ -250,8 +232,8 @@ PARAMS = (['z_pop'] + (['b', 'rho'] if Boss.HH_SIZE_RESPONSE else [])
 
 def central(su):
     return dict(z_pop=0.0, b=su['b_hat'], rho=su['rho_hat'], hh_rebase=su['k_range'][1],
-                regime=0.0, phi=su['phi'],
-                slope_T=0.0, slope_A=0.0, size=1.0, complete=su['completion'],
+                regime=0.0, phi=Boss.DAMPING_PHI,
+                slope_T=0.0, slope_A=0.0, size=1.0, complete=Boss.COMPLETION_RATE,
                 pre_share=su['pre_share'], vacancy=su['v_2023'], rv_share=su['rv_range'][1],
                 carbon=None)
 
@@ -269,58 +251,73 @@ def interp_z(z, zs, ys):
 
 
 def project(su, p):
-    """One draw through the shared engine. Reads only su (a snapshot) and p."""
-    fy, typ, yh = su['fy'], su['typ'], su['years_hist']
+    B, fy, typ = su['B'], su['fy'], su['typ']
     # ---- population and household size (same rank z) ----
     pop = su['pop50'] + interp_z(p['z_pop'], Z_KNOTS, su['spreads'])
     # historical households under this draw's census rebase
     k = p.get('hh_rebase', su['k_range'][1])
-    hh_hist = Boss.annual_households(Boss.rebase_households(su['hh_raw_dhe'], k)).reindex(yh)
-    S_hist = su['hist_pop'] / hh_hist
-    S_v = [Boss.respond_household_size(*su['size_shape'][v], S_hist, su['hist_pop'], fy,
-                                       p.get('b', su['b_hat']), p.get('rho', su['rho_hat']))[su['size_key']]
+    hh_hist = Boss.annual_households(Boss.rebase_households(B['hh_raw_dhe'], k)).reindex(B['years_hist'])
+    S_hist = B['hist_pop'] / hh_hist
+    key = 'S_resp' if Boss.HH_SIZE_RESPONSE else 'S_matched'
+    S_v = [Boss.respond_household_size(*su['size_shape'][v], S_hist, B['hist_pop'], fy,
+                                       p.get('b', su['b_hat']), p.get('rho', su['rho_hat']))[key]
            for v in VARIANT_Z]
     S = interp_z(p['z_pop'], np.array(list(VARIANT_Z.values())), np.array(S_v))
     hh = pop / S
+    d_hh = np.insert(np.diff(hh), 0, 0.0)
+    if Boss.FLOOR_HOUSEHOLD_DECLINE:
+        d_hh = np.maximum(d_hh, 0.0)
 
-    # ---- stock: recalibrated for this draw's completion rate / pre-2013 share ----
+    # ---- stock: recalibrate for this completion rate / pre-2013 share ----
     c = p['complete']
-    cal = engine.calibrate_stock(yh, hh_hist, engine.vacancy_knots(su['census'], p['pre_share']),
-                                 su['units_all'], su['rv_units'], c, su['demol_rate'],
-                                 su['calib_start'], su['calib_end'])
-    end = su['calib_end']
+    cal = B['calibrate_stock'](p['pre_share'], completion=c, hh=hh_hist)
+    end = B['calib_end']
     # regime: weight on the 2019-2023 census interval's net replacement rate
     # against the whole census-benchmarked window (0 = long run, as in Boss)
-    unc_recent = (engine.window_rate(cal, 2019, end) - su['demol_rate']) if end >= 2019 else cal['rate_unc']
+    unc_recent = (float(cal['net'].loc[2019:end].sum() / cal['prev'].loc[2019:end].sum())
+                  - Boss.DEMOLITION_RATE) if end >= 2019 else cal['rate_unc']
     unc = (1 - p['regime']) * cal['rate_unc'] + p['regime'] * unc_recent
-    dv = engine.deviation_2025(cal, c * su['units_all'].loc[2025],
-                               float(hh_hist.loc[2025] - hh_hist.loc[2024]),
-                               su['demol_rate'] + unc, yh, su['calib_start'], end)
-    # vacancy: from the latest census value, reached linearly by 2050
+    d_hh_2025 = float(hh_hist.loc[2025] - hh_hist.loc[2024])
+    other_2025 = c * (B['hist_total_units'].loc[2025] + B['hist_rv_units'].loc[2025]) - d_hh_2025
+    model_2025 = (cal['allow'].loc[2025] + cal['change'].loc[2025]
+                  + (Boss.DEMOLITION_RATE + unc) * cal['stock'].shift(1).loc[2025])
+    yh = B['years_hist']
+    net = cal['net'][(yh >= Boss.DEMOLITION_CALIB_START) & (yh <= end)].values
+    rho_o = float(np.clip(np.corrcoef(net[:-1], net[1:])[0, 1], 0.0, 0.95))
+    dev = (other_2025 - model_2025) * rho_o ** np.arange(len(fy))
+    dev[0] = 0.0
     v0 = float(cal['knots'][max(cal['knots'])])
     v = v0 + (p['vacancy'] - v0) * (fy - 2025) / (fy[-1] - 2025)
+    inv = 1.0 / (1.0 - v)
+    hh_prev = np.concatenate([[hh[0]], hh[:-1]])
+    inv_prev = np.concatenate([[inv[0]], inv[:-1]])
+    allow = d_hh * v * inv
+    change = hh_prev * (inv - inv_prev)
+    beyond = allow + change + (Boss.DEMOLITION_RATE + unc) * hh_prev * inv_prev + dev
+    rv = -p['rv_share'] * (d_hh + beyond)
+    dwell = d_hh + beyond + rv
 
     # ---- typology mix and dwelling size ----
+    ahead = (fy - 2025).clip(min=0)
+    damp = p['phi'] * (1 - p['phi'] ** ahead) / (1 - p['phi'])
     off = {typ[1]: p['slope_T'], typ[2]: p['slope_A']}
-    shares = engine.mix_shares(su['alr_2025'], {n: su['alr_slope'][n] + off[n] for n in typ[1:]},
-                               p['phi'], fy, typ)
-    size = {t: su['size_ref'][j] * p['size'] for j, t in enumerate(typ)}
+    ex = np.array([np.ones(len(fy))] + [np.exp(su['alr_2025'][n] + (su['alr_slope'][n] + off[n]) * damp)
+                                        for n in typ[1:]])
+    shares = ex / ex.sum(axis=0)                           # (typ, years)
+    size = su['size_ref'] * p['size']
+    D = 1.0 / (shares / size[:, None]).sum(axis=0)
+    gfa = dwell * D
+    gfa_t = shares * gfa                                   # (typ, years)
 
-    # ---- carbon factors ----
+    # ---- carbon ----
     if p['carbon'] is None:
         emb, upf = su['emb_central'], su['up_central']
     else:
-        kc = min(int(p['carbon'] * N_BOOT), N_BOOT - 1)
-        emb, upf = su['boot_emb'][kc], su['boot_up'][kc]
-    I = {t: emb[j] + su['soc'][j] for j, t in enumerate(typ)}
-    U = {t: upf[j] + su['soc'][j] for j, t in enumerate(typ)}
-
-    E = engine.forward(pop, hh, np.insert(np.diff(pop), 0, 0).clip(min=0), v, su['demol_rate'], unc,
-                       dv['dev'], dv['rho'], p['rv_share'], shares, size, su['olf'], I, U,
-                       floor_decline=su['floor_decline'], olf_per_resident=su['olf_per_resident'])
-    return dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
-                hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],
-                I=np.array([I[t] for t in typ]), U=np.array([U[t] for t in typ]))
+        k = min(int(p['carbon'] * N_BOOT), N_BOOT - 1)
+        emb, upf = su['boot_emb'][k], su['boot_up'][k]
+    carbon = ((emb + su['soc'])[:, None] * gfa_t).sum(axis=0)
+    upfront = ((upf + su['soc'])[:, None] * gfa_t).sum(axis=0)
+    return dict(gfa=gfa, carbon=carbon, upfront=upfront, rv_units=-rv, hh=hh, S=S)
 
 
 def summarise(out):
@@ -338,19 +335,14 @@ def validate(su):
     B = su['B']
     o = project(su, central(su))
     R = B['results']['50th']
-    typ = su['typ']
-    up_int = {t: B['UPFRONT_2025'][t] for t in typ}
     ref = dict(gfa=R['total'], carbon=B['carbon_total_typ'].sum(axis=1).values,
-               upfront=sum(B['evol_typ_total'][t].values * up_int[t] for t in typ),
-               rv_units=-B['stock_fwd']['50th']['rv'], hh=B['households_forecast']['50th'],
-               S=B['df_forecast']['PopTotal_50th'].values / B['households_forecast']['50th'])
+               rv_units=-B['stock_fwd']['50th']['rv'])
     worst = 0.0
     for k, r in ref.items():
         rel = np.abs(o[k][1:] - r[1:]) / np.maximum(np.abs(r[1:]), 1e-9)
         worst = max(worst, float(rel.max()))
-    print(f"[check] MC draw vs Boss.main(), central values, 2026-2050, floor area, carbon, "
-          f"upfront, RV units, households, S: max relative difference {worst:.1e} "
-          f"({'OK' if worst < 1e-9 else 'FAIL'})")
+    print(f"[check] engine vs Boss.main(), central values, 2026-2050: max relative "
+          f"difference {worst:.1e} ({'OK' if worst < 1e-9 else 'FAIL'})")
     if worst >= 1e-9:
         sys.exit("Engine does not reproduce Boss.main(); results would not be valid.")
 

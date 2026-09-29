@@ -26,7 +26,8 @@ Two checks, both DESCRIPTIVE. Nothing here is used to set or tune a parameter.
 
 2. OUT-OF-SAMPLE CHECK OF 2026 against observed consents
    Model: 2026 dwellings built (all categories: in scope + retirement
-   villages) / completion rate = consent-equivalent. Observed: all-category
+   villages), converted to 2026 consents by inverting the completion rate and
+   lag: consents_2026 = (built / c - W x consents_2025) / (1 - W). Observed: all-category
    consents in the consent file for 2026 months. Year-to-date months are
    compared with the model's annual figure x the average share of annual
    consents falling in those months (2010-2025, ratio-to-annual seasonal
@@ -66,10 +67,10 @@ def census_intervals(B, last):
 def hindcast(B):
     yh = B['years_hist']
     end = int(B['calib_end'])
-    units_all = B['hist_total_units'] + B['hist_rv_units']
+    units_all = B['hist_units_all_c']                 # consents timed as completions
     c = Boss.COMPLETION_RATE
     cal_full = engine.calibrate_stock(yh, B['hist_hh'], engine.vacancy_knots(B['census'], B['empty_share_measured']),
-                                      units_all, B['hist_rv_units'], c, Boss.DEMOLITION_RATE,
+                                      units_all, B['hist_rv_units_c'], c, Boss.DEMOLITION_RATE,
                                       Boss.DEMOLITION_CALIB_START, end)
     built = c * units_all
     need = built - cal_full['net']               # households + allowance + change (observed)
@@ -122,7 +123,10 @@ def check_2026(B, consents=None):
     last = s.index.max()
     E = B['engine_out']['50th']
     built_all_2026 = float(E['dwell_in_scope'][1] + E['rv_units'][1])
-    model_consents_2026 = built_all_2026 / Boss.COMPLETION_RATE
+    # completions_2026 = c x [(1 - W) consents_2026 + W consents_2025]  ->  consents_2026
+    W = B['lag_w']
+    cons_2025 = float(B['hist_units_all'].loc[2025])
+    model_consents_2026 = (built_all_2026 / Boss.COMPLETION_RATE - W * cons_2025) / (1.0 - W)
     out = dict(data_end=str(last.date()), model_built_all_2026=built_all_2026,
                model_consent_equivalent_2026=model_consents_2026)
     ytd = s.loc['2026-01-01':]

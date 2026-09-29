@@ -79,3 +79,23 @@ MonteCarlo seeds numpy's global generator (SEED + 3) immediately before SobolRes
 | MC carbon p95 (kt) | 40,888 | 40,888 | 0 |
 | Central run percentile in MC, floor area | 38.5 | 38.5 | 0 |
 | Central run percentile in MC, carbon | 39.0 | 39.0 | 0 |
+
+## Identity tests (item 2)
+
+tests/test_identities.py: 23 accounting identities checked to 1e-9 x the largest value (history: typology sum, share sums, dwelling-weighted size blend, stock identity every year, history reconstructed by the demand bands; forward: bands sum to total, structural identity, stock identity, RV share, typology split, for all three population paths; carbon: materials + soil, stages + soil, bands; determinism with no leaked module state). Mutation check: a +100 m2, +1 dwelling or +1 t error is detected. run_all.py runs them after the MC. No model change.
+
+| metric | before | after | change |
+|---|---|---|---|
+| Built floor area 2026-2050, central run (Mm2) | 76.71 | 76.71 | 0 |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 29,708 | 29,708 | 0 |
+| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 21,862 | 21,862 | 0 |
+| 2025 -> 2026 step in built floor area (%) | -22.1 | -22.1 | 0 |
+| Household size 2050, central run | 2.641 | 2.641 | 0 |
+| MC floor area p5 (Mm2) | 59.98 | 59.98 | 0 |
+| MC floor area p50 (Mm2) | 80.66 | 80.66 | 0 |
+| MC floor area p95 (Mm2) | 104.57 | 104.57 | 0 |
+| MC carbon p5 (kt) | 23,168 | 23,168 | 0 |
+| MC carbon p50 (kt) | 31,191 | 31,191 | 0 |
+| MC carbon p95 (kt) | 40,888 | 40,888 | 0 |
+| Central run percentile in MC, floor area | 38.5 | 38.5 | 0 |
+| Central run percentile in MC, carbon | 39.0 | 39.0 | 0 |

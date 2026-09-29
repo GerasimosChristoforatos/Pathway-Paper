@@ -59,3 +59,23 @@ First metrics file, so 'before' is empty; the values equal the Baseline table ab
 | MC carbon p95 (kt) | n/a | 40,888 |  |
 | Central run percentile in MC, floor area | n/a | 38.5 |  |
 | Central run percentile in MC, carbon | n/a | 39.0 |  |
+
+## Seed the Sobol bootstrap (item 1, N3)
+
+MonteCarlo seeds numpy's global generator (SEED + 3) immediately before SobolResult.bootstrap(), which accepts no rng in scipy 1.17. Sobol confidence intervals are now reproducible: montecarlo_sobol.csv is byte-identical across two independent runs. Point estimates and all headline metrics unchanged.
+
+| metric | before | after | change |
+|---|---|---|---|
+| Built floor area 2026-2050, central run (Mm2) | 76.71 | 76.71 | 0 |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 29,708 | 29,708 | 0 |
+| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 21,862 | 21,862 | 0 |
+| 2025 -> 2026 step in built floor area (%) | -22.1 | -22.1 | 0 |
+| Household size 2050, central run | 2.641 | 2.641 | 0 |
+| MC floor area p5 (Mm2) | 59.98 | 59.98 | 0 |
+| MC floor area p50 (Mm2) | 80.66 | 80.66 | 0 |
+| MC floor area p95 (Mm2) | 104.57 | 104.57 | 0 |
+| MC carbon p5 (kt) | 23,168 | 23,168 | 0 |
+| MC carbon p50 (kt) | 31,191 | 31,191 | 0 |
+| MC carbon p95 (kt) | 40,888 | 40,888 | 0 |
+| Central run percentile in MC, floor area | 38.5 | 38.5 | 0 |
+| Central run percentile in MC, carbon | 39.0 | 39.0 | 0 |

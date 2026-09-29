@@ -46,6 +46,7 @@ CASES = [
     ('Household size', 'S after 2043: 2038-43 secant slope', dict(S_TAIL='secant')),
     ('Household size', 'S after 2043: mean 2018-43 slope', dict(S_TAIL='mean_slope')),
     ('Household size', 'S after 2043: PCHIP end slope (original)', dict(S_TAIL='pchip_end_slope')),
+    ('Household size', 'S anchored on observed 2025 (original)', dict(S_ANCHOR_YEAR=2025)),
     ('Household size', 'Carry 2025 deviation, rho = 0.9',
      dict(HH_SIZE_RESPONSE=True, DEVIATION_PERSISTENCE=0.9)),
     ('Households', 'DHE as published (no rebase; calib. to 2018)', dict(HH_CENSUS_REBASE=None)),

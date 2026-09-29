@@ -121,7 +121,7 @@ HOUSEHOLD_VARIANT_MAP = {'5th': 'Low', '50th': 'Medium', '95th': 'High'}
 #         S_StatsNZ(knot) = Pop_update(knot) / HH_MediumB(knot)
 #     interpolated between knots with the same shape-preserving spline (PCHIP)
 #     used for every other input, extended linearly past the last knot, and
-#     applied as a SHAPE rebased on observed 2025 household size:
+#     applied as a SHAPE rebased on observed household size in S_ANCHOR_YEAR:
 #         S(t)            = S_observed(2025) x S_StatsNZ(t) / S_StatsNZ(2025)
 #         Households_p(t) = Pop_2024base_p(t) / S(t)
 #     VINTAGE: see FILE_POP_SIZE_PAIR for which release is paired and why.
@@ -144,6 +144,23 @@ HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S onl
 # population question remain OPEN until the living-arrangement table (E2) is
 # obtained; see ASSUMPTIONS.md.
 S_TAIL = 'flat'
+
+# S_ANCHOR_YEAR: the observed household size the Stats NZ shape is rebased on.
+#   2023 (ADOPTED, item 6): the last year in which households are benchmarked
+#       to a census (the k-rebase makes June 2023 match census growth); the
+#       Stats NZ shape then carries S from 2023 through 2025 and on.
+#       CAVEAT: the model's annual series is at 31 December, so the anchor is
+#       December 2023, six months after the June 2023 benchmark; those six
+#       months of household growth are consent-derived (0.888 x lagged
+#       consents x k). A June anchor would need a June population; the ERP is
+#       used at 31 December throughout, so this half-year compromise stands.
+#   2025: the original behaviour. 2024-25 households are 0.888 x lagged
+#       consents, so the 2025 value carries the same DHE artefact that the model
+#       already refuses to carry forward as e_2025 (ASSESSMENT.md C3).
+# When Stats NZ rebases DHE households on the 2023 census (planned after the
+# 2023-base family and household projections, late 2026; F3), this and the
+# k-rebase are to be replaced through one input switch.
+S_ANCHOR_YEAR = 2023
 
 # ---------------------------------------------------------------------------
 # HOUSEHOLD ESTIMATES: HOW STATS NZ BUILDS THEM, AND WHAT THAT ALLOWS
@@ -765,12 +782,14 @@ def statsnz_size_shape(variant, forecast_years, tail='pchip_end_slope'):
     return S_knots, S_ann, pop_ref
 
 
-def respond_household_size(S_ann, pop_ref, hist_S, hist_pop, forecast_years, b, rho):
-    """Household size rebased on observed 2025 (S_matched), plus 2025's
+def respond_household_size(S_ann, pop_ref, hist_S, hist_pop, forecast_years, b, rho, anchor_year=2025):
+    """Household size rebased on the observed value in anchor_year (S_matched):
+        S(t) = S_obs(anchor) x S_StatsNZ(t) / S_StatsNZ(anchor),
+    plus (sensitivity only) 2025's
     unexplained deviation e_2025 fading at rho (S_resp). The part of 2025's
     fall explained by b x (observed - assumed population growth) does not carry."""
     S_statsnz = S_ann.reindex(forecast_years).values
-    S_matched = float(hist_S.loc[2025]) * S_statsnz / S_statsnz[0]
+    S_matched = float(hist_S.loc[anchor_year]) * S_statsnz / float(S_ann.loc[anchor_year])
     dP_ref = pop_ref.diff().reindex(forecast_years).values
     dS_snz = np.diff(S_matched)                              # 2026..2050
     dS_snz_2025 = float(S_matched[0] * (S_ann.loc[2025] - S_ann.loc[2024]) / S_ann.loc[2025])
@@ -1258,7 +1277,7 @@ def main():
     # [Route A] household size from the (near-)matched vintage pair
     S_knots, _S_ann, _pref = statsnz_size_shape(HH_SIZE_VARIANT, forecast_years, tail=S_TAIL)
     S_matched = respond_household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years,
-                                       0.0, 0.0)['S_matched']
+                                       0.0, 0.0, anchor_year=S_ANCHOR_YEAR)['S_matched']
 
     if HOUSEHOLD_METHOD == 'matched_size':
         S_used = S_matched
@@ -1294,7 +1313,8 @@ def main():
         # applied year after year: our population differs from Stats NZ's by a
         # persistent VINTAGE gap, not a migration shock, and sustained migration
         # is housed rather than packed (2011-20: +75,800/yr, S rose only 0.002/yr).
-        _hr = respond_household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years, b_resp, rho)
+        _hr = respond_household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years, b_resp, rho,
+                                     anchor_year=S_ANCHOR_YEAR)
         S_resp, e_2025, dP_ref = _hr['S_resp'], _hr['e_2025'], _hr['dP_ref']
         dS_snz_2025, dS_obs_2025, dP_obs_2025 = _hr['dS_snz_2025'], _hr['dS_obs_2025'], _hr['dP_obs_2025']
         S_used = S_resp if HH_SIZE_RESPONSE else S_matched
@@ -1335,7 +1355,7 @@ def main():
               f"persistence {rho_other:.2f}/yr")
         print(f"   household size 2050: {h['S_by_pct']['50th'][-1]:.3f}  "
               f"(with 2025 deviation carried {h['S_resp'][-1]:.3f})")
-    print(f"   rebased on observed 2025 (S = {hist_S.loc[2025]:.3f}): "
+    print(f"   rebased on observed {S_ANCHOR_YEAR} (S = {hist_S.loc[S_ANCHOR_YEAR]:.3f}; observed 2025 S = {hist_S.loc[2025]:.3f}): "
           f"2030 {S_matched[5]:.3f} | 2040 {S_matched[15]:.3f} | 2050 {S_matched[-1]:.3f}")
     if VERBOSE:   # comparison against the earlier household methods
         print(f"   (median household size 2050: Route B {S_path[-1]:.3f} | Route A {S_matched[-1]:.3f})")

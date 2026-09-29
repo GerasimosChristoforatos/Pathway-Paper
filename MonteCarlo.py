@@ -179,7 +179,7 @@ def build_setup():
               completion=Boss.COMPLETION_RATE, floor_decline=Boss.FLOOR_HOUSEHOLD_DECLINE,
               size_key='S_resp' if Boss.HH_SIZE_RESPONSE else 'S_matched',
               olf=dict(B['OLF_USED']), olf_per_resident=(Boss.DEMAND_BASIS == 'per_resident'),
-              phi=Boss.DAMPING_PHI)
+              phi=Boss.DAMPING_PHI, s_anchor=Boss.S_ANCHOR_YEAR)
 
     # ---- dwelling size ----
     su['size_ref'] = np.array([B['size_ref'][t] for t in typ])
@@ -278,7 +278,8 @@ def project(su, p):
     hh_hist = Boss.annual_households(Boss.rebase_households(su['hh_raw_dhe'], k)).reindex(yh)
     S_hist = su['hist_pop'] / hh_hist
     S_v = [Boss.respond_household_size(*su['size_shape'][v], S_hist, su['hist_pop'], fy,
-                                       p.get('b', su['b_hat']), p.get('rho', su['rho_hat']))[su['size_key']]
+                                       p.get('b', su['b_hat']), p.get('rho', su['rho_hat']),
+                                       anchor_year=su['s_anchor'])[su['size_key']]
            for v in VARIANT_Z]
     S = interp_z(p['z_pop'], np.array(list(VARIANT_Z.values())), np.array(S_v))
     hh = pop / S

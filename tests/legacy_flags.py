@@ -4,4 +4,5 @@ reproduce the frozen legacy copies exactly, so every earlier behaviour stays
 available. Each Step 2 change that alters a default adds its flag here."""
 LEGACY_FLAGS = {
     'S_TAIL': 'pchip_end_slope',          # item 5
+    'S_ANCHOR_YEAR': 2025,                 # item 6
 }

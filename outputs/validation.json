@@ -102,8 +102,8 @@
   ],
   "check_2026": {
     "data_end": "2026-07-01",
-    "model_built_all_2026": 28266.487495106656,
-    "model_consent_equivalent_2026": 29754.197363270167,
+    "model_built_all_2026": 28046.060293078535,
+    "model_consent_equivalent_2026": 29522.168729556353,
     "status": "observed",
     "months": [
       1,
@@ -116,8 +116,8 @@
     ],
     "observed_ytd": 23916.0,
     "seasonal_share": 0.5612383713207713,
-    "model_expected_ytd": 16699.197268118536,
-    "ratio_observed_to_model": 1.4321646493547031,
+    "model_expected_ytd": 16568.97389563321,
+    "ratio_observed_to_model": 1.4434207061128337,
     "last12_months": "2025-08-01..2026-07-01",
     "observed_last12": 40908.0
   }

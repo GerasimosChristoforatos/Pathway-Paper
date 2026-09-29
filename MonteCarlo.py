@@ -179,7 +179,10 @@ def build_setup():
               completion=Boss.COMPLETION_RATE, floor_decline=Boss.FLOOR_HOUSEHOLD_DECLINE,
               size_key='S_resp' if Boss.HH_SIZE_RESPONSE else 'S_matched',
               olf=dict(B['OLF_USED']), olf_per_resident=(Boss.DEMAND_BASIS == 'per_resident'),
-              phi=Boss.DAMPING_PHI, s_anchor=Boss.S_ANCHOR_YEAR)
+              phi=Boss.DAMPING_PHI, s_anchor=Boss.S_ANCHOR_YEAR,
+              nr_source=Boss.NET_REPLACEMENT_SOURCE, nr_window=tuple(Boss.NET_REPLACEMENT_WINDOW),
+              census_stock=B['census']['total_private'], consents_monthly=B['consents_monthly'],
+              lag_w=B['lag_w'], const_share=B['_const_share'])
 
     # ---- dwelling size ----
     su['size_ref'] = np.array([B['size_ref'][t] for t in typ])
@@ -287,14 +290,21 @@ def project(su, p):
 
     # ---- stock: recalibrated for this draw's completion rate / pre-2013 share ----
     c = p['complete']
-    cal = engine.calibrate_stock(yh, hh_hist, engine.vacancy_knots(su['census'], p['pre_share']),
+    cal = engine.calibrate_stock(yh, hh_hist, engine.vacancy_knots(su['census'], p['pre_share'], su['const_share']),
                                  su['units_all'], su['rv_units'], c, su['demol_rate'],
                                  su['calib_start'], su['calib_end'])
     end = su['calib_end']
     # regime: weight on the 2019-2023 census interval's net replacement rate
     # against the whole census-benchmarked window (0 = long run, as in Boss)
-    unc_recent = (engine.window_rate(cal, 2019, end) - su['demol_rate']) if end >= 2019 else cal['rate_unc']
-    unc = (1 - p['regime']) * cal['rate_unc'] + p['regime'] * unc_recent
+    if su['nr_source'] == 'dwelling_count':
+        # census dwelling-count identity, recomputed for this draw's completion rate
+        rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_w'])
+        unc_long = engine.census_window_rate(rates, *su['nr_window']) - su['demol_rate']
+        unc_recent = engine.census_window_rate(rates, 2018, 2023) - su['demol_rate']
+    else:
+        unc_long = cal['rate_unc']
+        unc_recent = (engine.window_rate(cal, 2019, end) - su['demol_rate']) if end >= 2019 else cal['rate_unc']
+    unc = (1 - p['regime']) * unc_long + p['regime'] * unc_recent
     dv = engine.deviation_2025(cal, c * su['units_all'].loc[2025],
                                float(hh_hist.loc[2025] - hh_hist.loc[2024]),
                                su['demol_rate'] + unc, yh, su['calib_start'], end)

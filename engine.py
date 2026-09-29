@@ -27,11 +27,16 @@ import pandas as pd
 # ============================================================
 # HISTORY: STOCK CALIBRATION
 # ============================================================
-def vacancy_knots(census, pre_share):
+def vacancy_knots(census, pre_share, const_share=None):
     """Vacancy at each census: empty / (occupied + unoccupied private).
     Before 2013 only 'unoccupied' is published; its empty part is taken as
-    pre_share x unoccupied."""
-    empty = census['empty'].fillna(census['unoccupied'] * pre_share)
+    pre_share x unoccupied. With const_share, EVERY census uses
+    const_share x unoccupied (one empty/away split throughout, which removes
+    the 2013 -> 2018 classification break, N1)."""
+    if const_share is not None:
+        empty = census['unoccupied'] * const_share
+    else:
+        empty = census['empty'].fillna(census['unoccupied'] * pre_share)
     return (empty / census['total_private']).to_dict()
 
 
@@ -71,6 +76,49 @@ def window_rate(cal, start, end):
     """Net replacement (demolition + residual) as a share of stock, ratio of
     sums over the calendar years start..end."""
     return float(cal['net'].loc[start:end].sum() / cal['prev'].loc[start:end].sum())
+
+
+CENSUS_DAY_OF_YEAR = 64          # census nights fell on 4-7 March, 1986-2023; 5 March used
+
+
+def census_interval_rates(stock, consents, completion, lag_w, day_of_year=CENSUS_DAY_OF_YEAR):
+    """Net replacement from census DWELLING counts, per intercensal interval
+    (no household data, no empty/away split):
+
+        rate = [dwellings completed - change in census private dwellings] / stock-years
+
+    stock    : census private dwellings (occupied + unoccupied), by census year
+    consents : monthly consents, all categories (index = first of month)
+    Dwellings completed in (census_0, census_1] = completion x consents whose
+    mid-month falls in (census_0 - W, census_1 - W]: the same two-point lag as
+    the model's completions series, in continuous time. Intervals without full
+    consent coverage are skipped."""
+    years = sorted(int(y) for y in stock.index)
+    t = {y: y + day_of_year / 365.25 for y in years}
+    idx = consents.index
+    tm = idx.year + (idx.dayofyear - 1 + idx.days_in_month / 2.0) / 365.25
+    rows = []
+    for y0, y1 in zip(years[:-1], years[1:]):
+        lo, hi = t[y0] - lag_w, t[y1] - lag_w
+        if tm.min() > lo:
+            continue
+        m = (tm > lo) & (tm <= hi)
+        built = completion * float(consents[m].sum())
+        d_stock = float(stock[y1] - stock[y0])
+        stock_years = float((stock[y0] + stock[y1]) / 2.0 * (t[y1] - t[y0]))
+        rows.append(dict(y0=y0, y1=y1, built=built, d_stock=d_stock, stock_years=stock_years,
+                         rate=(built - d_stock) / stock_years))
+    return pd.DataFrame(rows)
+
+
+def census_window_rate(rates, start, end):
+    """Ratio of sums over the intervals from census year start to census year
+    end. The stock changes telescope, so only the endpoint counts enter the
+    numerator."""
+    w = rates[(rates['y0'] >= start) & (rates['y1'] <= end)]
+    if w.empty:
+        raise ValueError(f'No census intervals within {start}-{end}.')
+    return float((w['built'] - w['d_stock']).sum() / w['stock_years'].sum())
 
 
 def deviation_2025(cal, built_all_2025, d_hh_2025, rate_net, years, window_start, window_end):

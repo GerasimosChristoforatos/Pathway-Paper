@@ -1,0 +1,21 @@
+net replacement rate (household identity) by census interval, and townhouse consents per 1000 stock:
+  1991-1996: net +0.256%/yr | townhouses 3.05 per 1000 stock/yr | TH share of in-scope consents 20.7%
+  1996-2001: net -0.058%/yr | townhouses 2.28 per 1000 stock/yr | TH share of in-scope consents 15.4%
+  2001-2006: net -0.049%/yr | townhouses 1.78 per 1000 stock/yr | TH share of in-scope consents 10.4%
+  2006-2013: net +0.019%/yr | townhouses 0.87 per 1000 stock/yr | TH share of in-scope consents 8.9%
+  2013-2018: net +0.389%/yr | townhouses 2.40 per 1000 stock/yr | TH share of in-scope consents 16.2%
+  2018-2023: net +0.355%/yr | townhouses 7.50 per 1000 stock/yr | TH share of in-scope consents 36.8%
+
+HINDCAST A: calibrate 1992-2013, test 2014-2023; actual built 340,888
+   constant long-run                                    predicted   276,609  error -18.9%
+   recent interval 2006-2013                            predicted   273,758  error -19.7%
+   linked (n=4 intervals; a=-0.150%, b=0.961)           predicted   333,710  error -2.1%
+
+HINDCAST B: calibrate 1992-2018, test 2019-2023; actual built 202,189
+   constant long-run                                    predicted   177,962  error -12.0%
+   recent interval 2013-2018                            predicted   205,531  error +1.7%
+   linked (n=5 intervals; a=-0.167%, b=1.342)           predicted   249,717  error +23.5%
+
+linked model on all 6 intervals: b = 0.537 (SE 0.349, t = 1.54, df=4); leverage of 2018-23 = 0.92
+   dropping 2018-23: b = 1.342
+   interpretation: b = net dwellings removed per townhouse consented (if causal)

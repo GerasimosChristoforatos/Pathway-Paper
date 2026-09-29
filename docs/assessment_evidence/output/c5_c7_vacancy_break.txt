@@ -1,0 +1,24 @@
+census unoccupied split:
+  1986: unoccupied/total 8.99% | empty share of unoccupied  | empty rate used 6.85%
+  1991: unoccupied/total 9.44% | empty share of unoccupied  | empty rate used 7.19%
+  1996: unoccupied/total 8.16% | empty share of unoccupied  | empty rate used 6.22%
+  2001: unoccupied/total 9.78% | empty share of unoccupied  | empty rate used 7.46%
+  2006: unoccupied/total 9.77% | empty share of unoccupied  | empty rate used 7.44%
+  2013: unoccupied/total 10.61% | empty share of unoccupied 76.2% | empty rate used 8.09%
+  2018: unoccupied/total 10.56% | empty share of unoccupied 49.8% | empty rate used 5.26%
+  2023: unoccupied/total 11.15% | empty share of unoccupied 49.6% | empty rate used 5.53%
+2013 empty rate NZ 8.09% | Canterbury 9.82% | NZ excl. Canterbury 7.82%
+
+adopted: measured empty (2013 split pre-2013)
+   net by interval: 1991-1996 +0.256% | 1996-2001 -0.058% | 2001-2006 -0.049% | 2006-2013 +0.019% | 2013-2018 +0.389% | 2018-2023 +0.355%
+   rate 1992-2023 0.154% | v_forward 5.53% | dev +5,494 | GFA 76.71 (+0.0%) | kt 29,708 | hindcast 2014-23 (cal. 1992-2013) -18.9%
+
+constant empty share 76.2% (2013) all censuses
+   net by interval: 1991-1996 +0.256% | 1996-2001 -0.058% | 2001-2006 -0.049% | 2006-2013 +0.019% | 2013-2018 -0.236% | 2018-2023 +0.252%
+   rate 1992-2023 0.028% | v_forward 8.50% | dev +7,276 | GFA 69.61 (-9.3%) | kt 26,955 | hindcast 2014-23 (cal. 1992-2013) +0.9%
+
+constant empty share 49.7% (2018+2023) all censuses
+   net by interval: 1991-1996 +0.215% | 1996-2001 +0.077% | 2001-2006 -0.004% | 2006-2013 +0.085% | 2013-2018 -0.194% | 2018-2023 +0.351%
+   rate 1992-2023 0.089% | v_forward 5.54% | dev +6,862 | GFA 71.90 (-6.3%) | kt 27,843 | hindcast 2014-23 (cal. 1992-2013) -0.1%
+
+(dwelling-count identity, no households: 1991-96 +0.068 | 96-01 -0.103 | 01-06 +0.017 | 06-13 +0.098 | 13-18 +0.078 | 18-23 +0.334 %/yr)

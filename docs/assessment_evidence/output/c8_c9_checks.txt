@@ -1,0 +1,16 @@
+building_data.xlsx sheet 2 columns: ['ID', 'Total GFA', 'OLF', 'Footprint', 'Occupants'] -> no GWP column: the reconciliation block never runs
+soil orders in sheet 3: 10 (+ aggregate row): ['Allophanic', 'Granular', 'Brown', 'Gley', 'Ultic', 'Recent', 'Oxidic', 'Melanic', 'Raw', 'Organic']
+equal_subtypes   set via WEIGHT_SCHEME: {'Detached': 357.9, 'Townhouses': 393.1, 'Apartments': 615.3}
+                 actually applied:      {'Detached': 357.9, 'Townhouses': 393.1, 'Apartments': 615.3}
+equal_buildings  set via WEIGHT_SCHEME: {'Detached': 357.9, 'Townhouses': 393.1, 'Apartments': 615.3}
+                 actually applied:      {'Detached': 360.5, 'Townhouses': 393.1, 'Apartments': 615.3}
+gfa_weighted     set via WEIGHT_SCHEME: {'Detached': 357.9, 'Townhouses': 393.1, 'Apartments': 615.3}
+                 actually applied:      CRASH: KeyError: 'GFA'
+CONSUMPTION_BASIS=per_capita               comment says       101.98 Mm2; code gives 124.24
+CONSUMPTION_BASIS=per_household            comment says        61.77 Mm2; code gives 92.64
+CONSUMPTION_BASIS=extra_space_plus_other   comment says 52-63 (62.8) Mm2; code gives 84.74
+FILE_POP_SIZE_PAIR comment: S(2050) 2.582, GFA 80.31 Mm2; code gives S(2050) 2.641, GFA 76.71
+update-vintage file referenced in the comment present in data/: False
+summary table: growth 41.88 + consumption 32.54 = 74.42 vs total 76.71 (house-splitting 2.29 not shown)
+Boss [4] band 'completion 92%' (linearised) vs a full re-run: see Boss printout 73.05 vs 73.20 Mm2
+unused 20,000-draw 'other' bootstrap: 0.25 s per Boss run

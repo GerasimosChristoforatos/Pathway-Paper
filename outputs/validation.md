@@ -16,4 +16,4 @@ Actual households and vacancy fed in; only the net-replacement term is predicted
 
 ### 2026 out-of-sample check against observed consents
 
-PENDING: the consent file ends 2025-12-01. Model 2026: 28,266 dwellings built (all categories) = 29,754 consent-equivalents.
+Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 16,699 (annual 29,754 x seasonal share 0.561); observed / model = 1.432. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.

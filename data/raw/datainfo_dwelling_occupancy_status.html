@@ -1,0 +1,1047 @@
+
+
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Dwelling occupancy status (information about this variable and its quality) - Stats NZ DataInfo&#x2B;</title>
+
+    
+
+
+    <link rel="stylesheet" href="/css/site.min.css?v=ccT793CFnvsLw6QSb8vwm6-1qWSYf0TDtapElb69xmM" />
+
+
+
+
+
+
+    
+    <link rel="stylesheet" href="/lib/jstree/themes/default/style.css?v=rRWteekP46JPnR1v3uKJRNTCufWehQWN7U0-yhr25Cs" />
+    <link rel="stylesheet" href="/lib/jstree-bootstrap-theme/style.css?v=pHxPbnX3o6uEM2naRr2vgWuOyUNdtAll3Q4c13YgJFA" />
+    <link rel="stylesheet" href="/lib/bootstrap-star-rating/css/star-rating.min.css?v=DXXrjiNMFuPcagxegN4NS5OufpwettvtL1Mxnv3UhS8" media="all" type="text/css" />
+    <link rel="stylesheet" href="/lib/bootstrap-star-rating/themes/krajee-svg/theme.min.css?v=i9c7QffKOoO5xTeyZ8JicOFC5fphxIFllBpzE_g2DiI" media="all" type="text/css" />
+
+
+    
+
+        <link rel="shortcut icon" href="/img/colectica-favicon.png?v=x51KDNhnQawkYWAl1XbWbP1s_EO3XR4Kh6TNBR1TQck" />
+
+    <!-- Load jQuery right away-->
+    <script src="/lib/jquery/jquery.min.js?v=_JqT3SQfawRcv_BIHPThkBvs0OEvtFFmqPF_lYI_Cxo"></script>
+
+
+    
+    
+
+    <script src="/lib/plotly/plotly-cartesian.min.js?v=tnozSq777KdbERzokSFqNbknsSjltavRNMPi1dEvcYo"></script>
+
+
+
+</head>
+
+<body class="hamburg item-page item-page-variable">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+
+        <div class="shepherd-backdrop"></div>
+
+        <!-- Header -->
+        <div id="header-wrapper" class="">
+            <div class="row">
+                <div class="col-12" id="nav-row-1">
+                    <div id="nav-row-1-inner">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12" id="nav-row-2">
+                    <div id="nav-row-2-inner">
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Nav Bar -->
+            <nav class="navbar navbar-expand-lg navbar-dark main-nav navbar-fixed-top" id="main-nav-wrapper"
+                    aria-label="Main Navigation">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div id="logo-wrapper">
+                    <a class="navbar-brand" id="home-link" href="/">
+                        <div id="site-name"><span>Stats NZ DataInfo&#x2B;</span></div>
+                    </a>
+                </div>
+
+                <div id="after-logo">
+                    <div></div>
+                </div>
+
+                <div id="nav-links-wrapper" class="">
+
+                    <!-- Main Nav -->
+                    <ul id="site-nav-links" class="navbar-nav">
+                                <li class="nav-item " id="nav-link-home">
+                                    <a class="nav-link" href="/">Home</a>
+                                </li>
+                                <li class="nav-item " id="nav-link-search">
+                                    <a class="nav-link" href="/search">Search</a>
+                                </li>
+                                <li class="nav-item " id="nav-link-explore">
+                                    <a class="nav-link" href="/explore">Explore</a>
+                                </li>
+                    </ul>
+
+                    <!-- Mini Navigation-->
+                    <ul id="personal-nav-links" class="navbar-nav">
+
+                        <!-- Authentication Dropdown -->
+                        
+
+
+<li class="nav-item dropdown" id="authentication-menu-list-item">
+    <a class="nav-link dropdown-toggle" href="#" id="authentication-dropdown-button" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person"></i>
+            <span>anonymous</span>
+    </a>
+
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authentication-dropdown-button">
+
+            <li class="dropdown-header">Welcome</li>
+            <li>
+                <a class="dropdown-item" href="/Account/Login">Log in</a>
+            </li>
+    </ul>
+</li>
+
+
+
+                        <!-- Languages -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="language-checkbox-button" role="button"
+                                title="Languages"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-globe"></i>
+                            </a>
+
+                            <ul class="dropdown-menu allow-focus" id="language-checkbox-menu" aria-labelledby="language-checkbox-button" >
+
+                                <!-- UI languages -->
+
+                                <li class="dropdown-header">Interface Language</li>
+
+                                    <li>
+                                        <a class="dropdown-item language-set-link" data-lang="auto">
+                                                <i class="bi bi-check"></i>
+                                            Automatic
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item language-set-link" data-lang="en-NZ">
+                                            English (New Zealand)
+                                        </a>
+                                    </li>
+
+                                <!-- Metadata languages -->
+                                    <li class="dropdown-header">Metadata Language</li>
+                                            <li class="dropdown-item form-check">
+                                                    <input class="form-check-input ms-0 me-2" type="checkbox" data-lang="en-NZ" id="form-check-en-NZ" checked>
+                                                <label class="form-check-label" for="form-check-en-NZ">English (New Zealand)</label>
+                                            </li>
+                            </ul>
+                        </li>
+
+                        <!-- Help -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="help-dropdown-button" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-patch-question-fill"></i>
+                                Help
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="help-dropdown-button">
+                                
+                                
+
+    <li class="link" id="help-for-this-page-link">
+        <a class="dropdown-item" href="https://docs.colectica.com/repository/functionality/portal/items/" target="_blank" rel="noopener noreferrer">Help for this Page</a>
+    </li>
+<li class="link" id="general-help-link">
+    <a class="dropdown-item" href="https://docs.colectica.com/repository/functionality/portal/" target="_blank" rel="noopener noreferrer">General Help</a>
+</li>
+
+    <li><hr class="dropdown-divider"></li>
+        <li class="link">
+            <a class="dropdown-item" href="https://statsnz.contentdm.oclc.org/digital/collection/p20045coll11/id/43/rec/5">Concordance table</a>
+        </li>
+        <li class="link">
+            <a class="dropdown-item" href="https://statsnz.contentdm.oclc.org/digital/collection/p20045coll1/id/4245/rec/50">How to find data collections concepts and variables</a>
+        </li>
+
+                            </ul>
+                        </li>
+
+                        <!-- Feedback Email -->
+
+                        <li class="nav-item collapse" id="personal-nav-search-link">
+                            <a class="nav-link" href="/search">
+                                <i class="bi bi-search"></i>
+                                Search
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+            </nav>
+        </div>
+        <!-- End Header -->
+
+        <!-- Placeholder for optional content -->
+
+        <!-- Sidebar and Content Columns -->
+        <div class="d-flex flex-row" id="page-content-wrapper">
+
+            <!-- Sidebar -->
+            <!-- End Sidebar -->
+
+            <!-- Page Content -->
+            <div id="page-content" class="flex-grow-1">
+
+                <main class="container-fluid background-main">
+
+                    <!-- Page title -->
+                    <div class="row page-title p-2 mb-3 display-none">
+                        <div class="meta">
+
+                            <h1>
+                                
+
+
+    
+
+        
+
+
+
+
+<div class="multilingual-string d-flex">
+
+    <div class="multilingual-string-texts flex-fill">
+            <div class="multilingual-string-text-wrapper " lang="en-NZ" xml:lang="en-NZ">
+
+
+Dwelling occupancy status (information about this variable and its quality)
+                <sup class="multilingual-string-culture collapse" lang="en-NZ" title="English (New Zealand)">en-NZ</sup>
+            </div>
+    </div>
+
+
+</div>
+
+
+                                Dwelling occupancy status (information about this variable and its quality)
+                            </h1>
+
+                            
+    <nav class="breadcrumb-links" aria-label="Navigation Breadcrumb">
+        
+
+
+<div class="referenced-by-breadcrumbs d-none d-sm-none d-md-block" id="referenced-by-breadcrumbs">
+
+    <ol class="breadcrumb">
+
+                <li rel="Group" class="breadcrumb-item  referenced-by-breadcrumb mb-1">
+
+                        <a class="d-flex align-items-center" href="/Item/nz.govt.stats/ca28210f-3fd6-415c-a162-ecc07b4a28b0/224">
+                            <img src="/theme/default/types/group-16.png" alt="Series" width="16" height="16" class="me-1" />
+                            <span>
+                                
+
+        
+
+
+
+
+<div class="multilingual-string d-flex">
+
+    <div class="multilingual-string-texts flex-fill">
+            <div class="multilingual-string-text-wrapper " lang="en-NZ" xml:lang="en-NZ">
+
+
+2018 Census of Population and Dwellings
+                <sup class="multilingual-string-culture collapse" lang="en-NZ" title="English (New Zealand)">en-NZ</sup>
+            </div>
+    </div>
+
+
+</div>
+
+                            </span>
+                        </a>
+
+                </li>
+                <li rel="StudyUnit" class="breadcrumb-item  referenced-by-breadcrumb mb-1">
+
+                        <a class="d-flex align-items-center" href="/Item/nz.govt.stats/59379da8-e5fd-4f3b-aead-49d0379e26e5/220">
+                            <img src="/theme/default/types/study-16.png" alt="Study" width="16" height="16" class="me-1" />
+                            <span>
+                                
+
+        
+
+
+
+
+<div class="multilingual-string d-flex">
+
+    <div class="multilingual-string-texts flex-fill">
+            <div class="multilingual-string-text-wrapper " lang="en-NZ" xml:lang="en-NZ">
+
+
+2018 Census of Population and Dwellings
+                <sup class="multilingual-string-culture collapse" lang="en-NZ" title="English (New Zealand)">en-NZ</sup>
+            </div>
+    </div>
+
+
+</div>
+
+                            </span>
+                        </a>
+
+                </li>
+    </ul>
+</div>
+    </nav>
+
+    <!--Configured HTTP calling buttons-->
+
+                        </div>
+
+                        <div class="" id="title-right">
+
+                            <div id="title-right-div" class="row">
+                                
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Main Content -->
+                    
+
+
+
+
+
+
+
+
+
+
+
+<div class="item-tab-wrapper m-4">
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="tab-main-content" data-bs-toggle="tab" href="#main-content"
+                    role="tab" aria-controls="main-content" aria-selected="true"
+                    title="Content">
+                <i class="bi bi-card-text"></i>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="tab-appears-within" data-bs-toggle="tab" href="#appears-within"
+                    role="tab" aria-controls="appears-within" aria-selected="false"
+                    title="Appears Within">
+                <i class="bi bi-diagram-3"></i>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="tab-identification" data-bs-toggle="tab" href="#identification"
+                    role="tab" aria-controls="identification" aria-selected="false"
+                    title="Information">
+                <i class="bi bi-info-circle"></i>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="tab-history" data-bs-toggle="tab" href="#history"
+                    role="tab" aria-controls="history" aria-selected="false"
+                    title="History">
+                <i class="bi bi-clock"></i>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="tab-download" data-bs-toggle="tab" href="#download"
+                    role="tab" aria-controls="download" aria-selected="false"
+                    title="Download">
+                <i class="bi bi-download"></i>
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content p-4">
+
+        <div class="tab-pane fade show active" id="main-content" role="tabpanel" aria-labelledby="tab-main-content">
+
+
+
+
+
+
+
+
+
+<div class="row item-content variable-row">
+
+    
+
+
+
+    <section class="item-page-section" id="description-section">
+        <h2 class="item-page-section-header">Variable Description</h2>
+        <div>
+            <div class="row mb-1" id="property-name"><div class="col-md-3 property-label text-start text-md-end"><span class="property-name">Name</span></div><div class="col-md-9 property-value">
+<span><p>Dwelling occupancy status (information about this variable and its quality)</p>
+</span></div></div>
+            <div class="row mb-1" id="property-label"><div class="col-md-3 property-label text-start text-md-end"><span class="property-label">Label</span></div><div class="col-md-9 property-value">
+
+
+
+
+<div class="multilingual-string d-flex">
+
+    <div class="multilingual-string-texts flex-fill">
+            <div class="multilingual-string-text-wrapper " lang="en-NZ" xml:lang="en-NZ">
+
+
+Dwelling occupancy status (information about this variable and its quality)
+                <sup class="multilingual-string-culture collapse" lang="en-NZ" title="English (New Zealand)">en-NZ</sup>
+            </div>
+    </div>
+
+
+</div></div></div>
+            
+            <div class="row mb-1" id="property-description"><div class="col-md-3 property-label text-start text-md-end"><span class="property-description">Description</span></div><div class="col-md-9 property-value">
+
+
+
+
+<div class="multilingual-string d-flex">
+
+    <div class="multilingual-string-texts flex-fill">
+            <div class="multilingual-string-text-wrapper " lang="en-NZ" xml:lang="en-NZ">
+
+
+<p>Dwelling occupancy status classifies each dwelling according to whether it is occupied, unoccupied, or under construction on census night.</p>
+<p>For census use, a dwelling is defined as occupied if it is:</p>
+<ul>
+<li>occupied at midnight on census night, or</li>
+<li>occupied at any time during the 12 hours following midnight on census night unless the occupant(s) completed a form at another dwelling during this period.</li>
+</ul>
+<p>This includes occupied dilapidated dwellings and occupied dwellings under construction.</p>
+<p>For census use, a dwelling is defined as unoccupied if it is unoccupied at midnight and at all times during the next 12 hours following midnight on census night.</p>
+<p>An unoccupied dwelling is classified as 'empty' if it clearly had no current occupants and new occupants are not expected to arrive or move in on, or before, census night. Unoccupied private dwellings that are being repaired or renovated are defined as empty dwellings, as are baches and holiday homes with no occupants on census night.</p>
+<p>A dwelling is classified as having ‘residents away’ where occupants of a dwelling are identified as being temporarily away and are not expected to return by noon on the day after census night.</p>
+<p>Unoccupied non-private dwellings, such as camping grounds and marae, have been included in the data for the first time in 2018. Unoccupied non-private dwellings are classified as unoccupied empty.</p>
+<p>Dwelling under construction includes all dwellings that are being built. An existing dwelling that is being altered, repaired, or extended and is unoccupied is coded as an ‘unoccupied empty dwelling’. A new dwelling that is under construction and is occupied is coded as ‘occupied’.</p>
+
+                <sup class="multilingual-string-culture collapse" lang="en-NZ" title="English (New Zealand)">en-NZ</sup>
+            </div>
+    </div>
+
+
+</div></div></div>
+
+
+            
+            
+            
+
+            
+            <div class="row mb-1" id="property-conceptual-variable"><div class="col-md-3 property-label text-start text-md-end"><span class="property-conceptual-variable">Conceptual Variable</span></div><div class="col-md-9 property-value">
+
+        
+
+
+
+
+<div class="multilingual-string d-flex">
+
+    <div class="multilingual-string-texts flex-fill">
+            <div class="multilingual-string-text-wrapper " lang="en-NZ" xml:lang="en-NZ">
+
+                        <a href="/item/nz.govt.stats/3e6b316d-56da-4a00-adb1-c2f0d5febd94/1"><img class="type-image" width="16" src="/img/types/conceptual-variable-16.png" alt="conceptual-variable-16.png" /></a>
+
+                            <a href="/item/nz.govt.stats/3e6b316d-56da-4a00-adb1-c2f0d5febd94/1">Dwelling occupancy</a>
+
+                <sup class="multilingual-string-culture collapse" lang="en-NZ" title="English (New Zealand)">en-NZ</sup>
+            </div>
+    </div>
+
+
+</div>
+</div></div>
+            <div class="row mb-1" id="property-concept"><div class="col-md-3 property-label text-start text-md-end"><span class="property-concept">Concept</span></div><div class="col-md-9 property-value">
+
+        
+
+
+
+
+<div class="multilingual-string d-flex">
+
+    <div class="multilingual-string-texts flex-fill">
+            <div class="multilingual-string-text-wrapper " lang="en-NZ" xml:lang="en-NZ">
+
+                        <a href="/item/nz.govt.stats/d3fa2bae-8c31-4cfc-afbb-ad51f9f3941d/2"><img class="type-image" width="16" src="/img/types/concept-16.png" alt="concept-16.png" /></a>
+
+                            <a href="/item/nz.govt.stats/d3fa2bae-8c31-4cfc-afbb-ad51f9f3941d/2">Housing</a>
+
+                <sup class="multilingual-string-culture collapse" lang="en-NZ" title="English (New Zealand)">en-NZ</sup>
+            </div>
+    </div>
+
+
+</div>
+</div></div>
+            
+
+            
+<div class="custom-fields-div">
+
+
+
+
+<div class="row mb-1 custom-field" id="custom-field-OtherVariableInformation">
+
+    <div class="col-md-3 property-label text-start text-md-end ellipsis-text">
+        <span title="">
+            Other Variable Information
+        </span>
+    </div>
+
+    <div class="col-md-9 property-value">
+
+<h2>Priority level</h2>
+<p>Dwelling occupancy status does not have a priority level.</p>
+<p><strong>Priority levels of related variables:</strong></p>
+<p>Priority level 1: Count of dwellings</p>
+<p>Priority level 2: Dwelling type</p>
+<p><a href="https://datainfoplus.stats.govt.nz/Item/nz.govt.stats/e38c17e6-8669-4916-af60-550c11788717"><strong>Count of dwellings</strong></a> and <a href="https://datainfoplus.stats.govt.nz/Item/nz.govt.stats/1db47d51-8bbf-4707-a97a-2092224f4a39"><strong>Dwelling type</strong></a> information by variable pages provide further detail on these variables.</p>
+<p><a href="https://www.stats.govt.nz/methods/2018-census-data-quality-management-strategy"><strong>Quality Management Strategy</strong></a> has more information on priority levels.</p>
+<h2>Overall quality rating for 2018 Census</h2>
+<p>Dwelling occupancy status did not receive a quality rating in 2018.</p>
+<p>Quality ratings of related variables:</p>
+<ul>
+<li>Count of dwellings: High quality</li>
+<li>Dwelling type: Moderate quality</li>
+</ul>
+<h2>Subject population</h2>
+<p><strong>All dwellings</strong></p>
+<p>‘Subject population’ means the people, families, households, or dwellings to whom the variable applies.</p>
+<h2>How this data is classified</h2>
+<p><a href="http://aria.stats.govt.nz/aria/#ClassificationView:uri=http://stats.govt.nz/cms/ClassificationVersion/CARS6386"><strong>Dwelling occupancy status  V2.1.0</strong></a></p>
+<p>Dwelling occupancy status is a hierarchical classification with two levels. The first level has three categories, and the second level has four.  The dwelling occupancy status classification used for 2018 is the same as that used for 2006 and 2013.</p>
+<p>The categories are:</p>
+<p>1 Occupied dwelling</p>
+<p>11 Occupied dwelling</p>
+<p>2 Unoccupied dwelling</p>
+<p>21 Residents away</p>
+<p>22 Empty dwelling</p>
+<p>3 Dwelling under construction</p>
+<p>31 Dwelling under construction</p>
+<p><a href="https://www.stats.govt.nz/methods-and-standards/standards-and-classifications/"><strong>The Standards and Classifications</strong></a> page provides background information on classifications and standards.</p>
+<h2>Question format</h2>
+<p>As with previous censuses, dwelling occupancy status was not asked as a question on a census form in 2018. For information on how this data is collected please see the 2018 data sources section.</p>
+<h2>How this data is used</h2>
+<p>Data from this variable is used to:</p>
+<ul>
+<li>provide an indication of the housing stock available and in use in New Zealand</li>
+<li>monitor trends and developments in housing stock</li>
+<li>evaluate infrastructure requirements, eg transport, sewerage, water</li>
+<li>provide information on how communities are changing at a local level.</li>
+</ul>
+<h2>2018 data sources</h2>
+<p>Dwelling occupancy status was determined via responses to the census, evidence gathered during field operations, and administrative data sources. It is not (and cannot be) asked as a question on a census form. A response to the census generally indicated that a dwelling was occupied.</p>
+<p>In some cases, field officers confirmed a dwelling’s occupancy status during and after the non-response follow-up stage. If there was enough evidence that a dwelling was occupied, for example windows were opened or a car was parked in the drive, it was assumed to be occupied on census night unless evidence suggested otherwise. Examples of evidence for ‘Unoccupied – residents away’ include neighbour confirmation and uncollected mail. Examples of evidence for ‘Unoccupied – empty’ include no visible furniture and a ‘for sale’ sign.</p>
+<p>The table below shows the proportion of dwellings sourced from the 2018 Census compared with the proportion sourced from administrative data. We used administrative data from the <a href="https://www.stats.govt.nz/integrated-data/integrated-data-infrastructure/"><strong>Integrated Data Infrastructure (IDI)</strong></a> to confirm dwelling occupancy status for some dwellings, where all the occupants of a dwelling were comprised of admin enumerated individuals.</p>
+<table>
+<thead>
+<tr>
+<th><strong>2018 Dwelling occupancy status – all dwellings</strong></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Source</strong></td>
+<td><strong>Percent</strong></td>
+</tr>
+<tr>
+<td>2018 Census response (census form or field operations)</td>
+<td>99.4 percent</td>
+</tr>
+<tr>
+<td>Administrative data</td>
+<td>0.6 percent</td>
+</tr>
+<tr>
+<td>No information</td>
+<td>0.0 percent</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>100 percent</td>
+</tr>
+<tr>
+<td><sub>Due to rounding, individual figures may not always sum to the stated total(s)</sub></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>In the table above, dwellings where all occupants were admin enumerated individuals were coded to ‘Unoccupied – residents away’.</p>
+<p><strong>Admin enumeration of people into unoccupied dwellings</strong></p>
+<p>Data from the range of sources available in the IDI was used, in combination with evidence collected from field staff, to determine addresses where admin enumerated people usually live, and to confirm the occupancy status of their dwelling. Address information came from notifications of address changes from the following sources:</p>
+<ul>
+<li>Accident Compensation Corporation</li>
+<li>Inland Revenue</li>
+<li>Ministry of Education</li>
+<li>Ministry of Health</li>
+<li>Ministry of Social Development</li>
+<li>Household Economic Survey (Stats NZ)</li>
+<li>New Zealand Transport Authority</li>
+<li>Household Labour Force Survey (Stats NZ)</li>
+<li>Auckland City Mission</li>
+</ul>
+<p>It is important to note the following caveats relating to the use of admin data for the dwelling occupancy status variable:</p>
+<ul>
+<li>the New Zealand admin resident population includes all individuals who interacted with government within the last two years (removing anyone who migrated overseas or died before census day). Therefore, admin sources do not necessarily provide data for all residents on census night.</li>
+<li>there can be lags from when people change their address to when they notify a government agency of their new address.</li>
+</ul>
+<p><a href="https://www.stats.govt.nz/methods/overview-of-statistical-methods-for-adding-admin-records-to-the-2018-census-dataset"><strong>Overview of statistical methods for adding admin records to the 2018 Census dataset</strong></a> provides further information on the occupancy status of administrative addresses compared to census responses and on admin household enumerations in non-responding private dwellings.</p>
+<h2>Recommendations for use and further information</h2>
+<p>As there was a new collection methodology for the 2018 Census, some caution is advised when using dwelling occupancy data.</p>
+<p>While the national proportions of occupied and unoccupied dwellings and dwellings under construction are consistent with expectations, the change in the proportion of unoccupied residents away versus unoccupied empty indicates a break in the time series.</p>
+<p>When using this data, you should also be aware that:</p>
+<ul>
+<li>as field officers did not visit dwellings on census night, the dwelling occupancy status data for non-responding dwellings (collected either through field operations or administrative sources) may not always reflect occupancy status at census night</li>
+<li>we believe that changes to field operations for the 2018 Census and new methodologies used in 2018 have contributed to changes in the data for unoccupied dwellings. As a result of this, there may be some loss of comparability over time for the dwelling occupancy status data.</li>
+<li>as in previous censuses, determining whether dwellings should be classified as ‘Unoccupied – residents away’ or ‘Unoccupied – empty’ can be challenging. The 2018 data on dwelling occupancy status is not necessarily worse quality than in previous censuses; it may be better quality in some instances.</li>
+<li>the use of administrative data to provide evidence that a dwelling with no 2018 Census response was usually occupied may have contributed to the increase in ‘Unoccupied - residents away’ dwellings for 2018.  This resulted in some dwellings that were initially classified as ‘Unoccupied – empty’ having their occupancy status changed to ‘Unoccupied - residents away’. An assumption was made that the usual residents were away on census night. The use of census form information from people away from home on census night (who were elsewhere in NZ) to assign occupancy status may have also contributed to the increase for unoccupied residents away dwellings. These methods were not possible previously.</li>
+<li>changes in the data for certain geographic areas may have been affected by real world factors specific to those areas (eg changes in dwelling occupancy status due to the Christchurch earthquakes) or by issues with enumeration of dwellings in those areas (eg the Marlborough dwelling undercount: <a href="https://datainfoplus.stats.govt.nz/Item/nz.govt.stats/ca28210f-3fd6-415c-a162-ecc07b4a28b0#/nz.govt.stats/b09ae9c0-de19-4418-952b-c9e4cbf7e1a2/29"><strong>Correction to Marlborough Dwelling count</strong></a>.</li>
+</ul>
+<p><strong>Contact our <a href="https://www.stats.govt.nz/services/information-centre/">Information Centre</a> for further information about using this variable</strong></p>
+
+
+    </div>
+</div>
+</div>
+
+
+            This variable is not part of a dataset.
+
+        </div>
+    </section>
+
+    
+
+
+
+
+    <section class="item-page-section" id="representation-section">
+        <h2 class="item-page-section-header">Representation</h2>
+
+        <div>
+            
+            
+
+            
+            
+            
+            
+
+
+
+
+        </div>
+    </section>
+
+
+
+        <section class="item-page-section" id="concordance-section">
+            <h2 class="item-page-section-header">Concordance</h2>
+            <a href="/item/nz.govt.stats/3e6b316d-56da-4a00-adb1-c2f0d5febd94" class="btn btn-primary">View Concordance</a>
+        </section>
+
+    
+
+
+
+
+
+
+
+</div>
+
+        </div>
+
+        <div class="tab-pane fade" id="appears-within" role="tabpanel" aria-labelledby="tab-appears-within">
+            <h2 class="item-page-section-header">Appears Within</h2>
+            
+
+    <div class="referenced-by-list" id="referenced-by-list">
+        <ul>
+                <li rel="Group" class="type-node" data-jstree='{"type": "Group"}'>
+
+                    Series
+
+                    <ul>
+                            <li class="item-node" data-jstree='{"type": "Group"}'>
+                                
+
+        
+
+
+
+
+<div class="multilingual-string d-flex">
+
+    <div class="multilingual-string-texts flex-fill">
+            <div class="multilingual-string-text-wrapper " lang="en-NZ" xml:lang="en-NZ">
+
+                        <a href="/item/nz.govt.stats/ca28210f-3fd6-415c-a162-ecc07b4a28b0/224"><img class="type-image" width="16" src="/img/types/group-16.png" alt="group-16.png" /></a>
+
+                            <a href="/item/nz.govt.stats/ca28210f-3fd6-415c-a162-ecc07b4a28b0/224">2018 Census of Population and Dwellings</a>
+
+                <sup class="multilingual-string-culture collapse" lang="en-NZ" title="English (New Zealand)">en-NZ</sup>
+            </div>
+    </div>
+
+
+</div>
+
+                            </li>
+                    </ul>
+                </li>
+                <li rel="StudyUnit" class="type-node" data-jstree='{"type": "StudyUnit"}'>
+
+                    Studies
+
+                    <ul>
+                            <li class="item-node" data-jstree='{"type": "StudyUnit"}'>
+                                
+
+        
+
+
+
+
+<div class="multilingual-string d-flex">
+
+    <div class="multilingual-string-texts flex-fill">
+            <div class="multilingual-string-text-wrapper " lang="en-NZ" xml:lang="en-NZ">
+
+                        <a href="/item/nz.govt.stats/59379da8-e5fd-4f3b-aead-49d0379e26e5/220"><img class="type-image" width="16" src="/img/types/study-16.png" alt="study-16.png" /></a>
+
+                            <a href="/item/nz.govt.stats/59379da8-e5fd-4f3b-aead-49d0379e26e5/220">2018 Census of Population and Dwellings</a>
+
+                <sup class="multilingual-string-culture collapse" lang="en-NZ" title="English (New Zealand)">en-NZ</sup>
+            </div>
+    </div>
+
+
+</div>
+
+                            </li>
+                    </ul>
+                </li>
+
+        </ul>
+    </div>
+
+        </div>
+
+        <div class="tab-pane fade" id="identification" role="tabpanel" aria-labelledby="tab-identification">
+
+
+            <h2 class="item-page-section-header">Information</h2>
+            <dl>
+                <dt id="sidebar-id-agency-term">Agency</dt>
+                <dd id="sidebar-id-agency-definition">nz.govt.stats</dd>
+
+                <dt id="sidebar-id-identifier-term">Identifier</dt>
+                <dd id="sidebar-id-identifier-definition">
+
+<span>9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5</span></dd>
+
+                <dt id="sidebar-id-version-term">Version</dt>
+                <dd id="sidebar-id-version-definition">11</dd>
+
+                    <dt id="sidebar-id-identifier-term">DDI URN</dt>
+                    <dd id="sidebar-id-identifier-definition">urn:ddi:nz.govt.stats:9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5:11</dd>
+
+                <dt id="sidebar-id-lastupdated-term">Last Updated</dt>
+                <dd id="sidebar-id-lastupdated-definition"><span class="localizable-date" data-date="2021-10-28T21:33:30.3059028Z">2021-10-28T21:33:30.3059028Z</span></dd>
+
+                <dt id="sidebar-id-storageformat-term">Storage Format</dt>
+                <dd id="sidebar-id-storageformat-definition">DDI 3.3</dd>
+
+                    <dt id="sidebar-id-tags-term">Tags</dt>
+                    <dd id="sidebar-id-tags-definition">
+
+                    </dd>
+
+
+
+
+            </dl>
+
+        </div>
+
+        <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="tab-history">
+
+            <h4 role="presentation">History</h4>
+            
+            <a class="btn btn-secondary mb-2 item-sidebar-history" 
+               data-bs-toggle="modal" href="#" 
+               data-agency="nz.govt.stats"
+               data-identifier="9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5"
+               data-bs-target="#history-modal" aria-controls="history-modal"
+               >View Full History
+            </a>
+
+            <table class="table">
+                <tr>
+                    <th>Revision</th>
+                    <th>Date</th>
+
+
+
+                    <th></th>
+                </tr>
+
+                    <tr>
+                        <td>
+                            <a href="/item/nz.govt.stats/9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5/11">
+                                11
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        </td>
+
+                        <td>
+                            <small><span class="localizable-date" data-date="2021-11-30T01:59:19.0730000Z">2021-11-30T01:59:19.0730000Z</span></small>
+                        </td>
+
+
+
+                        <td>
+                        </td>
+
+                    </tr>
+            </table>
+        </div>
+
+        <div class="tab-pane fade" id="download" role="tabpanel" aria-labelledby="tab-download">
+            <h2 class="item-page-section-header">Download</h2>
+
+            <div class="list-group">
+
+                            <a class="list-group-item list-group-item-action" id="download-pdf-link" href="/item/nz.govt.stats/9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5/11/pdf/en-NZ" rel="nofollow">
+                                <i class="bi bi-download"></i> PDF (en-NZ)
+                            </a>
+
+
+                <a id="download-ddi33-link" class="list-group-item list-group-item-action" href="/item/nz.govt.stats/9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5/11/ddi" rel="nofollow">
+                    <i class="bi bi-download"></i> DDI 3.3 Fragment
+                </a>
+
+                    <a class="list-group-item list-group-item-action" id="download-ddi32-link" href="/item/nz.govt.stats/9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5/11/ddi-set" rel="nofollow">
+                        <i class="bi bi-download"></i> DDI 3.3 Set
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" id="download-ddi32-link" href="/item/nz.govt.stats/9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5/11/ddi32" rel="nofollow">
+                        <i class="bi bi-download"></i> DDI 3.2 Fragment
+                    </a>
+
+
+                    <a class="list-group-item list-group-item-action" id="download-ddi31-link" href="/item/nz.govt.stats/9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5/11/ddi31" rel="nofollow">
+                        <i class="bi bi-download"></i> DDI 3.1
+                    </a>
+
+
+                <a class="list-group-item list-group-item-action" id="download-json-link" href="/item/nz.govt.stats/9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5/11/json" rel="nofollow">
+                    <i class="bi bi-download"></i> JSON
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- HTTP Command Modal -->
+<div class="modal fade" id="httpCommandModal" tabindex="-1" role="dialog" aria-labelledby="httpCommandLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="httpCommandLabel">Command</div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status" id="http-command-progress">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div id="http-command-content">
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="history-modal" tabindex="-1" role="dialog" aria-labelledby="history-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-body overflow-auto">
+
+                <!-- Loading indicator -->
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status" id="modal-history-progress">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div id="history-content">
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+                    <form method="post" id="logoutForm" action="/Account/LogOff">
+                    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8EqSj2tm8cJCqQrn_ftv5L2JlJkpWwYhTHqS89Lp7MuEVoNWrdiULCk8PUcSvXQsyuFzE8GEVZruPtozDQscXIK7c7v7ZPhjJ3TKgnLZrV5bkc4g4crKTrWaNQJGOScYjGP5Q5NMxFg5XeBxOO4dYeQ" /></form>
+
+                </main>
+
+                <!-- End Page Content -->
+                <!-- Footer -->
+                    <footer>
+                        <div class="container-fluid">
+                            <table><tbody><tr><th><a href="https://www.stats.govt.nz" target="_blank">StatsNZ</a>&nbsp;&nbsp;</th><th><a href="https://www.stats.govt.nz/about-us/privacy-statement/" target="_blank">Privacy</a>&nbsp;&nbsp;</th><th><a href="https://www.stats.govt.nz/contact-us/#locate-data">Contact us</a>&nbsp;&nbsp;</th><th><a href="https://explore.data.stats.govt.nz/" target="_blank">ADE</a>&nbsp;&nbsp;</th><th><a href="https://aria.stats.govt.nz/aria/" target="_blank">Aria</a>&nbsp;&nbsp;</th><th><a href="https://www.stats.govt.nz/integrated-data/integrated-data-infrastructure/" target="_blank">IDI Webpage</a></th></tr></tbody></table>
+                        </div>
+
+                        <!-- Custom Footer-->
+                    </footer>
+                <!-- End Footer -->
+
+            </div>
+        </div>
+    </div>
+
+    
+
+
+        <script src="/js/MathJax.js"></script>
+        <script src="/js/gtm.js"></script>
+
+
+
+    <!-- Scripts -->
+    
+
+
+
+    <script src="/js/site.min.js?v=rqSpGTwjzOb1WGm410spTWi0vnr2WtwLcubKrWeLgl0"></script>
+
+
+<script src="/js/InitializeLanguage.js?v=es0cfzmOR-egmHxfdce3OXBAPewmmfRX02tt4D25Qcc"></script>
+
+
+    
+    <script src="/lib/jstree/jstree.js?v=ucrKtijOlJ6JbiqFmW0W7Hvyx9o0PjAcFQAjeLdXLcA"></script>
+    <script src="/js/ReferencedByList.js?v=EFo_6UFAUnLy1M7OA6TB5mEDawm1CBeRNPorbzLAiL8"></script>
+    <script src="/lib/bootstrap-star-rating/js/star-rating.min.js?v=rE4wo648XPamHDwe3bxjPiwseHCB0sUtXqKpYYqwcrg"></script>
+    <script src="/lib/bootstrap-star-rating/themes/krajee-svg/theme.min.js?v=1aJDsiRgak_70u-_hRpper0bUirNRtue6K-C5zWRY4U"></script>
+
+    <script src="/js/Item.js?v=wSkxTeAxWHIPIebBZuTYVOVd8BSz04UbQnFP3Wmmai8"></script>
+
+    <script type="application/json" data-selector="item-data">
+        {
+            "ItemIdentifier": "nz.govt.stats:9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5:11"
+        }
+    </script>
+
+    <script type="application/json" data-selector="star-data">
+        {
+            "1": "Poor",
+            "2": "Fair",
+            "3": "Good",
+            "4": "Very Good",
+            "5": "Excellent"
+        }
+    </script>
+
+    <script type="application/json" data-selector="star-url">
+        {
+            "ratingUrl": "/item/nz.govt.stats/9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5/11/rate"
+        }
+    </script>
+
+
+
+    <script src='/lib/jstree/jstree.js'></script><script src='/js/Variable.js'></script><script src='/js/jquery-ui/jquery-ui.js'></script><script src='/js/VariableConcordanceTree.js'></script>
+
+    <script src="/js/_Layout.js?v=cD_mVpDg7krOBElGyBZCGFMMmbFW8Y0G0pWJ54KzKv4"></script>
+
+    <script type="application/json" data-selector="languages-data">
+        ["en-NZ"]
+    </script>
+
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a42d66934a7a2552',t:'MTc5MDcxMDIwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"246325de84e5498a9b93e7426fd2da89","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

@@ -170,3 +170,50 @@ Actual households and vacancy fed in; only the net-replacement term is predicted
 ### 2026 out-of-sample check against observed consents
 
 PENDING: the consent file ends 2025-12-01. Model 2026: 28,266 dwellings built (all categories) = 29,754 consent-equivalents.
+
+## Consents built by script from the raw Stats NZ release (data provenance)
+
+data/fetch_sources.py downloads 'Building consents issued: July 2026' (Stats NZ) into data/raw/ and records URL, SHA-256 and date in data/raw/MANIFEST.csv; data/build_consents.py extracts New Zealand / New / Actual series (number, floor area, value) for houses, townhouses-flats-units, apartments, retirement-village units and all dwelling units into data/derived/consents_monthly.csv. It reproduces data/consentdata.xlsx exactly in all 13 columns for every month 1990-04..2025-12, and the published totals 40,581 (year ended June 2026) and 40,908 (year ended July 2026). Boss reads it by default (CONSENT_SOURCE = 'statsnz_release'; 'legacy_xlsx' keeps the original file). Model outputs unchanged (1991-2025 identical). The 2026 out-of-sample check is now observed: Jan-Jul 2026 consents are 1.432 x the model's 2026 consent-equivalent apportioned by 2010-2025 seasonal shares. Descriptive only; not used to set any parameter. The DataInfo+ page cited for F1/N1 is saved in data/raw/ with its SHA-256.
+
+| metric | before | after | change |
+|---|---|---|---|
+| Built floor area 2026-2050, central run (Mm2) | 76.71 | 76.71 | 0 |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 29,708 | 29,708 | 0 |
+| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 21,862 | 21,862 | 0 |
+| 2025 -> 2026 step in built floor area (%) | -22.1 | -22.1 | 0 |
+| Household size 2050, central run | 2.641 | 2.641 | 0 |
+| MC floor area p5 (Mm2) | 59.98 | 59.98 | 0 |
+| MC floor area p50 (Mm2) | 80.66 | 80.66 | 0 |
+| MC floor area p95 (Mm2) | 104.57 | 104.57 | 0 |
+| MC carbon p5 (kt) | 23,168 | 23,168 | 0 |
+| MC carbon p50 (kt) | 31,191 | 31,191 | 0 |
+| MC carbon p95 (kt) | 40,888 | 40,888 | 0 |
+| Central run percentile in MC, floor area | 38.5 | 38.5 | 0 |
+| Central run percentile in MC, carbon | 39.0 | 39.0 | 0 |
+| Hindcast error, origin 2006, model method (%) | -13.0 | -13.0 | 0 |
+| Hindcast error, origin 2013, model method (%) | -18.9 | -18.9 | 0 |
+| Hindcast error, origin 2018, model method (%) | -12.0 | -12.0 | 0 |
+| 2026 model consent-equivalents (all categories) | 29,754 | 29,754 | 0 |
+| 2026 observed / model consents, year to date | n/a | 1.432 |  |
+
+Validation (outputs/validation.md):
+
+### Rolling-origin hindcast of dwellings built (descriptive; 3 origins)
+
+Actual households and vacancy fed in; only the net-replacement term is predicted. Error = predicted / actual - 1.
+
+| origin | test years | method | rate used (%/yr) | predicted | actual | error |
+|---|---|---|---|---|---|---|
+| 2006 | 2007-2023 | constant | +0.043 | 400,634 | 460,544 | -13.0% |
+| 2006 | 2007-2023 | recent | -0.049 | 371,979 | 460,544 | -19.2% |
+| 2006 | 2007-2023 | linked | linked: b = 2.54 on 3 intervals | 484,994 | 460,544 | +5.3% |
+| 2013 | 2014-2023 | constant | +0.034 | 276,609 | 340,888 | -18.9% |
+| 2013 | 2014-2023 | recent | +0.019 | 273,758 | 340,888 | -19.7% |
+| 2013 | 2014-2023 | linked | linked: b = 0.96 on 4 intervals | 333,710 | 340,888 | -2.1% |
+| 2018 | 2019-2023 | constant | +0.109 | 177,962 | 202,189 | -12.0% |
+| 2018 | 2019-2023 | recent | +0.389 | 205,531 | 202,189 | +1.7% |
+| 2018 | 2019-2023 | linked | linked: b = 1.34 on 5 intervals | 249,717 | 202,189 | +23.5% |
+
+### 2026 out-of-sample check against observed consents
+
+Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 16,699 (annual 29,754 x seasonal share 0.561); observed / model = 1.432. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.

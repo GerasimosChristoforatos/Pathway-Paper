@@ -116,7 +116,7 @@ def check_2026(B, consents=None):
     """consents: monthly all-category series (index = month); read from the
     consent file when not given."""
     if consents is None:
-        c = pd.read_excel(Boss.FILE_CONSENTS, sheet_name=Boss.CONSENT_SHEET)
+        c = Boss.load_consents(Boss.CONSENT_SOURCE)
         consents = c.set_index(pd.to_datetime(c['Date']))[Boss.COL_DWELLINGS_TOTAL]
     s = consents.sort_index()
     last = s.index.max()

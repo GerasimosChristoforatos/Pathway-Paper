@@ -1029,7 +1029,7 @@ switch (`HOUSEHOLD_SOURCE`).
    `CENSUS_LATER` cannot be verified from anything in the repository.** Per
    D2, I stop before item 4 until E1 is supplied or the Stats NZ hosts are
    allowed.
-3. **The DHE intercensal weight corroborates about 0.09%/yr, not 0.154%.**
+3. **[CORRECTED at CP2, see docs/CP2_NOTE.md: with the model's completion rate and lag applied consistently, the weight implies about 0.000%/yr and corroborates no particular rate.]** ~~The DHE intercensal weight corroborates about 0.09%/yr, not 0.154%.~~
    * After the 2023 base, DHE quarterly dwelling growth = **0.8897 ×
      consents lagged four quarters** (sd 0.004, 2023Q3–2025Q4). It is a Stats
      NZ assumption, not an observation. The workbook gives no published factor

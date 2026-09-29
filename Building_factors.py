@@ -55,9 +55,10 @@ FILE_CHARS = FILE_LCA
 SHEET_CHARS = '2'                        # GFA, occupancy load factor, footprint
 SHEET_SOILS = '3'                        # soil carbon by soil order
 
-OUT_MATERIAL = os.path.join(DATA_DIR, 'factors_material.csv')
-OUT_TYPOLOGY = os.path.join(DATA_DIR, 'factors_typology.csv')
-OUT_BUILDING = os.path.join(DATA_DIR, 'factors_building.csv')   # for MonteCarlo.py
+OUT_DIR = os.path.join('outputs', 'factors')     # derived files; data/ holds inputs only
+OUT_MATERIAL = os.path.join(OUT_DIR, 'factors_material.csv')
+OUT_TYPOLOGY = os.path.join(OUT_DIR, 'factors_typology.csv')
+OUT_BUILDING = os.path.join(OUT_DIR, 'factors_building.csv')   # for MonteCarlo.py
 
 WEIGHT_SCHEME = 'equal_subtypes'         # 'equal_subtypes' | 'equal_buildings' | 'gfa_weighted'
 
@@ -319,6 +320,8 @@ def main():
     bld['SOC_avg'] = chars['SOC_avg']
     bld['duplicate_of'] = [dup_of.get(i, '') for i in bld.index]
 
+    for p in (OUT_MATERIAL, OUT_TYPOLOGY, OUT_BUILDING):
+        os.makedirs(os.path.dirname(p) or '.', exist_ok=True)
     mat_factors.to_csv(OUT_MATERIAL, index=False)
     typ_factors.to_csv(OUT_TYPOLOGY, index=False)
     bld.reset_index().to_csv(OUT_BUILDING, index=False)

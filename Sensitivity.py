@@ -28,8 +28,9 @@ import matplotlib.pyplot as plt
 
 import Boss
 
-OUT_CSV = os.path.join(Boss.DATA_DIR, 'sensitivity_oat.csv')
-SAVE_FIGURES = False     # True: also write the figures as PNGs into Boss.DATA_DIR
+OUT_CSV = os.path.join(Boss.OUT_DIR, 'sensitivity_oat.csv')
+FIG_DIR = os.path.join(Boss.OUT_DIR, 'figures')
+SAVE_FIGURES = False     # True: also write the figures as PNGs into FIG_DIR
 SHOW_FIGURES = True
 N_PATHS = 6              # cases drawn in the annual-path figure (largest effects)
 
@@ -119,6 +120,7 @@ def main():
     out = pd.DataFrame(rows, columns=['group', 'case', 'GFA_Mm2', 'carbon_kt'])
     out['GFA_change_pct'] = 100 * (out['GFA_Mm2'] / g0 - 1)
     out['carbon_change_pct'] = 100 * (out['carbon_kt'] / c0 - 1)
+    os.makedirs(os.path.dirname(OUT_CSV), exist_ok=True)
     out.to_csv(OUT_CSV, index=False)
 
     print("=" * 96)
@@ -140,7 +142,8 @@ def main():
 def _save(fig, name):
     fig.tight_layout()
     if SAVE_FIGURES:
-        fig.savefig(os.path.join(Boss.DATA_DIR, name), dpi=140, bbox_inches='tight')
+        os.makedirs(FIG_DIR, exist_ok=True)
+        fig.savefig(os.path.join(FIG_DIR, name), dpi=140, bbox_inches='tight')
 
 
 def figures(out, base, paths):
@@ -208,7 +211,7 @@ def figures(out, base, paths):
     _save(fig, 'sens_2_paths.png')
 
     if SAVE_FIGURES:
-        print(f"Figures written to {Boss.DATA_DIR}/ (sens_1, sens_2)")
+        print(f"Figures written to {FIG_DIR}/ (sens_1, sens_2)")
     if SHOW_FIGURES:
         plt.show()
 

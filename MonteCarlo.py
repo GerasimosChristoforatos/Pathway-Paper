@@ -96,12 +96,13 @@ N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
 N_BOOT = 4000                    # carbon-factor bootstrap replicates
 SEED = 20260924
 PHI_RANGE = (0.62, 0.98)         # triangular, mode = Boss.DAMPING_PHI
-SAVE_FIGURES = False             # True: also write the figures as PNGs into OUT_DIR
+SAVE_FIGURES = False             # True: also write the figures as PNGs into FIG_DIR
 SHOW_FIGURES = True
 # PLOT_ONLY: skip the ~15,000 model evaluations and redraw the figures from the
 # CSVs written by the last full run. Also: python MonteCarlo.py --plot-only
 PLOT_ONLY = False
-OUT_DIR = Boss.DATA_DIR
+OUT_DIR = Boss.OUT_DIR
+FIG_DIR = os.path.join(Boss.OUT_DIR, 'figures')
 Z_KNOTS = stats.norm.ppf([0.05, 0.25, 0.50, 0.75, 0.95])
 PCT_COLS = {5: 2, 25: 3, 50: 4, 75: 5, 95: 6}   # popdata.xlsx Table 1 (skiprows=5)
 VARIANT_Z = {'Low': Z_KNOTS[0], 'Medium': 0.0, 'High': Z_KNOTS[-1]}
@@ -180,7 +181,7 @@ def build_setup():
 
     # ---- carbon factors ----
     tf = pd.read_csv(Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
-    bf = pd.read_csv(os.path.join(Boss.DATA_DIR, 'factors_building.csv'))
+    bf = pd.read_csv(Boss.FILE_FACTORS_BUILDING)
     su['soc'] = tf['SOC_avg'].values
     su['emb_central'] = tf['embodied_materials'].values
     mf = pd.read_csv(Boss.FILE_FACTORS_MATERIAL)
@@ -415,6 +416,7 @@ def main():
     summ = pd.DataFrame(q.T, index=OUTPUTS, columns=['p5', 'p25', 'p50', 'p75', 'p95'])
     summ['mean'] = Y.mean(axis=1)
     summ['central'] = cen
+    os.makedirs(OUT_DIR, exist_ok=True)
     summ.to_csv(os.path.join(OUT_DIR, 'montecarlo_summary.csv'))
     pd.DataFrame(np.vstack([X, Y]).T, columns=PARAMS + OUTPUTS).to_csv(
         os.path.join(OUT_DIR, 'montecarlo_draws.csv'), index=False)
@@ -534,7 +536,8 @@ def _history():
 def _save(fig, name):
     fig.tight_layout()
     if SAVE_FIGURES:
-        fig.savefig(os.path.join(OUT_DIR, name), dpi=140, bbox_inches='tight')
+        os.makedirs(FIG_DIR, exist_ok=True)
+        fig.savefig(os.path.join(FIG_DIR, name), dpi=140, bbox_inches='tight')
 
 
 def figures():
@@ -630,7 +633,7 @@ def figures():
     _save(fig, 'mc_4_drivers.png')
 
     if SAVE_FIGURES:
-        print(f"Figures written to {OUT_DIR}/ (mc_1 ... mc_4)")
+        print(f"Figures written to {FIG_DIR}/ (mc_1 ... mc_4)")
     if SHOW_FIGURES:
         plt.show()
 

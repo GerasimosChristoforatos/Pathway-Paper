@@ -14,4 +14,4 @@ tf = pd.read_csv(Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology')
 print(tf[['n_buildings','n_independent','embodied_materials','emb_building_min','emb_building_max','emb_jackknife_min','emb_jackknife_max','SOC_avg','FSI']].round(2).to_string())
 gfa_t = B['evol_typ_total'].iloc[1:].sum()/1e6
 print('floor area by typology 2026-2050 (Mm2):', gfa_t.round(2).to_dict(), ' carbon (kt):', (B['carbon_total_typ'].iloc[1:].sum()/1e6).round(0).to_dict())
-bf = pd.read_csv('data/factors_building.csv'); print(bf[['id','Subtype','GFA','FSI','SOC_avg','duplicate_of']].to_string(index=False))
+bf = pd.read_csv('outputs/factors/factors_building.csv'); print(bf[['id','Subtype','GFA','FSI','SOC_avg','duplicate_of']].to_string(index=False))

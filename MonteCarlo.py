@@ -434,6 +434,10 @@ def main():
                               dists=[dists[k] for k in PARAMS], rng=rng)
     with np.errstate(all='ignore'), __import__('warnings').catch_warnings():
         __import__('warnings').simplefilter('ignore')    # BCa is undefined for zero-variance rows
+        # SobolResult.bootstrap() takes no rng argument (scipy 1.17), and
+        # scipy.stats.bootstrap then draws from numpy's global generator, so
+        # the confidence intervals are reproducible only if that is seeded.
+        np.random.seed(SEED + 3)
         boot = res.bootstrap(confidence_level=0.95, n_resamples=999)
     rows = []
     for o, name in enumerate(OUTPUTS):

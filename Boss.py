@@ -29,6 +29,14 @@ OUT_DIR = 'outputs'                                # everything the scripts writ
 FACTORS_DIR = os.path.join(OUT_DIR, 'factors')     # written by Building_factors.py
 VERBOSE = False     # True also prints historical diagnostics (occupancy, calibration)
 SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
+# Save every figure as PNG to FIG_DIR. Only when Boss.py is run as a script with
+# PATHWAY_SAVE_FIGURES=1 (run_all.py), so re-runs from other scripts never overwrite them.
+SAVE_FIGURES = False
+FIG_DIR = os.path.join(OUT_DIR, 'figures')
+BOSS_FIGURE_NAMES = ['boss_01_population', 'boss_02_households', 'boss_03_cumulative_gfa',
+                     'boss_04_annual_gfa', 'boss_05_annual_carbon', 'boss_06_cumulative_carbon',
+                     'boss_07_typology_share', 'boss_08_demographic_drivers',
+                     'boss_09_space_diagnostics', 'boss_10_material_flows']
 FILE_CONSENTS = os.path.join(DATA_DIR, 'consentdata.xlsx')
 FILE_POP_PROJ = os.path.join(DATA_DIR, 'popdata.xlsx')
 FILE_POP_HIST = os.path.join(DATA_DIR, 'histpopdata.xlsx')          # [FIX e] authoritative annual ERP
@@ -819,6 +827,16 @@ def calibrate_consumption_rate(consumption, population, years,
 # ============================================================
 # MAIN
 # ============================================================
+
+def save_open_figures(names, fig_dir, dpi=130):
+    """Write every open figure, in creation order, as fig_dir/<name>.png."""
+    nums = plt.get_fignums()
+    if len(nums) != len(names):
+        raise RuntimeError(f"{len(nums)} figures open but {len(names)} names given.")
+    os.makedirs(fig_dir, exist_ok=True)
+    for n, name in zip(nums, names):
+        plt.figure(n).savefig(os.path.join(fig_dir, name + '.png'), dpi=dpi, bbox_inches='tight')
+
 
 def main():
     print("\n" + "=" * 78)
@@ -2106,6 +2124,8 @@ def main():
 
     # Every intermediate result is returned, so Diagnostics.py and
     # Sensitivity.py read the same run instead of re-deriving anything.
+    if SAVE_FIGURES:
+        save_open_figures(BOSS_FIGURE_NAMES, FIG_DIR)
     state = dict(locals())
     if SHOW_PLOTS:
         plt.show()
@@ -2115,6 +2135,7 @@ def main():
 
 
 if __name__ == "__main__":
+    SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
     main()
 
 # ============================================================

@@ -15,5 +15,18 @@
     "carbon_p95": 40887.52341942916,
     "central_pct_GFA": 38.54,
     "central_pct_carbon": 39.019999999999996
+  },
+  "validation": {
+    "hindcast_2006_constant": -13.008520068278573,
+    "hindcast_2006_linked": 5.308874282025644,
+    "hindcast_2006_recent": -19.230523336277983,
+    "hindcast_2013_constant": -18.85625450822459,
+    "hindcast_2013_linked": -2.105511714151098,
+    "hindcast_2013_recent": -19.692702419484277,
+    "hindcast_2018_constant": -11.982382986095185,
+    "hindcast_2018_linked": 23.506384435782522,
+    "hindcast_2018_recent": 1.652867107500855,
+    "model_consents_2026": 29754.197363270167,
+    "observed_to_model_2026": null
   }
 }

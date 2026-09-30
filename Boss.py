@@ -139,11 +139,17 @@ HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S onl
 #   'mean_slope': continues the mean slope over all knots (2018->2043).
 #   'pchip_end_slope': the original behaviour: continues the PCHIP end
 #       derivative, which is 2.5x the 2038->2043 secant (ASSESSMENT.md C2).
+#   'taper' (ADOPTED v1.0.2, author's decision): the slope tapers linearly to
+#       zero over S_TAPER_YEARS from the PCHIP end derivative (C1-continuous,
+#       no kink at 2043). Adds s0 x T / 2 in total. NOTE: s0 is the inflated
+#       PCHIP end slope (C2), so 'taper_secant' (from the 2038->2043 secant; not
+#       C1 at 2043) is the flagged alternative; 'flat' is a sensitivity.
 # N4 (the Low/High variants pair stochastic population percentiles with
 # deterministic household variants) and the total vs private-household
 # population question remain OPEN until the living-arrangement table (E2) is
 # obtained; see ASSUMPTIONS.md.
-S_TAIL = 'flat'
+S_TAIL = 'taper'
+S_TAPER_YEARS = 5
 
 # S_ANCHOR_YEAR: the observed household size the Stats NZ shape is rebased on.
 #   2023 (ADOPTED, item 6): the last year in which households are benchmarked
@@ -298,6 +304,23 @@ WAVE_COLOR = '#d35400'
 
 TREND_WINDOW_START = 2012
 DAMPING_PHI = 0.8
+# MIX_MODE (v1.0.2, author's decision): coherent storylines.
+#   'storyline' (ADOPTED): S1 and S3 hold the typology floor-area shares at their
+#       MIX_HELD_WINDOW average; S2 ('intensification continues') keeps the
+#       damped ALR trend above.
+#   'held' / 'trend': force one mix whatever the scenario (sensitivities: S3-10
+#       with the trend = the v1.0 mix; S2 with shares held = the maximum
+#       floor-area case, since held shares keep more detached floor area).
+#   Held shares = ratio of sums of consented floor area over the window (floor-
+#   area weighted), with 2026 = the observed months (January-July).
+MIX_MODE = 'storyline'
+MIX_HELD_WINDOW = (2022, 2026)
+# NOWCAST_GFA (v1.0.2): under the nowcast join, 2026 in-scope floor area is the
+#   observed consented GFA by typology, c x [(1 - W) GFA_2026 + W GFA_2025], with
+#   the missing 2026 months by NOWCAST_METHOD, instead of dwellings x the model's
+#   size and mix; the 2026 mix is the observed one. Dwelling counts (the stock)
+#   still follow the dwelling nowcast. False = the v1.0 treatment.
+NOWCAST_GFA = True
 
 # --- [FIX d] consumption-rate calibration -------------------------------
 # v2 used .ewm(span=35, adjust=False) starting at 1991. With adjust=False the
@@ -950,6 +973,18 @@ def extend_tail(S_knots, S_ann, mode):
     last = int(yrs_k[-1])
     if mode == 'pchip_end_slope':
         return S_ann
+    if mode in ('taper', 'taper_secant'):
+        # slope tapers linearly to zero over S_TAPER_YEARS: S(K+t) = S(K) + s0 (t - t^2 / (2T)),
+        # constant after K+T. With s0 = the PCHIP end derivative this is C1-continuous at K
+        # ('taper'); 'taper_secant' starts from the 2038-43 secant slope instead (not C1).
+        s0 = (float(PchipInterpolator(yrs_k.astype(float), s_k).derivative()(last)) if mode == 'taper'
+              else (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]))
+        T = float(S_TAPER_YEARS)
+        out = S_ann.copy()
+        t = np.clip(out.index.values - last, 0.0, T)
+        after = out.index > last
+        out[after] = float(S_ann.loc[last]) + s0 * (t[after] - t[after] ** 2 / (2 * T))
+        return out
     slope = {'flat': 0.0,
              'secant': (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]),
              'mean_slope': (s_k[-1] - s_k[0]) / (yrs_k[-1] - yrs_k[0])}.get(mode)
@@ -1682,6 +1717,24 @@ def main():
     # ------------------------------------------------------------------
     evolving_gfa_shares = fit_evolving_mix(hist_shares, shares_2025, forecast_years,
                                            DAMPING_PHI, TREND_WINDOW_START, typ_names)
+    if MIX_MODE not in ('storyline', 'held', 'trend'):
+        raise ValueError(f"Unknown MIX_MODE '{MIX_MODE}'.")
+    mix_used = MIX_MODE if MIX_MODE != 'storyline' else ('trend' if _scenario == 'S2' else 'held')
+    _typ_cols = [COL_TYPOLOGIES[n] for n in typ_names]
+    _w = df_consents[(df_consents['Year'] >= MIX_HELD_WINDOW[0]) & (df_consents['Year'] <= MIX_HELD_WINDOW[1])]
+    held_shares = (_w[_typ_cols].sum() / _w[_typ_cols].sum().sum()).set_axis(typ_names)
+    if mix_used == 'held':
+        evolving_gfa_shares.loc[forecast_years > 2025, :] = held_shares.values
+    # 2026 floor area from observed consented GFA by typology (NOWCAST_GFA)
+    gfa_nowcast = None
+    if NOWCAST_GFA and _join_mode == 'nowcast':
+        _gm = df_consents.set_index(pd.to_datetime(df_consents['Date']))
+        _g26 = {n: engine.nowcast_year(_gm[COL_TYPOLOGIES[n]].astype(float), 2026, NOWCAST_METHOD,
+                                       NOWCAST_SEASONAL_YEARS)['total'] for n in typ_names}
+        _built = {n: _completion * ((1.0 - lag_w) * _g26[n] + lag_w * float(hist_typ_gfa.loc[2025, n]))
+                  for n in typ_names}
+        gfa_nowcast = dict(by_typology=_built, total=float(sum(_built.values())), consented_2026=_g26)
+        evolving_gfa_shares.loc[2026, :] = [_built[n] / gfa_nowcast['total'] for n in typ_names]
     future_blended_olf_bim = blend_per_gfa_share(evolving_gfa_shares, OLF_NET_BIM, typ_names)
 
     # [FIX f] realised dwelling size held at its recent observed level per
@@ -1713,7 +1766,8 @@ def main():
                       intensity=T_BASELINE_2025, intensity_upfront=UPFRONT_2025,
                       floor_decline=FLOOR_HOUSEHOLD_DECLINE,
                       olf_per_resident=(DEMAND_BASIS == 'per_resident'),
-                      soil=SOIL_INTENSITY, soil_on_replacement=SOIL_ON_REPLACEMENT)
+                      soil=SOIL_INTENSITY, soil_on_replacement=SOIL_ON_REPLACEMENT,
+                      gfa_fixed=({1: gfa_nowcast['total']} if gfa_nowcast else None))
     # NEAR-TERM JOIN (A1). Under 'nowcast', 2026 completions and the lagged
     # share of 2027 come from observed consents; the building above the
     # model's requirement is split into three channels (engine.join_channels).
@@ -1772,7 +1826,7 @@ def main():
             wave_gfa = (np.asarray(rate_path, float) - (demolition_rate + unconsented_rate)) * E['prev'] * _D
             unc_gfa = E['unc'] * _D - wave_gfa         # long-run residual, m2
             rv_gfa = E['rv'] * _D                      # housed in RV units, m2 (<0)
-            join_gfa = E['join'] * _D                  # near-term join (A1), m2
+            join_gfa = E['join'] * _D + E['gfa_adj']   # near-term join (A1), m2; 2026 = observed GFA
         else:
             vac_gfa = repl_gfa = unc_gfa = rv_gfa = wave_gfa = None      # 'other' not decomposed
         growth_check[col] = float(g_demand[1:].min())

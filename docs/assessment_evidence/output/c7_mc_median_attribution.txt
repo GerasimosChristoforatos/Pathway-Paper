@@ -1,0 +1,14 @@
+all sampled: median GFA 80.66 carbon 31,191; central 76.71 / 29,708; central pct 38.5
+input fixed at adopted   adopted dist median  dist mean MC med GFA   shift central pct
+z_pop                  0           0          0      80.56   -0.10        31.9
+hh_rebase         0.8258       0.863     0.8701      84.38   +3.71        28.6
+regime                 0         0.5        0.5      76.39   -4.27        50.9
+phi                  0.8         0.8        0.8      81.18   +0.52        36.6
+slope_T                0           0          0      80.70   +0.03        38.6
+slope_A                0           0          0      80.67   +0.01        38.5
+size                   1           1      1.002      80.69   +0.02        37.2
+complete            0.95        0.94       0.94      82.14   +1.48        34.5
+pre_share         0.7623      0.7623     0.7623      80.64   -0.02        38.5
+vacancy          0.05531     0.06187    0.06293      77.93   -2.74        46.0
+rv_share         0.05637     0.05883    0.05949      80.99   +0.33        37.8
+only z_pop sampled: median 76.71 (central 76.71)

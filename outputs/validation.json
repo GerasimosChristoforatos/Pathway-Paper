@@ -1,0 +1,258 @@
+{
+  "hindcast": [
+    {
+      "origin": 2006,
+      "test": "2007-2023",
+      "method": "constant",
+      "rate_pct": 0.024422932920106673,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 391522.3670607347,
+      "actual": 455109.26040824264,
+      "error_pct": -13.971786311372602
+    },
+    {
+      "origin": 2006,
+      "test": "2007-2023",
+      "method": "recent",
+      "rate_pct": -0.08165890645675634,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 358417.7244146084,
+      "actual": 455109.26040824264,
+      "error_pct": -21.245785222410085
+    },
+    {
+      "origin": 2006,
+      "test": "2007-2023",
+      "method": "linked",
+      "rate_pct": null,
+      "n_intervals": 3,
+      "linked_b": 2.4498851888441435,
+      "predicted": 473242.27815048955,
+      "actual": 455109.26040824264,
+      "error_pct": 3.9843218584436624
+    },
+    {
+      "origin": 2006,
+      "test": "2007-2023",
+      "method": "dwelling_count",
+      "rate_pct": -0.004074318316691156,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 382629.31501589215,
+      "actual": 455109.26040824264,
+      "error_pct": -15.925834013426677
+    },
+    {
+      "origin": 2013,
+      "test": "2014-2023",
+      "method": "constant",
+      "rate_pct": 0.02916494680122401,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 272162.42332995456,
+      "actual": 333208.2490875398,
+      "error_pct": -18.320622591053382
+    },
+    {
+      "origin": 2013,
+      "test": "2014-2023",
+      "method": "recent",
+      "rate_pct": 0.03787567032633805,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 273819.5113061636,
+      "actual": 333208.2490875398,
+      "error_pct": -17.823309580121972
+    },
+    {
+      "origin": 2013,
+      "test": "2014-2023",
+      "method": "linked",
+      "rate_pct": null,
+      "n_intervals": 4,
+      "linked_b": 0.7694229557336949,
+      "predicted": 317474.5941595824,
+      "actual": 333208.2490875398,
+      "error_pct": -4.721868372419524
+    },
+    {
+      "origin": 2013,
+      "test": "2014-2023",
+      "method": "dwelling_count",
+      "rate_pct": 0.027948033065554007,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 271930.9232583878,
+      "actual": 333208.2490875398,
+      "error_pct": -18.390098683617328
+    },
+    {
+      "origin": 2018,
+      "test": "2019-2023",
+      "method": "constant",
+      "rate_pct": 0.10054955788227526,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 177352.99648893802,
+      "actual": 200146.48343334574,
+      "error_pct": -11.388402410776589
+    },
+    {
+      "origin": 2018,
+      "test": "2019-2023",
+      "method": "recent",
+      "rate_pct": 0.3685766823338031,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 203668.7850320842,
+      "actual": 200146.48343334574,
+      "error_pct": 1.7598618463419147
+    },
+    {
+      "origin": 2018,
+      "test": "2019-2023",
+      "method": "linked",
+      "rate_pct": null,
+      "n_intervals": 5,
+      "linked_b": 1.146026052605232,
+      "predicted": 238447.3606911112,
+      "actual": 200146.48343334574,
+      "error_pct": 19.136422784325703
+    },
+    {
+      "origin": 2018,
+      "test": "2019-2023",
+      "method": "dwelling_count",
+      "rate_pct": 0.05650923926994142,
+      "n_intervals": null,
+      "linked_b": null,
+      "predicted": 173028.9725143251,
+      "actual": 200146.48343334574,
+      "error_pct": -13.54883206231875
+    }
+  ],
+  "hindcast_stock": [
+    {
+      "origin": 2006,
+      "test": "2006-2023",
+      "method": "long run",
+      "rate_pct": -0.004074318316691156,
+      "predicted": 444081.6929913129,
+      "actual": 383046.0,
+      "error_pct": 15.934298489297083
+    },
+    {
+      "origin": 2006,
+      "test": "2006-2023",
+      "method": "recent interval",
+      "rate_pct": 0.026931141063633143,
+      "predicted": 434622.54775361816,
+      "actual": 383046.0,
+      "error_pct": 13.46484436689539
+    },
+    {
+      "origin": 2013,
+      "test": "2013-2023",
+      "method": "long run",
+      "rate_pct": 0.027948033065554007,
+      "predicted": 310942.12994089804,
+      "actual": 266661.0,
+      "error_pct": 16.60577660058953
+    },
+    {
+      "origin": 2013,
+      "test": "2013-2023",
+      "method": "recent interval",
+      "rate_pct": 0.08702185035030859,
+      "predicted": 299905.07476534636,
+      "actual": 266661.0,
+      "error_pct": 12.4667929563552
+    },
+    {
+      "origin": 2018,
+      "test": "2018-2023",
+      "method": "long run",
+      "rate_pct": 0.05650923926994142,
+      "predicted": 187443.4887187037,
+      "actual": 158106.0,
+      "error_pct": 18.555582152925076
+    },
+    {
+      "origin": 2018,
+      "test": "2018-2023",
+      "method": "recent interval",
+      "rate_pct": 0.16315842202116962,
+      "predicted": 177125.1003006353,
+      "actual": 158106.0,
+      "error_pct": 12.02933494025229
+    }
+  ],
+  "net_replacement_crosscheck": {
+    "dhe_rate_long": 0.0011984706078904024,
+    "census_rate_long": 0.0011258085209542295,
+    "dhe_rates": [
+      {
+        "y0": 1991,
+        "y1": 1996,
+        "rate": 0.0006000742693750219
+      },
+      {
+        "y0": 1996,
+        "y1": 2001,
+        "rate": -0.000978757155665908
+      },
+      {
+        "y0": 2001,
+        "y1": 2006,
+        "rate": 0.0003036037183242069
+      },
+      {
+        "y0": 2006,
+        "y1": 2013,
+        "rate": 0.0007730041395623881
+      },
+      {
+        "y0": 2013,
+        "y1": 2018,
+        "rate": 0.0016896341463414634
+      },
+      {
+        "y0": 2018,
+        "y1": 2023,
+        "rate": 0.004033185292294979
+      }
+    ],
+    "dhe_weight_mean": 0.8888410964125001,
+    "dhe_weight_sd": 0.004744106757798261,
+    "dhe_post2023_period": "2023-06-30..2026-03-31",
+    "dhe_post2023_rate": 4.975563437644156e-06
+  },
+  "model_method": "dwelling_count",
+  "check_2026": {
+    "data_end": "2026-07-01",
+    "model_built_all_2026": 29084.83151255023,
+    "model_consent_equivalent_2026": 24445.87373096065,
+    "status": "observed",
+    "months": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "observed_ytd": 23916.0,
+    "seasonal_share": 0.5612383713207713,
+    "model_expected_ytd": 13719.962358277582,
+    "ratio_observed_to_model": 1.7431534705028475,
+    "last12_months": "2025-08-01..2026-07-01",
+    "observed_last12": 40908.0,
+    "model_settings": {
+      "NEAR_TERM_JOIN": "carried_deviation",
+      "NOWCAST_POPULATION": false
+    }
+  }
+}

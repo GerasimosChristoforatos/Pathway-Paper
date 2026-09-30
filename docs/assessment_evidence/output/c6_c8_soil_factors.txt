@@ -1,0 +1,38 @@
+SOIL carbon by demand band, 2026-2050 (kt):
+Growth (net of consolidation)        1583.3
+House-splitting                        87.8
+Consumption: extra space              779.7
+Consumption: vacancy                  143.5
+Consumption: demolition               395.7
+Calibrated stock residual              86.8
+Housed in RV units (out of scope)    -173.5
+total soil 2,903.4 kt = 9.8% of 29,708
+replacement bands (demolition + residual): 482.5 kt; remainder 2,420.8 kt
+  greenfield share g=0.00: soil 0 kt -> total 26,805 kt (-9.8%)
+  greenfield share g=0.25: soil 605 kt -> total 27,410 kt (-7.7%)
+  greenfield share g=0.50: soil 1,210 kt -> total 28,015 kt (-5.7%)
+  greenfield share g=0.75: soil 1,816 kt -> total 28,620 kt (-3.7%)
+  greenfield share g=1.00: soil 2,421 kt -> total 29,225 kt (-1.6%)
+            n_buildings  n_independent  embodied_materials  emb_building_min  emb_building_max  emb_jackknife_min  emb_jackknife_max  SOC_avg    FSI
+Typology                                                                                                                                            
+Detached             10             10              307.74            196.22            395.95             299.10             319.08    50.13   1.28
+Townhouses            4              4              362.88            307.36            440.73             336.93             381.39    30.27   2.33
+Apartments            2              1              609.75            609.73            609.77             609.73             609.77     5.51  10.66
+floor area by typology 2026-2050 (Mm2): {'Detached': 33.33, 'Townhouses': 40.12, 'Apartments': 3.26}  carbon (kt): {'Detached': 11929.0, 'Townhouses': 15773.0, 'Apartments': 2006.0}
+  id           Subtype     GFA       FSI   SOC_avg duplicate_of
+ A_1         Apartment 3720.96 10.660677  5.512721          NaN
+ A_2         Apartment 4078.00 10.660677  5.512721          A_1
+ T_1         Townhouse  123.00  2.277778 25.801171          NaN
+ T_2         Townhouse  125.00  1.582278 37.142219          NaN
+ T_3         Townhouse  134.00  1.340000 43.857711          NaN
+ T_4         Townhouse  887.00  4.119029 14.267763          NaN
+DD_1 2-storey Detached  106.00  1.378772 42.624399          NaN
+DD_2 2-storey Detached  186.00  2.147236 27.369763          NaN
+DD_3 2-storey Detached  194.00  1.687984 34.816286          NaN
+DD_4 2-storey Detached  190.00  1.156492 50.816915          NaN
+SD_1 1-storey Detached  113.00  0.964575 60.927676          NaN
+SD_2 1-storey Detached  119.95  0.999917 58.774233          NaN
+SD_3 1-storey Detached  146.00  0.985887 59.610620          NaN
+SD_4 1-storey Detached   75.00  1.000000 58.769333          NaN
+SD_5 1-storey Detached  194.00  0.891790 65.900416          NaN
+SD_6 1-storey Detached  166.00  0.915559 64.189565          NaN

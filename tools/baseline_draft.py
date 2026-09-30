@@ -44,7 +44,7 @@ def register():
          'DATA: census private-dwelling counts and consents'),
         ('Demolition rate (split only)', f'{100 * B.DEMOLITION_RATE:.3f}%/yr', 'LITERATURE: BRANZ SR214'),
         ('Completion rate', f'{B.COMPLETION_RATE:.2f} (band {B.COMPLETION_RATE_BAND[0]}-{B.COMPLETION_RATE_BAND[1]})',
-         'as documented in Boss.py; source to be cited [open]'),
+         'LITERATURE: bounds from Jones et al. 2024 (as cited in MonteCarlo.py)'),
         ('Completion lag', f'{B.COMPLETION_LAG}', "DATA: Little's law W = L / lambda (a lower bound)"),
         ('Near-term join', f'{B.NEAR_TERM_JOIN} ({B.NOWCAST_METHOD})', 'DATA (observed consents); method stated'),
         ('Excess channels', f'{B.EXCESS_CHANNELS} on {B.RECENT_INTERVAL[0]}-{B.RECENT_INTERVAL[1]}',
@@ -74,7 +74,7 @@ LIMITATIONS = [
     'Household-size shape is from the 2018-base projections (N4); 2023-base household projections are due '
     'late 2026 (F3 switch).',
     'Soil carbon: greenfield share and development-weighted soil-order shares are placeholders (item 8, E5/E6).',
-    'Completion rate source to be cited; W from Little\'s law is a lower bound on the completion lag.',
+    'W from Little\'s law is a lower bound on the completion lag.',
     'No independent national count of demolitions to test the implied rates.',
     'Retirement-village floor area is reported but out of carbon scope (A4).',
     'Case-study carbon factors: 16 LCAs; some typologies rest on one case (see ASSESSMENT).',
@@ -104,6 +104,11 @@ def main():
         txt += (f" How fast existing dwellings are replaced is the largest structural uncertainty: holding the "
                 f"long-run rate gives {rows['S1']['GFA_Mm2']:.1f} million m², holding the 2018-2023 rate gives "
                 f"{rows['S2']['GFA_Mm2']:.1f} million m².")
+    ref_mc = os.path.join(OUT, 'montecarlo_summary_S3-10.csv')
+    if os.path.exists(ref_mc):
+        r = pd.read_csv(ref_mc, index_col=0).loc['GFA_Mm2']
+        txt += (f" Within the reference path, joint uncertainty in the inputs gives a 90% interval of "
+                f"{r['p5']:.1f}-{r['p95']:.1f} million m² (median {r['p50']:.1f}, mean {r['mean']:.1f}).")
     txt += (f" Population uncertainty alone (Stats NZ 5th-95th percentiles) spans "
             f"{b['pop_band_gfa_Mm2']['5th']:.1f}-{b['pop_band_gfa_Mm2']['95th']:.1f} million m².")
     L += [txt, '']

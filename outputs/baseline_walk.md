@@ -8,3 +8,8 @@
 | item 4: net replacement from census dwelling counts (`6221b95`) | 75.01 | 29,049 | 21,377 | -19.5% | 2.652 | 83.97 | 26.5 | 1.97 | -2.04 (-2.6%) |
 | A1(a): observed 2026 population growth (`e1b3fbf`) | 74.24 | 28,751 | 21,160 | -36.2% | 2.652 | 83.17 | 26.6 | 1.97 | -0.78 (-1.0%) |
 | A1(a)+(c): nowcast 2026-27 consents, three-channel join (`0ab938f`) | 76.00 | 29,427 | 21,650 | +9.0% | 2.652 | 85.31 | 24.4 | 1.97 | +1.76 (+2.4%) |
+| item 2 decision: S3 half-life 10 as reference (`a9c46fa`) | 83.01 | 32,142 | 23,648 | +9.0% | 2.652 | 88.68 | 33.5 | 1.74 | +7.01 (+9.2%) |
+| quarterly ERP for the population nowcast and household test (`14188c3`) | 83.01 | 32,141 | 23,648 | +9.0% | 2.652 | 88.67 | 33.5 | 1.74 | -0.00 (-0.0%) |
+| household channel reverts at rho (`71a864e`) | 80.94 | 31,342 | 23,062 | +9.0% | 2.652 | 86.79 | 33.8 | 1.74 | -2.07 (-2.5%) |
+| item 8: no soil loss on net replacement (`0a366fd`) | 80.94 | 30,729 | 22,448 | +9.0% | 2.652 | 86.79 | 33.8 | 1.74 | +0.00 (+0.0%) |
+| item 9: MC within each scenario, centred inputs (`5867f5e`) | 80.94 | 30,729 | 22,448 | +9.0% | 2.652 | 79.74 | 53.7 | 1.74 | +0.00 (+0.0%) |

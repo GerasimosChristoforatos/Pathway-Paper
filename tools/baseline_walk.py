@@ -20,6 +20,11 @@ STEPS = [  # (commit, label) in order; the first is the CP1 state (= original nu
     ('6221b95', 'item 4: net replacement from census dwelling counts'),
     ('e1b3fbf', 'A1(a): observed 2026 population growth'),
     ('0ab938f', 'A1(a)+(c): nowcast 2026-27 consents, three-channel join'),
+    ('a9c46fa', 'item 2 decision: S3 half-life 10 as reference'),
+    ('14188c3', 'quarterly ERP for the population nowcast and household test'),
+    ('71a864e', 'household channel reverts at rho'),
+    ('0a366fd', 'item 8: no soil loss on net replacement'),
+    ('5867f5e', 'item 9: MC within each scenario, centred inputs'),
 ]
 COLS = [('boss.GFA_Mm2', 'floor area Mm2', '{:.2f}'), ('boss.carbon_kt', 'carbon kt', '{:,.0f}'),
         ('boss.upfront_kt', 'upfront kt', '{:,.0f}'), ('boss.step_2025_2026_pct', 'step 2025-26', '{:+.1f}%'),

@@ -39,7 +39,8 @@ Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% 
 | Extra space per dwelling | 20.21 | 25.0% | 7,829 |
 | Vacancy allowance | 3.69 | 4.6% | 1,430 |
 | Demolition replacement | 10.36 | 12.8% | 3,622 |
-| Calibrated stock residual | 6.78 | 8.4% | 2,365 |
+| Calibrated stock residual (long run) | -1.72 | -2.1% | -601 |
+| Redevelopment wave (scenario - long run) | 8.50 | 10.5% | 2,966 |
 | Near-term join (2026-27 excess) | 0.10 | 0.1% | 32 |
 | Housed in RV units (out of scope) | -4.84 | -6.0% | -1,836 |
 | **Total** | **80.94** | 100% | **30,729** |
@@ -88,22 +89,22 @@ Soil organic carbon loss is land-use change: a new building footprint seals the 
 
 Rolling-origin hindcast of dwellings built (actual households and vacancy fed in; the net-replacement term predicted):
 
-| origin | test years | model method error | best alternative |
-|---|---|---|---|
-| 2006 | 2007-2023 | -15.9% | linked +4.0% |
-| 2013 | 2014-2023 | -18.4% | linked -4.7% |
-| 2018 | 2019-2023 | -13.5% | recent +1.8% |
+| origin | test years | long-run rate (S1) error | reference method (S3-10) error | best alternative |
+|---|---|---|---|---|
+| 2006 | 2007-2023 | -15.9% | -14.7% | linked +4.0% |
+| 2013 | 2014-2023 | -18.4% | -16.1% | linked -4.7% |
+| 2018 | 2019-2023 | -13.5% | -9.3% | recent +1.8% |
 
 2026 check (model run without any observed-2026 input): observed consents Jan-Jul 23,916 vs model 13,720; ratio 1.74.
-Decomposition of the 2026 gap on the reference path (Jan-Jul 2026 / seasonal share): +8,511 dwellings = population -5,763 + pipeline from 2025 +5,811 + 2026 consents above requirement +8,463.
+Decomposition of the 2026 gap on the reference path (Jan-Jul 2026 / seasonal share): +8,511 dwellings = population -6,157 + pipeline from 2025 +6,011 + 2026 consents above requirement +8,657.
 
 ## Finding: 2026 building runs well above the model's requirement
 
-Consents for January-July 2026 (23,916) are 1.74 times what the reference model, run without any 2026 data, implies for those months. In completions, observed-implied 2026 building is 37,596 dwellings against a reference-path requirement of 29,085 (gap +8,511)[^s1]. Population does not explain it: growth over the year to June 2026 fell short of the projection, which lowers the requirement by 5,763. The gap is building already in the pipeline from 2025 (+5,811) plus 2026 consents above requirement (+8,463). Over 2018-2023 most building above household formation went to redevelopment (net removals 34,805) rather than vacancy (+6,286).
+Consents for January-July 2026 (23,916) are 1.74 times what the reference model, run without any 2026 data, implies for those months. In completions, observed-implied 2026 building is 37,596 dwellings against a reference-path requirement of 29,085 (gap +8,511)[^s1]. Population does not explain it: growth over the year to June 2026 fell short of the projection, which lowers the requirement by 6,157. The gap is building already in the pipeline from 2025 (+6,011) plus 2026 consents above requirement (+8,657). Over 2018-2023 most building above household formation went to redevelopment (net removals 34,805) rather than vacancy (+6,286).
 
 The model takes 2026 completions (and the 2027 share already consented) from these observed consents and allocates the excess (+14,542 dwellings in 2026, +7,639 in 2027) to redevelopment, vacancy and household formation. On the reference path the vacancy and household channels revert, so the excess mainly shifts timing: +2 dwellings net over 2026-2050.
 
-[^s1]: On S1 (long-run replacement) the requirement is 27,760 and the gap +9,836 = population -5,763 + pipeline +6,483 + 2026 consents above requirement +9,116.
+[^s1]: On S1 (long-run replacement) the requirement is 27,760 and the gap +9,836 = population -6,157 + pipeline +6,683 + 2026 consents above requirement +9,311.
 
 ## One-at-a-time sensitivities (floor area and carbon vs reference)
 
@@ -113,7 +114,7 @@ The model takes 2026 completions (and the 2027 share already consented) from the
 | Population | Stats NZ 5th percentile (level) | 57.27 | -29.2% | -27.8% |
 | Replacement scenario | S2: 2018-2023 rate persists (upper bound) | 90.81 | +12.2% | +11.2% |
 | Stock | Net replacement: household identity, constant empty share (S1) | 72.03 | -11.0% | -10.1% |
-| Household size | Carry 2025 deviation, rho = 0.9 | 88.59 | +9.4% | +9.6% |
+| Household size | Carry 2025 deviation, rho = 0.9 (REJECTED: DHE estimation artefact) | 88.59 | +9.4% | +9.6% |
 | Replacement scenario | S1: long-run rate (lower bound) | 74.42 | -8.1% | -7.4% |
 | Typology mix | Damping phi = 0.95 | 74.56 | -7.9% | -6.9% |
 | Stock | Net replacement: dwelling counts 2013-2023 only | 87.02 | +7.5% | +6.9% |

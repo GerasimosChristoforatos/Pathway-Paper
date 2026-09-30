@@ -4,7 +4,7 @@ Every number below is read from the run outputs. Reference path: net replacement
 
 ## Summary
 
-New Zealand is projected to build 80.9 million m² of new residential floor area in 2026-2050 on the reference path, embodying 30.7 Mt CO₂e over the life cycle, of which 22.4 Mt is upfront (materials A1-A5 plus soil). How fast existing dwellings are replaced is the largest structural uncertainty: holding the long-run rate gives 74.4 million m², holding the 2018-2023 rate gives 90.8 million m². Population uncertainty alone (Stats NZ 5th-95th percentiles) spans 57.3-105.2 million m².
+New Zealand is projected to build 80.9 million m² of new residential floor area in 2026-2050 on the reference path, embodying 30.7 Mt CO₂e over the life cycle, of which 22.4 Mt is upfront (materials A1-A5 plus soil). How fast existing dwellings are replaced is the largest structural uncertainty: holding the long-run rate gives 74.4 million m², holding the 2018-2023 rate gives 90.8 million m². Within the reference path, joint uncertainty in the inputs gives a 90% interval of 59.5-102.9 million m² (median 79.7, mean 80.3). Population uncertainty alone (Stats NZ 5th-95th percentiles) spans 57.3-105.2 million m².
 
 ## Headline, 2026-2050 (median demographics)
 
@@ -16,7 +16,19 @@ New Zealand is projected to build 80.9 million m² of new residential floor area
 | S3, half-life 15 yr | 83.12 | +2.7% | 31,492 | 22,990 |
 | S2 upper bound: 2018-2023 replacement | 90.81 | +12.2% | 34,186 | 24,900 |
 
-*Monte Carlo intervals by scenario: pending (item 9). The current single MC mixes scenarios and is not quoted.*
+Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% interval):
+
+| scenario | output | mean | median | 5th | 95th |
+|---|---|---|---|---|---|
+| S1 | floor area (Mm²) | 73.8 | 73.4 | 54.2 | 95.1 |
+| S1 | carbon (kt) | 28,234.6 | 28,040.3 | 20,558.4 | 36,641.5 |
+| S1 | upfront (kt) | 20,707.1 | 20,560.3 | 15,075.3 | 26,817.7 |
+| S2 | floor area (Mm²) | 90.0 | 89.5 | 68.3 | 113.6 |
+| S2 | carbon (kt) | 33,908.9 | 33,666.0 | 25,439.2 | 43,208.3 |
+| S2 | upfront (kt) | 24,735.2 | 24,555.3 | 18,563.7 | 31,461.4 |
+| S3-10 | floor area (Mm²) | 80.3 | 79.7 | 59.5 | 102.9 |
+| S3-10 | carbon (kt) | 30,497.7 | 30,293.8 | 22,414.1 | 39,391.5 |
+| S3-10 | upfront (kt) | 22,311.1 | 22,144.3 | 16,382.3 | 28,767.6 |
 
 ## Why the floor area is built (reference path, median)
 
@@ -146,7 +158,7 @@ Decomposition of the 2026 gap (Jan-Jul 2026 / seasonal share): gap +9,836 dwelli
 | Net replacement scenario | S3, half-life 10 yr | DECISION (author): S1/S2 bounds, S3-10 reference; half-life is JUDGEMENT (not identifiable) |
 | Long-run net replacement window | 1991-2023 | DATA: census private-dwelling counts and consents |
 | Demolition rate (split only) | 0.135%/yr | LITERATURE: BRANZ SR214 |
-| Completion rate | 0.95 (band 0.92-0.96) | as documented in Boss.py; source to be cited [open] |
+| Completion rate | 0.95 (band 0.92-0.96) | LITERATURE: bounds from Jones et al. 2024 (as cited in MonteCarlo.py) |
 | Completion lag | littles_law | DATA: Little's law W = L / lambda (a lower bound) |
 | Near-term join | nowcast (seasonal_share) | DATA (observed consents); method stated |
 | Excess channels | calibrated on 2018-2023 | DATA, ONE census interval |
@@ -168,7 +180,7 @@ Decomposition of the 2026 gap (Jan-Jul 2026 / seasonal share): gap +9,836 dwelli
 - The 2018 census empty-dwelling count has no quality rating (DataInfo+, F1); the vacancy channel and the vacancy knots rely on it.
 - Household-size shape is from the 2018-base projections (N4); 2023-base household projections are due late 2026 (F3 switch).
 - Soil carbon: greenfield share and development-weighted soil-order shares are placeholders (item 8, E5/E6).
-- Completion rate source to be cited; W from Little's law is a lower bound on the completion lag.
+- W from Little's law is a lower bound on the completion lag.
 - No independent national count of demolitions to test the implied rates.
 - Retirement-village floor area is reported but out of carbon scope (A4).
 - Case-study carbon factors: 16 LCAs; some typologies rest on one case (see ASSESSMENT).

@@ -30,9 +30,11 @@ FIELDS = [
     ('boss.join_net_2026_2050', 'Near-term join: net dwellings added 2026-2050', '{:+,.0f}'),
     ('mc.GFA_p5', 'MC floor area p5 (Mm2)', '{:.2f}'),
     ('mc.GFA_p50', 'MC floor area p50 (Mm2)', '{:.2f}'),
+    ('mc.GFA_mean', 'MC floor area mean (Mm2)', '{:.2f}'),
     ('mc.GFA_p95', 'MC floor area p95 (Mm2)', '{:.2f}'),
     ('mc.carbon_p5', 'MC carbon p5 (kt)', '{:,.0f}'),
     ('mc.carbon_p50', 'MC carbon p50 (kt)', '{:,.0f}'),
+    ('mc.carbon_mean', 'MC carbon mean (kt)', '{:,.0f}'),
     ('mc.carbon_p95', 'MC carbon p95 (kt)', '{:,.0f}'),
     ('mc.central_pct_GFA', 'Central run percentile in MC, floor area', '{:.1f}'),
     ('mc.central_pct_carbon', 'Central run percentile in MC, carbon', '{:.1f}'),
@@ -74,6 +76,8 @@ def mc_metrics(out_dir):
         for p in (5, 50, 95):
             m[f'{key}_p{p}'] = float(s.loc[row, f'p{p}'])
         m[f'central_pct_{key}'] = float(100 * (d[row] < s.loc[row, 'central']).mean())
+        if 'mean' in s.columns:
+            m[f'{key}_mean'] = float(s.loc[row, 'mean'])
     return m
 
 

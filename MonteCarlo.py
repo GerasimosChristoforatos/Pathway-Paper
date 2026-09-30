@@ -41,41 +41,46 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
             because the 2025 deviation is a DHE estimation artefact):
             Normal(b_hat, Newey-West SE) and Normal(rho_hat, sqrt((1-rho^2)/n))
             truncated to [0, 0.95].
-  hh_rebase Triangular(k_occupied, k_occupied+away, 1): the factor on post-2018
+  CENTRING (D3): the deterministic Boss run uses the MEDIAN of every sampled
+  input. Where the stated range is asymmetric about Boss's value, a two-piece
+  (split) distribution with its median at that value is used (TwoPiece).
+  hh_rebase Two-piece triangular(k_occupied, k_occupied+away, 1), median and
+            mode at k_occupied+away: the factor on post-2018
             DHE household increments. The low end rebases on census occupied
             dwellings, the mode (Boss's choice) adds residents-away households,
             and 1 is the DHE series as published (i.e. the 2023 census
             undercounted households relative to 2018). The stock calibration
             is redone with each draw's households.
-  regime    Uniform(0, 1): weight on the 2019-2023 census interval's net
-            replacement rate (+0.36%/yr of stock) against the whole
-            census-benchmarked window 1992-2023 (+0.15%/yr). It reads "how much
-            of the recent redevelopment regime persists". The census dwelling
-            counts show the same 2018-2023 rise with no household data.
-            INTERIM (until item 9 replaces it with scenarios): the weight moves
-            the long-run end of Boss.REPLACEMENT_SCENARIO's path; at 0 the draw
-            reproduces the Boss run.
+  net replacement: NOT sampled (item 9). The MC is run separately within
+            each scenario of MC_SCENARIOS (S3 half-life 10 = reference, S1 and
+            S2 = bounds); the half-life is fixed. The former Uniform(0, 1)
+            'regime' weight is no longer drawn (project() still accepts it,
+            for the legacy equivalence test).
   near-term join (A1), when Boss.NEAR_TERM_JOIN = 'nowcast': recomputed in
             every draw with that draw's completion rate and scenario rate
             (channel shares re-measured on 2018-2023); the observed consents
             and the observed 2026 population are data, not sampled.
-  phi       Triangular(0.62, 0.80, 0.98): mix-trend damping. The width is the
-            conventional damped-trend range [0.80, 0.98] (Hyndman &
-            Athanasopoulos), centred on the adopted 0.80.
+  phi       Triangular(0.62, 0.80, 0.98): mix-trend damping, symmetric about
+            the adopted 0.80 (the conventional damped-trend range [0.80, 0.98],
+            Hyndman & Athanasopoulos, mirrored). JUDGEMENT. What it means is
+            reported as the output townhouse_share_2050 (the 2050 townhouse
+            share of floor area implied by phi and the slope draws).
   slope_T,  Normal(0, Newey-West SE) added to each ALR mix slope (Townhouses,
   slope_A   Apartments vs Detached), independent of each other.
   size      Lognormal multiplier on dwelling size (all typologies together),
             sigma = RMS log deviation of annual typology sizes 2016-2025 from
             the adopted 2023-25 reference.
-  complete  Uniform(0.92, 0.96): completion rate (Jones et al. 2024 bounds).
+  complete  Two-piece uniform(0.92, 0.95, 0.96): completion rate (Jones et al.
+            2024 bounds), median at the adopted 0.95.
             The whole stock calibration is redone for each draw.
   pre_share Uniform(+/-0.05) around the measured 2013 empty share applied to
             pre-2013 censuses. The calibration is redone.
-  vacancy   Triangular(min, 2023, max) of the measured empty-vacancy censuses
-            (2013, 2018, 2023). It is reached linearly by 2050, and the
-            vacancy-change term builds the difference.
-  rv_share  Triangular(min, central, max) of the annual retirement-village
-            share since 2011, around the 2016-2025 ratio of sums.
+  vacancy   Symmetric triangular about the 2023 value, half-width = the
+            2018-2023 difference: the 2018/2023 empty definition only (N1;
+            2013 is on the earlier definition). Width is JUDGEMENT. Reached
+            linearly by 2050; the vacancy-change term builds the difference.
+  rv_share  Two-piece triangular(min, central, max) of the annual retirement-
+            village share since 2011, median at the 2016-2025 ratio of sums.
   carbon    A stratified bootstrap of the case studies (resampled within
             sub-type, duplicate cases removed, re-pooled as in
             Building_factors). A sub-type with one independent case (the
@@ -91,6 +96,7 @@ All other inputs are independent. Seeds are fixed, so runs are reproducible.
 """
 
 import contextlib
+import importlib
 import io
 import os
 import sys
@@ -140,7 +146,15 @@ def load_level_percentiles():
     return pd.DataFrame(rows, columns=['Year'] + list(PCT_COLS)).set_index('Year')
 
 
-def build_setup():
+def build_setup(settings=None):
+    """Snapshot of one Boss run. settings: Boss module settings for this run
+    (the module is reloaded first, so nothing leaks between scenarios)."""
+    if settings is not None:
+        importlib.reload(Boss)
+        for k, v in settings.items():
+            if not hasattr(Boss, k):
+                raise AttributeError(f"Boss has no setting '{k}'.")
+            setattr(Boss, k, v)
     Boss.SHOW_PLOTS = False
     with contextlib.redirect_stdout(io.StringIO()):
         B = Boss.main()
@@ -206,9 +220,12 @@ def build_setup():
     # ---- stock ----
     su['v_2023'] = float(B['v_forward'])
     cen = B['census']
-    measured = cen.loc[cen['empty'].notna()]
-    vm = (measured['empty'] / measured['total_private']).values
-    su['v_range'] = (float(vm.min()), su['v_2023'], float(vm.max()))
+    # vacancy on the 2018/2023 empty-dwelling definition only (N1: 2013 is on
+    # the earlier definition); symmetric about the 2023 value, half-width = the
+    # 2018-2023 difference (JUDGEMENT width, D3)
+    vm = (cen.loc[[2018, 2023], 'empty'] / cen.loc[[2018, 2023], 'total_private']).values
+    h = float(np.abs(vm - su['v_2023']).max())
+    su['v_range'] = (su['v_2023'] - h, su['v_2023'], su['v_2023'] + h)
     rs = B['hist_rv_share'].loc[2011:2025]
     su['rv_range'] = (float(rs.min()), float(B['rv_share']), float(rs.max()))
     su['pre_share'] = float(B['empty_share_measured'])
@@ -263,13 +280,45 @@ def carbon_bootstrap(bf, typ):
 # (HH_SIZE_RESPONSE, a sensitivity); hh_rebase only when households are rebased.
 PARAMS = (['z_pop'] + (['b', 'rho'] if Boss.HH_SIZE_RESPONSE else [])
           + (['hh_rebase'] if Boss.HH_CENSUS_REBASE else [])
-          + ['regime', 'phi', 'slope_T', 'slope_A', 'size', 'complete',
+          + ['phi', 'slope_T', 'slope_A', 'size', 'complete',
              'pre_share', 'vacancy', 'rv_share', 'carbon'])
+# Item 9 (D3): net replacement is NOT sampled. The MC runs separately within
+# each scenario (MC_SCENARIOS); the S3 half-life is fixed, not sampled. The
+# first entry is the reference path (its files keep the plain names and carry
+# the Sobol indices and figures).
+MC_SCENARIOS = [('S3-10', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0)),
+                ('S1', dict(REPLACEMENT_SCENARIO='S1')),
+                ('S2', dict(REPLACEMENT_SCENARIO='S2'))]
+
+
+class TwoPiece:
+    """Two-piece (split) distribution with its MEDIAN at m: probability 1/2
+    on [lo, m] and 1/2 on [m, hi] (the two-piece family; Wallis 2014, Statistical
+    Science 29(1)). Each half is a triangle peaking at m ('triangular', so the
+    mode is also m) or flat ('uniform'). Used where the deterministic value is
+    not the median of a one-piece distribution over the stated range, so that
+    the deterministic run sits at the input medians (D3)."""
+
+    def __init__(self, lo, m, hi, shape='triangular'):
+        if not lo <= m <= hi:
+            raise ValueError(f'TwoPiece needs lo <= m <= hi, got {lo}, {m}, {hi}.')
+        self.lo, self.m, self.hi, self.shape = float(lo), float(m), float(hi), shape
+
+    def ppf(self, u):
+        u = np.asarray(u, float)
+        lo, m, hi = self.lo, self.m, self.hi
+        if self.shape == 'triangular':
+            left = lo + (m - lo) * np.sqrt(np.clip(2 * u, 0, 1))
+            right = hi - (hi - m) * np.sqrt(np.clip(2 * (1 - u), 0, 1))
+        else:
+            left = lo + (m - lo) * np.clip(2 * u, 0, 1)
+            right = m + (hi - m) * np.clip(2 * u - 1, 0, 1)
+        return np.where(u < 0.5, left, right)
 
 
 def central(su):
     return dict(z_pop=0.0, b=su['b_hat'], rho=su['rho_hat'], hh_rebase=su['k_range'][1],
-                regime=0.0, phi=su['phi'],
+                phi=su['phi'],
                 slope_T=0.0, slope_A=0.0, size=1.0, complete=su['completion'],
                 pre_share=su['pre_share'], vacancy=su['v_2023'], rv_share=su['rv_range'][1],
                 carbon=None)
@@ -321,7 +370,8 @@ def project(su, p):
         unc_recent = (engine.window_rate(cal, 2019, end) - su['demol_rate']) if end >= 2019 else cal['rate_unc']
     # INTERIM until item 9: the regime weight blends the long-run end of the
     # scenario path; at regime = 0 the path is the Boss run's.
-    unc_base = (1 - p['regime']) * unc_long + p['regime'] * unc_recent
+    r = p.get('regime', 0.0)           # not sampled (item 9); kept for the legacy equivalence test
+    unc_base = (1 - r) * unc_long + r * unc_recent
     unc = engine.replacement_path(su['scenario'], unc_base, unc_recent, fy, su['s3_half_life'])
     dv = engine.deviation_2025(cal, c * su['units_all'].loc[2025],
                                float(hh_hist.loc[2025] - hh_hist.loc[2024]),
@@ -362,6 +412,7 @@ def project(su, p):
                                       su['drawdown'], su['hh_channel'], p.get('rho', su['rho_hat']))
         E = fwd(join, ji['channels']['redevelopment'])
     return dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
+                townhouse_2050=float(shares[typ[1]].iloc[-1]),
                 hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],
                 I=np.array([I[t] for t in typ]), U=np.array([U[t] for t in typ]))
 
@@ -370,10 +421,11 @@ def summarise(out):
     s = slice(1, None)                                     # 2026-2050
     return np.array([out['gfa'][s].sum() / 1e6, out['carbon'][s].sum() / 1e6,
                      out['upfront'][s].sum() / 1e6, out['rv_units'][s].sum(),
-                     out['hh'][-1] / 1e6, out['S'][-1]])
+                     out['hh'][-1] / 1e6, out['S'][-1], out['townhouse_2050']])
 
 
-OUTPUTS = ['GFA_Mm2', 'carbon_kt', 'upfront_kt', 'RV_units', 'households_2050_M', 'S_2050']
+OUTPUTS = ['GFA_Mm2', 'carbon_kt', 'upfront_kt', 'RV_units', 'households_2050_M', 'S_2050',
+           'townhouse_share_2050']
 
 
 def validate(su):
@@ -413,18 +465,17 @@ def distributions(su):
         'z_pop': stats.norm(0, 1),
         'b': stats.norm(su['b_hat'], su['b_se']),
         'rho': stats.truncnorm(tn_a, tn_b, loc=su['rho_hat'], scale=su['rho_se']),
-        'hh_rebase': tri(*su['k_range']),
-        'regime': stats.uniform(0, 1),
+        'hh_rebase': TwoPiece(*su['k_range']),
         'phi': tri(PHI_RANGE[0], Boss.DAMPING_PHI, PHI_RANGE[1]),
         'slope_T': stats.norm(0, su['alr_se'][typ[1]]),
         'slope_A': stats.norm(0, su['alr_se'][typ[2]]),
         'size': stats.lognorm(s=su['size_sigma'], scale=1.0),
-        'complete': stats.uniform(*Boss.COMPLETION_RATE_BAND[:1],
-                                  Boss.COMPLETION_RATE_BAND[1] - Boss.COMPLETION_RATE_BAND[0]),
+        'complete': TwoPiece(Boss.COMPLETION_RATE_BAND[0], su['completion'], Boss.COMPLETION_RATE_BAND[1],
+                             shape='uniform'),
         'pre_share': stats.uniform(su['pre_share'] - Boss.PRE2013_EMPTY_SHARE_BAND,
                                    2 * Boss.PRE2013_EMPTY_SHARE_BAND),
-        'vacancy': tri(*su['v_range']),
-        'rv_share': tri(*su['rv_range']),
+        'vacancy': tri(*su['v_range']),                 # symmetric: median = v_2023
+        'rv_share': TwoPiece(*su['rv_range']),
         'carbon': stats.uniform(0, 1),
     }
 
@@ -441,20 +492,22 @@ def evaluate(su, X):
 # ============================================================
 # MAIN
 # ============================================================
-def main():
-    t0 = time.time()
-    su = build_setup()
+def run_scenario(name, settings, reference):
+    """Joint uncertainty within one net-replacement scenario. Every scenario
+    uses the same seed (common random numbers), so differences between
+    scenarios are not sampling noise. The reference scenario also gets the
+    Sobol indices and keeps the plain file names read by figures() and metrics."""
+    su = build_setup(settings)
     validate(su)
     dists = distributions(su)
+    if reference:
+        print("\nINPUT DISTRIBUTIONS (5th / 50th / 95th; the deterministic run uses the medians)")
+        for k in PARAMS:
+            q = np.atleast_1d(dists[k].ppf(np.array([0.05, 0.5, 0.95])))
+            print(f"   {k:<10} {q[0]:>12.5g} {q[1]:>12.5g} {q[2]:>12.5g}")
+        print(f"   carbon-factor bootstrap: {N_BOOT} replicates; between-building log-SD "
+              f"{su['between_sigma']:.3f} used for single-case sub-types")
 
-    print("\nINPUT DISTRIBUTIONS (5th / 50th / 95th)")
-    for k in PARAMS:
-        q = dists[k].ppf([0.05, 0.5, 0.95])
-        print(f"   {k:<10} {q[0]:>12.5g} {q[1]:>12.5g} {q[2]:>12.5g}")
-    print(f"   carbon-factor bootstrap: {N_BOOT} replicates; between-building log-SD "
-          f"{su['between_sigma']:.3f} used for single-case sub-types")
-
-    # ---- 1. uncertainty: Latin hypercube ----
     lhs = qmc.LatinHypercube(d=len(PARAMS), seed=SEED).random(N_UNCERTAINTY)
     X = np.array([dists[k].ppf(lhs[:, i]) for i, k in enumerate(PARAMS)])
     Y = np.empty((len(OUTPUTS), N_UNCERTAINTY))
@@ -468,19 +521,23 @@ def main():
     summ = pd.DataFrame(q.T, index=OUTPUTS, columns=['p5', 'p25', 'p50', 'p75', 'p95'])
     summ['mean'] = Y.mean(axis=1)
     summ['central'] = cen
+    summ['central_pct'] = [100 * float((Y[i] < cen[i]).mean()) for i in range(len(OUTPUTS))]
     os.makedirs(OUT_DIR, exist_ok=True)
-    summ.to_csv(os.path.join(OUT_DIR, 'montecarlo_summary.csv'))
-    pd.DataFrame(np.vstack([X, Y]).T, columns=PARAMS + OUTPUTS).to_csv(
-        os.path.join(OUT_DIR, 'montecarlo_draws.csv'), index=False)
-    fy = su['fy']
-    pd.DataFrame({f'{k}_{p}': np.percentile(fan[k], p, axis=0)
-                  for k in fan for p in (5, 25, 50, 75, 95)},
-                 index=fy).to_csv(os.path.join(OUT_DIR, 'montecarlo_annual.csv'))
+    draws = pd.DataFrame(np.vstack([X, Y]).T, columns=PARAMS + OUTPUTS)
+    annual = pd.DataFrame({f'{k}_{p}': np.percentile(fan[k], p, axis=0)
+                           for k in fan for p in (5, 25, 50, 75, 95)}, index=su['fy'])
+    names = [f'_{name}'] + ([''] if reference else [])
+    for sfx in names:
+        summ.to_csv(os.path.join(OUT_DIR, f'montecarlo_summary{sfx}.csv'))
+        draws.to_csv(os.path.join(OUT_DIR, f'montecarlo_draws{sfx}.csv'), index=False)
+        annual.to_csv(os.path.join(OUT_DIR, f'montecarlo_annual{sfx}.csv'))
+    print(f"\nJOINT UNCERTAINTY within {name}, 2026-2050 ({N_UNCERTAINTY:,} Latin hypercube draws)")
+    print(summ.loc[['GFA_Mm2', 'carbon_kt', 'upfront_kt', 'townhouse_share_2050'],
+                   ['mean', 'p5', 'p50', 'p95', 'central', 'central_pct']].round(3).to_string())
+    if not reference:
+        return summ
 
-    print(f"\nJOINT UNCERTAINTY, 2026-2050 ({N_UNCERTAINTY:,} Latin hypercube draws)")
-    print(summ.round(3).to_string())
-
-    # ---- 2. Sobol indices ----
+    # ---- Sobol indices (reference scenario) ----
     rng = np.random.default_rng(SEED + 2)
     res = stats.sobol_indices(func=lambda x: evaluate(su, x), n=N_SOBOL,
                               dists=[dists[k] for k in PARAMS], rng=rng)
@@ -492,19 +549,19 @@ def main():
         np.random.seed(SEED + 3)
         boot = res.bootstrap(confidence_level=0.95, n_resamples=999)
     rows = []
-    for o, name in enumerate(OUTPUTS):
+    for o, oname in enumerate(OUTPUTS):
         for i, k in enumerate(PARAMS):
-            rows.append(dict(output=name, input=k,
+            rows.append(dict(output=oname, input=k,
                              S1=res.first_order[o, i], S1_lo=boot.first_order.confidence_interval.low[o, i],
                              S1_hi=boot.first_order.confidence_interval.high[o, i],
                              ST=res.total_order[o, i], ST_lo=boot.total_order.confidence_interval.low[o, i],
                              ST_hi=boot.total_order.confidence_interval.high[o, i]))
     sob = pd.DataFrame(rows)
     sob.to_csv(os.path.join(OUT_DIR, 'montecarlo_sobol.csv'), index=False)
-    print(f"\nSOBOL INDICES ({N_SOBOL * (len(PARAMS) + 2):,} evaluations; 95% bootstrap CI)")
-    for name in ['GFA_Mm2', 'carbon_kt']:
-        t = sob[sob.output == name].sort_values('ST', ascending=False)
-        print(f"   {name}")
+    print(f"\nSOBOL INDICES, {name} ({N_SOBOL * (len(PARAMS) + 2):,} evaluations; 95% bootstrap CI)")
+    for oname in ['GFA_Mm2', 'carbon_kt']:
+        t = sob[sob.output == oname].sort_values('ST', ascending=False)
+        print(f"   {oname}")
         for r in t.itertuples():
             if not np.isfinite(r.ST_lo):             # input cannot affect this output
                 print(f"     {r.input:<10} n/a (does not enter this output)")
@@ -512,9 +569,17 @@ def main():
             print(f"     {r.input:<10} S1 {r.S1:6.3f} [{r.S1_lo:6.3f}, {r.S1_hi:6.3f}]   "
                   f"ST {r.ST:6.3f} [{r.ST_lo:6.3f}, {r.ST_hi:6.3f}]")
     print("   S1: variance explained by the input alone. ST: including interactions.")
+    return summ
 
-    print(f"\nWritten: montecarlo_summary.csv, montecarlo_draws.csv, montecarlo_annual.csv, "
-          f"montecarlo_sobol.csv in {OUT_DIR}/  ({time.time() - t0:,.0f} s)")
+
+def main():
+    t0 = time.time()
+    for i, (name, settings) in enumerate(MC_SCENARIOS):
+        run_scenario(name, settings, reference=(i == 0))
+    importlib.reload(Boss)                       # restore module defaults
+    print(f"\nWritten: montecarlo_summary[_<scenario>].csv, montecarlo_draws[_<scenario>].csv, "
+          f"montecarlo_annual[_<scenario>].csv, montecarlo_sobol.csv in {OUT_DIR}/  "
+          f"({time.time() - t0:,.0f} s)")
     figures()
 
 

@@ -86,9 +86,11 @@ def _draws(MC, su, n, seed):
         for k in MC.PARAMS:
             u = rng.uniform() if i % 2 == 0 else rng.uniform(0.001, 0.999)
             p[k] = float(d[k].ppf(u))
+        if 'regime' not in p:          # no longer sampled (item 9); drawn here so the legacy path stays tested
+            p['regime'] = float(rng.uniform())
         if i % 2 == 1:   # widened: stretch continuous inputs beyond the distribution
             for k in ('phi', 'complete', 'vacancy', 'rv_share', 'regime'):
-                if k in p:
+                if k in p and k in d:
                     lo, hi = d[k].ppf(0.0005), d[k].ppf(0.9995)
                     p[k] = float(rng.uniform(lo - 0.3 * (hi - lo), hi + 0.3 * (hi - lo)))
             p['phi'] = float(np.clip(p['phi'], 0.05, 0.995))
@@ -107,7 +109,7 @@ def _compare_mc(response):
     worst = {k: 0.0 for k in ('gfa', 'carbon', 'upfront', 'rv_units', 'hh', 'S')}
     n = N_MC if not response else max(N_MC // 3, 100)
     n_clip = 0
-    draws = _draws(MC, su, n, seed=7 if not response else 8) + [MC.central(su)]
+    draws = _draws(MC, su, n, seed=7 if not response else 8) + [dict(MC.central(su), regime=0.0)]
     for p in draws:
         a, b = MC.project(su, p), MCL.project(sul, p)
         clip = a['extra_clip']

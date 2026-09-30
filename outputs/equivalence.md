@@ -2,29 +2,29 @@
 
 Unified engine vs frozen pre-unification code (tests/legacy/). Tolerance 1e-09 x the largest absolute value of each series.
 
-## MonteCarlo.project, default mode: 301 draws, largest relative difference 7.16e-15
+## MonteCarlo.project, default mode: 301 draws, largest relative difference 6.67e-15
 
 | output | largest relative difference |
 |---|---|
 | S | 0.00e+00 |
-| carbon | 7.16e-15 |
-| gfa | 5.29e-15 |
+| carbon | 6.67e-15 |
+| gfa | 5.39e-15 |
 | hh | 0.00e+00 |
-| rv_units | 3.50e-16 |
-| upfront | 5.98e-15 |
+| rv_units | 3.45e-16 |
+| upfront | 6.02e-15 |
 
-Draws in which the extra-space floor binds in at least one year (new = legacy + that term, verified above): 1.
+Draws in which the extra-space floor binds in at least one year (new = legacy + that term, verified above): 0.
 
-## MonteCarlo.project, 2025 deviation carried (b, rho sampled): 101 draws, largest relative difference 5.52e-15
+## MonteCarlo.project, 2025 deviation carried (b, rho sampled): 101 draws, largest relative difference 5.43e-15
 
 | output | largest relative difference |
 |---|---|
 | S | 0.00e+00 |
-| carbon | 5.52e-15 |
-| gfa | 4.64e-15 |
+| carbon | 5.43e-15 |
+| gfa | 4.45e-15 |
 | hh | 0.00e+00 |
-| rv_units | 3.47e-16 |
-| upfront | 4.84e-15 |
+| rv_units | 3.14e-16 |
+| upfront | 4.61e-15 |
 
 Draws in which the extra-space floor binds in at least one year (new = legacy + that term, verified above): 0.
 

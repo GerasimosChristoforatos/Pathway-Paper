@@ -53,9 +53,14 @@
       "carbon_kt": 3621.728890642427
     },
     {
-      "band": "Calibrated stock residual",
-      "gfa_Mm2": 6.78376245502051,
-      "carbon_kt": 2364.8571057807326
+      "band": "Calibrated stock residual (long run)",
+      "gfa_Mm2": -1.7200535023204724,
+      "carbon_kt": -601.4524123673509
+    },
+    {
+      "band": "Redevelopment wave (scenario - long run)",
+      "gfa_Mm2": 8.503815957340981,
+      "carbon_kt": 2966.309518148085
     },
     {
       "band": "Near-term join (2026-27 excess)",

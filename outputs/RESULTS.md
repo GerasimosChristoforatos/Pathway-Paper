@@ -28,6 +28,9 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 | Hindcast error, origin 2006, model method (%) | -15.9 |
 | Hindcast error, origin 2013, model method (%) | -18.4 |
 | Hindcast error, origin 2018, model method (%) | -13.5 |
+| Hindcast error, origin 2006, reference S3-10 (%) | -14.7 |
+| Hindcast error, origin 2013, reference S3-10 (%) | -16.1 |
+| Hindcast error, origin 2018, reference S3-10 (%) | -9.3 |
 | 2026 model consent-equivalents (all categories) | 24,446 |
 | 2026 observed / model consents, year to date | 1.743 |
 

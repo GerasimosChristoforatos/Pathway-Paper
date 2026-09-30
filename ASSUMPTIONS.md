@@ -9,7 +9,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Net replacement scenario | S3, half-life 10 yr | DECISION (author): S1/S2 bounds, S3-10 reference; half-life is JUDGEMENT (not identifiable) |
 | Long-run net replacement window | 1991-2023 | DATA: census private-dwelling counts and consents |
 | Demolition rate (split only) | 0.135%/yr | LITERATURE: BRANZ SR214 |
-| Completion rate | 0.95 (band 0.92-0.96) | LITERATURE: bounds from Jones et al. 2024 (as cited in MonteCarlo.py) |
+| Completion rate | 0.95 (band 0.92-0.96) | LITERATURE: bounds from Jones et al. 2024 (citation to verify) |
 | Completion lag | littles_law | DATA: Little's law W = L / lambda (a lower bound) |
 | Near-term join | nowcast (seasonal_share) | DATA (observed consents); method stated |
 | Excess channels | calibrated on 2018-2023 | DATA, ONE census interval |
@@ -18,7 +18,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
 | Household-size shape | Stats NZ Medium, anchored 2023, tail flat | DATA (2018-base projections; N4 open) |
 | Vacancy forward | latest census value held | DATA: census 2023 (2018 empty count unrated, F1) |
-| Typology damping phi | 0.8 | JUDGEMENT within the conventional damped-trend range |
+| Typology damping phi | 0.8 | JUDGEMENT: ≈4 years of trend applied by 2050 |
 | Mix trend window | 2012-2025 | DATA |
 | Dwelling size reference | 2023-2025 | DATA: consents |
 | RV share reference | 2016-2025 | DATA: consents |
@@ -100,3 +100,5 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `USE_GROSS_BASIS_OLF` | `False` |
 | `VACANCY_DRAWDOWN_YEARS` | `5` |
 | `VERBOSE` | `False` |
+| `WAVE_COLOR` | `'#d35400'` |
+| `WAVE_LABEL` | `'Redevelopment wave: net replacement above the long-run rate (scenario)'` |

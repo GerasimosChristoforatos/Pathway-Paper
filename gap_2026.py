@@ -79,7 +79,11 @@ def projected_growth_ye_june_2026():
 
 
 def boom_2018_2023(B):
-    """Where 2018-23 completions went (census counts, private dwellings)."""
+    """Where 2018-23 completions went (census counts, private dwellings).
+    Completions are lagged W behind consents, so dwellings under construction
+    at each census are already outside them: net removals = completions -
+    change in stock. The change in dwellings under construction is reported
+    for information only; subtracting it as well would count the pipeline twice."""
     cen, cr = B['census'], B['census_rates']
     r = cr[(cr['y0'] == 2018) & (cr['y1'] == 2023)].iloc[0]
     built = float(r['built'])
@@ -90,7 +94,7 @@ def boom_2018_2023(B):
     hh = float((cen.loc[2023, 'occupied_private'] + cen.loc[2023, 'away'])
                - (cen.loc[2018, 'occupied_private'] + cen.loc[2018, 'away']))
     return dict(built=built, d_stock=d_stock, d_under_construction=d_uc,
-                net_removals=built - d_stock - d_uc, vacancy_rate_rise_absorbed=vac, households=hh)
+                net_removals=built - d_stock, vacancy_rate_rise_absorbed=vac, households=hh)
 
 
 def main():
@@ -159,10 +163,12 @@ def main():
                  f"{-r['residual_S_fall']:+.4f} |")
     L += ['', 'Columns (ii)-(iv) sum to the gap exactly (sequential decomposition; the order is a choice).',
           '', '## Where the 2018-2023 excess building went (census counts, private dwellings)', '',
-          f"Completions {boom['built']:,.0f}; net stock change {boom['d_stock']:,.0f}; of the rest, more under "
-          f"construction {boom['d_under_construction']:+,.0f} and net removals (redevelopment) "
-          f"{boom['net_removals']:,.0f}; a higher vacancy rate absorbed {boom['vacancy_rate_rise_absorbed']:+,.0f}; "
-          f"households (occupied + away) {boom['households']:+,.0f}."]
+          f"Completions {boom['built']:,.0f} (consents lagged W, so the pipeline is already excluded); "
+          f"net stock change {boom['d_stock']:,.0f}; net removals (redevelopment) = completions - stock "
+          f"change = {boom['net_removals']:,.0f}; a higher vacancy rate absorbed "
+          f"{boom['vacancy_rate_rise_absorbed']:+,.0f}; households (occupied + away) {boom['households']:+,.0f}. "
+          f"For information: dwellings under construction at census changed by "
+          f"{boom['d_under_construction']:+,.0f} (not subtracted: the lag already accounts for them)."]
     with open(OUT_MD, 'w') as f:
         f.write('\n'.join(L) + '\n')
     print('\n'.join(L))

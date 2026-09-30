@@ -98,11 +98,17 @@ What the evidence says:
    formation it would lower household size by about 0.01 in one year, while
    the Stats NZ path falls about 0.003 a year.
 4. **In the 2018–23 boom, excess building mostly went to redevelopment.** Of
-   192,911 completions, 158,106 were net stock growth. Of the rest, 23,609
-   were net removals (redevelopment) and 11,196 more dwellings were under
-   construction. A higher vacancy rate absorbed only 6,286. Net replacement
-   is pro-cyclical, and a building upswing is likely to come with
+   192,911 completions, 158,106 were net stock growth, so 34,805 were net
+   removals (redevelopment). A higher vacancy rate absorbed only 6,286. Net
+   replacement is pro-cyclical, and a building upswing is likely to come with
    redevelopment again.
+
+   *Correction (after CP2):* this point first read "23,609 net removals and
+   11,196 more under construction". Completions are already lagged W behind
+   consents, so subtracting the change in dwellings under construction as
+   well counted the pipeline twice. Net removals = completions − stock change
+   = 34,805 (`outputs/gap_2026.md`). The census-interval rate (0.360%/yr) was
+   always computed without that subtraction and is unaffected.
 
 ## 4. A1 options, assessed against this evidence
 

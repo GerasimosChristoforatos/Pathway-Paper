@@ -339,7 +339,7 @@ def blend(shares, per_unit, typ_names):
 def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_share,
             shares, size, olf, intensity, intensity_upfront, floor_decline=True,
             olf_per_resident=False, consumption_override=None, join=None, join_redev=None,
-            soil=None, greenfield_share=1.0, soil_on_replacement=True):
+            soil=None, soil_on_replacement=True):
     """One forward path, 2025..2050 (index 0 = 2025, a model value; callers that
     anchor 2025 on observations overwrite it).
 
@@ -360,10 +360,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                              intensity_upfront (kg/m2). None = soil on all floor
                              area (legacy). Otherwise soil applies to the share
                              soil_share of each year's floor area (item 8):
-        soil_share = g x (1 - soil-free floor area / total), where the soil-free
+        soil_share = 1 - soil-free floor area / total, where the soil-free
         floor area is the in-scope net replacement (demolition + residual +
         redevelopment channel, x (1 - rv_share) x D; land already settled) when
-        soil_on_replacement is False, and g = greenfield_share.
+        soil_on_replacement is False.
     consumption_override   : for the legacy per-person/per-household bases only:
                              gross consumption computed elsewhere from
                              (extra space, floored new households, population).
@@ -432,7 +432,7 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         s = np.array([soil[t] for t in typ])
         soil_free = (np.zeros(len(hh)) if soil_on_replacement else
                      np.clip(demol + unc + join_redev, 0.0, None) * (1.0 - rv_share) * D)
-        soil_share = greenfield_share * (1.0 - np.divide(soil_free, total, out=np.zeros(len(hh)),
+        soil_share = (1.0 - np.divide(soil_free, total, out=np.zeros(len(hh)),
                                                          where=total != 0))
         carbon_t = (I - s)[:, None] * gfa_t + (s[:, None] * gfa_t) * soil_share
         upfront_t = (U - s)[:, None] * gfa_t + (s[:, None] * gfa_t) * soil_share

@@ -118,6 +118,11 @@ def hindcast(B):
         preds['linked'] = (None, float((need + (coef[0] + coef[1] * th / prev) * prev)[test].sum()))
         r_dc = engine.census_window_rate(crates, Boss.NET_REPLACEMENT_WINDOW[0], O)
         preds['dwelling_count'] = (r_dc, float((need + r_dc * prev)[test].sum()))
+        # reference method (S3): the most recent intercensal rate before the origin,
+        # fading to the long-run dwelling-count rate with a 10-year half-life from O
+        r_last = float(crates[crates['y1'] <= O].iloc[-1]['rate'])
+        path = pd.Series(engine.replacement_path('S3', r_dc, r_last, yh - O + 2025, 10.0), index=yh)
+        preds['reference_s3_10'] = (r_last, float((need + path * prev)[test].sum()))
         for m, (r, p) in preds.items():
             rows.append(dict(origin=O, test=f'{O + 1}-{end}', method=m,
                              rate_pct=None if r is None else 100 * r,

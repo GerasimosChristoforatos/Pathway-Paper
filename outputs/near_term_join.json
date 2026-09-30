@@ -1,0 +1,127 @@
+{
+  "nowcast": {
+    "seasonal_share": {
+      "year": 2026,
+      "method": "seasonal_share",
+      "months_observed": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "observed": 23916.0,
+      "estimated_missing": 18696.909633598454,
+      "total": 42612.90963359845
+    },
+    "same_period_ratio": {
+      "year": 2026,
+      "method": "same_period_ratio",
+      "months_observed": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "observed": 23916.0,
+      "estimated_missing": 20705.18530595608,
+      "total": 44621.18530595608
+    },
+    "last_12_months": {
+      "year": 2026,
+      "method": "last_12_months",
+      "months_observed": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "observed": 23916.0,
+      "estimated_missing": 16992.0,
+      "total": 40908.0
+    }
+  },
+  "method_in_use": "seasonal_share",
+  "evidence": {
+    "census_night": {
+      "levels": {
+        "redevelopment": 23912.518124128743,
+        "vacancy": 6285.530273787939,
+        "households": 27600.41551229707
+      },
+      "shares": {
+        "redevelopment": 0.41372238129503447,
+        "vacancy": 0.10874908861855069,
+        "households": 0.4775285300864148
+      },
+      "S_census": {
+        "2018": 2.7659915897801706,
+        "2023": 2.700334272654408
+      },
+      "change_S_census": -0.023737352408573553,
+      "change_S_shape": -0.009389205304086268,
+      "households_included": true,
+      "interval": [
+        2018,
+        2023
+      ]
+    },
+    "mid_year": {
+      "levels": {
+        "redevelopment": 23912.518124128743,
+        "vacancy": 6285.530273787939,
+        "households": 20421.06690908596
+      },
+      "shares": {
+        "redevelopment": 0.47240094930739907,
+        "vacancy": 0.12417305667367916,
+        "households": 0.40342599401892176
+      },
+      "S_census": {
+        "2018": 2.780223242032848,
+        "2023": 2.724604460313787
+      },
+      "change_S_census": -0.020005149542737244,
+      "change_S_shape": -0.009389205304086268,
+      "households_included": true,
+      "interval": [
+        2018,
+        2023
+      ]
+    }
+  },
+  "pop_date_in_use": "census_night",
+  "shares_in_use": {
+    "redevelopment": 0.41372238129503447,
+    "vacancy": 0.10874908861855069,
+    "households": 0.4775285300864148
+  },
+  "O26": 37596.25025020077,
+  "R26": 18588.96645219556,
+  "R27": 25232.51761803255,
+  "e26": 19007.28379800521,
+  "e27": 7938.597275121556,
+  "channels_2026_2050": {
+    "redevelopment": 11148.114083666806,
+    "vacancy": 2930.3400087263904,
+    "households": 12867.426980733571,
+    "vacancy_drawdown": -2930.34000872639,
+    "household_reversion": 0.0
+  },
+  "population_nowcast": {
+    "observed_growth": 36400.0,
+    "shift": -14600.0,
+    "status": "provisional"
+  },
+  "lag_w": 0.5068326945071742,
+  "completion": 0.95,
+  "scenario": "S1"
+}

@@ -4,80 +4,82 @@ Every number below is read from the run outputs. Reference path: net replacement
 
 ## Summary
 
-New Zealand is projected to build 80.9 million m² of new residential floor area in 2026-2050 on the reference path, embodying 30.7 Mt CO₂e over the life cycle, of which 22.4 Mt is upfront (materials A1-A5 plus soil). How fast existing dwellings are replaced is the largest structural uncertainty: holding the long-run rate gives 74.4 million m², holding the 2018-2023 rate gives 90.8 million m². Within the reference path, joint uncertainty in the inputs gives a 90% interval of 59.5-102.9 million m² (median 79.7, mean 80.3). Population uncertainty alone (Stats NZ 5th-95th percentiles) spans 57.3-105.2 million m². The joint interval is narrower than the population-only range because each population draw also moves household size along the matching Stats NZ Low/High variant: low-population variants come with smaller households (an older age structure), so the number of households varies less than population, whereas the population-only range holds household size on the Medium shape. Upfront carbon (22.4 Mt) is the quantity comparable with a 2026-2050 budget; the later life-cycle stages are booked in the construction year but emitted mostly after 2050.
+New Zealand is projected to build 87.5 million m² of new residential floor area in 2026-2050 on the reference path, embodying 32.7 Mt CO₂e over the life cycle, of which 23.5 Mt is upfront (materials A1-A5 plus soil). How fast existing dwellings are replaced is the largest structural uncertainty: holding the long-run rate gives 80.4 million m², holding the 2018-2023 rate gives 90.4 million m². Within the reference path, joint uncertainty in the inputs gives a 90% interval of 65.8-110.7 million m² (median 86.8, mean 87.3). Population uncertainty alone (Stats NZ 5th-95th percentiles) spans 61.7-113.9 million m². The joint interval is narrower than the population-only range because each population draw also moves household size along the matching Stats NZ Low/High variant: low-population variants come with smaller households (an older age structure), so the number of households varies less than population, whereas the population-only range holds household size on the Medium shape. Upfront carbon (23.5 Mt) is the quantity comparable with a 2026-2050 budget; the later life-cycle stages are booked in the construction year but emitted mostly after 2050.
 
 ## Headline, 2026-2050 (median demographics)
 
 | path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | of which soil | carbon excl. soil | upfront carbon (kt CO₂e) |
 |---|---|---|---|---|---|---|
-| S1 lower bound: long-run replacement | 74.42 | -8.1% | 28,448 | 2,450 | 25,998 | 20,835 |
-| S3, half-life 5 yr | 77.40 | -4.4% | 29,491 | 2,452 | 27,039 | 21,571 |
-| S3, half-life 10 yr (reference) | 80.94 | +0.0% | 30,729 | 2,452 | 28,277 | 22,448 |
-| S3, half-life 15 yr | 83.12 | +2.7% | 31,492 | 2,452 | 29,040 | 22,990 |
-| S2 upper bound: 2018-2023 replacement | 90.81 | +12.2% | 34,186 | 2,452 | 31,734 | 24,900 |
+| S1 lower bound: long-run replacement, shares held | 80.36 | -8.2% | 30,308 | 2,874 | 27,434 | 21,856 |
+| S3, half-life 5 yr, shares held | 83.62 | -4.4% | 31,424 | 2,874 | 28,549 | 22,627 |
+| S3, half-life 10 yr, shares held (reference) | 87.50 | +0.0% | 32,747 | 2,874 | 29,873 | 23,543 |
+| S3, half-life 15 yr, shares held | 89.90 | +2.7% | 33,565 | 2,874 | 30,691 | 24,109 |
+| S2 upper bound: 2018-2023 replacement + damped mix trend ("intensification continues") | 90.38 | +3.3% | 34,002 | 2,440 | 31,562 | 24,756 |
+| Sensitivity: S3-10 with the damped mix trend (v1.0 mix) | 80.52 | -8.0% | 30,547 | 2,441 | 28,107 | 22,306 |
+| Sensitivity: S2 with shares held (maximum floor-area case) | 98.35 | +12.4% | 36,454 | 2,874 | 33,580 | 26,108 |
 
 Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% interval):
 
 | scenario | output | mean | median | 5th | 95th |
 |---|---|---|---|---|---|
-| S1 | floor area (Mm²) | 73.8 | 73.4 | 54.2 | 95.1 |
-| S1 | carbon (kt) | 28,234.6 | 28,040.3 | 20,558.4 | 36,641.5 |
-| S1 | upfront (kt) | 20,707.1 | 20,560.3 | 15,075.3 | 26,817.7 |
-| S2 | floor area (Mm²) | 90.0 | 89.5 | 68.3 | 113.6 |
-| S2 | carbon (kt) | 33,908.9 | 33,666.0 | 25,439.2 | 43,208.3 |
-| S2 | upfront (kt) | 24,735.2 | 24,555.3 | 18,563.7 | 31,461.4 |
-| S3-10 | floor area (Mm²) | 80.3 | 79.7 | 59.5 | 102.9 |
-| S3-10 | carbon (kt) | 30,497.7 | 30,293.8 | 22,414.1 | 39,391.5 |
-| S3-10 | upfront (kt) | 22,311.1 | 22,144.3 | 16,382.3 | 28,767.6 |
+| S1 | floor area (Mm²) | 80.2 | 79.8 | 59.8 | 102.1 |
+| S1 | carbon (kt) | 30,240.4 | 30,050.9 | 22,286.8 | 38,858.8 |
+| S1 | upfront (kt) | 21,819.9 | 21,668.0 | 16,112.4 | 27,982.2 |
+| S2 | floor area (Mm²) | 89.6 | 89.1 | 68.7 | 112.5 |
+| S2 | carbon (kt) | 33,747.6 | 33,520.0 | 25,557.2 | 42,739.5 |
+| S2 | upfront (kt) | 24,607.7 | 24,432.9 | 18,663.0 | 31,117.1 |
+| S3-10 | floor area (Mm²) | 87.3 | 86.8 | 65.8 | 110.7 |
+| S3-10 | carbon (kt) | 32,669.9 | 32,452.4 | 24,319.2 | 41,786.2 |
+| S3-10 | upfront (kt) | 23,501.7 | 23,328.2 | 17,501.5 | 30,001.3 |
 
 ## Why the floor area is built (reference path, median)
 
 | reason | floor area (Mm²) | share | carbon (kt CO₂e) |
 |---|---|---|---|
-| Growth (net of consolidation) | 42.35 | 52.3% | 16,404 |
-| House-splitting | 2.28 | 2.8% | 883 |
-| Extra space per dwelling | 20.21 | 25.0% | 7,829 |
-| Vacancy allowance | 3.69 | 4.6% | 1,430 |
-| Demolition replacement | 10.36 | 12.8% | 3,622 |
-| Calibrated stock residual (long run) | -1.72 | -2.1% | -601 |
-| Redevelopment wave (scenario - long run) | 8.50 | 10.5% | 2,966 |
-| Near-term join (2026-27 excess) | 0.10 | 0.1% | 32 |
-| Housed in RV units (out of scope) | -4.84 | -6.0% | -1,836 |
-| **Total** | **80.94** | 100% | **30,729** |
+| Growth (net of consolidation) | 42.50 | 48.6% | 16,259 |
+| House-splitting | 2.31 | 2.6% | 883 |
+| Extra space per dwelling | 25.27 | 28.9% | 9,669 |
+| Vacancy allowance | 3.99 | 4.6% | 1,527 |
+| Demolition replacement | 11.31 | 12.9% | 3,861 |
+| Calibrated stock residual (long run) | -1.88 | -2.1% | -641 |
+| Redevelopment wave (scenario - long run) | 9.20 | 10.5% | 3,141 |
+| Near-term join (2026-27 excess) | 0.02 | 0.0% | 4 |
+| Housed in RV units (out of scope) | -5.23 | -6.0% | -1,956 |
+| **Total** | **87.50** | 100% | **32,747** |
 
-The near-term join adds the building observed above the model's requirement in 2026-27 (2026 excess +14,542 dwellings, 2027 lagged share +7,639): redevelopment +0, vacancy +4,023 (drawn down -4,023), households +18,158 (reverting -18,156).
+The near-term join adds the building observed above the model's requirement in 2026-27 (2026 excess +14,542 dwellings, 2027 lagged share +6,888): redevelopment +0, vacancy +3,887 (drawn down -3,887), households +17,543 (reverting -17,543).
 
 ## By typology
 
 | typology | floor area (Mm²) | carbon (kt) | share of floor area 2025 → 2050 |
 |---|---|---|---|
-| Detached | 35.27 | 12,266 | 59.7% → 39.9% |
-| Townhouses | 42.23 | 16,348 | 35.5% → 56.0% |
-| Apartments | 3.44 | 2,115 | 4.9% → 4.1% |
+| Detached | 53.03 | 18,445 | 59.7% → 60.6% |
+| Townhouses | 30.24 | 11,703 | 35.5% → 34.5% |
+| Apartments | 4.23 | 2,600 | 4.9% → 4.9% |
 
 ## By material (kt CO₂e, 2026-2050)
 
 | material | kt | share |
 |---|---|---|
-| TIMBER | 7,489 | 24.4% |
-| CONCRETE (incl. reinforced) | 5,499 | 17.9% |
-| OTHERS | 5,117 | 16.7% |
-| STEEL | 4,719 | 15.4% |
-| PLASTICS & PAINT | 3,774 | 12.3% |
-| SOIL | 2,452 | 8.0% |
-| PLASTERBOARD | 1,679 | 5.5% |
+| TIMBER | 7,525 | 23.0% |
+| STEEL | 5,815 | 17.8% |
+| CONCRETE (incl. reinforced) | 5,392 | 16.5% |
+| OTHERS | 5,337 | 16.3% |
+| PLASTICS & PAINT | 4,140 | 12.6% |
+| SOIL | 2,874 | 8.8% |
+| PLASTERBOARD | 1,665 | 5.1% |
 
 ## Upfront vs whole-life (kt CO₂e)
 
 | stage | kt |
 |---|---|
-| A1-A3 | 16,141 |
-| A4-A5 | 3,856 |
-| B2,B4 | 3,665 |
-| C1-C4 | 4,615 |
-| soil (land-use change) | 2,452 |
-| **upfront (A1-A5 + soil)** | **22,448** |
-| **whole-life** | **30,729** |
+| A1-A3 | 16,974 |
+| A4-A5 | 3,695 |
+| B2,B4 | 4,430 |
+| C1-C4 | 4,774 |
+| soil (land-use change) | 2,874 |
+| **upfront (A1-A5 + soil)** | **23,543** |
+| **whole-life** | **32,747** |
 
 Later stages (B, C) are booked in the construction year (static LCA convention).
 
@@ -102,7 +104,7 @@ Decomposition of the 2026 gap on the reference path (Jan-Jul 2026 / seasonal sha
 
 Consents for January-July 2026 (23,916) are 1.74 times what the reference model, run without any 2026 data, implies for those months. In completions, observed-implied 2026 building is 37,596 dwellings against a reference-path requirement of 29,085 (gap +8,511)[^s1]. Population does not explain it: growth over the year to June 2026 fell short of the projection, which lowers the requirement by 6,157. The gap is building already in the pipeline from 2025 (+6,011) plus 2026 consents above requirement (+8,657). Over 2018-2023 most building above household formation went to redevelopment (net removals 34,805) rather than vacancy (+6,286).
 
-The model takes 2026 completions (and the 2027 share already consented) from these observed consents and allocates the excess (+14,542 dwellings in 2026, +7,639 in 2027) to redevelopment, vacancy and household formation. On the reference path the vacancy and household channels revert, so the excess mainly shifts timing: +2 dwellings net over 2026-2050.
+The model takes 2026 completions (and the 2027 share already consented) from these observed consents and allocates the excess (+14,542 dwellings in 2026, +6,888 in 2027) to redevelopment, vacancy and household formation. On the reference path the vacancy and household channels revert, so the excess mainly shifts timing: +0 dwellings net over 2026-2050.
 
 [^s1]: On S1 (long-run replacement) the requirement is 27,760 and the gap +9,836 = population -6,157 + pipeline +6,683 + 2026 consents above requirement +9,311.
 
@@ -110,57 +112,62 @@ The model takes 2026 completions (and the 2027 share already consented) from the
 
 | group | case | floor area (Mm²) | change | carbon change |
 |---|---|---|---|---|
-| Population | Stats NZ 95th percentile (level) | 105.20 | +30.0% | +32.6% |
-| Population | Stats NZ 5th percentile (level) | 57.27 | -29.2% | -27.8% |
-| Replacement scenario | S2: 2018-2023 rate persists (upper bound) | 90.81 | +12.2% | +11.2% |
-| Stock | Net replacement: household identity, constant empty share (S1) | 72.03 | -11.0% | -10.1% |
-| Household size | Carry 2025 deviation, rho = 0.9 (REJECTED: DHE estimation artefact) | 88.59 | +9.4% | +9.6% |
-| Replacement scenario | S1: long-run rate (lower bound) | 74.42 | -8.1% | -7.4% |
-| Typology mix | Damping phi = 0.95 | 74.56 | -7.9% | -6.9% |
-| Stock | Net replacement: dwelling counts 2013-2023 only | 87.02 | +7.5% | +6.9% |
-| Household size | Stats NZ Low projection variant (S) | 86.65 | +7.1% | +7.2% |
-| Household size | Stats NZ High projection variant (S) | 76.23 | -5.8% | -5.9% |
-| Typology mix | Damping phi = 0.5 | 85.65 | +5.8% | +4.9% |
-| Stock | Net replacement: household identity (original; S1) | 76.47 | -5.5% | -5.1% |
-| Stock | Completion lag W = 0.99 (about 1 yr; W is a lower bound) | 76.67 | -5.3% | -4.9% |
-| Stock | Completion rate 0.92 | 77.03 | -4.8% | -4.4% |
-| Dwelling size | Reference 2016-2025 | 84.55 | +4.5% | +4.5% |
-| Replacement scenario | S3: 2018-23 rate fades, half-life 5 yr | 77.40 | -4.4% | -4.0% |
-| Stock | No completion lag (original) | 83.99 | +3.8% | +3.5% |
-| Near-term join (A1) | Excess: all redevelopment | 83.43 | +3.1% | +2.8% |
-| Replacement scenario | S3: 2018-23 rate fades, half-life 15 yr | 83.12 | +2.7% | +2.5% |
-| Near-term join (A1) | Household channel permanent | 83.01 | +2.6% | +2.6% |
-| Household size | S after 2043: mean 2018-43 slope | 82.96 | +2.5% | +2.6% |
-| Household size | Carry 2025 deviation (rho estimated) | 82.82 | +2.3% | +2.4% |
-| Household size | S after 2043: PCHIP end slope (original) | 79.47 | -1.8% | -1.9% |
-| Households | DHE as published (no rebase; calib. to 2018) | 82.38 | +1.8% | +1.8% |
-| Stock | Completion rate 0.96 | 82.24 | +1.6% | +1.5% |
-| Near-term join (A1) | Excess: equal shares | 81.82 | +1.1% | +1.0% |
-| Population | Projected 2026 growth (no population nowcast) | 81.76 | +1.0% | +1.0% |
-| Population | 2026 shortfall made up over 5 years (catch-up) | 81.75 | +1.0% | +1.0% |
-| Household size | S anchored on observed 2025 (original) | 81.64 | +0.9% | +0.9% |
-| Dwelling size | Reference 2025 only | 81.61 | +0.8% | +0.8% |
-| Household size | S after 2043: 2038-43 secant slope | 80.29 | -0.8% | -0.8% |
-| Typology mix | Trend window from 2016 | 81.37 | +0.5% | +0.1% |
-| Households | Census rebase: occupied dwellings only | 80.61 | -0.4% | -0.4% |
-| Near-term join (A1) | Carried 2025 deviation (original) | 80.80 | -0.2% | -0.2% |
-| Near-term join (A1) | No near-term join | 80.85 | -0.1% | -0.1% |
-| Population | 2026 growth from the provisional 30 June release | 80.99 | +0.1% | +0.1% |
-| Near-term join (A1) | Nowcast Aug-Dec 2026: same-period ratio | 80.95 | +0.0% | +0.0% |
-| Near-term join (A1) | Nowcast 2026: latest 12 months | 80.93 | -0.0% | -0.0% |
-| Near-term join (A1) | Vacancy drawn down over 10 yr | 80.95 | +0.0% | +0.0% |
-| Near-term join (A1) | Vacancy drawn down over 3 yr | 80.94 | -0.0% | -0.0% |
-| Near-term join (A1) | Excess: all vacancy | 80.94 | +0.0% | +0.0% |
-| Near-term join (A1) | Household channel reverts linearly (over the drawdown) | 80.94 | +0.0% | +0.0% |
-| Near-term join (A1) | Channel shares: population at mid-year | 80.94 | +0.0% | +0.0% |
-| Near-term join (A1) | Channel shares: population at census night (interpolated) | 80.94 | +0.0% | +0.0% |
-| Carbon factors | Soil on all floor area, incl. replacement (original) | 80.94 | +0.0% | +2.0% |
-| Carbon factors | Materials: jackknife low (all typologies) | 80.94 | +0.0% | -4.6% |
-| Carbon factors | Materials: jackknife high (all typologies) | 80.94 | +0.0% | +3.8% |
-| Carbon factors | Materials: lowest single case study | 80.94 | +0.0% | -20.4% |
-| Carbon factors | Materials: highest single case study | 80.94 | +0.0% | +20.8% |
-| Carbon factors | Soil: lowest soil order (Raw) | 80.94 | +0.0% | -4.3% |
-| Carbon factors | Soil: highest soil order (Organic) | 80.94 | +0.0% | +18.3% |
+| Population | Stats NZ 95th percentile (level) | 113.89 | +30.2% | +33.0% |
+| Population | Stats NZ 5th percentile (level) | 61.71 | -29.5% | -27.9% |
+| Typology mix | Damping phi = 0.95 (trend mix) | 74.22 | -15.2% | -13.1% |
+| Replacement scenario | S2 with shares held (maximum floor-area case) | 98.35 | +12.4% | +11.3% |
+| Stock | Net replacement: household identity, constant empty share (S1) | 77.73 | -11.2% | -10.2% |
+| Household size | Carry 2025 deviation, rho = 0.9 (REJECTED: DHE estimation artefact) | 95.63 | +9.3% | +9.5% |
+| Replacement scenario | S1: long-run rate (lower bound) | 80.36 | -8.2% | -7.4% |
+| Typology mix | S3-10 with the damped mix trend (v1.0 mix) | 80.52 | -8.0% | -6.7% |
+| Household size | Stats NZ Low projection variant (S) | 94.40 | +7.9% | +8.0% |
+| Stock | Net replacement: dwelling counts 2013-2023 only | 94.19 | +7.6% | +7.0% |
+| Typology mix | Trend window from 2016 (trend mix) | 80.94 | -7.5% | -6.6% |
+| Household size | Stats NZ High projection variant (S) | 81.92 | -6.4% | -6.5% |
+| Stock | Net replacement: household identity (original; S1) | 82.60 | -5.6% | -5.1% |
+| Stock | Completion lag W = 0.99 (about 1 yr; W is a lower bound) | 82.88 | -5.3% | -4.8% |
+| Stock | Completion rate 0.92 | 83.24 | -4.9% | -4.4% |
+| Dwelling size | Reference 2016-2025 | 91.72 | +4.8% | +4.8% |
+| Replacement scenario | S3: 2018-23 rate fades, half-life 5 yr | 83.62 | -4.4% | -4.0% |
+| Stock | No completion lag (original) | 90.79 | +3.8% | +3.4% |
+| Replacement scenario | S2: 2018-2023 rate persists (upper bound) | 90.38 | +3.3% | +3.8% |
+| Household size | S after 2043: mean 2018-43 slope | 90.37 | +3.3% | +3.4% |
+| Near-term join (A1) | Excess: all redevelopment | 90.16 | +3.0% | +2.8% |
+| Replacement scenario | S3: 2018-23 rate fades, half-life 15 yr | 89.90 | +2.7% | +2.5% |
+| Typology mix | Damping phi = 0.5 (trend mix) | 85.15 | -2.7% | -2.2% |
+| Near-term join (A1) | Household channel permanent | 89.71 | +2.5% | +2.6% |
+| Household size | Carry 2025 deviation (rho estimated) | 89.51 | +2.3% | +2.3% |
+| Households | DHE as published (no rebase; calib. to 2018) | 89.07 | +1.8% | +1.8% |
+| Stock | Completion rate 0.96 | 88.92 | +1.6% | +1.5% |
+| Household size | S after 2043: PCHIP end slope (original) | 86.51 | -1.1% | -1.2% |
+| Near-term join (A1) | Excess: equal shares | 88.43 | +1.1% | +1.0% |
+| Population | Projected 2026 growth (no population nowcast) | 88.37 | +1.0% | +1.0% |
+| Population | 2026 shortfall made up over 5 years (catch-up) | 88.36 | +1.0% | +1.0% |
+| Household size | S anchored on observed 2025 (original) | 88.26 | +0.9% | +0.9% |
+| Household size | S after 2043: flat (v1.0 default) | 88.13 | +0.7% | +0.7% |
+| Dwelling size | Reference 2025 only | 87.93 | +0.5% | +0.5% |
+| Household size | S after 2043: taper from the 2038-43 secant slope (flagged) | 87.88 | +0.4% | +0.4% |
+| Households | Census rebase: occupied dwellings only | 87.15 | -0.4% | -0.4% |
+| Household size | S after 2043: 2038-43 secant slope | 87.42 | -0.1% | -0.1% |
+| Near-term join (A1) | Carried 2025 deviation (original) | 87.42 | -0.1% | -0.1% |
+| Population | 2026 growth from the provisional 30 June release | 87.56 | +0.1% | +0.1% |
+| Near-term join (A1) | Nowcast Aug-Dec 2026: same-period ratio | 87.47 | -0.0% | -0.0% |
+| Near-term join (A1) | 2026 floor area from dwellings x model size and mix (v1.0) | 87.47 | -0.0% | -0.0% |
+| Near-term join (A1) | No near-term join | 87.47 | -0.0% | -0.0% |
+| Near-term join (A1) | Nowcast 2026: latest 12 months | 87.51 | +0.0% | +0.0% |
+| Near-term join (A1) | Household channel reverts geometrically at rho | 87.50 | +0.0% | +0.0% |
+| Near-term join (A1) | Vacancy drawn down over 3 yr | 87.50 | +0.0% | -0.0% |
+| Near-term join (A1) | Excess: all vacancy | 87.50 | +0.0% | +0.0% |
+| Near-term join (A1) | Channel shares: population at census night (interpolated) | 87.50 | +0.0% | +0.0% |
+| Near-term join (A1) | Vacancy drawn down over 10 yr | 87.50 | +0.0% | -0.0% |
+| Carbon factors | Soil on all floor area, incl. replacement (original) | 87.50 | +0.0% | +2.2% |
+| Near-term join (A1) | Channel shares: population at mid-year | 87.50 | +0.0% | +0.0% |
+| Carbon factors | Materials: jackknife low (all typologies) | 87.50 | +0.0% | -3.8% |
+| Carbon factors | Materials: jackknife high (all typologies) | 87.50 | +0.0% | +3.5% |
+| Carbon factors | Materials: lowest single case study | 87.50 | +0.0% | -23.2% |
+| Carbon factors | Materials: highest single case study | 87.50 | +0.0% | +21.5% |
+| Carbon factors | Soil: lowest soil order (Raw) | 87.50 | +0.0% | -4.8% |
+| Carbon factors | Soil: highest soil order (Organic) | 87.50 | +0.0% | +20.2% |
 
 ## Assumption register (values read from Boss.py)
 
@@ -173,10 +180,10 @@ The model takes 2026 completions (and the 2027 share already consented) from the
 | Completion lag | littles_law | DATA: Little's law W = L / lambda (a lower bound) |
 | Near-term join | nowcast (seasonal_share) | DATA (observed consents); method stated |
 | Excess channels | calibrated on 2018-2023 | DATA, ONE census interval |
-| Household channel | reverting | JUDGEMENT (author decision) |
+| Household channel | reverting_linear | JUDGEMENT (author decision) |
 | Vacancy drawdown | 5 yr | JUDGEMENT; 3 and 10 as sensitivities |
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
-| Household-size shape | Stats NZ Medium, anchored 2023, tail flat | DATA (2018-base projections; N4 open) |
+| Household-size shape | Stats NZ Medium, anchored 2023, tail taper | DATA (2018-base projections; N4 open) |
 | Vacancy forward | latest census value held | DATA: census 2023 (2018 empty count unrated, F1) |
 | Typology damping phi | 0.8 | JUDGEMENT: ≈4 years of trend applied by 2050 |
 | Mix trend window | 2012-2025 | DATA |
@@ -187,7 +194,9 @@ The model takes 2026 completions (and the 2027 share already consented) from the
 ## Open limitations and data needs
 
 - No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so the implied replacement rates cannot be tested against a count.
-- N4: the household-size shape comes from the 2018-base household projections, paired with the 2024-base population projection (vintage mismatch); Stats NZ's 2023-base release (late 2026) is planned as v1.1.
+- N4 (open): the Low/High household-size variants (deterministic) are paired with stochastic population percentiles through one draw z, and the total vs private-household population question is unresolved until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ's 2023-base release (late 2026) planned as v1.1.
+- Timber end of life (C1-C4) excludes biogenic CO2 (confirmed by the author). Whether it includes landfill methane is TO CONFIRM from Christoforatos & Pickering 2025 (author check).
+- With shares held (reference and S1), the Monte Carlo carries no typology-mix uncertainty; the mix is bracketed by the storylines and sensitivities instead.
 - The soil factor was derived for Auckland's future urban zones and is applied nationally.
 - Apartments rest on one independent case study (A_1 and A_2 are one design at two scales).
 - The regional analysis of the rebuilding wave (replacement half-life by territorial authority) is deferred.

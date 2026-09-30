@@ -10,11 +10,11 @@ New Zealand is projected to build 80.9 million m² of new residential floor area
 
 | path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | of which soil | carbon excl. soil | upfront carbon (kt CO₂e) |
 |---|---|---|---|---|---|---|
-| S1 lower bound: long-run replacement | 74.42 | -8.1% | 28,448 | n/a | n/a | 20,835 |
-| S3, half-life 5 yr | 77.40 | -4.4% | 29,491 | n/a | n/a | 21,571 |
-| S3, half-life 10 yr (reference) | 80.94 | +0.0% | 30,729 | n/a | n/a | 22,448 |
-| S3, half-life 15 yr | 83.12 | +2.7% | 31,492 | n/a | n/a | 22,990 |
-| S2 upper bound: 2018-2023 replacement | 90.81 | +12.2% | 34,186 | n/a | n/a | 24,900 |
+| S1 lower bound: long-run replacement | 74.42 | -8.1% | 28,448 | 2,450 | 25,998 | 20,835 |
+| S3, half-life 5 yr | 77.40 | -4.4% | 29,491 | 2,452 | 27,039 | 21,571 |
+| S3, half-life 10 yr (reference) | 80.94 | +0.0% | 30,729 | 2,452 | 28,277 | 22,448 |
+| S3, half-life 15 yr | 83.12 | +2.7% | 31,492 | 2,452 | 29,040 | 22,990 |
+| S2 upper bound: 2018-2023 replacement | 90.81 | +12.2% | 34,186 | 2,452 | 31,734 | 24,900 |
 
 Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% interval):
 
@@ -152,8 +152,6 @@ The model takes 2026 completions (and the 2027 share already consented) from the
 | Near-term join (A1) | Channel shares: population at mid-year | 80.94 | +0.0% | +0.0% |
 | Near-term join (A1) | Channel shares: population at census night (interpolated) | 80.94 | +0.0% | +0.0% |
 | Carbon factors | Soil on all floor area, incl. replacement (original) | 80.94 | +0.0% | +2.0% |
-| Carbon factors | Greenfield share 0.5 (bracketing; g is a PLACEHOLDER) | 80.94 | +0.0% | -4.0% |
-| Carbon factors | Greenfield share 0 (bracketing; g is a PLACEHOLDER) | 80.94 | +0.0% | -8.0% |
 | Carbon factors | Materials: jackknife low (all typologies) | 80.94 | +0.0% | -4.6% |
 | Carbon factors | Materials: jackknife high (all typologies) | 80.94 | +0.0% | +3.8% |
 | Carbon factors | Materials: lowest single case study | 80.94 | +0.0% | -20.4% |

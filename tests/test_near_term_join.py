@@ -131,3 +131,21 @@ def test_central_run_2026_completions_equal_nowcast(B):
         E = B['engine_out'][pct]
         ji = B['join_info'][pct]
         assert close(engine.requirement(E)[1], ji['O26'])
+
+
+# ------------------------------------------------ population nowcast (A1) ----
+def test_population_nowcast_shift_and_catchup():
+    """The observed 2026 growth shifts the level by (observed - projected);
+    with catch-up over N years the level rejoins the projection from 2026 + N."""
+    from conftest import run_boss
+    base = run_boss(NOWCAST_POPULATION=False)
+    perm = run_boss(POP_NOWCAST_CATCHUP_YEARS=None)
+    cu = run_boss(POP_NOWCAST_CATCHUP_YEARS=5)
+    fy = list(base['forecast_years'])
+    i26, i31 = fy.index(2026), fy.index(2031)
+    P = lambda B: B['df_forecast']['PopTotal_50th'].values
+    shift = perm['pop_nowcast']['shift']
+    assert close(P(perm)[i26:] - P(base)[i26:], np.full(len(fy) - i26, shift))
+    assert close(P(cu)[i26] - P(base)[i26], shift)
+    assert close(P(cu)[i31:], P(base)[i31:])
+    assert close(P(cu)[:i26], P(base)[:i26])

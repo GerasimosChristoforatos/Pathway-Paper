@@ -487,6 +487,23 @@ NOWCAST_SEASONAL_YEARS = (2010, 2025)
 #   to calendar years throughout (half-year offset).
 NOWCAST_POPULATION = True
 FILE_POP_NOWCAST = os.path.join(DATA_DIR, 'derived', 'population_nowcast.csv')
+FILE_POP_QUARTERLY = os.path.join(DATA_DIR, 'derived', 'population_quarterly.csv')
+# POPULATION CONVENTION. History: estimated resident population (ERP) at 31
+#   December (point values). Projection: Stats NZ growth for years ended June,
+#   applied to calendar years (half-year offset, as throughout the model).
+#   Nowcast of 2026 growth (POP_NOWCAST_SOURCE):
+#   'dpe_quarterly' (ADOPTED): latest four-quarter change of the Stats NZ
+#       mean-quarter ERP (Infoshare DPE059AA): June quarter 2026 minus June
+#       quarter 2025 (centred mid-May), applied to calendar 2026 like the
+#       projection's year-ended-June growth;
+#   'release_provisional': the 30 June 2026 point figure in the provisional
+#       release (data/derived/population_nowcast.csv).
+POP_NOWCAST_SOURCE = 'dpe_quarterly'
+# POP_NOWCAST_CATCHUP_YEARS: None (ADOPTED) = the 2026 shortfall against the
+#   projection is a permanent level shift (later growth is the projection's);
+#   N = the shortfall is made up linearly over the N years after 2026, so the
+#   level rejoins the projection (sensitivity: 5).
+POP_NOWCAST_CATCHUP_YEARS = None
 # EXCESS_CHANNELS: split of the 2026-27 excess.
 #   'calibrated' (ADOPTED): shares from the 2018-2023 census interval, measured
 #       against the ACTIVE replacement scenario (so redevelopment already inside
@@ -503,14 +520,18 @@ VACANCY_DRAWDOWN_YEARS = 5                 # JUDGEMENT; 3 and 10 as sensitivitie
 #   the Stats NZ shape, so the response is cyclical.
 HOUSEHOLD_CHANNEL = 'permanent'
 # CHANNEL_POP_DATE: the population paired with census households when testing
-#   household size over the calibration interval:
-#   'census_night' (ADOPTED): at the census date (5 March), linear between the
-#       31 December ERP values -- the same date as the household count;
-#   'mid_year': 30 June, as the mean of adjacent 31 December values (the date of
-#       the Stats NZ shape). The households channel is sensitive to this choice
-#       (fast population growth early in 2023); quarterly ERP (31 March) from
-#       Infoshare DPE would replace the interpolation.
-CHANNEL_POP_DATE = 'census_night'
+#   household size over the calibration interval, from the quarterly
+#   mean-quarter ERP (FILE_POP_QUARTERLY; DPE059AA):
+#   'march_quarter' (ADOPTED, author's decision): the March-quarter value. NOTE:
+#       it is the mean over January-March (centred mid-February), not a point
+#       estimate at 31 March; the export holds no point values;
+#   'census_night': linear between the March- and June-quarter centres to the
+#       census date (5 March), the date of the household count;
+#   'mid_year': mean of the June and September quarters (about 30 June, the
+#       date of the Stats NZ shape).
+#   The households channel is sensitive to this choice (fast population growth
+#   early in 2023).
+CHANNEL_POP_DATE = 'march_quarter'
 
 # ---------------------------------------------------------------------------
 # BUILT DWELLINGS, DEMOLITION AND UNCONSENTED ADDITIONS
@@ -1472,16 +1493,32 @@ def main():
         raise ValueError(f"Unknown POP_PERCENTILE_METHOD '{POP_PERCENTILE_METHOD}'.")
     pop_nowcast = None
     if NOWCAST_POPULATION:
-        _pn = pd.read_csv(FILE_POP_NOWCAST).iloc[-1]
-        if int(_pn['year_ended_june']) != 2026:
-            raise ValueError(f'{FILE_POP_NOWCAST} is for {_pn.year_ended_june}, not 2026.')
+        if POP_NOWCAST_SOURCE == 'dpe_quarterly':
+            _q = pd.read_csv(FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
+            if (2026, 2) not in _q.index:
+                raise ValueError(f'{FILE_POP_QUARTERLY} has no June quarter 2026.')
+            _g_obs, _status = float(_q[(2026, 2)] - _q[(2025, 2)]), 'DPE059AA, June qtr 2026 vs 2025, mean-quarter'
+        elif POP_NOWCAST_SOURCE == 'release_provisional':
+            _pn = pd.read_csv(FILE_POP_NOWCAST).iloc[-1]
+            if int(_pn['year_ended_june']) != 2026:
+                raise ValueError(f'{FILE_POP_NOWCAST} is for {_pn.year_ended_june}, not 2026.')
+            _g_obs, _status = float(_pn['growth_year_ended_june']), f"release, {_pn['status']}"
+        else:
+            raise ValueError(f"Unknown POP_NOWCAST_SOURCE '{POP_NOWCAST_SOURCE}'.")
         _i26 = int(np.where(forecast_years == 2026)[0][0])
-        _shift = float(_pn['growth_year_ended_june']) - float(df_forecast.loc[_i26, 'PopGrowth_50th'])
+        _shift = _g_obs - float(df_forecast.loc[_i26, 'PopGrowth_50th'])
+        # level path of the shortfall: permanent, or made up over N years
+        _adj = np.full(len(forecast_years), _shift)
+        _adj[:_i26] = 0.0
+        if POP_NOWCAST_CATCHUP_YEARS:
+            _n = int(POP_NOWCAST_CATCHUP_YEARS)
+            _k = np.arange(len(forecast_years)) - _i26
+            _adj = np.where(_k < 0, 0.0, _shift * np.clip(1.0 - _k / _n, 0.0, 1.0))
         for pct in ['5th', '50th', '95th']:
-            df_forecast.loc[_i26:, f'PopTotal_{pct}'] += _shift
-            df_forecast.loc[_i26, f'PopGrowth_{pct}'] += _shift
-        pop_nowcast = dict(observed_growth=float(_pn['growth_year_ended_june']), shift=_shift,
-                           status=str(_pn['status']))
+            df_forecast[f'PopTotal_{pct}'] += _adj
+            df_forecast[f'PopGrowth_{pct}'] += np.diff(np.insert(_adj, 0, 0.0))
+        pop_nowcast = dict(observed_growth=_g_obs, shift=_shift, status=_status,
+                           catchup_years=POP_NOWCAST_CATCHUP_YEARS)
         print(f"[nowcast] 2026 population growth: observed {pop_nowcast['observed_growth']:,.0f} "
               f"(year ended June 2026, {pop_nowcast['status']}) vs projection median "
               f"{pop_nowcast['observed_growth'] - _shift:,.0f}; levels from 2026 shifted by {_shift:+,.0f}")
@@ -1653,9 +1690,14 @@ def main():
     if _join_mode == 'nowcast':
         nowcast = engine.nowcast_year(consents_monthly, 2026, NOWCAST_METHOD, NOWCAST_SEASONAL_YEARS)
         # population at the census dates (5 March), from the 31 December ERP
-        _f = {'census_night': engine.CENSUS_DAY_OF_YEAR / 365.25, 'mid_year': 0.5}[CHANNEL_POP_DATE]
-        _pop_census = {y: float(hist_pop.loc[y - 1] + _f * (hist_pop.loc[y] - hist_pop.loc[y - 1]))
-                       for y in RECENT_INTERVAL}   # linear between 31 Dec values (quarterly ERP pending)
+        _q = pd.read_csv(FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
+        _t = engine.CENSUS_DAY_OF_YEAR / 365.25
+        _pop_date = {'march_quarter': lambda y: _q[(y, 1)],
+                     'census_night': lambda y: _q[(y, 1)] + (_t - 0.125) / 0.25 * (_q[(y, 2)] - _q[(y, 1)]),
+                     'mid_year': lambda y: (_q[(y, 2)] + _q[(y, 3)]) / 2.0}
+        if CHANNEL_POP_DATE not in _pop_date:
+            raise ValueError(f"Unknown CHANNEL_POP_DATE '{CHANNEL_POP_DATE}'.")
+        _pop_census = {y: float(_pop_date[CHANNEL_POP_DATE](y)) for y in RECENT_INTERVAL}
         excess_evidence = engine.excess_channels(census, census_rates, _pop_census,
                                                  S_knots.set_index('Year')['S'], float(rate_path[0]),
                                                  *RECENT_INTERVAL)

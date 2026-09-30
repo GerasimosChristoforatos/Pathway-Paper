@@ -203,12 +203,17 @@ def main():
     if v:
         L += ['', '## Validation', '', 'Rolling-origin hindcast of dwellings built (actual households and vacancy '
               'fed in; the net-replacement term predicted):', '',
-              '| origin | test years | model method error | best alternative |', '|---|---|---|---|']
+              '| origin | test years | long-run rate (S1) error | reference method (S3-10) error | best alternative |',
+              '|---|---|---|---|---|']
         for o in sorted({r['origin'] for r in v['hindcast']}):
             rr = [r for r in v['hindcast'] if r['origin'] == o]
             mm = [r for r in rr if r['method'] == v['model_method']][0]
-            alt = min((r for r in rr if r['method'] != v['model_method']), key=lambda r: abs(r['error_pct']))
-            L.append(f"| {o} | {mm['test']} | {mm['error_pct']:+.1f}% | {alt['method']} {alt['error_pct']:+.1f}% |")
+            ref = [r for r in rr if r['method'] == 'reference_s3_10']
+            alt = min((r for r in rr if r['method'] not in (v['model_method'], 'reference_s3_10')),
+                      key=lambda r: abs(r['error_pct']))
+            L.append(f"| {o} | {mm['test']} | {mm['error_pct']:+.1f}% | "
+                     f"{(format(ref[0]['error_pct'], '+.1f') + '%') if ref else 'n/a'} | "
+                     f"{alt['method']} {alt['error_pct']:+.1f}% |")
         c = v['check_2026']
         if c.get('status') == 'observed':
             L += ['', f"2026 check (model run without any observed-2026 input): observed consents Jan-Jul "

@@ -2377,7 +2377,7 @@ def main():
              linewidth=2.5, label='Projected Total GFA (Median)')
     plt.fill_between(df_forecast['Year'], df_forecast['Cum_GFA_Total_5th'],
                      df_forecast['Cum_GFA_Total_95th'], color='darkred', alpha=0.2,
-                     label='GFA Uncertainty Band')
+                     label='Population 5th-95th percentile (other inputs fixed)')
     plt.ylabel('Cumulative New GFA (m2)')
     plt.title('Cumulative New Residential GFA Projection')
     plt.legend(loc='upper left'); plt.grid(True, alpha=0.3)

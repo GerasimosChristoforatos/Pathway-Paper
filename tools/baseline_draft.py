@@ -70,8 +70,14 @@ def register():
 LIMITATIONS = [
     'No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so '
     'the implied replacement rates cannot be tested against a count.',
-    'N4: the household-size shape comes from the 2018-base household projections, paired with the 2024-base '
-    'population projection (vintage mismatch); Stats NZ\'s 2023-base release (late 2026) is planned as v1.1.',
+    'N4 (open): the Low/High household-size variants (deterministic) are paired with stochastic population '
+    'percentiles through one draw z, and the total vs private-household population question is unresolved '
+    'until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ\'s '
+    '2023-base release (late 2026) planned as v1.1.',
+    'Timber end of life (C1-C4) excludes biogenic CO2 (confirmed by the author). Whether it includes landfill '
+    'methane is TO CONFIRM from Christoforatos & Pickering 2025 (author check).',
+    'With shares held (reference and S1), the Monte Carlo carries no typology-mix uncertainty; the mix is '
+    'bracketed by the storylines and sensitivities instead.',
     'The soil factor was derived for Auckland\'s future urban zones and is applied nationally.',
     'Apartments rest on one independent case study (A_1 and A_2 are one design at two scales).',
     'The regional analysis of the rebuilding wave (replacement half-life by territorial authority) is deferred.',
@@ -128,9 +134,13 @@ def main():
           '| path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | of which soil | '
           'carbon excl. soil | upfront carbon (kt CO₂e) |', '|---|---|---|---|---|---|---|']
     base = rows.get('S3-10', {}).get('GFA_Mm2', b['gfa_Mm2'])
-    for k, lab in (('S1', 'S1 lower bound: long-run replacement'), ('S3-5', 'S3, half-life 5 yr'),
-                   ('S3-10', 'S3, half-life 10 yr (reference)'), ('S3-15', 'S3, half-life 15 yr'),
-                   ('S2', 'S2 upper bound: 2018-2023 replacement')):
+    for k, lab in (('S1', 'S1 lower bound: long-run replacement, shares held'),
+                   ('S3-5', 'S3, half-life 5 yr, shares held'),
+                   ('S3-10', 'S3, half-life 10 yr, shares held (reference)'),
+                   ('S3-15', 'S3, half-life 15 yr, shares held'),
+                   ('S2', 'S2 upper bound: 2018-2023 replacement + damped mix trend ("intensification continues")'),
+                   ('S3-10-trend', 'Sensitivity: S3-10 with the damped mix trend (v1.0 mix)'),
+                   ('S2-held', 'Sensitivity: S2 with shares held (maximum floor-area case)')):
         if k in rows:
             r = rows[k]
             up = f"{r['upfront_kt']:,.0f}" if 'upfront_kt' in r else 'n/a'

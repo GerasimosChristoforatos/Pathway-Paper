@@ -52,6 +52,13 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
             census-benchmarked window 1992-2023 (+0.15%/yr). It reads "how much
             of the recent redevelopment regime persists". The census dwelling
             counts show the same 2018-2023 rise with no household data.
+            INTERIM (until item 9 replaces it with scenarios): the weight moves
+            the long-run end of Boss.REPLACEMENT_SCENARIO's path; at 0 the draw
+            reproduces the Boss run.
+  near-term join (A1), when Boss.NEAR_TERM_JOIN = 'nowcast': recomputed in
+            every draw with that draw's completion rate and scenario rate
+            (channel shares re-measured on 2018-2023); the observed consents
+            and the observed 2026 population are data, not sampled.
   phi       Triangular(0.62, 0.80, 0.98): mix-trend damping. The width is the
             conventional damped-trend range [0.80, 0.98] (Hyndman &
             Athanasopoulos), centred on the adopted 0.80.
@@ -182,7 +189,14 @@ def build_setup():
               phi=Boss.DAMPING_PHI, s_anchor=Boss.S_ANCHOR_YEAR,
               nr_source=Boss.NET_REPLACEMENT_SOURCE, nr_window=tuple(Boss.NET_REPLACEMENT_WINDOW),
               census_stock=B['census']['total_private'], consents_monthly=B['consents_monthly'],
-              lag_w=B['lag_w'], const_share=B['_const_share'])
+              lag_w=B['lag_w'], const_share=B['_const_share'],
+              # replacement scenario and near-term join (A1), as in the Boss run
+              scenario=B['_scenario'], s3_half_life=Boss.S3_HALF_LIFE,
+              recent=tuple(Boss.RECENT_INTERVAL), join_mode=B['_join_mode'],
+              nowcast=B['nowcast'], pop_census=B.get('_pop_census'),
+              S_shape=B['S_knots'].set_index('Year')['S'], channels=Boss.EXCESS_CHANNELS,
+              drawdown=Boss.VACANCY_DRAWDOWN_YEARS, hh_channel=Boss.HOUSEHOLD_CHANNEL,
+              units_all_raw=B['hist_units_all'])
 
     # ---- dwelling size ----
     su['size_ref'] = np.array([B['size_ref'][t] for t in typ])
@@ -296,18 +310,22 @@ def project(su, p):
     end = su['calib_end']
     # regime: weight on the 2019-2023 census interval's net replacement rate
     # against the whole census-benchmarked window (0 = long run, as in Boss)
+    # census dwelling-count identity, recomputed for this draw's completion rate
+    rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_w'])
     if su['nr_source'] == 'dwelling_count':
-        # census dwelling-count identity, recomputed for this draw's completion rate
-        rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_w'])
         unc_long = engine.census_window_rate(rates, *su['nr_window']) - su['demol_rate']
-        unc_recent = engine.census_window_rate(rates, 2018, 2023) - su['demol_rate']
+        unc_recent = engine.census_window_rate(rates, *su['recent']) - su['demol_rate']
     else:
         unc_long = cal['rate_unc']
         unc_recent = (engine.window_rate(cal, 2019, end) - su['demol_rate']) if end >= 2019 else cal['rate_unc']
-    unc = (1 - p['regime']) * unc_long + p['regime'] * unc_recent
+    # INTERIM until item 9: the regime weight blends the long-run end of the
+    # scenario path; at regime = 0 the path is the Boss run's.
+    unc_base = (1 - p['regime']) * unc_long + p['regime'] * unc_recent
+    unc = engine.replacement_path(su['scenario'], unc_base, unc_recent, fy, su['s3_half_life'])
     dv = engine.deviation_2025(cal, c * su['units_all'].loc[2025],
                                float(hh_hist.loc[2025] - hh_hist.loc[2024]),
-                               su['demol_rate'] + unc, yh, su['calib_start'], end)
+                               su['demol_rate'] + float(unc[0]), yh, su['calib_start'], end)
+    dev = dv['dev'] if su['join_mode'] == 'carried_deviation' else 0.0
     # vacancy: from the latest census value, reached linearly by 2050
     v0 = float(cal['knots'][max(cal['knots'])])
     v = v0 + (p['vacancy'] - v0) * (fy - 2025) / (fy[-1] - 2025)
@@ -327,9 +345,20 @@ def project(su, p):
     I = {t: emb[j] + su['soc'][j] for j, t in enumerate(typ)}
     U = {t: upf[j] + su['soc'][j] for j, t in enumerate(typ)}
 
-    E = engine.forward(pop, hh, np.insert(np.diff(pop), 0, 0).clip(min=0), v, su['demol_rate'], unc,
-                       dv['dev'], dv['rho'], p['rv_share'], shares, size, su['olf'], I, U,
-                       floor_decline=su['floor_decline'], olf_per_resident=su['olf_per_resident'])
+    fwd = lambda join=None, redev=None: engine.forward(
+        pop, hh, np.insert(np.diff(pop), 0, 0).clip(min=0), v, su['demol_rate'], unc,
+        dev, dv['rho'], p['rv_share'], shares, size, su['olf'], I, U,
+        floor_decline=su['floor_decline'], olf_per_resident=su['olf_per_resident'],
+        join=join, join_redev=redev)
+    E = fwd()
+    if su['join_mode'] == 'nowcast':
+        # channel shares re-measured for this draw (completion rate, scenario rate)
+        ev = engine.excess_channels(su['census'], rates, su['pop_census'], su['S_shape'],
+                                    su['demol_rate'] + float(unc[0]), *su['recent'])
+        join, ji = engine.nowcast_join(E, float(su['units_all_raw'].loc[2025]), float(su['nowcast']['total']),
+                                      c, su['lag_w'], Boss.channel_shares(su['channels'], ev),
+                                      su['drawdown'], su['hh_channel'])
+        E = fwd(join, ji['channels']['redevelopment'])
     return dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
                 hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],
                 I=np.array([I[t] for t in typ]), U=np.array([U[t] for t in typ]))

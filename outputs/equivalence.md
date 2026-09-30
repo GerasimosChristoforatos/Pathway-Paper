@@ -28,24 +28,25 @@ Draws in which the extra-space floor binds in at least one year (new = legacy + 
 
 Draws in which the extra-space floor binds in at least one year (new = legacy + that term, verified above): 0.
 
-## Boss.main, random settings: 12 draws, largest relative difference 0.00e+00
+## Boss.main, random settings: 12 draws, largest relative difference 7.02e-16
 
 | output | largest relative difference |
 |---|---|
-| carbon_total_typ | 0.00e+00 |
-| dem_mat | 0.00e+00 |
-| df_forecast | 0.00e+00 |
+| carbon_total_typ | 2.32e-16 |
+| dem_mat | 3.10e-17 |
+| dem_mat.new_bands_zero | 0.00e+00 |
+| df_forecast | 3.51e-18 |
 | evol_typ_growth | 0.00e+00 |
 | evol_typ_repl | 0.00e+00 |
-| evol_typ_rv | 0.00e+00 |
-| evol_typ_total | 0.00e+00 |
-| evol_typ_unc | 0.00e+00 |
+| evol_typ_rv | 2.96e-16 |
+| evol_typ_total | 1.62e-16 |
+| evol_typ_unc | 6.39e-16 |
 | evol_typ_vac | 0.00e+00 |
 | evolving_gfa_shares | 0.00e+00 |
-| flow_annual | 0.00e+00 |
+| flow_annual | 2.48e-16 |
 | households | 0.00e+00 |
 | other_dev_2025 | 0.00e+00 |
-| results.c_gross | 0.00e+00 |
+| results.c_gross | 2.97e-16 |
 | results.d_hh | 0.00e+00 |
 | results.extra | 0.00e+00 |
 | results.growth | 0.00e+00 |
@@ -53,20 +54,20 @@ Draws in which the extra-space floor binds in at least one year (new = legacy + 
 | results.hs_avoided | 0.00e+00 |
 | results.hs_pos | 0.00e+00 |
 | results.occ_per_dw | 0.00e+00 |
-| results.other | 0.00e+00 |
-| results.repl | 0.00e+00 |
-| results.rv | 0.00e+00 |
+| results.other | 5.32e-16 |
+| results.repl | 1.83e-16 |
+| results.rv | 3.09e-16 |
 | results.structural | 0.00e+00 |
-| results.total | 0.00e+00 |
-| results.unc | 0.00e+00 |
-| results.vac | 0.00e+00 |
+| results.total | 1.58e-16 |
+| results.unc | 7.02e-16 |
+| results.vac | 1.91e-16 |
 | rho_other | 0.00e+00 |
 | stock_fwd.allow | 0.00e+00 |
 | stock_fwd.demol | 0.00e+00 |
-| stock_fwd.repl | 0.00e+00 |
-| stock_fwd.rv | 0.00e+00 |
+| stock_fwd.repl | 2.66e-16 |
+| stock_fwd.rv | 1.89e-16 |
 | stock_fwd.stock | 0.00e+00 |
-| stock_fwd.uncons | 0.00e+00 |
+| stock_fwd.uncons | 6.86e-16 |
 | tot_carbon_median | 0.00e+00 |
 | unconsented_rate | 0.00e+00 |
 | v_forward | 0.00e+00 |

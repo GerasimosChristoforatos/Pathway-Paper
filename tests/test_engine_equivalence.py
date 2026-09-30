@@ -184,7 +184,10 @@ def compare_boss(N, L):
                                 rel(N['households_forecast'][pct], L['households_forecast'][pct]))
     for k in ('carbon_total_typ', 'evol_typ_total', 'evol_typ_growth', 'evol_typ_vac', 'evol_typ_repl',
               'evol_typ_unc', 'evol_typ_rv', 'flow_annual', 'dem_mat', 'evolving_gfa_shares'):
-        out[k] = rel(N[k].values, L[k].values)
+        out[k] = rel(N[k][L[k].columns].values, L[k].values)
+    # bands added after the freeze (A1 near-term join) must be identically zero
+    new = [c for c in N['dem_mat'].columns if c not in L['dem_mat'].columns]
+    out['dem_mat.new_bands_zero'] = float(np.abs(N['dem_mat'][new].values).max()) if new else 0.0
     num = L['df_forecast'].select_dtypes('number').columns
     out['df_forecast'] = rel(N['df_forecast'][num].values, L['df_forecast'][num].values)
     for k in ('tot_carbon_median', 'unconsented_rate', 'other_dev_2025', 'rho_other', 'v_forward'):

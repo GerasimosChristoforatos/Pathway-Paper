@@ -273,6 +273,36 @@ bookkeeping; the bands add up to the same total:
 The OLF from the case studies moves floor area *between* bands but does not
 change the total.
 
+### 4.7a Near-term join and replacement scenarios (Step 2, A1 and item 2)
+
+*Method only; the numbers are in `outputs/` (A6). This section supersedes the
+"2025 deviation" term above when `NEAR_TERM_JOIN = 'nowcast'`.*
+
+* **Replacement scenario** (`REPLACEMENT_SCENARIO`, `engine.replacement_path`):
+  S1 = long-run census dwelling-count rate; S2 = the 2018–2023 interval rate
+  throughout; S3 = the 2018–2023 rate fading to the long-run rate with
+  half-life `S3_HALF_LIFE`.
+* **Nowcast of 2026** (`engine.nowcast_year`, `engine.nowcast_join`):
+  2026 completions are taken from observed consents,
+  `c × [(1 − W) C2026 + W C2025]`. The months of 2026 not yet published are
+  estimated with a ratio-to-annual estimator using fixed seasonal factors
+  (mean monthly share of the calendar year, 2010–2025). The W share of 2027
+  completions comes from the 2026 consents; 2027 consents are taken at the
+  requirement (net of the 2026 drawdown).
+* **Three channels** (`engine.excess_channels`, `engine.join_channels`):
+  building above the requirement goes to redevelopment (permanent), vacancy
+  (drawn down linearly over `VACANCY_DRAWDOWN_YEARS`) and faster household
+  formation (permanent, or reverting as a sensitivity). The shares are measured
+  on ONE census interval (2018–2023), against the active scenario's rate, so
+  redevelopment already in the requirement is not counted twice. The household
+  channel is included only if census household size fell faster than the
+  Stats NZ shape over that interval.
+* **Observed 2026 population** (`NOWCAST_POPULATION`): the provisional growth
+  over the year ended June 2026 replaces the projection median for 2026; all
+  later growth is the projection's.
+* The 2026 out-of-sample check and the 2026 gap decomposition run on the model
+  with none of these observed-2026 inputs (`validation.NO_2026_DATA`).
+
 ### 4.8 Carbon
 
 For each year, floor area by typology (total × mix share) is multiplied by

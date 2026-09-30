@@ -92,7 +92,7 @@ D_f = B['future_dwelling_size'].values
 S_f = DF['PopTotal_50th'].values / B['households_forecast']['50th']
 
 C = dict(growth='#3498db', split='#e67e22', extra='#8e44ad', vac='#95a5a6',
-         vchg='#f1c40f', demol='#34495e', unc='#16a085', rv='#b8a0d0', built='black')
+         vchg='#f1c40f', demol='#34495e', unc='#16a085', rv='#b8a0d0', join='#c0392b', built='black')
 
 
 def split(ax):
@@ -270,9 +270,12 @@ hist_parts = [('new households', B['d_hh'].loc[YH], C['split']),
               ('retirement-village units (out of scope)', SC['rv'].loc[YH], C['rv'])]
 fut_parts = [('', R['d_hh'][1:], C['split']), ('', SF['allow'][1:], C['vac']),
              ('', np.zeros(len(PF)), C['vchg']), ('', SF['demol'][1:], C['demol']),
-             ('', SF['uncons'][1:], C['unc']), ('', SF['rv'][1:], C['rv'])]
+             ('', SF['uncons'][1:], C['unc']), ('', SF['rv'][1:], C['rv']),
+             ('near-term join, 2026-27 excess (A1)', SF['join'][1:], C['join'])]
 signed_bars(a, YH, [(l, v / 1e3, c) for l, v, c in hist_parts])
 signed_bars(a, PF, [(l, v / 1e3, c) for l, v, c in fut_parts], projected=True)
+if np.any(SF['join'][1:] != 0):
+    a.bar([], [], color=C['join'], alpha=0.5, label='near-term join, 2026-27 excess (A1)')
 built_h = B['hist_built_units'].loc[YH]          # in-scope dwellings built (lagged completions)
 built_f = R['total'][1:] / D_f[1:]
 a.plot(YH, built_h / 1e3, color='black', lw=1.6, label='dwellings built (in scope)')
@@ -334,9 +337,12 @@ hist_dem = [('growth (net of consolidation)', B['hist_growth'].loc[YH] - B['hist
 fut_dem = [('', R['growth'][1:], C['growth']), ('', R['hs_pos'][1:], C['split']),
            ('', R['extra'][1:], C['extra']), ('', R['vac'][1:], C['vac']),
            ('', np.zeros(len(PF)), C['vchg']), ('', R['repl'][1:], C['demol']),
-           ('', R['unc'][1:], C['unc']), ('', R['rv'][1:], C['rv'])]
+           ('', R['unc'][1:], C['unc']), ('', R['rv'][1:], C['rv']),
+           ('near-term join, 2026-27 excess (A1)', R['join'][1:], C['join'])]
 signed_bars(a, YH, [(l, np.asarray(v) / M6, c) for l, v, c in hist_dem])
 signed_bars(a, PF, [(l, v / M6, c) for l, v, c in fut_dem], projected=True)
+if np.any(R['join'][1:] != 0):
+    a.bar([], [], color=C['join'], alpha=0.5, label='near-term join, 2026-27 excess (A1)')
 a.plot(YH, B['hist_built_gfa'].loc[YH] / M6, color='black', lw=1.6, label='built (net)')
 a.plot(PF, R['total'][1:] / M6, color='black', lw=1.6, ls='--')
 tidy(a, 'By demand type (hatched = projected)', 'million m² per year')

@@ -11,6 +11,12 @@ engine, and a change here reaches both scripts at once.
   calibrate_stock   historical stock identity -> calibrated net replacement
   window_rate       net replacement (demolition + residual) over a year window
   deviation_2025    2025 departure from the calibrated identity, and its persistence
+  replacement_path  net replacement by year under scenario S1 / S2 / S3
+  seasonal_shares   mean share of the calendar-year total, by month
+  nowcast_year      calendar-year consents from the observed months (A1)
+  excess_channels   where building above requirement went over one census interval (A1)
+  join_channels     near-term join: excess split into three channels (A1)
+  nowcast_join      2026-27 excess from observed consents, and its join (A1)
   mix_shares        damped additive-log-ratio typology mix
   blend             dwelling-weighted blend of a per-typology quantity
   forward           households -> dwellings built -> floor area -> carbon
@@ -121,6 +127,161 @@ def census_window_rate(rates, start, end):
     return float((w['built'] - w['d_stock']).sum() / w['stock_years'].sum())
 
 
+def replacement_path(scenario, rate_long, rate_recent, years, half_life=10.0):
+    """Net replacement rate by year (index 0 = 2025).
+      'S1': the long-run rate throughout;
+      'S2': the recent (2018-2023) rate throughout;
+      'S3': the recent rate fading to the long-run rate with the given
+            half-life: long + (recent - long) x 0.5^((t - 2025) / half_life)."""
+    years = np.asarray(years)
+    if scenario == 'S1':
+        return np.full(len(years), float(rate_long))
+    if scenario == 'S2':
+        return np.full(len(years), float(rate_recent))
+    if scenario == 'S3':
+        return rate_long + (rate_recent - rate_long) * 0.5 ** ((years - 2025) / float(half_life))
+    raise ValueError(f"Unknown replacement scenario '{scenario}'.")
+
+
+def seasonal_shares(consents, years):
+    """Mean share of the calendar-year total falling in each month, over the
+    complete calendar years years[0]..years[1] (fixed multiplicative seasonal
+    factors, normalised to the year)."""
+    m = consents.loc[f'{years[0]}-01-01':f'{years[1]}-12-31']
+    by = m.groupby([m.index.year, m.index.month]).sum().unstack()
+    return (by.div(by.sum(axis=1), axis=0)).mean()
+
+
+def nowcast_year(consents, year, method, seasonal_years):
+    """Calendar-year consents for a year observed only in part. consents:
+    monthly series (index = first of month). The observed months are taken
+    from the data; the unobserved months are estimated by:
+      'seasonal_share'   ratio-to-annual estimator with fixed seasonal factors:
+                         observed / (sum of the observed months' mean shares)
+                         x (sum of the missing months' mean shares);
+      'same_period_ratio' the same months of the previous year x the ratio of
+                         the observed months to the same months a year earlier;
+      'last_12_months'   the latest 12 observed months stand in for the year."""
+    s = consents.sort_index()
+    obs = s.loc[f'{year}-01-01':f'{year}-12-31']
+    months = sorted(int(m) for m in obs.index.month)
+    if months != list(range(1, len(months) + 1)):
+        raise ValueError(f'{year}: observed months {months} are not a run from January.')
+    missing = [m for m in range(1, 13) if m not in months]
+    ytd = float(obs.sum())
+    if not missing:
+        est = 0.0
+    elif method == 'seasonal_share':
+        sh = seasonal_shares(s, seasonal_years)
+        est = ytd / float(sh.loc[months].sum()) * float(sh.loc[missing].sum())
+    elif method == 'same_period_ratio':
+        prev = s.loc[f'{year - 1}-01-01':f'{year - 1}-12-31']
+        same = float(prev[prev.index.month.isin(months)].sum())
+        est = float(prev[prev.index.month.isin(missing)].sum()) * ytd / same
+    elif method == 'last_12_months':
+        last = s.index.max()
+        est = float(s.loc[last - pd.DateOffset(months=11):last].sum()) - ytd
+    else:
+        raise ValueError(f"Unknown nowcast method '{method}'.")
+    return dict(year=year, method=method, months_observed=months, observed=ytd,
+                estimated_missing=est, total=ytd + est)
+
+
+def excess_channels(census, rates, pop_census, S_shape, rate_scenario, start, end):
+    """Where building above the model's requirement went over ONE census
+    interval (start, end). Three channels, each measured from census data:
+      redevelopment : (interval net replacement rate - scenario rate) x stock-years
+                      (removals beyond what the scenario already builds for);
+      vacancy       : empty private dwellings at `end` above the `start` vacancy rate;
+      households    : households at `end` (occupied + residents away) above
+                      those implied by the Stats NZ household-size shape:
+                      hh_start x (P_end / P_start) x (S_start / S_end).
+    pop_census : population at each census date (dict/Series by census year)
+    S_shape    : Stats NZ household-size shape (Series by year, with start and end)
+    The households channel is included only when census household size fell
+    faster than the shape (the test of A1c); otherwise it is set to zero.
+    Returns levels, shares and the test."""
+    hh = lambda y: float(census.loc[y, 'total_private'] - census.loc[y, 'empty'])
+    r = rates[(rates['y0'] == start) & (rates['y1'] == end)]
+    if len(r) != 1:
+        raise ValueError(f'No single census interval {start}-{end}.')
+    r = r.iloc[0]
+    S_cen = {y: float(pop_census[y]) / hh(y) for y in (start, end)}
+    g_census = S_cen[end] / S_cen[start] - 1.0
+    g_shape = float(S_shape[end]) / float(S_shape[start]) - 1.0
+    hh_shape_end = hh(start) * float(pop_census[end]) / float(pop_census[start]) \
+        * float(S_shape[start]) / float(S_shape[end])
+    include_hh = g_census < g_shape
+    lev = dict(redevelopment=(float(r['rate']) - float(rate_scenario)) * float(r['stock_years']),
+               vacancy=float(census.loc[end, 'empty'])
+               - float(census.loc[start, 'empty'] / census.loc[start, 'total_private'])
+               * float(census.loc[end, 'total_private']),
+               households=(hh(end) - hh_shape_end) if include_hh else 0.0)
+    if abs(lev['redevelopment']) < 1e-6 * float(r['stock_years']):
+        lev['redevelopment'] = 0.0       # scenario rate = interval rate (S2, S3)
+    if any(v < 0 for v in lev.values()):
+        raise ValueError(f'A channel is negative over {start}-{end} ({lev}): shares undefined.')
+    tot = sum(lev.values())
+    return dict(levels=lev, shares={k: v / tot for k, v in lev.items()},
+                S_census=S_cen, change_S_census=g_census, change_S_shape=g_shape,
+                households_included=bool(include_hh), interval=(start, end))
+
+
+def join_channels(years, excess, shares, drawdown_years, household_mode='permanent'):
+    """Near-term join (A1, option c). excess: dict year -> dwellings built above
+    the model's requirement (all categories). Each year's excess is split into
+    three channels:
+      redevelopment : replaces removed dwellings; permanent, no later offset;
+      vacancy       : raises the stock; drawn down linearly over the following
+                      drawdown_years (the requirement is reduced by the same total);
+      households    : faster household formation; 'permanent' (no later offset)
+                      or 'reverting' (drawn down like vacancy).
+    Returns (join array added to dwellings built, dict of channel arrays)."""
+    years = np.asarray(years)
+    n = len(years)
+    ch = {k: np.zeros(n) for k in ('redevelopment', 'vacancy', 'households',
+                                   'vacancy_drawdown', 'household_reversion')}
+    for y, e in excess.items():
+        i = int(np.where(years == y)[0][0])
+        for k in ('redevelopment', 'vacancy', 'households'):
+            ch[k][i] += shares[k] * e
+        for k, back in (('vacancy', 'vacancy_drawdown'), ('households', 'household_reversion')):
+            if k == 'households' and household_mode == 'permanent':
+                continue
+            later = np.arange(i + 1, min(i + 1 + int(drawdown_years), n))
+            ch[back][later] -= shares[k] * e / drawdown_years
+    join = sum(ch.values())
+    return join, ch
+
+
+def requirement(E):
+    """Dwellings built, all categories (incl. retirement villages), in a
+    forward() result: new households (floored as in forward) + vacancy
+    allowance + vacancy change + demolition + residual (+ join, if any)."""
+    return np.maximum(E['d_hh'], 0.0) + E['allow'] + E['change'] + E['demol'] + E['unc'] + E['join']
+
+
+def nowcast_join(E, consents_2025, consents_2026, completion, lag_w, shares, drawdown_years,
+                 household_mode='permanent'):
+    """Near-term join (A1: nowcast + three channels). E: forward() result
+    WITHOUT a join (index 0 = 2025, 1 = 2026, 2 = 2027).
+      2026 completions = c x [(1 - W) C_2026 + W C_2025]   (observed consents)
+      excess_2026      = that - requirement_2026
+      excess_2027      = W x [c C_2026 - (requirement_2027 - drawdown of the 2026 excess)]
+    i.e. the W share of 2027 completions comes from observed 2026 consents, and
+    2027 consents are taken at the requirement net of the 2026 drawdown.
+    Returns (join array, info dict)."""
+    years = E['years']
+    R = requirement(E)
+    O26 = completion * ((1.0 - lag_w) * consents_2026 + lag_w * consents_2025)
+    e26 = O26 - R[1]
+    j26, _ = join_channels(years, {years[1]: e26}, shares, drawdown_years, household_mode)
+    e27 = lag_w * (completion * consents_2026 - (R[2] + j26[2]))
+    join, ch = join_channels(years, {years[1]: e26, years[2]: e27}, shares, drawdown_years,
+                             household_mode)
+    return join, dict(O26=O26, R26=float(R[1]), R27=float(R[2]), e26=e26, e27=e27, channels=ch)
+
+
 def deviation_2025(cal, built_all_2025, d_hh_2025, rate_net, years, window_start, window_end):
     """How far 2025's building beyond household formation departs from the
     calibrated identity, and the lag-1 autocorrelation (clipped to [0, 0.95])
@@ -165,12 +326,19 @@ def blend(shares, per_unit, typ_names):
 
 def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_share,
             shares, size, olf, intensity, intensity_upfront, floor_decline=True,
-            olf_per_resident=False, consumption_override=None):
+            olf_per_resident=False, consumption_override=None, join=None, join_redev=None):
     """One forward path, 2025..2050 (index 0 = 2025, a model value; callers that
     anchor 2025 on observations overwrite it).
 
     pop, hh, pop_growth, v : arrays over the years (v may vary by year)
     rate_demol, rate_unc   : demolition and residual, shares of last year's stock
+                             (rate_unc may be an array by year: scenario S3)
+    join                   : optional array of dwellings built above the requirement
+                             (near-term join, A1), added before the RV split
+    join_redev             : the part of join that replaces extra removals
+                             (redevelopment channel); the rest adds to the stock
+                             (stock_join). The extra stock does not enter the
+                             demolition / residual base (second order; see A1 note).
     dev_2025, rho_dev      : 2025 deviation, fading as rho^(t-2025), booked to the residual
     rv_share               : retirement-village share of ALL dwellings built (out of scope)
     shares                 : DataFrame years x typology (floor-area shares)
@@ -220,6 +388,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
     dev[0] = 0.0
     units = allow + change + demol + unc
     units, unc = units + dev, unc + dev
+    join = np.zeros(len(hh)) if join is None else np.asarray(join, float)
+    join_redev = np.zeros(len(hh)) if join_redev is None else np.asarray(join_redev, float)
+    units = units + join
+    stock_join = np.cumsum(join - join_redev)        # dwellings added to the stock by the join
     rv = -rv_share * (np.maximum(d_hh, 0.0) + units)
     units_in_scope = units + rv
 
@@ -238,6 +410,6 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         hs_pos=hs_pos, hs_avoided=hs_avoided, extra=extra, extra_clip=extra_clip,
         c_gross=c_gross, total=total,
         v=np.array(v), stock=stock, prev=prev, allow=allow, change=change, demol=demol,
-        unc=unc, dev=dev, rv=rv, dwell_in_scope=total / D, rv_units=-rv,
+        unc=unc, dev=dev, join=join, join_redev=join_redev, stock_join=stock_join, rv=rv, dwell_in_scope=total / D, rv_units=-rv,
         gfa_t=gfa_t, carbon_t=I[:, None] * gfa_t, carbon=(I[:, None] * gfa_t).sum(axis=0),
         upfront=(U[:, None] * gfa_t).sum(axis=0))

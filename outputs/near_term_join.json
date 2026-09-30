@@ -53,14 +53,14 @@
   "evidence": {
     "census_night": {
       "levels": {
-        "redevelopment": 23912.518124128743,
+        "redevelopment": 0.0,
         "vacancy": 6285.530273787939,
         "households": 27600.41551229707
       },
       "shares": {
-        "redevelopment": 0.41372238129503447,
-        "vacancy": 0.10874908861855069,
-        "households": 0.4775285300864148
+        "redevelopment": 0.0,
+        "vacancy": 0.1854907728846406,
+        "households": 0.8145092271153593
       },
       "S_census": {
         "2018": 2.7659915897801706,
@@ -76,14 +76,14 @@
     },
     "mid_year": {
       "levels": {
-        "redevelopment": 23912.518124128743,
+        "redevelopment": 0.0,
         "vacancy": 6285.530273787939,
         "households": 20421.06690908596
       },
       "shares": {
-        "redevelopment": 0.47240094930739907,
-        "vacancy": 0.12417305667367916,
-        "households": 0.40342599401892176
+        "redevelopment": 0.0,
+        "vacancy": 0.2353549660687829,
+        "households": 0.7646450339312171
       },
       "S_census": {
         "2018": 2.780223242032848,
@@ -100,20 +100,20 @@
   },
   "pop_date_in_use": "census_night",
   "shares_in_use": {
-    "redevelopment": 0.41372238129503447,
-    "vacancy": 0.10874908861855069,
-    "households": 0.4775285300864148
+    "redevelopment": 0.0,
+    "vacancy": 0.1854907728846406,
+    "households": 0.8145092271153593
   },
   "O26": 37596.25025020077,
-  "R26": 18588.96645219556,
-  "R27": 25232.51761803255,
-  "e26": 19007.28379800521,
-  "e27": 7938.597275121556,
+  "R26": 23449.20213121366,
+  "R27": 29802.168918249743,
+  "e26": 14147.04811898711,
+  "e27": 5679.022132644044,
   "channels_2026_2050": {
-    "redevelopment": 11148.114083666806,
-    "vacancy": 2930.3400087263904,
-    "households": 12867.426980733571,
-    "vacancy_drawdown": -2930.34000872639,
+    "redevelopment": 0.0,
+    "vacancy": 3677.553094240244,
+    "households": 16148.517157390908,
+    "vacancy_drawdown": -3677.5530942402434,
     "household_reversion": 0.0
   },
   "population_nowcast": {
@@ -123,5 +123,5 @@
   },
   "lag_w": 0.5068326945071742,
   "completion": 0.95,
-  "scenario": "S1"
+  "scenario": "S3"
 }

@@ -98,7 +98,7 @@ def boom_2018_2023(B):
 
 
 def main():
-    B = run()
+    B = run(REPLACEMENT_SCENARIO='S1')              # the decomposition is stated on S1 and S2
     c, W = Boss.COMPLETION_RATE, B['lag_w']
     C25 = float(B['hist_units_all'].loc[2025])
     chk = validation.check_2026(B)

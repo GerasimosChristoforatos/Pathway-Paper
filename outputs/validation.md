@@ -42,4 +42,4 @@ Change in census private dwellings from the origin to 2023, predicted as complet
 
 Run on the model WITHOUT any observed 2026 input (settings: {'NEAR_TERM_JOIN': 'carried_deviation', 'NOWCAST_POPULATION': False}), so the check stays out of sample.
 
-Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 12,133 (annual 21,618 x seasonal share 0.561); observed / model = 1.971. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.
+Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 13,720 (annual 24,446 x seasonal share 0.561); observed / model = 1.743. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.

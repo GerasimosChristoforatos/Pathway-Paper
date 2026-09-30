@@ -68,18 +68,18 @@ def register():
 
 
 LIMITATIONS = [
+    'No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so '
+    'the implied replacement rates cannot be tested against a count.',
+    'Household projections are 2018-base; Stats NZ\'s 2023-base release (late 2026) is planned as v1.1.',
+    'Apartments rest on one independent case study (A_1 and A_2 are one design at two scales).',
+    'The regional analysis of the rebuilding wave (replacement half-life by territorial authority) is deferred.',
     'Net replacement persistence (S3 half-life) is not identifiable from the census record; S1 and S2 bound it.',
     'Excess-channel shares rest on one census interval (2018-2023); no standard error can be formed.',
-    'The 2018 census empty-dwelling count has no quality rating (DataInfo+, F1); the vacancy channel and the '
-    'vacancy knots rely on it.',
-    'Household-size shape is from the 2018-base projections (N4); 2023-base household projections are due '
-    'late 2026 (F3 switch).',
-    'Soil carbon: greenfield share and development-weighted soil-order shares are placeholders (item 8, E5/E6).',
+    'The 2018 census empty-dwelling count has no quality rating (DataInfo+); the vacancy terms rely on it.',
+    'The household-channel reversion rate is the persistence estimated on changes in household size, used for a '
+    'level deviation (an assumption).',
     'W from Little\'s law is a lower bound on the completion lag.',
-    'No independent national count of demolitions to test the implied rates.',
-    'Retirement-village floor area is reported but out of carbon scope (A4).',
-    'Case-study carbon factors: 16 LCAs; some typologies rest on one case (see ASSESSMENT).',
-    'Deferred: regional (territorial authority) evidence on the replacement half-life.',
+    'Retirement-village floor area is reported but out of carbon scope.',
 ]
 
 
@@ -176,7 +176,19 @@ def main():
     L += [f"| soil (land-use change) | {b['soil_kt']:,.0f} |",
           f"| **upfront (A1-A5 + soil)** | **{b['upfront_kt']:,.0f}** |",
           f"| **whole-life** | **{b['carbon_kt']:,.0f}** |",
-          '', 'Later stages (B, C) are booked in the construction year (static LCA convention).']
+          '', 'Later stages (B, C) are booked in the construction year (static LCA convention).',
+          '', '### Soil method', '',
+          'Soil organic carbon loss is land-use change: a new building footprint seals the soil under it, '
+          'while a rebuilt footprint sits on soil already sealed. Soil loss is therefore applied to all '
+          'non-replacement floor area and is zero on the replacement bands (demolition replacement, the '
+          'calibrated residual and the redevelopment channel). The factor is 58.77 kg CO₂e per m² of '
+          'footprint, the area-weighted average over the 10 soil orders of the land zoned for urbanisation '
+          'to about 2050 in Auckland, divided by each typology\'s floor space index (Christoforatos, '
+          'Pickering & Schipper 2026, Journal of Environmental Management 415, 130603, '
+          'https://doi.org/10.1016/j.jenvman.2026.130603). The Raw and Organic soil-order extremes are the '
+          'bounding sensitivity. Carbon factors for materials come from 16 New Zealand case studies '
+          '(Christoforatos & Pickering 2025, Smart and Sustainable Built Environment, '
+          'https://doi.org/10.1108/SASBE-06-2025-0304).']
 
     # ---- validation ----
     if v:
@@ -198,6 +210,30 @@ def main():
             L += [f"Decomposition of the 2026 gap ({r0['C26_estimate']}): gap {r0['gap']:+,.0f} dwellings = "
                   f"population {r0['population']:+,.0f} + pipeline from 2025 {r0['pipeline']:+,.0f} + "
                   f"2026 consents above requirement {r0['residual']:+,.0f} (S1 basis)."]
+
+    # ---- the 2026 gap as a finding ----
+    if gap and v and nj:
+        r0 = gap['rows'][0]
+        s2 = [r for r in gap['rows'] if r['C26_estimate'] == r0['C26_estimate'] and r['S2_adds'] != 0]
+        c = v['check_2026']
+        ch = nj['channels_2026_2050']
+        L += ['', '## Finding: 2026 building runs well above the model\'s requirement', '',
+              f"Consents for January-July 2026 ({c['observed_ytd']:,.0f}) are {c['ratio_observed_to_model']:.2f} "
+              f"times what the reference model, run without any 2026 data, implies for those months. In "
+              f"completions, observed-implied 2026 building is {r0['observed_implied']:,.0f} dwellings against a "
+              f"long-run-replacement requirement of {r0['model']:,.0f} (gap {r0['gap']:+,.0f}). Population does "
+              f"not explain it: growth over the year to June 2026 fell short of the projection, which lowers "
+              f"the requirement by {-r0['population']:,.0f}. The gap is building already in the pipeline from "
+              f"2025 ({r0['pipeline']:+,.0f}) plus 2026 consents above requirement ({r0['residual']:+,.0f})"
+              + (f"; the 2018-2023 replacement regime would cover only {s2[0]['S2_adds']:+,.0f} of it" if s2 else '')
+              + ". Over 2018-2023 most building above household formation went to redevelopment "
+              f"(net removals {gap['boom_2018_2023']['net_removals']:,.0f}) rather than vacancy "
+              f"({gap['boom_2018_2023']['vacancy_rate_rise_absorbed']:+,.0f}).",
+              '', f"The model takes 2026 completions (and the 2027 share already consented) from these observed "
+                  f"consents and allocates the excess ({nj['e26']:+,.0f} dwellings in 2026, {nj['e27']:+,.0f} in "
+                  f"2027) to redevelopment, vacancy and household formation. On the reference path the vacancy "
+                  f"and household channels revert, so the excess mainly shifts timing: "
+                  f"{sum(ch.values()):+,.0f} dwellings net over 2026-2050."]
 
     # ---- sensitivity ----
     sens = os.path.join(OUT, 'sensitivity_oat.csv')

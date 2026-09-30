@@ -8,13 +8,13 @@ New Zealand is projected to build 80.9 million m² of new residential floor area
 
 ## Headline, 2026-2050 (median demographics)
 
-| path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | upfront carbon (kt CO₂e) |
-|---|---|---|---|---|
-| S1 lower bound: long-run replacement | 74.42 | -8.1% | 28,448 | 20,835 |
-| S3, half-life 5 yr | 77.40 | -4.4% | 29,491 | 21,571 |
-| S3, half-life 10 yr (reference) | 80.94 | +0.0% | 30,729 | 22,448 |
-| S3, half-life 15 yr | 83.12 | +2.7% | 31,492 | 22,990 |
-| S2 upper bound: 2018-2023 replacement | 90.81 | +12.2% | 34,186 | 24,900 |
+| path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | of which soil | carbon excl. soil | upfront carbon (kt CO₂e) |
+|---|---|---|---|---|---|---|
+| S1 lower bound: long-run replacement | 74.42 | -8.1% | 28,448 | n/a | n/a | 20,835 |
+| S3, half-life 5 yr | 77.40 | -4.4% | 29,491 | n/a | n/a | 21,571 |
+| S3, half-life 10 yr (reference) | 80.94 | +0.0% | 30,729 | n/a | n/a | 22,448 |
+| S3, half-life 15 yr | 83.12 | +2.7% | 31,492 | n/a | n/a | 22,990 |
+| S2 upper bound: 2018-2023 replacement | 90.81 | +12.2% | 34,186 | n/a | n/a | 24,900 |
 
 Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% interval):
 
@@ -80,6 +80,10 @@ The near-term join adds the building observed above the model's requirement in 2
 
 Later stages (B, C) are booked in the construction year (static LCA convention).
 
+### Soil method
+
+Soil organic carbon loss is land-use change: a new building footprint seals the soil under it, while a rebuilt footprint sits on soil already sealed. Soil loss is therefore applied to all non-replacement floor area and is zero on the replacement bands (demolition replacement, the calibrated residual and the redevelopment channel). The factor is 58.77 kg CO₂e per m² of footprint, the area-weighted average over the 10 soil orders of the land zoned for urbanisation to about 2050 in Auckland, divided by each typology's floor space index (Christoforatos, Pickering & Schipper 2026, Journal of Environmental Management 415, 130603, https://doi.org/10.1016/j.jenvman.2026.130603). The Raw and Organic soil-order extremes are the bounding sensitivity. Carbon factors for materials come from 16 New Zealand case studies (Christoforatos & Pickering 2025, Smart and Sustainable Built Environment, https://doi.org/10.1108/SASBE-06-2025-0304).
+
 ## Validation
 
 Rolling-origin hindcast of dwellings built (actual households and vacancy fed in; the net-replacement term predicted):
@@ -92,6 +96,12 @@ Rolling-origin hindcast of dwellings built (actual households and vacancy fed in
 
 2026 check (model run without any observed-2026 input): observed consents Jan-Jul 23,916 vs model 13,720; ratio 1.74.
 Decomposition of the 2026 gap (Jan-Jul 2026 / seasonal share): gap +9,836 dwellings = population -5,763 + pipeline from 2025 +6,483 + 2026 consents above requirement +9,116 (S1 basis).
+
+## Finding: 2026 building runs well above the model's requirement
+
+Consents for January-July 2026 (23,916) are 1.74 times what the reference model, run without any 2026 data, implies for those months. In completions, observed-implied 2026 building is 37,596 dwellings against a long-run-replacement requirement of 27,760 (gap +9,836). Population does not explain it: growth over the year to June 2026 fell short of the projection, which lowers the requirement by 5,763. The gap is building already in the pipeline from 2025 (+6,483) plus 2026 consents above requirement (+9,116); the 2018-2023 replacement regime would cover only +1,674 of it. Over 2018-2023 most building above household formation went to redevelopment (net removals 34,805) rather than vacancy (+6,286).
+
+The model takes 2026 completions (and the 2027 share already consented) from these observed consents and allocates the excess (+14,542 dwellings in 2026, +7,639 in 2027) to redevelopment, vacancy and household formation. On the reference path the vacancy and household channels revert, so the excess mainly shifts timing: +2 dwellings net over 2026-2050.
 
 ## One-at-a-time sensitivities (floor area and carbon vs reference)
 
@@ -171,20 +181,20 @@ Decomposition of the 2026 gap (Jan-Jul 2026 / seasonal share): gap +9,836 dwelli
 | Mix trend window | 2012-2025 | DATA |
 | Dwelling size reference | 2023-2025 | DATA: consents |
 | RV share reference | 2016-2025 | DATA: consents |
-| Soil on replacement / greenfield share | False / 1.0 | PLACEHOLDER where marked (item 8) |
+| Soil loss | all non-replacement floor area; zero on replacement bands | LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders (Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603) |
 
 ## Open limitations and data needs
 
+- No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so the implied replacement rates cannot be tested against a count.
+- Household projections are 2018-base; Stats NZ's 2023-base release (late 2026) is planned as v1.1.
+- Apartments rest on one independent case study (A_1 and A_2 are one design at two scales).
+- The regional analysis of the rebuilding wave (replacement half-life by territorial authority) is deferred.
 - Net replacement persistence (S3 half-life) is not identifiable from the census record; S1 and S2 bound it.
 - Excess-channel shares rest on one census interval (2018-2023); no standard error can be formed.
-- The 2018 census empty-dwelling count has no quality rating (DataInfo+, F1); the vacancy channel and the vacancy knots rely on it.
-- Household-size shape is from the 2018-base projections (N4); 2023-base household projections are due late 2026 (F3 switch).
-- Soil carbon: greenfield share and development-weighted soil-order shares are placeholders (item 8, E5/E6).
+- The 2018 census empty-dwelling count has no quality rating (DataInfo+); the vacancy terms rely on it.
+- The household-channel reversion rate is the persistence estimated on changes in household size, used for a level deviation (an assumption).
 - W from Little's law is a lower bound on the completion lag.
-- No independent national count of demolitions to test the implied rates.
-- Retirement-village floor area is reported but out of carbon scope (A4).
-- Case-study carbon factors: 16 LCAs; some typologies rest on one case (see ASSESSMENT).
-- Deferred: regional (territorial authority) evidence on the replacement half-life.
+- Retirement-village floor area is reported but out of carbon scope.
 
 ## Key figures
 

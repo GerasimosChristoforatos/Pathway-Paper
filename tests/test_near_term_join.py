@@ -28,7 +28,7 @@ def test_replacement_path_scenarios():
 
 
 # --------------------------------------------------------- join_channels ----
-@pytest.mark.parametrize('mode', ['permanent', 'reverting'])
+@pytest.mark.parametrize('mode', ['permanent', 'reverting_linear'])
 @pytest.mark.parametrize('horizon', [3, 5, 10])
 def test_join_channels_conserve_and_draw_down(mode, horizon):
     excess = {2026: 1000.0, 2027: -250.0}                    # negative excess treated symmetrically
@@ -45,6 +45,18 @@ def test_join_channels_conserve_and_draw_down(mode, horizon):
     j26, c26 = engine.join_channels(YEARS, {2026: 1000.0}, SHARES, horizon, mode)
     nz = np.nonzero(c26['vacancy_drawdown'])[0]
     assert list(YEARS[nz]) == list(range(2027, 2027 + horizon))
+
+
+def test_join_channels_geometric_household_reversion():
+    rho = 0.68
+    join, ch = engine.join_channels(YEARS, {2026: 1000.0}, SHARES, 5, 'reverting', rho)
+    h = SHARES['households'] * 1000.0
+    rev = ch['household_reversion']
+    i = list(YEARS).index(2026)
+    remaining = h + np.cumsum(rev)[i:]                       # extra households left, 2026..2050
+    assert close(remaining, h * rho ** np.arange(len(remaining)))
+    with pytest.raises(ValueError):
+        engine.join_channels(YEARS, {2026: 1000.0}, SHARES, 5, 'reverting', None)
 
 
 # ------------------------------------------------------------ nowcast ----

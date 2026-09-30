@@ -131,13 +131,13 @@
   "R26": 23054.50572920665,
   "R27": 29800.521515871944,
   "e26": 14541.744520994122,
-  "e27": 5681.197543710854,
+  "e27": 7638.626588695177,
   "channels_2026_2050": {
     "redevelopment": 0.0,
-    "vacancy": 3667.7439319462496,
-    "households": 16555.198132758727,
-    "vacancy_drawdown": -3667.7439319462496,
-    "household_reversion": 0.0
+    "vacancy": 4022.7540229105452,
+    "households": 18157.61708677875,
+    "vacancy_drawdown": -4022.754022910545,
+    "household_reversion": -18155.88851819987
   },
   "population_nowcast": {
     "observed_growth": 35400.0,

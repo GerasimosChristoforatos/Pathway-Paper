@@ -514,11 +514,17 @@ POP_NOWCAST_CATCHUP_YEARS = None
 #   'all_redevelopment' | 'all_vacancy' | 'equal': sensitivities.
 EXCESS_CHANNELS = 'calibrated'
 VACANCY_DRAWDOWN_YEARS = 5                 # JUDGEMENT; 3 and 10 as sensitivities
-# HOUSEHOLD_CHANNEL: 'permanent' (ADOPTED; households formed persist while
-#   supply stays at requirement) | 'reverting' (drawn down like vacancy).
-#   JUDGEMENT: 2013-18 census household size rose, 2018-23 it fell faster than
-#   the Stats NZ shape, so the response is cyclical.
-HOUSEHOLD_CHANNEL = 'permanent'
+# HOUSEHOLD_CHANNEL (author's decision: reverting):
+#   'reverting' (ADOPTED): the extra households dissolve geometrically at the
+#       model's estimated persistence for household-size deviations (rho: lag-1
+#       autocorrelation of the residuals of the regression of the annual change
+#       in S, 1992-2023). NOTE: rho is estimated on CHANGES in S; using it as the
+#       rate at which a LEVEL deviation reverts is an assumption, not an estimate;
+#   'permanent': households formed persist (sensitivity);
+#   'reverting_linear': drawn down linearly like vacancy (sensitivity).
+#   2013-18 census household size rose, 2018-23 it fell faster than the Stats
+#   NZ shape: the response looks cyclical.
+HOUSEHOLD_CHANNEL = 'reverting'
 # CHANNEL_POP_DATE: the population paired with census households when testing
 #   household size over the calibration interval, from the quarterly
 #   mean-quarter ERP (FILE_POP_QUARTERLY; DPE059AA):
@@ -1106,7 +1112,7 @@ def main():
         raise ValueError("REPLACEMENT_SCENARIO S2/S3 are defined on the census dwelling-count rates.")
     if _join_mode not in ('nowcast', 'carried_deviation', 'none'):
         raise ValueError(f"Unknown NEAR_TERM_JOIN '{_join_mode}'.")
-    if HOUSEHOLD_CHANNEL not in ('permanent', 'reverting'):
+    if HOUSEHOLD_CHANNEL not in ('permanent', 'reverting', 'reverting_linear'):
         raise ValueError(f"Unknown HOUSEHOLD_CHANNEL '{HOUSEHOLD_CHANNEL}'.")
     if _nr_source not in ('dwelling_count', 'household_constant_empty_share', 'household_identity'):
         raise ValueError(f"Unknown NET_REPLACEMENT_SOURCE '{_nr_source}'.")
@@ -1702,6 +1708,7 @@ def main():
                                                  S_knots.set_index('Year')['S'], float(rate_path[0]),
                                                  *RECENT_INTERVAL)
         join_shares = channel_shares(EXCESS_CHANNELS, excess_evidence)
+        household_rho = hh_response['rho'] if hh_response else None
     engine_out = {}
     for col in ['5th', '50th', '95th']:
         pop_total = df_forecast[f'PopTotal_{col}'].values
@@ -1713,7 +1720,7 @@ def main():
         if _join_mode == 'nowcast':
             join, ji = engine.nowcast_join(E, float(hist_units_all.loc[2025]), float(nowcast['total']),
                                            _completion, lag_w, join_shares, VACANCY_DRAWDOWN_YEARS,
-                                           HOUSEHOLD_CHANNEL)
+                                           HOUSEHOLD_CHANNEL, household_rho)
             E = engine.forward(pop_total, hh_arr, pop_growth, consumption_override=override,
                                join=join, join_redev=ji['channels']['redevelopment'], **fwd_inputs)
             join_info[col] = dict(ji, join=join)

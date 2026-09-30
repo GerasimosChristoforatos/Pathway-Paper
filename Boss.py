@@ -448,8 +448,10 @@ NET_REPLACEMENT_WINDOW = (1991, 2023)    # census years; (2013, 2023) is a sensi
 #   'S2': the 2018-2023 census-interval rate persists;
 #   'S3': the 2018-2023 rate fades to the long-run rate with half-life
 #         S3_HALF_LIFE years (5, 10, 15 assessed).
-# Which one is presented as central is the author's decision (docs/CP2B_NOTE.md).
-REPLACEMENT_SCENARIO = 'S1'
+# Author's decision (after docs/CP2B_NOTE.md): S1 and S2 are the lower and
+# upper bounds; S3 with a 10-year half-life is the labelled reference path
+# (JUDGEMENT: the half-life is not identifiable), with 5 and 15 years reported.
+REPLACEMENT_SCENARIO = 'S3'
 S3_HALF_LIFE = 10.0
 RECENT_INTERVAL = (2018, 2023)
 

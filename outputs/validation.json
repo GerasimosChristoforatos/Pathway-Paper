@@ -232,8 +232,8 @@
   "model_method": "dwelling_count",
   "check_2026": {
     "data_end": "2026-07-01",
-    "model_built_all_2026": 27759.954930599146,
-    "model_consent_equivalent_2026": 21618.016099611956,
+    "model_built_all_2026": 29084.83151255023,
+    "model_consent_equivalent_2026": 24445.87373096065,
     "status": "observed",
     "months": [
       1,
@@ -246,8 +246,8 @@
     ],
     "observed_ytd": 23916.0,
     "seasonal_share": 0.5612383713207713,
-    "model_expected_ytd": 12132.860146932426,
-    "ratio_observed_to_model": 1.9711757747448138,
+    "model_expected_ytd": 13719.962358277582,
+    "ratio_observed_to_model": 1.7431534705028475,
     "last12_months": "2025-08-01..2026-07-01",
     "observed_last12": 40908.0,
     "model_settings": {

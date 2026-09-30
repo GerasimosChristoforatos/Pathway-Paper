@@ -1,0 +1,90 @@
+{
+  "completion_rate": 0.95,
+  "lag_w": 0.5068326945071742,
+  "consents_2025": 36619.0,
+  "model_requirement_2026": 27759.954930599146,
+  "carried_2025_deviation_in_2026": 3408.4210090982956,
+  "S2_rate_effect": 5209.071622443662,
+  "S2_deviation_effect": -3535.359097067011,
+  "model_requirement_2026_S2": 29433.667455975792,
+  "S_2026": 2.6778614674781296,
+  "v_2026": 0.05387454644033866,
+  "stock_2025": 2107605.6635231664,
+  "population_growth_ye_june_2026_actual": 36400.0,
+  "population_growth_source_text": "population grew by 36,400 (0.7 percent)",
+  "population_growth_ye_june_2026_projection": {
+    "5th": -2000.0,
+    "50th": 51000.0,
+    "95th": 103000.0
+  },
+  "rows": [
+    {
+      "C26_estimate": "Jan-Jul 2026 / seasonal share",
+      "C26": 42612.90963359846,
+      "scenario": "S1 (long-run replacement)",
+      "observed_implied": 37596.25025020078,
+      "model": 27759.954930599146,
+      "S2_adds": 0.0,
+      "population": -5762.567469305158,
+      "pipeline": 6482.725959024339,
+      "residual": 9116.136829882451,
+      "gap": 9836.295319601631,
+      "check": 0.0,
+      "residual_vacancy_pp": 0.43253522172850467,
+      "residual_S_fall": 0.01141429139140504
+    },
+    {
+      "C26_estimate": "Jan-Jul 2026 / seasonal share",
+      "C26": 42612.90963359846,
+      "scenario": "S2 (2018-23 regime)",
+      "observed_implied": 37596.25025020078,
+      "model": 27759.954930599146,
+      "S2_adds": 1673.7125253766462,
+      "population": -5762.567469305158,
+      "pipeline": 5634.433729957286,
+      "residual": 8290.716533572859,
+      "gap": 9836.295319601631,
+      "check": -1.8189894035458565e-12,
+      "residual_vacancy_pp": 0.3933713349258007,
+      "residual_S_fall": 0.010384792725633751
+    },
+    {
+      "C26_estimate": "latest 12 months",
+      "C26": 40908.0,
+      "scenario": "S1 (long-run replacement)",
+      "observed_implied": 36797.4848445958,
+      "model": 27759.954930599146,
+      "S2_adds": 0.0,
+      "population": -5762.567469305158,
+      "pipeline": 6482.725959024339,
+      "residual": 8317.371424277464,
+      "gap": 9037.529913996652,
+      "check": 7.275957614183426e-12,
+      "residual_vacancy_pp": 0.39463603501490785,
+      "residual_S_fall": 0.010418050239585419
+    },
+    {
+      "C26_estimate": "latest 12 months",
+      "C26": 40908.0,
+      "scenario": "S2 (2018-23 regime)",
+      "observed_implied": 36797.4848445958,
+      "model": 27759.954930599146,
+      "S2_adds": 1673.7125253766462,
+      "population": -5762.567469305158,
+      "pipeline": 5634.433729957286,
+      "residual": 7491.951127967871,
+      "gap": 9037.529913996652,
+      "check": 7.275957614183426e-12,
+      "residual_vacancy_pp": 0.35547214821220374,
+      "residual_S_fall": 0.009387781996462952
+    }
+  ],
+  "boom_2018_2023": {
+    "built": 192910.8,
+    "d_stock": 158106.0,
+    "d_under_construction": 11196.0,
+    "net_removals": 34804.79999999999,
+    "vacancy_rate_rise_absorbed": 6285.530273787939,
+    "households": 143802.0
+  }
+}

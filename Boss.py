@@ -293,6 +293,8 @@ RV_COLOR = '#b8a0d0'
 UNCONSENTED_COLOR = '#16a085'
 JOIN_LABEL = 'Near-term join: 2026-27 building above requirement, by channel (A1)'
 JOIN_COLOR = '#c0392b'
+WAVE_LABEL = 'Redevelopment wave: net replacement above the long-run rate (scenario)'
+WAVE_COLOR = '#d35400'
 
 TREND_WINDOW_START = 2012
 DAMPING_PHI = 0.8
@@ -1763,11 +1765,15 @@ def main():
                                   join=E['join'], join_redev=E['join_redev'], stock_join=E['stock_join'])
             vac_gfa = (E['allow'] + E['change']) * _D   # vacancy allowance (+ change), m2
             repl_gfa = E['demol'] * _D                 # demolition replacement, m2
-            unc_gfa = E['unc'] * _D                    # calibrated residual incl. 2025 deviation, m2
+            # net replacement above the long-run rate (scenario - long run): the
+            # 'redevelopment wave'; the rest is the long-run residual (incl. any
+            # carried 2025 deviation)
+            wave_gfa = (np.asarray(rate_path, float) - (demolition_rate + unconsented_rate)) * E['prev'] * _D
+            unc_gfa = E['unc'] * _D - wave_gfa         # long-run residual, m2
             rv_gfa = E['rv'] * _D                      # housed in RV units, m2 (<0)
             join_gfa = E['join'] * _D                  # near-term join (A1), m2
         else:
-            vac_gfa = repl_gfa = unc_gfa = rv_gfa = None      # 'other' not decomposed
+            vac_gfa = repl_gfa = unc_gfa = rv_gfa = wave_gfa = None      # 'other' not decomposed
         growth_check[col] = float(g_demand[1:].min())
 
         g_demand[0] = real_2025_total * anchor['growth']
@@ -1786,15 +1792,16 @@ def main():
         if vac_gfa is None:
             vac_gfa = other_cons.copy()
             repl_gfa, unc_gfa = np.zeros_like(other_cons), np.zeros_like(other_cons)
+            wave_gfa = np.zeros_like(other_cons)
             rv_gfa = np.zeros_like(other_cons)
             join_gfa = np.zeros_like(other_cons)
         # 2025 is the observed anchor: split its 'other' in the 2026 proportions
         # (the near-term join starts in 2026; it has no 2025 share).
         join_gfa = join_gfa.copy()
         join_gfa[0] = 0.0
-        _t1 = vac_gfa[1] + repl_gfa[1] + unc_gfa[1] + rv_gfa[1]
+        _t1 = vac_gfa[1] + repl_gfa[1] + unc_gfa[1] + wave_gfa[1] + rv_gfa[1]
         _t1 = _t1 if abs(_t1) > 1e-9 else 1.0
-        for _arr in (vac_gfa, repl_gfa, unc_gfa, rv_gfa):
+        for _arr in (vac_gfa, repl_gfa, unc_gfa, wave_gfa, rv_gfa):
             _arr[0] = other_cons[0] * _arr[1] / _t1
 
         total = g_demand + hs_pos + c_gross
@@ -1804,7 +1811,7 @@ def main():
 
         results[col] = dict(total=total, growth=g_demand, growth_gross=g_gross,
                             hs_pos=hs_pos, hs_avoided=hs_avoided, c_gross=c_gross,
-                            extra=extra_space, other=other_cons, vac=vac_gfa, repl=repl_gfa, unc=unc_gfa, rv=rv_gfa,
+                            extra=extra_space, other=other_cons, vac=vac_gfa, repl=repl_gfa, unc=unc_gfa, wave=wave_gfa, rv=rv_gfa,
                             join=join_gfa,
                             structural=structural, occ_per_dw=occ_per_dw_f, d_hh=d_hh_f)
 
@@ -1818,6 +1825,7 @@ def main():
         df_forecast[f'Ann_GFA_Cons_Vacancy_{col}'] = vac_gfa
         df_forecast[f'Ann_GFA_Cons_Replacement_{col}'] = repl_gfa
         df_forecast[f'Ann_GFA_Cons_Unconsented_{col}'] = unc_gfa
+        df_forecast[f'Ann_GFA_Cons_Wave_{col}'] = wave_gfa
         df_forecast[f'Ann_GFA_Cons_RV_{col}'] = rv_gfa
         df_forecast[f'Ann_GFA_Cons_Join_{col}'] = join_gfa
 
@@ -1888,6 +1896,7 @@ def main():
     evol_typ_vac = split_typ(df_forecast['Ann_GFA_Cons_Vacancy_50th'].values)
     evol_typ_repl = split_typ(df_forecast['Ann_GFA_Cons_Replacement_50th'].values)
     evol_typ_unc = split_typ(df_forecast['Ann_GFA_Cons_Unconsented_50th'].values)
+    evol_typ_wave = split_typ(df_forecast['Ann_GFA_Cons_Wave_50th'].values)
     evol_typ_rv = split_typ(df_forecast['Ann_GFA_Cons_RV_50th'].values)
     evol_typ_join = split_typ(df_forecast['Ann_GFA_Cons_Join_50th'].values)   # 0 in 2025
     evol_typ_total = pd.DataFrame(engine_out['50th']['gfa_t'].T, index=forecast_years,
@@ -1906,7 +1915,7 @@ def main():
         _o1 = float(df_forecast['Ann_GFA_Cons_Other_50th'].iloc[1]
                     - df_forecast['Ann_GFA_Cons_Join_50th'].iloc[1]) or 1.0
         for _ev, _c in ((evol_typ_vac, 'Vacancy'), (evol_typ_repl, 'Replacement'),
-                        (evol_typ_unc, 'Unconsented'), (evol_typ_rv, 'RV')):
+                        (evol_typ_unc, 'Unconsented'), (evol_typ_wave, 'Wave'), (evol_typ_rv, 'RV')):
             _ev.loc[2025, n] = (evol_typ_other.loc[2025, n]
                                 * float(df_forecast[f'Ann_GFA_Cons_{_c}_50th'].iloc[1]) / _o1)
 
@@ -1949,13 +1958,16 @@ def main():
     carbon_vac_typ = band_carbon(evol_typ_vac, f_new)
     carbon_repl_typ = band_carbon(evol_typ_repl, f_repl)
     carbon_unc_typ = band_carbon(evol_typ_unc, f_repl)
+    carbon_wave_typ = band_carbon(evol_typ_wave, f_repl)     # replacement: no soil
     carbon_rv_typ = band_carbon(evol_typ_rv, f_rv)   # in-scope carbon NOT incurred; RV carbon out of scope
     carbon_join_typ = band_carbon(evol_typ_join, f_join)
-    carbon_other_typ = carbon_vac_typ + carbon_repl_typ + carbon_unc_typ + carbon_rv_typ + carbon_join_typ
+    carbon_other_typ = (carbon_vac_typ + carbon_repl_typ + carbon_unc_typ + carbon_wave_typ + carbon_rv_typ
+                        + carbon_join_typ)
     carbon_cons_typ = carbon_extra_typ + carbon_other_typ
     soil_fracs = {'Growth (net of consolidation)': f_new, 'House-splitting': f_new,
                   'Consumption: extra space': f_new, 'Consumption: vacancy': f_new,
                   'Consumption: demolition': f_repl, 'Calibrated stock residual': f_repl,
+                  'Redevelopment wave': f_repl,
                   'Housed in RV units (out of scope)': f_rv, 'Near-term join (2026-27, A1)': f_join}
     carbon_total_typ = pd.DataFrame(engine_out['50th']['carbon_t'].T, index=forecast_years,
                                     columns=typ_names)
@@ -2251,7 +2263,8 @@ def main():
              ('Consumption: extra space', evol_typ_extra, carbon_extra_typ),
              ('Consumption: vacancy allowance', evol_typ_vac, carbon_vac_typ),
              ('Consumption: demolition replacement', evol_typ_repl, carbon_repl_typ),
-             ('Calibrated stock residual', evol_typ_unc, carbon_unc_typ),
+             ('Calibrated stock residual (long run)', evol_typ_unc, carbon_unc_typ),
+             ('Redevelopment wave (scenario - long run)', evol_typ_wave, carbon_wave_typ),
              ('Housed in RV units (out of scope)', evol_typ_rv, carbon_rv_typ),
              ('Near-term join (2026-27, A1)', evol_typ_join, carbon_join_typ)]
     rows = [(lab, g.iloc[1:].sum().sum() / 1e6, c.iloc[1:].sum().sum() / 1e6) for lab, g, c in bands]
@@ -2265,8 +2278,8 @@ def main():
     if CONSUMPTION_BASIS == 'stock_vacancy':
         # Demolition and the residual trade one-for-one in calibration (only
         # their sum is identified by the stock identity), so report the sum too.
-        _net_g = rows[4][1] + rows[5][1]
-        _net_c = rows[4][2] + rows[5][2]
+        _net_g = rows[4][1] + rows[5][1] + rows[6][1]
+        _net_c = rows[4][2] + rows[5][2] + rows[6][2]
         print(f"   {'(demolition + residual: identified net)':<34}{_net_g:>12.2f}"
               f"{100 * _net_g / tg:>7.1f}%{_net_c:>12,.0f}")
     if CONSUMPTION_BASIS == 'stock_vacancy':
@@ -2328,6 +2341,7 @@ def main():
     y_cv = df_forecast['Ann_GFA_Cons_Vacancy_50th'].iloc[1:].values / 1e6
     y_cr = df_forecast['Ann_GFA_Cons_Replacement_50th'].iloc[1:].values / 1e6
     y_cu = df_forecast['Ann_GFA_Cons_Unconsented_50th'].iloc[1:].values / 1e6
+    y_w = df_forecast['Ann_GFA_Cons_Wave_50th'].iloc[1:].values / 1e6
     y_rv = df_forecast['Ann_GFA_Cons_RV_50th'].iloc[1:].values / 1e6
     y_j = df_forecast['Ann_GFA_Cons_Join_50th'].iloc[1:].values / 1e6
     y_h = df_forecast['Ann_GFA_HouseSplit_Pos_50th'].iloc[1:].values / 1e6
@@ -2343,8 +2357,11 @@ def main():
     if np.any(y_j != 0):
         bx2.fill_between(plot_years, y_cu + y_rv, y_cu + y_rv + y_j, facecolor=JOIN_COLOR, alpha=0.5,
                          edgecolor='none', label=JOIN_LABEL)
+    if np.any(y_w != 0):
+        bx2.fill_between(plot_years, y_cu + y_rv + y_j, y_cu + y_rv + y_j + y_w, facecolor=WAVE_COLOR,
+                         alpha=0.6, edgecolor='none', label=WAVE_LABEL)
     bx2.axhline(0, color='black', lw=0.7)
-    bx2.plot(plot_years, y_g + y_ce + y_cv + y_cr + y_h + y_cu + y_rv + y_j, color='black', linestyle='--',
+    bx2.plot(plot_years, y_g + y_ce + y_cv + y_cr + y_h + y_cu + y_rv + y_j + y_w, color='black', linestyle='--',
              linewidth=1.5, label='Built floor area (net)')
     bx2.set_title('Annual GFA by Demand Type (2026-2050)')
     bx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); bx2.grid(True, alpha=0.3); bx2.set_xlim(2026, 2050)
@@ -2363,6 +2380,7 @@ def main():
     yc_cv = carbon_vac_typ.sum(axis=1).iloc[1:].values / 1e6
     yc_cr = carbon_repl_typ.sum(axis=1).iloc[1:].values / 1e6
     yc_cu = carbon_unc_typ.sum(axis=1).iloc[1:].values / 1e6
+    yc_w = (carbon_wave_typ + carbon_join_typ).sum(axis=1).iloc[1:].values / 1e6   # wave + near-term join
     yc_rv = carbon_rv_typ.sum(axis=1).iloc[1:].values / 1e6
     yc_h = carbon_hs_pos_typ.sum(axis=1).iloc[1:].values / 1e6
     yc_a = carbon_avoided_typ.sum(axis=1).iloc[1:].values / 1e6
@@ -2374,8 +2392,10 @@ def main():
                      hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
     cx2.fill_between(plot_years, yc_cu, yc_cu + yc_rv, facecolor=RV_COLOR, alpha=0.5,
                      edgecolor='none', label=RV_LABEL)
+    cx2.fill_between(plot_years, yc_cu + yc_rv, yc_cu + yc_rv + yc_w, facecolor=WAVE_COLOR, alpha=0.6,
+                     edgecolor='none', label='Redevelopment wave + near-term join')
     cx2.axhline(0, color='black', lw=0.7)
-    cx2.plot(plot_years, yc_g + yc_ce + yc_cv + yc_cr + yc_h + yc_cu + yc_rv, color='black', linestyle='--', linewidth=1.5,
+    cx2.plot(plot_years, yc_g + yc_ce + yc_cv + yc_cr + yc_h + yc_cu + yc_rv + yc_w, color='black', linestyle='--', linewidth=1.5,
              label='Actual Built Carbon')
     cx2.set_title('Annual Embodied Carbon by Demand Type (2026-2050)')
     cx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
@@ -2388,6 +2408,7 @@ def main():
     cum_cv = (carbon_vac_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
     cum_cr = (carbon_repl_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
     cum_cu = (carbon_unc_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
+    cum_w = ((carbon_wave_typ + carbon_join_typ).sum(axis=1).iloc[1:] / 1e6).cumsum().values
     cum_rv = (carbon_rv_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
     cum_h = (carbon_hs_pos_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
     cum_a = (carbon_avoided_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
@@ -2407,8 +2428,10 @@ def main():
                      hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
     dx2.fill_between(plot_years, cum_cu, cum_cu + cum_rv, facecolor=RV_COLOR, alpha=0.5,
                      edgecolor='none', label=RV_LABEL)
+    dx2.fill_between(plot_years, cum_cu + cum_rv, cum_cu + cum_rv + cum_w, facecolor=WAVE_COLOR, alpha=0.6,
+                     edgecolor='none', label='Redevelopment wave + near-term join')
     dx2.axhline(0, color='black', lw=0.7)
-    dx2.plot(plot_years, cum_g + cum_ce + cum_cv + cum_cr + cum_h + cum_cu + cum_rv, color='black', linestyle='--',
+    dx2.plot(plot_years, cum_g + cum_ce + cum_cv + cum_cr + cum_h + cum_cu + cum_rv + cum_w, color='black', linestyle='--',
              linewidth=1.5, label='Actual Built Carbon')
     dx2.set_title('Cumulative Embodied Carbon by Demand Type (2026-2050)')
     dx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
@@ -2493,6 +2516,7 @@ def main():
                     'Consumption: vacancy': evol_typ_vac,
                     'Consumption: demolition': evol_typ_repl,
                     'Calibrated stock residual': evol_typ_unc,
+                    'Redevelopment wave': evol_typ_wave,
                     'Housed in RV units (out of scope)': evol_typ_rv,
                     'Near-term join (2026-27, A1)': evol_typ_join}
     dem_mat = pd.DataFrame(
@@ -2588,7 +2612,8 @@ def export_results(B, path):
              ('Extra space per dwelling', 'evol_typ_extra', 'carbon_extra_typ'),
              ('Vacancy allowance', 'evol_typ_vac', 'carbon_vac_typ'),
              ('Demolition replacement', 'evol_typ_repl', 'carbon_repl_typ'),
-             ('Calibrated stock residual', 'evol_typ_unc', 'carbon_unc_typ'),
+             ('Calibrated stock residual (long run)', 'evol_typ_unc', 'carbon_unc_typ'),
+             ('Redevelopment wave (scenario - long run)', 'evol_typ_wave', 'carbon_wave_typ'),
              ('Near-term join (2026-27 excess)', 'evol_typ_join', 'carbon_join_typ'),
              ('Housed in RV units (out of scope)', 'evol_typ_rv', 'carbon_rv_typ')]
     typ = list(B['typ_names'])

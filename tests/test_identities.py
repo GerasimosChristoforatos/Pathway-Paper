@@ -89,7 +89,7 @@ def test_forward_bands_sum_to_total(B, pct):
     + RV (negative) == total, every year including the 2025 anchor."""
     R = B['results'][pct]
     parts = (R['growth'] + R['hs_pos'] + R['extra'] + R['vac'] + R['repl'] + R['unc'] + R['rv']
-             + R['join'])
+             + R['join'] + R['wave'])
     assert close(parts, R['total'])
 
 

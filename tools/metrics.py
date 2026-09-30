@@ -25,6 +25,9 @@ FIELDS = [
     ('boss.step_2025_2026_pct', '2025 -> 2026 step in built floor area (%)', '{:+.1f}'),
     ('boss.S_2050', 'Household size 2050, central run', '{:.3f}'),
     ('boss.RV_floor_area_Mm2_out_of_scope', 'Retirement-village floor area 2026-2050, out of scope (Mm2)', '{:.2f}'),
+    ('boss.join_excess_2026', 'Near-term join: 2026 completions above requirement (dwellings)', '{:+,.0f}'),
+    ('boss.join_excess_2027', 'Near-term join: 2027 lagged-share excess (dwellings)', '{:+,.0f}'),
+    ('boss.join_net_2026_2050', 'Near-term join: net dwellings added 2026-2050', '{:+,.0f}'),
     ('mc.GFA_p5', 'MC floor area p5 (Mm2)', '{:.2f}'),
     ('mc.GFA_p50', 'MC floor area p50 (Mm2)', '{:.2f}'),
     ('mc.GFA_p95', 'MC floor area p95 (Mm2)', '{:.2f}'),
@@ -57,6 +60,9 @@ def boss_metrics():
         'S_2050': float(S[-1]),
         'RV_floor_area_Mm2_out_of_scope': (float(B['rv_floor_area']['projected'][1:].sum() / 1e6)
                                            if B.get('rv_floor_area') else None),
+        'join_excess_2026': float(B['join_info']['50th']['e26']) if B['join_info'] else None,
+        'join_excess_2027': float(B['join_info']['50th']['e27']) if B['join_info'] else None,
+        'join_net_2026_2050': float(B['join_info']['50th']['join'][1:].sum()) if B['join_info'] else None,
     }
 
 

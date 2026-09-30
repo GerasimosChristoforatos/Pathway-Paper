@@ -249,6 +249,7 @@
     "model_expected_ytd": 12132.860146932426,
     "ratio_observed_to_model": 1.9711757747448138,
     "last12_months": "2025-08-01..2026-07-01",
-    "observed_last12": 40908.0
+    "observed_last12": 40908.0,
+    "model_settings": "as run (no 2026 data used)"
   }
 }

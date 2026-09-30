@@ -4,6 +4,9 @@
     "RV_floor_area_Mm2_out_of_scope": 4.287946177358266,
     "S_2050": 2.6517520693175007,
     "carbon_kt": 29048.927262863308,
+    "join_excess_2026": null,
+    "join_excess_2027": null,
+    "join_net_2026_2050": null,
     "step_2025_2026_pct": -19.51354502737508,
     "upfront_kt": 21376.61982648045
   },

@@ -37,6 +37,7 @@ Two checks, both DESCRIPTIVE. Nothing here is used to set or tune a parameter.
 Writes outputs/validation.md and outputs/validation.json.
 """
 import contextlib
+import importlib
 import io
 import json
 import os
@@ -53,10 +54,25 @@ ORIGINS = (2006, 2013, 2018)
 SEASONAL_YEARS = (2010, 2025)
 
 
-def run_boss():
-    Boss.SHOW_PLOTS = False
-    with contextlib.redirect_stdout(io.StringIO()):
-        return Boss.main()
+# Settings that remove every use of observed 2026 data (A1: consents nowcast,
+# 2026 population growth), so that the 2026 check stays out of sample. The
+# 2025 deviation is then carried as in the pre-A1 model.
+NO_2026_DATA = dict(NEAR_TERM_JOIN='carried_deviation', NOWCAST_POPULATION=False)
+
+
+def run_boss(**settings):
+    """One silent Boss.main() with the given settings; module defaults are
+    restored afterwards."""
+    M = importlib.reload(Boss)
+    M.SHOW_PLOTS = False
+    for k, v in settings.items():
+        assert hasattr(M, k), k
+        setattr(M, k, v)
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            return M.main()
+    finally:
+        importlib.reload(Boss)
 
 
 def census_intervals(B, last):
@@ -166,9 +182,7 @@ def dhe_crosscheck(B):
 
 
 def seasonal_shares(consents):
-    m = consents.loc[f'{SEASONAL_YEARS[0]}-01-01':f'{SEASONAL_YEARS[1]}-12-31']
-    by = m.groupby([m.index.year, m.index.month]).sum().unstack()
-    return (by.div(by.sum(axis=1), axis=0)).mean()          # mean share of the year, by month
+    return engine.seasonal_shares(consents, SEASONAL_YEARS)   # mean share of the year, by month
 
 
 def check_2026(B, consents=None):
@@ -236,7 +250,9 @@ def write(rows, chk, stock_rows=None, dhe=None):
                   f"with this model's completion rate and lag this implies net replacement of "
                   f"{100 * dhe['dhe_post2023_rate']:+.3f}%/yr over {dhe['dhe_post2023_period']}. This is Stats NZ's "
                   f"assumption, not an observation."]
-    lines += ['', '### 2026 out-of-sample check against observed consents', '']
+    lines += ['', '### 2026 out-of-sample check against observed consents', '',
+              'Run on the model WITHOUT any observed 2026 input (settings: '
+              f"{chk.get('model_settings')}), so the check stays out of sample.", '']
     if chk['status'] == 'pending':
         lines.append(f"PENDING: the consent file ends {chk['data_end']}. Model 2026: "
                      f"{chk['model_built_all_2026']:,.0f} dwellings built (all categories) = "
@@ -258,7 +274,11 @@ def write(rows, chk, stock_rows=None, dhe=None):
 
 def main():
     B = run_boss()
-    write(hindcast(B), check_2026(B), hindcast_stock(B), dhe_crosscheck(B))
+    uses_2026 = B['_join_mode'] == 'nowcast' or B['pop_nowcast'] is not None
+    B0 = run_boss(**NO_2026_DATA) if uses_2026 else B
+    chk = check_2026(B0)
+    chk['model_settings'] = NO_2026_DATA if uses_2026 else 'as run (no 2026 data used)'
+    write(hindcast(B), chk, hindcast_stock(B), dhe_crosscheck(B))
 
 
 if __name__ == '__main__':

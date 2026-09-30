@@ -88,7 +88,8 @@ def test_forward_bands_sum_to_total(B, pct):
     """growth + house-splitting + extra space + vacancy + replacement + residual
     + RV (negative) == total, every year including the 2025 anchor."""
     R = B['results'][pct]
-    parts = R['growth'] + R['hs_pos'] + R['extra'] + R['vac'] + R['repl'] + R['unc'] + R['rv']
+    parts = (R['growth'] + R['hs_pos'] + R['extra'] + R['vac'] + R['repl'] + R['unc'] + R['rv']
+             + R['join'])
     assert close(parts, R['total'])
 
 
@@ -102,8 +103,10 @@ def test_forward_structural_identity(B, pct):
 @pytest.mark.parametrize('pct', PCTS)
 def test_forward_stock_identity(B, pct):
     """Change in dwelling stock == all dwellings built (in scope + RV) - net
-    replacement (demolition + residual), 2026-2050. Holds exactly while
-    household formation is not floored."""
+    replacement (demolition + residual + the redevelopment channel of the
+    near-term join), 2026-2050, where the stock includes the dwellings the join
+    adds (vacancy and household channels). Holds exactly while household
+    formation is not floored."""
     R, S = B['results'][pct], B['stock_fwd'][pct]
     D = B['future_dwelling_size'].values
     d_raw = np.insert(np.diff(B['households_forecast'][pct]), 0, 0)
@@ -112,8 +115,8 @@ def test_forward_stock_identity(B, pct):
     in_scope = R['total'] / D
     rv_units = -S['rv']
     built_all = in_scope + rv_units
-    net_repl = S['demol'] + S['uncons']
-    d_stock = np.diff(S['stock'])
+    net_repl = S['demol'] + S['uncons'] + S['join_redev']
+    d_stock = np.diff(S['stock'] + S['stock_join'])
     assert close(d_stock, (built_all - net_repl)[1:])
 
 

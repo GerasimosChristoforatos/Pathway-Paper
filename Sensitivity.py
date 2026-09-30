@@ -36,7 +36,8 @@ N_PATHS = 6              # cases drawn in the annual-path figure (largest effect
 
 GROUP_COLORS = {'Population': '#2E6DB4', 'Household size': '#E67E22', 'Households': '#D35400',
                 'Stock': '#34495E', 'Typology mix': '#8E44AD', 'Dwelling size': '#16A085',
-                'Carbon factors': '#C0392B'}
+                'Carbon factors': '#C0392B', 'Near-term join (A1)': '#7F8C8D',
+                'Replacement scenario': '#1ABC9C'}
 
 # (group, label, {Boss setting: value})
 CASES = [
@@ -55,7 +56,27 @@ CASES = [
     ('Stock', 'Net replacement: household identity, constant empty share',
      dict(NET_REPLACEMENT_SOURCE='household_constant_empty_share')),
     ('Stock', 'Net replacement: dwelling counts 2013-2023 only', dict(NET_REPLACEMENT_WINDOW=(2013, 2023))),
-    ('Stock', 'Net replacement: dwelling counts 2018-2023 (regime S2)', dict(NET_REPLACEMENT_WINDOW=(2018, 2023))),
+    ('Replacement scenario', 'S2: 2018-2023 rate persists', dict(REPLACEMENT_SCENARIO='S2')),
+    ('Replacement scenario', 'S3: 2018-23 rate fades, half-life 5 yr',
+     dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
+    ('Replacement scenario', 'S3: 2018-23 rate fades, half-life 10 yr',
+     dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0)),
+    ('Replacement scenario', 'S3: 2018-23 rate fades, half-life 15 yr',
+     dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=15.0)),
+    ('Population', 'Projected 2026 growth (no population nowcast)', dict(NOWCAST_POPULATION=False)),
+    ('Near-term join (A1)', 'Carried 2025 deviation (original)', dict(NEAR_TERM_JOIN='carried_deviation')),
+    ('Near-term join (A1)', 'No near-term join', dict(NEAR_TERM_JOIN='none')),
+    ('Near-term join (A1)', 'Excess: all redevelopment', dict(EXCESS_CHANNELS='all_redevelopment')),
+    ('Near-term join (A1)', 'Excess: all vacancy', dict(EXCESS_CHANNELS='all_vacancy')),
+    ('Near-term join (A1)', 'Excess: equal shares', dict(EXCESS_CHANNELS='equal')),
+    ('Near-term join (A1)', 'Vacancy drawn down over 3 yr', dict(VACANCY_DRAWDOWN_YEARS=3)),
+    ('Near-term join (A1)', 'Vacancy drawn down over 10 yr', dict(VACANCY_DRAWDOWN_YEARS=10)),
+    ('Near-term join (A1)', 'Household channel reverts (over the drawdown)',
+     dict(HOUSEHOLD_CHANNEL='reverting')),
+    ('Near-term join (A1)', 'Channel shares: population at mid-year, not census night',
+     dict(CHANNEL_POP_DATE='mid_year')),
+    ('Near-term join (A1)', 'Nowcast Aug-Dec 2026: same-period ratio', dict(NOWCAST_METHOD='same_period_ratio')),
+    ('Near-term join (A1)', 'Nowcast 2026: latest 12 months', dict(NOWCAST_METHOD='last_12_months')),
     ('Typology mix', 'Damping phi = 0.5', dict(DAMPING_PHI=0.5)),
     ('Typology mix', 'Damping phi = 0.95', dict(DAMPING_PHI=0.95)),
     ('Typology mix', 'Trend window from 2016', dict(TREND_WINDOW_START=2016)),

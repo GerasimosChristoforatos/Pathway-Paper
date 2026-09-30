@@ -10,7 +10,9 @@ retirement villages), the model's own unit.
       C25 = all dwellings consented in 2025 (observed); C26 = 2026 consents,
       estimated two ways: Jan-Jul 2026 / the 2010-2025 seasonal share of those
       months, and the latest 12 months. c, W = the model's completion rate and lag.
-  Model             M = the central run's 2026 requirement (S1, long-run replacement).
+  Model             M = the 2026 requirement of the model WITHOUT observed 2026
+                    inputs (validation.NO_2026_DATA: no consents nowcast, projected
+                    population; the pre-A1 model), S1 long-run replacement.
 
 Sequential decomposition of O - M (the order is a choice and is stated):
   (ii)  S2: what the 2018-23 replacement regime would add to M (full re-run,
@@ -50,12 +52,9 @@ POP_RELEASE = os.path.join(Boss.DATA_DIR, 'raw', 'national_population_estimates_
 
 
 def run(**settings):
-    M = importlib.reload(Boss)
-    M.SHOW_PLOTS = False
-    for k, v in settings.items():
-        setattr(M, k, v)
-    with contextlib.redirect_stdout(io.StringIO()):
-        return M.main()
+    """The model WITHOUT observed 2026 inputs (validation.NO_2026_DATA), plus
+    any further settings; module defaults are restored afterwards."""
+    return validation.run_boss(**{**validation.NO_2026_DATA, **settings})
 
 
 def requirement_2026(B):
@@ -104,9 +103,8 @@ def main():
     C26 = {'Jan-Jul 2026 / seasonal share': chk['observed_ytd'] / chk['seasonal_share'],
            'latest 12 months': chk['observed_last12']}
     M = requirement_2026(B)
-    B2 = run(NET_REPLACEMENT_WINDOW=(2018, 2023))
+    B2 = run(REPLACEMENT_SCENARIO='S2')
     M_S2 = requirement_2026(B2)
-    run()                                             # restore module defaults
     d_S2 = M_S2 - M
     E1, E2 = B['engine_out']['50th'], B2['engine_out']['50th']
     rep = lambda E: float(E['demol'][1] + E['unc'][1] - E['dev'][1])     # replacement at the calibrated rate

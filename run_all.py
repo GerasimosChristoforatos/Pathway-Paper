@@ -7,7 +7,7 @@
 
 Order: Building_factors -> Boss -> Diagnostics -> Sensitivity -> MonteCarlo
 -> tests -> validation -> gap_2026 (A1 evidence) -> near_term_join (A1 result)
--> scenarios (item 2: S1/S2/S3) -> metrics. Each script runs in its own process, with
+-> scenarios (item 2: S1/S2/S3) -> metrics -> baseline_draft (outputs/BASELINE_DRAFT.md). Each script runs in its own process, with
 the non-interactive matplotlib backend and PATHWAY_SAVE_FIGURES=1, so
 every figure is written to outputs/figures/ and nothing is shown. Console
 output of each step goes to outputs/logs/<step>.log. The run stops at the
@@ -59,6 +59,7 @@ def main():
     for key, label, f in metrics.FIELDS:
         v = metrics.get(m, key)
         print(f'  {label:<55} {f.format(v) if v is not None else "n/a"}')
+    step('baseline_draft', [py, os.path.join('tools', 'baseline_draft.py')])
 
 
 if __name__ == '__main__':

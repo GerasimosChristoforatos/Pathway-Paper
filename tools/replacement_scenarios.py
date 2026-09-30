@@ -40,6 +40,7 @@ def one(settings):
     out = dict(
         GFA_Mm2=float(B['results']['50th']['total'][f].sum() / 1e6),
         carbon_kt=float(B['carbon_total_typ'].iloc[1:].sum().sum() / 1e6),
+        upfront_kt=float(B['_upfront'] + B['_soil'] / 1e6),
         rate_pct={int(y): float(100 * rate[i]) for i, y in enumerate(fy) if y in (2026, 2030, 2040, 2050)},
         net_removals_per_yr_mean=float(net_removals[f].mean()),
         net_removals={int(y): float(net_removals[i]) for i, y in enumerate(fy) if y in (2026, 2050)},

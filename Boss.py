@@ -2472,9 +2472,52 @@ def main():
     return state
 
 
+def export_results(B, path):
+    """Write the central run's report tables to JSON (read by tools/baseline_draft.py;
+    every number in the draft report comes from here or another generated file)."""
+    import json
+    f = slice(1, None)
+    tot = lambda df: float(df.iloc[f].sum().sum())
+    bands = [('Growth (net of consolidation)', 'evol_typ_growth', 'carbon_growth_typ'),
+             ('House-splitting', 'evol_typ_hs_pos', 'carbon_hs_pos_typ'),
+             ('Extra space per dwelling', 'evol_typ_extra', 'carbon_extra_typ'),
+             ('Vacancy allowance', 'evol_typ_vac', 'carbon_vac_typ'),
+             ('Demolition replacement', 'evol_typ_repl', 'carbon_repl_typ'),
+             ('Calibrated stock residual', 'evol_typ_unc', 'carbon_unc_typ'),
+             ('Near-term join (2026-27 excess)', 'evol_typ_join', 'carbon_join_typ'),
+             ('Housed in RV units (out of scope)', 'evol_typ_rv', 'carbon_rv_typ')]
+    typ = list(B['typ_names'])
+    et, ct = B['evol_typ_total'], B['carbon_total_typ']
+    shares = B['evolving_gfa_shares']
+    stages = {s: float(sum(et[t].values[f].sum() * B['stage_int'].loc[s, t] for t in typ) / 1e6)
+              for s in B['stage_int'].index}
+    R = B['results']
+    out = dict(
+        settings=dict(scenario=B['_scenario'], s3_half_life=S3_HALF_LIFE, near_term_join=B['_join_mode'],
+                      nowcast_method=NOWCAST_METHOD, excess_channels=EXCESS_CHANNELS,
+                      household_channel=HOUSEHOLD_CHANNEL, vacancy_drawdown_years=VACANCY_DRAWDOWN_YEARS,
+                      completion_rate=COMPLETION_RATE, lag_w=float(B['lag_w']), phi=DAMPING_PHI),
+        gfa_Mm2=float(R['50th']['total'][f].sum() / 1e6), carbon_kt=float(B['tot_carbon_median']),
+        upfront_kt=float(B['_upfront'] + B['_soil'] / 1e6), soil_kt=float(B['_soil'] / 1e6),
+        stages_kt=stages,
+        pop_band_gfa_Mm2={p: float(R[p]['total'][f].sum() / 1e6) for p in ('5th', '50th', '95th')},
+        demand_bands=[dict(band=lab, gfa_Mm2=tot(B[g]) / 1e6, carbon_kt=tot(B[c]) / 1e6)
+                      for lab, g, c in bands],
+        typology={t: dict(gfa_Mm2=float(et[t].values[f].sum() / 1e6), carbon_kt=float(ct[t].values[f].sum() / 1e6),
+                          share_2025=float(shares[t].iloc[0]), share_2050=float(shares[t].iloc[-1]))
+                  for t in typ},
+        material_kt={m: float(v / 1e6) for m, v in B['flow_annual'].sum().items()},
+        annual=dict(years=[int(y) for y in B['forecast_years']],
+                    gfa_Mm2=[float(v / 1e6) for v in R['50th']['total']],
+                    carbon_kt=[float(v / 1e6) for v in ct.sum(axis=1).values]),
+        S_2050=float(B['df_forecast']['PopTotal_50th'].values[-1] / B['households_forecast']['50th'][-1]))
+    with open(path, 'w') as fh:
+        json.dump(out, fh, indent=2)
+
+
 if __name__ == "__main__":
     SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
-    main()
+    export_results(main(), os.path.join(OUT_DIR, 'boss_results.json'))
 
 # ============================================================
 # CHANGELOG v2 -> v3

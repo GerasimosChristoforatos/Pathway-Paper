@@ -4,7 +4,7 @@ Every number below is read from the run outputs. Reference path: net replacement
 
 ## Summary
 
-New Zealand is projected to build 80.9 million m² of new residential floor area in 2026-2050 on the reference path, embodying 30.7 Mt CO₂e over the life cycle, of which 22.4 Mt is upfront (materials A1-A5 plus soil). How fast existing dwellings are replaced is the largest structural uncertainty: holding the long-run rate gives 74.4 million m², holding the 2018-2023 rate gives 90.8 million m². Within the reference path, joint uncertainty in the inputs gives a 90% interval of 59.5-102.9 million m² (median 79.7, mean 80.3). Population uncertainty alone (Stats NZ 5th-95th percentiles) spans 57.3-105.2 million m².
+New Zealand is projected to build 80.9 million m² of new residential floor area in 2026-2050 on the reference path, embodying 30.7 Mt CO₂e over the life cycle, of which 22.4 Mt is upfront (materials A1-A5 plus soil). How fast existing dwellings are replaced is the largest structural uncertainty: holding the long-run rate gives 74.4 million m², holding the 2018-2023 rate gives 90.8 million m². Within the reference path, joint uncertainty in the inputs gives a 90% interval of 59.5-102.9 million m² (median 79.7, mean 80.3). Population uncertainty alone (Stats NZ 5th-95th percentiles) spans 57.3-105.2 million m². The joint interval is narrower than the population-only range because each population draw also moves household size along the matching Stats NZ Low/High variant: low-population variants come with smaller households (an older age structure), so the number of households varies less than population, whereas the population-only range holds household size on the Medium shape. Upfront carbon (22.4 Mt) is the quantity comparable with a 2026-2050 budget; the later life-cycle stages are booked in the construction year but emitted mostly after 2050.
 
 ## Headline, 2026-2050 (median demographics)
 
@@ -95,13 +95,15 @@ Rolling-origin hindcast of dwellings built (actual households and vacancy fed in
 | 2018 | 2019-2023 | -13.5% | recent +1.8% |
 
 2026 check (model run without any observed-2026 input): observed consents Jan-Jul 23,916 vs model 13,720; ratio 1.74.
-Decomposition of the 2026 gap (Jan-Jul 2026 / seasonal share): gap +9,836 dwellings = population -5,763 + pipeline from 2025 +6,483 + 2026 consents above requirement +9,116 (S1 basis).
+Decomposition of the 2026 gap on the reference path (Jan-Jul 2026 / seasonal share): +8,511 dwellings = population -5,763 + pipeline from 2025 +5,811 + 2026 consents above requirement +8,463.
 
 ## Finding: 2026 building runs well above the model's requirement
 
-Consents for January-July 2026 (23,916) are 1.74 times what the reference model, run without any 2026 data, implies for those months. In completions, observed-implied 2026 building is 37,596 dwellings against a long-run-replacement requirement of 27,760 (gap +9,836). Population does not explain it: growth over the year to June 2026 fell short of the projection, which lowers the requirement by 5,763. The gap is building already in the pipeline from 2025 (+6,483) plus 2026 consents above requirement (+9,116); the 2018-2023 replacement regime would cover only +1,674 of it. Over 2018-2023 most building above household formation went to redevelopment (net removals 34,805) rather than vacancy (+6,286).
+Consents for January-July 2026 (23,916) are 1.74 times what the reference model, run without any 2026 data, implies for those months. In completions, observed-implied 2026 building is 37,596 dwellings against a reference-path requirement of 29,085 (gap +8,511)[^s1]. Population does not explain it: growth over the year to June 2026 fell short of the projection, which lowers the requirement by 5,763. The gap is building already in the pipeline from 2025 (+5,811) plus 2026 consents above requirement (+8,463). Over 2018-2023 most building above household formation went to redevelopment (net removals 34,805) rather than vacancy (+6,286).
 
 The model takes 2026 completions (and the 2027 share already consented) from these observed consents and allocates the excess (+14,542 dwellings in 2026, +7,639 in 2027) to redevelopment, vacancy and household formation. On the reference path the vacancy and household channels revert, so the excess mainly shifts timing: +2 dwellings net over 2026-2050.
+
+[^s1]: On S1 (long-run replacement) the requirement is 27,760 and the gap +9,836 = population -5,763 + pipeline +6,483 + 2026 consents above requirement +9,116.
 
 ## One-at-a-time sensitivities (floor area and carbon vs reference)
 
@@ -166,7 +168,7 @@ The model takes 2026 completions (and the 2027 share already consented) from the
 | Net replacement scenario | S3, half-life 10 yr | DECISION (author): S1/S2 bounds, S3-10 reference; half-life is JUDGEMENT (not identifiable) |
 | Long-run net replacement window | 1991-2023 | DATA: census private-dwelling counts and consents |
 | Demolition rate (split only) | 0.135%/yr | LITERATURE: BRANZ SR214 |
-| Completion rate | 0.95 (band 0.92-0.96) | LITERATURE: bounds from Jones et al. 2024 (as cited in MonteCarlo.py) |
+| Completion rate | 0.95 (band 0.92-0.96) | LITERATURE: bounds from Jones et al. 2024 (citation to verify) |
 | Completion lag | littles_law | DATA: Little's law W = L / lambda (a lower bound) |
 | Near-term join | nowcast (seasonal_share) | DATA (observed consents); method stated |
 | Excess channels | calibrated on 2018-2023 | DATA, ONE census interval |
@@ -175,7 +177,7 @@ The model takes 2026 completions (and the 2027 share already consented) from the
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
 | Household-size shape | Stats NZ Medium, anchored 2023, tail flat | DATA (2018-base projections; N4 open) |
 | Vacancy forward | latest census value held | DATA: census 2023 (2018 empty count unrated, F1) |
-| Typology damping phi | 0.8 | JUDGEMENT within the conventional damped-trend range |
+| Typology damping phi | 0.8 | JUDGEMENT: ≈4 years of trend applied by 2050 |
 | Mix trend window | 2012-2025 | DATA |
 | Dwelling size reference | 2023-2025 | DATA: consents |
 | RV share reference | 2016-2025 | DATA: consents |
@@ -184,7 +186,8 @@ The model takes 2026 completions (and the 2027 share already consented) from the
 ## Open limitations and data needs
 
 - No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so the implied replacement rates cannot be tested against a count.
-- Household projections are 2018-base; Stats NZ's 2023-base release (late 2026) is planned as v1.1.
+- N4: the household-size shape comes from the 2018-base household projections, paired with the 2024-base population projection (vintage mismatch); Stats NZ's 2023-base release (late 2026) is planned as v1.1.
+- The soil factor was derived for Auckland's future urban zones and is applied nationally.
 - Apartments rest on one independent case study (A_1 and A_2 are one design at two scales).
 - The regional analysis of the rebuilding wave (replacement half-life by territorial authority) is deferred.
 - Net replacement persistence (S3 half-life) is not identifiable from the census record; S1 and S2 bound it.

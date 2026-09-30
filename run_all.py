@@ -6,7 +6,8 @@
                                  # last full run and marked stale)
 
 Order: Building_factors -> Boss -> Diagnostics -> Sensitivity -> MonteCarlo
--> tests -> validation -> gap_2026 (A1 evidence) -> metrics. Each script runs in its own process, with
+-> tests -> validation -> gap_2026 (A1 evidence) -> near_term_join (A1 result)
+-> scenarios (item 2: S1/S2/S3) -> metrics. Each script runs in its own process, with
 the non-interactive matplotlib backend and PATHWAY_SAVE_FIGURES=1, so
 every figure is written to outputs/figures/ and nothing is shown. Console
 output of each step goes to outputs/logs/<step>.log. The run stops at the
@@ -48,6 +49,8 @@ def main():
         step('validation', [py, 'validation.py'])
     if os.path.exists(os.path.join(ROOT, 'gap_2026.py')):
         step('gap_2026', [py, 'gap_2026.py'])
+    step('near_term_join', [py, os.path.join('tools', 'near_term_join.py')])
+    step('scenarios', [py, os.path.join('tools', 'replacement_scenarios.py')])
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     os.environ['MPLBACKEND'] = 'Agg'
     import metrics

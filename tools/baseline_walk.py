@@ -18,6 +18,8 @@ STEPS = [  # (commit, label) in order; the first is the CP1 state (= original nu
     ('2213ba1', "item 7: completion lag (Little's law)"),
     ('dcb182c', 'census 2018/2023 private dwellings only (E1)'),
     ('6221b95', 'item 4: net replacement from census dwelling counts'),
+    ('e1b3fbf', 'A1(a): observed 2026 population growth'),
+    ('0ab938f', 'A1(a)+(c): nowcast 2026-27 consents, three-channel join'),
 ]
 COLS = [('boss.GFA_Mm2', 'floor area Mm2', '{:.2f}'), ('boss.carbon_kt', 'carbon kt', '{:,.0f}'),
         ('boss.upfront_kt', 'upfront kt', '{:,.0f}'), ('boss.step_2025_2026_pct', 'step 2025-26', '{:+.1f}%'),

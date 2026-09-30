@@ -1,6 +1,16 @@
 """
 BUILDING FACTORS -- per-typology embodied-carbon factors from 16 case studies
 ============================================================================
+Source and benchmarking of the 16 case studies: Christoforatos G, Pickering K
+(2025), "Embodied impacts of residential stocks; multi-level assessment of
+materials, buildings, typologies and functional units to support policymaking
+towards sustainable housing", Smart and Sustainable Built Environment (ahead of
+print), https://doi.org/10.1108/SASBE-06-2025-0304.
+Soil factor (sheet 3): 58.77 kg CO2e / m2 footprint, the area-weighted average
+over the 10 soil orders of the land zoned for urbanisation to about 2050 in
+Auckland: Christoforatos G, Pickering K, Schipper LA (2026), Journal of
+Environmental Management 415, 130603, https://doi.org/10.1016/j.jenvman.2026.130603.
+
 Reads the case-study LCA results and writes the factor tables that Boss.py
 consumes. Run this whenever the case-study data change; Boss reads only the
 CSV outputs, never the workbooks.
@@ -19,9 +29,9 @@ OUTPUTS
 POOLING
   Factors are intensities (kg/m2), so they are scale-invariant. Buildings are
   pooled with equal weight, after first averaging within detached sub-types so
-  the six single-storey cases do not outvote the four two-storey ones
-  ('equal_subtypes'). 'equal_buildings' and 'gfa_weighted' are available for
-  sensitivity; on this data all three agree within ~1%.
+  the six single-storey cases do not outvote the four two-storey ones.
+  Apartments rest on ONE independent case (A_1 and A_2 are one design at two
+  scales); the typology table flags this (n_independent).
 
 SOIL
   Soil organic carbon loss is NOT a material. It is land-use change:
@@ -33,8 +43,7 @@ SOIL
 KNOWN DATA ISSUES, handled explicitly below
   1. T_4's absolute emissions are for the whole 887 m2 block, while the
      characteristics sheet reports it scaled to one 147.8 m2 dwelling. The
-     block area is used for the per-m2 conversion; a reconciliation check
-     against the published per-building intensities prints at runtime.
+     block area is used for the per-m2 conversion.
   2. The published case-study soil figures imply L_w = 58.406, while the soils
      sheet gives 58.769 (a systematic 0.62% difference). The sheet value is
      used; the discrepancy is reported.
@@ -60,7 +69,6 @@ OUT_MATERIAL = os.path.join(OUT_DIR, 'factors_material.csv')
 OUT_TYPOLOGY = os.path.join(OUT_DIR, 'factors_typology.csv')
 OUT_BUILDING = os.path.join(OUT_DIR, 'factors_building.csv')   # for MonteCarlo.py
 
-WEIGHT_SCHEME = 'equal_subtypes'         # 'equal_subtypes' | 'equal_buildings' | 'gfa_weighted'
 
 STAGES = ['A1-A3', 'A4-A5', 'B2,B4', 'C1-C4']     # in scope
 STAGE_D = 'D'                                      # outside the boundary
@@ -142,32 +150,14 @@ def load_soil_factor(path=FILE_CHARS, sheet=SHEET_SOILS):
     return float(row[val].iloc[0]), float(orders.min()), float(orders.max())
 
 
-def load_soil_orders(path=FILE_CHARS, sheet=SHEET_SOILS):
-    """Soil carbon loss by soil order (kg CO2e / m2 footprint), and the
-    area-weighted average row, from the soils sheet."""
-    s = pd.read_excel(path, sheet_name=sheet)
-    name, val = s.columns[0], s.columns[1]
-    avg = s[s[name].astype(str).str.contains('Area-weighted', case=False, na=False)]
-    orders = s.loc[~s.index.isin(avg.index)].set_index(name)[val].astype(float)
-    return orders, float(avg[val].iloc[0])
-
-
 # ============================================================
 # POOLING
 # ============================================================
-def pool(frame, value_cols, scheme=WEIGHT_SCHEME):
-    """Pool building-level intensities to one row per typology."""
-    if scheme == 'gfa_weighted':
-        w = frame['GFA'] / frame.groupby('Typology')['GFA'].transform('sum')
-        out = frame[value_cols].mul(w, axis=0).groupby(frame['Typology']).sum()
-    elif scheme == 'equal_buildings':
-        out = frame.groupby('Typology')[value_cols].mean()
-    elif scheme == 'equal_subtypes':
-        sub = frame.groupby(['Typology', 'Subtype'])[value_cols].mean()
-        out = sub.groupby('Typology').mean()
-    else:
-        raise ValueError(f"Unknown WEIGHT_SCHEME '{scheme}'.")
-    return out.reindex(TYP_ORDER)
+def pool(frame, value_cols):
+    """Pool building-level intensities to one row per typology: equal weight
+    per sub-type within a typology, equal weight per building within a sub-type."""
+    sub = frame.groupby(['Typology', 'Subtype'])[value_cols].mean()
+    return sub.groupby('Typology').mean().reindex(TYP_ORDER)
 
 
 # ============================================================
@@ -191,19 +181,6 @@ def main():
         raise ValueError(f"No floor area for {sorted(set(lca['id'][area.isna()]))}.")
     for s in ALL_STAGES:
         lca[s] = lca[s] / area
-
-    # ---- reconciliation against the published per-building intensities ----
-    per_building = lca.groupby('id')[STAGES].sum().sum(axis=1)
-    if 'GWP' in chars.columns:   # optional published cross-check
-        cmp = pd.DataFrame({'from_materials': per_building,
-                            'published': chars['GWP']}).dropna()
-        cmp['diff_pct'] = 100 * (cmp['from_materials'] / cmp['published'] - 1)
-        worst = cmp['diff_pct'].abs().max()
-        print(f"[check] material sums vs published intensities: "
-              f"max |difference| = {worst:.2f}% "
-              f"({'OK' if worst < 0.5 else 'INVESTIGATE'})")
-        if worst >= 0.5:
-            print(cmp[cmp['diff_pct'].abs() >= 0.5].round(2).to_string())
 
     # ---- duplicated case studies --------------------------------------------
     # Two cases whose per-m2 material x stage vectors are identical are one
@@ -339,7 +316,7 @@ def main():
     # ==================================================================
     # SUMMARY
     # ==================================================================
-    print(f"\nPooling: {WEIGHT_SCHEME} | soil factor L_w = {soil_avg:.3f} "
+    print(f"\nPooling: equal sub-types | soil factor L_w = {soil_avg:.3f} "
           f"(range {soil_low:.2f}-{soil_high:.2f}) kg/m2 footprint")
     print(f"NOTE: the published case-study soil figures imply L_w = "
           f"{PUBLISHED_SOIL_LW:.3f}, a {100 * (soil_avg / PUBLISHED_SOIL_LW - 1):.2f}% "

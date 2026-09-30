@@ -12,24 +12,25 @@ Scenario S3; completion rate 0.95; lag W = 0.507 yr.
 
 ## Population, 2026
 
-Observed growth, year ended June 2026: 36,400 (provisional); projection median 51,000; levels from 2026 shifted by -14,600.
+Observed growth, year ended June 2026: 35,400 (DPE059AA, June qtr 2026 vs 2025, mean-quarter); projection median 51,000; levels from 2026 shifted by -15,600.
 
 ## Channel evidence, census 2018 -> 2023 (ONE interval; no standard error can be formed)
 
 | population paired with census households | change in household size, census | Stats NZ shape | household channel | redevelopment | vacancy | households | shares R / V / H |
 |---|---|---|---|---|---|---|---|
-| census_night (in use) | -2.37% | -0.94% | included | 0 | 6,286 | 27,600 | 0.000 / 0.185 / 0.815 |
-| mid_year | -2.00% | -0.94% | included | 0 | 6,286 | 20,421 | 0.000 / 0.235 / 0.765 |
+| march_quarter (in use) | -2.41% | -0.94% | included | 0 | 6,286 | 28,371 | 0.000 / 0.181 / 0.819 |
+| census_night | -2.35% | -0.94% | included | 0 | 6,286 | 27,056 | 0.000 / 0.189 / 0.811 |
+| mid_year | -1.90% | -0.94% | included | 0 | 6,286 | 18,412 | 0.000 / 0.254 / 0.746 |
 
 ## Join, median path (dwellings, all categories)
 
-2026: observed-implied completions 37,596 vs requirement 23,449 -> excess +14,147. 2027 lagged share: +5,679 (requirement 29,802).
+2026: observed-implied completions 37,596 vs requirement 23,055 -> excess +14,542. 2027 lagged share: +5,681 (requirement 29,801).
 
 | channel | 2026-2050 |
 |---|---|
 | redevelopment | +0 |
-| vacancy | +3,678 |
-| households | +16,149 |
-| vacancy_drawdown | -3,678 |
+| vacancy | +3,668 |
+| households | +16,555 |
+| vacancy_drawdown | -3,668 |
 | household_reversion | +0 |
-| net join | +16,149 |
+| net join | +16,555 |

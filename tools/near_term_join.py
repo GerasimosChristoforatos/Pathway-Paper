@@ -26,7 +26,7 @@ def main():
     nc = {m: engine.nowcast_year(cm, 2026, m, Boss.NOWCAST_SEASONAL_YEARS)
           for m in ('seasonal_share', 'same_period_ratio', 'last_12_months')}
     ev = {}
-    for d in ('census_night', 'mid_year'):
+    for d in ('march_quarter', 'census_night', 'mid_year'):
         Bd = B if d == Boss.CHANNEL_POP_DATE else validation.run_boss(CHANNEL_POP_DATE=d)
         ev[d] = Bd['excess_evidence']
     ji = B['join_info']['50th']

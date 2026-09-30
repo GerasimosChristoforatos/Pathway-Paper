@@ -82,6 +82,9 @@ CASES = [
     ('Near-term join (A1)', 'Channel shares: population at mid-year', dict(CHANNEL_POP_DATE='mid_year')),
     ('Near-term join (A1)', 'Nowcast Aug-Dec 2026: same-period ratio', dict(NOWCAST_METHOD='same_period_ratio')),
     ('Near-term join (A1)', 'Nowcast 2026: latest 12 months', dict(NOWCAST_METHOD='last_12_months')),
+    ('Carbon factors', 'Soil on all floor area, incl. replacement (original)', dict(SOIL_ON_REPLACEMENT=True)),
+    ('Carbon factors', 'Greenfield share 0.5 (bracketing; g is a PLACEHOLDER)', dict(GREENFIELD_SHARE=0.5)),
+    ('Carbon factors', 'Greenfield share 0 (bracketing; g is a PLACEHOLDER)', dict(GREENFIELD_SHARE=0.0)),
     ('Typology mix', 'Damping phi = 0.5', dict(DAMPING_PHI=0.5)),
     ('Typology mix', 'Damping phi = 0.95', dict(DAMPING_PHI=0.95)),
     ('Typology mix', 'Trend window from 2016', dict(TREND_WINDOW_START=2016)),
@@ -136,10 +139,13 @@ def main():
     # ---- carbon factors: re-weight the adopted floor area -------------------
     typ = base['typ_names']
     gfa_t = base['evol_typ_total'].iloc[1:].sum()          # m2 by typology
+    # soil applies only to the soil-bearing floor area (item 8)
+    soil_gfa_t = base['evol_typ_total'].mul(base['soil_frac'], axis=0).iloc[1:].sum()
     tf = pd.read_csv(Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
 
     def carbon_with(emb, soc):
-        return float(sum(gfa_t[t] * (emb[t] + soc[t]) for t in typ)) / 1e6
+        return float(sum(gfa_t[t] * emb[t] + soil_gfa_t[t] * soc[t] * base['soil_order_factor']
+                         for t in typ)) / 1e6
 
     emb0, soc0 = tf['embodied_materials'], tf['SOC_avg']
     if 'emb_jackknife_min' in tf.columns:

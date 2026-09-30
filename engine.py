@@ -338,7 +338,8 @@ def blend(shares, per_unit, typ_names):
 
 def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_share,
             shares, size, olf, intensity, intensity_upfront, floor_decline=True,
-            olf_per_resident=False, consumption_override=None, join=None, join_redev=None):
+            olf_per_resident=False, consumption_override=None, join=None, join_redev=None,
+            soil=None, greenfield_share=1.0, soil_on_replacement=True):
     """One forward path, 2025..2050 (index 0 = 2025, a model value; callers that
     anchor 2025 on observations overwrite it).
 
@@ -355,6 +356,14 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
     rv_share               : retirement-village share of ALL dwellings built (out of scope)
     shares                 : DataFrame years x typology (floor-area shares)
     size, olf, intensity, intensity_upfront : dicts by typology
+    soil                   : dict by typology, the soil part of intensity and
+                             intensity_upfront (kg/m2). None = soil on all floor
+                             area (legacy). Otherwise soil applies to the share
+                             soil_share of each year's floor area (item 8):
+        soil_share = g x (1 - soil-free floor area / total), where the soil-free
+        floor area is the in-scope net replacement (demolition + residual +
+        redevelopment channel, x (1 - rv_share) x D; land already settled) when
+        soil_on_replacement is False, and g = greenfield_share.
     consumption_override   : for the legacy per-person/per-household bases only:
                              gross consumption computed elsewhere from
                              (extra space, floored new households, population).
@@ -416,6 +425,17 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
     gfa_t = shares.values.T * total                  # (typology, years)
     I = np.array([intensity[t] for t in typ])
     U = np.array([intensity_upfront[t] for t in typ])
+    if soil is None:
+        soil_share, soil_free = np.ones(len(hh)), np.zeros(len(hh))
+        carbon_t, upfront_t = I[:, None] * gfa_t, U[:, None] * gfa_t
+    else:
+        s = np.array([soil[t] for t in typ])
+        soil_free = (np.zeros(len(hh)) if soil_on_replacement else
+                     np.clip(demol + unc + join_redev, 0.0, None) * (1.0 - rv_share) * D)
+        soil_share = greenfield_share * (1.0 - np.divide(soil_free, total, out=np.zeros(len(hh)),
+                                                         where=total != 0))
+        carbon_t = (I - s)[:, None] * gfa_t + (s[:, None] * gfa_t) * soil_share
+        upfront_t = (U - s)[:, None] * gfa_t + (s[:, None] * gfa_t) * soil_share
     return dict(
         years=shares.index.values, typ=typ, pop=pop, hh=hh, S=S, d_hh=d_hh, d_hh_raw=d_raw,
         D=D, olf=olf_f, occ=occ, structural=structural, growth_gross=g_gross, growth=growth,
@@ -423,5 +443,5 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         c_gross=c_gross, total=total,
         v=np.array(v), stock=stock, prev=prev, allow=allow, change=change, demol=demol,
         unc=unc, dev=dev, join=join, join_redev=join_redev, stock_join=stock_join, rv=rv, dwell_in_scope=total / D, rv_units=-rv,
-        gfa_t=gfa_t, carbon_t=I[:, None] * gfa_t, carbon=(I[:, None] * gfa_t).sum(axis=0),
-        upfront=(U[:, None] * gfa_t).sum(axis=0))
+        gfa_t=gfa_t, carbon_t=carbon_t, carbon=carbon_t.sum(axis=0), upfront=upfront_t.sum(axis=0),
+        soil_share=soil_share, soil_free_gfa=soil_free)

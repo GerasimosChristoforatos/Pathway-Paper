@@ -142,6 +142,16 @@ def load_soil_factor(path=FILE_CHARS, sheet=SHEET_SOILS):
     return float(row[val].iloc[0]), float(orders.min()), float(orders.max())
 
 
+def load_soil_orders(path=FILE_CHARS, sheet=SHEET_SOILS):
+    """Soil carbon loss by soil order (kg CO2e / m2 footprint), and the
+    area-weighted average row, from the soils sheet."""
+    s = pd.read_excel(path, sheet_name=sheet)
+    name, val = s.columns[0], s.columns[1]
+    avg = s[s[name].astype(str).str.contains('Area-weighted', case=False, na=False)]
+    orders = s.loc[~s.index.isin(avg.index)].set_index(name)[val].astype(float)
+    return orders, float(avg[val].iloc[0])
+
+
 # ============================================================
 # POOLING
 # ============================================================

@@ -107,14 +107,13 @@ def test_forward_stock_identity(B, pct):
     near-term join), 2026-2050, where the stock includes the dwellings the join
     adds (vacancy and household channels). Holds exactly while household
     formation is not floored."""
-    R, S = B['results'][pct], B['stock_fwd'][pct]
-    D = B['future_dwelling_size'].values
+    import engine
+    S = B['stock_fwd'][pct]
     d_raw = np.insert(np.diff(B['households_forecast'][pct]), 0, 0)
     if (d_raw[1:] < 0).any():
         pytest.skip('household decline floored in this path; identity holds only for unfloored years')
-    in_scope = R['total'] / D
-    rv_units = -S['rv']
-    built_all = in_scope + rv_units
+    # dwellings from the engine's units (2026 floor area may be an observation, not dwellings x D)
+    built_all = engine.requirement(B['engine_out'][pct])
     net_repl = S['demol'] + S['uncons'] + S['join_redev']
     d_stock = np.diff(S['stock'] + S['stock_join'])
     assert close(d_stock, (built_all - net_repl)[1:])
@@ -122,10 +121,10 @@ def test_forward_stock_identity(B, pct):
 
 def test_rv_share_of_all_dwellings_built(B):
     """RV units == rv_share x all dwellings built (in scope + RV), 2026-2050."""
-    R, S = B['results']['50th'], B['stock_fwd']['50th']
-    in_scope = R['total'] / B['future_dwelling_size'].values
+    import engine
+    S = B['stock_fwd']['50th']
     rv = -S['rv']
-    assert close((rv / (in_scope + rv))[1:], B['rv_share'])
+    assert close((rv / engine.requirement(B['engine_out']['50th']))[1:], B['rv_share'])
 
 
 def test_typology_split_sums_to_total(B):

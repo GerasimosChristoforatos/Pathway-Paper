@@ -13,4 +13,5 @@ LEGACY_FLAGS = {
     'REPLACEMENT_SCENARIO': 'S1',          # item 2 of the CP2 decisions
     'HOUSEHOLD_CHANNEL': 'permanent',      # CP3 order, item 2 (inactive without the nowcast join)
     'SOIL_ON_REPLACEMENT': True,           # item 8
+    'MIX_MODE': 'trend',                   # v1.0.2 storylines
 }

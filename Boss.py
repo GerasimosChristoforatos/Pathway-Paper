@@ -542,24 +542,20 @@ CHANNEL_POP_DATE = 'march_quarter'
 # ---------------------------------------------------------------------------
 # SOIL CARBON (item 8)
 # ---------------------------------------------------------------------------
-# Soil organic carbon loss is land-use change: it arises only on land converted
-# TO settlement, not on settlement remaining settlement (IPCC 2006 Guidelines,
-# Vol. 4, ch. 8). So:
-# SOIL_ON_REPLACEMENT = False (ADOPTED): no soil loss on the net-replacement
-#   floor area (demolition replacement + calibrated residual + the
-#   redevelopment channel of the near-term join). True = the original (soil on
-#   all floor area).
+# Soil organic carbon loss is land-use change: a new building footprint seals
+# the soil under it; a rebuilt footprint sits on soil already sealed (IPCC 2006
+# Guidelines, Vol. 4, ch. 8: settlements remaining settlements). So soil loss
+# applies to ALL non-replacement floor area and is ZERO on the replacement bands
+# (demolition replacement + calibrated residual + the redevelopment channel of
+# the near-term join).
+# Factor: 58.77 kg CO2e per m2 of footprint, the area-weighted average over the
+# 10 soil orders of the land zoned for urbanisation to about 2050 in Auckland
+# (divided by each typology's floor space index), from
+#   Christoforatos G, Pickering K, Schipper LA (2026). Integrating soil organic carbon loss into bu
+#   ilding life cycle assessment and urban planning: implications for urban sustainability practice. Journal of Environmental Management 415, 130603. https://doi.org/10.1016/j.jenvman.2026.130603
+# The Raw / Organic soil-order extremes are the bounding sensitivity.
+# SOIL_ON_REPLACEMENT = True restores the original (soil on all floor area).
 SOIL_ON_REPLACEMENT = False
-# GREENFIELD_SHARE g: the share of the REMAINING floor area built on land newly
-#   converted to settlement. *** PLACEHOLDER: 1.0 keeps the original treatment
-#   of that floor area; no evidence-based value yet (needs E5: land-cover change
-#   under new dwellings, e.g. LCDB change x building footprints). ***
-GREENFIELD_SHARE = 1.0
-# SOIL_ORDER_SHARES_FILE: development-weighted soil-order shares (E6: e.g. LCDB
-#   change x S-map, with the Fundamental Soil Layers where S-map has no cover).
-#   *** PLACEHOLDER file with the expected columns and no values. *** While it
-#   is empty the case-study factor (national area-weighted soil orders) is used.
-SOIL_ORDER_SHARES_FILE = os.path.join(DATA_DIR, 'placeholders', 'soil_order_shares_development.csv')
 
 # ---------------------------------------------------------------------------
 # BUILT DWELLINGS, DEMOLITION AND UNCONSENTED ADDITIONS
@@ -1161,22 +1157,9 @@ def main():
                                            values='kgCO2e_per_m2', aggfunc='sum')
                      .reindex(index=MATERIALS, columns=typ_names).fillna(0.0))
     SOIL_INTENSITY = {t: float(typ_fac.loc[t, 'SOC_avg']) for t in typ_names}
-    # development-weighted soil orders (placeholder hook, item 8 / E6)
-    soil_order_factor, soil_order_status = 1.0, 'PLACEHOLDER: national area-weighted soil orders'
-    _so = pd.read_csv(SOIL_ORDER_SHARES_FILE) if os.path.exists(SOIL_ORDER_SHARES_FILE) else pd.DataFrame()
-    if len(_so):
-        import Building_factors as _bf
-        _L, _L_avg = _bf.load_soil_orders()
-        _w = _so.set_index('soil_order')['development_share'].astype(float)
-        if abs(_w.sum() - 1.0) > 1e-6 or not set(_w.index) <= set(_L.index):
-            raise ValueError(f'{SOIL_ORDER_SHARES_FILE}: shares must sum to 1 over known soil orders.')
-        soil_order_factor = float((_w * _L.reindex(_w.index)).sum() / _L_avg)
-        soil_order_status = f'development-weighted ({SOIL_ORDER_SHARES_FILE})'
-        SOIL_INTENSITY = {t: v * soil_order_factor for t, v in SOIL_INTENSITY.items()}
     OLF_NET_BIM = {t: float(typ_fac.loc[t, 'OLF_m2_per_person']) for t in typ_names}
     DESIGN_OCCUPANTS = {t: float(typ_fac.loc[t, 'design_occupants']) for t in typ_names}
-    T_BASELINE_2025 = {t: float(typ_fac.loc[t, 'total_with_SOC'])
-                       + float(typ_fac.loc[t, 'SOC_avg']) * (soil_order_factor - 1.0) for t in typ_names}
+    T_BASELINE_2025 = {t: float(typ_fac.loc[t, 'total_with_SOC']) for t in typ_names}
     UPFRONT_2025 = {t: float(MAT_INTENSITY_STAGE.get(t, 0.0)) + SOIL_INTENSITY[t] for t in typ_names}
 
     # ------------------------------------------------------------------
@@ -1727,8 +1710,7 @@ def main():
                       intensity=T_BASELINE_2025, intensity_upfront=UPFRONT_2025,
                       floor_decline=FLOOR_HOUSEHOLD_DECLINE,
                       olf_per_resident=(DEMAND_BASIS == 'per_resident'),
-                      soil=SOIL_INTENSITY, greenfield_share=GREENFIELD_SHARE,
-                      soil_on_replacement=SOIL_ON_REPLACEMENT)
+                      soil=SOIL_INTENSITY, soil_on_replacement=SOIL_ON_REPLACEMENT)
     # NEAR-TERM JOIN (A1). Under 'nowcast', 2026 completions and the lagged
     # share of 2027 come from observed consents; the building above the
     # model's requirement is split into three channels (engine.join_channels).
@@ -1933,26 +1915,26 @@ def main():
                               for n in typ_names}, index=forecast_years)
 
     # Soil (item 8): the share of each band's floor area that bears soil loss.
-    # Bands on new land: g. Net replacement (demolition, residual): 0 unless
-    # SOIL_ON_REPLACEMENT. Near-term join: g x its non-redevelopment part. RV
-    # (a proportional share of every dwelling built): g x the non-replacement
+    # Bands on new footprints: 1. Net replacement (demolition, residual): 0 unless
+    # SOIL_ON_REPLACEMENT. Near-term join: its non-redevelopment part. RV
+    # (a proportional share of every dwelling built): the non-replacement
     # share of gross building. The bands then add up to the engine's total.
     # 2025 is the observed anchor: soil on all its floor area, as before.
-    _E50, _g = engine_out['50th'], GREENFIELD_SHARE
+    _E50 = engine_out['50th']
     _soil_df = pd.DataFrame({n: np.full(len(forecast_years), SOIL_INTENSITY[n]) for n in typ_names},
                             index=forecast_years)
     _mat_df = intensity - _soil_df
     _one = np.ones(len(forecast_years))
     if SOIL_ON_REPLACEMENT:
-        f_new = f_repl = f_join = f_rv = _g * _one
+        f_new = f_repl = f_join = f_rv = _one.copy()
     else:
         _repl_u = np.clip(_E50['demol'] + _E50['unc'] + _E50['join_redev'], 0.0, None)
         _gross_u = np.maximum(_E50['d_hh'], 0.0) + _E50['allow'] + _E50['change'] + _E50['demol'] \
             + _E50['unc'] + _E50['join']
-        f_new, f_repl = _g * _one, 0.0 * _one
-        f_join = _g * np.divide(_E50['join'] - _E50['join_redev'], _E50['join'], out=_one.copy(),
+        f_new, f_repl = _one.copy(), 0.0 * _one
+        f_join = np.divide(_E50['join'] - _E50['join_redev'], _E50['join'], out=_one.copy(),
                                 where=_E50['join'] != 0)
-        f_rv = _g * (1.0 - np.divide(_repl_u, _gross_u, out=np.zeros_like(_one), where=_gross_u != 0))
+        f_rv = (1.0 - np.divide(_repl_u, _gross_u, out=np.zeros_like(_one), where=_gross_u != 0))
     soil_frac = np.asarray(_E50['soil_share'], float).copy()
     for _f in (f_new, f_repl, f_join, f_rv, soil_frac):
         _f[0] = 1.0

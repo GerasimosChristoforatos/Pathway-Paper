@@ -235,8 +235,8 @@ def build_setup(settings=None):
     # ---- carbon factors ----
     tf = pd.read_csv(Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
     bf = pd.read_csv(Boss.FILE_FACTORS_BUILDING)
-    su['soc'] = tf['SOC_avg'].values * B['soil_order_factor']        # item 8 hook (1 while placeholder)
-    su['soil_g'], su['soil_on_repl'] = Boss.GREENFIELD_SHARE, Boss.SOIL_ON_REPLACEMENT
+    su['soc'] = tf['SOC_avg'].values
+    su['soil_on_repl'] = Boss.SOIL_ON_REPLACEMENT
     su['emb_central'] = tf['embodied_materials'].values
     mf = pd.read_csv(Boss.FILE_FACTORS_MATERIAL)
     up = (mf[mf['Stage'].isin(['A1-A3', 'A4-A5'])].groupby('Typology')['kgCO2e_per_m2'].sum())
@@ -401,7 +401,7 @@ def project(su, p):
         dev, dv['rho'], p['rv_share'], shares, size, su['olf'], I, U,
         floor_decline=su['floor_decline'], olf_per_resident=su['olf_per_resident'],
         join=join, join_redev=redev, soil={t: su['soc'][j] for j, t in enumerate(typ)},
-        greenfield_share=su['soil_g'], soil_on_replacement=su['soil_on_repl'])
+        soil_on_replacement=su['soil_on_repl'])
     E = fwd()
     if su['join_mode'] == 'nowcast':
         # channel shares re-measured for this draw (completion rate, scenario rate)

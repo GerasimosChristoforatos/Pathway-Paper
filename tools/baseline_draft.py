@@ -60,9 +60,10 @@ def register():
         ('Mix trend window', f'{B.TREND_WINDOW_START}-2025', 'DATA'),
         ('Dwelling size reference', f'{B.DWELLING_SIZE_REF[0]}-{B.DWELLING_SIZE_REF[1]}', 'DATA: consents'),
         ('RV share reference', f'{B.RV_SHARE_REF[0]}-{B.RV_SHARE_REF[1]}', 'DATA: consents'),
-        ('Soil on replacement / greenfield share',
-         f"{getattr(B, 'SOIL_ON_REPLACEMENT', 'full (not yet item 8)')} / {getattr(B, 'GREENFIELD_SHARE', 'n/a')}",
-         'PLACEHOLDER where marked (item 8)'),
+        ('Soil loss', 'all non-replacement floor area; zero on replacement bands' if not B.SOIL_ON_REPLACEMENT
+         else 'all floor area (original)',
+         'LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders '
+         '(Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603)'),
     ]
 
 
@@ -115,8 +116,8 @@ def main():
 
     # ---- headline ----
     L += ['## Headline, 2026-2050 (median demographics)', '',
-          '| path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | upfront carbon (kt CO₂e) |',
-          '|---|---|---|---|---|']
+          '| path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | of which soil | '
+          'carbon excl. soil | upfront carbon (kt CO₂e) |', '|---|---|---|---|---|---|---|']
     base = rows.get('S3-10', {}).get('GFA_Mm2', b['gfa_Mm2'])
     for k, lab in (('S1', 'S1 lower bound: long-run replacement'), ('S3-5', 'S3, half-life 5 yr'),
                    ('S3-10', 'S3, half-life 10 yr (reference)'), ('S3-15', 'S3, half-life 15 yr'),
@@ -124,7 +125,9 @@ def main():
         if k in rows:
             r = rows[k]
             up = f"{r['upfront_kt']:,.0f}" if 'upfront_kt' in r else 'n/a'
-            L.append(f"| {lab} | {r['GFA_Mm2']:.2f} | {pct(r['GFA_Mm2'], base)} | {r['carbon_kt']:,.0f} | {up} |")
+            so = r.get('soil_kt')
+            sol = (f"{so:,.0f} | {r['carbon_kt'] - so:,.0f}") if so is not None else 'n/a | n/a'
+            L.append(f"| {lab} | {r['GFA_Mm2']:.2f} | {pct(r['GFA_Mm2'], base)} | {r['carbon_kt']:,.0f} | {sol} | {up} |")
     mcs = sorted(glob.glob(os.path.join(OUT, 'montecarlo_summary_*.csv')))
     if mcs:
         L += ['', 'Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% interval):', '',

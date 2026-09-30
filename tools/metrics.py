@@ -22,6 +22,8 @@ FIELDS = [
     ('boss.GFA_Mm2', 'Built floor area 2026-2050, central run (Mm2)', '{:.2f}'),
     ('boss.carbon_kt', 'Embodied carbon 2026-2050, central run (kt CO2e)', '{:,.0f}'),
     ('boss.upfront_kt', 'Upfront carbon A1-A5 + soil, central run (kt CO2e)', '{:,.0f}'),
+    ('boss.soil_kt', 'Soil carbon (land-use change), central run (kt CO2e)', '{:,.0f}'),
+    ('boss.carbon_excl_soil_kt', 'Embodied carbon excluding soil, central run (kt CO2e)', '{:,.0f}'),
     ('boss.step_2025_2026_pct', '2025 -> 2026 step in built floor area (%)', '{:+.1f}'),
     ('boss.S_2050', 'Household size 2050, central run', '{:.3f}'),
     ('boss.RV_floor_area_Mm2_out_of_scope', 'Retirement-village floor area 2026-2050, out of scope (Mm2)', '{:.2f}'),
@@ -58,6 +60,8 @@ def boss_metrics():
         'GFA_Mm2': float(R['total'][1:].sum() / 1e6),
         'carbon_kt': float(B['carbon_total_typ'].iloc[1:].sum().sum() / 1e6),
         'upfront_kt': float(B['_upfront'] + B['_soil'] / 1e6),
+        'soil_kt': float(B['_soil'] / 1e6),
+        'carbon_excl_soil_kt': float(B['carbon_total_typ'].iloc[1:].sum().sum() / 1e6 - B['_soil'] / 1e6),
         'step_2025_2026_pct': float(100 * (R['total'][1] / B['hist_built_gfa'].loc[2025] - 1)),
         'S_2050': float(S[-1]),
         'RV_floor_area_Mm2_out_of_scope': (float(B['rv_floor_area']['projected'][1:].sum() / 1e6)

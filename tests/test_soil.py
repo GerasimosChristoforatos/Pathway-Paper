@@ -13,7 +13,7 @@ def test_soil_zero_on_net_replacement(B):
     repl = np.clip(E['demol'] + E['unc'] + E['join_redev'], 0, None) * (1 - B['rv_share']) * D
     assert close(E['soil_free_gfa'], repl)
     soil_t = sum(E['gfa_t'][j] * B['SOIL_INTENSITY'][t] for j, t in enumerate(E['typ']))
-    expect = Boss.GREENFIELD_SHARE * soil_t * (1 - repl / E['total'])
+    expect = soil_t * (1 - repl / E['total'])
     # soil in the engine's carbon = carbon - materials
     mat = sum(E['gfa_t'][j] * (B['T_BASELINE_2025'][t] - B['SOIL_INTENSITY'][t]) for j, t in enumerate(E['typ']))
     assert close((E['carbon'] - mat)[1:], expect[1:])

@@ -2623,29 +2623,3 @@ def export_results(B, path):
 if __name__ == "__main__":
     SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
     export_results(main(), os.path.join(OUT_DIR, 'boss_results.json'))
-
-# ============================================================
-# CHANGELOG v2 -> v3
-# ============================================================
-# [FIX c] Consumption is now  Total - Structural  in BOTH the historical
-#         calibration and the forward projection. v2 used Total - Growth - HS_pos
-#         historically, which differs in the 14 consolidation years and left the
-#         two halves of the model on inconsistent definitions.
-# [FIX d] EWMA now uses adjust=True and starts in 1992. v2's adjust=False seeded
-#         the recursion on 1991 and left it holding 14.3% of the weight -- more
-#         than any other year -- despite 1991 having a structurally undefined
-#         growth term. A sensitivity table is printed; results are insensitive.
-# [FIX e] Historical population now comes from histpopdata.xlsx (published annual
-#         ERP at 31 December) instead of the hand-interpolated monthly sheet.
-#         The population PROJECTION now uses the same PCHIP routine as households
-#         instead of linear interpolation + ffill, which had frozen 2049-50.
-# [FIX f] S x OLF renamed occupied_area_per_dwelling; it is NOT a dwelling size,
-#         because OLF is normalised on design capacity (bedrooms+1) while S is
-#         actual occupancy. Realised dwelling size is now measured directly from
-#         consented GFA / consented dwelling counts, and utilisation is reported.
-# [NEW g] Consumption is decomposed into "extra space" (dwellings built larger
-#         than their occupants require) and "other" (replacement, vacancy,
-#         timing, error), reported by five-year period.
-# Also retained from v2: runtime truncation guard, structural identity check,
-#         Fig 5 sliced before accumulating, no shared y-axes, lower-left legends,
-#         House-Splitting suppressed from legends.

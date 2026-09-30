@@ -154,3 +154,12 @@ def test_boss_is_deterministic_and_leaks_no_state(B):
     B2 = run_boss()
     assert np.array_equal(B2['results']['50th']['total'], B['results']['50th']['total'])
     assert np.array_equal(B2['carbon_total_typ'].values, B['carbon_total_typ'].values)
+
+
+def test_figure_band_totals_equal_typology_totals(B):
+    """Figs 3-5: the signed sum of the demand bands (the dashed total) equals the
+    typology total, every year 2026-2050, for floor area and carbon."""
+    for key, ref in (('gfa', B['evol_typ_total'].sum(axis=1).values[1:] / 1e6),
+                     ('carbon', B['carbon_total_typ'].sum(axis=1).values[1:] / 1e6)):
+        bands, _ = B['fig_bands'][key]
+        assert close(sum(v for _, v, _ in bands), ref)

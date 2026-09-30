@@ -516,17 +516,18 @@ POP_NOWCAST_CATCHUP_YEARS = None
 #   'all_redevelopment' | 'all_vacancy' | 'equal': sensitivities.
 EXCESS_CHANNELS = 'calibrated'
 VACANCY_DRAWDOWN_YEARS = 5                 # JUDGEMENT; 3 and 10 as sensitivities
-# HOUSEHOLD_CHANNEL (author's decision: reverting):
-#   'reverting' (ADOPTED): the extra households dissolve geometrically at the
+# HOUSEHOLD_CHANNEL (author's decision, v1.0.2: linear reversion):
+#   'reverting_linear' (ADOPTED): drawn down linearly over VACANCY_DRAWDOWN_YEARS,
+#       like the vacancy channel;
+#   'reverting' (sensitivity): the extra households dissolve geometrically at the
 #       model's estimated persistence for household-size deviations (rho: lag-1
 #       autocorrelation of the residuals of the regression of the annual change
 #       in S, 1992-2023). NOTE: rho is estimated on CHANGES in S; using it as the
 #       rate at which a LEVEL deviation reverts is an assumption, not an estimate;
-#   'permanent': households formed persist (sensitivity);
-#   'reverting_linear': drawn down linearly like vacancy (sensitivity).
+#   'permanent': households formed persist (sensitivity).
 #   2013-18 census household size rose, 2018-23 it fell faster than the Stats
 #   NZ shape: the response looks cyclical.
-HOUSEHOLD_CHANNEL = 'reverting'
+HOUSEHOLD_CHANNEL = 'reverting_linear'
 # CHANNEL_POP_DATE: the population paired with census households when testing
 #   household size over the calibration interval, from the quarterly
 #   mean-quarter ERP (FILE_POP_QUARTERLY; DPE059AA):
@@ -2328,6 +2329,31 @@ def main():
     plt.legend(loc='upper left'); plt.grid(True, alpha=0.3)
     plt.xlim(1991, 2050); plt.tight_layout()
 
+    # Demand bands for figs 3-5 (annual, 2026-2050): one list, so the figures
+    # and the identity test use the same numbers.
+    def _band_list(get, scale):
+        spec = [('Growth demand (net of consolidation)', 'growth', DEMAND_COLORS[0]),
+                ('House-splitting demand', 'hs_pos', HOUSESPLIT_COLOR),
+                ('Consumption: extra space per dwelling', 'extra', DEMAND_COLORS[1]),
+                ('Consumption: vacancy allowance', 'vac', DEMAND_COLORS[2]),
+                ('Consumption: replacement of demolished stock', 'repl', DEMAND_COLORS[3]),
+                (UNCONSENTED_LABEL, 'unc', UNCONSENTED_COLOR),
+                (WAVE_LABEL, 'wave', WAVE_COLOR),
+                (JOIN_LABEL, 'join', JOIN_COLOR),
+                (RV_LABEL, 'rv', RV_COLOR)]
+        return [(lab, get(k) / scale, col) for lab, k, col in spec]
+    _gfa_cols = dict(growth='Growth', hs_pos='HouseSplit_Pos', extra='Cons_ExtraSpace', vac='Cons_Vacancy',
+                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join',
+                     rv='Cons_RV')
+    _carb = dict(growth=carbon_growth_typ, hs_pos=carbon_hs_pos_typ, extra=carbon_extra_typ, vac=carbon_vac_typ,
+                 repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ,
+                 rv=carbon_rv_typ)
+    fig_bands = {
+        'gfa': (_band_list(lambda k: df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:], 1e6),
+                df_forecast['Ann_GFA_HouseSplit_Avoided_50th'].values[1:] / 1e6),
+        'carbon': (_band_list(lambda k: _carb[k].sum(axis=1).values[1:], 1e6),
+                   carbon_avoided_typ.sum(axis=1).values[1:] / 1e6)}
+
     # FIG 3 annual GFA
     fig3, (bx1, bx2) = plt.subplots(1, 2, figsize=(18, 6))
     bx1.stackplot(plot_years, [evol_typ_total[n].iloc[1:] / 1e6 for n in typ_names],
@@ -2336,33 +2362,7 @@ def main():
     bx1.set_title('Annual GFA by Typology (2026-2050)')
     bx1.legend(loc='lower left', fontsize=9); bx1.grid(True, alpha=0.3); bx1.set_xlim(2026, 2050)
 
-    y_g = df_forecast['Ann_GFA_Growth_50th'].iloc[1:].values / 1e6
-    y_ce = df_forecast['Ann_GFA_Cons_ExtraSpace_50th'].iloc[1:].values / 1e6
-    y_cv = df_forecast['Ann_GFA_Cons_Vacancy_50th'].iloc[1:].values / 1e6
-    y_cr = df_forecast['Ann_GFA_Cons_Replacement_50th'].iloc[1:].values / 1e6
-    y_cu = df_forecast['Ann_GFA_Cons_Unconsented_50th'].iloc[1:].values / 1e6
-    y_w = df_forecast['Ann_GFA_Cons_Wave_50th'].iloc[1:].values / 1e6
-    y_rv = df_forecast['Ann_GFA_Cons_RV_50th'].iloc[1:].values / 1e6
-    y_j = df_forecast['Ann_GFA_Cons_Join_50th'].iloc[1:].values / 1e6
-    y_h = df_forecast['Ann_GFA_HouseSplit_Pos_50th'].iloc[1:].values / 1e6
-    y_a = df_forecast['Ann_GFA_HouseSplit_Avoided_50th'].iloc[1:].values / 1e6
-    colls3 = bx2.stackplot(plot_years, y_g, y_ce, y_cv, y_cr, y_h, y_a,
-                           labels=DEMAND_LABELS_LEGEND, colors=DEMAND_COLORS, alpha=0.85)
-    colls3[-1].set_facecolor((1, 1, 1, 0.2)); colls3[-1].set_edgecolor(HOUSESPLIT_COLOR)
-    colls3[-1].set_hatch('//')
-    bx2.fill_between(plot_years, 0, y_cu, facecolor='none', edgecolor=UNCONSENTED_COLOR,
-                     hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
-    bx2.fill_between(plot_years, y_cu, y_cu + y_rv, facecolor=RV_COLOR, alpha=0.5,
-                     edgecolor='none', label=RV_LABEL)
-    if np.any(y_j != 0):
-        bx2.fill_between(plot_years, y_cu + y_rv, y_cu + y_rv + y_j, facecolor=JOIN_COLOR, alpha=0.5,
-                         edgecolor='none', label=JOIN_LABEL)
-    if np.any(y_w != 0):
-        bx2.fill_between(plot_years, y_cu + y_rv + y_j, y_cu + y_rv + y_j + y_w, facecolor=WAVE_COLOR,
-                         alpha=0.6, edgecolor='none', label=WAVE_LABEL)
-    bx2.axhline(0, color='black', lw=0.7)
-    bx2.plot(plot_years, y_g + y_ce + y_cv + y_cr + y_h + y_cu + y_rv + y_j + y_w, color='black', linestyle='--',
-             linewidth=1.5, label='Built floor area (net)')
+    plot_demand_bands(bx2, plot_years, fig_bands['gfa'][0], fig_bands['gfa'][1])
     bx2.set_title('Annual GFA by Demand Type (2026-2050)')
     bx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); bx2.grid(True, alpha=0.3); bx2.set_xlim(2026, 2050)
     plt.tight_layout()
@@ -2375,44 +2375,14 @@ def main():
     cx1.set_title('Annual Embodied Carbon by Typology (2026-2050)')
     cx1.legend(loc='lower left', fontsize=9); cx1.grid(True, alpha=0.3); cx1.set_xlim(2026, 2050)
 
-    yc_g = carbon_growth_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_ce = carbon_extra_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_cv = carbon_vac_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_cr = carbon_repl_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_cu = carbon_unc_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_w = (carbon_wave_typ + carbon_join_typ).sum(axis=1).iloc[1:].values / 1e6   # wave + near-term join
-    yc_rv = carbon_rv_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_h = carbon_hs_pos_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_a = carbon_avoided_typ.sum(axis=1).iloc[1:].values / 1e6
-    colls4 = cx2.stackplot(plot_years, yc_g, yc_ce, yc_cv, yc_cr, yc_h, yc_a,
-                           labels=DEMAND_LABELS_LEGEND, colors=DEMAND_COLORS, alpha=0.85)
-    colls4[-1].set_facecolor((1, 1, 1, 0.2)); colls4[-1].set_edgecolor(HOUSESPLIT_COLOR)
-    colls4[-1].set_hatch('//')
-    cx2.fill_between(plot_years, 0, yc_cu, facecolor='none', edgecolor=UNCONSENTED_COLOR,
-                     hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
-    cx2.fill_between(plot_years, yc_cu, yc_cu + yc_rv, facecolor=RV_COLOR, alpha=0.5,
-                     edgecolor='none', label=RV_LABEL)
-    cx2.fill_between(plot_years, yc_cu + yc_rv, yc_cu + yc_rv + yc_w, facecolor=WAVE_COLOR, alpha=0.6,
-                     edgecolor='none', label='Redevelopment wave + near-term join')
-    cx2.axhline(0, color='black', lw=0.7)
-    cx2.plot(plot_years, yc_g + yc_ce + yc_cv + yc_cr + yc_h + yc_cu + yc_rv + yc_w, color='black', linestyle='--', linewidth=1.5,
-             label='Actual Built Carbon')
+    plot_demand_bands(cx2, plot_years, fig_bands['carbon'][0], fig_bands['carbon'][1])
+    cx2.set_ylabel('Annual Carbon (kt CO2e/yr)')
     cx2.set_title('Annual Embodied Carbon by Demand Type (2026-2050)')
     cx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
     plt.tight_layout()
 
     # FIG 5 cumulative carbon  -- slice BEFORE accumulating
     cum_typ = (carbon_total_typ.iloc[1:] / 1e6).cumsum()
-    cum_g = (carbon_growth_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_ce = (carbon_extra_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_cv = (carbon_vac_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_cr = (carbon_repl_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_cu = (carbon_unc_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_w = ((carbon_wave_typ + carbon_join_typ).sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_rv = (carbon_rv_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_h = (carbon_hs_pos_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_a = (carbon_avoided_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-
     fig5, (dx1, dx2) = plt.subplots(1, 2, figsize=(18, 6))
     dx1.stackplot(plot_years, [cum_typ[n].values for n in typ_names],
                   labels=typ_names, colors=stack_colors, alpha=0.85)
@@ -2420,19 +2390,8 @@ def main():
     dx1.set_title('Cumulative Embodied Carbon by Typology (2026-2050)')
     dx1.legend(loc='lower left', fontsize=9); dx1.grid(True, alpha=0.3); dx1.set_xlim(2026, 2050)
 
-    colls5 = dx2.stackplot(plot_years, cum_g, cum_ce, cum_cv, cum_cr, cum_h, cum_a,
-                           labels=DEMAND_LABELS_LEGEND, colors=DEMAND_COLORS, alpha=0.85)
-    colls5[-1].set_facecolor((1, 1, 1, 0.2)); colls5[-1].set_edgecolor(HOUSESPLIT_COLOR)
-    colls5[-1].set_hatch('//')
-    dx2.fill_between(plot_years, 0, cum_cu, facecolor='none', edgecolor=UNCONSENTED_COLOR,
-                     hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
-    dx2.fill_between(plot_years, cum_cu, cum_cu + cum_rv, facecolor=RV_COLOR, alpha=0.5,
-                     edgecolor='none', label=RV_LABEL)
-    dx2.fill_between(plot_years, cum_cu + cum_rv, cum_cu + cum_rv + cum_w, facecolor=WAVE_COLOR, alpha=0.6,
-                     edgecolor='none', label='Redevelopment wave + near-term join')
-    dx2.axhline(0, color='black', lw=0.7)
-    dx2.plot(plot_years, cum_g + cum_ce + cum_cv + cum_cr + cum_h + cum_cu + cum_rv + cum_w, color='black', linestyle='--',
-             linewidth=1.5, label='Actual Built Carbon')
+    plot_demand_bands(dx2, plot_years, [(l, np.cumsum(v), c) for l, v, c in fig_bands['carbon'][0]],
+                      np.cumsum(fig_bands['carbon'][1]))
     dx2.set_title('Cumulative Embodied Carbon by Demand Type (2026-2050)')
     dx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
     plt.tight_layout()
@@ -2599,6 +2558,33 @@ def main():
     else:
         plt.close('all')
     return state
+
+
+def plot_demand_bands(ax, years, bands, avoided=None):
+    """Signed stack: the positive part of each band stacked upward from zero,
+    the negative part (RV, a negative join) downward from zero. 'Avoided'
+    (consolidation) is drawn as an outline above the total, not stacked. The
+    dashed line is the signed sum of the bands, which equals the typology total
+    (tests/test_identities.py). Returns that sum."""
+    years = np.asarray(years)
+    up, dn = np.zeros(len(years)), np.zeros(len(years))
+    for lab, v, col in bands:
+        v = np.asarray(v, float)
+        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
+        if np.any(pos > 0):
+            ax.fill_between(years, up, up + pos, color=col, alpha=0.85, lw=0, label=lab)
+        if np.any(neg < 0):
+            ax.fill_between(years, dn + neg, dn, color=col, alpha=0.45, lw=0, hatch='..',
+                            label=None if np.any(pos > 0) else lab)
+        up, dn = up + pos, dn + neg
+    total = sum(np.asarray(v, float) for _, v, _ in bands)
+    if avoided is not None and np.any(np.asarray(avoided) > 0):
+        ax.fill_between(years, total, total + np.asarray(avoided, float), facecolor='none',
+                        edgecolor=HOUSESPLIT_COLOR, hatch='//', lw=0.8,
+                        label='Avoided floor area (consolidation; not built, not stacked)')
+    ax.plot(years, total, color='black', linestyle='--', linewidth=1.5, label='Total built (net) = typology total')
+    ax.axhline(0, color='black', lw=0.7)
+    return total
 
 
 def export_results(B, path):

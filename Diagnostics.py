@@ -348,6 +348,8 @@ if np.any(R['wave'][1:] != 0):
     a.bar([], [], color=C['wave'], alpha=0.5, label='redevelopment wave (scenario - long run)')
 a.plot(YH, B['hist_built_gfa'].loc[YH] / M6, color='black', lw=1.6, label='built (net)')
 a.plot(PF, R['total'][1:] / M6, color='black', lw=1.6, ls='--')
+a.fill_between(PF, R['total'][1:] / M6, (R['total'][1:] + R['hs_avoided'][1:]) / M6, facecolor='none',
+               edgecolor=C['split'], hatch='//', lw=0.6, label='avoided (consolidation; outline, not stacked)')
 tidy(a, 'By demand type (hatched = projected)', 'million m² per year')
 a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
 

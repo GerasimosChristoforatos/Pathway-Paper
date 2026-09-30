@@ -6,11 +6,13 @@ Current defaults, near-term join `nowcast`; only the scenario changes. Net repla
 
 | scenario | floor area 2026-50 (Mm2) | vs S1 | carbon (kt) | rate 2026 / 2030 / 2040 / 2050 (%/yr) | net removals /yr, mean 2026-50 | gross demolitions /yr, mean (if long-run residual persists) | cumulative net removals, % of 2025 stock |
 |---|---|---|---|---|---|---|---|
-| S1: long-run rate | 74.42 | +0.0% | 28,448 | 0.113 / 0.113 / 0.113 / 0.113 | 2,670 | 3,202 | 3.2% |
-| S3: fade, half-life 5 yr | 77.40 | +4.0% | 29,491 | 0.328 / 0.236 / 0.143 / 0.120 | 4,112 | 4,644 | 4.9% |
-| S3: fade, half-life 10 yr | 80.94 | +8.8% | 30,729 | 0.343 / 0.287 / 0.200 / 0.156 | 5,275 | 5,807 | 6.3% |
-| S3: fade, half-life 15 yr | 83.12 | +11.7% | 31,492 | 0.349 / 0.309 / 0.236 / 0.190 | 5,994 | 6,525 | 7.1% |
-| S2: 2018-2023 rate persists | 90.81 | +22.0% | 34,186 | 0.360 / 0.360 / 0.360 / 0.360 | 8,532 | 9,064 | 10.1% |
+| S1: long-run rate, shares held | 80.36 | +0.0% | 30,308 | 0.113 / 0.113 / 0.113 / 0.113 | 2,669 | 3,201 | 3.2% |
+| S3: fade, half-life 5 yr, shares held | 83.62 | +4.1% | 31,424 | 0.328 / 0.236 / 0.143 / 0.120 | 4,111 | 4,642 | 4.9% |
+| S3: fade, half-life 10 yr, shares held (reference) | 87.50 | +8.9% | 32,747 | 0.343 / 0.287 / 0.200 / 0.156 | 5,274 | 5,805 | 6.3% |
+| S3: fade, half-life 15 yr, shares held | 89.90 | +11.9% | 33,565 | 0.349 / 0.309 / 0.236 / 0.190 | 5,992 | 6,523 | 7.1% |
+| S2: 2018-2023 rate persists, damped mix trend (intensification continues) | 90.38 | +12.5% | 34,002 | 0.360 / 0.360 / 0.360 / 0.360 | 8,529 | 9,061 | 10.1% |
+| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 80.52 | +0.2% | 30,547 | 0.343 / 0.287 / 0.200 / 0.156 | 5,274 | 5,805 | 6.3% |
+| sensitivity: S2 with shares held (maximum floor-area case) | 98.35 | +22.4% | 36,454 | 0.360 / 0.360 / 0.360 / 0.360 | 8,529 | 9,061 | 10.1% |
 
 ## Against the 2026 excess (reported, NOT fitted)
 
@@ -18,11 +20,13 @@ O = observed-implied 2026 completions (all categories, nowcast consents); R = th
 
 | scenario | O 2026 | R 2026 | excess 2026 | share of S1 excess covered | 2027 lagged excess | channel shares (redevelopment / vacancy / households) | redevelopment channel, dwellings |
 |---|---|---|---|---|---|---|---|
-| S1: long-run rate | 37,596 | 18,194 | +19,402 | 0% | +9,486 | 0.408 / 0.107 / 0.484 | +11,794 |
-| S3: fade, half-life 5 yr | 37,596 | 22,729 | +14,867 | 23% | +7,988 | 0.000 / 0.181 / 0.819 | +0 |
-| S3: fade, half-life 10 yr | 37,596 | 23,055 | +14,542 | 25% | +7,639 | 0.000 / 0.181 / 0.819 | +0 |
-| S3: fade, half-life 15 yr | 37,596 | 23,168 | +14,428 | 26% | +7,512 | 0.000 / 0.181 / 0.819 | +0 |
-| S2: 2018-2023 rate persists | 37,596 | 23,403 | +14,193 | 27% | +7,241 | 0.000 / 0.181 / 0.819 | +0 |
+| S1: long-run rate, shares held | 37,596 | 18,194 | +19,402 | 0% | +8,893 | 0.408 / 0.107 / 0.484 | +11,552 |
+| S3: fade, half-life 5 yr, shares held | 37,596 | 22,729 | +14,867 | 23% | +7,221 | 0.000 / 0.181 / 0.819 | +0 |
+| S3: fade, half-life 10 yr, shares held (reference) | 37,596 | 23,055 | +14,542 | 25% | +6,888 | 0.000 / 0.181 / 0.819 | +0 |
+| S3: fade, half-life 15 yr, shares held | 37,596 | 23,168 | +14,428 | 26% | +6,767 | 0.000 / 0.181 / 0.819 | +0 |
+| S2: 2018-2023 rate persists, damped mix trend (intensification continues) | 37,596 | 23,403 | +14,193 | 27% | +6,508 | 0.000 / 0.181 / 0.819 | +0 |
+| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 37,596 | 23,055 | +14,542 | 25% | +6,888 | 0.000 / 0.181 / 0.819 | +0 |
+| sensitivity: S2 with shares held (maximum floor-area case) | 37,596 | 23,403 | +14,193 | 27% | +6,508 | 0.000 / 0.181 / 0.819 | +0 |
 
 ## Census record of net replacement (dwelling-count identity, completions lagged W)
 

@@ -24,13 +24,13 @@ Observed growth, year ended June 2026: 35,400 (DPE059AA, June qtr 2026 vs 2025, 
 
 ## Join, median path (dwellings, all categories)
 
-2026: observed-implied completions 37,596 vs requirement 23,055 -> excess +14,542. 2027 lagged share: +7,639 (requirement 29,801).
+2026: observed-implied completions 37,596 vs requirement 23,055 -> excess +14,542. 2027 lagged share: +6,888 (requirement 29,801).
 
 | channel | 2026-2050 |
 |---|---|
 | redevelopment | +0 |
-| vacancy | +4,023 |
-| households | +18,158 |
-| vacancy_drawdown | -4,023 |
-| household_reversion | -18,156 |
-| net join | +2 |
+| vacancy | +3,887 |
+| households | +17,543 |
+| vacancy_drawdown | -3,887 |
+| household_reversion | -17,543 |
+| net join | +0 |

@@ -589,7 +589,6 @@ def main():
 INPUT_LABELS = {
     'z_pop': 'Population (with household size)',
     'hh_rebase': 'Census rebase of households, k',
-    'regime': 'Redevelopment regime (long-run -> 2019-23)',
     'phi': 'Typology-trend damping, phi',
     'slope_T': 'Townhouse share trend',
     'slope_A': 'Apartment share trend',
@@ -613,7 +612,6 @@ OUTPUT_LABELS = {
 AXIS_LABELS = {
     'z_pop': 'population rank (standard deviations from median)',
     'hh_rebase': 'census rebase factor k (1 = as published)',
-    'regime': 'weight on the 2019-23 redevelopment rate',
     'phi': 'damping phi',
     'size': 'dwelling size multiplier',
     'complete': 'share of consents built',

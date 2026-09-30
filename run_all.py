@@ -59,6 +59,8 @@ def main():
     for key, label, f in metrics.FIELDS:
         v = metrics.get(m, key)
         print(f'  {label:<55} {f.format(v) if v is not None else "n/a"}')
+    step('results', [py, os.path.join('tools', 'results.py')])
+    step('assumptions', [py, os.path.join('tools', 'assumptions.py')])
     step('baseline_draft', [py, os.path.join('tools', 'baseline_draft.py')])
 
 

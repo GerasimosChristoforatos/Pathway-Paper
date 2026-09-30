@@ -469,7 +469,7 @@ RECENT_INTERVAL = (2018, 2023)
 #       (the observed pipeline replaces it).
 #   'carried_deviation': the original: 2025's deviation fades at rho.
 #   'none': neither.
-NEAR_TERM_JOIN = 'carried_deviation'
+NEAR_TERM_JOIN = 'nowcast'
 # NOWCAST_METHOD for the unobserved months of 2026:
 #   'seasonal_share' (ADOPTED): ratio-to-annual seasonal estimator: observed
 #       months / their mean share of the calendar-year total over 2010-2025,

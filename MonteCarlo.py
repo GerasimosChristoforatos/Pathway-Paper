@@ -357,7 +357,7 @@ def project(su, p):
                                     su['demol_rate'] + float(unc[0]), *su['recent'])
         join, ji = engine.nowcast_join(E, float(su['units_all_raw'].loc[2025]), float(su['nowcast']['total']),
                                       c, su['lag_w'], Boss.channel_shares(su['channels'], ev),
-                                      su['drawdown'], su['hh_channel'])
+                                      su['drawdown'], su['hh_channel'], p.get('rho', su['rho_hat']))
         E = fwd(join, ji['channels']['redevelopment'])
     return dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
                 hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],

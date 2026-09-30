@@ -227,15 +227,18 @@ def excess_channels(census, rates, pop_census, S_shape, rate_scenario, start, en
                 households_included=bool(include_hh), interval=(start, end))
 
 
-def join_channels(years, excess, shares, drawdown_years, household_mode='permanent'):
+def join_channels(years, excess, shares, drawdown_years, household_mode='permanent', household_rho=None):
     """Near-term join (A1, option c). excess: dict year -> dwellings built above
     the model's requirement (all categories). Each year's excess is split into
     three channels:
       redevelopment : replaces removed dwellings; permanent, no later offset;
       vacancy       : raises the stock; drawn down linearly over the following
                       drawdown_years (the requirement is reduced by the same total);
-      households    : faster household formation; 'permanent' (no later offset)
-                      or 'reverting' (drawn down like vacancy).
+      households    : faster household formation; 'permanent' (no later offset),
+                      'reverting' (the extra households dissolve geometrically:
+                      a share household_rho remains after each year, so the
+                      reversion in year k after the excess is e (1 - rho) rho^(k-1)),
+                      or 'reverting_linear' (drawn down like vacancy).
     Returns (join array added to dwellings built, dict of channel arrays)."""
     years = np.asarray(years)
     n = len(years)
@@ -248,6 +251,15 @@ def join_channels(years, excess, shares, drawdown_years, household_mode='permane
         for k, back in (('vacancy', 'vacancy_drawdown'), ('households', 'household_reversion')):
             if k == 'households' and household_mode == 'permanent':
                 continue
+            if k == 'households' and household_mode == 'reverting':
+                if household_rho is None or not 0.0 <= household_rho < 1.0:
+                    raise ValueError(f'household_rho {household_rho} outside [0, 1).')
+                later = np.arange(i + 1, n)
+                ch[back][later] -= (shares[k] * e * (1.0 - household_rho)
+                                    * household_rho ** (later - i - 1))
+                continue
+            if k == 'households' and household_mode != 'reverting_linear':
+                raise ValueError(f"Unknown household_mode '{household_mode}'.")
             later = np.arange(i + 1, min(i + 1 + int(drawdown_years), n))
             ch[back][later] -= shares[k] * e / drawdown_years
     join = sum(ch.values())
@@ -262,7 +274,7 @@ def requirement(E):
 
 
 def nowcast_join(E, consents_2025, consents_2026, completion, lag_w, shares, drawdown_years,
-                 household_mode='permanent'):
+                 household_mode='permanent', household_rho=None):
     """Near-term join (A1: nowcast + three channels). E: forward() result
     WITHOUT a join (index 0 = 2025, 1 = 2026, 2 = 2027).
       2026 completions = c x [(1 - W) C_2026 + W C_2025]   (observed consents)
@@ -275,10 +287,10 @@ def nowcast_join(E, consents_2025, consents_2026, completion, lag_w, shares, dra
     R = requirement(E)
     O26 = completion * ((1.0 - lag_w) * consents_2026 + lag_w * consents_2025)
     e26 = O26 - R[1]
-    j26, _ = join_channels(years, {years[1]: e26}, shares, drawdown_years, household_mode)
+    j26, _ = join_channels(years, {years[1]: e26}, shares, drawdown_years, household_mode, household_rho)
     e27 = lag_w * (completion * consents_2026 - (R[2] + j26[2]))
     join, ch = join_channels(years, {years[1]: e26, years[2]: e27}, shares, drawdown_years,
-                             household_mode)
+                             household_mode, household_rho)
     return join, dict(O26=O26, R26=float(R[1]), R27=float(R[2]), e26=e26, e27=e27, channels=ch)
 
 

@@ -68,7 +68,7 @@ Draws in which the extra-space floor binds in at least one year (new = legacy + 
 | stock_fwd.rv | 1.89e-16 |
 | stock_fwd.stock | 0.00e+00 |
 | stock_fwd.uncons | 6.86e-16 |
-| tot_carbon_median | 0.00e+00 |
+| tot_carbon_median | 2.01e-16 |
 | unconsented_rate | 0.00e+00 |
 | v_forward | 0.00e+00 |
 

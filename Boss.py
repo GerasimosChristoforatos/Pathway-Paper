@@ -483,7 +483,7 @@ NOWCAST_SEASONAL_YEARS = (2010, 2025)
 #   in place of the projection median; later years keep the projection's
 #   growth, so the level stays shifted. The model applies year-ended-June growth
 #   to calendar years throughout (half-year offset).
-NOWCAST_POPULATION = False
+NOWCAST_POPULATION = True
 FILE_POP_NOWCAST = os.path.join(DATA_DIR, 'derived', 'population_nowcast.csv')
 # EXCESS_CHANNELS: split of the 2026-27 excess.
 #   'calibrated' (ADOPTED): shares from the 2018-2023 census interval, measured

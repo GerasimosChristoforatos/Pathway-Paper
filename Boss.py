@@ -2073,7 +2073,7 @@ def main():
                   'Consumption: extra space': f_new, 'Consumption: vacancy': f_new,
                   'Consumption: demolition': f_repl, 'Calibrated stock residual': f_repl,
                   'Redevelopment wave': f_repl,
-                  'Housed in RV units (out of scope)': f_rv, 'Near-term join (2026-27, A1)': f_join}
+                  'Housed in RV units (out of scope)': f_rv, 'Near-term market excess': f_join}
     carbon_total_typ = pd.DataFrame(engine_out['50th']['carbon_t'].T, index=forecast_years,
                                     columns=typ_names)
     carbon_total_typ.loc[2025] = evol_typ_total.loc[2025] * intensity.loc[2025]   # observed anchor
@@ -2371,7 +2371,7 @@ def main():
              ('Calibrated stock residual (long run)', evol_typ_unc, carbon_unc_typ),
              ('Redevelopment wave (scenario - long run)', evol_typ_wave, carbon_wave_typ),
              ('Housed in RV units (out of scope)', evol_typ_rv, carbon_rv_typ),
-             ('Near-term join (2026-27, A1)', evol_typ_join, carbon_join_typ)]
+             ('Near-term market excess', evol_typ_join, carbon_join_typ)]
     rows = [(lab, g.iloc[1:].sum().sum() / 1e6, c.iloc[1:].sum().sum() / 1e6) for lab, g, c in bands]
     tg = sum(r[1] for r in rows); tc = sum(r[2] for r in rows)
     print("\n BY DEMAND TYPE, 2026-2050 (median)")
@@ -2410,14 +2410,14 @@ def main():
 
     # FIG 1b households
     plt.figure(figsize=(12, 5))
-    plt.plot(years_hist, hist_hh.values, color='black', linewidth=2, label='Historical (31 Dec)')
-    plt.plot(forecast_years, households_forecast['50th'], color='darkorange', linestyle='--',
+    plot_hist_estimated(plt.gca(), hist_hh, 1e6, label='Historical (31 Dec)')
+    plt.plot(forecast_years, households_forecast['50th'] / 1e6, color='darkorange', linestyle='--',
              label='Projected Median')
-    plt.fill_between(forecast_years, households_forecast['5th'], households_forecast['95th'],
+    plt.fill_between(forecast_years, households_forecast['5th'] / 1e6, households_forecast['95th'] / 1e6,
                      color='darkorange', alpha=0.2,
                      label='5th-95th population percentile (household size fixed)')
     plt.axvline(2025, color='black', linestyle=':', alpha=0.6)
-    plt.ylabel('Households'); plt.title('New Zealand Households (1991-2050)')
+    plt.ylabel('Households (millions)'); plt.title('New Zealand Households (1991-2050)')
     plt.legend(); plt.grid(True, alpha=0.3); plt.tight_layout()
 
     # FIG 2 cumulative GFA
@@ -2428,7 +2428,8 @@ def main():
     plt.fill_between(df_forecast['Year'], df_forecast['Cum_GFA_Total_5th'],
                      df_forecast['Cum_GFA_Total_95th'], color='darkred', alpha=0.2,
                      label='Population 5th-95th percentile (other inputs fixed)')
-    plt.ylabel('Cumulative New GFA (m2)')
+    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'{v / 1e6:,.0f}'))
+    plt.ylabel('Cumulative new GFA (Mm²)')
     plt.title('Cumulative New Residential GFA Projection')
     plt.legend(loc='upper left'); plt.grid(True, alpha=0.3)
     plt.xlim(1991, 2050); plt.tight_layout()
@@ -2462,7 +2463,7 @@ def main():
     fig3, (bx1, bx2) = plt.subplots(1, 2, figsize=(18, 6))
     bx1.stackplot(plot_years, [evol_typ_total[n].iloc[1:] / 1e6 for n in typ_names],
                   labels=typ_names, colors=stack_colors, alpha=0.85)
-    bx1.set_ylabel('Annual new GFA (million m2/yr)')
+    bx1.set_ylabel('Annual new GFA (Mm²/yr)')
     bx1.set_title('Annual GFA by Typology (2026-2050)')
     bx1.legend(loc='lower left', fontsize=9); bx1.grid(True, alpha=0.3); bx1.set_xlim(2026, 2050)
 
@@ -2515,7 +2516,7 @@ def main():
 
     # FIG 7 demographic drivers
     fig7, (ex1, ex2) = plt.subplots(1, 2, figsize=(18, 6))
-    ex1.plot(years_hist, hist_S.values, color='black', linewidth=2.5, label='Historical (actual)')
+    plot_hist_estimated(ex1, hist_S, 1.0, label='Historical (census-benchmarked)', lw=2.5)
     ex1.plot(forecast_years, df_forecast['PopTotal_50th'].values / households_forecast['50th'],
              color='darkorange', linestyle='--', linewidth=2.5, label=f'Projected ({HOUSEHOLD_METHOD})')
     ex1.axvline(2025, color='gray', linestyle=':', alpha=0.6)
@@ -2581,7 +2582,7 @@ def main():
                     'Calibrated stock residual': evol_typ_unc,
                     'Redevelopment wave': evol_typ_wave,
                     'Housed in RV units (out of scope)': evol_typ_rv,
-                    'Near-term join (2026-27, A1)': evol_typ_join}
+                    'Near-term market excess': evol_typ_join}
     dem_mat = pd.DataFrame(
         {lab: [sum(df[t].iloc[1:].sum() * MAT_INTENSITY.loc[m, t] for t in typ_names)
                for m in MATERIALS] + [sum((df[t].values * soil_fracs[lab])[1:].sum() * SOIL_INTENSITY[t]
@@ -2662,6 +2663,25 @@ def main():
     else:
         plt.close('all')
     return state
+
+
+def plot_hist_estimated(ax, series, scale=1.0, color='black', label='Historical', lw=2.0,
+                        census_last=2018, anchor=None):
+    """Households / household size history: census-benchmarked years solid,
+    2019-2025 dotted ("estimated from consents, not a census count"), the
+    census anchor year marked, and the join annotated."""
+    anchor = S_ANCHOR_YEAR if anchor is None else anchor
+    s = series.dropna() / scale
+    ax.plot(s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw, label=label)
+    tail = s.loc[census_last:]
+    ax.plot(tail.index, tail.values, color=color, lw=lw, ls=':',
+            label=f'{census_last + 1}-{int(s.index.max())} estimated from consents (not a census count)')
+    if anchor in s.index:
+        ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=6, label=f'{anchor} census anchor')
+        ax.annotate(f'projection anchored on {anchor} census;\n{anchor + 1}-{int(s.index.max())} estimates not used',
+                    xy=(anchor, s.loc[anchor]), xytext=(10, -28), textcoords='offset points', fontsize=7,
+                    color='grey', arrowprops=dict(arrowstyle='-', color='grey', lw=0.6))
+    ax.ticklabel_format(axis='y', style='plain', useOffset=False)
 
 
 def plot_demand_bands(ax, years, bands, avoided=None):

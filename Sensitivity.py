@@ -213,7 +213,7 @@ def figures(out, base, paths):
         a.plot(fy[1:], paths[c][1:] / 1e6, color=cmap(i), lw=1.6, label=c)
     a.axvline(2025.5, color='grey', ls=':', lw=1)
     a.set_xlim(2010, 2050); a.set_ylim(0, None); a.grid(alpha=0.3)
-    a.set_ylabel('million m² per year'); a.legend(fontsize=7.5, loc='upper right')
+    a.set_ylabel('Mm² per year'); a.legend(fontsize=7.5, loc='upper right')
     a.set_title(f'The {len(show)} largest effects, against history')
     a = ax[1]
     for i, c in enumerate(show):

@@ -10,7 +10,7 @@ Boss.py, so the two scripts can never disagree.
   3  The stock bucket             vacancy, demolition, unconsented additions
   4  Floor area                   by typology, by demand type, mix, dwelling size
   5  Embodied carbon              by typology, by material, cumulative, factors
-  6  Checks                       reconciliation, the 2027->2028 handover, rejections
+  6  Checks                       reconciliation, the 2026->2027 handover, the 2026 check
 
 Historical carbon is ESTIMATED by applying the 2025 case-study factors to past
 floor area; it is shown for continuity, not as a measured series.
@@ -156,8 +156,7 @@ a = ax[0, 1]
 hf = B['households_forecast']
 a.plot(B['hist_hh_dhe'].index, B['hist_hh_dhe'] / M6, color='#95a5a6', lw=1.5, ls=':',
        label='Stats NZ DHE as published (consent-driven after 2018)')
-a.plot(hh_h.index, hh_h / M6, color='black', lw=2,
-       label=f"used: post-2018 rebased on 2023 census (x{B['hh_rebase_k']:.3f})")
+M.plot_hist_estimated(a, hh_h, M6, label=f"used: post-2018 rebased on 2023 census (x{B['hh_rebase_k']:.3f})")
 a.plot(FY, hf['50th'] / M6, color='#e67e22', lw=2, ls='--', label='median projection')
 a.fill_between(FY, hf['5th'] / M6, hf['95th'] / M6, color='#e67e22', alpha=0.15,
                label='5th-95th percentile')
@@ -166,7 +165,7 @@ mark_anchor(a)
 a.legend()
 
 a = ax[1, 0]
-a.plot(S_h.index, S_h, color='black', lw=2, label='observed')
+M.plot_hist_estimated(a, S_h, 1.0, label='observed (census-benchmarked)')
 a.plot(B['hist_hh_dhe'].index, pop_h / B['hist_hh_dhe'], color='#95a5a6', lw=1.5, ls=':',
        label='from DHE as published')
 a.plot(FY, HR['S_resp'], color='#95a5a6', lw=2, ls='--',
@@ -281,11 +280,11 @@ hist_parts = [('new households', B['d_hh'].loc[YH], C['split']),
 fut_parts = [('', R['d_hh'][1:], C['split']), ('', SF['allow'][1:], C['vac']),
              ('', np.zeros(len(PF)), C['vchg']), ('', SF['demol'][1:], C['demol']),
              ('', SF['uncons'][1:], C['unc']), ('', SF['rv'][1:], C['rv']),
-             ('near-term join, 2026-27 excess (A1)', SF['join'][1:], C['join'])]
+             ('near-term market excess', SF['join'][1:], C['join'])]
 signed_bars(a, YH, [(l, v / 1e3, c) for l, v, c in hist_parts])
 signed_bars(a, PF, [(l, v / 1e3, c) for l, v, c in fut_parts], projected=True)
 if np.any(SF['join'][1:] != 0):
-    a.bar([], [], color=C['join'], alpha=0.5, label='near-term join, 2026-27 excess (A1)')
+    a.bar([], [], color=C['join'], alpha=0.5, label='near-term market excess')
 built_h = B['hist_built_units'].loc[YH]          # in-scope dwellings built (lagged completions)
 built_f = R['total'][1:] / D_f[1:]
 a.plot(YH, built_h / 1e3, color='black', lw=1.6, label='dwellings built (in scope)')
@@ -295,7 +294,7 @@ a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
 
 a = ax[1, 0]
 a.plot(SC['stock'].index, SC['stock'] / M6, color='#2c3e50', lw=2, label='dwelling stock')
-a.plot(hh_h.index, hh_h / M6, color='#e67e22', lw=2, label='households')
+M.plot_hist_estimated(a, hh_h, M6, color='#e67e22', label='households')
 a.plot(FY, SF['stock'] / M6, color='#2c3e50', lw=2, ls='--')
 a.plot(FY, B['households_forecast']['50th'] / M6, color='#e67e22', lw=2, ls='--')
 tidy(a, 'Stock = households / (1 - vacancy)', 'million')
@@ -335,7 +334,7 @@ typ_h = B['hist_built_typ_gfa'].loc[YH]
 typ_f = B['evol_typ_total'].loc[PF]
 a.stackplot(YH, [typ_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
 a.stackplot(PF, [typ_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
-tidy(a, 'By typology', 'million m² per year')
+tidy(a, 'By typology', 'Mm² per year')
 a.legend(loc='upper left')
 
 a = ax[0, 1]
@@ -354,18 +353,18 @@ fut_dem = [('', R['growth'][1:], C['growth']), ('', R['hs_pos'][1:], C['split'])
            ('', np.zeros(len(PF)), C['vchg']), ('', R['repl'][1:], C['demol']),
            ('', R['unc'][1:], C['unc']), ('redevelopment wave (scenario - long run)', R['wave'][1:], C['wave']),
            ('', R['rv'][1:], C['rv']),
-           ('near-term join, 2026-27 excess (A1)', R['join'][1:], C['join'])]
+           ('near-term market excess', R['join'][1:], C['join'])]
 signed_bars(a, YH, [(l, np.asarray(v) / M6, c) for l, v, c in hist_dem])
 signed_bars(a, PF, [(l, v / M6, c) for l, v, c in fut_dem], projected=True)
 if np.any(R['join'][1:] != 0):
-    a.bar([], [], color=C['join'], alpha=0.5, label='near-term join, 2026-27 excess (A1)')
+    a.bar([], [], color=C['join'], alpha=0.5, label='near-term market excess')
 if np.any(R['wave'][1:] != 0):
     a.bar([], [], color=C['wave'], alpha=0.5, label='redevelopment wave (scenario - long run)')
 a.plot(YH, B['hist_built_gfa'].loc[YH] / M6, color='black', lw=1.6, label='built (net)')
 a.plot(PF, R['total'][1:] / M6, color='black', lw=1.6, ls='--')
 a.fill_between(PF, R['total'][1:] / M6, (R['total'][1:] + R['hs_avoided'][1:]) / M6, facecolor='none',
                edgecolor=C['split'], hatch='//', lw=0.6, label='avoided (consolidation; outline, not stacked)')
-tidy(a, 'By demand type (hatched = projected)', 'million m² per year')
+tidy(a, 'By demand type (hatched = projected)', 'Mm² per year')
 a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
 
 a = ax[1, 0]
@@ -454,21 +453,53 @@ a.plot(YH, obs / M6, color='black', lw=2.5, label='observed (built)')
 a.plot(YH, recon / M6, color='#e74c3c', ls='', marker='o', ms=4, label='sum of demand parts')
 a.set_title(f'History reproduced by the decomposition\n'
             f'max |difference| = {np.abs(recon - obs).max():.1e} m²')
-a.set_ylabel('million m² per year')
+a.set_ylabel('Mm² per year')
 a.legend()
 
 a = ax[0, 1]
 chg = 100 * B['hist_total_gfa'].pct_change().loc[YH].values
-step = 100 * (R['total'][3] / R['total'][2] - 1)      # 2027 (observed pipeline) -> 2028 (model)
+step = 100 * (R['total'][2] / R['total'][1] - 1)      # 2026 (observed) -> 2027 (model)
 a.hist(chg, bins=14, color='#bdc3c7', edgecolor='white')
-a.axvline(step, color='#c0392b', lw=2.5, label=f'2027->2028 handover (observed pipeline -> model): {step:+.1f}%')
+a.axvline(step, color='#c0392b', lw=2.5, label=f'2026->2027 handover (observed -> model): {step:+.1f}%')
 a.axvline(np.median(chg), color='black', lw=1, ls='--', label=f'median year: {np.median(chg):+.1f}%')
-a.set_title('Is the model handover (2027->2028) normal?\nhistorical year-to-year changes, 1992-2025')
+a.set_title('Is the model handover (2026->2027) normal?\nhistorical year-to-year changes, 1992-2025')
 a.set_xlabel('% change from previous year')
 a.set_ylabel('number of years')
 a.legend()
 
 a = ax[1, 0]
+# 2026 out-of-sample check: observed consents vs the model run WITHOUT any 2026 data
+import validation as _V
+_chk = _V.check_2026(_V.run_boss(**_V.NO_2026_DATA))
+if _chk.get('status') == 'observed':
+    _vals = [_chk['observed_ytd'], _chk['model_expected_ytd']]
+    _bars = a.bar(['observed\nJan-Jul 2026', 'model (no 2026 data)\nsame months'], _vals,
+                  color=['black', '#95a5a6'])
+    for bb, v in zip(_bars, _vals):
+        a.text(bb.get_x() + bb.get_width() / 2, v / 2, f'{v:,.0f}', ha='center', va='center',
+               color='white', fontweight='bold')
+    a.set_title(f"2026 out-of-sample check: consents, observed / model = {_chk['ratio_observed_to_model']:.2f}\n"
+                f"(model run without any observed 2026 input)")
+else:
+    a.set_title('2026 out-of-sample check: no 2026 consents in the data')
+a.set_ylabel('dwellings consented')
+
+a = ax[1, 1]
+tot_mat = MI[TYP].sum() + pd.Series(SI)[TYP]
+x = np.arange(len(TYP))
+a.bar(x - 0.2, tot_mat.values, 0.4, color='#34495e', label='materials + soil')
+a.bar(x + 0.2, [TB[t] for t in TYP], 0.4, color='#e67e22', label='intensity used')
+a.set_xticks(x)
+a.set_xticklabels(TYP)
+dev = max(abs(tot_mat[t] - TB[t]) for t in TYP)
+a.set_title(f'Carbon factors add up (internal consistency of the CSVs only)\n'
+            f'max |difference| = {dev:.3f} kg/m²')
+a.set_ylabel('kg CO₂e per m²')
+a.legend()
+finish(fig, 'diag_6_checks.png')
+
+# Appendix: which vacancy definition is plausible (moved from diag_6)
+fig, a = plt.subplots(figsize=(7, 5))
 cen_all = (cen['unoccupied'] / cen['total_private']).to_dict()
 v_all = pd.Series(np.interp(B['years_hist'].astype(float), list(cen_all), list(cen_all.values())),
                   index=B['years_hist'])
@@ -487,20 +518,7 @@ for bb, v in zip(bars, [unc_emp, unc_all]):
 a.axhline(0, color='black', lw=0.7)
 a.set_title(f"Which vacancy definition is plausible?\nunconsented additions each one requires, 1992-{B['calib_end']}")
 a.set_ylabel('dwellings per year')
-
-a = ax[1, 1]
-tot_mat = MI[TYP].sum() + pd.Series(SI)[TYP]
-x = np.arange(len(TYP))
-a.bar(x - 0.2, tot_mat.values, 0.4, color='#34495e', label='materials + soil')
-a.bar(x + 0.2, [TB[t] for t in TYP], 0.4, color='#e67e22', label='intensity used')
-a.set_xticks(x)
-a.set_xticklabels(TYP)
-dev = max(abs(tot_mat[t] - TB[t]) for t in TYP)
-a.set_title(f'Carbon factors add up (internal consistency of the CSVs only)\n'
-            f'max |difference| = {dev:.3f} kg/m²')
-a.set_ylabel('kg CO₂e per m²')
-a.legend()
-finish(fig, 'diag_6_checks.png')
+finish(fig, 'diag_6b_appendix_vacancy_definition.png')
 
 # ---------------------------------------------------------------------------
 # Console summary
@@ -508,7 +526,7 @@ finish(fig, 'diag_6_checks.png')
 print("=" * 70)
 print(f" Built floor area 2026-2050: {R['total'][1:].sum() / M6:.2f} million m2")
 print(f" Embodied carbon  2026-2050: {B['carbon_total_typ'].iloc[1:].sum().sum() / M6:,.1f} kt CO2e")
-print(f" 2027 -> 2028 handover step: {step:+.1f}%  (median historical year {np.median(chg):+.1f}%)")
+print(f" 2026 -> 2027 handover step: {step:+.1f}%  (median historical year {np.median(chg):+.1f}%)")
 print(f" History reconstruction: max |difference| {np.abs(recon - obs).max():.1e} m2")
 print(f" Household size 2050: {S_f[-1]:.3f} | vacancy {100 * B['v_forward']:.2f}% | "
       f"demolition {100 * B['demolition_rate']:.3f}% | unconsented {100 * B['unconsented_rate']:+.3f}%")

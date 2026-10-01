@@ -19,11 +19,12 @@
 | `outputs/figures/diag_5_carbon.png` | Carbon decomposition. |
 | `outputs/figures/diag_6_checks.png` | History reconstruction, the 2026->2027 handover vs historical changes, the 2026 out-of-sample check, factor consistency. |
 | `outputs/figures/diag_6b_appendix_vacancy_definition.png` | Appendix: why empty-only vacancy (not residents away) is used. |
-| `outputs/figures/fig_bridge.png` | Waterfall of 2026-2050 floor area by reason, S1 / S3-10 / S2. Look for: how much the wave and excess add. |
+| `outputs/figures/fig_bridge.png` | Waterfall of 2026-2050 floor area by reason (low / reference / storyline); demolition and residual merged as long-run replacement (net). Look for: how much the wave and excess add. |
+| `outputs/figures/fig_bridge_appendix_split.png` | Appendix: the bridge with demolition and the long-run residual split; only their sum is identified. |
 | `outputs/figures/fig_conversion_chain.png` | Indices of population growth -> households -> dwellings -> floor area -> carbon, and carbon intensity per m². Look for: where the chain diverges. |
 | `outputs/figures/fig_reality_checks.png` | Projection vs 1991-2025 range: completions, removals, people per new dwelling, m² per new resident, household size and vacancy, dwelling size and mix. Look for: lines leaving the grey band (outputs/reality_checks.md). |
 | `outputs/figures/fig_scenarios.png` | Annual floor area by scenario with the reference MC band and history; cumulative floor area and carbon (upfront vs later). |
-| `outputs/figures/fig_validation.png` | Hindcast cumulative dwellings (reference method and constant rate) from 2006/2013/2018, and the 2026 check. |
+| `outputs/figures/fig_validation.png` | Hindcast cumulative dwellings from 2006/2013/2018 under a consistent vacancy definition (dotted: vacancy as published), and the 2026 check. |
 | `outputs/figures/mc_1_fan.png` | Reference MC fan (5-95%). Look for: the width relative to the scenario spread. |
 | `outputs/figures/mc_3_sobol.png` | Sobol indices (reference). Look for: population dominance. |
 | `outputs/figures/sens_1_tornado.png` | One-at-a-time sensitivities (floor area and carbon). Look for: the largest bars. |

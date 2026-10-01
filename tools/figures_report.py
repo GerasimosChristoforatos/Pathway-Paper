@@ -146,26 +146,31 @@ def main():
     plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_reality_checks.png'), dpi=130); plt.close(fig)
 
     # ---- 6. bridge ---------------------------------------------------------
-    steps = [('growth', 'Growth'), ('hs_pos', 'House-splitting'), ('extra', 'Extra space'), ('vac', 'Vacancy'),
-             ('repl', 'Demolition replacement'), ('unc', 'Long-run residual'), ('wave', 'Redevelopment wave'),
-             ('join', 'Near-term excess'), ('rv', 'RV (out of scope)')]
-    fig, ax = plt.subplots(1, 3, figsize=(19, 6), sharey=True)
-    fig.suptitle('Bridge: 2026-2050 floor area by reason for building (Mm²)', fontsize=13)
-    for a, k in zip(ax, ('S1', 'S3-10', 'S2')):
-        R = runs[k]['B']['results']['50th']
-        vals = [float(np.sum(R[s][1:])) / M6 for s, _ in steps]
-        cum = 0.0
-        for i, (v, (_, lab)) in enumerate(zip(vals, steps)):
-            a.bar(i, v, bottom=cum if v >= 0 else cum + v, color='#2E86AB' if v >= 0 else '#C0392B')
-            a.text(i, cum + max(v, 0) + 0.5, f'{v:+.1f}', ha='center', fontsize=7.5)
-            cum += v
-        a.bar(len(steps), cum, color='black')
-        a.text(len(steps), cum + 0.5, f'{cum:.1f}', ha='center', fontsize=8, fontweight='bold')
-        a.set_xticks(range(len(steps) + 1)); a.set_xticklabels([l for _, l in steps] + ['Total'], rotation=60,
-                                                              ha='right', fontsize=8)
-        a.set_title(runs[k]['lab']); a.grid(alpha=0.3, axis='y')
-    ax[0].set_ylabel('Mm² (2026-2050)')
-    plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_bridge.png'), dpi=130); plt.close(fig)
+    def bridge(steps, fname, note):
+        fig, ax = plt.subplots(1, 3, figsize=(19, 6), sharey=True)
+        fig.suptitle('Bridge: 2026-2050 floor area by reason for building (Mm²)' + note, fontsize=12)
+        for a, k in zip(ax, ('S1', 'S3-10', 'S2')):
+            R = runs[k]['B']['results']['50th']
+            vals = [sum(float(np.sum(R[x][1:])) for x in keys) / M6 for keys, _ in steps]
+            cum = 0.0
+            for i, (v, (_, lab)) in enumerate(zip(vals, steps)):
+                a.bar(i, v, bottom=cum if v >= 0 else cum + v, color='#2E86AB' if v >= 0 else '#C0392B')
+                a.text(i, cum + max(v, 0) + 0.5, f'{v:+.1f}', ha='center', fontsize=7.5)
+                cum += v
+            a.bar(len(steps), cum, color='black')
+            a.text(len(steps), cum + 0.5, f'{cum:.1f}', ha='center', fontsize=8, fontweight='bold')
+            a.set_xticks(range(len(steps) + 1))
+            a.set_xticklabels([l for _, l in steps] + ['Total'], rotation=60, ha='right', fontsize=8)
+            a.set_title(runs[k]['lab']); a.grid(alpha=0.3, axis='y')
+        ax[0].set_ylabel('Mm² (2026-2050)')
+        plt.tight_layout(); fig.savefig(os.path.join(FIG, fname), dpi=130); plt.close(fig)
+    common = [(('growth',), 'Growth'), (('hs_pos',), 'House-splitting'), (('extra',), 'Extra space'),
+              (('vac',), 'Vacancy')]
+    tail = [(('wave',), 'Redevelopment wave'), (('join',), 'Near-term excess'), (('rv',), 'RV (out of scope)')]
+    bridge(common + [(('repl', 'unc'), 'Long-run replacement (net)')] + tail, 'fig_bridge.png', '')
+    bridge(common + [(('repl',), 'Demolition replacement'), (('unc',), 'Long-run residual')] + tail,
+           'fig_bridge_appendix_split.png',
+           '\nAppendix: demolition (BRANZ rate) vs residual -- only their SUM is identified by the census data')
 
     # ---- 7. scenarios ------------------------------------------------------
     fig, ax = plt.subplots(1, 3, figsize=(19, 5.5), gridspec_kw=dict(width_ratios=[2, 1, 1]))
@@ -183,36 +188,46 @@ def main():
     ks = list(runs)
     a = ax[1]
     a.bar(range(len(ks)), [runs[k]['p']['gfa'].loc[2026:].sum() / M6 for k in ks], color=[runs[k]['col'] for k in ks])
-    a.set_xticks(range(len(ks))); a.set_xticklabels(ks); a.set_title('Cumulative floor area 2026-2050')
+    short = {'S1': 'low', 'S3-10': 'reference', 'S2': 'storyline', 'S2-held': 'high'}
+    a.set_xticks(range(len(ks))); a.set_xticklabels([short[k] for k in ks]); a.set_title('Cumulative floor area 2026-2050')
     a.set_ylabel('Mm²'); a.grid(alpha=0.3, axis='y')
     a = ax[2]
     up = [float(runs[k]['B']['_upfront'] + runs[k]['B']['_soil'] / M6) for k in ks]
     tot = [float(runs[k]['B']['tot_carbon_median']) for k in ks]
     a.bar(range(len(ks)), up, color='#34495E', label='upfront (A1-A5 + soil)')
     a.bar(range(len(ks)), np.subtract(tot, up), bottom=up, color='#BDC3C7', label='later stages (B, C)')
-    a.set_xticks(range(len(ks))); a.set_xticklabels(ks); a.set_title('Cumulative carbon 2026-2050')
+    a.set_xticks(range(len(ks))); a.set_xticklabels([short[k] for k in ks]); a.set_title('Cumulative carbon 2026-2050')
     a.set_ylabel('kt CO₂e'); a.legend(fontsize=8); a.grid(alpha=0.3, axis='y')
     plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_scenarios.png'), dpi=130); plt.close(fig)
 
     # ---- 8. conversion chain -----------------------------------------------
     p = ref['p']
-    yrs = np.arange(2026, 2051)
-    chain = [('population growth', p['dpop']), ('households formed', p['d_hh']), ('dwellings built', p['built']),
-             ('floor area', p['gfa']), ('carbon', p['carbon'])]
+    yrs = np.arange(2027, 2051)
+    chain = [('population growth', p['dpop'], '-'), ('households formed', p['d_hh'], '-'),
+             ('dwellings built', p['built'], '--'), ('floor area', p['gfa'], '-'), ('carbon', p['carbon'], '-')]
     fig, ax = plt.subplots(1, 2, figsize=(16, 5.5))
-    for lab, s in chain:
-        s = s.loc[yrs]
-        ax[0].plot(yrs, 100 * s / s.loc[2026], lw=1.8, label=lab)
+    for lab, s_, ls in chain:
+        s_ = s_.loc[yrs]
+        ax[0].plot(yrs, 100 * s_ / s_.loc[2027], lw=2.2 if ls == '--' else 1.8, ls=ls, label=lab)
     ax[0].axhline(100, color='black', lw=0.6)
-    ax[0].set_title('Conversion chain, reference path (index, 2026 = 100)'); ax[0].legend(); ax[0].grid(alpha=0.3)
-    ci = (p['carbon'] / p['gfa']).loc[yrs]
-    ax[1].plot(yrs, ci, color='#34495E', lw=2)
-    ax[1].set_title('Average carbon intensity of new floor area (mix effect only)')
-    ax[1].set_ylabel('kg CO₂e per m²'); ax[1].grid(alpha=0.3)
+    ax[0].set_title('Conversion chain, reference path (index, 2027 = 100)'); ax[0].legend(); ax[0].grid(alpha=0.3)
+    ax[0].text(0.02, 0.03, '2026 is not used as the base: it is observed building and carries the one-off\n'
+               'population shortfall and the near-term market excess.', transform=ax[0].transAxes, fontsize=8)
+    lo, hi = np.inf, -np.inf
+    for k in ('S3-10', 'S2', 'S2-held'):
+        ci = (runs[k]['p']['carbon'] / runs[k]['p']['gfa']).loc[2026:2050]
+        ax[1].plot(ci.index, ci, color=runs[k]['col'], lw=2, label=runs[k]['lab'])
+        lo, hi = min(lo, ci.min()), max(hi, ci.max())
+    pad = 0.15 * max(hi - lo, 1.0)
+    ax[1].set_ylim(lo - pad, hi + pad)
+    ax[1].set_title('Average carbon intensity of new floor area (typology mix effect only)')
+    ax[1].set_ylabel('kg CO₂e per m²'); ax[1].grid(alpha=0.3); ax[1].legend(fontsize=8)
     plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_conversion_chain.png'), dpi=130); plt.close(fig)
 
     # ---- 9. validation -----------------------------------------------------
+    from matplotlib.ticker import MaxNLocator
     v = json.load(open(os.path.join(OUT, 'validation.json')))
+    pub = v.get('hindcast_as_published') or []
     fig, ax = plt.subplots(1, 4, figsize=(20, 4.8))
     for a, o in zip(ax[:3], (2006, 2013, 2018)):
         rows = [r for r in v['hindcast'] if r['origin'] == o and 'years' in r]
@@ -223,10 +238,16 @@ def main():
         for r in rows:
             if r['method'] in ('reference_s3_10', 'constant'):
                 a.plot(yy, np.cumsum(r['predicted_path']) / 1e3, lw=1.6,
-                       label=f"{'reference (S3-10)' if r['method'] == 'reference_s3_10' else 'constant rate'} "
-                             f"{r['error_pct']:+.1f}%")
+                       color='#C0392B' if r['method'] == 'reference_s3_10' else '#2E86AB',
+                       label=f"{'reference (S3-10)' if r['method'] == 'reference_s3_10' else 'constant rate'}, "
+                             f"consistent vacancy {r['error_pct']:+.1f}%")
+        for r in pub:
+            if r['origin'] == o and r['method'] == 'reference_s3_10' and 'years' in r:
+                a.plot(r['years'], np.cumsum(r['predicted_path']) / 1e3, lw=1.2, ls=':', color='#C0392B',
+                       label=f"reference, vacancy as published {r['error_pct']:+.1f}%")
         a.set_title(f'Hindcast from origin {o}: cumulative dwellings'); a.set_ylabel('thousand')
-        a.legend(fontsize=8); a.grid(alpha=0.3)
+        a.xaxis.set_major_locator(MaxNLocator(integer=True))
+        a.legend(fontsize=7.5); a.grid(alpha=0.3)
     c = v['check_2026']
     a = ax[3]
     if c.get('status') == 'observed':
@@ -275,10 +296,11 @@ def main():
         'mc_1_fan': 'Reference MC fan (5-95%). Look for: the width relative to the scenario spread.',
         'mc_3_sobol': 'Sobol indices (reference). Look for: population dominance.',
         'fig_reality_checks': 'Projection vs 1991-2025 range: completions, removals, people per new dwelling, m² per new resident, household size and vacancy, dwelling size and mix. Look for: lines leaving the grey band (outputs/reality_checks.md).',
-        'fig_bridge': 'Waterfall of 2026-2050 floor area by reason, S1 / S3-10 / S2. Look for: how much the wave and excess add.',
+        'fig_bridge': 'Waterfall of 2026-2050 floor area by reason (low / reference / storyline); demolition and residual merged as long-run replacement (net). Look for: how much the wave and excess add.',
+        'fig_bridge_appendix_split': 'Appendix: the bridge with demolition and the long-run residual split; only their sum is identified.',
         'fig_scenarios': 'Annual floor area by scenario with the reference MC band and history; cumulative floor area and carbon (upfront vs later).',
         'fig_conversion_chain': 'Indices of population growth -> households -> dwellings -> floor area -> carbon, and carbon intensity per m². Look for: where the chain diverges.',
-        'fig_validation': 'Hindcast cumulative dwellings (reference method and constant rate) from 2006/2013/2018, and the 2026 check.'}
+        'fig_validation': 'Hindcast cumulative dwellings from 2006/2013/2018 under a consistent vacancy definition (dotted: vacancy as published), and the 2026 check.'}
     files = sorted(f[:-4] for f in os.listdir(FIG) if f.endswith('.png'))
     L = ['# Figures (generated by tools/figures_report.py)', '', '| figure | what it shows / what to look for |', '|---|---|']
     L += [f"| `outputs/figures/{f}.png` | {desc.get(f, '(no description)')} |" for f in files]

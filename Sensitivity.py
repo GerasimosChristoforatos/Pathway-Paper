@@ -37,7 +37,8 @@ N_PATHS = 6              # cases drawn in the annual-path figure (largest effect
 GROUP_COLORS = {'Population': '#2E6DB4', 'Household size': '#E67E22', 'Households': '#D35400',
                 'Stock': '#34495E', 'Typology mix': '#8E44AD', 'Dwelling size': '#16A085',
                 'Carbon factors': '#C0392B', 'Near-term join (A1)': '#7F8C8D',
-                'Replacement scenario': '#1ABC9C', 'Near-term market excess': '#7F8C8D'}
+                'Replacement scenario': '#1ABC9C', 'Near-term market excess': '#7F8C8D',
+                'Near-term: how the excess is booked': '#7F8C8D', 'Near-term: rule variant': '#F39C12'}
 
 # (group, label, {Boss setting: value})
 CASES = [   # v1.1 lean set; the full v1.0.2 table is in the history (tag v1.0.2). All old options stay as flags.
@@ -52,19 +53,19 @@ CASES = [   # v1.1 lean set; the full v1.0.2 table is in the history (tag v1.0.2
     ('Household size', 'Stats NZ High projection variant (S)', dict(HH_SIZE_VARIANT='High')),
     ('Household size', 'S after 2043: flat', dict(S_TAIL='flat')),
     ('Household size', 'S after 2043: taper from the PCHIP end slope', dict(S_TAIL='taper')),
-    ('Dwelling size', 'Reference 2016-2025', dict(DWELLING_SIZE_REF=(2016, 2025))),
+    ('Dwelling size', 'Dwelling size: 2016–2025 reference', dict(DWELLING_SIZE_REF=(2016, 2025))),
     ('Stock', 'Completion rate 0.92', dict(COMPLETION_RATE=0.92)),
     ('Stock', 'Completion rate 0.96', dict(COMPLETION_RATE=0.96)),
     ('Stock', "Completion lag on (Little's law)", dict(COMPLETION_LAG='littles_law')),
     ('Stock', 'No census under-construction correction', dict(CENSUS_UC_CORRECTION=False)),
-    ('Near-term market excess', 'Temporary surplus with payback, absorption 0.20/yr',
+    ('Near-term: how the excess is booked', 'Temporary surplus with payback, absorption 0.20/yr',
      dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.20)),
-    ('Near-term market excess', 'Temporary surplus with payback, absorption 0.10/yr',
+    ('Near-term: how the excess is booked', 'Temporary surplus with payback, absorption 0.10/yr',
      dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.10)),
-    ('Near-term market excess', 'Booked as redevelopment, stock-neutral (v1.1)',
+    ('Near-term: how the excess is booked', 'Booked as redevelopment, stock-neutral (v1.1)',
      dict(NEAR_TERM_MODE='redevelopment')),
-    ('Near-term market excess', 'Gap measured against the 2026 requirement', dict(NEAR_TERM_GAP_REF='2026')),
-    ('Near-term market excess', 'Three-channel join (v1.0.2)', dict(NEAR_TERM_JOIN='nowcast')),
+    ('Near-term: rule variant', 'Gap measured against the 2026 requirement', dict(NEAR_TERM_GAP_REF='2026')),
+    ('Near-term: rule variant', 'Three-channel join (v1.0.2)', dict(NEAR_TERM_JOIN='nowcast')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
 ]
 
@@ -185,8 +186,11 @@ def figures(out, base, paths):
                     f"{' Mm²' if col.startswith('GFA') else ' kt'})")
         a.set_xlabel('% change from the adopted settings'); a.grid(alpha=0.3, axis='x')
     ax[0].set_yticks(y); ax[0].set_yticklabels(cases.case, fontsize=8.5)
-    handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in GROUP_COLORS.values()]
-    ax[1].legend(handles, GROUP_COLORS.keys(), fontsize=8, loc='lower right')
+    present = [g for g in GROUP_COLORS if g in set(cases.group)]      # only groups shown
+    handles = [plt.Rectangle((0, 0), 1, 1, color=GROUP_COLORS[g]) for g in present]
+    ax[1].legend(handles, present, fontsize=8, loc='lower right')
+    fig.text(0.01, 0.005, 'Note: the single-case carbon factors and the soil-order extremes (Raw / Organic) are bounds '
+             'shown outside the Monte Carlo, not probability-weighted cases.', fontsize=8, style='italic')
     _save(fig, 'sens_1_tornado.png')
 
     # ---- 2. annual paths: WHEN each assumption matters ---------------------

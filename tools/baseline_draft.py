@@ -91,6 +91,15 @@ LIMITATIONS = [
 ]
 
 
+def _payback():
+    p = os.path.join(OUT, 'sensitivity_oat.csv')
+    if not os.path.exists(p):
+        return None
+    s = pd.read_csv(p).set_index('case')['GFA_change_pct']
+    k = 'Temporary surplus with payback, absorption 0.20/yr'
+    return float(s[k]) if k in s else None
+
+
 def main():
     b, m = load('boss_results.json'), load('metrics.json')
     sc, v = load('replacement_scenarios.json'), load('validation.json')
@@ -123,6 +132,15 @@ def main():
         r = pd.read_csv(ref_mc, index_col=0).loc['GFA_Mm2']
         txt += (f" Within the reference path, joint uncertainty in the inputs gives a 90% interval of "
                 f"{r['p5']:.1f}-{r['p95']:.1f} million m² (median {r['p50']:.1f}, mean {r['mean']:.1f}).")
+        _sp = os.path.join(OUT, 'sensitivity_oat.csv')
+        if os.path.exists(_sp):
+            _s = pd.read_csv(_sp).set_index('case')['carbon_kt']
+            _pair = lambda a, b_: (f"{_s[a]:,.0f}-{_s[b_]:,.0f} kt" if a in _s and b_ in _s else 'n/a')
+            txt += (f" Outside the MC, carbon-factor and soil bounds on the reference carbon "
+                    f"({b['carbon_kt']:,.0f} kt): case-study jackknife "
+                    f"{_pair('Materials: jackknife low (all typologies)', 'Materials: jackknife high (all typologies)')}, "
+                    f"single case study {_pair('Materials: lowest single case study', 'Materials: highest single case study')}, "
+                    f"soil order {_pair('Soil: lowest soil order (Raw)', 'Soil: highest soil order (Organic)')}.")
     txt += (f" Population uncertainty alone (Stats NZ 5th-95th percentiles) spans "
             f"{b['pop_band_gfa_Mm2']['5th']:.1f}-{b['pop_band_gfa_Mm2']['95th']:.1f} million m².")
     if os.path.exists(ref_mc):
@@ -195,6 +213,11 @@ def main():
                  f"{100 * nj['vacancy']['census_min']:.2f}-{100 * nj['vacancy']['census_max']:.2f}% at the censuses "
                  f"{nj['vacancy']['census_years']} (pre-2013 values on the earlier empty definition)."
                  if 'vacancy' in nj else ''),
+              '', ((f"Implied vacancy stays about {100 * (nj['vacancy']['v_2050'] - nj['vacancy']['v_forward']):.1f} "
+                    f"point above the 2023 rate because the surplus is never absorbed"
+                    + (f"; with payback (absorption 0.20 a year) floor area is "
+                       f"{_pb:+.1f}%." if (_pb := _payback()) is not None else '.'))
+                   if 'vacancy' in nj else ''),
               '', 'Caveats: a permanent surplus assumes the extra vacancy is never absorbed; over 2018-2023 part of '
                   'the excess went to redevelopment and household formation instead. rho is estimated on the '
                   'calibrated identity, not on market cycles. Sensitivities: booking as stock-neutral redevelopment'
@@ -242,10 +265,16 @@ def main():
 
     # ---- validation ----
     if v:
+        vd = v.get('vacancy_definition') or {}
+        pub = {(r['origin'], r['method']): r for r in (v.get('hindcast_as_published') or [])}
         L += ['', '## Validation', '', 'Rolling-origin hindcast of dwellings built (actual households and vacancy '
-              'fed in; the net-replacement term predicted):', '',
-              '| origin | test years | long-run rate (S1) error | reference method (S3-10) error | best alternative |',
-              '|---|---|---|---|---|']
+              'fed in; the net-replacement term predicted). Vacancy on a consistent definition'
+              + (f" (the pooled 2018/2023 empty share, {100 * vd['pooled_share']:.1f}% of unoccupied, at every census; "
+                 f"the 2013 census share was {100 * vd['share_2013']:.1f}%, and published empty vacancy falls "
+                 f"{100 * vd['v_2013']:.2f}% -> {100 * vd['v_2018']:.2f}% across the 2013->2018 definitional break)"
+                 if vd else '') + '; vacancy as published in the last column.', '',
+              '| origin | test years | long-run rate (S1) error | reference method (S3-10) error | best alternative | '
+              'reference, vacancy as published |', '|---|---|---|---|---|---|']
         for o in sorted({r['origin'] for r in v['hindcast']}):
             rr = [r for r in v['hindcast'] if r['origin'] == o]
             mm = [r for r in rr if r['method'] == v['model_method']][0]
@@ -254,7 +283,15 @@ def main():
                       key=lambda r: abs(r['error_pct']))
             L.append(f"| {o} | {mm['test']} | {mm['error_pct']:+.1f}% | "
                      f"{(format(ref[0]['error_pct'], '+.1f') + '%') if ref else 'n/a'} | "
-                     f"{alt['method']} {alt['error_pct']:+.1f}% |")
+                     f"{alt['method']} {alt['error_pct']:+.1f}% | "
+                     f"{(format(pub[(o, 'reference_s3_10')]['error_pct'], '+.1f') + '%') if (o, 'reference_s3_10') in pub else 'n/a'} |")
+        _ref = sorted((r['origin'], r['error_pct']) for r in v['hindcast'] if r['method'] == 'reference_s3_10')
+        if _ref:
+            _early = [e for o_, e in _ref if o_ < 2018]
+            L += ['', (f"Under a consistent vacancy definition the reference method reproduces building from the 2006 "
+                       f"and 2013 origins to 2023 within {min(abs(e) for e in _early):.0f}-{max(abs(e) for e in _early):.0f}%; "
+                       f"the residual miss ({[e for o_, e in _ref if o_ == 2018][0]:+.1f}% from 2018) is the 2018-23 surge."
+                       if _early and any(o_ == 2018 for o_, _ in _ref) else '')]
         c = v['check_2026']
         if c.get('status') == 'observed':
             L += ['', f"2026 check (model run without any observed-2026 input): observed consents Jan-Jul "
@@ -311,7 +348,14 @@ def main():
         L += ['', 'Notes: household size below the historical minimum is expected from Stats NZ\'s ageing projection '
                   '(the household-size shape keeps falling as the population ages). In the intensification storyline '
                   '(S2 + mix trend), average new-dwelling size below the historical minimum is intrinsic to that '
-                  'storyline: the mix moves towards townhouses and apartments.']
+                  'storyline'
+                  + ((f": by 2050 townhouses rise to {100 * rows['S2']['shares_2050']['Townhouses']:.0f}% of new floor "
+                      f"area (held: {100 * rows['S2-held']['shares_2050']['Townhouses']:.0f}%), while the apartment share "
+                      f"falls slightly ({100 * rows['S2-held']['shares_2050']['Apartments']:.1f}% -> "
+                      f"{100 * rows['S2']['shares_2050']['Apartments']:.1f}%), so the smaller average dwelling "
+                      f"({rows['S2']['size_2050']:.0f} vs {rows['S2-held']['size_2050']:.0f} m² in 2050) comes from "
+                      f"townhouses replacing detached houses.")
+                     if 'shares_2050' in rows.get('S2', {}) and 'shares_2050' in rows.get('S2-held', {}) else '.')]
 
     # ---- sensitivity ----
     sens = os.path.join(OUT, 'sensitivity_oat.csv')

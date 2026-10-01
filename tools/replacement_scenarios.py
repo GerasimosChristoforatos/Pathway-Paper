@@ -134,7 +134,7 @@ def main():
           '|---|---|---|---|---|']
     for h in hist:
         L.append(f"| {h['interval']} | {h['rate_uncorrected_pct']:+.3f} | "
-                 f"{('%+,.0f' % h['d_uc']) if h['d_uc'] is not None else 'n/a (not corrected)'} | "
+                 f"{format(h['d_uc'], '+,.0f') if h['d_uc'] is not None else 'n/a (not corrected)'} | "
                  f"{h['rate_pct']:+.3f} | {h['net_removals_per_yr']:,.0f} |")
     L += ['', '| window | uncorrected (%/yr) | corrected (%/yr) |', '|---|---|---|']
     for lab, v in rate_cmp.items():

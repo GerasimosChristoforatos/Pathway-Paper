@@ -87,7 +87,7 @@ def window_rate(cal, start, end):
 CENSUS_DAY_OF_YEAR = 64          # census nights fell on 4-7 March, 1986-2023; 5 March used
 
 
-def census_interval_rates(stock, consents, completion, lag_w, day_of_year=CENSUS_DAY_OF_YEAR):
+def census_interval_rates(stock, consents, completion, lag_w, day_of_year=CENSUS_DAY_OF_YEAR, uc=None):
     """Net replacement from census DWELLING counts, per intercensal interval
     (no household data, no empty/away split):
 
@@ -98,7 +98,13 @@ def census_interval_rates(stock, consents, completion, lag_w, day_of_year=CENSUS
     Dwellings completed in (census_0, census_1] = completion x consents whose
     mid-month falls in (census_0 - W, census_1 - W]: the same two-point lag as
     the model's completions series, in continuous time. Intervals without full
-    consent coverage are skipped."""
+    consent coverage are skipped.
+    uc : census dwellings under construction (private), by census year. When
+    given, dwellings completed = completion x consents - change in UC: the census
+    stock excludes dwellings under construction, so consents still in progress
+    at census night are not yet built. Use only with lag_w = 0 (a lag already
+    removes the pipeline). Intervals with a missing UC count are not corrected
+    (uc_corrected = False)."""
     years = sorted(int(y) for y in stock.index)
     t = {y: y + day_of_year / 365.25 for y in years}
     idx = consents.index
@@ -110,9 +116,14 @@ def census_interval_rates(stock, consents, completion, lag_w, day_of_year=CENSUS
             continue
         m = (tm > lo) & (tm <= hi)
         built = completion * float(consents[m].sum())
+        d_uc = (float(uc[y1] - uc[y0]) if uc is not None and y0 in uc.index and y1 in uc.index
+                and np.isfinite(uc[y0]) and np.isfinite(uc[y1]) else np.nan)
+        if np.isfinite(d_uc):
+            built -= d_uc
         d_stock = float(stock[y1] - stock[y0])
         stock_years = float((stock[y0] + stock[y1]) / 2.0 * (t[y1] - t[y0]))
         rows.append(dict(y0=y0, y1=y1, built=built, d_stock=d_stock, stock_years=stock_years,
+                         d_uc=d_uc, uc_corrected=bool(np.isfinite(d_uc)),
                          rate=(built - d_stock) / stock_years))
     return pd.DataFrame(rows)
 

@@ -209,7 +209,7 @@ def build_setup(settings=None):
               phi=Boss.DAMPING_PHI, s_anchor=Boss.S_ANCHOR_YEAR,
               nr_source=Boss.NET_REPLACEMENT_SOURCE, nr_window=tuple(Boss.NET_REPLACEMENT_WINDOW),
               census_stock=B['census']['total_private'], consents_monthly=B['consents_monthly'],
-              lag_w=B['lag_w'], const_share=B['_const_share'],
+              lag_w=B['lag_w'], const_share=B['_const_share'], census_uc=B['census_uc'],
               # replacement scenario and near-term join (A1), as in the Boss run
               scenario=B['_scenario'], s3_half_life=Boss.S3_HALF_LIFE,
               recent=tuple(Boss.RECENT_INTERVAL), join_mode=B['_join_mode'],
@@ -376,7 +376,8 @@ def project(su, p):
     # regime: weight on the 2019-2023 census interval's net replacement rate
     # against the whole census-benchmarked window (0 = long run, as in Boss)
     # census dwelling-count identity, recomputed for this draw's completion rate
-    rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_w'])
+    rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_w'],
+                                         uc=su['census_uc'])
     if su['nr_source'] == 'dwelling_count':
         unc_long = engine.census_window_rate(rates, *su['nr_window']) - su['demol_rate']
         unc_recent = engine.census_window_rate(rates, *su['recent']) - su['demol_rate']

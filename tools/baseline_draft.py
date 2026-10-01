@@ -46,11 +46,11 @@ def register():
         ('Completion rate', f'{B.COMPLETION_RATE:.2f} (band {B.COMPLETION_RATE_BAND[0]}-{B.COMPLETION_RATE_BAND[1]})',
          'LITERATURE: bounds from Jones et al. 2024 (citation to verify)'),
         ('Completion lag', f'{B.COMPLETION_LAG}', "DATA: Little's law W = L / lambda (a lower bound)"),
-        ('Near-term join', f'{B.NEAR_TERM_JOIN} ({B.NOWCAST_METHOD})', 'DATA (observed consents); method stated'),
-        ('Excess channels', f'{B.EXCESS_CHANNELS} on {B.RECENT_INTERVAL[0]}-{B.RECENT_INTERVAL[1]}',
-         'DATA, ONE census interval'),
-        ('Household channel', f'{B.HOUSEHOLD_CHANNEL}', 'JUDGEMENT (author decision)'),
-        ('Vacancy drawdown', f'{B.VACANCY_DRAWDOWN_YEARS} yr', 'JUDGEMENT; 3 and 10 as sensitivities'),
+        ('Near-term rule', f'{B.NEAR_TERM_JOIN}: 2026 building observed ({B.NOWCAST_METHOD})',
+         'DATA (observed consents); method stated'),
+        ('Near-term excess after 2026', f'gap vs the {B.NEAR_TERM_GAP_REF} requirement, fading at rho; booked as '
+         f'{B.NEAR_TERM_MODE}, absorption {B.NEAR_TERM_ABSORPTION:g}',
+         'JUDGEMENT (author decision); rho estimated; redevelopment, payback and gap-vs-2026 as sensitivities'),
         ('Population 2026', 'observed' if B.NOWCAST_POPULATION else 'projected median',
          'DATA: Stats NZ ERP (see README)'),
         ('Household-size shape', f'Stats NZ {B.HH_SIZE_VARIANT}, anchored {B.S_ANCHOR_YEAR}, tail {B.S_TAIL}',
@@ -82,10 +82,9 @@ LIMITATIONS = [
     'Apartments rest on one independent case study (A_1 and A_2 are one design at two scales).',
     'The regional analysis of the rebuilding wave (replacement half-life by territorial authority) is deferred.',
     'Net replacement persistence (S3 half-life) is not identifiable from the census record; S1 and S2 bound it.',
-    'Excess-channel shares rest on one census interval (2018-2023); no standard error can be formed.',
     'The 2018 census empty-dwelling count has no quality rating (DataInfo+); the vacancy terms rely on it.',
-    'The household-channel reversion rate is the persistence estimated on changes in household size, used for a '
-    'level deviation (an assumption).',
+    'The near-term excess fades at the persistence estimated on the calibrated stock identity (rho), not on '
+    'market cycles (an assumption).',
     'W from Little\'s law is a lower bound on the completion lag.',
     'Retirement-village floor area is reported but out of carbon scope.',
 ]
@@ -223,15 +222,8 @@ def main():
                   'calibrated identity, not on market cycles. Sensitivities: booking as stock-neutral redevelopment'
                   + (f" (implied net removals then peak at {nj['redevelopment_sensitivity']['peak_removals']:,.0f} in "
                      f"{nj['redevelopment_sensitivity']['peak_year']})" if 'redevelopment_sensitivity' in nj else '')
-                  + ', payback (absorption 0.20 or 0.10 a year), the gap measured against the 2026 requirement, '
-                  'and the v1.0.2 three-channel join.']
-    elif nj:
-        ch = nj['channels_2026_2050']
-        L += ['', f"The near-term join adds the building observed above the model's requirement in 2026-27 "
-                  f"(2026 excess {nj['e26']:+,.0f} dwellings, 2027 lagged share {nj['e27']:+,.0f}): redevelopment "
-                  f"{ch['redevelopment']:+,.0f}, vacancy {ch['vacancy']:+,.0f} (drawn down "
-                  f"{ch['vacancy_drawdown']:+,.0f}), households {ch['households']:+,.0f} (reverting "
-                  f"{ch['household_reversion']:+,.0f})."]
+                  + ', payback (absorption 0.20 or 0.10 a year), and the gap measured against the 2026 '
+                  'requirement.']
 
     # ---- typology / material / stages ----
     L += ['', '## By typology', '', '| typology | floor area (Mm²) | carbon (kt) | share of floor area 2025 → 2050 |',
@@ -323,11 +315,7 @@ def main():
               f"({gap['boom_2018_2023']['vacancy_rate_rise_absorbed']:+,.0f}).",
               '', (f"The model takes 2026 building from the observed consents and carries the excess forward as "
                    f"near-term market excess ({nj['e26']:+,.0f} dwellings in 2026, then gap_ref {nj['gap_ref']:+,.0f} "
-                   f"fading at rho = {nj['rho']:.2f}; {nj['join_2026_2050']:+,.0f} dwellings over 2026-2050)."
-                   if nj.get('mode') == 'market_excess' else
-                   f"The model allocates the 2026-27 excess ({nj['e26']:+,.0f} and {nj['e27']:+,.0f} dwellings) to "
-                   f"redevelopment, vacancy and household formation: "
-                   f"{sum(nj['channels_2026_2050'].values()):+,.0f} dwellings net over 2026-2050."),
+                   f"fading at rho = {nj['rho']:.2f}; {nj['join_2026_2050']:+,.0f} dwellings over 2026-2050)."),
               '', f"[^s1]: On S1 (long-run replacement) the requirement is {r1['model']:,.0f} and the gap "
                   f"{r1['gap']:+,.0f} = population {r1['population']:+,.0f} + pipeline {r1['pipeline']:+,.0f} + "
                   f"2026 consents above requirement {r1['residual']:+,.0f}."]

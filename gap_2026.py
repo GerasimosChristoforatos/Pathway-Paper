@@ -22,7 +22,7 @@ Sequential decomposition of O - M (the order is a choice and is stated):
         converted to dwellings as households / (1 - v) at the model's 2026
         household size and vacancy. Timing: projection growth is for years
         ended June and is applied by the model to calendar years (half-year
-        offset, stated in MODEL_REVIEW 3.8).
+        offset; see Boss.NOWCAST_POPULATION, POPULATION CONVENTION).
   With M' = M + (ii) + (iii):
   (i)   pipeline: W x (c C25 - M'), completions in 2026 from 2025 consents
         above the requirement;
@@ -107,7 +107,7 @@ def main():
 
     E = B['engine_out']['50th']
     S26, v26, stock25 = float(E['S'][1]), float(E['v'][1]), float(E['prev'][1])
-    # the model's adopted source (Boss.POP_NOWCAST_SOURCE = 'dpe_quarterly'): June qtr 2026 - June qtr 2025
+    # the model's 2026 population nowcast (Boss.NOWCAST_POPULATION): June qtr 2026 - June qtr 2025
     _q = pd.read_csv(Boss.FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
     g_act = float(_q[(2026, 2)] - _q[(2025, 2)])
     g_text = 'mean-quarter ERP (Infoshare DPE059AA), June quarter 2026 minus June quarter 2025'

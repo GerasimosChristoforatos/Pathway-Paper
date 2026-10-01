@@ -210,7 +210,7 @@ def check_2026(B, consents=None):
     """consents: monthly all-category series (index = month); read from the
     consent file when not given."""
     if consents is None:
-        c = Boss.load_consents(Boss.CONSENT_SOURCE)
+        c = Boss.load_consents()
         consents = c.set_index(pd.to_datetime(c['Date']))[Boss.COL_DWELLINGS_TOTAL]
     s = consents.sort_index()
     last = s.index.max()
@@ -238,7 +238,7 @@ def check_2026(B, consents=None):
 
 
 def write(rows, chk, stock_rows=None, dhe=None, rows_pub=None, vac=None):
-    lines = [f'Net replacement source in use: `{Boss.NET_REPLACEMENT_SOURCE}` '
+    lines = [f'Net replacement in use: census dwelling-count identity '
              f'(window {Boss.NET_REPLACEMENT_WINDOW[0]}-{Boss.NET_REPLACEMENT_WINDOW[1]}).', '',
              '### (A) Rolling-origin hindcast of dwellings built (descriptive; 3 origins)', '',
              'Actual households and vacancy fed in; only the net-replacement term is predicted. '
@@ -300,14 +300,13 @@ def write(rows, chk, stock_rows=None, dhe=None, rows_pub=None, vac=None):
     with open(OUT_JSON, 'w') as f:
         json.dump(dict(hindcast=rows, hindcast_as_published=rows_pub, vacancy_definition=vac,
                        hindcast_stock=stock_rows, net_replacement_crosscheck=dhe,
-                       model_method='dwelling_count' if Boss.NET_REPLACEMENT_SOURCE == 'dwelling_count'
-                       else 'constant', check_2026=chk), f, indent=2)
+                       model_method='dwelling_count', check_2026=chk), f, indent=2)
     print('\n'.join(lines))
 
 
 def main():
     B = run_boss()
-    uses_2026 = B['_join_mode'] == 'nowcast' or B['pop_nowcast'] is not None
+    uses_2026 = B['_join_mode'] == 'market_excess' or B['pop_nowcast'] is not None
     B0 = run_boss(**NO_2026_DATA) if uses_2026 else B
     chk = check_2026(B0)
     chk['model_settings'] = NO_2026_DATA if uses_2026 else 'as run (no 2026 data used)'

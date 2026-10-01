@@ -36,12 +36,12 @@ N_PATHS = 6              # cases drawn in the annual-path figure (largest effect
 
 GROUP_COLORS = {'Population': '#2E6DB4', 'Household size': '#E67E22', 'Households': '#D35400',
                 'Stock': '#34495E', 'Typology mix': '#8E44AD', 'Dwelling size': '#16A085',
-                'Carbon factors': '#C0392B', 'Near-term join (A1)': '#7F8C8D',
+                'Carbon factors': '#C0392B',
                 'Replacement scenario': '#1ABC9C', 'Near-term market excess': '#7F8C8D',
                 'Near-term: how the excess is booked': '#7F8C8D', 'Near-term: rule variant': '#F39C12'}
 
 # (group, label, {Boss setting: value})
-CASES = [   # v1.1 lean set; the full v1.0.2 table is in the history (tag v1.0.2). All old options stay as flags.
+CASES = [   # lean set (v1.1); the full v1.0.2 table is in the history (tag v1.0.2)
     ('Replacement scenario', 'Low (S1): long-run rate, shares held', dict(REPLACEMENT_SCENARIO='S1')),
     ('Replacement scenario', 'Storyline: intensification continues (S2 + mix trend)', dict(REPLACEMENT_SCENARIO='S2')),
     ('Replacement scenario', 'S3: half-life 5 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
@@ -66,7 +66,6 @@ CASES = [   # v1.1 lean set; the full v1.0.2 table is in the history (tag v1.0.2
     ('Near-term: how the excess is booked', 'Booked as redevelopment, stock-neutral (v1.1)',
      dict(NEAR_TERM_MODE='redevelopment')),
     ('Near-term: rule variant', 'Gap measured against the 2026 requirement', dict(NEAR_TERM_GAP_REF='2026')),
-    ('Near-term: rule variant', 'Three-channel join (v1.0.2)', dict(NEAR_TERM_JOIN='nowcast')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
 ]
 

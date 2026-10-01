@@ -31,6 +31,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `ANCHOR_SMOOTHING_YEARS` | `3` |
 | `CALIB_START_YEAR` | `1992` |
 | `CENSUS_SOURCE` | `'hou018_private'` |
+| `CENSUS_UC_CORRECTION` | `True` |
 | `CHANNEL_POP_DATE` | `'march_quarter'` |
 | `COMPLETION_LAG` | `0` |
 | `COMPLETION_RATE` | `0.95` |

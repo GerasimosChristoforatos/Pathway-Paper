@@ -211,6 +211,8 @@ def build_setup(settings=None):
               S_shape=B['S_knots'].set_index('Year')['S'], channels=Boss.EXCESS_CHANNELS,
               drawdown=Boss.VACANCY_DRAWDOWN_YEARS, hh_channel=Boss.HOUSEHOLD_CHANNEL,
               units_all_raw=B['hist_units_all'],
+              near_gap_ref=Boss.NEAR_TERM_GAP_REF, near_mode=Boss.NEAR_TERM_MODE,
+              near_absorption=Boss.NEAR_TERM_ABSORPTION,
               # typology mix storyline and the observed 2026 floor area (fixed in every draw)
               mix_used=B['mix_used'], held_frame=B['evolving_gfa_shares'].copy(),
               shares_2026=(B['evolving_gfa_shares'].loc[2026].copy() if B['gfa_nowcast'] else None),
@@ -420,6 +422,12 @@ def project(su, p):
                                       c, su['lag_w'], Boss.channel_shares(su['channels'], ev),
                                       su['drawdown'], su['hh_channel'], p.get('rho', su['rho_hat']))
         E = fwd(join, ji['channels']['redevelopment'])
+    elif su['join_mode'] == 'market_excess':
+        b26 = c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
+                   + su['lag_w'] * float(su['units_all_raw'].loc[2025]))
+        join, ji = engine.market_excess(E, b26, dv['rho'], su['near_gap_ref'], su['near_mode'],
+                                        su['near_absorption'])
+        E = fwd(join, ji['redev'])
     return dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
                 townhouse_2050=float(shares[typ[1]].iloc[-1]),
                 hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],

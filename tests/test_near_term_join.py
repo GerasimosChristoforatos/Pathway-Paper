@@ -161,3 +161,26 @@ def test_population_nowcast_shift_and_catchup():
     assert close(P(cu)[i26] - P(base)[i26], shift)
     assert close(P(cu)[i31:], P(base)[i31:])
     assert close(P(cu)[:i26], P(base)[:i26])
+
+
+# ------------------------------------------------ market excess (v1.1) ----
+@pytest.mark.parametrize('mode,absorption', [('redevelopment', 0.0), ('surplus', 0.2), ('surplus', 0.0)])
+def test_market_excess_rule(mode, absorption):
+    E0 = _toy_forward()
+    R = engine.requirement(E0)
+    b26, rho = R[1] + 5000.0, 0.6
+    join, ji = engine.market_excess(E0, b26, rho, '2027', mode, absorption)
+    E1 = _toy_forward(join, ji['redev'])
+    built = engine.requirement(E1)
+    assert close(built[1], b26)                                    # 2026 = observed
+    gap = b26 - R[2]
+    k = np.arange(len(R))
+    if mode == 'redevelopment':
+        assert close(built[2:] - R[2:], gap * rho ** (k[2:] - 1))  # no absorption, no payback
+        assert close(E1['stock_join'], np.zeros(len(R)))            # stock-neutral
+    else:
+        assert close(E1['stock_join'][1:], ji['surplus'][1:])       # surplus adds to the stock
+        if absorption == 0.0:
+            assert close(built[2:] - R[2:], gap * rho ** (k[2:] - 1))
+    net = E1['demol'] + E1['unc'] + E1['join_redev']
+    assert close(np.diff(E1['stock'] + E1['stock_join']), (built - net)[1:])

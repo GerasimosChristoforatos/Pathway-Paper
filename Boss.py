@@ -298,7 +298,7 @@ UNCONSENTED_LABEL = 'Calibrated residual (unconsented additions if < 0; losses b
 RV_LABEL = 'Housed in retirement villages (out of carbon scope)'
 RV_COLOR = '#b8a0d0'
 UNCONSENTED_COLOR = '#16a085'
-JOIN_LABEL = 'Near-term join: 2026-27 building above requirement, by channel (A1)'
+JOIN_LABEL = 'Near-term market excess (2026 observed building above requirement, fading at rho)'
 JOIN_COLOR = '#c0392b'
 WAVE_LABEL = 'Redevelopment wave: net replacement above the long-run rate (scenario)'
 WAVE_COLOR = '#d35400'
@@ -497,7 +497,22 @@ RECENT_INTERVAL = (2018, 2023)
 #       (the observed pipeline replaces it).
 #   'carried_deviation': the original: 2025's deviation fades at rho.
 #   'none': neither.
-NEAR_TERM_JOIN = 'nowcast'
+# v1.1 default: 'market_excess' -- ONE rule on top of any replacement scenario:
+#   2026 building = observed (NOWCAST_METHOD). Its excess over the 2026
+#   requirement is the 'near-term market excess'. From 2027 the building
+#   continues above the requirement by gap_ref x rho^(t-2026), with gap_ref =
+#   building_2026 - requirement_2027 (the 2027 requirement, because the 2026 one
+#   is depressed by the one-off 2026 population shortfall) and rho = rho_other
+#   (the estimated persistence of departures from the calibrated identity). The
+#   excess is booked as stock-neutral redevelopment (extra replacement of
+#   existing stock): no soil, no absorption, no payback, identities close.
+#   Sensitivities: NEAR_TERM_GAP_REF = '2026'; NEAR_TERM_MODE = 'surplus' with
+#   NEAR_TERM_ABSORPTION 0.20 / 0.10 (payback) or 0 (permanent surplus);
+#   NEAR_TERM_JOIN = 'nowcast' (the v1.0.2 three-channel join).
+NEAR_TERM_JOIN = 'market_excess'
+NEAR_TERM_GAP_REF = '2027'
+NEAR_TERM_MODE = 'redevelopment'
+NEAR_TERM_ABSORPTION = 0.20
 # NOWCAST_METHOD for the unobserved months of 2026:
 #   'seasonal_share' (ADOPTED): ratio-to-annual seasonal estimator: observed
 #       months / their mean share of the calendar-year total over 2010-2025,
@@ -1172,7 +1187,7 @@ def main():
     _scenario, _join_mode = REPLACEMENT_SCENARIO, NEAR_TERM_JOIN
     if _scenario != 'S1' and _nr_source != 'dwelling_count':
         raise ValueError("REPLACEMENT_SCENARIO S2/S3 are defined on the census dwelling-count rates.")
-    if _join_mode not in ('nowcast', 'carried_deviation', 'none'):
+    if _join_mode not in ('market_excess', 'nowcast', 'carried_deviation', 'none'):
         raise ValueError(f"Unknown NEAR_TERM_JOIN '{_join_mode}'.")
     if not SOIL_ON_REPLACEMENT and CONSUMPTION_BASIS != 'stock_vacancy':
         raise ValueError('SOIL_ON_REPLACEMENT = False needs the stock basis (replacement is not '
@@ -1733,7 +1748,7 @@ def main():
         evolving_gfa_shares.loc[forecast_years > 2025, :] = held_shares.values
     # 2026 floor area from observed consented GFA by typology (NOWCAST_GFA)
     gfa_nowcast = None
-    if NOWCAST_GFA and _join_mode == 'nowcast':
+    if NOWCAST_GFA and _join_mode in ('nowcast', 'market_excess'):
         _gm = df_consents.set_index(pd.to_datetime(df_consents['Date']))
         _g26 = {n: engine.nowcast_year(_gm[COL_TYPOLOGIES[n]].astype(float), 2026, NOWCAST_METHOD,
                                        NOWCAST_SEASONAL_YEARS)['total'] for n in typ_names}
@@ -1778,8 +1793,9 @@ def main():
     # share of 2027 come from observed consents; the building above the
     # model's requirement is split into three channels (engine.join_channels).
     nowcast, excess_evidence, join_shares, join_info = None, None, None, {}
-    if _join_mode == 'nowcast':
+    if _join_mode in ('nowcast', 'market_excess'):
         nowcast = engine.nowcast_year(consents_monthly, 2026, NOWCAST_METHOD, NOWCAST_SEASONAL_YEARS)
+    if _join_mode == 'nowcast':
         # population at the census dates (5 March), from the 31 December ERP
         _q = pd.read_csv(FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
         _t = engine.CENSUS_DAY_OF_YEAR / 365.25
@@ -1808,6 +1824,13 @@ def main():
                                            HOUSEHOLD_CHANNEL, household_rho)
             E = engine.forward(pop_total, hh_arr, pop_growth, consumption_override=override,
                                join=join, join_redev=ji['channels']['redevelopment'], **fwd_inputs)
+            join_info[col] = dict(ji, join=join)
+        elif _join_mode == 'market_excess':
+            _b26 = _completion * ((1.0 - lag_w) * float(nowcast['total']) + lag_w * float(hist_units_all.loc[2025]))
+            join, ji = engine.market_excess(E, _b26, rho_other, NEAR_TERM_GAP_REF, NEAR_TERM_MODE,
+                                            NEAR_TERM_ABSORPTION)
+            E = engine.forward(pop_total, hh_arr, pop_growth, consumption_override=override,
+                               join=join, join_redev=ji['redev'], **fwd_inputs)
             join_info[col] = dict(ji, join=join)
         engine_out[col] = E
 
@@ -1920,6 +1943,12 @@ def main():
           + f": net replacement {100 * rate_path[1]:.3f}%/yr in 2026, {100 * rate_path[-1]:.3f}%/yr in 2050 "
           f"(long run {100 * (demolition_rate + unconsented_rate):.3f}%, "
           f"{RECENT_INTERVAL[0]}-{RECENT_INTERVAL[1]} {100 * rate_recent:.3f}%)")
+    if _join_mode == 'market_excess':
+        ji = join_info['50th']
+        print(f"[near-term market excess] 2026 building {ji['O26']:,.0f} (0.95 x consents, {NOWCAST_METHOD}) vs "
+              f"requirement {ji['R26']:,.0f} -> excess {ji['e26']:+,.0f}; gap_ref ({NEAR_TERM_GAP_REF}) "
+              f"{ji['gap_ref']:+,.0f}, rho {ji['rho']:.2f}; {NEAR_TERM_MODE}: "
+              f"{ji['join'][1:].sum():+,.0f} dwellings 2026-2050")
     if _join_mode == 'nowcast':
         ev, ji = excess_evidence, join_info['50th']
         print(f"[near-term join] NEAR_TERM_JOIN='nowcast' ({NOWCAST_METHOD}): 2026 consents = "
@@ -2002,8 +2031,11 @@ def main():
         _gross_u = np.maximum(_E50['d_hh'], 0.0) + _E50['allow'] + _E50['change'] + _E50['demol'] \
             + _E50['unc'] + _E50['join']
         f_new, f_repl = _one.copy(), 0.0 * _one
-        f_join = np.divide(_E50['join'] - _E50['join_redev'], _E50['join'], out=_one.copy(),
-                                where=_E50['join'] != 0)
+        # join band floor area = join x D + gfa_adj (2026 observed GFA); its soil-bearing part
+        # is the non-redevelopment dwellings plus the observed-GFA adjustment
+        _jg = _E50['join'] * _E50['D'] + _E50['gfa_adj']
+        f_join = np.divide((_E50['join'] - _E50['join_redev']) * _E50['D'] + _E50['gfa_adj'], _jg,
+                           out=_one.copy(), where=_jg != 0)
         f_rv = (1.0 - np.divide(_repl_u, _gross_u, out=np.zeros_like(_one), where=_gross_u != 0))
     soil_frac = np.asarray(_E50['soil_share'], float).copy()
     for _f in (f_new, f_repl, f_join, f_rv, soil_frac):
@@ -2660,7 +2692,7 @@ def export_results(B, path):
              ('Demolition replacement', 'evol_typ_repl', 'carbon_repl_typ'),
              ('Calibrated stock residual (long run)', 'evol_typ_unc', 'carbon_unc_typ'),
              ('Redevelopment wave (scenario - long run)', 'evol_typ_wave', 'carbon_wave_typ'),
-             ('Near-term join (2026-27 excess)', 'evol_typ_join', 'carbon_join_typ'),
+             ('Near-term market excess', 'evol_typ_join', 'carbon_join_typ'),
              ('Housed in RV units (out of scope)', 'evol_typ_rv', 'carbon_rv_typ')]
     typ = list(B['typ_names'])
     et, ct = B['evol_typ_total'], B['carbon_total_typ']

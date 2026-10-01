@@ -5,7 +5,7 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 | metric | value |
 |---|---|
 | Built floor area 2026-2050, central run (Mm2) | 89.31 |
-| Embodied carbon 2026-2050, central run (kt CO2e) | 33,528 |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 33,527 |
 | Upfront carbon A1-A5 + soil, central run (kt CO2e) | 24,133 |
 | Soil carbon (land-use change), central run (kt CO2e) | 3,039 |
 | Embodied carbon excluding soil, central run (kt CO2e) | 30,488 |
@@ -22,14 +22,14 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 | MC carbon p5 (kt) | 25,884 |
 | MC carbon p50 (kt) | 33,204 |
 | MC carbon mean (kt) | 33,375 |
-| MC carbon p95 (kt) | 41,357 |
+| MC carbon p95 (kt) | 41,356 |
 | Central run percentile in MC, floor area | 52.0 |
 | Central run percentile in MC, carbon | 52.4 |
-| Hindcast error, origin 2006, model method (%) | -17.3 |
-| Hindcast error, origin 2013, model method (%) | -20.4 |
-| Hindcast error, origin 2018, model method (%) | -14.6 |
-| Hindcast error, origin 2006, reference S3-10 (%) | -16.2 |
-| Hindcast error, origin 2013, reference S3-10 (%) | -18.0 |
+| Hindcast error, origin 2006, model method (%) | -7.1 |
+| Hindcast error, origin 2013, model method (%) | -4.4 |
+| Hindcast error, origin 2018, model method (%) | -14.7 |
+| Hindcast error, origin 2006, reference S3-10 (%) | -6.1 |
+| Hindcast error, origin 2013, reference S3-10 (%) | -2.0 |
 | Hindcast error, origin 2018, reference S3-10 (%) | -10.5 |
 | 2026 model consent-equivalents (all categories) | 30,983 |
 | 2026 observed / model consents, year to date | 1.375 |
@@ -38,13 +38,13 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 
 | scenario | floor area (Mm2) | carbon (kt) | of which soil (kt) | carbon excl. soil (kt) | upfront (kt) |
 |---|---|---|---|---|---|
-| Low (S1): long-run rate, shares held | 82.99 | 31,415 | 3,086 | 28,330 | 22,686 |
+| Low (S1): long-run rate, shares held | 82.99 | 31,415 | 3,086 | 28,329 | 22,685 |
 | S3: fade, half-life 5 yr, shares held | 86.10 | 32,436 | 3,044 | 29,392 | 23,379 |
-| Reference (S3): fade, half-life 10 yr, shares held | 89.31 | 33,528 | 3,039 | 30,488 | 24,133 |
+| Reference (S3): fade, half-life 10 yr, shares held | 89.31 | 33,527 | 3,039 | 30,488 | 24,133 |
 | S3: fade, half-life 15 yr, shares held | 91.32 | 34,213 | 3,038 | 31,175 | 24,607 |
-| Storyline: intensification continues (S2 + damped mix trend) | 90.58 | 34,204 | 2,582 | 31,622 | 24,934 |
-| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 82.25 | 31,289 | 2,586 | 28,703 | 22,868 |
-| High (S2): 2018-2023 rate persists, shares held | 98.49 | 36,656 | 3,034 | 33,621 | 26,296 |
+| Storyline: intensification continues (S2 + damped mix trend) | 90.58 | 34,203 | 2,582 | 31,622 | 24,934 |
+| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 82.25 | 31,289 | 2,586 | 28,702 | 22,868 |
+| High (S2): 2018-2023 rate persists, shares held | 98.48 | 36,655 | 3,034 | 33,621 | 26,296 |
 | sensitivity: S1 without the census UC correction | 85.45 | 32,246 | 3,077 | 29,169 | 23,258 |
-| sensitivity: S3-10 without the census UC correction | 94.22 | 35,179 | 3,013 | 32,165 | 25,267 |
-| sensitivity: S2 without the census UC correction | 98.31 | 36,881 | 2,555 | 34,327 | 26,823 |
+| sensitivity: S3-10 without the census UC correction | 94.22 | 35,178 | 3,013 | 32,165 | 25,267 |
+| sensitivity: S2 without the census UC correction | 98.31 | 36,881 | 2,555 | 34,326 | 26,823 |

@@ -21,18 +21,18 @@ Current defaults, near-term join `market_excess`; only the scenario changes. Net
 
 O = observed-implied 2026 completions (all categories, nowcast consents); R = the scenario's 2026 requirement before the join; the excess O - R is what the near-term join allocates. Share of the S1 excess = how much of it the scenario's own replacement requirement covers.
 
-| scenario | O 2026 | R 2026 | excess 2026 | share of S1 excess covered | 2027 lagged excess | channel shares (redevelopment / vacancy / households) | redevelopment channel, dwellings |
-|---|---|---|---|---|---|---|---|
-| Low (S1): long-run rate, shares held | 38,863 | 17,941 | +20,922 | 0% | +13,886 | market excess: all redevelopment | +0 |
-| S3: fade, half-life 5 yr, shares held | 38,863 | 21,824 | +17,038 | 19% | +10,480 | market excess: all redevelopment | +0 |
-| Reference (S3): fade, half-life 10 yr, shares held | 38,863 | 22,103 | +16,760 | 20% | +9,974 | market excess: all redevelopment | +0 |
-| S3: fade, half-life 15 yr, shares held | 38,863 | 22,200 | +16,662 | 20% | +9,789 | market excess: all redevelopment | +0 |
-| Storyline: intensification continues (S2 + damped mix trend) | 38,863 | 22,402 | +16,461 | 21% | +9,392 | market excess: all redevelopment | +0 |
-| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 38,863 | 22,103 | +16,760 | 20% | +9,974 | market excess: all redevelopment | +0 |
-| High (S2): 2018-2023 rate persists, shares held | 38,863 | 22,402 | +16,461 | 21% | +9,392 | market excess: all redevelopment | +0 |
-| sensitivity: S1 without the census UC correction | 38,863 | 18,648 | +20,215 | 3% | +13,174 | market excess: all redevelopment | +0 |
-| sensitivity: S3-10 without the census UC correction | 38,863 | 24,426 | +14,437 | 31% | +7,742 | market excess: all redevelopment | +0 |
-| sensitivity: S2 without the census UC correction | 38,863 | 24,841 | +14,022 | 33% | +6,935 | market excess: all redevelopment | +0 |
+| scenario | O 2026 | R 2026 | excess 2026 | share of S1 excess covered | gap_ref (2027) | booked as redevelopment, dwellings |
+|---|---|---|---|---|---|---|
+| Low (S1): long-run rate, shares held | 38,863 | 17,941 | +20,922 | 0% | +13,886 | +0 |
+| S3: fade, half-life 5 yr, shares held | 38,863 | 21,824 | +17,038 | 19% | +10,480 | +0 |
+| Reference (S3): fade, half-life 10 yr, shares held | 38,863 | 22,103 | +16,760 | 20% | +9,974 | +0 |
+| S3: fade, half-life 15 yr, shares held | 38,863 | 22,200 | +16,662 | 20% | +9,789 | +0 |
+| Storyline: intensification continues (S2 + damped mix trend) | 38,863 | 22,402 | +16,461 | 21% | +9,392 | +0 |
+| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 38,863 | 22,103 | +16,760 | 20% | +9,974 | +0 |
+| High (S2): 2018-2023 rate persists, shares held | 38,863 | 22,402 | +16,461 | 21% | +9,392 | +0 |
+| sensitivity: S1 without the census UC correction | 38,863 | 18,648 | +20,215 | 3% | +13,174 | +0 |
+| sensitivity: S3-10 without the census UC correction | 38,863 | 24,426 | +14,437 | 31% | +7,742 | +0 |
+| sensitivity: S2 without the census UC correction | 38,863 | 24,841 | +14,022 | 33% | +6,935 | +0 |
 
 ## Census record of net replacement (dwelling-count identity)
 

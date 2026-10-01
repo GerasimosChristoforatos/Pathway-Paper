@@ -53,7 +53,7 @@ Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% 
 
 Implied vacancy stays about 1.0 point above the 2023 rate because the surplus is never absorbed; with payback (absorption 0.20 a year) floor area is -4.1%.
 
-Caveats: a permanent surplus assumes the extra vacancy is never absorbed; over 2018-2023 part of the excess went to redevelopment and household formation instead. rho is estimated on the calibrated identity, not on market cycles. Sensitivities: booking as stock-neutral redevelopment (implied net removals then peak at 23,041 in 2026), payback (absorption 0.20 or 0.10 a year), the gap measured against the 2026 requirement, and the v1.0.2 three-channel join.
+Caveats: a permanent surplus assumes the extra vacancy is never absorbed; over 2018-2023 part of the excess went to redevelopment and household formation instead. rho is estimated on the calibrated identity, not on market cycles. Sensitivities: booking as stock-neutral redevelopment (implied net removals then peak at 23,041 in 2026), payback (absorption 0.20 or 0.10 a year), and the gap measured against the 2026 requirement.
 
 ## By typology
 
@@ -124,6 +124,7 @@ The model takes 2026 building from the observed consents and carries the excess 
 - S2: net removals outside the range in 25 years from 2026 (max 35.3% above / 0.0% below).
 - S2: household size outside the range in 18 years from 2033 (max 0.0% above / 0.3% below).
 - S2: new-dwelling size outside the range in 24 years from 2027 (max 0.0% above / 8.3% below).
+- Handover 2026 -> 2027 (observed -> model, reference): -12.3% in floor area, against annual changes of -29.5% to +31.3% in 1992-2025 (median +5.1%).
 
 Notes: household size below the historical minimum is expected from Stats NZ's ageing projection (the household-size shape keeps falling as the population ages). In the intensification storyline (S2 + mix trend), average new-dwelling size below the historical minimum is intrinsic to that storyline: by 2050 townhouses rise to 56% of new floor area (held: 35%), while the apartment share falls slightly (4.9% -> 4.1%), so the smaller average dwelling (128 vs 141 m² in 2050) comes from townhouses replacing detached houses.
 
@@ -141,7 +142,6 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 | Household size | Stats NZ High projection variant (S) | 84.89 | -5.2% | -5.3% |
 | Stock | Completion rate 0.92 | 85.15 | -4.9% | -4.5% |
 | Dwelling size | Dwelling size: 2016–2025 reference | 93.88 | +4.8% | +4.8% |
-| Near-term: rule variant | Three-channel join (v1.0.2) | 85.90 | -4.1% | -4.2% |
 | Near-term: how the excess is booked | Temporary surplus with payback, absorption 0.20/yr | 85.92 | -4.1% | -4.1% |
 | Near-term: how the excess is booked | Temporary surplus with payback, absorption 0.10/yr | 86.22 | -3.7% | -3.8% |
 | Replacement scenario | S3: half-life 5 yr | 86.35 | -3.6% | -3.2% |
@@ -191,10 +191,8 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 | Demolition rate (split only) | 0.135%/yr | LITERATURE: BRANZ SR214 |
 | Completion rate | 0.95 (band 0.92-0.96) | LITERATURE: bounds from Jones et al. 2024 (citation to verify) |
 | Completion lag | 0 | DATA: Little's law W = L / lambda (a lower bound) |
-| Near-term join | market_excess (last_12_months) | DATA (observed consents); method stated |
-| Excess channels | calibrated on 2018-2023 | DATA, ONE census interval |
-| Household channel | reverting_linear | JUDGEMENT (author decision) |
-| Vacancy drawdown | 5 yr | JUDGEMENT; 3 and 10 as sensitivities |
+| Near-term rule | market_excess: 2026 building observed (last_12_months) | DATA (observed consents); method stated |
+| Near-term excess after 2026 | gap vs the 2027 requirement, fading at rho; booked as surplus, absorption 0 | JUDGEMENT (author decision); rho estimated; redevelopment, payback and gap-vs-2026 as sensitivities |
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
 | Household-size shape | Stats NZ Medium, anchored 2023, tail hermite_clamped | DATA (2018-base projections; N4 open) |
 | Vacancy forward | latest census value held | DATA: census 2023 (2018 empty count unrated, F1) |
@@ -207,16 +205,15 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 ## Open limitations and data needs
 
 - No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so the implied replacement rates cannot be tested against a count.
-- N4 (open): the Low/High household-size variants (deterministic) are paired with stochastic population percentiles through one draw z, and the total vs private-household population question is unresolved until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ's 2023-base release (late 2026) planned as v1.1.
+- N4 (open): the Low/High household-size variants (deterministic) are paired with stochastic population percentiles through one draw z, and the total vs private-household population question is unresolved until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ's 2023-base release (late 2026) to be adopted in a later version.
 - Timber end of life (C1-C4) excludes biogenic CO2 (confirmed by the author). Whether it includes landfill methane is TO CONFIRM from Christoforatos & Pickering 2025 (author check).
 - With shares held (reference and S1), the Monte Carlo carries no typology-mix uncertainty; the mix is bracketed by the storylines and sensitivities instead.
 - The soil factor was derived for Auckland's future urban zones and is applied nationally.
 - Apartments rest on one independent case study (A_1 and A_2 are one design at two scales).
 - The regional analysis of the rebuilding wave (replacement half-life by territorial authority) is deferred.
 - Net replacement persistence (S3 half-life) is not identifiable from the census record; S1 and S2 bound it.
-- Excess-channel shares rest on one census interval (2018-2023); no standard error can be formed.
 - The 2018 census empty-dwelling count has no quality rating (DataInfo+); the vacancy terms rely on it.
-- The household-channel reversion rate is the persistence estimated on changes in household size, used for a level deviation (an assumption).
+- The near-term excess fades at the persistence estimated on the calibrated stock identity (rho), not on market cycles (an assumption).
 - W from Little's law is a lower bound on the completion lag.
 - Retirement-village floor area is reported but out of carbon scope.
 
@@ -228,6 +225,7 @@ One line per figure: FIGURES.md. Where the projection leaves the 1991-2025 range
 ![boss_04_annual_gfa.png](figures/boss_04_annual_gfa.png)
 ![boss_05_annual_carbon.png](figures/boss_05_annual_carbon.png)
 ![diag_3_stock_bucket.png](figures/diag_3_stock_bucket.png)
+![diag_3b_appendix_vacancy_definition.png](figures/diag_3b_appendix_vacancy_definition.png)
 ![diag_4_floor_area.png](figures/diag_4_floor_area.png)
 ![fig_bridge.png](figures/fig_bridge.png)
 ![fig_bridge_appendix_split.png](figures/fig_bridge_appendix_split.png)

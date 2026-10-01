@@ -172,5 +172,11 @@
       "max_below_pct": 0.0,
       "first_outside": null
     }
+  },
+  "handover": {
+    "step_2026_2027_pct": -12.270936980460778,
+    "hist_median_pct": 5.074801222605774,
+    "hist_min_pct": -29.500318217834696,
+    "hist_max_pct": 31.321104416686673
   }
 }

@@ -20,11 +20,18 @@ import validation  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_MD = os.path.join(ROOT, 'outputs', 'replacement_scenarios.md')
 OUT_JSON = os.path.join(ROOT, 'outputs', 'replacement_scenarios.json')
-SCENARIOS = [('S1', 'S1: long-run rate', dict(REPLACEMENT_SCENARIO='S1')),
-             ('S3-5', 'S3: fade, half-life 5 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
-             ('S3-10', 'S3: fade, half-life 10 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0)),
-             ('S3-15', 'S3: fade, half-life 15 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=15.0)),
-             ('S2', 'S2: 2018-2023 rate persists', dict(REPLACEMENT_SCENARIO='S2'))]
+# storylines (Boss.MIX_MODE = 'storyline'): S1 and S3 hold the mix, S2 keeps the damped trend
+SCENARIOS = [('S1', 'S1: long-run rate, shares held', dict(REPLACEMENT_SCENARIO='S1')),
+             ('S3-5', 'S3: fade, half-life 5 yr, shares held', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
+             ('S3-10', 'S3: fade, half-life 10 yr, shares held (reference)',
+              dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0)),
+             ('S3-15', 'S3: fade, half-life 15 yr, shares held', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=15.0)),
+             ('S2', 'S2: 2018-2023 rate persists, damped mix trend (intensification continues)',
+              dict(REPLACEMENT_SCENARIO='S2')),
+             ('S3-10-trend', 'sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix)',
+              dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0, MIX_MODE='trend')),
+             ('S2-held', 'sensitivity: S2 with shares held (maximum floor-area case)',
+              dict(REPLACEMENT_SCENARIO='S2', MIX_MODE='held'))]
 
 
 def one(settings):

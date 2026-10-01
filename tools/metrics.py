@@ -43,6 +43,9 @@ FIELDS = [
     ('validation.hindcast_2006_model', 'Hindcast error, origin 2006, model method (%)', '{:+.1f}'),
     ('validation.hindcast_2013_model', 'Hindcast error, origin 2013, model method (%)', '{:+.1f}'),
     ('validation.hindcast_2018_model', 'Hindcast error, origin 2018, model method (%)', '{:+.1f}'),
+    ('validation.hindcast_2006_reference_s3_10', 'Hindcast error, origin 2006, reference S3-10 (%)', '{:+.1f}'),
+    ('validation.hindcast_2013_reference_s3_10', 'Hindcast error, origin 2013, reference S3-10 (%)', '{:+.1f}'),
+    ('validation.hindcast_2018_reference_s3_10', 'Hindcast error, origin 2018, reference S3-10 (%)', '{:+.1f}'),
     ('validation.model_consents_2026', '2026 model consent-equivalents (all categories)', '{:,.0f}'),
     ('validation.observed_to_model_2026', '2026 observed / model consents, year to date', '{:.3f}'),
 ]

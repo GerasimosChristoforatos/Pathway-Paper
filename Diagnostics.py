@@ -10,7 +10,7 @@ Boss.py, so the two scripts can never disagree.
   3  The stock bucket             vacancy, demolition, unconsented additions
   4  Floor area                   by typology, by demand type, mix, dwelling size
   5  Embodied carbon              by typology, by material, cumulative, factors
-  6  Checks                       reconciliation, the 2025->2026 join, rejections
+  6  Checks                       reconciliation, the 2027->2028 handover, rejections
 
 Historical carbon is ESTIMATED by applying the 2025 case-study factors to past
 floor area; it is shown for continuity, not as a measured series.
@@ -92,11 +92,19 @@ D_f = B['future_dwelling_size'].values
 S_f = DF['PopTotal_50th'].values / B['households_forecast']['50th']
 
 C = dict(growth='#3498db', split='#e67e22', extra='#8e44ad', vac='#95a5a6',
-         vchg='#f1c40f', demol='#34495e', unc='#16a085', rv='#b8a0d0', join='#c0392b', built='black')
+         vchg='#f1c40f', demol='#34495e', unc='#16a085', wave='#d35400', rv='#b8a0d0', join='#c0392b', built='black')
 
 
 def split(ax):
     ax.axvline(2025.5, color='grey', ls=':', lw=1)
+
+
+def mark_anchor(ax):
+    """The 2025 row is the observed anchor and the projection starts in 2026:
+    the step there is deliberate, not a model artefact."""
+    ax.axvline(2025.5, color='grey', lw=0.8, ls=':')
+    ax.text(2025.7, 0.97, '2025 observed anchor ->\nprojection (deliberate join)', transform=ax.get_xaxis_transform(),
+            fontsize=7, va='top', color='grey')
 
 
 def tidy(ax, title, ylabel, xlim=(1991, 2050)):
@@ -154,6 +162,7 @@ a.plot(FY, hf['50th'] / M6, color='#e67e22', lw=2, ls='--', label='median projec
 a.fill_between(FY, hf['5th'] / M6, hf['95th'] / M6, color='#e67e22', alpha=0.15,
                label='5th-95th percentile')
 tidy(a, 'Households = population / household size', 'million households')
+mark_anchor(a)
 a.legend()
 
 a = ax[1, 0]
@@ -163,7 +172,8 @@ a.plot(B['hist_hh_dhe'].index, pop_h / B['hist_hh_dhe'], color='#95a5a6', lw=1.5
 a.plot(FY, HR['S_resp'], color='#95a5a6', lw=2, ls='--',
        label=f"sensitivity: 2025 deviation carried -> {HR['S_resp'][-1]:.3f}")
 a.plot(FY, S_f, color='#c0392b', lw=2.5, label=f'model -> {S_f[-1]:.3f}')
-a.text(0.02, 0.04, "Stats NZ path, rebased on 2025 (census-rebased households).\n"
+mark_anchor(a)
+a.text(0.02, 0.04, f"Stats NZ path, rebased on {M.S_ANCHOR_YEAR} (census-rebased households).\n"
        f"2025 deviation {HR['e_2025']:+.4f} {'CARRIED' if HR['applied'] else 'not carried'}: "
        "a DHE estimation artefact",
        transform=a.transAxes, fontsize=8, va='bottom',
@@ -289,6 +299,7 @@ a.plot(hh_h.index, hh_h / M6, color='#e67e22', lw=2, label='households')
 a.plot(FY, SF['stock'] / M6, color='#2c3e50', lw=2, ls='--')
 a.plot(FY, B['households_forecast']['50th'] / M6, color='#e67e22', lw=2, ls='--')
 tidy(a, 'Stock = households / (1 - vacancy)', 'million')
+mark_anchor(a)
 a.legend()
 
 a = ax[1, 1]
@@ -303,6 +314,10 @@ a.axhline(100 * B['demolition_rate'], color=C['demol'], ls='--', lw=1.2,
 a.axhline(100 * B['unconsented_rate'], color=C['unc'], ls='--', lw=1.2,
           label=f"calibrated residual {100 * B['unconsented_rate']:+.3f}%")
 a.axhline(0, color='black', lw=0.7)
+for i, r in enumerate(B['census_rates'].itertuples()):     # the calibration basis
+    a.hlines(100 * r.rate, r.y0, r.y1, color='#d35400', lw=2.5,
+             label='census dwelling-count net replacement by interval (calibration basis)' if i == 0 else None)
+a.axvspan(2013, 2018, color='#f1c40f', alpha=0.12, label='2013->2018: census empty/away definition break')
 tidy(a, 'Net turnover = demolition - unconsented additions\n'
         'single years noisy: vacancy known only at censuses', '% of stock per year')
 a.legend(loc='lower left')
@@ -337,14 +352,19 @@ hist_dem = [('growth (net of consolidation)', B['hist_growth'].loc[YH] - B['hist
 fut_dem = [('', R['growth'][1:], C['growth']), ('', R['hs_pos'][1:], C['split']),
            ('', R['extra'][1:], C['extra']), ('', R['vac'][1:], C['vac']),
            ('', np.zeros(len(PF)), C['vchg']), ('', R['repl'][1:], C['demol']),
-           ('', R['unc'][1:], C['unc']), ('', R['rv'][1:], C['rv']),
+           ('', R['unc'][1:], C['unc']), ('redevelopment wave (scenario - long run)', R['wave'][1:], C['wave']),
+           ('', R['rv'][1:], C['rv']),
            ('near-term join, 2026-27 excess (A1)', R['join'][1:], C['join'])]
 signed_bars(a, YH, [(l, np.asarray(v) / M6, c) for l, v, c in hist_dem])
 signed_bars(a, PF, [(l, v / M6, c) for l, v, c in fut_dem], projected=True)
 if np.any(R['join'][1:] != 0):
     a.bar([], [], color=C['join'], alpha=0.5, label='near-term join, 2026-27 excess (A1)')
+if np.any(R['wave'][1:] != 0):
+    a.bar([], [], color=C['wave'], alpha=0.5, label='redevelopment wave (scenario - long run)')
 a.plot(YH, B['hist_built_gfa'].loc[YH] / M6, color='black', lw=1.6, label='built (net)')
 a.plot(PF, R['total'][1:] / M6, color='black', lw=1.6, ls='--')
+a.fill_between(PF, R['total'][1:] / M6, (R['total'][1:] + R['hs_avoided'][1:]) / M6, facecolor='none',
+               edgecolor=C['split'], hatch='//', lw=0.6, label='avoided (consolidation; outline, not stacked)')
 tidy(a, 'By demand type (hatched = projected)', 'million m² per year')
 a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
 
@@ -439,11 +459,11 @@ a.legend()
 
 a = ax[0, 1]
 chg = 100 * B['hist_total_gfa'].pct_change().loc[YH].values
-step = 100 * (R['total'][1] / B['hist_built_gfa'].loc[2025] - 1)
+step = 100 * (R['total'][3] / R['total'][2] - 1)      # 2027 (observed pipeline) -> 2028 (model)
 a.hist(chg, bins=14, color='#bdc3c7', edgecolor='white')
-a.axvline(step, color='#c0392b', lw=2.5, label=f'2025->2026 in the model: {step:+.1f}%')
+a.axvline(step, color='#c0392b', lw=2.5, label=f'2027->2028 handover (observed pipeline -> model): {step:+.1f}%')
 a.axvline(np.median(chg), color='black', lw=1, ls='--', label=f'median year: {np.median(chg):+.1f}%')
-a.set_title('Is the 2025->2026 join normal?\nhistorical year-to-year changes, 1992-2025')
+a.set_title('Is the model handover (2027->2028) normal?\nhistorical year-to-year changes, 1992-2025')
 a.set_xlabel('% change from previous year')
 a.set_ylabel('number of years')
 a.legend()
@@ -488,7 +508,7 @@ finish(fig, 'diag_6_checks.png')
 print("=" * 70)
 print(f" Built floor area 2026-2050: {R['total'][1:].sum() / M6:.2f} million m2")
 print(f" Embodied carbon  2026-2050: {B['carbon_total_typ'].iloc[1:].sum().sum() / M6:,.1f} kt CO2e")
-print(f" 2025 -> 2026 step: {step:+.1f}%  (median historical year {np.median(chg):+.1f}%)")
+print(f" 2027 -> 2028 handover step: {step:+.1f}%  (median historical year {np.median(chg):+.1f}%)")
 print(f" History reconstruction: max |difference| {np.abs(recon - obs).max():.1e} m2")
 print(f" Household size 2050: {S_f[-1]:.3f} | vacancy {100 * B['v_forward']:.2f}% | "
       f"demolition {100 * B['demolition_rate']:.3f}% | unconsented {100 * B['unconsented_rate']:+.3f}%")

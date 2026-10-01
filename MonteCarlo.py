@@ -210,7 +210,11 @@ def build_setup(settings=None):
               nowcast=B['nowcast'], pop_census=B.get('_pop_census'),
               S_shape=B['S_knots'].set_index('Year')['S'], channels=Boss.EXCESS_CHANNELS,
               drawdown=Boss.VACANCY_DRAWDOWN_YEARS, hh_channel=Boss.HOUSEHOLD_CHANNEL,
-              units_all_raw=B['hist_units_all'])
+              units_all_raw=B['hist_units_all'],
+              # typology mix storyline and the observed 2026 floor area (fixed in every draw)
+              mix_used=B['mix_used'], held_frame=B['evolving_gfa_shares'].copy(),
+              shares_2026=(B['evolving_gfa_shares'].loc[2026].copy() if B['gfa_nowcast'] else None),
+              gfa_2026=(B['gfa_nowcast']['total'] if B['gfa_nowcast'] else None))
 
     # ---- dwelling size ----
     su['size_ref'] = np.array([B['size_ref'][t] for t in typ])
@@ -385,6 +389,10 @@ def project(su, p):
     off = {typ[1]: p['slope_T'], typ[2]: p['slope_A']}
     shares = engine.mix_shares(su['alr_2025'], {n: su['alr_slope'][n] + off[n] for n in typ[1:]},
                                p['phi'], fy, typ)
+    if su['mix_used'] == 'held':                  # held shares: phi and the slopes do not enter
+        shares = su['held_frame'].copy()
+    if su['shares_2026'] is not None:             # 2026 = observed consented mix
+        shares.loc[2026] = su['shares_2026'].values
     size = {t: su['size_ref'][j] * p['size'] for j, t in enumerate(typ)}
 
     # ---- carbon factors ----
@@ -401,6 +409,7 @@ def project(su, p):
         dev, dv['rho'], p['rv_share'], shares, size, su['olf'], I, U,
         floor_decline=su['floor_decline'], olf_per_resident=su['olf_per_resident'],
         join=join, join_redev=redev, soil={t: su['soc'][j] for j, t in enumerate(typ)},
+        gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
         soil_on_replacement=su['soil_on_repl'])
     E = fwd()
     if su['join_mode'] == 'nowcast':

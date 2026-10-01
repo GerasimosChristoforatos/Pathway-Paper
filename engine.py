@@ -339,7 +339,7 @@ def blend(shares, per_unit, typ_names):
 def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_share,
             shares, size, olf, intensity, intensity_upfront, floor_decline=True,
             olf_per_resident=False, consumption_override=None, join=None, join_redev=None,
-            soil=None, soil_on_replacement=True):
+            soil=None, soil_on_replacement=True, gfa_fixed=None):
     """One forward path, 2025..2050 (index 0 = 2025, a model value; callers that
     anchor 2025 on observations overwrite it).
 
@@ -364,6 +364,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         floor area is the in-scope net replacement (demolition + residual +
         redevelopment channel, x (1 - rv_share) x D; land already settled) when
         soil_on_replacement is False.
+    gfa_fixed              : optional {index: floor area} fixing the in-scope floor area of
+                             a year to an observation (the 2026 nowcast from consented
+                             GFA); the difference is booked to consumption and reported
+                             as gfa_adj. Dwelling counts (the stock) are not changed.
     consumption_override   : for the legacy per-person/per-household bases only:
                              gross consumption computed elsewhere from
                              (extra space, floored new households, population).
@@ -421,6 +425,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
     else:
         c_gross = np.asarray(consumption_override(extra, d_hh), float)
     total = growth + hs_pos + c_gross
+    gfa_adj = np.zeros(len(hh))
+    for i, g in (gfa_fixed or {}).items():
+        gfa_adj[i] = float(g) - total[i]
+    c_gross, total = c_gross + gfa_adj, total + gfa_adj
 
     gfa_t = shares.values.T * total                  # (typology, years)
     I = np.array([intensity[t] for t in typ])
@@ -444,4 +452,4 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         v=np.array(v), stock=stock, prev=prev, allow=allow, change=change, demol=demol,
         unc=unc, dev=dev, join=join, join_redev=join_redev, stock_join=stock_join, rv=rv, dwell_in_scope=total / D, rv_units=-rv,
         gfa_t=gfa_t, carbon_t=carbon_t, carbon=carbon_t.sum(axis=0), upfront=upfront_t.sum(axis=0),
-        soil_share=soil_share, soil_free_gfa=soil_free)
+        soil_share=soil_share, soil_free_gfa=soil_free, gfa_adj=gfa_adj)

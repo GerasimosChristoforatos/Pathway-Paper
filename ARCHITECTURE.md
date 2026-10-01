@@ -1,422 +1,236 @@
-# Architecture: how the model works
+# Architecture: how the model works (baseline v2)
 
 This document is for a reviewer who knows statistics or modelling but not this
 code or New Zealand housing data. It describes what each script reads, what it
-calculates and in what order, and what it writes. It was first written for the
-code at commit `e1f98ff` and is updated with each change in `CHANGELOG.md`.
-Known problems are **not** discussed here; they are in `ASSESSMENT.md`.
-
-All numbers quoted are from the central run (`Boss.py` with its adopted
-settings) unless marked otherwise.
+calculates and in what order, and what it writes. Headline numbers are not
+repeated here: they are generated into [RESULTS.md](RESULTS.md),
+`outputs/metrics.json` and `outputs/BASELINE_DRAFT.md`. Every setting, with its
+basis (data, literature, author decision, judgement), is in
+[ASSUMPTIONS.md](ASSUMPTIONS.md). Parameter values quoted below are the adopted
+settings in `Boss.py`.
 
 ---
 
 ## 1. What the model answers
 
 How much new residential floor area New Zealand will build from 2026 to 2050,
-and how much embodied carbon that floor area carries. The answer is split
-three ways:
+and how much embodied carbon that floor area carries, split by building type
+(detached, townhouses, apartments), by reason for building (household growth,
+vacancy, replacement, ...) and by material and life-cycle stage.
 
-* by **building type** (detached houses, townhouses, apartments);
-* by **reason for building** (growth in households, vacancy, replacing
-  demolished homes, and so on);
-* by **material** and **life-cycle stage**.
-
-Central result, 2026–2050: 76.71 million m² of floor area and 29,708 kt CO₂e.
-
-The model is **bottom-up** and **demand-driven**. It starts from people,
-turns people into households, households into required dwellings, dwellings
-into floor area, and floor area into carbon. Construction capacity, prices
-and policy are not modelled.
+The model is bottom-up and demand-driven: people → households → dwellings
+required → floor area → carbon. Construction capacity, prices and policy are not
+modelled. Carbon intensities are held at their case-study values (no
+decarbonisation is assumed).
 
 ---
 
-## 2. The five scripts and how data flows between them
+## 2. Scripts and data flow
 
 ```mermaid
 flowchart LR
-    subgraph inputs["data/ (inputs)"]
+    subgraph inputs["data/ (inputs; data/derived built by scripts from data/raw)"]
         BD[building_data.xlsx<br/>16 case-study LCAs]
-        CD[consentdata.xlsx<br/>monthly building consents]
-        HP[histpopdata.xlsx<br/>population 1991-2025]
+        CM[derived/consents_monthly.csv<br/>monthly building consents]
+        HP[histpopdata.xlsx / derived/population_quarterly.csv<br/>population]
         OH[oldhouseholddata.xlsx<br/>household estimates]
         PP[popdata.xlsx<br/>population projection 2024-base]
-        HH[Householddata.xlsx<br/>household projection 2018-base]
-        SP[subnational-...-2018base-2048.xlsx<br/>population 2018-base]
-        CE[occ-unocc-2013.xlsx<br/>census occupancy 1981-2013]
+        HH[Householddata.xlsx + subnational 2018-base<br/>household size shape]
+        CE[occ-unocc-2013.xlsx + derived/census_dwellings.csv<br/>census occupancy]
     end
-    BF[Building_factors.py] --> F[(factors_*.csv)]
+    BF[Building_factors.py] --> F[(outputs/factors/*.csv)]
     BD --> BF
-    F --> BOSS[Boss.py<br/>one central run]
+    F --> BOSS[Boss.py<br/>central run]
     ENG[engine.py<br/>pure forward model] --- BOSS
     ENG --- MC
-    CD & HP & OH & PP & HH & SP & CE --> BOSS
-    BOSS -->|main returns all its variables| DIAG[Diagnostics.py<br/>6 figures]
-    BOSS -->|re-run with one setting changed| SENS[Sensitivity.py<br/>sensitivity_oat.csv]
-    BOSS -->|data + settings, copied once| MC[MonteCarlo.py]
-    F --> MC
-    MC --> MCO[(outputs/montecarlo_*.csv)]
+    CM & HP & OH & PP & HH & CE --> BOSS
+    BOSS -->|main returns its state| DIAG[Diagnostics.py]
+    BOSS -->|re-run, one setting changed| SENS[Sensitivity.py]
+    BOSS -->|data + settings copied once| MC[MonteCarlo.py]
+    BOSS --> VAL[validation.py, gap_2026.py, tools/]
 ```
 
-Run order: `Building_factors.py` → `Boss.py` → `Diagnostics.py`,
-`Sensitivity.py`, `MonteCarlo.py`; `python run_all.py` runs all of them, then
-the tests and the validation harness (`validation.py`: rolling-origin
-hindcast and the 2026 check, `outputs/validation.md`), and saves every figure
-to `outputs/figures/`. `data/` holds inputs
-only; everything the scripts write goes to `outputs/`.
-
-**One engine.** The forward model lives in `engine.py`: stock calibration,
-2025 deviation, typology mix, dwelling-size blend and the forward projection
-from households to carbon. These are pure functions; every input is an
-argument. `Boss.py` and `MonteCarlo.py` both call them, so they cannot
-disagree. `tests/test_engine_equivalence.py` checks the result against frozen
-copies of the code before unification (`tests/legacy/`); see
-`outputs/equivalence.md`. The last three import `Boss` and call
-`Boss.main()`. That function returns a dictionary of **all its local
-variables**, and the three scripts read what they need from it. Census counts
-for 2018 and 2023 are typed into `Boss.py` (`CENSUS_LATER`), not read from a file.
+`python run_all.py` runs everything in a fixed order (see README), each script
+in its own process, and writes to `outputs/`. **One engine:** the forward model
+is in `engine.py` (stock calibration, census dwelling-count rates, replacement
+path, near-term market excess, typology mix, forward projection). These are pure
+functions; `Boss.py` and `MonteCarlo.py` both call them. `Boss.main()` returns a
+dictionary of all its local variables, which the other scripts read.
 
 ---
 
 ## 3. `Building_factors.py`: carbon per square metre
 
-**Input.** `building_data.xlsx` has three sheets:
+1. Each case study's absolute emissions (by material and EN 15978 stage) are
+   divided by its gross floor area (GFA).
+2. Materials are grouped into six lines: concrete, steel, timber, plastics &
+   paint, plasterboard, others.
+3. Buildings are pooled into three typologies: equal weight within sub-type,
+   then equal weight across sub-types. A_2 duplicates A_1 (scaled by
+   1.000073), so apartments have one independent case.
+4. Soil carbon is land-use change, not a material: soil loss per m² of floor =
+   soil loss per m² of footprint (58.77 kg CO₂e/m², area-weighted over the soil
+   orders of Auckland land zoned for urbanisation) / floor space index.
+5. Stage D is written out but never added. Stages in scope: A1–A3, A4–A5,
+   B2/B4, C1–C4.
 
-1. LCA results for 16 case-study buildings. For each building it gives kg CO₂e
-   by material (concrete, steel, timber, …) and by life-cycle stage, using the
-   stage codes of EN 15978: A1–A3 (product manufacture), A4–A5 (transport and
-   construction), B2/B4 (maintenance and replacement during use), C1–C4 (end of
-   life) and D (benefits beyond the life cycle).
-2. Building characteristics: gross floor area (GFA), footprint, design
-   occupants, and the occupancy load factor (OLF = floor area per design
-   occupant).
-3. Soil carbon loss per m² of building footprint for 10 soil orders, plus an
-   "area-weighted average" (58.77 kg CO₂e/m² of footprint).
-
-**Steps.**
-
-1. Divide each building's absolute emissions by its GFA, giving kg CO₂e per m².
-2. Group materials into six lines: concrete, steel, timber, plastics & paint,
-   plasterboard, and "others".
-3. **Pool** the buildings into three typologies. Detached houses come in two
-   sub-types (single- and two-storey). The code averages within each sub-type
-   first, then averages the sub-types, so the six single-storey cases do not
-   outweigh the four two-storey ones. Every building gets equal weight within
-   its sub-type.
-4. **Soil carbon** is treated as land-use change, not as a material:
-   `soil loss per m² of floor = soil loss per m² of footprint / FSI`, where the
-   floor space index FSI = GFA / footprint. Taller, denser buildings disturb
-   less soil per m² of floor.
-5. Stage D is written out but never added to totals.
-6. Check for duplicated cases: A_2 is A_1 scaled by 1.000073 in every cell, so
-   the apartment typology has one independent case.
-7. Report the spread across cases: the minimum and maximum single building,
-   and a leave-one-out (jackknife) range of the pooled value.
-
-**Outputs.**
-
-| file | content |
-|---|---|
-| `factors_material.csv` | kg CO₂e/m² by typology × material × stage |
-| `factors_typology.csv` | one row per typology: OLF, design occupants, FSI, embodied materials, soil (average, low, high), spread columns |
-| `factors_building.csv` | one row per case study (used by the Monte Carlo bootstrap) |
-
-Central intensities (materials + soil, stages A–C): detached 357.9, townhouses
-393.1 and apartments 615.3 kg CO₂e/m². These are held **constant** from 2026 to
-2050; no decarbonisation is assumed.
+Outputs: `factors_material.csv`, `factors_typology.csv`, `factors_building.csv`.
 
 ---
 
 ## 4. `Boss.py`: the central projection
 
-`Boss.main()` runs top to bottom in the numbered sections of the code. The
-flags at the top of the file (`HOUSEHOLD_METHOD`, `CONSUMPTION_BASIS`, …) select
-between alternative methods. The adopted flags are the ones in the file.
+### 4.1 Consents (history 1991–2025)
 
-### 4.1 Building consents (history, 1991–2025)
+Monthly consents are summed to calendar years: floor area and dwellings by
+typology, and an all-category dwelling count. Retirement-village (RV) units =
+all-category − three typologies. RV units are dwellings in the stock but carry
+no floor area or carbon (no RV case study); forward they are a constant share
+of all dwellings built (ratio of sums 2016–2025, 5.6%). RV floor area is
+reported separately, out of scope. Realised dwelling size = floor area /
+dwellings, held per typology at its 2023–2025 average.
 
-Monthly Stats NZ consent data are summed to calendar years:
-
-* floor area consented by typology;
-* number of dwellings consented by typology;
-* an all-category dwelling count that also includes retirement-village (RV)
-  units. RV units = all-category count − three typologies.
-
-The retirement-village share of all new dwellings is fixed at 5.64% for the
-projection: the ratio of sums over 2016–2025. RV units count as dwellings in
-the housing stock, but they carry **no** floor area or carbon, because neither
-the consent floor area nor the case studies cover them.
-
-**Realised dwelling size** = floor area / dwellings, by typology. For the
-projection it is held at its 2023–2025 average: detached 179.6, townhouses
-107.7 and apartments 98.1 m² per dwelling.
+Dwellings built = 0.95 × consents (completion rate; Jones et al. 2024 bounds
+0.92–0.96). No completion lag in the adopted run (Little's-law lag is a
+sensitivity).
 
 ### 4.2 Population and households (history)
 
-* Population: the estimated resident population at 31 December.
-* Households: Stats NZ's quarterly Dwelling and Household Estimates (DHE),
-  taken at 31 December.
+Population: estimated resident population at 31 December. Households: Stats NZ
+Dwelling and Household Estimates (DHE) at 31 December. After the 2018 base the
+DHE series is 0.888 × lagged consents, so increments after June 2018 are
+scaled by one factor k = 0.824, chosen so that June 2023 grows over June 2018
+by the census ratio of occupied + residents-away private dwellings. 2024–25
+household values are consent-derived and not used as evidence (the household
+size anchor is 2023).
 
-After the 2018 census the DHE household series is not independently measured.
-Stats NZ extends it with 0.885–0.889 × the previous year's consents. The code
-therefore **rebases** it on the 2023 census. Every household increment after
-June 2018 is multiplied by one factor, k = 0.826, chosen so that June 2023
-grows over June 2018 by the same ratio as census households (occupied private
-dwellings plus dwellings whose residents were away).
+### 4.3 Net replacement: the census dwelling-count identity
 
-Household size S = population / households. Observed 2025 value: 2.657.
+For each intercensal interval: net replacement = (completions − change in
+census private dwellings) / stock-years, with completions corrected for the
+change in dwellings under construction on census night. This uses neither the
+household estimates nor the empty/away split (which breaks between 2013 and
+2018). Long run (ratio of sums 1991–2023): 0.101% of stock per year; the
+2018–2023 interval: 0.312%. A fixed BRANZ demolition rate (0.135%/yr) splits
+the net rate into demolition and a residual (net unconsented additions); only
+their sum is identified.
 
-### 4.3 The housing-stock identity (history), and what is calibrated
+The household stock identity (built = new households + vacancy allowance +
+vacancy change + net replacement) is still calibrated and printed for
+comparison, and is used by the hindcast with one vacancy definition throughout
+(the pooled 2018/2023 empty share).
 
-This is the core of the model. For each historical year:
+### 4.4 Replacement scenarios
 
-```
-dwellings built  =  new households
-                  + vacancy allowance        (new households × v / (1 − v))
-                  + vacancy change            (households last year × change in 1/(1 − v))
-                  + net replacement           (rate × dwelling stock last year)
-```
+`engine.replacement_path`: **S1** long-run rate throughout (low); **S3**
+the 2018–2023 rate fading to the long-run rate with a 10-year half-life
+(reference; 5 and 15 years as sensitivities); **S2** the 2018–2023 rate
+persists (high, shares held; with the damped mix trend it is the
+"intensification continues" storyline). The half-life is not identifiable from
+the census record.
 
-* **Dwellings built** = 0.95 × dwellings consented (all categories, including
-  RV). 0.95 is the completion rate: not every consent is built.
-* **Vacancy v** = empty private dwellings / all private dwellings, from the
-  censuses (1986–2023), interpolated linearly between census years. Before
-  2013 the census gives only "unoccupied". The code splits it using the 2013
-  share that was "empty" (76.2%) rather than "residents away".
-* **Dwelling stock** = households / (1 − v).
-* **Net replacement** is what is left over: demolitions minus dwellings that
-  appear without a new-dwelling consent (conversions, minor units). It is split
-  into a fixed demolition rate of 0.135%/yr (BRANZ study SR214) plus a
-  calibrated residual. Only their sum is identified by the data.
-  * The sum is calibrated as a **ratio of sums** over 1992–2023: total net
-    replacement / total stock-years = **0.154% of stock per year**.
-  * 2023 is the last year in which households are benchmarked to a census.
-* **2025 deviation.** Dwellings built in 2025 beyond household formation
-  exceed what the identity predicts by 5,494. This deviation is carried into
-  the projection, halving each year: ρ = 0.50, the lag-1 autocorrelation of
-  the historical series.
+### 4.5 Population projection
 
-A second, household-free version is printed as a check. It uses
-`dwellings built − change in census dwelling count`, census to census.
+Stats NZ 2024-base stochastic projection: the median path is observed 2025 plus
+the published median growth (PCHIP between knots); the 5th/95th paths add the
+published spread of the *level* about the median, shifted to zero in 2025.
+2026 growth is observed (mean-quarter ERP, June quarter 2026 − June quarter
+2025); later growth is the projection's, so the level shift is permanent.
 
-### 4.4 Population projection (2026–2050)
+### 4.6 Household size
 
-From Stats NZ's 2024-base stochastic projection (`popdata.xlsx`):
+`S_StatsNZ = population / households` at the shared knots of the 2018-base
+subnational population and household projections (2018–2043). Interpolation:
+one cubic Hermite through every knot (PCHIP derivatives at interior knots, zero
+slope at 2043), held constant after 2043. Applied as a shape rebased on the
+observed 2023 value; households = population / S for every population path.
+Household decline is floored at zero (it becomes vacancy).
 
-* **Median path:** the observed 2025 population plus the published median
-  annual growth. Growth is published at knot years and interpolated with
-  PCHIP, a shape-preserving cubic spline.
-* **5th and 95th percentile paths:** the median plus the published
-  difference between the 5th (or 95th) and 50th percentile *levels*. That
-  difference is shifted so it is zero in 2025, so all three paths start from
-  the observed 2025 population.
+### 4.7 Typology mix
 
-Percentiles of annual growth are not added up, because percentiles are not
-additive.
+Storylines: S1 and S3 hold floor-area shares at their 2022–2026 average; S2
+continues a damped additive-log-ratio trend fitted on 2012–2025 (φ = 0.8). 2026
+uses the observed consented mix.
 
-### 4.5 Household size projection
-
-1. At Stats NZ's five-year knots (2018–2043), compute
-   `S_StatsNZ = population / households`. Both series come from 2018-base
-   projections of similar vintage.
-2. Interpolate annually with PCHIP. Extend linearly from 2043 to 2050 using
-   the slope at the end of the spline.
-3. Use only the *shape* of that path, rebased on the observed 2025 value:
-   `S(t) = S_observed(2025) × S_StatsNZ(t) / S_StatsNZ(2025)`.
-4. Households for each population path: `households = population / S`.
-   Annual household growth is floored at zero: an empty house in a shrinking
-   town is not assumed to meet demand elsewhere.
-
-Result: S falls from 2.657 (2025) to 2.625 (2040), then rises to 2.641 (2050).
-
-### 4.6 Typology mix
-
-GFA shares of detached / townhouses / apartments are projected with a damped
-compositional trend:
-
-* the log-ratio of each type to detached is fitted as a straight line over
-  2012–2025. This is the additive log-ratio (ALR) transform, which keeps shares
-  positive and summing to one;
-* the trend is continued from 2025 with geometric damping φ = 0.8, so the
-  cumulative trend applied never exceeds 4 years' worth of slope.
-
-Townhouses rise from 35.5% of floor area (2025) to 56.0% (2050). The blended
-dwelling size follows from the mix. A harmonic mean weighted by floor-area
-share is used, because that is the exact dwelling-weighted average.
-
-### 4.7 Forward demand (2026–2050)
-
-For each year and population percentile:
+### 4.8 Forward requirement and the near-term market excess
 
 ```
-in-scope dwellings built = ( new households
-                           + vacancy allowance        (v held at the 2023 census value, 5.53%)
-                           + net replacement           (0.154% × stock last year)
-                           + 2025 deviation × 0.50^(t − 2025) )
-                           × (1 − RV share 5.64%)
-floor area built         = in-scope dwellings built × blended dwelling size
+dwellings built (all categories) = new households + vacancy allowance (v held at the 2023 census)
+                                   + net replacement (scenario rate × last year's stock)
+                                   + near-term market excess
+in-scope dwellings              = dwellings built × (1 − RV share)
+floor area                      = in-scope dwellings × blended dwelling size
 ```
 
-The 2025 row is the observed value (consents × 0.95), not a projection.
+2026 building is observed: 0.95 × consents over the latest 12 observed months
+(the year to July 2026). Its excess over the 2026 requirement is booked in
+2026; from 2027 building stays above the requirement by gap_ref × ρ^(t−2026),
+with gap_ref = building 2026 − requirement 2027 and ρ the estimated persistence
+of departures from the calibrated identity. The excess is stock-adding (extra
+vacancy, never absorbed); redevelopment booking, payback and the gap against
+the 2026 requirement are sensitivities. 2026 floor area is fixed to the
+observed consented GFA.
 
-The floor area is then split into **demand bands** for reporting. This is
-bookkeeping; the bands add up to the same total:
+The floor area is reported in demand bands (bookkeeping; they add up to the
+total): growth (net of consolidation), house-splitting, extra space per
+dwelling, vacancy allowance, long-run background replacement (demolition net of
+unconsented additions), the recent redevelopment wave (scenario − long run),
+and the near-term market excess. In the figures RV units are removed from every
+band in proportion (each band × (1 − RV share)), so all bands are in scope and
+sum exactly to the typology total (tested).
 
-* growth (net of consolidation);
-* house-splitting;
-* extra space per dwelling;
-* vacancy allowance;
-* demolition replacement;
-* calibrated residual;
-* housed in RV units (negative).
+### 4.9 Carbon
 
-The OLF from the case studies moves floor area *between* bands but does not
-change the total.
-
-### 4.7a Near-term join and replacement scenarios (Step 2, A1 and item 2)
-
-*Method only; the numbers are in `outputs/` (A6). This section supersedes the
-"2025 deviation" term above when `NEAR_TERM_JOIN = 'nowcast'`.*
-
-* **Replacement scenario** (`REPLACEMENT_SCENARIO`, `engine.replacement_path`):
-  S1 = long-run census dwelling-count rate; S2 = the 2018–2023 interval rate
-  throughout; S3 = the 2018–2023 rate fading to the long-run rate with
-  half-life `S3_HALF_LIFE`.
-* **Nowcast of 2026** (`engine.nowcast_year`, `engine.nowcast_join`):
-  2026 completions are taken from observed consents,
-  `c × [(1 − W) C2026 + W C2025]`. The months of 2026 not yet published are
-  estimated with a ratio-to-annual estimator using fixed seasonal factors
-  (mean monthly share of the calendar year, 2010–2025). The W share of 2027
-  completions comes from the 2026 consents; 2027 consents are taken at the
-  requirement (net of the 2026 drawdown).
-* **Three channels** (`engine.excess_channels`, `engine.join_channels`):
-  building above the requirement goes to redevelopment (permanent), vacancy
-  (drawn down linearly over `VACANCY_DRAWDOWN_YEARS`) and faster household
-  formation (permanent, or reverting as a sensitivity). The shares are measured
-  on ONE census interval (2018–2023), against the active scenario's rate, so
-  redevelopment already in the requirement is not counted twice. The household
-  channel is included only if census household size fell faster than the
-  Stats NZ shape over that interval.
-* **Observed 2026 population** (`NOWCAST_POPULATION`): the provisional growth
-  over the year ended June 2026 replaces the projection median for 2026; all
-  later growth is the projection's.
-* The 2026 out-of-sample check and the 2026 gap decomposition run on the model
-  with none of these observed-2026 inputs (`validation.NO_2026_DATA`).
-
-### 4.8 Carbon
-
-For each year, floor area by typology (total × mix share) is multiplied by
-that typology's constant intensity. This gives:
-
-* totals by typology and by demand band;
-* totals by material and soil (material flow accounting);
-* totals by life-cycle stage, with "upfront" = A1–A5 + soil (21,862 kt).
-
-All stages are booked in the year of construction (the static LCA convention).
-
-### 4.9 Verification printed at run time
-
-* The typology floor-area columns sum to the published total.
-* The accounting identity (total = sum of bands) holds.
-* The household-decline floor never binds in the central run.
-* Material + soil carbon equals the typology total.
-* One-line stock-term sensitivities: empty share, completion rate, demolition rate.
-* The census dwelling-count check of net replacement, by census interval.
+Floor area by typology × constant intensity, by band, material, soil and stage
+(all stages booked in the year of construction). Upfront = A1–A5 + soil. Soil
+applies only to floor area on new footprints: zero on the replacement bands
+(land already settled).
 
 ---
 
 ## 5. `Diagnostics.py`
 
-Runs `Boss.main()` once and draws six figures. Each covers history (solid)
-and projection (dashed) on one time axis:
+Runs `Boss.main()` once: household engines and the DHE/consent relationship
+(diag_2), the stock bucket (diag_3), floor area (diag_4), carbon (diag_5) and
+the vacancy-definition appendix (diag_3b). The history of the demand
+decomposition is one bar per census interval (interval means, one vacancy
+definition): between censuses annual detail is not identified. Accounting
+identities and factor sums are checked in `tests/test_identities.py`.
 
-1. people and households;
-2. what drives household formation, and the evidence that post-2018 DHE
-   households are consent-driven;
-3. the stock identity, year by year;
-4. floor area by typology and by demand band, the typology mix and dwelling
-   size;
-5. carbon by typology and by material, and the case-study intensities;
-6. checks: history is reproduced by the decomposition, how unusual the
-   2025→2026 step is (−22.1%), vacancy definitions, and factor consistency.
+## 6. `Sensitivity.py`
 
-Historical carbon in figure 5 applies the 2025 factors to past floor area; it
-is labelled as an estimate. The script saves nothing unless
-`SAVE_FIGURES = True`.
+Re-runs `Boss.main()` with one setting changed per row: replacement scenarios
+and half-lives, mix, household-size variants and tails, dwelling-size window,
+completion rate and lag, census under-construction correction, near-term
+booking and gap reference, soil on replacement. Population rows reuse Boss's
+5th/95th paths; carbon-factor and soil-order rows re-weight the central floor
+area. Writes `outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`. One-at-a-time
+ranges are not additive.
 
----
+## 7. `MonteCarlo.py`
 
-## 6. `Sensitivity.py`: one change at a time
+Within each scenario (S3-10 reference, S1, S2): 5,000 Latin hypercube draws of
+population rank z (moving population between the published percentile levels
+and household size between Stats NZ Low/Medium/High with the same z), a
+dwelling-size multiplier, the completion rate (two-piece uniform with median
+0.95) and a stratified bootstrap of the carbon factors. Each draw runs the same
+`engine.py` chain; the central draw is checked against `Boss.main()` to 1e-9.
+Sobol first-order and total indices (reference scenario, 1,024 × 6
+evaluations). This is within-scenario parametric uncertainty only; scenario,
+mix, carbon-factor and soil bounds are reported separately (sens_1).
 
-This script re-runs `Boss.main()` with **one** setting changed per run, all
-else at the adopted value. For example: household-size variant, household
-rebase, replacement window, φ, dwelling-size reference period, completion
-rate. It tabulates the change in 2026–2050 floor area and carbon.
+## 8. Validation and reports
 
-Some rows need no re-run:
-
-* **Population rows** reuse Boss's own 5th/95th paths.
-* **Carbon-factor rows** re-weight the central floor area with alternative
-  intensities: the jackknife range, the extreme single case study, or the
-  extreme soil order.
-
-Writes `data/sensitivity_oat.csv` and two figures (tornado; annual paths). The
-ranges are not additive and are not a joint interval.
-
----
-
-## 7. `MonteCarlo.py`: joint uncertainty and variance-based sensitivity
-
-**Engine.** One `Boss.main()` takes about 3 s, and about 24,000 evaluations
-are needed. `project()` therefore calls only the forward chain, through the
-same `engine.py` functions Boss uses, with Boss's data and settings copied once
-at set-up:
-
-population path → household size → households → stock identity → dwellings
-built → mix and dwelling size → floor area → carbon.
-
-Before sampling, the central draw is checked against `Boss.main()` for floor
-area, carbon, upfront carbon, RV units, households and household size.
-
-**Inputs sampled (12).** The distributions and their justifications are in the
-script's docstring:
-
-* population rank z (standard normal). This moves population between the
-  published percentile levels and, with the same z, household size between
-  Stats NZ's Low, Medium and High projections;
-* household rebase factor k;
-* replacement "regime": a weight between the 1992–2023 and 2019–2023
-  net-replacement rates;
-* mix damping φ and the two mix slopes;
-* dwelling-size multiplier;
-* completion rate;
-* pre-2013 empty share;
-* vacancy reached by 2050;
-* RV share;
-* carbon factors: an index into 4,000 stratified bootstrap replicates of the
-  case studies.
-
-**Method.**
-
-1. **Uncertainty:** 10,000 Latin hypercube draws. Output percentiles of the
-   2026–2050 totals, and annual 5/25/50/75/95th percentiles for the fan chart.
-2. **Global sensitivity:** Sobol first-order and total indices (Saltelli/Jansen
-   estimators via `scipy.stats.sobol_indices`), 1,024 × (12 + 2) evaluations,
-   with bootstrap confidence intervals.
-
-**Outputs.** `montecarlo_summary.csv`, `_draws.csv`, `_annual.csv` and
-`_sobol.csv` in `data/`, and four figures.
-
-Central results:
-
-| | median | 5–95% | Boss central run |
-|---|---|---|---|
-| Floor area, 2026–2050 | 80.66 Mm² | 60.0–104.6 Mm² | 76.71 Mm² (39th percentile of the MC) |
-| Carbon, 2026–2050 | 31,191 kt | 23,168–40,888 kt | 29,708 kt |
+`validation.py`: rolling-origin hindcast of dwellings built from 2006, 2013 and
+2018 (consistent vacancy definition), and the 2026 out-of-sample check (model
+run without any 2026 data vs observed consents). `gap_2026.py`: decomposition of
+the 2026 gap. `tools/`: near-term rule and scenario reports, report figures,
+metrics, RESULTS.md, ASSUMPTIONS.md and BASELINE_DRAFT.md.
+`tests/test_regression_v1_2_1.py` checks every headline number against v1.2.1.
 
 ---
 
-## 8. Glossary
+## 9. Glossary
 
 | term | meaning |
 |---|---|
@@ -426,10 +240,12 @@ Central results:
 | S | average household size = population / households |
 | v | vacancy rate = empty private dwellings / all private dwellings |
 | RV | retirement-village unit |
+| UC | dwellings under construction on census night |
 | OLF | occupancy load factor = floor area per design occupant |
 | FSI | floor space index = GFA / building footprint |
 | ALR | additive log-ratio transform for shares that sum to one |
-| φ | damping factor of the mix trend (0 = trend stops, 1 = continues undamped) |
+| φ | damping factor of the mix trend |
+| ρ | persistence of departures from the calibrated stock identity |
 | PCHIP | piecewise cubic Hermite interpolation, a shape-preserving spline |
 | EN 15978 stages | A1–A3 product, A4–A5 construction, B2/B4 maintenance/replacement, C1–C4 end of life, D beyond the life cycle |
 | upfront carbon | A1–A5 + soil loss |

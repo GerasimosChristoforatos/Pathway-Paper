@@ -5,13 +5,20 @@
                                  # MC metrics are then carried over from the
                                  # last full run and marked stale)
 
+In Spyder (or any IPython console): open run_all.py and Run (F5), or
+    runfile('run_all.py')
+Paths are resolved from this file's folder, so the working directory does not
+matter. A failed step prints its name and the log to read, and the run stops
+there; from the command line the exit code is non-zero, in an interactive
+console no SystemExit is raised.
+
 Order: Building_factors -> Boss -> Diagnostics -> Sensitivity -> MonteCarlo
--> tests -> validation -> gap_2026 (A1 evidence) -> near_term_join (A1 result)
--> scenarios (item 2: S1/S2/S3) -> metrics -> baseline_draft (outputs/BASELINE_DRAFT.md). Each script runs in its own process, with
-the non-interactive matplotlib backend and PATHWAY_SAVE_FIGURES=1, so
-every figure is written to outputs/figures/ and nothing is shown. Console
-output of each step goes to outputs/logs/<step>.log. The run stops at the
-first failing step.
+-> validation -> gap_2026 -> near_term_join -> scenarios -> figures_report
+-> tests (incl. the v1.2.1 regression test, which reads the outputs written
+above) -> metrics -> results -> assumptions -> baseline_draft. Each script
+runs in its own process, with the non-interactive matplotlib backend and
+PATHWAY_SAVE_FIGURES=1, so every figure is written to outputs/figures/ and
+nothing is shown. Console output of each step goes to outputs/logs/<step>.log.
 """
 import os
 import subprocess
@@ -22,46 +29,65 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 LOGS = os.path.join(ROOT, 'outputs', 'logs')
 
 
+class StepFailed(Exception):
+    pass
+
+
+def interactive():
+    """True inside Spyder, IPython or Jupyter, or python -i."""
+    return (hasattr(sys, 'ps1') or bool(sys.flags.interactive)
+            or any(m in sys.modules for m in ('spyder_kernels', 'IPython', 'ipykernel')))
+
+
 def step(name, cmd):
     os.makedirs(LOGS, exist_ok=True)
     env = dict(os.environ, MPLBACKEND='Agg', PATHWAY_SAVE_FIGURES='1', PYTHONWARNINGS='ignore')
+    log_path = os.path.join(LOGS, f'{name}.log')
     t = time.time()
-    with open(os.path.join(LOGS, f'{name}.log'), 'w') as log:
+    with open(log_path, 'w') as log:
         rc = subprocess.call(cmd, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
     print(f'  {name:<18} {"ok" if rc == 0 else f"FAILED (exit {rc})":<10} {time.time() - t:6.1f} s')
     if rc != 0:
-        sys.exit(f'Step {name} failed: see outputs/logs/{name}.log')
+        raise StepFailed(f'Step "{name}" failed (exit {rc}). Read the log: {log_path}')
 
 
-def main():
+def tool(name):
+    return os.path.join(ROOT, 'tools', f'{name}.py')
+
+
+def pipeline(skip_mc):
     py = sys.executable
-    skip_mc = '--no-mc' in sys.argv
-    print('run_all:')
-    step('building_factors', [py, 'Building_factors.py'])
-    step('boss', [py, 'Boss.py'])
-    step('diagnostics', [py, 'Diagnostics.py'])
-    step('sensitivity', [py, 'Sensitivity.py'])
+    step('building_factors', [py, os.path.join(ROOT, 'Building_factors.py')])
+    step('boss', [py, os.path.join(ROOT, 'Boss.py')])
+    step('diagnostics', [py, os.path.join(ROOT, 'Diagnostics.py')])
+    step('sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')])
     if not skip_mc:
-        step('montecarlo', [py, 'MonteCarlo.py'])
-    if os.path.isdir(os.path.join(ROOT, 'tests')):
-        step('tests', [py, '-m', 'pytest', '-q', 'tests'])
-    if os.path.exists(os.path.join(ROOT, 'validation.py')):
-        step('validation', [py, 'validation.py'])
-    if os.path.exists(os.path.join(ROOT, 'gap_2026.py')):
-        step('gap_2026', [py, 'gap_2026.py'])
-    step('near_term_join', [py, os.path.join('tools', 'near_term_join.py')])
-    step('scenarios', [py, os.path.join('tools', 'replacement_scenarios.py')])
-    sys.path.insert(0, os.path.join(ROOT, 'tools'))
-    os.environ['MPLBACKEND'] = 'Agg'
-    import metrics
-    m = metrics.collect(extra={'mc_stale': True} if skip_mc else None)
-    print('metrics -> outputs/metrics.json')
-    for key, label, f in metrics.FIELDS:
-        v = metrics.get(m, key)
-        print(f'  {label:<55} {f.format(v) if v is not None else "n/a"}')
-    step('results', [py, os.path.join('tools', 'results.py')])
-    step('assumptions', [py, os.path.join('tools', 'assumptions.py')])
-    step('baseline_draft', [py, os.path.join('tools', 'baseline_draft.py')])
+        step('montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')])
+    step('validation', [py, os.path.join(ROOT, 'validation.py')])
+    step('gap_2026', [py, os.path.join(ROOT, 'gap_2026.py')])
+    step('near_term_join', [py, tool('near_term_join')])
+    step('scenarios', [py, tool('replacement_scenarios')])
+    step('figures_report', [py, tool('figures_report')])
+    step('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
+    step('metrics', [py, tool('metrics')] + (['--mc-stale'] if skip_mc else []))
+    step('results', [py, tool('results')])
+    step('assumptions', [py, tool('assumptions')])
+    step('baseline_draft', [py, tool('baseline_draft')])
+
+
+def main(argv=None):
+    argv = sys.argv[1:] if argv is None else argv
+    print('run_all:')
+    try:
+        pipeline(skip_mc='--no-mc' in argv)
+    except StepFailed as e:
+        print(f'\n{e}')
+        if interactive():
+            return False
+        sys.exit(1)
+    print(f'\nDone. Metrics: {os.path.join(ROOT, "outputs", "metrics.json")} '
+          f'(log of each step in {LOGS})')
+    return True
 
 
 if __name__ == '__main__':

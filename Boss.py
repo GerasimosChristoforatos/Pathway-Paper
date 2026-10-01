@@ -19,15 +19,17 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import PchipInterpolator
-from scipy import stats
 
 import engine
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
-DATA_DIR = 'data'                                  # inputs only
-OUT_DIR = 'outputs'                                # everything the scripts write
+# Paths are anchored on this file's folder (the repository root), so every
+# script and test works from any working directory (e.g. Spyder).
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(ROOT_DIR, 'data')          # inputs only
+OUT_DIR = os.path.join(ROOT_DIR, 'outputs')        # everything the scripts write
 FACTORS_DIR = os.path.join(OUT_DIR, 'factors')     # written by Building_factors.py
 VERBOSE = False     # True also prints historical diagnostics (occupancy, calibration)
 SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
@@ -39,14 +41,9 @@ BOSS_FIGURE_NAMES = ['boss_01_population', 'boss_02_households', 'boss_03_cumula
                      'boss_04_annual_gfa', 'boss_05_annual_carbon', 'boss_06_cumulative_carbon',
                      'boss_07_typology_share', 'boss_08_demographic_drivers',
                      'boss_09_space_diagnostics', 'boss_10_material_flows']
-# CONSENT_SOURCE: where monthly building consents come from.
-#   'statsnz_release' (default): data/derived/consents_monthly.csv, built by
-#       data/build_consents.py from the raw Stats NZ release download
-#       (provenance in data/raw/MANIFEST.csv). Identical to the legacy file in
-#       every month 1990-04..2025-12; extends it into 2026.
-#   'legacy_xlsx': data/consentdata.xlsx as originally supplied.
-CONSENT_SOURCE = 'statsnz_release'
-FILE_CONSENTS = os.path.join(DATA_DIR, 'consentdata.xlsx')
+# Monthly building consents: data/derived/consents_monthly.csv, built by
+# data/build_consents.py from the raw Stats NZ release download (provenance in
+# data/raw/MANIFEST.csv).
 FILE_CONSENTS_DERIVED = os.path.join(DATA_DIR, 'derived', 'consents_monthly.csv')
 FILE_POP_PROJ = os.path.join(DATA_DIR, 'popdata.xlsx')
 FILE_POP_HIST = os.path.join(DATA_DIR, 'histpopdata.xlsx')          # [FIX e] authoritative annual ERP
@@ -88,67 +85,45 @@ POP_SHEET_HIST = 'Table 1'
 #     Each path then has the published marginal 5th/95th percentile width in
 #     every year. It is a band of marginal quantiles, not a simulated path, and
 #     removing the 2025 spread only approximates conditioning on observed 2025.
-# 'cumulated_growth': the previous behaviour, kept for comparison only.
-POP_PERCENTILE_METHOD = 'published_levels'
-CONSENT_SHEET = 'Sheet1'
 
 HOUSEHOLD_SHEET_HIST = 'Table 2'
 HOUSEHOLD_SHEET_PROJ = 'Table 1'
 HOUSEHOLD_VARIANT_MAP = {'5th': 'Low', '50th': 'Medium', '95th': 'High'}
 
 # ---------------------------------------------------------------------------
-# HOUSEHOLD METHOD -- how future households are obtained        [Route B]
+# HOUSEHOLD SIZE -- how future households are obtained
 # ---------------------------------------------------------------------------
 # All three Stats NZ household variants (Low B / Medium B / High B) use the SAME
-# 'B' living-arrangement assumption. They differ ONLY in fertility, mortality
-# and migration -- i.e. they are population variants. The old method paired the
-# 5th-percentile population (2024-base) with the Low B households (2018-base),
-# so low-population was counted on BOTH sides of S = Pop / HH, from two different
-# vintages. That double-counting is why the household-size band flipped sign
-# (2.38 at the 5th vs 3.00 at the 95th by 2050).
-#
-# 'single_living_arrangement' (Route B): take household size from the Medium B
-#     path, rebased on observed 2025 -- the one living-arrangement assumption
-#     Stats NZ actually made -- and apply it to every population percentile:
-#         S(t)            = Pop_50th(t) / HH_MediumB(t)
-#         Households_p(t) = Pop_p(t) / S(t)
-#     Population percentiles then carry population uncertainty alone.
-# 'variant_pairing': the previous behaviour, kept for comparison.
-#
-# 'matched_size' (Route A, ADOPTED): household size is taken from a population
-#     projection of (near-)matching vintage divided by the 2018-base household
-#     projection, at their shared published knots:
-#         S_StatsNZ(knot) = Pop_update(knot) / HH_MediumB(knot)
-#     interpolated between knots with the same shape-preserving spline (PCHIP)
-#     used for every other input, extended linearly past the last knot, and
-#     applied as a SHAPE rebased on observed household size in S_ANCHOR_YEAR:
-#         S(t)            = S_observed(2025) x S_StatsNZ(t) / S_StatsNZ(2025)
-#         Households_p(t) = Pop_2024base_p(t) / S(t)
-#     VINTAGE: see FILE_POP_SIZE_PAIR for which release is paired and why.
-#     Both series are at 30 June; only the rebased shape is used, so the
-#     half-year offset and any level difference do not enter the result.
-# 'single_living_arrangement' (Route B): S = Pop_2024base_median / HH_MediumB.
-# 'variant_pairing': the original behaviour.
-HOUSEHOLD_METHOD = 'matched_size'
+# 'B' living-arrangement assumption and differ only in fertility, mortality and
+# migration. Pairing the 5th-percentile population with the Low B households
+# would count low population on BOTH sides of S = Pop / HH, so household size
+# is taken from ONE living-arrangement assumption and applied to every
+# population percentile:
+#     S_StatsNZ(knot) = Pop(knot) / HH_MediumB(knot)
+# from a population projection of (near-)matching vintage and the 2018-base
+# household projection, at their shared published knots (see S_TAIL for the
+# interpolation), applied as a SHAPE rebased on observed household size in
+# S_ANCHOR_YEAR:
+#     S(t)            = S_observed(anchor) x S_StatsNZ(t) / S_StatsNZ(anchor)
+#     Households_p(t) = Pop_2024base_p(t) / S(t)
+# VINTAGE: see FILE_POP_SIZE_PAIR for which release is paired and why. Both
+# series are at 30 June; only the rebased shape is used, so the half-year offset
+# and any level difference do not enter the result.
 HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S only
 
-# S_TAIL: household size after the last published knot (2043).
-#   'flat' (ADOPTED, item 5): held at its 2043 value (zero-order hold): the
-#       neutral extrapolation when nothing is published beyond the horizon.
-#   'secant': continues the last published interval's slope (2038->2043).
-#   'mean_slope': continues the mean slope over all knots (2018->2043).
-#   'pchip_end_slope': the original behaviour: continues the PCHIP end
-#       derivative, which is 2.5x the 2038->2043 secant (ASSESSMENT.md C2).
-#   'taper' (ADOPTED v1.0.2, author's decision): the slope tapers linearly to
-#       zero over S_TAPER_YEARS from the PCHIP end derivative (C1-continuous,
-#       no kink at 2043). Adds s0 x T / 2 in total. NOTE: s0 is the inflated
-#       PCHIP end slope (C2), so 'taper_secant' (from the 2038->2043 secant; not
-#       C1 at 2043) is the flagged alternative; 'flat' is a sensitivity.
+# S_TAIL: household size between and after the published knots (last knot 2043).
+#   'hermite_clamped' (ADOPTED, v1.2.1): one cubic Hermite through every
+#       published knot (PCHIP derivatives at the interior knots, zero slope
+#       imposed at 2043), held constant after 2043.
+#   Sensitivities (Sensitivity.py): 'flat' (PCHIP, held after 2043; a kink at
+#       2043), 'taper' (PCHIP; the slope tapers linearly to zero over
+#       S_TAPER_YEARS from the PCHIP end derivative), 'taper_secant' (v1.2: the
+#       2038-43 interval linear at its secant slope, then tapering from it).
 # N4 (the Low/High variants pair stochastic population percentiles with
 # deterministic household variants) and the total vs private-household
 # population question remain OPEN until the living-arrangement table (E2) is
 # obtained; see ASSUMPTIONS.md.
-S_TAIL = 'taper'
+S_TAIL = 'hermite_clamped'
 S_TAPER_YEARS = 5
 
 # S_ANCHOR_YEAR: the observed household size the Stats NZ shape is rebased on.
@@ -160,9 +135,9 @@ S_TAPER_YEARS = 5
 #       months of household growth are consent-derived (0.888 x lagged
 #       consents x k). A June anchor would need a June population; the ERP is
 #       used at 31 December throughout, so this half-year compromise stands.
-#   2025: the original behaviour. 2024-25 households are 0.888 x lagged
-#       consents, so the 2025 value carries the same DHE artefact that the model
-#       already refuses to carry forward as e_2025 (ASSESSMENT.md C3).
+#   Not 2025: 2024-25 households are 0.888 x lagged consents, so the 2025
+#       value carries the same DHE artefact that the model does not carry
+#       forward as e_2025 (see HOUSEHOLD SIZE AND MIGRATION).
 # When Stats NZ rebases DHE households on the 2023 census (planned after the
 # 2023-base family and household projections, late 2026; F3), this and the
 # k-rebase are to be replaced through one input switch.
@@ -191,57 +166,36 @@ S_ANCHOR_YEAR = 2023
 #        year) outrunning slowing population growth: an artefact of the
 #        estimation method, not observed behaviour.
 #
-# HH_CENSUS_REBASE: rebase households on the 2023 census the way Stats NZ
-#   benchmarks each base. All increments after 30 June 2018 are scaled by one
-#   factor k, so that June 2023 grows over June 2018 by the census ratio
-#   (the intercensal SHAPE stays consent-driven, as in Stats NZ's own series);
-#   2024-25 keep the same k. Census households:
-#     'occupied_plus_away' (ADOPTED): occupied private dwellings + dwellings
-#        whose residents were away. Stats NZ's bases add households
-#        temporarily absent, so this is the closer definition. k = 0.826.
-#     'occupied': occupied private dwellings only. k = 0.785.
-#     None: the DHE series as published.
-#   Only the 2018->2023 RATIO is used, so the level adjustments (undercount,
-#   households overseas) are assumed proportionally equal in both censuses.
-#   This is an assumption: 2018 census coverage was poorer than usual.
-HH_CENSUS_REBASE = 'occupied_plus_away'   # 'occupied_plus_away' | 'occupied' | None
+# CENSUS REBASE OF HOUSEHOLDS: households are rebased on the 2023 census the
+#   way Stats NZ benchmarks each base. All increments after 30 June 2018 are
+#   scaled by one factor k, so that June 2023 grows over June 2018 by the census
+#   ratio (the intercensal SHAPE stays consent-driven, as in Stats NZ's own
+#   series); 2024-25 keep the same k. Census households = occupied private
+#   dwellings + dwellings whose residents were away (Stats NZ's bases add
+#   households temporarily absent); k = 0.824 (printed at run time). Only the 2018->2023 RATIO is
+#   used, so the level adjustments (undercount, households overseas) are assumed
+#   proportionally equal in both censuses. This is an assumption: 2018 census
+#   coverage was poorer than usual.
 HH_REBASE_BASE, HH_REBASE_CENSUS = '2018-06-30', '2023-06-30'
 
-# STOCK_CALIB_END: the stock-identity residual is calibrated only where
-#   households are census-benchmarked; otherwise the identity compares consents
-#   with 0.888 x lagged consents and just recovers Stats NZ's weight.
-#   'last_census_base' -> 2023 when households are rebased on the 2023 census,
-#   2018 (the last DHE base) when they are not.
-#   Census-to-census evidence (printed under STOCK): net replacement (demolition
-#   minus unconsented additions) was ~0.0-0.1% of stock/yr from 1991 to 2018 and
-#   ~0.2-0.3%/yr in 2018-2023, confirmed from census DWELLING counts alone
-#   (independent of household estimates). Whether that recent regime persists
-#   is sampled in MonteCarlo.py and shown in Sensitivity.py
-#   (DEMOLITION_CALIB_START = 2019).
-STOCK_CALIB_END = 'last_census_base'
+# The stock identity is calibrated only where households are census-benchmarked
+# (to the 2023 census; calib_end in main()); beyond it the identity would compare
+# consents with 0.888 x lagged consents and just recover Stats NZ's weight.
 
 # ---------------------------------------------------------------------------
-# HOUSEHOLD SIZE AND MIGRATION (diagnostic; not applied by default)
+# HOUSEHOLD SIZE AND MIGRATION (diagnostic only)
 # ---------------------------------------------------------------------------
 # Annual household size S = population / households co-moves with migration
 # (r ~ +0.6). Given (i) above, between censuses this is how consent-driven
 # households meet migration-driven population, i.e. housing SUPPLY against
 # arrivals. It is not evidence of how households behave, and must not be
 # presented as a behavioural finding. The regression (dS on population growth
-# with a time trend, HAC standard errors) is still fitted, over 1992-2018,
-# and reported.
-#
-# HH_SIZE_RESPONSE = True restores the earlier mechanism as a SENSITIVITY: the
-# part of 2025's fall in S not explained by migration (e_2025) is carried
-# forward, fading at the residual persistence rho:
-#   dS(t) = dS_StatsNZ(t) + e_2025 x rho^(t-2025)
-# By (iii) above, e_2025 is a product of the estimation method, so it is off in
-# the central case. Household size follows the Stats NZ path, rebased on 2025.
-HH_SIZE_RESPONSE = False
-DEVIATION_PERSISTENCE = 'estimated'   # 'estimated' | a number in [0, 1)
-# The same principle is applied to dwellings built beyond household formation:
-# 2025's deviation from the stock model fades at that series' own measured
-# persistence (lag-1 autocorrelation of its 1992-2018 residual).
+# with a time trend, HAC standard errors) is fitted over the census-benchmarked
+# years and reported (diag_2); the part of 2025's fall in S it does not explain
+# (e_2025) is a product of the estimation method (iii) and is not carried.
+# rho_other: the persistence of departures from the calibrated stock identity
+# (lag-1 autocorrelation of its residual; engine.deviation_2025). The near-term
+# market excess fades at it.
 
 ANCHOR_SMOOTHING_YEARS = 3
 
@@ -266,12 +220,11 @@ COL_TYPOLOGIES = {
 # March 2023). Critically, BOTH the counts AND the floor area in this file
 # exclude them, so the file is internally consistent.
 #
-# COL_DWELLINGS_TOTAL: optional external total-dwellings column. If present it
-# is used ONLY as a cross-check, never silently as a denominator, because an
-# all-category dwelling count divided into three-typology floor area would
-# understate dwelling size by roughly the retirement-village share.
-COL_DWELLINGS_TOTAL = 'Dwellings'        # set to None to skip the cross-check
-DWELLING_COUNT_SOURCE = 'typology_sum'   # 'typology_sum' | 'dwellings_column'
+# COL_DWELLINGS_TOTAL: the all-category dwellings column. It is never the
+# dwelling-size denominator (an all-category count divided into three-typology
+# floor area would understate dwelling size by roughly the retirement-village
+# share); all-category minus the three typologies = retirement-village units.
+COL_DWELLINGS_TOTAL = 'Dwellings'
 
 COL_CONSENT_COUNTS = {
     'Detached': 'Consents - Consents/Detached',
@@ -280,27 +233,27 @@ COL_CONSENT_COUNTS = {
 }
 TYPOLOGY_COLORS = {'Detached': '#4C72B0', 'Townhouses': '#DD8452', 'Apartments': '#55A868'}
 
-DEMAND_LABELS = ['Growth demand (net of consolidation)',
-                 'Consumption: extra space per dwelling',
-                 'Consumption: vacancy allowance',
-                 'Consumption: replacement of demolished stock',
-                 'House-splitting demand',
-                 'Avoided floor area (consolidation)']
-DEMAND_LABELS_LEGEND = DEMAND_LABELS[:4] + ['_nolegend_', DEMAND_LABELS[5]]
+# Demand bands in the floor-area and carbon figures (boss_04-06, diag_4), bottom to top.
+# All are IN SCOPE: retirement-village units are a constant share of every dwelling
+# built, so their band is removed by scaling each band by (1 - RV share); see fig_bands.
 DEMAND_COLORS = ['#3498db', '#8e44ad', '#95a5a6', '#34495e', '#e67e22', 'none']
 HOUSESPLIT_COLOR = DEMAND_COLORS[4]
-# With RV_IN_STOCK the residual is unconsented additions only; retirement-
-# village units are their own band (see RETIREMENT VILLAGES below).
-# Calibrated residual of the stock identity beyond the fixed BRANZ demolition rate:
-# negative = unconsented additions, positive = losses above that rate.
-UNCONSENTED_LABEL = 'Calibrated residual (unconsented additions if < 0; losses beyond BRANZ rate if > 0)'
-RV_LABEL = 'Housed in retirement villages (out of carbon scope)'
+REPL_LABEL = 'Replacement: long-run background (net of unconsented additions)'
+REPL_COLOR = DEMAND_COLORS[3]
 RV_COLOR = '#b8a0d0'
-UNCONSENTED_COLOR = '#16a085'
-JOIN_LABEL = 'Near-term join: 2026-27 building above requirement, by channel (A1)'
+JOIN_LABEL = 'Near-term market excess (2026 observed building above requirement, fading at rho)'
 JOIN_COLOR = '#c0392b'
-WAVE_LABEL = 'Redevelopment wave: net replacement above the long-run rate (scenario)'
+WAVE_LABEL = 'Replacement: recent redevelopment wave (fading)'
 WAVE_COLOR = '#d35400'
+# Materials in the carbon figures (boss_10, diag_5), bottom to top: (column, label, colour);
+# soil (land-use change, not a material) on top at alpha SOIL_ALPHA. Edges 0.4 pt #555555.
+MATERIAL_STYLE = [('TIMBER', 'Timber', '#8B5A2B'), ('STEEL', 'Steel', '#8E9296'),
+                  ('CONCRETE (incl. reinforced)', 'Concrete', '#D4D4D4'),
+                  ('PLASTICS & PAINT', 'Plastics & paint', '#2EE62E'),
+                  ('PLASTERBOARD', 'Plasterboard', '#F2EEE3'), ('OTHERS', 'Others', '#000000'),
+                  ('SOIL', 'Soil (land-use change)', '#C9A97A')]
+SOIL_ALPHA = 0.55
+EDGE = dict(edgecolor='#555555', linewidth=0.4)
 
 TREND_WINDOW_START = 2012
 DAMPING_PHI = 0.8
@@ -315,97 +268,27 @@ DAMPING_PHI = 0.8
 #   area weighted), with 2026 = the observed months (January-July).
 MIX_MODE = 'storyline'
 MIX_HELD_WINDOW = (2022, 2026)
-# NOWCAST_GFA (v1.0.2): under the nowcast join, 2026 in-scope floor area is the
-#   observed consented GFA by typology, c x [(1 - W) GFA_2026 + W GFA_2025], with
-#   the missing 2026 months by NOWCAST_METHOD, instead of dwellings x the model's
-#   size and mix; the 2026 mix is the observed one. Dwelling counts (the stock)
-#   still follow the dwelling nowcast. False = the v1.0 treatment.
-NOWCAST_GFA = True
+# 2026 in-scope floor area (market-excess rule): the observed consented GFA by
+#   typology, c x [(1 - W) GFA_2026 + W GFA_2025], with the observed 2026 mix;
+#   dwelling counts (the stock) follow the dwelling consents.
 
-# --- [FIX d] consumption-rate calibration -------------------------------
-# v2 used .ewm(span=35, adjust=False) starting at 1991. With adjust=False the
-# recursion is SEEDED with the first observation, and after 34 steps that seed
-# still carries (1-alpha)^34 = 14.3% weight -- more than any other single year,
-# including the most recent. 1991 is also the one year whose growth demand is
-# structurally undefined (there is no 1990 in the window to difference against),
-# so its consumption residual is inflated by construction.
-# Fix: adjust=True (weights properly normalised, no seed lump) and start in 1992.
-# Span 15 gives a ~10-year half-life. A sensitivity table over spans and simple
-# means is printed at runtime -- the result is insensitive to all of them.
+# First year with a defined household-formation flow (1991 has no prior year
+# in the window); start of the household-size diagnostic regression.
 CALIB_START_YEAR = 1992
-EWMA_SPAN = 15
-EWMA_ADJUST = True
 
 # ---------------------------------------------------------------------------
-# CONSUMPTION BASIS -- what consumption is assumed to scale with
+# CONSUMPTION: THE STOCK BASIS
 # ---------------------------------------------------------------------------
-# 'per_capita': consumption = Population x rate (m2 per person per year).
-#     Scales with the population LEVEL. Historically ~83% of consumption is
-#     extra space inside NEW dwellings, which scales with household FORMATION,
-#     a flow. Forward, formation falls from ~24,200/yr to ~15,000/yr while the
-#     population level keeps rising, so this basis builds a growing residual
-#     ('other') with no mechanism behind it: 4.4x its historical average, and
-#     ~42% of the whole projection.
-# 'per_household': consumption = new households x rate (m2 per new household).
-#     Scales with household formation, the thing that historically explained it.
-#     Calibrated as a ratio of exponentially weighted SUMS (weighted consumption
-#     / weighted household formation), not a weighted mean of annual ratios,
-#     because the annual ratio is unstable when formation is low (17-183 m2).
-#     Negative formation contributes zero consumption. Under this basis the
-#     'Avoid' pathway lever also scales consumption, since a consumption term
-#     that is floor area per new dwelling shrinks when dwellings are built
-#     smaller; under 'per_capita' it cannot.
-#
-# FINDING -- neither basis is correct on its own; they BRACKET the answer.
-#   per_capita    median 101.98 Mm2  -> upper bound. Carries a mechanism-free
-#                 residual that grows to 4.4x its historical size.
-#   per_household median  61.77 Mm2  -> lower bound. Assumes nothing is built
-#                 unless a NEW household forms, so there is no replacement of
-#                 demolished stock. At the 5th percentile, where households
-#                 decline every year, it projects ~zero construction for 25
-#                 years: the truncation guard fires in 25/25 years and the
-#                 identity check FAILS. That is physically absurd.
-# The ~40 Mm2 between them is roughly what replacement and vacancy should
-# explain. Resolving it needs the stock module (dwelling stock, demolition,
-# occupancy), not a choice of denominator.
-#
-# 'extra_space_plus_other' (ADOPTED): each part of consumption follows its own
-#     driver, so nothing is left as an unexplained residual.
-#       extra space = new households x (realised dwelling size - occupied area)
-#                     -> follows household formation and dwelling size, and
-#                        shrinks as the mix densifies.
-#       other       = other_per_person x population
-#                     -> held at its 1992-2025 historical level per person.
-#     'Other' is replacement of demolished stock, vacancy change, second homes,
-#     conversions, consent-to-occupancy timing and estimation error. Tested for
-#     trend: robust (Theil-Sen) 95% interval includes zero, Mann-Kendall
-#     p = 0.07, lag-1 autocorrelation +0.33 (which invalidates the ordinary
-#     regression p = 0.046). No defensible trend, so it is held CONSTANT, with a
-#     moving-block bootstrap interval as its own uncertainty band. Four ways of
-#     holding 'other' to history all gave 52-63 Mm2, and this one agrees with
-#     the per_household method (62.8 vs 61.8) by an independent route.
-# 'stock_vacancy' (ADOPTED): 'other' is no longer a per-person constant. It is
-#     the dwellings built beyond household formation, decomposed with census
-#     vacancy data into three named terms:
-#       vacancy allowance = new households x v / (1 - v)
-#       vacancy change    = households(t-1) x [1/(1-v(t)) - 1/(1-v(t-1))]
-#       replacement       = demolition rate x stock(t-1)
-#     then converted to floor area at realised dwelling size. Vacancy v is
-#     measured (census tables below); the demolition rate is the only calibrated term,
-#     taken as the long-run residual over the calibration window.
-#     Forward, v is held at its latest census value, so the vacancy-change term
-#     is zero unless a scenario changes it.
-#     Identity: total floor area = (new households + allowance + change
-#                                   + replacement) x realised dwelling size.
-CONSUMPTION_BASIS = 'stock_vacancy'
-# 'per_capita' | 'per_household' | 'extra_space_plus_other' | 'stock_vacancy'
-
-# 'Other' per person: which value of the bootstrap band drives the run.
-OTHER_CASE = 'central'            # 'central' | 'low' | 'high'
-OTHER_BOOTSTRAP_BLOCK = 4          # years per block (respects autocorrelation)
-OTHER_BOOTSTRAP_N = 20000
-OTHER_BOOTSTRAP_CI = (5, 95)       # -> 90% interval
-OTHER_BOOTSTRAP_SEED = 42
+# Floor area beyond household formation is the dwellings built beyond
+# formation, decomposed with census vacancy data into named terms:
+#   extra space       = new households x (realised dwelling size - occupied area)
+#   vacancy allowance = new households x v / (1 - v)
+#   vacancy change    = households(t-1) x [1/(1-v(t)) - 1/(1-v(t-1))]
+#   replacement       = net replacement rate x stock(t-1)
+# converted to floor area at realised dwelling size (engine.forward). Vacancy v
+# is measured (census tables below); forward it is held at its latest census
+# value. Identity: total floor area = (new households + allowance + change +
+# replacement) x realised dwelling size.
 
 # ---------------------------------------------------------------------------
 # CENSUS DWELLING OCCUPANCY  (private dwellings only)
@@ -414,7 +297,7 @@ OTHER_BOOTSTRAP_SEED = 42
 # Up to 2013 Stats NZ counted only private dwellings as unoccupied. From 2018 it
 # also counts UNOCCUPIED NON-PRIVATE dwellings (camping grounds, marae, ...; 4,860
 # in 2018, 4,710 in 2023; DataInfo+ 'Dwelling occupancy status'), so the 2018
-# and 2023 counts must be taken for private dwellings only (CENSUS_SOURCE).
+# and 2023 counts must be taken for private dwellings only.
 # 'Residents away' are NOT vacant: those households exist and are already in
 # the household series. Counting them fails the replacement check below.
 #
@@ -424,56 +307,48 @@ OTHER_BOOTSTRAP_SEED = 42
 #   split. Before 2013 only total unoccupied is published, so the 2013 empty
 #   share (76.2%) is applied to earlier years -- the one assumption here, with
 #   a sensitivity band. 2013 is measured.
-# 2018, 2023: CENSUS_SOURCE
-#   'hou018_private' (ADOPTED): private dwellings only, from Aotearoa Data
-#       Explorer CEN23_HOU_018 (occupancy status x dwelling type), built by
-#       data/build_census.py into data/derived/census_dwellings.csv and
-#       cross-checked there against CEN23_TBT_001 and, for 2013, against the
-#       QuickStats file above (identical within random rounding).
-#   'hardcoded': the original CENSUS_LATER values below. They are ALL dwelling
-#       types (they equal CEN23_TBT_001's totals), i.e. they include the
-#       non-private unoccupied dwellings counted from 2018, which made 2018/2023
-#       inconsistent with the private-only 1981-2013 values.
+# 2018, 2023: private dwellings only, from Aotearoa Data Explorer CEN23_HOU_018
+#   (occupancy status x dwelling type), built by data/build_census.py into
+#   data/derived/census_dwellings.csv and cross-checked there against
+#   CEN23_TBT_001 and, for 2013, against the QuickStats file above (identical
+#   within random rounding).
 # The empty / residents-away split itself breaks between 2013 and 2018
 # (N1; DataInfo+: 'did not receive a quality rating in 2018', 'a break in the
 # time series').
 # Only the RATIO is used: census counts and the household estimates series
 # differ in level (census undercount), exactly as for household size.
 FILE_CENSUS_2013 = os.path.join(DATA_DIR, 'occ-unocc-2013.xlsx')
-CENSUS_SOURCE = 'hou018_private'
 FILE_CENSUS_DERIVED = os.path.join(DATA_DIR, 'derived', 'census_dwellings.csv')
-CENSUS_LATER = {                   # CENSUS_SOURCE = 'hardcoded' only (all dwelling types)
-    2018: dict(occupied_private=1664313, unoccupied=196506, empty=97842,
-               away=98664, under_construction=16128),
-    2023: dict(occupied_private=1793613, unoccupied=225168, empty=111666,
-               away=113499, under_construction=27309),
-}
 PRE2013_EMPTY_SHARE_BAND = 0.05    # +/- on the empty share applied before 2013
 DEMOLITION_CALIB_START = 1992      # calibration window for the unconsented-additions rate
 
-# NET_REPLACEMENT_SOURCE: how the long-run net replacement rate (demolition +
-# residual, share of last year's stock) is calibrated. Item 4, D2.
-#   'dwelling_count' (ADOPTED): the census DWELLING-count identity, per
-#       intercensal interval: [completions - change in census private
-#       dwellings] / stock-years (engine.census_interval_rates), ratio of sums
-#       over NET_REPLACEMENT_WINDOW (census years). Uses neither the household
-#       estimates nor the census empty/away split, which breaks between 2013
-#       and 2018 (N1). Completions use the model's lag W in continuous time.
-#       Over 1991->2023 the stock changes telescope, so only the 1991 and 2023
-#       counts enter the numerator (2018 only weights the denominator).
-#   'household_constant_empty_share': the household identity with one empty
-#       share (pooled private 2018 + 2023) applied to every census.
-#   'household_identity': the original: the household identity with the
-#       census 'empty' series as published (contains the 2013->2018 break).
-NET_REPLACEMENT_SOURCE = 'dwelling_count'
-NET_REPLACEMENT_WINDOW = (1991, 2023)    # census years; (2013, 2023) is a sensitivity
+# NET REPLACEMENT RATE (demolition + residual, share of last year's stock):
+#   the census DWELLING-count identity, per intercensal interval: [completions -
+#   change in census private dwellings] / stock-years
+#   (engine.census_interval_rates), ratio of sums over NET_REPLACEMENT_WINDOW
+#   (census years). Uses neither the household estimates nor the census
+#   empty/away split, which breaks between 2013 and 2018 (N1). Completions use
+#   the model's lag W in continuous time. Over 1991->2023 the stock changes
+#   telescope, so only the 1991 and 2023 counts enter the numerator (2018 only
+#   weights the denominator). The household identity (stock_cal) is still
+#   calibrated and printed for comparison.
+NET_REPLACEMENT_WINDOW = (1991, 2023)
+# CENSUS_UC_CORRECTION (v1.1.1, default True): in the dwelling-count identity,
+#   dwellings completed over a census interval = 0.95 x consents - the change in
+#   census private dwellings UNDER CONSTRUCTION (census stock excludes them; with
+#   no completion lag, consents still in progress at census night would else be
+#   read as demolition). Applied only when COMPLETION_LAG is 0 (a lag already
+#   removes the pipeline; correcting twice would double count). UC counts:
+#   1986-2013 census Table 1 (occ-unocc-2013.xlsx), 2018/2023 CEN23_HOU_018
+#   (private). False = no correction (sensitivity).
+CENSUS_UC_CORRECTION = True    # census years; (2013, 2023) is a sensitivity
 
-# REPLACEMENT_SCENARIO (item 2 of the CP2 decisions; 'dwelling_count' source only):
+# REPLACEMENT_SCENARIO (net replacement path, on the census dwelling-count rates):
 #   'S1': the long-run rate (NET_REPLACEMENT_WINDOW) throughout;
 #   'S2': the 2018-2023 census-interval rate persists;
 #   'S3': the 2018-2023 rate fades to the long-run rate with half-life
 #         S3_HALF_LIFE years (5, 10, 15 assessed).
-# Author's decision (after docs/CP2B_NOTE.md): S1 and S2 are the lower and
+# Author's decision: S1 and S2 are the lower and
 # upper bounds; S3 with a 10-year half-life is the labelled reference path
 # (JUDGEMENT: the half-life is not identifiable), with 5 and 15 years reported.
 REPLACEMENT_SCENARIO = 'S3'
@@ -481,90 +356,41 @@ S3_HALF_LIFE = 10.0
 RECENT_INTERVAL = (2018, 2023)
 
 # ---------------------------------------------------------------------------
-# NEAR-TERM JOIN (A1)
+# NEAR-TERM MARKET EXCESS
 # ---------------------------------------------------------------------------
 # NEAR_TERM_JOIN:
-#   'nowcast' (ADOPTED): 2026 completions come from OBSERVED data, not the
-#       model: c x [(1 - W) C_2026 + W C_2025], with C = all dwellings consented;
-#       C_2026 = observed months + the remaining months estimated by
-#       NOWCAST_METHOD. 2027 carries the lagged share W x (c C_2026 - model
-#       requirement). The building above the model's requirement in 2026-27 is
-#       split into three channels (EXCESS_CHANNELS, engine.join_channels):
-#       redevelopment (permanent), vacancy (drawn down over
-#       VACANCY_DRAWDOWN_YEARS) and faster household formation
-#       (HOUSEHOLD_CHANNEL). The 2025 stock deviation is then NOT carried
-#       (the observed pipeline replaces it).
-#   'carried_deviation': the original: 2025's deviation fades at rho.
-#   'none': neither.
-NEAR_TERM_JOIN = 'nowcast'
-# NOWCAST_METHOD for the unobserved months of 2026:
-#   'seasonal_share' (ADOPTED): ratio-to-annual seasonal estimator: observed
-#       months / their mean share of the calendar-year total over 2010-2025,
-#       times the mean share of the missing months;
-#   'same_period_ratio': missing months of 2025 x (observed 2026 / same months 2025);
-#   'last_12_months': C_2026 = the latest 12 months of consents.
-NOWCAST_METHOD = 'seasonal_share'
+#   'carried_deviation': no observed 2026 data; 2025's deviation fades at rho
+#       (used only by the 2026 out-of-sample check, validation.NO_2026_DATA).
+# v1.1 default: 'market_excess' -- ONE rule on top of any replacement scenario:
+#   2026 building = observed (NOWCAST_METHOD). Its excess over the 2026
+#   requirement is the 'near-term market excess'. From 2027 the building
+#   continues above the requirement by gap_ref x rho^(t-2026), with gap_ref =
+#   building_2026 - requirement_2027 (the 2027 requirement, because the 2026 one
+#   is depressed by the one-off 2026 population shortfall) and rho = rho_other
+#   (the estimated persistence of departures from the calibrated identity).
+#   NEAR_TERM_MODE 'surplus' with absorption 0 (default): the excess is
+#   STOCK-ADDING -- extra dwellings join the stock as vacancy that is never
+#   absorbed; soil applies; removals stay on the scenario path. Implied vacancy
+#   = 1 - households / (stock + cumulative excess). Sensitivities: 'redevelopment'
+#   (stock-neutral), payback (NEAR_TERM_ABSORPTION 0.20 / 0.10), and
+#   NEAR_TERM_GAP_REF = '2026'.
+NEAR_TERM_JOIN = 'market_excess'
+NEAR_TERM_GAP_REF = '2027'
+NEAR_TERM_MODE = 'surplus'
+NEAR_TERM_ABSORPTION = 0.0
+# NOWCAST_METHOD: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
+#   (August 2025 - July 2026), no seasonal estimation. It is the year to July
+#   2026, not calendar 2026: replace it with calendar 2026 when published.
+NOWCAST_METHOD = 'last_12_months'
 NOWCAST_SEASONAL_YEARS = (2010, 2025)
-# NOWCAST_POPULATION: the 2026 population growth is the OBSERVED growth over
-#   the year ended June 2026 (data/derived/population_nowcast.csv, provisional),
-#   in place of the projection median; later years keep the projection's
-#   growth, so the level stays shifted. The model applies year-ended-June growth
-#   to calendar years throughout (half-year offset).
+# NOWCAST_POPULATION: 2026 population growth is OBSERVED: the latest
+#   four-quarter change of the Stats NZ mean-quarter ERP (Infoshare DPE059AA),
+#   June quarter 2026 minus June quarter 2025, in place of the projection
+#   median; later years keep the projection's growth, so the level shift is
+#   permanent. POPULATION CONVENTION: history = ERP at 31 December; projection
+#   growth = years ended June applied to calendar years (half-year offset).
 NOWCAST_POPULATION = True
-FILE_POP_NOWCAST = os.path.join(DATA_DIR, 'derived', 'population_nowcast.csv')
 FILE_POP_QUARTERLY = os.path.join(DATA_DIR, 'derived', 'population_quarterly.csv')
-# POPULATION CONVENTION. History: estimated resident population (ERP) at 31
-#   December (point values). Projection: Stats NZ growth for years ended June,
-#   applied to calendar years (half-year offset, as throughout the model).
-#   Nowcast of 2026 growth (POP_NOWCAST_SOURCE):
-#   'dpe_quarterly' (ADOPTED): latest four-quarter change of the Stats NZ
-#       mean-quarter ERP (Infoshare DPE059AA): June quarter 2026 minus June
-#       quarter 2025 (centred mid-May), applied to calendar 2026 like the
-#       projection's year-ended-June growth;
-#   'release_provisional': the 30 June 2026 point figure in the provisional
-#       release (data/derived/population_nowcast.csv).
-POP_NOWCAST_SOURCE = 'dpe_quarterly'
-# POP_NOWCAST_CATCHUP_YEARS: None (ADOPTED) = the 2026 shortfall against the
-#   projection is a permanent level shift (later growth is the projection's);
-#   N = the shortfall is made up linearly over the N years after 2026, so the
-#   level rejoins the projection (sensitivity: 5).
-POP_NOWCAST_CATCHUP_YEARS = None
-# EXCESS_CHANNELS: split of the 2026-27 excess.
-#   'calibrated' (ADOPTED): shares from the 2018-2023 census interval, measured
-#       against the ACTIVE replacement scenario (so redevelopment already inside
-#       the requirement is not counted twice): redevelopment = (2018-23 rate -
-#       scenario rate) x stock-years; vacancy = empty dwellings above the 2018
-#       vacancy rate in 2023; households = census households in 2023 above the
-#       Stats NZ household-size shape applied to 2018. ONE interval.
-#   'all_redevelopment' | 'all_vacancy' | 'equal': sensitivities.
-EXCESS_CHANNELS = 'calibrated'
-VACANCY_DRAWDOWN_YEARS = 5                 # JUDGEMENT; 3 and 10 as sensitivities
-# HOUSEHOLD_CHANNEL (author's decision, v1.0.2: linear reversion):
-#   'reverting_linear' (ADOPTED): drawn down linearly over VACANCY_DRAWDOWN_YEARS,
-#       like the vacancy channel;
-#   'reverting' (sensitivity): the extra households dissolve geometrically at the
-#       model's estimated persistence for household-size deviations (rho: lag-1
-#       autocorrelation of the residuals of the regression of the annual change
-#       in S, 1992-2023). NOTE: rho is estimated on CHANGES in S; using it as the
-#       rate at which a LEVEL deviation reverts is an assumption, not an estimate;
-#   'permanent': households formed persist (sensitivity).
-#   2013-18 census household size rose, 2018-23 it fell faster than the Stats
-#   NZ shape: the response looks cyclical.
-HOUSEHOLD_CHANNEL = 'reverting_linear'
-# CHANNEL_POP_DATE: the population paired with census households when testing
-#   household size over the calibration interval, from the quarterly
-#   mean-quarter ERP (FILE_POP_QUARTERLY; DPE059AA):
-#   'march_quarter' (ADOPTED, author's decision): the March-quarter value. NOTE:
-#       it is the mean over January-March (centred mid-February), not a point
-#       estimate at 31 March; the export holds no point values;
-#   'census_night': linear between the March- and June-quarter centres to the
-#       census date (5 March), the date of the household count;
-#   'mid_year': mean of the June and September quarters (about 30 June, the
-#       date of the Stats NZ shape).
-#   The households channel is sensitive to this choice (fast population growth
-#   early in 2023).
-CHANNEL_POP_DATE = 'march_quarter'
-
 # ---------------------------------------------------------------------------
 # SOIL CARBON (item 8)
 # ---------------------------------------------------------------------------
@@ -628,7 +454,6 @@ SOIL_ON_REPLACEMENT = False
 # faster than the total in the Stats NZ projection, so a constant share may
 # understate future RV building; this is disclosed, not modelled (there is no
 # historical age series in the inputs to calibrate against).
-RV_IN_STOCK = True
 RV_SHARE_REF = (2016, 2025)
 # RV floor area (A4). Stats NZ publishes retirement-village floor area
 # consented (building type 'Retirement village units'), extracted by
@@ -636,9 +461,7 @@ RV_SHARE_REF = (2016, 2025)
 # basis, lagged like everything else) and a projection = projected RV units x
 # RV floor area per unit over DWELLING_SIZE_REF. It stays OUT of the in-scope
 # floor area and carbon: bringing it in needs a carbon factor for RV buildings,
-# for which no case study exists (any factor would be judgement). True is not
-# implemented until that decision is made.
-RV_FLOOR_AREA_IN_SCOPE = False
+# for which no case study exists (any factor would be judgement).
 COL_RV_GFA = 'GFA - GFA/RetirementVillage'
 
 COMPLETION_RATE = 0.95
@@ -665,7 +488,9 @@ COMPLETION_RATE_BAND = (0.92, 0.96)
 # The same completions series is used everywhere consents become 'built':
 # stock calibration, the 2025 deviation, the 2025 observed anchor (and so the
 # 2025 -> 2026 step), history plots and the Monte Carlo.
-COMPLETION_LAG = 'littles_law'
+# v1.1 default: 0 (no lag): calibration, history and the 2026 anchor use
+#   same-year consents x COMPLETION_RATE. 'littles_law' is a sensitivity.
+COMPLETION_LAG = 0
 DEMOLITION_RATE = 0.00135
 DEMOLITION_RATE_BAND = (0.0010, 0.0030)
 
@@ -681,7 +506,6 @@ DEMOLITION_RATE_BAND = (0.0010, 0.0030)
 # Freed dwellings become vacancy, not negative construction. Never binds in
 # history (minimum 9,900 new households/yr) or in the median projection; it
 # binds only in low-population scenarios.
-FLOOR_HOUSEHOLD_DECLINE = True
 
 # [FIX f] Reference window for realised new-dwelling floor area, held constant
 # over the projection (parallel to holding OLF constant).
@@ -706,16 +530,10 @@ DWELLING_SIZE_REF = (2023, 2025)
 # Detached and 6.5% for Townhouses. OLF moves floor area BETWEEN the growth,
 # house-splitting and extra-space bands; it does not change the total, which is
 # (new households + vacancy + replacement - unconsented) x dwelling size.
-#
-# Setting USE_GROSS_BASIS_OLF = True instead derives it from consented dwelling
-# size divided by design occupants; the reconciliation between the two prints
-# at runtime.
 FILE_FACTORS_MATERIAL = os.path.join(FACTORS_DIR, 'factors_material.csv')
 FILE_FACTORS_TYPOLOGY = os.path.join(FACTORS_DIR, 'factors_typology.csv')
 FILE_FACTORS_BUILDING = os.path.join(FACTORS_DIR, 'factors_building.csv')
 STAGES_IN_SCOPE = ['A1-A3', 'A4-A5', 'B2,B4', 'C1-C4']   # Module D excluded
-USE_GROSS_BASIS_OLF = False
-DEMAND_BASIS = 'bim_olf'
 
 # Carbon intensity is held CONSTANT at its case-study value for the whole
 # projection. No learning rate, no decarbonisation: this build reports what
@@ -727,14 +545,9 @@ DEMAND_BASIS = 'bim_olf'
 # LOADERS
 # ============================================================
 
-def load_consents(source):
-    """Monthly consents with a datetime 'Date' column, from the chosen source."""
-    if source == 'legacy_xlsx':
-        df = pd.read_excel(FILE_CONSENTS, sheet_name=CONSENT_SHEET)
-    elif source == 'statsnz_release':
-        df = pd.read_csv(FILE_CONSENTS_DERIVED)
-    else:
-        raise ValueError(f"Unknown CONSENT_SOURCE '{source}'.")
+def load_consents():
+    """Monthly consents (data/derived/consents_monthly.csv) with a datetime 'Date' column."""
+    df = pd.read_csv(FILE_CONSENTS_DERIVED)
     df['Date'] = pd.to_datetime(df['Date'])
     return df
 
@@ -853,12 +666,8 @@ def load_national_pop_projection(path=None, sheet=None, variant='Medium',
     return pd.DataFrame({'Year': years, 'Population': vals})
 
 
-def census_later(source):
-    """2018 and 2023 census counts in the CENSUS_LATER layout, per CENSUS_SOURCE."""
-    if source == 'hardcoded':
-        return CENSUS_LATER
-    if source != 'hou018_private':
-        raise ValueError(f"Unknown CENSUS_SOURCE '{source}'.")
+def census_later():
+    """2018 and 2023 census private-dwelling counts (data/derived/census_dwellings.csv)."""
     d = pd.read_csv(FILE_CENSUS_DERIVED)
     d = d[d['type'] == 'private'].set_index('year')
     return {int(y): dict(occupied_private=float(d.loc[y, 'occupied']), unoccupied=float(d.loc[y, 'unoccupied']),
@@ -867,13 +676,12 @@ def census_later(source):
             for y in (2018, 2023)}
 
 
-def load_census_occupancy(path=None, later=None):
+def load_census_occupancy(later, path=None):
     """Census private-dwelling occupancy, one row per census year.
     Reads Tables 1 and 2 of the 2013 QuickStats workbook, then appends the
     later censuses. Columns: occupied_private, unoccupied, empty (NaN where not
     published), away, under_construction, total_private."""
     path = path or FILE_CENSUS_2013
-    later = CENSUS_LATER if later is None else later
     t1 = pd.read_excel(path, sheet_name='Table 1', header=None)
     rows = {}
     for _, r in t1.iterrows():
@@ -971,8 +779,19 @@ def extend_tail(S_knots, S_ann, mode):
     """Replace the values after the last knot according to S_TAIL (see there)."""
     yrs_k, s_k = S_knots['Year'].values, S_knots['S'].values
     last = int(yrs_k[-1])
-    if mode == 'pchip_end_slope':
-        return S_ann
+    if mode == 'hermite_clamped':
+        # v1.2.1: ONE cubic Hermite through every published knot, PCHIP derivatives at the
+        # interior knots, zero derivative clamped at the last knot; held constant after it.
+        from scipy.interpolate import CubicHermiteSpline
+        x = yrs_k.astype(float)
+        d = PchipInterpolator(x, s_k).derivative()(x)
+        d[-1] = 0.0
+        h = CubicHermiteSpline(x, s_k, d)
+        out = S_ann.copy()
+        inside = (out.index >= x[0]) & (out.index <= last)
+        out[inside] = h(out.index[inside].astype(float))
+        out[out.index > last] = float(s_k[-1])
+        return out
     if mode in ('taper', 'taper_secant'):
         # slope tapers linearly to zero over S_TAPER_YEARS: S(K+t) = S(K) + s0 (t - t^2 / (2T)),
         # constant after K+T. With s0 = the PCHIP end derivative this is C1-continuous at K
@@ -981,34 +800,25 @@ def extend_tail(S_knots, S_ann, mode):
               else (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]))
         T = float(S_TAPER_YEARS)
         out = S_ann.copy()
+        if mode == 'taper_secant':
+            # v1.2: the last published interval (2038->2043) is linear at its secant slope, so the
+            # taper after 2043 continues it smoothly (no kink at 2043; the PCHIP segment meets the
+            # line at 2038 instead)
+            k0 = int(yrs_k[-2])
+            seg = (out.index >= k0) & (out.index <= last)
+            out[seg] = s_k[-2] + s0 * (out.index[seg] - k0)
         t = np.clip(out.index.values - last, 0.0, T)
         after = out.index > last
         out[after] = float(S_ann.loc[last]) + s0 * (t[after] - t[after] ** 2 / (2 * T))
         return out
-    slope = {'flat': 0.0,
-             'secant': (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]),
-             'mean_slope': (s_k[-1] - s_k[0]) / (yrs_k[-1] - yrs_k[0])}.get(mode)
-    if slope is None:
+    if mode != 'flat':
         raise ValueError(f"Unknown S_TAIL '{mode}'.")
     out = S_ann.copy()
-    after = out.index > last
-    out[after] = float(S_ann.loc[last]) + slope * (out.index[after] - last)
+    out[out.index > last] = float(S_ann.loc[last])
     return out
 
 
-def channel_shares(mode, evidence):
-    """Shares of the 2026-27 excess by channel (EXCESS_CHANNELS)."""
-    fixed = {'all_redevelopment': dict(redevelopment=1.0, vacancy=0.0, households=0.0),
-             'all_vacancy': dict(redevelopment=0.0, vacancy=1.0, households=0.0),
-             'equal': dict(redevelopment=1 / 3, vacancy=1 / 3, households=1 / 3)}
-    if mode == 'calibrated':
-        return dict(evidence['shares'])
-    if mode not in fixed:
-        raise ValueError(f"Unknown EXCESS_CHANNELS '{mode}'.")
-    return fixed[mode]
-
-
-def statsnz_size_shape(variant, forecast_years, tail='pchip_end_slope'):
+def statsnz_size_shape(variant, forecast_years, tail):
     """[Route A] Stats NZ household size S = Pop / HH at the shared knots of the
     matched-vintage population and household projections for one variant,
     PCHIP-interpolated to annual values; after the last knot, see S_TAIL.
@@ -1027,33 +837,27 @@ def statsnz_size_shape(variant, forecast_years, tail='pchip_end_slope'):
     return S_knots, S_ann, pop_ref
 
 
-def respond_household_size(S_ann, pop_ref, hist_S, hist_pop, forecast_years, b, rho, anchor_year=2025):
+def household_size(S_ann, pop_ref, hist_S, hist_pop, forecast_years, b, anchor_year):
     """Household size rebased on the observed value in anchor_year (S_matched):
-        S(t) = S_obs(anchor) x S_StatsNZ(t) / S_StatsNZ(anchor),
-    plus (sensitivity only) 2025's
-    unexplained deviation e_2025 fading at rho (S_resp). The part of 2025's
-    fall explained by b x (observed - assumed population growth) does not carry."""
+        S(t) = S_obs(anchor) x S_StatsNZ(t) / S_StatsNZ(anchor).
+    Diagnostic only: 2025's departure from the Stats NZ trend not explained by
+    b x (observed - assumed population growth), e_2025 (not carried)."""
     S_statsnz = S_ann.reindex(forecast_years).values
     S_matched = float(hist_S.loc[anchor_year]) * S_statsnz / float(S_ann.loc[anchor_year])
     dP_ref = pop_ref.diff().reindex(forecast_years).values
-    dS_snz = np.diff(S_matched)                              # 2026..2050
     dS_snz_2025 = float(S_matched[0] * (S_ann.loc[2025] - S_ann.loc[2024]) / S_ann.loc[2025])
     dS_obs_2025 = float(hist_S.loc[2025] - hist_S.loc[2024])
     dP_obs_2025 = float(hist_pop.loc[2025] - hist_pop.loc[2024])
     e_2025 = dS_obs_2025 - (dS_snz_2025 + b * (dP_obs_2025 - dP_ref[0]))
-    fade = rho ** np.arange(1, len(forecast_years))
-    S_resp = np.concatenate([[S_matched[0]], S_matched[0] + np.cumsum(dS_snz + e_2025 * fade)])
-    return dict(S_matched=S_matched, S_resp=S_resp, e_2025=e_2025, dS_snz_2025=dS_snz_2025,
+    return dict(S_matched=S_matched, e_2025=e_2025, dS_snz_2025=dS_snz_2025,
                 dS_obs_2025=dS_obs_2025, dP_obs_2025=dP_obs_2025, dP_ref=dP_ref)
 
 
-def household_rebase_factor(hh_q, measure, later=None):
-    """k: the factor on DHE household increments after the 2018 base that
-    makes June 2023 grow over June 2018 by the census ratio (see HH_CENSUS_REBASE)."""
-    if measure is None:
-        return 1.0
-    cols = {'occupied_plus_away': ('occupied_private', 'away'), 'occupied': ('occupied_private',)}[measure]
-    later = CENSUS_LATER if later is None else later
+def household_rebase_factor(hh_q, later):
+    """k: the factor on DHE household increments after the 2018 base that makes
+    June 2023 grow over June 2018 by the census ratio of occupied + residents-away
+    private dwellings (see CENSUS REBASE OF HOUSEHOLDS)."""
+    cols = ('occupied_private', 'away')
     c18 = sum(later[2018][c] for c in cols)
     c23 = sum(later[2023][c] for c in cols)
     h = hh_q.set_index('Date')['Households']
@@ -1128,15 +932,6 @@ def blend_per_gfa_share(shares, per_unit_dict, typ_names):
     return engine.blend(shares, per_unit_dict, typ_names)
 
 
-def calibrate_consumption_rate(consumption, population, years,
-                               start_year=CALIB_START_YEAR,
-                               span=EWMA_SPAN, adjust=EWMA_ADJUST):
-    """[FIX d] EWMA of the per-capita consumption rate, seed-artefact free."""
-    rate = pd.Series(consumption / population, index=years)
-    rate = rate.loc[rate.index >= start_year]
-    return float(rate.ewm(span=span, adjust=adjust).mean().iloc[-1]), rate
-
-
 # ============================================================
 # MAIN
 # ============================================================
@@ -1154,27 +949,17 @@ def save_open_figures(names, fig_dir, dpi=130):
 def main():
     print("\n" + "=" * 78)
     print(" NZ RESIDENTIAL FLOOR AREA & EMBODIED CARBON, 2026-2050")
-    print(f" demand split: growth / house-splitting / consumption  |  "
-          f"'other' basis: {CONSUMPTION_BASIS}")
+    print(" demand split: growth / house-splitting / consumption (stock basis)")
     print("=" * 78)
 
     typ_names = list(COL_TYPOLOGIES.keys())
     # Settings used by the stock calibration, bound here once so that the
     # returned calibrate_stock() never reads the (mutable) module globals.
     _completion, _demol_rate, _calib_start = COMPLETION_RATE, DEMOLITION_RATE, DEMOLITION_CALIB_START
-    _nr_source, _nr_window = NET_REPLACEMENT_SOURCE, tuple(NET_REPLACEMENT_WINDOW)
+    _nr_window = tuple(NET_REPLACEMENT_WINDOW)
     _scenario, _join_mode = REPLACEMENT_SCENARIO, NEAR_TERM_JOIN
-    if _scenario != 'S1' and _nr_source != 'dwelling_count':
-        raise ValueError("REPLACEMENT_SCENARIO S2/S3 are defined on the census dwelling-count rates.")
-    if _join_mode not in ('nowcast', 'carried_deviation', 'none'):
+    if _join_mode not in ('market_excess', 'carried_deviation'):
         raise ValueError(f"Unknown NEAR_TERM_JOIN '{_join_mode}'.")
-    if not SOIL_ON_REPLACEMENT and CONSUMPTION_BASIS != 'stock_vacancy':
-        raise ValueError('SOIL_ON_REPLACEMENT = False needs the stock basis (replacement is not '
-                         'separated under the per-person / per-household bases).')
-    if HOUSEHOLD_CHANNEL not in ('permanent', 'reverting', 'reverting_linear'):
-        raise ValueError(f"Unknown HOUSEHOLD_CHANNEL '{HOUSEHOLD_CHANNEL}'.")
-    if _nr_source not in ('dwelling_count', 'household_constant_empty_share', 'household_identity'):
-        raise ValueError(f"Unknown NET_REPLACEMENT_SOURCE '{_nr_source}'.")
 
     # ------------------------------------------------------------------
     # 0. CASE-STUDY FACTORS
@@ -1203,7 +988,7 @@ def main():
     # ------------------------------------------------------------------
     # 1. CONSENTS: floor area AND dwelling counts
     # ------------------------------------------------------------------
-    df_consents = load_consents(CONSENT_SOURCE)
+    df_consents = load_consents()
     df_consents['Year'] = pd.to_datetime(df_consents['Date']).dt.year
 
     hist_typ_gfa = df_consents.groupby('Year')[list(COL_TYPOLOGIES.values())].sum()
@@ -1216,41 +1001,20 @@ def main():
 
     hist_total_gfa = df_consents.groupby('Year')[COL_GFA].sum().loc[1991:2025]
 
-    # ---- dwelling-count denominator, with a coverage guard ----------
+    # ---- dwelling-count denominator: the three typologies ----------
     typ_sum = hist_typ_units.sum(axis=1)
-    ext = None
-    if COL_DWELLINGS_TOTAL and COL_DWELLINGS_TOTAL in df_consents.columns:
-        ext = df_consents.groupby('Year')[COL_DWELLINGS_TOTAL].sum().reindex(typ_sum.index)
+    ext = df_consents.groupby('Year')[COL_DWELLINGS_TOTAL].sum().reindex(typ_sum.index)
+    ratio = (ext / typ_sum).loc[2015:2025].mean()
+    gap = (ext - typ_sum).loc[2015:2025].mean()
+    # The all-category column includes retirement village units, which the floor
+    # area columns exclude, so it is never the denominator.
+    print(f"[check] scope: 3 typologies; the all-category dwelling column is "
+          f"{100 * (ratio - 1):.1f}% higher ({gap:,.0f}/yr, retirement villages) "
+          f"-> not used as denominator")
 
-    if ext is not None:
-        ratio = (ext / typ_sum).loc[2015:2025].mean()
-        gap = (ext - typ_sum).loc[2015:2025].mean()
-        # The external column includes retirement village units, which the floor
-        # area columns exclude, so it is a cross-check only, never the denominator.
-        print(f"[check] scope: 3 typologies; the all-category dwelling column is "
-              f"{100 * (ratio - 1):.1f}% higher ({gap:,.0f}/yr, retirement villages) "
-              f"-> not used as denominator")
-
-    if DWELLING_COUNT_SOURCE == 'dwellings_column':
-        if ext is None:
-            raise ValueError(f"DWELLING_COUNT_SOURCE='dwellings_column' but no "
-                             f"'{COL_DWELLINGS_TOTAL}' column exists in {FILE_CONSENTS}.")
-        print("   [!] Using the external column as the denominator. Ensure the FLOOR AREA")
-        print("       columns cover the same categories, or dwelling size will be biased.")
-        hist_total_units = ext
-    else:
-        hist_total_units = typ_sum
-
+    hist_total_units = typ_sum
     # Retirement-village units consented = all-category dwellings - 3 typologies.
-    if RV_IN_STOCK:
-        if ext is None:
-            raise ValueError(f"RV_IN_STOCK needs the '{COL_DWELLINGS_TOTAL}' column in {FILE_CONSENTS}.")
-        if DWELLING_COUNT_SOURCE == 'dwellings_column':
-            raise ValueError("RV_IN_STOCK with DWELLING_COUNT_SOURCE='dwellings_column' would "
-                             "count retirement-village units twice.")
-        hist_rv_units = (ext - typ_sum).clip(lower=0)
-    else:
-        hist_rv_units = pd.Series(0.0, index=typ_sum.index)
+    hist_rv_units = (ext - typ_sum).clip(lower=0)
     _rw = slice(*RV_SHARE_REF)
     rv_share = float(hist_rv_units.loc[_rw].sum()
                      / (hist_total_units.loc[_rw].sum() + hist_rv_units.loc[_rw].sum()))
@@ -1275,22 +1039,18 @@ def main():
         raise ValueError(f"Population missing for {missing} in {FILE_POP_HIST}.")
 
     hh_raw_dhe = load_historical_households(FILE_HOUSEHOLDS_HIST)     # as published
-    census_18_23 = census_later(CENSUS_SOURCE)
-    hh_rebase_k = household_rebase_factor(hh_raw_dhe, HH_CENSUS_REBASE, census_18_23)
+    census_18_23 = census_later()
+    hh_rebase_k = household_rebase_factor(hh_raw_dhe, census_18_23)
     hh_raw = rebase_households(hh_raw_dhe, hh_rebase_k)
     hh_annual = annual_households(hh_raw)
-    calib_end = ((2023 if HH_CENSUS_REBASE else 2018) if STOCK_CALIB_END == 'last_census_base'
-                 else int(STOCK_CALIB_END))
-    if HH_CENSUS_REBASE is None and calib_end > 2018:
-        raise ValueError("Households after 2018 are consents-derived unless rebased; "
-                         "STOCK_CALIB_END must be <= 2018 with HH_CENSUS_REBASE = None.")
+    calib_end = 2023                     # last census-benchmarked household year
     hist_hh_dhe = annual_households(hh_raw_dhe).reindex(years_hist)
     hist_hh = hh_annual.reindex(years_hist)
     if hist_hh.isna().any():
         raise ValueError("Household series has gaps over 1991-2025.")
 
     hist_S = hist_pop / hist_hh
-    print(f"[check] households: DHE series ({HH_CENSUS_REBASE or 'as published'}); "
+    print(f"[check] households: DHE series rebased on the 2023 census (occupied + away); "
           f"post-2018 increments x {hh_rebase_k:.3f} -> 2025 households "
           f"{hist_hh.loc[2025]:,.0f} (published {hist_hh_dhe.loc[2025]:,.0f}), "
           f"S 2025 {hist_S.loc[2025]:.3f} (published {hist_pop.loc[2025] / hist_hh_dhe.loc[2025]:.3f})")
@@ -1311,12 +1071,11 @@ def main():
     # [FIX apt] resolve which OLF basis to use, and validate it.
     size_ref = {t: float(hist_dwelling_size[t].loc[DWELLING_SIZE_REF[0]:DWELLING_SIZE_REF[1]].mean())
                 for t in typ_names}
-    OLF_GROSS = {t: size_ref[t] / DESIGN_OCCUPANTS[t] for t in typ_names}
-    OLF_USED = OLF_GROSS if USE_GROSS_BASIS_OLF else dict(OLF_NET_BIM)
+    OLF_GROSS = {t: size_ref[t] / DESIGN_OCCUPANTS[t] for t in typ_names}   # comparison only
+    OLF_USED = dict(OLF_NET_BIM)
 
     if VERBOSE:   # case-study vs consented occupancy; see Diagnostics D
-        print("\n OCCUPANCY LOAD FACTOR -- case studies vs consented dwellings "
-              f"({'GROSS, derived' if USE_GROSS_BASIS_OLF else 'NET, raw BIM'})")
+        print("\n OCCUPANCY LOAD FACTOR -- case studies (in use) vs consented dwellings")
         print(f"   {'Typology':<12}{'realised size':>14}{'design occ':>12}"
               f"{'OLF gross':>11}{'OLF cases':>13}{'gross/net':>11}")
         for t in typ_names:
@@ -1336,10 +1095,7 @@ def main():
     # Floor area per resident, MEASURED: realised dwelling size / actual occupancy.
     area_per_resident = blended_dwelling_size / hist_S
 
-    if DEMAND_BASIS == 'per_resident':
-        blended_olf = area_per_resident
-    else:
-        blended_olf = blend_per_gfa_share(hist_shares, OLF_USED, typ_names)
+    blended_olf = blend_per_gfa_share(hist_shares, OLF_USED, typ_names)
 
     occupied_area_per_dwelling = hist_S * blended_olf
     # Utilisation is always measured against the BIM DESIGN benchmark: how much
@@ -1373,32 +1129,6 @@ def main():
     old_consumption = (hist_total_gfa - hist_growth - hist_hs_pos).clip(lower=0)
     if VERBOSE: print(f"[FIX c] consolidation years in history: {n_consol}/{len(years_hist)}; "
           f"definition gap closed = {(hist_consumption - old_consumption).sum() / 1e6:.2f} Mm2")
-
-    rate_consumption, rate_series = calibrate_consumption_rate(
-        hist_consumption.values, hist_pop.values, years_hist)
-
-    # Per-household rate: ratio of exponentially weighted sums, 1992 onward.
-    _m = years_hist >= CALIB_START_YEAR
-    _c = hist_consumption.values[_m]; _h = d_hh.values[_m]
-    _a = 2.0 / (EWMA_SPAN + 1.0)
-    _w = (1.0 - _a) ** np.arange(len(_c))[::-1]
-    rate_per_household = float((_w * _c).sum() / (_w * _h).sum())
-
-    # 'Other' per person, 1992 onward, with a moving-block bootstrap interval.
-    _extra_h = (d_hh * (blended_dwelling_size - occupied_area_per_dwelling)).clip(lower=0)
-    other_pp_series = ((hist_consumption - _extra_h) / hist_pop).loc[CALIB_START_YEAR:]
-    _o = other_pp_series.values
-    _rng = np.random.default_rng(OTHER_BOOTSTRAP_SEED)
-    _n, _L = len(_o), OTHER_BOOTSTRAP_BLOCK
-    _nb = int(np.ceil(_n / _L))
-    _boot = np.empty(OTHER_BOOTSTRAP_N)
-    for _b in range(OTHER_BOOTSTRAP_N):
-        _st = _rng.integers(0, _n - _L + 1, size=_nb)
-        _boot[_b] = np.concatenate([_o[i:i + _L] for i in _st])[:_n].mean()
-    other_pp = {'central': float(_o.mean()),
-                'low': float(np.percentile(_boot, OTHER_BOOTSTRAP_CI[0])),
-                'high': float(np.percentile(_boot, OTHER_BOOTSTRAP_CI[1]))}
-    other_rate = other_pp[OTHER_CASE]
 
     # ------------------------------------------------------------------
     # STOCK, VACANCY AND REPLACEMENT  (census-based)
@@ -1438,17 +1168,12 @@ def main():
     hist_gfa_c = completed(hist_total_gfa)
     hist_typ_gfa_c = hist_typ_gfa.apply(completed)
 
-    # one empty share for every census (NET_REPLACEMENT_SOURCE sensitivity)
-    _const_share = None
-    if _nr_source == 'household_constant_empty_share':
-        _const_share = float(census.loc[[2018, 2023], 'empty'].sum() / census.loc[[2018, 2023], 'unoccupied'].sum())
-
     def calibrate_stock(pre_share, completion=None, demol=None, hh=None):
         """The historical stock identity (engine.calibrate_stock) with this
         run's data and settings. In-scope built = d_hh + allow + change + demol
         + uncons + rv (rv < 0)."""
         return engine.calibrate_stock(years_hist, hist_hh if hh is None else hh,
-                                      engine.vacancy_knots(census, pre_share, _const_share),
+                                      engine.vacancy_knots(census, pre_share),
                                       hist_units_all_c, hist_rv_units_c,
                                       _completion if completion is None else completion,
                                       _demol_rate if demol is None else demol,
@@ -1458,27 +1183,18 @@ def main():
     demolition_rate = DEMOLITION_RATE                  # fixed (BRANZ SR214)
     # census dwelling-count identity (always computed; reported, and the default source)
     consents_monthly = df_consents.set_index('Date')[COL_DWELLINGS_TOTAL].astype(float)
-    census_rates = engine.census_interval_rates(census['total_private'], consents_monthly, _completion, lag_w)
+    census_uc = (census['under_construction'] if CENSUS_UC_CORRECTION and lag_w == 0 else None)
+    census_rates = engine.census_interval_rates(census['total_private'], consents_monthly, _completion, lag_w,
+                                                uc=census_uc)
 
-    def net_rate(cal, completion):
-        """Long-run net replacement rate under NET_REPLACEMENT_SOURCE."""
-        if _nr_source == 'dwelling_count':
-            return engine.census_window_rate(
-                engine.census_interval_rates(census['total_private'], consents_monthly, completion, lag_w),
-                *_nr_window)
-        return cal['demol_rate'] + cal['rate_unc']
-
-    if _nr_source == 'dwelling_count':
-        unconsented_rate = engine.census_window_rate(census_rates, *_nr_window) - demolition_rate
-    else:
-        unconsented_rate = stock_cal['rate_unc']        # calibrated residual (household identity)
+    # long-run residual beyond the BRANZ demolition rate (census dwelling counts)
+    unconsented_rate = engine.census_window_rate(census_rates, *_nr_window) - demolition_rate
     v_forward = float(stock_cal['knots'][max(stock_cal['knots'])])   # latest census, held
 
     # 2025's departure from the calibrated identity, and its persistence. Carried
     # forward fading at rho, booked to the residual (see engine.forward).
     # net replacement path forward (REPLACEMENT_SCENARIO); unconsented_rate stays the long-run value
-    rate_recent = (engine.census_window_rate(census_rates, *RECENT_INTERVAL)
-                   if _nr_source == 'dwelling_count' else demolition_rate + unconsented_rate)
+    rate_recent = engine.census_window_rate(census_rates, *RECENT_INTERVAL)
     rate_path = engine.replacement_path(_scenario, demolition_rate + unconsented_rate, rate_recent,
                                         np.arange(2025, 2051), S3_HALF_LIFE)
     unc_path = rate_path - demolition_rate
@@ -1486,15 +1202,6 @@ def main():
                                 float(rate_path[0]), years_hist, _calib_start, calib_end)
     other_2025, other_model_2025 = _dv['other_2025'], _dv['model_2025']
     rho_other, other_dev_2025 = _dv['rho'], _dv['dev']
-
-    def consumption_gross(pop_level, d_households, extra_space=None):
-        """Gross consumption under the legacy per-person / per-household bases
-        (the adopted 'stock_vacancy' basis is computed inside engine.forward)."""
-        if CONSUMPTION_BASIS == 'per_household':
-            return np.maximum(d_households, 0.0) * rate_per_household
-        if CONSUMPTION_BASIS == 'extra_space_plus_other':
-            return extra_space + other_rate * pop_level
-        return pop_level * rate_consumption
 
     # ------------------------------------------------------------------
     # 5. 2025 ANCHOR PROPORTIONS
@@ -1539,55 +1246,39 @@ def main():
             levels[i] = levels[i - 1] + df_forecast.loc[i, f'PopGrowth_{pct}']
         df_forecast[f'PopTotal_{pct}'] = levels
 
-    if POP_PERCENTILE_METHOD == 'published_levels':
-        # Published LEVEL percentiles (knots run past 2050, so no extrapolation).
-        pop_level_block = locate_projection_block(df_pop_proj_raw, section_label='Population (000)',
-                                                  min_year=2024, max_year=2078)
-        for col in ['PopGrowth_5th', 'PopGrowth_50th', 'PopGrowth_95th']:
-            pop_level_block[col] = pd.to_numeric(pop_level_block[col], errors='coerce') * 1000
-        pop_level_block = pop_level_block.dropna()
-        for pct in ['5th', '95th']:
-            spread = pd.DataFrame({'Year': pop_level_block['Year'],
-                                   'spread': pop_level_block[f'PopGrowth_{pct}']
-                                   - pop_level_block['PopGrowth_50th']})
-            sp = smooth_interpolate_and_extend(spread, 'spread', forecast_years)['spread'].values
-            levels = df_forecast['PopTotal_50th'].values + (sp - sp[0])
-            df_forecast[f'PopTotal_{pct}'] = levels
-            df_forecast.loc[1:, f'PopGrowth_{pct}'] = np.diff(levels)
-    elif POP_PERCENTILE_METHOD != 'cumulated_growth':
-        raise ValueError(f"Unknown POP_PERCENTILE_METHOD '{POP_PERCENTILE_METHOD}'.")
+    # 5th / 95th: the published LEVEL spread about the median (knots run past 2050,
+    # so no extrapolation); see POPULATION PERCENTILES
+    pop_level_block = locate_projection_block(df_pop_proj_raw, section_label='Population (000)',
+                                              min_year=2024, max_year=2078)
+    for col in ['PopGrowth_5th', 'PopGrowth_50th', 'PopGrowth_95th']:
+        pop_level_block[col] = pd.to_numeric(pop_level_block[col], errors='coerce') * 1000
+    pop_level_block = pop_level_block.dropna()
+    for pct in ['5th', '95th']:
+        spread = pd.DataFrame({'Year': pop_level_block['Year'],
+                               'spread': pop_level_block[f'PopGrowth_{pct}']
+                               - pop_level_block['PopGrowth_50th']})
+        sp = smooth_interpolate_and_extend(spread, 'spread', forecast_years)['spread'].values
+        levels = df_forecast['PopTotal_50th'].values + (sp - sp[0])
+        df_forecast[f'PopTotal_{pct}'] = levels
+        df_forecast.loc[1:, f'PopGrowth_{pct}'] = np.diff(levels)
     pop_nowcast = None
     if NOWCAST_POPULATION:
-        if POP_NOWCAST_SOURCE == 'dpe_quarterly':
-            _q = pd.read_csv(FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
-            if (2026, 2) not in _q.index:
-                raise ValueError(f'{FILE_POP_QUARTERLY} has no June quarter 2026.')
-            _g_obs, _status = float(_q[(2026, 2)] - _q[(2025, 2)]), 'DPE059AA, June qtr 2026 vs 2025, mean-quarter'
-        elif POP_NOWCAST_SOURCE == 'release_provisional':
-            _pn = pd.read_csv(FILE_POP_NOWCAST).iloc[-1]
-            if int(_pn['year_ended_june']) != 2026:
-                raise ValueError(f'{FILE_POP_NOWCAST} is for {_pn.year_ended_june}, not 2026.')
-            _g_obs, _status = float(_pn['growth_year_ended_june']), f"release, {_pn['status']}"
-        else:
-            raise ValueError(f"Unknown POP_NOWCAST_SOURCE '{POP_NOWCAST_SOURCE}'.")
+        _q = pd.read_csv(FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
+        if (2026, 2) not in _q.index:
+            raise ValueError(f'{FILE_POP_QUARTERLY} has no June quarter 2026.')
+        _g_obs, _status = float(_q[(2026, 2)] - _q[(2025, 2)]), 'DPE059AA, June qtr 2026 vs 2025, mean-quarter'
         _i26 = int(np.where(forecast_years == 2026)[0][0])
         _shift = _g_obs - float(df_forecast.loc[_i26, 'PopGrowth_50th'])
-        # level path of the shortfall: permanent, or made up over N years
-        _adj = np.full(len(forecast_years), _shift)
+        _adj = np.full(len(forecast_years), _shift)          # permanent level shift from 2026
         _adj[:_i26] = 0.0
-        if POP_NOWCAST_CATCHUP_YEARS:
-            _n = int(POP_NOWCAST_CATCHUP_YEARS)
-            _k = np.arange(len(forecast_years)) - _i26
-            _adj = np.where(_k < 0, 0.0, _shift * np.clip(1.0 - _k / _n, 0.0, 1.0))
         for pct in ['5th', '50th', '95th']:
             df_forecast[f'PopTotal_{pct}'] += _adj
             df_forecast[f'PopGrowth_{pct}'] += np.diff(np.insert(_adj, 0, 0.0))
-        pop_nowcast = dict(observed_growth=_g_obs, shift=_shift, status=_status,
-                           catchup_years=POP_NOWCAST_CATCHUP_YEARS)
+        pop_nowcast = dict(observed_growth=_g_obs, shift=_shift, status=_status)
         print(f"[nowcast] 2026 population growth: observed {pop_nowcast['observed_growth']:,.0f} "
               f"(year ended June 2026, {pop_nowcast['status']}) vs projection median "
               f"{pop_nowcast['observed_growth'] - _shift:,.0f}; levels from 2026 shifted by {_shift:+,.0f}")
-    print(f"[check] population percentiles ({POP_PERCENTILE_METHOD}), 2048: "
+    print(f"[check] population percentiles (published levels), 2048: "
           + " | ".join(f"{p} {df_forecast.loc[forecast_years == 2048, f'PopTotal_{p}'].iloc[0] / 1e6:.2f} M"
                        for p in ['5th', '50th', '95th']))
 
@@ -1597,120 +1288,62 @@ def main():
     # ------------------------------------------------------------------
     # 7. HOUSEHOLD PROJECTION
     # ------------------------------------------------------------------
-    hh_2025_actual = float(hist_hh.loc[2025])
-
-    def _hh_from_variant(variant):
-        blk = extract_household_projection_block(FILE_HOUSEHOLDS_PROJ, variant_label=variant)
-        ann = smooth_interpolate_and_extend(blk, 'Households',
-                                            np.arange(blk['Year'].min(), 2051))
-        ann['HH_Growth'] = ann['Households'].diff()
-        fwd = ann.loc[ann['Year'] >= 2026, 'HH_Growth'].values
-        levels = [hh_2025_actual]
-        for gr in fwd:
-            levels.append(levels[-1] + gr)
-        return np.array(levels)
-
-    # Legacy variant pairing, always built so the two methods can be compared.
-    hh_paired = {pct: _hh_from_variant(v) for pct, v in HOUSEHOLD_VARIANT_MAP.items()}
-    S_path = df_forecast['PopTotal_50th'].values / hh_paired['50th']
-
-    # [Route A] household size from the (near-)matched vintage pair
+    # household size: the Stats NZ shape, rebased on the census anchor year
     S_knots, _S_ann, _pref = statsnz_size_shape(HH_SIZE_VARIANT, forecast_years, tail=S_TAIL)
-    S_matched = respond_household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years,
-                                       0.0, 0.0, anchor_year=S_ANCHOR_YEAR)['S_matched']
-
-    if HOUSEHOLD_METHOD == 'matched_size':
-        S_used = S_matched
-    elif HOUSEHOLD_METHOD == 'single_living_arrangement':
-        S_used = S_path
-    else:
-        S_used = None
-    # ---- migration-responsive household size -------------------------------
-    hh_response = None
-    if HOUSEHOLD_METHOD == 'matched_size':
-        # Fitted only where households are census-benchmarked (see above).
-        _yr = years_hist[(years_hist >= CALIB_START_YEAR) & (years_hist <= calib_end)]
-        _dS = hist_S.diff().loc[_yr].values
-        _dP = hist_pop.diff().loc[_yr].values
-        _X = np.c_[np.ones(len(_yr)), _dP, _yr - _yr.mean()]
-        _beta, *_ = np.linalg.lstsq(_X, _dS, rcond=None)
-        b_resp = float(_beta[1])
-        _res = _dS - _X @ _beta
-        if DEVIATION_PERSISTENCE == 'estimated':
-            rho = float(np.clip(np.corrcoef(_res[:-1], _res[1:])[0, 1], 0.0, 0.95))
-        else:
-            rho = float(DEVIATION_PERSISTENCE)
-        _r2 = 1 - (_res ** 2).sum() / ((_dS - _dS.mean()) ** 2).sum()
-        # The residuals are autocorrelated (that is what rho measures), so the
-        # ordinary OLS standard error of b is invalid: Newey-West HAC instead.
-        _n, _k = _X.shape
-        _cov_hac, _L = newey_west_cov(_X, _res)
-        _se_hac = float(np.sqrt(_cov_hac[1, 1]))
-        _se_ols = float(np.sqrt((_res ** 2).sum() / (_n - _k) * np.linalg.inv(_X.T @ _X)[1, 1]))
-        # Migration explains part of 2025's fall (b x the migration shortfall);
-        # that part does NOT continue once migration recovers. Only the
-        # unexplained remainder e_2025 carries forward, fading at rho. b is not
-        # applied year after year: our population differs from Stats NZ's by a
-        # persistent VINTAGE gap, not a migration shock, and sustained migration
-        # is housed rather than packed (2011-20: +75,800/yr, S rose only 0.002/yr).
-        _hr = respond_household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years, b_resp, rho,
-                                     anchor_year=S_ANCHOR_YEAR)
-        S_resp, e_2025, dP_ref = _hr['S_resp'], _hr['e_2025'], _hr['dP_ref']
-        dS_snz_2025, dS_obs_2025, dP_obs_2025 = _hr['dS_snz_2025'], _hr['dS_obs_2025'], _hr['dP_obs_2025']
-        S_used = S_resp if HH_SIZE_RESPONSE else S_matched
-        S_by_pct = {pct: S_used for pct in ['5th', '50th', '95th']}
-        hh_response = dict(applied=HH_SIZE_RESPONSE, S_resp=S_resp, b=b_resp, se_hac=_se_hac, se_ols=_se_ols, hac_lag=_L,
-                           rho=rho, r2=_r2, e_2025=e_2025, dS_obs_2025=dS_obs_2025,
-                           dS_snz_2025=dS_snz_2025, dP_obs_2025=dP_obs_2025, dP_ref=dP_ref,
-                           S_by_pct=S_by_pct, S_snz=S_matched.copy(), dS_hist=_dS, dP_hist=_dP,
-                           years_fit=_yr, n_fit=_n, rho_estimated=DEVIATION_PERSISTENCE == 'estimated')
-
-    if S_used is not None:
-        households_forecast = {pct: df_forecast[f'PopTotal_{pct}'].values
-                               / (hh_response['S_by_pct'][pct] if hh_response else S_used)
-                               for pct in ['5th', '50th', '95th']}
-    else:
-        households_forecast = hh_paired
+    S_matched = household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years, 0.0,
+                               anchor_year=S_ANCHOR_YEAR)['S_matched']
+    # the same shape from the anchor year to 2025 (figures draw the projection from the anchor point)
+    S_bridge = (float(hist_S.loc[S_ANCHOR_YEAR]) * _S_ann.loc[S_ANCHOR_YEAR:2025]
+                / float(_S_ann.loc[S_ANCHOR_YEAR]))
+    # ---- household size and migration: diagnostic regression (not applied) ----
+    # Fitted only where households are census-benchmarked (see above).
+    _yr = years_hist[(years_hist >= CALIB_START_YEAR) & (years_hist <= calib_end)]
+    _dS = hist_S.diff().loc[_yr].values
+    _dP = hist_pop.diff().loc[_yr].values
+    _X = np.c_[np.ones(len(_yr)), _dP, _yr - _yr.mean()]
+    _beta, *_ = np.linalg.lstsq(_X, _dS, rcond=None)
+    b_resp = float(_beta[1])
+    _res = _dS - _X @ _beta
+    rho = float(np.clip(np.corrcoef(_res[:-1], _res[1:])[0, 1], 0.0, 0.95))
+    _r2 = 1 - (_res ** 2).sum() / ((_dS - _dS.mean()) ** 2).sum()
+    # The residuals are autocorrelated (that is what rho measures), so the
+    # ordinary OLS standard error of b is invalid: Newey-West HAC instead.
+    _n, _k = _X.shape
+    _cov_hac, _L = newey_west_cov(_X, _res)
+    _se_hac = float(np.sqrt(_cov_hac[1, 1]))
+    _se_ols = float(np.sqrt((_res ** 2).sum() / (_n - _k) * np.linalg.inv(_X.T @ _X)[1, 1]))
+    # Migration explains part of 2025's fall (b x the migration shortfall); the
+    # unexplained remainder e_2025 is a DHE estimation artefact and is not carried.
+    _hr = household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years, b_resp, anchor_year=S_ANCHOR_YEAR)
+    hh_response = dict(b=b_resp, se_hac=_se_hac, se_ols=_se_ols, hac_lag=_L, rho=rho, r2=_r2,
+                       e_2025=_hr['e_2025'], dS_obs_2025=_hr['dS_obs_2025'], dS_snz_2025=_hr['dS_snz_2025'],
+                       dP_obs_2025=_hr['dP_obs_2025'], dP_ref=_hr['dP_ref'], dS_hist=_dS, dP_hist=_dP,
+                       years_fit=_yr, n_fit=_n)
+    households_forecast = {pct: df_forecast[f'PopTotal_{pct}'].values / S_matched
+                           for pct in ['5th', '50th', '95th']}
 
     print(f"\n[Route A] household size from {FILE_POP_SIZE_PAIR} / {FILE_HOUSEHOLDS_PROJ} "
           f"({HH_SIZE_VARIANT})")
     print("   knot   " + "  ".join(f"{int(y)}" for y in S_knots['Year']))
     print("   S      " + "  ".join(f"{v:.3f}" for v in S_knots['S']))
-    if hh_response:
-        h = hh_response
-        print(f"   [diagnostic, {h['years_fit'][0]}-{h['years_fit'][-1]}] dS on population growth: "
-              f"b = {h['b']:.2e} per person (r2 {h['r2']:.2f}), residual persistence rho = {h['rho']:.2f}/yr")
-        print(f"   between censuses households follow lagged consents, so b measures supply vs "
-              f"arrivals, not behaviour")
-        print(f"   b standard error: OLS {h['se_ols']:.2e} | Newey-West HAC (lag {h['hac_lag']}) "
-              f"{h['se_hac']:.2e} -> t = {h['b'] / h['se_hac']:.1f}")
-        print(f"   2025: observed dS {h['dS_obs_2025']:+.4f} vs trend {h['dS_snz_2025']:+.4f} at "
-              f"{h['dP_obs_2025']:,.0f} people (Stats NZ assumed {h['dP_ref'][0]:,.0f}) "
-              f"-> deviation {h['e_2025']:+.4f}, fading")
-        _mig = h['b'] * (h['dP_obs_2025'] - h['dP_ref'][0])
-        print(f"   of 2025's fall: {_mig:+.4f} from low migration (ends as migration recovers), "
-              f"{h['e_2025']:+.4f} unexplained -> "
-              f"{'CARRIED, fading (sensitivity)' if h['applied'] else 'not carried (a DHE estimation artefact)'}")
-        print(f"   dwellings beyond formation: 2025 deviation {other_dev_2025:+,.0f}, "
-              f"persistence {rho_other:.2f}/yr")
-        print(f"   household size 2050: {h['S_by_pct']['50th'][-1]:.3f}  "
-              f"(with 2025 deviation carried {h['S_resp'][-1]:.3f})")
+    h = hh_response
+    print(f"   [diagnostic, {h['years_fit'][0]}-{h['years_fit'][-1]}] dS on population growth: "
+          f"b = {h['b']:.2e} per person (r2 {h['r2']:.2f}), residual persistence rho = {h['rho']:.2f}/yr")
+    print(f"   between censuses households follow lagged consents, so b measures supply vs "
+          f"arrivals, not behaviour")
+    print(f"   b standard error: OLS {h['se_ols']:.2e} | Newey-West HAC (lag {h['hac_lag']}) "
+          f"{h['se_hac']:.2e} -> t = {h['b'] / h['se_hac']:.1f}")
+    print(f"   2025: observed dS {h['dS_obs_2025']:+.4f} vs trend {h['dS_snz_2025']:+.4f} at "
+          f"{h['dP_obs_2025']:,.0f} people (Stats NZ assumed {h['dP_ref'][0]:,.0f}) "
+          f"-> deviation {h['e_2025']:+.4f}")
+    _mig = h['b'] * (h['dP_obs_2025'] - h['dP_ref'][0])
+    print(f"   of 2025's fall: {_mig:+.4f} from low migration (ends as migration recovers), "
+          f"{h['e_2025']:+.4f} unexplained -> not carried (a DHE estimation artefact)")
+    print(f"   dwellings beyond formation: 2025 deviation {other_dev_2025:+,.0f}, "
+          f"persistence {rho_other:.2f}/yr")
+    print(f"   household size 2050: {S_matched[-1]:.3f}")
     print(f"   rebased on observed {S_ANCHOR_YEAR} (S = {hist_S.loc[S_ANCHOR_YEAR]:.3f}; observed 2025 S = {hist_S.loc[2025]:.3f}): "
           f"2030 {S_matched[5]:.3f} | 2040 {S_matched[15]:.3f} | 2050 {S_matched[-1]:.3f}")
-    if VERBOSE:   # comparison against the earlier household methods
-        print(f"   (median household size 2050: Route B {S_path[-1]:.3f} | Route A {S_matched[-1]:.3f})")
-
-        print(f"\nHousehold method: {HOUSEHOLD_METHOD}")
-        print(f"   {'Variant':<9}{'S 2050 paired':>15}{'S 2050 now':>13}"
-              f"{'new HH/yr paired':>19}{'new HH/yr now':>16}")
-        for pct in ['5th', '50th', '95th']:
-            sp = df_forecast[f'PopTotal_{pct}'].values[-1] / hh_paired[pct][-1]
-            sn = df_forecast[f'PopTotal_{pct}'].values[-1] / households_forecast[pct][-1]
-            gp = np.diff(hh_paired[pct]).mean()
-            gn = np.diff(households_forecast[pct]).mean()
-            print(f"   {pct:<9}{sp:>15.3f}{sn:>13.3f}{gp:>19,.0f}{gn:>16,.0f}")
-        print(f"   Observed S: 2019 = {hist_S.loc[2019]:.3f}, 2025 = {hist_S.loc[2025]:.3f}; "
-              f"historical range {hist_S.min():.3f}-{hist_S.max():.3f}")
 
     # ------------------------------------------------------------------
     # 8. FORWARD MIX, OLF AND DWELLING SIZE
@@ -1725,9 +1358,9 @@ def main():
     held_shares = (_w[_typ_cols].sum() / _w[_typ_cols].sum().sum()).set_axis(typ_names)
     if mix_used == 'held':
         evolving_gfa_shares.loc[forecast_years > 2025, :] = held_shares.values
-    # 2026 floor area from observed consented GFA by typology (NOWCAST_GFA)
+    # 2026 floor area from observed consented GFA by typology
     gfa_nowcast = None
-    if NOWCAST_GFA and _join_mode == 'nowcast':
+    if _join_mode == 'market_excess':
         _gm = df_consents.set_index(pd.to_datetime(df_consents['Date']))
         _g26 = {n: engine.nowcast_year(_gm[COL_TYPOLOGIES[n]].astype(float), 2026, NOWCAST_METHOD,
                                        NOWCAST_SEASONAL_YEARS)['total'] for n in typ_names}
@@ -1741,12 +1374,7 @@ def main():
     # typology (parallel to holding OLF constant); the blended value still moves
     # because the typology mix moves.
     future_dwelling_size = blend_per_gfa_share(evolving_gfa_shares, size_ref, typ_names)
-    if DEMAND_BASIS == 'per_resident':
-        # S is variant-specific, so area per resident is resolved per variant
-        # inside the forecast loop; this holds the mix-driven part.
-        future_blended_olf = None
-    else:
-        future_blended_olf = blend_per_gfa_share(evolving_gfa_shares, OLF_USED, typ_names)
+    future_blended_olf = blend_per_gfa_share(evolving_gfa_shares, OLF_USED, typ_names)
 
     # ------------------------------------------------------------------
     # 9. FORWARD DEMAND
@@ -1755,8 +1383,7 @@ def main():
     results = {}
     # Under the stock basis the model reports BUILT floor area, so the observed
     # 2025 consents are converted with the completion rate.
-    real_2025_total = float(hist_gfa_c.loc[2025]) * (
-        COMPLETION_RATE if CONSUMPTION_BASIS == 'stock_vacancy' else 1.0)
+    real_2025_total = float(hist_gfa_c.loc[2025]) * COMPLETION_RATE
 
     # Everything that does not depend on the population path (engine.forward).
     fwd_inputs = dict(v=v_forward, rate_demol=demolition_rate, rate_unc=unc_path,
@@ -1764,44 +1391,24 @@ def main():
                       rho_dev=rho_other, rv_share=rv_share,
                       shares=evolving_gfa_shares, size=size_ref, olf=OLF_USED,
                       intensity=T_BASELINE_2025, intensity_upfront=UPFRONT_2025,
-                      floor_decline=FLOOR_HOUSEHOLD_DECLINE,
-                      olf_per_resident=(DEMAND_BASIS == 'per_resident'),
                       soil=SOIL_INTENSITY, soil_on_replacement=SOIL_ON_REPLACEMENT,
                       gfa_fixed=({1: gfa_nowcast['total']} if gfa_nowcast else None))
-    # NEAR-TERM JOIN (A1). Under 'nowcast', 2026 completions and the lagged
-    # share of 2027 come from observed consents; the building above the
-    # model's requirement is split into three channels (engine.join_channels).
-    nowcast, excess_evidence, join_shares, join_info = None, None, None, {}
-    if _join_mode == 'nowcast':
+    # NEAR-TERM MARKET EXCESS: 2026 building from observed consents (NOWCAST_METHOD)
+    nowcast, join_info = None, {}
+    if _join_mode == 'market_excess':
         nowcast = engine.nowcast_year(consents_monthly, 2026, NOWCAST_METHOD, NOWCAST_SEASONAL_YEARS)
-        # population at the census dates (5 March), from the 31 December ERP
-        _q = pd.read_csv(FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
-        _t = engine.CENSUS_DAY_OF_YEAR / 365.25
-        _pop_date = {'march_quarter': lambda y: _q[(y, 1)],
-                     'census_night': lambda y: _q[(y, 1)] + (_t - 0.125) / 0.25 * (_q[(y, 2)] - _q[(y, 1)]),
-                     'mid_year': lambda y: (_q[(y, 2)] + _q[(y, 3)]) / 2.0}
-        if CHANNEL_POP_DATE not in _pop_date:
-            raise ValueError(f"Unknown CHANNEL_POP_DATE '{CHANNEL_POP_DATE}'.")
-        _pop_census = {y: float(_pop_date[CHANNEL_POP_DATE](y)) for y in RECENT_INTERVAL}
-        excess_evidence = engine.excess_channels(census, census_rates, _pop_census,
-                                                 S_knots.set_index('Year')['S'], float(rate_path[0]),
-                                                 *RECENT_INTERVAL)
-        join_shares = channel_shares(EXCESS_CHANNELS, excess_evidence)
-        household_rho = hh_response['rho'] if hh_response else None
     engine_out = {}
     for col in ['5th', '50th', '95th']:
         pop_total = df_forecast[f'PopTotal_{col}'].values
         pop_growth = df_forecast[f'PopGrowth_{col}'].clip(lower=0).values
         hh_arr = households_forecast[col]
-        override = (None if CONSUMPTION_BASIS == 'stock_vacancy' else
-                    (lambda extra, d, _p=pop_total: consumption_gross(_p, d, extra)))
-        E = engine.forward(pop_total, hh_arr, pop_growth, consumption_override=override, **fwd_inputs)
-        if _join_mode == 'nowcast':
-            join, ji = engine.nowcast_join(E, float(hist_units_all.loc[2025]), float(nowcast['total']),
-                                           _completion, lag_w, join_shares, VACANCY_DRAWDOWN_YEARS,
-                                           HOUSEHOLD_CHANNEL, household_rho)
-            E = engine.forward(pop_total, hh_arr, pop_growth, consumption_override=override,
-                               join=join, join_redev=ji['channels']['redevelopment'], **fwd_inputs)
+        E = engine.forward(pop_total, hh_arr, pop_growth, **fwd_inputs)
+        if _join_mode == 'market_excess':
+            _b26 = _completion * ((1.0 - lag_w) * float(nowcast['total']) + lag_w * float(hist_units_all.loc[2025]))
+            join, ji = engine.market_excess(E, _b26, rho_other, NEAR_TERM_GAP_REF, NEAR_TERM_MODE,
+                                            NEAR_TERM_ABSORPTION)
+            E = engine.forward(pop_total, hh_arr, pop_growth, join=join, join_redev=ji['redev'],
+                               **fwd_inputs)
             join_info[col] = dict(ji, join=join)
         engine_out[col] = E
 
@@ -1813,22 +1420,19 @@ def main():
         hs_pos, hs_avoided = E['hs_pos'].copy(), E['hs_avoided'].copy()
         g_demand = E['growth'].copy()             # growth net of consolidation (>= 0)
         extra_space, c_gross = E['extra'].copy(), E['c_gross'].copy()
-        if CONSUMPTION_BASIS == 'stock_vacancy':
-            _D = E['D']
-            stock_fwd[col] = dict(allow=E['allow'] + E['change'], demol=E['demol'], uncons=E['unc'],
-                                  rv=E['rv'], repl=E['demol'] + E['unc'], stock=E['stock'],
-                                  join=E['join'], join_redev=E['join_redev'], stock_join=E['stock_join'])
-            vac_gfa = (E['allow'] + E['change']) * _D   # vacancy allowance (+ change), m2
-            repl_gfa = E['demol'] * _D                 # demolition replacement, m2
-            # net replacement above the long-run rate (scenario - long run): the
-            # 'redevelopment wave'; the rest is the long-run residual (incl. any
-            # carried 2025 deviation)
-            wave_gfa = (np.asarray(rate_path, float) - (demolition_rate + unconsented_rate)) * E['prev'] * _D
-            unc_gfa = E['unc'] * _D - wave_gfa         # long-run residual, m2
-            rv_gfa = E['rv'] * _D                      # housed in RV units, m2 (<0)
-            join_gfa = E['join'] * _D + E['gfa_adj']   # near-term join (A1), m2; 2026 = observed GFA
-        else:
-            vac_gfa = repl_gfa = unc_gfa = rv_gfa = wave_gfa = None      # 'other' not decomposed
+        _D = E['D']
+        stock_fwd[col] = dict(allow=E['allow'] + E['change'], demol=E['demol'], uncons=E['unc'],
+                              rv=E['rv'], repl=E['demol'] + E['unc'], stock=E['stock'],
+                              join=E['join'], join_redev=E['join_redev'], stock_join=E['stock_join'])
+        vac_gfa = (E['allow'] + E['change']) * _D   # vacancy allowance (+ change), m2
+        repl_gfa = E['demol'] * _D                 # demolition replacement, m2
+        # net replacement above the long-run rate (scenario - long run): the
+        # 'redevelopment wave'; the rest is the long-run residual (incl. any
+        # carried 2025 deviation)
+        wave_gfa = (np.asarray(rate_path, float) - (demolition_rate + unconsented_rate)) * E['prev'] * _D
+        unc_gfa = E['unc'] * _D - wave_gfa         # long-run residual, m2
+        rv_gfa = E['rv'] * _D                      # housed in RV units, m2 (<0)
+        join_gfa = E['join'] * _D + E['gfa_adj']   # near-term join (A1), m2; 2026 = observed GFA
         growth_check[col] = float(g_demand[1:].min())
 
         g_demand[0] = real_2025_total * anchor['growth']
@@ -1844,12 +1448,6 @@ def main():
         # typology; the blended value still moves with the typology mix.
         extra_space[0] = c_gross[0] * anchor_extra_share
         other_cons = c_gross - extra_space
-        if vac_gfa is None:
-            vac_gfa = other_cons.copy()
-            repl_gfa, unc_gfa = np.zeros_like(other_cons), np.zeros_like(other_cons)
-            wave_gfa = np.zeros_like(other_cons)
-            rv_gfa = np.zeros_like(other_cons)
-            join_gfa = np.zeros_like(other_cons)
         # 2025 is the observed anchor: split its 'other' in the 2026 proportions
         # (the near-term join starts in 2026; it has no 2025 share).
         join_gfa = join_gfa.copy()
@@ -1885,20 +1483,17 @@ def main():
         df_forecast[f'Ann_GFA_Cons_Join_{col}'] = join_gfa
 
     # ---- retirement-village floor area: reported, out of scope (A4) ----
-    if RV_FLOOR_AREA_IN_SCOPE:
-        raise NotImplementedError('RV floor area in scope needs an RV carbon factor (a judgement); '
-                                  'not implemented.')
     rv_floor_area, rv_size_ref = None, float('nan')
-    if COL_RV_GFA in df_consents.columns and CONSUMPTION_BASIS == 'stock_vacancy':
+    if COL_RV_GFA in df_consents.columns:
         _rvg = df_consents.groupby('Year')[COL_RV_GFA].sum().loc[1991:2025]
         _rw = slice(*DWELLING_SIZE_REF)
         rv_size_ref = float(_rvg.loc[_rw].sum() / hist_rv_units.loc[_rw].sum())
         rv_floor_area = dict(history_built=completed(_rvg) * COMPLETION_RATE,
                              projected=-stock_fwd['50th']['rv'] * rv_size_ref)
 
-    # Projections are BUILT floor area under the stock basis, so history is put on
-    # the same basis (consents x completion rate) wherever the two are joined.
-    built_factor = COMPLETION_RATE if CONSUMPTION_BASIS == 'stock_vacancy' else 1.0
+    # Projections are BUILT floor area, so history is put on the same basis
+    # (consents x completion rate) wherever the two are joined.
+    built_factor = COMPLETION_RATE
     # Built history on the same basis as the projection (completions, x completion rate)
     hist_built_gfa = hist_gfa_c * built_factor
     hist_built_typ_gfa = hist_typ_gfa_c * built_factor
@@ -1914,26 +1509,12 @@ def main():
           + f": net replacement {100 * rate_path[1]:.3f}%/yr in 2026, {100 * rate_path[-1]:.3f}%/yr in 2050 "
           f"(long run {100 * (demolition_rate + unconsented_rate):.3f}%, "
           f"{RECENT_INTERVAL[0]}-{RECENT_INTERVAL[1]} {100 * rate_recent:.3f}%)")
-    if _join_mode == 'nowcast':
-        ev, ji = excess_evidence, join_info['50th']
-        print(f"[near-term join] NEAR_TERM_JOIN='nowcast' ({NOWCAST_METHOD}): 2026 consents = "
-              f"{nowcast['observed']:,.0f} observed (months {nowcast['months_observed'][0]}-"
-              f"{nowcast['months_observed'][-1]}) + {nowcast['estimated_missing']:,.0f} estimated "
-              f"= {nowcast['total']:,.0f}")
-        print(f"   2026 completions (all categories): observed-implied {ji['O26']:,.0f} vs requirement "
-              f"{ji['R26']:,.0f} -> excess {ji['e26']:+,.0f}; 2027 lagged share excess {ji['e27']:+,.0f}")
-        print(f"   channel evidence {ev['interval'][0]}-{ev['interval'][1]} (ONE census interval; "
-              f"against scenario {_scenario}): household size census {100 * ev['change_S_census']:+.2f}% "
-              f"vs Stats NZ shape {100 * ev['change_S_shape']:+.2f}% -> households channel "
-              f"{'included' if ev['households_included'] else 'EXCLUDED'} ({HOUSEHOLD_CHANNEL})")
-        print("   levels: " + " | ".join(f"{k} {v:,.0f}" for k, v in ev['levels'].items())
-              + f"  -> shares in use ({EXCESS_CHANNELS}): "
-              + " | ".join(f"{k} {v:.3f}" for k, v in join_shares.items()))
-        ch = ji['channels']
-        print(f"   join, median path, 2026-2050 (dwellings): redevelopment {ch['redevelopment'].sum():+,.0f} | "
-              f"vacancy {ch['vacancy'].sum():+,.0f} drawn down {ch['vacancy_drawdown'].sum():+,.0f} over "
-              f"{VACANCY_DRAWDOWN_YEARS} yr | households {ch['households'].sum():+,.0f}"
-              f" (reverted {ch['household_reversion'].sum():+,.0f}) | net {ji['join'].sum():+,.0f}")
+    if _join_mode == 'market_excess':
+        ji = join_info['50th']
+        print(f"[near-term market excess] 2026 building {ji['O26']:,.0f} (0.95 x consents, {NOWCAST_METHOD}) vs "
+              f"requirement {ji['R26']:,.0f} -> excess {ji['e26']:+,.0f}; gap_ref ({NEAR_TERM_GAP_REF}) "
+              f"{ji['gap_ref']:+,.0f}, rho {ji['rho']:.2f}; {NEAR_TERM_MODE}: "
+              f"{ji['join'][1:].sum():+,.0f} dwellings 2026-2050")
 
     # ------------------------------------------------------------------
     # 10. TYPOLOGY SPLIT AND CARBON
@@ -1996,8 +1577,11 @@ def main():
         _gross_u = np.maximum(_E50['d_hh'], 0.0) + _E50['allow'] + _E50['change'] + _E50['demol'] \
             + _E50['unc'] + _E50['join']
         f_new, f_repl = _one.copy(), 0.0 * _one
-        f_join = np.divide(_E50['join'] - _E50['join_redev'], _E50['join'], out=_one.copy(),
-                                where=_E50['join'] != 0)
+        # join band floor area = join x D + gfa_adj (2026 observed GFA); its soil-bearing part
+        # is the non-redevelopment dwellings plus the observed-GFA adjustment
+        _jg = _E50['join'] * _E50['D'] + _E50['gfa_adj']
+        f_join = np.divide((_E50['join'] - _E50['join_redev']) * _E50['D'] + _E50['gfa_adj'], _jg,
+                           out=_one.copy(), where=_jg != 0)
         f_rv = (1.0 - np.divide(_repl_u, _gross_u, out=np.zeros_like(_one), where=_gross_u != 0))
     soil_frac = np.asarray(_E50['soil_share'], float).copy()
     for _f in (f_new, f_repl, f_join, f_rv, soil_frac):
@@ -2023,7 +1607,7 @@ def main():
                   'Consumption: extra space': f_new, 'Consumption: vacancy': f_new,
                   'Consumption: demolition': f_repl, 'Calibrated stock residual': f_repl,
                   'Redevelopment wave': f_repl,
-                  'Housed in RV units (out of scope)': f_rv, 'Near-term join (2026-27, A1)': f_join}
+                  'Housed in RV units (out of scope)': f_rv, 'Near-term market excess': f_join}
     carbon_total_typ = pd.DataFrame(engine_out['50th']['carbon_t'].T, index=forecast_years,
                                     columns=typ_names)
     carbon_total_typ.loc[2025] = evol_typ_total.loc[2025] * intensity.loc[2025]   # observed anchor
@@ -2043,7 +1627,7 @@ def main():
         floor_txt = ("floor never binds" if fr['years'] == 0 else
                      f"households decline in {fr['years']} yr(s); "
                      f"{-fr['area'] / 1e6:.2f} Mm2 of negative structural demand "
-                     f"{'floored to 0 (-> vacancy)' if FLOOR_HOUSEHOLD_DECLINE else 'kept'}")
+                     f"floored to 0 (-> vacancy)")
         print(f"     {c:<5} {'OK  ' if ok else 'FAIL'}  {floor_txt}")
     print(" [2] Structural identity  total == structural + c_gross")
     _band = {c: results[c]['total'][1:].sum() / 1e6 for c in ['5th', '50th', '95th']}
@@ -2053,42 +1637,6 @@ def main():
     print(f" [3] Population-only band (household size, mix, dwelling size and carbon\n"
           f"     factors held fixed), total GFA 2026-2050 (Mm2): "
           f"5th {_band['5th']:.2f} | 50th {_band['50th']:.2f} | 95th {_band['95th']:.2f}")
-    _mix_int_all = sum(evolving_gfa_shares[t].values * T_BASELINE_2025[t] for t in typ_names)
-    if CONSUMPTION_BASIS == 'stock_vacancy':
-        _sf = stock_fwd['50th']
-        _prev = np.concatenate([[_sf['stock'][0]], _sf['stock'][:-1]])[1:]
-        _D = future_dwelling_size.values[1:]
-        base_net = DEMOLITION_RATE + unconsented_rate
-
-        def _band_line(lab, cal, mark=''):
-            dr = net_rate(cal, cal['completion']) - base_net
-            g_ = _band['50th'] + dr * (_prev * _D).sum() / 1e6
-            c_ = tot_carbon_median + dr * (_prev * _D * _mix_int_all[1:]).sum() / 1e6
-            print(f"     {lab:<34} demol {100*cal['demol_rate']:.3f}% | unconsented "
-                  f"{100*cal['rate_unc']:+.3f}% -> built {g_:6.2f} Mm2 | {c_:9,.0f} kt{mark}")
-        print(f" [4] Stock-term sensitivities (median; LINEARISED in the net rate only, "
-              f"full re-runs are in Sensitivity.py; source {_nr_source}):")
-        for sh in (empty_share_measured - PRE2013_EMPTY_SHARE_BAND, empty_share_measured,
-                   empty_share_measured + PRE2013_EMPTY_SHARE_BAND):
-            _band_line(f"pre-2013 empty share {100*sh:.0f}%", calibrate_stock(sh),
-                       '  <- in use' if sh == empty_share_measured else '')
-        for cr in COMPLETION_RATE_BAND:
-            _band_line(f"completion rate {100*cr:.0f}%", calibrate_stock(empty_share_measured, completion=cr))
-        for dr_ in DEMOLITION_RATE_BAND:
-            _band_line(f"demolition rate {100*dr_:.2f}% (split only)",
-                       calibrate_stock(empty_share_measured, demol=dr_))
-    if CONSUMPTION_BASIS == 'extra_space_plus_other':
-        _P = df_forecast['PopTotal_50th'].values[1:]
-        _mix_int = sum(evolving_gfa_shares[t].values[1:] * T_BASELINE_2025[t]
-                       for t in typ_names)
-        print(f" [4] 'Other' uncertainty band (median demographics), 2026-2050:")
-        for case in ['low', 'central', 'high']:
-            dr = other_pp[case] - other_rate
-            g_ = _band['50th'] + dr * _P.sum() / 1e6
-            c_ = tot_carbon_median + dr * (_P * _mix_int).sum() / 1e6
-            mark = '  <- in use' if case == OTHER_CASE else ''
-            print(f"     {case:<8} other = {other_pp[case]:.4f} m2/person -> "
-                  f"GFA {g_:6.2f} Mm2 | carbon {c_:9,.0f} kt{mark}")
 
     # ------------------------------------------------------------------
     # STOCK, VACANCY AND REPLACEMENT
@@ -2143,7 +1691,7 @@ def main():
     print(f"     long run {_nr_window[0]}-{_nr_window[1]}: dwelling counts "
           f"{100 * engine.census_window_rate(census_rates, *_nr_window):+.3f}% | household identity "
           f"{DEMOLITION_CALIB_START}-{calib_end} {100 * (DEMOLITION_RATE + sc['rate_unc']):+.3f}%")
-    print(f"     IN USE ({_nr_source}): {100 * (DEMOLITION_RATE + unconsented_rate):+.3f}%/yr")
+    print(f"     IN USE (dwelling counts): {100 * (DEMOLITION_RATE + unconsented_rate):+.3f}%/yr")
 
     # ---- retirement villages: in the stock, out of carbon scope ----
     print(f"\n   RETIREMENT VILLAGES (counted in the stock; out of floor-area and carbon scope)")
@@ -2154,68 +1702,25 @@ def main():
     print(f"     forward share of all dwellings built: {100 * rv_share:.2f}% "
           f"(ratio of sums {RV_SHARE_REF[0]}-{RV_SHARE_REF[1]}; annual range since 2011 "
           f"{100 * hist_rv_share.loc[2011:].min():.1f}-{100 * hist_rv_share.loc[2011:].max():.1f}%)")
-    if CONSUMPTION_BASIS == 'stock_vacancy':
-        _sf = stock_fwd['50th']
-        _nb = (results['50th']['total'][1:] / future_dwelling_size.values[1:]).mean()
-        print(f"\n   Forward 2026-2050, median, dwellings per year:")
-        for lab, v_ in [('new households', results['50th']['d_hh'][1:].mean()),
-                        ('+ vacancy allowance', _sf['allow'][1:].mean()),
-                        ('+ demolitions replaced', _sf['demol'][1:].mean()),
-                        ('+ calibrated residual', _sf['uncons'][1:].mean()),
-                        ('- retirement-village units', _sf['rv'][1:].mean()),
-                        ('= dwellings built (in scope)', _nb)]:
-            print(f"     {lab:<30}{v_:>9,.0f}{'' if lab.startswith('=') else f'{100*v_/_nb:>8.1f}%'}")
-        _rv_tot = -_sf['rv'][1:].sum()
-        print(f"     retirement-village units built 2026-2050: {_rv_tot:,.0f} "
-              f"(median; carbon not estimated, out of scope)")
-        if rv_floor_area is not None:
-            print(f"     retirement-village FLOOR AREA (Stats NZ consents; out of scope): "
-                  f"{rv_size_ref:.1f} m2/unit ({DWELLING_SIZE_REF[0]}-{DWELLING_SIZE_REF[1]}) -> "
-                  f"{rv_floor_area['projected'][1:].sum() / 1e6:.2f} Mm2 built 2026-2050 "
-                  f"(in-scope total {results['50th']['total'][1:].sum() / 1e6:.2f} Mm2); "
-                  f"history 2016-2025 {rv_floor_area['history_built'].loc[2016:2025].sum() / 1e6:.2f} Mm2 built")
-
-    if VERBOSE or CONSUMPTION_BASIS in ('per_capita', 'extra_space_plus_other'):   # only relevant to the per-person bases
-        # ------------------------------------------------------------------
-        # [FIX d] calibration sensitivity
-        # ------------------------------------------------------------------
-        print("\n" + "=" * 78)
-        print(" [FIX d] CONSUMPTION-RATE CALIBRATION SENSITIVITY (m2/person/yr)")
-        print("=" * 78)
-        r_all = pd.Series(hist_consumption.values / hist_pop.values, index=years_hist)
-        print(f"   v2 method  (span 35, adjust=False, from 1991) : "
-              f"{r_all.ewm(span=35, adjust=False).mean().iloc[-1]:.4f}   <- seed artefact")
-        for sp in [10, 15, 20, 35]:
-            v = r_all.loc[CALIB_START_YEAR:].ewm(span=sp, adjust=True).mean().iloc[-1]
-            mark = '  <-- ADOPTED' if sp == EWMA_SPAN else ''
-            print(f"   EWMA span {sp:<3} adjust=True, from {CALIB_START_YEAR}       : {v:.4f}{mark}")
-        print(f"   simple mean, last 10 years                    : {r_all.loc[2016:2025].mean():.4f}")
-        print(f"   simple mean, last 5 years                     : {r_all.loc[2021:2025].mean():.4f}")
-        sl = stats.linregress(r_all.loc[CALIB_START_YEAR:].index.values,
-                              r_all.loc[CALIB_START_YEAR:].values)
-        print(f"   linear trend {CALIB_START_YEAR}-2025: slope={sl.slope:+.5f}/yr, "
-              f"p={sl.pvalue:.3f}, R2={sl.rvalue ** 2:.3f}")
-        print("   -> no significant trend, and every choice lies within a narrow band,")
-        print("      so the projection is not sensitive to this calibration decision.")
-        print(f"   ADOPTED rate = {rate_consumption:.4f}")
-        print(f"   Per-household rate (weighted sums) = {rate_per_household:.1f} m2 per new household")
-        print(f"   CONSUMPTION_BASIS in use           = {CONSUMPTION_BASIS}")
-        print("\n 'OTHER' PER PERSON (consumption beyond extra space), 1992-2025")
-        _y = other_pp_series.index.values.astype(float)
-        _ols = stats.linregress(_y, _o)
-        _ts = stats.theilslopes(_o, _y)
-        _mk = stats.kendalltau(_y, _o)
-        _r1 = float(np.corrcoef(_o[:-1], _o[1:])[0, 1])
-        print(f"   mean {other_pp['central']:.4f} m2/person | lag-1 autocorrelation {_r1:+.3f}")
-        print(f"   ordinary trend  p = {_ols.pvalue:.3f}  (invalid: assumes independent years)")
-        print(f"   Theil-Sen slope {_ts[0]:+.5f}/yr, 95% CI [{_ts[2]:+.5f}, {_ts[3]:+.5f}]"
-              f" -> {'includes zero' if _ts[2] <= 0 <= _ts[3] else 'excludes zero'}")
-        print(f"   Mann-Kendall    p = {_mk.pvalue:.3f}")
-        print(f"   -> no defensible trend: held constant. Block bootstrap "
-              f"({OTHER_BOOTSTRAP_BLOCK}-yr blocks, {OTHER_BOOTSTRAP_N:,} draws), "
-              f"{OTHER_BOOTSTRAP_CI[1] - OTHER_BOOTSTRAP_CI[0]}% interval "
-              f"[{other_pp['low']:.4f}, {other_pp['high']:.4f}]")
-        print(f"   OTHER_CASE in use = {OTHER_CASE} ({other_rate:.4f} m2/person)")
+    _sf = stock_fwd['50th']
+    _nb = (results['50th']['total'][1:] / future_dwelling_size.values[1:]).mean()
+    print(f"\n   Forward 2026-2050, median, dwellings per year:")
+    for lab, v_ in [('new households', results['50th']['d_hh'][1:].mean()),
+                    ('+ vacancy allowance', _sf['allow'][1:].mean()),
+                    ('+ demolitions replaced', _sf['demol'][1:].mean()),
+                    ('+ calibrated residual', _sf['uncons'][1:].mean()),
+                    ('- retirement-village units', _sf['rv'][1:].mean()),
+                    ('= dwellings built (in scope)', _nb)]:
+        print(f"     {lab:<30}{v_:>9,.0f}{'' if lab.startswith('=') else f'{100*v_/_nb:>8.1f}%'}")
+    _rv_tot = -_sf['rv'][1:].sum()
+    print(f"     retirement-village units built 2026-2050: {_rv_tot:,.0f} "
+          f"(median; carbon not estimated, out of scope)")
+    if rv_floor_area is not None:
+        print(f"     retirement-village FLOOR AREA (Stats NZ consents; out of scope): "
+              f"{rv_size_ref:.1f} m2/unit ({DWELLING_SIZE_REF[0]}-{DWELLING_SIZE_REF[1]}) -> "
+              f"{rv_floor_area['projected'][1:].sum() / 1e6:.2f} Mm2 built 2026-2050 "
+              f"(in-scope total {results['50th']['total'][1:].sum() / 1e6:.2f} Mm2); "
+              f"history 2016-2025 {rv_floor_area['history_built'].loc[2016:2025].sum() / 1e6:.2f} Mm2 built")
 
     if VERBOSE:   # historical space diagnostics; see Diagnostics D, E
         # ------------------------------------------------------------------
@@ -2321,7 +1826,7 @@ def main():
              ('Calibrated stock residual (long run)', evol_typ_unc, carbon_unc_typ),
              ('Redevelopment wave (scenario - long run)', evol_typ_wave, carbon_wave_typ),
              ('Housed in RV units (out of scope)', evol_typ_rv, carbon_rv_typ),
-             ('Near-term join (2026-27, A1)', evol_typ_join, carbon_join_typ)]
+             ('Near-term market excess', evol_typ_join, carbon_join_typ)]
     rows = [(lab, g.iloc[1:].sum().sum() / 1e6, c.iloc[1:].sum().sum() / 1e6) for lab, g, c in bands]
     tg = sum(r[1] for r in rows); tc = sum(r[2] for r in rows)
     print("\n BY DEMAND TYPE, 2026-2050 (median)")
@@ -2330,15 +1835,13 @@ def main():
     for lab, g, c in rows:
         print(f"   {lab:<34}{g:>12.2f}{100 * g / tg:>7.1f}%{c:>12,.0f}")
     print(f"   {'TOTAL BUILT':<34}{tg:>12.2f}{100.0:>7.1f}%{tc:>12,.0f}")
-    if CONSUMPTION_BASIS == 'stock_vacancy':
-        # Demolition and the residual trade one-for-one in calibration (only
-        # their sum is identified by the stock identity), so report the sum too.
-        _net_g = rows[4][1] + rows[5][1] + rows[6][1]
-        _net_c = rows[4][2] + rows[5][2] + rows[6][2]
-        print(f"   {'(demolition + residual: identified net)':<34}{_net_g:>12.2f}"
-              f"{100 * _net_g / tg:>7.1f}%{_net_c:>12,.0f}")
-    if CONSUMPTION_BASIS == 'stock_vacancy':
-        print(f"   {f'(consented equivalent, /{COMPLETION_RATE:.2f})':<34}{tg / COMPLETION_RATE:>12.2f}")
+    # Demolition and the residual trade one-for-one in calibration (only their
+    # sum is identified by the stock identity), so report the sum too.
+    _net_g = rows[4][1] + rows[5][1] + rows[6][1]
+    _net_c = rows[4][2] + rows[5][2] + rows[6][2]
+    print(f"   {'(demolition + residual: identified net)':<34}{_net_g:>12.2f}"
+          f"{100 * _net_g / tg:>7.1f}%{_net_c:>12,.0f}")
+    print(f"   {f'(consented equivalent, /{COMPLETION_RATE:.2f})':<34}{tg / COMPLETION_RATE:>12.2f}")
     print(f"   {'(avoided by consolidation, not built)':<34}{tot_avoided_gfa:>12.2f}{'':>8}{tot_avoided_c:>12,.0f}")
     print("=" * 80 + "\n")
 
@@ -2359,16 +1862,22 @@ def main():
     plt.legend(); plt.grid(True, alpha=0.3); plt.tight_layout()
 
     # FIG 1b households
-    plt.figure(figsize=(12, 5))
-    plt.plot(years_hist, hist_hh.values, color='black', linewidth=2, label='Historical (31 Dec)')
-    plt.plot(forecast_years, households_forecast['50th'], color='darkorange', linestyle='--',
-             label='Projected Median')
-    plt.fill_between(forecast_years, households_forecast['5th'], households_forecast['95th'],
-                     color='darkorange', alpha=0.2,
-                     label='5th-95th population percentile (household size fixed)')
-    plt.axvline(2025, color='black', linestyle=':', alpha=0.6)
-    plt.ylabel('Households'); plt.title('New Zealand Households (1991-2050)')
-    plt.legend(); plt.grid(True, alpha=0.3); plt.tight_layout()
+    fig1b = plt.figure(figsize=(12, 5.4))
+    a = plt.gca()
+    a.plot(hist_hh_dhe.loc[2018:].index, hist_hh_dhe.loc[2018:].values / 1e6, color='grey', lw=1.0, alpha=0.6,
+           label='Stats NZ as published')
+    plot_hist_estimated(a, hist_hh, 1e6, label='Historical (31 Dec)', k=hh_rebase_k)
+    _yb = np.r_[S_bridge.index.values, forecast_years[1:]]      # projection from the anchor point
+    a.plot(_yb, np.r_[(hist_pop.loc[S_bridge.index] / S_bridge).values, households_forecast['50th'][1:]] / 1e6,
+           color='darkorange', linestyle='--', label='Projected median (population / modelled household size)')
+    a.fill_between(forecast_years, households_forecast['5th'] / 1e6, households_forecast['95th'] / 1e6,
+                   color='darkorange', alpha=0.2, label='5th-95th population percentile (household size fixed)')
+    a.set_ylabel('Households (millions)'); a.set_title('New Zealand Households (1991-2050)')
+    a.legend(fontsize=8); a.grid(True, alpha=0.3)
+    plt.tight_layout(rect=(0, 0.05, 1, 1))
+    fig1b.text(0.5, 0.01, f'Census-benchmarked to 2018 (solid); 2019-23 Stats NZ estimates scaled to the 2023 census '
+               f'(x{hh_rebase_k:.3f}, dotted); 2024-25 consent-derived, not used; projection from the {S_ANCHOR_YEAR} '
+               f'census point.', ha='center', fontsize=8.5, style='italic')
 
     # FIG 2 cumulative GFA
     plt.figure(figsize=(13, 7))
@@ -2378,48 +1887,55 @@ def main():
     plt.fill_between(df_forecast['Year'], df_forecast['Cum_GFA_Total_5th'],
                      df_forecast['Cum_GFA_Total_95th'], color='darkred', alpha=0.2,
                      label='Population 5th-95th percentile (other inputs fixed)')
-    plt.ylabel('Cumulative New GFA (m2)')
+    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'{v / 1e6:,.0f}'))
+    plt.ylabel('Cumulative new GFA (Mm²)')
     plt.title('Cumulative New Residential GFA Projection')
     plt.legend(loc='upper left'); plt.grid(True, alpha=0.3)
     plt.xlim(1991, 2050); plt.tight_layout()
 
-    # Demand bands for figs 3-5 (annual, 2026-2050): one list, so the figures
-    # and the identity test use the same numbers.
-    def _band_list(get, scale):
-        spec = [('Growth demand (net of consolidation)', 'growth', DEMAND_COLORS[0]),
-                ('House-splitting demand', 'hs_pos', HOUSESPLIT_COLOR),
-                ('Consumption: extra space per dwelling', 'extra', DEMAND_COLORS[1]),
-                ('Consumption: vacancy allowance', 'vac', DEMAND_COLORS[2]),
-                ('Consumption: replacement of demolished stock', 'repl', DEMAND_COLORS[3]),
-                (UNCONSENTED_LABEL, 'unc', UNCONSENTED_COLOR),
-                (WAVE_LABEL, 'wave', WAVE_COLOR),
-                (JOIN_LABEL, 'join', JOIN_COLOR),
-                (RV_LABEL, 'rv', RV_COLOR)]
-        return [(lab, get(k) / scale, col) for lab, k, col in spec]
+    # Demand bands for boss_04-06 and diag_4 (annual, 2026-2050): one list, so the figures
+    # and the tests use the same numbers. IN SCOPE: retirement-village (RV) units are a
+    # constant share of every dwelling built (engine.forward), so instead of a negative RV
+    # band every band is scaled by (1 - RV share of the stack) = in-scope total / sum of the
+    # bands before RV; the bands then add up exactly to the typology total. Demolition and the
+    # calibrated residual are shown as one band (only their sum is identified).
+    def _band_list(get, total):
+        spec = [('Growth demand (net of consolidation)', ('growth',), DEMAND_COLORS[0]),
+                ('House-splitting demand', ('hs_pos',), HOUSESPLIT_COLOR),
+                ('Consumption: extra space per dwelling', ('extra',), DEMAND_COLORS[1]),
+                ('Consumption: vacancy allowance', ('vac',), DEMAND_COLORS[2]),
+                (REPL_LABEL, ('repl', 'unc'), REPL_COLOR),
+                (WAVE_LABEL, ('wave',), WAVE_COLOR),
+                (JOIN_LABEL, ('join',), JOIN_COLOR)]
+        raw = [(lab, sum(np.asarray(get(k), float) for k in keys), col) for lab, keys, col in spec]
+        f = total / sum(v for _, v, _ in raw)
+        return [(lab, v * f, col) for lab, v, col in raw], total
     _gfa_cols = dict(growth='Growth', hs_pos='HouseSplit_Pos', extra='Cons_ExtraSpace', vac='Cons_Vacancy',
-                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join',
-                     rv='Cons_RV')
+                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join')
     _carb = dict(growth=carbon_growth_typ, hs_pos=carbon_hs_pos_typ, extra=carbon_extra_typ, vac=carbon_vac_typ,
-                 repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ,
-                 rv=carbon_rv_typ)
+                 repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ)
     fig_bands = {
-        'gfa': (_band_list(lambda k: df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:], 1e6),
-                df_forecast['Ann_GFA_HouseSplit_Avoided_50th'].values[1:] / 1e6),
-        'carbon': (_band_list(lambda k: _carb[k].sum(axis=1).values[1:], 1e6),
-                   carbon_avoided_typ.sum(axis=1).values[1:] / 1e6)}
+        'gfa': _band_list(lambda k: df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:] / 1e6,
+                          evol_typ_total.sum(axis=1).values[1:] / 1e6),
+        'carbon': _band_list(lambda k: _carb[k].sum(axis=1).values[1:] / 1e6,
+                             carbon_total_typ.sum(axis=1).values[1:] / 1e6)}
+    rv_caption = (f'In scope: excludes retirement-village units ({100 * rv_share:.1f}% of new dwellings; '
+                  f'floor area reported separately).')
 
     # FIG 3 annual GFA
     fig3, (bx1, bx2) = plt.subplots(1, 2, figsize=(18, 6))
     bx1.stackplot(plot_years, [evol_typ_total[n].iloc[1:] / 1e6 for n in typ_names],
                   labels=typ_names, colors=stack_colors, alpha=0.85)
-    bx1.set_ylabel('Annual new GFA (million m2/yr)')
+    bx1.set_ylabel('Annual new GFA (Mm²/yr)')
     bx1.set_title('Annual GFA by Typology (2026-2050)')
     bx1.legend(loc='lower left', fontsize=9); bx1.grid(True, alpha=0.3); bx1.set_xlim(2026, 2050)
 
-    plot_demand_bands(bx2, plot_years, fig_bands['gfa'][0], fig_bands['gfa'][1])
+    plot_demand_bands(bx2, plot_years, *fig_bands['gfa'])
+    bx2.set_ylabel('Annual new GFA (Mm²/yr)')
     bx2.set_title('Annual GFA by Demand Type (2026-2050)')
-    bx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); bx2.grid(True, alpha=0.3); bx2.set_xlim(2026, 2050)
-    plt.tight_layout()
+    demand_legend(bx2); bx2.grid(True, alpha=0.3); bx2.set_xlim(2026, 2050)
+    plt.tight_layout(rect=(0, 0.04, 1, 1))
+    fig3.text(0.5, 0.01, rv_caption, ha='center', fontsize=8.5, style='italic')
 
     # FIG 4 annual carbon
     fig4, (cx1, cx2) = plt.subplots(1, 2, figsize=(18, 6))
@@ -2429,11 +1945,12 @@ def main():
     cx1.set_title('Annual Embodied Carbon by Typology (2026-2050)')
     cx1.legend(loc='lower left', fontsize=9); cx1.grid(True, alpha=0.3); cx1.set_xlim(2026, 2050)
 
-    plot_demand_bands(cx2, plot_years, fig_bands['carbon'][0], fig_bands['carbon'][1])
+    plot_demand_bands(cx2, plot_years, *fig_bands['carbon'])
     cx2.set_ylabel('Annual Carbon (kt CO2e/yr)')
     cx2.set_title('Annual Embodied Carbon by Demand Type (2026-2050)')
-    cx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
-    plt.tight_layout()
+    demand_legend(cx2); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
+    plt.tight_layout(rect=(0, 0.04, 1, 1))
+    fig4.text(0.5, 0.01, rv_caption, ha='center', fontsize=8.5, style='italic')
 
     # FIG 5 cumulative carbon  -- slice BEFORE accumulating
     cum_typ = (carbon_total_typ.iloc[1:] / 1e6).cumsum()
@@ -2446,9 +1963,11 @@ def main():
 
     plot_demand_bands(dx2, plot_years, [(l, np.cumsum(v), c) for l, v, c in fig_bands['carbon'][0]],
                       np.cumsum(fig_bands['carbon'][1]))
+    dx2.set_ylabel('Cumulative Carbon (kt CO2e)')
     dx2.set_title('Cumulative Embodied Carbon by Demand Type (2026-2050)')
-    dx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
-    plt.tight_layout()
+    demand_legend(dx2); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
+    plt.tight_layout(rect=(0, 0.04, 1, 1))
+    fig5.text(0.5, 0.01, rv_caption, ha='center', fontsize=8.5, style='italic')
 
     # FIG 6 market share
     plt.figure(figsize=(10, 6))
@@ -2465,9 +1984,11 @@ def main():
 
     # FIG 7 demographic drivers
     fig7, (ex1, ex2) = plt.subplots(1, 2, figsize=(18, 6))
-    ex1.plot(years_hist, hist_S.values, color='black', linewidth=2.5, label='Historical (actual)')
-    ex1.plot(forecast_years, df_forecast['PopTotal_50th'].values / households_forecast['50th'],
-             color='darkorange', linestyle='--', linewidth=2.5, label=f'Projected ({HOUSEHOLD_METHOD})')
+    plot_hist_estimated(ex1, hist_S, 1.0, label='Historical', lw=2.5, k=hh_rebase_k)
+    ex1.plot(np.r_[S_bridge.index.values, forecast_years[1:]],
+             np.r_[S_bridge.values, (df_forecast['PopTotal_50th'].values / households_forecast['50th'])[1:]],
+             color='darkorange', linestyle='--', linewidth=2.5,
+             label=f'Projected (Stats NZ shape from the {S_ANCHOR_YEAR} census point)')
     ex1.axvline(2025, color='gray', linestyle=':', alpha=0.6)
     ex1.set_ylabel('People per Household')
     ex1.set_title('Average Household Size (1991-2050)')
@@ -2483,7 +2004,10 @@ def main():
     ex2.set_ylabel('Annual Additions')
     ex2.set_title('Population Growth vs Household Formation')
     ex2.legend(); ex2.grid(True, alpha=0.3); ex2.set_xlim(1991, 2050)
-    plt.tight_layout()
+    plt.tight_layout(rect=(0, 0.05, 1, 1))
+    fig7.text(0.5, 0.01, f'Household size: census-benchmarked to 2018 (solid); 2019-23 from Stats NZ household estimates '
+              f'scaled to the 2023 census (x{hh_rebase_k:.3f}, dotted); 2024-25 consent-derived, not used; '
+              f'projection from the {S_ANCHOR_YEAR} census point.', ha='center', fontsize=8.5, style='italic')
 
     # FIG 8 [FIX f / NEW g] space diagnostics
     fig8, (gx1, gx2) = plt.subplots(1, 2, figsize=(18, 6))
@@ -2531,7 +2055,7 @@ def main():
                     'Calibrated stock residual': evol_typ_unc,
                     'Redevelopment wave': evol_typ_wave,
                     'Housed in RV units (out of scope)': evol_typ_rv,
-                    'Near-term join (2026-27, A1)': evol_typ_join}
+                    'Near-term market excess': evol_typ_join}
     dem_mat = pd.DataFrame(
         {lab: [sum(df[t].iloc[1:].sum() * MAT_INTENSITY.loc[m, t] for t in typ_names)
                for m in MATERIALS] + [sum((df[t].values * soil_fracs[lab])[1:].sum() * SOIL_INTENSITY[t]
@@ -2584,22 +2108,13 @@ def main():
 
     # --- FIG 9: material flows ---------------------------------------
     fig9, (mx1, mx2) = plt.subplots(1, 2, figsize=(18, 6))
-    order = flow_annual.sum().sort_values(ascending=False).index
-    pal = plt.get_cmap('tab20')(np.linspace(0, 1, len(order)))
-    mx1.stackplot(plot_years, [flow_annual[m] / 1e6 for m in order],
-                  labels=list(order), colors=pal, alpha=0.9)
-    mx1.set_ylabel('kt CO$_2$e per year'); mx1.set_xlabel('Year')
-    mx1.set_title('Annual embodied carbon by material (2026-2050)\n'
-                  'soil shown separately: land-use change, not a material')
-    mx1.legend(loc='upper right', fontsize=7, ncol=2); mx1.grid(True, alpha=0.3)
-    mx1.set_xlim(2026, 2050)
-
-    mx2.stackplot(plot_years, [flow_cum[m] / 1e6 for m in order],
-                  labels=list(order), colors=pal, alpha=0.9)
-    mx2.set_ylabel('cumulative kt CO$_2$e'); mx2.set_xlabel('Year')
-    mx2.set_title('Cumulative embodied carbon by material (2026-2050)')
-    mx2.legend(loc='upper left', fontsize=7, ncol=2); mx2.grid(True, alpha=0.3)
-    mx2.set_xlim(2026, 2050)
+    for a, frame, ylab, title, loc in (
+            (mx1, flow_annual, 'kt CO$_2$e per year', 'Annual embodied carbon by material (2026-2050)\n'
+             'soil shown separately: land-use change, not a material', 'upper right'),
+            (mx2, flow_cum, 'cumulative kt CO$_2$e', 'Cumulative embodied carbon by material (2026-2050)', 'upper left')):
+        a.legend(handles=stack_materials(a, plot_years, frame, 1e6), loc=loc, fontsize=7)
+        a.set_ylabel(ylab); a.set_xlabel('Year'); a.set_title(title)
+        a.grid(True, alpha=0.3); a.set_xlim(2026, 2050)
     plt.tight_layout()
 
     # Every intermediate result is returned, so Diagnostics.py and
@@ -2614,12 +2129,35 @@ def main():
     return state
 
 
-def plot_demand_bands(ax, years, bands, avoided=None):
-    """Signed stack: the positive part of each band stacked upward from zero,
-    the negative part (RV, a negative join) downward from zero. 'Avoided'
-    (consolidation) is drawn as an outline above the total, not stacked. The
-    dashed line is the signed sum of the bands, which equals the typology total
-    (tests/test_identities.py). Returns that sum."""
+def plot_hist_estimated(ax, series, scale=1.0, color='black', label='Historical', lw=2.0, k=None,
+                        census_last=2018, anchor=None):
+    """Households / household size history: census-benchmarked to census_last
+    (solid); census_last+1..anchor Stats NZ estimates scaled to the anchor census by
+    k (dotted); after the anchor consent-derived estimates, not used (faint
+    dashed); the anchor census point marked."""
+    anchor = S_ANCHOR_YEAR if anchor is None else anchor
+    s = series.dropna() / scale
+    last = int(s.index.max())
+    ax.plot(s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw,
+            label=f'{label}: census-benchmarked to {census_last}')
+    mid = s.loc[census_last:anchor]
+    ax.plot(mid.index, mid.values, color=color, lw=lw, ls=':',
+            label=f'{census_last + 1}-{anchor % 100:02d}: Stats NZ estimates scaled to the {anchor} census'
+                  + (f' (x{k:.3f})' if k is not None else ''))
+    tail = s.loc[anchor:]
+    ax.plot(tail.index, tail.values, color=color, lw=lw * 0.7, ls='--', alpha=0.35,
+            label=f'{anchor + 1}-{last % 100:02d}: consent-derived estimates, not used')
+    if anchor in s.index:
+        ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=6, label=f'{anchor} census')
+    ax.ticklabel_format(axis='y', style='plain', useOffset=False)
+
+
+def plot_demand_bands(ax, years, bands, total):
+    """Stack the in-scope demand bands upward from zero. In the adopted run every band
+    is non-negative; a negative part (possible only in a sensitivity run, e.g. payback)
+    is drawn downward, hatched. The solid line is the in-scope total (= typology total);
+    it sits exactly on the top of the stack (tests/test_identities.py). Returns the top
+    of the stack."""
     years = np.asarray(years)
     up, dn = np.zeros(len(years)), np.zeros(len(years))
     for lab, v, col in bands:
@@ -2631,14 +2169,32 @@ def plot_demand_bands(ax, years, bands, avoided=None):
             ax.fill_between(years, dn + neg, dn, color=col, alpha=0.45, lw=0, hatch='..',
                             label=None if np.any(pos > 0) else lab)
         up, dn = up + pos, dn + neg
-    total = sum(np.asarray(v, float) for _, v, _ in bands)
-    if avoided is not None and np.any(np.asarray(avoided) > 0):
-        ax.fill_between(years, total, total + np.asarray(avoided, float), facecolor='none',
-                        edgecolor=HOUSESPLIT_COLOR, hatch='//', lw=0.8,
-                        label='Avoided floor area (consolidation; not built, not stacked)')
-    ax.plot(years, total, color='black', linestyle='--', linewidth=1.5, label='Total built (net) = typology total')
-    ax.axhline(0, color='black', lw=0.7)
-    return total
+    ax.plot(years, np.asarray(total, float), color='black', linewidth=1.5, label='Total built, in scope')
+    if np.any(dn < 0):
+        ax.axhline(0, color='black', lw=0.7)
+    return up
+
+
+def demand_legend(ax):
+    """Legend below the panel, top band first (matches the stack)."""
+    h, l = ax.get_legend_handles_labels()
+    ax.legend(h[::-1], l[::-1], loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8)
+
+
+def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):
+    """Stack carbon by material in MATERIAL_STYLE order (bottom to top), soil on top
+    at SOIL_ALPHA; edges 0.4 pt #555555. Returns legend handles top first."""
+    unknown = set(frame.columns) - {c for c, _, _ in MATERIAL_STYLE}
+    if unknown:
+        raise ValueError(f'No colour for {sorted(unknown)} in MATERIAL_STYLE.')
+    years = np.asarray(years)
+    bottom, handles = np.zeros(len(years)), []
+    for col, lab, colour in MATERIAL_STYLE:
+        v = np.asarray(frame[col], float) / scale
+        handles.append(ax.fill_between(years, bottom, bottom + v, facecolor=colour, label=lab,
+                                       alpha=alpha * (SOIL_ALPHA if col == 'SOIL' else 1.0), **EDGE))
+        bottom = bottom + v
+    return handles[::-1]
 
 
 def export_results(B, path):
@@ -2654,7 +2210,7 @@ def export_results(B, path):
              ('Demolition replacement', 'evol_typ_repl', 'carbon_repl_typ'),
              ('Calibrated stock residual (long run)', 'evol_typ_unc', 'carbon_unc_typ'),
              ('Redevelopment wave (scenario - long run)', 'evol_typ_wave', 'carbon_wave_typ'),
-             ('Near-term join (2026-27 excess)', 'evol_typ_join', 'carbon_join_typ'),
+             ('Near-term market excess', 'evol_typ_join', 'carbon_join_typ'),
              ('Housed in RV units (out of scope)', 'evol_typ_rv', 'carbon_rv_typ')]
     typ = list(B['typ_names'])
     et, ct = B['evol_typ_total'], B['carbon_total_typ']
@@ -2664,8 +2220,7 @@ def export_results(B, path):
     R = B['results']
     out = dict(
         settings=dict(scenario=B['_scenario'], s3_half_life=S3_HALF_LIFE, near_term_join=B['_join_mode'],
-                      nowcast_method=NOWCAST_METHOD, excess_channels=EXCESS_CHANNELS,
-                      household_channel=HOUSEHOLD_CHANNEL, vacancy_drawdown_years=VACANCY_DRAWDOWN_YEARS,
+                      nowcast_method=NOWCAST_METHOD, near_term_mode=NEAR_TERM_MODE,
                       completion_rate=COMPLETION_RATE, lag_w=float(B['lag_w']), phi=DAMPING_PHI),
         gfa_Mm2=float(R['50th']['total'][f].sum() / 1e6), carbon_kt=float(B['tot_carbon_median']),
         upfront_kt=float(B['_upfront'] + B['_soil'] / 1e6), soil_kt=float(B['_soil'] / 1e6),

@@ -1,5 +1,5 @@
 """
-VALIDATION -- run by run_all.py after every change; results logged in CHANGELOG.md
+VALIDATION -- run by run_all.py; results in outputs/validation.md and metrics.json
 =================================================================================
 Two checks, both DESCRIPTIVE. Nothing here is used to set or tune a parameter.
 
@@ -80,13 +80,26 @@ def census_intervals(B, last):
     return [(a + 1, b) for a, b in zip(cy[:-1], cy[1:])]      # calendar years a+1..b
 
 
-def hindcast(B):
+# VALIDATION_VACANCY (v1.2): the hindcast feeds census vacancy into the identity.
+#   'consistent' (default): one empty/unoccupied share (pooled 2018 and 2023
+#   private dwellings) applied to every census, removing the 2013->2018
+#   empty/away definitional break; 'as_published': the published empty series
+#   (reported alongside).
+VALIDATION_VACANCY = 'consistent'
+
+
+def consistent_share(B):
+    cen = B['census']
+    return float(cen.loc[[2018, 2023], 'empty'].sum() / cen.loc[[2018, 2023], 'unoccupied'].sum())
+
+
+def hindcast(B, const_share=None):
     yh = B['years_hist']
     end = int(B['calib_end'])
     units_all = B['hist_units_all_c']                 # consents timed as completions
     c = Boss.COMPLETION_RATE
     cal_full = engine.calibrate_stock(yh, B['hist_hh'], engine.vacancy_knots(B['census'], B['empty_share_measured'],
-                                                                             B['_const_share']),
+                                                                             const_share),
                                       units_all, B['hist_rv_units_c'], c, Boss.DEMOLITION_RATE,
                                       Boss.DEMOLITION_CALIB_START, end)
     crates = B['census_rates']
@@ -107,28 +120,31 @@ def hindcast(B):
         actual = float(built[test].sum())
         preds = {}
         r_const = rate(Boss.DEMOLITION_CALIB_START, O)
-        preds['constant'] = (r_const, float((need + r_const * prev)[test].sum()))
+        preds['constant'] = (r_const, (need + r_const * prev)[test])
         before = [iv for iv in ivs if iv[1] <= O]
         r_recent = rate(*before[-1])
-        preds['recent'] = (r_recent, float((need + r_recent * prev)[test].sum()))
+        preds['recent'] = (r_recent, (need + r_recent * prev)[test])
         X = np.array([th.loc[a:b].sum() / prev.loc[a:b].sum() for a, b in before])
         Y = np.array([rate(a, b) for a, b in before])
         A = np.c_[np.ones(len(X)), X]
         coef, *_ = np.linalg.lstsq(A, Y, rcond=None)
-        preds['linked'] = (None, float((need + (coef[0] + coef[1] * th / prev) * prev)[test].sum()))
+        preds['linked'] = (None, (need + (coef[0] + coef[1] * th / prev) * prev)[test])
         r_dc = engine.census_window_rate(crates, Boss.NET_REPLACEMENT_WINDOW[0], O)
-        preds['dwelling_count'] = (r_dc, float((need + r_dc * prev)[test].sum()))
+        preds['dwelling_count'] = (r_dc, (need + r_dc * prev)[test])
         # reference method (S3): the most recent intercensal rate before the origin,
         # fading to the long-run dwelling-count rate with a 10-year half-life from O
         r_last = float(crates[crates['y1'] <= O].iloc[-1]['rate'])
         path = pd.Series(engine.replacement_path('S3', r_dc, r_last, yh - O + 2025, 10.0), index=yh)
-        preds['reference_s3_10'] = (r_last, float((need + path * prev)[test].sum()))
-        for m, (r, p) in preds.items():
+        preds['reference_s3_10'] = (r_last, (need + path * prev)[test])
+        for m, (r, ser) in preds.items():
+            p = float(ser.sum())
             rows.append(dict(origin=O, test=f'{O + 1}-{end}', method=m,
                              rate_pct=None if r is None else 100 * r,
                              n_intervals=len(before) if m == 'linked' else None,
                              linked_b=float(coef[1]) if m == 'linked' else None,
-                             predicted=p, actual=actual, error_pct=100 * (p / actual - 1)))
+                             predicted=p, actual=actual, error_pct=100 * (p / actual - 1),
+                             years=[int(y) for y in yh[test]], predicted_path=[float(x) for x in ser.values],
+                             actual_path=[float(x) for x in built[test].values]))
     return rows
 
 
@@ -194,7 +210,7 @@ def check_2026(B, consents=None):
     """consents: monthly all-category series (index = month); read from the
     consent file when not given."""
     if consents is None:
-        c = Boss.load_consents(Boss.CONSENT_SOURCE)
+        c = Boss.load_consents()
         consents = c.set_index(pd.to_datetime(c['Date']))[Boss.COL_DWELLINGS_TOTAL]
     s = consents.sort_index()
     last = s.index.max()
@@ -221,12 +237,17 @@ def check_2026(B, consents=None):
     return out
 
 
-def write(rows, chk, stock_rows=None, dhe=None):
-    lines = [f'Net replacement source in use: `{Boss.NET_REPLACEMENT_SOURCE}` '
+def write(rows, chk, stock_rows=None, dhe=None, rows_pub=None, vac=None):
+    lines = [f'Net replacement in use: census dwelling-count identity '
              f'(window {Boss.NET_REPLACEMENT_WINDOW[0]}-{Boss.NET_REPLACEMENT_WINDOW[1]}).', '',
              '### (A) Rolling-origin hindcast of dwellings built (descriptive; 3 origins)', '',
              'Actual households and vacancy fed in; only the net-replacement term is predicted. '
              'Error = predicted / actual - 1.', '',
+             (f"Vacancy definition: {VALIDATION_VACANCY} -- the pooled 2018/2023 empty share of unoccupied private "
+              f"dwellings ({100 * vac['pooled_share']:.1f}%) applied to every census; the 2013 census share was "
+              f"{100 * vac['share_2013']:.1f}% (published empty vacancy 2013 {100 * vac['v_2013']:.2f}% -> 2018 "
+              f"{100 * vac['v_2018']:.2f}%, a definitional break). The as-published series is shown below the table."
+              if vac else ''), '',
              '| origin | test years | method | rate used (%/yr) | predicted | actual | error |',
              '|---|---|---|---|---|---|---|']
     for r in rows:
@@ -234,6 +255,12 @@ def write(rows, chk, stock_rows=None, dhe=None):
                 else f"linked: b = {r['linked_b']:.2f} on {r['n_intervals']} intervals")
         lines.append(f"| {r['origin']} | {r['test']} | {r['method']} | {rate} | {r['predicted']:,.0f} | "
                      f"{r['actual']:,.0f} | {r['error_pct']:+.1f}% |")
+    if rows_pub:
+        lines += ['', '### (A2) Same hindcast with census vacancy as published (2013->2018 break included)', '',
+                  '| origin | test years | method | predicted | actual | error |', '|---|---|---|---|---|---|']
+        for r in rows_pub:
+            lines.append(f"| {r['origin']} | {r['test']} | {r['method']} | {r['predicted']:,.0f} | "
+                         f"{r['actual']:,.0f} | {r['error_pct']:+.1f}% |")
     if stock_rows:
         lines += ['', '### (B) Rolling-origin hindcast of the 2023 census private-dwelling stock '
                   '(dwelling-count identity; descriptive)', '',
@@ -271,19 +298,27 @@ def write(rows, chk, stock_rows=None, dhe=None):
     with open(OUT_MD, 'w') as f:
         f.write('\n'.join(lines) + '\n')
     with open(OUT_JSON, 'w') as f:
-        json.dump(dict(hindcast=rows, hindcast_stock=stock_rows, net_replacement_crosscheck=dhe,
-                       model_method='dwelling_count' if Boss.NET_REPLACEMENT_SOURCE == 'dwelling_count'
-                       else 'constant', check_2026=chk), f, indent=2)
+        json.dump(dict(hindcast=rows, hindcast_as_published=rows_pub, vacancy_definition=vac,
+                       hindcast_stock=stock_rows, net_replacement_crosscheck=dhe,
+                       model_method='dwelling_count', check_2026=chk), f, indent=2)
     print('\n'.join(lines))
 
 
 def main():
     B = run_boss()
-    uses_2026 = B['_join_mode'] == 'nowcast' or B['pop_nowcast'] is not None
+    uses_2026 = B['_join_mode'] == 'market_excess' or B['pop_nowcast'] is not None
     B0 = run_boss(**NO_2026_DATA) if uses_2026 else B
     chk = check_2026(B0)
     chk['model_settings'] = NO_2026_DATA if uses_2026 else 'as run (no 2026 data used)'
-    write(hindcast(B), chk, hindcast_stock(B), dhe_crosscheck(B))
+    sh = consistent_share(B)
+    cen = B['census']
+    vac = dict(definition=VALIDATION_VACANCY, pooled_share=sh,
+               share_2013=float(cen.loc[2013, 'empty'] / cen.loc[2013, 'unoccupied']),
+               v_2013=float(cen.loc[2013, 'empty'] / cen.loc[2013, 'total_private']),
+               v_2018=float(cen.loc[2018, 'empty'] / cen.loc[2018, 'total_private']))
+    rows_c, rows_p = hindcast(B, sh), hindcast(B, None)
+    main_rows = rows_c if VALIDATION_VACANCY == 'consistent' else rows_p
+    write(main_rows, chk, hindcast_stock(B), dhe_crosscheck(B), rows_pub=rows_p, vac=vac)
 
 
 if __name__ == '__main__':

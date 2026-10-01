@@ -1,20 +1,23 @@
 """
 DIAGNOSTICS -- sanity checks for Boss.py, past and future together
 ==================================================================
-Six figures. Every time-series panel runs 1992-2050: history solid, projection
-lighter or dashed, a dotted line at 2025. Everything is read from ONE run of
-Boss.py, so the two scripts can never disagree.
+Four figures and one appendix. Everything is read from ONE run of Boss.py, so
+the two scripts can never disagree. Projections are annual; the history of the
+demand decomposition (diag_3, diag_4) is one bar per census interval, because
+between censuses households and vacancy are interpolated and annual detail is
+not identified.
 
-  1  People and households       population, households, household size, flows
   2  The two household engines    people arriving vs homes emptying out
-  3  The stock bucket             vacancy, demolition, unconsented additions
+  3  The stock bucket             vacancy, dwellings by component, stock
   4  Floor area                   by typology, by demand type, mix, dwelling size
   5  Embodied carbon              by typology, by material, cumulative, factors
-  6  Checks                       reconciliation, the 2027->2028 handover, rejections
+  3b Appendix                     which vacancy definition is plausible
 
 Historical carbon is ESTIMATED by applying the 2025 case-study factors to past
-floor area; it is shown for continuity, not as a measured series.
-Figures are plotted, not saved (set SAVE_FIGURES = True to write PNGs to outputs/figures/).
+floor area; it is shown for continuity, not as a measured series. The
+accounting identities and factor sums are checked in tests/test_identities.py.
+Figures are plotted, not saved (run_all.py sets PATHWAY_SAVE_FIGURES=1 to write
+PNGs to outputs/figures/).
 """
 
 import importlib
@@ -28,6 +31,8 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 import Boss as M
+import engine
+import validation
 # Interactive consoles (Spyder, IPython, Jupyter) keep an imported module alive
 # between runs, so an edited Boss.py would otherwise be ignored. Always reload.
 M = importlib.reload(M)
@@ -37,6 +42,7 @@ FIG_DIR = os.path.join(M.OUT_DIR, 'figures')
 
 plt.rcParams.update({'font.size': 9, 'axes.titlesize': 10, 'legend.fontsize': 7.5,
                      'axes.grid': True, 'grid.alpha': 0.3})
+
 
 # ---------------------------------------------------------------------------
 # One silent run of Boss, with a version check
@@ -55,7 +61,7 @@ def boss_locals():
     if not isinstance(grab, dict):
         raise RuntimeError(f"{M.__file__}: main() returned no state; use the latest Boss.py.")
     need = ('stock_fwd', 'stock_cal', 'census', 'unconsented_rate', 'flow_annual', 'hist_rv_units',
-            'hh_response', 'MAT_INTENSITY')
+            'hh_response', 'MAT_INTENSITY', 'fig_bands')
     miss = [k for k in need if k not in grab]
     miss += [f"results['{k}']" for k in ('vac', 'repl', 'unc', 'rv')
              if k not in grab.get('results', {}).get('50th', {})]
@@ -81,10 +87,10 @@ FY = np.asarray(B['forecast_years'])
 PF = FY[1:]                                    # projected years (2025 is the anchor)
 M6 = 1e6
 R = B['results']['50th']
-SC = B['stock_cal']
 SF = B['stock_fwd']['50th']
 HR = B['hh_response']
 DF = B['df_forecast']
+E50 = B['engine_out']['50th']
 
 pop_h, hh_h, S_h = B['hist_pop'], B['hist_hh'], B['hist_S']
 D_h = B['blended_dwelling_size']               # realised m2 per dwelling
@@ -92,7 +98,22 @@ D_f = B['future_dwelling_size'].values
 S_f = DF['PopTotal_50th'].values / B['households_forecast']['50th']
 
 C = dict(growth='#3498db', split='#e67e22', extra='#8e44ad', vac='#95a5a6',
-         vchg='#f1c40f', demol='#34495e', unc='#16a085', wave='#d35400', rv='#b8a0d0', join='#c0392b', built='black')
+         vchg='#f1c40f', repl=M.REPL_COLOR, wave=M.WAVE_COLOR, rv=M.RV_COLOR, join=M.JOIN_COLOR, built='black')
+
+# History of the stock identity on ONE vacancy definition throughout (the pooled
+# 2018/2023 private empty share applied to every census, validation.consistent_share):
+# the published empty / residents-away split breaks between 2013 and 2018 (N1).
+POOLED_SHARE = validation.consistent_share(B)
+SCc = engine.calibrate_stock(B['years_hist'], hh_h,
+                             engine.vacancy_knots(B['census'], float(B['empty_share_measured']), POOLED_SHARE),
+                             B['hist_units_all_c'], B['hist_rv_units_c'], M.COMPLETION_RATE, M.DEMOLITION_RATE,
+                             M.DEMOLITION_CALIB_START, B['calib_end'])
+CENSUS_Y = [int(y) for y in B['census'].index if YH[0] - 1 <= y <= int(B['calib_end'])]
+INTERVALS = list(zip(CENSUS_Y[:-1], CENSUS_Y[1:])) + [(CENSUS_Y[-1], int(YH[-1]))]
+HIST_NOTE = (f'History: one bar per census interval (interval means; vacancy on one definition, pooled '
+             f'2018/23 empty share {100 * POOLED_SHARE:.1f}% of unoccupied); between censuses annual detail is not '
+             f'identified. Faint bar: {CENSUS_Y[-1] + 1}-{YH[-1]}, households consent-derived. '
+             f'Projection annual, hatched.')
 
 
 def split(ax):
@@ -131,71 +152,49 @@ def signed_bars(ax, years, parts, projected=False):
     ax.axhline(0, color='black', lw=0.7)
 
 
-def finish(fig, name):
-    fig.tight_layout()
+def interval_means(parts):
+    """parts: [(label, annual Series over YH, colour)] -> per census interval, the mean of
+    each part over the years y0+1..y1: [(y0, y1, [(label, mean, colour)])]."""
+    return [(y0, y1, [(lab, float(np.mean(np.asarray(ser.loc[y0 + 1:y1], float))), col) for lab, ser, col in parts])
+            for y0, y1 in INTERVALS]
+
+
+def interval_bars(ax, groups, scale=1.0):
+    """One stacked bar per census interval, spanning its years (signed: a negative mean
+    is drawn below zero). The interval after the latest census is faint."""
+    for i, (y0, y1, parts) in enumerate(groups):
+        up = dn = 0.0
+        faint = y0 == CENSUS_Y[-1]
+        for lab, m, col in parts:
+            m = m / scale
+            kw = dict(width=y1 - y0, align='edge', color=col, alpha=0.35 if faint else 0.95,
+                      edgecolor='white', linewidth=0.6, label=lab if i == 0 else None)
+            if m >= 0:
+                ax.bar(y0 + 0.5, m, bottom=up, **kw)
+                up += m
+            else:
+                ax.bar(y0 + 0.5, m, bottom=dn, **kw)
+                dn += m
+    ax.axhline(0, color='black', lw=0.7)
+
+
+def finish(fig, name, note=None):
+    if note:
+        fig.tight_layout(rect=(0, 0.035, 1, 1))
+        fig.text(0.5, 0.008, note, ha='center', fontsize=8, style='italic')
+    else:
+        fig.tight_layout()
     if SAVE_FIGURES:
         os.makedirs(FIG_DIR, exist_ok=True)
         fig.savefig(os.path.join(FIG_DIR, name), dpi=130, bbox_inches='tight')
 
 
 # =============================================================================
-# FIGURE 1 -- people and households
-# =============================================================================
-fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
-fig.suptitle('1. People and households, 1991-2050', fontsize=12)
-
-a = ax[0, 0]
-a.plot(pop_h.index, pop_h / M6, color='black', lw=2, label='observed')
-a.plot(FY, DF['PopTotal_50th'] / M6, color='#2980b9', lw=2, ls='--', label='median projection')
-a.fill_between(FY, DF['PopTotal_5th'] / M6, DF['PopTotal_95th'] / M6, color='#2980b9',
-               alpha=0.15, label='5th-95th percentile')
-tidy(a, 'Population', 'million people')
-a.legend()
-
-a = ax[0, 1]
-hf = B['households_forecast']
-a.plot(B['hist_hh_dhe'].index, B['hist_hh_dhe'] / M6, color='#95a5a6', lw=1.5, ls=':',
-       label='Stats NZ DHE as published (consent-driven after 2018)')
-a.plot(hh_h.index, hh_h / M6, color='black', lw=2,
-       label=f"used: post-2018 rebased on 2023 census (x{B['hh_rebase_k']:.3f})")
-a.plot(FY, hf['50th'] / M6, color='#e67e22', lw=2, ls='--', label='median projection')
-a.fill_between(FY, hf['5th'] / M6, hf['95th'] / M6, color='#e67e22', alpha=0.15,
-               label='5th-95th percentile')
-tidy(a, 'Households = population / household size', 'million households')
-mark_anchor(a)
-a.legend()
-
-a = ax[1, 0]
-a.plot(S_h.index, S_h, color='black', lw=2, label='observed')
-a.plot(B['hist_hh_dhe'].index, pop_h / B['hist_hh_dhe'], color='#95a5a6', lw=1.5, ls=':',
-       label='from DHE as published')
-a.plot(FY, HR['S_resp'], color='#95a5a6', lw=2, ls='--',
-       label=f"sensitivity: 2025 deviation carried -> {HR['S_resp'][-1]:.3f}")
-a.plot(FY, S_f, color='#c0392b', lw=2.5, label=f'model -> {S_f[-1]:.3f}')
-mark_anchor(a)
-a.text(0.02, 0.04, f"Stats NZ path, rebased on {M.S_ANCHOR_YEAR} (census-rebased households).\n"
-       f"2025 deviation {HR['e_2025']:+.4f} {'CARRIED' if HR['applied'] else 'not carried'}: "
-       "a DHE estimation artefact",
-       transform=a.transAxes, fontsize=8, va='bottom',
-       bbox=dict(facecolor='white', alpha=0.85, edgecolor='#cccccc'))
-tidy(a, 'Household size: Stats NZ path from a census-consistent 2025 start', 'people per household')
-a.legend(loc='upper right')
-
-a = ax[1, 1]
-a.plot(YH, pop_h.diff().loc[YH] / 1e3, color='#2980b9', lw=1.8, label='population growth')
-a.plot(YH, hh_h.diff().loc[YH] / 1e3, color='#e67e22', lw=1.8, label='new households')
-a.plot(PF, DF['PopGrowth_50th'].values[1:] / 1e3, color='#2980b9', lw=1.8, ls='--')
-a.plot(PF, R['d_hh'][1:] / 1e3, color='#e67e22', lw=1.8, ls='--')
-tidy(a, 'Annual flows', 'thousand per year')
-a.legend()
-finish(fig, 'diag_1_people_households.png')
-
-# =============================================================================
 # FIGURE 2 -- the two household engines
 # =============================================================================
 fig, ax = plt.subplots(1, 3, figsize=(20, 5.5), gridspec_kw={'width_ratios': [1, 1, 1.7]})
-fig.suptitle('2. Where new households come from, and what the household series can tell us',
-             fontsize=12)
+fig.suptitle('2. Where new households come from. Caveat: between censuses, households are consent-derived; '
+             'the relationship is partly mechanical', fontsize=12)
 
 a = ax[0]
 dP, dS = HR['dP_hist'], HR['dS_hist']
@@ -208,11 +207,12 @@ a.plot(xx / 1e3, lr.intercept + lr.slope * xx, color='black', lw=1.3,
 late = [y for y in YH if y > HR['years_fit'][-1]]
 dP_l, dS_l = pop_h.diff().loc[late], S_h.diff().loc[late]
 a.scatter(dP_l / 1e3, dS_l, facecolor='none', edgecolor='#c0392b', s=60, zorder=4,
-          label=f'{late[0]}-{late[-1]} (households = lagged consents)')
+          label=f'{late[0]}-{late[-1] % 100:02d}: consent-derived, no census check')
 for y, off in ((2024, (6, 5)), (2025, (-30, -12))):
     a.annotate(str(y), (dP_l[y] / 1e3, dS_l[y]), xytext=off, textcoords='offset points')
 a.axhline(0, color='black', lw=0.7)
-a.set_title('Household size vs arrivals\nbetween censuses: housing supply meets migration, not behaviour')
+a.set_title('Household size vs arrivals (between censuses households are consent-derived;\n'
+            'the relationship is partly mechanical: housing supply meets migration)')
 a.set_xlabel('population growth that year (thousand)')
 a.set_ylabel('change in household size')
 a.legend(fontsize=7)
@@ -225,7 +225,7 @@ a.bar(YH, ratio, color=['#c0392b' if y > 2018 else '#7f8c8d' for y in YH], width
 for y in bases:
     a.axvline(y + 0.5, color='black', lw=0.6, ls=':')
 a.set_title('Stats NZ household growth / previous-year consents\n'
-            'flat within each census period; 0.888 every year since 2019')
+            'flat within each census period; 0.888 every year since 2019 (consent-derived)')
 a.set_ylabel('ratio'); a.set_xlim(1991, 2026)
 
 a = ax[2]
@@ -240,93 +240,80 @@ signed_bars(a, YH, [(l, v / 1e3, c) for l, v, c in parts_h])
 signed_bars(a, PF, [(l, v / 1e3, c) for l, v, c in parts_f], projected=True)
 a.plot(YH, hh_h.diff().loc[YH] / 1e3, color='black', lw=1.5, label='new households (net)')
 a.plot(PF, R['d_hh'][1:] / 1e3, color='black', lw=1.5, ls='--')
-tidy(a, 'New households per year, split by engine (hatched = projected)', 'thousand per year')
+tidy(a, 'New households per year, split by engine (hatched = projected; 2019-25 consent-derived)',
+     'thousand per year')
 a.legend(loc='upper right')
 finish(fig, 'diag_2_household_engines.png')
 
 # =============================================================================
 # FIGURE 3 -- the stock bucket
 # =============================================================================
-fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
-fig.suptitle('3. The stock bucket: built (in scope) = households + vacancy + demolitions'
-             ' - unconsented - retirement villages',
-             fontsize=12)
+fig = plt.figure(figsize=(14, 9))
+gs = fig.add_gridspec(2, 2, height_ratios=[1, 1.15])
+fig.suptitle('3. The stock bucket: built (in scope) = households + vacancy + net replacement'
+             ' - retirement villages', fontsize=12)
 
 cen = B['census']
+SC = B['stock_cal']
 knots = SC['knots']
-a = ax[0, 0]
-a.plot(SC['v'].index, 100 * SC['v'], color='#2c3e50', lw=2, label='vacancy used')
-a.plot(FY, np.full(len(FY), 100 * B['v_forward']), color='#2c3e50', lw=2, ls='--')
+a = fig.add_subplot(gs[0, 0])
+a.plot(SC['v'].index, 100 * SC['v'], color='#2c3e50', lw=2, label='published empty (model; forward held at 2023)')
+a.plot(SCc['v'].index, 100 * SCc['v'], color='#16a085', lw=1.5, ls='-.',
+       label='one definition: pooled 2018/23 empty share (history bars below)')
+_v_imp = 1 - E50['hh'] / (E50['stock'] + E50['stock_join'])     # held rate + unabsorbed surplus / stock
+a.plot(FY, np.full(len(FY), 100 * B['v_forward']), color='#2c3e50', lw=1.2, ls=':', label='held (latest census)')
+a.plot(FY, 100 * _v_imp, color='#2c3e50', lw=2, ls='--', label='implied: held + near-term surplus / stock')
 meas = cen['empty'].notna()
 for y, v in knots.items():
     filled = bool(meas.get(y, False))
-    a.scatter(y, 100 * v, s=45, zorder=5, color='#c0392b' if filled else 'white',
-              edgecolor='#c0392b')
+    a.scatter(y, 100 * v, s=45, zorder=5, color='#c0392b' if filled else 'white', edgecolor='#c0392b')
     a.scatter(y, 100 * cen.loc[y, 'unoccupied'] / cen.loc[y, 'total_private'], marker='x',
               color='#95a5a6', s=40)
-a.scatter([], [], color='#c0392b', label='census empty (measured)')
+a.scatter([], [], color='#c0392b', label='census empty (published)')
 a.scatter([], [], color='white', edgecolor='#c0392b', label='census empty (2013 split applied)')
 a.scatter([], [], marker='x', color='#95a5a6', label='all unoccupied (rejected)')
+a.axvspan(2013, 2018, color='#f1c40f', alpha=0.12, label='2013->2018 empty/away definition break')
 tidy(a, 'Vacancy: empty homes only', '% of private dwellings', xlim=(1985, 2050))
 a.set_ylim(0, None)
-a.legend(loc='lower left')
+a.legend(loc='lower left', fontsize=6.5)
 
-a = ax[0, 1]
+a = fig.add_subplot(gs[0, 1])
+a.plot(SC['stock'].index, SC['stock'] / M6, color='#2c3e50', lw=2, label='dwelling stock')
+M.plot_hist_estimated(a, hh_h, M6, color='#e67e22', label='households', k=B['hh_rebase_k'])
+a.plot(FY, (SF['stock'] + SF['stock_join']) / M6, color='#2c3e50', lw=2, ls='--',
+       label='stock projected (incl. near-term surplus)')
+a.plot(FY, B['households_forecast']['50th'] / M6, color='#e67e22', lw=2, ls='--')
+tidy(a, 'Stock = households / (1 - vacancy) + near-term surplus', 'million')
+a.legend(fontsize=6.5)
+
+a = fig.add_subplot(gs[1, :])
 hist_parts = [('new households', B['d_hh'].loc[YH], C['split']),
-              ('vacancy allowance', SC['allow'].loc[YH], C['vac']),
-              ('vacancy change', SC['change'].loc[YH], C['vchg']),
-              ('demolitions replaced', SC['demol'].loc[YH], C['demol']),
-              ('calibrated residual', SC['uncons'].loc[YH], C['unc']),
-              ('retirement-village units (out of scope)', SC['rv'].loc[YH], C['rv'])]
+              ('vacancy allowance + change', (SCc['allow'] + SCc['change']).loc[YH], C['vac']),
+              ('net replacement (demolition net of unconsented additions)', SCc['net'].loc[YH], C['repl']),
+              ('retirement-village units (out of scope)', SCc['rv'].loc[YH], C['rv'])]
+interval_bars(a, interval_means(hist_parts), 1e3)
+_wave_u = (np.asarray(B['rate_path'], float) - (B['demolition_rate'] + B['unconsented_rate'])) * E50['prev']
 fut_parts = [('', R['d_hh'][1:], C['split']), ('', SF['allow'][1:], C['vac']),
-             ('', np.zeros(len(PF)), C['vchg']), ('', SF['demol'][1:], C['demol']),
-             ('', SF['uncons'][1:], C['unc']), ('', SF['rv'][1:], C['rv']),
-             ('near-term join, 2026-27 excess (A1)', SF['join'][1:], C['join'])]
-signed_bars(a, YH, [(l, v / 1e3, c) for l, v, c in hist_parts])
+             ('', (SF['demol'] + SF['uncons'] - _wave_u)[1:], C['repl']), ('', _wave_u[1:], C['wave']),
+             ('', SF['rv'][1:], C['rv']), ('', SF['join'][1:], C['join'])]
 signed_bars(a, PF, [(l, v / 1e3, c) for l, v, c in fut_parts], projected=True)
-if np.any(SF['join'][1:] != 0):
-    a.bar([], [], color=C['join'], alpha=0.5, label='near-term join, 2026-27 excess (A1)')
+for _lab, _arr, _col in (('replacement: recent redevelopment wave (fading)', _wave_u, C['wave']),
+                         ('near-term market excess', SF['join'], C['join'])):
+    if np.any(np.asarray(_arr)[1:] != 0):              # legend swatch in the projected style
+        a.fill_between([], [], color=_col, alpha=0.5, hatch='//', edgecolor='white', label=_lab)
 built_h = B['hist_built_units'].loc[YH]          # in-scope dwellings built (lagged completions)
 built_f = R['total'][1:] / D_f[1:]
-a.plot(YH, built_h / 1e3, color='black', lw=1.6, label='dwellings built (in scope)')
+a.plot(YH, built_h / 1e3, color='black', lw=1.4, label='dwellings built, in scope (observed, annual)')
 a.plot(PF, built_f / 1e3, color='black', lw=1.6, ls='--')
-tidy(a, 'Dwellings per year (hatched = projected)', 'thousand dwellings')
-a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
-
-a = ax[1, 0]
-a.plot(SC['stock'].index, SC['stock'] / M6, color='#2c3e50', lw=2, label='dwelling stock')
-a.plot(hh_h.index, hh_h / M6, color='#e67e22', lw=2, label='households')
-a.plot(FY, SF['stock'] / M6, color='#2c3e50', lw=2, ls='--')
-a.plot(FY, B['households_forecast']['50th'] / M6, color='#e67e22', lw=2, ls='--')
-tidy(a, 'Stock = households / (1 - vacancy)', 'million')
-mark_anchor(a)
-a.legend()
-
-a = ax[1, 1]
-prev_h = SC['stock'].shift(1).loc[YH]
-net_h = 100 * SC['net'].loc[YH] / prev_h
-a.bar(YH, net_h, color=np.where(net_h < 0, C['unc'], C['demol']), width=0.85)
-prev_f = np.concatenate([[SF['stock'][0]], SF['stock'][:-1]])[1:]
-a.plot(PF, 100 * (SF['demol'][1:] + SF['uncons'][1:]) / prev_f, color='black', lw=1.8,
-       ls='--', label='net, projected')
-a.axhline(100 * B['demolition_rate'], color=C['demol'], ls='--', lw=1.2,
-          label=f"demolition {100 * B['demolition_rate']:.3f}% (BRANZ, fixed)")
-a.axhline(100 * B['unconsented_rate'], color=C['unc'], ls='--', lw=1.2,
-          label=f"calibrated residual {100 * B['unconsented_rate']:+.3f}%")
-a.axhline(0, color='black', lw=0.7)
-for i, r in enumerate(B['census_rates'].itertuples()):     # the calibration basis
-    a.hlines(100 * r.rate, r.y0, r.y1, color='#d35400', lw=2.5,
-             label='census dwelling-count net replacement by interval (calibration basis)' if i == 0 else None)
-a.axvspan(2013, 2018, color='#f1c40f', alpha=0.12, label='2013->2018: census empty/away definition break')
-tidy(a, 'Net turnover = demolition - unconsented additions\n'
-        'single years noisy: vacancy known only at censuses', '% of stock per year')
-a.legend(loc='lower left')
-finish(fig, 'diag_3_stock_bucket.png')
+tidy(a, 'Dwellings per year (history: net replacement is the household-identity residual; the model\'s '
+        'rate comes from census dwelling counts, fig_replacement_rate)', 'thousand dwellings')
+a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.07), ncol=4, fontsize=7)
+finish(fig, 'diag_3_stock_bucket.png', HIST_NOTE)
 
 # =============================================================================
 # FIGURE 4 -- floor area
 # =============================================================================
-fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
+fig, ax = plt.subplots(2, 2, figsize=(14, 9))
 fig.suptitle('4. Floor area built, 1992-2050 (history converted to built: consents x '
              f"{BF:.2f}, completion lag W = {B['lag_w']:.2f} yr)", fontsize=12)
 
@@ -335,7 +322,7 @@ typ_h = B['hist_built_typ_gfa'].loc[YH]
 typ_f = B['evol_typ_total'].loc[PF]
 a.stackplot(YH, [typ_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
 a.stackplot(PF, [typ_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
-tidy(a, 'By typology', 'million m² per year')
+tidy(a, 'By typology (observed annual history)', 'Mm² per year')
 a.legend(loc='upper left')
 
 a = ax[0, 1]
@@ -343,29 +330,24 @@ Dh = D_h.loc[YH]
 hs_raw = B['hist_hs_raw'].loc[YH]
 hist_dem = [('growth (net of consolidation)', B['hist_growth'].loc[YH] - B['hist_avoided'].loc[YH], C['growth']),
             ('house-splitting', hs_raw.clip(lower=0), C['split']),
-            ('extra space per dwelling', B['d_hh'].loc[YH] * (Dh - B['occupied_area_per_dwelling'].loc[YH]), C['extra']),
-            ('vacancy allowance', SC['allow'].loc[YH] * Dh, C['vac']),
-            ('vacancy change', SC['change'].loc[YH] * Dh, C['vchg']),
-            ('demolition replacement', SC['demol'].loc[YH] * Dh, C['demol']),
-            ('calibrated residual', SC['uncons'].loc[YH] * Dh, C['unc']),
-            ('housed in retirement villages', SC['rv'].loc[YH] * Dh, C['rv'])]
-fut_dem = [('', R['growth'][1:], C['growth']), ('', R['hs_pos'][1:], C['split']),
-           ('', R['extra'][1:], C['extra']), ('', R['vac'][1:], C['vac']),
-           ('', np.zeros(len(PF)), C['vchg']), ('', R['repl'][1:], C['demol']),
-           ('', R['unc'][1:], C['unc']), ('redevelopment wave (scenario - long run)', R['wave'][1:], C['wave']),
-           ('', R['rv'][1:], C['rv']),
-           ('near-term join, 2026-27 excess (A1)', R['join'][1:], C['join'])]
-signed_bars(a, YH, [(l, np.asarray(v) / M6, c) for l, v, c in hist_dem])
-signed_bars(a, PF, [(l, v / M6, c) for l, v, c in fut_dem], projected=True)
-if np.any(R['join'][1:] != 0):
-    a.bar([], [], color=C['join'], alpha=0.5, label='near-term join, 2026-27 excess (A1)')
-if np.any(R['wave'][1:] != 0):
-    a.bar([], [], color=C['wave'], alpha=0.5, label='redevelopment wave (scenario - long run)')
-a.plot(YH, B['hist_built_gfa'].loc[YH] / M6, color='black', lw=1.6, label='built (net)')
-a.plot(PF, R['total'][1:] / M6, color='black', lw=1.6, ls='--')
-a.fill_between(PF, R['total'][1:] / M6, (R['total'][1:] + R['hs_avoided'][1:]) / M6, facecolor='none',
-               edgecolor=C['split'], hatch='//', lw=0.6, label='avoided (consolidation; outline, not stacked)')
-tidy(a, 'By demand type (hatched = projected)', 'million m² per year')
+            ('extra space per dwelling', B['d_hh'].loc[YH] * (Dh - B['occupied_area_per_dwelling'].loc[YH]),
+             C['extra']),
+            ('vacancy allowance + change', (SCc['allow'] + SCc['change']).loc[YH] * Dh, C['vac']),
+            ('replacement (net of unconsented additions)', SCc['net'].loc[YH] * Dh, C['repl'])]
+_rv_h = SCc['rv'].loc[YH] * Dh
+# in scope, as in the projection: every band x (1 - RV share) = in-scope total / bands before RV
+groups = []
+for y0, y1, parts in interval_means(hist_dem + [('', _rv_h, C['rv'])]):
+    f = sum(m for _, m, _ in parts) / sum(m for _, m, _ in parts[:-1])
+    groups.append((y0, y1, [(l, m * f, c) for l, m, c in parts[:-1]]))
+interval_bars(a, groups, M6)
+bands, total = B['fig_bands']['gfa']                 # in scope, already in Mm2
+signed_bars(a, PF, [('', v, c) for _, v, c in bands], projected=True)
+for _lab, _col in ((M.WAVE_LABEL, C['wave']), ('near-term market excess', C['join'])):
+    a.fill_between([], [], color=_col, alpha=0.5, hatch='//', edgecolor='white', label=_lab)
+a.plot(YH, B['hist_built_gfa'].loc[YH] / M6, color='black', lw=1.4, label='built, in scope (observed, annual)')
+a.plot(PF, total, color='black', lw=1.6, ls='--')
+tidy(a, 'By demand type, in scope (excl. retirement villages)', 'Mm² per year')
 a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
 
 a = ax[1, 0]
@@ -373,7 +355,8 @@ sh_h, sh_f = B['hist_shares'], B['evolving_gfa_shares']
 for t in TYP:
     a.plot(sh_h.index, 100 * sh_h[t], color=TC[t], lw=2, label=t)
     a.plot(FY, 100 * sh_f[t], color=TC[t], lw=2, ls='--')
-tidy(a, 'Typology mix: damped trend from 2012', '% of floor area')
+tidy(a, ('Typology mix: held at 2022–26 average (reference)' if B['mix_used'] == 'held'
+         else 'Typology mix: damped trend from 2012'), '% of floor area')
 a.set_ylim(0, 100)
 a.legend()
 
@@ -387,14 +370,15 @@ a.plot(FY, D_f, color='black', lw=2, ls='--')
 tidy(a, 'Dwelling size: held at 2023-25 per typology\n(blended falls only because the mix shifts)',
      'm² per dwelling')
 a.legend(ncol=2)
-finish(fig, 'diag_4_floor_area.png')
+finish(fig, 'diag_4_floor_area.png',
+       HIST_NOTE + f" Excludes retirement-village units ({100 * B['rv_share']:.1f}% of new dwellings).")
 
 # =============================================================================
 # FIGURE 5 -- embodied carbon
 # =============================================================================
 MI, SI, TB = B['MAT_INTENSITY'], B['SOIL_INTENSITY'], B['T_BASELINE_2025']
 mats = list(MI.index)
-MC = dict(zip(mats + ['SOIL'], plt.get_cmap('tab10')(np.linspace(0, 1, len(mats) + 1))))
+STYLE = {col: (lab, colour) for col, lab, colour in M.MATERIAL_STYLE}
 fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
 fig.suptitle('5. Embodied carbon (A1-A5, B2, B4, C1-C4 + soil). History estimated with '
              '2025 case-study factors', fontsize=12)
@@ -410,65 +394,36 @@ a.legend(loc='upper left')
 a = ax[0, 1]
 mat_h = pd.DataFrame({m: sum(typ_h[t] * MI.loc[m, t] for t in TYP) for m in mats})
 mat_h['SOIL'] = sum(typ_h[t] * SI[t] for t in TYP)
-fa = B['flow_annual']
-order = list(fa.sum().sort_values(ascending=False).index)
-a.stackplot(YH, [mat_h[m] / M6 for m in order], colors=[MC[m] for m in order],
-            labels=order, alpha=0.95)
-a.stackplot(PF, [fa[m] / M6 for m in order], colors=[MC[m] for m in order], alpha=0.5)
+handles = M.stack_materials(a, YH, mat_h, M6, alpha=0.95)
+M.stack_materials(a, PF, B['flow_annual'], M6, alpha=0.5)
 tidy(a, 'Annual carbon by material (soil = land-use change)', 'kt CO₂e per year')
-a.legend(loc='upper left', ncol=2)
+a.legend(handles=handles, loc='upper left', ncol=2)
 
 a = ax[1, 0]
 fc = B['flow_cum']
-a.stackplot(fc.index, [fc[m] / M6 for m in order], colors=[MC[m] for m in order],
-            labels=order, alpha=0.9)
+a.legend(handles=M.stack_materials(a, fc.index, fc, M6), loc='upper left', ncol=2)
 tidy(a, f'Cumulative carbon 2026-2050: {fc.iloc[-1].sum() / M6:,.0f} kt', 'kt CO₂e',
      xlim=(2026, 2050))
-a.legend(loc='upper left', ncol=2)
 
 a = ax[1, 1]
 bottom = np.zeros(len(TYP))
-for m in mats:
-    v = MI.loc[m, TYP].values
-    a.bar(TYP, v, bottom=bottom, color=MC[m], label=m)
+handles = []
+for col, lab, colour in M.MATERIAL_STYLE:
+    v = np.array([SI[t] for t in TYP]) if col == 'SOIL' else MI.loc[col, TYP].values
+    handles.append(a.bar(TYP, v, bottom=bottom, color=colour, label=lab,
+                         alpha=M.SOIL_ALPHA if col == 'SOIL' else 1.0, **M.EDGE))
     bottom += v
-a.bar(TYP, [SI[t] for t in TYP], bottom=bottom, color=MC['SOIL'], hatch='//',
-      edgecolor='white', label='SOIL')
 for k, t in enumerate(TYP):
     a.text(k, TB[t] + 8, f'{TB[t]:.0f}', ha='center', fontweight='bold')
 a.set_title('Case-study intensity (16 buildings), constant over time')
 a.set_ylabel('kg CO₂e per m²')
-a.legend(loc='upper left', fontsize=7)
+a.legend(handles=handles[::-1], loc='upper left', fontsize=7)
 finish(fig, 'diag_5_carbon.png')
 
 # =============================================================================
-# FIGURE 6 -- checks
+# APPENDIX (3b) -- which vacancy definition is plausible
 # =============================================================================
-fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
-fig.suptitle('6. Checks', fontsize=12)
-
-a = ax[0, 0]
-recon = sum(np.asarray(v, dtype=float) for _, v, _ in hist_dem)
-obs = (B['hist_built_units'].loc[YH] * D_h.loc[YH]).values   # built dwellings x realised size
-a.plot(YH, obs / M6, color='black', lw=2.5, label='observed (built)')
-a.plot(YH, recon / M6, color='#e74c3c', ls='', marker='o', ms=4, label='sum of demand parts')
-a.set_title(f'History reproduced by the decomposition\n'
-            f'max |difference| = {np.abs(recon - obs).max():.1e} m²')
-a.set_ylabel('million m² per year')
-a.legend()
-
-a = ax[0, 1]
-chg = 100 * B['hist_total_gfa'].pct_change().loc[YH].values
-step = 100 * (R['total'][3] / R['total'][2] - 1)      # 2027 (observed pipeline) -> 2028 (model)
-a.hist(chg, bins=14, color='#bdc3c7', edgecolor='white')
-a.axvline(step, color='#c0392b', lw=2.5, label=f'2027->2028 handover (observed pipeline -> model): {step:+.1f}%')
-a.axvline(np.median(chg), color='black', lw=1, ls='--', label=f'median year: {np.median(chg):+.1f}%')
-a.set_title('Is the model handover (2027->2028) normal?\nhistorical year-to-year changes, 1992-2025')
-a.set_xlabel('% change from previous year')
-a.set_ylabel('number of years')
-a.legend()
-
-a = ax[1, 0]
+fig, a = plt.subplots(figsize=(7, 5))
 cen_all = (cen['unoccupied'] / cen['total_private']).to_dict()
 v_all = pd.Series(np.interp(B['years_hist'].astype(float), list(cen_all), list(cen_all.values())),
                   index=B['years_hist'])
@@ -480,27 +435,15 @@ unc_all = (net_all - B['demolition_rate'] * prev_all).loc[YC].mean()
 unc_emp = SC['uncons'].loc[YC].mean()
 nb = built_h.mean()
 bars = a.bar(['empty homes only\n(used)', "incl. 'residents away'\n(rejected)"],
-             [unc_emp, unc_all], color=[C['unc'], '#e74c3c'])
+             [unc_emp, unc_all], color=['#16a085', '#e74c3c'])
 for bb, v in zip(bars, [unc_emp, unc_all]):
     a.text(bb.get_x() + bb.get_width() / 2, v / 2, f'{v:,.0f}/yr\n({100 * v / nb:+.0f}% of building)',
            ha='center', va='center', fontsize=9, color='white', fontweight='bold')
 a.axhline(0, color='black', lw=0.7)
-a.set_title(f"Which vacancy definition is plausible?\nunconsented additions each one requires, 1992-{B['calib_end']}")
+a.set_title(f"Which vacancy definition is plausible?\nunconsented additions each one requires, 1992-{B['calib_end']} "
+            f"(assumes the BRANZ demolition rate)")
 a.set_ylabel('dwellings per year')
-
-a = ax[1, 1]
-tot_mat = MI[TYP].sum() + pd.Series(SI)[TYP]
-x = np.arange(len(TYP))
-a.bar(x - 0.2, tot_mat.values, 0.4, color='#34495e', label='materials + soil')
-a.bar(x + 0.2, [TB[t] for t in TYP], 0.4, color='#e67e22', label='intensity used')
-a.set_xticks(x)
-a.set_xticklabels(TYP)
-dev = max(abs(tot_mat[t] - TB[t]) for t in TYP)
-a.set_title(f'Carbon factors add up (internal consistency of the CSVs only)\n'
-            f'max |difference| = {dev:.3f} kg/m²')
-a.set_ylabel('kg CO₂e per m²')
-a.legend()
-finish(fig, 'diag_6_checks.png')
+finish(fig, 'diag_3b_appendix_vacancy_definition.png')
 
 # ---------------------------------------------------------------------------
 # Console summary
@@ -508,12 +451,12 @@ finish(fig, 'diag_6_checks.png')
 print("=" * 70)
 print(f" Built floor area 2026-2050: {R['total'][1:].sum() / M6:.2f} million m2")
 print(f" Embodied carbon  2026-2050: {B['carbon_total_typ'].iloc[1:].sum().sum() / M6:,.1f} kt CO2e")
-print(f" 2027 -> 2028 handover step: {step:+.1f}%  (median historical year {np.median(chg):+.1f}%)")
-print(f" History reconstruction: max |difference| {np.abs(recon - obs).max():.1e} m2")
 print(f" Household size 2050: {S_f[-1]:.3f} | vacancy {100 * B['v_forward']:.2f}% | "
-      f"demolition {100 * B['demolition_rate']:.3f}% | unconsented {100 * B['unconsented_rate']:+.3f}%")
+      f"net replacement (long run) {100 * (B['demolition_rate'] + B['unconsented_rate']):.3f}%")
+print(f" History bars: census intervals {', '.join(f'{a}-{b}' for a, b in INTERVALS)}; "
+      f"pooled empty share {100 * POOLED_SHARE:.1f}%")
 print("=" * 70)
 if SAVE_FIGURES:
-    print(f"Saved diag_1 ... diag_6 in {FIG_DIR}/.")
+    print(f"Saved diag_2 ... diag_5 and diag_3b in {FIG_DIR}/.")
 
 plt.show()

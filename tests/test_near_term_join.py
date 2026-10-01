@@ -1,4 +1,4 @@
-"""A1: near-term join (nowcast + three channels) and replacement scenarios.
+"""Near-term market excess, the 2026 nowcast estimators and replacement scenarios.
 
 Pure-function tests on SYNTHETIC inputs (nothing here enters data/ or the
 model), plus the identities the central run must satisfy under the join.
@@ -11,7 +11,6 @@ import engine
 from test_identities import close
 
 YEARS = np.arange(2025, 2051)
-SHARES = dict(redevelopment=0.5, vacancy=0.2, households=0.3)
 
 
 # ------------------------------------------------------ replacement_path ----
@@ -25,38 +24,6 @@ def test_replacement_path_scenarios():
     assert np.all(np.diff(p) < 0) and np.all(p > long)
     with pytest.raises(ValueError):
         engine.replacement_path('S4', long, recent, YEARS)
-
-
-# --------------------------------------------------------- join_channels ----
-@pytest.mark.parametrize('mode', ['permanent', 'reverting_linear'])
-@pytest.mark.parametrize('horizon', [3, 5, 10])
-def test_join_channels_conserve_and_draw_down(mode, horizon):
-    excess = {2026: 1000.0, 2027: -250.0}                    # negative excess treated symmetrically
-    join, ch = engine.join_channels(YEARS, excess, SHARES, horizon, mode)
-    tot = sum(excess.values())
-    assert close(ch['redevelopment'].sum(), SHARES['redevelopment'] * tot)
-    assert close(ch['vacancy'].sum(), SHARES['vacancy'] * tot)
-    assert close(ch['vacancy_drawdown'].sum(), -SHARES['vacancy'] * tot)     # fully drawn down
-    back = ch['household_reversion'].sum()
-    assert close(back, 0.0 if mode == 'permanent' else -SHARES['households'] * tot)
-    kept = SHARES['redevelopment'] + (SHARES['households'] if mode == 'permanent' else 0.0)
-    assert close(join.sum(), kept * tot)
-    # the drawdown of 2026's vacancy runs over exactly `horizon` years after 2026
-    j26, c26 = engine.join_channels(YEARS, {2026: 1000.0}, SHARES, horizon, mode)
-    nz = np.nonzero(c26['vacancy_drawdown'])[0]
-    assert list(YEARS[nz]) == list(range(2027, 2027 + horizon))
-
-
-def test_join_channels_geometric_household_reversion():
-    rho = 0.68
-    join, ch = engine.join_channels(YEARS, {2026: 1000.0}, SHARES, 5, 'reverting', rho)
-    h = SHARES['households'] * 1000.0
-    rev = ch['household_reversion']
-    i = list(YEARS).index(2026)
-    remaining = h + np.cumsum(rev)[i:]                       # extra households left, 2026..2050
-    assert close(remaining, h * rho ** np.arange(len(remaining)))
-    with pytest.raises(ValueError):
-        engine.join_channels(YEARS, {2026: 1000.0}, SHARES, 5, 'reverting', None)
 
 
 # ------------------------------------------------------------ nowcast ----
@@ -82,7 +49,7 @@ def test_nowcast_year_methods_exact_on_synthetic_seasonality():
         engine.nowcast_year(s, 2026, 'arima', (2010, 2025))
 
 
-# -------------------------------------------------------- nowcast_join ----
+# ------------------------------------------------------------ toy forward ----
 def _toy_forward(join=None, join_redev=None):
     n = len(YEARS)
     pop = np.linspace(5.3e6, 6.3e6, n)
@@ -93,71 +60,35 @@ def _toy_forward(join=None, join_redev=None):
                           {'Detached': 400.0}, {'Detached': 300.0}, join=join, join_redev=join_redev)
 
 
-def test_nowcast_join_reproduces_observed_pipeline():
-    """With the join, 2026 completions (all categories) equal the observed-
-    implied value, and 2027 completions equal W x c C_2026 + (1 - W) x the
-    requirement net of the 2026 drawdown."""
-    c, W, C25, C26 = 0.94, 0.5, 38000.0, 42000.0
+# ------------------------------------------------ market excess (v1.1) ----
+@pytest.mark.parametrize('mode,absorption', [('redevelopment', 0.0), ('surplus', 0.2), ('surplus', 0.0)])
+def test_market_excess_rule(mode, absorption):
     E0 = _toy_forward()
-    join, info = engine.nowcast_join(E0, C25, C26, c, W, SHARES, 5, 'permanent')
-    E1 = _toy_forward(join, info['channels']['redevelopment'])
+    R = engine.requirement(E0)
+    b26, rho = R[1] + 5000.0, 0.6
+    join, ji = engine.market_excess(E0, b26, rho, '2027', mode, absorption)
+    E1 = _toy_forward(join, ji['redev'])
     built = engine.requirement(E1)
-    assert close(built[1], c * ((1 - W) * C26 + W * C25))
-    R0 = engine.requirement(E0)
-    j26, _ = engine.join_channels(YEARS, {2026: info['e26']}, SHARES, 5, 'permanent')
-    assert close(built[2], W * c * C26 + (1 - W) * (R0[2] + j26[2]))
-    # stock identity with the join
+    assert close(built[1], b26)                                    # 2026 = observed
+    gap = b26 - R[2]
+    k = np.arange(len(R))
+    if mode == 'redevelopment':
+        assert close(built[2:] - R[2:], gap * rho ** (k[2:] - 1))  # no absorption, no payback
+        assert close(E1['stock_join'], np.zeros(len(R)))            # stock-neutral
+    else:
+        assert close(E1['stock_join'][1:], ji['surplus'][1:])       # surplus adds to the stock
+        if absorption == 0.0:
+            assert close(built[2:] - R[2:], gap * rho ** (k[2:] - 1))
     net = E1['demol'] + E1['unc'] + E1['join_redev']
     assert close(np.diff(E1['stock'] + E1['stock_join']), (built - net)[1:])
 
 
-# ----------------------------------------------------- excess_channels ----
-def _toy_census():
-    census = pd.DataFrame({'total_private': [1_850_000.0, 2_010_000.0],
-                           'empty': [95_000.0, 108_000.0]}, index=[2018, 2023])
-    rates = pd.DataFrame([dict(y0=2018, y1=2023, rate=0.0036, stock_years=9.6e6)])
-    pop = {2018: 4.87e6, 2023: 5.16e6}
-    return census, rates, pop
-
-
-def test_excess_channels_shares_and_scenario_dependence():
-    census, rates, pop = _toy_census()
-    S = pd.Series({2018: 2.78, 2023: 2.76})
-    ev1 = engine.excess_channels(census, rates, pop, S, 0.00113, 2018, 2023)
-    assert close(sum(ev1['shares'].values()), 1.0)
-    assert close(ev1['levels']['redevelopment'], (0.0036 - 0.00113) * 9.6e6)
-    ev2 = engine.excess_channels(census, rates, pop, S, 0.0036, 2018, 2023)   # S2: in requirement
-    assert ev2['levels']['redevelopment'] == 0.0
-    assert close(ev2['levels']['vacancy'], ev1['levels']['vacancy'])
-    # household channel excluded when census household size did NOT fall faster than the shape
-    S_fast = pd.Series({2018: 2.78, 2023: 2.60})
-    ev3 = engine.excess_channels(census, rates, pop, S_fast, 0.00113, 2018, 2023)
-    assert not ev3['households_included'] and ev3['levels']['households'] == 0.0
-
-
-# ------------------------------------------------- central run, A1 on ----
-def test_central_run_2026_completions_equal_nowcast(B):
-    if B['_join_mode'] != 'nowcast':
-        pytest.skip('near-term join not in use')
-    for pct in ('5th', '50th', '95th'):
-        E = B['engine_out'][pct]
-        ji = B['join_info'][pct]
-        assert close(engine.requirement(E)[1], ji['O26'])
-
-
-# ------------------------------------------------ population nowcast (A1) ----
-def test_population_nowcast_shift_and_catchup():
-    """The observed 2026 growth shifts the level by (observed - projected);
-    with catch-up over N years the level rejoins the projection from 2026 + N."""
+def test_population_nowcast_is_a_permanent_level_shift():
+    """Observed 2026 growth shifts every later population level by (observed - projected)."""
     from conftest import run_boss
-    base = run_boss(NOWCAST_POPULATION=False)
-    perm = run_boss(POP_NOWCAST_CATCHUP_YEARS=None)
-    cu = run_boss(POP_NOWCAST_CATCHUP_YEARS=5)
+    base, now = run_boss(NOWCAST_POPULATION=False), run_boss()
     fy = list(base['forecast_years'])
-    i26, i31 = fy.index(2026), fy.index(2031)
+    i26 = fy.index(2026)
     P = lambda B: B['df_forecast']['PopTotal_50th'].values
-    shift = perm['pop_nowcast']['shift']
-    assert close(P(perm)[i26:] - P(base)[i26:], np.full(len(fy) - i26, shift))
-    assert close(P(cu)[i26] - P(base)[i26], shift)
-    assert close(P(cu)[i31:], P(base)[i31:])
-    assert close(P(cu)[:i26], P(base)[:i26])
+    assert close(P(now)[i26:] - P(base)[i26:], np.full(len(fy) - i26, now['pop_nowcast']['shift']))
+    assert close(P(now)[:i26], P(base)[:i26])

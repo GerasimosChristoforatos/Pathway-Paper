@@ -629,7 +629,7 @@ INPUT_LABELS = {
     'rho': 'Deviation persistence, rho',
 }
 OUTPUT_LABELS = {
-    'GFA_Mm2': ('Built floor area, 2026-2050', 'million m²', 1),
+    'GFA_Mm2': ('Built floor area, 2026-2050', 'Mm²', 1),
     'carbon_kt': ('Embodied carbon, 2026-2050', 'kt CO₂e', 1),
     'upfront_kt': ('Upfront carbon (A1-A5 + soil)', 'kt CO₂e', 1),
     'RV_units': ('Retirement-village units built', 'thousand units', 1e3),
@@ -696,7 +696,7 @@ def figures():
     fig, ax = plt.subplots(1, 2, figsize=(15, 5.2))
     fig.suptitle('Monte Carlo 1: joint uncertainty over time '
                  f'({len(draws):,} Latin hypercube draws)', fontsize=12)
-    for a, k, hist, lab in [(ax[0], 'gfa', hist_gfa, 'million m² per year'),
+    for a, k, hist, lab in [(ax[0], 'gfa', hist_gfa, 'Mm² per year'),
                             (ax[1], 'carbon', hist_c, 'kt CO₂e per year')]:
         hy = hist.index[hist.index >= 2005]
         a.plot(hy, hist.loc[hy] / 1e6, color='black', lw=2, label='observed (built basis)')

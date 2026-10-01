@@ -2,4 +2,6 @@
 
 2026 consents (last_12_months, observed only): 40,908; 2026 building = 0.95 x consents = 38,863 dwellings (all categories).
 Requirement 2026 22,103 -> excess +16,760; requirement 2027 28,889 -> gap_ref +9,974 (basis 2027), fading at rho = 0.52.
-Booked as redevelopment: +27,479 dwellings over 2026-2050 (scenario S3).
+Booked as surplus: +27,479 dwellings over 2026-2050 (scenario S3).
+Implied vacancy (1 - households / (stock + excess)): peak 6.52% in 2031, 6.36% in 2050 (held rate 5.39%); census 1986-2023 range 5.08-8.09% (empty dwellings; before 2013 the empty share of unoccupied is estimated, and 2013->2018 is a definitional break).
+Sensitivity, booked as redevelopment: implied net removals peak at 23,041 in 2026 (default: 6,281).

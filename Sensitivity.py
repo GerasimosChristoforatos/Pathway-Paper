@@ -41,11 +41,11 @@ GROUP_COLORS = {'Population': '#2E6DB4', 'Household size': '#E67E22', 'Household
 
 # (group, label, {Boss setting: value})
 CASES = [   # v1.1 lean set; the full v1.0.2 table is in the history (tag v1.0.2). All old options stay as flags.
-    ('Replacement scenario', 'S1: long-run rate, shares held (lower bound)', dict(REPLACEMENT_SCENARIO='S1')),
-    ('Replacement scenario', 'S2: 2018-2023 rate persists + mix trend (upper bound)', dict(REPLACEMENT_SCENARIO='S2')),
+    ('Replacement scenario', 'Low (S1): long-run rate, shares held', dict(REPLACEMENT_SCENARIO='S1')),
+    ('Replacement scenario', 'Storyline: intensification continues (S2 + mix trend)', dict(REPLACEMENT_SCENARIO='S2')),
     ('Replacement scenario', 'S3: half-life 5 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
     ('Replacement scenario', 'S3: half-life 15 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=15.0)),
-    ('Replacement scenario', 'S2 with shares held (maximum floor-area case)',
+    ('Replacement scenario', 'High (S2): 2018-2023 rate persists, shares held',
      dict(REPLACEMENT_SCENARIO='S2', MIX_MODE='held')),
     ('Typology mix', 'S3-10 with the damped mix trend', dict(MIX_MODE='trend')),
     ('Household size', 'Stats NZ Low projection variant (S)', dict(HH_SIZE_VARIANT='Low')),
@@ -61,8 +61,8 @@ CASES = [   # v1.1 lean set; the full v1.0.2 table is in the history (tag v1.0.2
      dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.20)),
     ('Near-term market excess', 'Temporary surplus with payback, absorption 0.10/yr',
      dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.10)),
-    ('Near-term market excess', 'Surplus permanent (no absorption)',
-     dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.0)),
+    ('Near-term market excess', 'Booked as redevelopment, stock-neutral (v1.1)',
+     dict(NEAR_TERM_MODE='redevelopment')),
     ('Near-term market excess', 'Gap measured against the 2026 requirement', dict(NEAR_TERM_GAP_REF='2026')),
     ('Near-term market excess', 'Three-channel join (v1.0.2)', dict(NEAR_TERM_JOIN='nowcast')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),

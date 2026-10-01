@@ -301,7 +301,7 @@ PARAMS = (['z_pop'] + (['b', 'rho'] if Boss.HH_SIZE_RESPONSE else [])
 # the Sobol indices and figures).
 MC_SCENARIOS = [('S3-10', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0)),
                 ('S1', dict(REPLACEMENT_SCENARIO='S1')),
-                ('S2', dict(REPLACEMENT_SCENARIO='S2'))]
+                ('S2', dict(REPLACEMENT_SCENARIO='S2'))]   # S2 = storyline (mix trend), not 'high'
 
 
 class TwoPiece:

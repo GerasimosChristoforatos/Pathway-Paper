@@ -109,10 +109,15 @@ def main():
     txt = (f"New Zealand is projected to build {b['gfa_Mm2']:.1f} million m² of new residential floor area in "
            f"2026-2050 on the reference path, embodying {b['carbon_kt'] / 1e3:.1f} Mt CO₂e over the life cycle, "
            f"of which {b['upfront_kt'] / 1e3:.1f} Mt is upfront (materials A1-A5 plus soil).")
-    if 'S1' in rows and 'S2' in rows:
-        txt += (f" How fast existing dwellings are replaced is the largest structural uncertainty: holding the "
-                f"long-run rate gives {rows['S1']['GFA_Mm2']:.1f} million m², holding the 2018-2023 rate gives "
-                f"{rows['S2']['GFA_Mm2']:.1f} million m².")
+    if 'S1' in rows and 'S2-held' in rows:
+        txt += (f" How fast existing dwellings are replaced is the largest structural uncertainty: the low case "
+                f"(long-run rate) gives {rows['S1']['GFA_Mm2']:.1f} million m², the high case (the 2018-2023 rate "
+                f"persisting, shares held) {rows['S2-held']['GFA_Mm2']:.1f} million m².")
+    if 'S2' in rows and 'S2-held' in rows and 'S3-10' in rows:
+        _off = (rows['S2-held']['GFA_Mm2'] - rows['S2']['GFA_Mm2']) / (rows['S2-held']['GFA_Mm2'] - rows['S3-10']['GFA_Mm2'])
+        txt += (f" Under the intensification storyline (S2 with the mix trend), smaller dwellings offset most of the "
+                f"extra redevelopment: {rows['S2']['GFA_Mm2']:.1f} million m² against {rows['S2-held']['GFA_Mm2']:.1f} "
+                f"with shares held, i.e. {100 * _off:.0f}% of the high case's gain over the reference.")
     ref_mc = os.path.join(OUT, 'montecarlo_summary_S3-10.csv')
     if os.path.exists(ref_mc):
         r = pd.read_csv(ref_mc, index_col=0).loc['GFA_Mm2']
@@ -134,13 +139,13 @@ def main():
           '| path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | of which soil | '
           'carbon excl. soil | upfront carbon (kt CO₂e) |', '|---|---|---|---|---|---|---|']
     base = rows.get('S3-10', {}).get('GFA_Mm2', b['gfa_Mm2'])
-    for k, lab in (('S1', 'S1 lower bound: long-run replacement, shares held'),
+    for k, lab in (('S1', 'Low: S1 long-run replacement, shares held'),
                    ('S3-5', 'S3, half-life 5 yr, shares held'),
-                   ('S3-10', 'S3, half-life 10 yr, shares held (reference)'),
+                   ('S3-10', 'Reference: S3 half-life 10 yr, shares held'),
                    ('S3-15', 'S3, half-life 15 yr, shares held'),
-                   ('S2', 'S2 upper bound: 2018-2023 replacement + damped mix trend ("intensification continues")'),
-                   ('S3-10-trend', 'Sensitivity: S3-10 with the damped mix trend (v1.0 mix)'),
-                   ('S2-held', 'Sensitivity: S2 with shares held (maximum floor-area case)')):
+                   ('S2-held', 'High: S2 2018-2023 replacement, shares held'),
+                   ('S2', 'Storyline: intensification continues (S2 + damped mix trend)'),
+                   ('S3-10-trend', 'Sensitivity: S3-10 with the damped mix trend (v1.0 mix)')):
         if k in rows:
             r = rows[k]
             up = f"{r['upfront_kt']:,.0f}" if 'upfront_kt' in r else 'n/a'
@@ -154,6 +159,8 @@ def main():
         for p in mcs:
             s = pd.read_csv(p, index_col=0)
             name = os.path.basename(p)[len('montecarlo_summary_'):-4]
+            name = {'S1': 'low (S1)', 'S3-10': 'reference (S3-10)',
+                    'S2': 'storyline: intensification continues (S2 + trend)'}.get(name, name)
             for row, lab in (('GFA_Mm2', 'floor area (Mm²)'), ('carbon_kt', 'carbon (kt)'),
                              ('upfront_kt', 'upfront (kt)')):
                 if row in s.index:
@@ -179,15 +186,22 @@ def main():
               f"gap_ref x rho^(t-2026), with gap_ref = building 2026 - requirement 2027 = {nj['gap_ref']:+,.0f} and "
               f"rho = {nj['rho']:.2f} (the estimated persistence of departures from the calibrated identity). The "
               f"2027 requirement is used because the 2026 requirement is depressed by the one-off 2026 population "
-              f"shortfall. The excess is booked as stock-neutral redevelopment (extra replacement of existing "
-              f"stock, no soil, no absorption, no payback), {nj['join_2026_2050']:+,.0f} dwellings over 2026-2050, "
-              f"on top of whichever replacement scenario runs.",
-              '', 'Caveats: booking all of the excess as redevelopment implies extra removals that cannot be '
-                  'checked against a national demolition count; over 2018-2023 part of the excess went to vacancy '
-                  'and household formation instead. rho is estimated on the calibrated identity, not on market '
-                  'cycles. Sensitivities: a temporary surplus with payback (absorption 0.20 or 0.10 a year), a '
-                  'permanent surplus, the gap measured against the 2026 requirement, and the v1.0.2 three-channel '
-                  'join.']
+              f"shortfall. The excess is STOCK-ADDING: the extra dwellings join the stock as additional vacancy "
+              f"that is not absorbed (no payback), soil applies (new footprints) and removals stay on the scenario "
+              f"path; {nj['join_2026_2050']:+,.0f} dwellings over 2026-2050, on top of whichever replacement "
+              f"scenario runs."
+              + (f" Implied vacancy (1 - households / (stock + excess)) peaks at {100 * nj['vacancy']['peak']:.2f}% "
+                 f"in {nj['vacancy']['peak_year']} and is {100 * nj['vacancy']['v_2050']:.2f}% in 2050, against "
+                 f"{100 * nj['vacancy']['census_min']:.2f}-{100 * nj['vacancy']['census_max']:.2f}% at the censuses "
+                 f"{nj['vacancy']['census_years']} (pre-2013 values on the earlier empty definition)."
+                 if 'vacancy' in nj else ''),
+              '', 'Caveats: a permanent surplus assumes the extra vacancy is never absorbed; over 2018-2023 part of '
+                  'the excess went to redevelopment and household formation instead. rho is estimated on the '
+                  'calibrated identity, not on market cycles. Sensitivities: booking as stock-neutral redevelopment'
+                  + (f" (implied net removals then peak at {nj['redevelopment_sensitivity']['peak_removals']:,.0f} in "
+                     f"{nj['redevelopment_sensitivity']['peak_year']})" if 'redevelopment_sensitivity' in nj else '')
+                  + ', payback (absorption 0.20 or 0.10 a year), the gap measured against the 2026 requirement, '
+                  'and the v1.0.2 three-channel join.']
     elif nj:
         ch = nj['channels_2026_2050']
         L += ['', f"The near-term join adds the building observed above the model's requirement in 2026-27 "
@@ -281,6 +295,24 @@ def main():
                   f"{r1['gap']:+,.0f} = population {r1['population']:+,.0f} + pipeline {r1['pipeline']:+,.0f} + "
                   f"2026 consents above requirement {r1['residual']:+,.0f}."]
 
+    # ---- reality checks ----
+    rcj = load('reality_checks.json')
+    if rcj:
+        names = dict(built='dwellings completed', removals_net='net removals', ppl_per_dw='people per new dwelling',
+                     m2_per_res='floor area per additional resident', S='household size', size='new-dwelling size',
+                     vacancy='vacancy rate')
+        L += ['', '## Reality checks (projection vs 1991-2025 range; outputs/reality_checks.md)', '']
+        out = [(k, q, r) for k, d in rcj.items() for q, r in d.items() if r['years_outside']]
+        if not out:
+            L.append('Every checked quantity stays within the 1991-2025 range in every scenario.')
+        for k, q, r in out:
+            L.append(f"- {k}: {names.get(q, q)} outside the range in {r['years_outside']} years from {r['first_outside']} "
+                     f"(max {r['max_above_pct']:.1f}% above / {r['max_below_pct']:.1f}% below).")
+        L += ['', 'Notes: household size below the historical minimum is expected from Stats NZ\'s ageing projection '
+                  '(the household-size shape keeps falling as the population ages). In the intensification storyline '
+                  '(S2 + mix trend), average new-dwelling size below the historical minimum is intrinsic to that '
+                  'storyline: the mix moves towards townhouses and apartments.']
+
     # ---- sensitivity ----
     sens = os.path.join(OUT, 'sensitivity_oat.csv')
     if os.path.exists(sens):
@@ -306,7 +338,7 @@ def main():
          ('LITERATURE', 'Material carbon factors: 16 NZ case studies (Christoforatos & Pickering 2025)'),
          ('LITERATURE', 'Soil 58.77 kg CO2e/m2 footprint, zero on replacement (Christoforatos, Pickering & Schipper 2026)'),
          ('JUDGEMENT', f'Replacement: S3 fades with half-life {BB.S3_HALF_LIFE:g} yr (reference); S1 and S2 bound it'),
-         ('JUDGEMENT', 'Near-term market excess booked as stock-neutral redevelopment, fading at rho'),
+         ('JUDGEMENT', 'Near-term market excess: stock-adding vacancy, never absorbed, fading at rho'),
          ('JUDGEMENT', 'Mix: held shares in S1/S3; damped trend (phi 0.8, about 4 years of trend) in S2'),
          ('JUDGEMENT', f'Household size after 2043: secant slope tapered to zero over {BB.S_TAPER_YEARS} yr'),
          ('JUDGEMENT', 'No completion lag (same-year consents x 0.95)')]

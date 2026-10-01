@@ -1,5 +1,5 @@
 """
-VALIDATION -- run by run_all.py after every change; results logged in CHANGELOG.md
+VALIDATION -- run by run_all.py; results in outputs/validation.md and metrics.json
 =================================================================================
 Two checks, both DESCRIPTIVE. Nothing here is used to set or tune a parameter.
 

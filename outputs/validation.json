@@ -4,23 +4,23 @@
       "origin": 2006,
       "test": "2007-2023",
       "method": "constant",
-      "rate_pct": 0.024422932920106673,
+      "rate_pct": 0.042568495011835225,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 391522.3670607347,
-      "actual": 455109.26040824264,
-      "error_pct": -13.971786311372602
+      "predicted": 397184.9984045007,
+      "actual": 460543.85,
+      "error_pct": -13.757398257625042
     },
     {
       "origin": 2006,
       "test": "2007-2023",
       "method": "recent",
-      "rate_pct": -0.08165890645675634,
+      "rate_pct": -0.04918096472507808,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 358417.7244146084,
-      "actual": 455109.26040824264,
-      "error_pct": -21.245785222410085
+      "predicted": 368553.01864804735,
+      "actual": 460543.85,
+      "error_pct": -19.974391440023055
     },
     {
       "origin": 2006,
@@ -28,54 +28,54 @@
       "method": "linked",
       "rate_pct": null,
       "n_intervals": 3,
-      "linked_b": 2.4498851888441435,
-      "predicted": 473242.27815048955,
-      "actual": 455109.26040824264,
-      "error_pct": 3.9843218584436624
+      "linked_b": 2.535779558120975,
+      "predicted": 481694.0617075615,
+      "actual": 460543.85,
+      "error_pct": 4.592442545386621
     },
     {
       "origin": 2006,
       "test": "2007-2023",
       "method": "dwelling_count",
-      "rate_pct": -0.004074318316691156,
+      "rate_pct": 0.008616466939112947,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 382629.31501589215,
-      "actual": 455109.26040824264,
-      "error_pct": -15.925834013426677
+      "predicted": 386589.69045112195,
+      "actual": 460543.85,
+      "error_pct": -16.058006104929646
     },
     {
       "origin": 2006,
       "test": "2007-2023",
       "method": "reference_s3_10",
-      "rate_pct": 0.026931141063633143,
+      "rate_pct": 0.0759462129178216,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 388023.2734148287,
-      "actual": 455109.26040824264,
-      "error_pct": -14.7406332565583
+      "predicted": 398302.9130925057,
+      "actual": 460543.85,
+      "error_pct": -13.514660310303627
     },
     {
       "origin": 2013,
       "test": "2014-2023",
       "method": "constant",
-      "rate_pct": 0.02916494680122401,
+      "rate_pct": 0.03441969703097537,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 272162.42332995456,
-      "actual": 333208.2490875398,
-      "error_pct": -18.320622591053382
+      "predicted": 273162.06284309004,
+      "actual": 340887.55,
+      "error_pct": -19.867398254031265
     },
     {
       "origin": 2013,
       "test": "2014-2023",
       "method": "recent",
-      "rate_pct": 0.03787567032633805,
+      "rate_pct": 0.019450966855821962,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 273819.5113061636,
-      "actual": 333208.2490875398,
-      "error_pct": -17.823309580121972
+      "predicted": 270314.4804670853,
+      "actual": 340887.55,
+      "error_pct": -20.702741866904397
     },
     {
       "origin": 2013,
@@ -83,54 +83,54 @@
       "method": "linked",
       "rate_pct": null,
       "n_intervals": 4,
-      "linked_b": 0.7694229557336949,
-      "predicted": 317474.5941595824,
-      "actual": 333208.2490875398,
-      "error_pct": -4.721868372419524
+      "linked_b": 0.9614288084556545,
+      "predicted": 330309.57379802584,
+      "actual": 340887.55,
+      "error_pct": -3.1030690918380954
     },
     {
       "origin": 2013,
       "test": "2014-2023",
       "method": "dwelling_count",
-      "rate_pct": 0.027948033065554007,
+      "rate_pct": 0.024807534070170296,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 271930.9232583878,
-      "actual": 333208.2490875398,
-      "error_pct": -18.390098683617328
+      "predicted": 271333.48917503713,
+      "actual": 340887.55,
+      "error_pct": -20.403813757634403
     },
     {
       "origin": 2013,
       "test": "2014-2023",
       "method": "reference_s3_10",
-      "rate_pct": 0.08702185035030859,
+      "rate_pct": 0.05467630073030984,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 279702.3364547183,
-      "actual": 333208.2490875398,
-      "error_pct": -16.05779952307379
+      "predicted": 275262.8531140869,
+      "actual": 340887.55,
+      "error_pct": -19.251127501110876
     },
     {
       "origin": 2018,
       "test": "2019-2023",
       "method": "constant",
-      "rate_pct": 0.10054955788227526,
+      "rate_pct": 0.11757691045303474,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 177352.99648893802,
-      "actual": 200146.48343334574,
-      "error_pct": -11.388402410776589
+      "predicted": 179024.79821653798,
+      "actual": 202189.44999999998,
+      "error_pct": -11.456904296174708
     },
     {
       "origin": 2018,
       "test": "2019-2023",
       "method": "recent",
-      "rate_pct": 0.3685766823338031,
+      "rate_pct": 0.42980651363193223,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 203668.7850320842,
-      "actual": 200146.48343334574,
-      "error_pct": 1.7598618463419147
+      "predicted": 209680.53215010947,
+      "actual": 202189.44999999998,
+      "error_pct": 3.7049817139862995
     },
     {
       "origin": 2018,
@@ -138,32 +138,32 @@
       "method": "linked",
       "rate_pct": null,
       "n_intervals": 5,
-      "linked_b": 1.146026052605232,
-      "predicted": 238447.3606911112,
-      "actual": 200146.48343334574,
-      "error_pct": 19.136422784325703
+      "linked_b": 1.3929816291950832,
+      "predicted": 253530.12230568385,
+      "actual": 202189.44999999998,
+      "error_pct": 25.3923596437321
     },
     {
       "origin": 2018,
       "test": "2019-2023",
       "method": "dwelling_count",
-      "rate_pct": 0.05650923926994142,
+      "rate_pct": 0.06745576981910466,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 173028.9725143251,
-      "actual": 200146.48343334574,
-      "error_pct": -13.54883206231875
+      "predicted": 174103.7390470123,
+      "actual": 202189.44999999998,
+      "error_pct": -13.89078953080276
     },
     {
       "origin": 2018,
       "test": "2019-2023",
       "method": "reference_s3_10",
-      "rate_pct": 0.16315842202116962,
+      "rate_pct": 0.22670672917483609,
       "n_intervals": null,
       "linked_b": null,
-      "predicted": 181556.0475246841,
-      "actual": 200146.48343334574,
-      "error_pct": -9.28841495976258
+      "predicted": 186836.55931686392,
+      "actual": 202189.44999999998,
+      "error_pct": -7.5933193760288065
     }
   ],
   "hindcast_stock": [
@@ -171,102 +171,102 @@
       "origin": 2006,
       "test": "2006-2023",
       "method": "long run",
-      "rate_pct": -0.004074318316691156,
-      "predicted": 444081.6929913129,
+      "rate_pct": 0.008616466939112947,
+      "predicted": 448707.73835238005,
       "actual": 383046.0,
-      "error_pct": 15.934298489297083
+      "error_pct": 17.141998180996552
     },
     {
       "origin": 2006,
       "test": "2006-2023",
       "method": "recent interval",
-      "rate_pct": 0.026931141063633143,
-      "predicted": 434622.54775361816,
+      "rate_pct": 0.0759462129178216,
+      "predicted": 428166.78012249304,
       "actual": 383046.0,
-      "error_pct": 13.46484436689539
+      "error_pct": 11.779467772145647
     },
     {
       "origin": 2013,
       "test": "2013-2023",
       "method": "long run",
-      "rate_pct": 0.027948033065554007,
-      "predicted": 310942.12994089804,
+      "rate_pct": 0.024807534070170296,
+      "predicted": 323851.3349921881,
       "actual": 266661.0,
-      "error_pct": 16.60577660058953
+      "error_pct": 21.446831367237085
     },
     {
       "origin": 2013,
       "test": "2013-2023",
       "method": "recent interval",
-      "rate_pct": 0.08702185035030859,
-      "predicted": 299905.07476534636,
+      "rate_pct": 0.05467630073030984,
+      "predicted": 318270.8047199601,
       "actual": 266661.0,
-      "error_pct": 12.4667929563552
+      "error_pct": 19.354088044355965
     },
     {
       "origin": 2018,
       "test": "2018-2023",
       "method": "long run",
-      "rate_pct": 0.05650923926994142,
-      "predicted": 187443.4887187037,
+      "rate_pct": 0.06745576981910466,
+      "predicted": 192982.15367817425,
       "actual": 158106.0,
-      "error_pct": 18.555582152925076
+      "error_pct": 22.05871610070096
     },
     {
       "origin": 2018,
       "test": "2018-2023",
       "method": "recent interval",
-      "rate_pct": 0.16315842202116962,
-      "predicted": 177125.1003006353,
+      "rate_pct": 0.22670672917483609,
+      "predicted": 177574.50392228772,
       "actual": 158106.0,
-      "error_pct": 12.02933494025229
+      "error_pct": 12.31357691819901
     }
   ],
   "net_replacement_crosscheck": {
-    "dhe_rate_long": 0.0011984706078904024,
-    "census_rate_long": 0.0011258085209542295,
+    "dhe_rate_long": 0.0014080106923792923,
+    "census_rate_long": 0.0013411321976770367,
     "dhe_rates": [
       {
         "y0": 1991,
         "y1": 1996,
-        "rate": 0.0006000742693750219
+        "rate": 0.000781967395744364
       },
       {
         "y0": 1996,
         "y1": 2001,
-        "rate": -0.000978757155665908
+        "rate": -0.001249624112007726
       },
       {
         "y0": 2001,
         "y1": 2006,
-        "rate": 0.0003036037183242069
+        "rate": 0.0007911244110531003
       },
       {
         "y0": 2006,
         "y1": 2013,
-        "rate": 0.0007730041395623881
+        "rate": 0.00044499450874376905
       },
       {
         "y0": 2013,
         "y1": 2018,
-        "rate": 0.0016896341463414634
+        "rate": 0.0023454711751662964
       },
       {
         "y0": 2018,
         "y1": 2023,
-        "rate": 0.004033185292294979
+        "rate": 0.004637605866556495
       }
     ],
     "dhe_weight_mean": 0.8888410964125001,
     "dhe_weight_sd": 0.004744106757798261,
     "dhe_post2023_period": "2023-06-30..2026-03-31",
-    "dhe_post2023_rate": 4.975563437644156e-06
+    "dhe_post2023_rate": -6.695511292635854e-06
   },
   "model_method": "dwelling_count",
   "check_2026": {
     "data_end": "2026-07-01",
-    "model_built_all_2026": 29084.83151255023,
-    "model_consent_equivalent_2026": 24445.87373096065,
+    "model_built_all_2026": 30497.8144928445,
+    "model_consent_equivalent_2026": 32102.962624046842,
     "status": "observed",
     "months": [
       1,
@@ -279,8 +279,8 @@
     ],
     "observed_ytd": 23916.0,
     "seasonal_share": 0.5612383713207713,
-    "model_expected_ytd": 13719.962358277582,
-    "ratio_observed_to_model": 1.7431534705028475,
+    "model_expected_ytd": 18017.414457691644,
+    "ratio_observed_to_model": 1.3273824641243264,
     "last12_months": "2025-08-01..2026-07-01",
     "observed_last12": 40908.0,
     "model_settings": {

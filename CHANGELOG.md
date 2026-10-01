@@ -1647,3 +1647,90 @@ Change in census private dwellings from the origin to 2023, predicted as complet
 Run on the model WITHOUT any observed 2026 input (settings: {'NEAR_TERM_JOIN': 'carried_deviation', 'NOWCAST_POPULATION': False}), so the check stays out of sample.
 
 Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 13,720 (annual 24,446 x seasonal share 0.561); observed / model = 1.743. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.
+
+## v1.1 simplified baseline
+
+Defaults: no completion lag (Little's law is a sensitivity); 2026 = 0.95 x consents over the latest 12 observed months (August 2025 - July 2026), dwellings and GFA by typology, no seasonal estimation, to be replaced by calendar 2026 when published; observed 2026 population kept (shortfall permanent; catch-up is a flag). The near-term join is replaced by one rule, 'near-term market excess', applied on top of any replacement scenario: the 2026 excess over the requirement, then gap_ref = building 2026 - requirement 2027 (the 2026 requirement is depressed by the one-off population shortfall) fading at rho_other, booked as stock-neutral redevelopment without soil. Sensitivities: surplus with payback (absorption 0.20 and 0.10), permanent surplus, the gap against the 2026 requirement, and the three-channel join. The household-size taper starts from the 2038-43 secant slope (PCHIP taper is a sensitivity). The MC is lean: it samples population z (with household size), dwelling size, the carbon bootstrap and the completion rate; 5,000 draws per scenario; Sobol on the reference only; fan and Sobol figures. Sensitivity is reduced to about 20 rows (the full v1.0.2 table is in the history). The draft adds an assumptions table and the near-term rule with caveats. Fix: the join band's soil fraction now includes the 2026 observed-GFA adjustment. Run note: the single full run stopped at the scenario-comparison step (an old key); after the fix, only the remaining reporting steps were re-run. Before/after: outputs/step_report.csv and outputs/replacement_scenarios.md.
+
+| metric | before | after | change |
+|---|---|---|---|
+| Built floor area 2026-2050, central run (Mm2) | 87.50 | 94.22 | +6.72 (+7.68%) |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 32,747 | 35,053 | +2.31e+03 (+7.04%) |
+| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 23,543 | 25,142 | +1.6e+03 (+6.79%) |
+| Soil carbon (land-use change), central run (kt CO2e) | 2,874 | 2,888 | +13.3 (+0.46%) |
+| Embodied carbon excluding soil, central run (kt CO2e) | 29,873 | 32,165 | +2.29e+03 (+7.67%) |
+| 2025 -> 2026 step in built floor area (%) | +12.3 | +9.7 | -2.62 |
+| Household size 2050, central run | 2.656 | 2.654 | -0.00282 (-0.11%) |
+| Retirement-village floor area 2026-2050, out of scope (Mm2) | 4.59 | 4.95 | +0.354 (+7.72%) |
+| Near-term: 2026 building above requirement (dwellings) | +14,542 | +14,437 | -105 (-0.72%) |
+| Near-term: gap_ref (market excess) / 2027 excess (old join) | +6,888 | +7,742 | +854 (+12.40%) |
+| Near-term: net dwellings added 2026-2050 | +0 | +22,758 | +2.28e+04 |
+| MC floor area p5 (Mm2) | 65.76 | 74.04 | +8.28 (+12.58%) |
+| MC floor area p50 (Mm2) | 86.81 | 93.60 | +6.79 (+7.83%) |
+| MC floor area mean (Mm2) | 87.29 | 93.85 | +6.56 (+7.52%) |
+| MC floor area p95 (Mm2) | 110.67 | 114.42 | +3.75 (+3.39%) |
+| MC carbon p5 (kt) | 24,319 | 27,197 | +2.88e+03 (+11.83%) |
+| MC carbon p50 (kt) | 32,452 | 34,730 | +2.28e+03 (+7.02%) |
+| MC carbon mean (kt) | 32,670 | 34,908 | +2.24e+03 (+6.85%) |
+| MC carbon p95 (kt) | 41,786 | 43,156 | +1.37e+03 (+3.28%) |
+| Central run percentile in MC, floor area | 51.9 | 52.0 | +0.16 |
+| Central run percentile in MC, carbon | 52.4 | 52.4 | 0 |
+| Hindcast error, origin 2006, model method (%) | -15.9 | -16.1 | -0.132 (+0.83%) |
+| Hindcast error, origin 2013, model method (%) | -18.4 | -20.4 | -2.01 (+10.95%) |
+| Hindcast error, origin 2018, model method (%) | -13.5 | -13.9 | -0.342 (+2.52%) |
+| Hindcast error, origin 2006, reference S3-10 (%) | -14.7 | -13.5 | +1.23 (-8.32%) |
+| Hindcast error, origin 2013, reference S3-10 (%) | -16.1 | -19.3 | -3.19 (+19.89%) |
+| Hindcast error, origin 2018, reference S3-10 (%) | -9.3 | -7.6 | +1.7 (-18.25%) |
+| 2026 model consent-equivalents (all categories) | 24,446 | 32,103 | +7.66e+03 (+31.32%) |
+| 2026 observed / model consents, year to date | 1.743 | 1.327 | -0.416 (-23.85%) |
+
+Validation (outputs/validation.md):
+
+Net replacement source in use: `dwelling_count` (window 1991-2023).
+
+### (A) Rolling-origin hindcast of dwellings built (descriptive; 3 origins)
+
+Actual households and vacancy fed in; only the net-replacement term is predicted. Error = predicted / actual - 1.
+
+| origin | test years | method | rate used (%/yr) | predicted | actual | error |
+|---|---|---|---|---|---|---|
+| 2006 | 2007-2023 | constant | +0.043 | 397,185 | 460,544 | -13.8% |
+| 2006 | 2007-2023 | recent | -0.049 | 368,553 | 460,544 | -20.0% |
+| 2006 | 2007-2023 | linked | linked: b = 2.54 on 3 intervals | 481,694 | 460,544 | +4.6% |
+| 2006 | 2007-2023 | dwelling_count | +0.009 | 386,590 | 460,544 | -16.1% |
+| 2006 | 2007-2023 | reference_s3_10 | +0.076 | 398,303 | 460,544 | -13.5% |
+| 2013 | 2014-2023 | constant | +0.034 | 273,162 | 340,888 | -19.9% |
+| 2013 | 2014-2023 | recent | +0.019 | 270,314 | 340,888 | -20.7% |
+| 2013 | 2014-2023 | linked | linked: b = 0.96 on 4 intervals | 330,310 | 340,888 | -3.1% |
+| 2013 | 2014-2023 | dwelling_count | +0.025 | 271,333 | 340,888 | -20.4% |
+| 2013 | 2014-2023 | reference_s3_10 | +0.055 | 275,263 | 340,888 | -19.3% |
+| 2018 | 2019-2023 | constant | +0.118 | 179,025 | 202,189 | -11.5% |
+| 2018 | 2019-2023 | recent | +0.430 | 209,681 | 202,189 | +3.7% |
+| 2018 | 2019-2023 | linked | linked: b = 1.39 on 5 intervals | 253,530 | 202,189 | +25.4% |
+| 2018 | 2019-2023 | dwelling_count | +0.067 | 174,104 | 202,189 | -13.9% |
+| 2018 | 2019-2023 | reference_s3_10 | +0.227 | 186,837 | 202,189 | -7.6% |
+
+### (B) Rolling-origin hindcast of the 2023 census private-dwelling stock (dwelling-count identity; descriptive)
+
+Change in census private dwellings from the origin to 2023, predicted as completions - rate x stock-years with the rate calibrated up to the origin.
+
+| origin | interval | rate | rate used (%/yr) | predicted change | actual change | error |
+|---|---|---|---|---|---|---|
+| 2006 | 2006-2023 | long run | +0.009 | 448,708 | 383,046 | +17.1% |
+| 2006 | 2006-2023 | recent interval | +0.076 | 428,167 | 383,046 | +11.8% |
+| 2013 | 2013-2023 | long run | +0.025 | 323,851 | 266,661 | +21.4% |
+| 2013 | 2013-2023 | recent interval | +0.055 | 318,271 | 266,661 | +19.4% |
+| 2018 | 2018-2023 | long run | +0.067 | 192,982 | 158,106 | +22.1% |
+| 2018 | 2018-2023 | recent interval | +0.227 | 177,575 | 158,106 | +12.3% |
+
+### (C, D) Cross-checks of the net replacement rate
+
+- Census dwelling counts, 1991-2023: +0.134%/yr.
+- Same identity on the Stats NZ DHE private-dwelling series at 31 March (bases = census counts): +0.141%/yr.
+- Stats NZ's intercensal weighting after the 2023 base: DHE dwelling growth = 0.8888 x consents lagged four quarters (sd 0.0047); with this model's completion rate and lag this implies net replacement of -0.001%/yr over 2023-06-30..2026-03-31. This is Stats NZ's assumption, not an observation.
+
+### 2026 out-of-sample check against observed consents
+
+Run on the model WITHOUT any observed 2026 input (settings: {'NEAR_TERM_JOIN': 'carried_deviation', 'NOWCAST_POPULATION': False}), so the check stays out of sample.
+
+Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 18,017 (annual 32,103 x seasonal share 0.561); observed / model = 1.327. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.

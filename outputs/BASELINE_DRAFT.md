@@ -4,7 +4,7 @@ Every number below is read from the run outputs. Reference path: net replacement
 
 ## Summary
 
-New Zealand is projected to build 89.3 million m² of new residential floor area in 2026-2050 on the reference path, embodying 33.5 Mt CO₂e over the life cycle, of which 24.1 Mt is upfront (materials A1-A5 plus soil). How fast existing dwellings are replaced is the largest structural uncertainty: the low case (long-run rate) gives 83.0 million m², the high case (the 2018-2023 rate persisting, shares held) 98.5 million m². Under the intensification storyline (S2 with the mix trend), smaller dwellings offset most of the extra redevelopment: 90.6 million m² against 98.5 with shares held, i.e. 86% of the high case's gain over the reference. Within the reference path, joint uncertainty in the inputs gives a 90% interval of 69.5-109.1 million m² (median 88.6, mean 88.9). Outside the MC, carbon-factor and soil bounds on the reference carbon (33,528 kt): case-study jackknife 32,259-34,712 kt, single case study 25,775-40,705 kt, soil order 31,878-40,510 kt. Population uncertainty alone (Stats NZ 5th-95th percentiles) spans 66.5-112.1 million m². The joint interval is narrower than the population-only range because each population draw also moves household size along the matching Stats NZ Low/High variant: low-population variants come with smaller households (an older age structure), so the number of households varies less than population, whereas the population-only range holds household size on the Medium shape. Upfront carbon (24.1 Mt) is the quantity comparable with a 2026-2050 budget; the later life-cycle stages are booked in the construction year but emitted mostly after 2050.
+New Zealand is projected to build 89.3 million m² of new residential floor area in 2026-2050 on the reference path, embodying 33.5 Mt CO₂e over the life cycle, of which 24.1 Mt is upfront (materials A1-A5 plus soil). How fast existing dwellings are replaced is the largest structural uncertainty: the low case (long-run rate) gives 83.0 million m², the high case (the 2018-2023 rate persisting, shares held) 98.5 million m². Under the intensification storyline (S2 with the mix trend), smaller dwellings offset most of the extra redevelopment: 90.6 million m² against 98.5 with shares held, i.e. 86% of the high case's gain over the reference. Within the reference path, joint uncertainty in the inputs gives a 90% interval of 69.5-109.1 million m² (median 88.6, mean 88.9). Outside the MC, carbon-factor and soil bounds on the reference carbon (33,527 kt): case-study jackknife 32,259-34,712 kt, single case study 25,775-40,705 kt, soil order 31,878-40,510 kt. Population uncertainty alone (Stats NZ 5th-95th percentiles) spans 66.5-112.1 million m². The joint interval is narrower than the population-only range because each population draw also moves household size along the matching Stats NZ Low/High variant: low-population variants come with smaller households (an older age structure), so the number of households varies less than population, whereas the population-only range holds household size on the Medium shape. Upfront carbon (24.1 Mt) is the quantity comparable with a 2026-2050 budget; the later life-cycle stages are booked in the construction year but emitted mostly after 2050.
 
 ## Headline, 2026-2050 (median demographics)
 
@@ -23,14 +23,14 @@ Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% 
 | scenario | output | mean | median | 5th | 95th |
 |---|---|---|---|---|---|
 | low (S1) | floor area (Mm²) | 82.7 | 82.4 | 63.8 | 102.4 |
-| low (S1) | carbon (kt) | 31,285.3 | 31,110.3 | 23,985.0 | 39,015.5 |
-| low (S1) | upfront (kt) | 22,609.8 | 22,512.2 | 17,363.7 | 28,133.4 |
+| low (S1) | carbon (kt) | 31,285.1 | 31,110.1 | 23,984.7 | 39,015.3 |
+| low (S1) | upfront (kt) | 22,609.7 | 22,512.1 | 17,363.6 | 28,133.3 |
 | storyline: intensification continues (S2 + trend) | floor area (Mm²) | 90.1 | 89.9 | 71.7 | 109.5 |
-| storyline: intensification continues (S2 + trend) | carbon (kt) | 34,032.4 | 33,910.5 | 26,750.8 | 41,758.0 |
-| storyline: intensification continues (S2 + trend) | upfront (kt) | 24,823.6 | 24,725.7 | 19,521.6 | 30,397.7 |
+| storyline: intensification continues (S2 + trend) | carbon (kt) | 34,031.9 | 33,910.0 | 26,750.2 | 41,757.3 |
+| storyline: intensification continues (S2 + trend) | upfront (kt) | 24,823.2 | 24,725.3 | 19,521.2 | 30,397.3 |
 | reference (S3-10) | floor area (Mm²) | 88.9 | 88.6 | 69.5 | 109.1 |
-| reference (S3-10) | carbon (kt) | 33,374.8 | 33,204.2 | 25,883.9 | 41,356.7 |
-| reference (S3-10) | upfront (kt) | 24,042.5 | 23,916.9 | 18,651.9 | 29,721.7 |
+| reference (S3-10) | carbon (kt) | 33,374.6 | 33,203.9 | 25,883.6 | 41,356.4 |
+| reference (S3-10) | upfront (kt) | 24,042.3 | 23,916.7 | 18,651.7 | 29,721.5 |
 
 ## Why the floor area is built (reference path, median)
 
@@ -38,14 +38,14 @@ Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% 
 |---|---|---|---|
 | Growth (net of consolidation) | 42.73 | 47.8% | 16,347 |
 | House-splitting | 2.31 | 2.6% | 883 |
-| Extra space per dwelling | 25.42 | 28.5% | 9,726 |
+| Extra space per dwelling | 25.42 | 28.5% | 9,725 |
 | Vacancy allowance | 4.01 | 4.5% | 1,535 |
 | Demolition replacement | 11.31 | 12.7% | 3,862 |
 | Calibrated stock residual (long run) | -2.89 | -3.2% | -986 |
 | Redevelopment wave (scenario - long run) | 7.88 | 8.8% | 2,691 |
 | Near-term market excess | 3.86 | 4.3% | 1,474 |
 | Housed in RV units (out of scope) | -5.34 | -6.0% | -2,004 |
-| **Total** | **89.31** | 100% | **33,528** |
+| **Total** | **89.31** | 100% | **33,527** |
 
 ### Near-term rule: "near-term market excess"
 
@@ -70,7 +70,7 @@ Caveats: a permanent surplus assumes the extra vacancy is never absorbed; over 2
 | TIMBER | 7,680 | 22.9% |
 | STEEL | 5,935 | 17.7% |
 | CONCRETE (incl. reinforced) | 5,502 | 16.4% |
-| OTHERS | 5,447 | 16.2% |
+| OTHERS | 5,446 | 16.2% |
 | PLASTICS & PAINT | 4,226 | 12.6% |
 | SOIL | 3,039 | 9.1% |
 | PLASTERBOARD | 1,699 | 5.1% |
@@ -85,7 +85,7 @@ Caveats: a permanent surplus assumes the extra vacancy is never absorbed; over 2
 | C1-C4 | 4,873 |
 | soil (land-use change) | 3,039 |
 | **upfront (A1-A5 + soil)** | **24,133** |
-| **whole-life** | **33,528** |
+| **whole-life** | **33,527** |
 
 Later stages (B, C) are booked in the construction year (static LCA convention).
 

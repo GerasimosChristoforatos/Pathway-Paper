@@ -1,3 +1,0 @@
-completion 0.95: rate_net 0.1543% dev 5,494 rho 0.505 -> GFA 76.713, carbon 29,708.0
-completion 0.92: rate_net 0.1072% dev 5,386 rho 0.489 -> GFA 73.204, carbon 28,349.0
-Boss: rate 0.15431699744181057 dev 5493.70139593495 GFA 76.7127348459791

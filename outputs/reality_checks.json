@@ -1,0 +1,182 @@
+{
+  "S1": {
+    "built": {
+      "hist_min": 12978.9,
+      "hist_max": 47061.1,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "removals_net": {
+      "hist_min": -1478.2800000000018,
+      "hist_max": 6041.309999999998,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "ppl_per_dw": {
+      "hist_min": 0.08591683465197775,
+      "hist_max": 4.025208433150871,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "m2_per_res": {
+      "hist_min": 32.85911235955056,
+      "hist_max": 1705.3210125,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "S": {
+      "hist_min": 2.6571388012813415,
+      "hist_max": 2.7904761904761903,
+      "years_outside": 18,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.3470954166008178,
+      "first_outside": 2033
+    },
+    "size": {
+      "hist_min": 139.08718595847193,
+      "hist_max": 205.03022702424593,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "vacancy": {
+      "hist_min": 5.075373310444934,
+      "hist_max": 8.090044277034487,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    }
+  },
+  "S3-10": {
+    "built": {
+      "hist_min": 12978.9,
+      "hist_max": 47061.1,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "removals_net": {
+      "hist_min": -1478.2800000000018,
+      "hist_max": 6041.309999999998,
+      "years_outside": 2,
+      "max_above_pct": 3.9743856822015866,
+      "max_below_pct": 0.0,
+      "first_outside": 2026
+    },
+    "ppl_per_dw": {
+      "hist_min": 0.08591683465197775,
+      "hist_max": 4.025208433150871,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "m2_per_res": {
+      "hist_min": 32.85911235955056,
+      "hist_max": 1705.3210125,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "S": {
+      "hist_min": 2.6571388012813415,
+      "hist_max": 2.7904761904761903,
+      "years_outside": 18,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.3470954166008178,
+      "first_outside": 2033
+    },
+    "size": {
+      "hist_min": 139.08718595847193,
+      "hist_max": 205.03022702424593,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "vacancy": {
+      "hist_min": 5.075373310444934,
+      "hist_max": 8.090044277034487,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    }
+  },
+  "S2": {
+    "built": {
+      "hist_min": 12978.9,
+      "hist_max": 47061.1,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "removals_net": {
+      "hist_min": -1478.2800000000018,
+      "hist_max": 6041.309999999998,
+      "years_outside": 25,
+      "max_above_pct": 35.276038564168346,
+      "max_below_pct": 0.0,
+      "first_outside": 2026
+    },
+    "ppl_per_dw": {
+      "hist_min": 0.08591683465197775,
+      "hist_max": 4.025208433150871,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "m2_per_res": {
+      "hist_min": 32.85911235955056,
+      "hist_max": 1705.3210125,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    },
+    "S": {
+      "hist_min": 2.6571388012813415,
+      "hist_max": 2.7904761904761903,
+      "years_outside": 18,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.3470954166008178,
+      "first_outside": 2033
+    },
+    "size": {
+      "hist_min": 139.08718595847193,
+      "hist_max": 205.03022702424593,
+      "years_outside": 24,
+      "max_above_pct": 0.0,
+      "max_below_pct": 8.25597753441496,
+      "first_outside": 2027
+    },
+    "vacancy": {
+      "hist_min": 5.075373310444934,
+      "hist_max": 8.090044277034487,
+      "years_outside": 0,
+      "max_above_pct": 0.0,
+      "max_below_pct": 0.0,
+      "first_outside": null
+    }
+  },
+  "handover": {
+    "step_2026_2027_pct": -12.270936980460778,
+    "hist_median_pct": 5.074801222605774,
+    "hist_min_pct": -29.500318217834696,
+    "hist_max_pct": 31.321104416686673
+  }
+}

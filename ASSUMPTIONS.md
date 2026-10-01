@@ -10,13 +10,11 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Long-run net replacement window | 1991-2023 | DATA: census private-dwelling counts and consents |
 | Demolition rate (split only) | 0.135%/yr | LITERATURE: BRANZ SR214 |
 | Completion rate | 0.95 (band 0.92-0.96) | LITERATURE: bounds from Jones et al. 2024 (citation to verify) |
-| Completion lag | littles_law | DATA: Little's law W = L / lambda (a lower bound) |
-| Near-term join | nowcast (seasonal_share) | DATA (observed consents); method stated |
-| Excess channels | calibrated on 2018-2023 | DATA, ONE census interval |
-| Household channel | reverting_linear | JUDGEMENT (author decision) |
-| Vacancy drawdown | 5 yr | JUDGEMENT; 3 and 10 as sensitivities |
+| Completion lag | 0 | DATA: Little's law W = L / lambda (a lower bound) |
+| Near-term rule | market_excess: 2026 building observed (last_12_months) | DATA (observed consents); method stated |
+| Near-term excess after 2026 | gap vs the 2027 requirement, fading at rho; booked as surplus, absorption 0 | JUDGEMENT (author decision); rho estimated; redevelopment, payback and gap-vs-2026 as sensitivities |
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
-| Household-size shape | Stats NZ Medium, anchored 2023, tail taper | DATA (2018-base projections; N4 open) |
+| Household-size shape | Stats NZ Medium, anchored 2023, tail hermite_clamped | DATA (2018-base projections; N4 open) |
 | Vacancy forward | latest census value held | DATA: census 2023 (2018 empty count unrated, F1) |
 | Typology damping phi | 0.8 | JUDGEMENT: ≈4 years of trend applied by 2050 |
 | Mix trend window | 2012-2025 | DATA |
@@ -30,79 +28,52 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 |---|---|
 | `ANCHOR_SMOOTHING_YEARS` | `3` |
 | `CALIB_START_YEAR` | `1992` |
-| `CENSUS_SOURCE` | `'hou018_private'` |
-| `CHANNEL_POP_DATE` | `'march_quarter'` |
-| `COMPLETION_LAG` | `'littles_law'` |
+| `CENSUS_UC_CORRECTION` | `True` |
+| `COMPLETION_LAG` | `0` |
 | `COMPLETION_RATE` | `0.95` |
 | `COMPLETION_RATE_BAND` | `(0.92, 0.96)` |
-| `CONSENT_SHEET` | `'Sheet1'` |
-| `CONSENT_SOURCE` | `'statsnz_release'` |
-| `CONSUMPTION_BASIS` | `'stock_vacancy'` |
 | `DAMPING_PHI` | `0.8` |
-| `DEMAND_BASIS` | `'bim_olf'` |
 | `DEMOLITION_CALIB_START` | `1992` |
 | `DEMOLITION_RATE` | `0.00135` |
 | `DEMOLITION_RATE_BAND` | `(0.001, 0.003)` |
-| `DEVIATION_PERSISTENCE` | `'estimated'` |
-| `DWELLING_COUNT_SOURCE` | `'typology_sum'` |
 | `DWELLING_SIZE_REF` | `(2023, 2025)` |
-| `EWMA_ADJUST` | `True` |
-| `EWMA_SPAN` | `15` |
-| `EXCESS_CHANNELS` | `'calibrated'` |
-| `FLOOR_HOUSEHOLD_DECLINE` | `True` |
-| `HH_CENSUS_REBASE` | `'occupied_plus_away'` |
 | `HH_REBASE_BASE` | `'2018-06-30'` |
 | `HH_REBASE_CENSUS` | `'2023-06-30'` |
-| `HH_SIZE_RESPONSE` | `False` |
 | `HH_SIZE_VARIANT` | `'Medium'` |
-| `HOUSEHOLD_CHANNEL` | `'reverting_linear'` |
-| `HOUSEHOLD_METHOD` | `'matched_size'` |
 | `HOUSEHOLD_SHEET_HIST` | `'Table 2'` |
 | `HOUSEHOLD_SHEET_PROJ` | `'Table 1'` |
 | `HOUSESPLIT_COLOR` | `'#e67e22'` |
 | `JOIN_COLOR` | `'#c0392b'` |
-| `JOIN_LABEL` | `'Near-term join: 2026-27 building above requirement, by channel (A1)'` |
+| `JOIN_LABEL` | `'Near-term market excess (2026 observed building above requirement, fading at rho)'` |
 | `MIX_HELD_WINDOW` | `(2022, 2026)` |
 | `MIX_MODE` | `'storyline'` |
-| `NEAR_TERM_JOIN` | `'nowcast'` |
-| `NET_REPLACEMENT_SOURCE` | `'dwelling_count'` |
+| `NEAR_TERM_ABSORPTION` | `0.0` |
+| `NEAR_TERM_GAP_REF` | `'2027'` |
+| `NEAR_TERM_JOIN` | `'market_excess'` |
+| `NEAR_TERM_MODE` | `'surplus'` |
 | `NET_REPLACEMENT_WINDOW` | `(1991, 2023)` |
-| `NOWCAST_GFA` | `True` |
-| `NOWCAST_METHOD` | `'seasonal_share'` |
+| `NOWCAST_METHOD` | `'last_12_months'` |
 | `NOWCAST_POPULATION` | `True` |
 | `NOWCAST_SEASONAL_YEARS` | `(2010, 2025)` |
-| `OTHER_BOOTSTRAP_BLOCK` | `4` |
-| `OTHER_BOOTSTRAP_CI` | `(5, 95)` |
-| `OTHER_BOOTSTRAP_N` | `20000` |
-| `OTHER_BOOTSTRAP_SEED` | `42` |
-| `OTHER_CASE` | `'central'` |
-| `POP_NOWCAST_CATCHUP_YEARS` | `None` |
-| `POP_NOWCAST_SOURCE` | `'dpe_quarterly'` |
-| `POP_PERCENTILE_METHOD` | `'published_levels'` |
 | `POP_SHEET_HIST` | `'Table 1'` |
 | `POP_SHEET_PROJ` | `'Table 1'` |
 | `POP_SIZE_PAIR_SHEET` | `'Table 1'` |
 | `PRE2013_EMPTY_SHARE_BAND` | `0.05` |
 | `RECENT_INTERVAL` | `(2018, 2023)` |
 | `REPLACEMENT_SCENARIO` | `'S3'` |
+| `REPL_COLOR` | `'#34495e'` |
+| `REPL_LABEL` | `'Replacement: long-run background (net of unconsented additions)'` |
 | `RV_COLOR` | `'#b8a0d0'` |
-| `RV_FLOOR_AREA_IN_SCOPE` | `False` |
-| `RV_IN_STOCK` | `True` |
-| `RV_LABEL` | `'Housed in retirement villages (out of carbon scope)'` |
 | `RV_SHARE_REF` | `(2016, 2025)` |
 | `S3_HALF_LIFE` | `10.0` |
 | `SAVE_FIGURES` | `False` |
 | `SHOW_PLOTS` | `True` |
+| `SOIL_ALPHA` | `0.55` |
 | `SOIL_ON_REPLACEMENT` | `False` |
-| `STOCK_CALIB_END` | `'last_census_base'` |
 | `S_ANCHOR_YEAR` | `2023` |
-| `S_TAIL` | `'taper'` |
+| `S_TAIL` | `'hermite_clamped'` |
 | `S_TAPER_YEARS` | `5` |
 | `TREND_WINDOW_START` | `2012` |
-| `UNCONSENTED_COLOR` | `'#16a085'` |
-| `UNCONSENTED_LABEL` | `'Calibrated residual (unconsented additions if < 0; losses beyond BRANZ rate if > 0)'` |
-| `USE_GROSS_BASIS_OLF` | `False` |
-| `VACANCY_DRAWDOWN_YEARS` | `5` |
 | `VERBOSE` | `False` |
 | `WAVE_COLOR` | `'#d35400'` |
-| `WAVE_LABEL` | `'Redevelopment wave: net replacement above the long-run rate (scenario)'` |
+| `WAVE_LABEL` | `'Replacement: recent redevelopment wave (fading)'` |

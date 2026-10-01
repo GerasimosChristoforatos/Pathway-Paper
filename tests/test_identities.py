@@ -155,10 +155,41 @@ def test_boss_is_deterministic_and_leaks_no_state(B):
     assert np.array_equal(B2['carbon_total_typ'].values, B['carbon_total_typ'].values)
 
 
-def test_figure_band_totals_equal_typology_totals(B):
-    """Figs 3-5: the signed sum of the demand bands (the dashed total) equals the
-    typology total, every year 2026-2050, for floor area and carbon."""
+def test_figure_bands_in_scope_sum_to_total(B):
+    """boss_04-06, diag_4: the in-scope demand bands (each scaled by 1 - RV share) are
+    non-negative and add up exactly to the typology total, every year 2026-2050, for
+    floor area and carbon."""
     for key, ref in (('gfa', B['evol_typ_total'].sum(axis=1).values[1:] / 1e6),
                      ('carbon', B['carbon_total_typ'].sum(axis=1).values[1:] / 1e6)):
-        bands, _ = B['fig_bands'][key]
-        assert close(sum(v for _, v, _ in bands), ref)
+        bands, total = B['fig_bands'][key]
+        assert close(total, ref, rel=1e-12)
+        assert all(np.all(np.asarray(v) >= 0) for _, v, _ in bands)
+        assert close(sum(v for _, v, _ in bands), ref, rel=1e-12)
+
+
+def test_total_line_sits_on_top_of_the_stack(B):
+    """boss_04-06, diag_4: the plotted total line equals the top of the stacked bands
+    every year (annual floor area, annual and cumulative carbon)."""
+    import matplotlib.pyplot as plt
+    import Boss
+    yrs = np.asarray(B['forecast_years'])[1:]
+    cases = [B['fig_bands']['gfa'], B['fig_bands']['carbon'],
+             ([(l, np.cumsum(v), c) for l, v, c in B['fig_bands']['carbon'][0]],
+              np.cumsum(B['fig_bands']['carbon'][1]))]
+    for bands, total in cases:
+        fig, ax = plt.subplots()
+        top = Boss.plot_demand_bands(ax, yrs, bands, total)
+        line = ax.get_lines()[-1].get_ydata()
+        plt.close(fig)
+        assert close(top, line, rel=1e-12)
+
+
+def test_household_size_shape_passes_through_published_knots():
+    """S_TAIL interpolation reproduces every published Stats NZ value exactly and is
+    flat after the last knot."""
+    import Boss
+    S_k, S_ann, _ = Boss.statsnz_size_shape(Boss.HH_SIZE_VARIANT, np.arange(2025, 2051), tail=Boss.S_TAIL)
+    yrs = S_k['Year'].astype(int).values
+    assert close(S_ann.loc[yrs].values, S_k['S'].values, rel=1e-12)
+    if Boss.S_TAIL == 'hermite_clamped':
+        assert close(S_ann.loc[yrs[-1]:].values, np.full(len(S_ann.loc[yrs[-1]:]), S_k['S'].values[-1]), rel=1e-12)

@@ -24,7 +24,7 @@ def main():
     L += ['', '## All settings in Boss.py', '', '| setting | value |', '|---|---|']
     for k in sorted(vars(Boss)):
         v = getattr(Boss, k)
-        if k.isupper() and not k.startswith(('FILE_', 'COL_', 'SHEET_')) and k not in ('DATA_DIR', 'OUT_DIR', 'FIG_DIR', 'FACTORS_DIR') \
+        if k.isupper() and not k.startswith(('FILE_', 'COL_', 'SHEET_')) and k not in ('ROOT_DIR', 'DATA_DIR', 'OUT_DIR', 'FIG_DIR', 'FACTORS_DIR') \
                 and isinstance(v, (bool, int, float, str, tuple, type(None))):
             L.append(f'| `{k}` | `{v!r}` |')
     with open(os.path.join(ROOT, 'ASSUMPTIONS.md'), 'w') as f:

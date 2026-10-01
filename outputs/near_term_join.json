@@ -1,151 +1,29 @@
 {
-  "nowcast": {
-    "seasonal_share": {
-      "year": 2026,
-      "method": "seasonal_share",
-      "months_observed": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
-      "observed": 23916.0,
-      "estimated_missing": 18696.909633598454,
-      "total": 42612.90963359845
-    },
-    "same_period_ratio": {
-      "year": 2026,
-      "method": "same_period_ratio",
-      "months_observed": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
-      "observed": 23916.0,
-      "estimated_missing": 20705.18530595608,
-      "total": 44621.18530595608
-    },
-    "last_12_months": {
-      "year": 2026,
-      "method": "last_12_months",
-      "months_observed": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
-      "observed": 23916.0,
-      "estimated_missing": 16992.0,
-      "total": 40908.0
-    }
+  "mode": "market_excess",
+  "near_mode": "surplus",
+  "gap_ref_basis": "2027",
+  "vacancy": {
+    "peak": 0.0651592557250733,
+    "peak_year": 2031,
+    "v_2050": 0.06363416985835924,
+    "v_forward": 0.05387454644033866,
+    "census_min": 0.05075373310444933,
+    "census_max": 0.08090044277034486,
+    "census_years": "1986-2023"
   },
-  "method_in_use": "seasonal_share",
-  "evidence": {
-    "march_quarter": {
-      "levels": {
-        "redevelopment": 0.0,
-        "vacancy": 6285.530273787939,
-        "households": 28371.173392357072
-      },
-      "shares": {
-        "redevelopment": 0.0,
-        "vacancy": 0.1813654966824807,
-        "households": 0.8186345033175193
-      },
-      "S_census": {
-        "2018": 2.765862643428607,
-        "2023": 2.699100160005374
-      },
-      "change_S_census": -0.024138032878043947,
-      "change_S_shape": -0.009389205304086268,
-      "households_included": true,
-      "interval": [
-        2018,
-        2023
-      ]
-    },
-    "census_night": {
-      "levels": {
-        "redevelopment": 0.0,
-        "vacancy": 6285.530273787939,
-        "households": 27055.71843920718
-      },
-      "shares": {
-        "redevelopment": 0.0,
-        "vacancy": 0.18852114172130827,
-        "households": 0.8114788582786917
-      },
-      "S_census": {
-        "2018": 2.76821161160031,
-        "2023": 2.703285449859533
-      },
-      "change_S_census": -0.02345419023195383,
-      "change_S_shape": -0.009389205304086268,
-      "households_included": true,
-      "interval": [
-        2018,
-        2023
-      ]
-    },
-    "mid_year": {
-      "levels": {
-        "redevelopment": 0.0,
-        "vacancy": 6285.530273787939,
-        "households": 18412.057195394533
-      },
-      "shares": {
-        "redevelopment": 0.0,
-        "vacancy": 0.2544997677052867,
-        "households": 0.7455002322947133
-      },
-      "S_census": {
-        "2018": 2.7822382667381858,
-        "2023": 2.72948491284194
-      },
-      "change_S_census": -0.01896076066773822,
-      "change_S_shape": -0.009389205304086268,
-      "households_included": true,
-      "interval": [
-        2018,
-        2023
-      ]
-    }
+  "redevelopment_sensitivity": {
+    "peak_removals": 23041.090364617223,
+    "peak_year": 2026,
+    "default_peak_removals": 6281.41495965741
   },
-  "pop_date_in_use": "march_quarter",
-  "shares_in_use": {
-    "redevelopment": 0.0,
-    "vacancy": 0.1813654966824807,
-    "households": 0.8186345033175193
-  },
-  "O26": 37596.25025020077,
-  "R26": 23054.50572920665,
-  "R27": 29800.521515871944,
-  "e26": 14541.744520994122,
-  "e27": 6887.902713941733,
-  "channels_2026_2050": {
-    "redevelopment": 0.0,
-    "vacancy": 3886.5986144944904,
-    "households": 17543.048620441365,
-    "vacancy_drawdown": -3886.598614494491,
-    "household_reversion": -17543.04862044136
-  },
-  "population_nowcast": {
-    "observed_growth": 35400.0,
-    "shift": -15600.0,
-    "status": "DPE059AA, June qtr 2026 vs 2025, mean-quarter",
-    "catchup_years": null
-  },
-  "lag_w": 0.5068326945071742,
-  "completion": 0.95,
+  "nowcast_method": "last_12_months",
+  "consents_2026": 40908.0,
+  "O26": 38862.6,
+  "R26": 22102.924595040186,
+  "R27": 28888.88873676696,
+  "e26": 16759.675404959813,
+  "gap_ref": 9973.711263233039,
+  "rho": 0.5180189643073912,
+  "join_2026_2050": 27479.123839651176,
   "scenario": "S3"
 }

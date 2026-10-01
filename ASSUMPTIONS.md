@@ -16,7 +16,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Household channel | reverting_linear | JUDGEMENT (author decision) |
 | Vacancy drawdown | 5 yr | JUDGEMENT; 3 and 10 as sensitivities |
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
-| Household-size shape | Stats NZ Medium, anchored 2023, tail taper_secant | DATA (2018-base projections; N4 open) |
+| Household-size shape | Stats NZ Medium, anchored 2023, tail hermite_clamped | DATA (2018-base projections; N4 open) |
 | Vacancy forward | latest census value held | DATA: census 2023 (2018 empty count unrated, F1) |
 | Typology damping phi | 0.8 | JUDGEMENT: ≈4 years of trend applied by 2050 |
 | Mix trend window | 2012-2025 | DATA |
@@ -100,7 +100,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `SOIL_ON_REPLACEMENT` | `False` |
 | `STOCK_CALIB_END` | `'last_census_base'` |
 | `S_ANCHOR_YEAR` | `2023` |
-| `S_TAIL` | `'taper_secant'` |
+| `S_TAIL` | `'hermite_clamped'` |
 | `S_TAPER_YEARS` | `5` |
 | `TREND_WINDOW_START` | `2012` |
 | `UNCONSENTED_COLOR` | `'#16a085'` |

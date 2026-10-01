@@ -149,7 +149,10 @@ HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S onl
 # population question remain OPEN until the living-arrangement table (E2) is
 # obtained; see ASSUMPTIONS.md.
 # v1.1 default: 'taper_secant' (the PCHIP end-slope 'taper' is a sensitivity).
-S_TAIL = 'taper_secant'
+# v1.2.1 default: 'hermite_clamped' -- interpolation through all published values,
+#   held constant beyond 2043 with zero slope imposed at 2043. Previous tails
+#   ('taper_secant' v1.2, 'taper', 'flat') are sensitivities.
+S_TAIL = 'hermite_clamped'
 S_TAPER_YEARS = 5
 
 # S_ANCHOR_YEAR: the observed household size the Stats NZ shape is rebased on.
@@ -1008,6 +1011,19 @@ def extend_tail(S_knots, S_ann, mode):
     last = int(yrs_k[-1])
     if mode == 'pchip_end_slope':
         return S_ann
+    if mode == 'hermite_clamped':
+        # v1.2.1: ONE cubic Hermite through every published knot, PCHIP derivatives at the
+        # interior knots, zero derivative clamped at the last knot; held constant after it.
+        from scipy.interpolate import CubicHermiteSpline
+        x = yrs_k.astype(float)
+        d = PchipInterpolator(x, s_k).derivative()(x)
+        d[-1] = 0.0
+        h = CubicHermiteSpline(x, s_k, d)
+        out = S_ann.copy()
+        inside = (out.index >= x[0]) & (out.index <= last)
+        out[inside] = h(out.index[inside].astype(float))
+        out[out.index > last] = float(s_k[-1])
+        return out
     if mode in ('taper', 'taper_secant'):
         # slope tapers linearly to zero over S_TAPER_YEARS: S(K+t) = S(K) + s0 (t - t^2 / (2T)),
         # constant after K+T. With s0 = the PCHIP end derivative this is C1-continuous at K

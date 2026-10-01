@@ -10,14 +10,17 @@ Actual households and vacancy fed in; only the net-replacement term is predicted
 | 2006 | 2007-2023 | recent | -0.082 | 358,418 | 455,109 | -21.2% |
 | 2006 | 2007-2023 | linked | linked: b = 2.45 on 3 intervals | 473,242 | 455,109 | +4.0% |
 | 2006 | 2007-2023 | dwelling_count | -0.004 | 382,629 | 455,109 | -15.9% |
+| 2006 | 2007-2023 | reference_s3_10 | +0.027 | 388,023 | 455,109 | -14.7% |
 | 2013 | 2014-2023 | constant | +0.029 | 272,162 | 333,208 | -18.3% |
 | 2013 | 2014-2023 | recent | +0.038 | 273,820 | 333,208 | -17.8% |
 | 2013 | 2014-2023 | linked | linked: b = 0.77 on 4 intervals | 317,475 | 333,208 | -4.7% |
 | 2013 | 2014-2023 | dwelling_count | +0.028 | 271,931 | 333,208 | -18.4% |
+| 2013 | 2014-2023 | reference_s3_10 | +0.087 | 279,702 | 333,208 | -16.1% |
 | 2018 | 2019-2023 | constant | +0.101 | 177,353 | 200,146 | -11.4% |
 | 2018 | 2019-2023 | recent | +0.369 | 203,669 | 200,146 | +1.8% |
 | 2018 | 2019-2023 | linked | linked: b = 1.15 on 5 intervals | 238,447 | 200,146 | +19.1% |
 | 2018 | 2019-2023 | dwelling_count | +0.057 | 173,029 | 200,146 | -13.5% |
+| 2018 | 2019-2023 | reference_s3_10 | +0.163 | 181,556 | 200,146 | -9.3% |
 
 ### (B) Rolling-origin hindcast of the 2023 census private-dwelling stock (dwelling-count identity; descriptive)
 

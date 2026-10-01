@@ -139,11 +139,17 @@ HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S onl
 #   'mean_slope': continues the mean slope over all knots (2018->2043).
 #   'pchip_end_slope': the original behaviour: continues the PCHIP end
 #       derivative, which is 2.5x the 2038->2043 secant (ASSESSMENT.md C2).
+#   'taper' (ADOPTED v1.0.2, author's decision): the slope tapers linearly to
+#       zero over S_TAPER_YEARS from the PCHIP end derivative (C1-continuous,
+#       no kink at 2043). Adds s0 x T / 2 in total. NOTE: s0 is the inflated
+#       PCHIP end slope (C2), so 'taper_secant' (from the 2038->2043 secant; not
+#       C1 at 2043) is the flagged alternative; 'flat' is a sensitivity.
 # N4 (the Low/High variants pair stochastic population percentiles with
 # deterministic household variants) and the total vs private-household
 # population question remain OPEN until the living-arrangement table (E2) is
 # obtained; see ASSUMPTIONS.md.
-S_TAIL = 'flat'
+S_TAIL = 'taper'
+S_TAPER_YEARS = 5
 
 # S_ANCHOR_YEAR: the observed household size the Stats NZ shape is rebased on.
 #   2023 (ADOPTED, item 6): the last year in which households are benchmarked
@@ -293,9 +299,28 @@ RV_COLOR = '#b8a0d0'
 UNCONSENTED_COLOR = '#16a085'
 JOIN_LABEL = 'Near-term join: 2026-27 building above requirement, by channel (A1)'
 JOIN_COLOR = '#c0392b'
+WAVE_LABEL = 'Redevelopment wave: net replacement above the long-run rate (scenario)'
+WAVE_COLOR = '#d35400'
 
 TREND_WINDOW_START = 2012
 DAMPING_PHI = 0.8
+# MIX_MODE (v1.0.2, author's decision): coherent storylines.
+#   'storyline' (ADOPTED): S1 and S3 hold the typology floor-area shares at their
+#       MIX_HELD_WINDOW average; S2 ('intensification continues') keeps the
+#       damped ALR trend above.
+#   'held' / 'trend': force one mix whatever the scenario (sensitivities: S3-10
+#       with the trend = the v1.0 mix; S2 with shares held = the maximum
+#       floor-area case, since held shares keep more detached floor area).
+#   Held shares = ratio of sums of consented floor area over the window (floor-
+#   area weighted), with 2026 = the observed months (January-July).
+MIX_MODE = 'storyline'
+MIX_HELD_WINDOW = (2022, 2026)
+# NOWCAST_GFA (v1.0.2): under the nowcast join, 2026 in-scope floor area is the
+#   observed consented GFA by typology, c x [(1 - W) GFA_2026 + W GFA_2025], with
+#   the missing 2026 months by NOWCAST_METHOD, instead of dwellings x the model's
+#   size and mix; the 2026 mix is the observed one. Dwelling counts (the stock)
+#   still follow the dwelling nowcast. False = the v1.0 treatment.
+NOWCAST_GFA = True
 
 # --- [FIX d] consumption-rate calibration -------------------------------
 # v2 used .ewm(span=35, adjust=False) starting at 1991. With adjust=False the
@@ -514,17 +539,18 @@ POP_NOWCAST_CATCHUP_YEARS = None
 #   'all_redevelopment' | 'all_vacancy' | 'equal': sensitivities.
 EXCESS_CHANNELS = 'calibrated'
 VACANCY_DRAWDOWN_YEARS = 5                 # JUDGEMENT; 3 and 10 as sensitivities
-# HOUSEHOLD_CHANNEL (author's decision: reverting):
-#   'reverting' (ADOPTED): the extra households dissolve geometrically at the
+# HOUSEHOLD_CHANNEL (author's decision, v1.0.2: linear reversion):
+#   'reverting_linear' (ADOPTED): drawn down linearly over VACANCY_DRAWDOWN_YEARS,
+#       like the vacancy channel;
+#   'reverting' (sensitivity): the extra households dissolve geometrically at the
 #       model's estimated persistence for household-size deviations (rho: lag-1
 #       autocorrelation of the residuals of the regression of the annual change
 #       in S, 1992-2023). NOTE: rho is estimated on CHANGES in S; using it as the
 #       rate at which a LEVEL deviation reverts is an assumption, not an estimate;
-#   'permanent': households formed persist (sensitivity);
-#   'reverting_linear': drawn down linearly like vacancy (sensitivity).
+#   'permanent': households formed persist (sensitivity).
 #   2013-18 census household size rose, 2018-23 it fell faster than the Stats
 #   NZ shape: the response looks cyclical.
-HOUSEHOLD_CHANNEL = 'reverting'
+HOUSEHOLD_CHANNEL = 'reverting_linear'
 # CHANNEL_POP_DATE: the population paired with census households when testing
 #   household size over the calibration interval, from the quarterly
 #   mean-quarter ERP (FILE_POP_QUARTERLY; DPE059AA):
@@ -947,6 +973,18 @@ def extend_tail(S_knots, S_ann, mode):
     last = int(yrs_k[-1])
     if mode == 'pchip_end_slope':
         return S_ann
+    if mode in ('taper', 'taper_secant'):
+        # slope tapers linearly to zero over S_TAPER_YEARS: S(K+t) = S(K) + s0 (t - t^2 / (2T)),
+        # constant after K+T. With s0 = the PCHIP end derivative this is C1-continuous at K
+        # ('taper'); 'taper_secant' starts from the 2038-43 secant slope instead (not C1).
+        s0 = (float(PchipInterpolator(yrs_k.astype(float), s_k).derivative()(last)) if mode == 'taper'
+              else (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]))
+        T = float(S_TAPER_YEARS)
+        out = S_ann.copy()
+        t = np.clip(out.index.values - last, 0.0, T)
+        after = out.index > last
+        out[after] = float(S_ann.loc[last]) + s0 * (t[after] - t[after] ** 2 / (2 * T))
+        return out
     slope = {'flat': 0.0,
              'secant': (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]),
              'mean_slope': (s_k[-1] - s_k[0]) / (yrs_k[-1] - yrs_k[0])}.get(mode)
@@ -1679,6 +1717,24 @@ def main():
     # ------------------------------------------------------------------
     evolving_gfa_shares = fit_evolving_mix(hist_shares, shares_2025, forecast_years,
                                            DAMPING_PHI, TREND_WINDOW_START, typ_names)
+    if MIX_MODE not in ('storyline', 'held', 'trend'):
+        raise ValueError(f"Unknown MIX_MODE '{MIX_MODE}'.")
+    mix_used = MIX_MODE if MIX_MODE != 'storyline' else ('trend' if _scenario == 'S2' else 'held')
+    _typ_cols = [COL_TYPOLOGIES[n] for n in typ_names]
+    _w = df_consents[(df_consents['Year'] >= MIX_HELD_WINDOW[0]) & (df_consents['Year'] <= MIX_HELD_WINDOW[1])]
+    held_shares = (_w[_typ_cols].sum() / _w[_typ_cols].sum().sum()).set_axis(typ_names)
+    if mix_used == 'held':
+        evolving_gfa_shares.loc[forecast_years > 2025, :] = held_shares.values
+    # 2026 floor area from observed consented GFA by typology (NOWCAST_GFA)
+    gfa_nowcast = None
+    if NOWCAST_GFA and _join_mode == 'nowcast':
+        _gm = df_consents.set_index(pd.to_datetime(df_consents['Date']))
+        _g26 = {n: engine.nowcast_year(_gm[COL_TYPOLOGIES[n]].astype(float), 2026, NOWCAST_METHOD,
+                                       NOWCAST_SEASONAL_YEARS)['total'] for n in typ_names}
+        _built = {n: _completion * ((1.0 - lag_w) * _g26[n] + lag_w * float(hist_typ_gfa.loc[2025, n]))
+                  for n in typ_names}
+        gfa_nowcast = dict(by_typology=_built, total=float(sum(_built.values())), consented_2026=_g26)
+        evolving_gfa_shares.loc[2026, :] = [_built[n] / gfa_nowcast['total'] for n in typ_names]
     future_blended_olf_bim = blend_per_gfa_share(evolving_gfa_shares, OLF_NET_BIM, typ_names)
 
     # [FIX f] realised dwelling size held at its recent observed level per
@@ -1710,7 +1766,8 @@ def main():
                       intensity=T_BASELINE_2025, intensity_upfront=UPFRONT_2025,
                       floor_decline=FLOOR_HOUSEHOLD_DECLINE,
                       olf_per_resident=(DEMAND_BASIS == 'per_resident'),
-                      soil=SOIL_INTENSITY, soil_on_replacement=SOIL_ON_REPLACEMENT)
+                      soil=SOIL_INTENSITY, soil_on_replacement=SOIL_ON_REPLACEMENT,
+                      gfa_fixed=({1: gfa_nowcast['total']} if gfa_nowcast else None))
     # NEAR-TERM JOIN (A1). Under 'nowcast', 2026 completions and the lagged
     # share of 2027 come from observed consents; the building above the
     # model's requirement is split into three channels (engine.join_channels).
@@ -1763,11 +1820,15 @@ def main():
                                   join=E['join'], join_redev=E['join_redev'], stock_join=E['stock_join'])
             vac_gfa = (E['allow'] + E['change']) * _D   # vacancy allowance (+ change), m2
             repl_gfa = E['demol'] * _D                 # demolition replacement, m2
-            unc_gfa = E['unc'] * _D                    # calibrated residual incl. 2025 deviation, m2
+            # net replacement above the long-run rate (scenario - long run): the
+            # 'redevelopment wave'; the rest is the long-run residual (incl. any
+            # carried 2025 deviation)
+            wave_gfa = (np.asarray(rate_path, float) - (demolition_rate + unconsented_rate)) * E['prev'] * _D
+            unc_gfa = E['unc'] * _D - wave_gfa         # long-run residual, m2
             rv_gfa = E['rv'] * _D                      # housed in RV units, m2 (<0)
-            join_gfa = E['join'] * _D                  # near-term join (A1), m2
+            join_gfa = E['join'] * _D + E['gfa_adj']   # near-term join (A1), m2; 2026 = observed GFA
         else:
-            vac_gfa = repl_gfa = unc_gfa = rv_gfa = None      # 'other' not decomposed
+            vac_gfa = repl_gfa = unc_gfa = rv_gfa = wave_gfa = None      # 'other' not decomposed
         growth_check[col] = float(g_demand[1:].min())
 
         g_demand[0] = real_2025_total * anchor['growth']
@@ -1786,15 +1847,16 @@ def main():
         if vac_gfa is None:
             vac_gfa = other_cons.copy()
             repl_gfa, unc_gfa = np.zeros_like(other_cons), np.zeros_like(other_cons)
+            wave_gfa = np.zeros_like(other_cons)
             rv_gfa = np.zeros_like(other_cons)
             join_gfa = np.zeros_like(other_cons)
         # 2025 is the observed anchor: split its 'other' in the 2026 proportions
         # (the near-term join starts in 2026; it has no 2025 share).
         join_gfa = join_gfa.copy()
         join_gfa[0] = 0.0
-        _t1 = vac_gfa[1] + repl_gfa[1] + unc_gfa[1] + rv_gfa[1]
+        _t1 = vac_gfa[1] + repl_gfa[1] + unc_gfa[1] + wave_gfa[1] + rv_gfa[1]
         _t1 = _t1 if abs(_t1) > 1e-9 else 1.0
-        for _arr in (vac_gfa, repl_gfa, unc_gfa, rv_gfa):
+        for _arr in (vac_gfa, repl_gfa, unc_gfa, wave_gfa, rv_gfa):
             _arr[0] = other_cons[0] * _arr[1] / _t1
 
         total = g_demand + hs_pos + c_gross
@@ -1804,7 +1866,7 @@ def main():
 
         results[col] = dict(total=total, growth=g_demand, growth_gross=g_gross,
                             hs_pos=hs_pos, hs_avoided=hs_avoided, c_gross=c_gross,
-                            extra=extra_space, other=other_cons, vac=vac_gfa, repl=repl_gfa, unc=unc_gfa, rv=rv_gfa,
+                            extra=extra_space, other=other_cons, vac=vac_gfa, repl=repl_gfa, unc=unc_gfa, wave=wave_gfa, rv=rv_gfa,
                             join=join_gfa,
                             structural=structural, occ_per_dw=occ_per_dw_f, d_hh=d_hh_f)
 
@@ -1818,6 +1880,7 @@ def main():
         df_forecast[f'Ann_GFA_Cons_Vacancy_{col}'] = vac_gfa
         df_forecast[f'Ann_GFA_Cons_Replacement_{col}'] = repl_gfa
         df_forecast[f'Ann_GFA_Cons_Unconsented_{col}'] = unc_gfa
+        df_forecast[f'Ann_GFA_Cons_Wave_{col}'] = wave_gfa
         df_forecast[f'Ann_GFA_Cons_RV_{col}'] = rv_gfa
         df_forecast[f'Ann_GFA_Cons_Join_{col}'] = join_gfa
 
@@ -1888,6 +1951,7 @@ def main():
     evol_typ_vac = split_typ(df_forecast['Ann_GFA_Cons_Vacancy_50th'].values)
     evol_typ_repl = split_typ(df_forecast['Ann_GFA_Cons_Replacement_50th'].values)
     evol_typ_unc = split_typ(df_forecast['Ann_GFA_Cons_Unconsented_50th'].values)
+    evol_typ_wave = split_typ(df_forecast['Ann_GFA_Cons_Wave_50th'].values)
     evol_typ_rv = split_typ(df_forecast['Ann_GFA_Cons_RV_50th'].values)
     evol_typ_join = split_typ(df_forecast['Ann_GFA_Cons_Join_50th'].values)   # 0 in 2025
     evol_typ_total = pd.DataFrame(engine_out['50th']['gfa_t'].T, index=forecast_years,
@@ -1906,7 +1970,7 @@ def main():
         _o1 = float(df_forecast['Ann_GFA_Cons_Other_50th'].iloc[1]
                     - df_forecast['Ann_GFA_Cons_Join_50th'].iloc[1]) or 1.0
         for _ev, _c in ((evol_typ_vac, 'Vacancy'), (evol_typ_repl, 'Replacement'),
-                        (evol_typ_unc, 'Unconsented'), (evol_typ_rv, 'RV')):
+                        (evol_typ_unc, 'Unconsented'), (evol_typ_wave, 'Wave'), (evol_typ_rv, 'RV')):
             _ev.loc[2025, n] = (evol_typ_other.loc[2025, n]
                                 * float(df_forecast[f'Ann_GFA_Cons_{_c}_50th'].iloc[1]) / _o1)
 
@@ -1949,13 +2013,16 @@ def main():
     carbon_vac_typ = band_carbon(evol_typ_vac, f_new)
     carbon_repl_typ = band_carbon(evol_typ_repl, f_repl)
     carbon_unc_typ = band_carbon(evol_typ_unc, f_repl)
+    carbon_wave_typ = band_carbon(evol_typ_wave, f_repl)     # replacement: no soil
     carbon_rv_typ = band_carbon(evol_typ_rv, f_rv)   # in-scope carbon NOT incurred; RV carbon out of scope
     carbon_join_typ = band_carbon(evol_typ_join, f_join)
-    carbon_other_typ = carbon_vac_typ + carbon_repl_typ + carbon_unc_typ + carbon_rv_typ + carbon_join_typ
+    carbon_other_typ = (carbon_vac_typ + carbon_repl_typ + carbon_unc_typ + carbon_wave_typ + carbon_rv_typ
+                        + carbon_join_typ)
     carbon_cons_typ = carbon_extra_typ + carbon_other_typ
     soil_fracs = {'Growth (net of consolidation)': f_new, 'House-splitting': f_new,
                   'Consumption: extra space': f_new, 'Consumption: vacancy': f_new,
                   'Consumption: demolition': f_repl, 'Calibrated stock residual': f_repl,
+                  'Redevelopment wave': f_repl,
                   'Housed in RV units (out of scope)': f_rv, 'Near-term join (2026-27, A1)': f_join}
     carbon_total_typ = pd.DataFrame(engine_out['50th']['carbon_t'].T, index=forecast_years,
                                     columns=typ_names)
@@ -2251,7 +2318,8 @@ def main():
              ('Consumption: extra space', evol_typ_extra, carbon_extra_typ),
              ('Consumption: vacancy allowance', evol_typ_vac, carbon_vac_typ),
              ('Consumption: demolition replacement', evol_typ_repl, carbon_repl_typ),
-             ('Calibrated stock residual', evol_typ_unc, carbon_unc_typ),
+             ('Calibrated stock residual (long run)', evol_typ_unc, carbon_unc_typ),
+             ('Redevelopment wave (scenario - long run)', evol_typ_wave, carbon_wave_typ),
              ('Housed in RV units (out of scope)', evol_typ_rv, carbon_rv_typ),
              ('Near-term join (2026-27, A1)', evol_typ_join, carbon_join_typ)]
     rows = [(lab, g.iloc[1:].sum().sum() / 1e6, c.iloc[1:].sum().sum() / 1e6) for lab, g, c in bands]
@@ -2265,8 +2333,8 @@ def main():
     if CONSUMPTION_BASIS == 'stock_vacancy':
         # Demolition and the residual trade one-for-one in calibration (only
         # their sum is identified by the stock identity), so report the sum too.
-        _net_g = rows[4][1] + rows[5][1]
-        _net_c = rows[4][2] + rows[5][2]
+        _net_g = rows[4][1] + rows[5][1] + rows[6][1]
+        _net_c = rows[4][2] + rows[5][2] + rows[6][2]
         print(f"   {'(demolition + residual: identified net)':<34}{_net_g:>12.2f}"
               f"{100 * _net_g / tg:>7.1f}%{_net_c:>12,.0f}")
     if CONSUMPTION_BASIS == 'stock_vacancy':
@@ -2309,11 +2377,36 @@ def main():
              linewidth=2.5, label='Projected Total GFA (Median)')
     plt.fill_between(df_forecast['Year'], df_forecast['Cum_GFA_Total_5th'],
                      df_forecast['Cum_GFA_Total_95th'], color='darkred', alpha=0.2,
-                     label='GFA Uncertainty Band')
+                     label='Population 5th-95th percentile (other inputs fixed)')
     plt.ylabel('Cumulative New GFA (m2)')
     plt.title('Cumulative New Residential GFA Projection')
     plt.legend(loc='upper left'); plt.grid(True, alpha=0.3)
     plt.xlim(1991, 2050); plt.tight_layout()
+
+    # Demand bands for figs 3-5 (annual, 2026-2050): one list, so the figures
+    # and the identity test use the same numbers.
+    def _band_list(get, scale):
+        spec = [('Growth demand (net of consolidation)', 'growth', DEMAND_COLORS[0]),
+                ('House-splitting demand', 'hs_pos', HOUSESPLIT_COLOR),
+                ('Consumption: extra space per dwelling', 'extra', DEMAND_COLORS[1]),
+                ('Consumption: vacancy allowance', 'vac', DEMAND_COLORS[2]),
+                ('Consumption: replacement of demolished stock', 'repl', DEMAND_COLORS[3]),
+                (UNCONSENTED_LABEL, 'unc', UNCONSENTED_COLOR),
+                (WAVE_LABEL, 'wave', WAVE_COLOR),
+                (JOIN_LABEL, 'join', JOIN_COLOR),
+                (RV_LABEL, 'rv', RV_COLOR)]
+        return [(lab, get(k) / scale, col) for lab, k, col in spec]
+    _gfa_cols = dict(growth='Growth', hs_pos='HouseSplit_Pos', extra='Cons_ExtraSpace', vac='Cons_Vacancy',
+                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join',
+                     rv='Cons_RV')
+    _carb = dict(growth=carbon_growth_typ, hs_pos=carbon_hs_pos_typ, extra=carbon_extra_typ, vac=carbon_vac_typ,
+                 repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ,
+                 rv=carbon_rv_typ)
+    fig_bands = {
+        'gfa': (_band_list(lambda k: df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:], 1e6),
+                df_forecast['Ann_GFA_HouseSplit_Avoided_50th'].values[1:] / 1e6),
+        'carbon': (_band_list(lambda k: _carb[k].sum(axis=1).values[1:], 1e6),
+                   carbon_avoided_typ.sum(axis=1).values[1:] / 1e6)}
 
     # FIG 3 annual GFA
     fig3, (bx1, bx2) = plt.subplots(1, 2, figsize=(18, 6))
@@ -2323,29 +2416,7 @@ def main():
     bx1.set_title('Annual GFA by Typology (2026-2050)')
     bx1.legend(loc='lower left', fontsize=9); bx1.grid(True, alpha=0.3); bx1.set_xlim(2026, 2050)
 
-    y_g = df_forecast['Ann_GFA_Growth_50th'].iloc[1:].values / 1e6
-    y_ce = df_forecast['Ann_GFA_Cons_ExtraSpace_50th'].iloc[1:].values / 1e6
-    y_cv = df_forecast['Ann_GFA_Cons_Vacancy_50th'].iloc[1:].values / 1e6
-    y_cr = df_forecast['Ann_GFA_Cons_Replacement_50th'].iloc[1:].values / 1e6
-    y_cu = df_forecast['Ann_GFA_Cons_Unconsented_50th'].iloc[1:].values / 1e6
-    y_rv = df_forecast['Ann_GFA_Cons_RV_50th'].iloc[1:].values / 1e6
-    y_j = df_forecast['Ann_GFA_Cons_Join_50th'].iloc[1:].values / 1e6
-    y_h = df_forecast['Ann_GFA_HouseSplit_Pos_50th'].iloc[1:].values / 1e6
-    y_a = df_forecast['Ann_GFA_HouseSplit_Avoided_50th'].iloc[1:].values / 1e6
-    colls3 = bx2.stackplot(plot_years, y_g, y_ce, y_cv, y_cr, y_h, y_a,
-                           labels=DEMAND_LABELS_LEGEND, colors=DEMAND_COLORS, alpha=0.85)
-    colls3[-1].set_facecolor((1, 1, 1, 0.2)); colls3[-1].set_edgecolor(HOUSESPLIT_COLOR)
-    colls3[-1].set_hatch('//')
-    bx2.fill_between(plot_years, 0, y_cu, facecolor='none', edgecolor=UNCONSENTED_COLOR,
-                     hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
-    bx2.fill_between(plot_years, y_cu, y_cu + y_rv, facecolor=RV_COLOR, alpha=0.5,
-                     edgecolor='none', label=RV_LABEL)
-    if np.any(y_j != 0):
-        bx2.fill_between(plot_years, y_cu + y_rv, y_cu + y_rv + y_j, facecolor=JOIN_COLOR, alpha=0.5,
-                         edgecolor='none', label=JOIN_LABEL)
-    bx2.axhline(0, color='black', lw=0.7)
-    bx2.plot(plot_years, y_g + y_ce + y_cv + y_cr + y_h + y_cu + y_rv + y_j, color='black', linestyle='--',
-             linewidth=1.5, label='Built floor area (net)')
+    plot_demand_bands(bx2, plot_years, fig_bands['gfa'][0], fig_bands['gfa'][1])
     bx2.set_title('Annual GFA by Demand Type (2026-2050)')
     bx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); bx2.grid(True, alpha=0.3); bx2.set_xlim(2026, 2050)
     plt.tight_layout()
@@ -2358,40 +2429,14 @@ def main():
     cx1.set_title('Annual Embodied Carbon by Typology (2026-2050)')
     cx1.legend(loc='lower left', fontsize=9); cx1.grid(True, alpha=0.3); cx1.set_xlim(2026, 2050)
 
-    yc_g = carbon_growth_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_ce = carbon_extra_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_cv = carbon_vac_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_cr = carbon_repl_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_cu = carbon_unc_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_rv = carbon_rv_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_h = carbon_hs_pos_typ.sum(axis=1).iloc[1:].values / 1e6
-    yc_a = carbon_avoided_typ.sum(axis=1).iloc[1:].values / 1e6
-    colls4 = cx2.stackplot(plot_years, yc_g, yc_ce, yc_cv, yc_cr, yc_h, yc_a,
-                           labels=DEMAND_LABELS_LEGEND, colors=DEMAND_COLORS, alpha=0.85)
-    colls4[-1].set_facecolor((1, 1, 1, 0.2)); colls4[-1].set_edgecolor(HOUSESPLIT_COLOR)
-    colls4[-1].set_hatch('//')
-    cx2.fill_between(plot_years, 0, yc_cu, facecolor='none', edgecolor=UNCONSENTED_COLOR,
-                     hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
-    cx2.fill_between(plot_years, yc_cu, yc_cu + yc_rv, facecolor=RV_COLOR, alpha=0.5,
-                     edgecolor='none', label=RV_LABEL)
-    cx2.axhline(0, color='black', lw=0.7)
-    cx2.plot(plot_years, yc_g + yc_ce + yc_cv + yc_cr + yc_h + yc_cu + yc_rv, color='black', linestyle='--', linewidth=1.5,
-             label='Actual Built Carbon')
+    plot_demand_bands(cx2, plot_years, fig_bands['carbon'][0], fig_bands['carbon'][1])
+    cx2.set_ylabel('Annual Carbon (kt CO2e/yr)')
     cx2.set_title('Annual Embodied Carbon by Demand Type (2026-2050)')
     cx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
     plt.tight_layout()
 
     # FIG 5 cumulative carbon  -- slice BEFORE accumulating
     cum_typ = (carbon_total_typ.iloc[1:] / 1e6).cumsum()
-    cum_g = (carbon_growth_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_ce = (carbon_extra_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_cv = (carbon_vac_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_cr = (carbon_repl_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_cu = (carbon_unc_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_rv = (carbon_rv_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_h = (carbon_hs_pos_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-    cum_a = (carbon_avoided_typ.sum(axis=1).iloc[1:] / 1e6).cumsum().values
-
     fig5, (dx1, dx2) = plt.subplots(1, 2, figsize=(18, 6))
     dx1.stackplot(plot_years, [cum_typ[n].values for n in typ_names],
                   labels=typ_names, colors=stack_colors, alpha=0.85)
@@ -2399,17 +2444,8 @@ def main():
     dx1.set_title('Cumulative Embodied Carbon by Typology (2026-2050)')
     dx1.legend(loc='lower left', fontsize=9); dx1.grid(True, alpha=0.3); dx1.set_xlim(2026, 2050)
 
-    colls5 = dx2.stackplot(plot_years, cum_g, cum_ce, cum_cv, cum_cr, cum_h, cum_a,
-                           labels=DEMAND_LABELS_LEGEND, colors=DEMAND_COLORS, alpha=0.85)
-    colls5[-1].set_facecolor((1, 1, 1, 0.2)); colls5[-1].set_edgecolor(HOUSESPLIT_COLOR)
-    colls5[-1].set_hatch('//')
-    dx2.fill_between(plot_years, 0, cum_cu, facecolor='none', edgecolor=UNCONSENTED_COLOR,
-                     hatch='xx', linewidth=0, label=UNCONSENTED_LABEL)
-    dx2.fill_between(plot_years, cum_cu, cum_cu + cum_rv, facecolor=RV_COLOR, alpha=0.5,
-                     edgecolor='none', label=RV_LABEL)
-    dx2.axhline(0, color='black', lw=0.7)
-    dx2.plot(plot_years, cum_g + cum_ce + cum_cv + cum_cr + cum_h + cum_cu + cum_rv, color='black', linestyle='--',
-             linewidth=1.5, label='Actual Built Carbon')
+    plot_demand_bands(dx2, plot_years, [(l, np.cumsum(v), c) for l, v, c in fig_bands['carbon'][0]],
+                      np.cumsum(fig_bands['carbon'][1]))
     dx2.set_title('Cumulative Embodied Carbon by Demand Type (2026-2050)')
     dx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
     plt.tight_layout()
@@ -2493,6 +2529,7 @@ def main():
                     'Consumption: vacancy': evol_typ_vac,
                     'Consumption: demolition': evol_typ_repl,
                     'Calibrated stock residual': evol_typ_unc,
+                    'Redevelopment wave': evol_typ_wave,
                     'Housed in RV units (out of scope)': evol_typ_rv,
                     'Near-term join (2026-27, A1)': evol_typ_join}
     dem_mat = pd.DataFrame(
@@ -2577,6 +2614,33 @@ def main():
     return state
 
 
+def plot_demand_bands(ax, years, bands, avoided=None):
+    """Signed stack: the positive part of each band stacked upward from zero,
+    the negative part (RV, a negative join) downward from zero. 'Avoided'
+    (consolidation) is drawn as an outline above the total, not stacked. The
+    dashed line is the signed sum of the bands, which equals the typology total
+    (tests/test_identities.py). Returns that sum."""
+    years = np.asarray(years)
+    up, dn = np.zeros(len(years)), np.zeros(len(years))
+    for lab, v, col in bands:
+        v = np.asarray(v, float)
+        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
+        if np.any(pos > 0):
+            ax.fill_between(years, up, up + pos, color=col, alpha=0.85, lw=0, label=lab)
+        if np.any(neg < 0):
+            ax.fill_between(years, dn + neg, dn, color=col, alpha=0.45, lw=0, hatch='..',
+                            label=None if np.any(pos > 0) else lab)
+        up, dn = up + pos, dn + neg
+    total = sum(np.asarray(v, float) for _, v, _ in bands)
+    if avoided is not None and np.any(np.asarray(avoided) > 0):
+        ax.fill_between(years, total, total + np.asarray(avoided, float), facecolor='none',
+                        edgecolor=HOUSESPLIT_COLOR, hatch='//', lw=0.8,
+                        label='Avoided floor area (consolidation; not built, not stacked)')
+    ax.plot(years, total, color='black', linestyle='--', linewidth=1.5, label='Total built (net) = typology total')
+    ax.axhline(0, color='black', lw=0.7)
+    return total
+
+
 def export_results(B, path):
     """Write the central run's report tables to JSON (read by tools/baseline_draft.py;
     every number in the draft report comes from here or another generated file)."""
@@ -2588,7 +2652,8 @@ def export_results(B, path):
              ('Extra space per dwelling', 'evol_typ_extra', 'carbon_extra_typ'),
              ('Vacancy allowance', 'evol_typ_vac', 'carbon_vac_typ'),
              ('Demolition replacement', 'evol_typ_repl', 'carbon_repl_typ'),
-             ('Calibrated stock residual', 'evol_typ_unc', 'carbon_unc_typ'),
+             ('Calibrated stock residual (long run)', 'evol_typ_unc', 'carbon_unc_typ'),
+             ('Redevelopment wave (scenario - long run)', 'evol_typ_wave', 'carbon_wave_typ'),
              ('Near-term join (2026-27 excess)', 'evol_typ_join', 'carbon_join_typ'),
              ('Housed in RV units (out of scope)', 'evol_typ_rv', 'carbon_rv_typ')]
     typ = list(B['typ_names'])

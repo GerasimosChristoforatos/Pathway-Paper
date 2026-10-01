@@ -107,28 +107,31 @@ def hindcast(B):
         actual = float(built[test].sum())
         preds = {}
         r_const = rate(Boss.DEMOLITION_CALIB_START, O)
-        preds['constant'] = (r_const, float((need + r_const * prev)[test].sum()))
+        preds['constant'] = (r_const, (need + r_const * prev)[test])
         before = [iv for iv in ivs if iv[1] <= O]
         r_recent = rate(*before[-1])
-        preds['recent'] = (r_recent, float((need + r_recent * prev)[test].sum()))
+        preds['recent'] = (r_recent, (need + r_recent * prev)[test])
         X = np.array([th.loc[a:b].sum() / prev.loc[a:b].sum() for a, b in before])
         Y = np.array([rate(a, b) for a, b in before])
         A = np.c_[np.ones(len(X)), X]
         coef, *_ = np.linalg.lstsq(A, Y, rcond=None)
-        preds['linked'] = (None, float((need + (coef[0] + coef[1] * th / prev) * prev)[test].sum()))
+        preds['linked'] = (None, (need + (coef[0] + coef[1] * th / prev) * prev)[test])
         r_dc = engine.census_window_rate(crates, Boss.NET_REPLACEMENT_WINDOW[0], O)
-        preds['dwelling_count'] = (r_dc, float((need + r_dc * prev)[test].sum()))
+        preds['dwelling_count'] = (r_dc, (need + r_dc * prev)[test])
         # reference method (S3): the most recent intercensal rate before the origin,
         # fading to the long-run dwelling-count rate with a 10-year half-life from O
         r_last = float(crates[crates['y1'] <= O].iloc[-1]['rate'])
         path = pd.Series(engine.replacement_path('S3', r_dc, r_last, yh - O + 2025, 10.0), index=yh)
-        preds['reference_s3_10'] = (r_last, float((need + path * prev)[test].sum()))
-        for m, (r, p) in preds.items():
+        preds['reference_s3_10'] = (r_last, (need + path * prev)[test])
+        for m, (r, ser) in preds.items():
+            p = float(ser.sum())
             rows.append(dict(origin=O, test=f'{O + 1}-{end}', method=m,
                              rate_pct=None if r is None else 100 * r,
                              n_intervals=len(before) if m == 'linked' else None,
                              linked_b=float(coef[1]) if m == 'linked' else None,
-                             predicted=p, actual=actual, error_pct=100 * (p / actual - 1)))
+                             predicted=p, actual=actual, error_pct=100 * (p / actual - 1),
+                             years=[int(y) for y in yh[test]], predicted_path=[float(x) for x in ser.values],
+                             actual_path=[float(x) for x in built[test].values]))
     return rows
 
 

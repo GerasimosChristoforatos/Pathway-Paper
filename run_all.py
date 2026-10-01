@@ -51,6 +51,7 @@ def main():
         step('gap_2026', [py, 'gap_2026.py'])
     step('near_term_join', [py, os.path.join('tools', 'near_term_join.py')])
     step('scenarios', [py, os.path.join('tools', 'replacement_scenarios.py')])
+    step('figures_report', [py, os.path.join('tools', 'figures_report.py')])
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     os.environ['MPLBACKEND'] = 'Agg'
     import metrics

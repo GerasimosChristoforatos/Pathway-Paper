@@ -320,9 +320,9 @@ def main():
 
     # ---- figures ----
     figs = sorted(glob.glob(os.path.join(OUT, 'figures', '*.png')))
-    key = [f for f in figs if any(k in f for k in ('boss_03', 'boss_04', 'boss_05', 'diag_3', 'diag_4',
+    key = [f for f in figs if any(k in f for k in ('fig_reality_checks', 'fig_bridge', 'fig_scenarios', 'fig_conversion_chain', 'fig_validation', 'boss_03', 'boss_04', 'boss_05', 'diag_3', 'diag_4',
                                                      'sens_1', 'mc_1'))]
-    L += ['', '## Key figures', ''] + [f"![{os.path.basename(f)}](figures/{os.path.basename(f)})" for f in key]
+    L += ['', '## Key figures', '', 'One line per figure: FIGURES.md. Where the projection leaves the 1991-2025 range: outputs/reality_checks.md.', ''] + [f"![{os.path.basename(f)}](figures/{os.path.basename(f)})" for f in key]
     with open(os.path.join(OUT, 'BASELINE_DRAFT.md'), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print(f'outputs/BASELINE_DRAFT.md: {len(L)} lines')

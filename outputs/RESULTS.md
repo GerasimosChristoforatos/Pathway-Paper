@@ -13,7 +13,7 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 | Household size 2050, central run | 2.652 |
 | Retirement-village floor area 2026-2050, out of scope (Mm2) | 4.70 |
 | Near-term: 2026 building above requirement (dwellings) | +16,760 |
-| Near-term: gap_ref (market excess) / 2027 excess (old join) | +9,974 |
+| Near-term: gap_ref (building 2026 - requirement 2027) | +9,974 |
 | Near-term: net dwellings added 2026-2050 | +27,479 |
 | MC floor area p5 (Mm2) | 69.10 |
 | MC floor area p50 (Mm2) | 88.87 |

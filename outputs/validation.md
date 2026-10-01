@@ -1,4 +1,4 @@
-Net replacement source in use: `dwelling_count` (window 1991-2023).
+Net replacement in use: census dwelling-count identity (window 1991-2023).
 
 ### (A) Rolling-origin hindcast of dwellings built (descriptive; 3 origins)
 

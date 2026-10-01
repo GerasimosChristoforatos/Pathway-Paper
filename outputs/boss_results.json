@@ -4,9 +4,7 @@
     "s3_half_life": 10.0,
     "near_term_join": "market_excess",
     "nowcast_method": "last_12_months",
-    "excess_channels": "calibrated",
-    "household_channel": "reverting_linear",
-    "vacancy_drawdown_years": 5,
+    "near_term_mode": "surplus",
     "completion_rate": 0.95,
     "lag_w": 0.0,
     "phi": 0.8

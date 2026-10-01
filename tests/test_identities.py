@@ -162,3 +162,14 @@ def test_figure_band_totals_equal_typology_totals(B):
                      ('carbon', B['carbon_total_typ'].sum(axis=1).values[1:] / 1e6)):
         bands, _ = B['fig_bands'][key]
         assert close(sum(v for _, v, _ in bands), ref)
+
+
+def test_household_size_shape_passes_through_published_knots():
+    """S_TAIL interpolation reproduces every published Stats NZ value exactly and is
+    flat after the last knot."""
+    import Boss
+    S_k, S_ann, _ = Boss.statsnz_size_shape(Boss.HH_SIZE_VARIANT, np.arange(2025, 2051), tail=Boss.S_TAIL)
+    yrs = S_k['Year'].astype(int).values
+    assert close(S_ann.loc[yrs].values, S_k['S'].values, rel=1e-12)
+    if Boss.S_TAIL == 'hermite_clamped':
+        assert close(S_ann.loc[yrs[-1]:].values, np.full(len(S_ann.loc[yrs[-1]:]), S_k['S'].values[-1]), rel=1e-12)

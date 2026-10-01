@@ -384,7 +384,8 @@ def main():
          ('JUDGEMENT', f'Replacement: S3 fades with half-life {BB.S3_HALF_LIFE:g} yr (reference); S1 and S2 bound it'),
          ('JUDGEMENT', 'Near-term market excess: stock-adding vacancy, never absorbed, fading at rho'),
          ('JUDGEMENT', 'Mix: held shares in S1/S3; damped trend (phi 0.8, about 4 years of trend) in S2'),
-         ('JUDGEMENT', f'Household size after 2043: secant slope tapered to zero over {BB.S_TAPER_YEARS} yr'),
+         ('JUDGEMENT', 'Household size: interpolation through all published Stats NZ values (2018-2043), held '
+                       'constant beyond 2043 with zero slope imposed at 2043'),
          ('JUDGEMENT', 'No completion lag (same-year consents x 0.95)')]
     L += ['', '## Assumptions', '', '| basis | assumption |', '|---|---|'] + [f'| {b_} | {a_} |' for b_, a_ in A]
 

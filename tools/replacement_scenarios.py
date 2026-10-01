@@ -63,10 +63,8 @@ def one(settings):
         gross_demolitions_per_yr_mean=float(gross_demol[f].mean()),
         gross_demolitions={int(y): float(gross_demol[i]) for i, y in enumerate(fy) if y in (2026, 2050)},
         cumulative_net_removals_share_of_2025_stock=float(net_removals[f].sum() / E['stock'][0]),
-        redevelopment_channel=(float(ji['channels']['redevelopment'].sum()) if ji and 'channels' in ji
-                               else float(ji['redev'][1:].sum()) if ji else None),
+        redevelopment_channel=float(ji['redev'][1:].sum()) if ji else None,
         join_net=float(ji['join'][f].sum()) if ji else None,
-        channel_shares=dict(B['join_shares']) if B['join_shares'] else None,
         R26=ji['R26'] if ji else None, O26=ji['O26'] if ji else None, e26=ji['e26'] if ji else None,
         e27=ji['e27'] if ji else None)
     return out, B
@@ -119,15 +117,12 @@ def main():
               'O = observed-implied 2026 completions (all categories, nowcast consents); R = the scenario\'s '
               '2026 requirement before the join; the excess O - R is what the near-term join allocates. '
               'Share of the S1 excess = how much of it the scenario\'s own replacement requirement covers.', '',
-              '| scenario | O 2026 | R 2026 | excess 2026 | share of S1 excess covered | 2027 lagged excess | '
-              'channel shares (redevelopment / vacancy / households) | redevelopment channel, dwellings |',
-              '|---|---|---|---|---|---|---|---|']
+              '| scenario | O 2026 | R 2026 | excess 2026 | share of S1 excess covered | gap_ref (2027) | '
+              'booked as redevelopment, dwellings |',
+              '|---|---|---|---|---|---|---|']
         for k, r in res.items():
-            sh = r['channel_shares']
             L.append(f"| {r['label']} | {r['O26']:,.0f} | {r['R26']:,.0f} | {r['e26']:+,.0f} | "
                      f"{100 * (r['R26'] - s1['R26']) / s1['e26']:.0f}% | {r['e27']:+,.0f} | "
-                     + (f"{sh['redevelopment']:.3f} / {sh['vacancy']:.3f} / {sh['households']:.3f}" if sh
-                        else 'market excess: all redevelopment') + " | "
                      f"{r['redevelopment_channel']:+,.0f} |")
     L += ['', '## Census record of net replacement (dwelling-count identity)', '',
           'Corrected = 0.95 x consents - change in census private dwellings under construction (UC), '

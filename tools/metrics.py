@@ -1,9 +1,11 @@
 """Headline metrics of one full pipeline run, written to outputs/metrics.json.
 
 Everything is read from what the pipeline itself produced: one silent
-Boss.main() (central run) and the Monte Carlo CSVs in outputs/. CHANGELOG.md
-before/after tables and outputs/RESULTS.md are generated from this file only,
-so no headline number is ever copied by hand.
+Boss.main() (central run) and the Monte Carlo CSVs in outputs/.
+outputs/RESULTS.md is generated from this file only, so no headline number is
+ever copied by hand.
+
+    python tools/metrics.py [--mc-stale]   # --mc-stale: MC CSVs are from an earlier run
 """
 import contextlib
 import io
@@ -28,7 +30,7 @@ FIELDS = [
     ('boss.S_2050', 'Household size 2050, central run', '{:.3f}'),
     ('boss.RV_floor_area_Mm2_out_of_scope', 'Retirement-village floor area 2026-2050, out of scope (Mm2)', '{:.2f}'),
     ('boss.join_excess_2026', 'Near-term: 2026 building above requirement (dwellings)', '{:+,.0f}'),
-    ('boss.join_excess_2027', 'Near-term: gap_ref (market excess) / 2027 excess (old join)', '{:+,.0f}'),
+    ('boss.join_excess_2027', 'Near-term: gap_ref (building 2026 - requirement 2027)', '{:+,.0f}'),
     ('boss.join_net_2026_2050', 'Near-term: net dwellings added 2026-2050', '{:+,.0f}'),
     ('mc.GFA_p5', 'MC floor area p5 (Mm2)', '{:.2f}'),
     ('mc.GFA_p50', 'MC floor area p50 (Mm2)', '{:.2f}'),
@@ -120,22 +122,9 @@ def get(m, dotted):
     return m
 
 
-def table(before, after):
-    """Markdown before/after table for the CHANGELOG."""
-    lines = ['| metric | before | after | change |', '|---|---|---|---|']
-    for key, label, f in FIELDS:
-        b, a = get(before, key), get(after, key)
-        fb = f.format(b) if b is not None else 'n/a'
-        fa = f.format(a) if a is not None else 'n/a'
-        if b is not None and a is not None:
-            d = a - b
-            ch = ('0' if abs(d) < 1e-9 else
-                  f'{d:+.3g}' + (f' ({100 * d / b:+.2f}%)' if b and 'pct' not in key else ''))
-        else:
-            ch = ''
-        lines.append(f'| {label} | {fb} | {fa} | {ch} |')
-    return '\n'.join(lines)
-
-
 if __name__ == '__main__':
-    print(json.dumps(collect(), indent=2))
+    m = collect(extra={'mc_stale': True} if '--mc-stale' in sys.argv else None)
+    print(f'metrics -> {METRICS}')
+    for key, label, f in FIELDS:
+        v = get(m, key)
+        print(f'  {label:<60} {f.format(v) if v is not None else "n/a"}')

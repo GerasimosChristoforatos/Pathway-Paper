@@ -57,14 +57,15 @@ import pandas as pd
 # ============================================================
 # CONFIGURATION
 # ============================================================
-DATA_DIR = 'data'
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))     # repository root: works from any directory
+DATA_DIR = os.path.join(ROOT_DIR, 'data')
 FILE_LCA = os.path.join(DATA_DIR, 'building_data.xlsx')   # one workbook, three sheets
 SHEET_LCA = '1'                          # materials x stages, absolute kg CO2e
 FILE_CHARS = FILE_LCA
 SHEET_CHARS = '2'                        # GFA, occupancy load factor, footprint
 SHEET_SOILS = '3'                        # soil carbon by soil order
 
-OUT_DIR = os.path.join('outputs', 'factors')     # derived files; data/ holds inputs only
+OUT_DIR = os.path.join(ROOT_DIR, 'outputs', 'factors')     # derived files; data/ holds inputs only
 OUT_MATERIAL = os.path.join(OUT_DIR, 'factors_material.csv')
 OUT_TYPOLOGY = os.path.join(OUT_DIR, 'factors_typology.csv')
 OUT_BUILDING = os.path.join(OUT_DIR, 'factors_building.csv')   # for MonteCarlo.py

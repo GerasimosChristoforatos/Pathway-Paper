@@ -1,3 +1,0 @@
-dwelling-count identity: 1991-2023 +0.094%/yr | net of pipeline +0.061% | 1991-2018 +0.040% | household identity (Boss) +0.154%
-  forward with dwelling-count 1991-2023: rate 0.094% dev +6,753 -> GFA 72.49 (-5.5%) | kt 28,072
-  forward with dwelling-count net of pipeline: rate 0.061% dev +7,464 -> GFA 70.10 (-8.6%) | kt 27,147

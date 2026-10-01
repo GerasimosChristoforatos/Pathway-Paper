@@ -327,12 +327,17 @@ def main():
                      m2_per_res='floor area per additional resident', S='household size', size='new-dwelling size',
                      vacancy='vacancy rate')
         L += ['', '## Reality checks (projection vs 1991-2025 range; outputs/reality_checks.md)', '']
-        out = [(k, q, r) for k, d in rcj.items() for q, r in d.items() if r['years_outside']]
+        out = [(k, q, r) for k, d in rcj.items() if k != 'handover' for q, r in d.items() if r['years_outside']]
         if not out:
             L.append('Every checked quantity stays within the 1991-2025 range in every scenario.')
         for k, q, r in out:
             L.append(f"- {k}: {names.get(q, q)} outside the range in {r['years_outside']} years from {r['first_outside']} "
                      f"(max {r['max_above_pct']:.1f}% above / {r['max_below_pct']:.1f}% below).")
+        if 'handover' in rcj:
+            h = rcj['handover']
+            L.append(f"- Handover 2026 -> 2027 (observed -> model, reference): {h['step_2026_2027_pct']:+.1f}% in floor "
+                     f"area, against annual changes of {h['hist_min_pct']:+.1f}% to {h['hist_max_pct']:+.1f}% in "
+                     f"1992-2025 (median {h['hist_median_pct']:+.1f}%).")
         L += ['', 'Notes: household size below the historical minimum is expected from Stats NZ\'s ageing projection '
                   '(the household-size shape keeps falling as the population ages). In the intensification storyline '
                   '(S2 + mix trend), average new-dwelling size below the historical minimum is intrinsic to that '

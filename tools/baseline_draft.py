@@ -171,7 +171,24 @@ def main():
         L.append(f"| {d['band']} | {d['gfa_Mm2']:.2f} | {100 * d['gfa_Mm2'] / b['gfa_Mm2']:.1f}% | "
                  f"{d['carbon_kt']:,.0f} |")
     L.append(f"| **Total** | **{b['gfa_Mm2']:.2f}** | 100% | **{b['carbon_kt']:,.0f}** |")
-    if nj:
+    if nj and nj.get('mode') == 'market_excess':
+        L += ['', '### Near-term rule: "near-term market excess"', '',
+              f"2026 building is observed, not modelled: {nj['O26']:,.0f} dwellings = 0.95 x consents over the latest "
+              f"12 observed months (the year to July 2026; to be replaced by calendar 2026 when published). It "
+              f"exceeds the 2026 requirement by {nj['e26']:+,.0f}. From 2027 building stays above the requirement by "
+              f"gap_ref x rho^(t-2026), with gap_ref = building 2026 - requirement 2027 = {nj['gap_ref']:+,.0f} and "
+              f"rho = {nj['rho']:.2f} (the estimated persistence of departures from the calibrated identity). The "
+              f"2027 requirement is used because the 2026 requirement is depressed by the one-off 2026 population "
+              f"shortfall. The excess is booked as stock-neutral redevelopment (extra replacement of existing "
+              f"stock, no soil, no absorption, no payback), {nj['join_2026_2050']:+,.0f} dwellings over 2026-2050, "
+              f"on top of whichever replacement scenario runs.",
+              '', 'Caveats: booking all of the excess as redevelopment implies extra removals that cannot be '
+                  'checked against a national demolition count; over 2018-2023 part of the excess went to vacancy '
+                  'and household formation instead. rho is estimated on the calibrated identity, not on market '
+                  'cycles. Sensitivities: a temporary surplus with payback (absorption 0.20 or 0.10 a year), a '
+                  'permanent surplus, the gap measured against the 2026 requirement, and the v1.0.2 three-channel '
+                  'join.']
+    elif nj:
         ch = nj['channels_2026_2050']
         L += ['', f"The near-term join adds the building observed above the model's requirement in 2026-27 "
                   f"(2026 excess {nj['e26']:+,.0f} dwellings, 2027 lagged share {nj['e27']:+,.0f}): redevelopment "
@@ -242,7 +259,6 @@ def main():
         r3 = [r for r in gap['rows'] if r['C26_estimate'] == r1['C26_estimate'] and r['scenario'].startswith('S3-10')][0]
         req3 = r3['model'] + r3['scenario_adds']
         c = v['check_2026']
-        ch = nj['channels_2026_2050']
         L += ['', '## Finding: 2026 building runs well above the model\'s requirement', '',
               f"Consents for January-July 2026 ({c['observed_ytd']:,.0f}) are {c['ratio_observed_to_model']:.2f} "
               f"times what the reference model, run without any 2026 data, implies for those months. In "
@@ -254,11 +270,13 @@ def main():
               f"({r3['residual']:+,.0f}). Over 2018-2023 most building above household formation went to "
               f"redevelopment (net removals {gap['boom_2018_2023']['net_removals']:,.0f}) rather than vacancy "
               f"({gap['boom_2018_2023']['vacancy_rate_rise_absorbed']:+,.0f}).",
-              '', f"The model takes 2026 completions (and the 2027 share already consented) from these observed "
-                  f"consents and allocates the excess ({nj['e26']:+,.0f} dwellings in 2026, {nj['e27']:+,.0f} in "
-                  f"2027) to redevelopment, vacancy and household formation. On the reference path the vacancy "
-                  f"and household channels revert, so the excess mainly shifts timing: "
-                  f"{sum(ch.values()):+,.0f} dwellings net over 2026-2050.",
+              '', (f"The model takes 2026 building from the observed consents and carries the excess forward as "
+                   f"near-term market excess ({nj['e26']:+,.0f} dwellings in 2026, then gap_ref {nj['gap_ref']:+,.0f} "
+                   f"fading at rho = {nj['rho']:.2f}; {nj['join_2026_2050']:+,.0f} dwellings over 2026-2050)."
+                   if nj.get('mode') == 'market_excess' else
+                   f"The model allocates the 2026-27 excess ({nj['e26']:+,.0f} and {nj['e27']:+,.0f} dwellings) to "
+                   f"redevelopment, vacancy and household formation: "
+                   f"{sum(nj['channels_2026_2050'].values()):+,.0f} dwellings net over 2026-2050."),
               '', f"[^s1]: On S1 (long-run replacement) the requirement is {r1['model']:,.0f} and the gap "
                   f"{r1['gap']:+,.0f} = population {r1['population']:+,.0f} + pipeline {r1['pipeline']:+,.0f} + "
                   f"2026 consents above requirement {r1['residual']:+,.0f}."]
@@ -274,6 +292,25 @@ def main():
               '| group | case | floor area (Mm²) | change | carbon change |', '|---|---|---|---|---|']
         for r in s.itertuples():
             L.append(f"| {r.group} | {r.case} | {r.GFA_Mm2:.2f} | {r.GFA_change_pct:+.1f}% | {r.carbon_change_pct:+.1f}% |")
+
+    # ---- assumptions (short) ----
+    import Boss as BB
+    A = [('DATA', 'Population: Stats NZ 2024-base projection percentiles; observed 2026 growth (DPE ERP)'),
+         ('DATA', 'Household-size shape: Stats NZ 2018-base household projections, rebased on observed households'),
+         ('DATA', 'Long-run net replacement: census private-dwelling counts and consents, 1991-2023'),
+         ('DATA', '2026 building: 0.95 x consents over the latest 12 observed months (dwellings and GFA by typology)'),
+         ('DATA', f'Typology shares (S1, S3): held at the {BB.MIX_HELD_WINDOW[0]}-{BB.MIX_HELD_WINDOW[1]} consented average'),
+         ('DATA', 'Dwelling size and vacancy: consents 2023-2025; 2023 census vacancy'),
+         ('LITERATURE', f'Completion rate {BB.COMPLETION_RATE:.2f} (Jones et al. 2024; citation to verify)'),
+         ('LITERATURE', 'Demolition split 0.135%/yr (BRANZ SR214); total net replacement from census counts'),
+         ('LITERATURE', 'Material carbon factors: 16 NZ case studies (Christoforatos & Pickering 2025)'),
+         ('LITERATURE', 'Soil 58.77 kg CO2e/m2 footprint, zero on replacement (Christoforatos, Pickering & Schipper 2026)'),
+         ('JUDGEMENT', f'Replacement: S3 fades with half-life {BB.S3_HALF_LIFE:g} yr (reference); S1 and S2 bound it'),
+         ('JUDGEMENT', 'Near-term market excess booked as stock-neutral redevelopment, fading at rho'),
+         ('JUDGEMENT', 'Mix: held shares in S1/S3; damped trend (phi 0.8, about 4 years of trend) in S2'),
+         ('JUDGEMENT', f'Household size after 2043: secant slope tapered to zero over {BB.S_TAPER_YEARS} yr'),
+         ('JUDGEMENT', 'No completion lag (same-year consents x 0.95)')]
+    L += ['', '## Assumptions', '', '| basis | assumption |', '|---|---|'] + [f'| {b_} | {a_} |' for b_, a_ in A]
 
     # ---- register ----
     L += ['', '## Assumption register (values read from Boss.py)', '', '| setting | value | basis |', '|---|---|---|']

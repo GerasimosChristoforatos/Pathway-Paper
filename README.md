@@ -71,7 +71,7 @@ was accessed on 2026-09-29. It states:
 | `engine.py` | the forward model (pure functions), shared by Boss and MonteCarlo |
 | `Boss.py` | central run: data, calibration, projection, reporting |
 | `Building_factors.py` | case-study carbon factors → `outputs/factors/` |
-| `Diagnostics.py`, `Sensitivity.py`, `MonteCarlo.py` | figures, one-at-a-time sensitivities, joint uncertainty and Sobol indices |
+| `Diagnostics.py`, `Sensitivity.py`, `MonteCarlo.py` | figures, one-at-a-time sensitivities (v1.1 lean set of about 20 rows; the full v1.0.2 table is in the history, tag `v1.0.2`, and every old option remains reachable as a flag), joint uncertainty and Sobol indices |
 | `validation.py` | rolling-origin hindcast and 2026 out-of-sample check |
 | `tests/` | identity tests; engine equivalence against frozen legacy code (`tests/legacy/`, `tests/legacy_flags.py`) |
 | `tools/` | metrics and CHANGELOG generation |

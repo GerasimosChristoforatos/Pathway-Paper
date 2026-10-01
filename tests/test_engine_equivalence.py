@@ -82,7 +82,7 @@ def _draws(MC, su, n, seed):
     d = MC.distributions(su)
     out = []
     for i in range(n):
-        p = {}
+        p = dict(MC.central(su))            # inputs not sampled stay central (v1.1 lean MC)
         for k in MC.PARAMS:
             u = rng.uniform() if i % 2 == 0 else rng.uniform(0.001, 0.999)
             p[k] = float(d[k].ppf(u))

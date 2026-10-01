@@ -112,7 +112,13 @@ from scipy.stats import qmc
 import Boss
 import engine
 
-N_UNCERTAINTY = 10000            # Latin hypercube draws for the percentiles
+N_UNCERTAINTY = 5000             # Latin hypercube draws per scenario (v1.1; 10,000 in v1.0.2)
+# v1.1 lean MC: sample only population z (coupled with household size), the
+# dwelling-size multiplier, the carbon bootstrap and the completion rate; every
+# other input is fixed at its central value (their v1.0.2 total Sobol indices
+# were about 0). False = the v1.0.2 input set. Figures 2 and 4 only when full.
+MC_PARAMS_LEAN = True
+MC_FIGURES_FULL = False
 N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
 N_BOOT = 4000                    # carbon-factor bootstrap replicates
 SEED = 20260924
@@ -285,9 +291,10 @@ def carbon_bootstrap(bf, typ):
 # b and rho enter only when the 2025 household-size deviation is carried
 # (HH_SIZE_RESPONSE, a sensitivity); hh_rebase only when households are rebased.
 PARAMS = (['z_pop'] + (['b', 'rho'] if Boss.HH_SIZE_RESPONSE else [])
-          + (['hh_rebase'] if Boss.HH_CENSUS_REBASE else [])
-          + ['phi', 'slope_T', 'slope_A', 'size', 'complete',
-             'pre_share', 'vacancy', 'rv_share', 'carbon'])
+          + ((['size', 'complete', 'carbon']) if MC_PARAMS_LEAN else
+             ((['hh_rebase'] if Boss.HH_CENSUS_REBASE else [])
+              + ['phi', 'slope_T', 'slope_A', 'size', 'complete', 'pre_share', 'vacancy', 'rv_share',
+                 'carbon'])))
 # Item 9 (D3): net replacement is NOT sampled. The MC runs separately within
 # each scenario (MC_SCENARIOS); the S3 half-life is fixed, not sampled. The
 # first entry is the reference path (its files keep the plain names and carry
@@ -343,7 +350,9 @@ def interp_z(z, zs, ys):
 
 
 def project(su, p):
-    """One draw through the shared engine. Reads only su (a snapshot) and p."""
+    """One draw through the shared engine. Reads only su (a snapshot) and p;
+    inputs not in p are held at their central values."""
+    p = {**central(su), **p}
     fy, typ, yh = su['fy'], su['typ'], su['years_hist']
     # ---- population and household size (same rank z) ----
     pop = su['pop50'] + interp_z(p['z_pop'], Z_KNOTS, su['spreads'])
@@ -706,23 +715,24 @@ def figures():
     ax[1].set_title('Embodied carbon (history estimated with 2025 factors)')
     _save(fig, 'mc_1_fan.png')
 
-    # ---- 2. distributions of the totals ------------------------------------
-    fig, ax = plt.subplots(2, 3, figsize=(15, 8))
-    fig.suptitle('Monte Carlo 2: distribution of each result '
-                 '(dashed = 5th / 50th / 95th, red = Boss central run)', fontsize=12)
-    for a, o in zip(ax.ravel(), OUTPUT_LABELS):
-        title, unit, sc = OUTPUT_LABELS[o]
-        v = draws[o] / sc
-        a.hist(v, bins=45, color=BLUE, alpha=0.75, edgecolor='white', linewidth=0.3)
-        p5, p50, p95 = np.percentile(v, [5, 50, 95])
-        for q in (p5, p50, p95):
-            a.axvline(q, color='black', ls='--', lw=1 if q != p50 else 1.8)
-        cen = summ.loc[o, 'central'] / sc
-        a.axvline(cen, color='#C0392B', lw=2.2)
-        fmt = (lambda x: f'{x:,.0f}') if p50 >= 100 else (lambda x: f'{x:.2f}' if p50 < 10 else f'{x:.1f}')
-        a.set_title(f'{title}\nmedian {fmt(p50)}  [{fmt(p5)} - {fmt(p95)}]  |  central {fmt(cen)}')
-        a.set_xlabel(unit); a.set_yticks([]); a.grid(alpha=0.3, axis='x')
-    _save(fig, 'mc_2_distributions.png')
+    if MC_FIGURES_FULL:
+        # ---- 2. distributions of the totals ------------------------------------
+        fig, ax = plt.subplots(2, 3, figsize=(15, 8))
+        fig.suptitle('Monte Carlo 2: distribution of each result '
+                     '(dashed = 5th / 50th / 95th, red = Boss central run)', fontsize=12)
+        for a, o in zip(ax.ravel(), OUTPUT_LABELS):
+            title, unit, sc = OUTPUT_LABELS[o]
+            v = draws[o] / sc
+            a.hist(v, bins=45, color=BLUE, alpha=0.75, edgecolor='white', linewidth=0.3)
+            p5, p50, p95 = np.percentile(v, [5, 50, 95])
+            for q in (p5, p50, p95):
+                a.axvline(q, color='black', ls='--', lw=1 if q != p50 else 1.8)
+            cen = summ.loc[o, 'central'] / sc
+            a.axvline(cen, color='#C0392B', lw=2.2)
+            fmt = (lambda x: f'{x:,.0f}') if p50 >= 100 else (lambda x: f'{x:.2f}' if p50 < 10 else f'{x:.1f}')
+            a.set_title(f'{title}\nmedian {fmt(p50)}  [{fmt(p5)} - {fmt(p95)}]  |  central {fmt(cen)}')
+            a.set_xlabel(unit); a.set_yticks([]); a.grid(alpha=0.3, axis='x')
+        _save(fig, 'mc_2_distributions.png')
 
     # ---- 3. what drives the uncertainty (Sobol) ----------------------------
     fig, ax = plt.subplots(1, 2, figsize=(15, 6))
@@ -746,26 +756,27 @@ def figures():
         a.legend(fontsize=8, loc='lower right')
     _save(fig, 'mc_3_sobol.png')
 
-    # ---- 4. how the main drivers move the result ----------------------------
-    ranked = (sob[(sob.output == 'carbon_kt') & np.isfinite(sob.ST_lo)]
-              .sort_values('ST', ascending=False).input.tolist())
-    top = [k for k in ranked if k not in UNORDERED_INPUTS][:4]
-    fig, ax = plt.subplots(1, 4, figsize=(17, 4.6), sharey=True)
-    fig.suptitle('Monte Carlo 4: how the biggest drivers move cumulative carbon '
-                 '(each dot = one draw; red = median in 12 bins; carbon-factor draws are '
-                 'unordered, see figure 3)', fontsize=11)
-    sub = draws.sample(min(4000, len(draws)), random_state=1)
-    for a, k in zip(ax, top):
-        a.scatter(sub[k], sub['carbon_kt'] / 1e3, s=4, alpha=0.18, color=BLUE)
-        bins = pd.qcut(draws[k], 12, duplicates='drop')
-        mid = draws.groupby(bins, observed=True)[k].median()
-        med = draws.groupby(bins, observed=True)['carbon_kt'].median() / 1e3
-        a.plot(mid, med, color='#C0392B', lw=2.2)
-        st_v = sob[(sob.output == 'carbon_kt') & (sob.input == k)].ST.iloc[0]
-        a.set_title(f'{INPUT_LABELS.get(k, k)}\ntotal effect {st_v:.2f}', fontsize=9.5)
-        a.set_xlabel(AXIS_LABELS.get(k, k), fontsize=8.5); a.grid(alpha=0.3)
-    ax[0].set_ylabel('embodied carbon 2026-2050 (Mt CO₂e)')
-    _save(fig, 'mc_4_drivers.png')
+    if MC_FIGURES_FULL:
+        # ---- 4. how the main drivers move the result ----------------------------
+        ranked = (sob[(sob.output == 'carbon_kt') & np.isfinite(sob.ST_lo)]
+                  .sort_values('ST', ascending=False).input.tolist())
+        top = [k for k in ranked if k not in UNORDERED_INPUTS][:4]
+        fig, ax = plt.subplots(1, 4, figsize=(17, 4.6), sharey=True)
+        fig.suptitle('Monte Carlo 4: how the biggest drivers move cumulative carbon '
+                     '(each dot = one draw; red = median in 12 bins; carbon-factor draws are '
+                     'unordered, see figure 3)', fontsize=11)
+        sub = draws.sample(min(4000, len(draws)), random_state=1)
+        for a, k in zip(ax, top):
+            a.scatter(sub[k], sub['carbon_kt'] / 1e3, s=4, alpha=0.18, color=BLUE)
+            bins = pd.qcut(draws[k], 12, duplicates='drop')
+            mid = draws.groupby(bins, observed=True)[k].median()
+            med = draws.groupby(bins, observed=True)['carbon_kt'].median() / 1e3
+            a.plot(mid, med, color='#C0392B', lw=2.2)
+            st_v = sob[(sob.output == 'carbon_kt') & (sob.input == k)].ST.iloc[0]
+            a.set_title(f'{INPUT_LABELS.get(k, k)}\ntotal effect {st_v:.2f}', fontsize=9.5)
+            a.set_xlabel(AXIS_LABELS.get(k, k), fontsize=8.5); a.grid(alpha=0.3)
+        ax[0].set_ylabel('embodied carbon 2026-2050 (Mt CO₂e)')
+        _save(fig, 'mc_4_drivers.png')
 
     if SAVE_FIGURES:
         print(f"Figures written to {FIG_DIR}/ (mc_1 ... mc_4)")

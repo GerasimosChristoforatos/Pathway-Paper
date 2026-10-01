@@ -148,7 +148,8 @@ HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S onl
 # deterministic household variants) and the total vs private-household
 # population question remain OPEN until the living-arrangement table (E2) is
 # obtained; see ASSUMPTIONS.md.
-S_TAIL = 'taper'
+# v1.1 default: 'taper_secant' (the PCHIP end-slope 'taper' is a sensitivity).
+S_TAIL = 'taper_secant'
 S_TAPER_YEARS = 5
 
 # S_ANCHOR_YEAR: the observed household size the Stats NZ shape is rebased on.
@@ -503,7 +504,10 @@ NEAR_TERM_JOIN = 'nowcast'
 #       times the mean share of the missing months;
 #   'same_period_ratio': missing months of 2025 x (observed 2026 / same months 2025);
 #   'last_12_months': C_2026 = the latest 12 months of consents.
-NOWCAST_METHOD = 'seasonal_share'
+# v1.1 default: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
+#   (August 2025 - July 2026), no seasonal estimation. It is the year to July
+#   2026, not calendar 2026: replace it with calendar 2026 when published.
+NOWCAST_METHOD = 'last_12_months'
 NOWCAST_SEASONAL_YEARS = (2010, 2025)
 # NOWCAST_POPULATION: the 2026 population growth is the OBSERVED growth over
 #   the year ended June 2026 (data/derived/population_nowcast.csv, provisional),
@@ -665,7 +669,9 @@ COMPLETION_RATE_BAND = (0.92, 0.96)
 # The same completions series is used everywhere consents become 'built':
 # stock calibration, the 2025 deviation, the 2025 observed anchor (and so the
 # 2025 -> 2026 step), history plots and the Monte Carlo.
-COMPLETION_LAG = 'littles_law'
+# v1.1 default: 0 (no lag): calibration, history and the 2026 anchor use
+#   same-year consents x COMPLETION_RATE. 'littles_law' is a sensitivity.
+COMPLETION_LAG = 0
 DEMOLITION_RATE = 0.00135
 DEMOLITION_RATE_BAND = (0.0010, 0.0030)
 

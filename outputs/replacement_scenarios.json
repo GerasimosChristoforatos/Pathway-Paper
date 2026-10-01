@@ -70,33 +70,33 @@
   },
   "scenarios": {
     "S1": {
-      "GFA_Mm2": 82.98937268917899,
-      "carbon_kt": 31415.109744059824,
-      "upfront_kt": 22685.447364742024,
+      "GFA_Mm2": 83.24468657433447,
+      "carbon_kt": 31512.746653195114,
+      "upfront_kt": 22756.22499709335,
       "shares_2050": {
         "Detached": 0.6059678545731274,
         "Townhouses": 0.34524078995949914,
         "Apartments": 0.04879135546737345
       },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3085.6223189813727,
+      "soil_kt": 3096.066031110163,
       "rate_pct": {
         "2026": 0.10054764522644084,
         "2030": 0.10054764522644084,
         "2040": 0.10054764522644084,
         "2050": 0.10054764522644084
       },
-      "net_removals_per_yr_mean": 2384.321814995403,
+      "net_removals_per_yr_mean": 2384.6812779450065,
       "net_removals": {
         "2026": 2119.1478653316476,
-        "2050": 2630.0445265608887
+        "2050": 2631.9468628026416
       },
-      "gross_demolitions_per_yr_mean": 3201.3026689931303,
+      "gross_demolitions_per_yr_mean": 3201.785300864689,
       "gross_demolitions": {
         "2026": 2845.2676457562748,
-        "2050": 3531.221544632967
+        "2050": 3533.775710790297
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.028282352057852057,
+      "cumulative_net_removals_share_of_2025_stock": 0.02828661593600328,
       "redevelopment_channel": 0.0,
       "join_net": 35846.62920231286,
       "channel_shares": null,
@@ -107,33 +107,33 @@
       "label": "Low (S1): long-run rate, shares held"
     },
     "S3-5": {
-      "GFA_Mm2": 86.09934744371024,
-      "carbon_kt": 32435.590280330558,
-      "upfront_kt": 23378.755437704647,
+      "GFA_Mm2": 86.3547728037207,
+      "carbon_kt": 32533.26525965927,
+      "upfront_kt": 23449.559412982857,
       "shares_2050": {
         "Detached": 0.6059678545731274,
         "Townhouses": 0.34524078995949914,
         "Apartments": 0.04879135546737345
       },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3044.003779473534,
+      "soil_kt": 3054.4474916023237,
       "rate_pct": {
         "2026": 0.28481041248917904,
         "2030": 0.20637881404739533,
         "2040": 0.12700543743167947,
         "2050": 0.10716209327775049
       },
-      "net_removals_per_yr_mean": 3618.946817841794,
+      "net_removals_per_yr_mean": 3619.3397180997167,
       "net_removals": {
         "2026": 6002.68038392563,
-        "2050": 2803.0599448174826
+        "2050": 2805.0874247582137
       },
-      "gross_demolitions_per_yr_mean": 4435.927671839521,
+      "gross_demolitions_per_yr_mean": 4436.4437410194,
       "gross_demolitions": {
         "2026": 6728.800164350258,
-        "2050": 3704.236962889561
+        "2050": 3706.9162727458693
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.042927228756258456,
+      "cumulative_net_removals_share_of_2025_stock": 0.04293188926112332,
       "redevelopment_channel": 0.0,
       "join_net": 28302.224140424623,
       "channel_shares": null,
@@ -144,33 +144,33 @@
       "label": "S3: fade, half-life 5 yr, shares held"
     },
     "S3-10": {
-      "GFA_Mm2": 89.30941742004238,
-      "carbon_kt": 33527.34273349586,
-      "upfront_kt": 24132.805309838466,
+      "GFA_Mm2": 89.56525459310167,
+      "carbon_kt": 33625.15835263455,
+      "upfront_kt": 24203.706601780894,
       "shares_2050": {
         "Detached": 0.6059678545731274,
         "Townhouses": 0.34524078995949914,
         "Apartments": 0.04879135546737345
       },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3039.4732643995094,
+      "soil_kt": 3049.916976528298,
       "rate_pct": {
         "2026": 0.2980355893121449,
         "2030": 0.25021551949483123,
         "2040": 0.17538158236063606,
         "2050": 0.13796461379353844
       },
-      "net_removals_per_yr_mean": 4614.743574149814,
+      "net_removals_per_yr_mean": 4615.259999303884,
       "net_removals": {
         "2026": 6281.41495965741,
-        "2050": 3608.767530553404
+        "2050": 3611.3777864605195
       },
-      "gross_demolitions_per_yr_mean": 5431.7244281475405,
+      "gross_demolitions_per_yr_mean": 5432.364022223566,
       "gross_demolitions": {
         "2026": 7007.534740082037,
-        "2050": 4509.944548625483
+        "2050": 4513.2066344481755
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.05473917220401189,
+      "cumulative_net_removals_share_of_2025_stock": 0.05474529793667393,
       "redevelopment_channel": 0.0,
       "join_net": 27479.123839651176,
       "channel_shares": null,
@@ -181,33 +181,33 @@
       "label": "Reference (S3): fade, half-life 10 yr, shares held"
     },
     "S3-15": {
-      "GFA_Mm2": 91.32107673860463,
-      "carbon_kt": 34212.72202939589,
-      "upfront_kt": 24606.556027843522,
+      "GFA_Mm2": 91.57727235520493,
+      "carbon_kt": 34310.660061924944,
+      "upfront_kt": 24677.542024556296,
       "shares_2050": {
         "Detached": 0.6059678545731274,
         "Townhouses": 0.34524078995949914,
         "Apartments": 0.04879135546737345
       },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3037.8432847697927,
+      "soil_kt": 3048.286996898582,
       "rate_pct": {
         "2026": 0.3026516511878693,
         "2030": 0.26854415394384806,
         "2040": 0.20637881404739533,
         "2050": 0.1672171038926901
       },
-      "net_removals_per_yr_mean": 5229.995324001151,
+      "net_removals_per_yr_mean": 5230.619265663752,
       "net_removals": {
         "2026": 6378.703341181912,
-        "2050": 4373.9306659036765
+        "2050": 4377.094371590265
       },
-      "gross_demolitions_per_yr_mean": 6046.976177998878,
+      "gross_demolitions_per_yr_mean": 6047.723288583435,
       "gross_demolitions": {
         "2026": 7104.823121606539,
-        "2050": 5275.107683975754
+        "2050": 5278.9232195779205
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.06203716632714941,
+      "cumulative_net_removals_share_of_2025_stock": 0.06204456739929255,
       "redevelopment_channel": 0.0,
       "join_net": 27182.952402974,
       "channel_shares": null,
@@ -218,33 +218,33 @@
       "label": "S3: fade, half-life 15 yr, shares held"
     },
     "S2": {
-      "GFA_Mm2": 90.5816402235587,
-      "carbon_kt": 34203.440270180596,
-      "upfront_kt": 24933.821185068482,
+      "GFA_Mm2": 90.81462733572602,
+      "carbon_kt": 34293.737235893794,
+      "upfront_kt": 25000.424151564628,
       "shares_2050": {
         "Detached": 0.39920807606278497,
         "Townhouses": 0.5599636663228423,
         "Apartments": 0.04082825761437271
       },
       "size_2050": 127.60417913249053,
-      "soil_kt": 2581.552384726332,
+      "soil_kt": 2590.098572562504,
       "rate_pct": {
         "2026": 0.3122099828683497,
         "2030": 0.3122099828683497,
         "2040": 0.3122099828683497,
         "2050": 0.3122099828683497
       },
-      "net_removals_per_yr_mean": 7403.545566242575,
+      "net_removals_per_yr_mean": 7404.661732822952,
       "net_removals": {
         "2026": 6580.155281018047,
-        "2050": 8166.537910771896
+        "2050": 8172.4448453809555
       },
-      "gross_demolitions_per_yr_mean": 8220.526420240301,
+      "gross_demolitions_per_yr_mean": 8221.765755742636,
       "gross_demolitions": {
         "2026": 7306.275061442673,
-        "2050": 9067.714928843974
+        "2050": 9074.27369336861
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.08781938782924982,
+      "cumulative_net_removals_share_of_2025_stock": 0.08783262757565609,
       "redevelopment_channel": 0.0,
       "join_net": 26555.071505418407,
       "channel_shares": null,
@@ -255,33 +255,33 @@
       "label": "Storyline: intensification continues (S2 + damped mix trend)"
     },
     "S3-10-trend": {
-      "GFA_Mm2": 82.2503774401482,
-      "carbon_kt": 31288.673664956073,
-      "upfront_kt": 22867.85483449014,
+      "GFA_Mm2": 82.4815586667894,
+      "carbon_kt": 31378.336902779425,
+      "upfront_kt": 22934.00769318166,
       "shares_2050": {
         "Detached": 0.39920807606278497,
         "Townhouses": 0.5599636663228423,
         "Apartments": 0.04082825761437271
       },
       "size_2050": 127.60417913249053,
-      "soil_kt": 2586.311132049684,
+      "soil_kt": 2594.8573198858567,
       "rate_pct": {
         "2026": 0.2980355893121449,
         "2030": 0.25021551949483123,
         "2040": 0.17538158236063606,
         "2050": 0.13796461379353844
       },
-      "net_removals_per_yr_mean": 4614.743574149814,
+      "net_removals_per_yr_mean": 4615.259999303884,
       "net_removals": {
         "2026": 6281.41495965741,
-        "2050": 3608.767530553404
+        "2050": 3611.3777864605195
       },
-      "gross_demolitions_per_yr_mean": 5431.7244281475405,
+      "gross_demolitions_per_yr_mean": 5432.364022223566,
       "gross_demolitions": {
         "2026": 7007.534740082037,
-        "2050": 4509.944548625483
+        "2050": 4513.2066344481755
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.05473917220401189,
+      "cumulative_net_removals_share_of_2025_stock": 0.05474529793667393,
       "redevelopment_channel": 0.0,
       "join_net": 27479.123839651176,
       "channel_shares": null,
@@ -292,33 +292,33 @@
       "label": "sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix)"
     },
     "S2-held": {
-      "GFA_Mm2": 98.48362937179643,
-      "carbon_kt": 36655.37688043449,
-      "upfront_kt": 26295.703158229106,
+      "GFA_Mm2": 98.74146599074054,
+      "carbon_kt": 36753.87533779342,
+      "upfront_kt": 26367.07694467935,
       "shares_2050": {
         "Detached": 0.6059678545731274,
         "Townhouses": 0.34524078995949914,
         "Apartments": 0.04879135546737345
       },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3034.3880762831873,
+      "soil_kt": 3044.831788411977,
       "rate_pct": {
         "2026": 0.3122099828683497,
         "2030": 0.3122099828683497,
         "2040": 0.3122099828683497,
         "2050": 0.3122099828683497
       },
-      "net_removals_per_yr_mean": 7403.545566242575,
+      "net_removals_per_yr_mean": 7404.661732822952,
       "net_removals": {
         "2026": 6580.155281018047,
-        "2050": 8166.537910771896
+        "2050": 8172.4448453809555
       },
-      "gross_demolitions_per_yr_mean": 8220.526420240301,
+      "gross_demolitions_per_yr_mean": 8221.765755742636,
       "gross_demolitions": {
         "2026": 7306.275061442673,
-        "2050": 9067.714928843974
+        "2050": 9074.27369336861
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.08781938782924982,
+      "cumulative_net_removals_share_of_2025_stock": 0.08783262757565609,
       "redevelopment_channel": 0.0,
       "join_net": 26555.071505418407,
       "channel_shares": null,
@@ -329,33 +329,33 @@
       "label": "High (S2): 2018-2023 rate persists, shares held"
     },
     "S1-noUC": {
-      "GFA_Mm2": 85.4464637023271,
-      "carbon_kt": 32246.115293472634,
-      "upfront_kt": 23257.964475246255,
+      "GFA_Mm2": 85.70217764452615,
+      "carbon_kt": 32343.888827580722,
+      "upfront_kt": 23328.836646168154,
       "shares_2050": {
         "Detached": 0.6059678545731274,
         "Townhouses": 0.34524078995949914,
         "Apartments": 0.04879135546737345
       },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3077.497553793999,
+      "soil_kt": 3087.941265922789,
       "rate_pct": {
         "2026": 0.13411321976770368,
         "2030": 0.13411321976770368,
         "2040": 0.13411321976770368,
         "2050": 0.13411321976770368
       },
-      "net_removals_per_yr_mean": 3180.2741362193487,
+      "net_removals_per_yr_mean": 3180.7535978064393,
       "net_removals": {
         "2026": 2826.5778153573933,
-        "2050": 3508.025859731934
+        "2050": 3510.5632482295728
       },
-      "gross_demolitions_per_yr_mean": 3201.3026689931303,
+      "gross_demolitions_per_yr_mean": 3201.785300864689,
       "gross_demolitions": {
         "2026": 2845.2676457562748,
-        "2050": 3531.221544632967
+        "2050": 3533.775710790297
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.037723780487748625,
+      "cumulative_net_removals_share_of_2025_stock": 0.0377294677659168,
       "redevelopment_channel": 0.0,
       "join_net": 34373.16691348948,
       "channel_shares": null,
@@ -366,33 +366,33 @@
       "label": "sensitivity: S1 without the census UC correction"
     },
     "S3-10-noUC": {
-      "GFA_Mm2": 94.21956578486113,
-      "carbon_kt": 35178.18878781431,
-      "upfront_kt": 25267.098831572734,
+      "GFA_Mm2": 94.4760061235327,
+      "carbon_kt": 35276.21039629052,
+      "upfront_kt": 25338.142659225316,
       "shares_2050": {
         "Detached": 0.6059678545731274,
         "Townhouses": 0.34524078995949914,
         "Apartments": 0.04879135546737345
       },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3013.4362402906345,
+      "soil_kt": 3023.8799524194246,
       "rate_pct": {
         "2026": 0.40825398416336445,
         "2030": 0.3418730688428671,
         "2040": 0.2379931443052854,
         "2050": 0.1860531820364945
       },
-      "net_removals_per_yr_mean": 6276.410099404793,
+      "net_removals_per_yr_mean": 6277.107446386927,
       "net_removals": {
         "2026": 8604.38409178604,
-        "2050": 4866.629665591027
+        "2050": 4870.149745154147
       },
-      "gross_demolitions_per_yr_mean": 6297.438632178575,
+      "gross_demolitions_per_yr_mean": 6298.139149445178,
       "gross_demolitions": {
         "2026": 8623.073922184922,
-        "2050": 4889.82535049206
+        "2050": 4893.362207714871
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.07444953066923427,
+      "cumulative_net_removals_share_of_2025_stock": 0.07445780246070602,
       "redevelopment_channel": 0.0,
       "join_net": 22757.904387846946,
       "channel_shares": null,
@@ -403,33 +403,33 @@
       "label": "sensitivity: S3-10 without the census UC correction"
     },
     "S2-noUC": {
-      "GFA_Mm2": 98.3059405631881,
-      "carbon_kt": 36880.729619586105,
-      "upfront_kt": 26822.98027430402,
+      "GFA_Mm2": 98.54017341342374,
+      "carbon_kt": 36971.46374170537,
+      "upfront_kt": 26889.893731127522,
       "shares_2050": {
         "Detached": 0.39920807606278497,
         "Townhouses": 0.5599636663228423,
         "Apartments": 0.04082825761437271
       },
       "size_2050": 127.60417913249053,
-      "soil_kt": 2554.9202978099215,
+      "soil_kt": 2563.4664856460945,
       "rate_pct": {
         "2026": 0.42793001604638714,
         "2030": 0.42793001604638714,
         "2040": 0.42793001604638714,
         "2050": 0.42793001604638714
       },
-      "net_removals_per_yr_mean": 10147.655574159795,
+      "net_removals_per_yr_mean": 10149.185445748983,
       "net_removals": {
         "2026": 9019.077254109248,
-        "2050": 11193.449572282469
+        "2050": 11201.545900909812
       },
-      "gross_demolitions_per_yr_mean": 10168.684106933575,
+      "gross_demolitions_per_yr_mean": 10170.217148807234,
       "gross_demolitions": {
         "2026": 9037.767084508132,
-        "2050": 11216.645257183502
+        "2050": 11224.758363470537
       },
-      "cumulative_net_removals_share_of_2025_stock": 0.12036947601000139,
+      "cumulative_net_removals_share_of_2025_stock": 0.12038762304309761,
       "redevelopment_channel": 0.0,
       "join_net": 21475.19108389847,
       "channel_shares": null,

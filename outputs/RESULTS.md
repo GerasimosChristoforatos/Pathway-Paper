@@ -4,27 +4,27 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 
 | metric | value |
 |---|---|
-| Built floor area 2026-2050, central run (Mm2) | 89.31 |
-| Embodied carbon 2026-2050, central run (kt CO2e) | 33,527 |
-| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 24,133 |
-| Soil carbon (land-use change), central run (kt CO2e) | 3,039 |
-| Embodied carbon excluding soil, central run (kt CO2e) | 30,488 |
+| Built floor area 2026-2050, central run (Mm2) | 89.57 |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 33,625 |
+| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 24,204 |
+| Soil carbon (land-use change), central run (kt CO2e) | 3,050 |
+| Embodied carbon excluding soil, central run (kt CO2e) | 30,575 |
 | 2025 -> 2026 step in built floor area (%) | +9.7 |
-| Household size 2050, central run | 2.654 |
-| Retirement-village floor area 2026-2050, out of scope (Mm2) | 4.69 |
+| Household size 2050, central run | 2.652 |
+| Retirement-village floor area 2026-2050, out of scope (Mm2) | 4.70 |
 | Near-term: 2026 building above requirement (dwellings) | +16,760 |
 | Near-term: gap_ref (market excess) / 2027 excess (old join) | +9,974 |
 | Near-term: net dwellings added 2026-2050 | +27,479 |
-| MC floor area p5 (Mm2) | 69.50 |
-| MC floor area p50 (Mm2) | 88.65 |
-| MC floor area mean (Mm2) | 88.92 |
-| MC floor area p95 (Mm2) | 109.13 |
-| MC carbon p5 (kt) | 25,884 |
-| MC carbon p50 (kt) | 33,204 |
-| MC carbon mean (kt) | 33,375 |
-| MC carbon p95 (kt) | 41,356 |
-| Central run percentile in MC, floor area | 52.0 |
-| Central run percentile in MC, carbon | 52.4 |
+| MC floor area p5 (Mm2) | 69.10 |
+| MC floor area p50 (Mm2) | 88.87 |
+| MC floor area mean (Mm2) | 89.14 |
+| MC floor area p95 (Mm2) | 109.94 |
+| MC carbon p5 (kt) | 25,743 |
+| MC carbon p50 (kt) | 33,268 |
+| MC carbon mean (kt) | 33,460 |
+| MC carbon p95 (kt) | 41,644 |
+| Central run percentile in MC, floor area | 52.1 |
+| Central run percentile in MC, carbon | 52.3 |
 | Hindcast error, origin 2006, model method (%) | -7.1 |
 | Hindcast error, origin 2013, model method (%) | -4.4 |
 | Hindcast error, origin 2018, model method (%) | -14.7 |
@@ -38,13 +38,13 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 
 | scenario | floor area (Mm2) | carbon (kt) | of which soil (kt) | carbon excl. soil (kt) | upfront (kt) |
 |---|---|---|---|---|---|
-| Low (S1): long-run rate, shares held | 82.99 | 31,415 | 3,086 | 28,329 | 22,685 |
-| S3: fade, half-life 5 yr, shares held | 86.10 | 32,436 | 3,044 | 29,392 | 23,379 |
-| Reference (S3): fade, half-life 10 yr, shares held | 89.31 | 33,527 | 3,039 | 30,488 | 24,133 |
-| S3: fade, half-life 15 yr, shares held | 91.32 | 34,213 | 3,038 | 31,175 | 24,607 |
-| Storyline: intensification continues (S2 + damped mix trend) | 90.58 | 34,203 | 2,582 | 31,622 | 24,934 |
-| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 82.25 | 31,289 | 2,586 | 28,702 | 22,868 |
-| High (S2): 2018-2023 rate persists, shares held | 98.48 | 36,655 | 3,034 | 33,621 | 26,296 |
-| sensitivity: S1 without the census UC correction | 85.45 | 32,246 | 3,077 | 29,169 | 23,258 |
-| sensitivity: S3-10 without the census UC correction | 94.22 | 35,178 | 3,013 | 32,165 | 25,267 |
-| sensitivity: S2 without the census UC correction | 98.31 | 36,881 | 2,555 | 34,326 | 26,823 |
+| Low (S1): long-run rate, shares held | 83.24 | 31,513 | 3,096 | 28,417 | 22,756 |
+| S3: fade, half-life 5 yr, shares held | 86.35 | 32,533 | 3,054 | 29,479 | 23,450 |
+| Reference (S3): fade, half-life 10 yr, shares held | 89.57 | 33,625 | 3,050 | 30,575 | 24,204 |
+| S3: fade, half-life 15 yr, shares held | 91.58 | 34,311 | 3,048 | 31,262 | 24,678 |
+| Storyline: intensification continues (S2 + damped mix trend) | 90.81 | 34,294 | 2,590 | 31,704 | 25,000 |
+| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 82.48 | 31,378 | 2,595 | 28,783 | 22,934 |
+| High (S2): 2018-2023 rate persists, shares held | 98.74 | 36,754 | 3,045 | 33,709 | 26,367 |
+| sensitivity: S1 without the census UC correction | 85.70 | 32,344 | 3,088 | 29,256 | 23,329 |
+| sensitivity: S3-10 without the census UC correction | 94.48 | 35,276 | 3,024 | 32,252 | 25,338 |
+| sensitivity: S2 without the census UC correction | 98.54 | 36,971 | 2,563 | 34,408 | 26,890 |

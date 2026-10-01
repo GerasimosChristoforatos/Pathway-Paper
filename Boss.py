@@ -1016,6 +1016,13 @@ def extend_tail(S_knots, S_ann, mode):
               else (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]))
         T = float(S_TAPER_YEARS)
         out = S_ann.copy()
+        if mode == 'taper_secant':
+            # v1.2: the last published interval (2038->2043) is linear at its secant slope, so the
+            # taper after 2043 continues it smoothly (no kink at 2043; the PCHIP segment meets the
+            # line at 2038 instead)
+            k0 = int(yrs_k[-2])
+            seg = (out.index >= k0) & (out.index <= last)
+            out[seg] = s_k[-2] + s0 * (out.index[seg] - k0)
         t = np.clip(out.index.values - last, 0.0, T)
         after = out.index > last
         out[after] = float(S_ann.loc[last]) + s0 * (t[after] - t[after] ** 2 / (2 * T))

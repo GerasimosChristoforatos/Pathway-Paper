@@ -19,7 +19,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import PchipInterpolator
-from scipy import stats
 
 import engine
 
@@ -173,7 +172,7 @@ S_ANCHOR_YEAR = 2023
 #   ratio (the intercensal SHAPE stays consent-driven, as in Stats NZ's own
 #   series); 2024-25 keep the same k. Census households = occupied private
 #   dwellings + dwellings whose residents were away (Stats NZ's bases add
-#   households temporarily absent), k = 0.826. Only the 2018->2023 RATIO is
+#   households temporarily absent); k = 0.824 (printed at run time). Only the 2018->2023 RATIO is
 #   used, so the level adjustments (undercount, households overseas) are assumed
 #   proportionally equal in both censuses. This is an assumption: 2018 census
 #   coverage was poorer than usual.
@@ -234,26 +233,27 @@ COL_CONSENT_COUNTS = {
 }
 TYPOLOGY_COLORS = {'Detached': '#4C72B0', 'Townhouses': '#DD8452', 'Apartments': '#55A868'}
 
-DEMAND_LABELS = ['Growth demand (net of consolidation)',
-                 'Consumption: extra space per dwelling',
-                 'Consumption: vacancy allowance',
-                 'Consumption: replacement of demolished stock',
-                 'House-splitting demand',
-                 'Avoided floor area (consolidation)']
-DEMAND_LABELS_LEGEND = DEMAND_LABELS[:4] + ['_nolegend_', DEMAND_LABELS[5]]
+# Demand bands in the floor-area and carbon figures (boss_04-06, diag_4), bottom to top.
+# All are IN SCOPE: retirement-village units are a constant share of every dwelling
+# built, so their band is removed by scaling each band by (1 - RV share); see fig_bands.
 DEMAND_COLORS = ['#3498db', '#8e44ad', '#95a5a6', '#34495e', '#e67e22', 'none']
 HOUSESPLIT_COLOR = DEMAND_COLORS[4]
-# Retirement-village units are their own band (see RETIREMENT VILLAGES below).
-# Calibrated residual of the stock identity beyond the fixed BRANZ demolition rate:
-# negative = unconsented additions, positive = losses above that rate.
-UNCONSENTED_LABEL = 'Calibrated residual (unconsented additions if < 0; losses beyond BRANZ rate if > 0)'
-RV_LABEL = 'Housed in retirement villages (out of carbon scope)'
+REPL_LABEL = 'Replacement: long-run background (net of unconsented additions)'
+REPL_COLOR = DEMAND_COLORS[3]
 RV_COLOR = '#b8a0d0'
-UNCONSENTED_COLOR = '#16a085'
 JOIN_LABEL = 'Near-term market excess (2026 observed building above requirement, fading at rho)'
 JOIN_COLOR = '#c0392b'
-WAVE_LABEL = 'Redevelopment wave: net replacement above the long-run rate (scenario)'
+WAVE_LABEL = 'Replacement: recent redevelopment wave (fading)'
 WAVE_COLOR = '#d35400'
+# Materials in the carbon figures (boss_10, diag_5), bottom to top: (column, label, colour);
+# soil (land-use change, not a material) on top at alpha SOIL_ALPHA. Edges 0.4 pt #555555.
+MATERIAL_STYLE = [('TIMBER', 'Timber', '#8B5A2B'), ('STEEL', 'Steel', '#8E9296'),
+                  ('CONCRETE (incl. reinforced)', 'Concrete', '#D4D4D4'),
+                  ('PLASTICS & PAINT', 'Plastics & paint', '#2EE62E'),
+                  ('PLASTERBOARD', 'Plasterboard', '#F2EEE3'), ('OTHERS', 'Others', '#000000'),
+                  ('SOIL', 'Soil (land-use change)', '#C9A97A')]
+SOIL_ALPHA = 0.55
+EDGE = dict(edgecolor='#555555', linewidth=0.4)
 
 TREND_WINDOW_START = 2012
 DAMPING_PHI = 0.8
@@ -1292,6 +1292,9 @@ def main():
     S_knots, _S_ann, _pref = statsnz_size_shape(HH_SIZE_VARIANT, forecast_years, tail=S_TAIL)
     S_matched = household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years, 0.0,
                                anchor_year=S_ANCHOR_YEAR)['S_matched']
+    # the same shape from the anchor year to 2025 (figures draw the projection from the anchor point)
+    S_bridge = (float(hist_S.loc[S_ANCHOR_YEAR]) * _S_ann.loc[S_ANCHOR_YEAR:2025]
+                / float(_S_ann.loc[S_ANCHOR_YEAR]))
     # ---- household size and migration: diagnostic regression (not applied) ----
     # Fitted only where households are census-benchmarked (see above).
     _yr = years_hist[(years_hist >= CALIB_START_YEAR) & (years_hist <= calib_end)]
@@ -1859,16 +1862,22 @@ def main():
     plt.legend(); plt.grid(True, alpha=0.3); plt.tight_layout()
 
     # FIG 1b households
-    plt.figure(figsize=(12, 5))
-    plot_hist_estimated(plt.gca(), hist_hh, 1e6, label='Historical (31 Dec)')
-    plt.plot(forecast_years, households_forecast['50th'] / 1e6, color='darkorange', linestyle='--',
-             label='Projected Median')
-    plt.fill_between(forecast_years, households_forecast['5th'] / 1e6, households_forecast['95th'] / 1e6,
-                     color='darkorange', alpha=0.2,
-                     label='5th-95th population percentile (household size fixed)')
-    plt.axvline(2025, color='black', linestyle=':', alpha=0.6)
-    plt.ylabel('Households (millions)'); plt.title('New Zealand Households (1991-2050)')
-    plt.legend(); plt.grid(True, alpha=0.3); plt.tight_layout()
+    fig1b = plt.figure(figsize=(12, 5.4))
+    a = plt.gca()
+    a.plot(hist_hh_dhe.loc[2018:].index, hist_hh_dhe.loc[2018:].values / 1e6, color='grey', lw=1.0, alpha=0.6,
+           label='Stats NZ as published')
+    plot_hist_estimated(a, hist_hh, 1e6, label='Historical (31 Dec)', k=hh_rebase_k)
+    _yb = np.r_[S_bridge.index.values, forecast_years[1:]]      # projection from the anchor point
+    a.plot(_yb, np.r_[(hist_pop.loc[S_bridge.index] / S_bridge).values, households_forecast['50th'][1:]] / 1e6,
+           color='darkorange', linestyle='--', label='Projected median (population / modelled household size)')
+    a.fill_between(forecast_years, households_forecast['5th'] / 1e6, households_forecast['95th'] / 1e6,
+                   color='darkorange', alpha=0.2, label='5th-95th population percentile (household size fixed)')
+    a.set_ylabel('Households (millions)'); a.set_title('New Zealand Households (1991-2050)')
+    a.legend(fontsize=8); a.grid(True, alpha=0.3)
+    plt.tight_layout(rect=(0, 0.05, 1, 1))
+    fig1b.text(0.5, 0.01, f'Census-benchmarked to 2018 (solid); 2019-23 Stats NZ estimates scaled to the 2023 census '
+               f'(x{hh_rebase_k:.3f}, dotted); 2024-25 consent-derived, not used; projection from the {S_ANCHOR_YEAR} '
+               f'census point.', ha='center', fontsize=8.5, style='italic')
 
     # FIG 2 cumulative GFA
     plt.figure(figsize=(13, 7))
@@ -1884,30 +1893,34 @@ def main():
     plt.legend(loc='upper left'); plt.grid(True, alpha=0.3)
     plt.xlim(1991, 2050); plt.tight_layout()
 
-    # Demand bands for figs 3-5 (annual, 2026-2050): one list, so the figures
-    # and the identity test use the same numbers.
-    def _band_list(get, scale):
-        spec = [('Growth demand (net of consolidation)', 'growth', DEMAND_COLORS[0]),
-                ('House-splitting demand', 'hs_pos', HOUSESPLIT_COLOR),
-                ('Consumption: extra space per dwelling', 'extra', DEMAND_COLORS[1]),
-                ('Consumption: vacancy allowance', 'vac', DEMAND_COLORS[2]),
-                ('Consumption: replacement of demolished stock', 'repl', DEMAND_COLORS[3]),
-                (UNCONSENTED_LABEL, 'unc', UNCONSENTED_COLOR),
-                (WAVE_LABEL, 'wave', WAVE_COLOR),
-                (JOIN_LABEL, 'join', JOIN_COLOR),
-                (RV_LABEL, 'rv', RV_COLOR)]
-        return [(lab, get(k) / scale, col) for lab, k, col in spec]
+    # Demand bands for boss_04-06 and diag_4 (annual, 2026-2050): one list, so the figures
+    # and the tests use the same numbers. IN SCOPE: retirement-village (RV) units are a
+    # constant share of every dwelling built (engine.forward), so instead of a negative RV
+    # band every band is scaled by (1 - RV share of the stack) = in-scope total / sum of the
+    # bands before RV; the bands then add up exactly to the typology total. Demolition and the
+    # calibrated residual are shown as one band (only their sum is identified).
+    def _band_list(get, total):
+        spec = [('Growth demand (net of consolidation)', ('growth',), DEMAND_COLORS[0]),
+                ('House-splitting demand', ('hs_pos',), HOUSESPLIT_COLOR),
+                ('Consumption: extra space per dwelling', ('extra',), DEMAND_COLORS[1]),
+                ('Consumption: vacancy allowance', ('vac',), DEMAND_COLORS[2]),
+                (REPL_LABEL, ('repl', 'unc'), REPL_COLOR),
+                (WAVE_LABEL, ('wave',), WAVE_COLOR),
+                (JOIN_LABEL, ('join',), JOIN_COLOR)]
+        raw = [(lab, sum(np.asarray(get(k), float) for k in keys), col) for lab, keys, col in spec]
+        f = total / sum(v for _, v, _ in raw)
+        return [(lab, v * f, col) for lab, v, col in raw], total
     _gfa_cols = dict(growth='Growth', hs_pos='HouseSplit_Pos', extra='Cons_ExtraSpace', vac='Cons_Vacancy',
-                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join',
-                     rv='Cons_RV')
+                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join')
     _carb = dict(growth=carbon_growth_typ, hs_pos=carbon_hs_pos_typ, extra=carbon_extra_typ, vac=carbon_vac_typ,
-                 repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ,
-                 rv=carbon_rv_typ)
+                 repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ)
     fig_bands = {
-        'gfa': (_band_list(lambda k: df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:], 1e6),
-                df_forecast['Ann_GFA_HouseSplit_Avoided_50th'].values[1:] / 1e6),
-        'carbon': (_band_list(lambda k: _carb[k].sum(axis=1).values[1:], 1e6),
-                   carbon_avoided_typ.sum(axis=1).values[1:] / 1e6)}
+        'gfa': _band_list(lambda k: df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:] / 1e6,
+                          evol_typ_total.sum(axis=1).values[1:] / 1e6),
+        'carbon': _band_list(lambda k: _carb[k].sum(axis=1).values[1:] / 1e6,
+                             carbon_total_typ.sum(axis=1).values[1:] / 1e6)}
+    rv_caption = (f'In scope: excludes retirement-village units ({100 * rv_share:.1f}% of new dwellings; '
+                  f'floor area reported separately).')
 
     # FIG 3 annual GFA
     fig3, (bx1, bx2) = plt.subplots(1, 2, figsize=(18, 6))
@@ -1917,10 +1930,12 @@ def main():
     bx1.set_title('Annual GFA by Typology (2026-2050)')
     bx1.legend(loc='lower left', fontsize=9); bx1.grid(True, alpha=0.3); bx1.set_xlim(2026, 2050)
 
-    plot_demand_bands(bx2, plot_years, fig_bands['gfa'][0], fig_bands['gfa'][1])
+    plot_demand_bands(bx2, plot_years, *fig_bands['gfa'])
+    bx2.set_ylabel('Annual new GFA (Mm²/yr)')
     bx2.set_title('Annual GFA by Demand Type (2026-2050)')
-    bx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); bx2.grid(True, alpha=0.3); bx2.set_xlim(2026, 2050)
-    plt.tight_layout()
+    demand_legend(bx2); bx2.grid(True, alpha=0.3); bx2.set_xlim(2026, 2050)
+    plt.tight_layout(rect=(0, 0.04, 1, 1))
+    fig3.text(0.5, 0.01, rv_caption, ha='center', fontsize=8.5, style='italic')
 
     # FIG 4 annual carbon
     fig4, (cx1, cx2) = plt.subplots(1, 2, figsize=(18, 6))
@@ -1930,11 +1945,12 @@ def main():
     cx1.set_title('Annual Embodied Carbon by Typology (2026-2050)')
     cx1.legend(loc='lower left', fontsize=9); cx1.grid(True, alpha=0.3); cx1.set_xlim(2026, 2050)
 
-    plot_demand_bands(cx2, plot_years, fig_bands['carbon'][0], fig_bands['carbon'][1])
+    plot_demand_bands(cx2, plot_years, *fig_bands['carbon'])
     cx2.set_ylabel('Annual Carbon (kt CO2e/yr)')
     cx2.set_title('Annual Embodied Carbon by Demand Type (2026-2050)')
-    cx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
-    plt.tight_layout()
+    demand_legend(cx2); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
+    plt.tight_layout(rect=(0, 0.04, 1, 1))
+    fig4.text(0.5, 0.01, rv_caption, ha='center', fontsize=8.5, style='italic')
 
     # FIG 5 cumulative carbon  -- slice BEFORE accumulating
     cum_typ = (carbon_total_typ.iloc[1:] / 1e6).cumsum()
@@ -1947,9 +1963,11 @@ def main():
 
     plot_demand_bands(dx2, plot_years, [(l, np.cumsum(v), c) for l, v, c in fig_bands['carbon'][0]],
                       np.cumsum(fig_bands['carbon'][1]))
+    dx2.set_ylabel('Cumulative Carbon (kt CO2e)')
     dx2.set_title('Cumulative Embodied Carbon by Demand Type (2026-2050)')
-    dx2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
-    plt.tight_layout()
+    demand_legend(dx2); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
+    plt.tight_layout(rect=(0, 0.04, 1, 1))
+    fig5.text(0.5, 0.01, rv_caption, ha='center', fontsize=8.5, style='italic')
 
     # FIG 6 market share
     plt.figure(figsize=(10, 6))
@@ -1966,9 +1984,11 @@ def main():
 
     # FIG 7 demographic drivers
     fig7, (ex1, ex2) = plt.subplots(1, 2, figsize=(18, 6))
-    plot_hist_estimated(ex1, hist_S, 1.0, label='Historical (census-benchmarked)', lw=2.5)
-    ex1.plot(forecast_years, df_forecast['PopTotal_50th'].values / households_forecast['50th'],
-             color='darkorange', linestyle='--', linewidth=2.5, label='Projected (Stats NZ shape, census-rebased)')
+    plot_hist_estimated(ex1, hist_S, 1.0, label='Historical', lw=2.5, k=hh_rebase_k)
+    ex1.plot(np.r_[S_bridge.index.values, forecast_years[1:]],
+             np.r_[S_bridge.values, (df_forecast['PopTotal_50th'].values / households_forecast['50th'])[1:]],
+             color='darkorange', linestyle='--', linewidth=2.5,
+             label=f'Projected (Stats NZ shape from the {S_ANCHOR_YEAR} census point)')
     ex1.axvline(2025, color='gray', linestyle=':', alpha=0.6)
     ex1.set_ylabel('People per Household')
     ex1.set_title('Average Household Size (1991-2050)')
@@ -1984,7 +2004,10 @@ def main():
     ex2.set_ylabel('Annual Additions')
     ex2.set_title('Population Growth vs Household Formation')
     ex2.legend(); ex2.grid(True, alpha=0.3); ex2.set_xlim(1991, 2050)
-    plt.tight_layout()
+    plt.tight_layout(rect=(0, 0.05, 1, 1))
+    fig7.text(0.5, 0.01, f'Household size: census-benchmarked to 2018 (solid); 2019-23 from Stats NZ household estimates '
+              f'scaled to the 2023 census (x{hh_rebase_k:.3f}, dotted); 2024-25 consent-derived, not used; '
+              f'projection from the {S_ANCHOR_YEAR} census point.', ha='center', fontsize=8.5, style='italic')
 
     # FIG 8 [FIX f / NEW g] space diagnostics
     fig8, (gx1, gx2) = plt.subplots(1, 2, figsize=(18, 6))
@@ -2085,22 +2108,13 @@ def main():
 
     # --- FIG 9: material flows ---------------------------------------
     fig9, (mx1, mx2) = plt.subplots(1, 2, figsize=(18, 6))
-    order = flow_annual.sum().sort_values(ascending=False).index
-    pal = plt.get_cmap('tab20')(np.linspace(0, 1, len(order)))
-    mx1.stackplot(plot_years, [flow_annual[m] / 1e6 for m in order],
-                  labels=list(order), colors=pal, alpha=0.9)
-    mx1.set_ylabel('kt CO$_2$e per year'); mx1.set_xlabel('Year')
-    mx1.set_title('Annual embodied carbon by material (2026-2050)\n'
-                  'soil shown separately: land-use change, not a material')
-    mx1.legend(loc='upper right', fontsize=7, ncol=2); mx1.grid(True, alpha=0.3)
-    mx1.set_xlim(2026, 2050)
-
-    mx2.stackplot(plot_years, [flow_cum[m] / 1e6 for m in order],
-                  labels=list(order), colors=pal, alpha=0.9)
-    mx2.set_ylabel('cumulative kt CO$_2$e'); mx2.set_xlabel('Year')
-    mx2.set_title('Cumulative embodied carbon by material (2026-2050)')
-    mx2.legend(loc='upper left', fontsize=7, ncol=2); mx2.grid(True, alpha=0.3)
-    mx2.set_xlim(2026, 2050)
+    for a, frame, ylab, title, loc in (
+            (mx1, flow_annual, 'kt CO$_2$e per year', 'Annual embodied carbon by material (2026-2050)\n'
+             'soil shown separately: land-use change, not a material', 'upper right'),
+            (mx2, flow_cum, 'cumulative kt CO$_2$e', 'Cumulative embodied carbon by material (2026-2050)', 'upper left')):
+        a.legend(handles=stack_materials(a, plot_years, frame, 1e6), loc=loc, fontsize=7)
+        a.set_ylabel(ylab); a.set_xlabel('Year'); a.set_title(title)
+        a.grid(True, alpha=0.3); a.set_xlim(2026, 2050)
     plt.tight_layout()
 
     # Every intermediate result is returned, so Diagnostics.py and
@@ -2115,31 +2129,35 @@ def main():
     return state
 
 
-def plot_hist_estimated(ax, series, scale=1.0, color='black', label='Historical', lw=2.0,
+def plot_hist_estimated(ax, series, scale=1.0, color='black', label='Historical', lw=2.0, k=None,
                         census_last=2018, anchor=None):
-    """Households / household size history: census-benchmarked years solid,
-    2019-2025 dotted ("estimated from consents, not a census count"), the
-    census anchor year marked, and the join annotated."""
+    """Households / household size history: census-benchmarked to census_last
+    (solid); census_last+1..anchor Stats NZ estimates scaled to the anchor census by
+    k (dotted); after the anchor consent-derived estimates, not used (faint
+    dashed); the anchor census point marked."""
     anchor = S_ANCHOR_YEAR if anchor is None else anchor
     s = series.dropna() / scale
-    ax.plot(s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw, label=label)
-    tail = s.loc[census_last:]
-    ax.plot(tail.index, tail.values, color=color, lw=lw, ls=':',
-            label=f'{census_last + 1}-{int(s.index.max())} estimated from consents (not a census count)')
+    last = int(s.index.max())
+    ax.plot(s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw,
+            label=f'{label}: census-benchmarked to {census_last}')
+    mid = s.loc[census_last:anchor]
+    ax.plot(mid.index, mid.values, color=color, lw=lw, ls=':',
+            label=f'{census_last + 1}-{anchor % 100:02d}: Stats NZ estimates scaled to the {anchor} census'
+                  + (f' (x{k:.3f})' if k is not None else ''))
+    tail = s.loc[anchor:]
+    ax.plot(tail.index, tail.values, color=color, lw=lw * 0.7, ls='--', alpha=0.35,
+            label=f'{anchor + 1}-{last % 100:02d}: consent-derived estimates, not used')
     if anchor in s.index:
-        ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=6, label=f'{anchor} census anchor')
-        ax.annotate(f'projection anchored on {anchor} census;\n{anchor + 1}-{int(s.index.max())} estimates not used',
-                    xy=(anchor, s.loc[anchor]), xytext=(10, -28), textcoords='offset points', fontsize=7,
-                    color='grey', arrowprops=dict(arrowstyle='-', color='grey', lw=0.6))
+        ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=6, label=f'{anchor} census')
     ax.ticklabel_format(axis='y', style='plain', useOffset=False)
 
 
-def plot_demand_bands(ax, years, bands, avoided=None):
-    """Signed stack: the positive part of each band stacked upward from zero,
-    the negative part (RV, a negative join) downward from zero. 'Avoided'
-    (consolidation) is drawn as an outline above the total, not stacked. The
-    dashed line is the signed sum of the bands, which equals the typology total
-    (tests/test_identities.py). Returns that sum."""
+def plot_demand_bands(ax, years, bands, total):
+    """Stack the in-scope demand bands upward from zero. In the adopted run every band
+    is non-negative; a negative part (possible only in a sensitivity run, e.g. payback)
+    is drawn downward, hatched. The solid line is the in-scope total (= typology total);
+    it sits exactly on the top of the stack (tests/test_identities.py). Returns the top
+    of the stack."""
     years = np.asarray(years)
     up, dn = np.zeros(len(years)), np.zeros(len(years))
     for lab, v, col in bands:
@@ -2151,14 +2169,32 @@ def plot_demand_bands(ax, years, bands, avoided=None):
             ax.fill_between(years, dn + neg, dn, color=col, alpha=0.45, lw=0, hatch='..',
                             label=None if np.any(pos > 0) else lab)
         up, dn = up + pos, dn + neg
-    total = sum(np.asarray(v, float) for _, v, _ in bands)
-    if avoided is not None and np.any(np.asarray(avoided) > 0):
-        ax.fill_between(years, total, total + np.asarray(avoided, float), facecolor='none',
-                        edgecolor=HOUSESPLIT_COLOR, hatch='//', lw=0.8,
-                        label='Avoided floor area (consolidation; not built, not stacked)')
-    ax.plot(years, total, color='black', linestyle='--', linewidth=1.5, label='Total built (net) = typology total')
-    ax.axhline(0, color='black', lw=0.7)
-    return total
+    ax.plot(years, np.asarray(total, float), color='black', linewidth=1.5, label='Total built, in scope')
+    if np.any(dn < 0):
+        ax.axhline(0, color='black', lw=0.7)
+    return up
+
+
+def demand_legend(ax):
+    """Legend below the panel, top band first (matches the stack)."""
+    h, l = ax.get_legend_handles_labels()
+    ax.legend(h[::-1], l[::-1], loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8)
+
+
+def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):
+    """Stack carbon by material in MATERIAL_STYLE order (bottom to top), soil on top
+    at SOIL_ALPHA; edges 0.4 pt #555555. Returns legend handles top first."""
+    unknown = set(frame.columns) - {c for c, _, _ in MATERIAL_STYLE}
+    if unknown:
+        raise ValueError(f'No colour for {sorted(unknown)} in MATERIAL_STYLE.')
+    years = np.asarray(years)
+    bottom, handles = np.zeros(len(years)), []
+    for col, lab, colour in MATERIAL_STYLE:
+        v = np.asarray(frame[col], float) / scale
+        handles.append(ax.fill_between(years, bottom, bottom + v, facecolor=colour, label=lab,
+                                       alpha=alpha * (SOIL_ALPHA if col == 'SOIL' else 1.0), **EDGE))
+        bottom = bottom + v
+    return handles[::-1]
 
 
 def export_results(B, path):

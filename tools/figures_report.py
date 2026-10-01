@@ -1,10 +1,11 @@
-"""Report figures (v1.1.1) and FIGURES.md, generated from model runs and outputs/.
+"""Report figures and FIGURES.md, generated from model runs and outputs/.
 
     python tools/figures_report.py
 
-fig_reality_checks, fig_bridge, fig_scenarios, fig_conversion_chain,
-fig_validation -> outputs/figures/; outputs/reality_checks.md/.json (where the
-projection leaves the 1991-2025 range); FIGURES.md (one line per figure).
+fig_reality_checks, fig_bridge (+ appendix split), fig_replacement_rate,
+fig_scenarios, fig_conversion_chain, fig_validation -> outputs/figures/;
+outputs/reality_checks.md/.json (where the projection leaves the 1991-2025
+range); FIGURES.md (one line per figure, paper candidates / supplementary).
 """
 import json
 import os
@@ -91,7 +92,7 @@ def main():
 
     # ---- 5. reality checks -------------------------------------------------
     rc = {}
-    fig, ax = plt.subplots(2, 3, figsize=(18, 10))
+    fig, ax = plt.subplots(2, 4, figsize=(24, 10))
     fig.suptitle('Reality checks: projection vs 1991-2025 history (grey band = historical min-max)', fontsize=13)
     panels = [
         ('built', ax[0, 0], 'Dwellings completed per year (in scope + RV)', 'thousand dwellings', 1e3,
@@ -143,6 +144,21 @@ def main():
     ax[1, 0].set_ylim(0, 300)
     ax[1, 0].text(0.02, 0.97, f"off-scale: {int(_m2.idxmax())} = {_m2.max():,.0f} m²/person (near-zero population growth)",
                   transform=ax[1, 0].transAxes, va='top', fontsize=8)
+    # the 2026 (observed) -> 2027 (model) handover against historical year-to-year changes
+    a = ax[0, 3]
+    Bref = ref['B']
+    chg = 100 * Bref['hist_total_gfa'].pct_change().loc[1992:2025].values
+    R0 = Bref['results']['50th']['total']
+    step = 100 * (R0[2] / R0[1] - 1)
+    a.hist(chg, bins=14, color='#bdc3c7', edgecolor='white')
+    a.axvline(step, color='#C0392B', lw=2.5, label=f'2026->2027 handover (observed -> model): {step:+.1f}%')
+    a.axvline(np.median(chg), color='black', lw=1, ls='--', label=f'median year 1992-2025: {np.median(chg):+.1f}%')
+    a.set_title('Handover 2026 -> 2027 (reference) vs annual changes\nin consented floor area, 1992-2025', fontsize=10)
+    a.set_xlabel('% change from previous year'); a.set_ylabel('number of years'); a.grid(alpha=0.3)
+    a.legend(fontsize=8)
+    handover = dict(step_2026_2027_pct=float(step), hist_median_pct=float(np.median(chg)),
+                          hist_min_pct=float(chg.min()), hist_max_pct=float(chg.max()))
+    ax[1, 3].axis('off')
     plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_reality_checks.png'), dpi=130); plt.close(fig)
 
     # ---- 6. bridge ---------------------------------------------------------
@@ -170,7 +186,34 @@ def main():
     bridge(common + [(('repl', 'unc'), 'Long-run replacement (net)')] + tail, 'fig_bridge.png', '')
     bridge(common + [(('repl',), 'Demolition replacement'), (('unc',), 'Long-run residual')] + tail,
            'fig_bridge_appendix_split.png',
-           '\nAppendix: demolition (BRANZ rate) vs residual -- only their SUM is identified by the census data')
+           '\nAppendix: split assumes the BRANZ demolition rate -- only the SUM is identified by the census data')
+
+    # ---- replacement rate: census record and scenario paths ----------------
+    Bref = ref['B']
+    long_rate = float(Bref['demolition_rate'] + Bref['unconsented_rate'])
+    fy = np.asarray(Bref['forecast_years'])
+    fig, a = plt.subplots(figsize=(11, 5.5))
+    for i, r in enumerate(Bref['census_rates'].itertuples()):
+        a.hlines(100 * r.rate, r.y0, r.y1, color='black', lw=2.5,
+                 label='census intervals (dwelling counts, UC-corrected)' if i == 0 else None)
+    for k, scen, hl in (('S1', 'S1', 10.0), ('S3-10', 'S3', 10.0), ('S2', 'S2', 10.0)):
+        path = engine.replacement_path(scen, long_rate, float(Bref['rate_recent']), fy, hl)
+        a.plot(fy, 100 * path, color=runs[k]['col'], lw=2 if k == 'S3-10' else 1.5, label=runs[k]['lab'])
+    a.axhline(100 * Bref['demolition_rate'], color='#7f8c8d', ls='--', lw=1.3,
+              label=f"BRANZ demolition rate {100 * Bref['demolition_rate']:.3f}%")
+    a.axhline(0, color='black', lw=0.6)
+    a.axvspan(2013, 2018, color='#f1c40f', alpha=0.15, label='2013->2018: census empty/away definition break')
+    a.axvline(2025.5, color='grey', lw=0.7, ls=':')
+    a.set_xlim(1986, 2050); a.grid(alpha=0.3)
+    a.set_ylabel('% of last year\'s stock per year')
+    a.set_title('Net replacement rate (demolition net of unconsented additions): census record and scenario paths')
+    a.legend(fontsize=8, loc='upper left')
+    plt.tight_layout(rect=(0, 0.04, 1, 1))
+    _w = validation.Boss.NET_REPLACEMENT_WINDOW
+    fig.text(0.5, 0.01, f"Long run {_w[0]}-{_w[1]}: "
+             f"{100 * long_rate:.3f}%/yr; 2018-23: {100 * Bref['rate_recent']:.3f}%/yr. Each step is one intercensal "
+             f"interval; the 2018-23 step is a single interval.", ha='center', fontsize=8.5, style='italic')
+    fig.savefig(os.path.join(FIG, 'fig_replacement_rate.png'), dpi=130); plt.close(fig)
 
     # ---- 7. scenarios ------------------------------------------------------
     fig, ax = plt.subplots(1, 3, figsize=(19, 5.5), gridspec_kw=dict(width_ratios=[2, 1, 1]))
@@ -258,7 +301,7 @@ def main():
     plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_validation.png'), dpi=130); plt.close(fig)
 
     # ---- reality-check exceedances ----------------------------------------
-    json.dump(rc, open(os.path.join(OUT, 'reality_checks.json'), 'w'), indent=2)
+    json.dump(dict(rc, handover=handover), open(os.path.join(OUT, 'reality_checks.json'), 'w'), indent=2)
     names = dict(built='dwellings completed', removals_net='net removals', ppl_per_dw='people per new dwelling',
                  m2_per_res='floor area per additional resident', S='household size', size='new-dwelling size',
                  vacancy='vacancy rate (effective, %)')
@@ -273,39 +316,46 @@ def main():
     open(os.path.join(OUT, 'reality_checks.md'), 'w').write('\n'.join(L) + '\n')
 
     # ---- FIGURES.md ---------------------------------------------------------
-    desc = {
-        'boss_01_population': 'Population history and projection (median, 5th-95th). Look for: the 2026 level shift from observed growth.',
-        'boss_02_households': 'Households; 2019-25 dotted = estimated from consents; 2023 census anchor marked. Look for: the anchored join.',
-        'boss_03_cumulative_gfa': 'Cumulative floor area with the population 5th-95th band. Look for: slope change after 2026.',
-        'boss_04_annual_gfa': 'Annual floor area by typology and by demand band (signed stack). Look for: the near-term excess fading.',
-        'boss_05_annual_carbon': 'Annual carbon by typology and by demand band. Look for: dashed total = typology total.',
-        'boss_06_cumulative_carbon': 'Cumulative carbon by typology and by demand band.',
-        'boss_07_typology_share': 'Typology floor-area shares, history and projection. Look for: held shares (reference) vs trend.',
-        'boss_08_demographic_drivers': 'Household size (2019-25 estimated, dotted) and population drivers.',
-        'boss_09_space_diagnostics': 'Dwelling size and space per person diagnostics.',
-        'boss_10_material_flows': 'Carbon by material (soil separate). Look for: dominant materials.',
-        'diag_1_people_households': 'People, households, household size; anchor and estimated years marked.',
-        'diag_2_household_engines': 'Household methods compared.',
-        'diag_3_stock_bucket': 'Stock identity: vacancy, dwellings by component, stock, net replacement with census-interval rates and the 2013-18 definition break.',
-        'diag_4_floor_area': 'Floor area by demand band, history and projection; avoided as an outline.',
-        'diag_5_carbon': 'Carbon decomposition.',
-        'diag_6_checks': 'History reconstruction, the 2026->2027 handover vs historical changes, the 2026 out-of-sample check, factor consistency.',
-        'diag_6b_appendix_vacancy_definition': 'Appendix: why empty-only vacancy (not residents away) is used.',
-        'sens_1_tornado': 'One-at-a-time sensitivities (floor area and carbon). Look for: the largest bars.',
-        'sens_2_paths': 'Annual paths of the largest sensitivities.',
-        'mc_1_fan': 'Reference MC fan (5-95%). Look for: the width relative to the scenario spread.',
-        'mc_3_sobol': 'Sobol indices (reference). Look for: population dominance.',
-        'fig_reality_checks': 'Projection vs 1991-2025 range: completions, removals, people per new dwelling, m² per new resident, household size and vacancy, dwelling size and mix. Look for: lines leaving the grey band (outputs/reality_checks.md).',
-        'fig_bridge': 'Waterfall of 2026-2050 floor area by reason (low / reference / storyline); demolition and residual merged as long-run replacement (net). Look for: how much the wave and excess add.',
-        'fig_bridge_appendix_split': 'Appendix: the bridge with demolition and the long-run residual split; only their sum is identified.',
-        'fig_scenarios': 'Annual floor area by scenario with the reference MC band and history; cumulative floor area and carbon (upfront vs later).',
-        'fig_conversion_chain': 'Indices of population growth -> households -> dwellings -> floor area -> carbon, and carbon intensity per m². Look for: where the chain diverges.',
-        'fig_validation': 'Hindcast cumulative dwellings (reference S3-10 and S1 census dwelling-count rate) from 2006/2013/2018 under a consistent vacancy definition (dotted: vacancy as published), and the 2026 check.'}
+    paper = {
+        'boss_03_cumulative_gfa': 'Cumulative built floor area, history and projection, with the population 5th-95th band.',
+        'boss_04_annual_gfa': 'Annual floor area by typology and by demand type (in scope; RV units excluded by scaling).',
+        'boss_05_annual_carbon': 'Annual embodied carbon by typology and by demand type (in scope).',
+        'boss_10_material_flows': 'Carbon by material, annual and cumulative; soil (land-use change) on top.',
+        'fig_bridge': 'Waterfall of 2026-2050 floor area by reason for building: low (S1) / reference (S3-10) / storyline (S2).',
+        'fig_replacement_rate': 'Net replacement rate: census intervals (steps), S1 / S3-10 / S2 paths, BRANZ demolition rate.',
+        'fig_scenarios': 'Annual floor area by scenario with the reference MC band; cumulative floor area and carbon.',
+        'fig_reality_checks': 'Projection vs the 1991-2025 range (outputs/reality_checks.md) and the 2026->2027 handover.',
+        'fig_validation': 'Hindcast of cumulative dwellings from 2006/2013/2018 (consistent vacancy) and the 2026 check.',
+        'mc_1_fan': 'Within-scenario Monte Carlo fan (reference), history from 1991.',
+        'sens_1_tornado': 'One-at-a-time sensitivities: scenarios, mix, household size, stock, near-term rule, carbon/soil bounds.'}
+    supp = {
+        'boss_01_population': 'Population history and projection (median, 5th-95th); the 2026 level shift from observed growth.',
+        'boss_02_households': 'Households: census-benchmarked to 2018, 2019-23 scaled to the 2023 census, projection from 2023.',
+        'boss_06_cumulative_carbon': 'Cumulative carbon by typology and by demand type (in scope).',
+        'boss_07_typology_share': 'Typology floor-area shares, history and projection (held vs trend).',
+        'boss_08_demographic_drivers': 'Household size (same history treatment as boss_02) and population vs household growth.',
+        'boss_09_space_diagnostics': 'Realised vs occupied floor area per new dwelling; occupancy utilisation.',
+        'diag_2_household_engines': 'Household size vs arrivals (partly mechanical between censuses); DHE/consent ratio; engines.',
+        'diag_3_stock_bucket': 'Vacancy definitions, stock, and dwellings per year (history by census interval).',
+        'diag_3b_appendix_vacancy_definition': 'Appendix: why empty-only vacancy (not residents away) is used.',
+        'diag_4_floor_area': 'Floor area by typology and demand type (history by census interval), mix, dwelling size.',
+        'diag_5_carbon': 'Carbon by typology and material (history estimated with 2025 factors); case-study intensities.',
+        'fig_bridge_appendix_split': 'Appendix: the bridge with demolition and residual split (split assumes the BRANZ rate).',
+        'fig_conversion_chain': 'Indices population -> households -> dwellings -> floor area -> carbon; intensity per m².',
+        'mc_3_sobol': 'Sobol indices (reference): within-scenario parametric uncertainty only.',
+        'sens_2_paths': 'Annual paths of the largest one-at-a-time sensitivities.'}
     files = sorted(f[:-4] for f in os.listdir(FIG) if f.endswith('.png'))
-    L = ['# Figures (generated by tools/figures_report.py)', '', '| figure | what it shows / what to look for |', '|---|---|']
-    L += [f"| `outputs/figures/{f}.png` | {desc.get(f, '(no description)')} |" for f in files]
+    unlisted = [f for f in files if f not in paper and f not in supp]
+    missing = [f for f in list(paper) + list(supp) if f not in files]
+    if unlisted or missing:
+        raise SystemExit(f'FIGURES.md out of date: unlisted {unlisted}, missing {missing}')
+    L = ['# Figures (generated by tools/figures_report.py)', '', 'All in `outputs/figures/`.', '',
+         '## Paper candidates', '']
+    L += [f'- `{f}.png`: {d}' for f, d in paper.items()]
+    L += ['', '## Supplementary', '']
+    L += [f'- `{f}.png`: {d}' for f, d in supp.items()]
     open(os.path.join(ROOT, 'FIGURES.md'), 'w').write('\n'.join(L) + '\n')
-    print(f'figures_report: 5 figures, {len(files)} listed in FIGURES.md')
+    print(f'figures_report: {len(files)} figures listed in FIGURES.md ({len(paper)} paper, {len(supp)} supplementary)')
 
 
 if __name__ == '__main__':

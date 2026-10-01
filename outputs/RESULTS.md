@@ -5,9 +5,9 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 | metric | value |
 |---|---|
 | Built floor area 2026-2050, central run (Mm2) | 89.31 |
-| Embodied carbon 2026-2050, central run (kt CO2e) | 33,376 |
-| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 23,981 |
-| Soil carbon (land-use change), central run (kt CO2e) | 2,888 |
+| Embodied carbon 2026-2050, central run (kt CO2e) | 33,528 |
+| Upfront carbon A1-A5 + soil, central run (kt CO2e) | 24,133 |
+| Soil carbon (land-use change), central run (kt CO2e) | 3,039 |
 | Embodied carbon excluding soil, central run (kt CO2e) | 30,488 |
 | 2025 -> 2026 step in built floor area (%) | +9.7 |
 | Household size 2050, central run | 2.654 |
@@ -19,10 +19,10 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 | MC floor area p50 (Mm2) | 88.65 |
 | MC floor area mean (Mm2) | 88.92 |
 | MC floor area p95 (Mm2) | 109.13 |
-| MC carbon p5 (kt) | 25,649 |
-| MC carbon p50 (kt) | 33,032 |
-| MC carbon mean (kt) | 33,226 |
-| MC carbon p95 (kt) | 41,296 |
+| MC carbon p5 (kt) | 25,884 |
+| MC carbon p50 (kt) | 33,204 |
+| MC carbon mean (kt) | 33,375 |
+| MC carbon p95 (kt) | 41,357 |
 | Central run percentile in MC, floor area | 52.0 |
 | Central run percentile in MC, carbon | 52.4 |
 | Hindcast error, origin 2006, model method (%) | -17.3 |

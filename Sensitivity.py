@@ -56,6 +56,7 @@ CASES = [   # v1.1 lean set; the full v1.0.2 table is in the history (tag v1.0.2
     ('Stock', 'Completion rate 0.92', dict(COMPLETION_RATE=0.92)),
     ('Stock', 'Completion rate 0.96', dict(COMPLETION_RATE=0.96)),
     ('Stock', "Completion lag on (Little's law)", dict(COMPLETION_LAG='littles_law')),
+    ('Stock', 'No census under-construction correction', dict(CENSUS_UC_CORRECTION=False)),
     ('Near-term market excess', 'Temporary surplus with payback, absorption 0.20/yr',
      dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.20)),
     ('Near-term market excess', 'Temporary surplus with payback, absorption 0.10/yr',

@@ -467,7 +467,16 @@ DEMOLITION_CALIB_START = 1992      # calibration window for the unconsented-addi
 #   'household_identity': the original: the household identity with the
 #       census 'empty' series as published (contains the 2013->2018 break).
 NET_REPLACEMENT_SOURCE = 'dwelling_count'
-NET_REPLACEMENT_WINDOW = (1991, 2023)    # census years; (2013, 2023) is a sensitivity
+NET_REPLACEMENT_WINDOW = (1991, 2023)
+# CENSUS_UC_CORRECTION (v1.1.1, default True): in the dwelling-count identity,
+#   dwellings completed over a census interval = 0.95 x consents - the change in
+#   census private dwellings UNDER CONSTRUCTION (census stock excludes them; with
+#   no completion lag, consents still in progress at census night would else be
+#   read as demolition). Applied only when COMPLETION_LAG is 0 (a lag already
+#   removes the pipeline; correcting twice would double count). UC counts:
+#   1986-2013 census Table 1 (occ-unocc-2013.xlsx), 2018/2023 CEN23_HOU_018
+#   (private). False = no correction (sensitivity).
+CENSUS_UC_CORRECTION = True    # census years; (2013, 2023) is a sensitivity
 
 # REPLACEMENT_SCENARIO (item 2 of the CP2 decisions; 'dwelling_count' source only):
 #   'S1': the long-run rate (NET_REPLACEMENT_WINDOW) throughout;
@@ -1479,13 +1488,16 @@ def main():
     demolition_rate = DEMOLITION_RATE                  # fixed (BRANZ SR214)
     # census dwelling-count identity (always computed; reported, and the default source)
     consents_monthly = df_consents.set_index('Date')[COL_DWELLINGS_TOTAL].astype(float)
-    census_rates = engine.census_interval_rates(census['total_private'], consents_monthly, _completion, lag_w)
+    census_uc = (census['under_construction'] if CENSUS_UC_CORRECTION and lag_w == 0 else None)
+    census_rates = engine.census_interval_rates(census['total_private'], consents_monthly, _completion, lag_w,
+                                                uc=census_uc)
 
     def net_rate(cal, completion):
         """Long-run net replacement rate under NET_REPLACEMENT_SOURCE."""
         if _nr_source == 'dwelling_count':
             return engine.census_window_rate(
-                engine.census_interval_rates(census['total_private'], consents_monthly, completion, lag_w),
+                engine.census_interval_rates(census['total_private'], consents_monthly, completion, lag_w,
+                                             uc=census_uc),
                 *_nr_window)
         return cal['demol_rate'] + cal['rate_unc']
 

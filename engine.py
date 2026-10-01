@@ -294,6 +294,41 @@ def nowcast_join(E, consents_2025, consents_2026, completion, lag_w, shares, dra
     return join, dict(O26=O26, R26=float(R[1]), R27=float(R[2]), e26=e26, e27=e27, channels=ch)
 
 
+def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', absorption=0.0):
+    """Near-term market excess (v1.1 rule). E: forward() result WITHOUT a join
+    (index 0 = 2025, 1 = 2026). building_2026: observed dwellings built in 2026
+    (all categories).
+      excess_2026 = building_2026 - requirement_2026
+      gap_ref     = building_2026 - requirement_2027  (gap_ref='2027'; '2026' = sensitivity)
+      excess_t    = gap_ref x rho^(t - 2026), t >= 2027
+    mode 'redevelopment' (default): the excess is stock-neutral extra replacement
+      of existing stock (returned as redev = join; no soil, no absorption, no payback);
+    mode 'surplus': the excess adds to the stock; each later year a share
+      `absorption` of the remaining surplus is absorbed by building less
+      (payback); absorption = 0 leaves the surplus permanent.
+    Returns (join, info)."""
+    R = requirement(E)
+    n = len(R)
+    k = np.arange(n)
+    gap = float(building_2026 - (R[2] if gap_ref == '2027' else R[1]))
+    excess = np.zeros(n)
+    excess[1] = building_2026 - R[1]
+    excess[2:] = gap * rho ** (k[2:] - 1)
+    info = dict(O26=float(building_2026), R26=float(R[1]), R27=float(R[2]), e26=float(excess[1]),
+                e27=gap, gap_ref=gap, rho=float(rho), mode=mode, excess=excess)
+    if mode == 'redevelopment':
+        return excess.copy(), dict(info, redev=excess.copy(), surplus=np.zeros(n), payback=np.zeros(n))
+    if mode != 'surplus':
+        raise ValueError(f"Unknown near-term mode '{mode}'.")
+    join, pay, U, left = excess.copy(), np.zeros(n), np.zeros(n), 0.0
+    for i in range(1, n):
+        pay[i] = absorption * left if i >= 2 else 0.0
+        join[i] = excess[i] - pay[i]
+        left = left - pay[i] + excess[i]
+        U[i] = left
+    return join, dict(info, redev=np.zeros(n), surplus=U, payback=-pay)
+
+
 def deviation_2025(cal, built_all_2025, d_hh_2025, rate_net, years, window_start, window_end):
     """How far 2025's building beyond household formation departs from the
     calibrated identity, and the lag-1 autocorrelation (clipped to [0, 0.95])

@@ -1,4 +1,4 @@
-"""Item 2 of the CP2 decisions: the net-replacement scenarios S1, S2 and S3
+"""The net-replacement scenarios S1, S2 and S3
 (half-lives 5, 10, 15 years), side by side. EVIDENCE for the author's choice
 of a central case or bracketing; nothing here sets a parameter, and 2026 is
 not used to fit anything (the 2026 comparison is reported, not targeted).

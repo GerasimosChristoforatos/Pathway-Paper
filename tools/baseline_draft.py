@@ -73,7 +73,7 @@ LIMITATIONS = [
     'N4 (open): the Low/High household-size variants (deterministic) are paired with stochastic population '
     'percentiles through one draw z, and the total vs private-household population question is unresolved '
     'until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ\'s '
-    '2023-base release (late 2026) planned as v1.1.',
+    '2023-base release (late 2026) to be adopted in a later version.',
     'Timber end of life (C1-C4) excludes biogenic CO2 (confirmed by the author). Whether it includes landfill '
     'methane is TO CONFIRM from Christoforatos & Pickering 2025 (author check).',
     'With shares held (reference and S1), the Monte Carlo carries no typology-mix uncertainty; the mix is '

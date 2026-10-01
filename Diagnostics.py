@@ -255,7 +255,12 @@ cen = B['census']
 knots = SC['knots']
 a = ax[0, 0]
 a.plot(SC['v'].index, 100 * SC['v'], color='#2c3e50', lw=2, label='vacancy used')
-a.plot(FY, np.full(len(FY), 100 * B['v_forward']), color='#2c3e50', lw=2, ls='--')
+_E50 = B['engine_out']['50th']
+_v_imp = 1 - _E50['hh'] / (_E50['stock'] + _E50['stock_join'])     # held rate + unabsorbed surplus / stock
+a.plot(FY, np.full(len(FY), 100 * B['v_forward']), color='#2c3e50', lw=1.2, ls=':', label='held (latest census)')
+a.plot(FY, 100 * _v_imp, color='#2c3e50', lw=2, ls='--', label='implied: held + near-term surplus / stock')
+_kv = [100 * v for v in knots.values()]
+a.axhspan(min(_kv), max(_kv), color='grey', alpha=0.12, label=f'census range {min(knots)}-{max(knots)}')
 meas = cen['empty'].notna()
 for y, v in knots.items():
     filled = bool(meas.get(y, False))
@@ -277,14 +282,17 @@ hist_parts = [('new households', B['d_hh'].loc[YH], C['split']),
               ('demolitions replaced', SC['demol'].loc[YH], C['demol']),
               ('calibrated residual', SC['uncons'].loc[YH], C['unc']),
               ('retirement-village units (out of scope)', SC['rv'].loc[YH], C['rv'])]
+_wave_u = (np.asarray(B['rate_path'], float) - (B['demolition_rate'] + B['unconsented_rate'])) * _E50['prev']
 fut_parts = [('', R['d_hh'][1:], C['split']), ('', SF['allow'][1:], C['vac']),
              ('', np.zeros(len(PF)), C['vchg']), ('', SF['demol'][1:], C['demol']),
-             ('', SF['uncons'][1:], C['unc']), ('', SF['rv'][1:], C['rv']),
-             ('near-term market excess', SF['join'][1:], C['join'])]
+             ('', (SF['uncons'] - _wave_u)[1:], C['unc']), ('', _wave_u[1:], C['wave']), ('', SF['rv'][1:], C['rv']),
+             ('', SF['join'][1:], C['join'])]
 signed_bars(a, YH, [(l, v / 1e3, c) for l, v, c in hist_parts])
 signed_bars(a, PF, [(l, v / 1e3, c) for l, v, c in fut_parts], projected=True)
-if np.any(SF['join'][1:] != 0):
-    a.bar([], [], color=C['join'], alpha=0.5, label='near-term market excess')
+for _lab, _arr, _col in (('near-term market excess', SF['join'], C['join']),
+                         ('redevelopment wave (scenario - long run)', _wave_u, C['wave'])):
+    if np.any(np.asarray(_arr)[1:] != 0):              # legend swatch in the projected style
+        a.fill_between([], [], color=_col, alpha=0.5, hatch='//', edgecolor='white', label=_lab)
 built_h = B['hist_built_units'].loc[YH]          # in-scope dwellings built (lagged completions)
 built_f = R['total'][1:] / D_f[1:]
 a.plot(YH, built_h / 1e3, color='black', lw=1.6, label='dwellings built (in scope)')
@@ -295,10 +303,10 @@ a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
 a = ax[1, 0]
 a.plot(SC['stock'].index, SC['stock'] / M6, color='#2c3e50', lw=2, label='dwelling stock')
 M.plot_hist_estimated(a, hh_h, M6, color='#e67e22', label='households')
-a.plot(FY, SF['stock'] / M6, color='#2c3e50', lw=2, ls='--')
+a.plot(FY, (SF['stock'] + SF['stock_join']) / M6, color='#2c3e50', lw=2, ls='--',
+       label='stock projected (incl. near-term surplus)')
 a.plot(FY, B['households_forecast']['50th'] / M6, color='#e67e22', lw=2, ls='--')
-tidy(a, 'Stock = households / (1 - vacancy)', 'million')
-mark_anchor(a)
+tidy(a, 'Stock = households / (1 - vacancy) + near-term surplus', 'million')
 a.legend()
 
 a = ax[1, 1]
@@ -356,10 +364,9 @@ fut_dem = [('', R['growth'][1:], C['growth']), ('', R['hs_pos'][1:], C['split'])
            ('near-term market excess', R['join'][1:], C['join'])]
 signed_bars(a, YH, [(l, np.asarray(v) / M6, c) for l, v, c in hist_dem])
 signed_bars(a, PF, [(l, v / M6, c) for l, v, c in fut_dem], projected=True)
-if np.any(R['join'][1:] != 0):
-    a.bar([], [], color=C['join'], alpha=0.5, label='near-term market excess')
-if np.any(R['wave'][1:] != 0):
-    a.bar([], [], color=C['wave'], alpha=0.5, label='redevelopment wave (scenario - long run)')
+for _lab, _key in (('near-term market excess', 'join'), ('redevelopment wave (scenario - long run)', 'wave')):
+    if np.any(R[_key][1:] != 0):                       # legend swatch in the projected style
+        a.fill_between([], [], color=C[_key], alpha=0.5, hatch='//', edgecolor='white', label=_lab)
 a.plot(YH, B['hist_built_gfa'].loc[YH] / M6, color='black', lw=1.6, label='built (net)')
 a.plot(PF, R['total'][1:] / M6, color='black', lw=1.6, ls='--')
 a.fill_between(PF, R['total'][1:] / M6, (R['total'][1:] + R['hs_avoided'][1:]) / M6, facecolor='none',
@@ -372,7 +379,8 @@ sh_h, sh_f = B['hist_shares'], B['evolving_gfa_shares']
 for t in TYP:
     a.plot(sh_h.index, 100 * sh_h[t], color=TC[t], lw=2, label=t)
     a.plot(FY, 100 * sh_f[t], color=TC[t], lw=2, ls='--')
-tidy(a, 'Typology mix: damped trend from 2012', '% of floor area')
+tidy(a, ('Typology mix: held at 2022–26 average (reference)' if B['mix_used'] == 'held'
+         else 'Typology mix: damped trend from 2012'), '% of floor area')
 a.set_ylim(0, 100)
 a.legend()
 
@@ -451,7 +459,7 @@ recon = sum(np.asarray(v, dtype=float) for _, v, _ in hist_dem)
 obs = (B['hist_built_units'].loc[YH] * D_h.loc[YH]).values   # built dwellings x realised size
 a.plot(YH, obs / M6, color='black', lw=2.5, label='observed (built)')
 a.plot(YH, recon / M6, color='#e74c3c', ls='', marker='o', ms=4, label='sum of demand parts')
-a.set_title(f'History reproduced by the decomposition\n'
+a.set_title(f'Accounting identity check (not a validation)\n'
             f'max |difference| = {np.abs(recon - obs).max():.1e} m²')
 a.set_ylabel('Mm² per year')
 a.legend()

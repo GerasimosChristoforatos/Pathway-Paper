@@ -5,6 +5,8 @@ and the join under the adopted settings. Nothing here sets a parameter.
     python tools/near_term_join.py      # -> outputs/near_term_join.md, .json
 """
 import json
+
+import numpy as np
 import os
 import sys
 
@@ -22,7 +24,21 @@ def main():
     import Boss
     if B['_join_mode'] == 'market_excess':
         ji, nc = B['join_info']['50th'], B['nowcast']
+        E = B['engine_out']['50th']
+        fy = list(B['forecast_years'])
+        v_eff = 1 - E['hh'] / (E['stock'] + E['stock_join'])
+        ipk = int(np.argmax(v_eff[1:])) + 1
+        knots = B['stock_cal']['knots']
+        rem = lambda Ex: Ex['demol'] + Ex['unc'] + Ex['join_redev']
+        Er = validation.run_boss(NEAR_TERM_MODE='redevelopment')['engine_out']['50th']
+        ir = int(np.argmax(rem(Er)[1:])) + 1
+        vac = dict(peak=float(v_eff[ipk]), peak_year=int(fy[ipk]), v_2050=float(v_eff[-1]), v_forward=float(E['v'][-1]),
+                   census_min=float(min(knots.values())), census_max=float(max(knots.values())),
+                   census_years=f'{min(knots)}-{max(knots)}')
+        redev = dict(peak_removals=float(rem(Er)[ir]), peak_year=int(fy[ir]),
+                     default_peak_removals=float(rem(E)[1:].max()))
         res = dict(mode='market_excess', near_mode=Boss.NEAR_TERM_MODE, gap_ref_basis=Boss.NEAR_TERM_GAP_REF,
+                   vacancy=vac, redevelopment_sensitivity=redev,
                    nowcast_method=Boss.NOWCAST_METHOD, consents_2026=nc['total'], O26=ji['O26'], R26=ji['R26'],
                    R27=ji['R27'], e26=ji['e26'], gap_ref=ji['gap_ref'], rho=ji['rho'],
                    join_2026_2050=float(ji['join'][1:].sum()), scenario=B['_scenario'])
@@ -34,7 +50,13 @@ def main():
              f"Requirement 2026 {ji['R26']:,.0f} -> excess {ji['e26']:+,.0f}; requirement 2027 {ji['R27']:,.0f} "
              f"-> gap_ref {ji['gap_ref']:+,.0f} (basis {Boss.NEAR_TERM_GAP_REF}), fading at rho = {ji['rho']:.2f}.",
              f"Booked as {Boss.NEAR_TERM_MODE}: {float(ji['join'][1:].sum()):+,.0f} dwellings over 2026-2050 "
-             f"(scenario {B['_scenario']})."]
+             f"(scenario {B['_scenario']}).",
+             f"Implied vacancy (1 - households / (stock + excess)): peak {100 * vac['peak']:.2f}% in {vac['peak_year']}, "
+             f"{100 * vac['v_2050']:.2f}% in 2050 (held rate {100 * vac['v_forward']:.2f}%); census {vac['census_years']} "
+             f"range {100 * vac['census_min']:.2f}-{100 * vac['census_max']:.2f}% (empty dwellings; before 2013 the empty share "
+             f"of unoccupied is estimated, and 2013->2018 is a definitional break).",
+             f"Sensitivity, booked as redevelopment: implied net removals peak at {redev['peak_removals']:,.0f} in "
+             f"{redev['peak_year']} (default: {redev['default_peak_removals']:,.0f})."]
         with open(OUT_MD, 'w') as f:
             f.write('\n'.join(L) + '\n')
         print('\n'.join(L))

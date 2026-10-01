@@ -71,9 +71,9 @@
   "scenarios": {
     "S1": {
       "GFA_Mm2": 82.98984338384902,
-      "carbon_kt": 31217.351321599628,
-      "upfront_kt": 22487.63942473046,
-      "soil_kt": 2887.703147829149,
+      "carbon_kt": 31415.270492751846,
+      "upfront_kt": 22685.55859588268,
+      "soil_kt": 3085.622318981372,
       "rate_pct": {
         "2026": 0.10054764522644084,
         "2030": 0.10054764522644084,
@@ -91,20 +91,20 @@
         "2050": 3531.221544632967
       },
       "cumulative_net_removals_share_of_2025_stock": 0.028284026786024194,
-      "redevelopment_channel": 35846.62920231286,
+      "redevelopment_channel": 0.0,
       "join_net": 35846.62920231286,
       "channel_shares": null,
       "R26": 17940.657500714424,
       "O26": 38862.6,
       "e26": 20921.942499285575,
       "e27": 13886.39693330392,
-      "label": "S1: long-run rate, shares held"
+      "label": "Low (S1): long-run rate, shares held"
     },
     "S3-5": {
       "GFA_Mm2": 86.09991852798677,
-      "carbon_kt": 32279.484681807076,
-      "upfront_kt": 23222.58976054251,
-      "soil_kt": 2887.703147829149,
+      "carbon_kt": 32435.785313451463,
+      "upfront_kt": 23378.89039218689,
+      "soil_kt": 3044.003779473534,
       "rate_pct": {
         "2026": 0.28481041248917904,
         "2030": 0.20637881404739533,
@@ -122,7 +122,7 @@
         "2050": 3704.236962889561
       },
       "cumulative_net_removals_share_of_2025_stock": 0.042929260669911797,
-      "redevelopment_channel": 28302.224140424623,
+      "redevelopment_channel": 0.0,
       "join_net": 28302.224140424623,
       "channel_shares": null,
       "R26": 21824.190019308404,
@@ -133,9 +133,9 @@
     },
     "S3-10": {
       "GFA_Mm2": 89.31020271426716,
-      "carbon_kt": 33375.84080568463,
-      "upfront_kt": 23981.22076828719,
-      "soil_kt": 2887.703147829149,
+      "carbon_kt": 33527.610922255,
+      "upfront_kt": 24132.990884857547,
+      "soil_kt": 3039.4732643995094,
       "rate_pct": {
         "2026": 0.2980355893121449,
         "2030": 0.25021551949483123,
@@ -153,20 +153,20 @@
         "2050": 4509.944548625483
       },
       "cumulative_net_removals_share_of_2025_stock": 0.0547419662750847,
-      "redevelopment_channel": 27479.123839651176,
+      "redevelopment_channel": 0.0,
       "join_net": 27479.123839651176,
       "channel_shares": null,
       "R26": 22102.924595040186,
       "O26": 38862.6,
       "e26": 16759.675404959813,
       "e27": 9973.711263233039,
-      "label": "S3: fade, half-life 10 yr, shares held (reference)"
+      "label": "Reference (S3): fade, half-life 10 yr, shares held"
     },
     "S3-15": {
       "GFA_Mm2": 91.32200832611088,
-      "carbon_kt": 34062.90004237847,
-      "upfront_kt": 24456.63603688612,
-      "soil_kt": 2887.703147829149,
+      "carbon_kt": 34213.040179319105,
+      "upfront_kt": 24606.77617382676,
+      "soil_kt": 3037.8432847697927,
       "rate_pct": {
         "2026": 0.3026516511878693,
         "2030": 0.26854415394384806,
@@ -184,7 +184,7 @@
         "2050": 5275.107683975754
       },
       "cumulative_net_removals_share_of_2025_stock": 0.06204048090864099,
-      "redevelopment_channel": 27182.952402974,
+      "redevelopment_channel": 0.0,
       "join_net": 27182.952402974,
       "channel_shares": null,
       "R26": 22200.212976564686,
@@ -195,9 +195,9 @@
     },
     "S2": {
       "GFA_Mm2": 90.58321049554912,
-      "carbon_kt": 34062.572625967194,
-      "upfront_kt": 24792.78446865312,
-      "soil_kt": 2440.156095982147,
+      "carbon_kt": 34203.98796447246,
+      "upfront_kt": 24934.19980715838,
+      "soil_kt": 2581.571434487408,
       "rate_pct": {
         "2026": 0.3122099828683497,
         "2030": 0.3122099828683497,
@@ -215,20 +215,20 @@
         "2050": 9067.714928843974
       },
       "cumulative_net_removals_share_of_2025_stock": 0.08782458801919713,
-      "redevelopment_channel": 26555.071505418407,
+      "redevelopment_channel": 0.0,
       "join_net": 26555.071505418407,
       "channel_shares": null,
       "R26": 22401.664916400823,
       "O26": 38862.6,
       "e26": 16460.935083599175,
       "e27": 9391.901340473029,
-      "label": "S2: 2018-2023 rate persists, damped mix trend (intensification continues)"
+      "label": "Storyline: intensification continues (S2 + damped mix trend)"
     },
     "S3-10-trend": {
       "GFA_Mm2": 82.25133588884378,
-      "carbon_kt": 31142.832662383993,
-      "upfront_kt": 22721.907007965416,
-      "soil_kt": 2440.156095982147,
+      "carbon_kt": 31289.0067482126,
+      "upfront_kt": 22868.08109379403,
+      "soil_kt": 2586.33018181076,
       "rate_pct": {
         "2026": 0.2980355893121449,
         "2030": 0.25021551949483123,
@@ -246,7 +246,7 @@
         "2050": 4509.944548625483
       },
       "cumulative_net_removals_share_of_2025_stock": 0.0547419662750847,
-      "redevelopment_channel": 27479.123839651176,
+      "redevelopment_channel": 0.0,
       "join_net": 27479.123839651176,
       "channel_shares": null,
       "R26": 22102.924595040186,
@@ -257,9 +257,9 @@
     },
     "S2-held": {
       "GFA_Mm2": 98.48509092342736,
-      "carbon_kt": 36509.19109192819,
-      "upfront_kt": 26149.36361302537,
-      "soil_kt": 2887.7031478291497,
+      "carbon_kt": 36655.876020382224,
+      "upfront_kt": 26296.048541479406,
+      "soil_kt": 3034.3880762831873,
       "rate_pct": {
         "2026": 0.3122099828683497,
         "2030": 0.3122099828683497,
@@ -277,20 +277,20 @@
         "2050": 9067.714928843974
       },
       "cumulative_net_removals_share_of_2025_stock": 0.08782458801919713,
-      "redevelopment_channel": 26555.071505418407,
+      "redevelopment_channel": 0.0,
       "join_net": 26555.071505418407,
       "channel_shares": null,
       "R26": 22401.664916400823,
       "O26": 38862.6,
       "e26": 16460.935083599175,
       "e27": 9391.901340473029,
-      "label": "sensitivity: S2 with shares held (maximum floor-area case)"
+      "label": "High (S2): 2018-2023 rate persists, shares held"
     },
     "S1-noUC": {
       "GFA_Mm2": 85.44709152784786,
-      "carbon_kt": 32056.5352985426,
-      "upfront_kt": 23068.31843244176,
-      "soil_kt": 2887.703147829149,
+      "carbon_kt": 32246.329704507447,
+      "upfront_kt": 23258.112838406607,
+      "soil_kt": 3077.4975537939986,
       "rate_pct": {
         "2026": 0.13411321976770368,
         "2030": 0.13411321976770368,
@@ -308,7 +308,7 @@
         "2050": 3531.221544632967
       },
       "cumulative_net_removals_share_of_2025_stock": 0.03772601428633132,
-      "redevelopment_channel": 34373.16691348948,
+      "redevelopment_channel": 0.0,
       "join_net": 34373.16691348948,
       "channel_shares": null,
       "R26": 18648.087450740168,
@@ -319,9 +319,9 @@
     },
     "S3-10-noUC": {
       "GFA_Mm2": 94.2206303183684,
-      "carbon_kt": 35052.81924816063,
-      "upfront_kt": 25141.61730192642,
-      "soil_kt": 2887.703147829149,
+      "carbon_kt": 35178.55234062212,
+      "upfront_kt": 25267.350394387904,
+      "soil_kt": 3013.436240290635,
       "rate_pct": {
         "2026": 0.40825398416336445,
         "2030": 0.3418730688428671,
@@ -339,7 +339,7 @@
         "2050": 4889.82535049206
       },
       "cumulative_net_removals_share_of_2025_stock": 0.07445331827161919,
-      "redevelopment_channel": 22757.904387846946,
+      "redevelopment_channel": 0.0,
       "join_net": 22757.904387846946,
       "channel_shares": null,
       "R26": 24425.893727168816,
@@ -350,9 +350,9 @@
     },
     "S2-noUC": {
       "GFA_Mm2": 98.30800094970807,
-      "carbon_kt": 36766.66598041316,
-      "upfront_kt": 26708.697697272277,
-      "soil_kt": 2440.156095982147,
+      "carbon_kt": 36881.449232002014,
+      "upfront_kt": 26823.480948861128,
+      "soil_kt": 2554.939347570998,
       "rate_pct": {
         "2026": 0.42793001604638714,
         "2030": 0.42793001604638714,
@@ -370,7 +370,7 @@
         "2050": 11216.645257183502
       },
       "cumulative_net_removals_share_of_2025_stock": 0.12037660364040947,
-      "redevelopment_channel": 21475.19108389847,
+      "redevelopment_channel": 0.0,
       "join_net": 21475.19108389847,
       "channel_shares": null,
       "R26": 24840.586889492024,

@@ -65,10 +65,10 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `JOIN_LABEL` | `'Near-term market excess (2026 observed building above requirement, fading at rho)'` |
 | `MIX_HELD_WINDOW` | `(2022, 2026)` |
 | `MIX_MODE` | `'storyline'` |
-| `NEAR_TERM_ABSORPTION` | `0.2` |
+| `NEAR_TERM_ABSORPTION` | `0.0` |
 | `NEAR_TERM_GAP_REF` | `'2027'` |
 | `NEAR_TERM_JOIN` | `'market_excess'` |
-| `NEAR_TERM_MODE` | `'redevelopment'` |
+| `NEAR_TERM_MODE` | `'surplus'` |
 | `NET_REPLACEMENT_SOURCE` | `'dwelling_count'` |
 | `NET_REPLACEMENT_WINDOW` | `(1991, 2023)` |
 | `NOWCAST_GFA` | `True` |

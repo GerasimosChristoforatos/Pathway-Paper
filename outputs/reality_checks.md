@@ -5,20 +5,23 @@ Projection 2026-2050 against the 1991-2025 historical range (min-max).
 | scenario | quantity | historical range | years outside | first year outside | max above (%) | max below (%) |
 |---|---|---|---|---|---|---|
 | S1 | dwellings completed | 12,978.90 to 47,061.10 | 0 | - | 0.0 | 0.0 |
-| S1 | net removals | -1,478.28 to 6,041.31 | 2 | 2026 | 281.4 | 0.0 |
+| S1 | net removals | -1,478.28 to 6,041.31 | 0 | - | 0.0 | 0.0 |
 | S1 | people per new dwelling | 0.09 to 4.03 | 0 | - | 0.0 | 0.0 |
 | S1 | floor area per additional resident | 32.86 to 1,705.32 | 0 | - | 0.0 | 0.0 |
 | S1 | household size | 2.66 to 2.79 | 18 | 2033 | 0.0 | 0.3 |
 | S1 | new-dwelling size | 139.09 to 205.03 | 0 | - | 0.0 | 0.0 |
+| S1 | vacancy rate (effective, %) | 5.08 to 8.09 | 0 | - | 0.0 | 0.0 |
 | S3-10 | dwellings completed | 12,978.90 to 47,061.10 | 0 | - | 0.0 | 0.0 |
-| S3-10 | net removals | -1,478.28 to 6,041.31 | 5 | 2026 | 281.4 | 0.0 |
+| S3-10 | net removals | -1,478.28 to 6,041.31 | 2 | 2026 | 4.0 | 0.0 |
 | S3-10 | people per new dwelling | 0.09 to 4.03 | 0 | - | 0.0 | 0.0 |
 | S3-10 | floor area per additional resident | 32.86 to 1,705.32 | 0 | - | 0.0 | 0.0 |
 | S3-10 | household size | 2.66 to 2.79 | 18 | 2033 | 0.0 | 0.3 |
 | S3-10 | new-dwelling size | 139.09 to 205.03 | 0 | - | 0.0 | 0.0 |
+| S3-10 | vacancy rate (effective, %) | 5.08 to 8.09 | 0 | - | 0.0 | 0.0 |
 | S2 | dwellings completed | 12,978.90 to 47,061.10 | 0 | - | 0.0 | 0.0 |
-| S2 | net removals | -1,478.28 to 6,041.31 | 25 | 2026 | 281.4 | 0.0 |
+| S2 | net removals | -1,478.28 to 6,041.31 | 25 | 2026 | 35.2 | 0.0 |
 | S2 | people per new dwelling | 0.09 to 4.03 | 0 | - | 0.0 | 0.0 |
 | S2 | floor area per additional resident | 32.86 to 1,705.32 | 0 | - | 0.0 | 0.0 |
 | S2 | household size | 2.66 to 2.79 | 18 | 2033 | 0.0 | 0.3 |
 | S2 | new-dwelling size | 139.09 to 205.03 | 24 | 2027 | 0.0 | 8.3 |
+| S2 | vacancy rate (effective, %) | 5.08 to 8.09 | 0 | - | 0.0 | 0.0 |

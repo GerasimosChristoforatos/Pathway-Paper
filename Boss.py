@@ -520,8 +520,13 @@ RECENT_INTERVAL = (2018, 2023)
 #   NEAR_TERM_JOIN = 'nowcast' (the v1.0.2 three-channel join).
 NEAR_TERM_JOIN = 'market_excess'
 NEAR_TERM_GAP_REF = '2027'
-NEAR_TERM_MODE = 'redevelopment'
-NEAR_TERM_ABSORPTION = 0.20
+# v1.1.2 (author's decision): the excess is STOCK-ADDING -- extra dwellings join
+#   the stock as additional vacancy that is never absorbed (no payback); soil
+#   applies (new footprints); removals stay on the scenario path. Implied vacancy
+#   = 1 - households / (stock + cumulative excess). 'redevelopment' (the v1.1
+#   booking) and payback (absorption 0.20 / 0.10) are sensitivities.
+NEAR_TERM_MODE = 'surplus'
+NEAR_TERM_ABSORPTION = 0.0
 # NOWCAST_METHOD for the unobserved months of 2026:
 #   'seasonal_share' (ADOPTED): ratio-to-annual seasonal estimator: observed
 #       months / their mean share of the calendar-year total over 2010-2025,

@@ -1,7 +1,21 @@
 {
   "mode": "market_excess",
-  "near_mode": "redevelopment",
+  "near_mode": "surplus",
   "gap_ref_basis": "2027",
+  "vacancy": {
+    "peak": 0.0651592557250733,
+    "peak_year": 2031,
+    "v_2050": 0.06364115621627964,
+    "v_forward": 0.05387454644033866,
+    "census_min": 0.05075373310444933,
+    "census_max": 0.08090044277034486,
+    "census_years": "1986-2023"
+  },
+  "redevelopment_sensitivity": {
+    "peak_removals": 23041.090364617223,
+    "peak_year": 2026,
+    "default_peak_removals": 6281.41495965741
+  },
   "nowcast_method": "last_12_months",
   "consents_2026": 40908.0,
   "O26": 38862.6,

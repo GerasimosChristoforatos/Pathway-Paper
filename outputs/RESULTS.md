@@ -38,13 +38,13 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 
 | scenario | floor area (Mm2) | carbon (kt) | of which soil (kt) | carbon excl. soil (kt) | upfront (kt) |
 |---|---|---|---|---|---|
-| S1: long-run rate, shares held | 82.99 | 31,217 | 2,888 | 28,330 | 22,488 |
-| S3: fade, half-life 5 yr, shares held | 86.10 | 32,279 | 2,888 | 29,392 | 23,223 |
-| S3: fade, half-life 10 yr, shares held (reference) | 89.31 | 33,376 | 2,888 | 30,488 | 23,981 |
-| S3: fade, half-life 15 yr, shares held | 91.32 | 34,063 | 2,888 | 31,175 | 24,457 |
-| S2: 2018-2023 rate persists, damped mix trend (intensification continues) | 90.58 | 34,063 | 2,440 | 31,622 | 24,793 |
-| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 82.25 | 31,143 | 2,440 | 28,703 | 22,722 |
-| sensitivity: S2 with shares held (maximum floor-area case) | 98.49 | 36,509 | 2,888 | 33,621 | 26,149 |
-| sensitivity: S1 without the census UC correction | 85.45 | 32,057 | 2,888 | 29,169 | 23,068 |
-| sensitivity: S3-10 without the census UC correction | 94.22 | 35,053 | 2,888 | 32,165 | 25,142 |
-| sensitivity: S2 without the census UC correction | 98.31 | 36,767 | 2,440 | 34,327 | 26,709 |
+| Low (S1): long-run rate, shares held | 82.99 | 31,415 | 3,086 | 28,330 | 22,686 |
+| S3: fade, half-life 5 yr, shares held | 86.10 | 32,436 | 3,044 | 29,392 | 23,379 |
+| Reference (S3): fade, half-life 10 yr, shares held | 89.31 | 33,528 | 3,039 | 30,488 | 24,133 |
+| S3: fade, half-life 15 yr, shares held | 91.32 | 34,213 | 3,038 | 31,175 | 24,607 |
+| Storyline: intensification continues (S2 + damped mix trend) | 90.58 | 34,204 | 2,582 | 31,622 | 24,934 |
+| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 82.25 | 31,289 | 2,586 | 28,703 | 22,868 |
+| High (S2): 2018-2023 rate persists, shares held | 98.49 | 36,656 | 3,034 | 33,621 | 26,296 |
+| sensitivity: S1 without the census UC correction | 85.45 | 32,246 | 3,077 | 29,169 | 23,258 |
+| sensitivity: S3-10 without the census UC correction | 94.22 | 35,179 | 3,013 | 32,165 | 25,267 |
+| sensitivity: S2 without the census UC correction | 98.31 | 36,881 | 2,555 | 34,327 | 26,823 |

@@ -55,7 +55,8 @@ def one(settings):
         gross_demolitions_per_yr_mean=float(gross_demol[f].mean()),
         gross_demolitions={int(y): float(gross_demol[i]) for i, y in enumerate(fy) if y in (2026, 2050)},
         cumulative_net_removals_share_of_2025_stock=float(net_removals[f].sum() / E['stock'][0]),
-        redevelopment_channel=float(ji['channels']['redevelopment'].sum()) if ji else None,
+        redevelopment_channel=(float(ji['channels']['redevelopment'].sum()) if ji and 'channels' in ji
+                               else float(ji['redev'][1:].sum()) if ji else None),
         join_net=float(ji['join'][f].sum()) if ji else None,
         channel_shares=dict(B['join_shares']) if B['join_shares'] else None,
         R26=ji['R26'] if ji else None, O26=ji['O26'] if ji else None, e26=ji['e26'] if ji else None,
@@ -109,7 +110,8 @@ def main():
             sh = r['channel_shares']
             L.append(f"| {r['label']} | {r['O26']:,.0f} | {r['R26']:,.0f} | {r['e26']:+,.0f} | "
                      f"{100 * (r['R26'] - s1['R26']) / s1['e26']:.0f}% | {r['e27']:+,.0f} | "
-                     f"{sh['redevelopment']:.3f} / {sh['vacancy']:.3f} / {sh['households']:.3f} | "
+                     + (f"{sh['redevelopment']:.3f} / {sh['vacancy']:.3f} / {sh['households']:.3f}" if sh
+                        else 'market excess: all redevelopment') + " | "
                      f"{r['redevelopment_channel']:+,.0f} |")
     L += ['', '## Census record of net replacement (dwelling-count identity, completions lagged W)', '',
           '| interval | net replacement (%/yr) | net removals per year |', '|---|---|---|']

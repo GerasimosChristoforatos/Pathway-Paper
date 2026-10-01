@@ -4,23 +4,45 @@ Net replacement source in use: `dwelling_count` (window 1991-2023).
 
 Actual households and vacancy fed in; only the net-replacement term is predicted. Error = predicted / actual - 1.
 
+Vacancy definition: consistent -- the pooled 2018/2023 empty share of unoccupied private dwellings (49.2%) applied to every census; the 2013 census share was 76.2% (published empty vacancy 2013 8.09% -> 2018 5.08%, a definitional break). The as-published series is shown below the table.
+
 | origin | test years | method | rate used (%/yr) | predicted | actual | error |
 |---|---|---|---|---|---|---|
-| 2006 | 2007-2023 | constant | +0.043 | 397,185 | 460,544 | -13.8% |
-| 2006 | 2007-2023 | recent | -0.049 | 368,553 | 460,544 | -20.0% |
-| 2006 | 2007-2023 | linked | linked: b = 2.54 on 3 intervals | 481,694 | 460,544 | +4.6% |
-| 2006 | 2007-2023 | dwelling_count | -0.010 | 380,933 | 460,544 | -17.3% |
-| 2006 | 2007-2023 | reference_s3_10 | +0.018 | 385,742 | 460,544 | -16.2% |
-| 2013 | 2014-2023 | constant | +0.034 | 273,162 | 340,888 | -19.9% |
-| 2013 | 2014-2023 | recent | +0.019 | 270,314 | 340,888 | -20.7% |
-| 2013 | 2014-2023 | linked | linked: b = 0.96 on 4 intervals | 330,310 | 340,888 | -3.1% |
-| 2013 | 2014-2023 | dwelling_count | +0.024 | 271,249 | 340,888 | -20.4% |
-| 2013 | 2014-2023 | reference_s3_10 | +0.087 | 279,469 | 340,888 | -18.0% |
-| 2018 | 2019-2023 | constant | +0.118 | 179,025 | 202,189 | -11.5% |
-| 2018 | 2019-2023 | recent | +0.430 | 209,681 | 202,189 | +3.7% |
-| 2018 | 2019-2023 | linked | linked: b = 1.39 on 5 intervals | 253,530 | 202,189 | +25.4% |
-| 2018 | 2019-2023 | dwelling_count | +0.053 | 172,638 | 202,189 | -14.6% |
-| 2018 | 2019-2023 | reference_s3_10 | +0.158 | 181,047 | 202,189 | -10.5% |
+| 2006 | 2007-2023 | constant | +0.092 | 458,783 | 460,544 | -0.4% |
+| 2006 | 2007-2023 | recent | -0.003 | 429,806 | 460,544 | -6.7% |
+| 2006 | 2007-2023 | linked | linked: b = 1.67 on 3 intervals | 513,426 | 460,544 | +11.5% |
+| 2006 | 2007-2023 | dwelling_count | -0.010 | 427,708 | 460,544 | -7.1% |
+| 2006 | 2007-2023 | reference_s3_10 | +0.018 | 432,419 | 460,544 | -6.1% |
+| 2013 | 2014-2023 | constant | +0.090 | 338,113 | 340,888 | -0.8% |
+| 2013 | 2014-2023 | recent | +0.086 | 337,443 | 340,888 | -1.0% |
+| 2013 | 2014-2023 | linked | linked: b = 0.59 on 4 intervals | 372,681 | 340,888 | +9.3% |
+| 2013 | 2014-2023 | dwelling_count | +0.024 | 325,771 | 340,888 | -4.4% |
+| 2013 | 2014-2023 | reference_s3_10 | +0.087 | 333,902 | 340,888 | -2.0% |
+| 2018 | 2019-2023 | constant | +0.035 | 170,792 | 202,189 | -15.5% |
+| 2018 | 2019-2023 | recent | -0.168 | 150,872 | 202,189 | -25.4% |
+| 2018 | 2019-2023 | linked | linked: b = 0.26 on 5 intervals | 185,079 | 202,189 | -8.5% |
+| 2018 | 2019-2023 | dwelling_count | +0.053 | 172,485 | 202,189 | -14.7% |
+| 2018 | 2019-2023 | reference_s3_10 | +0.158 | 180,895 | 202,189 | -10.5% |
+
+### (A2) Same hindcast with census vacancy as published (2013->2018 break included)
+
+| origin | test years | method | predicted | actual | error |
+|---|---|---|---|---|---|
+| 2006 | 2007-2023 | constant | 397,185 | 460,544 | -13.8% |
+| 2006 | 2007-2023 | recent | 368,553 | 460,544 | -20.0% |
+| 2006 | 2007-2023 | linked | 481,694 | 460,544 | +4.6% |
+| 2006 | 2007-2023 | dwelling_count | 380,933 | 460,544 | -17.3% |
+| 2006 | 2007-2023 | reference_s3_10 | 385,742 | 460,544 | -16.2% |
+| 2013 | 2014-2023 | constant | 273,162 | 340,888 | -19.9% |
+| 2013 | 2014-2023 | recent | 270,314 | 340,888 | -20.7% |
+| 2013 | 2014-2023 | linked | 330,310 | 340,888 | -3.1% |
+| 2013 | 2014-2023 | dwelling_count | 271,249 | 340,888 | -20.4% |
+| 2013 | 2014-2023 | reference_s3_10 | 279,469 | 340,888 | -18.0% |
+| 2018 | 2019-2023 | constant | 179,025 | 202,189 | -11.5% |
+| 2018 | 2019-2023 | recent | 209,681 | 202,189 | +3.7% |
+| 2018 | 2019-2023 | linked | 253,530 | 202,189 | +25.4% |
+| 2018 | 2019-2023 | dwelling_count | 172,638 | 202,189 | -14.6% |
+| 2018 | 2019-2023 | reference_s3_10 | 181,047 | 202,189 | -10.5% |
 
 ### (B) Rolling-origin hindcast of the 2023 census private-dwelling stock (dwelling-count identity; descriptive)
 

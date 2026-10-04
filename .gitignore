@@ -223,3 +223,6 @@ outputs/logs/
 
 # Raw downloads are large and re-fetchable (data/fetch_sources.py); provenance is in data/raw/MANIFEST.csv
 data/raw/*.zip
+
+# Reference papers (copyrighted; never committed: the repository is public). See refs listing in README.
+refs/

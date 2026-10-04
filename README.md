@@ -23,11 +23,14 @@ python run_all.py                      # about 5 minutes
 `run_all.py` runs, in order:
 * `Building_factors.py`, then `Boss.py` (central run);
 * `Diagnostics.py`, `Sensitivity.py` and `MonteCarlo.py`;
+* `PB.py`, the planetary-boundary layer (climate change; acquired rights and
+  ability to pay), which reads the model outputs and the Monte Carlo draws;
 * the validation harness (`validation.py`), `gap_2026.py` and the report tools
   (`tools/`: near-term rule, scenarios, report figures);
 * the tests (`tests/`, including the v1.2.1 regression test, which reads the
   outputs written above);
-* metrics, `RESULTS.md`, `ASSUMPTIONS.md` and `outputs/BASELINE_DRAFT.md`.
+* metrics, `RESULTS.md`, `ASSUMPTIONS.md`, `outputs/BASELINE_DRAFT.md` and
+  `outputs/PB_METHODS_DRAFT.md`.
 
 A failed step prints its name and the log to read (`outputs/logs/<step>.log`)
 and the run stops; from the command line the exit code is 1.
@@ -80,6 +83,21 @@ rebuilt from a recorded download.
 | `data/derived/population_quarterly.csv` (quarterly ERP, total of both sexes, 1991Q1-2026Q2; the 2026 population nowcast, `Boss.NOWCAST_POPULATION`) | Stats NZ Infoshare, Population Estimates - DPE, "Estimated Resident Population (Mean Quarter Ended) by Sex (1991+) (Qrtly-Mar/Jun/Sep/Dec)" | series DPE059AA (total); table last updated 18 August 2026 | exported by the author 2026-09-30 (see `data/raw/MANIFEST.csv`) | Raw → script (`data/build_population_quarterly.py`). MEAN-quarter values (average over the quarter), dated at the quarter's centre; not point estimates at quarter end. Convention: history = 31 December ERP; projection growth = years ended June applied to calendar years; 2026 nowcast = June quarter 2026 minus June quarter 2025 |
 | `data/building_data.xlsx` | 16 New Zealand case-study LCAs: Christoforatos G, Pickering K (2025), "Embodied impacts of residential stocks; multi-level assessment of materials, buildings, typologies and functional units to support policymaking towards sustainable housing", *Smart and Sustainable Built Environment* (ahead of print), <https://doi.org/10.1108/SASBE-06-2025-0304> (source and benchmarking). Soil sheet: 58.77 kg CO₂e/m² footprint, area-weighted over the 10 soil orders of Auckland land zoned for urbanisation to ~2050: Christoforatos G, Pickering K, Schipper LA (2026), *Journal of Environmental Management* 415, 130603, <https://doi.org/10.1016/j.jenvman.2026.130603> | sheets 1–3 | n/a | Supplied |
 
+**Planetary-boundary layer (PB.py) inputs.**
+
+| model input | source | table / series | download date | status |
+|---|---|---|---|---|
+| `data/derived/nz_gdp_quarterly.csv` (GDP and final consumption expenditure, quarterly, NZD million, nominal) | Stats NZ Infoshare, *GDP(E), Nominal, Actual, Total (Qrtly-Mar/Jun/Sep/Dec)*, last updated 19 March 2026 (stated in the file) | table SNE022AA; file `data/raw/GDP_Data.xlsx` | supplied by the author 2026-10-04 (see MANIFEST) | Raw → script (`data/build_gdp.py`) |
+| `data/derived/wpp2024_population_median.csv` (World and New Zealand, 1 July, persons) | United Nations, DESA, Population Division (2024), *World Population Prospects 2024*, Probabilistic Population Projections, <https://population.un.org/wpp/> | file PPP/POPTOT (POP/DB/WPP/Rev.2024/PPP/POPTOT), sheet "Median"; `data/raw/UN_PPP2024_Output_PopTot.xlsx` | supplied by the author 2026-10-04 | Raw → script (`data/build_wpp.py`) |
+| `data/derived/wdi_economies.csv`, `wdi_world_aggregate.csv` (population, GDP per capita PPP constant 2021 int-$ and current US$, by economy; WLD aggregate for coverage only) | World Bank, *World Development Indicators*, bulk CSV, release "Last Updated Date 2026-07-13" (stated in the files) | SP.POP.TOTL, NY.GDP.PCAP.PP.KD, NY.GDP.PCAP.CD; `data/raw/API_*_DS2_en_csv_v2_*.zip`; aggregates dropped with each archive's Metadata_Country file | supplied by the author 2026-10-04 | Raw → script (`data/build_wdi.py`) |
+| `data/raw/Absolute_Analysis.xlsm` | the author's earlier-manuscript AESA workbook (under review) | sheets 1.Acquired Rights, 2.Equalitarian, 6, 7 | supplied 2026-10-04 | Supplied; **local only (git-ignored)**; read only by reproduction tests, which skip without it |
+| SOS, I_glob (constants in `PB.py`) | Bjørn & Hauschild (2015), *Int J Life Cycle Assess* 20:1005-1018, Table 1 and ESM1/ESM2 | see the source check in `outputs/PB_METHODS_DRAFT.md` | n/a | Literature |
+
+The reference papers behind the PB layer (Bjørn & Hauschild 2015 with ESM1/ESM2; Sala et al. 2020 and
+corrigendum; Hjalsted et al. 2021 with SI; Horup et al. 2025; Andreasi Bassi et al. 2023; Clausen et
+al. 2025; the EC-JRC table of ILCD normalisation factors; the author's manuscript) are kept in `refs/`,
+which is git-ignored: the repository is public and the papers are copyrighted.
+
 **Documentation cited:** Stats NZ DataInfo+, "Dwelling occupancy status
 (information about this variable and its quality)", 2018 Census,
 <https://datainfoplus.stats.govt.nz/Item/nz.govt.stats/9b4c0bf9-2b8c-4b54-aa6d-fa51e07bd4d5>.
@@ -102,6 +120,7 @@ was accessed on 2026-09-29. It states:
 | `Diagnostics.py` | diagnostic figures `diag_2`-`diag_5`, appendix `diag_3b` |
 | `Sensitivity.py` | one-at-a-time sensitivities (`outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`) |
 | `MonteCarlo.py` | joint parametric uncertainty within S3-10, S1 and S2; Sobol indices (reference) |
+| `aesa.py`, `PB.py` | planetary-boundary layer: boundaries, levels of exceedance, figures `*_pb`, `pb_1`-`pb_5` |
 | `validation.py`, `gap_2026.py` | rolling-origin hindcast, 2026 out-of-sample check, 2026 gap decomposition |
 | `tools/` | near-term rule and scenario reports, report figures and FIGURES.md, metrics, RESULTS.md, ASSUMPTIONS.md, BASELINE_DRAFT.md |
 | `tests/` | accounting identities, census UC correction, soil, near-term rule, validation, and the v1.2.1 regression test (`regression_v1_2_1.json`) |

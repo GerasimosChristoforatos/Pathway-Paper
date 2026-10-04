@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## baseline-pb-v1
+
+A planetary-boundary (AESA, climate change) layer on top of baseline v2.
+**The baseline is unchanged**: `tests/test_regression_v1_2_1.py` passes and
+every existing key of `outputs/metrics.json` keeps its value; the new metrics
+are under the key `pb`.
+
+* **New:** `aesa.py` (pure functions: Horup et al. 2025 Eq. 1; Hjalsted et
+  al. 2021 Eqs. 5-6 and SI S1; levels of exceedance), `PB.py` (data, scenario
+  and Monte Carlo runs, sensitivities, figures `boss_05/06_*_pb`,
+  `fig_scenarios_pb`, `mc_1_fan_pb`, `pb_1`-`pb_5`), `tools/pb_methods.py`
+  (`outputs/PB_METHODS_DRAFT.md`), `tests/test_pb.py`.
+* **Data:** `data/build_gdp.py`, `build_wpp.py`, `build_wdi.py` build
+  `data/derived/` from supplied raw files (Stats NZ GDP(E) SNE022AA; UN WPP
+  2024 probabilistic median; World Bank WDI), recorded in MANIFEST.csv.
+  `refs/` (papers) and the earlier-manuscript workbook are git-ignored.
+* **Changed outside the new files:** `run_all.py` (step `pb` after the Monte
+  Carlo, `pb_methods` at the end), `tools/metrics.py` (key `pb`),
+  `tools/results.py`, `tools/assumptions.py`, `tools/baseline_draft.py`,
+  `tools/figures_report.py` (PB sections and figure entries), README,
+  ARCHITECTURE, `.gitignore`. `Boss.py`, `engine.py` and `MonteCarlo.py` are
+  not modified.
+
 ## Baseline v2
 
 v2 = cleaned v1.2.1. Full development history (every intermediate version,

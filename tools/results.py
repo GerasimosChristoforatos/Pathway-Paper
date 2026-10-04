@@ -9,7 +9,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
-from metrics import FIELDS, METRICS, get  # noqa: E402
+from metrics import FIELDS, METRICS, PB_FIELDS, get  # noqa: E402
 
 
 def main():
@@ -32,6 +32,22 @@ def main():
         for r in (x for x in sc.values() if 'soil_kt' in x):
             L.append(f"| {r['label']} | {r['GFA_Mm2']:.2f} | {r['carbon_kt']:,.0f} | {r['soil_kt']:,.0f} | "
                      f"{r['carbon_kt'] - r['soil_kt']:,.0f} | {r['upfront_kt']:,.0f} |")
+    if m.get('pb'):
+        pb = m['pb']
+        L += ['', f"## Planetary-boundary layer (climate change; {pb['source_pair_label']})", '',
+              'Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted et al. 2021 Eqs. 5-6) '
+              'are a range and are never averaged. LoE = embodied carbon / boundary (> 1: exceeded). Methods: '
+              'outputs/PB_METHODS_DRAFT.md.', '', '| metric | value |', '|---|---|']
+        for key, label, fmt in PB_FIELDS:
+            v = get(m, key)
+            L.append(f"| {label} | {fmt.format(v) if v is not None else 'n/a'} |")
+        L += ['', '| scenario (deterministic) | cumulative LoE AR | cumulative LoE AtP |', '|---|---|---|']
+        for k, v in pb['cum_LoE_by_scenario'].items():
+            L.append(f"| {k} | {v['AR']:.2f} | {v['AtP']:.1f} |")
+        L += ['', '| MC scenario | LoE AR p5 / p50 / p95 | LoE AtP p5 / p50 / p95 |', '|---|---|---|']
+        for k, v in pb['cum_LoE_mc'].items():
+            L.append(f"| {k} | {v['LoE_AR_p5']:.2f} / {v['LoE_AR_p50']:.2f} / {v['LoE_AR_p95']:.2f} | "
+                     f"{v['LoE_AtP_p5']:.1f} / {v['LoE_AtP_p50']:.1f} / {v['LoE_AtP_p95']:.1f} |")
     with open(os.path.join(ROOT, 'outputs', 'RESULTS.md'), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print(f'outputs/RESULTS.md: {len(L)} lines')

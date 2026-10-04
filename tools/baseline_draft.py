@@ -380,6 +380,18 @@ def main():
          ('JUDGEMENT', 'Household size: interpolation through all published Stats NZ values (2018-2043), held '
                        'constant beyond 2043 with zero slope imposed at 2043'),
          ('JUDGEMENT', 'No completion lag (same-year consents x 0.95)')]
+    pb = (m or {}).get('pb')
+    if pb:
+        L += ['', '## Planetary-boundary layer (climate change)', '',
+              f"Against the {pb['source_pair_label']}, allocated to the sector by acquired rights (AR; Horup et al. "
+              f"2025) and ability to pay (AtP; Hjalsted et al. 2021), the boundary is {pb['B_AR_2026_kt']:,.1f} kt "
+              f"CO2e (AR) and {pb['B_AtP_2026_kt']:,.1f} kt (AtP) in 2026, and {pb['B_AR_2050_kt']:,.1f} / "
+              f"{pb['B_AtP_2050_kt']:,.1f} kt in 2050 (AtP = {100 * pb['B_AtP_over_B_AR']:.1f}% of AR in every year). "
+              f"Over 2026-2050 the reference path exceeds them {pb['cum_LoE_AR_S3_10']:.2f}-fold (AR; MC p5-p95 "
+              f"{pb['cum_LoE_AR_S3_10_mc_p5']:.2f}-{pb['cum_LoE_AR_S3_10_mc_p95']:.2f}) and "
+              f"{pb['cum_LoE_AtP_S3_10']:.1f}-fold (AtP; {pb['cum_LoE_AtP_S3_10_mc_p5']:.1f}-"
+              f"{pb['cum_LoE_AtP_S3_10_mc_p95']:.1f}). The two principles are a range and are not averaged. "
+              'Methods, constants, sources and limitations: outputs/PB_METHODS_DRAFT.md; settings: ASSUMPTIONS.md.']
     L += ['', '## Assumptions', '', '| basis | assumption |', '|---|---|'] + [f'| {b_} | {a_} |' for b_, a_ in A]
 
     # ---- register ----
@@ -391,7 +403,7 @@ def main():
     # ---- figures ----
     figs = sorted(glob.glob(os.path.join(OUT, 'figures', '*.png')))
     key = [f for f in figs if any(k in f for k in ('fig_reality_checks', 'fig_bridge', 'fig_scenarios', 'fig_conversion_chain', 'fig_validation', 'boss_03', 'boss_04', 'boss_05', 'diag_3', 'diag_4',
-                                                     'sens_1', 'mc_1'))]
+                                                     'sens_1', 'mc_1', 'pb_1', 'pb_2'))]
     L += ['', '## Key figures', '', 'One line per figure: FIGURES.md. Where the projection leaves the 1991-2025 range: outputs/reality_checks.md.', ''] + [f"![{os.path.basename(f)}](figures/{os.path.basename(f)})" for f in key]
     with open(os.path.join(OUT, 'BASELINE_DRAFT.md'), 'w') as f:
         f.write('\n'.join(L) + '\n')

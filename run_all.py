@@ -13,9 +13,10 @@ there; from the command line the exit code is non-zero, in an interactive
 console no SystemExit is raised.
 
 Order: Building_factors -> Boss -> Diagnostics -> Sensitivity -> MonteCarlo
--> validation -> gap_2026 -> near_term_join -> scenarios -> figures_report
--> tests (incl. the v1.2.1 regression test, which reads the outputs written
-above) -> metrics -> results -> assumptions -> baseline_draft. Each script
+-> PB (planetary-boundary layer; reads the Monte Carlo draws) -> validation
+-> gap_2026 -> near_term_join -> scenarios -> figures_report -> tests (incl.
+the v1.2.1 regression test, which reads the outputs written above) -> metrics
+-> results -> assumptions -> baseline_draft -> pb_methods. Each script
 runs in its own process, with the non-interactive matplotlib backend and
 PATHWAY_SAVE_FIGURES=1, so every figure is written to outputs/figures/ and
 nothing is shown. Console output of each step goes to outputs/logs/<step>.log.
@@ -63,6 +64,7 @@ def pipeline(skip_mc):
     step('sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')])
     if not skip_mc:
         step('montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')])
+    step('pb', [py, os.path.join(ROOT, 'PB.py')])
     step('validation', [py, os.path.join(ROOT, 'validation.py')])
     step('gap_2026', [py, os.path.join(ROOT, 'gap_2026.py')])
     step('near_term_join', [py, tool('near_term_join')])
@@ -73,6 +75,7 @@ def pipeline(skip_mc):
     step('results', [py, tool('results')])
     step('assumptions', [py, tool('assumptions')])
     step('baseline_draft', [py, tool('baseline_draft')])
+    step('pb_methods', [py, tool('pb_methods')])
 
 
 def main(argv=None):

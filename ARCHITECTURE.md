@@ -228,9 +228,54 @@ the 2026 gap. `tools/`: near-term rule and scenario reports, report figures,
 metrics, RESULTS.md, ASSUMPTIONS.md and BASELINE_DRAFT.md.
 `tests/test_regression_v1_2_1.py` checks every headline number against v1.2.1.
 
+## 9. `PB.py`: planetary-boundary layer (AESA, climate change)
+
+A layer on top of the model outputs; nothing in the model changes. Equations
+are pure functions in `aesa.py`; `PB.py` assembles data, runs and figures.
+
+```mermaid
+flowchart LR
+    BOSS[Boss.main via validation.run_boss<br/>central + every scenario row] --> H[history 1992-2025<br/>projection soil convention]
+    BOSS --> I[I_sec 2026-2050<br/>by scenario]
+    MCD[outputs/montecarlo_draws_*.csv] --> MCR[MonteCarlo.project re-run<br/>per draw, asserted vs saved]
+    WPP[derived/wpp2024_population_median.csv] --> PW[P_W]
+    WDI[derived/wdi_economies.csv] --> A[alpha, g_W, g_NZ, year b]
+    GDP[derived/nz_gdp_quarterly.csv + consents] --> S[s_sec]
+    H --> BAR[B_AR, Horup Eq. 1]
+    PW --> BAR & BATP[B_AtP, Hjalsted Eqs. 5-6]
+    A --> BATP
+    S --> BATP
+    BAR & BATP & I & MCR --> OUT[(pb_annual / pb_mc_annual /<br/>pb_sensitivity .csv, pb_results.json, figures)]
+```
+
+1. **History.** Sector emissions 1992-2025 = built floor area by typology x
+   the 2025 case-study factors, with soil only on the non-replacement floor
+   area, as in `engine.forward`: net replacement in year y = census-interval
+   rate x last year's stock x (1 - RV share) x dwelling size (2024-25: the
+   2018-23 rate carried). The mean 2016-2025 is Ī_sec,base.
+2. **Acquired rights.** B_AR(t) = SOS (Ī_sec,base / I_glob) x population
+   modifier relative to t0 = 2025 (NZ: model path; world: WPP 2024 median,
+   dated 31 December as the mean of 1 July t and t+1).
+3. **Ability to pay.** α, g_W and g_NZ in base year b (latest year with ≥ 98%
+   WDI population coverage of PPP GDP per capita), over the covered economies;
+   s_sec = consented residential value / final consumption expenditure
+   2016-2025. B_AtP(t) = SOS / P_W(t) x g_W/g_NZ x α x P_NZ(t) x s_sec.
+4. **Scenarios.** Every deterministic scenario of
+   `tools/replacement_scenarios.py` is re-run (full Boss run); they share the
+   population path, so the boundaries are the same and only I_sec differs.
+5. **Monte Carlo.** Each saved draw of S3-10, S1 and S2 is re-run through
+   `MonteCarlo.project()` from its saved parameters (MonteCarlo.py unchanged);
+   the run stops unless every draw reproduces its saved outputs to 1e-9. The
+   boundaries are recomputed from each draw's NZ population path.
+6. **Sensitivities** of cumulative LoE (reference scenario): source pair,
+   GDP measure, AR base window, NZ population source, s_sec definition.
+
+Settings, sources and limitations: top of `PB.py` and ASSUMPTIONS.md; methods
+as implemented: `outputs/PB_METHODS_DRAFT.md`.
+
 ---
 
-## 9. Glossary
+## 10. Glossary
 
 | term | meaning |
 |---|---|
@@ -249,3 +294,8 @@ metrics, RESULTS.md, ASSUMPTIONS.md and BASELINE_DRAFT.md.
 | PCHIP | piecewise cubic Hermite interpolation, a shape-preserving spline |
 | EN 15978 stages | A1–A3 product, A4–A5 construction, B2/B4 maintenance/replacement, C1–C4 end of life, D beyond the life cycle |
 | upfront carbon | A1–A5 + soil loss |
+| AESA | absolute environmental sustainability assessment |
+| SOS | safe operating space: the global carrying capacity for climate change (kg CO₂-eq/yr) |
+| AR / AtP | acquired rights / ability to pay (allocation principles) |
+| LoE | level of exceedance = impact / boundary (> 1: exceeded) |
+| s_sec | the sector's share of final consumption expenditure (upscaling, Hjalsted Eq. 6) |

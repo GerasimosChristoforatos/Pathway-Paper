@@ -226,3 +226,9 @@ data/raw/*.zip
 
 # Reference papers (copyrighted; never committed: the repository is public). See refs listing in README.
 refs/
+# The author's earlier-manuscript AESA workbook (under review): kept local only;
+# tests/test_pb.py skips its reproduction test when the file is absent. Provenance in MANIFEST.csv.
+data/raw/Absolute_Analysis.xlsm
+# World Bank WDI bulk CSV archives are small and were supplied (not re-fetchable as the same
+# release), so they are versioned despite the *.zip rule above.
+!data/raw/API_*_DS2_en_csv_v2_*.zip

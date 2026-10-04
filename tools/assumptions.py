@@ -1,4 +1,4 @@
-"""Generate ASSUMPTIONS.md from the settings in Boss.py (A3). No value is typed
+"""Generate ASSUMPTIONS.md from the settings in Boss.py (A3) and PB.py. No value is typed
 by hand: the register (setting, value, basis) comes from
 tools/baseline_draft.register(), and the full settings table lists every
 upper-case scalar setting in Boss.py as it is at run time.
@@ -27,6 +27,17 @@ def main():
         if k.isupper() and not k.startswith(('FILE_', 'COL_', 'SHEET_')) and k not in ('ROOT_DIR', 'DATA_DIR', 'OUT_DIR', 'FIG_DIR', 'FACTORS_DIR') \
                 and isinstance(v, (bool, int, float, str, tuple, type(None))):
             L.append(f'| `{k}` | `{v!r}` |')
+    import PB
+    L += ['', '## Planetary-boundary layer (PB.py)', '', '| setting | value | basis |', '|---|---|---|']
+    L += [f'| {a} | {v} | {b} |' for a, v, b in PB.assumption_register()]
+    L += ['', '### Limitations of the planetary-boundary layer', ''] + [f'- {x}' for x in PB.LIMITATIONS]
+    L += ['', '### All settings in PB.py', '', '| setting | value |', '|---|---|']
+    for k in sorted(vars(PB)):
+        v = getattr(PB, k)
+        if k.isupper() and not k.startswith('FILE_') and k not in ('ROOT_DIR', 'DATA_DIR', 'OUT_DIR', 'FIG_DIR') \
+                and isinstance(v, (bool, int, float, str, tuple, type(None))):
+            L.append(f'| `{k}` | `{v!r}` |')
+    L.append(f"| `SOURCE_PAIRS` | `{PB.SOURCE_PAIRS!r}` |")
     with open(os.path.join(ROOT, 'ASSUMPTIONS.md'), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print(f'ASSUMPTIONS.md: {len(L)} lines')

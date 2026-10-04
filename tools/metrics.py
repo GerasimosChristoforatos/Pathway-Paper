@@ -52,6 +52,51 @@ FIELDS = [
     ('validation.observed_to_model_2026', '2026 observed / model consents, year to date', '{:.3f}'),
 ]
 
+# Planetary-boundary layer (PB.py): read from outputs/pb_results.json, kept apart
+# from FIELDS so the baseline table and keys are unchanged.
+PB_FIELDS = [
+    ('pb.I_sec_base_kt', 'Mean annual sector emissions 2016-2025, same convention as projection (kt/yr)', '{:,.1f}'),
+    ('pb.base_year_b', 'GDP base year b (PPP coverage >= 98% of WDI population)', '{:d}'),
+    ('pb.alpha', 'alpha, Hjalsted SI Eq. S1, year b, PPP', '{:.4f}'),
+    ('pb.alpha_2017_current_usd', 'alpha 2017, current US$ (Hjalsted report 0.243)', '{:.4f}'),
+    ('pb.g_W_over_g_NZ', 'g_W / g_NZ, year b, PPP', '{:.4f}'),
+    ('pb.s_sec', 's_sec (consented value / FCE, 2016-2025)', '{:.7f}'),
+    ('pb.B_AR_2026_kt', 'Boundary AR 2026 (kt CO2e)', '{:,.1f}'),
+    ('pb.B_AR_2050_kt', 'Boundary AR 2050 (kt CO2e)', '{:,.1f}'),
+    ('pb.B_AtP_2026_kt', 'Boundary AtP 2026 (kt CO2e)', '{:,.2f}'),
+    ('pb.B_AtP_2050_kt', 'Boundary AtP 2050 (kt CO2e)', '{:,.2f}'),
+    ('pb.B_AtP_over_B_AR', 'B_AtP / B_AR (constant over time)', '{:.4f}'),
+    ('pb.cum_LoE_AR_S3_10', 'Cumulative LoE 2026-2050, AR, reference S3-10', '{:.2f}'),
+    ('pb.cum_LoE_AR_S3_10_mc_p5', 'Cumulative LoE AR, MC p5 (S3-10)', '{:.2f}'),
+    ('pb.cum_LoE_AR_S3_10_mc_p50', 'Cumulative LoE AR, MC p50 (S3-10)', '{:.2f}'),
+    ('pb.cum_LoE_AR_S3_10_mc_p95', 'Cumulative LoE AR, MC p95 (S3-10)', '{:.2f}'),
+    ('pb.cum_LoE_AtP_S3_10', 'Cumulative LoE 2026-2050, AtP, reference S3-10', '{:.1f}'),
+    ('pb.cum_LoE_AtP_S3_10_mc_p5', 'Cumulative LoE AtP, MC p5 (S3-10)', '{:.1f}'),
+    ('pb.cum_LoE_AtP_S3_10_mc_p50', 'Cumulative LoE AtP, MC p50 (S3-10)', '{:.1f}'),
+    ('pb.cum_LoE_AtP_S3_10_mc_p95', 'Cumulative LoE AtP, MC p95 (S3-10)', '{:.1f}'),
+]
+
+
+def pb_metrics(out_dir):
+    with open(os.path.join(out_dir, 'pb_results.json')) as f:
+        r = json.load(f)
+    c, b, mc = r['components'], r['boundaries'], r['mc']['S3-10']
+    m = dict(I_sec_base_kt=c['I_sec_base_kg'] / 1e6, base_year_b=int(c['base_year_b']), alpha=c['alpha'],
+             alpha_2017_current_usd=r['alpha_check']['NY.GDP.PCAP.CD']['alpha'],
+             g_W_over_g_NZ=c['g_W_over_g_NZ'], s_sec=c['s_sec'],
+             B_AR_2026_kt=b['2026']['B_AR_kt'], B_AR_2050_kt=b['2050']['B_AR_kt'],
+             B_AtP_2026_kt=b['2026']['B_AtP_kt'], B_AtP_2050_kt=b['2050']['B_AtP_kt'],
+             B_AtP_over_B_AR=r['B_AtP_over_B_AR']['min'],
+             cum_LoE_AR_S3_10=r['deterministic']['S3-10']['LoE_AR'],
+             cum_LoE_AtP_S3_10=r['deterministic']['S3-10']['LoE_AtP'],
+             source_pair=r['settings']['SOURCE_PAIR'], source_pair_label=c['pair_label'])
+    for k in ('AR', 'AtP'):
+        for p in (5, 50, 95):
+            m[f'cum_LoE_{k}_S3_10_mc_p{p}'] = mc[f'LoE_{k}_p{p}']
+    m['cum_LoE_by_scenario'] = {s: dict(AR=v['LoE_AR'], AtP=v['LoE_AtP']) for s, v in r['deterministic'].items()}
+    m['cum_LoE_mc'] = r['mc']
+    return m
+
 
 def boss_metrics():
     sys.path.insert(0, ROOT)
@@ -95,6 +140,8 @@ def collect(out_dir=None, extra=None):
     m = {'boss': boss_metrics()}
     if os.path.exists(os.path.join(out_dir, 'montecarlo_summary.csv')):
         m['mc'] = mc_metrics(out_dir)
+    if os.path.exists(os.path.join(out_dir, 'pb_results.json')):
+        m['pb'] = pb_metrics(out_dir)
     vfile = os.path.join(out_dir, 'validation.json')
     if os.path.exists(vfile):
         with open(vfile) as f:
@@ -125,6 +172,6 @@ def get(m, dotted):
 if __name__ == '__main__':
     m = collect(extra={'mc_stale': True} if '--mc-stale' in sys.argv else None)
     print(f'metrics -> {METRICS}')
-    for key, label, f in FIELDS:
+    for key, label, f in FIELDS + PB_FIELDS:
         v = get(m, key)
         print(f'  {label:<60} {f.format(v) if v is not None else "n/a"}')

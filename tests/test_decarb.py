@@ -1,4 +1,4 @@
-"""Material decarbonisation (Boss.DECARB_MODE = 'horup_material'): Horup et al.
+"""Material decarbonisation (Boss.DECARB_MODE = 'horup_class_v1_1'): Horup et al.
 (2025) SI Table S4 paths applied to A1-A3 of mapped materials only. Soil, the
 2025 factors, the other stages and the history stay unchanged; the reductions
 are those tabulated, per material and year."""
@@ -19,7 +19,7 @@ S4 = pd.read_csv(BF.FILE_HORUP)
 
 @pytest.fixture(scope='module')
 def runs():
-    return run_boss(DECARB_MODE='none'), run_boss(DECARB_MODE='horup_material')
+    return run_boss(DECARB_MODE='none'), run_boss(DECARB_MODE='horup_class_v1_1')
 
 
 def test_s4_paths_match_the_table():
@@ -42,7 +42,7 @@ def test_reductions_per_material_and_year_as_tabulated():
     lca['a13'] = lca['A1-A3'] / lca['id'].map(gfa)
     paths = BF.decarb_paths()
     dec = pd.read_csv(BF.OUT_DECARB)
-    dec = dec[dec.Variant == 'horup_material'].set_index(['Typology', 'Material', 'Year'])['A13_kgCO2e_per_m2']
+    dec = dec[dec.Variant == 'horup_class_v1_1'].set_index(['Typology', 'Material', 'Year'])['A13_kgCO2e_per_m2']
     group = {raw: grp for grp, raws in BF.MATERIAL_GROUPS.items() for raw in raws}
     for y in (2026, 2030, 2041, 2050):
         f = lca['material'].map(lambda m: paths.loc[y, BF.DECARB_S4[m]] if m in BF.DECARB_S4 else 1.0)
@@ -56,7 +56,7 @@ def test_reductions_per_material_and_year_as_tabulated():
 
 def test_unmapped_classes_held_at_2025():
     dec = pd.read_csv(BF.OUT_DECARB)
-    dec = dec[dec.Variant == 'horup_material']
+    dec = dec[dec.Variant == 'horup_class_v1_1']
     for mat in ('PLASTERBOARD', 'PLASTICS & PAINT'):
         d = dec[dec.Material == mat].pivot(index='Year', columns='Typology', values='A13_kgCO2e_per_m2')
         assert np.allclose(d.values, d.loc[2025].values, rtol=0, atol=0)
@@ -97,7 +97,7 @@ def test_mc_bootstrap_stream_unchanged():
     try:
         with contextlib.redirect_stdout(io.StringIO()):
             s0 = MC.build_setup(dict(DECARB_MODE='none'))
-            s1 = MC.build_setup(dict(DECARB_MODE='horup_material'))
+            s1 = MC.build_setup(dict(DECARB_MODE='horup_class_v1_1'))
         assert np.array_equal(s0['boot_emb'], s1['boot_emb']) and np.array_equal(s0['boot_up'], s1['boot_up'])
         assert s1['boot_red'].shape == (MC.N_BOOT, len(s1['typ']), len(s1['fy']))
         assert np.allclose(s1['boot_red'][:, :, 0], 0.0)

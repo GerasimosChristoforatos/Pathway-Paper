@@ -162,6 +162,10 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 | Carbon factors | Soil: lowest soil order (Raw) | 89.57 | +0.0% | -4.9% |
 | Carbon factors | Soil: highest soil order (Organic) | 89.57 | +0.0% | +20.8% |
 
+## Planetary-boundary layer (climate change)
+
+Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the sector by acquired rights (AR; Horup et al. 2025) and ability to pay (AtP; Hjalsted et al. 2021), the boundary is 242.2 kt CO2e (AR) and 43.4 kt (AtP) in 2026, and 256.2 / 45.9 kt in 2050 (AtP = 17.9% of AR in every year). Over 2026-2050 the reference path exceeds them 5.41-fold (AR; MC p5-p95 4.29-6.46) and 30.2-fold (AtP; 24.0-36.1). The two principles are a range and are not averaged. Methods, constants, sources and limitations: outputs/PB_METHODS_DRAFT.md; settings: ASSUMPTIONS.md.
+
 ## Assumptions
 
 | basis | assumption |
@@ -224,6 +228,7 @@ One line per figure: FIGURES.md. Where the projection leaves the 1991-2025 range
 ![boss_03_cumulative_gfa.png](figures/boss_03_cumulative_gfa.png)
 ![boss_04_annual_gfa.png](figures/boss_04_annual_gfa.png)
 ![boss_05_annual_carbon.png](figures/boss_05_annual_carbon.png)
+![boss_05_annual_carbon_pb.png](figures/boss_05_annual_carbon_pb.png)
 ![diag_3_stock_bucket.png](figures/diag_3_stock_bucket.png)
 ![diag_3b_appendix_vacancy_definition.png](figures/diag_3b_appendix_vacancy_definition.png)
 ![diag_4_floor_area.png](figures/diag_4_floor_area.png)
@@ -232,6 +237,10 @@ One line per figure: FIGURES.md. Where the projection leaves the 1991-2025 range
 ![fig_conversion_chain.png](figures/fig_conversion_chain.png)
 ![fig_reality_checks.png](figures/fig_reality_checks.png)
 ![fig_scenarios.png](figures/fig_scenarios.png)
+![fig_scenarios_pb.png](figures/fig_scenarios_pb.png)
 ![fig_validation.png](figures/fig_validation.png)
 ![mc_1_fan.png](figures/mc_1_fan.png)
+![mc_1_fan_pb.png](figures/mc_1_fan_pb.png)
+![pb_1_boundaries.png](figures/pb_1_boundaries.png)
+![pb_2_loe.png](figures/pb_2_loe.png)
 ![sens_1_tornado.png](figures/sens_1_tornado.png)

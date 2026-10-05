@@ -77,3 +77,61 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `VERBOSE` | `False` |
 | `WAVE_COLOR` | `'#d35400'` |
 | `WAVE_LABEL` | `'Replacement: recent redevelopment wave (fading)'` |
+
+## Planetary-boundary layer (PB.py)
+
+| setting | value | basis |
+|---|---|---|
+| Impact category | climate change only | DECISION (author) |
+| Carrying capacity over time | static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / Paris-aligned pathways | DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, 140-150 (pp. 143, 148) |
+| Sector impact | the model's embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all booked in the construction year | DECISION (author); construction-year booking of B2/B4/C is a limitation to be revisited |
+| Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
+| SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
+| Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |
+| AR base window | 2016-2025 (sensitivity 2021-2025, 5 yr as Horup et al. 2025) | DECISION (author); LITERATURE for the 5-yr row |
+| Historical sector emissions | built floor area x 2025 case-study factors; soil only on non-replacement floor area (census-interval net replacement rate x last year's stock x (1 - RV share) x dwelling size), 2024-25 at the 2018-23 rate carried | DECISION (author): same convention as the projection; long-run 2024-25 rate reported as a note |
+| GDP per capita | NY.GDP.PCAP.PP.KD (PPP, constant 2021 international $); sensitivity NY.GDP.PCAP.CD (current US$) | DECISION (author); DATA: World Bank WDI |
+| GDP base year b | latest year with >= 98% of WDI-economy population reporting the PPP measure; held fixed (static) | DECISION (author); 99% is never reached |
+| alpha, g_W | computed over the covered economies (not a published world aggregate) | LITERATURE: Hjalsted et al. 2021 SI Eq. S1 |
+| Sector share s_sec | residential consented value (detached + townhouses + apartments) / national final consumption expenditure, annual averages 2016-2025; FCE share of GDP as mean of ratios | LITERATURE: Hjalsted et al. 2021 Eq. 6; DATA: Stats NZ; DECISION: mean of quarterly ratios for continuity with the manuscript (ratio of sums is a sensitivity) |
+| World population | UN WPP 2024 probabilistic median (1 July), dated 31 December t as the mean of 1 July t and t+1 | DATA; DECISION (dating) |
+| NZ population | the model's paths (central; each Monte Carlo draw); sensitivities: raw Stats NZ 2024-base median (PCHIP on level, dated as above) and the WPP 2024 New Zealand median | DATA (model); DECISION |
+| Monte Carlo | boundaries recomputed per draw from the draw's NZ population; I_sec,base held at the central estimate | DECISION (author) |
+
+### Limitations of the planetary-boundary layer
+
+- Static carrying capacity: the carrying capacities are constant yearly values modelled at steady state and their timespan may not match the assessment period (Clausen et al. 2025, pp. 143 and 148).
+- B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future maintenance and end-of-life emissions of the buildings built in those years (to be revisited).
+- The primary SOS (6.81E12) is the 2 °C carrying capacity of Bjørn & Hauschild (2015), not the 1 W/m² planetary boundary (3.61E12, sensitivity C). Sala et al. (2020, Table 3) label 6.81E12 as radiative forcing after Rockström et al. (2009), which does not match its derivation in Bjørn & Hauschild (2015).
+- GWP basis: Bjørn & Hauschild (2015) ESM2 uses AR5 GWP100 factors (CH4 28, N2O 265; column "CFs (GWP100, IPCC5)") while their Table 1 cites Forster et al. (2007), i.e. AR4. The GWP basis of the case-study LCA factors used by the model is not documented in this repository (building_data.xlsx gives "GWP" columns only; source Christoforatos & Pickering 2025): to be confirmed by the author.
+- I_glob = 5.58E13 (Bjørn & Hauschild 2015 ESM2, from Laurent et al. 2013, year 2010): Laurent et al. (2013) is not in hand, so whether it includes land-use-change CO2 (the sector impact includes soil carbon loss) and its GWP basis are NOT VERIFIED. The per-gas indicator scores in ESM2 sum to 54.0 Gt CO2-eq with 39.5 Gt CO2; a CO2 total of that size is consistent with inclusion of land-use-change CO2 (inference, not a sourced statement). The EC-JRC table "Normalization factors for testing" (Benini, Sala & Pant, version 0.1.1, 15 Dec 2015; sheet 1.3) gives the PROSUITE global value as 5.589E13 kg CO2-eq, 8,100 kg/person, "2010 or 2000".
+- Final-consumption-expenditure upscaling: the numerator (consented residential value) is an investment flow (gross fixed capital formation), while Hjalsted et al. (2021) define the upscaling on final consumption and leave intermediate sectors as open (p. 16).
+- Ability to pay: Hjalsted et al. (2021) state GDP as "USD/cap (2017)", World Bank (2019), without naming the series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in outputs/pb_results.json).
+- Monte Carlo: I_sec,base is the central historical estimate in every draw; it does not co-vary with the draw's carbon factors, completion rate or dwelling size (a co-varying base would cancel the factor uncertainty in LoE_AR).
+
+### All settings in PB.py
+
+| setting | value |
+|---|---|
+| `ALPHA_CHECK_YEAR` | `2017` |
+| `ALPHA_HJALSTED_2017` | `0.243` |
+| `AR_BASE_WINDOW` | `(2016, 2025)` |
+| `AR_BASE_WINDOW_SENS` | `(2021, 2025)` |
+| `AR_COLOR` | `'#1F5FA8'` |
+| `ATP_COLOR` | `'#C2571A'` |
+| `GDP_MEASURE` | `'NY.GDP.PCAP.PP.KD'` |
+| `GDP_MEASURE_SENS` | `'NY.GDP.PCAP.CD'` |
+| `HIST_RATE_AFTER_LAST_CENSUS` | `'recent'` |
+| `M6` | `1000000.0` |
+| `MC_PCT` | `(5, 50, 95)` |
+| `MC_REL_TOL` | `1e-09` |
+| `PB_YEARS` | `(2026, 2050)` |
+| `POP_NZ_SOURCE` | `'model'` |
+| `SAVE_FIGURES` | `True` |
+| `SOURCE_PAIR` | `'A'` |
+| `SSEC_FCE_SHARE` | `'mean_of_ratios'` |
+| `SSEC_VALUE_COLUMNS` | `('Value - Value/Detached', 'Value - Value/Townhouses', 'Value - Value/Apartments')` |
+| `SSEC_WINDOW` | `(2016, 2025)` |
+| `T0` | `2025` |
+| `WDI_COVERAGE_MIN` | `0.98` |
+| `SOURCE_PAIRS` | `{'A': {'label': '2 °C carrying capacity (Bjørn & Hauschild 2015)', 'sos': 6810000000000.0, 'i_glob': 55800000000000.0}, 'C': {'label': '1 W/m² planetary boundary (Bjørn & Hauschild 2015)', 'sos': 3610000000000.0, 'i_glob': 55800000000000.0}}` |

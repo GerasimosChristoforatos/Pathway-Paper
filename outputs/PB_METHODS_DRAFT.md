@@ -18,7 +18,7 @@ Absolute environmental sustainability assessment (AESA) of New Zealand new resid
 
 g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c and P_W = Σ P_c over the same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) is constant in this static design: 0.1790.
 
-**Carbon factors.** A1-A3 of mapped materials decarbonised 2026-2050 after Horup et al. (2025) SI Table S4; A4-A5, B2, B4, C1-C4, unmapped materials and soil at 2025 (see ASSUMPTIONS.md). Cumulative LoE of the reference path by decarbonisation mode (each a full run): `none` 5.41 (AR) / 30.2 (AtP); `horup_class_v1_1` 5.05 (AR) / 28.2 (AtP); `horup_item` 4.99 (AR) / 27.9 (AtP); see outputs/DECARB_MODES.md.
+**Carbon factors.** A1-A3 of each case-study EPD item decarbonised 2026-2050 after Horup et al. (2025) SI Table S4 (item-level mapping, data/material_item_map.csv: direct, Horup p. 6, proxy or held); A4-A5, B2, B4, C1-C4, held items and soil at 2025 (see ASSUMPTIONS.md). Cumulative LoE of the reference path by decarbonisation mode (each a full run): `none` 5.41 (AR) / 30.2 (AtP); `horup_class_v1_1` 5.05 (AR) / 28.2 (AtP); `horup_item` 4.99 (AR) / 27.9 (AtP); comparison run ? at commit ? (`python run_all.py --compare-modes`) **STALE: re-run `python run_all.py --compare-modes`.**; see outputs/DECARB_MODES.md.
 
 **Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over 2026-2050 (ratio of sums).
 
@@ -92,35 +92,34 @@ Primary pair A: 2 °C carrying capacity (Bjørn & Hauschild 2015); sensitivity C
 
 ## Results
 
-The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 242.2 kt CO2e in 2026 and 256.2 kt in 2050; by ability to pay 43.35 and 45.87 kt (17.9% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026-2050 the reference path (S3-10) emits 31,400 kt against cumulative boundaries of 6,217 kt (AR) and 1,113 kt (AtP): cumulative LoE 5.05 (AR; Monte Carlo p5-p95 4.05-5.99) and 28.2 (AtP; 22.4-33.6).
+The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 242.2 kt CO2e in 2026 and 256.2 kt in 2050; by ability to pay 43.35 and 45.87 kt (17.9% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026-2050 the reference path (S3-10) emits 31,013 kt against cumulative boundaries of 6,217 kt (AR) and 1,113 kt (AtP): cumulative LoE 4.99 (AR; Monte Carlo p5-p95 4.00-5.92) and 27.9 (AtP; 22.1-33.2).
 
 | scenario | cumulative LoE AR | cumulative LoE AtP |
 |---|---|---|
-| S1 | 4.74 | 26.5 |
-| S1-noUC | 4.86 | 27.1 |
-| S2 | 5.14 | 28.7 |
-| S2-held | 5.51 | 30.8 |
-| S2-noUC | 5.53 | 30.9 |
-| S3-10 | 5.05 | 28.2 |
-| S3-10-noUC | 5.30 | 29.6 |
-| S3-10-trend | 4.71 | 26.3 |
-| S3-15 | 5.15 | 28.8 |
-| S3-5 | 4.89 | 27.3 |
+| S1 | 4.68 | 26.1 |
+| S1-noUC | 4.80 | 26.8 |
+| S2 | 5.07 | 28.3 |
+| S2-held | 5.44 | 30.4 |
+| S2-noUC | 5.46 | 30.5 |
+| S3-10 | 4.99 | 27.9 |
+| S3-10-noUC | 5.23 | 29.2 |
+| S3-10-trend | 4.66 | 26.0 |
+| S3-15 | 5.09 | 28.4 |
+| S3-5 | 4.83 | 27.0 |
 
 ### Deterministic sensitivities (reference scenario S3-10)
 
 | case | cumulative LoE AR | vs reference | cumulative LoE AtP | vs reference |
 |---|---|---|---|---|
-| Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios | 5.05 | +0.0% | 28.2 | +0.0% |
-| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 9.53 | +88.6% | 53.2 | +88.6% |
-| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 5.05 | +0.0% | 86.8 | +207.7% |
-| (iii) AR base window 2021-2025 (5 yr, as Horup) | 4.95 | -1.9% | 28.2 | +0.0% |
-| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 5.04 | -0.2% | 28.1 | -0.6% |
-| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 5.36 | +6.2% | 30.4 | +7.7% |
-| (v) s_sec with FCE share as ratio of sums | 5.05 | +0.0% | 28.3 | +0.2% |
-| (vi) Frozen technology: 2025 factors held (no decarbonisation) | 5.41 | +7.1% | 30.2 | +7.1% |
-| (vii) STEEL class at the steel-profile rate (Horup SI Table S4) | 5.02 | -0.7% | 28.0 | -0.7% |
-| Note (not in tornado): history 2024-25 at the long-run net replacement rate | 5.04 | -0.2% | 28.2 | +0.0% |
+| Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios | 4.99 | +0.0% | 27.9 | +0.0% |
+| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 9.41 | +88.6% | 52.6 | +88.6% |
+| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 4.99 | +0.0% | 85.7 | +207.7% |
+| (iii) AR base window 2021-2025 (5 yr, as Horup) | 4.89 | -1.9% | 27.9 | +0.0% |
+| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 4.98 | -0.2% | 27.7 | -0.6% |
+| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 5.30 | +6.2% | 30.0 | +7.7% |
+| (v) s_sec with FCE share as ratio of sums | 4.99 | +0.0% | 27.9 | +0.2% |
+| (vi) Frozen technology: 2025 factors held (no decarbonisation) | 5.41 | +8.4% | 30.2 | +8.4% |
+| Note (not in tornado): history 2024-25 at the long-run net replacement rate | 4.98 | -0.2% | 27.9 | +0.0% |
 
 ## Assumption register
 
@@ -129,7 +128,7 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 | Impact category | climate change only | DECISION (author) |
 | Carrying capacity over time | static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / Paris-aligned pathways | DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, 140-150 (pp. 143, 148) |
 | Sector impact | the model's embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all booked in the construction year | DECISION (author); construction-year booking of B2/B4/C is a limitation to be revisited |
-| Carbon factors over time | Boss.DECARB_MODE = 'horup_class_v1_1' (A1-A3 of mapped materials, Horup et al. 2025); history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
+| Carbon factors over time | Boss.DECARB_MODE = 'horup_item' (A1-A3 by case-study EPD item, Horup et al. 2025; data/material_item_map.csv); history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
 | Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |

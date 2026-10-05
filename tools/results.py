@@ -57,6 +57,27 @@ def main():
         for k, v in pb['cum_LoE_mc'].items():
             L.append(f"| {k} | {v['LoE_AR_p5']:.2f} / {v['LoE_AR_p50']:.2f} / {v['LoE_AR_p95']:.2f} | "
                      f"{v['LoE_AtP_p5']:.1f} / {v['LoE_AtP_p50']:.1f} / {v['LoE_AtP_p95']:.1f} |")
+    dp = os.path.join(ROOT, 'outputs', 'decarb_modes.json')
+    if os.path.exists(dp):
+        with open(dp) as f:
+            dm = json.load(f)
+        typ = list(next(iter(dm['modes'].values()))['a13_reduction_2050'])
+        L += ['', f"## Material decarbonisation modes (adopted: {dm['adopted']}; reference S3-10)", '',
+              '| mode | carbon (kt) | upfront (kt) | MC carbon p5 / p50 / p95 (kt) | cum. LoE AR | cum. LoE AtP | '
+              'MC LoE AR p5 / p50 / p95 | MC LoE AtP p5 / p50 / p95 | A1-A3 by 2050 (' + ', '.join(typ)
+              + ') | whole factor by 2050 (' + ', '.join(typ) + ') |', '|---|---|---|---|---|---|---|---|---|---|']
+        for mode, r in dm['modes'].items():
+            mc, pbm = r.get('mc'), r.get('pb')
+            mcs = (f"{mc['carbon_kt']['p5']:,.0f} / {mc['carbon_kt']['p50']:,.0f} / {mc['carbon_kt']['p95']:,.0f}"
+                   if mc else 'n/a')
+            det = f"{pbm['det']['LoE_AR']:.2f} | {pbm['det']['LoE_AtP']:.1f}" if pbm else 'n/a | n/a'
+            pm = (pbm or {}).get('mc')
+            mcl = (f"{pm['LoE_AR_p5']:.2f} / {pm['LoE_AR_p50']:.2f} / {pm['LoE_AR_p95']:.2f} | "
+                   f"{pm['LoE_AtP_p5']:.1f} / {pm['LoE_AtP_p50']:.1f} / {pm['LoE_AtP_p95']:.1f}" if pm else 'n/a | n/a')
+            L.append(f"| {mode} | {r['carbon_kt']:,.0f} | {r['upfront_kt']:,.0f} | {mcs} | {det} | {mcl} | "
+                     + ', '.join(f"{-100 * r['a13_reduction_2050'][t]:.1f}%" for t in typ) + ' | '
+                     + ', '.join(f"{-100 * r['whole_factor_reduction_2050'][t]:.1f}%" for t in typ) + ' |')
+        L += ['', 'Sensitivities, item coverage and S4 rows: outputs/DECARB_MODES.md.']
     with open(os.path.join(ROOT, 'outputs', 'RESULTS.md'), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print(f'outputs/RESULTS.md: {len(L)} lines')

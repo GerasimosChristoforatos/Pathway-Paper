@@ -48,8 +48,8 @@ def interactive():
 
 def step(name, cmd, env_extra=None):
     os.makedirs(LOGS, exist_ok=True)
-    env = dict(os.environ, MPLBACKEND='Agg', PATHWAY_SAVE_FIGURES='1', PYTHONWARNINGS='ignore',
-               **(env_extra or {}))
+    env = dict(os.environ, MPLBACKEND='Agg', PATHWAY_SAVE_FIGURES='1', PYTHONWARNINGS='ignore')
+    env.update(env_extra or {})                      # a step's own settings override the defaults
     log_path = os.path.join(LOGS, f'{name}.log')
     t = time.time()
     with open(log_path, 'w') as log:

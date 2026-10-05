@@ -48,3 +48,48 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 | sensitivity: S1 without the census UC correction | 85.70 | 32,344 | 3,088 | 29,256 | 23,329 |
 | sensitivity: S3-10 without the census UC correction | 94.48 | 35,276 | 3,024 | 32,252 | 25,338 |
 | sensitivity: S2 without the census UC correction | 98.54 | 36,971 | 2,563 | 34,408 | 26,890 |
+
+## Planetary-boundary layer (climate change; 2 °C carrying capacity (Bjørn & Hauschild 2015))
+
+Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted et al. 2021 Eqs. 5-6) are a range and are never averaged. LoE = embodied carbon / boundary (> 1: exceeded). Methods: outputs/PB_METHODS_DRAFT.md.
+
+| metric | value |
+|---|---|
+| Mean annual sector emissions 2016-2025, same convention as projection (kt/yr) | 1,987.5 |
+| GDP base year b (PPP coverage >= 98% of WDI population) | 2024 |
+| alpha, Hjalsted SI Eq. S1, year b, PPP | 0.4220 |
+| alpha 2017, current US$ (Hjalsted report 0.243) | 0.2388 |
+| g_W / g_NZ, year b, PPP | 0.4448 |
+| s_sec (consented value / FCE, 2016-2025) | 0.0525462 |
+| Boundary AR 2026 (kt CO2e) | 242.2 |
+| Boundary AR 2050 (kt CO2e) | 256.2 |
+| Boundary AtP 2026 (kt CO2e) | 43.35 |
+| Boundary AtP 2050 (kt CO2e) | 45.87 |
+| B_AtP / B_AR (constant over time) | 0.1790 |
+| Cumulative LoE 2026-2050, AR, reference S3-10 | 5.41 |
+| Cumulative LoE AR, MC p5 (S3-10) | 4.29 |
+| Cumulative LoE AR, MC p50 (S3-10) | 5.36 |
+| Cumulative LoE AR, MC p95 (S3-10) | 6.46 |
+| Cumulative LoE 2026-2050, AtP, reference S3-10 | 30.2 |
+| Cumulative LoE AtP, MC p5 (S3-10) | 24.0 |
+| Cumulative LoE AtP, MC p50 (S3-10) | 29.9 |
+| Cumulative LoE AtP, MC p95 (S3-10) | 36.1 |
+
+| scenario (deterministic) | cumulative LoE AR | cumulative LoE AtP |
+|---|---|---|
+| S1 | 5.07 | 28.3 |
+| S1-noUC | 5.20 | 29.1 |
+| S2 | 5.52 | 30.8 |
+| S2-held | 5.91 | 33.0 |
+| S2-noUC | 5.95 | 33.2 |
+| S3-10 | 5.41 | 30.2 |
+| S3-10-noUC | 5.67 | 31.7 |
+| S3-10-trend | 5.05 | 28.2 |
+| S3-15 | 5.52 | 30.8 |
+| S3-5 | 5.23 | 29.2 |
+
+| MC scenario | LoE AR p5 / p50 / p95 | LoE AtP p5 / p50 / p95 |
+|---|---|---|
+| S1 | 3.98 / 5.02 / 6.10 | 22.2 / 28.0 / 34.1 |
+| S2 | 4.43 / 5.46 / 6.53 | 24.8 / 30.5 / 36.5 |
+| S3-10 | 4.29 / 5.36 / 6.46 | 24.0 / 29.9 / 36.1 |

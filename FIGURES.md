@@ -15,6 +15,13 @@ All in `outputs/figures/`.
 - `fig_validation.png`: Hindcast of cumulative dwellings from 2006/2013/2018 (consistent vacancy) and the 2026 check.
 - `mc_1_fan.png`: Within-scenario Monte Carlo fan (reference), history from 1991.
 - `sens_1_tornado.png`: One-at-a-time sensitivities: scenarios, mix, household size, stock, near-term rule, carbon/soil bounds.
+- `boss_05_annual_carbon_pb.png`: PB variant of boss_05: annual carbon by typology and demand type with the AR and AtP boundaries.
+- `fig_scenarios_pb.png`: PB variant of fig_scenarios (carbon): scenarios and reference MC band vs the boundaries; cumulative vs cumulative boundaries.
+- `mc_1_fan_pb.png`: PB variant of mc_1_fan (carbon): MC fan, history on the projection soil convention, base window, boundaries.
+- `pb_1_boundaries.png`: Boundaries B_AR and B_AtP 2025-2050 (log axis), population modifier, table of components.
+- `pb_2_loe.png`: Annual level of exceedance by principle, S1 / S3-10 / S2 with MC 5-95% bands, log axis.
+- `pb_3_headroom.png`: Intensity, floor area and carbon per dwelling that would fit each boundary vs the projection (S3-10).
+- `pb_4_sensitivity.png`: Tornado of cumulative LoE 2026-2050 (S3-10): source pair, GDP measure, base window, NZ population, s_sec.
 
 ## Supplementary
 
@@ -33,3 +40,5 @@ All in `outputs/figures/`.
 - `fig_conversion_chain.png`: Indices population -> households -> dwellings -> floor area -> carbon; intensity per m².
 - `mc_3_sobol.png`: Sobol indices (reference): within-scenario parametric uncertainty only.
 - `sens_2_paths.png`: Annual paths of the largest one-at-a-time sensitivities.
+- `boss_06_cumulative_carbon_pb.png`: PB variant of boss_06: cumulative carbon vs cumulative AR and AtP boundaries.
+- `pb_5_demand_vs_boundary.png`: Annual carbon by demand type (in scope, S3-10) against the AR and AtP boundaries.

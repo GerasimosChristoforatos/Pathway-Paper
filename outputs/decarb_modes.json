@@ -1,5 +1,12 @@
 {
-  "adopted": "horup_class_v1_1",
+  "adopted": "horup_item",
+  "provenance": {
+    "run_utc": "2026-10-05 20:04 UTC",
+    "commit": "3bcd7aa",
+    "code_uncommitted_changes": false,
+    "run_mode": "full",
+    "command": "python run_all.py --compare-modes"
+  },
   "modes": {
     "none": {
       "label": "frozen technology (2025 factors)",
@@ -51,7 +58,7 @@
     },
     "horup_class_v1_1": {
       "label": "class-level mapping (baseline-pb-v1.1)",
-      "dir": "outputs",
+      "dir": "outputs/modes/horup_class_v1_1",
       "carbon_kt": 31400.199445766302,
       "upfront_kt": 21978.747694912643,
       "a13_reduction_2050": {
@@ -99,7 +106,7 @@
     },
     "horup_item": {
       "label": "item-level mapping (v1.2)",
-      "dir": "outputs/modes/horup_item",
+      "dir": "outputs",
       "carbon_kt": 31012.952295889965,
       "upfront_kt": 21591.5005450363,
       "a13_reduction_2050": {
@@ -150,7 +157,7 @@
     "horup_item": {
       "oat": [
         {
-          "case": "Adopted settings",
+          "case": "Item-level mapping (horup_item)",
           "carbon_kt": 31012.952295889965,
           "carbon_change_pct": 0.0
         },
@@ -160,22 +167,22 @@
           "carbon_change_pct": 8.422951906745002
         },
         {
-          "case": "Decarbonisation: proxy-mapped items held at 2025",
+          "case": "Proxy-mapped items held at 2025",
           "carbon_kt": 31094.689218298936,
           "carbon_change_pct": 0.2635573731553542
         },
         {
-          "case": "Decarbonisation: NZ-made electricity-intensive items held at 2025",
+          "case": "NZ-made, electricity-intensive items held at 2025",
           "carbon_kt": 31533.834480102218,
           "carbon_change_pct": 1.6795633619224315
         },
         {
-          "case": "Decarbonisation: lift at the steel-profile rate (Horup S4)",
+          "case": "Lift at the steel-profile rate (Horup SI Table S4)",
           "carbon_kt": 30993.447964986965,
-          "carbon_change_pct": -0.0628909196290439
+          "carbon_change_pct": -0.06289091962904392
         },
         {
-          "case": "Decarbonisation: class-level mapping of v1.1",
+          "case": "Class-level mapping of baseline-pb-v1.1",
           "carbon_kt": 31400.199445766302,
           "carbon_change_pct": 1.248662643213283
         }
@@ -183,49 +190,49 @@
       "pb": [
         {
           "case": "reference",
-          "label": "Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",
+          "label": "Item-level mapping (horup_item)",
           "cum_LoE_AR": 4.98852847218903,
-          "cum_LoE_AtP": 27.86516769549704,
+          "cum_LoE_AtP": 27.865167695497036,
           "AR_vs_ref_pct": 0.0,
           "AtP_vs_ref_pct": 0.0
         },
         {
-          "case": "vi_frozen",
-          "label": "(vi) Frozen technology: 2025 factors held (no decarbonisation)",
+          "case": "frozen",
+          "label": "Frozen technology: 2025 factors held (no decarbonisation)",
           "cum_LoE_AR": 5.4087098262557936,
           "cum_LoE_AtP": 30.212237369222603,
           "AR_vs_ref_pct": 8.422951906745023,
           "AtP_vs_ref_pct": 8.422951906745023
         },
         {
-          "case": "vii_proxies_held",
-          "label": "(vii) Proxy-mapped items held at 2025",
+          "case": "proxies_held",
+          "label": "Proxy-mapped items held at 2025",
           "cum_LoE_AR": 5.001676106789438,
           "cum_LoE_AtP": 27.938608399500623,
           "AR_vs_ref_pct": 0.2635573731553542,
           "AtP_vs_ref_pct": 0.2635573731553542
         },
         {
-          "case": "viii_nz_elec_held",
-          "label": "(viii) NZ-made, electricity-intensive items held at 2025",
+          "case": "nz_elec_held",
+          "label": "NZ-made, electricity-intensive items held at 2025",
           "cum_LoE_AR": 5.072313968706985,
           "cum_LoE_AtP": 28.33318084284885,
           "AR_vs_ref_pct": 1.6795633619224315,
           "AtP_vs_ref_pct": 1.6795633619224315
         },
         {
-          "case": "ix_lift_steel_profile",
-          "label": "(ix) Lift at the steel-profile rate (Horup SI Table S4)",
+          "case": "lift_steel_profile",
+          "label": "Lift at the steel-profile rate (Horup SI Table S4)",
           "cum_LoE_AR": 4.985391140756914,
-          "cum_LoE_AtP": 27.84764303527717,
-          "AR_vs_ref_pct": -0.0628909196290439,
-          "AtP_vs_ref_pct": -0.0628909196290328
+          "cum_LoE_AtP": 27.847643035277166,
+          "AR_vs_ref_pct": -0.06289091962904392,
+          "AtP_vs_ref_pct": -0.06289091962903282
         },
         {
-          "case": "x_class_v1_1",
-          "label": "(x) Class-level mapping of baseline-pb-v1.1",
+          "case": "class_v1_1",
+          "label": "Class-level mapping of baseline-pb-v1.1",
           "cum_LoE_AR": 5.050818363667313,
-          "cum_LoE_AtP": 28.21310963497945,
+          "cum_LoE_AtP": 28.213109634979446,
           "AR_vs_ref_pct": 1.248662643213283,
           "AtP_vs_ref_pct": 1.2486626432133052
         }

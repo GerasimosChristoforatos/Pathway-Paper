@@ -46,8 +46,8 @@ import MonteCarlo as MC  # noqa: E402
 import validation  # noqa: E402
 
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
-OUT_DIR = os.path.join(ROOT_DIR, 'outputs')
-FIG_DIR = os.path.join(OUT_DIR, 'figures')
+OUT_DIR = Boss.OUT_DIR          # outputs/ (outputs/modes/<mode>/ in a mode comparison run)
+FIG_DIR = os.path.join(ROOT_DIR, 'outputs', 'figures')
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
 FILE_WPP = os.path.join(DATA_DIR, 'derived', 'wpp2024_population_median.csv')      # data/build_wpp.py
 FILE_WDI = os.path.join(DATA_DIR, 'derived', 'wdi_economies.csv')                  # data/build_wdi.py
@@ -449,8 +449,10 @@ def main():
             ('v_ssec', '(v) s_sec with FCE share as ratio of sums', ref_ar,
              cum_pair(ssec=ss['s_sec_ratio_of_sums'])[1]),
 ]
-    # carbon-factor rows: the other decarbonisation mode, and (decarbonised runs) the
-    # STEEL class at the steel-profile rate; boundaries unchanged, I_sec re-run
+    # carbon-factor rows (boundaries unchanged, I_sec re-run): 'none' adopted: the
+    # class-level decarbonisation; class-level adopted: frozen technology and the
+    # STEEL class at the steel-profile rate; item-level adopted: frozen technology,
+    # the item-level sensitivities and the class-level mapping of v1.1
     b_ar_ref, b_atp_ref = boundaries(SOURCE_PAIR, i_base, comp, s_sec, p_nz, p_w)
 
     def cum_I(**kw):
@@ -459,12 +461,23 @@ def main():
         return cum(I, b_ar_ref), cum(I, b_atp_ref)
     if Boss.DECARB_MODE == 'none':
         sens.append(('vi_decarb', '(vi) Materials decarbonised, A1-A3 (Horup et al. 2025, SI Table S4)',
-                     *cum_I(DECARB_MODE='horup_material')))
-    else:
+                     *cum_I(DECARB_MODE='horup_class_v1_1')))
+    elif Boss.DECARB_MODE == 'horup_class_v1_1':
         sens.append(('vi_frozen', '(vi) Frozen technology: 2025 factors held (no decarbonisation)',
                      *cum_I(DECARB_MODE='none')))
         sens.append(('vii_steel_profile', '(vii) STEEL class at the steel-profile rate (Horup SI Table S4)',
                      *cum_I(DECARB_STEEL='steel_profile')))
+    else:
+        sens.append(('vi_frozen', '(vi) Frozen technology: 2025 factors held (no decarbonisation)',
+                     *cum_I(DECARB_MODE='none')))
+        sens.append(('vii_proxies_held', '(vii) Proxy-mapped items held at 2025',
+                     *cum_I(DECARB_ITEM_CASE='proxies_held')))
+        sens.append(('viii_nz_elec_held', '(viii) NZ-made, electricity-intensive items held at 2025',
+                     *cum_I(DECARB_ITEM_CASE='nz_elec_held')))
+        sens.append(('ix_lift_steel_profile', '(ix) Lift at the steel-profile rate (Horup SI Table S4)',
+                     *cum_I(DECARB_ITEM_CASE='elevator_steel_profile')))
+        sens.append(('x_class_v1_1', '(x) Class-level mapping of baseline-pb-v1.1',
+                     *cum_I(DECARB_MODE='horup_class_v1_1')))
     sens.append(('note_soil_long_run', 'Note (not in tornado): history 2024-25 at the long-run net replacement rate',
                  *cum_pair(ib=i_base_long)))
     sens_df = pd.DataFrame(sens, columns=['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP'])
@@ -480,7 +493,8 @@ def main():
                       AR_BASE_WINDOW_SENS=list(AR_BASE_WINDOW_SENS), HIST_RATE_AFTER_LAST_CENSUS=HIST_RATE_AFTER_LAST_CENSUS,
                       GDP_MEASURE=GDP_MEASURE, GDP_MEASURE_SENS=GDP_MEASURE_SENS, WDI_COVERAGE_MIN=WDI_COVERAGE_MIN,
                       SSEC_WINDOW=list(SSEC_WINDOW), SSEC_FCE_SHARE=SSEC_FCE_SHARE, POP_NZ_SOURCE=POP_NZ_SOURCE,
-                      DECARB_MODE=Boss.DECARB_MODE, DECARB_STEEL=Boss.DECARB_STEEL),
+                      DECARB_MODE=Boss.DECARB_MODE, DECARB_STEEL=Boss.DECARB_STEEL,
+                      **({'DECARB_ITEM_CASE': Boss.DECARB_ITEM_CASE} if Boss.DECARB_MODE == 'horup_item' else {})),
         source_pairs=SOURCE_PAIRS,
         components=dict(SOS_kg=pair['sos'], I_glob_kg=pair['i_glob'], pair_label=pair['label'],
                         I_sec_base_kg=i_base, I_sec_base_window=list(AR_BASE_WINDOW),
@@ -553,7 +567,9 @@ def assumption_register():
          'booked in the construction year', 'DECISION (author); construction-year booking of B2/B4/C is a '
          'limitation to be revisited'),
         ('Carbon factors over time', f"Boss.DECARB_MODE = '{Boss.DECARB_MODE}'"
-         + ('' if Boss.DECARB_MODE == 'none' else ' (A1-A3 of mapped materials, Horup et al. 2025)')
+         + {'none': '', 'horup_class_v1_1': ' (A1-A3 of mapped materials, Horup et al. 2025)',
+            'horup_item': ' (A1-A3 by case-study EPD item, Horup et al. 2025; data/material_item_map.csv)'}[
+             Boss.DECARB_MODE]
          + '; history and the AR base always at 2025 factors', 'DECISION (author); see the Boss register'),
         ('Allocation principles', 'acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. '
          '2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of '
@@ -678,8 +694,10 @@ def _boundary_lines(ax, years, b_ar, b_atp, scale=M6, label=True, cumulative=Fal
 def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell):
     global _factor_note
     _factor_note = ('case-study factors held at 2025' if B['DECARB'] is None else
-                   'A1-A3 of mapped materials decarbonised after Horup et al. 2025; other stages, unmapped '
-                   'materials and soil at 2025')
+                    'A1-A3 of mapped materials decarbonised after Horup et al. 2025; other stages, unmapped '
+                    'materials and soil at 2025' if Boss.DECARB_MODE == 'horup_class_v1_1' else
+                    'A1-A3 of case-study items decarbonised after Horup et al. 2025 (item-level mapping); other '
+                    'stages, held items and soil at 2025')
     fy = np.asarray(B['forecast_years'])
     py = fy[fy >= PB_YEARS[0]]
     typ = list(B['typ_names'])
@@ -870,7 +888,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
 
     # ---- pb_4_sensitivity (tornado) ---------------------------------------------------------
     s = sens_df[~sens_df['case'].isin(['reference']) & ~sens_df['case'].str.startswith('note')]
-    fig, ax = plt.subplots(1, 2, figsize=(16, 5.2))
+    fig, ax = plt.subplots(1, 2, figsize=(16, max(5.2, 0.42 * len(s) + 1.4)))
     ref = sens_df.set_index('case').loc['reference']
     for a, k, col, ttl in ((ax[0], 'AR', AR_COLOR, 'acquired rights'), (ax[1], 'AtP', ATP_COLOR, 'ability to pay')):
         v = s[f'cum_LoE_{k}'].values - ref[f'cum_LoE_{k}']

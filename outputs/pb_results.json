@@ -23,7 +23,9 @@
       2025
     ],
     "SSEC_FCE_SHARE": "mean_of_ratios",
-    "POP_NZ_SOURCE": "model"
+    "POP_NZ_SOURCE": "model",
+    "DECARB_MODE": "none",
+    "DECARB_STEEL": "reinforcing_steel"
   },
   "source_pairs": {
     "A": {
@@ -690,6 +692,14 @@
       "cum_LoE_AtP": 30.28251163521268,
       "AR_vs_ref_pct": 0.0,
       "AtP_vs_ref_pct": 0.232601992137349
+    },
+    {
+      "case": "vi_decarb",
+      "label": "(vi) Materials decarbonised, A1-A3 (Horup et al. 2025, SI Table S4)",
+      "cum_LoE_AR": 5.050818363667313,
+      "cum_LoE_AtP": 28.213109634979446,
+      "AR_vs_ref_pct": -6.616947000024831,
+      "AtP_vs_ref_pct": -6.616947000024831
     },
     {
       "case": "note_soil_long_run",

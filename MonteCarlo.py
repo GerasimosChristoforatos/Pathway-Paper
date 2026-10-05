@@ -187,12 +187,29 @@ def build_setup(settings=None):
     mf = pd.read_csv(Boss.FILE_FACTORS_MATERIAL)
     up = (mf[mf['Stage'].isin(['A1-A3', 'A4-A5'])].groupby('Typology')['kgCO2e_per_m2'].sum())
     su['up_central'] = up.reindex(typ).values
-    su['boot_emb'], su['boot_up'], su['between_sigma'] = carbon_bootstrap(bf, typ)
+    # material decarbonisation of A1-A3 (Boss.DECARB_MODE): per case study and year,
+    # resampled with the SAME building indices and multipliers as the 2025 factors
+    red = None
+    su['decarb'] = B['DECARB'] is not None
+    if su['decarb']:
+        variant = {'reinforcing_steel': 'horup_material',
+                   'steel_profile': 'horup_material_steel_profile'}[Boss.DECARB_STEEL]
+        r = pd.read_csv(Boss.FILE_FACTORS_DECARB_BLD)
+        red = (r[r['Variant'] == variant].pivot(index='id', columns='Year', values='A13_reduction_kgCO2e_per_m2')
+               .reindex(columns=list(fy)))
+        su['red_central'] = np.array([B['RED_TOT'][t] for t in typ])          # (typ, years)
+    su['boot_emb'], su['boot_up'], su['between_sigma'], dec = carbon_bootstrap(bf, typ, red)
+    if su['decarb']:
+        su['boot_red'] = dec                                                    # (N_BOOT, typ, years)
     return su
 
 
-def carbon_bootstrap(bf, typ):
-    """Stratified bootstrap of pooled typology factors (materials, in scope)."""
+def carbon_bootstrap(bf, typ, red=None):
+    """Stratified bootstrap of pooled typology factors (materials, in scope).
+    red: optional A1-A3 reduction per case study (rows = id) and year (columns);
+    its bootstrap uses the same resampled indices and multipliers, so the random
+    stream, and every 2025-factor draw, is unchanged. Returns (emb, up, sigma,
+    reduction (N_BOOT, typ, years) or None)."""
     rng = np.random.default_rng(SEED + 1)
     bf = bf[bf['duplicate_of'].fillna('') == ''].copy()
     bf['emb'] = bf[Boss.STAGES_IN_SCOPE].sum(axis=1)
@@ -204,19 +221,24 @@ def carbon_bootstrap(bf, typ):
     sigma = float(np.sqrt(sum((l ** 2).sum() for l in logs) / dof))
     emb = np.empty((N_BOOT, len(typ)))
     upf = np.empty((N_BOOT, len(typ)))
+    dec = None if red is None else np.empty((N_BOOT, len(typ), red.shape[1]))
     for j, t in enumerate(typ):
         subs = [g for _, g in bf[bf['Typology'] == t].groupby('Subtype')]
-        e_sub, u_sub = [], []
+        e_sub, u_sub, r_sub = [], [], []
         for g in subs:
             idx = rng.integers(0, len(g), size=(N_BOOT, len(g)))
             e, u = g['emb'].values[idx].mean(axis=1), g['up'].values[idx].mean(axis=1)
+            rr = None if red is None else red.loc[g['id']].values[idx].mean(axis=1)   # (N_BOOT, years)
             if len(g) == 1:                          # no spread: borrow it
                 k = np.exp(rng.normal(-sigma ** 2 / 2, sigma, N_BOOT))   # mean-preserving
                 e, u = e * k, u * k
-            e_sub.append(e); u_sub.append(u)
+                rr = None if rr is None else rr * k[:, None]
+            e_sub.append(e); u_sub.append(u); r_sub.append(rr)
         emb[:, j] = np.mean(e_sub, axis=0)
         upf[:, j] = np.mean(u_sub, axis=0)
-    return emb, upf, sigma
+        if dec is not None:
+            dec[:, j, :] = np.mean(r_sub, axis=0)
+    return emb, upf, sigma, dec
 
 
 # ============================================================
@@ -305,11 +327,17 @@ def project(su, p):
     # ---- carbon factors ----
     if p['carbon'] is None:
         emb, upf = su['emb_central'], su['up_central']
+        red = su['red_central'] if su['decarb'] else None
     else:
         kc = min(int(p['carbon'] * N_BOOT), N_BOOT - 1)
         emb, upf = su['boot_emb'][kc], su['boot_up'][kc]
-    I = {t: emb[j] + su['soc'][j] for j, t in enumerate(typ)}
-    U = {t: upf[j] + su['soc'][j] for j, t in enumerate(typ)}
+        red = su['boot_red'][kc] if su['decarb'] else None
+    if red is None:                                   # 2025 factors held (DECARB_MODE 'none')
+        I = {t: emb[j] + su['soc'][j] for j, t in enumerate(typ)}
+        U = {t: upf[j] + su['soc'][j] for j, t in enumerate(typ)}
+    else:                                             # A1-A3 decarbonised, by year
+        I = {t: emb[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
+        U = {t: upf[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
 
     fwd = lambda join=None, redev=None: engine.forward(
         pop, hh, np.insert(np.diff(pop), 0, 0).clip(min=0), v, su['demol_rate'], unc,
@@ -347,7 +375,7 @@ def validate(su):
     o = project(su, central(su))
     R = B['results']['50th']
     typ = su['typ']
-    up_int = {t: B['UPFRONT_2025'][t] for t in typ}
+    up_int = {t: B['U_INT'][t] for t in typ}
     ref = dict(gfa=R['total'], carbon=B['carbon_total_typ'].sum(axis=1).values,
                upfront=(sum(B['evol_typ_total'][t].values * (up_int[t] - B['SOIL_INTENSITY'][t]) for t in typ)
                         + np.insert(B['flow_annual']['SOIL'].values, 0, 0.0)),

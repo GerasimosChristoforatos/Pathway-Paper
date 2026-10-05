@@ -64,7 +64,45 @@ def register():
          else 'all floor area (original)',
          'LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders '
          '(Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603)'),
+        ('Material decarbonisation', {'none': 'none: all factors held at 2025 (frozen technology)',
+                                      'horup_material': 'horup_material: A1-A3 of mapped materials scaled by '
+                                      'material-specific GWP paths, 2026-2050'}[B.DECARB_MODE],
+         'DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI '
+         'Table S4 (average of 9 premise scenarios, relative to 2025)'),
+        ('Decarbonised life-cycle stages', 'A1-A3 only; A4-A5, B2, B4, C1-C4 held at 2025; soil never',
+         'DECISION (author): Horup\'s scope is material production (A1-A3); soil is land-use change'),
+        ('Interpolation between 2025, 2030, 2040, 2050', 'linear',
+         'DECISION (author): Horup et al. state "interpolated" without naming the method (p. 3)'),
+        ('Material mapping (case-study class -> S4 row)',
+         'CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> '
+         'construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); '
+         'GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, '
+         'SIP, unspecified OTHERS (no S4 counterpart)', 'DECISION (author)'),
+        ('STEEL class', f"S4 '{'reinforcing steel' if B.DECARB_STEEL == 'reinforcing_steel' else 'steel profile'}' "
+         "(2050: -29.9%; steel profile -39.8% is a one-at-a-time sensitivity)",
+         'DECISION (author): rebar is inside REINFORCED CONCRETE; STEEL is non-rebar steel (stud walls, sections, '
+         'miscellaneous) whose closest S4 counterpart is steel profile; reinforcing steel is used as the '
+         'conservative choice because the class mixes items of unknown composition'),
+        ('Rebar in REINFORCED CONCRETE', 'decarbonised at the concrete-structure rate (2050: -27.6%)',
+         'DECISION (author): S4\'s concrete dataset does not separate reinforcement; the difference from '
+         'reinforcing steel (-29.9%) is small'),
+        ('History and acquired-rights base', 'always 2025 factors; decarbonisation applies to 2026-2050 only',
+         'DECISION (author): the base is observed past construction, built with past (not future) technology'),
     ]
+
+
+DECARB_LIMITATIONS = [
+    'Decarbonisation paths are relative changes for European and global market processes modelled with premise on '
+    'ecoinvent 3.9.1 (Horup et al. 2025); they are applied as relative changes to New Zealand case-study factors. '
+    'This assumes NZ material supply decarbonises at the same relative rate as those markets, which is not tested. '
+    'Materials without a counterpart in Horup et al. are held at 2025 factors, so the decarbonised baseline is '
+    'conservative.',
+    'B4 (replacement) and C1-C4 (end of life) occur decades after construction but are booked in the construction '
+    'year and held at 2025 factors; future production and end-of-life technology would lower them '
+    '(conservative).',
+    'Horup et al. (2025) SI Table S4 gives the average of the 9 premise scenarios only; the scenario range is shown '
+    'graphically in their Fig. 2, so no low/high decarbonisation path is implemented.',
+]
 
 
 LIMITATIONS = [
@@ -398,7 +436,7 @@ def main():
     L += ['', '## Assumption register (values read from Boss.py)', '', '| setting | value | basis |', '|---|---|---|']
     for a, val, basis in register():
         L.append(f'| {a} | {val} | {basis} |')
-    L += ['', '## Open limitations and data needs', ''] + [f'- {x}' for x in LIMITATIONS]
+    L += ['', '## Open limitations and data needs', ''] + [f'- {x}' for x in LIMITATIONS + DECARB_LIMITATIONS]
 
     # ---- figures ----
     figs = sorted(glob.glob(os.path.join(OUT, 'figures', '*.png')))

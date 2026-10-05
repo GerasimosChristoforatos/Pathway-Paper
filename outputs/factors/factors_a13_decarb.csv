@@ -1,0 +1,937 @@
+Variant,Typology,Material,Year,A13_kgCO2e_per_m2
+horup_material,Detached,CONCRETE (incl. reinforced),2025,31.290610670645812
+horup_material,Townhouses,CONCRETE (incl. reinforced),2025,69.27587278402507
+horup_material,Apartments,CONCRETE (incl. reinforced),2025,195.40334690361132
+horup_material,Detached,STEEL,2025,43.746845858675215
+horup_material,Townhouses,STEEL,2025,27.193258614295313
+horup_material,Apartments,STEEL,2025,181.12734290908816
+horup_material,Detached,TIMBER,2025,25.43738999849101
+horup_material,Townhouses,TIMBER,2025,25.882063840715773
+horup_material,Apartments,TIMBER,2025,2.0347926434200794
+horup_material,Detached,PLASTICS & PAINT,2025,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2025,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2025,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2025,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2025,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2025,11.814428893446376
+horup_material,Detached,OTHERS,2025,40.77782070407256
+horup_material,Townhouses,OTHERS,2025,57.40916348145601
+horup_material,Apartments,OTHERS,2025,43.522269294581704
+horup_material,Detached,CONCRETE (incl. reinforced),2026,30.760863052708277
+horup_material,Townhouses,CONCRETE (incl. reinforced),2026,68.10303761713877
+horup_material,Apartments,CONCRETE (incl. reinforced),2026,192.09518335740356
+horup_material,Detached,STEEL,2026,42.606193504914955
+horup_material,Townhouses,STEEL,2026,26.484223395047472
+horup_material,Apartments,STEEL,2026,176.40464059845698
+horup_material,Detached,TIMBER,2026,24.62140432612097
+horup_material,Townhouses,TIMBER,2026,25.051813832100756
+horup_material,Apartments,TIMBER,2026,1.9695201589641962
+horup_material,Detached,PLASTICS & PAINT,2026,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2026,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2026,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2026,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2026,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2026,11.814428893446376
+horup_material,Detached,OTHERS,2026,40.50984003221113
+horup_material,Townhouses,OTHERS,2026,56.83598225258803
+horup_material,Apartments,OTHERS,2026,43.25526138596858
+horup_material,Detached,CONCRETE (incl. reinforced),2027,30.231115434770736
+horup_material,Townhouses,CONCRETE (incl. reinforced),2027,66.93020245025248
+horup_material,Apartments,CONCRETE (incl. reinforced),2027,188.78701981119576
+horup_material,Detached,STEEL,2027,41.465541151154696
+horup_material,Townhouses,STEEL,2027,25.77518817579963
+horup_material,Apartments,STEEL,2027,171.68193828782574
+horup_material,Detached,TIMBER,2027,23.80541865375093
+horup_material,Townhouses,TIMBER,2027,24.221563823485734
+horup_material,Apartments,TIMBER,2027,1.904247674508313
+horup_material,Detached,PLASTICS & PAINT,2027,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2027,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2027,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2027,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2027,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2027,11.814428893446376
+horup_material,Detached,OTHERS,2027,40.2418593603497
+horup_material,Townhouses,OTHERS,2027,56.26280102372006
+horup_material,Apartments,OTHERS,2027,42.98825347735546
+horup_material,Detached,CONCRETE (incl. reinforced),2028,29.701367816833198
+horup_material,Townhouses,CONCRETE (incl. reinforced),2028,65.75736728336616
+horup_material,Apartments,CONCRETE (incl. reinforced),2028,185.478856264988
+horup_material,Detached,STEEL,2028,40.32488879739444
+horup_material,Townhouses,STEEL,2028,25.06615295655179
+horup_material,Apartments,STEEL,2028,166.95923597719457
+horup_material,Detached,TIMBER,2028,22.98943298138089
+horup_material,Townhouses,TIMBER,2028,23.391313814870717
+horup_material,Apartments,TIMBER,2028,1.8389751900524298
+horup_material,Detached,PLASTICS & PAINT,2028,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2028,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2028,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2028,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2028,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2028,11.814428893446376
+horup_material,Detached,OTHERS,2028,39.97387868848827
+horup_material,Townhouses,OTHERS,2028,55.68961979485208
+horup_material,Apartments,OTHERS,2028,42.72124556874233
+horup_material,Detached,CONCRETE (incl. reinforced),2029,29.171620198895663
+horup_material,Townhouses,CONCRETE (incl. reinforced),2029,64.58453211647986
+horup_material,Apartments,CONCRETE (incl. reinforced),2029,182.17069271878023
+horup_material,Detached,STEEL,2029,39.18423644363418
+horup_material,Townhouses,STEEL,2029,24.357117737303945
+horup_material,Apartments,STEEL,2029,162.23653366656336
+horup_material,Detached,TIMBER,2029,22.173447309010854
+horup_material,Townhouses,TIMBER,2029,22.5610638062557
+horup_material,Apartments,TIMBER,2029,1.7737027055965466
+horup_material,Detached,PLASTICS & PAINT,2029,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2029,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2029,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2029,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2029,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2029,11.814428893446376
+horup_material,Detached,OTHERS,2029,39.70589801662683
+horup_material,Townhouses,OTHERS,2029,55.11643856598411
+horup_material,Apartments,OTHERS,2029,42.45423766012921
+horup_material,Detached,CONCRETE (incl. reinforced),2030,28.64187258095813
+horup_material,Townhouses,CONCRETE (incl. reinforced),2030,63.41169694959357
+horup_material,Apartments,CONCRETE (incl. reinforced),2030,178.86252917257247
+horup_material,Detached,STEEL,2030,38.04358408987393
+horup_material,Townhouses,STEEL,2030,23.648082518056107
+horup_material,Apartments,STEEL,2030,157.51383135593215
+horup_material,Detached,TIMBER,2030,21.35746163664081
+horup_material,Townhouses,TIMBER,2030,21.730813797640682
+horup_material,Apartments,TIMBER,2030,1.7084302211406635
+horup_material,Detached,PLASTICS & PAINT,2030,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2030,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2030,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2030,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2030,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2030,11.814428893446376
+horup_material,Detached,OTHERS,2030,39.4379173447654
+horup_material,Townhouses,OTHERS,2030,54.54325733711614
+horup_material,Apartments,OTHERS,2030,42.187229751516085
+horup_material,Detached,CONCRETE (incl. reinforced),2031,28.32427981002738
+horup_material,Townhouses,CONCRETE (incl. reinforced),2031,62.7085621777061
+horup_material,Apartments,CONCRETE (incl. reinforced),2031,176.87922846152316
+horup_material,Detached,STEEL,2031,37.53502226682447
+horup_material,Townhouses,STEEL,2031,23.331957940292995
+horup_material,Apartments,STEEL,2031,155.40820636958392
+horup_material,Detached,TIMBER,2031,21.013667087839853
+horup_material,Townhouses,TIMBER,2031,21.381009338115376
+horup_material,Apartments,TIMBER,2031,1.6809293407913186
+horup_material,Detached,PLASTICS & PAINT,2031,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2031,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2031,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2031,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2031,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2031,11.814428893446376
+horup_material,Detached,OTHERS,2031,39.3395308271555
+horup_material,Townhouses,OTHERS,2031,54.337727822489505
+horup_material,Apartments,OTHERS,2031,42.091742988626464
+horup_material,Detached,CONCRETE (incl. reinforced),2032,28.00668703909664
+horup_material,Townhouses,CONCRETE (incl. reinforced),2032,62.00542740581863
+horup_material,Apartments,CONCRETE (incl. reinforced),2032,174.89592775047385
+horup_material,Detached,STEEL,2032,37.02646044377501
+horup_material,Townhouses,STEEL,2032,23.01583336252989
+horup_material,Apartments,STEEL,2032,153.30258138323572
+horup_material,Detached,TIMBER,2032,20.66987253903889
+horup_material,Townhouses,TIMBER,2032,21.031204878590074
+horup_material,Apartments,TIMBER,2032,1.6534284604419742
+horup_material,Detached,PLASTICS & PAINT,2032,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2032,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2032,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2032,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2032,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2032,11.814428893446376
+horup_material,Detached,OTHERS,2032,39.24114430954559
+horup_material,Townhouses,OTHERS,2032,54.13219830786288
+horup_material,Apartments,OTHERS,2032,41.996256225736836
+horup_material,Detached,CONCRETE (incl. reinforced),2033,27.6890942681659
+horup_material,Townhouses,CONCRETE (incl. reinforced),2033,61.30229263393116
+horup_material,Apartments,CONCRETE (incl. reinforced),2033,172.91262703942454
+horup_material,Detached,STEEL,2033,36.517898620725546
+horup_material,Townhouses,STEEL,2033,22.699708784766777
+horup_material,Apartments,STEEL,2033,151.1969563968875
+horup_material,Detached,TIMBER,2033,20.326077990237934
+horup_material,Townhouses,TIMBER,2033,20.68140041906477
+horup_material,Apartments,TIMBER,2033,1.6259275800926294
+horup_material,Detached,PLASTICS & PAINT,2033,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2033,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2033,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2033,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2033,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2033,11.814428893446376
+horup_material,Detached,OTHERS,2033,39.142757791935686
+horup_material,Townhouses,OTHERS,2033,53.92666879323625
+horup_material,Apartments,OTHERS,2033,41.90076946284721
+horup_material,Detached,CONCRETE (incl. reinforced),2034,27.37150149723516
+horup_material,Townhouses,CONCRETE (incl. reinforced),2034,60.5991578620437
+horup_material,Apartments,CONCRETE (incl. reinforced),2034,170.92932632837523
+horup_material,Detached,STEEL,2034,36.009336797676085
+horup_material,Townhouses,STEEL,2034,22.383584207003672
+horup_material,Apartments,STEEL,2034,149.09133141053928
+horup_material,Detached,TIMBER,2034,19.982283441436973
+horup_material,Townhouses,TIMBER,2034,20.33159595953947
+horup_material,Apartments,TIMBER,2034,1.5984266997432848
+horup_material,Detached,PLASTICS & PAINT,2034,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2034,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2034,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2034,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2034,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2034,11.814428893446376
+horup_material,Detached,OTHERS,2034,39.044371274325776
+horup_material,Townhouses,OTHERS,2034,53.72113927860963
+horup_material,Apartments,OTHERS,2034,41.80528269995758
+horup_material,Detached,CONCRETE (incl. reinforced),2035,27.053908726304414
+horup_material,Townhouses,CONCRETE (incl. reinforced),2035,59.89602309015622
+horup_material,Apartments,CONCRETE (incl. reinforced),2035,168.94602561732592
+horup_material,Detached,STEEL,2035,35.50077497462662
+horup_material,Townhouses,STEEL,2035,22.067459629240563
+horup_material,Apartments,STEEL,2035,146.98570642419105
+horup_material,Detached,TIMBER,2035,19.638488892636015
+horup_material,Townhouses,TIMBER,2035,19.981791500014165
+horup_material,Apartments,TIMBER,2035,1.5709258193939402
+horup_material,Detached,PLASTICS & PAINT,2035,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2035,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2035,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2035,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2035,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2035,11.814428893446376
+horup_material,Detached,OTHERS,2035,38.94598475671587
+horup_material,Townhouses,OTHERS,2035,53.515609763983
+horup_material,Apartments,OTHERS,2035,41.70979593706796
+horup_material,Detached,CONCRETE (incl. reinforced),2036,26.736315955373676
+horup_material,Townhouses,CONCRETE (incl. reinforced),2036,59.19288831826876
+horup_material,Apartments,CONCRETE (incl. reinforced),2036,166.9627249062766
+horup_material,Detached,STEEL,2036,34.99221315157716
+horup_material,Townhouses,STEEL,2036,21.751335051477454
+horup_material,Apartments,STEEL,2036,144.88008143784282
+horup_material,Detached,TIMBER,2036,19.294694343835054
+horup_material,Townhouses,TIMBER,2036,19.63198704048886
+horup_material,Apartments,TIMBER,2036,1.5434249390445953
+horup_material,Detached,PLASTICS & PAINT,2036,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2036,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2036,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2036,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2036,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2036,11.814428893446376
+horup_material,Detached,OTHERS,2036,38.84759823910596
+horup_material,Townhouses,OTHERS,2036,53.310080249356375
+horup_material,Apartments,OTHERS,2036,41.61430917417833
+horup_material,Detached,CONCRETE (incl. reinforced),2037,26.418723184442932
+horup_material,Townhouses,CONCRETE (incl. reinforced),2037,58.489753546381294
+horup_material,Apartments,CONCRETE (incl. reinforced),2037,164.9794241952273
+horup_material,Detached,STEEL,2037,34.4836513285277
+horup_material,Townhouses,STEEL,2037,21.435210473714346
+horup_material,Apartments,STEEL,2037,142.7744564514946
+horup_material,Detached,TIMBER,2037,18.950899795034097
+horup_material,Townhouses,TIMBER,2037,19.282182580963557
+horup_material,Apartments,TIMBER,2037,1.515924058695251
+horup_material,Detached,PLASTICS & PAINT,2037,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2037,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2037,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2037,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2037,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2037,11.814428893446376
+horup_material,Detached,OTHERS,2037,38.74921172149605
+horup_material,Townhouses,OTHERS,2037,53.10455073472974
+horup_material,Apartments,OTHERS,2037,41.5188224112887
+horup_material,Detached,CONCRETE (incl. reinforced),2038,26.101130413512188
+horup_material,Townhouses,CONCRETE (incl. reinforced),2038,57.78661877449382
+horup_material,Apartments,CONCRETE (incl. reinforced),2038,162.99612348417799
+horup_material,Detached,STEEL,2038,33.97508950547824
+horup_material,Townhouses,STEEL,2038,21.119085895951237
+horup_material,Apartments,STEEL,2038,140.66883146514635
+horup_material,Detached,TIMBER,2038,18.607105246233136
+horup_material,Townhouses,TIMBER,2038,18.932378121438255
+horup_material,Apartments,TIMBER,2038,1.488423178345906
+horup_material,Detached,PLASTICS & PAINT,2038,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2038,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2038,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2038,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2038,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2038,11.814428893446376
+horup_material,Detached,OTHERS,2038,38.65082520388615
+horup_material,Townhouses,OTHERS,2038,52.899021220103116
+horup_material,Apartments,OTHERS,2038,41.423335648399075
+horup_material,Detached,CONCRETE (incl. reinforced),2039,25.783537642581443
+horup_material,Townhouses,CONCRETE (incl. reinforced),2039,57.083484002606355
+horup_material,Apartments,CONCRETE (incl. reinforced),2039,161.01282277312868
+horup_material,Detached,STEEL,2039,33.466527682428776
+horup_material,Townhouses,STEEL,2039,20.80296131818813
+horup_material,Apartments,STEEL,2039,138.56320647879818
+horup_material,Detached,TIMBER,2039,18.26331069743218
+horup_material,Townhouses,TIMBER,2039,18.582573661912953
+horup_material,Apartments,TIMBER,2039,1.4609222979965617
+horup_material,Detached,PLASTICS & PAINT,2039,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2039,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2039,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2039,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2039,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2039,11.814428893446376
+horup_material,Detached,OTHERS,2039,38.55243868627625
+horup_material,Townhouses,OTHERS,2039,52.69349170547649
+horup_material,Apartments,OTHERS,2039,41.327848885509454
+horup_material,Detached,CONCRETE (incl. reinforced),2040,25.465944871650702
+horup_material,Townhouses,CONCRETE (incl. reinforced),2040,56.380349230718885
+horup_material,Apartments,CONCRETE (incl. reinforced),2040,159.02952206207937
+horup_material,Detached,STEEL,2040,32.957965859379314
+horup_material,Townhouses,STEEL,2040,20.48683674042502
+horup_material,Apartments,STEEL,2040,136.45758149244992
+horup_material,Detached,TIMBER,2040,17.919516148631217
+horup_material,Townhouses,TIMBER,2040,18.232769202387647
+horup_material,Apartments,TIMBER,2040,1.4334214176472169
+horup_material,Detached,PLASTICS & PAINT,2040,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2040,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2040,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2040,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2040,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2040,11.814428893446376
+horup_material,Detached,OTHERS,2040,38.45405216866634
+horup_material,Townhouses,OTHERS,2040,52.487962190849856
+horup_material,Apartments,OTHERS,2040,41.23236212261982
+horup_material,Detached,CONCRETE (incl. reinforced),2041,25.18377805769499
+horup_material,Townhouses,CONCRETE (incl. reinforced),2041,55.75564578490831
+horup_material,Apartments,CONCRETE (incl. reinforced),2041,157.26744907435724
+horup_material,Detached,STEEL,2041,32.727972549388696
+horup_material,Townhouses,STEEL,2041,20.34387174636951
+horup_material,Apartments,STEEL,2041,135.50532822006443
+horup_material,Detached,TIMBER,2041,17.643289691761485
+horup_material,Townhouses,TIMBER,2041,17.951714000119598
+horup_material,Apartments,TIMBER,2041,1.4113254572365823
+horup_material,Detached,PLASTICS & PAINT,2041,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2041,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2041,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2041,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2041,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2041,11.814428893446376
+horup_material,Detached,OTHERS,2041,38.39866622382522
+horup_material,Townhouses,OTHERS,2041,52.36394165201802
+horup_material,Apartments,OTHERS,2041,41.17924517992384
+horup_material,Detached,CONCRETE (incl. reinforced),2042,24.901611243739282
+horup_material,Townhouses,CONCRETE (incl. reinforced),2042,55.13094233909774
+horup_material,Apartments,CONCRETE (incl. reinforced),2042,155.50537608663512
+horup_material,Detached,STEEL,2042,32.49797923939807
+horup_material,Townhouses,STEEL,2042,20.200906752313998
+horup_material,Apartments,STEEL,2042,134.5530749476789
+horup_material,Detached,TIMBER,2042,17.36706323489175
+horup_material,Townhouses,TIMBER,2042,17.670658797851544
+horup_material,Apartments,TIMBER,2042,1.3892294968259473
+horup_material,Detached,PLASTICS & PAINT,2042,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2042,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2042,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2042,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2042,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2042,11.814428893446376
+horup_material,Detached,OTHERS,2042,38.343280278984096
+horup_material,Townhouses,OTHERS,2042,52.23992111318618
+horup_material,Apartments,OTHERS,2042,41.12612823722787
+horup_material,Detached,CONCRETE (incl. reinforced),2043,24.619444429783574
+horup_material,Townhouses,CONCRETE (incl. reinforced),2043,54.506238893287176
+horup_material,Apartments,CONCRETE (incl. reinforced),2043,153.743303098913
+horup_material,Detached,STEEL,2043,32.267985929407445
+horup_material,Townhouses,STEEL,2043,20.057941758258487
+horup_material,Apartments,STEEL,2043,133.6008216752934
+horup_material,Detached,TIMBER,2043,17.090836778022016
+horup_material,Townhouses,TIMBER,2043,17.389603595583495
+horup_material,Apartments,TIMBER,2043,1.367133536415313
+horup_material,Detached,PLASTICS & PAINT,2043,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2043,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2043,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2043,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2043,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2043,11.814428893446376
+horup_material,Detached,OTHERS,2043,38.287894334142976
+horup_material,Townhouses,OTHERS,2043,52.11590057435434
+horup_material,Apartments,OTHERS,2043,41.07301129453188
+horup_material,Detached,CONCRETE (incl. reinforced),2044,24.33727761582786
+horup_material,Townhouses,CONCRETE (incl. reinforced),2044,53.8815354474766
+horup_material,Apartments,CONCRETE (incl. reinforced),2044,151.98123011119088
+horup_material,Detached,STEEL,2044,32.03799261941682
+horup_material,Townhouses,STEEL,2044,19.914976764202976
+horup_material,Apartments,STEEL,2044,132.64856840290787
+horup_material,Detached,TIMBER,2044,16.814610321152276
+horup_material,Townhouses,TIMBER,2044,17.108548393315438
+horup_material,Apartments,TIMBER,2044,1.3450375760046782
+horup_material,Detached,PLASTICS & PAINT,2044,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2044,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2044,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2044,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2044,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2044,11.814428893446376
+horup_material,Detached,OTHERS,2044,38.23250838930186
+horup_material,Townhouses,OTHERS,2044,51.991880035522506
+horup_material,Apartments,OTHERS,2044,41.0198943518359
+horup_material,Detached,CONCRETE (incl. reinforced),2045,24.05511080187215
+horup_material,Townhouses,CONCRETE (incl. reinforced),2045,53.25683200166603
+horup_material,Apartments,CONCRETE (incl. reinforced),2045,150.21915712346876
+horup_material,Detached,STEEL,2045,31.807999309426194
+horup_material,Townhouses,STEEL,2045,19.772011770147465
+horup_material,Apartments,STEEL,2045,131.69631513052238
+horup_material,Detached,TIMBER,2045,16.538383864282544
+horup_material,Townhouses,TIMBER,2045,16.827493191047388
+horup_material,Apartments,TIMBER,2045,1.3229416155940437
+horup_material,Detached,PLASTICS & PAINT,2045,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2045,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2045,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2045,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2045,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2045,11.814428893446376
+horup_material,Detached,OTHERS,2045,38.177122444460736
+horup_material,Townhouses,OTHERS,2045,51.86785949669067
+horup_material,Apartments,OTHERS,2045,40.96677740913992
+horup_material,Detached,CONCRETE (incl. reinforced),2046,23.772943987916438
+horup_material,Townhouses,CONCRETE (incl. reinforced),2046,52.63212855585546
+horup_material,Apartments,CONCRETE (incl. reinforced),2046,148.45708413574664
+horup_material,Detached,STEEL,2046,31.578005999435565
+horup_material,Townhouses,STEEL,2046,19.629046776091954
+horup_material,Apartments,STEEL,2046,130.74406185813683
+horup_material,Detached,TIMBER,2046,16.262157407412808
+horup_material,Townhouses,TIMBER,2046,16.54643798877934
+horup_material,Apartments,TIMBER,2046,1.300845655183409
+horup_material,Detached,PLASTICS & PAINT,2046,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2046,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2046,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2046,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2046,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2046,11.814428893446376
+horup_material,Detached,OTHERS,2046,38.12173649961962
+horup_material,Townhouses,OTHERS,2046,51.74383895785882
+horup_material,Apartments,OTHERS,2046,40.91366046644394
+horup_material,Detached,CONCRETE (incl. reinforced),2047,23.49077717396073
+horup_material,Townhouses,CONCRETE (incl. reinforced),2047,52.007425110044885
+horup_material,Apartments,CONCRETE (incl. reinforced),2047,146.69501114802452
+horup_material,Detached,STEEL,2047,31.34801268944494
+horup_material,Townhouses,STEEL,2047,19.486081782036443
+horup_material,Apartments,STEEL,2047,129.7918085857513
+horup_material,Detached,TIMBER,2047,15.985930950543072
+horup_material,Townhouses,TIMBER,2047,16.265382786511285
+horup_material,Apartments,TIMBER,2047,1.2787496947727743
+horup_material,Detached,PLASTICS & PAINT,2047,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2047,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2047,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2047,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2047,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2047,11.814428893446376
+horup_material,Detached,OTHERS,2047,38.066350554778495
+horup_material,Townhouses,OTHERS,2047,51.61981841902699
+horup_material,Apartments,OTHERS,2047,40.860543523747964
+horup_material,Detached,CONCRETE (incl. reinforced),2048,23.208610360005018
+horup_material,Townhouses,CONCRETE (incl. reinforced),2048,51.38272166423432
+horup_material,Apartments,CONCRETE (incl. reinforced),2048,144.93293816030243
+horup_material,Detached,STEEL,2048,31.118019379454314
+horup_material,Townhouses,STEEL,2048,19.343116787980932
+horup_material,Apartments,STEEL,2048,128.83955531336582
+horup_material,Detached,TIMBER,2048,15.709704493673337
+horup_material,Townhouses,TIMBER,2048,15.984327584243236
+horup_material,Apartments,TIMBER,2048,1.2566537343621398
+horup_material,Detached,PLASTICS & PAINT,2048,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2048,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2048,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2048,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2048,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2048,11.814428893446376
+horup_material,Detached,OTHERS,2048,38.01096460993738
+horup_material,Townhouses,OTHERS,2048,51.49579788019515
+horup_material,Apartments,OTHERS,2048,40.807426581051985
+horup_material,Detached,CONCRETE (incl. reinforced),2049,22.92644354604931
+horup_material,Townhouses,CONCRETE (incl. reinforced),2049,50.75801821842374
+horup_material,Apartments,CONCRETE (incl. reinforced),2049,143.1708651725803
+horup_material,Detached,STEEL,2049,30.88802606946369
+horup_material,Townhouses,STEEL,2049,19.20015179392542
+horup_material,Apartments,STEEL,2049,127.8873020409803
+horup_material,Detached,TIMBER,2049,15.4334780368036
+horup_material,Townhouses,TIMBER,2049,15.70327238197518
+horup_material,Apartments,TIMBER,2049,1.2345577739515048
+horup_material,Detached,PLASTICS & PAINT,2049,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2049,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2049,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2049,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2049,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2049,11.814428893446376
+horup_material,Detached,OTHERS,2049,37.95557866509626
+horup_material,Townhouses,OTHERS,2049,51.371777341363305
+horup_material,Apartments,OTHERS,2049,40.754309638356006
+horup_material,Detached,CONCRETE (incl. reinforced),2050,22.644276732093598
+horup_material,Townhouses,CONCRETE (incl. reinforced),2050,50.133314772613176
+horup_material,Apartments,CONCRETE (incl. reinforced),2050,141.40879218485816
+horup_material,Detached,STEEL,2050,30.658032759473066
+horup_material,Townhouses,STEEL,2050,19.05718679986991
+horup_material,Apartments,STEEL,2050,126.93504876859478
+horup_material,Detached,TIMBER,2050,15.157251579933867
+horup_material,Townhouses,TIMBER,2050,15.42221717970713
+horup_material,Apartments,TIMBER,2050,1.2124618135408705
+horup_material,Detached,PLASTICS & PAINT,2050,18.914384846251245
+horup_material,Townhouses,PLASTICS & PAINT,2050,15.772082568690905
+horup_material,Apartments,PLASTICS & PAINT,2050,10.541155747221936
+horup_material,Detached,PLASTERBOARD,2050,6.554820644224648
+horup_material,Townhouses,PLASTERBOARD,2050,11.214945150181745
+horup_material,Apartments,PLASTERBOARD,2050,11.814428893446376
+horup_material,Detached,OTHERS,2050,37.90019272025514
+horup_material,Townhouses,OTHERS,2050,51.24775680253147
+horup_material,Apartments,OTHERS,2050,40.701192695660026
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2025,31.290610670645812
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2025,69.27587278402507
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2025,195.40334690361132
+horup_material_steel_profile,Detached,STEEL,2025,43.746845858675215
+horup_material_steel_profile,Townhouses,STEEL,2025,27.193258614295313
+horup_material_steel_profile,Apartments,STEEL,2025,181.12734290908816
+horup_material_steel_profile,Detached,TIMBER,2025,25.43738999849101
+horup_material_steel_profile,Townhouses,TIMBER,2025,25.882063840715773
+horup_material_steel_profile,Apartments,TIMBER,2025,2.0347926434200794
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2025,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2025,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2025,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2025,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2025,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2025,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2025,40.77782070407256
+horup_material_steel_profile,Townhouses,OTHERS,2025,57.40916348145601
+horup_material_steel_profile,Apartments,OTHERS,2025,43.522269294581704
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2026,30.760863052708277
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2026,68.10303761713877
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2026,192.09518335740356
+horup_material_steel_profile,Detached,STEEL,2026,42.383339289321526
+horup_material_steel_profile,Townhouses,STEEL,2026,26.345696097845398
+horup_material_steel_profile,Apartments,STEEL,2026,175.4819456901903
+horup_material_steel_profile,Detached,TIMBER,2026,24.62140432612097
+horup_material_steel_profile,Townhouses,TIMBER,2026,25.051813832100756
+horup_material_steel_profile,Apartments,TIMBER,2026,1.9695201589641962
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2026,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2026,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2026,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2026,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2026,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2026,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2026,40.50984003221113
+horup_material_steel_profile,Townhouses,OTHERS,2026,56.83598225258803
+horup_material_steel_profile,Apartments,OTHERS,2026,43.25526138596858
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2027,30.231115434770736
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2027,66.93020245025248
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2027,188.78701981119576
+horup_material_steel_profile,Detached,STEEL,2027,41.019832719967845
+horup_material_steel_profile,Townhouses,STEEL,2027,25.498133581395486
+horup_material_steel_profile,Apartments,STEEL,2027,169.83654847129242
+horup_material_steel_profile,Detached,TIMBER,2027,23.80541865375093
+horup_material_steel_profile,Townhouses,TIMBER,2027,24.221563823485734
+horup_material_steel_profile,Apartments,TIMBER,2027,1.904247674508313
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2027,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2027,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2027,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2027,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2027,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2027,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2027,40.2418593603497
+horup_material_steel_profile,Townhouses,OTHERS,2027,56.26280102372006
+horup_material_steel_profile,Apartments,OTHERS,2027,42.98825347735546
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2028,29.701367816833198
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2028,65.75736728336616
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2028,185.478856264988
+horup_material_steel_profile,Detached,STEEL,2028,39.65632615061416
+horup_material_steel_profile,Townhouses,STEEL,2028,24.650571064945566
+horup_material_steel_profile,Apartments,STEEL,2028,164.19115125239455
+horup_material_steel_profile,Detached,TIMBER,2028,22.98943298138089
+horup_material_steel_profile,Townhouses,TIMBER,2028,23.391313814870717
+horup_material_steel_profile,Apartments,TIMBER,2028,1.8389751900524298
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2028,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2028,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2028,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2028,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2028,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2028,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2028,39.97387868848827
+horup_material_steel_profile,Townhouses,OTHERS,2028,55.68961979485208
+horup_material_steel_profile,Apartments,OTHERS,2028,42.72124556874233
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2029,29.171620198895663
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2029,64.58453211647986
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2029,182.17069271878023
+horup_material_steel_profile,Detached,STEEL,2029,38.29281958126048
+horup_material_steel_profile,Townhouses,STEEL,2029,23.803008548495654
+horup_material_steel_profile,Apartments,STEEL,2029,158.54575403349668
+horup_material_steel_profile,Detached,TIMBER,2029,22.173447309010854
+horup_material_steel_profile,Townhouses,TIMBER,2029,22.5610638062557
+horup_material_steel_profile,Apartments,TIMBER,2029,1.7737027055965466
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2029,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2029,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2029,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2029,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2029,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2029,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2029,39.70589801662683
+horup_material_steel_profile,Townhouses,OTHERS,2029,55.11643856598411
+horup_material_steel_profile,Apartments,OTHERS,2029,42.45423766012921
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2030,28.64187258095813
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2030,63.41169694959357
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2030,178.86252917257247
+horup_material_steel_profile,Detached,STEEL,2030,36.9293130119068
+horup_material_steel_profile,Townhouses,STEEL,2030,22.95544603204574
+horup_material_steel_profile,Apartments,STEEL,2030,152.9003568145988
+horup_material_steel_profile,Detached,TIMBER,2030,21.35746163664081
+horup_material_steel_profile,Townhouses,TIMBER,2030,21.730813797640682
+horup_material_steel_profile,Apartments,TIMBER,2030,1.7084302211406635
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2030,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2030,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2030,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2030,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2030,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2030,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2030,39.4379173447654
+horup_material_steel_profile,Townhouses,OTHERS,2030,54.54325733711614
+horup_material_steel_profile,Apartments,OTHERS,2030,42.187229751516085
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2031,28.32427981002738
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2031,62.7085621777061
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2031,176.87922846152316
+horup_material_steel_profile,Detached,STEEL,2031,36.22503489493724
+horup_material_steel_profile,Townhouses,STEEL,2031,22.517663225188947
+horup_material_steel_profile,Apartments,STEEL,2031,149.98439746960258
+horup_material_steel_profile,Detached,TIMBER,2031,21.013667087839853
+horup_material_steel_profile,Townhouses,TIMBER,2031,21.381009338115376
+horup_material_steel_profile,Apartments,TIMBER,2031,1.6809293407913186
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2031,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2031,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2031,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2031,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2031,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2031,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2031,39.3395308271555
+horup_material_steel_profile,Townhouses,OTHERS,2031,54.337727822489505
+horup_material_steel_profile,Apartments,OTHERS,2031,42.091742988626464
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2032,28.00668703909664
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2032,62.00542740581863
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2032,174.89592775047385
+horup_material_steel_profile,Detached,STEEL,2032,35.52075677796766
+horup_material_steel_profile,Townhouses,STEEL,2032,22.079880418332152
+horup_material_steel_profile,Apartments,STEEL,2032,147.06843812460636
+horup_material_steel_profile,Detached,TIMBER,2032,20.66987253903889
+horup_material_steel_profile,Townhouses,TIMBER,2032,21.031204878590074
+horup_material_steel_profile,Apartments,TIMBER,2032,1.6534284604419742
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2032,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2032,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2032,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2032,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2032,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2032,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2032,39.24114430954559
+horup_material_steel_profile,Townhouses,OTHERS,2032,54.13219830786288
+horup_material_steel_profile,Apartments,OTHERS,2032,41.996256225736836
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2033,27.6890942681659
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2033,61.30229263393116
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2033,172.91262703942454
+horup_material_steel_profile,Detached,STEEL,2033,34.8164786609981
+horup_material_steel_profile,Townhouses,STEEL,2033,21.64209761147536
+horup_material_steel_profile,Apartments,STEEL,2033,144.15247877961014
+horup_material_steel_profile,Detached,TIMBER,2033,20.326077990237934
+horup_material_steel_profile,Townhouses,TIMBER,2033,20.68140041906477
+horup_material_steel_profile,Apartments,TIMBER,2033,1.6259275800926294
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2033,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2033,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2033,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2033,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2033,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2033,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2033,39.142757791935686
+horup_material_steel_profile,Townhouses,OTHERS,2033,53.92666879323625
+horup_material_steel_profile,Apartments,OTHERS,2033,41.90076946284721
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2034,27.37150149723516
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2034,60.5991578620437
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2034,170.92932632837523
+horup_material_steel_profile,Detached,STEEL,2034,34.11220054402854
+horup_material_steel_profile,Townhouses,STEEL,2034,21.20431480461857
+horup_material_steel_profile,Apartments,STEEL,2034,141.2365194346139
+horup_material_steel_profile,Detached,TIMBER,2034,19.982283441436973
+horup_material_steel_profile,Townhouses,TIMBER,2034,20.33159595953947
+horup_material_steel_profile,Apartments,TIMBER,2034,1.5984266997432848
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2034,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2034,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2034,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2034,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2034,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2034,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2034,39.044371274325776
+horup_material_steel_profile,Townhouses,OTHERS,2034,53.72113927860963
+horup_material_steel_profile,Apartments,OTHERS,2034,41.80528269995758
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2035,27.053908726304414
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2035,59.89602309015622
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2035,168.94602561732592
+horup_material_steel_profile,Detached,STEEL,2035,33.40792242705898
+horup_material_steel_profile,Townhouses,STEEL,2035,20.766531997761778
+horup_material_steel_profile,Apartments,STEEL,2035,138.32056008961771
+horup_material_steel_profile,Detached,TIMBER,2035,19.638488892636015
+horup_material_steel_profile,Townhouses,TIMBER,2035,19.981791500014165
+horup_material_steel_profile,Apartments,TIMBER,2035,1.5709258193939402
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2035,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2035,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2035,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2035,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2035,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2035,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2035,38.94598475671587
+horup_material_steel_profile,Townhouses,OTHERS,2035,53.515609763983
+horup_material_steel_profile,Apartments,OTHERS,2035,41.70979593706796
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2036,26.736315955373676
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2036,59.19288831826876
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2036,166.9627249062766
+horup_material_steel_profile,Detached,STEEL,2036,32.70364431008941
+horup_material_steel_profile,Townhouses,STEEL,2036,20.328749190904983
+horup_material_steel_profile,Apartments,STEEL,2036,135.40460074462146
+horup_material_steel_profile,Detached,TIMBER,2036,19.294694343835054
+horup_material_steel_profile,Townhouses,TIMBER,2036,19.63198704048886
+horup_material_steel_profile,Apartments,TIMBER,2036,1.5434249390445953
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2036,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2036,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2036,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2036,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2036,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2036,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2036,38.84759823910596
+horup_material_steel_profile,Townhouses,OTHERS,2036,53.310080249356375
+horup_material_steel_profile,Apartments,OTHERS,2036,41.61430917417833
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2037,26.418723184442932
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2037,58.489753546381294
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2037,164.9794241952273
+horup_material_steel_profile,Detached,STEEL,2037,31.999366193119844
+horup_material_steel_profile,Townhouses,STEEL,2037,19.89096638404819
+horup_material_steel_profile,Apartments,STEEL,2037,132.48864139962524
+horup_material_steel_profile,Detached,TIMBER,2037,18.950899795034097
+horup_material_steel_profile,Townhouses,TIMBER,2037,19.282182580963557
+horup_material_steel_profile,Apartments,TIMBER,2037,1.515924058695251
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2037,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2037,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2037,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2037,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2037,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2037,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2037,38.74921172149605
+horup_material_steel_profile,Townhouses,OTHERS,2037,53.10455073472974
+horup_material_steel_profile,Apartments,OTHERS,2037,41.5188224112887
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2038,26.101130413512188
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2038,57.78661877449382
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2038,162.99612348417799
+horup_material_steel_profile,Detached,STEEL,2038,31.29508807615028
+horup_material_steel_profile,Townhouses,STEEL,2038,19.453183577191396
+horup_material_steel_profile,Apartments,STEEL,2038,129.572682054629
+horup_material_steel_profile,Detached,TIMBER,2038,18.607105246233136
+horup_material_steel_profile,Townhouses,TIMBER,2038,18.932378121438255
+horup_material_steel_profile,Apartments,TIMBER,2038,1.488423178345906
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2038,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2038,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2038,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2038,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2038,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2038,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2038,38.65082520388615
+horup_material_steel_profile,Townhouses,OTHERS,2038,52.899021220103116
+horup_material_steel_profile,Apartments,OTHERS,2038,41.423335648399075
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2039,25.783537642581443
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2039,57.083484002606355
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2039,161.01282277312868
+horup_material_steel_profile,Detached,STEEL,2039,30.590809959180717
+horup_material_steel_profile,Townhouses,STEEL,2039,19.015400770334605
+horup_material_steel_profile,Apartments,STEEL,2039,126.65672270963282
+horup_material_steel_profile,Detached,TIMBER,2039,18.26331069743218
+horup_material_steel_profile,Townhouses,TIMBER,2039,18.582573661912953
+horup_material_steel_profile,Apartments,TIMBER,2039,1.4609222979965617
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2039,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2039,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2039,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2039,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2039,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2039,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2039,38.55243868627625
+horup_material_steel_profile,Townhouses,OTHERS,2039,52.69349170547649
+horup_material_steel_profile,Apartments,OTHERS,2039,41.327848885509454
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2040,25.465944871650702
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2040,56.380349230718885
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2040,159.02952206207937
+horup_material_steel_profile,Detached,STEEL,2040,29.88653184221115
+horup_material_steel_profile,Townhouses,STEEL,2040,18.577617963477813
+horup_material_steel_profile,Apartments,STEEL,2040,123.74076336463659
+horup_material_steel_profile,Detached,TIMBER,2040,17.919516148631217
+horup_material_steel_profile,Townhouses,TIMBER,2040,18.232769202387647
+horup_material_steel_profile,Apartments,TIMBER,2040,1.4334214176472169
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2040,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2040,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2040,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2040,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2040,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2040,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2040,38.45405216866634
+horup_material_steel_profile,Townhouses,OTHERS,2040,52.487962190849856
+horup_material_steel_profile,Apartments,OTHERS,2040,41.23236212261982
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2041,25.18377805769499
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2041,55.75564578490831
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2041,157.26744907435724
+horup_material_steel_profile,Detached,STEEL,2041,29.533095420075057
+horup_material_steel_profile,Townhouses,STEEL,2041,18.35792011230228
+horup_material_steel_profile,Apartments,STEEL,2041,122.27741214988586
+horup_material_steel_profile,Detached,TIMBER,2041,17.643289691761485
+horup_material_steel_profile,Townhouses,TIMBER,2041,17.951714000119598
+horup_material_steel_profile,Apartments,TIMBER,2041,1.4113254572365823
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2041,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2041,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2041,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2041,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2041,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2041,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2041,38.39866622382522
+horup_material_steel_profile,Townhouses,OTHERS,2041,52.36394165201802
+horup_material_steel_profile,Apartments,OTHERS,2041,41.17924517992384
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2042,24.901611243739282
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2042,55.13094233909774
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2042,155.50537608663512
+horup_material_steel_profile,Detached,STEEL,2042,29.17965899793896
+horup_material_steel_profile,Townhouses,STEEL,2042,18.138222261126753
+horup_material_steel_profile,Apartments,STEEL,2042,120.81406093513513
+horup_material_steel_profile,Detached,TIMBER,2042,17.36706323489175
+horup_material_steel_profile,Townhouses,TIMBER,2042,17.670658797851544
+horup_material_steel_profile,Apartments,TIMBER,2042,1.3892294968259473
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2042,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2042,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2042,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2042,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2042,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2042,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2042,38.343280278984096
+horup_material_steel_profile,Townhouses,OTHERS,2042,52.23992111318618
+horup_material_steel_profile,Apartments,OTHERS,2042,41.12612823722787
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2043,24.619444429783574
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2043,54.506238893287176
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2043,153.743303098913
+horup_material_steel_profile,Detached,STEEL,2043,28.826222575802873
+horup_material_steel_profile,Townhouses,STEEL,2043,17.918524409951225
+horup_material_steel_profile,Apartments,STEEL,2043,119.3507097203844
+horup_material_steel_profile,Detached,TIMBER,2043,17.090836778022016
+horup_material_steel_profile,Townhouses,TIMBER,2043,17.389603595583495
+horup_material_steel_profile,Apartments,TIMBER,2043,1.367133536415313
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2043,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2043,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2043,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2043,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2043,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2043,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2043,38.287894334142976
+horup_material_steel_profile,Townhouses,OTHERS,2043,52.11590057435434
+horup_material_steel_profile,Apartments,OTHERS,2043,41.07301129453188
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2044,24.33727761582786
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2044,53.8815354474766
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2044,151.98123011119088
+horup_material_steel_profile,Detached,STEEL,2044,28.472786153666778
+horup_material_steel_profile,Townhouses,STEEL,2044,17.698826558775696
+horup_material_steel_profile,Apartments,STEEL,2044,117.88735850563367
+horup_material_steel_profile,Detached,TIMBER,2044,16.814610321152276
+horup_material_steel_profile,Townhouses,TIMBER,2044,17.108548393315438
+horup_material_steel_profile,Apartments,TIMBER,2044,1.3450375760046782
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2044,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2044,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2044,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2044,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2044,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2044,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2044,38.23250838930186
+horup_material_steel_profile,Townhouses,OTHERS,2044,51.991880035522506
+horup_material_steel_profile,Apartments,OTHERS,2044,41.0198943518359
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2045,24.05511080187215
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2045,53.25683200166603
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2045,150.21915712346876
+horup_material_steel_profile,Detached,STEEL,2045,28.119349731530683
+horup_material_steel_profile,Townhouses,STEEL,2045,17.479128707600168
+horup_material_steel_profile,Apartments,STEEL,2045,116.42400729088293
+horup_material_steel_profile,Detached,TIMBER,2045,16.538383864282544
+horup_material_steel_profile,Townhouses,TIMBER,2045,16.827493191047388
+horup_material_steel_profile,Apartments,TIMBER,2045,1.3229416155940437
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2045,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2045,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2045,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2045,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2045,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2045,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2045,38.177122444460736
+horup_material_steel_profile,Townhouses,OTHERS,2045,51.86785949669067
+horup_material_steel_profile,Apartments,OTHERS,2045,40.96677740913992
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2046,23.772943987916438
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2046,52.63212855585546
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2046,148.45708413574664
+horup_material_steel_profile,Detached,STEEL,2046,27.765913309394588
+horup_material_steel_profile,Townhouses,STEEL,2046,17.259430856424636
+horup_material_steel_profile,Apartments,STEEL,2046,114.9606560761322
+horup_material_steel_profile,Detached,TIMBER,2046,16.262157407412808
+horup_material_steel_profile,Townhouses,TIMBER,2046,16.54643798877934
+horup_material_steel_profile,Apartments,TIMBER,2046,1.300845655183409
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2046,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2046,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2046,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2046,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2046,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2046,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2046,38.12173649961962
+horup_material_steel_profile,Townhouses,OTHERS,2046,51.74383895785882
+horup_material_steel_profile,Apartments,OTHERS,2046,40.91366046644394
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2047,23.49077717396073
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2047,52.007425110044885
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2047,146.69501114802452
+horup_material_steel_profile,Detached,STEEL,2047,27.412476887258492
+horup_material_steel_profile,Townhouses,STEEL,2047,17.039733005249108
+horup_material_steel_profile,Apartments,STEEL,2047,113.49730486138145
+horup_material_steel_profile,Detached,TIMBER,2047,15.985930950543072
+horup_material_steel_profile,Townhouses,TIMBER,2047,16.265382786511285
+horup_material_steel_profile,Apartments,TIMBER,2047,1.2787496947727743
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2047,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2047,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2047,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2047,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2047,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2047,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2047,38.066350554778495
+horup_material_steel_profile,Townhouses,OTHERS,2047,51.61981841902699
+horup_material_steel_profile,Apartments,OTHERS,2047,40.860543523747964
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2048,23.208610360005018
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2048,51.38272166423432
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2048,144.93293816030243
+horup_material_steel_profile,Detached,STEEL,2048,27.0590404651224
+horup_material_steel_profile,Townhouses,STEEL,2048,16.82003515407358
+horup_material_steel_profile,Apartments,STEEL,2048,112.03395364663074
+horup_material_steel_profile,Detached,TIMBER,2048,15.709704493673337
+horup_material_steel_profile,Townhouses,TIMBER,2048,15.984327584243236
+horup_material_steel_profile,Apartments,TIMBER,2048,1.2566537343621398
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2048,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2048,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2048,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2048,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2048,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2048,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2048,38.01096460993738
+horup_material_steel_profile,Townhouses,OTHERS,2048,51.49579788019515
+horup_material_steel_profile,Apartments,OTHERS,2048,40.807426581051985
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2049,22.92644354604931
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2049,50.75801821842374
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2049,143.1708651725803
+horup_material_steel_profile,Detached,STEEL,2049,26.70560404298631
+horup_material_steel_profile,Townhouses,STEEL,2049,16.60033730289805
+horup_material_steel_profile,Apartments,STEEL,2049,110.57060243187999
+horup_material_steel_profile,Detached,TIMBER,2049,15.4334780368036
+horup_material_steel_profile,Townhouses,TIMBER,2049,15.70327238197518
+horup_material_steel_profile,Apartments,TIMBER,2049,1.2345577739515048
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2049,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2049,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2049,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2049,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2049,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2049,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2049,37.95557866509626
+horup_material_steel_profile,Townhouses,OTHERS,2049,51.371777341363305
+horup_material_steel_profile,Apartments,OTHERS,2049,40.754309638356006
+horup_material_steel_profile,Detached,CONCRETE (incl. reinforced),2050,22.644276732093598
+horup_material_steel_profile,Townhouses,CONCRETE (incl. reinforced),2050,50.133314772613176
+horup_material_steel_profile,Apartments,CONCRETE (incl. reinforced),2050,141.40879218485816
+horup_material_steel_profile,Detached,STEEL,2050,26.352167620850214
+horup_material_steel_profile,Townhouses,STEEL,2050,16.380639451722523
+horup_material_steel_profile,Apartments,STEEL,2050,109.10725121712926
+horup_material_steel_profile,Detached,TIMBER,2050,15.157251579933867
+horup_material_steel_profile,Townhouses,TIMBER,2050,15.42221717970713
+horup_material_steel_profile,Apartments,TIMBER,2050,1.2124618135408705
+horup_material_steel_profile,Detached,PLASTICS & PAINT,2050,18.914384846251245
+horup_material_steel_profile,Townhouses,PLASTICS & PAINT,2050,15.772082568690905
+horup_material_steel_profile,Apartments,PLASTICS & PAINT,2050,10.541155747221936
+horup_material_steel_profile,Detached,PLASTERBOARD,2050,6.554820644224648
+horup_material_steel_profile,Townhouses,PLASTERBOARD,2050,11.214945150181745
+horup_material_steel_profile,Apartments,PLASTERBOARD,2050,11.814428893446376
+horup_material_steel_profile,Detached,OTHERS,2050,37.90019272025514
+horup_material_steel_profile,Townhouses,OTHERS,2050,51.24775680253147
+horup_material_steel_profile,Apartments,OTHERS,2050,40.701192695660026

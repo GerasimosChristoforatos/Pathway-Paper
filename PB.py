@@ -123,6 +123,7 @@ POP_NZ_SOURCE = 'model'            # sensitivities: 'statsnz_median' (raw Stats 
 
 MC_REL_TOL = 1e-9                  # re-run MC draws must reproduce the saved draw outputs
 MC_PCT = (5, 50, 95)
+_factor_note = ''                     # set from the Boss run in figures()
 AR_COLOR, ATP_COLOR = '#1F5FA8', '#C2571A'   # validated pair (dataviz validator, light mode)
 HALO = [pe.Stroke(linewidth=4, foreground='white'), pe.Normal()]
 M6 = 1e6
@@ -422,8 +423,25 @@ def main():
              *cum_pair(pnz=nz_population_alt('wpp_median', years_b))),
             ('v_ssec', '(v) s_sec with FCE share as ratio of sums', ref_ar,
              cum_pair(ssec=ss['s_sec_ratio_of_sums'])[1]),
-            ('note_soil_long_run', 'Note (not in tornado): history 2024-25 at the long-run net replacement rate',
-             *cum_pair(ib=i_base_long))]
+]
+    # carbon-factor rows: the other decarbonisation mode, and (decarbonised runs) the
+    # STEEL class at the steel-profile rate; boundaries unchanged, I_sec re-run
+    b_ar_ref, b_atp_ref = boundaries(SOURCE_PAIR, i_base, comp, s_sec, p_nz, p_w)
+
+    def cum_I(**kw):
+        Bx = validation.run_boss(**kw)
+        I = pd.Series(Bx['carbon_total_typ'].sum(axis=1).values, index=np.asarray(Bx['forecast_years']))
+        return cum(I, b_ar_ref), cum(I, b_atp_ref)
+    if Boss.DECARB_MODE == 'none':
+        sens.append(('vi_decarb', '(vi) Materials decarbonised, A1-A3 (Horup et al. 2025, SI Table S4)',
+                     *cum_I(DECARB_MODE='horup_material')))
+    else:
+        sens.append(('vi_frozen', '(vi) Frozen technology: 2025 factors held (no decarbonisation)',
+                     *cum_I(DECARB_MODE='none')))
+        sens.append(('vii_steel_profile', '(vii) STEEL class at the steel-profile rate (Horup SI Table S4)',
+                     *cum_I(DECARB_STEEL='steel_profile')))
+    sens.append(('note_soil_long_run', 'Note (not in tornado): history 2024-25 at the long-run net replacement rate',
+                 *cum_pair(ib=i_base_long)))
     sens_df = pd.DataFrame(sens, columns=['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP'])
     sens_df['AR_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AR'] / ref_ar - 1)
     sens_df['AtP_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AtP'] / ref_atp - 1)
@@ -436,7 +454,8 @@ def main():
         settings=dict(SOURCE_PAIR=SOURCE_PAIR, T0=T0, PB_YEARS=list(PB_YEARS), AR_BASE_WINDOW=list(AR_BASE_WINDOW),
                       AR_BASE_WINDOW_SENS=list(AR_BASE_WINDOW_SENS), HIST_RATE_AFTER_LAST_CENSUS=HIST_RATE_AFTER_LAST_CENSUS,
                       GDP_MEASURE=GDP_MEASURE, GDP_MEASURE_SENS=GDP_MEASURE_SENS, WDI_COVERAGE_MIN=WDI_COVERAGE_MIN,
-                      SSEC_WINDOW=list(SSEC_WINDOW), SSEC_FCE_SHARE=SSEC_FCE_SHARE, POP_NZ_SOURCE=POP_NZ_SOURCE),
+                      SSEC_WINDOW=list(SSEC_WINDOW), SSEC_FCE_SHARE=SSEC_FCE_SHARE, POP_NZ_SOURCE=POP_NZ_SOURCE,
+                      DECARB_MODE=Boss.DECARB_MODE, DECARB_STEEL=Boss.DECARB_STEEL),
         source_pairs=SOURCE_PAIRS,
         components=dict(SOS_kg=pair['sos'], I_glob_kg=pair['i_glob'], pair_label=pair['label'],
                         I_sec_base_kg=i_base, I_sec_base_window=list(AR_BASE_WINDOW),
@@ -507,6 +526,9 @@ def assumption_register():
         ('Sector impact', 'the model\'s embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all '
          'booked in the construction year', 'DECISION (author); construction-year booking of B2/B4/C is a '
          'limitation to be revisited'),
+        ('Carbon factors over time', f"Boss.DECARB_MODE = '{Boss.DECARB_MODE}'"
+         + ('' if Boss.DECARB_MODE == 'none' else ' (A1-A3 of mapped materials, Horup et al. 2025)')
+         + '; history and the AR base always at 2025 factors', 'DECISION (author); see the Boss register'),
         ('Allocation principles', 'acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. '
          '2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of '
          'the earlier manuscript is not used', 'DECISION (author); LITERATURE'),
@@ -625,6 +647,10 @@ def _boundary_lines(ax, years, b_ar, b_atp, scale=M6, label=True, cumulative=Fal
 
 
 def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell):
+    global _factor_note
+    _factor_note = ('case-study factors held at 2025' if B['DECARB'] is None else
+                   'A1-A3 of mapped materials decarbonised after Horup et al. 2025; other stages, unmapped '
+                   'materials and soil at 2025')
     fy = np.asarray(B['forecast_years'])
     py = fy[fy >= PB_YEARS[0]]
     typ = list(B['typ_names'])
@@ -634,7 +660,8 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     cap = (f"Boundaries: {pair['label']}, SOS {pair['sos']:.3g} and I_glob {pair['i_glob']:.3g} kg CO₂e/yr; "
            f"AR = Horup et al. 2025 Eq. 1 (base {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]}); AtP = Hjalsted et al. "
            f"2021 Eqs. 5-6 (GDP per capita PPP {res['components']['base_year_b']}). Both share one linear axis; "
-           f"AtP is {100 * res['B_AtP_over_B_AR']['min']:.1f}% of AR in every year (static design), so it lies near the axis.")
+           f"AtP is {100 * res['B_AtP_over_B_AR']['min']:.1f}% of AR in every year (static design), so it lies near the axis. "
+           f"Carbon: {_factor_note}.")
 
     # ---- boss_05_annual_carbon_pb ------------------------------------------
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(18, 6.4))
@@ -806,7 +833,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     fig.tight_layout(rect=(0, 0.08, 1, 1))
     fig.text(0.5, 0.01, 'Reference scenario S3-10, median demographics. I_sec(t): embodied carbon of the year\'s new '
              'floor area (kg CO₂e); GFA(t): in-scope floor area built (m²); dwellings(t): in-scope dwellings built '
-             '(GFA / blended dwelling size).\nCurrent intensity = I_sec/GFA (constant case-study factors; varies only with '
+             '(GFA / blended dwelling size).\nCurrent intensity = I_sec/GFA (' + _factor_note + '; also varies with '
              'mix and soil share). Fitting intensity = B_k/GFA; fitting floor area = B_k / (I_sec/GFA); per dwelling = '
              'B_k / dwellings. ' + pair['label'] + '.', ha='center', fontsize=8.5, style='italic')
     _save(fig, 'pb_3_headroom')

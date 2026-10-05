@@ -415,7 +415,8 @@ for col, lab, colour in M.MATERIAL_STYLE:
     bottom += v
 for k, t in enumerate(TYP):
     a.text(k, TB[t] + 8, f'{TB[t]:.0f}', ha='center', fontweight='bold')
-a.set_title('Case-study intensity (16 buildings), constant over time')
+a.set_title('Case-study intensity in 2025 (16 buildings)' +
+            (', held constant' if B['DECARB'] is None else '; A1-A3 decarbonised from 2026 (Horup et al. 2025)'))
 a.set_ylabel('kg CO₂e per m²')
 a.legend(handles=handles[::-1], loc='upper left', fontsize=7)
 finish(fig, 'diag_5_carbon.png')

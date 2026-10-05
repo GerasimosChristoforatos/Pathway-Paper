@@ -20,8 +20,10 @@ vacancy, replacement, ...) and by material and life-cycle stage.
 
 The model is bottom-up and demand-driven: people → households → dwellings
 required → floor area → carbon. Construction capacity, prices and policy are not
-modelled. Carbon intensities are held at their case-study values (no
-decarbonisation is assumed).
+modelled. Carbon intensities are the 2025 case-study values; with
+`DECARB_MODE = 'horup_material'` the A1–A3 part of each mapped material follows
+the material-specific GWP paths of Horup et al. (2025) from 2026 (section 4.9),
+and with `'none'` every factor is held at 2025 (frozen technology).
 
 ---
 
@@ -181,10 +183,21 @@ sum exactly to the typology total (tested).
 
 ### 4.9 Carbon
 
-Floor area by typology × constant intensity, by band, material, soil and stage
-(all stages booked in the year of construction). Upfront = A1–A5 + soil. Soil
+Floor area by typology × intensity, by band, material, soil and stage (all
+stages booked in the year of construction). Upfront = A1–A5 + soil. Soil
 applies only to floor area on new footprints: zero on the replacement bands
 (land already settled).
+
+**Material decarbonisation** (`DECARB_MODE`). `'none'`: every factor held at its
+2025 value. `'horup_material'`: the A1–A3 factor of each case-study material
+class is multiplied, year by year, by the relative GWP path of its counterpart
+in Horup et al. (2025) SI Table S4 (average of 9 premise scenarios, relative to
+2025; linear between 2025, 2030, 2040 and 2050). `Building_factors.py` does this
+per case study and class before pooling (`factors_a13_decarb.csv`), so OTHERS
+follows its own components (aluminium, bricks, glass, glass wool; the rest held).
+A4–A5, B2, B4, C1–C4, unmapped classes and soil stay at 2025. The history
+(1991–2025) always uses 2025 factors. The Monte Carlo bootstraps the same
+reduction per case study with the same resampled cases.
 
 ---
 

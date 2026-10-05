@@ -11,7 +11,9 @@ are already computed by Boss, and the typology mix does not depend on them, so
 their carbon is floor area x each year's mix intensity. Carbon-factor rows
 re-weight the adopted floor area by typology with alternative factors from
 factors_typology.csv (jackknife range of the pooled material factor; extreme
-soil orders).
+soil orders). When materials are decarbonised (Boss.DECARB_MODE), an alternative
+materials factor follows the adopted factor's relative path over time, and two
+rows are added: frozen technology, and STEEL at the steel-profile rate.
 
 One-at-a-time ranges show which assumptions matter. They are not a joint
 uncertainty interval and must not be added in quadrature or summed.
@@ -68,6 +70,14 @@ CASES = [   # lean set (v1.1); the full v1.0.2 table is in the history (tag v1.0
     ('Near-term: rule variant', 'Gap measured against the 2026 requirement', dict(NEAR_TERM_GAP_REF='2026')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
 ]
+# Decarbonisation rows (only when the adopted run decarbonises materials, so the
+# frozen-technology table of baseline v2 keeps its rows): frozen technology,
+# and the STEEL class at Horup's steel-profile rate instead of reinforcing steel.
+DECARB_CASES = [
+    ('Carbon factors', 'Frozen technology: 2025 factors held (no decarbonisation)', dict(DECARB_MODE='none')),
+    ('Carbon factors', 'Decarbonisation: STEEL at the steel-profile rate (Horup S4)',
+     dict(DECARB_STEEL='steel_profile')),
+]
 
 
 def run(**settings):
@@ -96,14 +106,14 @@ def main():
 
     # Carbon per m2 of each year's typology mix (identical across percentiles).
     shares = base['evolving_gfa_shares']
-    mix_int = sum(shares[t].values * base['T_BASELINE_2025'][t] for t in base['typ_names'])
+    mix_int = sum(shares[t].values * base['intensity'][t].values for t in base['typ_names'])
     for p in ('5th', '95th'):
         tot = base['results'][p]['total']
         rows.append(('Population', f'Stats NZ {p} percentile (level)', tot[1:].sum() / 1e6,
                      float((tot[1:] * mix_int[1:]).sum()) / 1e6))
         paths[f'Stats NZ {p} percentile (level)'] = tot
 
-    for grp, lab, kw in CASES:
+    for grp, lab, kw in CASES + (DECARB_CASES if Boss.DECARB_MODE != 'none' else []):
         st = run(**kw)
         g, c = totals(st)
         rows.append((grp, lab, g, c))
@@ -116,11 +126,20 @@ def main():
     soil_gfa_t = base['evol_typ_total'].mul(base['soil_frac'], axis=0).iloc[1:].sum()
     tf = pd.read_csv(Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
 
+    emb0, soc0 = tf['embodied_materials'], tf['SOC_avg']
+    gfa_y = base['evol_typ_total'].iloc[1:]                 # m2 by year and typology
+    # decarbonised run: an alternative materials factor follows the adopted
+    # factor's relative path, emb_alt x (materials intensity(t) / 2025 value)
+    rel = (None if base['DECARB'] is None else
+           {t: (np.asarray(base['T_INT'][t])[1:] - base['SOIL_INTENSITY'][t]) / emb0[t] for t in typ})
+
     def carbon_with(emb, soc):
-        return float(sum(gfa_t[t] * emb[t] + soil_gfa_t[t] * soc[t]
+        if rel is None:
+            return float(sum(gfa_t[t] * emb[t] + soil_gfa_t[t] * soc[t]
+                             for t in typ)) / 1e6
+        return float(sum((gfa_y[t].values * emb[t] * rel[t]).sum() + soil_gfa_t[t] * soc[t]
                          for t in typ)) / 1e6
 
-    emb0, soc0 = tf['embodied_materials'], tf['SOC_avg']
     if 'emb_jackknife_min' in tf.columns:
         for lab, col in [('Materials: jackknife low (all typologies)', 'emb_jackknife_min'),
                          ('Materials: jackknife high (all typologies)', 'emb_jackknife_max'),

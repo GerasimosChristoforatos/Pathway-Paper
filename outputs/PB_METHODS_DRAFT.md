@@ -116,6 +116,7 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 | (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 5.40 | -0.2% | 30.0 | -0.6% |
 | (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 5.74 | +6.2% | 32.5 | +7.7% |
 | (v) s_sec with FCE share as ratio of sums | 5.41 | +0.0% | 30.3 | +0.2% |
+| (vi) Materials decarbonised, A1-A3 (Horup et al. 2025, SI Table S4) | 5.05 | -6.6% | 28.2 | -6.6% |
 | Note (not in tornado): history 2024-25 at the long-run net replacement rate | 5.40 | -0.2% | 30.2 | +0.0% |
 
 ## Assumption register
@@ -125,6 +126,7 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 | Impact category | climate change only | DECISION (author) |
 | Carrying capacity over time | static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / Paris-aligned pathways | DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, 140-150 (pp. 143, 148) |
 | Sector impact | the model's embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all booked in the construction year | DECISION (author); construction-year booking of B2/B4/C is a limitation to be revisited |
+| Carbon factors over time | Boss.DECARB_MODE = 'none'; history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
 | Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |

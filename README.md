@@ -17,8 +17,15 @@ including every option and document removed here, is at the git tag
 ```
 python -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt        # pinned; Python 3.11
-python run_all.py                      # about 8 minutes (4-core machine)
+python run_all.py                      # full run; the only basis for reported results and tags
+python run_all.py --quick              # development only: every output marked "QUICK RUN, not for reporting"
 ```
+
+The full run takes about 11 minutes on a 4-core machine (the measured time is
+in `CHANGELOG.md`). `--quick` uses 1,000 instead of 5,000 Monte Carlo draws per
+scenario and 128 Sobol base samples, skips the frozen-technology Monte Carlo and
+the Monte Carlo regression checks, and marks `metrics.json`, the generated
+documents and every figure as a quick run.
 
 `run_all.py` runs, in order:
 * `Building_factors.py`, then `Boss.py` (central run);
@@ -27,8 +34,11 @@ python run_all.py                      # about 8 minutes (4-core machine)
   ability to pay), which reads the model outputs and the Monte Carlo draws;
 * the validation harness (`validation.py`), `gap_2026.py` and the report tools
   (`tools/`: near-term rule, scenarios, report figures);
-* the tests (`tests/`, including the v1.2.1 regression test, which reads the
-  outputs written above);
+* a frozen-technology check run (`DECARB_MODE = 'none'`: Boss, Sensitivity,
+  MonteCarlo and the scenario table, written to `outputs/frozen/`, figures not
+  saved);
+* the tests (`tests/`, including the v1.2.1 regression test, which compares the
+  frozen-technology run with v1.2.1);
 * metrics, `RESULTS.md`, `ASSUMPTIONS.md`, `outputs/BASELINE_DRAFT.md` and
   `outputs/PB_METHODS_DRAFT.md`.
 

@@ -99,12 +99,23 @@ def pb_metrics(out_dir):
     return m
 
 
-def boss_metrics():
+def boss_metrics(settings=None):
+    """settings: optional Boss module settings for this run (the module is
+    reloaded first), e.g. dict(DECARB_MODE='none') for the regression test."""
     sys.path.insert(0, ROOT)
+    import importlib
     import Boss
+    if settings:
+        importlib.reload(Boss)
+        for k, v in settings.items():
+            setattr(Boss, k, v)
     Boss.SHOW_PLOTS = False
-    with contextlib.redirect_stdout(io.StringIO()):
-        B = Boss.main()
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            B = Boss.main()
+    finally:
+        if settings:
+            importlib.reload(Boss)                     # module defaults restored
     R = B['results']['50th']
     S = B['df_forecast']['PopTotal_50th'].values / B['households_forecast']['50th']
     return {
@@ -155,6 +166,7 @@ def collect(out_dir=None, extra=None):
         val['model_consents_2026'] = v['check_2026']['model_consent_equivalent_2026']
         val['observed_to_model_2026'] = v['check_2026'].get('ratio_observed_to_model')
         m['validation'] = val
+    m['run_mode'] = ('QUICK RUN, not for reporting' if os.environ.get('PATHWAY_QUICK') == '1' else 'full')
     if extra:
         m.update(extra)
     with open(METRICS, 'w') as f:

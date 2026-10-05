@@ -29,8 +29,12 @@ import engine
 # script and test works from any working directory (e.g. Spyder).
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(ROOT_DIR, 'data')          # inputs only
-OUT_DIR = os.path.join(ROOT_DIR, 'outputs')        # everything the scripts write
-FACTORS_DIR = os.path.join(OUT_DIR, 'factors')     # written by Building_factors.py
+# Frozen-technology check run (run_all.py steps 'frozen_*', env PATHWAY_FROZEN=1):
+# DECARB_MODE 'none', outputs to outputs/frozen/; read by the v1.2.1 regression test.
+FROZEN_RUN = os.environ.get('PATHWAY_FROZEN') == '1'
+OUT_DIR = os.path.join(ROOT_DIR, 'outputs', 'frozen' if FROZEN_RUN else '')   # everything the scripts write
+OUT_DIR = OUT_DIR.rstrip(os.sep)
+FACTORS_DIR = os.path.join(ROOT_DIR, 'outputs', 'factors')     # written by Building_factors.py
 VERBOSE = False     # True also prints historical diagnostics (occupancy, calibration)
 SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
 # Save every figure as PNG to FIG_DIR. Only when Boss.py is run as a script with
@@ -88,7 +92,6 @@ POP_SHEET_HIST = 'Table 1'
 
 HOUSEHOLD_SHEET_HIST = 'Table 2'
 HOUSEHOLD_SHEET_PROJ = 'Table 1'
-HOUSEHOLD_VARIANT_MAP = {'5th': 'Low', '50th': 'Medium', '95th': 'High'}
 
 # ---------------------------------------------------------------------------
 # HOUSEHOLD SIZE -- how future households are obtained
@@ -319,7 +322,6 @@ CALIB_START_YEAR = 1992
 # differ in level (census undercount), exactly as for household size.
 FILE_CENSUS_2013 = os.path.join(DATA_DIR, 'occ-unocc-2013.xlsx')
 FILE_CENSUS_DERIVED = os.path.join(DATA_DIR, 'derived', 'census_dwellings.csv')
-PRE2013_EMPTY_SHARE_BAND = 0.05    # +/- on the empty share applied before 2013
 DEMOLITION_CALIB_START = 1992      # calibration window for the unconsented-additions rate
 
 # NET REPLACEMENT RATE (demolition + residual, share of last year's stock):
@@ -492,7 +494,6 @@ COMPLETION_RATE_BAND = (0.92, 0.96)
 #   same-year consents x COMPLETION_RATE. 'littles_law' is a sensitivity.
 COMPLETION_LAG = 0
 DEMOLITION_RATE = 0.00135
-DEMOLITION_RATE_BAND = (0.0010, 0.0030)
 
 
 # ---------------------------------------------------------------------------
@@ -538,8 +539,9 @@ STAGES_IN_SCOPE = ['A1-A3', 'A4-A5', 'B2,B4', 'C1-C4']   # Module D excluded
 FILE_FACTORS_DECARB = os.path.join(FACTORS_DIR, 'factors_a13_decarb.csv')
 FILE_FACTORS_DECARB_BLD = os.path.join(FACTORS_DIR, 'factors_building_a13_reduction.csv')
 
-# MATERIAL DECARBONISATION (author decision). 'none': every factor held at its
-# 2025 case-study value (frozen technology; reproduces baseline v2 exactly).
+# MATERIAL DECARBONISATION (author decision; adopted: 'horup_material').
+# 'none': every factor held at its 2025 case-study value (frozen technology;
+# reproduces baseline v2 exactly; reported as a sensitivity).
 # 'horup_material': the A1-A3 part of each material is scaled year by year with
 # the material-specific GWP paths of Horup et al. (2025), Sci. Total Environ. 966,
 # 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to
@@ -547,7 +549,7 @@ FILE_FACTORS_DECARB_BLD = os.path.join(FACTORS_DIR, 'factors_building_a13_reduct
 # at 2025 values; materials without an S4 counterpart stay at 2025. Mapping and
 # values: Building_factors.py (DECARB_S4) and outputs/factors/factors_a13_decarb.csv.
 # History (and so the acquired-rights base of PB.py) always uses 2025 factors.
-DECARB_MODE = 'none'               # 'none' | 'horup_material'
+DECARB_MODE = 'none' if FROZEN_RUN else 'horup_material'   # 'none' | 'horup_material' (adopted)
 DECARB_STEEL = 'reinforcing_steel'  # S4 row for the STEEL class; 'steel_profile' = sensitivity
 
 

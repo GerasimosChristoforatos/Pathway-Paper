@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import validation  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT_MD = os.path.join(ROOT, 'outputs', 'replacement_scenarios.md')
-OUT_JSON = os.path.join(ROOT, 'outputs', 'replacement_scenarios.json')
+OUT_MD = os.path.join(validation.Boss.OUT_DIR, 'replacement_scenarios.md')     # outputs/ (outputs/frozen/
+OUT_JSON = os.path.join(validation.Boss.OUT_DIR, 'replacement_scenarios.json')  # in the frozen check run)
 # storylines (Boss.MIX_MODE = 'storyline'): S1 and S3 hold the mix, S2 keeps the damped trend
 SCENARIOS = [('S1', 'Low (S1): long-run rate, shares held', dict(REPLACEMENT_SCENARIO='S1')),
              ('S3-5', 'S3: fade, half-life 5 yr, shares held', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),

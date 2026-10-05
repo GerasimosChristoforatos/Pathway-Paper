@@ -73,24 +73,26 @@ CASES = [   # lean set (v1.1); the full v1.0.2 table is in the history (tag v1.0
 # Decarbonisation rows, per adopted DECARB_MODE (none for 'none', so the
 # frozen-technology table of baseline v2 keeps its rows). Class-level mode
 # (v1.1): frozen technology, and the STEEL class at Horup's steel-profile rate.
-# Item-level mode (v1.2): frozen technology; proxy-mapped items held at 2025;
-# NZ-made, electricity-intensive items held at 2025; the held lift at the
-# steel-profile rate; the class-level mapping of v1.1.
+# Item-level mode (adopted from baseline-pb-v1.2): frozen technology only; its
+# decarbonisation sensitivities (ITEM_SENS_CASES: proxies held, NZ-made
+# electricity-intensive items held, lift at steel profile, class-level mapping
+# of v1.1) are run by the optional step run_all.py --compare-modes
+# (tools/decarb_modes.py) and stored in outputs/DECARB_MODES.md.
 FROZEN_CASE = ('Carbon factors', 'Frozen technology: 2025 factors held (no decarbonisation)', dict(DECARB_MODE='none'))
+ITEM_SENS_CASES = [
+    ('Carbon factors', 'Decarbonisation: proxy-mapped items held at 2025', dict(DECARB_ITEM_CASE='proxies_held')),
+    ('Carbon factors', 'Decarbonisation: NZ-made electricity-intensive items held at 2025',
+     dict(DECARB_ITEM_CASE='nz_elec_held')),
+    ('Carbon factors', 'Decarbonisation: lift at the steel-profile rate (Horup S4)',
+     dict(DECARB_ITEM_CASE='elevator_steel_profile')),
+    ('Carbon factors', 'Decarbonisation: class-level mapping of v1.1', dict(DECARB_MODE='horup_class_v1_1'))]
 DECARB_CASES = {
     'none': [],
     'horup_class_v1_1': [
         FROZEN_CASE,
         ('Carbon factors', 'Decarbonisation: STEEL at the steel-profile rate (Horup S4)',
          dict(DECARB_STEEL='steel_profile'))],
-    'horup_item': [
-        FROZEN_CASE,
-        ('Carbon factors', 'Decarbonisation: proxy-mapped items held at 2025', dict(DECARB_ITEM_CASE='proxies_held')),
-        ('Carbon factors', 'Decarbonisation: NZ-made electricity-intensive items held at 2025',
-         dict(DECARB_ITEM_CASE='nz_elec_held')),
-        ('Carbon factors', 'Decarbonisation: lift at the steel-profile rate (Horup S4)',
-         dict(DECARB_ITEM_CASE='elevator_steel_profile')),
-        ('Carbon factors', 'Decarbonisation: class-level mapping of v1.1', dict(DECARB_MODE='horup_class_v1_1'))],
+    'horup_item': [FROZEN_CASE],
 }
 
 def run(**settings):

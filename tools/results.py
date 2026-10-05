@@ -61,8 +61,12 @@ def main():
     if os.path.exists(dp):
         with open(dp) as f:
             dm = json.load(f)
+        from decarb_modes import provenance_note, stale
         typ = list(next(iter(dm['modes'].values()))['a13_reduction_2050'])
         L += ['', f"## Material decarbonisation modes (adopted: {dm['adopted']}; reference S3-10)", '',
+              f"Stored result of the optional step: {provenance_note(dm)}."
+              + (' **STALE: the adopted-mode carbon differs from this run; re-run `python run_all.py '
+                 '--compare-modes`.**' if stale(dm) else ''), '',
               '| mode | carbon (kt) | upfront (kt) | MC carbon p5 / p50 / p95 (kt) | cum. LoE AR | cum. LoE AtP | '
               'MC LoE AR p5 / p50 / p95 | MC LoE AtP p5 / p50 / p95 | A1-A3 by 2050 (' + ', '.join(typ)
               + ') | whole factor by 2050 (' + ', '.join(typ) + ') |', '|---|---|---|---|---|---|---|---|---|---|']

@@ -451,8 +451,8 @@ def main():
 ]
     # carbon-factor rows (boundaries unchanged, I_sec re-run): 'none' adopted: the
     # class-level decarbonisation; class-level adopted: frozen technology and the
-    # STEEL class at the steel-profile rate; item-level adopted: frozen technology,
-    # the item-level sensitivities and the class-level mapping of v1.1
+    # STEEL class at the steel-profile rate; item-level adopted: frozen technology
+    # (its other decarbonisation sensitivities: tools/decarb_modes.py, optional step)
     b_ar_ref, b_atp_ref = boundaries(SOURCE_PAIR, i_base, comp, s_sec, p_nz, p_w)
 
     def cum_I(**kw):
@@ -467,17 +467,9 @@ def main():
                      *cum_I(DECARB_MODE='none')))
         sens.append(('vii_steel_profile', '(vii) STEEL class at the steel-profile rate (Horup SI Table S4)',
                      *cum_I(DECARB_STEEL='steel_profile')))
-    else:
+    else:   # item-level: its decarbonisation sensitivities are in run_all.py --compare-modes (DECARB_MODES.md)
         sens.append(('vi_frozen', '(vi) Frozen technology: 2025 factors held (no decarbonisation)',
                      *cum_I(DECARB_MODE='none')))
-        sens.append(('vii_proxies_held', '(vii) Proxy-mapped items held at 2025',
-                     *cum_I(DECARB_ITEM_CASE='proxies_held')))
-        sens.append(('viii_nz_elec_held', '(viii) NZ-made, electricity-intensive items held at 2025',
-                     *cum_I(DECARB_ITEM_CASE='nz_elec_held')))
-        sens.append(('ix_lift_steel_profile', '(ix) Lift at the steel-profile rate (Horup SI Table S4)',
-                     *cum_I(DECARB_ITEM_CASE='elevator_steel_profile')))
-        sens.append(('x_class_v1_1', '(x) Class-level mapping of baseline-pb-v1.1',
-                     *cum_I(DECARB_MODE='horup_class_v1_1')))
     sens.append(('note_soil_long_run', 'Note (not in tornado): history 2024-25 at the long-run net replacement rate',
                  *cum_pair(ib=i_base_long)))
     sens_df = pd.DataFrame(sens, columns=['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP'])

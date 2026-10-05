@@ -3,8 +3,8 @@ now DECARB_MODE = 'horup_class_v1_1') must reproduce that tag's outputs
 exactly (tests/regression_pb_v1_1.json, read from tag baseline-PB_v1.1,
 commit 5c0cfba). The deterministic run is recomputed here; the Monte Carlo,
 PB and sensitivity tables are read from that mode's run directory (outputs/
-while it is the adopted mode, outputs/modes/horup_class_v1_1/ otherwise),
-written by run_all before the tests. In a quick run those file checks are
+while it is the adopted mode, otherwise outputs/modes/horup_class_v1_1/,
+written by run_all.py --compare-modes and stored; skipped when absent). In a quick run those file checks are
 skipped (fewer Monte Carlo draws)."""
 import json
 import math
@@ -21,8 +21,15 @@ quick = pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1', reason='quick
 
 
 def run_dir():
+    """The class-level run: outputs/ while adopted, else the stored comparison run
+    (run_all.py --compare-modes); skip when that run has not been made."""
+    import importlib
     import Boss
-    return Boss.OUT_DIR if Boss.DECARB_MODE == MODE else os.path.join(ROOT, 'outputs', 'modes', MODE)
+    Boss = importlib.reload(Boss)          # module defaults (run_boss leaves settings changed)
+    d = Boss.OUT_DIR if Boss.DECARB_MODE == MODE else os.path.join(ROOT, 'outputs', 'modes', MODE)
+    if not os.path.exists(os.path.join(d, 'boss_results.json')):
+        pytest.skip(f'{d}: no class-level run (python run_all.py --compare-modes)')
+    return d
 
 
 def test_deterministic_run_reproduces_v1_1():

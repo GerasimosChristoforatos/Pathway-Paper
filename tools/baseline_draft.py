@@ -32,6 +32,141 @@ def pct(a, b):
     return f'{100 * (a / b - 1):+.1f}%'
 
 
+def class_register():
+    """Register rows of the class-level mapping ('horup_class_v1_1', baseline-pb-v1.1)."""
+    import Boss as B
+    return [
+        ('Material mapping, class-level (horup_class_v1_1; case-study class -> S4 row)',
+         'CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> '
+         'construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); '
+         'GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, '
+         'SIP, unspecified OTHERS (no S4 counterpart)', 'DECISION (author)'),
+        ('STEEL class', f"S4 '{'reinforcing steel' if B.DECARB_STEEL == 'reinforcing_steel' else 'steel profile'}' "
+         "(2050: -29.9%; steel profile -39.8% is a one-at-a-time sensitivity)",
+         'DECISION (author): rebar is inside REINFORCED CONCRETE; STEEL is non-rebar steel (stud walls, sections, '
+         'miscellaneous) whose closest S4 counterpart is steel profile; reinforcing steel is used as the '
+         'conservative choice because the class mixes items of unknown composition'),
+        ('Rebar in REINFORCED CONCRETE', 'decarbonised at the concrete-structure rate (2050: -27.6%)',
+         'DECISION (author): S4\'s concrete dataset does not separate reinforcement; the difference from '
+         'reinforcing steel (-29.9%) is small'),
+    ]
+
+
+def _s4_change(rows):
+    """{S4 row: relative change by 2050}, from data/derived/horup2025_table_s4.csv."""
+    import Building_factors as BF
+    d = pd.read_csv(BF.FILE_HORUP)
+    d = d[d.year == 2050].set_index('material')['rel_to_2025']
+    return {r: float(d[r] - 1) for r in rows}
+
+
+SEC31_QUOTE = ('"Tendencies for concrete, wood and clay products are generally similar for other cementitious, '
+               'wood-based and clay products, whereas the extended analysis shows that for other metals, glass and '
+               'insulation products the results and tendencies observed are less homogenous." (Horup et al. 2025, '
+               'Sci. Total Environ. 966, 178780, p. 6)')
+PREMISE_QUOTE = ('"The Premise software accounts for future changes in several critical sectors (supply of '
+                 'conventional and alternative fuels, electricity, cement and steel production and freight and '
+                 'passenger road transportation), and includes implementation of technologies such as carbon capture '
+                 'and storage in steel and cement production" (Horup et al. 2025, p. 5)')
+
+
+def item_coverage():
+    """{typology: {label: share of 2025 A1-A3}} and {typology: {case: A1-A3 reduction by 2050}}
+    from outputs/factors/factors_a13_item_coverage.csv (Building_factors.py)."""
+    import Building_factors as BF
+    c = pd.read_csv(BF.OUT_ITEM_COVERAGE)
+    lab = c[c.Kind == 'label'].pivot(index='Typology', columns='Key', values='Value').reindex(BF.TYP_ORDER)
+    red = c[c.Kind == 'reduction_2050'].pivot(index='Typology', columns='Key', values='Value').reindex(BF.TYP_ORDER)
+    return lab, red
+
+
+def item_register():
+    """Register rows of the item-level mapping ('horup_item', baseline-pb-v1.2). Counts,
+    shares and S4 changes are read from the mapping table, the coverage file and S4."""
+    import Building_factors as BF
+    mp = pd.read_csv(BF.FILE_ITEM_MAP)
+    n = mp['label'].value_counts()
+    ch = _s4_change(sorted(set(mp['s4_row']) - {BF.ITEM_HELD}))
+    lab, _ = item_coverage()
+    cov = '; '.join(f"{t} {100 * r.get('direct', 0):.1f} / {100 * r.get('sec31', 0):.1f} / "
+                    f"{100 * r.get('proxy', 0):.1f} / {100 * r.get('held', 0):.1f}%" for t, r in lab.iterrows())
+    nz = mp[mp['nz_low_carbon_electricity'] == 'yes']
+    return [
+        ('Item table (horup_item)', f"{len(mp)} case-study class x EPD items (data/derived/material_items.csv, built by "
+         'data/build_material_items.py from the supplied data/raw/epd-level_materials.xlsx); item and class names '
+         'stripped of leading/trailing whitespace (5 item names, 34 source rows); rows of the same building, class '
+         'and item summed; reproduces data/building_data.xlsx sheet 1 for every building x class x stage',
+         'DATA: Christoforatos & Pickering 2025 case studies at item resolution'),
+        ('Material mapping, item-level (horup_item; EPD item -> S4 row)',
+         f"data/material_item_map.csv: each item to exactly one S4 row or held, with its basis; {n.get('direct', 0)} "
+         f"direct, {n.get('sec31', 0)} by Horup p. 6, {n.get('proxy', 0)} proxy, {n.get('held', 0)} held. Pooled per "
+         'building, then per typology, as the classes; the 2025 totals are the class totals',
+         'DECISION (author); per-item basis in the table'),
+        ('Item mapping: direct', 'in-situ concrete and concrete roof tiles, all REINFORCED CONCRETE items (incl. rebar) '
+         '-> concrete structure; AAC block -> lightweight concrete; steel sections (UB, UC, WC, PFC, SHS, RHS), '
+         'sheet / decking, purlins, studs, ZinaCore, Colorsteel -> steel profile; Pacific Steel rebar -> reinforcing '
+         'steel; sawn / framing / flooring timber, weatherboards, glulam, LVL, I-joists -> construction wood; CLT -> '
+         'CLT; plywood -> plywood; glass and IGUs (incl. the argon-fill items in OTHERS) -> glass; glass wool -> '
+         'mineral wool glass; bricks -> clay brick; aluminium -> aluminium; ceramic tiles and sanitary ware -> '
+         'ceramic tile; EPS and XPS -> EPS', 'DECISION (author)'),
+        ('Item mapping: Horup p. 6 (label sec31)', 'particleboard (TIMBER and OTHERS), MDF doors, hardwood floor -> '
+         'construction wood; fibre cement (all), "Plaster, cement" (PLASTER and the item in PLASTERBOARD) -> '
+         'cement mortar', f'LITERATURE: {SEC31_QUOTE}'),
+        ('Item mapping: proxies (label proxy)', 'plastics without an S4 row (carpets PA6.6 and wool blend, PE '
+         'membranes, PVC membrane / floor sheets / frames, EPDM, polyester insulation) and paint -> EPS; SIP -> EPS '
+         f"(the smaller 2050 reduction of construction wood, {100 * ch['Construction wood']:+.1f}%, and EPS, "
+         f"{100 * ch['EPS']:+.1f}%); gypsum plasterboard -> clay brick ({100 * ch['Clay brick']:+.1f}%)",
+         'DECISION (author): no S4 counterpart. The EPS-based proxies (polymers, paint, SIP) carry the smallest '
+         f"reduction in the set ({100 * ch['EPS']:+.1f}% by 2050), so they are conservative"),
+        ('Item mapping: held at 2025 (label held)', 'lift (OTIS Gen2, apartments)',
+         'DECISION (author): no S4 counterpart; sensitivity at the steel-profile rate'),
+        ('Composite floor decking (RC item)', 'concrete structure, incl. its rebar and steel trapezoidal deck',
+         'DECISION (author): no split available in the source; conservative versus steel profile '
+         f"({100 * ch['Concrete structure']:+.1f}% vs {100 * _s4_change(['Steel profile'])['Steel profile']:+.1f}% "
+         'by 2050)'),
+        ('Masonry wall (dense concrete block, grouted, reinforced)', 'concrete structure', 'DECISION (author)'),
+        ('Rebar inside REINFORCED CONCRETE items', 'concrete-structure rate', 'DECISION (author): S4\'s concrete '
+         'dataset does not separate reinforcement'),
+        ('Coverage of 2025 A1-A3 (pooled; direct / Horup p. 6 / proxy / held)', cov,
+         'DATA: outputs/factors/factors_a13_item_coverage.csv'),
+        ('Sensitivity: NZ low-carbon-electricity items held at 2025',
+         f"{len(nz)} items: the 5 aluminium items, Pink Batts glass wool, Pacific Steel rebar, WPMA Radiata timber, "
+         'Nelson Pine LVL', 'DECISION (author); criterion: made in New Zealand AND electricity-intensive production '
+         '(not fossil process heat). Not included: Allied Concrete, GIB plasterboard, Colorsteel / ZinaCore (fossil '
+         'process heat, where Horup\'s reductions reflect process change), CLT (imported, Xlam Australia); NZSIP not '
+         f"needed (EPS path {100 * ch['EPS']:+.1f}%)"),
+        ('Sensitivities (item-level)', 'proxies held at 2025; NZ low-carbon-electricity items held at 2025; lift at '
+         'the steel-profile rate; class-level mapping of v1.1 (sensitivity_oat.csv, pb_sensitivity.csv, pb_4)',
+         'DECISION (author)'),
+    ]
+
+
+def decarb_limitations(mode):
+    """Limitations of the material decarbonisation for a DECARB_MODE."""
+    if mode == 'none':
+        return []
+    held = ('Materials without a counterpart in Horup et al. are held at 2025 factors, so the decarbonised '
+            'baseline is conservative.' if mode == 'horup_class_v1_1' else
+            'Items without a counterpart in Horup et al. follow a labelled proxy path (polymers, paint and SIP at '
+            'EPS, the smallest reduction in the set; gypsum plasterboard at clay brick) or are held at 2025 (the '
+            'lift); the proxies are a judgement, bracketed by holding them at 2025 (sensitivity).')
+    L = ['Decarbonisation paths are relative changes for European and global market processes modelled with '
+         'premise on ecoinvent 3.9.1 (Horup et al. 2025); they are applied as relative changes to New Zealand '
+         'case-study factors. This assumes NZ material supply decarbonises at the same relative rate as those '
+         'markets, which is not tested. ' + held] + DECARB_LIMITATIONS[1:]
+    if mode == 'horup_item':
+        L.append('Several items are made in New Zealand with electricity-intensive production (aluminium, Pink '
+                 'Batts glass wool, Pacific Steel rebar, WPMA Radiata timber, Nelson Pine LVL); the aluminium items '
+                 'are stated in their EPD names to use mainly renewables-generated electricity. Where their 2025 '
+                 'factors already reflect low-carbon electricity, the premise paths, which include the '
+                 f'decarbonisation of electricity supply ({PREMISE_QUOTE}), may overstate their relative reduction; '
+                 'a sensitivity holds them at 2025.')
+        L.append('Composite floor decking (an RC item containing its steel deck and rebar) follows the '
+                 'concrete-structure path because the source gives no split; this is conservative versus steel '
+                 'profile for the steel share.')
+    return L
+
+
 def register():
     """(setting, value, basis). Values are read from Boss.py; the basis
     labels say whether a value rests on data, literature, or judgement."""
@@ -75,19 +210,7 @@ def register():
          'DECISION (author): Horup\'s scope is material production (A1-A3); soil is land-use change'),
         ('Interpolation between 2025, 2030, 2040, 2050', 'linear',
          'DECISION (author): Horup et al. state "interpolated" without naming the method (p. 3)'),
-        ('Material mapping (case-study class -> S4 row)',
-         'CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> '
-         'construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); '
-         'GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, '
-         'SIP, unspecified OTHERS (no S4 counterpart)', 'DECISION (author)'),
-        ('STEEL class', f"S4 '{'reinforcing steel' if B.DECARB_STEEL == 'reinforcing_steel' else 'steel profile'}' "
-         "(2050: -29.9%; steel profile -39.8% is a one-at-a-time sensitivity)",
-         'DECISION (author): rebar is inside REINFORCED CONCRETE; STEEL is non-rebar steel (stud walls, sections, '
-         'miscellaneous) whose closest S4 counterpart is steel profile; reinforcing steel is used as the '
-         'conservative choice because the class mixes items of unknown composition'),
-        ('Rebar in REINFORCED CONCRETE', 'decarbonised at the concrete-structure rate (2050: -27.6%)',
-         'DECISION (author): S4\'s concrete dataset does not separate reinforcement; the difference from '
-         'reinforcing steel (-29.9%) is small'),
+        *({'none': [], 'horup_class_v1_1': class_register(), 'horup_item': item_register()}[B.DECARB_MODE]),
         ('Carbon-factor sensitivity rows (decarbonised runs)', 'an alternative materials factor (jackknife, '
          'single case study) follows the adopted factor\'s relative path over time: factor_alt x (materials '
          'intensity(t) / 2025 value)', 'DECISION (author)'),
@@ -438,13 +561,28 @@ def main():
               f"{pb['cum_LoE_AtP_S3_10']:.1f}-fold (AtP; {pb['cum_LoE_AtP_S3_10_mc_p5']:.1f}-"
               f"{pb['cum_LoE_AtP_S3_10_mc_p95']:.1f}). The two principles are a range and are not averaged. "
               'Methods, constants, sources and limitations: outputs/PB_METHODS_DRAFT.md; settings: ASSUMPTIONS.md.']
+    dm = load('decarb_modes.json')
+    if dm:
+        typ = list(next(iter(dm['modes'].values()))['a13_reduction_2050'])
+        L += ['', '## Material decarbonisation: modes compared', '',
+              f"Adopted: `{dm['adopted']}`. A1-A3 only; A4-A5, B2, B4, C1-C4 and soil at 2025 in every mode. "
+              'Full tables (sensitivities, coverage, S4 rows): outputs/DECARB_MODES.md.', '',
+              '| mode | carbon (kt) | upfront (kt) | MC carbon p5-p95 (kt) | cum. LoE AR / AtP | A1-A3 by 2050 ('
+              + ', '.join(typ) + ') |', '|---|---|---|---|---|---|']
+        for mode, r in dm['modes'].items():
+            mc = r.get('mc')
+            pbm = r.get('pb')
+            L.append(f"| `{mode}` | {r['carbon_kt']:,.0f} | {r['upfront_kt']:,.0f} | "
+                     + (f"{mc['carbon_kt']['p5']:,.0f}-{mc['carbon_kt']['p95']:,.0f}" if mc else 'n/a') + ' | '
+                     + (f"{pbm['det']['LoE_AR']:.2f} / {pbm['det']['LoE_AtP']:.1f}" if pbm else 'n/a') + ' | '
+                     + ', '.join(f"{-100 * r['a13_reduction_2050'][t]:.1f}%" for t in typ) + ' |')
     L += ['', '## Assumptions', '', '| basis | assumption |', '|---|---|'] + [f'| {b_} | {a_} |' for b_, a_ in A]
 
     # ---- register ----
     L += ['', '## Assumption register (values read from Boss.py)', '', '| setting | value | basis |', '|---|---|---|']
     for a, val, basis in register():
         L.append(f'| {a} | {val} | {basis} |')
-    L += ['', '## Open limitations and data needs', ''] + [f'- {x}' for x in LIMITATIONS + DECARB_LIMITATIONS]
+    L += ['', '## Open limitations and data needs', ''] + [f'- {x}' for x in LIMITATIONS + decarb_limitations(BB.DECARB_MODE)]
 
     # ---- figures ----
     figs = sorted(glob.glob(os.path.join(OUT, 'figures', '*.png')))

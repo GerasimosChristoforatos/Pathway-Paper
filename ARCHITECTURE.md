@@ -21,9 +21,10 @@ vacancy, replacement, ...) and by material and life-cycle stage.
 The model is bottom-up and demand-driven: people → households → dwellings
 required → floor area → carbon. Construction capacity, prices and policy are not
 modelled. Carbon intensities are the 2025 case-study values; with
-`DECARB_MODE = 'horup_material'` the A1–A3 part of each mapped material follows
-the material-specific GWP paths of Horup et al. (2025) from 2026 (section 4.9),
-and with `'none'` every factor is held at 2025 (frozen technology).
+`DECARB_MODE = 'horup_class_v1_1'` (adopted) the A1–A3 part of each mapped
+material class, and with `'horup_item'` that of each case-study EPD item, follows
+the material-specific GWP paths of Horup et al. (2025) from 2026 (section 4.9);
+with `'none'` every factor is held at 2025 (frozen technology).
 
 ---
 
@@ -189,15 +190,26 @@ applies only to floor area on new footprints: zero on the replacement bands
 (land already settled).
 
 **Material decarbonisation** (`DECARB_MODE`). `'none'`: every factor held at its
-2025 value. `'horup_material'`: the A1–A3 factor of each case-study material
-class is multiplied, year by year, by the relative GWP path of its counterpart
-in Horup et al. (2025) SI Table S4 (average of 9 premise scenarios, relative to
-2025; linear between 2025, 2030, 2040 and 2050). `Building_factors.py` does this
-per case study and class before pooling (`factors_a13_decarb.csv`), so OTHERS
-follows its own components (aluminium, bricks, glass, glass wool; the rest held).
-A4–A5, B2, B4, C1–C4, unmapped classes and soil stay at 2025. The history
-(1991–2025) always uses 2025 factors. The Monte Carlo bootstraps the same
-reduction per case study with the same resampled cases.
+2025 value. `'horup_class_v1_1'` (baseline-pb-v1.1, then `'horup_material'`;
+adopted): the A1–A3 factor of each case-study material class is multiplied,
+year by year, by the relative GWP path of its counterpart in Horup et al. (2025)
+SI Table S4 (average of 9 premise scenarios, relative to 2025; linear between
+2025, 2030, 2040 and 2050). `Building_factors.py` does this per case study and
+class before pooling (`factors_a13_decarb.csv`), so OTHERS follows its own
+components (aluminium, bricks, glass, glass wool; the rest held).
+`'horup_item'` (v1.2): the same paths applied to each EPD item of the case
+studies (`data/derived/material_items.csv`, built by
+`data/build_material_items.py` from the supplied item table and checked against
+`building_data.xlsx`), mapped one-to-one by `data/material_item_map.csv` to an
+S4 row (direct; by Horup et al. p. 6 for other cementitious and wood-based
+products; or a labelled proxy) or held (the lift); summed per building and
+class, then pooled as before, so the 2025 totals are the class totals.
+`DECARB_ITEM_CASE` selects its sensitivities (proxies held; NZ-made
+electricity-intensive items held; lift at steel profile). A4–A5, B2, B4, C1–C4,
+unmapped classes or held items and soil stay at 2025. The history (1991–2025)
+always uses 2025 factors. The Monte Carlo bootstraps the same reduction per
+case study with the same resampled cases. Coverage by mapping basis:
+`outputs/factors/factors_a13_item_coverage.csv`.
 
 ---
 
@@ -215,9 +227,12 @@ identities and factor sums are checked in `tests/test_identities.py`.
 Re-runs `Boss.main()` with one setting changed per row: replacement scenarios
 and half-lives, mix, household-size variants and tails, dwelling-size window,
 completion rate and lag, census under-construction correction, near-term
-booking and gap reference, soil on replacement. Population rows reuse Boss's
-5th/95th paths; carbon-factor and soil-order rows re-weight the central floor
-area. Writes `outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`. One-at-a-time
+booking and gap reference, soil on replacement, and the decarbonisation rows of
+the adopted mode (`Sensitivity.DECARB_CASES`: frozen technology plus, for the
+class-level mode, STEEL at steel profile; for the item-level mode, proxies held,
+NZ-made electricity-intensive items held, lift at steel profile and the
+class-level mapping). Population rows reuse Boss's 5th/95th paths;
+carbon-factor and soil-order rows re-weight the central floor area. Writes `outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`. One-at-a-time
 ranges are not additive.
 
 ## 7. `MonteCarlo.py`
@@ -238,11 +253,18 @@ mix, carbon-factor and soil bounds are reported separately (sens_1).
 ## 8. Validation, reports and run modes
 
 **Frozen-technology check.** The adopted run decarbonises materials
-(`DECARB_MODE = 'horup_material'`). `run_all.py` also runs Boss, Sensitivity,
-MonteCarlo and the scenario table with `DECARB_MODE = 'none'` (environment
+(`DECARB_MODE = 'horup_class_v1_1'`). `run_all.py` also runs Boss, Sensitivity,
+MonteCarlo, the scenario table and PB with `DECARB_MODE = 'none'` (environment
 `PATHWAY_FROZEN=1`) into `outputs/frozen/`; the v1.2.1 regression test compares
 that run, and its own recomputation of the central run and scenario totals
 under `'none'`, with v1.2.1 to 1e-9.
+
+**Mode comparison runs.** Every other decarbonisation mode (now `'horup_item'`)
+is run in full (Boss, Sensitivity, MonteCarlo, PB; environment
+`PATHWAY_DECARB_MODE=<mode>`) into `outputs/modes/<mode>/`;
+`tools/decarb_modes.py` writes `outputs/DECARB_MODES.md`. The class-level mode
+is checked against the baseline-PB_v1.1 outputs by
+`tests/test_regression_pb_v1_1.py` (exact equality).
 
 **Quick mode** (`run_all.py --quick`, development only): 1,000 Monte Carlo draws
 per scenario, 128 Sobol base samples, no frozen-technology Monte Carlo, Monte

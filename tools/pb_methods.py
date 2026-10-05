@@ -17,6 +17,19 @@ OUT = os.path.join(ROOT, 'outputs')
 sys.path.insert(0, ROOT)
 
 
+def _modes_note():
+    """One sentence on the cumulative LoE under each decarbonisation mode (outputs/decarb_modes.json)."""
+    p = os.path.join(OUT, 'decarb_modes.json')
+    if not os.path.exists(p):
+        return ''
+    with open(p) as f:
+        dm = json.load(f)
+    parts = [f"`{k}` {v['pb']['det']['LoE_AR']:.2f} (AR) / {v['pb']['det']['LoE_AtP']:.1f} (AtP)"
+             for k, v in dm['modes'].items() if v.get('pb')]
+    return (' Cumulative LoE of the reference path by decarbonisation mode (each a full run): ' + '; '.join(parts)
+            + '; see outputs/DECARB_MODES.md.') if parts else ''
+
+
 def main():
     import PB
     with open(os.path.join(OUT, 'pb_results.json')) as f:
@@ -63,7 +76,7 @@ def main():
                                     'horup_item': 'A1-A3 of each case-study EPD item decarbonised 2026-2050 after '
                                     'Horup et al. (2025) SI Table S4 (item-level mapping, data/material_item_map.csv: '
                                     'direct, Horup p. 6, proxy or held); A4-A5, B2, B4, C1-C4, held items and soil at '
-                                    '2025 (see ASSUMPTIONS.md).'}[s.get('DECARB_MODE', 'none')]), '',
+                                    '2025 (see ASSUMPTIONS.md).'}[s.get('DECARB_MODE', 'none')]) + _modes_note(), '',
          '**Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over '
          f'{y0}-{y1} (ratio of sums).', '',
          '**Dating.** Model year t is 31 December (Stats NZ ERP history). The WPP 2024 series (1 July) and, in the '

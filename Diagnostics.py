@@ -226,7 +226,7 @@ for y in bases:
     a.axvline(y + 0.5, color='black', lw=0.6, ls=':')
 a.set_title('Stats NZ household growth / previous-year consents\n'
             'flat within each census period; 0.888 every year since 2019 (consent-derived)')
-a.set_ylabel('ratio'); a.set_xlim(1991, 2026)
+a.set_ylabel('households per consent'); a.set_xlim(1991, 2026)
 
 a = ax[2]
 pop_part_h = pop_h.diff().loc[YH] / S_h.loc[YH]
@@ -320,8 +320,8 @@ fig.suptitle('4. Floor area built, 1992-2050 (history converted to built: consen
 a = ax[0, 0]
 typ_h = B['hist_built_typ_gfa'].loc[YH]
 typ_f = B['evol_typ_total'].loc[PF]
-a.stackplot(YH, [typ_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
-a.stackplot(PF, [typ_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
+M.stack_typologies(a, YH, [typ_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
+M.stack_typologies(a, PF, [typ_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
 tidy(a, 'By typology (observed annual history)', 'Mm² per year')
 a.legend(loc='upper left')
 
@@ -386,8 +386,8 @@ fig.suptitle('5. Embodied carbon (A1-A5, B2, B4, C1-C4 + soil). History estimate
 a = ax[0, 0]
 car_h = pd.DataFrame({t: typ_h[t] * TB[t] for t in TYP})
 car_f = B['carbon_total_typ'].loc[PF]
-a.stackplot(YH, [car_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
-a.stackplot(PF, [car_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
+M.stack_typologies(a, YH, [car_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
+M.stack_typologies(a, PF, [car_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
 tidy(a, 'Annual carbon by typology', 'kt CO₂e per year')
 a.legend(loc='upper left')
 
@@ -415,7 +415,8 @@ for col, lab, colour in M.MATERIAL_STYLE:
     bottom += v
 for k, t in enumerate(TYP):
     a.text(k, TB[t] + 8, f'{TB[t]:.0f}', ha='center', fontweight='bold')
-a.set_title('Case-study intensity (16 buildings), constant over time')
+a.set_title('2025 case-study intensity (16 buildings)' +
+            (', held constant' if B['DECARB'] is None else ';\nA1-A3 decarbonised from 2026 (Horup et al. 2025)'))
 a.set_ylabel('kg CO₂e per m²')
 a.legend(handles=handles[::-1], loc='upper left', fontsize=7)
 finish(fig, 'diag_5_carbon.png')

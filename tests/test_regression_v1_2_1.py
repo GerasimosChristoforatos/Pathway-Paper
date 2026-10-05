@@ -1,7 +1,10 @@
 """Baseline v2 must reproduce every headline number of v1.2.1 (commit a83cf03)
-to 1e-9 relative: central-run metrics and the four scenario totals are
-recomputed here; the Monte Carlo summaries, the scenario table and the
-sensitivity table are read from outputs/ (run_all writes them before tests)."""
+to 1e-9 relative, with carbon factors held at 2025 (DECARB_MODE 'none', frozen
+technology; the adopted run decarbonises materials). Central-run metrics and the
+four scenario totals are recomputed here under 'none'; the Monte Carlo
+summaries, the scenario table and the sensitivity table are read from
+outputs/frozen/, written by run_all's frozen-technology steps before the tests.
+In a quick run (run_all.py --quick) those file checks are skipped."""
 import json
 import os
 import sys
@@ -12,6 +15,10 @@ import pytest
 from conftest import ROOT
 
 REL = 1e-9
+FROZEN = dict(DECARB_MODE='none')
+FROZEN_DIR = os.path.join(ROOT, 'outputs', 'frozen')
+quick = pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1',
+                           reason='quick run: no frozen-technology Monte Carlo (not for reporting)')
 FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_v1_2_1.json')))
 REMOVED_SENSITIVITY_ROWS = {'Three-channel join (v1.0.2)'}      # dropped with the three-channel join
 
@@ -23,7 +30,7 @@ def same(a, b):
 def test_central_run_metrics():
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     import metrics
-    m = metrics.boss_metrics()
+    m = metrics.boss_metrics(FROZEN)
     bad = {k: (m[k], v) for k, v in FX['boss'].items() if v is not None and not same(m[k], v)}
     assert not bad, bad
 
@@ -33,21 +40,23 @@ def test_scenario_totals_recomputed(key):
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     import replacement_scenarios as RS
     settings = dict((k, s) for k, _, s in RS.SCENARIOS)[key]
-    r, _ = RS.one(settings)
+    r, _ = RS.one(dict(settings, **FROZEN))
     bad = {f: (r[f], v) for f, v in FX['scenarios'][key].items() if not same(r[f], v)}
     assert not bad, bad
 
 
+@quick
 def test_scenario_table_file():
-    sc = json.load(open(os.path.join(ROOT, 'outputs', 'replacement_scenarios.json')))['scenarios']
+    sc = json.load(open(os.path.join(FROZEN_DIR, 'replacement_scenarios.json')))['scenarios']
     bad = {(k, f): (sc[k][f], v) for k, d in FX['scenarios'].items() for f, v in d.items() if not same(sc[k][f], v)}
     assert not bad, bad
 
 
+@quick
 def test_monte_carlo_summaries():
     bad = {}
     for name, rows in FX['mc'].items():
-        s = pd.read_csv(os.path.join(ROOT, 'outputs', name), index_col=0)
+        s = pd.read_csv(os.path.join(FROZEN_DIR, name), index_col=0)
         for i, cols in rows.items():
             for c, v in cols.items():
                 if not same(float(s.loc[i, c]), v):
@@ -55,8 +64,9 @@ def test_monte_carlo_summaries():
     assert not bad, bad
 
 
+@quick
 def test_sensitivity_table():
-    s = pd.read_csv(os.path.join(ROOT, 'outputs', 'sensitivity_oat.csv')).set_index('case')
+    s = pd.read_csv(os.path.join(FROZEN_DIR, 'sensitivity_oat.csv')).set_index('case')
     missing = set(FX['sensitivity']) - set(s.index) - REMOVED_SENSITIVITY_ROWS
     extra = set(s.index) - set(FX['sensitivity'])
     assert not missing and not extra, (missing, extra)

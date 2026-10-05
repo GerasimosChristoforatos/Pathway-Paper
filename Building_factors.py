@@ -25,6 +25,16 @@ OUTPUTS
   factors_building.csv   one row per case study: in-scope materials by stage
                          (kg/m2 GFA), soil loss, and which case (if any) it
                          duplicates. Read by MonteCarlo.py for the bootstrap.
+  factors_a13_decarb.csv A1-A3 (kg/m2 GFA) by typology x material x year 2025-2050,
+                         decarbonised with Horup et al. (2025) (Boss.DECARB_MODE),
+                         per variant: class-level mapping of v1.1 (and its
+                         steel-profile sensitivity); item-level mapping (and
+                         its sensitivities). See decarb_variant().
+  factors_building_a13_reduction.csv  the same reduction per case study and
+                         year, for the Monte Carlo bootstrap.
+  factors_a13_item_coverage.csv  item-level mapping: share of 2025 A1-A3 per
+                         typology by label (direct / sec31 / proxy / held) and
+                         by S4 row, and the implied A1-A3 reduction by 2050.
 
 POOLING
   Factors are intensities (kg/m2), so they are scale-invariant. Buildings are
@@ -69,7 +79,119 @@ OUT_DIR = os.path.join(ROOT_DIR, 'outputs', 'factors')     # derived files; data
 OUT_MATERIAL = os.path.join(OUT_DIR, 'factors_material.csv')
 OUT_TYPOLOGY = os.path.join(OUT_DIR, 'factors_typology.csv')
 OUT_BUILDING = os.path.join(OUT_DIR, 'factors_building.csv')   # for MonteCarlo.py
+OUT_DECARB = os.path.join(OUT_DIR, 'factors_a13_decarb.csv')    # A1-A3 by year (Boss.DECARB_MODE)
+OUT_DECARB_BLD = os.path.join(OUT_DIR, 'factors_building_a13_reduction.csv')   # for MonteCarlo.py
+OUT_ITEM_COVERAGE = os.path.join(OUT_DIR, 'factors_a13_item_coverage.csv')
 
+# ---------------------------------------------------------------------------
+# MATERIAL DECARBONISATION OF A1-A3 (Boss.DECARB_MODE)
+# ---------------------------------------------------------------------------
+# Relative change of GWP per unit of material production versus 2025: Horup et
+# al. (2025), Sci. Total Environ. 966, 178780, Fig. 2 and Supplementary Table S4
+# (average of the 9 premise scenarios; 2025, 2030, 2040, 2050), built by
+# data/build_horup.py. Applied to A1-A3 only (Horup's scope); A4-A5, B2, B4,
+# C1-C4 and soil are never changed (author decision). Between Horup's years the
+# path is interpolated linearly (author decision; Horup state 'interpolated'
+# without naming the method, p. 3).
+#
+# 'horup_class_v1_1' (baseline-pb-v1.1, then called 'horup_material'): case-study
+# material CLASS -> S4 row (author decision). Classes without a counterpart in
+# S4 keep their 2025 factor: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT,
+# PLASTER, SIP and OTHERS. REINFORCED CONCRETE includes its rebar, decarbonised
+# at the concrete-structure rate (S4 does not separate reinforcement). STEEL at
+# the reinforcing-steel rate (conservative; steel profile is a sensitivity).
+FILE_HORUP = os.path.join(DATA_DIR, 'derived', 'horup2025_table_s4.csv')
+DECARB_YEARS = list(range(2025, 2051))
+DECARB_KNOTS = (2025, 2030, 2040, 2050)
+DECARB_S4 = {'CONCRETE': 'Concrete structure', 'REINFORCED CONCRETE': 'Concrete structure',
+             'STEEL': 'Reinforcing steel', 'TIMBER': 'Construction wood', 'ALUMINIUM': 'Aluminium',
+             'BRICKS': 'Clay brick', 'GLASS': 'Glass', 'GLASS WOOL': 'Mineral wool glass'}
+DECARB_VARIANTS = {'horup_class_v1_1': {},                                  # the mapping above
+                   'horup_class_v1_1_steel_profile': {'STEEL': 'Steel profile'}}   # sensitivity
+#
+# 'horup_item' (baseline-pb-v1.2): each EPD item of the case studies
+# (data/derived/material_items.csv, built by data/build_material_items.py) ->
+# one S4 row, or HELD, by data/material_item_map.csv (author decisions; the
+# basis of each row is in the table): label 'direct' (S4 has the material),
+# 'sec31' (Horup et al. 2025 p. 6: cementitious, wood-based and clay products
+# follow concrete, wood and clay), 'proxy' (no S4 counterpart; author rule) or
+# 'held' (2025 factor kept). Items are pooled per building, then per typology,
+# exactly as the classes; the 2025 totals are the class totals. Sensitivities
+# (ITEM_CASES): proxies held at 2025; items made in New Zealand with
+# electricity-intensive production held at 2025 (column
+# nz_low_carbon_electricity); the held lift at the S4 steel-profile rate.
+FILE_ITEMS = os.path.join(DATA_DIR, 'derived', 'material_items.csv')
+FILE_ITEM_MAP = os.path.join(DATA_DIR, 'material_item_map.csv')
+ITEM_LABELS = ('direct', 'sec31', 'proxy', 'held')
+ITEM_HELD = 'HELD'
+ITEM_CASES = {'central': 'item-level mapping',
+              'proxies_held': 'proxy-mapped items held at 2025',
+              'nz_elec_held': 'NZ-made, electricity-intensive items held at 2025',
+              'elevator_steel_profile': 'held lift at the S4 steel-profile rate'}
+DECARB_MODES = ('none', 'horup_class_v1_1', 'horup_item')
+
+
+def decarb_variant(mode, steel='reinforcing_steel', item_case='central'):
+    """Variant name in factors_a13_decarb.csv / factors_building_a13_reduction.csv
+    for a Boss setting (DECARB_MODE, DECARB_STEEL, DECARB_ITEM_CASE); None for
+    'none'. A setting that does not apply to the mode must stay at its default."""
+    if mode not in DECARB_MODES:
+        raise ValueError(f"Unknown DECARB_MODE '{mode}'; expected one of {DECARB_MODES}.")
+    if mode != 'horup_class_v1_1' and steel != 'reinforcing_steel':
+        raise ValueError(f"DECARB_STEEL = '{steel}' applies to 'horup_class_v1_1' only.")
+    if mode != 'horup_item' and item_case != 'central':
+        raise ValueError(f"DECARB_ITEM_CASE = '{item_case}' applies to 'horup_item' only.")
+    if mode == 'none':
+        return None
+    if mode == 'horup_class_v1_1':
+        return {'reinforcing_steel': 'horup_class_v1_1', 'steel_profile': 'horup_class_v1_1_steel_profile'}[steel]
+    if item_case not in ITEM_CASES:
+        raise ValueError(f"Unknown DECARB_ITEM_CASE '{item_case}'; expected one of {tuple(ITEM_CASES)}.")
+    return 'horup_item' if item_case == 'central' else f'horup_item_{item_case}'
+
+
+def load_items(path=FILE_ITEMS, map_path=FILE_ITEM_MAP, s4_rows=None):
+    """Item-level case-study LCA (absolute kg per building) joined to its S4
+    mapping. Stops if an item is unmapped, mapped twice, or mapped to an
+    unknown S4 row or label."""
+    it = pd.read_csv(path)
+    mp = pd.read_csv(map_path)
+    if mp.duplicated(['class', 'item']).any():
+        raise ValueError(f'{map_path}: items mapped more than once: '
+                         f'{mp[mp.duplicated(["class", "item"], keep=False)][["class", "item"]].values.tolist()}')
+    pairs = it[['class', 'item']].drop_duplicates()
+    m = pairs.merge(mp, on=['class', 'item'], how='left', indicator=True)
+    if (m['_merge'] != 'both').any():
+        raise ValueError(f'{map_path}: unmatched items {m[m["_merge"] != "both"][["class", "item"]].values.tolist()}')
+    extra = mp.merge(pairs, on=['class', 'item'], how='left', indicator=True)
+    if (extra['_merge'] != 'both').any():
+        raise ValueError(f'{map_path}: mapped items absent from {path}: '
+                         f'{extra[extra["_merge"] != "both"][["class", "item"]].values.tolist()}')
+    if not mp['label'].isin(ITEM_LABELS).all():
+        raise ValueError(f'{map_path}: unknown labels {sorted(set(mp["label"]) - set(ITEM_LABELS))}.')
+    if ((mp['label'] == 'held') != (mp['s4_row'] == ITEM_HELD)).any():
+        raise ValueError(f"{map_path}: label 'held' and S4 row '{ITEM_HELD}' must coincide.")
+    if not mp['nz_low_carbon_electricity'].isin(('yes', 'no')).all():
+        raise ValueError(f'{map_path}: nz_low_carbon_electricity must be yes/no.')
+    if s4_rows is not None:
+        unknown = set(mp['s4_row']) - set(s4_rows) - {ITEM_HELD}
+        if unknown:
+            raise ValueError(f'{map_path}: S4 rows not in Table S4: {sorted(unknown)}')
+    return it.merge(mp, on=['class', 'item'], how='left', validate='m:1')
+
+
+def item_s4_row(items, case):
+    """S4 row per item row for an item-level case, NaN where held at 2025."""
+    row = items['s4_row'].where(items['s4_row'] != ITEM_HELD)
+    if case == 'proxies_held':
+        row = row.where(items['label'] != 'proxy')
+    elif case == 'nz_elec_held':
+        row = row.where(items['nz_low_carbon_electricity'] != 'yes')
+    elif case == 'elevator_steel_profile':
+        row = row.where(items['label'] != 'held', 'Steel profile')
+    elif case != 'central':
+        raise ValueError(f"Unknown item case '{case}'.")
+    return row
 
 STAGES = ['A1-A3', 'A4-A5', 'B2,B4', 'C1-C4']     # in scope
 STAGE_D = 'D'                                      # outside the boundary
@@ -151,6 +273,16 @@ def load_soil_factor(path=FILE_CHARS, sheet=SHEET_SOILS):
     return float(row[val].iloc[0]), float(orders.min()), float(orders.max())
 
 
+def decarb_paths(path=FILE_HORUP, years=DECARB_YEARS):
+    """Relative A1-A3 factor by S4 material and year (2025 = 1), linear between
+    the S4 years. Returns DataFrame (years x material)."""
+    d = pd.read_csv(path).pivot(index='year', columns='material', values='rel_to_2025')
+    if list(d.index) != list(DECARB_KNOTS):
+        raise ValueError(f'{path}: years {list(d.index)}, expected {DECARB_KNOTS}.')
+    return pd.DataFrame({m: np.interp(years, d.index.values, d[m].values) for m in d.columns},
+                        index=years)
+
+
 # ============================================================
 # POOLING
 # ============================================================
@@ -159,6 +291,31 @@ def pool(frame, value_cols):
     per sub-type within a typology, equal weight per building within a sub-type."""
     sub = frame.groupby(['Typology', 'Subtype'])[value_cols].mean()
     return sub.groupby('Typology').mean().reindex(TYP_ORDER)
+
+
+def item_coverage(items, paths, ids):
+    """Pooled 2025 A1-A3 (kg/m2) per typology by label and by S4 row (item-level
+    mapping), as shares, and the implied A1-A3 reduction by 2050 per item case.
+    Rows: Typology, Kind ('label' | 's4_row' | 'reduction_2050'), Key, Value."""
+    rows = []
+    for kind, col in (('label', 'label'), ('s4_row', 's4_row')):
+        b = items.groupby(['id', col])['a13'].sum().unstack(fill_value=0.0).reindex(ids).fillna(0.0)
+        keys = list(b.columns)
+        b['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in b.index]
+        b['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in b.index]
+        p = pool(b.reset_index(drop=True), keys)
+        share = p.div(p.sum(axis=1), axis=0)
+        rows += [dict(Typology=t, Kind=kind, Key=k, Value=float(share.loc[t, k])) for t in TYP_ORDER for k in keys]
+    y = DECARB_YEARS[-1]
+    for case in ITEM_CASES:
+        r = item_s4_row(items, case).map(lambda k: 1.0 if pd.isna(k) else paths.loc[y, k])
+        b = pd.DataFrame({'a': items['a13'], 'b': items['a13'] * r, 'id': items['id']}).groupby('id').sum().reindex(ids)
+        b['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in b.index]
+        b['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in b.index]
+        p = pool(b.reset_index(drop=True), ['a', 'b'])
+        rows += [dict(Typology=t, Kind='reduction_2050', Key=case, Value=float(1 - p.loc[t, 'b'] / p.loc[t, 'a']))
+                 for t in TYP_ORDER]
+    return pd.DataFrame(rows)
 
 
 # ============================================================
@@ -308,11 +465,87 @@ def main():
     bld['SOC_avg'] = chars['SOC_avg']
     bld['duplicate_of'] = [dup_of.get(i, '') for i in bld.index]
 
-    for p in (OUT_MATERIAL, OUT_TYPOLOGY, OUT_BUILDING):
+    # ---- decarbonised A1-A3 by year (Horup et al. 2025, S4) ------------------
+    # Pooling is linear, so pooling the decarbonised building values equals
+    # decarbonising the pooled ones; done per case-study class, then grouped.
+    paths = decarb_paths()
+    dec_rows, red_rows = [], []
+    ids = list(chars.index)
+    for variant, override in DECARB_VARIANTS.items():
+        s4 = {**DECARB_S4, **override}
+        missing = set(s4.values()) - set(paths.columns)
+        if missing:
+            raise ValueError(f'S4 rows not found: {missing}')
+        for y in DECARB_YEARS:
+            r = lca['material'].map(lambda m: paths.loc[y, s4[m]] if m in s4 else 1.0)
+            a13 = lca['A1-A3'] * r
+            g = (a13.groupby([lca['id'], lca['Material']]).sum()
+                    .reindex(pd.MultiIndex.from_product([ids, list(MATERIAL_GROUPS) + [OTHERS_LABEL]]))
+                    .fillna(0.0).rename('a13').reset_index())
+            g.columns = ['id', 'Material', 'a13']
+            g['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in g['id']]
+            g['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in g['id']]
+            for mat in list(MATERIAL_GROUPS) + [OTHERS_LABEL]:
+                pooled = pool(g[g['Material'] == mat], ['a13'])['a13']
+                for typ in TYP_ORDER:
+                    dec_rows.append(dict(Variant=variant, Typology=typ, Material=mat, Year=y,
+                                         A13_kgCO2e_per_m2=float(pooled.loc[typ])))
+            red = (lca['A1-A3'] - a13).groupby(lca['id']).sum().reindex(ids).fillna(0.0)
+            red_rows += [dict(Variant=variant, id=i, Year=y, A13_reduction_kgCO2e_per_m2=float(red.loc[i]))
+                         for i in ids]
+    # item-level mapping (horup_item and its sensitivities): each item follows
+    # one S4 row (or is held); summed per building x class, then grouped and
+    # pooled exactly as above
+    items = load_items(s4_rows=paths.columns)
+    area_i = items['id'].map(gfa)
+    if area_i.isna().any():
+        raise ValueError(f"No floor area for {sorted(set(items['id'][area_i.isna()]))}.")
+    items['a13'] = items['A1-A3'] / area_i
+    items['Material'] = [lookup.get(m, OTHERS_LABEL) for m in items['class']]
+    cls_items = items.groupby(['id', 'class'])['a13'].sum()
+    cls_lca = lca.groupby(['id', 'material'])['A1-A3'].sum()
+    cls_items.index.names = cls_lca.index.names
+    worst = (cls_items.reindex(cls_lca.index).fillna(0.0) - cls_lca).abs().max()
+    if set(cls_items.index) != set(cls_lca.index) or worst > 1e-9:
+        raise ValueError(f'Item A1-A3 does not reproduce the class A1-A3 of {FILE_LCA} (max {worst:g}).')
+    for case in ITEM_CASES:
+        variant = decarb_variant('horup_item', item_case=case)
+        row = item_s4_row(items, case)
+        for y in DECARB_YEARS:
+            r = row.map(lambda k: 1.0 if pd.isna(k) else paths.loc[y, k])
+            a13 = items['a13'] * r
+            g = (a13.groupby([items['id'], items['Material']]).sum()
+                    .reindex(pd.MultiIndex.from_product([ids, list(MATERIAL_GROUPS) + [OTHERS_LABEL]]))
+                    .fillna(0.0).rename('a13').reset_index())
+            g.columns = ['id', 'Material', 'a13']
+            g['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in g['id']]
+            g['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in g['id']]
+            for mat in list(MATERIAL_GROUPS) + [OTHERS_LABEL]:
+                pooled = pool(g[g['Material'] == mat], ['a13'])['a13']
+                for typ in TYP_ORDER:
+                    dec_rows.append(dict(Variant=variant, Typology=typ, Material=mat, Year=y,
+                                         A13_kgCO2e_per_m2=float(pooled.loc[typ])))
+            red = (items['a13'] - a13).groupby(items['id']).sum().reindex(ids).fillna(0.0)
+            red_rows += [dict(Variant=variant, id=i, Year=y, A13_reduction_kgCO2e_per_m2=float(red.loc[i]))
+                         for i in ids]
+    coverage = item_coverage(items, paths, ids)
+
+    dec = pd.DataFrame(dec_rows)
+    chk = (dec[(dec.Year == DECARB_YEARS[0])].groupby(['Variant', 'Typology', 'Material'])['A13_kgCO2e_per_m2']
+           .sum().reset_index())
+    base = mat_factors[mat_factors.Stage == 'A1-A3'].set_index(['Typology', 'Material'])['kgCO2e_per_m2']
+    worst = max(abs(r.A13_kgCO2e_per_m2 - base.loc[(r.Typology, r.Material)]) for r in chk.itertuples())
+    if worst > 1e-9:
+        raise ValueError(f'Decarbonised A1-A3 in 2025 differs from the 2025 factors by {worst:g}.')
+
+    for p in (OUT_MATERIAL, OUT_TYPOLOGY, OUT_BUILDING, OUT_DECARB, OUT_DECARB_BLD, OUT_ITEM_COVERAGE):
         os.makedirs(os.path.dirname(p) or '.', exist_ok=True)
     mat_factors.to_csv(OUT_MATERIAL, index=False)
     typ_factors.to_csv(OUT_TYPOLOGY, index=False)
     bld.reset_index().to_csv(OUT_BUILDING, index=False)
+    dec.to_csv(OUT_DECARB, index=False)
+    pd.DataFrame(red_rows).to_csv(OUT_DECARB_BLD, index=False)
+    coverage.to_csv(OUT_ITEM_COVERAGE, index=False)
 
     # ==================================================================
     # SUMMARY

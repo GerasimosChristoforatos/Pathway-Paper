@@ -299,7 +299,9 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
     dev_2025, rho_dev      : 2025 deviation, fading as rho^(t-2025), booked to the residual
     rv_share               : retirement-village share of ALL dwellings built (out of scope)
     shares                 : DataFrame years x typology (floor-area shares)
-    size, olf, intensity, intensity_upfront : dicts by typology
+    size, olf              : dicts by typology
+    intensity, intensity_upfront : dicts by typology, each a scalar (constant over
+                             time) or an array over the years (kg CO2e/m2, incl. soil)
     soil                   : dict by typology, the soil part of intensity and
                              intensity_upfront (kg/m2). None = soil on all floor
                              area. Otherwise soil applies to the share
@@ -369,19 +371,21 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
     c_gross, total = c_gross + gfa_adj, total + gfa_adj
 
     gfa_t = shares.values.T * total                  # (typology, years)
-    I = np.array([intensity[t] for t in typ])
-    U = np.array([intensity_upfront[t] for t in typ])
+    # intensities: one value per typology (constant), or one per typology and
+    # year (materials decarbonised, Boss.DECARB_MODE); both broadcast to (typ, years)
+    I = np.array([np.broadcast_to(np.asarray(intensity[t], float), (len(hh),)) for t in typ])
+    U = np.array([np.broadcast_to(np.asarray(intensity_upfront[t], float), (len(hh),)) for t in typ])
     if soil is None:
         soil_share, soil_free = np.ones(len(hh)), np.zeros(len(hh))
-        carbon_t, upfront_t = I[:, None] * gfa_t, U[:, None] * gfa_t
+        carbon_t, upfront_t = I * gfa_t, U * gfa_t
     else:
         s = np.array([soil[t] for t in typ])
         soil_free = (np.zeros(len(hh)) if soil_on_replacement else
                      np.clip(demol + unc + join_redev, 0.0, None) * (1.0 - rv_share) * D)
         soil_share = (1.0 - np.divide(soil_free, total, out=np.zeros(len(hh)),
                                                          where=total != 0))
-        carbon_t = (I - s)[:, None] * gfa_t + (s[:, None] * gfa_t) * soil_share
-        upfront_t = (U - s)[:, None] * gfa_t + (s[:, None] * gfa_t) * soil_share
+        carbon_t = (I - s[:, None]) * gfa_t + (s[:, None] * gfa_t) * soil_share
+        upfront_t = (U - s[:, None]) * gfa_t + (s[:, None] * gfa_t) * soil_share
     return dict(
         years=shares.index.values, typ=typ, pop=pop, hh=hh, S=S, d_hh=d_hh, d_hh_raw=d_raw,
         D=D, olf=olf_f, occ=occ, structural=structural, growth_gross=g_gross, growth=growth,

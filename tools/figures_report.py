@@ -327,7 +327,14 @@ def main():
         'fig_reality_checks': 'Projection vs the 1991-2025 range (outputs/reality_checks.md) and the 2026->2027 handover.',
         'fig_validation': 'Hindcast of cumulative dwellings from 2006/2013/2018 (consistent vacancy) and the 2026 check.',
         'mc_1_fan': 'Within-scenario Monte Carlo fan (reference), history from 1991.',
-        'sens_1_tornado': 'One-at-a-time sensitivities: scenarios, mix, household size, stock, near-term rule, carbon/soil bounds.'}
+        'sens_1_tornado': 'One-at-a-time sensitivities: scenarios, mix, household size, stock, near-term rule, carbon/soil bounds, decarbonisation (adopted mode).',
+        'boss_05_annual_carbon_pb': 'PB variant of boss_05: annual carbon by typology and demand type with the AR and AtP boundaries.',
+        'fig_scenarios_pb': 'PB variant of fig_scenarios (carbon): scenarios and reference MC band vs the boundaries; cumulative vs cumulative boundaries.',
+        'mc_1_fan_pb': 'PB variant of mc_1_fan (carbon): MC fan, history on the projection soil convention, base window, boundaries.',
+        'pb_1_boundaries': 'Boundaries B_AR and B_AtP 2025-2050 (log axis), population modifier, table of components.',
+        'pb_2_loe': 'Annual level of exceedance by principle, S1 / S3-10 / S2 with MC 5-95% bands, log axis.',
+        'pb_3_headroom': 'Intensity, floor area and carbon per dwelling that would fit each boundary vs the projection (S3-10).',
+        'pb_4_sensitivity': 'Tornado of cumulative LoE 2026-2050 (S3-10): source pair, GDP measure, base window, NZ population, s_sec, carbon factors (frozen technology and the decarbonisation sensitivities of the adopted mode).'}
     supp = {
         'boss_01_population': 'Population history and projection (median, 5th-95th); the 2026 level shift from observed growth.',
         'boss_02_households': 'Households: census-benchmarked to 2018, 2019-23 scaled to the 2023 census, projection from 2023.',
@@ -343,7 +350,9 @@ def main():
         'fig_bridge_appendix_split': 'Appendix: the bridge with demolition and residual split (split assumes the BRANZ rate).',
         'fig_conversion_chain': 'Indices population -> households -> dwellings -> floor area -> carbon; intensity per m².',
         'mc_3_sobol': 'Sobol indices (reference): within-scenario parametric uncertainty only.',
-        'sens_2_paths': 'Annual paths of the largest one-at-a-time sensitivities.'}
+        'sens_2_paths': 'Annual paths of the largest one-at-a-time sensitivities.',
+        'boss_06_cumulative_carbon_pb': 'PB variant of boss_06: cumulative carbon vs cumulative AR and AtP boundaries.',
+        'pb_5_demand_vs_boundary': 'Annual carbon by demand type (in scope, S3-10) against the AR and AtP boundaries.'}
     files = sorted(f[:-4] for f in os.listdir(FIG) if f.endswith('.png'))
     unlisted = [f for f in files if f not in paper and f not in supp]
     missing = [f for f in list(paper) + list(supp) if f not in files]

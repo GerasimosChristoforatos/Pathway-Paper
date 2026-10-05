@@ -21,10 +21,13 @@ python run_all.py                      # full run; the only basis for reported r
 python run_all.py --quick              # development only: every output marked "QUICK RUN, not for reporting"
 ```
 
-The full run takes about 24 minutes on a 4-core machine (measured: 1,420 s, sum
-of the step times, including the frozen-technology and item-level comparison
-runs; see `CHANGELOG.md`); the quick run time has not been re-measured since
-baseline-pb-v1.1 (about 6 minutes then, before the comparison runs were added). `--quick` uses 1,000 instead of 5,000 Monte Carlo draws per
+The default full run takes about 16 minutes on a 4-core machine (measured: 956 s
+wall clock, including the frozen-technology check run; see `CHANGELOG.md`).
+`python run_all.py --compare-modes` additionally runs the class-level
+decarbonisation mode of baseline-pb-v1.1 in full and the item-level
+decarbonisation sensitivities (outputs/DECARB_MODES.md, stamped with date and
+commit; the generated documents read this stored result). The quick run time
+has not been re-measured since baseline-pb-v1.1 (about 6 minutes then). `--quick` uses 1,000 instead of 5,000 Monte Carlo draws per
 scenario and 128 Sobol base samples, skips the frozen-technology Monte Carlo and
 the Monte Carlo regression checks, and marks `metrics.json`, the generated
 documents and every figure as a quick run.

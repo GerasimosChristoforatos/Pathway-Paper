@@ -1,0 +1,250 @@
+{
+ "source": "git tag baseline-PB_v1.1 (commit 5c0cfba), outputs/ of the full run, DECARB_MODE then named horup_material",
+ "boss": {
+  "gfa_Mm2": 89.56525459310167,
+  "carbon_kt": 31400.199445766302,
+  "upfront_kt": 21978.747694912643,
+  "soil_kt": 3049.916976528298,
+  "stages_kt": {
+   "A1-A3": 15147.207233053949,
+   "A4-A5": 3781.6234853303977,
+   "B2,B4": 4534.9337812431095,
+   "C1-C4": 4886.5179696105515
+  },
+  "material_kt": {
+   "CONCRETE (incl. reinforced)": 4815.4534657847935,
+   "OTHERS": 5231.382392388006,
+   "PLASTERBOARD": 1703.8093785260492,
+   "PLASTICS & PAINT": 4237.993187670904,
+   "STEEL": 5184.095546602607,
+   "TIMBER": 7177.548498265647,
+   "SOIL": 3049.916976528298
+  },
+  "annual_carbon_kt": [
+   1807.1179493452605,
+   1918.6132670349914,
+   1675.2912515251428,
+   1563.299711297442,
+   1506.8842871292575,
+   1476.295923266147,
+   1451.44347227036,
+   1416.8052312020284,
+   1367.6766735113288,
+   1330.0973138837373,
+   1308.5520434046648,
+   1276.3993855527058,
+   1234.9158673282482,
+   1185.5369856697002,
+   1132.831492278708,
+   1092.2974715815694,
+   1069.19723863872,
+   1062.352971233179,
+   1072.097889783731,
+   1075.8259088130303,
+   1062.5091479769596,
+   1049.4474571030757,
+   1036.627586081528,
+   1024.0371755399447,
+   1011.6646341051445,
+   999.4990595549609
+  ]
+ },
+ "mc": {
+  "GFA_Mm2": {
+   "p5": 69.09838038316775,
+   "p50": 88.86811345277576,
+   "p95": 109.93775983635231,
+   "mean": 89.14339595196364
+  },
+  "carbon_kt": {
+   "p5": 24118.78200532402,
+   "p50": 31094.55772283054,
+   "p95": 38862.53429139242,
+   "mean": 31256.25156817677
+  },
+  "upfront_kt": {
+   "p5": 16914.163436371895,
+   "p50": 21815.95348785984,
+   "p95": 27141.19485738868,
+   "mean": 21900.51528075121
+  }
+ },
+ "pb": {
+  "deterministic": {
+   "S1": {
+    "label": "Low (S1): long-run rate, shares held",
+    "I_kt": 29443.448377194774,
+    "LoE_AR": 4.736068954277836,
+    "LoE_AtP": 26.454966903391952
+   },
+   "S3-5": {
+    "label": "S3: fade, half-life 5 yr, shares held",
+    "I_kt": 30398.997996010756,
+    "LoE_AR": 4.889772040477876,
+    "LoE_AtP": 27.313529162013307
+   },
+   "S3-10": {
+    "label": "Reference (S3): fade, half-life 10 yr, shares held",
+    "I_kt": 31400.199445766302,
+    "LoE_AR": 5.050818363667313,
+    "LoE_AtP": 28.213109634979446
+   },
+   "S3-15": {
+    "label": "S3: fade, half-life 15 yr, shares held",
+    "I_kt": 32024.550030869428,
+    "LoE_AR": 5.151247069734989,
+    "LoE_AtP": 28.774089240812906
+   },
+   "S2": {
+    "label": "Storyline: intensification continues (S2 + damped mix trend)",
+    "I_kt": 31946.40342695854,
+    "LoE_AR": 5.138676948874035,
+    "LoE_AtP": 28.70387444145957
+   },
+   "S3-10-trend": {
+    "label": "sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix)",
+    "I_kt": 29302.2089618088,
+    "LoE_AR": 4.713350161228854,
+    "LoE_AtP": 26.328063151778927
+   },
+   "S2-held": {
+    "label": "High (S2): 2018-2023 rate persists, shares held",
+    "I_kt": 34237.43429824023,
+    "LoE_AR": 5.507196289535691,
+    "LoE_AtP": 30.76236789976491
+   },
+   "S1-noUC": {
+    "label": "sensitivity: S1 without the census UC correction",
+    "I_kt": 30203.682311938748,
+    "LoE_AR": 4.858354913796021,
+    "LoE_AtP": 27.13803783057536
+   },
+   "S3-10-noUC": {
+    "label": "sensitivity: S3-10 without the census UC correction",
+    "I_kt": 32919.925250988395,
+    "LoE_AR": 5.29527091939112,
+    "LoE_AtP": 29.578584743884186
+   },
+   "S2-noUC": {
+    "label": "sensitivity: S2 without the census UC correction",
+    "I_kt": 34396.435807862996,
+    "LoE_AR": 5.532772169906788,
+    "LoE_AtP": 30.90523091026465
+   }
+  },
+  "mc": {
+   "S3-10": {
+    "LoE_AR_p5": 4.046589771779642,
+    "LoE_AR_p50": 5.015439192139304,
+    "LoE_AR_p95": 5.994033610643875,
+    "LoE_AtP_p5": 22.411226132422012,
+    "LoE_AtP_p50": 27.943517233394967,
+    "LoE_AtP_p95": 33.64982751955584,
+    "n_draws": 5000,
+    "I_sec_base_kt_p5": 1862.4770311503473,
+    "I_sec_base_kt_p50": 1983.650953132257,
+    "I_sec_base_kt_p95": 2115.9717150322404
+   },
+   "S1": {
+    "LoE_AR_p5": 3.755236955162263,
+    "LoE_AR_p50": 4.705317502815863,
+    "LoE_AR_p95": 5.665705815852116,
+    "LoE_AtP_p5": 20.844462320855882,
+    "LoE_AtP_p50": 26.206212635142457,
+    "LoE_AtP_p95": 31.773955971366416,
+    "n_draws": 5000,
+    "I_sec_base_kt_p5": 1862.4770311503473,
+    "I_sec_base_kt_p50": 1983.650953132257,
+    "I_sec_base_kt_p95": 2115.9717150322404
+   },
+   "S2": {
+    "LoE_AR_p5": 4.166668843015258,
+    "LoE_AR_p50": 5.096743011042987,
+    "LoE_AR_p95": 6.059248514123179,
+    "LoE_AtP_p5": 23.078306303958957,
+    "LoE_AtP_p50": 28.40010414689788,
+    "LoE_AtP_p95": 34.009637347677526,
+    "n_draws": 5000,
+    "I_sec_base_kt_p5": 1862.4770311503473,
+    "I_sec_base_kt_p50": 1983.650953132257,
+    "I_sec_base_kt_p95": 2115.9717150322404
+   }
+  }
+ },
+ "sensitivity_oat": {
+  "Adopted settings": 31400.199445766302,
+  "Stats NZ 5th percentile (level)": 23936.565332222228,
+  "Stats NZ 95th percentile (level)": 40130.87397906986,
+  "Low (S1): long-run rate, shares held": 29443.448377194774,
+  "Storyline: intensification continues (S2 + mix trend)": 31946.403426958543,
+  "S3: half-life 5 yr": 30398.997996010752,
+  "S3: half-life 15 yr": 32024.550030869425,
+  "High (S2): 2018-2023 rate persists, shares held": 34237.43429824022,
+  "S3-10 with the damped mix trend": 29302.2089618088,
+  "Stats NZ Low projection variant (S)": 33427.169284650714,
+  "Stats NZ High projection variant (S)": 29731.34568674363,
+  "S after 2043: flat (kink at 2043)": 31400.950958195903,
+  "S after 2043: secant-slope taper (v1.2)": 31311.787481566636,
+  "S after 2043: taper from the PCHIP end slope": 31182.947717238112,
+  "Dwelling size: 2016\u20132025 reference": 32905.22916162152,
+  "Completion rate 0.92": 30006.861761409986,
+  "Completion rate 0.96": 31865.07621372607,
+  "Completion lag on (Little's law)": 32173.445823023085,
+  "No census under-construction correction": 32919.925250988395,
+  "Temporary surplus with payback, absorption 0.20/yr": 30069.233409380093,
+  "Temporary surplus with payback, absorption 0.10/yr": 30194.441338115324,
+  "Booked as redevelopment, stock-neutral (v1.1)": 31248.42932919594,
+  "Gap measured against the 2026 requirement": 31762.969330460244,
+  "Soil on all floor area, incl. replacement": 32032.9987132429,
+  "Frozen technology: 2025 factors held (no decarbonisation)": 33625.15835263455,
+  "Decarbonisation: STEEL at the steel-profile rate (Horup S4)": 31187.29664164595,
+  "Materials: jackknife low (all typologies)": 30217.174481524657,
+  "Materials: jackknife high (all typologies)": 32505.64004969479,
+  "Materials: lowest single case study": 24161.08113250203,
+  "Materials: highest single case study": 38100.78921812117,
+  "Soil: lowest soil order (Raw)": 29745.084780066085,
+  "Soil: highest soil order (Organic)": 38406.94033107483
+ },
+ "pb_sensitivity": {
+  "reference": [
+   5.050818363667313,
+   28.21310963497945
+  ],
+  "i_source_pair": [
+   9.527998076613406,
+   53.22196028094462
+  ],
+  "ii_gdp_measure": [
+   5.050818363667313,
+   86.80392183385433
+  ],
+  "iii_base_window": [
+   4.952659565536993,
+   28.21310963497945
+  ],
+  "iv_pop_statsnz": [
+   5.038818717025418,
+   28.051605061367905
+  ],
+  "iv_pop_wpp": [
+   5.364380911043183,
+   30.39001470556797
+  ],
+  "v_ssec": [
+   5.050818363667313,
+   28.278733890034303
+  ],
+  "vi_frozen": [
+   5.4087098262557936,
+   30.212237369222603
+  ],
+  "vii_steel_profile": [
+   5.01657229479808,
+   28.02181625913269
+  ],
+  "note_soil_long_run": [
+   5.038394424949184,
+   28.21310963497945
+  ]
+ }
+}

@@ -1,0 +1,161 @@
+class,item,s4_row,label,basis,nz_low_carbon_electricity
+ALUMINIUM,"Aluminium, curtain wall extruded frame, powder coated finish (primary manufacture using mainly renewables-generated electricity)",Aluminium,direct,S4 aluminium,yes
+ALUMINIUM,"Aluminium, louvre blades 2.0 mm BMT, anodised (one side 0.02 mm) (primary manufacture using mainly renewables-generated electricity)",Aluminium,direct,S4 aluminium,yes
+ALUMINIUM,"Window/door frame (aluminium), anodised finish, non-thermally broken (primary manufacture using mainly renewables-generated electricity)",Aluminium,direct,S4 aluminium,yes
+ALUMINIUM,"Window/door frame (aluminium), powder coated finish, non-thermally broken (primary manufacture using mainly renewables-generated electricity)",Aluminium,direct,S4 aluminium,yes
+ALUMINIUM,"Window/door frame (aluminium), powder coated finish, thermally broken (primary manufacture using mainly renewables-generated electricity)",Aluminium,direct,S4 aluminium,yes
+BRICKS,"Brick, clay",Clay brick,direct,S4 clay brick,no
+CONCRETE,"Autoclaved aerated concrete (AAC), precast block, density 650kg/m3, exc. steel reinforcing",Lightweight concrete,direct,S4 lightweight concrete (AAC block),no
+CONCRETE,"Concrete, 17.5 MPa, in-situ, no reinforcement, (OPC) (Allied Concrete, Avondale batching plant) (Auckland)",Concrete structure,direct,"S4 concrete structure (in-situ concrete, concrete roof tiles)",no
+CONCRETE,"Concrete, 20 MPa, in-situ, no reinforcement, (OPC) (Allied Concrete, Avondale batching plant) (Auckland)",Concrete structure,direct,"S4 concrete structure (in-situ concrete, concrete roof tiles)",no
+CONCRETE,"Concrete, 30 MPa, in-situ, no reinforcement, (OPC) (Allied Concrete, Avondale batching plant) (Auckland)",Concrete structure,direct,"S4 concrete structure (in-situ concrete, concrete roof tiles)",no
+CONCRETE,"Roof tiles, concrete",Concrete structure,direct,"S4 concrete structure (in-situ concrete, concrete roof tiles)",no
+FIBRE CEMENT,"Fibre cement, cladding, AxonTM panel (9 mm thickness), imported (based on manufacturing data for James Hardie, Australia)",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+FIBRE CEMENT,"Fibre cement, cladding, HardieFlexTM (6.0 mm thickness), imported (James Hardie, Australia)",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+FIBRE CEMENT,"Fibre cement, cladding, HardieFlexTM (7.5 mm thickness), imported (based on manufacturing data for James Hardie, Australia)",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+FIBRE CEMENT,"Fibre cement, cladding, weatherboard, all profiles (16 mm thickness), imported (based on manufacturing data for James Hardie, Australia)",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+FIBRE CEMENT,"Fibre cement, flooring, HardiePanelTM compressed sheet (18 mm thickness), imported (James Hardie, Australia)",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+FIBRE CEMENT,"Fibre cement, rigid air barrier (4.5 mm thickness), imported (based on manufacturing data for James Hardie, Australia)",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+FIBRE CEMENT,"Fibre cement, soffit/eaves lining, HardieFlexTM eaves lining (4.5 mm thickness), imported (James Hardie, Australia)",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+FIBRE CEMENT,"Fibre cement, soffit/eaves lining, HardieFlexTM eaves lining (6 mm thickness), imported (based on manufacturing data for James Hardie, Australia)",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+FIBRE CEMENT,"Fibre cement, tile and slate underlay (6 mm thickness), imported (based on manufacturing data for James Hardie, Australia)",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+GLASS,"Glass, single pane, heat strengthened",Glass,direct,"S4 glass (glazing, IGUs)",no
+GLASS,"Glass, single pane, laminated",Glass,direct,"S4 glass (glazing, IGUs)",no
+GLASS,"Window/door, IGU, glazing (float glass), for use with PVC - U joinery",Glass,direct,"S4 glass (glazing, IGUs)",no
+GLASS,"Window/door, IGU, glazing (float glass), for use with aluminium joinery",Glass,direct,"S4 glass (glazing, IGUs)",no
+GLASS,"Window/door, IGU, glazing (float glass, low emissivity (Low-E) finish), for use with PVC - U joinery",Glass,direct,"S4 glass (glazing, IGUs)",no
+GLASS,"Window/door, IGU, glazing (glass, heat strengthened), for use with aluminium joinery",Glass,direct,"S4 glass (glazing, IGUs)",no
+GLASS,"Window/door, IGU, glazing (glass, heat strengthened, low emissivity (Low-E) finish), for use with soft wood timber joinery",Glass,direct,"S4 glass (glazing, IGUs)",no
+GLASS WOOL,"Insulation (140 mm wall), Pink® Batts® Ultra® R3.2 140 mm Wall (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (140 mm wall), Pink® Batts® Ultra® R4.0 140 mm Wall (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (90 mm wall), Pink® Batts® Classic R1.8 Wall (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (90 mm wall), Pink® Batts® Classic R2.2 Wall (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (90 mm wall), Pink® Batts® Classic R2.4 Wall (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (90 mm wall), Pink® Batts® Ultra® R2.8 Wall (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (blanket, roof), Pink® Batts® BIB R1.2 Blanket (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (floor), Pink® Batts® SnugFloor® R1.6 Narrow (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (floor), Pink® Batts® SnugFloor® R2.6 Narrow (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (roof), Pink® Batts® Classic R1.8 Ceiling (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (roof), Pink® Batts® Classic R2.6 Ceiling (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (roof), Pink® Batts® Classic R3.2 Ceiling (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (roof), Pink® Batts® Classic R3.6 Ceiling (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+GLASS WOOL,"Insulation (roof), Pink® Batts® Classic R5.0 Ceiling (glass wool)",Mineral wool glass,direct,S4 mineral wool glass,yes
+OTHERS,"Ceramic basins sanitary ware (ceramic vitreous china) (basin - mass = 9 kg), imported",Ceramic tile,direct,"S4 ceramic tile (tiles, ceramic sanitary ware)",no
+OTHERS,"Door, interior, MDF, unpainted, imported (Australia)",Construction wood,sec31,Horup 2025 p. 6: wood-based products similar to wood; S4 construction wood,no
+OTHERS,"Elevator (12 floors) - OTIS Gen2 Stream® - rated load up to 2500 kg, speed up to 2.5 m/s, imported (Europe)",HELD,held,"HELD: lift (mixed assembly), no S4 counterpart; held at 2025 (author decision); sensitivity: S4 steel profile",no
+OTHERS,"Particleboard (floor), with galvanised fixings, imported (Australia)",Construction wood,sec31,Horup 2025 p. 6: wood-based products similar to wood; S4 construction wood,no
+OTHERS,"Tiles (ceramic), imported (Asia)",Ceramic tile,direct,"S4 ceramic tile (tiles, ceramic sanitary ware)",no
+OTHERS,"WC, sanitary ware (ceramic vitreous china) (toilet - mass = 18 kg), imported",Ceramic tile,direct,"S4 ceramic tile (tiles, ceramic sanitary ware)",no
+OTHERS,"Window/door, IGU glazing, argon gas fill (for use with PVC - U joinery)",Glass,direct,"S4 glass (IGU argon-fill item in OTHERS, author rule)",no
+OTHERS,"Window/door, IGU glazing, argon gas fill (for use with soft wood timber joinery)",Glass,direct,"S4 glass (IGU argon-fill item in OTHERS, author rule)",no
+PAINT,"Paint (exterior), water-borne, for masonry (2 coats / m2), imported",EPS,proxy,"PROXY: paint, no S4 row; S4 EPS (author rule)",no
+PAINT,"Paint (exterior), water-borne, for timber (2 coats / m2), imported",EPS,proxy,"PROXY: paint, no S4 row; S4 EPS (author rule)",no
+PAINT,"Paint (exterior), water-borne, primer/sealer (1 coat / m2), imported",EPS,proxy,"PROXY: paint, no S4 row; S4 EPS (author rule)",no
+PAINT,"Paint, water-based acrylic primer/undercoat (Dulux acrylic sealer undercoat) (1 coat / m2), imported (Australia)",EPS,proxy,"PROXY: paint, no S4 row; S4 EPS (author rule)",no
+PAINT,"Paint, water-borne, walls (Dulux Wash&Wear® low sheen - vivid white) (2 coats / m2), imported (Australia)",EPS,proxy,"PROXY: paint, no S4 row; S4 EPS (author rule)",no
+PAINT,"Paint, water-borne, walls (Dulux Wash&Wear® semi-gloss - vivid white) (2 coats / m2), imported (Australia)",EPS,proxy,"PROXY: paint, no S4 row; S4 EPS (author rule)",no
+PLASTER,"Plaster, cement",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+PLASTERBOARD,"Plaster, cement",Cement mortar,sec31,Horup 2025 p. 6: cementitious products similar to concrete; S4 cement mortar,no
+PLASTERBOARD,Plasterboard (GIB aqualine® 10 mm),Clay brick,proxy,"PROXY: gypsum plasterboard has no S4 counterpart; clay brick used as proxy, both thermally processed non-metallic mineral products (gypsum calcined, clay fired); -7.7% by 2050 (author decision)",no
+PLASTERBOARD,Plasterboard (GIB braceline® GIB noiseline® 10 mm),Clay brick,proxy,"PROXY: gypsum plasterboard has no S4 counterpart; clay brick used as proxy, both thermally processed non-metallic mineral products (gypsum calcined, clay fired); -7.7% by 2050 (author decision)",no
+PLASTERBOARD,Plasterboard (GIB braceline® GIB noiseline® 13 mm),Clay brick,proxy,"PROXY: gypsum plasterboard has no S4 counterpart; clay brick used as proxy, both thermally processed non-metallic mineral products (gypsum calcined, clay fired); -7.7% by 2050 (author decision)",no
+PLASTERBOARD,Plasterboard (GIB fyreline® 13 mm),Clay brick,proxy,"PROXY: gypsum plasterboard has no S4 counterpart; clay brick used as proxy, both thermally processed non-metallic mineral products (gypsum calcined, clay fired); -7.7% by 2050 (author decision)",no
+PLASTERBOARD,Plasterboard (GIB ultraline® 13 mm),Clay brick,proxy,"PROXY: gypsum plasterboard has no S4 counterpart; clay brick used as proxy, both thermally processed non-metallic mineral products (gypsum calcined, clay fired); -7.7% by 2050 (author decision)",no
+PLASTERBOARD,Plasterboard (GIB® standard 10 mm),Clay brick,proxy,"PROXY: gypsum plasterboard has no S4 counterpart; clay brick used as proxy, both thermally processed non-metallic mineral products (gypsum calcined, clay fired); -7.7% by 2050 (author decision)",no
+PLASTERBOARD,Plasterboard (GIB® standard 13 mm),Clay brick,proxy,"PROXY: gypsum plasterboard has no S4 counterpart; clay brick used as proxy, both thermally processed non-metallic mineral products (gypsum calcined, clay fired); -7.7% by 2050 (author decision)",no
+PLASTERBOARD,Plasterboard (generic),Clay brick,proxy,"PROXY: gypsum plasterboard has no S4 counterpart; clay brick used as proxy, both thermally processed non-metallic mineral products (gypsum calcined, clay fired); -7.7% by 2050 (author decision)",no
+PLASTICS,"Carpet - tufted wall-to-wall (pile material 1000 - 1100 g/m2 80% wool and 20% polyamide 6.6, polyester (90% recycled) and textile fabric backing)",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,"Carpet - woven broadloom (pile material 500 - 600 g/m2 polyamide 6.6, woven textile backing), imported (Europe)",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,"Carpet - woven broadloom (pile material 700 - 800 g/m2 polyamide 6.6, woven textile backing)",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,"Insulation underslab, polystyrene extruded (XPS), imported (Europe)",EPS,direct,S4 EPS (EPS and XPS insulation),no
+PLASTICS,"Insulation, polyester (generic)",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,"Insulation, polystyrene expanded (EPS), density range 18 - 22 kg/m3, imported (Europe)",EPS,direct,S4 EPS (EPS and XPS insulation),no
+PLASTICS,"Insulation, polystyrene extruded (XPS), density 35 kg/m3, imported (Europe)",EPS,direct,S4 EPS (EPS and XPS insulation),no
+PLASTICS,"Membrane (DPM), polyethylene underslab, vapour barrier",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,"Membrane, building wrap, polyethylene (PE) (0.25 mm thickness)",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,"Membrane, building wrap, polyethylene (PE) (0.5 mm thickness)",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,"Membrane, polyvinyl chloride (PVC)",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,"Membrane, synthetic rubber (EPDM)",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,"Vinyl (PVC) floor sheets (Karndean Design flooring - Van Gogh), imported (Australia)",EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+PLASTICS,Window/door frame (PVC - U),EPS,proxy,"PROXY: plastic product without an S4 row (polymers, carpets, membranes); S4 EPS (author rule)",no
+REINFORCED CONCRETE,"Masonry wall, incl. concrete block 20 series (17.5MPa OPC), grouted 22MPa (OPC), inc. steel reinforcing",Concrete structure,direct,"S4 concrete structure; dense concrete block, grouted, reinforced (author decision)",no
+REINFORCED CONCRETE,"Reinforced concrete, 20 MPa, in-situ, inc. 50 kg/m3 steel reinforcing, (OPC)",Concrete structure,direct,S4 concrete structure; rebar inside the RC item decarbonised at the concrete rate (author decision),no
+REINFORCED CONCRETE,"Reinforced concrete, 30 MPa, composite floor decking, trapezoidal deck section 95mm deep troughs at 300mm ctrs, 150mm thick in-situ slab, inc. 100 kg/m3 steel reinforcing, (OPC)",Concrete structure,direct,"S4 concrete structure; RC item incl. its rebar and steel trapezoidal deck, no split available in the source; conservative versus steel profile (author decision)",no
+REINFORCED CONCRETE,"Reinforced concrete, 30 MPa, precast, inc. 150 kg/m3 steel reinforcing, (OPC)",Concrete structure,direct,S4 concrete structure; rebar inside the RC item decarbonised at the concrete rate (author decision),no
+REINFORCED CONCRETE,"Reinforced concrete, 30 MPa, precast, inc. 50 kg/m3 steel reinforcing, (OPC)",Concrete structure,direct,S4 concrete structure; rebar inside the RC item decarbonised at the concrete rate (author decision),no
+SIP,"Structural insulated panel (SIP), roof panel, 215 mm thickness, R9.4, (NZSIP)",EPS,proxy,"PROXY: SIP (composite panel; split between wood-based and foam components not given in the source) at the smaller 2050 reduction of construction wood (-40.4%) and EPS (-4.0%), i.e. EPS (author rule; conservative)",no
+SIP,"Structural insulated panel (SIP), wall panel, 115 mm thickness, R4.5, (NZSIP)",EPS,proxy,"PROXY: SIP (composite panel; split between wood-based and foam components not given in the source) at the smaller 2050 reduction of construction wood (-40.4%) and EPS (-4.0%), i.e. EPS (author rule; conservative)",no
+SIP,"Structural insulated panel (SIP), wall panel, 165 mm thickness, R7, (NZSIP)",EPS,proxy,"PROXY: SIP (composite panel; split between wood-based and foam components not given in the source) at the smaller 2050 reduction of construction wood (-40.4%) and EPS (-4.0%), i.e. EPS (author rule; conservative)",no
+STEEL,"100x100x5.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"125x125x5.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"125x125x6.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"125x125x9.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"150x150x5.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"150x150x6.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"150x150x9.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"150x75, Parallel Flange Channels (PFC), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"180x75, Parallel Flange Channels (PFC), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"200UB-25.4, steel (primary), unpainted at factory",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"200UB-29.8, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"200UC-46.2, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"200x100x5.0, Rectangular Hollow Section (RHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"200x100x9.0, Rectangular Hollow Section (RHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"200x200x6.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"200x75, Parallel Flange Channels (PFC), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"230x75, Parallel Flange Channels (PFC), steel (primary), unpainted at factory",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"250UB-31.4, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"250UB-37.3, steel (primary), unpainted at factory",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"250UC-72.9, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"250UC-89.5, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"250x250x6.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"250x250x9.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"250x90, Parallel Flange Channels (PFC), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"310UB-40.4, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"310UB-46.2, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"310UC-118.0, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"310UC-96.8, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"400WC-144, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"410UB-53.7, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"460UB-67.1, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"530UB-82.0, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"530UB-92.4, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"610UB-125.0, steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"75x75x5.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"89x89x5.0, Square Hollow Section (SHS), steel (primary), factory painted",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"Colorsteel® Endura® 0.4 mm BMT (primary), AZ150 (150 g/m2 ZnAl alloy coating weight (total for both sides) + organic coating, all profiles (roof), exposure zone C",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"Colorsteel® Endura® 0.4 mm BMT (primary), AZ150 (150 g/m2 ZnAl alloy coating weight (total for both sides) + organic coating, all profiles (wall), exposure zone C",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"Colorsteel® Endura® 0.55 mm BMT (primary), AZ150 (150 g/m2 ZnAl alloy coating weight (total for both sides) + organic coating, all profiles (roof), exposure zone C",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"Colorsteel® Endura® 0.55 mm BMT (primary), AZ150 (150 g/m2 ZnAl alloy coating weight (total for both sides) + organic coating, all profiles (wall), exposure zone C",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"Colorsteel® Maxx® 0.55 mm BMT (primary), AZ200 (200 g/m2 ZnAl alloy coating weight (total for both sides) + organic coating, all profiles (roof), exposure zone C",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"Purlins, DHS (all profiles), steel, primary (galvanised finish, coating class Z275), generic all profiles, exposure zone C",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"Steel reinforcement, primary, bar (Pacific Steel)",Reinforcing steel,direct,S4 reinforcing steel (rebar),yes
+STEEL,"Steel, primary (galvanised finish, both sides, 0.02 mm each, coating class Z275), profile metal sheet, generic all profiles, 0.4mm BMT, exposure zone C",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"Steel, primary (galvanised finish, coating class Z275), cold rolled profile metal sheet, trough section 56mm deep at 305mm ctrs, 0.95 BMT",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"Stud wall system, steel, primary (galvanised finish, 2 sides, 0.02 mm each, coating class Z275), 92.1x33.1 0.55 BMT @ 450ctrs, wall height 4.4-8.8m, 1 nogging row",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+STEEL,"ZinaCoreTM and ZinaCore XTM (pre-painted steel with hot-dipped aluminium/zinc alloy), ColorCote® 0.55 mm BMT (150 g/m2 coating weight), all profiles (wall, roof), exposure zone B (Pacific Coilcoaters, Fletcher Steel Ltd)",Steel profile,direct,"S4 steel profile (hot-rolled sections, sheet/decking, purlins, studs, coated sheet)",no
+TIMBER,"Engineered wood (Radiata), cross-laminated timber (CLT) panel, 85 - 315 mm thick, untreated, visual / non-visual appearance grade, imported (Xlam, Australia)",CLT,direct,S4 CLT,no
+TIMBER,"Engineered wood, I-joist profile, 200x45, imported",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",no
+TIMBER,"Engineered wood, I-joist profile, 240x46, imported",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",no
+TIMBER,"Engineered wood, I-joist profile, 300x63, imported",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",no
+TIMBER,"Engineered wood, I-joist profile, 300x90, imported",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",no
+TIMBER,"Engineered wood, glulam, Radiata pine softwood (H1.2 boron treated) (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Engineered wood, laminated veneer lumber (LVL), imported (Europe)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",no
+TIMBER,"Engineered wood, laminated veneer lumber (Nelson Pine, NZ)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Engineered wood, plywood (exterior, A-bond), imported (Australia)",Plywood,direct,S4 plywood,no
+TIMBER,"Hardwood (dressed, kiln dried) floor, with galvanised fixings, imported (Australia)",Construction wood,sec31,Horup 2025 p. 6: wood-based products similar to wood; S4 construction wood,no
+TIMBER,"Particleboard (floor), excluding galvanised fixings, imported (Australia)",Construction wood,sec31,Horup 2025 p. 6: wood-based products similar to wood; S4 construction wood,no
+TIMBER,"Particleboard (floor), with galvanised fixings, imported (Australia)",Construction wood,sec31,Horup 2025 p. 6: wood-based products similar to wood; S4 construction wood,no
+TIMBER,"Plywood (A bond, floor, tongue and groove), with galvanised fixings, imported (Australia)",Plywood,direct,S4 plywood,no
+TIMBER,"Softwood (Radiata pine), finger-jointed (H3.1 LOSP treated), e.g. cladding (unpainted) (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Softwood (Radiata pine), finger-jointed (H3.1 LOSP treated), weatherboards, all profiles (unpainted) (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Softwood (Radiata pine), finger-jointed (H3.2 CCA treated), e.g. cladding (unpainted) (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Softwood (Radiata pine), finger-jointed (H3.2 CCA treated), weatherboards, all profiles (unpainted) (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Softwood (Radiata pine), surfaced, kiln-dried (H1.2 boron treated), e.g. framing (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Softwood (Radiata pine), surfaced, kiln-dried (H3.1 copper azole treated), e.g. framing (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Softwood (Radiata pine), surfaced, kiln-dried (H3.2 CCA treated), e.g. framing (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Softwood (Radiata pine), surfaced, kiln-dried (H4 CCA treated), e.g. framing (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Softwood (Radiata pine), surfaced, kiln-dried (untreated), e.g. decorative/aesthetic internal (unpainted) (WPMA)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",yes
+TIMBER,"Softwood (dressed, kiln dried) floor (untreated), imported, with galvanised fixings (Australia)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",no
+TIMBER,"Softwood (dressed, kiln dried), framing, exterior (untreated), imported (Australia)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",no
+TIMBER,"Softwood (dressed, kiln dried), weatherboards (untreated), all profiles, imported (unpainted) (Australia)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",no
+TIMBER,"Softwood (dressed, kiln dried), window/door frame (untreated), imported, unpainted (indoor / outdoor)",Construction wood,direct,"S4 construction wood (sawn, framing, flooring, weatherboards, glulam, LVL, I-joists)",no

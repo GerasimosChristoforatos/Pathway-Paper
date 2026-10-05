@@ -93,3 +93,13 @@ Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted 
 | S1 | 3.76 / 4.71 / 5.67 | 20.8 / 26.2 / 31.8 |
 | S2 | 4.17 / 5.10 / 6.06 | 23.1 / 28.4 / 34.0 |
 | S3-10 | 4.05 / 5.02 / 5.99 | 22.4 / 27.9 / 33.6 |
+
+## Material decarbonisation modes (adopted: horup_class_v1_1; reference S3-10)
+
+| mode | carbon (kt) | upfront (kt) | MC carbon p5 / p50 / p95 (kt) | cum. LoE AR | cum. LoE AtP | MC LoE AR p5 / p50 / p95 | MC LoE AtP p5 / p50 / p95 | A1-A3 by 2050 (Detached, Townhouses, Apartments) | whole factor by 2050 (Detached, Townhouses, Apartments) |
+|---|---|---|---|---|---|---|---|---|---|
+| none | 33,625 | 24,204 | 25,743 / 33,268 / 41,644 | 5.41 | 30.2 | 4.33 / 5.37 / 6.42 | 24.0 / 29.9 / 36.1 | -0.0%, -0.0%, -0.0% | -0.0%, -0.0%, -0.0% |
+| horup_class_v1_1 | 31,400 | 21,979 | 24,119 / 31,095 / 38,863 | 5.05 | 28.2 | 4.05 / 5.02 / 5.99 | 22.4 / 27.9 / 33.6 | -20.9%, -21.2%, -25.2% | -9.7%, -11.2%, -18.2% |
+| horup_item | 31,013 | 21,592 | 23,833 / 30,715 / 38,391 | 4.99 | 27.9 | 4.00 / 4.95 / 5.92 | 22.1 / 27.6 / 33.2 | -25.0%, -24.8%, -28.9% | -11.7%, -13.0%, -20.9% |
+
+Sensitivities, item coverage and S4 rows: outputs/DECARB_MODES.md.

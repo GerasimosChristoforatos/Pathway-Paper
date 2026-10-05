@@ -8,7 +8,7 @@ Absolute environmental sustainability assessment (AESA) of New Zealand new resid
 
     B_AR(t) = SOS · (Ī_sec,base / I_glob) · [P_NZ(t) / P_NZ(t0)] · [P_W(t0) / P_W(t)],   t0 = 2025
 
-Ī_sec,base is the mean annual sector impact 2016-2025 from this model's own history (same scope, factors and soil convention as the projection). Over the base window LoE_AR = I_glob / SOS = 8.1938 by construction (the sector impact cancels); the information is in the trajectory relative to the base.
+Ī_sec,base is the mean annual sector impact 2016-2025 from this model's own history (same scope and soil convention as the projection; 2025 case-study factors). Over the base window LoE_AR = I_glob / SOS = 8.1938 by construction (the sector impact cancels); the information is in the trajectory relative to the base.
 
 **Ability to pay** (Hjalsted et al. 2021, J. Ind. Ecol. 25, 6-19, Table 2 Eqs. 5-6, p. 11; SI Eq. S1):
 
@@ -17,6 +17,8 @@ Absolute environmental sustainability assessment (AESA) of New Zealand new resid
     α            = 1 / Σ_c [(P_c / P_W) (g_W / g_c)]   (SI Eq. S1 with GDP totals, rewritten per capita)
 
 g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c and P_W = Σ P_c over the same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) is constant in this static design: 0.1790.
+
+**Carbon factors.** All factors held at their 2025 case-study values (frozen technology).
 
 **Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over 2026-2050 (ratio of sums).
 

@@ -15,7 +15,7 @@ def test_soil_zero_on_net_replacement(B):
     soil_t = sum(E['gfa_t'][j] * B['SOIL_INTENSITY'][t] for j, t in enumerate(E['typ']))
     expect = soil_t * (1 - repl / E['total'])
     # soil in the engine's carbon = carbon - materials
-    mat = sum(E['gfa_t'][j] * (B['T_BASELINE_2025'][t] - B['SOIL_INTENSITY'][t]) for j, t in enumerate(E['typ']))
+    mat = sum(E['gfa_t'][j] * (np.asarray(B['T_INT'][t]) - B['SOIL_INTENSITY'][t]) for j, t in enumerate(E['typ']))   # 2025 or decarbonised
     assert close((E['carbon'] - mat)[1:], expect[1:])
     # the reported soil line equals it (2026-2050)
     assert abs(B['_soil'] - expect[1:].sum()) < 1e-6 * expect[1:].sum()

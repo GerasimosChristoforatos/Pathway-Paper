@@ -226,7 +226,7 @@ for y in bases:
     a.axvline(y + 0.5, color='black', lw=0.6, ls=':')
 a.set_title('Stats NZ household growth / previous-year consents\n'
             'flat within each census period; 0.888 every year since 2019 (consent-derived)')
-a.set_ylabel('ratio'); a.set_xlim(1991, 2026)
+a.set_ylabel('households per consent'); a.set_xlim(1991, 2026)
 
 a = ax[2]
 pop_part_h = pop_h.diff().loc[YH] / S_h.loc[YH]

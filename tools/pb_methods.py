@@ -38,8 +38,10 @@ def main():
          '**Acquired rights** (Horup et al. 2025, Sci. Total Environ. 966, 178780, Eq. 1, p. 4):', '',
          '    B_AR(t) = SOS · (Ī_sec,base / I_glob) · [P_NZ(t) / P_NZ(t0)] · [P_W(t0) / P_W(t)],   '
          f"t0 = {s['T0']}", '',
-         f'Ī_sec,base is the mean annual sector impact {w0}-{w1} from this model\'s own history (same scope, '
-         'factors and soil convention as the projection). Over the base window LoE_AR = I_glob / SOS = '
+         f'Ī_sec,base is the mean annual sector impact {w0}-{w1} from this model\'s own history (same scope and '
+         'soil convention as the projection; 2025 case-study factors'
+         + ('' if s.get('DECARB_MODE', 'none') == 'none' else ': past construction used past technology, so the '
+            'decarbonisation of A1-A3 applies only to 2026-2050') + '). Over the base window LoE_AR = I_glob / SOS = '
          f"{c['LoE_AR_base_identity']:.4f} by construction (the sector impact cancels); the information is in the "
          'trajectory relative to the base.', '',
          '**Ability to pay** (Hjalsted et al. 2021, J. Ind. Ecol. 25, 6-19, Table 2 Eqs. 5-6, p. 11; SI Eq. S1):', '',
@@ -49,6 +51,10 @@ def main():
          f'g = GDP per capita in base year b = {b}, held fixed; g_W = Σ P_c g_c / Σ P_c and P_W = Σ P_c over the '
          'same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) '
          f"is constant in this static design: {r['B_AtP_over_B_AR']['min']:.4f}.", '',
+         '**Carbon factors.** ' + ({'none': 'All factors held at their 2025 case-study values (frozen technology).',
+                                    'horup_material': 'A1-A3 of mapped materials decarbonised 2026-2050 after Horup et '
+                                    'al. (2025) SI Table S4; A4-A5, B2, B4, C1-C4, unmapped materials and soil at 2025 '
+                                    '(see ASSUMPTIONS.md).'}[s.get('DECARB_MODE', 'none')]), '',
          '**Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over '
          f'{y0}-{y1} (ratio of sums).', '',
          '**Dating.** Model year t is 31 December (Stats NZ ERP history). The WPP 2024 series (1 July) and, in the '

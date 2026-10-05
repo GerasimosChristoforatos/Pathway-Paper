@@ -13,6 +13,11 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 
 
+# display and run-time switches: not model settings, and their value depends on how
+# the tool is launched (run_all.py sets PATHWAY_SAVE_FIGURES=1)
+RUNTIME_ONLY = ('SAVE_FIGURES', 'SHOW_PLOTS', 'VERBOSE')
+
+
 def main():
     import Boss
     from baseline_draft import DECARB_LIMITATIONS, register
@@ -26,6 +31,7 @@ def main():
     for k in sorted(vars(Boss)):
         v = getattr(Boss, k)
         if k.isupper() and not k.startswith(('FILE_', 'COL_', 'SHEET_')) and k not in ('ROOT_DIR', 'DATA_DIR', 'OUT_DIR', 'FIG_DIR', 'FACTORS_DIR') \
+                and k not in RUNTIME_ONLY \
                 and isinstance(v, (bool, int, float, str, tuple, type(None))):
             L.append(f'| `{k}` | `{v!r}` |')
     import PB
@@ -36,6 +42,7 @@ def main():
     for k in sorted(vars(PB)):
         v = getattr(PB, k)
         if k.isupper() and not k.startswith('FILE_') and k not in ('ROOT_DIR', 'DATA_DIR', 'OUT_DIR', 'FIG_DIR') \
+                and k not in RUNTIME_ONLY \
                 and isinstance(v, (bool, int, float, str, tuple, type(None))):
             L.append(f'| `{k}` | `{v!r}` |')
     L.append(f"| `SOURCE_PAIRS` | `{PB.SOURCE_PAIRS!r}` |")

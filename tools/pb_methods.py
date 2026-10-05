@@ -15,6 +15,7 @@ import pandas as pd
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'outputs')
 sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
 
 
 def _modes_note():
@@ -24,9 +25,12 @@ def _modes_note():
         return ''
     with open(p) as f:
         dm = json.load(f)
+    from decarb_modes import provenance_note, stale
     parts = [f"`{k}` {v['pb']['det']['LoE_AR']:.2f} (AR) / {v['pb']['det']['LoE_AtP']:.1f} (AtP)"
              for k, v in dm['modes'].items() if v.get('pb')]
     return (' Cumulative LoE of the reference path by decarbonisation mode (each a full run): ' + '; '.join(parts)
+            + f'; {provenance_note(dm)}'
+            + (' **STALE: re-run `python run_all.py --compare-modes`.**' if stale(dm) else '')
             + '; see outputs/DECARB_MODES.md.') if parts else ''
 
 

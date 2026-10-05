@@ -545,10 +545,10 @@ STAGES_IN_SCOPE = ['A1-A3', 'A4-A5', 'B2,B4', 'C1-C4']   # Module D excluded
 FILE_FACTORS_DECARB = os.path.join(FACTORS_DIR, 'factors_a13_decarb.csv')
 FILE_FACTORS_DECARB_BLD = os.path.join(FACTORS_DIR, 'factors_building_a13_reduction.csv')
 
-# MATERIAL DECARBONISATION (author decision; adopted: 'horup_class_v1_1').
+# MATERIAL DECARBONISATION (author decision; adopted: 'horup_item', from baseline-pb-v1.2).
 # 'none': every factor held at its 2025 case-study value (frozen technology;
 # reproduces baseline v2 exactly; reported as a sensitivity).
-# 'horup_class_v1_1' (baseline-pb-v1.1; there called 'horup_material'): the A1-A3
+# 'horup_class_v1_1' (adopted in baseline-pb-v1.1, there called 'horup_material'): the A1-A3
 # part of each case-study material class is scaled year by year with the
 # material-specific GWP paths of Horup et al. (2025), Sci. Total Environ. 966,
 # 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to
@@ -560,7 +560,7 @@ FILE_FACTORS_DECARB_BLD = os.path.join(FACTORS_DIR, 'factors_building_a13_reduct
 # In both, A4-A5, B2, B4, C1-C4 and soil stay at 2025 values. Mapping and values:
 # Building_factors.py and outputs/factors/factors_a13_decarb.csv. History (and so
 # the acquired-rights base of PB.py) always uses 2025 factors.
-DECARB_MODE = 'none' if FROZEN_RUN else (MODE_RUN or 'horup_class_v1_1')   # see Building_factors.DECARB_MODES
+DECARB_MODE = 'none' if FROZEN_RUN else (MODE_RUN or 'horup_item')   # see Building_factors.DECARB_MODES
 DECARB_STEEL = 'reinforcing_steel'  # 'horup_class_v1_1' only: S4 row for STEEL; 'steel_profile' = sensitivity
 DECARB_ITEM_CASE = 'central'        # 'horup_item' only: 'central' or a sensitivity in Building_factors.ITEM_CASES
 

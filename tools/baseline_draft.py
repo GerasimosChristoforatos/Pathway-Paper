@@ -18,6 +18,7 @@ import pandas as pd
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'outputs')
 sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
 
 
 def load(name):
@@ -136,8 +137,9 @@ def item_register():
          'process heat, where Horup\'s reductions reflect process change), CLT (imported, Xlam Australia); NZSIP not '
          f"needed (EPS path {100 * ch['EPS']:+.1f}%)"),
         ('Sensitivities (item-level)', 'proxies held at 2025; NZ low-carbon-electricity items held at 2025; lift at '
-         'the steel-profile rate; class-level mapping of v1.1 (sensitivity_oat.csv, pb_sensitivity.csv, pb_4)',
-         'DECISION (author)'),
+         'the steel-profile rate; class-level mapping of v1.1: deterministic carbon and cumulative LoE, optional '
+         'step run_all.py --compare-modes, stored in outputs/DECARB_MODES.md with date and commit; frozen technology '
+         'stays in the default run (sensitivity_oat.csv, pb_sensitivity.csv, pb_4)', 'DECISION (author)'),
     ]
 
 
@@ -564,9 +566,13 @@ def main():
     dm = load('decarb_modes.json')
     if dm:
         typ = list(next(iter(dm['modes'].values()))['a13_reduction_2050'])
+        from decarb_modes import provenance_note, stale
         L += ['', '## Material decarbonisation: modes compared', '',
               f"Adopted: `{dm['adopted']}`. A1-A3 only; A4-A5, B2, B4, C1-C4 and soil at 2025 in every mode. "
-              'Full tables (sensitivities, coverage, S4 rows): outputs/DECARB_MODES.md.', '',
+              f"Stored result of the optional step: {provenance_note(dm)}"
+              + (' **STALE: the adopted-mode carbon differs from this run; re-run `python run_all.py '
+                 '--compare-modes`.**' if stale(dm) else '.')
+              + ' Full tables (sensitivities, coverage, S4 rows): outputs/DECARB_MODES.md.', '',
               '| mode | carbon (kt) | upfront (kt) | MC carbon p5-p95 (kt) | cum. LoE AR / AtP | A1-A3 by 2050 ('
               + ', '.join(typ) + ') |', '|---|---|---|---|---|---|']
         for mode, r in dm['modes'].items():

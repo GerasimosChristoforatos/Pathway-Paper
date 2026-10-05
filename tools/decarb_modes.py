@@ -1,23 +1,34 @@
-"""Compare the material-decarbonisation modes (Boss.DECARB_MODE) and the
-item-level sensitivities. Writes outputs/DECARB_MODES.md and
-outputs/decarb_modes.json. No number is typed by hand.
+"""Compare the material-decarbonisation modes (Boss.DECARB_MODE) and run the
+item-level decarbonisation sensitivities. Writes outputs/DECARB_MODES.md and
+outputs/decarb_modes.json, stamped with the run time and the git commit.
+No number is typed by hand.
 
-    python tools/decarb_modes.py
+    python run_all.py --compare-modes     # the optional step that runs this
 
-Reads, per mode, the outputs of its own pipeline run: the adopted mode in
-outputs/, 'none' in outputs/frozen/ (frozen-technology check run), any other
-mode in outputs/modes/<mode>/ (run_all.py steps 'mode_*'): boss_results.json
-(deterministic reference path, S3-10), montecarlo_summary.csv (MC p5/p50/p95),
-pb_results.json (cumulative LoE 2026-2050; deterministic and MC). The implied
-reductions by 2050 per typology come from a Boss run of each mode (checked
-against that mode's boss_results.json). Sensitivities: sensitivity_oat.csv and
-pb_sensitivity.csv of the item-level and class-level runs.
+Not part of the default full run: the generated documents read the stored
+result and state its date and commit (provenance_note), and flag it as stale
+when the adopted-mode carbon no longer matches the current run (stale()).
+
+Per mode, the outputs of its own pipeline run: the adopted mode in outputs/,
+'none' in outputs/frozen/ (frozen-technology check run, default full run), any
+other mode in outputs/modes/<mode>/ (run_all.py --compare-modes):
+boss_results.json (deterministic reference path, S3-10),
+montecarlo_summary.csv (MC p5/p50/p95), pb_results.json (cumulative LoE
+2026-2050; deterministic and MC). The implied reductions by 2050 per typology
+come from a Boss run of each mode (checked against that mode's
+boss_results.json). Item-level sensitivities (ITEM_SENS): a Boss run per case;
+cumulative LoE against the reference boundaries in the item-level run's
+pb_annual.csv, as PB.py does (equal to PB's own computation to the last bit
+but one: the boundary passes through a CSV). Class-level sensitivities: its
+run's sensitivity_oat.csv and pb_sensitivity.csv.
 """
 import contextlib
+import datetime
 import importlib
 import io
 import json
 import os
+import subprocess
 import sys
 
 import numpy as np
@@ -29,6 +40,58 @@ OUT = os.path.join(ROOT, 'outputs')
 LABEL = {'none': 'frozen technology (2025 factors)',
          'horup_class_v1_1': 'class-level mapping (baseline-pb-v1.1)',
          'horup_item': 'item-level mapping (v1.2)'}
+
+
+# item-level sensitivities: (case, label, DECARB_MODE, other Boss settings); the first is the reference
+ITEM_SENS = [
+    ('reference', 'Item-level mapping (horup_item)', 'horup_item', {}),
+    ('frozen', 'Frozen technology: 2025 factors held (no decarbonisation)', 'none', {}),
+    ('proxies_held', 'Proxy-mapped items held at 2025', 'horup_item', dict(DECARB_ITEM_CASE='proxies_held')),
+    ('nz_elec_held', 'NZ-made, electricity-intensive items held at 2025', 'horup_item',
+     dict(DECARB_ITEM_CASE='nz_elec_held')),
+    ('lift_steel_profile', 'Lift at the steel-profile rate (Horup SI Table S4)', 'horup_item',
+     dict(DECARB_ITEM_CASE='elevator_steel_profile')),
+    ('class_v1_1', 'Class-level mapping of baseline-pb-v1.1', 'horup_class_v1_1', {}),
+]
+
+
+def provenance():
+    """When and from which code this comparison was run: UTC time, git commit,
+    whether tracked files outside outputs/ had uncommitted changes, run mode."""
+    def git(*a):
+        try:
+            return subprocess.check_output(['git', *a], cwd=ROOT, stderr=subprocess.DEVNULL).decode().strip()
+        except (OSError, subprocess.CalledProcessError):
+            return ''
+    dirty = git('status', '--porcelain', '--untracked-files=no', '--', '.', ':(exclude)outputs')
+    return dict(run_utc=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
+                commit=git('rev-parse', '--short', 'HEAD') or 'unknown', code_uncommitted_changes=bool(dirty),
+                run_mode='quick' if os.environ.get('PATHWAY_QUICK') == '1' else 'full',
+                command='python run_all.py --compare-modes')
+
+
+def provenance_note(res):
+    """One line naming the stored comparison's run: for the generated documents."""
+    p = res.get('provenance', {})
+    return (f"comparison run {p.get('run_utc', '?')} at commit {p.get('commit', '?')}"
+            + (' with uncommitted code changes' if p.get('code_uncommitted_changes') else '')
+            + (' (QUICK RUN, not for reporting)' if p.get('run_mode') == 'quick' else '')
+            + f" (`{p.get('command', 'python run_all.py --compare-modes')}`)")
+
+
+def stale(res, out=OUT):
+    """True when the stored comparison's adopted-mode carbon differs from the
+    current run's (outputs/boss_results.json), or the adopted mode changed."""
+    import Boss
+    b = read_json(out, 'boss_results.json')
+    a = res['modes'].get(res['adopted'], {})
+    return (res['adopted'] != Boss.DECARB_MODE or b is None
+            or not np.isclose(b['carbon_kt'], a.get('carbon_kt', np.nan), rtol=1e-9))
+
+
+def load_stored():
+    """The stored comparison (outputs/decarb_modes.json) or None."""
+    return read_json(OUT, 'decarb_modes.json')
 
 
 def mode_dir(mode, adopted):
@@ -47,11 +110,15 @@ def read_json(d, name):
         return json.load(f)
 
 
-def boss_run(mode):
+def boss_run(mode, **settings):
     import Boss
     M = importlib.reload(Boss)
     M.SHOW_PLOTS = False
     M.DECARB_MODE = mode
+    for k, v in settings.items():
+        if not hasattr(M, k):
+            raise AttributeError(f"Boss has no setting '{k}'.")
+        setattr(M, k, v)
     with contextlib.redirect_stdout(io.StringIO()):
         B = M.main()
     importlib.reload(Boss)
@@ -65,7 +132,7 @@ def main():
     fy = None
     mf = pd.read_csv(Boss.FILE_FACTORS_MATERIAL)
     a13_2025 = mf[mf.Stage == 'A1-A3'].groupby('Typology')['kgCO2e_per_m2'].sum()
-    res = dict(adopted=adopted, modes={})
+    res = dict(adopted=adopted, provenance=provenance(), modes={})
     for mode in BF.DECARB_MODES:
         d = mode_dir(mode, adopted)
         B = boss_run(mode)
@@ -96,20 +163,45 @@ def main():
             r['pb'] = dict(det=pj['deterministic']['S3-10'], mc=pj['mc'].get('S3-10'))
         res['modes'][mode] = r
 
-    # sensitivities (deterministic): item-level and class-level runs
+    # sensitivities (deterministic, one at a time). Item-level: computed here,
+    # carbon from a Boss run per case and cumulative LoE 2026-2050 against the
+    # reference (S3-10) boundaries of the item-level run's pb_annual.csv, as in
+    # PB.py (boundaries unchanged, I_sec re-run). Class-level: read from its own
+    # run directory (sensitivity_oat.csv, pb_sensitivity.csv).
+    import PB
     res['sensitivity'] = {}
-    for mode in ('horup_item', 'horup_class_v1_1'):
-        d = mode_dir(mode, adopted)
-        p, q = os.path.join(d, 'sensitivity_oat.csv'), os.path.join(d, 'pb_sensitivity.csv')
-        if not (os.path.exists(p) and os.path.exists(q)):
-            continue
+    d_item = mode_dir('horup_item', adopted)
+    pa = os.path.join(d_item, 'pb_annual.csv')
+    if os.path.exists(pa):
+        ann = pd.read_csv(pa)
+        ann = ann[ann.scenario == 'S3-10'].set_index('year')
+        b_ar, b_atp = ann['B_AR_kgCO2e'], ann['B_AtP_kgCO2e']
+        rows = []
+        for case, label, mode, kw in ITEM_SENS:
+            B = boss_run(mode, **kw)
+            I = pd.Series(B['carbon_total_typ'].sum(axis=1).values, index=np.asarray(B['forecast_years']))
+            rows.append(dict(case=case, label=label, carbon_kt=float(B['tot_carbon_median']),
+                             cum_LoE_AR=float(PB.cum(I, b_ar)), cum_LoE_AtP=float(PB.cum(I, b_atp))))
+        ref = rows[0]
+        for r in rows:
+            r['carbon_change_pct'] = 100 * (r['carbon_kt'] / ref['carbon_kt'] - 1)
+            r['AR_vs_ref_pct'] = 100 * (r['cum_LoE_AR'] / ref['cum_LoE_AR'] - 1)
+            r['AtP_vs_ref_pct'] = 100 * (r['cum_LoE_AtP'] / ref['cum_LoE_AtP'] - 1)
+        res['sensitivity']['horup_item'] = dict(
+            oat=[dict(case=r['label'], carbon_kt=r['carbon_kt'], carbon_change_pct=r['carbon_change_pct']) for r in rows],
+            pb=[{k: r[k] for k in ('case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP', 'AR_vs_ref_pct', 'AtP_vs_ref_pct')}
+                for r in rows])
+    d = mode_dir('horup_class_v1_1', adopted)
+    p, q = os.path.join(d, 'sensitivity_oat.csv'), os.path.join(d, 'pb_sensitivity.csv')
+    if os.path.exists(p) and os.path.exists(q):
         s = pd.read_csv(p)
         s = s[(s.group == 'Adopted') | s.case.str.contains('Decarbonisation|Frozen technology')]
         ps = pd.read_csv(q)
-        ps = ps[ps.case.isin(['reference']) | ps.case.str.match(r'^(vi|vii|viii|ix|x)_')]
-        res['sensitivity'][mode] = dict(oat=s[['case', 'carbon_kt', 'carbon_change_pct']].to_dict(orient='records'),
-                                        pb=ps[['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP', 'AR_vs_ref_pct',
-                                               'AtP_vs_ref_pct']].to_dict(orient='records'))
+        ps = ps[ps.case.isin(['reference']) | ps.case.str.match(r'^(vi|vii)_')]
+        res['sensitivity']['horup_class_v1_1'] = dict(
+            oat=s[['case', 'carbon_kt', 'carbon_change_pct']].to_dict(orient='records'),
+            pb=ps[['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP', 'AR_vs_ref_pct', 'AtP_vs_ref_pct']]
+            .to_dict(orient='records'))
 
     cov = pd.read_csv(BF.OUT_ITEM_COVERAGE)
     res['coverage'] = {k: g.pivot(index='Key', columns='Typology', values='Value').to_dict()
@@ -126,6 +218,7 @@ def main():
 
 def write_md(res, typ):
     L = ['# Material decarbonisation: modes compared (generated by tools/decarb_modes.py; do not edit by hand)', '',
+         f"Stored result: {provenance_note(res)}.", '',
          f"Adopted mode: `{res['adopted']}`. Reference path S3-10, 2026-2050. Each mode is a full pipeline run "
          '(own directory). A1-A3 only is decarbonised; A4-A5, B2, B4, C1-C4 and soil stay at 2025 in every mode.', '',
          '## Results by mode', '',

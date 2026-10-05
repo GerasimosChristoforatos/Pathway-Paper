@@ -1,6 +1,6 @@
 """Run the whole pipeline headless, save every figure, and collect the metrics.
 
-    python run_all.py            # full run (about 5 minutes)
+    python run_all.py            # full run (about 8 minutes on 4 cores)
     python run_all.py --no-mc    # skip the Monte Carlo (development only; the
                                  # MC metrics are then carried over from the
                                  # last full run and marked stale)

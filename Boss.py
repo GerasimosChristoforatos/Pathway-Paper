@@ -1906,7 +1906,7 @@ def main():
              label='Projected Median')
     plt.fill_between(forecast_years, df_forecast['PopTotal_5th'], df_forecast['PopTotal_95th'],
                      color='blue', alpha=0.2, label='Uncertainty (5th/95th)')
-    plt.ylabel('Population'); plt.title('New Zealand Population (1991-2050)')
+    plt.ylabel('Population (persons)'); plt.title('New Zealand Population (1991-2050)')
     plt.legend(); plt.grid(True, alpha=0.3); plt.tight_layout()
 
     # FIG 1b households
@@ -1989,12 +1989,12 @@ def main():
     fig4, (cx1, cx2) = plt.subplots(1, 2, figsize=(18, 6))
     stack_typologies(cx1, plot_years, [carbon_total_typ[n].iloc[1:] / 1e6 for n in typ_names],
                   labels=typ_names, colors=stack_colors, alpha=0.85)
-    cx1.set_ylabel('Annual Carbon (kt CO2e/yr)')
+    cx1.set_ylabel('Annual carbon (kt CO₂e per year)')
     cx1.set_title('Annual Embodied Carbon by Typology (2026-2050)')
     cx1.legend(loc='lower left', fontsize=9); cx1.grid(True, alpha=0.3); cx1.set_xlim(2026, 2050)
 
     plot_demand_bands(cx2, plot_years, *fig_bands['carbon'])
-    cx2.set_ylabel('Annual Carbon (kt CO2e/yr)')
+    cx2.set_ylabel('Annual carbon (kt CO₂e per year)')
     cx2.set_title('Annual Embodied Carbon by Demand Type (2026-2050)')
     demand_legend(cx2); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
     plt.tight_layout(rect=(0, 0.04, 1, 1))
@@ -2005,13 +2005,13 @@ def main():
     fig5, (dx1, dx2) = plt.subplots(1, 2, figsize=(18, 6))
     stack_typologies(dx1, plot_years, [cum_typ[n].values for n in typ_names],
                   labels=typ_names, colors=stack_colors, alpha=0.85)
-    dx1.set_ylabel('Cumulative Carbon (kt CO2e)')
+    dx1.set_ylabel('Cumulative carbon (kt CO₂e)')
     dx1.set_title('Cumulative Embodied Carbon by Typology (2026-2050)')
     dx1.legend(loc='lower left', fontsize=9); dx1.grid(True, alpha=0.3); dx1.set_xlim(2026, 2050)
 
     plot_demand_bands(dx2, plot_years, [(l, np.cumsum(v), c) for l, v, c in fig_bands['carbon'][0]],
                       np.cumsum(fig_bands['carbon'][1]))
-    dx2.set_ylabel('Cumulative Carbon (kt CO2e)')
+    dx2.set_ylabel('Cumulative carbon (kt CO₂e)')
     dx2.set_title('Cumulative Embodied Carbon by Demand Type (2026-2050)')
     demand_legend(dx2); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
     plt.tight_layout(rect=(0, 0.04, 1, 1))
@@ -2049,7 +2049,7 @@ def main():
     ex2.plot(plot_years, np.diff(households_forecast['50th']), color='darkorange',
              linestyle='--', alpha=0.7, label='HH Formation (proj.)')
     ex2.axvline(2025, color='gray', linestyle=':', alpha=0.6)
-    ex2.set_ylabel('Annual Additions')
+    ex2.set_ylabel('Per year (persons; households)')
     ex2.set_title('Population Growth vs Household Formation')
     ex2.legend(); ex2.grid(True, alpha=0.3); ex2.set_xlim(1991, 2050)
     plt.tight_layout(rect=(0, 0.05, 1, 1))
@@ -2065,7 +2065,7 @@ def main():
              linestyle='-.', label='Occupied area per dwelling (S x OLF)')
     gx1.fill_between(years_hist, occupied_area_per_dwelling.values, blended_dwelling_size.values,
                      color='#e67e22', alpha=0.25, label='Excess space (under-utilisation)')
-    gx1.set_ylabel('m2 per dwelling'); gx1.set_xlabel('Year')
+    gx1.set_ylabel('m² per dwelling'); gx1.set_xlabel('Year')
     gx1.set_title('Realised vs Occupied Floor Area per New Dwelling')
     gx1.legend(loc='lower left', fontsize=9); gx1.grid(True, alpha=0.3)
     gx1.set_xlim(1991, 2025); gx1.set_ylim(0, None)

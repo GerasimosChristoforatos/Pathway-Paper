@@ -89,7 +89,8 @@ def pb_metrics(out_dir):
              B_AtP_over_B_AR=r['B_AtP_over_B_AR']['min'],
              cum_LoE_AR_S3_10=r['deterministic']['S3-10']['LoE_AR'],
              cum_LoE_AtP_S3_10=r['deterministic']['S3-10']['LoE_AtP'],
-             source_pair=r['settings']['SOURCE_PAIR'], source_pair_label=c['pair_label'])
+             source_pair=r['settings']['SOURCE_PAIR'], source_pair_label=c['pair_label'],
+             decarb_mode=r['settings'].get('DECARB_MODE', 'none'))
     for k in ('AR', 'AtP'):
         for p in (5, 50, 95):
             m[f'cum_LoE_{k}_S3_10_mc_p{p}'] = mc[f'LoE_{k}_p{p}']

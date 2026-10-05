@@ -113,6 +113,7 @@
         "n_draws": 5000
       }
     },
+    "decarb_mode": "none",
     "g_W_over_g_NZ": 0.44479898461066,
     "s_sec": 0.0525461766938767,
     "source_pair": "A",

@@ -81,15 +81,12 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `RV_COLOR` | `'#b8a0d0'` |
 | `RV_SHARE_REF` | `(2016, 2025)` |
 | `S3_HALF_LIFE` | `10.0` |
-| `SAVE_FIGURES` | `False` |
-| `SHOW_PLOTS` | `True` |
 | `SOIL_ALPHA` | `0.55` |
 | `SOIL_ON_REPLACEMENT` | `False` |
 | `S_ANCHOR_YEAR` | `2023` |
 | `S_TAIL` | `'hermite_clamped'` |
 | `S_TAPER_YEARS` | `5` |
 | `TREND_WINDOW_START` | `2012` |
-| `VERBOSE` | `False` |
 | `WAVE_COLOR` | `'#d35400'` |
 | `WAVE_LABEL` | `'Replacement: recent redevelopment wave (fading)'` |
 
@@ -143,7 +140,6 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `MC_REL_TOL` | `1e-09` |
 | `PB_YEARS` | `(2026, 2050)` |
 | `POP_NZ_SOURCE` | `'model'` |
-| `SAVE_FIGURES` | `True` |
 | `SOURCE_PAIR` | `'A'` |
 | `SSEC_FCE_SHARE` | `'mean_of_ratios'` |
 | `SSEC_VALUE_COLUMNS` | `('Value - Value/Detached', 'Value - Value/Townhouses', 'Value - Value/Apartments')` |

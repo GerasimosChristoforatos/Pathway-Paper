@@ -21,8 +21,8 @@ vacancy, replacement, ...) and by material and life-cycle stage.
 The model is bottom-up and demand-driven: people → households → dwellings
 required → floor area → carbon. Construction capacity, prices and policy are not
 modelled. Carbon intensities are the 2025 case-study values; with
-`DECARB_MODE = 'horup_class_v1_1'` (adopted) the A1–A3 part of each mapped
-material class, and with `'horup_item'` that of each case-study EPD item, follows
+`DECARB_MODE = 'horup_item'` (adopted) the A1–A3 part of each case-study EPD
+item, and with `'horup_class_v1_1'` that of each mapped material class, follows
 the material-specific GWP paths of Horup et al. (2025) from 2026 (section 4.9);
 with `'none'` every factor is held at 2025 (frozen technology).
 
@@ -190,14 +190,14 @@ applies only to floor area on new footprints: zero on the replacement bands
 (land already settled).
 
 **Material decarbonisation** (`DECARB_MODE`). `'none'`: every factor held at its
-2025 value. `'horup_class_v1_1'` (baseline-pb-v1.1, then `'horup_material'`;
-adopted): the A1–A3 factor of each case-study material class is multiplied,
+2025 value. `'horup_class_v1_1'` (adopted in baseline-pb-v1.1, then
+`'horup_material'`): the A1–A3 factor of each case-study material class is multiplied,
 year by year, by the relative GWP path of its counterpart in Horup et al. (2025)
 SI Table S4 (average of 9 premise scenarios, relative to 2025; linear between
 2025, 2030, 2040 and 2050). `Building_factors.py` does this per case study and
 class before pooling (`factors_a13_decarb.csv`), so OTHERS follows its own
 components (aluminium, bricks, glass, glass wool; the rest held).
-`'horup_item'` (v1.2): the same paths applied to each EPD item of the case
+`'horup_item'` (adopted from baseline-pb-v1.2): the same paths applied to each EPD item of the case
 studies (`data/derived/material_items.csv`, built by
 `data/build_material_items.py` from the supplied item table and checked against
 `building_data.xlsx`), mapped one-to-one by `data/material_item_map.csv` to an
@@ -228,10 +228,9 @@ Re-runs `Boss.main()` with one setting changed per row: replacement scenarios
 and half-lives, mix, household-size variants and tails, dwelling-size window,
 completion rate and lag, census under-construction correction, near-term
 booking and gap reference, soil on replacement, and the decarbonisation rows of
-the adopted mode (`Sensitivity.DECARB_CASES`: frozen technology plus, for the
-class-level mode, STEEL at steel profile; for the item-level mode, proxies held,
-NZ-made electricity-intensive items held, lift at steel profile and the
-class-level mapping). Population rows reuse Boss's 5th/95th paths;
+the adopted mode (`Sensitivity.DECARB_CASES`: frozen technology, plus STEEL at
+steel profile when the class-level mode is adopted; the item-level
+decarbonisation sensitivities are in the optional mode comparison). Population rows reuse Boss's 5th/95th paths;
 carbon-factor and soil-order rows re-weight the central floor area. Writes `outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`. One-at-a-time
 ranges are not additive.
 
@@ -253,18 +252,24 @@ mix, carbon-factor and soil bounds are reported separately (sens_1).
 ## 8. Validation, reports and run modes
 
 **Frozen-technology check.** The adopted run decarbonises materials
-(`DECARB_MODE = 'horup_class_v1_1'`). `run_all.py` also runs Boss, Sensitivity,
+(`DECARB_MODE = 'horup_item'`). `run_all.py` also runs Boss, Sensitivity,
 MonteCarlo, the scenario table and PB with `DECARB_MODE = 'none'` (environment
 `PATHWAY_FROZEN=1`) into `outputs/frozen/`; the v1.2.1 regression test compares
 that run, and its own recomputation of the central run and scenario totals
 under `'none'`, with v1.2.1 to 1e-9.
 
-**Mode comparison runs.** Every other decarbonisation mode (now `'horup_item'`)
-is run in full (Boss, Sensitivity, MonteCarlo, PB; environment
-`PATHWAY_DECARB_MODE=<mode>`) into `outputs/modes/<mode>/`;
-`tools/decarb_modes.py` writes `outputs/DECARB_MODES.md`. The class-level mode
-is checked against the baseline-PB_v1.1 outputs by
-`tests/test_regression_pb_v1_1.py` (exact equality).
+**Mode comparison (optional, `run_all.py --compare-modes`).** Every other
+decarbonisation mode (now `'horup_class_v1_1'`) is run in full (Boss,
+Sensitivity, MonteCarlo, PB; environment `PATHWAY_DECARB_MODE=<mode>`) into
+`outputs/modes/<mode>/`, and `tools/decarb_modes.py` runs the item-level
+decarbonisation sensitivities (a Boss run per case; cumulative LoE against the
+stored reference boundaries) and writes `outputs/DECARB_MODES.md` and
+`decarb_modes.json`, stamped with the UTC time and git commit. The default run
+does not repeat it: RESULTS, BASELINE_DRAFT and PB_METHODS_DRAFT read the stored
+result, state its date and commit, and flag it as stale when the adopted-mode
+carbon differs from the current run. The class-level mode is checked against
+the baseline-PB_v1.1 outputs by `tests/test_regression_pb_v1_1.py` (exact
+equality; its file checks read the stored comparison run).
 
 **Quick mode** (`run_all.py --quick`, development only): 1,000 Monte Carlo draws
 per scenario, 128 Sobol base samples, no frozen-technology Monte Carlo, Monte

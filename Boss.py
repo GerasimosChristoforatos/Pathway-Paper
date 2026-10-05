@@ -535,10 +535,42 @@ FILE_FACTORS_TYPOLOGY = os.path.join(FACTORS_DIR, 'factors_typology.csv')
 FILE_FACTORS_BUILDING = os.path.join(FACTORS_DIR, 'factors_building.csv')
 STAGES_IN_SCOPE = ['A1-A3', 'A4-A5', 'B2,B4', 'C1-C4']   # Module D excluded
 
-# Carbon intensity is held CONSTANT at its case-study value for the whole
-# projection. No learning rate, no decarbonisation: this build reports what
-# current construction practice implies, and nothing is assumed about future
-# material supply.
+FILE_FACTORS_DECARB = os.path.join(FACTORS_DIR, 'factors_a13_decarb.csv')
+FILE_FACTORS_DECARB_BLD = os.path.join(FACTORS_DIR, 'factors_building_a13_reduction.csv')
+
+# MATERIAL DECARBONISATION (author decision). 'none': every factor held at its
+# 2025 case-study value (frozen technology; reproduces baseline v2 exactly).
+# 'horup_material': the A1-A3 part of each material is scaled year by year with
+# the material-specific GWP paths of Horup et al. (2025), Sci. Total Environ. 966,
+# 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to
+# 2025, linear between 2025/2030/2040/2050). A4-A5, B2, B4, C1-C4 and soil stay
+# at 2025 values; materials without an S4 counterpart stay at 2025. Mapping and
+# values: Building_factors.py (DECARB_S4) and outputs/factors/factors_a13_decarb.csv.
+# History (and so the acquired-rights base of PB.py) always uses 2025 factors.
+DECARB_MODE = 'none'               # 'none' | 'horup_material'
+DECARB_STEEL = 'reinforcing_steel'  # S4 row for the STEEL class; 'steel_profile' = sensitivity
+
+
+def load_decarb(mode, steel, typ_names, materials, years):
+    """A1-A3 reduction versus 2025 (kg CO2e/m2) by material and typology, one
+    value per year in years (0 in 2025): {material: {typology: array}}, or None
+    for mode 'none'. From Building_factors.py (factors_a13_decarb.csv)."""
+    if mode == 'none':
+        return None
+    if mode != 'horup_material':
+        raise ValueError(f"Unknown DECARB_MODE '{mode}'.")
+    variant = {'reinforcing_steel': 'horup_material', 'steel_profile': 'horup_material_steel_profile'}[steel]
+    d = pd.read_csv(FILE_FACTORS_DECARB)
+    d = d[d['Variant'] == variant].set_index(['Material', 'Typology', 'Year'])['A13_kgCO2e_per_m2'].sort_index()
+    out = {}
+    for m in materials:
+        out[m] = {}
+        for t in typ_names:
+            v = d.loc[(m, t)].reindex(years).values
+            if np.isnan(v).any():
+                raise ValueError(f'{FILE_FACTORS_DECARB}: missing years for {m} / {t}.')
+            out[m][t] = v[0] - v                     # reduction versus 2025 (2025 = first year)
+    return out
 
 
 # ============================================================
@@ -1232,6 +1264,22 @@ def main():
         pop_growth_block[col] = pd.to_numeric(pop_growth_block[col], errors='coerce') * 1000
 
     forecast_years = np.arange(2025, 2051)
+
+    # ---- material decarbonisation of A1-A3 (DECARB_MODE) ----
+    # T_INT / U_INT: whole-life and upfront intensity incl. soil, by typology; scalars
+    # (2025 factors held) for 'none', arrays over forecast_years otherwise.
+    DECARB = load_decarb(DECARB_MODE, DECARB_STEEL, typ_names, MATERIALS, forecast_years)
+    if DECARB is None:
+        RED_TOT = None
+        T_INT, U_INT = T_BASELINE_2025, UPFRONT_2025
+    else:
+        RED_TOT = {t: sum(DECARB[m][t] for m in MATERIALS) for t in typ_names}
+        T_INT = {t: T_BASELINE_2025[t] - RED_TOT[t] for t in typ_names}
+        U_INT = {t: UPFRONT_2025[t] - RED_TOT[t] for t in typ_names}
+
+    def mat_int(m, t):
+        """Material m's intensity for typology t (in-scope stages, kg/m2): scalar, or by year."""
+        return MAT_INTENSITY.loc[m, t] if DECARB is None else MAT_INTENSITY.loc[m, t] - DECARB[m][t]
     df_forecast = pd.DataFrame({'Year': forecast_years})
     pop_2025_actual = float(hist_pop.loc[2025])
 
@@ -1390,7 +1438,7 @@ def main():
                       dev_2025=(other_dev_2025 if _join_mode == 'carried_deviation' else 0.0),
                       rho_dev=rho_other, rv_share=rv_share,
                       shares=evolving_gfa_shares, size=size_ref, olf=OLF_USED,
-                      intensity=T_BASELINE_2025, intensity_upfront=UPFRONT_2025,
+                      intensity=T_INT, intensity_upfront=U_INT,
                       soil=SOIL_INTENSITY, soil_on_replacement=SOIL_ON_REPLACEMENT,
                       gfa_fixed=({1: gfa_nowcast['total']} if gfa_nowcast else None))
     # NEAR-TERM MARKET EXCESS: 2026 building from observed consents (NOWCAST_METHOD)
@@ -1555,9 +1603,9 @@ def main():
             _ev.loc[2025, n] = (evol_typ_other.loc[2025, n]
                                 * float(df_forecast[f'Ann_GFA_Cons_{_c}_50th'].iloc[1]) / _o1)
 
-    # Constant over time: materials plus soil, no decarbonisation assumed.
-    intensity = pd.DataFrame({n: np.full(len(forecast_years), T_BASELINE_2025[n])
-                              for n in typ_names}, index=forecast_years)
+    # Materials plus soil: constant at 2025 (DECARB_MODE 'none') or with A1-A3 decarbonised by year.
+    intensity = pd.DataFrame({n: (np.full(len(forecast_years), T_BASELINE_2025[n]) if DECARB is None
+                                  else T_INT[n]) for n in typ_names}, index=forecast_years)
 
     # Soil (item 8): the share of each band's floor area that bears soil loss.
     # Bands on new footprints: 1. Net replacement (demolition, residual): 0 unless
@@ -2039,7 +2087,7 @@ def main():
     # a material, and nothing that acts on materials should act on it.
     plot_years = forecast_years[1:]
     flow_annual = pd.DataFrame(
-        {m: sum(evol_typ_total[t].values * MAT_INTENSITY.loc[m, t] for t in typ_names)
+        {m: sum(evol_typ_total[t].values * mat_int(m, t) for t in typ_names)
          for m in MATERIALS}, index=forecast_years)
     flow_annual['SOIL'] = sum(evol_typ_total[t].values * SOIL_INTENSITY[t] * soil_frac
                               for t in typ_names)
@@ -2057,7 +2105,8 @@ def main():
                     'Housed in RV units (out of scope)': evol_typ_rv,
                     'Near-term market excess': evol_typ_join}
     dem_mat = pd.DataFrame(
-        {lab: [sum(df[t].iloc[1:].sum() * MAT_INTENSITY.loc[m, t] for t in typ_names)
+        {lab: [sum((df[t].iloc[1:].sum() * MAT_INTENSITY.loc[m, t]) if DECARB is None
+                   else wsum(df[t].values, mat_int(m, t)) for t in typ_names)
                for m in MATERIALS] + [sum((df[t].values * soil_fracs[lab])[1:].sum() * SOIL_INTENSITY[t]
                                           for t in typ_names)]
          for lab, df in demand_bands.items()}, index=MATERIALS + ['SOIL'])
@@ -2085,16 +2134,22 @@ def main():
     stage_int = (mat_scope.pivot_table(index='Stage', columns='Typology',
                                        values='kgCO2e_per_m2', aggfunc='sum')
                  .reindex(index=STAGES_IN_SCOPE, columns=typ_names).fillna(0.0))
+    # by stage and typology: 2025 factor, or by year (A1-A3 decarbonised; DECARB_MODE)
+    stage_path = {stg: {t: (stage_int.loc[stg, t] if (DECARB is None or stg != 'A1-A3')
+                            else stage_int.loc[stg, t] - RED_TOT[t]) for t in typ_names}
+                  for stg in STAGES_IN_SCOPE}
     _soil = sum((evol_typ_total[t].values * soil_frac)[1:].sum() * SOIL_INTENSITY[t] for t in typ_names)
     print("\n BY LIFE-CYCLE STAGE  [kt CO2e, 2026-2050]  (soil = land-use change at construction)")
     _st_tot = 0.0
     for stg in STAGES_IN_SCOPE:
-        v = sum(evol_typ_total[t].values[1:].sum() * stage_int.loc[stg, t] for t in typ_names) / 1e6
+        v = sum(wsum(evol_typ_total[t].values, stage_path[stg][t]) for t in typ_names) / 1e6
         _st_tot += v
         print(f"   {stg:<10}{v:>10,.0f}")
     print(f"   {'SOIL':<10}{_soil / 1e6:>10,.0f}")
-    _upfront = sum(evol_typ_total[t].values[1:].sum() * stage_int.loc[['A1-A3', 'A4-A5'], t].sum()
-                   for t in typ_names) / 1e6
+    _upfront = (sum(evol_typ_total[t].values[1:].sum() * stage_int.loc[['A1-A3', 'A4-A5'], t].sum()
+                    for t in typ_names) / 1e6 if DECARB is None else
+                sum(wsum(evol_typ_total[t].values, stage_path['A1-A3'][t] + stage_path['A4-A5'][t])
+                    for t in typ_names) / 1e6)
     print(f"   upfront (A1-A5 + soil) {_upfront + _soil / 1e6:,.0f} kt | "
           f"later stages (B2,B4, C1-C4) {_st_tot - _upfront:,.0f} kt | "
           f"[check] sum {_st_tot + _soil / 1e6:,.0f} vs {tot_carbon_median:,.0f}")
@@ -2150,6 +2205,15 @@ def plot_hist_estimated(ax, series, scale=1.0, color='black', label='Historical'
     if anchor in s.index:
         ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=6, label=f'{anchor} census')
     ax.ticklabel_format(axis='y', style='plain', useOffset=False)
+
+
+def wsum(values, k):
+    """Sum over 2026-2050 (index 1 on) of values x k, where k is one factor
+    (constant: the original expression, unchanged to the last bit) or one factor
+    per year (decarbonised materials)."""
+    if np.ndim(k) == 0:
+        return values[1:].sum() * k
+    return (np.asarray(values)[1:] * np.asarray(k)[1:]).sum()
 
 
 def zero_floor(ax, *series):
@@ -2237,7 +2301,7 @@ def export_results(B, path):
     typ = list(B['typ_names'])
     et, ct = B['evol_typ_total'], B['carbon_total_typ']
     shares = B['evolving_gfa_shares']
-    stages = {s: float(sum(et[t].values[f].sum() * B['stage_int'].loc[s, t] for t in typ) / 1e6)
+    stages = {s: float(sum(wsum(et[t].values, B['stage_path'][s][t]) for t in typ) / 1e6)
               for s in B['stage_int'].index}
     R = B['results']
     out = dict(

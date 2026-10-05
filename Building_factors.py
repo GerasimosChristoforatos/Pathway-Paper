@@ -25,6 +25,11 @@ OUTPUTS
   factors_building.csv   one row per case study: in-scope materials by stage
                          (kg/m2 GFA), soil loss, and which case (if any) it
                          duplicates. Read by MonteCarlo.py for the bootstrap.
+  factors_a13_decarb.csv A1-A3 (kg/m2 GFA) by typology x material x year 2025-2050,
+                         decarbonised with Horup et al. (2025) (Boss.DECARB_MODE),
+                         per variant (adopted mapping; steel-profile sensitivity).
+  factors_building_a13_reduction.csv  the same reduction per case study and
+                         year, for the Monte Carlo bootstrap.
 
 POOLING
   Factors are intensities (kg/m2), so they are scale-invariant. Buildings are
@@ -69,6 +74,33 @@ OUT_DIR = os.path.join(ROOT_DIR, 'outputs', 'factors')     # derived files; data
 OUT_MATERIAL = os.path.join(OUT_DIR, 'factors_material.csv')
 OUT_TYPOLOGY = os.path.join(OUT_DIR, 'factors_typology.csv')
 OUT_BUILDING = os.path.join(OUT_DIR, 'factors_building.csv')   # for MonteCarlo.py
+OUT_DECARB = os.path.join(OUT_DIR, 'factors_a13_decarb.csv')    # A1-A3 by year (Boss.DECARB_MODE)
+OUT_DECARB_BLD = os.path.join(OUT_DIR, 'factors_building_a13_reduction.csv')   # for MonteCarlo.py
+
+# ---------------------------------------------------------------------------
+# MATERIAL DECARBONISATION OF A1-A3 (used when Boss.DECARB_MODE = 'horup_material')
+# ---------------------------------------------------------------------------
+# Relative change of GWP per unit of material production versus 2025: Horup et
+# al. (2025), Sci. Total Environ. 966, 178780, Fig. 2 and Supplementary Table S4
+# (average of the 9 premise scenarios; 2025, 2030, 2040, 2050), built by
+# data/build_horup.py. Applied to A1-A3 only (Horup's scope); A4-A5, B2, B4,
+# C1-C4 and soil are never changed (author decision). Between Horup's years the
+# path is interpolated linearly (author decision; Horup state 'interpolated'
+# without naming the method, p. 3). Case-study material class -> S4 row (author
+# decision). Classes without a counterpart in S4 keep their 2025 factor:
+# PLASTERBOARD, PLASTICS, PAINT (S4 has no plasterboard, paint or generic
+# plastic), FIBRE CEMENT, PLASTER, SIP and the unspecified OTHERS.
+# REINFORCED CONCRETE includes its rebar, decarbonised at the concrete-structure
+# rate (S4 does not separate reinforcement). STEEL is non-rebar steel; reinforcing
+# steel is used as the conservative choice (steel profile is a sensitivity).
+FILE_HORUP = os.path.join(DATA_DIR, 'derived', 'horup2025_table_s4.csv')
+DECARB_YEARS = list(range(2025, 2051))
+DECARB_KNOTS = (2025, 2030, 2040, 2050)
+DECARB_S4 = {'CONCRETE': 'Concrete structure', 'REINFORCED CONCRETE': 'Concrete structure',
+             'STEEL': 'Reinforcing steel', 'TIMBER': 'Construction wood', 'ALUMINIUM': 'Aluminium',
+             'BRICKS': 'Clay brick', 'GLASS': 'Glass', 'GLASS WOOL': 'Mineral wool glass'}
+DECARB_VARIANTS = {'horup_material': {},                                  # the mapping above
+                   'horup_material_steel_profile': {'STEEL': 'Steel profile'}}   # sensitivity
 
 
 STAGES = ['A1-A3', 'A4-A5', 'B2,B4', 'C1-C4']     # in scope
@@ -149,6 +181,16 @@ def load_soil_factor(path=FILE_CHARS, sheet=SHEET_SOILS):
     # rather than a confidence interval; the aggregate row is excluded.
     orders = s.loc[~s.index.isin(row.index), val].astype(float)
     return float(row[val].iloc[0]), float(orders.min()), float(orders.max())
+
+
+def decarb_paths(path=FILE_HORUP, years=DECARB_YEARS):
+    """Relative A1-A3 factor by S4 material and year (2025 = 1), linear between
+    the S4 years. Returns DataFrame (years x material)."""
+    d = pd.read_csv(path).pivot(index='year', columns='material', values='rel_to_2025')
+    if list(d.index) != list(DECARB_KNOTS):
+        raise ValueError(f'{path}: years {list(d.index)}, expected {DECARB_KNOTS}.')
+    return pd.DataFrame({m: np.interp(years, d.index.values, d[m].values) for m in d.columns},
+                        index=years)
 
 
 # ============================================================
@@ -308,11 +350,49 @@ def main():
     bld['SOC_avg'] = chars['SOC_avg']
     bld['duplicate_of'] = [dup_of.get(i, '') for i in bld.index]
 
-    for p in (OUT_MATERIAL, OUT_TYPOLOGY, OUT_BUILDING):
+    # ---- decarbonised A1-A3 by year (Horup et al. 2025, S4) ------------------
+    # Pooling is linear, so pooling the decarbonised building values equals
+    # decarbonising the pooled ones; done per case-study class, then grouped.
+    paths = decarb_paths()
+    dec_rows, red_rows = [], []
+    ids = list(chars.index)
+    for variant, override in DECARB_VARIANTS.items():
+        s4 = {**DECARB_S4, **override}
+        missing = set(s4.values()) - set(paths.columns)
+        if missing:
+            raise ValueError(f'S4 rows not found: {missing}')
+        for y in DECARB_YEARS:
+            r = lca['material'].map(lambda m: paths.loc[y, s4[m]] if m in s4 else 1.0)
+            a13 = lca['A1-A3'] * r
+            g = (a13.groupby([lca['id'], lca['Material']]).sum()
+                    .reindex(pd.MultiIndex.from_product([ids, list(MATERIAL_GROUPS) + [OTHERS_LABEL]]))
+                    .fillna(0.0).rename('a13').reset_index())
+            g.columns = ['id', 'Material', 'a13']
+            g['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in g['id']]
+            g['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in g['id']]
+            for mat in list(MATERIAL_GROUPS) + [OTHERS_LABEL]:
+                pooled = pool(g[g['Material'] == mat], ['a13'])['a13']
+                for typ in TYP_ORDER:
+                    dec_rows.append(dict(Variant=variant, Typology=typ, Material=mat, Year=y,
+                                         A13_kgCO2e_per_m2=float(pooled.loc[typ])))
+            red = (lca['A1-A3'] - a13).groupby(lca['id']).sum().reindex(ids).fillna(0.0)
+            red_rows += [dict(Variant=variant, id=i, Year=y, A13_reduction_kgCO2e_per_m2=float(red.loc[i]))
+                         for i in ids]
+    dec = pd.DataFrame(dec_rows)
+    chk = (dec[(dec.Year == DECARB_YEARS[0])].groupby(['Variant', 'Typology', 'Material'])['A13_kgCO2e_per_m2']
+           .sum().reset_index())
+    base = mat_factors[mat_factors.Stage == 'A1-A3'].set_index(['Typology', 'Material'])['kgCO2e_per_m2']
+    worst = max(abs(r.A13_kgCO2e_per_m2 - base.loc[(r.Typology, r.Material)]) for r in chk.itertuples())
+    if worst > 1e-9:
+        raise ValueError(f'Decarbonised A1-A3 in 2025 differs from the 2025 factors by {worst:g}.')
+
+    for p in (OUT_MATERIAL, OUT_TYPOLOGY, OUT_BUILDING, OUT_DECARB, OUT_DECARB_BLD):
         os.makedirs(os.path.dirname(p) or '.', exist_ok=True)
     mat_factors.to_csv(OUT_MATERIAL, index=False)
     typ_factors.to_csv(OUT_TYPOLOGY, index=False)
     bld.reset_index().to_csv(OUT_BUILDING, index=False)
+    dec.to_csv(OUT_DECARB, index=False)
+    pd.DataFrame(red_rows).to_csv(OUT_DECARB_BLD, index=False)
 
     # ==================================================================
     # SUMMARY

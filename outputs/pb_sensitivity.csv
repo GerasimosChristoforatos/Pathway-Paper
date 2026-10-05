@@ -6,4 +6,5 @@ iii_base_window,"(iii) AR base window 2021-2025 (5 yr, as Horup)",5.303595680833
 iv_pop_statsnz,"(iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",5.39585990728613,30.039288886148718,-0.23757826510280022,-0.5724451352618787
 iv_pop_wpp,"(iv) NZ population: WPP 2024 probabilistic median, New Zealand",5.744490824308999,32.543393827117704,6.208153309005504,7.7159345380685584
 v_ssec,(v) s_sec with FCE share as ratio of sums,5.4087098262557936,30.28251163521268,0.0,0.232601992137349
+vi_decarb,"(vi) Materials decarbonised, A1-A3 (Horup et al. 2025, SI Table S4)",5.050818363667313,28.213109634979446,-6.616947000024831,-6.616947000024831
 note_soil_long_run,Note (not in tornado): history 2024-25 at the long-run net replacement rate,5.395405550673657,30.212237369222603,-0.245978727081142,0.0

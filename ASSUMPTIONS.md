@@ -21,6 +21,19 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Dwelling size reference | 2023-2025 | DATA: consents |
 | RV share reference | 2016-2025 | DATA: consents |
 | Soil loss | all non-replacement floor area; zero on replacement bands | LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders (Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603) |
+| Material decarbonisation | none: all factors held at 2025 (frozen technology) | DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to 2025) |
+| Decarbonised life-cycle stages | A1-A3 only; A4-A5, B2, B4, C1-C4 held at 2025; soil never | DECISION (author): Horup's scope is material production (A1-A3); soil is land-use change |
+| Interpolation between 2025, 2030, 2040, 2050 | linear | DECISION (author): Horup et al. state "interpolated" without naming the method (p. 3) |
+| Material mapping (case-study class -> S4 row) | CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, SIP, unspecified OTHERS (no S4 counterpart) | DECISION (author) |
+| STEEL class | S4 'reinforcing steel' (2050: -29.9%; steel profile -39.8% is a one-at-a-time sensitivity) | DECISION (author): rebar is inside REINFORCED CONCRETE; STEEL is non-rebar steel (stud walls, sections, miscellaneous) whose closest S4 counterpart is steel profile; reinforcing steel is used as the conservative choice because the class mixes items of unknown composition |
+| Rebar in REINFORCED CONCRETE | decarbonised at the concrete-structure rate (2050: -27.6%) | DECISION (author): S4's concrete dataset does not separate reinforcement; the difference from reinforcing steel (-29.9%) is small |
+| History and acquired-rights base | always 2025 factors; decarbonisation applies to 2026-2050 only | DECISION (author): the base is observed past construction, built with past (not future) technology |
+
+### Limitations of the material decarbonisation
+
+- Decarbonisation paths are relative changes for European and global market processes modelled with premise on ecoinvent 3.9.1 (Horup et al. 2025); they are applied as relative changes to New Zealand case-study factors. This assumes NZ material supply decarbonises at the same relative rate as those markets, which is not tested. Materials without a counterpart in Horup et al. are held at 2025 factors, so the decarbonised baseline is conservative.
+- B4 (replacement) and C1-C4 (end of life) occur decades after construction but are booked in the construction year and held at 2025 factors; future production and end-of-life technology would lower them (conservative).
+- Horup et al. (2025) SI Table S4 gives the average of the 9 premise scenarios only; the scenario range is shown graphically in their Fig. 2, so no low/high decarbonisation path is implemented.
 
 ## All settings in Boss.py
 
@@ -33,6 +46,8 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `COMPLETION_RATE` | `0.95` |
 | `COMPLETION_RATE_BAND` | `(0.92, 0.96)` |
 | `DAMPING_PHI` | `0.8` |
+| `DECARB_MODE` | `'none'` |
+| `DECARB_STEEL` | `'reinforcing_steel'` |
 | `DEMOLITION_CALIB_START` | `1992` |
 | `DEMOLITION_RATE` | `0.00135` |
 | `DEMOLITION_RATE_BAND` | `(0.001, 0.003)` |
@@ -85,6 +100,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Impact category | climate change only | DECISION (author) |
 | Carrying capacity over time | static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / Paris-aligned pathways | DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, 140-150 (pp. 143, 148) |
 | Sector impact | the model's embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all booked in the construction year | DECISION (author); construction-year booking of B2/B4/C is a limitation to be revisited |
+| Carbon factors over time | Boss.DECARB_MODE = 'none'; history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
 | Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |

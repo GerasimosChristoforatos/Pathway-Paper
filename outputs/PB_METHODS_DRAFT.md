@@ -8,7 +8,7 @@ Absolute environmental sustainability assessment (AESA) of New Zealand new resid
 
     B_AR(t) = SOS · (Ī_sec,base / I_glob) · [P_NZ(t) / P_NZ(t0)] · [P_W(t0) / P_W(t)],   t0 = 2025
 
-Ī_sec,base is the mean annual sector impact 2016-2025 from this model's own history (same scope and soil convention as the projection; 2025 case-study factors). Over the base window LoE_AR = I_glob / SOS = 8.1938 by construction (the sector impact cancels); the information is in the trajectory relative to the base.
+Ī_sec,base is the mean annual sector impact 2016-2025 from this model's own history (same scope and soil convention as the projection; 2025 case-study factors: past construction used past technology, so the decarbonisation of A1-A3 applies only to 2026-2050). Over the base window LoE_AR = I_glob / SOS = 8.1938 by construction (the sector impact cancels); the information is in the trajectory relative to the base.
 
 **Ability to pay** (Hjalsted et al. 2021, J. Ind. Ecol. 25, 6-19, Table 2 Eqs. 5-6, p. 11; SI Eq. S1):
 
@@ -18,7 +18,7 @@ Absolute environmental sustainability assessment (AESA) of New Zealand new resid
 
 g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c and P_W = Σ P_c over the same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) is constant in this static design: 0.1790.
 
-**Carbon factors.** All factors held at their 2025 case-study values (frozen technology).
+**Carbon factors.** A1-A3 of mapped materials decarbonised 2026-2050 after Horup et al. (2025) SI Table S4; A4-A5, B2, B4, C1-C4, unmapped materials and soil at 2025 (see ASSUMPTIONS.md).
 
 **Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over 2026-2050 (ratio of sums).
 
@@ -92,34 +92,35 @@ Primary pair A: 2 °C carrying capacity (Bjørn & Hauschild 2015); sensitivity C
 
 ## Results
 
-The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 242.2 kt CO2e in 2026 and 256.2 kt in 2050; by ability to pay 43.35 and 45.87 kt (17.9% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026-2050 the reference path (S3-10) emits 33,625 kt against cumulative boundaries of 6,217 kt (AR) and 1,113 kt (AtP): cumulative LoE 5.41 (AR; Monte Carlo p5-p95 4.29-6.46) and 30.2 (AtP; 24.0-36.1).
+The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 242.2 kt CO2e in 2026 and 256.2 kt in 2050; by ability to pay 43.35 and 45.87 kt (17.9% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026-2050 the reference path (S3-10) emits 31,400 kt against cumulative boundaries of 6,217 kt (AR) and 1,113 kt (AtP): cumulative LoE 5.05 (AR; Monte Carlo p5-p95 4.05-5.99) and 28.2 (AtP; 22.4-33.6).
 
 | scenario | cumulative LoE AR | cumulative LoE AtP |
 |---|---|---|
-| S1 | 5.07 | 28.3 |
-| S1-noUC | 5.20 | 29.1 |
-| S2 | 5.52 | 30.8 |
-| S2-held | 5.91 | 33.0 |
-| S2-noUC | 5.95 | 33.2 |
-| S3-10 | 5.41 | 30.2 |
-| S3-10-noUC | 5.67 | 31.7 |
-| S3-10-trend | 5.05 | 28.2 |
-| S3-15 | 5.52 | 30.8 |
-| S3-5 | 5.23 | 29.2 |
+| S1 | 4.74 | 26.5 |
+| S1-noUC | 4.86 | 27.1 |
+| S2 | 5.14 | 28.7 |
+| S2-held | 5.51 | 30.8 |
+| S2-noUC | 5.53 | 30.9 |
+| S3-10 | 5.05 | 28.2 |
+| S3-10-noUC | 5.30 | 29.6 |
+| S3-10-trend | 4.71 | 26.3 |
+| S3-15 | 5.15 | 28.8 |
+| S3-5 | 4.89 | 27.3 |
 
 ### Deterministic sensitivities (reference scenario S3-10)
 
 | case | cumulative LoE AR | vs reference | cumulative LoE AtP | vs reference |
 |---|---|---|---|---|
-| Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios | 5.41 | +0.0% | 30.2 | +0.0% |
-| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 10.20 | +88.6% | 57.0 | +88.6% |
-| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 5.41 | +0.0% | 93.0 | +207.7% |
-| (iii) AR base window 2021-2025 (5 yr, as Horup) | 5.30 | -1.9% | 30.2 | +0.0% |
-| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 5.40 | -0.2% | 30.0 | -0.6% |
-| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 5.74 | +6.2% | 32.5 | +7.7% |
-| (v) s_sec with FCE share as ratio of sums | 5.41 | +0.0% | 30.3 | +0.2% |
-| (vi) Materials decarbonised, A1-A3 (Horup et al. 2025, SI Table S4) | 5.05 | -6.6% | 28.2 | -6.6% |
-| Note (not in tornado): history 2024-25 at the long-run net replacement rate | 5.40 | -0.2% | 30.2 | +0.0% |
+| Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios | 5.05 | +0.0% | 28.2 | +0.0% |
+| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 9.53 | +88.6% | 53.2 | +88.6% |
+| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 5.05 | +0.0% | 86.8 | +207.7% |
+| (iii) AR base window 2021-2025 (5 yr, as Horup) | 4.95 | -1.9% | 28.2 | +0.0% |
+| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 5.04 | -0.2% | 28.1 | -0.6% |
+| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 5.36 | +6.2% | 30.4 | +7.7% |
+| (v) s_sec with FCE share as ratio of sums | 5.05 | +0.0% | 28.3 | +0.2% |
+| (vi) Frozen technology: 2025 factors held (no decarbonisation) | 5.41 | +7.1% | 30.2 | +7.1% |
+| (vii) STEEL class at the steel-profile rate (Horup SI Table S4) | 5.02 | -0.7% | 28.0 | -0.7% |
+| Note (not in tornado): history 2024-25 at the long-run net replacement rate | 5.04 | -0.2% | 28.2 | +0.0% |
 
 ## Assumption register
 
@@ -128,7 +129,7 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 | Impact category | climate change only | DECISION (author) |
 | Carrying capacity over time | static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / Paris-aligned pathways | DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, 140-150 (pp. 143, 148) |
 | Sector impact | the model's embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all booked in the construction year | DECISION (author); construction-year booking of B2/B4/C is a limitation to be revisited |
-| Carbon factors over time | Boss.DECARB_MODE = 'none'; history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
+| Carbon factors over time | Boss.DECARB_MODE = 'horup_material' (A1-A3 of mapped materials, Horup et al. 2025); history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
 | Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |
@@ -140,7 +141,7 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 | Sector share s_sec | residential consented value (detached + townhouses + apartments) / national final consumption expenditure, annual averages 2016-2025; FCE share of GDP as mean of ratios | LITERATURE: Hjalsted et al. 2021 Eq. 6; DATA: Stats NZ; DECISION: mean of quarterly ratios for continuity with the manuscript (ratio of sums is a sensitivity) |
 | World population | UN WPP 2024 probabilistic median (1 July), dated 31 December t as the mean of 1 July t and t+1 | DATA; DECISION (dating) |
 | NZ population | the model's paths (central; each Monte Carlo draw); sensitivities: raw Stats NZ 2024-base median (PCHIP on level, dated as above) and the WPP 2024 New Zealand median | DATA (model); DECISION |
-| Monte Carlo | boundaries recomputed per draw from the draw's NZ population; I_sec,base held at the central estimate | DECISION (author) |
+| Monte Carlo | boundaries recomputed per draw from the draw's NZ population; I_sec,base recomputed per draw with the draw's 2025 carbon factors (historical floor area and soil as observed) | DECISION (author) |
 
 ## Limitations
 
@@ -151,9 +152,10 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 - I_glob = 5.58E13 (Bjørn & Hauschild 2015 ESM2, from Laurent et al. 2013, year 2010): Laurent et al. (2013) is not in hand, so whether it includes land-use-change CO2 (the sector impact includes soil carbon loss) and its GWP basis are NOT VERIFIED. The per-gas indicator scores in ESM2 sum to 54.0 Gt CO2-eq with 39.5 Gt CO2; a CO2 total of that size is consistent with inclusion of land-use-change CO2 (inference, not a sourced statement). The EC-JRC table "Normalization factors for testing" (Benini, Sala & Pant, version 0.1.1, 15 Dec 2015; sheet 1.3) gives the PROSUITE global value as 5.589E13 kg CO2-eq, 8,100 kg/person, "2010 or 2000".
 - Final-consumption-expenditure upscaling: the numerator (consented residential value) is an investment flow (gross fixed capital formation), while Hjalsted et al. (2021) define the upscaling on final consumption and leave intermediate sectors as open (p. 16).
 - Ability to pay: Hjalsted et al. (2021) state GDP as "USD/cap (2017)", World Bank (2019), without naming the series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in outputs/pb_results.json).
-- Monte Carlo: I_sec,base is the central historical estimate in every draw; it does not co-vary with the draw's carbon factors, completion rate or dwelling size (a co-varying base would cancel the factor uncertainty in LoE_AR).
+- Monte Carlo: I_sec,base is recomputed in every draw with that draw's case-study carbon factors (2025 technology), so the factor uncertainty is treated alike in the base and the projection; it does not co-vary with the draw's completion rate or dwelling size (historical floor area is observed).
+- The numerical results in Hjalsted et al.'s SI (Tables S4-S9) are reproduced only with α = 1; we apply α as specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS. The authors have been contacted.
 
 ## Notes
 
 - The manuscript world population 2025 (8,231,613,070) equals the WPP 2024 Median sheet x 1000; its 2026-2028 values differ from it by +/-0.5 person, consistent with a source at a higher precision than the 3-decimal thousands in this file; they are not a dating convention (the mean of 1 July t and t+1 differs by ~34 M).
-- In the Monte Carlo the boundaries vary only with each draw's NZ population path; I_sec,base is the central historical estimate in every draw (it does not co-vary with the draw's carbon factors, completion rate or dwelling size).
+- In the Monte Carlo the AR boundary varies with each draw's NZ population path and with I_sec,base recomputed from the draw's case-study carbon factors (2025 technology) on the observed history; the AtP boundary varies with population only. mc_base_fixed gives the bands with I_sec,base held at its central value (baseline-pb-v1).

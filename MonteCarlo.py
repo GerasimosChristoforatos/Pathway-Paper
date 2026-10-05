@@ -199,8 +199,7 @@ def build_setup(settings=None):
     red = None
     su['decarb'] = B['DECARB'] is not None
     if su['decarb']:
-        variant = {'reinforcing_steel': 'horup_material',
-                   'steel_profile': 'horup_material_steel_profile'}[Boss.DECARB_STEEL]
+        variant = Boss.BF.decarb_variant(Boss.DECARB_MODE, Boss.DECARB_STEEL, Boss.DECARB_ITEM_CASE)
         r = pd.read_csv(Boss.FILE_FACTORS_DECARB_BLD)
         red = (r[r['Variant'] == variant].pivot(index='id', columns='Year', values='A13_reduction_kgCO2e_per_m2')
                .reindex(columns=list(fy)))

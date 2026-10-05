@@ -82,6 +82,13 @@ import engine
 
 N_UNCERTAINTY = 5000             # Latin hypercube draws per scenario
 N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
+# run_all.py --quick (env PATHWAY_QUICK=1): development only, never reported.
+# QUICK_N_UNCERTAINTY is checked against the full run in the CHANGELOG (v1.1).
+QUICK_RUN = os.environ.get('PATHWAY_QUICK') == '1'
+QUICK_N_UNCERTAINTY = 1000
+QUICK_N_SOBOL = 128
+if QUICK_RUN:
+    N_UNCERTAINTY, N_SOBOL = QUICK_N_UNCERTAINTY, QUICK_N_SOBOL
 N_BOOT = 4000                    # carbon-factor bootstrap replicates
 SEED = 20260924
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: write PNGs to FIG_DIR

@@ -228,11 +228,28 @@ and household size between Stats NZ Low/Medium/High with the same z), a
 dwelling-size multiplier, the completion rate (two-piece uniform with median
 0.95) and a stratified bootstrap of the carbon factors. Each draw runs the same
 `engine.py` chain; the central draw is checked against `Boss.main()` to 1e-9.
+With decarbonised materials (`DECARB_MODE`), the bootstrap also resamples each
+case study's A1–A3 reduction by year with the same resampled cases and
+multipliers, so the random stream and every 2025-factor draw are unchanged.
 Sobol first-order and total indices (reference scenario, 1,024 × 6
 evaluations). This is within-scenario parametric uncertainty only; scenario,
 mix, carbon-factor and soil bounds are reported separately (sens_1).
 
-## 8. Validation and reports
+## 8. Validation, reports and run modes
+
+**Frozen-technology check.** The adopted run decarbonises materials
+(`DECARB_MODE = 'horup_material'`). `run_all.py` also runs Boss, Sensitivity,
+MonteCarlo and the scenario table with `DECARB_MODE = 'none'` (environment
+`PATHWAY_FROZEN=1`) into `outputs/frozen/`; the v1.2.1 regression test compares
+that run, and its own recomputation of the central run and scenario totals
+under `'none'`, with v1.2.1 to 1e-9.
+
+**Quick mode** (`run_all.py --quick`, development only): 1,000 Monte Carlo draws
+per scenario, 128 Sobol base samples, no frozen-technology Monte Carlo, Monte
+Carlo regression checks skipped; `metrics.json` (`run_mode`), the generated
+documents and every figure are marked "QUICK RUN, not for reporting".
+
+
 
 `validation.py`: rolling-origin hindcast of dwellings built from 2006, 2013 and
 2018 (consistent vacancy definition), and the 2026 out-of-sample check (model
@@ -279,7 +296,10 @@ flowchart LR
 5. **Monte Carlo.** Each saved draw of S3-10, S1 and S2 is re-run through
    `MonteCarlo.project()` from its saved parameters (MonteCarlo.py unchanged);
    the run stops unless every draw reproduces its saved outputs to 1e-9. The
-   boundaries are recomputed from each draw's NZ population path.
+   boundaries are recomputed from each draw's NZ population path, and the AR
+   base Ī_sec,base from the draw's case-study carbon factors (2025 technology)
+   on the observed history, so factor uncertainty enters base and projection
+   alike.
 6. **Sensitivities** of cumulative LoE (reference scenario): source pair,
    GDP measure, AR base window, NZ population source, s_sec definition.
 

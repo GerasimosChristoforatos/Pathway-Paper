@@ -182,9 +182,19 @@ def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS):
     mat = sum(g[t] * (B['T_BASELINE_2025'][t] - B['SOIL_INTENSITY'][t]) for t in typ)
     soil = sum(g[t] * B['SOIL_INTENSITY'][t] for t in typ) * soil_share
     soil_all = sum(g[t] * B['SOIL_INTENSITY'][t] for t in typ)
-    return pd.DataFrame(dict(I_sec_kg=mat + soil, materials_kg=mat, soil_kg=soil, soil_share=soil_share,
-                             net_replacement_rate=rate, rate_source=src, gfa_m2=gfa,
-                             I_soil_on_all_kg=mat + soil_all))
+    out = pd.DataFrame(dict(I_sec_kg=mat + soil, materials_kg=mat, soil_kg=soil, soil_share=soil_share,
+                            net_replacement_rate=rate, rate_source=src, gfa_m2=gfa,
+                            I_soil_on_all_kg=mat + soil_all))
+    for t in typ:                                  # for the base with other (MC) materials factors
+        out[f'gfa_{t}'] = g[t]
+    return out
+
+
+def base_with_factors(hist, typ, emb, window=AR_BASE_WINDOW):
+    """Ī_sec,base with materials factors emb (kg/m2 by typology, 2025 technology,
+    in-scope stages) and the observed floor area and soil of the history."""
+    h = hist.loc[window[0]:window[1]]
+    return float((sum(h[f'gfa_{t}'] * emb[j] for j, t in enumerate(typ)) + h['soil_kg']).mean())
 
 
 def wdi_table():
@@ -281,11 +291,13 @@ def scenario_runs():
     return out
 
 
-def mc_runs(fy):
+def mc_runs(fy, hist):
     """Re-run every saved Monte Carlo draw of each MC scenario through
     MonteCarlo.project() from its saved parameters (MonteCarlo.py unchanged);
     each draw must reproduce its saved outputs to MC_REL_TOL. Returns, per
-    scenario, the annual carbon (draws x years) and NZ population (draws x years)."""
+    scenario, the annual carbon (draws x years), NZ population (draws x years)
+    and the AR base Ī_sec,base of each draw, recomputed from the draw's
+    case-study carbon factors (2025 technology) on the observed history."""
     out = {}
     for name, settings in MC.MC_SCENARIOS:
         with contextlib.redirect_stdout(io.StringIO()):
@@ -296,12 +308,16 @@ def mc_runs(fy):
         Y = d[MC.OUTPUTS].to_numpy(float)
         carbon = np.empty((len(d), len(fy)))
         pop = np.empty((len(d), len(fy)))
+        ibase = np.empty(len(d))
+        kcar = MC.PARAMS.index('carbon')
         worst = 0.0
         for j in range(len(d)):
             o = MC.project(su, dict(zip(MC.PARAMS, X[j])))
             y = MC.summarise(o)
             worst = max(worst, float(np.max(np.abs(y - Y[j]) / np.maximum(np.abs(Y[j]), 1e-12))))
             carbon[j] = o['carbon']
+            kc = min(int(X[j, kcar] * MC.N_BOOT), MC.N_BOOT - 1)        # the draw's bootstrap replicate
+            ibase[j] = base_with_factors(hist, su['typ'], su['boot_emb'][kc])
             pop[j] = su['pop50'] + MC.interp_z(X[j, 0], MC.Z_KNOTS, su['spreads'])
             # the population path is the one the draw used: hh x S = pop
             if not np.allclose(o['hh'] * o['S'], pop[j], rtol=1e-12, atol=0):
@@ -310,7 +326,8 @@ def mc_runs(fy):
             raise SystemExit(f'MC {name}: re-run draws differ from {os.path.basename(path)} by {worst:.1e} '
                              f'(> {MC_REL_TOL:g}); MC outputs are stale - rerun MonteCarlo.py.')
         print(f'  MC {name}: {len(d):,} draws re-run, max relative difference vs saved outputs {worst:.1e} (OK)')
-        out[name] = dict(carbon=carbon, pop=pop)
+        central = base_with_factors(hist, su['typ'], su['emb_central'])
+        out[name] = dict(carbon=carbon, pop=pop, i_base=ibase, i_base_central=central)
     importlib.reload(Boss)
     return out
 
@@ -377,14 +394,18 @@ def main():
 
     # ---- Monte Carlo ---------------------------------------------------------
     print('PB: Monte Carlo (re-run from saved draws)')
-    mc = mc_runs(fy)
-    mc_rows, mc_cum = [], {}
+    mc = mc_runs(fy, hist)
+    mc_rows, mc_cum, mc_cum_fixed = [], {}, {}
     sel = (fy >= PB_YEARS[0]) & (fy <= PB_YEARS[1])
     pw_f = p_w.reindex(fy).values
     for name, m in mc.items():
         if not np.allclose(m['pop'][:, 0], p_nz.loc[T0], rtol=1e-12):
             raise SystemExit(f'MC {name}: draws do not share the observed {T0} population.')
-        bar = aesa.boundary_ar(pair['sos'], i_base, pair['i_glob'], m['pop'], pw_f, p_nz.loc[T0], p_w.loc[T0])
+        if not np.isclose(m['i_base_central'], i_base, rtol=1e-12):
+            raise SystemExit(f'MC {name}: central-factor base {m["i_base_central"]:g} differs from {i_base:g}.')
+        bar = aesa.boundary_ar(pair['sos'], m['i_base'][:, None], pair['i_glob'], m['pop'], pw_f,
+                               p_nz.loc[T0], p_w.loc[T0])
+        bar_fixed = aesa.boundary_ar(pair['sos'], i_base, pair['i_glob'], m['pop'], pw_f, p_nz.loc[T0], p_w.loc[T0])
         batp = aesa.boundary_atp(aesa.sosos_ind_atp(pair['sos'], pw_f, comp['g_W'], comp['g_NZ'], comp['alpha']),
                                  m['pop'], s_sec)
         la, lt = m['carbon'] / bar, m['carbon'] / batp
@@ -402,6 +423,10 @@ def main():
         mc_cum[name] = {f'LoE_AR_p{p}': float(np.percentile(ca, p)) for p in MC_PCT}
         mc_cum[name].update({f'LoE_AtP_p{p}': float(np.percentile(ct, p)) for p in MC_PCT})
         mc_cum[name]['n_draws'] = int(len(ca))
+        mc_cum[name].update({f'I_sec_base_kt_p{p}': float(np.percentile(m['i_base'], p) / M6) for p in MC_PCT})
+        cf = m['carbon'][:, sel].sum(axis=1) / bar_fixed[:, sel].sum(axis=1)
+        mc_cum_fixed[name] = {f'LoE_AR_p{p}': float(np.percentile(cf, p)) for p in MC_PCT}
+        mc_cum_fixed[name].update({f'LoE_AtP_p{p}': float(np.percentile(ct, p)) for p in MC_PCT})
     mc_annual = pd.DataFrame(mc_rows)
     mc_annual.to_csv(os.path.join(OUT_DIR, 'pb_mc_annual.csv'), index=False)
 
@@ -475,7 +500,7 @@ def main():
         boundaries={int(y): dict(B_AR_kt=float(b_ar.loc[y] / M6), B_AtP_kt=float(b_atp.loc[y] / M6),
                                  P_NZ=float(p_nz.loc[y]), P_W=float(p_w.loc[y])) for y in years_b},
         B_AtP_over_B_AR=dict(min=float(ratio.min()), max=float(ratio.max())),
-        deterministic=cum_det, mc=mc_cum,
+        deterministic=cum_det, mc=mc_cum, mc_base_fixed=mc_cum_fixed,
         reference_2026_2050=dict(I_kt=float(ref_I.loc[slice(*PB_YEARS)].sum() / M6),
                                  B_AR_kt=float(b_ar.loc[slice(*PB_YEARS)].sum() / M6),
                                  B_AtP_kt=float(b_atp.loc[slice(*PB_YEARS)].sum() / M6),
@@ -486,9 +511,10 @@ def main():
                                   'sheet x 1000; its 2026-2028 values differ from it by +/-0.5 person, consistent '
                                   'with a source at a higher precision than the 3-decimal thousands in this file; '
                                   'they are not a dating convention (the mean of 1 July t and t+1 differs by ~34 M).',
-            mc_base='In the Monte Carlo the boundaries vary only with each draw\'s NZ population path; I_sec,base '
-                    'is the central historical estimate in every draw (it does not co-vary with the draw\'s carbon '
-                    'factors, completion rate or dwelling size).'))
+            mc_base='In the Monte Carlo the AR boundary varies with each draw\'s NZ population path and with '
+                    'I_sec,base recomputed from the draw\'s case-study carbon factors (2025 technology) on the observed '
+                    'history; the AtP boundary varies with population only. mc_base_fixed gives the bands with '
+                    'I_sec,base held at its central value (baseline-pb-v1).'))
     with open(os.path.join(OUT_DIR, 'pb_results.json'), 'w') as f:
         json.dump(res, f, indent=2, default=float)
 
@@ -557,8 +583,8 @@ def assumption_register():
         ('NZ population', 'the model\'s paths (central; each Monte Carlo draw); sensitivities: raw Stats NZ '
          '2024-base median (PCHIP on level, dated as above) and the WPP 2024 New Zealand median',
          'DATA (model); DECISION'),
-        ('Monte Carlo', 'boundaries recomputed per draw from the draw\'s NZ population; I_sec,base held at the '
-         'central estimate', 'DECISION (author)'),
+        ('Monte Carlo', 'boundaries recomputed per draw from the draw\'s NZ population; I_sec,base recomputed per '
+         'draw with the draw\'s 2025 carbon factors (historical floor area and soil as observed)', 'DECISION (author)'),
     ]
 
 
@@ -612,9 +638,12 @@ LIMITATIONS = [
     'Ability to pay: Hjalsted et al. (2021) state GDP as "USD/cap (2017)", World Bank (2019), without naming the '
     'series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in '
     'outputs/pb_results.json).',
-    'Monte Carlo: I_sec,base is the central historical estimate in every draw; it does not co-vary with the '
-    'draw\'s carbon factors, completion rate or dwelling size (a co-varying base would cancel the factor '
-    'uncertainty in LoE_AR).',
+    'Monte Carlo: I_sec,base is recomputed in every draw with that draw\'s case-study carbon factors (2025 '
+    'technology), so the factor uncertainty is treated alike in the base and the projection; it does not '
+    'co-vary with the draw\'s completion rate or dwelling size (historical floor area is observed).',
+    'The numerical results in Hjalsted et al.\'s SI (Tables S4-S9) are reproduced only with α = 1; we apply α as '
+    'specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS. The authors have '
+    'been contacted.',
 ]
 
 
@@ -734,7 +763,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     for k, c, ls, nm in (('B_AR', AR_COLOR, '-', 'AR'), ('B_AtP', ATP_COLOR, '--', 'AtP')):
         ax.fill_between(m.index, m[f'{k}_kgCO2e_p5'] / M6, m[f'{k}_kgCO2e_p95'] / M6, color=c, alpha=0.25, lw=0)
         ax.plot(m.index, m[f'{k}_kgCO2e_p50'] / M6, color=c, ls=ls, lw=2, path_effects=HALO,
-                label=f'boundary {nm}, MC median and 5th-95th (population only)')
+                label=f'boundary {nm}, MC median and 5th-95th')
     ax.axvline(2025.5, color='grey', ls=':', lw=1)
     ax.set_xlim(1992, 2050); ax.set_ylim(0, None); ax.grid(alpha=0.3); ax.legend(fontsize=8, loc='upper left')
     ax.set_ylabel('kt CO₂e per year')
@@ -743,8 +772,9 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     spread = 100 * float(np.max(np.abs(np.r_[m['B_AR_kgCO2e_p95'] / m['B_AR_kgCO2e_p50'] - 1,
                                               m['B_AR_kgCO2e_p5'] / m['B_AR_kgCO2e_p50'] - 1])))
     fig.text(0.5, 0.01, 'History 1992-2025 here applies soil only to non-replacement floor area (as the projection), '
-             'unlike mc_1_fan (soil on all floor area). Boundary bands vary only with each draw\'s NZ population '
-             f'(5th-95th within {spread:.1f}% of the median in every year).',
+             'unlike mc_1_fan (soil on all floor area). Boundary bands: AR varies with each draw\'s NZ population and '
+             'its AR base (recomputed from the draw\'s 2025 carbon factors), AtP with population only; AR 5th-95th '
+             f'within {spread:.1f}% of the median in every year.',
              ha='center', fontsize=8.5, style='italic', wrap=True)
     _save(fig, 'mc_1_fan_pb')
 

@@ -54,9 +54,10 @@ the boundaries are unchanged.
   three unused Boss settings removed; RESULTS/PB methods state the factor
   basis; B_AtP rounding aligned; Hjalsted α limitation added; README run time.
   Open: the completion-rate citation (Jones et al. 2024) is to be supplied.
-* **Environment**: the pipeline under Python 3.12.3 with the same pinned
-  packages gives byte-identical outputs and pixel-identical figures. Full run
-  770 s on 4 cores (with a quick run in parallel); 63 tests pass.
+* **Environment**: the full pipeline of this version under Python 3.12.3 with
+  the same pinned packages gives byte-identical outputs (all 57 versioned output
+  files) and pixel-identical figures (35) to Python 3.11. Full run 769-770 s on
+  4 cores; quick run about 6 minutes; 63 tests pass.
 
 ## baseline-pb-v1
 

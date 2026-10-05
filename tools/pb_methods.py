@@ -57,9 +57,13 @@ def main():
          'same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) '
          f"is constant in this static design: {r['B_AtP_over_B_AR']['min']:.4f}.", '',
          '**Carbon factors.** ' + ({'none': 'All factors held at their 2025 case-study values (frozen technology).',
-                                    'horup_material': 'A1-A3 of mapped materials decarbonised 2026-2050 after Horup et '
-                                    'al. (2025) SI Table S4; A4-A5, B2, B4, C1-C4, unmapped materials and soil at 2025 '
-                                    '(see ASSUMPTIONS.md).'}[s.get('DECARB_MODE', 'none')]), '',
+                                    'horup_class_v1_1': 'A1-A3 of mapped materials decarbonised 2026-2050 after Horup '
+                                    'et al. (2025) SI Table S4; A4-A5, B2, B4, C1-C4, unmapped materials and soil at '
+                                    '2025 (see ASSUMPTIONS.md).',
+                                    'horup_item': 'A1-A3 of each case-study EPD item decarbonised 2026-2050 after '
+                                    'Horup et al. (2025) SI Table S4 (item-level mapping, data/material_item_map.csv: '
+                                    'direct, Horup p. 6, proxy or held); A4-A5, B2, B4, C1-C4, held items and soil at '
+                                    '2025 (see ASSUMPTIONS.md).'}[s.get('DECARB_MODE', 'none')]), '',
          '**Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over '
          f'{y0}-{y1} (ratio of sums).', '',
          '**Dating.** Model year t is 31 December (Stats NZ ERP history). The WPP 2024 series (1 July) and, in the '

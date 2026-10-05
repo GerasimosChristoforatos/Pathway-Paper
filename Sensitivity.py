@@ -12,8 +12,8 @@ their carbon is floor area x each year's mix intensity. Carbon-factor rows
 re-weight the adopted floor area by typology with alternative factors from
 factors_typology.csv (jackknife range of the pooled material factor; extreme
 soil orders). When materials are decarbonised (Boss.DECARB_MODE), an alternative
-materials factor follows the adopted factor's relative path over time, and two
-rows are added: frozen technology, and STEEL at the steel-profile rate.
+materials factor follows the adopted factor's relative path over time, and the
+decarbonisation rows of DECARB_CASES for the adopted mode are added.
 
 One-at-a-time ranges show which assumptions matter. They are not a joint
 uncertainty interval and must not be added in quadrature or summed.
@@ -70,15 +70,28 @@ CASES = [   # lean set (v1.1); the full v1.0.2 table is in the history (tag v1.0
     ('Near-term: rule variant', 'Gap measured against the 2026 requirement', dict(NEAR_TERM_GAP_REF='2026')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
 ]
-# Decarbonisation rows (only when the adopted run decarbonises materials, so the
-# frozen-technology table of baseline v2 keeps its rows): frozen technology,
-# and the STEEL class at Horup's steel-profile rate instead of reinforcing steel.
-DECARB_CASES = [
-    ('Carbon factors', 'Frozen technology: 2025 factors held (no decarbonisation)', dict(DECARB_MODE='none')),
-    ('Carbon factors', 'Decarbonisation: STEEL at the steel-profile rate (Horup S4)',
-     dict(DECARB_STEEL='steel_profile')),
-]
-
+# Decarbonisation rows, per adopted DECARB_MODE (none for 'none', so the
+# frozen-technology table of baseline v2 keeps its rows). Class-level mode
+# (v1.1): frozen technology, and the STEEL class at Horup's steel-profile rate.
+# Item-level mode (v1.2): frozen technology; proxy-mapped items held at 2025;
+# NZ-made, electricity-intensive items held at 2025; the held lift at the
+# steel-profile rate; the class-level mapping of v1.1.
+FROZEN_CASE = ('Carbon factors', 'Frozen technology: 2025 factors held (no decarbonisation)', dict(DECARB_MODE='none'))
+DECARB_CASES = {
+    'none': [],
+    'horup_class_v1_1': [
+        FROZEN_CASE,
+        ('Carbon factors', 'Decarbonisation: STEEL at the steel-profile rate (Horup S4)',
+         dict(DECARB_STEEL='steel_profile'))],
+    'horup_item': [
+        FROZEN_CASE,
+        ('Carbon factors', 'Decarbonisation: proxy-mapped items held at 2025', dict(DECARB_ITEM_CASE='proxies_held')),
+        ('Carbon factors', 'Decarbonisation: NZ-made electricity-intensive items held at 2025',
+         dict(DECARB_ITEM_CASE='nz_elec_held')),
+        ('Carbon factors', 'Decarbonisation: lift at the steel-profile rate (Horup S4)',
+         dict(DECARB_ITEM_CASE='elevator_steel_profile')),
+        ('Carbon factors', 'Decarbonisation: class-level mapping of v1.1', dict(DECARB_MODE='horup_class_v1_1'))],
+}
 
 def run(**settings):
     """One silent Boss run with the given module settings; returns its state."""
@@ -113,7 +126,7 @@ def main():
                      float((tot[1:] * mix_int[1:]).sum()) / 1e6))
         paths[f'Stats NZ {p} percentile (level)'] = tot
 
-    for grp, lab, kw in CASES + (DECARB_CASES if Boss.DECARB_MODE != 'none' else []):
+    for grp, lab, kw in CASES + DECARB_CASES[Boss.DECARB_MODE]:
         st = run(**kw)
         g, c = totals(st)
         rows.append((grp, lab, g, c))

@@ -65,8 +65,10 @@ def register():
          'LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders '
          '(Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603)'),
         ('Material decarbonisation', {'none': 'none: all factors held at 2025 (frozen technology)',
-                                      'horup_material': 'horup_material: A1-A3 of mapped materials scaled by '
-                                      'material-specific GWP paths, 2026-2050'}[B.DECARB_MODE],
+                                      'horup_class_v1_1': 'horup_class_v1_1: A1-A3 of mapped material classes '
+                                      'scaled by material-specific GWP paths, 2026-2050',
+                                      'horup_item': 'horup_item: A1-A3 of each case-study EPD item scaled by the GWP '
+                                      'path of its mapped S4 material, 2026-2050'}[B.DECARB_MODE],
          'DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI '
          'Table S4 (average of 9 premise scenarios, relative to 2025)'),
         ('Decarbonised life-cycle stages', 'A1-A3 only; A4-A5, B2, B4, C1-C4 held at 2025; soil never',

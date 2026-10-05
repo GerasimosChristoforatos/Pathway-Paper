@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 
 # display and run-time switches: not model settings, and their value depends on how
 # the tool is launched (run_all.py sets PATHWAY_SAVE_FIGURES=1)
-RUNTIME_ONLY = ('SAVE_FIGURES', 'SHOW_PLOTS', 'VERBOSE', 'FROZEN_RUN', 'QUICK_RUN')
+RUNTIME_ONLY = ('SAVE_FIGURES', 'SHOW_PLOTS', 'VERBOSE', 'FROZEN_RUN', 'QUICK_RUN', 'MODE_RUN')
 
 
 def main():

@@ -23,8 +23,10 @@ def main():
          'Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demographics unless '
          'marked MC (joint uncertainty within the reference scenario). Carbon factors: '
          + {'none': '2025 case-study values held (frozen technology).',
-            'horup_material': 'A1-A3 of mapped materials decarbonised 2026-2050 (Horup et al. 2025); other stages '
-                              'and soil at 2025.'}[(m.get('pb') or {}).get('decarb_mode', 'none')], '',
+            'horup_class_v1_1': 'A1-A3 of mapped materials decarbonised 2026-2050 (Horup et al. 2025); other '
+                                'stages and soil at 2025.',
+            'horup_item': 'A1-A3 of case-study items decarbonised 2026-2050 (Horup et al. 2025; item-level mapping, '
+                          'data/material_item_map.csv); other stages, held items and soil at 2025.'}[(m.get('pb') or {}).get('decarb_mode', 'none')], '',
          '| metric | value |', '|---|---|']
     for key, label, fmt in FIELDS:
         v = get(m, key)

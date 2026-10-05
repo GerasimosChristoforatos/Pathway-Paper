@@ -2330,4 +2330,5 @@ def export_results(B, path):
 
 if __name__ == "__main__":
     SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
+    os.makedirs(OUT_DIR, exist_ok=True)            # outputs/frozen/ in the frozen-technology check run
     export_results(main(), os.path.join(OUT_DIR, 'boss_results.json'))

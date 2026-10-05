@@ -21,10 +21,10 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Dwelling size reference | 2023-2025 | DATA: consents |
 | RV share reference | 2016-2025 | DATA: consents |
 | Soil loss | all non-replacement floor area; zero on replacement bands | LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders (Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603) |
-| Material decarbonisation | horup_material: A1-A3 of mapped materials scaled by material-specific GWP paths, 2026-2050 | DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to 2025) |
+| Material decarbonisation | horup_class_v1_1: A1-A3 of mapped material classes scaled by material-specific GWP paths, 2026-2050 | DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to 2025) |
 | Decarbonised life-cycle stages | A1-A3 only; A4-A5, B2, B4, C1-C4 held at 2025; soil never | DECISION (author): Horup's scope is material production (A1-A3); soil is land-use change |
 | Interpolation between 2025, 2030, 2040, 2050 | linear | DECISION (author): Horup et al. state "interpolated" without naming the method (p. 3) |
-| Material mapping (case-study class -> S4 row) | CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, SIP, unspecified OTHERS (no S4 counterpart) | DECISION (author) |
+| Material mapping, class-level (horup_class_v1_1; case-study class -> S4 row) | CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, SIP, unspecified OTHERS (no S4 counterpart) | DECISION (author) |
 | STEEL class | S4 'reinforcing steel' (2050: -29.9%; steel profile -39.8% is a one-at-a-time sensitivity) | DECISION (author): rebar is inside REINFORCED CONCRETE; STEEL is non-rebar steel (stud walls, sections, miscellaneous) whose closest S4 counterpart is steel profile; reinforcing steel is used as the conservative choice because the class mixes items of unknown composition |
 | Rebar in REINFORCED CONCRETE | decarbonised at the concrete-structure rate (2050: -27.6%) | DECISION (author): S4's concrete dataset does not separate reinforcement; the difference from reinforcing steel (-29.9%) is small |
 | Carbon-factor sensitivity rows (decarbonised runs) | an alternative materials factor (jackknife, single case study) follows the adopted factor's relative path over time: factor_alt x (materials intensity(t) / 2025 value) | DECISION (author) |
@@ -35,6 +35,29 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 - Decarbonisation paths are relative changes for European and global market processes modelled with premise on ecoinvent 3.9.1 (Horup et al. 2025); they are applied as relative changes to New Zealand case-study factors. This assumes NZ material supply decarbonises at the same relative rate as those markets, which is not tested. Materials without a counterpart in Horup et al. are held at 2025 factors, so the decarbonised baseline is conservative.
 - B4 (replacement) and C1-C4 (end of life) occur decades after construction but are booked in the construction year and held at 2025 factors; future production and end-of-life technology would lower them (conservative).
 - Horup et al. (2025) SI Table S4 gives the average of the 9 premise scenarios only; the scenario range is shown graphically in their Fig. 2, so no low/high decarbonisation path is implemented.
+
+## Material decarbonisation, mode 'horup_item' (not adopted; reported in outputs/DECARB_MODES.md)
+
+| setting | value | basis |
+|---|---|---|
+| Item table (horup_item) | 160 case-study class x EPD items (data/derived/material_items.csv, built by data/build_material_items.py from the supplied data/raw/epd-level_materials.xlsx); item and class names stripped of leading/trailing whitespace (5 item names, 34 source rows); rows of the same building, class and item summed; reproduces data/building_data.xlsx sheet 1 for every building x class x stage | DATA: Christoforatos & Pickering 2025 case studies at item resolution |
+| Material mapping, item-level (horup_item; EPD item -> S4 row) | data/material_item_map.csv: each item to exactly one S4 row or held, with its basis; 115 direct, 16 by Horup p. 6, 28 proxy, 1 held. Pooled per building, then per typology, as the classes; the 2025 totals are the class totals | DECISION (author); per-item basis in the table |
+| Item mapping: direct | in-situ concrete and concrete roof tiles, all REINFORCED CONCRETE items (incl. rebar) -> concrete structure; AAC block -> lightweight concrete; steel sections (UB, UC, WC, PFC, SHS, RHS), sheet / decking, purlins, studs, ZinaCore, Colorsteel -> steel profile; Pacific Steel rebar -> reinforcing steel; sawn / framing / flooring timber, weatherboards, glulam, LVL, I-joists -> construction wood; CLT -> CLT; plywood -> plywood; glass and IGUs (incl. the argon-fill items in OTHERS) -> glass; glass wool -> mineral wool glass; bricks -> clay brick; aluminium -> aluminium; ceramic tiles and sanitary ware -> ceramic tile; EPS and XPS -> EPS | DECISION (author) |
+| Item mapping: Horup p. 6 (label sec31) | particleboard (TIMBER and OTHERS), MDF doors, hardwood floor -> construction wood; fibre cement (all), "Plaster, cement" (PLASTER and the item in PLASTERBOARD) -> cement mortar | LITERATURE: "Tendencies for concrete, wood and clay products are generally similar for other cementitious, wood-based and clay products, whereas the extended analysis shows that for other metals, glass and insulation products the results and tendencies observed are less homogenous." (Horup et al. 2025, Sci. Total Environ. 966, 178780, p. 6) |
+| Item mapping: proxies (label proxy) | plastics without an S4 row (carpets PA6.6 and wool blend, PE membranes, PVC membrane / floor sheets / frames, EPDM, polyester insulation) and paint -> EPS; SIP -> EPS (the smaller 2050 reduction of construction wood, -40.4%, and EPS, -4.0%); gypsum plasterboard -> clay brick (-7.7%) | DECISION (author): no S4 counterpart. The EPS-based proxies (polymers, paint, SIP) carry the smallest reduction in the set (-4.0% by 2050), so they are conservative |
+| Item mapping: held at 2025 (label held) | lift (OTIS Gen2, apartments) | DECISION (author): no S4 counterpart; sensitivity at the steel-profile rate |
+| Composite floor decking (RC item) | concrete structure, incl. its rebar and steel trapezoidal deck | DECISION (author): no split available in the source; conservative versus steel profile (-27.6% vs -39.8% by 2050) |
+| Masonry wall (dense concrete block, grouted, reinforced) | concrete structure | DECISION (author) |
+| Rebar inside REINFORCED CONCRETE items | concrete-structure rate | DECISION (author): S4's concrete dataset does not separate reinforcement |
+| Coverage of 2025 A1-A3 (pooled; direct / Horup p. 6 / proxy / held) | Detached 74.9 / 6.2 / 18.9 / 0.0%; Townhouses 82.2 / 4.9 / 13.0 / 0.0%; Apartments 90.0 / 0.9 / 5.0 / 4.1% | DATA: outputs/factors/factors_a13_item_coverage.csv |
+| Sensitivity: NZ low-carbon-electricity items held at 2025 | 31 items: the 5 aluminium items, Pink Batts glass wool, Pacific Steel rebar, WPMA Radiata timber, Nelson Pine LVL | DECISION (author); criterion: made in New Zealand AND electricity-intensive production (not fossil process heat). Not included: Allied Concrete, GIB plasterboard, Colorsteel / ZinaCore (fossil process heat, where Horup's reductions reflect process change), CLT (imported, Xlam Australia); NZSIP not needed (EPS path -4.0%) |
+| Sensitivities (item-level) | proxies held at 2025; NZ low-carbon-electricity items held at 2025; lift at the steel-profile rate; class-level mapping of v1.1 (sensitivity_oat.csv, pb_sensitivity.csv, pb_4) | DECISION (author) |
+
+### Limitations specific to 'horup_item'
+
+- Decarbonisation paths are relative changes for European and global market processes modelled with premise on ecoinvent 3.9.1 (Horup et al. 2025); they are applied as relative changes to New Zealand case-study factors. This assumes NZ material supply decarbonises at the same relative rate as those markets, which is not tested. Items without a counterpart in Horup et al. follow a labelled proxy path (polymers, paint and SIP at EPS, the smallest reduction in the set; gypsum plasterboard at clay brick) or are held at 2025 (the lift); the proxies are a judgement, bracketed by holding them at 2025 (sensitivity).
+- Several items are made in New Zealand with electricity-intensive production (aluminium, Pink Batts glass wool, Pacific Steel rebar, WPMA Radiata timber, Nelson Pine LVL); the aluminium items are stated in their EPD names to use mainly renewables-generated electricity. Where their 2025 factors already reflect low-carbon electricity, the premise paths, which include the decarbonisation of electricity supply ("The Premise software accounts for future changes in several critical sectors (supply of conventional and alternative fuels, electricity, cement and steel production and freight and passenger road transportation), and includes implementation of technologies such as carbon capture and storage in steel and cement production" (Horup et al. 2025, p. 5)), may overstate their relative reduction; a sensitivity holds them at 2025.
+- Composite floor decking (an RC item containing its steel deck and rebar) follows the concrete-structure path because the source gives no split; this is conservative versus steel profile for the steel share.
 
 ## All settings in Boss.py
 
@@ -47,7 +70,8 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `COMPLETION_RATE` | `0.95` |
 | `COMPLETION_RATE_BAND` | `(0.92, 0.96)` |
 | `DAMPING_PHI` | `0.8` |
-| `DECARB_MODE` | `'horup_material'` |
+| `DECARB_ITEM_CASE` | `'central'` |
+| `DECARB_MODE` | `'horup_class_v1_1'` |
 | `DECARB_STEEL` | `'reinforcing_steel'` |
 | `DEMOLITION_CALIB_START` | `1992` |
 | `DEMOLITION_RATE` | `0.00135` |
@@ -96,7 +120,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Impact category | climate change only | DECISION (author) |
 | Carrying capacity over time | static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / Paris-aligned pathways | DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, 140-150 (pp. 143, 148) |
 | Sector impact | the model's embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all booked in the construction year | DECISION (author); construction-year booking of B2/B4/C is a limitation to be revisited |
-| Carbon factors over time | Boss.DECARB_MODE = 'horup_material' (A1-A3 of mapped materials, Horup et al. 2025); history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
+| Carbon factors over time | Boss.DECARB_MODE = 'horup_class_v1_1' (A1-A3 of mapped materials, Horup et al. 2025); history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
 | Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |

@@ -24,7 +24,7 @@
     ],
     "SSEC_FCE_SHARE": "mean_of_ratios",
     "POP_NZ_SOURCE": "model",
-    "DECARB_MODE": "horup_material",
+    "DECARB_MODE": "horup_class_v1_1",
     "DECARB_STEEL": "reinforcing_steel"
   },
   "source_pairs": {

@@ -168,6 +168,16 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 
 Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the sector by acquired rights (AR; Horup et al. 2025) and ability to pay (AtP; Hjalsted et al. 2021), the boundary is 242.2 kt CO2e (AR) and 43.35 kt (AtP) in 2026, and 256.2 / 45.87 kt in 2050 (AtP = 17.9% of AR in every year). Over 2026-2050 the reference path exceeds them 5.05-fold (AR; MC p5-p95 4.05-5.99) and 28.2-fold (AtP; 22.4-33.6). The two principles are a range and are not averaged. Methods, constants, sources and limitations: outputs/PB_METHODS_DRAFT.md; settings: ASSUMPTIONS.md.
 
+## Material decarbonisation: modes compared
+
+Adopted: `horup_class_v1_1`. A1-A3 only; A4-A5, B2, B4, C1-C4 and soil at 2025 in every mode. Full tables (sensitivities, coverage, S4 rows): outputs/DECARB_MODES.md.
+
+| mode | carbon (kt) | upfront (kt) | MC carbon p5-p95 (kt) | cum. LoE AR / AtP | A1-A3 by 2050 (Detached, Townhouses, Apartments) |
+|---|---|---|---|---|---|
+| `none` | 33,625 | 24,204 | 25,743-41,644 | 5.41 / 30.2 | -0.0%, -0.0%, -0.0% |
+| `horup_class_v1_1` | 31,400 | 21,979 | 24,119-38,863 | 5.05 / 28.2 | -20.9%, -21.2%, -25.2% |
+| `horup_item` | 31,013 | 21,592 | 23,833-38,391 | 4.99 / 27.9 | -25.0%, -24.8%, -28.9% |
+
 ## Assumptions
 
 | basis | assumption |
@@ -207,10 +217,10 @@ Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the 
 | Dwelling size reference | 2023-2025 | DATA: consents |
 | RV share reference | 2016-2025 | DATA: consents |
 | Soil loss | all non-replacement floor area; zero on replacement bands | LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders (Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603) |
-| Material decarbonisation | horup_material: A1-A3 of mapped materials scaled by material-specific GWP paths, 2026-2050 | DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to 2025) |
+| Material decarbonisation | horup_class_v1_1: A1-A3 of mapped material classes scaled by material-specific GWP paths, 2026-2050 | DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to 2025) |
 | Decarbonised life-cycle stages | A1-A3 only; A4-A5, B2, B4, C1-C4 held at 2025; soil never | DECISION (author): Horup's scope is material production (A1-A3); soil is land-use change |
 | Interpolation between 2025, 2030, 2040, 2050 | linear | DECISION (author): Horup et al. state "interpolated" without naming the method (p. 3) |
-| Material mapping (case-study class -> S4 row) | CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, SIP, unspecified OTHERS (no S4 counterpart) | DECISION (author) |
+| Material mapping, class-level (horup_class_v1_1; case-study class -> S4 row) | CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, SIP, unspecified OTHERS (no S4 counterpart) | DECISION (author) |
 | STEEL class | S4 'reinforcing steel' (2050: -29.9%; steel profile -39.8% is a one-at-a-time sensitivity) | DECISION (author): rebar is inside REINFORCED CONCRETE; STEEL is non-rebar steel (stud walls, sections, miscellaneous) whose closest S4 counterpart is steel profile; reinforcing steel is used as the conservative choice because the class mixes items of unknown composition |
 | Rebar in REINFORCED CONCRETE | decarbonised at the concrete-structure rate (2050: -27.6%) | DECISION (author): S4's concrete dataset does not separate reinforcement; the difference from reinforcing steel (-29.9%) is small |
 | Carbon-factor sensitivity rows (decarbonised runs) | an alternative materials factor (jackknife, single case study) follows the adopted factor's relative path over time: factor_alt x (materials intensity(t) / 2025 value) | DECISION (author) |

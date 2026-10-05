@@ -1,0 +1,629 @@
+{
+  "adopted": "horup_class_v1_1",
+  "modes": {
+    "none": {
+      "label": "frozen technology (2025 factors)",
+      "dir": "outputs/frozen",
+      "carbon_kt": 33625.15835263455,
+      "upfront_kt": 24203.706601780894,
+      "a13_reduction_2050": {
+        "Detached": 0.0,
+        "Townhouses": 0.0,
+        "Apartments": 0.0
+      },
+      "whole_factor_reduction_2050": {
+        "Detached": 0.0,
+        "Townhouses": 0.0,
+        "Apartments": 0.0
+      },
+      "mc": {
+        "carbon_kt": {
+          "p5": 25743.12025019047,
+          "p50": 33268.31501280615,
+          "p95": 41643.52567660237
+        },
+        "upfront_kt": {
+          "p5": 18555.1001633705,
+          "p50": 23993.06061810272,
+          "p95": 29928.351170596423
+        }
+      },
+      "pb": {
+        "det": {
+          "label": "Reference (S3): fade, half-life 10 yr, shares held",
+          "I_kt": 33625.15835263456,
+          "LoE_AR": 5.4087098262557936,
+          "LoE_AtP": 30.212237369222603
+        },
+        "mc": {
+          "LoE_AR_p5": 4.3267507443247775,
+          "LoE_AR_p50": 5.370078250894917,
+          "LoE_AR_p95": 6.421938539511442,
+          "LoE_AtP_p5": 23.954078202656554,
+          "LoE_AtP_p50": 29.91756252457147,
+          "LoE_AtP_p95": 36.080246972909926,
+          "n_draws": 5000,
+          "I_sec_base_kt_p5": 1862.4770311503473,
+          "I_sec_base_kt_p50": 1983.650953132257,
+          "I_sec_base_kt_p95": 2115.9717150322404
+        }
+      }
+    },
+    "horup_class_v1_1": {
+      "label": "class-level mapping (baseline-pb-v1.1)",
+      "dir": "outputs",
+      "carbon_kt": 31400.199445766302,
+      "upfront_kt": 21978.747694912643,
+      "a13_reduction_2050": {
+        "Detached": 0.20928815679893173,
+        "Townhouses": 0.21233585546990943,
+        "Apartments": 0.25161870396358355
+      },
+      "whole_factor_reduction_2050": {
+        "Detached": 0.0974998716584684,
+        "Townhouses": 0.11166229638271774,
+        "Apartments": 0.1817607673425622
+      },
+      "mc": {
+        "carbon_kt": {
+          "p5": 24118.78200532402,
+          "p50": 31094.55772283054,
+          "p95": 38862.53429139242
+        },
+        "upfront_kt": {
+          "p5": 16914.163436371895,
+          "p50": 21815.95348785984,
+          "p95": 27141.19485738868
+        }
+      },
+      "pb": {
+        "det": {
+          "label": "Reference (S3): fade, half-life 10 yr, shares held",
+          "I_kt": 31400.199445766302,
+          "LoE_AR": 5.050818363667313,
+          "LoE_AtP": 28.213109634979446
+        },
+        "mc": {
+          "LoE_AR_p5": 4.046589771779642,
+          "LoE_AR_p50": 5.015439192139304,
+          "LoE_AR_p95": 5.994033610643875,
+          "LoE_AtP_p5": 22.411226132422012,
+          "LoE_AtP_p50": 27.943517233394967,
+          "LoE_AtP_p95": 33.64982751955584,
+          "n_draws": 5000,
+          "I_sec_base_kt_p5": 1862.4770311503473,
+          "I_sec_base_kt_p50": 1983.650953132257,
+          "I_sec_base_kt_p95": 2115.9717150322404
+        }
+      }
+    },
+    "horup_item": {
+      "label": "item-level mapping (v1.2)",
+      "dir": "outputs/modes/horup_item",
+      "carbon_kt": 31012.952295889965,
+      "upfront_kt": 21591.5005450363,
+      "a13_reduction_2050": {
+        "Detached": 0.2503394831331124,
+        "Townhouses": 0.24767756883589537,
+        "Apartments": 0.2893796796393077
+      },
+      "whole_factor_reduction_2050": {
+        "Detached": 0.11662421729852213,
+        "Townhouses": 0.13024764959031598,
+        "Apartments": 0.2090380078906925
+      },
+      "mc": {
+        "carbon_kt": {
+          "p5": 23832.56784636384,
+          "p50": 30714.671576844776,
+          "p95": 38390.81383290742
+        },
+        "upfront_kt": {
+          "p5": 16626.943535666738,
+          "p50": 21434.306892780653,
+          "p95": 26646.90971730918
+        }
+      },
+      "pb": {
+        "det": {
+          "label": "Reference (S3): fade, half-life 10 yr, shares held",
+          "I_kt": 31012.952295889965,
+          "LoE_AR": 4.98852847218903,
+          "LoE_AtP": 27.865167695497036
+        },
+        "mc": {
+          "LoE_AR_p5": 4.000424784983471,
+          "LoE_AR_p50": 4.95335052838667,
+          "LoE_AR_p95": 5.918982373908058,
+          "LoE_AtP_p5": 22.13677086244692,
+          "LoE_AtP_p50": 27.605402363896257,
+          "LoE_AtP_p95": 33.22301737355507,
+          "n_draws": 5000,
+          "I_sec_base_kt_p5": 1862.4770311503473,
+          "I_sec_base_kt_p50": 1983.650953132257,
+          "I_sec_base_kt_p95": 2115.9717150322404
+        }
+      }
+    }
+  },
+  "sensitivity": {
+    "horup_item": {
+      "oat": [
+        {
+          "case": "Adopted settings",
+          "carbon_kt": 31012.952295889965,
+          "carbon_change_pct": 0.0
+        },
+        {
+          "case": "Frozen technology: 2025 factors held (no decarbonisation)",
+          "carbon_kt": 33625.15835263455,
+          "carbon_change_pct": 8.422951906745002
+        },
+        {
+          "case": "Decarbonisation: proxy-mapped items held at 2025",
+          "carbon_kt": 31094.689218298936,
+          "carbon_change_pct": 0.2635573731553542
+        },
+        {
+          "case": "Decarbonisation: NZ-made electricity-intensive items held at 2025",
+          "carbon_kt": 31533.834480102218,
+          "carbon_change_pct": 1.6795633619224315
+        },
+        {
+          "case": "Decarbonisation: lift at the steel-profile rate (Horup S4)",
+          "carbon_kt": 30993.447964986965,
+          "carbon_change_pct": -0.0628909196290439
+        },
+        {
+          "case": "Decarbonisation: class-level mapping of v1.1",
+          "carbon_kt": 31400.199445766302,
+          "carbon_change_pct": 1.248662643213283
+        }
+      ],
+      "pb": [
+        {
+          "case": "reference",
+          "label": "Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",
+          "cum_LoE_AR": 4.98852847218903,
+          "cum_LoE_AtP": 27.86516769549704,
+          "AR_vs_ref_pct": 0.0,
+          "AtP_vs_ref_pct": 0.0
+        },
+        {
+          "case": "vi_frozen",
+          "label": "(vi) Frozen technology: 2025 factors held (no decarbonisation)",
+          "cum_LoE_AR": 5.4087098262557936,
+          "cum_LoE_AtP": 30.212237369222603,
+          "AR_vs_ref_pct": 8.422951906745023,
+          "AtP_vs_ref_pct": 8.422951906745023
+        },
+        {
+          "case": "vii_proxies_held",
+          "label": "(vii) Proxy-mapped items held at 2025",
+          "cum_LoE_AR": 5.001676106789438,
+          "cum_LoE_AtP": 27.938608399500623,
+          "AR_vs_ref_pct": 0.2635573731553542,
+          "AtP_vs_ref_pct": 0.2635573731553542
+        },
+        {
+          "case": "viii_nz_elec_held",
+          "label": "(viii) NZ-made, electricity-intensive items held at 2025",
+          "cum_LoE_AR": 5.072313968706985,
+          "cum_LoE_AtP": 28.33318084284885,
+          "AR_vs_ref_pct": 1.6795633619224315,
+          "AtP_vs_ref_pct": 1.6795633619224315
+        },
+        {
+          "case": "ix_lift_steel_profile",
+          "label": "(ix) Lift at the steel-profile rate (Horup SI Table S4)",
+          "cum_LoE_AR": 4.985391140756914,
+          "cum_LoE_AtP": 27.84764303527717,
+          "AR_vs_ref_pct": -0.0628909196290439,
+          "AtP_vs_ref_pct": -0.0628909196290328
+        },
+        {
+          "case": "x_class_v1_1",
+          "label": "(x) Class-level mapping of baseline-pb-v1.1",
+          "cum_LoE_AR": 5.050818363667313,
+          "cum_LoE_AtP": 28.21310963497945,
+          "AR_vs_ref_pct": 1.248662643213283,
+          "AtP_vs_ref_pct": 1.2486626432133052
+        }
+      ]
+    },
+    "horup_class_v1_1": {
+      "oat": [
+        {
+          "case": "Adopted settings",
+          "carbon_kt": 31400.199445766302,
+          "carbon_change_pct": 0.0
+        },
+        {
+          "case": "Frozen technology: 2025 factors held (no decarbonisation)",
+          "carbon_kt": 33625.15835263455,
+          "carbon_change_pct": 7.085811383813478
+        },
+        {
+          "case": "Decarbonisation: STEEL at the steel-profile rate (Horup S4)",
+          "carbon_kt": 31187.29664164595,
+          "carbon_change_pct": -0.6780301013312839
+        }
+      ],
+      "pb": [
+        {
+          "case": "reference",
+          "label": "Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",
+          "cum_LoE_AR": 5.050818363667313,
+          "cum_LoE_AtP": 28.21310963497945,
+          "AR_vs_ref_pct": 0.0,
+          "AtP_vs_ref_pct": 0.0
+        },
+        {
+          "case": "vi_frozen",
+          "label": "(vi) Frozen technology: 2025 factors held (no decarbonisation)",
+          "cum_LoE_AR": 5.4087098262557936,
+          "cum_LoE_AtP": 30.212237369222603,
+          "AR_vs_ref_pct": 7.085811383813501,
+          "AtP_vs_ref_pct": 7.085811383813501
+        },
+        {
+          "case": "vii_steel_profile",
+          "label": "(vii) STEEL class at the steel-profile rate (Horup SI Table S4)",
+          "cum_LoE_AR": 5.01657229479808,
+          "cum_LoE_AtP": 28.02181625913269,
+          "AR_vs_ref_pct": -0.6780301013312839,
+          "AtP_vs_ref_pct": -0.6780301013312728
+        }
+      ]
+    }
+  },
+  "coverage": {
+    "label": {
+      "Apartments": {
+        "direct": 0.8997669405358328,
+        "held": 0.0410782932191121,
+        "proxy": 0.0503001908458862,
+        "sec31": 0.0088545753991687
+      },
+      "Detached": {
+        "direct": 0.7490101242110843,
+        "held": 0.0,
+        "proxy": 0.1885270911128724,
+        "sec31": 0.0624627846760432
+      },
+      "Townhouses": {
+        "direct": 0.8215545923646461,
+        "held": 0.0,
+        "proxy": 0.129704663433032,
+        "sec31": 0.0487407442023218
+      }
+    },
+    "reduction_2050": {
+      "Apartments": {
+        "central": 0.2893796796393079,
+        "elevator_steel_profile": 0.3057132844759589,
+        "nz_elec_held": 0.2671280460250933,
+        "proxies_held": 0.2863672082485466
+      },
+      "Detached": {
+        "central": 0.2503394831331124,
+        "elevator_steel_profile": 0.2503394831331124,
+        "nz_elec_held": 0.185312056052491,
+        "proxies_held": 0.2413664693570985
+      },
+      "Townhouses": {
+        "central": 0.2476775688358953,
+        "elevator_steel_profile": 0.2476775688358953,
+        "nz_elec_held": 0.2179640029021187,
+        "proxies_held": 0.2404399713250234
+      }
+    },
+    "s4_row": {
+      "Apartments": {
+        "Aluminium": 0.0190161881855004,
+        "CLT": 0.0,
+        "Cement mortar": 0.0056549546207835,
+        "Ceramic tile": 0.0001569319105119,
+        "Clay brick": 0.0265825312836792,
+        "Concrete structure": 0.415363639412142,
+        "Construction wood": 0.0077779156403162,
+        "EPS": 0.0237176595622069,
+        "Glass": 0.0252637237900242,
+        "HELD": 0.0410782932191121,
+        "Lightweight concrete": 0.024294987242443,
+        "Mineral wool glass": 0.003555637548083,
+        "Plywood": 0.0,
+        "Reinforcing steel": 0.0529004947572256,
+        "Steel profile": 0.3546370428279715
+      },
+      "Detached": {
+        "Aluminium": 0.047252470607121,
+        "CLT": 0.066464483064787,
+        "Cement mortar": 0.0298690095245355,
+        "Ceramic tile": 0.0078584531612805,
+        "Clay brick": 0.0656973040883278,
+        "Concrete structure": 0.1876814970927876,
+        "Construction wood": 0.0950390312754853,
+        "EPS": 0.1787818665874042,
+        "Glass": 0.0338397960657035,
+        "HELD": 0.0,
+        "Lightweight concrete": 0.0,
+        "Mineral wool glass": 0.011611575963536,
+        "Plywood": 0.0135103518968668,
+        "Reinforcing steel": 0.1132407390820274,
+        "Steel profile": 0.149153421590137
+      },
+      "Townhouses": {
+        "Aluminium": 0.1537439624177033,
+        "CLT": 0.0,
+        "Cement mortar": 0.0452003915296086,
+        "Ceramic tile": 0.016898811735515,
+        "Clay brick": 0.0819622195542049,
+        "Concrete structure": 0.3350749626251861,
+        "Construction wood": 0.125511515064755,
+        "EPS": 0.0762867325208803,
+        "Glass": 0.0253611576233585,
+        "HELD": 0.0,
+        "Lightweight concrete": 0.0,
+        "Mineral wool glass": 0.0052156008693546,
+        "Plywood": 0.0032157349441743,
+        "Reinforcing steel": 0.0079244160682133,
+        "Steel profile": 0.1236044950470456
+      }
+    }
+  },
+  "s4_rows": {
+    "Aluminium": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C34"
+      },
+      "2030": {
+        "rel_to_2025": 0.9282752373200414,
+        "cell": "C35"
+      },
+      "2040": {
+        "rel_to_2025": 0.8780902194468398,
+        "cell": "C36"
+      },
+      "2050": {
+        "rel_to_2025": 0.8476971574136565,
+        "cell": "C37"
+      }
+    },
+    "CLT": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C40"
+      },
+      "2030": {
+        "rel_to_2025": 0.8380965906055594,
+        "cell": "C41"
+      },
+      "2040": {
+        "rel_to_2025": 0.7124500148483613,
+        "cell": "C42"
+      },
+      "2050": {
+        "rel_to_2025": 0.6170425602820352,
+        "cell": "C43"
+      }
+    },
+    "Cement mortar": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C4"
+      },
+      "2030": {
+        "rel_to_2025": 0.9319888437837118,
+        "cell": "C5"
+      },
+      "2040": {
+        "rel_to_2025": 0.8466458465821295,
+        "cell": "C6"
+      },
+      "2050": {
+        "rel_to_2025": 0.7686055288447761,
+        "cell": "C7"
+      }
+    },
+    "Ceramic tile": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C88"
+      },
+      "2030": {
+        "rel_to_2025": 0.8910735451943304,
+        "cell": "C89"
+      },
+      "2040": {
+        "rel_to_2025": 0.800476176359292,
+        "cell": "C90"
+      },
+      "2050": {
+        "rel_to_2025": 0.7600912440489689,
+        "cell": "C91"
+      }
+    },
+    "Clay brick": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C76"
+      },
+      "2030": {
+        "rel_to_2025": 0.9712668159441598,
+        "cell": "C77"
+      },
+      "2040": {
+        "rel_to_2025": 0.9442844473291911,
+        "cell": "C78"
+      },
+      "2050": {
+        "rel_to_2025": 0.9226227138235888,
+        "cell": "C79"
+      }
+    },
+    "Concrete structure": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C10"
+      },
+      "2030": {
+        "rel_to_2025": 0.9153503868119612,
+        "cell": "C11"
+      },
+      "2040": {
+        "rel_to_2025": 0.813852600695348,
+        "cell": "C12"
+      },
+      "2050": {
+        "rel_to_2025": 0.7236764079307832,
+        "cell": "C13"
+      }
+    },
+    "Construction wood": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C46"
+      },
+      "2030": {
+        "rel_to_2025": 0.8396090022564333,
+        "cell": "C47"
+      },
+      "2040": {
+        "rel_to_2025": 0.7044557696247231,
+        "cell": "C48"
+      },
+      "2050": {
+        "rel_to_2025": 0.5958650467218933,
+        "cell": "C49"
+      }
+    },
+    "EPS": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C70"
+      },
+      "2030": {
+        "rel_to_2025": 0.9810427737037024,
+        "cell": "C71"
+      },
+      "2040": {
+        "rel_to_2025": 0.9683707780046747,
+        "cell": "C72"
+      },
+      "2050": {
+        "rel_to_2025": 0.959709883775668,
+        "cell": "C73"
+      }
+    },
+    "Glass": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C100"
+      },
+      "2030": {
+        "rel_to_2025": 0.9685985021453004,
+        "cell": "C101"
+      },
+      "2040": {
+        "rel_to_2025": 0.9451696003646652,
+        "cell": "C102"
+      },
+      "2050": {
+        "rel_to_2025": 0.9297970671655166,
+        "cell": "C103"
+      }
+    },
+    "Lightweight concrete": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C16"
+      },
+      "2030": {
+        "rel_to_2025": 0.9501276737389563,
+        "cell": "C17"
+      },
+      "2040": {
+        "rel_to_2025": 0.8875182652716939,
+        "cell": "C18"
+      },
+      "2050": {
+        "rel_to_2025": 0.8387850596003097,
+        "cell": "C19"
+      }
+    },
+    "Mineral wool glass": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C58"
+      },
+      "2030": {
+        "rel_to_2025": 0.761900335363099,
+        "cell": "C59"
+      },
+      "2040": {
+        "rel_to_2025": 0.5925274828226693,
+        "cell": "C60"
+      },
+      "2050": {
+        "rel_to_2025": 0.528177118837371,
+        "cell": "C61"
+      }
+    },
+    "Plywood": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C52"
+      },
+      "2030": {
+        "rel_to_2025": 0.8152930462646826,
+        "cell": "C53"
+      },
+      "2040": {
+        "rel_to_2025": 0.6901409551342136,
+        "cell": "C54"
+      },
+      "2050": {
+        "rel_to_2025": 0.6080772888106363,
+        "cell": "C55"
+      }
+    },
+    "Reinforcing steel": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C28"
+      },
+      "2030": {
+        "rel_to_2025": 0.8696303320420917,
+        "cell": "C29"
+      },
+      "2040": {
+        "rel_to_2025": 0.7533792485485806,
+        "cell": "C30"
+      },
+      "2050": {
+        "rel_to_2025": 0.7008055588399279,
+        "cell": "C31"
+      }
+    },
+    "Steel profile": {
+      "2025": {
+        "rel_to_2025": 1.0,
+        "cell": "C22"
+      },
+      "2030": {
+        "rel_to_2025": 0.8441594425163234,
+        "cell": "C23"
+      },
+      "2040": {
+        "rel_to_2025": 0.683169980728668,
+        "cell": "C24"
+      },
+      "2050": {
+        "rel_to_2025": 0.6023786881911728,
+        "cell": "C25"
+      }
+    }
+  }
+}

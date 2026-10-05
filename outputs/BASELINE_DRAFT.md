@@ -169,7 +169,7 @@ Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the 
 
 ## Material decarbonisation: modes compared
 
-Adopted: `horup_class_v1_1`. A1-A3 only; A4-A5, B2, B4, C1-C4 and soil at 2025 in every mode. Stored result of the optional step: comparison run ? at commit ? (`python run_all.py --compare-modes`) **STALE: the adopted-mode carbon differs from this run; re-run `python run_all.py --compare-modes`.** Full tables (sensitivities, coverage, S4 rows): outputs/DECARB_MODES.md.
+Adopted: `horup_item`. A1-A3 only; A4-A5, B2, B4, C1-C4 and soil at 2025 in every mode. Stored result of the optional step: comparison run 2026-10-05 20:04 UTC at commit 3bcd7aa (`python run_all.py --compare-modes`). Full tables (sensitivities, coverage, S4 rows): outputs/DECARB_MODES.md.
 
 | mode | carbon (kt) | upfront (kt) | MC carbon p5-p95 (kt) | cum. LoE AR / AtP | A1-A3 by 2050 (Detached, Townhouses, Apartments) |
 |---|---|---|---|---|---|

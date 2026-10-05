@@ -18,7 +18,7 @@ Absolute environmental sustainability assessment (AESA) of New Zealand new resid
 
 g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c and P_W = Σ P_c over the same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) is constant in this static design: 0.1790.
 
-**Carbon factors.** A1-A3 of each case-study EPD item decarbonised 2026-2050 after Horup et al. (2025) SI Table S4 (item-level mapping, data/material_item_map.csv: direct, Horup p. 6, proxy or held); A4-A5, B2, B4, C1-C4, held items and soil at 2025 (see ASSUMPTIONS.md). Cumulative LoE of the reference path by decarbonisation mode (each a full run): `none` 5.41 (AR) / 30.2 (AtP); `horup_class_v1_1` 5.05 (AR) / 28.2 (AtP); `horup_item` 4.99 (AR) / 27.9 (AtP); comparison run ? at commit ? (`python run_all.py --compare-modes`) **STALE: re-run `python run_all.py --compare-modes`.**; see outputs/DECARB_MODES.md.
+**Carbon factors.** A1-A3 of each case-study EPD item decarbonised 2026-2050 after Horup et al. (2025) SI Table S4 (item-level mapping, data/material_item_map.csv: direct, Horup p. 6, proxy or held); A4-A5, B2, B4, C1-C4, held items and soil at 2025 (see ASSUMPTIONS.md). Cumulative LoE of the reference path by decarbonisation mode (each a full run): `none` 5.41 (AR) / 30.2 (AtP); `horup_class_v1_1` 5.05 (AR) / 28.2 (AtP); `horup_item` 4.99 (AR) / 27.9 (AtP); comparison run 2026-10-05 20:04 UTC at commit 3bcd7aa (`python run_all.py --compare-modes`); see outputs/DECARB_MODES.md.
 
 **Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over 2026-2050 (ratio of sums).
 

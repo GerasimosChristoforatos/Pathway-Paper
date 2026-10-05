@@ -94,9 +94,9 @@ Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted 
 | S2 | 4.12 / 5.03 / 5.98 | 22.8 / 28.0 / 33.6 |
 | S3-10 | 4.00 / 4.95 / 5.92 | 22.1 / 27.6 / 33.2 |
 
-## Material decarbonisation modes (adopted: horup_class_v1_1; reference S3-10)
+## Material decarbonisation modes (adopted: horup_item; reference S3-10)
 
-Stored result of the optional step: comparison run ? at commit ? (`python run_all.py --compare-modes`). **STALE: the adopted-mode carbon differs from this run; re-run `python run_all.py --compare-modes`.**
+Stored result of the optional step: comparison run 2026-10-05 20:04 UTC at commit 3bcd7aa (`python run_all.py --compare-modes`).
 
 | mode | carbon (kt) | upfront (kt) | MC carbon p5 / p50 / p95 (kt) | cum. LoE AR | cum. LoE AtP | MC LoE AR p5 / p50 / p95 | MC LoE AtP p5 / p50 / p95 | A1-A3 by 2050 (Detached, Townhouses, Apartments) | whole factor by 2050 (Detached, Townhouses, Apartments) |
 |---|---|---|---|---|---|---|---|---|---|

@@ -1924,7 +1924,7 @@ def main():
 
     # FIG 3 annual GFA
     fig3, (bx1, bx2) = plt.subplots(1, 2, figsize=(18, 6))
-    bx1.stackplot(plot_years, [evol_typ_total[n].iloc[1:] / 1e6 for n in typ_names],
+    stack_typologies(bx1, plot_years, [evol_typ_total[n].iloc[1:] / 1e6 for n in typ_names],
                   labels=typ_names, colors=stack_colors, alpha=0.85)
     bx1.set_ylabel('Annual new GFA (Mm²/yr)')
     bx1.set_title('Annual GFA by Typology (2026-2050)')
@@ -1939,7 +1939,7 @@ def main():
 
     # FIG 4 annual carbon
     fig4, (cx1, cx2) = plt.subplots(1, 2, figsize=(18, 6))
-    cx1.stackplot(plot_years, [carbon_total_typ[n].iloc[1:] / 1e6 for n in typ_names],
+    stack_typologies(cx1, plot_years, [carbon_total_typ[n].iloc[1:] / 1e6 for n in typ_names],
                   labels=typ_names, colors=stack_colors, alpha=0.85)
     cx1.set_ylabel('Annual Carbon (kt CO2e/yr)')
     cx1.set_title('Annual Embodied Carbon by Typology (2026-2050)')
@@ -1955,7 +1955,7 @@ def main():
     # FIG 5 cumulative carbon  -- slice BEFORE accumulating
     cum_typ = (carbon_total_typ.iloc[1:] / 1e6).cumsum()
     fig5, (dx1, dx2) = plt.subplots(1, 2, figsize=(18, 6))
-    dx1.stackplot(plot_years, [cum_typ[n].values for n in typ_names],
+    stack_typologies(dx1, plot_years, [cum_typ[n].values for n in typ_names],
                   labels=typ_names, colors=stack_colors, alpha=0.85)
     dx1.set_ylabel('Cumulative Carbon (kt CO2e)')
     dx1.set_title('Cumulative Embodied Carbon by Typology (2026-2050)')
@@ -2152,6 +2152,25 @@ def plot_hist_estimated(ax, series, scale=1.0, color='black', label='Historical'
     ax.ticklabel_format(axis='y', style='plain', useOffset=False)
 
 
+def zero_floor(ax, *series):
+    """Anchor the y axis at 0 for panels of non-negative quantities. Checks that
+    every plotted series is >= 0 (raises otherwise: a negative value must be
+    reported, never clipped) and adds a sticky edge at 0 to the panel's filled
+    areas, so autoscaling keeps its top margin but no margin below zero."""
+    lo = min(float(np.nanmin(np.asarray(s, float))) for s in series)
+    if lo < 0:
+        raise ValueError(f'zero_floor: a plotted series is negative (min {lo:g}); not clipped.')
+    for c in ax.collections:
+        c.sticky_edges.y.append(0.0)
+
+
+def stack_typologies(ax, years, series, **kw):
+    """Stacked areas by typology from zero (all >= 0), y axis anchored at 0."""
+    out = ax.stackplot(years, series, **kw)
+    zero_floor(ax, *series)
+    return out
+
+
 def plot_demand_bands(ax, years, bands, total):
     """Stack the in-scope demand bands upward from zero. In the adopted run every band
     is non-negative; a negative part (possible only in a sensitivity run, e.g. payback)
@@ -2171,7 +2190,9 @@ def plot_demand_bands(ax, years, bands, total):
         up, dn = up + pos, dn + neg
     ax.plot(years, np.asarray(total, float), color='black', linewidth=1.5, label='Total built, in scope')
     if np.any(dn < 0):
-        ax.axhline(0, color='black', lw=0.7)
+        ax.axhline(0, color='black', lw=0.7)          # sensitivity runs only: negative parts shown
+    else:
+        zero_floor(ax, *[v for _, v, _ in bands], total)
     return up
 
 
@@ -2194,6 +2215,7 @@ def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):
         handles.append(ax.fill_between(years, bottom, bottom + v, facecolor=colour, label=lab,
                                        alpha=alpha * (SOIL_ALPHA if col == 'SOIL' else 1.0), **EDGE))
         bottom = bottom + v
+    zero_floor(ax, *[frame[col] for col, _, _ in MATERIAL_STYLE])
     return handles[::-1]
 
 

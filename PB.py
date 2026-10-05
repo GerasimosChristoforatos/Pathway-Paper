@@ -639,7 +639,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     # ---- boss_05_annual_carbon_pb ------------------------------------------
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(18, 6.4))
     ct = B['carbon_total_typ'].loc[py]
-    a1.stackplot(py, [ct[n] / M6 for n in typ], labels=typ, colors=colors, alpha=0.85)
+    Boss.stack_typologies(a1, py, [ct[n] / M6 for n in typ], labels=typ, colors=colors, alpha=0.85)
     _boundary_lines(a1, py, bar_, batp_)
     a1.set_ylabel('kt CO₂e per year'); a1.set_title('Annual embodied carbon by typology vs boundaries (2026-2050)')
     a1.legend(loc='upper right', fontsize=8); a1.grid(alpha=0.3); a1.set_xlim(2026, 2051.5)
@@ -654,7 +654,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     # ---- boss_06_cumulative_carbon_pb ---------------------------------------
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(18, 6.4))
     cc = ct.cumsum()
-    a1.stackplot(py, [cc[n] / M6 for n in typ], labels=typ, colors=colors, alpha=0.85)
+    Boss.stack_typologies(a1, py, [cc[n] / M6 for n in typ], labels=typ, colors=colors, alpha=0.85)
     _boundary_lines(a1, py, bar_, batp_, cumulative=True)
     a1.set_ylabel('kt CO₂e, cumulative from 2026'); a1.set_title('Cumulative carbon by typology vs cumulative boundaries')
     a1.legend(loc='upper left', fontsize=8); a1.grid(alpha=0.3); a1.set_xlim(2026, 2051.5)

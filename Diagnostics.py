@@ -320,8 +320,8 @@ fig.suptitle('4. Floor area built, 1992-2050 (history converted to built: consen
 a = ax[0, 0]
 typ_h = B['hist_built_typ_gfa'].loc[YH]
 typ_f = B['evol_typ_total'].loc[PF]
-a.stackplot(YH, [typ_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
-a.stackplot(PF, [typ_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
+M.stack_typologies(a, YH, [typ_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
+M.stack_typologies(a, PF, [typ_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
 tidy(a, 'By typology (observed annual history)', 'Mm² per year')
 a.legend(loc='upper left')
 
@@ -386,8 +386,8 @@ fig.suptitle('5. Embodied carbon (A1-A5, B2, B4, C1-C4 + soil). History estimate
 a = ax[0, 0]
 car_h = pd.DataFrame({t: typ_h[t] * TB[t] for t in TYP})
 car_f = B['carbon_total_typ'].loc[PF]
-a.stackplot(YH, [car_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
-a.stackplot(PF, [car_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
+M.stack_typologies(a, YH, [car_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
+M.stack_typologies(a, PF, [car_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
 tidy(a, 'Annual carbon by typology', 'kt CO₂e per year')
 a.legend(loc='upper left')
 

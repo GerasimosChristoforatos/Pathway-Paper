@@ -24,7 +24,7 @@
     ],
     "SSEC_FCE_SHARE": "mean_of_ratios",
     "POP_NZ_SOURCE": "model",
-    "DECARB_MODE": "none",
+    "DECARB_MODE": "horup_material",
     "DECARB_STEEL": "reinforcing_steel"
   },
   "source_pairs": {
@@ -542,96 +542,131 @@
   "deterministic": {
     "S1": {
       "label": "Low (S1): long-run rate, shares held",
-      "I_kt": 31512.746653195118,
-      "LoE_AR": 5.068921927087117,
-      "LoE_AtP": 28.314233409934577
+      "I_kt": 29443.448377194774,
+      "LoE_AR": 4.736068954277836,
+      "LoE_AtP": 26.454966903391952
     },
     "S3-5": {
       "label": "S3: fade, half-life 5 yr, shares held",
-      "I_kt": 32533.26525965927,
-      "LoE_AR": 5.233075474165567,
-      "LoE_AtP": 29.231170366925518
+      "I_kt": 30398.997996010756,
+      "LoE_AR": 4.889772040477876,
+      "LoE_AtP": 27.313529162013307
     },
     "S3-10": {
       "label": "Reference (S3): fade, half-life 10 yr, shares held",
-      "I_kt": 33625.15835263456,
-      "LoE_AR": 5.4087098262557936,
-      "LoE_AtP": 30.212237369222603
+      "I_kt": 31400.199445766302,
+      "LoE_AR": 5.050818363667313,
+      "LoE_AtP": 28.213109634979446
     },
     "S3-15": {
       "label": "S3: fade, half-life 15 yr, shares held",
-      "I_kt": 34310.660061924944,
-      "LoE_AR": 5.518974878157433,
-      "LoE_AtP": 30.82816131940577
+      "I_kt": 32024.550030869428,
+      "LoE_AR": 5.151247069734989,
+      "LoE_AtP": 28.774089240812906
     },
     "S2": {
       "label": "Storyline: intensification continues (S2 + damped mix trend)",
-      "I_kt": 34293.737235893794,
-      "LoE_AR": 5.516252789699653,
-      "LoE_AtP": 30.812956143815235
+      "I_kt": 31946.40342695854,
+      "LoE_AR": 5.138676948874035,
+      "LoE_AtP": 28.70387444145957
     },
     "S3-10-trend": {
       "label": "sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix)",
-      "I_kt": 31378.33690277942,
-      "LoE_AR": 5.04730170659049,
-      "LoE_AtP": 28.19346611891664
+      "I_kt": 29302.2089618088,
+      "LoE_AR": 4.713350161228854,
+      "LoE_AtP": 26.328063151778927
     },
     "S2-held": {
       "label": "High (S2): 2018-2023 rate persists, shares held",
-      "I_kt": 36753.87533779342,
-      "LoE_AR": 5.911973546941774,
-      "LoE_AtP": 33.0233926127289
+      "I_kt": 34237.43429824023,
+      "LoE_AR": 5.507196289535691,
+      "LoE_AtP": 30.76236789976491
     },
     "S1-noUC": {
       "label": "sensitivity: S1 without the census UC correction",
-      "I_kt": 32343.88882758072,
-      "LoE_AR": 5.202613694378461,
-      "LoE_AtP": 29.061015459159997
+      "I_kt": 30203.682311938748,
+      "LoE_AR": 4.858354913796021,
+      "LoE_AtP": 27.13803783057536
     },
     "S3-10-noUC": {
       "label": "sensitivity: S3-10 without the census UC correction",
-      "I_kt": 35276.21039629051,
-      "LoE_AR": 5.67428661011894,
-      "LoE_AtP": 31.695709230641082
+      "I_kt": 32919.925250988395,
+      "LoE_AR": 5.29527091939112,
+      "LoE_AtP": 29.578584743884186
     },
     "S2-noUC": {
       "label": "sensitivity: S2 without the census UC correction",
-      "I_kt": 36971.46374170537,
-      "LoE_AR": 5.946973308904997,
-      "LoE_AtP": 33.21889600452967
+      "I_kt": 34396.435807862996,
+      "LoE_AR": 5.532772169906788,
+      "LoE_AtP": 30.90523091026465
     }
   },
   "mc": {
     "S3-10": {
-      "LoE_AR_p5": 4.288350332027793,
-      "LoE_AR_p50": 5.355956013013262,
-      "LoE_AR_p95": 6.459223259476697,
-      "LoE_AtP_p5": 23.954078202656554,
-      "LoE_AtP_p50": 29.91756252457147,
-      "LoE_AtP_p95": 36.080246972909926,
-      "n_draws": 5000
+      "LoE_AR_p5": 4.046589771779642,
+      "LoE_AR_p50": 5.015439192139304,
+      "LoE_AR_p95": 5.994033610643875,
+      "LoE_AtP_p5": 22.411226132422012,
+      "LoE_AtP_p50": 27.943517233394967,
+      "LoE_AtP_p95": 33.64982751955584,
+      "n_draws": 5000,
+      "I_sec_base_kt_p5": 1862.4770311503473,
+      "I_sec_base_kt_p50": 1983.650953132257,
+      "I_sec_base_kt_p95": 2115.9717150322404
     },
     "S1": {
-      "LoE_AR_p5": 3.979352840695862,
-      "LoE_AR_p50": 5.0165188598224155,
-      "LoE_AR_p95": 6.1030656264974965,
-      "LoE_AtP_p5": 22.228064817856964,
-      "LoE_AtP_p50": 28.021517779417483,
-      "LoE_AtP_p95": 34.09080414937486,
-      "n_draws": 5000
+      "LoE_AR_p5": 3.755236955162263,
+      "LoE_AR_p50": 4.705317502815863,
+      "LoE_AR_p95": 5.665705815852116,
+      "LoE_AtP_p5": 20.844462320855882,
+      "LoE_AtP_p50": 26.206212635142457,
+      "LoE_AtP_p95": 31.773955971366416,
+      "n_draws": 5000,
+      "I_sec_base_kt_p5": 1862.4770311503473,
+      "I_sec_base_kt_p50": 1983.650953132257,
+      "I_sec_base_kt_p95": 2115.9717150322404
     },
     "S2": {
-      "LoE_AR_p5": 4.433600438919975,
-      "LoE_AR_p50": 5.46040570259759,
-      "LoE_AR_p95": 6.534557821413875,
-      "LoE_AtP_p5": 24.765423393709156,
-      "LoE_AtP_p50": 30.501002737900087,
-      "LoE_AtP_p95": 36.50105447423005,
-      "n_draws": 5000
+      "LoE_AR_p5": 4.166668843015258,
+      "LoE_AR_p50": 5.096743011042987,
+      "LoE_AR_p95": 6.059248514123179,
+      "LoE_AtP_p5": 23.078306303958957,
+      "LoE_AtP_p50": 28.40010414689788,
+      "LoE_AtP_p95": 34.009637347677526,
+      "n_draws": 5000,
+      "I_sec_base_kt_p5": 1862.4770311503473,
+      "I_sec_base_kt_p50": 1983.650953132257,
+      "I_sec_base_kt_p95": 2115.9717150322404
+    }
+  },
+  "mc_base_fixed": {
+    "S3-10": {
+      "LoE_AR_p5": 4.012143076975652,
+      "LoE_AR_p50": 5.002554904933226,
+      "LoE_AR_p95": 6.024120310342888,
+      "LoE_AtP_p5": 22.411226132422012,
+      "LoE_AtP_p50": 27.943517233394967,
+      "LoE_AtP_p95": 33.64982751955584
+    },
+    "S1": {
+      "LoE_AR_p5": 3.7316550508994233,
+      "LoE_AR_p50": 4.691536017555489,
+      "LoE_AR_p95": 5.688294639721699,
+      "LoE_AtP_p5": 20.844462320855882,
+      "LoE_AtP_p50": 26.206212635142457,
+      "LoE_AtP_p95": 31.773955971366416
+    },
+    "S2": {
+      "LoE_AR_p5": 4.131566310501806,
+      "LoE_AR_p50": 5.084294833539731,
+      "LoE_AR_p95": 6.088534836455667,
+      "LoE_AtP_p5": 23.078306303958957,
+      "LoE_AtP_p50": 28.40010414689788,
+      "LoE_AtP_p95": 34.009637347677526
     }
   },
   "reference_2026_2050": {
-    "I_kt": 33625.15835263456,
+    "I_kt": 31400.199445766302,
     "B_AR_kt": 6216.853821479963,
     "B_AtP_kt": 1112.9648539994828,
     "GFA_Mm2": 89.56525459310167
@@ -640,78 +675,86 @@
     {
       "case": "reference",
       "label": "Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",
-      "cum_LoE_AR": 5.4087098262557936,
-      "cum_LoE_AtP": 30.212237369222603,
+      "cum_LoE_AR": 5.050818363667313,
+      "cum_LoE_AtP": 28.213109634979446,
       "AR_vs_ref_pct": 0.0,
       "AtP_vs_ref_pct": 0.0
     },
     {
       "case": "i_source_pair",
       "label": "(i) SOS/I_glob pair C: 1 W/m\u00b2 planetary boundary (Bj\u00f8rn & Hauschild 2015)",
-      "cum_LoE_AR": 10.20313404897561,
-      "cum_LoE_AtP": 56.99316800122049,
+      "cum_LoE_AR": 9.527998076613406,
+      "cum_LoE_AtP": 53.22196028094462,
       "AR_vs_ref_pct": 88.64265927977837,
-      "AtP_vs_ref_pct": 88.64265927977843
+      "AtP_vs_ref_pct": 88.64265927977846
     },
     {
       "case": "ii_gdp_measure",
       "label": "(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",
-      "cum_LoE_AR": 5.4087098262557936,
-      "cum_LoE_AtP": 92.95468400875416,
+      "cum_LoE_AR": 5.050818363667313,
+      "cum_LoE_AtP": 86.80392183385433,
       "AR_vs_ref_pct": 0.0,
       "AtP_vs_ref_pct": 207.67229474851035
     },
     {
       "case": "iii_base_window",
       "label": "(iii) AR base window 2021-2025 (5 yr, as Horup)",
-      "cum_LoE_AR": 5.303595680833341,
-      "cum_LoE_AtP": 30.212237369222603,
-      "AR_vs_ref_pct": -1.943423640739439,
+      "cum_LoE_AR": 4.952659565536993,
+      "cum_LoE_AtP": 28.213109634979446,
+      "AR_vs_ref_pct": -1.94342364073945,
       "AtP_vs_ref_pct": 0.0
     },
     {
       "case": "iv_pop_statsnz",
       "label": "(iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",
-      "cum_LoE_AR": 5.39585990728613,
-      "cum_LoE_AtP": 30.039288886148718,
-      "AR_vs_ref_pct": -0.23757826510280022,
+      "cum_LoE_AR": 5.038818717025418,
+      "cum_LoE_AtP": 28.051605061367905,
+      "AR_vs_ref_pct": -0.23757826510281133,
       "AtP_vs_ref_pct": -0.5724451352618787
     },
     {
       "case": "iv_pop_wpp",
       "label": "(iv) NZ population: WPP 2024 probabilistic median, New Zealand",
-      "cum_LoE_AR": 5.744490824308999,
-      "cum_LoE_AtP": 32.543393827117704,
+      "cum_LoE_AR": 5.364380911043183,
+      "cum_LoE_AtP": 30.39001470556797,
       "AR_vs_ref_pct": 6.208153309005504,
       "AtP_vs_ref_pct": 7.7159345380685584
     },
     {
       "case": "v_ssec",
       "label": "(v) s_sec with FCE share as ratio of sums",
-      "cum_LoE_AR": 5.4087098262557936,
-      "cum_LoE_AtP": 30.28251163521268,
+      "cum_LoE_AR": 5.050818363667313,
+      "cum_LoE_AtP": 28.278733890034303,
       "AR_vs_ref_pct": 0.0,
       "AtP_vs_ref_pct": 0.232601992137349
     },
     {
-      "case": "vi_decarb",
-      "label": "(vi) Materials decarbonised, A1-A3 (Horup et al. 2025, SI Table S4)",
-      "cum_LoE_AR": 5.050818363667313,
-      "cum_LoE_AtP": 28.213109634979446,
-      "AR_vs_ref_pct": -6.616947000024831,
-      "AtP_vs_ref_pct": -6.616947000024831
+      "case": "vi_frozen",
+      "label": "(vi) Frozen technology: 2025 factors held (no decarbonisation)",
+      "cum_LoE_AR": 5.4087098262557936,
+      "cum_LoE_AtP": 30.212237369222603,
+      "AR_vs_ref_pct": 7.085811383813501,
+      "AtP_vs_ref_pct": 7.085811383813501
+    },
+    {
+      "case": "vii_steel_profile",
+      "label": "(vii) STEEL class at the steel-profile rate (Horup SI Table S4)",
+      "cum_LoE_AR": 5.01657229479808,
+      "cum_LoE_AtP": 28.02181625913269,
+      "AR_vs_ref_pct": -0.6780301013312839,
+      "AtP_vs_ref_pct": -0.6780301013312728
     },
     {
       "case": "note_soil_long_run",
       "label": "Note (not in tornado): history 2024-25 at the long-run net replacement rate",
-      "cum_LoE_AR": 5.395405550673657,
-      "cum_LoE_AtP": 30.212237369222603,
-      "AR_vs_ref_pct": -0.245978727081142,
+      "cum_LoE_AR": 5.038394424949184,
+      "cum_LoE_AtP": 28.213109634979446,
+      "AR_vs_ref_pct": -0.2459787270811309,
       "AtP_vs_ref_pct": 0.0
     }
   ],
   "notes": {
     "wpp_manuscript_values": "The manuscript world population 2025 (8,231,613,070) equals the WPP 2024 Median sheet x 1000; its 2026-2028 values differ from it by +/-0.5 person, consistent with a source at a higher precision than the 3-decimal thousands in this file; they are not a dating convention (the mean of 1 July t and t+1 differs by ~34 M).",
-    "mc_base": "In the Monte Carlo the boundaries vary only with each draw's NZ population path; I_sec,base is the central historical estimate in every draw (it does not co-vary with the draw's carbon factors, completion rate or dwelling size)."
+    "mc_base": "In the Monte Carlo the AR boundary varies with each draw's NZ population path and with I_sec,base recomputed from the draw's case-study carbon factors (2025 technology) on the observed history; the AtP boundary varies with population only. mc_base_fixed gives the bands with I_sec,base held at its central value (baseline-pb-v1)."
   }
 }

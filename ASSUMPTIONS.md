@@ -21,12 +21,13 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Dwelling size reference | 2023-2025 | DATA: consents |
 | RV share reference | 2016-2025 | DATA: consents |
 | Soil loss | all non-replacement floor area; zero on replacement bands | LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders (Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603) |
-| Material decarbonisation | none: all factors held at 2025 (frozen technology) | DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to 2025) |
+| Material decarbonisation | horup_material: A1-A3 of mapped materials scaled by material-specific GWP paths, 2026-2050 | DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to 2025) |
 | Decarbonised life-cycle stages | A1-A3 only; A4-A5, B2, B4, C1-C4 held at 2025; soil never | DECISION (author): Horup's scope is material production (A1-A3); soil is land-use change |
 | Interpolation between 2025, 2030, 2040, 2050 | linear | DECISION (author): Horup et al. state "interpolated" without naming the method (p. 3) |
 | Material mapping (case-study class -> S4 row) | CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, SIP, unspecified OTHERS (no S4 counterpart) | DECISION (author) |
 | STEEL class | S4 'reinforcing steel' (2050: -29.9%; steel profile -39.8% is a one-at-a-time sensitivity) | DECISION (author): rebar is inside REINFORCED CONCRETE; STEEL is non-rebar steel (stud walls, sections, miscellaneous) whose closest S4 counterpart is steel profile; reinforcing steel is used as the conservative choice because the class mixes items of unknown composition |
 | Rebar in REINFORCED CONCRETE | decarbonised at the concrete-structure rate (2050: -27.6%) | DECISION (author): S4's concrete dataset does not separate reinforcement; the difference from reinforcing steel (-29.9%) is small |
+| Carbon-factor sensitivity rows (decarbonised runs) | an alternative materials factor (jackknife, single case study) follows the adopted factor's relative path over time: factor_alt x (materials intensity(t) / 2025 value) | DECISION (author) |
 | History and acquired-rights base | always 2025 factors; decarbonisation applies to 2026-2050 only | DECISION (author): the base is observed past construction, built with past (not future) technology |
 
 ### Limitations of the material decarbonisation
@@ -46,11 +47,10 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `COMPLETION_RATE` | `0.95` |
 | `COMPLETION_RATE_BAND` | `(0.92, 0.96)` |
 | `DAMPING_PHI` | `0.8` |
-| `DECARB_MODE` | `'none'` |
+| `DECARB_MODE` | `'horup_material'` |
 | `DECARB_STEEL` | `'reinforcing_steel'` |
 | `DEMOLITION_CALIB_START` | `1992` |
 | `DEMOLITION_RATE` | `0.00135` |
-| `DEMOLITION_RATE_BAND` | `(0.001, 0.003)` |
 | `DWELLING_SIZE_REF` | `(2023, 2025)` |
 | `HH_REBASE_BASE` | `'2018-06-30'` |
 | `HH_REBASE_CENSUS` | `'2023-06-30'` |
@@ -73,7 +73,6 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `POP_SHEET_HIST` | `'Table 1'` |
 | `POP_SHEET_PROJ` | `'Table 1'` |
 | `POP_SIZE_PAIR_SHEET` | `'Table 1'` |
-| `PRE2013_EMPTY_SHARE_BAND` | `0.05` |
 | `RECENT_INTERVAL` | `(2018, 2023)` |
 | `REPLACEMENT_SCENARIO` | `'S3'` |
 | `REPL_COLOR` | `'#34495e'` |
@@ -97,7 +96,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Impact category | climate change only | DECISION (author) |
 | Carrying capacity over time | static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / Paris-aligned pathways | DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, 140-150 (pp. 143, 148) |
 | Sector impact | the model's embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all booked in the construction year | DECISION (author); construction-year booking of B2/B4/C is a limitation to be revisited |
-| Carbon factors over time | Boss.DECARB_MODE = 'none'; history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
+| Carbon factors over time | Boss.DECARB_MODE = 'horup_material' (A1-A3 of mapped materials, Horup et al. 2025); history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
 | Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |
@@ -109,7 +108,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Sector share s_sec | residential consented value (detached + townhouses + apartments) / national final consumption expenditure, annual averages 2016-2025; FCE share of GDP as mean of ratios | LITERATURE: Hjalsted et al. 2021 Eq. 6; DATA: Stats NZ; DECISION: mean of quarterly ratios for continuity with the manuscript (ratio of sums is a sensitivity) |
 | World population | UN WPP 2024 probabilistic median (1 July), dated 31 December t as the mean of 1 July t and t+1 | DATA; DECISION (dating) |
 | NZ population | the model's paths (central; each Monte Carlo draw); sensitivities: raw Stats NZ 2024-base median (PCHIP on level, dated as above) and the WPP 2024 New Zealand median | DATA (model); DECISION |
-| Monte Carlo | boundaries recomputed per draw from the draw's NZ population; I_sec,base held at the central estimate | DECISION (author) |
+| Monte Carlo | boundaries recomputed per draw from the draw's NZ population; I_sec,base recomputed per draw with the draw's 2025 carbon factors (historical floor area and soil as observed) | DECISION (author) |
 
 ### Limitations of the planetary-boundary layer
 
@@ -120,7 +119,8 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 - I_glob = 5.58E13 (Bjørn & Hauschild 2015 ESM2, from Laurent et al. 2013, year 2010): Laurent et al. (2013) is not in hand, so whether it includes land-use-change CO2 (the sector impact includes soil carbon loss) and its GWP basis are NOT VERIFIED. The per-gas indicator scores in ESM2 sum to 54.0 Gt CO2-eq with 39.5 Gt CO2; a CO2 total of that size is consistent with inclusion of land-use-change CO2 (inference, not a sourced statement). The EC-JRC table "Normalization factors for testing" (Benini, Sala & Pant, version 0.1.1, 15 Dec 2015; sheet 1.3) gives the PROSUITE global value as 5.589E13 kg CO2-eq, 8,100 kg/person, "2010 or 2000".
 - Final-consumption-expenditure upscaling: the numerator (consented residential value) is an investment flow (gross fixed capital formation), while Hjalsted et al. (2021) define the upscaling on final consumption and leave intermediate sectors as open (p. 16).
 - Ability to pay: Hjalsted et al. (2021) state GDP as "USD/cap (2017)", World Bank (2019), without naming the series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in outputs/pb_results.json).
-- Monte Carlo: I_sec,base is the central historical estimate in every draw; it does not co-vary with the draw's carbon factors, completion rate or dwelling size (a co-varying base would cancel the factor uncertainty in LoE_AR).
+- Monte Carlo: I_sec,base is recomputed in every draw with that draw's case-study carbon factors (2025 technology), so the factor uncertainty is treated alike in the base and the projection; it does not co-vary with the draw's completion rate or dwelling size (historical floor area is observed).
+- The numerical results in Hjalsted et al.'s SI (Tables S4-S9) are reproduced only with α = 1; we apply α as specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS. The authors have been contacted.
 
 ### All settings in PB.py
 

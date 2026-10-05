@@ -20,9 +20,11 @@ console no SystemExit is raised.
 Order: Building_factors -> Boss -> Diagnostics -> Sensitivity -> MonteCarlo
 -> PB (planetary-boundary layer; reads the Monte Carlo draws) -> validation
 -> gap_2026 -> near_term_join -> scenarios -> figures_report -> frozen
-technology check (Boss, Sensitivity, MonteCarlo, scenarios with DECARB_MODE
-'none', written to outputs/frozen/, figures not saved) -> tests (incl. the
-v1.2.1 regression test, which reads outputs/frozen/) -> metrics -> results ->
+technology check (Boss, Sensitivity, MonteCarlo, scenarios, PB with DECARB_MODE
+'none', written to outputs/frozen/, figures not saved) -> comparison runs of
+the other decarbonisation modes (Boss, Sensitivity, MonteCarlo, PB; written to
+outputs/modes/<mode>/, figures not saved) -> tests (incl. the v1.2.1
+regression test, which reads outputs/frozen/) -> metrics -> decarb_modes -> results ->
 assumptions -> baseline_draft -> pb_methods (-> quick_stamp, quick runs). Each script
 runs in its own process, with the non-interactive matplotlib backend and
 PATHWAY_SAVE_FIGURES=1, so every figure is written to outputs/figures/ and
@@ -64,6 +66,14 @@ def tool(name):
     return os.path.join(ROOT, 'tools', f'{name}.py')
 
 
+def comparison_modes():
+    """Decarbonisation modes other than 'none' (outputs/frozen/) and the adopted one."""
+    sys.path.insert(0, ROOT)
+    import Boss
+    import Building_factors as BF
+    return [m for m in BF.DECARB_MODES if m not in ('none', Boss.DECARB_MODE)]
+
+
 def pipeline(skip_mc, quick=False):
     py = sys.executable
     q = {'PATHWAY_QUICK': '1'} if quick else {'PATHWAY_QUICK': '0'}
@@ -91,8 +101,20 @@ def pipeline(skip_mc, quick=False):
     if not (skip_mc or quick):
         run('frozen_montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')], **fz)
     run('frozen_scenarios', [py, tool('replacement_scenarios')], **fz)
+    if not (skip_mc or quick):
+        run('frozen_pb', [py, os.path.join(ROOT, 'PB.py')], **fz)
+    # comparison runs of the other decarbonisation modes (outputs/modes/<mode>/;
+    # tools/decarb_modes.py compares them); figures are not saved
+    for mode in comparison_modes():
+        md = dict(PATHWAY_DECARB_MODE=mode, PATHWAY_SAVE_FIGURES='0')
+        run(f'mode_{mode}_boss', [py, os.path.join(ROOT, 'Boss.py')], **md)
+        run(f'mode_{mode}_sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')], **md)
+        if not skip_mc:
+            run(f'mode_{mode}_montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')], **md)
+            run(f'mode_{mode}_pb', [py, os.path.join(ROOT, 'PB.py')], **md)
     run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
     run('metrics', [py, tool('metrics')] + (['--mc-stale'] if skip_mc else []))
+    run('decarb_modes', [py, tool('decarb_modes')])
     run('results', [py, tool('results')])
     run('assumptions', [py, tool('assumptions')])
     run('baseline_draft', [py, tool('baseline_draft')])

@@ -266,16 +266,15 @@ EDGE = dict(edgecolor='#555555', linewidth=0.4)
 
 TREND_WINDOW_START = 2012
 DAMPING_PHI = 0.8
-# MIX_MODE (v1.0.2, author's decision): coherent storylines.
-#   'storyline' (ADOPTED): S1 and S3 hold the typology floor-area shares at their
-#       MIX_HELD_WINDOW average; S2 ('intensification continues') keeps the
-#       damped ALR trend above.
-#   'held' / 'trend': force one mix whatever the scenario (sensitivities: S3-10
-#       with the trend = the v1.0 mix; S2 with shares held = the maximum
-#       floor-area case, since held shares keep more detached floor area).
-#   Held shares = ratio of sums of consented floor area over the window (floor-
-#   area weighted), with 2026 = the observed months (January-July).
-MIX_MODE = 'storyline'
+# MIX_MODE (author's decision, baseline-pb-v2): 'held' (ADOPTED) for every
+#   scenario: the typology floor-area shares stay at their MIX_HELD_WINDOW
+#   average (ratio of sums of consented floor area over the window, floor-area
+#   weighted, 2026 = the observed months, January-July). The scenarios are Low
+#   (S1), Reference (S3-10) and High (S2), all with shares held.
+#   'trend' (damped ALR trend above) and 'storyline' (S2 with the trend, as in
+#   v1.0.2-v1.2) remain available but are not run or reported: the typology mix
+#   is a pathway lever for the next paper, not a baseline scenario.
+MIX_MODE = 'held'
 MIX_HELD_WINDOW = (2022, 2026)
 # 2026 in-scope floor area (market-excess rule): the observed consented GFA by
 #   typology, c x [(1 - W) GFA_2026 + W GFA_2025], with the observed 2026 mix;

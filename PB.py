@@ -747,7 +747,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     a1.set_title('Annual embodied carbon by scenario vs boundaries'); a1.set_ylabel('kt CO₂e per year')
     a1.grid(alpha=0.3); a1.legend(fontsize=7.5, loc='upper center', bbox_to_anchor=(0.5, -0.07), ncol=3)
     ks = [k for k, *_ in FR.SCEN]
-    short = {'S1': 'low', 'S3-10': 'reference', 'S2': 'storyline', 'S2-held': 'high'}
+    short = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
     a2.bar(range(len(ks)), [runs[k]['I'].loc[py].sum() / M6 for k in ks], color=[c for *_, c in FR.SCEN])
     for v, c, ls, nm in ((bar_.sum() / M6, AR_COLOR, '-', 'AR'), (batp_.sum() / M6, ATP_COLOR, '--', 'AtP')):
         a2.axhline(v, color=c, ls=ls, lw=2, path_effects=HALO)
@@ -827,7 +827,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
 
     # ---- pb_2_loe ----------------------------------------------------------------------
     fig, ax = plt.subplots(1, 2, figsize=(16, 5.6), sharey=True)
-    sc = [('S1', '#2E86AB', 'low (S1)'), ('S3-10', '#C0392B', 'reference (S3-10)'), ('S2', '#27AE60', 'storyline (S2)')]
+    sc = [('S1', '#2E86AB', 'Low (S1)'), ('S3-10', '#C0392B', 'Reference (S3-10)'), ('S2', '#8E44AD', 'High (S2)')]
     for a, k, ttl in ((ax[0], 'AR', 'Acquired rights'), (ax[1], 'AtP', 'Ability to pay')):
         for name, col, lab in sc:
             mm = mc_annual[mc_annual.scenario == name].set_index('year')

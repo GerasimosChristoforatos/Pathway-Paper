@@ -193,8 +193,10 @@ def register():
         ('Household-size shape', f'Stats NZ {B.HH_SIZE_VARIANT}, anchored {B.S_ANCHOR_YEAR}, tail {B.S_TAIL}',
          'DATA (2018-base projections; N4 open)'),
         ('Vacancy forward', 'latest census value held', 'DATA: census 2023 (2018 empty count unrated, F1)'),
-        ('Typology damping phi', f'{B.DAMPING_PHI}', 'JUDGEMENT: ≈4 years of trend applied by 2050'),
-        ('Mix trend window', f'{B.TREND_WINDOW_START}-2025', 'DATA'),
+        ('Typology mix', f"shares held at the {B.MIX_HELD_WINDOW[0]}-{B.MIX_HELD_WINDOW[1]} consented average in "
+         f"every scenario (MIX_MODE '{B.MIX_MODE}')", 'DECISION (author): the mix is a pathway lever for the next '
+         'paper; the damped-trend code path (TREND_WINDOW_START, DAMPING_PHI) remains available but is not run or '
+         'reported'),
         ('Dwelling size reference', f'{B.DWELLING_SIZE_REF[0]}-{B.DWELLING_SIZE_REF[1]}', 'DATA: consents'),
         ('RV share reference', f'{B.RV_SHARE_REF[0]}-{B.RV_SHARE_REF[1]}', 'DATA: consents'),
         ('Soil loss', 'all non-replacement floor area; zero on replacement bands' if not B.SOIL_ON_REPLACEMENT
@@ -244,8 +246,8 @@ LIMITATIONS = [
     '2023-base release (late 2026) to be adopted in a later version.',
     'Timber end of life (C1-C4) excludes biogenic CO2 (confirmed by the author). Whether it includes landfill '
     'methane is TO CONFIRM from Christoforatos & Pickering 2025 (author check).',
-    'With shares held (reference and S1), the Monte Carlo carries no typology-mix uncertainty; the mix is '
-    'bracketed by the storylines and sensitivities instead.',
+    'With shares held in every scenario, neither the scenarios nor the Monte Carlo carry typology-mix '
+    'uncertainty; the mix is treated as a pathway lever (next paper), not as a baseline uncertainty.',
     'The soil factor was derived for Auckland\'s future urban zones and is applied nationally.',
     'Apartments rest on one independent case study (A_1 and A_2 are one design at two scales).',
     'The regional analysis of the rebuilding wave (replacement half-life by territorial authority) is deferred.',
@@ -288,15 +290,10 @@ def main():
     txt = (f"New Zealand is projected to build {b['gfa_Mm2']:.1f} million m² of new residential floor area in "
            f"2026-2050 on the reference path, embodying {b['carbon_kt'] / 1e3:.1f} Mt CO₂e over the life cycle, "
            f"of which {b['upfront_kt'] / 1e3:.1f} Mt is upfront (materials A1-A5 plus soil).")
-    if 'S1' in rows and 'S2-held' in rows:
-        txt += (f" How fast existing dwellings are replaced is the largest structural uncertainty: the low case "
-                f"(long-run rate) gives {rows['S1']['GFA_Mm2']:.1f} million m², the high case (the 2018-2023 rate "
-                f"persisting, shares held) {rows['S2-held']['GFA_Mm2']:.1f} million m².")
-    if 'S2' in rows and 'S2-held' in rows and 'S3-10' in rows:
-        _off = (rows['S2-held']['GFA_Mm2'] - rows['S2']['GFA_Mm2']) / (rows['S2-held']['GFA_Mm2'] - rows['S3-10']['GFA_Mm2'])
-        txt += (f" Under the intensification storyline (S2 with the mix trend), smaller dwellings offset most of the "
-                f"extra redevelopment: {rows['S2']['GFA_Mm2']:.1f} million m² against {rows['S2-held']['GFA_Mm2']:.1f} "
-                f"with shares held, i.e. {100 * _off:.0f}% of the high case's gain over the reference.")
+    if 'S1' in rows and 'S2' in rows:
+        txt += (f" How fast existing dwellings are replaced is the largest structural uncertainty: Low (S1, the "
+                f"long-run rate) gives {rows['S1']['GFA_Mm2']:.1f} million m², High (S2, the 2018-2023 rate "
+                f"persisting) {rows['S2']['GFA_Mm2']:.1f} million m² (typology shares held in every scenario).")
     ref_mc = os.path.join(OUT, 'montecarlo_summary_S3-10.csv')
     if os.path.exists(ref_mc):
         r = pd.read_csv(ref_mc, index_col=0).loc['GFA_Mm2']
@@ -327,13 +324,11 @@ def main():
           '| path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | of which soil | '
           'carbon excl. soil | upfront carbon (kt CO₂e) |', '|---|---|---|---|---|---|---|']
     base = rows.get('S3-10', {}).get('GFA_Mm2', b['gfa_Mm2'])
-    for k, lab in (('S1', 'Low: S1 long-run replacement, shares held'),
-                   ('S3-5', 'S3, half-life 5 yr, shares held'),
-                   ('S3-10', 'Reference: S3 half-life 10 yr, shares held'),
-                   ('S3-15', 'S3, half-life 15 yr, shares held'),
-                   ('S2-held', 'High: S2 2018-2023 replacement, shares held'),
-                   ('S2', 'Storyline: intensification continues (S2 + damped mix trend)'),
-                   ('S3-10-trend', 'Sensitivity: S3-10 with the damped mix trend (v1.0 mix)')):
+    for k, lab in (('S1', 'Low (S1): long-run replacement, shares held'),
+                   ('S3-5', 'Sensitivity: S3 half-life 5 yr, shares held'),
+                   ('S3-10', 'Reference (S3-10): half-life 10 yr, shares held'),
+                   ('S3-15', 'Sensitivity: S3 half-life 15 yr, shares held'),
+                   ('S2', 'High (S2): 2018-2023 replacement persists, shares held')):
         if k in rows:
             r = rows[k]
             up = f"{r['upfront_kt']:,.0f}" if 'upfront_kt' in r else 'n/a'
@@ -347,8 +342,7 @@ def main():
         for p in mcs:
             s = pd.read_csv(p, index_col=0)
             name = os.path.basename(p)[len('montecarlo_summary_'):-4]
-            name = {'S1': 'low (S1)', 'S3-10': 'reference (S3-10)',
-                    'S2': 'storyline: intensification continues (S2 + trend)'}.get(name, name)
+            name = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}.get(name, name)
             for row, lab in (('GFA_Mm2', 'floor area (Mm²)'), ('carbon_kt', 'carbon (kt)'),
                              ('upfront_kt', 'upfront (kt)')):
                 if row in s.index:
@@ -510,16 +504,7 @@ def main():
                      f"area, against annual changes of {h['hist_min_pct']:+.1f}% to {h['hist_max_pct']:+.1f}% in "
                      f"1992-2025 (median {h['hist_median_pct']:+.1f}%).")
         L += ['', 'Notes: household size below the historical minimum is expected from Stats NZ\'s ageing projection '
-                  '(the household-size shape keeps falling as the population ages). In the intensification storyline '
-                  '(S2 + mix trend), average new-dwelling size below the historical minimum is intrinsic to that '
-                  'storyline'
-                  + ((f": by 2050 townhouses rise to {100 * rows['S2']['shares_2050']['Townhouses']:.0f}% of new floor "
-                      f"area (held: {100 * rows['S2-held']['shares_2050']['Townhouses']:.0f}%), while the apartment share "
-                      f"falls slightly ({100 * rows['S2-held']['shares_2050']['Apartments']:.1f}% -> "
-                      f"{100 * rows['S2']['shares_2050']['Apartments']:.1f}%), so the smaller average dwelling "
-                      f"({rows['S2']['size_2050']:.0f} vs {rows['S2-held']['size_2050']:.0f} m² in 2050) comes from "
-                      f"townhouses replacing detached houses.")
-                     if 'shares_2050' in rows.get('S2', {}) and 'shares_2050' in rows.get('S2-held', {}) else '.')]
+                  '(the household-size shape keeps falling as the population ages).']
 
     # ---- sensitivity ----
     sens = os.path.join(OUT, 'sensitivity_oat.csv')
@@ -547,7 +532,7 @@ def main():
          ('LITERATURE', 'Soil 58.77 kg CO2e/m2 footprint, zero on replacement (Christoforatos, Pickering & Schipper 2026)'),
          ('JUDGEMENT', f'Replacement: S3 fades with half-life {BB.S3_HALF_LIFE:g} yr (reference); S1 and S2 bound it'),
          ('JUDGEMENT', 'Near-term market excess: stock-adding vacancy, never absorbed, fading at rho'),
-         ('JUDGEMENT', 'Mix: held shares in S1/S3; damped trend (phi 0.8, about 4 years of trend) in S2'),
+         ('DECISION', 'Mix: typology shares held in every scenario (Low, Reference, High); the damped-trend path is kept in the code but not run'),
          ('JUDGEMENT', 'Household size: interpolation through all published Stats NZ values (2018-2043), held '
                        'constant beyond 2043 with zero slope imposed at 2043'),
          ('JUDGEMENT', 'No completion lag (same-year consents x 0.95)')]

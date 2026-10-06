@@ -152,7 +152,7 @@ def build_setup(settings=None):
                             fy, 0.0, anchor_year=Boss.S_ANCHOR_YEAR)['S_matched']
         for v in VARIANT_Z])
 
-    # ---- typology mix (fixed in every draw): Boss's storyline mix ----
+    # ---- typology mix (fixed in every draw): Boss's mix (shares held) ----
     if B['mix_used'] == 'held':
         shares = B['evolving_gfa_shares'].copy()
     else:
@@ -256,7 +256,7 @@ PARAMS = ['z_pop', 'size', 'complete', 'carbon']
 # path (its files keep the plain names and carry the Sobol indices and figures).
 MC_SCENARIOS = [('S3-10', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0)),
                 ('S1', dict(REPLACEMENT_SCENARIO='S1')),
-                ('S2', dict(REPLACEMENT_SCENARIO='S2'))]   # S2 = storyline (mix trend), not 'high'
+                ('S2', dict(REPLACEMENT_SCENARIO='S2'))]   # High (S2): 2018-2023 rate persists, shares held
 
 
 class TwoPiece:

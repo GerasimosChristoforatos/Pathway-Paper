@@ -45,12 +45,9 @@ GROUP_COLORS = {'Population': '#2E6DB4', 'Household size': '#E67E22', 'Household
 # (group, label, {Boss setting: value})
 CASES = [   # lean set (v1.1); the full v1.0.2 table is in the history (tag v1.0.2)
     ('Replacement scenario', 'Low (S1): long-run rate, shares held', dict(REPLACEMENT_SCENARIO='S1')),
-    ('Replacement scenario', 'Storyline: intensification continues (S2 + mix trend)', dict(REPLACEMENT_SCENARIO='S2')),
     ('Replacement scenario', 'S3: half-life 5 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
     ('Replacement scenario', 'S3: half-life 15 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=15.0)),
-    ('Replacement scenario', 'High (S2): 2018-2023 rate persists, shares held',
-     dict(REPLACEMENT_SCENARIO='S2', MIX_MODE='held')),
-    ('Typology mix', 'S3-10 with the damped mix trend', dict(MIX_MODE='trend')),
+    ('Replacement scenario', 'High (S2): 2018-2023 rate persists, shares held', dict(REPLACEMENT_SCENARIO='S2')),
     ('Household size', 'Stats NZ Low projection variant (S)', dict(HH_SIZE_VARIANT='Low')),
     ('Household size', 'Stats NZ High projection variant (S)', dict(HH_SIZE_VARIANT='High')),
     ('Household size', 'S after 2043: flat (kink at 2043)', dict(S_TAIL='flat')),

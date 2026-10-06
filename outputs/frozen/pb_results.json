@@ -50,6 +50,16 @@
     ],
     "I_sec_base_5yr_kg": 2026870381.3984718,
     "I_sec_base_long_run_2024_25_kg": 1992380535.5191104,
+    "I_sec_base_20yr_kg": 1651755773.1888804,
+    "I_sec_base_full_kg": 1559934900.7429352,
+    "I_sec_base_20yr_window": [
+      2006,
+      2025
+    ],
+    "I_sec_base_full_window": [
+      1992,
+      2025
+    ],
     "I_sec_base_soil_on_all_kg": 2022025447.750091,
     "LoE_AR_base_identity": 8.193832599118943,
     "base_year_b": 2024,
@@ -547,36 +557,24 @@
       "LoE_AtP": 28.314233409934577
     },
     "S3-5": {
-      "label": "S3: fade, half-life 5 yr, shares held",
+      "label": "sensitivity: S3 half-life 5 yr, shares held",
       "I_kt": 32533.26525965927,
       "LoE_AR": 5.233075474165567,
       "LoE_AtP": 29.231170366925518
     },
     "S3-10": {
-      "label": "Reference (S3): fade, half-life 10 yr, shares held",
+      "label": "Reference (S3-10): fade, half-life 10 yr, shares held",
       "I_kt": 33625.15835263456,
       "LoE_AR": 5.4087098262557936,
       "LoE_AtP": 30.212237369222603
     },
     "S3-15": {
-      "label": "S3: fade, half-life 15 yr, shares held",
+      "label": "sensitivity: S3 half-life 15 yr, shares held",
       "I_kt": 34310.660061924944,
       "LoE_AR": 5.518974878157433,
       "LoE_AtP": 30.82816131940577
     },
     "S2": {
-      "label": "Storyline: intensification continues (S2 + damped mix trend)",
-      "I_kt": 34293.737235893794,
-      "LoE_AR": 5.516252789699653,
-      "LoE_AtP": 30.812956143815235
-    },
-    "S3-10-trend": {
-      "label": "sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix)",
-      "I_kt": 31378.33690277942,
-      "LoE_AR": 5.04730170659049,
-      "LoE_AtP": 28.19346611891664
-    },
-    "S2-held": {
       "label": "High (S2): 2018-2023 rate persists, shares held",
       "I_kt": 36753.87533779342,
       "LoE_AR": 5.911973546941774,
@@ -595,10 +593,10 @@
       "LoE_AtP": 31.695709230641082
     },
     "S2-noUC": {
-      "label": "sensitivity: S2 without the census UC correction",
-      "I_kt": 36971.46374170537,
-      "LoE_AR": 5.946973308904997,
-      "LoE_AtP": 33.21889600452967
+      "label": "sensitivity: S2 (High) without the census UC correction",
+      "I_kt": 39619.30521081203,
+      "LoE_AR": 6.372886728319503,
+      "LoE_AtP": 35.59798413080027
     }
   },
   "mc": {
@@ -627,12 +625,12 @@
       "I_sec_base_kt_p95": 2115.9717150322404
     },
     "S2": {
-      "LoE_AR_p5": 4.461435676341075,
-      "LoE_AR_p50": 5.469589751946488,
-      "LoE_AR_p95": 6.508812836510222,
-      "LoE_AtP_p5": 24.765423393709156,
-      "LoE_AtP_p50": 30.501002737900087,
-      "LoE_AtP_p95": 36.50105447423005,
+      "LoE_AR_p5": 4.791398924864731,
+      "LoE_AR_p50": 5.864925122448392,
+      "LoE_AR_p95": 6.953330834466599,
+      "LoE_AtP_p5": 26.50607244597667,
+      "LoE_AtP_p50": 32.67708339549492,
+      "LoE_AtP_p95": 39.15606027616668,
       "n_draws": 5000,
       "I_sec_base_kt_p5": 1862.4770311503473,
       "I_sec_base_kt_p50": 1983.650953132257,
@@ -657,12 +655,38 @@
       "LoE_AtP_p95": 34.09080414937486
     },
     "S2": {
-      "LoE_AR_p5": 4.433600438919975,
-      "LoE_AR_p50": 5.46040570259759,
-      "LoE_AR_p95": 6.534557821413875,
-      "LoE_AtP_p5": 24.765423393709156,
-      "LoE_AtP_p50": 30.501002737900087,
-      "LoE_AtP_p95": 36.50105447423005
+      "LoE_AR_p5": 4.745218063196054,
+      "LoE_AR_p50": 5.8499759516202,
+      "LoE_AR_p95": 7.009867074224444,
+      "LoE_AtP_p5": 26.50607244597667,
+      "LoE_AtP_p50": 32.67708339549492,
+      "LoE_AtP_p95": 39.15606027616668
+    }
+  },
+  "mc_base_20yr": {
+    "S3-10": {
+      "LoE_AR_p5": 5.19981240697418,
+      "LoE_AR_p50": 6.4637283903977405,
+      "LoE_AR_p95": 7.735555851910241,
+      "I_sec_base_kt_p5": 1545.477382096984,
+      "I_sec_base_kt_p50": 1648.3363841944238,
+      "I_sec_base_kt_p95": 1760.4124843987609
+    },
+    "S1": {
+      "LoE_AR_p5": 4.819222124748798,
+      "LoE_AR_p50": 6.05903216372254,
+      "LoE_AR_p95": 7.305514986928534,
+      "I_sec_base_kt_p5": 1545.477382096984,
+      "I_sec_base_kt_p50": 1648.3363841944238,
+      "I_sec_base_kt_p95": 1760.4124843987609
+    },
+    "S2": {
+      "LoE_AR_p5": 5.7509306599397645,
+      "LoE_AR_p50": 7.058970302849806,
+      "LoE_AR_p95": 8.3789783772264,
+      "I_sec_base_kt_p5": 1545.477382096984,
+      "I_sec_base_kt_p50": 1648.3363841944238,
+      "I_sec_base_kt_p95": 1760.4124843987609
     }
   },
   "reference_2026_2050": {
@@ -702,6 +726,22 @@
       "cum_LoE_AR": 5.303595680833341,
       "cum_LoE_AtP": 30.212237369222603,
       "AR_vs_ref_pct": -1.943423640739439,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "iii_base_window_20",
+      "label": "(iii) AR base window 2006-2025 (20 yr)",
+      "cum_LoE_AR": 6.508045060221332,
+      "cum_LoE_AtP": 30.212237369222603,
+      "AR_vs_ref_pct": 20.32527662380732,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "iii_base_window_full",
+      "label": "(iii) AR base window 1992-2025 (full consistent history)",
+      "cum_LoE_AR": 6.891121543132539,
+      "cum_LoE_AtP": 30.212237369222603,
+      "AR_vs_ref_pct": 27.407861846841808,
       "AtP_vs_ref_pct": 0.0
     },
     {

@@ -16,8 +16,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
 | Household-size shape | Stats NZ Medium, anchored 2023, tail hermite_clamped | DATA (2018-base projections; N4 open) |
 | Vacancy forward | latest census value held | DATA: census 2023 (2018 empty count unrated, F1) |
-| Typology damping phi | 0.8 | JUDGEMENT: ≈4 years of trend applied by 2050 |
-| Mix trend window | 2012-2025 | DATA |
+| Typology mix | shares held at the 2022-2026 consented average in every scenario (MIX_MODE 'held') | DECISION (author): the mix is a pathway lever for the next paper; the damped-trend code path (TREND_WINDOW_START, DAMPING_PHI) remains available but is not run or reported |
 | Dwelling size reference | 2023-2025 | DATA: consents |
 | RV share reference | 2016-2025 | DATA: consents |
 | Soil loss | all non-replacement floor area; zero on replacement bands | LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders (Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603) |
@@ -38,6 +37,10 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Sensitivities (item-level) | proxies held at 2025; NZ low-carbon-electricity items held at 2025; lift at the steel-profile rate; class-level mapping of v1.1: deterministic carbon and cumulative LoE, optional step run_all.py --compare-modes, stored in outputs/DECARB_MODES.md with date and commit; frozen technology stays in the default run (sensitivity_oat.csv, pb_sensitivity.csv, pb_4) | DECISION (author) |
 | Carbon-factor sensitivity rows (decarbonised runs) | an alternative materials factor (jackknife, single case study) follows the adopted factor's relative path over time: factor_alt x (materials intensity(t) / 2025 value) | DECISION (author) |
 | History and acquired-rights base | always 2025 factors; decarbonisation applies to 2026-2050 only | DECISION (author): the base is observed past construction, built with past (not future) technology |
+
+### Limitation of the near-term rule
+
+- The near-term surplus (≈27,500 dwellings over 2026-2050, of which ≈24,600 in 2026-2028) is not absorbed by later demand; implied vacancy therefore rises from 5.4% (2023 census) to ≈6.4% and remains there, about 1 percentage point above the 1986-2023 range on a consistent definition (4.0-5.4%). Absorption is not modelled: the persistence rho = 0.52 (lag-1 autocorrelation of the annual departure of building from the calibrated stock identity, 1992-2023) describes how a flow deviation fades (already used for the excess), not a payback of the stock, and the eight census vacancy observations do not identify a mean-reversion rate.
 
 ### Limitations of the material decarbonisation
 
@@ -85,7 +88,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `JOIN_COLOR` | `'#c0392b'` |
 | `JOIN_LABEL` | `'Near-term market excess (2026 observed building above requirement, fading at rho)'` |
 | `MIX_HELD_WINDOW` | `(2022, 2026)` |
-| `MIX_MODE` | `'storyline'` |
+| `MIX_MODE` | `'held'` |
 | `NEAR_TERM_ABSORPTION` | `0.0` |
 | `NEAR_TERM_GAP_REF` | `'2027'` |
 | `NEAR_TERM_JOIN` | `'market_excess'` |
@@ -104,7 +107,9 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `RV_COLOR` | `'#b8a0d0'` |
 | `RV_SHARE_REF` | `(2016, 2025)` |
 | `S3_HALF_LIFE` | `10.0` |
-| `SOIL_ALPHA` | `0.55` |
+| `SOIL_ALPHA` | `0.5` |
+| `SOIL_HATCH` | `'///'` |
+| `SOIL_HATCH_COLOR` | `'#8C7B66'` |
 | `SOIL_ON_REPLACEMENT` | `False` |
 | `S_ANCHOR_YEAR` | `2023` |
 | `S_TAIL` | `'hermite_clamped'` |
@@ -124,7 +129,8 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
 | Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |
-| AR base window | 2016-2025 (sensitivity 2021-2025, 5 yr as Horup et al. 2025) | DECISION (author); LITERATURE for the 5-yr row |
+| AR base window | 2016-2025 (sensitivities 2021-2025, 5 yr as Horup et al. 2025; 2006-2025, 20 yr, also as a non-adopted MC band; 1992-2025, the full consistent history) | DECISION (author); LITERATURE for the 5-yr row |
+| History consistent with the projection scope | from 1992: consents by typology, retirement-village units and census-interval net replacement rates from 1991; the soil convention needs the previous year's stock | DATA; limitations: 1996-2000 negative census-interval net rate (soil on all floor area), pre-2013 vacancy on the estimated empty share, 2008-12 trough inside the 20-yr window |
 | Historical sector emissions | built floor area x 2025 case-study factors; soil only on non-replacement floor area (census-interval net replacement rate x last year's stock x (1 - RV share) x dwelling size), 2024-25 at the 2018-23 rate carried | DECISION (author): same convention as the projection; long-run 2024-25 rate reported as a note |
 | GDP per capita | NY.GDP.PCAP.PP.KD (PPP, constant 2021 international $); sensitivity NY.GDP.PCAP.CD (current US$) | DECISION (author); DATA: World Bank WDI |
 | GDP base year b | latest year with >= 98% of WDI-economy population reporting the PPP measure; held fixed (static) | DECISION (author); 99% is never reached |
@@ -153,12 +159,15 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `ALPHA_CHECK_YEAR` | `2017` |
 | `ALPHA_HJALSTED_2017` | `0.243` |
 | `AR_BASE_WINDOW` | `(2016, 2025)` |
+| `AR_BASE_WINDOW_20` | `(2006, 2025)` |
+| `AR_BASE_WINDOW_FULL` | `(1992, 2025)` |
 | `AR_BASE_WINDOW_SENS` | `(2021, 2025)` |
 | `AR_COLOR` | `'#1F5FA8'` |
 | `ATP_COLOR` | `'#C2571A'` |
 | `GDP_MEASURE` | `'NY.GDP.PCAP.PP.KD'` |
 | `GDP_MEASURE_SENS` | `'NY.GDP.PCAP.CD'` |
 | `HIST_RATE_AFTER_LAST_CENSUS` | `'recent'` |
+| `HIST_START` | `1992` |
 | `M6` | `1000000.0` |
 | `MC_PCT` | `(5, 50, 95)` |
 | `MC_REL_TOL` | `1e-09` |
@@ -169,5 +178,6 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `SSEC_VALUE_COLUMNS` | `('Value - Value/Detached', 'Value - Value/Townhouses', 'Value - Value/Apartments')` |
 | `SSEC_WINDOW` | `(2016, 2025)` |
 | `T0` | `2025` |
+| `TOP_N` | `5` |
 | `WDI_COVERAGE_MIN` | `0.98` |
 | `SOURCE_PAIRS` | `{'A': {'label': '2 °C carrying capacity (Bjørn & Hauschild 2015)', 'sos': 6810000000000.0, 'i_glob': 55800000000000.0}, 'C': {'label': '1 W/m² planetary boundary (Bjørn & Hauschild 2015)', 'sos': 3610000000000.0, 'i_glob': 55800000000000.0}}` |

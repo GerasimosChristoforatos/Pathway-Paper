@@ -96,14 +96,12 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 
 | scenario | cumulative LoE AR | cumulative LoE AtP |
 |---|---|---|
-| S1 | 4.68 | 26.1 |
+| Low (S1) | 4.68 | 26.1 |
 | S1-noUC | 4.80 | 26.8 |
-| S2 | 5.07 | 28.3 |
-| S2-held | 5.44 | 30.4 |
-| S2-noUC | 5.46 | 30.5 |
-| S3-10 | 4.99 | 27.9 |
+| High (S2) | 5.44 | 30.4 |
+| S2-noUC | 5.85 | 32.7 |
+| Reference (S3-10) | 4.99 | 27.9 |
 | S3-10-noUC | 5.23 | 29.2 |
-| S3-10-trend | 4.66 | 26.0 |
 | S3-15 | 5.09 | 28.4 |
 | S3-5 | 4.83 | 27.0 |
 
@@ -115,11 +113,23 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 | (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 9.41 | +88.6% | 52.6 | +88.6% |
 | (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 4.99 | +0.0% | 85.7 | +207.7% |
 | (iii) AR base window 2021-2025 (5 yr, as Horup) | 4.89 | -1.9% | 27.9 | +0.0% |
+| (iii) AR base window 2006-2025 (20 yr) | 6.00 | +20.3% | 27.9 | +0.0% |
+| (iii) AR base window 1992-2025 (full consistent history) | 6.36 | +27.4% | 27.9 | +0.0% |
 | (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 4.98 | -0.2% | 27.7 | -0.6% |
 | (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 5.30 | +6.2% | 30.0 | +7.7% |
 | (v) s_sec with FCE share as ratio of sums | 4.99 | +0.0% | 27.9 | +0.2% |
 | (vi) Frozen technology: 2025 factors held (no decarbonisation) | 5.41 | +8.4% | 30.2 | +8.4% |
 | Note (not in tornado): history 2024-25 at the long-run net replacement rate | 4.98 | -0.2% | 27.9 | +0.0% |
+
+### Monte Carlo with a 2006-2025 AR base (20 years; not adopted)
+
+Ī_sec,base 2006-2025 = 1,651.8 kt/yr (adopted 2016-2025: 1,987.5); full consistent history 1992-2025: 1,559.9 kt/yr. Same saved draws, base recomputed per draw (no new random numbers); AtP is unaffected.
+
+| scenario | cumulative LoE AR p5 / p50 / p95 (20-yr base) | adopted base |
+|---|---|---|
+| Reference (S3-10) | 4.81 / 5.96 / 7.13 | 4.00 / 4.95 / 5.92 |
+| Low (S1) | 4.46 / 5.59 / 6.74 | 3.71 / 4.65 / 5.59 |
+| High (S2) | 5.30 / 6.49 / 7.70 | 4.42 / 5.40 / 6.39 |
 
 ## Assumption register
 
@@ -132,7 +142,8 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
 | Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |
-| AR base window | 2016-2025 (sensitivity 2021-2025, 5 yr as Horup et al. 2025) | DECISION (author); LITERATURE for the 5-yr row |
+| AR base window | 2016-2025 (sensitivities 2021-2025, 5 yr as Horup et al. 2025; 2006-2025, 20 yr, also as a non-adopted MC band; 1992-2025, the full consistent history) | DECISION (author); LITERATURE for the 5-yr row |
+| History consistent with the projection scope | from 1992: consents by typology, retirement-village units and census-interval net replacement rates from 1991; the soil convention needs the previous year's stock | DATA; limitations: 1996-2000 negative census-interval net rate (soil on all floor area), pre-2013 vacancy on the estimated empty share, 2008-12 trough inside the 20-yr window |
 | Historical sector emissions | built floor area x 2025 case-study factors; soil only on non-replacement floor area (census-interval net replacement rate x last year's stock x (1 - RV share) x dwelling size), 2024-25 at the 2018-23 rate carried | DECISION (author): same convention as the projection; long-run 2024-25 rate reported as a note |
 | GDP per capita | NY.GDP.PCAP.PP.KD (PPP, constant 2021 international $); sensitivity NY.GDP.PCAP.CD (current US$) | DECISION (author); DATA: World Bank WDI |
 | GDP base year b | latest year with >= 98% of WDI-economy population reporting the PPP measure; held fixed (static) | DECISION (author); 99% is never reached |

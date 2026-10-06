@@ -3,6 +3,8 @@ reference,"Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, 
 i_source_pair,(i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015),9.410492768866284,52.565593353555364,88.64265927977834,88.64265927977843
 ii_gdp_measure,"(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",4.98852847218903,85.73340088425633,0.0,207.67229474851035
 iii_base_window,"(iii) AR base window 2021-2025 (5 yr, as Horup)",4.89158023053549,27.865167695497036,-1.94342364073945,0.0
+iii_base_window_20,(iii) AR base window 2006-2025 (20 yr),6.002460683618838,27.865167695497036,20.325276623807298,0.0
+iii_base_window_full,(iii) AR base window 1992-2025 (full consistent history),6.355777464036967,27.865167695497036,27.407861846841808,0.0
 iv_pop_statsnz,"(iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",4.976676812790643,27.705654898591597,-0.23757826510281133,-0.5724451352618787
 iv_pop_wpp,"(iv) NZ population: WPP 2024 probabilistic median, New Zealand",5.298223967605914,30.01522579380461,6.208153309005482,7.715934538068536
 v_ssec,(v) s_sec with FCE share as ratio of sums,4.98852847218903,27.929982630669176,0.0,0.232601992137349

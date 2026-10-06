@@ -159,10 +159,10 @@
     "size": {
       "hist_min": 139.08718595847193,
       "hist_max": 205.03022702424593,
-      "years_outside": 24,
+      "years_outside": 0,
       "max_above_pct": 0.0,
-      "max_below_pct": 8.25597753441496,
-      "first_outside": 2027
+      "max_below_pct": 0.0,
+      "first_outside": null
     },
     "vacancy": {
       "hist_min": 5.075373310444934,

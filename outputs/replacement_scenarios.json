@@ -139,7 +139,7 @@
       "O26": 38862.6,
       "e26": 17038.409980691595,
       "e27": 10480.206219223044,
-      "label": "S3: fade, half-life 5 yr, shares held"
+      "label": "sensitivity: S3 half-life 5 yr, shares held"
     },
     "S3-10": {
       "GFA_Mm2": 89.56525459310167,
@@ -175,7 +175,7 @@
       "O26": 38862.6,
       "e26": 16759.675404959813,
       "e27": 9973.711263233039,
-      "label": "Reference (S3): fade, half-life 10 yr, shares held"
+      "label": "Reference (S3-10): fade, half-life 10 yr, shares held"
     },
     "S3-15": {
       "GFA_Mm2": 91.57727235520493,
@@ -211,81 +211,9 @@
       "O26": 38862.6,
       "e26": 16662.387023435313,
       "e27": 9788.664226594203,
-      "label": "S3: fade, half-life 15 yr, shares held"
+      "label": "sensitivity: S3 half-life 15 yr, shares held"
     },
     "S2": {
-      "GFA_Mm2": 90.81462733572602,
-      "carbon_kt": 31548.317553763984,
-      "upfront_kt": 22255.004469434818,
-      "shares_2050": {
-        "Detached": 0.39920807606278497,
-        "Townhouses": 0.5599636663228423,
-        "Apartments": 0.04082825761437271
-      },
-      "size_2050": 127.60417913249053,
-      "soil_kt": 2590.098572562504,
-      "rate_pct": {
-        "2026": 0.3122099828683497,
-        "2030": 0.3122099828683497,
-        "2040": 0.3122099828683497,
-        "2050": 0.3122099828683497
-      },
-      "net_removals_per_yr_mean": 7404.661732822952,
-      "net_removals": {
-        "2026": 6580.155281018047,
-        "2050": 8172.4448453809555
-      },
-      "gross_demolitions_per_yr_mean": 8221.765755742636,
-      "gross_demolitions": {
-        "2026": 7306.275061442673,
-        "2050": 9074.27369336861
-      },
-      "cumulative_net_removals_share_of_2025_stock": 0.08783262757565609,
-      "redevelopment_channel": 0.0,
-      "join_net": 26555.071505418407,
-      "R26": 22401.664916400823,
-      "O26": 38862.6,
-      "e26": 16460.935083599175,
-      "e27": 9391.901340473029,
-      "label": "Storyline: intensification continues (S2 + damped mix trend)"
-    },
-    "S3-10-trend": {
-      "GFA_Mm2": 82.4815586667894,
-      "carbon_kt": 28950.619668817093,
-      "upfront_kt": 20506.29045921933,
-      "shares_2050": {
-        "Detached": 0.39920807606278497,
-        "Townhouses": 0.5599636663228423,
-        "Apartments": 0.04082825761437271
-      },
-      "size_2050": 127.60417913249053,
-      "soil_kt": 2594.8573198858567,
-      "rate_pct": {
-        "2026": 0.2980355893121449,
-        "2030": 0.25021551949483123,
-        "2040": 0.17538158236063606,
-        "2050": 0.13796461379353844
-      },
-      "net_removals_per_yr_mean": 4615.259999303884,
-      "net_removals": {
-        "2026": 6281.41495965741,
-        "2050": 3611.3777864605195
-      },
-      "gross_demolitions_per_yr_mean": 5432.364022223566,
-      "gross_demolitions": {
-        "2026": 7007.534740082037,
-        "2050": 4513.2066344481755
-      },
-      "cumulative_net_removals_share_of_2025_stock": 0.05474529793667393,
-      "redevelopment_channel": 0.0,
-      "join_net": 27479.123839651176,
-      "R26": 22102.924595040186,
-      "O26": 38862.6,
-      "e26": 16759.675404959813,
-      "e27": 9973.711263233039,
-      "label": "sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix)"
-    },
-    "S2-held": {
       "GFA_Mm2": 98.74146599074054,
       "carbon_kt": 33798.800896560446,
       "upfront_kt": 23412.002503446383,
@@ -394,16 +322,16 @@
       "label": "sensitivity: S3-10 without the census UC correction"
     },
     "S2-noUC": {
-      "GFA_Mm2": 98.54017341342374,
-      "carbon_kt": 33959.55915352823,
-      "upfront_kt": 23877.989142950377,
+      "GFA_Mm2": 107.21386522906477,
+      "carbon_kt": 36376.94975835784,
+      "upfront_kt": 25098.846468027652,
       "shares_2050": {
-        "Detached": 0.39920807606278497,
-        "Townhouses": 0.5599636663228423,
-        "Apartments": 0.04082825761437271
+        "Detached": 0.6059678545731274,
+        "Townhouses": 0.34524078995949914,
+        "Apartments": 0.04879135546737345
       },
-      "size_2050": 127.60417913249053,
-      "soil_kt": 2563.4664856460945,
+      "size_2050": 141.32058771513013,
+      "soil_kt": 3016.821003257954,
       "rate_pct": {
         "2026": 0.42793001604638714,
         "2030": 0.42793001604638714,
@@ -427,7 +355,7 @@
       "O26": 38862.6,
       "e26": 14022.013110507974,
       "e27": 6934.670711182494,
-      "label": "sensitivity: S2 without the census UC correction"
+      "label": "sensitivity: S2 (High) without the census UC correction"
     }
   }
 }

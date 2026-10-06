@@ -21,8 +21,8 @@ python run_all.py                      # full run; the only basis for reported r
 python run_all.py --quick              # development only: every output marked "QUICK RUN, not for reporting"
 ```
 
-The default full run takes about 16 minutes on a 4-core machine (measured: 956 s
-wall clock, including the frozen-technology check run; see `CHANGELOG.md`).
+The default full run takes about 15 minutes on a 4-core machine (measured: 925 s
+for baseline-pb-v2, including the frozen-technology check run; see `CHANGELOG.md`).
 `python run_all.py --compare-modes` additionally runs the class-level
 decarbonisation mode of baseline-pb-v1.1 in full and the item-level
 decarbonisation sensitivities (outputs/DECARB_MODES.md, stamped with date and

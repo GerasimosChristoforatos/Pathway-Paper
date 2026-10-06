@@ -7,15 +7,13 @@ Current defaults, near-term join `market_excess`; only the scenario changes. Net
 | scenario | floor area 2026-50 (Mm2) | vs S1 | carbon (kt) | rate 2026 / 2030 / 2040 / 2050 (%/yr) | net removals /yr, mean 2026-50 | gross demolitions /yr, mean (if long-run residual persists) | cumulative net removals, % of 2025 stock |
 |---|---|---|---|---|---|---|---|
 | Low (S1): long-run rate, shares held | 83.24 | +0.0% | 31,513 | 0.101 / 0.101 / 0.101 / 0.101 | 2,385 | 3,202 | 2.8% |
-| S3: fade, half-life 5 yr, shares held | 86.35 | +3.7% | 32,533 | 0.285 / 0.206 / 0.127 / 0.107 | 3,619 | 4,436 | 4.3% |
-| Reference (S3): fade, half-life 10 yr, shares held | 89.57 | +7.6% | 33,625 | 0.298 / 0.250 / 0.175 / 0.138 | 4,615 | 5,432 | 5.5% |
-| S3: fade, half-life 15 yr, shares held | 91.58 | +10.0% | 34,311 | 0.303 / 0.269 / 0.206 / 0.167 | 5,231 | 6,048 | 6.2% |
-| Storyline: intensification continues (S2 + damped mix trend) | 90.81 | +9.1% | 34,294 | 0.312 / 0.312 / 0.312 / 0.312 | 7,405 | 8,222 | 8.8% |
-| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 82.48 | -0.9% | 31,378 | 0.298 / 0.250 / 0.175 / 0.138 | 4,615 | 5,432 | 5.5% |
+| sensitivity: S3 half-life 5 yr, shares held | 86.35 | +3.7% | 32,533 | 0.285 / 0.206 / 0.127 / 0.107 | 3,619 | 4,436 | 4.3% |
+| Reference (S3-10): fade, half-life 10 yr, shares held | 89.57 | +7.6% | 33,625 | 0.298 / 0.250 / 0.175 / 0.138 | 4,615 | 5,432 | 5.5% |
+| sensitivity: S3 half-life 15 yr, shares held | 91.58 | +10.0% | 34,311 | 0.303 / 0.269 / 0.206 / 0.167 | 5,231 | 6,048 | 6.2% |
 | High (S2): 2018-2023 rate persists, shares held | 98.74 | +18.6% | 36,754 | 0.312 / 0.312 / 0.312 / 0.312 | 7,405 | 8,222 | 8.8% |
 | sensitivity: S1 without the census UC correction | 85.70 | +3.0% | 32,344 | 0.134 / 0.134 / 0.134 / 0.134 | 3,181 | 3,202 | 3.8% |
 | sensitivity: S3-10 without the census UC correction | 94.48 | +13.5% | 35,276 | 0.408 / 0.342 / 0.238 / 0.186 | 6,277 | 6,298 | 7.4% |
-| sensitivity: S2 without the census UC correction | 98.54 | +18.4% | 36,971 | 0.428 / 0.428 / 0.428 / 0.428 | 10,149 | 10,170 | 12.0% |
+| sensitivity: S2 (High) without the census UC correction | 107.21 | +28.8% | 39,619 | 0.428 / 0.428 / 0.428 / 0.428 | 10,149 | 10,170 | 12.0% |
 
 ## Against the 2026 excess (reported, NOT fitted)
 
@@ -24,15 +22,13 @@ O = observed-implied 2026 completions (all categories, nowcast consents); R = th
 | scenario | O 2026 | R 2026 | excess 2026 | share of S1 excess covered | gap_ref (2027) | booked as redevelopment, dwellings |
 |---|---|---|---|---|---|---|
 | Low (S1): long-run rate, shares held | 38,863 | 17,941 | +20,922 | 0% | +13,886 | +0 |
-| S3: fade, half-life 5 yr, shares held | 38,863 | 21,824 | +17,038 | 19% | +10,480 | +0 |
-| Reference (S3): fade, half-life 10 yr, shares held | 38,863 | 22,103 | +16,760 | 20% | +9,974 | +0 |
-| S3: fade, half-life 15 yr, shares held | 38,863 | 22,200 | +16,662 | 20% | +9,789 | +0 |
-| Storyline: intensification continues (S2 + damped mix trend) | 38,863 | 22,402 | +16,461 | 21% | +9,392 | +0 |
-| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 38,863 | 22,103 | +16,760 | 20% | +9,974 | +0 |
+| sensitivity: S3 half-life 5 yr, shares held | 38,863 | 21,824 | +17,038 | 19% | +10,480 | +0 |
+| Reference (S3-10): fade, half-life 10 yr, shares held | 38,863 | 22,103 | +16,760 | 20% | +9,974 | +0 |
+| sensitivity: S3 half-life 15 yr, shares held | 38,863 | 22,200 | +16,662 | 20% | +9,789 | +0 |
 | High (S2): 2018-2023 rate persists, shares held | 38,863 | 22,402 | +16,461 | 21% | +9,392 | +0 |
 | sensitivity: S1 without the census UC correction | 38,863 | 18,648 | +20,215 | 3% | +13,174 | +0 |
 | sensitivity: S3-10 without the census UC correction | 38,863 | 24,426 | +14,437 | 31% | +7,742 | +0 |
-| sensitivity: S2 without the census UC correction | 38,863 | 24,841 | +14,022 | 33% | +6,935 | +0 |
+| sensitivity: S2 (High) without the census UC correction | 38,863 | 24,841 | +14,022 | 33% | +6,935 | +0 |
 
 ## Census record of net replacement (dwelling-count identity)
 

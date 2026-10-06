@@ -4,7 +4,14 @@ technology; the adopted run decarbonises materials). Central-run metrics and the
 four scenario totals are recomputed here under 'none'; the Monte Carlo
 summaries, the scenario table and the sensitivity table are read from
 outputs/frozen/, written by run_all's frozen-technology steps before the tests.
-In a quick run (run_all.py --quick) those file checks are skipped."""
+In a quick run (run_all.py --quick) those file checks are skipped.
+
+Deliberate changes since v1.2.1 (baseline-pb-v2, CHANGELOG): the storyline
+scenario (S2 + damped mix trend) and the 'S3-10 with the damped mix trend'
+rows are removed; the High scenario 'S2-held' is now 'S2' (shares held), so
+its v1.2.1 values are compared under the new key; the Monte Carlo summary of
+S2 is now High, whose v1.2.1-era reference did not exist: it is compared with
+tests/regression_v2_high_mc.json (from the baseline-pb-v2 full run)."""
 import json
 import os
 import sys
@@ -20,7 +27,17 @@ FROZEN_DIR = os.path.join(ROOT, 'outputs', 'frozen')
 quick = pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1',
                            reason='quick run: no frozen-technology Monte Carlo (not for reporting)')
 FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_v1_2_1.json')))
-REMOVED_SENSITIVITY_ROWS = {'Three-channel join (v1.0.2)'}      # dropped with the three-channel join
+REMOVED_SENSITIVITY_ROWS = {'Three-channel join (v1.0.2)',      # dropped with the three-channel join
+                            'Storyline: intensification continues (S2 + mix trend)',   # baseline-pb-v2
+                            'S3-10 with the damped mix trend'}                         # baseline-pb-v2
+# baseline-pb-v2: storyline removed, High renamed (v1.2.1 key -> current key)
+REMOVED_SCENARIOS = {'S2', 'S3-10-trend'}                       # the v1.2.1 storyline rows
+FX['scenarios'] = {('S2' if k == 'S2-held' else k): v for k, v in FX['scenarios'].items()
+                   if k not in REMOVED_SCENARIOS}
+HIGH_MC = os.path.join(ROOT, 'tests', 'regression_v2_high_mc.json')
+FX['mc'] = {k: v for k, v in FX['mc'].items() if k != 'montecarlo_summary_S2.csv'}
+if os.path.exists(HIGH_MC):
+    FX['mc']['montecarlo_summary_S2.csv'] = json.load(open(HIGH_MC))['montecarlo_summary_S2.csv']
 
 
 def same(a, b):
@@ -35,7 +52,7 @@ def test_central_run_metrics():
     assert not bad, bad
 
 
-@pytest.mark.parametrize('key', ['S1', 'S3-10', 'S2', 'S2-held'])
+@pytest.mark.parametrize('key', ['S1', 'S3-10', 'S2'])
 def test_scenario_totals_recomputed(key):
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     import replacement_scenarios as RS

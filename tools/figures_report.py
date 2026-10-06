@@ -24,10 +24,10 @@ import validation  # noqa: E402
 
 OUT = os.path.join(ROOT, 'outputs')
 FIG = os.path.join(OUT, 'figures')
-SCEN = [('S1', 'low (S1)', dict(REPLACEMENT_SCENARIO='S1'), '#2E86AB'),
-        ('S3-10', 'reference (S3-10)', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0), '#C0392B'),
-        ('S2', 'storyline: intensification continues (S2 + trend)', dict(REPLACEMENT_SCENARIO='S2'), '#27AE60'),
-        ('S2-held', 'high (S2, shares held)', dict(REPLACEMENT_SCENARIO='S2', MIX_MODE='held'), '#8E44AD')]
+# the three scenarios (typology shares held in all); one naming scheme everywhere
+SCEN = [('S1', 'Low (S1)', dict(REPLACEMENT_SCENARIO='S1'), '#2E86AB'),
+        ('S3-10', 'Reference (S3-10)', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0), '#C0392B'),
+        ('S2', 'High (S2)', dict(REPLACEMENT_SCENARIO='S2'), '#8E44AD')]
 M6 = 1e6
 
 
@@ -231,7 +231,7 @@ def main():
     ks = list(runs)
     a = ax[1]
     a.bar(range(len(ks)), [runs[k]['p']['gfa'].loc[2026:].sum() / M6 for k in ks], color=[runs[k]['col'] for k in ks])
-    short = {'S1': 'low', 'S3-10': 'reference', 'S2': 'storyline', 'S2-held': 'high'}
+    short = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
     a.set_xticks(range(len(ks))); a.set_xticklabels([short[k] for k in ks]); a.set_title('Cumulative floor area 2026-2050')
     a.set_ylabel('Mm²'); a.grid(alpha=0.3, axis='y')
     a = ax[2]
@@ -257,7 +257,7 @@ def main():
     ax[0].text(0.02, 0.03, '2026 is not used as the base: it is observed building and carries the one-off\n'
                'population shortfall and the near-term market excess.', transform=ax[0].transAxes, fontsize=8)
     lo, hi = np.inf, -np.inf
-    for k in ('S3-10', 'S2', 'S2-held'):
+    for k in ('S1', 'S3-10', 'S2'):
         ci = (runs[k]['p']['carbon'] / runs[k]['p']['gfa']).loc[2026:2050]
         ax[1].plot(ci.index, ci, color=runs[k]['col'], lw=2, label=runs[k]['lab'])
         lo, hi = min(lo, ci.min()), max(hi, ci.max())
@@ -282,7 +282,7 @@ def main():
             if r['method'] in ('reference_s3_10', v['model_method']):
                 a.plot(yy, np.cumsum(r['predicted_path']) / 1e3, lw=1.6,
                        color='#C0392B' if r['method'] == 'reference_s3_10' else '#2E86AB',
-                       label=f"{'reference (S3-10)' if r['method'] == 'reference_s3_10' else 'S1 (census dwelling-count rate)'}, "
+                       label=f"{'Reference (S3-10)' if r['method'] == 'reference_s3_10' else 'S1 (census dwelling-count rate)'}, "
                              f"consistent vacancy {r['error_pct']:+.1f}%")
         for r in pub:
             if r['origin'] == o and r['method'] == 'reference_s3_10' and 'years' in r:
@@ -321,7 +321,7 @@ def main():
         'boss_04_annual_gfa': 'Annual floor area by typology and by demand type (in scope; RV units excluded by scaling).',
         'boss_05_annual_carbon': 'Annual embodied carbon by typology and by demand type (in scope).',
         'boss_10_material_flows': 'Carbon by material, annual and cumulative; soil (land-use change) on top.',
-        'fig_bridge': 'Waterfall of 2026-2050 floor area by reason for building: low (S1) / reference (S3-10) / storyline (S2).',
+        'fig_bridge': 'Waterfall of 2026-2050 floor area by reason for building: Low (S1) / Reference (S3-10) / High (S2).',
         'fig_replacement_rate': 'Net replacement rate: census intervals (steps), S1 / S3-10 / S2 paths, BRANZ demolition rate.',
         'fig_scenarios': 'Annual floor area by scenario with the reference MC band; cumulative floor area and carbon.',
         'fig_reality_checks': 'Projection vs the 1991-2025 range (outputs/reality_checks.md) and the 2026->2027 handover.',

@@ -20,23 +20,19 @@ import validation  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_MD = os.path.join(validation.Boss.OUT_DIR, 'replacement_scenarios.md')     # outputs/ (outputs/frozen/
 OUT_JSON = os.path.join(validation.Boss.OUT_DIR, 'replacement_scenarios.json')  # in the frozen check run)
-# storylines (Boss.MIX_MODE = 'storyline'): S1 and S3 hold the mix, S2 keeps the damped trend
+# three scenarios, all with typology shares held (Boss.MIX_MODE = 'held'); S3-5 and S3-15 are
+# half-life sensitivities; the -noUC rows drop the census under-construction correction
 SCENARIOS = [('S1', 'Low (S1): long-run rate, shares held', dict(REPLACEMENT_SCENARIO='S1')),
-             ('S3-5', 'S3: fade, half-life 5 yr, shares held', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
-             ('S3-10', 'Reference (S3): fade, half-life 10 yr, shares held',
+             ('S3-5', 'sensitivity: S3 half-life 5 yr, shares held', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
+             ('S3-10', 'Reference (S3-10): fade, half-life 10 yr, shares held',
               dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0)),
-             ('S3-15', 'S3: fade, half-life 15 yr, shares held', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=15.0)),
-             ('S2', 'Storyline: intensification continues (S2 + damped mix trend)',
-              dict(REPLACEMENT_SCENARIO='S2')),
-             ('S3-10-trend', 'sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix)',
-              dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0, MIX_MODE='trend')),
-             ('S2-held', 'High (S2): 2018-2023 rate persists, shares held',
-              dict(REPLACEMENT_SCENARIO='S2', MIX_MODE='held')),
+             ('S3-15', 'sensitivity: S3 half-life 15 yr, shares held', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=15.0)),
+             ('S2', 'High (S2): 2018-2023 rate persists, shares held', dict(REPLACEMENT_SCENARIO='S2')),
              ('S1-noUC', 'sensitivity: S1 without the census UC correction',
               dict(REPLACEMENT_SCENARIO='S1', CENSUS_UC_CORRECTION=False)),
              ('S3-10-noUC', 'sensitivity: S3-10 without the census UC correction',
               dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0, CENSUS_UC_CORRECTION=False)),
-             ('S2-noUC', 'sensitivity: S2 without the census UC correction',
+             ('S2-noUC', 'sensitivity: S2 (High) without the census UC correction',
               dict(REPLACEMENT_SCENARIO='S2', CENSUS_UC_CORRECTION=False))]
 
 

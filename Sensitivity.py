@@ -227,7 +227,7 @@ def tornado(cases, out, name, title_note=None):
     ax[0].set_yticks(y); ax[0].set_yticklabels(cases.case, fontsize=8.5)
     present = [g for g in GROUP_COLORS if g in set(cases.group)]      # only groups shown
     handles = [plt.Rectangle((0, 0), 1, 1, color=GROUP_COLORS[g]) for g in present]
-    ax[1].legend(handles, present, fontsize=8, loc='lower right')
+    ax[1].legend(handles, present, fontsize=8, loc='upper left', bbox_to_anchor=(1.01, 1.0))   # outside: no overlap
     fig.text(0.01, 0.005, 'Note: the single-case carbon factors and the soil-order extremes (Raw / Organic) are bounds '
              'shown outside the Monte Carlo, not probability-weighted cases.', fontsize=8, style='italic')
     _save(fig, name)

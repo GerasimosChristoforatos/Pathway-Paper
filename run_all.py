@@ -129,6 +129,7 @@ def pipeline(skip_mc, quick=False, compare=False):
     run('assumptions', [py, tool('assumptions')])
     run('baseline_draft', [py, tool('baseline_draft')])
     run('pb_methods', [py, tool('pb_methods')])
+    run('check_outputs', [py, tool('check_outputs')])
     if quick:
         run('quick_stamp', [py, tool('quick_stamp')])
 

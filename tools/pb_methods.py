@@ -18,6 +18,9 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 
 
+# one naming scheme for the three scenarios (other keys, e.g. S3-5, are sensitivities)
+SCEN_NAME = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
+
 def _modes_note():
     """One sentence on the cumulative LoE under each decarbonisation mode (outputs/decarb_modes.json)."""
     p = os.path.join(OUT, 'decarb_modes.json')
@@ -150,12 +153,23 @@ def main():
               f"{m['cum_LoE_AtP_S3_10']:.1f} (AtP; {m['cum_LoE_AtP_S3_10_mc_p5']:.1f}-"
               f"{m['cum_LoE_AtP_S3_10_mc_p95']:.1f}).", '',
               '| scenario | cumulative LoE AR | cumulative LoE AtP |', '|---|---|---|']
-        L += [f"| {k} | {v['AR']:.2f} | {v['AtP']:.1f} |" for k, v in m['cum_LoE_by_scenario'].items()]
+        L += [f"| {SCEN_NAME.get(k, k)} | {v['AR']:.2f} | {v['AtP']:.1f} |" for k, v in m['cum_LoE_by_scenario'].items()]
     L += ['', '### Deterministic sensitivities (reference scenario S3-10)', '',
           '| case | cumulative LoE AR | vs reference | cumulative LoE AtP | vs reference |', '|---|---|---|---|---|']
     for _, x in sens.iterrows():
         L.append(f"| {x['label']} | {x['cum_LoE_AR']:.2f} | {x['AR_vs_ref_pct']:+.1f}% | {x['cum_LoE_AtP']:.1f} | "
                  f"{x['AtP_vs_ref_pct']:+.1f}% |")
+    if r.get('mc_base_20yr'):
+        w20 = c.get('I_sec_base_20yr_window', ['?', '?'])
+        L += ['', f'### Monte Carlo with a {w20[0]}-{w20[1]} AR base (20 years; not adopted)', '',
+              f"Ī_sec,base {w20[0]}-{w20[1]} = {c['I_sec_base_20yr_kg'] / 1e6:,.1f} kt/yr (adopted {w0}-{w1}: "
+              f"{c['I_sec_base_kg'] / 1e6:,.1f}); full consistent history {c['I_sec_base_full_window'][0]}-"
+              f"{c['I_sec_base_full_window'][1]}: {c['I_sec_base_full_kg'] / 1e6:,.1f} kt/yr. Same saved draws, base "
+              'recomputed per draw (no new random numbers); AtP is unaffected.', '',
+              '| scenario | cumulative LoE AR p5 / p50 / p95 (20-yr base) | adopted base |', '|---|---|---|']
+        L += [f"| {SCEN_NAME.get(k, k)} | {v['LoE_AR_p5']:.2f} / {v['LoE_AR_p50']:.2f} / {v['LoE_AR_p95']:.2f} | "
+              f"{r['mc'][k]['LoE_AR_p5']:.2f} / {r['mc'][k]['LoE_AR_p50']:.2f} / {r['mc'][k]['LoE_AR_p95']:.2f} |"
+              for k, v in r['mc_base_20yr'].items()]
     L += ['', '## Assumption register', '', '| setting | value | basis |', '|---|---|---|']
     L += [f'| {a} | {v} | {bb} |' for a, v, bb in PB.assumption_register()]
     L += ['', '## Limitations', ''] + [f'- {x}' for x in PB.LIMITATIONS]

@@ -2,6 +2,8 @@
 
 Stored result: comparison run 2026-10-05 20:04 UTC at commit 3bcd7aa (`python run_all.py --compare-modes`).
 
+Note (added by hand in baseline-pb-v2; not generated): in this stored comparison run, "S2" (the `_S2` Monte Carlo files and the S2 PB results in `outputs/modes/horup_class_v1_1/`) is the pre-v2 storyline scenario (S2 + damped mix trend); from baseline-pb-v2 S2 is High (2018-2023 rate persists, shares held). The tables below use the reference path S3-10 only, which is unchanged.
+
 Adopted mode: `horup_item`. Reference path S3-10, 2026-2050. Each mode is a full pipeline run (own directory). A1-A3 only is decarbonised; A4-A5, B2, B4, C1-C4 and soil stay at 2025 in every mode.
 
 ## Results by mode

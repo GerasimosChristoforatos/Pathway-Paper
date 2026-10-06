@@ -4,4 +4,7 @@
 Requirement 2026 22,103 -> excess +16,760; requirement 2027 28,889 -> gap_ref +9,974 (basis 2027), fading at rho = 0.52.
 Booked as surplus: +27,479 dwellings over 2026-2050 (scenario S3).
 Implied vacancy (1 - households / (stock + excess)): peak 6.52% in 2031, 6.36% in 2050 (held rate 5.39%); census 1986-2023 range 5.08-8.09% (empty dwellings; before 2013 the empty share of unoccupied is estimated, and 2013->2018 is a definitional break).
+Consistent definition (pooled 2018/2023 empty share of unoccupied, 49.2%): 1986 4.42%, 1991 4.64%, 1996 4.01%, 2001 4.81%, 2006 4.80%, 2013 5.22%, 2018 5.08%, 2023 5.38%.
 Sensitivity, booked as redevelopment: implied net removals peak at 23,041 in 2026 (default: 6,281).
+
+Limitation: The near-term surplus (≈27,500 dwellings over 2026-2050, of which ≈24,600 in 2026-2028) is not absorbed by later demand; implied vacancy therefore rises from 5.4% (2023 census) to ≈6.4% and remains there, about 1 percentage point above the 1986-2023 range on a consistent definition (4.0-5.4%). Absorption is not modelled: the persistence rho = 0.52 (lag-1 autocorrelation of the annual departure of building from the calibrated stock identity, 1992-2023) describes how a flow deviation fades (already used for the excess), not a payback of the stock, and the eight census vacancy observations do not identify a mean-reversion rate.

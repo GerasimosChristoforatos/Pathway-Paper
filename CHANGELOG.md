@@ -1,5 +1,86 @@
 # CHANGELOG
 
+## baseline-pb-v2
+
+Clean-up, scenario simplification and figure improvements. The AESA framework,
+the decarbonisation mapping, the carbon factors, soil and the demographic method
+are unchanged.
+
+**Results**: Low (S1) and Reference (S3-10) are unchanged: every Monte Carlo file
+of S1 and S3-10 (draws, annual, summaries, Sobol) is byte-identical to
+baseline-PB_v1.2, and the deterministic totals and PB results of S1 and S3-10 are
+equal (tests/test_v2.py against tests/regression_pb_v1_2_low_ref.json). Only the
+third scenario changes, because its MC/PB "S2" is now High (shares held) instead
+of the storyline:
+
+| High (S2), 2026-2050 | v1.2 "S2" (storyline: S2 + damped mix trend) | v2 High (S2, shares held) |
+|---|---|---|
+| Floor area (Mm², deterministic) | 90.81 | 98.74 (= v1.2 "S2-held") |
+| Carbon / upfront (kt, deterministic) | 31,548 / 22,255 | 33,799 / 23,412 |
+| MC floor area p5 / p50 / p95 (Mm²) | 71.27 / 90.11 / 110.13 | 77.36 / 97.96 / 119.86 |
+| MC carbon p5 / p50 / p95 (kt) | 24,526 / 31,279 / 38,652 | 26,339 / 33,468 / 41,374 |
+| MC upfront p5 / p50 / p95 (kt) | 17,357 / 22,077 / 27,238 | 18,247 / 23,219 / 28,689 |
+| Cumulative LoE_AR (deterministic; MC p5 / p50 / p95) | 5.07; 4.12 / 5.03 / 5.98 | 5.44; 4.42 / 5.40 / 6.39 |
+| Cumulative LoE_AtP (deterministic; MC p5 / p50 / p95) | 28.3; 22.78 / 28.05 / 33.58 | 30.4; 24.41 / 30.05 / 35.98 |
+
+* **Three scenarios only** (all with typology shares held): Low (S1), Reference
+  (S3-10), High (S2). `Boss.MIX_MODE = 'held'`; the storyline (S2 + damped mix
+  trend) and the "S3-10 with the damped mix trend" sensitivity are removed from
+  the scenario table, Monte Carlo, Sobol, Sensitivity, PB, figures, metrics and
+  documents; the trend code path stays behind `MIX_MODE` (not run or reported;
+  ASSUMPTIONS). One naming scheme everywhere. S3-5 and S3-15 stay as half-life
+  sensitivities. tools/check_outputs.py (last run_all step) and tests/test_v2.py
+  check that no generated output mentions the storyline (the stored
+  `--compare-modes` run in outputs/modes/ predates v2: note in DECARB_MODES.md).
+* **Regression references updated deliberately** (tests/test_regression_v1_2_1.py):
+  the v1.2.1 storyline rows (scenarios S2, S3-10-trend, S2-noUC; sensitivity rows
+  "Storyline ..." and "S3-10 with the damped mix trend") are removed; v1.2.1
+  "S2-held" is compared under its new key S2 (unchanged values); the frozen High
+  MC summary and the S2-noUC row (High without the census UC correction), which
+  had no v1.2.1 reference, are pinned in tests/regression_v2_high.json from this
+  version's full run.
+* **Near-term surplus not absorbed** (author decision after review): the
+  persistence rho = 0.52 is a flow persistence (lag-1 autocorrelation of the
+  annual departure of building from the calibrated stock identity), already used
+  to fade the excess, not a stock payback rate, and the eight census vacancy
+  observations do not identify a mean-reversion rate. Limitation added
+  (ASSUMPTIONS, BASELINE_DRAFT, near_term_join.md): ≈27,500 dwellings over
+  2026-2050 (≈24,600 in 2026-2028); implied vacancy 5.4% -> ≈6.4%, about 1
+  percentage point above the 1986-2023 range on a consistent definition
+  (4.0-5.4%). diag_3 shades that range and labels the implied vacancy.
+* **AR base window**: adopted 2016-2025 (Ī_sec,base 1,987.5 kt/yr). Sensitivity
+  rows 2006-2025 (20 yr; 1,651.8 kt/yr; cumulative LoE_AR 6.00, +20.3%) and
+  1992-2025 (full consistent history; 1,559.9 kt/yr; 6.36, +27.4%); AtP
+  unaffected. The history is consistent with the projection scope from 1992
+  (limitations in the PB register). Non-adopted MC band with the 20-year base
+  (per-draw base from the saved draws, no new random numbers): cumulative LoE_AR
+  p5 / p50 / p95 4.81 / 5.96 / 7.13 (Reference), 4.46 / 5.59 / 6.74 (Low),
+  5.30 / 6.49 / 7.70 (High); pb_results.json `mc_base_20yr`.
+* **Historical analogue of the near-term excess** (diag_3): per census interval
+  (1991-2023; 1986-91 not covered), building beyond the structural requirement
+  = vacancy change + (net replacement - long-run replacement), on the consistent
+  vacancy definition used by the diag_3 history: -0.2k, +2.1k, -1.6k, +0.8k,
+  -5.4k and +6.3k dwellings per year. On that definition the 2013-18 value is
+  not driven by the vacancy definition break (vacancy change -2.7k over the
+  interval); it reflects net replacement below the long-run rate in the
+  household identity.
+* **Figures**: material stacks in the six Pride-stripe colours (one order in every
+  figure; Timber violet ... Others red), soil faded and hatched on top
+  (Boss.material_patch); main-text tornados with the 5 largest effects
+  (sens_1_tornado, pb_4_sensitivity) and full versions *_SI; sens_2 gains a
+  cumulative-carbon panel and the Stats NZ population 5th / 95th paths, and a
+  note on the household-size convergence after 2041 (projections end in 2043);
+  pb_5 shows the history 1992-2025 by demand type per census interval (2025
+  factors) and the boundaries from 2025; the shading between the AR and AtP
+  boundaries is removed from every _pb figure; diag_2 and fig_conversion_chain
+  titles corrected.
+* **Tests**: 86 pass (storyline absent, scenario names, Low / Reference
+  unchanged, tornado top-5 selection, Pride colour order, soil top layer, plus
+  the existing suite).
+* **Run time**: default full run 925 s on 4 cores (915 s up to the tests step,
+  which first failed on the S2-noUC reference above and was re-run after the
+  fixture was added, plus 10 s for the report steps).
+
 ## baseline-pb-v1.2
 
 **Adopted carbon factors change** (author approval): item-level material

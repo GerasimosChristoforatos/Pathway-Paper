@@ -39,15 +39,13 @@ Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demograp
 | scenario | floor area (Mm2) | carbon (kt) | of which soil (kt) | carbon excl. soil (kt) | upfront (kt) |
 |---|---|---|---|---|---|
 | Low (S1): long-run rate, shares held | 83.24 | 29,083 | 3,096 | 25,987 | 20,327 |
-| S3: fade, half-life 5 yr, shares held | 86.35 | 30,028 | 3,054 | 26,973 | 20,944 |
-| Reference (S3): fade, half-life 10 yr, shares held | 89.57 | 31,013 | 3,050 | 27,963 | 21,592 |
-| S3: fade, half-life 15 yr, shares held | 91.58 | 31,627 | 3,048 | 28,578 | 21,993 |
-| Storyline: intensification continues (S2 + damped mix trend) | 90.81 | 31,548 | 2,590 | 28,958 | 22,255 |
-| sensitivity: S3 half-life 10 with the damped mix trend (v1.0 mix) | 82.48 | 28,951 | 2,595 | 26,356 | 20,506 |
+| sensitivity: S3 half-life 5 yr, shares held | 86.35 | 30,028 | 3,054 | 26,973 | 20,944 |
+| Reference (S3-10): fade, half-life 10 yr, shares held | 89.57 | 31,013 | 3,050 | 27,963 | 21,592 |
+| sensitivity: S3 half-life 15 yr, shares held | 91.58 | 31,627 | 3,048 | 28,578 | 21,993 |
 | High (S2): 2018-2023 rate persists, shares held | 98.74 | 33,799 | 3,045 | 30,754 | 23,412 |
 | sensitivity: S1 without the census UC correction | 85.70 | 29,831 | 3,088 | 26,743 | 20,816 |
 | sensitivity: S3-10 without the census UC correction | 94.48 | 32,510 | 3,024 | 29,486 | 22,572 |
-| sensitivity: S2 without the census UC correction | 98.54 | 33,960 | 2,563 | 31,396 | 23,878 |
+| sensitivity: S2 (High) without the census UC correction | 107.21 | 36,377 | 3,017 | 33,360 | 25,099 |
 
 ## Planetary-boundary layer (climate change; 2 °C carrying capacity (Bjørn & Hauschild 2015))
 
@@ -77,22 +75,20 @@ Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted 
 
 | scenario (deterministic) | cumulative LoE AR | cumulative LoE AtP |
 |---|---|---|
-| S1 | 4.68 | 26.1 |
+| Low (S1) | 4.68 | 26.1 |
 | S1-noUC | 4.80 | 26.8 |
-| S2 | 5.07 | 28.3 |
-| S2-held | 5.44 | 30.4 |
-| S2-noUC | 5.46 | 30.5 |
-| S3-10 | 4.99 | 27.9 |
+| High (S2) | 5.44 | 30.4 |
+| S2-noUC | 5.85 | 32.7 |
+| Reference (S3-10) | 4.99 | 27.9 |
 | S3-10-noUC | 5.23 | 29.2 |
-| S3-10-trend | 4.66 | 26.0 |
 | S3-15 | 5.09 | 28.4 |
 | S3-5 | 4.83 | 27.0 |
 
 | MC scenario | LoE AR p5 / p50 / p95 | LoE AtP p5 / p50 / p95 |
 |---|---|---|
-| S1 | 3.71 / 4.65 / 5.59 | 20.6 / 25.9 / 31.4 |
-| S2 | 4.12 / 5.03 / 5.98 | 22.8 / 28.0 / 33.6 |
-| S3-10 | 4.00 / 4.95 / 5.92 | 22.1 / 27.6 / 33.2 |
+| Low (S1) | 3.71 / 4.65 / 5.59 | 20.6 / 25.9 / 31.4 |
+| High (S2) | 4.42 / 5.40 / 6.39 | 24.4 / 30.1 / 36.0 |
+| Reference (S3-10) | 4.00 / 4.95 / 5.92 | 22.1 / 27.6 / 33.2 |
 
 ## Material decarbonisation modes (adopted: horup_item; reference S3-10)
 

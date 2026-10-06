@@ -86,6 +86,15 @@ T0 = 2025                          # base year of the population modifier (Horup
 PB_YEARS = (2026, 2050)
 AR_BASE_WINDOW = (2016, 2025)      # mean annual sector impact, 10 years (manuscript)
 AR_BASE_WINDOW_SENS = (2021, 2025)  # 5 years, as Horup et al. (2025) (2017-2021)
+# Longer AR base windows (sensitivity rows; the 20-year one also as a non-adopted MC band).
+# The history is consistent with the projection scope from 1992: consents by typology,
+# retirement-village units and census-interval net replacement rates start in 1991, and
+# the soil convention needs the previous year's stock (from 1991). Limitations: in
+# 1996-2000 the census-interval net rate is negative, so soil applies to all floor area;
+# pre-2013 vacancy rests on the estimated empty share; 2006-2025 includes the 2008-12 trough.
+HIST_START = 1992
+AR_BASE_WINDOW_20 = (2006, 2025)    # 20 years
+AR_BASE_WINDOW_FULL = (HIST_START, 2025)   # the full consistent history (34 years)
 # Historical soil convention = the projection's (engine.forward, soil_on_replacement
 # False): soil only on floor area that is not net replacement. Net replacement in
 # calendar year y = census-interval rate x last year's stock x (1 - RV share) x
@@ -309,6 +318,7 @@ def mc_runs(fy, hist):
         carbon = np.empty((len(d), len(fy)))
         pop = np.empty((len(d), len(fy)))
         ibase = np.empty(len(d))
+        ibase20 = np.empty(len(d))
         kcar = MC.PARAMS.index('carbon')
         worst = 0.0
         for j in range(len(d)):
@@ -318,6 +328,7 @@ def mc_runs(fy, hist):
             carbon[j] = o['carbon']
             kc = min(int(X[j, kcar] * MC.N_BOOT), MC.N_BOOT - 1)        # the draw's bootstrap replicate
             ibase[j] = base_with_factors(hist, su['typ'], su['boot_emb'][kc])
+            ibase20[j] = base_with_factors(hist, su['typ'], su['boot_emb'][kc], AR_BASE_WINDOW_20)
             pop[j] = su['pop50'] + MC.interp_z(X[j, 0], MC.Z_KNOTS, su['spreads'])
             # the population path is the one the draw used: hh x S = pop
             if not np.allclose(o['hh'] * o['S'], pop[j], rtol=1e-12, atol=0):
@@ -327,7 +338,7 @@ def mc_runs(fy, hist):
                              f'(> {MC_REL_TOL:g}); MC outputs are stale - rerun MonteCarlo.py.')
         print(f'  MC {name}: {len(d):,} draws re-run, max relative difference vs saved outputs {worst:.1e} (OK)')
         central = base_with_factors(hist, su['typ'], su['emb_central'])
-        out[name] = dict(carbon=carbon, pop=pop, i_base=ibase, i_base_central=central)
+        out[name] = dict(carbon=carbon, pop=pop, i_base=ibase, i_base_central=central, i_base_20=ibase20)
     importlib.reload(Boss)
     return out
 
@@ -344,10 +355,12 @@ def main():
     pair = SOURCE_PAIRS[SOURCE_PAIR]
 
     # ---- sector history and base -------------------------------------------
-    hist = historical_emissions(B, range(1992, 2026))
-    hist_long = historical_emissions(B, range(1992, 2026), after='long_run')
+    hist = historical_emissions(B, range(HIST_START, 2026))
+    hist_long = historical_emissions(B, range(HIST_START, 2026), after='long_run')
     i_base = aesa.mean_over(hist['I_sec_kg'], AR_BASE_WINDOW)
     i_base_5 = aesa.mean_over(hist['I_sec_kg'], AR_BASE_WINDOW_SENS)
+    i_base_20 = aesa.mean_over(hist['I_sec_kg'], AR_BASE_WINDOW_20)
+    i_base_full = aesa.mean_over(hist['I_sec_kg'], AR_BASE_WINDOW_FULL)
     i_base_long = aesa.mean_over(hist_long['I_sec_kg'], AR_BASE_WINDOW)
     i_base_soil_all = aesa.mean_over(hist['I_soil_on_all_kg'], AR_BASE_WINDOW)
 
@@ -395,7 +408,7 @@ def main():
     # ---- Monte Carlo ---------------------------------------------------------
     print('PB: Monte Carlo (re-run from saved draws)')
     mc = mc_runs(fy, hist)
-    mc_rows, mc_cum, mc_cum_fixed = [], {}, {}
+    mc_rows, mc_cum, mc_cum_fixed, mc_cum_20 = [], {}, {}, {}
     sel = (fy >= PB_YEARS[0]) & (fy <= PB_YEARS[1])
     pw_f = p_w.reindex(fy).values
     for name, m in mc.items():
@@ -427,6 +440,12 @@ def main():
         cf = m['carbon'][:, sel].sum(axis=1) / bar_fixed[:, sel].sum(axis=1)
         mc_cum_fixed[name] = {f'LoE_AR_p{p}': float(np.percentile(cf, p)) for p in MC_PCT}
         mc_cum_fixed[name].update({f'LoE_AtP_p{p}': float(np.percentile(ct, p)) for p in MC_PCT})
+        # non-adopted variant: AR base over 20 years (2006-2025), per draw (no new random numbers)
+        bar20 = aesa.boundary_ar(pair['sos'], m['i_base_20'][:, None], pair['i_glob'], m['pop'], pw_f,
+                                 p_nz.loc[T0], p_w.loc[T0])
+        c20 = m['carbon'][:, sel].sum(axis=1) / bar20[:, sel].sum(axis=1)
+        mc_cum_20[name] = {f'LoE_AR_p{p}': float(np.percentile(c20, p)) for p in MC_PCT}
+        mc_cum_20[name].update({f'I_sec_base_kt_p{p}': float(np.percentile(m['i_base_20'], p) / M6) for p in MC_PCT})
     mc_annual = pd.DataFrame(mc_rows)
     mc_annual.to_csv(os.path.join(OUT_DIR, 'pb_mc_annual.csv'), index=False)
 
@@ -442,6 +461,10 @@ def main():
              *cum_pair(cp=comp_sens)),
             ('iii_base_window', f'(iii) AR base window {AR_BASE_WINDOW_SENS[0]}-{AR_BASE_WINDOW_SENS[1]} (5 yr, as Horup)',
              *cum_pair(ib=i_base_5)),
+            ('iii_base_window_20', f'(iii) AR base window {AR_BASE_WINDOW_20[0]}-{AR_BASE_WINDOW_20[1]} (20 yr)',
+             *cum_pair(ib=i_base_20)),
+            ('iii_base_window_full', f'(iii) AR base window {AR_BASE_WINDOW_FULL[0]}-{AR_BASE_WINDOW_FULL[1]} '
+             '(full consistent history)', *cum_pair(ib=i_base_full)),
             ('iv_pop_statsnz', '(iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)',
              *cum_pair(pnz=nz_population_alt('statsnz_median', years_b))),
             ('iv_pop_wpp', '(iv) NZ population: WPP 2024 probabilistic median, New Zealand',
@@ -491,6 +514,8 @@ def main():
         components=dict(SOS_kg=pair['sos'], I_glob_kg=pair['i_glob'], pair_label=pair['label'],
                         I_sec_base_kg=i_base, I_sec_base_window=list(AR_BASE_WINDOW),
                         I_sec_base_5yr_kg=i_base_5, I_sec_base_long_run_2024_25_kg=i_base_long,
+                        I_sec_base_20yr_kg=i_base_20, I_sec_base_full_kg=i_base_full,
+                        I_sec_base_20yr_window=list(AR_BASE_WINDOW_20), I_sec_base_full_window=list(AR_BASE_WINDOW_FULL),
                         I_sec_base_soil_on_all_kg=i_base_soil_all,
                         LoE_AR_base_identity=pair['i_glob'] / pair['sos'],
                         base_year_b=b_year, alpha=comp['alpha'], g_W=comp['g_W'], g_NZ=comp['g_NZ'],
@@ -506,7 +531,7 @@ def main():
         boundaries={int(y): dict(B_AR_kt=float(b_ar.loc[y] / M6), B_AtP_kt=float(b_atp.loc[y] / M6),
                                  P_NZ=float(p_nz.loc[y]), P_W=float(p_w.loc[y])) for y in years_b},
         B_AtP_over_B_AR=dict(min=float(ratio.min()), max=float(ratio.max())),
-        deterministic=cum_det, mc=mc_cum, mc_base_fixed=mc_cum_fixed,
+        deterministic=cum_det, mc=mc_cum, mc_base_fixed=mc_cum_fixed, mc_base_20yr=mc_cum_20,
         reference_2026_2050=dict(I_kt=float(ref_I.loc[slice(*PB_YEARS)].sum() / M6),
                                  B_AR_kt=float(b_ar.loc[slice(*PB_YEARS)].sum() / M6),
                                  B_AtP_kt=float(b_atp.loc[slice(*PB_YEARS)].sum() / M6),
@@ -570,8 +595,14 @@ def assumption_register():
          f"CO2-eq/yr; sensitivity C: {pc['label']}, SOS {pc['sos']:.3g}", 'DECISION (author) among LITERATURE '
          'values (Bjørn & Hauschild 2015, ESM2); see the source check'),
         ('Period and base year', f'{PB_YEARS[0]}-{PB_YEARS[1]}; t0 = {T0}', 'DECISION (author)'),
-        ('AR base window', f'{AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} (sensitivity {AR_BASE_WINDOW_SENS[0]}-'
-         f'{AR_BASE_WINDOW_SENS[1]}, 5 yr as Horup et al. 2025)', 'DECISION (author); LITERATURE for the 5-yr row'),
+        ('AR base window', f'{AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} (sensitivities {AR_BASE_WINDOW_SENS[0]}-'
+         f'{AR_BASE_WINDOW_SENS[1]}, 5 yr as Horup et al. 2025; {AR_BASE_WINDOW_20[0]}-{AR_BASE_WINDOW_20[1]}, '
+         f'20 yr, also as a non-adopted MC band; {AR_BASE_WINDOW_FULL[0]}-{AR_BASE_WINDOW_FULL[1]}, the full '
+         'consistent history)', 'DECISION (author); LITERATURE for the 5-yr row'),
+        ('History consistent with the projection scope', f'from {HIST_START}: consents by typology, retirement-'
+         'village units and census-interval net replacement rates from 1991; the soil convention needs the previous '
+         "year's stock", 'DATA; limitations: 1996-2000 negative census-interval net rate (soil on all floor area), '
+         'pre-2013 vacancy on the estimated empty share, 2008-12 trough inside the 20-yr window'),
         ('Historical sector emissions', 'built floor area x 2025 case-study factors; soil only on non-replacement '
          'floor area (census-interval net replacement rate x last year\'s stock x (1 - RV share) x dwelling size), '
          f"2024-25 at the {'2018-23 rate carried' if HIST_RATE_AFTER_LAST_CENSUS == 'recent' else 'long-run rate'}",
@@ -666,14 +697,12 @@ def _save(fig, name):
 
 
 def _boundary_lines(ax, years, b_ar, b_atp, scale=M6, label=True, cumulative=False):
-    """AR (solid) and AtP (dashed) boundary lines with a white halo and the range
-    between them shaded; direct labels at the right end."""
+    """AR (solid) and AtP (dashed) boundary lines with a white halo; direct labels
+    at the right end. No shading between them (the principles are not a range to fill)."""
     a = np.asarray(b_ar, float) / scale
     t = np.asarray(b_atp, float) / scale
     if cumulative:
         a, t = np.cumsum(a), np.cumsum(t)
-    ax.fill_between(years, t, a, color='#7F8C8D', alpha=0.18, lw=0,
-                    label='range between the two principles' if label else None)
     ax.plot(years, a, color=AR_COLOR, lw=2.2, path_effects=HALO,
             label='boundary, acquired rights (AR)' if label else None)
     ax.plot(years, t, color=ATP_COLOR, lw=2.2, ls='--', path_effects=HALO,
@@ -681,6 +710,57 @@ def _boundary_lines(ax, years, b_ar, b_atp, scale=M6, label=True, cumulative=Fal
     for v, c, nm in ((a, AR_COLOR, 'AR'), (t, ATP_COLOR, 'AtP')):
         ax.annotate(f'{nm} {v[-1]:,.0f}' if v[-1] >= 10 else f'{nm} {v[-1]:,.1f}', (years[-1], v[-1]),
                     xytext=(4, 0), textcoords='offset points', va='center', fontsize=8, color='#333333')
+
+
+TOP_N = 5        # main-text pb_4 shows the TOP_N largest effects (full version: pb_4_sensitivity_SI)
+
+
+def top_rows(s, n):
+    """The n sensitivity rows with the largest absolute effect, max(|AR %|, |AtP %|)."""
+    eff = s[['AR_vs_ref_pct', 'AtP_vs_ref_pct']].abs().max(axis=1)
+    return s.assign(_eff=eff).sort_values('_eff').tail(n).drop(columns='_eff')
+
+
+def pb_tornado(s, ref, name, note=None):
+    """Cumulative LoE 2026-2050 per sensitivity row, AR and AtP panels."""
+    fig, ax = plt.subplots(1, 2, figsize=(16, max(5.2, 0.42 * len(s) + 1.4)))
+    for a, k, col, ttl in ((ax[0], 'AR', AR_COLOR, 'acquired rights'), (ax[1], 'AtP', ATP_COLOR, 'ability to pay')):
+        v = s[f'cum_LoE_{k}'].values - ref[f'cum_LoE_{k}']
+        order = np.argsort(np.abs(v))
+        a.barh(range(len(s)), v[order], color=col, alpha=0.8)
+        a.set_yticks(range(len(s))); a.set_yticklabels([s['label'].values[i] for i in order], fontsize=8)
+        for i, j in enumerate(order):
+            a.annotate(f"{s[f'cum_LoE_{k}'].values[j]:.2f} ({s[f'{k}_vs_ref_pct'].values[j]:+.1f}%)",
+                       (max(v[j], 0.0), i), xytext=(4, 0), textcoords='offset points', ha='left', va='center',
+                       fontsize=8)
+        a.set_xlim(min(0.0, v.min()) - 0.05 * np.ptp(np.r_[v, 0]), v.max() + 0.35 * np.ptp(np.r_[v, 0]))
+        a.axvline(0, color='black', lw=1)
+        a.set_xlabel(f'change in cumulative LoE vs reference ({ref[f"cum_LoE_{k}"]:.2f})')
+        a.set_title(f'Cumulative LoE 2026-2050, {ttl} (reference S3-10)'); a.grid(alpha=0.3, axis='x')
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
+    fig.text(0.5, 0.01, 'One setting changed per row; labels show the cumulative LoE of that row. Rows that do not '
+             'enter a principle (e.g. GDP measure for AR) show no change.' + (f' {note}' if note else ''),
+             ha='center', fontsize=8.5, style='italic')
+    _save(fig, name)
+
+
+def historical_demand_carbon(B, hist):
+    """Historical carbon by demand type, one mean per census interval: the in-scope
+    floor area by demand type of validation.hist_demand_intervals, with the
+    interval's materials carbon (2025 factors, PB.historical_emissions) shared by
+    floor area and its soil carbon shared among the non-replacement bands. The
+    bands add up to the interval mean of I_sec. Returns [(y0, y1, [(label, kg, colour)])]."""
+    out = []
+    for y0, y1, parts in validation.hist_demand_intervals(B):
+        h = hist.loc[max(y0 + 1, HIST_START):y1]
+        if h.empty:
+            continue
+        mat, soil = float(h['materials_kg'].mean()), float(h['soil_kg'].mean())
+        tot = sum(v for _, v, _ in parts)
+        nonrep = sum(v for lab, v, _ in parts if lab != Boss.REPL_LABEL)
+        out.append((y0, y1, [(lab, mat * v / tot + (0.0 if lab == Boss.REPL_LABEL else soil * v / nonrep), col)
+                             for lab, v, col in parts]))
+    return out
 
 
 def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell):
@@ -878,37 +958,44 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
              'B_k / dwellings. ' + pair['label'] + '.', ha='center', fontsize=8.5, style='italic')
     _save(fig, 'pb_3_headroom')
 
-    # ---- pb_4_sensitivity (tornado) ---------------------------------------------------------
+    # ---- pb_4_sensitivity (tornado): full rows for the SI, the TOP_N largest for the main text ----
     s = sens_df[~sens_df['case'].isin(['reference']) & ~sens_df['case'].str.startswith('note')]
-    fig, ax = plt.subplots(1, 2, figsize=(16, max(5.2, 0.42 * len(s) + 1.4)))
     ref = sens_df.set_index('case').loc['reference']
-    for a, k, col, ttl in ((ax[0], 'AR', AR_COLOR, 'acquired rights'), (ax[1], 'AtP', ATP_COLOR, 'ability to pay')):
-        v = s[f'cum_LoE_{k}'].values - ref[f'cum_LoE_{k}']
-        order = np.argsort(np.abs(v))
-        a.barh(range(len(s)), v[order], color=col, alpha=0.8)
-        a.set_yticks(range(len(s))); a.set_yticklabels([s['label'].values[i] for i in order], fontsize=8)
-        for i, j in enumerate(order):
-            a.annotate(f"{s[f'cum_LoE_{k}'].values[j]:.2f} ({s[f'{k}_vs_ref_pct'].values[j]:+.1f}%)",
-                       (max(v[j], 0.0), i), xytext=(4, 0), textcoords='offset points', ha='left', va='center',
-                       fontsize=8)
-        a.set_xlim(min(0.0, v.min()) - 0.05 * np.ptp(np.r_[v, 0]), v.max() + 0.35 * np.ptp(np.r_[v, 0]))
-        a.axvline(0, color='black', lw=1)
-        a.set_xlabel(f'change in cumulative LoE vs reference ({ref[f"cum_LoE_{k}"]:.2f})')
-        a.set_title(f'Cumulative LoE 2026-2050, {ttl} (reference S3-10)'); a.grid(alpha=0.3, axis='x')
-    fig.tight_layout(rect=(0, 0.06, 1, 1))
-    fig.text(0.5, 0.01, 'One setting changed per row; labels show the cumulative LoE of that row. Rows that do not '
-             'enter a principle (e.g. GDP measure for AR) show no change.', ha='center', fontsize=8.5, style='italic')
-    _save(fig, 'pb_4_sensitivity')
+    pb_tornado(s, ref, 'pb_4_sensitivity_SI')
+    pb_tornado(top_rows(s, TOP_N), ref, 'pb_4_sensitivity',
+               note=f'The {TOP_N} largest effects (largest |% change| of AR or AtP); all rows: pb_4_sensitivity_SI.')
 
-    # ---- pb_5_demand_vs_boundary (supplementary) ------------------------------------------------
-    fig, ax = plt.subplots(figsize=(11, 6))
+    # ---- pb_5_demand_vs_boundary: history by demand type + projection vs the boundaries ----
+    fig, ax = plt.subplots(figsize=(13, 6.5))
+    hp = historical_demand_carbon(B, hist)
+    for i, (y0, y1, parts) in enumerate(hp):
+        up = dn = 0.0
+        faint = i == len(hp) - 1                                   # after the latest census
+        for lab, v, col in parts:
+            kw = dict(width=y1 - y0, align='edge', color=col, alpha=0.2 if faint else 0.4, edgecolor='white',
+                      linewidth=0.6)
+            ax.bar(y0 + 0.5, v / M6, bottom=up if v >= 0 else dn, **kw)
+            if v >= 0:
+                up += v
+            else:
+                dn += v
+    hy = hist.index[(hist.index >= HIST_START) & (hist.index <= 2025)]
+    ax.plot(hy, hist.loc[hy, 'I_sec_kg'] / M6, color='black', lw=1.2, alpha=0.7,
+            label='sector carbon, observed building (2025 factors), annual')
     Boss.plot_demand_bands(ax, py, *B['fig_bands']['carbon'])
-    _boundary_lines(ax, py, bar_, batp_)
-    ax.set_ylabel('kt CO₂e per year'); ax.set_xlim(2026, 2051.5); ax.grid(alpha=0.3)
-    ax.set_title('Annual carbon by demand type (in scope) vs the boundaries, reference S3-10')
+    yb = np.asarray([y for y in b_ar.index if y >= T0])
+    _boundary_lines(ax, yb, b_ar.loc[yb].values, b_atp.loc[yb].values)
+    ax.axvline(2025.5, color='grey', ls=':', lw=1)
+    ax.axhline(0, color='black', lw=0.7)
+    ax.set_ylabel('kt CO₂e per year'); ax.set_xlim(HIST_START - 0.5, 2051.5); ax.grid(alpha=0.3)
+    ax.set_title(f'Annual carbon by demand type vs the boundaries: history {HIST_START}-2025 (faded, one bar per '
+                 'census interval) and projection, reference S3-10')
     Boss.demand_legend(ax)
-    fig.tight_layout(rect=(0, 0.05, 1, 1))
-    fig.text(0.5, 0.01, cap, ha='center', fontsize=8, style='italic', wrap=True)
+    fig.tight_layout(rect=(0, 0.07, 1, 1))
+    fig.text(0.5, 0.01, cap + ' History: floor area by demand type per census interval (interval means; annual '
+             'detail not identified between censuses; last bar 2024-25 with consent-derived households), carbon at '
+             '2025 case-study factors, soil on the non-replacement bands (PB.historical_emissions); the black line '
+             'is the annual total. Boundaries from 2025.', ha='center', fontsize=8, style='italic', wrap=True)
     _save(fig, 'pb_5_demand_vs_boundary')
     if not SAVE_FIGURES:
         plt.show()

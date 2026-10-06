@@ -254,14 +254,20 @@ JOIN_LABEL = 'Near-term market excess (2026 observed building above requirement,
 JOIN_COLOR = '#c0392b'
 WAVE_LABEL = 'Replacement: recent redevelopment wave (fading)'
 WAVE_COLOR = '#d35400'
-# Materials in the carbon figures (boss_10, diag_5), bottom to top: (column, label, colour);
-# soil (land-use change, not a material) on top at alpha SOIL_ALPHA. Edges 0.4 pt #555555.
-MATERIAL_STYLE = [('TIMBER', 'Timber', '#8B5A2B'), ('STEEL', 'Steel', '#8E9296'),
-                  ('CONCRETE (incl. reinforced)', 'Concrete', '#D4D4D4'),
-                  ('PLASTICS & PAINT', 'Plastics & paint', '#2EE62E'),
-                  ('PLASTERBOARD', 'Plasterboard', '#F2EEE3'), ('OTHERS', 'Others', '#000000'),
-                  ('SOIL', 'Soil (land-use change)', '#C9A97A')]
-SOIL_ALPHA = 0.55
+# Materials in the carbon figures (boss_10, diag_5 and every other per-material
+# stack), bottom to top: (column, label, colour). Colours: the six stripes of the
+# Pride flag (#E40303, #FF8C00, #FFED00, #008026, #004DFF, #750787), assigned so
+# the stack reads like the flag from the top down (author decision). Soil
+# (land-use change, not a material) on top: light grey-brown at SOIL_ALPHA with
+# light hatching. Edges 0.4 pt #555555 keep the yellow band legible on white.
+MATERIAL_STYLE = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF'),
+                  ('CONCRETE (incl. reinforced)', 'Concrete', '#008026'),
+                  ('PLASTICS & PAINT', 'Plastics & paint', '#FFED00'),
+                  ('PLASTERBOARD', 'Plasterboard', '#FF8C00'), ('OTHERS', 'Others', '#E40303'),
+                  ('SOIL', 'Soil (land-use change)', '#B5A48B')]
+SOIL_ALPHA = 0.5
+SOIL_HATCH = '///'
+SOIL_HATCH_COLOR = '#8C7B66'
 EDGE = dict(edgecolor='#555555', linewidth=0.4)
 
 TREND_WINDOW_START = 2012
@@ -2279,9 +2285,17 @@ def demand_legend(ax):
     ax.legend(h[::-1], l[::-1], loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8)
 
 
+def material_patch(col, colour, alpha=1.0):
+    """Patch style of one MATERIAL_STYLE layer: soil faded and lightly hatched."""
+    if col == 'SOIL':
+        return dict(facecolor=colour, alpha=alpha * SOIL_ALPHA, hatch=SOIL_HATCH, edgecolor=SOIL_HATCH_COLOR,
+                    linewidth=0.4)
+    return dict(facecolor=colour, alpha=alpha, **EDGE)
+
+
 def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):
     """Stack carbon by material in MATERIAL_STYLE order (bottom to top), soil on top
-    at SOIL_ALPHA; edges 0.4 pt #555555. Returns legend handles top first."""
+    (material_patch); edges 0.4 pt #555555. Returns legend handles top first."""
     unknown = set(frame.columns) - {c for c, _, _ in MATERIAL_STYLE}
     if unknown:
         raise ValueError(f'No colour for {sorted(unknown)} in MATERIAL_STYLE.')
@@ -2289,8 +2303,8 @@ def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):
     bottom, handles = np.zeros(len(years)), []
     for col, lab, colour in MATERIAL_STYLE:
         v = np.asarray(frame[col], float) / scale
-        handles.append(ax.fill_between(years, bottom, bottom + v, facecolor=colour, label=lab,
-                                       alpha=alpha * (SOIL_ALPHA if col == 'SOIL' else 1.0), **EDGE))
+        handles.append(ax.fill_between(years, bottom, bottom + v, label=lab,
+                                       **material_patch(col, colour, alpha)))
         bottom = bottom + v
     zero_floor(ax, *[frame[col] for col, _, _ in MATERIAL_STYLE])
     return handles[::-1]

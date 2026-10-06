@@ -125,12 +125,11 @@ comparison, and is used by the hindcast with one vacancy definition throughout
 
 ### 4.4 Replacement scenarios
 
-`engine.replacement_path`: **S1** long-run rate throughout (low); **S3**
-the 2018–2023 rate fading to the long-run rate with a 10-year half-life
-(reference; 5 and 15 years as sensitivities); **S2** the 2018–2023 rate
-persists (high, shares held; with the damped mix trend it is the
-"intensification continues" storyline). The half-life is not identifiable from
-the census record.
+`engine.replacement_path`, three scenarios, all with typology shares held:
+**Low (S1)** long-run rate throughout; **Reference (S3-10)** the 2018–2023 rate
+fading to the long-run rate with a 10-year half-life (5 and 15 years as
+sensitivities); **High (S2)** the 2018–2023 rate persists. The half-life is not
+identifiable from the census record.
 
 ### 4.5 Population projection
 
@@ -151,9 +150,11 @@ Household decline is floored at zero (it becomes vacancy).
 
 ### 4.7 Typology mix
 
-Storylines: S1 and S3 hold floor-area shares at their 2022–2026 average; S2
-continues a damped additive-log-ratio trend fitted on 2012–2025 (φ = 0.8). 2026
-uses the observed consented mix.
+Floor-area shares are held at their 2022–2026 consented average in every
+scenario (`MIX_MODE = 'held'`); 2026 uses the observed consented mix. The damped
+additive-log-ratio trend (fitted on 2012–2025, φ = 0.8; `MIX_MODE = 'trend'`, or
+`'storyline'` for S2 only, as in v1.0.2–v1.2) stays in the code but is not run or
+reported: the typology mix is a pathway lever for the next paper.
 
 ### 4.8 Forward requirement and the near-term market excess
 

@@ -263,7 +263,8 @@ def main():
         lo, hi = min(lo, ci.min()), max(hi, ci.max())
     pad = 0.15 * max(hi - lo, 1.0)
     ax[1].set_ylim(lo - pad, hi + pad)
-    ax[1].set_title('Average carbon intensity of new floor area (typology mix effect only)')
+    ax[1].set_title('Average carbon intensity of new floor area by scenario\n(A1-A3 decarbonisation and the soil-bearing '
+                    'share of floor area; typology shares held)', fontsize=10)
     ax[1].set_ylabel('kg CO₂e per m²'); ax[1].grid(alpha=0.3); ax[1].legend(fontsize=8)
     plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_conversion_chain.png'), dpi=130); plt.close(fig)
 
@@ -320,21 +321,21 @@ def main():
         'boss_03_cumulative_gfa': 'Cumulative built floor area, history and projection, with the population 5th-95th band.',
         'boss_04_annual_gfa': 'Annual floor area by typology and by demand type (in scope; RV units excluded by scaling).',
         'boss_05_annual_carbon': 'Annual embodied carbon by typology and by demand type (in scope).',
-        'boss_10_material_flows': 'Carbon by material, annual and cumulative; soil (land-use change) on top.',
+        'boss_10_material_flows': 'Carbon by material, annual and cumulative (Pride-stripe colours, one order in every figure); soil (land-use change) on top, faded and hatched.',
         'fig_bridge': 'Waterfall of 2026-2050 floor area by reason for building: Low (S1) / Reference (S3-10) / High (S2).',
         'fig_replacement_rate': 'Net replacement rate: census intervals (steps), S1 / S3-10 / S2 paths, BRANZ demolition rate.',
         'fig_scenarios': 'Annual floor area by scenario with the reference MC band; cumulative floor area and carbon.',
         'fig_reality_checks': 'Projection vs the 1991-2025 range (outputs/reality_checks.md) and the 2026->2027 handover.',
         'fig_validation': 'Hindcast of cumulative dwellings from 2006/2013/2018 (consistent vacancy) and the 2026 check.',
         'mc_1_fan': 'Within-scenario Monte Carlo fan (reference), history from 1991.',
-        'sens_1_tornado': 'One-at-a-time sensitivities: scenarios, mix, household size, stock, near-term rule, carbon/soil bounds, decarbonisation (adopted mode).',
+        'sens_1_tornado': 'One-at-a-time sensitivities, the 5 largest effects on floor area or carbon (main text; all rows: sens_1_tornado_SI).',
         'boss_05_annual_carbon_pb': 'PB variant of boss_05: annual carbon by typology and demand type with the AR and AtP boundaries.',
         'fig_scenarios_pb': 'PB variant of fig_scenarios (carbon): scenarios and reference MC band vs the boundaries; cumulative vs cumulative boundaries.',
         'mc_1_fan_pb': 'PB variant of mc_1_fan (carbon): MC fan, history on the projection soil convention, base window, boundaries.',
         'pb_1_boundaries': 'Boundaries B_AR and B_AtP 2025-2050 (log axis), population modifier, table of components.',
         'pb_2_loe': 'Annual level of exceedance by principle, S1 / S3-10 / S2 with MC 5-95% bands, log axis.',
         'pb_3_headroom': 'Intensity, floor area and carbon per dwelling that would fit each boundary vs the projection (S3-10).',
-        'pb_4_sensitivity': 'Tornado of cumulative LoE 2026-2050 (S3-10): source pair, GDP measure, base window, NZ population, s_sec, carbon factors (frozen technology and the decarbonisation sensitivities of the adopted mode).'}
+        'pb_4_sensitivity': 'Tornado of cumulative LoE 2026-2050 (S3-10), the 5 largest effects on AR or AtP (main text; all rows incl. the AR base windows of 5, 20 and 34 years and the frozen-technology factors: pb_4_sensitivity_SI).',
     supp = {
         'boss_01_population': 'Population history and projection (median, 5th-95th); the 2026 level shift from observed growth.',
         'boss_02_households': 'Households: census-benchmarked to 2018, 2019-23 scaled to the 2023 census, projection from 2023.',
@@ -342,17 +343,19 @@ def main():
         'boss_07_typology_share': 'Typology floor-area shares, history and projection (held vs trend).',
         'boss_08_demographic_drivers': 'Household size (same history treatment as boss_02) and population vs household growth.',
         'boss_09_space_diagnostics': 'Realised vs occupied floor area per new dwelling; occupancy utilisation.',
-        'diag_2_household_engines': 'Household size vs arrivals (partly mechanical between censuses); DHE/consent ratio; engines.',
-        'diag_3_stock_bucket': 'Vacancy definitions, stock, and dwellings per year (history by census interval).',
+        'diag_2_household_engines': 'Household size vs arrivals (partly mechanical between censuses); household growth / consents (varies before 2019 because the series is census-benchmarked; flat from 2019 because it is consent-derived); engines.',
+        'diag_3_stock_bucket': 'Vacancy definitions with the 1986-2023 census range on one definition and the implied vacancy (near-term surplus not absorbed: limitation); stock; dwellings per year by component (history by census interval) with building beyond formation (historical, per census interval; 1991-2023, 1986-91 not covered).',
         'diag_3b_appendix_vacancy_definition': 'Appendix: why empty-only vacancy (not residents away) is used.',
         'diag_4_floor_area': 'Floor area by typology and demand type (history by census interval), mix, dwelling size.',
-        'diag_5_carbon': 'Carbon by typology and material (history estimated with 2025 factors); case-study intensities.',
+        'diag_5_carbon': 'Carbon by typology and material (history estimated with 2025 factors; Pride-stripe material colours, soil on top); case-study intensities.',
         'fig_bridge_appendix_split': 'Appendix: the bridge with demolition and residual split (split assumes the BRANZ rate).',
-        'fig_conversion_chain': 'Indices population -> households -> dwellings -> floor area -> carbon; intensity per m².',
+        'fig_conversion_chain': 'Indices population -> households -> dwellings -> floor area -> carbon; average carbon intensity of new floor area by scenario, which falls with A1-A3 decarbonisation and with the soil-bearing share (the High case has more replacement, which carries no soil); typology shares held.',
         'mc_3_sobol': 'Sobol indices (reference): within-scenario parametric uncertainty only.',
-        'sens_2_paths': 'Annual paths of the largest one-at-a-time sensitivities.',
+        'sens_2_paths': 'Annual paths of the largest one-at-a-time sensitivities and the Stats NZ population 5th / 95th percentiles; % difference by year; cumulative carbon 2026-2050 per path (% vs adopted). The household-size variants converge after about 2041 because the Stats NZ projections end in 2043 (household size held flat after that in every variant).',
+        'sens_1_tornado_SI': 'All one-at-a-time sensitivities (Supplementary Material version of sens_1_tornado).',
+        'pb_4_sensitivity_SI': 'All PB sensitivity rows (Supplementary Material version of pb_4_sensitivity).',
         'boss_06_cumulative_carbon_pb': 'PB variant of boss_06: cumulative carbon vs cumulative AR and AtP boundaries.',
-        'pb_5_demand_vs_boundary': 'Annual carbon by demand type (in scope, S3-10) against the AR and AtP boundaries.'}
+        'pb_5_demand_vs_boundary': 'Annual carbon by demand type, history 1992-2025 (faded, per census interval, 2025 factors) and projection (in scope, S3-10), against the AR and AtP boundaries from 2025.'}
     files = sorted(f[:-4] for f in os.listdir(FIG) if f.endswith('.png'))
     unlisted = [f for f in files if f not in paper and f not in supp]
     missing = [f for f in list(paper) + list(supp) if f not in files]

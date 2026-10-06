@@ -185,22 +185,30 @@ def main():
 # ============================================================
 # FIGURES
 # ============================================================
-def _save(fig, name):
-    fig.tight_layout()
+def _save(fig, name, tight=True):
+    if tight:
+        fig.tight_layout()
     if SAVE_FIGURES:
         os.makedirs(FIG_DIR, exist_ok=True)
         fig.savefig(os.path.join(FIG_DIR, name), dpi=140, bbox_inches='tight')
 
 
-def figures(out, base, paths):
-    cases = out[out.group != 'Adopted'].copy()
-    cases['order'] = cases[['GFA_change_pct', 'carbon_change_pct']].abs().max(axis=1)
-    cases = cases.sort_values('order')
+TOP_N = 5        # main-text tornados show the TOP_N largest effects (full versions: *_SI)
 
-    # ---- 1. tornado: how much each assumption moves the totals ------------
+
+def top_n(cases, n, cols=('GFA_change_pct', 'carbon_change_pct')):
+    """The n rows with the largest absolute effect (max over cols), in ascending
+    order of that effect (the tornado draws the largest at the top)."""
+    eff = cases[list(cols)].abs().max(axis=1)
+    return cases.assign(order=eff).sort_values('order').tail(n)
+
+
+def tornado(cases, out, name, title_note=None):
+    """Horizontal bars of the % change in floor area and carbon per case."""
     fig, ax = plt.subplots(1, 2, figsize=(16, 0.42 * len(cases) + 2), sharey=True)
     fig.suptitle('Sensitivity 1: one assumption changed at a time, 2026-2050 '
-                 '(bars are NOT additive and NOT a joint interval)', fontsize=12)
+                 '(bars are NOT additive and NOT a joint interval)'
+                 + (f'\n{title_note}' if title_note else ''), fontsize=12)
     y = np.arange(len(cases))
     for a, col, title in [(ax[0], 'GFA_change_pct', 'Built floor area'),
                           (ax[1], 'carbon_change_pct', 'Embodied carbon')]:
@@ -222,7 +230,19 @@ def figures(out, base, paths):
     ax[1].legend(handles, present, fontsize=8, loc='lower right')
     fig.text(0.01, 0.005, 'Note: the single-case carbon factors and the soil-order extremes (Raw / Organic) are bounds '
              'shown outside the Monte Carlo, not probability-weighted cases.', fontsize=8, style='italic')
-    _save(fig, 'sens_1_tornado.png')
+    _save(fig, name)
+
+
+def figures(out, base, paths):
+    cases = out[out.group != 'Adopted'].copy()
+    cases['order'] = cases[['GFA_change_pct', 'carbon_change_pct']].abs().max(axis=1)
+    cases = cases.sort_values('order')
+
+    # ---- 1. tornado: how much each assumption moves the totals ------------
+    # full table for the Supplementary Material; main text: the TOP_N largest
+    tornado(cases, out, 'sens_1_tornado_SI.png')
+    tornado(top_n(cases, TOP_N), out, 'sens_1_tornado.png',
+            title_note=f'the {TOP_N} largest effects; all rows: sens_1_tornado_SI')
 
     # ---- 2. annual paths: WHEN each assumption matters ---------------------
     fy = np.asarray(base['forecast_years'])
@@ -232,32 +252,61 @@ def figures(out, base, paths):
               .assign(a=lambda d: d.GFA_change_pct.abs())
               .sort_values('a', ascending=False))
     show = [c for c in ranked.case if c in paths and 'percentile' not in c][:N_PATHS]
-    fig, ax = plt.subplots(1, 2, figsize=(16, 5.6), gridspec_kw={'width_ratios': [1.6, 1]})
-    fig.suptitle('Sensitivity 2: when each assumption matters (annual built floor area)',
-                 fontsize=12)
+    pop = [c for c in ('Stats NZ 5th percentile (level)', 'Stats NZ 95th percentile (level)') if c in paths]
+    fig, ax = plt.subplots(1, 3, figsize=(22, 6.2), gridspec_kw={'width_ratios': [1.6, 1, 1.15]})
+    fig.suptitle('Sensitivity 2: when each assumption matters (annual built floor area) and what it adds up to '
+                 '(cumulative carbon)', fontsize=12)
     a = ax[0]
     hy = hist.index[hist.index >= 2010]
     a.plot(hy, hist.loc[hy] / 1e6, color='black', lw=2.2, label='observed (built basis)')
-    lo, hi = paths.get('Stats NZ 5th percentile (level)'), paths.get('Stats NZ 95th percentile (level)')
+    lo, hi = paths.get(pop[0]) if pop else None, paths.get(pop[-1]) if pop else None
     if lo is not None and hi is not None:
         a.fill_between(fy[1:], lo[1:] / 1e6, hi[1:] / 1e6, color='grey', alpha=0.15,
                        label='population 5th-95th')
     a.plot(fy[1:], adopted[1:] / 1e6, color='black', lw=2.2, ls='--', label='adopted')
     cmap = plt.get_cmap('tab10')
-    for i, c in enumerate(show):
-        a.plot(fy[1:], paths[c][1:] / 1e6, color=cmap(i), lw=1.6, label=c)
+    colour = {c: cmap(i) for i, c in enumerate(show)}
+    colour.update({c: ('#7f8c8d' if '5th' in c else '#2c3e50') for c in pop})
+    for c in show:
+        a.plot(fy[1:], paths[c][1:] / 1e6, color=colour[c], lw=1.6, label=c)
+    for c in pop:
+        a.plot(fy[1:], paths[c][1:] / 1e6, color=colour[c], lw=1.4, ls=':', label=c)
     a.axvline(2025.5, color='grey', ls=':', lw=1)
     a.set_xlim(2010, 2050); a.set_ylim(0, None); a.grid(alpha=0.3)
-    a.set_ylabel('Mm² per year'); a.legend(fontsize=7.5, loc='upper right')
-    a.set_title(f'The {len(show)} largest effects, against history')
+    a.set_ylabel('Mm² per year'); a.legend(fontsize=7, loc='upper right')
+    a.set_title(f'The {len(show)} largest effects and the population 5th / 95th percentiles, against history')
     a = ax[1]
-    for i, c in enumerate(show):
-        a.plot(fy[1:], 100 * (paths[c][1:] / adopted[1:] - 1), color=cmap(i), lw=1.8, label=c)
+    for c in show:
+        a.plot(fy[1:], 100 * (paths[c][1:] / adopted[1:] - 1), color=colour[c], lw=1.8, label=c)
+    for c in pop:
+        a.plot(fy[1:], 100 * (paths[c][1:] / adopted[1:] - 1), color=colour[c], lw=1.4, ls=':', label=c)
     a.axhline(0, color='black', lw=1)
     a.set_xlim(2026, 2050); a.grid(alpha=0.3)
     a.set_ylabel('% difference from adopted, each year')
     a.set_title('Early-years vs long-run effects')
-    _save(fig, 'sens_2_paths.png')
+    # ---- 3. cumulative carbon 2026-2050 of every path shown ------------------
+    a = ax[2]
+    carbon = out.set_index('case')['carbon_kt']
+    bars = [('adopted', float(out.iloc[0]['carbon_kt']), 'black')] + \
+           [(c, float(carbon[c]), colour[c]) for c in show + pop]
+    yb = np.arange(len(bars))[::-1]
+    a.barh(yb, [v for _, v, _ in bars], color=[c for *_, c in bars], height=0.7,
+           edgecolor=['#c0392b' if i == 0 else 'none' for i in range(len(bars))],
+           linewidth=[2.2 if i == 0 else 0 for i in range(len(bars))])
+    ref = bars[0][1]
+    for yi, (lab, v, _) in zip(yb, bars):
+        a.text(v, yi, f'  {v:,.0f} kt' + ('  (adopted)' if lab == 'adopted' else f'  ({100 * (v / ref - 1):+.1f}%)'),
+               va='center', fontsize=7.5)
+    a.set_yticks(yb); a.set_yticklabels([lab for lab, *_ in bars], fontsize=7.5)
+    a.set_xlim(0, 1.32 * max(v for _, v, _ in bars)); a.grid(alpha=0.3, axis='x')
+    a.set_xlabel('kt CO₂e, 2026-2050'); a.set_title('Cumulative carbon 2026-2050 (% vs adopted)')
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    fig.text(0.5, 0.008, 'The Stats NZ household-size variants (Low / Medium / High) converge after about 2041 because '
+             'their published projections end in 2043; household size is held flat after that in every variant, '
+             'so the convergence is an artefact of the projection horizon, not a model result. Population '
+             '5th / 95th: Stats NZ published percentiles; household size, typology mix, dwelling size and carbon '
+             'factors at the adopted settings.', ha='center', fontsize=8, style='italic', wrap=True)
+    _save(fig, 'sens_2_paths.png', tight=False)
 
     if SAVE_FIGURES:
         print(f"Figures written to {FIG_DIR}/ (sens_1, sens_2)")

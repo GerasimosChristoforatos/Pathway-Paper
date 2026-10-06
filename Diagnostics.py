@@ -224,8 +224,12 @@ bases = [1991, 1996, 2001, 2006, 2013, 2018]
 a.bar(YH, ratio, color=['#c0392b' if y > 2018 else '#7f8c8d' for y in YH], width=0.8)
 for y in bases:
     a.axvline(y + 0.5, color='black', lw=0.6, ls=':')
-a.set_title('Stats NZ household growth / previous-year consents\n'
-            'flat within each census period; 0.888 every year since 2019 (consent-derived)')
+_r19 = ratio.loc[2019:]
+a.set_title('Stats NZ household growth / previous-year consents: before 2019 it varies (series '
+            'census-benchmarked);\n'
+            + (f'flat at {_r19.iloc[0]:.3f} every year since 2019 (consent-derived, no census check)'
+               if np.allclose(_r19.values, _r19.iloc[0], rtol=1e-3) else
+               f'{_r19.min():.3f}-{_r19.max():.3f} since 2019 (consent-derived, no census check)'), fontsize=9.5)
 a.set_ylabel('households per consent'); a.set_xlim(1991, 2026)
 
 a = ax[2]
@@ -262,7 +266,12 @@ a.plot(SCc['v'].index, 100 * SCc['v'], color='#16a085', lw=1.5, ls='-.',
        label='one definition: pooled 2018/23 empty share (history bars below)')
 _v_imp = 1 - E50['hh'] / (E50['stock'] + E50['stock_join'])     # held rate + unabsorbed surplus / stock
 a.plot(FY, np.full(len(FY), 100 * B['v_forward']), color='#2c3e50', lw=1.2, ls=':', label='held (latest census)')
-a.plot(FY, 100 * _v_imp, color='#2c3e50', lw=2, ls='--', label='implied: held + near-term surplus / stock')
+_vc = SCc['knots']                                # census vacancy, one (consistent) definition
+a.axhspan(100 * min(_vc.values()), 100 * max(_vc.values()), color='#16a085', alpha=0.08,
+          label=f'census {min(_vc)}-{max(_vc)} range, one definition '
+                f'({100 * min(_vc.values()):.1f}-{100 * max(_vc.values()):.1f}%)')
+a.plot(FY, 100 * _v_imp, color='#2c3e50', lw=2, ls='--',
+       label='implied: held + near-term surplus / stock (surplus not absorbed; limitation)')
 meas = cen['empty'].notna()
 for y, v in knots.items():
     filled = bool(meas.get(y, False))
@@ -301,6 +310,22 @@ for _lab, _arr, _col in (('replacement: recent redevelopment wave (fading)', _wa
                          ('near-term market excess', SF['join'], C['join'])):
     if np.any(np.asarray(_arr)[1:] != 0):              # legend swatch in the projected style
         a.fill_between([], [], color=_col, alpha=0.5, hatch='//', edgecolor='white', label=_lab)
+# Historical analogue of the near-term excess (per census interval; households and vacancy
+# are census values at both ends, so no consent-vs-consent comparison): building (all
+# categories) minus the structural requirement (new households + vacancy allowance +
+# long-run net replacement) = vacancy change + (net replacement - long-run replacement),
+# i.e. existing components of the identity, shown as one annotated quantity. Only full
+# census intervals within the calibration (from 1991: 1986-91 is not covered).
+_lr = float(B['demolition_rate'] + B['unconsented_rate'])
+_beyond = SCc['change'] + SCc['net'] - _lr * SCc['prev']
+BEYOND_HIST = [(y0, y1, float(_beyond.loc[y0 + 1:y1].mean())) for y0, y1 in INTERVALS if y1 in CENSUS_Y]
+for _i, (y0, y1, m) in enumerate(BEYOND_HIST):
+    a.hlines(m / 1e3, y0 + 0.5, y1 + 0.5, color=C['join'], lw=2.4, zorder=6,
+             label='building beyond formation (historical, per census interval)' if _i == 0 else None)
+    a.annotate(f'{m / 1e3:+.1f}k/yr', ((y0 + y1) / 2 + 0.5, m / 1e3), xytext=(0, 4 if m >= 0 else -11),
+               textcoords='offset points', ha='center', fontsize=7, color=C['join'], zorder=7)
+a.text(1991.6, 0.02, '1986-91 not covered (calibration starts 1991)', transform=a.get_xaxis_transform(),
+       fontsize=7, color='grey')
 built_h = B['hist_built_units'].loc[YH]          # in-scope dwellings built (lagged completions)
 built_f = R['total'][1:] / D_f[1:]
 a.plot(YH, built_h / 1e3, color='black', lw=1.4, label='dwellings built, in scope (observed, annual)')
@@ -410,8 +435,7 @@ bottom = np.zeros(len(TYP))
 handles = []
 for col, lab, colour in M.MATERIAL_STYLE:
     v = np.array([SI[t] for t in TYP]) if col == 'SOIL' else MI.loc[col, TYP].values
-    handles.append(a.bar(TYP, v, bottom=bottom, color=colour, label=lab,
-                         alpha=M.SOIL_ALPHA if col == 'SOIL' else 1.0, **M.EDGE))
+    handles.append(a.bar(TYP, v, bottom=bottom, label=lab, **M.material_patch(col, colour)))
     bottom += v
 for k, t in enumerate(TYP):
     a.text(k, TB[t] + 8, f'{TB[t]:.0f}', ha='center', fontweight='bold')

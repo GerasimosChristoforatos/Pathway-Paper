@@ -93,6 +93,43 @@ def consistent_share(B):
     return float(cen.loc[[2018, 2023], 'empty'].sum() / cen.loc[[2018, 2023], 'unoccupied'].sum())
 
 
+def hist_demand_intervals(B, years=None):
+    """Historical in-scope floor area by demand type, one mean per census interval
+    (as diag_4): growth (net of consolidation), house-splitting, extra space per
+    dwelling, vacancy allowance + change (one vacancy definition: the pooled 2018/23
+    empty share) and replacement (the household-identity residual), each in m2 of
+    the realised dwelling size, scaled to in scope by the retirement-village share.
+    Between censuses annual detail is not identified. Returns
+    [(y0, y1, [(label, mean m2 per year, colour)])] for the years y0+1..y1;
+    the interval after the latest census (households consent-derived) is last."""
+    yh = np.asarray(B['years_hist']) if years is None else np.asarray(years)
+    yh = yh[yh >= int(B['years_hist'][0]) + 1]
+    cal = engine.calibrate_stock(B['years_hist'], B['hist_hh'],
+                                 engine.vacancy_knots(B['census'], float(B['empty_share_measured']),
+                                                      consistent_share(B)),
+                                 B['hist_units_all_c'], B['hist_rv_units_c'], Boss.COMPLETION_RATE,
+                                 Boss.DEMOLITION_RATE, Boss.DEMOLITION_CALIB_START, B['calib_end'])
+    dh = B['blended_dwelling_size'].loc[yh]
+    parts = [('Growth demand (net of consolidation)', B['hist_growth'].loc[yh] - B['hist_avoided'].loc[yh],
+              Boss.DEMAND_COLORS[0]),
+             ('House-splitting demand', B['hist_hs_raw'].loc[yh].clip(lower=0), Boss.HOUSESPLIT_COLOR),
+             ('Consumption: extra space per dwelling',
+              B['d_hh'].loc[yh] * (dh - B['occupied_area_per_dwelling'].loc[yh]), Boss.DEMAND_COLORS[1]),
+             ('Consumption: vacancy allowance (+ change)', (cal['allow'] + cal['change']).loc[yh] * dh,
+              Boss.DEMAND_COLORS[2]),
+             (Boss.REPL_LABEL, cal['net'].loc[yh] * dh, Boss.REPL_COLOR)]
+    rv = cal['rv'].loc[yh] * dh
+    cy = [int(y) for y in B['census'].index if yh[0] - 1 <= y <= int(B['calib_end'])]
+    intervals = list(zip(cy[:-1], cy[1:])) + [(cy[-1], int(yh[-1]))]
+    out = []
+    for y0, y1 in intervals:
+        m = [(lab, float(np.mean(np.asarray(v.loc[y0 + 1:y1], float))), col) for lab, v, col in parts]
+        r = float(np.mean(np.asarray(rv.loc[y0 + 1:y1], float)))
+        f = (sum(x for _, x, _ in m) + r) / sum(x for _, x, _ in m)     # in scope: remove the RV band
+        out.append((y0, y1, [(lab, x * f, col) for lab, x, col in m]))
+    return out
+
+
 def hindcast(B, const_share=None):
     yh = B['years_hist']
     end = int(B['calib_end'])

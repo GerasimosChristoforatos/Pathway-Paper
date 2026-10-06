@@ -36,7 +36,29 @@ def main():
                    census_years=f'{min(knots)}-{max(knots)}')
         redev = dict(peak_removals=float(rem(Er)[ir]), peak_year=int(fy[ir]),
                      default_peak_removals=float(rem(E)[1:].max()))
+        # vacancy on a consistent definition, 1986-2023: the pooled 2018/2023 empty share of
+        # unoccupied private dwellings applied to every census (as validation.py)
+        c, p = B['census'], B['census_18_23']
+        share = sum(p[y]['empty'] for y in p) / sum(p[y]['unoccupied'] for y in p)
+        v_cons = (c['unoccupied'] * share / c['total_private']).dropna()
+        vac.update(consistent_share=float(share), consistent=dict((int(k), float(v)) for k, v in v_cons.items()),
+                   consistent_min=float(v_cons.min()), consistent_max=float(v_cons.max()),
+                   consistent_years=f'{int(v_cons.index.min())}-{int(v_cons.index.max())}')
+        j = np.asarray(ji['join'])
+        i28 = fy.index(2028)
+        surplus_total, surplus_26_28 = float(j[1:].sum()), float(j[1:i28 + 1].sum())
+        limitation = (f"The near-term surplus (≈{round(surplus_total, -2):,.0f} dwellings over 2026-2050, of which "
+                      f"≈{round(surplus_26_28, -2):,.0f} in 2026-2028) is not absorbed by later demand; implied vacancy "
+                      f"therefore rises from {100 * vac['v_forward']:.1f}% (2023 census) to ≈{100 * vac['v_2050']:.1f}% "
+                      f"and remains there, about {100 * (vac['v_2050'] - vac['consistent_max']):.0f} percentage point "
+                      f"above the {vac['consistent_years']} range on a consistent definition "
+                      f"({100 * vac['consistent_min']:.1f}-{100 * vac['consistent_max']:.1f}%). Absorption is not "
+                      f"modelled: the persistence rho = {ji['rho']:.2f} (lag-1 autocorrelation of the annual "
+                      'departure of building from the calibrated stock identity, 1992-2023) describes how a flow '
+                      'deviation fades (already used for the excess), not a payback of the stock, and the eight '
+                      'census vacancy observations do not identify a mean-reversion rate.')
         res = dict(mode='market_excess', near_mode=Boss.NEAR_TERM_MODE, gap_ref_basis=Boss.NEAR_TERM_GAP_REF,
+                   surplus_2026_2028=surplus_26_28, limitation=limitation,
                    vacancy=vac, redevelopment_sensitivity=redev,
                    nowcast_method=Boss.NOWCAST_METHOD, consents_2026=nc['total'], O26=ji['O26'], R26=ji['R26'],
                    R27=ji['R27'], e26=ji['e26'], gap_ref=ji['gap_ref'], rho=ji['rho'],
@@ -54,8 +76,11 @@ def main():
              f"{100 * vac['v_2050']:.2f}% in 2050 (held rate {100 * vac['v_forward']:.2f}%); census {vac['census_years']} "
              f"range {100 * vac['census_min']:.2f}-{100 * vac['census_max']:.2f}% (empty dwellings; before 2013 the empty share "
              f"of unoccupied is estimated, and 2013->2018 is a definitional break).",
+             f"Consistent definition (pooled 2018/2023 empty share of unoccupied, {100 * share:.1f}%): "
+             + ', '.join(f'{y} {100 * v:.2f}%' for y, v in vac['consistent'].items()) + '.',
              f"Sensitivity, booked as redevelopment: implied net removals peak at {redev['peak_removals']:,.0f} in "
-             f"{redev['peak_year']} (default: {redev['default_peak_removals']:,.0f})."]
+             f"{redev['peak_year']} (default: {redev['default_peak_removals']:,.0f}).", '',
+             f"Limitation: {limitation}"]
         with open(OUT_MD, 'w') as f:
             f.write('\n'.join(L) + '\n')
         print('\n'.join(L))

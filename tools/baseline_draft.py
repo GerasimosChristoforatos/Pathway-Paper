@@ -143,6 +143,12 @@ def item_register():
     ]
 
 
+def near_term_limitations():
+    """The near-term surplus limitation, from outputs/near_term_join.json (tools/near_term_join.py)."""
+    nj = load('near_term_join.json')
+    return [nj['limitation']] if nj and 'limitation' in nj else []
+
+
 def decarb_limitations(mode):
     """Limitations of the material decarbonisation for a DECARB_MODE."""
     if mode == 'none':
@@ -573,7 +579,7 @@ def main():
     L += ['', '## Assumption register (values read from Boss.py)', '', '| setting | value | basis |', '|---|---|---|']
     for a, val, basis in register():
         L.append(f'| {a} | {val} | {basis} |')
-    L += ['', '## Open limitations and data needs', ''] + [f'- {x}' for x in LIMITATIONS + decarb_limitations(BB.DECARB_MODE)]
+    L += ['', '## Open limitations and data needs', ''] + [f'- {x}' for x in LIMITATIONS + near_term_limitations() + decarb_limitations(BB.DECARB_MODE)]
 
     # ---- figures ----
     figs = sorted(glob.glob(os.path.join(OUT, 'figures', '*.png')))

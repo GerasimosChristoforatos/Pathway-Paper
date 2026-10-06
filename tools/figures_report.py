@@ -333,9 +333,9 @@ def main():
         'fig_scenarios_pb': 'PB variant of fig_scenarios (carbon): scenarios and reference MC band vs the boundaries; cumulative vs cumulative boundaries.',
         'mc_1_fan_pb': 'PB variant of mc_1_fan (carbon): MC fan, history on the projection soil convention, base window, boundaries.',
         'pb_1_boundaries': 'Boundaries B_AR and B_AtP 2025-2050 (log axis), population modifier, table of components.',
-        'pb_2_loe': 'Annual level of exceedance by principle, S1 / S3-10 / S2 with MC 5-95% bands, log axis.',
+        'pb_2_loe': 'Annual level of exceedance by principle, Low (S1) / Reference (S3-10) / High (S2) with MC 5-95% bands, log axis.',
         'pb_3_headroom': 'Intensity, floor area and carbon per dwelling that would fit each boundary vs the projection (S3-10).',
-        'pb_4_sensitivity': 'Tornado of cumulative LoE 2026-2050 (S3-10), the 5 largest effects on AR or AtP (main text; all rows incl. the AR base windows of 5, 20 and 34 years and the frozen-technology factors: pb_4_sensitivity_SI).',
+        'pb_4_sensitivity': 'Tornado of cumulative LoE 2026-2050 (S3-10), the 5 largest effects on AR or AtP (main text; all rows incl. the AR base windows of 5, 20 and 34 years and the frozen-technology factors: pb_4_sensitivity_SI).'}
     supp = {
         'boss_01_population': 'Population history and projection (median, 5th-95th); the 2026 level shift from observed growth.',
         'boss_02_households': 'Households: census-benchmarked to 2018, 2019-23 scaled to the 2023 census, projection from 2023.',

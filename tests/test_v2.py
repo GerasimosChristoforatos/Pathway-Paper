@@ -3,10 +3,10 @@
 baseline-pb-v1.2 (tests/regression_pb_v1_2_low_ref.json, tag baseline-PB_v1.2),
 main-text tornados with the top-5 effects, Pride colours for the six material
 classes in one order, soil always the top layer."""
-import glob
 import json
 import os
 import re
+import sys
 
 import matplotlib
 matplotlib.use('Agg')
@@ -17,30 +17,21 @@ import pytest  # noqa: E402
 
 from conftest import ROOT, run_boss  # noqa: E402
 
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+
 OUT = os.path.join(ROOT, 'outputs')
 FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_pb_v1_2_low_ref.json')))
 quick = pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1', reason='quick run: fewer Monte Carlo draws')
 NAMES = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
 PRIDE = ['#750787', '#004DFF', '#008026', '#FFED00', '#FF8C00', '#E40303']   # bottom -> top of the stack
-STORYLINE = re.compile(r'storyline|S2-held|S3-10-trend|damped mix trend|intensification continues', re.I)
-
-
-def generated_files():
-    """Every generated text output of the adopted and frozen runs (the stored
-    --compare-modes run in outputs/modes/ predates baseline-pb-v2 and is excluded)."""
-    files = [p for ext in ('*.md', '*.json', '*.csv') for p in glob.glob(os.path.join(OUT, ext))]
-    files += [p for ext in ('*.md', '*.json', '*.csv') for p in glob.glob(os.path.join(OUT, 'frozen', ext))]
-    files += [os.path.join(ROOT, f) for f in ('ASSUMPTIONS.md', 'FIGURES.md', 'README.md')]
-    return [p for p in files if os.path.basename(p) not in ('DECARB_MODES.md', 'decarb_modes.json')]
 
 
 def test_storyline_absent_from_outputs():
-    hits = {}
-    for p in generated_files():
-        with open(p, encoding='utf-8') as f:
-            for i, line in enumerate(f, 1):
-                if STORYLINE.search(line):
-                    hits.setdefault(os.path.relpath(p, ROOT), []).append(i)
+    """Outputs written before the tests step; the documents written after it
+    (metrics, RESULTS, drafts, ASSUMPTIONS) are checked by tools/check_outputs.py,
+    the last step of run_all.py."""
+    import check_outputs
+    hits = check_outputs.storyline_hits(include_docs=False)
     assert not hits, hits
 
 
@@ -90,7 +81,9 @@ def test_low_and_reference_pb_unchanged():
     pb = json.load(open(os.path.join(OUT, 'pb_results.json')))
     for key in ('deterministic', 'mc', 'mc_base_fixed'):
         for k, v in FX['pb'][key].items():
-            assert pb[key][k] == v, (key, k)
+            # numbers only: the scenario labels were renamed in baseline-pb-v2 (deliberate)
+            assert {f: x for f, x in pb[key][k].items() if f != 'label'} == \
+                {f: x for f, x in v.items() if f != 'label'}, (key, k)
 
 
 def test_tornado_top5_selection():

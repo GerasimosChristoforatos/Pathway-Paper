@@ -12,6 +12,9 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 from metrics import FIELDS, METRICS, PB_FIELDS, get  # noqa: E402
 
 
+# one naming scheme for the three scenarios (other keys, e.g. S3-5, are sensitivities)
+SCEN_NAME = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
+
 def main():
     with open(METRICS) as f:
         m = json.load(f)
@@ -52,10 +55,10 @@ def main():
             L.append(f"| {label} | {fmt.format(v) if v is not None else 'n/a'} |")
         L += ['', '| scenario (deterministic) | cumulative LoE AR | cumulative LoE AtP |', '|---|---|---|']
         for k, v in pb['cum_LoE_by_scenario'].items():
-            L.append(f"| {k} | {v['AR']:.2f} | {v['AtP']:.1f} |")
+            L.append(f"| {SCEN_NAME.get(k, k)} | {v['AR']:.2f} | {v['AtP']:.1f} |")
         L += ['', '| MC scenario | LoE AR p5 / p50 / p95 | LoE AtP p5 / p50 / p95 |', '|---|---|---|']
         for k, v in pb['cum_LoE_mc'].items():
-            L.append(f"| {k} | {v['LoE_AR_p5']:.2f} / {v['LoE_AR_p50']:.2f} / {v['LoE_AR_p95']:.2f} | "
+            L.append(f"| {SCEN_NAME.get(k, k)} | {v['LoE_AR_p5']:.2f} / {v['LoE_AR_p50']:.2f} / {v['LoE_AR_p95']:.2f} | "
                      f"{v['LoE_AtP_p5']:.1f} / {v['LoE_AtP_p50']:.1f} / {v['LoE_AtP_p95']:.1f} |")
     dp = os.path.join(ROOT, 'outputs', 'decarb_modes.json')
     if os.path.exists(dp):

@@ -225,11 +225,9 @@ a.bar(YH, ratio, color=['#c0392b' if y > 2018 else '#7f8c8d' for y in YH], width
 for y in bases:
     a.axvline(y + 0.5, color='black', lw=0.6, ls=':')
 _r19 = ratio.loc[2019:]
-a.set_title('Stats NZ household growth / previous-year consents: before 2019 it varies (series '
-            'census-benchmarked);\n'
-            + (f'flat at {_r19.iloc[0]:.3f} every year since 2019 (consent-derived, no census check)'
-               if np.allclose(_r19.values, _r19.iloc[0], rtol=1e-3) else
-               f'{_r19.min():.3f}-{_r19.max():.3f} since 2019 (consent-derived, no census check)'), fontsize=9.5)
+a.set_title('Household growth / previous-year consents:\nvaries before 2019 (series census-benchmarked);\n'
+            + (f'{_r19.min():.3f}-{_r19.max():.3f} from 2019 (consent-derived)' if _r19.max() - _r19.min() >= 5e-4
+               else f'flat at {_r19.iloc[0]:.3f} from 2019 (consent-derived)'), fontsize=9.5)
 a.set_ylabel('households per consent'); a.set_xlim(1991, 2026)
 
 a = ax[2]

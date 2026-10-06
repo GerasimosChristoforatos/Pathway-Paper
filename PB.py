@@ -972,9 +972,10 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
         up = dn = 0.0
         faint = i == len(hp) - 1                                   # after the latest census
         for lab, v, col in parts:
+            v = v / M6                                              # kg -> kt
             kw = dict(width=y1 - y0, align='edge', color=col, alpha=0.2 if faint else 0.4, edgecolor='white',
                       linewidth=0.6)
-            ax.bar(y0 + 0.5, v / M6, bottom=up if v >= 0 else dn, **kw)
+            ax.bar(y0 + 0.5, v, bottom=up if v >= 0 else dn, **kw)
             if v >= 0:
                 up += v
             else:
@@ -994,8 +995,9 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     fig.tight_layout(rect=(0, 0.07, 1, 1))
     fig.text(0.5, 0.01, cap + ' History: floor area by demand type per census interval (interval means; annual '
              'detail not identified between censuses; last bar 2024-25 with consent-derived households), carbon at '
-             '2025 case-study factors, soil on the non-replacement bands (PB.historical_emissions); the black line '
-             'is the annual total. Boundaries from 2025.', ha='center', fontsize=8, style='italic', wrap=True)
+             '2025 case-study factors, soil on the non-replacement bands (PB.historical_emissions); a negative interval '
+             'mean (vacancy falling, or replacement below zero in the household identity) is drawn below zero; the '
+             'black line is the annual total. Boundaries from 2025.', ha='center', fontsize=8, style='italic', wrap=True)
     _save(fig, 'pb_5_demand_vs_boundary')
     if not SAVE_FIGURES:
         plt.show()

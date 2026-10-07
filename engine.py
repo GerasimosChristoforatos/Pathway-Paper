@@ -283,7 +283,7 @@ def blend(shares, per_unit, typ_names):
 
 def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_share,
             shares, size, olf, intensity, intensity_upfront, join=None, join_redev=None,
-            soil=None, soil_on_replacement=True, gfa_fixed=None):
+            soil=None, soil_on_replacement=True, gfa_fixed=None, events=None):
     """One forward path, 2025..2050 (index 0 = 2025, a model value; callers that
     anchor 2025 on observations overwrite it).
 
@@ -314,6 +314,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                              a year to an observation (the 2026 nowcast from consented
                              GFA); the difference is booked to consumption and reported
                              as gfa_adj. Dwelling counts (the stock) are not changed.
+    events                 : optional {typology: K (years x years)}: replacement and
+                             repaint emissions, kg/m2 of the cohort built in year i
+                             occurring in year j (events.kernel); b_t = gfa_t @ K is
+                             added to carbon_t (time-resolved accounting).
 
     Floor area built (in scope) = structural + gross consumption, where
         structural  = d_hh x occupied area per dwelling
@@ -386,6 +390,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                                                          where=total != 0))
         carbon_t = (I - s[:, None]) * gfa_t + (s[:, None] * gfa_t) * soil_share
         upfront_t = (U - s[:, None]) * gfa_t + (s[:, None] * gfa_t) * soil_share
+    b_t = np.zeros_like(gfa_t)
+    if events is not None:                           # time-resolved B2/B4 of the new cohorts
+        b_t = np.array([gfa_t[k] @ events[t] for k, t in enumerate(typ)])
+        carbon_t = carbon_t + b_t
     return dict(
         years=shares.index.values, typ=typ, pop=pop, hh=hh, S=S, d_hh=d_hh, d_hh_raw=d_raw,
         D=D, olf=olf_f, occ=occ, structural=structural, growth_gross=g_gross, growth=growth,
@@ -393,5 +401,5 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         c_gross=c_gross, total=total,
         v=np.array(v), stock=stock, prev=prev, allow=allow, change=change, demol=demol,
         unc=unc, dev=dev, join=join, join_redev=join_redev, stock_join=stock_join, rv=rv, dwell_in_scope=total / D, rv_units=-rv,
-        gfa_t=gfa_t, carbon_t=carbon_t, carbon=carbon_t.sum(axis=0), upfront=upfront_t.sum(axis=0),
+        gfa_t=gfa_t, carbon_t=carbon_t, carbon=carbon_t.sum(axis=0), upfront=upfront_t.sum(axis=0), b_t=b_t,
         soil_share=soil_share, soil_free_gfa=soil_free, gfa_adj=gfa_adj)

@@ -67,29 +67,23 @@ CASES = [   # lean set (v1.1); the full v1.0.2 table is in the history (tag v1.0
     ('Near-term: rule variant', 'Gap measured against the 2026 requirement', dict(NEAR_TERM_GAP_REF='2026')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
 ]
-# Decarbonisation rows, per adopted DECARB_MODE (none for 'none', so the
-# frozen-technology table of baseline v2 keeps its rows). Class-level mode
-# (v1.1): frozen technology, and the STEEL class at Horup's steel-profile rate.
-# Item-level mode (adopted from baseline-pb-v1.2): frozen technology only; its
-# decarbonisation sensitivities (ITEM_SENS_CASES: proxies held, NZ-made
-# electricity-intensive items held, lift at steel profile, class-level mapping
-# of v1.1) are run by the optional step run_all.py --compare-modes
-# (tools/decarb_modes.py) and stored in outputs/DECARB_MODES.md.
-FROZEN_CASE = ('Carbon factors', 'Frozen technology: 2025 factors held (no decarbonisation)', dict(DECARB_MODE='none'))
-ITEM_SENS_CASES = [
-    ('Carbon factors', 'Decarbonisation: proxy-mapped items held at 2025', dict(DECARB_ITEM_CASE='proxies_held')),
-    ('Carbon factors', 'Decarbonisation: NZ-made electricity-intensive items held at 2025',
-     dict(DECARB_ITEM_CASE='nz_elec_held')),
-    ('Carbon factors', 'Decarbonisation: lift at the steel-profile rate (Horup S4)',
-     dict(DECARB_ITEM_CASE='elevator_steel_profile')),
-    ('Carbon factors', 'Decarbonisation: class-level mapping of v1.1', dict(DECARB_MODE='horup_class_v1_1'))]
+# Carbon-factor and accounting rows of the adopted item-level, time-resolved run
+# (none for the frozen check run, so the table of baseline v2 keeps its rows):
+# frozen technology; the item-level decarbonisation sensitivities; A4-A5 held or on
+# item paths; event timing L / n; whole-life-at-construction accounting.
+FROZEN_CASE = ('Carbon factors', 'Frozen technology: 2025 factors held (no decarbonisation)',
+               dict(DECARB_MODE='none', DECARB_A45='held'))
 DECARB_CASES = {
     'none': [],
-    'horup_class_v1_1': [
+    'horup_item': [
         FROZEN_CASE,
-        ('Carbon factors', 'Decarbonisation: STEEL at the steel-profile rate (Horup S4)',
-         dict(DECARB_STEEL='steel_profile'))],
-    'horup_item': [FROZEN_CASE],
+        ('Carbon factors', 'Decarbonisation: proxy-mapped items held at 2025', dict(DECARB_ITEM_CASE='proxies_held')),
+        ('Carbon factors', 'Decarbonisation: NZ-made electricity-intensive items held at 2025',
+         dict(DECARB_ITEM_CASE='nz_elec_held')),
+        ('Carbon factors', 'A4-A5 held at 2025 (no generic 1%/yr)', dict(DECARB_A45='held')),
+        ('Carbon factors', "A4-A5 on each item's own Horup path", dict(DECARB_A45='item')),
+        ('Carbon factors', 'Event timing: interval L / n', dict(EVENT_TIMING='n')),
+        ('Carbon factors', 'Accounting: whole life at construction', dict(ACCOUNTING='whole_life_at_construction'))],
 }
 
 def run(**settings):
@@ -145,7 +139,15 @@ def main():
     rel = (None if base['DECARB'] is None else
            {t: (np.asarray(base['T_INT'][t])[1:] - base['SOIL_INTENSITY'][t]) / emb0[t] for t in typ})
 
+    # time-resolved run: the run's materials carbon (upfront + in-window replacements and
+    # repaints) scaled by emb_alt / emb_2025 per typology (same stage composition)
+    mat_c = ({t: float(base['carbon_total_typ'][t].iloc[1:].sum())
+              - float((base['evol_typ_total'][t].values * base['soil_frac'])[1:].sum()) * base['SOIL_INTENSITY'][t]
+              for t in typ} if base['TIME_RESOLVED'] else None)
+
     def carbon_with(emb, soc):
+        if mat_c is not None:
+            return float(sum(mat_c[t] * emb[t] / emb0[t] + soil_gfa_t[t] * soc[t] for t in typ)) / 1e6
         if rel is None:
             return float(sum(gfa_t[t] * emb[t] + soil_gfa_t[t] * soc[t]
                              for t in typ)) / 1e6

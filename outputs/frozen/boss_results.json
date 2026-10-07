@@ -100,6 +100,9 @@
     "TIMBER": 7702.300353655072,
     "SOIL": 3049.916976528298
   },
+  "accounting": "whole_life_at_construction",
+  "decarb_a45": "held",
+  "event_timing": "n+1",
   "annual": {
     "years": [
       2025,

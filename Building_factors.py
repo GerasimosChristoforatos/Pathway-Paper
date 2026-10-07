@@ -82,6 +82,9 @@ OUT_BUILDING = os.path.join(OUT_DIR, 'factors_building.csv')   # for MonteCarlo.
 OUT_DECARB = os.path.join(OUT_DIR, 'factors_a13_decarb.csv')    # A1-A3 by year (Boss.DECARB_MODE)
 OUT_DECARB_BLD = os.path.join(OUT_DIR, 'factors_building_a13_reduction.csv')   # for MonteCarlo.py
 OUT_ITEM_COVERAGE = os.path.join(OUT_DIR, 'factors_a13_item_coverage.csv')
+OUT_EVENTS = os.path.join(OUT_DIR, 'factors_events.csv')            # B2/B4 events by age (Boss.ACCOUNTING)
+OUT_EVENTS_BLD = os.path.join(OUT_DIR, 'factors_building_events.csv')   # the same per case study (MonteCarlo.py)
+OUT_A45_ITEM = os.path.join(OUT_DIR, 'factors_a45_item.csv')        # A4-A5 on item paths (sensitivity)
 
 # ---------------------------------------------------------------------------
 # MATERIAL DECARBONISATION OF A1-A3 (Boss.DECARB_MODE)
@@ -129,6 +132,90 @@ ITEM_CASES = {'central': 'item-level mapping',
               'nz_elec_held': 'NZ-made, electricity-intensive items held at 2025',
               'elevator_steel_profile': 'held lift at the S4 steel-profile rate'}
 DECARB_MODES = ('none', 'horup_class_v1_1', 'horup_item')
+
+# ---------------------------------------------------------------------------
+# A4-A5 DECARBONISATION (Boss.DECARB_A45)
+# ---------------------------------------------------------------------------
+# A4-A5 cannot be separated by material process in the case-study data, so it
+# follows a generic technological-progress factor: Resch E, Wiik MK, Tellnes LGF,
+# Andresen I, Selvig E, Stoknes S (2021), Building and Environment 187, 107399,
+# Table 1 (p. 4): production e^(-0.01 y), 'a ~1% yearly improvement' (half-life
+# 69 years); y = years after 2025. The source gives an exponential decay, so
+# e^(-0.01 (t - 2025)) is used rather than (1 - 0.01)^(t - 2025) (difference 0.1
+# percentage point by 2050: -22.1% vs -22.2%). Resch et al. apply 2%/yr to
+# transport (Table 1); A4-A5 also contains installation and wastage, so the 1%
+# production rate is used for the combined stage (conservative for transport).
+# Horup et al. (2025, Fig. 2A, pp. 5-6) show that this generic factor
+# oversimplifies material-specific trends, which is why it is used only for the
+# non-separable A4-A5 stage. Sensitivities: held at 2025; each item's own S4 path.
+A45_DECAY = 0.01           # per year, Resch et al. (2021) Table 1, production
+
+
+def generic_path(years, base=2025, rate=A45_DECAY):
+    """Relative A4-A5 factor e^(-rate (t - base)); 1 at and before base."""
+    t = np.asarray(years, float)
+    return np.exp(-rate * np.clip(t - base, 0.0, None))
+
+
+# ---------------------------------------------------------------------------
+# REPLACEMENT / REPAINT EVENTS (time-resolved B2, B4; Boss.ACCOUNTING)
+# ---------------------------------------------------------------------------
+# From data/derived/lca_events.csv (data/build_lca_events.py; counts and lifespan
+# from the LCAQuick root tables). Per event line: per-event impact = line B2/B4 /
+# number of events, split into A1-A3 : A4-A5 : C1-C4 in proportion to the line's
+# own initial stages (author decision; for paint lines the repaint composition
+# differs from the first coat and cannot be separated in the file, so the same
+# proportional split is used: negligible, since the paint path is the EPS proxy,
+# -4% by 2050). Timing: n events evenly spaced, event k at k L / (n + 1) years
+# after construction (LCAQuick derives n = ceil(L / RSL) - 1, so L / (n + 1) is
+# the shortest service life consistent with the count; author decision);
+# sensitivity k L / n. A fractional event year is split linearly between the two
+# adjacent years. Event paths: replacements on the item's own S4 path; repaints
+# (PAINT lines and the ZinaCore recoating lines) on the paint path (EPS proxy).
+FILE_EVENTS = os.path.join(DATA_DIR, 'derived', 'lca_events.csv')
+EVENT_TIMINGS = {'n+1': 'event k at k L / (n + 1) (adopted)', 'n': 'event k at k L / n (sensitivity)'}
+EVENT_COMPONENTS = ('A1-A3', 'A4-A5', 'C1-C4')
+PAINT_PATH = ('EPS', 'proxy', 'no')          # S4 row, label, NZ flag of the paint path (material_item_map)
+
+
+def event_rows(timing='n+1'):
+    """One row per event line x event x component x calendar offset (age, integer
+    years after construction): absolute kg CO2e per building, with the material
+    group and the S4 row / label / NZ flag of the path it follows."""
+    ev = pd.read_csv(FILE_EVENTS)
+    ev = ev[ev['n_events'] > 0].copy()
+    mp = pd.read_csv(FILE_ITEM_MAP)
+    ev = ev.merge(mp[['class', 'item', 's4_row', 'label', 'nz_low_carbon_electricity']], on=['class', 'item'],
+                  how='left', validate='m:1')
+    if ev['s4_row'].isna().any():
+        raise ValueError('Event lines without an S4 mapping.')
+    paint = ev['event_path'] == 'paint'
+    ev.loc[paint, ['s4_row', 'label', 'nz_low_carbon_electricity']] = PAINT_PATH
+    lookup = {raw: grp for grp, raws in MATERIAL_GROUPS.items() for raw in raws}
+    ev = ev.rename(columns={'A1-A3': 'a13', 'A4-A5': 'a45', 'B2,B4': 'b', 'C1-C4': 'c',
+                            'nz_low_carbon_electricity': 'nz', 'class': 'cls'})
+    ini = ev['a13'] + ev['a45'] + ev['c']
+    if (ini <= 0).any():
+        raise ValueError('Event line with no initial A1-A3 + A4-A5 + C1-C4 to split by.')
+    rows = []
+    for r, tot in zip(ev.itertuples(index=False), ini):
+        n, L = int(r.n_events), float(r.lifespan)
+        per = r.b / n
+        shares = {'A1-A3': r.a13 / tot, 'A4-A5': r.a45 / tot, 'C1-C4': r.c / tot}
+        for k in range(1, n + 1):
+            t = k * L / (n + 1) if timing == 'n+1' else k * L / n
+            a0 = int(np.floor(t)); w1 = t - a0
+            for age, w in ((a0, 1.0 - w1), (a0 + 1, w1)):
+                if w <= 0:
+                    continue
+                for c in EVENT_COMPONENTS:
+                    rows.append((r.id, lookup.get(r.cls, OTHERS_LABEL), age, c, r.s4_row, r.label, r.nz,
+                                 per * shares[c] * w))
+    out = pd.DataFrame(rows, columns=['id', 'Material', 'Age', 'Component', 'S4', 'label', 'nz', 'kg'])
+    chk = out.groupby('id')['kg'].sum() - ev.groupby('id')['b'].sum()
+    if chk.abs().max() > 1e-6:
+        raise ValueError(f'Events do not add up to line B2/B4 (max {chk.abs().max():g} kg).')
+    return out
 
 
 def decarb_variant(mode, steel='reinforcing_steel', item_case='central'):
@@ -530,6 +617,56 @@ def main():
                          for i in ids]
     coverage = item_coverage(items, paths, ids)
 
+    # ---- A4-A5 on each item's own S4 path (DECARB_A45 = 'item', sensitivity) ----
+    items['a45'] = items['A4-A5'] / area_i
+    row45 = item_s4_row(items, 'central')
+    a45_rows = []
+    for y in DECARB_YEARS:
+        r = row45.map(lambda k: 1.0 if pd.isna(k) else paths.loc[y, k])
+        g = ((items['a45'] * r).groupby([items['id'], items['Material']]).sum()
+             .reindex(pd.MultiIndex.from_product([ids, list(MATERIAL_GROUPS) + [OTHERS_LABEL]]))
+             .fillna(0.0).rename('a45').reset_index())
+        g.columns = ['id', 'Material', 'a45']
+        g['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in g['id']]
+        g['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in g['id']]
+        for mat in list(MATERIAL_GROUPS) + [OTHERS_LABEL]:
+            pooled = pool(g[g['Material'] == mat], ['a45'])['a45']
+            a45_rows += [dict(Typology=t, Material=mat, Year=y, A45_kgCO2e_per_m2=float(pooled.loc[t]))
+                         for t in TYP_ORDER]
+    a45_item = pd.DataFrame(a45_rows)
+    base45 = mat_factors[mat_factors.Stage == 'A4-A5'].set_index(['Typology', 'Material'])['kgCO2e_per_m2']
+    chk45 = a45_item[a45_item.Year == DECARB_YEARS[0]].set_index(['Typology', 'Material'])['A45_kgCO2e_per_m2']
+    if (chk45 - base45.reindex(chk45.index).fillna(0.0)).abs().max() > 1e-9:
+        raise ValueError('A4-A5 on item paths does not equal the 2025 A4-A5 factors in 2025.')
+
+    # ---- replacement / repaint events by age (time-resolved B2, B4) ---------
+    keys = ['Material', 'Age', 'Component', 'S4', 'label', 'nz']
+    ev_pooled, ev_bld = [], []
+    for timing in EVENT_TIMINGS:
+        er = event_rows(timing)
+        er['kg_m2'] = er['kg'] / er['id'].map(gfa)
+        wide = er.pivot_table(index='id', columns=keys, values='kg_m2', aggfunc='sum').reindex(ids).fillna(0.0)
+        bl = wide.stack(keys, future_stack=True).rename('kg_per_m2').reset_index()
+        bl = bl[bl['kg_per_m2'] != 0]
+        bl.insert(0, 'Timing', timing)
+        ev_bld.append(bl)
+        cols = list(wide.columns)
+        flat = pd.DataFrame(wide.values, index=ids, columns=range(len(cols)))
+        flat['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in flat.index]
+        flat['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in flat.index]
+        pooled = pool(flat, list(range(len(cols))))
+        for t in TYP_ORDER:
+            for j, key in enumerate(cols):
+                v = float(pooled.loc[t, j])
+                if v != 0:
+                    ev_pooled.append(dict(Timing=timing, Typology=t, **dict(zip(keys, key)), kg_per_m2=v))
+    ev_pooled, ev_bld = pd.DataFrame(ev_pooled), pd.concat(ev_bld, ignore_index=True)
+    b_fac = mat_factors[mat_factors.Stage == 'B2,B4'].groupby('Typology')['kgCO2e_per_m2'].sum()
+    for timing, g in ev_pooled.groupby('Timing'):
+        worst = float((g.groupby('Typology')['kg_per_m2'].sum() - b_fac).abs().max())
+        if worst > 1e-9:
+            raise ValueError(f'Pooled events ({timing}) do not add up to the B2/B4 factor ({worst:g} kg/m2).')
+
     dec = pd.DataFrame(dec_rows)
     chk = (dec[(dec.Year == DECARB_YEARS[0])].groupby(['Variant', 'Typology', 'Material'])['A13_kgCO2e_per_m2']
            .sum().reset_index())
@@ -538,7 +675,8 @@ def main():
     if worst > 1e-9:
         raise ValueError(f'Decarbonised A1-A3 in 2025 differs from the 2025 factors by {worst:g}.')
 
-    for p in (OUT_MATERIAL, OUT_TYPOLOGY, OUT_BUILDING, OUT_DECARB, OUT_DECARB_BLD, OUT_ITEM_COVERAGE):
+    for p in (OUT_MATERIAL, OUT_TYPOLOGY, OUT_BUILDING, OUT_DECARB, OUT_DECARB_BLD, OUT_ITEM_COVERAGE, OUT_EVENTS,
+              OUT_EVENTS_BLD, OUT_A45_ITEM):
         os.makedirs(os.path.dirname(p) or '.', exist_ok=True)
     mat_factors.to_csv(OUT_MATERIAL, index=False)
     typ_factors.to_csv(OUT_TYPOLOGY, index=False)
@@ -546,6 +684,9 @@ def main():
     dec.to_csv(OUT_DECARB, index=False)
     pd.DataFrame(red_rows).to_csv(OUT_DECARB_BLD, index=False)
     coverage.to_csv(OUT_ITEM_COVERAGE, index=False)
+    ev_pooled.to_csv(OUT_EVENTS, index=False)
+    ev_bld.to_csv(OUT_EVENTS_BLD, index=False)
+    a45_item.to_csv(OUT_A45_ITEM, index=False)
 
     # ==================================================================
     # SUMMARY

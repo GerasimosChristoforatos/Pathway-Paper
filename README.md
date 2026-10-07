@@ -24,7 +24,9 @@ python run_all.py                      # full run; the only basis for reported r
 python run_all.py --quick              # development only: every output marked "QUICK RUN, not for reporting"
 ```
 
-RUN_TIMES_PLACEHOLDER `--quick` uses 1,000 instead of 5,000 Monte Carlo draws per
+Measured for baseline-pb-v3 on a 4-core machine: the default full run takes 880 s
+(about 15 minutes, including the frozen-technology check run), `--quick` 348 s
+(about 6 minutes). `--quick` uses 1,000 instead of 5,000 Monte Carlo draws per
 scenario and 128 Sobol base samples, skips the frozen-technology Monte Carlo and
 the Monte Carlo regression checks, and marks `metrics.json`, the generated
 documents and every figure as a quick run.

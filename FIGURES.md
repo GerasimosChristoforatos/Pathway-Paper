@@ -6,20 +6,20 @@ All in `outputs/figures/`.
 
 - `boss_03_cumulative_gfa.png`: Cumulative built floor area, history and projection, with the population 5th-95th band.
 - `boss_04_annual_gfa.png`: Annual floor area by typology and by demand type (in scope; RV units excluded by scaling).
-- `boss_05_annual_carbon.png`: Annual embodied carbon by typology and by demand type (in scope).
-- `boss_10_material_flows.png`: Carbon by material, annual and cumulative (Pride-stripe colours, one order in every figure); soil (land-use change) on top, faded and hatched.
+- `boss_05_annual_carbon.png`: Annual carbon by typology and by demand type, in scope, incl. the band of replacements & repaints within 2026-2050 (time-resolved accounting: upfront at construction + replacements & repaints in the year they occur; A1-A3 item level (Horup et al. 2025), A4-A5 1%/yr (Resch et al. 2021)).
+- `boss_10_material_flows.png`: Carbon by material, annual and cumulative, 2026-2050 (Pride-stripe colours, one order in every figure); replacements & repaints within the window in the same colours, lighter and hatched; soil (land-use change) on top, faded and hatched.
 - `fig_bridge.png`: Waterfall of 2026-2050 floor area by reason for building: Low (S1) / Reference (S3-10) / High (S2).
 - `fig_replacement_rate.png`: Net replacement rate: census intervals (steps), S1 / S3-10 / S2 paths, BRANZ demolition rate.
-- `fig_scenarios.png`: Annual floor area by scenario with the reference MC band; cumulative floor area and carbon.
+- `fig_scenarios.png`: Annual floor area by scenario with the reference MC band; cumulative floor area and carbon (upfront / replacements & repaints within 2026-2050).
 - `fig_reality_checks.png`: Projection vs the 1991-2025 range (outputs/reality_checks.md) and the 2026->2027 handover.
 - `fig_validation.png`: Hindcast of cumulative dwellings from 2006/2013/2018 (consistent vacancy) and the 2026 check.
-- `mc_1_fan.png`: Within-scenario Monte Carlo fan (reference), history from 1991.
+- `mc_1_fan.png`: Within-scenario Monte Carlo fan (reference): floor area with history from 1991; carbon 2026-2050 only (no historical carbon), with the central band of replacements & repaints.
 - `sens_1_tornado.png`: One-at-a-time sensitivities, the 5 largest effects on floor area or carbon (main text; all rows: sens_1_tornado_SI).
-- `boss_05_annual_carbon_pb.png`: PB variant of boss_05: annual carbon by typology and demand type with the AR and AtP boundaries.
-- `fig_scenarios_pb.png`: PB variant of fig_scenarios (carbon): scenarios and reference MC band vs the boundaries; cumulative vs cumulative boundaries.
-- `mc_1_fan_pb.png`: PB variant of mc_1_fan (carbon): MC fan, history on the projection soil convention, base window, boundaries.
+- `boss_05_annual_carbon_pb.png`: PB variant of boss_05: annual carbon by typology and demand type (incl. replacements & repaints within the window) with the AR and AtP boundaries.
+- `fig_scenarios_pb.png`: PB variant of fig_scenarios (carbon): scenarios, the reference band of replacements & repaints and MC band vs the boundaries; cumulative (upfront / replacements & repaints) vs cumulative boundaries.
+- `mc_1_fan_pb.png`: PB variant of mc_1_fan (carbon): MC fan, the AR base window 2016-2025 at 2025 factors (same accounting; no other historical carbon), boundaries.
 - `pb_1_boundaries.png`: Boundaries B_AR and B_AtP 2025-2050 (log axis), population modifier, table of components.
-- `pb_2_loe.png`: Annual level of exceedance by principle, Low (S1) / Reference (S3-10) / High (S2) with MC 5-95% bands, log axis.
+- `pb_2_loe.png`: Annual level of exceedance by principle, Low (S1) / Reference (S3-10) / High (S2) with MC 5-95% bands and the reference without in-window replacements & repaints, log axis.
 - `pb_3_headroom.png`: Intensity, floor area and carbon per dwelling that would fit each boundary vs the projection (S3-10).
 - `pb_4_sensitivity.png`: Tornado of cumulative LoE 2026-2050 (S3-10), the 5 largest effects on AR or AtP (main text; all rows incl. the AR base windows of 5, 20 and 34 years and the frozen-technology factors: pb_4_sensitivity_SI).
 
@@ -27,7 +27,7 @@ All in `outputs/figures/`.
 
 - `boss_01_population.png`: Population history and projection (median, 5th-95th); the 2026 level shift from observed growth.
 - `boss_02_households.png`: Households: census-benchmarked to 2018, 2019-23 scaled to the 2023 census, projection from 2023.
-- `boss_06_cumulative_carbon.png`: Cumulative carbon by typology and by demand type (in scope).
+- `boss_06_cumulative_carbon.png`: Cumulative carbon by typology and by demand type, in scope (time-resolved accounting: upfront at construction + replacements & repaints in the year they occur; A1-A3 item level (Horup et al. 2025), A4-A5 1%/yr (Resch et al. 2021)).
 - `boss_07_typology_share.png`: Typology floor-area shares, history and projection (held vs trend).
 - `boss_08_demographic_drivers.png`: Household size (same history treatment as boss_02) and population vs household growth.
 - `boss_09_space_diagnostics.png`: Realised vs occupied floor area per new dwelling; occupancy utilisation.
@@ -35,12 +35,13 @@ All in `outputs/figures/`.
 - `diag_3_stock_bucket.png`: Vacancy definitions with the 1986-2023 census range on one definition and the implied vacancy (near-term surplus not absorbed: limitation); stock; dwellings per year by component (history by census interval) with building beyond formation (historical, per census interval; 1991-2023, 1986-91 not covered).
 - `diag_3b_appendix_vacancy_definition.png`: Appendix: why empty-only vacancy (not residents away) is used.
 - `diag_4_floor_area.png`: Floor area by typology and demand type (history by census interval), mix, dwelling size.
-- `diag_5_carbon.png`: Carbon by typology and material (history estimated with 2025 factors; Pride-stripe material colours, soil on top); case-study intensities.
+- `diag_5_carbon.png`: Carbon 2026-2050 by typology and material (no historical carbon; Pride-stripe material colours, replacements & repaints lighter and hatched, soil on top); 2025 case-study whole-life intensities.
 - `fig_bridge_appendix_split.png`: Appendix: the bridge with demolition and residual split (split assumes the BRANZ rate).
 - `fig_conversion_chain.png`: Indices population -> households -> dwellings -> floor area -> carbon; average carbon intensity of new floor area by scenario, which falls with A1-A3 decarbonisation and with the soil-bearing share (the High case has more replacement, which carries no soil); typology shares held.
 - `mc_3_sobol.png`: Sobol indices (reference): within-scenario parametric uncertainty only.
 - `sens_2_paths.png`: Annual paths of the largest one-at-a-time sensitivities and the Stats NZ population 5th / 95th percentiles; % difference by year; cumulative carbon 2026-2050 per path (% vs adopted). The household-size variants converge after about 2041 because the Stats NZ projections end in 2043 (household size held flat after that in every variant).
 - `sens_1_tornado_SI.png`: All one-at-a-time sensitivities (Supplementary Material version of sens_1_tornado).
 - `pb_4_sensitivity_SI.png`: All PB sensitivity rows (Supplementary Material version of pb_4_sensitivity).
-- `boss_06_cumulative_carbon_pb.png`: PB variant of boss_06: cumulative carbon vs cumulative AR and AtP boundaries.
-- `pb_5_demand_vs_boundary.png`: Annual carbon by demand type, history 1992-2025 (faded, per census interval, 2025 factors) and projection (in scope, S3-10), against the AR and AtP boundaries from 2025.
+- `boss_06_cumulative_carbon_pb.png`: PB variant of boss_06: cumulative carbon (time-resolved) vs cumulative AR and AtP boundaries.
+- `pb_6_committed.png`: Cumulative carbon within 2026-2050 (upfront / replacements & repaints) vs cumulative AR and AtP boundaries per scenario, and the emissions committed after 2050 (later replacements & repaints + end of life) as a range, in years of the 2050 AR boundary.
+- `pb_5_demand_vs_boundary.png`: Annual carbon by demand type 2026-2050 (in scope, S3-10, incl. the band of replacements & repaints) against the AR and AtP boundaries from 2025; no historical carbon.

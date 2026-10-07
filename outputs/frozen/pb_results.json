@@ -24,8 +24,7 @@
     ],
     "SSEC_FCE_SHARE": "mean_of_ratios",
     "POP_NZ_SOURCE": "model",
-    "DECARB_MODE": "none",
-    "DECARB_STEEL": "reinforcing_steel"
+    "DECARB_MODE": "none"
   },
   "source_pairs": {
     "A": {
@@ -48,6 +47,11 @@
       2016,
       2025
     ],
+    "I_sec_base_b_share": 0.0,
+    "I_sec_base_wider_scope_kg": 1987479703.239228,
+    "accounting": "whole_life_at_construction",
+    "decarb_a45": "held",
+    "event_timing": "n+1",
     "I_sec_base_5yr_kg": 2026870381.3984718,
     "I_sec_base_long_run_2024_25_kg": 1992380535.5191104,
     "I_sec_base_20yr_kg": 1651755773.1888804,
@@ -689,6 +693,7 @@
       "I_sec_base_kt_p95": 1760.4124843987609
     }
   },
+  "committed": {},
   "reference_2026_2050": {
     "I_kt": 33625.15835263456,
     "B_AR_kt": 6216.853821479963,
@@ -770,11 +775,19 @@
     },
     {
       "case": "vi_decarb",
-      "label": "(vi) Materials decarbonised, A1-A3 (Horup et al. 2025, SI Table S4)",
-      "cum_LoE_AR": 5.050818363667313,
-      "cum_LoE_AtP": 28.213109634979446,
-      "AR_vs_ref_pct": -6.616947000024831,
-      "AtP_vs_ref_pct": -6.616947000024831
+      "label": "(vi) Materials decarbonised (A1-A3 item level, Horup et al. 2025 SI Table S4)",
+      "cum_LoE_AR": 4.98852847218903,
+      "cum_LoE_AtP": 27.865167695497036,
+      "AR_vs_ref_pct": -7.76860596268365,
+      "AtP_vs_ref_pct": -7.768605962683662
+    },
+    {
+      "case": "xiv_alpha_1",
+      "label": "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",
+      "cum_LoE_AR": 5.4087098262557936,
+      "cum_LoE_AtP": 12.748328707406115,
+      "AR_vs_ref_pct": 0.0,
+      "AtP_vs_ref_pct": -57.80408927809856
     },
     {
       "case": "note_soil_long_run",

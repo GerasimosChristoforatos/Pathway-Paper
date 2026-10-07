@@ -8,7 +8,7 @@ Absolute environmental sustainability assessment (AESA) of New Zealand new resid
 
     B_AR(t) = SOS · (Ī_sec,base / I_glob) · [P_NZ(t) / P_NZ(t0)] · [P_W(t0) / P_W(t)],   t0 = 2025
 
-Ī_sec,base is the mean annual sector impact 2016-2025 from this model's own history (same scope and soil convention as the projection; 2025 case-study factors: past construction used past technology, so the decarbonisation of A1-A3 applies only to 2026-2050). Over the base window LoE_AR = I_glob / SOS = 8.1938 by construction (the sector impact cancels); the information is in the trajectory relative to the base.
+Ī_sec,base is the mean annual sector impact 2016-2025 from this model's own history (same scope, accounting rule and soil convention as the projection; at 2025 case-study factors: past construction used past technology, so the decarbonisation of A1-A3 applies only to 2026-2050). Over the base window LoE_AR = I_glob / SOS = 8.1938 by construction (the sector impact cancels); the information is in the trajectory relative to the base.
 
 **Ability to pay** (Hjalsted et al. 2021, J. Ind. Ecol. 25, 6-19, Table 2 Eqs. 5-6, p. 11; SI Eq. S1):
 
@@ -16,9 +16,11 @@ Absolute environmental sustainability assessment (AESA) of New Zealand new resid
     B_AtP(t)     = SoSOS_ind(t) · P_NZ(t) · s_sec
     α            = 1 / Σ_c [(P_c / P_W) (g_W / g_c)]   (SI Eq. S1 with GDP totals, rewritten per capita)
 
-g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c and P_W = Σ P_c over the same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) is constant in this static design: 0.1790.
+g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c and P_W = Σ P_c over the same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) is constant in this static design: 0.2500.
 
-**Carbon factors.** A1-A3 of each case-study EPD item decarbonised 2026-2050 after Horup et al. (2025) SI Table S4 (item-level mapping, data/material_item_map.csv: direct, Horup p. 6, proxy or held); A4-A5, B2, B4, C1-C4, held items and soil at 2025 (see ASSUMPTIONS.md). Cumulative LoE of the reference path by decarbonisation mode (each a full run): `none` 5.41 (AR) / 30.2 (AtP); `horup_class_v1_1` 5.05 (AR) / 28.2 (AtP); `horup_item` 4.99 (AR) / 27.9 (AtP); comparison run 2026-10-05 20:04 UTC at commit 3bcd7aa (`python run_all.py --compare-modes`); see outputs/DECARB_MODES.md.
+**Carbon factors.** A1-A3 of each case-study EPD item decarbonised 2026-2050 after Horup et al. (2025) SI Table S4 (item-level mapping, data/material_item_map.csv: direct, Horup p. 6, proxy or held), for construction and for the A1-A3 share of replacements and repaints; A4-A5 e^(-0.01 (t - 2025)) after Resch et al. (2021) Table 1; C1-C4, held items and soil at 2025 (see ASSUMPTIONS.md).
+
+**Accounting.** Time-resolved: the sector impact I_sec(t) counts the upfront emissions (A1-A5 and soil) of construction in year t and the replacement and repaint events (B2, B4) that occur in year t, of buildings built from 2026. Events after 2050 and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed emissions, reported below as a range and in years of the 2050 AR boundary; they are not part of the cumulative LoE.
 
 **Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over 2026-2050 (ratio of sums).
 
@@ -30,7 +32,7 @@ g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c 
 |---|---|---|
 | SOS | 6.81e+12 kg CO2-eq/yr | 2 °C carrying capacity (Bjørn & Hauschild 2015); ESM2 (see source check) |
 | I_glob | 5.58e+13 kg CO2-eq/yr | Bjørn & Hauschild 2015 ESM2 B30 (Laurent et al. 2013, 2010) |
-| Ī_sec,base 2016-2025 | 1,987.5 kt/yr | this model, history on the projection's soil convention (PB.historical_emissions) |
+| Ī_sec,base 2016-2025 | 1,423.0 kt/yr | this model, history on the projection's soil convention (PB.historical_emissions) |
 | base year b | 2024 | latest year with ≥ 98% of WDI-economy population reporting NY.GDP.PCAP.PP.KD |
 | α (b, PPP) | 0.4220 | Hjalsted SI Eq. S1; WDI (release 2026-07-13) |
 | g_W, g_NZ (b, PPP, 2021 int-$) | 21,495, 48,325 (ratio 0.4448) | WDI NY.GDP.PCAP.PP.KD |
@@ -42,22 +44,22 @@ g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c 
 
 The numerator of s_sec is an investment flow (gross fixed capital formation), while Hjalsted et al. define the upscaling on final consumption and leave intermediate sectors open (p. 16).
 
-## Historical sector emissions (base window)
+## Historical sector emissions (base window, at 2025 factors)
 
 | year | kt CO2e | soil share of floor area | net replacement rate (%/yr) | rate from |
 |---|---|---|---|---|
-| 2016 | 1,848.4 | 0.899 | 0.158 | 2013-2018 |
-| 2017 | 1,855.1 | 0.901 | 0.158 | 2013-2018 |
-| 2018 | 1,894.9 | 0.812 | 0.312 | 2018-2023 |
-| 2019 | 2,026.4 | 0.834 | 0.312 | 2018-2023 |
-| 2020 | 2,115.7 | 0.839 | 0.312 | 2018-2023 |
-| 2021 | 2,562.4 | 0.869 | 0.312 | 2018-2023 |
-| 2022 | 2,454.8 | 0.868 | 0.312 | 2018-2023 |
-| 2023 | 1,760.9 | 0.821 | 0.312 | 2018-2023 |
-| 2024 | 1,585.5 | 0.797 | 0.312 | 2018-2023 carried |
-| 2025 | 1,770.7 | 0.812 | 0.312 | 2018-2023 carried |
+| 2016 | 1,303.9 | 0.899 | 0.158 | 2013-2018 |
+| 2017 | 1,311.9 | 0.901 | 0.158 | 2013-2018 |
+| 2018 | 1,340.3 | 0.812 | 0.312 | 2018-2023 |
+| 2019 | 1,441.5 | 0.834 | 0.312 | 2018-2023 |
+| 2020 | 1,509.6 | 0.839 | 0.312 | 2018-2023 |
+| 2021 | 1,833.5 | 0.869 | 0.312 | 2018-2023 |
+| 2022 | 1,771.9 | 0.868 | 0.312 | 2018-2023 |
+| 2023 | 1,280.3 | 0.821 | 0.312 | 2018-2023 |
+| 2024 | 1,149.4 | 0.797 | 0.312 | 2018-2023 carried |
+| 2025 | 1,287.3 | 0.812 | 0.312 | 2018-2023 carried |
 
-Mean 2016-2025: 1,987.5 kt/yr. With soil on all floor area (the diag_5 history): 2,022.0 kt/yr. Note: with the long-run net replacement rate for 2024-25: 1,992.4 kt/yr; 2021-2025 (5 yr): 2,026.9 kt/yr.
+Mean 2016-2025: 1,423.0 kt/yr, of which replacements and repaints within the window 0.25%; wider B scope (events of all cohorts built since 1992): 1,574.8 kt/yr. With soil on all floor area: 1,457.5 kt/yr. Note: with the long-run net replacement rate for 2024-25: 1,427.9 kt/yr; 2021-2025 (5 yr): 1,457.5 kt/yr.
 
 ## α validation (Hjalsted et al. 2021 SI: α = 0.243 for 2017; world GDP per capita 1.07E+04 USD)
 
@@ -92,44 +94,62 @@ Primary pair A: 2 °C carrying capacity (Bjørn & Hauschild 2015); sensitivity C
 
 ## Results
 
-The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 242.2 kt CO2e in 2026 and 256.2 kt in 2050; by ability to pay 43.35 and 45.87 kt (17.9% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026-2050 the reference path (S3-10) emits 31,013 kt against cumulative boundaries of 6,217 kt (AR) and 1,113 kt (AtP): cumulative LoE 4.99 (AR; Monte Carlo p5-p95 4.00-5.92) and 27.9 (AtP; 22.1-33.2).
+The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 173.4 kt CO2e in 2026 and 183.5 kt in 2050; by ability to pay 43.35 and 45.87 kt (25.0% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026-2050 the reference path (S3-10) emits 21,578 kt against cumulative boundaries of 4,451 kt (AR) and 1,113 kt (AtP): cumulative LoE 4.85 (AR; Monte Carlo p5-p95 3.90-5.75) and 19.4 (AtP; 15.5-23.1).
 
 | scenario | cumulative LoE AR | cumulative LoE AtP |
 |---|---|---|
-| Low (S1) | 4.68 | 26.1 |
-| S1-noUC | 4.80 | 26.8 |
-| High (S2) | 5.44 | 30.4 |
-| S2-noUC | 5.85 | 32.7 |
-| Reference (S3-10) | 4.99 | 27.9 |
-| S3-10-noUC | 5.23 | 29.2 |
-| S3-15 | 5.09 | 28.4 |
-| S3-5 | 4.83 | 27.0 |
+| Low (S1) | 4.56 | 18.2 |
+| S1-noUC | 4.67 | 18.7 |
+| High (S2) | 5.25 | 21.0 |
+| S2-noUC | 5.62 | 22.5 |
+| Reference (S3-10) | 4.85 | 19.4 |
+| S3-10-noUC | 5.07 | 20.3 |
+| S3-15 | 4.94 | 19.7 |
+| S3-5 | 4.70 | 18.8 |
+
+### Committed emissions after 2050 (deterministic)
+
+Lower: events after 2050 with the 2050 factors held; upper: at 2025 factors; C1-C4 at 2025 in both. Years of the 2050 AR boundary = committed / B_AR(2050). Not part of the cumulative LoE.
+
+| scenario | B2/B4 within 2026-2050 (kt) | share of window carbon | committed (kt) | years of B_AR(2050) |
+|---|---|---|---|---|
+| Low (S1) | 373 | 1.8% | 7,630-8,338 | 41.6-45.4 |
+| Reference (S3-10) | 403 | 1.9% | 8,208-8,969 | 44.7-48.9 |
+| High (S2) | 424 | 1.8% | 9,069-9,911 | 49.4-54.0 |
 
 ### Deterministic sensitivities (reference scenario S3-10)
 
 | case | cumulative LoE AR | vs reference | cumulative LoE AtP | vs reference |
 |---|---|---|---|---|
-| Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios | 4.99 | +0.0% | 27.9 | +0.0% |
-| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 9.41 | +88.6% | 52.6 | +88.6% |
-| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 4.99 | +0.0% | 85.7 | +207.7% |
-| (iii) AR base window 2021-2025 (5 yr, as Horup) | 4.89 | -1.9% | 27.9 | +0.0% |
-| (iii) AR base window 2006-2025 (20 yr) | 6.00 | +20.3% | 27.9 | +0.0% |
-| (iii) AR base window 1992-2025 (full consistent history) | 6.36 | +27.4% | 27.9 | +0.0% |
-| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 4.98 | -0.2% | 27.7 | -0.6% |
-| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 5.30 | +6.2% | 30.0 | +7.7% |
-| (v) s_sec with FCE share as ratio of sums | 4.99 | +0.0% | 27.9 | +0.2% |
-| (vi) Frozen technology: 2025 factors held (no decarbonisation) | 5.41 | +8.4% | 30.2 | +8.4% |
-| Note (not in tornado): history 2024-25 at the long-run net replacement rate | 4.98 | -0.2% | 27.9 | +0.0% |
+| Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios | 4.85 | +0.0% | 19.4 | +0.0% |
+| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 9.14 | +88.6% | 36.6 | +88.6% |
+| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 4.85 | +0.0% | 59.6 | +207.7% |
+| (iii) AR base window 2021-2025 (5 yr, as Horup) | 4.73 | -2.4% | 19.4 | +0.0% |
+| (iii) AR base window 2006-2025 (20 yr) | 5.83 | +20.3% | 19.4 | +0.0% |
+| (iii) AR base window 1992-2025 (full consistent history) | 5.93 | +22.4% | 19.4 | +0.0% |
+| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 4.84 | -0.2% | 19.3 | -0.6% |
+| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 5.15 | +6.2% | 20.9 | +7.7% |
+| (v) s_sec with FCE share as ratio of sums | 4.85 | +0.0% | 19.4 | +0.2% |
+| (vi) Frozen technology: 2025 factors held (A1-A3 and A4-A5 not decarbonised) | 5.54 | +14.3% | 22.2 | +14.3% |
+| (vii) Proxy-mapped items held at 2025 (A1-A3) | 4.87 | +0.4% | 19.5 | +0.4% |
+| (viii) NZ-made, electricity-intensive items held at 2025 (A1-A3) | 4.96 | +2.4% | 19.9 | +2.4% |
+| (ix) A4-A5 held at 2025 (no generic 1%/yr) | 4.94 | +2.0% | 19.8 | +2.0% |
+| (x) A4-A5 on each item's own Horup S4 path | 4.79 | -1.2% | 19.2 | -1.2% |
+| (xi) Event timing: interval L / n (instead of L / (n + 1)) | 4.81 | -0.8% | 19.2 | -0.8% |
+| (xii) Accounting: whole life at construction (base on the same rule) | 4.92 | +1.5% | 27.5 | +41.8% |
+| (xiii) Wider scope: base and projection include the replacements and repaints of every cohort since 1992 | 5.36 | +10.6% | 23.7 | +22.4% |
+| (xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables | 4.85 | +0.0% | 8.2 | -57.8% |
+| Note (not in tornado): history 2024-25 at the long-run net replacement rate | 4.83 | -0.3% | 19.4 | +0.0% |
 
 ### Monte Carlo with a 2006-2025 AR base (20 years; not adopted)
 
-Ī_sec,base 2006-2025 = 1,651.8 kt/yr (adopted 2016-2025: 1,987.5); full consistent history 1992-2025: 1,559.9 kt/yr. Same saved draws, base recomputed per draw (no new random numbers); AtP is unaffected.
+Ī_sec,base 2006-2025 = 1,182.9 kt/yr (adopted 2016-2025: 1,423.0); full consistent history 1992-2025: 1,163.0 kt/yr. Same saved draws, base recomputed per draw (no new random numbers); AtP is unaffected.
 
 | scenario | cumulative LoE AR p5 / p50 / p95 (20-yr base) | adopted base |
 |---|---|---|
-| Reference (S3-10) | 4.81 / 5.96 / 7.13 | 4.00 / 4.95 / 5.92 |
-| Low (S1) | 4.46 / 5.59 / 6.74 | 3.71 / 4.65 / 5.59 |
-| High (S2) | 5.30 / 6.49 / 7.70 | 4.42 / 5.40 / 6.39 |
+| Reference (S3-10) | 4.68 / 5.80 / 6.91 | 3.90 / 4.82 / 5.75 |
+| Low (S1) | 4.36 / 5.46 / 6.55 | 3.64 / 4.54 / 5.45 |
+| High (S2) | 5.13 / 6.27 / 7.43 | 4.27 / 5.21 / 6.17 |
 
 ## Assumption register
 
@@ -137,8 +157,9 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 |---|---|---|
 | Impact category | climate change only | DECISION (author) |
 | Carrying capacity over time | static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / Paris-aligned pathways | DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, 140-150 (pp. 143, 148) |
-| Sector impact | the model's embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all booked in the construction year | DECISION (author); construction-year booking of B2/B4/C is a limitation to be revisited |
-| Carbon factors over time | Boss.DECARB_MODE = 'horup_item' (A1-A3 by case-study EPD item, Horup et al. 2025; data/material_item_map.csv); history and the AR base always at 2025 factors | DECISION (author); see the Boss register |
+| Sector impact | upfront carbon (A1-A5 + soil) of each year's construction plus the replacements and repaints (B2, B4) occurring that year from buildings built in the window (time-resolved); later events and end of life (C1-C4) are committed emissions after 2050, reported separately | DECISION (author); Boss.ACCOUNTING = 'time_resolved' |
+| AR base on the same rule | Ī_sec,base = upfront of 2016-2025 construction + the replacements and repaints within the window of the buildings built in it, at 2025 factors; base-window sensitivities on the same rule over their windows; wider scope (all cohorts since 1992) as a sensitivity | DECISION (author) |
+| Carbon factors over time | Boss.DECARB_MODE = 'horup_item' (A1-A3 by case-study EPD item, Horup et al. 2025; data/material_item_map.csv); A4-A5 'resch' (Resch et al. 2021 Table 1: e^(-0.01 (t - 2025))); history and the AR base always at 2025 factors | DECISION (author); LITERATURE; see the Boss register |
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
 | Period and base year | 2026-2050; t0 = 2025 | DECISION (author) |
@@ -156,7 +177,8 @@ The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired righ
 ## Limitations
 
 - Static carrying capacity: the carrying capacities are constant yearly values modelled at steady state and their timespan may not match the assessment period (Clausen et al. 2025, pp. 143 and 148).
-- B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future maintenance and end-of-life emissions of the buildings built in those years (to be revisited).
+- Accounting (time-resolved): the sector impact of 2026-2050 counts upfront emissions (A1-A5 and soil) in the construction year and replacement / repaint events (B2, B4) in the year they occur. Events after 2050 and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed emissions outside the window; they are reported as a range (pb_results.json "committed", pb_6) in years of the 2050 AR boundary and are not compared with the 2026-2050 boundary. Whole life at construction is a sensitivity.
+- History at 2025 factors: the acquired-rights base (2016-2025) and the base-window sensitivities use the 2025 case-study factors because no historical factor series exists for the case studies. If past production was more carbon-intensive than in 2025 (as the ~1%/yr technological progress assumed by Resch et al. 2021 implies), the base and hence the AR boundary are understated and the AR exceedance overstated (conservative); the size of this effect is not quantified. The base follows the projection's accounting rule (upfront of the window's construction plus the events within the window of cohorts built in it).
 - The primary SOS (6.81E12) is the 2 °C carrying capacity of Bjørn & Hauschild (2015), not the 1 W/m² planetary boundary (3.61E12, sensitivity C). Sala et al. (2020, Table 3) label 6.81E12 as radiative forcing after Rockström et al. (2009), which does not match its derivation in Bjørn & Hauschild (2015).
 - GWP basis: Bjørn & Hauschild (2015) ESM2 uses AR5 GWP100 factors (CH4 28, N2O 265; column "CFs (GWP100, IPCC5)") while their Table 1 cites Forster et al. (2007), i.e. AR4. The GWP basis of the case-study LCA factors used by the model is not documented in this repository (building_data.xlsx gives "GWP" columns only; source Christoforatos & Pickering 2025): to be confirmed by the author.
 - I_glob = 5.58E13 (Bjørn & Hauschild 2015 ESM2, from Laurent et al. 2013, year 2010): Laurent et al. (2013) is not in hand, so whether it includes land-use-change CO2 (the sector impact includes soil carbon loss) and its GWP basis are NOT VERIFIED. The per-gas indicator scores in ESM2 sum to 54.0 Gt CO2-eq with 39.5 Gt CO2; a CO2 total of that size is consistent with inclusion of land-use-change CO2 (inference, not a sourced statement). The EC-JRC table "Normalization factors for testing" (Benini, Sala & Pant, version 0.1.1, 15 Dec 2015; sheet 1.3) gives the PROSUITE global value as 5.589E13 kg CO2-eq, 8,100 kg/person, "2010 or 2000".

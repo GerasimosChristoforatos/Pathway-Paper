@@ -1,5 +1,92 @@
 # CHANGELOG
 
+## baseline-pb-v3
+
+Time-resolved replacement and repaint emissions (B2, B4), committed post-2050
+emissions, and A4-A5 decarbonisation. Unchanged: demographics, floor area, the
+three scenarios (Low S1 / Reference S3-10 / High S2), the AESA framework (AR,
+Horup et al. 2025 Eq. 1; AtP, Hjalsted et al. 2021 Eqs. 5-6 with α; carrying-capacity
+pair A), the A1-A3 item-level mapping, soil (never decarbonised).
+
+**Regression locks.** With `ACCOUNTING = 'whole_life_at_construction'` and
+`DECARB_A45 = 'held'` the model reproduces baseline-pb-v2 exactly (carbon, upfront,
+annual carbon; `tests/test_v3.py` against `tests/regression_pb_v2.json`), and with
+`DECARB_MODE = 'none'` the frozen anchor; the frozen-technology PB run
+(`outputs/frozen/pb_results.json`) equals baseline-PB_v2 in every deterministic and
+MC cumulative LoE and in the AR base.
+
+**Results** (deterministic; MC p5-p95 in brackets):
+
+| 2026-2050 | v2 (whole life at construction) | v3 (time-resolved, reported) |
+|---|---|---|
+| Reference carbon (kt) | 31,013 (upfront 21,592) | 21,578 within the window = upfront 21,174 + replacements & repaints 403; committed after 2050 8,208-8,969 |
+| Low (S1) carbon (kt) | 29,083 (upfront 20,327) | 20,311 = 19,938 + 373; committed 7,630-8,338 |
+| High (S2) carbon (kt) | 33,799 (upfront 23,412) | 23,361 = 22,937 + 424; committed 9,069-9,911 |
+| Ī_sec,base 2016-2025 (kt/yr) | 1,987.5 | 1,423.0 (same accounting rule as the projection; at 2025 factors) |
+| Reference cumulative LoE AR | 4.99 [4.00-5.92] | 4.85 [3.90-5.75] |
+| Reference cumulative LoE AtP | 27.9 [22.1-33.2] | 19.4 [15.5-23.1] |
+| Low / High LoE AR | 4.68 / 5.44 | 4.56 / 5.25 |
+| Low / High LoE AtP | 26.1 / 30.4 | 18.2 / 21.0 |
+
+AR changes little because the AR base follows the same accounting rule as the
+projection (both lose the post-window stages); AtP falls by the share of
+whole-life carbon now committed after 2050, since its boundary does not depend
+on the sector's history. Committed emissions equal 44.7-48.9 years of the 2050
+AR boundary (Reference). Reconciliation with v2 (outputs/reconciliation.md): at
+2025 factors upfront + in-window B + committed B + C1-C4 = 33,625.2 kt = the v2
+frozen whole-life total exactly; decarbonised, v2 31,013.0 - A4-A5 of
+construction 417.2 - in-window B decarbonisation 49.3 = 30,546.5 (committed upper
+bound).
+
+* **Event table** (`data/build_lca_events.py` -> `data/derived/lca_events.csv`):
+  event counts and building lifespan from the supplied LCAQuick root tables
+  (`data/raw/Analytical_LCA_Results_Database.xlsx`, MANIFEST); stage totals stay
+  those of `building_data.xlsx` and the item table. 1,287 of 1,303 lines matched;
+  16 excluded, none with B2/B4 (12 sand / granular-fill site works, 3 unlabelled
+  incl. the A_1 row of ≈408 t A1-A3, one T_1 aluminium line 10 kg off the item
+  table). Some sheet summary blocks do not equal their own line sums; line data
+  used. Colorsteel: one replacement at L/(n+1) with the full line B; ZinaCore: 3
+  repaints of B/3 on the paint path (author decisions).
+* **Timing**: event k at k L/(n+1) (sensitivity k L/n); per-event components
+  A1-A3 : A4-A5 : C1-C4 in the line's initial proportions; pooled per typology.
+* **Accounting** (`ACCOUNTING`): `time_resolved` adopted; `whole_life_at_construction`
+  is a sensitivity. Committed emissions: upper at 2025 factors, lower with the
+  2050 factors held; C1-C4 at 2025.
+* **A4-A5** (`DECARB_A45`): e^(-0.01 (t - 2025)) after Resch, Andresen, Cherubini &
+  Brattebø (2021) Table 1; held and item paths are sensitivities.
+* **AR base** on the projection's rule, at 2025 factors, for the adopted window and
+  the base-window rows; replacements & repaints are 0.25% of the base. Wider
+  scope (events of all cohorts since 1992 in base and projection): base 1,574.8
+  kt/yr, LoE AR +10.6%, AtP +22.4%.
+* **New sensitivity rows** (sensitivity_oat.csv, pb_sensitivity.csv, full
+  tornados `_SI`, top-5 regenerated): A4-A5 held (+2.0%), A4-A5 item paths
+  (-1.2%), event timing L/n (-0.8%), whole life at construction (carbon +41.8%;
+  LoE AR +1.5%, AtP +41.8%), wider scope, AtP with α = 1 "as computed in
+  Hjalsted et al.'s SI tables" (AtP -57.8%; limitation: the authors have been
+  contacted). The proxies-held and NZ-electricity-held rows stay as ordinary rows.
+* **Figures**: no historical carbon in any figure except the AR base window of
+  mc_1_fan_pb ("at 2025 factors"); historical_demand_carbon removed; in-window B
+  as a band (carbon figures) or lighter and hatched (material figures); new
+  pb_6_committed. `figaudit.py` records each figure's year range;
+  `tests/test_v3.py` checks it and FIGURES.md against the files. run_all clears
+  outputs/figures at the start.
+* **Removed** (results preserved at tags baseline-PB_v1.2 and baseline-PB_v2): the
+  class-level decarbonisation mode `horup_class_v1_1` (v2 Reference under whole
+  life at construction: carbon 31,400 kt, upfront 21,979, LoE AR 5.05 / AtP
+  28.2), the stored comparison runs (outputs/modes/, DECARB_MODES.md,
+  decarb_modes.json), `run_all.py --compare-modes`, `tools/decarb_modes.py`, the
+  lift-at-steel-profile case, `tests/test_regression_pb_v1_1.py`; the unused
+  `MIX_MODE = 'storyline'` option; a half-implemented `Boss.B_SCOPE` switch (the
+  wider scope remains a PB sensitivity row).
+* **Documents**: register rows and limitations for the accounting, events,
+  excluded lines, A4-A5 path, committed bounds, history at 2025 factors; Habert et
+  al. (2020, Section 5.1, p. 442) cited for time-resolved accounting; the Resch et
+  al. author list corrected (Resch, Andresen, Cherubini, Brattebø). "Jones et al.
+  2024" (completion rate) remains flagged "citation to verify" (TODO in Boss.py).
+  `tools/check_outputs.py` searches all stale terms; `tools/reconciliation.py` new.
+* **Tests**: 86 passed (full run). **Run time**: full run 880 s on 4 cores
+  (including the frozen-technology check run); `--quick` 348 s.
+
 ## baseline-pb-v2
 
 Clean-up, scenario simplification and figure improvements. The AESA framework,

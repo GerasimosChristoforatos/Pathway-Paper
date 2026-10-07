@@ -54,7 +54,7 @@ def row_factors(prof, years, decarb_mode, item_case='central', a45='resch', hold
         if decarb_mode == 'none':
             return None
         if s4 == BF.ITEM_HELD:
-            s4 = 'Steel profile' if item_case == 'elevator_steel_profile' else None
+            s4 = None
         if (item_case == 'proxies_held' and label == 'proxy') or (item_case == 'nz_elec_held' and nz == 'yes'):
             s4 = None
         return None if s4 is None else paths.loc[yy, s4].values

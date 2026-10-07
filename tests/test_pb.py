@@ -117,8 +117,9 @@ def test_history_decomposition(B):
     """Soil on all floor area reproduces the diag_5 history (2025 factors x built
     floor area); the projection's convention removes soil only on net replacement."""
     h = PB.historical_emissions(B, range(2016, 2026))
-    diag5 = sum(B['hist_built_typ_gfa'].loc[2016:2025, t] * B['T_BASELINE_2025'][t] for t in B['typ_names'])
-    assert np.allclose(h['I_soil_on_all_kg'].values, diag5.values, rtol=1e-12)
+    base = B['UPFRONT_2025'] if B['TIME_RESOLVED'] else B['T_BASELINE_2025']
+    direct = sum(B['hist_built_typ_gfa'].loc[2016:2025, t] * base[t] for t in B['typ_names']) + h['b_kg']
+    assert np.allclose(h['I_soil_on_all_kg'].values, direct.values, rtol=1e-12)
     assert ((h['soil_share'] > 0) & (h['soil_share'] <= 1)).all()
     assert (h['I_sec_kg'] <= h['I_soil_on_all_kg'] + 1e-6).all()
 

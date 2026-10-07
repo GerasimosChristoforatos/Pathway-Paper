@@ -1,6 +1,7 @@
 """baseline-pb-v2 clean-up: three replacement scenarios only (Low (S1), Reference
 (S3-10), High (S2), typology shares held), Low and Reference unchanged from
-baseline-pb-v1.2 (tests/regression_pb_v1_2_low_ref.json, tag baseline-PB_v1.2),
+baseline-pb-v1.2 under the v2 accounting (tests/regression_pb_v1_2_low_ref.json, tag
+baseline-PB_v1.2),
 main-text tornados with the top-5 effects, Pride colours for the six material
 classes in one order, soil always the top layer."""
 import json
@@ -21,7 +22,6 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 
 OUT = os.path.join(ROOT, 'outputs')
 FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_pb_v1_2_low_ref.json')))
-quick = pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1', reason='quick run: fewer Monte Carlo draws')
 NAMES = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
 PRIDE = ['#750787', '#004DFF', '#008026', '#FFED00', '#FF8C00', '#E40303']   # bottom -> top of the stack
 
@@ -59,31 +59,15 @@ def test_scenario_names_consistent():
 
 
 def test_low_and_reference_deterministic_unchanged():
+    """Under the v2 accounting (whole life at construction, A4-A5 held), Low and
+    Reference reproduce baseline-pb-v1.2 exactly. (Their Monte Carlo and PB outputs
+    change deliberately in baseline-pb-v3: time-resolved accounting, CHANGELOG.)"""
     import replacement_scenarios as RS
     settings = {k: s for k, _, s in RS.SCENARIOS}
     for k, ref in FX['scenarios'].items():
-        r, _ = RS.one(settings[k])
+        r, _ = RS.one(dict(settings[k], ACCOUNTING='whole_life_at_construction', DECARB_A45='held'))
         for f, v in ref.items():
             assert r[f] == v, (k, f, r[f], v)
-
-
-@quick
-def test_low_and_reference_monte_carlo_unchanged():
-    for name, rows in FX['mc'].items():
-        s = pd.read_csv(os.path.join(OUT, name), index_col=0)
-        for i, cols in rows.items():
-            for c, v in cols.items():
-                assert float(s.loc[i, c]) == v, (name, i, c)
-
-
-@quick
-def test_low_and_reference_pb_unchanged():
-    pb = json.load(open(os.path.join(OUT, 'pb_results.json')))
-    for key in ('deterministic', 'mc', 'mc_base_fixed'):
-        for k, v in FX['pb'][key].items():
-            # numbers only: the scenario labels were renamed in baseline-pb-v2 (deliberate)
-            assert {f: x for f, x in pb[key][k].items() if f != 'label'} == \
-                {f: x for f, x in v.items() if f != 'label'}, (key, k)
 
 
 def test_tornado_top5_selection():

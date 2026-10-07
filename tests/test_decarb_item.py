@@ -25,7 +25,9 @@ ITEM_VARIANTS = [BF.decarb_variant('horup_item', item_case=c) for c in BF.ITEM_C
 
 @pytest.fixture(scope='module')
 def runs():
-    return run_boss(DECARB_MODE='none'), run_boss(DECARB_MODE='horup_item')
+    # whole life at construction, A4-A5 held: isolates the A1-A3 decarbonisation
+    wl = dict(ACCOUNTING='whole_life_at_construction', DECARB_A45='held')
+    return run_boss(DECARB_MODE='none', **wl), run_boss(DECARB_MODE='horup_item', **wl)
 
 
 def test_item_table_reproduces_workbook():
@@ -83,13 +85,12 @@ def test_reductions_recomputed_from_items_and_s4():
     held = {'central': lambda r: r.s4_row == BF.ITEM_HELD,
             'proxies_held': lambda r: r.s4_row == BF.ITEM_HELD or r.label == 'proxy',
             'nz_elec_held': lambda r: r.s4_row == BF.ITEM_HELD or r.nz_low_carbon_electricity == 'yes',
-            'elevator_steel_profile': lambda r: False}
+            }
     for case, is_held in held.items():
         dec = DEC[DEC.Variant == BF.decarb_variant('horup_item', item_case=case)]
         dec = dec.set_index(['Typology', 'Material', 'Year'])['A13_kgCO2e_per_m2']
         for y in (2026, 2033, 2050):
-            f = [1.0 if is_held(r) else paths.loc[y, 'Steel profile' if r.s4_row == BF.ITEM_HELD else r.s4_row]
-                 for r in it.itertuples()]
+            f = [1.0 if is_held(r) else paths.loc[y, r.s4_row] for r in it.itertuples()]
             b = (it['a13'] * f).groupby([it['id'], it['class'].map(lambda m: group.get(m, BF.OTHERS_LABEL))]).sum()
             for (typ, mat), v in dec.xs(y, level='Year').items():
                 ids = [i for i in chars.index if BF.TYPOLOGY_OF[i.rsplit('_', 1)[0]] == typ]
@@ -99,12 +100,10 @@ def test_reductions_recomputed_from_items_and_s4():
 
 
 def test_sensitivity_cases_order():
-    """Holding items can only lower the reduction; the lift case changes the
-    apartments only (the lift is in A_1 / A_2)."""
+    """Holding items can only lower the reduction."""
     d = DEC[DEC.Year == 2050].groupby(['Variant', 'Typology'])['A13_kgCO2e_per_m2'].sum()
-    c, ph, nz, el = (d.loc[v] for v in ITEM_VARIANTS)
+    c, ph, nz = (d.loc[v] for v in ITEM_VARIANTS)
     assert (ph >= c - 1e-12).all() and (nz >= c - 1e-12).all()
-    assert (el.drop('Apartments') == c.drop('Apartments')).all() and el['Apartments'] < c['Apartments']
 
 
 def test_soil_other_stages_and_2025_unchanged(runs):
@@ -130,7 +129,7 @@ def test_history_unchanged(runs):
 
 def test_settings_that_do_not_apply_are_refused():
     with pytest.raises(ValueError):
-        BF.decarb_variant('horup_item', steel='steel_profile')
+        BF.decarb_variant('none', item_case='proxies_held')
     with pytest.raises(ValueError):
         BF.decarb_variant('horup_class_v1_1', item_case='proxies_held')
     with pytest.raises(ValueError):

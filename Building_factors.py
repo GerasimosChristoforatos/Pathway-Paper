@@ -27,9 +27,8 @@ OUTPUTS
                          duplicates. Read by MonteCarlo.py for the bootstrap.
   factors_a13_decarb.csv A1-A3 (kg/m2 GFA) by typology x material x year 2025-2050,
                          decarbonised with Horup et al. (2025) (Boss.DECARB_MODE),
-                         per variant: class-level mapping of v1.1 (and its
-                         steel-profile sensitivity); item-level mapping (and
-                         its sensitivities). See decarb_variant().
+                         per variant: item-level mapping and its sensitivities
+                         (decarb_variant()).
   factors_building_a13_reduction.csv  the same reduction per case study and
                          year, for the Monte Carlo bootstrap.
   factors_a13_item_coverage.csv  item-level mapping: share of 2025 A1-A3 per
@@ -95,24 +94,13 @@ OUT_A45_ITEM = os.path.join(OUT_DIR, 'factors_a45_item.csv')        # A4-A5 on i
 # data/build_horup.py. Applied to A1-A3 only (Horup's scope); A4-A5, B2, B4,
 # C1-C4 and soil are never changed (author decision). Between Horup's years the
 # path is interpolated linearly (author decision; Horup state 'interpolated'
-# without naming the method, p. 3).
-#
-# 'horup_class_v1_1' (baseline-pb-v1.1, then called 'horup_material'): case-study
-# material CLASS -> S4 row (author decision). Classes without a counterpart in
-# S4 keep their 2025 factor: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT,
-# PLASTER, SIP and OTHERS. REINFORCED CONCRETE includes its rebar, decarbonised
-# at the concrete-structure rate (S4 does not separate reinforcement). STEEL at
-# the reinforcing-steel rate (conservative; steel profile is a sensitivity).
+# without naming the method, p. 3). (The class-level mapping of baseline-pb-v1.1,
+# 'horup_class_v1_1', is preserved at tags baseline-PB_v1.2 / baseline-PB_v2.)
 FILE_HORUP = os.path.join(DATA_DIR, 'derived', 'horup2025_table_s4.csv')
 DECARB_YEARS = list(range(2025, 2051))
 DECARB_KNOTS = (2025, 2030, 2040, 2050)
-DECARB_S4 = {'CONCRETE': 'Concrete structure', 'REINFORCED CONCRETE': 'Concrete structure',
-             'STEEL': 'Reinforcing steel', 'TIMBER': 'Construction wood', 'ALUMINIUM': 'Aluminium',
-             'BRICKS': 'Clay brick', 'GLASS': 'Glass', 'GLASS WOOL': 'Mineral wool glass'}
-DECARB_VARIANTS = {'horup_class_v1_1': {},                                  # the mapping above
-                   'horup_class_v1_1_steel_profile': {'STEEL': 'Steel profile'}}   # sensitivity
 #
-# 'horup_item' (baseline-pb-v1.2): each EPD item of the case studies
+# 'horup_item' (adopted from baseline-pb-v1.2): each EPD item of the case studies
 # (data/derived/material_items.csv, built by data/build_material_items.py) ->
 # one S4 row, or HELD, by data/material_item_map.csv (author decisions; the
 # basis of each row is in the table): label 'direct' (S4 has the material),
@@ -121,17 +109,15 @@ DECARB_VARIANTS = {'horup_class_v1_1': {},                                  # th
 # 'held' (2025 factor kept). Items are pooled per building, then per typology,
 # exactly as the classes; the 2025 totals are the class totals. Sensitivities
 # (ITEM_CASES): proxies held at 2025; items made in New Zealand with
-# electricity-intensive production held at 2025 (column
-# nz_low_carbon_electricity); the held lift at the S4 steel-profile rate.
+# electricity-intensive production held at 2025 (column nz_low_carbon_electricity).
 FILE_ITEMS = os.path.join(DATA_DIR, 'derived', 'material_items.csv')
 FILE_ITEM_MAP = os.path.join(DATA_DIR, 'material_item_map.csv')
 ITEM_LABELS = ('direct', 'sec31', 'proxy', 'held')
 ITEM_HELD = 'HELD'
 ITEM_CASES = {'central': 'item-level mapping',
               'proxies_held': 'proxy-mapped items held at 2025',
-              'nz_elec_held': 'NZ-made, electricity-intensive items held at 2025',
-              'elevator_steel_profile': 'held lift at the S4 steel-profile rate'}
-DECARB_MODES = ('none', 'horup_class_v1_1', 'horup_item')
+              'nz_elec_held': 'NZ-made, electricity-intensive items held at 2025'}
+DECARB_MODES = ('none', 'horup_item')
 
 # ---------------------------------------------------------------------------
 # A4-A5 DECARBONISATION (Boss.DECARB_A45)
@@ -218,20 +204,15 @@ def event_rows(timing='n+1'):
     return out
 
 
-def decarb_variant(mode, steel='reinforcing_steel', item_case='central'):
+def decarb_variant(mode, item_case='central'):
     """Variant name in factors_a13_decarb.csv / factors_building_a13_reduction.csv
-    for a Boss setting (DECARB_MODE, DECARB_STEEL, DECARB_ITEM_CASE); None for
-    'none'. A setting that does not apply to the mode must stay at its default."""
+    for a Boss setting (DECARB_MODE, DECARB_ITEM_CASE); None for 'none'."""
     if mode not in DECARB_MODES:
         raise ValueError(f"Unknown DECARB_MODE '{mode}'; expected one of {DECARB_MODES}.")
-    if mode != 'horup_class_v1_1' and steel != 'reinforcing_steel':
-        raise ValueError(f"DECARB_STEEL = '{steel}' applies to 'horup_class_v1_1' only.")
     if mode != 'horup_item' and item_case != 'central':
         raise ValueError(f"DECARB_ITEM_CASE = '{item_case}' applies to 'horup_item' only.")
     if mode == 'none':
         return None
-    if mode == 'horup_class_v1_1':
-        return {'reinforcing_steel': 'horup_class_v1_1', 'steel_profile': 'horup_class_v1_1_steel_profile'}[steel]
     if item_case not in ITEM_CASES:
         raise ValueError(f"Unknown DECARB_ITEM_CASE '{item_case}'; expected one of {tuple(ITEM_CASES)}.")
     return 'horup_item' if item_case == 'central' else f'horup_item_{item_case}'
@@ -274,8 +255,6 @@ def item_s4_row(items, case):
         row = row.where(items['label'] != 'proxy')
     elif case == 'nz_elec_held':
         row = row.where(items['nz_low_carbon_electricity'] != 'yes')
-    elif case == 'elevator_steel_profile':
-        row = row.where(items['label'] != 'held', 'Steel profile')
     elif case != 'central':
         raise ValueError(f"Unknown item case '{case}'.")
     return row
@@ -554,32 +533,10 @@ def main():
 
     # ---- decarbonised A1-A3 by year (Horup et al. 2025, S4) ------------------
     # Pooling is linear, so pooling the decarbonised building values equals
-    # decarbonising the pooled ones; done per case-study class, then grouped.
+    # decarbonising the pooled ones.
     paths = decarb_paths()
     dec_rows, red_rows = [], []
     ids = list(chars.index)
-    for variant, override in DECARB_VARIANTS.items():
-        s4 = {**DECARB_S4, **override}
-        missing = set(s4.values()) - set(paths.columns)
-        if missing:
-            raise ValueError(f'S4 rows not found: {missing}')
-        for y in DECARB_YEARS:
-            r = lca['material'].map(lambda m: paths.loc[y, s4[m]] if m in s4 else 1.0)
-            a13 = lca['A1-A3'] * r
-            g = (a13.groupby([lca['id'], lca['Material']]).sum()
-                    .reindex(pd.MultiIndex.from_product([ids, list(MATERIAL_GROUPS) + [OTHERS_LABEL]]))
-                    .fillna(0.0).rename('a13').reset_index())
-            g.columns = ['id', 'Material', 'a13']
-            g['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in g['id']]
-            g['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in g['id']]
-            for mat in list(MATERIAL_GROUPS) + [OTHERS_LABEL]:
-                pooled = pool(g[g['Material'] == mat], ['a13'])['a13']
-                for typ in TYP_ORDER:
-                    dec_rows.append(dict(Variant=variant, Typology=typ, Material=mat, Year=y,
-                                         A13_kgCO2e_per_m2=float(pooled.loc[typ])))
-            red = (lca['A1-A3'] - a13).groupby(lca['id']).sum().reindex(ids).fillna(0.0)
-            red_rows += [dict(Variant=variant, id=i, Year=y, A13_reduction_kgCO2e_per_m2=float(red.loc[i]))
-                         for i in ids]
     # item-level mapping (horup_item and its sensitivities): each item follows
     # one S4 row (or is held); summed per building x class, then grouped and
     # pooled exactly as above

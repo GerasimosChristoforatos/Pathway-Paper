@@ -194,28 +194,67 @@ def build_setup(settings=None):
     mf = pd.read_csv(Boss.FILE_FACTORS_MATERIAL)
     up = (mf[mf['Stage'].isin(['A1-A3', 'A4-A5'])].groupby('Typology')['kgCO2e_per_m2'].sum())
     su['up_central'] = up.reindex(typ).values
-    # material decarbonisation of A1-A3 (Boss.DECARB_MODE): per case study and year,
-    # resampled with the SAME building indices and multipliers as the 2025 factors
+    # material decarbonisation of A1-A3 (Boss.DECARB_MODE) and A4-A5 (Boss.DECARB_A45): per
+    # case study and year, resampled with the SAME building indices and multipliers as
+    # the 2025 factors
     red = None
     su['decarb'] = B['DECARB'] is not None
+    if Boss.DECARB_A45 not in ('held', 'resch'):
+        raise ValueError(f"MonteCarlo supports DECARB_A45 'held' or 'resch', not '{Boss.DECARB_A45}'.")
     if su['decarb']:
-        variant = Boss.BF.decarb_variant(Boss.DECARB_MODE, Boss.DECARB_STEEL, Boss.DECARB_ITEM_CASE)
-        r = pd.read_csv(Boss.FILE_FACTORS_DECARB_BLD)
-        red = (r[r['Variant'] == variant].pivot(index='id', columns='Year', values='A13_reduction_kgCO2e_per_m2')
-               .reindex(columns=list(fy)))
+        red = pd.DataFrame(0.0, index=bf['id'], columns=list(fy))
+        if B['DECARB13'] is not None:
+            variant = Boss.BF.decarb_variant(Boss.DECARB_MODE, Boss.DECARB_STEEL, Boss.DECARB_ITEM_CASE)
+            r = pd.read_csv(Boss.FILE_FACTORS_DECARB_BLD)
+            red = red + (r[r['Variant'] == variant]
+                         .pivot(index='id', columns='Year', values='A13_reduction_kgCO2e_per_m2')
+                         .reindex(index=bf['id'], columns=list(fy)))
+        if Boss.DECARB_A45 == 'resch':
+            g = Boss.BF.generic_path(fy)
+            red = red + pd.DataFrame(np.outer(bf['A4-A5'].values, 1.0 - g), index=bf['id'], columns=list(fy))
         su['red_central'] = np.array([B['RED_TOT'][t] for t in typ])          # (typ, years)
-    su['boot_emb'], su['boot_up'], su['between_sigma'], dec = carbon_bootstrap(bf, typ, red)
+    # time-resolved accounting: replacement / repaint kernels (and the event profile by
+    # age at 2025 factors, for the AR base) per case study, resampled the same way
+    su['tr'] = bool(B['TIME_RESOLVED'])
+    extras = {}
+    if su['tr']:
+        ev = pd.read_csv(Boss.BF.OUT_EVENTS_BLD)
+        ev = ev[ev['Timing'] == Boss.EVENT_TIMING]
+        n = len(fy)
+        K, A = {}, {}
+        for i in bf['id']:
+            p = ev[ev['id'] == i].reset_index(drop=True)
+            if p.empty:
+                K[i], A[i] = np.zeros(n * n), np.zeros(AGE_MAX + 1)
+                continue
+            f = Boss.EV.row_factors(p, fy, Boss.DECARB_MODE, Boss.DECARB_ITEM_CASE, Boss.DECARB_A45)
+            K[i] = Boss.EV.kernel(p, fy, f).ravel()
+            A[i] = Boss.EV.age_profile(p, AGE_MAX).values
+        extras = dict(kernel=pd.DataFrame.from_dict(K, orient='index'),
+                      age=pd.DataFrame.from_dict(A, orient='index'))
+        su['K_central'] = B['EVENTS']
+        su['age_central'] = np.array([Boss.EV.age_profile(B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t],
+                                                          AGE_MAX).values for t in typ])
+    su['boot_emb'], su['boot_up'], su['between_sigma'], dec, ext = carbon_bootstrap(bf, typ, red, extras)
     if su['decarb']:
         su['boot_red'] = dec                                                    # (N_BOOT, typ, years)
+    if su['tr']:
+        su['boot_K'] = ext['kernel'].reshape(N_BOOT, len(typ), len(fy), len(fy))
+        su['boot_age'] = ext['age']                                             # (N_BOOT, typ, ages)
     return su
 
 
-def carbon_bootstrap(bf, typ, red=None):
+AGE_MAX = 50                      # oldest event age kept for the AR-base profile (building lifespan)
+
+
+def carbon_bootstrap(bf, typ, red=None, extras=None):
     """Stratified bootstrap of pooled typology factors (materials, in scope).
     red: optional A1-A3 reduction per case study (rows = id) and year (columns);
     its bootstrap uses the same resampled indices and multipliers, so the random
-    stream, and every 2025-factor draw, is unchanged. Returns (emb, up, sigma,
-    reduction (N_BOOT, typ, years) or None)."""
+    stream, and every 2025-factor draw, is unchanged. extras: {name: DataFrame (rows
+    = id)} resampled the same way. Returns (emb, up, sigma, reduction (N_BOOT, typ,
+    years) or None, {name: (N_BOOT, typ, columns)})."""
+    extras = extras or {}
     rng = np.random.default_rng(SEED + 1)
     bf = bf[bf['duplicate_of'].fillna('') == ''].copy()
     bf['emb'] = bf[Boss.STAGES_IN_SCOPE].sum(axis=1)
@@ -228,23 +267,30 @@ def carbon_bootstrap(bf, typ, red=None):
     emb = np.empty((N_BOOT, len(typ)))
     upf = np.empty((N_BOOT, len(typ)))
     dec = None if red is None else np.empty((N_BOOT, len(typ), red.shape[1]))
+    ext = {k: np.empty((N_BOOT, len(typ), v.shape[1])) for k, v in extras.items()}
     for j, t in enumerate(typ):
         subs = [g for _, g in bf[bf['Typology'] == t].groupby('Subtype')]
-        e_sub, u_sub, r_sub = [], [], []
+        e_sub, u_sub, r_sub, x_sub = [], [], [], {k: [] for k in extras}
         for g in subs:
             idx = rng.integers(0, len(g), size=(N_BOOT, len(g)))
             e, u = g['emb'].values[idx].mean(axis=1), g['up'].values[idx].mean(axis=1)
             rr = None if red is None else red.loc[g['id']].values[idx].mean(axis=1)   # (N_BOOT, years)
+            xx = {k: v.loc[g['id']].values[idx].mean(axis=1) for k, v in extras.items()}
             if len(g) == 1:                          # no spread: borrow it
                 k = np.exp(rng.normal(-sigma ** 2 / 2, sigma, N_BOOT))   # mean-preserving
                 e, u = e * k, u * k
                 rr = None if rr is None else rr * k[:, None]
+                xx = {n_: v * k[:, None] for n_, v in xx.items()}
             e_sub.append(e); u_sub.append(u); r_sub.append(rr)
+            for n_, v in xx.items():
+                x_sub[n_].append(v)
         emb[:, j] = np.mean(e_sub, axis=0)
         upf[:, j] = np.mean(u_sub, axis=0)
         if dec is not None:
             dec[:, j, :] = np.mean(r_sub, axis=0)
-    return emb, upf, sigma, dec
+        for n_ in extras:
+            ext[n_][:, j, :] = np.mean(x_sub[n_], axis=0)
+    return emb, upf, sigma, dec, ext
 
 
 # ============================================================
@@ -334,15 +380,18 @@ def project(su, p):
     if p['carbon'] is None:
         emb, upf = su['emb_central'], su['up_central']
         red = su['red_central'] if su['decarb'] else None
+        events = su['K_central'] if su['tr'] else None
     else:
         kc = min(int(p['carbon'] * N_BOOT), N_BOOT - 1)
         emb, upf = su['boot_emb'][kc], su['boot_up'][kc]
         red = su['boot_red'][kc] if su['decarb'] else None
-    if red is None:                                   # 2025 factors held (DECARB_MODE 'none')
-        I = {t: emb[j] + su['soc'][j] for j, t in enumerate(typ)}
+        events = {t: su['boot_K'][kc, j] for j, t in enumerate(typ)} if su['tr'] else None
+    base = upf if su['tr'] else emb                   # construction-year materials (Boss.ACCOUNTING)
+    if red is None:                                   # 2025 factors held
+        I = {t: base[j] + su['soc'][j] for j, t in enumerate(typ)}
         U = {t: upf[j] + su['soc'][j] for j, t in enumerate(typ)}
-    else:                                             # A1-A3 decarbonised, by year
-        I = {t: emb[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
+    else:                                             # A1-A3 (and A4-A5) decarbonised, by year
+        I = {t: base[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
         U = {t: upf[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
 
     fwd = lambda join=None, redev=None: engine.forward(
@@ -350,7 +399,7 @@ def project(su, p):
         dev, dv['rho'], su['rv_share'], shares, size, su['olf'], I, U,
         join=join, join_redev=redev, soil={t: su['soc'][j] for j, t in enumerate(typ)},
         gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
-        soil_on_replacement=su['soil_on_repl'])
+        soil_on_replacement=su['soil_on_repl'], events=events)
     E = fwd()
     if su['join_mode'] == 'market_excess':
         b26 = c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])

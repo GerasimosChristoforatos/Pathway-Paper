@@ -159,12 +159,18 @@ def nz_population_alt(source, years):
     raise ValueError(f'Unknown NZ population source {source!r}.')
 
 
-def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS):
-    """Sector emissions in past years (kg CO2e), same scope, factors and soil
-    convention as the projection: built floor area by typology (consents x
-    completion rate) x material intensity, plus soil on the non-replacement
-    share of the floor area (engine.forward with soil_on_replacement=False)."""
+def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_from=None):
+    """Sector emissions in past years (kg CO2e) at 2025 factors (the history is not
+    decarbonised; actual past factors were likely higher, so the base is slightly
+    conservative), with the same scope, accounting and soil convention as the
+    projection: built floor area by typology (consents x completion rate) x
+    construction-year intensity, plus soil on the non-replacement share of the floor
+    area (engine.forward with soil_on_replacement=False). Time-resolved accounting
+    (Boss.ACCOUNTING): construction-year intensity = upfront (A1-A5), plus the
+    replacement / repaint events of the cohorts built from events_from (default: the
+    first of years) that occur in each year (b_kg), at 2025 factors."""
     typ = list(B['typ_names'])
+    tr = bool(B.get('TIME_RESOLVED'))
     g = B['hist_built_typ_gfa'].loc[list(years), typ]
     gfa = g.sum(axis=1)
     units = B['hist_built_units'].loc[list(years)]
@@ -188,22 +194,74 @@ def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS):
     size = gfa / units
     soil_free = (rate * prev * (1.0 - rv) * size).clip(lower=0.0)
     soil_share = 1.0 - soil_free / gfa
-    mat = sum(g[t] * (B['T_BASELINE_2025'][t] - B['SOIL_INTENSITY'][t]) for t in typ)
+    base_int = B['UPFRONT_2025'] if tr else B['T_BASELINE_2025']
+    mat = sum(g[t] * (base_int[t] - B['SOIL_INTENSITY'][t]) for t in typ)
     soil = sum(g[t] * B['SOIL_INTENSITY'][t] for t in typ) * soil_share
     soil_all = sum(g[t] * B['SOIL_INTENSITY'][t] for t in typ)
-    out = pd.DataFrame(dict(I_sec_kg=mat + soil, materials_kg=mat, soil_kg=soil, soil_share=soil_share,
+    b = pd.Series(0.0, index=list(years))
+    if tr:
+        ef = int(years[0]) if events_from is None else int(events_from)
+        gh = B['hist_built_typ_gfa'][typ]
+        for t in typ:
+            prof = B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t]
+            b += hist_events(gh[t], Boss.EV.age_profile(prof), list(years), ef)
+    out = pd.DataFrame(dict(I_sec_kg=mat + soil + b, materials_kg=mat, b_kg=b, soil_kg=soil, soil_share=soil_share,
                             net_replacement_rate=rate, rate_source=src, gfa_m2=gfa,
-                            I_soil_on_all_kg=mat + soil_all))
+                            I_soil_on_all_kg=mat + soil_all + b))
     for t in typ:                                  # for the base with other (MC) materials factors
         out[f'gfa_{t}'] = g[t]
     return out
 
 
-def base_with_factors(hist, typ, emb, window=AR_BASE_WINDOW):
-    """Ī_sec,base with materials factors emb (kg/m2 by typology, 2025 technology,
-    in-scope stages) and the observed floor area and soil of the history."""
+def hist_events(gfa, age, years, events_from):
+    """Replacement / repaint emissions in each of years (kg, 2025 factors) of the cohorts
+    built from events_from (gfa: floor area by construction year; age: kg/m2 by age)."""
+    out = []
+    for y in years:
+        cs = [c for c in gfa.index if events_from <= c < y and (y - c) in age.index]
+        out.append(float(sum(gfa[c] * age[y - c] for c in cs)))
+    return pd.Series(out, index=years)
+
+
+def base_with_factors(hist, typ, emb, window=AR_BASE_WINDOW, age=None, events_from=None):
+    """Ī_sec,base with construction-year materials factors emb (kg/m2 by typology,
+    2025 technology) and, time-resolved, the event profiles age (kg/m2 by typology
+    and age) of the cohorts built from events_from (default: the window's first
+    year), on the observed floor area and soil of the history."""
     h = hist.loc[window[0]:window[1]]
-    return float((sum(h[f'gfa_{t}'] * emb[j] for j, t in enumerate(typ)) + h['soil_kg']).mean())
+    tot = sum(h[f'gfa_{t}'] * emb[j] for j, t in enumerate(typ)) + h['soil_kg']
+    if age is not None:
+        ef = window[0] if events_from is None else events_from
+        for j, t in enumerate(typ):
+            tot = tot + hist_events(hist[f'gfa_{t}'], pd.Series(age[j]), list(h.index), ef).values
+    return float(tot.mean())
+
+
+def legacy_events(B):
+    """Replacement / repaint emissions in 2026-2050 (kg by year) of the cohorts built
+    1992-2025 (wider-scope sensitivity), on the run's decarbonisation paths."""
+    fy = np.asarray(B['forecast_years'])
+    gh = B['hist_built_typ_gfa']
+    out = np.zeros(len(fy))
+    for t in B['typ_names']:
+        prof = B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t].reset_index(drop=True)
+        f = Boss.EV.row_factors(prof, fy, Boss.DECARB_MODE, Boss.DECARB_ITEM_CASE, Boss.DECARB_A45)
+        age, kg = prof['Age'].to_numpy(int), prof['kg_per_m2'].to_numpy(float)
+        for c in range(Boss.B_SCOPE_START, 2026):
+            for j, y in enumerate(fy[1:], start=1):
+                hit = age == y - c
+                if hit.any():
+                    out[j] += gh.loc[c, t] * float((kg[hit] * f[hit, j]).sum())
+    return pd.Series(out, index=fy)
+
+
+def window_base(B, window, after=HIST_RATE_AFTER_LAST_CENSUS, col='I_sec_kg', scope=None):
+    """Ī_sec,base over window, same accounting rule as the projection: upfront of the
+    window's construction + the events, within the window, of the buildings built in it
+    (scope 'since_1992': of every cohort since Boss.B_SCOPE_START), at 2025 factors."""
+    ef = Boss.B_SCOPE_START if (scope or Boss.B_SCOPE) == 'since_1992' else window[0]
+    h = historical_emissions(B, range(HIST_START, 2026), after, events_from=ef)
+    return aesa.mean_over(h[col], window), h
 
 
 def wdi_table():
@@ -294,7 +352,8 @@ def scenario_runs():
     for key, label, settings in RS.SCENARIOS:
         B = validation.run_boss(**settings)
         fy = np.asarray(B['forecast_years'])
-        out[key] = dict(label=label, settings=settings,
+        out[key] = dict(label=label, settings=settings, committed=B.get('COMMITTED'),
+                        b_inwindow=pd.Series(B['carbon_bev_typ'].sum(axis=1).values, index=fy),
                         I=pd.Series(B['carbon_total_typ'].sum(axis=1).values, index=fy),
                         pop=pd.Series(B['df_forecast']['PopTotal_50th'].values, index=fy))
     return out
@@ -327,8 +386,12 @@ def mc_runs(fy, hist):
             worst = max(worst, float(np.max(np.abs(y - Y[j]) / np.maximum(np.abs(Y[j]), 1e-12))))
             carbon[j] = o['carbon']
             kc = min(int(X[j, kcar] * MC.N_BOOT), MC.N_BOOT - 1)        # the draw's bootstrap replicate
-            ibase[j] = base_with_factors(hist, su['typ'], su['boot_emb'][kc])
-            ibase20[j] = base_with_factors(hist, su['typ'], su['boot_emb'][kc], AR_BASE_WINDOW_20)
+            if su['tr']:                                               # time-resolved base
+                fac, age = su['boot_up'][kc], su['boot_age'][kc]
+            else:
+                fac, age = su['boot_emb'][kc], None
+            ibase[j] = base_with_factors(hist, su['typ'], fac, AR_BASE_WINDOW, age)
+            ibase20[j] = base_with_factors(hist, su['typ'], fac, AR_BASE_WINDOW_20, age)
             pop[j] = su['pop50'] + MC.interp_z(X[j, 0], MC.Z_KNOTS, su['spreads'])
             # the population path is the one the draw used: hh x S = pop
             if not np.allclose(o['hh'] * o['S'], pop[j], rtol=1e-12, atol=0):
@@ -337,7 +400,8 @@ def mc_runs(fy, hist):
             raise SystemExit(f'MC {name}: re-run draws differ from {os.path.basename(path)} by {worst:.1e} '
                              f'(> {MC_REL_TOL:g}); MC outputs are stale - rerun MonteCarlo.py.')
         print(f'  MC {name}: {len(d):,} draws re-run, max relative difference vs saved outputs {worst:.1e} (OK)')
-        central = base_with_factors(hist, su['typ'], su['emb_central'])
+        central = (base_with_factors(hist, su['typ'], su['up_central'], AR_BASE_WINDOW, su['age_central'])
+                   if su['tr'] else base_with_factors(hist, su['typ'], su['emb_central']))
         out[name] = dict(carbon=carbon, pop=pop, i_base=ibase, i_base_central=central, i_base_20=ibase20)
     importlib.reload(Boss)
     return out
@@ -355,14 +419,16 @@ def main():
     pair = SOURCE_PAIRS[SOURCE_PAIR]
 
     # ---- sector history and base -------------------------------------------
-    hist = historical_emissions(B, range(HIST_START, 2026))
-    hist_long = historical_emissions(B, range(HIST_START, 2026), after='long_run')
-    i_base = aesa.mean_over(hist['I_sec_kg'], AR_BASE_WINDOW)
-    i_base_5 = aesa.mean_over(hist['I_sec_kg'], AR_BASE_WINDOW_SENS)
-    i_base_20 = aesa.mean_over(hist['I_sec_kg'], AR_BASE_WINDOW_20)
-    i_base_full = aesa.mean_over(hist['I_sec_kg'], AR_BASE_WINDOW_FULL)
-    i_base_long = aesa.mean_over(hist_long['I_sec_kg'], AR_BASE_WINDOW)
-    i_base_soil_all = aesa.mean_over(hist['I_soil_on_all_kg'], AR_BASE_WINDOW)
+    # every base on the projection's accounting rule (window_base), at 2025 factors
+    i_base, hist = window_base(B, AR_BASE_WINDOW)
+    i_base_5, _ = window_base(B, AR_BASE_WINDOW_SENS)
+    i_base_20, _ = window_base(B, AR_BASE_WINDOW_20)
+    i_base_full, _ = window_base(B, AR_BASE_WINDOW_FULL)
+    i_base_long, _ = window_base(B, AR_BASE_WINDOW, after='long_run')
+    i_base_soil_all, _ = window_base(B, AR_BASE_WINDOW, col='I_soil_on_all_kg')
+    i_base_wide, hist_wide = window_base(B, AR_BASE_WINDOW, scope='since_1992')
+    w = slice(*AR_BASE_WINDOW)
+    b_share_base = float(hist.loc[w, 'b_kg'].sum() / hist.loc[w, 'I_sec_kg'].sum())
 
     # ---- population ---------------------------------------------------------
     p_w = world_population(years_b)
@@ -478,21 +544,41 @@ def main():
     # (its other decarbonisation sensitivities: tools/decarb_modes.py, optional step)
     b_ar_ref, b_atp_ref = boundaries(SOURCE_PAIR, i_base, comp, s_sec, p_nz, p_w)
 
-    def cum_I(**kw):
+    def cum_I(base=None, add=None, **kw):
+        """Cumulative LoE of a Boss run with settings kw. base: its own AR base (a
+        different accounting rule); add: emissions added to the run (kg by year)."""
         Bx = validation.run_boss(**kw)
         I = pd.Series(Bx['carbon_total_typ'].sum(axis=1).values, index=np.asarray(Bx['forecast_years']))
-        return cum(I, b_ar_ref), cum(I, b_atp_ref)
+        if add is not None:
+            I = I + add.reindex(I.index, fill_value=0.0)
+        bar = b_ar_ref if base is None else boundaries(SOURCE_PAIR, base, comp, s_sec, p_nz, p_w)[0]
+        return cum(I, bar), cum(I, b_atp_ref)
     if Boss.DECARB_MODE == 'none':
-        sens.append(('vi_decarb', '(vi) Materials decarbonised, A1-A3 (Horup et al. 2025, SI Table S4)',
-                     *cum_I(DECARB_MODE='horup_class_v1_1')))
-    elif Boss.DECARB_MODE == 'horup_class_v1_1':
-        sens.append(('vi_frozen', '(vi) Frozen technology: 2025 factors held (no decarbonisation)',
-                     *cum_I(DECARB_MODE='none')))
-        sens.append(('vii_steel_profile', '(vii) STEEL class at the steel-profile rate (Horup SI Table S4)',
-                     *cum_I(DECARB_STEEL='steel_profile')))
-    else:   # item-level: its decarbonisation sensitivities are in run_all.py --compare-modes (DECARB_MODES.md)
-        sens.append(('vi_frozen', '(vi) Frozen technology: 2025 factors held (no decarbonisation)',
-                     *cum_I(DECARB_MODE='none')))
+        sens.append(('vi_decarb', '(vi) Materials decarbonised (A1-A3 item level, Horup et al. 2025 SI Table S4)',
+                     *cum_I(DECARB_MODE='horup_item')))
+    else:
+        sens += [
+            ('vi_frozen', '(vi) Frozen technology: 2025 factors held (A1-A3 and A4-A5 not decarbonised)',
+             *cum_I(DECARB_MODE='none', DECARB_A45='held')),
+            ('vii_proxies_held', '(vii) Proxy-mapped items held at 2025 (A1-A3)',
+             *cum_I(DECARB_ITEM_CASE='proxies_held')),
+            ('viii_nz_elec_held', '(viii) NZ-made, electricity-intensive items held at 2025 (A1-A3)',
+             *cum_I(DECARB_ITEM_CASE='nz_elec_held')),
+            ('ix_a45_held', '(ix) A4-A5 held at 2025 (no generic 1%/yr)', *cum_I(DECARB_A45='held')),
+            ('x_a45_item', "(x) A4-A5 on each item's own Horup S4 path", *cum_I(DECARB_A45='item'))]
+        if Boss.ACCOUNTING == 'time_resolved':
+            Bw = validation.run_boss(ACCOUNTING='whole_life_at_construction')
+            base_w, _ = window_base(Bw, AR_BASE_WINDOW)
+            sens += [
+                ('xi_event_timing', '(xi) Event timing: interval L / n (instead of L / (n + 1))',
+                 *cum_I(EVENT_TIMING='n')),
+                ('xii_whole_life', '(xii) Accounting: whole life at construction (base on the same rule)',
+                 *cum_I(base=base_w, ACCOUNTING='whole_life_at_construction')),
+                ('xiii_wider_scope', f'(xiii) Wider scope: base and projection include the replacements and '
+                 f'repaints of every cohort since {Boss.B_SCOPE_START}',
+                 *cum_I(base=i_base_wide, add=legacy_events(B)))]
+    sens.append(('xiv_alpha_1', "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",
+                 *cum_pair(cp=dict(comp, alpha=1.0))))
     sens.append(('note_soil_long_run', 'Note (not in tornado): history 2024-25 at the long-run net replacement rate',
                  *cum_pair(ib=i_base_long)))
     sens_df = pd.DataFrame(sens, columns=['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP'])
@@ -513,6 +599,8 @@ def main():
         source_pairs=SOURCE_PAIRS,
         components=dict(SOS_kg=pair['sos'], I_glob_kg=pair['i_glob'], pair_label=pair['label'],
                         I_sec_base_kg=i_base, I_sec_base_window=list(AR_BASE_WINDOW),
+                        I_sec_base_b_share=b_share_base, I_sec_base_wider_scope_kg=i_base_wide,
+                        accounting=Boss.ACCOUNTING, decarb_a45=Boss.DECARB_A45, event_timing=Boss.EVENT_TIMING,
                         I_sec_base_5yr_kg=i_base_5, I_sec_base_long_run_2024_25_kg=i_base_long,
                         I_sec_base_20yr_kg=i_base_20, I_sec_base_full_kg=i_base_full,
                         I_sec_base_20yr_window=list(AR_BASE_WINDOW_20), I_sec_base_full_window=list(AR_BASE_WINDOW_FULL),
@@ -532,6 +620,12 @@ def main():
                                  P_NZ=float(p_nz.loc[y]), P_W=float(p_w.loc[y])) for y in years_b},
         B_AtP_over_B_AR=dict(min=float(ratio.min()), max=float(ratio.max())),
         deterministic=cum_det, mc=mc_cum, mc_base_fixed=mc_cum_fixed, mc_base_20yr=mc_cum_20,
+        committed={k: dict(r['committed'], b_inwindow_kt=float(r['b_inwindow'].loc[slice(*PB_YEARS)].sum() / M6),
+                           b_share_inwindow=float(r['b_inwindow'].loc[slice(*PB_YEARS)].sum()
+                                                  / r['I'].loc[slice(*PB_YEARS)].sum()),
+                           years_of_B_AR_2050_upper=float(r['committed']['upper_kt'] * M6 / b_ar.loc[PB_YEARS[1]]),
+                           years_of_B_AR_2050_lower=float(r['committed']['lower_kt'] * M6 / b_ar.loc[PB_YEARS[1]]))
+                   for k, r in runs.items() if r.get('committed')},
         reference_2026_2050=dict(I_kt=float(ref_I.loc[slice(*PB_YEARS)].sum() / M6),
                                  B_AR_kt=float(b_ar.loc[slice(*PB_YEARS)].sum() / M6),
                                  B_AtP_kt=float(b_atp.loc[slice(*PB_YEARS)].sum() / M6),

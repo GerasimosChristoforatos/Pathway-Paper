@@ -22,6 +22,7 @@ from scipy.interpolate import PchipInterpolator
 
 import engine
 import events as EV
+import figaudit
 import Building_factors as BF
 
 # ============================================================
@@ -265,6 +266,8 @@ MATERIAL_STYLE = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF')
 SOIL_ALPHA = 0.5
 SOIL_HATCH = '///'
 SOIL_HATCH_COLOR = '#8C7B66'
+EVENTS_ALPHA = 0.45        # in-window replacements & repaints: material colour, lighter, hatched
+EVENTS_HATCH = '...'
 EDGE = dict(edgecolor='#555555', linewidth=0.4)
 
 TREND_WINDOW_START = 2012
@@ -274,9 +277,10 @@ DAMPING_PHI = 0.8
 #   average (ratio of sums of consented floor area over the window, floor-area
 #   weighted, 2026 = the observed months, January-July). The scenarios are Low
 #   (S1), Reference (S3-10) and High (S2), all with shares held.
-#   'trend' (damped ALR trend above) and 'storyline' (S2 with the trend, as in
-#   v1.0.2-v1.2) remain available but are not run or reported: the typology mix
-#   is a pathway lever for the next paper, not a baseline scenario.
+#   'trend' (damped ALR trend above) remains available but is not run or
+#   reported: the typology mix is a pathway lever for the next paper, not a
+#   baseline scenario. (The v1.0.2-v1.2 option of S2 with the trend was removed
+#   in baseline-pb-v3; it is preserved at tag baseline-PB_v1.2.)
 MIX_MODE = 'held'
 MIX_HELD_WINDOW = (2022, 2026)
 # 2026 in-scope floor area (market-excess rule): the observed consented GFA by
@@ -437,6 +441,8 @@ SOIL_ON_REPLACEMENT = False
 #   milestone. Eventual completion lies between the code-compliance share
 #   (~92%, counted early, so a lower bound) and the first-inspection share
 #   (~96%, construction started, so an upper bound). 95% is their own assumption.
+#   TODO (citation to verify): the Jones et al. (2024) reference is not in refs/
+#   and must be confirmed before submission (ASSUMPTIONS, limitations).
 # DEMOLITION_RATE: Page (2009), BRANZ Study Report SR214 -- ~2,200 dwellings/yr
 #   in 2001-2006 from the same census-and-consents identity used here, on a 2006
 #   private stock of 1,631,019 = 0.135%/yr (Finland, measured 2000-12: 0.15%).
@@ -574,11 +580,11 @@ DECARB_A45 = 'held' if FROZEN_RUN else 'resch'
 #       with DECARB_A45 'held' it reproduces baseline-pb-v2 exactly (regression).
 ACCOUNTING = 'whole_life_at_construction' if FROZEN_RUN else 'time_resolved'
 EVENT_TIMING = 'n+1'       # event k at k L / (n + 1); 'n': k L / n (sensitivity)
-# B_SCOPE: 'new_construction' (adopted): B events of the buildings built in the window
-#   only (projection: from 2026; AR base: from the base window's first year);
-#   'since_1992' (sensitivity, wider scope): also the events of every cohort built
-#   since 1992 (new construction + upkeep of the post-1992 stock), in base and projection.
-B_SCOPE = 'new_construction'
+# Scope of B events (author decision): those of the buildings built in the window
+#   only (projection: from 2026; AR base: from the base window's first year). The
+#   wider scope, which adds the events of every cohort built since B_SCOPE_START
+#   (upkeep of the post-1992 stock) in base and projection alike, is a PB
+#   sensitivity row (PB.legacy_events, PB.window_base(scope='since_1992')).
 B_SCOPE_START = 1992
 EVENTS_LABEL = 'Replacements & repaints, within 2026-2050'
 EVENTS_COLOR = '#16A085'
@@ -1030,6 +1036,7 @@ def save_open_figures(names, fig_dir, dpi=130):
         raise RuntimeError(f"{len(nums)} figures open but {len(names)} names given.")
     os.makedirs(fig_dir, exist_ok=True)
     for n, name in zip(nums, names):
+        figaudit.record(plt.figure(n), name)
         plt.figure(n).savefig(os.path.join(fig_dir, name + '.png'), dpi=dpi, bbox_inches='tight')
 
 
@@ -1483,9 +1490,9 @@ def main():
     # ------------------------------------------------------------------
     evolving_gfa_shares = fit_evolving_mix(hist_shares, shares_2025, forecast_years,
                                            DAMPING_PHI, TREND_WINDOW_START, typ_names)
-    if MIX_MODE not in ('storyline', 'held', 'trend'):
+    if MIX_MODE not in ('held', 'trend'):
         raise ValueError(f"Unknown MIX_MODE '{MIX_MODE}'.")
-    mix_used = MIX_MODE if MIX_MODE != 'storyline' else ('trend' if _scenario == 'S2' else 'held')
+    mix_used = MIX_MODE
     _typ_cols = [COL_TYPOLOGIES[n] for n in typ_names]
     _w = df_consents[(df_consents['Year'] >= MIX_HELD_WINDOW[0]) & (df_consents['Year'] <= MIX_HELD_WINDOW[1])]
     held_shares = (_w[_typ_cols].sum() / _w[_typ_cols].sum().sum()).set_axis(typ_names)
@@ -2059,6 +2066,13 @@ def main():
                              carbon_total_typ.sum(axis=1).values[1:] / 1e6)}
     rv_caption = (f'In scope: excludes retirement-village units ({100 * rv_share:.1f}% of new dwellings; '
                   f'floor area reported separately).')
+    carbon_caption = rv_caption + (' Carbon: ' + (
+        'time-resolved, upfront (A1-A5 + soil) of each year\'s construction plus replacements & repaints occurring '
+        'that year (buildings built from 2026); later events and C1-C4 are committed after 2050.'
+        if TIME_RESOLVED else 'whole life (A1-A5, B2, B4, C1-C4 + soil) booked at construction.') + ' Factors: '
+        + ('2025 held' if DECARB is None else 'A1-A3 item level after Horup et al. 2025; A4-A5 '
+           + {'resch': 'e^(-0.01 (t - 2025)) after Resch et al. 2021', 'held': 'held at 2025',
+              'item': 'on item paths'}[DECARB_A45] + '; C1-C4 and soil at 2025') + '.')
 
     # FIG 3 annual GFA
     fig3, (bx1, bx2) = plt.subplots(1, 2, figsize=(18, 6))
@@ -2088,7 +2102,7 @@ def main():
     cx2.set_title('Annual Embodied Carbon by Demand Type (2026-2050)')
     demand_legend(cx2); cx2.grid(True, alpha=0.3); cx2.set_xlim(2026, 2050)
     plt.tight_layout(rect=(0, 0.04, 1, 1))
-    fig4.text(0.5, 0.01, rv_caption, ha='center', fontsize=8.5, style='italic')
+    fig4.text(0.5, 0.005, carbon_caption, ha='center', fontsize=8, style='italic', wrap=True)
 
     # FIG 5 cumulative carbon  -- slice BEFORE accumulating
     cum_typ = (carbon_total_typ.iloc[1:] / 1e6).cumsum()
@@ -2105,7 +2119,7 @@ def main():
     dx2.set_title('Cumulative Embodied Carbon by Demand Type (2026-2050)')
     demand_legend(dx2); dx2.grid(True, alpha=0.3); dx2.set_xlim(2026, 2050)
     plt.tight_layout(rect=(0, 0.04, 1, 1))
-    fig5.text(0.5, 0.01, rv_caption, ha='center', fontsize=8.5, style='italic')
+    fig5.text(0.5, 0.005, carbon_caption, ha='center', fontsize=8, style='italic', wrap=True)
 
     # FIG 6 market share
     plt.figure(figsize=(10, 6))
@@ -2287,11 +2301,15 @@ def main():
 
     # --- FIG 9: material flows ---------------------------------------
     fig9, (mx1, mx2) = plt.subplots(1, 2, figsize=(18, 6))
-    for a, frame, ylab, title, loc in (
-            (mx1, flow_annual, 'kt CO$_2$e per year', 'Annual embodied carbon by material (2026-2050)\n'
+    _acc = ('upfront at construction + replacements & repaints within 2026-2050' if TIME_RESOLVED
+            else 'whole life at construction')
+    for a, frame, fb, ylab, title, loc in (
+            (mx1, flow_annual, flow_annual_b, 'kt CO$_2$e per year', f'Annual embodied carbon by material, {_acc}\n'
              'soil shown separately: land-use change, not a material', 'upper right'),
-            (mx2, flow_cum, 'cumulative kt CO$_2$e', 'Cumulative embodied carbon by material (2026-2050)', 'upper left')):
-        a.legend(handles=stack_materials(a, plot_years, frame, 1e6), loc=loc, fontsize=7)
+            (mx2, flow_cum, flow_annual_b.cumsum(), 'cumulative kt CO$_2$e',
+             f'Cumulative embodied carbon by material (2026-2050), {_acc}', 'upper left')):
+        a.legend(handles=stack_materials(a, plot_years, frame, 1e6,
+                                         frame_b=(fb if TIME_RESOLVED else None)), loc=loc, fontsize=7)
         a.set_ylabel(ylab); a.set_xlabel('Year'); a.set_title(title)
         a.grid(True, alpha=0.3); a.set_xlim(2026, 2050)
     plt.tight_layout()
@@ -2398,18 +2416,34 @@ def material_patch(col, colour, alpha=1.0):
     return dict(facecolor=colour, alpha=alpha, **EDGE)
 
 
-def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):
+def stack_materials(ax, years, frame, scale=1.0, alpha=1.0, frame_b=None):
     """Stack carbon by material in MATERIAL_STYLE order (bottom to top), soil on top
-    (material_patch); edges 0.4 pt #555555. Returns legend handles top first."""
+    (material_patch); edges 0.4 pt #555555. frame_b (time-resolved): the part of each
+    material that is in-window replacements & repaints, drawn above the construction
+    layers in the same colours, lighter and hatched. Returns legend handles top first."""
     unknown = set(frame.columns) - {c for c, _, _ in MATERIAL_STYLE}
     if unknown:
         raise ValueError(f'No colour for {sorted(unknown)} in MATERIAL_STYLE.')
     years = np.asarray(years)
     bottom, handles = np.zeros(len(years)), []
-    for col, lab, colour in MATERIAL_STYLE:
+    mats = [(c, lab, col) for c, lab, col in MATERIAL_STYLE if c != 'SOIL']
+    soil = [(c, lab, col) for c, lab, col in MATERIAL_STYLE if c == 'SOIL']
+    for col, lab, colour in mats:
+        v = (np.asarray(frame[col], float) - (np.asarray(frame_b[col], float) if frame_b is not None else 0.0)) / scale
+        handles.append(ax.fill_between(years, bottom, bottom + v, label=lab, **material_patch(col, colour, alpha)))
+        bottom = bottom + v
+    if frame_b is not None:
+        for k, (col, lab, colour) in enumerate(mats):
+            v = np.asarray(frame_b[col], float) / scale
+            ax.fill_between(years, bottom, bottom + v, facecolor=colour, alpha=alpha * EVENTS_ALPHA,
+                            hatch=EVENTS_HATCH, edgecolor='#555555', linewidth=0.4)
+            bottom = bottom + v
+        from matplotlib.patches import Patch            # neutral legend swatch for the event layers
+        handles.append(Patch(facecolor='white', edgecolor='#555555', hatch=EVENTS_HATCH,
+                             label=f'{EVENTS_LABEL} (material colours, lighter)'))
+    for col, lab, colour in soil:
         v = np.asarray(frame[col], float) / scale
-        handles.append(ax.fill_between(years, bottom, bottom + v, label=lab,
-                                       **material_patch(col, colour, alpha)))
+        handles.append(ax.fill_between(years, bottom, bottom + v, label=lab, **material_patch(col, colour, alpha)))
         bottom = bottom + v
     zero_floor(ax, *[frame[col] for col, _, _ in MATERIAL_STYLE])
     return handles[::-1]

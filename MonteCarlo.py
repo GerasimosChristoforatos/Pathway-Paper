@@ -79,6 +79,7 @@ from scipy.stats import qmc
 
 import Boss
 import engine
+import figaudit
 
 N_UNCERTAINTY = 5000             # Latin hypercube draws per scenario
 N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
@@ -597,24 +598,23 @@ def _history():
     Boss.SHOW_PLOTS = False
     with contextlib.redirect_stdout(io.StringIO()):
         st = Boss.main()
-    typ = st['typ_names']
     gfa = st['hist_built_gfa']
-    carbon = sum(st['hist_built_typ_gfa'][t] * st['T_BASELINE_2025'][t] for t in typ)
     fy = np.asarray(st['forecast_years'])
     central = {'gfa': pd.Series(st['results']['50th']['total'], index=fy),
-               'carbon': st['carbon_total_typ'].sum(axis=1)}
-    return gfa, carbon, central
+               'carbon': st['carbon_total_typ'].sum(axis=1), 'b': st['carbon_bev_typ'].sum(axis=1)}
+    return gfa, central
 
 
 def _save(fig, name):
     if SAVE_FIGURES:
         os.makedirs(FIG_DIR, exist_ok=True)
+        figaudit.record(fig, name)
         fig.savefig(os.path.join(FIG_DIR, name), dpi=140, bbox_inches='tight')
 
 
 def figures():
     draws, annual, sob, summ = _load_results()
-    hist_gfa, hist_c, central = _history()
+    hist_gfa, central = _history()
     yrs = annual.index.values
     fy = yrs[yrs >= 2026]
     has_q = 'gfa_25' in annual.columns
@@ -624,9 +624,10 @@ def figures():
     fig.suptitle('Monte Carlo 1: joint uncertainty over time '
                  f'({len(draws):,} Latin hypercube draws)', fontsize=12)
     for a, k, hist, lab in [(ax[0], 'gfa', hist_gfa, 'Mm² per year'),
-                            (ax[1], 'carbon', hist_c, 'kt CO₂e per year')]:
-        hy = hist.index[hist.index >= 1991]
-        a.plot(hy, hist.loc[hy] / 1e6, color='black', lw=2, label='observed (built basis)')
+                            (ax[1], 'carbon', None, 'kt CO₂e per year')]:
+        if hist is not None:          # observed floor area; no historical carbon (only 2025 factors exist)
+            hy = hist.index[hist.index >= 1991]
+            a.plot(hy, hist.loc[hy] / 1e6, color='black', lw=2, label='observed (built basis)')
         f = annual.loc[fy]
         a.fill_between(fy, f[f'{k}_5'] / 1e6, f[f'{k}_95'] / 1e6, color=BLUE, alpha=0.15,
                        label='5th-95th percentile')
@@ -636,11 +637,16 @@ def figures():
         a.plot(fy, f[f'{k}_50'] / 1e6, color=BLUE, lw=2.2, label='Monte Carlo median')
         a.plot(fy, central[k].loc[fy] / 1e6, color='#C0392B', lw=1.5, ls='--',
                label='Boss central run')
+        if k == 'carbon' and central['b'].loc[fy].sum() > 0:
+            a.fill_between(fy, (central[k] - central['b']).loc[fy] / 1e6, central[k].loc[fy] / 1e6,
+                           color=Boss.EVENTS_COLOR, alpha=0.5, lw=0,
+                           label=f'central run: {Boss.EVENTS_LABEL.lower()}')
         a.axvline(2025.5, color='grey', ls=':', lw=1)
         a.set_ylabel(lab); a.set_xlim(1991, 2050); a.set_ylim(0, None)
         a.grid(alpha=0.3); a.legend(fontsize=8, loc='upper right')
     ax[0].set_title('Built floor area (in scope)')
-    ax[1].set_title('Embodied carbon (history estimated with 2025 factors)')
+    ax[1].set_title('Embodied carbon within 2026-2050 (' + ('upfront + replacements & repaints occurring each year'
+                    if Boss.ACCOUNTING == 'time_resolved' else 'whole life at construction') + ')')
     fig.tight_layout()
     _save(fig, 'mc_1_fan.png')
 

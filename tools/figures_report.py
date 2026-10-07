@@ -20,10 +20,18 @@ import pandas as pd  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import engine  # noqa: E402
+import figaudit  # noqa: E402
 import validation  # noqa: E402
 
 OUT = os.path.join(ROOT, 'outputs')
 FIG = os.path.join(OUT, 'figures')
+
+
+def _savefig(fig, fname):
+    figaudit.record(fig, fname)
+    fig.savefig(os.path.join(FIG, fname), dpi=130)
+
+
 # the three scenarios (typology shares held in all); one naming scheme everywhere
 SCEN = [('S1', 'Low (S1)', dict(REPLACEMENT_SCENARIO='S1'), '#2E86AB'),
         ('S3-10', 'Reference (S3-10)', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0), '#C0392B'),
@@ -159,7 +167,7 @@ def main():
     handover = dict(step_2026_2027_pct=float(step), hist_median_pct=float(np.median(chg)),
                           hist_min_pct=float(chg.min()), hist_max_pct=float(chg.max()))
     ax[1, 3].axis('off')
-    plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_reality_checks.png'), dpi=130); plt.close(fig)
+    plt.tight_layout(); _savefig(fig, 'fig_reality_checks.png'); plt.close(fig)
 
     # ---- 6. bridge ---------------------------------------------------------
     def bridge(steps, fname, note):
@@ -179,7 +187,7 @@ def main():
             a.set_xticklabels([l for _, l in steps] + ['Total'], rotation=60, ha='right', fontsize=8)
             a.set_title(runs[k]['lab']); a.grid(alpha=0.3, axis='y')
         ax[0].set_ylabel('Mm² (2026-2050)')
-        plt.tight_layout(); fig.savefig(os.path.join(FIG, fname), dpi=130); plt.close(fig)
+        plt.tight_layout(); _savefig(fig, fname); plt.close(fig)
     common = [(('growth',), 'Growth'), (('hs_pos',), 'House-splitting'), (('extra',), 'Extra space'),
               (('vac',), 'Vacancy')]
     tail = [(('wave',), 'Redevelopment wave'), (('join',), 'Near-term excess'), (('rv',), 'RV (out of scope)')]
@@ -213,7 +221,7 @@ def main():
     fig.text(0.5, 0.01, f"Long run {_w[0]}-{_w[1]}: "
              f"{100 * long_rate:.3f}%/yr; 2018-23: {100 * Bref['rate_recent']:.3f}%/yr. Each step is one intercensal "
              f"interval; the 2018-23 step is a single interval.", ha='center', fontsize=8.5, style='italic')
-    fig.savefig(os.path.join(FIG, 'fig_replacement_rate.png'), dpi=130); plt.close(fig)
+    _savefig(fig, 'fig_replacement_rate.png'); plt.close(fig)
 
     # ---- 7. scenarios ------------------------------------------------------
     fig, ax = plt.subplots(1, 3, figsize=(19, 5.5), gridspec_kw=dict(width_ratios=[2, 1, 1]))
@@ -238,10 +246,12 @@ def main():
     up = [float(runs[k]['B']['_upfront'] + runs[k]['B']['_soil'] / M6) for k in ks]
     tot = [float(runs[k]['B']['tot_carbon_median']) for k in ks]
     a.bar(range(len(ks)), up, color='#34495E', label='upfront (A1-A5 + soil)')
-    a.bar(range(len(ks)), np.subtract(tot, up), bottom=up, color='#BDC3C7', label='later stages (B, C)')
+    a.bar(range(len(ks)), np.subtract(tot, up), bottom=up, color='#BDC3C7',
+          label=('replacements & repaints within 2026-2050' if runs[ks[0]]['B']['TIME_RESOLVED']
+                 else 'later stages (B, C), booked at construction'))
     a.set_xticks(range(len(ks))); a.set_xticklabels([short[k] for k in ks]); a.set_title('Cumulative carbon 2026-2050')
     a.set_ylabel('kt CO₂e'); a.legend(fontsize=8); a.grid(alpha=0.3, axis='y')
-    plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_scenarios.png'), dpi=130); plt.close(fig)
+    plt.tight_layout(); _savefig(fig, 'fig_scenarios.png'); plt.close(fig)
 
     # ---- 8. conversion chain -----------------------------------------------
     p = ref['p']
@@ -266,7 +276,7 @@ def main():
     ax[1].set_title('Average carbon intensity of new floor area by scenario\n(A1-A3 decarbonisation and the soil-bearing '
                     'share of floor area; typology shares held)', fontsize=10)
     ax[1].set_ylabel('kg CO₂e per m²'); ax[1].grid(alpha=0.3); ax[1].legend(fontsize=8)
-    plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_conversion_chain.png'), dpi=130); plt.close(fig)
+    plt.tight_layout(); _savefig(fig, 'fig_conversion_chain.png'); plt.close(fig)
 
     # ---- 9. validation -----------------------------------------------------
     from matplotlib.ticker import MaxNLocator
@@ -299,7 +309,7 @@ def main():
               color=['black', '#95A5A6'])
         a.set_title(f"2026 check: ratio {c['ratio_observed_to_model']:.2f}")
     a.set_ylabel('dwellings consented'); a.grid(alpha=0.3, axis='y')
-    plt.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_validation.png'), dpi=130); plt.close(fig)
+    plt.tight_layout(); _savefig(fig, 'fig_validation.png'); plt.close(fig)
 
     # ---- reality-check exceedances ----------------------------------------
     json.dump(dict(rc, handover=handover), open(os.path.join(OUT, 'reality_checks.json'), 'w'), indent=2)
@@ -320,26 +330,26 @@ def main():
     paper = {
         'boss_03_cumulative_gfa': 'Cumulative built floor area, history and projection, with the population 5th-95th band.',
         'boss_04_annual_gfa': 'Annual floor area by typology and by demand type (in scope; RV units excluded by scaling).',
-        'boss_05_annual_carbon': 'Annual embodied carbon by typology and by demand type (in scope).',
-        'boss_10_material_flows': 'Carbon by material, annual and cumulative (Pride-stripe colours, one order in every figure); soil (land-use change) on top, faded and hatched.',
+        'boss_05_annual_carbon': 'Annual carbon by typology and by demand type, in scope, incl. the band of replacements & repaints within 2026-2050 (time-resolved accounting: upfront at construction + replacements & repaints in the year they occur; A1-A3 item level (Horup et al. 2025), A4-A5 1%/yr (Resch et al. 2021)).',
+        'boss_10_material_flows': 'Carbon by material, annual and cumulative, 2026-2050 (Pride-stripe colours, one order in every figure); replacements & repaints within the window in the same colours, lighter and hatched; soil (land-use change) on top, faded and hatched.',
         'fig_bridge': 'Waterfall of 2026-2050 floor area by reason for building: Low (S1) / Reference (S3-10) / High (S2).',
         'fig_replacement_rate': 'Net replacement rate: census intervals (steps), S1 / S3-10 / S2 paths, BRANZ demolition rate.',
-        'fig_scenarios': 'Annual floor area by scenario with the reference MC band; cumulative floor area and carbon.',
+        'fig_scenarios': 'Annual floor area by scenario with the reference MC band; cumulative floor area and carbon (upfront / replacements & repaints within 2026-2050).',
         'fig_reality_checks': 'Projection vs the 1991-2025 range (outputs/reality_checks.md) and the 2026->2027 handover.',
         'fig_validation': 'Hindcast of cumulative dwellings from 2006/2013/2018 (consistent vacancy) and the 2026 check.',
-        'mc_1_fan': 'Within-scenario Monte Carlo fan (reference), history from 1991.',
+        'mc_1_fan': 'Within-scenario Monte Carlo fan (reference): floor area with history from 1991; carbon 2026-2050 only (no historical carbon), with the central band of replacements & repaints.',
         'sens_1_tornado': 'One-at-a-time sensitivities, the 5 largest effects on floor area or carbon (main text; all rows: sens_1_tornado_SI).',
-        'boss_05_annual_carbon_pb': 'PB variant of boss_05: annual carbon by typology and demand type with the AR and AtP boundaries.',
-        'fig_scenarios_pb': 'PB variant of fig_scenarios (carbon): scenarios and reference MC band vs the boundaries; cumulative vs cumulative boundaries.',
-        'mc_1_fan_pb': 'PB variant of mc_1_fan (carbon): MC fan, history on the projection soil convention, base window, boundaries.',
+        'boss_05_annual_carbon_pb': 'PB variant of boss_05: annual carbon by typology and demand type (incl. replacements & repaints within the window) with the AR and AtP boundaries.',
+        'fig_scenarios_pb': 'PB variant of fig_scenarios (carbon): scenarios, the reference band of replacements & repaints and MC band vs the boundaries; cumulative (upfront / replacements & repaints) vs cumulative boundaries.',
+        'mc_1_fan_pb': 'PB variant of mc_1_fan (carbon): MC fan, the AR base window 2016-2025 at 2025 factors (same accounting; no other historical carbon), boundaries.',
         'pb_1_boundaries': 'Boundaries B_AR and B_AtP 2025-2050 (log axis), population modifier, table of components.',
-        'pb_2_loe': 'Annual level of exceedance by principle, Low (S1) / Reference (S3-10) / High (S2) with MC 5-95% bands, log axis.',
+        'pb_2_loe': 'Annual level of exceedance by principle, Low (S1) / Reference (S3-10) / High (S2) with MC 5-95% bands and the reference without in-window replacements & repaints, log axis.',
         'pb_3_headroom': 'Intensity, floor area and carbon per dwelling that would fit each boundary vs the projection (S3-10).',
         'pb_4_sensitivity': 'Tornado of cumulative LoE 2026-2050 (S3-10), the 5 largest effects on AR or AtP (main text; all rows incl. the AR base windows of 5, 20 and 34 years and the frozen-technology factors: pb_4_sensitivity_SI).'}
     supp = {
         'boss_01_population': 'Population history and projection (median, 5th-95th); the 2026 level shift from observed growth.',
         'boss_02_households': 'Households: census-benchmarked to 2018, 2019-23 scaled to the 2023 census, projection from 2023.',
-        'boss_06_cumulative_carbon': 'Cumulative carbon by typology and by demand type (in scope).',
+        'boss_06_cumulative_carbon': 'Cumulative carbon by typology and by demand type, in scope (time-resolved accounting: upfront at construction + replacements & repaints in the year they occur; A1-A3 item level (Horup et al. 2025), A4-A5 1%/yr (Resch et al. 2021)).',
         'boss_07_typology_share': 'Typology floor-area shares, history and projection (held vs trend).',
         'boss_08_demographic_drivers': 'Household size (same history treatment as boss_02) and population vs household growth.',
         'boss_09_space_diagnostics': 'Realised vs occupied floor area per new dwelling; occupancy utilisation.',
@@ -347,15 +357,16 @@ def main():
         'diag_3_stock_bucket': 'Vacancy definitions with the 1986-2023 census range on one definition and the implied vacancy (near-term surplus not absorbed: limitation); stock; dwellings per year by component (history by census interval) with building beyond formation (historical, per census interval; 1991-2023, 1986-91 not covered).',
         'diag_3b_appendix_vacancy_definition': 'Appendix: why empty-only vacancy (not residents away) is used.',
         'diag_4_floor_area': 'Floor area by typology and demand type (history by census interval), mix, dwelling size.',
-        'diag_5_carbon': 'Carbon by typology and material (history estimated with 2025 factors; Pride-stripe material colours, soil on top); case-study intensities.',
+        'diag_5_carbon': 'Carbon 2026-2050 by typology and material (no historical carbon; Pride-stripe material colours, replacements & repaints lighter and hatched, soil on top); 2025 case-study whole-life intensities.',
         'fig_bridge_appendix_split': 'Appendix: the bridge with demolition and residual split (split assumes the BRANZ rate).',
         'fig_conversion_chain': 'Indices population -> households -> dwellings -> floor area -> carbon; average carbon intensity of new floor area by scenario, which falls with A1-A3 decarbonisation and with the soil-bearing share (the High case has more replacement, which carries no soil); typology shares held.',
         'mc_3_sobol': 'Sobol indices (reference): within-scenario parametric uncertainty only.',
         'sens_2_paths': 'Annual paths of the largest one-at-a-time sensitivities and the Stats NZ population 5th / 95th percentiles; % difference by year; cumulative carbon 2026-2050 per path (% vs adopted). The household-size variants converge after about 2041 because the Stats NZ projections end in 2043 (household size held flat after that in every variant).',
         'sens_1_tornado_SI': 'All one-at-a-time sensitivities (Supplementary Material version of sens_1_tornado).',
         'pb_4_sensitivity_SI': 'All PB sensitivity rows (Supplementary Material version of pb_4_sensitivity).',
-        'boss_06_cumulative_carbon_pb': 'PB variant of boss_06: cumulative carbon vs cumulative AR and AtP boundaries.',
-        'pb_5_demand_vs_boundary': 'Annual carbon by demand type, history 1992-2025 (faded, per census interval, 2025 factors) and projection (in scope, S3-10), against the AR and AtP boundaries from 2025.'}
+        'boss_06_cumulative_carbon_pb': 'PB variant of boss_06: cumulative carbon (time-resolved) vs cumulative AR and AtP boundaries.',
+        'pb_6_committed': 'Cumulative carbon within 2026-2050 (upfront / replacements & repaints) vs cumulative AR and AtP boundaries per scenario, and the emissions committed after 2050 (later replacements & repaints + end of life) as a range, in years of the 2050 AR boundary.',
+        'pb_5_demand_vs_boundary': 'Annual carbon by demand type 2026-2050 (in scope, S3-10, incl. the band of replacements & repaints) against the AR and AtP boundaries from 2025; no historical carbon.'}
     files = sorted(f[:-4] for f in os.listdir(FIG) if f.endswith('.png'))
     unlisted = [f for f in files if f not in paper and f not in supp]
     missing = [f for f in list(paper) + list(supp) if f not in files]

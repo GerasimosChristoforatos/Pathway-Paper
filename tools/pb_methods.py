@@ -21,22 +21,6 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 # one naming scheme for the three scenarios (other keys, e.g. S3-5, are sensitivities)
 SCEN_NAME = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
 
-def _modes_note():
-    """One sentence on the cumulative LoE under each decarbonisation mode (outputs/decarb_modes.json)."""
-    p = os.path.join(OUT, 'decarb_modes.json')
-    if not os.path.exists(p):
-        return ''
-    with open(p) as f:
-        dm = json.load(f)
-    from decarb_modes import provenance_note, stale
-    parts = [f"`{k}` {v['pb']['det']['LoE_AR']:.2f} (AR) / {v['pb']['det']['LoE_AtP']:.1f} (AtP)"
-             for k, v in dm['modes'].items() if v.get('pb')]
-    return (' Cumulative LoE of the reference path by decarbonisation mode (each a full run): ' + '; '.join(parts)
-            + f'; {provenance_note(dm)}'
-            + (' **STALE: re-run `python run_all.py --compare-modes`.**' if stale(dm) else '')
-            + '; see outputs/DECARB_MODES.md.') if parts else ''
-
-
 def main():
     import PB
     with open(os.path.join(OUT, 'pb_results.json')) as f:
@@ -63,8 +47,8 @@ def main():
          '**Acquired rights** (Horup et al. 2025, Sci. Total Environ. 966, 178780, Eq. 1, p. 4):', '',
          '    B_AR(t) = SOS · (Ī_sec,base / I_glob) · [P_NZ(t) / P_NZ(t0)] · [P_W(t0) / P_W(t)],   '
          f"t0 = {s['T0']}", '',
-         f'Ī_sec,base is the mean annual sector impact {w0}-{w1} from this model\'s own history (same scope and '
-         'soil convention as the projection; 2025 case-study factors'
+         f'Ī_sec,base is the mean annual sector impact {w0}-{w1} from this model\'s own history (same scope, '
+         'accounting rule and soil convention as the projection; at 2025 case-study factors'
          + ('' if s.get('DECARB_MODE', 'none') == 'none' else ': past construction used past technology, so the '
             'decarbonisation of A1-A3 applies only to 2026-2050') + '). Over the base window LoE_AR = I_glob / SOS = '
          f"{c['LoE_AR_base_identity']:.4f} by construction (the sector impact cancels); the information is in the "
@@ -77,13 +61,19 @@ def main():
          'same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) '
          f"is constant in this static design: {r['B_AtP_over_B_AR']['min']:.4f}.", '',
          '**Carbon factors.** ' + ({'none': 'All factors held at their 2025 case-study values (frozen technology).',
-                                    'horup_class_v1_1': 'A1-A3 of mapped materials decarbonised 2026-2050 after Horup '
-                                    'et al. (2025) SI Table S4; A4-A5, B2, B4, C1-C4, unmapped materials and soil at '
-                                    '2025 (see ASSUMPTIONS.md).',
                                     'horup_item': 'A1-A3 of each case-study EPD item decarbonised 2026-2050 after '
                                     'Horup et al. (2025) SI Table S4 (item-level mapping, data/material_item_map.csv: '
-                                    'direct, Horup p. 6, proxy or held); A4-A5, B2, B4, C1-C4, held items and soil at '
-                                    '2025 (see ASSUMPTIONS.md).'}[s.get('DECARB_MODE', 'none')]) + _modes_note(), '',
+                                    'direct, Horup p. 6, proxy or held), for construction and for the A1-A3 share of '
+                                    'replacements and repaints; A4-A5 e^(-0.01 (t - 2025)) after Resch et al. (2021) '
+                                    'Table 1; C1-C4, held items and soil at 2025 (see ASSUMPTIONS.md).'
+                                    }[s.get('DECARB_MODE', 'none')]), '',
+         '**Accounting.** ' + ('Time-resolved: the sector impact I_sec(t) counts the upfront emissions (A1-A5 and '
+                               'soil) of construction in year t and the replacement and repaint events (B2, B4) that '
+                               'occur in year t, of buildings built from 2026. Events after 2050 and all end-of-life '
+                               'emissions (C1-C4) of the 2026-2050 cohorts are committed emissions, reported below as '
+                               'a range and in years of the 2050 AR boundary; they are not part of the cumulative LoE.'
+                               if c.get('accounting') == 'time_resolved' else
+                               'Whole life at construction: all stages A1-C4 booked in the construction year.'), '',
          '**Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over '
          f'{y0}-{y1} (ratio of sums).', '',
          '**Dating.** Model year t is 31 December (Stats NZ ERP history). The WPP 2024 series (1 July) and, in the '
@@ -109,12 +99,14 @@ def main():
          f"| P_NZ(t0), P_W(t0) | {c['P_NZ_t0']:,.0f}, {c['P_W_t0']:,.0f} | model (observed 2025 ERP); WPP 2024 median |",
          '', 'The numerator of s_sec is an investment flow (gross fixed capital formation), while Hjalsted et al. '
          'define the upscaling on final consumption and leave intermediate sectors open (p. 16).', '',
-         '## Historical sector emissions (base window)', '',
+         '## Historical sector emissions (base window, at 2025 factors)', '',
          '| year | kt CO2e | soil share of floor area | net replacement rate (%/yr) | rate from |', '|---|---|---|---|---|']
     for y, h in r['history'].items():
         L.append(f"| {y} | {h['I_kt']:,.1f} | {h['soil_share']:.3f} | {h['rate_pct']:.3f} | {h['rate_source']} |")
-    L += ['', f"Mean {w0}-{w1}: {c['I_sec_base_kg'] / 1e6:,.1f} kt/yr. With soil on all floor area (the diag_5 "
-          f"history): {c['I_sec_base_soil_on_all_kg'] / 1e6:,.1f} kt/yr. Note: with the long-run net replacement "
+    L += ['', f"Mean {w0}-{w1}: {c['I_sec_base_kg'] / 1e6:,.1f} kt/yr"
+          + (f", of which replacements and repaints within the window {100 * c['I_sec_base_b_share']:.2f}%; wider "
+             f"B scope (events of all cohorts built since 1992): {c['I_sec_base_wider_scope_kg'] / 1e6:,.1f} kt/yr"
+             if c.get('I_sec_base_b_share') is not None else '') + f". With soil on all floor area: {c['I_sec_base_soil_on_all_kg'] / 1e6:,.1f} kt/yr. Note: with the long-run net replacement "
           f"rate for 2024-25: {c['I_sec_base_long_run_2024_25_kg'] / 1e6:,.1f} kt/yr; {w1 - 4}-{w1} (5 yr): "
           f"{c['I_sec_base_5yr_kg'] / 1e6:,.1f} kt/yr.", '',
           '## α validation (Hjalsted et al. 2021 SI: α = 0.243 for 2017; world GDP per capita 1.07E+04 USD)', '',
@@ -154,6 +146,16 @@ def main():
               f"{m['cum_LoE_AtP_S3_10_mc_p95']:.1f}).", '',
               '| scenario | cumulative LoE AR | cumulative LoE AtP |', '|---|---|---|']
         L += [f"| {SCEN_NAME.get(k, k)} | {v['AR']:.2f} | {v['AtP']:.1f} |" for k, v in m['cum_LoE_by_scenario'].items()]
+    cm = r.get('committed') or {}
+    if cm:
+        L += ['', '### Committed emissions after 2050 (deterministic)', '',
+              'Lower: events after 2050 with the 2050 factors held; upper: at 2025 factors; C1-C4 at 2025 in both. '
+              'Years of the 2050 AR boundary = committed / B_AR(2050). Not part of the cumulative LoE.', '',
+              '| scenario | B2/B4 within 2026-2050 (kt) | share of window carbon | committed (kt) | years of B_AR(2050) |',
+              '|---|---|---|---|---|']
+        L += [f"| {SCEN_NAME.get(k, k)} | {v['b_inwindow_kt']:,.0f} | {100 * v['b_share_inwindow']:.1f}% | "
+              f"{v['lower_kt']:,.0f}-{v['upper_kt']:,.0f} | {v['years_of_B_AR_2050_lower']:.1f}-"
+              f"{v['years_of_B_AR_2050_upper']:.1f} |" for k, v in cm.items() if k in SCEN_NAME]
     L += ['', '### Deterministic sensitivities (reference scenario S3-10)', '',
           '| case | cumulative LoE AR | vs reference | cumulative LoE AtP | vs reference |', '|---|---|---|---|---|']
     for _, x in sens.iterrows():

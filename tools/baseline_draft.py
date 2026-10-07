@@ -33,26 +33,6 @@ def pct(a, b):
     return f'{100 * (a / b - 1):+.1f}%'
 
 
-def class_register():
-    """Register rows of the class-level mapping ('horup_class_v1_1', baseline-pb-v1.1)."""
-    import Boss as B
-    return [
-        ('Material mapping, class-level (horup_class_v1_1; case-study class -> S4 row)',
-         'CONCRETE and REINFORCED CONCRETE -> concrete structure; STEEL -> reinforcing steel; TIMBER -> '
-         'construction wood; ALUMINIUM -> aluminium; BRICKS -> clay brick; GLASS -> glass (flat glass, coated); '
-         'GLASS WOOL -> mineral wool glass; held at 2025: PLASTERBOARD, PLASTICS, PAINT, FIBRE CEMENT, PLASTER, '
-         'SIP, unspecified OTHERS (no S4 counterpart)', 'DECISION (author)'),
-        ('STEEL class', f"S4 '{'reinforcing steel' if B.DECARB_STEEL == 'reinforcing_steel' else 'steel profile'}' "
-         "(2050: -29.9%; steel profile -39.8% is a one-at-a-time sensitivity)",
-         'DECISION (author): rebar is inside REINFORCED CONCRETE; STEEL is non-rebar steel (stud walls, sections, '
-         'miscellaneous) whose closest S4 counterpart is steel profile; reinforcing steel is used as the '
-         'conservative choice because the class mixes items of unknown composition'),
-        ('Rebar in REINFORCED CONCRETE', 'decarbonised at the concrete-structure rate (2050: -27.6%)',
-         'DECISION (author): S4\'s concrete dataset does not separate reinforcement; the difference from '
-         'reinforcing steel (-29.9%) is small'),
-    ]
-
-
 def _s4_change(rows):
     """{S4 row: relative change by 2050}, from data/derived/horup2025_table_s4.csv."""
     import Building_factors as BF
@@ -120,7 +100,7 @@ def item_register():
          'DECISION (author): no S4 counterpart. The EPS-based proxies (polymers, paint, SIP) carry the smallest '
          f"reduction in the set ({100 * ch['EPS']:+.1f}% by 2050), so they are conservative"),
         ('Item mapping: held at 2025 (label held)', 'lift (OTIS Gen2, apartments)',
-         'DECISION (author): no S4 counterpart; sensitivity at the steel-profile rate'),
+         'DECISION (author): no S4 counterpart; its share of 2025 A1-A3 is in the coverage row'),
         ('Composite floor decking (RC item)', 'concrete structure, incl. its rebar and steel trapezoidal deck',
          'DECISION (author): no split available in the source; conservative versus steel profile '
          f"({100 * ch['Concrete structure']:+.1f}% vs {100 * _s4_change(['Steel profile'])['Steel profile']:+.1f}% "
@@ -136,10 +116,11 @@ def item_register():
          '(not fossil process heat). Not included: Allied Concrete, GIB plasterboard, Colorsteel / ZinaCore (fossil '
          'process heat, where Horup\'s reductions reflect process change), CLT (imported, Xlam Australia); NZSIP not '
          f"needed (EPS path {100 * ch['EPS']:+.1f}%)"),
-        ('Sensitivities (item-level)', 'proxies held at 2025; NZ low-carbon-electricity items held at 2025; lift at '
-         'the steel-profile rate; class-level mapping of v1.1: deterministic carbon and cumulative LoE, optional '
-         'step run_all.py --compare-modes, stored in outputs/DECARB_MODES.md with date and commit; frozen technology '
-         'stays in the default run (sensitivity_oat.csv, pb_sensitivity.csv, pb_4)', 'DECISION (author)'),
+        ('Sensitivities (item-level)', 'proxies held at 2025; NZ low-carbon-electricity items held at 2025; frozen '
+         'technology (no decarbonisation, A4-A5 held); all in the default run (sensitivity_oat.csv, '
+         'pb_sensitivity.csv, pb_4). The class-level mapping of baseline-pb-v1.1 and its comparison runs were '
+         'removed in baseline-pb-v3; their results are preserved at tags baseline-PB_v1.2 and baseline-PB_v2',
+         'DECISION (author)'),
     ]
 
 
@@ -153,26 +134,109 @@ def decarb_limitations(mode):
     """Limitations of the material decarbonisation for a DECARB_MODE."""
     if mode == 'none':
         return []
-    held = ('Materials without a counterpart in Horup et al. are held at 2025 factors, so the decarbonised '
-            'baseline is conservative.' if mode == 'horup_class_v1_1' else
-            'Items without a counterpart in Horup et al. follow a labelled proxy path (polymers, paint and SIP at '
-            'EPS, the smallest reduction in the set; gypsum plasterboard at clay brick) or are held at 2025 (the '
-            'lift); the proxies are a judgement, bracketed by holding them at 2025 (sensitivity).')
-    L = ['Decarbonisation paths are relative changes for European and global market processes modelled with '
-         'premise on ecoinvent 3.9.1 (Horup et al. 2025); they are applied as relative changes to New Zealand '
-         'case-study factors. This assumes NZ material supply decarbonises at the same relative rate as those '
-         'markets, which is not tested. ' + held] + DECARB_LIMITATIONS[1:]
-    if mode == 'horup_item':
-        L.append('Several items are made in New Zealand with electricity-intensive production (aluminium, Pink '
-                 'Batts glass wool, Pacific Steel rebar, WPMA Radiata timber, Nelson Pine LVL); the aluminium items '
-                 'are stated in their EPD names to use mainly renewables-generated electricity. Where their 2025 '
-                 'factors already reflect low-carbon electricity, the premise paths, which include the '
-                 f'decarbonisation of electricity supply ({PREMISE_QUOTE}), may overstate their relative reduction; '
-                 'a sensitivity holds them at 2025.')
-        L.append('Composite floor decking (an RC item containing its steel deck and rebar) follows the '
-                 'concrete-structure path because the source gives no split; this is conservative versus steel '
-                 'profile for the steel share.')
-    return L
+    return DECARB_LIMITATIONS + [
+        'Several items are made in New Zealand with electricity-intensive production (aluminium, Pink '
+        'Batts glass wool, Pacific Steel rebar, WPMA Radiata timber, Nelson Pine LVL); the aluminium items '
+        'are stated in their EPD names to use mainly renewables-generated electricity. Where their 2025 '
+        'factors already reflect low-carbon electricity, the premise paths, which include the '
+        f'decarbonisation of electricity supply ({PREMISE_QUOTE}), may overstate their relative reduction; '
+        'a sensitivity holds them at 2025.',
+        'Composite floor decking (an RC item containing its steel deck and rebar) follows the '
+        'concrete-structure path because the source gives no split; this is conservative versus steel '
+        'profile for the steel share.']
+
+
+def timing_register():
+    """Register rows of the time-resolved accounting (baseline-pb-v3): events, A4-A5 path,
+    committed emissions and the data notes of the event table. Counts from the files."""
+    import Boss as B
+    import Building_factors as BF
+    ev = pd.read_csv(BF.FILE_EVENTS).fillna({'event_type': '', 'event_path': ''})
+    ex = pd.read_csv(os.path.join(ROOT, 'data', 'derived', 'lca_excluded_lines.csv'))
+    ne = ev[ev['n_events'] > 0]
+    nrep = int((ne['event_type'] == 'replacement').sum())
+    nrp = int((ne['event_type'] == 'repaint').sum())
+    site = int(ex['reason'].str.startswith('site works').sum())
+    unl = ex[ex['reason'].str.startswith('unlabelled')]
+    a1 = unl[unl['id'] == 'A_1']['A1-A3'].sum() / 1e3
+    g = BF.generic_path([2050])[0]
+    return [
+        ('Accounting of later life-cycle stages (ACCOUNTING)',
+         {'time_resolved': 'time_resolved: upfront (A1-A5 and soil) in the construction year; replacement and '
+                           'repaint events (B2, B4) in the calendar year they occur, within 2026-2050; events '
+                           'after 2050 and all C1-C4 of the 2026-2050 cohorts reported as committed emissions '
+                           '(range below), not added to the 2026-2050 total',
+          'whole_life_at_construction': 'whole_life_at_construction: all stages A1-C4 booked in the construction '
+                                        'year (the static convention of baseline-pb-v2)'}[B.ACCOUNTING],
+         'DECISION (author); LITERATURE: Habert et al. 2020, Buildings and Cities 1, 429-452, Section 5.1 (p. '
+         '442): embodied emissions "occur mainly in the first year of the building life time and (approximately '
+         '30 years later) when deep renovation are done", and spreading them over the building life '
+         '"underestimates the peak of emissions which will happen before 2050"; time-explicit inventories of '
+         'building replacements: Resch, Andresen, Cherubini & Brattebø 2021, Building and Environment 187, 107399, '
+         'Section 2.2. Whole life at construction is a sensitivity'),
+        ('Event table (B2, B4)', f"{len(ev)} case-study lines matched to the item table (data/derived/lca_events.csv, "
+         'built by data/build_lca_events.py from data/raw/Analytical_LCA_Results_Database.xlsx, LCAQuick root '
+         f"tables): number of replacements and repaints and building lifespan ({', '.join(str(int(v)) for v in sorted(ev['lifespan'].unique()))} "
+         f"yr) per line; {len(ne)} lines carry events ({nrep} replacement, {nrp} repaint lines). Stage totals stay "
+         'those of data/building_data.xlsx and the item table (baseline-pb-v2 reproduced)',
+         'DATA: Christoforatos & Pickering 2025 case studies, LCAQuick root tables'),
+        ('Lines not used from the event workbook', f"{len(ex)} lines, none with B2/B4 (data/derived/"
+         f"lca_excluded_lines.csv): {site} sand / granular-fill lines (site works, outside the case-study scope); "
+         f"{len(unl)} unlabelled lines, including the A_1 unlabelled row ({a1:,.0f} t A1-A3; excluded, as in "
+         'baseline-pb-v2 and the sheet summary); one T_1 aluminium line whose A1-A3 differs from the item table '
+         'by 10 kg (item table kept). Several sheet summary blocks do not equal their own line sums; line-level '
+         'data are used', 'DECISION (author)'),
+        ('Events per line', 'per-event impact = line B2/B4 / n; split into A1-A3 : A4-A5 : C1-C4 in proportion to '
+         "the line's initial stages; pooled per typology with the weights of the carbon factors "
+         '(outputs/factors/factors_events.csv)', 'DECISION (author)'),
+        ('Event timing (EVENT_TIMING)', f"'{B.EVENT_TIMING}': {BF.EVENT_TIMINGS[B.EVENT_TIMING]}; a fractional "
+         'year is split linearly between the two adjacent years',
+         'DECISION (author): LCAQuick derives n = ceil(L / RSL) - 1, so the service life lies in [L / (n + 1), '
+         'L / n); L / (n + 1) is its lower end (earliest events), L / n the sensitivity'),
+        ('Colorsteel lines (1 replacement + 1 repaint in the source)', 'one replacement event at L / (n + 1) '
+         'carrying the full line B2/B4, on the item\'s steel-profile path', 'DECISION (author): the repaint '
+         'would fall in the same year (L / 2), so a separate repaint event would change only the decarbonisation '
+         'path of about 2.5% of these lines\' B2/B4'),
+        ('ZinaCore lines', '3 repaint events of B2/B4 / 3 each at L / (m + 1) spacing, on the paint path (EPS '
+         'proxy)', 'DECISION (author): the emission is recoating, not new steel'),
+        ('Event decarbonisation paths', 'A1-A3: replacements on the item\'s own S4 path (same item rules and '
+         'sensitivities as construction); repaints and recoating on the paint path (EPS proxy). A4-A5: the A4-A5 '
+         'path below. C1-C4: held at 2025', 'DECISION (author); no source for end-of-life decarbonisation'),
+        ('A4-A5 decarbonisation (DECARB_A45)',
+         {'resch': f"resch: e^(-0.01 (t - 2025)), {100 * (g - 1):+.1f}% by 2050, for construction A4-A5 and the "
+                   'A4-A5 share of events',
+          'held': 'held: A4-A5 at 2025', 'item': "item: each item's S4 path"}[B.DECARB_A45],
+         'LITERATURE: Resch et al. 2021, Table 1 (p. 4): production e^(-0.01 y), "a ~1% yearly improvement", '
+         'half-life 69 years; the exponential form of the source is used (0.99^25 would give -22.2%). Resch et al. '
+         'apply 2%/yr to transport; A4-A5 also contains installation and wastage, so the 1% production rate is '
+         'used for the combined stage (conservative for transport). Resch et al. count y from the construction '
+         'year for future (B, C) emissions; here y counts calendar years from 2025 (adaptation). Sensitivities: '
+         'held at 2025; item S4 paths'),
+        ('Committed emissions (post-2050)', 'upper: events after 2050 at 2025 factors; lower: the 2050 factors held '
+         'after 2050 (no extrapolation beyond the last source year); C1-C4 at 2025 in both. Expressed in years of '
+         'the 2050 AR boundary', 'DECISION (author): the source paths end in 2050'),
+        ('Scope of B events', 'events of the cohorts built in the window only (projection: the 2026-2050 '
+         'cohorts; AR base: the cohorts of the base window); wider scope (events of all cohorts built since '
+         f"{B.B_SCOPE_START}, in the base and the projection alike) is a sensitivity",
+         'DECISION (author): the AESA object is new construction'),
+    ]
+
+
+TIMING_LIMITATIONS = [
+    'Event timing is deterministic (n events evenly spaced in the building life). Resch et al. (2021, Section 2.2 '
+    'and Fig. 4) model replacement years as probability-distributed; the L / n sensitivity brackets the timing '
+    'within the service-life range implied by the counts, but not early or late failures.',
+    'A4-A5 follows a generic technological-progress factor (Resch et al. 2021, Table 1) because it cannot be '
+    'separated by material process; Horup et al. (2025, Fig. 2A, pp. 5-6) show that generic factors oversimplify '
+    'material-specific trends, and Resch et al. state that "the decay functions should not be interpreted as '
+    'predictions" (p. 4). Sensitivities: held at 2025 and the item S4 paths.',
+    'Committed post-2050 emissions are a range bounded by two conventions (2025 factors; the 2050 factors held), '
+    'not a projection: the source paths end in 2050 and C1-C4 has no decarbonisation source.',
+    'The repaint composition differs from the first coat but cannot be separated in the source file; repaints '
+    'take the line\'s initial stage split (negligible: the paint path is the EPS proxy).',
+    'Completion rate 0.95: "Jones et al. 2024" is a citation to verify (TODO: confirm the reference before '
+    'submission).',
+]
 
 
 def register():
@@ -210,34 +274,37 @@ def register():
          'LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders '
          '(Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603)'),
         ('Material decarbonisation', {'none': 'none: all factors held at 2025 (frozen technology)',
-                                      'horup_class_v1_1': 'horup_class_v1_1: A1-A3 of mapped material classes '
-                                      'scaled by material-specific GWP paths, 2026-2050',
                                       'horup_item': 'horup_item: A1-A3 of each case-study EPD item scaled by the GWP '
                                       'path of its mapped S4 material, 2026-2050'}[B.DECARB_MODE],
          'DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI '
          'Table S4 (average of 9 premise scenarios, relative to 2025)'),
-        ('Decarbonised life-cycle stages', 'A1-A3 only; A4-A5, B2, B4, C1-C4 held at 2025; soil never',
-         'DECISION (author): Horup\'s scope is material production (A1-A3); soil is land-use change'),
+        ('Decarbonised life-cycle stages', 'A1-A3 item paths (construction and events); A4-A5 as below; C1-C4 '
+         'held at 2025; soil never', 'DECISION (author): Horup\'s scope is material production (A1-A3); soil '
+         'is land-use change'),
         ('Interpolation between 2025, 2030, 2040, 2050', 'linear',
          'DECISION (author): Horup et al. state "interpolated" without naming the method (p. 3)'),
-        *({'none': [], 'horup_class_v1_1': class_register(), 'horup_item': item_register()}[B.DECARB_MODE]),
+        *({'none': [], 'horup_item': item_register()}[B.DECARB_MODE]),
+        *timing_register(),
         ('Carbon-factor sensitivity rows (decarbonised runs)', 'an alternative materials factor (jackknife, '
          'single case study) follows the adopted factor\'s relative path over time: factor_alt x (materials '
          'intensity(t) / 2025 value)', 'DECISION (author)'),
-        ('History and acquired-rights base', 'always 2025 factors; decarbonisation applies to 2026-2050 only',
-         'DECISION (author): the base is observed past construction, built with past (not future) technology'),
+        ('History and acquired-rights base', 'always 2025 factors ("at 2025 factors"); decarbonisation applies '
+         'to 2026-2050 only; the base follows the projection\'s accounting rule (upfront of the window\'s '
+         'construction plus the events within the window of cohorts built in it). Historical carbon appears only '
+         'for the AR base window (mc_1_fan_pb) and the base-window rows',
+         'DECISION (author): no historical factor series exists for the case studies (limitation)'),
     ]
 
 
 DECARB_LIMITATIONS = [
     'Decarbonisation paths are relative changes for European and global market processes modelled with premise on '
     'ecoinvent 3.9.1 (Horup et al. 2025); they are applied as relative changes to New Zealand case-study factors. '
-    'This assumes NZ material supply decarbonises at the same relative rate as those markets, which is not tested. '
-    'Materials without a counterpart in Horup et al. are held at 2025 factors, so the decarbonised baseline is '
-    'conservative.',
-    'B4 (replacement) and C1-C4 (end of life) occur decades after construction but are booked in the construction '
-    'year and held at 2025 factors; future production and end-of-life technology would lower them '
-    '(conservative).',
+    'This assumes NZ material supply decarbonises at the same relative rate as those markets, which is not tested.',
+    'Items without a counterpart in Horup et al. follow a labelled proxy path (polymers, paint and SIP at EPS, the '
+    'smallest reduction in the set; gypsum plasterboard at clay brick) or are held at 2025 (the lift); the proxies '
+    'are a judgement, bracketed by holding them at 2025 (sensitivity).',
+    'C1-C4 (end of life) is held at 2025 factors (no source for end-of-life decarbonisation); future end-of-life '
+    'technology would lower the committed emissions (conservative).',
     'Horup et al. (2025) SI Table S4 gives the average of the 9 premise scenarios only; the scenario range is shown '
     'graphically in their Fig. 2, so no low/high decarbonisation path is implemented.',
 ]
@@ -293,9 +360,19 @@ def main():
     # ---- summary ----
     rows = sc['scenarios'] if sc else {}
     L += ['## Summary', '']
-    txt = (f"New Zealand is projected to build {b['gfa_Mm2']:.1f} million m² of new residential floor area in "
-           f"2026-2050 on the reference path, embodying {b['carbon_kt'] / 1e3:.1f} Mt CO₂e over the life cycle, "
-           f"of which {b['upfront_kt'] / 1e3:.1f} Mt is upfront (materials A1-A5 plus soil).")
+    tr = b.get('accounting') == 'time_resolved'
+    cm = b.get('committed') or {}
+    if tr:
+        txt = (f"New Zealand is projected to build {b['gfa_Mm2']:.1f} million m² of new residential floor area in "
+               f"2026-2050 on the reference path. Within 2026-2050 this emits {b['carbon_kt'] / 1e3:.1f} Mt CO₂e: "
+               f"{b['upfront_kt'] / 1e3:.1f} Mt upfront (materials A1-A5 plus soil, in the construction year) and "
+               f"{b['b_inwindow_kt']:,.0f} kt of replacements and repaints (B2, B4) that fall in the window. A further "
+               f"{cm['lower_kt'] / 1e3:.1f}-{cm['upper_kt'] / 1e3:.1f} Mt is committed after 2050 (later replacements "
+               f"and end of life; outputs/reconciliation.md).")
+    else:
+        txt = (f"New Zealand is projected to build {b['gfa_Mm2']:.1f} million m² of new residential floor area in "
+               f"2026-2050 on the reference path, embodying {b['carbon_kt'] / 1e3:.1f} Mt CO₂e over the life cycle, "
+               f"of which {b['upfront_kt'] / 1e3:.1f} Mt is upfront (materials A1-A5 plus soil).")
     if 'S1' in rows and 'S2' in rows:
         txt += (f" How fast existing dwellings are replaced is the largest structural uncertainty: Low (S1, the "
                 f"long-run rate) gives {rows['S1']['GFA_Mm2']:.1f} million m², High (S2, the 2018-2023 rate "
@@ -321,13 +398,15 @@ def main():
                 "also moves household size along the matching Stats NZ Low/High variant: low-population variants "
                 "come with smaller households (an older age structure), so the number of households varies less "
                 "than population, whereas the population-only range holds household size on the Medium shape.")
-    txt += (f" Upfront carbon ({b['upfront_kt'] / 1e3:.1f} Mt) is the quantity comparable with a 2026-2050 "
-            f"budget; the later life-cycle stages are booked in the construction year but emitted mostly after 2050.")
+    if not tr:
+        txt += (f" Upfront carbon ({b['upfront_kt'] / 1e3:.1f} Mt) is the quantity comparable with a 2026-2050 "
+                f"budget; the later life-cycle stages are booked in the construction year but emitted mostly after 2050.")
     L += [txt, '']
 
     # ---- headline ----
     L += ['## Headline, 2026-2050 (median demographics)', '',
-          '| path | floor area (Mm²) | vs reference | whole-life carbon (kt CO₂e) | of which soil | '
+          '| path | floor area (Mm²) | vs reference | ' + ('carbon within 2026-2050' if tr else 'whole-life carbon')
+          + ' (kt CO₂e) | of which soil | '
           'carbon excl. soil | upfront carbon (kt CO₂e) |', '|---|---|---|---|---|---|---|']
     base = rows.get('S3-10', {}).get('GFA_Mm2', b['gfa_Mm2'])
     for k, lab in (('S1', 'Low (S1): long-run replacement, shares held'),
@@ -406,13 +485,42 @@ def main():
     mt = sum(b['material_kt'].values())
     for k, x in sorted(b['material_kt'].items(), key=lambda kv: -kv[1]):
         L.append(f'| {k} | {x:,.0f} | {100 * x / mt:.1f}% |')
-    L += ['', '## Upfront vs whole-life (kt CO₂e)', '', '| stage | kt |', '|---|---|']
-    for s_, x in b['stages_kt'].items():
-        L.append(f'| {s_} | {x:,.0f} |')
-    L += [f"| soil (land-use change) | {b['soil_kt']:,.0f} |",
-          f"| **upfront (A1-A5 + soil)** | **{b['upfront_kt']:,.0f}** |",
-          f"| **whole-life** | **{b['carbon_kt']:,.0f}** |",
-          '', 'Later stages (B, C) are booked in the construction year (static LCA convention).',
+    if tr:
+        L += ['', '## Carbon within 2026-2050 and committed after 2050 (kt CO₂e)', '', '| term | kt |', '|---|---|']
+        L += [f'| {s_} | {b["stages_kt"][s_]:,.0f} |' for s_ in ('A1-A3', 'A4-A5')]
+        L += [f"| soil (land-use change) | {b['soil_kt']:,.0f} |",
+              f"| **upfront (A1-A5 + soil)** | **{b['upfront_kt']:,.0f}** |",
+              f"| replacements & repaints (B2, B4) within 2026-2050 | {b['b_inwindow_kt']:,.0f} |",
+              f"| **within 2026-2050** | **{b['carbon_kt']:,.0f}** |",
+              f"| committed B2, B4 after 2050 (lower: 2050 factors held / upper: 2025 factors) | "
+              f"{cm['B_lower_kt']:,.0f} / {cm['B_upper_kt']:,.0f} |",
+              f"| committed C1-C4 (2025 factors) | {cm['C_kt']:,.0f} |",
+              f"| **committed after 2050** | **{cm['lower_kt']:,.0f}-{cm['upper_kt']:,.0f}** |",
+              '', 'Time-resolved accounting: upfront in the construction year, replacements and repaints in the year '
+                  'they occur. Committed emissions are reported as a range and are not added to the 2026-2050 '
+                  'total. Reconciliation with whole life at construction (baseline-pb-v2): outputs/reconciliation.md.']
+        rc = load('reconciliation.json')
+        if rc:
+            f0, f1 = rc['frozen_2025_factors'], rc['adopted']
+            L += ['', '| term (reference, kt CO₂e) | 2025 factors | decarbonised |', '|---|---|---|',
+                  f"| upfront within 2026-2050 | {f0['upfront_kt']:,.0f} | {f1['upfront_kt']:,.0f} |",
+                  f"| B2, B4 within 2026-2050 | {f0['b_inwindow_kt']:,.0f} | {f1['b_inwindow_kt']:,.0f} |",
+                  f"| committed B2, B4 (upper) | {f0['b_committed_upper_kt']:,.0f} | {f1['b_committed_upper_kt']:,.0f} |",
+                  f"| committed C1-C4 | {f0['c_committed_kt']:,.0f} | {f1['c_committed_kt']:,.0f} |",
+                  f"| sum | {rc['sum_2025_factors_kt']:,.0f} | {rc['sum_adopted_upper_kt']:,.0f} |",
+                  f"| whole life at construction, A4-A5 held (baseline-pb-v2) | {rc['v2_frozen_whole_life_kt']:,.0f} | "
+                  f"{rc['v2_adopted_whole_life_kt']:,.0f} |",
+                  f"| difference: A4-A5 of construction + in-window B decarbonised | 0 | "
+                  f"{-rc['a45_construction_decarbonisation_kt'] - rc['b_inwindow_decarbonisation_kt']:,.0f} |"]
+    else:
+        L += ['', '## Upfront vs whole-life (kt CO₂e)', '', '| stage | kt |', '|---|---|']
+        for s_, x in b['stages_kt'].items():
+            L.append(f'| {s_} | {x:,.0f} |')
+        L += [f"| soil (land-use change) | {b['soil_kt']:,.0f} |",
+              f"| **upfront (A1-A5 + soil)** | **{b['upfront_kt']:,.0f}** |",
+              f"| **whole-life** | **{b['carbon_kt']:,.0f}** |",
+              '', 'Later stages (B, C) are booked in the construction year (static LCA convention).']
+    L += [
           '', '### Soil method', '',
           'Soil organic carbon loss is land-use change: a new building footprint seals the soil under it, '
           'while a rebuilt footprint sits on soil already sealed. Soil loss is therefore applied to all '
@@ -554,32 +662,21 @@ def main():
               f"{pb['cum_LoE_AtP_S3_10']:.1f}-fold (AtP; {pb['cum_LoE_AtP_S3_10_mc_p5']:.1f}-"
               f"{pb['cum_LoE_AtP_S3_10_mc_p95']:.1f}). The two principles are a range and are not averaged. "
               'Methods, constants, sources and limitations: outputs/PB_METHODS_DRAFT.md; settings: ASSUMPTIONS.md.']
-    dm = load('decarb_modes.json')
-    if dm:
-        typ = list(next(iter(dm['modes'].values()))['a13_reduction_2050'])
-        from decarb_modes import provenance_note, stale
-        L += ['', '## Material decarbonisation: modes compared', '',
-              f"Adopted: `{dm['adopted']}`. A1-A3 only; A4-A5, B2, B4, C1-C4 and soil at 2025 in every mode. "
-              f"Stored result of the optional step: {provenance_note(dm)}"
-              + (' **STALE: the adopted-mode carbon differs from this run; re-run `python run_all.py '
-                 '--compare-modes`.**' if stale(dm) else '.')
-              + ' Full tables (sensitivities, coverage, S4 rows): outputs/DECARB_MODES.md.', '',
-              '| mode | carbon (kt) | upfront (kt) | MC carbon p5-p95 (kt) | cum. LoE AR / AtP | A1-A3 by 2050 ('
-              + ', '.join(typ) + ') |', '|---|---|---|---|---|---|']
-        for mode, r in dm['modes'].items():
-            mc = r.get('mc')
-            pbm = r.get('pb')
-            L.append(f"| `{mode}` | {r['carbon_kt']:,.0f} | {r['upfront_kt']:,.0f} | "
-                     + (f"{mc['carbon_kt']['p5']:,.0f}-{mc['carbon_kt']['p95']:,.0f}" if mc else 'n/a') + ' | '
-                     + (f"{pbm['det']['LoE_AR']:.2f} / {pbm['det']['LoE_AtP']:.1f}" if pbm else 'n/a') + ' | '
-                     + ', '.join(f"{-100 * r['a13_reduction_2050'][t]:.1f}%" for t in typ) + ' |')
+        pr = load('pb_results.json') or {}
+        cr = (pr.get('committed') or {}).get('S3-10')
+        if cr:
+            L[-1] += (f" The emissions committed after 2050 by the 2026-2050 cohorts ({cr['lower_kt']:,.0f}-"
+                      f"{cr['upper_kt']:,.0f} kt) equal {cr['years_of_B_AR_2050_lower']:.0f}-"
+                      f"{cr['years_of_B_AR_2050_upper']:.0f} years of the 2050 AR boundary; they are outside the "
+                      'window and not part of the cumulative LoE.')
     L += ['', '## Assumptions', '', '| basis | assumption |', '|---|---|'] + [f'| {b_} | {a_} |' for b_, a_ in A]
 
     # ---- register ----
     L += ['', '## Assumption register (values read from Boss.py)', '', '| setting | value | basis |', '|---|---|---|']
     for a, val, basis in register():
         L.append(f'| {a} | {val} | {basis} |')
-    L += ['', '## Open limitations and data needs', ''] + [f'- {x}' for x in LIMITATIONS + near_term_limitations() + decarb_limitations(BB.DECARB_MODE)]
+    L += ['', '## Open limitations and data needs', ''] + [f'- {x}' for x in LIMITATIONS + near_term_limitations() + decarb_limitations(BB.DECARB_MODE)
+                                                            + TIMING_LIMITATIONS]
 
     # ---- figures ----
     figs = sorted(glob.glob(os.path.join(OUT, 'figures', '*.png')))

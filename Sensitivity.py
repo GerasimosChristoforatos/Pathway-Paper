@@ -29,6 +29,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import Boss
+import figaudit
 
 OUT_CSV = os.path.join(Boss.OUT_DIR, 'sensitivity_oat.csv')
 FIG_DIR = os.path.join(Boss.OUT_DIR, 'figures')
@@ -192,6 +193,7 @@ def _save(fig, name, tight=True):
         fig.tight_layout()
     if SAVE_FIGURES:
         os.makedirs(FIG_DIR, exist_ok=True)
+        figaudit.record(fig, name)
         fig.savefig(os.path.join(FIG_DIR, name), dpi=140, bbox_inches='tight')
 
 

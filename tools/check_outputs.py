@@ -1,8 +1,9 @@
-"""Final check of the generated outputs (run_all.py, last step): the storyline
-scenario of v1.0.2-v1.2 (S2 + damped mix trend) must not appear in any
-generated output or document of the adopted and frozen runs. The stored
---compare-modes run (outputs/modes/, DECARB_MODES.md, decarb_modes.json)
-predates baseline-pb-v2 and is excluded; DECARB_MODES.md carries a note.
+"""Final check of the generated outputs (run_all.py, last step): stale terms of
+earlier versions must not appear in any generated output or document of the
+adopted and frozen runs: the storyline scenario of v1.0.2-v1.2 (S2 + damped mix
+trend), the retired decarbonisation names (horup_material, horup_class_v1_1, "mix
+effect only") and the comparison runs removed in baseline-pb-v3 (--compare-modes,
+DECARB_MODES, decarb_modes). CHANGELOG.md records them and is not checked.
 
     python tools/check_outputs.py
 """
@@ -13,8 +14,9 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'outputs')
-STORYLINE = re.compile(r'storyline|S2-held|S3-10-trend|damped mix trend|intensification continues', re.I)
-EXCLUDED = ('DECARB_MODES.md', 'decarb_modes.json')
+STORYLINE = re.compile(r'storyline|S2-held|S3-10-trend|damped mix trend|intensification continues|horup_material|'
+                       r'horup_class|mix effect only|compare-modes|DECARB_MODES|decarb_modes', re.I)
+EXCLUDED = ()
 # written by run_all after the tests step (checked here, not by tests/test_v2.py)
 AFTER_TESTS = ('metrics.json', 'RESULTS.md', 'BASELINE_DRAFT.md', 'PB_METHODS_DRAFT.md', 'ASSUMPTIONS.md')
 
@@ -45,9 +47,9 @@ def storyline_hits(include_docs=True):
 def main():
     hits = storyline_hits()
     if hits:
-        print(f'check_outputs: storyline found in {hits}')
+        print(f'check_outputs: stale terms found in {hits}')
         sys.exit(1)
-    print(f'check_outputs: no storyline in {len(generated_files())} generated files')
+    print(f'check_outputs: no stale terms in {len(generated_files())} generated files')
 
 
 if __name__ == '__main__':

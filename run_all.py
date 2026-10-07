@@ -19,7 +19,7 @@ console no SystemExit is raised.
 
 Order: Building_factors -> Boss -> Diagnostics -> Sensitivity -> MonteCarlo
 -> PB (planetary-boundary layer; reads the Monte Carlo draws) -> validation
--> gap_2026 -> near_term_join -> scenarios -> figures_report -> frozen
+-> gap_2026 -> near_term_join -> scenarios -> reconciliation -> figures_report -> frozen
 technology check (Boss, Sensitivity, MonteCarlo, scenarios, PB with DECARB_MODE
 'none', A4-A5 held, whole life at construction, written to outputs/frozen/,
 figures not saved) -> tests (incl. the v1.2.1 regression test, which reads
@@ -30,6 +30,7 @@ PATHWAY_SAVE_FIGURES=1, so every figure is written to outputs/figures/ and
 nothing is shown. Console output of each step goes to outputs/logs/<step>.log.
 """
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -72,6 +73,8 @@ def pipeline(skip_mc, quick=False):
     def run(name, cmd, **extra):
         step(name, cmd, dict(q, **extra))
 
+    # every figure (and its audit record, figaudit.py) is written by this run
+    shutil.rmtree(os.path.join(ROOT, 'outputs', 'figures'), ignore_errors=True)
     run('building_factors', [py, os.path.join(ROOT, 'Building_factors.py')])
     run('boss', [py, os.path.join(ROOT, 'Boss.py')])
     run('diagnostics', [py, os.path.join(ROOT, 'Diagnostics.py')])
@@ -83,6 +86,7 @@ def pipeline(skip_mc, quick=False):
     run('gap_2026', [py, os.path.join(ROOT, 'gap_2026.py')])
     run('near_term_join', [py, tool('near_term_join')])
     run('scenarios', [py, tool('replacement_scenarios')])
+    run('reconciliation', [py, tool('reconciliation')])
     run('figures_report', [py, tool('figures_report')])
     # frozen-technology check run (DECARB_MODE 'none', outputs/frozen/): the
     # v1.2.1 regression test compares it with v1.2.1; figures are not saved

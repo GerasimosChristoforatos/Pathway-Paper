@@ -26,7 +26,7 @@ NAMES = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
 PRIDE = ['#750787', '#004DFF', '#008026', '#FFED00', '#FF8C00', '#E40303']   # bottom -> top of the stack
 
 
-def test_storyline_absent_from_outputs():
+def test_stale_terms_absent_from_outputs():
     """Outputs written before the tests step; the documents written after it
     (metrics, RESULTS, drafts, ASSUMPTIONS) are checked by tools/check_outputs.py,
     the last step of run_all.py."""

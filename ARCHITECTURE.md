@@ -1,4 +1,4 @@
-# Architecture: how the model works (baseline v2)
+# Architecture: how the model works (baseline-pb-v3)
 
 This document is for a reviewer who knows statistics or modelling but not this
 code or New Zealand housing data. It describes what each script reads, what it
@@ -22,9 +22,13 @@ The model is bottom-up and demand-driven: people → households → dwellings
 required → floor area → carbon. Construction capacity, prices and policy are not
 modelled. Carbon intensities are the 2025 case-study values; with
 `DECARB_MODE = 'horup_item'` (adopted) the A1–A3 part of each case-study EPD
-item, and with `'horup_class_v1_1'` that of each mapped material class, follows
-the material-specific GWP paths of Horup et al. (2025) from 2026 (section 4.9);
-with `'none'` every factor is held at 2025 (frozen technology).
+item follows the material-specific GWP paths of Horup et al. (2025) from 2026,
+and A4–A5 a generic 1%/yr path after Resch et al. (2021) (section 4.9); with
+`'none'` and `DECARB_A45 = 'held'` every factor is held at 2025 (frozen
+technology). With `ACCOUNTING = 'time_resolved'` (adopted) upfront emissions are
+counted in the construction year and replacements and repaints (B2, B4) in the
+year they occur; later events and end of life are committed emissions after
+2050, reported as a range (section 4.10).
 
 ---
 
@@ -34,6 +38,7 @@ with `'none'` every factor is held at 2025 (frozen technology).
 flowchart LR
     subgraph inputs["data/ (inputs; data/derived built by scripts from data/raw)"]
         BD[building_data.xlsx<br/>16 case-study LCAs]
+        EV[derived/lca_events.csv<br/>replacement / repaint counts]
         CM[derived/consents_monthly.csv<br/>monthly building consents]
         HP[histpopdata.xlsx / derived/population_quarterly.csv<br/>population]
         OH[oldhouseholddata.xlsx<br/>household estimates]
@@ -42,7 +47,8 @@ flowchart LR
         CE[occ-unocc-2013.xlsx + derived/census_dwellings.csv<br/>census occupancy]
     end
     BF[Building_factors.py] --> F[(outputs/factors/*.csv)]
-    BD --> BF
+    BD & EV --> BF
+    EVP[events.py<br/>event kernels, committed] --- BOSS
     F --> BOSS[Boss.py<br/>central run]
     ENG[engine.py<br/>pure forward model] --- BOSS
     ENG --- MC
@@ -76,8 +82,18 @@ dictionary of all its local variables, which the other scripts read.
    orders of Auckland land zoned for urbanisation) / floor space index.
 5. Stage D is written out but never added. Stages in scope: A1–A3, A4–A5,
    B2/B4, C1–C4.
+6. Replacement and repaint events (`event_rows`): each line of
+   `data/derived/lca_events.csv` (counts and lifespan from the LCAQuick root
+   tables; stage totals from `building_data.xlsx` and the item table) is split
+   into n events of line B2/B4 / n at k L / (n + 1) years (sensitivity k L / n;
+   a fractional year split linearly), each divided into A1–A3 : A4–A5 : C1–C4
+   in proportion to the line's initial stages and carrying its decarbonisation
+   path (replacements: the item's S4 row; repaints and recoating: the paint
+   path). Pooled per typology like the factors; the pooled events add up to the
+   B2/B4 factor of each typology (tested).
 
-Outputs: `factors_material.csv`, `factors_typology.csv`, `factors_building.csv`.
+Outputs: `factors_material.csv`, `factors_typology.csv`, `factors_building.csv`,
+`factors_events.csv`, `factors_building_events.csv`, `factors_a45_item.csv`.
 
 ---
 
@@ -185,39 +201,49 @@ sum exactly to the typology total (tested).
 
 ### 4.9 Carbon
 
-Floor area by typology × intensity, by band, material, soil and stage (all
-stages booked in the year of construction). Upfront = A1–A5 + soil. Soil
-applies only to floor area on new footprints: zero on the replacement bands
-(land already settled).
+Floor area by typology × intensity, by band, material, soil and stage. Upfront
+= A1–A5 + soil. Soil applies only to floor area on new footprints: zero on the
+replacement bands (land already settled).
 
-**Material decarbonisation** (`DECARB_MODE`). `'none'`: every factor held at its
-2025 value. `'horup_class_v1_1'` (adopted in baseline-pb-v1.1, then
-`'horup_material'`): the A1–A3 factor of each case-study material class is multiplied,
-year by year, by the relative GWP path of its counterpart in Horup et al. (2025)
-SI Table S4 (average of 9 premise scenarios, relative to 2025; linear between
-2025, 2030, 2040 and 2050). `Building_factors.py` does this per case study and
-class before pooling (`factors_a13_decarb.csv`), so OTHERS follows its own
-components (aluminium, bricks, glass, glass wool; the rest held).
-`'horup_item'` (adopted from baseline-pb-v1.2): the same paths applied to each EPD item of the case
-studies (`data/derived/material_items.csv`, built by
-`data/build_material_items.py` from the supplied item table and checked against
-`building_data.xlsx`), mapped one-to-one by `data/material_item_map.csv` to an
-S4 row (direct; by Horup et al. p. 6 for other cementitious and wood-based
-products; or a labelled proxy) or held (the lift); summed per building and
-class, then pooled as before, so the 2025 totals are the class totals.
-`DECARB_ITEM_CASE` selects its sensitivities (proxies held; NZ-made
-electricity-intensive items held; lift at steel profile). A4–A5, B2, B4, C1–C4,
-unmapped classes or held items and soil stay at 2025. The history (1991–2025)
-always uses 2025 factors. The Monte Carlo bootstraps the same reduction per
-case study with the same resampled cases. Coverage by mapping basis:
-`outputs/factors/factors_a13_item_coverage.csv`.
+**Material decarbonisation** (`DECARB_MODE`). `'none'`: every A1–A3 factor held
+at its 2025 value. `'horup_item'` (adopted from baseline-pb-v1.2): the A1–A3
+factor of each EPD item of the case studies (`data/derived/material_items.csv`,
+built by `data/build_material_items.py` from the supplied item table and
+checked against `building_data.xlsx`) is multiplied, year by year, by the
+relative GWP path of its counterpart in Horup et al. (2025) SI Table S4 (average
+of 9 premise scenarios, relative to 2025; linear between 2025, 2030, 2040 and
+2050), mapped one-to-one by `data/material_item_map.csv` (direct; by Horup et
+al. p. 6 for other cementitious and wood-based products; a labelled proxy; or
+held, the lift); summed per building and class, then pooled, so the 2025 totals
+are the class totals. `DECARB_ITEM_CASE` selects its sensitivities (proxies
+held; NZ-made electricity-intensive items held). **A4–A5** (`DECARB_A45`):
+`'resch'` (adopted) e^(−0.01 (t − 2025)) after Resch et al. (2021) Table 1;
+`'held'` and `'item'` (each item's S4 path) are sensitivities. C1–C4 and soil
+stay at 2025. The history (1991–2025) always uses 2025 factors. The Monte Carlo
+bootstraps the same reductions per case study with the same resampled cases.
+Coverage by mapping basis: `outputs/factors/factors_a13_item_coverage.csv`.
+
+### 4.10 Accounting of the later stages (`ACCOUNTING`)
+
+`'time_resolved'` (adopted): the construction year carries the upfront
+emissions; `events.py` builds per typology a kernel K[i, j] (kg/m² of the
+cohort built in year i occurring in year j, each event component at its own
+factor in year j) and `engine.forward` adds gfa @ K to the carbon of year j.
+Events after 2050 and all C1–C4 of the 2026–2050 cohorts are committed
+emissions (`COMMITTED`): upper bound at 2025 factors, lower bound with the 2050
+factors held (no extrapolation beyond the last source year). At 2025 factors,
+upfront + in-window B + committed B + C1–C4 equals the whole-life total exactly
+(tested; `tools/reconciliation.py`). `'whole_life_at_construction'` books every
+stage in the construction year (baseline-pb-v2; with A4–A5 held it reproduces
+v2 exactly, tested) and is a sensitivity.
 
 ---
 
 ## 5. `Diagnostics.py`
 
 Runs `Boss.main()` once: household engines and the DHE/consent relationship
-(diag_2), the stock bucket (diag_3), floor area (diag_4), carbon (diag_5) and
+(diag_2), the stock bucket (diag_3), floor area (diag_4), carbon of the
+projection (diag_5; no historical carbon) and
 the vacancy-definition appendix (diag_3b). The history of the demand
 decomposition is one bar per census interval (interval means, one vacancy
 definition): between censuses annual detail is not identified. Accounting
@@ -228,10 +254,10 @@ identities and factor sums are checked in `tests/test_identities.py`.
 Re-runs `Boss.main()` with one setting changed per row: replacement scenarios
 and half-lives, mix, household-size variants and tails, dwelling-size window,
 completion rate and lag, census under-construction correction, near-term
-booking and gap reference, soil on replacement, and the decarbonisation rows of
-the adopted mode (`Sensitivity.DECARB_CASES`: frozen technology, plus STEEL at
-steel profile when the class-level mode is adopted; the item-level
-decarbonisation sensitivities are in the optional mode comparison). Population rows reuse Boss's 5th/95th paths;
+booking and gap reference, soil on replacement, and the decarbonisation and
+accounting rows (`Sensitivity.DECARB_CASES`: frozen technology, proxies held, NZ
+low-carbon-electricity items held, A4–A5 held, A4–A5 on the item paths, event
+timing L / n, whole life at construction). Population rows reuse Boss's 5th/95th paths;
 carbon-factor and soil-order rows re-weight the central floor area. Writes `outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`. One-at-a-time
 ranges are not additive.
 
@@ -244,33 +270,25 @@ dwelling-size multiplier, the completion rate (two-piece uniform with median
 0.95) and a stratified bootstrap of the carbon factors. Each draw runs the same
 `engine.py` chain; the central draw is checked against `Boss.main()` to 1e-9.
 With decarbonised materials (`DECARB_MODE`), the bootstrap also resamples each
-case study's A1–A3 reduction by year with the same resampled cases and
-multipliers, so the random stream and every 2025-factor draw are unchanged.
+case study's reduction by year, its event kernel and its event age profile with
+the same resampled cases and multipliers, so the random stream and every
+2025-factor draw are unchanged.
 Sobol first-order and total indices (reference scenario, 1,024 × 6
 evaluations). This is within-scenario parametric uncertainty only; scenario,
 mix, carbon-factor and soil bounds are reported separately (sens_1).
 
 ## 8. Validation, reports and run modes
 
-**Frozen-technology check.** The adopted run decarbonises materials
-(`DECARB_MODE = 'horup_item'`). `run_all.py` also runs Boss, Sensitivity,
-MonteCarlo, the scenario table and PB with `DECARB_MODE = 'none'` (environment
-`PATHWAY_FROZEN=1`) into `outputs/frozen/`; the v1.2.1 regression test compares
-that run, and its own recomputation of the central run and scenario totals
-under `'none'`, with v1.2.1 to 1e-9.
-
-**Mode comparison (optional, `run_all.py --compare-modes`).** Every other
-decarbonisation mode (now `'horup_class_v1_1'`) is run in full (Boss,
-Sensitivity, MonteCarlo, PB; environment `PATHWAY_DECARB_MODE=<mode>`) into
-`outputs/modes/<mode>/`, and `tools/decarb_modes.py` runs the item-level
-decarbonisation sensitivities (a Boss run per case; cumulative LoE against the
-stored reference boundaries) and writes `outputs/DECARB_MODES.md` and
-`decarb_modes.json`, stamped with the UTC time and git commit. The default run
-does not repeat it: RESULTS, BASELINE_DRAFT and PB_METHODS_DRAFT read the stored
-result, state its date and commit, and flag it as stale when the adopted-mode
-carbon differs from the current run. The class-level mode is checked against
-the baseline-PB_v1.1 outputs by `tests/test_regression_pb_v1_1.py` (exact
-equality; its file checks read the stored comparison run).
+**Frozen-technology check.** The adopted run decarbonises materials and
+resolves events in time. `run_all.py` also runs Boss, Sensitivity, MonteCarlo,
+the scenario table and PB with `DECARB_MODE = 'none'`, `DECARB_A45 = 'held'` and
+`ACCOUNTING = 'whole_life_at_construction'` (environment `PATHWAY_FROZEN=1`)
+into `outputs/frozen/`; the v1.2.1 regression test compares that run, and its
+own recomputation of the central run and scenario totals, with v1.2.1 to 1e-9,
+and `tests/test_v3.py` checks the whole-life accounting against baseline-pb-v2
+(`tests/regression_pb_v2.json`). The class-level decarbonisation mode and the
+`--compare-modes` comparison were removed in baseline-pb-v3 (CHANGELOG; results
+preserved at tags baseline-PB_v1.2 and baseline-PB_v2).
 
 **Quick mode** (`run_all.py --quick`, development only): 1,000 Monte Carlo draws
 per scenario, 128 Sobol base samples, no frozen-technology Monte Carlo, Monte
@@ -306,11 +324,15 @@ flowchart LR
     BAR & BATP & I & MCR --> OUT[(pb_annual / pb_mc_annual /<br/>pb_sensitivity .csv, pb_results.json, figures)]
 ```
 
-1. **History.** Sector emissions 1992-2025 = built floor area by typology x
-   the 2025 case-study factors, with soil only on the non-replacement floor
-   area, as in `engine.forward`: net replacement in year y = census-interval
-   rate x last year's stock x (1 - RV share) x dwelling size (2024-25: the
-   2018-23 rate carried). The mean 2016-2025 is Ī_sec,base.
+1. **History (at 2025 factors).** Sector emissions 1992-2025 = built floor
+   area by typology x the 2025 case-study factors, with soil only on the
+   non-replacement floor area, as in `engine.forward`: net replacement in year
+   y = census-interval rate x last year's stock x (1 - RV share) x dwelling
+   size (2024-25: the 2018-23 rate carried). The base follows the projection's
+   accounting rule (`PB.window_base`): upfront of the window's construction
+   plus the events within the window of cohorts built in it. The mean
+   2016-2025 is Ī_sec,base. Historical carbon is used only for the AR base and
+   the base-window sensitivity rows; no figure shows it outside the base window.
 2. **Acquired rights.** B_AR(t) = SOS (Ī_sec,base / I_glob) x population
    modifier relative to t0 = 2025 (NZ: model path; world: WPP 2024 median,
    dated 31 December as the mean of 1 July t and t+1).
@@ -329,7 +351,11 @@ flowchart LR
    on the observed history, so factor uncertainty enters base and projection
    alike.
 6. **Sensitivities** of cumulative LoE (reference scenario): source pair,
-   GDP measure, AR base window, NZ population source, s_sec definition.
+   GDP measure, AR base window, NZ population source, s_sec definition, the
+   decarbonisation and accounting rows, the wider B scope (events of all
+   cohorts since 1992 in base and projection) and α = 1.
+7. **Committed emissions** per scenario, in years of the 2050 AR boundary
+   (`pb_results.json` "committed", pb_6).
 
 Settings, sources and limitations: top of `PB.py` and ASSUMPTIONS.md; methods
 as implemented: `outputs/PB_METHODS_DRAFT.md`.

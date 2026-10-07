@@ -7,10 +7,13 @@ by typology, reason for building and material. How the model works:
 `outputs/BASELINE_DRAFT.md`. Figures: [FIGURES.md](FIGURES.md). Release notes:
 [CHANGELOG.md](CHANGELOG.md).
 
-This is baseline v2: a cleaned release of v1.2.1 with identical results
-(checked by `tests/test_regression_v1_2_1.py`). The full development history,
-including every option and document removed here, is at the git tag
-`baseline-v1.2.1`.
+This is baseline-pb-v3: replacements and repaints (B2, B4) resolved in time,
+committed post-2050 emissions, and A4–A5 decarbonisation (see CHANGELOG.md).
+With whole life at construction, A4–A5 held, it reproduces baseline-pb-v2
+exactly (`tests/test_v3.py`), and with frozen technology v1.2.1
+(`tests/test_regression_v1_2_1.py`). Options and documents removed in earlier
+releases are preserved at the git tags `baseline-v1.2.1`, `baseline-PB_v1.2` and
+`baseline-PB_v2`.
 
 ## Running
 
@@ -21,13 +24,7 @@ python run_all.py                      # full run; the only basis for reported r
 python run_all.py --quick              # development only: every output marked "QUICK RUN, not for reporting"
 ```
 
-The default full run takes about 15 minutes on a 4-core machine (measured: 925 s
-for baseline-pb-v2, including the frozen-technology check run; see `CHANGELOG.md`).
-`python run_all.py --compare-modes` additionally runs the class-level
-decarbonisation mode of baseline-pb-v1.1 in full and the item-level
-decarbonisation sensitivities (outputs/DECARB_MODES.md, stamped with date and
-commit; the generated documents read this stored result). The quick run time
-has not been re-measured since baseline-pb-v1.1 (about 6 minutes then). `--quick` uses 1,000 instead of 5,000 Monte Carlo draws per
+RUN_TIMES_PLACEHOLDER `--quick` uses 1,000 instead of 5,000 Monte Carlo draws per
 scenario and 128 Sobol base samples, skips the frozen-technology Monte Carlo and
 the Monte Carlo regression checks, and marks `metrics.json`, the generated
 documents and every figure as a quick run.
@@ -38,10 +35,11 @@ documents and every figure as a quick run.
 * `PB.py`, the planetary-boundary layer (climate change; acquired rights and
   ability to pay), which reads the model outputs and the Monte Carlo draws;
 * the validation harness (`validation.py`), `gap_2026.py` and the report tools
-  (`tools/`: near-term rule, scenarios, report figures);
-* a frozen-technology check run (`DECARB_MODE = 'none'`: Boss, Sensitivity,
-  MonteCarlo and the scenario table, written to `outputs/frozen/`, figures not
-  saved);
+  (`tools/`: near-term rule, scenarios, reconciliation of the accounting, report
+  figures);
+* a frozen-technology check run (`DECARB_MODE = 'none'`, A4–A5 held, whole life
+  at construction: Boss, Sensitivity, MonteCarlo, the scenario table and PB,
+  written to `outputs/frozen/`, figures not saved);
 * the tests (`tests/`, including the v1.2.1 regression test, which compares the
   frozen-technology run with v1.2.1);
 * metrics, `RESULTS.md`, `ASSUMPTIONS.md`, `outputs/BASELINE_DRAFT.md` and
@@ -114,7 +112,9 @@ rebuilt from a recorded download.
 The reference papers behind the PB layer (Bjørn & Hauschild 2015 with ESM1/ESM2; Sala et al. 2020 and
 corrigendum; Hjalsted et al. 2021 with SI; Horup et al. 2025; Andreasi Bassi et al. 2023; Clausen et
 al. 2025; the EC-JRC table of ILCD normalisation factors; the author's manuscript) are kept in `refs/`,
-which is git-ignored: the repository is public and the papers are copyrighted.
+which is git-ignored: the papers are copyrighted and are not distributed. The same folder holds
+Resch et al. 2021 (A4–A5 path, timing of replacement emissions) and Habert et al. 2020
+(time-resolved accounting of embodied emissions).
 
 **Documentation cited:** Stats NZ DataInfo+, "Dwelling occupancy status
 (information about this variable and its quality)", 2018 Census,
@@ -134,14 +134,15 @@ was accessed on 2026-09-29. It states:
 |---|---|
 | `engine.py` | the forward model (pure functions), shared by Boss and MonteCarlo |
 | `Boss.py` | central run: data, calibration, projection, reporting, figures `boss_01`-`boss_10` |
-| `Building_factors.py` | case-study carbon factors → `outputs/factors/` |
+| `Building_factors.py` | case-study carbon factors and pooled replacement / repaint events → `outputs/factors/` |
+| `events.py` | time-resolved B2/B4: event factors, kernels, committed post-2050 emissions |
 | `Diagnostics.py` | diagnostic figures `diag_2`-`diag_5`, appendix `diag_3b` |
 | `Sensitivity.py` | one-at-a-time sensitivities (`outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`) |
 | `MonteCarlo.py` | joint parametric uncertainty within S3-10, S1 and S2; Sobol indices (reference) |
-| `aesa.py`, `PB.py` | planetary-boundary layer: boundaries, levels of exceedance, figures `*_pb`, `pb_1`-`pb_5` |
+| `aesa.py`, `PB.py` | planetary-boundary layer: boundaries, levels of exceedance, figures `*_pb`, `pb_1`-`pb_6` |
 | `validation.py`, `gap_2026.py` | rolling-origin hindcast, 2026 out-of-sample check, 2026 gap decomposition |
-| `tools/` | near-term rule and scenario reports, report figures and FIGURES.md, metrics, RESULTS.md, ASSUMPTIONS.md, BASELINE_DRAFT.md |
-| `tests/` | accounting identities, census UC correction, soil, near-term rule, validation, and the v1.2.1 regression test (`regression_v1_2_1.json`) |
+| `tools/` | near-term rule and scenario reports, reconciliation of the accounting, report figures and FIGURES.md, metrics, RESULTS.md, ASSUMPTIONS.md, BASELINE_DRAFT.md, PB_METHODS_DRAFT.md |
+| `tests/` | accounting identities, census UC correction, soil, near-term rule, validation, events and committed emissions (`test_v3.py`), and the regression tests against v1.2.1 (`regression_v1_2_1.json`) and baseline-pb-v2 (`regression_pb_v2.json`) |
 | `data/` | inputs and the scripts that build `data/derived/` from `data/raw/` |
 
 Note: `data/raw/national_population_estimates_june_2026.html` is the release

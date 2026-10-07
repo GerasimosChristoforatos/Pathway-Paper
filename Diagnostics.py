@@ -32,6 +32,7 @@ from scipy import stats
 
 import Boss as M
 import engine
+import figaudit
 import validation
 # Interactive consoles (Spyder, IPython, Jupyter) keep an imported module alive
 # between runs, so an edited Boss.py would otherwise be ignored. Always reload.
@@ -186,6 +187,7 @@ def finish(fig, name, note=None):
         fig.tight_layout()
     if SAVE_FIGURES:
         os.makedirs(FIG_DIR, exist_ok=True)
+        figaudit.record(fig, name)
         fig.savefig(os.path.join(FIG_DIR, name), dpi=130, bbox_inches='tight')
 
 
@@ -403,28 +405,28 @@ MI, SI, TB = B['MAT_INTENSITY'], B['SOIL_INTENSITY'], B['T_BASELINE_2025']
 mats = list(MI.index)
 STYLE = {col: (lab, colour) for col, lab, colour in M.MATERIAL_STYLE}
 fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
-fig.suptitle('5. Embodied carbon (A1-A5, B2, B4, C1-C4 + soil). History estimated with '
-             '2025 case-study factors', fontsize=12)
+_acc = ('time-resolved: upfront (A1-A5 + soil) at construction + replacements & repaints in the year they occur'
+        if B['TIME_RESOLVED'] else 'A1-A5, B2, B4, C1-C4 + soil, booked at construction')
+fig.suptitle(f'5. Embodied carbon 2026-2050 ({_acc}). No historical carbon: only 2025 factors exist',
+             fontsize=11.5)
 
 a = ax[0, 0]
-car_h = pd.DataFrame({t: typ_h[t] * TB[t] for t in TYP})
 car_f = B['carbon_total_typ'].loc[PF]
-M.stack_typologies(a, YH, [car_h[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.95)
-M.stack_typologies(a, PF, [car_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], alpha=0.5)
-tidy(a, 'Annual carbon by typology', 'kt CO₂e per year')
-a.legend(loc='upper left')
+M.stack_typologies(a, PF, [car_f[t] / M6 for t in TYP], colors=[TC[t] for t in TYP], labels=TYP, alpha=0.85)
+tidy(a, 'Annual carbon by typology', 'kt CO₂e per year', xlim=(2026, 2050))
+a.legend(loc='upper right')
 
 a = ax[0, 1]
-mat_h = pd.DataFrame({m: sum(typ_h[t] * MI.loc[m, t] for t in TYP) for m in mats})
-mat_h['SOIL'] = sum(typ_h[t] * SI[t] for t in TYP)
-handles = M.stack_materials(a, YH, mat_h, M6, alpha=0.95)
-M.stack_materials(a, PF, B['flow_annual'], M6, alpha=0.5)
-tidy(a, 'Annual carbon by material (soil = land-use change)', 'kt CO₂e per year')
-a.legend(handles=handles, loc='upper left', ncol=2)
+handles = M.stack_materials(a, PF, B['flow_annual'], M6,
+                            frame_b=B['flow_annual_b'] if B['TIME_RESOLVED'] else None)
+tidy(a, 'Annual carbon by material (soil = land-use change)', 'kt CO₂e per year', xlim=(2026, 2050))
+a.legend(handles=handles, loc='upper right', ncol=2, fontsize=7)
 
 a = ax[1, 0]
 fc = B['flow_cum']
-a.legend(handles=M.stack_materials(a, fc.index, fc, M6), loc='upper left', ncol=2)
+a.legend(handles=M.stack_materials(a, fc.index, fc, M6,
+                                   frame_b=B['flow_annual_b'].cumsum() if B['TIME_RESOLVED'] else None),
+         loc='upper left', ncol=2, fontsize=7)
 tidy(a, f'Cumulative carbon 2026-2050: {fc.iloc[-1].sum() / M6:,.0f} kt', 'kt CO₂e',
      xlim=(2026, 2050))
 
@@ -437,8 +439,9 @@ for col, lab, colour in M.MATERIAL_STYLE:
     bottom += v
 for k, t in enumerate(TYP):
     a.text(k, TB[t] + 8, f'{TB[t]:.0f}', ha='center', fontweight='bold')
-a.set_title('2025 case-study intensity (16 buildings)' +
-            (', held constant' if B['DECARB'] is None else ';\nA1-A3 decarbonised from 2026 (Horup et al. 2025)'))
+a.set_title('2025 case-study intensity, whole life (16 buildings)' +
+            (', held constant' if B['DECARB'] is None else
+             ';\nA1-A3 decarbonised from 2026 (Horup et al. 2025), A4-A5 1%/yr (Resch et al. 2021)'))
 a.set_ylabel('kg CO₂e per m²')
 a.legend(handles=handles[::-1], loc='upper left', fontsize=7)
 finish(fig, 'diag_5_carbon.png')

@@ -4,9 +4,12 @@ supplied tables; events per line equal the counts and add up to the line B2/B4;
 within-window + committed (2025 factors) = whole-life total; the
 whole-life-at-construction accounting with A4-A5 held reproduces baseline-pb-v2
 and 'none' the frozen anchor (tests/regression_pb_v2.json, tag baseline-PB_v2);
-soil unchanged; the A4-A5 path is Resch et al.'s e^(-0.01 (t - 2025))."""
+soil unchanged; the A4-A5 path is Resch et al.'s e^(-0.01 (t - 2025)); FIGURES.md lists
+exactly the figure files; no figure shows carbon before 2026 except the AR base
+window of mc_1_fan_pb (at 2025 factors)."""
 import json
 import os
+import re
 
 import numpy as np
 import pandas as pd
@@ -118,3 +121,35 @@ def test_committed_range_ordered():
     c = run_boss()['COMMITTED']
     assert c['B_lower_kt'] < c['B_upper_kt'] and c['lower_kt'] < c['upper_kt']
     assert c['C_kt'] > 0 and c['B_inwindow_kt'] > 0
+
+
+def test_figures_md_matches_the_files():
+    """FIGURES.md lists exactly the PNG files in outputs/figures (written by
+    tools/figures_report.py, which also refuses to finish otherwise)."""
+    fig_dir = os.path.join(ROOT, 'outputs', 'figures')
+    files = {f for f in os.listdir(fig_dir) if f.endswith('.png')}
+    listed = set(re.findall(r'`([^`]+\.png)`', open(os.path.join(ROOT, 'FIGURES.md'), encoding='utf-8').read()))
+    assert files and listed == files, (sorted(files - listed), sorted(listed - files))
+
+
+CARBON_AXIS = re.compile(r'CO₂|CO2|carbon|LoE|exceedance|\bkt\b|\bMt\b', re.I)
+
+
+def test_no_historical_carbon_in_figures():
+    """No figure shows carbon before the projection (from 2026), except mc_1_fan_pb,
+    which shows the AR base window at 2025 factors (figaudit records, written when
+    each figure is saved)."""
+    import PB
+    audit = os.path.join(ROOT, 'outputs', 'figures', '_audit')
+    files = {f[:-4] for f in os.listdir(os.path.join(ROOT, 'outputs', 'figures')) if f.endswith('.png')}
+    recs = {f[:-5]: json.load(open(os.path.join(audit, f))) for f in os.listdir(audit) if f.endswith('.json')}
+    assert files <= set(recs), sorted(files - set(recs))         # every saved figure audited
+    allowed = {'mc_1_fan_pb': PB.AR_BASE_WINDOW[0]}
+    bad = []
+    for name in files:
+        for ax in recs[name]['axes']:
+            if ax['year_min'] is None or not CARBON_AXIS.search(ax['ylabel'] + ' ' + ax['title']):
+                continue
+            if ax['year_min'] < allowed.get(name, 2026):
+                bad.append((name, ax['title'][:50], ax['ylabel'][:40], ax['year_min']))
+    assert not bad, bad

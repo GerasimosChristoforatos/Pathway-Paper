@@ -41,6 +41,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT_DIR)
 sys.path.insert(0, os.path.join(ROOT_DIR, 'tools'))
 import aesa  # noqa: E402
+import figaudit  # noqa: E402
 import Boss  # noqa: E402
 import MonteCarlo as MC  # noqa: E402
 import validation  # noqa: E402
@@ -259,7 +260,7 @@ def window_base(B, window, after=HIST_RATE_AFTER_LAST_CENSUS, col='I_sec_kg', sc
     """Ī_sec,base over window, same accounting rule as the projection: upfront of the
     window's construction + the events, within the window, of the buildings built in it
     (scope 'since_1992': of every cohort since Boss.B_SCOPE_START), at 2025 factors."""
-    ef = Boss.B_SCOPE_START if (scope or Boss.B_SCOPE) == 'since_1992' else window[0]
+    ef = Boss.B_SCOPE_START if scope == 'since_1992' else window[0]
     h = historical_emissions(B, range(HIST_START, 2026), after, events_from=ef)
     return aesa.mean_over(h[col], window), h
 
@@ -757,8 +758,21 @@ SOURCE_CHECK = [
 LIMITATIONS = [
     'Static carrying capacity: the carrying capacities are constant yearly values modelled at steady state and '
     'their timespan may not match the assessment period (Clausen et al. 2025, pp. 143 and 148).',
-    'B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future '
-    'maintenance and end-of-life emissions of the buildings built in those years (to be revisited).',
+    ('Accounting (time-resolved): the sector impact of 2026-2050 counts upfront emissions (A1-A5 and soil) in '
+     'the construction year and replacement / repaint events (B2, B4) in the year they occur. Events after 2050 '
+     'and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed emissions outside the window; '
+     'they are reported as a range (pb_results.json "committed", pb_6) in years of the 2050 AR boundary and are '
+     'not compared with the 2026-2050 boundary. Whole life at construction is a sensitivity.'
+     if Boss.ACCOUNTING == 'time_resolved' else
+     'B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future '
+     'maintenance and end-of-life emissions of the buildings built in those years.'),
+    'History at 2025 factors: the acquired-rights base (2016-2025) and the base-window sensitivities use the '
+    '2025 case-study factors because no historical factor series exists for the case studies. If past production '
+    'was more carbon-intensive than in 2025 (as the ~1%/yr technological progress assumed by Resch et al. 2021 '
+    'implies), the base and hence the AR boundary are understated and the AR exceedance overstated '
+    '(conservative); the size of this effect is not quantified. The base follows the '
+    'projection\'s accounting rule (upfront of the window\'s construction plus the events within the window of '
+    'cohorts built in it).',
     'The primary SOS (6.81E12) is the 2 °C carrying capacity of Bjørn & Hauschild (2015), not the 1 W/m² '
     'planetary boundary (3.61E12, sensitivity C). Sala et al. (2020, Table 3) label 6.81E12 as radiative forcing '
     'after Rockström et al. (2009), which does not match its derivation in Bjørn & Hauschild (2015).',
@@ -793,6 +807,7 @@ LIMITATIONS = [
 def _save(fig, name):
     if SAVE_FIGURES:
         os.makedirs(FIG_DIR, exist_ok=True)
+        figaudit.record(fig, name)
         fig.savefig(os.path.join(FIG_DIR, f'{name}.png'), dpi=130, bbox_inches='tight')
         plt.close(fig)
 
@@ -804,9 +819,9 @@ def _boundary_lines(ax, years, b_ar, b_atp, scale=M6, label=True, cumulative=Fal
     t = np.asarray(b_atp, float) / scale
     if cumulative:
         a, t = np.cumsum(a), np.cumsum(t)
-    ax.plot(years, a, color=AR_COLOR, lw=2.2, path_effects=HALO,
+    ax.plot(years, a, color=AR_COLOR, lw=2.2, path_effects=HALO, gid=figaudit.BOUNDARY,
             label='boundary, acquired rights (AR)' if label else None)
-    ax.plot(years, t, color=ATP_COLOR, lw=2.2, ls='--', path_effects=HALO,
+    ax.plot(years, t, color=ATP_COLOR, lw=2.2, ls='--', path_effects=HALO, gid=figaudit.BOUNDARY,
             label='boundary, ability to pay (AtP)' if label else None)
     for v, c, nm in ((a, AR_COLOR, 'AR'), (t, ATP_COLOR, 'AtP')):
         ax.annotate(f'{nm} {v[-1]:,.0f}' if v[-1] >= 10 else f'{nm} {v[-1]:,.1f}', (years[-1], v[-1]),
@@ -843,25 +858,6 @@ def pb_tornado(s, ref, name, note=None):
              'enter a principle (e.g. GDP measure for AR) show no change.' + (f' {note}' if note else ''),
              ha='center', fontsize=8.5, style='italic')
     _save(fig, name)
-
-
-def historical_demand_carbon(B, hist):
-    """Historical carbon by demand type, one mean per census interval: the in-scope
-    floor area by demand type of validation.hist_demand_intervals, with the
-    interval's materials carbon (2025 factors, PB.historical_emissions) shared by
-    floor area and its soil carbon shared among the non-replacement bands. The
-    bands add up to the interval mean of I_sec. Returns [(y0, y1, [(label, kg, colour)])]."""
-    out = []
-    for y0, y1, parts in validation.hist_demand_intervals(B):
-        h = hist.loc[max(y0 + 1, HIST_START):y1]
-        if h.empty:
-            continue
-        mat, soil = float(h['materials_kg'].mean()), float(h['soil_kg'].mean())
-        tot = sum(v for _, v, _ in parts)
-        nonrep = sum(v for lab, v, _ in parts if lab != Boss.REPL_LABEL)
-        out.append((y0, y1, [(lab, mat * v / tot + (0.0 if lab == Boss.REPL_LABEL else soil * v / nonrep), col)
-                             for lab, v, col in parts]))
-    return out
 
 
 def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell):
@@ -924,13 +920,21 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     for key, lab, _, col in FR.SCEN:
         I = runs[key]['I'].loc[py]
         a1.plot(py, I / M6, color=col, lw=2 if key == 'S3-10' else 1.3, label=lab)
+    _r = runs['S3-10']
+    if _r['b_inwindow'].loc[py].sum() > 0:
+        a1.fill_between(py, (_r['I'] - _r['b_inwindow']).loc[py] / M6, _r['I'].loc[py] / M6,
+                        color=Boss.EVENTS_COLOR, alpha=0.55, lw=0, label=f'Reference: {Boss.EVENTS_LABEL.lower()}')
     _boundary_lines(a1, py, bar_, batp_)
     a1.set_ylim(0, None); a1.set_xlim(2026, 2051.5)
     a1.set_title('Annual embodied carbon by scenario vs boundaries'); a1.set_ylabel('kt CO₂e per year')
     a1.grid(alpha=0.3); a1.legend(fontsize=7.5, loc='upper center', bbox_to_anchor=(0.5, -0.07), ncol=3)
     ks = [k for k, *_ in FR.SCEN]
     short = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
-    a2.bar(range(len(ks)), [runs[k]['I'].loc[py].sum() / M6 for k in ks], color=[c for *_, c in FR.SCEN])
+    _bi = [runs[k]['b_inwindow'].loc[py].sum() / M6 for k in ks]
+    _up = [runs[k]['I'].loc[py].sum() / M6 - b for k, b in zip(ks, _bi)]
+    a2.bar(range(len(ks)), _up, color=[c for *_, c in FR.SCEN], label='construction year (upfront)')
+    a2.bar(range(len(ks)), _bi, bottom=_up, color=Boss.EVENTS_COLOR, alpha=0.8, label=Boss.EVENTS_LABEL.lower())
+    a2.legend(fontsize=7.5, loc='lower right')
     for v, c, ls, nm in ((bar_.sum() / M6, AR_COLOR, '-', 'AR'), (batp_.sum() / M6, ATP_COLOR, '--', 'AtP')):
         a2.axhline(v, color=c, ls=ls, lw=2, path_effects=HALO)
         a2.annotate(f'cumulative boundary {nm}: {v:,.0f} kt', (len(ks) - 0.5, v), xytext=(0, 3),
@@ -944,8 +948,10 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
 
     # ---- mc_1_fan_pb -------------------------------------------------------------
     fig, ax = plt.subplots(figsize=(11, 5.6))
-    h = hist['I_sec_kg']
-    ax.plot(h.index, h / M6, color='black', lw=2, label='history, same soil convention as the projection')
+    h = hist.loc[AR_BASE_WINDOW[0]:AR_BASE_WINDOW[1], 'I_sec_kg']           # only where the AESA needs it
+    ax.plot(h.index, h / M6, color='black', lw=2,
+            label=f'AR base window {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]}: sector carbon at 2025 factors '
+                  '(same accounting as the projection)')
     ax.axvspan(AR_BASE_WINDOW[0] - 0.5, AR_BASE_WINDOW[1] + 0.5, color='#F1C40F', alpha=0.12,
                label=f'AR base window {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]}')
     blue = MC.BLUE
@@ -975,8 +981,9 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     fig = plt.figure(figsize=(17, 6))
     gs = fig.add_gridspec(1, 3, width_ratios=[1.3, 1, 1.1])
     a = fig.add_subplot(gs[0])
-    a.plot(yb, b_ar.loc[yb] / M6, color=AR_COLOR, lw=2.2, label='B_AR (acquired rights)')
-    a.plot(yb, b_atp.loc[yb] / M6, color=ATP_COLOR, lw=2.2, ls='--', label='B_AtP (ability to pay)')
+    a.plot(yb, b_ar.loc[yb] / M6, color=AR_COLOR, lw=2.2, label='B_AR (acquired rights)', gid=figaudit.BOUNDARY)
+    a.plot(yb, b_atp.loc[yb] / M6, color=ATP_COLOR, lw=2.2, ls='--', label='B_AtP (ability to pay)',
+           gid=figaudit.BOUNDARY)
     a.set_yscale('log'); a.grid(alpha=0.3, which='both'); a.legend(fontsize=8)
     for s, c in ((b_ar, AR_COLOR), (b_atp, ATP_COLOR)):
         for y in (T0, PB_YEARS[1]):
@@ -1017,15 +1024,59 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
             I = runs[name]['I'].loc[py]
             bb = b_ar if k == 'AR' else b_atp
             a.plot(py, I / bb.loc[py], color=col, lw=2, label=f'{lab}; band MC 5-95%')
+        _r = runs['S3-10']
+        if _r['b_inwindow'].loc[py].sum() > 0:
+            bb = b_ar if k == 'AR' else b_atp
+            a.plot(py, (_r['I'] - _r['b_inwindow']).loc[py] / bb.loc[py], color='#C0392B', lw=1.2, ls=':',
+                   label='Reference without in-window replacements & repaints')
         a.axhline(1, color='black', lw=1.2, ls='--', label='LoE = 1 (boundary)')
         a.set_yscale('log'); a.grid(alpha=0.3, which='both'); a.set_title(f'Level of exceedance, {ttl}')
         a.set_xlim(2026, 2050)
     ax[0].set_ylabel('LoE = annual carbon / boundary (log scale)'); ax[0].legend(fontsize=8)
     fig.tight_layout(rect=(0, 0.05, 1, 1))
     fig.text(0.5, 0.01, f"{pair['label']}. Log axis: LoE_AtP is {1 / res['B_AtP_over_B_AR']['min']:.1f} x LoE_AR "
-             'in every year. MC bands: within-scenario uncertainty (population, dwelling size, completion, carbon factors).',
-             ha='center', fontsize=8.5, style='italic')
+             'in every year. MC bands: within-scenario uncertainty (population, dwelling size, completion, carbon factors). '
+             f'Carbon: {_factor_note}.', ha='center', fontsize=8, style='italic', wrap=True)
     _save(fig, 'pb_2_loe')
+
+    # ---- pb_6_committed: within-window carbon vs boundaries, and what is committed after 2050 ----
+    com = res.get('committed') or {}
+    if com:
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ks = [k for k, *_ in FR.SCEN if k in com]
+        x = np.arange(len(ks))
+        up = [(runs[k]['I'] - runs[k]['b_inwindow']).loc[py].sum() / M6 for k in ks]
+        bi = [runs[k]['b_inwindow'].loc[py].sum() / M6 for k in ks]
+        cols = {k: c for k, _, _, c in FR.SCEN}
+        ax.bar(x - 0.2, up, 0.38, color=[cols[k] for k in ks], label='within 2026-2050: upfront at construction')
+        ax.bar(x - 0.2, bi, 0.38, bottom=up, color=Boss.EVENTS_COLOR, alpha=0.85,
+               label=f'within 2026-2050: {Boss.EVENTS_LABEL.lower()}')
+        lo = [com[k]['lower_kt'] for k in ks]
+        hi = [com[k]['upper_kt'] for k in ks]
+        ax.bar(x + 0.2, lo, 0.38, color='#BDC3C7', edgecolor='#7F8C8D', hatch='//',
+               label='committed after 2050 (later replacements & repaints + end of life), lower bound')
+        ax.bar(x + 0.2, np.subtract(hi, lo), 0.38, bottom=lo, color='white', edgecolor='#7F8C8D', hatch='..',
+               label='committed after 2050, range to the upper bound (2025 factors)')
+        for i, k in enumerate(ks):
+            c = com[k]
+            ax.annotate(f"{c['lower_kt']:,.0f}-{c['upper_kt']:,.0f} kt\n= {c['years_of_B_AR_2050_lower']:.0f}-"
+                        f"{c['years_of_B_AR_2050_upper']:.0f} years of\nthe 2050 AR boundary",
+                        (x[i] + 0.2, hi[i]), xytext=(0, 4), textcoords='offset points', ha='center', fontsize=8)
+        for v, c, ls, nm in ((bar_.sum() / M6, AR_COLOR, '-', 'AR'), (batp_.sum() / M6, ATP_COLOR, '--', 'AtP')):
+            ax.axhline(v, color=c, ls=ls, lw=2, path_effects=HALO)
+            ax.annotate(f'cumulative boundary 2026-2050, {nm}: {v:,.0f} kt', (len(ks) - 0.45, v), xytext=(0, 3),
+                        textcoords='offset points', ha='right', fontsize=8, color='#333333')
+        short = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
+        ax.set_xticks(x); ax.set_xticklabels([short[k] for k in ks])
+        ax.set_ylabel('kt CO₂e'); ax.set_ylim(0, 1.25 * max(np.add(up, bi).max(), max(hi)))
+        ax.set_title('Cumulative carbon within 2026-2050 vs cumulative boundaries, and emissions committed after 2050')
+        ax.grid(alpha=0.3, axis='y'); ax.legend(fontsize=7.5, loc='upper left')
+        fig.tight_layout(rect=(0, 0.07, 1, 1))
+        fig.text(0.5, 0.01, 'Committed after 2050: the 2026-2050 cohorts\' later replacements and repaints and all their '
+                 'end of life (C1-C4, held at 2025). Lower bound: A1-A3 and A4-A5 shares at their 2050 factors, held '
+                 'after 2050 (no extrapolation); upper bound: 2025 factors. Years of boundary = committed / B_AR(2050). '
+                 + cap, ha='center', fontsize=7.5, style='italic', wrap=True)
+        _save(fig, 'pb_6_committed')
 
     # ---- pb_3_headroom -------------------------------------------------------------------
     I = runs['S3-10']['I'].loc[py]
@@ -1067,39 +1118,18 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     pb_tornado(top_rows(s, TOP_N), ref, 'pb_4_sensitivity',
                note=f'The {TOP_N} largest effects (largest |% change| of AR or AtP); all rows: pb_4_sensitivity_SI.')
 
-    # ---- pb_5_demand_vs_boundary: history by demand type + projection vs the boundaries ----
+    # ---- pb_5_demand_vs_boundary: projection by demand type vs the boundaries (no historical carbon) ----
     fig, ax = plt.subplots(figsize=(13, 6.5))
-    hp = historical_demand_carbon(B, hist)
-    for i, (y0, y1, parts) in enumerate(hp):
-        up = dn = 0.0
-        faint = i == len(hp) - 1                                   # after the latest census
-        for lab, v, col in parts:
-            v = v / M6                                              # kg -> kt
-            kw = dict(width=y1 - y0, align='edge', color=col, alpha=0.2 if faint else 0.4, edgecolor='white',
-                      linewidth=0.6)
-            ax.bar(y0 + 0.5, v, bottom=up if v >= 0 else dn, **kw)
-            if v >= 0:
-                up += v
-            else:
-                dn += v
-    hy = hist.index[(hist.index >= HIST_START) & (hist.index <= 2025)]
-    ax.plot(hy, hist.loc[hy, 'I_sec_kg'] / M6, color='black', lw=1.2, alpha=0.7,
-            label='sector carbon, observed building (2025 factors), annual')
     Boss.plot_demand_bands(ax, py, *B['fig_bands']['carbon'])
     yb = np.asarray([y for y in b_ar.index if y >= T0])
     _boundary_lines(ax, yb, b_ar.loc[yb].values, b_atp.loc[yb].values)
     ax.axvline(2025.5, color='grey', ls=':', lw=1)
     ax.axhline(0, color='black', lw=0.7)
-    ax.set_ylabel('kt CO₂e per year'); ax.set_xlim(HIST_START - 0.5, 2051.5); ax.grid(alpha=0.3)
-    ax.set_title(f'Annual carbon by demand type vs the boundaries: history {HIST_START}-2025 (faded, one bar per '
-                 'census interval) and projection, reference S3-10')
+    ax.set_ylabel('kt CO₂e per year'); ax.set_xlim(2024.5, 2051.5); ax.grid(alpha=0.3)
+    ax.set_title('Annual carbon by demand type vs the boundaries, reference S3-10 (2026-2050)')
     Boss.demand_legend(ax)
     fig.tight_layout(rect=(0, 0.07, 1, 1))
-    fig.text(0.5, 0.01, cap + ' History: floor area by demand type per census interval (interval means; annual '
-             'detail not identified between censuses; last bar 2024-25 with consent-derived households), carbon at '
-             '2025 case-study factors, soil on the non-replacement bands (PB.historical_emissions); a negative interval '
-             'mean (vacancy falling, or replacement below zero in the household identity) is drawn below zero; the '
-             'black line is the annual total. Boundaries from 2025.', ha='center', fontsize=8, style='italic', wrap=True)
+    fig.text(0.5, 0.01, cap + ' Boundaries from 2025.', ha='center', fontsize=8, style='italic', wrap=True)
     _save(fig, 'pb_5_demand_vs_boundary')
     if not SAVE_FIGURES:
         plt.show()

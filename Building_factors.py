@@ -91,11 +91,12 @@ OUT_A45_ITEM = os.path.join(OUT_DIR, 'factors_a45_item.csv')        # A4-A5 on i
 # Relative change of GWP per unit of material production versus 2025: Horup et
 # al. (2025), Sci. Total Environ. 966, 178780, Fig. 2 and Supplementary Table S4
 # (average of the 9 premise scenarios; 2025, 2030, 2040, 2050), built by
-# data/build_horup.py. Applied to A1-A3 only (Horup's scope); A4-A5, B2, B4,
-# C1-C4 and soil are never changed (author decision). Between Horup's years the
+# data/build_horup.py. Applied to A1-A3 (Horup's scope), of construction and of
+# the A1-A3 share of replacement / repaint events; A4-A5 follows the generic
+# path below; C1-C4 and soil are never changed (author decision). Between Horup's years the
 # path is interpolated linearly (author decision; Horup state 'interpolated'
-# without naming the method, p. 3). (The class-level mapping of baseline-pb-v1.1,
-# 'horup_class_v1_1', is preserved at tags baseline-PB_v1.2 / baseline-PB_v2.)
+# without naming the method, p. 3). (The class-level mapping of baseline-pb-v1.1
+# was removed in baseline-pb-v3; it is preserved at tags baseline-PB_v1.2 / baseline-PB_v2.)
 FILE_HORUP = os.path.join(DATA_DIR, 'derived', 'horup2025_table_s4.csv')
 DECARB_YEARS = list(range(2025, 2051))
 DECARB_KNOTS = (2025, 2030, 2040, 2050)
@@ -123,10 +124,13 @@ DECARB_MODES = ('none', 'horup_item')
 # A4-A5 DECARBONISATION (Boss.DECARB_A45)
 # ---------------------------------------------------------------------------
 # A4-A5 cannot be separated by material process in the case-study data, so it
-# follows a generic technological-progress factor: Resch E, Wiik MK, Tellnes LGF,
-# Andresen I, Selvig E, Stoknes S (2021), Building and Environment 187, 107399,
-# Table 1 (p. 4): production e^(-0.01 y), 'a ~1% yearly improvement' (half-life
-# 69 years); y = years after 2025. The source gives an exponential decay, so
+# follows a generic technological-progress factor: Resch E, Andresen I, Cherubini F,
+# Brattebø H (2021), Building and Environment 187, 107399, Table 1 (p. 4):
+# production e^(-0.01 y), 'a ~1% yearly improvement' (half-life 69 years). Resch et
+# al. count y from the year of construction and apply it to future (B, C) emissions;
+# here y = calendar years after 2025, applied to the A4-A5 of construction and of
+# events in 2026-2050 (an adaptation, stated in ASSUMPTIONS). The source gives an
+# exponential decay, so
 # e^(-0.01 (t - 2025)) is used rather than (1 - 0.01)^(t - 2025) (difference 0.1
 # percentage point by 2050: -22.1% vs -22.2%). Resch et al. apply 2%/yr to
 # transport (Table 1); A4-A5 also contains installation and wastage, so the 1%

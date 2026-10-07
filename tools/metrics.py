@@ -90,7 +90,10 @@ def pb_metrics(out_dir):
              cum_LoE_AR_S3_10=r['deterministic']['S3-10']['LoE_AR'],
              cum_LoE_AtP_S3_10=r['deterministic']['S3-10']['LoE_AtP'],
              source_pair=r['settings']['SOURCE_PAIR'], source_pair_label=c['pair_label'],
-             decarb_mode=r['settings'].get('DECARB_MODE', 'none'))
+             decarb_mode=r['settings'].get('DECARB_MODE', 'none'),
+             accounting=c.get('accounting', 'whole_life_at_construction'), decarb_a45=c.get('decarb_a45', 'held'),
+             I_sec_base_b_share=c.get('I_sec_base_b_share'), I_sec_base_wider_scope_kt=(
+                 c['I_sec_base_wider_scope_kg'] / 1e6 if c.get('I_sec_base_wider_scope_kg') is not None else None))
     for k in ('AR', 'AtP'):
         for p in (5, 50, 95):
             m[f'cum_LoE_{k}_S3_10_mc_p{p}'] = mc[f'LoE_{k}_p{p}']

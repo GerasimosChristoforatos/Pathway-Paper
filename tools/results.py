@@ -26,10 +26,12 @@ def main():
          'Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demographics unless '
          'marked MC (joint uncertainty within the reference scenario). Carbon factors: '
          + {'none': '2025 case-study values held (frozen technology).',
-            'horup_class_v1_1': 'A1-A3 of mapped materials decarbonised 2026-2050 (Horup et al. 2025); other '
-                                'stages and soil at 2025.',
             'horup_item': 'A1-A3 of case-study items decarbonised 2026-2050 (Horup et al. 2025; item-level mapping, '
-                          'data/material_item_map.csv); other stages, held items and soil at 2025.'}[(m.get('pb') or {}).get('decarb_mode', 'none')], '',
+                          'data/material_item_map.csv); A4-A5 e^(-0.01 (t - 2025)) (Resch et al. 2021); C1-C4, held '
+                          'items and soil at 2025.'}[(m.get('pb') or {}).get('decarb_mode', 'none')]
+         + (' Accounting: time-resolved (upfront in the construction year, replacements and repaints in the year '
+            'they occur within 2026-2050; later events and end of life are committed emissions, below).'
+            if (m.get('pb') or {}).get('accounting') == 'time_resolved' else ''), '',
          '| metric | value |', '|---|---|']
     for key, label, fmt in FIELDS:
         v = get(m, key)
@@ -60,31 +62,24 @@ def main():
         for k, v in pb['cum_LoE_mc'].items():
             L.append(f"| {SCEN_NAME.get(k, k)} | {v['LoE_AR_p5']:.2f} / {v['LoE_AR_p50']:.2f} / {v['LoE_AR_p95']:.2f} | "
                      f"{v['LoE_AtP_p5']:.1f} / {v['LoE_AtP_p50']:.1f} / {v['LoE_AtP_p95']:.1f} |")
-    dp = os.path.join(ROOT, 'outputs', 'decarb_modes.json')
-    if os.path.exists(dp):
-        with open(dp) as f:
-            dm = json.load(f)
-        from decarb_modes import provenance_note, stale
-        typ = list(next(iter(dm['modes'].values()))['a13_reduction_2050'])
-        L += ['', f"## Material decarbonisation modes (adopted: {dm['adopted']}; reference S3-10)", '',
-              f"Stored result of the optional step: {provenance_note(dm)}."
-              + (' **STALE: the adopted-mode carbon differs from this run; re-run `python run_all.py '
-                 '--compare-modes`.**' if stale(dm) else ''), '',
-              '| mode | carbon (kt) | upfront (kt) | MC carbon p5 / p50 / p95 (kt) | cum. LoE AR | cum. LoE AtP | '
-              'MC LoE AR p5 / p50 / p95 | MC LoE AtP p5 / p50 / p95 | A1-A3 by 2050 (' + ', '.join(typ)
-              + ') | whole factor by 2050 (' + ', '.join(typ) + ') |', '|---|---|---|---|---|---|---|---|---|---|']
-        for mode, r in dm['modes'].items():
-            mc, pbm = r.get('mc'), r.get('pb')
-            mcs = (f"{mc['carbon_kt']['p5']:,.0f} / {mc['carbon_kt']['p50']:,.0f} / {mc['carbon_kt']['p95']:,.0f}"
-                   if mc else 'n/a')
-            det = f"{pbm['det']['LoE_AR']:.2f} | {pbm['det']['LoE_AtP']:.1f}" if pbm else 'n/a | n/a'
-            pm = (pbm or {}).get('mc')
-            mcl = (f"{pm['LoE_AR_p5']:.2f} / {pm['LoE_AR_p50']:.2f} / {pm['LoE_AR_p95']:.2f} | "
-                   f"{pm['LoE_AtP_p5']:.1f} / {pm['LoE_AtP_p50']:.1f} / {pm['LoE_AtP_p95']:.1f}" if pm else 'n/a | n/a')
-            L.append(f"| {mode} | {r['carbon_kt']:,.0f} | {r['upfront_kt']:,.0f} | {mcs} | {det} | {mcl} | "
-                     + ', '.join(f"{-100 * r['a13_reduction_2050'][t]:.1f}%" for t in typ) + ' | '
-                     + ', '.join(f"{-100 * r['whole_factor_reduction_2050'][t]:.1f}%" for t in typ) + ' |')
-        L += ['', 'Sensitivities, item coverage and S4 rows: outputs/DECARB_MODES.md.']
+    pp = os.path.join(ROOT, 'outputs', 'pb_results.json')
+    if os.path.exists(pp):
+        with open(pp) as f:
+            cm = json.load(f).get('committed') or {}
+        if cm:
+            L += ['', '## Within 2026-2050 and committed after 2050 (deterministic, kt CO2e)', '',
+                  'Committed: events after 2050 (lower: 2050 factors held; upper: 2025 factors) and all C1-C4 '
+                  '(2025 factors) of the 2026-2050 cohorts; in years of the 2050 AR boundary. Reconciliation with '
+                  'whole life at construction: outputs/reconciliation.md.', '',
+                  '| scenario | B2/B4 within window | share of window carbon | committed B2/B4 | committed C1-C4 | '
+                  'committed total | years of the 2050 AR boundary |', '|---|---|---|---|---|---|---|']
+            for k in ('S1', 'S3-10', 'S2'):
+                if k in cm:
+                    c = cm[k]
+                    L.append(f"| {SCEN_NAME[k]} | {c['b_inwindow_kt']:,.0f} | {100 * c['b_share_inwindow']:.1f}% | "
+                             f"{c['B_lower_kt']:,.0f}-{c['B_upper_kt']:,.0f} | {c['C_kt']:,.0f} | "
+                             f"{c['lower_kt']:,.0f}-{c['upper_kt']:,.0f} | {c['years_of_B_AR_2050_lower']:.1f}-"
+                             f"{c['years_of_B_AR_2050_upper']:.1f} |")
     with open(os.path.join(ROOT, 'outputs', 'RESULTS.md'), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print(f'outputs/RESULTS.md: {len(L)} lines')

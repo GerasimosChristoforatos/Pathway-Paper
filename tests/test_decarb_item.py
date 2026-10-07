@@ -131,9 +131,7 @@ def test_settings_that_do_not_apply_are_refused():
     with pytest.raises(ValueError):
         BF.decarb_variant('none', item_case='proxies_held')
     with pytest.raises(ValueError):
-        BF.decarb_variant('horup_class_v1_1', item_case='proxies_held')
-    with pytest.raises(ValueError):
-        BF.decarb_variant('horup_material')            # the v1.1 name is retired
+        BF.decarb_variant('class_level')               # removed in baseline-pb-v3
 
 
 def test_mc_bootstrap_stream_unchanged():

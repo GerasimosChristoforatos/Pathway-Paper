@@ -1,0 +1,17 @@
+id,line,family,item,A1-A3,A4-A5,"B2,B4",C1-C4,reason
+A_1,166,,,407867.32901578856,0.0,0.0,0.0,"unlabelled line (no family, type, code, item)"
+T_1,18,ALL,"Window/door frame (aluminium), powder coated finish, non-thermally broken (primary manufacture using mainly renewables-generated electricity)",5241.240000000003,2.608200000000002,0.0,119.45484346153853,A1-A3 differs from the item table by 10 kg (item table kept)
+T_4,15,Floor,Granular fill,179.24554375,167.19009125000002,0.0,177.0248025,"site works (sand / granular fill), outside scope"
+T_4,64,Floor,Sand,45.300800999999986,86.61911399999998,0.0,92.59284599999998,"site works (sand / granular fill), outside scope"
+DD_2,22,Floor,Granular fill,84.6327625,78.94064750000001,0.0,83.584215,"site works (sand / granular fill), outside scope"
+DD_2,23,Floor,Granular fill,30.371574999999996,28.328885000000003,0.0,29.99529,"site works (sand / granular fill), outside scope"
+DD_2,98,,,0.9599999999999999,0.146415,0.0,0.00832,"unlabelled line (no family, type, code, item)"
+DD_2,99,,,733.4399999999999,111.86106,0.0,6.3564799999999995,"unlabelled line (no family, type, code, item)"
+DD_3,47,Floor,Sand,19.088433,36.498762,0.0,39.015918,"site works (sand / granular fill), outside scope"
+SD_1,64,Floor,Sand,101.992486323,195.018600222,0.0,208.46815885799998,"site works (sand / granular fill), outside scope"
+SD_1,65,Floor,Granular fill,201.77085004375,188.20042119125,0.0,199.2710342025,"site works (sand / granular fill), outside scope"
+SD_1,67,Floor,Sand,283.093625451,541.299899214,0.0,578.630926746,"site works (sand / granular fill), outside scope"
+SD_1,68,Floor,Granular fill,560.0416609937499,522.37514220125,0.0,553.1030917424999,"site works (sand / granular fill), outside scope"
+SD_3,12,Floor,Granular fill,59.74239375,55.72432125,0.0,59.0022225,"site works (sand / granular fill), outside scope"
+SD_5,47,Floor,Sand,48.456680999999996,92.653434,0.0,99.04332600000001,"site works (sand / granular fill), outside scope"
+SD_6,19,Floor,Granular fill,125.22306875,116.80098625000001,0.0,123.6716325,"site works (sand / granular fill), outside scope"

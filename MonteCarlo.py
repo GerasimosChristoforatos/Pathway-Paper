@@ -204,7 +204,7 @@ def build_setup(settings=None):
     if su['decarb']:
         red = pd.DataFrame(0.0, index=bf['id'], columns=list(fy))
         if B['DECARB13'] is not None:
-            variant = Boss.BF.decarb_variant(Boss.DECARB_MODE, Boss.DECARB_STEEL, Boss.DECARB_ITEM_CASE)
+            variant = Boss.BF.decarb_variant(Boss.DECARB_MODE, Boss.DECARB_ITEM_CASE)
             r = pd.read_csv(Boss.FILE_FACTORS_DECARB_BLD)
             red = red + (r[r['Variant'] == variant]
                          .pivot(index='id', columns='Year', values='A13_reduction_kgCO2e_per_m2')

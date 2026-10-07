@@ -23,7 +23,7 @@ import pytest
 from conftest import ROOT
 
 REL = 1e-9
-FROZEN = dict(DECARB_MODE='none')
+FROZEN = dict(DECARB_MODE='none', ACCOUNTING='whole_life_at_construction', DECARB_A45='held')   # the anchor
 FROZEN_DIR = os.path.join(ROOT, 'outputs', 'frozen')
 quick = pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1',
                            reason='quick run: no frozen-technology Monte Carlo (not for reporting)')

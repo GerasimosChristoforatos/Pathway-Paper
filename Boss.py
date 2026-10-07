@@ -32,14 +32,10 @@ import Building_factors as BF
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(ROOT_DIR, 'data')          # inputs only
 # Frozen-technology check run (run_all.py steps 'frozen_*', env PATHWAY_FROZEN=1):
-# DECARB_MODE 'none', outputs to outputs/frozen/; read by the v1.2.1 regression test.
+# DECARB_MODE 'none', A4-A5 held, whole life at construction (the regression anchor:
+# it reproduces v1.2.1 / baseline v2), outputs to outputs/frozen/.
 FROZEN_RUN = os.environ.get('PATHWAY_FROZEN') == '1'
-# Comparison run of another decarbonisation mode (run_all.py steps 'mode_*', env
-# PATHWAY_DECARB_MODE=<mode>): that DECARB_MODE, outputs to outputs/modes/<mode>/.
-MODE_RUN = '' if FROZEN_RUN else os.environ.get('PATHWAY_DECARB_MODE', '')
 OUT_DIR = os.path.join(ROOT_DIR, 'outputs', 'frozen' if FROZEN_RUN else '')   # everything the scripts write
-if MODE_RUN:
-    OUT_DIR = os.path.join(ROOT_DIR, 'outputs', 'modes', MODE_RUN)
 OUT_DIR = OUT_DIR.rstrip(os.sep)
 FACTORS_DIR = os.path.join(ROOT_DIR, 'outputs', 'factors')     # written by Building_factors.py
 VERBOSE = False     # True also prints historical diagnostics (occupancy, calibration)
@@ -551,23 +547,18 @@ STAGES_IN_SCOPE = ['A1-A3', 'A4-A5', 'B2,B4', 'C1-C4']   # Module D excluded
 FILE_FACTORS_DECARB = os.path.join(FACTORS_DIR, 'factors_a13_decarb.csv')
 FILE_FACTORS_DECARB_BLD = os.path.join(FACTORS_DIR, 'factors_building_a13_reduction.csv')
 
-# MATERIAL DECARBONISATION (author decision; adopted: 'horup_item', from baseline-pb-v1.2).
-# 'none': every factor held at its 2025 case-study value (frozen technology;
-# reproduces baseline v2 exactly; reported as a sensitivity).
-# 'horup_class_v1_1' (adopted in baseline-pb-v1.1, there called 'horup_material'): the A1-A3
-# part of each case-study material class is scaled year by year with the
-# material-specific GWP paths of Horup et al. (2025), Sci. Total Environ. 966,
-# 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios, relative to
-# 2025, linear between 2025/2030/2040/2050); classes without an S4 counterpart
-# stay at 2025.
-# 'horup_item' (baseline-pb-v1.2): the same paths applied to each EPD item of the
-# case studies, mapped one-to-one to an S4 row (direct, Horup p. 6, or proxy) or
-# held, by data/material_item_map.csv.
-# In both, A4-A5, B2, B4, C1-C4 and soil stay at 2025 values. Mapping and values:
-# Building_factors.py and outputs/factors/factors_a13_decarb.csv. History (and so
-# the acquired-rights base of PB.py) always uses 2025 factors.
-DECARB_MODE = 'none' if FROZEN_RUN else (MODE_RUN or 'horup_item')   # see Building_factors.DECARB_MODES
-DECARB_STEEL = 'reinforcing_steel'  # 'horup_class_v1_1' only: S4 row for STEEL; 'steel_profile' = sensitivity
+# MATERIAL DECARBONISATION OF A1-A3 (author decision; adopted: 'horup_item').
+# 'none': A1-A3 held at its 2025 case-study value (frozen technology; the regression
+# anchor and a sensitivity).
+# 'horup_item': the material-specific GWP paths of Horup et al. (2025), Sci. Total
+# Environ. 966, 178780, Fig. 2 and SI Table S4 (average of 9 premise scenarios,
+# relative to 2025, linear between 2025/2030/2040/2050), applied to each EPD item of
+# the case studies, mapped one-to-one to an S4 row (direct, Horup p. 6, or proxy) or
+# held, by data/material_item_map.csv. Mapping and values: Building_factors.py and
+# outputs/factors/factors_a13_decarb.csv. The history (and so the acquired-rights
+# base of PB.py) always uses 2025 factors. (The class-level mapping of v1.1 is
+# preserved at tags baseline-PB_v1.2 / baseline-PB_v2.)
+DECARB_MODE = 'none' if FROZEN_RUN else 'horup_item'   # see Building_factors.DECARB_MODES
 DECARB_ITEM_CASE = 'central'        # 'horup_item' only: 'central' or a sensitivity in Building_factors.ITEM_CASES
 # A4-A5 (not separable by material process): 'resch' (adopted) = generic technological
 # progress e^(-0.01 (t - 2025)), Resch et al. (2021) Table 1 (Building_factors.generic_path);
@@ -615,11 +606,11 @@ def load_decarb_a45(mode, a45, typ_names, materials, years):
     return out
 
 
-def load_decarb(mode, steel, item_case, typ_names, materials, years):
+def load_decarb(mode, item_case, typ_names, materials, years):
     """A1-A3 reduction versus 2025 (kg CO2e/m2) by material and typology, one
     value per year in years (0 in 2025): {material: {typology: array}}, or None
     for mode 'none'. From Building_factors.py (factors_a13_decarb.csv)."""
-    variant = BF.decarb_variant(mode, steel, item_case)
+    variant = BF.decarb_variant(mode, item_case)
     if variant is None:
         return None
     d = pd.read_csv(FILE_FACTORS_DECARB)
@@ -1335,12 +1326,10 @@ def main():
     if ACCOUNTING not in ('time_resolved', 'whole_life_at_construction'):
         raise ValueError(f"Unknown ACCOUNTING '{ACCOUNTING}'.")
     TIME_RESOLVED = ACCOUNTING == 'time_resolved'
-    if TIME_RESOLVED and DECARB_MODE == 'horup_class_v1_1':
-        raise ValueError("DECARB_MODE 'horup_class_v1_1' is defined for whole-life-at-construction only.")
     MAT_STAGE = {stg: (mat_scope[mat_scope['Stage'] == stg]
                        .pivot_table(index='Material', columns='Typology', values='kgCO2e_per_m2', aggfunc='sum')
                        .reindex(index=MATERIALS, columns=typ_names).fillna(0.0)) for stg in STAGES_IN_SCOPE}
-    DECARB13 = load_decarb(DECARB_MODE, DECARB_STEEL, DECARB_ITEM_CASE, typ_names, MATERIALS, forecast_years)
+    DECARB13 = load_decarb(DECARB_MODE, DECARB_ITEM_CASE, typ_names, MATERIALS, forecast_years)
     DECARB45 = load_decarb_a45(DECARB_A45, MAT_STAGE['A4-A5'], typ_names, MATERIALS, forecast_years)
     if DECARB13 is None and DECARB45 is None:
         DECARB = None

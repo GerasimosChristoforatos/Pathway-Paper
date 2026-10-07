@@ -6,11 +6,6 @@
                                  # frozen-technology Monte Carlo, MC regression
                                  # checks skipped; every output marked
                                  # "QUICK RUN, not for reporting"
-    python run_all.py --compare-modes   # also run the other decarbonisation modes
-                                 # in full and the item-level decarbonisation
-                                 # sensitivities (outputs/modes/,
-                                 # outputs/DECARB_MODES.md, stamped with date and
-                                 # commit); the documents read the stored result
     python run_all.py --no-mc    # skip the Monte Carlo (development only; the
                                  # MC metrics are then carried over from the
                                  # last full run and marked stale)
@@ -26,11 +21,9 @@ Order: Building_factors -> Boss -> Diagnostics -> Sensitivity -> MonteCarlo
 -> PB (planetary-boundary layer; reads the Monte Carlo draws) -> validation
 -> gap_2026 -> near_term_join -> scenarios -> figures_report -> frozen
 technology check (Boss, Sensitivity, MonteCarlo, scenarios, PB with DECARB_MODE
-'none', written to outputs/frozen/, figures not saved) -> [--compare-modes:
-comparison runs of the other decarbonisation modes (Boss, Sensitivity,
-MonteCarlo, PB; outputs/modes/<mode>/, figures not saved)] -> tests (incl. the
-v1.2.1 regression test, which reads outputs/frozen/) -> metrics ->
-[--compare-modes: decarb_modes] -> results ->
+'none', A4-A5 held, whole life at construction, written to outputs/frozen/,
+figures not saved) -> tests (incl. the v1.2.1 regression test, which reads
+outputs/frozen/) -> metrics -> results ->
 assumptions -> baseline_draft -> pb_methods (-> quick_stamp, quick runs). Each script
 runs in its own process, with the non-interactive matplotlib backend and
 PATHWAY_SAVE_FIGURES=1, so every figure is written to outputs/figures/ and
@@ -72,15 +65,7 @@ def tool(name):
     return os.path.join(ROOT, 'tools', f'{name}.py')
 
 
-def comparison_modes():
-    """Decarbonisation modes other than 'none' (outputs/frozen/) and the adopted one."""
-    sys.path.insert(0, ROOT)
-    import Boss
-    import Building_factors as BF
-    return [m for m in BF.DECARB_MODES if m not in ('none', Boss.DECARB_MODE)]
-
-
-def pipeline(skip_mc, quick=False, compare=False):
+def pipeline(skip_mc, quick=False):
     py = sys.executable
     q = {'PATHWAY_QUICK': '1'} if quick else {'PATHWAY_QUICK': '0'}
 
@@ -109,22 +94,8 @@ def pipeline(skip_mc, quick=False, compare=False):
     run('frozen_scenarios', [py, tool('replacement_scenarios')], **fz)
     if not (skip_mc or quick):
         run('frozen_pb', [py, os.path.join(ROOT, 'PB.py')], **fz)
-    # optional (--compare-modes): full runs of the other decarbonisation modes
-    # into outputs/modes/<mode>/ and the comparison with the item-level
-    # sensitivities (tools/decarb_modes.py -> outputs/DECARB_MODES.md, stamped
-    # with date and commit); the documents read the stored result
-    if compare:
-        for mode in comparison_modes():
-            md = dict(PATHWAY_DECARB_MODE=mode, PATHWAY_SAVE_FIGURES='0')
-            run(f'mode_{mode}_boss', [py, os.path.join(ROOT, 'Boss.py')], **md)
-            run(f'mode_{mode}_sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')], **md)
-            if not skip_mc:
-                run(f'mode_{mode}_montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')], **md)
-                run(f'mode_{mode}_pb', [py, os.path.join(ROOT, 'PB.py')], **md)
     run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
     run('metrics', [py, tool('metrics')] + (['--mc-stale'] if skip_mc else []))
-    if compare:
-        run('decarb_modes', [py, tool('decarb_modes')])
     run('results', [py, tool('results')])
     run('assumptions', [py, tool('assumptions')])
     run('baseline_draft', [py, tool('baseline_draft')])
@@ -138,7 +109,7 @@ def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     print('run_all:')
     try:
-        pipeline(skip_mc='--no-mc' in argv, quick='--quick' in argv, compare='--compare-modes' in argv)
+        pipeline(skip_mc='--no-mc' in argv, quick='--quick' in argv)
     except StepFailed as e:
         print(f'\n{e}')
         if interactive():

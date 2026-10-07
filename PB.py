@@ -541,7 +541,6 @@ def main():
     # carbon-factor rows (boundaries unchanged, I_sec re-run): 'none' adopted: the
     # class-level decarbonisation; class-level adopted: frozen technology and the
     # STEEL class at the steel-profile rate; item-level adopted: frozen technology
-    # (its other decarbonisation sensitivities: tools/decarb_modes.py, optional step)
     b_ar_ref, b_atp_ref = boundaries(SOURCE_PAIR, i_base, comp, s_sec, p_nz, p_w)
 
     def cum_I(base=None, add=None, **kw):
@@ -594,7 +593,7 @@ def main():
                       AR_BASE_WINDOW_SENS=list(AR_BASE_WINDOW_SENS), HIST_RATE_AFTER_LAST_CENSUS=HIST_RATE_AFTER_LAST_CENSUS,
                       GDP_MEASURE=GDP_MEASURE, GDP_MEASURE_SENS=GDP_MEASURE_SENS, WDI_COVERAGE_MIN=WDI_COVERAGE_MIN,
                       SSEC_WINDOW=list(SSEC_WINDOW), SSEC_FCE_SHARE=SSEC_FCE_SHARE, POP_NZ_SOURCE=POP_NZ_SOURCE,
-                      DECARB_MODE=Boss.DECARB_MODE, DECARB_STEEL=Boss.DECARB_STEEL,
+                      DECARB_MODE=Boss.DECARB_MODE,
                       **({'DECARB_ITEM_CASE': Boss.DECARB_ITEM_CASE} if Boss.DECARB_MODE == 'horup_item' else {})),
         source_pairs=SOURCE_PAIRS,
         components=dict(SOS_kg=pair['sos'], I_glob_kg=pair['i_glob'], pair_label=pair['label'],
@@ -674,14 +673,22 @@ def assumption_register():
         ('Carrying capacity over time', 'static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / '
          'Paris-aligned pathways', 'DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, '
          '140-150 (pp. 143, 148)'),
-        ('Sector impact', 'the model\'s embodied carbon as scoped (A1-A5, B2, B4, C1-C4 + soil carbon loss), all '
-         'booked in the construction year', 'DECISION (author); construction-year booking of B2/B4/C is a '
-         'limitation to be revisited'),
+        ('Sector impact', ('upfront carbon (A1-A5 + soil) of each year\'s construction plus the replacements and '
+                           'repaints (B2, B4) occurring that year from buildings built in the window (time-resolved); '
+                           'later events and end of life (C1-C4) are committed emissions after 2050, reported '
+                           'separately' if Boss.ACCOUNTING == 'time_resolved' else
+                           'the model\'s embodied carbon (A1-A5, B2, B4, C1-C4 + soil), all booked in the '
+                           'construction year'),
+         f"DECISION (author); Boss.ACCOUNTING = '{Boss.ACCOUNTING}'"),
+        ('AR base on the same rule', f'Ī_sec,base = upfront of {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} construction + '
+         'the replacements and repaints within the window of the buildings built in it, at 2025 factors; '
+         'base-window sensitivities on the same rule over their windows; wider scope (all cohorts since '
+         f'{Boss.B_SCOPE_START}) as a sensitivity', 'DECISION (author)'),
         ('Carbon factors over time', f"Boss.DECARB_MODE = '{Boss.DECARB_MODE}'"
-         + {'none': '', 'horup_class_v1_1': ' (A1-A3 of mapped materials, Horup et al. 2025)',
-            'horup_item': ' (A1-A3 by case-study EPD item, Horup et al. 2025; data/material_item_map.csv)'}[
+         + {'none': '', 'horup_item': ' (A1-A3 by case-study EPD item, Horup et al. 2025; data/material_item_map.csv)'}[
              Boss.DECARB_MODE]
-         + '; history and the AR base always at 2025 factors', 'DECISION (author); see the Boss register'),
+         + f"; A4-A5 '{Boss.DECARB_A45}' (Resch et al. 2021 Table 1: e^(-0.01 (t - 2025)))"
+         + '; history and the AR base always at 2025 factors', 'DECISION (author); LITERATURE; see the Boss register'),
         ('Allocation principles', 'acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. '
          '2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of '
          'the earlier manuscript is not used', 'DECISION (author); LITERATURE'),
@@ -859,11 +866,12 @@ def historical_demand_carbon(B, hist):
 
 def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell):
     global _factor_note
-    _factor_note = ('case-study factors held at 2025' if B['DECARB'] is None else
-                    'A1-A3 of mapped materials decarbonised after Horup et al. 2025; other stages, unmapped '
-                    'materials and soil at 2025' if Boss.DECARB_MODE == 'horup_class_v1_1' else
-                    'A1-A3 of case-study items decarbonised after Horup et al. 2025 (item-level mapping); other '
-                    'stages, held items and soil at 2025')
+    _acc = ('time-resolved: upfront (A1-A5 + soil) of each year\'s construction plus replacements & repaints '
+            'occurring that year (buildings built from 2026); later events and C1-C4 committed after 2050'
+            if B['TIME_RESOLVED'] else 'whole life booked at construction')
+    _factor_note = (_acc + '; ' + ('case-study factors held at 2025' if B['DECARB'] is None else
+                    'A1-A3 of case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4-A5 '
+                    'e^(-0.01 (t - 2025)) after Resch et al. 2021, C1-C4 and soil at 2025'))
     fy = np.asarray(B['forecast_years'])
     py = fy[fy >= PB_YEARS[0]]
     typ = list(B['typ_names'])

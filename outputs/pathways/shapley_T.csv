@@ -1,0 +1,13 @@
+level,setting,metric,player,name,reduction,share_of_P5s_instant_minus_T
+T,T,carbon_kt,T1,No idle stock,1916.1265458623202,0.2405513377124755
+T,T,carbon_kt,T2,No extra space,2707.0001611016028,0.3398379461664564
+T,T,carbon_kt,T3,Minimum space per person,2313.7861393087674,0.2904736914131248
+T,T,carbon_kt,T4,Best materials,355.64427696215773,0.04464773308306344
+T,T,carbon_kt,T5,Best soil,673.004673609592,0.08448929162487988
+T,T,LoE_AR,T1,No idle stock,0.4304907580432952,0.24055133771247553
+T,T,LoE_AR,T2,No extra space,0.6081741072333561,0.3398379461664564
+T,T,LoE_AR,T3,Minimum space per person,0.5198318196739136,0.29047369141312473
+T,T,LoE_AR,T4,Best materials,0.0799015987298991,0.04464773308306339
+T,T,LoE_AR,T5,Best soil,0.15120206582101767,0.0844892916248799
+T,T,carbon_kt,instant start,"P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player)",1207.7518065963413,
+T,T,LoE_AR,instant start,"P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player)",0.2713421991217366,

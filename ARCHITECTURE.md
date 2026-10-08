@@ -362,7 +362,61 @@ as implemented: `outputs/PB_METHODS_DRAFT.md`.
 
 ---
 
-## 10. Glossary
+## 10. Pathways (PATHWAYS v1: `levers.py`, `pathways.py`)
+
+A layer on top of the model, like PB: nothing in the model changes. `pathways.py`
+obtains the Boss state from `validation.run_boss()` (`Boss.main()` returns its
+locals) and re-calls `engine.forward()` with copies of `fwd_inputs` modified by
+the pure functions of `levers.py`. Which input each lever changes, line by line:
+`outputs/pathways/HOOKS.md`.
+
+```mermaid
+flowchart LR
+    BOSS[Boss.main via validation.run_boss<br/>S3-10; S1, S2 for the envelope] --> CTX[fwd_inputs, join, events,<br/>committed factors]
+    LEV[levers.py<br/>L1 size, L2 vacancy + absorption,<br/>L3 lifetime, L4 mix, L5 materials] --> RUN
+    CTX --> RUN[engine.forward per run<br/>P0, single levers, P1-P3, 32 subsets]
+    PBA[outputs/pb_annual.csv<br/>B_AR, B_AtP S3-10] --> GAP
+    RUN --> GAP[cumulative LoE, committed,<br/>Shapley, back-cast, solution space]
+    GAP --> OUTP[(outputs/pathways/*.csv, *.json,<br/>PATHWAYS_METHODS_DRAFT.md, pw_1-pw_6)]
+```
+
+1. **Levers** (Moderate M, Ambitious A; ramp w(y) = 0 to 2026, 1/9 in 2027, full
+   from 2035; sensitivity full by 2045): L1 dwelling size (`size`); L2 stock-wide
+   vacancy path (`v`) and absorption of the near-term surplus (`join` from
+   `engine.market_excess(..., 'surplus', absorption)`); L3 demolition and the
+   redevelopment wave (`rate_demol`, `rate_unc`); L4 attached floor-area share
+   (`shares`); L5 best-practice A1-A3 ratio on top of decarbonisation
+   (`intensity`, `intensity_upfront`). Targets computed from data are resolved
+   once (`levers.resolve`) and written to `outputs/pathways/levers.json`.
+2. **Identity.** With every lever off the call is the reference call of Boss, and
+   P0 reproduces the central run (annual carbon, upfront, in-window B, floor area
+   by typology, demand bands, committed range, cumulative LoE) to 1e-9; each lever
+   at zero strength is the baseline (`tests/test_pathways.py`). The near-term
+   excess is frozen at the baseline path except under L2; 2026 is never changed.
+3. **Per run**: within-window carbon, upfront, B, soil, A1-A3, A4-A5, floor area
+   by typology, committed after 2050 (`events.committed`, the run's floor area),
+   demand bands (Boss bookkeeping), dwellings, mean size, implied vacancy, and
+   cumulative LoE against the S3-10 boundaries of `outputs/pb_annual.csv`. Checks
+   that stop the run: identity, D >= S x OLF, implied vacancy >= 4.0%, no negative
+   dwellings, L4 Moderate target below Ambitious.
+4. **Attribution**: Shapley values over the 32 lever subsets (exact rational
+   arithmetic; they sum to P0 - P3 exactly) and the fixed-order waterfall
+   L1 -> L5.
+5. **Gap**: back-cast of P3-A (uniform factor k on every 2027-2050 cohort,
+   `scipy.optimize.brentq` for cumulative LoE AR = 1; AtP minimum at k = 0) and
+   the demand x intensity solution space on P0 (Horup et al. 2025, Fig. 6 style).
+
+`run_all.py` runs `pathways.py` after the frozen-technology check and before the
+tests (also in `--quick`); it writes figures pw_1-pw_6 to `outputs/figures/` and
+appends their section to FIGURES.md after `tools/figures_report.py` has written
+it (`tools/figures_report.py` run on its own while pw_ figures exist stops with
+"unlisted": run `run_all.py`, which clears the figures first). Methods as
+implemented: `outputs/pathways/PATHWAYS_METHODS_DRAFT.md`
+(`tools/pathways_methods.py`).
+
+---
+
+## 11. Glossary
 
 | term | meaning |
 |---|---|

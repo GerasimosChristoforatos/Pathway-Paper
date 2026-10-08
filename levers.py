@@ -298,3 +298,80 @@ def apply(base, params, active, ramp_full=RAMP_FULL, E_nojoin=None):
 def label(active):
     """'P0' for no lever; otherwise e.g. 'L1:M+L3:M'."""
     return '+'.join(f'{k}:{active[k]}' for k in LEVERS if k in active) or 'P0'
+
+
+# ============================================================
+# REGISTER (ASSUMPTIONS.md "Pathways" section and the methods draft)
+# ============================================================
+OMITTED = [
+    ('Occupancy / household size', 'household size is a demographic input of the baseline (Stats NZ household '
+     'projections, Boss.HH_SIZE_VARIANT) and sets the number of households, not a construction choice; a lever on it '
+     'needs a behavioural or policy model of household formation that v1 does not have'),
+    ('Brownfield soil', 'the soil factor is one area-weighted value for Auckland land zoned for urbanisation '
+     '(Christoforatos, Pickering & Schipper 2026) and soil is already zero on the replacement bands; no national '
+     'brownfield share is in the inputs to parameterise a shift'),
+    ('Lightweighting', 'the case studies give A1-A3 per m2 by material and item, not structural mass by design '
+     'alternative; a mass reduction cannot be separated from the material choice already covered by L5'),
+    ('Bio-based archetypes', 'no typology has a bio-based archetype among the 16 case studies, and the model\'s '
+     'biogenic-carbon convention (timber C1-C4 excludes biogenic CO2) would need extending; overlaps L5'),
+]
+
+
+def pct(x, nd=1):
+    return f'{100 * x:.{nd}f}%'
+
+
+def register(p):
+    """(setting, value, basis) rows for the resolved parameters p (resolve() / levers.json)."""
+    L1, L2, L3, L4, L5 = p['L1'], p['L2'], p['L3'], p['L4'], p['L5']
+    typ = list(L1['size_ref'])
+    sz = lambda d: ', '.join(f'{t} {d[t]:.1f}' for t in typ)
+    cA = ', '.join(f"{t} {pct(L1['c']['A'][t])}" + (' (held)' if t in L1['held_A'] else '') for t in typ)
+    rr = lambda s: ', '.join(f"{t} {L5['r'][s][t]:.3f}" for t in typ)
+    return [
+        ('Pathway levers, settings', 'L1 size, L2 existing stock, L3 lifetime (Avoid); L4 typology mix (Shift); L5 '
+         'best-practice materials (Improve); each at Moderate (M) and Ambitious (A); reference scenario S3-10, '
+         'envelope S1 / S2 for P0 and P3', 'DECISION (author)'),
+        ('Ramp', f"w(y) = clip((y - {p['ramp']['observed_year']}) / ({p['ramp']['full']} - "
+         f"{p['ramp']['observed_year']}), 0, 1): 1/9 in 2027, full from {p['ramp']['full']}; sensitivity full by "
+         f"{p['ramp']['full_sensitivity']} (P3); 2026 observed and never changed", 'DECISION (author)'),
+        ('Near-term excess under the levers', 'frozen at the baseline path (dwellings) in every run except L2; the '
+         'excess is the observed 2026 pipeline, not demand', 'DECISION (author)'),
+        ('L1 size, M', f"size_ref x (1 - w x 6.5%) for every typology; size_ref {L1['size_ref_window'][0]}-"
+         f"{L1['size_ref_window'][1]} (m2): {sz(L1['size_ref'])}; target {sz(L1['target_size']['M'])}",
+         'LITERATURE: Pellan et al. 2024, Build. Environ. 256, 111505, Table 2 (individual 107 -> 100 m2)'),
+        ('L1 size, A', f"1991-1995 mean realised size (m2): {sz(L1['size_1991_1995'])}; cut {cA}",
+         'DATA: Stats NZ consents (data/derived/consents_monthly.csv), definition of DWELLING_SIZE_REF; a typology '
+         'whose 1991-95 size is not smaller is held (DECISION)'),
+        ('L2 vacancy', f"v(y) = {pct(L2['v0'], 2)} + w (v* - {pct(L2['v0'], 2)}); v* M {pct(L2['v_star']['M'])}, "
+         f"A {pct(L2['v_star']['A'])}; consistent census range 1986-2023 {pct(L2['census_consistent_min'], 2)}-"
+         f"{pct(L2['census_consistent_max'], 2)} (midpoint {pct(L2['census_consistent_midpoint'], 2)})",
+         'DATA: census 1986-2023 on one empty/unoccupied share (tools/near_term_join.py); M midpoint, A minimum '
+         '(DECISION, rounded to 0.1 point)'),
+        ('L2 near-term absorption', f"engine.market_excess(..., 'surplus', absorption) with M {L2['absorption']['M']:.2f}, "
+         f"A {L2['absorption']['A']:.2f} a year, from the baseline run without a join (O26 {L2['O26']:,.0f}, rho "
+         f"{L2['rho']:.3f}, gap vs {L2['gap_ref']})", 'DECISION (author): the existing baseline payback sensitivities'),
+        ('L2 check', f"implied vacancy 1 - hh / (stock + stock_join) >= {pct(L2['floor'])} in every year of every run",
+         'DECISION (author)'),
+        ('L3 lifetime extension', f"demolition {pct(L3['demolition_rate'], 3)}/yr x (1 - w d) and the redevelopment "
+         f"wave (residual path - long-run residual {pct(L3['long_run_residual'], 4)}) x (1 - w d); d M "
+         f"{pct(L3['d']['M'], 0)}, A {pct(L3['d']['A'], 0)}; renovation carbon not modelled (upper bound)",
+         'LITERATURE: Pellan et al. 2024 (demolition 150,000 -> 90,000/yr, -40%); Pauliuk et al. 2024, J. Ind. Ecol. '
+         '28, 1699 (lifetime extension up to +90%); Napiontek et al. 2025, RCR 215, 108117 (renovation)'),
+        ('L4 typology mix', f"attached (townhouses + apartments) floor-area share {pct(L4['baseline_attached'])} -> "
+         f"M {pct(L4['target']['M'])} (observed peak, {L4['peak_year']}), A {pct(L4['target']['A'])} (+16 points); "
+         'increase split in proportion to the held townhouse / apartment shares; size and OLF blend with the shares',
+         'DATA: consents 1991-2026 (M); LITERATURE: Pellan et al. 2024 (collective 59% -> 75%) (A)'),
+        ('L5 best-practice materials', f"A1-A3 x [1 - w (1 - r)] on top of decarbonisation; r M: {rr('M')}; r A: {rr('A')}; "
+         'M = mean of the lowest ceil(n/3) independent case studies (detached 4 of 10, townhouses 2 of 4), A = the '
+         'lowest; apartments held (one independent case); A4-A5, B2/B4 events, C1-C4 and soil unchanged',
+         'DATA: case studies (Christoforatos & Pickering 2025; outputs/factors/factors_building.csv, 2025 factors); '
+         'DECISION (author): the ceil(n/3) rule'),
+        ('Attribution', 'Shapley values over all 2^5 lever subsets (exact rational arithmetic) on cumulative carbon '
+         'and cumulative LoE AR; fixed-order waterfall L1 -> L5 for the main figure', 'DECISION (author)'),
+        ('Back-cast', 'uniform factor k on the floor area of every 2027-2050 cohort of P3-A (2026 fixed), brentq for '
+         'cumulative LoE AR = 1; AtP: minimum LoE at k = 0', 'DECISION (author)'),
+        ('Solution space', 'uniform cuts of 2027-2050 floor area and of non-soil carbon per m2 of the 2027-2050 '
+         'cohorts, 0-100% in 5% steps, applied to P0', 'LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, '
+         '178780, Fig. 6 (form); DECISION (author)'),
+    ] + [(f'Omitted in v1: {a}', 'not modelled', f'DECISION (author): {b}') for a, b in OMITTED]

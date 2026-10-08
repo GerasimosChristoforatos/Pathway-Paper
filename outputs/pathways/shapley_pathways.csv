@@ -1,0 +1,17 @@
+level,setting,metric,player,name,reduction,share_of_P0_minus_P5
+pathways,central,carbon_kt,P1,Right-size space,1291.071841017828,0.31718818113202546
+pathways,central,carbon_kt,P2,Occupy the existing stock,1448.1339303395787,0.3557749095029944
+pathways,central,carbon_kt,P3,Keep and reuse,506.4042872353354,0.12441248401715993
+pathways,central,carbon_kt,P4,Build better,824.7554777588042,0.20262442534782024
+pathways,central,LoE_AR,P1,Right-size space,0.2900614767476078,0.31718818113202546
+pathways,central,LoE_AR,P2,Occupy the existing stock,0.32534817429792856,0.3557749095029947
+pathways,central,LoE_AR,P3,Keep and reuse,0.11377242591783292,0.12441248401715983
+pathways,central,LoE_AR,P4,Build better,0.1852954918804505,0.20262442534782002
+pathways,stretch,carbon_kt,P1,Right-size space,2623.109101646621,0.36279319505661767
+pathways,stretch,carbon_kt,P2,Occupy the existing stock,2096.9869680108045,0.2900270528736926
+pathways,stretch,carbon_kt,P3,Keep and reuse,937.3943923476432,0.12964779330546233
+pathways,stretch,carbon_kt,P4,Build better,1572.8245973423311,0.21753195876422743
+pathways,stretch,LoE_AR,P1,Right-size space,0.5893265390203821,0.36279319505661767
+pathways,stretch,LoE_AR,P2,Occupy the existing stock,0.47112416004842833,0.2900270528736926
+pathways,stretch,LoE_AR,P3,Keep and reuse,0.21060175979434834,0.12964779330546228
+pathways,stretch,LoE_AR,P4,Build better,0.35336207550651577,0.21753195876422746

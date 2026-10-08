@@ -1,10 +1,77 @@
 {
   "ramp": {
-    "observed_year": 2026,
-    "full": 2035,
-    "full_sensitivity": 2045
+    "form": "normalised logistic",
+    "k": 0.7324081924454066,
+    "mid": 2030.5,
+    "start": 2026,
+    "end": 2035,
+    "w": {
+      "2025": 0.0,
+      "2026": 0.0,
+      "2027": 0.03857022955569279,
+      "2028": 0.11027957661034687,
+      "2029": 0.23076923076923078,
+      "2030": 0.4024938372773642,
+      "2031": 0.5975061627226359,
+      "2032": 0.7692307692307693,
+      "2033": 0.8897204233896531,
+      "2034": 0.9614297704443072,
+      "2035": 1.0,
+      "2036": 1.0,
+      "2037": 1.0,
+      "2038": 1.0,
+      "2039": 1.0,
+      "2040": 1.0,
+      "2041": 1.0,
+      "2042": 1.0,
+      "2043": 1.0,
+      "2044": 1.0,
+      "2045": 1.0,
+      "2046": 1.0,
+      "2047": 1.0,
+      "2048": 1.0,
+      "2049": 1.0,
+      "2050": 1.0
+    },
+    "sensitivity": {
+      "name": "ramp2045",
+      "mid": 2035.5,
+      "end": 2045
+    },
+    "w_sensitivity": {
+      "2025": 0.0,
+      "2026": 0.0,
+      "2027": 0.0010262293176321025,
+      "2028": 0.0031541457486487403,
+      "2029": 0.0075515056811489515,
+      "2030": 0.016575349899401248,
+      "2031": 0.03483026868793204,
+      "2032": 0.07071367532606483,
+      "2033": 0.13742771073001936,
+      "2034": 0.2495239908319634,
+      "2035": 0.4092861689700814,
+      "2036": 0.5907138310299186,
+      "2037": 0.7504760091680366,
+      "2038": 0.8625722892699805,
+      "2039": 0.9292863246739351,
+      "2040": 0.965169731312068,
+      "2041": 0.9834246501005985,
+      "2042": 0.992448494318851,
+      "2043": 0.9968458542513512,
+      "2044": 0.998973770682368,
+      "2045": 1.0,
+      "2046": 1.0,
+      "2047": 1.0,
+      "2048": 1.0,
+      "2049": 1.0,
+      "2050": 1.0
+    }
   },
   "L1": {
+    "f": {
+      "central": 0.25,
+      "stretch": 0.5
+    },
     "size_ref": {
       "Detached": 179.60009343759657,
       "Townhouses": 107.73533895826715,
@@ -14,76 +81,112 @@
       2023,
       2025
     ],
-    "size_1991_1995": {
-      "Detached": 171.09196409343798,
-      "Townhouses": 124.15774813626831,
-      "Apartments": 110.90674658639989
+    "olf": {
+      "Detached": 36.46145833333333,
+      "Townhouses": 33.114583332500004,
+      "Apartments": 20.632169315
     },
-    "c": {
-      "M": {
-        "Detached": 0.065,
-        "Townhouses": 0.065,
-        "Apartments": 0.065
+    "S": {
+      "2025": 2.6802110787745215,
+      "2026": 2.6778614674781296,
+      "2035": 2.651233784130276,
+      "2050": 2.6517520693175007
+    },
+    "implied": {
+      "central": {
+        "Detached": {
+          "2035": {
+            "size_m2": 158.86703261619536,
+            "occupied_m2": 96.66785015199173,
+            "cut_pct": -11.54401449607545,
+            "size_per_occupant_m2": 59.92192524368834
+          },
+          "2050": {
+            "size_m2": 158.87175697463505,
+            "occupied_m2": 96.6867475857505,
+            "cut_pct": -11.54138400833502,
+            "size_per_occupant_m2": 59.91199509670787
+          }
+        },
+        "Townhouses": {
+          "2035": {
+            "size_m2": 102.7501297383307,
+            "occupied_m2": 87.79450207852136,
+            "cut_pct": -4.6272738992983005,
+            "size_per_occupant_m2": 38.75559007786156
+          },
+          "2050": {
+            "size_m2": 102.75442043783629,
+            "occupied_m2": 87.8116648765437,
+            "cut_pct": -4.6232912696921975,
+            "size_per_occupant_m2": 38.749633356289934
+          }
+        },
+        "Apartments": {
+          "2035": {
+            "size_m2": 87.21536758962367,
+            "occupied_m2": 54.70070432782401,
+            "cut_pct": -11.053365035910156,
+            "size_per_occupant_m2": 32.89614371681456
+          },
+          "2050": {
+            "size_m2": 87.21804092655773,
+            "occupied_m2": 54.711397675560285,
+            "cut_pct": -11.050638631940512,
+            "size_per_occupant_m2": 32.8907223023326
+          }
+        }
       },
-      "A": {
-        "Detached": 0.04737263317245877,
-        "Townhouses": 0.0,
-        "Apartments": 0.0
+      "stretch": {
+        "Detached": {
+          "2035": {
+            "size_m2": 138.13397179479415,
+            "occupied_m2": 96.66785015199173,
+            "cut_pct": -23.08802899215091,
+            "size_per_occupant_m2": 52.10176960690334
+          },
+          "2050": {
+            "size_m2": 138.14342051167353,
+            "occupied_m2": 96.6867475857505,
+            "cut_pct": -23.08276801667004,
+            "size_per_occupant_m2": 52.09514950891636
+          }
+        },
+        "Townhouses": {
+          "2035": {
+            "size_m2": 97.76492051839426,
+            "occupied_m2": 87.79450207852136,
+            "cut_pct": -9.25454779859659,
+            "size_per_occupant_m2": 36.87525449607438
+          },
+          "2050": {
+            "size_m2": 97.77350191740543,
+            "occupied_m2": 87.8116648765437,
+            "cut_pct": -9.246582539384395,
+            "size_per_occupant_m2": 36.87128334835996
+          }
+        },
+        "Apartments": {
+          "2035": {
+            "size_m2": 76.3771465023571,
+            "occupied_m2": 54.70070432782401,
+            "cut_pct": -22.106730071820337,
+            "size_per_occupant_m2": 28.808152249543035
+          },
+          "2050": {
+            "size_m2": 76.38249317622525,
+            "occupied_m2": 54.711397675560285,
+            "cut_pct": -22.101277263881023,
+            "size_per_occupant_m2": 28.80453797322173
+          }
+        }
       }
     },
-    "held_A": [
-      "Townhouses",
-      "Apartments"
-    ],
-    "target_size": {
-      "M": {
-        "Detached": 167.9260873641528,
-        "Townhouses": 100.73254192597979,
-        "Apartments": 91.68010541289236
-      },
-      "A": {
-        "Detached": 171.09196409343798,
-        "Townhouses": 107.73533895826715,
-        "Apartments": 98.05358867689021
-      }
+    "held": [],
+    "benchmarks_pct": {
+      "Pellan2024": -6.5,
+      "Pauliuk2024_LEMD_EU_UK": -17.24137931034484
     }
-  },
-  "L2": {
-    "v0": 0.05387454644033866,
-    "v_star": {
-      "M": 0.047,
-      "A": 0.04
-    },
-    "absorption": {
-      "M": 0.1,
-      "A": 0.2
-    },
-    "floor": 0.04,
-    "census_consistent": {
-      "1986": 0.04421960198496479,
-      "1991": 0.046416698373295526,
-      "1996": 0.040132499944037336,
-      "2001": 0.04811303160582413,
-      "2006": 0.04803369656611718,
-      "2013": 0.05220157081378557,
-      "2018": 0.05079172543256766,
-      "2023": 0.053839536541328725
-    },
-    "census_consistent_min": 0.040132499944037336,
-    "census_consistent_max": 0.053839536541328725,
-    "census_consistent_midpoint": 0.04698601824268303,
-    "O26": 38862.6,
-    "rho": 0.5180189643073912,
-    "gap_ref": "2027"
-  },
-  "L3": {
-    "d": {
-      "M": 0.2,
-      "A": 0.4
-    },
-    "demolition_rate": 0.00135,
-    "long_run_residual": -0.0003445235477355917,
-    "long_run_net": 0.0010054764522644084
   },
   "L4": {
     "baseline_shares": {
@@ -133,106 +236,267 @@
     "attached_2026_calendar_ytd": 0.3734291480455299,
     "peak_year": 2023,
     "target": {
-      "M": 0.41392428809958487,
-      "A": 0.5540321454268726
+      "central": 0.41392428809958487,
+      "stretch": 0.5540321454268726
     },
-    "increment_A": 0.16
+    "increment_stretch": 0.16
+  },
+  "L2a": {
+    "v0": 0.05387454644033866,
+    "v_star": {
+      "central": 0.047,
+      "stretch": 0.04
+    },
+    "floor": 0.04,
+    "census_consistent": {
+      "1986": 0.04421960198496479,
+      "1991": 0.046416698373295526,
+      "1996": 0.040132499944037336,
+      "2001": 0.04811303160582413,
+      "2006": 0.04803369656611718,
+      "2013": 0.05220157081378557,
+      "2018": 0.05079172543256766,
+      "2023": 0.053839536541328725
+    },
+    "census_consistent_min": 0.040132499944037336,
+    "census_consistent_max": 0.053839536541328725,
+    "census_consistent_midpoint": 0.04698601824268303
+  },
+  "L2b": {
+    "absorption": {
+      "central": 0.1,
+      "stretch": 0.2
+    },
+    "O26": 38862.6,
+    "rho": 0.5180189643073912,
+    "gap_ref": "2027"
+  },
+  "L3": {
+    "d": {
+      "central": 0.2,
+      "stretch": 0.4
+    },
+    "demolition_rate": 0.00135,
+    "long_run_residual": -0.0003445235477355917,
+    "long_run_net": 0.0010054764522644084
   },
   "L5": {
-    "cases": {
-      "Detached": {
-        "n_cases": 10,
-        "n_independent": 10,
-        "pooled_a13": 166.7218727223605,
-        "cases": {
-          "SD_2": 88.34177296618816,
-          "SD_3": 148.0429629345861,
-          "DD_4": 157.32687882981003,
-          "SD_5": 158.96984532069126,
-          "DD_3": 159.75565900470244,
-          "SD_6": 169.22827589988486,
-          "DD_1": 173.85450474922246,
-          "DD_2": 180.79701525695253,
-          "SD_4": 199.08499881021365,
-          "SD_1": 229.3935299757306
-        },
-        "held": false,
-        "k_M": 4,
-        "target_M": 138.17036501281888,
-        "target_A": 88.34177296618816,
-        "r": {
-          "M": 0.8287476787338633,
-          "A": 0.529875123903523
-        },
-        "cases_M": [
-          "SD_2",
-          "SD_3",
-          "DD_4",
-          "SD_5"
-        ],
-        "case_A": "SD_2"
+    "n": 14,
+    "sample_typologies": [
+      "Detached",
+      "Townhouses"
+    ],
+    "min_cases": 10,
+    "cases": [
+      {
+        "id": "SD_2",
+        "typology": "Detached",
+        "subtype": "1-storey Detached",
+        "a13": 88.34177296618816,
+        "ratio": 0.529875123903523
       },
-      "Townhouses": {
-        "n_cases": 4,
-        "n_independent": 4,
-        "pooled_a13": 206.74738643936482,
-        "cases": {
-          "T_2": 181.92793484107216,
-          "T_1": 196.3593880445344,
-          "T_4": 211.28039131321128,
-          "T_3": 237.42183155864143
-        },
-        "held": false,
-        "k_M": 2,
-        "target_M": 189.14366144280328,
-        "target_A": 181.92793484107216,
-        "r": {
-          "M": 0.9148539418092021,
-          "A": 0.8799527673566421
-        },
-        "cases_M": [
-          "T_2",
-          "T_1"
-        ],
-        "case_A": "T_2"
+      {
+        "id": "T_2",
+        "typology": "Townhouses",
+        "subtype": "Townhouse",
+        "a13": 181.92793484107216,
+        "ratio": 0.8799527673566421
       },
-      "Apartments": {
-        "n_cases": 2,
-        "n_independent": 1,
-        "pooled_a13": 444.4433363913696,
-        "cases": {
-          "A_1": 444.427210975524
-        },
-        "held": true,
-        "k_M": 0,
-        "target_M": 444.4433363913696,
-        "target_A": 444.4433363913696,
-        "r": {
-          "M": 1.0,
-          "A": 1.0
-        },
-        "cases_M": [],
-        "case_A": null
+      {
+        "id": "SD_3",
+        "typology": "Detached",
+        "subtype": "1-storey Detached",
+        "a13": 148.0429629345861,
+        "ratio": 0.88796365178263
+      },
+      {
+        "id": "DD_4",
+        "typology": "Detached",
+        "subtype": "2-storey Detached",
+        "a13": 157.32687882981003,
+        "ratio": 0.9436487022419918
+      },
+      {
+        "id": "T_1",
+        "typology": "Townhouses",
+        "subtype": "Townhouse",
+        "a13": 196.3593880445344,
+        "ratio": 0.9497551162617621
+      },
+      {
+        "id": "SD_5",
+        "typology": "Detached",
+        "subtype": "1-storey Detached",
+        "a13": 158.96984532069126,
+        "ratio": 0.9535032370073088
+      },
+      {
+        "id": "DD_3",
+        "typology": "Detached",
+        "subtype": "2-storey Detached",
+        "a13": 159.75565900470244,
+        "ratio": 0.9582165578882454
+      },
+      {
+        "id": "SD_6",
+        "typology": "Detached",
+        "subtype": "1-storey Detached",
+        "a13": 169.22827589988486,
+        "ratio": 1.015033439443775
+      },
+      {
+        "id": "T_4",
+        "typology": "Townhouses",
+        "subtype": "Townhouse",
+        "a13": 211.28039131321128,
+        "ratio": 1.0219253309650709
+      },
+      {
+        "id": "DD_1",
+        "typology": "Detached",
+        "subtype": "2-storey Detached",
+        "a13": 173.85450474922246,
+        "ratio": 1.0427816213337515
+      },
+      {
+        "id": "DD_2",
+        "typology": "Detached",
+        "subtype": "2-storey Detached",
+        "a13": 180.79701525695253,
+        "ratio": 1.0844228912785256
+      },
+      {
+        "id": "T_3",
+        "typology": "Townhouses",
+        "subtype": "Townhouse",
+        "a13": 237.42183155864143,
+        "ratio": 1.148366785416525
+      },
+      {
+        "id": "SD_4",
+        "typology": "Detached",
+        "subtype": "1-storey Detached",
+        "a13": 199.08499881021365,
+        "ratio": 1.1941144587653894
+      },
+      {
+        "id": "SD_1",
+        "typology": "Detached",
+        "subtype": "1-storey Detached",
+        "a13": 229.3935299757306,
+        "ratio": 1.3759054299836009
       }
-    },
-    "r": {
-      "M": {
-        "Detached": 0.8287476787338633,
-        "Townhouses": 0.9148539418092021,
-        "Apartments": 1.0
-      },
-      "A": {
-        "Detached": 0.529875123903523,
-        "Townhouses": 0.8799527673566421,
-        "Apartments": 1.0
-      }
+    ],
+    "pooled_a13": {
+      "Detached": 166.7218727223605,
+      "Townhouses": 206.74738643936482
     },
     "a13_2025_pooled": {
       "Detached": 166.72187272236047,
       "Townhouses": 206.7473864393648,
       "Apartments": 444.44333639136954
     },
-    "pooled_check_max_abs": 5.684341886080802e-14
+    "pooled_check_max_abs": 2.842170943040401e-14,
+    "estimator": {
+      "central": {
+        "q": 0.25,
+        "r": 0.9157935246093193,
+        "ci_lo": 0.7430549302010314,
+        "ci_hi": 0.9799400982651439,
+        "scipy_hdquantiles": 0.9157935246093193,
+        "weights": [
+          0.02246182532265446,
+          0.1431066897144861,
+          0.24573351704116786,
+          0.24591505342851883,
+          0.17779491487867738,
+          0.09994623179884887,
+          0.044548324984836296,
+          0.015561283435736373,
+          0.00409345648956716,
+          0.0007508389796075932,
+          8.350348445496092e-05,
+          4.303947642947392e-06,
+          5.646547285298453e-08,
+          2.8328339674033032e-11
+        ]
+      },
+      "stretch": {
+        "q": 0.15,
+        "r": 0.8269665220200395,
+        "ci_lo": 0.6063414810329825,
+        "ci_hi": 0.95077307931342,
+        "scipy_hdquantiles": 0.8269665220200395,
+        "weights": [
+          0.19826447921465307,
+          0.3392482211155329,
+          0.24739399829660935,
+          0.13147777602537947,
+          0.05635418207583853,
+          0.019925059722531113,
+          0.005760672007303902,
+          0.001320354206154395,
+          0.00022681521037071217,
+          2.658183825732241e-05,
+          1.8073913858884794e-06,
+          5.25638140791429e-08,
+          3.3211644545616537e-10,
+          5.284661597215745e-14
+        ]
+      }
+    },
+    "r": {
+      "central": {
+        "Detached": 0.9157935246093193,
+        "Townhouses": 0.9157935246093193,
+        "Apartments": 0.9157935246093193
+      },
+      "stretch": {
+        "Detached": 0.8269665220200395,
+        "Townhouses": 0.8269665220200395,
+        "Apartments": 0.8269665220200395
+      }
+    },
+    "r_apartments_held": {
+      "central": {
+        "Detached": 0.9157935246093193,
+        "Townhouses": 0.9157935246093193,
+        "Apartments": 1.0
+      },
+      "stretch": {
+        "Detached": 0.8269665220200395,
+        "Townhouses": 0.8269665220200395,
+        "Apartments": 1.0
+      }
+    },
+    "bootstrap": {
+      "B": 10000,
+      "seed": 20261008,
+      "ci": 0.95,
+      "method": "percentile"
+    }
+  },
+  "diagnostics": {
+    "end_of_ramp_step_P2-central": {
+      "w_2035_minus_w_2034": 0.03857022955569278,
+      "carbon_2035_kt": 826.9958739047759,
+      "carbon_2036_kt": 825.976007981736,
+      "carbon_step_kt": -1.0198659230399016,
+      "carbon_step_pct": -0.12332176679726858,
+      "P0_carbon_step_kt": -26.349644193505924,
+      "step_relative_to_P0_kt": 25.329778270466022,
+      "dwellings_step": 188.29382017077296
+    },
+    "end_of_ramp_step_P2-stretch": {
+      "w_2035_minus_w_2034": 0.03857022955569278,
+      "carbon_2035_kt": 803.5304037017268,
+      "carbon_2036_kt": 826.4077584023065,
+      "carbon_step_kt": 22.877354700579758,
+      "carbon_step_pct": 2.847105049813625,
+      "P0_carbon_step_kt": -26.349644193505924,
+      "step_relative_to_P0_kt": 49.22699889408568,
+      "dwellings_step": 881.7170531419033
+    }
   },
   "run_mode": "full",
   "identity_max_rel_diff": 4.376097045698541e-16,
@@ -280,9 +544,15 @@
   },
   "sources": {
     "Pellan2024": "Pellan M, et al. (2024) Building and Environment 256, 111505 (Table 2)",
-    "Pauliuk2024": "Pauliuk S, et al. (2024) Journal of Industrial Ecology 28, 1699",
+    "Pauliuk2024": "Pauliuk S, et al. (2024) Journal of Industrial Ecology 28, 1699 (LEMD EU_UK: 37.7 -> 31.2 m2/cap)",
     "Napiontek2025": "Napiontek et al. (2025) Resources, Conservation and Recycling 215, 108117",
     "Horup2025": "Horup LH, et al. (2025) Science of the Total Environment 966, 178780 (Fig. 6)",
-    "ChristoforatosPickering2025": "Christoforatos G, Pickering K (2025) Smart and Sustainable Built Environment, doi:10.1108/SASBE-06-2025-0304 (16 NZ case studies)"
+    "ChristoforatosPickering2025": "Christoforatos G, Pickering K (2025) Smart and Sustainable Built Environment, doi:10.1108/SASBE-06-2025-0304 (16 NZ case studies)",
+    "HarrellDavis1982": "Harrell FE, Davis CE (1982) A new distribution-free quantile estimator. Biometrika 69(3), 635-640",
+    "EUTaxonomy2021": "Commission Delegated Regulation (EU) 2021/2139 (Climate Delegated Act), Annex I, Section 7.7 (top 15% of the national or regional building stock)",
+    "EfronTibshirani1993": "Efron B, Tibshirani RJ (1993) An Introduction to the Bootstrap. Chapman & Hall (percentile interval)",
+    "Shapley1953": "Shapley LS (1953) A value for n-person games. In: Kuhn HW, Tucker AW (eds) Contributions to the Theory of Games II. Annals of Mathematics Studies 28, 307-317",
+    "Albrecht2002": "Albrecht J, Francois D, Schoors K (2002) A Shapley decomposition of carbon emissions without residuals. Energy Policy 30, 727-736",
+    "StatsNZCensus": "Stats NZ census dwelling counts 1986-2023 (data/derived/census_dwellings.csv, occ-unocc-2013.xlsx)"
   }
 }

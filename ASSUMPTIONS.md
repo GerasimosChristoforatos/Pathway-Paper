@@ -212,3 +212,49 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `TOP_N` | `5` |
 | `WDI_COVERAGE_MIN` | `0.98` |
 | `SOURCE_PAIRS` | `{'A': {'label': '2 °C carrying capacity (Bjørn & Hauschild 2015)', 'sos': 6810000000000.0, 'i_glob': 55800000000000.0}, 'C': {'label': '1 W/m² planetary boundary (Bjørn & Hauschild 2015)', 'sos': 3610000000000.0, 'i_glob': 55800000000000.0}}` |
+
+## Pathways (levers.py, pathways.py)
+
+Resolved values from outputs/pathways/levers.json; methods as implemented: outputs/pathways/PATHWAYS_METHODS_DRAFT.md.
+
+| setting | value | basis |
+|---|---|---|
+| Pathway levers, settings | L1 size, L2 existing stock, L3 lifetime (Avoid); L4 typology mix (Shift); L5 best-practice materials (Improve); each at Moderate (M) and Ambitious (A); reference scenario S3-10, envelope S1 / S2 for P0 and P3 | DECISION (author) |
+| Ramp | w(y) = clip((y - 2026) / (2035 - 2026), 0, 1): 1/9 in 2027, full from 2035; sensitivity full by 2045 (P3); 2026 observed and never changed | DECISION (author) |
+| Near-term excess under the levers | frozen at the baseline path (dwellings) in every run except L2; the excess is the observed 2026 pipeline, not demand | DECISION (author) |
+| L1 size, M | size_ref x (1 - w x 6.5%) for every typology; size_ref 2023-2025 (m2): Detached 179.6, Townhouses 107.7, Apartments 98.1; target Detached 167.9, Townhouses 100.7, Apartments 91.7 | LITERATURE: Pellan et al. 2024, Build. Environ. 256, 111505, Table 2 (individual 107 -> 100 m2) |
+| L1 size, A | 1991-1995 mean realised size (m2): Detached 171.1, Townhouses 124.2, Apartments 110.9; cut Detached 4.7%, Townhouses 0.0% (held), Apartments 0.0% (held) | DATA: Stats NZ consents (data/derived/consents_monthly.csv), definition of DWELLING_SIZE_REF; a typology whose 1991-95 size is not smaller is held (DECISION) |
+| L2 vacancy | v(y) = 5.39% + w (v* - 5.39%); v* M 4.7%, A 4.0%; consistent census range 1986-2023 4.01%-5.38% (midpoint 4.70%) | DATA: census 1986-2023 on one empty/unoccupied share (tools/near_term_join.py); M midpoint, A minimum (DECISION, rounded to 0.1 point) |
+| L2 near-term absorption | engine.market_excess(..., 'surplus', absorption) with M 0.10, A 0.20 a year, from the baseline run without a join (O26 38,863, rho 0.518, gap vs 2027) | DECISION (author): the existing baseline payback sensitivities |
+| L2 check | implied vacancy 1 - hh / (stock + stock_join) >= 4.0% in every year of every run | DECISION (author) |
+| L3 lifetime extension | demolition 0.135%/yr x (1 - w d) and the redevelopment wave (residual path - long-run residual -0.0345%) x (1 - w d); d M 20%, A 40%; renovation carbon not modelled (upper bound) | LITERATURE: Pellan et al. 2024 (demolition 150,000 -> 90,000/yr, -40%); Pauliuk et al. 2024, J. Ind. Ecol. 28, 1699 (lifetime extension up to +90%); Napiontek et al. 2025, RCR 215, 108117 (renovation) |
+| L4 typology mix | attached (townhouses + apartments) floor-area share 39.4% -> M 41.4% (observed peak, 2023), A 55.4% (+16 points); increase split in proportion to the held townhouse / apartment shares; size and OLF blend with the shares | DATA: consents 1991-2026 (M); LITERATURE: Pellan et al. 2024 (collective 59% -> 75%) (A) |
+| L5 best-practice materials | A1-A3 x [1 - w (1 - r)] on top of decarbonisation; r M: Detached 0.829, Townhouses 0.915, Apartments 1.000; r A: Detached 0.530, Townhouses 0.880, Apartments 1.000; M = mean of the lowest ceil(n/3) independent case studies (detached 4 of 10, townhouses 2 of 4), A = the lowest; apartments held (one independent case); A4-A5, B2/B4 events, C1-C4 and soil unchanged | DATA: case studies (Christoforatos & Pickering 2025; outputs/factors/factors_building.csv, 2025 factors); DECISION (author): the ceil(n/3) rule |
+| Attribution | Shapley values over all 2^5 lever subsets (exact rational arithmetic) on cumulative carbon and cumulative LoE AR; fixed-order waterfall L1 -> L5 for the main figure | DECISION (author) |
+| Back-cast | uniform factor k on the floor area of every 2027-2050 cohort of P3-A (2026 fixed), brentq for cumulative LoE AR = 1; AtP: minimum LoE at k = 0 | DECISION (author) |
+| Solution space | uniform cuts of 2027-2050 floor area and of non-soil carbon per m2 of the 2027-2050 cohorts, 0-100% in 5% steps, applied to P0 | LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 6 (form); DECISION (author) |
+| Omitted in v1: Occupancy / household size | not modelled | DECISION (author): household size is a demographic input of the baseline (Stats NZ household projections, Boss.HH_SIZE_VARIANT) and sets the number of households, not a construction choice; a lever on it needs a behavioural or policy model of household formation that v1 does not have |
+| Omitted in v1: Brownfield soil | not modelled | DECISION (author): the soil factor is one area-weighted value for Auckland land zoned for urbanisation (Christoforatos, Pickering & Schipper 2026) and soil is already zero on the replacement bands; no national brownfield share is in the inputs to parameterise a shift |
+| Omitted in v1: Lightweighting | not modelled | DECISION (author): the case studies give A1-A3 per m2 by material and item, not structural mass by design alternative; a mass reduction cannot be separated from the material choice already covered by L5 |
+| Omitted in v1: Bio-based archetypes | not modelled | DECISION (author): no typology has a bio-based archetype among the 16 case studies, and the model's biogenic-carbon convention (timber C1-C4 excludes biogenic CO2) would need extending; overlaps L5 |
+
+### All settings in levers.py
+
+| setting | value |
+|---|---|
+| `ATTACHED` | `('Townhouses', 'Apartments')` |
+| `DETACHED` | `'Detached'` |
+| `L1_C_M` | `0.065` |
+| `L1_SIZE_WINDOW_A` | `(1991, 1995)` |
+| `L2_ABSORPTION` | `{'M': 0.1, 'A': 0.2}` |
+| `L2_VACANCY_FLOOR` | `0.04` |
+| `L2_V_STAR` | `{'M': 0.047, 'A': 0.04}` |
+| `L3_D` | `{'M': 0.2, 'A': 0.4}` |
+| `L4_A_INCREMENT` | `0.16` |
+| `L4_PEAK_WINDOW_M` | `(1991, 2026)` |
+| `L5_HELD` | `('Apartments',)` |
+| `LEVERS` | `('L1', 'L2', 'L3', 'L4', 'L5')` |
+| `OBSERVED_YEAR` | `2026` |
+| `RAMP_FULL` | `2035` |
+| `RAMP_FULL_SENS` | `2045` |
+| `SETTINGS` | `('M', 'A')` |

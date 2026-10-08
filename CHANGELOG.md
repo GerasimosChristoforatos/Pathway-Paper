@@ -50,6 +50,12 @@ construction cut by 78.3% from P3-A (k = 0.2173; 83.4% of P0's 2027-2050 floor
 area), or by 85.0% from P0; AtP is not attainable within the window (2026 alone
 gives a cumulative LoE AtP of 1.28).
 
+**Tests**: 101 passed, 2 skipped (the reproduction tests that need the git-ignored
+author workbook; full run). **Run time**: full run 1,280 s on 4 cores (pathways
+step 16 s), `--quick` 526 s; pinned environment (requirements.txt), in which the
+unchanged baseline run also reproduces every tracked output of baseline-PB_v3.1
+byte for byte.
+
 ## baseline-pb-v3.1
 
 Figure and label clean-up only. No model result, method or test baseline changes:

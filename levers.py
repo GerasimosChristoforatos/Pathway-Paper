@@ -523,3 +523,127 @@ def register(p):
                      f"band: {r['band']}; assumption: {r['assumption']}", f"{r['tag']}: {r['basis']}"))
     rows += [(f'Omitted in v2: {a}', 'not modelled', f'DECISION (author): {b}') for a, b in OMITTED]
     return rows
+
+
+# ============================================================
+# THEORETICAL LIMIT T (PATHWAYS v3): a thought experiment, not a proposal
+# ============================================================
+# T = P5-stretch with five overrides, all at full strength from 2027 (w = 1 in 2027-2050,
+# no ramp; 2026 observed and untouched). It combines the best observed attributes of
+# different buildings and is a theoretical potential (theoretical > technical >
+# realisable), not a feasible pathway.
+#   T1 No idle stock       v = 0 from 2027; near-term surplus absorbed in full (absorption 1);
+#                          banking rule (pathways.bank): dwellings built never negative, unused
+#                          release carried forward and used before any new building
+#   T2 No extra space      L1 with f = 1: new-dwelling size = occupied area S(t) x OLF (T3's OLF)
+#   T3 Minimum space       OLF of all new buildings = the lowest design OLF among the independent
+#                          case studies
+#   T4 Best materials      r per typology = its own best independent case (A1-A3 / pooled);
+#                          apartments held at r = 1 (one independent case)
+#   T5 Best soil           soil factor at the lowest soil order (SOC_low) for every typology
+T_COMPONENTS = ('T1', 'T2', 'T3', 'T4', 'T5')
+T_NAMES = {'T1': 'No idle stock', 'T2': 'No extra space', 'T3': 'Minimum space per person',
+           'T4': 'Best materials', 'T5': 'Best soil'}
+T_DISCLAIMER = ('T is a theoretical limit (thought experiment) combining the best observed attributes of different '
+                'buildings; it is not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > '
+                'realisable).')
+T_BASE_SETTING = 'stretch'
+T_INSTANT = 'instant'
+
+
+def ramp_instant(years, start=OBSERVED_YEAR):
+    """w = 1 from the first year after the observed year (2027), 0 up to and including 2026."""
+    return (np.asarray(years, float) > start).astype(float)
+
+
+def resolve_T(chars, factors_building, factors_typology, olf_used):
+    """T parameters from the case-study data. chars: per-building characteristics
+    (Building_factors.load_characteristics: Total GFA, OLF, Occupants); factors_building:
+    outputs/factors/factors_building.csv (A1-A3 per m2 at 2025 factors, duplicate_of);
+    factors_typology: outputs/factors/factors_typology.csv (SOC_avg, SOC_low);
+    olf_used: the baseline OLF per typology (Boss.OLF_USED, the pooled 'OLF_m2_per_person')."""
+    fb = factors_building.set_index('id')
+    independent = [i for i in fb.index if str(fb.loc[i, 'duplicate_of']) in ('', 'nan')]
+    c = chars.loc[independent]
+    occ_check = float((c['Total GFA'] / c['Occupants'] - c['OLF']).abs().max()) if 'Occupants' in c else None
+    olf_bld = c['OLF'].astype(float)
+    best = str(olf_bld.idxmin())
+    T3 = dict(building=best, typology=str(fb.loc[best, 'Typology']), olf=float(olf_bld.min()),
+              per_building={str(i): float(v) for i, v in olf_bld.sort_values().items()},
+              gfa_over_occupants_max_abs_diff=occ_check, excluded_duplicates=[i for i in fb.index if i not in independent],
+              replaces={t: float(v) for t, v in olf_used.items()})
+    T4 = {}
+    for t in factors_typology['Typology']:
+        g = fb[fb['Typology'] == t]
+        pooled = float(g.groupby('Subtype')['A1-A3'].mean().mean())
+        ind = g.loc[[i for i in g.index if i in independent]]
+        ratios = (ind['A1-A3'] / pooled).sort_values()
+        held = len(ind) < 2
+        T4[t] = dict(n_independent=int(len(ind)), pooled_a13=pooled, held=held,
+                     building=None if held else str(ratios.index[0]),
+                     a13=None if held else float(ind.loc[ratios.index[0], 'A1-A3']),
+                     r=1.0 if held else float(ratios.iloc[0]),
+                     ratios={str(i): float(v) for i, v in ratios.items()})
+    ft = factors_typology.set_index('Typology')
+    T5 = {t: dict(soc_avg=float(ft.loc[t, 'SOC_avg']), soc_low=float(ft.loc[t, 'SOC_low'])) for t in ft.index}
+    return dict(T3=T3, T4=T4, T5=T5, disclaimer=T_DISCLAIMER, base_setting=T_BASE_SETTING,
+                start_year=OBSERVED_YEAR + 1)
+
+
+def apply_T(base, params, pT, comps, ramp_name=T_INSTANT, E_nojoin=None):
+    """Inputs of a T-family run: P5-stretch with the overrides in `comps` (subset of T1..T5).
+    ramp_name 'instant' (w = 1 from 2027; T and its Shapley subsets) or None (the v2 logistic
+    ramp; T-ramp sensitivity). Returns (inputs, join_absorbed, join_redev, info); the banking
+    rule and the soil path are applied by pathways.run_T."""
+    unknown = set(comps) - set(T_COMPONENTS)
+    if unknown:
+        raise ValueError(f'Unknown T component(s) {unknown}.')
+    s = T_BASE_SETTING
+    years = base['years']
+    w = ramp_instant(years) if ramp_name == T_INSTANT else ramp_named(years, ramp_name)
+    fi = dict(base['fwd_inputs'])
+    typ = list(base['a13_2025'])
+    S = np.asarray(base['pop'], float) / np.asarray(base['hh'], float)
+    # T3: OLF of every new building = the lowest independent design OLF
+    if 'T3' in comps:
+        olf_y = {t: float(base['olf'][t]) + w * (pT['T3']['olf'] - float(base['olf'][t])) for t in typ}
+        fi['olf'] = olf_y
+    else:
+        olf_y = {t: np.full(len(years), float(base['olf'][t])) for t in typ}
+    # L1 / T2: size = occ + [1 - f w](size_ref - occ), occ = S x OLF (T3's OLF if active)
+    f = 1.0 if 'T2' in comps else params['L1']['f'][s]
+    size, held = {}, {}
+    for t in typ:
+        occ = S * olf_y[t]
+        ref = float(base['size_ref'][t])
+        held[t] = ref <= occ
+        size[t] = np.where(held[t], ref, occ + (1.0 - f * w) * (ref - occ))
+    fi['size'] = size
+    # L4 (unchanged, stretch)
+    fi['shares'] = l4_shares(base['fwd_inputs']['shares'], base['held_shares'], params['L4']['target'][s], w)
+    # L2a / L2b, or T1 (v = 0, absorption 1)
+    fi['v'] = l2_vacancy(base['v0'], 0.0 if 'T1' in comps else params['L2a']['v_star'][s], w)
+    if E_nojoin is None:
+        raise ValueError('apply_T needs the baseline forward run without a join (E_nojoin).')
+    join, redev = l2_join(E_nojoin, base['O26'], base['rho'], base['gap_ref'],
+                          1.0 if 'T1' in comps else params['L2b']['absorption'][s])
+    # L3 (unchanged, stretch)
+    fi['rate_demol'], fi['rate_unc'] = l3_rates(base['rate_demol'], base['rate_unc'], base['long_run_residual'],
+                                                params['L3']['d'][s], w)
+    # L5 / T4
+    r = {t: pT['T4'][t]['r'] for t in typ} if 'T4' in comps else params['L5']['r'][s]
+    fi['intensity'] = l5_intensity(base['fwd_inputs']['intensity'], base['a13_2025'], base['red13'], r, w)
+    fi['intensity_upfront'] = l5_intensity(base['fwd_inputs']['intensity_upfront'], base['a13_2025'], base['red13'], r, w)
+    # T5: soil path (applied exactly by pathways.run_T through the soil-bearing share)
+    soil_path = ({t: pT['T5'][t]['soc_avg'] + w * (pT['T5'][t]['soc_low'] - pT['T5'][t]['soc_avg'])
+                  for t in typ} if 'T5' in comps else None)
+    info = dict(w=w, l1_held=held, a13=a13_path(base['a13_2025'], base['red13'], r, w), soil_path=soil_path,
+                olf_path=olf_y, occupied=None, comps=tuple(c for c in T_COMPONENTS if c in comps))
+    return fi, join, redev, info
+
+
+def t_label(comps, ramp_name=T_INSTANT):
+    """'T' for all five, 'P5-stretch-instant' for none, else e.g. 'T[T1+T3]'; '-ramp' for the logistic ramp."""
+    c = [x for x in T_COMPONENTS if x in comps]
+    name = 'T' if len(c) == 5 else ('P5-stretch-instant' if not c else f"T[{'+'.join(c)}]")
+    return name + ('' if ramp_name == T_INSTANT else '-ramp')

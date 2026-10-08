@@ -151,16 +151,25 @@ def committed(ctx, gfa_t):
                 upper_kt=(b['upper'] + c) / M6, lower_kt=(b['lower'] + c) / M6)
 
 
-def soil_by_year(ctx, E):
-    s = np.array([ctx['soil'][t] for t in ctx['typ']])
-    return (s[:, None] * E['gfa_t']).sum(axis=0) * E['soil_share']
+def soil_by_year(ctx, E, soil_path=None):
+    """Soil carbon by year (kg): soil factor x floor area x soil-bearing share. soil_path: a run's own
+    factor by typology and year (T5); None = the baseline factor."""
+    if soil_path is None:
+        s = np.array([ctx['soil'][t] for t in ctx['typ']])
+        return (s[:, None] * E['gfa_t']).sum(axis=0) * E['soil_share']
+    s = np.array([np.asarray(soil_path[t], float) for t in ctx['typ']])
+    return (s * E['gfa_t']).sum(axis=0) * E['soil_share']
+
+
+def _soil_path(R):
+    return R['info'].get('soil_path')
 
 
 def carbon_parts(ctx, R):
     """Annual carbon split by cohort: upfront by construction year (soil and non-soil) and
     in-window events by cohort year i and occurrence year j (ev[i, j]). Sum = E['carbon']."""
     E = R['E']
-    soil = soil_by_year(ctx, E)
+    soil = soil_by_year(ctx, E, _soil_path(R))
     up = E['upfront']
     ev = np.zeros((len(ctx['years']), len(ctx['years'])))
     for k, t in enumerate(ctx['typ']):
@@ -177,7 +186,7 @@ def metrics(ctx, R, label, setting):
     f = slice(1, None)
     gfa_t = E['gfa_t']
     I = E['carbon'][f]
-    soil = soil_by_year(ctx, E)[f]
+    soil = soil_by_year(ctx, E, _soil_path(R))[f]
     a13 = sum((gfa_t[k] * info['a13'][t])[f].sum() for k, t in enumerate(ctx['typ']))
     a45 = sum((gfa_t[k] * (ctx['a45_2025'][t] - np.asarray(ctx['red45'][t], float)))[f].sum()
               for k, t in enumerate(ctx['typ']))
@@ -192,7 +201,7 @@ def metrics(ctx, R, label, setting):
     gfa = gfa_t[:, f].sum()
     S = E['pop'] / E['hh']
     size = fi['size']
-    size_minus_occ = min(float((np.broadcast_to(np.asarray(size[t], float), S.shape) - S * float(ctx['olf'][t]))[f].min())
+    size_minus_occ = min(float((np.broadcast_to(np.asarray(size[t], float), S.shape) - S * np.asarray(fi['olf'][t], float))[f].min())
                          for t in ctx['typ'])
     held = R['info'].get('l1_held')
     row = dict(run=label, scenario=ctx['scenario'], setting=setting, levers=LV.label(R['active']),
@@ -231,7 +240,7 @@ def metrics(ctx, R, label, setting):
 def annual_rows(ctx, R, label):
     E = R['E']
     v_impl = 1.0 - E['hh'] / (E['stock'] + E['stock_join'])
-    soil = soil_by_year(ctx, E)
+    soil = soil_by_year(ctx, E, _soil_path(R))
     rows = []
     for i, y in enumerate(ctx['years']):
         if y < WINDOW[0]:
@@ -283,8 +292,14 @@ def band_arrays(ctx, R):
                 join=np.divide((E['join'] - E['join_redev']) * D + E['gfa_adj'], jg, out=one.copy(), where=jg != 0),
                 rv=1.0 - np.divide(repl_u, gross_u, out=np.zeros_like(one), where=gross_u != 0))
     shares = fi['shares']
-    mat = {t: np.asarray(fi['intensity'][t], float) - ctx['soil'][t] for t in ctx['typ']}
-    c = {k: sum(v * shares[t].values * mat[t] + v * shares[t].values * frac[k] * ctx['soil'][t] for t in ctx['typ'])
+    sp = _soil_path(R)
+    if sp is None:
+        mat = {t: np.asarray(fi['intensity'][t], float) - ctx['soil'][t] for t in ctx['typ']}
+        soil = ctx['soil']
+    else:                              # T5: material part before the soil adjustment, soil on its own path
+        mat = {t: np.asarray(R['info']['intensity_material'][t], float) for t in ctx['typ']}
+        soil = {t: np.asarray(sp[t], float) for t in ctx['typ']}
+    c = {k: sum(v * shares[t].values * mat[t] + v * shares[t].values * frac[k] * soil[t] for t in ctx['typ'])
          for k, v in g.items()}
     c['bev'] = E['b_t'].sum(axis=0)
     return g, c
@@ -303,7 +318,9 @@ def band_rows(ctx, R, label):
     tot_g, tot_c = E['total'][f], E['carbon'][f]
     raw_g = {b: sum((g[k] if k != 'bev' else 0.0 * g['growth']) for k in ks)[f] for b, ks in FIG_BANDS}
     raw_c = {b: sum(c[k] for k in ks)[f] for b, ks in FIG_BANDS}
-    fg, fc = tot_g / sum(raw_g.values()), tot_c / sum(raw_c.values())
+    sg, sc = sum(raw_g.values()), sum(raw_c.values())
+    fg = np.divide(tot_g, sg, out=np.zeros_like(tot_g), where=sg != 0)     # 0 / 0 only in banked zero-building years (T)
+    fc = np.divide(tot_c, sc, out=np.zeros_like(tot_c), where=sc != 0)
     rows += [dict(run=label, scenario=ctx['scenario'], definition='in_scope_figure', band=b,
                   gfa_Mm2=(raw_g[b] * fg).sum() / M6, carbon_kt=(raw_c[b] * fc).sum() / M6) for b, _ in FIG_BANDS]
     return rows
@@ -648,13 +665,241 @@ def write(res, identity):
         json.dump(to_json(lv), f, indent=2)
 
 
+# ============================================================
+# THEORETICAL LIMIT T (PATHWAYS v3; levers.apply_T) -- a thought experiment, not a proposal
+# ============================================================
+T_RUNS = ('T', 'T-ramp')
+T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of built = req + (0 - req) in banked zero years (~1e-12)
+T_ZERO_TOL_M2 = 1e-3
+
+
+def bank(raw):
+    """Banking rule (T): dwellings built can never be negative. raw_t = the requirement of the year
+    (new households + vacancy allowance + vacancy change + removals + absorbed near-term excess),
+    negative when the release of vacant / surplus dwellings exceeds it. Unused release is carried
+    forward and used before any new building, until exhausted:
+
+        D_t = raw_t - bank_{t-1};  built_t = max(0, D_t);  bank_t = max(0, -D_t)
+
+    Index 0 (2025, the anchor year) is passed through. Returns built, bank, added, used (arrays)."""
+    raw = np.asarray(raw, float)
+    n = len(raw)
+    built, bnk, added, used = raw.copy(), np.zeros(n), np.zeros(n), np.zeros(n)
+    prev = 0.0
+    for i in range(1, n):
+        d = raw[i] - prev
+        built[i] = max(0.0, d)
+        bnk[i] = max(0.0, -d)
+        added[i] = max(0.0, -raw[i])
+        used[i] = min(prev, max(raw[i], 0.0))
+        prev = bnk[i]
+    return dict(built=built, bank=bnk, added=added, used=used)
+
+
+def run_T(ctx, params, pT, comps, ramp_name=LV.T_INSTANT):
+    """A T-family run. 1) the T inputs (levers.apply_T); 2) the requirement without a join; 3) the
+    banking rule on requirement + absorbed near-term excess; 4) engine.forward with the stock-adding
+    join join_t = built_t - requirement_t (join_redev = 0), so the stock identity holds and dwellings
+    built = built_t >= 0; 5) T5: the soil factor of each year applied exactly through the engine's
+    soil-bearing share (intensity minus (soil_avg - soil_path) x share; the share does not depend
+    on the intensity, checked)."""
+    fi, join_abs, _, info = LV.apply_T(ctx, params, pT, comps, ramp_name, ctx['E_nojoin'])
+    n = len(ctx['years'])
+    zeros = np.zeros(n)
+    E1 = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=zeros, join_redev=zeros, **fi)
+    req = np.asarray(engine.requirement(E1), float)
+    bk = bank(req + np.asarray(join_abs, float))
+    join_T = bk['built'] - req
+    join_T[0] = 0.0
+    E = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=join_T, join_redev=zeros, **fi)
+    if info['soil_path'] is not None:
+        share = E['soil_share'].copy()
+        info['intensity_material'] = {t: np.asarray(fi['intensity'][t], float) - ctx['soil'][t] for t in ctx['typ']}
+        fi = dict(fi)
+        for key in ('intensity', 'intensity_upfront'):
+            fi[key] = {t: np.asarray(fi[key][t], float) - (ctx['soil'][t] - info['soil_path'][t]) * share
+                       for t in ctx['typ']}
+        E = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=join_T, join_redev=zeros, **fi)
+        if not np.array_equal(E['soil_share'], share):
+            raise SystemExit('T5: the soil-bearing share changed between passes.')
+    info.update(bank=bk, requirement_nojoin=req, join_absorbed=np.asarray(join_abs, float), join_T=join_T)
+    return dict(E=E, inputs=fi, info=info, active={}, ramp=ramp_name or RAMP_ADOPTED, l5_apartments_held=False,
+                scenario=ctx['scenario'], comps=tuple(info['comps']))
+
+
+def t_indicators(ctx, R):
+    """Human-terms indicators of a T-family run (2026-2050)."""
+    E, info = R['E'], R['info']
+    S = E['pop'] / E['hh']
+    years = ctx['years']
+    f = slice(1, None)
+    size = {t: np.broadcast_to(np.asarray(R['inputs']['size'][t], float), S.shape) for t in ctx['typ']}
+    built = np.asarray(engine.requirement(E), float)
+    v_impl = 1.0 - E['hh'] / (E['stock'] + E['stock_join'])
+    bk = info['bank']
+    zero_years = [int(y) for y, b in zip(years[f], built[f]) if b <= T_ZERO_TOL_DWELLINGS]
+    return dict(
+        new_dwelling_size_m2={t: {int(y): float(size[t][i]) for i, y in enumerate(years) if y in (2026, 2027, 2035, 2050)}
+                              for t in ctx['typ']},
+        mean_new_dwelling_size_m2_by_year={int(y): float(E['D'][i]) for i, y in enumerate(years) if y >= 2026},
+        m2_per_person_new_dwellings={int(y): float(E['D'][i] / S[i]) for i, y in enumerate(years) if y >= 2026},
+        dwellings_built_all_categories={int(y): float(built[i]) for i, y in enumerate(years) if y >= 2026},
+        dwellings_built_in_scope={int(y): float(E['dwell_in_scope'][i]) for i, y in enumerate(years) if y >= 2026},
+        implied_vacancy={int(y): float(v_impl[i]) for i, y in enumerate(years) if y >= 2026},
+        vacancy_change_release_dwellings=float(-np.minimum(E['change'][f], 0.0).sum()),
+        near_term_surplus_absorbed_dwellings=float(-np.minimum(info['join_absorbed'][f], 0.0).sum()),
+        bank={int(y): dict(raw=float(info['requirement_nojoin'][i] + info['join_absorbed'][i]),
+                           built=float(bk['built'][i]), bank_end=float(bk['bank'][i]), added=float(bk['added'][i]),
+                           used=float(bk['used'][i])) for i, y in enumerate(years) if y >= 2026},
+        release_added_total=float(bk['added'][f].sum()), release_used_total=float(bk['used'][f].sum()),
+        bank_unused_2050=float(bk['bank'][-1]), zero_building_years=zero_years, n_zero_building_years=len(zero_years))
+
+
+def compute_T(res, verbose=True):
+    """T, T-ramp, the 32 Shapley subsets of T1-T5 relative to P5-stretch (instant), metrics, bands,
+    annual rows, gap. Appended to the v2 tables (v2 rows unchanged)."""
+    import Building_factors as BF
+    t0 = time.time()
+    ref = res['ctxs'][REFERENCE]
+    B = ref['B']
+    pT = LV.resolve_T(BF.load_characteristics(), load_factors_building(),
+                      pd.read_csv(validation.Boss.FILE_FACTORS_TYPOLOGY), B['OLF_USED'])
+    params = res['params']
+    cache = {}
+
+    def getT(comps, ramp_name=LV.T_INSTANT):
+        key = (tuple(c for c in LV.T_COMPONENTS if c in comps), ramp_name)
+        if key not in cache:
+            cache[key] = run_T(ref, params, pT, comps, ramp_name)
+        return cache[key]
+
+    full = LV.T_COMPONENTS
+    RT, RTr = getT(full), getT(full, None)
+    rows = [metrics(ref, RT, 'T', 'T'), metrics(ref, RTr, 'T-ramp', 'T')]
+    for r_ in rows:
+        r_['levers'] = 'P5-stretch+' + '+'.join(LV.T_COMPONENTS)
+    p0 = res['runs'][(res['runs']['run'] == 'P0') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
+    for r_ in rows:
+        for col in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'gfa_Mm2', 'committed_lower_kt', 'committed_upper_kt'):
+            r_[f'delta_{col}_vs_P0_pct'] = 100.0 * (r_[col] / p0[col] - 1.0)
+    annual = annual_rows(ref, RT, 'T') + annual_rows(ref, RTr, 'T-ramp')
+    bands = band_rows(ref, RT, 'T') + band_rows(ref, RTr, 'T-ramp')
+    bd = pd.DataFrame(bands)
+    b0 = res['bands'][(res['bands']['run'] == 'P0')].set_index(['scenario', 'definition', 'band'])
+    for col in ('gfa_Mm2', 'carbon_kt'):
+        bd[f'delta_{col}_vs_P0'] = [r[col] - b0.loc[(r['scenario'], r['definition'], r['band']), col] for _, r in bd.iterrows()]
+    # Shapley over T1-T5 (instant convention), base = P5-stretch with the instant start
+    vals = {'carbon_kt': {}, 'LoE_AR': {}}
+    sub_rows = []
+    for S_ in subsets(full):
+        R_ = getT(S_)
+        m = metrics(ref, R_, LV.t_label(S_), 'T')
+        vals['carbon_kt'][S_], vals['LoE_AR'][S_] = m['carbon_kt'], m['LoE_AR']
+        sub_rows.append(dict(level='T', subset=LV.t_label(S_), n_players=len(S_), carbon_kt=m['carbon_kt'],
+                             LoE_AR=m['LoE_AR'], LoE_AtP=m['LoE_AtP'], gfa_Mm2=m['gfa_Mm2'],
+                             dwellings_built_min_year=m['dwellings_built_min_year']))
+    shap_rows, exact = [], {}
+    for metric, v in vals.items():
+        r_, ex = shapley_rows(v, full, 'T', metric, 'T', LV.T_NAMES)
+        for x in r_:
+            x['share_of_P5s_instant_minus_T'] = x.pop('share_of_P0_minus_P5')
+        shap_rows += r_
+        exact[metric] = ex
+    p5s = res['runs'][(res['runs']['run'] == 'P5-stretch') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
+    for metric in ('carbon_kt', 'LoE_AR'):
+        shap_rows.append(dict(level='T', setting='T', metric=metric, player='instant start',
+                              name='P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player)',
+                              reduction=float(p5s[metric] - vals[metric][frozenset()]),
+                              share_of_P5s_instant_minus_T=float('nan')))
+    # gap
+    bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
+    gap = {}
+    for name, R_ in (('T', RT), ('T-ramp', RTr)):
+        loe = R_['E']['carbon'][1:].sum() / bar
+        if loe > 1:
+            bc, _ = backcast(ref, R_, name)
+            gap[name] = dict(LoE_AR=loe, within_AR=False, backcast=bc)
+        else:
+            sp = linear_split(ref, R_)
+            gap[name] = dict(LoE_AR=loe, within_AR=True, margin_AR_kt=(bar - R_['E']['carbon'][1:].sum()) / M6,
+                             margin_AR_share=1.0 - loe, LoE_AtP=R_['E']['carbon'][1:].sum() / batp,
+                             LoE_AtP_min_k0=sp['fixed'].sum() / batp)
+    out = dict(params_T=pT, rows=rows, annual=annual, bands=bd, shapley=pd.DataFrame(shap_rows),
+               subsets=pd.DataFrame(sub_rows), shapley_exact=exact, gap=gap,
+               indicators={'T': t_indicators(ref, RT), 'T-ramp': t_indicators(ref, RTr)},
+               cache=cache, getT=getT, seconds=time.time() - t0)
+    if verbose:
+        print(f'pathways T: {len(cache)} engine runs in {out["seconds"]:.1f} s')
+    return out
+
+
+def checks_T(res, rt):
+    """STOP conditions of the T family: dwellings built >= 0 every year, the stock identity
+    (engine dwellings built = banked dwellings), implied vacancy >= 0, size >= occupied area
+    (within 1e-12 relative), 2026 unchanged, Shapley efficiency exact."""
+    ref = res['ctxs'][REFERENCE]
+    E0 = res['get'](REFERENCE, {})['E']
+    for key, R in rt['cache'].items():
+        E, bk = R['E'], R['info']['bank']
+        built = np.asarray(engine.requirement(E), float)
+        if (built[1:] < -T_ZERO_TOL_DWELLINGS).any() or (E['dwell_in_scope'][1:] < -T_ZERO_TOL_DWELLINGS).any() \
+                or (E['total'][1:] < -T_ZERO_TOL_M2).any():
+            raise SystemExit(f'STOP: negative dwellings built in T run {key}.')
+        if not np.allclose(built[1:], bk['built'][1:], rtol=1e-12, atol=1e-6):
+            raise SystemExit(f'STOP: banking breaks the stock identity in T run {key}.')
+        v = 1.0 - E['hh'] / (E['stock'] + E['stock_join'])
+        if (v[1:] < -1e-12).any():
+            raise SystemExit(f'STOP: negative implied vacancy in T run {key}.')
+        S = E['pop'] / E['hh']
+        for t in ref['typ']:
+            occ = S * np.asarray(R['inputs']['olf'][t], float)
+            size = np.broadcast_to(np.asarray(R['inputs']['size'][t], float), S.shape)
+            if (size[1:] < occ[1:] * (1 - 1e-12)).any():
+                raise SystemExit(f'STOP: dwelling size below the occupied area in T run {key} ({t}).')
+        if abs(E['carbon'][1] / E0['carbon'][1] - 1) > 1e-12 or abs(E['total'][1] / E0['total'][1] - 1) > 1e-12:
+            raise SystemExit(f'T run {key}: 2026 changed.')
+    for metric, (phi, total) in rt['shapley_exact'].items():
+        if sum(phi.values()) != total:
+            raise SystemExit(f'T Shapley efficiency fails ({metric}).')
+
+
+def write_T(res, rt):
+    """Append the T rows to the v2 tables (v2 rows unchanged) and write t_limit.json, shapley_T.csv."""
+    runs = pd.concat([res['runs'], pd.DataFrame(rt['rows'])], ignore_index=True)
+    runs.to_csv(os.path.join(OUT, 'pathways_runs.csv'), index=False)
+    pd.concat([res['annual'], pd.DataFrame(rt['annual'])], ignore_index=True).to_csv(
+        os.path.join(OUT, 'pathways_annual.csv'), index=False)
+    pd.concat([res['bands'], rt['bands']], ignore_index=True).to_csv(os.path.join(OUT, 'pathways_bands.csv'), index=False)
+    rt['shapley'].to_csv(os.path.join(OUT, 'shapley_T.csv'), index=False)
+    rt['subsets'].to_csv(os.path.join(OUT, 'shapley_T_subsets.csv'), index=False)
+    rows = {r['run']: r for r in rt['rows']}
+    out = dict(run_mode=RUN_MODE, disclaimer=LV.T_DISCLAIMER, definition=dict(
+        base='P5-stretch (L3 removals -40%, L4 attached share stretch, L2b replaced by T1)', start=2027,
+        ramp='instant: w = 1 for every lever in 2027-2050; 2026 observed and untouched (T-ramp: the v2 logistic ramp)',
+        components=LV.T_NAMES), resolved=rt['params_T'],
+        metrics={k: {c: v for c, v in r.items() if isinstance(v, (int, float, str, bool, np.floating, np.integer))}
+                 for k, r in rows.items()},
+        indicators=rt['indicators'], gap=rt['gap'],
+        shapley=rt['shapley'].to_dict(orient='records'))
+    with open(os.path.join(OUT, 't_limit.json'), 'w') as f:
+        json.dump(to_json(out), f, indent=2)
+
+
 def main():
     res = compute()
     identity = checks(res)
     print(f'pathways: identity P0 = reference run, max relative difference {max(identity.values()):.2e}')
     write(res, identity)
+    rt = compute_T(res)
+    checks_T(res, rt)
+    write_T(res, rt)
+    res['T'] = rt
     if SAVE_FIGURES:
         figures(res)
+    for k in T_RUNS:
+        x = next(r_ for r_ in rt['rows'] if r_['run'] == k)
+        print(f"{k}: floor area {x['gfa_Mm2']:.2f} Mm2, carbon {x['carbon_kt']:,.0f} kt, LoE AR {x['LoE_AR']:.3f}, "
+              f"AtP {x['LoE_AtP']:.2f} ({x['delta_carbon_kt_vs_P0_pct']:+.1f}% vs P0)")
     r = res['runs']
     ref = r[(r['scenario'] == REFERENCE) & (r['ramp'] == RAMP_ADOPTED) & ~r['l5_apartments_held']]
     print(ref[['run', 'gfa_Mm2', 'carbon_kt', 'LoE_AR', 'LoE_AtP', 'delta_carbon_kt_vs_P0_pct']].to_string(index=False))

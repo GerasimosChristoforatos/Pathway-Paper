@@ -1,36 +1,39 @@
 """
-PATHWAYS v1: lever runs, attribution, AESA gap, back-cast, solution space
-=========================================================================
-Reads the Boss state (validation.run_boss -> Boss.main() locals) and re-calls
-engine.forward() with copies of `fwd_inputs` modified by levers.py; nothing in
-the model changes (engine.py, Boss.py, events.py, aesa.py, PB.py are only
-called). With every lever off the run IS the reference central run (tested to
-1e-9: annual carbon, upfront, in-window B, floor area by typology, demand
-bands, committed range, cumulative LoE AR / AtP).
+PATHWAYS v2: pathway runs, attribution, AESA gap, back-cast, solution space
+===========================================================================
+Reads the Boss state (validation.run_boss -> Boss.main() locals, in memory only)
+and re-calls engine.forward() with copies of `fwd_inputs` modified by levers.py;
+nothing in the model changes and no baseline output is written (the baseline is
+frozen: tests/test_baseline_lock.py). With every lever off the run IS the
+reference central run (tested to 1e-9: annual carbon, upfront, in-window B,
+floor area by typology, demand bands, committed range, cumulative LoE AR / AtP).
 
-Runs (reference scenario S3-10 unless stated):
-  P0              baseline (every lever off)
-  L1..L5 at M, A  single levers
-  P1 Avoid (L1+L2+L3), P2 Shift + Improve (L4+L5), P3 all five; each at M and A
-  Shapley         all 2^5 subsets at M and at A (P3 attribution, exact arithmetic)
-  envelope        P0 and P3 under S1 and S2 (full Boss runs with REPLACEMENT_SCENARIO
-                  changed, as tools/replacement_scenarios.py and PB.scenario_runs)
-  ramp sensitivity  P3 with the levers at full strength by 2045 (all three scenarios)
+Runs (reference scenario S3-10 unless stated; settings central and stretch):
+  P0                  baseline (every lever off)
+  levers              L1, L4, L2a, L2b, L3, L5 each alone
+  pathways            P1 Right-size space (L1 + L4), P2 Occupy the existing stock
+                      (L2a + L2b), P3 Keep and reuse (L3), P4 Build better (L5), P5 all
+  attribution         Shapley values over the 16 pathway subsets (main) and the 64 lever
+                      subsets (SI), exact arithmetic; demand bands by run (exact by band)
+  envelope            P0 and P5 under S1 and S2 (full Boss runs with REPLACEMENT_SCENARIO
+                      changed, as tools/replacement_scenarios.py and PB.scenario_runs)
+  sensitivities       P5 with the ramp2045 (all three scenarios); P4 and P5 with the
+                      apartments held at r = 1 (L5)
 
-AESA gap: boundaries B_AR, B_AtP by year for S3-10 from outputs/pb_annual.csv
-(population is not changed by any lever); cumulative LoE = ratio of sums
-(aesa.cumulative_loe). Back-cast on P3-A: a uniform factor k on all 2027-2050
-construction (floor area by typology; carbon is linear in floor area; 2026
-fixed) solved with scipy.optimize.brentq for cumulative LoE AR = 1; for AtP the
-minimum attainable LoE (k = 0, 2026 alone) is reported. Solution space (Horup
-et al. 2025, Fig. 6 style): demand x intensity reduction grid on P0.
+AESA gap: boundaries B_AR, B_AtP by year for S3-10 from outputs/pb_annual.csv;
+cumulative LoE = ratio of sums (aesa.cumulative_loe). Back-cast on P5-central,
+P5-stretch and P0: a uniform factor k on all 2027-2050 construction (floor area by
+typology; carbon linear in floor area; 2026 fixed), scipy.optimize.brentq for
+cumulative LoE AR = 1; AtP: the minimum attainable LoE (2026 cohort alone).
+Solution space (Horup et al. 2025, Fig. 6 style) on P0.
 
-Writes outputs/pathways/: pathways_runs.csv, pathways_annual.csv,
-pathways_bands.csv, shapley.csv, backcast.json, solution_space.csv,
-levers.json, PATHWAYS_METHODS_DRAFT.md (tools/pathways_methods.py), and the
-figures pw_1..pw_6 (outputs/figures/, listed in FIGURES.md).
+Writes outputs/pathways/: pathways_runs.csv, pathways_annual.csv, pathways_bands.csv,
+shapley_pathways.csv, shapley_levers.csv, shapley_subsets.csv, backcast.json,
+solution_space.csv, levers.json; figures pw_* (outputs/figures/, FIGURES.md section).
+The documents (PATHWAYS_METHODS_DRAFT.md, LEVERS_TABLE.md, the ASSUMPTIONS and
+FIGURES sections) are written by tools/pathways_methods.py --sections.
 
-    python pathways.py
+    python pathways.py          (run_all.py --pathways-only runs it with the tests)
 """
 import contextlib
 import io
@@ -54,6 +57,8 @@ import engine  # noqa: E402
 import events as EV  # noqa: E402
 import levers as LV  # noqa: E402
 import validation  # noqa: E402
+
+RAMP_ADOPTED = 'ramp2035'
 
 OUT = os.path.join(ROOT, 'outputs', 'pathways')
 FIG_DIR = os.path.join(ROOT, 'outputs', 'figures')
@@ -113,7 +118,7 @@ def base_context(B, scenario, bounds):
     a45 = {t: float(B['MAT_STAGE']['A4-A5'][t].sum()) for t in typ}
     return dict(
         scenario=scenario, B=B, years=fy, typ=typ, pop=pop, growth=growth, hh=hh,
-        fwd_inputs=fi, size_ref=B['size_ref'], v0=float(B['v_forward']), rate_demol=float(B['demolition_rate']),
+        fwd_inputs=fi, size_ref=B['size_ref'], olf=B['OLF_USED'], v0=float(B['v_forward']), rate_demol=float(B['demolition_rate']),
         rate_unc=np.asarray(fi['rate_unc'], float), long_run_residual=float(B['unconsented_rate']),
         held_shares=B['held_shares'], a13_2025=a13, red13=B['RED13_TOT'], a45_2025=a45, red45=B['RED45_TOT'],
         join=ji['join'], join_redev=ji['redev'], O26=float(ji['O26']), rho=float(B['rho_other']),
@@ -125,11 +130,12 @@ def base_context(B, scenario, bounds):
 # ============================================================
 # ONE RUN AND ITS METRICS
 # ============================================================
-def run(ctx, params, active, ramp_full=LV.RAMP_FULL):
-    """engine.forward with the levers in `active` ({lever: 'M' | 'A'})."""
-    fi, join, redev, info = LV.apply(ctx, params, active, ramp_full, ctx['E_nojoin'])
+def run(ctx, params, active, ramp_name=None, l5_apartments_held=False):
+    """engine.forward with the levers in `active` ({lever: 'central' | 'stretch'})."""
+    fi, join, redev, info = LV.apply(ctx, params, active, ramp_name, ctx['E_nojoin'], l5_apartments_held)
     E = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=join, join_redev=redev, **fi)
-    return dict(E=E, inputs=fi, info=info, active=dict(active), ramp_full=ramp_full, scenario=ctx['scenario'])
+    return dict(E=E, inputs=fi, info=info, active=dict(active), ramp=ramp_name or RAMP_ADOPTED,
+                l5_apartments_held=l5_apartments_held, scenario=ctx['scenario'])
 
 
 def committed(ctx, gfa_t):
@@ -184,8 +190,13 @@ def metrics(ctx, R, label, setting):
     built_all = engine.requirement(E)[f]
     loe_ar, loe_atp = aesa.cumulative_loe(I, ctx['b_ar']), aesa.cumulative_loe(I, ctx['b_atp'])
     gfa = gfa_t[:, f].sum()
+    S = E['pop'] / E['hh']
+    size = fi['size']
+    size_minus_occ = min(float((np.broadcast_to(np.asarray(size[t], float), S.shape) - S * float(ctx['olf'][t]))[f].min())
+                         for t in ctx['typ'])
+    held = R['info'].get('l1_held')
     row = dict(run=label, scenario=ctx['scenario'], setting=setting, levers=LV.label(R['active']),
-               ramp_full=R['ramp_full'],
+               ramp=R['ramp'], l5_apartments_held=R['l5_apartments_held'],
                gfa_Mm2=gfa / M6, gfa_2027_2050_Mm2=gfa_t[:, 2:].sum() / M6,
                **{f'gfa_{t}_Mm2': gfa_t[k][f].sum() / M6 for k, t in enumerate(ctx['typ'])},
                carbon_kt=I.sum() / M6, upfront_kt=up / M6, b_inwindow_kt=E['b_t'][:, f].sum() / M6,
@@ -209,7 +220,11 @@ def metrics(ctx, R, label, setting):
                D_minus_occ_min_m2=float((E['D'] - E['occ'])[f].min()),
                extra_clip_max_m2=float(np.abs(E['extra_clip'][f]).max()),
                attached_share_2050=float(sum(fi['shares'][t].iloc[-1] for t in LV.ATTACHED)),
-               near_term_join_dwellings=float(E['join'][f].sum()))
+               near_term_join_dwellings=float(E['join'][f].sum()),
+               existing_dwellings_released=float(-np.minimum(E['change'][f], 0.0).sum()),
+               vacancy_change_dwellings=float(E['change'][f].sum()),
+               size_minus_occupied_min_m2=size_minus_occ,
+               l1_held_typology_years=int(sum(h[f].sum() for h in held.values())) if held else 0)
     return row
 
 
@@ -229,6 +244,8 @@ def annual_rows(ctx, R, label):
                          **{f'gfa_{t}_Mm2': E['gfa_t'][k, i] / M6 for k, t in enumerate(ctx['typ'])},
                          dwellings_built=E['dwell_in_scope'][i], dwelling_size_m2=E['D'][i],
                          occupied_area_m2=E['occ'][i], implied_vacancy=v_impl[i],
+                         stock_vacancy=float(np.broadcast_to(E['v'], E['hh'].shape)[i]),
+                         vacancy_change_dwellings=E['change'][i], near_term_join_dwellings=E['join'][i],
                          B_AR_kt=ctx['b_ar'][j] / M6, B_AtP_kt=ctx['b_atp'][j] / M6,
                          LoE_AR=E['carbon'][i] / ctx['b_ar'][j], LoE_AtP=E['carbon'][i] / ctx['b_atp'][j]))
     return rows
@@ -396,6 +413,22 @@ def boss_state(scenario):
         return validation.run_boss(**SCENARIOS[scenario][1])
 
 
+def run_name(pathway_or_lever, setting, ramp_name=None, apt_held=False):
+    """'P0', 'P3-central', 'L1-stretch', 'P5-central-ramp2045', 'P4-stretch-aptheld'."""
+    if pathway_or_lever == 'P0':
+        return 'P0'
+    return f'{pathway_or_lever}-{setting}' + (f'-{ramp_name}' if ramp_name else '') + ('-aptheld' if apt_held else '')
+
+
+def shapley_rows(value, players, setting, metric, level, groups):
+    phi = shapley(value, players)
+    full = frozenset(players)
+    total = Fraction(value[frozenset()]) - Fraction(value[full])
+    rows = [dict(level=level, setting=setting, metric=metric, player=pl, name=groups[pl], reduction=float(phi[pl]),
+                 share_of_P0_minus_P5=float(phi[pl] / total)) for pl in players]
+    return rows, (phi, total)
+
+
 def compute(scenarios=tuple(SCENARIOS), verbose=True):
     """All runs. Returns a dict of tables and the objects the figures and tests need."""
     t0 = time.time()
@@ -404,36 +437,37 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
     if REFERENCE not in states:
         raise ValueError('The reference scenario S3-10 is required.')
     params = LV.resolve(states[REFERENCE], load_factors_building(), validation.Boss)
-    if params['L4']['target']['M'] >= params['L4']['target']['A']:
-        raise SystemExit(f"STOP (L4): Moderate target {params['L4']['target']['M']:.4f} >= Ambitious "
-                         f"{params['L4']['target']['A']:.4f}.")
+    LV.stop_checks(params)
     ctxs = {s: base_context(states[s], s, bounds) for s in scenarios}
     cache = {}
 
-    def get(scen, active, ramp_full=LV.RAMP_FULL):
-        key = (scen, LV.label(active), ramp_full)
+    def get(scen, active, ramp_name=None, apt_held=False):
+        key = (scen, LV.label(active), ramp_name or RAMP_ADOPTED, apt_held)
         if key not in cache:
-            cache[key] = run(ctxs[scen], params, active, ramp_full)
+            cache[key] = run(ctxs[scen], params, active, ramp_name, apt_held)
         return cache[key]
 
-    named = []                                  # (name, scenario, setting, active, ramp)
-    named.append(('P0', REFERENCE, '', {}, LV.RAMP_FULL))
-    for L in LV.LEVERS:
-        for s in LV.SETTINGS:
-            named.append((f'{L}-{s}', REFERENCE, s, {L: s}, LV.RAMP_FULL))
-    for P, members in LV.BUNDLES.items():
-        for s in LV.SETTINGS:
-            named.append((f'{P}-{s}', REFERENCE, s, {L: s for L in members}, LV.RAMP_FULL))
+    named = [('P0', REFERENCE, '', {}, None, False)]            # (name, scenario, setting, active, ramp, apt_held)
+    for s in LV.SETTINGS:
+        for L in LV.LEVERS:
+            named.append((run_name(L, s), REFERENCE, s, {L: s}, None, False))
+    for s in LV.SETTINGS:
+        for P in ('P1', 'P2', 'P3', 'P4', 'P5'):
+            named.append((run_name(P, s), REFERENCE, s, LV.pathway_levers(P, s), None, False))
     for scen in scenarios:
         if scen != REFERENCE:
-            named.append(('P0', scen, '', {}, LV.RAMP_FULL))
+            named.append(('P0', scen, '', {}, None, False))
             for s in LV.SETTINGS:
-                named.append((f'P3-{s}', scen, s, {L: s for L in LV.LEVERS}, LV.RAMP_FULL))
+                named.append((run_name('P5', s), scen, s, LV.pathway_levers('P5', s), None, False))
         for s in LV.SETTINGS:
-            named.append((f'P3-{s}-ramp{LV.RAMP_FULL_SENS}', scen, s, {L: s for L in LV.LEVERS}, LV.RAMP_FULL_SENS))
+            named.append((run_name('P5', s, LV.RAMP_SENS['name']), scen, s, LV.pathway_levers('P5', s),
+                          LV.RAMP_SENS['name'], False))
+    for s in LV.SETTINGS:                                        # L5 sensitivity: apartments held at r = 1
+        for P in ('P4', 'P5'):
+            named.append((run_name(P, s, apt_held=True), REFERENCE, s, LV.pathway_levers(P, s), None, True))
     rows, annual, bands = [], [], []
-    for name, scen, s, active, rf in named:
-        R = get(scen, active, rf)
+    for name, scen, s, active, rn, ah in named:
+        R = get(scen, active, rn, ah)
         rows.append(metrics(ctxs[scen], R, name, s))
         annual += annual_rows(ctxs[scen], R, name)
         bands += band_rows(ctxs[scen], R, name)
@@ -442,73 +476,87 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
     for col in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'gfa_Mm2', 'committed_lower_kt', 'committed_upper_kt'):
         runs_df[f'delta_{col}_vs_P0_pct'] = [100.0 * (r[col] / p0.loc[r['scenario'], col] - 1.0)
                                             for _, r in runs_df.iterrows()]
+    bands_df = pd.DataFrame(bands)
+    b0 = bands_df[bands_df['run'] == 'P0'].set_index(['scenario', 'definition', 'band'])
+    for col in ('gfa_Mm2', 'carbon_kt'):
+        bands_df[f'delta_{col}_vs_P0'] = [r[col] - b0.loc[(r['scenario'], r['definition'], r['band']), col]
+                                          for _, r in bands_df.iterrows()]
 
-    # ---- Shapley attribution of P3 (all 2^5 subsets, S3-10) and the fixed-order waterfall
-    shap_rows, shap_runs = [], []
-    shap_exact = {}
-    for s in LV.SETTINGS:
-        vals = {'carbon_kt': {}, 'LoE_AR': {}}
-        for S in subsets(LV.LEVERS):
-            active = {L: s for L in S}
-            m = metrics(ctxs[REFERENCE], get(REFERENCE, active), LV.label(active), s)
-            vals['carbon_kt'][S] = m['carbon_kt']
-            vals['LoE_AR'][S] = m['LoE_AR']
-            shap_runs.append(dict(setting=s, subset=LV.label(active), n_levers=len(S), carbon_kt=m['carbon_kt'],
-                                  LoE_AR=m['LoE_AR'], LoE_AtP=m['LoE_AtP'], gfa_Mm2=m['gfa_Mm2']))
-        for metric, v in vals.items():
-            phi = shapley(v)
-            full = frozenset(LV.LEVERS)
-            shap_exact[(s, metric)] = (phi, Fraction(v[frozenset()]) - Fraction(v[full]))
-            for pos, L in enumerate(LV.LEVERS, 1):
-                shap_rows.append(dict(setting=s, metric=metric, method='shapley', lever=L,
-                                      lever_name=LV.LEVER_NAMES[L], group=LV.LEVER_GROUP[L], order=pos,
-                                      reduction=float(phi[L]),
-                                      share_of_P0_minus_P3=float(phi[L] / (Fraction(v[frozenset()]) - Fraction(v[full])))))
-            prev = frozenset()
-            for pos, L in enumerate(LV.LEVERS, 1):          # fixed order Avoid -> Shift -> Improve
-                cur = prev | {L}
-                shap_rows.append(dict(setting=s, metric=metric, method='sequential', lever=L,
-                                      lever_name=LV.LEVER_NAMES[L], group=LV.LEVER_GROUP[L], order=pos,
-                                      reduction=v[prev] - v[cur], share_of_P0_minus_P3=(v[prev] - v[cur]) / (v[frozenset()] - v[full]),
-                                      cumulative_after=v[cur]))
-                prev = cur
-    shap_df = pd.DataFrame(shap_rows)
-
-    # ---- back-cast (P3-A; P0 for comparison) and solution space (P0) ------------
+    # ---- Shapley: four pathways (P1-P4; 16 subsets) and six levers (64 subsets), S3-10 -----
     ref = ctxs[REFERENCE]
+    shap_p, shap_l, shap_runs, shap_exact = [], [], [], {}
+    pnames = {P: LV.PATHWAY_NAMES[P] for P in LV.PATHWAYS}
+    for s in LV.SETTINGS:
+        for level, players, names, expand in (
+                ('pathways', tuple(LV.PATHWAYS), pnames, lambda S: [L for P in S for L in LV.PATHWAYS[P]]),
+                ('levers', LV.LEVERS, LV.LEVER_NAMES, lambda S: list(S))):
+            vals = {'carbon_kt': {}, 'LoE_AR': {}}
+            for S in subsets(players):
+                active = {L: s for L in expand(S)}
+                m = metrics(ref, get(REFERENCE, active), LV.label(active), s)
+                vals['carbon_kt'][S] = m['carbon_kt']
+                vals['LoE_AR'][S] = m['LoE_AR']
+                shap_runs.append(dict(level=level, setting=s, subset='+'.join(p for p in players if p in S) or 'none',
+                                      levers=LV.label(active), n_players=len(S), carbon_kt=m['carbon_kt'],
+                                      LoE_AR=m['LoE_AR'], LoE_AtP=m['LoE_AtP'], gfa_Mm2=m['gfa_Mm2']))
+            for metric, v in vals.items():
+                r_, ex = shapley_rows(v, players, s, metric, level, names)
+                (shap_p if level == 'pathways' else shap_l).extend(r_)
+                shap_exact[(level, s, metric)] = ex
+
+    # ---- back-cast (P5 central / stretch; P0) and solution space (P0) --------------------
     R0 = get(REFERENCE, {})
-    R3A = get(REFERENCE, {L: 'A' for L in LV.LEVERS})
-    bc3, split3 = backcast(ref, R3A, 'P3-A')
     bc0, split0 = backcast(ref, R0, 'P0')
     gfa0_later = split0['gfa_later']
-    if bc3['k_AR'] is not None:
-        bc3['equivalent_cut_vs_P0_floor_area'] = 1.0 - bc3['k_AR'] * split3['gfa_later'] / gfa0_later
-        bc3['equivalent_cut_vs_P0_carbon_2027_2050_cohorts'] = 1.0 - (
-            bc3['k_AR'] * (split3['later_nonsoil'] + split3['later_soil']).sum()
-            / (split0['later_nonsoil'] + split0['later_soil']).sum())
     bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
+    bcs, bc_points = {'P0': bc0}, [dict(run='P0 back-cast', demand_reduction=1.0 - bc0['k_AR'], intensity_reduction=0.0)]
+    for s in LV.SETTINGS:
+        R5 = get(REFERENCE, LV.pathway_levers('P5', s))
+        bc, sp = backcast(ref, R5, f'P5-{s}')
+        if bc['k_AR'] is not None:
+            bc['equivalent_cut_vs_P0_floor_area'] = 1.0 - bc['k_AR'] * sp['gfa_later'] / gfa0_later
+            bc['equivalent_cut_vs_P0_carbon_2027_2050_cohorts'] = 1.0 - (
+                bc['k_AR'] * (sp['later_nonsoil'] + sp['later_soil']).sum()
+                / (split0['later_nonsoil'] + split0['later_soil']).sum())
+            d, i = effective_coordinates(sp, split0)
+            bc_points.append(dict(run=f'P5-{s} back-cast', demand_reduction=1.0 - bc['k_AR'] * (1.0 - d),
+                                  intensity_reduction=i))
+        bcs[f'P5-{s}'] = bc
     space = solution_space(split0, bar, batp)
     markers = []
-    for P in ('P1', 'P2', 'P3'):
+    for P in ('P1', 'P2', 'P3', 'P4', 'P5'):
         for s in LV.SETTINGS:
-            Rp = get(REFERENCE, {L: s for L in LV.BUNDLES[P]})
-            sp = linear_split(ref, Rp)
-            d, i = effective_coordinates(sp, split0)
-            grid_loe = scaled_carbon(split0, 1.0 - d, 1.0 - i).sum() / bar
+            Rp = get(REFERENCE, LV.pathway_levers(P, s))
+            d, i = effective_coordinates(linear_split(ref, Rp), split0)
             run_loe = Rp['E']['carbon'][1:].sum() / bar
-            markers.append(dict(run=f'{P}-{s}', demand_reduction=d, intensity_reduction=i,
-                                LoE_AR_run=run_loe, LoE_AR_on_grid_at_coordinates=grid_loe,
+            markers.append(dict(run=f'{P}-{s}', demand_reduction=d, intensity_reduction=i, LoE_AR_run=run_loe,
+                                LoE_AR_on_grid_at_coordinates=scaled_carbon(split0, 1.0 - d, 1.0 - i).sum() / bar,
                                 LoE_AtP_run=run_loe * bar / batp))
     backcast_out = dict(
         run_mode=RUN_MODE, method='uniform factor k on the floor area by typology of every 2027-2050 cohort '
         '(construction-year upfront and its in-window events scale with k; 2026 and its events fixed); '
         'scipy.optimize.brentq on [0, 1], xtol 1e-15',
-        P3_A=bc3, P0=bc0, B_AR_kt=bar / M6, B_AtP_kt=batp / M6,
-        solution_space_markers=markers,
-        AtP_note=('not attainable within the window' if not bc3['AtP_attainable'] else 'attainable'))
-    out = dict(params=params, runs=runs_df, annual=pd.DataFrame(annual), bands=pd.DataFrame(bands),
-               shapley=shap_df, shapley_runs=pd.DataFrame(shap_runs), shapley_exact=shap_exact,
-               backcast=backcast_out, space=space, ctxs=ctxs, states=states, cache=cache, get=get,
+        B_AR_kt=bar / M6, B_AtP_kt=batp / M6, solution_space_markers=markers, backcast_points=bc_points,
+        AtP_note=('not attainable within the window' if not bcs['P0']['AtP_attainable'] else 'attainable'), **bcs)
+
+    # ---- diagnostics: L1 sizes held, released dwellings, end-of-ramp step of P2 --------------
+    diag = {}
+    a_ref = pd.DataFrame(annual)
+    a_ref = a_ref[a_ref['scenario'] == REFERENCE].set_index(['run', 'year'])
+    w = LV.ramp(ref['years'])
+    for s in LV.SETTINGS:
+        nm = run_name('P2', s)
+        c35, c36 = a_ref.loc[(nm, 2035), 'carbon_kt'], a_ref.loc[(nm, 2036), 'carbon_kt']
+        d35, d36 = a_ref.loc[(nm, 2035), 'dwellings_built'], a_ref.loc[(nm, 2036), 'dwellings_built']
+        p35, p36 = a_ref.loc[('P0', 2035), 'carbon_kt'], a_ref.loc[('P0', 2036), 'carbon_kt']
+        diag[f'end_of_ramp_step_{nm}'] = dict(
+            w_2035_minus_w_2034=float(w[10] - w[9]), carbon_2035_kt=c35, carbon_2036_kt=c36,
+            carbon_step_kt=c36 - c35, carbon_step_pct=100 * (c36 / c35 - 1), P0_carbon_step_kt=p36 - p35,
+            step_relative_to_P0_kt=(c36 - c35) - (p36 - p35), dwellings_step=d36 - d35)
+    out = dict(params=params, runs=runs_df, annual=pd.DataFrame(annual), bands=bands_df,
+               shapley_pathways=pd.DataFrame(shap_p), shapley_levers=pd.DataFrame(shap_l),
+               shapley_runs=pd.DataFrame(shap_runs), shapley_exact=shap_exact, backcast=backcast_out,
+               space=space, diagnostics=diag, ctxs=ctxs, states=states, cache=cache, get=get,
                seconds=time.time() - t0)
     if verbose:
         print(f'pathways: {len(cache)} engine runs in {out["seconds"]:.1f} s')
@@ -521,17 +569,15 @@ def checks(res):
     B = ctx['B']
     R0 = res['get'](REFERENCE, {})
     E0, Eb = R0['E'], B['engine_out']['50th']
-    rel = lambda a, b: float(np.max(np.abs(np.asarray(a, float) - np.asarray(b, float)) / np.maximum(np.abs(np.asarray(b, float)), 1e-300)))
+    rel = lambda a, b: float(np.max(np.abs(np.asarray(a, float) - np.asarray(b, float))
+                                    / np.maximum(np.abs(np.asarray(b, float)), 1e-300)))
     rep = {}
     rep['annual_carbon'] = rel(E0['carbon'][1:], B['carbon_total_typ'].sum(axis=1).values[1:])
     rep['gfa_by_typology'] = rel(E0['gfa_t'][:, 1:], Eb['gfa_t'][:, 1:])
     bres = json.load(open(FILE_BOSS_RESULTS))
     r0 = res['runs'][(res['runs']['run'] == 'P0') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
-    rep['carbon_kt'] = abs(r0['carbon_kt'] / bres['carbon_kt'] - 1)
-    rep['upfront_kt'] = abs(r0['upfront_kt'] / bres['upfront_kt'] - 1)
-    rep['soil_kt'] = abs(r0['soil_kt'] / bres['soil_kt'] - 1)
-    rep['b_inwindow_kt'] = abs(r0['b_inwindow_kt'] / bres['b_inwindow_kt'] - 1)
-    rep['gfa_Mm2'] = abs(r0['gfa_Mm2'] / bres['gfa_Mm2'] - 1)
+    for k in ('carbon_kt', 'upfront_kt', 'soil_kt', 'b_inwindow_kt', 'gfa_Mm2'):
+        rep[k] = abs(r0[k] / bres[k] - 1)
     rep['annual_carbon_json'] = rel(E0['carbon'][1:] / M6, bres['annual']['carbon_kt'][1:])
     for k in ('lower_kt', 'upper_kt', 'B_lower_kt', 'B_upper_kt', 'C_kt'):
         rep[f'committed_{k}'] = abs(r0[f'committed_{k}'] / bres['committed'][k] - 1)
@@ -550,18 +596,18 @@ def checks(res):
     if rep[worst] > IDENTITY_RTOL:
         raise SystemExit(f'STOP: identity not reproduced: {worst} relative difference {rep[worst]:.3e}')
     runs = res['runs']
-    bad = runs[(runs['D_minus_occ_min_m2'] < 0) | (runs['extra_clip_max_m2'] > 0)]
+    bad = runs[(runs['D_minus_occ_min_m2'] < 0) | (runs['extra_clip_max_m2'] > 0) | (runs['size_minus_occupied_min_m2'] < 0)]
     if len(bad):
-        raise SystemExit(f'STOP: D < S x OLF in {list(bad["run"] + " " + bad["scenario"])}')
+        raise SystemExit(f'STOP: dwelling size below occupied area in {list(bad["run"] + " " + bad["scenario"])}')
     badv = runs[runs['implied_vacancy_min'] < LV.L2_VACANCY_FLOOR]
     if len(badv):
         raise SystemExit(f'STOP: implied vacancy below {LV.L2_VACANCY_FLOOR:.1%} in {list(badv["run"] + " " + badv["scenario"])}')
     badd = runs[runs['dwellings_built_min_year'] < 0]
     if len(badd):
         raise SystemExit(f'STOP: negative dwellings built in {list(badd["run"] + " " + badd["scenario"])}')
-    for (s, metric), (phi, total) in res['shapley_exact'].items():
+    for key, (phi, total) in res['shapley_exact'].items():
         if sum(phi.values()) != total:
-            raise SystemExit(f'Shapley efficiency fails ({s}, {metric}).')
+            raise SystemExit(f'Shapley efficiency fails {key}.')
     return rep
 
 
@@ -570,7 +616,7 @@ def to_json(o):
         return {str(k): to_json(v) for k, v in o.items()}
     if isinstance(o, (list, tuple)):
         return [to_json(v) for v in o]
-    if isinstance(o, (np.floating, np.integer)):
+    if isinstance(o, (np.floating, np.integer, np.bool_)):
         return o.item()
     if isinstance(o, np.ndarray):
         return [to_json(v) for v in o.tolist()]
@@ -579,18 +625,25 @@ def to_json(o):
     return o
 
 
+V1_FILES = ('shapley.csv',)              # v1 outputs without a v2 equivalent (removed)
+
+
 def write(res, identity):
     os.makedirs(OUT, exist_ok=True)
+    for f in V1_FILES:
+        if os.path.exists(os.path.join(OUT, f)):
+            os.remove(os.path.join(OUT, f))
     res['runs'].to_csv(os.path.join(OUT, 'pathways_runs.csv'), index=False)
     res['annual'].to_csv(os.path.join(OUT, 'pathways_annual.csv'), index=False)
     res['bands'].to_csv(os.path.join(OUT, 'pathways_bands.csv'), index=False)
-    res['shapley'].to_csv(os.path.join(OUT, 'shapley.csv'), index=False)
+    res['shapley_pathways'].to_csv(os.path.join(OUT, 'shapley_pathways.csv'), index=False)
+    res['shapley_levers'].to_csv(os.path.join(OUT, 'shapley_levers.csv'), index=False)
     res['shapley_runs'].to_csv(os.path.join(OUT, 'shapley_subsets.csv'), index=False)
     res['space'].to_csv(os.path.join(OUT, 'solution_space.csv'), index=False)
     with open(os.path.join(OUT, 'backcast.json'), 'w') as f:
         json.dump(to_json(res['backcast']), f, indent=2)
-    lv = dict(res['params'], run_mode=RUN_MODE, identity_max_rel_diff=max(identity.values()),
-              identity_checks=identity, sources=LV.SOURCES)
+    lv = dict(res['params'], diagnostics=res['diagnostics'], run_mode=RUN_MODE,
+              identity_max_rel_diff=max(identity.values()), identity_checks=identity, sources=LV.SOURCES)
     with open(os.path.join(OUT, 'levers.json'), 'w') as f:
         json.dump(to_json(lv), f, indent=2)
 
@@ -603,7 +656,7 @@ def main():
     if SAVE_FIGURES:
         figures(res)
     r = res['runs']
-    ref = r[(r['scenario'] == REFERENCE) & (r['ramp_full'] == LV.RAMP_FULL)]
+    ref = r[(r['scenario'] == REFERENCE) & (r['ramp'] == RAMP_ADOPTED) & ~r['l5_apartments_held']]
     print(ref[['run', 'gfa_Mm2', 'carbon_kt', 'LoE_AR', 'LoE_AtP', 'delta_carbon_kt_vs_P0_pct']].to_string(index=False))
     return res
 

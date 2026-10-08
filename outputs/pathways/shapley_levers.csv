@@ -1,0 +1,25 @@
+level,setting,metric,player,name,reduction,share_of_P0_minus_P5
+levers,central,carbon_kt,L1,Right-sized new dwellings,1223.457998145627,0.3005769352209748
+levers,central,carbon_kt,L4,Denser typology mix,68.15526553269828,0.016744261645303963
+levers,central,carbon_kt,L2a,Lower vacancy,640.8538246731312,0.15744380177893252
+levers,central,carbon_kt,L2b,Near-term surplus absorbed,807.0492884744848,0.19827440097625232
+levers,central,carbon_kt,L3,Fewer removals,506.2911795505936,0.12438469592694257
+levers,central,carbon_kt,L5,Best-practice materials,824.5579799750113,0.20257590445159385
+levers,central,LoE_AR,L1,Right-sized new dwellings,0.2748708649714034,0.3005769352209749
+levers,central,LoE_AR,L4,Denser typology mix,0.015312251681482373,0.01674426164530395
+levers,central,LoE_AR,L2a,Lower vacancy,0.14397882508032642,0.15744380177893247
+levers,central,LoE_AR,L2b,Near-term surplus absorbed,0.181317492168728,0.1982744009762524
+levers,central,LoE_AR,L3,Fewer removals,0.11374701433264817,0.12438469592694251
+levers,central,LoE_AR,L5,Best-practice materials,0.18525112060923143,0.20257590445159382
+levers,stretch,carbon_kt,L1,Right-sized new dwellings,2216.7142897041185,0.3065861268159173
+levers,stretch,carbon_kt,L4,Denser typology mix,419.6846063203394,0.05804513397763605
+levers,stretch,carbon_kt,L2a,Lower vacancy,1213.3022880718856,0.1678076651035172
+levers,stretch,carbon_kt,L2b,Near-term surplus absorbed,879.5114189473355,0.12164219840051053
+levers,stretch,carbon_kt,L3,Fewer removals,934.1553459398757,0.12919981194072497
+levers,stretch,carbon_kt,L5,Best-practice materials,1566.9471103638452,0.21671906376169395
+levers,stretch,LoE_AR,L1,Right-sized new dwellings,0.49802296043588035,0.30658612681591735
+levers,stretch,LoE_AR,L4,Denser typology mix,0.09428935928270704,0.05804513397763605
+levers,stretch,LoE_AR,L2a,Lower vacancy,0.2725892101727922,0.16780766510351722
+levers,stretch,LoE_AR,L2b,Near-term surplus absorbed,0.19759735507446882,0.12164219840051049
+levers,stretch,LoE_AR,L3,Fewer removals,0.20987405235434217,0.1291998119407249
+levers,stretch,LoE_AR,L5,Best-practice materials,0.35204159704948396,0.21671906376169398

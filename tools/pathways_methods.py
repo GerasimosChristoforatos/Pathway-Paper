@@ -27,7 +27,117 @@ def table(head, rows):
     return L
 
 
-def levers_table(p):
+def t_table_rows(t):
+    r = t['resolved']
+    T3, T4, T5 = r['T3'], r['T4'], r['T5']
+    rr = ', '.join(f"{k} {v['r']:.3f}" + (f" ({v['building']})" if v['building'] else ' (held: one independent case)')
+                   for k, v in T4.items())
+    return [
+        ['T1 No idle stock', 'stock-wide vacancy v = 0 from 2027; near-term surplus absorbed in full; banking rule '
+         '(dwellings built never negative; unused release carried forward and used before any new building)',
+         '`v`; `join` = banked built - requirement (stock-adding, join_redev = 0)', 'v = 0; absorption 1',
+         'DECISION (author): theoretical limit of L2a / L2b', 'DECISION'],
+        ['T2 No extra space', 'new-dwelling size = occupied area S(t) x OLF (L1 with f = 1)', '`size` per typology and year',
+         f"f = 1 (2050 size {t['indicators']['T']['new_dwelling_size_m2']['Detached']['2050']:.1f} m2 with T3)",
+         'DECISION (author): theoretical limit of L1', 'DECISION'],
+        ['T3 Minimum space per person', 'OLF of every new building = the lowest design OLF (GFA / design occupants) among '
+         'the independent case studies', '`olf` (all typologies)',
+         f"{T3['olf']:.2f} m2/person ({T3['building']}, {T3['typology']}); replaces "
+         + ', '.join(f'{k} {v:.2f}' for k, v in T3['replaces'].items()),
+         'DATA: case studies, Christoforatos & Pickering (2025) SASBE, doi:10.1108/SASBE-06-2025-0304 '
+         '(data/building_data.xlsx; duplicate ' + ', '.join(T3['excluded_duplicates']) + ' excluded)', 'DATA'],
+        ['T4 Best materials', "each typology's A1-A3 per m2 at its own best independent case (on top of decarbonisation, as L5)",
+         '`intensity`, `intensity_upfront` (A1-A3 term)', rr,
+         'DATA: case studies (outputs/factors/factors_building.csv, 2025 factors)', 'DATA'],
+        ['T5 Best soil', 'soil factor at the lowest soil order (SOC_low) for every typology, from 2027',
+         'soil factor (applied exactly through the soil-bearing share)',
+         ', '.join(f"{k} {v['soc_low']:.1f} (vs {v['soc_avg']:.1f})" for k, v in T5.items()) + ' kg CO2e/m2',
+         'DATA: Christoforatos, Pickering & Schipper (2026) J. Environ. Manage. 415, 130603 (lowest of 10 soil orders; '
+         'the existing lower-bound sensitivity)', 'DATA'],
+    ]
+
+
+def t_levers_table(t):
+    L = ['', '## Theoretical limit T (PATHWAYS v3)', '', '> ' + t['disclaimer'], '',
+         'T = P5-stretch (L3 removals -40%, L4 attached share 55.40%) with the overrides below, all at full strength '
+         'from 2027 (no ramp); 2026 observed and untouched.', '']
+    L += table(['assumption', 'definition', 'model terms', 'value', 'source', 'tag'], t_table_rows(t))
+    return L
+
+
+def t_methods(t, runs):
+    ind, gap = t['indicators']['T'], t['gap']
+    r = {n: runs[(runs['run'] == n) & (runs['scenario'] == 'S3-10')].iloc[0] for n in ('P0', 'P5-central', 'P5-stretch', 'T', 'T-ramp')}
+    sh = pd.DataFrame(t['shapley'])
+    L = ['', '## Theoretical limit T (PATHWAYS v3)', '', '> ' + t['disclaimer'], '',
+         '**Definition.** T = P5-stretch with five overrides at full strength from 2027 (w = 1 for every lever in '
+         '2027-2050, no ramp; 2026 observed and untouched): T1 no idle stock (v = 0; near-term surplus absorbed in full), '
+         'T2 no extra space (new-dwelling size = occupied area S(t) · OLF), T3 minimum space per person (OLF of every new '
+         'building = the lowest independent design OLF), T4 best materials (each typology at its own best independent '
+         'case; apartments held), T5 best soil (lowest soil order). L3 (−40%) and L4 (55.40%) as P5-stretch.', '']
+    L += table(['assumption', 'definition', 'model terms', 'value', 'source', 'tag'], t_table_rows(t))
+    L += ['', '**Banking rule (T1).** raw_t = requirement_t + absorbed near-term excess_t (negative when the release of '
+          'vacant or surplus dwellings exceeds the year\'s need); D_t = raw_t − bank_(t−1); built_t = max(0, D_t); '
+          'bank_t = max(0, −D_t). The banked path enters engine.forward as a stock-adding join, join_t = built_t − '
+          'requirement_t (join_redev = 0), so the stock identity holds and implied vacancy = stock_join / (households + '
+          'stock_join) ≥ 0. Banked zero-building years carry floating-point noise of about 1e-12 dwellings; the checks '
+          'use 1e-6 dwellings. The banking rule is applied in every T-family run (it binds only where the release exceeds '
+          'the need).', '',
+          '**Soil path (T5).** The engine takes one soil factor per typology; the year-dependent factor is applied exactly '
+          'by lowering the intensity by (SOC_avg − SOC_path(y)) × soil-bearing share(y), the share being independent of '
+          'the intensity (checked: identical in both passes; tested).', '',
+          '### Results (S3-10)', '']
+    rows = [[n, f"{x['gfa_Mm2']:.2f}", f"{x['carbon_kt']:,.0f}", f"{x['committed_lower_kt']:,.0f}-{x['committed_upper_kt']:,.0f}",
+             f"{x['LoE_AR']:.3f}", f"{x['LoE_AtP']:.2f}", f"{100 * x['remaining_reduction_AR']:.1f}%",
+             f"{x['delta_carbon_kt_vs_P0_pct']:+.1f}%"] for n, x in r.items()]
+    L += table(['run', 'floor area (Mm²)', 'carbon 2026-2050 (kt)', 'committed after 2050 (kt)', 'LoE AR', 'LoE AtP',
+                'AR reduction still needed', 'carbon vs P0'], rows)
+    zy = ind['zero_building_years']
+    L += ['', '**Human terms (T, 2027-2050).** New-dwelling size '
+          + ', '.join(f"{k} {v['2050']:.1f} m²" for k, v in ind['new_dwelling_size_m2'].items())
+          + f" (2050); floor area per person in new dwellings {ind['m2_per_person_new_dwellings']['2050']:.1f} m²; "
+          f"vacant dwellings released by the vacancy change {ind['vacancy_change_release_dwellings']:,.0f} and near-term "
+          f"surplus absorbed {ind['near_term_surplus_absorbed_dwellings']:,.0f}; release in excess of the yearly need "
+          f"{ind['release_added_total']:,.0f} dwellings, used {ind['release_used_total']:,.0f}, unused in 2050 "
+          f"{ind['bank_unused_2050']:,.0f}; no new building in {len(zy)} years"
+          + (f" ({zy[0]}-{zy[-1]})" if zy else '') + '. Dwellings built per year, implied vacancy and the banking path by '
+          'year: t_limit.json.', '']
+    g = gap['T']
+    if g['within_AR']:
+        L += [f"**Gap.** T is within the AR budget: margin {g['margin_AR_kt']:,.0f} kt ({100 * g['margin_AR_share']:.1f}%)."]
+    else:
+        b = g['backcast']
+        L += [f"**Gap.** T exceeds the AR budget (cumulative LoE AR {g['LoE_AR']:.3f}): a uniform cut of "
+              f"{100 * b['cut_AR']:.1f}% of 2027-2050 construction (k = {b['k_AR']:.4f}, brentq) would reach LoE AR = 1. "
+              f"AtP: T {b['LoE_AtP_at_k1']:.2f}; the minimum attainable (2026 cohort alone) is {b['LoE_AtP_min_k0']:.2f}, "
+              'so AtP is not attainable within the window.']
+    L += ['', '### Shapley attribution of P5-stretch (instant start) − T', '']
+    rows = []
+    for pl in ['T1', 'T2', 'T3', 'T4', 'T5', 'instant start']:
+        c = sh[(sh['metric'] == 'carbon_kt') & (sh['player'] == pl)].iloc[0]
+        a = sh[(sh['metric'] == 'LoE_AR') & (sh['player'] == pl)].iloc[0]
+        share = c['share_of_P5s_instant_minus_T']
+        rows.append([pl if pl == 'instant start' else f"{pl} {t['definition']['components'][pl]}",
+                     f"{c['reduction']:,.0f}" + ('' if pd.isna(share) else f" ({100 * share:.0f}%)"), f"{a['reduction']:.3f}"])
+    L += table(['player', 'carbon (kt)', 'LoE AR'], rows)
+    L += ['', 'Players T1-T5 over 32 subsets, each applied with the instant start (exact rational arithmetic; the values add '
+          'up to P5-stretch with the instant start − T). "instant start" is a separate line, not a player: P5-stretch on '
+          'the logistic ramp minus P5-stretch at full strength from 2027. Sensitivity: T with the v2 logistic ramp '
+          f"(T-ramp) gives LoE AR {r['T-ramp']['LoE_AR']:.3f}.", '',
+          '### Limitations of T', '',
+          '* T combines attributes of different buildings (the OLF of A_1, an apartment block, applied to every typology; '
+          'each typology\'s best A1-A3 case; the lowest soil order everywhere) that have not been observed together; it is '
+          'not a design, a policy or a feasible pathway.',
+          '* T2 + T3 give every new dwelling the occupied area of the case-study minimum (about 20 m² per person); no '
+          'design rule, accessibility standard or household-size variation is modelled.',
+          '* T1 assumes every vacant dwelling is usable where it is needed (no spatial or condition mismatch; Napiontek et '
+          'al. 2025 on hibernating stock) and an instant reallocation in 2027.',
+          '* As in P1-P5, the renovation carbon of the kept stock (L3) and any rebound are not modelled; deterministic, '
+          'median demographics; static budgets.']
+    return L
+
+
+def levers_table(p, t=None):
     import levers as LV
     rows = LV.lever_table(p)
     L = ['# Table 1. PATHWAYS v2 levers (generated by tools/pathways_methods.py from outputs/pathways/levers.json; '
@@ -40,6 +150,8 @@ def levers_table(p):
                 'basis (full citation)', 'key assumption', 'tag'],
                [[r['lever'], r['pathway'], r['band'], r['parameter'], r['central'], r['stretch'], r['basis'],
                  r['assumption'], r['tag']] for r in rows])
+    if t is not None:
+        L += t_levers_table(t)
     with open(os.path.join(OUT, 'LEVERS_TABLE.md'), 'w', encoding='utf-8') as f:
         f.write('\n'.join(L) + '\n')
 
@@ -52,8 +164,10 @@ def main():
     shp = pd.read_csv(os.path.join(OUT, 'shapley_pathways.csv'))
     shl = pd.read_csv(os.path.join(OUT, 'shapley_levers.csv'))
     bc = json.load(open(os.path.join(OUT, 'backcast.json')))
-    levers_table(p)
-    ref = runs[(runs['scenario'] == 'S3-10') & (runs['ramp'] == 'ramp2035') & ~runs['l5_apartments_held']].set_index('run')
+    t_path = os.path.join(OUT, 't_limit.json')
+    tlim = json.load(open(t_path)) if os.path.exists(t_path) else None
+    levers_table(p, tlim)
+    ref = runs[(runs['scenario'] == 'S3-10') & (runs['ramp'] == 'ramp2035') & ~runs['l5_apartments_held'].astype(bool)].set_index('run')
     p0 = ref.loc['P0']
     e5 = p['L5']['estimator']
     L = ['# PATHWAYS v2: methods (DRAFT; generated by tools/pathways_methods.py, do not edit by hand)', '']
@@ -266,7 +380,7 @@ def main():
           '* The pathways are deterministic (median demographics); the baseline Monte Carlo is not re-run for them. '
           'Budgets are static (PB layer limitations apply).',
           '* Omitted in v2: ' + '; '.join(f'{a} ({b})' for a, b in LV.OMITTED) + '.', '',
-          '## Sources', ''] + [f'* {v}' for v in p['sources'].values()]
+          ] + (t_methods(tlim, runs) if tlim is not None else []) + ['', '## Sources', ''] + [f'* {v}' for v in p['sources'].values()]
     path = os.path.join(OUT, 'PATHWAYS_METHODS_DRAFT.md')
     with open(path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(L) + '\n')

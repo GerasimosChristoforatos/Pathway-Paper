@@ -229,6 +229,59 @@ AtP: not attainable within the window (minimum cumulative LoE AtP with no constr
 * The pathways are deterministic (median demographics); the baseline Monte Carlo is not re-run for them. Budgets are static (PB layer limitations apply).
 * Omitted in v2: Occupancy / household size (household size is a demographic input of the baseline (Stats NZ household projections, Boss.HH_SIZE_VARIANT) and sets the number of households, not a construction choice; a lever on it needs a behavioural or policy model of household formation that v2 does not have (growth and house-splitting are untargeted by design, as in Pellan et al. 2024)); Brownfield soil (the soil factor is one area-weighted value for Auckland land zoned for urbanisation (Christoforatos, Pickering & Schipper 2026) and soil is already zero on the replacement bands; no national brownfield share is in the inputs to parameterise a shift); Lightweighting (the case studies give A1-A3 per m2 by material and item, not structural mass by design alternative; a mass reduction cannot be separated from the material choice already covered by L5); Bio-based archetypes (no typology has a bio-based archetype among the 16 case studies, and the model's biogenic-carbon convention (timber C1-C4 excludes biogenic CO2) would need extending; overlaps L5).
 
+
+## Theoretical limit T (PATHWAYS v3)
+
+> T is a theoretical limit (thought experiment) combining the best observed attributes of different buildings; it is not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).
+
+**Definition.** T = P5-stretch with five overrides at full strength from 2027 (w = 1 for every lever in 2027-2050, no ramp; 2026 observed and untouched): T1 no idle stock (v = 0; near-term surplus absorbed in full), T2 no extra space (new-dwelling size = occupied area S(t) · OLF), T3 minimum space per person (OLF of every new building = the lowest independent design OLF), T4 best materials (each typology at its own best independent case; apartments held), T5 best soil (lowest soil order). L3 (−40%) and L4 (55.40%) as P5-stretch.
+
+| assumption | definition | model terms | value | source | tag |
+|---|---|---|---|---|---|
+| T1 No idle stock | stock-wide vacancy v = 0 from 2027; near-term surplus absorbed in full; banking rule (dwellings built never negative; unused release carried forward and used before any new building) | `v`; `join` = banked built - requirement (stock-adding, join_redev = 0) | v = 0; absorption 1 | DECISION (author): theoretical limit of L2a / L2b | DECISION |
+| T2 No extra space | new-dwelling size = occupied area S(t) x OLF (L1 with f = 1) | `size` per typology and year | f = 1 (2050 size 52.2 m2 with T3) | DECISION (author): theoretical limit of L1 | DECISION |
+| T3 Minimum space per person | OLF of every new building = the lowest design OLF (GFA / design occupants) among the independent case studies | `olf` (all typologies) | 19.69 m2/person (A_1, Apartments); replaces Detached 36.46, Townhouses 33.11, Apartments 20.63 | DATA: case studies, Christoforatos & Pickering (2025) SASBE, doi:10.1108/SASBE-06-2025-0304 (data/building_data.xlsx; duplicate A_2 excluded) | DATA |
+| T4 Best materials | each typology's A1-A3 per m2 at its own best independent case (on top of decarbonisation, as L5) | `intensity`, `intensity_upfront` (A1-A3 term) | Detached 0.530 (SD_2), Townhouses 0.880 (T_2), Apartments 1.000 (held: one independent case) | DATA: case studies (outputs/factors/factors_building.csv, 2025 factors) | DATA |
+| T5 Best soil | soil factor at the lowest soil order (SOC_low) for every typology, from 2027 | soil factor (applied exactly through the soil-bearing share) | Detached 22.9 (vs 50.1), Townhouses 13.8 (vs 30.3), Apartments 2.5 (vs 5.5) kg CO2e/m2 | DATA: Christoforatos, Pickering & Schipper (2026) J. Environ. Manage. 415, 130603 (lowest of 10 soil orders; the existing lower-bound sensitivity) | DATA |
+
+**Banking rule (T1).** raw_t = requirement_t + absorbed near-term excess_t (negative when the release of vacant or surplus dwellings exceeds the year's need); D_t = raw_t − bank_(t−1); built_t = max(0, D_t); bank_t = max(0, −D_t). The banked path enters engine.forward as a stock-adding join, join_t = built_t − requirement_t (join_redev = 0), so the stock identity holds and implied vacancy = stock_join / (households + stock_join) ≥ 0. Banked zero-building years carry floating-point noise of about 1e-12 dwellings; the checks use 1e-6 dwellings. The banking rule is applied in every T-family run (it binds only where the release exceeds the need).
+
+**Soil path (T5).** The engine takes one soil factor per typology; the year-dependent factor is applied exactly by lowering the intensity by (SOC_avg − SOC_path(y)) × soil-bearing share(y), the share being independent of the intensity (checked: identical in both passes; tested).
+
+### Results (S3-10)
+
+| run | floor area (Mm²) | carbon 2026-2050 (kt) | committed after 2050 (kt) | LoE AR | LoE AtP | AR reduction still needed | carbon vs P0 |
+|---|---|---|---|---|---|---|---|
+| P0 | 89.57 | 21,578 | 8,208-8,969 | 4.848 | 19.39 | 79.4% | +0.0% |
+| P5-central | 75.18 | 17,507 | 6,883-7,511 | 3.933 | 15.73 | 74.6% | -18.9% |
+| P5-stretch | 62.51 | 14,347 | 5,700-6,164 | 3.223 | 12.89 | 69.0% | -33.5% |
+| T | 25.32 | 5,174 | 2,321-2,509 | 1.162 | 4.65 | 14.0% | -76.0% |
+| T-ramp | 30.09 | 6,431 | 2,732-2,958 | 1.445 | 5.78 | 30.8% | -70.2% |
+
+**Human terms (T, 2027-2050).** New-dwelling size Detached 52.2 m², Townhouses 52.2 m², Apartments 52.2 m² (2050); floor area per person in new dwellings 19.7 m²; vacant dwellings released by the vacancy change 114,399 and near-term surplus absorbed 16,760; release in excess of the yearly need 101,045 dwellings, used 101,045, unused in 2050 0; no new building in 5 years (2027-2031). Dwellings built per year, implied vacancy and the banking path by year: t_limit.json.
+
+**Gap.** T exceeds the AR budget (cumulative LoE AR 1.162): a uniform cut of 19.3% of 2027-2050 construction (k = 0.8074, brentq) would reach LoE AR = 1. AtP: T 4.65; the minimum attainable (2026 cohort alone) is 1.28, so AtP is not attainable within the window.
+
+### Shapley attribution of P5-stretch (instant start) − T
+
+| player | carbon (kt) | LoE AR |
+|---|---|---|
+| T1 No idle stock | 1,916 (24%) | 0.430 |
+| T2 No extra space | 2,707 (34%) | 0.608 |
+| T3 Minimum space per person | 2,314 (29%) | 0.520 |
+| T4 Best materials | 356 (4%) | 0.080 |
+| T5 Best soil | 673 (8%) | 0.151 |
+| instant start | 1,208 | 0.271 |
+
+Players T1-T5 over 32 subsets, each applied with the instant start (exact rational arithmetic; the values add up to P5-stretch with the instant start − T). "instant start" is a separate line, not a player: P5-stretch on the logistic ramp minus P5-stretch at full strength from 2027. Sensitivity: T with the v2 logistic ramp (T-ramp) gives LoE AR 1.445.
+
+### Limitations of T
+
+* T combines attributes of different buildings (the OLF of A_1, an apartment block, applied to every typology; each typology's best A1-A3 case; the lowest soil order everywhere) that have not been observed together; it is not a design, a policy or a feasible pathway.
+* T2 + T3 give every new dwelling the occupied area of the case-study minimum (about 20 m² per person); no design rule, accessibility standard or household-size variation is modelled.
+* T1 assumes every vacant dwelling is usable where it is needed (no spatial or condition mismatch; Napiontek et al. 2025 on hibernating stock) and an instant reallocation in 2027.
+* As in P1-P5, the renovation carbon of the kept stock (L3) and any rebound are not modelled; deterministic, median demographics; static budgets.
+
 ## Sources
 
 * Pellan M, et al. (2024) Building and Environment 256, 111505 (Table 2)

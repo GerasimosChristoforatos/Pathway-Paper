@@ -943,6 +943,15 @@ PW_FIGURES = {
                              'targets.'),
     'pw_7_shapley_levers_SI': ('supp', 'Shapley attribution of P0 - P5 to the six levers (64 subsets; S3-10), on '
                                'cumulative carbon and cumulative LoE AR, central (open) and stretch (filled).'),
+    'pw_8_staircase': ('paper', 'Theoretical limit T (a thought experiment, not a proposal or a feasible pathway): '
+                       'cumulative LoE AR and AtP (log) for P0 -> P5-central -> P5-stretch -> T with LoE = 1 and the change '
+                       'vs P0, and under each step the mean new-dwelling size, floor area per person and dwellings built '
+                       'per year (2027-2050); demand bands (floor area, carbon) of P0, P5-stretch and T.'),
+    'pw_9_T_shapley_SI': ('supp', 'Shapley attribution of P5-stretch (instant start) - T to T1-T5 (32 subsets, exact), '
+                          'carbon and LoE AR, with the instant-start effect as a separate line; T is a theoretical limit.'),
+    'pw_10_T_annual_SI': ('supp', 'Annual carbon of P0, P5-stretch, T and T with the logistic ramp against the annual AR '
+                          'and AtP boundaries, and dwellings built per year (banking rule; zero-building years shaded); '
+                          'T is a theoretical limit.'),
 }
 
 
@@ -1381,6 +1390,193 @@ def fig_shapley_levers(res):
     _save(fig, 'pw_7_shapley_levers_SI')
 
 
+T_STEPS = (('P0', 'P0\nbaseline'), ('P5-central', 'P5-central\nall pathways'), ('P5-stretch', 'P5-stretch\nall pathways'),
+           ('T', 'T\ntheoretical limit'))
+T_CAPTION = ('T is a theoretical limit (thought experiment) combining the best observed attributes of different buildings; '
+             'it is not a proposal or a feasible pathway (theoretical > technical > realisable potential).')
+
+
+def _step_run(res, name):
+    if name == 'T':
+        return res['T']['cache'][(LV.T_COMPONENTS, LV.T_INSTANT)]
+    if name == 'T-ramp':
+        return res['T']['cache'][(LV.T_COMPONENTS, None)]
+    s = name.split('-')[1] if name != 'P0' else None
+    return res['get'](REFERENCE, LV.pathway_levers(name[:2], s) if s else {})
+
+
+def _human(res, name):
+    """2027-2050: mean new-dwelling size (m2), floor area per person in new dwellings (m2), dwellings built per year."""
+    E = _step_run(res, name)['E']
+    S = E['pop'] / E['hh']
+    w = slice(2, None)
+    dw = E['dwell_in_scope'][w]
+    return dict(size=E['total'][w].sum() / dw.sum(), per_person=E['total'][w].sum() / (dw * S[w]).sum(),
+                per_year=float(np.asarray(engine.requirement(E))[w].mean()))
+
+
+def _t_row(res, name):
+    if name in T_RUNS:
+        return next(r for r in res['T']['rows'] if r['run'] == name)
+    return _run(res, name)
+
+
+def fig_staircase(res):
+    import matplotlib.pyplot as plt
+    import figaudit
+    import matplotlib.patheffects as pe
+    from matplotlib.patches import Patch
+    fig = plt.figure(figsize=(15, 11))
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.15, 1], hspace=0.55, wspace=0.18)
+    ax = fig.add_subplot(gs[0, :])
+    xs = np.arange(len(T_STEPS))
+    p0 = _t_row(res, 'P0')
+    halo = [pe.Stroke(linewidth=4, foreground='white'), pe.Normal()]
+    for key, col, ls, nm in (('LoE_AR', AR_COLOR, '-', 'acquired rights (AR)'), ('LoE_AtP', ATP_COLOR, '--', 'ability to pay (AtP)')):
+        ys = [_t_row(res, n)[key] for n, _ in T_STEPS]
+        ax.step(np.r_[xs - 0.4, xs[-1] + 0.4], np.r_[ys, ys[-1]], where='post', color=col, ls=ls, lw=2.2,
+                path_effects=halo, label=f'cumulative LoE, {nm}')
+        ax.scatter(xs, ys, color=col, s=36, zorder=5)
+        for x, y, (n, _) in zip(xs, ys, T_STEPS):
+            d = 100 * (y / p0[key] - 1)
+            ax.annotate(f'{y:.2f}' + ('' if n == 'P0' else f' ({d:+.0f}%)'), (x, y), xytext=(0, 7),
+                        textcoords='offset points', ha='center', fontsize=8.5, color=INK, path_effects=halo)
+    ax.axhline(1.0, color='black', lw=1.0, gid=figaudit.BOUNDARY)
+    ax.text(-0.45, 1.0, 'LoE = 1', va='bottom', fontsize=8.5, color=INK)
+    ax.set_yscale('log')
+    ax.set_yticks([0.5, 1, 2, 5, 10, 20])
+    ax.set_yticklabels(['0.5', '1', '2', '5', '10', '20'])
+    ax.set_ylim(0.5, 30)
+    ax.set_xlim(-0.5, len(T_STEPS) - 0.3)
+    lab = []
+    for n, l in T_STEPS:
+        h = _human(res, n)
+        lab.append(f"{l}\n{h['size']:.0f} m² per new dwelling\n{h['per_person']:.0f} m² per person\n"
+                   f"{h['per_year'] / 1e3:.1f}k dwellings / yr")
+    ax.set_xticks(xs)
+    ax.set_xticklabels(lab, fontsize=8.5)
+    ax.set_ylabel('cumulative level of exceedance 2026-2050 (log)')
+    ax.set_title('From the baseline to the theoretical limit T (S3-10): cumulative LoE; indicators are 2027-2050 means',
+                 fontsize=11)
+    ax.legend(fontsize=8.5, loc='upper right', frameon=False)
+    _style(ax)
+    colors = _band_colors()
+    bd = pd.concat([res['bands'], res['T']['bands']], ignore_index=True)
+    bd = bd[(bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope_figure')]
+    runs = ['P0', 'P5-stretch', 'T']
+    for j, (col, ylab, ttl) in enumerate((('gfa_Mm2', 'floor area 2026-2050, Mm$^2$', 'Floor area by demand band'),
+                                          ('carbon_kt', 'carbon 2026-2050, kt CO$_2$e', 'Carbon by demand band'))):
+        a = fig.add_subplot(gs[1, j])
+        fmt = (lambda v: f'{v:,.1f}') if col == 'gfa_Mm2' else (lambda v: f'{v:,.0f}')
+        for i, rn in enumerate(runs):
+            d = bd[bd['run'] == rn].set_index('band')
+            pos, neg = 0.0, 0.0
+            for band, _ in FIG_BANDS:
+                v = float(d.loc[band, col])
+                if abs(v) < 1e-9:
+                    continue
+                base = pos if v > 0 else neg
+                a.bar(i, v, bottom=base, color=colors[band], edgecolor='white', lw=1.0, width=0.6,
+                      hatch='..' if band in UNTARGETED else None)
+                if v > 0:
+                    pos += v
+                else:
+                    neg += v
+            a.text(i, pos, fmt(pos + neg), ha='center', va='bottom', fontsize=8.5, color=INK)
+        a.axhline(0, color=INK, lw=0.8)
+        a.set_xticks(range(len(runs)))
+        a.set_xticklabels(['P0', 'P5-stretch', 'T (limit)'], fontsize=9)
+        a.set_ylabel(ylab)
+        a.set_title(ttl, fontsize=10)
+        _style(a)
+    fig.legend(handles=[Patch(facecolor=colors[b], hatch='..' if b in UNTARGETED else None, edgecolor='white',
+                              label=b + (' (untargeted)' if b in UNTARGETED else '')) for b, _ in FIG_BANDS],
+               loc='lower center', ncol=3, fontsize=7.5, frameon=False, bbox_to_anchor=(0.5, -0.04))
+    fig.text(0.5, -0.07, T_CAPTION + ' T: no idle stock (v = 0, surplus absorbed), no extra space (size = S x OLF), '
+             'minimum OLF of the case studies (A_1, 19.7 m² per person) for every typology, each typology\'s best '
+             'case-study A1-A3, lowest soil order; full strength from 2027. In its zero-building years (released vacant stock '
+             'used, banking rule) every band is zero.', ha='center', fontsize=8, style='italic',
+             wrap=True)
+    _save(fig, 'pw_8_staircase')
+
+
+def fig_T_shapley(res):
+    import matplotlib.pyplot as plt
+    sh = res['T']['shapley']
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    for ax, metric, xl in ((axes[0], 'carbon_kt', 'reduction of cumulative carbon 2026-2050, kt CO$_2$e'),
+                           (axes[1], 'LoE_AR', 'reduction of cumulative LoE AR')):
+        d = sh[sh['metric'] == metric].set_index('player')
+        players = list(LV.T_COMPONENTS) + ['instant start']
+        for k, pl in enumerate(players):
+            v = float(d.loc[pl, 'reduction'])
+            is_t = pl != 'instant start'
+            ax.barh(k, v, height=0.6, color='#3b3b3b' if is_t else 'white', edgecolor='#3b3b3b', lw=1.2,
+                    hatch=None if is_t else '///')
+            share = d.loc[pl, 'share_of_P5s_instant_minus_T']
+            ax.text(v, k, (f' {v:,.0f}' if metric == 'carbon_kt' else f' {v:.3f}') +
+                    (f' ({100 * share:.0f}%)' if is_t else ' (separate line)'), va='center', fontsize=8, color=INK)
+        ax.set_yticks(range(len(players)))
+        ax.set_yticklabels([f'{p} {LV.T_NAMES[p]}' if p in LV.T_NAMES else 'P5-stretch: ramp -> instant start'
+                            for p in players], fontsize=8.5)
+        ax.invert_yaxis()
+        ax.set_xlabel(xl)
+        ax.set_xlim(0, ax.get_xlim()[1] * 1.3)
+        _style(ax, 'x')
+    fig.suptitle('Shapley attribution of P5-stretch (instant start) - T to T1-T5 (32 subsets, exact; S3-10)', fontsize=11)
+    fig.text(0.5, -0.04, 'Shares are of P5-stretch with the instant start minus T. The hatched bar is the separate effect '
+             'of starting P5-stretch at full strength in 2027 instead of on the logistic ramp. ' + T_CAPTION,
+             ha='center', fontsize=8, style='italic', wrap=True)
+    fig.tight_layout()
+    _save(fig, 'pw_9_T_shapley_SI')
+
+
+def fig_T_annual(res):
+    import matplotlib.pyplot as plt
+    import figaudit
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+    series = (('P0', '#9a9a9a', '-', 2.0), ('P5-stretch', '#3b3b3b', '--', 1.8), ('T', 'black', '-', 2.6),
+              ('T-ramp', 'black', ':', 2.0))
+    ref = res['ctxs'][REFERENCE]
+    yrs = ref['years']
+    ends = []
+    for nm, col, ls, lw in series:
+        E = _step_run(res, nm)['E']
+        ax.plot(yrs[1:], E['carbon'][1:] / M6, color=col, ls=ls, lw=lw, label=nm)
+        ends.append((E['carbon'][-1] / M6, nm))
+        ax2.plot(yrs[1:], np.asarray(engine.requirement(E))[1:] / 1e3, color=col, ls=ls, lw=lw, label=nm)
+    ylast = -1e9
+    for v, nm in sorted(ends):                    # direct labels, nudged apart
+        y = max(v, ylast + 35)
+        ax.annotate(f'{nm} {v:,.0f}', (2050, v), xytext=(2050.5, y), fontsize=7.5, va='center', color=INK,
+                    arrowprops=dict(arrowstyle='-', color=MUTED, lw=0.5))
+        ylast = y
+    ax.plot(yrs[1:], ref['b_ar'] / M6, color=AR_COLOR, lw=2.0, gid=figaudit.BOUNDARY, label='AR boundary')
+    ax.plot(yrs[1:], ref['b_atp'] / M6, color=ATP_COLOR, lw=2.0, ls='--', gid=figaudit.BOUNDARY, label='AtP boundary')
+    ax.set_xlim(2026, 2053)
+    ax.set_ylim(0, None)
+    ax.set_xlabel('year')
+    ax.set_ylabel('annual carbon, kt CO$_2$e per year')
+    ax.set_title('Annual carbon: P0, P5-stretch, T and T with the logistic ramp', fontsize=10)
+    ax.legend(fontsize=8, frameon=False, loc='upper right')
+    _style(ax)
+    zy = res['T']['indicators']['T']['zero_building_years']
+    if zy:
+        ax2.axvspan(min(zy) - 0.5, max(zy) + 0.5, color='#e1e0d9', zorder=0)
+        ax2.text((min(zy) + max(zy)) / 2, ax2.get_ylim()[1] * 0.02 + 1, f'T: no new building\n{min(zy)}-{max(zy)}\n'
+                 '(released vacant\nstock used)', ha='center', va='bottom', fontsize=8, color=INK)
+    ax2.set_xlim(2026, 2050)
+    ax2.set_ylim(0, None)
+    ax2.set_xlabel('year')
+    ax2.set_ylabel('dwellings built per year, thousands (all categories)')
+    ax2.set_title('Dwellings built per year (banking rule: never negative)', fontsize=10)
+    ax2.legend(fontsize=8, frameon=False, loc='upper right')
+    _style(ax2)
+    fig.text(0.5, -0.04, T_CAPTION, ha='center', fontsize=8, style='italic')
+    fig.tight_layout()
+    _save(fig, 'pw_10_T_annual_SI')
+
+
 FIGURES_MD_MARK = '## Pathways'
 
 
@@ -1420,6 +1616,10 @@ def figures(res):
     fig_envelope(res)
     fig_l5_estimator(res)
     fig_shapley_levers(res)
+    if 'T' in res:
+        fig_staircase(res)
+        fig_T_shapley(res)
+        fig_T_annual(res)
     update_figures_md()
 
 

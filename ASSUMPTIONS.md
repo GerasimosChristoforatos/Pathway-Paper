@@ -215,7 +215,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 
 ## Pathways (levers.py, pathways.py)
 
-Resolved values from outputs/pathways/levers.json; methods as implemented: outputs/pathways/PATHWAYS_METHODS_DRAFT.md.
+Resolved values from outputs/pathways/levers.json; Table 1 of the paper: outputs/pathways/LEVERS_TABLE.md; methods as implemented: outputs/pathways/PATHWAYS_METHODS_DRAFT.md.
 
 | setting | value | basis |
 |---|---|---|
@@ -243,6 +243,8 @@ Resolved values from outputs/pathways/levers.json; methods as implemented: outpu
 | setting | value |
 |---|---|
 | `ATTACHED` | `('Townhouses', 'Apartments')` |
+| `BUNDLES` | `{'P1': ('L1', 'L2', 'L3'), 'P2': ('L4', 'L5'), 'P3': ('L1', 'L2', 'L3', 'L4', 'L5')}` |
+| `BUNDLE_NAMES` | `{'P0': 'Baseline (reference S3-10)', 'P1': 'Avoid (L1+L2+L3)', 'P2': 'Shift + Improve (L4+L5)', 'P3': 'All five levers'}` |
 | `DETACHED` | `'Detached'` |
 | `L1_C_M` | `0.065` |
 | `L1_SIZE_WINDOW_A` | `(1991, 1995)` |

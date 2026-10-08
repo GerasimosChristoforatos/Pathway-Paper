@@ -14,6 +14,7 @@ import pandas as pd
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'outputs', 'pathways')
 sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
 
 
 def table(head, rows):
@@ -201,5 +202,17 @@ def main():
     print(f'pathways_methods: {path} ({len(L)} lines)')
 
 
+def sections():
+    """The generated Pathways sections outside outputs/pathways/: FIGURES.md (pathways.update_figures_md)
+    and ASSUMPTIONS.md (tools/assumptions.update_pathways_section). Both replace only their own
+    section and are idempotent."""
+    import pathways
+    import assumptions
+    pathways.update_figures_md()
+    assumptions.update_pathways_section()
+
+
 if __name__ == '__main__':
     main()
+    if '--sections' in sys.argv:
+        sections()

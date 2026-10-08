@@ -1,0 +1,288 @@
+{
+  "ramp": {
+    "observed_year": 2026,
+    "full": 2035,
+    "full_sensitivity": 2045
+  },
+  "L1": {
+    "size_ref": {
+      "Detached": 179.60009343759657,
+      "Townhouses": 107.73533895826715,
+      "Apartments": 98.05358867689021
+    },
+    "size_ref_window": [
+      2023,
+      2025
+    ],
+    "size_1991_1995": {
+      "Detached": 171.09196409343798,
+      "Townhouses": 124.15774813626831,
+      "Apartments": 110.90674658639989
+    },
+    "c": {
+      "M": {
+        "Detached": 0.065,
+        "Townhouses": 0.065,
+        "Apartments": 0.065
+      },
+      "A": {
+        "Detached": 0.04737263317245877,
+        "Townhouses": 0.0,
+        "Apartments": 0.0
+      }
+    },
+    "held_A": [
+      "Townhouses",
+      "Apartments"
+    ],
+    "target_size": {
+      "M": {
+        "Detached": 167.9260873641528,
+        "Townhouses": 100.73254192597979,
+        "Apartments": 91.68010541289236
+      },
+      "A": {
+        "Detached": 171.09196409343798,
+        "Townhouses": 107.73533895826715,
+        "Apartments": 98.05358867689021
+      }
+    }
+  },
+  "L2": {
+    "v0": 0.05387454644033866,
+    "v_star": {
+      "M": 0.047,
+      "A": 0.04
+    },
+    "absorption": {
+      "M": 0.1,
+      "A": 0.2
+    },
+    "floor": 0.04,
+    "census_consistent": {
+      "1986": 0.04421960198496479,
+      "1991": 0.046416698373295526,
+      "1996": 0.040132499944037336,
+      "2001": 0.04811303160582413,
+      "2006": 0.04803369656611718,
+      "2013": 0.05220157081378557,
+      "2018": 0.05079172543256766,
+      "2023": 0.053839536541328725
+    },
+    "census_consistent_min": 0.040132499944037336,
+    "census_consistent_max": 0.053839536541328725,
+    "census_consistent_midpoint": 0.04698601824268303,
+    "O26": 38862.6,
+    "rho": 0.5180189643073912,
+    "gap_ref": "2027"
+  },
+  "L3": {
+    "d": {
+      "M": 0.2,
+      "A": 0.4
+    },
+    "demolition_rate": 0.00135,
+    "long_run_residual": -0.0003445235477355917,
+    "long_run_net": 0.0010054764522644084
+  },
+  "L4": {
+    "baseline_shares": {
+      "Detached": 0.6059678545731274,
+      "Townhouses": 0.34524078995949914,
+      "Apartments": 0.04879135546737345
+    },
+    "baseline_attached": 0.3940321454268726,
+    "attached_by_year": {
+      "1991": 0.2193409395895657,
+      "1992": 0.19282278506277067,
+      "1993": 0.19106020858746736,
+      "1994": 0.22265869338891514,
+      "1995": 0.24248408479599326,
+      "1996": 0.18710233313336594,
+      "1997": 0.1766701349435715,
+      "1998": 0.15805535067904727,
+      "1999": 0.1673132015037669,
+      "2000": 0.1353520897287578,
+      "2001": 0.13395782646881746,
+      "2002": 0.1598161333320568,
+      "2003": 0.14286204208885425,
+      "2004": 0.16397827177186253,
+      "2005": 0.13522157471136026,
+      "2006": 0.11706901185295943,
+      "2007": 0.12305809863884365,
+      "2008": 0.11968610324121809,
+      "2009": 0.0824754995512832,
+      "2010": 0.06451883427692552,
+      "2011": 0.06813802302234036,
+      "2012": 0.0723290197819019,
+      "2013": 0.08789709578444013,
+      "2014": 0.11118101956058107,
+      "2015": 0.14668213881794023,
+      "2016": 0.15296996009499178,
+      "2017": 0.16836975711580315,
+      "2018": 0.2080132446633276,
+      "2019": 0.2372484867764733,
+      "2020": 0.2805818595979742,
+      "2021": 0.3056511992049356,
+      "2022": 0.39217033259646966,
+      "2023": 0.41392428809958487,
+      "2024": 0.3794338066471991,
+      "2025": 0.4032585274933854,
+      "2026": 0.3875419197204092
+    },
+    "attached_2026_calendar_ytd": 0.3734291480455299,
+    "peak_year": 2023,
+    "target": {
+      "M": 0.41392428809958487,
+      "A": 0.5540321454268726
+    },
+    "increment_A": 0.16
+  },
+  "L5": {
+    "cases": {
+      "Detached": {
+        "n_cases": 10,
+        "n_independent": 10,
+        "pooled_a13": 166.7218727223605,
+        "cases": {
+          "SD_2": 88.34177296618816,
+          "SD_3": 148.0429629345861,
+          "DD_4": 157.32687882981003,
+          "SD_5": 158.96984532069126,
+          "DD_3": 159.75565900470244,
+          "SD_6": 169.22827589988486,
+          "DD_1": 173.85450474922246,
+          "DD_2": 180.79701525695253,
+          "SD_4": 199.08499881021365,
+          "SD_1": 229.3935299757306
+        },
+        "held": false,
+        "k_M": 4,
+        "target_M": 138.17036501281888,
+        "target_A": 88.34177296618816,
+        "r": {
+          "M": 0.8287476787338633,
+          "A": 0.529875123903523
+        },
+        "cases_M": [
+          "SD_2",
+          "SD_3",
+          "DD_4",
+          "SD_5"
+        ],
+        "case_A": "SD_2"
+      },
+      "Townhouses": {
+        "n_cases": 4,
+        "n_independent": 4,
+        "pooled_a13": 206.74738643936482,
+        "cases": {
+          "T_2": 181.92793484107216,
+          "T_1": 196.3593880445344,
+          "T_4": 211.28039131321128,
+          "T_3": 237.42183155864143
+        },
+        "held": false,
+        "k_M": 2,
+        "target_M": 189.14366144280328,
+        "target_A": 181.92793484107216,
+        "r": {
+          "M": 0.9148539418092021,
+          "A": 0.8799527673566421
+        },
+        "cases_M": [
+          "T_2",
+          "T_1"
+        ],
+        "case_A": "T_2"
+      },
+      "Apartments": {
+        "n_cases": 2,
+        "n_independent": 1,
+        "pooled_a13": 444.4433363913696,
+        "cases": {
+          "A_1": 444.427210975524
+        },
+        "held": true,
+        "k_M": 0,
+        "target_M": 444.4433363913696,
+        "target_A": 444.4433363913696,
+        "r": {
+          "M": 1.0,
+          "A": 1.0
+        },
+        "cases_M": [],
+        "case_A": null
+      }
+    },
+    "r": {
+      "M": {
+        "Detached": 0.8287476787338633,
+        "Townhouses": 0.9148539418092021,
+        "Apartments": 1.0
+      },
+      "A": {
+        "Detached": 0.529875123903523,
+        "Townhouses": 0.8799527673566421,
+        "Apartments": 1.0
+      }
+    },
+    "a13_2025_pooled": {
+      "Detached": 166.72187272236047,
+      "Townhouses": 206.7473864393648,
+      "Apartments": 444.44333639136954
+    },
+    "pooled_check_max_abs": 5.684341886080802e-14
+  },
+  "run_mode": "full",
+  "identity_max_rel_diff": 4.376097045698541e-16,
+  "identity_checks": {
+    "annual_carbon": 0.0,
+    "gfa_by_typology": 0.0,
+    "carbon_kt": 0.0,
+    "upfront_kt": 2.220446049250313e-16,
+    "soil_kt": 2.220446049250313e-16,
+    "b_inwindow_kt": 2.220446049250313e-16,
+    "gfa_Mm2": 2.220446049250313e-16,
+    "annual_carbon_json": 0.0,
+    "committed_lower_kt": 0.0,
+    "committed_upper_kt": 0.0,
+    "committed_B_lower_kt": 0.0,
+    "committed_B_upper_kt": 0.0,
+    "committed_C_kt": 0.0,
+    "band Growth (net of consolidation) gfa_Mm2": 1.6567287988183632e-16,
+    "band Growth (net of consolidation) carbon_kt": 0.0,
+    "band House-splitting gfa_Mm2": 0.0,
+    "band House-splitting carbon_kt": 0.0,
+    "band Extra space per dwelling gfa_Mm2": 0.0,
+    "band Extra space per dwelling carbon_kt": 1.4725234321221666e-16,
+    "band Vacancy allowance gfa_Mm2": 0.0,
+    "band Vacancy allowance carbon_kt": 1.1661879127551265e-16,
+    "band Demolition replacement gfa_Mm2": 0.0,
+    "band Demolition replacement carbon_kt": 0.0,
+    "band Calibrated stock residual (long run) gfa_Mm2": 1.5380761540638378e-16,
+    "band Calibrated stock residual (long run) carbon_kt": 1.9781027515928695e-16,
+    "band Redevelopment wave (scenario - long run) gfa_Mm2": 0.0,
+    "band Redevelopment wave (scenario - long run) carbon_kt": 2.792735856588957e-16,
+    "band Near-term market excess gfa_Mm2": 1.149045618267832e-16,
+    "band Near-term market excess carbon_kt": 4.376097045698541e-16,
+    "band Housed in RV units (out of scope) gfa_Mm2": 0.0,
+    "band Housed in RV units (out of scope) carbon_kt": 1.7967761019983043e-16,
+    "S1 LoE_AR": 2.220446049250313e-16,
+    "S1 LoE_AtP": 0.0,
+    "S1 carbon vs pb_results": 0.0,
+    "S3-10 LoE_AR": 3.3306690738754696e-16,
+    "S3-10 LoE_AtP": 0.0,
+    "S3-10 carbon vs pb_results": 0.0,
+    "S2 LoE_AR": 2.220446049250313e-16,
+    "S2 LoE_AtP": 0.0,
+    "S2 carbon vs pb_results": 0.0
+  },
+  "sources": {
+    "Pellan2024": "Pellan M, et al. (2024) Building and Environment 256, 111505 (Table 2)",
+    "Pauliuk2024": "Pauliuk S, et al. (2024) Journal of Industrial Ecology 28, 1699",
+    "Napiontek2025": "Napiontek et al. (2025) Resources, Conservation and Recycling 215, 108117",
+    "Horup2025": "Horup LH, et al. (2025) Science of the Total Environment 966, 178780 (Fig. 6)",
+    "ChristoforatosPickering2025": "Christoforatos G, Pickering K (2025) Smart and Sustainable Built Environment, doi:10.1108/SASBE-06-2025-0304 (16 NZ case studies)"
+  }
+}

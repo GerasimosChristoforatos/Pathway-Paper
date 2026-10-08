@@ -1,0 +1,494 @@
+run,scenario,definition,band,gfa_Mm2,carbon_kt
+P0,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+P0,S3-10,boss_results,House-splitting,2.307796429820681,589.6554998776348
+P0,S3-10,boss_results,Extra space per dwelling,25.52026002339228,6176.436190643061
+P0,S3-10,boss_results,Vacancy allowance,4.0267507336767565,974.8586525222179
+P0,S3-10,boss_results,Demolition replacement,11.313767245341518,2252.040503589108
+P0,S3-10,boss_results,Calibrated stock residual (long run),-2.8873031330516983,-574.7266547709393
+P0,S3-10,boss_results,Redevelopment wave (scenario - long run),7.883319196922969,1628.3220978939685
+P0,S3-10,boss_results,Near-term market excess,3.8648527333450873,1039.1619430228477
+P0,S3-10,boss_results,Housed in RV units (out of scope),-5.352483707143523,-1265.4535820593114
+P0,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9781.456427389292
+P0,S3-10,in_scope_figure,House-splitting demand,2.17764998715523,556.5159694296577
+P0,S3-10,in_scope_figure,Consumption: extra space per dwelling,24.081369410571774,5834.621719111324
+P0,S3-10,in_scope_figure,Consumption: vacancy allowance,3.799712713412142,920.9044841583378
+P0,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.9513452492402665,1584.6949304216528
+P0,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.438732300108333,1537.6340136490521
+P0,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.646273053443086,980.3892592712964
+P0,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,381.28682039885615
+L1-M,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+L1-M,S3-10,boss_results,House-splitting,2.307796429820681,589.6554998776348
+L1-M,S3-10,boss_results,Extra space per dwelling,21.8908039998632,5316.977814145548
+L1-M,S3-10,boss_results,Vacancy allowance,3.8200812097176335,925.9191275956393
+L1-M,S3-10,boss_results,Demolition replacement,10.712694639382462,2135.3942446905703
+L1-M,S3-10,boss_results,Calibrated stock residual (long run),-2.733907824420817,-544.9582229592294
+L1-M,S3-10,boss_results,Redevelopment wave (scenario - long run),7.535570913107994,1559.1104971216594
+L1-M,S3-10,boss_results,Near-term market excess,3.8422140861967664,1033.2469987102108
+L1-M,S3-10,boss_results,Housed in RV units (out of scope),-5.090111083164724,-1205.1113384538335
+L1-M,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9781.81803323401
+L1-M,S3-10,in_scope_figure,House-splitting demand,2.17764998715523,556.5216981969451
+L1-M,S3-10,in_scope_figure,Consumption: extra space per dwelling,20.656518258435042,5022.640840940093
+L1-M,S3-10,in_scope_figure,Consumption: vacancy allowance,3.6046938586156276,874.6893534063015
+L1-M,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.5289050550072405,1502.64638205348
+L1-M,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.110587778517123,1472.2878354708844
+L1-M,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.624910624399695,974.8077253199583
+L1-M,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,368.7027370608888
+L1-A,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+L1-A,S3-10,boss_results,House-splitting,2.307796429820681,589.6554998776348
+L1-A,S3-10,boss_results,Extra space per dwelling,24.229722244392384,5870.89077824908
+L1-A,S3-10,boss_results,Vacancy allowance,3.953264562000309,957.4601981758948
+L1-A,S3-10,boss_results,Demolition replacement,11.099944824256463,2210.553136497187
+L1-A,S3-10,boss_results,Calibrated stock residual (long run),-2.832735089275671,-564.1389696622598
+L1-A,S3-10,boss_results,Redevelopment wave (scenario - long run),7.759793729436729,1603.7438177658119
+L1-A,S3-10,boss_results,Near-term market excess,3.856917660365816,1037.0889783455277
+L1-A,S3-10,boss_results,Housed in RV units (out of scope),-5.259200407615317,-1244.003786885938
+L1-A,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9781.580665607611
+L1-A,S3-10,in_scope_figure,House-splitting demand,2.17764998715523,556.5179356643247
+L1-A,S3-10,in_scope_figure,Consumption: extra space per dwelling,22.863583667851536,5545.960231029787
+L1-A,S3-10,in_scope_figure,Consumption: vacancy allowance,3.7303692090135185,904.4746254339603
+L1-A,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.801068586822049,1555.5129713157226
+L1-A,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.3221703864507806,1514.4284583895735
+L1-A,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.63878530771503,978.4331423532324
+L1-A,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,376.8293583630701
+L2-M,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+L2-M,S3-10,boss_results,House-splitting,2.307796429820681,589.6554998776348
+L2-M,S3-10,boss_results,Extra space per dwelling,25.52026002339228,6176.436190643061
+L2-M,S3-10,boss_results,Vacancy allowance,1.3391053727751359,295.8718313094232
+L2-M,S3-10,boss_results,Demolition replacement,11.250081935271611,2239.743250237819
+L2-M,S3-10,boss_results,Calibrated stock residual (long run),-2.8710504745599024,-571.5883633990952
+L2-M,S3-10,boss_results,Redevelopment wave (scenario - long run),7.847887074571375,1621.3232185075622
+L2-M,S3-10,boss_results,Near-term market excess,0.3228830041057891,160.67523743152543
+L2-M,S3-10,boss_results,Housed in RV units (out of scope),-4.996627589206843,-1176.7425902147775
+L2-M,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9780.854238608077
+L2-M,S3-10,in_scope_figure,House-splitting demand,2.1776499871552297,556.5185452923004
+L2-M,S3-10,in_scope_figure,Consumption: extra space per dwelling,24.081369410571774,5834.281198975214
+L2-M,S3-10,in_scope_figure,Consumption: vacancy allowance,1.263579129991936,279.8867588507251
+L2-M,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.906586538746721,1575.9311249394875
+L2-M,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.4052976078922494,1530.968691329716
+L2-M,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.30397629343897714,150.90776283203698
+L2-M,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,346.5336943750454
+L2-A,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+L2-A,S3-10,boss_results,House-splitting,2.307796429820681,589.6554998776348
+L2-A,S3-10,boss_results,Extra space per dwelling,25.52026002339228,6176.436190643061
+L2-A,S3-10,boss_results,Vacancy allowance,-1.3580343520526377,-385.6535867052074
+L2-A,S3-10,boss_results,Demolition replacement,11.186104969241622,2227.388372736225
+L2-A,S3-10,boss_results,Calibrated stock residual (long run),-2.854723384700634,-568.4353661926599
+L2-A,S3-10,boss_results,Redevelopment wave (scenario - long run),7.8122626918632445,1614.2852979796526
+L2-A,S3-10,boss_results,Near-term market excess,0.004899087477855999,56.268680088946006
+L2-A,S3-10,boss_results,Housed in RV units (out of scope),-4.821960283745497,-1131.5214187676172
+L2-A,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9780.157421678829
+L2-A,S3-10,in_scope_figure,House-splitting demand,2.1776499871552297,556.5163691991781
+L2-A,S3-10,in_scope_figure,Consumption: extra space per dwelling,24.081369410571774,5833.884251167668
+L2-A,S3-10,in_scope_figure,Consumption: vacancy allowance,-1.2815135875300447,-363.52193573891395
+L2-A,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.861622849355112,1567.114031965125
+L2-A,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.3716814936946555,1524.2523550099809
+L2-A,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.003918219676948999,52.65423069071817
+L2-A,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,322.4707298759531
+L3-M,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+L3-M,S3-10,boss_results,House-splitting,2.307796429820681,589.6554998776348
+L3-M,S3-10,boss_results,Extra space per dwelling,25.52026002339228,6176.436190643061
+L3-M,S3-10,boss_results,Vacancy allowance,4.0267507336767565,974.8586525222179
+L3-M,S3-10,boss_results,Demolition replacement,9.464313073159811,1893.1289377474534
+L3-M,S3-10,boss_results,Calibrated stock residual (long run),-2.8873031330516983,-574.7266547709393
+L3-M,S3-10,boss_results,Redevelopment wave (scenario - long run),6.813324477492275,1415.363326286862
+L3-M,S3-10,boss_results,Near-term market excess,3.8648527333450873,1039.1619430228477
+L3-M,S3-10,boss_results,Housed in RV units (out of scope),-5.187904370424056,-1233.2152917788214
+L3-M,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9781.607426084413
+L3-M,S3-10,in_scope_figure,House-splitting demand,2.1776499871552297,556.5187869303163
+L3-M,S3-10,in_scope_figure,Consumption: extra space per dwelling,24.081369410571774,5834.709026342942
+L3-M,S3-10,in_scope_figure,Consumption: vacancy allowance,3.799712713412141,920.9182142775711
+L3-M,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),6.206151145397214,1245.5131747207793
+L3-M,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),6.429056849058452,1336.468153041563
+L3-M,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.6462730534430854,980.3893778884737
+L3-M,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,373.40831933483236
+L3-A,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+L3-A,S3-10,boss_results,House-splitting,2.307796429820681,589.6554998776348
+L3-A,S3-10,boss_results,Extra space per dwelling,25.52026002339228,6176.436190643061
+L3-A,S3-10,boss_results,Vacancy allowance,4.0267507336767565,974.8586525222179
+L3-A,S3-10,boss_results,Demolition replacement,7.614858900978106,1534.217371905799
+L3-A,S3-10,boss_results,Calibrated stock residual (long run),-2.8873031330516983,-574.7266547709393
+L3-A,S3-10,boss_results,Redevelopment wave (scenario - long run),5.74332975806158,1202.4045546797556
+L3-A,S3-10,boss_results,Near-term market excess,3.8648527333450873,1039.1619430228477
+L3-A,S3-10,boss_results,Housed in RV units (out of scope),-5.02332503370459,-1200.9770014983317
+L3-A,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9781.76935014881
+L3-A,S3-10,in_scope_figure,House-splitting demand,2.17764998715523,556.5217915021111
+L3-A,S3-10,in_scope_figure,Consumption: extra space per dwelling,24.081369410571774,5834.802641643416
+L3-A,S3-10,in_scope_figure,Consumption: vacancy allowance,3.799712713412142,920.9329363604306
+L3-A,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),4.4609570415541615,906.3187169134006
+L3-A,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),5.41938139800857,1135.2962862210386
+L3-A,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.6462730534430854,980.3895039447789
+L3-A,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,365.5301066783224
+L4-M,S3-10,boss_results,Growth (net of consolidation),42.771650543634905,10365.844079131955
+L4-M,S3-10,boss_results,House-splitting,2.3034643746216803,590.1996650828183
+L4-M,S3-10,boss_results,Extra space per dwelling,25.046277559013,6087.003081365638
+L4-M,S3-10,boss_results,Vacancy allowance,3.992872405307986,970.4700515508312
+L4-M,S3-10,boss_results,Demolition replacement,11.21525536727403,2247.526890858578
+L4-M,S3-10,boss_results,Calibrated stock residual (long run),-2.86216264288436,-573.5747689405491
+L4-M,S3-10,boss_results,Redevelopment wave (scenario - long run),7.826290032754804,1625.6695102442025
+L4-M,S3-10,boss_results,Near-term market excess,3.86111901099848,1038.6603964407777
+L4-M,S3-10,boss_results,Housed in RV units (out of scope),-5.309472381144534,-1260.4941018317954
+L4-M,S3-10,in_scope_figure,Growth demand (net of consolidation),40.36010300365513,9792.642029475015
+L4-M,S3-10,in_scope_figure,House-splitting demand,2.173562144750408,557.0299812705281
+L4-M,S3-10,in_scope_figure,Consumption: extra space per dwelling,23.634106961681823,5750.121253613949
+L4-M,S3-10,in_scope_figure,Consumption: vacancy allowance,3.7677442224884152,916.7590372262317
+L4-M,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.882110057863194,1581.5210618697683
+L4-M,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.384918065319282,1535.1302183311007
+L4-M,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.642749813817742,979.9159800588972
+L4-M,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,379.8939669181015
+L4-A,S3-10,boss_results,Growth (net of consolidation),41.970270209065866,10447.092972901772
+L4-A,S3-10,boss_results,House-splitting,2.2735491570833037,593.9592935889107
+L4-A,S3-10,boss_results,Extra space per dwelling,21.993353576141164,5498.738057571145
+L4-A,S3-10,boss_results,Vacancy allowance,3.7716960645442987,941.8134757653922
+L4-A,S3-10,boss_results,Demolition replacement,10.573077240060774,2218.090497880479
+L4-A,S3-10,boss_results,Calibrated stock residual (long run),-2.698277097206057,-566.0625240951018
+L4-A,S3-10,boss_results,Redevelopment wave (scenario - long run),7.452728012578717,1608.2817708931689
+L4-A,S3-10,boss_results,Near-term market excess,3.835572952090043,1035.2279572999107
+L4-A,S3-10,boss_results,Housed in RV units (out of scope),-5.028575068189807,-1228.0986950647116
+L4-A,S3-10,in_scope_figure,Growth demand (net of consolidation),39.60389922425796,9869.537649094984
+L4-A,S3-10,in_scope_figure,House-splitting demand,2.1453333505210432,560.5811806136552
+L4-A,S3-10,in_scope_figure,Consumption: extra space per dwelling,20.75328676373993,5194.296387088416
+L4-A,S3-10,in_scope_figure,Consumption: vacancy allowance,3.559036349854281,889.6899243472124
+L4-A,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.430780467889087,1560.8217886407824
+L4-A,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.032415016129395,1518.7176584499612
+L4-A,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.618643873776611,976.6769948650586
+L4-A,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,370.69755722091566
+L5-M,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,9694.954584527228
+L5-M,S3-10,boss_results,House-splitting,2.307796429820681,563.4374329622932
+L5-M,S3-10,boss_results,Extra space per dwelling,25.52026002339228,5788.128474422157
+L5-M,S3-10,boss_results,Vacancy allowance,4.0267507336767565,913.7255637661875
+L5-M,S3-10,boss_results,Demolition replacement,11.313767245341518,2075.6905646642886
+L5-M,S3-10,boss_results,Calibrated stock residual (long run),-2.8873031330516983,-529.7216869180995
+L5-M,S3-10,boss_results,Redevelopment wave (scenario - long run),7.883319196922969,1523.7559326949001
+L5-M,S3-10,boss_results,Near-term market excess,3.8648527333450873,1031.6240617650776
+L5-M,S3-10,boss_results,Housed in RV units (out of scope),-5.352483707143523,-1187.7608830666156
+L5-M,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9159.532105085982
+L5-M,S3-10,in_scope_figure,House-splitting demand,2.17764998715523,531.7760757837904
+L5-M,S3-10,in_scope_figure,Consumption: extra space per dwelling,24.081369410571774,5468.2004477365335
+L5-M,S3-10,in_scope_figure,Consumption: vacancy allowance,3.799712713412142,863.2170803055814
+L5-M,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.9513452492402665,1460.7155196241179
+L5-M,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.438732300108333,1438.940729827637
+L5-M,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.646273053443086,973.2763204236898
+L5-M,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,381.3585685200788
+L5-A,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,8774.807068394535
+L5-A,S3-10,boss_results,House-splitting,2.307796429820681,526.834846646126
+L5-A,S3-10,boss_results,Extra space per dwelling,25.52026002339228,5246.002749765003
+L5-A,S3-10,boss_results,Vacancy allowance,4.0267507336767565,828.3761473099356
+L5-A,S3-10,boss_results,Demolition replacement,11.313767245341518,1829.480379992843
+L5-A,S3-10,boss_results,Calibrated stock residual (long run),-2.8873031330516983,-466.888200761328
+L5-A,S3-10,boss_results,Redevelopment wave (scenario - long run),7.883319196922969,1377.7730950928167
+L5-A,S3-10,boss_results,Near-term market excess,3.8648527333450873,1021.0956291581481
+L5-A,S3-10,boss_results,Housed in RV units (out of scope),-5.352483707143523,-1079.2920288383475
+L5-A,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,8291.244655277804
+L5-A,S3-10,in_scope_figure,House-splitting demand,2.17764998715523,497.23719575768575
+L5-A,S3-10,in_scope_figure,Consumption: extra space per dwelling,24.081369410571774,4956.629683906228
+L5-A,S3-10,in_scope_figure,Consumption: vacancy allowance,3.799712713412142,782.6780760741434
+L5-A,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.9513452492402665,1287.6094503960946
+L5-A,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.438732300108333,1301.149710735591
+L5-A,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.646273053443086,963.3414221548629
+L5-A,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,381.48229494731544
+P1-M,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+P1-M,S3-10,boss_results,House-splitting,2.307796429820681,589.6554998776348
+P1-M,S3-10,boss_results,Extra space per dwelling,21.8908039998632,5316.977814145548
+P1-M,S3-10,boss_results,Vacancy allowance,1.2404292824095093,273.7048000542779
+P1-M,S3-10,boss_results,Demolition replacement,8.926932238808163,1788.699796649872
+P1-M,S3-10,boss_results,Calibrated stock residual (long run),-2.7186588518464445,-542.0126393920102
+P1-M,S3-10,boss_results,Redevelopment wave (scenario - long run),6.499074878088362,1352.6951584118476
+P1-M,S3-10,boss_results,Near-term market excess,0.46147991050751624,193.88374811878992
+P1-M,S3-10,boss_results,Housed in RV units (out of scope),-4.595862956006954,-1090.011358766971
+P1-M,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9781.344679560814
+P1-M,S3-10,in_scope_figure,House-splitting demand,2.1776499871552297,556.5278192150217
+P1-M,S3-10,in_scope_figure,Consumption: extra space per dwelling,20.656518258435042,5022.424667102673
+P1-M,S3-10,in_scope_figure,Consumption: vacancy allowance,1.1704657489270622,258.94913115509576
+P1-M,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),5.858201535127402,1177.704044499472
+P1-M,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),6.132522576263903,1277.25645104237
+P1-M,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.4347600173621549,182.25051734922937
+P1-M,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,327.69766234261067
+P1-A,S3-10,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+P1-A,S3-10,boss_results,House-splitting,2.307796429820681,589.6554998776348
+P1-A,S3-10,boss_results,Extra space per dwelling,24.229722244392384,5870.89077824908
+P1-A,S3-10,boss_results,Vacancy allowance,-1.355000711219729,-384.0853168851686
+P1-A,S3-10,boss_results,Demolition replacement,7.403420002150184,1493.0870734597306
+P1-A,S3-10,boss_results,Calibrated stock residual (long run),-2.800871617839824,-557.985200122048
+P1-A,S3-10,boss_results,Redevelopment wave (scenario - long run),5.618701548783251,1177.5178420672146
+P1-A,S3-10,boss_results,Near-term market excess,0.045598350917826824,66.29626811778212
+P1-A,S3-10,boss_results,Housed in RV units (out of scope),-4.417807960509347,-1049.522428826342
+P1-A,S3-10,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9780.503715134682
+P1-A,S3-10,in_scope_figure,House-splitting demand,2.1776499871552297,556.5254105246581
+P1-A,S3-10,in_scope_figure,Consumption: extra space per dwelling,22.863583667851536,5545.392627658601
+P1-A,S3-10,in_scope_figure,Consumption: vacancy allowance,-1.2786509634248342,-362.05156320641754
+P1-A,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),4.342996752456421,883.1712270031296
+P1-A,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),5.301778907891994,1111.7211014582579
+P1-A,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.042323126191828514,62.10742244629441
+P1-A,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,303.34594483207945
+P2-M,S3-10,boss_results,Growth (net of consolidation),42.771650543634905,9715.43778240093
+P2-M,S3-10,boss_results,House-splitting,2.3034643746216803,564.2546302105023
+P2-M,S3-10,boss_results,Extra space per dwelling,25.046277559013,5710.750354297305
+P2-M,S3-10,boss_results,Vacancy allowance,3.992872405307986,910.5323698947271
+P2-M,S3-10,boss_results,Demolition replacement,11.21525536727403,2074.6986128613476
+P2-M,S3-10,boss_results,Calibrated stock residual (long run),-2.86216264288436,-529.468538211187
+P2-M,S3-10,boss_results,Redevelopment wave (scenario - long run),7.826290032754804,1523.052430931712
+P2-M,S3-10,boss_results,Near-term market excess,3.86111901099848,1031.177796223574
+P2-M,S3-10,boss_results,Housed in RV units (out of scope),-5.309472381144534,-1184.3131131097857
+P2-M,S3-10,in_scope_figure,Growth demand (net of consolidation),40.36010300365513,9178.894084559399
+P2-M,S3-10,in_scope_figure,House-splitting demand,2.173562144750408,532.5477214360654
+P2-M,S3-10,in_scope_figure,Consumption: extra space per dwelling,23.634106961681823,5395.075230835911
+P2-M,S3-10,in_scope_figure,Consumption: vacancy allowance,3.7677442224884152,860.1996179159113
+P2-M,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.882110057863194,1460.0180134618522
+P2-M,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.384918065319282,1438.27687790887
+P2-M,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.642749813817742,972.8552056068999
+P2-M,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,379.96429863535093
+P2-A,S3-10,boss_results,Growth (net of consolidation),41.970270209065866,9132.459875796254
+P2-A,S3-10,boss_results,House-splitting,2.2735491570833037,539.5056253512932
+P2-A,S3-10,boss_results,Extra space per dwelling,21.993353576141164,4828.428101454615
+P2-A,S3-10,boss_results,Vacancy allowance,3.7716960645442987,825.6855637985625
+P2-A,S3-10,boss_results,Demolition replacement,10.573077240060774,1884.8810014985543
+P2-A,S3-10,boss_results,Calibrated stock residual (long run),-2.698277097206057,-481.0265849597756
+P2-A,S3-10,boss_results,Redevelopment wave (scenario - long run),7.452728012578717,1407.30975760458
+P2-A,S3-10,boss_results,Near-term market excess,3.835572952090043,1018.6131253956318
+P2-A,S3-10,boss_results,Housed in RV units (out of scope),-5.028575068189807,-1080.3278764712002
+P2-A,S3-10,in_scope_figure,Growth demand (net of consolidation),39.60389922425796,8628.991439273477
+P2-A,S3-10,in_scope_figure,House-splitting demand,2.1453333505210432,509.1975524608414
+P2-A,S3-10,in_scope_figure,Consumption: extra space per dwelling,20.75328676373993,4561.762948668699
+P2-A,S3-10,in_scope_figure,Consumption: vacancy allowance,3.559036349854281,780.1065855133003
+P2-A,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.430780467889087,1326.5672026594475
+P2-A,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),7.032415016129395,1329.0348606885354
+P2-A,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.618643873776611,960.9988085133216
+P2-A,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,370.84552527091313
+P3-M,S3-10,boss_results,Growth (net of consolidation),42.771650543634905,9715.43778240093
+P3-M,S3-10,boss_results,House-splitting,2.3034643746216803,564.2546302105023
+P3-M,S3-10,boss_results,Extra space per dwelling,21.452172613844212,4917.783606317846
+P3-M,S3-10,boss_results,Vacancy allowance,1.2254128565814981,246.9165551240757
+P3-M,S3-10,boss_results,Demolition replacement,8.852093645019796,1653.6302116149495
+P3-M,S3-10,boss_results,Calibrated stock residual (long run),-2.695195829273168,-499.7487288431198
+P3-M,S3-10,boss_results,Redevelopment wave (scenario - long run),6.454908796362923,1270.8651156902774
+P3-M,S3-10,boss_results,Near-term market excess,0.48283112132345707,234.9293221375397
+P3-M,S3-10,boss_results,Housed in RV units (out of scope),-4.559287040694901,-1021.0349848637446
+P3-M,S3-10,in_scope_figure,Growth demand (net of consolidation),40.36010300365513,9178.780353370788
+P3-M,S3-10,in_scope_figure,House-splitting demand,2.173562144750408,532.5596149423297
+P3-M,S3-10,in_scope_figure,Consumption: extra space per dwelling,20.242614026497343,4645.627425376707
+P3-M,S3-10,in_scope_figure,Consumption: vacancy allowance,1.156295850472683,233.66703560932928
+P3-M,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),5.809722180886155,1090.103702061374
+P3-M,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),6.090846287888417,1200.0230763712548
+P3-M,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.45490758727027214,220.98424349836444
+P3-M,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,326.5973181782764
+P3-A,S3-10,boss_results,Growth (net of consolidation),41.970270209065866,9132.459875796254
+P3-A,S3-10,boss_results,House-splitting,2.2735491570833037,539.5056253512932
+P3-A,S3-10,boss_results,Extra space per dwelling,21.14543066506456,4649.467299784311
+P3-A,S3-10,boss_results,Vacancy allowance,-1.337357771569658,-363.9585895207572
+P3-A,S3-10,boss_results,Demolition replacement,6.989551418375178,1274.2667889654144
+P3-A,S3-10,boss_results,Calibrated stock residual (long run),-2.6331071505096117,-469.93478261551354
+P3-A,S3-10,boss_results,Redevelopment wave (scenario - long run),5.366436880144752,1039.4007670591168
+P3-A,S3-10,boss_results,Near-term market excess,0.17612837137242252,150.89072939296847
+P3-A,S3-10,boss_results,Housed in RV units (out of scope),-4.1705112952675965,-899.7210188265221
+P3-A,S3-10,in_scope_figure,Growth demand (net of consolidation),39.60389922425796,8627.98353046828
+P3-A,S3-10,in_scope_figure,House-splitting demand,2.1453333505210432,509.2066979335501
+P3-A,S3-10,in_scope_figure,Consumption: extra space per dwelling,19.953164172338433,4392.165211306798
+P3-A,S3-10,in_scope_figure,Consumption: vacancy allowance,-1.2620026167315819,-343.07699643130064
+P3-A,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),4.110766368264581,759.7422228765585
+P3-A,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),5.063735262941068,981.3678277858743
+P3-A,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.16549472216770975,141.93814649033743
+P3-A,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,296.0208011341935
+P0,S1,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+P0,S1,boss_results,House-splitting,2.307796429820681,589.6554998776348
+P0,S1,boss_results,Extra space per dwelling,25.52026002339228,6176.436190643061
+P0,S1,boss_results,Vacancy allowance,4.0267507336767565,974.8586525222179
+P0,S1,boss_results,Demolition replacement,11.313767245341518,2252.040503589108
+P0,S1,boss_results,Calibrated stock residual (long run),-2.8873031330516983,-574.7266547709393
+P0,S1,boss_results,Redevelopment wave (scenario - long run),0.0,0.0
+P0,S1,boss_results,Near-term market excess,5.05000530964641,1356.98341839568
+P0,S1,boss_results,Housed in RV units (out of scope),-4.974885105289067,-1191.5761718930873
+P0,S1,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9781.211256991135
+P0,S1,in_scope_figure,House-splitting demand,2.1776499871552297,556.5185507902816
+P0,S1,in_scope_figure,Consumption: extra space per dwelling,24.081369410571774,5834.483941489517
+P0,S1,in_scope_figure,Consumption: vacancy allowance,3.7997127134121413,920.8828252111274
+P0,S1,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.9513452492402665,1584.650039355878
+P0,S1,in_scope_figure,Replacement: recent redevelopment wave (fading),0.0,0.0
+P0,S1,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",4.764437334784227,1280.2508829822266
+P0,S1,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,353.07344397278945
+P3-M,S1,boss_results,Growth (net of consolidation),42.771650543634905,9715.43778240093
+P3-M,S1,boss_results,House-splitting,2.3034643746216803,564.2546302105023
+P3-M,S1,boss_results,Extra space per dwelling,21.452172613844212,4917.783606317846
+P3-M,S1,boss_results,Vacancy allowance,1.2254128565814981,246.9165551240757
+P3-M,S1,boss_results,Demolition replacement,8.852093645019796,1653.6302116149495
+P3-M,S1,boss_results,Calibrated stock residual (long run),-2.695195829273168,-499.7487288431198
+P3-M,S1,boss_results,Redevelopment wave (scenario - long run),0.0,0.0
+P3-M,S1,boss_results,Near-term market excess,0.639580428034016,308.3070767302158
+P3-M,S1,boss_results,Housed in RV units (out of scope),-4.204238211329054,-953.5285194532335
+P3-M,S1,in_scope_figure,Growth demand (net of consolidation),40.36010300365513,9178.402434971902
+P3-M,S1,in_scope_figure,House-splitting demand,2.173562144750408,532.5625683670456
+P3-M,S1,in_scope_figure,Consumption: extra space per dwelling,20.242614026497346,4645.458082908565
+P3-M,S1,in_scope_figure,Consumption: vacancy allowance,1.1562958504726832,233.63440025774977
+P3-M,S1,in_scope_figure,Replacement: long-run background (net of unconsented additions),5.8097221808861566,1090.058822238552
+P3-M,S1,in_scope_figure,Replacement: recent redevelopment wave (fading),0.0,0.0
+P3-M,S1,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.6026432148721725,290.0365202494107
+P3-M,S1,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,297.94173197092954
+P3-A,S1,boss_results,Growth (net of consolidation),41.970270209065866,9132.459875796254
+P3-A,S1,boss_results,House-splitting,2.2735491570833037,539.5056253512932
+P3-A,S1,boss_results,Extra space per dwelling,21.14543066506456,4649.467299784311
+P3-A,S1,boss_results,Vacancy allowance,-1.337357771569658,-363.9585895207572
+P3-A,S1,boss_results,Demolition replacement,6.989551418375178,1274.2667889654144
+P3-A,S1,boss_results,Calibrated stock residual (long run),-2.6331071505096117,-469.93478261551354
+P3-A,S1,boss_results,Redevelopment wave (scenario - long run),0.0,0.0
+P3-A,S1,boss_results,Near-term market excess,0.23750851380668175,198.2900833631884
+P3-A,S1,boss_results,Housed in RV units (out of scope),-3.871447070625761,-843.7985003470926
+P3-A,S1,in_scope_figure,Growth demand (net of consolidation),39.603899224257965,8627.454495091017
+P3-A,S1,in_scope_figure,House-splitting demand,2.1453333505210432,509.2073511950001
+P3-A,S1,in_scope_figure,Consumption: extra space per dwelling,19.953164172338433,4391.9238542108415
+P3-A,S1,in_scope_figure,Consumption: vacancy allowance,-1.2620026167315819,-343.11671218162195
+P3-A,S1,in_scope_figure,Replacement: long-run background (net of unconsented additions),4.110766368264581,759.7035755171637
+P3-A,S1,in_scope_figure,Replacement: recent redevelopment wave (fading),0.0,0.0
+P3-A,S1,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.22323747204012337,186.545571395992
+P3-A,S1,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,268.6825295573986
+P3-M-ramp2045,S1,boss_results,Growth (net of consolidation),42.801904987884086,9887.59052228708
+P3-M-ramp2045,S1,boss_results,House-splitting,2.3056688903575244,577.1484134866831
+P3-M-ramp2045,S1,boss_results,Extra space per dwelling,22.539784859036267,5259.6986273520915
+P3-M-ramp2045,S1,boss_results,Vacancy allowance,1.2788720328255108,295.6842381222923
+P3-M-ramp2045,S1,boss_results,Demolition replacement,9.425528045097566,1796.51718790935
+P3-M-ramp2045,S1,boss_results,Calibrated stock residual (long run),-2.7410435939692137,-518.1603248726244
+P3-M-ramp2045,S1,boss_results,Redevelopment wave (scenario - long run),0.0,0.0
+P3-M-ramp2045,S1,boss_results,Near-term market excess,0.5690319451368746,275.45627769384106
+P3-M-ramp2045,S1,boss_results,Housed in RV units (out of scope),-4.296158946285855,-991.1495401407576
+P3-M-ramp2045,S1,in_scope_figure,Growth demand (net of consolidation),40.38865190122334,9341.359140569897
+P3-M-ramp2045,S1,in_scope_figure,House-splitting demand,2.1756423843810473,544.7249936596693
+P3-M-ramp2045,S1,in_scope_figure,Consumption: extra space per dwelling,21.26891384301975,4968.492368278746
+P3-M-ramp2045,S1,in_scope_figure,Consumption: vacancy allowance,1.2067413497884625,279.3716054515019
+P3-M-ramp2045,S1,in_scope_figure,Replacement: long-run background (net of unconsented additions),6.307566949998997,1207.6504067008507
+P3-M-ramp2045,S1,in_scope_figure,Replacement: recent redevelopment wave (fading),0.0,0.0
+P3-M-ramp2045,S1,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.5360717916711729,259.0039008216204
+P3-M-ramp2045,S1,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,311.0045738040737
+P3-A-ramp2045,S1,boss_results,Growth (net of consolidation),42.20611193041043,9431.277715067738
+P3-A-ramp2045,S1,boss_results,House-splitting,2.2908339899261403,563.1047691645283
+P3-A-ramp2045,S1,boss_results,Extra space per dwelling,22.239204580302527,5028.219237257815
+P3-A-ramp2045,S1,boss_results,Vacancy allowance,-1.2856610567094238,-292.10286383961056
+P3-A-ramp2045,S1,boss_results,Demolition replacement,7.974287485977433,1494.101504732346
+P3-A-ramp2045,S1,boss_results,Calibrated stock residual (long run),-2.690689247854852,-493.25209192109133
+P3-A-ramp2045,S1,boss_results,Redevelopment wave (scenario - long run),0.0,0.0
+P3-A-ramp2045,S1,boss_results,Near-term market excess,0.14422623938057166,148.51688468259246
+P3-A-ramp2045,S1,boss_results,Housed in RV units (out of scope),-3.997298990346644,-895.6490219865561
+P3-A-ramp2045,S1,in_scope_figure,Growth demand (net of consolidation),39.82644573972268,8910.362167026324
+P3-A-ramp2045,S1,in_scope_figure,House-splitting demand,2.161643778114741,531.4704102725452
+P3-A-ramp2045,S1,in_scope_figure,Consumption: extra space per dwelling,20.985278304454976,4749.891080108877
+P3-A-ramp2045,S1,in_scope_figure,Consumption: vacancy allowance,-1.213220222812782,-275.87010724986044
+P3-A-ramp2045,S1,in_scope_figure,Replacement: long-run background (net of unconsented additions),4.985653492576762,945.3321643531764
+P3-A-ramp2045,S1,in_scope_figure,Replacement: recent redevelopment wave (fading),0.0,0.0
+P3-A-ramp2045,S1,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.13521383902980857,139.56056889102993
+P3-A-ramp2045,S1,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,288.9929149421832
+P3-M-ramp2045,S3-10,boss_results,Growth (net of consolidation),42.801904987884086,9887.59052228708
+P3-M-ramp2045,S3-10,boss_results,House-splitting,2.3056688903575244,577.1484134866831
+P3-M-ramp2045,S3-10,boss_results,Extra space per dwelling,22.539784859036267,5259.6986273520915
+P3-M-ramp2045,S3-10,boss_results,Vacancy allowance,1.2788720328255108,295.6842381222923
+P3-M-ramp2045,S3-10,boss_results,Demolition replacement,9.425528045097566,1796.51718790935
+P3-M-ramp2045,S3-10,boss_results,Calibrated stock residual (long run),-2.7410435939692137,-518.1603248726244
+P3-M-ramp2045,S3-10,boss_results,Redevelopment wave (scenario - long run),6.908101239200427,1385.8857371414051
+P3-M-ramp2045,S3-10,boss_results,Near-term market excess,0.42803049019197914,209.35525717646394
+P3-M-ramp2045,S3-10,boss_results,Housed in RV units (out of scope),-4.677643546755129,-1065.55032650099
+P3-M-ramp2045,S3-10,in_scope_figure,Growth demand (net of consolidation),40.38865190122334,9341.762490655683
+P3-M-ramp2045,S3-10,in_scope_figure,House-splitting demand,2.1756423843810473,544.7218130445809
+P3-M-ramp2045,S3-10,in_scope_figure,Consumption: extra space per dwelling,21.268913843019746,4968.673562926977
+P3-M-ramp2045,S3-10,in_scope_figure,Consumption: vacancy allowance,1.2067413497884625,279.39071434819886
+P3-M-ramp2045,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),6.307566949998998,1207.6987678093064
+P3-M-ramp2045,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),6.518490719982265,1308.6464947908926
+P3-M-ramp2045,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.4031962554751646,196.82585158774458
+P3-M-ramp2045,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,341.9255678301616
+P3-A-ramp2045,S3-10,boss_results,Growth (net of consolidation),42.20611193041043,9431.277715067738
+P3-A-ramp2045,S3-10,boss_results,House-splitting,2.2908339899261403,563.1047691645283
+P3-A-ramp2045,S3-10,boss_results,Extra space per dwelling,22.239204580302527,5028.219237257815
+P3-A-ramp2045,S3-10,boss_results,Vacancy allowance,-1.2856610567094238,-292.10286383961056
+P3-A-ramp2045,S3-10,boss_results,Demolition replacement,7.974287485977433,1494.101504732346
+P3-A-ramp2045,S3-10,boss_results,Calibrated stock residual (long run),-2.6906892478548525,-493.2520919210914
+P3-A-ramp2045,S3-10,boss_results,Redevelopment wave (scenario - long run),6.149118441524473,1219.1260356668283
+P3-A-ramp2045,S3-10,boss_results,Near-term market excess,0.10400536215047826,112.28721553182237
+P3-A-ramp2045,S3-10,boss_results,Housed in RV units (out of scope),-4.3416784765254395,-962.332943040423
+P3-A-ramp2045,S3-10,in_scope_figure,Growth demand (net of consolidation),39.826445739722686,8910.956162943221
+P3-A-ramp2045,S3-10,in_scope_figure,House-splitting demand,2.161643778114741,531.4692445709443
+P3-A-ramp2045,S3-10,in_scope_figure,Consumption: extra space per dwelling,20.985278304454976,4750.164974667265
+P3-A-ramp2045,S3-10,in_scope_figure,Consumption: vacancy allowance,-1.213220222812782,-275.87206186726377
+P3-A-ramp2045,S3-10,in_scope_figure,Replacement: long-run background (net of unconsented additions),4.985653492576762,945.3787882473065
+P3-A-ramp2045,S3-10,in_scope_figure,Replacement: recent redevelopment wave (fading),5.802294383059869,1151.0963947316527
+P3-A-ramp2045,S3-10,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.09743753408552301,105.49751596189623
+P3-A-ramp2045,S3-10,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,320.15878504611777
+P0,S2,boss_results,Growth (net of consolidation),42.8882950707976,10354.02617062089
+P0,S2,boss_results,House-splitting,2.307796429820681,589.6554998776348
+P0,S2,boss_results,Extra space per dwelling,25.52026002339228,6176.436190643061
+P0,S2,boss_results,Vacancy allowance,4.0267507336767565,974.8586525222179
+P0,S2,boss_results,Demolition replacement,11.313767245341518,2252.040503589108
+P0,S2,boss_results,Calibrated stock residual (long run),-2.8873031330517,-574.7266547709396
+P0,S2,boss_results,Redevelopment wave (scenario - long run),17.73850683470701,3530.9048700291287
+P0,S2,boss_results,Near-term market excess,3.734074785470675,1004.2382251688634
+P0,S2,boss_results,Housed in RV units (out of scope),-5.9006819994142825,-1370.7399219759996
+P0,S2,in_scope_figure,Growth demand (net of consolidation),40.47017187917084,9780.659441171216
+P0,S2,in_scope_figure,House-splitting demand,2.1776499871552297,556.5099764352078
+P0,S2,in_scope_figure,Consumption: extra space per dwelling,24.081369410571774,5834.165994179401
+P0,S2,in_scope_figure,Consumption: vacancy allowance,3.799712713412142,920.8328106665933
+P0,S2,in_scope_figure,Replacement: long-run background (net of unconsented additions),7.951345249240264,1584.5549433108101
+P0,S2,in_scope_figure,Replacement: recent redevelopment wave (fading),16.738336527542128,3335.6385688385226
+P0,S2,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",3.522880223648159,947.4371149186248
+P0,S2,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,401.23662009316035
+P3-M,S2,boss_results,Growth (net of consolidation),42.771650543634905,9715.43778240093
+P3-M,S2,boss_results,House-splitting,2.3034643746216803,564.2546302105023
+P3-M,S2,boss_results,Extra space per dwelling,21.452172613844212,4917.783606317846
+P3-M,S2,boss_results,Vacancy allowance,1.2254128565814981,246.9165551240757
+P3-M,S2,boss_results,Demolition replacement,8.852093645019796,1653.6302116149495
+P3-M,S2,boss_results,Calibrated stock residual (long run),-2.695195829273168,-499.74872884311975
+P3-M,S2,boss_results,Redevelopment wave (scenario - long run),13.8789246957776,2592.6758235978127
+P3-M,S2,boss_results,Near-term market excess,0.46537772907438735,226.92369677119356
+P3-M,S2,boss_results,Housed in RV units (out of scope),-4.976820345800082,-1095.0986787631343
+P3-M,S2,in_scope_figure,Growth demand (net of consolidation),40.36010300365512,9178.157953445492
+P3-M,S2,in_scope_figure,House-splitting demand,2.173562144750408,532.5536039593934
+P3-M,S2,in_scope_figure,Consumption: extra space per dwelling,20.242614026497343,4645.340720380672
+P3-M,S2,in_scope_figure,Consumption: vacancy allowance,1.1562958504726832,233.62871118439003
+P3-M,S2,in_scope_figure,Replacement: long-run background (net of unconsented additions),5.809722180886155,1090.031171282531
+P3-M,S2,in_scope_figure,Replacement: recent redevelopment wave (fading),13.096332257594861,2449.277147883042
+P3-M,S2,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.438450819624255,213.4776874163293
+P3-M,S2,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,342.92238709061826
+P3-A,S2,boss_results,Growth (net of consolidation),41.970270209065866,9132.459875796254
+P3-A,S2,boss_results,House-splitting,2.2735491570833037,539.5056253512932
+P3-A,S2,boss_results,Extra space per dwelling,21.14543066506456,4649.467299784311
+P3-A,S2,boss_results,Vacancy allowance,-1.337357771569658,-363.9585895207572
+P3-A,S2,boss_results,Demolition replacement,6.989551418375178,1274.2667889654144
+P3-A,S2,boss_results,Calibrated stock residual (long run),-2.6331071505096117,-469.9347826155135
+P3-A,S2,boss_results,Redevelopment wave (scenario - long run),10.958702165048962,1997.8836098656939
+P3-A,S2,boss_results,Near-term market excess,0.169544937896061,145.82038054711757
+P3-A,S2,boss_results,Housed in RV units (out of scope),-4.48539531905547,-953.4681477202382
+P3-A,S2,in_scope_figure,Growth demand (net of consolidation),39.60389922425796,8627.583365092905
+P3-A,S2,in_scope_figure,House-splitting demand,2.1453333505210432,509.20182433885094
+P3-A,S2,in_scope_figure,Consumption: extra space per dwelling,19.953164172338433,4391.978751425286
+P3-A,S2,in_scope_figure,Consumption: vacancy allowance,-1.2620026167315819,-343.0893070206151
+P3-A,S2,in_scope_figure,Replacement: long-run background (net of unconsented additions),4.110766368264581,759.7123591719953
+P3-A,S2,in_scope_figure,Replacement: recent redevelopment wave (fading),10.340732676273339,1887.2326694954306
+P3-A,S2,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.15929513647541915,137.17584383412694
+P3-A,S2,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,309.5663410029734
+P3-M-ramp2045,S2,boss_results,Growth (net of consolidation),42.801904987884086,9887.59052228708
+P3-M-ramp2045,S2,boss_results,House-splitting,2.3056688903575244,577.1484134866831
+P3-M-ramp2045,S2,boss_results,Extra space per dwelling,22.539784859036267,5259.6986273520915
+P3-M-ramp2045,S2,boss_results,Vacancy allowance,1.2788720328255108,295.6842381222923
+P3-M-ramp2045,S2,boss_results,Demolition replacement,9.425528045097566,1796.51718790935
+P3-M-ramp2045,S2,boss_results,Calibrated stock residual (long run),-2.7410435939692137,-518.1603248726243
+P3-M-ramp2045,S2,boss_results,Redevelopment wave (scenario - long run),14.777994811368318,2816.7039081982334
+P3-M-ramp2045,S2,boss_results,Near-term market excess,0.41215560898677467,202.06591164442176
+P3-M-ramp2045,S2,boss_results,Housed in RV units (out of scope),-5.120401490028124,-1145.7995237309908
+P3-M-ramp2045,S2,in_scope_figure,Growth demand (net of consolidation),40.388651901223334,9341.09171910869
+P3-M-ramp2045,S2,in_scope_figure,House-splitting demand,2.1756423843810477,544.7154694721646
+P3-M-ramp2045,S2,in_scope_figure,Consumption: extra space per dwelling,21.268913843019746,4968.355401883104
+P3-M-ramp2045,S2,in_scope_figure,Consumption: vacancy allowance,1.2067413497884625,279.37030226980846
+P3-M-ramp2045,S2,in_scope_figure,Replacement: long-run background (net of unconsented additions),6.307566949998998,1207.616625012786
+P3-M-ramp2045,S2,in_scope_figure,Replacement: recent redevelopment wave (fading),13.94471871034999,2660.9287524524407
+P3-M-ramp2045,S2,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.3882290127971305,189.9990703824655
+P3-M-ramp2045,S2,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,359.921688753703
+P3-A-ramp2045,S2,boss_results,Growth (net of consolidation),42.20611193041043,9431.277715067738
+P3-A-ramp2045,S2,boss_results,House-splitting,2.2908339899261403,563.1047691645283
+P3-A-ramp2045,S2,boss_results,Extra space per dwelling,22.239204580302527,5028.219237257815
+P3-A-ramp2045,S2,boss_results,Vacancy allowance,-1.2856610567094238,-292.10286383961056
+P3-A-ramp2045,S2,boss_results,Demolition replacement,7.974287485977433,1494.101504732346
+P3-A-ramp2045,S2,boss_results,Calibrated stock residual (long run),-2.690689247854852,-493.2520919210914
+P3-A-ramp2045,S2,boss_results,Redevelopment wave (scenario - long run),12.502639483782255,2342.555682710681
+P3-A-ramp2045,S2,boss_results,Near-term market excess,0.09962140998442054,108.35030851715985
+P3-A-ramp2045,S2,boss_results,Housed in RV units (out of scope),-4.699601087888964,-1025.4425844339066
+P3-A-ramp2045,S2,in_scope_figure,Growth demand (net of consolidation),39.82644573972268,8910.488406934124
+P3-A-ramp2045,S2,in_scope_figure,House-splitting demand,2.161643778114741,531.463542538929
+P3-A-ramp2045,S2,in_scope_figure,Consumption: extra space per dwelling,20.985278304454976,4749.940319505087
+P3-A-ramp2045,S2,in_scope_figure,Consumption: vacancy allowance,-1.213220222812782,-275.85658966097265
+P3-A-ramp2045,S2,in_scope_figure,Replacement: long-run background (net of unconsented additions),4.985653492576762,945.3383871715841
+P3-A-ramp2045,S2,in_scope_figure,Replacement: recent redevelopment wave (fading),11.797632958467442,2212.8582396200177
+P3-A-ramp2045,S2,in_scope_figure,"Near-term market excess (2026 observed building above requirement, fading at rho)",0.09331343740614853,101.80770578610125
+P3-A-ramp2045,S2,in_scope_figure,"Replacements & repaints, within 2026-2050",0.0,336.53044533109215

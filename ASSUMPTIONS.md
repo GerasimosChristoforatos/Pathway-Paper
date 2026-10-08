@@ -104,9 +104,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `DEMOLITION_CALIB_START` | `1992` |
 | `DEMOLITION_RATE` | `0.00135` |
 | `DWELLING_SIZE_REF` | `(2023, 2025)` |
-| `EVENTS_ALPHA` | `0.45` |
 | `EVENTS_COLOR` | `'#16A085'` |
-| `EVENTS_HATCH` | `'...'` |
 | `EVENTS_LABEL` | `'Replacements & repaints, within 2026-2050'` |
 | `EVENT_TIMING` | `'n+1'` |
 | `HH_REBASE_BASE` | `'2018-06-30'` |
@@ -201,6 +199,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `HIST_RATE_AFTER_LAST_CENSUS` | `'recent'` |
 | `HIST_START` | `1992` |
 | `M6` | `1000000.0` |
+| `MAIN_EXCLUDED` | `('xii_whole_life',)` |
 | `MC_PCT` | `(5, 50, 95)` |
 | `MC_REL_TOL` | `1e-09` |
 | `PB_YEARS` | `(2026, 2050)` |

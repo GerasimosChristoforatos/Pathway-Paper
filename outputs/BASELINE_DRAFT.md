@@ -141,13 +141,13 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 
 | group | case | floor area (Mm²) | change | carbon change |
 |---|---|---|---|---|
-| Population | Stats NZ 5th percentile (level) | 66.73 | -25.5% | -24.2% |
-| Population | Stats NZ 95th percentile (level) | 112.34 | +25.4% | +26.4% |
+| Population | Population: Stats NZ 5th percentile | 66.73 | -25.5% | -24.2% |
+| Population | Population: Stats NZ 95th percentile | 112.34 | +25.4% | +26.4% |
 | Replacement scenario | High (S2): 2018-2023 rate persists, shares held | 98.74 | +10.2% | +8.3% |
 | Replacement scenario | Low (S1): long-run rate, shares held | 83.24 | -7.1% | -5.9% |
-| Household size | Stats NZ Low projection variant (S) | 95.25 | +6.4% | +6.5% |
+| Household size | Household size: Stats NZ Low variant | 95.25 | +6.4% | +6.5% |
 | Stock | No census under-construction correction | 94.48 | +5.5% | +4.5% |
-| Household size | Stats NZ High projection variant (S) | 84.89 | -5.2% | -5.4% |
+| Household size | Household size: Stats NZ High variant | 84.89 | -5.2% | -5.4% |
 | Stock | Completion rate 0.92 | 85.15 | -4.9% | -4.2% |
 | Dwelling size | Dwelling size: 2016–2025 reference | 93.88 | +4.8% | +4.8% |
 | Near-term: how the excess is booked | Temporary surplus with payback, absorption 0.20/yr | 85.92 | -4.1% | -4.4% |
@@ -157,10 +157,10 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 | Replacement scenario | S3: half-life 15 yr | 91.58 | +2.2% | +1.8% |
 | Stock | Completion rate 0.96 | 91.04 | +1.6% | +1.4% |
 | Near-term: rule variant | Gap measured against the 2026 requirement | 90.54 | +1.1% | +1.2% |
-| Household size | S after 2043: taper from the PCHIP end slope | 88.94 | -0.7% | -0.7% |
-| Household size | S after 2043: secant-slope taper (v1.2) | 89.31 | -0.3% | -0.3% |
-| Household size | S after 2043: flat (kink at 2043) | 89.57 | +0.0% | +0.0% |
-| Near-term: how the excess is booked | Booked as redevelopment, stock-neutral (v1.1) | 89.57 | +0.0% | -0.7% |
+| Household size | Household size after 2043: taper from the PCHIP end slope | 88.94 | -0.7% | -0.7% |
+| Household size | Household size after 2043: secant-slope taper | 89.31 | -0.3% | -0.3% |
+| Household size | Household size after 2043: flat (kink at 2043) | 89.57 | +0.0% | +0.0% |
+| Near-term: how the excess is booked | Booked as redevelopment, stock-neutral | 89.57 | +0.0% | -0.7% |
 | Carbon factors | Soil on all floor area, incl. replacement | 89.57 | +0.0% | +2.9% |
 | Carbon factors | Frozen technology: 2025 factors held (no decarbonisation) | 89.57 | +0.0% | +14.3% |
 | Carbon factors | Decarbonisation: proxy-mapped items held at 2025 | 89.57 | +0.0% | +0.4% |
@@ -168,13 +168,12 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 | Carbon factors | A4-A5 held at 2025 (no generic 1%/yr) | 89.57 | +0.0% | +2.0% |
 | Carbon factors | A4-A5 on each item's own Horup path | 89.57 | +0.0% | -1.2% |
 | Carbon factors | Event timing: interval L / n | 89.57 | +0.0% | -0.8% |
-| Carbon factors | Accounting: whole life at construction | 89.57 | +0.0% | +41.8% |
 | Carbon factors | Materials: jackknife low (all typologies) | 89.57 | +0.0% | -3.6% |
 | Carbon factors | Materials: jackknife high (all typologies) | 89.57 | +0.0% | +3.3% |
 | Carbon factors | Materials: lowest single case study | 89.57 | +0.0% | -21.0% |
 | Carbon factors | Materials: highest single case study | 89.57 | +0.0% | +19.8% |
-| Carbon factors | Soil: lowest soil order (Raw) | 89.57 | +0.0% | -7.7% |
-| Carbon factors | Soil: highest soil order (Organic) | 89.57 | +0.0% | +32.5% |
+| Carbon factors | Soil carbon: lowest soil order (Raw) | 89.57 | +0.0% | -7.7% |
+| Carbon factors | Soil carbon: highest soil order (Organic) | 89.57 | +0.0% | +32.5% |
 
 ## Planetary-boundary layer (climate change)
 

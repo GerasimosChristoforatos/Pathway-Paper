@@ -407,8 +407,7 @@ STYLE = {col: (lab, colour) for col, lab, colour in M.MATERIAL_STYLE}
 fig, ax = plt.subplots(2, 2, figsize=(14, 8.5))
 _acc = ('time-resolved: upfront (A1-A5 + soil) at construction + replacements & repaints in the year they occur'
         if B['TIME_RESOLVED'] else 'A1-A5, B2, B4, C1-C4 + soil, booked at construction')
-fig.suptitle(f'5. Embodied carbon 2026-2050 ({_acc}). No historical carbon: only 2025 factors exist',
-             fontsize=11.5)
+fig.suptitle(f'5. Embodied carbon 2026-2050 ({_acc});\nno historical carbon shown', fontsize=11.5)
 
 a = ax[0, 0]
 car_f = B['carbon_total_typ'].loc[PF]
@@ -417,16 +416,13 @@ tidy(a, 'Annual carbon by typology', 'kt CO₂e per year', xlim=(2026, 2050))
 a.legend(loc='upper right')
 
 a = ax[0, 1]
-handles = M.stack_materials(a, PF, B['flow_annual'], M6,
-                            frame_b=B['flow_annual_b'] if B['TIME_RESOLVED'] else None)
+handles = M.stack_materials(a, PF, B['flow_annual'], M6)
 tidy(a, 'Annual carbon by material (soil = land-use change)', 'kt CO₂e per year', xlim=(2026, 2050))
 a.legend(handles=handles, loc='upper right', ncol=2, fontsize=7)
 
 a = ax[1, 0]
 fc = B['flow_cum']
-a.legend(handles=M.stack_materials(a, fc.index, fc, M6,
-                                   frame_b=B['flow_annual_b'].cumsum() if B['TIME_RESOLVED'] else None),
-         loc='upper left', ncol=2, fontsize=7)
+a.legend(handles=M.stack_materials(a, fc.index, fc, M6), loc='upper left', ncol=2, fontsize=7)
 tidy(a, f'Cumulative carbon 2026-2050: {fc.iloc[-1].sum() / M6:,.0f} kt', 'kt CO₂e',
      xlim=(2026, 2050))
 

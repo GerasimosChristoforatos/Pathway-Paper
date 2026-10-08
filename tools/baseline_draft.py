@@ -390,7 +390,7 @@ def main():
                     f"({b['carbon_kt']:,.0f} kt): case-study jackknife "
                     f"{_pair('Materials: jackknife low (all typologies)', 'Materials: jackknife high (all typologies)')}, "
                     f"single case study {_pair('Materials: lowest single case study', 'Materials: highest single case study')}, "
-                    f"soil order {_pair('Soil: lowest soil order (Raw)', 'Soil: highest soil order (Organic)')}.")
+                    f"soil order {_pair('Soil carbon: lowest soil order (Raw)', 'Soil carbon: highest soil order (Organic)')}.")
     txt += (f" Population uncertainty alone (Stats NZ 5th-95th percentiles) spans "
             f"{b['pop_band_gfa_Mm2']['5th']:.1f}-{b['pop_band_gfa_Mm2']['95th']:.1f} million m².")
     if os.path.exists(ref_mc):

@@ -70,20 +70,35 @@ def test_low_and_reference_deterministic_unchanged():
             assert r[f] == v, (k, f, r[f], v)
 
 
-def test_tornado_top5_selection():
+def test_tornado_top5_parameters():
+    """Main-text tornados: all rows of the 5 parameters with the largest absolute effect
+    (sens_1: on carbon; pb_4: on AR or AtP), both ends of a paired parameter shown."""
     import PB
     import Sensitivity as S
-    rng = np.random.default_rng(0)
-    d = pd.DataFrame(dict(case=[f'c{i}' for i in range(12)], group='Stock',
-                          GFA_change_pct=rng.normal(0, 5, 12), carbon_change_pct=rng.normal(0, 5, 12)))
-    eff = d[['GFA_change_pct', 'carbon_change_pct']].abs().max(axis=1)
-    top = S.top_n(d, 5)
-    assert S.TOP_N == 5 and list(top.case) == list(d.assign(e=eff).sort_values('e').case.tail(5))
-    p = pd.DataFrame(dict(case=[f'r{i}' for i in range(9)], AR_vs_ref_pct=rng.normal(0, 20, 9),
-                          AtP_vs_ref_pct=rng.normal(0, 20, 9)))
-    e2 = p[['AR_vs_ref_pct', 'AtP_vs_ref_pct']].abs().max(axis=1)
+    d = pd.DataFrame(dict(case=['a_lo', 'a_hi', 'b', 'c', 'd', 'e', 'f', 'g_lo', 'g_hi'], group='Stock',
+                          GFA_change_pct=[0, 0, 0, 0, 0, 0, 50, 0, 0],
+                          carbon_change_pct=[-1, 9, 8, 7, 6, 2, 0.1, 5, -0.5]))
+    par = {'a_lo': 'a', 'a_hi': 'a', 'g_lo': 'g', 'g_hi': 'g'}
+    top = S.top_parameters(d, 5, parameter=par)
+    assert S.TOP_N == 5 and set(top.case) == {'a_lo', 'a_hi', 'b', 'c', 'd', 'g_lo', 'g_hi'}   # f: floor area only
+    assert list(top.case) == list(top.sort_values('order').case)
+    p = pd.DataFrame(dict(case=['iii_base_window', 'iii_base_window_20', 'iii_base_window_full', 'i_source_pair',
+                                'ii_gdp_measure', 'v_ssec', 'vi_frozen', 'xiv_alpha_1', 'vii_proxies_held'],
+                          AR_vs_ref_pct=[-2, 20, 22, 88, 0, 0, 14, 0, 0.4],
+                          AtP_vs_ref_pct=[0, 0, 0, 88, 207, 0.2, 14, -58, 0.4]))
     assert PB.TOP_N == 5
-    assert list(PB.top_rows(p, 5).case) == list(p.assign(e=e2).sort_values('e').case.tail(5))
+    assert set(PB.top_rows(p, 5).case) == {'iii_base_window', 'iii_base_window_20', 'iii_base_window_full',
+                                          'i_source_pair', 'ii_gdp_measure', 'vi_frozen', 'xiv_alpha_1'}
+    assert 'xii_whole_life' in PB.MAIN_EXCLUDED
+
+
+def test_whole_life_row_only_in_pb_sensitivity():
+    import Sensitivity as S
+    assert not any('whole life' in lab.lower() for _, lab, _ in S.CASES + S.DECARB_CASES['horup_item'])
+    oat = pd.read_csv(os.path.join(OUT, 'sensitivity_oat.csv'))
+    assert not oat['case'].str.contains('whole life', case=False).any()
+    pb = pd.read_csv(os.path.join(OUT, 'pb_sensitivity.csv'))
+    assert (pb['case'] == 'xii_whole_life').sum() == 1
 
 
 def test_pride_colours_in_one_order():

@@ -266,8 +266,6 @@ MATERIAL_STYLE = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF')
 SOIL_ALPHA = 0.5
 SOIL_HATCH = '///'
 SOIL_HATCH_COLOR = '#8C7B66'
-EVENTS_ALPHA = 0.45        # in-window replacements & repaints: material colour, lighter, hatched
-EVENTS_HATCH = '...'
 EDGE = dict(edgecolor='#555555', linewidth=0.4)
 
 TREND_WINDOW_START = 2012
@@ -2303,13 +2301,12 @@ def main():
     fig9, (mx1, mx2) = plt.subplots(1, 2, figsize=(18, 6))
     _acc = ('upfront at construction + replacements & repaints within 2026-2050' if TIME_RESOLVED
             else 'whole life at construction')
-    for a, frame, fb, ylab, title, loc in (
-            (mx1, flow_annual, flow_annual_b, 'kt CO$_2$e per year', f'Annual embodied carbon by material, {_acc}\n'
-             'soil shown separately: land-use change, not a material', 'upper right'),
-            (mx2, flow_cum, flow_annual_b.cumsum(), 'cumulative kt CO$_2$e',
-             f'Cumulative embodied carbon by material (2026-2050), {_acc}', 'upper left')):
-        a.legend(handles=stack_materials(a, plot_years, frame, 1e6,
-                                         frame_b=(fb if TIME_RESOLVED else None)), loc=loc, fontsize=7)
+    for a, frame, ylab, title, loc in (
+            (mx1, flow_annual, 'kt CO$_2$e per year', f'Annual embodied carbon by material, 2026-2050\n'
+             f'{_acc}; soil = land-use change', 'upper right'),
+            (mx2, flow_cum, 'cumulative kt CO$_2$e',
+             f'Cumulative embodied carbon by material, 2026-2050\n{_acc}', 'upper left')):
+        a.legend(handles=stack_materials(a, plot_years, frame, 1e6), loc=loc, fontsize=7)
         a.set_ylabel(ylab); a.set_xlabel('Year'); a.set_title(title)
         a.grid(True, alpha=0.3); a.set_xlim(2026, 2050)
     plt.tight_layout()
@@ -2416,11 +2413,10 @@ def material_patch(col, colour, alpha=1.0):
     return dict(facecolor=colour, alpha=alpha, **EDGE)
 
 
-def stack_materials(ax, years, frame, scale=1.0, alpha=1.0, frame_b=None):
+def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):
     """Stack carbon by material in MATERIAL_STYLE order (bottom to top), soil on top
-    (material_patch); edges 0.4 pt #555555. frame_b (time-resolved): the part of each
-    material that is in-window replacements & repaints, drawn above the construction
-    layers in the same colours, lighter and hatched. Returns legend handles top first."""
+    (material_patch); edges 0.4 pt #555555. Each material includes its in-window
+    replacements & repaints (time-resolved). Returns legend handles top first."""
     unknown = set(frame.columns) - {c for c, _, _ in MATERIAL_STYLE}
     if unknown:
         raise ValueError(f'No colour for {sorted(unknown)} in MATERIAL_STYLE.')
@@ -2429,18 +2425,9 @@ def stack_materials(ax, years, frame, scale=1.0, alpha=1.0, frame_b=None):
     mats = [(c, lab, col) for c, lab, col in MATERIAL_STYLE if c != 'SOIL']
     soil = [(c, lab, col) for c, lab, col in MATERIAL_STYLE if c == 'SOIL']
     for col, lab, colour in mats:
-        v = (np.asarray(frame[col], float) - (np.asarray(frame_b[col], float) if frame_b is not None else 0.0)) / scale
+        v = np.asarray(frame[col], float) / scale
         handles.append(ax.fill_between(years, bottom, bottom + v, label=lab, **material_patch(col, colour, alpha)))
         bottom = bottom + v
-    if frame_b is not None:
-        for k, (col, lab, colour) in enumerate(mats):
-            v = np.asarray(frame_b[col], float) / scale
-            ax.fill_between(years, bottom, bottom + v, facecolor=colour, alpha=alpha * EVENTS_ALPHA,
-                            hatch=EVENTS_HATCH, edgecolor='#555555', linewidth=0.4)
-            bottom = bottom + v
-        from matplotlib.patches import Patch            # neutral legend swatch for the event layers
-        handles.append(Patch(facecolor='white', edgecolor='#555555', hatch=EVENTS_HATCH,
-                             label=f'{EVENTS_LABEL} (material colours, lighter)'))
     for col, lab, colour in soil:
         v = np.asarray(frame[col], float) / scale
         handles.append(ax.fill_between(years, bottom, bottom + v, label=lab, **material_patch(col, colour, alpha)))

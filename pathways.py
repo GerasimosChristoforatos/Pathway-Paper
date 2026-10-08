@@ -396,10 +396,6 @@ def boss_state(scenario):
         return validation.run_boss(**SCENARIOS[scenario][1])
 
 
-def run_name(bundle, setting):
-    return 'P0' if bundle == 'P0' else f'{bundle}-{setting}'
-
-
 def compute(scenarios=tuple(SCENARIOS), verbose=True):
     """All runs. Returns a dict of tables and the objects the figures and tests need."""
     t0 = time.time()

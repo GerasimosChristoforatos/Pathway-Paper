@@ -1,4 +1,8 @@
-# PATHWAYS v1: hook inventory
+# PATHWAYS v2: hook inventory
+
+(Written for v1 before any pathways code; updated for v2: logistic ramp, L1 on the
+engine's occupied area, L2 split into L2a / L2b, L5 Harrell-Davis ratio. The hooks
+themselves are unchanged.)
 
 Written before any pathways code (step 1). It records, for each lever, which
 `engine.forward()` input (the `fwd_inputs` dict built in `Boss.main()`) or which
@@ -41,23 +45,24 @@ Townhouses 206.75, Apartments 444.44. No STOP.
 ## Common conventions
 
 * Model index 0 = 2025, 1 = 2026 (observed; `gfa_fixed = {1: observed 2026 GFA}`
-  stays). Ramp weight `w(y) = clip((y − 2026) / (2035 − 2026), 0, 1)` (1/9 in
-  2027, 1 from 2035; sensitivity: full by 2045). `w = 0` in 2025 and 2026, so no
-  lever changes 2026.
+  stays). Ramp weight: normalised logistic, `s(y) = 1 / (1 + exp(−k (y − 2030.5)))`,
+  `k = ln(81)/6`, `w(y) = (s(y) − s(2026)) / (s(2035) − s(2026))` for 2026-2035, 1
+  after (sensitivity ramp2045: midpoint 2035.5, end 2045). `w = 0` in 2025 and
+  2026, so no lever changes 2026.
 * Near-term excess: `join = join_info['50th']['join']` and
   `join_redev = join_info['50th']['redev']` are passed unchanged to every run
-  (frozen), except L2(b).
+  (frozen), except L2b.
 
 ## Levers
 
 | lever | input(s) modified | modification | identity (lever off / strength 0) |
 |---|---|---|---|
-| L1 new-dwelling size | `fwd_inputs['size']` (dict by typology; a scalar per typology in the baseline) | `size[t] = size_ref[t] × (1 − w(y) c_t)`, an array over years (`engine.blend` divides the share Series by it elementwise) | `c_t = 0`: `size_ref[t] × 1` (multiplication by exactly 1.0 leaves every value bit-identical) |
-| L2(a) vacancy | `fwd_inputs['v']` (scalar `v_forward`) | `v(y) = v_forward + w(y)(v* − v_forward)`, an array over years (`engine.forward` broadcasts `v`) | `v* = v_forward` → the array equals `v_forward` in every year |
-| L2(b) near-term absorption | `join`, `join_redev` passed to `engine.forward` | `join, ji = engine.market_excess(E_nojoin, O26, rho, '2027', 'surplus', absorption=a)` with `E_nojoin` = the baseline forward run **without** a join (same inputs as Boss l. 1543), `O26 = join_info['50th']['O26']`, `rho = rho_other` | `a = 0`: `market_excess` returns the same arrays as Boss (Boss uses absorption 0 in mode `surplus`) |
-| L3 lifetime extension | `fwd_inputs['rate_demol']` (scalar), `fwd_inputs['rate_unc']` (array `unc_path`) | `rate_demol(y) = demolition_rate × (1 − w d)`; `rate_unc(y) = unconsented_rate + (unc_path(y) − unconsented_rate)(1 − w d)` (only the redevelopment-wave component `unc_path − unconsented_rate` is scaled; the long-run residual is untouched) | `d = 0`; the reference run passes the original `rate_demol` scalar and `unc_path` array |
-| L4 typology mix | `fwd_inputs['shares']` (DataFrame years x typology) | attached share `a(y) = a_0 + w(y)(a* − a_0)` from 2027 with `a_0` = held Townhouses + Apartments share; the increase `Δ(y) = a(y) − a_0` is split between Townhouses and Apartments in proportion to their held shares; Detached −Δ(y). Size and OLF blend with the new shares inside `engine.forward` | `a* = a_0` → Δ = 0; the original DataFrame is passed |
-| L5 best-practice materials | `fwd_inputs['intensity']` and `fwd_inputs['intensity_upfront']` (equal arrays) | `I[t](y) = T_INT[t](y) − w(y)(1 − r_t)(A13_2025[t] − RED13_TOT[t](y))`, i.e. A1-A3(y) = [1 − w(1 − r)] (A1-A3_2025 − reduction(y)); A4-A5, soil, events (`fwd_inputs['events']`), C1-C4 unchanged | `r_t = 1` → the original `T_INT` / `U_INT` objects are passed |
+| L1 right-sized new dwellings (P1) | `fwd_inputs['size']` (dict by typology; a scalar per typology in the baseline) | `size[t](y) = occ_t(y) + [1 − f w(y)](size_ref[t] − occ_t(y))`, `occ_t(y) = S(y) × OLF_USED[t]` with `S = pop / hh` of the median path (the engine's S and OLF); held at `size_ref[t]` where `size_ref[t] <= occ_t(y)` (never binds); an array over years (`engine.blend` divides the share Series by it elementwise) | `f = 0` → `size_ref[t]` in every year |
+| L4 denser typology mix (P1) | `fwd_inputs['shares']` (DataFrame years x typology) | attached share `a(y) = a_0 + w(y)(a* − a_0)` with `a_0` = held Townhouses + Apartments share; the increase `Δ(y)` split between Townhouses and Apartments in proportion to their held shares; Detached −Δ(y). Size and OLF blend with the new shares inside `engine.forward` | `a* = a_0` → Δ = 0 |
+| L2a vacancy (P2) | `fwd_inputs['v']` (scalar `v_forward`) | `v(y) = v_forward + w(y)(v* − v_forward)`, an array over years (`engine.forward` broadcasts `v`) | `v* = v_forward` |
+| L2b near-term absorption (P2) | `join`, `join_redev` passed to `engine.forward` | `join, ji = engine.market_excess(E_nojoin, O26, rho, '2027', 'surplus', absorption=a)` with `E_nojoin` = the baseline forward run **without** a join (same inputs as Boss l. 1543), `O26 = join_info['50th']['O26']`, `rho = rho_other` | `a = 0`: the same arrays as Boss |
+| L3 fewer removals (P3) | `fwd_inputs['rate_demol']` (scalar), `fwd_inputs['rate_unc']` (array `unc_path`) | `rate_demol(y) = demolition_rate × (1 − w d)`; `rate_unc(y) = unconsented_rate + (unc_path(y) − unconsented_rate)(1 − w d)` (only the redevelopment-wave component is scaled; the long-run residual untouched) | `d = 0` |
+| L5 best-practice materials (P4) | `fwd_inputs['intensity']` and `fwd_inputs['intensity_upfront']` (equal arrays) | `I[t](y) = T_INT[t](y) − w(y)(1 − r)(A13_2025[t] − RED13_TOT[t](y))`, the same r for every typology (r = Harrell-Davis quantile of the case-study ratios, `outputs/factors/factors_building.csv`); A4-A5, soil, events (`fwd_inputs['events']`), C1-C4 unchanged | `r = 1` |
 
 Run quantities recomputed per run from its own `engine.forward` result `E`
 (same code paths as Boss): within-window carbon `E['carbon'][1:]`; upfront
@@ -69,7 +74,7 @@ row_factors(..., hold='2025' | '2050'))` per typology plus C1-C4 =
 the Boss bookkeeping (l. 1555-1575, 1700-1745), the redevelopment wave from the
 run's own `rate_unc − unconsented_rate`.
 
-**Identity run.** `levers.apply(B, settings)` with every lever off returns
+**Identity run.** `levers.apply(base, params, {})` (every lever off) returns
 `fwd_inputs` itself (the same objects), `join`/`join_redev` from
 `join_info['50th']`; `engine.forward(pop, hh, growth, join=..., join_redev=...,
 **fwd_inputs)` is then the very call of Boss l. 1548-1549, so P0 reproduces the
@@ -77,7 +82,7 @@ reference central run. Tested (tests/test_pathways.py) for annual carbon,
 upfront, in-window B, floor area by typology, demand bands, committed range and
 cumulative LoE AR / AtP (outputs/pb_results.json), to ≤ 1e-9 relative.
 
-**Scenarios S1 / S2** (envelope for P0 and P3 only): `validation.run_boss(
+**Scenarios S1 / S2** (envelope for P0 and P5 only): `validation.run_boss(
 REPLACEMENT_SCENARIO='S1' | 'S2')`, the mechanism of
 `tools/replacement_scenarios.py` and `PB.scenario_runs`; the levers act on each
 run's own `fwd_inputs`.

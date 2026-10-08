@@ -1,5 +1,61 @@
 # CHANGELOG
 
+## pathways-v2
+
+PATHWAYS v2: four pathways from six levers, settings central and stretch, on the
+frozen baseline (tag pathways_v1 = a3202ca is the previous layer). No model file
+changes; no baseline output rewritten.
+
+**Baseline lock and run mode.** `tests/baseline_manifest.json` holds the SHA-256 of
+the 65 files tracked under outputs/ at tag baseline-PB_v3.1 (outside
+outputs/pathways/); `tests/test_baseline_lock.py` asserts them. `python run_all.py
+--pathways-only` (about 40 s) runs pathways.py (Boss.main() in memory), the pathway
+and lock tests, then only the Pathways documents and sections (methods draft,
+LEVERS_TABLE.md, ASSUMPTIONS and FIGURES sections; baseline parts byte-identical);
+it does not clear outputs/figures/ (only pw_* replaced) and stamps nothing quick.
+Every v2 number comes from this mode.
+
+**Changes to the lever layer.**
+
+* Settings Moderate / Ambitious -> central / stretch everywhere.
+* Ramp: normalised logistic, k = ln(81)/6, midpoint 2030.5, w(2026) = 0, w(2035) = 1
+  (v1: linear); sensitivity ramp2045 (midpoint 2035.5, same k).
+* L1 right-sized new dwellings (replaces the v1 size cut): the space above the
+  engine's occupied area S x OLF cut by f = 0.25 / 0.50; 2050 sizes detached
+  158.9 / 138.1 m2 (-11.5% / -23.1%), townhouses 102.8 / 97.8 m2 (-4.6% / -9.2%),
+  apartments 87.2 / 76.4 m2 (-11.1% / -22.1%); never below the occupied area (no hold).
+* L5 best-practice materials (replaces the v1 lowest-cases rule): Harrell & Davis
+  (1982) quantile of the 14 independent detached and townhouse case ratios, q =
+  0.25 / 0.15 (EU 2021/2139 Annex I 7.7 convention), r = 0.916 (bootstrap 95% CI
+  0.743-0.980) / 0.827 (0.606-0.951), the same r for all typologies; apartments held
+  as a sensitivity. Checked against scipy.stats.mstats.hdquantiles.
+* L2 split into L2a (vacancy) and L2b (surplus absorption); L2a, L2b, L3, L4 values
+  unchanged.
+* Pathways (replace the v1 bundles): P1 Right-size space (L1 + L4), P2 Occupy the
+  existing stock (L2a + L2b), P3 Keep and reuse (L3), P4 Build better (L5), P5 all.
+
+**Results** (S3-10, 2026-2050, central / stretch):
+
+| run | floor area (Mm2) | carbon (kt) | committed after 2050 (kt) | LoE AR | LoE AtP | carbon vs P0 |
+|---|---|---|---|---|---|---|
+| P0 | 89.57 | 21,578 | 8,208-8,969 | 4.85 | 19.4 | +0.0% |
+| P1 Right-size space | 83.26 / 74.49 | 20,186 / 18,601 | 7,617-8,312 / 6,779-7,330 | 4.54 / 4.18 | 18.1 / 16.7 | -6.4% / -13.8% |
+| P2 Occupy the existing stock | 83.61 / 80.69 | 20,057 / 19,276 | 7,672-8,384 / 7,416-8,106 | 4.51 / 4.33 | 18.0 / 17.3 | -7.0% / -10.7% |
+| P3 Keep and reuse | 86.82 / 84.07 | 21,032 / 20,486 | 7,952-8,689 / 7,696-8,409 | 4.73 / 4.60 | 18.9 / 18.4 | -2.5% / -5.1% |
+| P4 Build better | 89.57 / 89.57 | 20,674 / 19,720 | 8,208-8,969 (both) | 4.64 / 4.43 | 18.6 / 17.7 | -4.2% / -8.6% |
+| P5 All | 75.18 / 62.51 | 17,507 / 14,347 | 6,883-7,511 / 5,700-6,164 | 3.93 / 3.22 | 15.7 / 12.9 | -18.9% / -33.5% |
+
+Shapley shares of P0 - P5 (carbon, central / stretch): P1 32% / 36%, P2 36% / 29%,
+P3 12% / 13%, P4 20% / 22%. Back-cast: cumulative LoE AR = 1 needs 2027-2050
+construction cut by 81.2% from P5-central (k = 0.1884), 76.6% from P5-stretch
+(k = 0.2344), 85.0% from P0; AtP is not attainable within the window (2026 alone:
+1.28). L4 lowers floor area but raises carbon per m2 (attached typologies carry
+more A1-A3 per m2). With the logistic ramp the end-of-ramp step of P2 (2035 ->
+2036, relative to P0's trend) is +25 kt central / +49 kt stretch.
+
+**Tests**: tests/test_pathways.py and tests/test_baseline_lock.py, 22 passed
+(`--pathways-only`). The v1 byte-identity test is replaced by the lock.
+
 ## pathways-v1
 
 PATHWAYS v1: five levers on new residential construction, their bundles, an

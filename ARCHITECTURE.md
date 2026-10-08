@@ -362,57 +362,70 @@ as implemented: `outputs/PB_METHODS_DRAFT.md`.
 
 ---
 
-## 10. Pathways (PATHWAYS v1: `levers.py`, `pathways.py`)
+## 10. Pathways (PATHWAYS v2: `levers.py`, `pathways.py`)
 
-A layer on top of the model, like PB: nothing in the model changes. `pathways.py`
-obtains the Boss state from `validation.run_boss()` (`Boss.main()` returns its
-locals) and re-calls `engine.forward()` with copies of `fwd_inputs` modified by
-the pure functions of `levers.py`. Which input each lever changes, line by line:
+A layer on top of the frozen baseline, like PB: nothing in the model changes and no
+baseline output is rewritten. `tests/test_baseline_lock.py` checks the SHA-256 of
+the 65 files tracked under `outputs/` at tag baseline-PB_v3.1
+(`tests/baseline_manifest.json`). `pathways.py` obtains the Boss state from
+`validation.run_boss()` (`Boss.main()` returns its locals, in memory only) and
+re-calls `engine.forward()` with copies of `fwd_inputs` modified by the pure
+functions of `levers.py`. Which input each lever changes:
 `outputs/pathways/HOOKS.md`.
 
 ```mermaid
 flowchart LR
-    BOSS[Boss.main via validation.run_boss<br/>S3-10; S1, S2 for the envelope] --> CTX[fwd_inputs, join, events,<br/>committed factors]
-    LEV[levers.py<br/>L1 size, L2 vacancy + absorption,<br/>L3 lifetime, L4 mix, L5 materials] --> RUN
-    CTX --> RUN[engine.forward per run<br/>P0, single levers, P1-P3, 32 subsets]
+    BOSS[Boss.main via validation.run_boss<br/>S3-10; S1, S2 for the envelope] --> CTX[fwd_inputs, S, OLF, join,<br/>events, committed factors]
+    FB[outputs/factors/factors_building.csv] --> L5[L5: Harrell-Davis quantile<br/>+ bootstrap]
+    LEV[levers.py<br/>L1, L4 / L2a, L2b / L3 / L5<br/>logistic ramp 2026-2035] --> RUN
+    L5 --> LEV
+    CTX --> RUN[engine.forward per run<br/>P0, levers, P1-P5, 16 + 64 subsets]
     PBA[outputs/pb_annual.csv<br/>B_AR, B_AtP S3-10] --> GAP
-    RUN --> GAP[cumulative LoE, committed,<br/>Shapley, back-cast, solution space]
-    GAP --> OUTP[(outputs/pathways/*.csv, *.json,<br/>PATHWAYS_METHODS_DRAFT.md, pw_1-pw_6)]
+    RUN --> GAP[bands, cumulative LoE, committed,<br/>Shapley, back-cast, solution space]
+    GAP --> OUTP[(outputs/pathways/*.csv, *.json,<br/>LEVERS_TABLE.md, PATHWAYS_METHODS_DRAFT.md, pw_1-pw_7)]
 ```
 
-1. **Levers** (Moderate M, Ambitious A; ramp w(y) = 0 to 2026, 1/9 in 2027, full
-   from 2035; sensitivity full by 2045): L1 dwelling size (`size`); L2 stock-wide
-   vacancy path (`v`) and absorption of the near-term surplus (`join` from
-   `engine.market_excess(..., 'surplus', absorption)`); L3 demolition and the
-   redevelopment wave (`rate_demol`, `rate_unc`); L4 attached floor-area share
-   (`shares`); L5 best-practice A1-A3 ratio on top of decarbonisation
-   (`intensity`, `intensity_upfront`). Targets computed from data are resolved
-   once (`levers.resolve`) and written to `outputs/pathways/levers.json`.
+1. **Pathways and levers** (settings central and stretch; normalised logistic ramp,
+   w = 0 in 2026, 1 from 2035; sensitivity ramp2045): P1 Right-size space = L1
+   right-sized new dwellings (`size` per typology and year: the space above the
+   engine's occupied area S x OLF cut by f) + L4 denser mix (`shares`); P2 Occupy
+   the existing stock = L2a vacancy path (`v`) + L2b absorption of the near-term
+   surplus (`join` from `engine.market_excess(..., 'surplus', absorption)`); P3
+   Keep and reuse = L3 fewer removals (`rate_demol`, `rate_unc`); P4 Build better =
+   L5 best-practice A1-A3 ratio (`intensity`, `intensity_upfront`), r = the
+   Harrell-Davis quantile of the case-study ratios with a bootstrap interval; P5
+   all. Resolved values: `outputs/pathways/levers.json`; Table 1:
+   `outputs/pathways/LEVERS_TABLE.md`.
 2. **Identity.** With every lever off the call is the reference call of Boss, and
    P0 reproduces the central run (annual carbon, upfront, in-window B, floor area
    by typology, demand bands, committed range, cumulative LoE) to 1e-9; each lever
    at zero strength is the baseline (`tests/test_pathways.py`). The near-term
-   excess is frozen at the baseline path except under L2; 2026 is never changed.
+   excess is frozen except under L2b; 2026 is never changed.
 3. **Per run**: within-window carbon, upfront, B, soil, A1-A3, A4-A5, floor area
-   by typology, committed after 2050 (`events.committed`, the run's floor area),
-   demand bands (Boss bookkeeping), dwellings, mean size, implied vacancy, and
-   cumulative LoE against the S3-10 boundaries of `outputs/pb_annual.csv`. Checks
-   that stop the run: identity, D >= S x OLF, implied vacancy >= 4.0%, no negative
-   dwellings, L4 Moderate target below Ambitious.
-4. **Attribution**: Shapley values over the 32 lever subsets (exact rational
-   arithmetic; they sum to P0 - P3 exactly) and the fixed-order waterfall
-   L1 -> L5.
-5. **Gap**: back-cast of P3-A (uniform factor k on every 2027-2050 cohort,
-   `scipy.optimize.brentq` for cumulative LoE AR = 1; AtP minimum at k = 0) and
-   the demand x intensity solution space on P0 (Horup et al. 2025, Fig. 6 style).
+   by typology and by demand band (with the delta vs P0, exact), committed after
+   2050 (`events.committed`, the run's floor area), dwellings, mean size, existing
+   dwellings released, implied vacancy, and cumulative LoE against the S3-10
+   budgets of `outputs/pb_annual.csv`. Checks that stop the run: identity, sizes
+   below the occupied area, implied vacancy below 4.0%, negative dwellings, fewer
+   than 10 L5 cases or r >= 1.
+4. **Attribution**: Shapley values over the 16 pathway subsets (main) and the 64
+   lever subsets (SI), exact rational arithmetic (they sum to P0 - P5 exactly).
+5. **Gap**: back-cast of P5 (central, stretch) and P0 (uniform factor k on every
+   2027-2050 cohort, `scipy.optimize.brentq` for cumulative LoE AR = 1; AtP
+   minimum at k = 0) and the demand x intensity solution space on P0 (Horup et
+   al. 2025, Fig. 6 style).
 
-`run_all.py` runs `pathways.py` after the frozen-technology check and before the
-tests (also in `--quick`); it writes figures pw_1-pw_6 to `outputs/figures/` and
-appends their section to FIGURES.md after `tools/figures_report.py` has written
-it (`tools/figures_report.py` run on its own while pw_ figures exist stops with
-"unlisted": run `run_all.py`, which clears the figures first). Methods as
-implemented: `outputs/pathways/PATHWAYS_METHODS_DRAFT.md`
-(`tools/pathways_methods.py`).
+**Run mode.** `python run_all.py --pathways-only` (about 40 s) runs `pathways.py`,
+then `pytest tests/test_pathways.py tests/test_baseline_lock.py`, then
+`tools/pathways_methods.py --sections` (methods draft, LEVERS_TABLE, and the
+Pathways sections of ASSUMPTIONS.md and FIGURES.md, each replacing only its own
+section). It does not clear `outputs/figures/` (only `pw_*` files are replaced)
+and stamps nothing as quick. The full pipeline runs the same `pathways` step
+after the frozen-technology check (after `figures_report`, which rewrites
+FIGURES.md) and before the tests, and `pathways_docs` after `pb_methods`.
+`tools/figures_report.py` run on its own while `pw_*` figures exist stops with
+"unlisted": run `run_all.py`, which clears the figures first. Methods as
+implemented: `outputs/pathways/PATHWAYS_METHODS_DRAFT.md`.
 
 ---
 

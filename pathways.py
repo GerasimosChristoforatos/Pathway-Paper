@@ -614,9 +614,416 @@ def main():
     return res
 
 
+# ============================================================
+# FIGURES (outputs/figures/, figaudit records; listed in FIGURES.md)
+# ============================================================
+# Colours: the AR / AtP boundary pair of PB.py; pathways encoded by lever group, the same
+# in every figure: Avoid (L1-L3, P1) aqua, Shift and Improve (L4, L5, P2) amber (Improve
+# hatched), P3 deep magenta, P0 neutral. Validated with the dataviz palette validator
+# together with the boundary pair (all pairs, light surface): no failure; aqua and amber
+# are below 3:1 contrast, so every series is also labelled directly.
+AR_COLOR, ATP_COLOR = '#1F5FA8', '#C2571A'
+P_COLOR = {'P0': '#3b3b3b', 'P1': '#1baf7a', 'P2': '#eda100', 'P3': '#a0185a'}
+GROUP_COLOR = {'Avoid': P_COLOR['P1'], 'Shift': P_COLOR['P2'], 'Improve': P_COLOR['P2']}
+GROUP_HATCH = {'Avoid': None, 'Shift': None, 'Improve': '///'}
+INK, MUTED, GRID_COLOR = '#333333', '#777777', '#e1e0d9'
+PW_FIGURES = {
+    'pw_1_waterfall': ('paper', 'Cumulative within-window carbon 2026-2050 (S3-10), P0 to P3 by lever in the fixed '
+                       'order Avoid (L1 size, L2 existing stock, L3 lifetime) -> Shift (L4 mix) -> Improve (L5 materials), '
+                       'Moderate and Ambitious, against the cumulative AR and AtP boundaries; emissions committed after '
+                       '2050 (later replacements & repaints + end of life, range) as separate hatched bars, not part of the LoE.'),
+    'pw_2_annual': ('paper', 'Annual carbon 2026-2050 (S3-10) of P0 and the bundles P1 Avoid, P2 Shift + Improve and P3 '
+                    '(Moderate solid, Ambitious dashed) against the annual AR and AtP boundaries.'),
+    'pw_3_bands': ('paper', 'Floor area and carbon 2026-2050 by demand band (in scope; RV units removed from every band in '
+                   'proportion, as boss_04) for P0, P1-A and P3-A (S3-10).'),
+    'pw_4_solution_space': ('paper', 'Solution space (Horup et al. 2025, Fig. 6 style): cumulative LoE AR over uniform cuts '
+                            'of 2027-2050 floor area (demand) and of non-soil carbon per m2 (intensity) applied to P0, with '
+                            'the LoE = 1, 2, 3, 5 and 10 contours and the bundles P1-P3 (Moderate open, Ambitious filled) at '
+                            'their effective coordinates; the AtP LoE = 1 contour is drawn where it exists on the grid.'),
+    'pw_5_shapley_SI': ('supp', 'Shapley attribution of P0 - P3 (S3-10; all 32 lever subsets) to the five levers, on '
+                        'cumulative within-window carbon and on cumulative LoE AR, Moderate and Ambitious.'),
+    'pw_6_envelope_SI': ('supp', 'P0 and P3 under the replacement scenarios Low (S1), Reference (S3-10) and High (S2), '
+                         'with the levers at full strength by 2035 (adopted) and by 2045 (ramp sensitivity): cumulative '
+                         'carbon vs cumulative boundaries, and annual carbon (S3-10).'),
+}
+
+
+def _save(fig, name):
+    os.makedirs(FIG_DIR, exist_ok=True)
+    import figaudit
+    figaudit.record(fig, name)
+    fig.savefig(os.path.join(FIG_DIR, f'{name}.png'), dpi=130, bbox_inches='tight')
+    import matplotlib.pyplot as plt
+    plt.close(fig)
+
+
+def _style(ax):
+    ax.grid(True, axis='y', color=GRID_COLOR, lw=0.6)
+    ax.set_axisbelow(True)
+    for sp in ('top', 'right'):
+        ax.spines[sp].set_visible(False)
+
+
+def _hline(ax, y, color, ls, label, x_text, x_range=None):
+    """A cumulative boundary as a horizontal line (over x_range only, if given) with a direct label."""
+    import figaudit
+    import matplotlib.patheffects as pe
+    kw = dict(color=color, lw=2.0, ls=ls, gid=figaudit.BOUNDARY,
+              path_effects=[pe.Stroke(linewidth=4, foreground='white'), pe.Normal()])
+    if x_range is None:
+        ax.axhline(y, **kw)
+    else:
+        ax.plot(x_range, [y, y], **kw)
+    ax.text(x_text, y, f' {label}', color=INK, fontsize=8, va='bottom', ha='left')
+
+
+def _wrap(text, width=12):
+    import textwrap
+    return '\n'.join(textwrap.wrap(text, width))
+
+
+def _run(res, name, scen=REFERENCE):
+    r = res['runs']
+    return r[(r['run'] == name) & (r['scenario'] == scen)].iloc[0]
+
+
+def fig_waterfall(res):
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+    sh = res['shapley']
+    bar_kt, batp_kt = res['backcast']['B_AR_kt'], res['backcast']['B_AtP_kt']
+    fig, axes = plt.subplots(1, 2, figsize=(15, 6.2), sharey=True)
+    p0 = _run(res, 'P0')
+    for ax, s in zip(axes, LV.SETTINGS):
+        seq = sh[(sh['setting'] == s) & (sh['metric'] == 'carbon_kt') & (sh['method'] == 'sequential')]
+        p3 = _run(res, f'P3-{s}')
+        x = 0
+        ax.bar(x, p0['carbon_kt'], color=P_COLOR['P0'], width=0.7)
+        ax.text(x, p0['carbon_kt'], f"{p0['carbon_kt']:,.0f}", ha='center', va='bottom', fontsize=8, color=INK)
+        prev = p0['carbon_kt']
+        labels = ['P0']
+        for _, r in seq.iterrows():
+            x += 1
+            ax.bar(x, r['reduction'], bottom=r['cumulative_after'], color=GROUP_COLOR[r['group']],
+                   hatch=GROUP_HATCH[r['group']], edgecolor='white', width=0.7)
+            ax.plot([x - 1.35, x + 0.35], [prev, prev], color=MUTED, lw=0.6)
+            ax.text(x, prev, f"-{r['reduction']:,.0f}\n({-100 * r['reduction'] / p0['carbon_kt']:.1f}%)",
+                    ha='center', va='bottom', fontsize=7.5, color=INK)
+            prev = r['cumulative_after']
+            labels.append(f"{r['lever']}\n{_wrap(LV.LEVER_NAMES[r['lever']])}")
+        x += 1
+        ax.plot([x - 1.35, x + 0.35], [prev, prev], color=MUTED, lw=0.6)
+        ax.bar(x, p3['carbon_kt'], color=P_COLOR['P3'], width=0.7)
+        ax.text(x, p3['carbon_kt'], f"{p3['carbon_kt']:,.0f}\n({p3['delta_carbon_kt_vs_P0_pct']:+.1f}%)",
+                ha='center', va='bottom', fontsize=8, color=INK)
+        labels.append(f'P3-{s}')
+        x_c = x + 1.6
+        ax.axvline(x_c - 0.8, color=MUTED, lw=0.8, ls=':')
+        for k, (nm, rr, col) in enumerate((('P0', p0, P_COLOR['P0']), (f'P3-{s}', p3, P_COLOR['P3']))):
+            xc = x_c + 0.9 * k
+            ax.bar(xc, rr['committed_lower_kt'], color='white', edgecolor=col, hatch='xx', width=0.7, lw=1.0)
+            ax.plot([xc, xc], [rr['committed_lower_kt'], rr['committed_upper_kt']], color=col, lw=2.2)
+            ax.plot([xc - 0.2, xc + 0.2], [rr['committed_upper_kt']] * 2, color=col, lw=2.2)
+            ax.text(xc, rr['committed_upper_kt'], f"{rr['committed_lower_kt']:,.0f}-\n{rr['committed_upper_kt']:,.0f}",
+                    ha='center', va='bottom', fontsize=7.5, color=INK)
+        ticks = list(range(x + 1)) + [x_c, x_c + 0.9]
+        ax.set_xticks(ticks)
+        ax.set_xticklabels(labels + ['P0\ncommitted', f'P3-{s}\ncommitted'], fontsize=8)
+        _hline(ax, bar_kt, AR_COLOR, '-', f'AR {bar_kt:,.0f}', x - 1.4, x_range=[-0.45, x + 0.45])
+        _hline(ax, batp_kt, ATP_COLOR, '--', f'AtP {batp_kt:,.0f}', x - 1.4, x_range=[-0.45, x + 0.45])
+        ax.set_title(f"{'Moderate' if s == 'M' else 'Ambitious'}: cumulative LoE AR {p0['LoE_AR']:.2f} -> "
+                     f"{p3['LoE_AR']:.2f}, AtP {p0['LoE_AtP']:.1f} -> {p3['LoE_AtP']:.1f}", fontsize=10)
+        ax.text(x_c + 0.45, p0['committed_upper_kt'] * 1.25, 'committed\nafter 2050\n(not in LoE)',
+                ha='center', va='bottom', fontsize=8, color=MUTED)
+        _style(ax)
+    axes[0].set_ylabel('cumulative carbon 2026-2050, kt CO$_2$e')
+    fig.legend(handles=[Patch(color=P_COLOR['P0'], label='P0 baseline'),
+                            Patch(color=GROUP_COLOR['Avoid'], label='Avoid: L1-L3'),
+                            Patch(color=GROUP_COLOR['Shift'], label='Shift: L4'),
+                            Patch(facecolor=GROUP_COLOR['Improve'], hatch='///', edgecolor='white', label='Improve: L5'),
+                            Patch(color=P_COLOR['P3'], label='P3 (all five)'),
+                            Patch(facecolor='white', edgecolor=MUTED, hatch='xx', label='committed after 2050 (range)')],
+               loc='lower center', ncol=6, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.06))
+    fig.suptitle('PATHWAYS: cumulative within-window carbon, P0 -> P3 (reference S3-10), fixed order Avoid -> Shift -> Improve',
+                 fontsize=11)
+    fig.text(0.5, -0.1, 'Steps are the marginal effect of adding each lever in this order (order-dependent; the '
+             'order-free Shapley attribution is pw_5_shapley_SI). Boundaries: cumulative 2026-2050, 2 °C carrying '
+             'capacity (Bjørn & Hauschild 2015).', ha='center', fontsize=8, style='italic')
+    fig.tight_layout()
+    _save(fig, 'pw_1_waterfall')
+
+
+def fig_annual(res):
+    import matplotlib.pyplot as plt
+    a = res['annual']
+    a = a[a['scenario'] == REFERENCE]
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ends = []
+    for name, col, ls in [('P0', P_COLOR['P0'], '-')] + [(f'{P}-{s}', P_COLOR[P], '-' if s == 'M' else '--')
+                                                       for P in ('P1', 'P2', 'P3') for s in LV.SETTINGS]:
+        d = a[a['run'] == name]
+        ax.plot(d['year'], d['carbon_kt'], color=col, ls=ls, lw=2.0, label=f'{name}: {LV.BUNDLE_NAMES[name[:2]]}')
+        ends.append((d['carbon_kt'].iloc[-1], name, col))
+    d0 = a[a['run'] == 'P0']
+    import figaudit
+    ax.plot(d0['year'], d0['B_AR_kt'], color=AR_COLOR, lw=2.0, gid=figaudit.BOUNDARY, label='boundary, acquired rights (AR)')
+    ax.plot(d0['year'], d0['B_AtP_kt'], color=ATP_COLOR, lw=2.0, ls='--', gid=figaudit.BOUNDARY,
+            label='boundary, ability to pay (AtP)')
+    ends += [(d0['B_AR_kt'].iloc[-1], 'AR', AR_COLOR), (d0['B_AtP_kt'].iloc[-1], 'AtP', ATP_COLOR)]
+    ends.sort()
+    ylast = -1e9
+    for v, nm, col in ends:                      # direct labels, nudged apart
+        y = max(v, ylast + 28)
+        ax.annotate(f'{nm} {v:,.0f}', (2050, v), xytext=(2050.4, y), fontsize=7.5, color=INK, va='center',
+                    arrowprops=dict(arrowstyle='-', color=col, lw=0.6))
+        ylast = y
+    ax.set_xlim(2026, 2053)
+    ax.set_ylim(0, None)
+    ax.set_xlabel('year')
+    ax.set_ylabel('annual carbon, kt CO$_2$e per year')
+    ax.set_title('Annual carbon by pathway (S3-10): Moderate solid, Ambitious dashed, vs annual boundaries', fontsize=11)
+    ax.annotate('L2: vacancy reaches its target in 2035;\nthe one-off release of existing stock ends', (2036, a[a['run'] == 'P3-A']
+                .set_index('year').loc[2036, 'carbon_kt']), xytext=(2037.5, 300), fontsize=8, color=INK,
+                arrowprops=dict(arrowstyle='->', color=MUTED, lw=0.8))
+    ax.legend(fontsize=8, frameon=False, loc='upper right', ncol=2)
+    _style(ax)
+    fig.text(0.5, -0.07, 'Time-resolved: upfront (A1-A5 + soil) in the construction year plus replacements & repaints '
+             'within 2026-2050. 2026 is observed and identical in every run;\nlevers ramp in linearly 2027-2035. The '
+             'step in 2036 (P1, P3) is L2: lowering the vacancy rate acts through the vacancy-change term of the stock '
+             'identity while the rate falls, so the release of existing dwellings ends when the target is reached;\n'
+             'afterwards only the lower vacancy allowance on new households remains.',
+             ha='center', fontsize=8, style='italic')
+    fig.tight_layout()
+    _save(fig, 'pw_2_annual')
+
+
+def fig_bands(res):
+    import matplotlib.pyplot as plt
+    Boss = validation.Boss
+    colors = [Boss.DEMAND_COLORS[0], Boss.HOUSESPLIT_COLOR, Boss.DEMAND_COLORS[1], Boss.DEMAND_COLORS[2],
+              Boss.REPL_COLOR, Boss.WAVE_COLOR, Boss.JOIN_COLOR, Boss.EVENTS_COLOR]
+    bd = res['bands']
+    bd = bd[(bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope_figure')]
+    runs = ['P0', 'P1-A', 'P3-A']
+    fig, axes = plt.subplots(1, 2, figsize=(15, 6.5))
+    for ax, col, ylab, sc in ((axes[0], 'gfa_Mm2', 'floor area 2026-2050, Mm$^2$', 1.0),
+                              (axes[1], 'carbon_kt', 'carbon 2026-2050, kt CO$_2$e', 1.0)):
+        for i, rn in enumerate(runs):
+            d = bd[bd['run'] == rn].set_index('band')
+            pos, neg = 0.0, 0.0                       # positive bands stack up, negative bands down from 0
+            fmt = (lambda v: f'{v:,.1f}') if col == 'gfa_Mm2' else (lambda v: f'{v:,.0f}')
+            for (band, _), c in zip(FIG_BANDS, colors):
+                v = float(d.loc[band, col]) * sc
+                if abs(v) < 1e-12:
+                    continue
+                base = pos if v > 0 else neg
+                ax.bar(i, v, bottom=base, color=c, edgecolor='white', lw=1.0, width=0.6,
+                       label=band if i == 0 else None)
+                if abs(v) > 0.03 * d[col].sum():
+                    ax.text(i, base + v / 2, fmt(v), ha='center', va='center', fontsize=7.5, color='white')
+                if v > 0:
+                    pos += v
+                else:
+                    neg += v
+            ax.text(i, pos, f'net {fmt(pos + neg)}', ha='center', va='bottom', fontsize=9, color=INK)
+        ax.set_xticks(range(len(runs)))
+        ax.set_xticklabels([f'{r}\n{LV.BUNDLE_NAMES[r[:2]]}' for r in runs], fontsize=9)
+        ax.set_ylabel(ylab)
+        ax.axhline(0, color=INK, lw=0.8)
+        _style(ax)
+    axes[0].set_title('Floor area by demand band (in scope)', fontsize=10)
+    axes[1].set_title('Carbon by demand band (in scope, incl. replacements & repaints within the window)', fontsize=10)
+    h, l = axes[1].get_legend_handles_labels()
+    fig.legend(h, l, loc='lower center', ncol=3, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.1))
+    fig.suptitle('Why the floor area is built, P0 vs Avoid (P1-A) vs all levers (P3-A), S3-10', fontsize=11)
+    fig.text(0.5, -0.16, 'Negative bands (below zero): with L2 the stock-wide vacancy rate falls 2027-2035, so existing '
+             'dwellings are released and less is built; with the near-term surplus absorbed (L2), the excess built in '
+             '2026-2028 is almost fully paid back by 2050 (net band near zero).', ha='center', fontsize=8, style='italic',
+             wrap=True)
+    fig.tight_layout()
+    _save(fig, 'pw_3_bands')
+
+
+def fig_solution_space(res):
+    import matplotlib.pyplot as plt
+    import matplotlib.patheffects as pe
+    from matplotlib.colors import LinearSegmentedColormap, LogNorm
+    ref = res['ctxs'][REFERENCE]
+    split0 = linear_split(ref, res['get'](REFERENCE, {}))
+    bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
+    sp = res['space']
+    n = len(GRID)
+    Z = sp.pivot(index='intensity_reduction', columns='demand_reduction', values='LoE_AR').values
+    ramp = ['#cde2fb', '#9ec5f4', '#6da7ec', '#3987e5', '#256abf', '#184f95', '#0d366b']
+    cmap = LinearSegmentedColormap.from_list('blue_seq', ramp)
+    fig, ax = plt.subplots(figsize=(9.5, 8))
+    edges = np.concatenate([[-2.5], GRID * 100 + 2.5])
+    pm = ax.pcolormesh(edges, edges, Z, cmap=cmap, norm=LogNorm(vmin=0.3, vmax=5.0), shading='flat')
+    cb = fig.colorbar(pm, ax=ax, shrink=0.8)
+    cb.set_label('cumulative LoE AR 2026-2050 (log scale)')
+    cb.set_ticks([0.3, 0.5, 1, 2, 3, 5])
+    cb.set_ticklabels(['0.3', '0.5', '1', '2', '3', '5'])
+    cb.minorticks_off()
+    fine = np.linspace(0, 1, 201)
+    D, Ii = np.meshgrid(fine, fine)
+    L_ar = np.vectorize(lambda d, i: scaled_carbon(split0, 1 - d, 1 - i).sum() / bar)(D, Ii)
+    L_atp = L_ar * bar / batp
+    levels = [lv for lv in (1, 2, 3, 5, 10) if L_ar.min() < lv < L_ar.max()]
+    cs = ax.contour(D * 100, Ii * 100, L_ar, levels=levels, colors=['black' if lv == 1 else '#555555' for lv in levels],
+                    linewidths=[2.4 if lv == 1 else 0.9 for lv in levels])
+    ax.clabel(cs, fmt=lambda v: f'AR {v:g}', fontsize=8)
+    if L_atp.min() < 1 < L_atp.max():
+        c2 = ax.contour(D * 100, Ii * 100, L_atp, levels=[1], colors=[ATP_COLOR], linewidths=2.4)
+        ax.clabel(c2, fmt=lambda v: 'AtP 1', fontsize=8)
+        atp_note = ''
+    else:
+        atp_note = (f'AtP LoE = 1 is not attainable on this grid: minimum AtP LoE {L_atp.min():.2f} '
+                    f'(100% demand cut, i.e. 2026 construction and its events alone).')
+    for m in res['backcast']['solution_space_markers']:
+        P, s = m['run'].split('-')
+        ax.scatter(100 * m['demand_reduction'], 100 * m['intensity_reduction'], s=90, zorder=5,
+                   facecolor=P_COLOR[P] if s == 'A' else 'white', edgecolor=P_COLOR[P], linewidth=2.0,
+                   label=f"{m['run']}: LoE AR {m['LoE_AR_run']:.2f}")
+        ax.annotate(m['run'], (100 * m['demand_reduction'], 100 * m['intensity_reduction']),
+                    xytext=((-30, 8) if s == 'M' else (6, 8)), textcoords='offset points', fontsize=8, color='white',
+                    path_effects=[pe.Stroke(linewidth=2.5, foreground='#0d366b'), pe.Normal()])
+    bc = res['backcast']
+    if bc['P0'].get('k_AR') is not None:
+        ax.scatter(100 * (1 - bc['P0']['k_AR']), 0, marker='D', s=60, color='black', zorder=5,
+                   label=f"P0 back-cast: demand cut {100 * (1 - bc['P0']['k_AR']):.1f}% for LoE AR = 1")
+    ax.set_xlim(-2.5, 102.5)
+    ax.set_ylim(-2.5, 102.5)
+    ax.set_xlabel('demand reduction: cut of 2027-2050 floor area vs P0 (%)')
+    ax.set_ylabel('intensity reduction: cut of non-soil carbon per m$^2$, 2027-2050 cohorts (%)')
+    ax.set_title('Solution space on P0 (S3-10): cumulative LoE AR', fontsize=11)
+    ax.legend(fontsize=7.5, loc='upper right', frameon=True, framealpha=0.9)
+    fig.text(0.5, -0.03, 'Cells: the 5% grid (solution_space.csv); contours: the same linear model on a 0.5% grid. '
+             'Soil carbon and 2026 are not cut by the intensity axis. ' + atp_note, ha='center', fontsize=8,
+             style='italic', wrap=True)
+    fig.tight_layout()
+    _save(fig, 'pw_4_solution_space')
+
+
+def fig_shapley(res):
+    import matplotlib.pyplot as plt
+    sh = res['shapley'][res['shapley']['method'] == 'shapley']
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+    for ax, metric, xl in ((axes[0], 'carbon_kt', 'reduction of cumulative carbon 2026-2050, kt CO$_2$e'),
+                           (axes[1], 'LoE_AR', 'reduction of cumulative LoE AR')):
+        for j, s in enumerate(LV.SETTINGS):
+            d = sh[(sh['metric'] == metric) & (sh['setting'] == s)].set_index('lever')
+            for k, L in enumerate(LV.LEVERS):
+                y = k + (0.2 if s == 'M' else -0.2)
+                g = LV.LEVER_GROUP[L]
+                ax.barh(y, d.loc[L, 'reduction'], height=0.38, color='white' if s == 'M' else GROUP_COLOR[g],
+                        edgecolor=GROUP_COLOR[g], hatch=('///' if g == 'Improve' else None), lw=1.5)
+                v = d.loc[L, 'reduction']
+                ax.text(v, y, f' {v:,.0f} ({100 * d.loc[L, "share_of_P0_minus_P3"]:.0f}%) {s}' if metric == 'carbon_kt'
+                        else f' {v:.3f} {s}', va='center', fontsize=7.5, color=INK)
+        ax.set_yticks(range(len(LV.LEVERS)))
+        ax.set_yticklabels([f'{L} {LV.LEVER_NAMES[L]}\n({LV.LEVER_GROUP[L]})' for L in LV.LEVERS], fontsize=8.5)
+        ax.invert_yaxis()
+        ax.set_xlabel(xl)
+        ax.grid(True, axis='x', color=GRID_COLOR, lw=0.6)
+        ax.set_axisbelow(True)
+        for spn in ('top', 'right'):
+            ax.spines[spn].set_visible(False)
+        ax.set_xlim(0, ax.get_xlim()[1] * 1.3)
+    tot = {s: _run(res, 'P0')['carbon_kt'] - _run(res, f'P3-{s}')['carbon_kt'] for s in LV.SETTINGS}
+    axes[0].set_title(f"Carbon: P0 - P3 = {tot['M']:,.0f} kt (M, open) / {tot['A']:,.0f} kt (A, filled)", fontsize=10)
+    axes[1].set_title('Cumulative LoE AR', fontsize=10)
+    fig.suptitle('Shapley attribution of P0 - P3 to the levers (S3-10; all 32 subsets; values sum exactly to P0 - P3)',
+                 fontsize=11)
+    fig.tight_layout()
+    _save(fig, 'pw_5_shapley_SI')
+
+
+def fig_envelope(res):
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+    bar_kt, batp_kt = res['backcast']['B_AR_kt'], res['backcast']['B_AtP_kt']
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(15, 6), gridspec_kw=dict(width_ratios=[1.25, 1]))
+    names = [('P0', P_COLOR['P0'], None, 1.0), ('P3-M', P_COLOR['P3'], '///', 1.0), ('P3-A', P_COLOR['P3'], None, 1.0),
+             (f'P3-M-ramp{LV.RAMP_FULL_SENS}', P_COLOR['P3'], '///', 0.4),
+             (f'P3-A-ramp{LV.RAMP_FULL_SENS}', P_COLOR['P3'], None, 0.4)]
+    scen = list(SCENARIOS)
+    w = 0.16
+    for i, sc in enumerate(scen):
+        for k, (nm, col, hatch, alpha) in enumerate(names):
+            r = _run(res, nm, sc)
+            x = i + (k - 2) * w
+            ax.bar(x, r['carbon_kt'], width=w * 0.92, color='white' if hatch else col, edgecolor=col, hatch=hatch,
+                   alpha=alpha, lw=1.2)
+            ax.text(x, r['carbon_kt'], f"{r['carbon_kt'] / 1e3:,.1f}", ha='center', va='bottom', fontsize=6.5,
+                    color=INK, rotation=90)
+    ax.set_xticks(range(len(scen)))
+    ax.set_xticklabels([SCENARIOS[s][0] for s in scen])
+    _hline(ax, bar_kt, AR_COLOR, '-', f'AR {bar_kt:,.0f}', len(scen) - 0.55)
+    _hline(ax, batp_kt, ATP_COLOR, '--', f'AtP {batp_kt:,.0f}', len(scen) - 0.55)
+    ax.set_xlim(-0.6, len(scen) - 0.1)
+    ax.set_ylabel('cumulative carbon 2026-2050, kt CO$_2$e (labels: Mt)')
+    ax.set_title('Cumulative carbon by replacement scenario', fontsize=10)
+    ax.legend(handles=[Patch(color=P_COLOR['P0'], label='P0'),
+                       Patch(facecolor='white', edgecolor=P_COLOR['P3'], hatch='///', label='P3-M, full by 2035'),
+                       Patch(color=P_COLOR['P3'], label='P3-A, full by 2035'),
+                       Patch(facecolor='white', edgecolor=P_COLOR['P3'], hatch='///', alpha=0.4,
+                             label=f'P3-M, full by {LV.RAMP_FULL_SENS}'),
+                       Patch(color=P_COLOR['P3'], alpha=0.4, label=f'P3-A, full by {LV.RAMP_FULL_SENS}')],
+              fontsize=8, frameon=False, loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
+    _style(ax)
+    a = res['annual']
+    a = a[a['scenario'] == REFERENCE]
+    for nm, col, ls, lw in (('P0', P_COLOR['P0'], '-', 2.0), ('P3-M', P_COLOR['P3'], '-', 1.6),
+                            ('P3-A', P_COLOR['P3'], '-', 2.4), (f'P3-M-ramp{LV.RAMP_FULL_SENS}', P_COLOR['P3'], ':', 1.6),
+                            (f'P3-A-ramp{LV.RAMP_FULL_SENS}', P_COLOR['P3'], ':', 2.4)):
+        d = a[a['run'] == nm]
+        ax2.plot(d['year'], d['carbon_kt'], color=col, ls=ls, lw=lw, label=nm)
+    import figaudit
+    d0 = a[a['run'] == 'P0']
+    ax2.plot(d0['year'], d0['B_AR_kt'], color=AR_COLOR, lw=2.0, gid=figaudit.BOUNDARY, label='AR boundary')
+    ax2.plot(d0['year'], d0['B_AtP_kt'], color=ATP_COLOR, lw=2.0, ls='--', gid=figaudit.BOUNDARY, label='AtP boundary')
+    ax2.set_ylim(0, None)
+    ax2.set_xlim(2026, 2050)
+    ax2.set_xlabel('year')
+    ax2.set_ylabel('annual carbon, kt CO$_2$e per year')
+    ax2.set_title(f'Ramp sensitivity, S3-10: full strength by 2035 (solid) or {LV.RAMP_FULL_SENS} (dotted)', fontsize=10)
+    ax2.legend(fontsize=8, frameon=False, loc='upper right')
+    _style(ax2)
+    fig.suptitle('Envelope: P0 and P3 under Low (S1), Reference (S3-10) and High (S2) replacement, and the ramp '
+                 'sensitivity', fontsize=11)
+    fig.tight_layout()
+    _save(fig, 'pw_6_envelope_SI')
+
+
+FIGURES_MD_MARK = '## Pathways'
+
+
+def update_figures_md():
+    """Append (or replace) the Pathways sections of FIGURES.md, which tools/figures_report.py
+    regenerates without them earlier in run_all.py."""
+    path = os.path.join(ROOT, 'FIGURES.md')
+    txt = open(path, encoding='utf-8').read()
+    if FIGURES_MD_MARK in txt:
+        txt = txt[:txt.index(FIGURES_MD_MARK)].rstrip('\n') + '\n'
+    L = ['', f'{FIGURES_MD_MARK}: paper candidates (generated by pathways.py)', '']
+    L += [f'- `{n}.png`: {d}' for n, (k, d) in PW_FIGURES.items() if k == 'paper']
+    L += ['', f'{FIGURES_MD_MARK}: supplementary (generated by pathways.py)', '']
+    L += [f'- `{n}.png`: {d}' for n, (k, d) in PW_FIGURES.items() if k == 'supp']
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(txt + '\n'.join(L) + '\n')
+
+
 def figures(res):
-    """pw_1..pw_6 (step 5)."""
-    return None
+    """pw_1..pw_6 -> outputs/figures/ (figaudit records), and their FIGURES.md section."""
+    import matplotlib
+    matplotlib.use('Agg')
+    fig_waterfall(res)
+    fig_annual(res)
+    fig_bands(res)
+    fig_solution_space(res)
+    fig_shapley(res)
+    fig_envelope(res)
+    update_figures_md()
 
 
 if __name__ == '__main__':

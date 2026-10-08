@@ -22,7 +22,7 @@ Order: Building_factors -> Boss -> Diagnostics -> Sensitivity -> MonteCarlo
 -> gap_2026 -> near_term_join -> scenarios -> reconciliation -> figures_report -> frozen
 technology check (Boss, Sensitivity, MonteCarlo, scenarios, PB with DECARB_MODE
 'none', A4-A5 held, whole life at construction, written to outputs/frozen/,
-figures not saved) -> tests (incl. the v1.2.1 regression test, which reads
+figures not saved) -> pathways (PATHWAYS v1, outputs/pathways/) -> tests (incl. the v1.2.1 regression test, which reads
 outputs/frozen/) -> metrics -> results ->
 assumptions -> baseline_draft -> pb_methods (-> quick_stamp, quick runs). Each script
 runs in its own process, with the non-interactive matplotlib backend and
@@ -98,6 +98,9 @@ def pipeline(skip_mc, quick=False):
     run('frozen_scenarios', [py, tool('replacement_scenarios')], **fz)
     if not (skip_mc or quick):
         run('frozen_pb', [py, os.path.join(ROOT, 'PB.py')], **fz)
+    # PATHWAYS v1 (levers, bundles, attribution, AESA gap): after PB and after figures_report
+    # (which rewrites FIGURES.md; pathways.py appends its own section), before the tests
+    run('pathways', [py, os.path.join(ROOT, 'pathways.py')])
     run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
     run('metrics', [py, tool('metrics')] + (['--mc-stale'] if skip_mc else []))
     run('results', [py, tool('results')])

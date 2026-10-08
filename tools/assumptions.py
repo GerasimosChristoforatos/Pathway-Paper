@@ -18,6 +18,48 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 RUNTIME_ONLY = ('SAVE_FIGURES', 'SHOW_PLOTS', 'VERBOSE', 'FROZEN_RUN', 'QUICK_RUN')
 
 
+PATHWAYS_MARK = '## Pathways (levers.py, pathways.py)'
+PATHWAYS_EXCLUDED = ('SOURCES', 'LEVER_NAMES', 'LEVER_GROUP', 'PATHWAYS', 'PATHWAY_NAMES', 'SETTING_NAMES',
+                     'BAND_TARGET', 'LEVER_PARAMETER')
+
+
+def pathways_section():
+    """The generated Pathways section (PATHWAYS v2): register rows from levers.register() with the
+    resolved values of outputs/pathways/levers.json, then every scalar setting in levers.py.
+    Empty when levers.json does not exist yet."""
+    import json
+    import levers as LV
+    lv_path = os.path.join(ROOT, 'outputs', 'pathways', 'levers.json')
+    if not os.path.exists(lv_path):
+        return []
+    with open(lv_path) as f:
+        lv = json.load(f)
+    L = ['', PATHWAYS_MARK, '',
+         'Resolved values from outputs/pathways/levers.json; Table 1 of the paper: outputs/pathways/LEVERS_TABLE.md; '
+         'methods as implemented: outputs/pathways/PATHWAYS_METHODS_DRAFT.md.', '', '| setting | value | basis |',
+         '|---|---|---|']
+    L += [f'| {a} | {v} | {b} |' for a, v, b in LV.register(lv)]
+    L += ['', '### All settings in levers.py', '', '| setting | value |', '|---|---|']
+    for k in sorted(vars(LV)):
+        v = getattr(LV, k)
+        if k.isupper() and isinstance(v, (bool, int, float, str, tuple, dict, type(None))) and k not in PATHWAYS_EXCLUDED:
+            L.append(f'| `{k}` | `{v!r}` |')
+    return L
+
+
+def update_pathways_section():
+    """Replace only the Pathways section of ASSUMPTIONS.md (the last section), leaving every
+    baseline row byte-identical (run_all.py --pathways-only). Idempotent."""
+    path = os.path.join(ROOT, 'ASSUMPTIONS.md')
+    txt = open(path).read()
+    head = txt[:txt.index(PATHWAYS_MARK)].rstrip('\n') + '\n' if PATHWAYS_MARK in txt else txt
+    body = pathways_section()
+    with open(path, 'w') as f:
+        f.write(head + ('\n'.join(body[1:]) + '\n' if body else '').replace(PATHWAYS_MARK, '\n' + PATHWAYS_MARK, 1)
+                if body else head)
+    print(f'ASSUMPTIONS.md: Pathways section {len(body)} lines')
+
+
 def main():
     import Boss
     from baseline_draft import TIMING_LIMITATIONS, LIMITATIONS, decarb_limitations, near_term_limitations, register
@@ -50,27 +92,14 @@ def main():
                 and isinstance(v, (bool, int, float, str, tuple, type(None))):
             L.append(f'| `{k}` | `{v!r}` |')
     L.append(f"| `SOURCE_PAIRS` | `{PB.SOURCE_PAIRS!r}` |")
-    # PATHWAYS v1 (levers.py, pathways.py): resolved parameters from outputs/pathways/levers.json
-    import json
-    import levers as LV
-    lv_path = os.path.join(ROOT, 'outputs', 'pathways', 'levers.json')
-    if os.path.exists(lv_path):
-        with open(lv_path) as f:
-            lv = json.load(f)
-        L += ['', '## Pathways (levers.py, pathways.py)', '',
-              'Resolved values from outputs/pathways/levers.json; methods as implemented: '
-              'outputs/pathways/PATHWAYS_METHODS_DRAFT.md.', '', '| setting | value | basis |', '|---|---|---|']
-        L += [f'| {a} | {v} | {b} |' for a, v, b in LV.register(lv)]
-        L += ['', '### All settings in levers.py', '', '| setting | value |', '|---|---|']
-        for k in sorted(vars(LV)):
-            v = getattr(LV, k)
-            if k.isupper() and isinstance(v, (bool, int, float, str, tuple, dict, type(None))) and k not in (
-                    'SOURCES', 'LEVER_NAMES', 'LEVER_GROUP', 'BUNDLES', 'BUNDLE_NAMES'):
-                L.append(f'| `{k}` | `{v!r}` |')
+    L += pathways_section()
     with open(os.path.join(ROOT, 'ASSUMPTIONS.md'), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print(f'ASSUMPTIONS.md: {len(L)} lines')
 
 
 if __name__ == '__main__':
-    main()
+    if '--pathways-only' in sys.argv:
+        update_pathways_section()
+    else:
+        main()

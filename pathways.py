@@ -602,8 +602,6 @@ def main():
     write(res, identity)
     if SAVE_FIGURES:
         figures(res)
-    import pathways_methods                                   # tools/pathways_methods.py
-    pathways_methods.main()
     r = res['runs']
     ref = r[(r['scenario'] == REFERENCE) & (r['ramp_full'] == LV.RAMP_FULL)]
     print(ref[['run', 'gfa_Mm2', 'carbon_kt', 'LoE_AR', 'LoE_AtP', 'delta_carbon_kt_vs_P0_pct']].to_string(index=False))
@@ -1009,10 +1007,20 @@ def update_figures_md():
         f.write(txt + '\n'.join(L) + '\n')
 
 
+def clear_pw_figures():
+    """Delete only the pathway figures (pw_*.png) and their audit records; every other file in
+    outputs/figures/ is left as it is (run_all.py --pathways-only never clears the folder)."""
+    import glob
+    import figaudit
+    for f in glob.glob(os.path.join(FIG_DIR, 'pw_*.png')) + glob.glob(os.path.join(figaudit.AUDIT_DIR, 'pw_*.json')):
+        os.remove(f)
+
+
 def figures(res):
-    """pw_1..pw_6 -> outputs/figures/ (figaudit records), and their FIGURES.md section."""
+    """pw_* -> outputs/figures/ (figaudit records; old pw_* removed first), and their FIGURES.md section."""
     import matplotlib
     matplotlib.use('Agg')
+    clear_pw_figures()
     fig_waterfall(res)
     fig_annual(res)
     fig_bands(res)

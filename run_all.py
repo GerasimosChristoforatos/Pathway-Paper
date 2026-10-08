@@ -6,6 +6,11 @@
                                  # frozen-technology Monte Carlo, MC regression
                                  # checks skipped; every output marked
                                  # "QUICK RUN, not for reporting"
+    python run_all.py --pathways-only   # PATHWAYS only (the baseline is frozen): pathways.py
+                                 # (Boss.main() in memory), tests/test_pathways.py and
+                                 # tests/test_baseline_lock.py, then the Pathways sections
+                                 # (methods draft, LEVERS_TABLE, ASSUMPTIONS and FIGURES
+                                 # sections); outputs/figures/ is not cleared (only pw_* replaced)
     python run_all.py --no-mc    # skip the Monte Carlo (development only; the
                                  # MC metrics are then carried over from the
                                  # last full run and marked stale)
@@ -107,23 +112,44 @@ def pipeline(skip_mc, quick=False):
     run('assumptions', [py, tool('assumptions')])
     run('baseline_draft', [py, tool('baseline_draft')])
     run('pb_methods', [py, tool('pb_methods')])
+    run('pathways_docs', [py, tool('pathways_methods'), '--sections'])
     run('check_outputs', [py, tool('check_outputs')])
     if quick:
         run('quick_stamp', [py, tool('quick_stamp')])
+
+
+def pathways_only():
+    """PATHWAYS v2 run mode: the baseline is frozen (tests/test_baseline_lock.py), so only the
+    pathway layer runs. Boss.main() is called in memory by pathways.py; no baseline output is
+    written, outputs/figures/ is not cleared (pathways.py replaces only pw_* files), nothing is
+    stamped as quick."""
+    py = sys.executable
+    env = {'PATHWAY_QUICK': '0'}
+    step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
+    step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
+                            os.path.join(ROOT, 'tests', 'test_baseline_lock.py')], env)
+    step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
 
 
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     print('run_all:')
     try:
-        pipeline(skip_mc='--no-mc' in argv, quick='--quick' in argv)
+        if '--pathways-only' in argv:
+            pathways_only()
+        else:
+            pipeline(skip_mc='--no-mc' in argv, quick='--quick' in argv)
     except StepFailed as e:
         print(f'\n{e}')
         if interactive():
             return False
         sys.exit(1)
-    print(f'\nDone. Metrics: {os.path.join(ROOT, "outputs", "metrics.json")} '
-          f'(log of each step in {LOGS})')
+    if '--pathways-only' in argv:
+        print(f'\nDone (pathways only; baseline frozen). Outputs: {os.path.join(ROOT, "outputs", "pathways")} '
+              f'(log of each step in {LOGS})')
+    else:
+        print(f'\nDone. Metrics: {os.path.join(ROOT, "outputs", "metrics.json")} '
+              f'(log of each step in {LOGS})')
     if '--quick' in argv:
         print('QUICK RUN, not for reporting: re-run without --quick before reporting or tagging.')
     return True

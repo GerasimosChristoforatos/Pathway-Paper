@@ -1,5 +1,55 @@
 # CHANGELOG
 
+## pathways-v1
+
+PATHWAYS v1: five levers on new residential construction, their bundles, an
+order-free attribution, and the gap to the climate-change boundaries. A layer on
+top of baseline-pb-v3.1; no model file changes (engine.py, Boss.py, events.py,
+aesa.py, PB.py, MonteCarlo.py, Building_factors.py and the existing tests are
+untouched). New: `levers.py`, `pathways.py`, `tools/pathways_methods.py`,
+`tests/test_pathways.py`, `outputs/pathways/` (HOOKS.md, pathways_runs.csv,
+pathways_annual.csv, pathways_bands.csv, shapley.csv, shapley_subsets.csv,
+backcast.json, solution_space.csv, levers.json, PATHWAYS_METHODS_DRAFT.md),
+figures pw_1-pw_6.
+
+**Regression locks.** With every lever off the run reproduces the reference
+central run (annual carbon, upfront, in-window B, floor area by typology, demand
+bands, committed range, cumulative LoE AR 4.85 / AtP 19.4; maximum relative
+difference 4.4e-16); each lever at zero strength is the baseline; every baseline
+output is byte-identical to tag baseline-PB_v3.1 (tests/test_pathways.py and
+`git diff --stat baseline-PB_v3.1 -- outputs/`: changes only under
+outputs/pathways/).
+
+**Levers** (Moderate / Ambitious; ramp 1/9 in 2027, full from 2035; 2026 observed
+and unchanged; near-term excess frozen except under L2):
+
+* L1 new-dwelling size: -6.5% all typologies (Pellan et al. 2024) / the 1991-1995
+  realised size (detached -4.74%; townhouses and apartments held: their 1991-95
+  sizes exceed today's, so A is weaker than M).
+* L2 existing stock: vacancy 5.39% -> 4.7% / 4.0% (1986-2023 consistent census
+  range 4.01-5.38%) and near-term surplus absorbed at 0.10 / 0.20 a year.
+* L3 lifetime extension: demolition and the redevelopment wave -20% / -40%
+  (Pellan et al. 2024; Pauliuk et al. 2024); renovation carbon not modelled.
+* L4 typology mix: attached floor-area share 39.4% -> 41.4% (peak 2023) / 55.4%
+  (+16 points, Pellan et al. 2024).
+* L5 best-practice materials: A1-A3 x r on top of decarbonisation, r detached
+  0.829 / 0.530, townhouses 0.915 / 0.880, apartments held.
+
+**Results** (S3-10, 2026-2050; committed after 2050 as a range):
+
+| run | floor area (Mm2) | carbon (kt) | committed (kt) | LoE AR | LoE AtP | carbon vs P0 |
+|---|---|---|---|---|---|---|
+| P0 | 89.57 | 21,578 | 8,208-8,969 | 4.85 | 19.4 | +0.0% |
+| P1-M / P1-A (Avoid) | 76.90 / 73.92 | 18,584 / 17,881 | 7,047-7,700 / 6,786-7,416 | 4.18 / 4.02 | 16.7 / 16.1 | -13.9% / -17.1% |
+| P2-M / P2-A (Shift + Improve) | 88.85 / 84.14 | 20,218 / 18,468 | 8,137-8,880 / 7,674-8,296 | 4.54 / 4.15 | 18.2 / 16.6 | -6.3% / -14.4% |
+| P3-M / P3-A (all five) | 76.29 / 69.78 | 17,428 / 15,365 | 6,987-7,624 / 6,375-6,893 | 3.92 / 3.45 | 15.7 / 13.8 | -19.2% / -28.8% |
+
+Shapley shares of P0 - P3 (carbon, M / A): L1 23% / 4%, L2 35% / 35%, L3 12% / 16%,
+L4 2% / 4%, L5 29% / 41%. Back-cast: cumulative LoE AR = 1 needs 2027-2050
+construction cut by 78.3% from P3-A (k = 0.2173; 83.4% of P0's 2027-2050 floor
+area), or by 85.0% from P0; AtP is not attainable within the window (2026 alone
+gives a cumulative LoE AtP of 1.28).
+
 ## baseline-pb-v3.1
 
 Figure and label clean-up only. No model result, method or test baseline changes:

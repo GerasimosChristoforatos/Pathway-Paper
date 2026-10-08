@@ -50,6 +50,23 @@ def main():
                 and isinstance(v, (bool, int, float, str, tuple, type(None))):
             L.append(f'| `{k}` | `{v!r}` |')
     L.append(f"| `SOURCE_PAIRS` | `{PB.SOURCE_PAIRS!r}` |")
+    # PATHWAYS v1 (levers.py, pathways.py): resolved parameters from outputs/pathways/levers.json
+    import json
+    import levers as LV
+    lv_path = os.path.join(ROOT, 'outputs', 'pathways', 'levers.json')
+    if os.path.exists(lv_path):
+        with open(lv_path) as f:
+            lv = json.load(f)
+        L += ['', '## Pathways (levers.py, pathways.py)', '',
+              'Resolved values from outputs/pathways/levers.json; methods as implemented: '
+              'outputs/pathways/PATHWAYS_METHODS_DRAFT.md.', '', '| setting | value | basis |', '|---|---|---|']
+        L += [f'| {a} | {v} | {b} |' for a, v, b in LV.register(lv)]
+        L += ['', '### All settings in levers.py', '', '| setting | value |', '|---|---|']
+        for k in sorted(vars(LV)):
+            v = getattr(LV, k)
+            if k.isupper() and isinstance(v, (bool, int, float, str, tuple, dict, type(None))) and k not in (
+                    'SOURCES', 'LEVER_NAMES', 'LEVER_GROUP', 'BUNDLES', 'BUNDLE_NAMES'):
+                L.append(f'| `{k}` | `{v!r}` |')
     with open(os.path.join(ROOT, 'ASSUMPTIONS.md'), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print(f'ASSUMPTIONS.md: {len(L)} lines')

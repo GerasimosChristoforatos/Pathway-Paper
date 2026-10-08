@@ -42,6 +42,8 @@ documents and every figure as a quick run.
 * a frozen-technology check run (`DECARB_MODE = 'none'`, A4–A5 held, whole life
   at construction: Boss, Sensitivity, MonteCarlo, the scenario table and PB,
   written to `outputs/frozen/`, figures not saved);
+* `pathways.py`, the PATHWAYS v1 layer (levers, bundles, attribution, AESA gap;
+  `outputs/pathways/`);
 * the tests (`tests/`, including the v1.2.1 regression test, which compares the
   frozen-technology run with v1.2.1);
 * metrics, `RESULTS.md`, `ASSUMPTIONS.md`, `outputs/BASELINE_DRAFT.md` and
@@ -142,9 +144,10 @@ was accessed on 2026-09-29. It states:
 | `Sensitivity.py` | one-at-a-time sensitivities (`outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`) |
 | `MonteCarlo.py` | joint parametric uncertainty within S3-10, S1 and S2; Sobol indices (reference) |
 | `aesa.py`, `PB.py` | planetary-boundary layer: boundaries, levels of exceedance, figures `*_pb`, `pb_1`-`pb_6` |
+| `levers.py`, `pathways.py` | PATHWAYS v1: five levers (size, existing stock, lifetime, mix, materials) at Moderate / Ambitious, bundles P1-P3, Shapley attribution, AESA gap, back-cast and solution space → `outputs/pathways/`, figures `pw_1`-`pw_6` (`tools/pathways_methods.py`: `PATHWAYS_METHODS_DRAFT.md`) |
 | `validation.py`, `gap_2026.py` | rolling-origin hindcast, 2026 out-of-sample check, 2026 gap decomposition |
 | `tools/` | near-term rule and scenario reports, reconciliation of the accounting, report figures and FIGURES.md, metrics, RESULTS.md, ASSUMPTIONS.md, BASELINE_DRAFT.md, PB_METHODS_DRAFT.md |
-| `tests/` | accounting identities, census UC correction, soil, near-term rule, validation, events and committed emissions (`test_v3.py`), and the regression tests against v1.2.1 (`regression_v1_2_1.json`) and baseline-pb-v2 (`regression_pb_v2.json`) |
+| `tests/` | accounting identities, census UC correction, soil, near-term rule, validation, events and committed emissions (`test_v3.py`), pathways (`test_pathways.py`: identity, Shapley, constraints, byte-identical baseline outputs), and the regression tests against v1.2.1 (`regression_v1_2_1.json`) and baseline-pb-v2 (`regression_pb_v2.json`) |
 | `data/` | inputs and the scripts that build `data/derived/` from `data/raw/` |
 
 Note: `data/raw/national_population_estimates_june_2026.html` is the release

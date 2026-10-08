@@ -17,12 +17,12 @@ OUT = os.path.join(ROOT, 'outputs')
 STORYLINE = re.compile(r'storyline|S2-held|S3-10-trend|damped mix trend|intensification continues|horup_material|'
                        r'horup_class|mix effect only|compare-modes|DECARB_MODES|decarb_modes', re.I)
 EXCLUDED = ()
-# PATHWAYS v1 (pathways.py): every output must exist after a run
-PATHWAYS_OUTPUTS = ('HOOKS.md', 'pathways_runs.csv', 'pathways_annual.csv', 'pathways_bands.csv', 'shapley.csv',
-                    'shapley_subsets.csv', 'backcast.json', 'solution_space.csv', 'levers.json',
-                    'PATHWAYS_METHODS_DRAFT.md')
-PATHWAYS_FIGURES = ('pw_1_waterfall', 'pw_2_annual', 'pw_3_bands', 'pw_4_solution_space', 'pw_5_shapley_SI',
-                    'pw_6_envelope_SI')
+# PATHWAYS v2 (pathways.py): every output must exist after a run
+PATHWAYS_OUTPUTS = ('HOOKS.md', 'pathways_runs.csv', 'pathways_annual.csv', 'pathways_bands.csv',
+                    'shapley_pathways.csv', 'shapley_levers.csv', 'shapley_subsets.csv', 'backcast.json',
+                    'solution_space.csv', 'levers.json', 'PATHWAYS_METHODS_DRAFT.md', 'LEVERS_TABLE.md')
+PATHWAYS_FIGURES = ('pw_1_bands_by_pathway', 'pw_2_shapley_waterfall', 'pw_3_solution_space', 'pw_4_annual_SI',
+                    'pw_5_envelope_SI', 'pw_6_L5_estimator_SI', 'pw_7_shapley_levers_SI')
 # written by run_all after the tests step (checked here, not by tests/test_v2.py)
 AFTER_TESTS = ('metrics.json', 'RESULTS.md', 'BASELINE_DRAFT.md', 'PB_METHODS_DRAFT.md', 'ASSUMPTIONS.md')
 

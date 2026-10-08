@@ -248,3 +248,130 @@ def test_backcast(res):
     assert c00['LoE_AR'] == pytest.approx(r0['LoE_AR'], rel=1e-12)
     c11 = sp[(sp['demand_reduction'] == 1) & (sp['intensity_reduction'] == 1)].iloc[0]
     assert c11['LoE_AtP'] == pytest.approx(bc['P0']['LoE_AtP_min_k0'], rel=1e-12)
+
+
+# ============================================================
+# THEORETICAL LIMIT T (PATHWAYS v3)
+# ============================================================
+import os  # noqa: E402
+import subprocess  # noqa: E402
+
+from conftest import ROOT  # noqa: E402
+
+
+@pytest.fixture(scope='module')
+def rt(res):
+    return PW.compute_T(res, verbose=False)
+
+
+def test_bank_rule_on_a_known_path():
+    raw = np.array([5.0, 10.0, -30.0, 8.0, 12.0, 20.0, -5.0, 3.0])
+    b = PW.bank(raw)
+    assert list(b['built']) == [5.0, 10.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0]
+    assert list(b['bank']) == [0.0, 0.0, 30.0, 22.0, 10.0, 0.0, 5.0, 2.0]
+    assert b['added'][1:].sum() == 35.0 and b['used'][1:].sum() == 33.0
+
+
+def test_T_banking_and_stock_identity(rt):
+    """Dwellings built >= 0 every year (within floating-point noise of 1e-6 dwellings); the engine's
+    dwellings built equal the banked path (stock identity: requirement + stock-adding join);
+    cumulative release used <= released; implied vacancy never negative; v = 0 from 2027 under T1."""
+    for key, R in rt['cache'].items():
+        E, bk = R['E'], R['info']['bank']
+        built = np.asarray(PW.engine.requirement(E), float)
+        assert (built[1:] >= -PW.T_ZERO_TOL_DWELLINGS).all() and (bk['built'][1:] >= 0).all(), key
+        assert np.allclose(built[1:], bk['built'][1:], rtol=1e-12, atol=1e-6), key
+        assert (E['join_redev'] == 0).all()
+        assert np.allclose(E['stock_join'], np.cumsum(E['join']), rtol=1e-12, atol=1e-6)
+        assert np.all(np.cumsum(bk['used']) <= np.cumsum(bk['added']) + 1e-6), key
+        assert bk['bank'][-1] == pytest.approx(bk['added'].sum() - bk['used'].sum(), abs=1e-6)
+        v = 1.0 - E['hh'] / (E['stock'] + E['stock_join'])
+        assert (v[1:] >= -1e-12).all(), key
+        if 'T1' in key[0] and key[1] == LV.T_INSTANT:
+            assert (np.broadcast_to(E['v'], E['hh'].shape)[2:] == 0).all()
+
+
+def test_T2_size_equals_occupied_area(rt):
+    R = rt['cache'][(LV.T_COMPONENTS, LV.T_INSTANT)]
+    E = R['E']
+    S = E['pop'] / E['hh']
+    for t in res_typ(rt):
+        occ = S * np.asarray(R['inputs']['olf'][t], float)
+        size = np.asarray(R['inputs']['size'][t], float)
+        assert np.allclose(size[2:], occ[2:], rtol=1e-12, atol=0), t
+    assert np.allclose(E['D'][2:], E['occ'][2:], rtol=1e-12, atol=0)
+
+
+def res_typ(rt):
+    return list(rt['params_T']['T4'])
+
+
+def test_T3_T4_T5_values(rt):
+    import Building_factors as BF
+    import pandas as pd
+    fb = pd.read_csv(PW.validation.Boss.FILE_FACTORS_BUILDING)
+    ind = fb[fb['duplicate_of'].fillna('') == '']['id']
+    chars = BF.load_characteristics()
+    p = rt['params_T']
+    assert p['T3']['olf'] == float(chars.loc[ind, 'OLF'].min()) and p['T3']['building'] == 'A_1'
+    assert 'A_2' in p['T3']['excluded_duplicates']
+    for t, d in p['T4'].items():
+        g = fb[(fb['Typology'] == t) & fb['id'].isin(ind)]
+        pooled = fb[fb['Typology'] == t].groupby('Subtype')['A1-A3'].mean().mean()
+        if t == 'Apartments':
+            assert d['held'] and d['r'] == 1.0
+        else:
+            assert d['r'] == pytest.approx(float((g['A1-A3'] / pooled).min()), rel=1e-15)
+    assert p['T4']['Detached']['building'] == 'SD_2'
+    ft = pd.read_csv(PW.validation.Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology')
+    for t, d in p['T5'].items():
+        assert d['soc_low'] == ft.loc[t, 'SOC_low']
+
+
+def test_T5_soil_exact(rt):
+    """The soil path enters exactly: carbon - events = material part + soil_path x floor area x share."""
+    R = rt['cache'][(LV.T_COMPONENTS, LV.T_INSTANT)]
+    E, info = R['E'], R['info']
+    typ = res_typ(rt)
+    mat = sum(np.asarray(info['intensity_material'][t]) * E['gfa_t'][k] for k, t in enumerate(typ))
+    soil = sum(np.asarray(info['soil_path'][t]) * E['gfa_t'][k] for k, t in enumerate(typ)) * E['soil_share']
+    assert np.allclose((E['carbon'] - E['b_t'].sum(axis=0))[1:], (mat + soil)[1:], rtol=1e-12, atol=1e-3)
+
+
+def test_T_2026_unchanged(res, rt):
+    E0 = res['get'](PW.REFERENCE, {})['E']
+    for key, R in rt['cache'].items():
+        E = R['E']
+        for k in ('carbon', 'upfront', 'total', 'dwell_in_scope', 'join'):
+            assert E[k][1] == pytest.approx(E0[k][1], rel=1e-12), (key, k)
+
+
+def test_T_shapley_efficiency_exact(rt):
+    for metric, (phi, total) in rt['shapley_exact'].items():
+        assert sum(phi.values()) == total, metric
+    s = rt['subsets']
+    assert len(s) == 32
+    t = s[s['subset'] == 'T'].iloc[0]
+    base = s[s['subset'] == 'P5-stretch-instant'].iloc[0]
+    assert total == Fraction(base['LoE_AR']) - Fraction(t['LoE_AR'])
+
+
+def test_T_checks_pass(res, rt):
+    PW.checks_T(res, rt)
+
+
+def _git_show(path):
+    r = subprocess.run(['git', 'show', f'pathways_v2:{path}'], cwd=ROOT, capture_output=True, text=True)
+    return r.stdout if r.returncode == 0 else None
+
+
+@pytest.mark.parametrize('name', ['pathways_runs.csv', 'pathways_annual.csv', 'pathways_bands.csv'])
+def test_v2_rows_unchanged(name):
+    """The v2 rows of the output tables are byte-identical to tag pathways_v2; T rows are appended."""
+    old = _git_show(f'outputs/pathways/{name}')
+    if old is None:
+        pytest.skip('git or tag pathways_v2 not available')
+    new = open(os.path.join(ROOT, 'outputs', 'pathways', name)).read()
+    assert new.startswith(old)
+    extra = new[len(old):].splitlines()
+    assert extra and all(line.split(',')[0] in PW.T_RUNS for line in extra)

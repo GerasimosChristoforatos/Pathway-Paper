@@ -44,16 +44,16 @@ GROUP_COLORS = {'Population': '#2E6DB4', 'Household size': '#E67E22', 'Household
                 'Near-term: how the excess is booked': '#7F8C8D', 'Near-term: rule variant': '#F39C12'}
 
 # (group, label, {Boss setting: value})
-CASES = [   # lean set (v1.1); the full v1.0.2 table is in the history (tag v1.0.2)
+CASES = [   # earlier, longer tables are preserved at the git tags (CHANGELOG)
     ('Replacement scenario', 'Low (S1): long-run rate, shares held', dict(REPLACEMENT_SCENARIO='S1')),
     ('Replacement scenario', 'S3: half-life 5 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
     ('Replacement scenario', 'S3: half-life 15 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=15.0)),
     ('Replacement scenario', 'High (S2): 2018-2023 rate persists, shares held', dict(REPLACEMENT_SCENARIO='S2')),
-    ('Household size', 'Stats NZ Low projection variant (S)', dict(HH_SIZE_VARIANT='Low')),
-    ('Household size', 'Stats NZ High projection variant (S)', dict(HH_SIZE_VARIANT='High')),
-    ('Household size', 'S after 2043: flat (kink at 2043)', dict(S_TAIL='flat')),
-    ('Household size', 'S after 2043: secant-slope taper (v1.2)', dict(S_TAIL='taper_secant')),
-    ('Household size', 'S after 2043: taper from the PCHIP end slope', dict(S_TAIL='taper')),
+    ('Household size', 'Household size: Stats NZ Low variant', dict(HH_SIZE_VARIANT='Low')),
+    ('Household size', 'Household size: Stats NZ High variant', dict(HH_SIZE_VARIANT='High')),
+    ('Household size', 'Household size after 2043: flat (kink at 2043)', dict(S_TAIL='flat')),
+    ('Household size', 'Household size after 2043: secant-slope taper', dict(S_TAIL='taper_secant')),
+    ('Household size', 'Household size after 2043: taper from the PCHIP end slope', dict(S_TAIL='taper')),
     ('Dwelling size', 'Dwelling size: 2016–2025 reference', dict(DWELLING_SIZE_REF=(2016, 2025))),
     ('Stock', 'Completion rate 0.92', dict(COMPLETION_RATE=0.92)),
     ('Stock', 'Completion rate 0.96', dict(COMPLETION_RATE=0.96)),
@@ -63,7 +63,7 @@ CASES = [   # lean set (v1.1); the full v1.0.2 table is in the history (tag v1.0
      dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.20)),
     ('Near-term: how the excess is booked', 'Temporary surplus with payback, absorption 0.10/yr',
      dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.10)),
-    ('Near-term: how the excess is booked', 'Booked as redevelopment, stock-neutral (v1.1)',
+    ('Near-term: how the excess is booked', 'Booked as redevelopment, stock-neutral',
      dict(NEAR_TERM_MODE='redevelopment')),
     ('Near-term: rule variant', 'Gap measured against the 2026 requirement', dict(NEAR_TERM_GAP_REF='2026')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
@@ -71,7 +71,8 @@ CASES = [   # lean set (v1.1); the full v1.0.2 table is in the history (tag v1.0
 # Carbon-factor and accounting rows of the adopted item-level, time-resolved run
 # (none for the frozen check run, so the table of baseline v2 keeps its rows):
 # frozen technology; the item-level decarbonisation sensitivities; A4-A5 held or on
-# item paths; event timing L / n; whole-life-at-construction accounting.
+# item paths; event timing L / n. (Whole life at construction is an accounting
+# convention, not a parameter: it is a PB sensitivity row, pb_sensitivity.csv.)
 FROZEN_CASE = ('Carbon factors', 'Frozen technology: 2025 factors held (no decarbonisation)',
                dict(DECARB_MODE='none', DECARB_A45='held'))
 DECARB_CASES = {
@@ -83,8 +84,7 @@ DECARB_CASES = {
          dict(DECARB_ITEM_CASE='nz_elec_held')),
         ('Carbon factors', 'A4-A5 held at 2025 (no generic 1%/yr)', dict(DECARB_A45='held')),
         ('Carbon factors', "A4-A5 on each item's own Horup path", dict(DECARB_A45='item')),
-        ('Carbon factors', 'Event timing: interval L / n', dict(EVENT_TIMING='n')),
-        ('Carbon factors', 'Accounting: whole life at construction', dict(ACCOUNTING='whole_life_at_construction'))],
+        ('Carbon factors', 'Event timing: interval L / n', dict(EVENT_TIMING='n'))],
 }
 
 def run(**settings):
@@ -116,9 +116,9 @@ def main():
     mix_int = sum(shares[t].values * base['intensity'][t].values for t in base['typ_names'])
     for p in ('5th', '95th'):
         tot = base['results'][p]['total']
-        rows.append(('Population', f'Stats NZ {p} percentile (level)', tot[1:].sum() / 1e6,
+        rows.append(('Population', f'Population: Stats NZ {p} percentile', tot[1:].sum() / 1e6,
                      float((tot[1:] * mix_int[1:]).sum()) / 1e6))
-        paths[f'Stats NZ {p} percentile (level)'] = tot
+        paths[f'Population: Stats NZ {p} percentile'] = tot
 
     for grp, lab, kw in CASES + DECARB_CASES[Boss.DECARB_MODE]:
         st = run(**kw)
@@ -163,8 +163,8 @@ def main():
             rows.append(('Carbon factors', lab, g0, carbon_with(tf[col], soc0)))
     else:
         print("factors_typology.csv has no spread columns: re-run Building_factors.py.")
-    rows.append(('Carbon factors', 'Soil: lowest soil order (Raw)', g0, carbon_with(emb0, tf['SOC_low'])))
-    rows.append(('Carbon factors', 'Soil: highest soil order (Organic)', g0, carbon_with(emb0, tf['SOC_high'])))
+    rows.append(('Carbon factors', 'Soil carbon: lowest soil order (Raw)', g0, carbon_with(emb0, tf['SOC_low'])))
+    rows.append(('Carbon factors', 'Soil carbon: highest soil order (Organic)', g0, carbon_with(emb0, tf['SOC_high'])))
 
     out = pd.DataFrame(rows, columns=['group', 'case', 'GFA_Mm2', 'carbon_kt'])
     out['GFA_change_pct'] = 100 * (out['GFA_Mm2'] / g0 - 1)
@@ -197,14 +197,43 @@ def _save(fig, name, tight=True):
         fig.savefig(os.path.join(FIG_DIR, name), dpi=140, bbox_inches='tight')
 
 
-TOP_N = 5        # main-text tornados show the TOP_N largest effects (full versions: *_SI)
+TOP_N = 5        # main-text tornados show the TOP_N largest parameters (full versions: *_SI)
+PCT_NOTE = ('Percentages are relative to within-window carbon (2026-2050); fixed absolute terms such as soil '
+            'carbon therefore show larger percentage effects than under whole-life accounting.')
+
+# Rows that are alternative settings of one parameter (both ends shown together in
+# the main-text tornado); every other row is a parameter of its own.
+PARAMETER = {
+    'Population: Stats NZ 5th percentile': 'Population', 'Population: Stats NZ 95th percentile': 'Population',
+    'Low (S1): long-run rate, shares held': 'Replacement scenario',
+    'High (S2): 2018-2023 rate persists, shares held': 'Replacement scenario',
+    'S3: half-life 5 yr': 'S3 half-life', 'S3: half-life 15 yr': 'S3 half-life',
+    'Household size: Stats NZ Low variant': 'Household-size variant',
+    'Household size: Stats NZ High variant': 'Household-size variant',
+    'Household size after 2043: flat (kink at 2043)': 'Household size after 2043',
+    'Household size after 2043: secant-slope taper': 'Household size after 2043',
+    'Household size after 2043: taper from the PCHIP end slope': 'Household size after 2043',
+    'Completion rate 0.92': 'Completion rate', 'Completion rate 0.96': 'Completion rate',
+    'Temporary surplus with payback, absorption 0.20/yr': 'Near-term payback',
+    'Temporary surplus with payback, absorption 0.10/yr': 'Near-term payback',
+    'A4-A5 held at 2025 (no generic 1%/yr)': 'A4-A5 path', "A4-A5 on each item's own Horup path": 'A4-A5 path',
+    'Materials: jackknife low (all typologies)': 'Materials: jackknife',
+    'Materials: jackknife high (all typologies)': 'Materials: jackknife',
+    'Materials: lowest single case study': 'Materials: single case study',
+    'Materials: highest single case study': 'Materials: single case study',
+    'Soil carbon: lowest soil order (Raw)': 'Soil order', 'Soil carbon: highest soil order (Organic)': 'Soil order',
+}
 
 
-def top_n(cases, n, cols=('GFA_change_pct', 'carbon_change_pct')):
-    """The n rows with the largest absolute effect (max over cols), in ascending
-    order of that effect (the tornado draws the largest at the top)."""
+def top_parameters(cases, n, label='case', parameter=None, cols=('carbon_change_pct',)):
+    """All rows of the n parameters with the largest absolute effect (max over cols and
+    over the parameter's rows), so both ends of a paired parameter are shown; ascending
+    order of the row effect (the tornado draws the largest at the top)."""
+    parameter = PARAMETER if parameter is None else parameter
     eff = cases[list(cols)].abs().max(axis=1)
-    return cases.assign(order=eff).sort_values('order').tail(n)
+    par = cases[label].map(lambda c: parameter.get(c, c))
+    top = eff.groupby(par).max().sort_values().tail(n).index
+    return cases.assign(order=eff)[par.isin(top)].sort_values('order')
 
 
 def tornado(cases, out, name, title_note=None):
@@ -233,8 +262,9 @@ def tornado(cases, out, name, title_note=None):
     handles = [plt.Rectangle((0, 0), 1, 1, color=GROUP_COLORS[g]) for g in present]
     ax[1].legend(handles, present, fontsize=8, loc='upper left', bbox_to_anchor=(1.01, 1.0))   # outside: no overlap
     fig.text(0.01, 0.005, 'Note: the single-case carbon factors and the soil-order extremes (Raw / Organic) are bounds '
-             'shown outside the Monte Carlo, not probability-weighted cases.', fontsize=8, style='italic')
-    _save(fig, name)
+             'shown outside the Monte Carlo, not probability-weighted cases.\n' + PCT_NOTE, fontsize=8, style='italic')
+    fig.tight_layout(rect=(0, 0.5 / fig.get_figheight(), 1, 1 - 0.25 / fig.get_figheight()))   # note; suptitle
+    _save(fig, name, tight=False)
 
 
 def figures(out, base, paths):
@@ -245,8 +275,8 @@ def figures(out, base, paths):
     # ---- 1. tornado: how much each assumption moves the totals ------------
     # full table for the Supplementary Material; main text: the TOP_N largest
     tornado(cases, out, 'sens_1_tornado_SI.png')
-    tornado(top_n(cases, TOP_N), out, 'sens_1_tornado.png',
-            title_note=f'the {TOP_N} largest effects; all rows: sens_1_tornado_SI')
+    tornado(top_parameters(cases, TOP_N), out, 'sens_1_tornado.png',
+            title_note=f'{TOP_N} largest parameters (effect on carbon; both ends shown); all rows: sens_1_tornado_SI')
 
     # ---- 2. annual paths: WHEN each assumption matters ---------------------
     fy = np.asarray(base['forecast_years'])
@@ -256,7 +286,7 @@ def figures(out, base, paths):
               .assign(a=lambda d: d.GFA_change_pct.abs())
               .sort_values('a', ascending=False))
     show = [c for c in ranked.case if c in paths and 'percentile' not in c][:N_PATHS]
-    pop = [c for c in ('Stats NZ 5th percentile (level)', 'Stats NZ 95th percentile (level)') if c in paths]
+    pop = [c for c in ('Population: Stats NZ 5th percentile', 'Population: Stats NZ 95th percentile') if c in paths]
     fig, ax = plt.subplots(1, 3, figsize=(22, 6.2), gridspec_kw={'width_ratios': [1.6, 1, 1.15]})
     fig.suptitle('Sensitivity 2: when each assumption matters (annual built floor area) and what it adds up to '
                  '(cumulative carbon)', fontsize=12)

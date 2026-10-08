@@ -35,6 +35,19 @@ REMOVED_SENSITIVITY_ROWS = {'Three-channel join (v1.0.2)',      # dropped with t
 REMOVED_SCENARIOS = {'S2', 'S3-10-trend', 'S2-noUC'}            # the v1.2.1 storyline rows
 FX['scenarios'] = {('S2' if k == 'S2-held' else k): v for k, v in FX['scenarios'].items()
                    if k not in REMOVED_SCENARIOS}
+# baseline-pb-v3.1: row labels made version-free and explicit (CHANGELOG); values unchanged
+RENAMED_SENSITIVITY_ROWS = {
+    'Stats NZ 5th percentile (level)': 'Population: Stats NZ 5th percentile',
+    'Stats NZ 95th percentile (level)': 'Population: Stats NZ 95th percentile',
+    'Stats NZ Low projection variant (S)': 'Household size: Stats NZ Low variant',
+    'Stats NZ High projection variant (S)': 'Household size: Stats NZ High variant',
+    'S after 2043: flat (kink at 2043)': 'Household size after 2043: flat (kink at 2043)',
+    'S after 2043: secant-slope taper (v1.2)': 'Household size after 2043: secant-slope taper',
+    'S after 2043: taper from the PCHIP end slope': 'Household size after 2043: taper from the PCHIP end slope',
+    'Booked as redevelopment, stock-neutral (v1.1)': 'Booked as redevelopment, stock-neutral',
+    'Soil: lowest soil order (Raw)': 'Soil carbon: lowest soil order (Raw)',
+    'Soil: highest soil order (Organic)': 'Soil carbon: highest soil order (Organic)'}
+FX['sensitivity'] = {RENAMED_SENSITIVITY_ROWS.get(k, k): v for k, v in FX['sensitivity'].items()}
 HIGH = json.load(open(os.path.join(ROOT, 'tests', 'regression_v2_high.json')))   # baseline-pb-v2 references
 FX['mc']['montecarlo_summary_S2.csv'] = HIGH['montecarlo_summary_S2.csv']
 FX['scenarios'].update(HIGH['scenarios'])

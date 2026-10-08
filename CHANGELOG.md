@@ -1,5 +1,51 @@
 # CHANGELOG
 
+## baseline-pb-v3.1
+
+Figure and label clean-up only. No model result, method or test baseline changes:
+metrics.json, every Monte Carlo, PB, scenario and reconciliation output and
+RESULTS.md are byte-identical to baseline-pb-v3. sensitivity_oat.csv differs only
+in the relabelled rows below and the removed "Accounting: whole life at
+construction" row (an accounting convention, not a parameter; it stays in
+pb_sensitivity.csv and pb_4_sensitivity_SI: carbon / LoE AtP +41.8%, LoE AR +1.5%).
+
+* **Material figures** (boss_10, diag_5): replacements & repaints within 2026-2050
+  merged into their material colour (no separate lighter / hatched layer or legend
+  entry; totals unchanged); soil on top, hatched, as before.
+* **mc_1_fan / mc_1_fan_pb**: the replacements & repaints band and its legend entry
+  removed; carbon axes start at 2026 (mc_1_fan_pb: at the 2016 AR base window); the
+  floor-area panel keeps its history.
+* **Tornados** (sens_1, pb_4, main text): the 5 parameters with the largest absolute
+  effect (sens_1: on carbon; pb_4: on AR or AtP), with both ends of paired
+  parameters shown (population 5th / 95th, Low / High replacement, single case
+  study lowest / highest, soil order Raw / Organic, AR base windows, ...).
+  Captions and figure notes add: "Percentages are relative to within-window carbon
+  (2026-2050); fixed absolute terms such as soil carbon therefore show larger
+  percentage effects than under whole-life accounting."
+* **Labels** (sens_1, sens_1_SI, sens_2, sensitivity_oat.csv; the PB labels had no
+  version tags), old -> new:
+  - "Stats NZ 5th / 95th percentile (level)" -> "Population: Stats NZ 5th / 95th percentile"
+  - "Stats NZ Low / High projection variant (S)" -> "Household size: Stats NZ Low / High variant"
+  - "S after 2043: flat (kink at 2043)" -> "Household size after 2043: flat (kink at 2043)"
+  - "S after 2043: secant-slope taper (v1.2)" -> "Household size after 2043: secant-slope taper"
+  - "S after 2043: taper from the PCHIP end slope" -> "Household size after 2043: taper from the PCHIP end slope"
+  - "Booked as redevelopment, stock-neutral (v1.1)" -> "Booked as redevelopment, stock-neutral"
+  - "Soil: lowest / highest soil order (Raw / Organic)" -> "Soil carbon: lowest / highest soil order (Raw / Organic)"
+  tests/test_regression_v1_2_1.py maps the old labels to the new (values unchanged).
+* **Cosmetic fixes**: boss_10 panel titles no longer overlap; diag_5 suptitle
+  shortened; mc_1_fan carbon title on two lines; mc_1_fan_pb legend no longer covers
+  the base-window line, stale caption reference to mc_1_fan history removed; pb_5
+  axis starts at 2026 (no empty 2025 column); pb_6 caption no longer overlaps the
+  tick labels, boundary labels now drawn (were clipped), duplicated legend wording
+  removed; fig_scenarios_pb bar legend moved below the panel (was covering the AtP
+  label); pb_3 caption wrapped (the figure was 4,300 px wide); pb_4 labels wrapped
+  with a subtitle; sens_1 note spacing; fig_conversion_chain subtitle and caption
+  updated (intensity also reflects A4-A5 decarbonisation and in-window replacements
+  & repaints).
+* **Tests**: 87 passed (full run); new: top-5 parameter selection, whole-life row
+  only in the PB sensitivities. **Run time**: full run 1,037 s on 4 cores (v3: 880 s;
+  same steps minus one Sensitivity case, so the difference is machine load).
+
 ## baseline-pb-v3
 
 Time-resolved replacement and repaint emissions (B2, B4), committed post-2050

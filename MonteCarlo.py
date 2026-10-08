@@ -601,7 +601,7 @@ def _history():
     gfa = st['hist_built_gfa']
     fy = np.asarray(st['forecast_years'])
     central = {'gfa': pd.Series(st['results']['50th']['total'], index=fy),
-               'carbon': st['carbon_total_typ'].sum(axis=1), 'b': st['carbon_bev_typ'].sum(axis=1)}
+               'carbon': st['carbon_total_typ'].sum(axis=1)}
     return gfa, central
 
 
@@ -637,15 +637,12 @@ def figures():
         a.plot(fy, f[f'{k}_50'] / 1e6, color=BLUE, lw=2.2, label='Monte Carlo median')
         a.plot(fy, central[k].loc[fy] / 1e6, color='#C0392B', lw=1.5, ls='--',
                label='Boss central run')
-        if k == 'carbon' and central['b'].loc[fy].sum() > 0:
-            a.fill_between(fy, (central[k] - central['b']).loc[fy] / 1e6, central[k].loc[fy] / 1e6,
-                           color=Boss.EVENTS_COLOR, alpha=0.5, lw=0,
-                           label=f'central run: {Boss.EVENTS_LABEL.lower()}')
-        a.axvline(2025.5, color='grey', ls=':', lw=1)
-        a.set_ylabel(lab); a.set_xlim(1991, 2050); a.set_ylim(0, None)
+        if hist is not None:          # carbon panel: projection only, no empty historical axis
+            a.axvline(2025.5, color='grey', ls=':', lw=1)
+        a.set_ylabel(lab); a.set_xlim((1991, 2050) if hist is not None else (2026, 2050)); a.set_ylim(0, None)
         a.grid(alpha=0.3); a.legend(fontsize=8, loc='upper right')
     ax[0].set_title('Built floor area (in scope)')
-    ax[1].set_title('Embodied carbon within 2026-2050 (' + ('upfront + replacements & repaints occurring each year'
+    ax[1].set_title('Embodied carbon within 2026-2050\n(' + ('upfront + replacements & repaints occurring each year'
                     if Boss.ACCOUNTING == 'time_resolved' else 'whole life at construction') + ')')
     fig.tight_layout()
     _save(fig, 'mc_1_fan.png')

@@ -236,6 +236,12 @@ Resolved values from outputs/pathways/levers.json; Table 1 of the paper: outputs
 | Omitted in v2: Brownfield soil | not modelled | DECISION (author): the soil factor is one area-weighted value for Auckland land zoned for urbanisation (Christoforatos, Pickering & Schipper 2026) and soil is already zero on the replacement bands; no national brownfield share is in the inputs to parameterise a shift |
 | Omitted in v2: Lightweighting | not modelled | DECISION (author): the case studies give A1-A3 per m2 by material and item, not structural mass by design alternative; a mass reduction cannot be separated from the material choice already covered by L5 |
 | Omitted in v2: Bio-based archetypes | not modelled | DECISION (author): no typology has a bio-based archetype among the 16 case studies, and the model's biogenic-carbon convention (timber C1-C4 excludes biogenic CO2) would need extending; overlaps L5 |
+| Theoretical limit T | T is a theoretical limit (thought experiment) combining the best observed attributes of different buildings; it is not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). T = P5-stretch with T1-T5 at full strength from 2027 (no ramp); 2026 untouched; sensitivity: the v2 logistic ramp (T-ramp) | DECISION (author) |
+| T1 No idle stock | v = 0 from 2027; near-term surplus absorbed in full; banking rule: built_t = max(0, raw_t - bank_(t-1)), unused release carried forward; stock-adding join (built - requirement) | DECISION (author) |
+| T2 No extra space | new-dwelling size = occupied area S(t) x OLF (L1, f = 1) | DECISION (author) |
+| T3 Minimum space per person | OLF 19.69 m2/person (A_1, the lowest design OLF of the independent case studies; duplicates A_2 excluded) for every typology; replaces Detached 36.46, Townhouses 33.11, Apartments 20.63 | DATA: Christoforatos & Pickering 2025 case studies (data/building_data.xlsx) |
+| T4 Best materials | Detached r = 0.530 (SD_2), Townhouses r = 0.880 (T_2), Apartments r = 1.000 (held); on top of decarbonisation | DATA: outputs/factors/factors_building.csv (2025 factors) |
+| T5 Best soil | Detached 22.93 kg CO2e/m2 (SOC_low; average 50.13), Townhouses 13.84 kg CO2e/m2 (SOC_low; average 30.27), Apartments 2.52 kg CO2e/m2 (SOC_low; average 5.51), from 2027 | DATA: Christoforatos, Pickering & Schipper 2026 (lowest of 10 soil orders) |
 
 ### All settings in levers.py
 
@@ -266,3 +272,6 @@ Resolved values from outputs/pathways/levers.json; Table 1 of the paper: outputs
 | `RAMP_MID` | `2030.5` |
 | `RAMP_SENS` | `{'name': 'ramp2045', 'mid': 2035.5, 'end': 2045}` |
 | `SETTINGS` | `('central', 'stretch')` |
+| `T_BASE_SETTING` | `'stretch'` |
+| `T_COMPONENTS` | `('T1', 'T2', 'T3', 'T4', 'T5')` |
+| `T_INSTANT` | `'instant'` |

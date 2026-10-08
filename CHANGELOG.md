@@ -1,5 +1,43 @@
 # CHANGELOG
 
+## pathways-v3: theoretical limit T
+
+A theoretical-limit scenario T on top of PATHWAYS v2 (tag pathways_v2 = 2e6e907). T is a theoretical limit (thought experiment) combining the best observed attributes of different buildings; it is not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).
+No baseline file changes (tests/test_baseline_lock.py); the v2 rows of every output
+table are byte-identical to tag pathways_v2 (tested); T rows are appended.
+
+**Definition.** T = P5-stretch (L3 removals -40%, L4 attached share 55.40%) with, at full
+strength from 2027 (no ramp; 2026 untouched): T1 no idle stock (v = 0, near-term surplus
+absorbed in full, banking rule: dwellings built never negative, unused release carried
+forward and used before any new building; the banked path enters the engine as a
+stock-adding join, so the stock identity holds); T2 no extra space (size = S x OLF);
+T3 minimum space per person (OLF 19.69 m2/person of case study A_1, for every
+typology; A_2 duplicate excluded); T4 best materials (r detached 0.530 SD_2, townhouses
+0.880 T_2, apartments held at 1); T5 best soil (SOC_low; applied exactly through the
+engine's soil-bearing share). Sensitivity: T with the v2 logistic ramp.
+
+| run (S3-10) | floor area (Mm2) | carbon (kt) | committed after 2050 (kt) | LoE AR | LoE AtP | carbon vs P0 |
+|---|---|---|---|---|---|---|
+| P0 | 89.57 | 21,578 | 8,208-8,969 | 4.848 | 19.39 | +0.0% |
+| P5-central | 75.18 | 17,507 | 6,883-7,511 | 3.933 | 15.73 | -18.9% |
+| P5-stretch | 62.51 | 14,347 | 5,700-6,164 | 3.223 | 12.89 | -33.5% |
+| T (theoretical limit) | 25.32 | 5,174 | 2,321-2,509 | 1.162 | 4.65 | -76.0% |
+| T with the logistic ramp | 30.09 | 6,431 | 2,732-2,958 | 1.445 | 5.78 | -70.2% |
+
+Human terms (T): new dwellings 52.2 m2 (19.7 m2 per person); 101,045 vacant
+or surplus dwellings released beyond the yearly need cover 5 years without new building
+(2027-2031). Gap: T still exceeds the AR budget (LoE 1.162); a further uniform
+cut of 19.3% of 2027-2050 construction reaches LoE AR = 1; AtP is not attainable within the
+window (minimum 1.28, 2026 cohort alone). Shapley over T1-T5 (relative to P5-stretch with the
+instant start; 32 subsets, exact): T1 1,916 kt (24%), T2 2,707 kt (34%), T3 2,314 kt (29%), T4 356 kt (4%), T5 673 kt (8%); the instant start of P5-stretch
+alone: 1,208 kt (separate line).
+
+New outputs: t_limit.json, shapley_T.csv, shapley_T_subsets.csv; figures pw_8_staircase,
+pw_9_T_shapley_SI, pw_10_T_annual_SI; T sections in LEVERS_TABLE.md,
+PATHWAYS_METHODS_DRAFT.md and the ASSUMPTIONS Pathways section. Tests: 33 passed
+(tests/test_pathways.py with the T tests, tests/test_baseline_lock.py; `run_all.py
+--pathways-only`).
+
 ## pathways-v2
 
 PATHWAYS v2: four pathways from six levers, settings central and stretch, on the

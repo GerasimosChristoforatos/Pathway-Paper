@@ -20,7 +20,7 @@ RUNTIME_ONLY = ('SAVE_FIGURES', 'SHOW_PLOTS', 'VERBOSE', 'FROZEN_RUN', 'QUICK_RU
 
 PATHWAYS_MARK = '## Pathways (levers.py, pathways.py)'
 PATHWAYS_EXCLUDED = ('SOURCES', 'LEVER_NAMES', 'LEVER_GROUP', 'PATHWAYS', 'PATHWAY_NAMES', 'SETTING_NAMES',
-                     'BAND_TARGET', 'LEVER_PARAMETER')
+                     'BAND_TARGET', 'LEVER_PARAMETER', 'T_NAMES', 'T_DISCLAIMER')
 
 
 def pathways_section():
@@ -39,6 +39,10 @@ def pathways_section():
          'methods as implemented: outputs/pathways/PATHWAYS_METHODS_DRAFT.md.', '', '| setting | value | basis |',
          '|---|---|---|']
     L += [f'| {a} | {v} | {b} |' for a, v, b in LV.register(lv)]
+    t_path = os.path.join(ROOT, 'outputs', 'pathways', 't_limit.json')
+    if os.path.exists(t_path):                     # PATHWAYS v3: the theoretical limit T
+        with open(t_path) as f:
+            L += [f'| {a} | {v} | {b} |' for a, v, b in LV.register_T(json.load(f))]
     L += ['', '### All settings in levers.py', '', '| setting | value |', '|---|---|']
     for k in sorted(vars(LV)):
         v = getattr(LV, k)

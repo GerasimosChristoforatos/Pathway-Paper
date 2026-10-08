@@ -634,7 +634,7 @@ PW_FIGURES = {
                    'proportion, as boss_04) for P0, P1-A and P3-A (S3-10).'),
     'pw_4_solution_space': ('paper', 'Solution space (Horup et al. 2025, Fig. 6 style): cumulative LoE AR over uniform cuts '
                             'of 2027-2050 floor area (demand) and of non-soil carbon per m2 (intensity) applied to P0, with '
-                            'the LoE = 1, 2, 3, 5 and 10 contours and the bundles P1-P3 (Moderate open, Ambitious filled) at '
+                            'the LoE AR = 1 contour, the 2, 3, 5 and 10 contours where inside the grid range (1, 2, 3 on P0, maximum 4.85), and the bundles P1-P3 (Moderate open, Ambitious filled) at '
                             'their effective coordinates; the AtP LoE = 1 contour is drawn where it exists on the grid.'),
     'pw_5_shapley_SI': ('supp', 'Shapley attribution of P0 - P3 (S3-10; all 32 lever subsets) to the five levers, on '
                         'cumulative within-window carbon and on cumulative LoE AR, Moderate and Ambitious.'),

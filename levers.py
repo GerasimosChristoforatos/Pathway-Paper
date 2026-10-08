@@ -647,3 +647,26 @@ def t_label(comps, ramp_name=T_INSTANT):
     c = [x for x in T_COMPONENTS if x in comps]
     name = 'T' if len(c) == 5 else ('P5-stretch-instant' if not c else f"T[{'+'.join(c)}]")
     return name + ('' if ramp_name == T_INSTANT else '-ramp')
+
+
+def register_T(t):
+    """(setting, value, basis) rows of the theoretical limit T, from outputs/pathways/t_limit.json."""
+    r = t['resolved']
+    T3, T4, T5 = r['T3'], r['T4'], r['T5']
+    rows = [('Theoretical limit T', T_DISCLAIMER + ' T = P5-stretch with T1-T5 at full strength from 2027 (no ramp); '
+             '2026 untouched; sensitivity: the v2 logistic ramp (T-ramp)', 'DECISION (author)'),
+            ('T1 No idle stock', 'v = 0 from 2027; near-term surplus absorbed in full; banking rule: built_t = max(0, '
+             'raw_t - bank_(t-1)), unused release carried forward; stock-adding join (built - requirement)',
+             'DECISION (author)'),
+            ('T2 No extra space', 'new-dwelling size = occupied area S(t) x OLF (L1, f = 1)', 'DECISION (author)'),
+            ('T3 Minimum space per person', f"OLF {T3['olf']:.2f} m2/person ({T3['building']}, the lowest design OLF of the "
+             f"independent case studies; duplicates {', '.join(T3['excluded_duplicates'])} excluded) for every typology; "
+             'replaces ' + ', '.join(f'{k} {v:.2f}' for k, v in T3['replaces'].items()),
+             'DATA: Christoforatos & Pickering 2025 case studies (data/building_data.xlsx)'),
+            ('T4 Best materials', ', '.join(f"{k} r = {v['r']:.3f}" + (f" ({v['building']})" if v['building'] else ' (held)')
+                                            for k, v in T4.items()) + '; on top of decarbonisation',
+             'DATA: outputs/factors/factors_building.csv (2025 factors)'),
+            ('T5 Best soil', ', '.join(f"{k} {v['soc_low']:.2f} kg CO2e/m2 (SOC_low; average {v['soc_avg']:.2f})"
+                                       for k, v in T5.items()) + ', from 2027',
+             'DATA: Christoforatos, Pickering & Schipper 2026 (lowest of 10 soil orders)')]
+    return rows

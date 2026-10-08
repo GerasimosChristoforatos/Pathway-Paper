@@ -427,6 +427,19 @@ FIGURES.md) and before the tests, and `pathways_docs` after `pb_methods`.
 "unlisted": run `run_all.py`, which clears the figures first. Methods as
 implemented: `outputs/pathways/PATHWAYS_METHODS_DRAFT.md`.
 
+**Theoretical limit T (PATHWAYS v3).** A thought experiment, not a proposal or a
+feasible pathway: P5-stretch with T1 no idle stock (v = 0, surplus absorbed in full),
+T2 no extra space (size = S x OLF), T3 the lowest independent case-study OLF for every
+typology, T4 each typology's best case-study A1-A3, T5 the lowest soil order, all at
+full strength from 2027 (`levers.apply_T`). `pathways.run_T` applies the banking rule
+(`pathways.bank`: dwellings built never negative; unused release carried forward) as a
+stock-adding join (join = banked built - requirement, join_redev = 0) so the stock
+identity holds, and the year-dependent soil factor exactly through the engine's
+soil-bearing share (intensity minus (soil_avg - soil_path) x share; two passes, the
+share checked identical). Shapley over T1-T5 (32 subsets, instant start), gap and
+back-cast as for P5; T rows are appended to the v2 tables (v2 rows byte-identical to
+tag pathways_v2, tested); `t_limit.json`, `shapley_T.csv`, figures pw_8-pw_10.
+
 ---
 
 ## 11. Glossary

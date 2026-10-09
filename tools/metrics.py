@@ -1,9 +1,9 @@
-"""Headline metrics of one full pipeline run, written to outputs/metrics.json.
+"""Headline metrics of one full pipeline run, written to outputs/data/metrics.json.
 
 Everything is read from what the pipeline itself produced: one silent
 projection.main() (the Reference run) and the Monte Carlo CSVs in outputs/.
 Keys carry the release names (naming.py; docs/RENAMING.md).
-outputs/RESULTS.md is generated from this file only, so no headline number is
+outputs/reports/RESULTS.md is generated from this file only, so no headline number is
 ever copied by hand.
 
     python tools/metrics.py [--mc-stale]   # --mc-stale: MC CSVs are from an earlier run
@@ -19,9 +19,10 @@ import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
+import layout  # noqa: E402
 import naming as N  # noqa: E402
 
-METRICS = os.path.join(ROOT, 'outputs', 'metrics.json')
+METRICS = layout.data('metrics.json', frozen=False)
 
 # (key, label, format) in the order they appear in tables
 FIELDS = [
@@ -57,7 +58,7 @@ FIELDS = [
     ('validation.observed_to_model_2026', '2026 observed / model consents, year to date', '{:.3f}'),
 ]
 
-# AESA layer (boundaries.py): read from outputs/pb_results.json, kept apart from FIELDS
+# AESA layer (boundaries.py): read from outputs/data/aesa/results.json, kept apart from FIELDS
 PB_FIELDS = [
     ('aesa.I_sec_base_kt', 'Mean annual sector emissions 2016-2025, same convention as projection (kt/yr)', '{:,.1f}'),
     ('aesa.base_year_b', 'GDP base year b (PPP coverage >= 98% of WDI population)', '{:d}'),
@@ -81,8 +82,8 @@ PB_FIELDS = [
 ]
 
 
-def aesa_metrics(out_dir):
-    with open(os.path.join(out_dir, 'pb_results.json')) as f:
+def aesa_metrics():
+    with open(layout.data('aesa/results.json', frozen=False)) as f:
         r = json.load(f)
     c, b, mc = r['components'], r['boundaries'], r['mc']['REF']
     m = dict(I_sec_base_kt=c['I_sec_base_kg'] / 1e6, base_year_b=int(c['base_year_b']), alpha=c['alpha'],
@@ -140,9 +141,9 @@ def projection_metrics(settings=None):
     }
 
 
-def mc_metrics(out_dir):
-    s = pd.read_csv(os.path.join(out_dir, 'montecarlo_summary.csv'), index_col=0)
-    d = pd.read_csv(os.path.join(out_dir, 'montecarlo_draws.csv'))
+def mc_metrics():
+    s = pd.read_csv(layout.montecarlo('summary', 'REF', frozen=False), index_col=0)
+    d = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))
     m = {}
     for key, row in (('floor_area', 'floor_area_Mm2'), ('carbon', 'carbon_kt')):
         for p in (5, 50, 95):
@@ -153,14 +154,13 @@ def mc_metrics(out_dir):
     return m
 
 
-def collect(out_dir=None, extra=None):
-    out_dir = out_dir or os.path.join(ROOT, 'outputs')
+def collect(extra=None):
     m = {'projection': projection_metrics()}
-    if os.path.exists(os.path.join(out_dir, 'montecarlo_summary.csv')):
-        m['mc'] = mc_metrics(out_dir)
-    if os.path.exists(os.path.join(out_dir, 'pb_results.json')):
-        m['aesa'] = aesa_metrics(out_dir)
-    vfile = os.path.join(out_dir, 'validation.json')
+    if os.path.exists(layout.montecarlo('summary', 'REF', frozen=False)):
+        m['mc'] = mc_metrics()
+    if os.path.exists(layout.data('aesa/results.json', frozen=False)):
+        m['aesa'] = aesa_metrics()
+    vfile = layout.data('baseline/validation.json', frozen=False)
     if os.path.exists(vfile):
         with open(vfile) as f:
             v = json.load(f)
@@ -175,7 +175,7 @@ def collect(out_dir=None, extra=None):
     m['run_mode'] = ('QUICK RUN, not for reporting' if os.environ.get('PATHWAY_QUICK') == '1' else 'full')
     if extra:
         m.update(extra)
-    with open(METRICS, 'w') as f:
+    with open(layout.writing(METRICS), 'w') as f:
         json.dump(N.keys(m), f, indent=2, sort_keys=True)
     return m
 

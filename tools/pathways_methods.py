@@ -1,12 +1,13 @@
 """Generate the pathway documents from outputs/pathways/ (nothing typed by hand; vocabulary of
 naming.py):
 
-  outputs/pathways/PATHWAYS_METHODS_DRAFT.md  equations, parameters with sources, L5 estimator,
-                                              attribution, gap, results tables, checks, limitations
-  outputs/pathways/LEVERS_TABLE.md            Table 1 of the paper: one row per lever and per TL assumption
+  outputs/reports/PATHWAYS_METHODS_DRAFT.md  equations, parameters with sources, L5 estimator,
+                                             attribution, gap, results tables, checks, limitations
+  outputs/reports/LEVERS_TABLE.md            Table 1 of the paper: one row per lever and per TL assumption
 
-With --sections also the Pathways sections of FIGURES.md and ASSUMPTIONS.md (each replaces only
-its own section; idempotent; run_all.py --pathways-only).
+from outputs/data/pathways/. With --sections also the Pathways section of
+outputs/reports/ASSUMPTIONS.md (it replaces only its own section; idempotent; run_all.py
+--pathways-only).
 
     python tools/pathways_methods.py [--sections]
 """
@@ -17,12 +18,13 @@ import sys
 import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, 'outputs', 'pathways')
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import layout  # noqa: E402
 import naming as N  # noqa: E402
 
 REF = 'REF'
+DATA = layout.data('pathways', frozen=False)
 
 
 def table(head, rows):
@@ -176,19 +178,19 @@ def levers_table(p, t=None):
           f"{100 * n['shapley_share_of_reference_minus_P5']['ambitious']:.1f}%."]
     if t is not None:
         L += tl_levers_table(t)
-    with open(os.path.join(OUT, 'LEVERS_TABLE.md'), 'w', encoding='utf-8') as f:
+    with open(layout.writing(layout.report('LEVERS_TABLE.md', frozen=False)), 'w', encoding='utf-8') as f:
         f.write('\n'.join(L) + '\n')
 
 
 def main():
     import levers as LV
-    p = json.load(open(os.path.join(OUT, 'levers.json')))
-    runs = pd.read_csv(os.path.join(OUT, 'pathways_runs.csv'))
-    bands = pd.read_csv(os.path.join(OUT, 'pathways_bands.csv'))
-    shp = pd.read_csv(os.path.join(OUT, 'shapley_pathways.csv'))
-    shl = pd.read_csv(os.path.join(OUT, 'shapley_levers.csv'))
-    bc = json.load(open(os.path.join(OUT, 'backcast.json')))
-    t_path = os.path.join(OUT, 't_limit.json')
+    p = json.load(open(os.path.join(DATA, 'levers.json')))
+    runs = pd.read_csv(os.path.join(DATA, 'runs.csv'))
+    bands = pd.read_csv(os.path.join(DATA, 'bands.csv'))
+    shp = pd.read_csv(os.path.join(DATA, 'shapley_pathways.csv'))
+    shl = pd.read_csv(os.path.join(DATA, 'shapley_levers.csv'))
+    bc = json.load(open(os.path.join(DATA, 'backcast.json')))
+    t_path = os.path.join(DATA, 'theoretical_limit.json')
     tlim = json.load(open(t_path)) if os.path.exists(t_path) else None
     levers_table(p, tlim)
     ref = runs[(runs['scenario'] == REF) & (runs['adoption'] == LV.ADOPTION_ADOPTED)
@@ -207,7 +209,7 @@ def main():
         'the Reference inputs modified by `levers.py` (hooks: docs/HOOKS.md); no projection output is rewritten. With '
         'every lever off the run reproduces the Reference '
         f"(maximum relative difference {p['identity_max_rel_diff']:.1e}; tests/test_pathways.py). "
-        'Table 1: outputs/pathways/LEVERS_TABLE.md.', '',
+        'Table 1: outputs/reports/LEVERS_TABLE.md.', '',
         '## Pathways and demand bands', '',
         '| pathway | levers | demand band targeted |', '|---|---|---|',
         f"| P1 {LV.PATHWAY_NAMES['P1']} | L1 {LV.LEVER_NAMES['L1']} | {LV.BAND_TARGET['L1']} |",
@@ -226,7 +228,7 @@ def main():
         'Reference held mix in every run (the Reference, P1-P5 and TL).', '',
         'Population growth and Smaller households are untargeted by design: population and household formation are '
         'exogenous (as in Pellan et al. 2024). Every run reports floor area and carbon by demand band '
-        '(pathways_bands.csv), so the attribution by band is exact and needs no decomposition.', '',
+        '(outputs/data/pathways/bands.csv), so the attribution by band is exact and needs no decomposition.', '',
         '## Conventions', '',
         f"* Adoption path (all levers): s(y) = 1 / (1 + exp(−k (y − {ad['mid']}))), k = ln(81)/6 = {ad['k']:.4f} "
         '(s rises from 10% to 90% within 6 years); w(y) = (s(y) − s(2026)) / (s(2035) − s(2026)) for 2026 ≤ y ≤ 2035, '
@@ -254,7 +256,7 @@ def main():
         '(size − S(y) · OLF): full strength in 2035, f held constant to 2050, so the sizes then follow S(y). L1 holds a '
         f"typology / year at size_ref where size_ref ≤ occ (never binds: {len(p['L1']['held'])} typology-years held). "
         'L2 acts through the stock identity: while v falls the vacancy-change term releases existing dwellings once '
-        '(cumulative release in pathways_runs.csv, by year in pathways_annual.csv); under the logistic adoption path '
+        '(cumulative release in runs.csv, by year in annual.csv); under the logistic adoption path '
         'the release peaks where w rises fastest (2029-2032). R13: the A1-A3 decarbonisation of the Reference (Horup '
         'et al. 2025, item level).', '',
         '## Parameters and sources', '']
@@ -429,19 +431,16 @@ def main():
           'Budgets are static (AESA layer limitations apply).',
           '* Omitted: ' + '; '.join(f'{a} ({b})' for a, b in LV.OMITTED) + '.', '',
           ] + (tl_methods(tlim, runs) if tlim is not None else []) + ['', '## Sources', ''] + [f'* {v}' for v in p['sources'].values()]
-    path = os.path.join(OUT, 'PATHWAYS_METHODS_DRAFT.md')
+    path = layout.writing(layout.report('PATHWAYS_METHODS_DRAFT.md', frozen=False))
     with open(path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(L) + '\n')
     print(f'pathways_methods: {path} ({len(L)} lines), LEVERS_TABLE.md')
 
 
 def sections():
-    """The generated Pathways sections outside outputs/pathways/: FIGURES.md (pathways.update_figures_md)
-    and ASSUMPTIONS.md (tools/assumptions.update_pathways_section). Both replace only their own
-    section and are idempotent."""
-    import pathways
+    """The Pathways section of outputs/reports/ASSUMPTIONS.md (tools/assumptions.update_pathways_section;
+    it replaces only its own section and is idempotent)."""
     import assumptions
-    pathways.update_figures_md()
     assumptions.update_pathways_section()
 
 

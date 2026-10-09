@@ -32,14 +32,14 @@ from scipy import stats
 
 import projection as M
 import engine
-import figaudit
+import figure_plan as FP
+import style
 import validation
 # Interactive consoles (Spyder, IPython, Jupyter) keep an imported module alive
 # between runs, so an edited projection.py would otherwise be ignored. Always reload.
 M = importlib.reload(M)
 
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # run_all.py sets this
-FIG_DIR = os.path.join(M.OUT_DIR, 'figures')
 
 plt.rcParams.update({'font.size': 9, 'axes.titlesize': 10, 'legend.fontsize': 7.5,
                      'axes.grid': True, 'grid.alpha': 0.3})
@@ -185,10 +185,9 @@ def finish(fig, name, note=None):
         fig.text(0.5, 0.008, note, ha='center', fontsize=8, style='italic')
     else:
         fig.tight_layout()
-    if SAVE_FIGURES:
-        os.makedirs(FIG_DIR, exist_ok=True)
-        figaudit.record(fig, name)
-        fig.savefig(os.path.join(FIG_DIR, name), dpi=130, bbox_inches='tight')
+    target = FP.release_file(os.path.splitext(name)[0])
+    if SAVE_FIGURES and target is not None:
+        style.save_figure(fig, target)
 
 
 # =============================================================================
@@ -479,6 +478,6 @@ print(f" History bars: census intervals {', '.join(f'{a}-{b}' for a, b in INTERV
       f"pooled empty share {100 * POOLED_SHARE:.1f}%")
 print("=" * 70)
 if SAVE_FIGURES:
-    print(f"Saved diag_2 ... diag_5 and diag_3b in {FIG_DIR}/.")
+    print("Saved D04-D06 in outputs/diagnostics/data_calibration/.")
 
 plt.show()

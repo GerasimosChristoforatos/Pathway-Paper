@@ -1,14 +1,13 @@
-"""Generate outputs/BASELINE_DRAFT.md from the run outputs. No number in the
+"""Generate outputs/reports/BASELINE_DRAFT.md from the run outputs. No number in the
 report is typed by hand: every value is read from a generated file in
-outputs/ (or, for the assumption register, from the settings in projection.py).
+outputs/data/ (or, for the assumption register, from the settings in projection.py).
 
     python tools/baseline_draft.py
 
-Inputs: outputs/boss_results.json, metrics.json, replacement_scenarios.json,
-validation.json, gap_2026.json, near_term_join.json, sensitivity_oat.csv,
-montecarlo_summary*.csv (when present), figures/.
+Inputs (outputs/data/): baseline/projection.json, metrics.json, baseline/scenarios.json,
+baseline/validation.json, baseline/gap_2026.json, baseline/overbuild_2026.json,
+baseline/sensitivity_one_at_a_time.csv, montecarlo/summary_<variant>.csv (when present).
 """
-import glob
 import json
 import os
 import sys
@@ -16,14 +15,17 @@ import sys
 import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, 'outputs')
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import layout  # noqa: E402
 import naming as N  # noqa: E402
+
+SENSITIVITY = layout.data('baseline/sensitivity_one_at_a_time.csv', frozen=False)
 
 
 def load(name):
-    p = os.path.join(OUT, name)
+    """A JSON file of outputs/data/ (relative path), or None if it does not exist."""
+    p = layout.data(name, frozen=False)
     if not os.path.exists(p):
         return None
     with open(p) as f:
@@ -127,7 +129,7 @@ def item_register():
 
 def near_term_limitations():
     """The near-term surplus limitation, from outputs/near_term_join.json (tools/near_term_join.py)."""
-    nj = load('near_term_join.json')
+    nj = load('baseline/overbuild_2026.json')
     return [nj['limitation']] if nj and 'limitation' in nj else []
 
 
@@ -335,7 +337,7 @@ LIMITATIONS = [
 
 
 def _payback():
-    p = os.path.join(OUT, 'sensitivity_oat.csv')
+    p = SENSITIVITY
     if not os.path.exists(p):
         return None
     s = pd.read_csv(p).set_index('case')['floor_area_change_pct']
@@ -344,9 +346,9 @@ def _payback():
 
 
 def main():
-    b, m = load('boss_results.json'), load('metrics.json')
-    sc, v = load('replacement_scenarios.json'), load('validation.json')
-    gap, nj = load('gap_2026.json'), load('near_term_join.json')
+    b, m = load('baseline/projection.json'), load('metrics.json')
+    sc, v = load('baseline/scenarios.json'), load('baseline/validation.json')
+    gap, nj = load('baseline/gap_2026.json'), load('baseline/overbuild_2026.json')
     if b is None or m is None:
         raise SystemExit('Run run_all.py first (outputs/boss_results.json missing).')
     st = b['settings']
@@ -378,12 +380,12 @@ def main():
         txt += (f" How fast existing dwellings are replaced is the largest structural uncertainty: Low (S1, the "
                 f"long-run rate) gives {rows['LOW']['floor_area_Mm2']:.1f} million m², High (S2, the 2018-2023 rate "
                 f"persisting) {rows['HIGH']['floor_area_Mm2']:.1f} million m² (typology shares held in every scenario).")
-    ref_mc = os.path.join(OUT, 'montecarlo_summary_S3-10.csv')
+    ref_mc = layout.montecarlo('summary', 'REF', frozen=False)
     if os.path.exists(ref_mc):
         r = pd.read_csv(ref_mc, index_col=0).loc['floor_area_Mm2']
         txt += (f" Within the reference path, joint uncertainty in the inputs gives a 90% interval of "
                 f"{r['p5']:.1f}-{r['p95']:.1f} million m² (median {r['p50']:.1f}, mean {r['mean']:.1f}).")
-        _sp = os.path.join(OUT, 'sensitivity_oat.csv')
+        _sp = SENSITIVITY
         if os.path.exists(_sp):
             _s = pd.read_csv(_sp).set_index('case')['carbon_kt']
             _pair = lambda a, b_: (f"{_s[a]:,.0f}-{_s[b_]:,.0f} kt" if a in _s and b_ in _s else 'n/a')
@@ -418,14 +420,14 @@ def main():
             so = r.get('soil_carbon_loss_kt')
             sol = (f"{so:,.0f} | {r['carbon_kt'] - so:,.0f}") if so is not None else 'n/a | n/a'
             L.append(f"| {lab} | {r['floor_area_Mm2']:.2f} | {pct(r['floor_area_Mm2'], base)} | {r['carbon_kt']:,.0f} | {sol} | {up} |")
-    mcs = sorted(glob.glob(os.path.join(OUT, 'montecarlo_summary_*.csv')))
+    mcs = [layout.montecarlo('summary', k, frozen=False) for k in ('LOW', 'REF', 'HIGH')]
+    mcs = [p for p in mcs if os.path.exists(p)]
     if mcs:
         L += ['', 'Monte Carlo within each scenario (joint input uncertainty; mean, median and 90% interval):', '',
               '| scenario | output | mean | median | 5th | 95th |', '|---|---|---|---|---|---|']
         for p in mcs:
             s = pd.read_csv(p, index_col=0)
-            name = os.path.basename(p)[len('montecarlo_summary_'):-4]
-            name = N.SCENARIOS.get(N.SCENARIO_LEGACY.get(name, name), name)
+            name = N.SCENARIOS[os.path.basename(p)[len('summary_'):-4]]
             for row, lab in (('floor_area_Mm2', 'floor area (Mm²)'), ('carbon_kt', 'carbon (kt)'),
                              ('upfront_kt', 'upfront (kt)')):
                 if row in s.index:
@@ -497,7 +499,7 @@ def main():
               '', 'Time-resolved accounting: upfront in the construction year, replacements and repaints in the year '
                   'they occur. Committed emissions are reported as a range and are not added to the 2026-2050 '
                   'total. Reconciliation with whole life at construction (baseline-pb-v2): outputs/reconciliation.md.']
-        rc = load('reconciliation.json')
+        rc = load('baseline/reconciliation.json')
         if rc:
             f0, f1 = rc['frozen_2025_factors'], rc['adopted']
             L += ['', '| term (reference, kt CO₂e) | 2025 factors | decarbonised |', '|---|---|---|',
@@ -599,7 +601,7 @@ def main():
                   f"2026 consents above requirement {r1['residual']:+,.0f}."]
 
     # ---- reality checks ----
-    rcj = load('reality_checks.json')
+    rcj = load('baseline/reality_checks.json')
     if rcj:
         names = dict(built='dwellings completed', removals_net='net removals', ppl_per_dw='people per new dwelling',
                      m2_per_res='floor area per additional resident', S='household size', size='new-dwelling size',
@@ -620,7 +622,7 @@ def main():
                   '(the household-size shape keeps falling as the population ages).']
 
     # ---- sensitivity ----
-    sens = os.path.join(OUT, 'sensitivity_oat.csv')
+    sens = SENSITIVITY
     if os.path.exists(sens):
         s = pd.read_csv(sens)
         s = s[s.group != 'Reference'].copy()
@@ -661,7 +663,7 @@ def main():
               f"{pb['cum_LoE_AtP_REF']:.1f}-fold (AtP; {pb['cum_LoE_AtP_REF_mc_p5']:.1f}-"
               f"{pb['cum_LoE_AtP_REF_mc_p95']:.1f}). The two principles are a range and are not averaged. "
               'Methods, constants, sources and limitations: outputs/PB_METHODS_DRAFT.md; settings: ASSUMPTIONS.md.']
-        pr = load('pb_results.json') or {}
+        pr = load('aesa/results.json') or {}
         cr = (pr.get('committed') or {}).get('REF')
         if cr:
             L[-1] += (f" The emissions committed after 2050 by the 2026-2050 cohorts ({cr['lower_kt']:,.0f}-"
@@ -677,14 +679,12 @@ def main():
     L += ['', '## Open limitations and data needs', ''] + [f'- {x}' for x in LIMITATIONS + near_term_limitations() + decarb_limitations(BB.DECARB_MODE)
                                                             + TIMING_LIMITATIONS]
 
-    # ---- figures ----
-    figs = sorted(glob.glob(os.path.join(OUT, 'figures', '*.png')))
-    key = [f for f in figs if any(k in f for k in ('fig_reality_checks', 'fig_bridge', 'fig_scenarios', 'fig_conversion_chain', 'fig_validation', 'boss_03', 'boss_04', 'boss_05', 'diag_3', 'diag_4',
-                                                     'sens_1', 'mc_1', 'pb_1', 'pb_2'))]
-    L += ['', '## Key figures', '', 'One line per figure: FIGURES.md. Where the projection leaves the 1991-2025 range: outputs/reality_checks.md.', ''] + [f"![{os.path.basename(f)}](figures/{os.path.basename(f)})" for f in key]
-    with open(os.path.join(OUT, 'BASELINE_DRAFT.md'), 'w') as f:
+    L += ['', '## Figures', '', 'The figures of the paper: outputs/headline/HEADLINE.md; every other figure: '
+          'outputs/diagnostics/DIAGNOSTICS.md. Where the projection leaves the 1991-2025 range: '
+          'outputs/reports/reality_checks.md.']
+    with open(layout.writing(layout.report('BASELINE_DRAFT.md', frozen=False)), 'w') as f:
         f.write('\n'.join(L) + '\n')
-    print(f'outputs/BASELINE_DRAFT.md: {len(L)} lines')
+    print(f'outputs/reports/BASELINE_DRAFT.md: {len(L)} lines')
 
 
 if __name__ == '__main__':

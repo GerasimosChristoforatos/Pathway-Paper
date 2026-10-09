@@ -3,7 +3,7 @@ to 1e-9 relative, with carbon factors held at 2025 (DECARB_MODE 'none', frozen
 technology; the adopted run decarbonises materials). Central-run metrics and the
 four scenario totals are recomputed here under 'none'; the Monte Carlo
 summaries, the scenario table and the sensitivity table are read from
-outputs/frozen/, written by run_all's frozen-technology steps before the tests.
+outputs/data/frozen_technology/, written by run_all's frozen-technology steps before the tests.
 In a quick run (run_all.py --quick) those file checks are skipped.
 
 Deliberate changes since v1.2.1 (baseline-pb-v2, CHANGELOG): the storyline
@@ -29,7 +29,6 @@ import naming as N
 
 REL = 1e-9
 FROZEN = dict(DECARB_MODE='none', ACCOUNTING='whole_life_at_construction', DECARB_A45='held')   # the anchor
-FROZEN_DIR = os.path.join(ROOT, 'outputs', 'frozen')
 quick = pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1',
                            reason='quick run: no frozen-technology Monte Carlo (not for reporting)')
 FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_v1_2_1.json')))

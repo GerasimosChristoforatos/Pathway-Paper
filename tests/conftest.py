@@ -29,5 +29,5 @@ def run_boss(**settings):
 def B():
     import projection
     if not os.path.exists(projection.FILE_FACTORS_TYPOLOGY):
-        pytest.exit('Run Building_factors.py first (outputs/factors/ missing).')
+        pytest.exit('Run Building_factors.py first (outputs/data/factors/ missing).')
     return run_boss()

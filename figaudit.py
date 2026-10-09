@@ -1,5 +1,5 @@
 """Figure audit: when a figure is saved, record for every axes its labels and the
-range of calendar years its data cover (outputs/figures/_audit/<name>.json). The
+range of calendar years its data cover (outputs/figure_audit/<name>.json). The
 tests read these records to check that no figure shows carbon outside the
 projection, except the AR base window (tests/test_v3.py).
 
@@ -11,6 +11,8 @@ value counts as a calendar year when it lies in YEAR_RANGE.
 import json
 import os
 
+import layout
+
 import numpy as np
 from matplotlib.collections import PolyCollection
 from matplotlib.lines import Line2D
@@ -18,7 +20,7 @@ from matplotlib.patches import Rectangle
 
 YEAR_RANGE = (1900, 2200)
 BOUNDARY = 'boundary'
-AUDIT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'outputs', 'figures', '_audit')
+AUDIT_DIR = layout.FIGURE_AUDIT
 
 
 def _years(ax):

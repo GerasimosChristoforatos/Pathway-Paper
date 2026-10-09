@@ -1,8 +1,8 @@
-"""Generate outputs/PB_METHODS_DRAFT.md: the planetary-boundary layer as
-implemented (equations, constants with sources, alpha validation, coverage,
-source check, results). Every number is read from outputs/pb_results.json,
-outputs/pb_sensitivity.csv and outputs/metrics.json, or from the settings in
-boundaries.py; nothing is typed by hand.
+"""Generate outputs/reports/AESA_METHODS_DRAFT.md: the AESA layer (absolute environmental
+sustainability assessment; boundaries.py) as implemented (equations, constants with sources,
+alpha validation, coverage, source check, results). Every number is read from
+outputs/data/aesa/results.json, outputs/data/aesa/sensitivity.csv and outputs/data/metrics.json,
+or from the settings in boundaries.py; nothing is typed by hand.
 
     python tools/pb_methods.py
 """
@@ -13,21 +13,21 @@ import sys
 import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, 'outputs')
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import layout  # noqa: E402
 import naming as N  # noqa: E402
 
 SCEN_NAME = N.SCENARIOS
 
 def main():
     import boundaries
-    with open(os.path.join(OUT, 'pb_results.json')) as f:
+    with open(layout.data('aesa/results.json', frozen=False)) as f:
         r = json.load(f)
-    with open(os.path.join(OUT, 'metrics.json')) as f:
+    with open(layout.data('metrics.json', frozen=False)) as f:
         mm = json.load(f)
     m, run_mode = mm.get('aesa', {}), mm.get('run_mode', 'full')
-    sens = pd.read_csv(os.path.join(OUT, 'pb_sensitivity.csv'))
+    sens = pd.read_csv(layout.data('aesa/sensitivity.csv', frozen=False))
     c, s, ss = r['components'], r['settings'], r['components']['s_sec_parts']
     b = c['base_year_b']
     cov = r['coverage']
@@ -175,9 +175,9 @@ def main():
     L += [f'| {a} | {v} | {bb} |' for a, v, bb in boundaries.assumption_register()]
     L += ['', '## Limitations', ''] + [f'- {x}' for x in boundaries.LIMITATIONS]
     L += ['', '## Notes', ''] + [f'- {v}' for v in r['notes'].values()]
-    with open(os.path.join(OUT, 'PB_METHODS_DRAFT.md'), 'w') as f:
+    with open(layout.writing(layout.report('AESA_METHODS_DRAFT.md', frozen=False)), 'w') as f:
         f.write('\n'.join(L) + '\n')
-    print(f'outputs/PB_METHODS_DRAFT.md: {len(L)} lines')
+    print(f'outputs/reports/AESA_METHODS_DRAFT.md: {len(L)} lines')
 
 
 if __name__ == '__main__':

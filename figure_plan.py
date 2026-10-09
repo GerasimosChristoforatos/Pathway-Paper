@@ -233,3 +233,13 @@ def legacy_map():
     for old, why in REMOVED.items():
         m.setdefault(old, []).append(('removed', why))
     return m
+
+
+def release_file(old):
+    """The release file id a v3.1 figure is saved as while the figure code is refurbished: its
+    diagnostics file, else its headline file; None when the release removes it (REMOVED)."""
+    if old in REMOVED:
+        return None
+    lst = legacy_map()[old]
+    diag = [f for g, f in lst if g != H]
+    return diag[0] if diag else lst[0][1]

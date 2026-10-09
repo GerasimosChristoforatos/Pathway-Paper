@@ -20,7 +20,7 @@ from conftest import ROOT, run_boss  # noqa: E402
 
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 
-OUT = os.path.join(ROOT, 'outputs')
+import layout  # noqa: E402
 FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_pb_v1_2_low_ref.json')))
 import naming as N  # noqa: E402
 
@@ -55,7 +55,7 @@ def test_scenario_names_consistent():
     labels = {k: lab for k, lab, _ in RS.SCENARIOS}
     for k, name in NAMES.items():
         assert labels[k].startswith(name), (k, labels[k])
-    sc = json.load(open(os.path.join(OUT, 'replacement_scenarios.json')))['scenarios']
+    sc = json.load(open(layout.data('baseline/scenarios.json', frozen=False)))['scenarios']
     for k, name in NAMES.items():
         assert sc[k]['label'].startswith(name)
 
@@ -98,9 +98,9 @@ def test_tornado_top5_parameters():
 def test_whole_life_row_only_in_pb_sensitivity():
     import Sensitivity as S
     assert not any('whole life' in lab.lower() for _, lab, _ in S.CASES + S.DECARB_CASES['horup_item'])
-    oat = pd.read_csv(os.path.join(OUT, 'sensitivity_oat.csv'))
+    oat = pd.read_csv(layout.data('baseline/sensitivity_one_at_a_time.csv', frozen=False))
     assert not oat['case'].str.contains('whole life', case=False).any()
-    pb = pd.read_csv(os.path.join(OUT, 'pb_sensitivity.csv'))
+    pb = pd.read_csv(layout.data('aesa/sensitivity.csv', frozen=False))
     assert (pb['case'] == 'xii_whole_life').sum() == 1
 
 

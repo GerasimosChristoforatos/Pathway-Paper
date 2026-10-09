@@ -79,8 +79,10 @@ from scipy.stats import qmc
 
 import projection
 import engine
-import figaudit
+import figure_plan as FP
+import layout
 import naming as N
+import style
 
 N_UNCERTAINTY = 5000             # Latin hypercube draws per scenario
 N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
@@ -93,13 +95,11 @@ if QUICK_RUN:
     N_UNCERTAINTY, N_SOBOL = QUICK_N_UNCERTAINTY, QUICK_N_SOBOL
 N_BOOT = 4000                    # carbon-factor bootstrap replicates
 SEED = 20260924
-SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: write PNGs to FIG_DIR
+SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: save every figure
 SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
 # PLOT_ONLY: skip the ~15,000 model evaluations and redraw the figures from the
 # CSVs written by the last full run. Also: python MonteCarlo.py --plot-only
 PLOT_ONLY = False
-OUT_DIR = projection.OUT_DIR
-FIG_DIR = os.path.join(projection.OUT_DIR, 'figures')
 Z_KNOTS = stats.norm.ppf([0.05, 0.25, 0.50, 0.75, 0.95])
 PCT_COLS = {5: 2, 25: 3, 50: 4, 75: 5, 95: 6}   # popdata.xlsx Table 1 (skiprows=5)
 VARIANT_Z = {'Low': Z_KNOTS[0], 'Medium': 0.0, 'High': Z_KNOTS[-1]}
@@ -305,8 +305,6 @@ PARAMS = ['z_pop', 'size', 'complete', 'carbon']
 MC_SCENARIOS = [('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
                 ('LOW', dict(REPLACEMENT_VARIANT='LOW')),
                 ('HIGH', dict(REPLACEMENT_VARIANT='HIGH'))]
-# file names of the v3.1 layout (until the output restructure of MODEL v1.0.0, commit 4)
-LEGACY_FILE_SUFFIX = {'REF': 'S3-10', 'LOW': 'S1', 'HIGH': 'S2'}
 
 
 class TwoPiece:
@@ -507,16 +505,13 @@ def run_scenario(name, settings, reference):
     summ['reference'] = cen                            # the deterministic Reference run (median inputs)
     summ['reference_percentile'] = [100 * float((Y[i] < cen[i]).mean()) for i in range(len(OUTPUTS))]
     summ.index = pd.Index([N.identifier(o) for o in OUTPUTS], name='output')
-    os.makedirs(OUT_DIR, exist_ok=True)
     draws = N.columns(pd.DataFrame(np.vstack([X, Y]).T, columns=PARAMS + OUTPUTS))
     annual = N.columns(pd.DataFrame({f'{k}_{p}': np.percentile(fan[k], p, axis=0)
                                      for k in fan for p in (5, 25, 50, 75, 95)},
                                     index=pd.Index(su['fy'], name='year')))
-    names = [f'_{LEGACY_FILE_SUFFIX[name]}'] + ([''] if reference else [])
-    for sfx in names:
-        summ.to_csv(os.path.join(OUT_DIR, f'montecarlo_summary{sfx}.csv'))
-        draws.to_csv(os.path.join(OUT_DIR, f'montecarlo_draws{sfx}.csv'), index=False)
-        annual.to_csv(os.path.join(OUT_DIR, f'montecarlo_annual{sfx}.csv'))
+    summ.to_csv(layout.writing(layout.montecarlo('summary', name)))
+    draws.to_csv(layout.writing(layout.montecarlo('draws', name)), index=False)
+    annual.to_csv(layout.writing(layout.montecarlo('annual', name)))
     print(f"\nJOINT UNCERTAINTY within {name}, 2026-2050 ({N_UNCERTAINTY:,} Latin hypercube draws)")
     print(summ.loc[['floor_area_Mm2', 'carbon_kt', 'upfront_kt', 'townhouse_share_2050'],
                    ['mean', 'p5', 'p50', 'p95', 'reference', 'reference_percentile']].round(3).to_string())
@@ -544,7 +539,7 @@ def run_scenario(name, settings, reference):
                              ST_hi=boot.total_order.confidence_interval.high[o, i]))
     sob = pd.DataFrame(rows)
     sob['output'] = sob['output'].map(N.identifier)
-    sob.to_csv(os.path.join(OUT_DIR, 'montecarlo_sobol.csv'), index=False)
+    sob.to_csv(layout.writing(layout.montecarlo('sobol', name)), index=False)
     print(f"\nSOBOL INDICES, {name} ({N_SOBOL * (len(PARAMS) + 2):,} evaluations; 95% bootstrap CI)")
     for oname in ['floor_area_Mm2', 'carbon_kt']:
         t = sob[sob.output == oname].sort_values('ST', ascending=False)
@@ -564,9 +559,8 @@ def main():
     for i, (name, settings) in enumerate(MC_SCENARIOS):
         run_scenario(name, settings, reference=(i == 0))
     importlib.reload(projection)                       # restore module defaults
-    print(f"\nWritten: montecarlo_summary[_<scenario>].csv, montecarlo_draws[_<scenario>].csv, "
-          f"montecarlo_annual[_<scenario>].csv, montecarlo_sobol.csv in {OUT_DIR}/  "
-          f"({time.time() - t0:,.0f} s)")
+    print(f"\nWritten: summary_<variant>.csv, draws_<variant>.csv, annual_<variant>.csv, sobol_REF.csv in "
+          f"{os.path.dirname(layout.montecarlo('summary', 'REF'))}/  ({time.time() - t0:,.0f} s)")
     figures()
 
 
@@ -587,16 +581,13 @@ BLUE = '#2E6DB4'
 
 
 def _load_results():
-    rd = lambda f: os.path.join(OUT_DIR, f)
-    need = ['montecarlo_draws.csv', 'montecarlo_annual.csv', 'montecarlo_sobol.csv',
-            'montecarlo_summary.csv']
-    miss = [f for f in need if not os.path.exists(rd(f))]
+    """The Monte Carlo files of the Reference (draws, annual, Sobol, summary)."""
+    rd = {k: layout.montecarlo(k, 'REF') for k in ('draws', 'annual', 'sobol', 'summary')}
+    miss = [f for f in rd.values() if not os.path.exists(f)]
     if miss:
-        raise FileNotFoundError(f"Missing {miss} in {OUT_DIR}: run a full Monte Carlo first.")
-    return (pd.read_csv(rd('montecarlo_draws.csv')),
-            pd.read_csv(rd('montecarlo_annual.csv'), index_col=0),
-            pd.read_csv(rd('montecarlo_sobol.csv')),
-            pd.read_csv(rd('montecarlo_summary.csv'), index_col=0))
+        raise FileNotFoundError(f"Missing {miss}: run a full Monte Carlo first.")
+    return (pd.read_csv(rd['draws']), pd.read_csv(rd['annual'], index_col=0), pd.read_csv(rd['sobol']),
+            pd.read_csv(rd['summary'], index_col=0))
 
 
 def _history():
@@ -612,10 +603,9 @@ def _history():
 
 
 def _save(fig, name):
-    if SAVE_FIGURES:
-        os.makedirs(FIG_DIR, exist_ok=True)
-        figaudit.record(fig, name)
-        fig.savefig(os.path.join(FIG_DIR, name), dpi=140, bbox_inches='tight')
+    target = FP.release_file(os.path.splitext(name)[0])
+    if SAVE_FIGURES and target is not None:
+        style.save_figure(fig, target)
 
 
 def figures():
@@ -680,7 +670,7 @@ def figures():
     _save(fig, 'mc_3_sobol.png')
 
     if SAVE_FIGURES:
-        print(f"Figures written to {FIG_DIR}/ (mc_1, mc_3)")
+        print("Figures written to outputs/diagnostics/monte_carlo/ (D20)")
     if SHOW_FIGURES:
         plt.show()
 

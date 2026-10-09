@@ -31,23 +31,23 @@ Sequential decomposition of O - M (the order is a choice and is stated):
         size, it would imply if built and not offset.
 Also reported: where the 2018-23 excess building went, from census counts.
 
-Writes outputs/gap_2026.md and outputs/gap_2026.json.
+Writes outputs/reports/gap_2026.md and outputs/data/baseline/gap_2026.json.
 """
 import contextlib
 import importlib
 import io
 import json
-import os
 
 import numpy as np
 import pandas as pd
 
+import layout
 import naming as N
 import projection
 import validation
 
-OUT_MD = os.path.join(projection.OUT_DIR, 'gap_2026.md')
-OUT_JSON = os.path.join(projection.OUT_DIR, 'gap_2026.json')
+OUT_MD = layout.report('gap_2026.md')
+OUT_JSON = layout.data('baseline/gap_2026.json')
 
 
 def run(**settings):
@@ -137,7 +137,7 @@ def main():
                stock_2025=stock25,
                population_growth_ye_june_2026_actual=g_act, population_growth_source_text=g_text,
                population_growth_ye_june_2026_projection=g_proj, rows=rows, boom_2018_2023=boom)
-    with open(OUT_JSON, 'w') as f:
+    with open(layout.writing(OUT_JSON), 'w') as f:
         json.dump(N.keys(res), f, indent=2)
 
     L = ['# 2026 gap decomposition (A1 evidence; nothing here is used to set a parameter)', '',
@@ -166,7 +166,7 @@ def main():
           f"{boom['vacancy_rate_rise_absorbed']:+,.0f}; households (occupied + away) {boom['households']:+,.0f}. "
           f"For information: dwellings under construction at census changed by "
           f"{boom['d_under_construction']:+,.0f} (not subtracted: the lag already accounts for them)."]
-    with open(OUT_MD, 'w') as f:
+    with open(layout.writing(OUT_MD), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print('\n'.join(L))
 

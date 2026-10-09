@@ -1,5 +1,5 @@
 """
-VALIDATION -- run by run_all.py; results in outputs/validation.md and metrics.json
+VALIDATION -- run by run_all.py; results in outputs/reports/validation.md and outputs/data/metrics.json
 =================================================================================
 Two checks, both DESCRIPTIVE. Nothing here is used to set or tune a parameter.
 
@@ -34,23 +34,23 @@ Two checks, both DESCRIPTIVE. Nothing here is used to set or tune a parameter.
    shares), never annualised naively. PENDING while the consent file ends
    before 2026.
 
-Writes outputs/validation.md and outputs/validation.json.
+Writes outputs/reports/validation.md and outputs/data/baseline/validation.json.
 """
 import contextlib
 import importlib
 import io
 import json
-import os
 
 import numpy as np
 import pandas as pd
 
 import projection
 import engine
+import layout
 import naming as N
 
-OUT_MD = os.path.join(projection.OUT_DIR, 'validation.md')
-OUT_JSON = os.path.join(projection.OUT_DIR, 'validation.json')
+OUT_MD = layout.report('validation.md')
+OUT_JSON = layout.data('baseline/validation.json')
 ORIGINS = (2006, 2013, 2018)
 SEASONAL_YEARS = (2010, 2025)
 
@@ -296,9 +296,9 @@ def write(rows, chk, stock_rows=None, dhe=None, rows_pub=None, vac=None):
                      f"seasonal share {chk['seasonal_share']:.3f}); observed / model = "
                      f"{chk['ratio_observed_to_model']:.3f}. Latest 12 months ({chk['last12_months']}): "
                      f"{chk['observed_last12']:,.0f}. Descriptive only: not used to set any parameter.")
-    with open(OUT_MD, 'w') as f:
+    with open(layout.writing(OUT_MD), 'w') as f:
         f.write('\n'.join(lines) + '\n')
-    with open(OUT_JSON, 'w') as f:
+    with open(layout.writing(OUT_JSON), 'w') as f:
         json.dump(N.keys(dict(hindcast=rows, hindcast_as_published=rows_pub, vacancy_definition=vac,
                               hindcast_stock=stock_rows, net_replacement_crosscheck=dhe,
                               model_method='dwelling_count', check_2026=chk)), f, indent=2)

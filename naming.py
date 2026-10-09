@@ -548,7 +548,7 @@ def _removed(old_file, row=None, col=None, path=None):
 #   'labels'   vocabulary, columns, identifying cells and JSON keys renamed (commit 3)
 #   'layout'   outputs/data/, outputs/headline/, outputs/diagnostics/, outputs/reports/ (commit 4)
 #   'removals' by-typology reporting removed (commit 7)
-APPLIED = {'labels'}
+APPLIED = {'labels', 'layout'}
 
 
 class _Legacy:

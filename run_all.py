@@ -1,38 +1,36 @@
 """Run the whole pipeline headless, save every figure, and collect the metrics.
 
-    python run_all.py            # full run: the only
-                                 # basis for reported results and tags
-    python run_all.py --quick    # development: Monte Carlo with fewer draws, no
-                                 # frozen-technology Monte Carlo, MC regression
-                                 # checks skipped; every output marked
-                                 # "QUICK RUN, not for reporting"
-    python run_all.py --pathways-only   # the pathway layer only (the projection is unchanged): pathways.py
-                                 # (projection.main() in memory), tests/test_pathways.py and
-                                 # the numerical regression lock, then the Pathways sections
-                                 # (methods draft, LEVERS_TABLE, ASSUMPTIONS and FIGURES
-                                 # sections); outputs/figures/ is not cleared (only pw_* replaced)
-    python run_all.py --no-mc    # skip the Monte Carlo (development only; the
-                                 # MC metrics are then carried over from the
-                                 # last full run and marked stale)
+    python run_all.py                   # full run: the only basis for reported results and tags
+    python run_all.py --pathways-only   # the pathway layer only (the projection is unchanged):
+                                        # pathways.py (projection.main() in memory), the pathway
+                                        # tests and the numerical regression lock, then the pathway
+                                        # documents; only the pathway figures are replaced
+    python run_all.py --quick           # development: Monte Carlo with fewer draws, no
+                                        # frozen-technology Monte Carlo or AESA step, regression
+                                        # checks of the Monte Carlo skipped; every output and figure
+                                        # marked "QUICK RUN, not for reporting"
+    python run_all.py --no-mc           # skip the Monte Carlo (development only; the MC metrics are
+                                        # carried over from the last full run and marked stale)
 
 In Spyder (or any IPython console): open run_all.py and Run (F5), or
-    runfile('run_all.py')
+    runfile('run_all.py')                        # full run
+    runfile('run_all.py', args='--pathways-only')
 Paths are resolved from this file's folder, so the working directory does not
 matter. A failed step prints its name and the log to read, and the run stops
 there; from the command line the exit code is non-zero, in an interactive
 console no SystemExit is raised.
 
-Order: Building_factors -> projection -> Diagnostics -> Sensitivity -> MonteCarlo
--> PB (planetary-boundary layer; reads the Monte Carlo draws) -> validation
--> gap_2026 -> near_term_join -> scenarios -> reconciliation -> figures_report -> frozen
-technology check (projection, Sensitivity, MonteCarlo, scenarios, PB with DECARB_MODE
-'none', A4-A5 held, whole life at construction, written to outputs/frozen/,
-figures not saved) -> pathways (outputs/pathways/) -> metrics -> tests (incl. the v1.2.1 regression test, which
-reads outputs/frozen/, and the regression lock of MODEL v1.0.0, which reads every data file) -> results ->
-assumptions -> baseline_draft -> pb_methods (-> quick_stamp, quick runs). Each script
-runs in its own process, with the non-interactive matplotlib backend and
-PATHWAY_SAVE_FIGURES=1, so every figure is written to outputs/figures/ and
-nothing is shown. Console output of each step goes to outputs/logs/<step>.log.
+Order: Building_factors -> projection -> Diagnostics -> Sensitivity -> MonteCarlo ->
+boundaries (AESA layer; reads the Monte Carlo draws) -> validation -> gap_2026 ->
+overbuild_2026 -> scenarios -> reconciliation -> figures_report -> frozen-technology check
+(projection, Sensitivity, MonteCarlo, scenarios, boundaries with DECARB_MODE 'none', A4-A5
+held, whole life at construction; data in outputs/data/frozen_technology/, no figures) ->
+pathways -> metrics -> tests (incl. the v1.2.1 regression test, which reads the
+frozen-technology data, and the regression lock of MODEL v1.0.0, which reads every data file)
+-> results -> assumptions -> baseline_draft -> pb_methods -> pathways_docs -> check_outputs.
+Each script runs in its own process, with the non-interactive matplotlib backend and
+PATHWAY_SAVE_FIGURES=1, so every figure is written (outputs/headline/, outputs/diagnostics/;
+layout.py) and nothing is shown. Console output of each step goes to outputs/logs/<step>.log.
 """
 import os
 import shutil
@@ -41,7 +39,10 @@ import sys
 import time
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-LOGS = os.path.join(ROOT, 'outputs', 'logs')
+sys.path.insert(0, ROOT)
+import layout  # noqa: E402
+
+LOGS = layout.LOGS
 
 
 class StepFailed(Exception):
@@ -79,30 +80,31 @@ def pipeline(skip_mc, quick=False):
         step(name, cmd, dict(q, **extra))
 
     # every figure (and its audit record, figaudit.py) is written by this run
-    shutil.rmtree(os.path.join(ROOT, 'outputs', 'figures'), ignore_errors=True)
+    for d in (layout.HEADLINE, layout.DIAGNOSTICS, layout.FIGURE_AUDIT):
+        shutil.rmtree(d, ignore_errors=True)
     run('building_factors', [py, os.path.join(ROOT, 'Building_factors.py')])
-    run('boss', [py, os.path.join(ROOT, 'projection.py')])
+    run('projection', [py, os.path.join(ROOT, 'projection.py')])
     run('diagnostics', [py, os.path.join(ROOT, 'Diagnostics.py')])
     run('sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')])
     if not skip_mc:
         run('montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')])
-    run('pb', [py, os.path.join(ROOT, 'boundaries.py')])
+    run('boundaries', [py, os.path.join(ROOT, 'boundaries.py')])
     run('validation', [py, os.path.join(ROOT, 'validation.py')])
     run('gap_2026', [py, os.path.join(ROOT, 'gap_2026.py')])
-    run('near_term_join', [py, tool('near_term_join')])
+    run('overbuild_2026', [py, tool('overbuild_2026')])
     run('scenarios', [py, tool('replacement_scenarios')])
     run('reconciliation', [py, tool('reconciliation')])
     run('figures_report', [py, tool('figures_report')])
-    # frozen-technology check run (DECARB_MODE 'none', outputs/frozen/): the
+    # frozen-technology check run (DECARB_MODE 'none', outputs/data/frozen_technology/): the
     # v1.2.1 regression test compares it with v1.2.1; figures are not saved
     fz = dict(PATHWAY_FROZEN='1', PATHWAY_SAVE_FIGURES='0')
-    run('frozen_boss', [py, os.path.join(ROOT, 'projection.py')], **fz)
+    run('frozen_projection', [py, os.path.join(ROOT, 'projection.py')], **fz)
     run('frozen_sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')], **fz)
     if not (skip_mc or quick):
         run('frozen_montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')], **fz)
     run('frozen_scenarios', [py, tool('replacement_scenarios')], **fz)
     if not (skip_mc or quick):
-        run('frozen_pb', [py, os.path.join(ROOT, 'boundaries.py')], **fz)
+        run('frozen_boundaries', [py, os.path.join(ROOT, 'boundaries.py')], **fz)
     # PATHWAYS v2 (levers, pathways, attribution, AESA gap): after PB and after figures_report
     # (which rewrites FIGURES.md; pathways.py appends its own section), before the tests
     run('pathways', [py, os.path.join(ROOT, 'pathways.py')])
@@ -115,15 +117,13 @@ def pipeline(skip_mc, quick=False):
     run('pb_methods', [py, tool('pb_methods')])
     run('pathways_docs', [py, tool('pathways_methods'), '--sections'])
     run('check_outputs', [py, tool('check_outputs')])
-    if quick:
-        run('quick_stamp', [py, tool('quick_stamp')])
 
 
 def pathways_only():
     """Pathways-only run mode: the projection is unchanged (every number locked by
-    tests/test_regression_model_v1.py), so only the pathway layer runs. projection.main() is called in memory by pathways.py; no baseline output is
-    written, outputs/figures/ is not cleared (pathways.py replaces only pw_* files), nothing is
-    stamped as quick."""
+    tests/test_regression_model_v1.py), so only the pathway layer runs. projection.main() is
+    called in memory by pathways.py; no projection output is written; pathways.py overwrites
+    only the pathway figures."""
     py = sys.executable
     env = {'PATHWAY_QUICK': '0'}
     step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
@@ -146,11 +146,11 @@ def main(argv=None):
             return False
         sys.exit(1)
     if '--pathways-only' in argv:
-        print(f'\nDone (pathways only; baseline frozen). Outputs: {os.path.join(ROOT, "outputs", "pathways")} '
+        print(f'\nDone (pathways only; projection unchanged). Data: {layout.data("pathways", frozen=False)} '
               f'(log of each step in {LOGS})')
     else:
-        print(f'\nDone. Metrics: {os.path.join(ROOT, "outputs", "metrics.json")} '
-              f'(log of each step in {LOGS})')
+        print(f'\nDone. Figures of the paper: {os.path.join(layout.HEADLINE, "HEADLINE.md")}; metrics: '
+              f'{layout.data("metrics.json", frozen=False)} (log of each step in {LOGS})')
     if '--quick' in argv:
         print('QUICK RUN, not for reporting: re-run without --quick before reporting or tagging.')
     return True

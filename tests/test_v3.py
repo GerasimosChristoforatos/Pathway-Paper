@@ -10,6 +10,7 @@ window of mc_1_fan_pb (at 2025 factors)."""
 import json
 import os
 import re
+import sys
 
 import numpy as np
 import pandas as pd
@@ -123,28 +124,29 @@ def test_committed_range_ordered():
     assert c['C_kt'] > 0 and c['B_inwindow_kt'] > 0
 
 
-def test_figures_md_matches_the_files():
-    """FIGURES.md lists exactly the PNG files in outputs/figures (written by
-    tools/figures_report.py, which also refuses to finish otherwise)."""
-    fig_dir = os.path.join(ROOT, 'outputs', 'figures')
-    files = {f for f in os.listdir(fig_dir) if f.endswith('.png')}
-    listed = set(re.findall(r'`([^`]+\.png)`', open(os.path.join(ROOT, 'FIGURES.md'), encoding='utf-8').read()))
-    assert files and listed == files, (sorted(files - listed), sorted(listed - files))
+def test_every_figure_is_planned():
+    """Every figure file in outputs/headline/ and outputs/diagnostics/ is a figure of figure_plan.py
+    (tools/check_outputs.py also refuses to finish otherwise)."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import check_outputs
+    assert not check_outputs.unplanned_figures()
 
 
 CARBON_AXIS = re.compile(r'CO₂|CO2|carbon|LoE|exceedance|\bkt\b|\bMt\b', re.I)
 
 
 def test_no_historical_carbon_in_figures():
-    """No figure shows carbon before the projection (from 2026), except mc_1_fan_pb,
-    which shows the AR base window at 2025 factors (figaudit records, written when
-    each figure is saved)."""
+    """No figure shows carbon before the projection (from 2026), except the Monte Carlo fan
+    with the boundaries (D21), which shows the AR base window at 2025 factors (figaudit records,
+    written when each figure is saved)."""
     import boundaries
-    audit = os.path.join(ROOT, 'outputs', 'figures', '_audit')
-    files = {f[:-4] for f in os.listdir(os.path.join(ROOT, 'outputs', 'figures')) if f.endswith('.png')}
+    import layout
+    audit = layout.FIGURE_AUDIT
+    files = {os.path.splitext(f)[0] for base in (layout.HEADLINE, layout.DIAGNOSTICS)
+             for _, _, fs in os.walk(base) for f in fs if f.endswith('.png')}
     recs = {f[:-5]: json.load(open(os.path.join(audit, f))) for f in os.listdir(audit) if f.endswith('.json')}
-    assert files <= set(recs), sorted(files - set(recs))         # every saved figure audited
-    allowed = {'mc_1_fan_pb': boundaries.AR_BASE_WINDOW[0]}
+    assert files and files <= set(recs), sorted(files - set(recs))         # every saved figure audited
+    allowed = {'D21_fan_and_boundaries': boundaries.AR_BASE_WINDOW[0]}
     bad = []
     for name in files:
         for ax in recs[name]['axes']:

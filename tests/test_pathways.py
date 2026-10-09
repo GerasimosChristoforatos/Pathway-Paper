@@ -70,12 +70,11 @@ def test_envelope_scenarios_reproduce_pb(res):
 
 
 def zero_strength(params):
-    """Every lever at zero strength: L1 f = 0, L4 target = baseline attached share, L2a v* = v0,
+    """Every lever at zero strength: L1 f = 0, L2a v* = v0,
     L2b absorption 0, L3 d = 0, L5 r = 1."""
     p = copy.deepcopy(params)
     for s in LV.SETTINGS:
         p['L1']['f'][s] = 0.0
-        p['L4']['target'][s] = p['L4']['baseline_attached']
         p['L2a']['v_star'][s] = p['L2a']['v0']
         p['L2b']['absorption'][s] = 0.0
         p['L3']['d'][s] = 0.0
@@ -107,6 +106,10 @@ def test_logistic_ramp():
     assert s(2027.5) == pytest.approx(0.1) and s(2033.5) == pytest.approx(0.9)    # 10% -> 90% in 6 years
     w45 = LV.ramp_named(y, 'ramp2045')
     assert w45[1] == 0 and w45[20] == 1 and (np.diff(w45) >= 0).all()
+    w30 = LV.ramp_named(y, 'ramp2030')
+    assert w30[1] == 0 and w30[5] == 1 and (w30[5:] == 1).all() and (np.diff(w30) >= 0).all()
+    s30 = lambda t: 1 / (1 + np.exp(-np.log(81) / 6 * (t - 2028.5)))
+    assert w30[2] == pytest.approx((s30(2027) - s30(2026)) / (s30(2030) - s30(2026)), rel=1e-12)
 
 
 def test_2026_unchanged_in_every_run(res):
@@ -189,17 +192,39 @@ def test_l5_sample_and_application(res):
         assert r4[k] == pytest.approx(r0[k], rel=1e-12), k
 
 
-def test_l4_shares(res):
-    ctx = res['ctxs'][PW.REFERENCE]
-    sh = res['get'](PW.REFERENCE, {'L4': 'stretch'})['inputs']['shares']
-    assert np.allclose(sh.sum(axis=1).values, 1.0, rtol=0, atol=1e-12)
-    b = ctx['held_shares']
-    d_t, d_a = sh['Townhouses'].iloc[-1] - b['Townhouses'], sh['Apartments'].iloc[-1] - b['Apartments']
-    assert d_t / d_a == pytest.approx(b['Townhouses'] / b['Apartments'])
-    p = res['params']['L4']
-    assert p['target']['central'] < p['target']['stretch']
-    assert p['target']['stretch'] == pytest.approx(p['baseline_attached'] + 0.16)
+def test_no_l4_anywhere(res):
+    """L4 removed (v3.1): the typology shares are the baseline (held) mix in every run, incl. T."""
+    base = res['ctxs'][PW.REFERENCE]['fwd_inputs']['shares']
+    assert 'L4' not in LV.LEVERS and all('L4' not in v for v in LV.PATHWAYS.values())
+    for (scen, label, rn, ah), R in res['cache'].items():
+        assert R['inputs']['shares'] is res['ctxs'][scen]['fwd_inputs']['shares'], (scen, label)
+    rt_ = PW.compute_T(res, verbose=False)
+    for key, R in rt_['cache'].items():
+        assert R['inputs']['shares'].equals(base), key
 
+
+def test_l4_v2_note_matches_tag():
+    """The v2 L4 numbers cited in the documents are those of tag pathways_v2."""
+    import io
+    import pandas as pd
+    txt = _git_show_tag('pathways_v2', 'outputs/pathways/pathways_runs.csv')
+    if txt is None:
+        pytest.skip('git or tag pathways_v2 not available')
+    r = pd.read_csv(io.StringIO(txt))
+    r = r[r['scenario'] == 'S3-10'].set_index('run')
+    n = LV.L4_V2_NOTE
+    for s in LV.SETTINGS:
+        assert r.loc[f'L4-{s}', 'carbon_kt'] == n['carbon_kt'][s]
+        assert r.loc[f'L4-{s}', 'delta_carbon_kt_vs_P0_pct'] == n['carbon_vs_P0_pct'][s]
+        assert r.loc[f'L4-{s}', 'carbon_per_m2_kg'] == n['carbon_per_m2_kg'][s]
+
+
+def test_l2a_unchanged(res):
+    p = res['params']['L2a']
+    assert p['v0'] == float(res['ctxs'][PW.REFERENCE]['B']['v_forward'])
+    assert p['v_star'] == {'central': 0.047, 'stretch': 0.040}
+    assert (p['census_consistent_min_year'], p['census_consistent_max_year']) == (1996, 2023)
+    assert round(p['census_consistent_min'], 4) == 0.0401 and round(p['census_consistent_max'], 4) == 0.0538
 
 def test_shapley_efficiency_exact(res):
     r = res['runs']
@@ -210,16 +235,16 @@ def test_shapley_efficiency_exact(res):
         assert total == Fraction(p0) - Fraction(p5)
     assert {k[0] for k in res['shapley_exact']} == {'pathways', 'levers'}
     sr = res['shapley_runs']
-    assert len(sr[sr['level'] == 'pathways']) == 2 * 16 and len(sr[sr['level'] == 'levers']) == 2 * 64
+    assert len(sr[sr['level'] == 'pathways']) == 2 * 16 and len(sr[sr['level'] == 'levers']) == 2 * 32
 
 
 def test_shapley_on_a_known_game():
     """Additive game with one pairwise interaction: the interaction is split equally."""
-    a = dict(zip(LV.LEVERS, (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)))
-    v = {S: 100.0 - sum(a[i] for i in S) - (6.0 if {'L1', 'L4'} <= S else 0.0) for S in PW.subsets(LV.LEVERS)}
+    a = dict(zip(LV.LEVERS, (1.0, 2.0, 3.0, 4.0, 5.0)))
+    v = {S: 100.0 - sum(a[i] for i in S) - (6.0 if {'L1', 'L2a'} <= S else 0.0) for S in PW.subsets(LV.LEVERS)}
     phi = PW.shapley(v, LV.LEVERS)
-    assert float(phi['L1']) == pytest.approx(4.0) and float(phi['L4']) == pytest.approx(5.0)
-    assert float(phi['L5']) == pytest.approx(6.0)
+    assert float(phi['L1']) == pytest.approx(4.0) and float(phi['L2a']) == pytest.approx(5.0)
+    assert float(phi['L5']) == pytest.approx(5.0)
 
 
 def test_band_sums_equal_totals(res):
@@ -328,6 +353,29 @@ def test_T3_T4_T5_values(rt):
         assert d['soc_low'] == ft.loc[t, 'SOC_low']
 
 
+def test_T6_developed_share_carries_no_soil(res, rt):
+    """T6: soil carbon on the developed share (s = 0.65) of the non-replacement floor area is 0; the rest equals
+    the T5 path (1e-9)."""
+    R = rt['cache'][(LV.T_COMPONENTS, LV.T_INSTANT)]
+    E, info, p = R['E'], R['info'], rt['params_T']
+    typ = res_typ(rt)
+    w = LV.ramp_instant(E['years'])
+    for t in typ:
+        t5 = p['T5'][t]['soc_avg'] + w * (p['T5'][t]['soc_low'] - p['T5'][t]['soc_avg'])
+        assert np.allclose(info['soil_path'][t], t5 * (1 - LV.T6_SHARE * w), rtol=1e-12, atol=0)
+        assert info['soil_path'][t][1] == p['T5'][t]['soc_avg']               # 2026 untouched
+    soil_bearing = sum(E['gfa_t'][k] * E['soil_share'] for k in range(len(typ)))
+    t5_soil = sum((p['T5'][t]['soc_avg'] + w * (p['T5'][t]['soc_low'] - p['T5'][t]['soc_avg'])) * E['gfa_t'][k]
+                  for k, t in enumerate(typ)) * E['soil_share']
+    soil = PW.soil_by_year(res['ctxs'][PW.REFERENCE], E, info['soil_path'])
+    developed = LV.T6_SHARE * w * t5_soil                 # what the developed share would carry under T5
+    assert np.allclose(soil[2:], (t5_soil - developed)[2:], rtol=1e-9, atol=1e-6)
+    pos = t5_soil[2:] > 0                                  # years with soil-bearing floor area (not the banked zero years)
+    assert pos.sum() > 10 and np.allclose(soil[2:][pos] / t5_soil[2:][pos], 1 - LV.T6_SHARE, rtol=1e-9)
+    assert (soil_bearing[2:][~pos] == 0).all()
+    assert LV.T6_SHARE == round(LV.T6_COMPONENTS[0] * LV.T6_COMPONENTS[1], 2)
+
+
 def test_T5_soil_exact(rt):
     """The soil path enters exactly: carbon - events = material part + soil_path x floor area x share."""
     R = rt['cache'][(LV.T_COMPONENTS, LV.T_INSTANT)]
@@ -350,7 +398,7 @@ def test_T_shapley_efficiency_exact(rt):
     for metric, (phi, total) in rt['shapley_exact'].items():
         assert sum(phi.values()) == total, metric
     s = rt['subsets']
-    assert len(s) == 32
+    assert len(s) == 64
     t = s[s['subset'] == 'T'].iloc[0]
     base = s[s['subset'] == 'P5-stretch-instant'].iloc[0]
     assert total == Fraction(base['LoE_AR']) - Fraction(t['LoE_AR'])
@@ -360,18 +408,39 @@ def test_T_checks_pass(res, rt):
     PW.checks_T(res, rt)
 
 
-def _git_show(path):
-    r = subprocess.run(['git', 'show', f'pathways_v2:{path}'], cwd=ROOT, capture_output=True, text=True)
+def _git_show_tag(tag, path):
+    r = subprocess.run(['git', 'show', f'{tag}:{path}'], cwd=ROOT, capture_output=True, text=True)
     return r.stdout if r.returncode == 0 else None
 
 
+UNCHANGED_PREFIXES = ('P0', 'P2-', 'P3-', 'P4-', 'L2a-', 'L2b-', 'L3-', 'L5-')
+
+
 @pytest.mark.parametrize('name', ['pathways_runs.csv', 'pathways_annual.csv', 'pathways_bands.csv'])
-def test_v2_rows_unchanged(name):
-    """The v2 rows of the output tables are byte-identical to tag pathways_v2; T rows are appended."""
-    old = _git_show(f'outputs/pathways/{name}')
+def test_unchanged_rows_byte_identical_to_v3(name):
+    """v3.1 changes P1, P5, the Shapley values and T by design; every row of P0, P2, P3, P4 (central and
+    stretch, all scenarios) and of the levers L2a, L2b, L3, L5 is byte-identical to tag pathways_v3."""
+    old = _git_show_tag('pathways_v3', f'outputs/pathways/{name}')
     if old is None:
-        pytest.skip('git or tag pathways_v2 not available')
-    new = open(os.path.join(ROOT, 'outputs', 'pathways', name)).read()
-    assert new.startswith(old)
-    extra = new[len(old):].splitlines()
-    assert extra and all(line.split(',')[0] in PW.T_RUNS for line in extra)
+        pytest.skip('git or tag pathways_v3 not available')
+    new = open(os.path.join(ROOT, 'outputs', 'pathways', name)).read().splitlines()
+    old = old.splitlines()
+    assert new[0] == old[0]                                              # same columns
+    keep = lambda lines: sorted(l for l in lines[1:] if l.split(',')[0] == 'P0' or l.split(',')[0].startswith(UNCHANGED_PREFIXES[1:]))
+    o, n = keep(old), keep(new)
+    assert len(o) > 0 and o == n
+
+
+def test_T_residual_in_people(rt):
+    g = rt['gap']['T']
+    if g['within_AR']:
+        assert g['margin_AR_kt'] >= 0
+        return
+    R = rt['cache'][(LV.T_COMPONENTS, LV.T_INSTANT)]
+    E = R['E']
+    res_ = g['residual']
+    cut = 1 - g['backcast']['k_AR']
+    assert res_['dwellings_not_built_2027_2050'] == pytest.approx(cut * E['dwell_in_scope'][2:].sum(), rel=1e-12)
+    S = E['pop'] / E['hh']
+    assert res_['new_residents_housed_in_existing_dwellings'] == pytest.approx(cut * (E['dwell_in_scope'][2:] * S[2:]).sum(),
+                                                                               rel=1e-12)

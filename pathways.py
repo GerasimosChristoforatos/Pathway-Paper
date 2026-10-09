@@ -10,14 +10,14 @@ floor area by typology, demand bands, committed range, cumulative LoE AR / AtP).
 
 Runs (reference scenario S3-10 unless stated; settings central and stretch):
   P0                  baseline (every lever off)
-  levers              L1, L4, L2a, L2b, L3, L5 each alone
-  pathways            P1 Right-size space (L1 + L4), P2 Occupy the existing stock
+  levers              L1, L2a, L2b, L3, L5 each alone (L4, the denser mix, removed in v3.1)
+  pathways            P1 Right-size space (L1), P2 Occupy the existing stock
                       (L2a + L2b), P3 Keep and reuse (L3), P4 Build better (L5), P5 all
   attribution         Shapley values over the 16 pathway subsets (main) and the 64 lever
                       subsets (SI), exact arithmetic; demand bands by run (exact by band)
   envelope            P0 and P5 under S1 and S2 (full Boss runs with REPLACEMENT_SCENARIO
                       changed, as tools/replacement_scenarios.py and PB.scenario_runs)
-  sensitivities       P5 with the ramp2045 (all three scenarios); P4 and P5 with the
+  sensitivities       P5 with ramp2030 and ramp2045 (all three scenarios); P4 and P5 with the
                       apartments held at r = 1 (L5)
 
 AESA gap: boundaries B_AR, B_AtP by year for S3-10 from outputs/pb_annual.csv;
@@ -476,9 +476,9 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
             named.append(('P0', scen, '', {}, None, False))
             for s in LV.SETTINGS:
                 named.append((run_name('P5', s), scen, s, LV.pathway_levers('P5', s), None, False))
-        for s in LV.SETTINGS:
-            named.append((run_name('P5', s, LV.RAMP_SENS['name']), scen, s, LV.pathway_levers('P5', s),
-                          LV.RAMP_SENS['name'], False))
+        for rs in LV.RAMP_SENSITIVITIES:
+            for s in LV.SETTINGS:
+                named.append((run_name('P5', s, rs['name']), scen, s, LV.pathway_levers('P5', s), rs['name'], False))
     for s in LV.SETTINGS:                                        # L5 sensitivity: apartments held at r = 1
         for P in ('P4', 'P5'):
             named.append((run_name(P, s, apt_held=True), REFERENCE, s, LV.pathway_levers(P, s), None, True))
@@ -700,9 +700,8 @@ def run_T(ctx, params, pT, comps, ramp_name=LV.T_INSTANT):
     """A T-family run. 1) the T inputs (levers.apply_T); 2) the requirement without a join; 3) the
     banking rule on requirement + absorbed near-term excess; 4) engine.forward with the stock-adding
     join join_t = built_t - requirement_t (join_redev = 0), so the stock identity holds and dwellings
-    built = built_t >= 0; 5) T5: the soil factor of each year applied exactly through the engine's
-    soil-bearing share (intensity minus (soil_avg - soil_path) x share; the share does not depend
-    on the intensity, checked)."""
+    built = built_t >= 0; 5) soil: the T5 / T6 soil factor of each year and the soil-bearing share
+    clipped to [0, 1] (zero-building years) applied exactly through the intensity (see below)."""
     fi, join_abs, _, info = LV.apply_T(ctx, params, pT, comps, ramp_name, ctx['E_nojoin'])
     n = len(ctx['years'])
     zeros = np.zeros(n)
@@ -712,16 +711,35 @@ def run_T(ctx, params, pT, comps, ramp_name=LV.T_INSTANT):
     join_T = bk['built'] - req
     join_T[0] = 0.0
     E = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=join_T, join_redev=zeros, **fi)
-    if info['soil_path'] is not None:
-        share = E['soil_share'].copy()
+    # Soil (T5, T6, and the banked zero-building years). The engine's soil-bearing share is
+    # 1 - soil-free floor area / floor area built, which assumes the replacement (soil-free) floor area
+    # does not exceed the floor area built. In banked zero-building years nothing is built while the
+    # replacement term stays positive, so the physical soil-bearing area is max(0, built - soil-free):
+    # the share is clipped to [0, 1] (0 where nothing is built). The soil factor of each year
+    # (soil_path: T5 lowest soil order, x (1 - s w) under T6) and the clipped share are applied exactly
+    # by replacing the engine's own soil term through the intensity:
+    #     I'(y) = I(y) - s_eng x share(y) + soil_path(y) x share_eff(y)
+    # so that carbon = (I - s_eng) x floor area + soil_path x floor area x share_eff. The share does not
+    # depend on the intensity (checked identical in both passes); E['soil_share'] is then set to share_eff.
+    share = E['soil_share'].copy()
+    built_gfa = E['total']
+    share_eff = np.where(built_gfa <= T_ZERO_TOL_M2, 0.0, np.clip(share, 0.0, 1.0))
+    share_eff[0] = share[0]
+    sp = info['soil_path'] or {t: np.full(n, float(ctx['soil'][t])) for t in ctx['typ']}
+    clipped = bool(np.any(share_eff[1:] != share[1:]))
+    info.update(soil_share_raw=share, soil_share_clipped_years=[int(y) for y, a, b in
+                                                                zip(ctx['years'][1:], share[1:], share_eff[1:]) if a != b])
+    if info['soil_path'] is not None or clipped:
+        info['soil_path'] = sp
         info['intensity_material'] = {t: np.asarray(fi['intensity'][t], float) - ctx['soil'][t] for t in ctx['typ']}
         fi = dict(fi)
         for key in ('intensity', 'intensity_upfront'):
-            fi[key] = {t: np.asarray(fi[key][t], float) - (ctx['soil'][t] - info['soil_path'][t]) * share
+            fi[key] = {t: np.asarray(fi[key][t], float) - ctx['soil'][t] * share + np.asarray(sp[t], float) * share_eff
                        for t in ctx['typ']}
         E = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=join_T, join_redev=zeros, **fi)
         if not np.array_equal(E['soil_share'], share):
-            raise SystemExit('T5: the soil-bearing share changed between passes.')
+            raise SystemExit('T soil: the soil-bearing share changed between passes.')
+        E = dict(E, soil_share=share_eff)
     info.update(bank=bk, requirement_nojoin=req, join_absorbed=np.asarray(join_abs, float), join_T=join_T)
     return dict(E=E, inputs=fi, info=info, active={}, ramp=ramp_name or RAMP_ADOPTED, l5_apartments_held=False,
                 scenario=ctx['scenario'], comps=tuple(info['comps']))
@@ -818,7 +836,16 @@ def compute_T(res, verbose=True):
         loe = R_['E']['carbon'][1:].sum() / bar
         if loe > 1:
             bc, _ = backcast(ref, R_, name)
-            gap[name] = dict(LoE_AR=loe, within_AR=False, backcast=bc)
+            E_ = R_['E']
+            S_ = E_['pop'] / E_['hh']
+            cut = 1.0 - bc['k_AR']
+            dw = np.asarray(E_['dwell_in_scope'], float)[2:]
+            gap[name] = dict(LoE_AR=loe, within_AR=False, backcast=bc, residual=dict(
+                cut_of_2027_2050_construction=cut,
+                dwellings_not_built_2027_2050=float(cut * dw.sum()),
+                new_residents_housed_in_existing_dwellings=float(cut * (dw * S_[2:]).sum()),
+                note='dwellings in scope (excl. retirement villages) of the 2027-2050 cohorts x (1 - k); residents = '
+                     'sum over years of dwellings not built x S(t)'))
         else:
             sp = linear_split(ref, R_)
             gap[name] = dict(LoE_AR=loe, within_AR=True, margin_AR_kt=(bar - R_['E']['carbon'][1:].sum()) / M6,
@@ -874,7 +901,8 @@ def write_T(res, rt):
     rt['subsets'].to_csv(os.path.join(OUT, 'shapley_T_subsets.csv'), index=False)
     rows = {r['run']: r for r in rt['rows']}
     out = dict(run_mode=RUN_MODE, disclaimer=LV.T_DISCLAIMER, definition=dict(
-        base='P5-stretch (L3 removals -40%, L4 attached share stretch, L2b replaced by T1)', start=2027,
+        base='P5-stretch (L3 removals -40%; no L4; L2a / L2b replaced by T1)', start=2027, bau=LV.T_BAU_NOTE,
+        t6=dict(share=LV.T6_SHARE, components=LV.T6_COMPONENTS, source=LV.T6_SOURCE, assumptions=LV.T6_ASSUMPTIONS),
         ramp='instant: w = 1 for every lever in 2027-2050; 2026 observed and untouched (T-ramp: the v2 logistic ramp)',
         components=LV.T_NAMES), resolved=rt['params_T'],
         metrics={k: {c: v for c, v in r.items() if isinstance(v, (int, float, str, bool, np.floating, np.integer))}
@@ -935,7 +963,7 @@ PW_FIGURES = {
     'pw_4_annual_SI': ('supp', 'Annual carbon 2026-2050 (S3-10) of P0-P5 (central solid, stretch dashed) against the '
                        'annual AR and AtP boundaries.'),
     'pw_5_envelope_SI': ('supp', 'P0 and P5 under the replacement scenarios Low (S1), Reference (S3-10) and High (S2), '
-                         'with the logistic ramp to 2035 (adopted) and to 2045 (sensitivity): cumulative carbon vs '
+                         'with the logistic ramp full by 2035 (adopted) and by 2030 and 2045 (sensitivities): cumulative carbon vs '
                          'cumulative budgets, and annual carbon (S3-10).'),
     'pw_6_L5_estimator_SI': ('supp', 'L5 estimator: the 14 independent case-study A1-A3 ratios (detached, townhouses; '
                              '2025) at their plotting positions, the Harrell-Davis quantile function with its '
@@ -1053,8 +1081,8 @@ def fig_bands_by_pathway(res):
     fig.suptitle(f"What each pathway removes, by reason for building (S3-10, central): carbon {p0['carbon_kt']:,.0f} -> "
                  f"{p5['carbon_kt']:,.0f} kt (P5)", fontsize=11)
     fig.text(0.5, -0.16, 'Growth and house-splitting (hatched) are untargeted by design: population and household '
-             'formation are exogenous (Pellan et al. 2024). P1 also lowers the growth band slightly through the '
-             'attached occupancy load factor (L4). Negative bands below zero: with P2 the vacancy rate falls and '
+             'formation are exogenous (Pellan et al. 2024). Typology shares are the baseline mix in every run (L4 '
+             'removed). Negative bands below zero: with P2 the vacancy rate falls and '
              'existing dwellings are released; the absorbed near-term surplus is paid back by 2050.',
              ha='center', fontsize=8, style='italic', wrap=True)
     fig.tight_layout()
@@ -1208,8 +1236,7 @@ def fig_solution_space(res):
     fig.legend(*ax.get_legend_handles_labels(), fontsize=7.5, loc='lower center', bbox_to_anchor=(0.5, -0.13),
                frameon=False, ncol=4)
     fig.text(0.5, -0.17, 'Right: zoom on the pathway markers (c = central, s = stretch; white box on the left). Cells: the 5% grid (solution_space.csv); contours: the same linear model on a 0.5% grid. '
-             'Soil carbon and 2026 are not cut by the intensity axis; a negative intensity reduction (P1, L4) means '
-             'more carbon per m2 (the attached typologies carry more A1-A3 per m2). ' + atp_note, ha='center', fontsize=8,
+             'Soil carbon and 2026 are not cut by the intensity axis. ' + atp_note, ha='center', fontsize=8,
              style='italic', wrap=True)
     fig.tight_layout()
     _save(fig, 'pw_3_solution_space')
@@ -1260,20 +1287,21 @@ def fig_envelope(res):
     import figaudit
     from matplotlib.patches import Patch
     bar_kt, batp_kt = res['backcast']['B_AR_kt'], res['backcast']['B_AtP_kt']
-    sens = LV.RAMP_SENS['name']
-    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(15, 6), gridspec_kw=dict(width_ratios=[1.25, 1]))
-    names = [('P0', P_COLOR['P0'], None, 1.0), ('P5-central', P_COLOR['P5'], '///', 1.0),
-             ('P5-stretch', P_COLOR['P5'], None, 1.0), (f'P5-central-{sens}', P_COLOR['P5'], '///', 0.4),
-             (f'P5-stretch-{sens}', P_COLOR['P5'], None, 0.4)]
+    ramps = [('ramp2030', 'ramp2030', 0.6, '--'), ('ramp2035', None, 1.0, '-'), ('ramp2045', 'ramp2045', 0.3, ':')]
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(16, 6.2), gridspec_kw=dict(width_ratios=[1.35, 1]))
+    names = [('P0', P_COLOR['P0'], None, 1.0)]
+    for lab, rn, alpha, _ in ramps:
+        for s, hatch in (('central', '///'), ('stretch', None)):
+            names.append((f'P5-{s}' + (f'-{rn}' if rn else ''), P_COLOR['P5'], hatch, alpha))
     scen = list(SCENARIOS)
-    w = 0.16
+    w = 0.12
     for i, sc in enumerate(scen):
         for k, (nm, col, hatch, alpha) in enumerate(names):
             r = _run(res, nm, sc)
-            x = i + (k - 2) * w
+            x = i + (k - (len(names) - 1) / 2) * w
             ax.bar(x, r['carbon_kt'], width=w * 0.92, color='white' if hatch else col, edgecolor=col, hatch=hatch,
                    alpha=alpha, lw=1.2)
-            ax.text(x, r['carbon_kt'], f"{r['carbon_kt'] / 1e3:,.1f}", ha='center', va='bottom', fontsize=6.5,
+            ax.text(x, r['carbon_kt'], f"{r['carbon_kt'] / 1e3:,.1f}", ha='center', va='bottom', fontsize=6.3,
                     color=INK, rotation=90)
     ax.set_xticks(range(len(scen)))
     ax.set_xticklabels([SCENARIOS[s][0] for s in scen])
@@ -1281,22 +1309,23 @@ def fig_envelope(res):
     _hline(ax, batp_kt, ATP_COLOR, '--', f'AtP {batp_kt:,.0f}', len(scen) - 0.55)
     ax.set_xlim(-0.6, len(scen) - 0.1)
     ax.set_ylabel('cumulative carbon 2026-2050, kt CO$_2$e (labels: Mt)')
-    ax.set_title('Cumulative carbon by replacement scenario', fontsize=10)
-    ax.legend(handles=[Patch(color=P_COLOR['P0'], label='P0'),
-                       Patch(facecolor='white', edgecolor=P_COLOR['P5'], hatch='///', label='P5 central, ramp to 2035'),
-                       Patch(color=P_COLOR['P5'], label='P5 stretch, ramp to 2035'),
-                       Patch(facecolor='white', edgecolor=P_COLOR['P5'], hatch='///', alpha=0.4,
-                             label='P5 central, ramp to 2045'),
-                       Patch(color=P_COLOR['P5'], alpha=0.4, label='P5 stretch, ramp to 2045')],
-              fontsize=8, frameon=False, loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
+    ax.set_title('Cumulative carbon by replacement scenario and ramp', fontsize=10)
+    handles = [Patch(color=P_COLOR['P0'], label='P0')]
+    for lab, rn, alpha, _ in ramps:
+        full = {'ramp2030': 'full by 2030', 'ramp2035': 'full by 2035 (adopted)', 'ramp2045': 'full by 2045'}[lab]
+        handles += [Patch(facecolor='white', edgecolor=P_COLOR['P5'], hatch='///', alpha=alpha, label=f'P5 central, {full}'),
+                    Patch(color=P_COLOR['P5'], alpha=alpha, label=f'P5 stretch, {full}')]
+    ax.legend(handles=handles, fontsize=7.5, frameon=False, loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=4)
     _style(ax)
     a = res['annual']
     a = a[a['scenario'] == REFERENCE]
-    for nm, col, ls, lw in (('P0', P_COLOR['P0'], '-', 2.0), ('P5-central', P_COLOR['P5'], '-', 1.6),
-                            ('P5-stretch', P_COLOR['P5'], '-', 2.4), (f'P5-central-{sens}', P_COLOR['P5'], ':', 1.6),
-                            (f'P5-stretch-{sens}', P_COLOR['P5'], ':', 2.4)):
-        d = a[a['run'] == nm]
-        ax2.plot(d['year'], d['carbon_kt'], color=col, ls=ls, lw=lw, label=nm)
+    d = a[a['run'] == 'P0']
+    ax2.plot(d['year'], d['carbon_kt'], color=P_COLOR['P0'], lw=2.0, label='P0')
+    for lab, rn, alpha, ls in ramps:
+        for s, lw in (('central', 1.4), ('stretch', 2.4)):
+            nm = f'P5-{s}' + (f'-{rn}' if rn else '')
+            d = a[a['run'] == nm]
+            ax2.plot(d['year'], d['carbon_kt'], color=P_COLOR['P5'], ls=ls, lw=lw, label=nm)
     d0 = a[a['run'] == 'P0']
     ax2.plot(d0['year'], d0['B_AR_kt'], color=AR_COLOR, lw=2.0, gid=figaudit.BOUNDARY, label='AR boundary')
     ax2.plot(d0['year'], d0['B_AtP_kt'], color=ATP_COLOR, lw=2.0, ls='--', gid=figaudit.BOUNDARY, label='AtP boundary')
@@ -1304,11 +1333,11 @@ def fig_envelope(res):
     ax2.set_xlim(2026, 2050)
     ax2.set_xlabel('year')
     ax2.set_ylabel('annual carbon, kt CO$_2$e per year')
-    ax2.set_title('Ramp sensitivity, S3-10: logistic to 2035 (solid) or to 2045 (dotted)', fontsize=10)
-    ax2.legend(fontsize=8, frameon=False, loc='upper right')
+    ax2.set_title('Ramp sensitivity, S3-10: logistic, full by 2030 (dashed), 2035 (solid) or 2045 (dotted)', fontsize=10)
+    ax2.legend(fontsize=7, frameon=False, loc='upper right', ncol=2)
     _style(ax2)
     fig.suptitle('Envelope: P0 and P5 under Low (S1), Reference (S3-10) and High (S2) replacement, and the ramp '
-                 'sensitivity', fontsize=11)
+                 'sensitivities (2035 adopted after RECC, Pauliuk et al. 2024)', fontsize=11)
     fig.tight_layout()
     _save(fig, 'pw_5_envelope_SI')
 

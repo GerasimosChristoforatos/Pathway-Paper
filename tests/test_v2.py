@@ -2,8 +2,8 @@
 (S3-10), High (S2), typology shares held), Low and Reference unchanged from
 baseline-pb-v1.2 under the v2 accounting (tests/regression_pb_v1_2_low_ref.json, tag
 baseline-PB_v1.2),
-main-text tornados with the top-5 effects, Pride colours for the six material
-classes in one order, soil always the top layer."""
+the largest parameters shown with both ends (H11 since MODEL v1.0.0), Pride colours for the six
+material classes in one order, soil always the top layer."""
 import json
 import os
 import re
@@ -73,26 +73,20 @@ def test_low_and_reference_deterministic_unchanged():
             assert r[f] == v, (k, f, r[f], v)
 
 
-def test_tornado_top5_parameters():
-    """Main-text tornados: all rows of the 5 parameters with the largest absolute effect
-    (sens_1: on carbon; pb_4: on AR or AtP), both ends of a paired parameter shown."""
-    import boundaries
+def test_top_parameters_keep_both_ends_of_a_parameter():
+    """H11 (headline.py) shows all rows of the parameters with the largest absolute effect, both ends
+    of a paired parameter together (Sensitivity.top_parameters); the accounting-convention row
+    (whole life) and the reference are not drawn."""
+    import headline
     import Sensitivity as S
     d = pd.DataFrame(dict(case=['a_lo', 'a_hi', 'b', 'c', 'd', 'e', 'f', 'g_lo', 'g_hi'], group='Stock',
                           GFA_change_pct=[0, 0, 0, 0, 0, 0, 50, 0, 0],
                           carbon_change_pct=[-1, 9, 8, 7, 6, 2, 0.1, 5, -0.5]))
     par = {'a_lo': 'a', 'a_hi': 'a', 'g_lo': 'g', 'g_hi': 'g'}
     top = S.top_parameters(d, 5, parameter=par)
-    assert S.TOP_N == 5 and set(top.case) == {'a_lo', 'a_hi', 'b', 'c', 'd', 'g_lo', 'g_hi'}   # f: floor area only
+    assert set(top.case) == {'a_lo', 'a_hi', 'b', 'c', 'd', 'g_lo', 'g_hi'}   # f: floor area only
     assert list(top.case) == list(top.sort_values('order').case)
-    p = pd.DataFrame(dict(case=['iii_base_window', 'iii_base_window_20', 'iii_base_window_full', 'i_source_pair',
-                                'ii_gdp_measure', 'v_ssec', 'vi_frozen', 'xiv_alpha_1', 'vii_proxies_held'],
-                          AR_vs_ref_pct=[-2, 20, 22, 88, 0, 0, 14, 0, 0.4],
-                          AtP_vs_ref_pct=[0, 0, 0, 88, 207, 0.2, 14, -58, 0.4]))
-    assert boundaries.TOP_N == 5
-    assert set(boundaries.top_rows(p, 5).case) == {'iii_base_window', 'iii_base_window_20', 'iii_base_window_full',
-                                          'i_source_pair', 'ii_gdp_measure', 'vi_frozen', 'xiv_alpha_1'}
-    assert 'xii_whole_life' in boundaries.MAIN_EXCLUDED
+    assert 'xii_whole_life' in headline.AESA_NOT_DRAWN and 'reference' in headline.AESA_NOT_DRAWN
 
 
 def test_whole_life_row_only_in_pb_sensitivity():
@@ -105,27 +99,29 @@ def test_whole_life_row_only_in_pb_sensitivity():
 
 
 def test_pride_colours_in_one_order():
-    import projection
-    style = projection.MATERIAL_STYLE
-    assert [c for _, _, c in style[:-1]] == PRIDE
-    assert [col for col, _, _ in style] == ['TIMBER', 'STEEL', 'CONCRETE (incl. reinforced)', 'PLASTICS & PAINT',
-                                            'PLASTERBOARD', 'OTHERS', 'SOIL']
-    # every per-material figure draws through projection.stack_materials / projection.material_patch
-    for f in ('Diagnostics.py', 'projection.py', 'boundaries.py', os.path.join('tools', 'figures_report.py')):
+    import style
+    assert [c for _, _, c in style.MATERIAL[:-1]] == PRIDE
+    assert [col for col, _, _ in style.MATERIAL] == ['TIMBER', 'STEEL', 'CONCRETE (incl. reinforced)', 'PLASTICS & PAINT',
+                                                     'PLASTERBOARD', 'OTHERS', 'SOIL']
+    # every per-material figure draws through plotting.stack_materials / plotting.material_patch
+    for f in ('Diagnostics.py', 'projection.py', 'boundaries.py', 'headline.py', 'plotting.py',
+              os.path.join('tools', 'figures_report.py')):
         src = open(os.path.join(ROOT, f), encoding='utf-8').read()
         assert not re.search(r"'#8B5A2B'|'#8E9296'|'#2EE62E'", src), f      # the pre-v2 material colours
 
 
 def test_soil_is_the_top_layer():
-    import projection
-    frame = pd.DataFrame({col: np.full(3, 1.0) for col, _, _ in projection.MATERIAL_STYLE})
+    import plotting
+    import style
+    frame = pd.DataFrame({col: np.full(3, 1.0) for col, _, _ in style.MATERIAL})
     fig, ax = plt.subplots()
-    handles = projection.stack_materials(ax, [2026, 2027, 2028], frame)
-    assert handles[0].get_label() == 'Soil (land-use change)'            # legend: top first
+    handles = plotting.stack_materials(ax, [2026, 2027, 2028], frame)
+    soil = [lab for code, lab, _ in style.MATERIAL if code == 'SOIL'][0]
+    assert handles[0].get_label() == soil                                   # legend: top first
     polys = ax.collections
-    assert polys[-1].get_label() == 'Soil (land-use change)' and polys[-1].get_hatch()
+    assert polys[-1].get_label() == soil and polys[-1].get_hatch()
     tops = [p.get_paths()[0].vertices[:, 1].max() for p in polys]
-    assert tops == sorted(tops) and tops[-1] == len(projection.MATERIAL_STYLE)
+    assert tops == sorted(tops) and tops[-1] == len(style.MATERIAL)
     colours = [matplotlib.colors.to_hex(p.get_facecolor()[0][:3]).upper() for p in polys[:-1]]
     assert colours == PRIDE
     plt.close(fig)

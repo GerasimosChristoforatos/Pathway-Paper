@@ -45,6 +45,7 @@ def groups():
                                                             **{'Acquired rights (AR)': S.AR,
                                                                'Ability to pay (AtP)': S.ATP}),
         'Materials (H4b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
+        'Categorical groups (diagnostics D16, D17; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
 
 
@@ -174,6 +175,8 @@ def main():
           'Color Research & Application 31, 320-330.',
           '* Machado GM, Oliveira MM, Fernandes LAF (2009) A physiologically-based model for simulation of color '
           'vision deficiency. IEEE Transactions on Visualization and Computer Graphics 15, 1291-1298.',
+          '* Okabe M, Ito K (2008) Color Universal Design (CUD): how to make figures and presentations that are '
+          'friendly to colorblind people. https://jfly.uni-koeln.de/color/ (the categorical palette).',
           '* Smith NJ, van der Walt S, colorspacious 1.1.2 (Python package), https://github.com/njsmith/colorspacious.']
     with open(os.path.join(DOCS, 'PALETTE.md'), 'w', encoding='utf-8') as f:
         f.write('\n'.join(L) + '\n')

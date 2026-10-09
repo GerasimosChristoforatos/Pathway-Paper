@@ -122,3 +122,58 @@ def test_headline_md_shows_every_figure_with_a_filled_caption():
     findings = md.split('## Findings')[1].split('## Figures')[0]
     n = sum(1 for line in findings.splitlines() if line[:2].rstrip('.').isdigit())
     assert 6 <= n <= 8, n
+
+
+# ---- 3. figure audit and indexes --------------------------------------------------------------
+def planned_figures():
+    out = {h['file']: os.path.join(L.HEADLINE, h['file']) for h in FP.HEADLINE}
+    out.update({f: os.path.join(L.DIAGNOSTICS, g, f) for g, rows in FP.DIAGNOSTICS.items() for f, _, _ in rows})
+    return out
+
+
+def test_every_planned_figure_exists_and_no_other():
+    """Every figure of docs/FIGURE_PLAN.md exists (headline: PNG and PDF; diagnostics: PNG) with
+    its audit record, and no figure outside the plan is written."""
+    plan = planned_figures()
+    for fid, base in plan.items():
+        exts = ('png', 'pdf') if fid.startswith('H') else ('png',)
+        for ext in exts:
+            assert os.path.exists(f'{base}.{ext}'), f'{fid}.{ext}'
+        assert os.path.exists(os.path.join(L.FIGURE_AUDIT, f'{fid}.json')), fid
+    written = {os.path.splitext(f)[0] for base in (L.HEADLINE, L.DIAGNOSTICS) for _, _, fs in os.walk(base)
+               for f in fs if f.endswith('.png')}
+    assert written == set(plan), sorted(written ^ set(plan))
+
+
+def test_every_output_file_is_indexed_once():
+    """outputs/INDEX.md covers every file the run wrote (indexes.FILES), each by exactly one entry,
+    and no entry of the registry is stale."""
+    import indexes
+    files = indexes.output_files()
+    assert 'INDEX.md' in files
+    bad = {f: len(indexes.entry(f)) for f in files if len(indexes.entry(f)) != 1}
+    assert not bad, bad
+    stale = [e[0] for e in indexes.FILES if not any(indexes.fnmatch.fnmatch(f, e[0]) for f in files)]
+    assert not stale, stale
+    md = open(os.path.join(L.OUT, 'INDEX.md'), encoding='utf-8').read()
+    assert 'NOT INDEXED' not in md
+    for f in files:
+        assert f'`{f}`' in md, f
+
+
+def test_diagnostics_md_shows_every_diagnostic_with_its_script():
+    md = open(os.path.join(L.DIAGNOSTICS, 'DIAGNOSTICS.md'), encoding='utf-8').read()
+    for g, rows in FP.DIAGNOSTICS.items():
+        for fid, _, _ in rows:
+            assert f'({g}/{fid}.png)' in md, fid
+            rec = json.load(open(os.path.join(L.FIGURE_AUDIT, f'{fid}.json')))
+            assert rec['producer'] and rec['producer'].endswith('.py'), fid
+            assert f"drawn by `{rec['producer']}`" in md, fid
+
+
+def test_headline_figures_print_within_183_mm():
+    from PIL import Image
+    import style as S
+    for h in FP.HEADLINE:
+        with Image.open(os.path.join(L.HEADLINE, f"{h['file']}.png")) as im:
+            assert im.size[0] / S.DPI * 25.4 <= 183.0 + 1e-6, h['file']

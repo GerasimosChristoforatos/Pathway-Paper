@@ -25,10 +25,11 @@ boundaries (AESA layer; reads the Monte Carlo draws) -> validation -> gap_2026 -
 overbuild_2026 -> scenarios -> reconciliation -> figures_report -> frozen-technology check
 (projection, Sensitivity, MonteCarlo, scenarios, boundaries with DECARB_MODE 'none', A4-A5
 held, whole life at construction; data in outputs/data/frozen_technology/, no figures) ->
-pathways -> metrics -> headline (the figures of the paper, from the data files) -> tests (incl. the v1.2.1
-regression test, which reads the
-frozen-technology data, and the regression lock of MODEL v1.0.0, which reads every data file)
--> results -> assumptions -> baseline_draft -> pb_methods -> pathways_docs -> check_outputs.
+pathways -> metrics -> headline (the figures of the paper, from the data files) -> results ->
+assumptions -> baseline_draft -> pb_methods -> pathways_docs -> check_outputs -> indexes
+(DIAGNOSTICS.md, outputs/INDEX.md) -> tests, last (incl. the v1.2.1 regression test, which reads
+the frozen-technology data, the regression lock of MODEL v1.0.0, which reads every data file, and
+the release checks of figures and indexes).
 Each script runs in its own process, with the non-interactive matplotlib backend and
 PATHWAY_SAVE_FIGURES=1, so every figure is written (outputs/headline/, outputs/diagnostics/;
 layout.py) and nothing is shown. Console output of each step goes to outputs/logs/<step>.log.
@@ -113,13 +114,16 @@ def pipeline(skip_mc, quick=False):
     run('metrics', [py, tool('metrics')] + (['--mc-stale'] if skip_mc else []))
     # the figures of the paper and HEADLINE.md, from the data files only
     run('headline', [py, os.path.join(ROOT, 'headline.py')])
-    run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
     run('results', [py, tool('results')])
     run('assumptions', [py, tool('assumptions')])
     run('baseline_draft', [py, tool('baseline_draft')])
     run('pb_methods', [py, tool('pb_methods')])
     run('pathways_docs', [py, tool('pathways_methods'), '--sections'])
     run('check_outputs', [py, tool('check_outputs')])
+    # DIAGNOSTICS.md and outputs/INDEX.md, once every output is written; then the tests, last, on
+    # the complete output set (figure audit, index, regression lock)
+    run('indexes', [py, os.path.join(ROOT, 'indexes.py')])
+    run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
 
 
 def pathways_only():
@@ -131,9 +135,11 @@ def pathways_only():
     env = {'PATHWAY_QUICK': '0'}
     step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
     step('headline', [py, os.path.join(ROOT, 'headline.py')], env)
-    step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
-                            os.path.join(ROOT, 'tests', 'test_regression_model_v1.py')], env)
     step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
+    step('indexes', [py, os.path.join(ROOT, 'indexes.py')], env)
+    step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
+                            os.path.join(ROOT, 'tests', 'test_regression_model_v1.py'),
+                            os.path.join(ROOT, 'tests', 'test_release.py')], env)
 
 
 def main(argv=None):

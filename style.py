@@ -115,6 +115,12 @@ MATERIAL = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF'),
             ('PLASTERBOARD', 'Plasterboard', '#FF8C00'), ('OTHERS', 'Others', '#E40303'),
             ('SOIL', 'Soil carbon loss', '#B5A48B')]
 EDGE = dict(edgecolor='#555555', linewidth=0.3)
+SOIL = dict(alpha=0.5, hatch='///', edgecolor='#8C7B66')          # the soil layer of a material stack
+
+# categorical groups in the diagnostics (sensitivity groups, the cases of D17): the Okabe-Ito
+# palette (Okabe & Ito 2008, Color Universal Design), distinguishable under the common colour-vision
+# deficiencies; one colour per group, always with a label
+QUALITATIVE = ['#000000', '#E69F00', '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7']
 
 # sequential ramp for continuous fields (the solution-space LoE, H10): light to dark blue, lightness
 # strictly decreasing (tools/palette_check.py), so the order survives greyscale and colour-vision
@@ -155,14 +161,15 @@ def save(fig, path, pdf=False):
     plt.close(fig)
 
 
-def save_figure(fig, name):
+def save_figure(fig, name, note=None):
     """Save a planned figure (figure_plan.py file id, e.g. 'D22_boundaries') to its place in
-    outputs/ (layout.figure): headline figures as PNG and PDF, diagnostics as PNG; the axis
-    record of the figure is written first (figaudit.py)."""
+    outputs/ (layout.figure): headline figures as PNG and PDF, diagnostics as PNG; the audit
+    record of the figure (axes, year ranges, every text, the note) is written first
+    (figaudit.py). note: run-specific caption text for DIAGNOSTICS.md (numbers of this run)."""
     import figaudit
     import layout
     path = layout.figure(name)
-    figaudit.record(fig, name)
+    figaudit.record(fig, name, note=note)
     save(fig, path, pdf=path.startswith(layout.HEADLINE))
 
 

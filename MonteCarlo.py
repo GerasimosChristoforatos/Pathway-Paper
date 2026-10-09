@@ -79,7 +79,6 @@ from scipy.stats import qmc
 
 import projection
 import engine
-import figure_plan as FP
 import layout
 import naming as N
 import style
@@ -577,7 +576,6 @@ OUTPUT_LABELS = {
     'floor_area_Mm2': ('Built floor area, 2026-2050', 'Mm²', 1),
     'carbon_kt': ('Embodied carbon, 2026-2050', 'kt CO₂e', 1),
 }
-BLUE = '#2E6DB4'
 
 
 def _load_results():
@@ -590,84 +588,40 @@ def _load_results():
             pd.read_csv(rd['summary'], index_col=0))
 
 
-def _history():
-    """Observed history on the model's built basis, from one silent projection run."""
-    projection.SHOW_PLOTS = False
-    with contextlib.redirect_stdout(io.StringIO()):
-        st = projection.main()
-    gfa = st['hist_built_gfa']
-    fy = np.asarray(st['forecast_years'])
-    central = {'floor_area': pd.Series(st['results']['50th']['total'], index=fy),
-               'carbon': st['carbon_total_typ'].sum(axis=1)}
-    return gfa, central
-
-
-def _save(fig, name):
-    target = FP.release_file(os.path.splitext(name)[0])
-    if SAVE_FIGURES and target is not None:
-        style.save_figure(fig, target)
+def _save(fig, name, note=None):
+    if SAVE_FIGURES:
+        style.save_figure(fig, name, note=note)
 
 
 def figures():
+    """D20: what drives the joint uncertainty of the Reference (Sobol indices). The Monte Carlo
+    bands of floor area and carbon are drawn in H2 and H4, those of the level of exceedance in H5
+    and D21-D23."""
+    import plotting as P
+    S = style
+    S.apply()
     draws, annual, sob, summ = _load_results()
-    hist_gfa, central = _history()
-    yrs = annual.index.values
-    fy = yrs[yrs >= 2026]
-    has_q = 'floor_area_25' in annual.columns
-
-    # ---- 1. joint uncertainty over time ----------------------------------
-    fig, ax = plt.subplots(1, 2, figsize=(15, 5.2))
-    fig.suptitle('Monte Carlo 1: joint uncertainty over time '
-                 f'({len(draws):,} Latin hypercube draws)', fontsize=12)
-    for a, k, hist, lab in [(ax[0], 'floor_area', hist_gfa, 'Mm² per year'),
-                            (ax[1], 'carbon', None, 'kt CO₂e per year')]:
-        if hist is not None:          # observed floor area; no historical carbon (only 2025 factors exist)
-            hy = hist.index[hist.index >= 1991]
-            a.plot(hy, hist.loc[hy] / 1e6, color='black', lw=2, label='observed (built basis)')
-        f = annual.loc[fy]
-        a.fill_between(fy, f[f'{k}_5'] / 1e6, f[f'{k}_95'] / 1e6, color=BLUE, alpha=0.15,
-                       label='5th-95th percentile')
-        if has_q:
-            a.fill_between(fy, f[f'{k}_25'] / 1e6, f[f'{k}_75'] / 1e6, color=BLUE, alpha=0.30,
-                           label='25th-75th percentile')
-        a.plot(fy, f[f'{k}_50'] / 1e6, color=BLUE, lw=2.2, label='Monte Carlo median')
-        a.plot(fy, central[k].loc[fy] / 1e6, color='#C0392B', lw=1.5, ls='--',
-               label='projection central run')
-        if hist is not None:          # carbon panel: projection only, no empty historical axis
-            a.axvline(2025.5, color='grey', ls=':', lw=1)
-        a.set_ylabel(lab); a.set_xlim((1991, 2050) if hist is not None else (2026, 2050)); a.set_ylim(0, None)
-        a.grid(alpha=0.3); a.legend(fontsize=8, loc='upper right')
-    ax[0].set_title('Built floor area (in scope)')
-    ax[1].set_title('Embodied carbon within 2026-2050\n(' + ('upfront + replacements & repaints occurring each year'
-                    if projection.ACCOUNTING == 'time_resolved' else 'whole life at construction') + ')')
-    fig.tight_layout()
-    _save(fig, 'mc_1_fan.png')
-
-    # ---- 3. what drives the uncertainty (Sobol) ----------------------------
-    fig, ax = plt.subplots(1, 2, figsize=(15, 6))
-    fig.suptitle('Monte Carlo 3: what drives the uncertainty (Sobol indices, 95% CI)',
-                 fontsize=12)
-    for a, o in zip(ax, ['carbon_kt', 'floor_area_Mm2']):
+    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 66))
+    for a, o, letter in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab'):
         t = sob[(sob.output == o) & np.isfinite(sob.ST_lo)].sort_values('ST')
         y = np.arange(len(t))
-        a.barh(y + 0.2, t.ST, 0.4, color='#E67E22',
-               xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor='#7f4a13', capsize=2,
-               label='total effect (incl. interactions)')
-        a.barh(y - 0.2, t.S1.clip(lower=0), 0.4, color='#27AE60',
-               label='effect on its own')
-        for yi, v in zip(y, t.ST):
-            a.text(v + 0.012, yi + 0.2, f'{v:.2f}', va='center', fontsize=8)
+        a.barh(y + 0.2, t.ST, 0.4, color=S.QUALITATIVE[5], xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor=S.INK,
+               capsize=1.5, error_kw=dict(lw=S.LW_THIN), label='Total effect (incl. interactions), 95% CI')
+        a.barh(y - 0.2, t.S1.clip(lower=0), 0.4, color=S.QUALITATIVE[2], label='First-order effect (on its own)')
+        for yi, v, hi in zip(y, t.ST, t.ST_hi):
+            a.text(max(v, hi) + 0.012, yi + 0.2, f'{v:.2f}', va='center', fontsize=S.FONT_MIN)
         a.set_yticks(y)
-        a.set_yticklabels([INPUT_LABELS.get(i, i) for i in t.input], fontsize=8.5)
+        a.set_yticklabels([INPUT_LABELS.get(i, i) for i in t.input], fontsize=S.FONT_SMALL)
         a.set_xlim(0, max(0.7, t.ST_hi.max() + 0.08))
-        a.set_xlabel('share of output variance')
-        a.set_title(OUTPUT_LABELS[o][0]); a.grid(alpha=0.3, axis='x')
-        a.legend(fontsize=8, loc='lower right')
-    fig.tight_layout(rect=(0, 0.05, 1, 1))
-    fig.text(0.5, 0.01, 'Within-scenario parametric uncertainty only; replacement scenario, typology mix, '
-             'carbon-factor and soil bounds are reported separately (sens_1).',
-             ha='center', fontsize=9, style='italic')
-    _save(fig, 'mc_3_sobol.png')
+        a.set_xlabel('Share of output variance')
+        a.grid(axis='y', visible=False)
+        P.panel(a, letter, OUTPUT_LABELS[o][0].replace('2026-2050', '2026–2050'))
+    fig.legend(*ax[0].get_legend_handles_labels(), loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.01),
+               frameon=False)
+    fig.tight_layout(rect=(0, 0.09, 1, 1))
+    _save(fig, 'D20_sobol',
+          note=f'Reference, {len(draws):,} Latin hypercube draws. Within-scenario parametric uncertainty only; the '
+               'replacement variant, the carbon-factor and soil bounds are reported separately (D16).')
 
     if SAVE_FIGURES:
         print("Figures written to outputs/diagnostics/monte_carlo/ (D20)")

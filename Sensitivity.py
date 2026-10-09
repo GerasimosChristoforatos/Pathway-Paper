@@ -29,7 +29,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import projection
-import figure_plan as FP
 import layout
 import naming as N
 import style
@@ -39,11 +38,9 @@ SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.
 SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
 N_PATHS = 6              # cases drawn in the annual-path figure (largest effects)
 
-GROUP_COLORS = {'Population': '#2E6DB4', 'Household size': '#E67E22', 'Households': '#D35400',
-                'Stock': '#34495E', 'Typology mix': '#8E44AD', 'Dwelling size': '#16A085',
-                'Carbon factors': '#C0392B',
-                'Replacement variant': '#1ABC9C', '2026 overbuild: how it is booked': '#7F8C8D',
-                '2026 overbuild: rule variant': '#F39C12'}
+# sensitivity groups -> the categorical palette (style.QUALITATIVE, Okabe-Ito), one colour per group
+GROUPS = ['Population', 'Household size', 'Stock', 'Dwelling size', 'Carbon factors', 'Replacement variant',
+          '2026 overbuild: how it is booked', '2026 overbuild: rule variant']
 
 # (group, label, {projection setting: value})
 CASES = [   # earlier, longer tables are preserved at the git tags (CHANGELOG)
@@ -189,16 +186,17 @@ def main():
 # ============================================================
 # FIGURES
 # ============================================================
-def _save(fig, name, tight=True):
+def _save(fig, name, tight=True, note=None):
     if tight:
         fig.tight_layout()
-    target = FP.release_file(os.path.splitext(name)[0])
-    if SAVE_FIGURES and target is not None:
-        style.save_figure(fig, target)
+    if SAVE_FIGURES:
+        style.save_figure(fig, name, note=note)
 
 
-TOP_N = 5        # main-text tornados show the TOP_N largest parameters (full versions: *_SI)
-PCT_NOTE = ('Percentages are relative to within-window carbon (2026-2050); fixed absolute terms such as soil '
+POP_NOTE = ('Population rows: carbon is the floor area of the path times the Reference carbon per m² of each year '
+            '(an approximation kept from v3.1); the engine carbon of the population paths, carbon and boundaries '
+            'together, is in data/aesa/results.json (population_paths) and is the one used in H11. ')
+PCT_NOTE = ('Percentages are relative to within-window carbon (2026–2050); fixed absolute terms such as soil '
             'carbon therefore show larger percentage effects than under whole-life accounting.')
 
 # Rows that are alternative settings of one parameter (both ends shown together in
@@ -236,49 +234,58 @@ def top_parameters(cases, n, label='case', parameter=None, cols=('carbon_change_
     return cases.assign(order=eff)[par.isin(top)].sort_values('order')
 
 
-def tornado(cases, out, name, title_note=None):
-    """Horizontal bars of the % change in floor area and carbon per case."""
-    fig, ax = plt.subplots(1, 2, figsize=(16, 0.42 * len(cases) + 2), sharey=True)
-    fig.suptitle('Sensitivity 1: one assumption changed at a time, 2026-2050 '
-                 '(bars are NOT additive and NOT a joint interval)'
-                 + (f'\n{title_note}' if title_note else ''), fontsize=12)
+def group_colour(g):
+    if g not in GROUPS:
+        raise ValueError(f'Sensitivity group {g!r} has no colour (GROUPS).')
+    return style.QUALITATIVE[GROUPS.index(g)]
+
+
+def tornado(cases, out, fid):
+    """D16: horizontal bars of the % change in floor area and carbon per case, all rows."""
+    import plotting as P
+    from matplotlib.patches import Patch
+    S = style
+    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 24 + 3.6 * len(cases)), sharey=True)
     y = np.arange(len(cases))
-    for a, col, title in [(ax[0], 'GFA_change_pct', 'Built floor area'),
-                          (ax[1], 'carbon_change_pct', 'Embodied carbon')]:
+    lim = max(5, np.nanmax(np.abs(cases[['GFA_change_pct', 'carbon_change_pct']].values)) * 1.3)
+    for a, col, title, letter in [(ax[0], 'GFA_change_pct', 'Floor area', 'a'),
+                                  (ax[1], 'carbon_change_pct', 'Embodied carbon', 'b')]:
         v = cases[col].values
-        a.barh(y, v, color=[GROUP_COLORS.get(g, 'grey') for g in cases.group], height=0.7)
+        a.barh(y, v, color=[group_colour(g) for g in cases.group], height=0.7)
         for yi, vi in zip(y, v):
             if abs(vi) > 0.05:
-                a.text(vi + (0.4 if vi >= 0 else -0.4), yi, f'{vi:+.1f}%', va='center',
-                       ha='left' if vi >= 0 else 'right', fontsize=8)
-        a.axvline(0, color='black', lw=1)
-        lim = max(5, np.nanmax(np.abs(cases[['GFA_change_pct', 'carbon_change_pct']].values)) * 1.25)
+                a.text(vi + (0.01 if vi >= 0 else -0.01) * lim, yi, f'{vi:+.1f}%', va='center',
+                       ha='left' if vi >= 0 else 'right', fontsize=S.FONT_MIN)
+        a.axvline(0, color=S.INK, lw=S.LW_THIN)
         a.set_xlim(-lim, lim)
-        a.set_title(f"{title}  (adopted: {out.iloc[0]['GFA_Mm2' if col.startswith('GFA') else 'carbon_kt']:,.1f}"
-                    f"{' Mm²' if col.startswith('GFA') else ' kt'})")
-        a.set_xlabel('% change from the adopted settings'); a.grid(alpha=0.3, axis='x')
-    ax[0].set_yticks(y); ax[0].set_yticklabels(cases.case, fontsize=8.5)
-    present = [g for g in GROUP_COLORS if g in set(cases.group)]      # only groups shown
-    handles = [plt.Rectangle((0, 0), 1, 1, color=GROUP_COLORS[g]) for g in present]
-    ax[1].legend(handles, present, fontsize=8, loc='upper left', bbox_to_anchor=(1.01, 1.0))   # outside: no overlap
-    fig.text(0.01, 0.005, 'Note: the single-case carbon factors and the soil-order extremes (Raw / Organic) are bounds '
-             'shown outside the Monte Carlo, not probability-weighted cases.\n' + PCT_NOTE, fontsize=8, style='italic')
-    fig.tight_layout(rect=(0, 0.5 / fig.get_figheight(), 1, 1 - 0.25 / fig.get_figheight()))   # note; suptitle
-    _save(fig, name, tight=False)
+        adopted = out.iloc[0]['GFA_Mm2' if col.startswith('GFA') else 'carbon_kt']
+        a.set_xlabel('Change vs the Reference (%)')
+        a.grid(axis='y', visible=False)
+        P.panel(a, letter, f"{title} (Reference: {adopted:,.1f}{' Mm²' if col.startswith('GFA') else ' kt CO₂e'})")
+    ax[0].set_yticks(y)
+    ax[0].set_yticklabels(cases.case, fontsize=S.FONT_MIN)
+    present = [g for g in GROUPS if g in set(cases.group)]
+    fig.legend(handles=[Patch(color=group_colour(g), label=g) for g in present], loc='lower center', ncol=4,
+               bbox_to_anchor=(0.5, -0.01), frameon=False)
+    fig.tight_layout(rect=(0, 10 / (24 + 3.6 * len(cases)), 1, 1))
+    _save(fig, fid, tight=False,
+          note='One assumption changed at a time from the Reference (the adopted settings), 2026–2050; bars are not additive and not a joint interval. The '
+               'single-case carbon factors and the soil-order extremes (Raw / Organic) are bounds outside the Monte '
+               'Carlo, not probability-weighted cases. ' + POP_NOTE + PCT_NOTE)
 
 
 def figures(out, base, paths):
+    import plotting as P
+    S = style
+    S.apply()
     cases = out[out.group != 'Reference'].copy()
     cases['order'] = cases[['GFA_change_pct', 'carbon_change_pct']].abs().max(axis=1)
     cases = cases.sort_values('order')
 
-    # ---- 1. tornado: how much each assumption moves the totals ------------
-    # full table for the Supplementary Material; main text: the TOP_N largest
-    tornado(cases, out, 'sens_1_tornado_SI.png')
-    tornado(top_parameters(cases, TOP_N), out, 'sens_1_tornado.png',
-            title_note=f'{TOP_N} largest parameters (effect on carbon; both ends shown); all rows: sens_1_tornado_SI')
+    # ---- D16: every one-at-a-time case (the largest parameters on the LoE: H11) ----
+    tornado(cases, out, 'D16_one_at_a_time')
 
-    # ---- 2. annual paths: WHEN each assumption matters ---------------------
+    # ---- D17: annual paths, WHEN each assumption matters ---------------------
     fy = np.asarray(base['forecast_years'])
     hist = base['hist_built_gfa']
     adopted = base['results']['50th']['total']
@@ -287,60 +294,60 @@ def figures(out, base, paths):
               .sort_values('a', ascending=False))
     show = [c for c in ranked.case if c in paths and 'percentile' not in c][:N_PATHS]
     pop = [c for c in ('Population: Stats NZ 5th percentile', 'Population: Stats NZ 95th percentile') if c in paths]
-    fig, ax = plt.subplots(1, 3, figsize=(22, 6.2), gridspec_kw={'width_ratios': [1.6, 1, 1.15]})
-    fig.suptitle('Sensitivity 2: when each assumption matters (annual built floor area) and what it adds up to '
-                 '(cumulative carbon)', fontsize=12)
+    fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 92), gridspec_kw={'width_ratios': [1.25, 1, 1.15]})
+    colour = {c: S.QUALITATIVE[1 + i] for i, c in enumerate(show)}
+    colour.update({c: S.MUTED for c in pop})
+    num = {c: i for i, c in enumerate(show + pop, 1)}          # cases numbered: legend (a) and bars (c)
     a = ax[0]
     hy = hist.index[hist.index >= 2010]
-    a.plot(hy, hist.loc[hy] / 1e6, color='black', lw=2.2, label='observed (built basis)')
+    a.plot(hy, hist.loc[hy] / 1e6, color=S.INK, lw=S.LW_BOLD, label='History (built)')
     lo, hi = paths.get(pop[0]) if pop else None, paths.get(pop[-1]) if pop else None
     if lo is not None and hi is not None:
-        a.fill_between(fy[1:], lo[1:] / 1e6, hi[1:] / 1e6, color='grey', alpha=0.15,
-                       label='population 5th-95th')
-    a.plot(fy[1:], adopted[1:] / 1e6, color='black', lw=2.2, ls='--', label='adopted')
-    cmap = plt.get_cmap('tab10')
-    colour = {c: cmap(i) for i, c in enumerate(show)}
-    colour.update({c: ('#7f8c8d' if '5th' in c else '#2c3e50') for c in pop})
+        a.fill_between(fy[1:], lo[1:] / 1e6, hi[1:] / 1e6, label='Population 5th–95th percentile', **S.MC_BAND)
+    a.plot(fy[1:], adopted[1:] / 1e6, color=S.INK, lw=S.LW_BOLD, ls='--', label='Reference')
     for c in show:
-        a.plot(fy[1:], paths[c][1:] / 1e6, color=colour[c], lw=1.6, label=c)
+        a.plot(fy[1:], paths[c][1:] / 1e6, color=colour[c], lw=S.LW, label=f'{num[c]}  {c}')
     for c in pop:
-        a.plot(fy[1:], paths[c][1:] / 1e6, color=colour[c], lw=1.4, ls=':', label=c)
-    a.axvline(2025.5, color='grey', ls=':', lw=1)
-    a.set_xlim(2010, 2050); a.set_ylim(0, None); a.grid(alpha=0.3)
-    a.set_ylabel('Mm² per year'); a.legend(fontsize=7, loc='upper right')
-    a.set_title(f'The {len(show)} largest effects and the population 5th / 95th percentiles, against history')
+        a.plot(fy[1:], paths[c][1:] / 1e6, color=colour[c], lw=S.LW, ls=':', label=f'{num[c]}  {c}')
+    P.split(a)
+    a.set_xlim(2010, 2050)
+    a.set_ylim(0, None)
+    a.set_ylabel('Floor area (Mm² per year)')
+    P.panel(a, 'a', f'The {len(show)} largest effects, against history')
     a = ax[1]
     for c in show:
-        a.plot(fy[1:], 100 * (paths[c][1:] / adopted[1:] - 1), color=colour[c], lw=1.8, label=c)
+        a.plot(fy[1:], 100 * (paths[c][1:] / adopted[1:] - 1), color=colour[c], lw=S.LW)
     for c in pop:
-        a.plot(fy[1:], 100 * (paths[c][1:] / adopted[1:] - 1), color=colour[c], lw=1.4, ls=':', label=c)
-    a.axhline(0, color='black', lw=1)
-    a.set_xlim(2026, 2050); a.grid(alpha=0.3)
-    a.set_ylabel('% difference from adopted, each year')
-    a.set_title('Early-years vs long-run effects')
-    # ---- 3. cumulative carbon 2026-2050 of every path shown ------------------
+        a.plot(fy[1:], 100 * (paths[c][1:] / adopted[1:] - 1), color=colour[c], lw=S.LW, ls=':')
+    a.axhline(0, color=S.INK, lw=S.LW_THIN)
+    a.set_xlim(2026, 2050)
+    a.set_ylabel('Difference vs the Reference, each year (%)')
+    P.panel(a, 'b', 'Early-year vs long-run effects')
     a = ax[2]
     carbon = out.set_index('case')['carbon_kt']
-    bars = [('adopted', float(out.iloc[0]['carbon_kt']), 'black')] + \
+    bars = [('Reference', float(out.iloc[0]['carbon_kt']), S.INK)] + \
            [(c, float(carbon[c]), colour[c]) for c in show + pop]
     yb = np.arange(len(bars))[::-1]
-    a.barh(yb, [v for _, v, _ in bars], color=[c for *_, c in bars], height=0.7,
-           edgecolor=['#c0392b' if i == 0 else 'none' for i in range(len(bars))],
-           linewidth=[2.2 if i == 0 else 0 for i in range(len(bars))])
+    a.barh(yb, [v for _, v, _ in bars], color=[c for *_, c in bars], height=0.7)
     ref = bars[0][1]
     for yi, (lab, v, _) in zip(yb, bars):
-        a.text(v, yi, f'  {v:,.0f} kt' + ('  (adopted)' if lab == 'adopted' else f'  ({100 * (v / ref - 1):+.1f}%)'),
-               va='center', fontsize=7.5)
-    a.set_yticks(yb); a.set_yticklabels([lab for lab, *_ in bars], fontsize=7.5)
-    a.set_xlim(0, 1.32 * max(v for _, v, _ in bars)); a.grid(alpha=0.3, axis='x')
-    a.set_xlabel('kt CO₂e, 2026-2050'); a.set_title('Cumulative carbon 2026-2050 (% vs adopted)')
-    fig.tight_layout(rect=(0, 0.05, 1, 1))
-    fig.text(0.5, 0.008, 'The Stats NZ household-size variants (Low / Medium / High) converge after about 2041 because '
-             'their published projections end in 2043; household size is held flat after that in every variant, '
-             'so the convergence is an artefact of the projection horizon, not a model result. Population '
-             '5th / 95th: Stats NZ published percentiles; household size, typology mix, dwelling size and carbon '
-             'factors at the adopted settings.', ha='center', fontsize=8, style='italic', wrap=True)
-    _save(fig, 'sens_2_paths.png', tight=False)
+        a.text(v, yi, f' {v:,.0f}' + ('' if lab == 'Reference' else f' ({100 * (v / ref - 1):+.1f}%)'),
+               va='center', fontsize=S.FONT_MIN)
+    a.set_yticks(yb)
+    a.set_yticklabels(['Reference'] + [str(num[c]) for c in show + pop], fontsize=S.FONT_MIN)
+    a.set_xlim(0, 1.45 * max(v for _, v, _ in bars))
+    P.thousands(a.xaxis)
+    a.grid(axis='y', visible=False)
+    a.set_xlabel('Embodied carbon 2026–2050 (kt CO₂e)')
+    P.panel(a, 'c', 'Cumulative carbon (% vs the Reference)')
+    h_, l_ = ax[0].get_legend_handles_labels()
+    fig.legend(h_, l_, loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.01), frameon=False, fontsize=S.FONT_MIN)
+    fig.tight_layout(rect=(0, 0.25, 1, 1))
+    _save(fig, 'D17_sensitivity_paths', tight=False,
+          note='Cases numbered as in the legend. The Stats NZ household-size variants converge after about 2041 because their published projections end '
+               'in 2043 and household size is held flat after that in every variant: an artefact of the projection '
+               'horizon, not a model result. Population 5th / 95th: Stats NZ published percentiles, every other '
+               'input at the adopted settings. ' + POP_NOTE)
 
     if SAVE_FIGURES:
         print("Figures written to outputs/diagnostics/sensitivity/ (D16, D17)")

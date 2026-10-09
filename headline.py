@@ -29,6 +29,7 @@ sys.path.insert(0, ROOT)
 import figure_plan as FP  # noqa: E402
 import layout as L  # noqa: E402
 import naming as N  # noqa: E402
+import plotting as P  # noqa: E402
 import style as S  # noqa: E402
 
 import matplotlib  # noqa: E402
@@ -83,64 +84,6 @@ class Source:
             L.writing(os.path.join(L.HEADLINE, f'{self.fid}.csv')), index=False)
 
 
-# ============================================================
-# DRAWING HELPERS
-# ============================================================
-def panel_label(ax, letter, x=-0.02, y=1.02):
-    ax.text(x, y, letter, transform=ax.transAxes, fontsize=S.FONT_SIZE + 1, fontweight='bold', va='bottom',
-            ha='right')
-
-
-def boundary_lines(ax, x, ar, atp, label=True, **kw):
-    """The two allocation principles as lines (never shaded as a range, never averaged)."""
-    import figaudit
-    for key, y in (('AR', ar), ('AtP', atp)):
-        st = dict(S.BOUNDARY[key])
-        lab = st.pop('label')
-        ax.plot(x, y, gid=figaudit.BOUNDARY, label=lab if label else None, **st, **kw)
-
-
-def band_style(bid):
-    colour, hatch = S.BAND[bid if bid in S.BAND else 'replacement']
-    return dict(facecolor=colour, hatch=hatch, edgecolor='white', linewidth=S.LW_THIN)
-
-
-def signed_stack(ax, x, parts, width, **kw):
-    """Stack positive parts upwards and negative parts downwards from zero. parts: [(id, values)]."""
-    x = np.atleast_1d(np.asarray(x, float))
-    up, dn = np.zeros(len(x)), np.zeros(len(x))
-    for bid, v in parts:
-        v = np.atleast_1d(np.asarray(v, float))
-        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
-        st = dict(band_style(bid), **kw)
-        ax.bar(x, pos, bottom=up, width=width, **st)
-        ax.bar(x, neg, bottom=dn, width=width, **st)
-        up, dn = up + pos, dn + neg
-    return up, dn
-
-
-def band_legend(fig, bids, loc='lower center', ncol=4, y=-0.02, extra=()):
-    handles = []
-    for b in bids:
-        lab = (N.BANDS.get(b) or N.BAND_DETAIL[b]) + (' (untargeted)' if b in N.UNTARGETED else '')
-        st = dict(band_style(b), edgecolor='#555555')
-        handles.append(Patch(label=lab, **st))
-    fig.legend(handles=list(handles) + list(extra), loc=loc, ncol=ncol, bbox_to_anchor=(0.5, y), frameon=False,
-               handlelength=1.4, columnspacing=1.2)
-
-
-def fmt_kt(v):
-    return f'{v:,.0f}'
-
-
-def log_ticks(axis, ticks):
-    """Plain-number ticks on a log axis (1, 2, 5, 10 ... rather than 10^0, 10^1)."""
-    lo, hi = axis.get_view_interval()
-    axis.set_major_locator(matplotlib.ticker.FixedLocator([t for t in ticks if lo <= t <= hi]))
-    axis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:,g}'))
-    axis.set_minor_locator(matplotlib.ticker.NullLocator())
-
-
 def save(fig, fid, src):
     """Source data, then the figure (style.save_figure: PNG and PDF); a headline figure must print
     at Nature's double-column width, so a PNG wider than 183 mm (labels outside the frame) is
@@ -156,16 +99,6 @@ def save(fig, fid, src):
 
 def fill(fid, **numbers):
     return PLAN[fid]['caption'].format(**numbers)
-
-
-def typeset(text):
-    """Print typography for captions and findings (figure_plan.py keeps ASCII): ranges with an en
-    dash (1991-2050, 8,208-8,969, A1-A5, C1-C4), m² and CO₂e."""
-    import re
-    text = re.sub(r'(?<=\d)-(?=\d)', '–', text)
-    text = re.sub(r'\b([A-D]\d)-([A-D]\d)\b', r'\1–\2', text)
-    text = re.sub(r'\bm2\b', 'm²', text)
-    return re.sub(r'\bCO2e\b', 'CO₂e', text)
 
 
 # ============================================================
@@ -228,7 +161,7 @@ def h1():
         ax.text(xb_ + 5.2, y, N.BANDS[bid] + (' (untargeted)' if bid in N.UNTARGETED else ''), va='center',
                 fontsize=S.FONT_SMALL, color=S.INK)
         if lev:
-            p = [P for P, ls in N.PATHWAY_LEVERS.items() if lev in ls][0]
+            p = [pw for pw, ls in N.PATHWAY_LEVERS.items() if lev in ls][0]
             if bid != 'redevelopment':
                 ax.text(1.0, y, f'{lev} {N.LEVERS[lev]}', va='center', ha='left', fontsize=S.FONT_SMALL,
                         color=S.PATHWAY[p], fontweight='bold')
@@ -268,8 +201,8 @@ def h1():
             raise SystemExit('H1: a row of labels is wider than the figure.')
 
     heading(1.0, 25.0, 'Pathways (levers combined)')
-    row(20.0, [(f"{P} {N.PATHWAYS[P]} ({'+'.join(N.PATHWAY_LEVERS.get(P, ('L1–L5',)))})",
-                dict(color=S.PATHWAY[P], fontweight='bold')) for P in (f'P{k}' for k in range(1, 6))])
+    row(20.0, [(f"{pw} {N.PATHWAYS[pw]} ({'+'.join(N.PATHWAY_LEVERS.get(pw, ('L1–L5',)))})",
+                dict(color=S.PATHWAY[pw], fontweight='bold')) for pw in (f'P{k}' for k in range(1, 6))])
     heading(1.0, 13.0, 'Theoretical limit TL: each lever and the soil at its limit, from 2027', color=S.TL)
     row(8.0, [(f"TL{k} {N.TL[f'TL{k}']}", dict(color=S.TL)) for k in range(1, 7)])
     ax.text(1.0, 3.0, 'TL: ' + N.TL_CAPTION + '.', fontsize=S.FONT_SMALL, color=S.MUTED, style='italic',
@@ -311,9 +244,9 @@ def h2():
     a.axvline(2025.5, color=S.MUTED, lw=S.LW_THIN, ls=':')
     a.set_xlim(1991, 2050)
     a.set_ylim(0, None)
-    a.set_ylabel('Floor area built (Mm² per year)')
+    a.set_ylabel('Floor area (Mm² per year)')
     a.legend(loc='upper left', ncol=1)
-    panel_label(a, 'a')
+    P.panel_label(a, 'a')
     tot = {k: sc[k]['floor_area_Mm2'] for k in VARIANTS}
     p5, p95 = ms.loc['floor_area_Mm2', 'p5'], ms.loc['floor_area_Mm2', 'p95']
     for i, k in enumerate(VARIANTS):
@@ -327,9 +260,9 @@ def h2():
     src.add('b', 'Reference, Monte Carlo 95%', 'cumulative 2026-2050', p95, 'Mm2')
     b.set_xticks(range(len(VARIANTS)))
     b.set_xticklabels([N.SCENARIOS[k].replace(' replacement', '\nreplacement') for k in VARIANTS])
-    b.set_ylabel('Floor area, 2026–2050 (Mm²)')
+    b.set_ylabel('Floor area 2026–2050 (Mm²)')
     b.grid(axis='x', visible=False)
-    panel_label(b, 'b')
+    P.panel_label(b, 'b')
     fig.tight_layout()
     save(fig, fid, src)
     num = dict(gfa_ref=tot[REF], gfa_p5=p5, gfa_p95=p95, gfa_low=tot['LOW'], gfa_high=tot['HIGH'])
@@ -352,7 +285,7 @@ def h3():
         faint = g['households_from'].iloc[0] != 'census'
         parts = [(('replacement' if b == 'replacement_history' else b),
                   float(g[g['band'] == N.band_data_label(b)]['floor_area_Mm2_per_year'].iloc[0])) for b in hist_ids]
-        signed_stack(ax, [y0 - 0.5 + (y1 - y0 + 1) / 2], parts, width=(y1 - y0 + 1) * 0.96,
+        P.signed_stack(ax, [y0 - 0.5 + (y1 - y0 + 1) / 2], parts, width=(y1 - y0 + 1) * 0.96,
                      alpha=0.45 if faint else 1.0, align='center')
         for b, v in parts:
             src.add('history', N.band_data_label(b if b != 'replacement' else 'replacement_history'),
@@ -365,7 +298,7 @@ def h3():
         v = ba[ba['band'] == N.band_data_label(b)].set_index('year').loc[years, 'floor_area_Mm2'].values
         parts.append((b, v))
         src.add('projection', N.BANDS[b], years, v, 'Mm2 per year')
-    signed_stack(ax, years, parts, width=0.82)
+    P.signed_stack(ax, years, parts, width=0.82)
     ax.axhline(0, color=S.INK, lw=S.LW_THIN)
     ax.axvline(2025.5, color=S.MUTED, lw=S.LW_THIN, ls=':')
     y_lo, y_hi = ax.get_ylim()
@@ -375,9 +308,9 @@ def h3():
     ax.text(2026.0, 0.98, ' Reference projection', transform=ax.get_xaxis_transform(), ha='left', va='top',
             fontsize=S.FONT_SMALL, color=S.MUTED)
     ax.set_xlim(1991, 2050.6)
-    ax.set_ylabel('Floor area built (Mm² per year)')
+    ax.set_ylabel('Floor area (Mm² per year)')
     ax.grid(axis='x', visible=False)
-    band_legend(fig, ['growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild_2026', 'replacement',
+    P.band_legend(fig, ['growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild_2026', 'replacement',
                       'redevelopment'], y=-0.01, ncol=4)
     fig.tight_layout(rect=(0, 0.1, 1, 1))
     save(fig, fid, src)
@@ -431,7 +364,7 @@ def h4():
     a.set_ylabel('Embodied carbon (kt CO₂e per year)')
     a.grid(axis='x', visible=False)
     a.legend(loc='upper right')
-    panel_label(a, 'a')
+    P.panel_label(a, 'a')
     # (b) cumulative by material, and committed after 2050
     mat = pj['material_kt']
     com = pj['committed']
@@ -439,9 +372,7 @@ def h4():
     bottom = 0.0
     for code_, label, colour in S.MATERIAL:
         v = float(mat[code_])
-        soil = code_ == 'SOIL'
-        b.bar(x0, v, bottom=bottom, width=0.6, color=colour, edgecolor='#555555' if soil else 'white',
-              hatch='////' if soil else None, lw=S.LW_THIN, alpha=0.7 if soil else 1.0)
+        b.bar(x0, v, bottom=bottom, width=0.6, **P.material_patch(code_, colour))
         if v > 0.035 * sum(mat.values()):
             b.text(x0 + 0.34, bottom + v / 2, f'{label} {v:,.0f}', va='center', ha='left', fontsize=S.FONT_MIN,
                    color=S.INK)
@@ -463,7 +394,7 @@ def h4():
     b.set_ylabel('Embodied carbon (kt CO₂e)')
     b.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:,.0f}'))
     b.grid(axis='x', visible=False)
-    panel_label(b, 'b')
+    P.panel_label(b, 'b')
     fig.tight_layout()
     save(fig, fid, src)
     num = dict(carbon=pj['carbon_kt'], materials=float(an['materials_construction_kt'].sum()),
@@ -494,12 +425,12 @@ def h5():
     st = dict(S.SCENARIO[REF])
     lab = st.pop('label')
     a.plot(r['year'], r['I_sec_kgCO2e'] / M6, label=f'{lab} (embodied carbon)', **st)
-    boundary_lines(a, r['year'], r['B_AR_kgCO2e'] / M6, r['B_AtP_kgCO2e'] / M6)
+    P.boundary_lines(a, r['year'], r['B_AR_kgCO2e'] / M6, r['B_AtP_kgCO2e'] / M6)
     a.set_yscale('log')
     a.set_xlim(WINDOW[0], WINDOW[1])
-    a.set_ylabel('kt CO₂e per year (log scale)')
-    log_ticks(a.yaxis, (20, 50, 100, 200, 500, 1000, 2000, 5000))
-    panel_label(a, 'a')
+    a.set_ylabel('Embodied carbon and boundaries (kt CO₂e per year, log scale)')
+    P.log_ticks(a.yaxis, (20, 50, 100, 200, 500, 1000, 2000, 5000))
+    P.panel_label(a, 'a')
     src.add('a', 'Reference', r['year'], r['I_sec_kgCO2e'] / M6, 'kt CO2e per year')
     src.add('a', 'Monte Carlo 5%', m['year'], m['I_sec_kgCO2e_p5'] / M6, 'kt CO2e per year')
     src.add('a', 'Monte Carlo 95%', m['year'], m['I_sec_kgCO2e_p95'] / M6, 'kt CO2e per year')
@@ -524,13 +455,13 @@ def h5():
     b.set_yticks(range(len(VARIANTS)))
     b.set_yticklabels([N.SCENARIOS[k] for k in reversed(VARIANTS)])
     b.set_ylim(-0.6, len(VARIANTS) - 0.4)
-    b.set_xlabel(N.METRICS['cumulative_LoE'] + ' (log)')
+    b.set_xlabel(N.METRICS['cumulative_LoE'] + ' (log scale)')
     b.grid(axis='y', visible=False)
     xl = b.get_xlim()
     b.set_xlim(min(0.8, xl[0]), xl[1] * 1.6)
-    log_ticks(b.xaxis, (1, 2, 5, 10, 20, 50, 100))
+    P.log_ticks(b.xaxis, (1, 2, 5, 10, 20, 50, 100))
     b.text(1.0, len(VARIANTS) - 0.45, ' LoE = 1: on the boundary', fontsize=S.FONT_MIN, color=S.INK, va='top')
-    panel_label(b, 'b')
+    P.panel_label(b, 'b')
     st_ref = dict(S.SCENARIO[REF])
     handles = [Line2D([0], [0], color=st_ref['color'], lw=st_ref['lw'], ls=st_ref['ls'],
                       label=f"{st_ref['label']} (embodied carbon)"),
@@ -580,7 +511,7 @@ def h6():
                    lw=S.LW_THIN, label=N.COMPONENTS[cid] if i == 0 else None)
             src.add('within 2026-2050', N.COMPONENTS[cid], N.SCENARIOS[k], v, 'kt CO2e')
             bottom += v
-        ax.text(i - w / 2 - 0.02, bottom, fmt_kt(bottom), ha='center', va='bottom', fontsize=S.FONT_SMALL)
+        ax.text(i - w / 2 - 0.02, bottom, P.fmt_kt(bottom), ha='center', va='bottom', fontsize=S.FONT_SMALL)
         colour, hatch = S.COMPONENT['committed']
         ax.bar(i + w / 2 + 0.02, c['lower_kt'], width=w, facecolor='white', edgecolor=S.MUTED, hatch=hatch,
                lw=S.LW_THIN, label=N.COMPONENTS['committed'] + ', lower bound (2050 factors held)' if i == 0 else None)
@@ -653,11 +584,11 @@ def h7():
         for i, run in enumerate(H7_RUNS):
             d = bd[bd['run'] == run].set_index('band')
             parts = [(b, float(d.loc[N.band_data_label(b), col])) for b in ids]
-            up, dn = signed_stack(ax, [i], parts, width=0.64)
+            up, dn = P.signed_stack(ax, [i], parts, width=0.64)
             for b, v in parts:
                 src.add(letter, f'{run}: {N.BANDS[b]}', run, v, unit)
             net = float(up[0] + dn[0])
-            ax.text(i, up[0], fmt_kt(net) if col == 'carbon_kt' else f'{net:.1f}', ha='center', va='bottom',
+            ax.text(i, up[0], P.fmt_kt(net) if col == 'carbon_kt' else f'{net:.1f}', ha='center', va='bottom',
                     fontsize=S.FONT_MIN)
             if run.startswith('P'):
                 amb = run.replace('moderate', 'ambitious')
@@ -671,12 +602,12 @@ def h7():
         ax.axhline(0, color=S.INK, lw=S.LW_THIN)
         ax.set_xticks(range(len(H7_RUNS)))
         ax.set_xticklabels(xt, fontsize=S.FONT_MIN)
-        ax.set_ylabel('Floor area, 2026–2050 (Mm²)' if col == 'floor_area_Mm2' else 'Embodied carbon, 2026–2050 (kt CO₂e)')
+        ax.set_ylabel('Floor area 2026–2050 (Mm²)' if col == 'floor_area_Mm2' else 'Embodied carbon 2026–2050 (kt CO₂e)')
         if col == 'carbon_kt':
             ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:,.0f}'))
         ax.grid(axis='x', visible=False)
-        panel_label(ax, letter)
-    band_legend(fig, list(N.BANDS_IN_SCOPE), ncol=4, y=-0.01,
+        P.panel_label(ax, letter)
+    P.band_legend(fig, list(N.BANDS_IN_SCOPE), ncol=4, y=-0.01,
                 extra=[Line2D([0], [0], color=S.INK, marker='_', ms=7, mew=S.LW_BOLD, lw=S.LW_THIN,
                               label='Ambitious total (bars: Moderate)')])
     fig.tight_layout(rect=(0, 0.12, 1, 1))
@@ -713,7 +644,7 @@ def h8():
         ends.append((float(d['carbon_kt'].iloc[-1]), N.run_label(run).split(',')[0] if run.startswith('TL') else
                      N.run_label(run).replace('P5 Combined', 'P5'), colour))
     d0 = an[an['run'] == REF]
-    boundary_lines(ax, d0['year'], d0['B_AR_kt'], d0['B_AtP_kt'])
+    P.boundary_lines(ax, d0['year'], d0['B_AR_kt'], d0['B_AtP_kt'])
     src.add('a', N.METRICS['AR'] + ' boundary', d0['year'], d0['B_AR_kt'], 'kt CO2e per year')
     src.add('a', N.METRICS['AtP'] + ' boundary', d0['year'], d0['B_AtP_kt'], 'kt CO2e per year')
     ax.set_xlim(WINDOW[0], WINDOW[1])
@@ -762,7 +693,7 @@ def h9():
 
     def total(xx, v, colour, label):
         ax.bar(xx, v, width=w, color=colour, edgecolor='white')
-        ax.text(xx, v, fmt_kt(v), ha='center', va='bottom', fontsize=S.FONT_SMALL)
+        ax.text(xx, v, P.fmt_kt(v), ha='center', va='bottom', fontsize=S.FONT_SMALL)
         labels.append(label)
         src.add('cascade', label, 'total', v, 'kt CO2e, 2026-2050')
 
@@ -832,7 +763,7 @@ def h9():
     ax.set_xticklabels(labels, fontsize=S.FONT_MIN, rotation=90)
     ax.set_xlim(-0.6, xc + 2.6)
     ax.set_ylim(0, ref * 1.07)
-    ax.set_ylabel('Embodied carbon, 2026–2050 (kt CO₂e)')
+    ax.set_ylabel('Embodied carbon 2026–2050 (kt CO₂e)')
     ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:,.0f}'))
     ax.grid(axis='x', visible=False)
     ax.legend(handles=[Line2D([0], [0], marker='o', mfc='white', mec=S.INK, ms=3.5, lw=0, mew=S.LW_THIN,
@@ -905,16 +836,16 @@ def h10():
                         linewidths=[S.LW_BOLD if v == 1 else S.LW_THIN for v in lv])
         a_.clabel(cs, fmt=lambda v: f'{v:g}', fontsize=S.FONT_MIN)
         for m in marks:
-            P, st_ = m['run'].split('-')
+            pw, st_ = m['run'].split('-')
             a_.plot(100 * m['demand_reduction'], 100 * m['intensity_reduction'], marker='o', ms=4 if a_ is ax else 5,
-                    mfc=S.PATHWAY[P] if st_ == 'ambitious' else 'white', mec=S.PATHWAY[P], mew=S.LW, lw=0,
+                    mfc=S.PATHWAY[pw] if st_ == 'ambitious' else 'white', mec=S.PATHWAY[pw], mew=S.LW, lw=0,
                     clip_on=False, zorder=5)
         a_.set_xlim(x0, x1)
         a_.set_ylim(y0, y1)
         a_.set_xlabel('Demand reduction:\ncut of 2027–2050 floor area (%)')
         a_.set_ylabel('Intensity reduction:\ncut of non-soil carbon per m² (%)')
         a_.grid(False)
-        panel_label(a_, letter)
+        P.panel_label(a_, letter)
     ax.plot(100 * tl['demand_reduction'], 100 * tl['intensity_reduction'], marker='*', ms=8, mfc=S.TL, mec='white',
             mew=S.LW_THIN, lw=0, zorder=6)
     for p in bc['backcast_points']:
@@ -938,12 +869,12 @@ def h10():
     pb = az.get_position()
     cax.set_position([pb.x1 + 0.02, pb.y0, 0.014, pb.height])
     cb = fig.colorbar(pm, cax=cax)
-    cb.set_label(N.METRICS['cumulative_LoE'] + ', AR (log)')
+    cb.set_label(N.METRICS['cumulative_LoE'] + ', AR (log scale)')
     cb.set_ticks([0.25, 0.5, 1, 2, 3, 5])
     cb.set_ticklabels(['0.25', '0.5', '1', '2', '3', '5'])
     cb.minorticks_off()
-    handles = [Line2D([0], [0], marker='o', mfc=S.PATHWAY[P], mec=S.PATHWAY[P], lw=0, ms=4, label=f'{P} {N.PATHWAYS[P]}')
-               for P in S.PATHWAY]
+    handles = [Line2D([0], [0], marker='o', mfc=S.PATHWAY[pw], mec=S.PATHWAY[pw], lw=0, ms=4,
+                      label=f'{pw} {N.PATHWAYS[pw]}') for pw in S.PATHWAY]
     handles += [Line2D([0], [0], marker='o', mfc='white', mec=S.INK, lw=0, ms=4, label='Moderate (open) / Ambitious (filled)'),
                 Line2D([0], [0], marker='*', mfc=S.TL, mec='white', lw=0, ms=8, label='TL Theoretical limit (a)'),
                 Line2D([0], [0], marker='D', mfc=S.INK, mec='white', lw=0, ms=3.5, label='Back-cast to LoE AR = 1 (a)'),
@@ -1144,13 +1075,13 @@ def write_md(r):
         lines += ['> **QUICK RUN, not for reporting** (run_all.py --quick: fewer Monte Carlo draws).', '']
     lines += ['## Findings', '']
     for i, (text, files) in enumerate(findings(r), 1):
-        lines.append(f'{i}. {typeset(text)} (Source: {files}.)')
+        lines.append(f'{i}. {N.typeset(text)} (Source: {files}.)')
     lines += ['', '## Figures', '']
     for h in FP.HEADLINE:
         f = h['file']
         data = f"Data (outputs/): {h['source']}" if h['source'].startswith('data/') else f"Data: {h['source']}"
-        lines += [f"### {h['id']}. {typeset(h['title'])}", '', f'![{h["id"]}]({f}.png)', '',
-                  f"**{h['id']}.** {typeset(r[h['id']]['caption'])}", '',
+        lines += [f"### {h['id']}. {N.typeset(h['title'])}", '', f'![{h["id"]}]({f}.png)', '',
+                  f"**{h['id']}.** {N.typeset(r[h['id']]['caption'])}", '',
                   f"Files: [{f}.png]({f}.png), [{f}.pdf]({f}.pdf), source data [{f}.csv]({f}.csv). {data}.", '']
     with open(L_path(), 'w', encoding='utf-8') as fh:
         fh.write('\n'.join(lines) + '\n')

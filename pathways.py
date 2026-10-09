@@ -58,7 +58,6 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import aesa  # noqa: E402
 import engine  # noqa: E402
 import events as EV  # noqa: E402
-import figure_plan as FP  # noqa: E402
 import layout  # noqa: E402
 import levers as LV  # noqa: E402
 import naming as N  # noqa: E402
@@ -955,49 +954,17 @@ def main():
 
 
 # ============================================================
-# FIGURES (style.save_figure: outputs/headline/, outputs/diagnostics/pathways_si/)
+# FIGURES (outputs/diagnostics/pathways_si/; the headline figures H7-H10 are drawn by headline.py
+# from the data files written above)
 # ============================================================
-# Colours: the AR / AtP boundary pair of boundaries.py; pathways P1-P4 aqua, amber, pink, deep magenta
-# (validated with the dataviz palette validator together with the boundary pair, all pairs,
-# light surface: no failure; pink vs aqua in the CVD warn band, so every pathway is also
-# identified by position and direct labels); P0 and P5 (totals) neutral.
-AR_COLOR, ATP_COLOR = '#1F5FA8', '#C2571A'
-P_COLOR = {'REF': '#9a9a9a', 'P1': '#1baf7a', 'P2': '#eda100', 'P3': '#e87ba4', 'P4': '#a0185a', 'P5': '#3b3b3b'}
-INK, MUTED, GRID_COLOR = '#333333', '#777777', '#e1e0d9'
-PW_ORDER = ('REF', 'P1', 'P2', 'P3', 'P4', 'P5')
 NAMES = {'REF': N.SCENARIOS['REF'], **LV.PATHWAY_NAMES}
-UNTARGETED = tuple(N.band_data_label(b) for b in N.UNTARGETED)
-def _save(fig, name):
-    target = FP.release_file(name)
-    if target is not None:
-        style.save_figure(fig, target)
+BAND_ID = {N.band_data_label(b): b for b in N.BANDS_IN_SCOPE}
+
+
+def _save(fig, name, note=None):
     import matplotlib.pyplot as plt
+    style.save_figure(fig, name, note=note)
     plt.close(fig)
-
-
-def _style(ax, axis='y'):
-    ax.grid(True, axis=axis, color=GRID_COLOR, lw=0.6)
-    ax.set_axisbelow(True)
-    for sp in ('top', 'right'):
-        ax.spines[sp].set_visible(False)
-
-
-def _hline(ax, y, color, ls, label, x_text, x_range=None):
-    """A cumulative boundary as a horizontal line (over x_range only, if given) with a direct label."""
-    import figaudit
-    import matplotlib.patheffects as pe
-    kw = dict(color=color, lw=2.0, ls=ls, gid=figaudit.BOUNDARY,
-              path_effects=[pe.Stroke(linewidth=4, foreground='white'), pe.Normal()])
-    if x_range is None:
-        ax.axhline(y, **kw)
-    else:
-        ax.plot(x_range, [y, y], **kw)
-    ax.text(x_text, y, f' {label}', color=INK, fontsize=8, va='bottom', ha='left')
-
-
-def _wrap(text, width=12):
-    import textwrap
-    return '\n'.join(textwrap.wrap(text, width))
 
 
 def _run(res, name, scen=REFERENCE):
@@ -1008,277 +975,57 @@ def _run(res, name, scen=REFERENCE):
     return r[(r['run'] == name) & (r['scenario'] == scen)].iloc[0]
 
 
-def _pname(P, s='moderate'):
-    return P if P == REFERENCE else f'{P}-{s}'
-
-
-def _band_colors():
-    projection = validation.projection
-    return dict(zip([b for b, _ in FIG_BANDS],
-                    [projection.DEMAND_COLORS[0], projection.HOUSESPLIT_COLOR, projection.DEMAND_COLORS[1], projection.DEMAND_COLORS[2],
-                     projection.REPL_COLOR, projection.WAVE_COLOR, projection.JOIN_COLOR, projection.EVENTS_COLOR]))
-
-
-def fig_bands_by_pathway(res):
-    import matplotlib.pyplot as plt
-    from matplotlib.patches import Patch
-    colors = _band_colors()
-    bd = res['bands']
-    bd = bd[(bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope')]
-    fig, axes = plt.subplots(1, 2, figsize=(16, 7))
-    for ax, col, ylab in ((axes[0], 'gfa_Mm2', 'floor area 2026-2050, Mm$^2$'),
-                          (axes[1], 'carbon_kt', 'carbon 2026-2050, kt CO$_2$e')):
-        fmt = (lambda v: f'{v:,.1f}') if col == 'gfa_Mm2' else (lambda v: f'{v:,.0f}')
-        for i, P in enumerate(PW_ORDER):
-            d = bd[bd['run'] == _pname(P)].set_index('band')
-            pos, neg = 0.0, 0.0
-            for band, _ in FIG_BANDS:                      # untargeted bands first, at the bottom
-                v = float(d.loc[band, col])
-                if abs(v) < 1e-12:
-                    continue
-                base = pos if v > 0 else neg
-                ax.bar(i, v, bottom=base, color=colors[band], edgecolor='white', lw=1.0, width=0.62,
-                       hatch='..' if band in UNTARGETED else None)
-                if abs(v) > 0.035 * d[col].sum():
-                    ax.text(i, base + v / 2, fmt(v), ha='center', va='center', fontsize=7, color='white')
-                if v > 0:
-                    pos += v
-                else:
-                    neg += v
-            net = pos + neg
-            ax.text(i - 0.33, pos, fmt(net), ha='left', va='bottom', fontsize=8.5, color=INK)
-            if P != 'REF':                                  # stretch total as a whisker from the central total
-                st = float(bd[bd['run'] == _pname(P, 'ambitious')][col].sum())
-                ax.plot([i + 0.2, i + 0.2], [net, st], color=INK, lw=1.4)
-                ax.plot([i + 0.12, i + 0.28], [st, st], color=INK, lw=1.4)
-                ax.text(i + 0.3, st, fmt(st), ha='left', va='center', fontsize=7.5, color=MUTED)
-        ax.set_xticks(range(len(PW_ORDER)))
-        ax.set_xticklabels([f'{P}\n{_wrap(NAMES[P], 14)}' for P in PW_ORDER], fontsize=8.5)
-        ax.axhline(0, color=INK, lw=0.8)
-        ax.set_ylabel(ylab)
-        _style(ax)
-    axes[0].set_title('Floor area by demand band (in scope)', fontsize=10)
-    axes[1].set_title('Carbon by demand band (in scope, incl. replacements & repaints within the window)', fontsize=10)
-    handles = [Patch(facecolor=colors[b], hatch='..' if b in UNTARGETED else None, edgecolor='white',
-                     label=b + (' (untargeted)' if b in UNTARGETED else '')) for b, _ in FIG_BANDS]
-    handles.append(plt.Line2D([0], [0], color=INK, lw=1.4, label='stretch total (whisker from the central total)'))
-    fig.legend(handles=handles, loc='lower center', ncol=3, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.12))
-    p0, p5 = _run(res, 'REF'), _run(res, 'P5-moderate')
-    fig.suptitle(f"What each pathway removes, by reason for building (S3-10, central): carbon {p0['carbon_kt']:,.0f} -> "
-                 f"{p5['carbon_kt']:,.0f} kt (P5)", fontsize=11)
-    fig.text(0.5, -0.16, 'Growth and house-splitting (hatched) are untargeted by design: population and household '
-             'formation are exogenous (Pellan et al. 2024). Typology shares are the baseline mix in every run (L4 '
-             'removed). Negative bands below zero: with P2 the vacancy rate falls and '
-             'existing dwellings are released; the absorbed near-term surplus is paid back by 2050.',
-             ha='center', fontsize=8, style='italic', wrap=True)
-    fig.tight_layout()
-    _save(fig, 'pw_1_bands_by_pathway')
-
-
-def fig_shapley_waterfall(res):
-    import matplotlib.pyplot as plt
-    from matplotlib.patches import Patch
-    sh = res['shapley_pathways']
-    sh = sh[sh['metric'] == 'carbon_kt'].set_index(['setting', 'player'])['reduction']
-    bar_kt, batp_kt = res['backcast']['B_AR_kt'], res['backcast']['B_AtP_kt']
-    p0, p5c, p5s = _run(res, 'REF'), _run(res, 'P5-moderate'), _run(res, 'P5-ambitious')
-    fig, ax = plt.subplots(figsize=(13, 6.8))
-    ax.bar(0, p0['carbon_kt'], color=P_COLOR['REF'], width=0.66)
-    ax.text(0, p0['carbon_kt'], f"{p0['carbon_kt']:,.0f}", ha='center', va='bottom', fontsize=8.5, color=INK)
-    prev, x = p0['carbon_kt'], 0
-    labels = ['P0\nbaseline']
-    for P in ('P1', 'P2', 'P3', 'P4'):
-        x += 1
-        c, s = float(sh[('moderate', P)]), float(sh[('ambitious', P)])
-        ax.bar(x, -c, bottom=prev, color=P_COLOR[P], edgecolor='white', width=0.66)
-        ax.plot([x - 1.33, x + 0.33], [prev, prev], color=MUTED, lw=0.6)
-        ax.plot([x + 0.4, x + 0.4], [prev, prev - s], color=INK, lw=1.4)         # stretch Shapley value of the step
-        ax.plot([x + 0.32, x + 0.48], [prev - s, prev - s], color=INK, lw=1.4)
-        ax.text(x - 0.1, prev - c - 60, f"-{c:,.0f}\n({-100 * c / p0['carbon_kt']:.1f}%)\nstretch -{s:,.0f}",
-                ha='center', va='top', fontsize=7.5, color=INK)
-        prev -= c
-        labels.append(f'{P}\n{_wrap(NAMES[P], 13)}')
-    x += 1
-    ax.plot([x - 1.33, x + 0.33], [prev, prev], color=MUTED, lw=0.6)
-    ax.bar(x, p5c['carbon_kt'], color=P_COLOR['P5'], width=0.66)
-    ax.plot([x + 0.18, x + 0.18], [p5c['carbon_kt'], p5s['carbon_kt']], color=INK, lw=1.4)
-    ax.plot([x + 0.1, x + 0.26], [p5s['carbon_kt']] * 2, color=INK, lw=1.4)
-    ax.text(x, p5c['carbon_kt'], f"{p5c['carbon_kt']:,.0f} ({p5c['delta_carbon_kt_vs_reference_pct']:+.1f}%)\nstretch "
-            f"{p5s['carbon_kt']:,.0f} ({p5s['delta_carbon_kt_vs_reference_pct']:+.1f}%)", ha='center', va='bottom',
-            fontsize=8, color=INK)
-    labels.append('P5\nall')
-    xc = x + 1.6
-    ax.axvline(xc - 0.8, color=MUTED, lw=0.8, ls=':')
-    for k, (nm, rr, rs, col) in enumerate((('REF', p0, None, P_COLOR['REF']), ('P5', p5c, p5s, P_COLOR['P5']))):
-        xx = xc + 0.9 * k
-        ax.bar(xx, rr['committed_lower_kt'], color='white', edgecolor=col, hatch='xx', width=0.66, lw=1.0)
-        ax.plot([xx, xx], [rr['committed_lower_kt'], rr['committed_upper_kt']], color=col, lw=2.2)
-        ax.plot([xx - 0.18, xx + 0.18], [rr['committed_upper_kt']] * 2, color=col, lw=2.2)
-        txt = f"{rr['committed_lower_kt']:,.0f}-{rr['committed_upper_kt']:,.0f}"
-        if rs is not None:
-            ax.plot([xx + 0.42, xx + 0.42], [rs['committed_lower_kt'], rs['committed_upper_kt']], color=INK, lw=2.0)
-            ax.plot([xx + 0.36, xx + 0.48], [rs['committed_lower_kt']] * 2, color=INK, lw=1.4)
-            ax.plot([xx + 0.36, xx + 0.48], [rs['committed_upper_kt']] * 2, color=INK, lw=1.4)
-            txt = f"stretch {rs['committed_lower_kt']:,.0f}-{rs['committed_upper_kt']:,.0f}\ncentral " + txt
-        ax.text(xx, rr['committed_upper_kt'] + 250, txt, ha='center', va='bottom', fontsize=7.5, color=INK)
-    ax.text(xc + 0.45, p0['committed_upper_kt'] * 1.35, 'committed\nafter 2050\n(not in LoE)', ha='center',
-            va='bottom', fontsize=8, color=MUTED)
-    ax.set_xticks(list(range(x + 1)) + [xc, xc + 0.9])
-    ax.set_xticklabels(labels + ['P0\ncommitted', 'P5\ncommitted'], fontsize=8.5)
-    _hline(ax, bar_kt, AR_COLOR, '-', f'AR budget {bar_kt:,.0f}', x - 1.6, x_range=[-0.4, x + 0.4])
-    _hline(ax, batp_kt, ATP_COLOR, '--', f'AtP budget {batp_kt:,.0f}', x - 1.6, x_range=[-0.4, x + 0.4])
-    ax.set_ylabel('cumulative carbon 2026-2050, kt CO$_2$e')
-    ax.set_title(f"P0 -> P5 (S3-10): cumulative LoE AR {p0['LoE_AR']:.2f} -> {p5c['LoE_AR']:.2f} (stretch "
-                 f"{p5s['LoE_AR']:.2f}), AtP {p0['LoE_AtP']:.1f} -> {p5c['LoE_AtP']:.1f} (stretch {p5s['LoE_AtP']:.1f})",
-                 fontsize=11)
-    _style(ax)
-    fig.legend(handles=[Patch(color=P_COLOR[P], label=f'{P} {NAMES[P]}') for P in PW_ORDER] +
-               [plt.Line2D([0], [0], color=INK, lw=1.4, label='stretch (whisker)'),
-                Patch(facecolor='white', edgecolor=MUTED, hatch='xx', label='committed after 2050 (range)')],
-               loc='lower center', ncol=4, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.09))
-    fig.text(0.5, -0.13, 'Steps are Shapley values over the 16 pathway subsets (order-free; they add up exactly to '
-             'P0 - P5; Shapley 1953, Albrecht et al. 2002). Budgets: cumulative 2026-2050, 2 °C carrying capacity '
-             '(Bjørn & Hauschild 2015).', ha='center', fontsize=8, style='italic')
-    fig.tight_layout()
-    _save(fig, 'pw_2_shapley_waterfall')
-
-
-def fig_solution_space(res):
-    import matplotlib.pyplot as plt
-    import matplotlib.patheffects as pe
-    from matplotlib.colors import LinearSegmentedColormap, LogNorm
-    ref = res['ctxs'][REFERENCE]
-    split0 = linear_split(ref, res['get'](REFERENCE, {}))
-    bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
-    Z = res['space'].pivot(index='intensity_reduction', columns='demand_reduction', values='LoE_AR').values
-    cmap = LinearSegmentedColormap.from_list('blue_seq', ['#cde2fb', '#9ec5f4', '#6da7ec', '#3987e5', '#256abf',
-                                                          '#184f95', '#0d366b'])
-    fig, (ax, axin) = plt.subplots(1, 2, figsize=(15, 7.6), gridspec_kw=dict(width_ratios=[1.15, 1]))
-    edges = np.concatenate([[-2.5], GRID * 100 + 2.5])
-    pm = ax.pcolormesh(edges, edges, Z, cmap=cmap, norm=LogNorm(vmin=0.3, vmax=5.0), shading='flat')
-    cb = fig.colorbar(pm, ax=axin, shrink=0.8)
-    cb.set_label('cumulative LoE AR 2026-2050 (log scale)')
-    cb.set_ticks([0.3, 0.5, 1, 2, 3, 5])
-    cb.set_ticklabels(['0.3', '0.5', '1', '2', '3', '5'])
-    cb.minorticks_off()
-    fine = np.linspace(0, 1, 201)
-    D, Ii = np.meshgrid(fine, fine)
-    L_ar = np.vectorize(lambda d, i: scaled_carbon(split0, 1 - d, 1 - i).sum() / bar)(D, Ii)
-    L_atp = L_ar * bar / batp
-    levels = [lv for lv in (1, 2, 3, 5, 10) if L_ar.min() < lv < L_ar.max()]
-    cs = ax.contour(D * 100, Ii * 100, L_ar, levels=levels, colors=['black' if lv == 1 else '#555555' for lv in levels],
-                    linewidths=[2.4 if lv == 1 else 0.9 for lv in levels])
-    ax.clabel(cs, fmt=lambda v: f'AR {v:g}', fontsize=8)
-    if L_atp.min() < 1 < L_atp.max():
-        c2 = ax.contour(D * 100, Ii * 100, L_atp, levels=[1], colors=[ATP_COLOR], linewidths=2.4)
-        ax.clabel(c2, fmt=lambda v: 'AtP 1', fontsize=8)
-        atp_note = ''
-    else:
-        atp_note = (f'AtP LoE = 1 is not attainable on this grid: minimum AtP LoE {L_atp.min():.2f} '
-                    f'(100% demand cut, i.e. 2026 construction and its events alone).')
-    halo = [pe.Stroke(linewidth=2.5, foreground='#0d366b'), pe.Normal()]
-    marks = res['backcast']['solution_space_markers']
-    # zoom inset on the pathway markers (they all sit at small cuts), with direct labels
-    zx = (-1.5, 2.5 + 100 * max(m['demand_reduction'] for m in marks))
-    zy = (min(-2.0, 100 * min(m['intensity_reduction'] for m in marks) - 2.0),
-          2.5 + 100 * max(m['intensity_reduction'] for m in marks))
-    axin.pcolormesh(edges, edges, Z, cmap=cmap, norm=LogNorm(vmin=0.3, vmax=5.0), shading='flat')
-    for a_ in (ax, axin):
-        for m in marks:
-            P, s = m['run'].split('-')
-            a_.scatter(100 * m['demand_reduction'], 100 * m['intensity_reduction'], s=90 if a_ is ax else 110, zorder=5,
-                       facecolor=P_COLOR[P] if s == 'ambitious' else 'white', edgecolor=P_COLOR[P], linewidth=2.0,
-                       label=f"{m['run']}: LoE AR {m['LoE_AR_run']:.2f}" if a_ is ax else None)
-    for k, m in enumerate(marks):
-        P, s = m['run'].split('-')
-        axin.annotate(f'{P}{"s" if s == "ambitious" else "c"}', (100 * m['demand_reduction'], 100 * m['intensity_reduction']),
-                      xytext=((-20, 6) if s == 'moderate' else (6, -12)), textcoords='offset points', fontsize=8,
-                      color='white', path_effects=halo)
-    fz = np.linspace(0, 1, 401)
-    Dz, Iz = np.meshgrid(fz, fz)
-    Lz = np.vectorize(lambda d, i: scaled_carbon(split0, 1 - d, 1 - i).sum() / bar)(Dz, Iz)
-    lz = [lv for lv in (3, 3.5, 4, 4.5) if Lz.min() < lv < Lz.max()]
-    cz = axin.contour(Dz * 100, Iz * 100, Lz, levels=lz, colors='#cccccc', linewidths=0.8)
-    axin.clabel(cz, fmt=lambda v: f'AR {v:g}', fontsize=7)
-    axin.set_xlim(*zx)
-    axin.set_ylim(*zy)
-    axin.set_xlabel('demand reduction (%)')
-    axin.set_ylabel('intensity reduction (%)')
-    axin.set_title('Zoom on the pathways (contours AR 3-4.5)', fontsize=10)
-    ax.add_patch(plt.Rectangle((zx[0], zy[0]), zx[1] - zx[0], zy[1] - zy[0], fill=False, ec='white', lw=1.2))
-    bc = res['backcast']
-    for pnt in bc['backcast_points']:
-        k = pnt['run'].split(' ')[0]
-        ax.scatter(100 * pnt['demand_reduction'], 100 * pnt['intensity_reduction'], marker='D', s=60, zorder=6,
-                   color='black', edgecolor='white',
-                   label=f"{pnt['run']}: cut {100 * bc[k]['cut_AR']:.1f}% of 2027-2050 construction for LoE AR = 1")
-    ax.set_xlim(-2.5, 102.5)
-    ax.set_ylim(min(-2.5, zy[0] - 1.0), 102.5)
-    ax.axhline(0, color='white', lw=0.6, ls=':')
-    axin.axhline(0, color='white', lw=0.6, ls=':')
-    ax.set_xlabel('demand reduction: cut of 2027-2050 floor area vs P0 (%)')
-    ax.set_ylabel('intensity reduction: cut of non-soil carbon per m$^2$, 2027-2050 cohorts (%)')
-    ax.set_title('Solution space on P0 (S3-10): cumulative LoE AR (c = central, open; s = stretch, filled)', fontsize=10.5)
-    fig.legend(*ax.get_legend_handles_labels(), fontsize=7.5, loc='lower center', bbox_to_anchor=(0.5, -0.13),
-               frameon=False, ncol=4)
-    fig.text(0.5, -0.17, 'Right: zoom on the pathway markers (c = central, s = stretch; white box on the left). Cells: the 5% grid (solution_space.csv); contours: the same linear model on a 0.5% grid. '
-             'Soil carbon and 2026 are not cut by the intensity axis. ' + atp_note, ha='center', fontsize=8,
-             style='italic', wrap=True)
-    fig.tight_layout()
-    _save(fig, 'pw_3_solution_space')
+def _line(run):
+    """Colour, line style and width of a run in the release style."""
+    S = style
+    if run in ('REF', REFERENCE):
+        return dict(color=S.REFERENCE, ls='-', lw=S.LW_BOLD)
+    if run == 'TL':
+        return dict(color=S.TL, ls='-', lw=S.LW_BOLD)
+    if run == 'TL-gradual':
+        return dict(color=S.TL_GRADUAL, ls='-', lw=S.LW)
+    P, setting = run.split('-')[:2]
+    return dict(color=S.PATHWAY[P], ls=S.SETTING[setting]['ls'], lw=S.LW_BOLD if P == 'P5' else S.LW)
 
 
 def fig_annual(res):
+    """D28: annual carbon of the Reference and P1-P5 (both settings) against the annual boundaries."""
     import matplotlib.pyplot as plt
-    import figaudit
+    import plotting as P
+    S = style
     a = res['annual']
     a = a[a['scenario'] == REFERENCE]
-    fig, ax = plt.subplots(figsize=(12.5, 6.2))
-    ends = []
-    series = [('REF', P_COLOR['REF'], '-')] + [(f'{P}-{s}', P_COLOR[P], '-' if s == 'moderate' else '--')
-                                            for P in PW_ORDER[1:] for s in LV.SETTINGS]
-    for name, col, ls in series:
+    fig, ax = plt.subplots(figsize=S.figsize('double', 92))
+    for name in ['REF'] + [f'{p}-{s}' for p in ('P1', 'P2', 'P3', 'P4', 'P5') for s in LV.SETTINGS]:
         d = a[a['run'] == name]
-        ax.plot(d['year'], d['carbon_kt'], color=col, ls=ls, lw=2.0 if name.split('-')[0] in ('REF', 'P5') else 1.6,
-                label=f"{name}: {NAMES[name.split('-')[0]]}")
-        ends.append((d['carbon_kt'].iloc[-1], name, col))
+        ax.plot(d['year'], d['carbon_kt'], label=N.run_label(name) if name != 'REF' else N.SCENARIOS['REF'],
+                **_line(name))
     d0 = a[a['run'] == 'REF']
-    ax.plot(d0['year'], d0['B_AR_kt'], color=AR_COLOR, lw=2.0, gid=figaudit.BOUNDARY, label='boundary, acquired rights (AR)')
-    ax.plot(d0['year'], d0['B_AtP_kt'], color=ATP_COLOR, lw=2.0, ls='--', gid=figaudit.BOUNDARY,
-            label='boundary, ability to pay (AtP)')
-    ends += [(d0['B_AR_kt'].iloc[-1], 'AR', AR_COLOR), (d0['B_AtP_kt'].iloc[-1], 'AtP', ATP_COLOR)]
-    ends.sort()
-    ylast = -1e9
-    for v, nm, col in ends:
-        y = max(v, ylast + 22)
-        ax.annotate(f'{nm} {v:,.0f}', (2050, v), xytext=(2050.5, y), fontsize=7, color=INK, va='center',
-                    arrowprops=dict(arrowstyle='-', color=col, lw=0.6))
-        ylast = y
-    ax.set_xlim(2026, 2054)
+    P.boundary_lines(ax, d0['year'], d0['B_AR_kt'], d0['B_AtP_kt'])
+    ax.set_xlim(2026, 2050)
     ax.set_ylim(0, None)
-    ax.set_xlabel('year')
-    ax.set_ylabel('annual carbon, kt CO$_2$e per year')
-    ax.set_title('Annual carbon by pathway (S3-10): central solid, stretch dashed, vs annual boundaries', fontsize=11)
-    ax.legend(fontsize=7.5, frameon=False, loc='upper right', ncol=2)
-    _style(ax)
-    fig.text(0.5, -0.05, 'Time-resolved: upfront (A1-A5 + soil) in the construction year plus replacements & repaints '
-             'within 2026-2050. 2026 is observed and identical in every run; the levers follow a logistic ramp '
-             '2026-2035 (10% to 90% in 2027.5-2033.5).', ha='center', fontsize=8, style='italic')
+    ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3, fontsize=S.FONT_SMALL)
     fig.tight_layout()
-    _save(fig, 'pw_4_annual_SI')
+    _save(fig, 'D28_pathways_annual',
+          'Reference variant; Moderate solid, Ambitious dashed. Construction (A1–A5 and soil) in the construction '
+          'year plus maintenance (B2, B4) within 2026–2050. 2026 is observed and identical in every run; the levers '
+          f"follow the adopted logistic adoption path ({N.ADOPTION['by2035']}).")
 
 
 def fig_envelope(res):
+    """D29: P5 under Low / Reference / High replacement and the adoption paths."""
     import matplotlib.pyplot as plt
-    import figaudit
+    import plotting as P
     from matplotlib.patches import Patch
+    S = style
     bar_kt, batp_kt = res['backcast']['B_AR_kt'], res['backcast']['B_AtP_kt']
-    ramps = [('by2030', 'by2030', 0.6, '--'), ('by2035', None, 1.0, '-'), ('by2045', 'by2045', 0.3, ':')]
-    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(16, 6.2), gridspec_kw=dict(width_ratios=[1.35, 1]))
-    names = [('REF', P_COLOR['REF'], None, 1.0)]
+    ramps = [('by2030', 'by2030', 0.55, '--'), ('by2035', None, 1.0, '-'), ('by2045', 'by2045', 0.3, ':')]
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=S.figsize('double', 96), gridspec_kw=dict(width_ratios=[1.3, 1]))
+    names = [('REF', S.REFERENCE, None, 1.0)]
     for lab, rn, alpha, _ in ramps:
-        for s, hatch in (('moderate', '///'), ('ambitious', None)):
-            names.append((f'P5-{s}' + (f'-{rn}' if rn else ''), P_COLOR['P5'], hatch, alpha))
+        for s_, hatch in (('moderate', '////'), ('ambitious', None)):
+            names.append((f'P5-{s_}' + (f'-{rn}' if rn else ''), S.PATHWAY['P5'], hatch, alpha))
     scen = list(SCENARIOS)
     w = 0.12
     for i, sc in enumerate(scen):
@@ -1286,50 +1033,53 @@ def fig_envelope(res):
             r = _run(res, nm, sc)
             x = i + (k - (len(names) - 1) / 2) * w
             ax.bar(x, r['carbon_kt'], width=w * 0.92, color='white' if hatch else col, edgecolor=col, hatch=hatch,
-                   alpha=alpha, lw=1.2)
-            ax.text(x, r['carbon_kt'], f"{r['carbon_kt'] / 1e3:,.1f}", ha='center', va='bottom', fontsize=6.3,
-                    color=INK, rotation=90)
+                   alpha=alpha, lw=S.LW_THIN)
+            ax.text(x, r['carbon_kt'], f" {r['carbon_kt'] / 1e3:,.1f}", ha='center', va='bottom', fontsize=S.FONT_MIN,
+                    rotation=90)
     ax.set_xticks(range(len(scen)))
-    ax.set_xticklabels([SCENARIOS[s][0] for s in scen])
-    _hline(ax, bar_kt, AR_COLOR, '-', f'AR {bar_kt:,.0f}', len(scen) - 0.55)
-    _hline(ax, batp_kt, ATP_COLOR, '--', f'AtP {batp_kt:,.0f}', len(scen) - 0.55)
-    ax.set_xlim(-0.6, len(scen) - 0.1)
-    ax.set_ylabel('cumulative carbon 2026-2050, kt CO$_2$e (labels: Mt)')
-    ax.set_title('Cumulative carbon by replacement scenario and ramp', fontsize=10)
-    handles = [Patch(color=P_COLOR['REF'], label='REF')]
+    ax.set_xticklabels([SCENARIOS[s_][0] for s_ in scen])
+    P.boundary_hline(ax, 'AR', bar_kt, label=f"{S.BOUNDARY['AR']['label']} budget: {bar_kt:,.0f} kt")
+    P.boundary_hline(ax, 'AtP', batp_kt, label=f"{S.BOUNDARY['AtP']['label']} budget: {batp_kt:,.0f} kt")
+    ax.set_xlim(-0.6, len(scen) - 0.4)
+    ax.set_ylabel('Embodied carbon 2026–2050 (kt CO₂e; labels: Mt)')
+    P.thousands(ax.yaxis)
+    ax.grid(axis='x', visible=False)
+    P.panel(ax, 'a', 'Cumulative, by replacement variant and adoption path')
+    handles = [Patch(color=S.REFERENCE, label='No pathway (the variant itself)')]
     for lab, rn, alpha, _ in ramps:
-        full = {'by2030': 'full by 2030', 'by2035': 'full by 2035 (adopted)', 'by2045': 'full by 2045'}[lab]
-        handles += [Patch(facecolor='white', edgecolor=P_COLOR['P5'], hatch='///', alpha=alpha, label=f'P5 central, {full}'),
-                    Patch(color=P_COLOR['P5'], alpha=alpha, label=f'P5 stretch, {full}')]
-    ax.legend(handles=handles, fontsize=7.5, frameon=False, loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=4)
-    _style(ax)
+        handles += [Patch(facecolor='white', edgecolor=S.PATHWAY['P5'], hatch='////', alpha=alpha,
+                          label=f"P5 Moderate, {N.ADOPTION[lab]}"),
+                    Patch(color=S.PATHWAY['P5'], alpha=alpha, label=f"P5 Ambitious, {N.ADOPTION[lab]}")]
+    handles += ax.get_legend_handles_labels()[0]
+    ax.legend(handles=handles, fontsize=S.FONT_MIN, frameon=False, loc='upper center', bbox_to_anchor=(0.5, -0.1),
+              ncol=2)
     a = res['annual']
     a = a[a['scenario'] == REFERENCE]
     d = a[a['run'] == 'REF']
-    ax2.plot(d['year'], d['carbon_kt'], color=P_COLOR['REF'], lw=2.0, label='REF')
+    ax2.plot(d['year'], d['carbon_kt'], label=N.SCENARIOS['REF'], **_line('REF'))
     for lab, rn, alpha, ls in ramps:
-        for s, lw in (('moderate', 1.4), ('ambitious', 2.4)):
-            nm = f'P5-{s}' + (f'-{rn}' if rn else '')
+        for s_, lw in (('moderate', S.LW_THIN), ('ambitious', S.LW_BOLD)):
+            nm = f'P5-{s_}' + (f'-{rn}' if rn else '')
             d = a[a['run'] == nm]
-            ax2.plot(d['year'], d['carbon_kt'], color=P_COLOR['P5'], ls=ls, lw=lw, label=nm)
+            ax2.plot(d['year'], d['carbon_kt'], color=S.PATHWAY['P5'], ls=ls, lw=lw,
+                     label=N.run_label(nm) + ('' if rn else f", {N.ADOPTION['by2035']}"))
     d0 = a[a['run'] == 'REF']
-    ax2.plot(d0['year'], d0['B_AR_kt'], color=AR_COLOR, lw=2.0, gid=figaudit.BOUNDARY, label='AR boundary')
-    ax2.plot(d0['year'], d0['B_AtP_kt'], color=ATP_COLOR, lw=2.0, ls='--', gid=figaudit.BOUNDARY, label='AtP boundary')
+    P.boundary_lines(ax2, d0['year'], d0['B_AR_kt'], d0['B_AtP_kt'], label=False)
     ax2.set_ylim(0, None)
     ax2.set_xlim(2026, 2050)
-    ax2.set_xlabel('year')
-    ax2.set_ylabel('annual carbon, kt CO$_2$e per year')
-    ax2.set_title('Ramp sensitivity, S3-10: logistic, full by 2030 (dashed), 2035 (solid) or 2045 (dotted)', fontsize=10)
-    ax2.legend(fontsize=7, frameon=False, loc='upper right', ncol=2)
-    _style(ax2)
-    fig.suptitle('Envelope: P0 and P5 under Low (S1), Reference (S3-10) and High (S2) replacement, and the ramp '
-                 'sensitivities (2035 adopted after RECC, Pauliuk et al. 2024)', fontsize=11)
+    ax2.set_ylabel('Embodied carbon (kt CO₂e per year)')
+    P.panel(ax2, 'b', 'Annual, Reference: adoption paths')
+    ax2.legend(fontsize=S.FONT_MIN, frameon=False, loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=1)
     fig.tight_layout()
-    _save(fig, 'pw_5_envelope_SI')
+    _save(fig, 'D29_adoption_and_variants',
+          'b: logistic adoption, full roll-out by 2030 (dashed), 2035 (solid, adopted after RECC, Pauliuk et al. '
+          '2024) or 2045 (dotted); Moderate thin, Ambitious thick.')
 
 
 def fig_l5_estimator(res):
+    """D30: the L5 best-practice ratio, Harrell-Davis quantile of the independent case studies."""
     import matplotlib.pyplot as plt
+    S = style
     p = res['params']['L5']
     cases = pd.DataFrame(p['cases']).sort_values('ratio').reset_index(drop=True)
     x = cases['ratio'].values
@@ -1340,73 +1090,79 @@ def fig_l5_estimator(res):
     qs = np.linspace(0.02, 0.98, 97)
     curve = np.array([LV.hd_quantile(x, q) for q in qs])
     band = np.array([np.percentile(boot_sorted @ LV.hd_weights(n, q), [2.5, 97.5]) for q in qs])
-    fig, ax = plt.subplots(figsize=(10, 6.2))
-    ax.fill_between(qs, band[:, 0], band[:, 1], color='#b7d3f6', label='bootstrap 95% band (B = 10,000, cases resampled)')
-    ax.plot(qs, curve, color='#184f95', lw=2.0, label='Harrell-Davis quantile function')
+    fig, ax = plt.subplots(figsize=S.figsize('double', 92))
+    ax.fill_between(qs, band[:, 0], band[:, 1], color=S.SEQUENTIAL[1], lw=0,
+                    label=f'Bootstrap 95% band (B = {LV.L5_BOOTSTRAP_B:,}, cases resampled)')
+    ax.plot(qs, curve, color=S.SEQUENTIAL[6], lw=S.LW_BOLD, label='Harrell–Davis quantile function')
     pos = (np.arange(1, n + 1) - 0.5) / n
     for typ, mk in (('Detached', 'o'), ('Townhouses', 's')):
         sel = cases['typology'].values == typ
-        ax.scatter(pos[sel], x[sel], marker=mk, s=46, facecolor='white' if typ == 'Townhouses' else '#3b3b3b',
-                   edgecolor='#3b3b3b', zorder=5, label=f'{typ} case ((i - 0.5) / n)')
+        ax.scatter(pos[sel], x[sel], marker=mk, s=14, facecolor='white' if typ == 'Townhouses' else S.INK,
+                   edgecolor=S.INK, lw=S.LW_THIN, zorder=5, label=f'{typ} case, at (i − 0.5) / n')
     for i, cid in enumerate(cases['id']):
-        ax.annotate(cid, (pos[i], x[i]), xytext=(4, -9), textcoords='offset points', fontsize=6.5, color=MUTED)
-    for s, col in (('moderate', P_COLOR['P4']), ('ambitious', P_COLOR['P4'])):
-        e = p['estimator'][s]
-        ax.axvline(e['q'], color=col, lw=0.9, ls=':' if s == 'moderate' else '--')
-        ax.errorbar(e['q'], e['r'], yerr=[[e['r'] - e['ci_lo']], [e['ci_hi'] - e['r']]], fmt='D', color=col,
-                    ms=7, capsize=4, zorder=6, label=f"{s}: q = {e['q']:.2f}, r = {e['r']:.3f} "
-                                                     f"(95% CI {e['ci_lo']:.3f}-{e['ci_hi']:.3f})")
-    ax.axhline(1.0, color=MUTED, lw=0.8)
-    ax.text(0.99, 1.005, 'pooled typology factor (r = 1)', ha='right', va='bottom', fontsize=7.5, color=MUTED)
+        ax.annotate(cid, (pos[i], x[i]), xytext=(3, -7), textcoords='offset points', fontsize=S.FONT_MIN, color=S.MUTED)
+    for s_ in LV.SETTINGS:
+        e = p['estimator'][s_]
+        ax.axvline(e['q'], color=S.PATHWAY['P4'], lw=S.LW_THIN, ls=S.SETTING[s_]['ls'])
+        ax.errorbar(e['q'], e['r'], yerr=[[e['r'] - e['ci_lo']], [e['ci_hi'] - e['r']]], fmt='D', color=S.PATHWAY['P4'],
+                    mfc='white' if s_ == 'moderate' else S.PATHWAY['P4'], ms=4, capsize=2, lw=S.LW, zorder=6,
+                    label=f"{N.SETTINGS[s_]}: q = {e['q']:.2f}, r = {e['r']:.3f} (95% CI {e['ci_lo']:.3f}–{e['ci_hi']:.3f})")
+    ax.axhline(1.0, color=S.MUTED, lw=S.LW_THIN)
+    ax.text(0.99, 1.005, 'pooled typology factor (r = 1)', ha='right', va='bottom', fontsize=S.FONT_SMALL, color=S.MUTED)
     ax.set_xlim(0, 1)
-    ax.set_xlabel('quantile q')
-    ax.set_ylabel('A1-A3 per m$^2$ relative to the pooled typology factor (2025)')
-    ax.set_title(f'L5 best-practice ratio: Harrell-Davis quantile of {n} independent case studies (detached, townhouses)',
-                 fontsize=10.5)
-    ax.legend(fontsize=7.5, loc='lower right', frameon=True, framealpha=0.92)
-    _style(ax, 'both')
-    fig.text(0.5, -0.06, 'Harrell & Davis (1982) Biometrika 69, 635; percentile bootstrap (Efron & Tibshirani 1993).\n'
-             'q = 0.15 follows the top-15% convention of Commission Delegated Regulation (EU) 2021/2139, Annex I s. 7.7. '
-             'Apartments (one independent case) are not in the sample.', ha='center', fontsize=8, style='italic')
+    ax.set_xlabel('Quantile q')
+    ax.set_ylabel('A1–A3 per m² relative to the pooled typology factor (2025)')
+    ax.legend(fontsize=S.FONT_SMALL, loc='lower right', frameon=True, framealpha=0.92, edgecolor='none')
     fig.tight_layout()
-    _save(fig, 'pw_6_L5_estimator_SI')
+    _save(fig, 'D30_l5_estimator',
+          f'L5 best-practice ratio: Harrell–Davis quantile of {n} independent case studies (detached, townhouses); '
+          'Harrell & Davis (1982) Biometrika 69, 635; percentile bootstrap (Efron & Tibshirani 1993). The Ambitious '
+          'q = 0.15 follows the top-15% convention of Commission Delegated Regulation (EU) 2021/2139, Annex I s. 7.7. '
+          'Apartments (one independent case) are not in the sample.')
 
 
 def fig_shapley_levers(res):
+    """D31: Shapley attribution of Reference - P5 to the five levers."""
     import matplotlib.pyplot as plt
+    import plotting as P
+    S = style
     sh = res['shapley_levers']
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-    for ax, metric, xl in ((axes[0], 'carbon_kt', 'reduction of cumulative carbon 2026-2050, kt CO$_2$e'),
-                           (axes[1], 'LoE_AR', 'reduction of cumulative LoE AR')):
-        for s in LV.SETTINGS:
-            d = sh[(sh['metric'] == metric) & (sh['setting'] == s)].set_index('player')
+    fig, axes = plt.subplots(1, 2, figsize=S.figsize('double', 84))
+    tot = {s_: _run(res, 'REF')['carbon_kt'] - _run(res, f'P5-{s_}')['carbon_kt'] for s_ in LV.SETTINGS}
+    for ax, metric, xl, letter in ((axes[0], 'carbon_kt', 'Reduction of carbon 2026–2050 (kt CO₂e)', 'a'),
+                                   (axes[1], 'LoE_AR', 'Reduction of the cumulative LoE AR', 'b')):
+        for s_ in LV.SETTINGS:
+            d = sh[(sh['metric'] == metric) & (sh['setting'] == s_)].set_index('player')
             for k, L in enumerate(LV.LEVERS):
-                y = k + (0.2 if s == 'moderate' else -0.2)
-                col = P_COLOR[LV.LEVER_PATHWAY[L]]
+                y = k + (-0.2 if s_ == 'moderate' else 0.2)
+                col = S.PATHWAY[LV.LEVER_PATHWAY[L]]
                 v = d.loc[L, 'reduction']
-                ax.barh(y, v, height=0.38, color='white' if s == 'moderate' else col, edgecolor=col, lw=1.5)
-                ax.text(max(v, 0), y, f' {v:,.0f} ({100 * d.loc[L, "share_of_reference_minus_P5"]:.0f}%) {s[0]}'
-                        if metric == 'carbon_kt' else f' {v:.3f} {s[0]}', va='center', fontsize=7.5, color=INK)
+                ax.barh(y, v, height=0.38, color='white' if s_ == 'moderate' else col, edgecolor=col, lw=S.LW)
+                ax.text(max(v, 0), y, f' {v:,.0f} ({100 * d.loc[L, "share_of_reference_minus_P5"]:.0f}%)'
+                        if metric == 'carbon_kt' else f' {v:.3f}', va='center', fontsize=S.FONT_MIN)
         ax.set_yticks(range(len(LV.LEVERS)))
         ax.set_yticklabels([f'{L} {LV.LEVER_NAMES[L]}\n({LV.LEVER_PATHWAY[L]} {LV.PATHWAY_NAMES[LV.LEVER_PATHWAY[L]]})'
-                            for L in LV.LEVERS], fontsize=8)
+                            for L in LV.LEVERS], fontsize=S.FONT_SMALL)
         ax.invert_yaxis()
-        ax.axvline(0, color=INK, lw=0.6)
+        ax.axvline(0, color=S.INK, lw=S.LW_THIN)
         ax.set_xlabel(xl)
-        _style(ax, 'x')
-        ax.set_xlim(min(0, ax.get_xlim()[0]), ax.get_xlim()[1] * 1.3)
-    tot = {s: _run(res, 'REF')['carbon_kt'] - _run(res, f'P5-{s}')['carbon_kt'] for s in LV.SETTINGS}
-    axes[0].set_title(f"Carbon: P0 - P5 = {tot['moderate']:,.0f} kt (central, open) / {tot['ambitious']:,.0f} kt "
-                      f"(stretch, filled)", fontsize=10)
-    axes[1].set_title('Cumulative LoE AR', fontsize=10)
-    fig.suptitle('Shapley attribution of P0 - P5 to the five levers (S3-10; 32 subsets; values sum exactly to P0 - P5)',
-                 fontsize=11)
-    fig.tight_layout()
-    _save(fig, 'pw_7_shapley_levers_SI')
+        ax.grid(axis='y', visible=False)
+        ax.set_xlim(min(0, ax.get_xlim()[0]), ax.get_xlim()[1] * 1.35)
+        if metric == 'carbon_kt':
+            P.thousands(ax.xaxis)
+        P.panel(ax, letter, 'Carbon' if metric == 'carbon_kt' else 'Cumulative LoE AR')
+    from matplotlib.patches import Patch
+    fig.legend(handles=[Patch(facecolor='white', edgecolor=S.INK, label='Moderate (open)'),
+                        Patch(color=S.INK, label='Ambitious (filled)')], loc='lower center', ncol=2,
+               bbox_to_anchor=(0.5, -0.01), frameon=False)
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
+    _save(fig, 'D31_shapley_levers',
+          f"Reference variant; 32 subsets, exact; the values add up to Reference − P5: {tot['moderate']:,.0f} kt "
+          f"(Moderate) and {tot['ambitious']:,.0f} kt (Ambitious). Shares are of Reference − P5.")
 
 
-T_STEPS = (('REF', 'P0\nbaseline'), ('P5-moderate', 'P5-central\nall pathways'), ('P5-ambitious', 'P5-stretch\nall pathways'),
-           ('TL', 'T\nhyper-optimistic\ntheoretical limit'))
+T_STEPS = (('REF', N.SCENARIOS['REF']), ('P5-moderate', 'P5 Combined,\nModerate'),
+           ('P5-ambitious', 'P5 Combined,\nAmbitious'), ('TL', 'TL Theoretical\nlimit'))
 T_CAPTION = LV.TL_DISCLAIMER
 
 
@@ -1415,17 +1171,17 @@ def _step_run(res, name):
         return res['T']['cache'][(LV.TL_COMPONENTS, LV.TL_FROM2027)]
     if name == 'TL-gradual':
         return res['T']['cache'][(LV.TL_COMPONENTS, LV.TL_GRADUAL)]
-    s = name.split('-')[1] if name != 'REF' else None
-    return res['get'](REFERENCE, LV.pathway_levers(name.split('-')[0], s) if s else {})
+    s_ = name.split('-')[1] if name != 'REF' else None
+    return res['get'](REFERENCE, LV.pathway_levers(name.split('-')[0], s_) if s_ else {})
 
 
 def _human(res, name):
     """2027-2050: mean new-dwelling size (m2), floor area per person in new dwellings (m2), dwellings built per year."""
     E = _step_run(res, name)['E']
-    S = E['pop'] / E['hh']
+    S_ = E['pop'] / E['hh']
     w = slice(2, None)
     dw = E['dwell_in_scope'][w]
-    return dict(size=E['total'][w].sum() / dw.sum(), per_person=E['total'][w].sum() / (dw * S[w]).sum(),
+    return dict(size=E['total'][w].sum() / dw.sum(), per_person=E['total'][w].sum() / (dw * S_[w]).sum(),
                 per_year=float(np.asarray(engine.requirement(E))[w].mean()))
 
 
@@ -1436,181 +1192,161 @@ def _t_row(res, name):
 
 
 def fig_staircase(res):
+    """D32: Reference -> P5 -> TL: cumulative LoE and the human terms; floor area and carbon by demand band."""
     import matplotlib.pyplot as plt
     import figaudit
-    import matplotlib.patheffects as pe
-    from matplotlib.patches import Patch
-    fig = plt.figure(figsize=(15, 11))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.15, 1], hspace=0.55, wspace=0.18)
+    import plotting as P
+    S = style
+    fig = plt.figure(figsize=S.figsize('double', 150))
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.15, 1], hspace=0.75, wspace=0.28)
     ax = fig.add_subplot(gs[0, :])
     xs = np.arange(len(T_STEPS))
     p0 = _t_row(res, 'REF')
-    halo = [pe.Stroke(linewidth=4, foreground='white'), pe.Normal()]
-    for key, col, ls, nm in (('LoE_AR', AR_COLOR, '-', 'acquired rights (AR)'), ('LoE_AtP', ATP_COLOR, '--', 'ability to pay (AtP)')):
+    for key, st_key in (('LoE_AR', 'AR'), ('LoE_AtP', 'AtP')):
+        st = dict(S.BOUNDARY[st_key])
+        lab = st.pop('label')
         ys = [_t_row(res, n)[key] for n, _ in T_STEPS]
-        ax.step(np.r_[xs - 0.4, xs[-1] + 0.4], np.r_[ys, ys[-1]], where='post', color=col, ls=ls, lw=2.2,
-                path_effects=halo, label=f'cumulative LoE, {nm}')
-        ax.scatter(xs, ys, color=col, s=36, zorder=5)
-        for x, y, (n, _) in zip(xs, ys, T_STEPS):
+        ax.step(np.r_[xs - 0.4, xs[-1] + 0.4], np.r_[ys, ys[-1]], where='post', label=f'Cumulative LoE, {lab}', **st)
+        ax.scatter(xs, ys, color=st['color'], s=10, zorder=5)
+        for x_, y, (n, _) in zip(xs, ys, T_STEPS):
             d = 100 * (y / p0[key] - 1)
-            ax.annotate(f'{y:.2f}' + ('' if n == 'REF' else f' ({d:+.0f}%)'), (x, y), xytext=(0, 7),
-                        textcoords='offset points', ha='center', fontsize=8.5, color=INK, path_effects=halo)
-    ax.axhline(1.0, color='black', lw=1.0, gid=figaudit.BOUNDARY)
-    ax.text(-0.45, 1.0, 'LoE = 1', va='bottom', fontsize=8.5, color=INK)
+            ax.annotate(f'{y:.2f}' + ('' if n == 'REF' else f' ({d:+.0f}%)'), (x_, y), xytext=(0, 4),
+                        textcoords='offset points', ha='center', fontsize=S.FONT_SMALL)
+    ax.axhline(1.0, color=S.INK, lw=S.LW, gid=figaudit.BOUNDARY)
+    ax.text(-0.45, 1.0, 'LoE = 1', va='bottom', fontsize=S.FONT_SMALL)
     ax.set_yscale('log')
-    ax.set_yticks([0.5, 1, 2, 5, 10, 20])
-    ax.set_yticklabels(['0.5', '1', '2', '5', '10', '20'])
     ax.set_ylim(0.3, 30)
+    P.log_ticks(ax.yaxis, (0.5, 1, 2, 5, 10, 20))
     ax.set_xlim(-0.5, len(T_STEPS) - 0.3)
     lab = []
-    for n, l in T_STEPS:
+    for n, l_ in T_STEPS:
         h = _human(res, n)
-        lab.append(f"{l}\n{h['size']:.0f} m² per new dwelling\n{h['per_person']:.0f} m² per person\n"
-                   f"{h['per_year'] / 1e3:.1f}k dwellings / yr")
+        lab.append(f"{l_}\n{h['size']:.0f} m² per new dwelling\n{h['per_person']:.0f} m² per person\n"
+                   f"{h['per_year'] / 1e3:.1f}k dwellings per year")
     ax.set_xticks(xs)
-    ax.set_xticklabels(lab, fontsize=8.5)
-    ax.set_ylabel('cumulative level of exceedance 2026-2050 (log)')
-    ax.set_title('From the baseline to the hyper-optimistic theoretical limit T (S3-10): cumulative LoE; indicators are '
-                 '2027-2050 means', fontsize=11)
+    ax.set_xticklabels(lab, fontsize=S.FONT_SMALL)
+    ax.set_ylabel('Cumulative level of exceedance, 2026–2050 (log scale)')
     g = res['T']['gap']['TL']
     if g['within_AR']:
-        resid = f"T within the AR budget: margin {g['margin_AR_kt']:,.0f} kt"
+        resid = f"TL within the AR budget: margin {g['margin_AR_kt']:,.0f} kt"
     else:
         rs = g['residual']
-        resid = (f"Residual to LoE AR = 1: cut {100 * rs['cut_of_2027_2050_construction']:.1f}% of 2027-2050 construction\n"
-                 f"= {rs['dwellings_not_built_2027_2050']:,.0f} dwellings not built, "
+        resid = (f"Residual to LoE AR = 1: cut {100 * rs['cut_of_2027_2050_construction']:.1f}% of 2027–2050 "
+                 f"construction\n= {rs['dwellings_not_built_2027_2050']:,.0f} dwellings not built, "
                  f"{rs['new_residents_housed_in_existing_dwellings']:,.0f} new residents\nhoused in existing dwellings")
-    ax.annotate(resid, (xs[-1], 1.0), xytext=(xs[-1] - 0.95, 0.55), fontsize=8.5, color=INK, ha='left', va='center',
-                arrowprops=dict(arrowstyle='-', color=MUTED, lw=0.6), path_effects=halo)
-    ax.legend(fontsize=8.5, loc='upper right', frameon=False)
-    _style(ax)
-    colors = _band_colors()
+    ax.annotate(resid, (xs[-1], 1.0), xytext=(xs[-1] - 1.25, 0.45), fontsize=S.FONT_SMALL, ha='left', va='center',
+                arrowprops=dict(arrowstyle='-', color=S.MUTED, lw=S.LW_THIN))
+    ax.legend(fontsize=S.FONT_SMALL, loc='upper right', frameon=False)
+    ax.grid(axis='x', visible=False)
+    P.panel(ax, 'a', 'From the Reference to the theoretical limit (indicators: 2027–2050 means)')
     bd = pd.concat([res['bands'], res['T']['bands']], ignore_index=True)
     bd = bd[(bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope')]
     runs = ['REF', 'P5-ambitious', 'TL']
-    for j, (col, ylab, ttl) in enumerate((('gfa_Mm2', 'floor area 2026-2050, Mm$^2$', 'Floor area by demand band'),
-                                          ('carbon_kt', 'carbon 2026-2050, kt CO$_2$e', 'Carbon by demand band'))):
+    for j, (col, ylab, ttl) in enumerate((('gfa_Mm2', 'Floor area 2026–2050 (Mm²)', 'Floor area by demand band'),
+                                          ('carbon_kt', 'Embodied carbon 2026–2050 (kt CO₂e)', 'Carbon by demand band'))):
         a = fig.add_subplot(gs[1, j])
         fmt = (lambda v: f'{v:,.1f}') if col == 'gfa_Mm2' else (lambda v: f'{v:,.0f}')
         for i, rn in enumerate(runs):
             d = bd[bd['run'] == rn].set_index('band')
-            pos, neg = 0.0, 0.0
-            for band, _ in FIG_BANDS:
-                v = float(d.loc[band, col])
-                if abs(v) < 1e-9:
-                    continue
-                base = pos if v > 0 else neg
-                a.bar(i, v, bottom=base, color=colors[band], edgecolor='white', lw=1.0, width=0.6,
-                      hatch='..' if band in UNTARGETED else None)
-                if v > 0:
-                    pos += v
-                else:
-                    neg += v
-            a.text(i, pos, fmt(pos + neg), ha='center', va='bottom', fontsize=8.5, color=INK)
-        a.axhline(0, color=INK, lw=0.8)
+            parts = [(BAND_ID[b], float(d.loc[b, col])) for b, _ in FIG_BANDS
+                     if not (col == 'gfa_Mm2' and BAND_ID[b] == 'maintenance')]
+            up, dn = P.signed_stack(a, [i], parts, width=0.6)
+            a.text(i, up[0], fmt(up[0] + dn[0]), ha='center', va='bottom', fontsize=S.FONT_SMALL)
+        a.axhline(0, color=S.INK, lw=S.LW_THIN)
         a.set_xticks(range(len(runs)))
-        a.set_xticklabels(['REF', 'P5-ambitious', 'T (limit)'], fontsize=9)
+        a.set_xticklabels([N.SCENARIOS['REF'], 'P5 Ambitious', 'TL'], fontsize=S.FONT_SMALL)
         a.set_ylabel(ylab)
-        a.set_title(ttl, fontsize=10)
-        _style(a)
-    fig.legend(handles=[Patch(facecolor=colors[b], hatch='..' if b in UNTARGETED else None, edgecolor='white',
-                              label=b + (' (untargeted)' if b in UNTARGETED else '')) for b, _ in FIG_BANDS],
-               loc='lower center', ncol=3, fontsize=7.5, frameon=False, bbox_to_anchor=(0.5, -0.04))
-    fig.text(0.5, -0.08, T_CAPTION + ' T1 no idle stock (v = 0, surplus absorbed), T2 no extra space (size = S x OLF), '
-             'T3 minimum OLF of the case studies (A_1, 19.7 m² per person) for every typology, T4 each typology\'s best '
-             f'case-study A1-A3, T5 lowest soil order, T6 urban densification ({100 * LV.TL6_SHARE:.0f}% of non-replacement '
-             'floor area on developed land, zero soil; Auckland Council 2021); BAU decarbonisation applies. In its '
-             'zero-building years (released vacant stock used, banking rule) every band is zero.', ha='center', fontsize=8,
-             style='italic', wrap=True)
-    _save(fig, 'pw_8_staircase')
+        if col == 'carbon_kt':
+            P.thousands(a.yaxis)
+        a.grid(axis='x', visible=False)
+        P.panel(a, 'bc'[j], ttl)
+    P.band_legend(fig, list(N.BANDS_IN_SCOPE), ncol=4, y=-0.01)
+    fig.subplots_adjust(bottom=0.12)
+    _save(fig, 'D32_tl_staircase',
+          T_CAPTION + f" TL1 {LV.TL_NAMES['TL1']} (vacancy 0, surplus absorbed), TL2 {LV.TL_NAMES['TL2']} (size = household "
+          f"size × occupant load factor), TL3 {LV.TL_NAMES['TL3']} (the smallest occupant load factor of the case "
+          f"studies, 19.7 m² per person, for every typology), TL4 {LV.TL_NAMES['TL4']} (each typology's best case-study "
+          f"A1–A3), TL5 {LV.TL_NAMES['TL5']} (lowest soil order), TL6 {LV.TL_NAMES['TL6']} ({100 * LV.TL6_SHARE:.0f}% of "
+          'non-replacement floor area on developed land, no soil carbon loss; Auckland Council 2021); the adopted '
+          'decarbonisation applies. In its zero-building years (released vacant stock used, banking rule) every band '
+          'is zero.')
 
 
 def fig_T_shapley(res):
+    """D33: Shapley attribution of P5 Ambitious (full strength from 2027) - TL to TL1-TL6."""
     import matplotlib.pyplot as plt
+    import plotting as P
+    S = style
     sh = res['T']['shapley']
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    for ax, metric, xl in ((axes[0], 'carbon_kt', 'reduction of cumulative carbon 2026-2050, kt CO$_2$e'),
-                           (axes[1], 'LoE_AR', 'reduction of cumulative LoE AR')):
+    fig, axes = plt.subplots(1, 2, figsize=S.figsize('double', 72))
+    for ax, metric, xl, letter in ((axes[0], 'carbon_kt', 'Reduction of carbon 2026–2050 (kt CO₂e)', 'a'),
+                                   (axes[1], 'LoE_AR', 'Reduction of the cumulative LoE AR', 'b')):
         d = sh[sh['metric'] == metric].set_index('player')
         players = list(LV.TL_COMPONENTS) + [LV.TL_FROM2027]
         for k, pl in enumerate(players):
             v = float(d.loc[pl, 'reduction'])
             is_t = pl != LV.TL_FROM2027
-            ax.barh(k, v, height=0.6, color='#3b3b3b' if is_t else 'white', edgecolor='#3b3b3b', lw=1.2,
-                    hatch=None if is_t else '///')
+            ax.barh(k, v, height=0.6, color=S.TL if is_t else 'white', edgecolor=S.TL, lw=S.LW,
+                    hatch=None if is_t else '////')
             share = d.loc[pl, 'share_of_P5_ambitious_from2027_minus_TL']
             ax.text(v, k, (f' {v:,.0f}' if metric == 'carbon_kt' else f' {v:.3f}') +
-                    (f' ({100 * share:.0f}%)' if is_t else ' (separate line)'), va='center', fontsize=8, color=INK)
+                    (f' ({100 * share:.0f}%)' if is_t else ' (separate line)'), va='center', fontsize=S.FONT_MIN)
         ax.set_yticks(range(len(players)))
-        ax.set_yticklabels([f'{p} {LV.TL_NAMES[p]}' if p in LV.TL_NAMES else 'P5-stretch: ramp -> instant start'
-                            for p in players], fontsize=8.5)
+        ax.set_yticklabels([f'{p_} {LV.TL_NAMES[p_]}' if p_ in LV.TL_NAMES
+                            else f"P5 Ambitious: {N.ADOPTION['from2027']}" for p_ in players], fontsize=S.FONT_SMALL)
         ax.invert_yaxis()
         ax.set_xlabel(xl)
-        ax.set_xlim(0, ax.get_xlim()[1] * 1.3)
-        _style(ax, 'x')
-    fig.suptitle(f'Shapley attribution of P5-stretch (instant start) - T to T1-T{len(LV.TL_COMPONENTS)} '
-                 f'({2 ** len(LV.TL_COMPONENTS)} subsets, exact; S3-10)', fontsize=11)
-    fig.text(0.5, -0.04, 'Shares are of P5-stretch with the instant start minus T. The hatched bar is the separate effect '
-             'of starting P5-stretch at full strength in 2027 instead of on the logistic ramp. ' + T_CAPTION,
-             ha='center', fontsize=8, style='italic', wrap=True)
+        ax.set_xlim(0, ax.get_xlim()[1] * 1.35)
+        ax.grid(axis='y', visible=False)
+        if metric == 'carbon_kt':
+            P.thousands(ax.xaxis)
+        P.panel(ax, letter, 'Carbon' if metric == 'carbon_kt' else 'Cumulative LoE AR')
     fig.tight_layout()
-    _save(fig, 'pw_9_T_shapley_SI')
+    _save(fig, 'D33_tl_shapley',
+          f'Reference variant; {2 ** len(LV.TL_COMPONENTS)} subsets, exact. Shares are of P5 Ambitious at full strength '
+          'from 2027 minus TL. The hatched bar is the separate effect of starting P5 Ambitious at full strength in 2027 '
+          'instead of on the adopted adoption path (not a Shapley player). ' + T_CAPTION)
 
 
 def fig_T_annual(res):
+    """D34: TL: annual carbon and dwellings built per year (banking rule)."""
     import matplotlib.pyplot as plt
-    import figaudit
-    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-    series = (('REF', '#9a9a9a', '-', 2.0), ('P5-ambitious', '#3b3b3b', '--', 1.8), ('TL', 'black', '-', 2.6),
-              ('TL-gradual', 'black', ':', 2.0))
+    import plotting as P
+    S = style
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=S.figsize('double', 78))
+    series = ('REF', 'P5-ambitious', 'TL', 'TL-gradual')
     ref = res['ctxs'][REFERENCE]
     yrs = ref['years']
-    ends = []
-    for nm, col, ls, lw in series:
+    for nm in series:
         E = _step_run(res, nm)['E']
-        ax.plot(yrs[1:], E['carbon'][1:] / M6, color=col, ls=ls, lw=lw, label=nm)
-        ends.append((E['carbon'][-1] / M6, nm))
-        ax2.plot(yrs[1:], np.asarray(engine.requirement(E))[1:] / 1e3, color=col, ls=ls, lw=lw, label=nm)
-    ylast = -1e9
-    for v, nm in sorted(ends):                    # direct labels, nudged apart
-        y = max(v, ylast + 35)
-        ax.annotate(f'{nm} {v:,.0f}', (2050, v), xytext=(2050.5, y), fontsize=7.5, va='center', color=INK,
-                    arrowprops=dict(arrowstyle='-', color=MUTED, lw=0.5))
-        ylast = y
-    ax.plot(yrs[1:], ref['b_ar'] / M6, color=AR_COLOR, lw=2.0, gid=figaudit.BOUNDARY, label='AR boundary')
-    ax.plot(yrs[1:], ref['b_atp'] / M6, color=ATP_COLOR, lw=2.0, ls='--', gid=figaudit.BOUNDARY, label='AtP boundary')
-    ax.set_xlim(2026, 2053)
+        lab = N.SCENARIOS['REF'] if nm == 'REF' else N.run_label(nm)
+        ax.plot(yrs[1:], E['carbon'][1:] / M6, label=lab, **_line(nm))
+        ax2.plot(yrs[1:], np.asarray(engine.requirement(E))[1:] / 1e3, label=lab, **_line(nm))
+    P.boundary_lines(ax, yrs[1:], ref['b_ar'] / M6, ref['b_atp'] / M6)
+    ax.set_xlim(2026, 2050)
     ax.set_ylim(0, None)
-    ax.set_xlabel('year')
-    ax.set_ylabel('annual carbon, kt CO$_2$e per year')
-    ax.set_title('Annual carbon: P0, P5-stretch, T and T with the logistic ramp', fontsize=10)
-    ax.legend(fontsize=8, frameon=False, loc='upper right')
-    _style(ax)
+    ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
+    ax.legend(fontsize=S.FONT_MIN, frameon=False, loc='upper right')
+    P.panel(ax, 'a', 'Annual carbon')
     zy = res['T']['indicators']['TL']['zero_building_years']
     if zy:
-        ax2.axvspan(min(zy) - 0.5, max(zy) + 0.5, color='#e1e0d9', zorder=0)
-        ax2.text((min(zy) + max(zy)) / 2, ax2.get_ylim()[1] * 0.02 + 1, f'T: no new building\n{min(zy)}-{max(zy)}\n'
-                 '(released vacant\nstock used)', ha='center', va='bottom', fontsize=8, color=INK)
+        ax2.axvspan(min(zy) - 0.5, max(zy) + 0.5, color=S.MUTED, alpha=0.12, lw=0, zorder=0)
+        ax2.text((min(zy) + max(zy)) / 2, 1, f'TL: no new building\n{min(zy)}–{max(zy)}\n(released vacant\nstock used)',
+                 ha='center', va='bottom', fontsize=S.FONT_MIN)
     ax2.set_xlim(2026, 2050)
     ax2.set_ylim(0, None)
-    ax2.set_xlabel('year')
-    ax2.set_ylabel('dwellings built per year, thousands (all categories)')
-    ax2.set_title('Dwellings built per year (banking rule: never negative)', fontsize=10)
-    ax2.legend(fontsize=8, frameon=False, loc='upper right')
-    _style(ax2)
-    fig.text(0.5, -0.05, T_CAPTION, ha='center', fontsize=8, style='italic', wrap=True)
+    ax2.set_ylabel('Dwellings (thousand per year)')
+    P.panel(ax2, 'b', 'Dwellings built, all categories (banking rule: never negative)')
     fig.tight_layout()
-    _save(fig, 'pw_10_T_annual_SI')
+    _save(fig, 'D34_tl_dwellings', T_CAPTION)
 
 
 def figures(res):
-    """The pathway figures (style.save_figure; each file is overwritten in place, so a
-    pathways-only run replaces exactly the pathway figures)."""
+    """The pathway diagnostics D28-D34 (style.save_figure; each file is overwritten in place, so
+    a pathways-only run replaces exactly these figures). H7-H10: headline.py."""
     import matplotlib
     matplotlib.use('Agg')
-    fig_bands_by_pathway(res)
-    fig_shapley_waterfall(res)
-    fig_solution_space(res)
+    style.apply()
     fig_annual(res)
     fig_envelope(res)
     fig_l5_estimator(res)

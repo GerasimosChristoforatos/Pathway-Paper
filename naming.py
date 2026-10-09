@@ -589,3 +589,15 @@ class _Release(_Legacy):
 
 LEGACY = _Legacy()
 RELEASE = _Release()
+
+
+def typeset(text):
+    """Print typography for reader-facing text built from ASCII sources (figure_plan.py, data labels):
+    ranges with an en dash (1991-2050, 8,208-8,969, A1-A5, C1-C4), m² and CO₂e. Data files keep
+    ASCII hyphens (section 1 of docs/RENAMING.md)."""
+    import re
+    text = re.sub(r'(?<=\d)-(?=\d)', '–', text)
+    text = re.sub(r'\b(\d+(?:st|nd|rd|th))-(\d+(?:st|nd|rd|th))\b', r'\1–\2', text)      # 5th-95th
+    text = re.sub(r'\b([A-D]\d)-([A-D]\d)\b', r'\1–\2', text)
+    text = re.sub(r'\bm2\b', 'm²', text)
+    return re.sub(r'\bCO2e\b', 'CO₂e', text)

@@ -55,6 +55,14 @@ One palette for every figure; `style.py` is the only place colours are defined, 
 | Materials (H4b, diagnostics) | Plasterboard | `#FF8C00` | 74 |
 | Materials (H4b, diagnostics) | Others | `#E40303` | 54 |
 | Materials (H4b, diagnostics) | Soil carbon loss | `#B5A48B` | 71 |
+| Categorical groups (diagnostics D16, D17; Okabe-Ito) | group 1 | `#000000` | 0 |
+| Categorical groups (diagnostics D16, D17; Okabe-Ito) | group 2 | `#E69F00` | 75 |
+| Categorical groups (diagnostics D16, D17; Okabe-Ito) | group 3 | `#56B4E9` | 71 |
+| Categorical groups (diagnostics D16, D17; Okabe-Ito) | group 4 | `#009E73` | 59 |
+| Categorical groups (diagnostics D16, D17; Okabe-Ito) | group 5 | `#F0E442` | 91 |
+| Categorical groups (diagnostics D16, D17; Okabe-Ito) | group 6 | `#0072B2` | 47 |
+| Categorical groups (diagnostics D16, D17; Okabe-Ito) | group 7 | `#D55E00` | 59 |
+| Categorical groups (diagnostics D16, D17; Okabe-Ito) | group 8 | `#CC79A7` | 66 |
 
 ## Colour-vision-deficiency check
 
@@ -68,6 +76,7 @@ Minimum pairwise distance within each group (CAM02-UCS, Luo, Cui & Li 2006) afte
 | Carbon components (H4) | 17.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 13.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 16.3 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 11.4 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | yes |
 | Projection variants and boundaries (H2, H5) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | yes |
 | Materials (H4b, diagnostics) | 25.9 (Plasterboard / Soil carbon loss) | 12.8 (Concrete / Others) | 13.0 (Concrete / Others) | 16.5 (Steel / Concrete) | yes |
+| Categorical groups (diagnostics D16, D17; Okabe-Ito) | 20.8 (group 2 / group 5) | 14.8 (group 4 / group 8) | 14.0 (group 6 / group 8) | 11.0 (group 2 / group 8) | yes |
 
 ## Sequential ramp
 
@@ -77,4 +86,5 @@ Continuous fields (the solution space, H10) use one blue ramp, light to dark; it
 
 * Luo MR, Cui G, Li C (2006) Uniform colour spaces based on CIECAM02 colour appearance model. Color Research & Application 31, 320-330.
 * Machado GM, Oliveira MM, Fernandes LAF (2009) A physiologically-based model for simulation of color vision deficiency. IEEE Transactions on Visualization and Computer Graphics 15, 1291-1298.
+* Okabe M, Ito K (2008) Color Universal Design (CUD): how to make figures and presentations that are friendly to colorblind people. https://jfly.uni-koeln.de/color/ (the categorical palette).
 * Smith NJ, van der Walt S, colorspacious 1.1.2 (Python package), https://github.com/njsmith/colorspacious.

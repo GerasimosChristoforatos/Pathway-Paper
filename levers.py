@@ -14,12 +14,15 @@ b + w(y) (x - b), with the normalised logistic ramp
     s(y) = 1 / (1 + exp(-k (y - m))),  k = ln(81) / 6,  m = 2030.5
     w(y) = (s(y) - s(2026)) / (s(2035) - s(2026))  for 2026 <= y <= 2035;  w = 1 after 2035
 
-(10% -> 90% of s within 6 years; sensitivity 'ramp2045': m = 2035.5, end 2045).
+(10% -> 90% of s within 6 years; full roll-out by 2035 following RECC, Pauliuk et al. 2024;
+sensitivities 'ramp2030': m = 2028.5, end 2030, and 'ramp2045': m = 2035.5, end 2045; same k).
+Typology shares stay at the baseline (held) mix in every run: L4 (denser mix) was evaluated in
+pathways_v2 and removed (L4_V2_NOTE).
 
 Levers (settings 'central' and 'stretch') and pathways:
   P1 Right-size space        L1  size_t(y) = occ_t(y) + [1 - f w(y)] (size_ref_t - occ_t(y)),
-                                 occ_t(y) = S(y) OLF_t (the engine's occupied area)
-                             L4  attached floor-area share a0 + w (a* - a0)
+                                 occ_t(y) = S(y) OLF_t (the engine's occupied area): a share f of the
+                                 extra-space margin removed; full strength in 2035, f constant to 2050
   P2 Occupy the existing     L2a stock-wide vacancy v(y) = v0 + w (v* - v0)
      stock                   L2b near-term surplus absorbed at rate a (engine.market_excess)
   P3 Keep and reuse          L3  demolition x (1 - w d); redevelopment wave x (1 - w d)
@@ -35,24 +38,23 @@ import pandas as pd
 
 import engine
 
-LEVERS = ('L1', 'L4', 'L2a', 'L2b', 'L3', 'L5')
+LEVERS = ('L1', 'L2a', 'L2b', 'L3', 'L5')
 SETTINGS = ('central', 'stretch')
 SETTING_NAMES = {'central': 'central', 'stretch': 'stretch'}
-LEVER_NAMES = {'L1': 'Right-sized new dwellings', 'L4': 'Denser typology mix', 'L2a': 'Lower vacancy',
+LEVER_NAMES = {'L1': 'Right-sized new dwellings', 'L2a': 'Lower vacancy',
                'L2b': 'Near-term surplus absorbed', 'L3': 'Fewer removals', 'L5': 'Best-practice materials'}
-PATHWAYS = {'P1': ('L1', 'L4'), 'P2': ('L2a', 'L2b'), 'P3': ('L3',), 'P4': ('L5',)}
+PATHWAYS = {'P1': ('L1',), 'P2': ('L2a', 'L2b'), 'P3': ('L3',), 'P4': ('L5',)}
 PATHWAY_NAMES = {'P0': 'Baseline (S3-10)', 'P1': 'Right-size space', 'P2': 'Occupy the existing stock',
                  'P3': 'Keep and reuse', 'P4': 'Build better', 'P5': 'All pathways'}
 LEVER_PATHWAY = {L: P for P, ls in PATHWAYS.items() for L in ls}
 # demand band(s) each lever targets (bands as Boss.export_results; LEVERS_TABLE.md)
 BAND_TARGET = {
     'L1': 'Extra space per dwelling (and the dwelling size of every non-growth band)',
-    'L4': 'Extra space per dwelling and dwelling size via the mix; the attached OLF also lowers the growth band',
     'L2a': 'Vacancy allowance (incl. the vacancy change)',
     'L2b': 'Near-term market excess',
     'L3': 'Replacement: long-run background (demolition) + recent redevelopment wave',
     'L5': 'None: carbon per m2 (A1-A3) of every band'}
-LEVER_PARAMETER = {'L1': 'size (engine.forward), per typology and year', 'L4': 'shares (floor-area shares)',
+LEVER_PARAMETER = {'L1': 'size (engine.forward), per typology and year',
                    'L2a': 'v (stock-wide vacancy rate)', 'L2b': 'join, join_redev (engine.market_excess absorption)',
                    'L3': 'rate_demol, rate_unc (redevelopment-wave component)',
                    'L5': 'intensity, intensity_upfront (A1-A3 term only)'}
@@ -62,6 +64,10 @@ RAMP_END = 2035                 # full strength from this year (adopted)
 RAMP_MID = 2030.5
 RAMP_K = math.log(81.0) / 6.0   # s rises from 0.1 to 0.9 within 6 years
 RAMP_SENS = dict(name='ramp2045', mid=2035.5, end=2045)    # sensitivity (P5 only); same k
+RAMP_SENS_2030 = dict(name='ramp2030', mid=2028.5, end=2030)   # sensitivity (P5 only); same k
+RAMP_SENSITIVITIES = (RAMP_SENS_2030, RAMP_SENS)
+RAMP_BASIS = ('full roll-out by 2035 following RECC (Pauliuk et al. 2024, J. Ind. Ecol. 28, 1699: circular-economy '
+              'strategies fully implemented by 2035)')
 ATTACHED = ('Townhouses', 'Apartments')
 DETACHED = 'Detached'
 
@@ -80,10 +86,19 @@ L2B_ABSORPTION = {'central': 0.10, 'stretch': 0.20}
 L2_VACANCY_FLOOR = 0.040        # implied vacancy must never fall below this (check)
 # L3: reduction d of removals (Pellan et al. 2024: demolition 150,000 -> 90,000 a year = -40%)
 L3_D = {'central': 0.20, 'stretch': 0.40}
-# L4: attached (townhouses + apartments) floor-area share target; central = observed peak
-#     annual share 1991-2026 (consents), stretch = baseline share + 16 points (Pellan et al. 2024)
-L4_PEAK_WINDOW = (1991, 2026)
-L4_STRETCH_INCREMENT = 0.16
+# L4 (denser typology mix): evaluated in pathways_v2 and removed. Values from tag pathways_v2,
+# outputs/pathways/pathways_runs.csv and shapley_levers.csv (S3-10; checked in tests/test_pathways.py).
+L4_V2_NOTE = dict(
+    text=('L4 evaluated in pathways_v2 and removed: within the embodied-carbon scope a denser mix raises A1-A3 per m2 '
+          '(attached typologies carry more per m2), while its benefits (infrastructure, operational energy, land) are '
+          'outside the scope.'),
+    tag='pathways_v2', attached_share={'baseline': 0.3940321454268726, 'central': 0.4139242880995848,
+                                       'stretch': 0.5540321454268726},
+    carbon_kt={'P0': 21577.50362382947, 'central': 21493.26802626376, 'stretch': 20944.022039096093},
+    carbon_vs_P0_pct={'central': -0.3903862051617746, 'stretch': -2.935842791534893},
+    floor_area_Mm2={'P0': 89.56525459310168, 'central': 88.84679781127117, 'stretch': 84.1634942040968},
+    carbon_per_m2_kg={'P0': 240.9137753457731, 'central': 241.9138174447195, 'stretch': 248.84924559223688},
+    shapley_share_of_P0_minus_P5={'central': 0.016744, 'stretch': 0.058045})
 # L5: target ratio r = Harrell-Davis quantile at q of the scale-free case ratios
 #     x_i = A1-A3_i / pooled A1-A3 of the case's typology (independent detached and townhouse cases)
 L5_Q = {'central': 0.25, 'stretch': 0.15}
@@ -124,12 +139,13 @@ def ramp(years, mid=RAMP_MID, end=RAMP_END, start=OBSERVED_YEAR, k=RAMP_K):
 
 
 def ramp_named(years, name=None):
-    """The adopted ramp (name None) or the 'ramp2045' sensitivity."""
+    """The adopted ramp (name None) or a sensitivity ('ramp2030', 'ramp2045')."""
     if name is None:
         return ramp(years)
-    if name != RAMP_SENS['name']:
-        raise ValueError(f'Unknown ramp {name!r}.')
-    return ramp(years, mid=RAMP_SENS['mid'], end=RAMP_SENS['end'])
+    for r in RAMP_SENSITIVITIES:
+        if name == r['name']:
+            return ramp(years, mid=r['mid'], end=r['end'])
+    raise ValueError(f'Unknown ramp {name!r}.')
 
 
 # ============================================================
@@ -224,6 +240,8 @@ def resolve(B, factors_building, settings):
     L2a = dict(v0=v0, v_star=dict(L2A_V_STAR), floor=L2_VACANCY_FLOOR,
                census_consistent={int(k): float(v) for k, v in v_cons.items()},
                census_consistent_min=float(v_cons.min()), census_consistent_max=float(v_cons.max()),
+              census_consistent_min_year=int(v_cons.idxmin()), census_consistent_max_year=int(v_cons.idxmax()),
+              consistent_empty_share=float(share),
                census_consistent_midpoint=float((v_cons.min() + v_cons.max()) / 2.0))
     L2b = dict(absorption=dict(L2B_ABSORPTION), O26=float(B['join_info']['50th']['O26']),
                rho=float(B['rho_other']), gap_ref=str(settings.NEAR_TERM_GAP_REF))
@@ -231,22 +249,9 @@ def resolve(B, factors_building, settings):
     L3 = dict(d=dict(L3_D), demolition_rate=float(B['demolition_rate']),
               long_run_residual=float(B['unconsented_rate']),
               long_run_net=float(B['demolition_rate'] + B['unconsented_rate']))
-    # L4: observed annual attached floor-area shares; 1991-2025 calendar years (Boss hist_shares),
-    # 2026 = the model's observed 2026 mix (the latest 12 months, the 2026 row of evolving_gfa_shares)
-    hs = B['hist_shares']
-    att = {int(y): float(attached_share(hs.loc[y])) for y in hs.index if L4_PEAK_WINDOW[0] <= y <= L4_PEAK_WINDOW[1]}
-    att[2026] = float(attached_share(B['evolving_gfa_shares'].loc[2026]))
-    dc = B['df_consents']
-    m26 = dc[dc['Year'] == 2026]
-    col = settings.COL_TYPOLOGIES
-    ytd = float(sum(m26[col[t]].sum() for t in ATTACHED) / sum(m26[col[t]].sum() for t in typ)) if len(m26) else None
-    peak_year = max(att, key=att.get)
+    # typology shares: the baseline (held) mix in every run (L4 removed; L4_V2_NOTE)
     held_sh = B['held_shares']
-    a0 = float(attached_share(held_sh))
-    L4 = dict(baseline_shares={t: float(held_sh[t]) for t in typ}, baseline_attached=a0, attached_by_year=att,
-              attached_2026_calendar_ytd=ytd, peak_year=int(peak_year),
-              target={'central': float(att[peak_year]), 'stretch': a0 + L4_STRETCH_INCREMENT},
-              increment_stretch=L4_STRETCH_INCREMENT)
+    L4 = dict(removed=True, note=L4_V2_NOTE, baseline_shares={t: float(held_sh[t]) for t in typ})
     # L5
     cases, pooled = case_ratios(factors_building)
     x = cases['ratio'].values
@@ -266,8 +271,10 @@ def resolve(B, factors_building, settings):
               r_apartments_held={s: {t: (1.0 if t == 'Apartments' else est[s]['r']) for t in typ} for s in SETTINGS},
               bootstrap=dict(B=L5_BOOTSTRAP_B, seed=L5_BOOTSTRAP_SEED, ci=L5_CI, method='percentile'))
     return dict(ramp=dict(form='normalised logistic', k=RAMP_K, mid=RAMP_MID, start=OBSERVED_YEAR, end=RAMP_END,
-                          w={int(y): float(v) for y, v in zip(years, w)}, sensitivity=dict(RAMP_SENS),
-                          w_sensitivity={int(y): float(v) for y, v in zip(years, ramp_named(years, RAMP_SENS['name']))}),
+                          basis=RAMP_BASIS, w={int(y): float(v) for y, v in zip(years, w)}, sensitivity=dict(RAMP_SENS),
+                          sensitivities=[dict(r) for r in RAMP_SENSITIVITIES],
+                          w_sensitivity={int(y): float(v) for y, v in zip(years, ramp_named(years, RAMP_SENS['name']))},
+                          w_sensitivity_2030={int(y): float(v) for y, v in zip(years, ramp_named(years, 'ramp2030'))}),
                 L1=L1, L4=L4, L2a=L2a, L2b=L2b, L3=L3, L5=L5)
 
 
@@ -278,8 +285,6 @@ def stop_checks(p):
     for s in SETTINGS:
         if p['L5']['estimator'][s]['r'] >= 1.0:
             raise SystemExit(f"STOP (L5): Harrell-Davis r = {p['L5']['estimator'][s]['r']:.4f} >= 1 ({s}).")
-    if p['L4']['target']['central'] >= p['L4']['target']['stretch']:
-        raise SystemExit('STOP (L4): central target >= stretch target.')
 
 
 # ============================================================
@@ -320,21 +325,6 @@ def l3_rates(rate_demol, rate_unc, long_run_residual, d, w):
     return float(rate_demol) * f, float(long_run_residual) + (np.asarray(rate_unc, float) - long_run_residual) * f
 
 
-def l4_shares(shares, baseline, target, w):
-    """L4: attached share a0 + w (a* - a0) (w = 0 up to 2026); the increase split between
-    townhouses and apartments in proportion to their baseline shares, detached reduced by
-    the same amount."""
-    a0 = attached_share(baseline)
-    delta = w * (float(target) - a0)
-    out = shares.copy()
-    for t in ATTACHED:
-        out[t] = shares[t].values + delta * (baseline[t] / a0)
-    out[DETACHED] = shares[DETACHED].values - delta
-    if (out.values < 0).any():
-        raise ValueError('L4: a typology share falls below zero.')
-    return out
-
-
 def l5_intensity(intensity, a13_2025, red13, r, w):
     """L5: intensity_t(y) - w(y) (1 - r_t) (A1-A3_t,2025 - red13_t(y)): only the A1-A3 term is
     scaled, so A1-A3(y) = [1 - w (1 - r)] (A1-A3_2025 - reduction(y)) and decarbonisation
@@ -366,9 +356,6 @@ def apply(base, params, active, ramp_name=None, E_nojoin=None, l5_apartments_hel
     if 'L1' in active:
         S = np.asarray(base['pop'], float) / np.asarray(base['hh'], float)
         fi['size'], info['l1_held'] = l1_size(base['size_ref'], base['olf'], S, params['L1']['f'][active['L1']], w)
-    if 'L4' in active:
-        fi['shares'] = l4_shares(base['fwd_inputs']['shares'], base['held_shares'],
-                                 params['L4']['target'][active['L4']], w)
     if 'L2a' in active:
         fi['v'] = l2_vacancy(base['v0'], params['L2a']['v_star'][active['L2a']], w)
     if 'L2b' in active:
@@ -398,7 +385,7 @@ def pathway_levers(pathway, setting):
 
 
 def label(active):
-    """'P0' for no lever; otherwise e.g. 'L1:central+L4:central'."""
+    """'P0' for no lever; otherwise e.g. 'L1:central+L3:central'."""
     return '+'.join(f'{k}:{active[k]}' for k in LEVERS if k in active) or 'P0'
 
 
@@ -435,82 +422,134 @@ def _l1_text(p, s, year):
 
 
 def lever_table(p):
-    """Table 1 of the paper: one row per lever (pathway, band targeted, model parameter, central,
-    stretch, basis with full citation, key assumption, tag)."""
-    L1, L4, L2a, L2b, L3, L5 = p['L1'], p['L4'], p['L2a'], p['L2b'], p['L3'], p['L5']
+    """Table 1 of the paper, lever rows: item, pathway, demand band targeted, how it works (model
+    terms), assumption, central, stretch, source with full citation, tag."""
+    L1, L2a, L2b, L3, L5 = p['L1'], p['L2a'], p['L2b'], p['L3'], p['L5']
     e = L5['estimator']
     return [
-        dict(lever='L1 ' + LEVER_NAMES['L1'], pathway='P1 ' + PATHWAY_NAMES['P1'], band=BAND_TARGET['L1'],
-             parameter=LEVER_PARAMETER['L1'],
-             central=f"f = {L1['f']['central']:.2f} of the space above S x OLF removed; 2050: {_l1_text(p, 'central', 2050)}",
-             stretch=f"f = {L1['f']['stretch']:.2f}; 2050: {_l1_text(p, 'stretch', 2050)}",
-             basis='DECISION (author): f; benchmarks Pellan et al. (2024) Build. Environ. 256, 111505, Table 2 '
-                   '(individual dwellings 107 -> 100 m2, -6.5%); Pauliuk et al. (2024) J. Ind. Ecol. 28, 1699 '
-                   '(LEMD EU_UK 37.7 -> 31.2 m2/cap, -17%)',
+        dict(item='L1 ' + LEVER_NAMES['L1'], pathway='P1 ' + PATHWAY_NAMES['P1'], band=BAND_TARGET['L1'],
+             how='size_t(y) = occ_t(y) + [1 - f w(y)] (size_ref_t - occ_t(y)), occ_t = S(y) x OLF_t (engine `size`): a '
+                 'share f of the extra-space margin (new-dwelling size - occupied area) is removed; full strength in '
+                 '2035, f constant to 2050, so sizes then follow S(y)',
              assumption='new dwellings keep the occupied area S x OLF of the engine; only the space above it shrinks',
-             tag='DECISION'),
-        dict(lever='L4 ' + LEVER_NAMES['L4'], pathway='P1 ' + PATHWAY_NAMES['P1'], band=BAND_TARGET['L4'],
-             parameter=LEVER_PARAMETER['L4'],
-             central=f"attached share {pct(L4['baseline_attached'])} -> {pct(L4['target']['central'])} (observed peak, {L4['peak_year']})",
-             stretch=f"-> {pct(L4['target']['stretch'])} (+16 points)",
-             basis='DATA: Stats NZ building consents 1991-2026 (central); LITERATURE: Pellan et al. (2024) Build. '
-                   'Environ. 256, 111505 (collective 59% -> 75%) (stretch)',
-             assumption='per-typology size, OLF and carbon factors unchanged; increase split by the held townhouse / apartment shares',
-             tag='DATA / LITERATURE'),
-        dict(lever='L2a ' + LEVER_NAMES['L2a'], pathway='P2 ' + PATHWAY_NAMES['P2'], band=BAND_TARGET['L2a'],
-             parameter=LEVER_PARAMETER['L2a'],
-             central=f"{pct(L2a['v0'], 2)} -> {pct(L2a['v_star']['central'])} (midpoint of the 1986-2023 range)",
+             central=f"f = {L1['f']['central']:.2f}; 2050: {_l1_text(p, 'central', 2050)}",
+             stretch=f"f = {L1['f']['stretch']:.2f}; 2050: {_l1_text(p, 'stretch', 2050)}",
+             source='DECISION (author): f; benchmarks Pellan M, et al. (2024) Building and Environment 256, 111505, '
+                    'Table 2 (individual dwellings 107 -> 100 m2, -6.5%); Pauliuk S, et al. (2024) Journal of '
+                    'Industrial Ecology 28, 1699 (LEMD EU_UK 37.7 -> 31.2 m2/cap, -17%)', tag='DECISION'),
+        dict(item='L2a ' + LEVER_NAMES['L2a'], pathway='P2 ' + PATHWAY_NAMES['P2'], band=BAND_TARGET['L2a'],
+             how='v(y) = v0 + w(y)(v* - v0) (engine `v`); while v falls the vacancy-change term of the stock identity '
+                 'releases existing dwellings once',
+             assumption=f"consistent definition: the pooled 2018/2023 empty share of unoccupied dwellings "
+                        f"({100 * L2a['consistent_empty_share']:.1f}%) applied to every census; 4.0% is the lowest NZ "
+                        f"vacancy rate on that definition in 1986-2023 ({L2a['census_consistent_min_year']}: "
+                        f"{pct(L2a['census_consistent_min'], 2)})",
+             central=f"{pct(L2a['v0'], 2)} -> {pct(L2a['v_star']['central'])} (midpoint of the 1986-2023 range "
+                     f"{pct(L2a['census_consistent_min'], 2)} ({L2a['census_consistent_min_year']}) - "
+                     f"{pct(L2a['census_consistent_max'], 2)} ({L2a['census_consistent_max_year']}))",
              stretch=f"-> {pct(L2a['v_star']['stretch'])} (range minimum)",
-             basis=f"DATA: Stats NZ censuses 1986-2023 on one empty/unoccupied share, {pct(L2a['census_consistent_min'], 2)}-"
-                   f"{pct(L2a['census_consistent_max'], 2)}",
-             assumption='vacancy falls through the stock identity (existing dwellings released once while the rate falls)',
+             source='DATA: Stats NZ censuses 1986-2023 (data/derived/census_dwellings.csv, data/occ-unocc-2013.xlsx)',
              tag='DATA'),
-        dict(lever='L2b ' + LEVER_NAMES['L2b'], pathway='P2 ' + PATHWAY_NAMES['P2'], band=BAND_TARGET['L2b'],
-             parameter=LEVER_PARAMETER['L2b'],
-             central=f"absorption {L2b['absorption']['central']:.2f} of the remaining surplus a year",
-             stretch=f"{L2b['absorption']['stretch']:.2f} a year",
-             basis='DECISION (author): the baseline payback sensitivities (engine.market_excess, mode surplus)',
+        dict(item='L2b ' + LEVER_NAMES['L2b'], pathway='P2 ' + PATHWAY_NAMES['P2'], band=BAND_TARGET['L2b'],
+             how='engine.market_excess(..., surplus, absorption a): a share a of the remaining near-term surplus is '
+                 'paid back each year (`join`)',
              assumption='the 2026 observed building stays; later building is lower by the absorbed surplus',
-             tag='DECISION'),
-        dict(lever='L3 ' + LEVER_NAMES['L3'], pathway='P3 ' + PATHWAY_NAMES['P3'], band=BAND_TARGET['L3'],
-             parameter=LEVER_PARAMETER['L3'],
-             central=f"removals -{pct(L3['d']['central'], 0)} (demolition {pct(L3['demolition_rate'], 3)}/yr and the redevelopment wave)",
-             stretch=f"-{pct(L3['d']['stretch'], 0)}",
-             basis='LITERATURE: Pellan et al. (2024) (demolition 150,000 -> 90,000 a year, -40%); Pauliuk et al. (2024) '
-                   'J. Ind. Ecol. 28, 1699 (lifetime extension up to +90%)',
-             assumption='renovation carbon of the kept stock not modelled (upper bound; Napiontek et al. 2025, RCR 215, 108117); '
-                        'long-run residual untouched',
-             tag='LITERATURE'),
-        dict(lever='L5 ' + LEVER_NAMES['L5'], pathway='P4 ' + PATHWAY_NAMES['P4'], band=BAND_TARGET['L5'],
-             parameter=LEVER_PARAMETER['L5'],
-             central=f"r = {e['central']['r']:.3f} (95% CI {e['central']['ci_lo']:.3f}-{e['central']['ci_hi']:.3f}), "
-                     f"Harrell-Davis q = {e['central']['q']:.2f}, n = {L5['n']}",
-             stretch=f"r = {e['stretch']['r']:.3f} ({e['stretch']['ci_lo']:.3f}-{e['stretch']['ci_hi']:.3f}), q = {e['stretch']['q']:.2f}",
-             basis='DATA: 16 NZ case studies, Christoforatos & Pickering (2025) SASBE, doi:10.1108/SASBE-06-2025-0304 '
-                   '(independent detached and townhouse cases); Harrell & Davis (1982) Biometrika 69, 635; top-15% '
-                   'convention of Commission Delegated Regulation (EU) 2021/2139, Annex I s. 7.7',
-             assumption='the same r for all three typologies (apartments held as a sensitivity); A1-A3 only, on top of '
-                        'decarbonisation; A4-A5, B events, C1-C4 and soil unchanged',
-             tag='DATA / LITERATURE'),
+             central=f"a = {L2b['absorption']['central']:.2f} a year", stretch=f"a = {L2b['absorption']['stretch']:.2f} a year",
+             source='DECISION (author): the baseline payback sensitivities', tag='DECISION'),
+        dict(item='L3 ' + LEVER_NAMES['L3'], pathway='P3 ' + PATHWAY_NAMES['P3'], band=BAND_TARGET['L3'],
+             how='demolition x (1 - w d); redevelopment-wave component of the residual x (1 - w d) (`rate_demol`, '
+                 '`rate_unc`); the long-run residual untouched',
+             assumption='renovation carbon of the kept stock not modelled (upper bound; Napiontek et al. 2025, '
+                        'Resources, Conservation and Recycling 215, 108117)',
+             central=f"d = {pct(L3['d']['central'], 0)}", stretch=f"d = {pct(L3['d']['stretch'], 0)}",
+             source='LITERATURE: Pellan M, et al. (2024) Building and Environment 256, 111505 (demolition 150,000 -> '
+                    '90,000 a year, -40%); Pauliuk S, et al. (2024) Journal of Industrial Ecology 28, 1699 (lifetime '
+                    'extension up to +90%)', tag='LITERATURE'),
+        dict(item='L5 ' + LEVER_NAMES['L5'], pathway='P4 ' + PATHWAY_NAMES['P4'], band=BAND_TARGET['L5'],
+             how='A1-A3(y) = [1 - w(y)(1 - r)] (A1-A3_2025 - decarbonisation reduction(y)) (`intensity`, A1-A3 term '
+                 'only); r = Harrell-Davis quantile of the case ratios A1-A3_i / pooled typology A1-A3',
+             assumption='the same r for all typologies (apartments held as a sensitivity); decarbonisation on top; '
+                        'A4-A5, B events, C1-C4 and soil unchanged',
+             central=f"q = {e['central']['q']:.2f}: r = {e['central']['r']:.3f} (95% CI {e['central']['ci_lo']:.3f}-"
+                     f"{e['central']['ci_hi']:.3f}), n = {L5['n']}",
+             stretch=f"q = {e['stretch']['q']:.2f}: r = {e['stretch']['r']:.3f} ({e['stretch']['ci_lo']:.3f}-"
+                     f"{e['stretch']['ci_hi']:.3f})",
+             source='DATA: Christoforatos G, Pickering K (2025) Smart and Sustainable Built Environment, '
+                    'doi:10.1108/SASBE-06-2025-0304; Harrell FE, Davis CE (1982) Biometrika 69, 635-640; top-15% '
+                    'convention of Commission Delegated Regulation (EU) 2021/2139, Annex I s. 7.7', tag='DATA / LITERATURE'),
+    ]
+
+
+def t_table(t):
+    """Table 1, theoretical-limit rows (from outputs/pathways/t_limit.json)."""
+    r = t['resolved']
+    T3, T4, T5 = r['T3'], r['T4'], r['T5']
+    ind = t['indicators']['T']
+    size50 = ind['new_dwelling_size_m2']['Detached'].get('2050', ind['new_dwelling_size_m2']['Detached'].get(2050))
+    return [
+        dict(item='T1 ' + T_NAMES['T1'], pathway='T (replaces P2)', band=BAND_TARGET['L2a'] + '; ' + BAND_TARGET['L2b'],
+             how='v = 0 from 2027 (`v`); near-term surplus absorbed in full; banking rule: built_t = max(0, raw_t - '
+                 'bank_(t-1)), unused release carried forward; stock-adding join = built - requirement',
+             assumption='every vacant dwelling usable where needed, reallocated from 1 January 2027', value='v = 0; absorption 1',
+             source='DECISION (author): theoretical limit of L2a / L2b', tag='DECISION'),
+        dict(item='T2 ' + T_NAMES['T2'], pathway='T (replaces P1)', band=BAND_TARGET['L1'],
+             how='L1 with f = 1: size = occupied area S(t) x OLF (T3\'s OLF) (`size`)',
+             assumption='no space above the occupied area', value=f'f = 1 (2050 size {size50:.1f} m2 with T3)',
+             source='DECISION (author): theoretical limit of L1', tag='DECISION'),
+        dict(item='T3 ' + T_NAMES['T3'], pathway='T', band='Occupied area of every band (growth and extra space)',
+             how='OLF of every new building = the lowest design OLF (GFA / design occupants) of the independent case '
+                 'studies (`olf`, all typologies)',
+             assumption='an apartment-block occupancy applied to every typology',
+             value=f"{T3['olf']:.2f} m2/person ({T3['building']}); replaces "
+                   + ', '.join(f'{k} {v:.2f}' for k, v in T3['replaces'].items()),
+             source='DATA: Christoforatos G, Pickering K (2025) Smart and Sustainable Built Environment, '
+                    'doi:10.1108/SASBE-06-2025-0304 (data/building_data.xlsx; duplicate '
+                    + ', '.join(T3['excluded_duplicates']) + ' excluded)', tag='DATA'),
+        dict(item='T4 ' + T_NAMES['T4'], pathway='T (replaces P4)', band=BAND_TARGET['L5'],
+             how='each typology\'s A1-A3 per m2 at its own best independent case, on top of decarbonisation (as L5)',
+             assumption='the best observed design of each typology built everywhere',
+             value=', '.join(f"{k} r = {v['r']:.3f}" + (f" ({v['building']})" if v['building'] else ' (held: one independent case)')
+                             for k, v in T4.items()),
+             source='DATA: case studies (outputs/factors/factors_building.csv, 2025 factors)', tag='DATA'),
+        dict(item='T5 ' + T_NAMES['T5'], pathway='T', band='Soil carbon of the non-replacement floor area',
+             how='soil factor at the lowest soil order (SOC_low), applied exactly through the soil-bearing share',
+             assumption='the lowest of 10 soil orders under every new footprint',
+             value=', '.join(f"{k} {v['soc_low']:.1f} (vs {v['soc_avg']:.1f})" for k, v in T5.items()) + ' kg CO2e/m2',
+             source='DATA: Christoforatos G, Pickering K, Schipper LA (2026) Journal of Environmental Management 415, '
+                    '130603 (the existing lower-bound sensitivity)', tag='DATA'),
+        dict(item='T6 ' + T_NAMES['T6'], pathway='T', band='Soil carbon of the non-replacement floor area',
+             how=f'a share s of each year\'s non-replacement new floor area 2027-2050 is on previously developed land '
+                 f'(zero soil); the rest carries the T5 factor: soil factor x (1 - s) on the soil-bearing floor area',
+             assumption='; '.join(T6_ASSUMPTIONS),
+             value=f's = {T6_COMPONENTS[0]} x {T6_COMPONENTS[1]} = {T6_COMPONENTS[0] * T6_COMPONENTS[1]:.3f}, rounded {T6_SHARE}',
+             source='DATA: ' + T6_SOURCE + ' (Auckland monitoring); DECISION (author): national application',
+             tag='DATA + DECISION'),
     ]
 
 
 def register(p):
     """(setting, value, basis) rows for the resolved parameters p (resolve() / levers.json)."""
     rows = [
-        ('Pathways', 'P1 Right-size space (L1 + L4), P2 Occupy the existing stock (L2a + L2b), P3 Keep and reuse '
+        ('Pathways', 'P1 Right-size space (L1), P2 Occupy the existing stock (L2a + L2b), P3 Keep and reuse '
          '(L3), P4 Build better (L5), P5 all; settings central and stretch; reference scenario S3-10, envelope S1 / S2 '
          'for P0 and P5; growth and house-splitting untargeted by design', 'DECISION (author)'),
         ('Ramp', f"normalised logistic s(y) = 1 / (1 + exp(-k (y - {p['ramp']['mid']}))), k = ln(81)/6 = "
-         f"{p['ramp']['k']:.4f}; w = (s(y) - s(2026)) / (s(2035) - s(2026)), 1 after 2035, 0 up to 2026; sensitivity "
-         f"ramp2045 (P5): midpoint {p['ramp']['sensitivity']['mid']}, end {p['ramp']['sensitivity']['end']}, same k",
-         'DECISION (author)'),
+         f"{p['ramp']['k']:.4f}; w = (s(y) - s(2026)) / (s(2035) - s(2026)), 1 after 2035, 0 up to 2026; sensitivities "
+         "(P5): ramp2030 (midpoint 2028.5, end 2030) and ramp2045 (midpoint 2035.5, end 2045), same k",
+         'LITERATURE: ' + RAMP_BASIS + '; DECISION (author): the logistic form'),
+        ('Typology mix', 'baseline (held) shares in every run; ' + L4_V2_NOTE['text'] + ' pathways_v2 (S3-10): L4 '
+         f"central / stretch carbon {L4_V2_NOTE['carbon_vs_P0_pct']['central']:+.2f}% / "
+         f"{L4_V2_NOTE['carbon_vs_P0_pct']['stretch']:+.2f}% vs P0, carbon per m2 "
+         f"{L4_V2_NOTE['carbon_per_m2_kg']['P0']:.1f} -> {L4_V2_NOTE['carbon_per_m2_kg']['central']:.1f} / "
+         f"{L4_V2_NOTE['carbon_per_m2_kg']['stretch']:.1f} kg; lever Shapley share "
+         f"{100 * L4_V2_NOTE['shapley_share_of_P0_minus_P5']['central']:.1f}% / "
+         f"{100 * L4_V2_NOTE['shapley_share_of_P0_minus_P5']['stretch']:.1f}%", 'DECISION (author); DATA: tag pathways_v2'),
         ('Near-term excess under the levers', 'frozen at the baseline path (dwellings) in every run except L2b; the '
          'excess is the observed 2026 pipeline, not demand', 'DECISION (author)'),
         ('L2 check', f"implied vacancy 1 - hh / (stock + stock_join) >= {pct(p['L2a']['floor'])} in every year of every run",
          'DECISION (author)'),
         ('Attribution', 'Shapley values (Shapley 1953; Albrecht, Francois & Schoors 2002, Energy Policy 30, 727) over '
-         'the 16 pathway subsets (main) and the 64 lever subsets (SI), exact rational arithmetic, on cumulative carbon '
+         'the 16 pathway subsets (main) and the 32 lever subsets (SI), exact rational arithmetic, on cumulative carbon '
          'and cumulative LoE AR; demand bands give the attribution by band exactly', 'LITERATURE; DECISION (author)'),
         ('Back-cast', 'uniform factor k on the floor area of every 2027-2050 cohort of P5 and P0 (2026 fixed), brentq '
          'for cumulative LoE AR = 1; AtP: minimum LoE at k = 0', 'DECISION (author)'),
@@ -519,9 +558,9 @@ def register(p):
          '178780, Fig. 6 (form); DECISION (author)'),
     ]
     for r in lever_table(p):
-        rows.append((r['lever'], f"central: {r['central']}; stretch: {r['stretch']}; parameter: {r['parameter']}; "
-                     f"band: {r['band']}; assumption: {r['assumption']}", f"{r['tag']}: {r['basis']}"))
-    rows += [(f'Omitted in v2: {a}', 'not modelled', f'DECISION (author): {b}') for a, b in OMITTED]
+        rows.append((r['item'], f"central: {r['central']}; stretch: {r['stretch']}; how: {r['how']}; "
+                     f"band: {r['band']}; assumption: {r['assumption']}", f"{r['tag']}: {r['source']}"))
+    rows += [(f'Omitted: {a}', 'not modelled', f'DECISION (author): {b}') for a, b in OMITTED]
     return rows
 
 
@@ -541,12 +580,29 @@ def register(p):
 #   T4 Best materials      r per typology = its own best independent case (A1-A3 / pooled);
 #                          apartments held at r = 1 (one independent case)
 #   T5 Best soil           soil factor at the lowest soil order (SOC_low) for every typology
-T_COMPONENTS = ('T1', 'T2', 'T3', 'T4', 'T5')
+T_COMPONENTS = ('T1', 'T2', 'T3', 'T4', 'T5', 'T6')
 T_NAMES = {'T1': 'No idle stock', 'T2': 'No extra space', 'T3': 'Minimum space per person',
-           'T4': 'Best materials', 'T5': 'Best soil'}
-T_DISCLAIMER = ('T is a theoretical limit (thought experiment) combining the best observed attributes of different '
-                'buildings; it is not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > '
-                'realisable).')
+           'T4': 'Best materials', 'T5': 'Best soil', 'T6': 'Urban densification'}
+T_DISCLAIMER = ('T is a hyper-optimistic theoretical limit (thought experiment): all assumptions at full strength from '
+                '1 January 2027, combining best observed attributes of different buildings and places; not a proposal '
+                'or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).')
+T_BAU_NOTE = ('BAU decarbonisation applies in T as in every run (A1-A3 item paths of Horup et al. 2025, A4-A5 '
+              'e^(-0.01 (t - 2025)); the lift held at 2025 as in the baseline).')
+# T6 urban densification: share of each year's non-replacement new floor area 2027-2050 on previously
+# developed land (zero soil-carbon loss). Auckland Council (2021), Auckland Plan 2050 Development
+# Strategy Monitoring Report, December 2021: in 2020/21, 82% of dwelling consents were in the existing
+# urban area, of which 79% occurred through intensification; 0.82 x 0.79 = 0.648, rounded 0.65.
+T6_SHARE = 0.65
+T6_COMPONENTS = (0.82, 0.79)
+T6_SOURCE = ('Auckland Council (2021). Auckland Plan 2050 Development Strategy Monitoring Report, December 2021: in '
+             '2020/21, 82% of dwelling consents were in the existing urban area, of which 79% occurred through '
+             'intensification')
+T6_ASSUMPTIONS = (
+    "(i) Auckland's observed share applied nationally (demonstrated-limit logic, as T3 / T4)",
+    '(ii) a dwelling-count share applied to floor area',
+    '(iii) intensification on developed land seals no additional soil (upper bound: some infill builds over garden soil)',
+    '(iv) replacement floor area keeps its existing zero-soil treatment',
+    "(v) the soil factor on the remaining share is T5's lowest soil order")
 T_BASE_SETTING = 'stretch'
 T_INSTANT = 'instant'
 
@@ -619,8 +675,7 @@ def apply_T(base, params, pT, comps, ramp_name=T_INSTANT, E_nojoin=None):
         held[t] = ref <= occ
         size[t] = np.where(held[t], ref, occ + (1.0 - f * w) * (ref - occ))
     fi['size'] = size
-    # L4 (unchanged, stretch)
-    fi['shares'] = l4_shares(base['fwd_inputs']['shares'], base['held_shares'], params['L4']['target'][s], w)
+    # typology shares: the baseline (held) mix (L4 removed)
     # L2a / L2b, or T1 (v = 0, absorption 1)
     fi['v'] = l2_vacancy(base['v0'], 0.0 if 'T1' in comps else params['L2a']['v_star'][s], w)
     if E_nojoin is None:
@@ -634,39 +689,32 @@ def apply_T(base, params, pT, comps, ramp_name=T_INSTANT, E_nojoin=None):
     r = {t: pT['T4'][t]['r'] for t in typ} if 'T4' in comps else params['L5']['r'][s]
     fi['intensity'] = l5_intensity(base['fwd_inputs']['intensity'], base['a13_2025'], base['red13'], r, w)
     fi['intensity_upfront'] = l5_intensity(base['fwd_inputs']['intensity_upfront'], base['a13_2025'], base['red13'], r, w)
-    # T5: soil path (applied exactly by pathways.run_T through the soil-bearing share)
-    soil_path = ({t: pT['T5'][t]['soc_avg'] + w * (pT['T5'][t]['soc_low'] - pT['T5'][t]['soc_avg'])
-                  for t in typ} if 'T5' in comps else None)
+    # T5 / T6: soil path (applied exactly by pathways.run_T through the soil-bearing share).
+    # T5: the lowest soil order; T6: a share s of the non-replacement floor area is on developed land
+    # (zero soil), so the soil factor on the soil-bearing floor area is scaled by (1 - s w).
+    soil_path = None
+    if 'T5' in comps or 'T6' in comps:
+        soil_path = {}
+        for t in typ:
+            base_s = pT['T5'][t]['soc_avg']
+            sp = base_s + w * (pT['T5'][t]['soc_low'] - base_s) if 'T5' in comps else np.full(len(years), base_s)
+            soil_path[t] = sp * (1.0 - T6_SHARE * w) if 'T6' in comps else sp
     info = dict(w=w, l1_held=held, a13=a13_path(base['a13_2025'], base['red13'], r, w), soil_path=soil_path,
                 olf_path=olf_y, occupied=None, comps=tuple(c for c in T_COMPONENTS if c in comps))
     return fi, join, redev, info
 
 
 def t_label(comps, ramp_name=T_INSTANT):
-    """'T' for all five, 'P5-stretch-instant' for none, else e.g. 'T[T1+T3]'; '-ramp' for the logistic ramp."""
+    """'T' for all six, 'P5-stretch-instant' for none, else e.g. 'T[T1+T3]'; '-ramp' for the logistic ramp."""
     c = [x for x in T_COMPONENTS if x in comps]
-    name = 'T' if len(c) == 5 else ('P5-stretch-instant' if not c else f"T[{'+'.join(c)}]")
+    name = 'T' if len(c) == len(T_COMPONENTS) else ('P5-stretch-instant' if not c else f"T[{'+'.join(c)}]")
     return name + ('' if ramp_name == T_INSTANT else '-ramp')
 
 
 def register_T(t):
     """(setting, value, basis) rows of the theoretical limit T, from outputs/pathways/t_limit.json."""
-    r = t['resolved']
-    T3, T4, T5 = r['T3'], r['T4'], r['T5']
-    rows = [('Theoretical limit T', T_DISCLAIMER + ' T = P5-stretch with T1-T5 at full strength from 2027 (no ramp); '
-             '2026 untouched; sensitivity: the v2 logistic ramp (T-ramp)', 'DECISION (author)'),
-            ('T1 No idle stock', 'v = 0 from 2027; near-term surplus absorbed in full; banking rule: built_t = max(0, '
-             'raw_t - bank_(t-1)), unused release carried forward; stock-adding join (built - requirement)',
-             'DECISION (author)'),
-            ('T2 No extra space', 'new-dwelling size = occupied area S(t) x OLF (L1, f = 1)', 'DECISION (author)'),
-            ('T3 Minimum space per person', f"OLF {T3['olf']:.2f} m2/person ({T3['building']}, the lowest design OLF of the "
-             f"independent case studies; duplicates {', '.join(T3['excluded_duplicates'])} excluded) for every typology; "
-             'replaces ' + ', '.join(f'{k} {v:.2f}' for k, v in T3['replaces'].items()),
-             'DATA: Christoforatos & Pickering 2025 case studies (data/building_data.xlsx)'),
-            ('T4 Best materials', ', '.join(f"{k} r = {v['r']:.3f}" + (f" ({v['building']})" if v['building'] else ' (held)')
-                                            for k, v in T4.items()) + '; on top of decarbonisation',
-             'DATA: outputs/factors/factors_building.csv (2025 factors)'),
-            ('T5 Best soil', ', '.join(f"{k} {v['soc_low']:.2f} kg CO2e/m2 (SOC_low; average {v['soc_avg']:.2f})"
-                                       for k, v in T5.items()) + ', from 2027',
-             'DATA: Christoforatos, Pickering & Schipper 2026 (lowest of 10 soil orders)')]
+    rows = [('Theoretical limit T', T_DISCLAIMER + ' T = P5-stretch (without L4) with T1-T6 at full strength from 2027 '
+             '(no ramp); 2026 untouched; sensitivity: the v2 logistic ramp (T-ramp). ' + T_BAU_NOTE, 'DECISION (author)')]
+    for r in t_table(t):
+        rows.append((r['item'], f"{r['value']}; how: {r['how']}; assumption: {r['assumption']}", f"{r['tag']}: {r['source']}"))
     return rows

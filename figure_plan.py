@@ -32,8 +32,8 @@ HEADLINE = [
                 'projection 2026-2050 with the Monte Carlo 5-95% band, Low and High replacement variants; '
                 '(b) cumulative floor area 2026-2050 by variant (bar) with the Monte Carlo 5-95% whisker on the '
                 'Reference',
-         source='data/baseline/projection.json, data/baseline/scenarios.json, data/montecarlo/annual_REF.csv, '
-                'data/montecarlo/summary_REF.csv',
+         source='data/baseline/annual.csv, data/baseline/variants_annual.csv, data/baseline/scenarios.json, '
+                'data/montecarlo/annual_REF.csv, data/montecarlo/summary_REF.csv',
          caption='New residential floor area. History is consented floor area converted to built floor area; '
                  'the Reference projection builds {gfa_ref:.1f} million m2 in 2026-2050 (Monte Carlo 90% '
                  'interval {gfa_p5:.1f}-{gfa_p95:.1f}); Low and High replacement bracket the replacement '
@@ -44,7 +44,8 @@ HEADLINE = [
                 'one vacancy definition), Reference projection annual 2026-2050; bands stacked (they sum to '
                 'the total; no separate total line); untargeted bands grey and hatched; retirement villages '
                 'removed in proportion (out of scope, noted)',
-         source='data/baseline/projection.json (bands), history by census interval from the Boss state',
+         source='data/baseline/bands_annual.csv (Reference, 2026-2050), data/baseline/bands_history.csv (census '
+                'intervals)',
          caption='Floor area by reason for building. Bands sum to the in-scope total. Population growth and '
                  'smaller households are untargeted; extra space, vacancy and the 2026 overbuild, replacement '
                  'and redevelopment are the bands the pathways act on.',
@@ -54,7 +55,8 @@ HEADLINE = [
                 'soil carbon loss, maintenance B2/B4 within 2026-2050), stacked, with the Monte Carlo 5-95% band '
                 'of the total; (b) cumulative 2026-2050 by material (Pride-stripe order) with committed after '
                 '2050 as a hatched companion range',
-         source='data/baseline/projection.json (stages, materials, committed), data/montecarlo/annual_REF.csv',
+         source='data/baseline/annual.csv (components), data/baseline/projection.json (materials, committed), '
+                'data/montecarlo/annual_REF.csv',
          caption='Embodied carbon of new residential construction. Materials and construction (A1-A5) and soil '
                  'carbon loss are counted in the construction year, maintenance (B2, B4) in the year it occurs '
                  'within 2026-2050; later events and end of life are committed after 2050 (b, hatched).',
@@ -75,7 +77,7 @@ HEADLINE = [
                 'emissions committed after 2050 (later B2/B4 and C1-C4, lower-upper range, hatched) for Low, '
                 'Reference and High, in kt and in years of the 2050 AR boundary; cumulative AR and AtP budgets '
                 'as lines',
-         source='data/aesa/results.json (committed), data/baseline/scenarios.json',
+         source='data/aesa/results.json (committed, budgets), data/baseline/scenarios.json',
          caption='Lock-in. The 2026-2050 cohorts commit {com_lo:,.0f}-{com_hi:,.0f} kt after 2050 (Reference), '
                  'equal to {yrs_lo:.0f}-{yrs_hi:.0f} years of the 2050 acquired-rights boundary.',
          legacy=['pb_6_committed']),
@@ -108,18 +110,21 @@ HEADLINE = [
          legacy=['pw_2_shapley_waterfall', 'pw_8_staircase', 'pw_9_T_shapley_SI']),
     dict(id='H10', file='H10_solution_space', title='Solution space: demand and intensity',
          panels='cumulative LoE AR over uniform cuts of 2027-2050 floor area (demand) and of non-soil carbon '
-                'per m2 (intensity) applied to the Reference, with the LoE = 1 contour and 2, 3, 5, 10 contours; '
-                'P1-P5 (Moderate open, Ambitious filled) and TL at their effective coordinates; back-cast points',
-         source='data/pathways/solution_space.csv, data/pathways/backcast.json',
+                'per m2 (intensity) applied to the Reference: (a) the whole plane with the LoE = 1 contour and '
+                '2, 3, 5, 10 contours, P1-P5 (Moderate open, Ambitious filled) and TL at their effective '
+                'coordinates, back-cast points; (b) zoom on the P1-P5 markers',
+         source='data/pathways/solution_space.csv, data/pathways/backcast.json, data/pathways/theoretical_limit.json '
+                '(TL marker)',
          caption='Solution space (after Horup et al. 2025, Fig. 6). Markers sit at each run\'s effective '
                  'reductions of 2027-2050 floor area and non-soil carbon per m2; TL also lowers soil carbon '
                  '(TL5, TL6), which the plane does not show.',
          legacy=['pw_3_solution_space']),
     dict(id='H11', file='H11_sensitivity', title='What moves the cumulative level of exceedance',
          panels='tornado of the cumulative LoE AR 2026-2050 (Reference), the largest parameters with both '
-                'ends of paired parameters: model-input rows and AESA-method rows on one axis (see the note on '
-                'population rows in docs/FIGURE_PLAN.md)',
-         source='data/baseline/sensitivity_one_at_a_time.csv, data/aesa/sensitivity.csv',
+                'ends of paired parameters: model-input rows (boundaries as adopted, as the AESA sensitivity rows) '
+                'and AESA-method rows on one axis; the population rows move carbon and boundaries together',
+         source='data/baseline/sensitivity_one_at_a_time.csv, data/aesa/sensitivity.csv, data/aesa/results.json '
+                '(population paths)',
          caption='One-at-a-time sensitivities of the cumulative acquired-rights level of exceedance; bars are '
                  'not additive and not a joint interval.',
          legacy=['sens_1_tornado', 'pb_4_sensitivity']),

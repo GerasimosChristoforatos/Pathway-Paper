@@ -25,7 +25,8 @@ boundaries (AESA layer; reads the Monte Carlo draws) -> validation -> gap_2026 -
 overbuild_2026 -> scenarios -> reconciliation -> figures_report -> frozen-technology check
 (projection, Sensitivity, MonteCarlo, scenarios, boundaries with DECARB_MODE 'none', A4-A5
 held, whole life at construction; data in outputs/data/frozen_technology/, no figures) ->
-pathways -> metrics -> tests (incl. the v1.2.1 regression test, which reads the
+pathways -> metrics -> headline (the figures of the paper, from the data files) -> tests (incl. the v1.2.1
+regression test, which reads the
 frozen-technology data, and the regression lock of MODEL v1.0.0, which reads every data file)
 -> results -> assumptions -> baseline_draft -> pb_methods -> pathways_docs -> check_outputs.
 Each script runs in its own process, with the non-interactive matplotlib backend and
@@ -110,6 +111,8 @@ def pipeline(skip_mc, quick=False):
     run('pathways', [py, os.path.join(ROOT, 'pathways.py')])
     # metrics.json is a data file (locked by tests/test_regression_model_v1.py): written before the tests
     run('metrics', [py, tool('metrics')] + (['--mc-stale'] if skip_mc else []))
+    # the figures of the paper and HEADLINE.md, from the data files only
+    run('headline', [py, os.path.join(ROOT, 'headline.py')])
     run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
     run('results', [py, tool('results')])
     run('assumptions', [py, tool('assumptions')])
@@ -127,6 +130,7 @@ def pathways_only():
     py = sys.executable
     env = {'PATHWAY_QUICK': '0'}
     step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
+    step('headline', [py, os.path.join(ROOT, 'headline.py')], env)
     step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
                             os.path.join(ROOT, 'tests', 'test_regression_model_v1.py')], env)
     step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)

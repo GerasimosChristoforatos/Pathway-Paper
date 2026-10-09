@@ -473,6 +473,24 @@ def main():
     cum_det = {k: dict(label=r['label'], I_kt=float(r['I'].loc[slice(*PB_YEARS)].sum() / M6),
                        LoE_AR=cum(r['I'], b_ar), LoE_AtP=cum(r['I'], b_atp)) for k, r in runs.items()}
 
+    # ---- population paths (MODEL v1.0.0 addition; the population rows of H11) ------------
+    # The Stats NZ 5th / 95th percentile paths move both the embodied carbon (the projection's own
+    # engine run of that path, every other input at the Reference) and the boundaries (population
+    # modifier of AR, Horup et al. 2025 Eq. 1; per-capita AtP), with I_sec,base unchanged. The
+    # median path reproduces the deterministic Reference (checked).
+    pop_paths = {}
+    for p in ('5th', '50th', '95th'):
+        pnz_p = pd.Series(B['df_forecast'][f'PopTotal_{p}'].values, index=fy).loc[T0:]
+        a_p, t_p = boundaries(SOURCE_PAIR, i_base, comp, s_sec, pnz_p, p_w)
+        I_p = pd.Series(B['engine_out'][p]['carbon'], index=fy)
+        w = slice(*PB_YEARS)
+        pop_paths[p] = dict(I_kt=float(I_p.loc[w].sum() / M6), B_AR_kt=float(a_p.loc[w].sum() / M6),
+                            B_AtP_kt=float(t_p.loc[w].sum() / M6), LoE_AR=cum(I_p, a_p), LoE_AtP=cum(I_p, t_p),
+                            P_NZ_2050=float(pnz_p.loc[PB_YEARS[1]]))
+    for k in ('LoE_AR', 'LoE_AtP'):
+        if not np.isclose(pop_paths['50th'][k], cum_det['REF'][k], rtol=1e-12, atol=0):
+            raise SystemExit(f'Population paths: the median path does not reproduce the Reference {k}.')
+
     # ---- Monte Carlo ---------------------------------------------------------
     print('PB: Monte Carlo (re-run from saved draws)')
     mc = mc_runs(fy, hist)
@@ -621,7 +639,8 @@ def main():
         boundaries={int(y): dict(B_AR_kt=float(b_ar.loc[y] / M6), B_AtP_kt=float(b_atp.loc[y] / M6),
                                  P_NZ=float(p_nz.loc[y]), P_W=float(p_w.loc[y])) for y in years_b},
         B_AtP_over_B_AR=dict(min=float(ratio.min()), max=float(ratio.max())),
-        deterministic=cum_det, mc=mc_cum, mc_base_fixed=mc_cum_fixed, mc_base_20yr=mc_cum_20,
+        deterministic=cum_det, population_paths=pop_paths, mc=mc_cum, mc_base_fixed=mc_cum_fixed,
+        mc_base_20yr=mc_cum_20,
         # maintenance within 2026-2050 twice: the projection's own total (committed['B_inwindow_kt'] ->
         # maintenance_kt) and this layer's sum of the annual series (equal to rounding)
         committed={k: dict(r['committed'],

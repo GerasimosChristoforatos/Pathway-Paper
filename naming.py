@@ -78,7 +78,11 @@ BANDS = {'growth': 'Population growth',
          'maintenance': 'Maintenance (B2, B4), 2026–2050'}
 BAND_DETAIL = {'replacement_demolition': 'Replacement: demolition (BRANZ rate)',
                'replacement_residual': 'Replacement: net unconsented additions (calibrated residual)',
-               'retirement_villages': 'Retirement villages (out of scope)'}
+               'retirement_villages': 'Retirement villages (out of scope)',
+               # history (census intervals): the net replacement observed in the dwelling counts holds the
+               # long-run rate and any redevelopment; the two are not separable before the projection
+               'replacement_history': 'Replacement and redevelopment (history; not separable)'}
+BANDS_HISTORY = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement_history')
 BAND_DEFINITIONS = {
     'growth': 'population growth at the occupied area per person, net of consolidation (untargeted)',
     'smaller_households': 'additional households from falling household size (untargeted)',

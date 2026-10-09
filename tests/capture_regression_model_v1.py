@@ -23,6 +23,16 @@ number, e.g. the Monte Carlo draws, whose order is the draw order). These are th
 names at capture time; tests/test_regression_model_v1.py translates the renamed
 outputs back to them through the machine-readable map of docs/RENAMING.md
 (naming.py), so labels and file names may change while every number is compared.
+
+Additions (MODEL v1.0.0): values the release reports that no v3.1 output held (the annual
+component split, the annual and census-interval demand bands, the annual series of the
+projection variants, the population paths of the AESA layer, the TL marker of the solution
+space). They are NEW values, not changes: after the release run,
+
+    python tests/capture_regression_model_v1.py --additions
+
+writes them to the 'additions' section of the same file, flagged with the commit and run
+they come from; the v3.1 capture ('meta', 'files') is not touched.
 """
 import datetime
 import glob
@@ -156,5 +166,44 @@ def main():
           f'({os.path.getsize(TARGET) / 1e6:.1f} MB)')
 
 
+# the release locations (outputs/...) of the additions: a whole file (None) or JSON key prefixes
+ADDITIONS = {'data/baseline/annual.csv': None, 'data/baseline/bands_annual.csv': None,
+             'data/baseline/bands_history.csv': None, 'data/baseline/variants_annual.csv': None,
+             'data/frozen_technology/baseline/variants_annual.csv': None,
+             'data/aesa/results.json': ('population_paths',),
+             'data/frozen_technology/aesa/results.json': ('population_paths',),
+             'data/pathways/theoretical_limit.json': ('solution_space_marker',)}
+
+
+def additions():
+    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    with open(TARGET) as f:
+        cap = json.load(f)
+    add = dict(meta=dict(
+        purpose='MODEL v1.0.0: values that no v3.1 output held (additions, not changes)',
+        commit=commit, captured_utc=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
+        runs='python run_all.py (full) then python run_all.py --pathways-only, release layout (layout.py)',
+        tolerance=cap['meta']['tolerance']), files={})
+    n = 0
+    for rel, prefixes in ADDITIONS.items():
+        p = os.path.join(OUT, rel)
+        entry = capture_csv(p) if rel.endswith('.csv') else capture_json(p)
+        if prefixes:
+            entry['values'] = {k: v for k, v in entry['values'].items() if k.split('/')[0] in prefixes}
+            entry['n_values'] = len(entry['values'])
+        add['files'][rel] = entry
+        n += (sum(len(r) for r in entry['rows'].values()) if entry['kind'] == 'csv' else
+              sum(len(c) for c in entry['columns'].values()) if entry['kind'] == 'csv_by_row_number' else
+              entry['n_values'])
+    add['meta']['n_files'], add['meta']['n_values'] = len(add['files']), n
+    cap['additions'] = add
+    with open(TARGET, 'w') as f:
+        json.dump(cap, f, indent=0, sort_keys=False)
+    print(f'regression additions: {n:,} values from {len(add["files"])} files -> {os.path.relpath(TARGET, ROOT)}')
+
+
 if __name__ == '__main__':
-    main()
+    if '--additions' in sys.argv:
+        additions()
+    else:
+        main()

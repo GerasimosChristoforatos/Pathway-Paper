@@ -175,3 +175,28 @@ def test_every_captured_number_is_reproduced(old_file):
 def test_capture_meta():
     m = CAP['meta']
     assert m['commit'].startswith('ee37ef1') and m['n_files'] == len(CAP['files'])
+
+
+# ---- additions (MODEL v1.0.0): new values, captured from the release run ---------------------
+ADDITIONS = CAP.get('additions', {}).get('files', {})
+
+
+class _Release(_Identity):
+    """Additions are captured at their release locations: no map."""
+
+
+@pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1', reason='quick run: Monte Carlo outputs differ by design')
+@pytest.mark.skipif(not ADDITIONS, reason='additions not captured yet (captured from the release run)')
+@pytest.mark.parametrize('new_file', sorted(ADDITIONS))
+def test_every_added_number_is_reproduced(new_file):
+    """The values the release added (CAP['additions']; CHANGELOG) are locked as the v3.1 numbers are."""
+    global LEGACY
+    entry, saved = ADDITIONS[new_file], LEGACY
+    LEGACY = _Release()
+    try:
+        assert os.path.exists(os.path.join(OUT, new_file)), new_file
+        bad, missing = (_check_json if entry['kind'] == 'json' else _check_csv)(new_file, entry)
+    finally:
+        LEGACY = saved
+    assert not missing, f'{new_file}: {len(missing)} added values absent, e.g. {missing[:5]}'
+    assert not bad, f'{new_file}: {len(bad)} values differ beyond 1e-12 relative, e.g. {bad[:5]}'

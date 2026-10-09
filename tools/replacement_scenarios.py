@@ -13,6 +13,7 @@ import os
 import sys
 
 import numpy as np
+import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import layout  # noqa: E402
@@ -22,6 +23,7 @@ import validation  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_MD = layout.report('scenarios.md')                    # frozen_technology/ in the frozen check run
 OUT_JSON = layout.data('baseline/scenarios.json')
+OUT_ANNUAL = layout.data('baseline/variants_annual.csv')        # MODEL v1.0.0 addition
 # the Reference and its variants (typology shares held in every run); REF_HL5 and REF_HL15 are
 # half-life sensitivities; the _NOUC rows drop the census under-construction correction
 SCENARIOS = [(k, N.SCENARIOS[k], s) for k, s in (
@@ -65,12 +67,23 @@ def one(settings):
     return out, B
 
 
+def annual(key, B):
+    """Annual floor area (in scope) and embodied carbon 2026-2050 of one variant (median demographics)."""
+    fy = np.asarray(B['forecast_years'])
+    g = np.asarray(B['results']['50th']['total'], float)
+    c = B['carbon_total_typ'].sum(axis=1).values
+    return [dict(variant=key, year=int(y), floor_area_Mm2=float(g[i]) / 1e6, carbon_kt=float(c[i]) / 1e6)
+            for i, y in enumerate(fy) if i > 0]
+
+
 def main():
-    res, B1 = {}, None
+    res, B1, rows = {}, None, []
     for key, lab, s in SCENARIOS:
         res[key], B = one(s)
         res[key]['label'] = lab
+        rows += annual(key, B)
         B1 = B if key == 'LOW' else B1
+    pd.DataFrame(rows).to_csv(layout.writing(OUT_ANNUAL), index=False)
     cr = B1['census_rates']
     long_pct = 100 * (float(B1['demolition_rate']) + float(B1['unconsented_rate']))
     import engine

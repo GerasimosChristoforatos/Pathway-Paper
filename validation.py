@@ -94,6 +94,45 @@ def consistent_share(B):
     return float(cen.loc[[2018, 2023], 'empty'].sum() / cen.loc[[2018, 2023], 'unoccupied'].sum())
 
 
+def history_bands(B):
+    """Floor area built by demand band in the census intervals 1991-2023 (and 2023-2025), interval
+    means in Mm2 per year, in scope (MODEL v1.0.0 addition; the bands of the projection's history,
+    as the census-interval bars of the floor-area figures). Vacancy on ONE definition throughout
+    (the pooled 2018/2023 empty share of unoccupied private dwellings applied to every census,
+    consistent_share): the published empty / residents-away split breaks between 2013 and 2018.
+    Between censuses annual detail is not identified, so each band is the mean over the interval's
+    years y0+1..y1. Retirement-village units are removed from every band in proportion (as the
+    projection does), so the bands add up to the in-scope floor area. The history's replacement
+    band is the net replacement in the dwelling counts (long-run rate and any redevelopment; not
+    separable). The last interval (after the latest census) uses consent-derived households."""
+    c = projection.COMPLETION_RATE
+    yh = np.arange(1992, 2026)
+    hh_h, d_h = B['hist_hh'], B['blended_dwelling_size']
+    cal = engine.calibrate_stock(B['years_hist'], hh_h,
+                                 engine.vacancy_knots(B['census'], float(B['empty_share_measured']), consistent_share(B)),
+                                 B['hist_units_all_c'], B['hist_rv_units_c'], c, projection.DEMOLITION_RATE,
+                                 projection.DEMOLITION_CALIB_START, B['calib_end'])
+    cy = [int(y) for y in B['census'].index if yh[0] - 1 <= y <= int(B['calib_end'])]
+    intervals = list(zip(cy[:-1], cy[1:])) + [(cy[-1], int(yh[-1]))]
+    D = d_h.loc[yh]
+    parts = [('growth', B['hist_growth'].loc[yh] - B['hist_avoided'].loc[yh]),
+             ('smaller_households', B['hist_hs_raw'].loc[yh].clip(lower=0)),
+             ('extra_space', B['d_hh'].loc[yh] * (D - B['occupied_area_per_dwelling'].loc[yh])),
+             ('vacancy', (cal['allow'] + cal['change']).loc[yh] * D),
+             ('replacement_history', cal['net'].loc[yh] * D)]
+    rv = cal['rv'].loc[yh] * D
+    rows = []
+    for y0, y1 in intervals:
+        mean = lambda ser: float(np.mean(np.asarray(ser.loc[y0 + 1:y1], float)))
+        m = {k: mean(v) for k, v in parts}
+        f = (sum(m.values()) + mean(rv)) / sum(m.values())          # in scope: every band x (1 - RV share)
+        built = mean(B['hist_built_gfa'])
+        rows += [dict(interval=f'{y0}-{y1}', year_start=y0 + 1, year_end=y1, band=N.band_data_label(k),
+                      floor_area_Mm2_per_year=m[k] * f / 1e6, observed_built_Mm2_per_year=built / 1e6,
+                      households_from=('census' if y1 <= cy[-1] else 'consents')) for k in N.BANDS_HISTORY]
+    return pd.DataFrame(rows)
+
+
 def hindcast(B, const_share=None):
     yh = B['years_hist']
     end = int(B['calib_end'])
@@ -320,6 +359,7 @@ def main():
     rows_c, rows_p = hindcast(B, sh), hindcast(B, None)
     main_rows = rows_c if VALIDATION_VACANCY == 'consistent' else rows_p
     write(main_rows, chk, hindcast_stock(B), dhe_crosscheck(B), rows_pub=rows_p, vac=vac)
+    history_bands(B).to_csv(layout.writing(layout.data('baseline/bands_history.csv')), index=False)
 
 
 if __name__ == '__main__':

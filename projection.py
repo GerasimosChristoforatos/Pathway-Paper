@@ -2479,6 +2479,52 @@ def export_results(B, path):
         json.dump(N.keys(out), fh, indent=2)
 
 
+def export_annual(B, path_annual, path_bands):
+    """Annual series of the Reference (MODEL v1.0.0 additions; release names of naming.py).
+
+    path_annual: one row per year, history (in-scope floor area built, 1991-2025) and the
+    Reference (2026-2050; 2025 is the observed anchor): floor area and embodied carbon, the
+    carbon split into materials and construction (A1-A5, excluding soil), soil carbon loss and
+    maintenance (B2, B4 within 2026-2050). The three components add up to the annual carbon
+    of the engine (carbon = upfront + maintenance; upfront = materials and construction + soil
+    carbon loss, the soil term computed exactly as the engine applies it: soil factor x floor
+    area x soil-bearing share). No historical carbon (the model has no historical factors).
+
+    path_bands: the in-scope demand bands of the Reference by year 2026-2050 (floor area and
+    carbon; retirement villages removed from every band in proportion, maintenance a carbon band),
+    the bands of the projection figures (fig_bands) under the labels of naming.BANDS_IN_SCOPE."""
+    E = B['engine_out']['50th']
+    fy = np.asarray(B['forecast_years'])
+    typ = list(B['typ_names'])
+    soil = (np.array([B['SOIL_INTENSITY'][t] for t in typ])[:, None] * E['gfa_t']).sum(axis=0) * E['soil_share']
+    maint = E['b_t'].sum(axis=0)
+    if not np.allclose(E['upfront'] + maint, E['carbon'], rtol=1e-12, atol=0):
+        raise SystemExit('export_annual: upfront + maintenance does not reproduce the annual carbon.')
+    if not np.allclose(E['carbon'][1:], B['carbon_total_typ'].sum(axis=1).values[1:], rtol=1e-12, atol=0):
+        raise SystemExit('export_annual: engine carbon differs from the reported annual carbon.')
+    hist = B['hist_built_gfa']
+    rows = [dict(year=int(y), source='history', floor_area_Mm2=float(v) / 1e6) for y, v in hist.items() if y <= fy[0]]
+    for i, y in enumerate(fy):
+        if i == 0:
+            continue                                   # 2025: the observed anchor (history row)
+        rows.append(dict(year=int(y), source='projection', floor_area_Mm2=float(B['results']['50th']['total'][i]) / 1e6,
+                         carbon_kt=float(E['carbon'][i]) / 1e6,
+                         materials_construction_kt=float(E['upfront'][i] - soil[i]) / 1e6,
+                         soil_carbon_loss_kt=float(soil[i]) / 1e6, maintenance_kt=float(maint[i]) / 1e6))
+    N.columns(pd.DataFrame(rows)).to_csv(path_annual, index=False)
+    (g_bands, _), (c_bands, _) = B['fig_bands']['gfa'], B['fig_bands']['carbon']
+    if len(g_bands) != len(N.BANDS_IN_SCOPE) or len(c_bands) != len(N.BANDS_IN_SCOPE):
+        raise SystemExit('export_annual: the projection bands do not match naming.BANDS_IN_SCOPE.')
+    out = [dict(year=int(y), band=N.band_data_label(b), floor_area_Mm2=float(g[i]), carbon_kt=float(c[i]))
+           for i, y in enumerate(fy[1:])
+           for b, (_, g, _), (_, c, _) in zip(N.BANDS_IN_SCOPE, g_bands, c_bands)]
+    pd.DataFrame(out).to_csv(path_bands, index=False)
+
+
 if __name__ == "__main__":
     SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
-    export_results(main(), layout.writing(layout.data('baseline/projection.json')))
+    _B = main()
+    export_results(_B, layout.writing(layout.data('baseline/projection.json')))
+    if not FROZEN_RUN:                 # the frozen check run (whole life at construction) is an anchor only
+        export_annual(_B, layout.writing(layout.data('baseline/annual.csv')),
+                      layout.writing(layout.data('baseline/bands_annual.csv')))

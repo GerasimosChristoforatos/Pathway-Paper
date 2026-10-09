@@ -191,7 +191,9 @@ def _vocabulary():
     L += table(['ID', 'release label', 'v3.1 labels', 'definition'],
                [[code(k), v, '; '.join(f'"{x}"' for x in leg.get(v, [])), N.BAND_DEFINITIONS.get(k, '')]
                 for k, v in N.BANDS.items()]
-               + [[code(k), v, '; '.join(f'"{x}"' for x in leg.get(v, [])), 'sub-row of Replacement in data tables'
+               + [[code(k), v, '; '.join(f'"{x}"' for x in leg.get(v, [])),
+                   'history band (census intervals, H3): replacement and redevelopment are not separable before 2026'
+                   if k == 'replacement_history' else 'sub-row of Replacement in data tables'
                    if k.startswith('replacement') else 'bookkeeping row, out of scope; not a band in figures']
                   for k, v in N.BAND_DETAIL.items()])
     L += ['', '### Carbon components, boundaries and metrics', '']

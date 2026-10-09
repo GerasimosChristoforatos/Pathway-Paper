@@ -863,8 +863,18 @@ def compute_tl(res, verbose=True):
             gap[name] = dict(LoE_AR=loe, within_AR=True, margin_AR_kt=(bar - R_['E']['carbon'][1:].sum()) / M6,
                              margin_AR_share=1.0 - loe, LoE_AtP=R_['E']['carbon'][1:].sum() / batp,
                              LoE_AtP_min_k0=sp['fixed'].sum() / batp)
+    # TL on the solution-space plane (MODEL v1.0.0 addition): its effective reductions of 2027-2050
+    # floor area and of non-soil carbon per m2 against the Reference, as the P1-P5 markers
+    # (effective_coordinates). TL5 and TL6 also lower soil carbon, which the plane does not show.
+    split0 = linear_split(ref, res['get'](REFERENCE, {}))
+    d_tl, i_tl = effective_coordinates(linear_split(ref, RT), split0)
+    loe_tl = RT['E']['carbon'][1:].sum() / bar
+    marker = dict(run='TL', demand_reduction=d_tl, intensity_reduction=i_tl, LoE_AR_run=loe_tl,
+                  LoE_AR_on_grid_at_coordinates=scaled_carbon(split0, 1.0 - d_tl, 1.0 - i_tl).sum() / bar,
+                  LoE_AtP_run=loe_tl * bar / batp,
+                  note='TL5 and TL6 lower soil carbon loss, which the demand-intensity plane does not show')
     out = dict(params_T=pT, rows=rows, annual=annual, bands=bd, shapley=pd.DataFrame(shap_rows),
-               subsets=pd.DataFrame(sub_rows), shapley_exact=exact, gap=gap,
+               subsets=pd.DataFrame(sub_rows), shapley_exact=exact, gap=gap, solution_space_marker=marker,
                indicators={'TL': tl_indicators(ref, RT), 'TL-gradual': tl_indicators(ref, RTr)},
                cache=cache, getT=getT, seconds=time.time() - t0)
     if verbose:
@@ -918,7 +928,7 @@ def write_tl(res, rt):
         components=LV.TL_NAMES), resolved=rt['params_T'],
         metrics={k: {c: v for c, v in r.items() if isinstance(v, (int, float, str, bool, np.floating, np.integer))}
                  for k, r in rows.items()},
-        indicators=rt['indicators'], gap=rt['gap'],
+        indicators=rt['indicators'], gap=rt['gap'], solution_space_marker=rt['solution_space_marker'],
         shapley=N.columns(rt['shapley']).to_dict(orient='records'))
     _json(out, 'theoretical_limit.json')
 

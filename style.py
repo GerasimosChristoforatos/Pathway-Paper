@@ -116,6 +116,11 @@ MATERIAL = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF'),
             ('SOIL', 'Soil carbon loss', '#B5A48B')]
 EDGE = dict(edgecolor='#555555', linewidth=0.3)
 
+# sequential ramp for continuous fields (the solution-space LoE, H10): light to dark blue, lightness
+# strictly decreasing (tools/palette_check.py), so the order survives greyscale and colour-vision
+# deficiency
+SEQUENTIAL = ['#EAF2FB', '#C6DBF2', '#9EC5F4', '#6DA7EC', '#3987E5', '#256ABF', '#184F95', '#0D366B']
+
 
 def apply():
     """Set the rcParams of the release style (call once per process before plotting)."""

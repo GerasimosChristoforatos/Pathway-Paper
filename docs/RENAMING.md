@@ -88,6 +88,7 @@ TL caption wording: "hyper-optimistic theoretical limit; a thought experiment, n
 | `replacement_demolition` | Replacement: demolition (BRANZ rate) | "Demolition replacement" | sub-row of Replacement in data tables |
 | `replacement_residual` | Replacement: net unconsented additions (calibrated residual) | "Calibrated stock residual (long run)" | sub-row of Replacement in data tables |
 | `retirement_villages` | Retirement villages (out of scope) | "Housed in RV units (out of scope)" | bookkeeping row, out of scope; not a band in figures |
+| `replacement_history` | Replacement and redevelopment (history; not separable) |  | history band (census intervals, H3): replacement and redevelopment are not separable before 2026 |
 
 ### Carbon components, boundaries and metrics
 

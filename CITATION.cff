@@ -1,0 +1,61 @@
+cff-version: 1.2.0
+message: >-
+  If you use this model or its outputs, please cite it as below. The numbers
+  of a release are those of its full run (python run_all.py), committed under
+  outputs/ and locked by tests/test_regression_model_v1.py.
+type: software
+title: >-
+  New Zealand new residential floor area and embodied carbon, 2026–2050:
+  projection, planetary-boundary layer (AESA) and pathways
+version: 1.0.0
+authors:
+  - family-names: Christoforatos
+    given-names: Gerasimos
+repository-code: "https://github.com/GerasimosChristoforatos/Pathway-Paper"
+abstract: >-
+  A bottom-up, demand-driven projection of the new residential floor area New
+  Zealand builds in 2026–2050 and its embodied carbon (materials and
+  construction A1–A5, soil carbon loss, maintenance B2/B4, and the emissions
+  committed after 2050), with Monte Carlo and Sobol uncertainty analysis,
+  validation against the census record, an absolute environmental
+  sustainability assessment (AESA) of climate change under the acquired-rights
+  and ability-to-pay allocation principles, and five construction pathways
+  built from five levers with Shapley attribution, a back-cast and a
+  hyper-optimistic theoretical limit.
+keywords:
+  - embodied carbon
+  - residential construction
+  - floor area projection
+  - absolute environmental sustainability assessment
+  - planetary boundaries
+  - New Zealand
+references:
+  - type: article
+    title: >-
+      Embodied impacts of residential stocks; multi-level assessment of
+      materials, buildings, typologies and functional units to support
+      policymaking towards sustainable housing
+    authors:
+      - family-names: Christoforatos
+        given-names: Gerasimos
+      - family-names: Pickering
+        given-names: K.
+    journal: Smart and Sustainable Built Environment
+    year: 2025
+    doi: 10.1108/SASBE-06-2025-0304
+  - type: article
+    title: >-
+      Integrating soil organic carbon loss into building life cycle assessment
+      and urban planning: implications for urban sustainability practice
+    authors:
+      - family-names: Christoforatos
+        given-names: Gerasimos
+      - family-names: Pickering
+        given-names: K.
+      - family-names: Schipper
+        given-names: L. A.
+    journal: Journal of Environmental Management
+    volume: 415
+    start: 130603
+    year: 2026
+    doi: 10.1016/j.jenvman.2026.130603

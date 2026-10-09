@@ -1,5 +1,191 @@
 # CHANGELOG
 
+Entries below the first use the vocabulary of their own version (S1/S2/S3-10, central/stretch,
+L2a/L2b, T, near-term market excess, ...); docs/RENAMING.md maps every one of those names to the
+release vocabulary.
+
+## model-v1.0.0: one model, release vocabulary, figures of the paper
+
+The baseline projection, the planetary-boundary layer (AESA) and the pathways, refurbished as one
+publication-ready model from commit ee37ef1 (tag pathways_v3.1). **No result changes**: this is a
+refurbish, not a re-analysis. Every number the pipeline reported at ee37ef1 is locked (below) and
+reproduced by the release run; the release adds a small set of new values (additions, listed) and
+removes the by-typology reporting (listed).
+
+### Regression lock (replaces the byte lock)
+
+* `tests/regression_model_v1.json` holds every number the pipeline reported at ee37ef1: 488,484
+  numeric and boolean values from the 67 CSV and JSON outputs (baseline, factors, frozen-technology
+  check run, Monte Carlo, sensitivity, AESA, pathways, theoretical limit, metrics), captured by
+  `tests/capture_regression_model_v1.py` after a full run and a `--pathways-only` run.
+* `tests/test_regression_model_v1.py` maps each captured identifier (file, identifying cells and
+  column, or JSON path) forward to its release location through `naming.LEGACY`, the
+  machine-readable form of docs/RENAMING.md, and requires every value to 1e-12 relative (NaN equals
+  NaN; booleans and integers exactly). A value may be absent only where `naming.LEGACY.removed()`
+  says so (the removals below). A 1e-11 relative change in a draws file, a keyed CSV and a JSON
+  file each fails the test (checked when the lock was written).
+* **Why the byte lock was retired.** `tests/test_baseline_lock.py` and `tests/baseline_manifest.json`
+  compared the SHA-256 of the baseline output files. The refurbish renames files, columns, labels and
+  JSON keys by design, so every byte changes while no number may; a byte lock can only say "changed",
+  whereas the numerical lock says which number moved and by how much. Byte reproducibility of the
+  release outputs themselves is checked again by `tests/output_manifest_model_v1.json` (SHA-256 of
+  every tracked output; a re-run reproduces them).
+* `tests/test_release_map.py` checks that the map is complete and one-to-one.
+
+### Vocabulary (docs/RENAMING.md)
+
+* One vocabulary, defined once in `naming.py` and used by every figure, table, caption, document and
+  data file: the Reference, Low replacement and High replacement variants (were S3-10, S1, S2;
+  REF_HL5, REF_HL15 and the *_NOUC variants); pathways P1 Right-sized dwellings, P2 Occupied stock,
+  P3 Retained stock, P4 Low-carbon materials, P5 Combined; settings Moderate and Ambitious (were
+  central and stretch); levers L1 Dwelling size, L2 Vacancy rate, L3 Overbuild absorption, L4 Building
+  retention, L5 Material carbon (were L1, L2a, L2b, L3, L5); the theoretical limit TL and TL1-TL6
+  (were T, T1-T6); adoption paths by2035 (adopted), by2030, by2045 and from2027 (were ramp2035,
+  ramp2030, ramp2045, instant); demand bands Population growth, Smaller households, Extra space,
+  Vacancy, 2026 overbuild (was the near-term market excess), Replacement, Redevelopment, Maintenance
+  (B2, B4), 2026-2050; carbon components materials and construction (A1-A5), soil carbon loss,
+  maintenance (B2, B4) and committed after 2050 (later B2/B4 and C1-C4).
+* Modules: `Boss.py` -> `projection.py`, `PB.py` -> `boundaries.py` (git mv, history kept);
+  `tools/near_term_join.py` -> `tools/overbuild_2026.py`. Settings: `REPLACEMENT_VARIANT`,
+  `REPLACEMENT_HALF_LIFE`, `OVERBUILD_RULE`, `OVERBUILD_BOOKING`, `OVERBUILD_ABSORPTION`,
+  `OVERBUILD_GAP_REF` (docs/RENAMING.md section 8).
+* Every CSV column and JSON key is written through `naming.columns` / `naming.keys`. Identifiers the
+  approved map left in the old vocabulary were mapped by the same rules (docs/RENAMING.md section 9),
+  among them, in the clean-up: `reconciliation.json` `v2_frozen_whole_life_kt` ->
+  `whole_life_2025_factors_kt`, `v2_adopted_whole_life_kt` -> `whole_life_a45_held_kt` and the two
+  checks naming "v2"; the AESA sensitivity labels "(xiii) Wider scope: ... the maintenance (B2, B4)
+  of every cohort ..." and "Note (not drawn in D18 or H11): ...".
+* Vacancy is stated in one sentence everywhere (author decision): "the vacancy-rate parameter is held
+  at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum,
+  5.38%, minimum 4.01% in 1996); implied stock vacancy rises to ≈6.4% because the 2026 overbuild is
+  not absorbed" (`naming.VACANCY_WORDING`, numbers read from `outputs/data/baseline/overbuild_2026.json`;
+  D05 and the documents stop if 2023 is no longer the series maximum).
+* No version tag in any label, caption or generated document; the denser typology mix keeps the
+  approved name "denser typology mix (lever of pathways_v2, removed in pathways_v3.1)" with its
+  values from git tag pathways_v2.
+* `tests/test_release.py` greps every generated report, HEADLINE.md, DIAGNOSTICS.md, INDEX.md and the
+  texts of every figure for the old terms (`naming.OLD_TERMS`).
+
+### Outputs (layout.py; outputs/INDEX.md lists every file)
+
+* `outputs/headline/`: the figures of the paper H1-H11 (PNG 300 dpi and vector PDF, 183 mm wide),
+  their source data (CSV: panel, series, x, value, unit) and `HEADLINE.md` (eight findings, each figure
+  with its caption, numbers filled from the data). `headline.py` draws them from the data files only.
+* `outputs/diagnostics/<group>/`: every other figure, D01-D34 in six groups, and `DIAGNOSTICS.md`
+  (content, run note and drawing script of each). The earlier file name of every figure is in
+  docs/FIGURE_PLAN.md.
+* `outputs/data/`: every number (baseline/, montecarlo/, aesa/, pathways/, factors/,
+  frozen_technology/, metrics.json). The plain-named Monte Carlo copies of the Reference (exact
+  duplicates of the S3-10 files) are merged into `<kind>_REF.csv`.
+* `outputs/reports/`: RESULTS.md, ASSUMPTIONS.md, METHODS_DRAFT.md (one methods document in three
+  parts: baseline projection, planetary-boundary layer (AESA), pathways and the theoretical limit;
+  replaces BASELINE_DRAFT.md, PB_METHODS_DRAFT.md and PATHWAYS_METHODS_DRAFT.md), LEVERS_TABLE.md
+  (Table 1), validation, 2026 gap, 2026 overbuild, scenarios, reality-check and reconciliation reports;
+  the frozen-technology check run's reports as `frozen_technology_<name>.md`.
+* Figures are versioned. Every figure is saved through `style.save_figure`: release file name, 300 dpi,
+  no software or date metadata (byte-stable), and an audit record (`outputs/diagnostics/_audit/`:
+  axes, year ranges, texts, note, drawing script) read by the tests. `style.py` (Okabe-Ito categorical
+  palette, colour-vision checked: docs/PALETTE.md), `plotting.py` (shared drawing rules: demand bands
+  stacked so that they sum to the total, no separate total line, negative parts below zero, AR and AtP
+  as lines, never averaged) and `naming.py` (labels).
+* Layout corrections made in the clean-up to match the approved map: the figure audit records moved
+  from `outputs/figure_audit/` to `outputs/diagnostics/_audit/`, and the frozen-technology reports
+  from `outputs/reports/frozen_technology/` to `outputs/reports/frozen_technology_<name>.md`.
+* FIGURES.md removed (replaced by HEADLINE.md and DIAGNOSTICS.md); ASSUMPTIONS.md moved to
+  outputs/reports/; `outputs/pathways/HOOKS.md` moved to docs/HOOKS.md.
+
+### Additions (new values; captured with `tests/capture_regression_model_v1.py --additions`)
+
+* `data/baseline/annual.csv`: history 1991-2025 and the Reference 2026-2050 by year, carbon split into
+  materials and construction, soil carbon loss and maintenance (sums exactly to the captured annual
+  carbon; tested).
+* `data/baseline/bands_annual.csv` (the in-scope demand bands by year), `data/baseline/bands_history.csv`
+  (by census interval, one vacancy definition; replacement and redevelopment not separable in the
+  history), `data/baseline/variants_annual.csv` (annual series of every variant); each tested against
+  the captured totals.
+* `data/aesa/results.json` `population_paths`: the cumulative LoE of the Stats NZ 5th, 50th and 95th
+  population paths, carbon and both boundaries moving with the path (the existing boundary functions;
+  LoE AR 3.765 and 5.828 for the 5th and 95th paths; the 50th reproduces the Reference). Used by H11
+  (approved decision, option A).
+* `data/pathways/theoretical_limit.json` `solution_space_marker`: TL's effective demand and intensity
+  cuts for H10 (TL5/TL6 soil effects are not on the plane; the plane value at the marker, 1.16, and
+  the run value, 1.03, are both reported).
+
+### Removals
+
+* **By-typology reporting** (typology stays internal to the model: it weights the case-study factors
+  and the lever parameters): the `typology` section and `settings/phi` of
+  `data/baseline/projection.json`; `shares_2050` of every variant in `data/baseline/scenarios.json`;
+  the per-typology floor area columns (`gfa_<typology>_Mm2` at ee37ef1) of `data/pathways/runs.csv`
+  and `annual.csv` and `attached_share_2050` of `runs.csv`, and the same values of the TL runs in
+  `data/pathways/theoretical_limit.json` (`metrics/<run>/...`); the Monte Carlo output
+  `townhouse_share_2050` (draws column, summary row, Sobol rows); the same in the frozen-technology
+  copies; the figures boss_04, boss_05 (typology panels), boss_05_annual_carbon_pb, boss_06,
+  boss_07, diag_4, diag_5 (docs/FIGURE_PLAN.md, "Not carried into the release"); the "By typology"
+  table of the baseline report; the non-detached share axis of the reality-check figure. Every
+  removed identifier is listed in docs/RENAMING.md and `naming.LEGACY.removed()`. Typology stays in
+  the lever parameters and their indicators (L1 implied sizes, TL new-dwelling sizes), which are
+  model inputs, not results by typology.
+* **Superseded figures**: mc_1_fan (H2, H4), sens_1_tornado (H11; all rows in D16), pb_4_sensitivity
+  (H11; all rows in D18), and the earlier versions of H6, H7, H9 and H10 (pb_6_committed,
+  pw_1_bands_by_pathway, pw_2_shapley_waterfall, pw_3_solution_space).
+* **The separate total line** in band figures: the stacked bands are the total (tested).
+* **The typology-mix trend code path**, never run or reported: `MIX_MODE`, `TREND_WINDOW_START`,
+  `DAMPING_PHI`, `fit_evolving_mix`, `mix_trend`, `engine.mix_shares` and the `phi` setting. The mix is
+  held at its 2022-2026 consented average in every variant, as before.
+* **Dead code and options**: `projection.VERBOSE` and its console blocks; the unused variables
+  `OLF_GROSS`, `design_capacity`, `n_consol`, `old_consumption`, `DESIGN_OCCUPANTS`; the projection
+  "dashboard" print (replaced by a projection summary by demand band; console only);
+  `MonteCarlo.PLOT_ONLY` (the `--plot-only` option is kept); `run_all.py --no-mc`;
+  `tools/metrics.py --mc-stale`; `tools/quick_stamp.py` (the quick-run stamp is applied by
+  `style.save_figure`); `figure_plan.release_file`; the after-tests document list of
+  `tools/check_outputs.py` (the tests now run last); unused imports (gap_2026.py,
+  data/build_lca_events.py, tests).
+* **Documents**: FIGURES.md; the three standalone methods drafts (now METHODS_DRAFT.md); the byte lock
+  (above).
+
+### Text corrections (no number changes)
+
+* The baseline assumption table no longer says the typology shares are held "(S1, S3)" only: they are
+  held in every variant (as the code always did); the sentence saying the damped-trend path is "kept in
+  the code but not run" is removed with that code.
+* The AESA committed-emissions table shows the three main variants in the order of naming.SCENARIOS (as
+  at ee37ef1, three rows).
+* Doubled basis tags in the lever register ("DECISION: DECISION (author)", "DATA: DATA:") written once;
+  L3's source names the absorption sensitivities of the projection; TL4's source path is
+  `outputs/data/factors/factors_building.csv`; "BAU decarbonisation" reads "the adopted
+  decarbonisation".
+* METHODS_DRAFT.md typesets ranges, m² and CO₂e in prose only: inline code, URLs and DOIs keep their
+  characters.
+
+### Numerical note
+
+The held typology mix of 2025 is now taken directly from the 2025 consented shares instead of from
+the removed trend function, which returned the same row to rounding. Compared byte for byte with the
+run before this change, every number is identical except eight percentile values of the Monte Carlo
+annual files (adopted and frozen-technology runs), which differ in the last bit (at most 2.6e-16
+relative); the Monte Carlo draws, summaries, Sobol indices and their confidence intervals are
+identical. Every captured value is reproduced to 1e-12.
+
+### Known issues (unchanged from ee37ef1; disclosed)
+
+* The one-at-a-time population rows of the sensitivity table carry approximate carbon (floor area of
+  the path x the Reference carbon per m² of each year); D16 and D17 say so. H11 and the AESA use the
+  exact engine carbon of the population paths (`population_paths`).
+* The completion rate 0.95 cites "Jones et al. 2024", to be verified before submission; whether timber
+  end of life (C1-C4) includes landfill methane is to be confirmed from Christoforatos & Pickering
+  (2025). Both are flagged in METHODS_DRAFT.md.
+* The apartment carbon factor rests on one independent case study (A_1 and A_2 are one design at two
+  scales).
+
+### Run modes and documents
+
+* `python run_all.py` (full run; the only basis for reported results), `--pathways-only` (the pathway
+  layer, the headline figures, the pathway documents and the indexes; then the pathway tests, the
+  regression lock and the release checks), `--quick` (development; every output marked "QUICK RUN, not
+  for reporting"). Spyder: Run (F5) on run_all.py, or `runfile('run_all.py', args='--pathways-only')`.
+* README.md is the front page; CITATION.cff added; ARCHITECTURE.md describes the release.
+
 ## pathways-v3.1: L4 removed, ramp2030, T6 urban densification
 
 Revision of PATHWAYS v3 (tag pathways_v3 = 828e5ef). No baseline file changes

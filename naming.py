@@ -8,7 +8,7 @@ the names of commit ee37ef1 (pathways v3.1) to the release names.
 * LEGACY maps every identifier of the captured outputs (tests/regression_model_v1.json)
   to its release location: file, CSV column, identifying cell, JSON path. It is used by
   tests/test_regression_model_v1.py, which requires every captured number to be
-  reproduced at its mapped location, and by tools/renaming_doc.py, which writes the
+  reproduced at its mapped location, and by tools/design_docs.py, which writes the
   complete old -> new table, docs/RENAMING.md. One map serves both, so the documented
   renaming is exactly the one the test enforces.
 """
@@ -116,6 +116,45 @@ VACANCY_WORDING = ('the vacancy-rate parameter is held at its published 2023 cen
 def vacancy_wording(v0, vmax, vmin, ymin, v2050):
     """The release wording of the vacancy assumption (fractions in, percent out)."""
     return VACANCY_WORDING.format(v0=100 * v0, vmax=100 * vmax, vmin=100 * vmin, ymin=ymin, v2050=100 * v2050)
+
+
+# Terms of the earlier versions that no reader-facing text of the release may use (docs/RENAMING.md
+# §1 Terms, §7 and §8): (pattern, release term). tests/test_release.py greps every generated report,
+# HEADLINE.md, DIAGNOSTICS.md, INDEX.md and the texts of every figure for them. The patterns
+# are narrowed where a release text legitimately uses the same letters: Hjalsted et al.'s
+# Supplementary Information numbering ("SI Eq. S1", "Table S1"), "central" as an ordinary word
+# (only the setting names "-central" / "central/stretch" are matched), "the recent redevelopment
+# wave" and "vacancy allowance" of the release band definitions, and the typology words, which stay
+# in the descriptions of model inputs (case studies, consents; by-typology results are removed).
+OLD_TERMS = [
+    (r'\bS3(?:-(?:10|5|15))?(?:-noUC)?\b', 'Reference (REF, REF_HL5, REF_HL15)'),
+    (r'(?<!Eq\. )(?<!Table )(?<!SI )(?<!Fig\. )\bS[12](?:-noUC)?\b', 'Low / High replacement (LOW, HIGH)'),
+    (r'noUC', ', no census under-construction correction'),
+    (r'\bcentral run\b|\bP0\b', 'Reference'),
+    (r'\bstretch\b|[-_]central\b|central/stretch', 'Moderate / Ambitious'),
+    (r'ramp20\d\d|logistic ramp|instant start|T-ramp', 'adoption path; full roll-out by ...; full strength from 2027'),
+    (r'(?i)near[- _]term', '2026 overbuild'),
+    (r'(?i)market excess', '2026 overbuild'),
+    (r'(?i)house-splitting', 'smaller households'),
+    (r'(?i)growth \(net of consolidation\)|growth demand', 'population growth'),
+    (r'(?i)extra space per dwelling|consumption: (?:extra space|vacancy)', 'extra space; vacancy'),
+    (r'(?i)replacements? (?:&|and) repaints', 'maintenance (B2, B4)'),
+    (r'(?i)within-window|within the window|in-window', '2026–2050'),
+    (r'(?i)committed post-2050', 'committed after 2050'),
+    (r'\bPB\b|\bBoss\b|boss_results', 'planetary-boundary layer (AESA); projection.py; boundaries.py'),
+    (r'theoretical limit T\b|(?<![-_.])\bT[1-6]?\b(?![-_.])', 'TL, TL1-TL6'),
+    (r'\bL2[ab]\b', 'L2, L3'),
+    (r'\bGFA\b', 'floor area'),
+    (r'\bv\d+(?:\.\d+)+\b|baseline-pb-v\d|PATHWAYS v\d', 'no version tags (CHANGELOG, git tags)'),
+    (r'(?i)total built', 'removed: the demand bands sum to the total'),
+    (r'(?i)soil \(land-use change\)', 'soil carbon loss'),
+    (r'Keep and reuse|Build better|Right-size space|Occupy the existing stock', 'pathway labels (PATHWAYS)'),
+    (r'No idle stock|Best soil\b|Urban densification|Best materials\b', 'theoretical-limit labels (TL)'),
+    (r'Lower vacancy|surplus absorbed|Fewer removals|Right-sized new dwellings', 'lever labels (LEVERS)'),
+    (r'Projected Median|Projected Total|Uncertainty \(5th', 'legend entries of docs/RENAMING.md §7'),
+    (r'(?i)held at the 2023 census|vacancy (?:rate )?(?:is |stays |remains )?(?:held|constant|fixed) at',
+     'the vacancy wording (VACANCY_WORDING)'),
+]
 
 
 def scenario_label(code):
@@ -454,7 +493,9 @@ def _sens_label(old):
 
 
 def _pb_sens_label(old):
-    return old.replace('Reference: pair A', 'Reference: carrying-capacity pair A')
+    return (old.replace('Reference: pair A', 'Reference: carrying-capacity pair A')
+            .replace('include the replacements and repaints of', 'include the maintenance (B2, B4) of')
+            .replace('Note (not in tornado):', 'Note (not drawn in D18 or H11):'))
 
 
 # JSON: per-file key maps (exact keys), then the generic identifier rules.
@@ -468,6 +509,15 @@ _JSON_KEY_MAPS = {
                       'model_requirement_2026_S2': 'model_requirement_2026_HIGH'},
     'replacement_scenarios.json': dict(SCENARIO_LEGACY),
     'reality_checks.json': dict(SCENARIO_LEGACY),
+    # version tags of the reconciliation (the whole-life accounting of baseline-pb-v2) dropped
+    'reconciliation.json': {
+        'v2_frozen_whole_life_kt': 'whole_life_2025_factors_kt',
+        'v2_adopted_whole_life_kt': 'whole_life_a45_held_kt',
+        '2025 factors: split sums to the v2 frozen whole-life total':
+            '2025 factors: split sums to the whole-life total at 2025 factors',
+        'decarbonised: v2 adopted - A4-A5 - in-window B decarbonisation = split (upper)':
+            'decarbonised: whole life (A4-A5 held) - A4-A5 decarbonisation - maintenance decarbonisation = split '
+            '(upper)'},
     'pathways/backcast.json': {'P0': 'REF', 'P5-central': 'P5-moderate', 'P5-stretch': 'P5-ambitious'},
     'pathways/t_limit.json': {'T': 'TL', 'T-ramp': 'TL-gradual', 't6': 'tl6',
                               **{k: v for k, v in TL_LEGACY.items() if k != 'T'}},
@@ -532,13 +582,13 @@ def _removed(old_file, row=None, col=None, path=None):
         parts = path.split('/')
         if f == 'boss_results.json' and parts[0] == 'typology':
             return True
+        if f == 'boss_results.json' and path == 'settings/phi':     # damping of the removed typology-mix trend
+            return True
         if f == 'replacement_scenarios.json' and 'shares_2050' in parts:
             return True
         if any(re.fullmatch(r'gfa_(Detached|Townhouses|Apartments)_Mm2', p) for p in parts):
             return True
         if parts[-1] in ('attached_share_2050',):
-            return True
-        if f.startswith('montecarlo_summary') and False:
             return True
     if row is not None and f.startswith('montecarlo_summary') and row and row[0] == 'townhouse_share_2050':
         return True
@@ -551,8 +601,9 @@ def _removed(old_file, row=None, col=None, path=None):
 # what it has applied, so the regression test holds at every commit:
 #   'labels'   vocabulary, columns, identifying cells and JSON keys renamed (commit 3)
 #   'layout'   outputs/data/, outputs/headline/, outputs/diagnostics/, outputs/reports/ (commit 4)
-#   'removals' by-typology reporting removed (commit 7)
-APPLIED = {'labels', 'layout'}
+#   'removals' by-typology reporting removed, with the setting of the removed typology-mix trend
+#              (settings/phi) (commit 7)
+APPLIED = {'labels', 'layout', 'removals'}
 
 
 class _Legacy:

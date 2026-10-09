@@ -33,12 +33,8 @@ Also reported: where the 2018-23 excess building went, from census counts.
 
 Writes outputs/reports/gap_2026.md and outputs/data/baseline/gap_2026.json.
 """
-import contextlib
-import importlib
-import io
 import json
 
-import numpy as np
 import pandas as pd
 
 import layout

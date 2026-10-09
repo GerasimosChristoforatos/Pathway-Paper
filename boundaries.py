@@ -1,8 +1,10 @@
 """
 PLANETARY-BOUNDARY LAYER (AESA, climate change) on top of the model outputs
 ===========================================================================
-Compares the sector's embodied carbon (A1-A5, B2, B4, C1-C4 + soil carbon
-loss, booked in the construction year; 2026-2050) with a share of a global
+Compares the sector's embodied carbon 2026-2050 (projection.ACCOUNTING: adopted
+time-resolved, materials and construction A1-A5 and soil carbon loss in the construction
+year and maintenance B2/B4 in the year it occurs; whole life at construction is a
+sensitivity) with a share of a global
 carrying capacity for climate change, allocated by two principles reported as
 a range and never averaged:
 
@@ -15,8 +17,9 @@ The model itself is not changed: projection.py, MonteCarlo.py and engine.py are 
 called. Equations: aesa.py. Every constant below carries its source.
 
 Writes outputs/data/aesa/ (annual.csv, montecarlo_annual.csv, sensitivity.csv, results.json;
-layout.py) and the AESA figures (outputs/diagnostics/, outputs/headline/; style.save_figure)
-when PATHWAY_SAVE_FIGURES=1, as run_all.py sets.
+layout.py) and the AESA diagnostics D18, D21-D27 (outputs/diagnostics/; style.save_figure)
+when PATHWAY_SAVE_FIGURES=1, as run_all.py sets; the headline figures H5, H6 and H11 are
+drawn from these data by headline.py.
 
     python boundaries.py
 """
@@ -589,12 +592,12 @@ def main():
                  *cum_I(EVENT_TIMING='n')),
                 ('xii_whole_life', '(xii) Accounting: whole life at construction (base on the same rule)',
                  *cum_I(base=base_w, ACCOUNTING='whole_life_at_construction')),
-                ('xiii_wider_scope', f'(xiii) Wider scope: base and projection include the replacements and '
-                 f'repaints of every cohort since {projection.B_SCOPE_START}',
+                ('xiii_wider_scope', f'(xiii) Wider scope: base and projection include the maintenance (B2, B4) of '
+                 f'every cohort since {projection.B_SCOPE_START}',
                  *cum_I(base=i_base_wide, add=legacy_events(B)))]
     sens.append(('xiv_alpha_1', "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",
                  *cum_pair(cp=dict(comp, alpha=1.0))))
-    sens.append(('note_soil_long_run', 'Note (not in tornado): history 2024-25 at the long-run net replacement rate',
+    sens.append(('note_soil_long_run', 'Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate',
                  *cum_pair(ib=i_base_long)))
     sens_df = pd.DataFrame(sens, columns=['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP'])
     sens_df['AR_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AR'] / ref_ar - 1)
@@ -658,7 +661,7 @@ def main():
             mc_base='In the Monte Carlo the AR boundary varies with each draw\'s NZ population path and with '
                     'I_sec,base recomputed from the draw\'s case-study carbon factors (2025 technology) on the observed '
                     'history; the AtP boundary varies with population only. mc_base_fixed gives the bands with '
-                    'I_sec,base held at its central value (baseline-pb-v1).'))
+                    'I_sec,base held at its deterministic value.'))
     with open(layout.writing(layout.data('aesa/results.json')), 'w') as f:
         json.dump(N.keys(res), f, indent=2, default=float)
 
@@ -693,15 +696,16 @@ def assumption_register():
         ('Carrying capacity over time', 'static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / '
          'Paris-aligned pathways', 'DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, '
          '140-150 (pp. 143, 148)'),
-        ('Sector impact', ('upfront carbon (A1-A5 + soil) of each year\'s construction plus the replacements and '
-                           'repaints (B2, B4) occurring that year from buildings built in the window (time-resolved); '
-                           'later events and end of life (C1-C4) are committed emissions after 2050, reported '
-                           'separately' if projection.ACCOUNTING == 'time_resolved' else
+        ('Sector impact', ('materials and construction (A1-A5) and soil carbon loss of each year\'s construction plus '
+                           'the maintenance (B2, B4) occurring that year from buildings built in 2026-2050 '
+                           '(time-resolved); later maintenance and end of life (C1-C4) are committed after 2050, '
+                           'reported separately' if projection.ACCOUNTING == 'time_resolved' else
                            'the model\'s embodied carbon (A1-A5, B2, B4, C1-C4 + soil), all booked in the '
                            'construction year'),
          f"DECISION (author); projection.ACCOUNTING = '{projection.ACCOUNTING}'"),
-        ('AR base on the same rule', f'Ī_sec,base = upfront of {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} construction + '
-         'the replacements and repaints within the window of the buildings built in it, at 2025 factors; '
+        ('AR base on the same rule', f'Ī_sec,base = materials and construction (A1-A5) and soil carbon loss of {AR_BASE_WINDOW[0]}-'
+         f'{AR_BASE_WINDOW[1]} construction + the maintenance (B2, B4) within {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} '
+         'of the buildings built in it, at 2025 factors; '
          'base-window sensitivities on the same rule over their windows; wider scope (all cohorts since '
          f'{projection.B_SCOPE_START}) as a sensitivity', 'DECISION (author)'),
         ('Carbon factors over time', f"projection.DECARB_MODE = '{projection.DECARB_MODE}'"
@@ -740,7 +744,7 @@ def assumption_register():
          'DECISION: mean of quarterly ratios for continuity with the manuscript (ratio of sums is a sensitivity)'),
         ('World population', 'UN WPP 2024 probabilistic median (1 July), dated 31 December t as the mean of '
          '1 July t and t+1', 'DATA; DECISION (dating)'),
-        ('NZ population', 'the model\'s paths (central; each Monte Carlo draw); sensitivities: raw Stats NZ '
+        ('NZ population', 'the model\'s paths (the Reference; each Monte Carlo draw); sensitivities: raw Stats NZ '
          '2024-base median (PCHIP on level, dated as above) and the WPP 2024 New Zealand median',
          'DATA (model); DECISION'),
         ('Monte Carlo', 'boundaries recomputed per draw from the draw\'s NZ population; I_sec,base recomputed per '
@@ -777,9 +781,9 @@ SOURCE_CHECK = [
 LIMITATIONS = [
     'Static carrying capacity: the carrying capacities are constant yearly values modelled at steady state and '
     'their timespan may not match the assessment period (Clausen et al. 2025, pp. 143 and 148).',
-    ('Accounting (time-resolved): the sector impact of 2026-2050 counts upfront emissions (A1-A5 and soil) in '
-     'the construction year and replacement / repaint events (B2, B4) in the year they occur. Events after 2050 '
-     'and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed emissions outside the window; '
+    ('Accounting (time-resolved): the sector impact of 2026-2050 counts materials and construction (A1-A5) and '
+     'soil carbon loss in the construction year and maintenance (B2, B4) in the year it occurs. Maintenance after '
+     '2050 and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed after 2050, outside 2026-2050; '
      'they are reported as a range (outputs/data/aesa/results.json "committed", H6) in years of the 2050 AR boundary and are '
      'not compared with the 2026-2050 boundary. Whole life at construction is a sensitivity.'
      if projection.ACCOUNTING == 'time_resolved' else
@@ -790,8 +794,8 @@ LIMITATIONS = [
     'was more carbon-intensive than in 2025 (as the ~1%/yr technological progress assumed by Resch et al. 2021 '
     'implies), the base and hence the AR boundary are understated and the AR exceedance overstated '
     '(conservative); the size of this effect is not quantified. The base follows the '
-    'projection\'s accounting rule (upfront of the window\'s construction plus the events within the window of '
-    'cohorts built in it).',
+    'projection\'s accounting rule (materials and construction and soil carbon loss of the base window\'s '
+    'construction plus the maintenance within the base window of the cohorts built in it).',
     'The primary SOS (6.81E12) is the 2 °C carrying capacity of Bjørn & Hauschild (2015), not the 1 W/m² '
     'planetary boundary (3.61E12, sensitivity C). Sala et al. (2020, Table 3) label 6.81E12 as radiative forcing '
     'after Rockström et al. (2009), which does not match its derivation in Bjørn & Hauschild (2015).',
@@ -1030,8 +1034,8 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
         cell.set_edgecolor('#BDBDBD')
     P.panel(a, 'c', 'Components')
     fig.tight_layout()
-    _save(fig, 'D22_boundaries', f"{pair['label']}. Log axis: B_AtP is {ratio:.1f}% of B_AR in every year: both "
-                                  'scale with P_NZ(t) / P_W(t) (static design), so their ratio is constant.')
+    _save(fig, 'D22_boundaries', f"{pair['label']}. Log axis: the AtP boundary is {ratio:.1f}% of the AR "
+                                  'boundary in every year: both scale with P_NZ(t) / P_W(t) (static design), so their ratio is constant.')
 
     # ---- D23: annual level of exceedance by variant ------------------------------------------
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 74), sharey=True)
@@ -1101,8 +1105,8 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     aesa_tornado(s, ref, 'D18_aesa_sensitivity',
                  'One setting changed per row; labels show the cumulative LoE of that row and its change from the '
                  'Reference. Rows that do not enter a principle (e.g. the GDP measure for AR) show no change. '
-                 'Percentages are relative to within-window carbon (2026–2050); fixed absolute terms such as soil '
-                 'carbon therefore show larger percentage effects than under whole-life accounting. The largest '
+                 'Percentages are relative to carbon 2026–2050 (time-resolved accounting); fixed absolute terms such as '
+                 'soil carbon loss therefore show larger percentage effects than under whole-life accounting. The largest '
                  'effects on the AR LoE, with the model inputs and the population paths: H11.')
     if not SAVE_FIGURES:
         plt.show()

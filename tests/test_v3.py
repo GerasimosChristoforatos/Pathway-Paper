@@ -4,9 +4,9 @@ supplied tables; events per line equal the counts and add up to the line B2/B4;
 within-window + committed (2025 factors) = whole-life total; the
 whole-life-at-construction accounting with A4-A5 held reproduces baseline-pb-v2
 and 'none' the frozen anchor (tests/regression_pb_v2.json, tag baseline-PB_v2);
-soil unchanged; the A4-A5 path is Resch et al.'s e^(-0.01 (t - 2025)); FIGURES.md lists
-exactly the figure files; no figure shows carbon before 2026 except the AR base
-window of mc_1_fan_pb (at 2025 factors)."""
+soil unchanged; the A4-A5 path is Resch et al.'s e^(-0.01 (t - 2025)); every figure
+file is planned (figure_plan.py); no figure shows carbon before 2026 except the AR base
+window of D21 (at 2025 factors)."""
 import json
 import os
 import re

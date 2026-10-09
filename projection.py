@@ -1,16 +1,18 @@
 """
-Residential GFA & Embodied Carbon Projection, New Zealand 2026-2050
-====================================================================
+New residential floor area and embodied carbon, New Zealand 2026-2050
+=====================================================================
 Bottom-up demographic model of new residential floor area and its embodied
-carbon (A1-A5, B2, B4, C1-C4, plus soil carbon loss) by typology, demand type
-and material.
+carbon (A1-A5, B2, B4, C1-C4, plus soil carbon loss) by demand band and
+material (typology is internal: it weights the case-study factors).
 
     total floor area = new dwellings required x realised dwelling size
     new dwellings    = new households + vacancy allowance + replacement
 
 All input data are read from DATA_DIR; every output path comes from layout.py.
 Case-study carbon and occupancy factors come from Building_factors.py (run it
-first; it writes them to outputs/factors/). Figures are plotted, never saved.
+first; it writes them to outputs/data/factors/). figures(B) draws D01-D03, D08, D09
+and D13 from the state main() returns: shown when run on its own, saved through
+style.save_figure when PATHWAY_SAVE_FIGURES=1 (run_all.py).
 """
 
 import os
@@ -40,7 +42,6 @@ DATA_DIR = os.path.join(ROOT_DIR, 'data')          # inputs only
 # (layout.py: every path of the pipeline).
 FROZEN_RUN = layout.frozen_run()
 FACTORS_DIR = layout.FACTORS     # written by Building_factors.py
-VERBOSE = False     # True also prints historical diagnostics (occupancy, calibration)
 SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
 # Save every figure (style.save_figure, outputs/diagnostics/ and outputs/headline/). Only when
 # projection.py is run as a script with PATHWAY_SAVE_FIGURES=1 (run_all.py), so re-runs from
@@ -238,18 +239,11 @@ COL_CONSENT_COUNTS = {
 # Colours and reader-facing labels of the figures: style.py and naming.py (docs/PALETTE.md,
 # docs/RENAMING.md); the figures are drawn by figures() from the state main() returns.
 
-TREND_WINDOW_START = 2012
-DAMPING_PHI = 0.8
-# MIX_MODE (author's decision, baseline-pb-v2): 'held' (ADOPTED) for every
-#   scenario: the typology floor-area shares stay at their MIX_HELD_WINDOW
-#   average (ratio of sums of consented floor area over the window, floor-area
-#   weighted, 2026 = the observed months, January-July). The scenarios are Low
-#   (S1), Reference (S3-10) and High (S2), all with shares held.
-#   'trend' (damped ALR trend above) remains available but is not run or
-#   reported: the typology mix is a pathway lever for the next paper, not a
-#   baseline scenario. (The v1.0.2-v1.2 option of S2 with the trend was removed
-#   in baseline-pb-v3; it is preserved at tag baseline-PB_v1.2.)
-MIX_MODE = 'held'
+# Typology mix (author's decision, baseline-pb-v2): the typology floor-area shares are held at
+#   their MIX_HELD_WINDOW average (ratio of sums of consented floor area over the window, 2026 =
+#   the observed months, January-July) in every variant. The typology mix is internal to the model
+#   (it weights the case-study factors) and is not reported. The damped log-ratio trend of v1.0.2-
+#   v1.2 was never run in a reported result and is removed (MODEL v1.0.0; tag baseline-PB_v1.2).
 MIX_HELD_WINDOW = (2022, 2026)
 # 2026 in-scope floor area (market-excess rule): the observed consented GFA by
 #   typology, c x [(1 - W) GFA_2026 + W GFA_2025], with the observed 2026 mix;
@@ -269,8 +263,9 @@ CALIB_START_YEAR = 1992
 #   vacancy change    = households(t-1) x [1/(1-v(t)) - 1/(1-v(t-1))]
 #   replacement       = net replacement rate x stock(t-1)
 # converted to floor area at realised dwelling size (engine.forward). Vacancy v
-# is measured (census tables below); forward it is held at its latest census
-# value. Identity: total floor area = (new households + allowance + change +
+# is measured (census tables below); forward the vacancy-rate parameter is held at its
+# published 2023 census value (naming.VACANCY_WORDING: implied stock vacancy still rises,
+# because the 2026 overbuild is not absorbed). Identity: total floor area = (new households + allowance + change +
 # replacement) x realised dwelling size.
 
 # ---------------------------------------------------------------------------
@@ -528,7 +523,7 @@ FILE_FACTORS_DECARB_BLD = os.path.join(FACTORS_DIR, 'factors_building_a13_reduct
 # relative to 2025, linear between 2025/2030/2040/2050), applied to each EPD item of
 # the case studies, mapped one-to-one to an S4 row (direct, Horup p. 6, or proxy) or
 # held, by data/material_item_map.csv. Mapping and values: Building_factors.py and
-# outputs/factors/factors_a13_decarb.csv. The history (and so the acquired-rights
+# outputs/data/factors/factors_a13_decarb.csv. The history (and so the acquired-rights
 # base of boundaries.py) always uses 2025 factors. (The class-level mapping of v1.1 is
 # preserved at tags baseline-PB_v1.2 / baseline-PB_v2.)
 DECARB_MODE = 'none' if FROZEN_RUN else 'horup_item'   # see Building_factors.DECARB_MODES
@@ -956,25 +951,6 @@ def newey_west_cov(X, resid, lag=None):
 # CORE HELPERS
 # ============================================================
 
-def fit_evolving_mix(hist_shares, shares_2025, forecast_years, phi, trend_window_start,
-                     typ_names, ref_typology='Detached'):
-    """Additive log-ratio (ALR) trend with geometric damping. Shares stay positive
-    and sum to one by construction."""
-    alr_2025, slope = mix_trend(hist_shares, shares_2025, trend_window_start, typ_names, ref_typology)
-    return engine.mix_shares(alr_2025, slope, phi, forecast_years, typ_names, ref_typology)
-
-
-def mix_trend(hist_shares, shares_2025, trend_window_start, typ_names, ref_typology='Detached'):
-    """2025 log-ratios and OLS slopes of log(share / reference share) over the
-    trend window, for every non-reference typology."""
-    other = [n for n in typ_names if n != ref_typology]
-    window = hist_shares.loc[hist_shares.index >= trend_window_start]
-    alr_hist = {n: np.log(window[n] / window[ref_typology]) for n in other}
-    slope = {n: np.polyfit(window.index.values, alr_hist[n].values, 1)[0] for n in other}
-    alr_2025 = {n: np.log(shares_2025[n] / shares_2025[ref_typology]) for n in other}
-    return alr_2025, slope
-
-
 def blend_per_gfa_share(shares, per_unit_dict, typ_names):
     """
     Harmonic mean weighted by GFA share.
@@ -1029,7 +1005,6 @@ def main():
                      .reindex(index=MATERIALS, columns=typ_names).fillna(0.0))
     SOIL_INTENSITY = {t: float(typ_fac.loc[t, 'SOC_avg']) for t in typ_names}
     OLF_NET_BIM = {t: float(typ_fac.loc[t, 'OLF_m2_per_person']) for t in typ_names}
-    DESIGN_OCCUPANTS = {t: float(typ_fac.loc[t, 'design_occupants']) for t in typ_names}
     T_BASELINE_2025 = {t: float(typ_fac.loc[t, 'total_with_SOC']) for t in typ_names}
     UPFRONT_2025 = {t: float(MAT_INTENSITY_STAGE.get(t, 0.0)) + SOIL_INTENSITY[t] for t in typ_names}
 
@@ -1119,23 +1094,7 @@ def main():
     # [FIX apt] resolve which OLF basis to use, and validate it.
     size_ref = {t: float(hist_dwelling_size[t].loc[DWELLING_SIZE_REF[0]:DWELLING_SIZE_REF[1]].mean())
                 for t in typ_names}
-    OLF_GROSS = {t: size_ref[t] / DESIGN_OCCUPANTS[t] for t in typ_names}   # comparison only
     OLF_USED = dict(OLF_NET_BIM)
-
-    if VERBOSE:   # case-study vs consented occupancy; see Diagnostics D
-        print("\n OCCUPANCY LOAD FACTOR -- case studies (in use) vs consented dwellings")
-        print(f"   {'Typology':<12}{'realised size':>14}{'design occ':>12}"
-              f"{'OLF gross':>11}{'OLF cases':>13}{'gross/net':>11}")
-        for t in typ_names:
-            print(f"   {t:<12}{size_ref[t]:>14.1f}{DESIGN_OCCUPANTS[t]:>12.1f}"
-                  f"{OLF_GROSS[t]:>11.2f}{OLF_NET_BIM[t]:>13.2f}"
-                  f"{OLF_GROSS[t] / OLF_NET_BIM[t]:>11.2f}")
-        print("   The case-study apartments are whole blocks (63 dwellings each), so their")
-        print("   floor area ALREADY includes shared circulation: the apartment gap is a SIZE")
-        print("   difference (62 m2/dwelling in the cases vs 98 m2 consented), not a basis")
-        print("   mismatch. Detached cases are smaller than the consented average and")
-        print("   townhouse cases larger, so the sample compresses the spread between")
-        print("   typologies relative to what New Zealand actually builds.")
 
     blended_olf_bim = blend_per_gfa_share(hist_shares, OLF_NET_BIM, typ_names)
     blended_dwelling_size = hist_total_gfa / hist_total_units
@@ -1149,7 +1108,6 @@ def main():
     # Utilisation is always measured against the BIM DESIGN benchmark: how much
     # floor area we build per resident, versus how much the design allows for.
     utilisation = blended_olf_bim / area_per_resident
-    design_capacity = blended_dwelling_size / blended_olf_bim
 
     # ------------------------------------------------------------------
     # 4. HISTORICAL DEMAND DECOMPOSITION
@@ -1173,10 +1131,6 @@ def main():
     # which reduces to the old expression whenever HS_raw >= 0.
     hist_consumption = (hist_total_gfa - hist_structural).clip(lower=0)
 
-    n_consol = int((hist_hs_raw < 0).sum())
-    old_consumption = (hist_total_gfa - hist_growth - hist_hs_pos).clip(lower=0)
-    if VERBOSE: print(f"[FIX c] consolidation years in history: {n_consol}/{len(years_hist)}; "
-          f"definition gap closed = {(hist_consumption - old_consumption).sum() / 1e6:.2f} Mm2")
 
     # ------------------------------------------------------------------
     # STOCK, VACANCY AND REPLACEMENT  (census-based)
@@ -1237,7 +1191,7 @@ def main():
 
     # long-run residual beyond the BRANZ demolition rate (census dwelling counts)
     unconsented_rate = engine.census_window_rate(census_rates, *_nr_window) - demolition_rate
-    v_forward = float(stock_cal['knots'][max(stock_cal['knots'])])   # latest census, held
+    v_forward = float(stock_cal['knots'][max(stock_cal['knots'])])   # vacancy-rate parameter: its published 2023 census value
 
     # 2025's departure from the calibrated identity, and its persistence. Carried
     # forward fading at rho, booked to the residual (see engine.forward).
@@ -1372,12 +1326,9 @@ def main():
         print(f"[nowcast] 2026 population growth: observed {pop_nowcast['observed_growth']:,.0f} "
               f"(year ended June 2026, {pop_nowcast['status']}) vs projection median "
               f"{pop_nowcast['observed_growth'] - _shift:,.0f}; levels from 2026 shifted by {_shift:+,.0f}")
-    print(f"[check] population percentiles (published levels), 2048: "
+    print("[check] population percentiles (published levels), 2048: "
           + " | ".join(f"{p} {df_forecast.loc[forecast_years == 2048, f'PopTotal_{p}'].iloc[0] / 1e6:.2f} M"
                        for p in ['5th', '50th', '95th']))
-
-    if VERBOSE: print(f"[FIX e] population projection: {len(pop_growth_block)} published knots "
-          f"-> PCHIP to 2050 (was linear interpolate + ffill, which froze 2049-50)")
 
     # ------------------------------------------------------------------
     # 7. HOUSEHOLD PROJECTION
@@ -1423,8 +1374,8 @@ def main():
     h = hh_response
     print(f"   [diagnostic, {h['years_fit'][0]}-{h['years_fit'][-1]}] dS on population growth: "
           f"b = {h['b']:.2e} per person (r2 {h['r2']:.2f}), residual persistence rho = {h['rho']:.2f}/yr")
-    print(f"   between censuses households follow lagged consents, so b measures supply vs "
-          f"arrivals, not behaviour")
+    print("   between censuses households follow lagged consents, so b measures supply vs "
+          "arrivals, not behaviour")
     print(f"   b standard error: OLS {h['se_ols']:.2e} | Newey-West HAC (lag {h['hac_lag']}) "
           f"{h['se_hac']:.2e} -> t = {h['b'] / h['se_hac']:.1f}")
     print(f"   2025: observed dS {h['dS_obs_2025']:+.4f} vs trend {h['dS_snz_2025']:+.4f} at "
@@ -1442,16 +1393,14 @@ def main():
     # ------------------------------------------------------------------
     # 8. FORWARD MIX, OLF AND DWELLING SIZE
     # ------------------------------------------------------------------
-    evolving_gfa_shares = fit_evolving_mix(hist_shares, shares_2025, forecast_years,
-                                           DAMPING_PHI, TREND_WINDOW_START, typ_names)
-    if MIX_MODE not in ('held', 'trend'):
-        raise ValueError(f"Unknown MIX_MODE '{MIX_MODE}'.")
-    mix_used = MIX_MODE
+    # typology shares: 2025 observed, 2026 the observed consented mix (below), then held at the
+    # MIX_HELD_WINDOW average
     _typ_cols = [COL_TYPOLOGIES[n] for n in typ_names]
     _w = df_consents[(df_consents['Year'] >= MIX_HELD_WINDOW[0]) & (df_consents['Year'] <= MIX_HELD_WINDOW[1])]
     held_shares = (_w[_typ_cols].sum() / _w[_typ_cols].sum().sum()).set_axis(typ_names)
-    if mix_used == 'held':
-        evolving_gfa_shares.loc[forecast_years > 2025, :] = held_shares.values
+    evolving_gfa_shares = pd.DataFrame([shares_2025[list(typ_names)].values] * len(forecast_years),
+                                       index=forecast_years, columns=list(typ_names))
+    evolving_gfa_shares.loc[forecast_years > 2025, :] = held_shares.values
     # 2026 floor area from observed consented GFA by typology
     gfa_nowcast = None
     if _join_mode == 'market_excess':
@@ -1744,8 +1693,8 @@ def main():
     print("=" * 78)
     print("   vacancy (empty / private dwellings): " +
           " | ".join(f"{y} {100*v:.2f}%" for y, v in sc['knots'].items()) +
-          f"  -> held at {100*v_forward:.2f}% forward")
-    print(f"   build duration W, Little's law (under construction / all consents in the 12 months to March): " +
+          f"  -> vacancy-rate parameter held at its published 2023 census value, {100*v_forward:.2f}%")
+    print("   build duration W, Little's law (under construction / all consents in the 12 months to March): " +
           " | ".join(f"{y} {d:.2f}" for y, d in build_duration.items()) +
           f" -> completion lag W used = {lag_w:.3f} yr ({COMPLETION_LAG})")
     nb_hist = hist_built_units[wcal].mean()
@@ -1790,8 +1739,8 @@ def main():
     print(f"     IN USE (dwelling counts): {100 * (DEMOLITION_RATE + unconsented_rate):+.3f}%/yr")
 
     # ---- retirement villages: in the stock, out of carbon scope ----
-    print(f"\n   RETIREMENT VILLAGES (counted in the stock; out of floor-area and carbon scope)")
-    print(f"     consented RV units = all-category dwellings - three typologies")
+    print("\n   RETIREMENT VILLAGES (counted in the stock; out of floor-area and carbon scope)")
+    print("     consented RV units = all-category dwellings - three typologies")
     for a_, b_ in [(1992, 2005), (2006, 2015), (2016, 2025)]:
         print(f"     {a_}-{b_}: {hist_rv_units.loc[a_:b_].mean():6,.0f} consented/yr "
               f"({100 * hist_rv_share.loc[a_:b_].mean():.1f}% of all new dwellings)")
@@ -1800,7 +1749,7 @@ def main():
           f"{100 * hist_rv_share.loc[2011:].min():.1f}-{100 * hist_rv_share.loc[2011:].max():.1f}%)")
     _sf = stock_fwd['50th']
     _nb = (results['50th']['total'][1:] / future_dwelling_size.values[1:]).mean()
-    print(f"\n   Forward 2026-2050, median, dwellings per year:")
+    print("\n   Forward 2026-2050, median, dwellings per year:")
     for lab, v_ in [('new households', results['50th']['d_hh'][1:].mean()),
                     ('+ vacancy allowance', _sf['allow'][1:].mean()),
                     ('+ demolitions replaced', _sf['demol'][1:].mean()),
@@ -1818,127 +1767,36 @@ def main():
               f"(in-scope total {results['50th']['total'][1:].sum() / 1e6:.2f} Mm2); "
               f"history 2016-2025 {rv_floor_area['history_built'].loc[2016:2025].sum() / 1e6:.2f} Mm2 built")
 
-    if VERBOSE:   # historical space diagnostics; see Diagnostics D, E
-        # ------------------------------------------------------------------
-        # [FIX f] utilisation diagnostic
-        # ------------------------------------------------------------------
-        print("\n" + "=" * 78)
-        print(" [FIX f] DESIGN CAPACITY vs ACTUAL OCCUPANCY")
-        print("=" * 78)
-        print(" OLF (your BIM metric) = GFA / (bedrooms+1) = floor area per DESIGN occupant.")
-        print(" S = actual people per dwelling. S x OLF is therefore NOT a dwelling size;")
-        print(" it is the floor area matching the occupants actually housed. Renamed")
-        print(" 'occupied_area_per_dwelling'. Realised dwelling size is measured directly.\n")
-        print(f" {'Typology':<12}{'realised size':>14}{'your OLF':>10}{'design cap.':>13}{'implied beds':>14}")
-        print(f" {'':<12}{'(m2/dwelling)':>14}{'(m2/occ)':>10}{'(occupants)':>13}{'':>14}")
-        for t in typ_names:
-            d = float(hist_dwelling_size[t].loc[DWELLING_SIZE_REF[0]:DWELLING_SIZE_REF[1]].mean())
-            cap = d / OLF_USED[t]
-            print(f" {t:<12}{d:>14.1f}{OLF_USED[t]:>10.2f}{cap:>13.2f}{cap - 1:>14.2f}")
-        print(f"\n Blended, 2025: realised {blended_dwelling_size.loc[2025]:.1f} m2/dwelling | "
-              f"occupied {occupied_area_per_dwelling.loc[2025]:.1f} m2 | "
-              f"design capacity {design_capacity.loc[2025]:.2f} occupants | S {hist_S.loc[2025]:.3f}")
-        print(f" UTILISATION (S / design capacity): 2025 = {utilisation.loc[2025]:.3f}, "
-              f"range {utilisation.min():.3f}-{utilisation.max():.3f}, "
-              f"2020-25 mean = {utilisation.loc[2020:2025].mean():.3f}")
-        print(" Under-occupancy of roughly a third is what the consumption term has been")
-        print(" absorbing. Quantified next.")
-
-        # ------------------------------------------------------------------
-        # [NEW g] splitting consumption: extra space vs extra dwellings
-        # ------------------------------------------------------------------
-        print("\n" + "=" * 78)
-        print(" [NEW g] WHAT IS INSIDE 'CONSUMPTION'?")
-        print("=" * 78)
-        print(" Consumption = Total - Structural. Structural values each new household")
-        print(" at its OCCUPIED area (S x OLF), but dwellings are actually built larger.")
-        print(" That difference is real floor area and it lands in the residual:")
-        print("   Extra space   = dHH x (realised dwelling size - occupied area)")
-        print("   Other         = Consumption - Extra space")
-        print("                 = Total - dHH x realised dwelling size")
-        print(" 'Other' covers replacement of demolished stock, vacant/second homes,")
-        print(" consent-to-occupation timing, and measurement error. It can go NEGATIVE")
-        print(" when households form faster than dwellings are consented (people moving")
-        print(" into existing stock), which is informative rather than a defect.\n")
-        extra_space = d_hh * (blended_dwelling_size - occupied_area_per_dwelling)
-        other = hist_consumption - extra_space
-        print(f" {'Period':<12}{'Consumption':>13}{'Extra space':>13}{'Other':>10}{'space %':>10}")
-        print(f" {'':<12}{'(Mm2/yr)':>13}{'(Mm2/yr)':>13}{'(Mm2/yr)':>10}{'':>10}")
-        for lo, hi in [(1996, 2000), (2001, 2005), (2006, 2010), (2011, 2015),
-                       (2016, 2020), (2021, 2025)]:
-            cc = hist_consumption.loc[lo:hi].mean() / 1e6
-            ee = extra_space.loc[lo:hi].mean() / 1e6
-            oo = other.loc[lo:hi].mean() / 1e6
-            print(f" {f'{lo}-{hi}':<12}{cc:>13.2f}{ee:>13.2f}{oo:>10.2f}{100 * ee / cc:>10.1f}")
-        tot_c = hist_consumption.loc[1996:2025].sum()
-        print(f"\n 1996-2025 overall: extra space = "
-              f"{100 * extra_space.loc[1996:2025].sum() / tot_c:.0f}% of consumption; "
-              f"other = {100 * other.loc[1996:2025].sum() / tot_c:.0f}%")
-        print(" READING: most of what the model labels 'consumption' is not people buying")
-        print(" second homes. It is new dwellings being larger than the occupants they")
-        print(" house require. That is a space-per-person story, and it should be named")
-        print(" as such in the paper. The annual split is noisy; use period means.")
-
     # ==================================================================
     # DASHBOARD
     # ==================================================================
-    gfa_growth_typ = evol_typ_growth.iloc[1:].sum() / 1e6
-    gfa_cons_typ = evol_typ_cons.iloc[1:].sum() / 1e6
-    gfa_hs_typ = evol_typ_hs_pos.iloc[1:].sum() / 1e6
-    gfa_built_typ = gfa_growth_typ + gfa_cons_typ + gfa_hs_typ
-    carbon_built_typ = (carbon_growth_typ.iloc[1:].sum() + carbon_cons_typ.iloc[1:].sum()
-                        + carbon_hs_pos_typ.iloc[1:].sum()) / 1e6
-
-    print("\n" + "=" * 80)
-    print(f" CUMULATIVE FORECAST SUMMARY (2026-2050) | Damping phi = {DAMPING_PHI}")
-    print("=" * 80)
-    print(f"{'Typology':<15} | {'Growth GFA':>12} | {'Consumption GFA':>15} | "
-          f"{'Total GFA':>12} | {'Carbon':>13}")
-    print(f"{'':<15} | {'(million m2)':>12} | {'(million m2)':>15} | "
-          f"{'(million m2)':>12} | {'(kt CO2e)':>13}")
-    print("-" * 80)
-    for n in typ_names:
-        print(f"{n:<15} | {gfa_growth_typ[n]:>12.2f} | {gfa_cons_typ[n]:>15.2f} | "
-              f"{gfa_built_typ[n]:>12.2f} | {carbon_built_typ[n]:>13,.1f}")
-    print("-" * 80)
-    tot_built = gfa_built_typ.sum()
-    tot_carbon = carbon_built_typ.sum()
-    print(f"{'TOTAL MARKET':<15} | {gfa_growth_typ.sum():>12.2f} | {gfa_cons_typ.sum():>15.2f} | "
-          f"{tot_built:>12.2f} | {tot_carbon:>13,.1f}")
-    print("=" * 80)
-
+    # console summary (totals; the typology mix is internal and not reported)
+    tot_built = float(evol_typ_total.iloc[1:].sum().sum() / 1e6)
     tot_avoided_gfa = df_forecast['Ann_GFA_HouseSplit_Avoided_50th'].iloc[1:].sum() / 1e6
     tot_avoided_c = carbon_avoided_typ.iloc[1:].sum().sum() / 1e6
-    print("\nCONSOLIDATION SAVINGS:")
-    print(f"   Had household size not risen, an additional {tot_avoided_gfa:.2f} million m2")
-    print(f"   would have been required, embodying {tot_avoided_c:,.0f} kt CO2e")
-    print(f"   ({100 * tot_avoided_gfa / tot_built:.1f}% of the total built baseline).")
-    # ---- demand type summary: every band reported on its own ----
-    bands = [('Growth (net of consolidation)', evol_typ_growth, carbon_growth_typ),
-             ('House-splitting', evol_typ_hs_pos, carbon_hs_pos_typ),
-             ('Consumption: extra space', evol_typ_extra, carbon_extra_typ),
-             ('Consumption: vacancy allowance', evol_typ_vac, carbon_vac_typ),
-             ('Consumption: demolition replacement', evol_typ_repl, carbon_repl_typ),
-             ('Calibrated stock residual (long run)', evol_typ_unc, carbon_unc_typ),
-             ('Redevelopment wave (scenario - long run)', evol_typ_wave, carbon_wave_typ),
-             ('Housed in RV units (out of scope)', evol_typ_rv, carbon_rv_typ),
-             ('Near-term market excess', evol_typ_join, carbon_join_typ)]
-    rows = [(lab, g.iloc[1:].sum().sum() / 1e6, c.iloc[1:].sum().sum() / 1e6) for lab, g, c in bands]
-    tg = sum(r[1] for r in rows); tc = sum(r[2] for r in rows)
-    print("\n BY DEMAND TYPE, 2026-2050 (median)")
-    print(f"   {'':<34}{'floor area':>12}{'share':>8}{'carbon':>12}")
-    print(f"   {'':<34}{'(Mm2)':>12}{'':>8}{'(kt CO2e)':>12}")
+    print("\n" + "=" * 80)
+    print(" PROJECTION SUMMARY 2026-2050 (median population)")
+    print("=" * 80)
+    print(f"   floor area {tot_built:.2f} Mm2 | carbon {carbon_total_typ.iloc[1:].sum().sum() / 1e6:,.1f} kt CO2e")
+    print(f"   smaller households avoided by consolidation (not built): {tot_avoided_gfa:.2f} Mm2, "
+          f"{tot_avoided_c:,.0f} kt CO2e ({100 * tot_avoided_gfa / tot_built:.1f}% of the floor area built)")
+    # ---- by demand band (definition with retirement villages; naming.BANDS_WITH_RETIREMENT_VILLAGES) ----
+    _src = dict(growth=(evol_typ_growth, carbon_growth_typ), hs_pos=(evol_typ_hs_pos, carbon_hs_pos_typ),
+                extra=(evol_typ_extra, carbon_extra_typ), vac=(evol_typ_vac, carbon_vac_typ),
+                repl=(evol_typ_repl, carbon_repl_typ), unc=(evol_typ_unc, carbon_unc_typ),
+                wave=(evol_typ_wave, carbon_wave_typ), join=(evol_typ_join, carbon_join_typ),
+                rv=(evol_typ_rv, carbon_rv_typ))
+    rows = [(N.band_data_label(b), _src[k][0].iloc[1:].sum().sum() / 1e6, _src[k][1].iloc[1:].sum().sum() / 1e6)
+            for b, k in zip(N.BANDS_WITH_RETIREMENT_VILLAGES, _src)]
+    tg = sum(r[1] for r in rows)
+    tc = sum(r[2] for r in rows)
+    print("\n BY DEMAND BAND, 2026-2050 (median)")
+    print(f"   {'':<58}{'floor area':>12}{'share':>8}{'carbon':>12}")
+    print(f"   {'':<58}{'(Mm2)':>12}{'':>8}{'(kt CO2e)':>12}")
     for lab, g, c in rows:
-        print(f"   {lab:<34}{g:>12.2f}{100 * g / tg:>7.1f}%{c:>12,.0f}")
-    print(f"   {'TOTAL BUILT':<34}{tg:>12.2f}{100.0:>7.1f}%{tc:>12,.0f}")
-    # Demolition and the residual trade one-for-one in calibration (only their
-    # sum is identified by the stock identity), so report the sum too.
-    _net_g = rows[4][1] + rows[5][1] + rows[6][1]
-    _net_c = rows[4][2] + rows[5][2] + rows[6][2]
-    print(f"   {'(demolition + residual: identified net)':<34}{_net_g:>12.2f}"
-          f"{100 * _net_g / tg:>7.1f}%{_net_c:>12,.0f}")
-    print(f"   {f'(consented equivalent, /{COMPLETION_RATE:.2f})':<34}{tg / COMPLETION_RATE:>12.2f}")
-    print(f"   {'(avoided by consolidation, not built)':<34}{tot_avoided_gfa:>12.2f}{'':>8}{tot_avoided_c:>12,.0f}")
+        print(f"   {lab:<58}{g:>12.2f}{100 * g / tg:>7.1f}%{c:>12,.0f}")
+    print(f"   {'Total built':<58}{tg:>12.2f}{100.0:>7.1f}%{tc:>12,.0f}")
+    print(f"   {f'(consented equivalent, /{COMPLETION_RATE:.2f})':<58}{tg / COMPLETION_RATE:>12.2f}")
     print("=" * 80 + "\n")
 
     # Demand bands (annual, 2026-2050; H3, H7, the band exports, D25/D26): one list, so the figures
@@ -2241,23 +2099,19 @@ def export_results(B, path):
              for b, k in zip(N.BANDS_WITH_RETIREMENT_VILLAGES, keys)]
     typ = list(B['typ_names'])
     et, ct = B['evol_typ_total'], B['carbon_total_typ']
-    shares = B['evolving_gfa_shares']
     stages = {s: float(sum(wsum(et[t].values, B['stage_path'][s][t]) for t in typ) / 1e6)
               for s in B['stage_int'].index}
     R = B['results']
     out = dict(
         settings=dict(scenario=B['_scenario'], replacement_half_life=REPLACEMENT_HALF_LIFE, overbuild_rule=B['_join_mode'],
                       nowcast_method=NOWCAST_METHOD, overbuild_booking=OVERBUILD_BOOKING,
-                      completion_rate=COMPLETION_RATE, lag_w=float(B['lag_w']), phi=DAMPING_PHI),
+                      completion_rate=COMPLETION_RATE, lag_w=float(B['lag_w'])),
         gfa_Mm2=float(R['50th']['total'][f].sum() / 1e6), carbon_kt=float(B['tot_carbon_median']),
         upfront_kt=float(B['_upfront'] + B['_soil'] / 1e6), soil_kt=float(B['_soil'] / 1e6),
         stages_kt=stages,
         pop_band_gfa_Mm2={p: float(R[p]['total'][f].sum() / 1e6) for p in ('5th', '50th', '95th')},
         demand_bands=[dict(band=lab, gfa_Mm2=tot(B[g]) / 1e6, carbon_kt=tot(B[c]) / 1e6)
                       for lab, g, c in bands],
-        typology={t: dict(gfa_Mm2=float(et[t].values[f].sum() / 1e6), carbon_kt=float(ct[t].values[f].sum() / 1e6),
-                          share_2025=float(shares[t].iloc[0]), share_2050=float(shares[t].iloc[-1]))
-                  for t in typ},
         material_kt={m: float(v / 1e6) for m, v in B['flow_annual'].sum().items()},
         accounting=ACCOUNTING, decarb_a45=DECARB_A45, event_timing=EVENT_TIMING,
         **({'b_inwindow_kt': B['COMMITTED']['B_inwindow_kt'], 'committed': B['COMMITTED']}

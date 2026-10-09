@@ -194,10 +194,10 @@ def _save(fig, name, tight=True, note=None):
 
 
 POP_NOTE = ('Population rows: carbon is the floor area of the path times the Reference carbon per m² of each year '
-            '(an approximation kept from v3.1); the engine carbon of the population paths, carbon and boundaries '
+            '(an approximation, listed as a known issue in the CHANGELOG); the engine carbon of the population paths, carbon and boundaries '
             'together, is in data/aesa/results.json (population_paths) and is the one used in H11. ')
-PCT_NOTE = ('Percentages are relative to within-window carbon (2026–2050); fixed absolute terms such as soil '
-            'carbon therefore show larger percentage effects than under whole-life accounting.')
+PCT_NOTE = ('Percentages are relative to carbon 2026–2050 (time-resolved accounting); fixed absolute terms such as '
+            'soil carbon loss therefore show larger percentage effects than under whole-life accounting.')
 
 # Rows that are alternative settings of one parameter (both ends shown together in
 # the main-text tornado); every other row is a parameter of its own.

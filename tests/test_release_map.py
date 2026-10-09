@@ -57,8 +57,9 @@ def test_json_paths_one_to_one():
 
 
 def test_removals_are_by_typology_only():
-    """Everything the release removes is by-typology reporting (CHANGELOG)."""
-    typ = ('Detached', 'Townhouses', 'Apartments', 'typology', 'townhouse', 'attached', 'shares_2050')
+    """Everything the release removes is by-typology reporting, or the damping phi of the typology-mix
+    trend that was never run in a reported result and is removed with its code (CHANGELOG)."""
+    typ = ('Detached', 'Townhouses', 'Apartments', 'typology', 'townhouse', 'attached', 'shares_2050', 'settings/phi')
     for f, e in CAP['files'].items():
         if e['kind'] == 'json':
             gone = [p for p in e['values'] if R.removed(f, path=p)]

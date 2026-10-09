@@ -1,5 +1,7 @@
-"""Generate outputs/reports/RESULTS.md from outputs/data/metrics.json and the comparison of the Reference
-with its replacement variants. Every headline number in the docs must come from this file.
+"""Generate outputs/reports/RESULTS.md from outputs/data/metrics.json, the comparison of the Reference with
+its replacement variants (outputs/data/baseline/scenarios.json) and the emissions committed after 2050 of the
+planetary-boundary layer (AESA; outputs/data/aesa/results.json). Every headline number in the docs must come
+from this file.
 
     python tools/results.py
 """
@@ -29,9 +31,10 @@ def main():
          + {'none': '2025 case-study values held (frozen technology).',
             'horup_item': 'A1-A3 of case-study items decarbonised 2026-2050 (Horup et al. 2025; item-level mapping, '
                           'data/material_item_map.csv); A4-A5 e^(-0.01 (t - 2025)) (Resch et al. 2021); C1-C4, held '
-                          'items and soil at 2025.'}[(m.get('aesa') or {}).get('decarb_mode', 'none')]
-         + (' Accounting: time-resolved (upfront in the construction year, replacements and repaints in the year '
-            'they occur within 2026-2050; later events and end of life are committed emissions, below).'
+                          'items and soil carbon loss at 2025.'}[(m.get('aesa') or {}).get('decarb_mode', 'none')]
+         + (' Accounting: time-resolved (materials and construction (A1-A5) and soil carbon loss in the construction '
+            'year; maintenance (B2, B4) in the year it occurs, 2026-2050; later B2/B4 and end of life (C1-C4) are '
+            'committed after 2050, below).'
             if (m.get('aesa') or {}).get('accounting') == 'time_resolved' else ''), '',
          '| metric | value |', '|---|---|']
     for key, label, fmt in FIELDS:
@@ -42,25 +45,28 @@ def main():
         with open(sp) as f:
             sc = json.load(f)['scenarios']
         L += ['', '## The Reference and its replacement variants (deterministic)', '',
-              '| variant | floor area (Mm2) | carbon (kt) | of which soil carbon loss (kt) | carbon excl. soil (kt) | '
-              'upfront (kt) |', '|---|---|---|---|---|---|']
+              '| variant | floor area 2026-2050 (Mm2) | carbon 2026-2050 (kt) | of which soil carbon loss (kt) | '
+              'carbon excl. soil carbon loss (kt) | materials and construction (A1-A5) and soil carbon loss (kt) |',
+              '|---|---|---|---|---|---|']
         for r in (x for x in sc.values() if 'soil_carbon_loss_kt' in x):
             L.append(f"| {r['label']} | {r['floor_area_Mm2']:.2f} | {r['carbon_kt']:,.0f} | "
                      f"{r['soil_carbon_loss_kt']:,.0f} | {r['carbon_kt'] - r['soil_carbon_loss_kt']:,.0f} | "
                      f"{r['upfront_kt']:,.0f} |")
     if m.get('aesa'):
         pb = m['aesa']
-        L += ['', f"## Absolute sustainability (AESA, climate change; {pb['source_pair_label']})", '',
+        L += ['', f"## Planetary-boundary layer (AESA): climate change, {pb['source_pair_label']}", '',
               'Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted et al. 2021 Eqs. 5-6) '
               'are a range and are never averaged. LoE = embodied carbon / boundary (> 1: exceeded). Methods: '
-              'outputs/reports/AESA_METHODS_DRAFT.md.', '', '| metric | value |', '|---|---|']
+              'outputs/reports/METHODS_DRAFT.md, part 2 (planetary-boundary layer (AESA)).', '',
+              '| metric | value |', '|---|---|']
         for key, label, fmt in PB_FIELDS:
             v = get(m, key)
             L.append(f"| {label} | {fmt.format(v) if v is not None else 'n/a'} |")
         L += ['', '| variant (deterministic) | cumulative LoE AR | cumulative LoE AtP |', '|---|---|---|']
         for k, v in pb['cum_LoE_by_scenario'].items():
             L.append(f"| {SCEN_NAME.get(k, k)} | {v['AR']:.2f} | {v['AtP']:.1f} |")
-        L += ['', '| MC variant | LoE AR p5 / p50 / p95 | LoE AtP p5 / p50 / p95 |', '|---|---|---|']
+        L += ['', '| variant (Monte Carlo) | cumulative LoE AR p5 / p50 / p95 | cumulative LoE AtP p5 / p50 / p95 |',
+              '|---|---|---|']
         for k, v in pb['cum_LoE_mc'].items():
             L.append(f"| {SCEN_NAME.get(k, k)} | {v['LoE_AR_p5']:.2f} / {v['LoE_AR_p50']:.2f} / {v['LoE_AR_p95']:.2f} | "
                      f"{v['LoE_AtP_p5']:.1f} / {v['LoE_AtP_p50']:.1f} / {v['LoE_AtP_p95']:.1f} |")
@@ -69,11 +75,12 @@ def main():
         with open(pp) as f:
             cm = json.load(f).get('committed') or {}
         if cm:
-            L += ['', '## Within 2026-2050 and committed after 2050 (deterministic, kt CO2e)', '',
-                  'Committed: events after 2050 (lower: 2050 factors held; upper: 2025 factors) and all C1-C4 '
-                  '(2025 factors) of the 2026-2050 cohorts; in years of the 2050 AR boundary. Reconciliation with '
-                  'whole life at construction: outputs/reports/reconciliation.md.', '',
-                  '| variant | maintenance (B2, B4) 2026-2050 | share of 2026-2050 carbon | committed B2/B4 | '
+            L += ['', '## Maintenance 2026-2050 and committed after 2050 (deterministic, kt CO2e)', '',
+                  'Committed after 2050: later maintenance events (B2, B4; lower bound: 2050 factors held; upper '
+                  'bound: 2025 factors) and all C1-C4 (2025 factors) of the 2026-2050 cohorts; also in years of the '
+                  '2050 AR boundary. Reconciliation with whole life at construction: outputs/reports/reconciliation.md.',
+                  '',
+                  '| variant | maintenance (B2, B4) 2026-2050 | share of carbon 2026-2050 | committed B2/B4 | '
                   'committed C1-C4 | committed total | years of the 2050 AR boundary |', '|---|---|---|---|---|---|---|']
             for k in ('LOW', 'REF', 'HIGH'):
                 if k in cm:

@@ -5,7 +5,6 @@ assumptions: a test here can only fail if a calculation is inconsistent with
 itself.
 """
 import numpy as np
-import pandas as pd
 import pytest
 
 from conftest import run_boss
@@ -50,7 +49,6 @@ def test_historical_stock_identity(B):
     """Calibration: new households + vacancy allowance + vacancy change
     + demolitions + residual - RV units == in-scope dwellings built, every year."""
     sc, yh = B['stock_cal'], B['years_hist']
-    import projection
     lhs = (B['d_hh'] + sc['allow'] + sc['change'] + sc['demol'] + sc['uncons'] + sc['rv']).loc[yh[1:]]
     rhs = B['hist_built_units'].loc[yh[1:]]           # completion rate x lagged consents
     assert close(lhs, rhs)
@@ -59,7 +57,6 @@ def test_historical_stock_identity(B):
 def test_history_reconstructed_by_demand_bands(B):
     """Sum of the historical demand bands == dwellings built x realised dwelling size, 1992-2025
     (== built floor area exactly when there is no completion lag)."""
-    import projection
     YH = np.arange(1992, 2026)
     D = B['blended_dwelling_size'].loc[YH]
     sc = B['stock_cal']

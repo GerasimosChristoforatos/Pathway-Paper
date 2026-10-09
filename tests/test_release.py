@@ -7,7 +7,14 @@
    totals, the variants to the captured variant totals.
 2. The headline set: every figure of figure_plan.HEADLINE exists as PNG, PDF and source data
    (CSV), and HEADLINE.md shows every one with a filled caption.
+3. Figure audit and indexes: every planned figure exists and no other; every output file is
+   indexed once; DIAGNOSTICS.md shows every diagnostic with the script that draws it.
+4. Vocabulary and style: no reader-facing text of the release (generated reports, HEADLINE.md,
+   DIAGNOSTICS.md, INDEX.md, the texts of every figure) uses a term of the earlier versions
+   (naming.OLD_TERMS, docs/RENAMING.md); every module that draws a figure imports style.py and
+   plotting.py, and only style.save_figure writes figure files.
 """
+import ast
 import json
 import math
 import os
@@ -23,7 +30,6 @@ import layout as L
 import naming as N
 
 CAP = json.load(open(os.path.join(ROOT, 'tests', 'regression_model_v1.json')))
-quick = pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1', reason='quick run: Monte Carlo outputs differ')
 
 
 def data(rel):
@@ -177,3 +183,61 @@ def test_headline_figures_print_within_183_mm():
     for h in FP.HEADLINE:
         with Image.open(os.path.join(L.HEADLINE, f"{h['file']}.png")) as im:
             assert im.size[0] / S.DPI * 25.4 <= 183.0 + 1e-6, h['file']
+
+
+# ---- 4. vocabulary and style -------------------------------------------------------------------
+def _reader_texts():
+    """(file relative to outputs/, line number, text) of every reader-facing text of the run."""
+    md = [os.path.join(d, f) for d, _, fs in os.walk(L.REPORTS) for f in fs if f.endswith('.md')]
+    md += [os.path.join(L.HEADLINE, 'HEADLINE.md'), os.path.join(L.DIAGNOSTICS, 'DIAGNOSTICS.md'),
+           os.path.join(L.OUT, 'INDEX.md')]
+    for p in sorted(md):
+        with open(p, encoding='utf-8') as f:
+            for i, line in enumerate(f, 1):
+                yield os.path.relpath(p, L.OUT), i, line
+    for f in sorted(os.listdir(L.FIGURE_AUDIT)):
+        rec = json.load(open(os.path.join(L.FIGURE_AUDIT, f)))
+        for i, t in enumerate(rec.get('texts', []) + [rec.get('note') or ''], 1):
+            yield os.path.relpath(os.path.join(L.FIGURE_AUDIT, f), L.OUT), i, t
+
+
+def test_no_old_vocabulary_in_reader_facing_texts():
+    import re
+    rules = [(re.compile(p), new) for p, new in N.OLD_TERMS]
+    hits = [f'{f}:{i}: {m.group(0)!r} -> {new}' for f, i, line in _reader_texts() for rx, new in rules
+            for m in rx.finditer(line)]
+    assert not hits, '\n'.join(hits[:50])
+
+
+FIGURE_MODULES = ('headline.py', 'projection.py', 'Diagnostics.py', 'Sensitivity.py', 'MonteCarlo.py',
+                  'boundaries.py', 'pathways.py', 'tools/figures_report.py')
+
+
+def _imports(tree):
+    out = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            out |= {a.name for a in node.names}
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            out.add(node.module)
+    return out
+
+
+def test_every_figure_module_imports_style_and_plotting():
+    """Every module that draws a figure (FIGURE_MODULES and every producer in the figure audit
+    records) imports style.py and plotting.py; no module but style.py calls savefig."""
+    producers = {json.load(open(os.path.join(L.FIGURE_AUDIT, f))).get('producer')
+                 for f in os.listdir(L.FIGURE_AUDIT)}
+    assert producers <= set(FIGURE_MODULES), producers - set(FIGURE_MODULES)
+    for m in FIGURE_MODULES:
+        tree = ast.parse(open(os.path.join(ROOT, m), encoding='utf-8').read())
+        assert {'style', 'plotting'} <= _imports(tree), m
+    py = [os.path.join(d, f) for d, ds, fs in os.walk(ROOT) for f in fs if f.endswith('.py')
+          and not any(x in d for x in ('.venv', '.git', 'site-packages'))]
+    for p in py:
+        if os.path.relpath(p, ROOT) == 'style.py':
+            continue
+        tree = ast.parse(open(p, encoding='utf-8').read())
+        calls = [n.lineno for n in ast.walk(tree) if isinstance(n, ast.Call)
+                 and isinstance(n.func, ast.Attribute) and n.func.attr == 'savefig']
+        assert not calls, f'{os.path.relpath(p, ROOT)}: savefig at lines {calls} (use style.save_figure)'

@@ -23,26 +23,21 @@ PATHWAYS_OUTPUTS = [layout.data(f'pathways/{f}', frozen=False) for f in (
     'runs.csv', 'annual.csv', 'bands.csv', 'shapley_pathways.csv', 'shapley_levers.csv', 'shapley_subsets.csv',
     'backcast.json', 'solution_space.csv', 'levers.json', 'theoretical_limit.json', 'shapley_theoretical_limit.csv',
     'shapley_theoretical_limit_subsets.csv')] + [layout.report(f, frozen=False) for f in (
-        'PATHWAYS_METHODS_DRAFT.md', 'LEVERS_TABLE.md')]
-# written by run_all after the tests step (checked here, not by tests/test_v2.py)
-AFTER_TESTS = ('RESULTS.md', 'BASELINE_DRAFT.md', 'AESA_METHODS_DRAFT.md', 'ASSUMPTIONS.md',
-               'PATHWAYS_METHODS_DRAFT.md', 'LEVERS_TABLE.md')
+        'METHODS_DRAFT.md', 'LEVERS_TABLE.md')]
 
 
-def generated_files(include_docs=True):
+def generated_files():
     files = [os.path.join(d, f) for base in (layout.DATA, layout.REPORTS) for d, _, fs in os.walk(base) for f in fs
              if f.endswith(('.md', '.json', '.csv'))]
     files += [os.path.join(ROOT, 'README.md')]
     if os.environ.get('PATHWAY_QUICK') == '1':      # quick runs do not re-run the frozen AESA step
         files = [p for p in files if not (os.sep + layout.FROZEN + os.sep in p and os.sep + 'aesa' + os.sep in p)]
-    if not include_docs:
-        files = [p for p in files if os.path.basename(p) not in AFTER_TESTS]
     return files
 
 
-def storyline_hits(include_docs=True):
+def storyline_hits():
     hits = {}
-    for p in generated_files(include_docs):
+    for p in generated_files():
         with open(p, encoding='utf-8') as f:
             for i, line in enumerate(f, 1):
                 if STORYLINE.search(line):

@@ -96,9 +96,6 @@ N_BOOT = 4000                    # carbon-factor bootstrap replicates
 SEED = 20260924
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: save every figure
 SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
-# PLOT_ONLY: skip the ~15,000 model evaluations and redraw the figures from the
-# CSVs written by the last full run. Also: python MonteCarlo.py --plot-only
-PLOT_ONLY = False
 Z_KNOTS = stats.norm.ppf([0.05, 0.25, 0.50, 0.75, 0.95])
 PCT_COLS = {5: 2, 25: 3, 50: 4, 75: 5, 95: 6}   # popdata.xlsx Table 1 (skiprows=5)
 VARIANT_Z = {'Low': Z_KNOTS[0], 'Medium': 0.0, 'High': Z_KNOTS[-1]}
@@ -153,15 +150,8 @@ def build_setup(settings=None):
                             fy, 0.0, anchor_year=projection.S_ANCHOR_YEAR)['S_matched']
         for v in VARIANT_Z])
 
-    # ---- typology mix (fixed in every draw): projection's mix (shares held) ----
-    if B['mix_used'] == 'held':
-        shares = B['evolving_gfa_shares'].copy()
-    else:
-        alr_2025, alr_slope = projection.mix_trend(B['hist_shares'], B['shares_2025'], projection.TREND_WINDOW_START, typ)
-        shares = engine.mix_shares(alr_2025, alr_slope, projection.DAMPING_PHI, fy, typ)
-    if B['gfa_nowcast']:                          # 2026 = observed consented mix
-        shares.loc[2026] = B['evolving_gfa_shares'].loc[2026].values
-    su['shares'] = shares
+    # ---- typology mix (fixed in every draw): projection's held mix, 2026 the observed mix ----
+    su['shares'] = B['evolving_gfa_shares'].copy()
 
     # ---- snapshot of projection's data and settings used in every draw ----
     su.update(years_hist=B['years_hist'], hist_hh=B['hist_hh'],
@@ -371,7 +361,7 @@ def project(su, p):
                                float(su['hist_hh'].loc[2025] - su['hist_hh'].loc[2024]),
                                su['demol_rate'] + float(unc[0]), yh, su['calib_start'], su['calib_end'])
     dev = dv['dev'] if su['join_mode'] == 'carried_deviation' else 0.0
-    v = float(cal['knots'][max(cal['knots'])])        # latest census vacancy, held
+    v = float(cal['knots'][max(cal['knots'])])        # vacancy-rate parameter: the published 2023 census value
 
     # ---- typology mix (fixed) and dwelling size ----
     shares = su['shares']
@@ -409,7 +399,6 @@ def project(su, p):
                                         su['near_absorption'])
         E = fwd(join, ji['redev'])
     return dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
-                townhouse_2050=float(shares[typ[1]].iloc[-1]),
                 hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],
                 I=np.array([I[t] for t in typ]), U=np.array([U[t] for t in typ]))
 
@@ -418,11 +407,10 @@ def summarise(out):
     s = slice(1, None)                                     # 2026-2050
     return np.array([out['gfa'][s].sum() / 1e6, out['carbon'][s].sum() / 1e6,
                      out['upfront'][s].sum() / 1e6, out['rv_units'][s].sum(),
-                     out['hh'][-1] / 1e6, out['S'][-1], out['townhouse_2050']])
+                     out['hh'][-1] / 1e6, out['S'][-1]])
 
 
-OUTPUTS = ['GFA_Mm2', 'carbon_kt', 'upfront_kt', 'RV_units', 'households_2050_M', 'S_2050',
-           'townhouse_share_2050']
+OUTPUTS = ['GFA_Mm2', 'carbon_kt', 'upfront_kt', 'RV_units', 'households_2050_M', 'S_2050']
 
 
 def validate(su):
@@ -512,7 +500,7 @@ def run_scenario(name, settings, reference):
     draws.to_csv(layout.writing(layout.montecarlo('draws', name)), index=False)
     annual.to_csv(layout.writing(layout.montecarlo('annual', name)))
     print(f"\nJOINT UNCERTAINTY within {name}, 2026-2050 ({N_UNCERTAINTY:,} Latin hypercube draws)")
-    print(summ.loc[['floor_area_Mm2', 'carbon_kt', 'upfront_kt', 'townhouse_share_2050'],
+    print(summ.loc[['floor_area_Mm2', 'carbon_kt', 'upfront_kt'],
                    ['mean', 'p5', 'p50', 'p95', 'reference', 'reference_percentile']].round(3).to_string())
     if not reference:
         return summ
@@ -564,7 +552,7 @@ def main():
 
 
 # ============================================================
-# FIGURES  (drawn from the CSVs, so PLOT_ONLY needs no re-run)
+# FIGURES  (drawn from the CSVs, so --plot-only needs no re-run)
 # ============================================================
 INPUT_LABELS = {
     'z_pop': 'Population (with household size)',
@@ -630,7 +618,7 @@ def figures():
 
 
 if __name__ == '__main__':
-    if PLOT_ONLY or '--plot-only' in sys.argv:
+    if '--plot-only' in sys.argv:          # redraw D20 from the CSVs of the last full run (no model runs)
         figures()
     else:
         main()

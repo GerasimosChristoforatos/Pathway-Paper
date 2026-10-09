@@ -1,13 +1,17 @@
-"""Generate the pathway documents from outputs/pathways/ (nothing typed by hand; vocabulary of
-naming.py):
+"""Generate the documents of the pathways and the theoretical limit TL from outputs/data/pathways/
+(no number typed by hand; reader-facing labels from naming.py):
 
-  outputs/reports/PATHWAYS_METHODS_DRAFT.md  equations, parameters with sources, L5 estimator,
-                                             attribution, gap, results tables, checks, limitations
+  lines()                                    the pathways part of the methods draft (pathways and
+                                             demand bands, levers, parameters with sources, L5
+                                             estimator, attribution, AESA gap, results, checks,
+                                             limitations, the theoretical limit TL, sources);
+                                             tools/methods_draft.py merges it into
+                                             outputs/reports/METHODS_DRAFT.md
   outputs/reports/LEVERS_TABLE.md            Table 1 of the paper: one row per lever and per TL assumption
+                                             (main())
 
-from outputs/data/pathways/. With --sections also the Pathways section of
-outputs/reports/ASSUMPTIONS.md (it replaces only its own section; idempotent; run_all.py
---pathways-only).
+With --sections also the Pathways section of outputs/reports/ASSUMPTIONS.md (it replaces only
+its own section; idempotent; run_all.py --pathways-only).
 
     python tools/pathways_methods.py [--sections]
 """
@@ -25,6 +29,19 @@ import naming as N  # noqa: E402
 
 REF = 'REF'
 DATA = layout.data('pathways', frozen=False)
+# the denser typology mix (naming.DENSER_MIX: lever of pathways_v2, removed in pathways_v3.1; never
+# given a lever number): its text and values from levers.json denser_mix_pathways_v2 (levers.py)
+DENSER_MIX_VALUES = 'Values from git tag pathways_v2 (Reference)'
+
+
+def vacancy_sentence():
+    """The release wording of the vacancy assumption of the Reference (naming.vacancy_wording),
+    from outputs/data/baseline/overbuild_2026.json."""
+    with open(layout.data('baseline/overbuild_2026.json', frozen=False)) as f:
+        v = json.load(f)['vacancy']
+    c = v['consistent']
+    return N.vacancy_wording(v['v_forward'], v['consistent_max'], v['consistent_min'], min(c, key=c.get),
+                             v['v_2050'])
 
 
 def table(head, rows):
@@ -38,7 +55,8 @@ def tl_levers_table(t):
     L = ['', '## Theoretical limit TL', '', '> ' + t['disclaimer'], '',
          'TL = P5 Ambitious (L4 removals -40%; L1, L2 / L3 and L5 replaced by TL2, TL1 and TL4) with the overrides '
          'below, all at full strength from 1 January 2027 (no adoption path); 2026 observed and untouched. '
-         + LV.TL_BAU_NOTE + ' Sensitivity (SI): ' + N.TL_GRADUAL + ', the same TL on the adopted logistic path.', '']
+         + LV.TL_BAU_NOTE + ' Sensitivity: ' + N.TL_GRADUAL + ', the same TL on the adoption path of the levers, '
+         + N.ADOPTION['by2035'] + '.', '']
     L += table(['item', 'pathway', 'demand band targeted', 'how it works (model terms)', 'assumption', 'TL value',
                 'source (full citation)', 'tag'],
                [[r['item'], r['pathway'], r['band'], r['how'], r['assumption'], r['value'], r['source'], r['tag']]
@@ -83,7 +101,7 @@ def tl_methods(t, runs):
           'non-replacement floor area carries zero soil carbon loss and the rest the TL5 factor (tested to 1e-9). The '
           'engine share is 1 − soil-free / total floor area; in banked years with no new building (total ≈ 0, '
           'floating-point noise) it is undefined, so share(y) is clipped to [0, 1] and set to 0 where the floor area '
-          'built is ≤ 1e-3 m² (pathways v3.1 correction; CHANGELOG).', '',
+          'built is ≤ 1e-3 m² (a correction of the earlier version; CHANGELOG.md).', '',
           f"**TL6 source and assumptions.** {tl6['source']}. Assumptions: " + '; '.join(tl6['assumptions'])
           + '. Tag: DATA (the Auckland shares) + DECISION (author: their national application to floor area).', '',
           '### Results (Reference)', '']
@@ -103,7 +121,7 @@ def tl_methods(t, runs):
           f"{ind['release_added_total']:,.0f} dwellings, used {ind['release_used_total']:,.0f}, unused in 2050 "
           f"{ind['bank_unused_2050']:,.0f}; no new building in {len(zy)} years"
           + (f" ({zy[0]}-{zy[-1]})" if zy else '') + '. Dwellings built per year, implied vacancy and the banking path by '
-          'year: theoretical_limit.json.', '']
+          'year: outputs/data/pathways/theoretical_limit.json.', '']
     g = gap['TL']
     if g['within_AR']:
         L += [f"**Gap.** TL is within the AR budget: margin {g['margin_AR_kt']:,.0f} kt ({100 * g['margin_AR_share']:.1f}%)."]
@@ -142,7 +160,7 @@ def tl_methods(t, runs):
           '* TL2 + TL3 give every new dwelling the occupied area of the case-study minimum (about 20 m² per person); no '
           'design rule, accessibility standard or household-size variation is modelled.',
           '* TL1 assumes every vacant dwelling is usable where it is needed (no spatial or condition mismatch; Napiontek '
-          'et al. 2025 on hibernating stock) and an instant reallocation in 2027.',
+          'et al. 2025 on hibernating stock) and an immediate reallocation in 2027.',
           '* TL6 is an upper bound on the soil saving (assumption iii: some infill builds over garden soil) and transfers '
           'a dwelling-count share of one city to national floor area; its benefits beyond soil (infrastructure, '
           'transport energy) are outside the embodied-carbon scope, as for the removed denser typology mix.',
@@ -154,8 +172,9 @@ def tl_methods(t, runs):
 def levers_table(p, t=None):
     import levers as LV
     rows = LV.lever_table(p)
-    L = ['# Table 1. Pathway levers and theoretical-limit assumptions (generated by tools/pathways_methods.py '
-         'from outputs/pathways/levers.json and theoretical_limit.json; do not edit by hand)', '']
+    L = ['# Table 1. Pathway levers and the theoretical-limit assumptions (generated by tools/pathways_methods.py '
+         'from outputs/data/pathways/levers.json and outputs/data/pathways/theoretical_limit.json; do not edit by '
+         'hand)', '']
     if p['run_mode'] != 'full':
         L += [f"> **{p['run_mode']}**", '']
     L += ['The Reference projection; each lever follows a normalised logistic adoption path from 2026 (observed, '
@@ -167,7 +186,7 @@ def levers_table(p, t=None):
                [[r['item'], r['pathway'], r['band'], r['how'], r['assumption'], r['moderate'], r['ambitious'],
                  r['source'], r['tag']] for r in rows])
     n = p['denser_mix_pathways_v2']['note']
-    L += ['', f"Removed: {N.DENSER_MIX}. {n['text']} Tag {n['tag']} (Reference): attached share "
+    L += ['', f"**Removed lever.** {n['text']} {DENSER_MIX_VALUES}: attached share "
           f"{100 * n['attached_share']['baseline']:.2f}% -> {100 * n['attached_share']['moderate']:.2f}% / "
           f"{100 * n['attached_share']['ambitious']:.2f}% (Moderate / Ambitious); carbon "
           f"{n['carbon_vs_reference_pct']['moderate']:+.2f}% / {n['carbon_vs_reference_pct']['ambitious']:+.2f}% vs the "
@@ -182,31 +201,43 @@ def levers_table(p, t=None):
         f.write('\n'.join(L) + '\n')
 
 
-def main():
+def load_levers():
+    """levers.json and, when it exists, theoretical_limit.json (outputs/data/pathways/)."""
+    with open(os.path.join(DATA, 'levers.json')) as f:
+        p = json.load(f)
+    t_path = os.path.join(DATA, 'theoretical_limit.json')
+    tlim = None
+    if os.path.exists(t_path):
+        with open(t_path) as f:
+            tlim = json.load(f)
+    return p, tlim
+
+
+def lines():
+    """The pathways part of the methods draft as Markdown lines: no document title (the caller
+    adds it; tools/methods_draft.py demotes the '##' section headings by one level)."""
     import levers as LV
-    p = json.load(open(os.path.join(DATA, 'levers.json')))
+    p, tlim = load_levers()
     runs = pd.read_csv(os.path.join(DATA, 'runs.csv'))
     bands = pd.read_csv(os.path.join(DATA, 'bands.csv'))
     shp = pd.read_csv(os.path.join(DATA, 'shapley_pathways.csv'))
     shl = pd.read_csv(os.path.join(DATA, 'shapley_levers.csv'))
     bc = json.load(open(os.path.join(DATA, 'backcast.json')))
-    t_path = os.path.join(DATA, 'theoretical_limit.json')
-    tlim = json.load(open(t_path)) if os.path.exists(t_path) else None
-    levers_table(p, tlim)
     ref = runs[(runs['scenario'] == REF) & (runs['adoption'] == LV.ADOPTION_ADOPTED)
                & ~runs['l5_apartments_held'].astype(bool)].set_index('run')
     p0 = ref.loc[REF]
     e5 = p['L5']['estimator']
     note = p['denser_mix_pathways_v2']['note']
     ad = p['adoption']
-    L = ['# Pathways: methods (DRAFT; generated by tools/pathways_methods.py, do not edit by hand)', '']
+    L = []
     if p['run_mode'] != 'full':
         L += [f"> **{p['run_mode']}**", '']
     L += [
         'Five pathways for new residential construction in New Zealand, 2026-2050, built from five levers and applied '
-        'to the Reference projection, assessed against the climate-change budgets of the AESA layer (acquired rights, '
-        'AR; ability to pay, AtP). The model is unchanged: `pathways.py` re-calls `engine.forward()` with copies of '
-        'the Reference inputs modified by `levers.py` (hooks: docs/HOOKS.md); no projection output is rewritten. With '
+        'to the Reference projection, assessed against the climate-change budgets of the planetary-boundary layer '
+        '(AESA; acquired rights, AR; ability to pay, AtP). The model is unchanged: `pathways.py` re-calls '
+        '`engine.forward()` with copies of the Reference inputs modified by `levers.py` (hooks: docs/HOOKS.md); no '
+        'projection output is rewritten. With '
         'every lever off the run reproduces the Reference '
         f"(maximum relative difference {p['identity_max_rel_diff']:.1e}; tests/test_pathways.py). "
         'Table 1: outputs/reports/LEVERS_TABLE.md.', '',
@@ -218,7 +249,7 @@ def main():
         f"| P3 {LV.PATHWAY_NAMES['P3']} | L4 {LV.LEVER_NAMES['L4']} | {LV.BAND_TARGET['L4']} |",
         f"| P4 {LV.PATHWAY_NAMES['P4']} | L5 {LV.LEVER_NAMES['L5']} | {LV.BAND_TARGET['L5']} |",
         f"| P5 {LV.PATHWAY_NAMES['P5']} | all five | all of the above |", '',
-        '**Typology mix (denser mix removed).** ' + note['text'] + ' Values from tag pathways_v2 (Reference): '
+        '**Typology mix.** ' + note['text'] + ' ' + DENSER_MIX_VALUES + ': '
         f"Moderate / Ambitious carbon {note['carbon_vs_reference_pct']['moderate']:+.2f}% / "
         f"{note['carbon_vs_reference_pct']['ambitious']:+.2f}% vs the Reference while carbon per m² rose from "
         f"{note['carbon_per_m2_kg']['REF']:.1f} to {note['carbon_per_m2_kg']['moderate']:.1f} / "
@@ -232,7 +263,7 @@ def main():
         '## Conventions', '',
         f"* Adoption path (all levers): s(y) = 1 / (1 + exp(−k (y − {ad['mid']}))), k = ln(81)/6 = {ad['k']:.4f} "
         '(s rises from 10% to 90% within 6 years); w(y) = (s(y) − s(2026)) / (s(2035) − s(2026)) for 2026 ≤ y ≤ 2035, '
-        'w = 1 after 2035, w(2026) = 0 (full roll-out by 2035, adopted). A lever moves a quantity from its Reference '
+        f"w = 1 after 2035, w(2026) = 0: {N.ADOPTION['by2035']}. A lever moves a quantity from its Reference "
         f"value b to its target x as b + w(y)(x − b). Basis: {LV.RAMP_BASIS}. Sensitivities (P5), same k: full "
         f"roll-out by 2030 (midpoint {LV.ADOPTION_BY2030['mid']}, full strength {LV.ADOPTION_BY2030['end']}) and by "
         f"2045 (midpoint {LV.ADOPTION_BY2045['mid']}, full strength {LV.ADOPTION_BY2045['end']}; the same adoption "
@@ -240,10 +271,10 @@ def main():
         '* 2026 is observed (consented floor area fixed) and identical in every run.',
         '* 2026 overbuild: held at the Reference path, in dwellings, except where L3 absorbs it (it is the observed '
         '2026 pipeline, not demand).',
-        '* Accounting as the Reference (time-resolved): carbon 2026-2050 = upfront (materials and construction A1-A5 and '
-        'soil carbon loss) in the construction year + maintenance (B2, B4) in 2026-2050; later events and all C1-C4 of '
-        'the 2026-2050 cohorts are committed after 2050 (range: lower with the 2050 factors held, upper at 2025 '
-        'factors; `events.committed` with each run\'s floor area by typology).', '',
+        '* Accounting as the Reference (time-resolved): carbon 2026-2050 = materials and construction (A1-A5) and '
+        'soil carbon loss in the construction year + maintenance (B2, B4), 2026-2050; later B2/B4 events and all '
+        'C1-C4 of the 2026-2050 cohorts are committed after 2050 (range: lower with the 2050 factors held, upper at '
+        '2025 factors; `events.committed` with each run\'s floor area by typology).', '',
         '## Levers as implemented (levers.py)', '',
         '    L1   size_t(y) = occ_t(y) + [1 − f w(y)] (size_ref_t − occ_t(y)),   occ_t(y) = S(y) · OLF_t',
         '    L2   v(y) = v0 + w(y)(v* − v0)',
@@ -256,7 +287,8 @@ def main():
         '(size − S(y) · OLF): full strength in 2035, f held constant to 2050, so the sizes then follow S(y). L1 holds a '
         f"typology / year at size_ref where size_ref ≤ occ (never binds: {len(p['L1']['held'])} typology-years held). "
         'L2 acts through the stock identity: while v falls the vacancy-change term releases existing dwellings once '
-        '(cumulative release in runs.csv, by year in annual.csv); under the logistic adoption path '
+        '(cumulative release in outputs/data/pathways/runs.csv, by year in outputs/data/pathways/annual.csv); under '
+        'the logistic adoption path '
         'the release peaks where w rises fastest (2029-2032). R13: the A1-A3 decarbonisation of the Reference (Horup '
         'et al. 2025, item level).', '',
         '## Parameters and sources', '']
@@ -277,7 +309,7 @@ def main():
     L += ['### L5: Harrell-Davis estimator', '',
           f"Sample: the {p['L5']['n']} independent case studies of the detached and townhouse typologies (duplicates "
           'excluded; apartments have one independent case and are not in the sample), 2025 A1-A3 per m² '
-          '(outputs/factors/factors_building.csv). Scale-free ratio x_i = A1-A3_i / pooled A1-A3 of its typology '
+          '(outputs/data/factors/factors_building.csv). Scale-free ratio x_i = A1-A3_i / pooled A1-A3 of its typology '
           f"(pooling as Building_factors.pool; recomputed pooled values equal the model's to {p['L5']['pooled_check_max_abs']:.1e} kg/m²). "
           'Harrell & Davis (1982):', '',
           '    Q̂(q) = Σ_i W_i x_(i),   W_i = I_{i/n}(a, b) − I_{(i−1)/n}(a, b),   a = q(n + 1),   b = (1 − q)(n + 1)', '',
@@ -300,16 +332,18 @@ def main():
           'every subset is a full run; v = cumulative carbon 2026-2050 (kt) or cumulative LoE AR. Computed in exact '
           'rational arithmetic on the run values, so Σ_i φ_i = Reference − P5 exactly (tested).', '',
           '## AESA gap', '',
-          'Budgets B_AR(t), B_AtP(t) for the Reference from outputs/pb_annual.csv (no lever changes population). '
-          'Cumulative LoE = Σ I(t) / Σ B(t) over 2026-2050 (aesa.cumulative_loe); remaining reduction needed = 1 − 1/LoE.', '',
-          '**Back-cast.** I(t; k) = F(t) + k · G(t), F the 2026 cohort (its upfront carbon and its maintenance in '
-          '2026-2050), G the 2027-2050 cohorts; scaling their floor area by k keeps the typology mix and the replacement '
+          'Budgets B_AR(t), B_AtP(t) for the Reference from outputs/data/aesa/annual.csv (no lever changes '
+          'population). Cumulative LoE = Σ I(t) / Σ B(t) over 2026-2050 (aesa.cumulative_loe); remaining reduction '
+          'needed = 1 − 1/LoE.', '',
+          '**Back-cast.** I(t; k) = F(t) + k · G(t), F the 2026 cohort (its materials and construction (A1-A5), soil '
+          'carbon loss and maintenance (B2, B4), 2026-2050), G the 2027-2050 cohorts; scaling their floor area by k '
+          'keeps the typology mix and the replacement '
           'share, hence the soil share. k solves Σ I(t; k) = Σ B_AR(t) (scipy.optimize.brentq on [0, 1], xtol 1e-15; '
           'checked against the closed form). AtP: the minimum attainable cumulative LoE is Σ F / Σ B_AtP (k = 0).', '',
           '**Solution space** (after Horup et al. 2025, Fig. 6): I(t; d, i) = F(t) + (1 − d)[(1 − i) G_ns(t) + '
           'G_soil(t)] on the Reference. Pathways sit at d = 1 − floor area_P / floor area_REF and i = 1 − (C_P / floor '
-          'area_P) / (C_REF / floor area_REF) (2027-2050 cohorts; C excludes soil carbon loss, within 2026-2050); a '
-          'negative i would mean more carbon per m².', '',
+          'area_P) / (C_REF / floor area_REF) (2027-2050 cohorts; C = their materials and construction (A1-A5) and '
+          'maintenance (B2, B4), 2026-2050, without soil carbon loss); a negative i would mean more carbon per m².', '',
           '## Results (Reference)', '']
     rows = []
     names = [REF] + [f'{P}-{s}' for P in ('P1', 'P2', 'P3', 'P4', 'P5') for s in LV.SETTINGS]
@@ -362,7 +396,8 @@ def main():
     L += table(['lever', 'Moderate: carbon (kt)', 'Ambitious: carbon (kt)'], srows)
     L += ['', '### Back-cast', '',
           f"Cumulative budgets 2026-2050: AR {bc['B_AR_kt']:,.0f} kt, AtP {bc['B_AtP_kt']:,.0f} kt. The 2026 cohort "
-          f"alone (construction and its maintenance in 2026-2050, fixed) emits {bc[REF]['carbon_fixed_2026_cohort_kt']:,.0f} kt.", '']
+          'alone (materials and construction (A1-A5), soil carbon loss and maintenance (B2, B4), 2026-2050; fixed) '
+          f"emits {bc[REF]['carbon_fixed_2026_cohort_kt']:,.0f} kt.", '']
     keys = ['P5-moderate', 'P5-ambitious', REF]
     L += table([''] + [N.run_label(k) for k in keys],
                [['LoE AR at k = 1'] + [f"{bc[k]['LoE_AR_at_k1']:.3f}" for k in keys],
@@ -397,17 +432,19 @@ def main():
                  f"{d['step_relative_to_reference_kt']:+.1f}", f"{d['dwellings_step']:+,.0f}"]
                 for k, d in p['diagnostics'].items() if k.startswith('end_of_ramp_step')])
     L += ['', '## Checks (tests/test_pathways.py, tests/test_regression_model_v1.py)', '',
-          '* No lever = the Reference (≤ 1e-9 relative): annual carbon, upfront, maintenance 2026-2050, floor area by '
-          'typology, demand bands, committed range, cumulative LoE AR / AtP; LOW and HIGH without levers = the AESA '
-          'variant runs.',
+          '* No lever = the Reference (≤ 1e-9 relative): annual carbon, materials and construction (A1-A5) with soil '
+          'carbon loss, maintenance (B2, B4) 2026-2050, floor area by typology, demand bands, committed range, '
+          f"cumulative LoE AR / AtP; {N.SCENARIOS['LOW']} and {N.SCENARIOS['HIGH']} without levers = their runs in the "
+          'planetary-boundary layer (AESA).',
           '* Each lever at zero strength = the Reference; 2026 identical in every run; lever functions never modify '
           'their inputs; the logistic adoption path is 0 in 2026, 1 from 2035 and monotone.',
           '* L1 sizes ≥ occupied area S·OLF in every typology, year and run; D ≥ S·OLF (engine extra_clip = 0); implied '
           f"vacancy ≥ {100 * p['L2']['floor']:.1f}%; no negative dwellings built.",
           '* Harrell-Davis = scipy.stats.mstats.hdquantiles (≤ 1e-10); pathway and lever Shapley efficiency exact; '
           'demand bands add up to the totals; back-cast LoE AR = 1 (≤ 1e-9).',
-          '* Every number of the model reproduced to 1e-12 relative against the capture before the MODEL v1.0.0 '
-          'refurbish (tests/test_regression_model_v1.py).', '',
+          '* Numerical lock (tests/test_regression_model_v1.py): every number the model reported before the renaming '
+          'and restructuring of this release (captured in tests/regression_model_v1.json) is reproduced at its '
+          'release location to 1e-12 relative.', '',
           '## Limitations', '',
           '* L4 is an upper bound: the carbon of renovating the buildings kept in use is not modelled (Napiontek et '
           'al. 2025, Resour. Conserv. Recycl. 215, 108117).',
@@ -419,7 +456,8 @@ def main():
           'per typology and design rules (minimum room sizes) are not modelled.',
           '* The typology mix is held at the Reference (the denser mix removed; see above): the infrastructure, '
           'operational-energy and land benefits of denser forms are outside the embodied-carbon scope.',
-          f"* L2: v0 = {100 * p['L2']['v0']:.2f}% is the published 2023 empty-dwelling share while the target range "
+          f"* L2 starts from the Reference, in which {vacancy_sentence()}. "
+          f"v0 = {100 * p['L2']['v0']:.2f}% is the published 2023 empty-dwelling share while the target range "
           f"({100 * p['L2']['census_consistent_min']:.2f}% in {p['L2']['census_consistent_min_year']} to "
           f"{100 * p['L2']['census_consistent_max']:.2f}% in {p['L2']['census_consistent_max_year']}) is on a "
           'consistent definition; targets rounded to 0.1 point; 4.0% is the lowest NZ vacancy rate on that definition. '
@@ -428,13 +466,16 @@ def main():
           '* Levers are parameter changes on the Reference model; no behavioural, market or rebound response is '
           'modelled; interactions are those of the model (attributed by Shapley values).',
           '* The pathways are deterministic (median demographics); the Monte Carlo is not re-run for them. '
-          'Budgets are static (AESA layer limitations apply).',
+          'Budgets are static (the limitations of the planetary-boundary layer (AESA) apply).',
           '* Omitted: ' + '; '.join(f'{a} ({b})' for a, b in LV.OMITTED) + '.', '',
           ] + (tl_methods(tlim, runs) if tlim is not None else []) + ['', '## Sources', ''] + [f'* {v}' for v in p['sources'].values()]
-    path = layout.writing(layout.report('PATHWAYS_METHODS_DRAFT.md', frozen=False))
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(L) + '\n')
-    print(f'pathways_methods: {path} ({len(L)} lines), LEVERS_TABLE.md')
+    return L
+
+
+def main():
+    """LEVERS_TABLE.md (the pathways part of the methods draft is written by tools/methods_draft.py)."""
+    levers_table(*load_levers())
+    print('pathways_methods: outputs/reports/LEVERS_TABLE.md')
 
 
 def sections():

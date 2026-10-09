@@ -3,14 +3,15 @@
     outputs/
       headline/       the figures of the paper (H1-H11: PNG 300 dpi and vector PDF), their
                       tables and HEADLINE.md (findings, every figure with its caption)
-      diagnostics/    every other figure, by group (D01-D34: PNG 300 dpi) and DIAGNOSTICS.md
+      diagnostics/    every other figure, by group (D01-D34: PNG 300 dpi), DIAGNOSTICS.md, and
+                      _audit/: the record of every figure (figaudit.py; read by the tests)
       data/           every number the model reports, as CSV and JSON, in the release names of
                       naming.py: baseline/ (the Reference projection and its checks), montecarlo/,
                       aesa/ (boundaries and levels of exceedance), pathways/, factors/ (case-study
                       factors), frozen_technology/ (the check run at 2025 factors), metrics.json
       reports/        generated documents: RESULTS, ASSUMPTIONS, the methods draft, the levers
-                      table, the validation and reality-check reports
-      figure_audit/   the axis record of every figure (figaudit.py; read by the tests)
+                      table, the validation and reality-check reports (frozen-technology run:
+                      frozen_technology_<name>.md)
       logs/           console output of each run_all.py step (not versioned)
 
 Every module takes its paths from here, so the layout is defined once. The data file names
@@ -25,10 +26,10 @@ DATA = os.path.join(OUT, 'data')
 REPORTS = os.path.join(OUT, 'reports')
 HEADLINE = os.path.join(OUT, 'headline')
 DIAGNOSTICS = os.path.join(OUT, 'diagnostics')
-FIGURE_AUDIT = os.path.join(OUT, 'figure_audit')
+FIGURE_AUDIT = os.path.join(DIAGNOSTICS, '_audit')
 LOGS = os.path.join(OUT, 'logs')
 FACTORS = os.path.join(DATA, 'factors')          # written by Building_factors.py (inputs of every run)
-FROZEN = 'frozen_technology'                     # sub-folder of data/ and reports/ of the check run
+FROZEN = 'frozen_technology'                     # data/ sub-folder and reports/ file prefix of the check run
 
 
 def frozen_run():
@@ -47,8 +48,10 @@ def data(rel, frozen=None):
 
 
 def report(rel, frozen=None):
-    """outputs/reports/<rel>; outputs/reports/frozen_technology/<rel> in the frozen-technology run."""
-    return _under(REPORTS, rel, frozen)
+    """outputs/reports/<rel>; outputs/reports/frozen_technology_<rel> in the frozen-technology run
+    (docs/RENAMING.md section 2)."""
+    frozen = frozen_run() if frozen is None else frozen
+    return os.path.join(REPORTS, f'{FROZEN}_{rel}' if frozen else rel)
 
 
 def montecarlo(kind, variant, frozen=None):

@@ -16,8 +16,8 @@ b + w(y) (x - b), with the adoption path (normalised logistic ramp)
 
 (10% -> 90% of s within 6 years; full roll-out by 2035 following RECC, Pauliuk et al. 2024;
 sensitivities 'by2030': m = 2028.5, end 2030, and 'by2045': m = 2035.5, end 2045; same k).
-Typology shares stay at the baseline (held) mix in every run: a denser typology mix was
-evaluated in pathways_v2 and removed (DENSER_MIX_V2_NOTE).
+Typology shares stay at the Reference (held) mix in every run: the denser typology mix
+(lever of pathways_v2, removed in pathways_v3.1) is described in DENSER_MIX_V2_NOTE.
 
 Levers (settings Moderate and Ambitious; naming.LEVERS) and pathways (naming.PATHWAYS):
   P1 Right-sized dwellings   L1 Dwelling size    size_t(y) = occ_t(y) + [1 - f w(y)] (size_ref_t - occ_t(y)),
@@ -31,7 +31,7 @@ Levers (settings Moderate and Ambitious; naming.LEVERS) and pathways (naming.PAT
   P4 Low-carbon materials    L5 Material carbon  A1-A3_t(y) = [1 - w (1 - r)] (A1-A3_t,2025 - reduction_t(y)),
                                                  r = Harrell-Davis quantile of the case-study ratios
   P5 Combined                every lever
-Resolved values (incl. the L5 estimator): outputs/pathways/levers.json.
+Resolved values (incl. the L5 estimator): outputs/data/pathways/levers.json.
 """
 import math
 
@@ -84,18 +84,18 @@ L1_BENCHMARKS = {'Pellan2024': -0.065, 'Pauliuk2024_LEMD_EU_UK': 31.2 / 37.7 - 1
 #     consistent definition (4.0-5.4%), Ambitious = its minimum.
 L2_V_STAR = {'moderate': 0.047, 'ambitious': 0.040}
 L2_VACANCY_FLOOR = 0.040        # implied vacancy must never fall below this (check)
-# L3: the 2026 overbuild absorbed (the existing baseline payback sensitivities)
+# L3: the 2026 overbuild absorbed (the absorption sensitivities of the projection, OVERBUILD_ABSORPTION)
 L3_ABSORPTION = {'moderate': 0.10, 'ambitious': 0.20}
 # L4: reduction d of removals (Pellan et al. 2024: demolition 150,000 -> 90,000 a year = -40%)
 L4_D = {'moderate': 0.20, 'ambitious': 0.40}
-# Denser typology mix (numbered L4 in pathways_v2): evaluated in pathways_v2 and removed. Values
-# from tag pathways_v2, outputs/pathways/pathways_runs.csv and shapley_levers.csv (Reference;
-# checked in tests/test_pathways.py). Setting keys in the release names (central = Moderate,
-# stretch = Ambitious; P0 = the Reference).
+# The denser typology mix (lever of pathways_v2, removed in pathways_v3.1; never numbered in the
+# release). Values from git tag pathways_v2, its outputs/pathways/pathways_runs.csv and
+# shapley_levers.csv (Reference; checked in tests/test_pathways.py). Setting keys in the release
+# names (central = Moderate, stretch = Ambitious; P0 = the Reference).
 DENSER_MIX_V2_NOTE = dict(
-    text=('A denser typology mix (lever L4 of pathways_v2) was evaluated in pathways_v2 and removed: within the '
-          'embodied-carbon scope a denser mix raises A1-A3 per m2 (attached typologies carry more per m2), while its '
-          'benefits (infrastructure, operational energy, land) are outside the scope.'),
+    text=(f'The {N.DENSER_MIX} was not carried forward: within the embodied-carbon scope a denser mix raises '
+          'A1-A3 per m2 (attached typologies carry more per m2), while its benefits (infrastructure, operational '
+          'energy, land) are outside the scope.'),
     tag='pathways_v2', attached_share={'baseline': 0.3940321454268726, 'moderate': 0.4139242880995848,
                                        'ambitious': 0.5540321454268726},
     carbon_kt={'REF': 21577.50362382947, 'moderate': 21493.26802626376, 'ambitious': 20944.022039096093},
@@ -214,7 +214,7 @@ def resolve(B, factors_building, settings):
     """Every lever's parameters at Moderate and Ambitious, with the targets computed from the data
     in the projection state B (projection.main() locals), the projection module settings (`settings`: the projection
     module, for DWELLING_SIZE_REF, COL_TYPOLOGIES and OVERBUILD_GAP_REF) and the case-study
-    table. Returns a dict (written to outputs/pathways/levers.json)."""
+    table. Returns a dict (written to outputs/data/pathways/levers.json)."""
     typ = list(B['typ_names'])
     years = np.asarray(B['forecast_years'])
     w = ramp(years)
@@ -394,11 +394,16 @@ def label(active):
     return '+'.join(f'{k}:{active[k]}' for k in LEVERS if k in active) or 'none'
 
 
+def tagged(r):
+    """The basis column of a lever row: its tag and source, the tag written once."""
+    return r['source'] if r['source'].startswith(r['tag']) else f"{r['tag']}: {r['source']}"
+
+
 # ============================================================
 # REGISTER (ASSUMPTIONS.md "Pathways" section), LEVERS_TABLE.md and the methods draft
 # ============================================================
 OMITTED = [
-    ('Occupancy / household size', 'household size is a demographic input of the baseline (Stats NZ household '
+    ('Occupancy / household size', 'household size is a demographic input of the projection (Stats NZ household '
      'projections, projection.HH_SIZE_VARIANT) and sets the number of households, not a construction choice; a lever on it '
      'needs a behavioural or policy model of household formation that the model does not have (Population growth and '
      'Smaller households are untargeted by design, as in Pellan et al. 2024)'),
@@ -462,7 +467,8 @@ def lever_table(p):
              assumption='the 2026 observed building stays; later building is lower by the absorbed overbuild',
              moderate=f"a = {L3['absorption']['moderate']:.2f} a year",
              ambitious=f"a = {L3['absorption']['ambitious']:.2f} a year",
-             source='DECISION (author): the baseline payback sensitivities', tag='DECISION'),
+             source='DECISION (author): the absorption sensitivities of the 2026 overbuild in the projection '
+                    '(projection.OVERBUILD_ABSORPTION 0.10 / 0.20)', tag='DECISION'),
         dict(item='L4 ' + LEVER_NAMES['L4'], pathway='P3 ' + PATHWAY_NAMES['P3'], band=BAND_TARGET['L4'],
              how='demolition x (1 - w d); redevelopment component of the residual x (1 - w d) (`rate_demol`, '
                  '`rate_unc`); the long-run residual untouched',
@@ -518,7 +524,7 @@ def tl_table(t):
              assumption='the best observed design of each typology built everywhere',
              value=', '.join(f"{k} r = {v['r']:.3f}" + (f" ({v['building']})" if v['building'] else ' (held: one independent case)')
                              for k, v in TL4.items()),
-             source='DATA: case studies (outputs/factors/factors_building.csv, 2025 factors)', tag='DATA'),
+             source='DATA: case studies (outputs/data/factors/factors_building.csv, 2025 factors)', tag='DATA'),
         dict(item='TL5 ' + TL_NAMES['TL5'], pathway='TL', band='Soil carbon loss of the non-replacement floor area',
              how='soil factor at the lowest soil order (SOC_low), applied exactly through the soil-bearing share',
              assumption='the lowest of 10 soil orders under every new footprint',
@@ -526,9 +532,9 @@ def tl_table(t):
              source='DATA: Christoforatos G, Pickering K, Schipper LA (2026) Journal of Environmental Management 415, '
                     '130603 (the existing lower-bound sensitivity)', tag='DATA'),
         dict(item='TL6 ' + TL_NAMES['TL6'], pathway='TL', band='Soil carbon loss of the non-replacement floor area',
-             how=f'a share s of each year\'s non-replacement new floor area 2027-2050 is on previously developed land '
-                 f'(zero soil carbon loss); the rest carries the TL5 factor: soil factor x (1 - s) on the soil-bearing '
-                 f'floor area',
+             how='a share s of each year\'s non-replacement new floor area 2027-2050 is on previously developed land '
+                 '(zero soil carbon loss); the rest carries the TL5 factor: soil factor x (1 - s) on the soil-bearing '
+                 'floor area',
              assumption='; '.join(TL6_ASSUMPTIONS),
              value=f's = {TL6_COMPONENTS[0]} x {TL6_COMPONENTS[1]} = {TL6_COMPONENTS[0] * TL6_COMPONENTS[1]:.3f}, '
                    f'rounded {TL6_SHARE}',
@@ -551,14 +557,15 @@ def register(p):
          "roll-out by 2035, adopted); sensitivities (P5): full roll-out by 2030 (midpoint 2028.5) and by 2045 "
          "(midpoint 2035.5), same k",
          'LITERATURE: ' + RAMP_BASIS + '; DECISION (author): the logistic form'),
-        ('Typology mix', 'baseline (held) shares in every run; ' + note['text'] + ' pathways_v2 (Reference): '
+        ('Typology mix', 'Reference (held) shares in every run; ' + note['text'] + ' Values from git tag pathways_v2 '
+         '(Reference): '
          f"Moderate / Ambitious carbon {note['carbon_vs_reference_pct']['moderate']:+.2f}% / "
          f"{note['carbon_vs_reference_pct']['ambitious']:+.2f}% vs the Reference, carbon per m2 "
          f"{note['carbon_per_m2_kg']['REF']:.1f} -> {note['carbon_per_m2_kg']['moderate']:.1f} / "
          f"{note['carbon_per_m2_kg']['ambitious']:.1f} kg; lever Shapley share "
          f"{100 * note['shapley_share_of_reference_minus_P5']['moderate']:.1f}% / "
          f"{100 * note['shapley_share_of_reference_minus_P5']['ambitious']:.1f}%",
-         'DECISION (author); DATA: tag pathways_v2'),
+         'DECISION (author); DATA: git tag pathways_v2'),
         ('2026 overbuild under the levers', 'held at the Reference path (dwellings) in every run except L3; the '
          'overbuild is the observed 2026 pipeline, not demand', 'DECISION (author)'),
         ('Vacancy check', f"implied vacancy 1 - hh / (stock + stock_join) >= {pct(p['L2']['floor'])} in every year of "
@@ -574,7 +581,7 @@ def register(p):
     ]
     for r in lever_table(p):
         rows.append((r['item'], f"Moderate: {r['moderate']}; Ambitious: {r['ambitious']}; how: {r['how']}; "
-                     f"band: {r['band']}; assumption: {r['assumption']}", f"{r['tag']}: {r['source']}"))
+                     f"band: {r['band']}; assumption: {r['assumption']}", tagged(r)))
     rows += [(f'Omitted: {a}', 'not modelled', f'DECISION (author): {b}') for a, b in OMITTED]
     return rows
 
@@ -602,7 +609,7 @@ TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experime
                  'full strength from 1 January 2027, combining best observed attributes of different buildings and '
                  'places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > '
                  'realisable).')
-TL_BAU_NOTE = ('BAU decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025, A4-A5 '
+TL_BAU_NOTE = ('The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025, A4-A5 '
                'e^(-0.01 (t - 2025)); the lift held at 2025 as in the Reference).')
 # TL6 urban infill: share of each year's non-replacement new floor area 2027-2050 on previously
 # developed land (zero soil carbon loss). Auckland Council (2021), Auckland Plan 2050 Development
@@ -632,8 +639,8 @@ def ramp_from2027(years, start=OBSERVED_YEAR):
 def resolve_tl(chars, factors_building, factors_typology, olf_used):
     """TL parameters from the case-study data. chars: per-building characteristics
     (Building_factors.load_characteristics: Total GFA, OLF, Occupants); factors_building:
-    outputs/factors/factors_building.csv (A1-A3 per m2 at 2025 factors, duplicate_of);
-    factors_typology: outputs/factors/factors_typology.csv (SOC_avg, SOC_low);
+    outputs/data/factors/factors_building.csv (A1-A3 per m2 at 2025 factors, duplicate_of);
+    factors_typology: outputs/data/factors/factors_typology.csv (SOC_avg, SOC_low);
     olf_used: the Reference OLF per typology (projection.OLF_USED, the pooled 'OLF_m2_per_person')."""
     fb = factors_building.set_index('id')
     independent = [i for i in fb.index if str(fb.loc[i, 'duplicate_of']) in ('', 'nan')]
@@ -735,5 +742,5 @@ def register_tl(t):
              '(no adoption path); 2026 untouched; sensitivity: the adopted logistic adoption path (TL, gradual '
              'adoption, SI). ' + TL_BAU_NOTE, 'DECISION (author)')]
     for r in tl_table(t):
-        rows.append((r['item'], f"{r['value']}; how: {r['how']}; assumption: {r['assumption']}", f"{r['tag']}: {r['source']}"))
+        rows.append((r['item'], f"{r['value']}; how: {r['how']}; assumption: {r['assumption']}", tagged(r)))
     return rows

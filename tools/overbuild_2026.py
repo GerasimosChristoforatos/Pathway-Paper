@@ -48,11 +48,13 @@ def main():
         j = np.asarray(ji['join'])
         i28 = fy.index(2028)
         surplus_total, surplus_26_28 = float(j[1:].sum()), float(j[1:i28 + 1].sum())
-        limitation = (f"The 2026 overbuild (≈{round(surplus_total, -2):,.0f} dwellings over 2026-2050, of which "
-                      f"≈{round(surplus_26_28, -2):,.0f} in 2026-2028) is not absorbed by later demand; implied vacancy "
-                      f"therefore rises from {100 * vac['v_forward']:.1f}% (2023 census) to ≈{100 * vac['v_2050']:.1f}% "
-                      f"and remains there, about {100 * (vac['v_2050'] - vac['consistent_max']):.0f} percentage point "
-                      f"above the {vac['consistent_years']} range on a consistent definition "
+        wording = N.vacancy_wording(vac['v_forward'], vac['consistent_max'], vac['consistent_min'],
+                                    min(vac['consistent'], key=vac['consistent'].get), vac['v_2050'])
+        limitation = (f"{wording[0].upper() + wording[1:]}. The 2026 overbuild (≈{round(surplus_total, -2):,.0f} "
+                      f"dwellings over 2026-2050, of which ≈{round(surplus_26_28, -2):,.0f} in 2026-2028) is not "
+                      f"absorbed by later demand, so the implied stock vacancy stays about "
+                      f"{100 * (vac['v_2050'] - vac['consistent_max']):.0f} percentage point above the "
+                      f"{vac['consistent_years']} range on a consistent definition "
                       f"({100 * vac['consistent_min']:.1f}-{100 * vac['consistent_max']:.1f}%). Absorption is not "
                       f"modelled: the persistence rho = {ji['rho']:.2f} (lag-1 autocorrelation of the annual "
                       'departure of building from the calibrated stock identity, 1992-2023) describes how a flow '
@@ -74,7 +76,8 @@ def main():
              f"Booked as {projection.OVERBUILD_BOOKING}: {float(ji['join'][1:].sum()):+,.0f} dwellings over 2026-2050 "
              f"(variant {B['_scenario']}).",
              f"Implied vacancy (1 - households / (stock + excess)): peak {100 * vac['peak']:.2f}% in {vac['peak_year']}, "
-             f"{100 * vac['v_2050']:.2f}% in 2050 (held rate {100 * vac['v_forward']:.2f}%); census {vac['census_years']} "
+             f"{100 * vac['v_2050']:.2f}% in 2050 (the vacancy-rate parameter: its published 2023 census value, "
+             f"{100 * vac['v_forward']:.2f}%); census {vac['census_years']} "
              f"range {100 * vac['census_min']:.2f}-{100 * vac['census_max']:.2f}% (empty dwellings; before 2013 the empty share "
              f"of unoccupied is estimated, and 2013->2018 is a definitional break).",
              f"Consistent definition (pooled 2018/2023 empty share of unoccupied, {100 * share:.1f}%): "

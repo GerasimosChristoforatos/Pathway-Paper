@@ -555,7 +555,7 @@ def h6():
     num = dict(com_lo=c['lower_kt'], com_hi=c['upper_kt'], yrs_lo=c['years_of_B_AR_2050_lower'],
                yrs_hi=c['years_of_B_AR_2050_upper'], budget_ar=bud['B_AR_kt'], budget_atp=bud['B_AtP_kt'],
                carbon_ref=sc[REF]['carbon_kt'])
-    cap = (fill('H6', **num) + ' Committed: replacements and repaints (B2, B4) after 2050 and the end of life '
+    cap = (fill('H6', **num) + ' Committed after 2050: the later maintenance (B2, B4) and the end of life '
            '(C1–C4) of the 2026–2050 cohorts; lower bound with the 2050 factors held, upper bound at 2025 factors; '
            'not part of the level of exceedance 2026–2050. Short lines over the 2026–2050 bars: the cumulative AR and '
            'AtP budgets 2026–2050 (the committed emissions fall after 2050 and are not compared with them).')

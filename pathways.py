@@ -22,7 +22,7 @@ Runs (naming.py vocabulary; the Reference projection unless stated; settings Mod
                       with the apartments held at r = 1 (L5)
   theoretical limit   TL (TL1-TL6 at full strength from 2027) and TL, gradual adoption (SI)
 
-AESA gap: boundaries B_AR, B_AtP by year for the Reference from outputs/pb_annual.csv;
+AESA gap: boundaries B_AR, B_AtP by year for the Reference from outputs/data/aesa/annual.csv;
 cumulative LoE = ratio of sums (aesa.cumulative_loe). Back-cast on P5 Moderate,
 P5 Ambitious and the Reference: a uniform factor k on all 2027-2050 construction (floor area by
 typology; carbon linear in floor area; 2026 fixed), scipy.optimize.brentq for
@@ -90,7 +90,7 @@ M6 = 1e6
 # CONTEXT: one projection state per scenario
 # ============================================================
 def boundaries():
-    """B_AR and B_AtP (kg/yr) by year 2026-2050 for the Reference, and P_NZ, from outputs/pb_annual.csv."""
+    """B_AR and B_AtP (kg/yr) by year 2026-2050 for the Reference, and P_NZ, from outputs/data/aesa/annual.csv."""
     a = pd.read_csv(FILE_PB_ANNUAL)
     a = a[(a['scenario'] == REFERENCE) & (a['year'] >= WINDOW[0]) & (a['year'] <= WINDOW[1])].set_index('year')
     if list(a.index) != list(range(WINDOW[0], WINDOW[1] + 1)):
@@ -212,7 +212,6 @@ def metrics(ctx, R, label, setting):
     row = dict(run=label, scenario=ctx['scenario'], setting=setting, levers=LV.label(R['active']),
                adoption=R['ramp'], l5_apartments_held=R['l5_apartments_held'],
                gfa_Mm2=gfa / M6, gfa_2027_2050_Mm2=gfa_t[:, 2:].sum() / M6,
-               **{f'gfa_{t}_Mm2': gfa_t[k][f].sum() / M6 for k, t in enumerate(ctx['typ'])},
                carbon_kt=I.sum() / M6, upfront_kt=up / M6, b_inwindow_kt=E['b_t'][:, f].sum() / M6,
                soil_kt=soil.sum() / M6, a13_kt=a13 / M6, a45_kt=a45 / M6,
                carbon_excl_soil_kt=(I.sum() - soil.sum()) / M6,
@@ -233,7 +232,6 @@ def metrics(ctx, R, label, setting):
                stock_vacancy_2050=float(np.broadcast_to(E['v'], E['hh'].shape)[-1]),
                D_minus_occ_min_m2=float((E['D'] - E['occ'])[f].min()),
                extra_clip_max_m2=float(np.abs(E['extra_clip'][f]).max()),
-               attached_share_2050=float(sum(fi['shares'][t].iloc[-1] for t in LV.ATTACHED)),
                near_term_join_dwellings=float(E['join'][f].sum()),
                existing_dwellings_released=float(-np.minimum(E['change'][f], 0.0).sum()),
                vacancy_change_dwellings=float(E['change'][f].sum()),
@@ -255,7 +253,6 @@ def annual_rows(ctx, R, label):
                          carbon_kt=E['carbon'][i] / M6, upfront_kt=E['upfront'][i] / M6,
                          b_kt=E['b_t'][:, i].sum() / M6, soil_kt=soil[i] / M6,
                          gfa_Mm2=E['gfa_t'][:, i].sum() / M6,
-                         **{f'gfa_{t}_Mm2': E['gfa_t'][k, i] / M6 for k, t in enumerate(ctx['typ'])},
                          dwellings_built=E['dwell_in_scope'][i], dwelling_size_m2=E['D'][i],
                          occupied_area_m2=E['occ'][i], implied_vacancy=v_impl[i],
                          stock_vacancy=float(np.broadcast_to(E['v'], E['hh'].shape)[i]),
@@ -1263,7 +1260,7 @@ def fig_staircase(res):
     P.band_legend(fig, list(N.BANDS_IN_SCOPE), ncol=4, y=-0.01)
     fig.subplots_adjust(bottom=0.12)
     _save(fig, 'D32_tl_staircase',
-          T_CAPTION + f" TL1 {LV.TL_NAMES['TL1']} (vacancy 0, surplus absorbed), TL2 {LV.TL_NAMES['TL2']} (size = household "
+          T_CAPTION + f" TL1 {LV.TL_NAMES['TL1']} (vacancy 0, 2026 overbuild absorbed), TL2 {LV.TL_NAMES['TL2']} (size = household "
           f"size × occupant load factor), TL3 {LV.TL_NAMES['TL3']} (the smallest occupant load factor of the case "
           f"studies, 19.7 m² per person, for every typology), TL4 {LV.TL_NAMES['TL4']} (each typology's best case-study "
           f"A1–A3), TL5 {LV.TL_NAMES['TL5']} (lowest soil order), TL6 {LV.TL_NAMES['TL6']} ({100 * LV.TL6_SHARE:.0f}% of "

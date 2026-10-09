@@ -1,7 +1,7 @@
 """Baseline v2 must reproduce every headline number of v1.2.1 (commit a83cf03)
 to 1e-9 relative, with carbon factors held at 2025 (DECARB_MODE 'none', frozen
 technology; the adopted run decarbonises materials). Central-run metrics and the
-four scenario totals are recomputed here under 'none'; the Monte Carlo
+three scenario totals (S1, S3-10, S2) are recomputed here under 'none'; the Monte Carlo
 summaries, the scenario table and the sensitivity table are read from
 outputs/data/frozen_technology/, written by run_all's frozen-technology steps before the tests.
 In a quick run (run_all.py --quick) those file checks are skipped.
@@ -95,6 +95,8 @@ def test_monte_carlo_summaries():
         f_ = f'frozen/{name}'
         s = pd.read_csv(os.path.join(ROOT, 'outputs', N.LEGACY.file(f_)), index_col=0)
         for i, cols in rows.items():
+            if N.LEGACY.removed(f_, row=(i,)):      # by-typology output removed in the release (CHANGELOG)
+                continue
             ii = N.LEGACY.cell(f_, 'Unnamed: 0', i, {})
             for c, v in cols.items():
                 got = float(s.loc[ii, N.LEGACY.column(f_, c)])

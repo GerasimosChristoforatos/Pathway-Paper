@@ -21,7 +21,7 @@ and re-call `engine.forward()` with modified *copies* of `fwd_inputs`.
 | `fwd_inputs` | l. 1527-1532 | every `engine.forward` argument that does not depend on the population path: `v`, `rate_demol`, `rate_unc`, `dev_2025`, `rho_dev`, `rv_share`, `shares`, `size`, `olf`, `intensity`, `intensity_upfront`, `soil`, `soil_on_replacement`, `gfa_fixed`, `events` |
 | `df_forecast['PopTotal_50th']`, `df_forecast['PopGrowth_50th'].clip(lower=0)`, `households_forecast['50th']` | l. 1539-1542 | the median population and household paths (the levers never change them) |
 | `join_info['50th']` (`join`, `redev`, `O26`, `rho`) | l. 1544-1550 | the near-term market excess of the reference run (`engine.market_excess`, mode `surplus`, absorption 0) |
-| `v_forward` | l. 1284 | stock-wide vacancy held forward = 2023 census value (5.39%) |
+| `v_forward` | l. 1284 | the vacancy-rate parameter, held at its published 2023 census value (5.39%); implied stock vacancy rises because the 2026 overbuild is not absorbed |
 | `demolition_rate`, `unconsented_rate`, `rate_path`, `unc_path` | l. 1275-1292 | BRANZ demolition rate (0.135%/yr); long-run residual = long-run net rate − demolition; scenario net replacement path; `unc_path = rate_path − demolition_rate` |
 | `size_ref` | l. 1164-1165 | realised new-dwelling size per typology, mean of annual GFA / dwellings over `DWELLING_SIZE_REF` (2023-2025) |
 | `OLF_USED` | l. 1167 | occupancy load factor per typology (case studies) |

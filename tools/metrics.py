@@ -6,7 +6,7 @@ Keys carry the release names (naming.py; docs/RENAMING.md).
 outputs/reports/RESULTS.md is generated from this file only, so no headline number is
 ever copied by hand.
 
-    python tools/metrics.py [--mc-stale]   # --mc-stale: MC CSVs are from an earlier run
+    python tools/metrics.py
 """
 import contextlib
 import io
@@ -14,7 +14,6 @@ import json
 import os
 import sys
 
-import numpy as np
 import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,7 +28,7 @@ FIELDS = [
     ('projection.floor_area_Mm2', 'Built floor area 2026-2050, Reference (Mm2)', '{:.2f}'),
     ('projection.carbon_kt', 'Embodied carbon 2026-2050, Reference (kt CO2e)', '{:,.0f}'),
     ('projection.upfront_kt', 'Upfront carbon (A1-A5 and soil carbon loss), Reference (kt CO2e)', '{:,.0f}'),
-    ('projection.soil_carbon_loss_kt', 'Soil carbon loss (land-use change), Reference (kt CO2e)', '{:,.0f}'),
+    ('projection.soil_carbon_loss_kt', 'Soil carbon loss, Reference (kt CO2e)', '{:,.0f}'),
     ('projection.carbon_excl_soil_kt', 'Embodied carbon excluding soil carbon loss, Reference (kt CO2e)', '{:,.0f}'),
     ('projection.step_2025_2026_pct', '2025 -> 2026 step in built floor area (%)', '{:+.1f}'),
     ('projection.S_2050', 'Household size 2050, Reference', '{:.3f}'),
@@ -154,7 +153,7 @@ def mc_metrics():
     return m
 
 
-def collect(extra=None):
+def collect():
     m = {'projection': projection_metrics()}
     if os.path.exists(layout.montecarlo('summary', 'REF', frozen=False)):
         m['mc'] = mc_metrics()
@@ -173,8 +172,6 @@ def collect(extra=None):
         val['observed_to_model_2026'] = v['check_2026'].get('ratio_observed_to_model')
         m['validation'] = val
     m['run_mode'] = ('QUICK RUN, not for reporting' if os.environ.get('PATHWAY_QUICK') == '1' else 'full')
-    if extra:
-        m.update(extra)
     with open(layout.writing(METRICS), 'w') as f:
         json.dump(N.keys(m), f, indent=2, sort_keys=True)
     return m
@@ -189,7 +186,7 @@ def get(m, dotted):
 
 
 if __name__ == '__main__':
-    m = collect(extra={'mc_stale': True} if '--mc-stale' in sys.argv else None)
+    m = collect()
     print(f'metrics -> {METRICS}')
     for key, label, f in FIELDS + PB_FIELDS:
         v = get(m, key)

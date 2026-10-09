@@ -14,7 +14,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-import pytest  # noqa: E402
 
 from conftest import ROOT, run_boss  # noqa: E402
 
@@ -29,11 +28,10 @@ PRIDE = ['#750787', '#004DFF', '#008026', '#FFED00', '#FF8C00', '#E40303']   # b
 
 
 def test_stale_terms_absent_from_outputs():
-    """Outputs written before the tests step; the documents written after it
-    (metrics, RESULTS, drafts, ASSUMPTIONS) are checked by tools/check_outputs.py,
-    the last step of run_all.py."""
+    """Every data file and report (the tests run last in run_all.py; tools/check_outputs.py
+    applies the same check during the run)."""
     import check_outputs
-    hits = check_outputs.storyline_hits(include_docs=False)
+    hits = check_outputs.storyline_hits()
     assert not hits, hits
 
 
@@ -41,11 +39,12 @@ def test_mix_held_in_every_scenario():
     import projection
     import MonteCarlo as MC
     import replacement_scenarios as RS
-    assert projection.MIX_MODE == 'held'
+    assert not hasattr(projection, 'MIX_MODE')                      # the mix is held; no trend code path
     assert [k for k, _ in MC.MC_SCENARIOS] == ['REF', 'LOW', 'HIGH']
     assert not any('MIX_MODE' in s for _, s in MC.MC_SCENARIOS)
     assert not any('MIX_MODE' in s for _, _, s in RS.SCENARIOS)
-    assert run_boss(REPLACEMENT_VARIANT='HIGH')['mix_used'] == 'held'
+    sh = run_boss(REPLACEMENT_VARIANT='HIGH')['evolving_gfa_shares']
+    assert (sh.loc[2027:].nunique() == 1).all()                       # held after the observed 2026
 
 
 def test_scenario_names_consistent():

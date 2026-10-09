@@ -1,6 +1,6 @@
 """Figure audit: when a figure is saved, record for every axes its labels and the
 range of calendar years its data cover, every text of the figure and its note
-(outputs/figure_audit/<name>.json). The tests read these records to check that no
+(outputs/diagnostics/_audit/<name>.json). The tests read these records to check that no
 figure shows carbon outside the projection, except the AR base window
 (tests/test_v3.py), and that no figure uses an old name (tests/test_release.py);
 DIAGNOSTICS.md takes the notes from them.

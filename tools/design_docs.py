@@ -106,6 +106,9 @@ EXTENSIONS = [
     ('montecarlo_summary*.csv index column (unnamed) and its output names (GFA_Mm2, RV_units, ...)', 'output; floor_area_Mm2, retirement_village_units, ...'),
     ('montecarlo_annual*.csv index column (unnamed)', 'year'),
     ('montecarlo_sobol.csv output names', 'as the draws columns (floor_area_Mm2, retirement_village_units, ...)'),
+    # step 7 (clean-up): version tags and old terms left in identifiers
+    ('reconciliation.json v2_frozen_whole_life_kt, v2_adopted_whole_life_kt and the two checks naming "v2"', 'whole_life_2025_factors_kt, whole_life_a45_held_kt; the checks name the whole-life totals and "maintenance decarbonisation"'),
+    ('pb_sensitivity.csv labels "(xiii) Wider scope: ... the replacements and repaints of every cohort ..." and "Note (not in tornado): ..."', '"(xiii) Wider scope: ... the maintenance (B2, B4) of every cohort ..." and "Note (not drawn in D18 or H11): ..."'),
 ]
 
 LEGEND_TERMS = [
@@ -284,7 +287,7 @@ def _identifiers(cap):
             rows.append([code(f), code(k), code(new)])
     L += table(['v3.1 file', 'v3.1 key', 'release key'], rows)
     if removed:
-        L += ['', 'Removed JSON values (by-typology reporting):', '']
+        L += ['', 'Removed JSON values (by-typology reporting, and settings/phi, the damping of the removed typology-mix trend):', '']
         L += [f'* `{f}`: ' + ', '.join(sorted(v)) for f, v in removed.items()]
     return L
 
@@ -315,7 +318,7 @@ def _labels():
     L += table(['v3.1', 'release'], SETTINGS)
     L += ['', '## 9. Extensions made while applying the map', '',
           'Identifiers of the captured outputs that the approved map left in the v3.1 vocabulary, mapped while '
-          'the renaming was applied (MODEL v1.0.0, step 3) by the same rules (naming.py); sections 3-5 above list '
+          'the renaming was applied (MODEL v1.0.0, steps 3 and 7) by the same rules (naming.py); sections 3-5 above list '
           'them with every other identifier. Kept on purpose: the Sobol index notation S1 / ST of '
           'montecarlo_sobol.csv, the case-study ids (A_1, T_1, ...) and the input tables of data/factors/ '
           '(model inputs keep their source names), and setting names echoed from module constants (e.g. '

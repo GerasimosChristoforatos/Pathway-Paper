@@ -2,15 +2,15 @@
 
     python run_all.py                   # full run: the only basis for reported results and tags
     python run_all.py --pathways-only   # the pathway layer only (the projection is unchanged):
-                                        # pathways.py (projection.main() in memory), the pathway
-                                        # tests and the numerical regression lock, then the pathway
-                                        # documents; only the pathway figures are replaced
+                                        # pathways.py (projection.main() in memory), the headline
+                                        # figures, the pathway documents and the indexes, then the
+                                        # pathway tests, the numerical regression lock, the
+                                        # release checks and the byte manifest; only the pathway
+                                        # figures are replaced
     python run_all.py --quick           # development: Monte Carlo with fewer draws, no
                                         # frozen-technology Monte Carlo or AESA step, regression
                                         # checks of the Monte Carlo skipped; every output and figure
                                         # marked "QUICK RUN, not for reporting"
-    python run_all.py --no-mc           # skip the Monte Carlo (development only; the MC metrics are
-                                        # carried over from the last full run and marked stale)
 
 In Spyder (or any IPython console): open run_all.py and Run (F5), or
     runfile('run_all.py')                        # full run
@@ -26,7 +26,7 @@ overbuild_2026 -> scenarios -> reconciliation -> figures_report -> frozen-techno
 (projection, Sensitivity, MonteCarlo, scenarios, boundaries with DECARB_MODE 'none', A4-A5
 held, whole life at construction; data in outputs/data/frozen_technology/, no figures) ->
 pathways -> metrics -> headline (the figures of the paper, from the data files) -> results ->
-assumptions -> baseline_draft -> pb_methods -> pathways_docs -> check_outputs -> indexes
+assumptions -> pathways_docs (LEVERS_TABLE.md) -> methods_draft (METHODS_DRAFT.md) -> check_outputs -> indexes
 (DIAGNOSTICS.md, outputs/INDEX.md) -> tests, last (incl. the v1.2.1 regression test, which reads
 the frozen-technology data, the regression lock of MODEL v1.0.0, which reads every data file, and
 the release checks of figures and indexes).
@@ -74,22 +74,24 @@ def tool(name):
     return os.path.join(ROOT, 'tools', f'{name}.py')
 
 
-def pipeline(skip_mc, quick=False):
+def pipeline(quick=False):
     py = sys.executable
     q = {'PATHWAY_QUICK': '1'} if quick else {'PATHWAY_QUICK': '0'}
 
     def run(name, cmd, **extra):
         step(name, cmd, dict(q, **extra))
 
-    # every figure (and its audit record, figaudit.py) is written by this run
-    for d in (layout.HEADLINE, layout.DIAGNOSTICS, layout.FIGURE_AUDIT):
+    # every figure (and its audit record, figaudit.py) is written by this run; a full run also
+    # rewrites every data file and report, so nothing stale survives (outputs/INDEX.md, the tests).
+    # A quick run keeps the data: it does not re-run the frozen-technology Monte Carlo and AESA.
+    for d in (layout.HEADLINE, layout.DIAGNOSTICS, layout.FIGURE_AUDIT) + (() if quick else (layout.DATA,
+                                                                                          layout.REPORTS)):
         shutil.rmtree(d, ignore_errors=True)
     run('building_factors', [py, os.path.join(ROOT, 'Building_factors.py')])
     run('projection', [py, os.path.join(ROOT, 'projection.py')])
     run('diagnostics', [py, os.path.join(ROOT, 'Diagnostics.py')])
     run('sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')])
-    if not skip_mc:
-        run('montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')])
+    run('montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')])
     run('boundaries', [py, os.path.join(ROOT, 'boundaries.py')])
     run('validation', [py, os.path.join(ROOT, 'validation.py')])
     run('gap_2026', [py, os.path.join(ROOT, 'gap_2026.py')])
@@ -102,23 +104,22 @@ def pipeline(skip_mc, quick=False):
     fz = dict(PATHWAY_FROZEN='1', PATHWAY_SAVE_FIGURES='0')
     run('frozen_projection', [py, os.path.join(ROOT, 'projection.py')], **fz)
     run('frozen_sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')], **fz)
-    if not (skip_mc or quick):
+    if not quick:
         run('frozen_montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')], **fz)
     run('frozen_scenarios', [py, tool('replacement_scenarios')], **fz)
-    if not (skip_mc or quick):
+    if not quick:
         run('frozen_boundaries', [py, os.path.join(ROOT, 'boundaries.py')], **fz)
-    # PATHWAYS v2 (levers, pathways, attribution, AESA gap): after PB and after figures_report
-    # (which rewrites FIGURES.md; pathways.py appends its own section), before the tests
+    # the pathway layer (levers, pathways, attribution, AESA gap): after the AESA layer, whose
+    # boundaries it reads
     run('pathways', [py, os.path.join(ROOT, 'pathways.py')])
     # metrics.json is a data file (locked by tests/test_regression_model_v1.py): written before the tests
-    run('metrics', [py, tool('metrics')] + (['--mc-stale'] if skip_mc else []))
+    run('metrics', [py, tool('metrics')])
     # the figures of the paper and HEADLINE.md, from the data files only
     run('headline', [py, os.path.join(ROOT, 'headline.py')])
     run('results', [py, tool('results')])
     run('assumptions', [py, tool('assumptions')])
-    run('baseline_draft', [py, tool('baseline_draft')])
-    run('pb_methods', [py, tool('pb_methods')])
     run('pathways_docs', [py, tool('pathways_methods'), '--sections'])
+    run('methods_draft', [py, tool('methods_draft')])
     run('check_outputs', [py, tool('check_outputs')])
     # DIAGNOSTICS.md and outputs/INDEX.md, once every output is written; then the tests, last, on
     # the complete output set (figure audit, index, regression lock)
@@ -136,10 +137,12 @@ def pathways_only():
     step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
     step('headline', [py, os.path.join(ROOT, 'headline.py')], env)
     step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
+    step('methods_draft', [py, tool('methods_draft')], env)
     step('indexes', [py, os.path.join(ROOT, 'indexes.py')], env)
     step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
                             os.path.join(ROOT, 'tests', 'test_regression_model_v1.py'),
-                            os.path.join(ROOT, 'tests', 'test_release.py')], env)
+                            os.path.join(ROOT, 'tests', 'test_release.py'),
+                            os.path.join(ROOT, 'tests', 'test_output_manifest.py')], env)
 
 
 def main(argv=None):
@@ -149,7 +152,7 @@ def main(argv=None):
         if '--pathways-only' in argv:
             pathways_only()
         else:
-            pipeline(skip_mc='--no-mc' in argv, quick='--quick' in argv)
+            pipeline(quick='--quick' in argv)
     except StepFailed as e:
         print(f'\n{e}')
         if interactive():

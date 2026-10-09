@@ -400,6 +400,7 @@ Distinct values of identifying (text) columns that change.
 | `frozen/pb_mc_annual.csv` | `scenario` | S1 | LOW |
 | `frozen/pb_mc_annual.csv` | `scenario` | S2 | HIGH |
 | `frozen/pb_sensitivity.csv` | `label` | Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios | Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios |
+| `frozen/pb_sensitivity.csv` | `label` | Note (not in tornado): history 2024-25 at the long-run net replacement rate | Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate |
 | `frozen/sensitivity_oat.csv` | `group` | Adopted | Reference |
 | `frozen/sensitivity_oat.csv` | `case` | Adopted settings | Reference (adopted settings) |
 | `frozen/sensitivity_oat.csv` | `group` | Replacement scenario | Replacement variant |
@@ -770,6 +771,8 @@ Distinct values of identifying (text) columns that change.
 | `pb_mc_annual.csv` | `scenario` | S1 | LOW |
 | `pb_mc_annual.csv` | `scenario` | S2 | HIGH |
 | `pb_sensitivity.csv` | `label` | Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios | Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios |
+| `pb_sensitivity.csv` | `label` | (xiii) Wider scope: base and projection include the replacements and repaints of every cohort since 1992 | (xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992 |
+| `pb_sensitivity.csv` | `label` | Note (not in tornado): history 2024-25 at the long-run net replacement rate | Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate |
 | `sensitivity_oat.csv` | `group` | Adopted | Reference |
 | `sensitivity_oat.csv` | `case` | Adopted settings | Reference (adopted settings) |
 | `sensitivity_oat.csv` | `group` | Replacement scenario | Replacement variant |
@@ -951,9 +954,13 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `reality_checks.json` | `S1` | `LOW` |
 | `reality_checks.json` | `S3-10` | `REF` |
 | `reality_checks.json` | `S2` | `HIGH` |
+| `reconciliation.json` | `v2_frozen_whole_life_kt` | `whole_life_2025_factors_kt` |
+| `reconciliation.json` | `v2_adopted_whole_life_kt` | `whole_life_a45_held_kt` |
 | `reconciliation.json` | `b_inwindow_kt` | `maintenance_kt` |
 | `reconciliation.json` | `within_window_kt` | `carbon_2026_2050_kt` |
 | `reconciliation.json` | `b_inwindow_decarbonisation_kt` | `maintenance_decarbonisation_kt` |
+| `reconciliation.json` | `2025 factors: split sums to the v2 frozen whole-life total` | `2025 factors: split sums to the whole-life total at 2025 factors` |
+| `reconciliation.json` | `decarbonised: v2 adopted - A4-A5 - in-window B decarbonisation = split (upper)` | `decarbonised: whole life (A4-A5 held) - A4-A5 decarbonisation - maintenance decarbonisation = split (upper)` |
 | `replacement_scenarios.json` | `S1` | `LOW` |
 | `replacement_scenarios.json` | `GFA_Mm2` | `floor_area_Mm2` |
 | `replacement_scenarios.json` | `soil_kt` | `soil_carbon_loss_kt` |
@@ -966,10 +973,10 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `replacement_scenarios.json` | `S3-10-noUC` | `REF_NOUC` |
 | `replacement_scenarios.json` | `S2-noUC` | `HIGH_NOUC` |
 
-Removed JSON values (by-typology reporting):
+Removed JSON values (by-typology reporting, and settings/phi, the damping of the removed typology-mix trend):
 
-* `boss_results.json`: typology/...
-* `frozen/boss_results.json`: typology/...
+* `boss_results.json`: settings/..., typology/...
+* `frozen/boss_results.json`: settings/..., typology/...
 * `frozen/replacement_scenarios.json`: scenarios/...
 * `pathways/t_limit.json`: metrics/...
 * `replacement_scenarios.json`: scenarios/...
@@ -1132,7 +1139,7 @@ Module renames approved with the design documents: Boss.py -> projection.py and 
 
 ## 9. Extensions made while applying the map
 
-Identifiers of the captured outputs that the approved map left in the v3.1 vocabulary, mapped while the renaming was applied (MODEL v1.0.0, step 3) by the same rules (naming.py); sections 3-5 above list them with every other identifier. Kept on purpose: the Sobol index notation S1 / ST of montecarlo_sobol.csv, the case-study ids (A_1, T_1, ...) and the input tables of data/factors/ (model inputs keep their source names), and setting names echoed from module constants (e.g. PB_YEARS in the AESA settings block).
+Identifiers of the captured outputs that the approved map left in the v3.1 vocabulary, mapped while the renaming was applied (MODEL v1.0.0, steps 3 and 7) by the same rules (naming.py); sections 3-5 above list them with every other identifier. Kept on purpose: the Sobol index notation S1 / ST of montecarlo_sobol.csv, the case-study ids (A_1, T_1, ...) and the input tables of data/factors/ (model inputs keep their source names), and setting names echoed from module constants (e.g. PB_YEARS in the AESA settings block).
 
 | v3.1 identifier | release identifier |
 |---|---|
@@ -1150,3 +1157,5 @@ Identifiers of the captured outputs that the approved map left in the v3.1 vocab
 | montecarlo_summary*.csv index column (unnamed) and its output names (GFA_Mm2, RV_units, ...) | output; floor_area_Mm2, retirement_village_units, ... |
 | montecarlo_annual*.csv index column (unnamed) | year |
 | montecarlo_sobol.csv output names | as the draws columns (floor_area_Mm2, retirement_village_units, ...) |
+| reconciliation.json v2_frozen_whole_life_kt, v2_adopted_whole_life_kt and the two checks naming "v2" | whole_life_2025_factors_kt, whole_life_a45_held_kt; the checks name the whole-life totals and "maintenance decarbonisation" |
+| pb_sensitivity.csv labels "(xiii) Wider scope: ... the replacements and repaints of every cohort ..." and "Note (not in tornado): ..." | "(xiii) Wider scope: ... the maintenance (B2, B4) of every cohort ..." and "Note (not drawn in D18 or H11): ..." |

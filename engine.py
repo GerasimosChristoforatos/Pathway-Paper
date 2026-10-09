@@ -15,8 +15,7 @@ engine, and a change here reaches both scripts at once.
   seasonal_shares   mean share of the calendar-year total, by month
   nowcast_year      calendar-year consents from the observed months (A1)
   requirement       dwellings built (all categories) in a forward() result
-  market_excess     near-term market excess from observed 2026 building
-  mix_shares        damped additive-log-ratio typology mix
+  market_excess     the 2026 overbuild from observed 2026 building
   blend             dwelling-weighted blend of a per-typology quantity
   forward           households -> dwellings built -> floor area -> carbon
 
@@ -256,22 +255,6 @@ def deviation_2025(cal, built_all_2025, d_hh_2025, rate_net, years, window_start
 # ============================================================
 # FORWARD
 # ============================================================
-def mix_shares(alr_2025, slopes, phi, years, typ_names, ref='Detached'):
-    """Additive-log-ratio trend, geometrically damped from 2025:
-        alr(t) = alr(2025) + slope x phi (1 - phi^(t-2025)) / (1 - phi).
-    Shares stay positive and sum to one. Returns DataFrame (years x typology)."""
-    years = np.asarray(years)
-    other = [n for n in typ_names if n != ref]
-    ahead = (years - 2025).clip(min=0)
-    damp = phi * (1 - phi ** ahead) / (1 - phi)
-    alr_f = {n: alr_2025[n] + slopes[n] * damp for n in other}
-    denom = 1 + sum(np.exp(alr_f[n]) for n in other)
-    out = {ref: 1 / denom}
-    for n in other:
-        out[n] = np.exp(alr_f[n]) / denom
-    return pd.DataFrame(out, index=years)[list(typ_names)]
-
-
 def blend(shares, per_unit, typ_names):
     """Harmonic mean weighted by floor-area share. This equals the mean
     weighted by the underlying units (dwellings or persons), so blended x units
@@ -290,9 +273,9 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
 
     pop, hh, pop_growth, v : arrays over the years (v may vary by year)
     rate_demol, rate_unc   : demolition and residual, shares of last year's stock
-                             (rate_unc may be an array by year: scenario S3)
+                             (rate_unc may be an array by year: the Reference variant)
     join                   : optional array of dwellings built above the requirement
-                             (near-term market excess), added before the RV split
+                             (the 2026 overbuild), added before the RV split
     join_redev             : the part of join that replaces extra removals
                              (redevelopment); the rest adds to the stock
                              (stock_join). The extra stock does not enter the

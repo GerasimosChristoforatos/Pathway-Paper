@@ -4,7 +4,7 @@ Time-resolved replacement and repaint emissions (B2, B4) of new construction.
 The case-study B2/B4 of every event line is split into events in time
 (Building_factors.event_rows: per-event impact = line B / n, at k L / (n + 1)
 years after construction, sensitivity k L / n), pooled per typology with the
-weights of the carbon factors (outputs/factors/factors_events.csv), and kept by
+weights of the carbon factors (outputs/data/factors/factors_events.csv), and kept by
 stage component of the event (A1-A3 : A4-A5 : C1-C4, in proportion to the line's
 initial stages), material group and decarbonisation path.
 
@@ -32,7 +32,7 @@ LAST_FACTOR_YEAR = BF.DECARB_YEARS[-1]                 # 2050
 
 
 def load_profile(timing='n+1', path=None):
-    """Pooled events by typology (outputs/factors/factors_events.csv)."""
+    """Pooled events by typology (outputs/data/factors/factors_events.csv)."""
     d = pd.read_csv(path or BF.OUT_EVENTS)
     d = d[d['Timing'] == timing].drop(columns='Timing')
     if d.empty:

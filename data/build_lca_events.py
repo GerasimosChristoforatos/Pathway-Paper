@@ -44,7 +44,6 @@ Output: data/derived/lca_events.csv
   lifespan, event_type ('replacement' | 'repaint' | ''), n_events, event_path ('item' | 'paint' | '')
 """
 import os
-import sys
 from collections import defaultdict
 
 import numpy as np

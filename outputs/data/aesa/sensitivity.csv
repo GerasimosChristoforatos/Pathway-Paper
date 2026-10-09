@@ -1,5 +1,5 @@
 case,label,cum_LoE_AR,cum_LoE_AtP,AR_vs_ref_pct,AtP_vs_ref_pct
-reference,"Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",4.847757008409891,19.38740791884835,0.0,0.0
+reference,"Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",4.847757008409891,19.38740791884835,0.0,0.0
 i_source_pair,(i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015),9.144937736086248,36.57292186353388,88.64265927977839,88.64265927977846
 ii_gdp_measure,"(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",4.847757008409891,59.64968283617513,0.0,207.67229474851035
 iii_base_window,"(iii) AR base window 2021-2025 (5 yr, as Horup)",4.7328791930069904,19.38740791884835,-2.3697106765790954,0.0
@@ -15,6 +15,6 @@ ix_a45_held,(ix) A4-A5 held at 2025 (no generic 1%/yr),4.94310754364855,19.76873
 x_a45_item,(x) A4-A5 on each item's own Horup S4 path,4.788819743419827,19.151702870925906,-1.2157635972227854,-1.2157635972227743
 xi_event_timing,(xi) Event timing: interval L / n (instead of L / (n + 1)),4.811039737571526,19.240566254512597,-0.7574074107812856,-0.7574074107812745
 xii_whole_life,(xii) Accounting: whole life at construction (base on the same rule),4.9214238344291035,27.490331309426377,1.5196064054245007,41.79477434268251
-xiii_wider_scope,(xiii) Wider scope: base and projection include the replacements and repaints of every cohort since 1992,5.363427094813075,23.739060281508923,10.637292370648922,22.445766761991504
+xiii_wider_scope,"(xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",5.363427094813075,23.739060281508923,10.637292370648922,22.445766761991504
 xiv_alpha_1,"(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",4.847757008409891,8.180693336728101,0.0,-57.804089278098544
-note_soil_long_run,Note (not in tornado): history 2024-25 at the long-run net replacement rate,4.831118090020177,19.38740791884835,-0.3432292163334294,0.0
+note_soil_long_run,Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate,4.831118090020177,19.38740791884835,-0.3432292163334294,0.0

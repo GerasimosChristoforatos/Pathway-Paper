@@ -3,7 +3,7 @@
   "near_mode": "surplus",
   "gap_ref_basis": "2027",
   "surplus_2026_2028": 24602.629042152665,
-  "limitation": "The near-term surplus (\u224827,500 dwellings over 2026-2050, of which \u224824,600 in 2026-2028) is not absorbed by later demand; implied vacancy therefore rises from 5.4% (2023 census) to \u22486.4% and remains there, about 1 percentage point above the 1986-2023 range on a consistent definition (4.0-5.4%). Absorption is not modelled: the persistence rho = 0.52 (lag-1 autocorrelation of the annual departure of building from the calibrated stock identity, 1992-2023) describes how a flow deviation fades (already used for the excess), not a payback of the stock, and the eight census vacancy observations do not identify a mean-reversion rate.",
+  "limitation": "The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); implied stock vacancy rises to \u22486.4% because the 2026 overbuild is not absorbed. The 2026 overbuild (\u224827,500 dwellings over 2026-2050, of which \u224824,600 in 2026-2028) is not absorbed by later demand, so the implied stock vacancy stays about 1 percentage point above the 1986-2023 range on a consistent definition (4.0-5.4%). Absorption is not modelled: the persistence rho = 0.52 (lag-1 autocorrelation of the annual departure of building from the calibrated stock identity, 1992-2023) describes how a flow deviation fades (already used for the excess), not a payback of the stock, and the eight census vacancy observations do not identify a mean-reversion rate.",
   "vacancy": {
     "peak": 0.0651592557250733,
     "peak_year": 2031,
@@ -40,6 +40,6 @@
   "e26": 16759.675404959813,
   "gap_ref": 9973.711263233039,
   "rho": 0.5180189643073912,
-  "join_2026_2050": 27479.123839651176,
-  "scenario": "S3"
+  "overbuild_2026_dwellings_2026_2050": 27479.123839651176,
+  "scenario": "REF"
 }

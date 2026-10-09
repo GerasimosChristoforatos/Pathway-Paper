@@ -1,0 +1,30 @@
+{
+ "figure": "D06_vacancy_definition",
+ "producer": "Diagnostics.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Unconsented additions required, 1992\u20132023\n(dwellings per year)",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "-1,000",
+  "-1,500",
+  "-2,000",
+  "-2,500",
+  "-2,634 per year\n(-11% of building)",
+  "-3,000",
+  "-500",
+  "0",
+  "1,000",
+  "432 per year\n(+2% of building)",
+  "500",
+  "Empty homes only\n(used)",
+  "Including 'residents away'\n(rejected)",
+  "Unconsented additions required, 1992\u20132023\n(dwellings per year)"
+ ],
+ "note": "The unconsented additions each vacancy definition requires to close the stock identity, assuming the BRANZ demolition rate; counting residents-away dwellings as vacant requires implausibly many."
+}

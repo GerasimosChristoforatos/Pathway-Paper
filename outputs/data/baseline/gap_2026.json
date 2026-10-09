@@ -4,10 +4,10 @@
   "consents_2025": 36619.0,
   "model_requirement_2026": 27573.871894305586,
   "carried_2025_deviation_in_2026": 3475.9505222788616,
-  "S2_rate_effect": 4461.007415686399,
-  "S2_deviation_effect": -2302.4811397935455,
-  "model_requirement_2026_S2": 29732.398170198434,
-  "model_requirement_2026_S3_10": 29433.657848837804,
+  "HIGH_rate_effect": 4461.007415686399,
+  "HIGH_deviation_effect": -2302.4811397935455,
+  "model_requirement_2026_HIGH": 29732.398170198434,
+  "model_requirement_2026_REF": 29433.657848837804,
   "S_2026": 2.6778614674781296,
   "v_2026": 0.05387454644033866,
   "stock_2025": 2107605.6635231664,
@@ -22,7 +22,7 @@
     {
       "C26_estimate": "Jan-Jul 2026 / seasonal share",
       "C26": 42612.90963359846,
-      "scenario": "S1 (long-run replacement)",
+      "scenario": "Low replacement (long-run rate)",
       "observed_implied": 40482.264151918534,
       "model": 27573.871894305586,
       "scenario_adds": 0.0,
@@ -37,7 +37,7 @@
     {
       "C26_estimate": "Jan-Jul 2026 / seasonal share",
       "C26": 42612.90963359846,
-      "scenario": "S3-10 (reference: 2018-23 rate fading, half-life 10 yr)",
+      "scenario": "Reference (2018-2023 rate fading, half-life 10 yr)",
       "observed_implied": 40482.264151918534,
       "model": 27573.871894305586,
       "scenario_adds": 1859.7859545322171,
@@ -52,7 +52,7 @@
     {
       "C26_estimate": "Jan-Jul 2026 / seasonal share",
       "C26": 42612.90963359846,
-      "scenario": "S2 (2018-23 regime)",
+      "scenario": "High replacement (2018-2023 rate persists)",
       "observed_implied": 40482.264151918534,
       "model": 27573.871894305586,
       "scenario_adds": 2158.5262758928475,
@@ -67,7 +67,7 @@
     {
       "C26_estimate": "latest 12 months",
       "C26": 40908.0,
-      "scenario": "S1 (long-run replacement)",
+      "scenario": "Low replacement (long-run rate)",
       "observed_implied": 38862.6,
       "model": 27573.871894305586,
       "scenario_adds": 0.0,
@@ -82,7 +82,7 @@
     {
       "C26_estimate": "latest 12 months",
       "C26": 40908.0,
-      "scenario": "S3-10 (reference: 2018-23 rate fading, half-life 10 yr)",
+      "scenario": "Reference (2018-2023 rate fading, half-life 10 yr)",
       "observed_implied": 38862.6,
       "model": 27573.871894305586,
       "scenario_adds": 1859.7859545322171,
@@ -97,7 +97,7 @@
     {
       "C26_estimate": "latest 12 months",
       "C26": 40908.0,
-      "scenario": "S2 (2018-23 regime)",
+      "scenario": "High replacement (2018-2023 rate persists)",
       "observed_implied": 38862.6,
       "model": 27573.871894305586,
       "scenario_adds": 2158.5262758928475,

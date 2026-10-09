@@ -1,5 +1,5 @@
 {
-  "S1": {
+  "LOW": {
     "built": {
       "hist_min": 12978.9,
       "hist_max": 47061.1,
@@ -57,7 +57,7 @@
       "first_outside": null
     }
   },
-  "S3-10": {
+  "REF": {
     "built": {
       "hist_min": 12978.9,
       "hist_max": 47061.1,
@@ -115,7 +115,7 @@
       "first_outside": null
     }
   },
-  "S2": {
+  "HIGH": {
     "built": {
       "hist_min": 12978.9,
       "hist_max": 47061.1,

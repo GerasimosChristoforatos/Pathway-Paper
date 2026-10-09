@@ -1,17 +1,17 @@
-level,setting,metric,player,name,reduction,share_of_P0_minus_P5
-pathways,central,carbon_kt,P1,Right-size space,1234.6444363372584,0.30734493314115674
-pathways,central,carbon_kt,P2,Occupy the existing stock,1450.2111363555186,0.36100680619111886
-pathways,central,carbon_kt,P3,Keep and reuse,506.6767164537023,0.12612904327712524
-pathways,central,carbon_kt,P4,Build better,825.597336902093,0.2055192173905992
-pathways,central,LoE_AR,P1,Right-size space,0.2773840905552348,0.30734493314115674
-pathways,central,LoE_AR,P2,Occupy the existing stock,0.32581485432714946,0.3610068061911191
-pathways,central,LoE_AR,P3,Keep and reuse,0.11383363182356036,0.12612904327712515
-pathways,central,LoE_AR,P4,Build better,0.18548463000472667,0.20551921739059906
-pathways,stretch,carbon_kt,P1,Right-size space,2371.3316566027356,0.33893516014299824
-pathways,stretch,carbon_kt,P2,Occupy the existing stock,2111.9047398370926,0.3018551914534485
-pathways,stretch,carbon_kt,P3,Keep and reuse,936.3988451017043,0.13383977379906184
-pathways,stretch,carbon_kt,P4,Build better,1576.781582261169,0.2253698746044914
-pathways,stretch,LoE_AR,P1,Right-size space,0.5327604090801655,0.33893516014299824
-pathways,stretch,LoE_AR,P2,Occupy the existing stock,0.474475693857969,0.3018551914534485
-pathways,stretch,LoE_AR,P3,Keep and reuse,0.21037809299661123,0.1338397737990618
-pathways,stretch,LoE_AR,P4,Build better,0.3542510801711371,0.22536987460449143
+level,setting,metric,player,name,reduction,share_of_reference_minus_P5
+pathways,moderate,carbon_kt,P1,Right-sized dwellings,1234.6444363372584,0.30734493314115674
+pathways,moderate,carbon_kt,P2,Occupied stock,1450.2111363555186,0.36100680619111886
+pathways,moderate,carbon_kt,P3,Retained stock,506.6767164537023,0.12612904327712524
+pathways,moderate,carbon_kt,P4,Low-carbon materials,825.597336902093,0.2055192173905992
+pathways,moderate,LoE_AR,P1,Right-sized dwellings,0.2773840905552348,0.30734493314115674
+pathways,moderate,LoE_AR,P2,Occupied stock,0.32581485432714946,0.3610068061911191
+pathways,moderate,LoE_AR,P3,Retained stock,0.11383363182356036,0.12612904327712515
+pathways,moderate,LoE_AR,P4,Low-carbon materials,0.18548463000472667,0.20551921739059906
+pathways,ambitious,carbon_kt,P1,Right-sized dwellings,2371.3316566027356,0.33893516014299824
+pathways,ambitious,carbon_kt,P2,Occupied stock,2111.9047398370926,0.3018551914534485
+pathways,ambitious,carbon_kt,P3,Retained stock,936.3988451017043,0.13383977379906184
+pathways,ambitious,carbon_kt,P4,Low-carbon materials,1576.781582261169,0.2253698746044914
+pathways,ambitious,LoE_AR,P1,Right-sized dwellings,0.5327604090801655,0.33893516014299824
+pathways,ambitious,LoE_AR,P2,Occupied stock,0.474475693857969,0.3018551914534485
+pathways,ambitious,LoE_AR,P3,Retained stock,0.21037809299661123,0.1338397737990618
+pathways,ambitious,LoE_AR,P4,Low-carbon materials,0.3542510801711371,0.22536987460449143

@@ -1,0 +1,45 @@
+{
+ "figure": "D28_pathways_annual",
+ "producer": "pathways.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{1000}$",
+  "$\\mathdefault{1200}$",
+  "$\\mathdefault{1400}$",
+  "$\\mathdefault{1600}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{400}$",
+  "$\\mathdefault{600}$",
+  "$\\mathdefault{800}$",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "P1 Right-sized dwellings, Ambitious",
+  "P1 Right-sized dwellings, Moderate",
+  "P2 Occupied stock, Ambitious",
+  "P2 Occupied stock, Moderate",
+  "P3 Retained stock, Ambitious",
+  "P3 Retained stock, Moderate",
+  "P4 Low-carbon materials, Ambitious",
+  "P4 Low-carbon materials, Moderate",
+  "P5 Combined, Ambitious",
+  "P5 Combined, Moderate",
+  "Reference"
+ ],
+ "note": "Reference variant; Moderate solid, Ambitious dashed. Construction (A1\u2013A5 and soil) in the construction year plus maintenance (B2, B4) within 2026\u20132050. 2026 is observed and identical in every run; the levers follow the adopted logistic adoption path (full roll-out by 2035 (adopted))."
+}

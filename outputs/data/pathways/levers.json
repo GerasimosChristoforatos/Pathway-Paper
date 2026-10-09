@@ -1,10 +1,11 @@
 {
-  "ramp": {
+  "adoption": {
     "form": "normalised logistic",
     "k": 0.7324081924454066,
     "mid": 2030.5,
     "start": 2026,
     "end": 2035,
+    "adopted": "by2035",
     "basis": "full roll-out by 2035 following RECC (Pauliuk et al. 2024, J. Ind. Ecol. 28, 1699: circular-economy strategies fully implemented by 2035)",
     "w": {
       "2025": 0.0,
@@ -35,18 +36,18 @@
       "2050": 1.0
     },
     "sensitivity": {
-      "name": "ramp2045",
+      "name": "by2045",
       "mid": 2035.5,
       "end": 2045
     },
     "sensitivities": [
       {
-        "name": "ramp2030",
+        "name": "by2030",
         "mid": 2028.5,
         "end": 2030
       },
       {
-        "name": "ramp2045",
+        "name": "by2045",
         "mid": 2035.5,
         "end": 2045
       }
@@ -110,8 +111,8 @@
   },
   "L1": {
     "f": {
-      "central": 0.25,
-      "stretch": 0.5
+      "moderate": 0.25,
+      "ambitious": 0.5
     },
     "size_ref": {
       "Detached": 179.60009343759657,
@@ -134,7 +135,7 @@
       "2050": 2.6517520693175007
     },
     "implied": {
-      "central": {
+      "moderate": {
         "Detached": {
           "2035": {
             "size_m2": 158.86703261619536,
@@ -178,7 +179,7 @@
           }
         }
       },
-      "stretch": {
+      "ambitious": {
         "Detached": {
           "2035": {
             "size_m2": 138.13397179479415,
@@ -229,38 +230,38 @@
       "Pauliuk2024_LEMD_EU_UK": -17.24137931034484
     }
   },
-  "L4": {
+  "denser_mix_pathways_v2": {
     "removed": true,
     "note": {
-      "text": "L4 evaluated in pathways_v2 and removed: within the embodied-carbon scope a denser mix raises A1-A3 per m2 (attached typologies carry more per m2), while its benefits (infrastructure, operational energy, land) are outside the scope.",
+      "text": "The denser typology mix (lever of pathways_v2, removed in pathways_v3.1) was not carried forward: within the embodied-carbon scope a denser mix raises A1-A3 per m2 (attached typologies carry more per m2), while its benefits (infrastructure, operational energy, land) are outside the scope.",
       "tag": "pathways_v2",
       "attached_share": {
         "baseline": 0.3940321454268726,
-        "central": 0.4139242880995848,
-        "stretch": 0.5540321454268726
+        "moderate": 0.4139242880995848,
+        "ambitious": 0.5540321454268726
       },
       "carbon_kt": {
-        "P0": 21577.50362382947,
-        "central": 21493.26802626376,
-        "stretch": 20944.022039096093
+        "REF": 21577.50362382947,
+        "moderate": 21493.26802626376,
+        "ambitious": 20944.022039096093
       },
-      "carbon_vs_P0_pct": {
-        "central": -0.3903862051617746,
-        "stretch": -2.935842791534893
+      "carbon_vs_reference_pct": {
+        "moderate": -0.3903862051617746,
+        "ambitious": -2.935842791534893
       },
       "floor_area_Mm2": {
-        "P0": 89.56525459310168,
-        "central": 88.84679781127117,
-        "stretch": 84.1634942040968
+        "REF": 89.56525459310168,
+        "moderate": 88.84679781127117,
+        "ambitious": 84.1634942040968
       },
       "carbon_per_m2_kg": {
-        "P0": 240.9137753457731,
-        "central": 241.9138174447195,
-        "stretch": 248.84924559223688
+        "REF": 240.9137753457731,
+        "moderate": 241.9138174447195,
+        "ambitious": 248.84924559223688
       },
-      "shapley_share_of_P0_minus_P5": {
-        "central": 0.016744,
-        "stretch": 0.058045
+      "shapley_share_of_reference_minus_P5": {
+        "moderate": 0.016744,
+        "ambitious": 0.058045
       }
     },
     "baseline_shares": {
@@ -269,11 +270,11 @@
       "Apartments": 0.04879135546737345
     }
   },
-  "L2a": {
+  "L2": {
     "v0": 0.05387454644033866,
     "v_star": {
-      "central": 0.047,
-      "stretch": 0.04
+      "moderate": 0.047,
+      "ambitious": 0.04
     },
     "floor": 0.04,
     "census_consistent": {
@@ -293,19 +294,19 @@
     "consistent_empty_share": 0.491875837167317,
     "census_consistent_midpoint": 0.04698601824268303
   },
-  "L2b": {
+  "L3": {
     "absorption": {
-      "central": 0.1,
-      "stretch": 0.2
+      "moderate": 0.1,
+      "ambitious": 0.2
     },
     "O26": 38862.6,
     "rho": 0.5180189643073912,
     "gap_ref": "2027"
   },
-  "L3": {
+  "L4": {
     "d": {
-      "central": 0.2,
-      "stretch": 0.4
+      "moderate": 0.2,
+      "ambitious": 0.4
     },
     "demolition_rate": 0.00135,
     "long_run_residual": -0.0003445235477355917,
@@ -429,7 +430,7 @@
     },
     "pooled_check_max_abs": 2.842170943040401e-14,
     "estimator": {
-      "central": {
+      "moderate": {
         "q": 0.25,
         "r": 0.9157935246093193,
         "ci_lo": 0.7430549302010314,
@@ -452,7 +453,7 @@
           2.8328339674033032e-11
         ]
       },
-      "stretch": {
+      "ambitious": {
         "q": 0.15,
         "r": 0.8269665220200395,
         "ci_lo": 0.6063414810329825,
@@ -477,24 +478,24 @@
       }
     },
     "r": {
-      "central": {
+      "moderate": {
         "Detached": 0.9157935246093193,
         "Townhouses": 0.9157935246093193,
         "Apartments": 0.9157935246093193
       },
-      "stretch": {
+      "ambitious": {
         "Detached": 0.8269665220200395,
         "Townhouses": 0.8269665220200395,
         "Apartments": 0.8269665220200395
       }
     },
     "r_apartments_held": {
-      "central": {
+      "moderate": {
         "Detached": 0.9157935246093193,
         "Townhouses": 0.9157935246093193,
         "Apartments": 1.0
       },
-      "stretch": {
+      "ambitious": {
         "Detached": 0.8269665220200395,
         "Townhouses": 0.8269665220200395,
         "Apartments": 1.0
@@ -508,24 +509,24 @@
     }
   },
   "diagnostics": {
-    "end_of_ramp_step_P2-central": {
+    "end_of_ramp_step_P2-moderate": {
       "w_2035_minus_w_2034": 0.03857022955569278,
       "carbon_2035_kt": 826.9958739047759,
       "carbon_2036_kt": 825.976007981736,
       "carbon_step_kt": -1.0198659230399016,
       "carbon_step_pct": -0.12332176679726858,
-      "P0_carbon_step_kt": -26.349644193505924,
-      "step_relative_to_P0_kt": 25.329778270466022,
+      "reference_carbon_step_kt": -26.349644193505924,
+      "step_relative_to_reference_kt": 25.329778270466022,
       "dwellings_step": 188.29382017077296
     },
-    "end_of_ramp_step_P2-stretch": {
+    "end_of_ramp_step_P2-ambitious": {
       "w_2035_minus_w_2034": 0.03857022955569278,
       "carbon_2035_kt": 803.5304037017268,
       "carbon_2036_kt": 826.4077584023065,
       "carbon_step_kt": 22.877354700579758,
       "carbon_step_pct": 2.847105049813625,
-      "P0_carbon_step_kt": -26.349644193505924,
-      "step_relative_to_P0_kt": 49.22699889408568,
+      "reference_carbon_step_kt": -26.349644193505924,
+      "step_relative_to_reference_kt": 49.22699889408568,
       "dwellings_step": 881.7170531419033
     }
   },
@@ -533,45 +534,45 @@
   "identity_max_rel_diff": 4.376097045698541e-16,
   "identity_checks": {
     "annual_carbon": 0.0,
-    "gfa_by_typology": 0.0,
+    "floor_area_by_typology": 0.0,
     "carbon_kt": 0.0,
     "upfront_kt": 2.220446049250313e-16,
-    "soil_kt": 2.220446049250313e-16,
-    "b_inwindow_kt": 2.220446049250313e-16,
-    "gfa_Mm2": 2.220446049250313e-16,
+    "soil_carbon_loss_kt": 2.220446049250313e-16,
+    "maintenance_kt": 2.220446049250313e-16,
+    "floor_area_Mm2": 2.220446049250313e-16,
     "annual_carbon_json": 0.0,
     "committed_lower_kt": 0.0,
     "committed_upper_kt": 0.0,
-    "committed_B_lower_kt": 0.0,
-    "committed_B_upper_kt": 0.0,
-    "committed_C_kt": 0.0,
-    "band Growth (net of consolidation) gfa_Mm2": 1.6567287988183632e-16,
-    "band Growth (net of consolidation) carbon_kt": 0.0,
-    "band House-splitting gfa_Mm2": 0.0,
-    "band House-splitting carbon_kt": 0.0,
-    "band Extra space per dwelling gfa_Mm2": 0.0,
-    "band Extra space per dwelling carbon_kt": 1.4725234321221666e-16,
-    "band Vacancy allowance gfa_Mm2": 0.0,
-    "band Vacancy allowance carbon_kt": 1.1661879127551265e-16,
-    "band Demolition replacement gfa_Mm2": 0.0,
-    "band Demolition replacement carbon_kt": 0.0,
-    "band Calibrated stock residual (long run) gfa_Mm2": 1.5380761540638378e-16,
-    "band Calibrated stock residual (long run) carbon_kt": 1.9781027515928695e-16,
-    "band Redevelopment wave (scenario - long run) gfa_Mm2": 0.0,
-    "band Redevelopment wave (scenario - long run) carbon_kt": 2.792735856588957e-16,
-    "band Near-term market excess gfa_Mm2": 1.149045618267832e-16,
-    "band Near-term market excess carbon_kt": 4.376097045698541e-16,
-    "band Housed in RV units (out of scope) gfa_Mm2": 0.0,
-    "band Housed in RV units (out of scope) carbon_kt": 1.7967761019983043e-16,
-    "S1 LoE_AR": 2.220446049250313e-16,
-    "S1 LoE_AtP": 0.0,
-    "S1 carbon vs pb_results": 0.0,
-    "S3-10 LoE_AR": 3.3306690738754696e-16,
-    "S3-10 LoE_AtP": 0.0,
-    "S3-10 carbon vs pb_results": 0.0,
-    "S2 LoE_AR": 2.220446049250313e-16,
-    "S2 LoE_AtP": 0.0,
-    "S2 carbon vs pb_results": 0.0
+    "committed_b2b4_lower_kt": 0.0,
+    "committed_b2b4_upper_kt": 0.0,
+    "committed_c1c4_kt": 0.0,
+    "band Population growth floor_area_Mm2": 1.6567287988183632e-16,
+    "band Population growth carbon_kt": 0.0,
+    "band Smaller households floor_area_Mm2": 0.0,
+    "band Smaller households carbon_kt": 0.0,
+    "band Extra space floor_area_Mm2": 0.0,
+    "band Extra space carbon_kt": 1.4725234321221666e-16,
+    "band Vacancy floor_area_Mm2": 0.0,
+    "band Vacancy carbon_kt": 1.1661879127551265e-16,
+    "band Replacement: demolition (BRANZ rate) floor_area_Mm2": 0.0,
+    "band Replacement: demolition (BRANZ rate) carbon_kt": 0.0,
+    "band Replacement: net unconsented additions (calibrated residual) floor_area_Mm2": 1.5380761540638378e-16,
+    "band Replacement: net unconsented additions (calibrated residual) carbon_kt": 1.9781027515928695e-16,
+    "band Redevelopment floor_area_Mm2": 0.0,
+    "band Redevelopment carbon_kt": 2.792735856588957e-16,
+    "band 2026 overbuild floor_area_Mm2": 1.149045618267832e-16,
+    "band 2026 overbuild carbon_kt": 4.376097045698541e-16,
+    "band Retirement villages (out of scope) floor_area_Mm2": 0.0,
+    "band Retirement villages (out of scope) carbon_kt": 1.7967761019983043e-16,
+    "LOW LoE_AR": 2.220446049250313e-16,
+    "LOW LoE_AtP": 0.0,
+    "LOW carbon vs aesa results": 0.0,
+    "REF LoE_AR": 3.3306690738754696e-16,
+    "REF LoE_AtP": 0.0,
+    "REF carbon vs aesa results": 0.0,
+    "HIGH LoE_AR": 2.220446049250313e-16,
+    "HIGH LoE_AtP": 0.0,
+    "HIGH carbon vs aesa results": 0.0
   },
   "sources": {
     "Pellan2024": "Pellan M, et al. (2024) Building and Environment 256, 111505 (Table 2)",

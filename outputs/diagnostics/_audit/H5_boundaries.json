@@ -1,0 +1,57 @@
+{
+ "figure": "H5_boundaries",
+ "producer": "headline.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Embodied carbon and boundaries (kt CO\u2082e per year, log scale)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "Cumulative level of exceedance, 2026\u20132050 (log scale)",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  " LoE = 1: on the boundary",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "1",
+  "1,000",
+  "10",
+  "100",
+  "18.2",
+  "19.4",
+  "2",
+  "20",
+  "200",
+  "21.0",
+  "4.56",
+  "4.85",
+  "5",
+  "5.25",
+  "50",
+  "500",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Cumulative level of exceedance, 2026\u20132050 (log scale)",
+  "Embodied carbon and boundaries (kt CO\u2082e per year, log scale)",
+  "High replacement",
+  "Low replacement",
+  "Monte Carlo 5\u201395% (a: band; b: whiskers)",
+  "Reference",
+  "Reference (embodied carbon)",
+  "a",
+  "b"
+ ],
+ "note": null
+}

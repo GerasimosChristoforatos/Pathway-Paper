@@ -16,7 +16,7 @@ Two sets. **Headline** (`outputs/headline/`): the figures of the paper, double c
 
 * File: `outputs/headline/H2_floor_area.png` / `.pdf`
 * Panels: (a) annual floor area built: history 1991-2025 (consents x completion rate), Reference projection 2026-2050 with the Monte Carlo 5-95% band, Low and High replacement variants; (b) cumulative floor area 2026-2050 by variant (bar) with the Monte Carlo 5-95% whisker on the Reference
-* Data: data/baseline/projection.json, data/baseline/scenarios.json, data/montecarlo/annual_REF.csv, data/montecarlo/summary_REF.csv
+* Data: data/baseline/annual.csv, data/baseline/variants_annual.csv, data/baseline/scenarios.json, data/montecarlo/annual_REF.csv, data/montecarlo/summary_REF.csv
 * Draft caption: New residential floor area. History is consented floor area converted to built floor area; the Reference projection builds {gfa_ref:.1f} million m2 in 2026-2050 (Monte Carlo 90% interval {gfa_p5:.1f}-{gfa_p95:.1f}); Low and High replacement bracket the replacement assumption ({gfa_low:.1f} and {gfa_high:.1f}).
 * Replaces (v3.1): boss_03_cumulative_gfa, fig_scenarios, mc_1_fan
 
@@ -24,7 +24,7 @@ Two sets. **Headline** (`outputs/headline/`): the figures of the paper, double c
 
 * File: `outputs/headline/H3_demand_bands.png` / `.pdf`
 * Panels: annual floor area by demand band: history as one bar per census interval (interval means, one vacancy definition), Reference projection annual 2026-2050; bands stacked (they sum to the total; no separate total line); untargeted bands grey and hatched; retirement villages removed in proportion (out of scope, noted)
-* Data: data/baseline/projection.json (bands), history by census interval from the Boss state
+* Data: data/baseline/bands_annual.csv (Reference, 2026-2050), data/baseline/bands_history.csv (census intervals)
 * Draft caption: Floor area by reason for building. Bands sum to the in-scope total. Population growth and smaller households are untargeted; extra space, vacancy and the 2026 overbuild, replacement and redevelopment are the bands the pathways act on.
 * Replaces (v3.1): diag_4_floor_area, boss_04_annual_gfa, fig_bridge
 
@@ -32,7 +32,7 @@ Two sets. **Headline** (`outputs/headline/`): the figures of the paper, double c
 
 * File: `outputs/headline/H4_carbon_components.png` / `.pdf`
 * Panels: (a) annual embodied carbon of the Reference by component (materials and construction A1-A5, soil carbon loss, maintenance B2/B4 within 2026-2050), stacked, with the Monte Carlo 5-95% band of the total; (b) cumulative 2026-2050 by material (Pride-stripe order) with committed after 2050 as a hatched companion range
-* Data: data/baseline/projection.json (stages, materials, committed), data/montecarlo/annual_REF.csv
+* Data: data/baseline/annual.csv (components), data/baseline/projection.json (materials, committed), data/montecarlo/annual_REF.csv
 * Draft caption: Embodied carbon of new residential construction. Materials and construction (A1-A5) and soil carbon loss are counted in the construction year, maintenance (B2, B4) in the year it occurs within 2026-2050; later events and end of life are committed after 2050 (b, hatched).
 * Replaces (v3.1): boss_05_annual_carbon, boss_06_cumulative_carbon, boss_10_material_flows, diag_5_carbon
 
@@ -48,7 +48,7 @@ Two sets. **Headline** (`outputs/headline/`): the figures of the paper, double c
 
 * File: `outputs/headline/H6_committed.png` / `.pdf`
 * Panels: cumulative carbon within 2026-2050 (materials and construction, soil, maintenance) and the emissions committed after 2050 (later B2/B4 and C1-C4, lower-upper range, hatched) for Low, Reference and High, in kt and in years of the 2050 AR boundary; cumulative AR and AtP budgets as lines
-* Data: data/aesa/results.json (committed), data/baseline/scenarios.json
+* Data: data/aesa/results.json (committed, budgets), data/baseline/scenarios.json
 * Draft caption: Lock-in. The 2026-2050 cohorts commit {com_lo:,.0f}-{com_hi:,.0f} kt after 2050 (Reference), equal to {yrs_lo:.0f}-{yrs_hi:.0f} years of the 2050 acquired-rights boundary.
 * Replaces (v3.1): pb_6_committed
 
@@ -79,16 +79,16 @@ Two sets. **Headline** (`outputs/headline/`): the figures of the paper, double c
 ### H10. Solution space: demand and intensity
 
 * File: `outputs/headline/H10_solution_space.png` / `.pdf`
-* Panels: cumulative LoE AR over uniform cuts of 2027-2050 floor area (demand) and of non-soil carbon per m2 (intensity) applied to the Reference, with the LoE = 1 contour and 2, 3, 5, 10 contours; P1-P5 (Moderate open, Ambitious filled) and TL at their effective coordinates; back-cast points
-* Data: data/pathways/solution_space.csv, data/pathways/backcast.json
+* Panels: cumulative LoE AR over uniform cuts of 2027-2050 floor area (demand) and of non-soil carbon per m2 (intensity) applied to the Reference: (a) the whole plane with the LoE = 1 contour and 2, 3, 5, 10 contours, P1-P5 (Moderate open, Ambitious filled) and TL at their effective coordinates, back-cast points; (b) zoom on the P1-P5 markers
+* Data: data/pathways/solution_space.csv, data/pathways/backcast.json, data/pathways/theoretical_limit.json (TL marker)
 * Draft caption: Solution space (after Horup et al. 2025, Fig. 6). Markers sit at each run's effective reductions of 2027-2050 floor area and non-soil carbon per m2; TL also lowers soil carbon (TL5, TL6), which the plane does not show.
 * Replaces (v3.1): pw_3_solution_space
 
 ### H11. What moves the cumulative level of exceedance
 
 * File: `outputs/headline/H11_sensitivity.png` / `.pdf`
-* Panels: tornado of the cumulative LoE AR 2026-2050 (Reference), the largest parameters with both ends of paired parameters: model-input rows and AESA-method rows on one axis (see the note on population rows in docs/FIGURE_PLAN.md)
-* Data: data/baseline/sensitivity_one_at_a_time.csv, data/aesa/sensitivity.csv
+* Panels: tornado of the cumulative LoE AR 2026-2050 (Reference), the largest parameters with both ends of paired parameters: model-input rows (boundaries as adopted, as the AESA sensitivity rows) and AESA-method rows on one axis; the population rows move carbon and boundaries together
+* Data: data/baseline/sensitivity_one_at_a_time.csv, data/aesa/sensitivity.csv, data/aesa/results.json (population paths)
 * Draft caption: One-at-a-time sensitivities of the cumulative acquired-rights level of exceedance; bars are not additive and not a joint interval.
 * Replaces (v3.1): sens_1_tornado, pb_4_sensitivity
 

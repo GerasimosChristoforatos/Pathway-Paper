@@ -44,7 +44,7 @@ def groups():
                                                              for k in S.SCENARIO},
                                                             **{'Acquired rights (AR)': S.AR,
                                                                'Ability to pay (AtP)': S.ATP}),
-        'Materials (diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
+        'Materials (H4b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
     }
 
 
@@ -109,7 +109,6 @@ def preview(G, path):
 
 
 def main():
-    import naming as N
     G = groups()
     os.makedirs(DOCS, exist_ok=True)
     preview(G, os.path.join(DOCS, 'palette_preview'))
@@ -139,7 +138,7 @@ def main():
          f"lines {S.LW:g} pt, emphasised lines {S.LW_BOLD:g} pt, grid and edges {S.LW_THIN:g} pt.",
          f"* **Files**: PNG at {S.DPI} dpi for every figure; vector PDF (TrueType fonts embedded) for the "
          'headline figures; no software or date metadata, so re-runs are byte-identical.',
-         '* **Materials** (diagnostics only): the six stripes of the Pride flag in one order in every figure '
+         '* **Materials** (H4b and the diagnostics): the six stripes of the Pride flag in one order in every figure '
          '(author decision, baseline-pb-v2), soil carbon loss faded and hatched on top; kept because the '
          'material figures label every layer directly (see the check below).', '',
          '## Colour table', '', '| group | element | colour | lightness J\' |', '|---|---|---|---|']
@@ -163,6 +162,13 @@ def main():
         L += ['', 'Groups below the threshold: ' + '; '.join(fails) + '. They are labelled directly in every '
               'figure (text on or beside each layer) and, where noted, carry a hatch, so the reading never '
               'depends on colour alone.']
+    seq = [lightness(h) for h in S.SEQUENTIAL]
+    mono = all(a > b for a, b in zip(seq, seq[1:]))
+    if not mono:
+        fails.append('sequential ramp')
+    L += ['', '## Sequential ramp', '', 'Continuous fields (the solution space, H10) use one blue ramp, light to dark; '
+          'its CAM02-UCS lightness J\' must fall strictly so the order survives greyscale: '
+          + ', '.join(f'`{h}` {j:.0f}' for h, j in zip(S.SEQUENTIAL, seq)) + f" ({'monotone' if mono else 'NOT monotone'})."]
     L += ['', '## Sources', '',
           '* Luo MR, Cui G, Li C (2006) Uniform colour spaces based on CIECAM02 colour appearance model. '
           'Color Research & Application 31, 320-330.',

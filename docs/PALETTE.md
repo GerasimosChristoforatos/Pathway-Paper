@@ -12,7 +12,7 @@ One palette for every figure; `style.py` is the only place colours are defined, 
 * **Typeface**: Liberation Sans only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open Font License 1.1, registered by style.py, so every machine renders the same glyphs.
 * **Sizes** (Nature Cities): width 89 mm (single column) or 183 mm (double column), page depth at most 247 mm; text 7 pt, legends and ticks 6 pt, never below 5 pt; data lines 1 pt, emphasised lines 1.5 pt, grid and edges 0.5 pt.
 * **Files**: PNG at 300 dpi for every figure; vector PDF (TrueType fonts embedded) for the headline figures; no software or date metadata, so re-runs are byte-identical.
-* **Materials** (diagnostics only): the six stripes of the Pride flag in one order in every figure (author decision, baseline-pb-v2), soil carbon loss faded and hatched on top; kept because the material figures label every layer directly (see the check below).
+* **Materials** (H4b and the diagnostics): the six stripes of the Pride flag in one order in every figure (author decision, baseline-pb-v2), soil carbon loss faded and hatched on top; kept because the material figures label every layer directly (see the check below).
 
 ## Colour table
 
@@ -48,13 +48,13 @@ One palette for every figure; `style.py` is the only place colours are defined, 
 | Projection variants and boundaries (H2, H5) | High replacement | `#6E6E6E` | 49 |
 | Projection variants and boundaries (H2, H5) | Acquired rights (AR) | `#1F5FA8` | 41 |
 | Projection variants and boundaries (H2, H5) | Ability to pay (AtP) | `#C2571A` | 55 |
-| Materials (diagnostics) | Timber | `#750787` | 32 |
-| Materials (diagnostics) | Steel | `#004DFF` | 42 |
-| Materials (diagnostics) | Concrete | `#008026` | 47 |
-| Materials (diagnostics) | Plastics & paint | `#FFED00` | 94 |
-| Materials (diagnostics) | Plasterboard | `#FF8C00` | 74 |
-| Materials (diagnostics) | Others | `#E40303` | 54 |
-| Materials (diagnostics) | Soil carbon loss | `#B5A48B` | 71 |
+| Materials (H4b, diagnostics) | Timber | `#750787` | 32 |
+| Materials (H4b, diagnostics) | Steel | `#004DFF` | 42 |
+| Materials (H4b, diagnostics) | Concrete | `#008026` | 47 |
+| Materials (H4b, diagnostics) | Plastics & paint | `#FFED00` | 94 |
+| Materials (H4b, diagnostics) | Plasterboard | `#FF8C00` | 74 |
+| Materials (H4b, diagnostics) | Others | `#E40303` | 54 |
+| Materials (H4b, diagnostics) | Soil carbon loss | `#B5A48B` | 71 |
 
 ## Colour-vision-deficiency check
 
@@ -67,7 +67,11 @@ Minimum pairwise distance within each group (CAM02-UCS, Luo, Cui & Li 2006) afte
 | Demand bands (H3, H7) | 19.5 (Population growth / Maintenance (B2, B4), 2026–2050) | 13.8 (Extra space / 2026 overbuild) | 14.7 (Smaller households / Replacement) | 14.1 (Population growth / Maintenance (B2, B4), 2026–2050) | yes |
 | Carbon components (H4) | 17.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 13.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 16.3 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 11.4 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | yes |
 | Projection variants and boundaries (H2, H5) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | yes |
-| Materials (diagnostics) | 25.9 (Plasterboard / Soil carbon loss) | 12.8 (Concrete / Others) | 13.0 (Concrete / Others) | 16.5 (Steel / Concrete) | yes |
+| Materials (H4b, diagnostics) | 25.9 (Plasterboard / Soil carbon loss) | 12.8 (Concrete / Others) | 13.0 (Concrete / Others) | 16.5 (Steel / Concrete) | yes |
+
+## Sequential ramp
+
+Continuous fields (the solution space, H10) use one blue ramp, light to dark; its CAM02-UCS lightness J' must fall strictly so the order survives greyscale: `#EAF2FB` 96, `#C6DBF2` 88, `#9EC5F4` 80, `#6DA7EC` 69, `#3987E5` 57, `#256ABF` 46, `#184F95` 35, `#0D366B` 24 (monotone).
 
 ## Sources
 

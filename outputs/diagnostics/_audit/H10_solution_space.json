@@ -1,0 +1,73 @@
+{
+ "figure": "H10_solution_space",
+ "producer": "headline.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "Demand reduction:\ncut of 2027\u20132050 floor area (%)",
+   "ylabel": "Intensity reduction:\ncut of non-soil carbon per m\u00b2 (%)",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "",
+   "xlabel": "Demand reduction:\ncut of 2027\u20132050 floor area (%)",
+   "ylabel": "Intensity reduction:\ncut of non-soil carbon per m\u00b2 (%)",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Cumulative level of exceedance, 2026\u20132050, AR (log scale)",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{100}$",
+  "$\\mathdefault{10}$",
+  "$\\mathdefault{12}$",
+  "$\\mathdefault{14}$",
+  "$\\mathdefault{15}$",
+  "$\\mathdefault{20}$",
+  "$\\mathdefault{25}$",
+  "$\\mathdefault{2}$",
+  "$\\mathdefault{30}$",
+  "$\\mathdefault{35}$",
+  "$\\mathdefault{40}$",
+  "$\\mathdefault{4}$",
+  "$\\mathdefault{5}$",
+  "$\\mathdefault{60}$",
+  "$\\mathdefault{6}$",
+  "$\\mathdefault{80}$",
+  "$\\mathdefault{8}$",
+  "$\\mathdefault{\u22122}$",
+  "$\\mathdefault{\u22125}$",
+  "0.25",
+  "0.5",
+  "1",
+  "2",
+  "3",
+  "3.5",
+  "4",
+  "4.5",
+  "5",
+  "Back-cast to LoE AR = 1 (a)",
+  "Cumulative level of exceedance, 2026\u20132050, AR (log scale)",
+  "Demand reduction:\ncut of 2027\u20132050 floor area (%)",
+  "Intensity reduction:\ncut of non-soil carbon per m\u00b2 (%)",
+  "LoE AR = 1",
+  "Moderate (open) / Ambitious (filled)",
+  "P1 Right-sized dwellings",
+  "P2 Occupied stock",
+  "P3 Retained stock",
+  "P4 Low-carbon materials",
+  "P5 Combined",
+  "TL Theoretical limit (a)",
+  "a",
+  "b"
+ ],
+ "note": null
+}

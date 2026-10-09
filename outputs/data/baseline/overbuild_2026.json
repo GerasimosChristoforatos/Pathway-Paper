@@ -1,0 +1,45 @@
+{
+  "mode": "market_excess",
+  "near_mode": "surplus",
+  "gap_ref_basis": "2027",
+  "surplus_2026_2028": 24602.629042152665,
+  "limitation": "The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); implied stock vacancy rises to \u22486.4% because the 2026 overbuild is not absorbed. The 2026 overbuild (\u224827,500 dwellings over 2026-2050, of which \u224824,600 in 2026-2028) is not absorbed by later demand, so the implied stock vacancy stays about 1 percentage point above the 1986-2023 range on a consistent definition (4.0-5.4%). Absorption is not modelled: the persistence rho = 0.52 (lag-1 autocorrelation of the annual departure of building from the calibrated stock identity, 1992-2023) describes how a flow deviation fades (already used for the excess), not a payback of the stock, and the eight census vacancy observations do not identify a mean-reversion rate.",
+  "vacancy": {
+    "peak": 0.0651592557250733,
+    "peak_year": 2031,
+    "v_2050": 0.06363416985835924,
+    "v_forward": 0.05387454644033866,
+    "census_min": 0.05075373310444933,
+    "census_max": 0.08090044277034486,
+    "census_years": "1986-2023",
+    "consistent_share": 0.491875837167317,
+    "consistent": {
+      "1986": 0.04421960198496479,
+      "1991": 0.046416698373295526,
+      "1996": 0.040132499944037336,
+      "2001": 0.04811303160582413,
+      "2006": 0.04803369656611718,
+      "2013": 0.05220157081378557,
+      "2018": 0.05079172543256766,
+      "2023": 0.053839536541328725
+    },
+    "consistent_min": 0.040132499944037336,
+    "consistent_max": 0.053839536541328725,
+    "consistent_years": "1986-2023"
+  },
+  "redevelopment_sensitivity": {
+    "peak_removals": 23041.090364617223,
+    "peak_year": 2026,
+    "default_peak_removals": 6281.41495965741
+  },
+  "nowcast_method": "last_12_months",
+  "consents_2026": 40908.0,
+  "O26": 38862.6,
+  "R26": 22102.924595040186,
+  "R27": 28888.88873676696,
+  "e26": 16759.675404959813,
+  "gap_ref": 9973.711263233039,
+  "rho": 0.5180189643073912,
+  "overbuild_2026_dwellings_2026_2050": 27479.123839651176,
+  "scenario": "REF"
+}

@@ -1,0 +1,21 @@
+level,setting,metric,player,name,reduction,share_of_reference_minus_P5
+levers,moderate,carbon_kt,L1,Dwelling size,1234.6444363372584,0.30734493314115674
+levers,moderate,carbon_kt,L2,Vacancy rate,641.8232369957458,0.15977160229879656
+levers,moderate,carbon_kt,L3,Overbuild absorption,808.387899359773,0.20123520389232233
+levers,moderate,carbon_kt,L4,Building retention,506.6767164537025,0.1261290432771253
+levers,moderate,carbon_kt,L5,Material carbon,825.5973369020927,0.2055192173905991
+levers,moderate,LoE_AR,L1,Dwelling size,0.27738409055523483,0.3073449331411568
+levers,moderate,LoE_AR,L2,Vacancy rate,0.1441966202183981,0.15977160229879653
+levers,moderate,LoE_AR,L3,Overbuild absorption,0.18161823410875108,0.20123520389232227
+levers,moderate,LoE_AR,L4,Building retention,0.11383363182356049,0.1261290432771253
+levers,moderate,LoE_AR,L5,Material carbon,0.18548463000472673,0.2055192173905991
+levers,ambitious,carbon_kt,L1,Dwelling size,2371.331656602736,0.3389351601429983
+levers,ambitious,carbon_kt,L2,Vacancy rate,1225.2680096229399,0.1751279319800418
+levers,ambitious,carbon_kt,L3,Overbuild absorption,886.6367302141531,0.12672725947340674
+levers,ambitious,carbon_kt,L4,Building retention,936.398845101704,0.13383977379906178
+levers,ambitious,carbon_kt,L5,Material carbon,1576.7815822611685,0.22536987460449137
+levers,ambitious,LoE_AR,L1,Dwelling size,0.5327604090801656,0.33893516014299824
+levers,ambitious,LoE_AR,L2,Vacancy rate,0.27527751515566073,0.1751279319800418
+levers,ambitious,LoE_AR,L3,Overbuild absorption,0.19919817870230833,0.12672725947340674
+levers,ambitious,LoE_AR,L4,Building retention,0.21037809299661117,0.13383977379906178
+levers,ambitious,LoE_AR,L5,Material carbon,0.3542510801711371,0.2253698746044914

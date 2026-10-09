@@ -1,0 +1,47 @@
+{
+ "figure": "D20_sobol",
+ "producer": "MonteCarlo.py",
+ "axes": [
+  {
+   "title": "Embodied carbon, 2026\u20132050",
+   "xlabel": "Share of output variance",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "Built floor area, 2026\u20132050",
+   "xlabel": "Share of output variance",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0.0}$",
+  "$\\mathdefault{0.2}$",
+  "$\\mathdefault{0.4}$",
+  "$\\mathdefault{0.6}$",
+  "$\\mathdefault{0.8}$",
+  "$\\mathdefault{1.0}$",
+  "0.01",
+  "0.02",
+  "0.06",
+  "0.22",
+  "0.23",
+  "0.70",
+  "0.75",
+  "Built floor area, 2026\u20132050",
+  "Carbon factors (case-study bootstrap)",
+  "Completion rate",
+  "Embodied carbon, 2026\u20132050",
+  "First-order effect (on its own)",
+  "Future dwelling size",
+  "Population (with household size)",
+  "Share of output variance",
+  "Total effect (incl. interactions), 95% CI",
+  "a",
+  "b"
+ ],
+ "note": "Reference, 5,000 Latin hypercube draws. Within-scenario parametric uncertainty only; the replacement variant, the carbon-factor and soil bounds are reported separately (D16)."
+}

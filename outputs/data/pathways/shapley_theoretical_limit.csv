@@ -1,0 +1,15 @@
+level,setting,metric,player,name,reduction,share_of_P5_ambitious_from2027_minus_TL
+TL,TL,carbon_kt,TL1,No vacancy,1804.152035230623,0.20430211628902717
+TL,TL,carbon_kt,TL2,No extra space,2825.0725294846225,0.31991111900385083
+TL,TL,carbon_kt,TL3,Minimum space per person,2196.3841359761304,0.24871846629389505
+TL,TL,carbon_kt,TL4,Best-practice materials,722.0268988269602,0.08176230193875816
+TL,TL,carbon_kt,TL5,Lowest-carbon soils,564.6861380350962,0.06394503943504998
+TL,TL,carbon_kt,TL6,Urban infill,718.482700508681,0.08136095703941885
+TL,TL,LoE_AR,TL1,No vacancy,0.40533375989645665,0.20430211628902717
+TL,TL,LoE_AR,TL2,No extra space,0.6347010939185171,0.31991111900385083
+TL,TL,LoE_AR,TL3,Minimum space per person,0.4934554420178524,0.248718466293895
+TL,TL,LoE_AR,TL4,Best-practice materials,0.16221575118556988,0.08176230193875816
+TL,TL,LoE_AR,TL5,Lowest-carbon soils,0.12686644530039112,0.06394503943505
+TL,TL,LoE_AR,TL6,Urban infill,0.16141948612469148,0.08136095703941884
+TL,TL,carbon_kt,from2027,"P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player)",1170.856987127063,
+TL,TL,LoE_AR,from2027,"P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player)",0.26305314387353373,

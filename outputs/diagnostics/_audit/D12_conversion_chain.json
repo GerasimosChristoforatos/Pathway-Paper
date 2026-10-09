@@ -1,0 +1,60 @@
+{
+ "figure": "D12_conversion_chain",
+ "producer": "tools/figures_report.py",
+ "axes": [
+  {
+   "title": "Conversion chain, Reference",
+   "xlabel": "",
+   "ylabel": "Index, 2027 = 100",
+   "year_min": 2027.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Carbon per m\u00b2 of new floor area",
+   "xlabel": "",
+   "ylabel": "Carbon intensity (kg CO\u2082e per m\u00b2)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{100}$",
+  "$\\mathdefault{110}$",
+  "$\\mathdefault{120}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{210}$",
+  "$\\mathdefault{220}$",
+  "$\\mathdefault{230}$",
+  "$\\mathdefault{240}$",
+  "$\\mathdefault{250}$",
+  "$\\mathdefault{260}$",
+  "$\\mathdefault{270}$",
+  "$\\mathdefault{280}$",
+  "$\\mathdefault{50}$",
+  "$\\mathdefault{60}$",
+  "$\\mathdefault{70}$",
+  "$\\mathdefault{80}$",
+  "$\\mathdefault{90}$",
+  "Carbon",
+  "Carbon intensity (kg CO\u2082e per m\u00b2)",
+  "Carbon per m\u00b2 of new floor area",
+  "Conversion chain, Reference",
+  "Dwellings built",
+  "Floor area",
+  "High replacement",
+  "Households formed",
+  "Index, 2027 = 100",
+  "Low replacement",
+  "Population growth",
+  "Reference",
+  "a",
+  "b"
+ ],
+ "note": "a: 2026 is not the base year: it is observed building and carries the one-off population shortfall and the 2026 overbuild. b: decarbonisation, maintenance within 2026\u20132050 and the soil-bearing share; typology shares held."
+}

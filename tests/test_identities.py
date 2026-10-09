@@ -5,7 +5,6 @@ assumptions: a test here can only fail if a calculation is inconsistent with
 itself.
 """
 import numpy as np
-import pandas as pd
 import pytest
 
 from conftest import run_boss
@@ -50,7 +49,6 @@ def test_historical_stock_identity(B):
     """Calibration: new households + vacancy allowance + vacancy change
     + demolitions + residual - RV units == in-scope dwellings built, every year."""
     sc, yh = B['stock_cal'], B['years_hist']
-    import Boss
     lhs = (B['d_hh'] + sc['allow'] + sc['change'] + sc['demol'] + sc['uncons'] + sc['rv']).loc[yh[1:]]
     rhs = B['hist_built_units'].loc[yh[1:]]           # completion rate x lagged consents
     assert close(lhs, rhs)
@@ -59,7 +57,6 @@ def test_historical_stock_identity(B):
 def test_history_reconstructed_by_demand_bands(B):
     """Sum of the historical demand bands == dwellings built x realised dwelling size, 1992-2025
     (== built floor area exactly when there is no completion lag)."""
-    import Boss
     YH = np.arange(1992, 2026)
     D = B['blended_dwelling_size'].loc[YH]
     sc = B['stock_cal']
@@ -167,29 +164,31 @@ def test_figure_bands_in_scope_sum_to_total(B):
         assert close(sum(v for _, v, _ in bands), ref, rel=1e-12)
 
 
-def test_total_line_sits_on_top_of_the_stack(B):
-    """boss_04-06, diag_4: the plotted total line equals the top of the stacked bands
-    every year (annual floor area, annual and cumulative carbon)."""
+def test_band_stack_is_the_total(B):
+    """The band figures draw no separate total line (MODEL v1.0.0): the stack is the total. The
+    signed stack of plotting.signed_areas reaches exactly the in-scope total every year (annual
+    floor area, annual and cumulative carbon)."""
     import matplotlib.pyplot as plt
-    import Boss
+    import naming as N
+    import plotting
     yrs = np.asarray(B['forecast_years'])[1:]
     cases = [B['fig_bands']['gfa'], B['fig_bands']['carbon'],
              ([(l, np.cumsum(v), c) for l, v, c in B['fig_bands']['carbon'][0]],
               np.cumsum(B['fig_bands']['carbon'][1]))]
     for bands, total in cases:
         fig, ax = plt.subplots()
-        top = Boss.plot_demand_bands(ax, yrs, bands, total)
-        line = ax.get_lines()[-1].get_ydata()
+        up, dn = plotting.signed_areas(ax, yrs, [(b, v) for b, (_, v, _) in zip(N.BANDS_IN_SCOPE, bands)])
+        assert not ax.get_lines()                                  # no total line
         plt.close(fig)
-        assert close(top, line, rel=1e-12)
+        assert close(up + dn, np.asarray(total, float), rel=1e-12)
 
 
 def test_household_size_shape_passes_through_published_knots():
     """S_TAIL interpolation reproduces every published Stats NZ value exactly and is
     flat after the last knot."""
-    import Boss
-    S_k, S_ann, _ = Boss.statsnz_size_shape(Boss.HH_SIZE_VARIANT, np.arange(2025, 2051), tail=Boss.S_TAIL)
+    import projection
+    S_k, S_ann, _ = projection.statsnz_size_shape(projection.HH_SIZE_VARIANT, np.arange(2025, 2051), tail=projection.S_TAIL)
     yrs = S_k['Year'].astype(int).values
     assert close(S_ann.loc[yrs].values, S_k['S'].values, rel=1e-12)
-    if Boss.S_TAIL == 'hermite_clamped':
+    if projection.S_TAIL == 'hermite_clamped':
         assert close(S_ann.loc[yrs[-1]:].values, np.full(len(S_ann.loc[yrs[-1]:]), S_k['S'].values[-1]), rel=1e-12)

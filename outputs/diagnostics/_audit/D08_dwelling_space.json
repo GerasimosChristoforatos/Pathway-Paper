@@ -1,0 +1,56 @@
+{
+ "figure": "D08_dwelling_space",
+ "producer": "projection.py",
+ "axes": [
+  {
+   "title": "New dwellings: realised and occupied floor area",
+   "xlabel": "",
+   "ylabel": "Floor area per dwelling (m\u00b2)",
+   "year_min": 1991.0,
+   "year_max": 2025.0
+  },
+  {
+   "title": "Occupancy utilisation of new dwellings",
+   "xlabel": "",
+   "ylabel": "Occupancy utilisation: household size / design capacity (%)",
+   "year_min": 1991.0,
+   "year_max": 2025.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{100}$",
+  "$\\mathdefault{120}$",
+  "$\\mathdefault{125}$",
+  "$\\mathdefault{150}$",
+  "$\\mathdefault{175}$",
+  "$\\mathdefault{1990}$",
+  "$\\mathdefault{1995}$",
+  "$\\mathdefault{2000}$",
+  "$\\mathdefault{2005}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2010}$",
+  "$\\mathdefault{2015}$",
+  "$\\mathdefault{2020}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{20}$",
+  "$\\mathdefault{225}$",
+  "$\\mathdefault{25}$",
+  "$\\mathdefault{40}$",
+  "$\\mathdefault{50}$",
+  "$\\mathdefault{60}$",
+  "$\\mathdefault{75}$",
+  "$\\mathdefault{80}$",
+  "Floor area per dwelling (m\u00b2)",
+  "New dwellings: realised and occupied floor area",
+  "Occupancy utilisation of new dwellings",
+  "Occupancy utilisation: household size / design capacity (%)",
+  "Occupied area per dwelling (household size \u00d7 occupant load factor)",
+  "Realised new-dwelling size (floor area / consents)",
+  "Space above occupancy (under-utilisation)",
+  "a",
+  "b",
+  "design capacity (bedrooms + 1)"
+ ],
+ "note": null
+}

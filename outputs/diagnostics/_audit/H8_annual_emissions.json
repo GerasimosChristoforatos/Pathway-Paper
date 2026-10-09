@@ -1,0 +1,39 @@
+{
+ "figure": "H8_annual_emissions",
+ "producer": "headline.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{1000}$",
+  "$\\mathdefault{1200}$",
+  "$\\mathdefault{1400}$",
+  "$\\mathdefault{1600}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{400}$",
+  "$\\mathdefault{600}$",
+  "$\\mathdefault{800}$",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "P5 Combined, Ambitious",
+  "P5 Combined, Moderate",
+  "Reference",
+  "TL Theoretical limit",
+  "TL, gradual adoption (SI)"
+ ],
+ "note": null
+}

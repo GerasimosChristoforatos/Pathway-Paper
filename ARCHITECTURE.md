@@ -1,30 +1,51 @@
-# Architecture: how the model works (baseline v2)
+# Architecture: how the model works (MODEL v1.0.0)
 
 This document is for a reviewer who knows statistics or modelling but not this
 code or New Zealand housing data. It describes what each script reads, what it
 calculates and in what order, and what it writes. Headline numbers are not
-repeated here: they are generated into [RESULTS.md](RESULTS.md),
-`outputs/metrics.json` and `outputs/BASELINE_DRAFT.md`. Every setting, with its
-basis (data, literature, author decision, judgement), is in
-[ASSUMPTIONS.md](ASSUMPTIONS.md). Parameter values quoted below are the adopted
-settings in `Boss.py`.
+repeated here: they are generated into `outputs/reports/RESULTS.md` and
+`outputs/data/metrics.json`, and the figures of the paper with their captions into
+`outputs/headline/HEADLINE.md`. Every setting, with its basis (data, literature,
+author decision, judgement), is in `outputs/reports/ASSUMPTIONS.md`; the methods as
+implemented are in `outputs/reports/METHODS_DRAFT.md` (one document in three parts:
+baseline projection, planetary-boundary layer (AESA), pathways and the theoretical
+limit). Every other figure is indexed in `outputs/diagnostics/DIAGNOSTICS.md`, and
+every output file, with the script that writes it, in `outputs/INDEX.md`. Labels
+follow one vocabulary (`naming.py`; `docs/RENAMING.md` maps the earlier names to
+the release names, `docs/FIGURE_PLAN.md` the earlier figure names to the figure ids
+H1–H11 and D01–D34). Parameter values quoted below are the adopted settings in
+`projection.py` unless another module is named.
 
 ---
 
 ## 1. What the model answers
 
 How much new residential floor area New Zealand will build from 2026 to 2050,
-and how much embodied carbon that floor area carries, split by building type
-(detached, townhouses, apartments), by reason for building (household growth,
-vacancy, replacement, ...) and by material and life-cycle stage.
+and how much embodied carbon that floor area carries, split by reason for
+building (the demand bands: population growth, smaller households, extra space,
+vacancy, the 2026 overbuild, replacement, redevelopment) and by material and
+life-cycle stage. Building type (detached houses, townhouses, apartments) is
+internal to the model: it weights the case-study carbon factors and the lever
+parameters, and no result is reported by typology.
 
 The model is bottom-up and demand-driven: people → households → dwellings
 required → floor area → carbon. Construction capacity, prices and policy are not
 modelled. Carbon intensities are the 2025 case-study values; with
 `DECARB_MODE = 'horup_item'` (adopted) the A1–A3 part of each case-study EPD
-item, and with `'horup_class_v1_1'` that of each mapped material class, follows
-the material-specific GWP paths of Horup et al. (2025) from 2026 (section 4.9);
-with `'none'` every factor is held at 2025 (frozen technology).
+item follows the material-specific GWP paths of Horup et al. (2025) from 2026,
+and A4–A5 a generic 1%/yr path after Resch et al. (2021) (section 4.9); with
+`'none'` and `DECARB_A45 = 'held'` every factor is held at 2025 (frozen
+technology). With `ACCOUNTING = 'time_resolved'` (adopted) materials and
+construction (A1–A5) and soil carbon loss are counted in the construction year
+and maintenance (B2, B4) in the year it occurs; later maintenance and end of life
+are committed after 2050 (later B2/B4 and C1–C4), reported as a range
+(section 4.10).
+
+The adopted projection with no interventions is the **Reference**. Its two
+replacement variants, **Low replacement** and **High replacement**, bracket the
+replacement assumption (section 4.4). The planetary-boundary layer (AESA,
+section 9) compares carbon 2026–2050 with two allocations of a global carrying
+capacity; the pathway layer (section 10) changes the inputs the levers act on.
 
 ---
 
@@ -34,6 +55,7 @@ with `'none'` every factor is held at 2025 (frozen technology).
 flowchart LR
     subgraph inputs["data/ (inputs; data/derived built by scripts from data/raw)"]
         BD[building_data.xlsx<br/>16 case-study LCAs]
+        EV[derived/lca_events.csv<br/>replacement / repaint counts]
         CM[derived/consents_monthly.csv<br/>monthly building consents]
         HP[histpopdata.xlsx / derived/population_quarterly.csv<br/>population]
         OH[oldhouseholddata.xlsx<br/>household estimates]
@@ -41,47 +63,68 @@ flowchart LR
         HH[Householddata.xlsx + subnational 2018-base<br/>household size shape]
         CE[occ-unocc-2013.xlsx + derived/census_dwellings.csv<br/>census occupancy]
     end
-    BF[Building_factors.py] --> F[(outputs/factors/*.csv)]
-    BD --> BF
-    F --> BOSS[Boss.py<br/>central run]
-    ENG[engine.py<br/>pure forward model] --- BOSS
+    BF[Building_factors.py] --> F[("outputs/data/factors/*.csv")]
+    BD & EV --> BF
+    EVP[events.py<br/>event kernels, committed] --- PROJ
+    F --> PROJ[projection.py<br/>the Reference]
+    ENG[engine.py<br/>pure forward model] --- PROJ
     ENG --- MC
-    CM & HP & OH & PP & HH & CE --> BOSS
-    BOSS -->|main returns its state| DIAG[Diagnostics.py]
-    BOSS -->|re-run, one setting changed| SENS[Sensitivity.py]
-    BOSS -->|data + settings copied once| MC[MonteCarlo.py]
-    BOSS --> VAL[validation.py, gap_2026.py, tools/]
+    CM & HP & OH & PP & HH & CE --> PROJ
+    PROJ -->|main returns its locals| DIAG[Diagnostics.py]
+    PROJ -->|re-run, one setting changed| SENS[Sensitivity.py]
+    PROJ -->|data + settings copied once| MC[MonteCarlo.py]
+    PROJ --> VAL[validation.py, gap_2026.py, tools/]
+    PROJ & MC --> BND[boundaries.py<br/>AESA layer]
+    PROJ & BND --> PW[levers.py, pathways.py]
+    SENS & MC & VAL & BND & PW --> DATA[("outputs/data/")]
+    DATA --> HL[headline.py<br/>H1-H11]
+    DATA --> REP[tools/ reports, indexes.py]
 ```
 
-`python run_all.py` runs everything in a fixed order (see README), each script
-in its own process, and writes to `outputs/`. **One engine:** the forward model
-is in `engine.py` (stock calibration, census dwelling-count rates, replacement
-path, near-term market excess, typology mix, forward projection). These are pure
-functions; `Boss.py` and `MonteCarlo.py` both call them. `Boss.main()` returns a
-dictionary of all its local variables, which the other scripts read.
+`python run_all.py` runs everything in a fixed order (section 11), each script in
+its own process, and writes to `outputs/` (section 12). **One engine:** the
+forward model is in `engine.py` (stock calibration, census dwelling-count rates,
+replacement path, the 2026 overbuild (`engine.market_excess`), forward
+projection). These are pure functions; `projection.py` and `MonteCarlo.py` both
+call them. `projection.main()` returns a dictionary of all its local variables,
+which the other scripts read; `validation.run_boss(**settings)` is the in-memory
+entry point that runs it silently with settings changed and restores the module
+defaults afterwards.
 
 ---
 
 ## 3. `Building_factors.py`: carbon per square metre
 
 1. Each case study's absolute emissions (by material and EN 15978 stage) are
-   divided by its gross floor area (GFA).
+   divided by its floor area.
 2. Materials are grouped into six lines: concrete, steel, timber, plastics &
    paint, plasterboard, others.
 3. Buildings are pooled into three typologies: equal weight within sub-type,
    then equal weight across sub-types. A_2 duplicates A_1 (scaled by
    1.000073), so apartments have one independent case.
-4. Soil carbon is land-use change, not a material: soil loss per m² of floor =
-   soil loss per m² of footprint (58.77 kg CO₂e/m², area-weighted over the soil
-   orders of Auckland land zoned for urbanisation) / floor space index.
+4. Soil carbon loss is land-use change, not a material: soil loss per m² of
+   floor = soil loss per m² of footprint (58.77 kg CO₂e/m², area-weighted over
+   the soil orders of Auckland land zoned for urbanisation) / floor space index.
 5. Stage D is written out but never added. Stages in scope: A1–A3, A4–A5,
    B2/B4, C1–C4.
+6. Replacement and repaint events (`event_rows`): each line of
+   `data/derived/lca_events.csv` (counts and lifespan from the LCAQuick root
+   tables; stage totals from `building_data.xlsx` and the item table) is split
+   into n events of line B2/B4 / n at k L / (n + 1) years (sensitivity k L / n;
+   a fractional year split linearly), each divided into A1–A3 : A4–A5 : C1–C4
+   in proportion to the line's initial stages and carrying its decarbonisation
+   path (replacements: the item's S4 row; repaints and recoating: the paint
+   path). Pooled per typology like the factors; the pooled events add up to the
+   B2/B4 factor of each typology (tested).
 
-Outputs: `factors_material.csv`, `factors_typology.csv`, `factors_building.csv`.
+Outputs (`outputs/data/factors/`): `factors_material.csv`,
+`factors_typology.csv`, `factors_building.csv`, `factors_a13_decarb.csv`,
+`factors_building_a13_reduction.csv`, `factors_a13_item_coverage.csv`,
+`factors_events.csv`, `factors_building_events.csv`, `factors_a45_item.csv`.
 
 ---
 
-## 4. `Boss.py`: the central projection
+## 4. `projection.py`: the Reference projection
 
 ### 4.1 Consents (history 1991–2025)
 
@@ -123,14 +166,14 @@ vacancy change + net replacement) is still calibrated and printed for
 comparison, and is used by the hindcast with one vacancy definition throughout
 (the pooled 2018/2023 empty share).
 
-### 4.4 Replacement scenarios
+### 4.4 Replacement variants
 
-`engine.replacement_path`: **S1** long-run rate throughout (low); **S3**
-the 2018–2023 rate fading to the long-run rate with a 10-year half-life
-(reference; 5 and 15 years as sensitivities); **S2** the 2018–2023 rate
-persists (high, shares held; with the damped mix trend it is the
-"intensification continues" storyline). The half-life is not identifiable from
-the census record.
+`engine.replacement_path`, set by `REPLACEMENT_VARIANT`, three variants, all with
+typology shares held: **Low replacement** (`LOW`) the long-run rate throughout;
+**Reference** (`REF`) the 2018–2023 rate fading to the long-run rate with a
+10-year half-life (`REPLACEMENT_HALF_LIFE`; 5 and 15 years as sensitivity
+variants); **High replacement** (`HIGH`) the 2018–2023 rate persists. The
+half-life is not identifiable from the census record.
 
 ### 4.5 Population projection
 
@@ -151,195 +194,542 @@ Household decline is floored at zero (it becomes vacancy).
 
 ### 4.7 Typology mix
 
-Storylines: S1 and S3 hold floor-area shares at their 2022–2026 average; S2
-continues a damped additive-log-ratio trend fitted on 2012–2025 (φ = 0.8). 2026
-uses the observed consented mix.
+Floor-area shares are held at their 2022–2026 consented average
+(`MIX_HELD_WINDOW`; ratio of sums of consented floor area over the window, 2026
+being the observed months) in every variant; 2026 uses the observed consented
+mix. The mix is internal to the model: it weights the case-study factors and is
+not reported. (The damped typology-mix trend of earlier versions, never run in a
+reported result, is removed from the code.)
 
-### 4.8 Forward requirement and the near-term market excess
+### 4.8 Forward requirement and the 2026 overbuild
 
 ```
-dwellings built (all categories) = new households + vacancy allowance (v held at the 2023 census)
-                                   + net replacement (scenario rate × last year's stock)
-                                   + near-term market excess
+dwellings built (all categories) = new households + vacancy allowance + vacancy change
+                                   + net replacement (variant rate × last year's stock)
+                                   + 2026 overbuild
 in-scope dwellings              = dwellings built × (1 − RV share)
 floor area                      = in-scope dwellings × blended dwelling size
 ```
+
+Vacancy: the vacancy-rate parameter is held at its published 2023 census value
+(5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum
+4.01% in 1996); implied stock vacancy rises to ≈6.4% because the 2026 overbuild
+is not absorbed (values: `outputs/data/baseline/overbuild_2026.json`, `vacancy`).
 
 2026 building is observed: 0.95 × consents over the latest 12 observed months
 (the year to July 2026). Its excess over the 2026 requirement is booked in
 2026; from 2027 building stays above the requirement by gap_ref × ρ^(t−2026),
 with gap_ref = building 2026 − requirement 2027 and ρ the estimated persistence
-of departures from the calibrated identity. The excess is stock-adding (extra
-vacancy, never absorbed); redevelopment booking, payback and the gap against
-the 2026 requirement are sensitivities. 2026 floor area is fixed to the
-observed consented GFA.
+of departures from the calibrated identity (`OVERBUILD_RULE = 'market_excess'`,
+`OVERBUILD_GAP_REF = '2027'`). The 2026 overbuild is stock-adding
+(`OVERBUILD_BOOKING = 'surplus'`, `OVERBUILD_ABSORPTION = 0`: extra vacancy,
+never absorbed); booking it as redevelopment, payback (absorption 0.20 or 0.10
+a year) and the gap against the 2026 requirement are sensitivities. 2026 floor
+area is fixed to the observed consented floor area of the same months times the
+completion rate; the difference to the modelled floor area is carried in the
+2026 overbuild band.
 
 The floor area is reported in demand bands (bookkeeping; they add up to the
-total): growth (net of consolidation), house-splitting, extra space per
-dwelling, vacancy allowance, long-run background replacement (demolition net of
-unconsented additions), the recent redevelopment wave (scenario − long run),
-and the near-term market excess. In the figures RV units are removed from every
-band in proportion (each band × (1 − RV share)), so all bands are in scope and
-sum exactly to the typology total (tested).
+total), bottom to top: Population growth (at the occupied area per person, net
+of consolidation), Smaller households (from falling household size), Extra space
+(new-dwelling size above the occupied area), Vacancy (the vacancy allowance on
+new households and the change in the vacancy rate), 2026 overbuild, Replacement
+(long-run net replacement: demolition net of unconsented additions) and
+Redevelopment (net replacement above the long-run rate, fading); carbon has one
+further band, Maintenance (B2, B4), 2026–2050. In the figures and the data files
+of the bands RV units are removed from every band in proportion (each band ×
+(1 − RV share)), so all bands are in scope and sum exactly to the in-scope total
+(tested). Population growth and smaller households are untargeted by the
+pathways.
 
 ### 4.9 Carbon
 
-Floor area by typology × intensity, by band, material, soil and stage (all
-stages booked in the year of construction). Upfront = A1–A5 + soil. Soil
+Floor area by typology × intensity, by band, material, soil and stage. Upfront
+= materials and construction (A1–A5) + soil carbon loss. Soil carbon loss
 applies only to floor area on new footprints: zero on the replacement bands
 (land already settled).
 
-**Material decarbonisation** (`DECARB_MODE`). `'none'`: every factor held at its
-2025 value. `'horup_class_v1_1'` (adopted in baseline-pb-v1.1, then
-`'horup_material'`): the A1–A3 factor of each case-study material class is multiplied,
-year by year, by the relative GWP path of its counterpart in Horup et al. (2025)
-SI Table S4 (average of 9 premise scenarios, relative to 2025; linear between
-2025, 2030, 2040 and 2050). `Building_factors.py` does this per case study and
-class before pooling (`factors_a13_decarb.csv`), so OTHERS follows its own
-components (aluminium, bricks, glass, glass wool; the rest held).
-`'horup_item'` (adopted from baseline-pb-v1.2): the same paths applied to each EPD item of the case
-studies (`data/derived/material_items.csv`, built by
+**Material decarbonisation** (`DECARB_MODE`). `'none'`: every A1–A3 factor held
+at its 2025 value. `'horup_item'` (adopted): the A1–A3 factor of each EPD item of
+the case studies (`data/derived/material_items.csv`, built by
 `data/build_material_items.py` from the supplied item table and checked against
-`building_data.xlsx`), mapped one-to-one by `data/material_item_map.csv` to an
-S4 row (direct; by Horup et al. p. 6 for other cementitious and wood-based
-products; or a labelled proxy) or held (the lift); summed per building and
-class, then pooled as before, so the 2025 totals are the class totals.
-`DECARB_ITEM_CASE` selects its sensitivities (proxies held; NZ-made
-electricity-intensive items held; lift at steel profile). A4–A5, B2, B4, C1–C4,
-unmapped classes or held items and soil stay at 2025. The history (1991–2025)
-always uses 2025 factors. The Monte Carlo bootstraps the same reduction per
-case study with the same resampled cases. Coverage by mapping basis:
-`outputs/factors/factors_a13_item_coverage.csv`.
+`building_data.xlsx`) is multiplied, year by year, by the relative GWP path of
+its counterpart in Horup et al. (2025) SI Table S4 (average of 9 premise
+scenarios, relative to 2025; linear between 2025, 2030, 2040 and 2050), mapped
+one-to-one by `data/material_item_map.csv` (direct; by Horup et al. p. 6 for
+other cementitious and wood-based products; a labelled proxy; or held, the
+lift); summed per building and class, then pooled, so the 2025 totals are the
+class totals. `DECARB_ITEM_CASE` selects its sensitivities (proxies held;
+NZ-made electricity-intensive items held). **A4–A5** (`DECARB_A45`): `'resch'`
+(adopted) e^(−0.01 (t − 2025)) after Resch et al. (2021) Table 1; `'held'` and
+`'item'` (each item's S4 path) are sensitivities. C1–C4 and soil carbon loss stay
+at 2025. The history (1991–2025) always uses 2025 factors. The Monte Carlo
+bootstraps the same reductions per case study with the same resampled cases.
+Coverage by mapping basis: `outputs/data/factors/factors_a13_item_coverage.csv`.
+
+### 4.10 Accounting of the later stages (`ACCOUNTING`)
+
+`'time_resolved'` (adopted): the construction year carries materials and
+construction (A1–A5) and soil carbon loss; `events.py` builds per typology a
+kernel K[i, j] (kg/m² of the cohort built in year i occurring in year j, each
+event component at its own factor in year j) and `engine.forward` adds gfa @ K
+to the carbon of year j. Events after 2050 and all C1–C4 of the 2026–2050
+cohorts are committed after 2050 (later B2/B4 and C1–C4; `COMMITTED`): upper
+bound at 2025 factors, lower bound with the 2050 factors held (no extrapolation
+beyond the last source year). At 2025 factors, upfront + maintenance (B2, B4)
+2026–2050 + committed B2/B4 + C1–C4 equals the whole-life total exactly (tested;
+`tools/reconciliation.py`). `'whole_life_at_construction'` books every stage in
+the construction year; with A4–A5 held it reproduces the earlier whole-life
+results exactly (tested against `tests/regression_pb_v2.json`). It is the
+accounting of the frozen-technology check run (section 8) and an AESA
+sensitivity row (section 9).
+
+**Outputs.** `outputs/data/baseline/projection.json` (floor area, carbon by
+stage, material and demand band, committed after 2050, settings),
+`outputs/data/baseline/annual.csv` (history 1991–2025 and the Reference by year:
+floor area, carbon and its components materials and construction (A1–A5), soil
+carbon loss and maintenance (B2, B4), which add up to the annual carbon) and
+`outputs/data/baseline/bands_annual.csv` (the in-scope demand bands by year).
+`projection.figures()` draws D01–D03, D08, D09 and D13 from the returned state,
+never from inside the computation.
 
 ---
 
 ## 5. `Diagnostics.py`
 
-Runs `Boss.main()` once: household engines and the DHE/consent relationship
-(diag_2), the stock bucket (diag_3), floor area (diag_4), carbon (diag_5) and
-the vacancy-definition appendix (diag_3b). The history of the demand
-decomposition is one bar per census interval (interval means, one vacancy
-definition): between censuses annual detail is not identified. Accounting
-identities and factor sums are checked in `tests/test_identities.py`.
+Runs `projection.main()` once: household formation and the DHE/consent
+relationship (D04), the stock and vacancy (D05), and the vacancy-definition
+appendix (D06). The history of the stock identity (D05) and of the demand bands
+(H3; `outputs/data/baseline/bands_history.csv`, written by `validation.py`) is
+one bar per census interval (interval means, one vacancy definition): between
+censuses annual detail is not identified. Accounting identities and factor sums
+are checked in `tests/test_identities.py`.
 
 ## 6. `Sensitivity.py`
 
-Re-runs `Boss.main()` with one setting changed per row: replacement scenarios
-and half-lives, mix, household-size variants and tails, dwelling-size window,
-completion rate and lag, census under-construction correction, near-term
-booking and gap reference, soil on replacement, and the decarbonisation rows of
-the adopted mode (`Sensitivity.DECARB_CASES`: frozen technology, plus STEEL at
-steel profile when the class-level mode is adopted; the item-level
-decarbonisation sensitivities are in the optional mode comparison). Population rows reuse Boss's 5th/95th paths;
-carbon-factor and soil-order rows re-weight the central floor area. Writes `outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`. One-at-a-time
+Re-runs `projection.main()` with one setting changed per row: replacement
+variants and half-lives, household-size variants and tails, dwelling-size
+window, completion rate and lag, census under-construction correction, booking
+and gap reference of the 2026 overbuild, soil on replacement, and the
+decarbonisation rows (`Sensitivity.DECARB_CASES`: frozen technology, proxies
+held, NZ-made electricity-intensive items held, A4–A5 held, A4–A5 on the item
+paths, event timing L / n). Population rows reuse the projection's 5th/95th
+paths; carbon-factor rows (jackknife and single-case extremes of the materials
+factor) and soil-order rows re-weight the Reference floor area. Whole life at
+construction is an accounting convention, not a parameter: it is an AESA
+sensitivity row only. Writes
+`outputs/data/baseline/sensitivity_one_at_a_time.csv`, D16 and D17. One-at-a-time
 ranges are not additive.
 
 ## 7. `MonteCarlo.py`
 
-Within each scenario (S3-10 reference, S1, S2): 5,000 Latin hypercube draws of
-population rank z (moving population between the published percentile levels
-and household size between Stats NZ Low/Medium/High with the same z), a
-dwelling-size multiplier, the completion rate (two-piece uniform with median
-0.95) and a stratified bootstrap of the carbon factors. Each draw runs the same
-`engine.py` chain; the central draw is checked against `Boss.main()` to 1e-9.
-With decarbonised materials (`DECARB_MODE`), the bootstrap also resamples each
-case study's A1–A3 reduction by year with the same resampled cases and
-multipliers, so the random stream and every 2025-factor draw are unchanged.
-Sobol first-order and total indices (reference scenario, 1,024 × 6
-evaluations). This is within-scenario parametric uncertainty only; scenario,
-mix, carbon-factor and soil bounds are reported separately (sens_1).
+Within each variant (Reference, Low replacement, High replacement): 5,000 Latin
+hypercube draws of population rank z (moving population between the published
+percentile levels and household size between Stats NZ Low/Medium/High with the
+same z), a dwelling-size multiplier, the completion rate (two-piece uniform with
+median 0.95) and a stratified bootstrap of the carbon factors. Each draw runs the
+same `engine.py` chain; before sampling, the draw at the median of every input is
+checked against `projection.main()` to 1e-9. With decarbonised materials
+(`DECARB_MODE`), the bootstrap also resamples each case study's reduction by
+year, its event kernel and its event age profile with the same resampled cases
+and multipliers, so the random stream and every 2025-factor draw are unchanged.
+Sobol first-order and total indices (Reference, 1,024 × 6 evaluations). This is
+within-variant parametric uncertainty only; the variant differences and the
+carbon-factor and soil-order bounds are reported separately (D16, D19). Writes
+`outputs/data/montecarlo/` (`draws_<variant>.csv`, `summary_<variant>.csv`,
+`annual_<variant>.csv`, `sobol_REF.csv`) and D20.
 
-## 8. Validation, reports and run modes
+## 8. Validation, frozen-technology check and reports
 
-**Frozen-technology check.** The adopted run decarbonises materials
-(`DECARB_MODE = 'horup_item'`). `run_all.py` also runs Boss, Sensitivity,
-MonteCarlo, the scenario table and PB with `DECARB_MODE = 'none'` (environment
-`PATHWAY_FROZEN=1`) into `outputs/frozen/`; the v1.2.1 regression test compares
-that run, and its own recomputation of the central run and scenario totals
-under `'none'`, with v1.2.1 to 1e-9.
-
-**Mode comparison (optional, `run_all.py --compare-modes`).** Every other
-decarbonisation mode (now `'horup_class_v1_1'`) is run in full (Boss,
-Sensitivity, MonteCarlo, PB; environment `PATHWAY_DECARB_MODE=<mode>`) into
-`outputs/modes/<mode>/`, and `tools/decarb_modes.py` runs the item-level
-decarbonisation sensitivities (a Boss run per case; cumulative LoE against the
-stored reference boundaries) and writes `outputs/DECARB_MODES.md` and
-`decarb_modes.json`, stamped with the UTC time and git commit. The default run
-does not repeat it: RESULTS, BASELINE_DRAFT and PB_METHODS_DRAFT read the stored
-result, state its date and commit, and flag it as stale when the adopted-mode
-carbon differs from the current run. The class-level mode is checked against
-the baseline-PB_v1.1 outputs by `tests/test_regression_pb_v1_1.py` (exact
-equality; its file checks read the stored comparison run).
-
-**Quick mode** (`run_all.py --quick`, development only): 1,000 Monte Carlo draws
-per scenario, 128 Sobol base samples, no frozen-technology Monte Carlo, Monte
-Carlo regression checks skipped; `metrics.json` (`run_mode`), the generated
-documents and every figure are marked "QUICK RUN, not for reporting".
-
-
+**Frozen-technology check.** The adopted run decarbonises materials and
+resolves events in time. `run_all.py` also runs projection, Sensitivity,
+MonteCarlo, the variant table and the AESA layer with `DECARB_MODE = 'none'`,
+`DECARB_A45 = 'held'` and `ACCOUNTING = 'whole_life_at_construction'`
+(environment `PATHWAY_FROZEN=1`) into `outputs/data/frozen_technology/`, without
+figures. `tests/test_regression_v1_2_1.py` compares that run, and its own
+recomputation of the Reference metrics and the Low, Reference and High totals,
+with commit a83cf03 (tag baseline-v1.2.1) to 1e-9, and `tests/test_v3.py` checks
+the whole-life accounting against `tests/regression_pb_v2.json` (tag
+baseline-PB_v2).
 
 `validation.py`: rolling-origin hindcast of dwellings built from 2006, 2013 and
 2018 (consistent vacancy definition), and the 2026 out-of-sample check (model
-run without any 2026 data vs observed consents). `gap_2026.py`: decomposition of
-the 2026 gap. `tools/`: near-term rule and scenario reports, report figures,
-metrics, RESULTS.md, ASSUMPTIONS.md and BASELINE_DRAFT.md.
-`tests/test_regression_v1_2_1.py` checks every headline number against v1.2.1.
+run without any 2026 data vs observed consents); it also writes the demand bands
+of the history by census interval. `gap_2026.py`: decomposition of the 2026 gap.
+`tools/`: the 2026 overbuild report (`overbuild_2026.py`), the variant table
+(`replacement_scenarios.py`: Low replacement, the Reference with half-lives 5, 10
+and 15 years, High replacement, and the three main variants without the census
+under-construction correction), the reconciliation of the accounting
+(`reconciliation.py`), the reality checks and the report figures D07, D10–D12,
+D14, D15 and D19 (`figures_report.py`), `metrics.json` (`metrics.py`), and the
+documents: `RESULTS.md` (`results.py`), `ASSUMPTIONS.md` (`assumptions.py`),
+`METHODS_DRAFT.md` (`methods_draft.py`, merging `baseline_draft.py`,
+`pb_methods.py` and `pathways_methods.py`) and `LEVERS_TABLE.md`
+(`pathways_methods.py`), all in `outputs/reports/`. `tools/check_outputs.py`
+checks that terms of retired code paths appear in no generated output.
+`tools/design_docs.py` (`docs/RENAMING.md`, `docs/FIGURE_PLAN.md`) and
+`tools/palette_check.py` (`docs/PALETTE.md`) write the design documents and are
+not part of the pipeline.
 
-## 9. `PB.py`: planetary-boundary layer (AESA, climate change)
+## 9. `boundaries.py`: planetary-boundary layer (AESA, climate change)
 
 A layer on top of the model outputs; nothing in the model changes. Equations
-are pure functions in `aesa.py`; `PB.py` assembles data, runs and figures.
+are pure functions in `aesa.py`; `boundaries.py` assembles data, runs and
+figures.
 
 ```mermaid
 flowchart LR
-    BOSS[Boss.main via validation.run_boss<br/>central + every scenario row] --> H[history 1992-2025<br/>projection soil convention]
-    BOSS --> I[I_sec 2026-2050<br/>by scenario]
-    MCD[outputs/montecarlo_draws_*.csv] --> MCR[MonteCarlo.project re-run<br/>per draw, asserted vs saved]
-    WPP[derived/wpp2024_population_median.csv] --> PW[P_W]
-    WDI[derived/wdi_economies.csv] --> A[alpha, g_W, g_NZ, year b]
-    GDP[derived/nz_gdp_quarterly.csv + consents] --> S[s_sec]
-    H --> BAR[B_AR, Horup Eq. 1]
-    PW --> BAR & BATP[B_AtP, Hjalsted Eqs. 5-6]
+    PROJ["projection.main via validation.run_boss<br/>Reference + every variant row"] --> H["history 1992-2025<br/>projection soil convention"]
+    PROJ --> I["I_sec 2026-2050<br/>by variant"]
+    MCD["outputs/data/montecarlo/draws_*.csv"] --> MCR["MonteCarlo.project re-run<br/>per draw, asserted vs saved"]
+    WPP["derived/wpp2024_population_median.csv"] --> PW["P_W"]
+    WDI["derived/wdi_economies.csv"] --> A["alpha, g_W, g_NZ, year b"]
+    GDP["derived/nz_gdp_quarterly.csv + consents"] --> S["s_sec"]
+    H --> BAR["B_AR, Horup Eq. 1"]
+    PW --> BAR & BATP["B_AtP, Hjalsted Eqs. 5-6"]
     A --> BATP
     S --> BATP
-    BAR & BATP & I & MCR --> OUT[(pb_annual / pb_mc_annual /<br/>pb_sensitivity .csv, pb_results.json, figures)]
+    BAR & BATP & I & MCR --> OUT[("outputs/data/aesa/: annual, montecarlo_annual,<br/>sensitivity .csv, results.json; D18, D21-D27")]
 ```
 
-1. **History.** Sector emissions 1992-2025 = built floor area by typology x
-   the 2025 case-study factors, with soil only on the non-replacement floor
-   area, as in `engine.forward`: net replacement in year y = census-interval
-   rate x last year's stock x (1 - RV share) x dwelling size (2024-25: the
-   2018-23 rate carried). The mean 2016-2025 is Ī_sec,base.
-2. **Acquired rights.** B_AR(t) = SOS (Ī_sec,base / I_glob) x population
+1. **History (at 2025 factors).** Sector emissions 1992–2025 = built floor
+   area by typology × the 2025 case-study factors, with soil carbon loss only on
+   the non-replacement floor area, as in `engine.forward`: net replacement in
+   year y = census-interval rate × last year's stock × (1 − RV share) × dwelling
+   size (2024–25: the 2018–23 rate carried). The base follows the projection's
+   accounting rule (`boundaries.window_base`): upfront of the base window's
+   construction plus the maintenance events of the cohorts built in the base
+   window that occur in it. The mean 2016–2025 is Ī_sec,base. Historical carbon is used only
+   for the AR base and the base-window sensitivity rows; no figure shows carbon
+   before 2026 except the AR base window of D21 (tested).
+2. **Acquired rights.** B_AR(t) = SOS (Ī_sec,base / I_glob) × population
    modifier relative to t0 = 2025 (NZ: model path; world: WPP 2024 median,
    dated 31 December as the mean of 1 July t and t+1).
 3. **Ability to pay.** α, g_W and g_NZ in base year b (latest year with ≥ 98%
    WDI population coverage of PPP GDP per capita), over the covered economies;
    s_sec = consented residential value / final consumption expenditure
-   2016-2025. B_AtP(t) = SOS / P_W(t) x g_W/g_NZ x α x P_NZ(t) x s_sec.
-4. **Scenarios.** Every deterministic scenario of
-   `tools/replacement_scenarios.py` is re-run (full Boss run); they share the
-   population path, so the boundaries are the same and only I_sec differs.
-5. **Monte Carlo.** Each saved draw of S3-10, S1 and S2 is re-run through
-   `MonteCarlo.project()` from its saved parameters (MonteCarlo.py unchanged);
-   the run stops unless every draw reproduces its saved outputs to 1e-9. The
-   boundaries are recomputed from each draw's NZ population path, and the AR
-   base Ī_sec,base from the draw's case-study carbon factors (2025 technology)
-   on the observed history, so factor uncertainty enters base and projection
-   alike.
-6. **Sensitivities** of cumulative LoE (reference scenario): source pair,
-   GDP measure, AR base window, NZ population source, s_sec definition.
+   2016–2025. B_AtP(t) = SOS / P_W(t) × g_W/g_NZ × α × P_NZ(t) × s_sec. AR and
+   AtP are reported side by side and never averaged.
+4. **Variants.** Every deterministic row of `tools/replacement_scenarios.py` is
+   re-run (full projection run); they share the population path, so the
+   boundaries are the same and only I_sec differs.
+5. **Monte Carlo.** Each saved draw of the Reference, Low replacement and High
+   replacement is re-run through `MonteCarlo.project()` from its saved
+   parameters (MonteCarlo.py unchanged); the run stops unless every draw
+   reproduces its saved outputs to 1e-9. The boundaries are recomputed from each
+   draw's NZ population path, and the AR base Ī_sec,base from the draw's
+   case-study carbon factors (2025 technology) on the observed history, so
+   factor uncertainty enters base and projection alike.
+6. **Sensitivities** of cumulative LoE (Reference): source pair, GDP measure,
+   AR base window (5 years, 20 years, the full consistent history from 1992),
+   NZ population source, s_sec definition, the decarbonisation and accounting
+   rows (including whole life at construction), the wider maintenance scope
+   (events of all cohorts since 1992 in base and projection) and α = 1. The
+   Stats NZ 5th/95th population paths, which move carbon and the AR boundary
+   together, are evaluated with the same boundary functions
+   (`results.json` "population_paths"; used in H11).
+7. **Committed after 2050** per variant, in years of the 2050 AR boundary
+   (`outputs/data/aesa/results.json` "committed"; H6).
 
-Settings, sources and limitations: top of `PB.py` and ASSUMPTIONS.md; methods
-as implemented: `outputs/PB_METHODS_DRAFT.md`.
+Settings, sources and limitations: top of `boundaries.py` and
+`outputs/reports/ASSUMPTIONS.md`; methods as implemented: part 2 of
+`outputs/reports/METHODS_DRAFT.md`.
 
 ---
 
-## 10. Glossary
+## 10. Pathways and the theoretical limit (`levers.py`, `pathways.py`)
+
+A layer on top of the Reference, like the AESA layer: nothing in the model
+changes and no baseline output is rewritten (every baseline number is locked by
+`tests/test_regression_model_v1.py`). `pathways.py` obtains the projection state
+from `validation.run_boss()` (`projection.main()` returns its locals, in memory
+only) and re-calls `engine.forward()` with copies of `fwd_inputs` modified by the
+pure functions of `levers.py`. Which input each lever changes is recorded in
+`docs/HOOKS.md` (a historical record, written before the pathway code with the
+module names and lever ids of that time) and in `levers.LEVER_PARAMETER`.
+
+```mermaid
+flowchart LR
+    PROJ["projection.main via validation.run_boss<br/>Reference; Low and High replacement for the variants"] --> CTX["fwd_inputs, S, OLF, 2026 overbuild,<br/>events, committed factors"]
+    FB["outputs/data/factors/factors_building.csv"] --> L5["L5: Harrell-Davis quantile<br/>+ bootstrap"]
+    LEV["levers.py<br/>L1 / L2, L3 / L4 / L5; TL1-TL6<br/>adoption path to 2035"] --> RUN
+    L5 --> LEV
+    CTX --> RUN["engine.forward per run<br/>Reference, levers, P1-P5, TL; 16 + 32 + 64 subsets"]
+    AESA["outputs/data/aesa/annual.csv<br/>B_AR, B_AtP of the Reference"] --> GAP
+    RUN --> GAP["bands, cumulative LoE, committed,<br/>Shapley, back-cast, solution space"]
+    GAP --> OUTP[("outputs/data/pathways/*.csv, *.json;<br/>D28-D34")]
+```
+
+1. **Pathways and levers** (settings Moderate and Ambitious). Adoption path: a
+   normalised logistic, w = 0 in 2026 and 1 from 2035 (full roll-out by 2035
+   (adopted), following RECC, Pauliuk et al. 2024; P5 sensitivities: full
+   roll-out by 2030 and by 2045). P1 Right-sized dwellings = L1 Dwelling size
+   (`size` per typology and year: a share f of the space above the engine's
+   occupied area S × OLF removed, f = 0.25 / 0.50, constant from 2035 to 2050).
+   The typology shares stay at the Reference held mix in every run (the denser
+   typology mix of an earlier pathway version was not carried forward: within
+   the embodied-carbon scope it raises A1–A3 per m², and its benefits are
+   outside the scope). P2 Occupied stock = L2 Vacancy rate (the stock-wide
+   vacancy path `v`, v(y) = v0 + w (v* − v0), v* = 4.7% / 4.0%) + L3 Overbuild
+   absorption (the 2026 overbuild absorbed at 0.10 / 0.20 a year: `join` from
+   `engine.market_excess(..., 'surplus', absorption)`). P3 Retained stock = L4
+   Building retention (`rate_demol` and the redevelopment component of
+   `rate_unc` × (1 − w d), d = 0.20 / 0.40). P4 Low-carbon materials = L5
+   Material carbon (`intensity`, `intensity_upfront`: the A1–A3 term scaled
+   towards r, the Harrell-Davis quantile (q = 0.25 / 0.15) of the case-study
+   ratios with a bootstrap interval; decarbonisation applies on top). P5
+   Combined = all five levers. Resolved values:
+   `outputs/data/pathways/levers.json`; Table 1:
+   `outputs/reports/LEVERS_TABLE.md`.
+2. **Identity.** With every lever off the call is the reference call of the
+   projection, and the run reproduces the Reference (annual carbon, upfront,
+   maintenance 2026–2050, floor area by typology, demand bands, committed range,
+   cumulative LoE) to 1e-9; each lever at zero strength is the Reference
+   (`tests/test_pathways.py`). The 2026 overbuild is unchanged except under L3;
+   2026 is never changed.
+3. **Per run**: carbon 2026–2050, upfront, maintenance, soil carbon loss, A1–A3,
+   A4–A5, floor area and floor area by demand band (with the change vs the
+   Reference, exact), committed after 2050 (`events.committed`, the run's floor
+   area), dwellings built, mean dwelling size, existing dwellings released,
+   implied vacancy, and cumulative LoE against the Reference budgets of
+   `outputs/data/aesa/annual.csv`. Checks that stop the run: identity, sizes
+   below the occupied area, implied vacancy below 4.0%, negative dwellings
+   built, fewer than 10 independent L5 cases or r ≥ 1, Shapley efficiency.
+4. **Attribution**: Shapley values over the 16 pathway subsets (main) and the 32
+   lever subsets (SI), exact rational arithmetic (they sum to Reference − P5
+   exactly).
+5. **Variants**: the Reference and P5 under Low and High replacement (full
+   projection runs).
+6. **Gap**: back-cast of P5 (Moderate, Ambitious) and the Reference (uniform
+   factor k on every 2027–2050 cohort, `scipy.optimize.brentq` for cumulative
+   LoE AR = 1; AtP minimum at k = 0) and the demand × intensity solution space
+   on the Reference (Horup et al. 2025, Fig. 6 style).
+
+Methods as implemented: part 3 of `outputs/reports/METHODS_DRAFT.md`.
+
+**Theoretical limit TL.** A hyper-optimistic theoretical limit; a thought
+experiment, not a pathway: P5 Ambitious with TL1 No vacancy (v = 0, the 2026
+overbuild absorbed in full), TL2 No extra space (size = S × OLF), TL3 Minimum
+space per person (the lowest independent case-study OLF for every typology),
+TL4 Best-practice materials (each typology's best independent case-study A1–A3;
+apartments held, one independent case), TL5 Lowest-carbon soils (the lowest soil
+order), TL6 Urban infill (65% of the non-replacement floor area on developed
+land with zero soil carbon loss; Auckland Council 2021), all at full strength
+from 2027 (`levers.apply_tl`); the adopted decarbonisation applies. TL, gradual
+adoption (SI) uses the adopted adoption path instead. `pathways.run_tl` applies
+the banking rule (`pathways.bank`: dwellings built never negative; unused
+release carried forward) as a stock-adding 2026 overbuild term (join = banked
+built − requirement, join_redev = 0) so the stock identity holds, and the
+year-dependent soil factor exactly through the engine's soil-bearing share
+(intensity minus (soil_avg − soil_path) × share; two passes, the share checked
+identical; the share is clipped to [0, 1] and set to 0 in years with no new
+building, where the engine's ratio is undefined). Shapley over TL1–TL6 (64
+subsets, full strength from 2027), gap and back-cast as for P5; where TL exceeds
+the AR budget the back-cast cut is expressed as dwellings not built 2027–2050
+and new residents housed in existing dwellings
+(`outputs/data/pathways/theoretical_limit.json`,
+`shapley_theoretical_limit.csv`; H9, D32–D34).
+
+---
+
+## 11. Run modes
+
+`run_all.py` (its docstring is the reference; in Spyder or any IPython console:
+open it and Run, or `runfile('run_all.py')`, `runfile('run_all.py',
+args='--pathways-only')`). Paths are resolved from the repository folder, so the
+working directory does not matter. Each step runs in its own process with the
+non-interactive matplotlib backend and `PATHWAY_SAVE_FIGURES=1`, its console
+output going to `outputs/logs/<step>.log`. A failed step prints its name and the
+log to read, and the run stops there (non-zero exit code from the command line;
+no `SystemExit` in an interactive console).
+
+**Full run** (`python run_all.py`): the only basis for reported results and
+tags. It first deletes `outputs/headline/`, `outputs/diagnostics/` (with the
+figure audit records), `outputs/data/` and `outputs/reports/`, so nothing stale
+survives, then runs: `Building_factors.py`, `projection.py`, `Diagnostics.py`,
+`Sensitivity.py`, `MonteCarlo.py`, `boundaries.py` (reads the Monte Carlo
+draws), `validation.py`, `gap_2026.py`, `tools/overbuild_2026.py`,
+`tools/replacement_scenarios.py`, `tools/reconciliation.py`,
+`tools/figures_report.py`; the frozen-technology check (projection, Sensitivity,
+MonteCarlo, the variant table and boundaries with `PATHWAY_FROZEN=1`, figures
+not saved; section 8); `pathways.py`; `tools/metrics.py`; `headline.py`;
+`tools/results.py`, `tools/assumptions.py`, `tools/pathways_methods.py
+--sections`, `tools/methods_draft.py`, `tools/check_outputs.py`; `indexes.py`;
+and last `pytest tests/` on the complete output set.
+
+**Quick run** (`python run_all.py --quick`, development only; environment
+`PATHWAY_QUICK=1`): the same steps with 1,000 Monte Carlo draws per variant and
+128 Sobol base samples, and without the frozen-technology Monte Carlo and AESA
+steps. Only the figure folders and audit records are cleared; data and reports
+are overwritten where a step writes them. In the tests, the numerical regression
+lock and the file checks of `tests/test_regression_v1_2_1.py` are skipped.
+`metrics.json` (`run_mode`), the generated documents and every figure are marked
+"QUICK RUN, not for reporting".
+
+**Pathways only** (`python run_all.py --pathways-only`): the projection is
+unchanged, so only the pathway layer runs, on the outputs of a previous full
+run: `pathways.py` (`projection.main()` in memory; no projection output is
+written; the pathway figures D28–D34 are overwritten in place), `headline.py`,
+`tools/pathways_methods.py --sections` (`LEVERS_TABLE.md` and the Pathways
+section of `ASSUMPTIONS.md`, each replacing only its own section),
+`tools/methods_draft.py`, `indexes.py`, then
+`pytest tests/test_pathways.py tests/test_regression_model_v1.py
+tests/test_release.py tests/test_output_manifest.py`. Nothing is cleared and nothing
+is marked as quick.
+
+---
+
+## 12. Outputs
+
+`layout.py` defines every path once; `outputs/INDEX.md` lists every file with
+what it holds and the script that writes it (the registry is `indexes.FILES`).
+
+| folder | content |
+|---|---|
+| `outputs/headline/` | the figures of the paper H1–H11 (PNG and PDF), the source data of each (`H*.csv`) and `HEADLINE.md` |
+| `outputs/diagnostics/<group>/` | every other figure D01–D34 (PNG) in the groups data_calibration, validation, sensitivity, monte_carlo, planetary_boundary, pathways_si; `DIAGNOSTICS.md`; `_audit/` the figure audit records |
+| `outputs/data/baseline/` | the Reference projection and its checks (projection, annual series, demand bands, variants, validation, 2026 gap and overbuild, reconciliation, reality checks, one-at-a-time sensitivity) |
+| `outputs/data/montecarlo/` | draws, summaries, annual percentiles by variant; Sobol indices of the Reference |
+| `outputs/data/aesa/` | boundaries, levels of exceedance, AESA sensitivity rows, committed after 2050 |
+| `outputs/data/pathways/` | lever parameters, every pathway and TL run, bands, Shapley tables, back-cast, solution space |
+| `outputs/data/factors/` | the case-study factors (`Building_factors.py`) |
+| `outputs/data/frozen_technology/` | the frozen-technology check run (same file names) |
+| `outputs/data/metrics.json` | the headline metrics and the run mode |
+| `outputs/reports/` | `RESULTS.md`, `ASSUMPTIONS.md`, `METHODS_DRAFT.md`, `LEVERS_TABLE.md`, the validation, gap, overbuild, variant, reality-check and reconciliation reports (frozen-technology run: `frozen_technology_<name>.md`) |
+| `outputs/logs/` | console output of each step; git-ignored, not part of the release |
+
+Data files carry the release names of `naming.py` (ASCII hyphens; variant ids
+`REF`, `LOW`, `HIGH`).
+
+---
+
+## 13. Figures
+
+* **`figure_plan.py`** lists every figure of the release: the headline set H1–H11
+  (title, panels, data source, draft caption) and the diagnostics D01–D34 by
+  group, with the earlier figures each replaces (`docs/FIGURE_PLAN.md`).
+* **`style.py`** holds the palette (`docs/PALETTE.md`, checked for colour-vision
+  deficiency by `tools/palette_check.py`), the bundled typeface (Liberation
+  Sans), the print sizes (89 mm single column, 183 mm double column, text
+  5–7 pt) and saving. `save_figure(fig, name, note)` writes a planned figure to
+  its place (`layout.figure`): PNG at 300 dpi, and a vector PDF as well for the
+  headline figures, with fixed metadata (no software version or creation date)
+  so that re-runs are byte-stable; it first writes the figure's audit record. In
+  a quick run every figure carries a "QUICK RUN, not for reporting" footer.
+* **`plotting.py`** holds the shared drawing rules: demand bands are stacked and
+  sum to the total, with no separate total line; negative parts are drawn
+  below zero, never clipped; the AR and AtP boundaries are lines, never a shaded range and never
+  averaged.
+* **`naming.py`** supplies every reader-facing label (variants, pathways,
+  settings, levers, TL, adoption paths, bands, components, metrics), the
+  vacancy wording (`VACANCY_WORDING`) and the terms of earlier versions that no
+  reader-facing text may use (`OLD_TERMS`).
+* **`figaudit.py`** records, for every saved figure, each axes' labels and the
+  range of calendar years its data cover, every text of the figure, its note and
+  the script that drew it (`outputs/diagnostics/_audit/<figure>.json`); the
+  tests read these records.
+* **`headline.py`** draws H1–H11 from the data files of `outputs/data/` only (no
+  model is run), writes the source data of each figure (panel, series, x, value,
+  unit) and `HEADLINE.md`: the headline findings and every figure with its
+  caption, the numbers in the captions filled from the data.
+* **`indexes.py`** writes `outputs/diagnostics/DIAGNOSTICS.md` (every diagnostic
+  by group, with its note and drawing script) and `outputs/INDEX.md`.
+
+The diagnostics are drawn by the script that owns the data: `projection.py`
+(D01–D03, D08, D09, D13), `Diagnostics.py` (D04–D06), `tools/figures_report.py`
+(D07, D10–D12, D14, D15, D19), `Sensitivity.py` (D16, D17), `MonteCarlo.py`
+(D20), `boundaries.py` (D18, D21–D27), `pathways.py` (D28–D34).
+
+---
+
+## 14. Tests
+
+`tests/` runs last in the full pipeline. `conftest.py` provides one silent
+Reference run per session (it needs the factor files of `Building_factors.py`).
+
+* **`test_regression_model_v1.py`**: the numerical regression lock of the
+  release. `tests/regression_model_v1.json` holds every number the pipeline
+  reported at commit ee37ef1 (67 files, 488,484 values), captured by
+  `tests/capture_regression_model_v1.py` before the refurbish; each captured
+  identifier is mapped forward to its release file, column, row or JSON path by
+  `naming.LEGACY` (documented in `docs/RENAMING.md`) and must be reproduced to
+  1e-12 relative (booleans and integers exactly). A value may be absent only
+  where `naming.LEGACY.removed()` says so (by-typology reporting and the removed
+  mix-trend setting). The values the release adds are locked by the same test
+  once captured from the release run (`capture_regression_model_v1.py
+  --additions`); until then that test is skipped. This lock replaces the byte
+  lock of earlier versions.
+* **`test_output_manifest.py`**: byte reproducibility of the release. The
+  SHA-256 of every release output (console logs excluded) is recorded in
+  `tests/output_manifest_model_v1.json` by `tools/output_manifest.py`, with the
+  environment that wrote it (Python, numpy, pandas, scipy, matplotlib, FreeType,
+  machine); after a run in the same environment every file must be reproduced
+  byte for byte and no other written. Elsewhere the test is skipped with the
+  reason (floating-point and font rasterisation may differ in the last bits),
+  and the numerical lock applies.
+* **`test_release_map.py`**: the release map is complete and one-to-one (every
+  captured identifier has a release location; merged files are identical;
+  removals are by-typology reporting or the removed mix-trend setting).
+* **`test_release.py`**: the values the release adds agree with the locked
+  numbers (H4 components with the annual carbon, annual and census-interval
+  bands with the band totals, variant series with the variant totals,
+  population paths with the Reference); the headline set exists as PNG, PDF and
+  source data and `HEADLINE.md` shows every figure with a filled caption;
+  every planned figure exists and no other; every output file is indexed once;
+  `DIAGNOSTICS.md` names the drawing script of every diagnostic; headline
+  figures print within 183 mm; no reader-facing text (reports, `HEADLINE.md`,
+  `DIAGNOSTICS.md`, `INDEX.md`, the texts of every figure) uses a term of
+  `naming.OLD_TERMS`; every module that draws a figure imports `style.py` and
+  `plotting.py`, and only `style.save_figure` writes figure files.
+* **`test_regression_v1_2_1.py`**: the frozen-technology check run reproduces
+  every headline number of commit a83cf03 to 1e-9 (section 8); High is compared
+  with `tests/regression_v2_high.json`.
+* **`test_v2.py`**: three replacement variants only, typology shares held in
+  every variant, Low and Reference unchanged against
+  `tests/regression_pb_v1_2_low_ref.json` (tag baseline-PB_v1.2), the
+  largest parameters shown with both ends, whole life at construction only in
+  the AESA sensitivity, the material colours in one order and soil carbon loss
+  the top layer, stale terms absent from the outputs.
+* **`test_v3.py`**: the event table reproduces the supplied tables; events per
+  line equal the counts and add up to the line B2/B4; maintenance 2026–2050 +
+  committed (2025 factors) = whole-life total; whole life at construction with
+  A4–A5 held reproduces `tests/regression_pb_v2.json`; soil unchanged; the A4–A5
+  path; every figure file is planned; no figure shows carbon before 2026 except
+  the AR base window of D21.
+* **`test_identities.py`**: accounting identities (typology and band sums,
+  stock identities, material + soil = carbon, stages + soil = total, the band
+  stack is the total, the projection is deterministic and leaks no state,
+  household size passes through the published knots).
+* **`test_decarb.py`, `test_decarb_item.py`**: the S4 paths match the table; the
+  item table reproduces the workbook; the mapping is complete and one-to-one;
+  2025 class totals are kept; reductions recomputed from items; soil, other
+  stages and the history unchanged; sensitivity cases; the Monte Carlo
+  bootstrap stream unchanged.
+* **`test_pb.py`**: AESA equations, reproduction of the earlier manuscript and
+  its constants, α, the population modifier, LoE definitions, units, Monte Carlo
+  percentiles ordered.
+* **`test_pathways.py`**: the identity with every lever off, each lever at zero
+  strength, 2026 unchanged, the adoption path, L1 sizes never below the occupied
+  area, implied vacancy and dwellings built in every run, the Harrell-Davis
+  estimator against scipy, exact Shapley efficiency, band sums, the back-cast,
+  the banking rule and the TL components.
+* **`test_census_uc.py`, `test_soil.py`, `test_overbuild_2026.py`,
+  `test_validation.py`**: the under-construction correction, soil carbon loss
+  zero on net replacement, the replacement paths, nowcast and 2026 overbuild
+  rule on synthetic inputs, and the 2026 out-of-sample check on synthetic
+  consents.
+
+---
+
+## 15. Glossary
 
 | term | meaning |
 |---|---|
-| GFA | gross floor area, m² |
+| floor area | gross floor area (GFA), m² |
+| Reference | the adopted projection with no interventions (replacement half-life 10 years) |
+| Low / High replacement | the replacement variants of the Reference: the 1991–2023 long-run rate throughout / the 2018–2023 rate persists |
+| demand band | a reason for building (population growth, smaller households, extra space, vacancy, 2026 overbuild, replacement, redevelopment; for carbon also maintenance (B2, B4), 2026–2050) |
+| 2026 overbuild | observed 2026 building above the requirement, fading at ρ; never absorbed in the Reference |
 | DHE | Stats NZ Dwelling and Household Estimates |
 | ERP | estimated resident population |
 | S | average household size = population / households |
@@ -347,15 +737,18 @@ as implemented: `outputs/PB_METHODS_DRAFT.md`.
 | RV | retirement-village unit |
 | UC | dwellings under construction on census night |
 | OLF | occupancy load factor = floor area per design occupant |
-| FSI | floor space index = GFA / building footprint |
-| ALR | additive log-ratio transform for shares that sum to one |
-| φ | damping factor of the mix trend |
+| FSI | floor space index = floor area / building footprint |
 | ρ | persistence of departures from the calibrated stock identity |
 | PCHIP | piecewise cubic Hermite interpolation, a shape-preserving spline |
-| EN 15978 stages | A1–A3 product, A4–A5 construction, B2/B4 maintenance/replacement, C1–C4 end of life, D beyond the life cycle |
-| upfront carbon | A1–A5 + soil loss |
+| EN 15978 stages | A1–A3 product, A4–A5 construction, B2/B4 maintenance (replacement and repaint events), C1–C4 end of life, D beyond the life cycle |
+| upfront carbon | materials and construction (A1–A5) + soil carbon loss |
+| committed after 2050 | later B2/B4 and C1–C4 of the 2026–2050 cohorts, a range (2050 factors held / 2025 factors) |
 | AESA | absolute environmental sustainability assessment |
 | SOS | safe operating space: the global carrying capacity for climate change (kg CO₂-eq/yr) |
 | AR / AtP | acquired rights / ability to pay (allocation principles) |
-| LoE | level of exceedance = impact / boundary (> 1: exceeded) |
+| LoE | level of exceedance = impact / boundary (> 1: exceeded); LoE AR and LoE AtP against each principle |
 | s_sec | the sector's share of final consumption expenditure (upscaling, Hjalsted Eq. 6) |
+| P1–P5, L1–L5 | pathways (Right-sized dwellings, Occupied stock, Retained stock, Low-carbon materials, Combined) and levers (Dwelling size, Vacancy rate, Overbuild absorption, Building retention, Material carbon) |
+| Moderate / Ambitious | the two settings of every lever |
+| adoption path | the share w(y) of a lever's full strength: full roll-out by 2035 (adopted), by 2030 or by 2045 (sensitivities), full strength from 2027 (TL) |
+| TL, TL1–TL6 | theoretical limit and its six assumptions (No vacancy, No extra space, Minimum space per person, Best-practice materials, Lowest-carbon soils, Urban infill) |

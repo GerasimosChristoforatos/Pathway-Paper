@@ -8,7 +8,7 @@ Source (data/raw/, provenance in MANIFEST.csv):
   (Qrtly-Mar/Jun/Sep/Dec)', NZD millions, current prices; last updated
   19 March 2026 (stated in the file).
 
-Used by PB.py for the final-consumption-expenditure upscaling of the ability-to-
+Used by boundaries.py for the final-consumption-expenditure upscaling of the ability-to-
 pay boundary (Hjalsted et al. 2021, Eq. 6): GDP and final consumption
 expenditure (FCE) by quarter.
 

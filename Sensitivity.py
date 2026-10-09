@@ -1,17 +1,17 @@
 """
 SENSITIVITY -- one-at-a-time sensitivity of the 2026-2050 median projection
 ==========================================================================
-Boss.py reports a population-only band. Every other structural assumption is
-held at one value. This script re-runs Boss.main() with ONE assumption changed
+projection.py reports a population-only band. Every other structural assumption is
+held at one value. This script re-runs projection.main() with ONE assumption changed
 at a time (all else at the adopted setting) and tabulates the effect on
 cumulative built floor area and embodied carbon, 2026-2050, median population.
 
 Population and carbon-factor rows need no re-run. The population percentiles
-are already computed by Boss, and the typology mix does not depend on them, so
+are already computed by projection, and the typology mix does not depend on them, so
 their carbon is floor area x each year's mix intensity. Carbon-factor rows
 re-weight the adopted floor area by typology with alternative factors from
 factors_typology.csv (jackknife range of the pooled material factor; extreme
-soil orders). When materials are decarbonised (Boss.DECARB_MODE), an alternative
+soil orders). When materials are decarbonised (projection.DECARB_MODE), an alternative
 materials factor follows the adopted factor's relative path over time, and the
 decarbonisation rows of DECARB_CASES for the adopted mode are added.
 
@@ -28,11 +28,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-import Boss
+import projection
 import figaudit
+import naming as N
 
-OUT_CSV = os.path.join(Boss.OUT_DIR, 'sensitivity_oat.csv')
-FIG_DIR = os.path.join(Boss.OUT_DIR, 'figures')
+OUT_CSV = os.path.join(projection.OUT_DIR, 'sensitivity_oat.csv')
+FIG_DIR = os.path.join(projection.OUT_DIR, 'figures')
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: write PNGs to FIG_DIR
 SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
 N_PATHS = 6              # cases drawn in the annual-path figure (largest effects)
@@ -40,32 +41,32 @@ N_PATHS = 6              # cases drawn in the annual-path figure (largest effect
 GROUP_COLORS = {'Population': '#2E6DB4', 'Household size': '#E67E22', 'Households': '#D35400',
                 'Stock': '#34495E', 'Typology mix': '#8E44AD', 'Dwelling size': '#16A085',
                 'Carbon factors': '#C0392B',
-                'Replacement scenario': '#1ABC9C', 'Near-term market excess': '#7F8C8D',
-                'Near-term: how the excess is booked': '#7F8C8D', 'Near-term: rule variant': '#F39C12'}
+                'Replacement variant': '#1ABC9C', '2026 overbuild: how it is booked': '#7F8C8D',
+                '2026 overbuild: rule variant': '#F39C12'}
 
-# (group, label, {Boss setting: value})
+# (group, label, {projection setting: value})
 CASES = [   # earlier, longer tables are preserved at the git tags (CHANGELOG)
-    ('Replacement scenario', 'Low (S1): long-run rate, shares held', dict(REPLACEMENT_SCENARIO='S1')),
-    ('Replacement scenario', 'S3: half-life 5 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=5.0)),
-    ('Replacement scenario', 'S3: half-life 15 yr', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=15.0)),
-    ('Replacement scenario', 'High (S2): 2018-2023 rate persists, shares held', dict(REPLACEMENT_SCENARIO='S2')),
+    ('Replacement variant', 'Low replacement: long-run rate', dict(REPLACEMENT_VARIANT='LOW')),
+    ('Replacement variant', N.SCENARIOS['REF_HL5'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=5.0)),
+    ('Replacement variant', N.SCENARIOS['REF_HL15'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=15.0)),
+    ('Replacement variant', 'High replacement: 2018-2023 rate persists', dict(REPLACEMENT_VARIANT='HIGH')),
     ('Household size', 'Household size: Stats NZ Low variant', dict(HH_SIZE_VARIANT='Low')),
     ('Household size', 'Household size: Stats NZ High variant', dict(HH_SIZE_VARIANT='High')),
     ('Household size', 'Household size after 2043: flat (kink at 2043)', dict(S_TAIL='flat')),
     ('Household size', 'Household size after 2043: secant-slope taper', dict(S_TAIL='taper_secant')),
     ('Household size', 'Household size after 2043: taper from the PCHIP end slope', dict(S_TAIL='taper')),
-    ('Dwelling size', 'Dwelling size: 2016–2025 reference', dict(DWELLING_SIZE_REF=(2016, 2025))),
+    ('Dwelling size', 'Dwelling size: 2016-2025 reference', dict(DWELLING_SIZE_REF=(2016, 2025))),
     ('Stock', 'Completion rate 0.92', dict(COMPLETION_RATE=0.92)),
     ('Stock', 'Completion rate 0.96', dict(COMPLETION_RATE=0.96)),
     ('Stock', "Completion lag on (Little's law)", dict(COMPLETION_LAG='littles_law')),
     ('Stock', 'No census under-construction correction', dict(CENSUS_UC_CORRECTION=False)),
-    ('Near-term: how the excess is booked', 'Temporary surplus with payback, absorption 0.20/yr',
-     dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.20)),
-    ('Near-term: how the excess is booked', 'Temporary surplus with payback, absorption 0.10/yr',
-     dict(NEAR_TERM_MODE='surplus', NEAR_TERM_ABSORPTION=0.10)),
-    ('Near-term: how the excess is booked', 'Booked as redevelopment, stock-neutral',
-     dict(NEAR_TERM_MODE='redevelopment')),
-    ('Near-term: rule variant', 'Gap measured against the 2026 requirement', dict(NEAR_TERM_GAP_REF='2026')),
+    ('2026 overbuild: how it is booked', 'Temporary surplus with payback, absorption 0.20/yr',
+     dict(OVERBUILD_BOOKING='surplus', OVERBUILD_ABSORPTION=0.20)),
+    ('2026 overbuild: how it is booked', 'Temporary surplus with payback, absorption 0.10/yr',
+     dict(OVERBUILD_BOOKING='surplus', OVERBUILD_ABSORPTION=0.10)),
+    ('2026 overbuild: how it is booked', 'Booked as redevelopment, stock-neutral',
+     dict(OVERBUILD_BOOKING='redevelopment')),
+    ('2026 overbuild: rule variant', 'Gap measured against the 2026 requirement', dict(OVERBUILD_GAP_REF='2026')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
 ]
 # Carbon-factor and accounting rows of the adopted item-level, time-resolved run
@@ -88,12 +89,12 @@ DECARB_CASES = {
 }
 
 def run(**settings):
-    """One silent Boss run with the given module settings; returns its state."""
-    M = importlib.reload(Boss)          # fresh module globals every time
+    """One silent projection run with the given module settings; returns its state."""
+    M = importlib.reload(projection)          # fresh module globals every time
     M.SHOW_PLOTS = False
     for k, v in settings.items():
         if not hasattr(M, k):
-            raise AttributeError(f"Boss has no setting '{k}'.")
+            raise AttributeError(f"projection has no setting '{k}'.")
         setattr(M, k, v)
     with contextlib.redirect_stdout(io.StringIO()):
         return M.main()
@@ -108,7 +109,7 @@ def totals(state):
 def main():
     base = run()
     g0, c0 = totals(base)
-    rows = [('Adopted', 'Adopted settings', g0, c0)]
+    rows = [('Reference', 'Reference (adopted settings)', g0, c0)]
     paths = {}                                   # annual built floor area, per case
 
     # Carbon per m2 of each year's typology mix (identical across percentiles).
@@ -120,7 +121,7 @@ def main():
                      float((tot[1:] * mix_int[1:]).sum()) / 1e6))
         paths[f'Population: Stats NZ {p} percentile'] = tot
 
-    for grp, lab, kw in CASES + DECARB_CASES[Boss.DECARB_MODE]:
+    for grp, lab, kw in CASES + DECARB_CASES[projection.DECARB_MODE]:
         st = run(**kw)
         g, c = totals(st)
         rows.append((grp, lab, g, c))
@@ -131,7 +132,7 @@ def main():
     gfa_t = base['evol_typ_total'].iloc[1:].sum()          # m2 by typology
     # soil applies only to the soil-bearing floor area (item 8)
     soil_gfa_t = base['evol_typ_total'].mul(base['soil_frac'], axis=0).iloc[1:].sum()
-    tf = pd.read_csv(Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
+    tf = pd.read_csv(projection.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
 
     emb0, soc0 = tf['embodied_materials'], tf['SOC_avg']
     gfa_y = base['evol_typ_total'].iloc[1:]                 # m2 by year and typology
@@ -170,7 +171,7 @@ def main():
     out['GFA_change_pct'] = 100 * (out['GFA_Mm2'] / g0 - 1)
     out['carbon_change_pct'] = 100 * (out['carbon_kt'] / c0 - 1)
     os.makedirs(os.path.dirname(OUT_CSV), exist_ok=True)
-    out.to_csv(OUT_CSV, index=False)
+    N.columns(out).to_csv(OUT_CSV, index=False)
 
     print("=" * 96)
     print(" ONE-AT-A-TIME SENSITIVITY, 2026-2050 (median population unless stated)")
@@ -205,17 +206,17 @@ PCT_NOTE = ('Percentages are relative to within-window carbon (2026-2050); fixed
 # the main-text tornado); every other row is a parameter of its own.
 PARAMETER = {
     'Population: Stats NZ 5th percentile': 'Population', 'Population: Stats NZ 95th percentile': 'Population',
-    'Low (S1): long-run rate, shares held': 'Replacement scenario',
-    'High (S2): 2018-2023 rate persists, shares held': 'Replacement scenario',
-    'S3: half-life 5 yr': 'S3 half-life', 'S3: half-life 15 yr': 'S3 half-life',
+    'Low replacement: long-run rate': 'Replacement variant',
+    'High replacement: 2018-2023 rate persists': 'Replacement variant',
+    N.SCENARIOS['REF_HL5']: 'Replacement half-life', N.SCENARIOS['REF_HL15']: 'Replacement half-life',
     'Household size: Stats NZ Low variant': 'Household-size variant',
     'Household size: Stats NZ High variant': 'Household-size variant',
     'Household size after 2043: flat (kink at 2043)': 'Household size after 2043',
     'Household size after 2043: secant-slope taper': 'Household size after 2043',
     'Household size after 2043: taper from the PCHIP end slope': 'Household size after 2043',
     'Completion rate 0.92': 'Completion rate', 'Completion rate 0.96': 'Completion rate',
-    'Temporary surplus with payback, absorption 0.20/yr': 'Near-term payback',
-    'Temporary surplus with payback, absorption 0.10/yr': 'Near-term payback',
+    'Temporary surplus with payback, absorption 0.20/yr': '2026 overbuild payback',
+    'Temporary surplus with payback, absorption 0.10/yr': '2026 overbuild payback',
     'A4-A5 held at 2025 (no generic 1%/yr)': 'A4-A5 path', "A4-A5 on each item's own Horup path": 'A4-A5 path',
     'Materials: jackknife low (all typologies)': 'Materials: jackknife',
     'Materials: jackknife high (all typologies)': 'Materials: jackknife',
@@ -268,7 +269,7 @@ def tornado(cases, out, name, title_note=None):
 
 
 def figures(out, base, paths):
-    cases = out[out.group != 'Adopted'].copy()
+    cases = out[out.group != 'Reference'].copy()
     cases['order'] = cases[['GFA_change_pct', 'carbon_change_pct']].abs().max(axis=1)
     cases = cases.sort_values('order')
 

@@ -16,14 +16,14 @@ YEARS = np.arange(2025, 2051)
 # ------------------------------------------------------ replacement_path ----
 def test_replacement_path_scenarios():
     long, recent = 0.001, 0.004
-    assert close(engine.replacement_path('S1', long, recent, YEARS), np.full(len(YEARS), long))
-    assert close(engine.replacement_path('S2', long, recent, YEARS), np.full(len(YEARS), recent))
-    p = engine.replacement_path('S3', long, recent, YEARS, half_life=10)
+    assert close(engine.replacement_path('LOW', long, recent, YEARS), np.full(len(YEARS), long))
+    assert close(engine.replacement_path('HIGH', long, recent, YEARS), np.full(len(YEARS), recent))
+    p = engine.replacement_path('REF', long, recent, YEARS, half_life=10)
     assert close(p[0], recent)
     assert close(p[10], (long + recent) / 2)                 # one half-life after 2025
     assert np.all(np.diff(p) < 0) and np.all(p > long)
     with pytest.raises(ValueError):
-        engine.replacement_path('S4', long, recent, YEARS)
+        engine.replacement_path('S3', long, recent, YEARS)
 
 
 # ------------------------------------------------------------ nowcast ----

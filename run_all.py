@@ -6,9 +6,9 @@
                                  # frozen-technology Monte Carlo, MC regression
                                  # checks skipped; every output marked
                                  # "QUICK RUN, not for reporting"
-    python run_all.py --pathways-only   # PATHWAYS only (the baseline is frozen): pathways.py
-                                 # (Boss.main() in memory), tests/test_pathways.py and
-                                 # tests/test_baseline_lock.py, then the Pathways sections
+    python run_all.py --pathways-only   # the pathway layer only (the projection is unchanged): pathways.py
+                                 # (projection.main() in memory), tests/test_pathways.py and
+                                 # the numerical regression lock, then the Pathways sections
                                  # (methods draft, LEVERS_TABLE, ASSUMPTIONS and FIGURES
                                  # sections); outputs/figures/ is not cleared (only pw_* replaced)
     python run_all.py --no-mc    # skip the Monte Carlo (development only; the
@@ -22,13 +22,13 @@ matter. A failed step prints its name and the log to read, and the run stops
 there; from the command line the exit code is non-zero, in an interactive
 console no SystemExit is raised.
 
-Order: Building_factors -> Boss -> Diagnostics -> Sensitivity -> MonteCarlo
+Order: Building_factors -> projection -> Diagnostics -> Sensitivity -> MonteCarlo
 -> PB (planetary-boundary layer; reads the Monte Carlo draws) -> validation
 -> gap_2026 -> near_term_join -> scenarios -> reconciliation -> figures_report -> frozen
-technology check (Boss, Sensitivity, MonteCarlo, scenarios, PB with DECARB_MODE
+technology check (projection, Sensitivity, MonteCarlo, scenarios, PB with DECARB_MODE
 'none', A4-A5 held, whole life at construction, written to outputs/frozen/,
-figures not saved) -> pathways (PATHWAYS v2, outputs/pathways/) -> tests (incl. the v1.2.1 regression test, which reads
-outputs/frozen/) -> metrics -> results ->
+figures not saved) -> pathways (outputs/pathways/) -> metrics -> tests (incl. the v1.2.1 regression test, which
+reads outputs/frozen/, and the regression lock of MODEL v1.0.0, which reads every data file) -> results ->
 assumptions -> baseline_draft -> pb_methods (-> quick_stamp, quick runs). Each script
 runs in its own process, with the non-interactive matplotlib backend and
 PATHWAY_SAVE_FIGURES=1, so every figure is written to outputs/figures/ and
@@ -81,12 +81,12 @@ def pipeline(skip_mc, quick=False):
     # every figure (and its audit record, figaudit.py) is written by this run
     shutil.rmtree(os.path.join(ROOT, 'outputs', 'figures'), ignore_errors=True)
     run('building_factors', [py, os.path.join(ROOT, 'Building_factors.py')])
-    run('boss', [py, os.path.join(ROOT, 'Boss.py')])
+    run('boss', [py, os.path.join(ROOT, 'projection.py')])
     run('diagnostics', [py, os.path.join(ROOT, 'Diagnostics.py')])
     run('sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')])
     if not skip_mc:
         run('montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')])
-    run('pb', [py, os.path.join(ROOT, 'PB.py')])
+    run('pb', [py, os.path.join(ROOT, 'boundaries.py')])
     run('validation', [py, os.path.join(ROOT, 'validation.py')])
     run('gap_2026', [py, os.path.join(ROOT, 'gap_2026.py')])
     run('near_term_join', [py, tool('near_term_join')])
@@ -96,18 +96,19 @@ def pipeline(skip_mc, quick=False):
     # frozen-technology check run (DECARB_MODE 'none', outputs/frozen/): the
     # v1.2.1 regression test compares it with v1.2.1; figures are not saved
     fz = dict(PATHWAY_FROZEN='1', PATHWAY_SAVE_FIGURES='0')
-    run('frozen_boss', [py, os.path.join(ROOT, 'Boss.py')], **fz)
+    run('frozen_boss', [py, os.path.join(ROOT, 'projection.py')], **fz)
     run('frozen_sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')], **fz)
     if not (skip_mc or quick):
         run('frozen_montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')], **fz)
     run('frozen_scenarios', [py, tool('replacement_scenarios')], **fz)
     if not (skip_mc or quick):
-        run('frozen_pb', [py, os.path.join(ROOT, 'PB.py')], **fz)
+        run('frozen_pb', [py, os.path.join(ROOT, 'boundaries.py')], **fz)
     # PATHWAYS v2 (levers, pathways, attribution, AESA gap): after PB and after figures_report
     # (which rewrites FIGURES.md; pathways.py appends its own section), before the tests
     run('pathways', [py, os.path.join(ROOT, 'pathways.py')])
-    run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
+    # metrics.json is a data file (locked by tests/test_regression_model_v1.py): written before the tests
     run('metrics', [py, tool('metrics')] + (['--mc-stale'] if skip_mc else []))
+    run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
     run('results', [py, tool('results')])
     run('assumptions', [py, tool('assumptions')])
     run('baseline_draft', [py, tool('baseline_draft')])
@@ -119,15 +120,15 @@ def pipeline(skip_mc, quick=False):
 
 
 def pathways_only():
-    """PATHWAYS v2 run mode: the baseline is frozen (tests/test_baseline_lock.py), so only the
-    pathway layer runs. Boss.main() is called in memory by pathways.py; no baseline output is
+    """Pathways-only run mode: the projection is unchanged (every number locked by
+    tests/test_regression_model_v1.py), so only the pathway layer runs. projection.main() is called in memory by pathways.py; no baseline output is
     written, outputs/figures/ is not cleared (pathways.py replaces only pw_* files), nothing is
     stamped as quick."""
     py = sys.executable
     env = {'PATHWAY_QUICK': '0'}
     step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
     step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
-                            os.path.join(ROOT, 'tests', 'test_baseline_lock.py')], env)
+                            os.path.join(ROOT, 'tests', 'test_regression_model_v1.py')], env)
     step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
 
 

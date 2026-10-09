@@ -2,7 +2,7 @@
 implemented (equations, constants with sources, alpha validation, coverage,
 source check, results). Every number is read from outputs/pb_results.json,
 outputs/pb_sensitivity.csv and outputs/metrics.json, or from the settings in
-PB.py; nothing is typed by hand.
+boundaries.py; nothing is typed by hand.
 
     python tools/pb_methods.py
 """
@@ -16,18 +16,17 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'outputs')
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import naming as N  # noqa: E402
 
-
-# one naming scheme for the three scenarios (other keys, e.g. S3-5, are sensitivities)
-SCEN_NAME = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
+SCEN_NAME = N.SCENARIOS
 
 def main():
-    import PB
+    import boundaries
     with open(os.path.join(OUT, 'pb_results.json')) as f:
         r = json.load(f)
     with open(os.path.join(OUT, 'metrics.json')) as f:
         mm = json.load(f)
-    m, run_mode = mm.get('pb', {}), mm.get('run_mode', 'full')
+    m, run_mode = mm.get('aesa', {}), mm.get('run_mode', 'full')
     sens = pd.read_csv(os.path.join(OUT, 'pb_sensitivity.csv'))
     c, s, ss = r['components'], r['settings'], r['components']['s_sec_parts']
     b = c['base_year_b']
@@ -83,7 +82,7 @@ def main():
          f"| SOS | {c['SOS_kg']:.3g} kg CO2-eq/yr | {c['pair_label']}; ESM2 (see source check) |",
          f"| I_glob | {c['I_glob_kg']:.3g} kg CO2-eq/yr | Bjørn & Hauschild 2015 ESM2 B30 (Laurent et al. 2013, 2010) |",
          f"| Ī_sec,base {w0}-{w1} | {c['I_sec_base_kg'] / 1e6:,.1f} kt/yr | this model, history on the projection's "
-         'soil convention (PB.historical_emissions) |',
+         'soil convention (boundaries.historical_emissions) |',
          f"| base year b | {b} | latest year with ≥ {100 * s['WDI_COVERAGE_MIN']:.0f}% of WDI-economy population "
          f"reporting {s['GDP_MEASURE']} |",
          f"| α (b, PPP) | {c['alpha']:.4f} | Hjalsted SI Eq. S1; WDI (release 2026-07-13) |",
@@ -111,11 +110,11 @@ def main():
           f"{c['I_sec_base_5yr_kg'] / 1e6:,.1f} kt/yr.", '',
           '## α validation (Hjalsted et al. 2021 SI: α = 0.243 for 2017; world GDP per capita 1.07E+04 USD)', '',
           '| GDP measure | α 2017 | g_W 2017 | economies | population coverage |', '|---|---|---|---|---|']
-    for k in (PB.GDP_MEASURE_SENS, PB.GDP_MEASURE):
+    for k in (boundaries.GDP_MEASURE_SENS, boundaries.GDP_MEASURE):
         L.append(f"| {k} | {ac[k]['alpha']:.4f} | {ac[k]['g_W']:,.0f} | {ac[k]['n']} | {100 * ac[k]['population_share']:.2f}% |")
     L += ['', f"Hjalsted et al. state GDP as 'USD/cap (2017)', World Bank (2019), without naming the series. With "
-          f"current US$ (WDI release 2026-07-13) α(2017) = {ac[PB.GDP_MEASURE_SENS]['alpha']:.4f} against 0.243 "
-          f"({100 * (ac[PB.GDP_MEASURE_SENS]['alpha'] / ac['hjalsted_alpha'] - 1):+.1f}%); not tuned. Possible "
+          f"current US$ (WDI release 2026-07-13) α(2017) = {ac[boundaries.GDP_MEASURE_SENS]['alpha']:.4f} against 0.243 "
+          f"({100 * (ac[boundaries.GDP_MEASURE_SENS]['alpha'] / ac['hjalsted_alpha'] - 1):+.1f}%); not tuned. Possible "
           'reasons, not tested: WDI revisions since the 2019 release, a different country set, and their use of '
           'UNSD rather than WDI population.', '',
           f'## Coverage, base year {b}', '', '| measure | economies | population share | share of WDI world GDP |',
@@ -128,9 +127,9 @@ def main():
         L += ['', f'Excluded, {k}: {ex}.']
     L += ['', '## Source check (SOS and I_glob)', '',
           '| value (kg CO2-eq/yr) | what | where | reference year | GWP basis | land-use-change CO2 |',
-          '|---|---|---|---|---|---|'] + [f'| {" | ".join(row)} |' for row in PB.SOURCE_CHECK]
-    L += ['', f"Primary pair {s['SOURCE_PAIR']}: {PB.SOURCE_PAIRS[s['SOURCE_PAIR']]['label']}; sensitivity C: "
-          f"{PB.SOURCE_PAIRS['C']['label']}. Pair B (6.81E12 with 5.21E13) mixes sources and is not implemented.", '',
+          '|---|---|---|---|---|---|'] + [f'| {" | ".join(row)} |' for row in boundaries.SOURCE_CHECK]
+    L += ['', f"Primary pair {s['SOURCE_PAIR']}: {boundaries.SOURCE_PAIRS[s['SOURCE_PAIR']]['label']}; sensitivity C: "
+          f"{boundaries.SOURCE_PAIRS['C']['label']}. Pair B (6.81E12 with 5.21E13) mixes sources and is not implemented.", '',
           '## Results', '']
     if m:
         L += [f"The {m['source_pair_label']} allocated by acquired rights gives {m['B_AR_2026_kt']:,.1f} kt CO2e in "
@@ -138,12 +137,12 @@ def main():
               f"{m['B_AtP_2050_kt']:,.2f} kt ({100 * m['B_AtP_over_B_AR']:.1f}% of AR in every year). Both "
               + ('rise: New Zealand\'s share of world population grows' if m['B_AR_2050_kt'] > m['B_AR_2026_kt']
                  else 'fall: New Zealand\'s share of world population declines') + f" between 2026 and 2050. Over "
-              f"{y0}-{y1} the reference path (S3-10) emits {r['reference_2026_2050']['I_kt']:,.0f} kt against "
+              f"{y0}-{y1} the Reference emits {r['reference_2026_2050']['I_kt']:,.0f} kt against "
               f"cumulative boundaries of {r['reference_2026_2050']['B_AR_kt']:,.0f} kt (AR) and "
-              f"{r['reference_2026_2050']['B_AtP_kt']:,.0f} kt (AtP): cumulative LoE {m['cum_LoE_AR_S3_10']:.2f} "
-              f"(AR; Monte Carlo p5-p95 {m['cum_LoE_AR_S3_10_mc_p5']:.2f}-{m['cum_LoE_AR_S3_10_mc_p95']:.2f}) and "
-              f"{m['cum_LoE_AtP_S3_10']:.1f} (AtP; {m['cum_LoE_AtP_S3_10_mc_p5']:.1f}-"
-              f"{m['cum_LoE_AtP_S3_10_mc_p95']:.1f}).", '',
+              f"{r['reference_2026_2050']['B_AtP_kt']:,.0f} kt (AtP): cumulative LoE {m['cum_LoE_AR_REF']:.2f} "
+              f"(AR; Monte Carlo p5-p95 {m['cum_LoE_AR_REF_mc_p5']:.2f}-{m['cum_LoE_AR_REF_mc_p95']:.2f}) and "
+              f"{m['cum_LoE_AtP_REF']:.1f} (AtP; {m['cum_LoE_AtP_REF_mc_p5']:.1f}-"
+              f"{m['cum_LoE_AtP_REF_mc_p95']:.1f}).", '',
               '| scenario | cumulative LoE AR | cumulative LoE AtP |', '|---|---|---|']
         L += [f"| {SCEN_NAME.get(k, k)} | {v['AR']:.2f} | {v['AtP']:.1f} |" for k, v in m['cum_LoE_by_scenario'].items()]
     cm = r.get('committed') or {}
@@ -153,10 +152,10 @@ def main():
               'Years of the 2050 AR boundary = committed / B_AR(2050). Not part of the cumulative LoE.', '',
               '| scenario | B2/B4 within 2026-2050 (kt) | share of window carbon | committed (kt) | years of B_AR(2050) |',
               '|---|---|---|---|---|']
-        L += [f"| {SCEN_NAME.get(k, k)} | {v['b_inwindow_kt']:,.0f} | {100 * v['b_share_inwindow']:.1f}% | "
+        L += [f"| {SCEN_NAME.get(k, k)} | {v['maintenance_kt_sum_of_annual']:,.0f} | {100 * v['maintenance_share']:.1f}% | "
               f"{v['lower_kt']:,.0f}-{v['upper_kt']:,.0f} | {v['years_of_B_AR_2050_lower']:.1f}-"
               f"{v['years_of_B_AR_2050_upper']:.1f} |" for k, v in cm.items() if k in SCEN_NAME]
-    L += ['', '### Deterministic sensitivities (reference scenario S3-10)', '',
+    L += ['', '### Deterministic sensitivities (the Reference)', '',
           '| case | cumulative LoE AR | vs reference | cumulative LoE AtP | vs reference |', '|---|---|---|---|---|']
     for _, x in sens.iterrows():
         L.append(f"| {x['label']} | {x['cum_LoE_AR']:.2f} | {x['AR_vs_ref_pct']:+.1f}% | {x['cum_LoE_AtP']:.1f} | "
@@ -173,8 +172,8 @@ def main():
               f"{r['mc'][k]['LoE_AR_p5']:.2f} / {r['mc'][k]['LoE_AR_p50']:.2f} / {r['mc'][k]['LoE_AR_p95']:.2f} |"
               for k, v in r['mc_base_20yr'].items()]
     L += ['', '## Assumption register', '', '| setting | value | basis |', '|---|---|---|']
-    L += [f'| {a} | {v} | {bb} |' for a, v, bb in PB.assumption_register()]
-    L += ['', '## Limitations', ''] + [f'- {x}' for x in PB.LIMITATIONS]
+    L += [f'| {a} | {v} | {bb} |' for a, v, bb in boundaries.assumption_register()]
+    L += ['', '## Limitations', ''] + [f'- {x}' for x in boundaries.LIMITATIONS]
     L += ['', '## Notes', ''] + [f'- {v}' for v in r['notes'].values()]
     with open(os.path.join(OUT, 'PB_METHODS_DRAFT.md'), 'w') as f:
         f.write('\n'.join(L) + '\n')

@@ -139,12 +139,12 @@ def test_no_historical_carbon_in_figures():
     """No figure shows carbon before the projection (from 2026), except mc_1_fan_pb,
     which shows the AR base window at 2025 factors (figaudit records, written when
     each figure is saved)."""
-    import PB
+    import boundaries
     audit = os.path.join(ROOT, 'outputs', 'figures', '_audit')
     files = {f[:-4] for f in os.listdir(os.path.join(ROOT, 'outputs', 'figures')) if f.endswith('.png')}
     recs = {f[:-5]: json.load(open(os.path.join(audit, f))) for f in os.listdir(audit) if f.endswith('.json')}
     assert files <= set(recs), sorted(files - set(recs))         # every saved figure audited
-    allowed = {'mc_1_fan_pb': PB.AR_BASE_WINDOW[0]}
+    allowed = {'mc_1_fan_pb': boundaries.AR_BASE_WINDOW[0]}
     bad = []
     for name in files:
         for ax in recs[name]['axes']:

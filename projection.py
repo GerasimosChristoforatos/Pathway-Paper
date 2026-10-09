@@ -23,6 +23,7 @@ from scipy.interpolate import PchipInterpolator
 import engine
 import events as EV
 import figaudit
+import naming as N
 import Building_factors as BF
 
 # ============================================================
@@ -41,7 +42,7 @@ OUT_DIR = OUT_DIR.rstrip(os.sep)
 FACTORS_DIR = os.path.join(ROOT_DIR, 'outputs', 'factors')     # written by Building_factors.py
 VERBOSE = False     # True also prints historical diagnostics (occupancy, calibration)
 SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
-# Save every figure as PNG to FIG_DIR. Only when Boss.py is run as a script with
+# Save every figure as PNG to FIG_DIR. Only when projection.py is run as a script with
 # PATHWAY_SAVE_FIGURES=1 (run_all.py), so re-runs from other scripts never overwrite them.
 SAVE_FIGURES = False
 FIG_DIR = os.path.join(OUT_DIR, 'figures')
@@ -355,22 +356,21 @@ NET_REPLACEMENT_WINDOW = (1991, 2023)
 #   (private). False = no correction (sensitivity).
 CENSUS_UC_CORRECTION = True    # census years; (2013, 2023) is a sensitivity
 
-# REPLACEMENT_SCENARIO (net replacement path, on the census dwelling-count rates):
-#   'S1': the long-run rate (NET_REPLACEMENT_WINDOW) throughout;
-#   'S2': the 2018-2023 census-interval rate persists;
-#   'S3': the 2018-2023 rate fades to the long-run rate with half-life
-#         S3_HALF_LIFE years (5, 10, 15 assessed).
-# Author's decision: S1 and S2 are the lower and
-# upper bounds; S3 with a 10-year half-life is the labelled reference path
-# (JUDGEMENT: the half-life is not identifiable), with 5 and 15 years reported.
-REPLACEMENT_SCENARIO = 'S3'
-S3_HALF_LIFE = 10.0
+# REPLACEMENT_VARIANT (net replacement path, on the census dwelling-count rates):
+#   'REF':  the Reference: the 2018-2023 rate fades to the long-run rate with
+#           half-life REPLACEMENT_HALF_LIFE years (10; 5 and 15 are sensitivity variants);
+#   'LOW':  Low replacement: the long-run rate (NET_REPLACEMENT_WINDOW) throughout;
+#   'HIGH': High replacement: the 2018-2023 census-interval rate persists.
+# Author's decision: Low and High bound the Reference (JUDGEMENT: the half-life is
+# not identifiable from the census record).
+REPLACEMENT_VARIANT = 'REF'
+REPLACEMENT_HALF_LIFE = 10.0
 RECENT_INTERVAL = (2018, 2023)
 
 # ---------------------------------------------------------------------------
 # NEAR-TERM MARKET EXCESS
 # ---------------------------------------------------------------------------
-# NEAR_TERM_JOIN:
+# OVERBUILD_RULE:
 #   'carried_deviation': no observed 2026 data; 2025's deviation fades at rho
 #       (used only by the 2026 out-of-sample check, validation.NO_2026_DATA).
 # v1.1 default: 'market_excess' -- ONE rule on top of any replacement scenario:
@@ -380,16 +380,16 @@ RECENT_INTERVAL = (2018, 2023)
 #   building_2026 - requirement_2027 (the 2027 requirement, because the 2026 one
 #   is depressed by the one-off 2026 population shortfall) and rho = rho_other
 #   (the estimated persistence of departures from the calibrated identity).
-#   NEAR_TERM_MODE 'surplus' with absorption 0 (default): the excess is
+#   OVERBUILD_BOOKING 'surplus' with absorption 0 (default): the excess is
 #   STOCK-ADDING -- extra dwellings join the stock as vacancy that is never
 #   absorbed; soil applies; removals stay on the scenario path. Implied vacancy
 #   = 1 - households / (stock + cumulative excess). Sensitivities: 'redevelopment'
-#   (stock-neutral), payback (NEAR_TERM_ABSORPTION 0.20 / 0.10), and
-#   NEAR_TERM_GAP_REF = '2026'.
-NEAR_TERM_JOIN = 'market_excess'
-NEAR_TERM_GAP_REF = '2027'
-NEAR_TERM_MODE = 'surplus'
-NEAR_TERM_ABSORPTION = 0.0
+#   (stock-neutral), payback (OVERBUILD_ABSORPTION 0.20 / 0.10), and
+#   OVERBUILD_GAP_REF = '2026'.
+OVERBUILD_RULE = 'market_excess'
+OVERBUILD_GAP_REF = '2027'
+OVERBUILD_BOOKING = 'surplus'
+OVERBUILD_ABSORPTION = 0.0
 # NOWCAST_METHOD: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
 #   (August 2025 - July 2026), no seasonal estimation. It is the year to July
 #   2026, not calendar 2026: replace it with calendar 2026 when published.
@@ -560,7 +560,7 @@ FILE_FACTORS_DECARB_BLD = os.path.join(FACTORS_DIR, 'factors_building_a13_reduct
 # the case studies, mapped one-to-one to an S4 row (direct, Horup p. 6, or proxy) or
 # held, by data/material_item_map.csv. Mapping and values: Building_factors.py and
 # outputs/factors/factors_a13_decarb.csv. The history (and so the acquired-rights
-# base of PB.py) always uses 2025 factors. (The class-level mapping of v1.1 is
+# base of boundaries.py) always uses 2025 factors. (The class-level mapping of v1.1 is
 # preserved at tags baseline-PB_v1.2 / baseline-PB_v2.)
 DECARB_MODE = 'none' if FROZEN_RUN else 'horup_item'   # see Building_factors.DECARB_MODES
 DECARB_ITEM_CASE = 'central'        # 'horup_item' only: 'central' or a sensitivity in Building_factors.ITEM_CASES
@@ -582,7 +582,7 @@ EVENT_TIMING = 'n+1'       # event k at k L / (n + 1); 'n': k L / n (sensitivity
 #   only (projection: from 2026; AR base: from the base window's first year). The
 #   wider scope, which adds the events of every cohort built since B_SCOPE_START
 #   (upkeep of the post-1992 stock) in base and projection alike, is a PB
-#   sensitivity row (PB.legacy_events, PB.window_base(scope='since_1992')).
+#   sensitivity row (boundaries.legacy_events, boundaries.window_base(scope='since_1992')).
 B_SCOPE_START = 1992
 EVENTS_LABEL = 'Replacements & repaints, within 2026-2050'
 EVENTS_COLOR = '#16A085'
@@ -1049,9 +1049,9 @@ def main():
     # returned calibrate_stock() never reads the (mutable) module globals.
     _completion, _demol_rate, _calib_start = COMPLETION_RATE, DEMOLITION_RATE, DEMOLITION_CALIB_START
     _nr_window = tuple(NET_REPLACEMENT_WINDOW)
-    _scenario, _join_mode = REPLACEMENT_SCENARIO, NEAR_TERM_JOIN
+    _scenario, _join_mode = REPLACEMENT_VARIANT, OVERBUILD_RULE
     if _join_mode not in ('market_excess', 'carried_deviation'):
-        raise ValueError(f"Unknown NEAR_TERM_JOIN '{_join_mode}'.")
+        raise ValueError(f"Unknown OVERBUILD_RULE '{_join_mode}'.")
 
     # ------------------------------------------------------------------
     # 0. CASE-STUDY FACTORS
@@ -1285,10 +1285,10 @@ def main():
 
     # 2025's departure from the calibrated identity, and its persistence. Carried
     # forward fading at rho, booked to the residual (see engine.forward).
-    # net replacement path forward (REPLACEMENT_SCENARIO); unconsented_rate stays the long-run value
+    # net replacement path forward (REPLACEMENT_VARIANT); unconsented_rate stays the long-run value
     rate_recent = engine.census_window_rate(census_rates, *RECENT_INTERVAL)
     rate_path = engine.replacement_path(_scenario, demolition_rate + unconsented_rate, rate_recent,
-                                        np.arange(2025, 2051), S3_HALF_LIFE)
+                                        np.arange(2025, 2051), REPLACEMENT_HALF_LIFE)
     unc_path = rate_path - demolition_rate
     _dv = engine.deviation_2025(stock_cal, _completion * hist_units_all_c.loc[2025], d_hh.loc[2025],
                                 float(rate_path[0]), years_hist, _calib_start, calib_end)
@@ -1543,8 +1543,8 @@ def main():
         E = engine.forward(pop_total, hh_arr, pop_growth, **fwd_inputs)
         if _join_mode == 'market_excess':
             _b26 = _completion * ((1.0 - lag_w) * float(nowcast['total']) + lag_w * float(hist_units_all.loc[2025]))
-            join, ji = engine.market_excess(E, _b26, rho_other, NEAR_TERM_GAP_REF, NEAR_TERM_MODE,
-                                            NEAR_TERM_ABSORPTION)
+            join, ji = engine.market_excess(E, _b26, rho_other, OVERBUILD_GAP_REF, OVERBUILD_BOOKING,
+                                            OVERBUILD_ABSORPTION)
             E = engine.forward(pop_total, hh_arr, pop_growth, join=join, join_redev=ji['redev'],
                                **fwd_inputs)
             join_info[col] = dict(ji, join=join)
@@ -1642,16 +1642,16 @@ def main():
         fwd = df_forecast[f'Ann_GFA_Total_{col}'].cumsum() - df_forecast[f'Ann_GFA_Total_{col}'].iloc[0]
         df_forecast[f'Cum_GFA_Total_{col}'] = gfa_2025_cum + fwd
 
-    print(f"\n[replacement] scenario {_scenario}"
-          + (f" (half-life {S3_HALF_LIFE:g} yr)" if _scenario == 'S3' else '')
+    print(f"\n[replacement] variant {_scenario}"
+          + (f" (half-life {REPLACEMENT_HALF_LIFE:g} yr)" if _scenario == 'REF' else '')
           + f": net replacement {100 * rate_path[1]:.3f}%/yr in 2026, {100 * rate_path[-1]:.3f}%/yr in 2050 "
           f"(long run {100 * (demolition_rate + unconsented_rate):.3f}%, "
           f"{RECENT_INTERVAL[0]}-{RECENT_INTERVAL[1]} {100 * rate_recent:.3f}%)")
     if _join_mode == 'market_excess':
         ji = join_info['50th']
         print(f"[near-term market excess] 2026 building {ji['O26']:,.0f} (0.95 x consents, {NOWCAST_METHOD}) vs "
-              f"requirement {ji['R26']:,.0f} -> excess {ji['e26']:+,.0f}; gap_ref ({NEAR_TERM_GAP_REF}) "
-              f"{ji['gap_ref']:+,.0f}, rho {ji['rho']:.2f}; {NEAR_TERM_MODE}: "
+              f"requirement {ji['R26']:,.0f} -> excess {ji['e26']:+,.0f}; gap_ref ({OVERBUILD_GAP_REF}) "
+              f"{ji['gap_ref']:+,.0f}, rho {ji['rho']:.2f}; {OVERBUILD_BOOKING}: "
               f"{ji['join'][1:].sum():+,.0f} dwellings 2026-2050")
 
     # ------------------------------------------------------------------
@@ -2442,15 +2442,10 @@ def export_results(B, path):
     import json
     f = slice(1, None)
     tot = lambda df: float(df.iloc[f].sum().sum())
-    bands = [('Growth (net of consolidation)', 'evol_typ_growth', 'carbon_growth_typ'),
-             ('House-splitting', 'evol_typ_hs_pos', 'carbon_hs_pos_typ'),
-             ('Extra space per dwelling', 'evol_typ_extra', 'carbon_extra_typ'),
-             ('Vacancy allowance', 'evol_typ_vac', 'carbon_vac_typ'),
-             ('Demolition replacement', 'evol_typ_repl', 'carbon_repl_typ'),
-             ('Calibrated stock residual (long run)', 'evol_typ_unc', 'carbon_unc_typ'),
-             ('Redevelopment wave (scenario - long run)', 'evol_typ_wave', 'carbon_wave_typ'),
-             ('Near-term market excess', 'evol_typ_join', 'carbon_join_typ'),
-             ('Housed in RV units (out of scope)', 'evol_typ_rv', 'carbon_rv_typ')]
+    # demand bands, definition 'with_retirement_villages' (naming.BANDS_WITH_RETIREMENT_VILLAGES)
+    keys = ('growth', 'hs_pos', 'extra', 'vac', 'repl', 'unc', 'wave', 'join', 'rv')
+    bands = [(N.band_data_label(b), f'evol_typ_{k}', f'carbon_{k}_typ')
+             for b, k in zip(N.BANDS_WITH_RETIREMENT_VILLAGES, keys)]
     typ = list(B['typ_names'])
     et, ct = B['evol_typ_total'], B['carbon_total_typ']
     shares = B['evolving_gfa_shares']
@@ -2458,8 +2453,8 @@ def export_results(B, path):
               for s in B['stage_int'].index}
     R = B['results']
     out = dict(
-        settings=dict(scenario=B['_scenario'], s3_half_life=S3_HALF_LIFE, near_term_join=B['_join_mode'],
-                      nowcast_method=NOWCAST_METHOD, near_term_mode=NEAR_TERM_MODE,
+        settings=dict(scenario=B['_scenario'], replacement_half_life=REPLACEMENT_HALF_LIFE, overbuild_rule=B['_join_mode'],
+                      nowcast_method=NOWCAST_METHOD, overbuild_booking=OVERBUILD_BOOKING,
                       completion_rate=COMPLETION_RATE, lag_w=float(B['lag_w']), phi=DAMPING_PHI),
         gfa_Mm2=float(R['50th']['total'][f].sum() / 1e6), carbon_kt=float(B['tot_carbon_median']),
         upfront_kt=float(B['_upfront'] + B['_soil'] / 1e6), soil_kt=float(B['_soil'] / 1e6),
@@ -2479,7 +2474,7 @@ def export_results(B, path):
                     carbon_kt=[float(v / 1e6) for v in ct.sum(axis=1).values]),
         S_2050=float(B['df_forecast']['PopTotal_50th'].values[-1] / B['households_forecast']['50th'][-1]))
     with open(path, 'w') as fh:
-        json.dump(out, fh, indent=2)
+        json.dump(N.keys(out), fh, indent=2)
 
 
 if __name__ == "__main__":

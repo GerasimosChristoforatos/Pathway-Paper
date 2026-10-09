@@ -1,7 +1,7 @@
 """
-DIAGNOSTICS -- sanity checks for Boss.py, past and future together
+DIAGNOSTICS -- sanity checks for projection.py, past and future together
 ==================================================================
-Four figures and one appendix. Everything is read from ONE run of Boss.py, so
+Four figures and one appendix. Everything is read from ONE run of projection.py, so
 the two scripts can never disagree. Projections are annual; the history of the
 demand decomposition (diag_3, diag_4) is one bar per census interval, because
 between censuses households and vacancy are interpolated and annual detail is
@@ -30,12 +30,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
 
-import Boss as M
+import projection as M
 import engine
 import figaudit
 import validation
 # Interactive consoles (Spyder, IPython, Jupyter) keep an imported module alive
-# between runs, so an edited Boss.py would otherwise be ignored. Always reload.
+# between runs, so an edited projection.py would otherwise be ignored. Always reload.
 M = importlib.reload(M)
 
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # run_all.py sets this
@@ -46,13 +46,13 @@ plt.rcParams.update({'font.size': 9, 'axes.titlesize': 10, 'legend.fontsize': 7.
 
 
 # ---------------------------------------------------------------------------
-# One silent run of Boss, with a version check
+# One silent run of projection, with a version check
 # ---------------------------------------------------------------------------
 _BOSS_CACHE = None
 
 
 def boss_locals():
-    """Run Boss.main() silently once per run and return its internal variables."""
+    """Run projection.main() silently once per run and return its internal variables."""
     global _BOSS_CACHE
     if _BOSS_CACHE is not None:
         return _BOSS_CACHE
@@ -60,7 +60,7 @@ def boss_locals():
     with contextlib.redirect_stdout(io.StringIO()):
         grab = M.main()
     if not isinstance(grab, dict):
-        raise RuntimeError(f"{M.__file__}: main() returned no state; use the latest Boss.py.")
+        raise RuntimeError(f"{M.__file__}: main() returned no state; use the latest projection.py.")
     need = ('stock_fwd', 'stock_cal', 'census', 'unconsented_rate', 'flow_annual', 'hist_rv_units',
             'hh_response', 'MAT_INTENSITY', 'fig_bands')
     miss = [k for k in need if k not in grab]
@@ -68,9 +68,9 @@ def boss_locals():
              if k not in grab.get('results', {}).get('50th', {})]
     if miss:
         raise RuntimeError(
-            f"\nThe Boss.py being run is OLDER than this Diagnostics.py.\n"
+            f"\nThe projection.py being run is OLDER than this Diagnostics.py.\n"
             f"  file used: {M.__file__}\n  missing:   {', '.join(miss)}\n"
-            f"Use the latest Boss.py. In Spyder, restart the kernel once.")
+            f"Use the latest projection.py. In Spyder, restart the kernel once.")
     _BOSS_CACHE = grab
     return grab
 
@@ -82,7 +82,7 @@ B = boss_locals()
 # ---------------------------------------------------------------------------
 TYP = list(B['typ_names'])
 TC = M.TYPOLOGY_COLORS
-BF = M.COMPLETION_RATE                         # consents -> built (x the completion lag, see Boss)
+BF = M.COMPLETION_RATE                         # consents -> built (x the completion lag, see projection)
 YH = np.arange(1992, 2026)                     # history with defined flows
 FY = np.asarray(B['forecast_years'])
 PF = FY[1:]                                    # projected years (2025 is the anchor)

@@ -13,10 +13,10 @@ os.chdir(ROOT)
 
 
 def run_boss(**settings):
-    """One silent Boss.main() on a freshly reloaded module (no leaked globals)."""
+    """One silent projection.main() on a freshly reloaded module (no leaked globals)."""
     import importlib
-    import Boss
-    M = importlib.reload(Boss)
+    import projection
+    M = importlib.reload(projection)
     M.SHOW_PLOTS = False
     for k, v in settings.items():
         assert hasattr(M, k), k
@@ -27,7 +27,7 @@ def run_boss(**settings):
 
 @pytest.fixture(scope='session')
 def B():
-    import Boss
-    if not os.path.exists(Boss.FILE_FACTORS_TYPOLOGY):
+    import projection
+    if not os.path.exists(projection.FILE_FACTORS_TYPOLOGY):
         pytest.exit('Run Building_factors.py first (outputs/factors/ missing).')
     return run_boss()

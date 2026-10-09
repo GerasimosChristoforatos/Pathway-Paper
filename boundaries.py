@@ -11,14 +11,14 @@ a range and never averaged:
 
 Static carrying capacity: SOS, I_glob, GDP per capita and the sector share are
 held fixed; the boundaries move only with New Zealand and world population.
-The model itself is not changed: Boss.py, MonteCarlo.py and engine.py are only
+The model itself is not changed: projection.py, MonteCarlo.py and engine.py are only
 called. Equations: aesa.py. Every constant below carries its source.
 
 Writes outputs/pb_annual.csv, pb_mc_annual.csv, pb_sensitivity.csv,
 pb_results.json and figures *_pb, pb_1..pb_5 (outputs/figures/ when
 PATHWAY_SAVE_FIGURES=1, as run_all.py sets).
 
-    python PB.py
+    python boundaries.py
 """
 import contextlib
 import importlib
@@ -42,12 +42,13 @@ sys.path.insert(0, ROOT_DIR)
 sys.path.insert(0, os.path.join(ROOT_DIR, 'tools'))
 import aesa  # noqa: E402
 import figaudit  # noqa: E402
-import Boss  # noqa: E402
+import projection  # noqa: E402
 import MonteCarlo as MC  # noqa: E402
+import naming as N  # noqa: E402
 import validation  # noqa: E402
 
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
-OUT_DIR = Boss.OUT_DIR          # outputs/ (outputs/modes/<mode>/ in a mode comparison run)
+OUT_DIR = projection.OUT_DIR          # outputs/ (outputs/modes/<mode>/ in a mode comparison run)
 FIG_DIR = os.path.join(ROOT_DIR, 'outputs', 'figures')
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
 FILE_WPP = os.path.join(DATA_DIR, 'derived', 'wpp2024_population_median.csv')      # data/build_wpp.py
@@ -133,7 +134,7 @@ POP_NZ_SOURCE = 'model'            # sensitivities: 'statsnz_median' (raw Stats 
 
 MC_REL_TOL = 1e-9                  # re-run MC draws must reproduce the saved draw outputs
 MC_PCT = (5, 50, 95)
-_factor_note = ''                     # set from the Boss run in figures()
+_factor_note = ''                     # set from the projection run in figures()
 AR_COLOR, ATP_COLOR = '#1F5FA8', '#C2571A'   # validated pair (dataviz validator, light mode)
 HALO = [pe.Stroke(linewidth=4, foreground='white'), pe.Normal()]
 M6 = 1e6
@@ -167,7 +168,7 @@ def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_fro
     projection: built floor area by typology (consents x completion rate) x
     construction-year intensity, plus soil on the non-replacement share of the floor
     area (engine.forward with soil_on_replacement=False). Time-resolved accounting
-    (Boss.ACCOUNTING): construction-year intensity = upfront (A1-A5), plus the
+    (projection.ACCOUNTING): construction-year intensity = upfront (A1-A5), plus the
     replacement / repaint events of the cohorts built from events_from (default: the
     first of years) that occur in each year (b_kg), at 2025 factors."""
     typ = list(B['typ_names'])
@@ -188,7 +189,7 @@ def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_fro
             last = cr.iloc[-1]
             rate.append(float(last['rate']) if after == 'recent' else long_run)
             src.append(f"{int(last['y0'])}-{int(last['y1'])} carried" if after == 'recent'
-                       else f"long run {Boss.NET_REPLACEMENT_WINDOW[0]}-{Boss.NET_REPLACEMENT_WINDOW[1]}")
+                       else f"long run {projection.NET_REPLACEMENT_WINDOW[0]}-{projection.NET_REPLACEMENT_WINDOW[1]}")
         else:
             raise ValueError(f'No census interval for {y}.')
     rate = pd.Series(rate, index=list(years))
@@ -205,7 +206,7 @@ def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_fro
         gh = B['hist_built_typ_gfa'][typ]
         for t in typ:
             prof = B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t]
-            b += hist_events(gh[t], Boss.EV.age_profile(prof), list(years), ef)
+            b += hist_events(gh[t], projection.EV.age_profile(prof), list(years), ef)
     out = pd.DataFrame(dict(I_sec_kg=mat + soil + b, materials_kg=mat, b_kg=b, soil_kg=soil, soil_share=soil_share,
                             net_replacement_rate=rate, rate_source=src, gfa_m2=gfa,
                             I_soil_on_all_kg=mat + soil_all + b))
@@ -246,9 +247,9 @@ def legacy_events(B):
     out = np.zeros(len(fy))
     for t in B['typ_names']:
         prof = B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t].reset_index(drop=True)
-        f = Boss.EV.row_factors(prof, fy, Boss.DECARB_MODE, Boss.DECARB_ITEM_CASE, Boss.DECARB_A45)
+        f = projection.EV.row_factors(prof, fy, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45)
         age, kg = prof['Age'].to_numpy(int), prof['kg_per_m2'].to_numpy(float)
-        for c in range(Boss.B_SCOPE_START, 2026):
+        for c in range(projection.B_SCOPE_START, 2026):
             for j, y in enumerate(fy[1:], start=1):
                 hit = age == y - c
                 if hit.any():
@@ -259,8 +260,8 @@ def legacy_events(B):
 def window_base(B, window, after=HIST_RATE_AFTER_LAST_CENSUS, col='I_sec_kg', scope=None):
     """Ī_sec,base over window, same accounting rule as the projection: upfront of the
     window's construction + the events, within the window, of the buildings built in it
-    (scope 'since_1992': of every cohort since Boss.B_SCOPE_START), at 2025 factors."""
-    ef = Boss.B_SCOPE_START if scope == 'since_1992' else window[0]
+    (scope 'since_1992': of every cohort since projection.B_SCOPE_START), at 2025 factors."""
+    ef = projection.B_SCOPE_START if scope == 'since_1992' else window[0]
     h = historical_emissions(B, range(HIST_START, 2026), after, events_from=ef)
     return aesa.mean_over(h[col], window), h
 
@@ -310,7 +311,7 @@ def sector_share_components(window=SSEC_WINDOW):
     n_years = window[1] - window[0] + 1
     if len(q) != 4 * n_years:
         raise ValueError(f'GDP(E): {len(q)} quarters in {window}, expected {4 * n_years}.')
-    c = Boss.load_consents()
+    c = projection.load_consents()
     c['Date'] = pd.to_datetime(c['Date'])
     c = c[(c['Date'].dt.year >= window[0]) & (c['Date'].dt.year <= window[1])]
     if len(c) != 12 * n_years or c[list(SSEC_VALUE_COLUMNS)].isna().any().any():
@@ -347,7 +348,7 @@ def cum(impact, boundary, years=PB_YEARS):
 # ============================================================
 def scenario_runs():
     """Deterministic scenarios of tools/replacement_scenarios.py (all rows of
-    RESULTS.md): annual carbon and the NZ population path of each full Boss run."""
+    RESULTS.md): annual carbon and the NZ population path of each full projection run."""
     import replacement_scenarios as RS
     out = {}
     for key, label, settings in RS.SCENARIOS:
@@ -371,10 +372,10 @@ def mc_runs(fy, hist):
     for name, settings in MC.MC_SCENARIOS:
         with contextlib.redirect_stdout(io.StringIO()):
             su = MC.build_setup(settings)
-        path = os.path.join(OUT_DIR, f'montecarlo_draws_{name}.csv')
+        path = os.path.join(OUT_DIR, f'montecarlo_draws_{MC.LEGACY_FILE_SUFFIX[name]}.csv')
         d = pd.read_csv(path)
-        X = d[MC.PARAMS].to_numpy(float)
-        Y = d[MC.OUTPUTS].to_numpy(float)
+        X = d[[N.identifier(c) for c in MC.PARAMS]].to_numpy(float)
+        Y = d[[N.identifier(c) for c in MC.OUTPUTS]].to_numpy(float)
         carbon = np.empty((len(d), len(fy)))
         pop = np.empty((len(d), len(fy)))
         ibase = np.empty(len(d))
@@ -404,7 +405,7 @@ def mc_runs(fy, hist):
         central = (base_with_factors(hist, su['typ'], su['up_central'], AR_BASE_WINDOW, su['age_central'])
                    if su['tr'] else base_with_factors(hist, su['typ'], su['emb_central']))
         out[name] = dict(carbon=carbon, pop=pop, i_base=ibase, i_base_central=central, i_base_20=ibase20)
-    importlib.reload(Boss)
+    importlib.reload(projection)
     return out
 
 
@@ -465,10 +466,10 @@ def main():
     for y in AR_BASE_WINDOW_RANGE():
         rows.append(dict(scenario='history', year=y, I_sec_kgCO2e=float(hist.loc[y, 'I_sec_kg'])))
     annual = pd.DataFrame(rows)
-    annual.to_csv(os.path.join(OUT_DIR, 'pb_annual.csv'), index=False)
-    ref_I = runs['S3-10']['I']
+    N.columns(annual).to_csv(os.path.join(OUT_DIR, 'pb_annual.csv'), index=False)
+    ref_I = runs['REF']['I']
     if not np.allclose(ref_I.values, B['carbon_total_typ'].sum(axis=1).values, rtol=1e-12):
-        raise SystemExit('S3-10 scenario run differs from the central Boss run.')
+        raise SystemExit('The REF variant run differs from the Reference projection run.')
     cum_det = {k: dict(label=r['label'], I_kt=float(r['I'].loc[slice(*PB_YEARS)].sum() / M6),
                        LoE_AR=cum(r['I'], b_ar), LoE_AtP=cum(r['I'], b_atp)) for k, r in runs.items()}
 
@@ -514,14 +515,15 @@ def main():
         mc_cum_20[name] = {f'LoE_AR_p{p}': float(np.percentile(c20, p)) for p in MC_PCT}
         mc_cum_20[name].update({f'I_sec_base_kt_p{p}': float(np.percentile(m['i_base_20'], p) / M6) for p in MC_PCT})
     mc_annual = pd.DataFrame(mc_rows)
-    mc_annual.to_csv(os.path.join(OUT_DIR, 'pb_mc_annual.csv'), index=False)
+    N.columns(mc_annual).to_csv(os.path.join(OUT_DIR, 'pb_mc_annual.csv'), index=False)
 
-    # ---- deterministic sensitivities (reference scenario S3-10) -------------
+    # ---- deterministic sensitivities (the Reference) --------------------------
     def cum_pair(pair_key=SOURCE_PAIR, ib=i_base, cp=comp, ssec=s_sec, pnz=p_nz):
         a, t = boundaries(pair_key, ib, cp, ssec, pnz, p_w)
         return cum(ref_I, a), cum(ref_I, t)
     ref_ar, ref_atp = cum_pair()
-    sens = [('reference', 'Reference: pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios',
+    sens = [('reference', 'Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, '
+                          'mean of ratios',
              ref_ar, ref_atp),
             ('i_source_pair', f"(i) SOS/I_glob pair C: {SOURCE_PAIRS['C']['label']}", *cum_pair(pair_key='C')),
             ('ii_gdp_measure', f'(ii) GDP per capita, current US$ ({GDP_MEASURE_SENS}), b = {b_year}',
@@ -545,7 +547,7 @@ def main():
     b_ar_ref, b_atp_ref = boundaries(SOURCE_PAIR, i_base, comp, s_sec, p_nz, p_w)
 
     def cum_I(base=None, add=None, **kw):
-        """Cumulative LoE of a Boss run with settings kw. base: its own AR base (a
+        """Cumulative LoE of a projection run with settings kw. base: its own AR base (a
         different accounting rule); add: emissions added to the run (kg by year)."""
         Bx = validation.run_boss(**kw)
         I = pd.Series(Bx['carbon_total_typ'].sum(axis=1).values, index=np.asarray(Bx['forecast_years']))
@@ -553,7 +555,7 @@ def main():
             I = I + add.reindex(I.index, fill_value=0.0)
         bar = b_ar_ref if base is None else boundaries(SOURCE_PAIR, base, comp, s_sec, p_nz, p_w)[0]
         return cum(I, bar), cum(I, b_atp_ref)
-    if Boss.DECARB_MODE == 'none':
+    if projection.DECARB_MODE == 'none':
         sens.append(('vi_decarb', '(vi) Materials decarbonised (A1-A3 item level, Horup et al. 2025 SI Table S4)',
                      *cum_I(DECARB_MODE='horup_item')))
     else:
@@ -566,7 +568,7 @@ def main():
              *cum_I(DECARB_ITEM_CASE='nz_elec_held')),
             ('ix_a45_held', '(ix) A4-A5 held at 2025 (no generic 1%/yr)', *cum_I(DECARB_A45='held')),
             ('x_a45_item', "(x) A4-A5 on each item's own Horup S4 path", *cum_I(DECARB_A45='item'))]
-        if Boss.ACCOUNTING == 'time_resolved':
+        if projection.ACCOUNTING == 'time_resolved':
             Bw = validation.run_boss(ACCOUNTING='whole_life_at_construction')
             base_w, _ = window_base(Bw, AR_BASE_WINDOW)
             sens += [
@@ -575,7 +577,7 @@ def main():
                 ('xii_whole_life', '(xii) Accounting: whole life at construction (base on the same rule)',
                  *cum_I(base=base_w, ACCOUNTING='whole_life_at_construction')),
                 ('xiii_wider_scope', f'(xiii) Wider scope: base and projection include the replacements and '
-                 f'repaints of every cohort since {Boss.B_SCOPE_START}',
+                 f'repaints of every cohort since {projection.B_SCOPE_START}',
                  *cum_I(base=i_base_wide, add=legacy_events(B)))]
     sens.append(('xiv_alpha_1', "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",
                  *cum_pair(cp=dict(comp, alpha=1.0))))
@@ -584,7 +586,7 @@ def main():
     sens_df = pd.DataFrame(sens, columns=['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP'])
     sens_df['AR_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AR'] / ref_ar - 1)
     sens_df['AtP_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AtP'] / ref_atp - 1)
-    sens_df.to_csv(os.path.join(OUT_DIR, 'pb_sensitivity.csv'), index=False)
+    N.columns(sens_df).to_csv(os.path.join(OUT_DIR, 'pb_sensitivity.csv'), index=False)
 
     # ---- results JSON ---------------------------------------------------------
     gfa = pd.Series(B['results']['50th']['total'], index=fy)
@@ -594,13 +596,13 @@ def main():
                       AR_BASE_WINDOW_SENS=list(AR_BASE_WINDOW_SENS), HIST_RATE_AFTER_LAST_CENSUS=HIST_RATE_AFTER_LAST_CENSUS,
                       GDP_MEASURE=GDP_MEASURE, GDP_MEASURE_SENS=GDP_MEASURE_SENS, WDI_COVERAGE_MIN=WDI_COVERAGE_MIN,
                       SSEC_WINDOW=list(SSEC_WINDOW), SSEC_FCE_SHARE=SSEC_FCE_SHARE, POP_NZ_SOURCE=POP_NZ_SOURCE,
-                      DECARB_MODE=Boss.DECARB_MODE,
-                      **({'DECARB_ITEM_CASE': Boss.DECARB_ITEM_CASE} if Boss.DECARB_MODE == 'horup_item' else {})),
+                      DECARB_MODE=projection.DECARB_MODE,
+                      **({'DECARB_ITEM_CASE': projection.DECARB_ITEM_CASE} if projection.DECARB_MODE == 'horup_item' else {})),
         source_pairs=SOURCE_PAIRS,
         components=dict(SOS_kg=pair['sos'], I_glob_kg=pair['i_glob'], pair_label=pair['label'],
                         I_sec_base_kg=i_base, I_sec_base_window=list(AR_BASE_WINDOW),
                         I_sec_base_b_share=b_share_base, I_sec_base_wider_scope_kg=i_base_wide,
-                        accounting=Boss.ACCOUNTING, decarb_a45=Boss.DECARB_A45, event_timing=Boss.EVENT_TIMING,
+                        accounting=projection.ACCOUNTING, decarb_a45=projection.DECARB_A45, event_timing=projection.EVENT_TIMING,
                         I_sec_base_5yr_kg=i_base_5, I_sec_base_long_run_2024_25_kg=i_base_long,
                         I_sec_base_20yr_kg=i_base_20, I_sec_base_full_kg=i_base_full,
                         I_sec_base_20yr_window=list(AR_BASE_WINDOW_20), I_sec_base_full_window=list(AR_BASE_WINDOW_FULL),
@@ -620,7 +622,10 @@ def main():
                                  P_NZ=float(p_nz.loc[y]), P_W=float(p_w.loc[y])) for y in years_b},
         B_AtP_over_B_AR=dict(min=float(ratio.min()), max=float(ratio.max())),
         deterministic=cum_det, mc=mc_cum, mc_base_fixed=mc_cum_fixed, mc_base_20yr=mc_cum_20,
-        committed={k: dict(r['committed'], b_inwindow_kt=float(r['b_inwindow'].loc[slice(*PB_YEARS)].sum() / M6),
+        # maintenance within 2026-2050 twice: the projection's own total (committed['B_inwindow_kt'] ->
+        # maintenance_kt) and this layer's sum of the annual series (equal to rounding)
+        committed={k: dict(r['committed'],
+                           maintenance_kt_sum_of_annual=float(r['b_inwindow'].loc[slice(*PB_YEARS)].sum() / M6),
                            b_share_inwindow=float(r['b_inwindow'].loc[slice(*PB_YEARS)].sum()
                                                   / r['I'].loc[slice(*PB_YEARS)].sum()),
                            years_of_B_AR_2050_upper=float(r['committed']['upper_kt'] * M6 / b_ar.loc[PB_YEARS[1]]),
@@ -641,7 +646,7 @@ def main():
                     'history; the AtP boundary varies with population only. mc_base_fixed gives the bands with '
                     'I_sec,base held at its central value (baseline-pb-v1).'))
     with open(os.path.join(OUT_DIR, 'pb_results.json'), 'w') as f:
-        json.dump(res, f, indent=2, default=float)
+        json.dump(N.keys(res), f, indent=2, default=float)
 
     print(f"\nPB layer ({pair['label']}; b = {b_year}): I_base {i_base / M6:,.1f} kt/yr | "
           f"B_AR 2026 {b_ar.loc[2026] / M6:,.1f} kt, 2050 {b_ar.loc[2050] / M6:,.1f} kt | "
@@ -649,10 +654,10 @@ def main():
           f"B_AtP/B_AR {ratio.min():.4f}")
     print(f"  alpha(b) {comp['alpha']:.4f}; alpha({ALPHA_CHECK_YEAR}) current US$ "
           f"{alpha_check[GDP_MEASURE_SENS]['alpha']:.4f} vs Hjalsted {ALPHA_HJALSTED_2017}; s_sec {s_sec:.7f}")
-    print(f"  cumulative LoE 2026-2050, S3-10: AR {cum_det['S3-10']['LoE_AR']:.2f} "
-          f"(MC p5-p95 {mc_cum['S3-10']['LoE_AR_p5']:.2f}-{mc_cum['S3-10']['LoE_AR_p95']:.2f}); "
-          f"AtP {cum_det['S3-10']['LoE_AtP']:.1f} "
-          f"(MC {mc_cum['S3-10']['LoE_AtP_p5']:.1f}-{mc_cum['S3-10']['LoE_AtP_p95']:.1f})")
+    print(f"  cumulative LoE 2026-2050, Reference: AR {cum_det['REF']['LoE_AR']:.2f} "
+          f"(MC p5-p95 {mc_cum['REF']['LoE_AR_p5']:.2f}-{mc_cum['REF']['LoE_AR_p95']:.2f}); "
+          f"AtP {cum_det['REF']['LoE_AtP']:.1f} "
+          f"(MC {mc_cum['REF']['LoE_AtP_p5']:.1f}-{mc_cum['REF']['LoE_AtP_p95']:.1f})")
 
     figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     print(f'PB done ({time.time() - t_start:,.0f} s)')
@@ -677,19 +682,19 @@ def assumption_register():
         ('Sector impact', ('upfront carbon (A1-A5 + soil) of each year\'s construction plus the replacements and '
                            'repaints (B2, B4) occurring that year from buildings built in the window (time-resolved); '
                            'later events and end of life (C1-C4) are committed emissions after 2050, reported '
-                           'separately' if Boss.ACCOUNTING == 'time_resolved' else
+                           'separately' if projection.ACCOUNTING == 'time_resolved' else
                            'the model\'s embodied carbon (A1-A5, B2, B4, C1-C4 + soil), all booked in the '
                            'construction year'),
-         f"DECISION (author); Boss.ACCOUNTING = '{Boss.ACCOUNTING}'"),
+         f"DECISION (author); projection.ACCOUNTING = '{projection.ACCOUNTING}'"),
         ('AR base on the same rule', f'Ī_sec,base = upfront of {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} construction + '
          'the replacements and repaints within the window of the buildings built in it, at 2025 factors; '
          'base-window sensitivities on the same rule over their windows; wider scope (all cohorts since '
-         f'{Boss.B_SCOPE_START}) as a sensitivity', 'DECISION (author)'),
-        ('Carbon factors over time', f"Boss.DECARB_MODE = '{Boss.DECARB_MODE}'"
+         f'{projection.B_SCOPE_START}) as a sensitivity', 'DECISION (author)'),
+        ('Carbon factors over time', f"projection.DECARB_MODE = '{projection.DECARB_MODE}'"
          + {'none': '', 'horup_item': ' (A1-A3 by case-study EPD item, Horup et al. 2025; data/material_item_map.csv)'}[
-             Boss.DECARB_MODE]
-         + f"; A4-A5 '{Boss.DECARB_A45}' (Resch et al. 2021 Table 1: e^(-0.01 (t - 2025)))"
-         + '; history and the AR base always at 2025 factors', 'DECISION (author); LITERATURE; see the Boss register'),
+             projection.DECARB_MODE]
+         + f"; A4-A5 '{projection.DECARB_A45}' (Resch et al. 2021 Table 1: e^(-0.01 (t - 2025)))"
+         + '; history and the AR base always at 2025 factors', 'DECISION (author); LITERATURE; see the projection register'),
         ('Allocation principles', 'acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. '
          '2021 Eqs. 5-6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of '
          'the earlier manuscript is not used', 'DECISION (author); LITERATURE'),
@@ -763,7 +768,7 @@ LIMITATIONS = [
      'and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed emissions outside the window; '
      'they are reported as a range (pb_results.json "committed", pb_6) in years of the 2050 AR boundary and are '
      'not compared with the 2026-2050 boundary. Whole life at construction is a sensitivity.'
-     if Boss.ACCOUNTING == 'time_resolved' else
+     if projection.ACCOUNTING == 'time_resolved' else
      'B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future '
      'maintenance and end-of-life emissions of the buildings built in those years.'),
     'History at 2025 factors: the acquired-rights base (2016-2025) and the base-window sensitivities use the '
@@ -898,14 +903,14 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     # ---- boss_05_annual_carbon_pb ------------------------------------------
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(18, 6.4))
     ct = B['carbon_total_typ'].loc[py]
-    Boss.stack_typologies(a1, py, [ct[n] / M6 for n in typ], labels=typ, colors=colors, alpha=0.85)
+    projection.stack_typologies(a1, py, [ct[n] / M6 for n in typ], labels=typ, colors=colors, alpha=0.85)
     _boundary_lines(a1, py, bar_, batp_)
     a1.set_ylabel('kt CO₂e per year'); a1.set_title('Annual embodied carbon by typology vs boundaries (2026-2050)')
     a1.legend(loc='upper right', fontsize=8); a1.grid(alpha=0.3); a1.set_xlim(2026, 2051.5)
-    Boss.plot_demand_bands(a2, py, *B['fig_bands']['carbon'])
+    projection.plot_demand_bands(a2, py, *B['fig_bands']['carbon'])
     _boundary_lines(a2, py, bar_, batp_, label=False)
     a2.set_ylabel('kt CO₂e per year'); a2.set_title('Annual embodied carbon by demand type vs boundaries')
-    Boss.demand_legend(a2); a2.grid(alpha=0.3); a2.set_xlim(2026, 2051.5)
+    projection.demand_legend(a2); a2.grid(alpha=0.3); a2.set_xlim(2026, 2051.5)
     fig.tight_layout(rect=(0, 0.05, 1, 1))
     fig.text(0.5, 0.01, cap, ha='center', fontsize=8.5, style='italic', wrap=True)
     _save(fig, 'boss_05_annual_carbon_pb')
@@ -913,15 +918,15 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     # ---- boss_06_cumulative_carbon_pb ---------------------------------------
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(18, 6.4))
     cc = ct.cumsum()
-    Boss.stack_typologies(a1, py, [cc[n] / M6 for n in typ], labels=typ, colors=colors, alpha=0.85)
+    projection.stack_typologies(a1, py, [cc[n] / M6 for n in typ], labels=typ, colors=colors, alpha=0.85)
     _boundary_lines(a1, py, bar_, batp_, cumulative=True)
     a1.set_ylabel('kt CO₂e, cumulative from 2026'); a1.set_title('Cumulative carbon by typology vs cumulative boundaries')
     a1.legend(loc='upper left', fontsize=8); a1.grid(alpha=0.3); a1.set_xlim(2026, 2051.5)
-    Boss.plot_demand_bands(a2, py, [(l, np.cumsum(v), c) for l, v, c in B['fig_bands']['carbon'][0]],
+    projection.plot_demand_bands(a2, py, [(l, np.cumsum(v), c) for l, v, c in B['fig_bands']['carbon'][0]],
                            np.cumsum(B['fig_bands']['carbon'][1]))
     _boundary_lines(a2, py, bar_, batp_, label=False, cumulative=True)
     a2.set_ylabel('kt CO₂e, cumulative from 2026'); a2.set_title('Cumulative carbon by demand type vs cumulative boundaries')
-    Boss.demand_legend(a2); a2.grid(alpha=0.3); a2.set_xlim(2026, 2051.5)
+    projection.demand_legend(a2); a2.grid(alpha=0.3); a2.set_xlim(2026, 2051.5)
     fig.tight_layout(rect=(0, 0.05, 1, 1))
     fig.text(0.5, 0.01, cap.replace('annual', 'cumulative'), ha='center', fontsize=8.5, style='italic', wrap=True)
     _save(fig, 'boss_06_cumulative_carbon_pb')
@@ -929,26 +934,26 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     # ---- fig_scenarios_pb (carbon panels) -------------------------------------
     import figures_report as FR
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(17, 5.8), gridspec_kw=dict(width_ratios=[2, 1]))
-    m = mc_annual[mc_annual.scenario == 'S3-10'].set_index('year')
+    m = mc_annual[mc_annual.scenario == 'REF'].set_index('year')
     a1.fill_between(m.index, m['I_sec_kgCO2e_p5'] / M6, m['I_sec_kgCO2e_p95'] / M6, color='#C0392B', alpha=0.12,
                     label='reference MC 5-95%')
     for key, lab, _, col in FR.SCEN:
         I = runs[key]['I'].loc[py]
-        a1.plot(py, I / M6, color=col, lw=2 if key == 'S3-10' else 1.3, label=lab)
-    _r = runs['S3-10']
+        a1.plot(py, I / M6, color=col, lw=2 if key == 'REF' else 1.3, label=lab)
+    _r = runs['REF']
     if _r['b_inwindow'].loc[py].sum() > 0:
         a1.fill_between(py, (_r['I'] - _r['b_inwindow']).loc[py] / M6, _r['I'].loc[py] / M6,
-                        color=Boss.EVENTS_COLOR, alpha=0.55, lw=0, label=f'Reference: {Boss.EVENTS_LABEL.lower()}')
+                        color=projection.EVENTS_COLOR, alpha=0.55, lw=0, label=f'Reference: {projection.EVENTS_LABEL.lower()}')
     _boundary_lines(a1, py, bar_, batp_)
     a1.set_ylim(0, None); a1.set_xlim(2026, 2051.5)
     a1.set_title('Annual embodied carbon by scenario vs boundaries'); a1.set_ylabel('kt CO₂e per year')
     a1.grid(alpha=0.3); a1.legend(fontsize=7.5, loc='upper center', bbox_to_anchor=(0.5, -0.07), ncol=3)
     ks = [k for k, *_ in FR.SCEN]
-    short = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
+    short = {k: N.SCENARIOS[k] for k in ('LOW', 'REF', 'HIGH')}
     _bi = [runs[k]['b_inwindow'].loc[py].sum() / M6 for k in ks]
     _up = [runs[k]['I'].loc[py].sum() / M6 - b for k, b in zip(ks, _bi)]
     a2.bar(range(len(ks)), _up, color=[c for *_, c in FR.SCEN], label='construction year (upfront)')
-    a2.bar(range(len(ks)), _bi, bottom=_up, color=Boss.EVENTS_COLOR, alpha=0.8, label=Boss.EVENTS_LABEL.lower())
+    a2.bar(range(len(ks)), _bi, bottom=_up, color=projection.EVENTS_COLOR, alpha=0.8, label=projection.EVENTS_LABEL.lower())
     a2.legend(fontsize=7.5, loc='upper center', bbox_to_anchor=(0.5, -0.09), ncol=1)
     for v, c, ls, nm in ((bar_.sum() / M6, AR_COLOR, '-', 'AR'), (batp_.sum() / M6, ATP_COLOR, '--', 'AtP')):
         a2.axhline(v, color=c, ls=ls, lw=2, path_effects=HALO)
@@ -1034,7 +1039,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
 
     # ---- pb_2_loe ----------------------------------------------------------------------
     fig, ax = plt.subplots(1, 2, figsize=(16, 5.6), sharey=True)
-    sc = [('S1', '#2E86AB', 'Low (S1)'), ('S3-10', '#C0392B', 'Reference (S3-10)'), ('S2', '#8E44AD', 'High (S2)')]
+    sc = [('LOW', '#2E86AB', N.SCENARIOS['LOW']), ('REF', '#C0392B', N.SCENARIOS['REF']), ('HIGH', '#8E44AD', N.SCENARIOS['HIGH'])]
     for a, k, ttl in ((ax[0], 'AR', 'Acquired rights'), (ax[1], 'AtP', 'Ability to pay')):
         for name, col, lab in sc:
             mm = mc_annual[mc_annual.scenario == name].set_index('year')
@@ -1042,7 +1047,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
             I = runs[name]['I'].loc[py]
             bb = b_ar if k == 'AR' else b_atp
             a.plot(py, I / bb.loc[py], color=col, lw=2, label=f'{lab}; band MC 5-95%')
-        _r = runs['S3-10']
+        _r = runs['REF']
         if _r['b_inwindow'].loc[py].sum() > 0:
             bb = b_ar if k == 'AR' else b_atp
             a.plot(py, (_r['I'] - _r['b_inwindow']).loc[py] / bb.loc[py], color='#C0392B', lw=1.2, ls=':',
@@ -1067,7 +1072,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
         bi = [runs[k]['b_inwindow'].loc[py].sum() / M6 for k in ks]
         cols = {k: c for k, _, _, c in FR.SCEN}
         ax.bar(x - 0.2, up, 0.38, color=[cols[k] for k in ks], label='within 2026-2050: upfront at construction')
-        ax.bar(x - 0.2, bi, 0.38, bottom=up, color=Boss.EVENTS_COLOR, alpha=0.85,
+        ax.bar(x - 0.2, bi, 0.38, bottom=up, color=projection.EVENTS_COLOR, alpha=0.85,
                label='within 2026-2050: replacements & repaints')
         lo = [com[k]['lower_kt'] for k in ks]
         hi = [com[k]['upper_kt'] for k in ks]
@@ -1085,7 +1090,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
             ax.annotate(f'cumulative boundary 2026-2050, {nm}: {v:,.0f} kt', (x[-1] + 0.39, v), xytext=(0, 3),
                         textcoords='offset points', ha='right', fontsize=8, color='#333333', zorder=6,
                         bbox=dict(boxstyle='round,pad=0.15', facecolor='white', edgecolor='none', alpha=0.85))
-        short = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
+        short = {k: N.SCENARIOS[k] for k in ('LOW', 'REF', 'HIGH')}
         ax.set_xticks(x); ax.set_xticklabels([short[k] for k in ks])
         ax.set_ylabel('kt CO₂e'); ax.set_ylim(0, 1.25 * max(np.add(up, bi).max(), max(hi)))
         ax.set_title('Cumulative carbon within 2026-2050 vs cumulative boundaries, and emissions committed after 2050')
@@ -1098,7 +1103,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
         _save(fig, 'pb_6_committed')
 
     # ---- pb_3_headroom -------------------------------------------------------------------
-    I = runs['S3-10']['I'].loc[py]
+    I = runs['REF']['I'].loc[py]
     g = gfa.loc[py]
     d = dwell.loc[py]
     fig, ax = plt.subplots(1, 3, figsize=(19, 5.6))
@@ -1140,13 +1145,13 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
 
     # ---- pb_5_demand_vs_boundary: projection by demand type vs the boundaries (no historical carbon) ----
     fig, ax = plt.subplots(figsize=(13, 6.5))
-    Boss.plot_demand_bands(ax, py, *B['fig_bands']['carbon'])
+    projection.plot_demand_bands(ax, py, *B['fig_bands']['carbon'])
     yb = np.asarray([y for y in b_ar.index if y >= PB_YEARS[0]])
     _boundary_lines(ax, yb, b_ar.loc[yb].values, b_atp.loc[yb].values)
     ax.axhline(0, color='black', lw=0.7)
     ax.set_ylabel('kt CO₂e per year'); ax.set_xlim(PB_YEARS[0], 2051.5); ax.grid(alpha=0.3)
     ax.set_title('Annual carbon by demand type vs the boundaries, reference S3-10 (2026-2050)')
-    Boss.demand_legend(ax)
+    projection.demand_legend(ax)
     fig.tight_layout(rect=(0, 0.07, 1, 1))
     fig.text(0.5, 0.01, cap, ha='center', fontsize=8, style='italic', wrap=True)
     _save(fig, 'pb_5_demand_vs_boundary')

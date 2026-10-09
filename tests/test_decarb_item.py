@@ -1,4 +1,4 @@
-"""Item-level material decarbonisation (Boss.DECARB_MODE = 'horup_item'): each
+"""Item-level material decarbonisation (projection.DECARB_MODE = 'horup_item'): each
 case-study EPD item follows one Horup et al. (2025) S4 path (or is held) by
 data/material_item_map.csv. Checks: the item table reproduces the case-study
 workbook; the mapping is complete and one-to-one; the 2025 class totals are
@@ -120,10 +120,10 @@ def test_soil_other_stages_and_2025_unchanged(runs):
 
 
 def test_history_unchanged(runs):
-    import PB
+    import boundaries
     b0, b1 = runs
-    h0 = PB.historical_emissions(b0, range(2016, 2026))
-    h1 = PB.historical_emissions(b1, range(2016, 2026))
+    h0 = boundaries.historical_emissions(b0, range(2016, 2026))
+    h1 = boundaries.historical_emissions(b1, range(2016, 2026))
     assert np.array_equal(h0['I_sec_kg'].values, h1['I_sec_kg'].values)
 
 
@@ -135,7 +135,7 @@ def test_settings_that_do_not_apply_are_refused():
 
 
 def test_mc_bootstrap_stream_unchanged():
-    import Boss
+    import projection
     import MonteCarlo as MC
     try:
         with contextlib.redirect_stdout(io.StringIO()):
@@ -144,4 +144,4 @@ def test_mc_bootstrap_stream_unchanged():
         assert np.array_equal(s0['boot_emb'], s1['boot_emb']) and np.array_equal(s0['boot_up'], s1['boot_up'])
         assert np.allclose(s1['boot_red'][:, :, 0], 0.0)
     finally:
-        importlib.reload(Boss)
+        importlib.reload(projection)

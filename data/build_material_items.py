@@ -1,6 +1,6 @@
 """
 Build the item-level (EPD-level) case-study LCA table used for the item-level
-material decarbonisation of A1-A3 (Boss.DECARB_MODE = 'horup_item'). No values
+material decarbonisation of A1-A3 (projection.DECARB_MODE = 'horup_item'). No values
 typed by hand.
 
 Source (provenance in data/raw/MANIFEST.csv):

@@ -135,7 +135,7 @@ TL caption wording: "hyper-optimistic theoretical limit; a thought experiment, n
 
 ### Vacancy wording (one sentence everywhere)
 
-> the vacancy-rate parameter is held at its 2023 census value (5.39%; the highest in the consistent 1986–2023 series, minimum 4.01% in 1996); implied stock vacancy rises to ≈6.4% because the 2026 overbuild is not absorbed.
+> the vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); implied stock vacancy rises to ≈6.4% because the 2026 overbuild is not absorbed.
 
 Values are read from the overbuild report (outputs/near_term_join.json at ee37ef1; data/baseline/overbuild_2026.json in the release): the held rate is the published 2023 empty-dwelling share; on the consistent definition (the pooled 2018/2023 empty share applied to every census) 2023 is the highest census and 1996 the lowest. Every document, caption and code comment that implies that vacancy itself stays at the census level is reworded to this sentence.
 
@@ -235,78 +235,102 @@ Columns whose name changes (generic rules of `naming.identifier`; Sobol columns 
 
 | v3.1 file | v3.1 column | release column |
 |---|---|---|
+| `frozen/montecarlo_annual.csv` | `Unnamed: 0` | `year` |
 | `frozen/montecarlo_annual.csv` | `gfa_5` | `floor_area_5` |
 | `frozen/montecarlo_annual.csv` | `gfa_25` | `floor_area_25` |
 | `frozen/montecarlo_annual.csv` | `gfa_50` | `floor_area_50` |
 | `frozen/montecarlo_annual.csv` | `gfa_75` | `floor_area_75` |
 | `frozen/montecarlo_annual.csv` | `gfa_95` | `floor_area_95` |
+| `frozen/montecarlo_annual_S1.csv` | `Unnamed: 0` | `year` |
 | `frozen/montecarlo_annual_S1.csv` | `gfa_5` | `floor_area_5` |
 | `frozen/montecarlo_annual_S1.csv` | `gfa_25` | `floor_area_25` |
 | `frozen/montecarlo_annual_S1.csv` | `gfa_50` | `floor_area_50` |
 | `frozen/montecarlo_annual_S1.csv` | `gfa_75` | `floor_area_75` |
 | `frozen/montecarlo_annual_S1.csv` | `gfa_95` | `floor_area_95` |
+| `frozen/montecarlo_annual_S2.csv` | `Unnamed: 0` | `year` |
 | `frozen/montecarlo_annual_S2.csv` | `gfa_5` | `floor_area_5` |
 | `frozen/montecarlo_annual_S2.csv` | `gfa_25` | `floor_area_25` |
 | `frozen/montecarlo_annual_S2.csv` | `gfa_50` | `floor_area_50` |
 | `frozen/montecarlo_annual_S2.csv` | `gfa_75` | `floor_area_75` |
 | `frozen/montecarlo_annual_S2.csv` | `gfa_95` | `floor_area_95` |
+| `frozen/montecarlo_annual_S3-10.csv` | `Unnamed: 0` | `year` |
 | `frozen/montecarlo_annual_S3-10.csv` | `gfa_5` | `floor_area_5` |
 | `frozen/montecarlo_annual_S3-10.csv` | `gfa_25` | `floor_area_25` |
 | `frozen/montecarlo_annual_S3-10.csv` | `gfa_50` | `floor_area_50` |
 | `frozen/montecarlo_annual_S3-10.csv` | `gfa_75` | `floor_area_75` |
 | `frozen/montecarlo_annual_S3-10.csv` | `gfa_95` | `floor_area_95` |
 | `frozen/montecarlo_draws.csv` | `GFA_Mm2` | `floor_area_Mm2` |
+| `frozen/montecarlo_draws.csv` | `RV_units` | `retirement_village_units` |
 | `frozen/montecarlo_draws.csv` | `townhouse_share_2050` | removed |
 | `frozen/montecarlo_draws_S1.csv` | `GFA_Mm2` | `floor_area_Mm2` |
+| `frozen/montecarlo_draws_S1.csv` | `RV_units` | `retirement_village_units` |
 | `frozen/montecarlo_draws_S1.csv` | `townhouse_share_2050` | removed |
 | `frozen/montecarlo_draws_S2.csv` | `GFA_Mm2` | `floor_area_Mm2` |
+| `frozen/montecarlo_draws_S2.csv` | `RV_units` | `retirement_village_units` |
 | `frozen/montecarlo_draws_S2.csv` | `townhouse_share_2050` | removed |
 | `frozen/montecarlo_draws_S3-10.csv` | `GFA_Mm2` | `floor_area_Mm2` |
+| `frozen/montecarlo_draws_S3-10.csv` | `RV_units` | `retirement_village_units` |
 | `frozen/montecarlo_draws_S3-10.csv` | `townhouse_share_2050` | removed |
+| `frozen/montecarlo_summary.csv` | `Unnamed: 0` | `output` |
 | `frozen/montecarlo_summary.csv` | `central` | `reference` |
 | `frozen/montecarlo_summary.csv` | `central_pct` | `reference_percentile` |
+| `frozen/montecarlo_summary_S1.csv` | `Unnamed: 0` | `output` |
 | `frozen/montecarlo_summary_S1.csv` | `central` | `reference` |
 | `frozen/montecarlo_summary_S1.csv` | `central_pct` | `reference_percentile` |
+| `frozen/montecarlo_summary_S2.csv` | `Unnamed: 0` | `output` |
 | `frozen/montecarlo_summary_S2.csv` | `central` | `reference` |
 | `frozen/montecarlo_summary_S2.csv` | `central_pct` | `reference_percentile` |
+| `frozen/montecarlo_summary_S3-10.csv` | `Unnamed: 0` | `output` |
 | `frozen/montecarlo_summary_S3-10.csv` | `central` | `reference` |
 | `frozen/montecarlo_summary_S3-10.csv` | `central_pct` | `reference_percentile` |
 | `frozen/sensitivity_oat.csv` | `GFA_Mm2` | `floor_area_Mm2` |
 | `frozen/sensitivity_oat.csv` | `GFA_change_pct` | `floor_area_change_pct` |
+| `montecarlo_annual.csv` | `Unnamed: 0` | `year` |
 | `montecarlo_annual.csv` | `gfa_5` | `floor_area_5` |
 | `montecarlo_annual.csv` | `gfa_25` | `floor_area_25` |
 | `montecarlo_annual.csv` | `gfa_50` | `floor_area_50` |
 | `montecarlo_annual.csv` | `gfa_75` | `floor_area_75` |
 | `montecarlo_annual.csv` | `gfa_95` | `floor_area_95` |
+| `montecarlo_annual_S1.csv` | `Unnamed: 0` | `year` |
 | `montecarlo_annual_S1.csv` | `gfa_5` | `floor_area_5` |
 | `montecarlo_annual_S1.csv` | `gfa_25` | `floor_area_25` |
 | `montecarlo_annual_S1.csv` | `gfa_50` | `floor_area_50` |
 | `montecarlo_annual_S1.csv` | `gfa_75` | `floor_area_75` |
 | `montecarlo_annual_S1.csv` | `gfa_95` | `floor_area_95` |
+| `montecarlo_annual_S2.csv` | `Unnamed: 0` | `year` |
 | `montecarlo_annual_S2.csv` | `gfa_5` | `floor_area_5` |
 | `montecarlo_annual_S2.csv` | `gfa_25` | `floor_area_25` |
 | `montecarlo_annual_S2.csv` | `gfa_50` | `floor_area_50` |
 | `montecarlo_annual_S2.csv` | `gfa_75` | `floor_area_75` |
 | `montecarlo_annual_S2.csv` | `gfa_95` | `floor_area_95` |
+| `montecarlo_annual_S3-10.csv` | `Unnamed: 0` | `year` |
 | `montecarlo_annual_S3-10.csv` | `gfa_5` | `floor_area_5` |
 | `montecarlo_annual_S3-10.csv` | `gfa_25` | `floor_area_25` |
 | `montecarlo_annual_S3-10.csv` | `gfa_50` | `floor_area_50` |
 | `montecarlo_annual_S3-10.csv` | `gfa_75` | `floor_area_75` |
 | `montecarlo_annual_S3-10.csv` | `gfa_95` | `floor_area_95` |
 | `montecarlo_draws.csv` | `GFA_Mm2` | `floor_area_Mm2` |
+| `montecarlo_draws.csv` | `RV_units` | `retirement_village_units` |
 | `montecarlo_draws.csv` | `townhouse_share_2050` | removed |
 | `montecarlo_draws_S1.csv` | `GFA_Mm2` | `floor_area_Mm2` |
+| `montecarlo_draws_S1.csv` | `RV_units` | `retirement_village_units` |
 | `montecarlo_draws_S1.csv` | `townhouse_share_2050` | removed |
 | `montecarlo_draws_S2.csv` | `GFA_Mm2` | `floor_area_Mm2` |
+| `montecarlo_draws_S2.csv` | `RV_units` | `retirement_village_units` |
 | `montecarlo_draws_S2.csv` | `townhouse_share_2050` | removed |
 | `montecarlo_draws_S3-10.csv` | `GFA_Mm2` | `floor_area_Mm2` |
+| `montecarlo_draws_S3-10.csv` | `RV_units` | `retirement_village_units` |
 | `montecarlo_draws_S3-10.csv` | `townhouse_share_2050` | removed |
+| `montecarlo_summary.csv` | `Unnamed: 0` | `output` |
 | `montecarlo_summary.csv` | `central` | `reference` |
 | `montecarlo_summary.csv` | `central_pct` | `reference_percentile` |
+| `montecarlo_summary_S1.csv` | `Unnamed: 0` | `output` |
 | `montecarlo_summary_S1.csv` | `central` | `reference` |
 | `montecarlo_summary_S1.csv` | `central_pct` | `reference_percentile` |
+| `montecarlo_summary_S2.csv` | `Unnamed: 0` | `output` |
 | `montecarlo_summary_S2.csv` | `central` | `reference` |
 | `montecarlo_summary_S2.csv` | `central_pct` | `reference_percentile` |
+| `montecarlo_summary_S3-10.csv` | `Unnamed: 0` | `output` |
 | `montecarlo_summary_S3-10.csv` | `central` | `reference` |
 | `montecarlo_summary_S3-10.csv` | `central_pct` | `reference_percentile` |
 | `pathways/pathways_annual.csv` | `soil_kt` | `soil_carbon_loss_kt` |
@@ -318,6 +342,7 @@ Columns whose name changes (generic rules of `naming.identifier`; Sobol columns 
 | `pathways/pathways_bands.csv` | `gfa_Mm2` | `floor_area_Mm2` |
 | `pathways/pathways_bands.csv` | `delta_gfa_Mm2_vs_P0` | `delta_floor_area_Mm2_vs_reference` |
 | `pathways/pathways_bands.csv` | `delta_carbon_kt_vs_P0` | `delta_carbon_kt_vs_reference` |
+| `pathways/pathways_runs.csv` | `ramp` | `adoption` |
 | `pathways/pathways_runs.csv` | `gfa_Mm2` | `floor_area_Mm2` |
 | `pathways/pathways_runs.csv` | `gfa_2027_2050_Mm2` | `floor_area_2027_2050_Mm2` |
 | `pathways/pathways_runs.csv` | `gfa_Detached_Mm2` | removed |
@@ -352,6 +377,16 @@ Distinct values of identifying (text) columns that change.
 
 | v3.1 file | column | v3.1 value | release value |
 |---|---|---|---|
+| `frozen/montecarlo_sobol.csv` | `output` | GFA_Mm2 | floor_area_Mm2 |
+| `frozen/montecarlo_sobol.csv` | `output` | RV_units | retirement_village_units |
+| `frozen/montecarlo_summary.csv` | `Unnamed: 0` | GFA_Mm2 | floor_area_Mm2 |
+| `frozen/montecarlo_summary.csv` | `Unnamed: 0` | RV_units | retirement_village_units |
+| `frozen/montecarlo_summary_S1.csv` | `Unnamed: 0` | GFA_Mm2 | floor_area_Mm2 |
+| `frozen/montecarlo_summary_S1.csv` | `Unnamed: 0` | RV_units | retirement_village_units |
+| `frozen/montecarlo_summary_S2.csv` | `Unnamed: 0` | GFA_Mm2 | floor_area_Mm2 |
+| `frozen/montecarlo_summary_S2.csv` | `Unnamed: 0` | RV_units | retirement_village_units |
+| `frozen/montecarlo_summary_S3-10.csv` | `Unnamed: 0` | GFA_Mm2 | floor_area_Mm2 |
+| `frozen/montecarlo_summary_S3-10.csv` | `Unnamed: 0` | RV_units | retirement_village_units |
 | `frozen/pb_annual.csv` | `scenario` | S1 | LOW |
 | `frozen/pb_annual.csv` | `scenario` | S3-5 | REF_HL5 |
 | `frozen/pb_annual.csv` | `scenario` | S3-10 | REF |
@@ -374,6 +409,16 @@ Distinct values of identifying (text) columns that change.
 | `frozen/sensitivity_oat.csv` | `case` | Dwelling size: 2016–2025 reference | Dwelling size: 2016-2025 reference |
 | `frozen/sensitivity_oat.csv` | `group` | Near-term: how the excess is booked | 2026 overbuild: how it is booked |
 | `frozen/sensitivity_oat.csv` | `group` | Near-term: rule variant | 2026 overbuild: rule variant |
+| `montecarlo_sobol.csv` | `output` | GFA_Mm2 | floor_area_Mm2 |
+| `montecarlo_sobol.csv` | `output` | RV_units | retirement_village_units |
+| `montecarlo_summary.csv` | `Unnamed: 0` | GFA_Mm2 | floor_area_Mm2 |
+| `montecarlo_summary.csv` | `Unnamed: 0` | RV_units | retirement_village_units |
+| `montecarlo_summary_S1.csv` | `Unnamed: 0` | GFA_Mm2 | floor_area_Mm2 |
+| `montecarlo_summary_S1.csv` | `Unnamed: 0` | RV_units | retirement_village_units |
+| `montecarlo_summary_S2.csv` | `Unnamed: 0` | GFA_Mm2 | floor_area_Mm2 |
+| `montecarlo_summary_S2.csv` | `Unnamed: 0` | RV_units | retirement_village_units |
+| `montecarlo_summary_S3-10.csv` | `Unnamed: 0` | GFA_Mm2 | floor_area_Mm2 |
+| `montecarlo_summary_S3-10.csv` | `Unnamed: 0` | RV_units | retirement_village_units |
 | `pathways/pathways_annual.csv` | `run` | P0 | REF |
 | `pathways/pathways_annual.csv` | `scenario` | S3-10 | REF |
 | `pathways/pathways_annual.csv` | `run` | L1-central | L1-moderate |
@@ -537,6 +582,7 @@ Distinct values of identifying (text) columns that change.
 | `pathways/shapley_T.csv` | `player` | T6 | TL6 |
 | `pathways/shapley_T.csv` | `name` | Urban densification | Urban infill |
 | `pathways/shapley_T.csv` | `player` | instant start | from2027 |
+| `pathways/shapley_T.csv` | `name` | P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player) | P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player) |
 | `pathways/shapley_T_subsets.csv` | `level` | T | TL |
 | `pathways/shapley_T_subsets.csv` | `subset` | P5-stretch-instant | P5-ambitious-from2027 |
 | `pathways/shapley_T_subsets.csv` | `subset` | T[T1] | TL[TL1] |
@@ -601,6 +647,7 @@ Distinct values of identifying (text) columns that change.
 | `pathways/shapley_T_subsets.csv` | `subset` | T[T1+T2+T4+T5+T6] | TL[TL1+TL2+TL4+TL5+TL6] |
 | `pathways/shapley_T_subsets.csv` | `subset` | T[T1+T3+T4+T5+T6] | TL[TL1+TL3+TL4+TL5+TL6] |
 | `pathways/shapley_T_subsets.csv` | `subset` | T[T2+T3+T4+T5+T6] | TL[TL2+TL3+TL4+TL5+TL6] |
+| `pathways/shapley_T_subsets.csv` | `subset` | T | TL |
 | `pathways/shapley_levers.csv` | `setting` | central | moderate |
 | `pathways/shapley_levers.csv` | `name` | Right-sized new dwellings | Dwelling size |
 | `pathways/shapley_levers.csv` | `player` | L2a | L2 |
@@ -739,11 +786,13 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 
 | v3.1 file | v3.1 key | release key |
 |---|---|---|
+| `boss_results.json` | `s3_half_life` | `replacement_half_life` |
 | `boss_results.json` | `gfa_Mm2` | `floor_area_Mm2` |
 | `boss_results.json` | `soil_kt` | `soil_carbon_loss_kt` |
 | `boss_results.json` | `pop_band_gfa_Mm2` | `population_band_floor_area_Mm2` |
 | `boss_results.json` | `b_inwindow_kt` | `maintenance_kt` |
 | `boss_results.json` | `B_inwindow_kt` | `maintenance_kt` |
+| `frozen/boss_results.json` | `s3_half_life` | `replacement_half_life` |
 | `frozen/boss_results.json` | `gfa_Mm2` | `floor_area_Mm2` |
 | `frozen/boss_results.json` | `soil_kt` | `soil_carbon_loss_kt` |
 | `frozen/boss_results.json` | `pop_band_gfa_Mm2` | `population_band_floor_area_Mm2` |
@@ -759,6 +808,7 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `frozen/replacement_scenarios.json` | `S1` | `LOW` |
 | `frozen/replacement_scenarios.json` | `GFA_Mm2` | `floor_area_Mm2` |
 | `frozen/replacement_scenarios.json` | `soil_kt` | `soil_carbon_loss_kt` |
+| `frozen/replacement_scenarios.json` | `join_net` | `overbuild_2026_net_dwellings` |
 | `frozen/replacement_scenarios.json` | `S3-5` | `REF_HL5` |
 | `frozen/replacement_scenarios.json` | `S3-10` | `REF` |
 | `frozen/replacement_scenarios.json` | `S3-15` | `REF_HL15` |
@@ -766,8 +816,13 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `frozen/replacement_scenarios.json` | `S1-noUC` | `LOW_NOUC` |
 | `frozen/replacement_scenarios.json` | `S3-10-noUC` | `REF_NOUC` |
 | `frozen/replacement_scenarios.json` | `S2-noUC` | `HIGH_NOUC` |
+| `gap_2026.json` | `S2_rate_effect` | `HIGH_rate_effect` |
+| `gap_2026.json` | `S2_deviation_effect` | `HIGH_deviation_effect` |
+| `gap_2026.json` | `model_requirement_2026_S2` | `model_requirement_2026_HIGH` |
 | `gap_2026.json` | `model_requirement_2026_S3_10` | `model_requirement_2026_REF` |
+| `metrics.json` | `boss` | `projection` |
 | `metrics.json` | `GFA_Mm2` | `floor_area_Mm2` |
+| `metrics.json` | `RV_floor_area_Mm2_out_of_scope` | `retirement_village_floor_area_Mm2_out_of_scope` |
 | `metrics.json` | `join_excess_2026` | `overbuild_2026_excess` |
 | `metrics.json` | `join_excess_2027` | `overbuild_2026_gap_ref` |
 | `metrics.json` | `join_net_2026_2050` | `overbuild_2026_net_dwellings` |
@@ -778,6 +833,7 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `metrics.json` | `GFA_p95` | `floor_area_p95` |
 | `metrics.json` | `central_pct_GFA` | `reference_percentile_floor_area` |
 | `metrics.json` | `central_pct_carbon` | `reference_percentile_carbon` |
+| `metrics.json` | `pb` | `aesa` |
 | `metrics.json` | `cum_LoE_AR_S3_10` | `cum_LoE_AR_REF` |
 | `metrics.json` | `cum_LoE_AR_S3_10_mc_p5` | `cum_LoE_AR_REF_mc_p5` |
 | `metrics.json` | `cum_LoE_AR_S3_10_mc_p50` | `cum_LoE_AR_REF_mc_p50` |
@@ -794,6 +850,9 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `metrics.json` | `S3-10-noUC` | `REF_NOUC` |
 | `metrics.json` | `S3-15` | `REF_HL15` |
 | `metrics.json` | `S3-5` | `REF_HL5` |
+| `metrics.json` | `hindcast_2006_reference_s3_10` | `hindcast_2006_reference` |
+| `metrics.json` | `hindcast_2013_reference_s3_10` | `hindcast_2013_reference` |
+| `metrics.json` | `hindcast_2018_reference_s3_10` | `hindcast_2018_reference` |
 | `near_term_join.json` | `join_2026_2050` | `overbuild_2026_dwellings_2026_2050` |
 | `pathways/backcast.json` | `P0` | `REF` |
 | `pathways/backcast.json` | `gfa_2027_2050_Mm2` | `floor_area_2027_2050_Mm2` |
@@ -802,6 +861,7 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `pathways/backcast.json` | `equivalent_cut_vs_P0_floor_area` | `equivalent_cut_vs_reference_floor_area` |
 | `pathways/backcast.json` | `equivalent_cut_vs_P0_carbon_2027_2050_cohorts` | `equivalent_cut_vs_reference_carbon_2027_2050_cohorts` |
 | `pathways/backcast.json` | `P5-stretch` | `P5-ambitious` |
+| `pathways/levers.json` | `ramp` | `adoption` |
 | `pathways/levers.json` | `central` | `moderate` |
 | `pathways/levers.json` | `stretch` | `ambitious` |
 | `pathways/levers.json` | `L4` | `denser_mix_pathways_v2` |
@@ -811,7 +871,10 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `pathways/levers.json` | `L2a` | `L2` |
 | `pathways/levers.json` | `L2b` | `L3` |
 | `pathways/levers.json` | `L3` | `L4` |
+| `pathways/levers.json` | `end_of_ramp_step_P2-central` | `end_of_ramp_step_P2-moderate` |
 | `pathways/levers.json` | `P0_carbon_step_kt` | `reference_carbon_step_kt` |
+| `pathways/levers.json` | `step_relative_to_P0_kt` | `step_relative_to_reference_kt` |
+| `pathways/levers.json` | `end_of_ramp_step_P2-stretch` | `end_of_ramp_step_P2-ambitious` |
 | `pathways/levers.json` | `gfa_by_typology` | `floor_area_by_typology` |
 | `pathways/levers.json` | `soil_kt` | `soil_carbon_loss_kt` |
 | `pathways/levers.json` | `b_inwindow_kt` | `maintenance_kt` |
@@ -846,6 +909,7 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `pathways/levers.json` | `S2 LoE_AR` | `HIGH LoE_AR` |
 | `pathways/levers.json` | `S2 LoE_AtP` | `HIGH LoE_AtP` |
 | `pathways/levers.json` | `S2 carbon vs pb_results` | `HIGH carbon vs aesa results` |
+| `pathways/t_limit.json` | `t6` | `tl6` |
 | `pathways/t_limit.json` | `T3` | `TL3` |
 | `pathways/t_limit.json` | `gfa_over_occupants_max_abs_diff` | `floor_area_over_occupants_max_abs_diff` |
 | `pathways/t_limit.json` | `T4` | `TL4` |
@@ -868,6 +932,7 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `pathways/t_limit.json` | `delta_committed_lower_kt_vs_P0_pct` | `delta_committed_lower_kt_vs_reference_pct` |
 | `pathways/t_limit.json` | `delta_committed_upper_kt_vs_P0_pct` | `delta_committed_upper_kt_vs_reference_pct` |
 | `pathways/t_limit.json` | `T-ramp` | `TL-gradual` |
+| `pathways/t_limit.json` | `near_term_surplus_absorbed_dwellings` | `overbuild_2026_absorbed_dwellings` |
 | `pathways/t_limit.json` | `gfa_2027_2050_at_k_Mm2` | `floor_area_2027_2050_at_k_Mm2` |
 | `pathways/t_limit.json` | `share_of_P5s_instant_minus_T` | `share_of_P5_ambitious_from2027_minus_TL` |
 | `pb_results.json` | `S1` | `LOW` |
@@ -891,6 +956,7 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `replacement_scenarios.json` | `S1` | `LOW` |
 | `replacement_scenarios.json` | `GFA_Mm2` | `floor_area_Mm2` |
 | `replacement_scenarios.json` | `soil_kt` | `soil_carbon_loss_kt` |
+| `replacement_scenarios.json` | `join_net` | `overbuild_2026_net_dwellings` |
 | `replacement_scenarios.json` | `S3-5` | `REF_HL5` |
 | `replacement_scenarios.json` | `S3-10` | `REF` |
 | `replacement_scenarios.json` | `S3-15` | `REF_HL15` |
@@ -1036,22 +1102,50 @@ Legend entries (term level; legends are composed from the vocabulary above):
 
 ## 8. Code settings that surface in documents
 
+Module renames approved with the design documents: Boss.py -> projection.py and PB.py -> boundaries.py (git mv, so the history of each file is kept); imports, run_all.py, the Spyder instructions, the documents and the tests use the new names.
+
 | v3.1 | release |
 |---|---|
-| Boss.REPLACEMENT_SCENARIO = S1 / S2 / S3 | Boss.REPLACEMENT_VARIANT = LOW / HIGH / REF (REF = the fading path) |
-| Boss.S3_HALF_LIFE | Boss.REPLACEMENT_HALF_LIFE |
-| Boss.NEAR_TERM_JOIN (market_excess, carried_deviation) | Boss.OVERBUILD_RULE (same values) |
-| Boss.NEAR_TERM_MODE (surplus, redevelopment) | Boss.OVERBUILD_BOOKING (same values) |
-| Boss.NEAR_TERM_ABSORPTION | Boss.OVERBUILD_ABSORPTION |
-| Boss.NEAR_TERM_GAP_REF | Boss.OVERBUILD_GAP_REF |
+| Boss.py (module) | projection.py (git mv; history kept) |
+| PB.py (module) | boundaries.py (git mv; history kept); outputs data/aesa/*, figures D22-D27, H5, H6 |
+| Boss.REPLACEMENT_SCENARIO = S1 / S2 / S3 | projection.REPLACEMENT_VARIANT = LOW / HIGH / REF (REF = the fading path) |
+| Boss.S3_HALF_LIFE | projection.REPLACEMENT_HALF_LIFE |
+| Boss.NEAR_TERM_JOIN (market_excess, carried_deviation) | projection.OVERBUILD_RULE (same values) |
+| Boss.NEAR_TERM_MODE (surplus, redevelopment) | projection.OVERBUILD_BOOKING (same values) |
+| Boss.NEAR_TERM_ABSORPTION | projection.OVERBUILD_ABSORPTION |
+| Boss.NEAR_TERM_GAP_REF | projection.OVERBUILD_GAP_REF |
 | Boss.MIX_MODE, TREND_WINDOW_START, DAMPING_PHI, fit_evolving_mix, mix_trend, engine.mix_shares | removed (the damped typology-mix trend was never run or reported; MIX_HELD_WINDOW kept) |
 | Boss colour and label constants (DEMAND_COLORS, REPL_*, JOIN_*, WAVE_*, EVENTS_*, RV_COLOR, TYPOLOGY_COLORS, MATERIAL_STYLE, SOIL_*) | style.py (colours) and naming.py (labels) |
 | MonteCarlo.MC_SCENARIOS keys S3-10 / S1 / S2 | REF / LOW / HIGH |
-| PB module, pb_* outputs and figures | module name kept (PB.py); outputs data/aesa/*, figures D22-D27, H5, H6 |
+| engine.replacement_path codes S1 / S2 / S3 | LOW / HIGH / REF |
+| validation hindcast method reference_s3_10 | reference |
+| pathways run_T, compute_T, checks_T, write_T, t_indicators | run_tl, compute_tl, checks_tl, write_tl, tl_indicators |
 | levers.LEVERS (L1, L2a, L2b, L3, L5) | L1, L2, L3, L4, L5 |
 | levers.L2A_V_STAR, L2B_ABSORPTION, L3_D | L2_V_STAR, L3_ABSORPTION, L4_D |
 | levers.L4_V2_NOTE | levers.DENSER_MIX_V2_NOTE |
 | levers.SETTINGS (central, stretch) | moderate, ambitious |
 | levers.RAMP_SENS, RAMP_SENS_2030, ramp names | ADOPTION_SENSITIVITIES; by2030, by2045 (adopted by2035; TL from2027) |
 | levers.T_COMPONENTS, T_NAMES, T_DISCLAIMER, T6_*, T_* | TL_COMPONENTS, TL_NAMES, TL_DISCLAIMER, TL6_*, TL_* |
-| module names (Boss.py, PB.py, levers.py, pathways.py, ...) | unchanged (code); documents name them by role |
+| levers.resolve_T, apply_T, t_label, t_table, register_T, ramp_instant | resolve_tl, apply_tl, tl_label, tl_table, register_tl, ramp_from2027 |
+| other module names (levers.py, pathways.py, engine.py, aesa.py, MonteCarlo.py, Sensitivity.py, ...) | unchanged; documents name them by role |
+
+## 9. Extensions made while applying the map
+
+Identifiers of the captured outputs that the approved map left in the v3.1 vocabulary, mapped while the renaming was applied (MODEL v1.0.0, step 3) by the same rules (naming.py); sections 3-5 above list them with every other identifier. Kept on purpose: the Sobol index notation S1 / ST of montecarlo_sobol.csv, the case-study ids (A_1, T_1, ...) and the input tables of data/factors/ (model inputs keep their source names), and setting names echoed from module constants (e.g. PB_YEARS in the AESA settings block).
+
+| v3.1 identifier | release identifier |
+|---|---|
+| gap_2026.json: S2_rate_effect, S2_deviation_effect, model_requirement_2026_S2 | HIGH_rate_effect, HIGH_deviation_effect, model_requirement_2026_HIGH |
+| metrics.json sections boss, pb | projection, aesa |
+| metrics.json validation/hindcast_<origin>_reference_s3_10 (and the hindcast method id) | hindcast_<origin>_reference |
+| projection.json settings/s3_half_life | settings/replacement_half_life |
+| levers.json ramp (section), end_of_ramp_step_P2-central / -stretch, P0_carbon_step_kt, step_relative_to_P0_kt | adoption, end_of_ramp_step_P2-moderate / -ambitious, reference_carbon_step_kt, step_relative_to_reference_kt |
+| pathways CSV column ramp (values ramp2035 / ramp2030 / ramp2045 / instant) | adoption (by2035 / by2030 / by2045 / from2027) |
+| t_limit.json definition/t6; indicators near_term_surplus_absorbed_dwellings | definition/tl6; overbuild_2026_absorbed_dwellings |
+| replacement_scenarios.json join_net | overbuild_2026_net_dwellings |
+| RV_units, RV_floor_area_Mm2_out_of_scope | retirement_village_units, retirement_village_floor_area_Mm2_out_of_scope |
+| shapley_T_subsets.csv subset T | TL |
+| shapley_T.csv name of the separate line (P5-stretch ramped -> P5-stretch instant ...) | P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player) |
+| montecarlo_summary*.csv index column (unnamed) and its output names (GFA_Mm2, RV_units, ...) | output; floor_area_Mm2, retirement_village_units, ... |
+| montecarlo_annual*.csv index column (unnamed) | year |
+| montecarlo_sobol.csv output names | as the draws columns (floor_area_Mm2, retirement_village_units, ...) |

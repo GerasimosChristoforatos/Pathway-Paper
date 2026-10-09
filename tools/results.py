@@ -1,5 +1,5 @@
-"""Generate outputs/RESULTS.md from outputs/metrics.json and the scenario
-comparison (A6). Every headline number in the docs must come from this file.
+"""Generate outputs/RESULTS.md from outputs/metrics.json and the comparison of the Reference
+with its replacement variants. Every headline number in the docs must come from this file.
 
     python tools/results.py
 """
@@ -8,12 +8,12 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import naming as N  # noqa: E402
 from metrics import FIELDS, METRICS, PB_FIELDS, get  # noqa: E402
 
-
-# one naming scheme for the three scenarios (other keys, e.g. S3-5, are sensitivities)
-SCEN_NAME = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
+SCEN_NAME = N.SCENARIOS                          # REF, LOW, HIGH and the sensitivity variants
 
 def main():
     with open(METRICS) as f:
@@ -23,15 +23,15 @@ def main():
         L += ['> **' + m['run_mode'] + '** (run_all.py --quick: fewer Monte Carlo draws, no frozen-technology '
               'Monte Carlo).', '']
     L += [
-         'Reference path: net replacement S3 (half-life 10 yr); 2026-2050; median demographics unless '
-         'marked MC (joint uncertainty within the reference scenario). Carbon factors: '
+         'Reference: net replacement fading from the 2018-2023 rate to the long-run rate (half-life 10 yr); '
+         '2026-2050; median demographics unless marked MC (joint uncertainty within the Reference). Carbon factors: '
          + {'none': '2025 case-study values held (frozen technology).',
             'horup_item': 'A1-A3 of case-study items decarbonised 2026-2050 (Horup et al. 2025; item-level mapping, '
                           'data/material_item_map.csv); A4-A5 e^(-0.01 (t - 2025)) (Resch et al. 2021); C1-C4, held '
-                          'items and soil at 2025.'}[(m.get('pb') or {}).get('decarb_mode', 'none')]
+                          'items and soil at 2025.'}[(m.get('aesa') or {}).get('decarb_mode', 'none')]
          + (' Accounting: time-resolved (upfront in the construction year, replacements and repaints in the year '
             'they occur within 2026-2050; later events and end of life are committed emissions, below).'
-            if (m.get('pb') or {}).get('accounting') == 'time_resolved' else ''), '',
+            if (m.get('aesa') or {}).get('accounting') == 'time_resolved' else ''), '',
          '| metric | value |', '|---|---|']
     for key, label, fmt in FIELDS:
         v = get(m, key)
@@ -40,25 +40,26 @@ def main():
     if os.path.exists(sp):
         with open(sp) as f:
             sc = json.load(f)['scenarios']
-        L += ['', '## By net-replacement scenario (deterministic)', '',
-              '| scenario | floor area (Mm2) | carbon (kt) | of which soil (kt) | carbon excl. soil (kt) | upfront (kt) |',
-              '|---|---|---|---|---|---|']
-        for r in (x for x in sc.values() if 'soil_kt' in x):
-            L.append(f"| {r['label']} | {r['GFA_Mm2']:.2f} | {r['carbon_kt']:,.0f} | {r['soil_kt']:,.0f} | "
-                     f"{r['carbon_kt'] - r['soil_kt']:,.0f} | {r['upfront_kt']:,.0f} |")
-    if m.get('pb'):
-        pb = m['pb']
-        L += ['', f"## Planetary-boundary layer (climate change; {pb['source_pair_label']})", '',
+        L += ['', '## The Reference and its replacement variants (deterministic)', '',
+              '| variant | floor area (Mm2) | carbon (kt) | of which soil carbon loss (kt) | carbon excl. soil (kt) | '
+              'upfront (kt) |', '|---|---|---|---|---|---|']
+        for r in (x for x in sc.values() if 'soil_carbon_loss_kt' in x):
+            L.append(f"| {r['label']} | {r['floor_area_Mm2']:.2f} | {r['carbon_kt']:,.0f} | "
+                     f"{r['soil_carbon_loss_kt']:,.0f} | {r['carbon_kt'] - r['soil_carbon_loss_kt']:,.0f} | "
+                     f"{r['upfront_kt']:,.0f} |")
+    if m.get('aesa'):
+        pb = m['aesa']
+        L += ['', f"## Absolute sustainability (AESA, climate change; {pb['source_pair_label']})", '',
               'Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted et al. 2021 Eqs. 5-6) '
               'are a range and are never averaged. LoE = embodied carbon / boundary (> 1: exceeded). Methods: '
               'outputs/PB_METHODS_DRAFT.md.', '', '| metric | value |', '|---|---|']
         for key, label, fmt in PB_FIELDS:
             v = get(m, key)
             L.append(f"| {label} | {fmt.format(v) if v is not None else 'n/a'} |")
-        L += ['', '| scenario (deterministic) | cumulative LoE AR | cumulative LoE AtP |', '|---|---|---|']
+        L += ['', '| variant (deterministic) | cumulative LoE AR | cumulative LoE AtP |', '|---|---|---|']
         for k, v in pb['cum_LoE_by_scenario'].items():
             L.append(f"| {SCEN_NAME.get(k, k)} | {v['AR']:.2f} | {v['AtP']:.1f} |")
-        L += ['', '| MC scenario | LoE AR p5 / p50 / p95 | LoE AtP p5 / p50 / p95 |', '|---|---|---|']
+        L += ['', '| MC variant | LoE AR p5 / p50 / p95 | LoE AtP p5 / p50 / p95 |', '|---|---|---|']
         for k, v in pb['cum_LoE_mc'].items():
             L.append(f"| {SCEN_NAME.get(k, k)} | {v['LoE_AR_p5']:.2f} / {v['LoE_AR_p50']:.2f} / {v['LoE_AR_p95']:.2f} | "
                      f"{v['LoE_AtP_p5']:.1f} / {v['LoE_AtP_p50']:.1f} / {v['LoE_AtP_p95']:.1f} |")
@@ -71,12 +72,13 @@ def main():
                   'Committed: events after 2050 (lower: 2050 factors held; upper: 2025 factors) and all C1-C4 '
                   '(2025 factors) of the 2026-2050 cohorts; in years of the 2050 AR boundary. Reconciliation with '
                   'whole life at construction: outputs/reconciliation.md.', '',
-                  '| scenario | B2/B4 within window | share of window carbon | committed B2/B4 | committed C1-C4 | '
-                  'committed total | years of the 2050 AR boundary |', '|---|---|---|---|---|---|---|']
-            for k in ('S1', 'S3-10', 'S2'):
+                  '| variant | maintenance (B2, B4) 2026-2050 | share of 2026-2050 carbon | committed B2/B4 | '
+                  'committed C1-C4 | committed total | years of the 2050 AR boundary |', '|---|---|---|---|---|---|---|']
+            for k in ('LOW', 'REF', 'HIGH'):
                 if k in cm:
                     c = cm[k]
-                    L.append(f"| {SCEN_NAME[k]} | {c['b_inwindow_kt']:,.0f} | {100 * c['b_share_inwindow']:.1f}% | "
+                    L.append(f"| {SCEN_NAME[k]} | {c['maintenance_kt_sum_of_annual']:,.0f} | "
+                             f"{100 * c['maintenance_share']:.1f}% | "
                              f"{c['B_lower_kt']:,.0f}-{c['B_upper_kt']:,.0f} | {c['C_kt']:,.0f} | "
                              f"{c['lower_kt']:,.0f}-{c['upper_kt']:,.0f} | {c['years_of_B_AR_2050_lower']:.1f}-"
                              f"{c['years_of_B_AR_2050_upper']:.1f} |")

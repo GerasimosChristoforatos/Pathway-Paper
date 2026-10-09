@@ -567,7 +567,7 @@ def register(p):
 # ============================================================
 # THEORETICAL LIMIT T (PATHWAYS v3): a thought experiment, not a proposal
 # ============================================================
-# T = P5-stretch with five overrides, all at full strength from 2027 (w = 1 in 2027-2050,
+# T = P5-stretch (no L4) with six overrides, all at full strength from 2027 (w = 1 in 2027-2050,
 # no ramp; 2026 observed and untouched). It combines the best observed attributes of
 # different buildings and is a theoretical potential (theoretical > technical >
 # realisable), not a feasible pathway.
@@ -580,6 +580,7 @@ def register(p):
 #   T4 Best materials      r per typology = its own best independent case (A1-A3 / pooled);
 #                          apartments held at r = 1 (one independent case)
 #   T5 Best soil           soil factor at the lowest soil order (SOC_low) for every typology
+#   T6 Urban densification a share T6_SHARE of the non-replacement floor area on developed land (zero soil)
 T_COMPONENTS = ('T1', 'T2', 'T3', 'T4', 'T5', 'T6')
 T_NAMES = {'T1': 'No idle stock', 'T2': 'No extra space', 'T3': 'Minimum space per person',
            'T4': 'Best materials', 'T5': 'Best soil', 'T6': 'Urban densification'}
@@ -647,7 +648,7 @@ def resolve_T(chars, factors_building, factors_typology, olf_used):
 
 
 def apply_T(base, params, pT, comps, ramp_name=T_INSTANT, E_nojoin=None):
-    """Inputs of a T-family run: P5-stretch with the overrides in `comps` (subset of T1..T5).
+    """Inputs of a T-family run: P5-stretch with the overrides in `comps` (subset of T1..T6).
     ramp_name 'instant' (w = 1 from 2027; T and its Shapley subsets) or None (the v2 logistic
     ramp; T-ramp sensitivity). Returns (inputs, join_absorbed, join_redev, info); the banking
     rule and the soil path are applied by pathways.run_T."""

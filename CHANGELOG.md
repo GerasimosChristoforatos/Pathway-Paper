@@ -1,5 +1,73 @@
 # CHANGELOG
 
+## pathways-v3.1: L4 removed, ramp2030, T6 urban densification
+
+Revision of PATHWAYS v3 (tag pathways_v3 = 828e5ef). No baseline file changes
+(tests/test_baseline_lock.py); the P0, P2, P3, P4 rows (central and stretch, all
+scenarios) and the L2a, L2b, L3, L5 single-lever rows are byte-identical to tag
+pathways_v3 (tested).
+
+* **L4 removed.** Lever set L1, L2a, L2b, L3, L5; P1 = L1 only; the typology shares stay
+  at the baseline held mix in every run, including T. L4 evaluated in pathways_v2 and removed: within the
+  embodied-carbon scope a denser mix raises A1-A3 per m2 (attached typologies carry
+  more per m2), while its benefits (infrastructure, operational energy, land) are
+  outside the scope. pathways_v2 (S3-10): L4 central / stretch carbon -0.39% / -2.94%
+  vs P0, carbon per m2 240.9 -> 241.9 / 248.8 kg, lever Shapley share 1.7% / 5.8%
+  (values checked against the tag in tests/test_pathways.py). L4 runs and rows removed
+  from every output.
+* **L2a** unchanged (4.7% / 4.0%); documented: consistent-definition census minimum
+  4.01% (1996), maximum 5.38% (2023); 4.0% is the lowest NZ vacancy rate on that definition.
+* **L1** documented: removes a share f of the extra-space margin (size - S(t) x OLF);
+  full strength in 2035; f constant to 2050 (sizes follow S(t)).
+* **Ramp** basis: full roll-out by 2035 following RECC (Pauliuk et al. 2024, J. Ind.
+  Ecol. 28, 1699). New P5 sensitivity ramp2030 (k = ln(81)/6, midpoint 2028.5,
+  w(2026) = 0, w(2030) = 1); ramp2045 kept.
+* **Shapley**: levers over 5 players (32 subsets); pathways over P1-P4 (16 subsets).
+* **T revised** = P5-stretch without L4, T1-T5 unchanged, plus T6 urban densification:
+  65% (0.82 x 0.79; Auckland Council 2021, Auckland Plan 2050 Development Strategy
+  Monitoring Report, Dec 2021) of each year's non-replacement new floor area 2027-2050
+  on developed land with zero soil, the rest at the T5 factor (assumptions i-v in
+  LEVERS_TABLE, ASSUMPTIONS, methods; DATA + DECISION). Everything at full strength
+  from 1 January 2027; BAU decarbonisation applies (lift held at 2025). T is a
+  hyper-optimistic theoretical limit (thought experiment): all assumptions at full
+  strength from 1 January 2027, combining best observed attributes of different
+  buildings and places; not a proposal or a feasible pathway (potentials hierarchy:
+  theoretical > technical > realisable).
+* **T Shapley** over T1-T6 relative to P5-stretch, instant start (64 subsets, exact);
+  the instant-start effect as a separate line.
+* **Residual in people**: where T exceeds the AR budget, the back-cast cut is
+  expressed as dwellings not built 2027-2050 and new residents housed in existing
+  dwellings (sum of dwellings not built x S(t)).
+* **Correction to v3 (soil share in T).** In banked years with no new building the
+  engine's soil-bearing share (1 - soil-free / total) is 0/0 floating-point noise and
+  was negative; v3's T therefore understated soil carbon by 5.5 kt. The share is now
+  clipped to [0, 1] and set to 0 where the floor area built is <= 1e-3 m2 (tested).
+
+| run (S3-10) | floor area (Mm2) | carbon (kt) | committed after 2050 (kt) | LoE AR | LoE AtP | carbon vs P0 |
+|---|---|---|---|---|---|---|
+| P0 | 89.57 | 21,578 | 8,208-8,969 | 4.848 | 19.39 | +0.0% |
+| P1-central | 83.84 | 20,246 | 7,675-8,386 | 4.549 | 18.19 | -6.2% |
+| P1-stretch | 77.93 | 18,872 | 7,124-7,783 | 4.240 | 16.96 | -12.5% |
+| P2-central | 83.61 | 20,057 | 7,672-8,384 | 4.506 | 18.02 | -7.0% |
+| P2-stretch | 80.69 | 19,276 | 7,416-8,106 | 4.331 | 17.32 | -10.7% |
+| P3-central | 86.82 | 21,032 | 7,952-8,689 | 4.725 | 18.90 | -2.5% |
+| P3-stretch | 84.07 | 20,486 | 7,696-8,409 | 4.602 | 18.41 | -5.1% |
+| P4-central | 89.57 | 20,674 | 8,208-8,969 | 4.645 | 18.58 | -4.2% |
+| P4-stretch | 89.57 | 19,720 | 8,208-8,969 | 4.431 | 17.72 | -8.6% |
+| P5-central | 75.71 | 17,560 | 6,936-7,579 | 3.945 | 15.78 | -18.6% |
+| P5-stretch | 65.40 | 14,581 | 5,990-6,546 | 3.276 | 13.10 | -32.4% |
+| T (hyper-optimistic theoretical limit) | 25.32 | 4,579 | 2,330-2,548 | 1.029 | 4.11 | -78.8% |
+| T with the logistic ramp | 30.21 | 5,892 | 2,752-3,007 | 1.324 | 5.29 | -72.7% |
+
+P5 ramp sensitivities (carbon, LoE AR): central 2030 17,151 kt / 3.853, 2035 17,560 / 3.945,
+2045 18,357 / 4.124; stretch 2030 13,844 / 3.110, 2035 14,581 / 3.276, 2045 16,081 / 3.613.
+T Shapley (carbon, kt): T1 1,804 (20%), T2 2,825 (32%), T3 2,196 (25%), T4 722 (8%),
+T5 565 (6%), T6 718 (8%); instant start of P5-stretch 1,171 (separate line). Gap: T
+exceeds the AR budget (LoE 1.029); a uniform cut of 4.1% of 2027-2050 construction
+reaches LoE AR = 1, i.e. 15,683 dwellings not built and 41,584 new residents housed in
+existing dwellings; AtP not attainable (minimum 1.28). Tests: 36 passed
+(`run_all.py --pathways-only`).
+
 ## pathways-v3: theoretical limit T
 
 A theoretical-limit scenario T on top of PATHWAYS v2 (tag pathways_v2 = 2e6e907). T is a theoretical limit (thought experiment) combining the best observed attributes of different buildings; it is not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).

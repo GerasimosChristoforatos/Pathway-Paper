@@ -21,6 +21,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import engine  # noqa: E402
 import figaudit  # noqa: E402
+import naming as N  # noqa: E402
 import validation  # noqa: E402
 
 OUT = os.path.join(ROOT, 'outputs')
@@ -32,10 +33,10 @@ def _savefig(fig, fname):
     fig.savefig(os.path.join(FIG, fname), dpi=130)
 
 
-# the three scenarios (typology shares held in all); one naming scheme everywhere
-SCEN = [('S1', 'Low (S1)', dict(REPLACEMENT_SCENARIO='S1'), '#2E86AB'),
-        ('S3-10', 'Reference (S3-10)', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0), '#C0392B'),
-        ('S2', 'High (S2)', dict(REPLACEMENT_SCENARIO='S2'), '#8E44AD')]
+# the Reference and the two replacement variants (typology shares held in all); labels: naming.SCENARIOS
+SCEN = [('LOW', N.SCENARIOS['LOW'], dict(REPLACEMENT_VARIANT='LOW'), '#2E86AB'),
+        ('REF', N.SCENARIOS['REF'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0), '#C0392B'),
+        ('HIGH', N.SCENARIOS['HIGH'], dict(REPLACEMENT_VARIANT='HIGH'), '#8E44AD')]
 M6 = 1e6
 
 
@@ -95,8 +96,8 @@ def main():
     for k, lab, s, col in SCEN:
         B = validation.run_boss(**s)
         runs[k] = dict(B=B, lab=lab, col=col, p=series(B)[0])
-    hist = series(runs['S3-10']['B'])[1]
-    ref = runs['S3-10']
+    hist = series(runs['REF']['B'])[1]
+    ref = runs['REF']
 
     # ---- 5. reality checks -------------------------------------------------
     rc = {}
@@ -121,29 +122,29 @@ def main():
         hs = hist_of[key]
         shade(a, hs / sc)
         a.plot(hs.index, hs / sc, color='black', lw=1.8, label='history')
-        for k in ('S1', 'S3-10', 'S2'):
+        for k in ('LOW', 'REF', 'HIGH'):
             r = runs[k]
             y = f(r['p']).loc[2026:]
-            a.plot(y.index, y / sc, color=r['col'], lw=2 if k == 'S3-10' else 1.3, label=r['lab'])
+            a.plot(y.index, y / sc, color=r['col'], lw=2 if k == 'REF' else 1.3, label=r['lab'])
             rc.setdefault(k, {})[key] = range_check(hs, f(r['p']))
         a.set_title(title, fontsize=10); a.set_ylabel(unit); a.grid(alpha=0.3); a.set_xlim(1991, 2050)
         a.ticklabel_format(axis='y', style='plain', useOffset=False)
-    for k in ('S1', 'S3-10', 'S2'):
+    for k in ('LOW', 'REF', 'HIGH'):
         rc[k]['vacancy'] = range_check(hist['v'], runs[k]['p']['v'])
     # cumulative removals as % of 2025 stock by 2050 (gross: demolition + wave + near-term excess)
     txt = '\n'.join(f"{runs[k]['lab']}: {100 * runs[k]['p']['removals_gross'].loc[2026:].sum() / runs[k]['p']['stock_2025']:.1f}%"
-                    for k in ('S1', 'S3-10', 'S2'))
+                    for k in ('LOW', 'REF', 'HIGH'))
     ax[0, 1].text(0.02, 0.97, 'Cumulative removals 2026-50\n(% of 2025 stock):\n' + txt, transform=ax[0, 1].transAxes,
                   va='top', fontsize=8, bbox=dict(facecolor='white', alpha=0.85, edgecolor='#ccc'))
     t = ax[1, 1].twinx()
     t.plot(hist['v'].index, hist['v'], color='black', ls='--', lw=1)
-    for k in ('S1', 'S3-10', 'S2'):
+    for k in ('LOW', 'REF', 'HIGH'):
         vv = runs[k]['p']['v'].loc[2026:]
         t.plot(vv.index, vv, color=runs[k]['col'], ls='--', lw=1)
     t.set_ylabel('vacancy (% of private dwellings)')
     t2 = ax[1, 2].twinx()
     t2.plot(hist['dense'].index, hist['dense'], color='black', ls='--', lw=1)
-    for k in ('S1', 'S3-10', 'S2'):
+    for k in ('LOW', 'REF', 'HIGH'):
         d = runs[k]['p']['dense'].loc[2026:]
         t2.plot(d.index, d, color=runs[k]['col'], ls='--', lw=1)
     t2.set_ylabel('townhouses + apartments, % of floor area')
@@ -173,7 +174,7 @@ def main():
     def bridge(steps, fname, note):
         fig, ax = plt.subplots(1, 3, figsize=(19, 6), sharey=True)
         fig.suptitle('Bridge: 2026-2050 floor area by reason for building (Mm²)' + note, fontsize=12)
-        for a, k in zip(ax, ('S1', 'S3-10', 'S2')):
+        for a, k in zip(ax, ('LOW', 'REF', 'HIGH')):
             R = runs[k]['B']['results']['50th']
             vals = [sum(float(np.sum(R[x][1:])) for x in keys) / M6 for keys, _ in steps]
             cum = 0.0
@@ -204,9 +205,9 @@ def main():
     for i, r in enumerate(Bref['census_rates'].itertuples()):
         a.hlines(100 * r.rate, r.y0, r.y1, color='black', lw=2.5,
                  label='census intervals (dwelling counts, UC-corrected)' if i == 0 else None)
-    for k, scen, hl in (('S1', 'S1', 10.0), ('S3-10', 'S3', 10.0), ('S2', 'S2', 10.0)):
+    for k, scen, hl in (('LOW', 'LOW', 10.0), ('REF', 'REF', 10.0), ('HIGH', 'HIGH', 10.0)):
         path = engine.replacement_path(scen, long_rate, float(Bref['rate_recent']), fy, hl)
-        a.plot(fy, 100 * path, color=runs[k]['col'], lw=2 if k == 'S3-10' else 1.5, label=runs[k]['lab'])
+        a.plot(fy, 100 * path, color=runs[k]['col'], lw=2 if k == 'REF' else 1.5, label=runs[k]['lab'])
     a.axhline(100 * Bref['demolition_rate'], color='#7f8c8d', ls='--', lw=1.3,
               label=f"BRANZ demolition rate {100 * Bref['demolition_rate']:.3f}%")
     a.axhline(0, color='black', lw=0.6)
@@ -217,7 +218,7 @@ def main():
     a.set_title('Net replacement rate (demolition net of unconsented additions): census record and scenario paths')
     a.legend(fontsize=8, loc='upper left')
     plt.tight_layout(rect=(0, 0.04, 1, 1))
-    _w = validation.Boss.NET_REPLACEMENT_WINDOW
+    _w = validation.projection.NET_REPLACEMENT_WINDOW
     fig.text(0.5, 0.01, f"Long run {_w[0]}-{_w[1]}: "
              f"{100 * long_rate:.3f}%/yr; 2018-23: {100 * Bref['rate_recent']:.3f}%/yr. Each step is one intercensal "
              f"interval; the 2018-23 step is a single interval.", ha='center', fontsize=8.5, style='italic')
@@ -230,16 +231,16 @@ def main():
     mc = os.path.join(OUT, 'montecarlo_annual.csv')
     if os.path.exists(mc):
         m = pd.read_csv(mc, index_col=0).loc[2026:]
-        a.fill_between(m.index, m['gfa_5'] / M6, m['gfa_95'] / M6, color=ref['col'], alpha=0.15,
+        a.fill_between(m.index, m['floor_area_5'] / M6, m['floor_area_95'] / M6, color=ref['col'], alpha=0.15,
                        label='reference MC 5-95%')
     for k, r in runs.items():
         g = r['p']['gfa'].loc[2026:]
-        a.plot(g.index, g / M6, color=r['col'], lw=2 if k == 'S3-10' else 1.3, label=r['lab'])
+        a.plot(g.index, g / M6, color=r['col'], lw=2 if k == 'REF' else 1.3, label=r['lab'])
     a.set_title('Annual floor area built'); a.set_ylabel('Mm² per year'); a.grid(alpha=0.3); a.legend(fontsize=8)
     ks = list(runs)
     a = ax[1]
     a.bar(range(len(ks)), [runs[k]['p']['gfa'].loc[2026:].sum() / M6 for k in ks], color=[runs[k]['col'] for k in ks])
-    short = {'S1': 'Low (S1)', 'S3-10': 'Reference (S3-10)', 'S2': 'High (S2)'}
+    short = {k: N.SCENARIOS[k] for k in ('LOW', 'REF', 'HIGH')}
     a.set_xticks(range(len(ks))); a.set_xticklabels([short[k] for k in ks]); a.set_title('Cumulative floor area 2026-2050')
     a.set_ylabel('Mm²'); a.grid(alpha=0.3, axis='y')
     a = ax[2]
@@ -267,7 +268,7 @@ def main():
     ax[0].text(0.02, 0.03, '2026 is not used as the base: it is observed building and carries the one-off\n'
                'population shortfall and the near-term market excess.', transform=ax[0].transAxes, fontsize=8)
     lo, hi = np.inf, -np.inf
-    for k in ('S1', 'S3-10', 'S2'):
+    for k in ('LOW', 'REF', 'HIGH'):
         ci = (runs[k]['p']['carbon'] / runs[k]['p']['gfa']).loc[2026:2050]
         ax[1].plot(ci.index, ci, color=runs[k]['col'], lw=2, label=runs[k]['lab'])
         lo, hi = min(lo, ci.min()), max(hi, ci.max())
@@ -290,13 +291,13 @@ def main():
         yy = rows[0]['years']
         a.plot(yy, np.cumsum(rows[0]['actual_path']) / 1e3, color='black', lw=2, label='actual')
         for r in rows:
-            if r['method'] in ('reference_s3_10', v['model_method']):
+            if r['method'] in ('reference', v['model_method']):
                 a.plot(yy, np.cumsum(r['predicted_path']) / 1e3, lw=1.6,
-                       color='#C0392B' if r['method'] == 'reference_s3_10' else '#2E86AB',
-                       label=f"{'Reference (S3-10)' if r['method'] == 'reference_s3_10' else 'S1 (census dwelling-count rate)'}, "
+                       color='#C0392B' if r['method'] == 'reference' else '#2E86AB',
+                       label=f"{'Reference' if r['method'] == 'reference' else 'Low replacement (census dwelling-count rate)'}, "
                              f"consistent vacancy {r['error_pct']:+.1f}%")
         for r in pub:
-            if r['origin'] == o and r['method'] == 'reference_s3_10' and 'years' in r:
+            if r['origin'] == o and r['method'] == 'reference' and 'years' in r:
                 a.plot(r['years'], np.cumsum(r['predicted_path']) / 1e3, lw=1.2, ls=':', color='#C0392B',
                        label=f"reference, vacancy as published {r['error_pct']:+.1f}%")
         a.set_title(f'Hindcast from origin {o}: cumulative dwellings'); a.set_ylabel('thousand')
@@ -312,13 +313,14 @@ def main():
     plt.tight_layout(); _savefig(fig, 'fig_validation.png'); plt.close(fig)
 
     # ---- reality-check exceedances ----------------------------------------
-    json.dump(dict(rc, handover=handover), open(os.path.join(OUT, 'reality_checks.json'), 'w'), indent=2)
+    with open(os.path.join(OUT, 'reality_checks.json'), 'w') as f:
+        json.dump(N.keys(dict(rc, handover=handover)), f, indent=2)
     names = dict(built='dwellings completed', removals_net='net removals', ppl_per_dw='people per new dwelling',
                  m2_per_res='floor area per additional resident', S='household size', size='new-dwelling size',
                  vacancy='vacancy rate (effective, %)')
     L = ['# Reality checks (generated by tools/figures_report.py)', '',
          'Projection 2026-2050 against the 1991-2025 historical range (min-max).', '',
-         '| scenario | quantity | historical range | years outside | first year outside | max above (%) | max below (%) |',
+         '| variant | quantity | historical range | years outside | first year outside | max above (%) | max below (%) |',
          '|---|---|---|---|---|---|---|']
     for k, d in rc.items():
         for q, r in d.items():

@@ -1,8 +1,8 @@
 """
-ENGINE -- the forward model shared by Boss.py and MonteCarlo.py
+ENGINE -- the forward model shared by projection.py and MonteCarlo.py
 ===============================================================
 Pure functions. Every input is an argument; nothing is read from module
-globals or files; no argument is modified. Boss.py builds the inputs from the
+globals or files; no argument is modified. projection.py builds the inputs from the
 data and its settings, MonteCarlo.py builds them from one draw of its
 uncertain inputs, and both call these same functions. There is therefore one
 engine, and a change here reaches both scripts at once.
@@ -11,7 +11,7 @@ engine, and a change here reaches both scripts at once.
   calibrate_stock   historical stock identity -> calibrated net replacement
   window_rate       net replacement (demolition + residual) over a year window
   deviation_2025    2025 departure from the calibrated identity, and its persistence
-  replacement_path  net replacement by year under scenario S1 / S2 / S3
+  replacement_path  net replacement by year: LOW / HIGH / REF (the projection variants)
   seasonal_shares   mean share of the calendar-year total, by month
   nowcast_year      calendar-year consents from the observed months (A1)
   requirement       dwellings built (all categories) in a forward() result
@@ -138,19 +138,20 @@ def census_window_rate(rates, start, end):
 
 
 def replacement_path(scenario, rate_long, rate_recent, years, half_life=10.0):
-    """Net replacement rate by year (index 0 = 2025).
-      'S1': the long-run rate throughout;
-      'S2': the recent (2018-2023) rate throughout;
-      'S3': the recent rate fading to the long-run rate with the given
-            half-life: long + (recent - long) x 0.5^((t - 2025) / half_life)."""
+    """Net replacement rate by year (index 0 = 2025), by projection variant:
+      'LOW':  the long-run rate throughout (Low replacement);
+      'HIGH': the recent (2018-2023) rate throughout (High replacement);
+      'REF':  the recent rate fading to the long-run rate with the given
+              half-life: long + (recent - long) x 0.5^((t - 2025) / half_life)
+              (the Reference; half-lives 5 and 15 yr are sensitivity variants)."""
     years = np.asarray(years)
-    if scenario == 'S1':
+    if scenario == 'LOW':
         return np.full(len(years), float(rate_long))
-    if scenario == 'S2':
+    if scenario == 'HIGH':
         return np.full(len(years), float(rate_recent))
-    if scenario == 'S3':
+    if scenario == 'REF':
         return rate_long + (rate_recent - rate_long) * 0.5 ** ((years - 2025) / float(half_life))
-    raise ValueError(f"Unknown replacement scenario '{scenario}'.")
+    raise ValueError(f"Unknown replacement variant '{scenario}'.")
 
 
 def seasonal_shares(consents, years):
@@ -376,7 +377,7 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
 
     gfa_t = shares.values.T * total                  # (typology, years)
     # intensities: one value per typology (constant), or one per typology and
-    # year (materials decarbonised, Boss.DECARB_MODE); both broadcast to (typ, years)
+    # year (materials decarbonised, projection.DECARB_MODE); both broadcast to (typ, years)
     I = np.array([np.broadcast_to(np.asarray(intensity[t], float), (len(hh),)) for t in typ])
     U = np.array([np.broadcast_to(np.asarray(intensity_upfront[t], float), (len(hh),)) for t in typ])
     if soil is None:

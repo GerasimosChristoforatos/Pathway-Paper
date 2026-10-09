@@ -65,23 +65,47 @@ TERMS = [
 ]
 
 SETTINGS = [
-    ('Boss.REPLACEMENT_SCENARIO = S1 / S2 / S3', 'Boss.REPLACEMENT_VARIANT = LOW / HIGH / REF (REF = the fading path)'),
-    ('Boss.S3_HALF_LIFE', 'Boss.REPLACEMENT_HALF_LIFE'),
-    ('Boss.NEAR_TERM_JOIN (market_excess, carried_deviation)', 'Boss.OVERBUILD_RULE (same values)'),
-    ('Boss.NEAR_TERM_MODE (surplus, redevelopment)', 'Boss.OVERBUILD_BOOKING (same values)'),
-    ('Boss.NEAR_TERM_ABSORPTION', 'Boss.OVERBUILD_ABSORPTION'),
-    ('Boss.NEAR_TERM_GAP_REF', 'Boss.OVERBUILD_GAP_REF'),
+    ('Boss.py (module)', 'projection.py (git mv; history kept)'),
+    ('PB.py (module)', 'boundaries.py (git mv; history kept); outputs data/aesa/*, figures D22-D27, H5, H6'),
+    ('Boss.REPLACEMENT_SCENARIO = S1 / S2 / S3', 'projection.REPLACEMENT_VARIANT = LOW / HIGH / REF (REF = the fading path)'),
+    ('Boss.S3_HALF_LIFE', 'projection.REPLACEMENT_HALF_LIFE'),
+    ('Boss.NEAR_TERM_JOIN (market_excess, carried_deviation)', 'projection.OVERBUILD_RULE (same values)'),
+    ('Boss.NEAR_TERM_MODE (surplus, redevelopment)', 'projection.OVERBUILD_BOOKING (same values)'),
+    ('Boss.NEAR_TERM_ABSORPTION', 'projection.OVERBUILD_ABSORPTION'),
+    ('Boss.NEAR_TERM_GAP_REF', 'projection.OVERBUILD_GAP_REF'),
     ('Boss.MIX_MODE, TREND_WINDOW_START, DAMPING_PHI, fit_evolving_mix, mix_trend, engine.mix_shares', 'removed (the damped typology-mix trend was never run or reported; MIX_HELD_WINDOW kept)'),
     ('Boss colour and label constants (DEMAND_COLORS, REPL_*, JOIN_*, WAVE_*, EVENTS_*, RV_COLOR, TYPOLOGY_COLORS, MATERIAL_STYLE, SOIL_*)', 'style.py (colours) and naming.py (labels)'),
     ('MonteCarlo.MC_SCENARIOS keys S3-10 / S1 / S2', 'REF / LOW / HIGH'),
-    ('PB module, pb_* outputs and figures', 'module name kept (PB.py); outputs data/aesa/*, figures D22-D27, H5, H6'),
+    ('engine.replacement_path codes S1 / S2 / S3', 'LOW / HIGH / REF'),
+    ('validation hindcast method reference_s3_10', 'reference'),
+    ('pathways run_T, compute_T, checks_T, write_T, t_indicators', 'run_tl, compute_tl, checks_tl, write_tl, tl_indicators'),
     ('levers.LEVERS (L1, L2a, L2b, L3, L5)', 'L1, L2, L3, L4, L5'),
     ('levers.L2A_V_STAR, L2B_ABSORPTION, L3_D', 'L2_V_STAR, L3_ABSORPTION, L4_D'),
     ('levers.L4_V2_NOTE', 'levers.DENSER_MIX_V2_NOTE'),
     ('levers.SETTINGS (central, stretch)', 'moderate, ambitious'),
     ('levers.RAMP_SENS, RAMP_SENS_2030, ramp names', 'ADOPTION_SENSITIVITIES; by2030, by2045 (adopted by2035; TL from2027)'),
     ('levers.T_COMPONENTS, T_NAMES, T_DISCLAIMER, T6_*, T_*', 'TL_COMPONENTS, TL_NAMES, TL_DISCLAIMER, TL6_*, TL_*'),
-    ('module names (Boss.py, PB.py, levers.py, pathways.py, ...)', 'unchanged (code); documents name them by role'),
+    ('levers.resolve_T, apply_T, t_label, t_table, register_T, ramp_instant', 'resolve_tl, apply_tl, tl_label, tl_table, register_tl, ramp_from2027'),
+    ('other module names (levers.py, pathways.py, engine.py, aesa.py, MonteCarlo.py, Sensitivity.py, ...)', 'unchanged; documents name them by role'),
+]
+
+# Identifiers the approved map did not cover, added while applying it (step 3 of the release);
+# every one is in sections 3-5 above, which are enumerated from the map itself.
+EXTENSIONS = [
+    ('gap_2026.json: S2_rate_effect, S2_deviation_effect, model_requirement_2026_S2', 'HIGH_rate_effect, HIGH_deviation_effect, model_requirement_2026_HIGH'),
+    ('metrics.json sections boss, pb', 'projection, aesa'),
+    ('metrics.json validation/hindcast_<origin>_reference_s3_10 (and the hindcast method id)', 'hindcast_<origin>_reference'),
+    ('projection.json settings/s3_half_life', 'settings/replacement_half_life'),
+    ('levers.json ramp (section), end_of_ramp_step_P2-central / -stretch, P0_carbon_step_kt, step_relative_to_P0_kt', 'adoption, end_of_ramp_step_P2-moderate / -ambitious, reference_carbon_step_kt, step_relative_to_reference_kt'),
+    ('pathways CSV column ramp (values ramp2035 / ramp2030 / ramp2045 / instant)', 'adoption (by2035 / by2030 / by2045 / from2027)'),
+    ('t_limit.json definition/t6; indicators near_term_surplus_absorbed_dwellings', 'definition/tl6; overbuild_2026_absorbed_dwellings'),
+    ('replacement_scenarios.json join_net', 'overbuild_2026_net_dwellings'),
+    ('RV_units, RV_floor_area_Mm2_out_of_scope', 'retirement_village_units, retirement_village_floor_area_Mm2_out_of_scope'),
+    ('shapley_T_subsets.csv subset T', 'TL'),
+    ('shapley_T.csv name of the separate line (P5-stretch ramped -> P5-stretch instant ...)', 'P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player)'),
+    ('montecarlo_summary*.csv index column (unnamed) and its output names (GFA_Mm2, RV_units, ...)', 'output; floor_area_Mm2, retirement_village_units, ...'),
+    ('montecarlo_annual*.csv index column (unnamed)', 'year'),
+    ('montecarlo_sobol.csv output names', 'as the draws columns (floor_area_Mm2, retirement_village_units, ...)'),
 ]
 
 LEGEND_TERMS = [
@@ -120,7 +144,7 @@ def _vacancy():
             with open(path) as f:
                 v = json.load(f)['vacancy']
             ymin = min(v['consistent'], key=v['consistent'].get)
-            return N.vacancy_wording(v['v_forward'], v['consistent_min'], ymin, v['v_2050']) + '.'
+            return N.vacancy_wording(v['v_forward'], v['consistent_max'], v['consistent_min'], ymin, v['v_2050']) + '.'
     raise FileNotFoundError('overbuild report')
 
 
@@ -282,8 +306,19 @@ def _labels():
     L += table(['v3.1 axis label', 'release axis label'], AXIS_LABELS)
     L += ['', 'Legend entries (term level; legends are composed from the vocabulary above):', '']
     L += table(['v3.1 legend entry', 'release legend entry'], LEGEND_TERMS)
-    L += ['', '## 8. Code settings that surface in documents', '']
+    L += ['', '## 8. Code settings that surface in documents', '',
+          'Module renames approved with the design documents: Boss.py -> projection.py and PB.py -> boundaries.py '
+          '(git mv, so the history of each file is kept); imports, run_all.py, the Spyder instructions, the '
+          'documents and the tests use the new names.', '']
     L += table(['v3.1', 'release'], SETTINGS)
+    L += ['', '## 9. Extensions made while applying the map', '',
+          'Identifiers of the captured outputs that the approved map left in the v3.1 vocabulary, mapped while '
+          'the renaming was applied (MODEL v1.0.0, step 3) by the same rules (naming.py); sections 3-5 above list '
+          'them with every other identifier. Kept on purpose: the Sobol index notation S1 / ST of '
+          'montecarlo_sobol.csv, the case-study ids (A_1, T_1, ...) and the input tables of data/factors/ '
+          '(model inputs keep their source names), and setting names echoed from module constants (e.g. '
+          'PB_YEARS in the AESA settings block).', '']
+    L += table(['v3.1 identifier', 'release identifier'], EXTENSIONS)
     return L
 
 
@@ -352,23 +387,24 @@ def figure_plan():
         L += [f"### {h['id']}. {h['title']}", '', f"* File: `outputs/headline/{h['file']}.png` / `.pdf`",
               f"* Panels: {h['panels']}", f"* Data: {h['source']}", f"* Draft caption: {h['caption']}",
               f"* Replaces (v3.1): {', '.join(h['legacy']) or 'new'}", '']
-    L += ['### Choices for approval', '',
-          '* **H11, population rows.** The one-at-a-time rows that change only the numerator of the LoE (every '
-          'model-input row except population) convert exactly: cumulative LoE AR = Reference LoE x carbon / '
+    L += ['### Decisions (approved with the design documents)', '',
+          '* **H11, population rows: option A.** The one-at-a-time rows that change only the numerator of the LoE '
+          '(every model-input row except population) convert exactly: cumulative LoE AR = Reference LoE x carbon / '
           'Reference carbon, because the boundaries depend on the population path only. The population 5th / 95th '
-          'rows change the AR boundary as well (population modifier of Horup et al. 2025, Eq. 1), so their LoE is '
-          'not in any v3.1 output. Option A (recommended): compute them with aesa.boundary_ar on each population '
-          'path (two new numbers, reported as new in the CHANGELOG). Option B: leave population out of H11 and point '
-          'to the Monte Carlo band (H5), which carries population uncertainty.',
-          '* **H10, TL marker.** TL is placed at its effective coordinates (2027-2050 floor area and non-soil carbon '
-          'per m2 of the TL run vs the Reference): two derived coordinates, computed exactly from the TL run, with '
-          'the caveat that TL5 and TL6 lower soil carbon, which the plane does not show.',
-          '* **H4, annual components.** The annual split into materials and construction (A1-A5), soil carbon loss '
-          'and maintenance is exported as a new table (outputs/headline/H4_carbon_components.csv); it is an exact '
-          'decomposition of the captured annual carbon (tested to sum to it).',
+          'rows change the AR boundary as well (population modifier of Horup et al. 2025, Eq. 1): their LoE is '
+          'computed with the existing boundary function (aesa.boundary_ar, aesa.boundary_atp) on each population '
+          'path, with the exact engine carbon of that path. Two new values, flagged as additions (not changes) in '
+          'the regression file and the CHANGELOG.',
+          '* **H10, TL marker: yes.** TL is placed at its effective coordinates (2027-2050 floor area and non-soil '
+          'carbon per m2 of the TL run vs the Reference): two derived coordinates, computed exactly from the TL run, '
+          'with the caveat in the caption that TL5 and TL6 lower soil carbon, which the plane does not show.',
+          '* **H4, annual components: yes.** The annual split into materials and construction (A1-A5), soil carbon '
+          'loss and maintenance is exported as a new table (outputs/headline/H4_carbon_components.csv); it is an '
+          'exact decomposition of the captured annual carbon (tested to sum to it exactly).',
           '* **Added headline content.** No figure beyond H1-H11; the material breakdown joins H4 as panel (b) '
           'because it is the policy-relevant split of the same carbon, and the TL human-terms staircase stays in '
-          'the diagnostics (D32) because H9 carries its residual.', '']
+          'the diagnostics (D32) because H9 carries its residual.',
+          '* **Palette and figure plan:** approved as proposed (docs/PALETTE.md).', '']
     L += ['## Diagnostics set', '']
     for g, rows in FP.DIAGNOSTICS.items():
         L += [f'### {g}', '']

@@ -11,8 +11,8 @@ over the 10 soil orders of the land zoned for urbanisation to about 2050 in
 Auckland: Christoforatos G, Pickering K, Schipper LA (2026), Journal of
 Environmental Management 415, 130603, https://doi.org/10.1016/j.jenvman.2026.130603.
 
-Reads the case-study LCA results and writes the factor tables that Boss.py
-consumes. Run this whenever the case-study data change; Boss reads only the
+Reads the case-study LCA results and writes the factor tables that projection.py
+consumes. Run this whenever the case-study data change; projection reads only the
 CSV outputs, never the workbooks.
 
 OUTPUTS
@@ -26,7 +26,7 @@ OUTPUTS
                          (kg/m2 GFA), soil loss, and which case (if any) it
                          duplicates. Read by MonteCarlo.py for the bootstrap.
   factors_a13_decarb.csv A1-A3 (kg/m2 GFA) by typology x material x year 2025-2050,
-                         decarbonised with Horup et al. (2025) (Boss.DECARB_MODE),
+                         decarbonised with Horup et al. (2025) (projection.DECARB_MODE),
                          per variant: item-level mapping and its sensitivities
                          (decarb_variant()).
   factors_building_a13_reduction.csv  the same reduction per case study and
@@ -78,15 +78,15 @@ OUT_DIR = os.path.join(ROOT_DIR, 'outputs', 'factors')     # derived files; data
 OUT_MATERIAL = os.path.join(OUT_DIR, 'factors_material.csv')
 OUT_TYPOLOGY = os.path.join(OUT_DIR, 'factors_typology.csv')
 OUT_BUILDING = os.path.join(OUT_DIR, 'factors_building.csv')   # for MonteCarlo.py
-OUT_DECARB = os.path.join(OUT_DIR, 'factors_a13_decarb.csv')    # A1-A3 by year (Boss.DECARB_MODE)
+OUT_DECARB = os.path.join(OUT_DIR, 'factors_a13_decarb.csv')    # A1-A3 by year (projection.DECARB_MODE)
 OUT_DECARB_BLD = os.path.join(OUT_DIR, 'factors_building_a13_reduction.csv')   # for MonteCarlo.py
 OUT_ITEM_COVERAGE = os.path.join(OUT_DIR, 'factors_a13_item_coverage.csv')
-OUT_EVENTS = os.path.join(OUT_DIR, 'factors_events.csv')            # B2/B4 events by age (Boss.ACCOUNTING)
+OUT_EVENTS = os.path.join(OUT_DIR, 'factors_events.csv')            # B2/B4 events by age (projection.ACCOUNTING)
 OUT_EVENTS_BLD = os.path.join(OUT_DIR, 'factors_building_events.csv')   # the same per case study (MonteCarlo.py)
 OUT_A45_ITEM = os.path.join(OUT_DIR, 'factors_a45_item.csv')        # A4-A5 on item paths (sensitivity)
 
 # ---------------------------------------------------------------------------
-# MATERIAL DECARBONISATION OF A1-A3 (Boss.DECARB_MODE)
+# MATERIAL DECARBONISATION OF A1-A3 (projection.DECARB_MODE)
 # ---------------------------------------------------------------------------
 # Relative change of GWP per unit of material production versus 2025: Horup et
 # al. (2025), Sci. Total Environ. 966, 178780, Fig. 2 and Supplementary Table S4
@@ -121,7 +121,7 @@ ITEM_CASES = {'central': 'item-level mapping',
 DECARB_MODES = ('none', 'horup_item')
 
 # ---------------------------------------------------------------------------
-# A4-A5 DECARBONISATION (Boss.DECARB_A45)
+# A4-A5 DECARBONISATION (projection.DECARB_A45)
 # ---------------------------------------------------------------------------
 # A4-A5 cannot be separated by material process in the case-study data, so it
 # follows a generic technological-progress factor: Resch E, Andresen I, Cherubini F,
@@ -148,7 +148,7 @@ def generic_path(years, base=2025, rate=A45_DECAY):
 
 
 # ---------------------------------------------------------------------------
-# REPLACEMENT / REPAINT EVENTS (time-resolved B2, B4; Boss.ACCOUNTING)
+# REPLACEMENT / REPAINT EVENTS (time-resolved B2, B4; projection.ACCOUNTING)
 # ---------------------------------------------------------------------------
 # From data/derived/lca_events.csv (data/build_lca_events.py; counts and lifespan
 # from the LCAQuick root tables). Per event line: per-event impact = line B2/B4 /
@@ -210,7 +210,7 @@ def event_rows(timing='n+1'):
 
 def decarb_variant(mode, item_case='central'):
     """Variant name in factors_a13_decarb.csv / factors_building_a13_reduction.csv
-    for a Boss setting (DECARB_MODE, DECARB_ITEM_CASE); None for 'none'."""
+    for a projection setting (DECARB_MODE, DECARB_ITEM_CASE); None for 'none'."""
     if mode not in DECARB_MODES:
         raise ValueError(f"Unknown DECARB_MODE '{mode}'; expected one of {DECARB_MODES}.")
     if mode != 'horup_item' and item_case != 'central':

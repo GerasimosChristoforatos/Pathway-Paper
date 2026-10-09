@@ -92,12 +92,13 @@ Two sets. **Headline** (`outputs/headline/`): the figures of the paper, double c
 * Draft caption: One-at-a-time sensitivities of the cumulative acquired-rights level of exceedance; bars are not additive and not a joint interval.
 * Replaces (v3.1): sens_1_tornado, pb_4_sensitivity
 
-### Choices for approval
+### Decisions (approved with the design documents)
 
-* **H11, population rows.** The one-at-a-time rows that change only the numerator of the LoE (every model-input row except population) convert exactly: cumulative LoE AR = Reference LoE x carbon / Reference carbon, because the boundaries depend on the population path only. The population 5th / 95th rows change the AR boundary as well (population modifier of Horup et al. 2025, Eq. 1), so their LoE is not in any v3.1 output. Option A (recommended): compute them with aesa.boundary_ar on each population path (two new numbers, reported as new in the CHANGELOG). Option B: leave population out of H11 and point to the Monte Carlo band (H5), which carries population uncertainty.
-* **H10, TL marker.** TL is placed at its effective coordinates (2027-2050 floor area and non-soil carbon per m2 of the TL run vs the Reference): two derived coordinates, computed exactly from the TL run, with the caveat that TL5 and TL6 lower soil carbon, which the plane does not show.
-* **H4, annual components.** The annual split into materials and construction (A1-A5), soil carbon loss and maintenance is exported as a new table (outputs/headline/H4_carbon_components.csv); it is an exact decomposition of the captured annual carbon (tested to sum to it).
+* **H11, population rows: option A.** The one-at-a-time rows that change only the numerator of the LoE (every model-input row except population) convert exactly: cumulative LoE AR = Reference LoE x carbon / Reference carbon, because the boundaries depend on the population path only. The population 5th / 95th rows change the AR boundary as well (population modifier of Horup et al. 2025, Eq. 1): their LoE is computed with the existing boundary function (aesa.boundary_ar, aesa.boundary_atp) on each population path, with the exact engine carbon of that path. Two new values, flagged as additions (not changes) in the regression file and the CHANGELOG.
+* **H10, TL marker: yes.** TL is placed at its effective coordinates (2027-2050 floor area and non-soil carbon per m2 of the TL run vs the Reference): two derived coordinates, computed exactly from the TL run, with the caveat in the caption that TL5 and TL6 lower soil carbon, which the plane does not show.
+* **H4, annual components: yes.** The annual split into materials and construction (A1-A5), soil carbon loss and maintenance is exported as a new table (outputs/headline/H4_carbon_components.csv); it is an exact decomposition of the captured annual carbon (tested to sum to it exactly).
 * **Added headline content.** No figure beyond H1-H11; the material breakdown joins H4 as panel (b) because it is the policy-relevant split of the same carbon, and the TL human-terms staircase stays in the diagnostics (D32) because H9 carries its residual.
+* **Palette and figure plan:** approved as proposed (docs/PALETTE.md).
 
 ## Diagnostics set
 

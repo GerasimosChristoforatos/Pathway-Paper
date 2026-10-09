@@ -1,5 +1,5 @@
 """Absolute environmental sustainability assessment (AESA): pure functions for
-the planetary-boundary layer (PB.py). No data are read here; every function
+the planetary-boundary layer (boundaries.py). No data are read here; every function
 takes arrays or scalars and returns arrays or scalars, so each equation can be
 tested on its own.
 

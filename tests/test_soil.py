@@ -5,8 +5,8 @@ from test_identities import close
 
 
 def test_soil_zero_on_net_replacement(B):
-    import Boss
-    if Boss.SOIL_ON_REPLACEMENT:
+    import projection
+    if projection.SOIL_ON_REPLACEMENT:
         return
     E = B['engine_out']['50th']
     D = E['D']

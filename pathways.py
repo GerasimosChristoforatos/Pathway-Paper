@@ -1,37 +1,39 @@
 """
-PATHWAYS v2: pathway runs, attribution, AESA gap, back-cast, solution space
-===========================================================================
-Reads the Boss state (validation.run_boss -> Boss.main() locals, in memory only)
+PATHWAYS: pathway runs, attribution, AESA gap, back-cast, solution space, theoretical limit
+===========================================================================================
+Reads the projection state (validation.run_boss -> projection.main() locals, in memory only)
 and re-calls engine.forward() with copies of `fwd_inputs` modified by levers.py;
 nothing in the model changes and no baseline output is written (the baseline is
-frozen: tests/test_baseline_lock.py). With every lever off the run IS the
-reference central run (tested to 1e-9: annual carbon, upfront, in-window B,
+unchanged: tests/test_regression_model_v1.py). With every lever off the run IS the
+Reference (tested to 1e-9: annual carbon, upfront, maintenance within 2026-2050,
 floor area by typology, demand bands, committed range, cumulative LoE AR / AtP).
 
-Runs (reference scenario S3-10 unless stated; settings central and stretch):
-  P0                  baseline (every lever off)
-  levers              L1, L2a, L2b, L3, L5 each alone (L4, the denser mix, removed in v3.1)
-  pathways            P1 Right-size space (L1), P2 Occupy the existing stock
-                      (L2a + L2b), P3 Keep and reuse (L3), P4 Build better (L5), P5 all
-  attribution         Shapley values over the 16 pathway subsets (main) and the 64 lever
+Runs (naming.py vocabulary; the Reference projection unless stated; settings Moderate and Ambitious):
+  REF                 the Reference (every lever off); LOW, HIGH: the replacement variants
+  levers              L1 Dwelling size, L2 Vacancy rate, L3 Overbuild absorption, L4 Building
+                      retention, L5 Material carbon, each alone
+  pathways            P1 Right-sized dwellings (L1), P2 Occupied stock (L2 + L3), P3 Retained
+                      stock (L4), P4 Low-carbon materials (L5), P5 Combined (every lever)
+  attribution         Shapley values over the 16 pathway subsets (main) and the 32 lever
                       subsets (SI), exact arithmetic; demand bands by run (exact by band)
-  envelope            P0 and P5 under S1 and S2 (full Boss runs with REPLACEMENT_SCENARIO
-                      changed, as tools/replacement_scenarios.py and PB.scenario_runs)
-  sensitivities       P5 with ramp2030 and ramp2045 (all three scenarios); P4 and P5 with the
-                      apartments held at r = 1 (L5)
+  variants            the Reference and P5 under Low and High replacement (full projection runs
+                      with REPLACEMENT_VARIANT changed, as tools/replacement_scenarios.py)
+  sensitivities       P5 with full roll-out by 2030 and by 2045 (all three variants); P4 and P5
+                      with the apartments held at r = 1 (L5)
+  theoretical limit   TL (TL1-TL6 at full strength from 2027) and TL, gradual adoption (SI)
 
-AESA gap: boundaries B_AR, B_AtP by year for S3-10 from outputs/pb_annual.csv;
-cumulative LoE = ratio of sums (aesa.cumulative_loe). Back-cast on P5-central,
-P5-stretch and P0: a uniform factor k on all 2027-2050 construction (floor area by
+AESA gap: boundaries B_AR, B_AtP by year for the Reference from outputs/pb_annual.csv;
+cumulative LoE = ratio of sums (aesa.cumulative_loe). Back-cast on P5 Moderate,
+P5 Ambitious and the Reference: a uniform factor k on all 2027-2050 construction (floor area by
 typology; carbon linear in floor area; 2026 fixed), scipy.optimize.brentq for
 cumulative LoE AR = 1; AtP: the minimum attainable LoE (2026 cohort alone).
-Solution space (Horup et al. 2025, Fig. 6 style) on P0.
+Solution space (Horup et al. 2025, Fig. 6 style) on the Reference.
 
-Writes outputs/pathways/: pathways_runs.csv, pathways_annual.csv, pathways_bands.csv,
-shapley_pathways.csv, shapley_levers.csv, shapley_subsets.csv, backcast.json,
-solution_space.csv, levers.json; figures pw_* (outputs/figures/, FIGURES.md section).
-The documents (PATHWAYS_METHODS_DRAFT.md, LEVERS_TABLE.md, the ASSUMPTIONS and
-FIGURES sections) are written by tools/pathways_methods.py --sections.
+Writes outputs/pathways/ (release names: naming.columns / naming.keys): pathways_runs.csv,
+pathways_annual.csv, pathways_bands.csv, shapley_pathways.csv, shapley_levers.csv,
+shapley_subsets.csv, shapley_T.csv, shapley_T_subsets.csv, backcast.json, solution_space.csv,
+levers.json, t_limit.json; figures pw_*. The documents (LEVERS_TABLE.md, the methods draft,
+the ASSUMPTIONS sections) are written by tools/pathways_methods.py --sections.
 
     python pathways.py          (run_all.py --pathways-only runs it with the tests)
 """
@@ -56,9 +58,10 @@ import aesa  # noqa: E402
 import engine  # noqa: E402
 import events as EV  # noqa: E402
 import levers as LV  # noqa: E402
+import naming as N  # noqa: E402
 import validation  # noqa: E402
 
-RAMP_ADOPTED = 'ramp2035'
+RAMP_ADOPTED = LV.ADOPTION_ADOPTED
 
 OUT = os.path.join(ROOT, 'outputs', 'pathways')
 FIG_DIR = os.path.join(ROOT, 'outputs', 'figures')
@@ -70,11 +73,11 @@ QUICK = os.environ.get('PATHWAY_QUICK') == '1'
 RUN_MODE = 'QUICK RUN, not for reporting' if QUICK else 'full'
 
 WINDOW = (2026, 2050)
-REFERENCE = 'S3-10'
-# the three replacement scenarios, as tools/replacement_scenarios.py
-SCENARIOS = {'S1': ('Low (S1)', dict(REPLACEMENT_SCENARIO='S1')),
-             'S3-10': ('Reference (S3-10)', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0)),
-             'S2': ('High (S2)', dict(REPLACEMENT_SCENARIO='S2'))}
+REFERENCE = 'REF'
+# the Reference and the two replacement variants, as tools/replacement_scenarios.py
+SCENARIOS = {'LOW': (N.SCENARIOS['LOW'], dict(REPLACEMENT_VARIANT='LOW')),
+             'REF': (N.SCENARIOS['REF'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
+             'HIGH': (N.SCENARIOS['HIGH'], dict(REPLACEMENT_VARIANT='HIGH'))}
 IDENTITY_RTOL = 1e-9
 GRID = np.round(np.arange(0.0, 1.0 + 1e-9, 0.05), 2)     # solution space: 0-100% in 5% steps
 BRENTQ_XTOL = 1e-15
@@ -82,20 +85,20 @@ M6 = 1e6
 
 
 # ============================================================
-# CONTEXT: one Boss state per scenario
+# CONTEXT: one projection state per scenario
 # ============================================================
 def boundaries():
-    """B_AR and B_AtP (kg/yr) by year 2026-2050 for S3-10, and P_NZ, from outputs/pb_annual.csv."""
+    """B_AR and B_AtP (kg/yr) by year 2026-2050 for the Reference, and P_NZ, from outputs/pb_annual.csv."""
     a = pd.read_csv(FILE_PB_ANNUAL)
     a = a[(a['scenario'] == REFERENCE) & (a['year'] >= WINDOW[0]) & (a['year'] <= WINDOW[1])].set_index('year')
     if list(a.index) != list(range(WINDOW[0], WINDOW[1] + 1)):
-        raise SystemExit(f'{FILE_PB_ANNUAL}: S3-10 boundaries incomplete over {WINDOW}.')
+        raise SystemExit(f'{FILE_PB_ANNUAL}: Reference boundaries incomplete over {WINDOW}.')
     return a['B_AR_kgCO2e'].values, a['B_AtP_kgCO2e'].values, a['P_NZ'].values
 
 
 def base_context(B, scenario, bounds):
-    """Everything a lever run needs from one Boss state (no copy of the data is changed)."""
-    Boss = validation.Boss
+    """Everything a lever run needs from one projection state (no copy of the data is changed)."""
+    projection = validation.projection
     fi = B['fwd_inputs']
     fy = np.asarray(B['forecast_years'])
     typ = list(B['typ_names'])
@@ -107,11 +110,11 @@ def base_context(B, scenario, bounds):
         raise SystemExit('pathways: written for SOIL_ON_REPLACEMENT = False and the market_excess join.')
     b_ar, b_atp, p_nz = bounds
     if not np.allclose(pop[1:], p_nz, rtol=1e-12, atol=0):
-        raise SystemExit(f'{scenario}: NZ population differs from the pb_annual.csv S3-10 path.')
-    E_nojoin = engine.forward(pop, hh, growth, **fi)          # Boss l. 1543 (input to market_excess)
+        raise SystemExit(f'{scenario}: NZ population differs from the pb_annual.csv Reference path.')
+    E_nojoin = engine.forward(pop, hh, growth, **fi)          # projection l. 1543 (input to market_excess)
     prof = {t: B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t].reset_index(drop=True) for t in typ}
     after = np.arange(fy[-1] + 1, fy[-1] + int(B['EV_PROFILE']['Age'].max()) + 1)
-    fac = {(t, k): EV.row_factors(prof[t], after, Boss.DECARB_MODE, Boss.DECARB_ITEM_CASE, Boss.DECARB_A45,
+    fac = {(t, k): EV.row_factors(prof[t], after, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45,
                                   hold=hold)
            for t in typ for k, hold in (('upper', '2025'), ('lower', '2050'))}
     a13 = {t: float(B['MAT_STAGE']['A1-A3'][t].sum()) for t in typ}
@@ -122,7 +125,7 @@ def base_context(B, scenario, bounds):
         rate_unc=np.asarray(fi['rate_unc'], float), long_run_residual=float(B['unconsented_rate']),
         held_shares=B['held_shares'], a13_2025=a13, red13=B['RED13_TOT'], a45_2025=a45, red45=B['RED45_TOT'],
         join=ji['join'], join_redev=ji['redev'], O26=float(ji['O26']), rho=float(B['rho_other']),
-        gap_ref=Boss.NEAR_TERM_GAP_REF, E_nojoin=E_nojoin, profile=prof, committed_factors=fac,
+        gap_ref=projection.OVERBUILD_GAP_REF, E_nojoin=E_nojoin, profile=prof, committed_factors=fac,
         c14={t: float(B['stage_int'].loc['C1-C4', t]) for t in typ}, soil=B['SOIL_INTENSITY'],
         events=fi['events'], b_ar=b_ar, b_atp=b_atp)
 
@@ -131,7 +134,7 @@ def base_context(B, scenario, bounds):
 # ONE RUN AND ITS METRICS
 # ============================================================
 def run(ctx, params, active, ramp_name=None, l5_apartments_held=False):
-    """engine.forward with the levers in `active` ({lever: 'central' | 'stretch'})."""
+    """engine.forward with the levers in `active` ({lever: 'moderate' | 'ambitious'})."""
     fi, join, redev, info = LV.apply(ctx, params, active, ramp_name, ctx['E_nojoin'], l5_apartments_held)
     E = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=join, join_redev=redev, **fi)
     return dict(E=E, inputs=fi, info=info, active=dict(active), ramp=ramp_name or RAMP_ADOPTED,
@@ -141,7 +144,7 @@ def run(ctx, params, active, ramp_name=None, l5_apartments_held=False):
 def committed(ctx, gfa_t):
     """Committed after 2050 (kt): the 2026-2050 cohorts' later replacements and repaints
     (events.committed; upper: 2025 factors, lower: 2050 factors held) and all their C1-C4
-    (2025 factors), as Boss l. 2274-2289, with this run's floor area by typology."""
+    (2025 factors), as projection l. 2274-2289, with this run's floor area by typology."""
     b = {'upper': 0.0, 'lower': 0.0}
     for k, t in enumerate(ctx['typ']):
         for key in b:
@@ -153,7 +156,7 @@ def committed(ctx, gfa_t):
 
 def soil_by_year(ctx, E, soil_path=None):
     """Soil carbon by year (kg): soil factor x floor area x soil-bearing share. soil_path: a run's own
-    factor by typology and year (T5); None = the baseline factor."""
+    factor by typology and year (TL5); None = the Reference factor."""
     if soil_path is None:
         s = np.array([ctx['soil'][t] for t in ctx['typ']])
         return (s[:, None] * E['gfa_t']).sum(axis=0) * E['soil_share']
@@ -205,7 +208,7 @@ def metrics(ctx, R, label, setting):
                          for t in ctx['typ'])
     held = R['info'].get('l1_held')
     row = dict(run=label, scenario=ctx['scenario'], setting=setting, levers=LV.label(R['active']),
-               ramp=R['ramp'], l5_apartments_held=R['l5_apartments_held'],
+               adoption=R['ramp'], l5_apartments_held=R['l5_apartments_held'],
                gfa_Mm2=gfa / M6, gfa_2027_2050_Mm2=gfa_t[:, 2:].sum() / M6,
                **{f'gfa_{t}_Mm2': gfa_t[k][f].sum() / M6 for k, t in enumerate(ctx['typ'])},
                carbon_kt=I.sum() / M6, upfront_kt=up / M6, b_inwindow_kt=E['b_t'][:, f].sum() / M6,
@@ -261,22 +264,19 @@ def annual_rows(ctx, R, label):
 
 
 # ============================================================
-# DEMAND BANDS (Boss bookkeeping, l. 1555-1575 and 1700-1745)
+# DEMAND BANDS (projection bookkeeping, l. 1555-1575 and 1700-1745)
 # ============================================================
-BAND_ORDER = ['Growth (net of consolidation)', 'House-splitting', 'Extra space per dwelling', 'Vacancy allowance',
-              'Demolition replacement', 'Calibrated stock residual (long run)',
-              'Redevelopment wave (scenario - long run)', 'Near-term market excess',
-              'Housed in RV units (out of scope)']
-FIG_BANDS = [('Growth demand (net of consolidation)', ('growth',)), ('House-splitting demand', ('hs_pos',)),
-             ('Consumption: extra space per dwelling', ('extra',)), ('Consumption: vacancy allowance', ('vac',)),
-             ('Replacement: long-run background (net of unconsented additions)', ('repl', 'unc')),
-             ('Replacement: recent redevelopment wave (fading)', ('wave',)),
-             ('Near-term market excess (2026 observed building above requirement, fading at rho)', ('join',)),
-             ('Replacements & repaints, within 2026-2050', ('bev',))]
+# definition 'with_retirement_villages' (as projection.export_results) and 'in_scope' (the band
+# figures): naming.BANDS_WITH_RETIREMENT_VILLAGES / BANDS_IN_SCOPE, labels naming.band_data_label
+BAND_ORDER = [N.band_data_label(b) for b in N.BANDS_WITH_RETIREMENT_VILLAGES]
+_IN_SCOPE_KEYS = {'growth': ('growth',), 'smaller_households': ('hs_pos',), 'extra_space': ('extra',),
+                  'vacancy': ('vac',), 'replacement': ('repl', 'unc'), 'redevelopment': ('wave',),
+                  'overbuild_2026': ('join',), 'maintenance': ('bev',)}
+FIG_BANDS = [(N.band_data_label(b), _IN_SCOPE_KEYS[b]) for b in N.BANDS_IN_SCOPE]
 
 
 def band_arrays(ctx, R):
-    """Annual floor area (m2) and carbon (kg) by demand band, as Boss: the redevelopment
+    """Annual floor area (m2) and carbon (kg) by demand band, as projection: the redevelopment
     wave is the run's residual path above the long-run residual, x last year's stock x D."""
     E, fi = R['E'], R['inputs']
     D = E['D']
@@ -306,22 +306,23 @@ def band_arrays(ctx, R):
 
 
 def band_rows(ctx, R, label):
-    """Two definitions: 'boss_results' (export_results: every band incl. the negative RV
-    band; carbon excludes in-window events) and 'in_scope_figure' (fig_bands: RV removed
-    from every band in proportion; demolition + residual one band; events as a carbon band)."""
+    """Two definitions: 'with_retirement_villages' (projection.export_results: every band incl. the
+    negative retirement-village band; carbon excludes maintenance) and 'in_scope' (the band figures:
+    retirement villages removed from every band in proportion; demolition + residual one band;
+    maintenance as a carbon band)."""
     g, c = band_arrays(ctx, R)
     f = slice(1, None)
     keys = ['growth', 'hs_pos', 'extra', 'vac', 'repl', 'unc', 'wave', 'join', 'rv']
-    rows = [dict(run=label, scenario=ctx['scenario'], definition='boss_results', band=b,
+    rows = [dict(run=label, scenario=ctx['scenario'], definition='with_retirement_villages', band=b,
                  gfa_Mm2=g[k][f].sum() / M6, carbon_kt=c[k][f].sum() / M6) for b, k in zip(BAND_ORDER, keys)]
     E = R['E']
     tot_g, tot_c = E['total'][f], E['carbon'][f]
     raw_g = {b: sum((g[k] if k != 'bev' else 0.0 * g['growth']) for k in ks)[f] for b, ks in FIG_BANDS}
     raw_c = {b: sum(c[k] for k in ks)[f] for b, ks in FIG_BANDS}
     sg, sc = sum(raw_g.values()), sum(raw_c.values())
-    fg = np.divide(tot_g, sg, out=np.zeros_like(tot_g), where=sg != 0)     # 0 / 0 only in banked zero-building years (T)
+    fg = np.divide(tot_g, sg, out=np.zeros_like(tot_g), where=sg != 0)     # 0 / 0 only in banked zero-building years (TL)
     fc = np.divide(tot_c, sc, out=np.zeros_like(tot_c), where=sc != 0)
-    rows += [dict(run=label, scenario=ctx['scenario'], definition='in_scope_figure', band=b,
+    rows += [dict(run=label, scenario=ctx['scenario'], definition='in_scope', band=b,
                   gfa_Mm2=(raw_g[b] * fg).sum() / M6, carbon_kt=(raw_c[b] * fc).sum() / M6) for b, _ in FIG_BANDS]
     return rows
 
@@ -422,7 +423,7 @@ def effective_coordinates(split, split0):
 # MAIN
 # ============================================================
 def load_factors_building():
-    return pd.read_csv(validation.Boss.FILE_FACTORS_BUILDING)
+    return pd.read_csv(validation.projection.FILE_FACTORS_BUILDING)
 
 
 def boss_state(scenario):
@@ -431,10 +432,12 @@ def boss_state(scenario):
 
 
 def run_name(pathway_or_lever, setting, ramp_name=None, apt_held=False):
-    """'P0', 'P3-central', 'L1-stretch', 'P5-central-ramp2045', 'P4-stretch-aptheld'."""
-    if pathway_or_lever == 'P0':
-        return 'P0'
-    return f'{pathway_or_lever}-{setting}' + (f'-{ramp_name}' if ramp_name else '') + ('-aptheld' if apt_held else '')
+    """'REF' (a variant id: no lever), 'P3-moderate', 'L1-ambitious', 'P5-moderate-by2045',
+    'P4-ambitious-apartments-held'."""
+    if pathway_or_lever in N.SCENARIOS:
+        return pathway_or_lever
+    return (f'{pathway_or_lever}-{setting}' + (f'-{ramp_name}' if ramp_name else '')
+            + ('-apartments-held' if apt_held else ''))
 
 
 def shapley_rows(value, players, setting, metric, level, groups):
@@ -442,7 +445,7 @@ def shapley_rows(value, players, setting, metric, level, groups):
     full = frozenset(players)
     total = Fraction(value[frozenset()]) - Fraction(value[full])
     rows = [dict(level=level, setting=setting, metric=metric, player=pl, name=groups[pl], reduction=float(phi[pl]),
-                 share_of_P0_minus_P5=float(phi[pl] / total)) for pl in players]
+                 share_of_reference_minus_P5=float(phi[pl] / total)) for pl in players]
     return rows, (phi, total)
 
 
@@ -452,8 +455,8 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
     bounds = boundaries()
     states = {s: boss_state(s) for s in scenarios}
     if REFERENCE not in states:
-        raise ValueError('The reference scenario S3-10 is required.')
-    params = LV.resolve(states[REFERENCE], load_factors_building(), validation.Boss)
+        raise ValueError('The Reference (REF) is required.')
+    params = LV.resolve(states[REFERENCE], load_factors_building(), validation.projection)
     LV.stop_checks(params)
     ctxs = {s: base_context(states[s], s, bounds) for s in scenarios}
     cache = {}
@@ -464,7 +467,7 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
             cache[key] = run(ctxs[scen], params, active, ramp_name, apt_held)
         return cache[key]
 
-    named = [('P0', REFERENCE, '', {}, None, False)]            # (name, scenario, setting, active, ramp, apt_held)
+    named = [(REFERENCE, REFERENCE, '', {}, None, False)]       # (name, scenario, setting, active, ramp, apt_held)
     for s in LV.SETTINGS:
         for L in LV.LEVERS:
             named.append((run_name(L, s), REFERENCE, s, {L: s}, None, False))
@@ -473,10 +476,10 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
             named.append((run_name(P, s), REFERENCE, s, LV.pathway_levers(P, s), None, False))
     for scen in scenarios:
         if scen != REFERENCE:
-            named.append(('P0', scen, '', {}, None, False))
+            named.append((scen, scen, '', {}, None, False))       # the variant without levers
             for s in LV.SETTINGS:
                 named.append((run_name('P5', s), scen, s, LV.pathway_levers('P5', s), None, False))
-        for rs in LV.RAMP_SENSITIVITIES:
+        for rs in LV.ADOPTION_SENSITIVITIES:
             for s in LV.SETTINGS:
                 named.append((run_name('P5', s, rs['name']), scen, s, LV.pathway_levers('P5', s), rs['name'], False))
     for s in LV.SETTINGS:                                        # L5 sensitivity: apartments held at r = 1
@@ -489,17 +492,17 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
         annual += annual_rows(ctxs[scen], R, name)
         bands += band_rows(ctxs[scen], R, name)
     runs_df = pd.DataFrame(rows)
-    p0 = runs_df[runs_df['run'] == 'P0'].set_index('scenario')
+    p0 = runs_df[runs_df['run'] == runs_df['scenario']].set_index('scenario')      # each variant without levers
     for col in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'gfa_Mm2', 'committed_lower_kt', 'committed_upper_kt'):
-        runs_df[f'delta_{col}_vs_P0_pct'] = [100.0 * (r[col] / p0.loc[r['scenario'], col] - 1.0)
-                                            for _, r in runs_df.iterrows()]
+        runs_df[f'delta_{col}_vs_reference_pct'] = [100.0 * (r[col] / p0.loc[r['scenario'], col] - 1.0)
+                                                   for _, r in runs_df.iterrows()]
     bands_df = pd.DataFrame(bands)
-    b0 = bands_df[bands_df['run'] == 'P0'].set_index(['scenario', 'definition', 'band'])
+    b0 = bands_df[bands_df['run'] == bands_df['scenario']].set_index(['scenario', 'definition', 'band'])
     for col in ('gfa_Mm2', 'carbon_kt'):
-        bands_df[f'delta_{col}_vs_P0'] = [r[col] - b0.loc[(r['scenario'], r['definition'], r['band']), col]
-                                          for _, r in bands_df.iterrows()]
+        bands_df[f'delta_{col}_vs_reference'] = [r[col] - b0.loc[(r['scenario'], r['definition'], r['band']), col]
+                                                 for _, r in bands_df.iterrows()]
 
-    # ---- Shapley: four pathways (P1-P4; 16 subsets) and five levers (32 subsets), S3-10 -----
+    # ---- Shapley: four pathways (P1-P4; 16 subsets) and five levers (32 subsets), Reference --
     ref = ctxs[REFERENCE]
     shap_p, shap_l, shap_runs, shap_exact = [], [], [], {}
     pnames = {P: LV.PATHWAY_NAMES[P] for P in LV.PATHWAYS}
@@ -521,18 +524,19 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
                 (shap_p if level == 'pathways' else shap_l).extend(r_)
                 shap_exact[(level, s, metric)] = ex
 
-    # ---- back-cast (P5 central / stretch; P0) and solution space (P0) --------------------
+    # ---- back-cast (P5 Moderate / Ambitious; the Reference) and solution space (Reference) ----
     R0 = get(REFERENCE, {})
-    bc0, split0 = backcast(ref, R0, 'P0')
+    bc0, split0 = backcast(ref, R0, REFERENCE)
     gfa0_later = split0['gfa_later']
     bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
-    bcs, bc_points = {'P0': bc0}, [dict(run='P0 back-cast', demand_reduction=1.0 - bc0['k_AR'], intensity_reduction=0.0)]
+    bcs, bc_points = {REFERENCE: bc0}, [dict(run=f'{REFERENCE} back-cast', demand_reduction=1.0 - bc0['k_AR'],
+                                             intensity_reduction=0.0)]
     for s in LV.SETTINGS:
         R5 = get(REFERENCE, LV.pathway_levers('P5', s))
         bc, sp = backcast(ref, R5, f'P5-{s}')
         if bc['k_AR'] is not None:
-            bc['equivalent_cut_vs_P0_floor_area'] = 1.0 - bc['k_AR'] * sp['gfa_later'] / gfa0_later
-            bc['equivalent_cut_vs_P0_carbon_2027_2050_cohorts'] = 1.0 - (
+            bc['equivalent_cut_vs_reference_floor_area'] = 1.0 - bc['k_AR'] * sp['gfa_later'] / gfa0_later
+            bc['equivalent_cut_vs_reference_carbon_2027_2050_cohorts'] = 1.0 - (
                 bc['k_AR'] * (sp['later_nonsoil'] + sp['later_soil']).sum()
                 / (split0['later_nonsoil'] + split0['later_soil']).sum())
             d, i = effective_coordinates(sp, split0)
@@ -554,7 +558,7 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
         '(construction-year upfront and its in-window events scale with k; 2026 and its events fixed); '
         'scipy.optimize.brentq on [0, 1], xtol 1e-15',
         B_AR_kt=bar / M6, B_AtP_kt=batp / M6, solution_space_markers=markers, backcast_points=bc_points,
-        AtP_note=('not attainable within the window' if not bcs['P0']['AtP_attainable'] else 'attainable'), **bcs)
+        AtP_note=('not attainable within 2026-2050' if not bcs[REFERENCE]['AtP_attainable'] else 'attainable'), **bcs)
 
     # ---- diagnostics: L1 sizes held, released dwellings, end-of-ramp step of P2 --------------
     diag = {}
@@ -565,11 +569,11 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
         nm = run_name('P2', s)
         c35, c36 = a_ref.loc[(nm, 2035), 'carbon_kt'], a_ref.loc[(nm, 2036), 'carbon_kt']
         d35, d36 = a_ref.loc[(nm, 2035), 'dwellings_built'], a_ref.loc[(nm, 2036), 'dwellings_built']
-        p35, p36 = a_ref.loc[('P0', 2035), 'carbon_kt'], a_ref.loc[('P0', 2036), 'carbon_kt']
+        p35, p36 = a_ref.loc[(REFERENCE, 2035), 'carbon_kt'], a_ref.loc[(REFERENCE, 2036), 'carbon_kt']
         diag[f'end_of_ramp_step_{nm}'] = dict(
             w_2035_minus_w_2034=float(w[10] - w[9]), carbon_2035_kt=c35, carbon_2036_kt=c36,
-            carbon_step_kt=c36 - c35, carbon_step_pct=100 * (c36 / c35 - 1), P0_carbon_step_kt=p36 - p35,
-            step_relative_to_P0_kt=(c36 - c35) - (p36 - p35), dwellings_step=d36 - d35)
+            carbon_step_kt=c36 - c35, carbon_step_pct=100 * (c36 / c35 - 1), reference_carbon_step_kt=p36 - p35,
+            step_relative_to_reference_kt=(c36 - c35) - (p36 - p35), dwellings_step=d36 - d35)
     out = dict(params=params, runs=runs_df, annual=pd.DataFrame(annual), bands=bands_df,
                shapley_pathways=pd.DataFrame(shap_p), shapley_levers=pd.DataFrame(shap_l),
                shapley_runs=pd.DataFrame(shap_runs), shapley_exact=shap_exact, backcast=backcast_out,
@@ -581,7 +585,8 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
 
 
 def checks(res):
-    """Identity of P0 with the published reference run, and the STOP conditions."""
+    """Identity of the no-lever run with the published Reference run, and the STOP conditions.
+    The published files carry the release names (naming.identifier)."""
     ctx = res['ctxs'][REFERENCE]
     B = ctx['B']
     R0 = res['get'](REFERENCE, {})
@@ -592,23 +597,25 @@ def checks(res):
     rep['annual_carbon'] = rel(E0['carbon'][1:], B['carbon_total_typ'].sum(axis=1).values[1:])
     rep['gfa_by_typology'] = rel(E0['gfa_t'][:, 1:], Eb['gfa_t'][:, 1:])
     bres = json.load(open(FILE_BOSS_RESULTS))
-    r0 = res['runs'][(res['runs']['run'] == 'P0') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
+    ident = N.identifier
+    r0 = res['runs'][(res['runs']['run'] == REFERENCE) & (res['runs']['scenario'] == REFERENCE)].iloc[0]
     for k in ('carbon_kt', 'upfront_kt', 'soil_kt', 'b_inwindow_kt', 'gfa_Mm2'):
-        rep[k] = abs(r0[k] / bres[k] - 1)
+        rep[k] = abs(r0[k] / bres[ident(k)] - 1)
     rep['annual_carbon_json'] = rel(E0['carbon'][1:] / M6, bres['annual']['carbon_kt'][1:])
     for k in ('lower_kt', 'upper_kt', 'B_lower_kt', 'B_upper_kt', 'C_kt'):
-        rep[f'committed_{k}'] = abs(r0[f'committed_{k}'] / bres['committed'][k] - 1)
+        rep[f'committed_{k}'] = abs(r0[f'committed_{k}'] / bres['committed'][ident(k)] - 1)
     bd = res['bands']
-    b0 = bd[(bd['run'] == 'P0') & (bd['scenario'] == REFERENCE) & (bd['definition'] == 'boss_results')].set_index('band')
+    b0 = bd[(bd['run'] == REFERENCE) & (bd['scenario'] == REFERENCE)
+            & (bd['definition'] == 'with_retirement_villages')].set_index('band')
     for x in bres['demand_bands']:
         for col in ('gfa_Mm2', 'carbon_kt'):
-            rep[f"band {x['band']} {col}"] = abs(b0.loc[x['band'], col] - x[col]) / max(abs(x[col]), 1e-12)
+            rep[f"band {x['band']} {col}"] = abs(b0.loc[x['band'], col] - x[ident(col)]) / max(abs(x[ident(col)]), 1e-12)
     pbr = json.load(open(FILE_PB_RESULTS))
     for scen in res['ctxs']:
-        rs = res['runs'][(res['runs']['run'] == 'P0') & (res['runs']['scenario'] == scen)].iloc[0]
+        rs = res['runs'][(res['runs']['run'] == scen) & (res['runs']['scenario'] == scen)].iloc[0]
         for col in ('LoE_AR', 'LoE_AtP'):
             rep[f'{scen} {col}'] = abs(rs[col] / pbr['deterministic'][scen][col] - 1)
-        rep[f'{scen} carbon vs pb_results'] = abs(rs['carbon_kt'] / pbr['deterministic'][scen]['I_kt'] - 1)
+        rep[f'{scen} carbon vs aesa results'] = abs(rs['carbon_kt'] / pbr['deterministic'][scen]['I_kt'] - 1)
     worst = max(rep, key=rep.get)
     if rep[worst] > IDENTITY_RTOL:
         raise SystemExit(f'STOP: identity not reproduced: {worst} relative difference {rep[worst]:.3e}')
@@ -645,36 +652,43 @@ def to_json(o):
 V1_FILES = ('shapley.csv',)              # v1 outputs without a v2 equivalent (removed)
 
 
+def _csv(df, name):
+    N.columns(df).to_csv(os.path.join(OUT, name), index=False)
+
+
+def _json(obj, name):
+    with open(os.path.join(OUT, name), 'w') as f:
+        json.dump(N.keys(to_json(obj)), f, indent=2)
+
+
 def write(res, identity):
     os.makedirs(OUT, exist_ok=True)
     for f in V1_FILES:
         if os.path.exists(os.path.join(OUT, f)):
             os.remove(os.path.join(OUT, f))
-    res['runs'].to_csv(os.path.join(OUT, 'pathways_runs.csv'), index=False)
-    res['annual'].to_csv(os.path.join(OUT, 'pathways_annual.csv'), index=False)
-    res['bands'].to_csv(os.path.join(OUT, 'pathways_bands.csv'), index=False)
-    res['shapley_pathways'].to_csv(os.path.join(OUT, 'shapley_pathways.csv'), index=False)
-    res['shapley_levers'].to_csv(os.path.join(OUT, 'shapley_levers.csv'), index=False)
-    res['shapley_runs'].to_csv(os.path.join(OUT, 'shapley_subsets.csv'), index=False)
-    res['space'].to_csv(os.path.join(OUT, 'solution_space.csv'), index=False)
-    with open(os.path.join(OUT, 'backcast.json'), 'w') as f:
-        json.dump(to_json(res['backcast']), f, indent=2)
+    _csv(res['runs'], 'pathways_runs.csv')
+    _csv(res['annual'], 'pathways_annual.csv')
+    _csv(res['bands'], 'pathways_bands.csv')
+    _csv(res['shapley_pathways'], 'shapley_pathways.csv')
+    _csv(res['shapley_levers'], 'shapley_levers.csv')
+    _csv(res['shapley_runs'], 'shapley_subsets.csv')
+    _csv(res['space'], 'solution_space.csv')
+    _json(res['backcast'], 'backcast.json')
     lv = dict(res['params'], diagnostics=res['diagnostics'], run_mode=RUN_MODE,
               identity_max_rel_diff=max(identity.values()), identity_checks=identity, sources=LV.SOURCES)
-    with open(os.path.join(OUT, 'levers.json'), 'w') as f:
-        json.dump(to_json(lv), f, indent=2)
+    _json(lv, 'levers.json')
 
 
 # ============================================================
-# THEORETICAL LIMIT T (PATHWAYS v3; levers.apply_T) -- a thought experiment, not a proposal
+# THEORETICAL LIMIT TL (PATHWAYS v3; levers.apply_tl) -- a thought experiment, not a pathway
 # ============================================================
-T_RUNS = ('T', 'T-ramp')
+T_RUNS = ('TL', 'TL-gradual')
 T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of built = req + (0 - req) in banked zero years (~1e-12)
 T_ZERO_TOL_M2 = 1e-3
 
 
 def bank(raw):
-    """Banking rule (T): dwellings built can never be negative. raw_t = the requirement of the year
+    """Banking rule (TL): dwellings built can never be negative. raw_t = the requirement of the year
     (new households + vacancy allowance + vacancy change + removals + absorbed near-term excess),
     negative when the release of vacant / surplus dwellings exceeds it. Unused release is carried
     forward and used before any new building, until exhausted:
@@ -696,13 +710,13 @@ def bank(raw):
     return dict(built=built, bank=bnk, added=added, used=used)
 
 
-def run_T(ctx, params, pT, comps, ramp_name=LV.T_INSTANT):
-    """A T-family run. 1) the T inputs (levers.apply_T); 2) the requirement without a join; 3) the
+def run_tl(ctx, params, pT, comps, ramp_name=LV.TL_FROM2027):
+    """A TL-family run. 1) the TL inputs (levers.apply_tl); 2) the requirement without a join; 3) the
     banking rule on requirement + absorbed near-term excess; 4) engine.forward with the stock-adding
     join join_t = built_t - requirement_t (join_redev = 0), so the stock identity holds and dwellings
-    built = built_t >= 0; 5) soil: the T5 / T6 soil factor of each year and the soil-bearing share
+    built = built_t >= 0; 5) soil: the TL5 / TL6 soil factor of each year and the soil-bearing share
     clipped to [0, 1] (zero-building years) applied exactly through the intensity (see below)."""
-    fi, join_abs, _, info = LV.apply_T(ctx, params, pT, comps, ramp_name, ctx['E_nojoin'])
+    fi, join_abs, _, info = LV.apply_tl(ctx, params, pT, comps, ramp_name, ctx['E_nojoin'])
     n = len(ctx['years'])
     zeros = np.zeros(n)
     E1 = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=zeros, join_redev=zeros, **fi)
@@ -711,12 +725,12 @@ def run_T(ctx, params, pT, comps, ramp_name=LV.T_INSTANT):
     join_T = bk['built'] - req
     join_T[0] = 0.0
     E = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=join_T, join_redev=zeros, **fi)
-    # Soil (T5, T6, and the banked zero-building years). The engine's soil-bearing share is
+    # Soil (TL5, TL6, and the banked zero-building years). The engine's soil-bearing share is
     # 1 - soil-free floor area / floor area built, which assumes the replacement (soil-free) floor area
     # does not exceed the floor area built. In banked zero-building years nothing is built while the
     # replacement term stays positive, so the physical soil-bearing area is max(0, built - soil-free):
     # the share is clipped to [0, 1] (0 where nothing is built). The soil factor of each year
-    # (soil_path: T5 lowest soil order, x (1 - s w) under T6) and the clipped share are applied exactly
+    # (soil_path: TL5 lowest soil order, x (1 - s w) under TL6) and the clipped share are applied exactly
     # by replacing the engine's own soil term through the intensity:
     #     I'(y) = I(y) - s_eng x share(y) + soil_path(y) x share_eff(y)
     # so that carbon = (I - s_eng) x floor area + soil_path x floor area x share_eff. The share does not
@@ -738,15 +752,15 @@ def run_T(ctx, params, pT, comps, ramp_name=LV.T_INSTANT):
                        for t in ctx['typ']}
         E = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=join_T, join_redev=zeros, **fi)
         if not np.array_equal(E['soil_share'], share):
-            raise SystemExit('T soil: the soil-bearing share changed between passes.')
+            raise SystemExit('TL soil: the soil-bearing share changed between passes.')
         E = dict(E, soil_share=share_eff)
     info.update(bank=bk, requirement_nojoin=req, join_absorbed=np.asarray(join_abs, float), join_T=join_T)
     return dict(E=E, inputs=fi, info=info, active={}, ramp=ramp_name or RAMP_ADOPTED, l5_apartments_held=False,
                 scenario=ctx['scenario'], comps=tuple(info['comps']))
 
 
-def t_indicators(ctx, R):
-    """Human-terms indicators of a T-family run (2026-2050)."""
+def tl_indicators(ctx, R):
+    """Human-terms indicators of a TL-family run (2026-2050)."""
     E, info = R['E'], R['info']
     S = E['pop'] / E['hh']
     years = ctx['years']
@@ -773,66 +787,68 @@ def t_indicators(ctx, R):
         bank_unused_2050=float(bk['bank'][-1]), zero_building_years=zero_years, n_zero_building_years=len(zero_years))
 
 
-def compute_T(res, verbose=True):
-    """T, T-ramp, the 64 Shapley subsets of T1-T6 relative to P5-stretch (instant), metrics, bands,
-    annual rows, gap. Appended to the v2 tables (v2 rows unchanged)."""
+def compute_tl(res, verbose=True):
+    """TL, TL gradual adoption, the 64 Shapley subsets of TL1-TL6 relative to P5 Ambitious at full
+    strength from 2027, metrics, bands, annual rows, gap. Appended to the pathway tables."""
     import Building_factors as BF
     t0 = time.time()
     ref = res['ctxs'][REFERENCE]
     B = ref['B']
-    pT = LV.resolve_T(BF.load_characteristics(), load_factors_building(),
-                      pd.read_csv(validation.Boss.FILE_FACTORS_TYPOLOGY), B['OLF_USED'])
+    pT = LV.resolve_tl(BF.load_characteristics(), load_factors_building(),
+                       pd.read_csv(validation.projection.FILE_FACTORS_TYPOLOGY), B['OLF_USED'])
     params = res['params']
     cache = {}
 
-    def getT(comps, ramp_name=LV.T_INSTANT):
-        key = (tuple(c for c in LV.T_COMPONENTS if c in comps), ramp_name)
+    def getT(comps, ramp_name=LV.TL_FROM2027):
+        key = (tuple(c for c in LV.TL_COMPONENTS if c in comps), ramp_name)
         if key not in cache:
-            cache[key] = run_T(ref, params, pT, comps, ramp_name)
+            cache[key] = run_tl(ref, params, pT, comps, ramp_name)
         return cache[key]
 
-    full = LV.T_COMPONENTS
-    RT, RTr = getT(full), getT(full, None)
-    rows = [metrics(ref, RT, 'T', 'T'), metrics(ref, RTr, 'T-ramp', 'T')]
+    full = LV.TL_COMPONENTS
+    RT, RTr = getT(full), getT(full, LV.TL_GRADUAL)
+    rows = [metrics(ref, RT, 'TL', 'TL'), metrics(ref, RTr, 'TL-gradual', 'TL')]
     for r_ in rows:
-        r_['levers'] = 'P5-stretch+' + '+'.join(LV.T_COMPONENTS)
-    p0 = res['runs'][(res['runs']['run'] == 'P0') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
+        r_['levers'] = 'P5-ambitious+' + '+'.join(LV.TL_COMPONENTS)
+    p0 = res['runs'][(res['runs']['run'] == REFERENCE) & (res['runs']['scenario'] == REFERENCE)].iloc[0]
     for r_ in rows:
         for col in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'gfa_Mm2', 'committed_lower_kt', 'committed_upper_kt'):
-            r_[f'delta_{col}_vs_P0_pct'] = 100.0 * (r_[col] / p0[col] - 1.0)
-    annual = annual_rows(ref, RT, 'T') + annual_rows(ref, RTr, 'T-ramp')
-    bands = band_rows(ref, RT, 'T') + band_rows(ref, RTr, 'T-ramp')
+            r_[f'delta_{col}_vs_reference_pct'] = 100.0 * (r_[col] / p0[col] - 1.0)
+    annual = annual_rows(ref, RT, 'TL') + annual_rows(ref, RTr, 'TL-gradual')
+    bands = band_rows(ref, RT, 'TL') + band_rows(ref, RTr, 'TL-gradual')
     bd = pd.DataFrame(bands)
-    b0 = res['bands'][(res['bands']['run'] == 'P0')].set_index(['scenario', 'definition', 'band'])
+    b0 = res['bands'][(res['bands']['run'] == res['bands']['scenario'])].set_index(['scenario', 'definition', 'band'])
     for col in ('gfa_Mm2', 'carbon_kt'):
-        bd[f'delta_{col}_vs_P0'] = [r[col] - b0.loc[(r['scenario'], r['definition'], r['band']), col] for _, r in bd.iterrows()]
-    # Shapley over T1-T6 (instant convention), base = P5-stretch with the instant start
+        bd[f'delta_{col}_vs_reference'] = [r[col] - b0.loc[(r['scenario'], r['definition'], r['band']), col]
+                                           for _, r in bd.iterrows()]
+    # Shapley over TL1-TL6 (full strength from 2027), base = P5 Ambitious at full strength from 2027
     vals = {'carbon_kt': {}, 'LoE_AR': {}}
     sub_rows = []
     for S_ in subsets(full):
         R_ = getT(S_)
-        m = metrics(ref, R_, LV.t_label(S_), 'T')
+        m = metrics(ref, R_, LV.tl_label(S_), 'TL')
         vals['carbon_kt'][S_], vals['LoE_AR'][S_] = m['carbon_kt'], m['LoE_AR']
-        sub_rows.append(dict(level='T', subset=LV.t_label(S_), n_players=len(S_), carbon_kt=m['carbon_kt'],
+        sub_rows.append(dict(level='TL', subset=LV.tl_label(S_), n_players=len(S_), carbon_kt=m['carbon_kt'],
                              LoE_AR=m['LoE_AR'], LoE_AtP=m['LoE_AtP'], gfa_Mm2=m['gfa_Mm2'],
                              dwellings_built_min_year=m['dwellings_built_min_year']))
     shap_rows, exact = [], {}
     for metric, v in vals.items():
-        r_, ex = shapley_rows(v, full, 'T', metric, 'T', LV.T_NAMES)
+        r_, ex = shapley_rows(v, full, 'TL', metric, 'TL', LV.TL_NAMES)
         for x in r_:
-            x['share_of_P5s_instant_minus_T'] = x.pop('share_of_P0_minus_P5')
+            x['share_of_P5_ambitious_from2027_minus_TL'] = x.pop('share_of_reference_minus_P5')
         shap_rows += r_
         exact[metric] = ex
-    p5s = res['runs'][(res['runs']['run'] == 'P5-stretch') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
+    p5s = res['runs'][(res['runs']['run'] == 'P5-ambitious') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
     for metric in ('carbon_kt', 'LoE_AR'):
-        shap_rows.append(dict(level='T', setting='T', metric=metric, player='instant start',
-                              name='P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player)',
+        shap_rows.append(dict(level='TL', setting='TL', metric=metric, player=LV.TL_FROM2027,
+                              name=N._ascii(f"P5 Ambitious: adoption path -> {N.ADOPTION['from2027']} (separate line, "
+                                            f"not a Shapley player)"),
                               reduction=float(p5s[metric] - vals[metric][frozenset()]),
-                              share_of_P5s_instant_minus_T=float('nan')))
+                              share_of_P5_ambitious_from2027_minus_TL=float('nan')))
     # gap
     bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
     gap = {}
-    for name, R_ in (('T', RT), ('T-ramp', RTr)):
+    for name, R_ in (('TL', RT), ('TL-gradual', RTr)):
         loe = R_['E']['carbon'][1:].sum() / bar
         if loe > 1:
             bc, _ = backcast(ref, R_, name)
@@ -853,15 +869,15 @@ def compute_T(res, verbose=True):
                              LoE_AtP_min_k0=sp['fixed'].sum() / batp)
     out = dict(params_T=pT, rows=rows, annual=annual, bands=bd, shapley=pd.DataFrame(shap_rows),
                subsets=pd.DataFrame(sub_rows), shapley_exact=exact, gap=gap,
-               indicators={'T': t_indicators(ref, RT), 'T-ramp': t_indicators(ref, RTr)},
+               indicators={'TL': tl_indicators(ref, RT), 'TL-gradual': tl_indicators(ref, RTr)},
                cache=cache, getT=getT, seconds=time.time() - t0)
     if verbose:
-        print(f'pathways T: {len(cache)} engine runs in {out["seconds"]:.1f} s')
+        print(f'pathways TL: {len(cache)} engine runs in {out["seconds"]:.1f} s')
     return out
 
 
-def checks_T(res, rt):
-    """STOP conditions of the T family: dwellings built >= 0 every year, the stock identity
+def checks_tl(res, rt):
+    """STOP conditions of the TL family: dwellings built >= 0 every year, the stock identity
     (engine dwellings built = banked dwellings), implied vacancy >= 0, size >= occupied area
     (within 1e-12 relative), 2026 unchanged, Shapley efficiency exact."""
     ref = res['ctxs'][REFERENCE]
@@ -871,81 +887,80 @@ def checks_T(res, rt):
         built = np.asarray(engine.requirement(E), float)
         if (built[1:] < -T_ZERO_TOL_DWELLINGS).any() or (E['dwell_in_scope'][1:] < -T_ZERO_TOL_DWELLINGS).any() \
                 or (E['total'][1:] < -T_ZERO_TOL_M2).any():
-            raise SystemExit(f'STOP: negative dwellings built in T run {key}.')
+            raise SystemExit(f'STOP: negative dwellings built in TL run {key}.')
         if not np.allclose(built[1:], bk['built'][1:], rtol=1e-12, atol=1e-6):
-            raise SystemExit(f'STOP: banking breaks the stock identity in T run {key}.')
+            raise SystemExit(f'STOP: banking breaks the stock identity in TL run {key}.')
         v = 1.0 - E['hh'] / (E['stock'] + E['stock_join'])
         if (v[1:] < -1e-12).any():
-            raise SystemExit(f'STOP: negative implied vacancy in T run {key}.')
+            raise SystemExit(f'STOP: negative implied vacancy in TL run {key}.')
         S = E['pop'] / E['hh']
         for t in ref['typ']:
             occ = S * np.asarray(R['inputs']['olf'][t], float)
             size = np.broadcast_to(np.asarray(R['inputs']['size'][t], float), S.shape)
             if (size[1:] < occ[1:] * (1 - 1e-12)).any():
-                raise SystemExit(f'STOP: dwelling size below the occupied area in T run {key} ({t}).')
+                raise SystemExit(f'STOP: dwelling size below the occupied area in TL run {key} ({t}).')
         if abs(E['carbon'][1] / E0['carbon'][1] - 1) > 1e-12 or abs(E['total'][1] / E0['total'][1] - 1) > 1e-12:
-            raise SystemExit(f'T run {key}: 2026 changed.')
+            raise SystemExit(f'TL run {key}: 2026 changed.')
     for metric, (phi, total) in rt['shapley_exact'].items():
         if sum(phi.values()) != total:
-            raise SystemExit(f'T Shapley efficiency fails ({metric}).')
+            raise SystemExit(f'TL Shapley efficiency fails ({metric}).')
 
 
-def write_T(res, rt):
-    """Append the T rows to the v2 tables (v2 rows unchanged) and write t_limit.json, shapley_T.csv."""
-    runs = pd.concat([res['runs'], pd.DataFrame(rt['rows'])], ignore_index=True)
-    runs.to_csv(os.path.join(OUT, 'pathways_runs.csv'), index=False)
-    pd.concat([res['annual'], pd.DataFrame(rt['annual'])], ignore_index=True).to_csv(
-        os.path.join(OUT, 'pathways_annual.csv'), index=False)
-    pd.concat([res['bands'], rt['bands']], ignore_index=True).to_csv(os.path.join(OUT, 'pathways_bands.csv'), index=False)
-    rt['shapley'].to_csv(os.path.join(OUT, 'shapley_T.csv'), index=False)
-    rt['subsets'].to_csv(os.path.join(OUT, 'shapley_T_subsets.csv'), index=False)
+def write_tl(res, rt):
+    """Append the TL rows to the pathway tables and write t_limit.json, shapley_T.csv."""
+    _csv(pd.concat([res['runs'], pd.DataFrame(rt['rows'])], ignore_index=True), 'pathways_runs.csv')
+    _csv(pd.concat([res['annual'], pd.DataFrame(rt['annual'])], ignore_index=True), 'pathways_annual.csv')
+    _csv(pd.concat([res['bands'], rt['bands']], ignore_index=True), 'pathways_bands.csv')
+    _csv(rt['shapley'], 'shapley_T.csv')
+    _csv(rt['subsets'], 'shapley_T_subsets.csv')
     rows = {r['run']: r for r in rt['rows']}
-    out = dict(run_mode=RUN_MODE, disclaimer=LV.T_DISCLAIMER, definition=dict(
-        base='P5-stretch (L3 removals -40%; no L4; L2a / L2b replaced by T1)', start=2027, bau=LV.T_BAU_NOTE,
-        t6=dict(share=LV.T6_SHARE, components=LV.T6_COMPONENTS, source=LV.T6_SOURCE, assumptions=LV.T6_ASSUMPTIONS),
-        ramp='instant: w = 1 for every lever in 2027-2050; 2026 observed and untouched (T-ramp: the v2 logistic ramp)',
-        components=LV.T_NAMES), resolved=rt['params_T'],
+    out = dict(run_mode=RUN_MODE, disclaimer=LV.TL_DISCLAIMER, definition=dict(
+        base='P5 Ambitious (L4 removals -40%; L2 / L3 replaced by TL1)', start=2027, bau=LV.TL_BAU_NOTE,
+        tl6=dict(share=LV.TL6_SHARE, components=LV.TL6_COMPONENTS, source=LV.TL6_SOURCE, assumptions=LV.TL6_ASSUMPTIONS),
+        adoption=('from2027: w = 1 for every lever in 2027-2050; 2026 observed and untouched (TL, gradual adoption: '
+                  'the adopted logistic path, full by 2035)'),
+        components=LV.TL_NAMES), resolved=rt['params_T'],
         metrics={k: {c: v for c, v in r.items() if isinstance(v, (int, float, str, bool, np.floating, np.integer))}
                  for k, r in rows.items()},
         indicators=rt['indicators'], gap=rt['gap'],
-        shapley=rt['shapley'].to_dict(orient='records'))
-    with open(os.path.join(OUT, 't_limit.json'), 'w') as f:
-        json.dump(to_json(out), f, indent=2)
+        shapley=N.columns(rt['shapley']).to_dict(orient='records'))
+    _json(out, 't_limit.json')
 
 
 def main():
     res = compute()
     identity = checks(res)
-    print(f'pathways: identity P0 = reference run, max relative difference {max(identity.values()):.2e}')
+    print(f'pathways: identity REF (no lever) = the Reference run, max relative difference {max(identity.values()):.2e}')
     write(res, identity)
-    rt = compute_T(res)
-    checks_T(res, rt)
-    write_T(res, rt)
+    rt = compute_tl(res)
+    checks_tl(res, rt)
+    write_tl(res, rt)
     res['T'] = rt
     if SAVE_FIGURES:
         figures(res)
     for k in T_RUNS:
         x = next(r_ for r_ in rt['rows'] if r_['run'] == k)
         print(f"{k}: floor area {x['gfa_Mm2']:.2f} Mm2, carbon {x['carbon_kt']:,.0f} kt, LoE AR {x['LoE_AR']:.3f}, "
-              f"AtP {x['LoE_AtP']:.2f} ({x['delta_carbon_kt_vs_P0_pct']:+.1f}% vs P0)")
+              f"AtP {x['LoE_AtP']:.2f} ({x['delta_carbon_kt_vs_reference_pct']:+.1f}% vs the Reference)")
     r = res['runs']
-    ref = r[(r['scenario'] == REFERENCE) & (r['ramp'] == RAMP_ADOPTED) & ~r['l5_apartments_held']]
-    print(ref[['run', 'gfa_Mm2', 'carbon_kt', 'LoE_AR', 'LoE_AtP', 'delta_carbon_kt_vs_P0_pct']].to_string(index=False))
+    ref = r[(r['scenario'] == REFERENCE) & (r['adoption'] == RAMP_ADOPTED) & ~r['l5_apartments_held']]
+    print(ref[['run', 'gfa_Mm2', 'carbon_kt', 'LoE_AR', 'LoE_AtP', 'delta_carbon_kt_vs_reference_pct']].to_string(index=False))
     return res
 
 
 # ============================================================
 # FIGURES (outputs/figures/, figaudit records; listed in FIGURES.md)
 # ============================================================
-# Colours: the AR / AtP boundary pair of PB.py; pathways P1-P4 aqua, amber, pink, deep magenta
+# Colours: the AR / AtP boundary pair of boundaries.py; pathways P1-P4 aqua, amber, pink, deep magenta
 # (validated with the dataviz palette validator together with the boundary pair, all pairs,
 # light surface: no failure; pink vs aqua in the CVD warn band, so every pathway is also
 # identified by position and direct labels); P0 and P5 (totals) neutral.
 AR_COLOR, ATP_COLOR = '#1F5FA8', '#C2571A'
-P_COLOR = {'P0': '#9a9a9a', 'P1': '#1baf7a', 'P2': '#eda100', 'P3': '#e87ba4', 'P4': '#a0185a', 'P5': '#3b3b3b'}
+P_COLOR = {'REF': '#9a9a9a', 'P1': '#1baf7a', 'P2': '#eda100', 'P3': '#e87ba4', 'P4': '#a0185a', 'P5': '#3b3b3b'}
 INK, MUTED, GRID_COLOR = '#333333', '#777777', '#e1e0d9'
-PW_ORDER = ('P0', 'P1', 'P2', 'P3', 'P4', 'P5')
-UNTARGETED = ('Growth demand (net of consolidation)', 'House-splitting demand')
+PW_ORDER = ('REF', 'P1', 'P2', 'P3', 'P4', 'P5')
+NAMES = {'REF': N.SCENARIOS['REF'], **LV.PATHWAY_NAMES}
+UNTARGETED = tuple(N.band_data_label(b) for b in N.UNTARGETED)
 PW_FIGURES = {
     'pw_1_bands_by_pathway': ('paper', 'Floor area (Mm2) and carbon (kt CO2e) 2026-2050 by demand band for P0 and the '
                               'pathways P1 Right-size space, P2 Occupy the existing stock, P3 Keep and reuse, P4 Build '
@@ -975,12 +990,12 @@ PW_FIGURES = {
                        'P5-central -> P5-stretch -> T with LoE = 1 and the change vs P0, under each step the mean '
                        'new-dwelling size, floor area per person and dwellings built per year (2027-2050), and the residual '
                        'to LoE AR = 1 in people (dwellings not built 2027-2050, new residents housed in existing '
-                       'dwellings); demand bands (floor area, carbon) of P0, P5-stretch and T. ' + LV.T_DISCLAIMER),
+                       'dwellings); demand bands (floor area, carbon) of P0, P5-stretch and T. ' + LV.TL_DISCLAIMER),
     'pw_9_T_shapley_SI': ('supp', 'Shapley attribution of P5-stretch (instant start) - T to T1-T6 (64 subsets, exact), '
-                          'carbon and LoE AR, with the instant-start effect as a separate line. ' + LV.T_DISCLAIMER),
+                          'carbon and LoE AR, with the instant-start effect as a separate line. ' + LV.TL_DISCLAIMER),
     'pw_10_T_annual_SI': ('supp', 'Annual carbon of P0, P5-stretch, T and T with the logistic ramp against the annual AR '
                           'and AtP boundaries, and dwellings built per year (banking rule; zero-building years shaded). '
-                          + LV.T_DISCLAIMER),
+                          + LV.TL_DISCLAIMER),
 }
 
 
@@ -1019,19 +1034,22 @@ def _wrap(text, width=12):
 
 
 def _run(res, name, scen=REFERENCE):
+    """The runs row of `name` under variant `scen` (the no-lever run carries the variant id)."""
     r = res['runs']
+    if name == REFERENCE:
+        name = scen
     return r[(r['run'] == name) & (r['scenario'] == scen)].iloc[0]
 
 
-def _pname(P, s='central'):
-    return 'P0' if P == 'P0' else f'{P}-{s}'
+def _pname(P, s='moderate'):
+    return P if P == REFERENCE else f'{P}-{s}'
 
 
 def _band_colors():
-    Boss = validation.Boss
+    projection = validation.projection
     return dict(zip([b for b, _ in FIG_BANDS],
-                    [Boss.DEMAND_COLORS[0], Boss.HOUSESPLIT_COLOR, Boss.DEMAND_COLORS[1], Boss.DEMAND_COLORS[2],
-                     Boss.REPL_COLOR, Boss.WAVE_COLOR, Boss.JOIN_COLOR, Boss.EVENTS_COLOR]))
+                    [projection.DEMAND_COLORS[0], projection.HOUSESPLIT_COLOR, projection.DEMAND_COLORS[1], projection.DEMAND_COLORS[2],
+                     projection.REPL_COLOR, projection.WAVE_COLOR, projection.JOIN_COLOR, projection.EVENTS_COLOR]))
 
 
 def fig_bands_by_pathway(res):
@@ -1039,7 +1057,7 @@ def fig_bands_by_pathway(res):
     from matplotlib.patches import Patch
     colors = _band_colors()
     bd = res['bands']
-    bd = bd[(bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope_figure')]
+    bd = bd[(bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope')]
     fig, axes = plt.subplots(1, 2, figsize=(16, 7))
     for ax, col, ylab in ((axes[0], 'gfa_Mm2', 'floor area 2026-2050, Mm$^2$'),
                           (axes[1], 'carbon_kt', 'carbon 2026-2050, kt CO$_2$e')):
@@ -1062,13 +1080,13 @@ def fig_bands_by_pathway(res):
                     neg += v
             net = pos + neg
             ax.text(i - 0.33, pos, fmt(net), ha='left', va='bottom', fontsize=8.5, color=INK)
-            if P != 'P0':                                  # stretch total as a whisker from the central total
-                st = float(bd[bd['run'] == _pname(P, 'stretch')][col].sum())
+            if P != 'REF':                                  # stretch total as a whisker from the central total
+                st = float(bd[bd['run'] == _pname(P, 'ambitious')][col].sum())
                 ax.plot([i + 0.2, i + 0.2], [net, st], color=INK, lw=1.4)
                 ax.plot([i + 0.12, i + 0.28], [st, st], color=INK, lw=1.4)
                 ax.text(i + 0.3, st, fmt(st), ha='left', va='center', fontsize=7.5, color=MUTED)
         ax.set_xticks(range(len(PW_ORDER)))
-        ax.set_xticklabels([f'{P}\n{_wrap(LV.PATHWAY_NAMES[P], 14)}' for P in PW_ORDER], fontsize=8.5)
+        ax.set_xticklabels([f'{P}\n{_wrap(NAMES[P], 14)}' for P in PW_ORDER], fontsize=8.5)
         ax.axhline(0, color=INK, lw=0.8)
         ax.set_ylabel(ylab)
         _style(ax)
@@ -1078,7 +1096,7 @@ def fig_bands_by_pathway(res):
                      label=b + (' (untargeted)' if b in UNTARGETED else '')) for b, _ in FIG_BANDS]
     handles.append(plt.Line2D([0], [0], color=INK, lw=1.4, label='stretch total (whisker from the central total)'))
     fig.legend(handles=handles, loc='lower center', ncol=3, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.12))
-    p0, p5 = _run(res, 'P0'), _run(res, 'P5-central')
+    p0, p5 = _run(res, 'REF'), _run(res, 'P5-moderate')
     fig.suptitle(f"What each pathway removes, by reason for building (S3-10, central): carbon {p0['carbon_kt']:,.0f} -> "
                  f"{p5['carbon_kt']:,.0f} kt (P5)", fontsize=11)
     fig.text(0.5, -0.16, 'Growth and house-splitting (hatched) are untargeted by design: population and household '
@@ -1096,15 +1114,15 @@ def fig_shapley_waterfall(res):
     sh = res['shapley_pathways']
     sh = sh[sh['metric'] == 'carbon_kt'].set_index(['setting', 'player'])['reduction']
     bar_kt, batp_kt = res['backcast']['B_AR_kt'], res['backcast']['B_AtP_kt']
-    p0, p5c, p5s = _run(res, 'P0'), _run(res, 'P5-central'), _run(res, 'P5-stretch')
+    p0, p5c, p5s = _run(res, 'REF'), _run(res, 'P5-moderate'), _run(res, 'P5-ambitious')
     fig, ax = plt.subplots(figsize=(13, 6.8))
-    ax.bar(0, p0['carbon_kt'], color=P_COLOR['P0'], width=0.66)
+    ax.bar(0, p0['carbon_kt'], color=P_COLOR['REF'], width=0.66)
     ax.text(0, p0['carbon_kt'], f"{p0['carbon_kt']:,.0f}", ha='center', va='bottom', fontsize=8.5, color=INK)
     prev, x = p0['carbon_kt'], 0
     labels = ['P0\nbaseline']
     for P in ('P1', 'P2', 'P3', 'P4'):
         x += 1
-        c, s = float(sh[('central', P)]), float(sh[('stretch', P)])
+        c, s = float(sh[('moderate', P)]), float(sh[('ambitious', P)])
         ax.bar(x, -c, bottom=prev, color=P_COLOR[P], edgecolor='white', width=0.66)
         ax.plot([x - 1.33, x + 0.33], [prev, prev], color=MUTED, lw=0.6)
         ax.plot([x + 0.4, x + 0.4], [prev, prev - s], color=INK, lw=1.4)         # stretch Shapley value of the step
@@ -1112,19 +1130,19 @@ def fig_shapley_waterfall(res):
         ax.text(x - 0.1, prev - c - 60, f"-{c:,.0f}\n({-100 * c / p0['carbon_kt']:.1f}%)\nstretch -{s:,.0f}",
                 ha='center', va='top', fontsize=7.5, color=INK)
         prev -= c
-        labels.append(f'{P}\n{_wrap(LV.PATHWAY_NAMES[P], 13)}')
+        labels.append(f'{P}\n{_wrap(NAMES[P], 13)}')
     x += 1
     ax.plot([x - 1.33, x + 0.33], [prev, prev], color=MUTED, lw=0.6)
     ax.bar(x, p5c['carbon_kt'], color=P_COLOR['P5'], width=0.66)
     ax.plot([x + 0.18, x + 0.18], [p5c['carbon_kt'], p5s['carbon_kt']], color=INK, lw=1.4)
     ax.plot([x + 0.1, x + 0.26], [p5s['carbon_kt']] * 2, color=INK, lw=1.4)
-    ax.text(x, p5c['carbon_kt'], f"{p5c['carbon_kt']:,.0f} ({p5c['delta_carbon_kt_vs_P0_pct']:+.1f}%)\nstretch "
-            f"{p5s['carbon_kt']:,.0f} ({p5s['delta_carbon_kt_vs_P0_pct']:+.1f}%)", ha='center', va='bottom',
+    ax.text(x, p5c['carbon_kt'], f"{p5c['carbon_kt']:,.0f} ({p5c['delta_carbon_kt_vs_reference_pct']:+.1f}%)\nstretch "
+            f"{p5s['carbon_kt']:,.0f} ({p5s['delta_carbon_kt_vs_reference_pct']:+.1f}%)", ha='center', va='bottom',
             fontsize=8, color=INK)
     labels.append('P5\nall')
     xc = x + 1.6
     ax.axvline(xc - 0.8, color=MUTED, lw=0.8, ls=':')
-    for k, (nm, rr, rs, col) in enumerate((('P0', p0, None, P_COLOR['P0']), ('P5', p5c, p5s, P_COLOR['P5']))):
+    for k, (nm, rr, rs, col) in enumerate((('REF', p0, None, P_COLOR['REF']), ('P5', p5c, p5s, P_COLOR['P5']))):
         xx = xc + 0.9 * k
         ax.bar(xx, rr['committed_lower_kt'], color='white', edgecolor=col, hatch='xx', width=0.66, lw=1.0)
         ax.plot([xx, xx], [rr['committed_lower_kt'], rr['committed_upper_kt']], color=col, lw=2.2)
@@ -1147,7 +1165,7 @@ def fig_shapley_waterfall(res):
                  f"{p5s['LoE_AR']:.2f}), AtP {p0['LoE_AtP']:.1f} -> {p5c['LoE_AtP']:.1f} (stretch {p5s['LoE_AtP']:.1f})",
                  fontsize=11)
     _style(ax)
-    fig.legend(handles=[Patch(color=P_COLOR[P], label=f'{P} {LV.PATHWAY_NAMES[P]}') for P in PW_ORDER] +
+    fig.legend(handles=[Patch(color=P_COLOR[P], label=f'{P} {NAMES[P]}') for P in PW_ORDER] +
                [plt.Line2D([0], [0], color=INK, lw=1.4, label='stretch (whisker)'),
                 Patch(facecolor='white', edgecolor=MUTED, hatch='xx', label='committed after 2050 (range)')],
                loc='lower center', ncol=4, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.09))
@@ -1202,12 +1220,12 @@ def fig_solution_space(res):
         for m in marks:
             P, s = m['run'].split('-')
             a_.scatter(100 * m['demand_reduction'], 100 * m['intensity_reduction'], s=90 if a_ is ax else 110, zorder=5,
-                       facecolor=P_COLOR[P] if s == 'stretch' else 'white', edgecolor=P_COLOR[P], linewidth=2.0,
+                       facecolor=P_COLOR[P] if s == 'ambitious' else 'white', edgecolor=P_COLOR[P], linewidth=2.0,
                        label=f"{m['run']}: LoE AR {m['LoE_AR_run']:.2f}" if a_ is ax else None)
     for k, m in enumerate(marks):
         P, s = m['run'].split('-')
-        axin.annotate(f'{P}{"s" if s == "stretch" else "c"}', (100 * m['demand_reduction'], 100 * m['intensity_reduction']),
-                      xytext=((-20, 6) if s == 'central' else (6, -12)), textcoords='offset points', fontsize=8,
+        axin.annotate(f'{P}{"s" if s == "ambitious" else "c"}', (100 * m['demand_reduction'], 100 * m['intensity_reduction']),
+                      xytext=((-20, 6) if s == 'moderate' else (6, -12)), textcoords='offset points', fontsize=8,
                       color='white', path_effects=halo)
     fz = np.linspace(0, 1, 401)
     Dz, Iz = np.meshgrid(fz, fz)
@@ -1250,14 +1268,14 @@ def fig_annual(res):
     a = a[a['scenario'] == REFERENCE]
     fig, ax = plt.subplots(figsize=(12.5, 6.2))
     ends = []
-    series = [('P0', P_COLOR['P0'], '-')] + [(f'{P}-{s}', P_COLOR[P], '-' if s == 'central' else '--')
+    series = [('REF', P_COLOR['REF'], '-')] + [(f'{P}-{s}', P_COLOR[P], '-' if s == 'moderate' else '--')
                                             for P in PW_ORDER[1:] for s in LV.SETTINGS]
     for name, col, ls in series:
         d = a[a['run'] == name]
-        ax.plot(d['year'], d['carbon_kt'], color=col, ls=ls, lw=2.0 if name[:2] in ('P0', 'P5') else 1.6,
-                label=f"{name}: {LV.PATHWAY_NAMES[name[:2]]}")
+        ax.plot(d['year'], d['carbon_kt'], color=col, ls=ls, lw=2.0 if name.split('-')[0] in ('REF', 'P5') else 1.6,
+                label=f"{name}: {NAMES[name.split('-')[0]]}")
         ends.append((d['carbon_kt'].iloc[-1], name, col))
-    d0 = a[a['run'] == 'P0']
+    d0 = a[a['run'] == 'REF']
     ax.plot(d0['year'], d0['B_AR_kt'], color=AR_COLOR, lw=2.0, gid=figaudit.BOUNDARY, label='boundary, acquired rights (AR)')
     ax.plot(d0['year'], d0['B_AtP_kt'], color=ATP_COLOR, lw=2.0, ls='--', gid=figaudit.BOUNDARY,
             label='boundary, ability to pay (AtP)')
@@ -1288,11 +1306,11 @@ def fig_envelope(res):
     import figaudit
     from matplotlib.patches import Patch
     bar_kt, batp_kt = res['backcast']['B_AR_kt'], res['backcast']['B_AtP_kt']
-    ramps = [('ramp2030', 'ramp2030', 0.6, '--'), ('ramp2035', None, 1.0, '-'), ('ramp2045', 'ramp2045', 0.3, ':')]
+    ramps = [('by2030', 'by2030', 0.6, '--'), ('by2035', None, 1.0, '-'), ('by2045', 'by2045', 0.3, ':')]
     fig, (ax, ax2) = plt.subplots(1, 2, figsize=(16, 6.2), gridspec_kw=dict(width_ratios=[1.35, 1]))
-    names = [('P0', P_COLOR['P0'], None, 1.0)]
+    names = [('REF', P_COLOR['REF'], None, 1.0)]
     for lab, rn, alpha, _ in ramps:
-        for s, hatch in (('central', '///'), ('stretch', None)):
+        for s, hatch in (('moderate', '///'), ('ambitious', None)):
             names.append((f'P5-{s}' + (f'-{rn}' if rn else ''), P_COLOR['P5'], hatch, alpha))
     scen = list(SCENARIOS)
     w = 0.12
@@ -1311,23 +1329,23 @@ def fig_envelope(res):
     ax.set_xlim(-0.6, len(scen) - 0.1)
     ax.set_ylabel('cumulative carbon 2026-2050, kt CO$_2$e (labels: Mt)')
     ax.set_title('Cumulative carbon by replacement scenario and ramp', fontsize=10)
-    handles = [Patch(color=P_COLOR['P0'], label='P0')]
+    handles = [Patch(color=P_COLOR['REF'], label='REF')]
     for lab, rn, alpha, _ in ramps:
-        full = {'ramp2030': 'full by 2030', 'ramp2035': 'full by 2035 (adopted)', 'ramp2045': 'full by 2045'}[lab]
+        full = {'by2030': 'full by 2030', 'by2035': 'full by 2035 (adopted)', 'by2045': 'full by 2045'}[lab]
         handles += [Patch(facecolor='white', edgecolor=P_COLOR['P5'], hatch='///', alpha=alpha, label=f'P5 central, {full}'),
                     Patch(color=P_COLOR['P5'], alpha=alpha, label=f'P5 stretch, {full}')]
     ax.legend(handles=handles, fontsize=7.5, frameon=False, loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=4)
     _style(ax)
     a = res['annual']
     a = a[a['scenario'] == REFERENCE]
-    d = a[a['run'] == 'P0']
-    ax2.plot(d['year'], d['carbon_kt'], color=P_COLOR['P0'], lw=2.0, label='P0')
+    d = a[a['run'] == 'REF']
+    ax2.plot(d['year'], d['carbon_kt'], color=P_COLOR['REF'], lw=2.0, label='REF')
     for lab, rn, alpha, ls in ramps:
-        for s, lw in (('central', 1.4), ('stretch', 2.4)):
+        for s, lw in (('moderate', 1.4), ('ambitious', 2.4)):
             nm = f'P5-{s}' + (f'-{rn}' if rn else '')
             d = a[a['run'] == nm]
             ax2.plot(d['year'], d['carbon_kt'], color=P_COLOR['P5'], ls=ls, lw=lw, label=nm)
-    d0 = a[a['run'] == 'P0']
+    d0 = a[a['run'] == 'REF']
     ax2.plot(d0['year'], d0['B_AR_kt'], color=AR_COLOR, lw=2.0, gid=figaudit.BOUNDARY, label='AR boundary')
     ax2.plot(d0['year'], d0['B_AtP_kt'], color=ATP_COLOR, lw=2.0, ls='--', gid=figaudit.BOUNDARY, label='AtP boundary')
     ax2.set_ylim(0, None)
@@ -1365,9 +1383,9 @@ def fig_l5_estimator(res):
                    edgecolor='#3b3b3b', zorder=5, label=f'{typ} case ((i - 0.5) / n)')
     for i, cid in enumerate(cases['id']):
         ax.annotate(cid, (pos[i], x[i]), xytext=(4, -9), textcoords='offset points', fontsize=6.5, color=MUTED)
-    for s, col in (('central', P_COLOR['P4']), ('stretch', P_COLOR['P4'])):
+    for s, col in (('moderate', P_COLOR['P4']), ('ambitious', P_COLOR['P4'])):
         e = p['estimator'][s]
-        ax.axvline(e['q'], color=col, lw=0.9, ls=':' if s == 'central' else '--')
+        ax.axvline(e['q'], color=col, lw=0.9, ls=':' if s == 'moderate' else '--')
         ax.errorbar(e['q'], e['r'], yerr=[[e['r'] - e['ci_lo']], [e['ci_hi'] - e['r']]], fmt='D', color=col,
                     ms=7, capsize=4, zorder=6, label=f"{s}: q = {e['q']:.2f}, r = {e['r']:.3f} "
                                                      f"(95% CI {e['ci_lo']:.3f}-{e['ci_hi']:.3f})")
@@ -1396,11 +1414,11 @@ def fig_shapley_levers(res):
         for s in LV.SETTINGS:
             d = sh[(sh['metric'] == metric) & (sh['setting'] == s)].set_index('player')
             for k, L in enumerate(LV.LEVERS):
-                y = k + (0.2 if s == 'central' else -0.2)
+                y = k + (0.2 if s == 'moderate' else -0.2)
                 col = P_COLOR[LV.LEVER_PATHWAY[L]]
                 v = d.loc[L, 'reduction']
-                ax.barh(y, v, height=0.38, color='white' if s == 'central' else col, edgecolor=col, lw=1.5)
-                ax.text(max(v, 0), y, f' {v:,.0f} ({100 * d.loc[L, "share_of_P0_minus_P5"]:.0f}%) {s[0]}'
+                ax.barh(y, v, height=0.38, color='white' if s == 'moderate' else col, edgecolor=col, lw=1.5)
+                ax.text(max(v, 0), y, f' {v:,.0f} ({100 * d.loc[L, "share_of_reference_minus_P5"]:.0f}%) {s[0]}'
                         if metric == 'carbon_kt' else f' {v:.3f} {s[0]}', va='center', fontsize=7.5, color=INK)
         ax.set_yticks(range(len(LV.LEVERS)))
         ax.set_yticklabels([f'{L} {LV.LEVER_NAMES[L]}\n({LV.LEVER_PATHWAY[L]} {LV.PATHWAY_NAMES[LV.LEVER_PATHWAY[L]]})'
@@ -1410,8 +1428,8 @@ def fig_shapley_levers(res):
         ax.set_xlabel(xl)
         _style(ax, 'x')
         ax.set_xlim(min(0, ax.get_xlim()[0]), ax.get_xlim()[1] * 1.3)
-    tot = {s: _run(res, 'P0')['carbon_kt'] - _run(res, f'P5-{s}')['carbon_kt'] for s in LV.SETTINGS}
-    axes[0].set_title(f"Carbon: P0 - P5 = {tot['central']:,.0f} kt (central, open) / {tot['stretch']:,.0f} kt "
+    tot = {s: _run(res, 'REF')['carbon_kt'] - _run(res, f'P5-{s}')['carbon_kt'] for s in LV.SETTINGS}
+    axes[0].set_title(f"Carbon: P0 - P5 = {tot['moderate']:,.0f} kt (central, open) / {tot['ambitious']:,.0f} kt "
                       f"(stretch, filled)", fontsize=10)
     axes[1].set_title('Cumulative LoE AR', fontsize=10)
     fig.suptitle('Shapley attribution of P0 - P5 to the five levers (S3-10; 32 subsets; values sum exactly to P0 - P5)',
@@ -1420,18 +1438,18 @@ def fig_shapley_levers(res):
     _save(fig, 'pw_7_shapley_levers_SI')
 
 
-T_STEPS = (('P0', 'P0\nbaseline'), ('P5-central', 'P5-central\nall pathways'), ('P5-stretch', 'P5-stretch\nall pathways'),
-           ('T', 'T\nhyper-optimistic\ntheoretical limit'))
-T_CAPTION = LV.T_DISCLAIMER
+T_STEPS = (('REF', 'P0\nbaseline'), ('P5-moderate', 'P5-central\nall pathways'), ('P5-ambitious', 'P5-stretch\nall pathways'),
+           ('TL', 'T\nhyper-optimistic\ntheoretical limit'))
+T_CAPTION = LV.TL_DISCLAIMER
 
 
 def _step_run(res, name):
-    if name == 'T':
-        return res['T']['cache'][(LV.T_COMPONENTS, LV.T_INSTANT)]
-    if name == 'T-ramp':
-        return res['T']['cache'][(LV.T_COMPONENTS, None)]
-    s = name.split('-')[1] if name != 'P0' else None
-    return res['get'](REFERENCE, LV.pathway_levers(name[:2], s) if s else {})
+    if name == 'TL':
+        return res['T']['cache'][(LV.TL_COMPONENTS, LV.TL_FROM2027)]
+    if name == 'TL-gradual':
+        return res['T']['cache'][(LV.TL_COMPONENTS, LV.TL_GRADUAL)]
+    s = name.split('-')[1] if name != 'REF' else None
+    return res['get'](REFERENCE, LV.pathway_levers(name.split('-')[0], s) if s else {})
 
 
 def _human(res, name):
@@ -1459,7 +1477,7 @@ def fig_staircase(res):
     gs = fig.add_gridspec(2, 2, height_ratios=[1.15, 1], hspace=0.55, wspace=0.18)
     ax = fig.add_subplot(gs[0, :])
     xs = np.arange(len(T_STEPS))
-    p0 = _t_row(res, 'P0')
+    p0 = _t_row(res, 'REF')
     halo = [pe.Stroke(linewidth=4, foreground='white'), pe.Normal()]
     for key, col, ls, nm in (('LoE_AR', AR_COLOR, '-', 'acquired rights (AR)'), ('LoE_AtP', ATP_COLOR, '--', 'ability to pay (AtP)')):
         ys = [_t_row(res, n)[key] for n, _ in T_STEPS]
@@ -1468,7 +1486,7 @@ def fig_staircase(res):
         ax.scatter(xs, ys, color=col, s=36, zorder=5)
         for x, y, (n, _) in zip(xs, ys, T_STEPS):
             d = 100 * (y / p0[key] - 1)
-            ax.annotate(f'{y:.2f}' + ('' if n == 'P0' else f' ({d:+.0f}%)'), (x, y), xytext=(0, 7),
+            ax.annotate(f'{y:.2f}' + ('' if n == 'REF' else f' ({d:+.0f}%)'), (x, y), xytext=(0, 7),
                         textcoords='offset points', ha='center', fontsize=8.5, color=INK, path_effects=halo)
     ax.axhline(1.0, color='black', lw=1.0, gid=figaudit.BOUNDARY)
     ax.text(-0.45, 1.0, 'LoE = 1', va='bottom', fontsize=8.5, color=INK)
@@ -1487,7 +1505,7 @@ def fig_staircase(res):
     ax.set_ylabel('cumulative level of exceedance 2026-2050 (log)')
     ax.set_title('From the baseline to the hyper-optimistic theoretical limit T (S3-10): cumulative LoE; indicators are '
                  '2027-2050 means', fontsize=11)
-    g = res['T']['gap']['T']
+    g = res['T']['gap']['TL']
     if g['within_AR']:
         resid = f"T within the AR budget: margin {g['margin_AR_kt']:,.0f} kt"
     else:
@@ -1501,8 +1519,8 @@ def fig_staircase(res):
     _style(ax)
     colors = _band_colors()
     bd = pd.concat([res['bands'], res['T']['bands']], ignore_index=True)
-    bd = bd[(bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope_figure')]
-    runs = ['P0', 'P5-stretch', 'T']
+    bd = bd[(bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope')]
+    runs = ['REF', 'P5-ambitious', 'TL']
     for j, (col, ylab, ttl) in enumerate((('gfa_Mm2', 'floor area 2026-2050, Mm$^2$', 'Floor area by demand band'),
                                           ('carbon_kt', 'carbon 2026-2050, kt CO$_2$e', 'Carbon by demand band'))):
         a = fig.add_subplot(gs[1, j])
@@ -1524,7 +1542,7 @@ def fig_staircase(res):
             a.text(i, pos, fmt(pos + neg), ha='center', va='bottom', fontsize=8.5, color=INK)
         a.axhline(0, color=INK, lw=0.8)
         a.set_xticks(range(len(runs)))
-        a.set_xticklabels(['P0', 'P5-stretch', 'T (limit)'], fontsize=9)
+        a.set_xticklabels(['REF', 'P5-ambitious', 'T (limit)'], fontsize=9)
         a.set_ylabel(ylab)
         a.set_title(ttl, fontsize=10)
         _style(a)
@@ -1533,7 +1551,7 @@ def fig_staircase(res):
                loc='lower center', ncol=3, fontsize=7.5, frameon=False, bbox_to_anchor=(0.5, -0.04))
     fig.text(0.5, -0.08, T_CAPTION + ' T1 no idle stock (v = 0, surplus absorbed), T2 no extra space (size = S x OLF), '
              'T3 minimum OLF of the case studies (A_1, 19.7 m² per person) for every typology, T4 each typology\'s best '
-             f'case-study A1-A3, T5 lowest soil order, T6 urban densification ({100 * LV.T6_SHARE:.0f}% of non-replacement '
+             f'case-study A1-A3, T5 lowest soil order, T6 urban densification ({100 * LV.TL6_SHARE:.0f}% of non-replacement '
              'floor area on developed land, zero soil; Auckland Council 2021); BAU decarbonisation applies. In its '
              'zero-building years (released vacant stock used, banking rule) every band is zero.', ha='center', fontsize=8,
              style='italic', wrap=True)
@@ -1547,24 +1565,24 @@ def fig_T_shapley(res):
     for ax, metric, xl in ((axes[0], 'carbon_kt', 'reduction of cumulative carbon 2026-2050, kt CO$_2$e'),
                            (axes[1], 'LoE_AR', 'reduction of cumulative LoE AR')):
         d = sh[sh['metric'] == metric].set_index('player')
-        players = list(LV.T_COMPONENTS) + ['instant start']
+        players = list(LV.TL_COMPONENTS) + [LV.TL_FROM2027]
         for k, pl in enumerate(players):
             v = float(d.loc[pl, 'reduction'])
-            is_t = pl != 'instant start'
+            is_t = pl != LV.TL_FROM2027
             ax.barh(k, v, height=0.6, color='#3b3b3b' if is_t else 'white', edgecolor='#3b3b3b', lw=1.2,
                     hatch=None if is_t else '///')
-            share = d.loc[pl, 'share_of_P5s_instant_minus_T']
+            share = d.loc[pl, 'share_of_P5_ambitious_from2027_minus_TL']
             ax.text(v, k, (f' {v:,.0f}' if metric == 'carbon_kt' else f' {v:.3f}') +
                     (f' ({100 * share:.0f}%)' if is_t else ' (separate line)'), va='center', fontsize=8, color=INK)
         ax.set_yticks(range(len(players)))
-        ax.set_yticklabels([f'{p} {LV.T_NAMES[p]}' if p in LV.T_NAMES else 'P5-stretch: ramp -> instant start'
+        ax.set_yticklabels([f'{p} {LV.TL_NAMES[p]}' if p in LV.TL_NAMES else 'P5-stretch: ramp -> instant start'
                             for p in players], fontsize=8.5)
         ax.invert_yaxis()
         ax.set_xlabel(xl)
         ax.set_xlim(0, ax.get_xlim()[1] * 1.3)
         _style(ax, 'x')
-    fig.suptitle(f'Shapley attribution of P5-stretch (instant start) - T to T1-T{len(LV.T_COMPONENTS)} '
-                 f'({2 ** len(LV.T_COMPONENTS)} subsets, exact; S3-10)', fontsize=11)
+    fig.suptitle(f'Shapley attribution of P5-stretch (instant start) - T to T1-T{len(LV.TL_COMPONENTS)} '
+                 f'({2 ** len(LV.TL_COMPONENTS)} subsets, exact; S3-10)', fontsize=11)
     fig.text(0.5, -0.04, 'Shares are of P5-stretch with the instant start minus T. The hatched bar is the separate effect '
              'of starting P5-stretch at full strength in 2027 instead of on the logistic ramp. ' + T_CAPTION,
              ha='center', fontsize=8, style='italic', wrap=True)
@@ -1576,8 +1594,8 @@ def fig_T_annual(res):
     import matplotlib.pyplot as plt
     import figaudit
     fig, (ax, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-    series = (('P0', '#9a9a9a', '-', 2.0), ('P5-stretch', '#3b3b3b', '--', 1.8), ('T', 'black', '-', 2.6),
-              ('T-ramp', 'black', ':', 2.0))
+    series = (('REF', '#9a9a9a', '-', 2.0), ('P5-ambitious', '#3b3b3b', '--', 1.8), ('TL', 'black', '-', 2.6),
+              ('TL-gradual', 'black', ':', 2.0))
     ref = res['ctxs'][REFERENCE]
     yrs = ref['years']
     ends = []
@@ -1601,7 +1619,7 @@ def fig_T_annual(res):
     ax.set_title('Annual carbon: P0, P5-stretch, T and T with the logistic ramp', fontsize=10)
     ax.legend(fontsize=8, frameon=False, loc='upper right')
     _style(ax)
-    zy = res['T']['indicators']['T']['zero_building_years']
+    zy = res['T']['indicators']['TL']['zero_building_years']
     if zy:
         ax2.axvspan(min(zy) - 0.5, max(zy) + 0.5, color='#e1e0d9', zorder=0)
         ax2.text((min(zy) + max(zy)) / 2, ax2.get_ylim()[1] * 0.02 + 1, f'T: no new building\n{min(zy)}-{max(zy)}\n'

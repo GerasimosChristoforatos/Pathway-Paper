@@ -101,15 +101,17 @@ UPFRONT = 'Upfront (A1–A5 and soil carbon loss)'
 METRICS = {'AR': 'Acquired rights (AR)', 'AtP': 'Ability to pay (AtP)', 'LoE': 'Level of exceedance (LoE)',
            'cumulative_LoE': 'Cumulative level of exceedance, 2026–2050'}
 
-# The one wording of the vacancy assumption (filled from the data by vacancy_wording()).
-VACANCY_WORDING = ('the vacancy-rate parameter is held at its 2023 census value ({v0:.2f}%; the highest in the '
-                   'consistent 1986–2023 series, minimum {vmin:.2f}% in {ymin}); implied stock vacancy rises to '
-                   '≈{v2050:.1f}% because the 2026 overbuild is not absorbed')
+# The one wording of the vacancy assumption (author decision, MODEL v1.0.0), filled from the data by
+# vacancy_wording(): the parameter is the published 2023 census value; on the consistent 1986-2023
+# definition (pooled 2018/2023 empty share of unoccupied dwellings) 2023 is the series maximum.
+VACANCY_WORDING = ('the vacancy-rate parameter is held at its published 2023 census value ({v0:.2f}%; on the '
+                   'consistent definition 2023 is the series maximum, {vmax:.2f}%, minimum {vmin:.2f}% in {ymin}); '
+                   'implied stock vacancy rises to ≈{v2050:.1f}% because the 2026 overbuild is not absorbed')
 
 
-def vacancy_wording(v0, vmin, ymin, v2050):
+def vacancy_wording(v0, vmax, vmin, ymin, v2050):
     """The release wording of the vacancy assumption (fractions in, percent out)."""
-    return VACANCY_WORDING.format(v0=100 * v0, vmin=100 * vmin, ymin=ymin, v2050=100 * v2050)
+    return VACANCY_WORDING.format(v0=100 * v0, vmax=100 * vmax, vmin=100 * vmin, ymin=ymin, v2050=100 * v2050)
 
 
 def scenario_label(code):
@@ -135,6 +137,62 @@ def run_label(run, scenario='REF'):
     elif rest == 'apartments-held':
         out += ', apartments held'
     return out
+
+
+# Demand bands as the data files list them. 'with_retirement_villages' (projection.json,
+# bands.csv): every band of the projection's bookkeeping, replacement split into demolition
+# and net unconsented additions, and the retirement-village row (negative: households housed
+# in retirement villages, out of scope). 'in_scope' (bands.csv, the band figures): retirement
+# villages removed from every band in proportion, replacement one band, maintenance a carbon band.
+BANDS_WITH_RETIREMENT_VILLAGES = ('growth', 'smaller_households', 'extra_space', 'vacancy',
+                                  'replacement_demolition', 'replacement_residual', 'redevelopment',
+                                  'overbuild_2026', 'retirement_villages')
+BANDS_IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement', 'redevelopment',
+                  'overbuild_2026', 'maintenance')
+BAND_DEFINITION_IDS = ('with_retirement_villages', 'in_scope')
+
+
+def band_data_label(band_id):
+    """The label of a band in the data files (ASCII: en dash -> hyphen)."""
+    return _ascii({**BANDS, **BAND_DETAIL}[band_id])
+
+
+def _ascii(s):
+    """Data files keep ASCII identifiers: en dash -> hyphen."""
+    return s.replace('\u2013', '-')
+
+
+# ============================================================
+# EXPORT: release identifiers at write time
+# ============================================================
+# The model code names quantities with short tokens (gfa, soil_kt, b_inwindow, ...); the
+# files carry the release names. Every CSV and JSON file of the model is written through
+# columns() or keys(), which apply identifier() (the generic rules of docs/RENAMING.md), so
+# one function names every output and the regression test checks the same map. Vocabulary
+# identifiers (scenario, pathway, lever, setting, band and TL ids) are the release ids in
+# the code itself.
+def columns(df):
+    """df with the release column names (identifier on every column; collisions refused)."""
+    new = [identifier(c) if isinstance(c, str) else c for c in df.columns]
+    if len(set(new)) != len(new):
+        raise ValueError(f'naming.columns: two columns map to one release name: {list(df.columns)}')
+    return df.set_axis(new, axis=1)
+
+
+def keys(obj):
+    """obj with the release JSON keys (identifier on every string key, recursively; collisions
+    refused). Lists and tuples become lists, as json.dump writes them."""
+    if isinstance(obj, dict):
+        out = {}
+        for k, v in obj.items():
+            nk = identifier(k) if isinstance(k, str) else k
+            if nk in out:
+                raise ValueError(f'naming.keys: two keys map to {nk!r}')
+            out[nk] = keys(v)
+        return out
+    if isinstance(obj, (list, tuple)):
+        return [keys(v) for v in obj]
+    return obj
 
 
 # ============================================================
@@ -205,6 +263,12 @@ _ID_RULES = [
     (r'committed_C_', 'committed_c1c4_'),
     (r'^within_window_kt$', 'carbon_2026_2050_kt'),
     (r'^pop_band_', 'population_band_'),
+    (r'^s3_half_life$', 'replacement_half_life'),
+    (r'(?<![A-Za-z0-9])reference_s3_10(?![A-Za-z0-9])', 'reference'),      # hindcast method (validation)
+    (r'_to_P0(?=_|$)', '_to_reference'),
+    (r'near_term_surplus_absorbed', 'overbuild_2026_absorbed'),
+    (r'^join_net$', 'overbuild_2026_net_dwellings'),
+    (r'(?<![A-Za-z])RV_(?=units|floor_area)', 'retirement_village_'),
     # Monte Carlo: 'central' is the deterministic Reference run (metrics.json, montecarlo_summary)
     (r'^central_pct_(GFA|floor_area|carbon)$', r'reference_percentile_\1'),
     (r'^central_pct$', 'reference_percentile'),
@@ -272,6 +336,8 @@ def subset_label(old):
         return 'none'
     if old == 'P5-stretch-instant':
         return 'P5-ambitious-from2027'
+    if old == 'T':
+        return 'TL'
     m = re.fullmatch(r'T\[(.*)\]', old)
     if m:
         return 'TL[' + '+'.join(TL_LEGACY[t] for t in m.group(1).split('+')) + ']'
@@ -306,11 +372,6 @@ def band_label(old):
     return _BAND_LEGACY[old]
 
 
-def _ascii(s):
-    """Data files keep ASCII identifiers: en dash -> hyphen."""
-    return s.replace('–', '-')
-
-
 # Cell maps for identifying CSV columns, per v3.1 file (paths relative to outputs/; the
 # frozen-technology copies use the same maps). A value is mapped with the row's other
 # identifying cells available (P0 needs its scenario).
@@ -342,6 +403,9 @@ def _cell(old_file, col, value, row):
             return _ascii(_player_name(value))
         if col == 'subset':
             return subset_label(value)
+    if (f.startswith('montecarlo_summary') and col == 'Unnamed: 0') or (f.startswith('montecarlo_sobol')
+                                                                        and col == 'output'):
+        return identifier(value)                    # output names, as the draws columns
     if f == 'sensitivity_oat.csv' and col in ('group', 'case'):
         return _ascii(_sens_label(value))
     if f == 'pb_sensitivity.csv' and col == 'label':
@@ -360,6 +424,8 @@ _PLAYER_NAMES = {
     'Best materials': TL['TL4'], 'Best soil': TL['TL5'], 'Urban densification': TL['TL6'],
     'P5-stretch: ramp -> instant start': 'P5 Ambitious: adoption path -> full strength from 2027',
     'instant start': ADOPTION['from2027'],
+    'P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player)':
+        'P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player)',
 }
 
 
@@ -393,13 +459,18 @@ _JSON_KEY_MAPS = {
     # committed/<variant> holds the in-window maintenance twice: Boss's B_inwindow_kt and the
     # layer's own sum of the annual series (equal to rounding); both kept, named apart
     'pb_results.json': dict(SCENARIO_LEGACY, b_inwindow_kt='maintenance_kt_sum_of_annual'),
-    'metrics.json': dict(SCENARIO_LEGACY),
+    'metrics.json': dict(SCENARIO_LEGACY, boss='projection', pb='aesa'),
+    'gap_2026.json': {'S2_rate_effect': 'HIGH_rate_effect', 'S2_deviation_effect': 'HIGH_deviation_effect',
+                      'model_requirement_2026_S2': 'model_requirement_2026_HIGH'},
     'replacement_scenarios.json': dict(SCENARIO_LEGACY),
     'reality_checks.json': dict(SCENARIO_LEGACY),
     'pathways/backcast.json': {'P0': 'REF', 'P5-central': 'P5-moderate', 'P5-stretch': 'P5-ambitious'},
-    'pathways/t_limit.json': {'T': 'TL', 'T-ramp': 'TL-gradual', **{k: v for k, v in TL_LEGACY.items() if k != 'T'}},
+    'pathways/t_limit.json': {'T': 'TL', 'T-ramp': 'TL-gradual', 't6': 'tl6',
+                              **{k: v for k, v in TL_LEGACY.items() if k != 'T'}},
     'pathways/levers.json': {'L2a': 'L2', 'L2b': 'L3', 'L3': 'L4', 'L4': 'denser_mix_pathways_v2',
-                             'central': 'moderate', 'stretch': 'ambitious', 'P0': 'REF',
+                             'central': 'moderate', 'stretch': 'ambitious', 'P0': 'REF', 'ramp': 'adoption',
+                             'end_of_ramp_step_P2-central': 'end_of_ramp_step_P2-moderate',
+                             'end_of_ramp_step_P2-stretch': 'end_of_ramp_step_P2-ambitious',
                              'S3-10 LoE_AR': 'REF LoE_AR', 'S3-10 LoE_AtP': 'REF LoE_AtP',
                              'S1 LoE_AR': 'LOW LoE_AR', 'S1 LoE_AtP': 'LOW LoE_AtP',
                              'S2 LoE_AR': 'HIGH LoE_AR', 'S2 LoE_AtP': 'HIGH LoE_AtP',
@@ -429,8 +500,12 @@ def _column(old_file, col):
     f = old_file[len('frozen/'):] if old_file.startswith('frozen/') else old_file
     if f.startswith('montecarlo_sobol') or f.startswith('factors/'):
         return col                                  # Sobol S1 / ST; model input tables keep their names
-    if f.startswith('montecarlo_summary') and col.startswith('Unnamed'):
-        return col
+    if f.startswith('montecarlo_summary') and col == 'Unnamed: 0':
+        return 'output'                             # the index column (one row per output)
+    if f.startswith('montecarlo_annual') and col == 'Unnamed: 0':
+        return 'year'                               # the index column
+    if f.startswith('pathways/') and col == 'ramp':
+        return 'adoption'                           # the adoption path of the levers (by2035, ...)
     if f.startswith('montecarlo_summary') and col == 'central':
         return 'reference'                          # the deterministic Reference run
     return identifier(col)
@@ -473,7 +548,7 @@ def _removed(old_file, row=None, col=None, path=None):
 #   'labels'   vocabulary, columns, identifying cells and JSON keys renamed (commit 3)
 #   'layout'   outputs/data/, outputs/headline/, outputs/diagnostics/, outputs/reports/ (commit 4)
 #   'removals' by-typology reporting removed (commit 7)
-APPLIED = set()
+APPLIED = {'labels'}
 
 
 class _Legacy:

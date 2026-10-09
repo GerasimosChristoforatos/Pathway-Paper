@@ -127,16 +127,38 @@ def figsize(width='double', height_mm=100.0):
     return WIDTH[width], height_mm * MM
 
 
+QUICK_TEXT = 'QUICK RUN, not for reporting (run_all.py --quick: fewer Monte Carlo draws)'
+
+
+def quick_run():
+    return os.environ.get('PATHWAY_QUICK') == '1'
+
+
 def save(fig, path, pdf=False):
     """Write path + '.png' (DPI, no software / date metadata) and, with pdf, path + '.pdf'
     (vector, fonts embedded as TrueType, no producer / dates), then close the figure.
-    Fixed metadata make re-runs byte-identical."""
+    Fixed metadata make re-runs byte-identical. In a quick run (PATHWAY_QUICK=1) every figure
+    carries a red footer 'QUICK RUN, not for reporting'."""
     import matplotlib.pyplot as plt
     os.makedirs(os.path.dirname(path), exist_ok=True)
+    if quick_run():
+        fig.text(0.5, 0.0, QUICK_TEXT, ha='center', va='top', color='white', fontsize=FONT_SIZE,
+                 fontweight='bold', bbox=dict(facecolor='#C0392B', edgecolor='none', pad=2))
     fig.savefig(path + '.png', dpi=DPI, metadata={'Software': None})
     if pdf:
         fig.savefig(path + '.pdf', metadata={'Creator': None, 'Producer': None, 'CreationDate': None})
     plt.close(fig)
+
+
+def save_figure(fig, name):
+    """Save a planned figure (figure_plan.py file id, e.g. 'D22_boundaries') to its place in
+    outputs/ (layout.figure): headline figures as PNG and PDF, diagnostics as PNG; the axis
+    record of the figure is written first (figaudit.py)."""
+    import figaudit
+    import layout
+    path = layout.figure(name)
+    figaudit.record(fig, name)
+    save(fig, path, pdf=path.startswith(layout.HEADLINE))
 
 
 apply()

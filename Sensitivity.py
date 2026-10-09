@@ -29,12 +29,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import projection
-import figaudit
+import figure_plan as FP
+import layout
 import naming as N
+import style
 
-OUT_CSV = os.path.join(projection.OUT_DIR, 'sensitivity_oat.csv')
-FIG_DIR = os.path.join(projection.OUT_DIR, 'figures')
-SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: write PNGs to FIG_DIR
+OUT_CSV = layout.data('baseline/sensitivity_one_at_a_time.csv')
+SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: save every figure
 SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
 N_PATHS = 6              # cases drawn in the annual-path figure (largest effects)
 
@@ -170,8 +171,7 @@ def main():
     out = pd.DataFrame(rows, columns=['group', 'case', 'GFA_Mm2', 'carbon_kt'])
     out['GFA_change_pct'] = 100 * (out['GFA_Mm2'] / g0 - 1)
     out['carbon_change_pct'] = 100 * (out['carbon_kt'] / c0 - 1)
-    os.makedirs(os.path.dirname(OUT_CSV), exist_ok=True)
-    N.columns(out).to_csv(OUT_CSV, index=False)
+    N.columns(out).to_csv(layout.writing(OUT_CSV), index=False)
 
     print("=" * 96)
     print(" ONE-AT-A-TIME SENSITIVITY, 2026-2050 (median population unless stated)")
@@ -192,10 +192,9 @@ def main():
 def _save(fig, name, tight=True):
     if tight:
         fig.tight_layout()
-    if SAVE_FIGURES:
-        os.makedirs(FIG_DIR, exist_ok=True)
-        figaudit.record(fig, name)
-        fig.savefig(os.path.join(FIG_DIR, name), dpi=140, bbox_inches='tight')
+    target = FP.release_file(os.path.splitext(name)[0])
+    if SAVE_FIGURES and target is not None:
+        style.save_figure(fig, target)
 
 
 TOP_N = 5        # main-text tornados show the TOP_N largest parameters (full versions: *_SI)
@@ -344,7 +343,7 @@ def figures(out, base, paths):
     _save(fig, 'sens_2_paths.png', tight=False)
 
     if SAVE_FIGURES:
-        print(f"Figures written to {FIG_DIR}/ (sens_1, sens_2)")
+        print("Figures written to outputs/diagnostics/sensitivity/ (D16, D17)")
     if SHOW_FIGURES:
         plt.show()
 

@@ -439,7 +439,7 @@ def test_unchanged_rows_equal_to_v3(name):
     R, f = N.RELEASE, f'pathways/{name}'
     o = pd.read_csv(io.StringIO(old))
     o = o[(o['run'] == 'P0') | o['run'].str.startswith(UNCHANGED_PREFIXES)]
-    new = pd.read_csv(os.path.join(ROOT, 'outputs', 'pathways', name))
+    new = pd.read_csv(os.path.join(ROOT, 'outputs', N.LEGACY.file(f)))
     keys = KEYS[name]
     nk = [R.column(f, k) for k in keys]
     idx = {tuple(r): i for i, r in enumerate(new[nk].itertuples(index=False, name=None))}

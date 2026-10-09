@@ -29,11 +29,12 @@ typology; carbon linear in floor area; 2026 fixed), scipy.optimize.brentq for
 cumulative LoE AR = 1; AtP: the minimum attainable LoE (2026 cohort alone).
 Solution space (Horup et al. 2025, Fig. 6 style) on the Reference.
 
-Writes outputs/pathways/ (release names: naming.columns / naming.keys): pathways_runs.csv,
-pathways_annual.csv, pathways_bands.csv, shapley_pathways.csv, shapley_levers.csv,
-shapley_subsets.csv, shapley_T.csv, shapley_T_subsets.csv, backcast.json, solution_space.csv,
-levers.json, t_limit.json; figures pw_*. The documents (LEVERS_TABLE.md, the methods draft,
-the ASSUMPTIONS sections) are written by tools/pathways_methods.py --sections.
+Writes outputs/data/pathways/ (release names: naming.columns / naming.keys): runs.csv,
+annual.csv, bands.csv, shapley_pathways.csv, shapley_levers.csv, shapley_subsets.csv,
+shapley_theoretical_limit.csv, shapley_theoretical_limit_subsets.csv, backcast.json,
+solution_space.csv, levers.json, theoretical_limit.json; and the pathway figures
+(style.save_figure). The documents (LEVERS_TABLE.md, the methods draft, the ASSUMPTIONS
+section) are written by tools/pathways_methods.py --sections.
 
     python pathways.py          (run_all.py --pathways-only runs it with the tests)
 """
@@ -57,17 +58,19 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import aesa  # noqa: E402
 import engine  # noqa: E402
 import events as EV  # noqa: E402
+import figure_plan as FP  # noqa: E402
+import layout  # noqa: E402
 import levers as LV  # noqa: E402
 import naming as N  # noqa: E402
+import style  # noqa: E402
 import validation  # noqa: E402
 
 RAMP_ADOPTED = LV.ADOPTION_ADOPTED
 
-OUT = os.path.join(ROOT, 'outputs', 'pathways')
-FIG_DIR = os.path.join(ROOT, 'outputs', 'figures')
-FILE_PB_ANNUAL = os.path.join(ROOT, 'outputs', 'pb_annual.csv')
-FILE_PB_RESULTS = os.path.join(ROOT, 'outputs', 'pb_results.json')
-FILE_BOSS_RESULTS = os.path.join(ROOT, 'outputs', 'boss_results.json')
+OUT = layout.data('pathways', frozen=False)
+FILE_PB_ANNUAL = layout.data('aesa/annual.csv', frozen=False)
+FILE_PB_RESULTS = layout.data('aesa/results.json', frozen=False)
+FILE_BOSS_RESULTS = layout.data('baseline/projection.json', frozen=False)
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
 QUICK = os.environ.get('PATHWAY_QUICK') == '1'
 RUN_MODE = 'QUICK RUN, not for reporting' if QUICK else 'full'
@@ -649,26 +652,19 @@ def to_json(o):
     return o
 
 
-V1_FILES = ('shapley.csv',)              # v1 outputs without a v2 equivalent (removed)
-
-
 def _csv(df, name):
-    N.columns(df).to_csv(os.path.join(OUT, name), index=False)
+    N.columns(df).to_csv(layout.writing(os.path.join(OUT, name)), index=False)
 
 
 def _json(obj, name):
-    with open(os.path.join(OUT, name), 'w') as f:
+    with open(layout.writing(os.path.join(OUT, name)), 'w') as f:
         json.dump(N.keys(to_json(obj)), f, indent=2)
 
 
 def write(res, identity):
-    os.makedirs(OUT, exist_ok=True)
-    for f in V1_FILES:
-        if os.path.exists(os.path.join(OUT, f)):
-            os.remove(os.path.join(OUT, f))
-    _csv(res['runs'], 'pathways_runs.csv')
-    _csv(res['annual'], 'pathways_annual.csv')
-    _csv(res['bands'], 'pathways_bands.csv')
+    _csv(res['runs'], 'runs.csv')
+    _csv(res['annual'], 'annual.csv')
+    _csv(res['bands'], 'bands.csv')
     _csv(res['shapley_pathways'], 'shapley_pathways.csv')
     _csv(res['shapley_levers'], 'shapley_levers.csv')
     _csv(res['shapley_runs'], 'shapley_subsets.csv')
@@ -907,12 +903,12 @@ def checks_tl(res, rt):
 
 
 def write_tl(res, rt):
-    """Append the TL rows to the pathway tables and write t_limit.json, shapley_T.csv."""
-    _csv(pd.concat([res['runs'], pd.DataFrame(rt['rows'])], ignore_index=True), 'pathways_runs.csv')
-    _csv(pd.concat([res['annual'], pd.DataFrame(rt['annual'])], ignore_index=True), 'pathways_annual.csv')
-    _csv(pd.concat([res['bands'], rt['bands']], ignore_index=True), 'pathways_bands.csv')
-    _csv(rt['shapley'], 'shapley_T.csv')
-    _csv(rt['subsets'], 'shapley_T_subsets.csv')
+    """Append the TL rows to the pathway tables and write theoretical_limit.json and the TL Shapley tables."""
+    _csv(pd.concat([res['runs'], pd.DataFrame(rt['rows'])], ignore_index=True), 'runs.csv')
+    _csv(pd.concat([res['annual'], pd.DataFrame(rt['annual'])], ignore_index=True), 'annual.csv')
+    _csv(pd.concat([res['bands'], rt['bands']], ignore_index=True), 'bands.csv')
+    _csv(rt['shapley'], 'shapley_theoretical_limit.csv')
+    _csv(rt['subsets'], 'shapley_theoretical_limit_subsets.csv')
     rows = {r['run']: r for r in rt['rows']}
     out = dict(run_mode=RUN_MODE, disclaimer=LV.TL_DISCLAIMER, definition=dict(
         base='P5 Ambitious (L4 removals -40%; L2 / L3 replaced by TL1)', start=2027, bau=LV.TL_BAU_NOTE,
@@ -924,7 +920,7 @@ def write_tl(res, rt):
                  for k, r in rows.items()},
         indicators=rt['indicators'], gap=rt['gap'],
         shapley=N.columns(rt['shapley']).to_dict(orient='records'))
-    _json(out, 't_limit.json')
+    _json(out, 'theoretical_limit.json')
 
 
 def main():
@@ -949,7 +945,7 @@ def main():
 
 
 # ============================================================
-# FIGURES (outputs/figures/, figaudit records; listed in FIGURES.md)
+# FIGURES (style.save_figure: outputs/headline/, outputs/diagnostics/pathways_si/)
 # ============================================================
 # Colours: the AR / AtP boundary pair of boundaries.py; pathways P1-P4 aqua, amber, pink, deep magenta
 # (validated with the dataviz palette validator together with the boundary pair, all pairs,
@@ -961,49 +957,10 @@ INK, MUTED, GRID_COLOR = '#333333', '#777777', '#e1e0d9'
 PW_ORDER = ('REF', 'P1', 'P2', 'P3', 'P4', 'P5')
 NAMES = {'REF': N.SCENARIOS['REF'], **LV.PATHWAY_NAMES}
 UNTARGETED = tuple(N.band_data_label(b) for b in N.UNTARGETED)
-PW_FIGURES = {
-    'pw_1_bands_by_pathway': ('paper', 'Floor area (Mm2) and carbon (kt CO2e) 2026-2050 by demand band for P0 and the '
-                              'pathways P1 Right-size space, P2 Occupy the existing stock, P3 Keep and reuse, P4 Build '
-                              'better and P5 all (central; S3-10), stretch totals as whiskers; the untargeted bands '
-                              '(growth, house-splitting) hatched at the bottom; negative bands below zero.'),
-    'pw_2_shapley_waterfall': ('paper', 'Cumulative within-window carbon 2026-2050 (S3-10), P0 -> P5 by the order-free '
-                               'Shapley values of the four pathways (central bars, stretch whiskers), against the '
-                               'cumulative AR and AtP budgets; emissions committed after 2050 (range) as a separate '
-                               'hatched pair, not part of the LoE.'),
-    'pw_3_solution_space': ('paper', 'Solution space (Horup et al. 2025, Fig. 6 style): cumulative LoE AR over uniform '
-                            'cuts of 2027-2050 floor area (demand) and of non-soil carbon per m2 (intensity) applied to '
-                            'P0, with the LoE AR = 1 contour, the 2, 3, 5 and 10 contours where inside the grid range, '
-                            'the pathways P1-P5 (central open, stretch filled) at their effective coordinates and the '
-                            'back-cast points of P0 and P5.'),
-    'pw_4_annual_SI': ('supp', 'Annual carbon 2026-2050 (S3-10) of P0-P5 (central solid, stretch dashed) against the '
-                       'annual AR and AtP boundaries.'),
-    'pw_5_envelope_SI': ('supp', 'P0 and P5 under the replacement scenarios Low (S1), Reference (S3-10) and High (S2), '
-                         'with the logistic ramp full by 2035 (adopted) and by 2030 and 2045 (sensitivities): cumulative carbon vs '
-                         'cumulative budgets, and annual carbon (S3-10).'),
-    'pw_6_L5_estimator_SI': ('supp', 'L5 estimator: the 14 independent case-study A1-A3 ratios (detached, townhouses; '
-                             '2025) at their plotting positions, the Harrell-Davis quantile function with its '
-                             'bootstrap 95% band (B = 10,000), and the central (q = 0.25) and stretch (q = 0.15) '
-                             'targets.'),
-    'pw_7_shapley_levers_SI': ('supp', 'Shapley attribution of P0 - P5 to the five levers (32 subsets; S3-10), on '
-                               'cumulative carbon and cumulative LoE AR, central (open) and stretch (filled).'),
-    'pw_8_staircase': ('paper', 'Hyper-optimistic theoretical limit T (T1-T6): cumulative LoE AR and AtP (log) for P0 -> '
-                       'P5-central -> P5-stretch -> T with LoE = 1 and the change vs P0, under each step the mean '
-                       'new-dwelling size, floor area per person and dwellings built per year (2027-2050), and the residual '
-                       'to LoE AR = 1 in people (dwellings not built 2027-2050, new residents housed in existing '
-                       'dwellings); demand bands (floor area, carbon) of P0, P5-stretch and T. ' + LV.TL_DISCLAIMER),
-    'pw_9_T_shapley_SI': ('supp', 'Shapley attribution of P5-stretch (instant start) - T to T1-T6 (64 subsets, exact), '
-                          'carbon and LoE AR, with the instant-start effect as a separate line. ' + LV.TL_DISCLAIMER),
-    'pw_10_T_annual_SI': ('supp', 'Annual carbon of P0, P5-stretch, T and T with the logistic ramp against the annual AR '
-                          'and AtP boundaries, and dwellings built per year (banking rule; zero-building years shaded). '
-                          + LV.TL_DISCLAIMER),
-}
-
-
 def _save(fig, name):
-    os.makedirs(FIG_DIR, exist_ok=True)
-    import figaudit
-    figaudit.record(fig, name)
-    fig.savefig(os.path.join(FIG_DIR, f'{name}.png'), dpi=130, bbox_inches='tight')
+    target = FP.release_file(name)
+    if target is not None:
+        style.save_figure(fig, target)
     import matplotlib.pyplot as plt
     plt.close(fig)
 
@@ -1636,38 +1593,11 @@ def fig_T_annual(res):
     _save(fig, 'pw_10_T_annual_SI')
 
 
-FIGURES_MD_MARK = '## Pathways'
-
-
-def update_figures_md():
-    """Append (or replace) the Pathways sections of FIGURES.md, which tools/figures_report.py
-    regenerates without them earlier in run_all.py."""
-    path = os.path.join(ROOT, 'FIGURES.md')
-    txt = open(path, encoding='utf-8').read()
-    if FIGURES_MD_MARK in txt:
-        txt = txt[:txt.index(FIGURES_MD_MARK)].rstrip('\n') + '\n'
-    L = ['', f'{FIGURES_MD_MARK}: paper candidates (generated by pathways.py)', '']
-    L += [f'- `{n}.png`: {d}' for n, (k, d) in PW_FIGURES.items() if k == 'paper']
-    L += ['', f'{FIGURES_MD_MARK}: supplementary (generated by pathways.py)', '']
-    L += [f'- `{n}.png`: {d}' for n, (k, d) in PW_FIGURES.items() if k == 'supp']
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(txt + '\n'.join(L) + '\n')
-
-
-def clear_pw_figures():
-    """Delete only the pathway figures (pw_*.png) and their audit records; every other file in
-    outputs/figures/ is left as it is (run_all.py --pathways-only never clears the folder)."""
-    import glob
-    import figaudit
-    for f in glob.glob(os.path.join(FIG_DIR, 'pw_*.png')) + glob.glob(os.path.join(figaudit.AUDIT_DIR, 'pw_*.json')):
-        os.remove(f)
-
-
 def figures(res):
-    """pw_* -> outputs/figures/ (figaudit records; old pw_* removed first), and their FIGURES.md section."""
+    """The pathway figures (style.save_figure; each file is overwritten in place, so a
+    pathways-only run replaces exactly the pathway figures)."""
     import matplotlib
     matplotlib.use('Agg')
-    clear_pw_figures()
     fig_bands_by_pathway(res)
     fig_shapley_waterfall(res)
     fig_solution_space(res)
@@ -1679,7 +1609,6 @@ def figures(res):
         fig_staircase(res)
         fig_T_shapley(res)
         fig_T_annual(res)
-    update_figures_md()
 
 
 if __name__ == '__main__':

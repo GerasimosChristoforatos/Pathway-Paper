@@ -1,7 +1,6 @@
-"""Planetary-boundary layer (boundaries.py, aesa.py): equations, reproduction of the
-earlier manuscript and of its constants, identities of the method, units.
-Tests that read outputs/pb_*.csv / pb_results.json rely on run_all.py having
-run boundaries.py before the tests (as it does)."""
+"""AESA layer (boundaries.py, aesa.py): equations, reproduction of the earlier manuscript and
+of its constants, identities of the method, units. Tests that read outputs/data/aesa/ rely on
+run_all.py having run boundaries.py before the tests (as it does)."""
 import json
 import os
 
@@ -14,18 +13,18 @@ from conftest import ROOT
 
 import aesa  # noqa: E402
 import boundaries  # noqa: E402
+import layout  # noqa: E402
 
 WORKBOOK = os.path.join(ROOT, 'data', 'raw', 'Absolute_Analysis.xlsm')   # local only (git-ignored)
-OUT = os.path.join(ROOT, 'outputs')
 
 
 def results():
-    with open(os.path.join(OUT, 'pb_results.json')) as f:
+    with open(layout.data('aesa/results.json', frozen=False)) as f:
         return json.load(f)
 
 
 def annual():
-    return pd.read_csv(os.path.join(OUT, 'pb_annual.csv'))
+    return pd.read_csv(layout.data('aesa/annual.csv', frozen=False))
 
 
 # ---- reproduction of the earlier manuscript ----------------------------------
@@ -153,7 +152,7 @@ def test_units_one_year_by_hand():
 
 
 def test_mc_percentiles_ordered():
-    m = pd.read_csv(os.path.join(OUT, 'pb_mc_annual.csv'))
+    m = pd.read_csv(layout.data('aesa/montecarlo_annual.csv', frozen=False))
     for k in ('LoE_AR', 'LoE_AtP', 'B_AR_kgCO2e', 'I_sec_kgCO2e'):
         assert (m[f'{k}_p5'] <= m[f'{k}_p50']).all() and (m[f'{k}_p50'] <= m[f'{k}_p95']).all()
     assert set(m['scenario']) == {'REF', 'LOW', 'HIGH'}

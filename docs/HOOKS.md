@@ -1,4 +1,6 @@
-# PATHWAYS v3.1: hook inventory
+# Hook inventory of the pathway layer
+
+> Historical record, kept unchanged in substance: it was written before any pathway code and refers to the modules and line numbers at tag `baseline-PB_v3.1`, where `Boss.py` is the module now named `projection.py` (MODEL v1.0.0, docs/RENAMING.md section 8). Lever ids are those of that version (L2a, L2b, L3 = the release L2, L3, L4).
 
 (Written for v1 before any pathways code; updated for v2: logistic ramp, L1 on the
 engine's occupied area, L2 split into L2a / L2b, L5 Harrell-Davis ratio. The hooks

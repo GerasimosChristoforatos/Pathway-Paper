@@ -63,6 +63,8 @@ import re
 import numpy as np
 import pandas as pd
 
+import layout
+
 # ============================================================
 # CONFIGURATION
 # ============================================================
@@ -74,7 +76,7 @@ FILE_CHARS = FILE_LCA
 SHEET_CHARS = '2'                        # GFA, occupancy load factor, footprint
 SHEET_SOILS = '3'                        # soil carbon by soil order
 
-OUT_DIR = os.path.join(ROOT_DIR, 'outputs', 'factors')     # derived files; data/ holds inputs only
+OUT_DIR = layout.FACTORS     # outputs/data/factors/ (derived files; data/ holds inputs only)
 OUT_MATERIAL = os.path.join(OUT_DIR, 'factors_material.csv')
 OUT_TYPOLOGY = os.path.join(OUT_DIR, 'factors_typology.csv')
 OUT_BUILDING = os.path.join(OUT_DIR, 'factors_building.csv')   # for MonteCarlo.py

@@ -6,7 +6,7 @@ the author's choice of the Reference and its bracket; nothing here sets a parame
 Every number is computed from full projection runs with the current defaults and
 only REPLACEMENT_VARIANT / REPLACEMENT_HALF_LIFE changed.
 
-    python tools/replacement_scenarios.py      # -> outputs/replacement_scenarios.md, .json
+    python tools/replacement_scenarios.py      # -> outputs/reports/scenarios.md, outputs/data/baseline/scenarios.json
 """
 import json
 import os
@@ -15,12 +15,13 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import layout  # noqa: E402
 import naming as N  # noqa: E402
 import validation  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT_MD = os.path.join(validation.projection.OUT_DIR, 'replacement_scenarios.md')     # outputs/ (outputs/frozen/
-OUT_JSON = os.path.join(validation.projection.OUT_DIR, 'replacement_scenarios.json')  # in the frozen check run)
+OUT_MD = layout.report('scenarios.md')                    # frozen_technology/ in the frozen check run
+OUT_JSON = layout.data('baseline/scenarios.json')
 # the Reference and its variants (typology shares held in every run); REF_HL5 and REF_HL15 are
 # half-life sensitivities; the _NOUC rows drop the census under-construction correction
 SCENARIOS = [(k, N.SCENARIOS[k], s) for k, s in (
@@ -86,8 +87,7 @@ def main():
                 residual_long_pct=100 * float(B1['unconsented_rate']), long_run_pct=long_pct,
                 recent_pct=100 * float(B1['rate_recent']), stock_2025=float(B1['engine_out']['50th']['stock'][0]),
                 join_mode=B1['_join_mode'], census_intervals=hist, rate_windows=rate_cmp)
-    os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
-    with open(OUT_JSON, 'w') as f:
+    with open(layout.writing(OUT_JSON), 'w') as f:
         json.dump(N.keys(dict(meta=meta, scenarios=res)), f, indent=2)
 
     s1 = res['LOW']
@@ -132,7 +132,7 @@ def main():
     L += ['', '| window | uncorrected (%/yr) | corrected (%/yr) |', '|---|---|---|']
     for lab, v in rate_cmp.items():
         L.append(f"| {lab} | {v['uncorrected']:+.3f} | {v['corrected']:+.3f} |")
-    with open(OUT_MD, 'w') as f:
+    with open(layout.writing(OUT_MD), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print('\n'.join(L))
 

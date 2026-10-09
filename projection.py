@@ -8,7 +8,7 @@ and material.
     total floor area = new dwellings required x realised dwelling size
     new dwellings    = new households + vacancy allowance + replacement
 
-All input data are read from DATA_DIR; everything written goes to OUT_DIR.
+All input data are read from DATA_DIR; every output path comes from layout.py.
 Case-study carbon and occupancy factors come from Building_factors.py (run it
 first; it writes them to outputs/factors/). Figures are plotted, never saved.
 """
@@ -22,8 +22,10 @@ from scipy.interpolate import PchipInterpolator
 
 import engine
 import events as EV
-import figaudit
+import figure_plan as FP
+import layout
 import naming as N
+import style
 import Building_factors as BF
 
 # ============================================================
@@ -35,17 +37,16 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(ROOT_DIR, 'data')          # inputs only
 # Frozen-technology check run (run_all.py steps 'frozen_*', env PATHWAY_FROZEN=1):
 # DECARB_MODE 'none', A4-A5 held, whole life at construction (the regression anchor:
-# it reproduces v1.2.1 / baseline v2), outputs to outputs/frozen/.
-FROZEN_RUN = os.environ.get('PATHWAY_FROZEN') == '1'
-OUT_DIR = os.path.join(ROOT_DIR, 'outputs', 'frozen' if FROZEN_RUN else '')   # everything the scripts write
-OUT_DIR = OUT_DIR.rstrip(os.sep)
-FACTORS_DIR = os.path.join(ROOT_DIR, 'outputs', 'factors')     # written by Building_factors.py
+# it reproduces v1.2.1 / baseline v2); its data go to outputs/data/frozen_technology/
+# (layout.py: every path of the pipeline).
+FROZEN_RUN = layout.frozen_run()
+FACTORS_DIR = layout.FACTORS     # written by Building_factors.py
 VERBOSE = False     # True also prints historical diagnostics (occupancy, calibration)
 SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
-# Save every figure as PNG to FIG_DIR. Only when projection.py is run as a script with
-# PATHWAY_SAVE_FIGURES=1 (run_all.py), so re-runs from other scripts never overwrite them.
+# Save every figure (style.save_figure, outputs/diagnostics/ and outputs/headline/). Only when
+# projection.py is run as a script with PATHWAY_SAVE_FIGURES=1 (run_all.py), so re-runs from
+# other scripts never overwrite them.
 SAVE_FIGURES = False
-FIG_DIR = os.path.join(OUT_DIR, 'figures')
 BOSS_FIGURE_NAMES = ['boss_01_population', 'boss_02_households', 'boss_03_cumulative_gfa',
                      'boss_04_annual_gfa', 'boss_05_annual_carbon', 'boss_06_cumulative_carbon',
                      'boss_07_typology_share', 'boss_08_demographic_drivers',
@@ -1027,15 +1028,16 @@ def blend_per_gfa_share(shares, per_unit_dict, typ_names):
 # MAIN
 # ============================================================
 
-def save_open_figures(names, fig_dir, dpi=130):
-    """Write every open figure, in creation order, as fig_dir/<name>.png."""
+def save_open_figures(names):
+    """Save every open figure, in creation order, under its release file (figure_plan.py;
+    figures the release removes are not saved)."""
     nums = plt.get_fignums()
     if len(nums) != len(names):
         raise RuntimeError(f"{len(nums)} figures open but {len(names)} names given.")
-    os.makedirs(fig_dir, exist_ok=True)
     for n, name in zip(nums, names):
-        figaudit.record(plt.figure(n), name)
-        plt.figure(n).savefig(os.path.join(fig_dir, name + '.png'), dpi=dpi, bbox_inches='tight')
+        target = FP.release_file(name)
+        if target is not None:
+            style.save_figure(plt.figure(n), target)
 
 
 def main():
@@ -2314,7 +2316,7 @@ def main():
     # Every intermediate result is returned, so Diagnostics.py and
     # Sensitivity.py read the same run instead of re-deriving anything.
     if SAVE_FIGURES:
-        save_open_figures(BOSS_FIGURE_NAMES, FIG_DIR)
+        save_open_figures(BOSS_FIGURE_NAMES)
     state = dict(locals())
     if SHOW_PLOTS:
         plt.show()
@@ -2479,5 +2481,4 @@ def export_results(B, path):
 
 if __name__ == "__main__":
     SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
-    os.makedirs(OUT_DIR, exist_ok=True)            # outputs/frozen/ in the frozen-technology check run
-    export_results(main(), os.path.join(OUT_DIR, 'boss_results.json'))
+    export_results(main(), layout.writing(layout.data('baseline/projection.json')))

@@ -14,9 +14,9 @@ held fixed; the boundaries move only with New Zealand and world population.
 The model itself is not changed: projection.py, MonteCarlo.py and engine.py are only
 called. Equations: aesa.py. Every constant below carries its source.
 
-Writes outputs/pb_annual.csv, pb_mc_annual.csv, pb_sensitivity.csv,
-pb_results.json and figures *_pb, pb_1..pb_5 (outputs/figures/ when
-PATHWAY_SAVE_FIGURES=1, as run_all.py sets).
+Writes outputs/data/aesa/ (annual.csv, montecarlo_annual.csv, sensitivity.csv, results.json;
+layout.py) and the AESA figures (outputs/diagnostics/, outputs/headline/; style.save_figure)
+when PATHWAY_SAVE_FIGURES=1, as run_all.py sets.
 
     python boundaries.py
 """
@@ -42,14 +42,15 @@ sys.path.insert(0, ROOT_DIR)
 sys.path.insert(0, os.path.join(ROOT_DIR, 'tools'))
 import aesa  # noqa: E402
 import figaudit  # noqa: E402
+import figure_plan as FP  # noqa: E402
+import layout  # noqa: E402
 import projection  # noqa: E402
 import MonteCarlo as MC  # noqa: E402
 import naming as N  # noqa: E402
+import style  # noqa: E402
 import validation  # noqa: E402
 
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
-OUT_DIR = projection.OUT_DIR          # outputs/ (outputs/modes/<mode>/ in a mode comparison run)
-FIG_DIR = os.path.join(ROOT_DIR, 'outputs', 'figures')
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
 FILE_WPP = os.path.join(DATA_DIR, 'derived', 'wpp2024_population_median.csv')      # data/build_wpp.py
 FILE_WDI = os.path.join(DATA_DIR, 'derived', 'wdi_economies.csv')                  # data/build_wdi.py
@@ -372,7 +373,7 @@ def mc_runs(fy, hist):
     for name, settings in MC.MC_SCENARIOS:
         with contextlib.redirect_stdout(io.StringIO()):
             su = MC.build_setup(settings)
-        path = os.path.join(OUT_DIR, f'montecarlo_draws_{MC.LEGACY_FILE_SUFFIX[name]}.csv')
+        path = layout.montecarlo('draws', name)
         d = pd.read_csv(path)
         X = d[[N.identifier(c) for c in MC.PARAMS]].to_numpy(float)
         Y = d[[N.identifier(c) for c in MC.OUTPUTS]].to_numpy(float)
@@ -414,7 +415,6 @@ def mc_runs(fy, hist):
 # ============================================================
 def main():
     t_start = time.time()
-    os.makedirs(OUT_DIR, exist_ok=True)
     B = validation.run_boss()
     fy = np.asarray(B['forecast_years'])                     # 2025..2050
     years_b = list(range(T0, PB_YEARS[1] + 1))
@@ -466,7 +466,7 @@ def main():
     for y in AR_BASE_WINDOW_RANGE():
         rows.append(dict(scenario='history', year=y, I_sec_kgCO2e=float(hist.loc[y, 'I_sec_kg'])))
     annual = pd.DataFrame(rows)
-    N.columns(annual).to_csv(os.path.join(OUT_DIR, 'pb_annual.csv'), index=False)
+    N.columns(annual).to_csv(layout.writing(layout.data('aesa/annual.csv')), index=False)
     ref_I = runs['REF']['I']
     if not np.allclose(ref_I.values, B['carbon_total_typ'].sum(axis=1).values, rtol=1e-12):
         raise SystemExit('The REF variant run differs from the Reference projection run.')
@@ -515,7 +515,7 @@ def main():
         mc_cum_20[name] = {f'LoE_AR_p{p}': float(np.percentile(c20, p)) for p in MC_PCT}
         mc_cum_20[name].update({f'I_sec_base_kt_p{p}': float(np.percentile(m['i_base_20'], p) / M6) for p in MC_PCT})
     mc_annual = pd.DataFrame(mc_rows)
-    N.columns(mc_annual).to_csv(os.path.join(OUT_DIR, 'pb_mc_annual.csv'), index=False)
+    N.columns(mc_annual).to_csv(layout.writing(layout.data('aesa/montecarlo_annual.csv')), index=False)
 
     # ---- deterministic sensitivities (the Reference) --------------------------
     def cum_pair(pair_key=SOURCE_PAIR, ib=i_base, cp=comp, ssec=s_sec, pnz=p_nz):
@@ -586,7 +586,7 @@ def main():
     sens_df = pd.DataFrame(sens, columns=['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP'])
     sens_df['AR_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AR'] / ref_ar - 1)
     sens_df['AtP_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AtP'] / ref_atp - 1)
-    N.columns(sens_df).to_csv(os.path.join(OUT_DIR, 'pb_sensitivity.csv'), index=False)
+    N.columns(sens_df).to_csv(layout.writing(layout.data('aesa/sensitivity.csv')), index=False)
 
     # ---- results JSON ---------------------------------------------------------
     gfa = pd.Series(B['results']['50th']['total'], index=fy)
@@ -645,7 +645,7 @@ def main():
                     'I_sec,base recomputed from the draw\'s case-study carbon factors (2025 technology) on the observed '
                     'history; the AtP boundary varies with population only. mc_base_fixed gives the bands with '
                     'I_sec,base held at its central value (baseline-pb-v1).'))
-    with open(os.path.join(OUT_DIR, 'pb_results.json'), 'w') as f:
+    with open(layout.writing(layout.data('aesa/results.json')), 'w') as f:
         json.dump(N.keys(res), f, indent=2, default=float)
 
     print(f"\nPB layer ({pair['label']}; b = {b_year}): I_base {i_base / M6:,.1f} kt/yr | "
@@ -766,7 +766,7 @@ LIMITATIONS = [
     ('Accounting (time-resolved): the sector impact of 2026-2050 counts upfront emissions (A1-A5 and soil) in '
      'the construction year and replacement / repaint events (B2, B4) in the year they occur. Events after 2050 '
      'and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed emissions outside the window; '
-     'they are reported as a range (pb_results.json "committed", pb_6) in years of the 2050 AR boundary and are '
+     'they are reported as a range (outputs/data/aesa/results.json "committed", H6) in years of the 2050 AR boundary and are '
      'not compared with the 2026-2050 boundary. Whole life at construction is a sensitivity.'
      if projection.ACCOUNTING == 'time_resolved' else
      'B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future '
@@ -796,7 +796,7 @@ LIMITATIONS = [
     'leave intermediate sectors as open (p. 16).',
     'Ability to pay: Hjalsted et al. (2021) state GDP as "USD/cap (2017)", World Bank (2019), without naming the '
     'series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in '
-    'outputs/pb_results.json).',
+    'outputs/data/aesa/results.json).',
     'Monte Carlo: I_sec,base is recomputed in every draw with that draw\'s case-study carbon factors (2025 '
     'technology), so the factor uncertainty is treated alike in the base and the projection; it does not '
     'co-vary with the draw\'s completion rate or dwelling size (historical floor area is observed).',
@@ -810,11 +810,10 @@ LIMITATIONS = [
 # FIGURES
 # ============================================================
 def _save(fig, name):
-    if SAVE_FIGURES:
-        os.makedirs(FIG_DIR, exist_ok=True)
-        figaudit.record(fig, name)
-        fig.savefig(os.path.join(FIG_DIR, f'{name}.png'), dpi=130, bbox_inches='tight')
-        plt.close(fig)
+    target = FP.release_file(name)
+    if SAVE_FIGURES and target is not None:
+        style.save_figure(fig, target)
+    plt.close(fig)
 
 
 def _boundary_lines(ax, years, b_ar, b_atp, scale=M6, label=True, cumulative=False):

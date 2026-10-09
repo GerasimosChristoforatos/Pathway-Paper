@@ -1,8 +1,8 @@
 """
-ENGINE -- the forward model shared by Boss.py and MonteCarlo.py
+ENGINE -- the forward model shared by projection.py and MonteCarlo.py
 ===============================================================
 Pure functions. Every input is an argument; nothing is read from module
-globals or files; no argument is modified. Boss.py builds the inputs from the
+globals or files; no argument is modified. projection.py builds the inputs from the
 data and its settings, MonteCarlo.py builds them from one draw of its
 uncertain inputs, and both call these same functions. There is therefore one
 engine, and a change here reaches both scripts at once.
@@ -11,12 +11,11 @@ engine, and a change here reaches both scripts at once.
   calibrate_stock   historical stock identity -> calibrated net replacement
   window_rate       net replacement (demolition + residual) over a year window
   deviation_2025    2025 departure from the calibrated identity, and its persistence
-  replacement_path  net replacement by year under scenario S1 / S2 / S3
+  replacement_path  net replacement by year: LOW / HIGH / REF (the projection variants)
   seasonal_shares   mean share of the calendar-year total, by month
   nowcast_year      calendar-year consents from the observed months (A1)
   requirement       dwellings built (all categories) in a forward() result
-  market_excess     near-term market excess from observed 2026 building
-  mix_shares        damped additive-log-ratio typology mix
+  market_excess     the 2026 overbuild from observed 2026 building
   blend             dwelling-weighted blend of a per-typology quantity
   forward           households -> dwellings built -> floor area -> carbon
 
@@ -138,19 +137,20 @@ def census_window_rate(rates, start, end):
 
 
 def replacement_path(scenario, rate_long, rate_recent, years, half_life=10.0):
-    """Net replacement rate by year (index 0 = 2025).
-      'S1': the long-run rate throughout;
-      'S2': the recent (2018-2023) rate throughout;
-      'S3': the recent rate fading to the long-run rate with the given
-            half-life: long + (recent - long) x 0.5^((t - 2025) / half_life)."""
+    """Net replacement rate by year (index 0 = 2025), by projection variant:
+      'LOW':  the long-run rate throughout (Low replacement);
+      'HIGH': the recent (2018-2023) rate throughout (High replacement);
+      'REF':  the recent rate fading to the long-run rate with the given
+              half-life: long + (recent - long) x 0.5^((t - 2025) / half_life)
+              (the Reference; half-lives 5 and 15 yr are sensitivity variants)."""
     years = np.asarray(years)
-    if scenario == 'S1':
+    if scenario == 'LOW':
         return np.full(len(years), float(rate_long))
-    if scenario == 'S2':
+    if scenario == 'HIGH':
         return np.full(len(years), float(rate_recent))
-    if scenario == 'S3':
+    if scenario == 'REF':
         return rate_long + (rate_recent - rate_long) * 0.5 ** ((years - 2025) / float(half_life))
-    raise ValueError(f"Unknown replacement scenario '{scenario}'.")
+    raise ValueError(f"Unknown replacement variant '{scenario}'.")
 
 
 def seasonal_shares(consents, years):
@@ -255,22 +255,6 @@ def deviation_2025(cal, built_all_2025, d_hh_2025, rate_net, years, window_start
 # ============================================================
 # FORWARD
 # ============================================================
-def mix_shares(alr_2025, slopes, phi, years, typ_names, ref='Detached'):
-    """Additive-log-ratio trend, geometrically damped from 2025:
-        alr(t) = alr(2025) + slope x phi (1 - phi^(t-2025)) / (1 - phi).
-    Shares stay positive and sum to one. Returns DataFrame (years x typology)."""
-    years = np.asarray(years)
-    other = [n for n in typ_names if n != ref]
-    ahead = (years - 2025).clip(min=0)
-    damp = phi * (1 - phi ** ahead) / (1 - phi)
-    alr_f = {n: alr_2025[n] + slopes[n] * damp for n in other}
-    denom = 1 + sum(np.exp(alr_f[n]) for n in other)
-    out = {ref: 1 / denom}
-    for n in other:
-        out[n] = np.exp(alr_f[n]) / denom
-    return pd.DataFrame(out, index=years)[list(typ_names)]
-
-
 def blend(shares, per_unit, typ_names):
     """Harmonic mean weighted by floor-area share. This equals the mean
     weighted by the underlying units (dwellings or persons), so blended x units
@@ -283,15 +267,15 @@ def blend(shares, per_unit, typ_names):
 
 def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_share,
             shares, size, olf, intensity, intensity_upfront, join=None, join_redev=None,
-            soil=None, soil_on_replacement=True, gfa_fixed=None):
+            soil=None, soil_on_replacement=True, gfa_fixed=None, events=None):
     """One forward path, 2025..2050 (index 0 = 2025, a model value; callers that
     anchor 2025 on observations overwrite it).
 
     pop, hh, pop_growth, v : arrays over the years (v may vary by year)
     rate_demol, rate_unc   : demolition and residual, shares of last year's stock
-                             (rate_unc may be an array by year: scenario S3)
+                             (rate_unc may be an array by year: the Reference variant)
     join                   : optional array of dwellings built above the requirement
-                             (near-term market excess), added before the RV split
+                             (the 2026 overbuild), added before the RV split
     join_redev             : the part of join that replaces extra removals
                              (redevelopment); the rest adds to the stock
                              (stock_join). The extra stock does not enter the
@@ -314,6 +298,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                              a year to an observation (the 2026 nowcast from consented
                              GFA); the difference is booked to consumption and reported
                              as gfa_adj. Dwelling counts (the stock) are not changed.
+    events                 : optional {typology: K (years x years)}: replacement and
+                             repaint emissions, kg/m2 of the cohort built in year i
+                             occurring in year j (events.kernel); b_t = gfa_t @ K is
+                             added to carbon_t (time-resolved accounting).
 
     Floor area built (in scope) = structural + gross consumption, where
         structural  = d_hh x occupied area per dwelling
@@ -372,7 +360,7 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
 
     gfa_t = shares.values.T * total                  # (typology, years)
     # intensities: one value per typology (constant), or one per typology and
-    # year (materials decarbonised, Boss.DECARB_MODE); both broadcast to (typ, years)
+    # year (materials decarbonised, projection.DECARB_MODE); both broadcast to (typ, years)
     I = np.array([np.broadcast_to(np.asarray(intensity[t], float), (len(hh),)) for t in typ])
     U = np.array([np.broadcast_to(np.asarray(intensity_upfront[t], float), (len(hh),)) for t in typ])
     if soil is None:
@@ -386,6 +374,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                                                          where=total != 0))
         carbon_t = (I - s[:, None]) * gfa_t + (s[:, None] * gfa_t) * soil_share
         upfront_t = (U - s[:, None]) * gfa_t + (s[:, None] * gfa_t) * soil_share
+    b_t = np.zeros_like(gfa_t)
+    if events is not None:                           # time-resolved B2/B4 of the new cohorts
+        b_t = np.array([gfa_t[k] @ events[t] for k, t in enumerate(typ)])
+        carbon_t = carbon_t + b_t
     return dict(
         years=shares.index.values, typ=typ, pop=pop, hh=hh, S=S, d_hh=d_hh, d_hh_raw=d_raw,
         D=D, olf=olf_f, occ=occ, structural=structural, growth_gross=g_gross, growth=growth,
@@ -393,5 +385,5 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         c_gross=c_gross, total=total,
         v=np.array(v), stock=stock, prev=prev, allow=allow, change=change, demol=demol,
         unc=unc, dev=dev, join=join, join_redev=join_redev, stock_join=stock_join, rv=rv, dwell_in_scope=total / D, rv_units=-rv,
-        gfa_t=gfa_t, carbon_t=carbon_t, carbon=carbon_t.sum(axis=0), upfront=upfront_t.sum(axis=0),
+        gfa_t=gfa_t, carbon_t=carbon_t, carbon=carbon_t.sum(axis=0), upfront=upfront_t.sum(axis=0), b_t=b_t,
         soil_share=soil_share, soil_free_gfa=soil_free, gfa_adj=gfa_adj)

@@ -1,0 +1,985 @@
+{
+  "settings": {
+    "SOURCE_PAIR": "A",
+    "T0": 2025,
+    "PB_YEARS": [
+      2026,
+      2050
+    ],
+    "AR_BASE_WINDOW": [
+      2016,
+      2025
+    ],
+    "AR_BASE_WINDOW_SENS": [
+      2021,
+      2025
+    ],
+    "HIST_RATE_AFTER_LAST_CENSUS": "recent",
+    "GDP_MEASURE": "NY.GDP.PCAP.PP.KD",
+    "GDP_MEASURE_SENS": "NY.GDP.PCAP.CD",
+    "WDI_COVERAGE_MIN": 0.98,
+    "SSEC_WINDOW": [
+      2016,
+      2025
+    ],
+    "SSEC_FCE_SHARE": "mean_of_ratios",
+    "POP_NZ_SOURCE": "model",
+    "DECARB_MODE": "horup_item",
+    "DECARB_ITEM_CASE": "central"
+  },
+  "source_pairs": {
+    "A": {
+      "label": "2 \u00b0C carrying capacity (Bj\u00f8rn & Hauschild 2015)",
+      "sos": 6810000000000.0,
+      "i_glob": 55800000000000.0
+    },
+    "C": {
+      "label": "1 W/m\u00b2 planetary boundary (Bj\u00f8rn & Hauschild 2015)",
+      "sos": 3610000000000.0,
+      "i_glob": 55800000000000.0
+    }
+  },
+  "components": {
+    "SOS_kg": 6810000000000.0,
+    "I_glob_kg": 55800000000000.0,
+    "pair_label": "2 \u00b0C carrying capacity (Bj\u00f8rn & Hauschild 2015)",
+    "I_sec_base_kg": 1422959048.7163734,
+    "I_sec_base_window": [
+      2016,
+      2025
+    ],
+    "I_sec_base_b_share": 0.002455555178475988,
+    "I_sec_base_wider_scope_kg": 1574833476.6480007,
+    "accounting": "time_resolved",
+    "decarb_a45": "resch",
+    "event_timing": "n+1",
+    "I_sec_base_5yr_kg": 1457497523.1329305,
+    "I_sec_base_long_run_2024_25_kg": 1427859880.996256,
+    "I_sec_base_20yr_kg": 1182883458.5755541,
+    "I_sec_base_full_kg": 1162965824.4387162,
+    "I_sec_base_20yr_window": [
+      2006,
+      2025
+    ],
+    "I_sec_base_full_window": [
+      1992,
+      2025
+    ],
+    "I_sec_base_soil_on_all_kg": 1457504793.2272365,
+    "LoE_AR_base_identity": 8.193832599118943,
+    "base_year_b": 2024,
+    "alpha": 0.4219591072190145,
+    "g_W": 21495.07332678265,
+    "g_NZ": 48325.3650985684,
+    "g_W_over_g_NZ": 0.44479898461066,
+    "s_sec": 0.0525461766938767,
+    "s_sec_parts": {
+      "window": [
+        2016,
+        2025
+      ],
+      "consented_value_nzd_per_yr": 14289850911.5,
+      "gdp_nzd_per_yr": 352304300000.0,
+      "fce_share_mean_of_ratios": 0.7719134921292377,
+      "fce_share_ratio_of_sums": 0.7737089782895071,
+      "s_sec_mean_of_ratios": 0.0525461766938767,
+      "s_sec_ratio_of_sums": 0.052424236874543714
+    },
+    "P_NZ_t0": 5344500.0,
+    "P_W_t0": 8266145733.0
+  },
+  "coverage": {
+    "NY.GDP.PCAP.PP.KD": {
+      "measure": "NY.GDP.PCAP.PP.KD",
+      "year": 2024,
+      "alpha": 0.4219591072190145,
+      "g_W": 21495.07332678265,
+      "g_NZ": 48325.3650985684,
+      "n_economies": 195,
+      "n_all": 217,
+      "population_covered": 7969400788.0,
+      "population_share": 0.9817574232832942,
+      "gdp_share_of_wdi_world": 0.9835962803194391,
+      "excluded": [
+        {
+          "code": "YEM",
+          "name": "Yemen, Rep.",
+          "population": 40583164.0
+        },
+        {
+          "code": "VEN",
+          "name": "Venezuela, RB",
+          "population": 28405543.0
+        },
+        {
+          "code": "PRK",
+          "name": "Korea, Dem. People's Rep.",
+          "population": 26498823.0
+        },
+        {
+          "code": "SYR",
+          "name": "Syrian Arab Republic",
+          "population": 24672760.0
+        },
+        {
+          "code": "SSD",
+          "name": "South Sudan",
+          "population": 11943408.0
+        },
+        {
+          "code": "CUB",
+          "name": "Cuba",
+          "population": 10979783.0
+        },
+        {
+          "code": "ERI",
+          "name": "Eritrea",
+          "population": 3535603.0
+        },
+        {
+          "code": "NCL",
+          "name": "New Caledonia",
+          "population": 292639.0
+        },
+        {
+          "code": "PYF",
+          "name": "French Polynesia",
+          "population": 281807.0
+        },
+        {
+          "code": "CHI",
+          "name": "Channel Islands",
+          "population": 168126.0
+        },
+        {
+          "code": "GUM",
+          "name": "Guam",
+          "population": 167777.0
+        },
+        {
+          "code": "VIR",
+          "name": "Virgin Islands (U.S.)",
+          "population": 104377.0
+        },
+        {
+          "code": "IMN",
+          "name": "Isle of Man",
+          "population": 84160.0
+        },
+        {
+          "code": "GRL",
+          "name": "Greenland",
+          "population": 56836.0
+        },
+        {
+          "code": "ASM",
+          "name": "American Samoa",
+          "population": 46765.0
+        },
+        {
+          "code": "MNP",
+          "name": "Northern Mariana Islands",
+          "population": 44278.0
+        },
+        {
+          "code": "LIE",
+          "name": "Liechtenstein",
+          "population": 40450.0
+        },
+        {
+          "code": "VGB",
+          "name": "British Virgin Islands",
+          "population": 39471.0
+        },
+        {
+          "code": "GIB",
+          "name": "Gibraltar",
+          "population": 39329.0
+        },
+        {
+          "code": "MCO",
+          "name": "Monaco",
+          "population": 38631.0
+        },
+        {
+          "code": "SMR",
+          "name": "San Marino",
+          "population": 33977.0
+        },
+        {
+          "code": "MAF",
+          "name": "St. Martin (French part)",
+          "population": 26129.0
+        }
+      ]
+    },
+    "NY.GDP.PCAP.CD": {
+      "measure": "NY.GDP.PCAP.CD",
+      "year": 2024,
+      "alpha": 0.21805234387004377,
+      "g_W": 13829.178113363072,
+      "g_NZ": 49432.3626396797,
+      "n_economies": 200,
+      "n_all": 217,
+      "population_covered": 7998459858.0,
+      "population_share": 0.9853372354228928,
+      "gdp_share_of_wdi_world": 0.9905318216428205,
+      "excluded": [
+        {
+          "code": "YEM",
+          "name": "Yemen, Rep.",
+          "population": 40583164.0
+        },
+        {
+          "code": "PRK",
+          "name": "Korea, Dem. People's Rep.",
+          "population": 26498823.0
+        },
+        {
+          "code": "SYR",
+          "name": "Syrian Arab Republic",
+          "population": 24672760.0
+        },
+        {
+          "code": "SSD",
+          "name": "South Sudan",
+          "population": 11943408.0
+        },
+        {
+          "code": "CUB",
+          "name": "Cuba",
+          "population": 10979783.0
+        },
+        {
+          "code": "ERI",
+          "name": "Eritrea",
+          "population": 3535603.0
+        },
+        {
+          "code": "CHI",
+          "name": "Channel Islands",
+          "population": 168126.0
+        },
+        {
+          "code": "GUM",
+          "name": "Guam",
+          "population": 167777.0
+        },
+        {
+          "code": "VIR",
+          "name": "Virgin Islands (U.S.)",
+          "population": 104377.0
+        },
+        {
+          "code": "IMN",
+          "name": "Isle of Man",
+          "population": 84160.0
+        },
+        {
+          "code": "GRL",
+          "name": "Greenland",
+          "population": 56836.0
+        },
+        {
+          "code": "ASM",
+          "name": "American Samoa",
+          "population": 46765.0
+        },
+        {
+          "code": "MNP",
+          "name": "Northern Mariana Islands",
+          "population": 44278.0
+        },
+        {
+          "code": "VGB",
+          "name": "British Virgin Islands",
+          "population": 39471.0
+        },
+        {
+          "code": "GIB",
+          "name": "Gibraltar",
+          "population": 39329.0
+        },
+        {
+          "code": "SMR",
+          "name": "San Marino",
+          "population": 33977.0
+        },
+        {
+          "code": "MAF",
+          "name": "St. Martin (French part)",
+          "population": 26129.0
+        }
+      ]
+    }
+  },
+  "alpha_check": {
+    "year": 2017,
+    "hjalsted_alpha": 0.243,
+    "hjalsted_g_W_usd": 10700.0,
+    "NY.GDP.PCAP.CD": {
+      "alpha": 0.23877244684334165,
+      "g_W": 10791.20995350169,
+      "n": 211,
+      "population_share": 0.9948182124980871
+    },
+    "NY.GDP.PCAP.PP.KD": {
+      "alpha": 0.44461239537948033,
+      "g_W": 18771.54996847407,
+      "n": 199,
+      "population_share": 0.9847979302372657
+    }
+  },
+  "history": {
+    "2016": {
+      "I_kt": 1303.8506314435165,
+      "soil_share": 0.8985157569431197,
+      "rate_pct": 0.15770463696612805,
+      "rate_source": "2013-2018"
+    },
+    "2017": {
+      "I_kt": 1311.9211566394085,
+      "soil_share": 0.9007139334620818,
+      "rate_pct": 0.15770463696612805,
+      "rate_source": "2013-2018"
+    },
+    "2018": {
+      "I_kt": 1340.2517565217775,
+      "soil_share": 0.8123863630397511,
+      "rate_pct": 0.3122099828683497,
+      "rate_source": "2018-2023"
+    },
+    "2019": {
+      "I_kt": 1441.5342419459928,
+      "soil_share": 0.8337341078833546,
+      "rate_pct": 0.3122099828683497,
+      "rate_source": "2018-2023"
+    },
+    "2020": {
+      "I_kt": 1509.6035403400367,
+      "soil_share": 0.8390693225535436,
+      "rate_pct": 0.3122099828683497,
+      "rate_source": "2018-2023"
+    },
+    "2021": {
+      "I_kt": 1833.4884066512627,
+      "soil_share": 0.8685241802177559,
+      "rate_pct": 0.3122099828683497,
+      "rate_source": "2018-2023"
+    },
+    "2022": {
+      "I_kt": 1771.9082294047441,
+      "soil_share": 0.8678271952246656,
+      "rate_pct": 0.3122099828683497,
+      "rate_source": "2018-2023"
+    },
+    "2023": {
+      "I_kt": 1280.3176423544303,
+      "soil_share": 0.8207153815099238,
+      "rate_pct": 0.3122099828683497,
+      "rate_source": "2018-2023"
+    },
+    "2024": {
+      "I_kt": 1149.3705159213807,
+      "soil_share": 0.797425630371813,
+      "rate_pct": 0.3122099828683497,
+      "rate_source": "2018-2023 carried"
+    },
+    "2025": {
+      "I_kt": 1287.3443659411832,
+      "soil_share": 0.8115381136183224,
+      "rate_pct": 0.3122099828683497,
+      "rate_source": "2018-2023 carried"
+    }
+  },
+  "boundaries": {
+    "2025": {
+      "B_AR_kt": 173.6622064831273,
+      "B_AtP_kt": 43.4236583920041,
+      "P_NZ": 5344500.0,
+      "P_W": 8266145733.0
+    },
+    "2026": {
+      "B_AR_kt": 173.37074312415197,
+      "B_AtP_kt": 43.35077894638239,
+      "P_NZ": 5379900.0,
+      "P_W": 8334886370.0
+    },
+    "2027": {
+      "B_AR_kt": 173.6625002620953,
+      "B_AtP_kt": 43.42373185046007,
+      "P_NZ": 5432900.0,
+      "P_W": 8402856615.5
+    },
+    "2028": {
+      "B_AR_kt": 173.99925210597297,
+      "B_AtP_kt": 43.50793553143105,
+      "P_NZ": 5486900.0,
+      "P_W": 8469952105.0
+    },
+    "2029": {
+      "B_AR_kt": 174.34791616374,
+      "B_AtP_kt": 43.59511782195157,
+      "P_NZ": 5540900.0,
+      "P_W": 8536205117.0
+    },
+    "2030": {
+      "B_AR_kt": 174.7081882036433,
+      "B_AtP_kt": 43.68520264988142,
+      "P_NZ": 5594900.0,
+      "P_W": 8601622122.0
+    },
+    "2031": {
+      "B_AR_kt": 175.08048635594122,
+      "B_AtP_kt": 43.778294567304044,
+      "P_NZ": 5648900.0,
+      "P_W": 8666174572.5
+    },
+    "2032": {
+      "B_AR_kt": 175.4651171809021,
+      "B_AtP_kt": 43.87447022859716,
+      "P_NZ": 5702900.0,
+      "P_W": 8729839446.5
+    },
+    "2033": {
+      "B_AR_kt": 175.8619242464089,
+      "B_AtP_kt": 43.973690518429045,
+      "P_NZ": 5756900.0,
+      "P_W": 8792616995.0
+    },
+    "2034": {
+      "B_AR_kt": 176.26659225351887,
+      "B_AtP_kt": 44.074876410620426,
+      "P_NZ": 5810756.0,
+      "P_W": 8854497545.0
+    },
+    "2035": {
+      "B_AR_kt": 176.67297917098915,
+      "B_AtP_kt": 44.17649211064277,
+      "P_NZ": 5864244.0,
+      "P_W": 8915448398.0
+    },
+    "2036": {
+      "B_AR_kt": 177.07833094060007,
+      "B_AtP_kt": 44.27784897537827,
+      "P_NZ": 5917236.0,
+      "P_W": 8975419619.5
+    },
+    "2037": {
+      "B_AR_kt": 177.4828001685753,
+      "B_AtP_kt": 44.37898516350668,
+      "P_NZ": 5969700.0,
+      "P_W": 9034362775.0
+    },
+    "2038": {
+      "B_AR_kt": 177.88896424660103,
+      "B_AtP_kt": 44.48054514326548,
+      "P_NZ": 6021700.0,
+      "P_W": 9092250653.0
+    },
+    "2039": {
+      "B_AR_kt": 178.29927742430655,
+      "B_AtP_kt": 44.583142591629425,
+      "P_NZ": 6073300.0,
+      "P_W": 9149059291.5
+    },
+    "2040": {
+      "B_AR_kt": 178.71483236943394,
+      "B_AtP_kt": 44.687050726541166,
+      "P_NZ": 6124500.0,
+      "P_W": 9204735889.0
+    },
+    "2041": {
+      "B_AR_kt": 179.13732121366027,
+      "B_AtP_kt": 44.79269265991082,
+      "P_NZ": 6175300.0,
+      "P_W": 9259195973.0
+    },
+    "2042": {
+      "B_AR_kt": 179.56782337335133,
+      "B_AtP_kt": 44.900338296218344,
+      "P_NZ": 6225700.0,
+      "P_W": 9312385842.5
+    },
+    "2043": {
+      "B_AR_kt": 180.00710782263963,
+      "B_AtP_kt": 45.01017991489355,
+      "P_NZ": 6275700.0,
+      "P_W": 9364267504.0
+    },
+    "2044": {
+      "B_AR_kt": 180.45682784243408,
+      "B_AtP_kt": 45.122630913340906,
+      "P_NZ": 6325300.0,
+      "P_W": 9414756681.0
+    },
+    "2045": {
+      "B_AR_kt": 180.91871130275445,
+      "B_AtP_kt": 45.238123339724524,
+      "P_NZ": 6374500.0,
+      "P_W": 9463764636.0
+    },
+    "2046": {
+      "B_AR_kt": 181.39418922401796,
+      "B_AtP_kt": 45.357015015950545,
+      "P_NZ": 6423300.0,
+      "P_W": 9511217790.5
+    },
+    "2047": {
+      "B_AR_kt": 181.88472107758895,
+      "B_AtP_kt": 45.47967087799001,
+      "P_NZ": 6471700.0,
+      "P_W": 9557041010.0
+    },
+    "2048": {
+      "B_AR_kt": 182.39137188482925,
+      "B_AtP_kt": 45.606357230899924,
+      "P_NZ": 6519700.0,
+      "P_W": 9601180035.5
+    },
+    "2049": {
+      "B_AR_kt": 182.91482230195382,
+      "B_AtP_kt": 45.737244270507894,
+      "P_NZ": 6567300.0,
+      "P_W": 9643601307.5
+    },
+    "2050": {
+      "B_AR_kt": 183.45549723846673,
+      "B_AtP_kt": 45.87243824402532,
+      "P_NZ": 6614500.0,
+      "P_W": 9684285445.5
+    }
+  },
+  "B_AtP_over_B_AR": {
+    "min": 0.2500466812635082,
+    "max": 0.2500466812635084
+  },
+  "deterministic": {
+    "LOW": {
+      "label": "Low replacement",
+      "I_kt": 20311.070940792957,
+      "LoE_AR": 4.563231141938039,
+      "LoE_AtP": 18.24951692571812
+    },
+    "REF_HL5": {
+      "label": "Reference, replacement half-life 5 yr",
+      "I_kt": 20935.995924018694,
+      "LoE_AR": 4.703631279042748,
+      "LoE_AtP": 18.81101262882145
+    },
+    "REF": {
+      "label": "Reference",
+      "I_kt": 21577.50362382947,
+      "LoE_AR": 4.847757008409891,
+      "LoE_AtP": 19.38740791884835
+    },
+    "REF_HL15": {
+      "label": "Reference, replacement half-life 15 yr",
+      "I_kt": 21973.000536959407,
+      "LoE_AR": 4.93661218674075,
+      "LoE_AtP": 19.74276227860976
+    },
+    "HIGH": {
+      "label": "High replacement",
+      "I_kt": 23361.035469613533,
+      "LoE_AR": 5.248458088379745,
+      "LoE_AtP": 20.989913010877867
+    },
+    "LOW_NOUC": {
+      "label": "Low replacement, no census under-construction correction",
+      "I_kt": 20794.73663626274,
+      "LoE_AR": 4.671894952442591,
+      "LoE_AtP": 18.68409102186474
+    },
+    "REF_NOUC": {
+      "label": "Reference, no census under-construction correction",
+      "I_kt": 22552.721537015022,
+      "LoE_AR": 5.066856472175064,
+      "LoE_AtP": 20.2636421590232
+    },
+    "HIGH_NOUC": {
+      "label": "High replacement, no census under-construction correction",
+      "I_kt": 25028.51207598109,
+      "LoE_AR": 5.623085364352054,
+      "LoE_AtP": 22.488142357811345
+    }
+  },
+  "population_paths": {
+    "5th": {
+      "I_kt": 16059.677828805774,
+      "B_AR_kt": 4265.520866326651,
+      "B_AtP_kt": 1066.579336485224,
+      "LoE_AR": 3.764998069892441,
+      "LoE_AtP": 15.057180726684985,
+      "P_NZ_2050": 6140088.442776736
+    },
+    "50th": {
+      "I_kt": 21577.50362382947,
+      "B_AR_kt": 4451.028297498578,
+      "B_AtP_kt": 1112.9648539994828,
+      "LoE_AR": 4.847757008409891,
+      "LoE_AtP": 19.38740791884835,
+      "P_NZ_2050": 6614500.0
+    },
+    "95th": {
+      "I_kt": 27119.45535042152,
+      "B_AR_kt": 4653.613478423535,
+      "B_AtP_kt": 1163.620606162936,
+      "LoE_AR": 5.827612343861559,
+      "LoE_AtP": 23.306097543123187,
+      "P_NZ_2050": 7099034.644995723
+    }
+  },
+  "mc": {
+    "REF": {
+      "LoE_AR_p5": 3.8997946059527777,
+      "LoE_AR_p50": 4.815108633772946,
+      "LoE_AR_p95": 5.749440990120698,
+      "LoE_AtP_p5": 15.525531131404572,
+      "LoE_AtP_p50": 19.225868660461366,
+      "LoE_AtP_p95": 23.123585704068343,
+      "n_draws": 5000,
+      "I_sec_base_kt_p5": 1339.9580273637375,
+      "I_sec_base_kt_p50": 1420.9575912779178,
+      "I_sec_base_kt_p95": 1510.9880542153899
+    },
+    "LOW": {
+      "LoE_AR_p5": 3.635497075674698,
+      "LoE_AR_p50": 4.535738152306413,
+      "LoE_AR_p95": 5.449083686378429,
+      "LoE_AtP_p5": 14.483448535830515,
+      "LoE_AtP_p50": 18.100314008442,
+      "LoE_AtP_p95": 21.885244660618728,
+      "n_draws": 5000,
+      "I_sec_base_kt_p5": 1339.9580273637375,
+      "I_sec_base_kt_p50": 1420.9575912779178,
+      "I_sec_base_kt_p95": 1510.9880542153899
+    },
+    "HIGH": {
+      "LoE_AR_p5": 4.2711904792998014,
+      "LoE_AR_p50": 5.210832802466307,
+      "LoE_AR_p95": 6.1697065641836355,
+      "LoE_AtP_p5": 16.97677379966463,
+      "LoE_AtP_p50": 20.822967834058797,
+      "LoE_AtP_p95": 24.845335793963542,
+      "n_draws": 5000,
+      "I_sec_base_kt_p5": 1339.9580273637375,
+      "I_sec_base_kt_p50": 1420.9575912779178,
+      "I_sec_base_kt_p95": 1510.9880542153899
+    }
+  },
+  "mc_base_fixed": {
+    "REF": {
+      "LoE_AR_p5": 3.882107534260996,
+      "LoE_AR_p50": 4.807364652956457,
+      "LoE_AR_p95": 5.781975864214592,
+      "LoE_AtP_p5": 15.525531131404572,
+      "LoE_AtP_p50": 19.225868660461366,
+      "LoE_AtP_p95": 23.123585704068343
+    },
+    "LOW": {
+      "LoE_AR_p5": 3.6215382396352394,
+      "LoE_AR_p50": 4.525923447638311,
+      "LoE_AR_p95": 5.4723327960276285,
+      "LoE_AtP_p5": 14.483448535830515,
+      "LoE_AtP_p50": 18.100314008442,
+      "LoE_AtP_p95": 21.885244660618728
+    },
+    "HIGH": {
+      "LoE_AR_p5": 4.244985947167421,
+      "LoE_AR_p50": 5.206714000963187,
+      "LoE_AR_p95": 6.212493760158035,
+      "LoE_AtP_p5": 16.97677379966463,
+      "LoE_AtP_p50": 20.822967834058797,
+      "LoE_AtP_p95": 24.845335793963542
+    }
+  },
+  "mc_base_20yr": {
+    "REF": {
+      "LoE_AR_p5": 4.684560424158209,
+      "LoE_AR_p50": 5.799339240088706,
+      "LoE_AR_p95": 6.9123154379826754,
+      "I_sec_base_kt_p5": 1113.3594920816518,
+      "I_sec_base_kt_p50": 1181.5612633586939,
+      "I_sec_base_kt_p95": 1254.76471766397
+    },
+    "LOW": {
+      "LoE_AR_p5": 4.358385438025036,
+      "LoE_AR_p50": 5.45690124848694,
+      "LoE_AR_p95": 6.5541433455691145,
+      "I_sec_base_kt_p5": 1113.3594920816518,
+      "I_sec_base_kt_p50": 1181.5612633586939,
+      "I_sec_base_kt_p95": 1254.76471766397
+    },
+    "HIGH": {
+      "LoE_AR_p5": 5.1278300139364195,
+      "LoE_AR_p50": 6.269751660310727,
+      "LoE_AR_p95": 7.4321602848632216,
+      "I_sec_base_kt_p5": 1113.3594920816518,
+      "I_sec_base_kt_p50": 1181.5612633586939,
+      "I_sec_base_kt_p95": 1254.76471766397
+    }
+  },
+  "committed": {
+    "LOW": {
+      "B_upper_kt": 3795.9053492423172,
+      "B_lower_kt": 3088.4296813299893,
+      "C_kt": 4541.71917687936,
+      "upper_kt": 8337.624526121677,
+      "lower_kt": 7630.14885820935,
+      "maintenance_kt": 373.37333180838897,
+      "maintenance_kt_sum_of_annual": 373.37333180838897,
+      "maintenance_share": 0.018382749629341416,
+      "years_of_B_AR_2050_upper": 45.44766797194374,
+      "years_of_B_AR_2050_lower": 41.591279482299804
+    },
+    "REF_HL5": {
+      "B_upper_kt": 3932.316260411917,
+      "B_lower_kt": 3199.2222828995345,
+      "C_kt": 4711.380190572783,
+      "upper_kt": 8643.6964509847,
+      "lower_kt": 7910.602473472319,
+      "maintenance_kt": 392.0411683286239,
+      "maintenance_kt_sum_of_annual": 392.0411683286239,
+      "maintenance_share": 0.018725699496285105,
+      "years_of_B_AR_2050_upper": 47.11603948149394,
+      "years_of_B_AR_2050_lower": 43.12000780870377
+    },
+    "REF": {
+      "B_upper_kt": 4082.493276679825,
+      "B_lower_kt": 3321.539468289954,
+      "C_kt": 4886.5179696105515,
+      "upper_kt": 8969.011246290376,
+      "lower_kt": 8208.057437900507,
+      "maintenance_kt": 403.18280248999224,
+      "maintenance_kt_sum_of_annual": 403.18280248999224,
+      "maintenance_share": 0.018685331237517703,
+      "years_of_B_AR_2050_upper": 48.88930220843644,
+      "years_of_B_AR_2050_lower": 44.74140901447706
+    },
+    "REF_HL15": {
+      "B_upper_kt": 4178.259833960281,
+      "B_lower_kt": 3399.619900701603,
+      "C_kt": 4996.277297137292,
+      "upper_kt": 9174.537131097573,
+      "lower_kt": 8395.897197838896,
+      "maintenance_kt": 408.71793616909315,
+      "maintenance_kt_sum_of_annual": 408.71793616909315,
+      "maintenance_share": 0.01860091595053731,
+      "years_of_B_AR_2050_upper": 50.00960597638536,
+      "years_of_B_AR_2050_lower": 45.76530725010324
+    },
+    "HIGH": {
+      "B_upper_kt": 4523.877346751665,
+      "B_lower_kt": 3681.6667520194214,
+      "C_kt": 5387.097443220772,
+      "upper_kt": 9910.974789972437,
+      "lower_kt": 9068.764195240192,
+      "maintenance_kt": 424.34193390956807,
+      "maintenance_kt_sum_of_annual": 424.3419339095682,
+      "maintenance_share": 0.01816451734177296,
+      "years_of_B_AR_2050_upper": 54.023863766205615,
+      "years_of_B_AR_2050_lower": 49.43304687922246
+    },
+    "LOW_NOUC": {
+      "B_upper_kt": 3911.347702466683,
+      "B_lower_kt": 3182.505667349545,
+      "C_kt": 4675.779905540745,
+      "upper_kt": 8587.127608007428,
+      "lower_kt": 7858.28557289029,
+      "maintenance_kt": 381.45597150778326,
+      "maintenance_kt_sum_of_annual": 381.4559715077833,
+      "maintenance_share": 0.018343871248774762,
+      "years_of_B_AR_2050_upper": 46.807687625982396,
+      "years_of_B_AR_2050_lower": 42.834832922316885
+    },
+    "REF_NOUC": {
+      "B_upper_kt": 4309.171649938596,
+      "B_lower_kt": 3506.0945096009987,
+      "C_kt": 5154.408639257315,
+      "upper_kt": 9463.580289195912,
+      "lower_kt": 8660.503148858315,
+      "maintenance_kt": 422.83566745184737,
+      "maintenance_kt_sum_of_annual": 422.8356674518474,
+      "maintenance_share": 0.01874876461175036,
+      "years_of_B_AR_2050_upper": 51.585155155610124,
+      "years_of_B_AR_2050_lower": 47.20765133355944
+    },
+    "HIGH_NOUC": {
+      "B_upper_kt": 4921.874197032059,
+      "B_lower_kt": 4006.001323145456,
+      "C_kt": 5849.282648765106,
+      "upper_kt": 10771.156845797164,
+      "lower_kt": 9855.283971910563,
+      "maintenance_kt": 452.20748803646745,
+      "maintenance_kt_sum_of_annual": 452.20748803646745,
+      "maintenance_share": 0.01806769362332305,
+      "years_of_B_AR_2050_upper": 58.71264152851278,
+      "years_of_B_AR_2050_lower": 53.72029794833598
+    }
+  },
+  "reference_2026_2050": {
+    "I_kt": 21577.50362382947,
+    "B_AR_kt": 4451.028297498578,
+    "B_AtP_kt": 1112.9648539994828,
+    "floor_area_Mm2": 89.56525459310167
+  },
+  "sensitivity": [
+    {
+      "case": "reference",
+      "label": "Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",
+      "cum_LoE_AR": 4.847757008409891,
+      "cum_LoE_AtP": 19.38740791884835,
+      "AR_vs_ref_pct": 0.0,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "i_source_pair",
+      "label": "(i) SOS/I_glob pair C: 1 W/m\u00b2 planetary boundary (Bj\u00f8rn & Hauschild 2015)",
+      "cum_LoE_AR": 9.144937736086248,
+      "cum_LoE_AtP": 36.57292186353388,
+      "AR_vs_ref_pct": 88.64265927977839,
+      "AtP_vs_ref_pct": 88.64265927977846
+    },
+    {
+      "case": "ii_gdp_measure",
+      "label": "(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",
+      "cum_LoE_AR": 4.847757008409891,
+      "cum_LoE_AtP": 59.64968283617513,
+      "AR_vs_ref_pct": 0.0,
+      "AtP_vs_ref_pct": 207.67229474851035
+    },
+    {
+      "case": "iii_base_window",
+      "label": "(iii) AR base window 2021-2025 (5 yr, as Horup)",
+      "cum_LoE_AR": 4.7328791930069904,
+      "cum_LoE_AtP": 19.38740791884835,
+      "AR_vs_ref_pct": -2.3697106765790954,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "iii_base_window_20",
+      "label": "(iii) AR base window 2006-2025 (20 yr)",
+      "cum_LoE_AR": 5.831647784982924,
+      "cum_LoE_AtP": 19.38740791884835,
+      "AR_vs_ref_pct": 20.295794010842116,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "iii_base_window_full",
+      "label": "(iii) AR base window 1992-2025 (full consistent history)",
+      "cum_LoE_AR": 5.931524001940762,
+      "cum_LoE_AtP": 19.38740791884835,
+      "AR_vs_ref_pct": 22.35605026511749,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "iv_pop_statsnz",
+      "label": "(iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",
+      "cum_LoE_AR": 4.83623979141291,
+      "cum_LoE_AtP": 19.276425645363524,
+      "AR_vs_ref_pct": -0.23757826510282243,
+      "AtP_vs_ref_pct": -0.5724451352618898
+    },
+    {
+      "case": "iv_pop_wpp",
+      "label": "(iv) NZ population: WPP 2024 probabilistic median, New Zealand",
+      "cum_LoE_AR": 5.148713195540035,
+      "cum_LoE_AtP": 20.883327622495006,
+      "AR_vs_ref_pct": 6.208153309005482,
+      "AtP_vs_ref_pct": 7.715934538068536
+    },
+    {
+      "case": "v_ssec",
+      "label": "(v) s_sec with FCE share as ratio of sums",
+      "cum_LoE_AR": 4.847757008409891,
+      "cum_LoE_AtP": 19.432503415891386,
+      "AR_vs_ref_pct": 0.0,
+      "AtP_vs_ref_pct": 0.232601992137349
+    },
+    {
+      "case": "vi_frozen",
+      "label": "(vi) Frozen technology: 2025 factors held (A1-A3 and A4-A5 not decarbonised)",
+      "cum_LoE_AR": 5.539427174659982,
+      "cum_LoE_AtP": 22.15357207169781,
+      "AR_vs_ref_pct": 14.267839024319517,
+      "AtP_vs_ref_pct": 14.267839024319517
+    },
+    {
+      "case": "vii_proxies_held",
+      "label": "(vii) Proxy-mapped items held at 2025 (A1-A3)",
+      "cum_LoE_AR": 4.868291794174644,
+      "cum_LoE_AtP": 19.469531727334786,
+      "AR_vs_ref_pct": 0.4235935449967698,
+      "AtP_vs_ref_pct": 0.4235935449967698
+    },
+    {
+      "case": "viii_nz_elec_held",
+      "label": "(viii) NZ-made, electricity-intensive items held at 2025 (A1-A3)",
+      "cum_LoE_AR": 4.9647821426929015,
+      "cum_LoE_AtP": 19.855421066200165,
+      "AR_vs_ref_pct": 2.414005777929784,
+      "AtP_vs_ref_pct": 2.414005777929784
+    },
+    {
+      "case": "ix_a45_held",
+      "label": "(ix) A4-A5 held at 2025 (no generic 1%/yr)",
+      "cum_LoE_AR": 4.94310754364855,
+      "cum_LoE_AtP": 19.768738855763186,
+      "AR_vs_ref_pct": 1.9669000544632276,
+      "AtP_vs_ref_pct": 1.9669000544632276
+    },
+    {
+      "case": "x_a45_item",
+      "label": "(x) A4-A5 on each item's own Horup S4 path",
+      "cum_LoE_AR": 4.788819743419827,
+      "cum_LoE_AtP": 19.151702870925906,
+      "AR_vs_ref_pct": -1.2157635972227854,
+      "AtP_vs_ref_pct": -1.2157635972227743
+    },
+    {
+      "case": "xi_event_timing",
+      "label": "(xi) Event timing: interval L / n (instead of L / (n + 1))",
+      "cum_LoE_AR": 4.811039737571526,
+      "cum_LoE_AtP": 19.240566254512597,
+      "AR_vs_ref_pct": -0.7574074107812856,
+      "AtP_vs_ref_pct": -0.7574074107812745
+    },
+    {
+      "case": "xii_whole_life",
+      "label": "(xii) Accounting: whole life at construction (base on the same rule)",
+      "cum_LoE_AR": 4.9214238344291035,
+      "cum_LoE_AtP": 27.490331309426377,
+      "AR_vs_ref_pct": 1.5196064054245007,
+      "AtP_vs_ref_pct": 41.79477434268251
+    },
+    {
+      "case": "xiii_wider_scope",
+      "label": "(xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",
+      "cum_LoE_AR": 5.363427094813075,
+      "cum_LoE_AtP": 23.739060281508923,
+      "AR_vs_ref_pct": 10.637292370648922,
+      "AtP_vs_ref_pct": 22.445766761991504
+    },
+    {
+      "case": "xiv_alpha_1",
+      "label": "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",
+      "cum_LoE_AR": 4.847757008409891,
+      "cum_LoE_AtP": 8.180693336728101,
+      "AR_vs_ref_pct": 0.0,
+      "AtP_vs_ref_pct": -57.804089278098544
+    },
+    {
+      "case": "note_soil_long_run",
+      "label": "Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate",
+      "cum_LoE_AR": 4.831118090020177,
+      "cum_LoE_AtP": 19.38740791884835,
+      "AR_vs_ref_pct": -0.3432292163334294,
+      "AtP_vs_ref_pct": 0.0
+    }
+  ],
+  "notes": {
+    "wpp_manuscript_values": "The manuscript world population 2025 (8,231,613,070) equals the WPP 2024 Median sheet x 1000; its 2026-2028 values differ from it by +/-0.5 person, consistent with a source at a higher precision than the 3-decimal thousands in this file; they are not a dating convention (the mean of 1 July t and t+1 differs by ~34 M).",
+    "mc_base": "In the Monte Carlo the AR boundary varies with each draw's NZ population path and with I_sec,base recomputed from the draw's case-study carbon factors (2025 technology) on the observed history; the AtP boundary varies with population only. mc_base_fixed gives the bands with I_sec,base held at its deterministic value."
+  }
+}

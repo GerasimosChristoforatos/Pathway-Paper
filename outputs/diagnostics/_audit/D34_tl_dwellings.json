@@ -1,0 +1,60 @@
+{
+ "figure": "D34_tl_dwellings",
+ "producer": "pathways.py",
+ "axes": [
+  {
+   "title": "Annual carbon",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Dwellings built, all categories (banking rule: never negative)",
+   "xlabel": "",
+   "ylabel": "Dwellings (thousand per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{1000}$",
+  "$\\mathdefault{10}$",
+  "$\\mathdefault{1200}$",
+  "$\\mathdefault{1400}$",
+  "$\\mathdefault{15}$",
+  "$\\mathdefault{1600}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{20}$",
+  "$\\mathdefault{25}$",
+  "$\\mathdefault{30}$",
+  "$\\mathdefault{35}$",
+  "$\\mathdefault{400}$",
+  "$\\mathdefault{40}$",
+  "$\\mathdefault{45}$",
+  "$\\mathdefault{5}$",
+  "$\\mathdefault{600}$",
+  "$\\mathdefault{800}$",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Annual carbon",
+  "Dwellings (thousand per year)",
+  "Dwellings built, all categories (banking rule: never negative)",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "P5 Combined, Ambitious",
+  "Reference",
+  "TL Theoretical limit",
+  "TL, gradual adoption (SI)",
+  "TL: no new building\n2027\u20132031\n(released vacant\nstock used)",
+  "a",
+  "b"
+ ],
+ "note": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable)."
+}

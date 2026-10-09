@@ -12,17 +12,17 @@ retirement villages), the model's own unit.
       months, and the latest 12 months. c, W = the model's completion rate and lag.
   Model             M = the 2026 requirement of the model WITHOUT observed 2026
                     inputs (validation.NO_2026_DATA: no consents nowcast, projected
-                    population; the pre-A1 model), S1 long-run replacement.
+                    population; the pre-A1 model), Low replacement (long-run rate).
 
 Sequential decomposition of O - M (the order is a choice and is stated):
-  (ii)  S2: what the 2018-23 replacement regime would add to M (full re-run,
-        NET_REPLACEMENT_WINDOW = (2018, 2023)).
+  (ii)  High replacement: what the 2018-23 replacement regime would add to M (full
+        re-run); the Reference (fading, half-life 10 yr) is reported alongside.
   (iii) population: actual growth in the year ended June 2026 (Stats NZ
         mean-quarter ERP, DPE059AA) minus the 2024-base projection median for that year,
         converted to dwellings as households / (1 - v) at the model's 2026
         household size and vacancy. Timing: projection growth is for years
         ended June and is applied by the model to calendar years (half-year
-        offset; see Boss.NOWCAST_POPULATION, POPULATION CONVENTION).
+        offset; see projection.NOWCAST_POPULATION, POPULATION CONVENTION).
   With M' = M + (ii) + (iii):
   (i)   pipeline: W x (c C25 - M'), completions in 2026 from 2025 consents
         above the requirement;
@@ -31,22 +31,19 @@ Sequential decomposition of O - M (the order is a choice and is stated):
         size, it would imply if built and not offset.
 Also reported: where the 2018-23 excess building went, from census counts.
 
-Writes outputs/gap_2026.md and outputs/gap_2026.json.
+Writes outputs/reports/gap_2026.md and outputs/data/baseline/gap_2026.json.
 """
-import contextlib
-import importlib
-import io
 import json
-import os
 
-import numpy as np
 import pandas as pd
 
-import Boss
+import layout
+import naming as N
+import projection
 import validation
 
-OUT_MD = os.path.join(Boss.OUT_DIR, 'gap_2026.md')
-OUT_JSON = os.path.join(Boss.OUT_DIR, 'gap_2026.json')
+OUT_MD = layout.report('gap_2026.md')
+OUT_JSON = layout.data('baseline/gap_2026.json')
 
 
 def run(**settings):
@@ -61,8 +58,8 @@ def requirement_2026(B):
 
 
 def projected_growth_ye_june_2026():
-    raw = pd.read_excel(Boss.FILE_POP_PROJ, sheet_name=Boss.POP_SHEET_PROJ, skiprows=5)
-    g = Boss.locate_projection_block(raw).set_index('Year')
+    raw = pd.read_excel(projection.FILE_POP_PROJ, sheet_name=projection.POP_SHEET_PROJ, skiprows=5)
+    g = projection.locate_projection_block(raw).set_index('Year')
     return {p: float(g.loc[2026, f'PopGrowth_{p}']) * 1000 for p in ('5th', '50th', '95th')}
 
 
@@ -86,8 +83,8 @@ def boom_2018_2023(B):
 
 
 def main():
-    B = run(REPLACEMENT_SCENARIO='S1')              # the decomposition is stated on S1 and S2
-    c, W = Boss.COMPLETION_RATE, B['lag_w']
+    B = run(REPLACEMENT_VARIANT='LOW')              # the decomposition is stated on Low and High replacement
+    c, W = projection.COMPLETION_RATE, B['lag_w']
     C25 = float(B['hist_units_all'].loc[2025])
     chk = validation.check_2026(B)
     if chk['status'] != 'observed':
@@ -95,20 +92,20 @@ def main():
     C26 = {'Jan-Jul 2026 / seasonal share': chk['observed_ytd'] / chk['seasonal_share'],
            'latest 12 months': chk['observed_last12']}
     M = requirement_2026(B)
-    B2 = run(REPLACEMENT_SCENARIO='S2')
+    B2 = run(REPLACEMENT_VARIANT='HIGH')
     M_S2 = requirement_2026(B2)
     d_S2 = M_S2 - M
-    M_S3 = requirement_2026(run(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0))
+    M_S3 = requirement_2026(run(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0))
     d_S3 = M_S3 - M
     E1, E2 = B['engine_out']['50th'], B2['engine_out']['50th']
     rep = lambda E: float(E['demol'][1] + E['unc'][1] - E['dev'][1])     # replacement at the calibrated rate
     s2_rate, s2_dev = rep(E2) - rep(E1), float(E2['dev'][1] - E1['dev'][1])
-    dev_in_M = float(E1['dev'][1])                   # 2025 deviation carried into 2026 (S1)
+    dev_in_M = float(E1['dev'][1])                   # 2025 deviation carried into 2026 (Low replacement)
 
     E = B['engine_out']['50th']
     S26, v26, stock25 = float(E['S'][1]), float(E['v'][1]), float(E['prev'][1])
-    # the model's 2026 population nowcast (Boss.NOWCAST_POPULATION): June qtr 2026 - June qtr 2025
-    _q = pd.read_csv(Boss.FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
+    # the model's 2026 population nowcast (projection.NOWCAST_POPULATION): June qtr 2026 - June qtr 2025
+    _q = pd.read_csv(projection.FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
     g_act = float(_q[(2026, 2)] - _q[(2025, 2)])
     g_text = 'mean-quarter ERP (Infoshare DPE059AA), June quarter 2026 minus June quarter 2025'
     g_proj = projected_growth_ye_june_2026()
@@ -118,9 +115,9 @@ def main():
     rows = []
     for lab, C in C26.items():
         O = c * ((1 - W) * C + W * C25)
-        for scen, add_S2 in (('S1 (long-run replacement)', 0.0),
-                             ('S3-10 (reference: 2018-23 rate fading, half-life 10 yr)', d_S3),
-                             ('S2 (2018-23 regime)', d_S2)):
+        for scen, add_S2 in ((f"{N.SCENARIOS['LOW']} (long-run rate)", 0.0),
+                             (f"{N.SCENARIOS['REF']} (2018-2023 rate fading, half-life 10 yr)", d_S3),
+                             (f"{N.SCENARIOS['HIGH']} (2018-2023 rate persists)", d_S2)):
             Mp = M + add_S2 + d_pop
             pipe = W * (c * C25 - Mp)
             resid = (1 - W) * (c * C - Mp)
@@ -131,24 +128,25 @@ def main():
                              residual_S_fall=S26 - S26 * float(E['hh'][1]) / (float(E['hh'][1]) + resid * (1 - v26))))
     boom = boom_2018_2023(B)
     res = dict(completion_rate=c, lag_w=W, consents_2025=C25, model_requirement_2026=M,
-               carried_2025_deviation_in_2026=dev_in_M, S2_rate_effect=s2_rate, S2_deviation_effect=s2_dev,
-               model_requirement_2026_S2=M_S2, model_requirement_2026_S3_10=M_S3, S_2026=S26, v_2026=v26, stock_2025=stock25,
+               carried_2025_deviation_in_2026=dev_in_M, HIGH_rate_effect=s2_rate, HIGH_deviation_effect=s2_dev,
+               model_requirement_2026_HIGH=M_S2, model_requirement_2026_REF=M_S3, S_2026=S26, v_2026=v26,
+               stock_2025=stock25,
                population_growth_ye_june_2026_actual=g_act, population_growth_source_text=g_text,
                population_growth_ye_june_2026_projection=g_proj, rows=rows, boom_2018_2023=boom)
-    with open(OUT_JSON, 'w') as f:
-        json.dump(res, f, indent=2)
+    with open(layout.writing(OUT_JSON), 'w') as f:
+        json.dump(N.keys(res), f, indent=2)
 
     L = ['# 2026 gap decomposition (A1 evidence; nothing here is used to set a parameter)', '',
          f"Dwellings completed in 2026, all categories. Completion rate {c:.2f}, lag W = {W:.3f} yr; "
-         f"2025 consents {C25:,.0f}; model 2026 requirement {M:,.0f} (S2: {M_S2:,.0f}). The requirement "
+         f"2025 consents {C25:,.0f}; model 2026 requirement {M:,.0f} (High replacement: {M_S2:,.0f}). The requirement "
          f"already includes {dev_in_M:+,.0f} of the carried 2025 deviation (other_dev_2025 x rho). "
-         f"S2 adds {d_S2:+,.0f}: {s2_rate:+,.0f} from the higher replacement rate and {s2_dev:+,.0f} because "
+         f"High replacement adds {d_S2:+,.0f}: {s2_rate:+,.0f} from the higher replacement rate and {s2_dev:+,.0f} because "
          f"a higher rate leaves less of 2025's building to be carried as a deviation.", '',
          f"Population, year ended June 2026: actual {g_act:,.0f} (Stats NZ: "
          f"\"{g_text}\") vs 2024-base projection median {g_proj['50th']:,.0f} "
          f"(5th {g_proj['5th']:,.0f}, 95th {g_proj['95th']:,.0f}) -> {d_pop_persons:+,.0f} persons = "
          f"{d_pop:+,.0f} dwellings at S = {S26:.3f}, v = {100 * v26:.2f}%.", '',
-         '| 2026 consents estimate | scenario | observed-implied completions | model | gap | (ii) scenario adds (vs S1) | '
+         '| 2026 consents estimate | variant | observed-implied completions | model | gap | (ii) variant adds (vs Low) | '
          '(iii) population | (i) pipeline from 2025 | (iv) residual | residual as vacancy rise | '
          'or as fall in household size |', '|---|---|---|---|---|---|---|---|---|---|---|']
     for r in rows:
@@ -164,7 +162,7 @@ def main():
           f"{boom['vacancy_rate_rise_absorbed']:+,.0f}; households (occupied + away) {boom['households']:+,.0f}. "
           f"For information: dwellings under construction at census changed by "
           f"{boom['d_under_construction']:+,.0f} (not subtracted: the lag already accounts for them)."]
-    with open(OUT_MD, 'w') as f:
+    with open(layout.writing(OUT_MD), 'w') as f:
         f.write('\n'.join(L) + '\n')
     print('\n'.join(L))
 

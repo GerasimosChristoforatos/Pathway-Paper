@@ -1,0 +1,38 @@
+{
+ "figure": "D21_fan_and_boundaries",
+ "producer": "boundaries.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2016.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{1000}$",
+  "$\\mathdefault{1500}$",
+  "$\\mathdefault{2000}$",
+  "$\\mathdefault{2015}$",
+  "$\\mathdefault{2020}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{2500}$",
+  "$\\mathdefault{3000}$",
+  "$\\mathdefault{500}$",
+  "AR base window 2016\u20132025",
+  "Ability to pay (AtP): Monte Carlo median and 5\u201395%",
+  "Acquired rights (AR): Monte Carlo median and 5\u201395%",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "Embodied carbon, Monte Carlo 5\u201395%",
+  "Embodied carbon, Monte Carlo median",
+  "Sector carbon in the base window, at 2025 factors (accounting as the projection)"
+ ],
+ "note": "Reference. AR base window 2016\u20132025 at 2025 factors, soil only on non-replacement floor area (as the projection). Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th\u201395th within 9.9% of the median in every year."
+}

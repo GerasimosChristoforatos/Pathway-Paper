@@ -1,0 +1,38 @@
+{
+ "figure": "D07_net_replacement_rate",
+ "producer": "tools/figures_report.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Net replacement (% of the previous year's stock per year)",
+   "year_min": 2015.5,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0.0}$",
+  "$\\mathdefault{0.1}$",
+  "$\\mathdefault{0.2}$",
+  "$\\mathdefault{0.3}$",
+  "$\\mathdefault{0.4}$",
+  "$\\mathdefault{1980}$",
+  "$\\mathdefault{1990}$",
+  "$\\mathdefault{2000}$",
+  "$\\mathdefault{2010}$",
+  "$\\mathdefault{2020}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{\u22120.1}$",
+  "$\\mathdefault{\u22120.2}$",
+  "2013 \u2192 2018: census empty / away definition break",
+  "BRANZ demolition rate, 0.135%",
+  "Census intervals (dwelling counts, under-construction corrected)",
+  "High replacement",
+  "Low replacement",
+  "Net replacement (% of the previous year's stock per year)",
+  "Reference"
+ ],
+ "note": "Net replacement rate (demolition net of unconsented additions). Long run 1991\u20132023: 0.101% per year; 2018\u201323: 0.312% per year. Each step is one intercensal interval; the 2018\u201323 step is a single interval."
+}

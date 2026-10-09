@@ -1,0 +1,34 @@
+{
+ "figure": "D09_cumulative_floor_area",
+ "producer": "projection.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Floor area, cumulative from 1991 (Mm\u00b2)",
+   "year_min": 1991.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{100}$",
+  "$\\mathdefault{150}$",
+  "$\\mathdefault{1990}$",
+  "$\\mathdefault{2000}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2010}$",
+  "$\\mathdefault{2020}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{250}$",
+  "$\\mathdefault{300}$",
+  "$\\mathdefault{50}$",
+  "Floor area, cumulative from 1991 (Mm\u00b2)",
+  "History (consents timed as completions \u00d7 0.95, completion lag weight 0.00)",
+  "Population 5th\u201395th percentile (other inputs at the Reference)",
+  "Reference projection"
+ ],
+ "note": null
+}

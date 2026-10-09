@@ -1,0 +1,88 @@
+panel,series,x,value,unit
+a,Low replacement: long-run rate,model input,4.56323114193804,cumulative LoE AR 2026-2050
+a,Low replacement: long-run rate,model input (AtP),18.249516925718122,cumulative LoE AtP 2026-2050
+a,"Reference, replacement half-life 5 yr",model input,4.703631279042747,cumulative LoE AR 2026-2050
+a,"Reference, replacement half-life 5 yr",model input (AtP),18.811012628821448,cumulative LoE AtP 2026-2050
+a,"Reference, replacement half-life 15 yr",model input,4.93661218674075,cumulative LoE AR 2026-2050
+a,"Reference, replacement half-life 15 yr",model input (AtP),19.742762278609757,cumulative LoE AtP 2026-2050
+a,High replacement: 2018-2023 rate persists,model input,5.2484580883797465,cumulative LoE AR 2026-2050
+a,High replacement: 2018-2023 rate persists,model input (AtP),20.989913010877874,cumulative LoE AtP 2026-2050
+a,Household size: Stats NZ Low variant,model input,5.1631634712956345,cumulative LoE AR 2026-2050
+a,Household size: Stats NZ Low variant,model input (AtP),20.648798237215967,cumulative LoE AtP 2026-2050
+a,Household size: Stats NZ High variant,model input,4.587483702747856,cumulative LoE AR 2026-2050
+a,Household size: Stats NZ High variant,model input (AtP),18.346509058096228,cumulative LoE AtP 2026-2050
+a,Household size after 2043: flat (kink at 2043),model input,4.847976859790049,cumulative LoE AR 2026-2050
+a,Household size after 2043: flat (kink at 2043),model input (AtP),19.388287160192597,cumulative LoE AtP 2026-2050
+a,Household size after 2043: secant-slope taper,model input,4.834766257154871,cumulative LoE AR 2026-2050
+a,Household size after 2043: secant-slope taper,model input (AtP),19.33545461481177,cumulative LoE AtP 2026-2050
+a,Household size after 2043: taper from the PCHIP end slope,model input,4.815942287604451,cumulative LoE AR 2026-2050
+a,Household size after 2043: taper from the PCHIP end slope,model input (AtP),19.260172793612224,cumulative LoE AtP 2026-2050
+a,Dwelling size: 2016-2025 reference,model input,5.078810319139946,cumulative LoE AR 2026-2050
+a,Dwelling size: 2016-2025 reference,model input (AtP),20.31144862021868,cumulative LoE AtP 2026-2050
+a,Completion rate 0.92,model input,4.644588791458366,cumulative LoE AR 2026-2050
+a,Completion rate 0.92,model input (AtP),18.57488676909784,cumulative LoE AtP 2026-2050
+a,Completion rate 0.96,model input,4.915549343523078,cumulative LoE AR 2026-2050
+a,Completion rate 0.96,model input (AtP),19.65852663464424,cumulative LoE AtP 2026-2050
+a,Completion lag on (Little's law),model input,4.962228157764718,cumulative LoE AR 2026-2050
+a,Completion lag on (Little's law),model input (AtP),19.8452070337032,cumulative LoE AtP 2026-2050
+a,No census under-construction correction,model input,5.066856472175065,cumulative LoE AR 2026-2050
+a,No census under-construction correction,model input (AtP),20.263642159023203,cumulative LoE AtP 2026-2050
+a,"Temporary surplus with payback, absorption 0.20/yr",model input,4.633437191226117,cumulative LoE AR 2026-2050
+a,"Temporary surplus with payback, absorption 0.20/yr",model input (AtP),18.530288695746503,cumulative LoE AtP 2026-2050
+a,"Temporary surplus with payback, absorption 0.10/yr",model input,4.657264489616886,cumulative LoE AR 2026-2050
+a,"Temporary surplus with payback, absorption 0.10/yr",model input (AtP),18.625580096017714,cumulative LoE AtP 2026-2050
+a,"Booked as redevelopment, stock-neutral",model input,4.813659243483154,cumulative LoE AR 2026-2050
+a,"Booked as redevelopment, stock-neutral",model input (AtP),19.251042322014836,cumulative LoE AtP 2026-2050
+a,Gap measured against the 2026 requirement,model input,4.907718503554115,cumulative LoE AR 2026-2050
+a,Gap measured against the 2026 requirement,model input (AtP),19.627209122532527,cumulative LoE AtP 2026-2050
+a,"Soil on all floor area, incl. replacement",model input,4.989926238794748,cumulative LoE AR 2026-2050
+a,"Soil on all floor area, incl. replacement",model input (AtP),19.955978673982802,cumulative LoE AtP 2026-2050
+a,Frozen technology: 2025 factors held (no decarbonisation),model input,5.539427174659984,cumulative LoE AR 2026-2050
+a,Frozen technology: 2025 factors held (no decarbonisation),model input (AtP),22.153572071697816,cumulative LoE AtP 2026-2050
+a,Decarbonisation: proxy-mapped items held at 2025,model input,4.868291794174645,cumulative LoE AR 2026-2050
+a,Decarbonisation: proxy-mapped items held at 2025,model input (AtP),19.46953172733479,cumulative LoE AtP 2026-2050
+a,Decarbonisation: NZ-made electricity-intensive items held at 2025,model input,4.964782142692903,cumulative LoE AR 2026-2050
+a,Decarbonisation: NZ-made electricity-intensive items held at 2025,model input (AtP),19.85542106620017,cumulative LoE AtP 2026-2050
+a,A4-A5 held at 2025 (no generic 1%/yr),model input,4.9431075436485505,cumulative LoE AR 2026-2050
+a,A4-A5 held at 2025 (no generic 1%/yr),model input (AtP),19.768738855763186,cumulative LoE AtP 2026-2050
+a,A4-A5 on each item's own Horup path,model input,4.788819743419829,cumulative LoE AR 2026-2050
+a,A4-A5 on each item's own Horup path,model input (AtP),19.15170287092591,cumulative LoE AtP 2026-2050
+a,Event timing: interval L / n,model input,4.811039737571526,cumulative LoE AR 2026-2050
+a,Event timing: interval L / n,model input (AtP),19.240566254512597,cumulative LoE AtP 2026-2050
+a,Materials: jackknife low (all typologies),model input,4.671000264010073,cumulative LoE AR 2026-2050
+a,Materials: jackknife low (all typologies),model input (AtP),18.6805129362529,cumulative LoE AtP 2026-2050
+a,Materials: jackknife high (all typologies),model input,5.009428441212772,cumulative LoE AR 2026-2050
+a,Materials: jackknife high (all typologies),model input (AtP),20.033972920175064,cumulative LoE AtP 2026-2050
+a,Materials: lowest single case study,model input,3.8290203284703797,cumulative LoE AR 2026-2050
+a,Materials: lowest single case study,model input (AtP),15.313221951685165,cumulative LoE AtP 2026-2050
+a,Materials: highest single case study,model input,5.8068104587211264,cumulative LoE AR 2026-2050
+a,Materials: highest single case study,model input (AtP),23.222905536593373,cumulative LoE AtP 2026-2050
+a,Soil carbon: lowest soil order (Raw),model input,4.47590705485413,cumulative LoE AR 2026-2050
+a,Soil carbon: lowest soil order (Raw),model input (AtP),17.900285787585624,cumulative LoE AtP 2026-2050
+a,Soil carbon: highest soil order (Organic),model input,6.421941762356799,cumulative LoE AR 2026-2050
+a,Soil carbon: highest soil order (Organic),model input (AtP),25.68297139520569,cumulative LoE AtP 2026-2050
+a,Population: Stats NZ 5th percentile (carbon and boundaries),model input,3.764998069892441,cumulative LoE AR 2026-2050
+a,Population: Stats NZ 5th percentile (carbon and boundaries),model input (AtP),15.057180726684985,cumulative LoE AtP 2026-2050
+a,Population: Stats NZ 95th percentile (carbon and boundaries),model input,5.827612343861559,cumulative LoE AR 2026-2050
+a,Population: Stats NZ 95th percentile (carbon and boundaries),model input (AtP),23.306097543123187,cumulative LoE AtP 2026-2050
+a,SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015),AESA method,9.144937736086248,cumulative LoE AR 2026-2050
+a,SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015),AESA method (AtP),36.57292186353388,cumulative LoE AtP 2026-2050
+a,"GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",AESA method,4.847757008409891,cumulative LoE AR 2026-2050
+a,"GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",AESA method (AtP),59.64968283617513,cumulative LoE AtP 2026-2050
+a,"AR base window 2021-2025 (5 yr, as Horup)",AESA method,4.7328791930069904,cumulative LoE AR 2026-2050
+a,"AR base window 2021-2025 (5 yr, as Horup)",AESA method (AtP),19.38740791884835,cumulative LoE AtP 2026-2050
+a,AR base window 2006-2025 (20 yr),AESA method,5.831647784982924,cumulative LoE AR 2026-2050
+a,AR base window 2006-2025 (20 yr),AESA method (AtP),19.38740791884835,cumulative LoE AtP 2026-2050
+a,AR base window 1992-2025 (full consistent history),AESA method,5.931524001940762,cumulative LoE AR 2026-2050
+a,AR base window 1992-2025 (full consistent history),AESA method (AtP),19.38740791884835,cumulative LoE AtP 2026-2050
+a,"NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",AESA method,4.83623979141291,cumulative LoE AR 2026-2050
+a,"NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",AESA method (AtP),19.276425645363524,cumulative LoE AtP 2026-2050
+a,"NZ population: WPP 2024 probabilistic median, New Zealand",AESA method,5.148713195540035,cumulative LoE AR 2026-2050
+a,"NZ population: WPP 2024 probabilistic median, New Zealand",AESA method (AtP),20.88332762249501,cumulative LoE AtP 2026-2050
+a,s_sec with FCE share as ratio of sums,AESA method,4.847757008409891,cumulative LoE AR 2026-2050
+a,s_sec with FCE share as ratio of sums,AESA method (AtP),19.432503415891382,cumulative LoE AtP 2026-2050
+a,"Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",AESA method,5.363427094813075,cumulative LoE AR 2026-2050
+a,"Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",AESA method (AtP),23.739060281508923,cumulative LoE AtP 2026-2050
+a,"AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",AESA method,4.847757008409891,cumulative LoE AR 2026-2050
+a,"AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",AESA method (AtP),8.180693336728101,cumulative LoE AtP 2026-2050
+a,Reference,reference,4.847757008409891,cumulative LoE AR 2026-2050

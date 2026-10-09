@@ -1,0 +1,24 @@
+panel,series,x,value,unit
+within 2026-2050,Materials and construction (A1–A5),Low replacement,16841.631577874403,kt CO2e
+within 2026-2050,Soil carbon loss,Low replacement,3096.066031110163,kt CO2e
+within 2026-2050,"Maintenance (B2, B4), 2026–2050",Low replacement,373.3733318083905,kt CO2e
+after 2050,"Committed, lower",Low replacement,7630.14885820935,kt CO2e
+after 2050,"Committed, upper",Low replacement,8337.624526121677,kt CO2e
+after 2050,"Committed, lower, years of the 2050 AR boundary",Low replacement,41.591279482299804,years
+after 2050,"Committed, upper, years of the 2050 AR boundary",Low replacement,45.44766797194374,years
+within 2026-2050,Materials and construction (A1–A5),Reference,18124.40384481118,kt CO2e
+within 2026-2050,Soil carbon loss,Reference,3049.916976528298,kt CO2e
+within 2026-2050,"Maintenance (B2, B4), 2026–2050",Reference,403.1828024899951,kt CO2e
+after 2050,"Committed, lower",Reference,8208.057437900507,kt CO2e
+after 2050,"Committed, upper",Reference,8969.011246290376,kt CO2e
+after 2050,"Committed, lower, years of the 2050 AR boundary",Reference,44.74140901447706,years
+after 2050,"Committed, upper, years of the 2050 AR boundary",Reference,48.88930220843644,years
+within 2026-2050,Materials and construction (A1–A5),High replacement,19891.861747291987,kt CO2e
+within 2026-2050,Soil carbon loss,High replacement,3044.831788411977,kt CO2e
+within 2026-2050,"Maintenance (B2, B4), 2026–2050",High replacement,424.34193390957444,kt CO2e
+after 2050,"Committed, lower",High replacement,9068.764195240192,kt CO2e
+after 2050,"Committed, upper",High replacement,9910.974789972437,kt CO2e
+after 2050,"Committed, lower, years of the 2050 AR boundary",High replacement,49.43304687922246,years
+after 2050,"Committed, upper, years of the 2050 AR boundary",High replacement,54.023863766205615,years
+budgets,Acquired rights (AR) budget 2026-2050,cumulative,4451.028297498578,kt CO2e
+budgets,Ability to pay (AtP) budget 2026-2050,cumulative,1112.9648539994828,kt CO2e

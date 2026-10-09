@@ -1,0 +1,72 @@
+{
+ "figure": "D11_floor_area_bridge_split",
+ "producer": "tools/figures_report.py",
+ "axes": [
+  {
+   "title": "Low replacement",
+   "xlabel": "",
+   "ylabel": "Floor area 2026\u20132050 (Mm\u00b2)",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "Reference",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "High replacement",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{100}$",
+  "$\\mathdefault{120}$",
+  "$\\mathdefault{20}$",
+  "$\\mathdefault{40}$",
+  "$\\mathdefault{60}$",
+  "$\\mathdefault{80}$",
+  "+0.0",
+  "+11.3",
+  "+17.7",
+  "+2.3",
+  "+25.5",
+  "+3.7",
+  "+3.9",
+  "+4.0",
+  "+42.9",
+  "+5.1",
+  "+7.9",
+  "-2.9",
+  "-5.0",
+  "-5.4",
+  "-5.9",
+  "2026 overbuild",
+  "83.2",
+  "89.6",
+  "98.7",
+  "Extra space",
+  "Floor area 2026\u20132050 (Mm\u00b2)",
+  "High replacement",
+  "Low replacement",
+  "Population growth",
+  "Redevelopment",
+  "Reference",
+  "Replacement: demolition (BRANZ rate)",
+  "Replacement: net unconsented additions (calibrated residual)",
+  "Retirement villages (out of scope)",
+  "Smaller households",
+  "Total, in scope",
+  "Vacancy",
+  "a",
+  "b",
+  "c"
+ ],
+ "note": "Appendix: replacement split into demolition and the calibrated residual; the split assumes the BRANZ demolition rate: only their sum is identified by the census data."
+}

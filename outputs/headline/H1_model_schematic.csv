@@ -1,0 +1,8 @@
+panel,series,x,value,unit
+bands,Population growth,lever,0.0,lever number (0: untargeted)
+bands,Smaller households,lever,0.0,lever number (0: untargeted)
+bands,Extra space,lever,1.0,lever number (0: untargeted)
+bands,Vacancy,lever,2.0,lever number (0: untargeted)
+bands,2026 overbuild,lever,3.0,lever number (0: untargeted)
+bands,Replacement,lever,4.0,lever number (0: untargeted)
+bands,Redevelopment,lever,4.0,lever number (0: untargeted)

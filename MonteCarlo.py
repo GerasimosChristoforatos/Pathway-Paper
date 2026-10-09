@@ -1,7 +1,7 @@
 """
-MONTE CARLO -- joint uncertainty and variance-based sensitivity for Boss.py
+MONTE CARLO -- joint uncertainty and variance-based sensitivity for projection.py
 ===========================================================================
-Boss.py gives one central projection plus a population-only band. This script
+projection.py gives one central projection plus a population-only band. This script
 samples every uncertain input at once, propagates them through the same model,
 and reports:
   1. percentiles of the 2026-2050 totals (floor area, carbon, upfront carbon,
@@ -12,14 +12,14 @@ and reports:
      2010 / Jansen estimators, as implemented in scipy.stats.sobol_indices).
 
 ENGINE
-  One full Boss.main() takes about three seconds, too slow for ~25,000 runs.
+  One full projection.main() takes about three seconds, too slow for ~25,000 runs.
   Each draw therefore calls only the forward chain, through the SAME pure
-  functions Boss.main() uses (engine.py): stock calibration, 2025 deviation,
+  functions projection.main() uses (engine.py): stock calibration, 2025 deviation,
   replacement path, near-term market excess, forward projection. Everything
-  taken from Boss (data series, calibration window, fixed rates, settings) is
-  copied once in build_setup(), so later changes to Boss's module settings
+  taken from projection (data series, calibration window, fixed rates, settings) is
+  copied once in build_setup(), so later changes to projection's module settings
   cannot leak into a draw. Before sampling, the central draw is checked against
-  Boss.main() year by year (floor area, carbon, upfront carbon, RV units,
+  projection.main() year by year (floor area, carbon, upfront carbon, RV units,
   households, household size); the script stops if any differs by more than
   1e-9 (relative).
 
@@ -46,12 +46,12 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
             apartments) has no bootstrap spread, so it gets a lognormal
             multiplier with the pooled between-building log-SD of the other
             sub-types.
-  CENTRING: the deterministic Boss run uses the MEDIAN of every sampled input.
+  CENTRING: the deterministic projection run uses the MEDIAN of every sampled input.
   Inputs are independent. Seeds are fixed, so runs are reproducible.
-NOT SAMPLED (held at the Boss value in every draw)
-  net replacement: the MC is run separately within each scenario of
-    MC_SCENARIOS (S3 half-life 10 = reference, S1 and S2); the half-life is
-    fixed. Scenario differences are reported separately (Sensitivity.py).
+NOT SAMPLED (held at the projection value in every draw)
+  net replacement: the MC is run separately within each projection variant of
+    MC_SCENARIOS (the Reference, half-life 10 yr; Low and High replacement); the
+    half-life is fixed. Variant differences are reported separately (Sensitivity.py).
   typology mix, the census rebase of households, the pre-2013 empty share,
     future vacancy and the retirement-village share: their total Sobol indices
     were about 0 in a full-input run (v1.0.2), so they are fixed (v1.1 lean MC).
@@ -77,8 +77,11 @@ from scipy import stats
 from scipy.interpolate import PchipInterpolator
 from scipy.stats import qmc
 
-import Boss
+import projection
 import engine
+import layout
+import naming as N
+import style
 
 N_UNCERTAINTY = 5000             # Latin hypercube draws per scenario
 N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
@@ -91,13 +94,8 @@ if QUICK_RUN:
     N_UNCERTAINTY, N_SOBOL = QUICK_N_UNCERTAINTY, QUICK_N_SOBOL
 N_BOOT = 4000                    # carbon-factor bootstrap replicates
 SEED = 20260924
-SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: write PNGs to FIG_DIR
+SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: save every figure
 SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
-# PLOT_ONLY: skip the ~15,000 model evaluations and redraw the figures from the
-# CSVs written by the last full run. Also: python MonteCarlo.py --plot-only
-PLOT_ONLY = False
-OUT_DIR = Boss.OUT_DIR
-FIG_DIR = os.path.join(Boss.OUT_DIR, 'figures')
 Z_KNOTS = stats.norm.ppf([0.05, 0.25, 0.50, 0.75, 0.95])
 PCT_COLS = {5: 2, 25: 3, 50: 4, 75: 5, 95: 6}   # popdata.xlsx Table 1 (skiprows=5)
 VARIANT_Z = {'Low': Z_KNOTS[0], 'Medium': 0.0, 'High': Z_KNOTS[-1]}
@@ -108,7 +106,7 @@ VARIANT_Z = {'Low': Z_KNOTS[0], 'Medium': 0.0, 'High': Z_KNOTS[-1]}
 # ============================================================
 def load_level_percentiles():
     """Published population LEVEL percentiles (5, 25, 50, 75, 95th), persons."""
-    raw = pd.read_excel(Boss.FILE_POP_PROJ, sheet_name=Boss.POP_SHEET_PROJ, skiprows=5)
+    raw = pd.read_excel(projection.FILE_POP_PROJ, sheet_name=projection.POP_SHEET_PROJ, skiprows=5)
     lab = raw.iloc[:, 0].astype(str)
     start = lab.index[lab.str.contains('Population (000)', regex=False)][0]
     rows = []
@@ -121,17 +119,17 @@ def load_level_percentiles():
 
 
 def build_setup(settings=None):
-    """Snapshot of one Boss run. settings: Boss module settings for this run
+    """Snapshot of one projection run. settings: projection module settings for this run
     (the module is reloaded first, so nothing leaks between scenarios)."""
     if settings is not None:
-        importlib.reload(Boss)
+        importlib.reload(projection)
         for k, v in settings.items():
-            if not hasattr(Boss, k):
-                raise AttributeError(f"Boss has no setting '{k}'.")
-            setattr(Boss, k, v)
-    Boss.SHOW_PLOTS = False
+            if not hasattr(projection, k):
+                raise AttributeError(f"projection has no setting '{k}'.")
+            setattr(projection, k, v)
+    projection.SHOW_PLOTS = False
     with contextlib.redirect_stdout(io.StringIO()):
-        B = Boss.main()
+        B = projection.main()
     fy = B['forecast_years']
     typ = list(B['typ_names'])
     su = dict(B=B, fy=fy, typ=typ)
@@ -148,35 +146,28 @@ def build_setup(settings=None):
 
     # ---- household size: Stats NZ shape per variant, rebased on the census anchor ----
     su['S_variants'] = np.array([
-        Boss.household_size(*Boss.statsnz_size_shape(v, fy, tail=Boss.S_TAIL)[1:], B['hist_S'], B['hist_pop'],
-                            fy, 0.0, anchor_year=Boss.S_ANCHOR_YEAR)['S_matched']
+        projection.household_size(*projection.statsnz_size_shape(v, fy, tail=projection.S_TAIL)[1:], B['hist_S'], B['hist_pop'],
+                            fy, 0.0, anchor_year=projection.S_ANCHOR_YEAR)['S_matched']
         for v in VARIANT_Z])
 
-    # ---- typology mix (fixed in every draw): Boss's storyline mix ----
-    if B['mix_used'] == 'held':
-        shares = B['evolving_gfa_shares'].copy()
-    else:
-        alr_2025, alr_slope = Boss.mix_trend(B['hist_shares'], B['shares_2025'], Boss.TREND_WINDOW_START, typ)
-        shares = engine.mix_shares(alr_2025, alr_slope, Boss.DAMPING_PHI, fy, typ)
-    if B['gfa_nowcast']:                          # 2026 = observed consented mix
-        shares.loc[2026] = B['evolving_gfa_shares'].loc[2026].values
-    su['shares'] = shares
+    # ---- typology mix (fixed in every draw): projection's held mix, 2026 the observed mix ----
+    su['shares'] = B['evolving_gfa_shares'].copy()
 
-    # ---- snapshot of Boss's data and settings used in every draw ----
+    # ---- snapshot of projection's data and settings used in every draw ----
     su.update(years_hist=B['years_hist'], hist_hh=B['hist_hh'],
               knots=engine.vacancy_knots(B['census'], float(B['empty_share_measured'])),
               units_all=B['hist_units_all_c'], rv_units=B['hist_rv_units_c'],
-              calib_start=Boss.DEMOLITION_CALIB_START, calib_end=B['calib_end'], demol_rate=Boss.DEMOLITION_RATE,
-              completion=Boss.COMPLETION_RATE, olf=dict(B['OLF_USED']), rv_share=float(B['rv_share']),
-              nr_window=tuple(Boss.NET_REPLACEMENT_WINDOW),
+              calib_start=projection.DEMOLITION_CALIB_START, calib_end=B['calib_end'], demol_rate=projection.DEMOLITION_RATE,
+              completion=projection.COMPLETION_RATE, olf=dict(B['OLF_USED']), rv_share=float(B['rv_share']),
+              nr_window=tuple(projection.NET_REPLACEMENT_WINDOW),
               census_stock=B['census']['total_private'], consents_monthly=B['consents_monthly'],
               lag_w=B['lag_w'], census_uc=B['census_uc'],
-              # replacement scenario and near-term market excess, as in the Boss run
-              scenario=B['_scenario'], s3_half_life=Boss.S3_HALF_LIFE,
-              recent=tuple(Boss.RECENT_INTERVAL), join_mode=B['_join_mode'],
+              # replacement scenario and near-term market excess, as in the projection run
+              scenario=B['_scenario'], s3_half_life=projection.REPLACEMENT_HALF_LIFE,
+              recent=tuple(projection.RECENT_INTERVAL), join_mode=B['_join_mode'],
               nowcast=B['nowcast'], units_all_raw=B['hist_units_all'],
-              near_gap_ref=Boss.NEAR_TERM_GAP_REF, near_mode=Boss.NEAR_TERM_MODE,
-              near_absorption=Boss.NEAR_TERM_ABSORPTION,
+              near_gap_ref=projection.OVERBUILD_GAP_REF, near_mode=projection.OVERBUILD_BOOKING,
+              near_absorption=projection.OVERBUILD_ABSORPTION,
               # observed 2026 floor area (fixed in every draw)
               gfa_2026=(B['gfa_nowcast']['total'] if B['gfa_nowcast'] else None))
 
@@ -186,39 +177,78 @@ def build_setup(settings=None):
     su['size_sigma'] = float(np.sqrt(np.mean(np.concatenate([d.values for d in dev]) ** 2)))
 
     # ---- carbon factors ----
-    tf = pd.read_csv(Boss.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
-    bf = pd.read_csv(Boss.FILE_FACTORS_BUILDING)
+    tf = pd.read_csv(projection.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
+    bf = pd.read_csv(projection.FILE_FACTORS_BUILDING)
     su['soc'] = tf['SOC_avg'].values
-    su['soil_on_repl'] = Boss.SOIL_ON_REPLACEMENT
+    su['soil_on_repl'] = projection.SOIL_ON_REPLACEMENT
     su['emb_central'] = tf['embodied_materials'].values
-    mf = pd.read_csv(Boss.FILE_FACTORS_MATERIAL)
+    mf = pd.read_csv(projection.FILE_FACTORS_MATERIAL)
     up = (mf[mf['Stage'].isin(['A1-A3', 'A4-A5'])].groupby('Typology')['kgCO2e_per_m2'].sum())
     su['up_central'] = up.reindex(typ).values
-    # material decarbonisation of A1-A3 (Boss.DECARB_MODE): per case study and year,
-    # resampled with the SAME building indices and multipliers as the 2025 factors
+    # material decarbonisation of A1-A3 (projection.DECARB_MODE) and A4-A5 (projection.DECARB_A45): per
+    # case study and year, resampled with the SAME building indices and multipliers as
+    # the 2025 factors
     red = None
     su['decarb'] = B['DECARB'] is not None
+    if projection.DECARB_A45 not in ('held', 'resch'):
+        raise ValueError(f"MonteCarlo supports DECARB_A45 'held' or 'resch', not '{projection.DECARB_A45}'.")
     if su['decarb']:
-        variant = Boss.BF.decarb_variant(Boss.DECARB_MODE, Boss.DECARB_STEEL, Boss.DECARB_ITEM_CASE)
-        r = pd.read_csv(Boss.FILE_FACTORS_DECARB_BLD)
-        red = (r[r['Variant'] == variant].pivot(index='id', columns='Year', values='A13_reduction_kgCO2e_per_m2')
-               .reindex(columns=list(fy)))
+        red = pd.DataFrame(0.0, index=bf['id'], columns=list(fy))
+        if B['DECARB13'] is not None:
+            variant = projection.BF.decarb_variant(projection.DECARB_MODE, projection.DECARB_ITEM_CASE)
+            r = pd.read_csv(projection.FILE_FACTORS_DECARB_BLD)
+            red = red + (r[r['Variant'] == variant]
+                         .pivot(index='id', columns='Year', values='A13_reduction_kgCO2e_per_m2')
+                         .reindex(index=bf['id'], columns=list(fy)))
+        if projection.DECARB_A45 == 'resch':
+            g = projection.BF.generic_path(fy)
+            red = red + pd.DataFrame(np.outer(bf['A4-A5'].values, 1.0 - g), index=bf['id'], columns=list(fy))
         su['red_central'] = np.array([B['RED_TOT'][t] for t in typ])          # (typ, years)
-    su['boot_emb'], su['boot_up'], su['between_sigma'], dec = carbon_bootstrap(bf, typ, red)
+    # time-resolved accounting: replacement / repaint kernels (and the event profile by
+    # age at 2025 factors, for the AR base) per case study, resampled the same way
+    su['tr'] = bool(B['TIME_RESOLVED'])
+    extras = {}
+    if su['tr']:
+        ev = pd.read_csv(projection.BF.OUT_EVENTS_BLD)
+        ev = ev[ev['Timing'] == projection.EVENT_TIMING]
+        n = len(fy)
+        K, A = {}, {}
+        for i in bf['id']:
+            p = ev[ev['id'] == i].reset_index(drop=True)
+            if p.empty:
+                K[i], A[i] = np.zeros(n * n), np.zeros(AGE_MAX + 1)
+                continue
+            f = projection.EV.row_factors(p, fy, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45)
+            K[i] = projection.EV.kernel(p, fy, f).ravel()
+            A[i] = projection.EV.age_profile(p, AGE_MAX).values
+        extras = dict(kernel=pd.DataFrame.from_dict(K, orient='index'),
+                      age=pd.DataFrame.from_dict(A, orient='index'))
+        su['K_central'] = B['EVENTS']
+        su['age_central'] = np.array([projection.EV.age_profile(B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t],
+                                                          AGE_MAX).values for t in typ])
+    su['boot_emb'], su['boot_up'], su['between_sigma'], dec, ext = carbon_bootstrap(bf, typ, red, extras)
     if su['decarb']:
         su['boot_red'] = dec                                                    # (N_BOOT, typ, years)
+    if su['tr']:
+        su['boot_K'] = ext['kernel'].reshape(N_BOOT, len(typ), len(fy), len(fy))
+        su['boot_age'] = ext['age']                                             # (N_BOOT, typ, ages)
     return su
 
 
-def carbon_bootstrap(bf, typ, red=None):
+AGE_MAX = 50                      # oldest event age kept for the AR-base profile (building lifespan)
+
+
+def carbon_bootstrap(bf, typ, red=None, extras=None):
     """Stratified bootstrap of pooled typology factors (materials, in scope).
     red: optional A1-A3 reduction per case study (rows = id) and year (columns);
     its bootstrap uses the same resampled indices and multipliers, so the random
-    stream, and every 2025-factor draw, is unchanged. Returns (emb, up, sigma,
-    reduction (N_BOOT, typ, years) or None)."""
+    stream, and every 2025-factor draw, is unchanged. extras: {name: DataFrame (rows
+    = id)} resampled the same way. Returns (emb, up, sigma, reduction (N_BOOT, typ,
+    years) or None, {name: (N_BOOT, typ, columns)})."""
+    extras = extras or {}
     rng = np.random.default_rng(SEED + 1)
     bf = bf[bf['duplicate_of'].fillna('') == ''].copy()
-    bf['emb'] = bf[Boss.STAGES_IN_SCOPE].sum(axis=1)
+    bf['emb'] = bf[projection.STAGES_IN_SCOPE].sum(axis=1)
     bf['up'] = bf[['A1-A3', 'A4-A5']].sum(axis=1)
     # pooled between-building log-SD within sub-types that have >= 2 cases
     logs = [np.log(g['emb']) - np.log(g['emb']).mean()
@@ -228,35 +258,42 @@ def carbon_bootstrap(bf, typ, red=None):
     emb = np.empty((N_BOOT, len(typ)))
     upf = np.empty((N_BOOT, len(typ)))
     dec = None if red is None else np.empty((N_BOOT, len(typ), red.shape[1]))
+    ext = {k: np.empty((N_BOOT, len(typ), v.shape[1])) for k, v in extras.items()}
     for j, t in enumerate(typ):
         subs = [g for _, g in bf[bf['Typology'] == t].groupby('Subtype')]
-        e_sub, u_sub, r_sub = [], [], []
+        e_sub, u_sub, r_sub, x_sub = [], [], [], {k: [] for k in extras}
         for g in subs:
             idx = rng.integers(0, len(g), size=(N_BOOT, len(g)))
             e, u = g['emb'].values[idx].mean(axis=1), g['up'].values[idx].mean(axis=1)
             rr = None if red is None else red.loc[g['id']].values[idx].mean(axis=1)   # (N_BOOT, years)
+            xx = {k: v.loc[g['id']].values[idx].mean(axis=1) for k, v in extras.items()}
             if len(g) == 1:                          # no spread: borrow it
                 k = np.exp(rng.normal(-sigma ** 2 / 2, sigma, N_BOOT))   # mean-preserving
                 e, u = e * k, u * k
                 rr = None if rr is None else rr * k[:, None]
+                xx = {n_: v * k[:, None] for n_, v in xx.items()}
             e_sub.append(e); u_sub.append(u); r_sub.append(rr)
+            for n_, v in xx.items():
+                x_sub[n_].append(v)
         emb[:, j] = np.mean(e_sub, axis=0)
         upf[:, j] = np.mean(u_sub, axis=0)
         if dec is not None:
             dec[:, j, :] = np.mean(r_sub, axis=0)
-    return emb, upf, sigma, dec
+        for n_ in extras:
+            ext[n_][:, j, :] = np.mean(x_sub[n_], axis=0)
+    return emb, upf, sigma, dec, ext
 
 
 # ============================================================
 # ENGINE
 # ============================================================
 PARAMS = ['z_pop', 'size', 'complete', 'carbon']
-# Net replacement is NOT sampled: the MC runs separately within each scenario
-# (MC_SCENARIOS); the S3 half-life is fixed. The first entry is the reference
-# path (its files keep the plain names and carry the Sobol indices and figures).
-MC_SCENARIOS = [('S3-10', dict(REPLACEMENT_SCENARIO='S3', S3_HALF_LIFE=10.0)),
-                ('S1', dict(REPLACEMENT_SCENARIO='S1')),
-                ('S2', dict(REPLACEMENT_SCENARIO='S2'))]   # S2 = storyline (mix trend), not 'high'
+# Net replacement is NOT sampled: the MC runs separately within each projection variant
+# (MC_SCENARIOS, naming.SCENARIOS); the Reference half-life is fixed. The first entry is the
+# Reference (its files carry the Sobol indices and figures).
+MC_SCENARIOS = [('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
+                ('LOW', dict(REPLACEMENT_VARIANT='LOW')),
+                ('HIGH', dict(REPLACEMENT_VARIANT='HIGH'))]
 
 
 class TwoPiece:
@@ -324,7 +361,7 @@ def project(su, p):
                                float(su['hist_hh'].loc[2025] - su['hist_hh'].loc[2024]),
                                su['demol_rate'] + float(unc[0]), yh, su['calib_start'], su['calib_end'])
     dev = dv['dev'] if su['join_mode'] == 'carried_deviation' else 0.0
-    v = float(cal['knots'][max(cal['knots'])])        # latest census vacancy, held
+    v = float(cal['knots'][max(cal['knots'])])        # vacancy-rate parameter: the published 2023 census value
 
     # ---- typology mix (fixed) and dwelling size ----
     shares = su['shares']
@@ -334,15 +371,18 @@ def project(su, p):
     if p['carbon'] is None:
         emb, upf = su['emb_central'], su['up_central']
         red = su['red_central'] if su['decarb'] else None
+        events = su['K_central'] if su['tr'] else None
     else:
         kc = min(int(p['carbon'] * N_BOOT), N_BOOT - 1)
         emb, upf = su['boot_emb'][kc], su['boot_up'][kc]
         red = su['boot_red'][kc] if su['decarb'] else None
-    if red is None:                                   # 2025 factors held (DECARB_MODE 'none')
-        I = {t: emb[j] + su['soc'][j] for j, t in enumerate(typ)}
+        events = {t: su['boot_K'][kc, j] for j, t in enumerate(typ)} if su['tr'] else None
+    base = upf if su['tr'] else emb                   # construction-year materials (projection.ACCOUNTING)
+    if red is None:                                   # 2025 factors held
+        I = {t: base[j] + su['soc'][j] for j, t in enumerate(typ)}
         U = {t: upf[j] + su['soc'][j] for j, t in enumerate(typ)}
-    else:                                             # A1-A3 decarbonised, by year
-        I = {t: emb[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
+    else:                                             # A1-A3 (and A4-A5) decarbonised, by year
+        I = {t: base[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
         U = {t: upf[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
 
     fwd = lambda join=None, redev=None: engine.forward(
@@ -350,7 +390,7 @@ def project(su, p):
         dev, dv['rho'], su['rv_share'], shares, size, su['olf'], I, U,
         join=join, join_redev=redev, soil={t: su['soc'][j] for j, t in enumerate(typ)},
         gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
-        soil_on_replacement=su['soil_on_repl'])
+        soil_on_replacement=su['soil_on_repl'], events=events)
     E = fwd()
     if su['join_mode'] == 'market_excess':
         b26 = c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
@@ -359,7 +399,6 @@ def project(su, p):
                                         su['near_absorption'])
         E = fwd(join, ji['redev'])
     return dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
-                townhouse_2050=float(shares[typ[1]].iloc[-1]),
                 hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],
                 I=np.array([I[t] for t in typ]), U=np.array([U[t] for t in typ]))
 
@@ -368,15 +407,14 @@ def summarise(out):
     s = slice(1, None)                                     # 2026-2050
     return np.array([out['gfa'][s].sum() / 1e6, out['carbon'][s].sum() / 1e6,
                      out['upfront'][s].sum() / 1e6, out['rv_units'][s].sum(),
-                     out['hh'][-1] / 1e6, out['S'][-1], out['townhouse_2050']])
+                     out['hh'][-1] / 1e6, out['S'][-1]])
 
 
-OUTPUTS = ['GFA_Mm2', 'carbon_kt', 'upfront_kt', 'RV_units', 'households_2050_M', 'S_2050',
-           'townhouse_share_2050']
+OUTPUTS = ['GFA_Mm2', 'carbon_kt', 'upfront_kt', 'RV_units', 'households_2050_M', 'S_2050']
 
 
 def validate(su):
-    """The engine at central values must reproduce Boss.main() exactly."""
+    """The engine at central values must reproduce projection.main() exactly."""
     B = su['B']
     o = project(su, central(su))
     R = B['results']['50th']
@@ -391,11 +429,11 @@ def validate(su):
     for k, r in ref.items():
         rel = np.abs(o[k][1:] - r[1:]) / np.maximum(np.abs(r[1:]), 1e-9)
         worst = max(worst, float(rel.max()))
-    print(f"[check] MC draw vs Boss.main(), central values, 2026-2050, floor area, carbon, "
+    print(f"[check] MC draw vs projection.main(), central values, 2026-2050, floor area, carbon, "
           f"upfront, RV units, households, S: max relative difference {worst:.1e} "
           f"({'OK' if worst < 1e-9 else 'FAIL'})")
     if worst >= 1e-9:
-        sys.exit("Engine does not reproduce Boss.main(); results would not be valid.")
+        sys.exit("Engine does not reproduce projection.main(); results would not be valid.")
 
 
 # ============================================================
@@ -405,7 +443,7 @@ def distributions(su):
     return {
         'z_pop': stats.norm(0, 1),
         'size': stats.lognorm(s=su['size_sigma'], scale=1.0),
-        'complete': TwoPiece(Boss.COMPLETION_RATE_BAND[0], su['completion'], Boss.COMPLETION_RATE_BAND[1],
+        'complete': TwoPiece(projection.COMPLETION_RATE_BAND[0], su['completion'], projection.COMPLETION_RATE_BAND[1],
                              shape='uniform'),
         'carbon': stats.uniform(0, 1),
     }
@@ -451,20 +489,19 @@ def run_scenario(name, settings, reference):
     q = np.percentile(Y, [5, 25, 50, 75, 95], axis=1)
     summ = pd.DataFrame(q.T, index=OUTPUTS, columns=['p5', 'p25', 'p50', 'p75', 'p95'])
     summ['mean'] = Y.mean(axis=1)
-    summ['central'] = cen
-    summ['central_pct'] = [100 * float((Y[i] < cen[i]).mean()) for i in range(len(OUTPUTS))]
-    os.makedirs(OUT_DIR, exist_ok=True)
-    draws = pd.DataFrame(np.vstack([X, Y]).T, columns=PARAMS + OUTPUTS)
-    annual = pd.DataFrame({f'{k}_{p}': np.percentile(fan[k], p, axis=0)
-                           for k in fan for p in (5, 25, 50, 75, 95)}, index=su['fy'])
-    names = [f'_{name}'] + ([''] if reference else [])
-    for sfx in names:
-        summ.to_csv(os.path.join(OUT_DIR, f'montecarlo_summary{sfx}.csv'))
-        draws.to_csv(os.path.join(OUT_DIR, f'montecarlo_draws{sfx}.csv'), index=False)
-        annual.to_csv(os.path.join(OUT_DIR, f'montecarlo_annual{sfx}.csv'))
+    summ['reference'] = cen                            # the deterministic Reference run (median inputs)
+    summ['reference_percentile'] = [100 * float((Y[i] < cen[i]).mean()) for i in range(len(OUTPUTS))]
+    summ.index = pd.Index([N.identifier(o) for o in OUTPUTS], name='output')
+    draws = N.columns(pd.DataFrame(np.vstack([X, Y]).T, columns=PARAMS + OUTPUTS))
+    annual = N.columns(pd.DataFrame({f'{k}_{p}': np.percentile(fan[k], p, axis=0)
+                                     for k in fan for p in (5, 25, 50, 75, 95)},
+                                    index=pd.Index(su['fy'], name='year')))
+    summ.to_csv(layout.writing(layout.montecarlo('summary', name)))
+    draws.to_csv(layout.writing(layout.montecarlo('draws', name)), index=False)
+    annual.to_csv(layout.writing(layout.montecarlo('annual', name)))
     print(f"\nJOINT UNCERTAINTY within {name}, 2026-2050 ({N_UNCERTAINTY:,} Latin hypercube draws)")
-    print(summ.loc[['GFA_Mm2', 'carbon_kt', 'upfront_kt', 'townhouse_share_2050'],
-                   ['mean', 'p5', 'p50', 'p95', 'central', 'central_pct']].round(3).to_string())
+    print(summ.loc[['floor_area_Mm2', 'carbon_kt', 'upfront_kt'],
+                   ['mean', 'p5', 'p50', 'p95', 'reference', 'reference_percentile']].round(3).to_string())
     if not reference:
         return summ
 
@@ -488,9 +525,10 @@ def run_scenario(name, settings, reference):
                              ST=res.total_order[o, i], ST_lo=boot.total_order.confidence_interval.low[o, i],
                              ST_hi=boot.total_order.confidence_interval.high[o, i]))
     sob = pd.DataFrame(rows)
-    sob.to_csv(os.path.join(OUT_DIR, 'montecarlo_sobol.csv'), index=False)
+    sob['output'] = sob['output'].map(N.identifier)
+    sob.to_csv(layout.writing(layout.montecarlo('sobol', name)), index=False)
     print(f"\nSOBOL INDICES, {name} ({N_SOBOL * (len(PARAMS) + 2):,} evaluations; 95% bootstrap CI)")
-    for oname in ['GFA_Mm2', 'carbon_kt']:
+    for oname in ['floor_area_Mm2', 'carbon_kt']:
         t = sob[sob.output == oname].sort_values('ST', ascending=False)
         print(f"   {oname}")
         for r in t.itertuples():
@@ -507,15 +545,14 @@ def main():
     t0 = time.time()
     for i, (name, settings) in enumerate(MC_SCENARIOS):
         run_scenario(name, settings, reference=(i == 0))
-    importlib.reload(Boss)                       # restore module defaults
-    print(f"\nWritten: montecarlo_summary[_<scenario>].csv, montecarlo_draws[_<scenario>].csv, "
-          f"montecarlo_annual[_<scenario>].csv, montecarlo_sobol.csv in {OUT_DIR}/  "
-          f"({time.time() - t0:,.0f} s)")
+    importlib.reload(projection)                       # restore module defaults
+    print(f"\nWritten: summary_<variant>.csv, draws_<variant>.csv, annual_<variant>.csv, sobol_REF.csv in "
+          f"{os.path.dirname(layout.montecarlo('summary', 'REF'))}/  ({time.time() - t0:,.0f} s)")
     figures()
 
 
 # ============================================================
-# FIGURES  (drawn from the CSVs, so PLOT_ONLY needs no re-run)
+# FIGURES  (drawn from the CSVs, so --plot-only needs no re-run)
 # ============================================================
 INPUT_LABELS = {
     'z_pop': 'Population (with household size)',
@@ -524,111 +561,64 @@ INPUT_LABELS = {
     'carbon': 'Carbon factors (case-study bootstrap)',
 }
 OUTPUT_LABELS = {
-    'GFA_Mm2': ('Built floor area, 2026-2050', 'Mm²', 1),
+    'floor_area_Mm2': ('Built floor area, 2026-2050', 'Mm²', 1),
     'carbon_kt': ('Embodied carbon, 2026-2050', 'kt CO₂e', 1),
 }
-BLUE = '#2E6DB4'
 
 
 def _load_results():
-    rd = lambda f: os.path.join(OUT_DIR, f)
-    need = ['montecarlo_draws.csv', 'montecarlo_annual.csv', 'montecarlo_sobol.csv',
-            'montecarlo_summary.csv']
-    miss = [f for f in need if not os.path.exists(rd(f))]
+    """The Monte Carlo files of the Reference (draws, annual, Sobol, summary)."""
+    rd = {k: layout.montecarlo(k, 'REF') for k in ('draws', 'annual', 'sobol', 'summary')}
+    miss = [f for f in rd.values() if not os.path.exists(f)]
     if miss:
-        raise FileNotFoundError(f"Missing {miss} in {OUT_DIR}: run a full Monte Carlo first.")
-    return (pd.read_csv(rd('montecarlo_draws.csv')),
-            pd.read_csv(rd('montecarlo_annual.csv'), index_col=0),
-            pd.read_csv(rd('montecarlo_sobol.csv')),
-            pd.read_csv(rd('montecarlo_summary.csv'), index_col=0))
+        raise FileNotFoundError(f"Missing {miss}: run a full Monte Carlo first.")
+    return (pd.read_csv(rd['draws']), pd.read_csv(rd['annual'], index_col=0), pd.read_csv(rd['sobol']),
+            pd.read_csv(rd['summary'], index_col=0))
 
 
-def _history():
-    """Observed history on the model's built basis, from one silent Boss run."""
-    Boss.SHOW_PLOTS = False
-    with contextlib.redirect_stdout(io.StringIO()):
-        st = Boss.main()
-    typ = st['typ_names']
-    gfa = st['hist_built_gfa']
-    carbon = sum(st['hist_built_typ_gfa'][t] * st['T_BASELINE_2025'][t] for t in typ)
-    fy = np.asarray(st['forecast_years'])
-    central = {'gfa': pd.Series(st['results']['50th']['total'], index=fy),
-               'carbon': st['carbon_total_typ'].sum(axis=1)}
-    return gfa, carbon, central
-
-
-def _save(fig, name):
+def _save(fig, name, note=None):
     if SAVE_FIGURES:
-        os.makedirs(FIG_DIR, exist_ok=True)
-        fig.savefig(os.path.join(FIG_DIR, name), dpi=140, bbox_inches='tight')
+        style.save_figure(fig, name, note=note)
 
 
 def figures():
+    """D20: what drives the joint uncertainty of the Reference (Sobol indices). The Monte Carlo
+    bands of floor area and carbon are drawn in H2 and H4, those of the level of exceedance in H5
+    and D21-D23."""
+    import plotting as P
+    S = style
+    S.apply()
     draws, annual, sob, summ = _load_results()
-    hist_gfa, hist_c, central = _history()
-    yrs = annual.index.values
-    fy = yrs[yrs >= 2026]
-    has_q = 'gfa_25' in annual.columns
-
-    # ---- 1. joint uncertainty over time ----------------------------------
-    fig, ax = plt.subplots(1, 2, figsize=(15, 5.2))
-    fig.suptitle('Monte Carlo 1: joint uncertainty over time '
-                 f'({len(draws):,} Latin hypercube draws)', fontsize=12)
-    for a, k, hist, lab in [(ax[0], 'gfa', hist_gfa, 'Mm² per year'),
-                            (ax[1], 'carbon', hist_c, 'kt CO₂e per year')]:
-        hy = hist.index[hist.index >= 1991]
-        a.plot(hy, hist.loc[hy] / 1e6, color='black', lw=2, label='observed (built basis)')
-        f = annual.loc[fy]
-        a.fill_between(fy, f[f'{k}_5'] / 1e6, f[f'{k}_95'] / 1e6, color=BLUE, alpha=0.15,
-                       label='5th-95th percentile')
-        if has_q:
-            a.fill_between(fy, f[f'{k}_25'] / 1e6, f[f'{k}_75'] / 1e6, color=BLUE, alpha=0.30,
-                           label='25th-75th percentile')
-        a.plot(fy, f[f'{k}_50'] / 1e6, color=BLUE, lw=2.2, label='Monte Carlo median')
-        a.plot(fy, central[k].loc[fy] / 1e6, color='#C0392B', lw=1.5, ls='--',
-               label='Boss central run')
-        a.axvline(2025.5, color='grey', ls=':', lw=1)
-        a.set_ylabel(lab); a.set_xlim(1991, 2050); a.set_ylim(0, None)
-        a.grid(alpha=0.3); a.legend(fontsize=8, loc='upper right')
-    ax[0].set_title('Built floor area (in scope)')
-    ax[1].set_title('Embodied carbon (history estimated with 2025 factors)')
-    fig.tight_layout()
-    _save(fig, 'mc_1_fan.png')
-
-    # ---- 3. what drives the uncertainty (Sobol) ----------------------------
-    fig, ax = plt.subplots(1, 2, figsize=(15, 6))
-    fig.suptitle('Monte Carlo 3: what drives the uncertainty (Sobol indices, 95% CI)',
-                 fontsize=12)
-    for a, o in zip(ax, ['carbon_kt', 'GFA_Mm2']):
+    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 66))
+    for a, o, letter in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab'):
         t = sob[(sob.output == o) & np.isfinite(sob.ST_lo)].sort_values('ST')
         y = np.arange(len(t))
-        a.barh(y + 0.2, t.ST, 0.4, color='#E67E22',
-               xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor='#7f4a13', capsize=2,
-               label='total effect (incl. interactions)')
-        a.barh(y - 0.2, t.S1.clip(lower=0), 0.4, color='#27AE60',
-               label='effect on its own')
-        for yi, v in zip(y, t.ST):
-            a.text(v + 0.012, yi + 0.2, f'{v:.2f}', va='center', fontsize=8)
+        a.barh(y + 0.2, t.ST, 0.4, color=S.QUALITATIVE[5], xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor=S.INK,
+               capsize=1.5, error_kw=dict(lw=S.LW_THIN), label='Total effect (incl. interactions), 95% CI')
+        a.barh(y - 0.2, t.S1.clip(lower=0), 0.4, color=S.QUALITATIVE[2], label='First-order effect (on its own)')
+        for yi, v, hi in zip(y, t.ST, t.ST_hi):
+            a.text(max(v, hi) + 0.012, yi + 0.2, f'{v:.2f}', va='center', fontsize=S.FONT_MIN)
         a.set_yticks(y)
-        a.set_yticklabels([INPUT_LABELS.get(i, i) for i in t.input], fontsize=8.5)
+        a.set_yticklabels([INPUT_LABELS.get(i, i) for i in t.input], fontsize=S.FONT_SMALL)
         a.set_xlim(0, max(0.7, t.ST_hi.max() + 0.08))
-        a.set_xlabel('share of output variance')
-        a.set_title(OUTPUT_LABELS[o][0]); a.grid(alpha=0.3, axis='x')
-        a.legend(fontsize=8, loc='lower right')
-    fig.tight_layout(rect=(0, 0.05, 1, 1))
-    fig.text(0.5, 0.01, 'Within-scenario parametric uncertainty only; replacement scenario, typology mix, '
-             'carbon-factor and soil bounds are reported separately (sens_1).',
-             ha='center', fontsize=9, style='italic')
-    _save(fig, 'mc_3_sobol.png')
+        a.set_xlabel('Share of output variance')
+        a.grid(axis='y', visible=False)
+        P.panel(a, letter, OUTPUT_LABELS[o][0].replace('2026-2050', '2026–2050'))
+    fig.legend(*ax[0].get_legend_handles_labels(), loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.01),
+               frameon=False)
+    fig.tight_layout(rect=(0, 0.09, 1, 1))
+    _save(fig, 'D20_sobol',
+          note=f'Reference, {len(draws):,} Latin hypercube draws. Within-scenario parametric uncertainty only; the '
+               'replacement variant, the carbon-factor and soil bounds are reported separately (D16).')
 
     if SAVE_FIGURES:
-        print(f"Figures written to {FIG_DIR}/ (mc_1, mc_3)")
+        print("Figures written to outputs/diagnostics/monte_carlo/ (D20)")
     if SHOW_FIGURES:
         plt.show()
 
 
 if __name__ == '__main__':
-    if PLOT_ONLY or '--plot-only' in sys.argv:
+    if '--plot-only' in sys.argv:          # redraw D20 from the CSVs of the last full run (no model runs)
         figures()
     else:
         main()

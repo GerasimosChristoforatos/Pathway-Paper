@@ -43,7 +43,7 @@ documents and every figure as a quick run.
 * a frozen-technology check run (`DECARB_MODE = 'none'`, A4–A5 held, whole life
   at construction: Boss, Sensitivity, MonteCarlo, the scenario table and PB,
   written to `outputs/frozen/`, figures not saved);
-* `pathways.py`, the PATHWAYS v2 layer (levers, pathways P1-P5, attribution, AESA
+* `pathways.py`, the PATHWAYS v3.1 layer (levers, pathways P1-P5, theoretical limit T, attribution, AESA
   gap; `outputs/pathways/`; on its own: `run_all.py --pathways-only`);
 * the tests (`tests/`, including the v1.2.1 regression test, which compares the
   frozen-technology run with v1.2.1);
@@ -145,7 +145,7 @@ was accessed on 2026-09-29. It states:
 | `Sensitivity.py` | one-at-a-time sensitivities (`outputs/sensitivity_oat.csv`, `sens_1`, `sens_2`) |
 | `MonteCarlo.py` | joint parametric uncertainty within S3-10, S1 and S2; Sobol indices (reference) |
 | `aesa.py`, `PB.py` | planetary-boundary layer: boundaries, levels of exceedance, figures `*_pb`, `pb_1`-`pb_6` |
-| `levers.py`, `pathways.py` | PATHWAYS v2: six levers in four pathways (P1 Right-size space, P2 Occupy the existing stock, P3 Keep and reuse, P4 Build better; P5 all) at central / stretch, demand-band and Shapley attribution, AESA gap, back-cast and solution space → `outputs/pathways/` (Table 1: `LEVERS_TABLE.md`), figures `pw_1`-`pw_7` (`tools/pathways_methods.py`: `PATHWAYS_METHODS_DRAFT.md`) |
+| `levers.py`, `pathways.py` | PATHWAYS v3.1: five levers in four pathways (P1 Right-size space, P2 Occupy the existing stock, P3 Keep and reuse, P4 Build better; P5 all) at central / stretch, demand-band and Shapley attribution, AESA gap, back-cast and solution space, and the hyper-optimistic theoretical limit T (T1-T6) → `outputs/pathways/` (Table 1: `LEVERS_TABLE.md`), figures `pw_1`-`pw_10` (`tools/pathways_methods.py`: `PATHWAYS_METHODS_DRAFT.md`) |
 | `validation.py`, `gap_2026.py` | rolling-origin hindcast, 2026 out-of-sample check, 2026 gap decomposition |
 | `tools/` | near-term rule and scenario reports, reconciliation of the accounting, report figures and FIGURES.md, metrics, RESULTS.md, ASSUMPTIONS.md, BASELINE_DRAFT.md, PB_METHODS_DRAFT.md |
 | `tests/` | accounting identities, census UC correction, soil, near-term rule, validation, events and committed emissions (`test_v3.py`), pathways (`test_pathways.py`: identity, Harrell-Davis, Shapley, constraints) and the baseline byte lock (`test_baseline_lock.py`, `baseline_manifest.json`), and the regression tests against v1.2.1 (`regression_v1_2_1.json`) and baseline-pb-v2 (`regression_pb_v2.json`) |

@@ -362,7 +362,7 @@ as implemented: `outputs/PB_METHODS_DRAFT.md`.
 
 ---
 
-## 10. Pathways (PATHWAYS v2: `levers.py`, `pathways.py`)
+## 10. Pathways (PATHWAYS v3.1: `levers.py`, `pathways.py`)
 
 A layer on top of the frozen baseline, like PB: nothing in the model changes and no
 baseline output is rewritten. `tests/test_baseline_lock.py` checks the SHA-256 of
@@ -377,18 +377,22 @@ functions of `levers.py`. Which input each lever changes:
 flowchart LR
     BOSS[Boss.main via validation.run_boss<br/>S3-10; S1, S2 for the envelope] --> CTX[fwd_inputs, S, OLF, join,<br/>events, committed factors]
     FB[outputs/factors/factors_building.csv] --> L5[L5: Harrell-Davis quantile<br/>+ bootstrap]
-    LEV[levers.py<br/>L1, L4 / L2a, L2b / L3 / L5<br/>logistic ramp 2026-2035] --> RUN
+    LEV[levers.py<br/>L1 / L2a, L2b / L3 / L5<br/>logistic ramp 2026-2035] --> RUN
     L5 --> LEV
-    CTX --> RUN[engine.forward per run<br/>P0, levers, P1-P5, 16 + 64 subsets]
+    CTX --> RUN[engine.forward per run<br/>P0, levers, P1-P5, T, 16 + 32 + 64 subsets]
     PBA[outputs/pb_annual.csv<br/>B_AR, B_AtP S3-10] --> GAP
     RUN --> GAP[bands, cumulative LoE, committed,<br/>Shapley, back-cast, solution space]
-    GAP --> OUTP[(outputs/pathways/*.csv, *.json,<br/>LEVERS_TABLE.md, PATHWAYS_METHODS_DRAFT.md, pw_1-pw_7)]
+    GAP --> OUTP[(outputs/pathways/*.csv, *.json,<br/>LEVERS_TABLE.md, PATHWAYS_METHODS_DRAFT.md, pw_1-pw_10)]
 ```
 
 1. **Pathways and levers** (settings central and stretch; normalised logistic ramp,
-   w = 0 in 2026, 1 from 2035; sensitivity ramp2045): P1 Right-size space = L1
-   right-sized new dwellings (`size` per typology and year: the space above the
-   engine's occupied area S x OLF cut by f) + L4 denser mix (`shares`); P2 Occupy
+   w = 0 in 2026, 1 from 2035, full roll-out by 2035 following RECC, Pauliuk et al.
+   2024; P5 sensitivities ramp2030 and ramp2045): P1 Right-size space = L1
+   right-sized new dwellings (`size` per typology and year: a share f of the space
+   above the engine's occupied area S x OLF removed, f constant from 2035 to 2050);
+   the typology shares stay at the baseline held mix in every run (L4, the denser
+   mix, was evaluated in pathways_v2 and removed in v3.1: within the embodied-carbon
+   scope it raises A1-A3 per m2, its benefits are outside the scope); P2 Occupy
    the existing stock = L2a vacancy path (`v`) + L2b absorption of the near-term
    surplus (`join` from `engine.market_excess(..., 'surplus', absorption)`); P3
    Keep and reuse = L3 fewer removals (`rate_demol`, `rate_unc`); P4 Build better =
@@ -408,7 +412,7 @@ flowchart LR
    budgets of `outputs/pb_annual.csv`. Checks that stop the run: identity, sizes
    below the occupied area, implied vacancy below 4.0%, negative dwellings, fewer
    than 10 L5 cases or r >= 1.
-4. **Attribution**: Shapley values over the 16 pathway subsets (main) and the 64
+4. **Attribution**: Shapley values over the 16 pathway subsets (main) and the 32
    lever subsets (SI), exact rational arithmetic (they sum to P0 - P5 exactly).
 5. **Gap**: back-cast of P5 (central, stretch) and P0 (uniform factor k on every
    2027-2050 cohort, `scipy.optimize.brentq` for cumulative LoE AR = 1; AtP
@@ -427,18 +431,22 @@ FIGURES.md) and before the tests, and `pathways_docs` after `pb_methods`.
 "unlisted": run `run_all.py`, which clears the figures first. Methods as
 implemented: `outputs/pathways/PATHWAYS_METHODS_DRAFT.md`.
 
-**Theoretical limit T (PATHWAYS v3).** A thought experiment, not a proposal or a
-feasible pathway: P5-stretch with T1 no idle stock (v = 0, surplus absorbed in full),
-T2 no extra space (size = S x OLF), T3 the lowest independent case-study OLF for every
-typology, T4 each typology's best case-study A1-A3, T5 the lowest soil order, all at
-full strength from 2027 (`levers.apply_T`). `pathways.run_T` applies the banking rule
+**Theoretical limit T (PATHWAYS v3.1).** A hyper-optimistic theoretical limit (thought
+experiment), not a proposal or a feasible pathway: P5-stretch (no L4) with T1 no idle
+stock (v = 0, surplus absorbed in full), T2 no extra space (size = S x OLF), T3 the
+lowest independent case-study OLF for every typology, T4 each typology's best
+case-study A1-A3, T5 the lowest soil order, T6 urban densification (65% of the
+non-replacement floor area on developed land with zero soil; Auckland Council 2021),
+all at full strength from 1 January 2027 (`levers.apply_T`); BAU decarbonisation applies. `pathways.run_T` applies the banking rule
 (`pathways.bank`: dwellings built never negative; unused release carried forward) as a
 stock-adding join (join = banked built - requirement, join_redev = 0) so the stock
 identity holds, and the year-dependent soil factor exactly through the engine's
 soil-bearing share (intensity minus (soil_avg - soil_path) x share; two passes, the
-share checked identical). Shapley over T1-T5 (32 subsets, instant start), gap and
-back-cast as for P5; T rows are appended to the v2 tables (v2 rows byte-identical to
-tag pathways_v2, tested); `t_limit.json`, `shapley_T.csv`, figures pw_8-pw_10.
+share checked identical; the share is clipped to [0, 1] and set to 0 in years with no
+new building, where the engine's ratio is undefined). Shapley over T1-T6 (64 subsets,
+instant start), gap and back-cast as for P5; where T exceeds the AR budget the
+back-cast cut is expressed as dwellings not built 2027-2050 and new residents housed
+in existing dwellings; `t_limit.json`, `shapley_T.csv`, figures pw_8-pw_10.
 
 ---
 

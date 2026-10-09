@@ -499,7 +499,7 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
         bands_df[f'delta_{col}_vs_P0'] = [r[col] - b0.loc[(r['scenario'], r['definition'], r['band']), col]
                                           for _, r in bands_df.iterrows()]
 
-    # ---- Shapley: four pathways (P1-P4; 16 subsets) and six levers (64 subsets), S3-10 -----
+    # ---- Shapley: four pathways (P1-P4; 16 subsets) and five levers (32 subsets), S3-10 -----
     ref = ctxs[REFERENCE]
     shap_p, shap_l, shap_runs, shap_exact = [], [], [], {}
     pnames = {P: LV.PATHWAY_NAMES[P] for P in LV.PATHWAYS}
@@ -774,7 +774,7 @@ def t_indicators(ctx, R):
 
 
 def compute_T(res, verbose=True):
-    """T, T-ramp, the 32 Shapley subsets of T1-T5 relative to P5-stretch (instant), metrics, bands,
+    """T, T-ramp, the 64 Shapley subsets of T1-T6 relative to P5-stretch (instant), metrics, bands,
     annual rows, gap. Appended to the v2 tables (v2 rows unchanged)."""
     import Building_factors as BF
     t0 = time.time()
@@ -806,7 +806,7 @@ def compute_T(res, verbose=True):
     b0 = res['bands'][(res['bands']['run'] == 'P0')].set_index(['scenario', 'definition', 'band'])
     for col in ('gfa_Mm2', 'carbon_kt'):
         bd[f'delta_{col}_vs_P0'] = [r[col] - b0.loc[(r['scenario'], r['definition'], r['band']), col] for _, r in bd.iterrows()]
-    # Shapley over T1-T5 (instant convention), base = P5-stretch with the instant start
+    # Shapley over T1-T6 (instant convention), base = P5-stretch with the instant start
     vals = {'carbon_kt': {}, 'LoE_AR': {}}
     sub_rows = []
     for S_ in subsets(full):
@@ -969,17 +969,18 @@ PW_FIGURES = {
                              '2025) at their plotting positions, the Harrell-Davis quantile function with its '
                              'bootstrap 95% band (B = 10,000), and the central (q = 0.25) and stretch (q = 0.15) '
                              'targets.'),
-    'pw_7_shapley_levers_SI': ('supp', 'Shapley attribution of P0 - P5 to the six levers (64 subsets; S3-10), on '
+    'pw_7_shapley_levers_SI': ('supp', 'Shapley attribution of P0 - P5 to the five levers (32 subsets; S3-10), on '
                                'cumulative carbon and cumulative LoE AR, central (open) and stretch (filled).'),
-    'pw_8_staircase': ('paper', 'Theoretical limit T (a thought experiment, not a proposal or a feasible pathway): '
-                       'cumulative LoE AR and AtP (log) for P0 -> P5-central -> P5-stretch -> T with LoE = 1 and the change '
-                       'vs P0, and under each step the mean new-dwelling size, floor area per person and dwellings built '
-                       'per year (2027-2050); demand bands (floor area, carbon) of P0, P5-stretch and T.'),
-    'pw_9_T_shapley_SI': ('supp', 'Shapley attribution of P5-stretch (instant start) - T to T1-T5 (32 subsets, exact), '
-                          'carbon and LoE AR, with the instant-start effect as a separate line; T is a theoretical limit.'),
+    'pw_8_staircase': ('paper', 'Hyper-optimistic theoretical limit T (T1-T6): cumulative LoE AR and AtP (log) for P0 -> '
+                       'P5-central -> P5-stretch -> T with LoE = 1 and the change vs P0, under each step the mean '
+                       'new-dwelling size, floor area per person and dwellings built per year (2027-2050), and the residual '
+                       'to LoE AR = 1 in people (dwellings not built 2027-2050, new residents housed in existing '
+                       'dwellings); demand bands (floor area, carbon) of P0, P5-stretch and T. ' + LV.T_DISCLAIMER),
+    'pw_9_T_shapley_SI': ('supp', 'Shapley attribution of P5-stretch (instant start) - T to T1-T6 (64 subsets, exact), '
+                          'carbon and LoE AR, with the instant-start effect as a separate line. ' + LV.T_DISCLAIMER),
     'pw_10_T_annual_SI': ('supp', 'Annual carbon of P0, P5-stretch, T and T with the logistic ramp against the annual AR '
-                          'and AtP boundaries, and dwellings built per year (banking rule; zero-building years shaded); '
-                          'T is a theoretical limit.'),
+                          'and AtP boundaries, and dwellings built per year (banking rule; zero-building years shaded). '
+                          + LV.T_DISCLAIMER),
 }
 
 
@@ -1413,16 +1414,15 @@ def fig_shapley_levers(res):
     axes[0].set_title(f"Carbon: P0 - P5 = {tot['central']:,.0f} kt (central, open) / {tot['stretch']:,.0f} kt "
                       f"(stretch, filled)", fontsize=10)
     axes[1].set_title('Cumulative LoE AR', fontsize=10)
-    fig.suptitle('Shapley attribution of P0 - P5 to the six levers (S3-10; 64 subsets; values sum exactly to P0 - P5)',
+    fig.suptitle('Shapley attribution of P0 - P5 to the five levers (S3-10; 32 subsets; values sum exactly to P0 - P5)',
                  fontsize=11)
     fig.tight_layout()
     _save(fig, 'pw_7_shapley_levers_SI')
 
 
 T_STEPS = (('P0', 'P0\nbaseline'), ('P5-central', 'P5-central\nall pathways'), ('P5-stretch', 'P5-stretch\nall pathways'),
-           ('T', 'T\ntheoretical limit'))
-T_CAPTION = ('T is a theoretical limit (thought experiment) combining the best observed attributes of different buildings; '
-             'it is not a proposal or a feasible pathway (theoretical > technical > realisable potential).')
+           ('T', 'T\nhyper-optimistic\ntheoretical limit'))
+T_CAPTION = LV.T_DISCLAIMER
 
 
 def _step_run(res, name):
@@ -1475,7 +1475,7 @@ def fig_staircase(res):
     ax.set_yscale('log')
     ax.set_yticks([0.5, 1, 2, 5, 10, 20])
     ax.set_yticklabels(['0.5', '1', '2', '5', '10', '20'])
-    ax.set_ylim(0.5, 30)
+    ax.set_ylim(0.3, 30)
     ax.set_xlim(-0.5, len(T_STEPS) - 0.3)
     lab = []
     for n, l in T_STEPS:
@@ -1485,8 +1485,18 @@ def fig_staircase(res):
     ax.set_xticks(xs)
     ax.set_xticklabels(lab, fontsize=8.5)
     ax.set_ylabel('cumulative level of exceedance 2026-2050 (log)')
-    ax.set_title('From the baseline to the theoretical limit T (S3-10): cumulative LoE; indicators are 2027-2050 means',
-                 fontsize=11)
+    ax.set_title('From the baseline to the hyper-optimistic theoretical limit T (S3-10): cumulative LoE; indicators are '
+                 '2027-2050 means', fontsize=11)
+    g = res['T']['gap']['T']
+    if g['within_AR']:
+        resid = f"T within the AR budget: margin {g['margin_AR_kt']:,.0f} kt"
+    else:
+        rs = g['residual']
+        resid = (f"Residual to LoE AR = 1: cut {100 * rs['cut_of_2027_2050_construction']:.1f}% of 2027-2050 construction\n"
+                 f"= {rs['dwellings_not_built_2027_2050']:,.0f} dwellings not built, "
+                 f"{rs['new_residents_housed_in_existing_dwellings']:,.0f} new residents\nhoused in existing dwellings")
+    ax.annotate(resid, (xs[-1], 1.0), xytext=(xs[-1] - 0.95, 0.55), fontsize=8.5, color=INK, ha='left', va='center',
+                arrowprops=dict(arrowstyle='-', color=MUTED, lw=0.6), path_effects=halo)
     ax.legend(fontsize=8.5, loc='upper right', frameon=False)
     _style(ax)
     colors = _band_colors()
@@ -1521,11 +1531,12 @@ def fig_staircase(res):
     fig.legend(handles=[Patch(facecolor=colors[b], hatch='..' if b in UNTARGETED else None, edgecolor='white',
                               label=b + (' (untargeted)' if b in UNTARGETED else '')) for b, _ in FIG_BANDS],
                loc='lower center', ncol=3, fontsize=7.5, frameon=False, bbox_to_anchor=(0.5, -0.04))
-    fig.text(0.5, -0.07, T_CAPTION + ' T: no idle stock (v = 0, surplus absorbed), no extra space (size = S x OLF), '
-             'minimum OLF of the case studies (A_1, 19.7 m² per person) for every typology, each typology\'s best '
-             'case-study A1-A3, lowest soil order; full strength from 2027. In its zero-building years (released vacant stock '
-             'used, banking rule) every band is zero.', ha='center', fontsize=8, style='italic',
-             wrap=True)
+    fig.text(0.5, -0.08, T_CAPTION + ' T1 no idle stock (v = 0, surplus absorbed), T2 no extra space (size = S x OLF), '
+             'T3 minimum OLF of the case studies (A_1, 19.7 m² per person) for every typology, T4 each typology\'s best '
+             f'case-study A1-A3, T5 lowest soil order, T6 urban densification ({100 * LV.T6_SHARE:.0f}% of non-replacement '
+             'floor area on developed land, zero soil; Auckland Council 2021); BAU decarbonisation applies. In its '
+             'zero-building years (released vacant stock used, banking rule) every band is zero.', ha='center', fontsize=8,
+             style='italic', wrap=True)
     _save(fig, 'pw_8_staircase')
 
 
@@ -1552,7 +1563,8 @@ def fig_T_shapley(res):
         ax.set_xlabel(xl)
         ax.set_xlim(0, ax.get_xlim()[1] * 1.3)
         _style(ax, 'x')
-    fig.suptitle('Shapley attribution of P5-stretch (instant start) - T to T1-T5 (32 subsets, exact; S3-10)', fontsize=11)
+    fig.suptitle(f'Shapley attribution of P5-stretch (instant start) - T to T1-T{len(LV.T_COMPONENTS)} '
+                 f'({2 ** len(LV.T_COMPONENTS)} subsets, exact; S3-10)', fontsize=11)
     fig.text(0.5, -0.04, 'Shares are of P5-stretch with the instant start minus T. The hatched bar is the separate effect '
              'of starting P5-stretch at full strength in 2027 instead of on the logistic ramp. ' + T_CAPTION,
              ha='center', fontsize=8, style='italic', wrap=True)
@@ -1601,7 +1613,7 @@ def fig_T_annual(res):
     ax2.set_title('Dwellings built per year (banking rule: never negative)', fontsize=10)
     ax2.legend(fontsize=8, frameon=False, loc='upper right')
     _style(ax2)
-    fig.text(0.5, -0.04, T_CAPTION, ha='center', fontsize=8, style='italic')
+    fig.text(0.5, -0.05, T_CAPTION, ha='center', fontsize=8, style='italic', wrap=True)
     fig.tight_layout()
     _save(fig, 'pw_10_T_annual_SI')
 

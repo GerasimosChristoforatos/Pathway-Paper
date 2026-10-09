@@ -6,19 +6,19 @@
   "solution_space_markers": [
     {
       "run": "P1-central",
-      "demand_reduction": 0.0747465210508218,
-      "intensity_reduction": -0.008706929091338411,
-      "LoE_AR_run": 4.535225307909517,
-      "LoE_AR_on_grid_at_coordinates": 4.540551732769229,
-      "LoE_AtP_run": 18.13751450326242
+      "demand_reduction": 0.06782167702730246,
+      "intensity_reduction": -0.0022363576144444064,
+      "LoE_AR_run": 4.54863285960776,
+      "LoE_AR_on_grid_at_coordinates": 4.548720036248866,
+      "LoE_AtP_run": 18.191134697821667
     },
     {
       "run": "P1-stretch",
-      "demand_reduction": 0.17867046146840992,
-      "intensity_reduction": -0.05556558095910957,
-      "LoE_AR_run": 4.179145389992368,
-      "LoE_AR_on_grid_at_coordinates": 4.215882619784934,
-      "LoE_AtP_run": 16.71346073811007
+      "demand_reduction": 0.13785371346349817,
+      "intensity_reduction": -0.00493897750700234,
+      "LoE_AR_run": 4.239839992142473,
+      "LoE_AR_on_grid_at_coordinates": 4.240018049767947,
+      "LoE_AtP_run": 16.956193822362216
     },
     {
       "run": "P2-central",
@@ -70,19 +70,19 @@
     },
     {
       "run": "P5-central",
-      "demand_reduction": 0.17043490963083208,
-      "intensity_reduction": 0.04609838833892832,
-      "LoE_AR_run": 3.9332794395660695,
-      "LoE_AR_on_grid_at_coordinates": 3.9274173988317136,
-      "LoE_AtP_run": 15.730180539453098
+      "demand_reduction": 0.16419051752969327,
+      "intensity_reduction": 0.052316652140153574,
+      "LoE_AR_run": 3.945239801699218,
+      "LoE_AR_on_grid_at_coordinates": 3.9343928511005735,
+      "LoE_AtP_run": 15.77801305645637
     },
     {
       "run": "P5-stretch",
-      "demand_reduction": 0.320602043355557,
-      "intensity_reduction": 0.061044051452712966,
-      "LoE_AR_run": 3.223342474040215,
-      "LoE_AR_on_grid_at_coordinates": 3.2348289727813344,
-      "LoE_AtP_run": 12.890962830429807
+      "demand_reduction": 0.28631002601990563,
+      "intensity_reduction": 0.10766128501464578,
+      "LoE_AR_run": 3.2758917323040064,
+      "LoE_AR_on_grid_at_coordinates": 3.2527809443998708,
+      "LoE_AtP_run": 13.101120621760034
     }
   ],
   "backcast_points": [
@@ -93,13 +93,13 @@
     },
     {
       "run": "P5-central back-cast",
-      "demand_reduction": 0.8437342395408308,
-      "intensity_reduction": 0.04609838833892832
+      "demand_reduction": 0.8430772982056123,
+      "intensity_reduction": 0.052316652140153574
     },
     {
       "run": "P5-stretch back-cast",
-      "demand_reduction": 0.840735913178385,
-      "intensity_reduction": 0.061044051452712966
+      "demand_reduction": 0.8356706856088993,
+      "intensity_reduction": 0.10766128501464578
     }
   ],
   "AtP_note": "not attainable within the window",
@@ -121,38 +121,38 @@
   },
   "P5-central": {
     "run": "P5-central",
-    "LoE_AR_at_k1": 3.9332794395660695,
-    "LoE_AtP_at_k1": 15.730180539453098,
+    "LoE_AR_at_k1": 3.945239801699218,
+    "LoE_AtP_at_k1": 15.77801305645637,
     "LoE_AR_min_k0": 0.3192163991544315,
     "LoE_AtP_min_k0": 1.276627218331403,
     "carbon_fixed_2026_cohort_kt": 1420.8412256619758,
-    "carbon_2027_2050_cohorts_kt": 16086.296861815945,
-    "gfa_2027_2050_Mm2": 70.00583981470879,
-    "k_AR": 0.18837070444903695,
-    "k_AR_closed_form": 0.18837070444903697,
-    "cut_AR": 0.8116292955509631,
+    "carbon_2027_2050_cohorts_kt": 16139.532772118922,
+    "gfa_2027_2050_Mm2": 70.53279534628501,
+    "k_AR": 0.18774936763171093,
+    "k_AR_closed_form": 0.18774936763171093,
+    "cut_AR": 0.8122506323682891,
     "LoE_AR_at_k": 1.0,
-    "gfa_2027_2050_at_k_Mm2": 13.187049361443133,
+    "gfa_2027_2050_at_k_Mm2": 13.242487723561895,
     "AtP_attainable": false,
-    "equivalent_cut_vs_P0_floor_area": 0.8437342395408308,
-    "equivalent_cut_vs_P0_carbon_2027_2050_cohorts": 0.8496682133192802
+    "equivalent_cut_vs_P0_floor_area": 0.8430772982056123,
+    "equivalent_cut_vs_P0_carbon_2027_2050_cohorts": 0.8496682133192801
   },
   "P5-stretch": {
     "run": "P5-stretch",
-    "LoE_AR_at_k1": 3.223342474040215,
-    "LoE_AtP_at_k1": 12.890962830429807,
+    "LoE_AR_at_k1": 3.2758917323040064,
+    "LoE_AtP_at_k1": 13.101120621760034,
     "LoE_AR_min_k0": 0.3192163991544315,
     "LoE_AtP_min_k0": 1.276627218331403,
     "carbon_fixed_2026_cohort_kt": 1420.8412256619758,
-    "carbon_2027_2050_cohorts_kt": 12926.347338820093,
-    "gfa_2027_2050_Mm2": 57.33344504905056,
-    "k_AR": 0.23441943747994587,
-    "k_AR_closed_form": 0.23441943747994592,
-    "cut_AR": 0.7655805625200541,
-    "LoE_AR_at_k": 0.9999999999999998,
-    "gfa_2027_2050_at_k_Mm2": 13.44007393718582,
+    "carbon_2027_2050_cohorts_kt": 13160.245574364793,
+    "gfa_2027_2050_Mm2": 60.22730051668421,
+    "k_AR": 0.23025307960355904,
+    "k_AR_closed_form": 0.23025307960355904,
+    "cut_AR": 0.769746920396441,
+    "LoE_AR_at_k": 1.0,
+    "gfa_2027_2050_at_k_Mm2": 13.867521420175562,
     "AtP_attainable": false,
-    "equivalent_cut_vs_P0_floor_area": 0.840735913178385,
-    "equivalent_cut_vs_P0_carbon_2027_2050_cohorts": 0.8496682133192802
+    "equivalent_cut_vs_P0_floor_area": 0.8356706856088993,
+    "equivalent_cut_vs_P0_carbon_2027_2050_cohorts": 0.8496682133192801
   }
 }

@@ -69,17 +69,12 @@
     }
   },
   "scenarios": {
-    "S1": {
-      "GFA_Mm2": 83.24468657433447,
+    "LOW": {
+      "floor_area_Mm2": 83.24468657433447,
       "carbon_kt": 31512.746653195114,
       "upfront_kt": 22756.22499709335,
-      "shares_2050": {
-        "Detached": 0.6059678545731274,
-        "Townhouses": 0.34524078995949914,
-        "Apartments": 0.04879135546737345
-      },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3096.066031110163,
+      "soil_carbon_loss_kt": 3096.066031110163,
       "rate_pct": {
         "2026": 0.10054764522644084,
         "2030": 0.10054764522644084,
@@ -98,24 +93,19 @@
       },
       "cumulative_net_removals_share_of_2025_stock": 0.02828661593600328,
       "redevelopment_channel": 0.0,
-      "join_net": 35846.62920231286,
+      "overbuild_2026_net_dwellings": 35846.62920231286,
       "R26": 17940.657500714424,
       "O26": 38862.6,
       "e26": 20921.942499285575,
       "e27": 13886.39693330392,
-      "label": "Low (S1): long-run rate, shares held"
+      "label": "Low replacement"
     },
-    "S3-5": {
-      "GFA_Mm2": 86.3547728037207,
+    "REF_HL5": {
+      "floor_area_Mm2": 86.3547728037207,
       "carbon_kt": 32533.26525965927,
       "upfront_kt": 23449.559412982857,
-      "shares_2050": {
-        "Detached": 0.6059678545731274,
-        "Townhouses": 0.34524078995949914,
-        "Apartments": 0.04879135546737345
-      },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3054.4474916023237,
+      "soil_carbon_loss_kt": 3054.4474916023237,
       "rate_pct": {
         "2026": 0.28481041248917904,
         "2030": 0.20637881404739533,
@@ -134,24 +124,19 @@
       },
       "cumulative_net_removals_share_of_2025_stock": 0.04293188926112332,
       "redevelopment_channel": 0.0,
-      "join_net": 28302.224140424623,
+      "overbuild_2026_net_dwellings": 28302.224140424623,
       "R26": 21824.190019308404,
       "O26": 38862.6,
       "e26": 17038.409980691595,
       "e27": 10480.206219223044,
-      "label": "sensitivity: S3 half-life 5 yr, shares held"
+      "label": "Reference, replacement half-life 5 yr"
     },
-    "S3-10": {
-      "GFA_Mm2": 89.56525459310167,
+    "REF": {
+      "floor_area_Mm2": 89.56525459310167,
       "carbon_kt": 33625.15835263455,
       "upfront_kt": 24203.706601780894,
-      "shares_2050": {
-        "Detached": 0.6059678545731274,
-        "Townhouses": 0.34524078995949914,
-        "Apartments": 0.04879135546737345
-      },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3049.916976528298,
+      "soil_carbon_loss_kt": 3049.916976528298,
       "rate_pct": {
         "2026": 0.2980355893121449,
         "2030": 0.25021551949483123,
@@ -170,24 +155,19 @@
       },
       "cumulative_net_removals_share_of_2025_stock": 0.05474529793667393,
       "redevelopment_channel": 0.0,
-      "join_net": 27479.123839651176,
+      "overbuild_2026_net_dwellings": 27479.123839651176,
       "R26": 22102.924595040186,
       "O26": 38862.6,
       "e26": 16759.675404959813,
       "e27": 9973.711263233039,
-      "label": "Reference (S3-10): fade, half-life 10 yr, shares held"
+      "label": "Reference"
     },
-    "S3-15": {
-      "GFA_Mm2": 91.57727235520493,
+    "REF_HL15": {
+      "floor_area_Mm2": 91.57727235520493,
       "carbon_kt": 34310.660061924944,
       "upfront_kt": 24677.542024556296,
-      "shares_2050": {
-        "Detached": 0.6059678545731274,
-        "Townhouses": 0.34524078995949914,
-        "Apartments": 0.04879135546737345
-      },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3048.286996898582,
+      "soil_carbon_loss_kt": 3048.286996898582,
       "rate_pct": {
         "2026": 0.3026516511878693,
         "2030": 0.26854415394384806,
@@ -206,24 +186,19 @@
       },
       "cumulative_net_removals_share_of_2025_stock": 0.06204456739929255,
       "redevelopment_channel": 0.0,
-      "join_net": 27182.952402974,
+      "overbuild_2026_net_dwellings": 27182.952402974,
       "R26": 22200.212976564686,
       "O26": 38862.6,
       "e26": 16662.387023435313,
       "e27": 9788.664226594203,
-      "label": "sensitivity: S3 half-life 15 yr, shares held"
+      "label": "Reference, replacement half-life 15 yr"
     },
-    "S2": {
-      "GFA_Mm2": 98.74146599074054,
+    "HIGH": {
+      "floor_area_Mm2": 98.74146599074054,
       "carbon_kt": 36753.87533779342,
       "upfront_kt": 26367.07694467935,
-      "shares_2050": {
-        "Detached": 0.6059678545731274,
-        "Townhouses": 0.34524078995949914,
-        "Apartments": 0.04879135546737345
-      },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3044.831788411977,
+      "soil_carbon_loss_kt": 3044.831788411977,
       "rate_pct": {
         "2026": 0.3122099828683497,
         "2030": 0.3122099828683497,
@@ -242,24 +217,19 @@
       },
       "cumulative_net_removals_share_of_2025_stock": 0.08783262757565609,
       "redevelopment_channel": 0.0,
-      "join_net": 26555.071505418407,
+      "overbuild_2026_net_dwellings": 26555.071505418407,
       "R26": 22401.664916400823,
       "O26": 38862.6,
       "e26": 16460.935083599175,
       "e27": 9391.901340473029,
-      "label": "High (S2): 2018-2023 rate persists, shares held"
+      "label": "High replacement"
     },
-    "S1-noUC": {
-      "GFA_Mm2": 85.70217764452615,
+    "LOW_NOUC": {
+      "floor_area_Mm2": 85.70217764452615,
       "carbon_kt": 32343.888827580722,
       "upfront_kt": 23328.836646168154,
-      "shares_2050": {
-        "Detached": 0.6059678545731274,
-        "Townhouses": 0.34524078995949914,
-        "Apartments": 0.04879135546737345
-      },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3087.941265922789,
+      "soil_carbon_loss_kt": 3087.941265922789,
       "rate_pct": {
         "2026": 0.13411321976770368,
         "2030": 0.13411321976770368,
@@ -278,24 +248,19 @@
       },
       "cumulative_net_removals_share_of_2025_stock": 0.0377294677659168,
       "redevelopment_channel": 0.0,
-      "join_net": 34373.16691348948,
+      "overbuild_2026_net_dwellings": 34373.16691348948,
       "R26": 18648.087450740168,
       "O26": 38862.6,
       "e26": 20214.51254925983,
       "e27": 13173.656402667955,
-      "label": "sensitivity: S1 without the census UC correction"
+      "label": "Low replacement, no census under-construction correction"
     },
-    "S3-10-noUC": {
-      "GFA_Mm2": 94.4760061235327,
+    "REF_NOUC": {
+      "floor_area_Mm2": 94.4760061235327,
       "carbon_kt": 35276.21039629052,
       "upfront_kt": 25338.142659225316,
-      "shares_2050": {
-        "Detached": 0.6059678545731274,
-        "Townhouses": 0.34524078995949914,
-        "Apartments": 0.04879135546737345
-      },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3023.8799524194246,
+      "soil_carbon_loss_kt": 3023.8799524194246,
       "rate_pct": {
         "2026": 0.40825398416336445,
         "2030": 0.3418730688428671,
@@ -314,24 +279,19 @@
       },
       "cumulative_net_removals_share_of_2025_stock": 0.07445780246070602,
       "redevelopment_channel": 0.0,
-      "join_net": 22757.904387846946,
+      "overbuild_2026_net_dwellings": 22757.904387846946,
       "R26": 24425.893727168816,
       "O26": 38862.6,
       "e26": 14436.706272831183,
       "e27": 7742.30389454883,
-      "label": "sensitivity: S3-10 without the census UC correction"
+      "label": "Reference, no census under-construction correction"
     },
-    "S2-noUC": {
-      "GFA_Mm2": 107.21386522906477,
+    "HIGH_NOUC": {
+      "floor_area_Mm2": 107.21386522906477,
       "carbon_kt": 39619.305210812025,
       "upfront_kt": 28341.20192048184,
-      "shares_2050": {
-        "Detached": 0.6059678545731274,
-        "Townhouses": 0.34524078995949914,
-        "Apartments": 0.04879135546737345
-      },
       "size_2050": 141.32058771513013,
-      "soil_kt": 3016.821003257954,
+      "soil_carbon_loss_kt": 3016.821003257954,
       "rate_pct": {
         "2026": 0.42793001604638714,
         "2030": 0.42793001604638714,
@@ -350,12 +310,12 @@
       },
       "cumulative_net_removals_share_of_2025_stock": 0.12038762304309761,
       "redevelopment_channel": 0.0,
-      "join_net": 21475.19108389847,
+      "overbuild_2026_net_dwellings": 21475.19108389847,
       "R26": 24840.586889492024,
       "O26": 38862.6,
       "e26": 14022.013110507974,
       "e27": 6934.670711182494,
-      "label": "sensitivity: S2 (High) without the census UC correction"
+      "label": "High replacement, no census under-construction correction"
     }
   }
 }

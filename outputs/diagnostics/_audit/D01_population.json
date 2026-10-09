@@ -1,0 +1,37 @@
+{
+ "figure": "D01_population",
+ "producer": "projection.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Population (million)",
+   "year_min": 1991.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{1990}$",
+  "$\\mathdefault{2000}$",
+  "$\\mathdefault{2010}$",
+  "$\\mathdefault{2020}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{3.0}$",
+  "$\\mathdefault{3.5}$",
+  "$\\mathdefault{4.0}$",
+  "$\\mathdefault{4.5}$",
+  "$\\mathdefault{5.0}$",
+  "$\\mathdefault{5.5}$",
+  "$\\mathdefault{6.0}$",
+  "$\\mathdefault{6.5}$",
+  "$\\mathdefault{7.0}$",
+  "$\\mathdefault{7.5}$",
+  "History (estimated resident population, 31 December)",
+  "Population (million)",
+  "Population 5th\u201395th percentile",
+  "Reference projection (median)"
+ ],
+ "note": null
+}

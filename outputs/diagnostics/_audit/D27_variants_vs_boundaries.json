@@ -1,0 +1,63 @@
+{
+ "figure": "D27_variants_vs_boundaries",
+ "producer": "boundaries.py",
+ "axes": [
+  {
+   "title": "Annual",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Cumulative 2026\u20132050",
+   "xlabel": "",
+   "ylabel": "Embodied carbon 2026\u20132050 (kt CO\u2082e)",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{1000}$",
+  "$\\mathdefault{1200}$",
+  "$\\mathdefault{1400}$",
+  "$\\mathdefault{1600}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{400}$",
+  "$\\mathdefault{600}$",
+  "$\\mathdefault{800}$",
+  "0",
+  "10,000",
+  "15,000",
+  "20,000",
+  "25,000",
+  "5,000",
+  "Ability to pay (AtP)",
+  "Ability to pay (AtP): 1,113 kt",
+  "Acquired rights (AR)",
+  "Acquired rights (AR): 4,451 kt",
+  "Annual",
+  "Construction year (A1\u2013A5 and soil)",
+  "Cumulative 2026\u20132050",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "Embodied carbon 2026\u20132050 (kt CO\u2082e)",
+  "High\nreplacement",
+  "High replacement",
+  "Low\nreplacement",
+  "Low replacement",
+  "Maintenance (B2, B4), 2026\u20132050",
+  "Monte Carlo 5\u201395% (Reference)",
+  "Reference",
+  "Reference: Maintenance (B2, B4), 2026\u20132050",
+  "a",
+  "b"
+ ],
+ "note": "The boundaries are the same in every variant (same population path). Boundaries: 2 \u00b0C carrying capacity (Bj\u00f8rn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO\u2082e per year; AR: Horup et al. 2025 Eq. 1 (base 2016\u20132025); AtP: Hjalsted et al. 2021 Eqs. 5\u20136 (GDP per capita, PPP, 2024); AtP is 25.0% of AR in every year (static design). Carbon: construction (A1\u2013A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1\u2013C4 are committed after 2050; A1\u2013A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4\u2013A5 e^(\u22120.01 (t \u2212 2025)) after Resch et al. 2021, C1\u2013C4 and soil at 2025."
+}

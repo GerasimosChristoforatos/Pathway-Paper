@@ -1,11 +1,11 @@
 {
   "run_mode": "full",
-  "disclaimer": "T is a hyper-optimistic theoretical limit (thought experiment): all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
+  "disclaimer": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
   "definition": {
-    "base": "P5-stretch (L3 removals -40%; no L4; L2a / L2b replaced by T1)",
+    "base": "P5 Ambitious (L4 removals -40%; L2 / L3 replaced by TL1)",
     "start": 2027,
-    "bau": "BAU decarbonisation applies in T as in every run (A1-A3 item paths of Horup et al. 2025, A4-A5 e^(-0.01 (t - 2025)); the lift held at 2025 as in the baseline).",
-    "t6": {
+    "bau": "The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025, A4-A5 e^(-0.01 (t - 2025)); the lift held at 2025 as in the Reference).",
+    "tl6": {
       "share": 0.65,
       "components": [
         0.82,
@@ -13,25 +13,25 @@
       ],
       "source": "Auckland Council (2021). Auckland Plan 2050 Development Strategy Monitoring Report, December 2021: in 2020/21, 82% of dwelling consents were in the existing urban area, of which 79% occurred through intensification",
       "assumptions": [
-        "(i) Auckland's observed share applied nationally (demonstrated-limit logic, as T3 / T4)",
+        "(i) Auckland's observed share applied nationally (demonstrated-limit logic, as TL3 / TL4)",
         "(ii) a dwelling-count share applied to floor area",
         "(iii) intensification on developed land seals no additional soil (upper bound: some infill builds over garden soil)",
         "(iv) replacement floor area keeps its existing zero-soil treatment",
-        "(v) the soil factor on the remaining share is T5's lowest soil order"
+        "(v) the soil factor on the remaining share is TL5's lowest soil order"
       ]
     },
-    "ramp": "instant: w = 1 for every lever in 2027-2050; 2026 observed and untouched (T-ramp: the v2 logistic ramp)",
+    "adoption": "from2027: w = 1 for every lever in 2027-2050; 2026 observed and untouched (TL, gradual adoption: the adopted logistic path, full by 2035)",
     "components": {
-      "T1": "No idle stock",
-      "T2": "No extra space",
-      "T3": "Minimum space per person",
-      "T4": "Best materials",
-      "T5": "Best soil",
-      "T6": "Urban densification"
+      "TL1": "No vacancy",
+      "TL2": "No extra space",
+      "TL3": "Minimum space per person",
+      "TL4": "Best-practice materials",
+      "TL5": "Lowest-carbon soils",
+      "TL6": "Urban infill"
     }
   },
   "resolved": {
-    "T3": {
+    "TL3": {
       "building": "A_1",
       "typology": "Apartments",
       "olf": 19.68761905,
@@ -52,7 +52,7 @@
         "SD_6": 41.5,
         "DD_4": 47.5
       },
-      "gfa_over_occupants_max_abs_diff": 3.33333360913457e-09,
+      "floor_area_over_occupants_max_abs_diff": 3.33333360913457e-09,
       "excluded_duplicates": [
         "A_2"
       ],
@@ -62,7 +62,7 @@
         "Apartments": 20.632169315
       }
     },
-    "T4": {
+    "TL4": {
       "Detached": {
         "n_independent": 10,
         "pooled_a13": 166.7218727223605,
@@ -109,7 +109,7 @@
         }
       }
     },
-    "T5": {
+    "TL5": {
       "Detached": {
         "soc_avg": 50.134407430073445,
         "soc_low": 22.92770192553271
@@ -123,35 +123,32 @@
         "soc_low": 2.5211032170909298
       }
     },
-    "disclaimer": "T is a hyper-optimistic theoretical limit (thought experiment): all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
-    "base_setting": "stretch",
+    "disclaimer": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
+    "base_setting": "ambitious",
     "start_year": 2027
   },
   "metrics": {
-    "T": {
-      "run": "T",
-      "scenario": "S3-10",
-      "setting": "T",
-      "levers": "P5-stretch+T1+T2+T3+T4+T5+T6",
-      "ramp": "instant",
+    "TL": {
+      "run": "TL",
+      "scenario": "REF",
+      "setting": "TL",
+      "levers": "P5-ambitious+TL1+TL2+TL3+TL4+TL5+TL6",
+      "adoption": "from2027",
       "l5_apartments_held": false,
-      "gfa_Mm2": 25.316324684160463,
-      "gfa_2027_2050_Mm2": 20.13967398416046,
-      "gfa_Detached_Mm2": 15.374476585983947,
-      "gfa_Townhouses_Mm2": 8.74985270581833,
-      "gfa_Apartments_Mm2": 1.191995392358186,
+      "floor_area_Mm2": 25.316324684160463,
+      "floor_area_2027_2050_Mm2": 20.13967398416046,
       "carbon_kt": 4579.425374837593,
       "upfront_kt": 4476.446640920804,
-      "b_inwindow_kt": 102.97873391678907,
-      "soil_kt": 299.21927696800924,
-      "a13_kt": 3232.1573656054625,
-      "a45_kt": 945.0699983473304,
+      "maintenance_kt": 102.97873391678907,
+      "soil_carbon_loss_kt": 299.21927696800924,
+      "a1a3_kt": 3232.1573656054625,
+      "a4a5_kt": 945.0699983473304,
       "carbon_excl_soil_kt": 4280.2060978695845,
       "committed_lower_kt": 2330.3514433989317,
       "committed_upper_kt": 2547.9775871455045,
-      "committed_B_lower_kt": 948.7326222662856,
-      "committed_B_upper_kt": 1166.3587660128587,
-      "committed_C_kt": 1381.6188211326457,
+      "committed_b2b4_lower_kt": 948.7326222662856,
+      "committed_b2b4_upper_kt": 1166.3587660128587,
+      "committed_c1c4_kt": 1381.6188211326457,
       "committed_years_B_AR_2050_lower": 12.702543551310415,
       "committed_years_B_AR_2050_upper": 13.888804780995393,
       "B_AR_kt": 4451.0282974985785,
@@ -172,43 +169,39 @@
       "stock_vacancy_2050": 0.0,
       "D_minus_occ_min_m2": -7.105427357601002e-15,
       "extra_clip_max_m2": 1.6543818112966853e-10,
-      "attached_share_2050": 0.3940321454268726,
-      "near_term_join_dwellings": 0.0013904411462135613,
+      "overbuild_2026_dwellings": 0.0013904411462135613,
       "existing_dwellings_released": 114398.67585300712,
       "vacancy_change_dwellings": -114398.67585300712,
       "size_minus_occupied_min_m2": 0.0,
       "l1_held_typology_years": 0,
-      "delta_carbon_kt_vs_P0_pct": -78.77685271348894,
-      "delta_LoE_AR_vs_P0_pct": -78.77685271348892,
-      "delta_LoE_AtP_vs_P0_pct": -78.77685271348894,
-      "delta_gfa_Mm2_vs_P0_pct": -71.7342123358288,
-      "delta_committed_lower_kt_vs_P0_pct": -71.6089773855798,
-      "delta_committed_upper_kt_vs_P0_pct": -71.59132130423674
+      "delta_carbon_kt_vs_reference_pct": -78.77685271348894,
+      "delta_LoE_AR_vs_reference_pct": -78.77685271348892,
+      "delta_LoE_AtP_vs_reference_pct": -78.77685271348894,
+      "delta_floor_area_Mm2_vs_reference_pct": -71.7342123358288,
+      "delta_committed_lower_kt_vs_reference_pct": -71.6089773855798,
+      "delta_committed_upper_kt_vs_reference_pct": -71.59132130423674
     },
-    "T-ramp": {
-      "run": "T-ramp",
-      "scenario": "S3-10",
-      "setting": "T",
-      "levers": "P5-stretch+T1+T2+T3+T4+T5+T6",
-      "ramp": "ramp2035",
+    "TL-gradual": {
+      "run": "TL-gradual",
+      "scenario": "REF",
+      "setting": "TL",
+      "levers": "P5-ambitious+TL1+TL2+TL3+TL4+TL5+TL6",
+      "adoption": "by2035",
       "l5_apartments_held": false,
-      "gfa_Mm2": 30.209755418878768,
-      "gfa_2027_2050_Mm2": 25.033104718878768,
-      "gfa_Detached_Mm2": 18.3397383098034,
-      "gfa_Townhouses_Mm2": 10.439264598284572,
-      "gfa_Apartments_Mm2": 1.4307525107907975,
+      "floor_area_Mm2": 30.209755418878768,
+      "floor_area_2027_2050_Mm2": 25.033104718878768,
       "carbon_kt": 5892.112170197813,
       "upfront_kt": 5739.3710295123565,
-      "b_inwindow_kt": 152.74114068545668,
-      "soil_kt": 416.1902828781855,
-      "a13_kt": 4175.119464940119,
-      "a45_kt": 1148.0612816940522,
+      "maintenance_kt": 152.74114068545668,
+      "soil_carbon_loss_kt": 416.1902828781855,
+      "a1a3_kt": 4175.119464940119,
+      "a4a5_kt": 1148.0612816940522,
       "carbon_excl_soil_kt": 5475.921887319628,
       "committed_lower_kt": 2752.0058233292402,
       "committed_upper_kt": 3006.5341917126025,
-      "committed_B_lower_kt": 1103.4412143125385,
-      "committed_B_upper_kt": 1357.969582695901,
-      "committed_C_kt": 1648.564609016702,
+      "committed_b2b4_lower_kt": 1103.4412143125385,
+      "committed_b2b4_upper_kt": 1357.969582695901,
+      "committed_c1c4_kt": 1648.564609016702,
       "committed_years_B_AR_2050_lower": 15.000944996224417,
       "committed_years_B_AR_2050_upper": 16.38835705099926,
       "B_AR_kt": 4451.0282974985785,
@@ -229,22 +222,21 @@
       "stock_vacancy_2050": 0.0,
       "D_minus_occ_min_m2": -7.105427357601002e-15,
       "extra_clip_max_m2": 1.5220008964224908e-10,
-      "attached_share_2050": 0.3940321454268726,
-      "near_term_join_dwellings": 0.0013904411580369924,
+      "overbuild_2026_dwellings": 0.0013904411580369924,
       "existing_dwellings_released": 119452.51951112486,
       "vacancy_change_dwellings": -119452.51951112486,
       "size_minus_occupied_min_m2": 0.0,
       "l1_held_typology_years": 0,
-      "delta_carbon_kt_vs_P0_pct": -72.69326297926901,
-      "delta_LoE_AR_vs_P0_pct": -72.69326297926901,
-      "delta_LoE_AtP_vs_P0_pct": -72.69326297926901,
-      "delta_gfa_Mm2_vs_P0_pct": -66.27067543533167,
-      "delta_committed_lower_kt_vs_P0_pct": -66.47189856857092,
-      "delta_committed_upper_kt_vs_P0_pct": -66.47864397587728
+      "delta_carbon_kt_vs_reference_pct": -72.69326297926901,
+      "delta_LoE_AR_vs_reference_pct": -72.69326297926901,
+      "delta_LoE_AtP_vs_reference_pct": -72.69326297926901,
+      "delta_floor_area_Mm2_vs_reference_pct": -66.27067543533167,
+      "delta_committed_lower_kt_vs_reference_pct": -66.47189856857092,
+      "delta_committed_upper_kt_vs_reference_pct": -66.47864397587728
     }
   },
   "indicators": {
-    "T": {
+    "TL": {
       "new_dwelling_size_m2": {
         "Detached": {
           "2026": 179.60009343759657,
@@ -401,7 +393,7 @@
         "2050": 5.574277706088537e-10
       },
       "vacancy_change_release_dwellings": 114398.67585300712,
-      "near_term_surplus_absorbed_dwellings": 16759.674014518656,
+      "overbuild_2026_absorbed_dwellings": 16759.674014518656,
       "bank": {
         "2026": {
           "raw": 38862.6,
@@ -591,7 +583,7 @@
       ],
       "n_zero_building_years": 5
     },
-    "T-ramp": {
+    "TL-gradual": {
       "new_dwelling_size_m2": {
         "Detached": {
           "2026": 179.60009343759657,
@@ -748,7 +740,7 @@
         "2050": 5.574277706088537e-10
       },
       "vacancy_change_release_dwellings": 119452.51951112486,
-      "near_term_surplus_absorbed_dwellings": 16759.674014518656,
+      "overbuild_2026_absorbed_dwellings": 16759.674014518656,
       "bank": {
         "2026": {
           "raw": 38862.6,
@@ -934,23 +926,23 @@
     }
   },
   "gap": {
-    "T": {
+    "TL": {
       "LoE_AR": 1.028846609986994,
       "within_AR": false,
       "backcast": {
-        "run": "T",
+        "run": "TL",
         "LoE_AR_at_k1": 1.028846609986994,
         "LoE_AtP_at_k1": 4.114618137653896,
         "LoE_AR_min_k0": 0.3192163991544315,
         "LoE_AtP_min_k0": 1.276627218331403,
         "carbon_fixed_2026_cohort_kt": 1420.8412256619758,
         "carbon_2027_2050_cohorts_kt": 3158.584149175617,
-        "gfa_2027_2050_Mm2": 20.13967398416046,
+        "floor_area_2027_2050_Mm2": 20.13967398416046,
         "k_AR": 0.9593498000132349,
         "k_AR_closed_form": 0.9593498000132351,
         "cut_AR": 0.04065019998676511,
         "LoE_AR_at_k": 0.9999999999999998,
-        "gfa_2027_2050_at_k_Mm2": 19.320992209036085,
+        "floor_area_2027_2050_at_k_Mm2": 19.320992209036085,
         "AtP_attainable": false
       },
       "residual": {
@@ -960,23 +952,23 @@
         "note": "dwellings in scope (excl. retirement villages) of the 2027-2050 cohorts x (1 - k); residents = sum over years of dwellings not built x S(t)"
       }
     },
-    "T-ramp": {
+    "TL-gradual": {
       "LoE_AR": 1.3237642576905444,
       "within_AR": false,
       "backcast": {
-        "run": "T-ramp",
+        "run": "TL-gradual",
         "LoE_AR_at_k1": 1.3237642576905444,
         "LoE_AtP_at_k1": 5.294068495536294,
         "LoE_AR_min_k0": 0.3192163991544315,
         "LoE_AtP_min_k0": 1.276627218331403,
         "carbon_fixed_2026_cohort_kt": 1420.8412256619758,
         "carbon_2027_2050_cohorts_kt": 4471.270944535838,
-        "gfa_2027_2050_Mm2": 25.033104718878768,
+        "floor_area_2027_2050_Mm2": 25.033104718878768,
         "k_AR": 0.6777015102472539,
         "k_AR_closed_form": 0.6777015102472538,
         "cut_AR": 0.3222984897527461,
         "LoE_AR_at_k": 1.0000000000000002,
-        "gfa_2027_2050_at_k_Mm2": 16.9649728741618,
+        "floor_area_2027_2050_at_k_Mm2": 16.9649728741618,
         "AtP_attainable": false
       },
       "residual": {
@@ -987,132 +979,141 @@
       }
     }
   },
+  "solution_space_marker": {
+    "run": "TL",
+    "demand_reduction": 0.7613460460884959,
+    "intensity_reduction": 0.263357385209284,
+    "LoE_AR_run": 1.028846609986994,
+    "LoE_AR_on_grid_at_coordinates": 1.155876240793504,
+    "LoE_AtP_run": 4.114618137653896,
+    "note": "TL5 and TL6 lower soil carbon loss, which the demand-intensity plane does not show"
+  },
   "shapley": [
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "carbon_kt",
-      "player": "T1",
-      "name": "No idle stock",
+      "player": "TL1",
+      "name": "No vacancy",
       "reduction": 1804.152035230623,
-      "share_of_P5s_instant_minus_T": 0.20430211628902717
+      "share_of_P5_ambitious_from2027_minus_TL": 0.20430211628902717
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "carbon_kt",
-      "player": "T2",
+      "player": "TL2",
       "name": "No extra space",
       "reduction": 2825.0725294846225,
-      "share_of_P5s_instant_minus_T": 0.31991111900385083
+      "share_of_P5_ambitious_from2027_minus_TL": 0.31991111900385083
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "carbon_kt",
-      "player": "T3",
+      "player": "TL3",
       "name": "Minimum space per person",
       "reduction": 2196.3841359761304,
-      "share_of_P5s_instant_minus_T": 0.24871846629389505
+      "share_of_P5_ambitious_from2027_minus_TL": 0.24871846629389505
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "carbon_kt",
-      "player": "T4",
-      "name": "Best materials",
+      "player": "TL4",
+      "name": "Best-practice materials",
       "reduction": 722.0268988269602,
-      "share_of_P5s_instant_minus_T": 0.08176230193875816
+      "share_of_P5_ambitious_from2027_minus_TL": 0.08176230193875816
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "carbon_kt",
-      "player": "T5",
-      "name": "Best soil",
+      "player": "TL5",
+      "name": "Lowest-carbon soils",
       "reduction": 564.6861380350962,
-      "share_of_P5s_instant_minus_T": 0.06394503943504998
+      "share_of_P5_ambitious_from2027_minus_TL": 0.06394503943504998
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "carbon_kt",
-      "player": "T6",
-      "name": "Urban densification",
+      "player": "TL6",
+      "name": "Urban infill",
       "reduction": 718.482700508681,
-      "share_of_P5s_instant_minus_T": 0.08136095703941885
+      "share_of_P5_ambitious_from2027_minus_TL": 0.08136095703941885
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "LoE_AR",
-      "player": "T1",
-      "name": "No idle stock",
+      "player": "TL1",
+      "name": "No vacancy",
       "reduction": 0.40533375989645665,
-      "share_of_P5s_instant_minus_T": 0.20430211628902717
+      "share_of_P5_ambitious_from2027_minus_TL": 0.20430211628902717
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "LoE_AR",
-      "player": "T2",
+      "player": "TL2",
       "name": "No extra space",
       "reduction": 0.6347010939185171,
-      "share_of_P5s_instant_minus_T": 0.31991111900385083
+      "share_of_P5_ambitious_from2027_minus_TL": 0.31991111900385083
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "LoE_AR",
-      "player": "T3",
+      "player": "TL3",
       "name": "Minimum space per person",
       "reduction": 0.4934554420178524,
-      "share_of_P5s_instant_minus_T": 0.248718466293895
+      "share_of_P5_ambitious_from2027_minus_TL": 0.248718466293895
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "LoE_AR",
-      "player": "T4",
-      "name": "Best materials",
+      "player": "TL4",
+      "name": "Best-practice materials",
       "reduction": 0.16221575118556988,
-      "share_of_P5s_instant_minus_T": 0.08176230193875816
+      "share_of_P5_ambitious_from2027_minus_TL": 0.08176230193875816
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "LoE_AR",
-      "player": "T5",
-      "name": "Best soil",
+      "player": "TL5",
+      "name": "Lowest-carbon soils",
       "reduction": 0.12686644530039112,
-      "share_of_P5s_instant_minus_T": 0.06394503943505
+      "share_of_P5_ambitious_from2027_minus_TL": 0.06394503943505
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "LoE_AR",
-      "player": "T6",
-      "name": "Urban densification",
+      "player": "TL6",
+      "name": "Urban infill",
       "reduction": 0.16141948612469148,
-      "share_of_P5s_instant_minus_T": 0.08136095703941884
+      "share_of_P5_ambitious_from2027_minus_TL": 0.08136095703941884
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "carbon_kt",
-      "player": "instant start",
-      "name": "P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player)",
+      "player": "from2027",
+      "name": "P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player)",
       "reduction": 1170.856987127063,
-      "share_of_P5s_instant_minus_T": null
+      "share_of_P5_ambitious_from2027_minus_TL": null
     },
     {
-      "level": "T",
-      "setting": "T",
+      "level": "TL",
+      "setting": "TL",
       "metric": "LoE_AR",
-      "player": "instant start",
-      "name": "P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player)",
+      "player": "from2027",
+      "name": "P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player)",
       "reduction": 0.26305314387353373,
-      "share_of_P5s_instant_minus_T": null
+      "share_of_P5_ambitious_from2027_minus_TL": null
     }
   ]
 }

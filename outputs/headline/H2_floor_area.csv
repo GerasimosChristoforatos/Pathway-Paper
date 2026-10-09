@@ -1,0 +1,166 @@
+panel,series,x,value,unit
+a,History,1991,2.3036037,Mm2 per year
+a,History,1992,2.52268605,Mm2 per year
+a,History,1993,2.80909015,Mm2 per year
+a,History,1994,3.5842892,Mm2 per year
+a,History,1995,3.37897805,Mm2 per year
+a,History,1996,3.69135135,Mm2 per year
+a,History,1997,3.8091922,Mm2 per year
+a,History,1998,3.04363565,Mm2 per year
+a,History,1999,3.99693595,Mm2 per year
+a,History,2000,3.2419662,Mm2 per year
+a,History,2001,3.42561545,Mm2 per year
+a,History,2002,4.46513775,Mm2 per year
+a,History,2003,5.1801125,Mm2 per year
+a,History,2004,5.328653549999999,Mm2 per year
+a,History,2005,4.63703075,Mm2 per year
+a,History,2006,4.6342814500000005,Mm2 per year
+a,History,2007,4.703460450000001,Mm2 per year
+a,History,2008,3.31592465,Mm2 per year
+a,History,2009,2.60091665,Mm2 per year
+a,History,2010,2.865998,Mm2 per year
+a,History,2011,2.3959684,Mm2 per year
+a,History,2012,3.02861425,Mm2 per year
+a,History,2013,3.7253984,Mm2 per year
+a,History,2014,4.1809443,Mm2 per year
+a,History,2015,4.421664799999999,Mm2 per year
+a,History,2016,4.98723115,Mm2 per year
+a,History,2017,4.9752887,Mm2 per year
+a,History,2018,5.1040935,Mm2 per year
+a,History,2019,5.38133485,Mm2 per year
+a,History,2020,5.635218549999999,Mm2 per year
+a,History,2021,6.82128405,Mm2 per year
+a,History,2022,6.466438149999999,Mm2 per year
+a,History,2023,4.6791376,Mm2 per year
+a,History,2024,4.261795,Mm2 per year
+a,History,2025,4.71978525,Mm2 per year
+a,Monte Carlo 5%,2026,5.176650700000001,Mm2 per year
+a,Monte Carlo 5%,2027,3.650998965387344,Mm2 per year
+a,Monte Carlo 5%,2028,3.424877123579327,Mm2 per year
+a,Monte Carlo 5%,2029,3.3452655924498025,Mm2 per year
+a,Monte Carlo 5%,2030,3.3021632673046235,Mm2 per year
+a,Monte Carlo 5%,2031,3.2710354461862496,Mm2 per year
+a,Monte Carlo 5%,2032,3.2053889144369445,Mm2 per year
+a,Monte Carlo 5%,2033,3.0830359199868678,Mm2 per year
+a,Monte Carlo 5%,2034,3.0041755238960666,Mm2 per year
+a,Monte Carlo 5%,2035,2.9705786626281583,Mm2 per year
+a,Monte Carlo 5%,2036,2.898332612671827,Mm2 per year
+a,Monte Carlo 5%,2037,2.7877021749450086,Mm2 per year
+a,Monte Carlo 5%,2038,2.6536961650004085,Mm2 per year
+a,Monte Carlo 5%,2039,2.56656854317712,Mm2 per year
+a,Monte Carlo 5%,2040,2.530295231695137,Mm2 per year
+a,Monte Carlo 5%,2041,2.466443181789431,Mm2 per year
+a,Monte Carlo 5%,2042,2.375327734080767,Mm2 per year
+a,Monte Carlo 5%,2043,2.25301801283574,Mm2 per year
+a,Monte Carlo 5%,2044,2.149264228796874,Mm2 per year
+a,Monte Carlo 5%,2045,2.104332557735147,Mm2 per year
+a,Monte Carlo 5%,2046,2.052046580528362,Mm2 per year
+a,Monte Carlo 5%,2047,2.0026839642747607,Mm2 per year
+a,Monte Carlo 5%,2048,1.9543667106963096,Mm2 per year
+a,Monte Carlo 5%,2049,1.9050383871862544,Mm2 per year
+a,Monte Carlo 5%,2050,1.8370060789718081,Mm2 per year
+a,Monte Carlo 95%,2026,5.176650700000001,Mm2 per year
+a,Monte Carlo 95%,2027,5.546086900898229,Mm2 per year
+a,Monte Carlo 95%,2028,5.107016590309474,Mm2 per year
+a,Monte Carlo 95%,2029,5.093070976044005,Mm2 per year
+a,Monte Carlo 95%,2030,5.112259774365194,Mm2 per year
+a,Monte Carlo 95%,2031,5.060389353916475,Mm2 per year
+a,Monte Carlo 95%,2032,4.937108498297326,Mm2 per year
+a,Monte Carlo 95%,2033,4.747872183225326,Mm2 per year
+a,Monte Carlo 95%,2034,4.530792987561836,Mm2 per year
+a,Monte Carlo 95%,2035,4.38402474130442,Mm2 per year
+a,Monte Carlo 95%,2036,4.267290787801973,Mm2 per year
+a,Monte Carlo 95%,2037,4.190282054468161,Mm2 per year
+a,Monte Carlo 95%,2038,4.166636240073273,Mm2 per year
+a,Monte Carlo 95%,2039,4.0995686876682385,Mm2 per year
+a,Monte Carlo 95%,2040,3.978141548692096,Mm2 per year
+a,Monte Carlo 95%,2041,3.9261532328112496,Mm2 per year
+a,Monte Carlo 95%,2042,3.9400733294442807,Mm2 per year
+a,Monte Carlo 95%,2043,4.033132445640112,Mm2 per year
+a,Monte Carlo 95%,2044,4.0472435737703485,Mm2 per year
+a,Monte Carlo 95%,2045,3.9619699172455083,Mm2 per year
+a,Monte Carlo 95%,2046,3.912356629375988,Mm2 per year
+a,Monte Carlo 95%,2047,3.904961782197136,Mm2 per year
+a,Monte Carlo 95%,2048,3.9375345450310832,Mm2 per year
+a,Monte Carlo 95%,2049,3.9799055354820525,Mm2 per year
+a,Monte Carlo 95%,2050,4.012348433497523,Mm2 per year
+a,Low replacement,2026,5.176650700000001,Mm2 per year
+a,Low replacement,2027,4.289943068925064,Mm2 per year
+a,Low replacement,2028,3.925277065100412,Mm2 per year
+a,Low replacement,2029,3.76753291187951,Mm2 per year
+a,Low replacement,2030,3.709247244717625,Mm2 per year
+a,Low replacement,2031,3.662469671599105,Mm2 per year
+a,Low replacement,2032,3.5958426385405176,Mm2 per year
+a,Low replacement,2033,3.4919354645139653,Mm2 per year
+a,Low replacement,2034,3.4203895459865783,Mm2 per year
+a,Low replacement,2035,3.392983257368773,Mm2 per year
+a,Low replacement,2036,3.3351726624648896,Mm2 per year
+a,Low replacement,2037,3.249929464947371,Mm2 per year
+a,Low replacement,2038,3.1408627494450725,Mm2 per year
+a,Low replacement,2039,3.020589902609731,Mm2 per year
+a,Low replacement,2040,2.9330776374338026,Mm2 per year
+a,Low replacement,2041,2.889648205148546,Mm2 per year
+a,Low replacement,2042,2.8917039675074183,Mm2 per year
+a,Low replacement,2043,2.940633754317078,Mm2 per year
+a,Low replacement,2044,2.971775049277452,Mm2 per year
+a,Low replacement,2045,2.95315840069615,Mm2 per year
+a,Low replacement,2046,2.934523478347223,Mm2 per year
+a,Low replacement,2047,2.9158687863159587,Mm2 per year
+a,Low replacement,2048,2.8971935496898005,Mm2 per year
+a,Low replacement,2049,2.878497367049683,Mm2 per year
+a,Low replacement,2050,2.85978003045275,Mm2 per year
+a,High replacement,2026,5.176650700000001,Mm2 per year
+a,High replacement,2027,4.578822424797481,Mm2 per year
+a,High replacement,2028,4.370248545629772,Mm2 per year
+a,High replacement,2029,4.296670749938583,Mm2 per year
+a,High replacement,2030,4.285355156581371,Mm2 per year
+a,High replacement,2031,4.266325478071125,Mm2 per year
+a,High replacement,2032,4.217450347921973,Mm2 per year
+a,High replacement,2033,4.126023832054695,Mm2 per year
+a,High replacement,2034,4.064077785042231,Mm2 per year
+a,High replacement,2035,4.044738407371116,Mm2 per year
+a,High replacement,2036,3.994217947634768,Mm2 per year
+a,High replacement,2037,3.91576705873618,Mm2 per year
+a,High replacement,2038,3.81311469460592,Mm2 per year
+a,High replacement,2039,3.698920110289328,Mm2 per year
+a,High replacement,2040,3.61717425063068,Mm2 per year
+a,High replacement,2041,3.5792936867184624,Mm2 per year
+a,High replacement,2042,3.5867870824572723,Mm2 per year
+a,High replacement,2043,3.64114627308056,Mm2 per year
+a,High replacement,2044,3.677811393756495,Mm2 per year
+a,High replacement,2045,3.6647770223635647,Mm2 per year
+a,High replacement,2046,3.651678371104094,Mm2 per year
+a,High replacement,2047,3.6385144282338113,Mm2 per year
+a,High replacement,2048,3.625284669649635,Mm2 per year
+a,High replacement,2049,3.611988823856561,Mm2 per year
+a,High replacement,2050,3.5986267502148617,Mm2 per year
+a,Reference,2026,5.176650700000001,Mm2 per year
+a,Reference,2027,4.541427154904419,Mm2 per year
+a,Reference,2028,4.277329888833303,Mm2 per year
+a,Reference,2029,4.159155440869919,Mm2 per year
+a,Reference,2030,4.109563021108126,Mm2 per year
+a,Reference,2031,4.056153134250751,Mm2 per year
+a,Reference,2032,3.975534065286801,Mm2 per year
+a,Reference,2033,3.854346573019712,Mm2 per year
+a,Reference,2034,3.764293467062823,Mm2 per year
+a,Reference,2035,3.71826428495577,Mm2 per year
+a,Reference,2036,3.6422912128113936,Mm2 per year
+a,Reference,2037,3.539564070002509,Mm2 per year
+a,Reference,2038,3.4137779441082765,Mm2 per year
+a,Reference,2039,3.277571994335934,Mm2 per year
+a,Reference,2040,3.174911267929529,Mm2 per year
+a,Reference,2041,3.1171295530396983,Mm2 per year
+a,Reference,2042,3.10563182227912,Mm2 per year
+a,Reference,2043,3.141798279004695,Mm2 per year
+a,Reference,2044,3.160950197867197,Mm2 per year
+a,Reference,2045,3.131061666060333,Mm2 per year
+a,Reference,2046,3.101805032592857,Mm2 per year
+a,Reference,2047,3.073143286509969,Mm2 per year
+a,Reference,2048,3.045041781085656,Mm2 per year
+a,Reference,2049,3.017467901249421,Mm2 per year
+a,Reference,2050,2.990390853933455,Mm2 per year
+b,Low replacement,cumulative 2026-2050,83.24468657433447,Mm2
+b,Reference,cumulative 2026-2050,89.56525459310167,Mm2
+b,High replacement,cumulative 2026-2050,98.74146599074054,Mm2
+b,"Reference, Monte Carlo 5%",cumulative 2026-2050,69.09838038316775,Mm2
+b,"Reference, Monte Carlo 95%",cumulative 2026-2050,109.93775983635231,Mm2

@@ -1,0 +1,67 @@
+{
+ "figure": "D22_boundaries",
+ "producer": "boundaries.py",
+ "axes": [
+  {
+   "title": "Boundaries 2025\u20132050",
+   "xlabel": "",
+   "ylabel": "Boundary (kt CO\u2082e per year, log scale)",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "Population modifier [P_NZ(t) / P_NZ(2025)] \u00b7 [P_W(2025) / P_W(t)]",
+   "xlabel": "",
+   "ylabel": "Index (2025 = 1)",
+   "year_min": 2025.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Components",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0.0}$",
+  "$\\mathdefault{0.2}$",
+  "$\\mathdefault{0.4}$",
+  "$\\mathdefault{0.6}$",
+  "$\\mathdefault{0.8}$",
+  "$\\mathdefault{0.99}$",
+  "$\\mathdefault{1.00}$",
+  "$\\mathdefault{1.01}$",
+  "$\\mathdefault{1.02}$",
+  "$\\mathdefault{1.03}$",
+  "$\\mathdefault{1.04}$",
+  "$\\mathdefault{1.05}$",
+  "$\\mathdefault{1.06}$",
+  "$\\mathdefault{1.0}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "100",
+  "173.7",
+  "183.5",
+  "200",
+  "43.4",
+  "45.9",
+  "50",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Boundaries 2025\u20132050",
+  "Boundary (kt CO\u2082e per year, log scale)",
+  "Components",
+  "Index (2025 = 1)",
+  "Population modifier [P_NZ(t) / P_NZ(2025)] \u00b7 [P_W(2025) / P_W(t)]",
+  "a",
+  "b",
+  "c"
+ ],
+ "note": "2 \u00b0C carrying capacity (Bj\u00f8rn & Hauschild 2015). Log axis: the AtP boundary is 25.0% of the AR boundary in every year: both scale with P_NZ(t) / P_W(t) (static design), so their ratio is constant."
+}

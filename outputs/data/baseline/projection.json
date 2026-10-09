@@ -1,96 +1,75 @@
 {
   "settings": {
-    "scenario": "S3",
-    "s3_half_life": 10.0,
-    "near_term_join": "market_excess",
+    "scenario": "REF",
+    "replacement_half_life": 10.0,
+    "overbuild_rule": "market_excess",
     "nowcast_method": "last_12_months",
-    "near_term_mode": "surplus",
+    "overbuild_booking": "surplus",
     "completion_rate": 0.95,
-    "lag_w": 0.0,
-    "phi": 0.8
+    "lag_w": 0.0
   },
-  "gfa_Mm2": 89.56525459310167,
+  "floor_area_Mm2": 89.56525459310167,
   "carbon_kt": 21577.50362382947,
   "upfront_kt": 21174.320821339476,
-  "soil_kt": 3049.916976528298,
+  "soil_carbon_loss_kt": 3049.916976528298,
   "stages_kt": {
     "A1-A3": 14759.960083177604,
     "A4-A5": 3364.4437616335736,
     "B2,B4": 0.0,
     "C1-C4": 0.0
   },
-  "pop_band_gfa_Mm2": {
+  "population_band_floor_area_Mm2": {
     "5th": 66.73010838757283,
     "50th": 89.56525459310167,
     "95th": 112.342066340124
   },
   "demand_bands": [
     {
-      "band": "Growth (net of consolidation)",
-      "gfa_Mm2": 42.88829507079759,
+      "band": "Population growth",
+      "floor_area_Mm2": 42.88829507079759,
       "carbon_kt": 10354.02617062089
     },
     {
-      "band": "House-splitting",
-      "gfa_Mm2": 2.307796429820681,
+      "band": "Smaller households",
+      "floor_area_Mm2": 2.307796429820681,
       "carbon_kt": 589.6554998776348
     },
     {
-      "band": "Extra space per dwelling",
-      "gfa_Mm2": 25.52026002339228,
+      "band": "Extra space",
+      "floor_area_Mm2": 25.52026002339228,
       "carbon_kt": 6176.436190643062
     },
     {
-      "band": "Vacancy allowance",
-      "gfa_Mm2": 4.0267507336767565,
+      "band": "Vacancy",
+      "floor_area_Mm2": 4.0267507336767565,
       "carbon_kt": 974.8586525222178
     },
     {
-      "band": "Demolition replacement",
-      "gfa_Mm2": 11.313767245341518,
+      "band": "Replacement: demolition (BRANZ rate)",
+      "floor_area_Mm2": 11.313767245341518,
       "carbon_kt": 2252.040503589108
     },
     {
-      "band": "Calibrated stock residual (long run)",
-      "gfa_Mm2": -2.8873031330516987,
+      "band": "Replacement: net unconsented additions (calibrated residual)",
+      "floor_area_Mm2": -2.8873031330516987,
       "carbon_kt": -574.7266547709394
     },
     {
-      "band": "Redevelopment wave (scenario - long run)",
-      "gfa_Mm2": 7.883319196922969,
+      "band": "Redevelopment",
+      "floor_area_Mm2": 7.883319196922969,
       "carbon_kt": 1628.322097893969
     },
     {
-      "band": "Near-term market excess",
-      "gfa_Mm2": 3.8648527333450877,
+      "band": "2026 overbuild",
+      "floor_area_Mm2": 3.8648527333450877,
       "carbon_kt": 1039.1619430228482
     },
     {
-      "band": "Housed in RV units (out of scope)",
-      "gfa_Mm2": -5.352483707143523,
+      "band": "Retirement villages (out of scope)",
+      "floor_area_Mm2": -5.352483707143523,
       "carbon_kt": -1265.4535820593112
     }
   ],
-  "typology": {
-    "Detached": {
-      "gfa_Mm2": 54.30726280152429,
-      "carbon_kt": 11685.31349449435,
-      "share_2025": 0.5967414725066146,
-      "share_2050": 0.6059678545731274
-    },
-    "Townhouses": {
-      "gfa_Mm2": 30.931204021633686,
-      "carbon_kt": 8074.202946706868,
-      "share_2025": 0.3547195711923546,
-      "share_2050": 0.34524078995949914
-    },
-    "Apartments": {
-      "gfa_Mm2": 4.3267877699436985,
-      "carbon_kt": 1817.9871826282524,
-      "share_2025": 0.04853895630103086,
-      "share_2050": 0.04879135546737345
-    }
-  },
   "material_kt": {
     "CONCRETE (incl. reinforced)": 4322.926146248115,
     "OTHERS": 4366.897324426537,
@@ -103,14 +82,14 @@
   "accounting": "time_resolved",
   "decarb_a45": "resch",
   "event_timing": "n+1",
-  "b_inwindow_kt": 403.18280248999224,
+  "maintenance_kt": 403.18280248999224,
   "committed": {
     "B_upper_kt": 4082.493276679825,
     "B_lower_kt": 3321.539468289954,
     "C_kt": 4886.5179696105515,
     "upper_kt": 8969.011246290376,
     "lower_kt": 8208.057437900507,
-    "B_inwindow_kt": 403.18280248999224
+    "maintenance_kt": 403.18280248999224
   },
   "annual": {
     "years": [
@@ -141,7 +120,7 @@
       2049,
       2050
     ],
-    "gfa_Mm2": [
+    "floor_area_Mm2": [
       4.71978525,
       5.176650700000001,
       4.541427154904419,

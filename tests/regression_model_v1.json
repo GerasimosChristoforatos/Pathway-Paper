@@ -506502,5 +506502,3188 @@
 },
 "sha256_at_capture": "f9474d59994455b01904964ea3a275749aec195494338efeb31a61c165127213"
 }
+},
+"additions": {
+"meta": {
+"purpose": "MODEL v1.0.0: values that no v3.1 output held (additions, not changes)",
+"commit": "2f37ca8f4a1c1d338d8d98805d4baf03688baf0c",
+"captured_utc": "2026-10-09 11:36 UTC",
+"runs": "python run_all.py (full) then python run_all.py --pathways-only, release layout (layout.py)",
+"tolerance": "relative 1e-12 (math.isclose, abs_tol 0); NaN equals NaN; booleans and integers exact",
+"n_files": 8,
+"n_values": 1681
+},
+"files": {
+"data/baseline/annual.csv": {
+"kind": "csv",
+"key_columns": [
+"year",
+"source"
+],
+"value_columns": [
+"floor_area_Mm2",
+"carbon_kt",
+"materials_construction_kt",
+"soil_carbon_loss_kt",
+"maintenance_kt"
+],
+"n_rows": 60,
+"duplicate_keys": 0,
+"rows": {
+"[1991, \"history\"]": {
+"floor_area_Mm2": 2.3036037,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[1992, \"history\"]": {
+"floor_area_Mm2": 2.52268605,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[1993, \"history\"]": {
+"floor_area_Mm2": 2.80909015,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[1994, \"history\"]": {
+"floor_area_Mm2": 3.5842892,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[1995, \"history\"]": {
+"floor_area_Mm2": 3.37897805,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[1996, \"history\"]": {
+"floor_area_Mm2": 3.69135135,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[1997, \"history\"]": {
+"floor_area_Mm2": 3.8091922,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[1998, \"history\"]": {
+"floor_area_Mm2": 3.04363565,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[1999, \"history\"]": {
+"floor_area_Mm2": 3.99693595,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2000, \"history\"]": {
+"floor_area_Mm2": 3.2419662,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2001, \"history\"]": {
+"floor_area_Mm2": 3.42561545,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2002, \"history\"]": {
+"floor_area_Mm2": 4.46513775,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2003, \"history\"]": {
+"floor_area_Mm2": 5.1801125,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2004, \"history\"]": {
+"floor_area_Mm2": 5.328653549999999,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2005, \"history\"]": {
+"floor_area_Mm2": 4.63703075,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2006, \"history\"]": {
+"floor_area_Mm2": 4.6342814500000005,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2007, \"history\"]": {
+"floor_area_Mm2": 4.703460450000001,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2008, \"history\"]": {
+"floor_area_Mm2": 3.31592465,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2009, \"history\"]": {
+"floor_area_Mm2": 2.60091665,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2010, \"history\"]": {
+"floor_area_Mm2": 2.865998,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2011, \"history\"]": {
+"floor_area_Mm2": 2.3959684,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2012, \"history\"]": {
+"floor_area_Mm2": 3.02861425,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2013, \"history\"]": {
+"floor_area_Mm2": 3.7253984,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2014, \"history\"]": {
+"floor_area_Mm2": 4.1809443,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2015, \"history\"]": {
+"floor_area_Mm2": 4.421664799999999,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2016, \"history\"]": {
+"floor_area_Mm2": 4.98723115,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2017, \"history\"]": {
+"floor_area_Mm2": 4.9752887,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2018, \"history\"]": {
+"floor_area_Mm2": 5.1040935,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2019, \"history\"]": {
+"floor_area_Mm2": 5.38133485,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2020, \"history\"]": {
+"floor_area_Mm2": 5.635218549999999,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2021, \"history\"]": {
+"floor_area_Mm2": 6.82128405,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2022, \"history\"]": {
+"floor_area_Mm2": 6.466438149999999,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2023, \"history\"]": {
+"floor_area_Mm2": 4.6791376,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2024, \"history\"]": {
+"floor_area_Mm2": 4.261795,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2025, \"history\"]": {
+"floor_area_Mm2": 4.71978525,
+"carbon_kt": "NaN",
+"materials_construction_kt": "NaN",
+"soil_carbon_loss_kt": "NaN",
+"maintenance_kt": "NaN"
+},
+"[2026, \"projection\"]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1370.0863216893729,
+"materials_construction_kt": 1190.461020604684,
+"soil_carbon_loss_kt": 179.62530108468877,
+"maintenance_kt": 0.0
+},
+"[2027, \"projection\"]": {
+"floor_area_Mm2": 4.541427154904419,
+"carbon_kt": 1189.022120071042,
+"materials_construction_kt": 1035.522577967661,
+"soil_carbon_loss_kt": 153.49954210338117,
+"maintenance_kt": 0.0
+},
+"[2028, \"projection\"]": {
+"floor_area_Mm2": 4.277329888833303,
+"carbon_kt": 1101.329311041889,
+"materials_construction_kt": 957.5887680797282,
+"soil_carbon_loss_kt": 143.7405429621607,
+"maintenance_kt": 0.0
+},
+"[2029, \"projection\"]": {
+"floor_area_Mm2": 4.159155440869919,
+"carbon_kt": 1053.824986212924,
+"materials_construction_kt": 913.9237539326396,
+"soil_carbon_loss_kt": 139.9012322802844,
+"maintenance_kt": 0.0
+},
+"[2030, \"projection\"]": {
+"floor_area_Mm2": 4.109563021108126,
+"carbon_kt": 1024.8490990210514,
+"materials_construction_kt": 886.039618332946,
+"soil_carbon_loss_kt": 138.8094806881053,
+"maintenance_kt": 0.0
+},
+"[2031, \"projection\"]": {
+"floor_area_Mm2": 4.056153134250751,
+"carbon_kt": 1003.0613206603134,
+"materials_construction_kt": 865.565683556034,
+"soil_carbon_loss_kt": 137.4956371042794,
+"maintenance_kt": 0.0
+},
+"[2032, \"projection\"]": {
+"floor_area_Mm2": 3.975534065286801,
+"carbon_kt": 974.6039695641884,
+"materials_construction_kt": 839.5972541702287,
+"soil_carbon_loss_kt": 135.0067153939596,
+"maintenance_kt": 0.0
+},
+"[2033, \"projection\"]": {
+"floor_area_Mm2": 3.854346573019712,
+"carbon_kt": 947.0381028108236,
+"materials_construction_kt": 805.5212232663737,
+"soil_carbon_loss_kt": 130.80133803529213,
+"maintenance_kt": 10.715541509157935
+},
+"[2034, \"projection\"]": {
+"floor_area_Mm2": 3.764293467062823,
+"carbon_kt": 917.4298150363834,
+"materials_construction_kt": 778.431530513407,
+"soil_carbon_loss_kt": 127.8334111789376,
+"maintenance_kt": 11.1648733440389
+},
+"[2035, \"projection\"]": {
+"floor_area_Mm2": 3.71826428495577,
+"carbon_kt": 897.7693174421685,
+"materials_construction_kt": 760.7589963497245,
+"soil_carbon_loss_kt": 126.63240303022988,
+"maintenance_kt": 10.377918062214055
+},
+"[2036, \"projection\"]": {
+"floor_area_Mm2": 3.6422912128113936,
+"carbon_kt": 871.4196732486625,
+"materials_construction_kt": 737.241386137506,
+"soil_carbon_loss_kt": 124.15706981099216,
+"maintenance_kt": 10.021217300164457
+},
+"[2037, \"projection\"]": {
+"floor_area_Mm2": 3.539564070002509,
+"carbon_kt": 839.1131493398076,
+"materials_construction_kt": 708.7130335956944,
+"soil_carbon_loss_kt": 120.54334068388933,
+"maintenance_kt": 9.85677506022405
+},
+"[2038, \"projection\"]": {
+"floor_area_Mm2": 3.4137779441082765,
+"carbon_kt": 802.0982783505058,
+"materials_construction_kt": 676.0798377977111,
+"soil_carbon_loss_kt": 115.9471709695034,
+"maintenance_kt": 10.071269583291237
+},
+"[2039, \"projection\"]": {
+"floor_area_Mm2": 3.277571994335934,
+"carbon_kt": 763.0406365256144,
+"materials_construction_kt": 641.9667698102598,
+"soil_carbon_loss_kt": 110.89146007151288,
+"maintenance_kt": 10.18240664384178
+},
+"[2040, \"projection\"]": {
+"floor_area_Mm2": 3.174911267929529,
+"carbon_kt": 740.7547582228092,
+"materials_construction_kt": 614.955971848444,
+"soil_carbon_loss_kt": 107.18536656906792,
+"maintenance_kt": 18.61341980529712
+},
+"[2041, \"projection\"]": {
+"floor_area_Mm2": 3.1171295530396983,
+"carbon_kt": 724.7975687822824,
+"materials_construction_kt": 598.7386842591907,
+"soil_carbon_loss_kt": 105.29375986814334,
+"maintenance_kt": 20.76512465494838
+},
+"[2042, \"projection\"]": {
+"floor_area_Mm2": 3.10563182227912,
+"carbon_kt": 720.9100961237434,
+"materials_construction_kt": 591.5344965768179,
+"soil_carbon_loss_kt": 105.27291707969928,
+"maintenance_kt": 24.10268246722617
+},
+"[2043, \"projection\"]": {
+"floor_area_Mm2": 3.141798279004695,
+"carbon_kt": 732.5032931238119,
+"materials_construction_kt": 593.3804899939671,
+"soil_carbon_loss_kt": 107.1782775695696,
+"maintenance_kt": 31.94452556027516
+},
+"[2044, \"projection\"]": {
+"floor_area_Mm2": 3.160950197867197,
+"carbon_kt": 730.99081235082,
+"materials_construction_kt": 591.9353669218085,
+"soil_carbon_loss_kt": 108.35051102072448,
+"maintenance_kt": 30.70493440828685
+},
+"[2045, \"projection\"]": {
+"floor_area_Mm2": 3.131061666060333,
+"carbon_kt": 718.3844100433283,
+"materials_construction_kt": 581.3348106304693,
+"soil_carbon_loss_kt": 107.4765296767713,
+"maintenance_kt": 29.57306973608764
+},
+"[2046, \"projection\"]": {
+"floor_area_Mm2": 3.101805032592857,
+"carbon_kt": 706.2530508908865,
+"materials_construction_kt": 570.9568143524061,
+"soil_carbon_loss_kt": 106.6026399480945,
+"maintenance_kt": 28.69359659038575
+},
+"[2047, \"projection\"]": {
+"floor_area_Mm2": 3.073143286509969,
+"carbon_kt": 701.3848813359264,
+"materials_construction_kt": 560.791192370422,
+"soil_carbon_loss_kt": 105.728797677875,
+"maintenance_kt": 34.864891287629376
+},
+"[2048, \"projection\"]": {
+"floor_area_Mm2": 3.045041781085656,
+"carbon_kt": 694.2145696877302,
+"materials_construction_kt": 550.8284396970732,
+"soil_carbon_loss_kt": 104.85497999202823,
+"maintenance_kt": 38.53114999862878
+},
+"[2049, \"projection\"]": {
+"floor_area_Mm2": 3.017467901249421,
+"carbon_kt": 682.0120122055378,
+"materials_construction_kt": 541.0596521958565,
+"soil_carbon_loss_kt": 103.98117504135828,
+"maintenance_kt": 36.971184968323065
+},
+"[2050, \"projection\"]": {
+"floor_area_Mm2": 2.990390853933455,
+"carbon_kt": 670.612070047848,
+"materials_construction_kt": 531.4764718501265,
+"soil_carbon_loss_kt": 103.10737668775,
+"maintenance_kt": 36.02822150997158
+}
+}
+},
+"data/baseline/bands_annual.csv": {
+"kind": "csv",
+"key_columns": [
+"year",
+"band"
+],
+"value_columns": [
+"floor_area_Mm2",
+"carbon_kt"
+],
+"n_rows": 200,
+"duplicate_keys": 0,
+"rows": {
+"[2026, \"Population growth\"]": {
+"floor_area_Mm2": 1.1420836054117558,
+"carbon_kt": 309.9605176883236
+},
+"[2026, \"Smaller households\"]": {
+"floor_area_Mm2": 0.1511571657487397,
+"carbon_kt": 41.023926029379645
+},
+"[2026, \"Extra space\"]": {
+"floor_area_Mm2": 0.7113129807236956,
+"carbon_kt": 193.04973707599265
+},
+"[2026, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1141438736181617,
+"carbon_kt": 30.97855007285599
+},
+"[2026, \"Replacement\"]": {
+"floor_area_Mm2": 0.2837803505378276,
+"carbon_kt": 65.25970815486384
+},
+"[2026, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.557379517674656,
+"carbon_kt": 128.1780947342165
+},
+"[2026, \"2026 overbuild\"]": {
+"floor_area_Mm2": 2.2167932062851654,
+"carbon_kt": 601.6357879337402
+},
+"[2026, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2027, \"Population growth\"]": {
+"floor_area_Mm2": 1.7005246629387103,
+"carbon_kt": 457.6371811752581
+},
+"[2027, \"Smaller households\"]": {
+"floor_area_Mm2": 0.1545981714449045,
+"carbon_kt": 41.60473113787784
+},
+"[2027, \"Extra space\"]": {
+"floor_area_Mm2": 1.026732883150473,
+"carbon_kt": 276.3095135903143
+},
+"[2027, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1640994533066489,
+"carbon_kt": 44.16167132435314
+},
+"[2027, \"Replacement\"]": {
+"floor_area_Mm2": 0.284717965924429,
+"carbon_kt": 64.92053533202129
+},
+"[2027, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.521771744852929,
+"carbon_kt": 118.97282592263907
+},
+"[2027, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.6889822732863248,
+"carbon_kt": 185.41566158857827
+},
+"[2027, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2028, \"Population growth\"]": {
+"floor_area_Mm2": 1.7326100339375532,
+"carbon_kt": 459.0960044175376
+},
+"[2028, \"Smaller households\"]": {
+"floor_area_Mm2": 0.1781861745631653,
+"carbon_kt": 47.21464102252999
+},
+"[2028, \"Extra space\"]": {
+"floor_area_Mm2": 1.0605831061258748,
+"carbon_kt": 281.02657657394093
+},
+"[2028, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1691971316017633,
+"carbon_kt": 44.83278150060482
+},
+"[2028, \"Replacement\"]": {
+"floor_area_Mm2": 0.2877806021233623,
+"carbon_kt": 64.42698585956384
+},
+"[2028, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.4920669568476498,
+"carbon_kt": 110.16166703686424
+},
+"[2028, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.3569058836339339,
+"carbon_kt": 94.5706546308477
+},
+"[2028, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2029, \"Population growth\"]": {
+"floor_area_Mm2": 1.7326100339375536,
+"carbon_kt": 451.92726314692976
+},
+"[2029, \"Smaller households\"]": {
+"floor_area_Mm2": 0.2235238500583699,
+"carbon_kt": 58.30309176691783
+},
+"[2029, \"Extra space\"]": {
+"floor_area_Mm2": 1.0896147660850306,
+"carbon_kt": 284.2108780832778
+},
+"[2029, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1734318915922051,
+"carbon_kt": 45.23730012779391
+},
+"[2029, \"Replacement\"]": {
+"floor_area_Mm2": 0.2909383777865813,
+"carbon_kt": 63.93016519098184
+},
+"[2029, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.4641525052149142,
+"carbon_kt": 101.99186012497978
+},
+"[2029, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.1848840161952647,
+"carbon_kt": 48.22442777204306
+},
+"[2029, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2030, \"Population growth\"]": {
+"floor_area_Mm2": 1.7326100339375536,
+"carbon_kt": 444.7655505201494
+},
+"[2030, \"Smaller households\"]": {
+"floor_area_Mm2": 0.2586290313105487,
+"carbon_kt": 66.390752239794
+},
+"[2030, \"Extra space\"]": {
+"floor_area_Mm2": 1.1136861227456525,
+"carbon_kt": 285.8861554460289
+},
+"[2030, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1768015389555298,
+"carbon_kt": 45.38541983833392
+},
+"[2030, \"Replacement\"]": {
+"floor_area_Mm2": 0.2941751880168213,
+"carbon_kt": 63.42544693308135
+},
+"[2030, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.4378876795555588,
+"carbon_kt": 94.41048366292918
+},
+"[2030, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.0957734265864619,
+"carbon_kt": 24.585290380734424
+},
+"[2030, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2031, \"Population growth\"]": {
+"floor_area_Mm2": 1.7326100339375536,
+"carbon_kt": 440.9388603208956
+},
+"[2031, \"Smaller households\"]": {
+"floor_area_Mm2": 0.2642962939638385,
+"carbon_kt": 67.26182139359099
+},
+"[2031, \"Extra space\"]": {
+"floor_area_Mm2": 1.1214468856878084,
+"carbon_kt": 285.40150524340214
+},
+"[2031, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1775661614332594,
+"carbon_kt": 45.18952292801941
+},
+"[2031, \"Replacement\"]": {
+"floor_area_Mm2": 0.2974748869635356,
+"carbon_kt": 63.47986512173656
+},
+"[2031, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.4131464210162668,
+"carbon_kt": 88.16367441751693
+},
+"[2031, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.049612451248489,
+"carbon_kt": 12.626071235152034
+},
+"[2031, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2032, \"Population growth\"]": {
+"floor_area_Mm2": 1.732610033937554,
+"carbon_kt": 437.11905958899627
+},
+"[2032, \"Smaller households\"]": {
+"floor_area_Mm2": 0.239483117019404,
+"carbon_kt": 60.419039973501846
+},
+"[2032, \"Extra space\"]": {
+"floor_area_Mm2": 1.1115864902073496,
+"carbon_kt": 280.44143329068487
+},
+"[2032, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1755917689456362,
+"carbon_kt": 44.2999332854211
+},
+"[2032, \"Replacement\"]": {
+"floor_area_Mm2": 0.3007888562836828,
+"carbon_kt": 63.52391745951872
+},
+"[2032, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.3897736082806816,
+"carbon_kt": 82.3167015767664
+},
+"[2032, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.0257001906124932,
+"carbon_kt": 6.483884389299271
+},
+"[2032, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2033, \"Population growth\"]": {
+"floor_area_Mm2": 1.7326100339375536,
+"carbon_kt": 433.5826420797354
+},
+"[2033, \"Smaller households\"]": {
+"floor_area_Mm2": 0.1831448446286954,
+"carbon_kt": 45.8316782553358
+},
+"[2033, \"Extra space\"]": {
+"floor_area_Mm2": 1.0828322546523517,
+"carbon_kt": 270.9768849914469
+},
+"[2033, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1707464069972835,
+"carbon_kt": 42.72899084120871
+},
+"[2033, \"Replacement\"]": {
+"floor_area_Mm2": 0.3040659769380869,
+"carbon_kt": 63.58741314600729
+},
+"[2033, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.3676338697421547,
+"carbon_kt": 76.88096839101388
+},
+"[2033, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.0133131861235862,
+"carbon_kt": 3.33160163042889
+},
+"[2033, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 10.11792347564679
+},
+"[2034, \"Population growth\"]": {
+"floor_area_Mm2": 1.7279897405137203,
+"carbon_kt": 428.6485941686444
+},
+"[2034, \"Smaller households\"]": {
+"floor_area_Mm2": 0.1465041594132912,
+"carbon_kt": 36.34211506006778
+},
+"[2034, \"Extra space\"]": {
+"floor_area_Mm2": 1.0618394711713708,
+"carbon_kt": 263.4020248378732
+},
+"[2034, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1672015354521698,
+"carbon_kt": 41.47634759284168
+},
+"[2034, \"Replacement\"]": {
+"floor_area_Mm2": 0.3072526671821458,
+"carbon_kt": 63.581483400942346
+},
+"[2034, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.3466094104427538,
+"carbon_kt": 71.72579062954661
+},
+"[2034, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.0068964828873716,
+"carbon_kt": 1.7107553506082398
+},
+"[2034, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 10.54270399585907
+},
+"[2035, \"Population growth\"]": {
+"floor_area_Mm2": 1.7161823239861458,
+"carbon_kt": 421.9390025014381
+},
+"[2035, \"Smaller households\"]": {
+"floor_area_Mm2": 0.1412606133187283,
+"carbon_kt": 34.730204036833285
+},
+"[2035, \"Extra space\"]": {
+"floor_area_Mm2": 1.054386871309999,
+"carbon_kt": 259.2305832039001
+},
+"[2035, \"Vacancy\"]": {
+"floor_area_Mm2": 0.165806246582174,
+"carbon_kt": 40.76497078054903
+},
+"[2035, \"Replacement\"]": {
+"floor_area_Mm2": 0.310373198449463,
+"carbon_kt": 63.5439426047345
+},
+"[2035, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.3266825223865806,
+"carbon_kt": 66.88301553164824
+},
+"[2035, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.0035725089226799,
+"carbon_kt": 0.8783337470589322
+},
+"[2035, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 9.79926503600648
+},
+"[2036, \"Population growth\"]": {
+"floor_area_Mm2": 1.7002679799707194,
+"carbon_kt": 414.30037156784056
+},
+"[2036, \"Smaller households\"]": {
+"floor_area_Mm2": 0.1206950248609073,
+"carbon_kt": 29.409477938368752
+},
+"[2036, \"Extra space\"]": {
+"floor_area_Mm2": 1.0355111701034314,
+"carbon_kt": 252.32061509732665
+},
+"[2036, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1626541702415605,
+"carbon_kt": 39.633565980168505
+},
+"[2036, \"Replacement\"]": {
+"floor_area_Mm2": 0.3134676890316034,
+"carbon_kt": 63.49060449424301
+},
+"[2036, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.3078445512310657,
+"carbon_kt": 62.35167875930204
+},
+"[2036, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.0018506273721055,
+"carbon_kt": 0.4509380973640159
+},
+"[2036, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 9.462421314049
+},
+"[2037, \"Population growth\"]": {
+"floor_area_Mm2": 1.68332690408333,
+"carbon_kt": 406.4969842206587
+},
+"[2037, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0843547063517077,
+"carbon_kt": 20.37033546699079
+},
+"[2037, \"Extra space\"]": {
+"floor_area_Mm2": 1.0064446679796308,
+"carbon_kt": 243.04056527954688
+},
+"[2037, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1579650927427358,
+"carbon_kt": 38.14608657195208
+},
+"[2037, \"Replacement\"]": {
+"floor_area_Mm2": 0.3165033514890426,
+"carbon_kt": 63.41421777773655
+},
+"[2037, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.2900106872814454,
+"carbon_kt": 58.10618053367855
+},
+"[2037, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.000958660074617,
+"carbon_kt": 0.2315013371908221
+},
+"[2037, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 9.307278152053216
+},
+"[2038, \"Population growth\"]": {
+"floor_area_Mm2": 1.6684392919398658,
+"carbon_kt": 399.2777964352277
+},
+"[2038, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0318168344728933,
+"carbon_kt": 7.614155108461164
+},
+"[2038, \"Extra space\"]": {
+"floor_area_Mm2": 0.96849869955817,
+"carbon_kt": 231.7735074198356
+},
+"[2038, \"Vacancy\"]": {
+"floor_area_Mm2": 0.151965001331171,
+"carbon_kt": 36.36707140613978
+},
+"[2038, \"Replacement\"]": {
+"floor_area_Mm2": 0.3194515003186291,
+"carbon_kt": 63.31041575325877
+},
+"[2038, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.2731100123885709,
+"carbon_kt": 54.126239549514985
+},
+"[2038, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.0004966040989759,
+"carbon_kt": 0.1188433953202363
+},
+"[2038, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 9.510249282747452
+},
+"[2039, \"Population growth\"]": {
+"floor_area_Mm2": 1.6264951298459178,
+"carbon_kt": 385.7123455550346
+},
+"[2039, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2039, \"Extra space\"]": {
+"floor_area_Mm2": 0.9260984226231272,
+"carbon_kt": 219.6179922399297
+},
+"[2039, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1453505128399241,
+"carbon_kt": 34.46889339313629
+},
+"[2039, \"Replacement\"]": {
+"floor_area_Mm2": 0.3222876676834166,
+"carbon_kt": 63.17290203944025
+},
+"[2039, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.2570830110025262,
+"carbon_kt": 50.391875018997474
+},
+"[2039, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.0002572503410223,
+"carbon_kt": 0.0610051826223155
+},
+"[2039, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 9.615623096453827
+},
+"[2040, \"Population growth\"]": {
+"floor_area_Mm2": 1.5727705274430483,
+"carbon_kt": 369.7955995861093
+},
+"[2040, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2040, \"Extra space\"]": {
+"floor_area_Mm2": 0.8946222012834605,
+"carbon_kt": 210.34686723466837
+},
+"[2040, \"Vacancy\"]": {
+"floor_area_Mm2": 0.140498983142459,
+"carbon_kt": 33.03463843315544
+},
+"[2040, \"Replacement\"]": {
+"floor_area_Mm2": 0.3250003869106114,
+"carbon_kt": 63.03938055042463
+},
+"[2040, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.241885908594726,
+"carbon_kt": 46.91790673431441
+},
+"[2040, \"2026 overbuild\"]": {
+"floor_area_Mm2": 0.0001332605552241,
+"carbon_kt": 0.031332712598827
+},
+"[2040, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 17.589032971538224
+},
+"[2041, \"Population growth\"]": {
+"floor_area_Mm2": 1.5457138103883048,
+"carbon_kt": 361.0101790462009
+},
+"[2041, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2041, \"Extra space\"]": {
+"floor_area_Mm2": 0.8781929300537145,
+"carbon_kt": 205.10691227903004
+},
+"[2041, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1380227915480754,
+"carbon_kt": 32.236001486400504
+},
+"[2041, \"Replacement\"]": {
+"floor_area_Mm2": 0.3276225606169511,
+"carbon_kt": 63.0315882958848
+},
+"[2041, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.2275084289378521,
+"carbon_kt": 43.77054376124153
+},
+"[2041, \"2026 overbuild\"]": {
+"floor_area_Mm2": 6.903149480022283e-05,
+"carbon_kt": 0.0161226949841347
+},
+"[2041, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 19.6262212185404
+},
+"[2042, \"Population growth\"]": {
+"floor_area_Mm2": 1.545982626506737,
+"carbon_kt": 358.67897216910933
+},
+"[2042, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2042, \"Extra space\"]": {
+"floor_area_Mm2": 0.8774757705945365,
+"carbon_kt": 203.5806238077244
+},
+"[2042, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1379972618532116,
+"carbon_kt": 32.016346881919965
+},
+"[2042, \"Replacement\"]": {
+"floor_area_Mm2": 0.3301985204337278,
+"carbon_kt": 63.01218646735273
+},
+"[2042, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.2139418832674658,
+"carbon_kt": 40.826790574102056
+},
+"[2042, \"2026 overbuild\"]": {
+"floor_area_Mm2": 3.575962344100249e-05,
+"carbon_kt": 0.008296487140968
+},
+"[2042, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 22.78687973639395
+},
+"[2043, \"Population growth\"]": {
+"floor_area_Mm2": 1.5742113781090965,
+"carbon_kt": 362.90539624134686
+},
+"[2043, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2043, \"Extra space\"]": {
+"floor_area_Mm2": 0.8931267094842968,
+"carbon_kt": 205.8938887790626
+},
+"[2043, \"Vacancy\"]": {
+"floor_area_Mm2": 0.140495871751414,
+"carbon_kt": 32.388731727669466
+},
+"[2043, \"Replacement\"]": {
+"floor_area_Mm2": 0.332774003782326,
+"carbon_kt": 63.00476020814021
+},
+"[2043, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.2011717917144628,
+"carbon_kt": 38.08825314943316
+},
+"[2043, \"2026 overbuild\"]": {
+"floor_area_Mm2": 1.8524163098930423e-05,
+"carbon_kt": 0.0042704041165879
+},
+"[2043, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 30.217992614042984
+},
+"[2044, \"Population growth\"]": {
+"floor_area_Mm2": 1.59143440154264,
+"carbon_kt": 364.2878215558529
+},
+"[2044, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2044, \"Extra space\"]": {
+"floor_area_Mm2": 0.9028981686799794,
+"carbon_kt": 206.67820592313996
+},
+"[2044, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1420329993094662,
+"carbon_kt": 32.512110997057064
+},
+"[2044, \"Replacement\"]": {
+"floor_area_Mm2": 0.3353961194198627,
+"carbon_kt": 62.957035767410375
+},
+"[2044, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.1891789130474656,
+"carbon_kt": 35.51067798807625
+},
+"[2044, \"2026 overbuild\"]": {
+"floor_area_Mm2": 9.595867783169132e-06,
+"carbon_kt": 0.0021965453098664
+},
+"[2044, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 29.042763573973573
+},
+"[2045, \"Population growth\"]": {
+"floor_area_Mm2": 1.5786002531431045,
+"carbon_kt": 358.8044038991399
+},
+"[2045, \"Smaller households\"]": {
+"floor_area_Mm2": 6.371450293662662e-15,
+"carbon_kt": 1.4481845039862605e-12
+},
+"[2045, \"Extra space\"]": {
+"floor_area_Mm2": 0.8956167318357904,
+"carbon_kt": 203.56719628582584
+},
+"[2045, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1408875718956808,
+"carbon_kt": 32.02272465760488
+},
+"[2045, \"Replacement\"]": {
+"floor_area_Mm2": 0.3380469229195878,
+"carbon_kt": 62.91015022392611
+},
+"[2045, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.1779052154246728,
+"carbon_kt": 33.10795948480913
+},
+"[2045, \"2026 overbuild\"]": {
+"floor_area_Mm2": 4.970841490667937e-06,
+"carbon_kt": 0.0011298362675319
+},
+"[2045, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 27.97084565575353
+},
+"[2046, \"Population growth\"]": {
+"floor_area_Mm2": 1.565766104743542,
+"carbon_kt": 353.37403860156934
+},
+"[2046, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2046, \"Extra space\"]": {
+"floor_area_Mm2": 0.8883352949915793,
+"carbon_kt": 200.4862858331622
+},
+"[2046, \"Vacancy\"]": {
+"floor_area_Mm2": 0.139742144481892,
+"carbon_kt": 31.53807315716443
+},
+"[2046, \"Replacement\"]": {
+"floor_area_Mm2": 0.3406763489717347,
+"carbon_kt": 62.85308073709712
+},
+"[2046, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.1672825644139485,
+"carbon_kt": 30.862795608658185
+},
+"[2046, \"2026 overbuild\"]": {
+"floor_area_Mm2": 2.574990160732014e-06,
+"carbon_kt": 0.0005811434221883
+},
+"[2046, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 27.138195809812988
+},
+"[2047, \"Population growth\"]": {
+"floor_area_Mm2": 1.5529319563440291,
+"carbon_kt": 348.1795803229933
+},
+"[2047, \"Smaller households\"]": {
+"floor_area_Mm2": 2.240992861908936e-14,
+"carbon_kt": 5.024482566533136e-12
+},
+"[2047, \"Extra space\"]": {
+"floor_area_Mm2": 0.8810538581474127,
+"carbon_kt": 197.5392169106481
+},
+"[2047, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1385967170681103,
+"carbon_kt": 31.07447598446404
+},
+"[2047, \"Replacement\"]": {
+"floor_area_Mm2": 0.3432843975763029,
+"carbon_kt": 62.819018676430055
+},
+"[2047, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.1572750234803551,
+"carbon_kt": 28.780401052606454
+},
+"[2047, \"2026 overbuild\"]": {
+"floor_area_Mm2": 1.3338937361641202e-06,
+"carbon_kt": 0.0002990694855339
+},
+"[2047, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 32.99188931929386
+},
+"[2048, \"Population growth\"]": {
+"floor_area_Mm2": 1.5400978079444827,
+"carbon_kt": 342.96225431277503
+},
+"[2048, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2048, \"Extra space\"]": {
+"floor_area_Mm2": 0.8737724213032013,
+"carbon_kt": 194.5791740113173
+},
+"[2048, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1374512896543214,
+"carbon_kt": 30.60883790293897
+},
+"[2048, \"Replacement\"]": {
+"floor_area_Mm2": 0.3458710687332927,
+"carbon_kt": 62.76222514240512
+},
+"[2048, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.1478485024681058,
+"carbon_kt": 26.82878632449634
+},
+"[2048, \"2026 overbuild\"]": {
+"floor_area_Mm2": 6.909822517038542e-07,
+"carbon_kt": 0.0001538738835365
+},
+"[2048, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 36.473138119913976
+},
+"[2049, \"Population growth\"]": {
+"floor_area_Mm2": 1.5272636595449531,
+"carbon_kt": 337.6521444512004
+},
+"[2049, \"Smaller households\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 0.0
+},
+"[2049, \"Extra space\"]": {
+"floor_area_Mm2": 0.8664909844590125,
+"carbon_kt": 191.5664903186324
+},
+"[2049, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1363058622405361,
+"carbon_kt": 30.134919009661843
+},
+"[2049, \"Replacement\"]": {
+"floor_area_Mm2": 0.3484363624427041,
+"carbon_kt": 62.66934767051251
+},
+"[2049, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.1389706746203046,
+"carbon_kt": 24.99509942857258
+},
+"[2049, \"2026 overbuild\"]": {
+"floor_area_Mm2": 3.5794191038241974e-07,
+"carbon_kt": 7.913489781168073e-05
+},
+"[2049, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 34.99393219206021
+},
+"[2050, \"Population growth\"]": {
+"floor_area_Mm2": 1.514429511145417,
+"carbon_kt": 332.4038638163264
+},
+"[2050, \"Smaller households\"]": {
+"floor_area_Mm2": 6.810860658742843e-15,
+"carbon_kt": 1.4949235882021482e-12
+},
+"[2050, \"Extra space\"]": {
+"floor_area_Mm2": 0.8592095476148234,
+"carbon_kt": 188.58888535461276
+},
+"[2050, \"Vacancy\"]": {
+"floor_area_Mm2": 0.1351604348267508,
+"carbon_kt": 29.666518276922787
+},
+"[2050, \"Replacement\"]": {
+"floor_area_Mm2": 0.3509802787045372,
+"carbon_kt": 62.56855341393897
+},
+"[2050, \"Redevelopment\"]": {
+"floor_area_Mm2": 0.1306108962212211,
+"carbon_kt": 23.283743653128145
+},
+"[2050, \"2026 overbuild\"]": {
+"floor_area_Mm2": 1.854206976985101e-07,
+"carbon_kt": 4.069820080294617e-05
+},
+"[2050, \"Maintenance (B2, B4), 2026-2050\"]": {
+"floor_area_Mm2": 0.0,
+"carbon_kt": 34.100464834716654
+}
+}
+},
+"data/baseline/bands_history.csv": {
+"kind": "csv",
+"key_columns": [
+"interval",
+"band",
+"households_from"
+],
+"value_columns": [
+"year_start",
+"year_end",
+"floor_area_Mm2_per_year",
+"observed_built_Mm2_per_year"
+],
+"n_rows": 35,
+"duplicate_keys": 0,
+"rows": {
+"[\"1991-1996\", \"Population growth\", \"census\"]": {
+"year_start": 1992,
+"year_end": 1996,
+"floor_area_Mm2_per_year": 1.6408835190351825,
+"observed_built_Mm2_per_year": 3.19727896
+},
+"[\"1991-1996\", \"Smaller households\", \"census\"]": {
+"year_start": 1992,
+"year_end": 1996,
+"floor_area_Mm2_per_year": 0.0552451224771384,
+"observed_built_Mm2_per_year": 3.19727896
+},
+"[\"1991-1996\", \"Extra space\", \"census\"]": {
+"year_start": 1992,
+"year_end": 1996,
+"floor_area_Mm2_per_year": 1.1907431905524617,
+"observed_built_Mm2_per_year": 3.19727896
+},
+"[\"1991-1996\", \"Vacancy\", \"census\"]": {
+"year_start": 1992,
+"year_end": 1996,
+"floor_area_Mm2_per_year": -0.15984500580938,
+"observed_built_Mm2_per_year": 3.19727896
+},
+"[\"1991-1996\", \"Replacement and redevelopment (history; not separable)\", \"census\"]": {
+"year_start": 1992,
+"year_end": 1996,
+"floor_area_Mm2_per_year": 0.4702521337445974,
+"observed_built_Mm2_per_year": 3.19727896
+},
+"[\"1996-2001\", \"Population growth\", \"census\"]": {
+"year_start": 1997,
+"year_end": 2001,
+"floor_area_Mm2_per_year": 1.0400687573430232,
+"observed_built_Mm2_per_year": 3.50346909
+},
+"[\"1996-2001\", \"Smaller households\", \"census\"]": {
+"year_start": 1997,
+"year_end": 2001,
+"floor_area_Mm2_per_year": 0.55151815626529,
+"observed_built_Mm2_per_year": 3.50346909
+},
+"[\"1996-2001\", \"Extra space\", \"census\"]": {
+"year_start": 1997,
+"year_end": 2001,
+"floor_area_Mm2_per_year": 1.2049112270970213,
+"observed_built_Mm2_per_year": 3.50346909
+},
+"[\"1996-2001\", \"Vacancy\", \"census\"]": {
+"year_start": 1997,
+"year_end": 2001,
+"floor_area_Mm2_per_year": 0.5280879244865091,
+"observed_built_Mm2_per_year": 3.50346909
+},
+"[\"1996-2001\", \"Replacement and redevelopment (history; not separable)\", \"census\"]": {
+"year_start": 1997,
+"year_end": 2001,
+"floor_area_Mm2_per_year": 0.1788830248081567,
+"observed_built_Mm2_per_year": 3.50346909
+},
+"[\"2001-2006\", \"Population growth\", \"census\"]": {
+"year_start": 2002,
+"year_end": 2006,
+"floor_area_Mm2_per_year": 1.8542422376377008,
+"observed_built_Mm2_per_year": 4.8490432000000006
+},
+"[\"2001-2006\", \"Smaller households\", \"census\"]": {
+"year_start": 2002,
+"year_end": 2006,
+"floor_area_Mm2_per_year": 0.4549867544998459,
+"observed_built_Mm2_per_year": 4.8490432000000006
+},
+"[\"2001-2006\", \"Extra space\", \"census\"]": {
+"year_start": 2002,
+"year_end": 2006,
+"floor_area_Mm2_per_year": 2.321130500753068,
+"observed_built_Mm2_per_year": 4.8490432000000006
+},
+"[\"2001-2006\", \"Vacancy\", \"census\"]": {
+"year_start": 2002,
+"year_end": 2006,
+"floor_area_Mm2_per_year": 0.2290620841041838,
+"observed_built_Mm2_per_year": 4.8490432000000006
+},
+"[\"2001-2006\", \"Replacement and redevelopment (history; not separable)\", \"census\"]": {
+"year_start": 2002,
+"year_end": 2006,
+"floor_area_Mm2_per_year": -0.0103783769947976,
+"observed_built_Mm2_per_year": 4.8490432000000006
+},
+"[\"2006-2013\", \"Population growth\", \"census\"]": {
+"year_start": 2007,
+"year_end": 2013,
+"floor_area_Mm2_per_year": 1.0877781297992732,
+"observed_built_Mm2_per_year": 3.2337544
+},
+"[\"2006-2013\", \"Smaller households\", \"census\"]": {
+"year_start": 2007,
+"year_end": 2013,
+"floor_area_Mm2_per_year": 0.1508318585998974,
+"observed_built_Mm2_per_year": 3.2337544
+},
+"[\"2006-2013\", \"Extra space\", \"census\"]": {
+"year_start": 2007,
+"year_end": 2013,
+"floor_area_Mm2_per_year": 1.377711993163658,
+"observed_built_Mm2_per_year": 3.2337544
+},
+"[\"2006-2013\", \"Vacancy\", \"census\"]": {
+"year_start": 2007,
+"year_end": 2013,
+"floor_area_Mm2_per_year": 0.3394052954020842,
+"observed_built_Mm2_per_year": 3.2337544
+},
+"[\"2006-2013\", \"Replacement and redevelopment (history; not separable)\", \"census\"]": {
+"year_start": 2007,
+"year_end": 2013,
+"floor_area_Mm2_per_year": 0.2780271230350871,
+"observed_built_Mm2_per_year": 3.2337544
+},
+"[\"2013-2018\", \"Population growth\", \"census\"]": {
+"year_start": 2014,
+"year_end": 2018,
+"floor_area_Mm2_per_year": 2.573874854087732,
+"observed_built_Mm2_per_year": 4.73384449
+},
+"[\"2013-2018\", \"Smaller households\", \"census\"]": {
+"year_start": 2014,
+"year_end": 2018,
+"floor_area_Mm2_per_year": 0.0463205343538427,
+"observed_built_Mm2_per_year": 4.73384449
+},
+"[\"2013-2018\", \"Extra space\", \"census\"]": {
+"year_start": 2014,
+"year_end": 2018,
+"floor_area_Mm2_per_year": 2.453276707516184,
+"observed_built_Mm2_per_year": 4.73384449
+},
+"[\"2013-2018\", \"Vacancy\", \"census\"]": {
+"year_start": 2014,
+"year_end": 2018,
+"floor_area_Mm2_per_year": 0.1826159785328403,
+"observed_built_Mm2_per_year": 4.73384449
+},
+"[\"2013-2018\", \"Replacement and redevelopment (history; not separable)\", \"census\"]": {
+"year_start": 2014,
+"year_end": 2018,
+"floor_area_Mm2_per_year": -0.5222435844905989,
+"observed_built_Mm2_per_year": 4.73384449
+},
+"[\"2018-2023\", \"Population growth\", \"census\"]": {
+"year_start": 2019,
+"year_end": 2023,
+"floor_area_Mm2_per_year": 1.6424945255756227,
+"observed_built_Mm2_per_year": 5.796682639999998
+},
+"[\"2018-2023\", \"Smaller households\", \"census\"]": {
+"year_start": 2019,
+"year_end": 2023,
+"floor_area_Mm2_per_year": 0.9899921553741242,
+"observed_built_Mm2_per_year": 5.796682639999998
+},
+"[\"2018-2023\", \"Extra space\", \"census\"]": {
+"year_start": 2019,
+"year_end": 2023,
+"floor_area_Mm2_per_year": 1.7099094704048787,
+"observed_built_Mm2_per_year": 5.796682639999998
+},
+"[\"2018-2023\", \"Vacancy\", \"census\"]": {
+"year_start": 2019,
+"year_end": 2023,
+"floor_area_Mm2_per_year": 0.4226432073175698,
+"observed_built_Mm2_per_year": 5.796682639999998
+},
+"[\"2018-2023\", \"Replacement and redevelopment (history; not separable)\", \"census\"]": {
+"year_start": 2019,
+"year_end": 2023,
+"floor_area_Mm2_per_year": 1.031643281327805,
+"observed_built_Mm2_per_year": 5.796682639999998
+},
+"[\"2023-2025\", \"Population growth\", \"consents\"]": {
+"year_start": 2024,
+"year_end": 2025,
+"floor_area_Mm2_per_year": 1.3250768571125635,
+"observed_built_Mm2_per_year": 4.490790125
+},
+"[\"2023-2025\", \"Smaller households\", \"consents\"]": {
+"year_start": 2024,
+"year_end": 2025,
+"floor_area_Mm2_per_year": 0.9239771255131582,
+"observed_built_Mm2_per_year": 4.490790125
+},
+"[\"2023-2025\", \"Extra space\", \"consents\"]": {
+"year_start": 2024,
+"year_end": 2025,
+"floor_area_Mm2_per_year": 1.2409456738682725,
+"observed_built_Mm2_per_year": 4.490790125
+},
+"[\"2023-2025\", \"Vacancy\", \"consents\"]": {
+"year_start": 2024,
+"year_end": 2025,
+"floor_area_Mm2_per_year": 0.1985920689902518,
+"observed_built_Mm2_per_year": 4.490790125
+},
+"[\"2023-2025\", \"Replacement and redevelopment (history; not separable)\", \"consents\"]": {
+"year_start": 2024,
+"year_end": 2025,
+"floor_area_Mm2_per_year": 0.8021983995157536,
+"observed_built_Mm2_per_year": 4.490790125
+}
+}
+},
+"data/baseline/variants_annual.csv": {
+"kind": "csv",
+"key_columns": [
+"variant",
+"year"
+],
+"value_columns": [
+"floor_area_Mm2",
+"carbon_kt"
+],
+"n_rows": 200,
+"duplicate_keys": 0,
+"rows": {
+"[\"LOW\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1393.1880814425865
+},
+"[\"LOW\", 2027]": {
+"floor_area_Mm2": 4.289943068925064,
+"carbon_kt": 1142.7878347936205
+},
+"[\"LOW\", 2028]": {
+"floor_area_Mm2": 3.925277065100412,
+"carbon_kt": 1028.2676998836623
+},
+"[\"LOW\", 2029]": {
+"floor_area_Mm2": 3.76753291187951,
+"carbon_kt": 970.751563017898
+},
+"[\"LOW\", 2030]": {
+"floor_area_Mm2": 3.709247244717625,
+"carbon_kt": 940.0834216722816
+},
+"[\"LOW\", 2031]": {
+"floor_area_Mm2": 3.662469671599105,
+"carbon_kt": 919.8508523951732
+},
+"[\"LOW\", 2032]": {
+"floor_area_Mm2": 3.5958426385405176,
+"carbon_kt": 894.8308950151993
+},
+"[\"LOW\", 2033]": {
+"floor_area_Mm2": 3.4919354645139653,
+"carbon_kt": 871.5123264652211
+},
+"[\"LOW\", 2034]": {
+"floor_area_Mm2": 3.4203895459865783,
+"carbon_kt": 845.9043145664122
+},
+"[\"LOW\", 2035]": {
+"floor_area_Mm2": 3.392983257368773,
+"carbon_kt": 830.4620820425553
+},
+"[\"LOW\", 2036]": {
+"floor_area_Mm2": 3.3351726624648896,
+"carbon_kt": 808.3589948856498
+},
+"[\"LOW\", 2037]": {
+"floor_area_Mm2": 3.249929464947371,
+"carbon_kt": 780.1806742015245
+},
+"[\"LOW\", 2038]": {
+"floor_area_Mm2": 3.1408627494450725,
+"carbon_kt": 747.1141397584817
+},
+"[\"LOW\", 2039]": {
+"floor_area_Mm2": 3.020589902609731,
+"carbon_kt": 711.7832155910537
+},
+"[\"LOW\", 2040]": {
+"floor_area_Mm2": 2.9330776374338026,
+"carbon_kt": 693.0057684813187
+},
+"[\"LOW\", 2041]": {
+"floor_area_Mm2": 2.889648205148546,
+"carbon_kt": 679.8031619749772
+},
+"[\"LOW\", 2042]": {
+"floor_area_Mm2": 2.8917039675074183,
+"carbon_kt": 678.5651923553198
+},
+"[\"LOW\", 2043]": {
+"floor_area_Mm2": 2.940633754317078,
+"carbon_kt": 692.5949946853838
+},
+"[\"LOW\", 2044]": {
+"floor_area_Mm2": 2.971775049277452,
+"carbon_kt": 693.1131575604527
+},
+"[\"LOW\", 2045]": {
+"floor_area_Mm2": 2.95315840069615,
+"carbon_kt": 682.7432369214276
+},
+"[\"LOW\", 2046]": {
+"floor_area_Mm2": 2.934523478347223,
+"carbon_kt": 672.8518586182462
+},
+"[\"LOW\", 2047]": {
+"floor_area_Mm2": 2.9158687863159587,
+"carbon_kt": 670.154502385322
+},
+"[\"LOW\", 2048]": {
+"floor_area_Mm2": 2.8971935496898005,
+"carbon_kt": 664.7160549292034
+},
+"[\"LOW\", 2049]": {
+"floor_area_Mm2": 2.878497367049683,
+"carbon_kt": 654.0813286403456
+},
+"[\"LOW\", 2050]": {
+"floor_area_Mm2": 2.85978003045275,
+"carbon_kt": 644.3655885096387
+},
+"[\"REF_HL5\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1371.6333774302805
+},
+"[\"REF_HL5\", 2027]": {
+"floor_area_Mm2": 4.508872681634402,
+"carbon_kt": 1183.0371178854734
+},
+"[\"REF_HL5\", 2028]": {
+"floor_area_Mm2": 4.203070247515164,
+"carbon_kt": 1085.4493033774877
+},
+"[\"REF_HL5\", 2029]": {
+"floor_area_Mm2": 4.056153720992187,
+"carbon_kt": 1031.577483112166
+},
+"[\"REF_HL5\", 2030]": {
+"floor_area_Mm2": 3.9861723508649543,
+"carbon_kt": 998.4454233157672
+},
+"[\"REF_HL5\", 2031]": {
+"floor_area_Mm2": 3.918101167650612,
+"carbon_kt": 973.7051689074592
+},
+"[\"REF_HL5\", 2032]": {
+"floor_area_Mm2": 3.826999389878519,
+"carbon_kt": 943.288412708961
+},
+"[\"REF_HL5\", 2033]": {
+"floor_area_Mm2": 3.6985389974846528,
+"carbon_kt": 914.5036095916475
+},
+"[\"REF_HL5\", 2034]": {
+"floor_area_Mm2": 3.603777664683519,
+"carbon_kt": 884.1833192919629
+},
+"[\"REF_HL5\", 2035]": {
+"floor_area_Mm2": 3.5551044464748296,
+"carbon_kt": 864.2299085123364
+},
+"[\"REF_HL5\", 2036]": {
+"floor_area_Mm2": 3.4781552032675944,
+"carbon_kt": 837.9632111173152
+},
+"[\"REF_HL5\", 2037]": {
+"floor_area_Mm2": 3.375836549940793,
+"carbon_kt": 806.0441621124596
+},
+"[\"REF_HL5\", 2038]": {
+"floor_area_Mm2": 3.2516102817802635,
+"carbon_kt": 769.6580944722571
+},
+"[\"REF_HL5\", 2039]": {
+"floor_area_Mm2": 3.1179182919631065,
+"carbon_kt": 731.4175796530819
+},
+"[\"REF_HL5\", 2040]": {
+"floor_area_Mm2": 3.0185517098256707,
+"carbon_kt": 710.0938428821353
+},
+"[\"REF_HL5\", 2041]": {
+"floor_area_Mm2": 2.9646744226658392,
+"carbon_kt": 695.0671002138258
+},
+"[\"REF_HL5\", 2042]": {
+"floor_area_Mm2": 2.957540093583836,
+"carbon_kt": 692.1536946701686
+},
+"[\"REF_HL5\", 2043]": {
+"floor_area_Mm2": 2.9983988545563167,
+"carbon_kt": 704.7601781995845
+},
+"[\"REF_HL5\", 2044]": {
+"floor_area_Mm2": 3.0224610067955964,
+"carbon_kt": 704.2470924900114
+},
+"[\"REF_HL5\", 2045]": {
+"floor_area_Mm2": 2.9976330069260606,
+"carbon_kt": 692.6673333656249
+},
+"[\"REF_HL5\", 2046]": {
+"floor_area_Mm2": 2.973542636821401,
+"carbon_kt": 681.6111253389107
+},
+"[\"REF_HL5\", 2047]": {
+"floor_area_Mm2": 2.9500972958395453,
+"carbon_kt": 677.8416479331229
+},
+"[\"REF_HL5\", 2048]": {
+"floor_area_Mm2": 2.9272158888145503,
+"carbon_kt": 671.7327218349525
+},
+"[\"REF_HL5\", 2049]": {
+"floor_area_Mm2": 2.90482726402912,
+"carbon_kt": 660.5406835409165
+},
+"[\"REF_HL5\", 2050]": {
+"floor_area_Mm2": 2.882868929732172,
+"carbon_kt": 650.1443320607859
+},
+"[\"REF\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1370.0863216893729
+},
+"[\"REF\", 2027]": {
+"floor_area_Mm2": 4.541427154904419,
+"carbon_kt": 1189.022120071042
+},
+"[\"REF\", 2028]": {
+"floor_area_Mm2": 4.277329888833303,
+"carbon_kt": 1101.329311041889
+},
+"[\"REF\", 2029]": {
+"floor_area_Mm2": 4.159155440869919,
+"carbon_kt": 1053.824986212924
+},
+"[\"REF\", 2030]": {
+"floor_area_Mm2": 4.109563021108126,
+"carbon_kt": 1024.8490990210514
+},
+"[\"REF\", 2031]": {
+"floor_area_Mm2": 4.056153134250751,
+"carbon_kt": 1003.0613206603134
+},
+"[\"REF\", 2032]": {
+"floor_area_Mm2": 3.975534065286801,
+"carbon_kt": 974.6039695641884
+},
+"[\"REF\", 2033]": {
+"floor_area_Mm2": 3.854346573019712,
+"carbon_kt": 947.0381028108236
+},
+"[\"REF\", 2034]": {
+"floor_area_Mm2": 3.764293467062823,
+"carbon_kt": 917.4298150363834
+},
+"[\"REF\", 2035]": {
+"floor_area_Mm2": 3.71826428495577,
+"carbon_kt": 897.7693174421685
+},
+"[\"REF\", 2036]": {
+"floor_area_Mm2": 3.6422912128113936,
+"carbon_kt": 871.4196732486625
+},
+"[\"REF\", 2037]": {
+"floor_area_Mm2": 3.539564070002509,
+"carbon_kt": 839.1131493398076
+},
+"[\"REF\", 2038]": {
+"floor_area_Mm2": 3.4137779441082765,
+"carbon_kt": 802.0982783505058
+},
+"[\"REF\", 2039]": {
+"floor_area_Mm2": 3.277571994335934,
+"carbon_kt": 763.0406365256144
+},
+"[\"REF\", 2040]": {
+"floor_area_Mm2": 3.174911267929529,
+"carbon_kt": 740.7547582228092
+},
+"[\"REF\", 2041]": {
+"floor_area_Mm2": 3.1171295530396983,
+"carbon_kt": 724.7975687822824
+},
+"[\"REF\", 2042]": {
+"floor_area_Mm2": 3.10563182227912,
+"carbon_kt": 720.9100961237434
+},
+"[\"REF\", 2043]": {
+"floor_area_Mm2": 3.141798279004695,
+"carbon_kt": 732.5032931238119
+},
+"[\"REF\", 2044]": {
+"floor_area_Mm2": 3.160950197867197,
+"carbon_kt": 730.99081235082
+},
+"[\"REF\", 2045]": {
+"floor_area_Mm2": 3.131061666060333,
+"carbon_kt": 718.3844100433283
+},
+"[\"REF\", 2046]": {
+"floor_area_Mm2": 3.101805032592857,
+"carbon_kt": 706.2530508908865
+},
+"[\"REF\", 2047]": {
+"floor_area_Mm2": 3.073143286509969,
+"carbon_kt": 701.3848813359264
+},
+"[\"REF\", 2048]": {
+"floor_area_Mm2": 3.045041781085656,
+"carbon_kt": 694.2145696877302
+},
+"[\"REF\", 2049]": {
+"floor_area_Mm2": 3.017467901249421,
+"carbon_kt": 682.0120122055378
+},
+"[\"REF\", 2050]": {
+"floor_area_Mm2": 2.990390853933455,
+"carbon_kt": 670.612070047848
+},
+"[\"REF_HL15\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1369.5463436519651
+},
+"[\"REF_HL15\", 2027]": {
+"floor_area_Mm2": 4.553320874154159,
+"carbon_kt": 1191.2087300374762
+},
+"[\"REF_HL15\", 2028]": {
+"floor_area_Mm2": 4.306025392517803,
+"carbon_kt": 1107.4813807245189
+},
+"[\"REF_HL15\", 2029]": {
+"floor_area_Mm2": 4.2006667561588245,
+"carbon_kt": 1062.8056151188027
+},
+"[\"REF_HL15\", 2030]": {
+"floor_area_Mm2": 4.161410713073046,
+"carbon_kt": 1035.9546575778893
+},
+"[\"REF_HL15\", 2031]": {
+"floor_area_Mm2": 4.116666843885433,
+"carbon_kt": 1015.936856476566
+},
+"[\"REF_HL15\", 2032]": {
+"floor_area_Mm2": 4.043481178213294,
+"carbon_kt": 988.9341955691008
+},
+"[\"REF_HL15\", 2033]": {
+"floor_area_Mm2": 3.9287384467777433,
+"carbon_kt": 962.5751347143166
+},
+"[\"REF_HL15\", 2034]": {
+"floor_area_Mm2": 3.844282342153051,
+"carbon_kt": 933.9903114845564
+},
+"[\"REF_HL15\", 2035]": {
+"floor_area_Mm2": 3.803109666689612,
+"carbon_kt": 915.1892482202032
+},
+"[\"REF_HL15\", 2036]": {
+"floor_area_Mm2": 3.731337949977569,
+"carbon_kt": 889.5375609173606
+},
+"[\"REF_HL15\", 2037]": {
+"floor_area_Mm2": 3.6322069923186135,
+"carbon_kt": 857.7825543283371
+},
+"[\"REF_HL15\", 2038]": {
+"floor_area_Mm2": 3.5094528085131755,
+"carbon_kt": 821.1873911033321
+},
+"[\"REF_HL15\", 2039]": {
+"floor_area_Mm2": 3.375750534570048,
+"carbon_kt": 782.4306019667264
+},
+"[\"REF_HL15\", 2040]": {
+"floor_area_Mm2": 3.275101219369569,
+"carbon_kt": 760.3382568913268
+},
+"[\"REF_HL15\", 2041]": {
+"floor_area_Mm2": 3.2188857937876416,
+"carbon_kt": 744.5559227862219
+},
+"[\"REF_HL15\", 2042]": {
+"floor_area_Mm2": 3.208558075185274,
+"carbon_kt": 740.7771202705546
+},
+"[\"REF_HL15\", 2043]": {
+"floor_area_Mm2": 3.2455455610187625,
+"carbon_kt": 752.4149956442222
+},
+"[\"REF_HL15\", 2044]": {
+"floor_area_Mm2": 3.265214986805982,
+"carbon_kt": 750.905052018333
+},
+"[\"REF_HL15\", 2045]": {
+"floor_area_Mm2": 3.2355632845250155,
+"carbon_kt": 738.2462969609282
+},
+"[\"REF_HL15\", 2046]": {
+"floor_area_Mm2": 3.206273748031576,
+"carbon_kt": 725.9979421807788
+},
+"[\"REF_HL15\", 2047]": {
+"floor_area_Mm2": 3.177334157548481,
+"carbon_kt": 720.9583565145483
+},
+"[\"REF_HL15\", 2048]": {
+"floor_area_Mm2": 3.148732997488185,
+"carbon_kt": 713.5859623842848
+},
+"[\"REF_HL15\", 2049]": {
+"floor_area_Mm2": 3.1204592181327464,
+"carbon_kt": 701.159552913878
+},
+"[\"REF_HL15\", 2050]": {
+"floor_area_Mm2": 3.0925021143093283,
+"carbon_kt": 689.5004965031768
+},
+"[\"HIGH\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1368.4282284012024
+},
+"[\"HIGH\", 2027]": {
+"floor_area_Mm2": 4.578822424797481,
+"carbon_kt": 1195.897082236258
+},
+"[\"HIGH\", 2028]": {
+"floor_area_Mm2": 4.370248545629772,
+"carbon_kt": 1121.275847662772
+},
+"[\"HIGH\", 2029]": {
+"floor_area_Mm2": 4.296670749938583,
+"carbon_kt": 1083.5990519066982
+},
+"[\"HIGH\", 2030]": {
+"floor_area_Mm2": 4.285355156581371,
+"carbon_kt": 1062.5210349512597
+},
+"[\"HIGH\", 2031]": {
+"floor_area_Mm2": 4.266325478071125,
+"carbon_kt": 1047.7922545150363
+},
+"[\"HIGH\", 2032]": {
+"floor_area_Mm2": 4.217450347921973,
+"carbon_kt": 1025.6329110644049
+},
+"[\"HIGH\", 2033]": {
+"floor_area_Mm2": 4.126023832054695,
+"carbon_kt": 1003.7841095425184
+},
+"[\"HIGH\", 2034]": {
+"floor_area_Mm2": 4.064077785042231,
+"carbon_kt": 979.483999771644
+},
+"[\"HIGH\", 2035]": {
+"floor_area_Mm2": 4.044738407371116,
+"carbon_kt": 964.7619415945526
+},
+"[\"HIGH\", 2036]": {
+"floor_area_Mm2": 3.994217947634768,
+"carbon_kt": 942.9639379034376
+},
+"[\"HIGH\", 2037]": {
+"floor_area_Mm2": 3.91576705873618,
+"carbon_kt": 914.8443188005792
+},
+"[\"HIGH\", 2038]": {
+"floor_area_Mm2": 3.81311469460592,
+"carbon_kt": 881.6739046706841
+},
+"[\"HIGH\", 2039]": {
+"floor_area_Mm2": 3.698920110289328,
+"carbon_kt": 846.136498616737
+},
+"[\"HIGH\", 2040]": {
+"floor_area_Mm2": 3.61717425063068,
+"carbon_kt": 827.0625265020335
+},
+"[\"HIGH\", 2041]": {
+"floor_area_Mm2": 3.5792936867184624,
+"carbon_kt": 814.3515785182885
+},
+"[\"HIGH\", 2042]": {
+"floor_area_Mm2": 3.5867870824572723,
+"carbon_kt": 813.5253928101475
+},
+"[\"HIGH\", 2043]": {
+"floor_area_Mm2": 3.64114627308056,
+"carbon_kt": 827.9930682113722
+},
+"[\"HIGH\", 2044]": {
+"floor_area_Mm2": 3.677811393756495,
+"carbon_kt": 829.2323658397045
+},
+"[\"HIGH\", 2045]": {
+"floor_area_Mm2": 3.6647770223635647,
+"carbon_kt": 819.2074909536534
+},
+"[\"HIGH\", 2046]": {
+"floor_area_Mm2": 3.651678371104094,
+"carbon_kt": 809.4399302688586
+},
+"[\"HIGH\", 2047]": {
+"floor_area_Mm2": 3.6385144282338113,
+"carbon_kt": 806.7408029576649
+},
+"[\"HIGH\", 2048]": {
+"floor_area_Mm2": 3.625284669649635,
+"carbon_kt": 801.6112510636123
+},
+"[\"HIGH\", 2049]": {
+"floor_area_Mm2": 3.611988823856561,
+"carbon_kt": 791.3454306434268
+},
+"[\"HIGH\", 2050]": {
+"floor_area_Mm2": 3.5986267502148617,
+"carbon_kt": 781.7305102069867
+},
+"[\"LOW_NOUC\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1389.2616451093677
+},
+"[\"LOW_NOUC\", 2027]": {
+"floor_area_Mm2": 4.335753776965964,
+"carbon_kt": 1151.20993965992
+},
+"[\"LOW_NOUC\", 2028]": {
+"floor_area_Mm2": 3.995840981028208,
+"carbon_kt": 1043.0170027214024
+},
+"[\"LOW_NOUC\", 2029]": {
+"floor_area_Mm2": 3.85144399282024,
+"carbon_kt": 988.6470036630805
+},
+"[\"LOW_NOUC\", 2030]": {
+"floor_area_Mm2": 3.80060687569831,
+"carbon_kt": 959.4996715396652
+},
+"[\"LOW_NOUC\", 2031]": {
+"floor_area_Mm2": 3.758229584818064,
+"carbon_kt": 940.1398972843648
+},
+"[\"LOW_NOUC\", 2032]": {
+"floor_area_Mm2": 3.6944176620289455,
+"carbon_kt": 915.5735782377328
+},
+"[\"LOW_NOUC\", 2033]": {
+"floor_area_Mm2": 3.5924896802688893,
+"carbon_kt": 892.4880864613053
+},
+"[\"LOW_NOUC\", 2034]": {
+"floor_area_Mm2": 3.5224661166701616,
+"carbon_kt": 867.0874826770288
+},
+"[\"LOW_NOUC\", 2035]": {
+"floor_area_Mm2": 3.4963390849277904,
+"carbon_kt": 851.7594559490086
+},
+"[\"LOW_NOUC\", 2036]": {
+"floor_area_Mm2": 3.4396845652052925,
+"carbon_kt": 829.7047491602234
+},
+"[\"LOW_NOUC\", 2037]": {
+"floor_area_Mm2": 3.355518497156322,
+"carbon_kt": 801.5357374175169
+},
+"[\"LOW_NOUC\", 2038]": {
+"floor_area_Mm2": 3.2474689743748,
+"carbon_kt": 768.4527296546987
+},
+"[\"LOW_NOUC\", 2039]": {
+"floor_area_Mm2": 3.128160023034176,
+"carbon_kt": 733.0890614326099
+},
+"[\"LOW_NOUC\", 2040]": {
+"floor_area_Mm2": 3.041562198832404,
+"carbon_kt": 714.2645911619835
+},
+"[\"LOW_NOUC\", 2041]": {
+"floor_area_Mm2": 2.999012710315462,
+"carbon_kt": 701.1399522382217
+},
+"[\"LOW_NOUC\", 2042]": {
+"floor_area_Mm2": 3.0019307767128125,
+"carbon_kt": 699.9672836245478
+},
+"[\"LOW_NOUC\", 2043]": {
+"floor_area_Mm2": 3.0517215625100644,
+"carbon_kt": 714.0665241993812
+},
+"[\"LOW_NOUC\", 2044]": {
+"floor_area_Mm2": 3.083738829955077,
+"carbon_kt": 714.6990451722801
+},
+"[\"LOW_NOUC\", 2045]": {
+"floor_area_Mm2": 3.0660074231374432,
+"carbon_kt": 704.383842151281
+},
+"[\"LOW_NOUC\", 2046]": {
+"floor_area_Mm2": 3.048250446870016,
+"carbon_kt": 694.5120989402269
+},
+"[\"LOW_NOUC\", 2047]": {
+"floor_area_Mm2": 3.0304664820181992,
+"carbon_kt": 691.8144618483633
+},
+"[\"LOW_NOUC\", 2048]": {
+"floor_area_Mm2": 3.012654793442995,
+"carbon_kt": 686.4249992854925
+},
+"[\"LOW_NOUC\", 2049]": {
+"floor_area_Mm2": 2.994815000328793,
+"carbon_kt": 675.8487743699617
+},
+"[\"LOW_NOUC\", 2050]": {
+"floor_area_Mm2": 2.976946905405719,
+"carbon_kt": 666.1490223030778
+},
+"[\"REF_NOUC\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1357.193185908219
+},
+"[\"REF_NOUC\", 2027]": {
+"floor_area_Mm2": 4.684848704673577,
+"carbon_kt": 1215.3895652361468
+},
+"[\"REF_NOUC\", 2028]": {
+"floor_area_Mm2": 4.484539319818459,
+"carbon_kt": 1144.436692027615
+},
+"[\"REF_NOUC\", 2029]": {
+"floor_area_Mm2": 4.395070592150282,
+"carbon_kt": 1103.9644821100967
+},
+"[\"REF_NOUC\", 2030]": {
+"floor_area_Mm2": 4.35630091285791,
+"carbon_kt": 1077.1662343796895
+},
+"[\"REF_NOUC\", 2031]": {
+"floor_area_Mm2": 4.304717047032043,
+"carbon_kt": 1055.647613370705
+},
+"[\"REF_NOUC\", 2032]": {
+"floor_area_Mm2": 4.221482230170552,
+"carbon_kt": 1026.3097132271243
+},
+"[\"REF_NOUC\", 2033]": {
+"floor_area_Mm2": 4.0955667606000725,
+"carbon_kt": 997.328380155253
+},
+"[\"REF_NOUC\", 2034]": {
+"floor_area_Mm2": 3.99985264392872,
+"carbon_kt": 966.3748364615756
+},
+"[\"REF_NOUC\", 2035]": {
+"floor_area_Mm2": 3.947874442992012,
+"carbon_kt": 945.1912704692974
+},
+"[\"REF_NOUC\", 2036]": {
+"floor_area_Mm2": 3.866007875936301,
+"carbon_kt": 917.2417512277668
+},
+"[\"REF_NOUC\", 2037]": {
+"floor_area_Mm2": 3.757571657377552,
+"carbon_kt": 883.3422186026474
+},
+"[\"REF_NOUC\", 2038]": {
+"floor_area_Mm2": 3.626313264979663,
+"carbon_kt": 844.7783699515721
+},
+"[\"REF_NOUC\", 2039]": {
+"floor_area_Mm2": 3.4848869482547062,
+"carbon_kt": 804.2414987168454
+},
+"[\"REF_NOUC\", 2040]": {
+"floor_area_Mm2": 3.377260950609908,
+"carbon_kt": 780.5468374401268
+},
+"[\"REF_NOUC\", 2041]": {
+"floor_area_Mm2": 3.31478849544173,
+"carbon_kt": 763.5984538586089
+},
+"[\"REF_NOUC\", 2042]": {
+"floor_area_Mm2": 3.2988924262157693,
+"carbon_kt": 758.7479061130708
+},
+"[\"REF_NOUC\", 2043]": {
+"floor_area_Mm2": 3.33096593270423,
+"carbon_kt": 769.4647992196174
+},
+"[\"REF_NOUC\", 2044]": {
+"floor_area_Mm2": 3.3463402767378203,
+"carbon_kt": 767.2785040644138
+},
+"[\"REF_NOUC\", 2045]": {
+"floor_area_Mm2": 3.312961926518451,
+"carbon_kt": 753.8587530823288
+},
+"[\"REF_NOUC\", 2046]": {
+"floor_area_Mm2": 3.280460536263072,
+"carbon_kt": 740.8776045600248
+},
+"[\"REF_NOUC\", 2047]": {
+"floor_area_Mm2": 3.248785387016374,
+"carbon_kt": 735.1665763155097
+},
+"[\"REF_NOUC\", 2048]": {
+"floor_area_Mm2": 3.217888724846002,
+"carbon_kt": 727.3730451111652
+},
+"[\"REF_NOUC\", 2049]": {
+"floor_area_Mm2": 3.1877254519027702,
+"carbon_kt": 714.6204521961898
+},
+"[\"REF_NOUC\", 2050]": {
+"floor_area_Mm2": 3.158252914504728,
+"carbon_kt": 702.5827932094111
+},
+"[\"HIGH_NOUC\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1354.891521553149
+},
+"[\"HIGH_NOUC\", 2027]": {
+"floor_area_Mm2": 4.736758546161508,
+"carbon_kt": 1224.9329699836576
+},
+"[\"HIGH_NOUC\", 2028]": {
+"floor_area_Mm2": 4.613523353343803,
+"carbon_kt": 1172.1252621912795
+},
+"[\"HIGH_NOUC\", 2029]": {
+"floor_area_Mm2": 4.585960988618377,
+"carbon_kt": 1145.2950310013025
+},
+"[\"HIGH_NOUC\", 2030]": {
+"floor_area_Mm2": 4.6003248739988845,
+"carbon_kt": 1129.460126849854
+},
+"[\"HIGH_NOUC\", 2031]": {
+"floor_area_Mm2": 4.596465524421331,
+"carbon_kt": 1117.740377847223
+},
+"[\"HIGH_NOUC\", 2032]": {
+"floor_area_Mm2": 4.557295714625998,
+"carbon_kt": 1097.1449892432636
+},
+"[\"HIGH_NOUC\", 2033]": {
+"floor_area_Mm2": 4.472692624184165,
+"carbon_kt": 1076.0997387505763
+},
+"[\"HIGH_NOUC\", 2034]": {
+"floor_area_Mm2": 4.415995018923731,
+"carbon_kt": 1052.5146852307305
+},
+"[\"HIGH_NOUC\", 2035]": {
+"floor_area_Mm2": 4.401065982803197,
+"carbon_kt": 1038.186360772307
+},
+"[\"HIGH_NOUC\", 2036]": {
+"floor_area_Mm2": 4.354531185763662,
+"carbon_kt": 1016.5551523135264
+},
+"[\"HIGH_NOUC\", 2037]": {
+"floor_area_Mm2": 4.279793787831369,
+"carbon_kt": 988.4676265391622
+},
+"[\"HIGH_NOUC\", 2038]": {
+"floor_area_Mm2": 4.1806482778814855,
+"carbon_kt": 955.2404193068994
+},
+"[\"HIGH_NOUC\", 2039]": {
+"floor_area_Mm2": 4.069776801247492,
+"carbon_kt": 919.5901254760104
+},
+"[\"HIGH_NOUC\", 2040]": {
+"floor_area_Mm2": 3.991183550811684,
+"carbon_kt": 900.3540372106712
+},
+"[\"HIGH_NOUC\", 2041]": {
+"floor_area_Mm2": 3.956336664214865,
+"carbon_kt": 887.9118887742665
+},
+"[\"HIGH_NOUC\", 2042]": {
+"floor_area_Mm2": 3.966802922873676,
+"carbon_kt": 887.3108335661174
+},
+"[\"HIGH_NOUC\", 2043]": {
+"floor_area_Mm2": 4.024130477148473,
+"carbon_kt": 902.0179029326883
+},
+"[\"HIGH_NOUC\", 2044]": {
+"floor_area_Mm2": 4.063815583818119,
+"carbon_kt": 903.6514593531288
+},
+"[\"HIGH_NOUC\", 2045]": {
+"floor_area_Mm2": 4.053833155008098,
+"carbon_kt": 893.8152278810501
+},
+"[\"HIGH_NOUC\", 2046]": {
+"floor_area_Mm2": 4.043761293877149,
+"carbon_kt": 884.1153607645455
+},
+"[\"HIGH_NOUC\", 2047]": {
+"floor_area_Mm2": 4.033599253386666,
+"carbon_kt": 881.415265169441
+},
+"[\"HIGH_NOUC\", 2048]": {
+"floor_area_Mm2": 4.023346646556122,
+"carbon_kt": 876.4545926569971
+},
+"[\"HIGH_NOUC\", 2049]": {
+"floor_area_Mm2": 4.013003272922594,
+"carbon_kt": 866.390460453232
+},
+"[\"HIGH_NOUC\", 2050]": {
+"floor_area_Mm2": 4.002569028642324,
+"carbon_kt": 856.8306601600136
+}
+}
+},
+"data/frozen_technology/baseline/variants_annual.csv": {
+"kind": "csv",
+"key_columns": [
+"variant",
+"year"
+],
+"value_columns": [
+"floor_area_Mm2",
+"carbon_kt"
+],
+"n_rows": 200,
+"duplicate_keys": 0,
+"rows": {
+"[\"LOW\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1958.1016291777323
+},
+"[\"LOW\", 2027]": {
+"floor_area_Mm2": 4.289943068925064,
+"carbon_kt": 1629.6823577121577
+},
+"[\"LOW\", 2028]": {
+"floor_area_Mm2": 3.925277065100412,
+"carbon_kt": 1490.0308925972254
+},
+"[\"LOW\", 2029]": {
+"floor_area_Mm2": 3.76753291187951,
+"carbon_kt": 1429.5463044592605
+},
+"[\"LOW\", 2030]": {
+"floor_area_Mm2": 3.709247244717625,
+"carbon_kt": 1407.1124802990146
+},
+"[\"LOW\", 2031]": {
+"floor_area_Mm2": 3.662469671599105,
+"carbon_kt": 1389.079206617478
+},
+"[\"LOW\", 2032]": {
+"floor_area_Mm2": 3.5958426385405176,
+"carbon_kt": 1363.4507045031603
+},
+"[\"LOW\", 2033]": {
+"floor_area_Mm2": 3.4919354645139653,
+"carbon_kt": 1323.5598867995557
+},
+"[\"LOW\", 2034]": {
+"floor_area_Mm2": 3.4203895459865783,
+"carbon_kt": 1296.054590936893
+},
+"[\"LOW\", 2035]": {
+"floor_area_Mm2": 3.392983257368773,
+"carbon_kt": 1285.4403670151205
+},
+"[\"LOW\", 2036]": {
+"floor_area_Mm2": 3.3351726624648896,
+"carbon_kt": 1263.1941603048715
+},
+"[\"LOW\", 2037]": {
+"floor_area_Mm2": 3.249929464947371,
+"carbon_kt": 1230.4543278559934
+},
+"[\"LOW\", 2038]": {
+"floor_area_Mm2": 3.1408627494450725,
+"carbon_kt": 1188.6029277503992
+},
+"[\"LOW\", 2039]": {
+"floor_area_Mm2": 3.020589902609731,
+"carbon_kt": 1142.468529356378
+},
+"[\"LOW\", 2040]": {
+"floor_area_Mm2": 2.9330776374338026,
+"carbon_kt": 1108.8737967638615
+},
+"[\"LOW\", 2041]": {
+"floor_area_Mm2": 2.889648205148546,
+"carbon_kt": 1092.1494071354148
+},
+"[\"LOW\", 2042]": {
+"floor_area_Mm2": 2.8917039675074183,
+"carbon_kt": 1092.8300989787376
+},
+"[\"LOW\", 2043]": {
+"floor_area_Mm2": 2.940633754317078,
+"carbon_kt": 1111.4453755404736
+},
+"[\"LOW\", 2044]": {
+"floor_area_Mm2": 2.971775049277452,
+"carbon_kt": 1123.2526448124638
+},
+"[\"LOW\", 2045]": {
+"floor_area_Mm2": 2.95315840069615,
+"carbon_kt": 1116.0207478198313
+},
+"[\"LOW\", 2046]": {
+"floor_area_Mm2": 2.934523478347223,
+"carbon_kt": 1108.7827376406117
+},
+"[\"LOW\", 2047]": {
+"floor_area_Mm2": 2.9158687863159587,
+"carbon_kt": 1101.538041919856
+},
+"[\"LOW\", 2048]": {
+"floor_area_Mm2": 2.8971935496898005,
+"carbon_kt": 1094.2863641667068
+},
+"[\"LOW\", 2049]": {
+"floor_area_Mm2": 2.878497367049683,
+"carbon_kt": 1087.027550793405
+},
+"[\"LOW\", 2050]": {
+"floor_area_Mm2": 2.85978003045275,
+"carbon_kt": 1079.761522238514
+},
+"[\"REF_HL5\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1936.5469251654265
+},
+"[\"REF_HL5\", 2027]": {
+"floor_area_Mm2": 4.508872681634402,
+"carbon_kt": 1694.7794365952873
+},
+"[\"REF_HL5\", 2028]": {
+"floor_area_Mm2": 4.203070247515164,
+"carbon_kt": 1579.8916330534794
+},
+"[\"REF_HL5\", 2029]": {
+"floor_area_Mm2": 4.056153720992187,
+"carbon_kt": 1525.5192856645062
+},
+"[\"REF_HL5\", 2030]": {
+"floor_area_Mm2": 3.9861723508649543,
+"carbon_kt": 1500.3419531843483
+},
+"[\"REF_HL5\", 2031]": {
+"floor_area_Mm2": 3.918101167650612,
+"carbon_kt": 1475.684523666313
+},
+"[\"REF_HL5\", 2032]": {
+"floor_area_Mm2": 3.826999389878519,
+"carbon_kt": 1442.0331869584052
+},
+"[\"REF_HL5\", 2033]": {
+"floor_area_Mm2": 3.6985389974846528,
+"carbon_kt": 1393.9309691063906
+},
+"[\"REF_HL5\", 2034]": {
+"floor_area_Mm2": 3.603777664683519,
+"carbon_kt": 1358.5873538469427
+},
+"[\"REF_HL5\", 2035]": {
+"floor_area_Mm2": 3.5551044464748296,
+"carbon_kt": 1340.7568359939137
+},
+"[\"REF_HL5\", 2036]": {
+"floor_area_Mm2": 3.4781552032675944,
+"carbon_kt": 1311.9986860474637
+},
+"[\"REF_HL5\", 2037]": {
+"floor_area_Mm2": 3.375836549940793,
+"carbon_kt": 1273.4398704479024
+},
+"[\"REF_HL5\", 2038]": {
+"floor_area_Mm2": 3.2516102817802635,
+"carbon_kt": 1226.4177602893424
+},
+"[\"REF_HL5\", 2039]": {
+"floor_area_Mm2": 3.1179182919631065,
+"carbon_kt": 1175.7038998462906
+},
+"[\"REF_HL5\", 2040]": {
+"floor_area_Mm2": 3.0185517098256707,
+"carbon_kt": 1138.0624955533272
+},
+"[\"REF_HL5\", 2041]": {
+"floor_area_Mm2": 2.9646744226658392,
+"carbon_kt": 1117.7709215493833
+},
+"[\"REF_HL5\", 2042]": {
+"floor_area_Mm2": 2.957540093583836,
+"carbon_kt": 1115.313537990093
+},
+"[\"REF_HL5\", 2043]": {
+"floor_area_Mm2": 2.9983988545563167,
+"carbon_kt": 1131.1726903334147
+},
+"[\"REF_HL5\", 2044]": {
+"floor_area_Mm2": 3.0224610067955964,
+"carbon_kt": 1140.5624604914096
+},
+"[\"REF_HL5\", 2045]": {
+"floor_area_Mm2": 2.9976330069260606,
+"carbon_kt": 1131.209366673436
+},
+"[\"REF_HL5\", 2046]": {
+"floor_area_Mm2": 2.973542636821401,
+"carbon_kt": 1122.1082798149237
+},
+"[\"REF_HL5\", 2047]": {
+"floor_area_Mm2": 2.9500972958395453,
+"carbon_kt": 1113.227529126048
+},
+"[\"REF_HL5\", 2048]": {
+"floor_area_Mm2": 2.9272158888145503,
+"carbon_kt": 1104.5393954585786
+},
+"[\"REF_HL5\", 2049]": {
+"floor_area_Mm2": 2.90482726402912,
+"carbon_kt": 1096.0195670732762
+},
+"[\"REF_HL5\", 2050]": {
+"floor_area_Mm2": 2.882868929732172,
+"carbon_kt": 1087.646695729365
+},
+"[\"REF\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1934.999869424518
+},
+"[\"REF\", 2027]": {
+"floor_area_Mm2": 4.541427154904419,
+"carbon_kt": 1704.459265140321
+},
+"[\"REF\", 2028]": {
+"floor_area_Mm2": 4.277329888833303,
+"carbon_kt": 1604.507423822137
+},
+"[\"REF\", 2029]": {
+"floor_area_Mm2": 4.159155440869919,
+"carbon_kt": 1560.3099167337853
+},
+"[\"REF\", 2030]": {
+"floor_area_Mm2": 4.109563021108126,
+"carbon_kt": 1542.2816729344336
+},
+"[\"REF\", 2031]": {
+"floor_area_Mm2": 4.056153134250751,
+"carbon_kt": 1522.727619719965
+},
+"[\"REF\", 2032]": {
+"floor_area_Mm2": 3.975534065286801,
+"carbon_kt": 1492.7061791324477
+},
+"[\"REF\", 2033]": {
+"floor_area_Mm2": 3.854346573019712,
+"carbon_kt": 1447.1136093712494
+},
+"[\"REF\", 2034]": {
+"floor_area_Mm2": 3.764293467062823,
+"carbon_kt": 1413.3913104839178
+},
+"[\"REF\", 2035]": {
+"floor_area_Mm2": 3.71826428495577,
+"carbon_kt": 1396.4707047071215
+},
+"[\"REF\", 2036]": {
+"floor_area_Mm2": 3.6422912128113936,
+"carbon_kt": 1368.0495243098535
+},
+"[\"REF\", 2037]": {
+"floor_area_Mm2": 3.539564070002509,
+"carbon_kt": 1329.3530655638945
+},
+"[\"REF\", 2038]": {
+"floor_area_Mm2": 3.4137779441082765,
+"carbon_kt": 1281.799206928279
+},
+"[\"REF\", 2039]": {
+"floor_area_Mm2": 3.277571994335934,
+"carbon_kt": 1230.2272942000425
+},
+"[\"REF\", 2040]": {
+"floor_area_Mm2": 3.174911267929529,
+"carbon_kt": 1191.461153192024
+},
+"[\"REF\", 2041]": {
+"floor_area_Mm2": 3.1171295530396983,
+"carbon_kt": 1169.8362975661769
+},
+"[\"REF\", 2042]": {
+"floor_area_Mm2": 3.10563182227912,
+"carbon_kt": 1165.8888218696784
+},
+"[\"REF\", 2043]": {
+"floor_area_Mm2": 3.141798279004695,
+"carbon_kt": 1180.1455238636725
+},
+"[\"REF\", 2044]": {
+"floor_area_Mm2": 3.160950197867197,
+"carbon_kt": 1187.8584005446835
+},
+"[\"REF\", 2045]": {
+"floor_area_Mm2": 3.131061666060333,
+"carbon_kt": 1176.7770752465085
+},
+"[\"REF\", 2046]": {
+"floor_area_Mm2": 3.101805032592857,
+"carbon_kt": 1165.911643521896
+},
+"[\"REF\", 2047]": {
+"floor_area_Mm2": 3.073143286509969,
+"carbon_kt": 1155.2494214648368
+},
+"[\"REF\", 2048]": {
+"floor_area_Mm2": 3.045041781085656,
+"carbon_kt": 1144.7785538686448
+},
+"[\"REF\", 2049]": {
+"floor_area_Mm2": 3.017467901249421,
+"carbon_kt": 1134.4878903897752
+},
+"[\"REF\", 2050]": {
+"floor_area_Mm2": 2.990390853933455,
+"carbon_kt": 1124.366908634694
+},
+"[\"REF_HL15\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1934.4598913871112
+},
+"[\"REF_HL15\", 2027]": {
+"floor_area_Mm2": 4.553320874154159,
+"carbon_kt": 1707.9957733843748
+},
+"[\"REF_HL15\", 2028]": {
+"floor_area_Mm2": 4.306025392517803,
+"carbon_kt": 1614.035185762439
+},
+"[\"REF_HL15\", 2029]": {
+"floor_area_Mm2": 4.2006667561588245,
+"carbon_kt": 1574.345623753199
+},
+"[\"REF_HL15\", 2030]": {
+"floor_area_Mm2": 4.161410713073046,
+"carbon_kt": 1559.9153427690594
+},
+"[\"REF_HL15\", 2031]": {
+"floor_area_Mm2": 4.116666843885433,
+"carbon_kt": 1543.3560520584626
+},
+"[\"REF_HL15\", 2032]": {
+"floor_area_Mm2": 4.043481178213294,
+"carbon_kt": 1515.8914542358918
+},
+"[\"REF_HL15\", 2033]": {
+"floor_area_Mm2": 3.9287384467777433,
+"carbon_kt": 1472.5093040713668
+},
+"[\"REF_HL15\", 2034]": {
+"floor_area_Mm2": 3.844282342153051,
+"carbon_kt": 1440.7033508210825
+},
+"[\"REF_HL15\", 2035]": {
+"floor_area_Mm2": 3.803109666689612,
+"carbon_kt": 1425.4438433225862
+},
+"[\"REF_HL15\", 2036]": {
+"floor_area_Mm2": 3.731337949977569,
+"carbon_kt": 1398.458796448862
+},
+"[\"REF_HL15\", 2037]": {
+"floor_area_Mm2": 3.6322069923186135,
+"carbon_kt": 1360.99116444348
+},
+"[\"REF_HL15\", 2038]": {
+"floor_area_Mm2": 3.5094528085131755,
+"carbon_kt": 1314.4731079821602
+},
+"[\"REF_HL15\", 2039]": {
+"floor_area_Mm2": 3.375750534570048,
+"carbon_kt": 1263.7564174339032
+},
+"[\"REF_HL15\", 2040]": {
+"floor_area_Mm2": 3.275101219369569,
+"carbon_kt": 1225.677295511768
+},
+"[\"REF_HL15\", 2041]": {
+"floor_area_Mm2": 3.2188857937876416,
+"carbon_kt": 1204.5873981639895
+},
+"[\"REF_HL15\", 2042]": {
+"floor_area_Mm2": 3.208558075185274,
+"carbon_kt": 1201.0395230530585
+},
+"[\"REF_HL15\", 2043]": {
+"floor_area_Mm2": 3.2455455610187625,
+"carbon_kt": 1215.576630901701
+},
+"[\"REF_HL15\", 2044]": {
+"floor_area_Mm2": 3.265214986805982,
+"carbon_kt": 1223.46625011037
+},
+"[\"REF_HL15\", 2045]": {
+"floor_area_Mm2": 3.2355632845250155,
+"carbon_kt": 1212.4658088733984
+},
+"[\"REF_HL15\", 2046]": {
+"floor_area_Mm2": 3.206273748031576,
+"carbon_kt": 1201.5891421405668
+},
+"[\"REF_HL15\", 2047]": {
+"floor_area_Mm2": 3.177334157548481,
+"carbon_kt": 1190.8320333526435
+},
+"[\"REF_HL15\", 2048]": {
+"floor_area_Mm2": 3.148732997488185,
+"carbon_kt": 1180.1905273286936
+},
+"[\"REF_HL15\", 2049]": {
+"floor_area_Mm2": 3.1204592181327464,
+"carbon_kt": 1169.6608388089849
+},
+"[\"REF_HL15\", 2050]": {
+"floor_area_Mm2": 3.0925021143093283,
+"carbon_kt": 1159.239305805789
+},
+"[\"HIGH\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1933.3417761363485
+},
+"[\"HIGH\", 2027]": {
+"floor_area_Mm2": 4.578822424797481,
+"carbon_kt": 1715.5784682666542
+},
+"[\"HIGH\", 2028]": {
+"floor_area_Mm2": 4.370248545629772,
+"carbon_kt": 1635.38475969958
+},
+"[\"HIGH\", 2029]": {
+"floor_area_Mm2": 4.296670749938583,
+"carbon_kt": 1606.8300340597698
+},
+"[\"HIGH\", 2030]": {
+"floor_area_Mm2": 4.285355156581371,
+"carbon_kt": 1602.087489441347
+},
+"[\"HIGH\", 2031]": {
+"floor_area_Mm2": 4.266325478071125,
+"carbon_kt": 1594.3854176409288
+},
+"[\"HIGH\", 2032]": {
+"floor_area_Mm2": 4.217450347921973,
+"carbon_kt": 1575.2622962285743
+},
+"[\"HIGH\", 2033]": {
+"floor_area_Mm2": 4.126023832054695,
+"carbon_kt": 1539.8632056219924
+},
+"[\"HIGH\", 2034]": {
+"floor_area_Mm2": 4.064077785042231,
+"carbon_kt": 1515.7552369213308
+},
+"[\"HIGH\", 2035]": {
+"floor_area_Mm2": 4.044738407371116,
+"carbon_kt": 1507.9575348203227
+},
+"[\"HIGH\", 2036]": {
+"floor_area_Mm2": 3.994217947634768,
+"carbon_kt": 1488.232899112375
+},
+"[\"HIGH\", 2037]": {
+"floor_area_Mm2": 3.91576705873618,
+"carbon_kt": 1457.8292528072627
+},
+"[\"HIGH\", 2038]": {
+"floor_area_Mm2": 3.81311469460592,
+"carbon_kt": 1418.1769991717524
+},
+"[\"HIGH\", 2039]": {
+"floor_area_Mm2": 3.698920110289328,
+"carbon_kt": 1374.1228437792695
+},
+"[\"HIGH\", 2040]": {
+"floor_area_Mm2": 3.61717425063068,
+"carbon_kt": 1342.4997141658862
+},
+"[\"HIGH\", 2041]": {
+"floor_area_Mm2": 3.5792936867184624,
+"carbon_kt": 1327.6715288089156
+},
+"[\"HIGH\", 2042]": {
+"floor_area_Mm2": 3.5867870824572723,
+"carbon_kt": 1330.2098633101152
+},
+"[\"HIGH\", 2043]": {
+"floor_area_Mm2": 3.64114627308056,
+"carbon_kt": 1350.6796750207727
+},
+"[\"HIGH\", 2044]": {
+"floor_area_Mm2": 3.677811393756495,
+"carbon_kt": 1364.373571966368
+},
+"[\"HIGH\", 2045]": {
+"floor_area_Mm2": 3.6647770223635647,
+"carbon_kt": 1359.0481849299747
+},
+"[\"HIGH\", 2046]": {
+"floor_area_Mm2": 3.651678371104094,
+"carbon_kt": 1353.7009317076136
+},
+"[\"HIGH\", 2047]": {
+"floor_area_Mm2": 3.6385144282338113,
+"carbon_kt": 1348.331425193765
+},
+"[\"HIGH\", 2048]": {
+"floor_area_Mm2": 3.625284669649635,
+"carbon_kt": 1342.9394648602915
+},
+"[\"HIGH\", 2049]": {
+"floor_area_Mm2": 3.611988823856561,
+"carbon_kt": 1337.5249468299412
+},
+"[\"HIGH\", 2050]": {
+"floor_area_Mm2": 3.5986267502148617,
+"carbon_kt": 1332.0878172922646
+},
+"[\"LOW_NOUC\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1954.1751928445133
+},
+"[\"LOW_NOUC\", 2027]": {
+"floor_area_Mm2": 4.335753776965964,
+"carbon_kt": 1643.3038282758023
+},
+"[\"LOW_NOUC\", 2028]": {
+"floor_area_Mm2": 3.995840981028208,
+"carbon_kt": 1513.0812194311802
+},
+"[\"LOW_NOUC\", 2029]": {
+"floor_area_Mm2": 3.85144399282024,
+"carbon_kt": 1457.6600931812122
+},
+"[\"LOW_NOUC\", 2030]": {
+"floor_area_Mm2": 3.80060687569831,
+"carbon_kt": 1438.031765590677
+},
+"[\"LOW_NOUC\", 2031]": {
+"floor_area_Mm2": 3.758229584818064,
+"carbon_kt": 1421.6368217636857
+},
+"[\"LOW_NOUC\", 2032]": {
+"floor_area_Mm2": 3.6944176620289455,
+"carbon_kt": 1397.0399478705424
+},
+"[\"LOW_NOUC\", 2033]": {
+"floor_area_Mm2": 3.5924896802688893,
+"carbon_kt": 1357.8614316674016
+},
+"[\"LOW_NOUC\", 2034]": {
+"floor_area_Mm2": 3.5224661166701616,
+"carbon_kt": 1330.8948865308605
+},
+"[\"LOW_NOUC\", 2035]": {
+"floor_area_Mm2": 3.4963390849277904,
+"carbon_kt": 1320.7273087823053
+},
+"[\"LOW_NOUC\", 2036]": {
+"floor_area_Mm2": 3.4396845652052925,
+"carbon_kt": 1298.8809747200755
+},
+"[\"LOW_NOUC\", 2037]": {
+"floor_area_Mm2": 3.355518497156322,
+"carbon_kt": 1266.511616447304
+},
+"[\"LOW_NOUC\", 2038]": {
+"floor_area_Mm2": 3.2474689743748,
+"carbon_kt": 1225.0089586621025
+},
+"[\"LOW_NOUC\", 2039]": {
+"floor_area_Mm2": 3.128160023034176,
+"carbon_kt": 1179.204446785966
+},
+"[\"LOW_NOUC\", 2040]": {
+"floor_area_Mm2": 3.041562198832404,
+"carbon_kt": 1145.9223724939252
+},
+"[\"LOW_NOUC\", 2041]": {
+"floor_area_Mm2": 2.999012710315462,
+"carbon_kt": 1129.4986843815288
+},
+"[\"LOW_NOUC\", 2042]": {
+"floor_area_Mm2": 3.0019307767128125,
+"carbon_kt": 1130.473962610879
+},
+"[\"LOW_NOUC\", 2043]": {
+"floor_area_Mm2": 3.0517215625100644,
+"carbon_kt": 1149.3833327675077
+},
+"[\"LOW_NOUC\", 2044]": {
+"floor_area_Mm2": 3.083738829955077,
+"carbon_kt": 1161.4897848913718
+},
+"[\"LOW_NOUC\", 2045]": {
+"floor_area_Mm2": 3.0660074231374432,
+"carbon_kt": 1154.5602236981204
+},
+"[\"LOW_NOUC\", 2046]": {
+"floor_area_Mm2": 3.048250446870016,
+"carbon_kt": 1147.6220511956544
+},
+"[\"LOW_NOUC\", 2047]": {
+"floor_area_Mm2": 3.0304664820181992,
+"carbon_kt": 1140.674724406021
+},
+"[\"LOW_NOUC\", 2048]": {
+"floor_area_Mm2": 3.012654793442995,
+"carbon_kt": 1133.7179620562035
+},
+"[\"LOW_NOUC\", 2049]": {
+"floor_area_Mm2": 2.994815000328793,
+"carbon_kt": 1126.751618441573
+},
+"[\"LOW_NOUC\", 2050]": {
+"floor_area_Mm2": 2.976946905405719,
+"carbon_kt": 1119.7756180843046
+},
+"[\"REF_NOUC\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1922.1067336433648
+},
+"[\"REF_NOUC\", 2027]": {
+"floor_area_Mm2": 4.684848704673577,
+"carbon_kt": 1747.104587640658
+},
+"[\"REF_NOUC\", 2028]": {
+"floor_area_Mm2": 4.484539319818459,
+"carbon_kt": 1671.9905843579927
+},
+"[\"REF_NOUC\", 2029]": {
+"floor_area_Mm2": 4.395070592150282,
+"carbon_kt": 1639.178194400187
+},
+"[\"REF_NOUC\", 2030]": {
+"floor_area_Mm2": 4.35630091285791,
+"carbon_kt": 1625.6654257787495
+},
+"[\"REF_NOUC\", 2031]": {
+"floor_area_Mm2": 4.304717047032043,
+"carbon_kt": 1607.1594282083745
+},
+"[\"REF_NOUC\", 2032]": {
+"floor_area_Mm2": 4.221482230170552,
+"carbon_kt": 1576.4645440464951
+},
+"[\"REF_NOUC\", 2033]": {
+"floor_area_Mm2": 4.0955667606000725,
+"carbon_kt": 1529.371202081713
+},
+"[\"REF_NOUC\", 2034]": {
+"floor_area_Mm2": 3.99985264392872,
+"carbon_kt": 1493.77459109825
+},
+"[\"REF_NOUC\", 2035]": {
+"floor_area_Mm2": 3.947874442992012,
+"carbon_kt": 1474.8528772412303
+},
+"[\"REF_NOUC\", 2036]": {
+"floor_area_Mm2": 3.866007875936301,
+"carbon_kt": 1444.434819904855
+},
+"[\"REF_NOUC\", 2037]": {
+"floor_area_Mm2": 3.757571657377552,
+"carbon_kt": 1403.796834937625
+},
+"[\"REF_NOUC\", 2038]": {
+"floor_area_Mm2": 3.626313264979663,
+"carbon_kt": 1354.3783707086818
+},
+"[\"REF_NOUC\", 2039]": {
+"floor_area_Mm2": 3.4848869482547062,
+"carbon_kt": 1301.0258318231229
+},
+"[\"REF_NOUC\", 2040]": {
+"floor_area_Mm2": 3.377260950609908,
+"carbon_kt": 1260.5651225891309
+},
+"[\"REF_NOUC\", 2041]": {
+"floor_area_Mm2": 3.31478849544173,
+"carbon_kt": 1237.3389053368326
+},
+"[\"REF_NOUC\", 2042]": {
+"floor_area_Mm2": 3.2988924262157693,
+"carbon_kt": 1231.8896425999396
+},
+"[\"REF_NOUC\", 2043]": {
+"floor_area_Mm2": 3.33096593270423,
+"carbon_kt": 1244.7487043734009
+},
+"[\"REF_NOUC\", 2044]": {
+"floor_area_Mm2": 3.3463402767378203,
+"carbon_kt": 1251.171569482253
+},
+"[\"REF_NOUC\", 2045]": {
+"floor_area_Mm2": 3.312961926518451,
+"carbon_kt": 1238.8984658107336
+},
+"[\"REF_NOUC\", 2046]": {
+"floor_area_Mm2": 3.280460536263072,
+"carbon_kt": 1226.924927125065
+},
+"[\"REF_NOUC\", 2047]": {
+"floor_area_Mm2": 3.248785387016374,
+"carbon_kt": 1215.2335979280242
+},
+"[\"REF_NOUC\", 2048]": {
+"floor_area_Mm2": 3.217888724846002,
+"carbon_kt": 1203.8081518396016
+},
+"[\"REF_NOUC\", 2049]": {
+"floor_area_Mm2": 3.1877254519027702,
+"carbon_kt": 1192.6331781269594
+},
+"[\"REF_NOUC\", 2050]": {
+"floor_area_Mm2": 3.158252914504728,
+"carbon_kt": 1181.6941052072748
+},
+"[\"HIGH_NOUC\", 2026]": {
+"floor_area_Mm2": 5.176650700000001,
+"carbon_kt": 1919.8050692882948
+},
+"[\"HIGH_NOUC\", 2027]": {
+"floor_area_Mm2": 4.736758546161508,
+"carbon_kt": 1762.539589805655
+},
+"[\"HIGH_NOUC\", 2028]": {
+"floor_area_Mm2": 4.613523353343803,
+"carbon_kt": 1714.8526258822603
+},
+"[\"HIGH_NOUC\", 2029]": {
+"floor_area_Mm2": 4.585960988618377,
+"carbon_kt": 1703.7545946587609
+},
+"[\"HIGH_NOUC\", 2030]": {
+"floor_area_Mm2": 4.6003248739988845,
+"carbon_kt": 1708.6842263866326
+},
+"[\"HIGH_NOUC\", 2031]": {
+"floor_area_Mm2": 4.596465524421331,
+"carbon_kt": 1706.6304292758505
+},
+"[\"HIGH_NOUC\", 2032]": {
+"floor_area_Mm2": 4.557295714625998,
+"carbon_kt": 1691.0639295991054
+},
+"[\"HIGH_NOUC\", 2033]": {
+"floor_area_Mm2": 4.472692624184165,
+"carbon_kt": 1658.120556029786
+},
+"[\"HIGH_NOUC\", 2034]": {
+"floor_area_Mm2": 4.415995018923731,
+"carbon_kt": 1635.86997403421
+},
+"[\"HIGH_NOUC\", 2035]": {
+"floor_area_Mm2": 4.401065982803197,
+"carbon_kt": 1629.6121207422843
+},
+"[\"HIGH_NOUC\", 2036]": {
+"floor_area_Mm2": 4.354531185763662,
+"carbon_kt": 1611.266078332029
+},
+"[\"HIGH_NOUC\", 2037]": {
+"floor_area_Mm2": 4.279793787831369,
+"carbon_kt": 1582.1396717148016
+},
+"[\"HIGH_NOUC\", 2038]": {
+"floor_area_Mm2": 4.1806482778814855,
+"carbon_kt": 1543.6897354368175
+},
+"[\"HIGH_NOUC\", 2039]": {
+"floor_area_Mm2": 4.069776801247492,
+"carbon_kt": 1500.7728904975706
+},
+"[\"HIGH_NOUC\", 2040]": {
+"floor_area_Mm2": 3.991183550811684,
+"carbon_kt": 1470.2276756644028
+},
+"[\"HIGH_NOUC\", 2041]": {
+"floor_area_Mm2": 3.956336664214865,
+"carbon_kt": 1456.4361831062176
+},
+"[\"HIGH_NOUC\", 2042]": {
+"floor_area_Mm2": 3.966802922873676,
+"carbon_kt": 1459.9901280008266
+},
+"[\"HIGH_NOUC\", 2043]": {
+"floor_area_Mm2": 4.024130477148473,
+"carbon_kt": 1481.4738511675987
+},
+"[\"HIGH_NOUC\", 2044]": {
+"floor_area_Mm2": 4.063815583818119,
+"carbon_kt": 1496.1992051943944
+},
+"[\"HIGH_NOUC\", 2045]": {
+"floor_area_Mm2": 4.053833155008098,
+"carbon_kt": 1491.9161452807575
+},
+"[\"HIGH_NOUC\", 2046]": {
+"floor_area_Mm2": 4.043761293877149,
+"carbon_kt": 1487.6026067013356
+},
+"[\"HIGH_NOUC\", 2047]": {
+"floor_area_Mm2": 4.033599253386666,
+"carbon_kt": 1483.2583036301778
+},
+"[\"HIGH_NOUC\", 2048]": {
+"floor_area_Mm2": 4.023346646556122,
+"carbon_kt": 1478.883088003884
+},
+"[\"HIGH_NOUC\", 2049]": {
+"floor_area_Mm2": 4.013003272922594,
+"carbon_kt": 1474.476883122931
+},
+"[\"HIGH_NOUC\", 2050]": {
+"floor_area_Mm2": 4.002569028642324,
+"carbon_kt": 1470.039649255448
+}
+}
+},
+"data/aesa/results.json": {
+"kind": "json",
+"n_values": 18,
+"values": {
+"population_paths/5th/I_kt": 16059.677828805774,
+"population_paths/5th/B_AR_kt": 4265.520866326651,
+"population_paths/5th/B_AtP_kt": 1066.579336485224,
+"population_paths/5th/LoE_AR": 3.764998069892441,
+"population_paths/5th/LoE_AtP": 15.057180726684985,
+"population_paths/5th/P_NZ_2050": 6140088.442776736,
+"population_paths/50th/I_kt": 21577.50362382947,
+"population_paths/50th/B_AR_kt": 4451.028297498578,
+"population_paths/50th/B_AtP_kt": 1112.9648539994828,
+"population_paths/50th/LoE_AR": 4.847757008409891,
+"population_paths/50th/LoE_AtP": 19.38740791884835,
+"population_paths/50th/P_NZ_2050": 6614500.0,
+"population_paths/95th/I_kt": 27119.45535042152,
+"population_paths/95th/B_AR_kt": 4653.613478423535,
+"population_paths/95th/B_AtP_kt": 1163.620606162936,
+"population_paths/95th/LoE_AR": 5.827612343861559,
+"population_paths/95th/LoE_AtP": 23.306097543123187,
+"population_paths/95th/P_NZ_2050": 7099034.644995723
+}
+},
+"data/frozen_technology/aesa/results.json": {
+"kind": "json",
+"n_values": 18,
+"values": {
+"population_paths/5th/I_kt": 24910.374475892422,
+"population_paths/5th/B_AR_kt": 5957.751316325761,
+"population_paths/5th/B_AtP_kt": 1066.579336485224,
+"population_paths/5th/LoE_AR": 4.181170571459005,
+"population_paths/5th/LoE_AtP": 23.35538822454725,
+"population_paths/5th/P_NZ_2050": 6140088.442776736,
+"population_paths/50th/I_kt": 33625.15835263456,
+"population_paths/50th/B_AR_kt": 6216.853821479963,
+"population_paths/50th/B_AtP_kt": 1112.9648539994828,
+"population_paths/50th/LoE_AR": 5.4087098262557936,
+"population_paths/50th/LoE_AtP": 30.212237369222603,
+"population_paths/50th/P_NZ_2050": 6614500.0,
+"population_paths/95th/I_kt": 42315.2956553174,
+"population_paths/95th/B_AR_kt": 6499.809213364648,
+"population_paths/95th/B_AtP_kt": 1163.620606162936,
+"population_paths/95th/LoE_AR": 6.510236572530526,
+"population_paths/95th/LoE_AtP": 36.36519964600232,
+"population_paths/95th/P_NZ_2050": 7099034.644995723
+}
+},
+"data/pathways/theoretical_limit.json": {
+"kind": "json",
+"n_values": 5,
+"values": {
+"solution_space_marker/demand_reduction": 0.7613460460884959,
+"solution_space_marker/intensity_reduction": 0.263357385209284,
+"solution_space_marker/LoE_AR_run": 1.028846609986994,
+"solution_space_marker/LoE_AR_on_grid_at_coordinates": 1.155876240793504,
+"solution_space_marker/LoE_AtP_run": 4.114618137653896
+}
+}
+}
 }
 }

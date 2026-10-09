@@ -1,34 +1,34 @@
 {
-  "scenario": "S3-10",
-  "v2_frozen_whole_life_kt": 33625.15835263455,
-  "v2_adopted_whole_life_kt": 31012.952295889965,
+  "scenario": "REF",
+  "whole_life_2025_factors_kt": 33625.15835263455,
+  "whole_life_a45_held_kt": 31012.952295889965,
   "whole_life_adopted_a45_resch_kt": 30595.772572193142,
   "frozen_2025_factors": {
     "upfront_kt": 24203.706601780894,
-    "b_inwindow_kt": 452.4405045632818,
+    "maintenance_kt": 452.4405045632818,
     "b_committed_upper_kt": 4082.493276679825,
     "b_committed_lower_kt": 4082.493276679825,
     "c_committed_kt": 4886.5179696105515,
-    "within_window_kt": 24656.14710634418
+    "carbon_2026_2050_kt": 24656.14710634418
   },
   "adopted": {
     "upfront_kt": 21174.320821339476,
-    "b_inwindow_kt": 403.18280248999224,
+    "maintenance_kt": 403.18280248999224,
     "b_committed_upper_kt": 4082.493276679825,
     "b_committed_lower_kt": 3321.539468289954,
     "c_committed_kt": 4886.5179696105515,
-    "within_window_kt": 21577.50362382947
+    "carbon_2026_2050_kt": 21577.50362382947
   },
   "a45_construction_decarbonisation_kt": 417.1797236968232,
-  "b_inwindow_decarbonisation_kt": 49.25770207328958,
+  "maintenance_decarbonisation_kt": 49.25770207328958,
   "sum_2025_factors_kt": 33625.15835263455,
   "sum_adopted_upper_kt": 30546.514870119845,
   "sum_adopted_lower_kt": 29785.56106172997,
   "checks": {
-    "2025 factors: split sums to the v2 frozen whole-life total": true,
+    "2025 factors: split sums to the whole-life total at 2025 factors": true,
     "2025 factors: committed B upper = lower": true,
     "decarbonised: committed C1-C4 unchanged (held at 2025)": true,
     "decarbonised: committed B upper (2025 factors) unchanged": true,
-    "decarbonised: v2 adopted - A4-A5 - in-window B decarbonisation = split (upper)": true
+    "decarbonised: whole life (A4-A5 held) - A4-A5 decarbonisation - maintenance decarbonisation = split (upper)": true
   }
 }

@@ -1,11 +1,11 @@
-# Architecture: how the model works (MODEL v1.0.0)
+# Architecture: how the model works (MODEL v2.0.0)
 
 This document is for a reviewer who knows statistics or modelling but not this
 code or New Zealand housing data. It describes what each script reads, what it
 calculates and in what order, and what it writes. Headline numbers are not
 repeated here: they are generated into `outputs/reports/RESULTS.md` and
-`outputs/data/metrics.json`, and the figures of the paper with their captions into
-`outputs/headline/HEADLINE.md`. Every setting, with its basis (data, literature,
+`outputs/data/metrics.json`, the figures and tables of the paper with their captions into
+`outputs/paper/PAPER.md`, and the Extended Data into `outputs/extended_data/EXTENDED_DATA.md`. Every setting, with its basis (data, literature,
 author decision, judgement), is in `outputs/reports/ASSUMPTIONS.md`; the methods as
 implemented are in `outputs/reports/METHODS_DRAFT.md` (one document in three parts:
 baseline projection, planetary-boundary layer (AESA), pathways and the theoretical
@@ -13,7 +13,8 @@ limit). Every other figure is indexed in `outputs/diagnostics/DIAGNOSTICS.md`, a
 every output file, with the script that writes it, in `outputs/INDEX.md`. Labels
 follow one vocabulary (`naming.py`; `docs/RENAMING.md` maps the earlier names to
 the release names, `docs/FIGURE_PLAN.md` the earlier figure names to the figure ids
-H1–H11 and D01–D34). Parameter values quoted below are the adopted settings in
+Fig1–Fig6, ED1–ED10 and the diagnostics D01–D34; the model-v1.1.0 ids H1–H11 are mapped in
+`docs/RENAMING.md`, section 6). Parameter values quoted below are the adopted settings in
 `projection.py` unless another module is named.
 
 ---
@@ -77,8 +78,10 @@ flowchart LR
     PROJ --> VAL[validation.py, gap_2026.py, tools/]
     PROJ & MC --> BND[boundaries.py<br/>AESA layer]
     PROJ & BND --> PW[levers.py, pathways.py]
-    SENS & MC & VAL & BND & PW --> DATA[("outputs/data/")]
-    DATA --> HL[headline.py<br/>H1-H11]
+    MC & BND & PW --> PMC[pathways_mc.py<br/>pathway Monte Carlo]
+    SENS & BND & PW --> ST[tools/sensitivity_tables.py]
+    SENS & MC & VAL & BND & PW & PMC & ST --> DATA[("outputs/data/")]
+    DATA --> HL[paper.py, extended_data.py<br/>Fig1-Fig6, Tables, ED1-ED10]
     DATA --> REP[tools/ reports, indexes.py]
 ```
 
@@ -303,7 +306,7 @@ never from inside the computation.
 Runs `projection.main()` once: household formation and the DHE/consent
 relationship (D04), the stock and vacancy (D05), and the vacancy-definition
 appendix (D06). The history of household formation (D04c), of the stock identity
-(D05c) and of the demand bands (H3; `outputs/data/baseline/bands_history.csv`) is
+(D05c) and of the demand bands (Fig2; `outputs/data/baseline/bands_history.csv`) is
 one bar per census interval (interval means, one vacancy definition): between
 censuses annual detail is not identified. In D05c the history's net replacement
 is census-measured, the rate of the census dwelling-count identity of each
@@ -332,8 +335,10 @@ paths; carbon-factor rows (jackknife and single-case extremes of the materials
 factor) and soil-order rows re-weight the Reference floor area. Whole life at
 construction is an accounting convention, not a parameter: it is an AESA
 sensitivity row only. Writes
-`outputs/data/baseline/sensitivity_one_at_a_time.csv`, D16 and D17. One-at-a-time
-ranges are not additive.
+`outputs/data/baseline/sensitivity_one_at_a_time.csv` and the annual carbon of every row
+(`sensitivity_annual_carbon.csv`, with the population rows also on the exact engine paths); no
+figures (MODEL v2.0.0: the grouped tables of `tools/sensitivity_tables.py` feed Extended Data
+ED1–ED4). One-at-a-time ranges are not additive.
 
 ## 7. `MonteCarlo.py`
 
@@ -349,7 +354,7 @@ year, its event kernel and its event age profile with the same resampled cases
 and multipliers, so the random stream and every 2025-factor draw are unchanged.
 Sobol first-order and total indices (Reference, 1,024 × 6 evaluations). This is
 within-variant parametric uncertainty only; the variant differences and the
-carbon-factor and soil-order bounds are reported separately (D16, D19). Writes
+carbon-factor and soil-order bounds are reported separately (ED1, D19). Writes
 `outputs/data/montecarlo/` (`draws_<variant>.csv`, `summary_<variant>.csv`,
 `annual_<variant>.csv`, `sobol_REF.csv`) and D20.
 
@@ -441,9 +446,10 @@ flowchart LR
    (events of all cohorts since 1992 in base and projection) and α = 1. The
    Stats NZ 5th/95th population paths, which move carbon and the AR boundary
    together, are evaluated with the same boundary functions
-   (`results.json` "population_paths"; used in H11).
+   (`results.json` "population_paths"; used in ED1, ED2 and ED4).
 7. **Committed after 2050** per variant, in years of the 2050 AR boundary
-   (`outputs/data/aesa/results.json` "committed"; H6).
+   (`outputs/data/aesa/results.json` "committed"; Fig3c). For the pathway Monte Carlo the
+   budgets of every Reference draw are written to `montecarlo_draw_budgets.csv`.
 
 Settings, sources and limitations: top of `boundaries.py` and
 `outputs/reports/ASSUMPTIONS.md`; methods as implemented: part 2 of
@@ -546,7 +552,31 @@ subsets, full strength from 2027), gap and back-cast as for P5; where TL exceeds
 the AR budget the back-cast cut is expressed as dwellings not built 2027–2050
 and new residents housed in existing dwellings
 (`outputs/data/pathways/theoretical_limit.json`,
-`shapley_theoretical_limit.csv`; H9, D32–D34).
+`shapley_theoretical_limit.csv`; D32, D34).
+
+**TL relative to P5 Moderate (MODEL v2.0.0).** With TL1–TL6 active every Ambitious lever setting
+of P5 Ambitious is overridden except L4, so that element is named TL7 (L4 at d = 0.40): TL = P5
+Moderate + TL1–TL7 is the same run (asserted to 1e-12, otherwise the run stops). The Shapley
+attribution over TL1–TL7 (128 subsets, exact rational arithmetic) is relative to P5 Moderate at full
+strength from 2027, with the effect of full strength from 2027 as a separate line
+(`shapley_theoretical_limit_moderate.csv`; Fig5b, ED8). The TL1–TL6 attribution relative to P5
+Ambitious stays in `shapley_theoretical_limit.csv`.
+
+**Pathway Monte Carlo (`pathways_mc.py`).** The 5,000 saved Reference draws of `MonteCarlo.py`
+(`MonteCarlo.project(..., full=True)` returns each draw's inputs; its A1–A3 factors are re-derived
+with the same bootstrap and seed, checked identical) are run through the pathway layer for P5
+(Moderate) and TL with the levers applied identically; the TL targets TL3–TL6 are absolute (TL4
+scales each draw's ratio so the A1–A3 per m² equals the deterministic best case). Each draw's AR and
+AtP budgets are those of the AESA layer for that draw. The central draw must reproduce the
+deterministic Reference, P5 and TL runs to 1e-9 (otherwise the run stops). Writes
+`montecarlo_draws.csv`, `montecarlo_summary.csv` (percentiles, P(LoE ≤ 1)) and
+`montecarlo_annual.csv` in `outputs/data/pathways/`.
+
+**Grouped sensitivity tables (`tools/sensitivity_tables.py`).** The rows of
+`docs/SENSITIVITY_PLAN.md`, grouped by type of change, from the existing data files; the new rows
+(P1–P4 each at Ambitious within P5; P5 on the population 5th / 95th paths, exact engine path; TL
+under Low / High replacement) are computed with the pathway engine, and every run that an existing
+file holds is asserted to reproduce it (1e-12). Writes `outputs/data/sensitivity/`.
 
 ---
 
@@ -562,7 +592,7 @@ log to read, and the run stops there (non-zero exit code from the command line;
 no `SystemExit` in an interactive console).
 
 **Full run** (`python run_all.py`): the only basis for reported results and
-tags. It first deletes `outputs/headline/`, `outputs/diagnostics/` (with the
+tags. It first deletes `outputs/paper/`, `outputs/extended_data/`, `outputs/diagnostics/` (with the
 figure audit records), `outputs/data/` and `outputs/reports/`, so nothing stale
 survives, then runs: `Building_factors.py`, `projection.py`, `Diagnostics.py`,
 `Sensitivity.py`, `MonteCarlo.py`, `boundaries.py` (reads the Monte Carlo
@@ -570,7 +600,8 @@ draws), `validation.py`, `gap_2026.py`, `tools/overbuild_2026.py`,
 `tools/replacement_scenarios.py`, `tools/reconciliation.py`,
 `tools/figures_report.py`; the frozen-technology check (projection, Sensitivity,
 MonteCarlo, the variant table and boundaries with `PATHWAY_FROZEN=1`, figures
-not saved; section 8); `pathways.py`; `tools/metrics.py`; `headline.py`;
+not saved; section 8); `pathways.py`; `pathways_mc.py`; `tools/sensitivity_tables.py`;
+`tools/metrics.py`; `paper.py`; `extended_data.py`;
 `tools/results.py`, `tools/assumptions.py`, `tools/pathways_methods.py
 --sections`, `tools/methods_draft.py`, `tools/check_outputs.py`; `indexes.py`;
 and last `pytest tests/` on the complete output set.
@@ -587,12 +618,14 @@ lock and the file checks of `tests/test_regression_v1_2_1.py` are skipped.
 **Pathways only** (`python run_all.py --pathways-only`): the projection is
 unchanged, so only the pathway layer runs, on the outputs of a previous full
 run: `pathways.py` (`projection.main()` in memory; no projection output is
-written; the pathway figures D28–D34 are overwritten in place), `headline.py`,
+written; the pathway figures D28, D30, D32, D34 are overwritten in place), `pathways_mc.py`,
+`tools/sensitivity_tables.py`, `paper.py`, `extended_data.py`,
 `tools/pathways_methods.py --sections` (`LEVERS_TABLE.md` and the Pathways
 section of `ASSUMPTIONS.md`, each replacing only its own section),
 `tools/methods_draft.py`, `indexes.py`, then
-`pytest tests/test_pathways.py tests/test_regression_model_v1.py
-tests/test_release.py tests/test_output_manifest.py`. Nothing is cleared and nothing
+`pytest tests/test_pathways.py tests/test_regression_model_v1.py tests/test_regression_model_v2.py
+tests/test_pathways_mc.py tests/test_sensitivity_tables.py tests/test_release.py
+tests/test_output_manifest.py`. Nothing is cleared and nothing
 is marked as quick.
 
 ---
@@ -604,12 +637,14 @@ what it holds and the script that writes it (the registry is `indexes.FILES`).
 
 | folder | content |
 |---|---|
-| `outputs/headline/` | the figures of the paper H1–H11 (PNG and PDF), the source data of each (`H*.csv`) and `HEADLINE.md` |
-| `outputs/diagnostics/<group>/` | every other figure D01–D34 (PNG) in the groups data_calibration, validation, sensitivity, monte_carlo, planetary_boundary, pathways_si; `DIAGNOSTICS.md`; `_audit/` the figure audit records |
+| `outputs/paper/` | the figures of the paper Fig1–Fig6 (PNG and PDF), the source data of each (`Fig*.csv`), Tables 1–2 (Markdown and CSV) and `PAPER.md` |
+| `outputs/extended_data/` | the Extended Data ED1–ED10 (PNG, PDF, source data) and `EXTENDED_DATA.md` |
+| `outputs/diagnostics/<group>/` | every other figure (PNG; D16, D17, D29, D31 and D33 are superseded by Extended Data) in the groups data_calibration, validation, sensitivity, monte_carlo, planetary_boundary, pathways_si; `DIAGNOSTICS.md`; `_audit/` the figure audit records |
 | `outputs/data/baseline/` | the Reference projection and its checks (projection, annual series, demand bands, variants, validation, 2026 gap and overbuild, reconciliation, reality checks, one-at-a-time sensitivity) |
 | `outputs/data/montecarlo/` | draws, summaries, annual percentiles by variant; Sobol indices of the Reference |
 | `outputs/data/aesa/` | boundaries, levels of exceedance, AESA sensitivity rows, committed after 2050 |
-| `outputs/data/pathways/` | lever parameters, every pathway and TL run, bands, Shapley tables, back-cast, solution space |
+| `outputs/data/pathways/` | lever parameters, every pathway and TL run, bands, Shapley tables, back-cast, solution space, the pathway Monte Carlo |
+| `outputs/data/sensitivity/` | the grouped one-at-a-time tables (Reference carbon, P5 carbon, planetary boundary, replacement variants) |
 | `outputs/data/factors/` | the case-study factors (`Building_factors.py`) |
 | `outputs/data/frozen_technology/` | the frozen-technology check run (same file names) |
 | `outputs/data/metrics.json` | the headline metrics and the run mode |
@@ -623,15 +658,16 @@ Data files carry the release names of `naming.py` (ASCII hyphens; variant ids
 
 ## 13. Figures
 
-* **`figure_plan.py`** lists every figure of the release: the headline set H1–H11
-  (title, panels, data source, draft caption) and the diagnostics D01–D34 by
-  group, with the earlier figures each replaces (`docs/FIGURE_PLAN.md`).
+* **`figure_plan.py`** lists every figure of the release: the paper Fig1–Fig6 and
+  Tables 1–2, the Extended Data ED1–ED10 (title, panels, data source, draft caption,
+  print width) and the diagnostics by group, with the earlier figures each replaces
+  (`docs/FIGURE_PLAN.md`), and the figures allowed to draw maintenance as its own layer.
 * **`style.py`** holds the palette (`docs/PALETTE.md`, checked for colour-vision
   deficiency by `tools/palette_check.py`), the bundled typeface (Liberation
   Sans), the print sizes (89 mm single column, 183 mm double column, text
   5–7 pt) and saving. `save_figure(fig, name, note)` writes a planned figure to
   its place (`layout.figure`): PNG at 300 dpi, and a vector PDF as well for the
-  headline figures, with fixed metadata (no software version or creation date)
+  paper and Extended Data figures, with fixed metadata (no software version or creation date)
   so that re-runs are byte-stable; it first writes the figure's audit record. In
   a quick run every figure carries a "QUICK RUN, not for reporting" footer.
 * **`plotting.py`** holds the shared drawing rules: demand bands are stacked and
@@ -643,20 +679,21 @@ Data files carry the release names of `naming.py` (ASCII hyphens; variant ids
   vacancy wording (`VACANCY_WORDING`) and the terms of earlier versions that no
   reader-facing text may use (`OLD_TERMS`).
 * **`figaudit.py`** records, for every saved figure, each axes' labels and the
-  range of calendar years its data cover, every text of the figure, its note and
-  the script that drew it (`outputs/diagnostics/_audit/<figure>.json`); the
-  tests read these records.
-* **`headline.py`** draws H1–H11 from the data files of `outputs/data/` only (no
-  model is run), writes the source data of each figure (panel, series, x, value,
-  unit) and `HEADLINE.md`: the headline findings and every figure with its
-  caption, the numbers in the captions filled from the data.
+  range of calendar years its data cover, every text of the figure, its note,
+  the script that drew it and whether it draws maintenance (B2, B4) as its own layer
+  (`outputs/diagnostics/_audit/<figure>.json`); the tests read these records.
+* **`paper.py`** draws Fig1–Fig6 and writes Tables 1–2 from the data files of
+  `outputs/data/` only (no model is run), with the source data of each figure (panel,
+  series, x, value, unit) and `PAPER.md`: the headline findings, every figure with its
+  caption (numbers filled from the data) and the tables. **`extended_data.py`** does the
+  same for ED1–ED10 and `EXTENDED_DATA.md`.
 * **`indexes.py`** writes `outputs/diagnostics/DIAGNOSTICS.md` (every diagnostic
   by group, with its note and drawing script) and `outputs/INDEX.md`.
 
 The diagnostics are drawn by the script that owns the data: `projection.py`
 (D01–D03, D08, D09, D13), `Diagnostics.py` (D04–D06), `tools/figures_report.py`
-(D07, D10–D12, D14, D15, D19), `Sensitivity.py` (D16, D17), `MonteCarlo.py`
-(D20), `boundaries.py` (D18, D21–D27), `pathways.py` (D28–D34).
+(D07, D10–D12, D14, D15, D19), `MonteCarlo.py` (D20), `boundaries.py` (D18,
+D21–D27), `pathways.py` (D28, D30, D32, D34).
 
 ---
 
@@ -684,23 +721,34 @@ Reference run per session (it needs the factor files of `Building_factors.py`).
   captured one, and the list to be exact.
 * **`test_output_manifest.py`**: byte reproducibility of the release. The
   SHA-256 of every release output (console logs excluded) is recorded in
-  `tests/output_manifest_model_v1_1.json` by `tools/output_manifest.py`, with the
+  `tests/output_manifest_model_v2.json` by `tools/output_manifest.py`, with the
   environment that wrote it (Python, numpy, pandas, scipy, matplotlib, FreeType,
   machine); after a run in the same environment every file must be reproduced
   byte for byte and no other written. Elsewhere the test is skipped with the
   reason (floating-point and font rasterisation may differ in the last bits),
   and the numerical lock applies.
+* **`test_regression_model_v2.py`** (MODEL v2.0.0): coverage of the lock. Every number of
+  `outputs/data/` must be covered by the v1 lock or listed in
+  `tests/regression_model_v2_additions.json` (the v1.1.0 values no file captured and the values
+  MODEL v2.0.0 adds, captured by `tests/capture_regression_model_v2.py`, append-only) and
+  reproduced to 1e-12; no other number may appear.
+* **`test_pathways_mc.py`**, **`test_sensitivity_tables.py`**: the pathway Monte Carlo (central
+  draw = deterministic runs to 1e-9; Reference percentiles = AESA layer; ordered percentiles and
+  probabilities) and the grouped sensitivity tables (every row = its source; new runs reproduce the
+  overlapping existing runs).
 * **`test_release_map.py`**: the release map is complete and one-to-one (every
   captured identifier has a release location; merged files are identical;
   removals are by-typology reporting or the removed mix-trend setting).
 * **`test_release.py`**: the values the release adds agree with the locked
-  numbers (H4 components with the annual carbon, annual and census-interval
-  bands with the band totals, variant series with the variant totals,
-  population paths with the Reference); the headline set exists as PNG, PDF and
-  source data and `HEADLINE.md` shows every figure with a filled caption;
-  every planned figure exists and no other; every output file is indexed once;
-  `DIAGNOSTICS.md` names the drawing script of every diagnostic; headline
-  figures print within 183 mm; no reader-facing text (reports, `HEADLINE.md`,
+  numbers (annual components, stages and materials with the annual carbon, annual and
+  census-interval bands with the band totals, the history's replacement split with its band,
+  variant series with the variant totals, population paths with the Reference); the paper
+  and Extended Data figures exist as PNG, PDF and source data within their print width,
+  `PAPER.md` and `EXTENDED_DATA.md` show every figure with a filled caption, Table 2 carries
+  the Monte Carlo intervals and P(LoE ≤ 1) of TL under AR and AtP; every planned figure
+  exists and no other; maintenance is drawn only where `figure_plan.MAINTENANCE_ALLOWED`
+  allows; every output file is indexed once; `DIAGNOSTICS.md` names the drawing script of
+  every diagnostic; no reader-facing text (reports, `PAPER.md`, `EXTENDED_DATA.md`,
   `DIAGNOSTICS.md`, `INDEX.md`, the texts of every figure) uses a term of
   `naming.OLD_TERMS`; every module that draws a figure imports `style.py` and
   `plotting.py`, and only `style.save_figure` writes figure files.

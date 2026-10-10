@@ -4,8 +4,8 @@ A bottom-up, demand-driven model of the new residential floor area New Zealand b
 2026–2050 and the embodied carbon it carries, in three layers:
 
 * **Baseline projection** (`projection.py`): people → households → dwellings required →
-  floor area by reason for building (demand bands) → carbon by component (materials and
-  construction A1–A5, soil carbon loss, maintenance B2/B4) and the emissions committed after
+  floor area by reason for building (demand bands) → carbon by life-cycle stage (materials
+  A1–A3, construction A4–A5, maintenance B2/B4, soil carbon loss) and the emissions committed after
   2050, with replacement variants, one-at-a-time sensitivities, Monte Carlo with Sobol indices
   and validation against the census record.
 * **Planetary-boundary layer (AESA)** (`boundaries.py`, `aesa.py`): an absolute environmental
@@ -15,31 +15,43 @@ A bottom-up, demand-driven model of the new residential floor area New Zealand b
 * **Pathways** (`levers.py`, `pathways.py`): five levers in five pathways (P1 Right-sized
   dwellings, P2 Occupied stock, P3 Retained stock, P4 Low-carbon materials, P5 Combined) at
   Moderate and Ambitious settings, their Shapley attribution, the back-cast to the AR budget and
-  a hyper-optimistic theoretical limit (TL; a thought experiment, not a pathway).
+  a hyper-optimistic theoretical limit (TL = P5 Moderate with TL1–TL7 from 2027; a thought
+  experiment, not a pathway). The pathway Monte Carlo runs the 5,000 Reference draws through P5
+  and TL (`pathways_mc.py`). The paper shows the Reference, P1–P5 at the Moderate setting with
+  full roll-out by 2035, and TL; every other setting is Extended Data.
 
-Release **MODEL v1.1.0** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
+Release **MODEL v2.0.0** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
 
-![H1. How the model works](outputs/headline/H1_model_schematic.png)
+![Fig1. How the model works](outputs/paper/Fig1_model_schematic.png)
 
 ## Results
 
 | what | where |
 |---|---|
-| Headline findings and the figures of the paper (H1–H11, with captions) | [outputs/headline/HEADLINE.md](outputs/headline/HEADLINE.md) |
-| Every other figure (D01–D34, by group, with notes) | [outputs/diagnostics/DIAGNOSTICS.md](outputs/diagnostics/DIAGNOSTICS.md) |
+| **Paper**: headline findings, Fig1–Fig6 with captions, Table 1 (levers and TL assumptions) and Table 2 (results with Monte Carlo intervals) | [outputs/paper/PAPER.md](outputs/paper/PAPER.md) |
+| **Extended Data**: ED1–ED10 (grouped sensitivity tornados and paths, Monte Carlo, Ambitious settings, roll-out timing, the TL attribution, single levers, Low / High replacement) | [outputs/extended_data/EXTENDED_DATA.md](outputs/extended_data/EXTENDED_DATA.md) |
+| **Diagnostics**: every other figure, by group, with notes | [outputs/diagnostics/DIAGNOSTICS.md](outputs/diagnostics/DIAGNOSTICS.md) |
+| Grouped one-at-a-time sensitivity tables (Reference carbon, P5 carbon, planetary boundary, replacement variants) | [outputs/data/sensitivity/](outputs/data/sensitivity/) |
 | Results summary | [outputs/reports/RESULTS.md](outputs/reports/RESULTS.md) |
 | Methods draft: baseline projection, planetary-boundary layer (AESA), pathways and the theoretical limit | [outputs/reports/METHODS_DRAFT.md](outputs/reports/METHODS_DRAFT.md) |
-| Table 1: the pathway levers and the theoretical-limit assumptions | [outputs/reports/LEVERS_TABLE.md](outputs/reports/LEVERS_TABLE.md) |
+| The pathway levers and the theoretical-limit assumptions, with the adoption rule (full text of Table 1) | [outputs/reports/LEVERS_TABLE.md](outputs/reports/LEVERS_TABLE.md) |
 | Every assumption and setting with its basis (data, literature, author decision, judgement) | [outputs/reports/ASSUMPTIONS.md](outputs/reports/ASSUMPTIONS.md) |
 | Validation, reality checks, the 2026 gap and overbuild, variants, reconciliation | [outputs/reports/](outputs/reports/) |
 | Every number (CSV, JSON) | [outputs/data/](outputs/data/) |
 | Every output file, what it holds and the script that writes it | [outputs/INDEX.md](outputs/INDEX.md) |
 | How the model works, script by script | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| Vocabulary and the map from earlier names; figure plan; palette | [docs/RENAMING.md](docs/RENAMING.md), [docs/FIGURE_PLAN.md](docs/FIGURE_PLAN.md), [docs/PALETTE.md](docs/PALETTE.md) |
+| Vocabulary and the map from earlier names (incl. model-v1.1.0 H/D figures → Fig/ED); figure plan; sensitivity plan; palette | [docs/RENAMING.md](docs/RENAMING.md), [docs/FIGURE_PLAN.md](docs/FIGURE_PLAN.md) ([design](docs/FIGURE_PLAN_v2.md)), [docs/SENSITIVITY_PLAN.md](docs/SENSITIVITY_PLAN.md), [docs/PALETTE.md](docs/PALETTE.md) |
 
 Every number in the documents and figures is read from `outputs/data/`, which the full run
 writes; nothing is typed by hand. The outputs committed with a release are those of its full
 run.
+
+**Output layout.** `outputs/paper/` holds what goes into the paper (figures as PNG, vector PDF and a
+source-data CSV of every plotted value; the two tables as Markdown and CSV; PAPER.md);
+`outputs/extended_data/` the Extended Data figures in the same formats; `outputs/diagnostics/` every
+other figure (PNG) with DIAGNOSTICS.md and the audit record of every figure (`_audit/`);
+`outputs/data/` every number; `outputs/reports/` the generated documents. The model-v1.1.0 folder
+`outputs/headline/` is retired (map: docs/RENAMING.md, section 6).
 
 ## Running
 
@@ -51,10 +63,10 @@ python run_all.py --pathways-only      # the pathway layer only (the projection 
 python run_all.py --quick              # development only: outputs marked "QUICK RUN, not for reporting"
 ```
 
-| run mode | what it runs | time (measured for this release, 4 cores) |
+| run mode | what it runs | time |
 |---|---|---|
-| full | every step below, then the tests | about 24 min (1,410 s; Monte Carlo and AESA 1,150 s of it) |
-| `--pathways-only` | `pathways.py` (the projection in memory), `headline.py`, the pathway documents, `tools/methods_draft.py`, `indexes.py`, then `tests/test_pathways.py`, the regression lock, the release checks and the byte manifest | 77 s |
+| full | every step below, then the tests | about 12–24 min depending on the machine (Monte Carlo and AESA most of it) |
+| `--pathways-only` | `pathways.py` (the projection in memory), `pathways_mc.py`, `tools/sensitivity_tables.py`, `paper.py`, `extended_data.py`, the pathway documents, `tools/methods_draft.py`, `indexes.py`, then the pathway, pathway Monte Carlo and sensitivity-table tests, the regression locks, the release checks and the byte manifest | PATHWAYS_ONLY_TIME |
 | `--quick` | as the full run with 1,000 instead of 5,000 Monte Carlo draws per variant and 128 Sobol base samples, without the frozen-technology Monte Carlo and AESA steps; Monte Carlo regression checks skipped | not timed for this release |
 
 The full run executes, each script in its own process with the non-interactive backend and
@@ -64,8 +76,9 @@ its console output in `outputs/logs/<step>.log`:
 `gap_2026.py` → `tools/overbuild_2026.py` → `tools/replacement_scenarios.py` →
 `tools/reconciliation.py` → `tools/figures_report.py` → the frozen-technology check run
 (2025 carbon factors held, whole life at construction; data in
-`outputs/data/frozen_technology/`, no figures) → `pathways.py` → `tools/metrics.py` →
-`headline.py` → `tools/results.py` → `tools/assumptions.py` → `tools/pathways_methods.py` →
+`outputs/data/frozen_technology/`, no figures) → `pathways.py` → `pathways_mc.py` →
+`tools/sensitivity_tables.py` → `tools/metrics.py` → `paper.py` → `extended_data.py` →
+`tools/results.py` → `tools/assumptions.py` → `tools/pathways_methods.py` →
 `tools/methods_draft.py` → `tools/check_outputs.py` → `indexes.py` → the tests, last.
 A full run first clears the figures, data and reports, so nothing stale survives. A failed step
 prints its name and the log to read, and the run stops (exit code 1 from the command line).
@@ -80,8 +93,8 @@ prints its name and the log to read, and the run stops (exit code 1 from the com
    line per step. If a step fails, the console names the step and the log file to open; no
    `SystemExit` traceback is raised and the console stays usable.
 3. To look at figures interactively, run a single script instead (`projection.py`,
-   `Diagnostics.py`, `Sensitivity.py`, `MonteCarlo.py`, `boundaries.py`): each shows its
-   figures. `headline.py` always writes the figures of the paper to `outputs/headline/`;
+   `Diagnostics.py`, `MonteCarlo.py`, `boundaries.py`): each shows its figures. `paper.py` and
+   `extended_data.py` always write their figures to `outputs/paper/` and `outputs/extended_data/`;
    `pathways.py` writes its diagnostics only with `PATHWAY_SAVE_FIGURES=1`, as `run_all.py`
    sets it.
 4. To run the tests on their own: `!python -m pytest -q tests` in the console (or
@@ -95,12 +108,22 @@ prints its name and the log to read, and the run stops (exit code 1 from the com
   (`naming.LEGACY`, docs/RENAMING.md) and reproduced to 1e-12 relative, except the values of the
   adoption-path sensitivities (full roll-out by 2030 and by 2045) that MODEL v1.1.0 changes, each
   listed with its old and new value in `tests/regression_model_v1_1.json`.
-* **Byte reproducibility** (`tests/output_manifest_model_v1_1.json`): the SHA-256 of every
+* **Coverage lock** (`tests/test_regression_model_v2.py`): every number in `outputs/data/` is
+  locked: the values no earlier capture holds (the v1.1.0 data and the values MODEL v2.0.0 adds)
+  are listed in `tests/regression_model_v2_additions.json` and reproduced to 1e-12, and no other
+  number may appear or change.
+* **Byte reproducibility** (`tests/output_manifest_model_v2.json`): the SHA-256 of every
   committed output; a re-run reproduces them (figures are written without software or date
   metadata).
 * **Release checks** (`tests/test_release.py`): the new values add up to the locked numbers;
-  every planned figure exists and no other; every output file is indexed once; no old term in
-  any reader-facing text; every figure module uses the shared style.
+  every planned figure (paper, Extended Data, diagnostics) exists within its print width and no
+  other; maintenance is drawn as its own layer only in Fig2–Fig4, D25 and D26 (figure audit);
+  every output file is indexed once; no old term in any reader-facing text; every figure module
+  uses the shared style.
+* **Pathway Monte Carlo** (`tests/test_pathways_mc.py`): the central draw reproduces the
+  deterministic Reference, P5 and TL runs to 1e-9; the Reference percentiles equal those of the
+  AESA layer. **Sensitivity tables** (`tests/test_sensitivity_tables.py`): every row agrees with
+  its source; the new runs reproduce the existing ones they overlap.
 * Model tests: accounting identities, census under-construction correction, soil, the 2026
   overbuild, validation, decarbonisation, time-resolved events and committed emissions, the
   AESA equations against their sources, and the pathways (identity with the Reference,
@@ -111,17 +134,18 @@ prints its name and the log to read, and the run stops (exit code 1 from the com
 | path | what |
 |---|---|
 | `projection.py` | the baseline projection: data, calibration, projection, figures D01–D03, D08, D09, D13 |
+| `paper.py`, `extended_data.py` | the paper (Fig1–Fig6, Tables 1–2, PAPER.md) and Extended Data (ED1–ED10, EXTENDED_DATA.md), from the data files only |
 | `engine.py` | the forward model (pure functions), shared by the projection, the Monte Carlo and the pathways |
 | `Building_factors.py`, `events.py` | case-study carbon factors; time-resolved maintenance (B2, B4) and committed emissions |
-| `Diagnostics.py`, `Sensitivity.py`, `MonteCarlo.py`, `validation.py`, `gap_2026.py` | diagnostics, one-at-a-time sensitivities, Monte Carlo and Sobol indices, rolling-origin hindcast, 2026 gap |
+| `Diagnostics.py`, `Sensitivity.py`, `MonteCarlo.py`, `validation.py`, `gap_2026.py` | diagnostics, one-at-a-time sensitivities (data only), Monte Carlo and Sobol indices, rolling-origin hindcast, 2026 gap |
 | `aesa.py`, `boundaries.py` | planetary-boundary layer (AESA): boundaries, levels of exceedance |
-| `levers.py`, `pathways.py` | levers, pathways, attribution, back-cast, solution space, theoretical limit |
-| `headline.py`, `indexes.py` | the figures of the paper and HEADLINE.md; DIAGNOSTICS.md and outputs/INDEX.md |
+| `levers.py`, `pathways.py`, `pathways_mc.py` | levers, pathways, attribution, back-cast, solution space, theoretical limit; the pathway Monte Carlo |
+| `indexes.py` | DIAGNOSTICS.md and outputs/INDEX.md |
 | `naming.py`, `style.py`, `plotting.py`, `figaudit.py`, `layout.py`, `figure_plan.py` | vocabulary and the renaming map; palette, sizes and saving; shared drawing rules; figure audit; output layout; figure plan |
-| `tools/` | reports (overbuild, variants, reconciliation, reality checks, metrics, results, assumptions, methods draft, levers table), output checks, design documents, palette check |
+| `tools/` | reports (overbuild, variants, reconciliation, reality checks, metrics, results, assumptions, methods draft, levers table), the grouped sensitivity tables, output checks, design documents, palette check |
 | `tests/` | the tests above |
 | `data/` | inputs only, and the scripts that build `data/derived/` from `data/raw/` |
-| `docs/` | renaming map, figure plan, palette, the hooks of the levers into the model |
+| `docs/` | renaming map, figure plan (and its design), sensitivity plan, palette, the hooks of the levers into the model |
 
 ## Data provenance
 

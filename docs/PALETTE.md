@@ -4,7 +4,7 @@ One palette for every figure; `style.py` is the only place colours are defined, 
 
 ## Rules
 
-* **Demand bands** are coloured by the pathway that targets them: Extra space in the P1 colour; Vacancy and 2026 overbuild in the P2 family; Replacement and Redevelopment in the P3 family. The untargeted bands (Population growth, Smaller households) are neutral greys with a light dot hatch, so they read as untargeted without colour. Maintenance (B2, B4) within 2026-2050 is a light tint of the P4 colour (material carbon).
+* **Demand bands** are coloured by the pathway that targets them: Extra space in the P1 colour; Vacancy and 2026 overbuild in the P2 family; Historical replacement and Recent replacement surge in the P3 family. The untargeted bands (Population growth, Smaller households) are neutral greys with a light dot hatch, so they read as untargeted without colour. Maintenance (B2, B4) within 2026-2050 is a light tint of the P4 colour (material carbon).
 * **P4** (Low-carbon materials) marks intensity and material effects; Materials and construction (A1-A5) take the P4 colour in the component figure.
 * **Reference** dark grey (#4D4D4D); **TL** near-black (#141414); TL gradual adoption light grey (#A6A6A6); Low and High replacement mid greys with dashed and dotted lines.
 * **Boundaries**: acquired rights (AR) blue solid (#1F5FA8), ability to pay (AtP) orange dashed (#C2571A); the two principles are never shaded as a range and never averaged.
@@ -36,8 +36,8 @@ One palette for every figure; `style.py` is the only place colours are defined, 
 | Demand bands (H3, H7) | Extra space | `#228833` | 51 |
 | Demand bands (H3, H7) | Vacancy | `#F0B400` | 80 |
 | Demand bands (H3, H7) | 2026 overbuild | `#6B4C00` | 37 |
-| Demand bands (H3, H7) | Replacement | `#E15A97` | 63 |
-| Demand bands (H3, H7) | Redevelopment | `#7A1A4B` | 32 |
+| Demand bands (H3, H7) | Historical replacement | `#E15A97` | 63 |
+| Demand bands (H3, H7) | Recent replacement surge | `#7A1A4B` | 32 |
 | Demand bands (H3, H7) | Maintenance (B2, B4), 2026–2050 | `#C7A3D0` | 75 |
 | Carbon components (H4) | Materials and construction (A1–A5) | `#762A83` | 36 |
 | Carbon components (H4) | Soil carbon loss | `#8C6D46` | 51 |
@@ -72,7 +72,7 @@ Minimum pairwise distance within each group (CAM02-UCS, Luo, Cui & Li 2006) afte
 |---|---|---|---|---|---|
 | Boundaries and runs (H5, H8) | 24.3 (Reference / Theoretical limit) | 23.2 (TL, gradual adoption / P5 Combined) | 20.8 (TL, gradual adoption / P5 Combined) | 21.9 (Acquired rights (AR) / Reference) | yes |
 | Pathways (H9, H10) | 24.3 (Reference / Theoretical limit) | 20.9 (P4 Low-carbon materials / Reference) | 22.4 (P3 Retained stock / P5 Combined) | 20.5 (P4 Low-carbon materials / Reference) | yes |
-| Demand bands (H3, H7) | 19.5 (Population growth / Maintenance (B2, B4), 2026–2050) | 13.8 (Extra space / 2026 overbuild) | 14.7 (Smaller households / Replacement) | 14.1 (Population growth / Maintenance (B2, B4), 2026–2050) | yes |
+| Demand bands (H3, H7) | 19.5 (Population growth / Maintenance (B2, B4), 2026–2050) | 13.8 (Extra space / 2026 overbuild) | 14.7 (Smaller households / Historical replacement) | 14.1 (Population growth / Maintenance (B2, B4), 2026–2050) | yes |
 | Carbon components (H4) | 17.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 13.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 16.3 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 11.4 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | yes |
 | Projection variants and boundaries (H2, H5) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | yes |
 | Materials (H4b, diagnostics) | 25.9 (Plasterboard / Soil carbon loss) | 12.8 (Concrete / Others) | 13.0 (Concrete / Others) | 16.5 (Steel / Concrete) | yes |

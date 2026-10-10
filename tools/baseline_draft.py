@@ -309,7 +309,7 @@ def register():
          'the case-study factors) and not reported; a change of mix is a pathway question for later work'),
         ('Dwelling size reference', f'{B.DWELLING_SIZE_REF[0]}-{B.DWELLING_SIZE_REF[1]}', 'DATA: consents'),
         ('Retirement-village share reference', f'{B.RV_SHARE_REF[0]}-{B.RV_SHARE_REF[1]}', 'DATA: consents'),
-        ('Soil carbon loss', 'all floor area except the Replacement and Redevelopment bands; zero on those bands'
+        ('Soil carbon loss', f"all floor area except the {N.BANDS['replacement']} and {N.BANDS['redevelopment']} bands; zero on those bands"
          if not B.SOIL_ON_REPLACEMENT else 'all floor area (original)',
          'LITERATURE: 58.77 kg CO2e/m2 footprint, Auckland land zoned for urbanisation to ~2050, 10 soil orders '
          '(Christoforatos, Pickering & Schipper 2026, J. Environ. Manage. 415, 130603)'),
@@ -366,7 +366,7 @@ LIMITATIONS = [
     'The soil factor was derived for Auckland\'s future urban zones and is applied nationally.',
     'The case-study carbon factor for apartments rests on one independent case study (A_1 and A_2 are one design '
     'at two scales).',
-    'The regional analysis of redevelopment (replacement half-life by territorial authority) is deferred.',
+    'The regional analysis of the recent replacement surge (replacement half-life by territorial authority) is deferred.',
     'Net replacement persistence (the replacement half-life of the Reference) is not identifiable from the census '
     'record; Low replacement and High replacement bound it.',
     'The 2018 census empty-dwelling count has no quality rating (DataInfo+); the vacancy terms rely on it.',
@@ -574,8 +574,9 @@ def lines():
           '', '### Soil method', '',
           'Soil carbon loss is the loss of soil organic carbon when land is built on (land-use change): a new '
           'building footprint seals the soil under it, while a rebuilt footprint sits on soil already sealed. '
-          'Soil carbon loss is therefore applied to all floor area except the Replacement band (demolition, net of '
-          'unconsented additions) and the Redevelopment band, where it is zero. The factor is 58.77 kg CO₂e per m² '
+          f"Soil carbon loss is therefore applied to all floor area except the {N.BANDS['replacement']} band (demolition, "
+          f"net of unconsented additions) and the {N.BANDS['redevelopment']} band, where it is zero. "
+          'The factor is 58.77 kg CO₂e per m² '
           'of footprint, the area-weighted average over the 10 soil orders of the land zoned for urbanisation '
           'to about 2050 in Auckland, divided by each typology\'s floor space index (Christoforatos, '
           'Pickering & Schipper 2026, Journal of Environmental Management 415, 130603, '
@@ -698,9 +699,9 @@ def lines():
          ('LITERATURE', f'Completion rate {BB.COMPLETION_RATE:.2f} (Jones et al. 2024; citation to verify)'),
          ('LITERATURE', 'Demolition split 0.135%/yr (BRANZ SR214); total net replacement from census counts'),
          ('LITERATURE', 'Material carbon factors: 16 NZ case studies (Christoforatos & Pickering 2025)'),
-         ('LITERATURE', 'Soil carbon loss 58.77 kg CO2e/m2 footprint, zero on the Replacement and Redevelopment bands '
+         ('LITERATURE', f"Soil carbon loss 58.77 kg CO2e/m2 footprint, zero on the {N.BANDS['replacement']} and {N.BANDS['redevelopment']} bands "
                         '(Christoforatos, Pickering & Schipper 2026)'),
-         ('JUDGEMENT', f'Replacement: in the Reference net replacement fades from the 2018-2023 rate to the long-run '
+         ('JUDGEMENT', f'Net replacement: in the Reference it fades from the 2018-2023 rate to the long-run '
                        f'rate with half-life {BB.REPLACEMENT_HALF_LIFE:g} yr; Low replacement and High replacement '
                        'bound it'),
          ('JUDGEMENT', '2026 overbuild: stock-adding (vacant dwellings), never absorbed, fading at rho'),

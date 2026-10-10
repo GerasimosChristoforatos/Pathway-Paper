@@ -65,9 +65,11 @@ class _Identity:
 
 try:
     import naming
+    from naming import _ascii
     LEGACY = naming.LEGACY
 except (ImportError, AttributeError):
     LEGACY = _Identity()
+    _ascii = str
 
 
 def _same(expected, actual):
@@ -230,7 +232,13 @@ ADDITIONS = CAP.get('additions', {}).get('files', {})
 
 
 class _Release(_Identity):
-    """Additions are captured at their release locations: no map."""
+    """Additions are captured at their release locations: no map, except the MODEL v1.1.0
+    renaming of two demand-band labels (naming.BAND_RELABEL_V1_1)."""
+    @staticmethod
+    def cell(old_file, col, value, row):
+        if col == 'band':
+            return _ascii(getattr(naming, 'BAND_RELABEL_V1_1', {}).get(value, value))
+        return value
 
 
 @pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1', reason='quick run: Monte Carlo outputs differ by design')

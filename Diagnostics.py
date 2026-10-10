@@ -95,7 +95,7 @@ RV = ('#BDBDBD', 'xxxx')                       # retirement villages: out of sco
 UNEXPLAINED = ('#F2F2F2', '////', '#8C8C8C')   # unexplained building: neutral, hatched (face, hatch, hatch colour)
 COMP = {'new_households': ('New households', '#9E9E9E', None),
         'vacancy': ('Vacancy (allowance and change)',) + S.BAND['vacancy'],
-        'replacement': ('Replacement (net of unconsented additions)',) + S.BAND['replacement'],
+        'replacement': (N.BANDS['replacement'],) + S.BAND['replacement'],
         'redevelopment': (N.BANDS['redevelopment'],) + S.BAND['redevelopment'],
         'retirement_villages': (N.BAND_DETAIL['retirement_villages'],) + RV,
         'overbuild_2026': (N.BANDS['overbuild_2026'],) + S.BAND['overbuild_2026'],

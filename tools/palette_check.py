@@ -119,7 +119,7 @@ def main():
          '[palette_preview.png](palette_preview.png).', '',
          '## Rules', '',
          '* **Demand bands** are coloured by the pathway that targets them: Extra space in the P1 colour; '
-         'Vacancy and 2026 overbuild in the P2 family; Replacement and Redevelopment in the P3 family. The '
+         'Vacancy and 2026 overbuild in the P2 family; Historical replacement and Recent replacement surge in the P3 family. The '
          'untargeted bands (Population growth, Smaller households) are neutral greys with a light dot hatch, '
          'so they read as untargeted without colour. Maintenance (B2, B4) within 2026-2050 is a light tint of '
          'the P4 colour (material carbon).',

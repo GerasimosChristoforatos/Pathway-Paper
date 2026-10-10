@@ -7,7 +7,7 @@ Two sets. **Headline** (`outputs/headline/`): the figures of the paper, double c
 ### H1. How the model works
 
 * File: `outputs/headline/H1_model_schematic.png` / `.pdf`
-* Panels: one panel: people -> households -> dwellings -> floor area -> embodied carbon -> AESA boundaries (AR, AtP); the demand bands branch off the dwellings step, each pathway lever (L1-L5) is attached to the band or quantity it acts on (L1 extra space; L2 vacancy, L3 2026 overbuild; L4 replacement and redevelopment; L5 carbon per m2); TL1-TL6 shown as the limits of the same arrows; untargeted bands (population growth, smaller households) marked
+* Panels: one panel: people -> households -> dwellings -> floor area -> embodied carbon -> AESA boundaries (AR, AtP); the demand bands branch off the dwellings step, each pathway lever (L1-L5) is attached to the band or quantity it acts on (L1 extra space; L2 vacancy, L3 2026 overbuild; L4 historical replacement and the recent replacement surge; L5 carbon per m2); TL1-TL6 shown as the limits of the same arrows; untargeted bands (population growth, smaller households) marked
 * Data: naming.py, levers.py (structure only; no numbers)
 * Draft caption: Model structure. A bottom-up chain converts population and household projections into dwellings required, floor area by reason for building (demand bands) and embodied carbon, which is compared with two allocations of a global carrying capacity (acquired rights, AR; ability to pay, AtP). Pathway levers act on the band or quantity they target; population growth and smaller households are untargeted by design.
 * Replaces (v3.1): new
@@ -25,7 +25,7 @@ Two sets. **Headline** (`outputs/headline/`): the figures of the paper, double c
 * File: `outputs/headline/H3_demand_bands.png` / `.pdf`
 * Panels: annual floor area by demand band: history as one bar per census interval (interval means, one vacancy definition), Reference projection annual 2026-2050; bands stacked (they sum to the total; no separate total line); untargeted bands grey and hatched; retirement villages removed in proportion (out of scope, noted)
 * Data: data/baseline/bands_annual.csv (Reference, 2026-2050), data/baseline/bands_history.csv (census intervals)
-* Draft caption: Floor area by reason for building. Bands sum to the in-scope total. Population growth and smaller households are untargeted; extra space, vacancy and the 2026 overbuild, replacement and redevelopment are the bands the pathways act on.
+* Draft caption: Floor area by reason for building. Bands sum to the in-scope total. Population growth and smaller households are untargeted; extra space, vacancy, the 2026 overbuild, historical replacement and the recent replacement surge are the bands the pathways act on.
 * Replaces (v3.1): diag_4_floor_area, boss_04_annual_gfa, fig_bridge
 
 ### H4. Embodied carbon 2026-2050 by component
@@ -109,8 +109,8 @@ Two sets. **Headline** (`outputs/headline/`): the figures of the paper, double c
 | `outputs/diagnostics/data_calibration/D01_population.png` | Population, history and projection (median, 5th-95th) | boss_01_population |
 | `outputs/diagnostics/data_calibration/D02_households.png` | Households: census-benchmarked history and projection | boss_02_households |
 | `outputs/diagnostics/data_calibration/D03_household_size.png` | Household size and population vs household growth | boss_08_demographic_drivers |
-| `outputs/diagnostics/data_calibration/D04_household_formation.png` | Household size vs arrivals; households per consent; formation by engine | diag_2_household_engines |
-| `outputs/diagnostics/data_calibration/D05_stock_and_vacancy.png` | Vacancy (definitions, consistent 1986-2023 range, implied vacancy), stock, dwellings per year by component | diag_3_stock_bucket |
+| `outputs/diagnostics/data_calibration/D04_household_formation.png` | Household size vs arrivals; households per consent (2019 on consent-derived); new households by source: history one column per census interval (population growth, household-size change; 2024-25 hatched, no census check), projection annual | diag_2_household_engines |
+| `outputs/diagnostics/data_calibration/D05_stock_and_vacancy.png` | Vacancy (definitions, consistent 1986-2023 range, implied vacancy), stock, dwellings per year by component (history per census interval with census-measured net replacement and unexplained building; projection annual) | diag_3_stock_bucket |
 | `outputs/diagnostics/data_calibration/D06_vacancy_definition.png` | Why empty-only vacancy is used (appendix) | diag_3b_appendix_vacancy_definition |
 | `outputs/diagnostics/data_calibration/D07_net_replacement_rate.png` | Net replacement rate: census intervals and the three variants | fig_replacement_rate |
 | `outputs/diagnostics/data_calibration/D08_dwelling_space.png` | Realised vs occupied floor area per new dwelling; occupancy utilisation | boss_09_space_diagnostics |

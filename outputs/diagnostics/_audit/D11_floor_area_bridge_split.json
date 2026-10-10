@@ -67,5 +67,7 @@
   "b",
   "c"
  ],
- "note": "Appendix: replacement split into demolition and the calibrated residual; the split assumes the BRANZ demolition rate: only their sum is identified by the census data."
+ "note": "Appendix: replacement split into demolition and the calibrated residual; the split assumes the BRANZ demolition rate: only their sum is identified by the census data.",
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

@@ -1,5 +1,6 @@
-"""Byte manifest of the release outputs (MODEL v1.1.0): tests/output_manifest_model_v1_1.json
-(the model-v1.0.0 manifest is kept at tag model-v1.0.0).
+"""Byte manifest of the release outputs (MODEL v2.0.0): tests/output_manifest_model_v2.json
+(the manifests of model-v1.0.0 and model-v1.1.0 are kept at their releases: tag model-v1.0.0, and
+tests/output_manifest_model_v1_1.json at the merge commit 4ad57f3 of main).
 
     python tools/output_manifest.py          # after the release run (python run_all.py)
 
@@ -9,7 +10,8 @@ checks that a re-run reproduces every file byte for byte. Byte identity is expec
 the same environment (Python, numpy, pandas, scipy, matplotlib, FreeType and machine
 architecture: floating-point and font rasterisation can differ elsewhere); the test is skipped,
 with the reason, in any other environment, where the numerical lock
-(tests/test_regression_model_v1.py, every number to 1e-12 relative) still applies.
+(tests/test_regression_model_v1.py and tests/test_regression_model_v2.py, every number to 1e-12
+relative) still applies.
 
 Written once per release, from the outputs the release commits; never by run_all.py.
 """
@@ -24,7 +26,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import layout  # noqa: E402
 
-TARGET = os.path.join(ROOT, 'tests', 'output_manifest_model_v1_1.json')
+TARGET = os.path.join(ROOT, 'tests', 'output_manifest_model_v2.json')
 EXCLUDED = ('logs',)                               # console logs: git-ignored, not part of the release
 
 

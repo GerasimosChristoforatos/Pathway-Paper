@@ -153,7 +153,7 @@ def item_register():
          f"needed (EPS path {100 * ch['EPS']:+.1f}%)"),
         ('Sensitivities (item-level)', 'proxies held at 2025; NZ low-carbon-electricity items held at 2025; frozen '
          'technology (no decarbonisation, A4-A5 held); all in the default run '
-         '(outputs/data/baseline/sensitivity_one_at_a_time.csv, outputs/data/aesa/sensitivity.csv; figures H11 and '
+         '(outputs/data/baseline/sensitivity_one_at_a_time.csv, outputs/data/aesa/sensitivity.csv; figures ED1, ED4 and '
          'D18). An earlier class-level mapping and its comparison runs were removed (history: CHANGELOG.md)',
          'DECISION (author)'),
     ]
@@ -741,7 +741,8 @@ def lines():
         f'- {x}' for x in LIMITATIONS + overbuild_limitations() + decarb_limitations(BB.DECARB_MODE)
         + TIMING_LIMITATIONS]
 
-    L += ['', '## Figures', '', 'The figures of the paper: outputs/headline/HEADLINE.md; every other figure: '
+    L += ['', '## Figures', '', 'The figures of the paper: outputs/paper/PAPER.md; Extended Data: outputs/extended_data/EXTENDED_DATA.md; '
+          'every other figure: '
           'outputs/diagnostics/DIAGNOSTICS.md. Where the projection leaves the 1991-2025 range: '
           'outputs/reports/reality_checks.md.']
     return L

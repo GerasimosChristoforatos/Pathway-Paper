@@ -1,0 +1,35 @@
+panel,series,x,value,unit
+a,Demographics: Population: Stats NZ 5th / 95th percentile (high),value,27119.45535042152,kt CO2e 2026-2050
+a,Demographics: Population: Stats NZ 5th / 95th percentile (low),value,16059.677828805776,kt CO2e 2026-2050
+a,Demographics: Household size: Stats NZ High / Low variant (high),value,22981.38671534785,kt CO2e 2026-2050
+a,Demographics: Household size: Stats NZ High / Low variant (low),value,20419.01977524426,kt CO2e 2026-2050
+a,Demographics: Household size after 2043: flat (single),value,21578.4821885438,kt CO2e 2026-2050
+a,Demographics: Household size after 2043: secant-slope taper (single),value,21519.68142238761,kt CO2e 2026-2050
+a,Demographics: Household size after 2043: taper from the PCHIP end slope (single),value,21435.89540124744,kt CO2e 2026-2050
+a,Housing stock & calibration: Completion rate 0.92 / 0.96 (low),value,20673.196141025903,kt CO2e 2026-2050
+a,Housing stock & calibration: Completion rate 0.92 / 0.96 (high),value,21879.24922577177,kt CO2e 2026-2050
+a,Housing stock & calibration: Completion lag on (Little's law) (single),value,22087.01794885499,kt CO2e 2026-2050
+a,Housing stock & calibration: No census under-construction correction (single),value,22552.721537015022,kt CO2e 2026-2050
+a,Housing stock & calibration: Dwelling-size window 2016-2025 (single),value,22605.92844811968,kt CO2e 2026-2050
+a,Housing stock & calibration: 2026 overbuild: payback at absorption 0.20 / 0.10 a year (low),value,20623.560052829773,kt CO2e 2026-2050
+a,Housing stock & calibration: 2026 overbuild: payback at absorption 0.20 / 0.10 a year (high),value,20729.616032220027,kt CO2e 2026-2050
+a,Housing stock & calibration: 2026 overbuild booked as stock-neutral redevelopment (single),value,21425.73350725911,kt CO2e 2026-2050
+a,Housing stock & calibration: 2026 overbuild gap vs the 2026 requirement (single),value,21844.39393547673,kt CO2e 2026-2050
+a,Replacement scenario: Low / High replacement (high),value,23361.035469613536,kt CO2e 2026-2050
+a,Replacement scenario: Low / High replacement (low),value,20311.07094079296,kt CO2e 2026-2050
+a,Replacement scenario: Replacement half-life 5 / 15 yr (low),value,20935.99592401869,kt CO2e 2026-2050
+a,Replacement scenario: Replacement half-life 5 / 15 yr (high),value,21973.000536959404,kt CO2e 2026-2050
+a,Carbon factors & technology: Single case study: lowest / highest (low),value,17043.077833718955,kt CO2e 2026-2050
+a,Carbon factors & technology: Single case study: lowest / highest (high),value,25846.277669978423,kt CO2e 2026-2050
+a,Carbon factors & technology: Case studies: jackknife low / high (low),value,20790.75435273216,kt CO2e 2026-2050
+a,Carbon factors & technology: Case studies: jackknife low / high (high),value,22297.107746132235,kt CO2e 2026-2050
+a,Carbon factors & technology: Frozen technology (2025 factors held) (single),value,24656.14710634418,kt CO2e 2026-2050
+a,Carbon factors & technology: Decarbonisation: proxy-mapped items held (single),value,21668.90453635146,kt CO2e 2026-2050
+a,Carbon factors & technology: Decarbonisation: NZ-made electricity-intensive items held (single),value,22098.385808041727,kt CO2e 2026-2050
+a,Carbon factors & technology: Soil order: lowest (Raw) / highest (Organic) (high),value,28584.244509137992,kt CO2e 2026-2050
+a,Carbon factors & technology: Soil order: lowest (Raw) / highest (Organic) (low),value,19922.38895812925,kt CO2e 2026-2050
+a,Carbon factors & technology: A4-A5 on each item's own path / held at 2025 (high),value,22001.911554358376,kt CO2e 2026-2050
+a,Carbon factors & technology: A4-A5 on each item's own path / held at 2025 (low),value,21315.17218958153,kt CO2e 2026-2050
+a,"Carbon factors & technology: Soil carbon loss on all floor area, including replacement (single)",value,22210.302891306063,kt CO2e 2026-2050
+a,Accounting: Event timing L / n (single),value,21414.074012320987,kt CO2e 2026-2050
+a,central,value,21577.50362382947,kt CO2e 2026-2050

@@ -33,5 +33,7 @@
   "Population 5th\u201395th percentile",
   "Reference projection (median)"
  ],
- "note": null
+ "note": null,
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

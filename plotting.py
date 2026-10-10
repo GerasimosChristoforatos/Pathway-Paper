@@ -2,7 +2,7 @@
 PLOTTING: drawing helpers shared by every figure (MODEL v1.0.0)
 ==============================================================
 style.py holds the colours, sizes and saving, naming.py the labels; this module draws
-with them, so the headline figures (headline.py) and the diagnostics (projection.py,
+with them, so the paper and Extended Data figures (paper.py, extended_data.py) and the diagnostics (projection.py,
 Diagnostics.py, tools/figures_report.py, Sensitivity.py, MonteCarlo.py, boundaries.py,
 pathways.py) stack bands, materials and boundaries the same way.
 
@@ -61,7 +61,7 @@ def log_ticks(axis, ticks):
 
 
 def note(fig, text, y=0.0):
-    """A short italic note under the figure (the full caption is in DIAGNOSTICS.md / HEADLINE.md)."""
+    """A short italic note under the figure (the full caption is in DIAGNOSTICS.md / PAPER.md / EXTENDED_DATA.md)."""
     fig.text(0.5, y, text, ha='center', va='top', fontsize=S.FONT_SMALL, style='italic', color=S.MUTED, wrap=True)
 
 

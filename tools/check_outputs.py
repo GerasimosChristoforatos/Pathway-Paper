@@ -22,7 +22,11 @@ STORYLINE = re.compile(r'storyline|S2-held|S3-10-trend|damped mix trend|intensif
 PATHWAYS_OUTPUTS = [layout.data(f'pathways/{f}', frozen=False) for f in (
     'runs.csv', 'annual.csv', 'bands.csv', 'shapley_pathways.csv', 'shapley_levers.csv', 'shapley_subsets.csv',
     'backcast.json', 'solution_space.csv', 'levers.json', 'theoretical_limit.json', 'shapley_theoretical_limit.csv',
-    'shapley_theoretical_limit_subsets.csv')] + [layout.report(f, frozen=False) for f in (
+    'shapley_theoretical_limit_subsets.csv', 'shapley_theoretical_limit_moderate.csv',
+    'shapley_theoretical_limit_moderate_subsets.csv', 'montecarlo_draws.csv', 'montecarlo_summary.csv',
+    'montecarlo_annual.csv')] + [layout.data(f'sensitivity/{f}.csv', frozen=False) for f in (
+        'reference_carbon', 'p5_carbon', 'planetary_boundary', 'replacement_variants')] + [
+    layout.report(f, frozen=False) for f in (
         'METHODS_DRAFT.md', 'LEVERS_TABLE.md')]
 
 
@@ -50,10 +54,10 @@ def pathways_missing():
 
 
 def unplanned_figures():
-    """Figure files in outputs/headline/ or outputs/diagnostics/ that figure_plan.py does not plan."""
+    """Figure files in outputs/paper/, outputs/extended_data/ or outputs/diagnostics/ that figure_plan.py does not plan."""
     planned = {os.path.relpath(layout.figure(f), layout.OUT) for _, f in FP.all_release_files()}
     found = set()
-    for base in (layout.HEADLINE, layout.DIAGNOSTICS):
+    for base in (layout.PAPER, layout.EXTENDED_DATA, layout.DIAGNOSTICS):
         for d, _, fs in os.walk(base):
             found |= {os.path.relpath(os.path.join(d, os.path.splitext(f)[0]), layout.OUT)
                       for f in fs if f.endswith(('.png', '.pdf'))}

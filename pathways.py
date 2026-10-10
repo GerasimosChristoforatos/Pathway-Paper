@@ -720,13 +720,13 @@ def bank(raw):
     return dict(built=built, bank=bnk, added=added, used=used)
 
 
-def run_tl(ctx, params, pT, comps, ramp_name=LV.TL_FROM2027):
+def run_tl(ctx, params, pT, comps, ramp_name=LV.TL_FROM2027, base_setting=LV.TL_BASE_SETTING):
     """A TL-family run. 1) the TL inputs (levers.apply_tl); 2) the requirement without a join; 3) the
     banking rule on requirement + absorbed near-term excess; 4) engine.forward with the stock-adding
     join join_t = built_t - requirement_t (join_redev = 0), so the stock identity holds and dwellings
     built = built_t >= 0; 5) soil: the TL5 / TL6 soil factor of each year and the soil-bearing share
     clipped to [0, 1] (zero-building years) applied exactly through the intensity (see below)."""
-    fi, join_abs, _, info = LV.apply_tl(ctx, params, pT, comps, ramp_name, ctx['E_nojoin'])
+    fi, join_abs, _, info = LV.apply_tl(ctx, params, pT, comps, ramp_name, ctx['E_nojoin'], base_setting)
     n = len(ctx['years'])
     zeros = np.zeros(n)
     E1 = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=zeros, join_redev=zeros, **fi)
@@ -855,6 +855,47 @@ def compute_tl(res, verbose=True):
                                             f"not a Shapley player)"),
                               reduction=float(p5s[metric] - vals[metric][frozenset()]),
                               share_of_P5_ambitious_from2027_minus_TL=float('nan')))
+    # ---- MODEL v2.0.0: TL relative to P5 Moderate (TL1-TL7, 128 subsets) -------------------------
+    # TL = P5 Moderate + TL1-TL7 must be TL (P5 Ambitious + TL1-TL6) exactly: TL1-TL6 override every
+    # Ambitious lever setting but L4, which TL7 sets to its Ambitious d.
+    cache2 = {}
+
+    def getT2(comps):
+        key = tuple(c for c in LV.TL_COMPONENTS_V2 if c in comps)
+        if key not in cache2:
+            cache2[key] = run_tl(ref, params, pT, comps, LV.TL_FROM2027, LV.TL_BASE_SETTING_V2)
+        return cache2[key]
+
+    full2 = LV.TL_COMPONENTS_V2
+    RT2 = getT2(full2)
+    for k in ('carbon', 'total', 'upfront', 'dwell_in_scope'):
+        a, b = np.asarray(RT2['E'][k], float), np.asarray(RT['E'][k], float)
+        if not np.allclose(a, b, rtol=1e-12, atol=0.0):
+            raise SystemExit(f'STOP: TL relative to P5 Moderate (TL1-TL7) differs from TL in {k!r}.')
+    vals2 = {'carbon_kt': {}, 'LoE_AR': {}, 'LoE_AtP': {}}
+    sub2 = []
+    for S_ in subsets(full2):
+        R_ = getT2(S_)
+        m = metrics(ref, R_, LV.tl_label(S_, components=full2, base='moderate'), 'TL')
+        for metric in vals2:
+            vals2[metric][S_] = m[metric]
+        sub2.append(dict(level='TL', subset=LV.tl_label(S_, components=full2, base='moderate'), n_players=len(S_),
+                         carbon_kt=m['carbon_kt'], LoE_AR=m['LoE_AR'], LoE_AtP=m['LoE_AtP'], gfa_Mm2=m['gfa_Mm2'],
+                         dwellings_built_min_year=m['dwellings_built_min_year']))
+    shap2, exact2 = [], {}
+    for metric, v in vals2.items():
+        r_, ex = shapley_rows(v, full2, 'TL', metric, 'TL', LV.TL_NAMES)
+        for x in r_:
+            x['share_of_P5_moderate_from2027_minus_TL'] = x.pop('share_of_reference_minus_P5')
+        shap2 += r_
+        exact2[metric] = ex
+    p5m = res['runs'][(res['runs']['run'] == 'P5-moderate') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
+    for metric in vals2:
+        shap2.append(dict(level='TL', setting='TL', metric=metric, player=LV.TL_FROM2027,
+                          name=N._ascii(f"P5 Combined: adoption path -> {N.ADOPTION['from2027']} (separate line, "
+                                        f"not a Shapley player)"),
+                          reduction=float(p5m[metric] - vals2[metric][frozenset()]),
+                          share_of_P5_moderate_from2027_minus_TL=float('nan')))
     # gap
     bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
     gap = {}
@@ -889,6 +930,7 @@ def compute_tl(res, verbose=True):
                   note='TL5 and TL6 lower soil carbon loss, which the demand-intensity plane does not show')
     out = dict(params_T=pT, rows=rows, annual=annual, bands=bd, shapley=pd.DataFrame(shap_rows),
                subsets=pd.DataFrame(sub_rows), shapley_exact=exact, gap=gap, solution_space_marker=marker,
+               shapley_v2=pd.DataFrame(shap2), subsets_v2=pd.DataFrame(sub2), shapley_exact_v2=exact2, cache_v2=cache2,
                indicators={'TL': tl_indicators(ref, RT), 'TL-gradual': tl_indicators(ref, RTr)},
                cache=cache, getT=getT, seconds=time.time() - t0)
     if verbose:
@@ -921,7 +963,7 @@ def checks_tl(res, rt):
                 raise SystemExit(f'STOP: dwelling size below the occupied area in TL run {key} ({t}).')
         if abs(E['carbon'][1] / E0['carbon'][1] - 1) > 1e-12 or abs(E['total'][1] / E0['total'][1] - 1) > 1e-12:
             raise SystemExit(f'TL run {key}: 2026 changed.')
-    for metric, (phi, total) in rt['shapley_exact'].items():
+    for metric, (phi, total) in list(rt['shapley_exact'].items()) + list(rt['shapley_exact_v2'].items()):
         if sum(phi.values()) != total:
             raise SystemExit(f'TL Shapley efficiency fails ({metric}).')
 
@@ -933,17 +975,24 @@ def write_tl(res, rt):
     _csv(pd.concat([res['bands'], rt['bands']], ignore_index=True), 'bands.csv')
     _csv(rt['shapley'], 'shapley_theoretical_limit.csv')
     _csv(rt['subsets'], 'shapley_theoretical_limit_subsets.csv')
+    _csv(rt['shapley_v2'], 'shapley_theoretical_limit_moderate.csv')            # MODEL v2.0.0: TL1-TL7 vs P5 Moderate
+    _csv(rt['subsets_v2'], 'shapley_theoretical_limit_moderate_subsets.csv')
     rows = {r['run']: r for r in rt['rows']}
     out = dict(run_mode=RUN_MODE, disclaimer=LV.TL_DISCLAIMER, definition=dict(
         base='P5 Ambitious (L4 removals -40%; L2 / L3 replaced by TL1)', start=2027, bau=LV.TL_BAU_NOTE,
         tl6=dict(share=LV.TL6_SHARE, components=LV.TL6_COMPONENTS, source=LV.TL6_SOURCE, assumptions=LV.TL6_ASSUMPTIONS),
         adoption=('from2027: w = 1 for every lever in 2027-2050; 2026 observed and untouched (TL, gradual adoption: '
                   'the adopted logistic path, full by 2035)'),
-        components=LV.TL_NAMES), resolved=rt['params_T'],
+        components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS}), resolved=rt['params_T'],
         metrics={k: {c: v for c, v in r.items() if isinstance(v, (int, float, str, bool, np.floating, np.integer))}
                  for k, r in rows.items()},
         indicators=rt['indicators'], gap=rt['gap'], solution_space_marker=rt['solution_space_marker'],
-        shapley=N.columns(rt['shapley']).to_dict(orient='records'))
+        shapley=N.columns(rt['shapley']).to_dict(orient='records'),
+        relative_to_P5_moderate=dict(
+            definition='TL = P5 Combined (Moderate) with TL1-TL7 at full strength from 2027; identical to P5 Ambitious '
+                       'with TL1-TL6 (TL1-TL6 override every Ambitious setting but L4; TL7 = L4 at d = 0.40)',
+            components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS_V2},
+            shapley=N.columns(rt['shapley_v2']).to_dict(orient='records')))
     _json(out, 'theoretical_limit.json')
 
 
@@ -969,8 +1018,8 @@ def main():
 
 
 # ============================================================
-# FIGURES (outputs/diagnostics/pathways_si/; the headline figures H7-H10 are drawn by headline.py
-# from the data files written above)
+# FIGURES (outputs/diagnostics/pathways_si/; the paper and Extended Data figures are drawn by paper.py and
+# extended_data.py from the data files written above)
 # ============================================================
 NAMES = {'REF': N.SCENARIOS['REF'], **LV.PATHWAY_NAMES}
 BAND_ID = {N.band_data_label(b): b for b in N.BANDS_IN_SCOPE}
@@ -1028,69 +1077,6 @@ def fig_annual(res):
           f"follow the adopted logistic adoption path ({N.ADOPTION['by2035']}).")
 
 
-def fig_envelope(res):
-    """D29: P5 under Low / Reference / High replacement and the adoption paths."""
-    import matplotlib.pyplot as plt
-    import plotting as P
-    from matplotlib.patches import Patch
-    S = style
-    bar_kt, batp_kt = res['backcast']['B_AR_kt'], res['backcast']['B_AtP_kt']
-    ramps = [('by2030', 'by2030', 0.55, '--'), ('by2035', None, 1.0, '-'), ('by2045', 'by2045', 0.3, ':')]
-    fig, (ax, ax2) = plt.subplots(1, 2, figsize=S.figsize('double', 96), gridspec_kw=dict(width_ratios=[1.3, 1]))
-    names = [('REF', S.REFERENCE, None, 1.0)]
-    for lab, rn, alpha, _ in ramps:
-        for s_, hatch in (('moderate', '////'), ('ambitious', None)):
-            names.append((f'P5-{s_}' + (f'-{rn}' if rn else ''), S.PATHWAY['P5'], hatch, alpha))
-    scen = list(SCENARIOS)
-    w = 0.12
-    for i, sc in enumerate(scen):
-        for k, (nm, col, hatch, alpha) in enumerate(names):
-            r = _run(res, nm, sc)
-            x = i + (k - (len(names) - 1) / 2) * w
-            ax.bar(x, r['carbon_kt'], width=w * 0.92, color='white' if hatch else col, edgecolor=col, hatch=hatch,
-                   alpha=alpha, lw=S.LW_THIN)
-            ax.text(x, r['carbon_kt'], f" {r['carbon_kt'] / 1e3:,.1f}", ha='center', va='bottom', fontsize=S.FONT_MIN,
-                    rotation=90)
-    ax.set_xticks(range(len(scen)))
-    ax.set_xticklabels([SCENARIOS[s_][0] for s_ in scen])
-    P.boundary_hline(ax, 'AR', bar_kt, label=f"{S.BOUNDARY['AR']['label']} budget: {bar_kt:,.0f} kt")
-    P.boundary_hline(ax, 'AtP', batp_kt, label=f"{S.BOUNDARY['AtP']['label']} budget: {batp_kt:,.0f} kt")
-    ax.set_xlim(-0.6, len(scen) - 0.4)
-    ax.set_ylabel('Embodied carbon 2026–2050 (kt CO₂e; labels: Mt)')
-    P.thousands(ax.yaxis)
-    ax.grid(axis='x', visible=False)
-    P.panel(ax, 'a', 'Cumulative, by replacement variant and adoption path')
-    handles = [Patch(color=S.REFERENCE, label='No pathway (the variant itself)')]
-    for lab, rn, alpha, _ in ramps:
-        handles += [Patch(facecolor='white', edgecolor=S.PATHWAY['P5'], hatch='////', alpha=alpha,
-                          label=f"P5 Moderate, {N.ADOPTION[lab]}"),
-                    Patch(color=S.PATHWAY['P5'], alpha=alpha, label=f"P5 Ambitious, {N.ADOPTION[lab]}")]
-    handles += ax.get_legend_handles_labels()[0]
-    ax.legend(handles=handles, fontsize=S.FONT_MIN, frameon=False, loc='upper center', bbox_to_anchor=(0.5, -0.1),
-              ncol=2)
-    a = res['annual']
-    a = a[a['scenario'] == REFERENCE]
-    d = a[a['run'] == 'REF']
-    ax2.plot(d['year'], d['carbon_kt'], label=N.SCENARIOS['REF'], **_line('REF'))
-    for lab, rn, alpha, ls in ramps:
-        for s_, lw in (('moderate', S.LW_THIN), ('ambitious', S.LW_BOLD)):
-            nm = f'P5-{s_}' + (f'-{rn}' if rn else '')
-            d = a[a['run'] == nm]
-            ax2.plot(d['year'], d['carbon_kt'], color=S.PATHWAY['P5'], ls=ls, lw=lw,
-                     label=N.run_label(nm) + ('' if rn else f", {N.ADOPTION['by2035']}"))
-    d0 = a[a['run'] == 'REF']
-    P.boundary_lines(ax2, d0['year'], d0['B_AR_kt'], d0['B_AtP_kt'], label=False)
-    ax2.set_ylim(0, None)
-    ax2.set_xlim(2026, 2050)
-    ax2.set_ylabel('Embodied carbon (kt CO₂e per year)')
-    P.panel(ax2, 'b', 'Annual, Reference: adoption paths')
-    ax2.legend(fontsize=S.FONT_MIN, frameon=False, loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=1)
-    fig.tight_layout()
-    _save(fig, 'D29_adoption_and_variants',
-          'b: logistic adoption, full roll-out by 2030 (dashed), 2035 (solid, adopted after RECC, Pauliuk et al. '
-          '2024) or 2045 (dotted); Moderate thin, Ambitious thick.')
-
-
 def fig_l5_estimator(res):
     """D30: the L5 best-practice ratio, Harrell-Davis quantile of the independent case studies."""
     import matplotlib.pyplot as plt
@@ -1134,46 +1120,6 @@ def fig_l5_estimator(res):
           'Harrell & Davis (1982) Biometrika 69, 635; percentile bootstrap (Efron & Tibshirani 1993). The Ambitious '
           'q = 0.15 follows the top-15% convention of Commission Delegated Regulation (EU) 2021/2139, Annex I s. 7.7. '
           'Apartments (one independent case) are not in the sample.')
-
-
-def fig_shapley_levers(res):
-    """D31: Shapley attribution of Reference - P5 to the five levers."""
-    import matplotlib.pyplot as plt
-    import plotting as P
-    S = style
-    sh = res['shapley_levers']
-    fig, axes = plt.subplots(1, 2, figsize=S.figsize('double', 84))
-    tot = {s_: _run(res, 'REF')['carbon_kt'] - _run(res, f'P5-{s_}')['carbon_kt'] for s_ in LV.SETTINGS}
-    for ax, metric, xl, letter in ((axes[0], 'carbon_kt', 'Reduction of carbon 2026–2050 (kt CO₂e)', 'a'),
-                                   (axes[1], 'LoE_AR', 'Reduction of the cumulative LoE AR', 'b')):
-        for s_ in LV.SETTINGS:
-            d = sh[(sh['metric'] == metric) & (sh['setting'] == s_)].set_index('player')
-            for k, L in enumerate(LV.LEVERS):
-                y = k + (-0.2 if s_ == 'moderate' else 0.2)
-                col = S.PATHWAY[LV.LEVER_PATHWAY[L]]
-                v = d.loc[L, 'reduction']
-                ax.barh(y, v, height=0.38, color='white' if s_ == 'moderate' else col, edgecolor=col, lw=S.LW)
-                ax.text(max(v, 0), y, f' {v:,.0f} ({100 * d.loc[L, "share_of_reference_minus_P5"]:.0f}%)'
-                        if metric == 'carbon_kt' else f' {v:.3f}', va='center', fontsize=S.FONT_MIN)
-        ax.set_yticks(range(len(LV.LEVERS)))
-        ax.set_yticklabels([f'{L} {LV.LEVER_NAMES[L]}\n({LV.LEVER_PATHWAY[L]} {LV.PATHWAY_NAMES[LV.LEVER_PATHWAY[L]]})'
-                            for L in LV.LEVERS], fontsize=S.FONT_SMALL)
-        ax.invert_yaxis()
-        ax.axvline(0, color=S.INK, lw=S.LW_THIN)
-        ax.set_xlabel(xl)
-        ax.grid(axis='y', visible=False)
-        ax.set_xlim(min(0, ax.get_xlim()[0]), ax.get_xlim()[1] * 1.35)
-        if metric == 'carbon_kt':
-            P.thousands(ax.xaxis)
-        P.panel(ax, letter, 'Carbon' if metric == 'carbon_kt' else 'Cumulative LoE AR')
-    from matplotlib.patches import Patch
-    fig.legend(handles=[Patch(facecolor='white', edgecolor=S.INK, label='Moderate (open)'),
-                        Patch(color=S.INK, label='Ambitious (filled)')], loc='lower center', ncol=2,
-               bbox_to_anchor=(0.5, -0.01), frameon=False)
-    fig.tight_layout(rect=(0, 0.08, 1, 1))
-    _save(fig, 'D31_shapley_levers',
-          f"Reference variant; 32 subsets, exact; the values add up to Reference − P5: {tot['moderate']:,.0f} kt "
-          f"(Moderate) and {tot['ambitious']:,.0f} kt (Ambitious). Shares are of Reference − P5.")
 
 
 T_STEPS = (('REF', N.SCENARIOS['REF']), ('P5-moderate', 'P5 Combined,\nModerate'),
@@ -1287,42 +1233,6 @@ def fig_staircase(res):
           'is zero.')
 
 
-def fig_T_shapley(res):
-    """D33: Shapley attribution of P5 Ambitious (full strength from 2027) - TL to TL1-TL6."""
-    import matplotlib.pyplot as plt
-    import plotting as P
-    S = style
-    sh = res['T']['shapley']
-    fig, axes = plt.subplots(1, 2, figsize=S.figsize('double', 72))
-    for ax, metric, xl, letter in ((axes[0], 'carbon_kt', 'Reduction of carbon 2026–2050 (kt CO₂e)', 'a'),
-                                   (axes[1], 'LoE_AR', 'Reduction of the cumulative LoE AR', 'b')):
-        d = sh[sh['metric'] == metric].set_index('player')
-        players = list(LV.TL_COMPONENTS) + [LV.TL_FROM2027]
-        for k, pl in enumerate(players):
-            v = float(d.loc[pl, 'reduction'])
-            is_t = pl != LV.TL_FROM2027
-            ax.barh(k, v, height=0.6, color=S.TL if is_t else 'white', edgecolor=S.TL, lw=S.LW,
-                    hatch=None if is_t else '////')
-            share = d.loc[pl, 'share_of_P5_ambitious_from2027_minus_TL']
-            ax.text(v, k, (f' {v:,.0f}' if metric == 'carbon_kt' else f' {v:.3f}') +
-                    (f' ({100 * share:.0f}%)' if is_t else ' (separate line)'), va='center', fontsize=S.FONT_MIN)
-        ax.set_yticks(range(len(players)))
-        ax.set_yticklabels([f'{p_} {LV.TL_NAMES[p_]}' if p_ in LV.TL_NAMES
-                            else f"P5 Ambitious: {N.ADOPTION['from2027']}" for p_ in players], fontsize=S.FONT_SMALL)
-        ax.invert_yaxis()
-        ax.set_xlabel(xl)
-        ax.set_xlim(0, ax.get_xlim()[1] * 1.35)
-        ax.grid(axis='y', visible=False)
-        if metric == 'carbon_kt':
-            P.thousands(ax.xaxis)
-        P.panel(ax, letter, 'Carbon' if metric == 'carbon_kt' else 'Cumulative LoE AR')
-    fig.tight_layout()
-    _save(fig, 'D33_tl_shapley',
-          f'Reference variant; {2 ** len(LV.TL_COMPONENTS)} subsets, exact. Shares are of P5 Ambitious at full strength '
-          'from 2027 minus TL. The hatched bar is the separate effect of starting P5 Ambitious at full strength in 2027 '
-          'instead of on the adopted adoption path (not a Shapley player). ' + T_CAPTION)
-
-
 def fig_T_annual(res):
     """D34: TL: annual carbon and dwellings built per year (banking rule)."""
     import matplotlib.pyplot as plt
@@ -1357,18 +1267,17 @@ def fig_T_annual(res):
 
 
 def figures(res):
-    """The pathway diagnostics D28-D34 (style.save_figure; each file is overwritten in place, so
-    a pathways-only run replaces exactly these figures). H7-H10: headline.py."""
+    """The pathway diagnostics D28, D30, D32, D34 (style.save_figure; each file is overwritten in place,
+    so a pathways-only run replaces exactly these figures). The paper figures (Fig4-Fig6) and Extended
+    Data (ED6-ED10; D29, D31 and D33 of model-v1.1.0 are superseded by ED7, ED9 and ED8) are drawn
+    from the data files by paper.py and extended_data.py."""
     import matplotlib
     matplotlib.use('Agg')
     style.apply()
     fig_annual(res)
-    fig_envelope(res)
     fig_l5_estimator(res)
-    fig_shapley_levers(res)
     if 'T' in res:
         fig_staircase(res)
-        fig_T_shapley(res)
         fig_T_annual(res)
 
 

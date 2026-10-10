@@ -555,6 +555,13 @@ def tl_table(t):
                    f'rounded {TL6_SHARE}',
              source='DATA: ' + TL6_SOURCE + ' (Auckland monitoring); DECISION (author): national application',
              tag='DATA + DECISION'),
+        dict(item='TL7 ' + TL_NAMES['TL7'], pathway='TL (relative to P5 Moderate)', band=BAND_TARGET['L4'],
+             how='L4 at its Ambitious reduction d = 0.40 (`rate_demol`, recent-surge component of `rate_unc`), '
+                 'from 2027; the element of P5 Ambitious that TL1-TL6 do not replace',
+             assumption='demolition and the recent replacement surge reduced by 40% (Pellan et al. 2024: 150,000 -> '
+                        '90,000 demolitions a year)',
+             value='d = 0.40 (P5 Moderate: 0.20)',
+             source='LITERATURE: Pellan2024 (the Ambitious level of L4)', tag='LITERATURE'),
     ]
 
 
@@ -620,8 +627,14 @@ def register(p):
 #       materials           apartments held at r = 1 (one independent case)
 #   TL5 Lowest-carbon soils soil factor at the lowest soil order (SOC_low) for every typology
 #   TL6 Urban infill        a share TL6_SHARE of the non-replacement floor area on developed land (zero soil)
-TL_COMPONENTS = ('TL1', 'TL2', 'TL3', 'TL4', 'TL5', 'TL6')
-TL_NAMES = {k: N.TL[k] for k in TL_COMPONENTS}
+TL_COMPONENTS = ('TL1', 'TL2', 'TL3', 'TL4', 'TL5', 'TL6')       # the model-v1 attribution (base P5 Ambitious)
+# MODEL v2.0.0: TL relative to P5 Moderate. With TL1-TL6 active every Ambitious lever setting of P5 Ambitious
+# is overridden (TL1 replaces L2 and L3, TL2 and TL3 replace L1, TL4 replaces L5) except L4; that element is
+# named TL7 (building retention at the Ambitious level, d = 0.40), so TL = P5 Moderate + TL1-TL7 is the same
+# computation as P5 Ambitious + TL1-TL6 (asserted in pathways.compute_tl).
+TL_COMPONENTS_V2 = TL_COMPONENTS + ('TL7',)
+TL_BASE_SETTING_V2 = 'moderate'
+TL_NAMES = {k: N.TL[k] for k in TL_COMPONENTS_V2}
 TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at '
                  'full strength from 1 January 2027, combining best observed attributes of different buildings and '
                  'places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > '
@@ -687,15 +700,16 @@ def resolve_tl(chars, factors_building, factors_typology, olf_used):
                 start_year=OBSERVED_YEAR + 1)
 
 
-def apply_tl(base, params, pT, comps, adoption=TL_FROM2027, E_nojoin=None):
-    """Inputs of a TL-family run: P5 Ambitious with the overrides in `comps` (subset of TL1..TL6).
+def apply_tl(base, params, pT, comps, adoption=TL_FROM2027, E_nojoin=None, base_setting=TL_BASE_SETTING):
+    """Inputs of a TL-family run: P5 at `base_setting` (Ambitious for the model-v1 attribution, Moderate
+    for MODEL v2.0.0) with the overrides in `comps` (subset of TL1..TL7; TL7 sets L4 to its Ambitious d).
     adoption 'from2027' (w = 1 from 2027; TL and its Shapley subsets) or 'by2035' (the adopted
     logistic path; TL gradual adoption, SI). Returns (inputs, join_absorbed, join_redev, info);
     the banking rule and the soil path are applied by pathways.run_tl."""
-    unknown = set(comps) - set(TL_COMPONENTS)
+    unknown = set(comps) - set(TL_COMPONENTS_V2)
     if unknown:
         raise ValueError(f'Unknown TL component(s) {unknown}.')
-    s = TL_BASE_SETTING
+    s = base_setting
     years = base['years']
     w = ramp_from2027(years) if adoption == TL_FROM2027 else ramp_named(years, adoption)
     fi = dict(base['fwd_inputs'])
@@ -723,9 +737,9 @@ def apply_tl(base, params, pT, comps, adoption=TL_FROM2027, E_nojoin=None):
         raise ValueError('apply_tl needs the Reference forward run without a join (E_nojoin).')
     join, redev = l3_join(E_nojoin, base['O26'], base['rho'], base['gap_ref'],
                           1.0 if 'TL1' in comps else params['L3']['absorption'][s])
-    # L4 (unchanged, Ambitious)
+    # L4 at the base setting, or TL7: the Ambitious d (building retention at -40%)
     fi['rate_demol'], fi['rate_unc'] = l4_rates(base['rate_demol'], base['rate_unc'], base['long_run_residual'],
-                                                params['L4']['d'][s], w)
+                                                params['L4']['d']['ambitious' if 'TL7' in comps else s], w)
     # L5 / TL4
     r = {t: pT['TL4'][t]['r'] for t in typ} if 'TL4' in comps else params['L5']['r'][s]
     fi['intensity'] = l5_intensity(base['fwd_inputs']['intensity'], base['a13_2025'], base['red13'], r, w)
@@ -741,21 +755,22 @@ def apply_tl(base, params, pT, comps, adoption=TL_FROM2027, E_nojoin=None):
             sp = base_s + w * (pT['TL5'][t]['soc_low'] - base_s) if 'TL5' in comps else np.full(len(years), base_s)
             soil_path[t] = sp * (1.0 - TL6_SHARE * w) if 'TL6' in comps else sp
     info = dict(w=w, l1_held=held, a13=a13_path(base['a13_2025'], base['red13'], r, w), soil_path=soil_path,
-                olf_path=olf_y, occupied=None, comps=tuple(c for c in TL_COMPONENTS if c in comps))
+                olf_path=olf_y, occupied=None, comps=tuple(c for c in TL_COMPONENTS_V2 if c in comps))
     return fi, join, redev, info
 
 
-def tl_label(comps, adoption=TL_FROM2027):
-    """'TL' for all six, 'P5-ambitious-from2027' for none, else e.g. 'TL[TL1+TL3]'; '-gradual' for the
+def tl_label(comps, adoption=TL_FROM2027, components=TL_COMPONENTS, base='ambitious'):
+    """'TL' for every component, 'P5-<base>-from2027' for none, else e.g. 'TL[TL1+TL3]'; '-gradual' for the
     adopted logistic path (TL gradual adoption)."""
-    c = [x for x in TL_COMPONENTS if x in comps]
-    name = 'TL' if len(c) == len(TL_COMPONENTS) else ('P5-ambitious-from2027' if not c else f"TL[{'+'.join(c)}]")
+    c = [x for x in components if x in comps]
+    name = 'TL' if len(c) == len(components) else (f'P5-{base}-from2027' if not c else f"TL[{'+'.join(c)}]")
     return name + ('' if adoption == TL_FROM2027 else '-gradual')
 
 
 def register_tl(t):
     """(setting, value, basis) rows of the theoretical limit TL, from outputs/pathways/theoretical_limit.json."""
-    rows = [('Theoretical limit TL', TL_DISCLAIMER + ' TL = P5 Ambitious with TL1-TL6 at full strength from 2027 '
+    rows = [('Theoretical limit TL', TL_DISCLAIMER + ' TL = P5 Combined (Moderate) with TL1-TL7 at full strength from '
+             '2027, identical to P5 Ambitious with TL1-TL6 at full strength from 2027 '
              '(no adoption path); 2026 untouched; sensitivity: the adopted logistic adoption path (TL, gradual '
              'adoption, SI). ' + TL_BAU_NOTE, 'DECISION (author)')]
     for r in tl_table(t):

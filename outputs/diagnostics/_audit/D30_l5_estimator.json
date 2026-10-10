@@ -44,5 +44,7 @@
   "Townhouses case, at (i \u2212 0.5) / n",
   "pooled typology factor (r = 1)"
  ],
- "note": "L5 best-practice ratio: Harrell\u2013Davis quantile of 14 independent case studies (detached, townhouses); Harrell & Davis (1982) Biometrika 69, 635; percentile bootstrap (Efron & Tibshirani 1993). The Ambitious q = 0.15 follows the top-15% convention of Commission Delegated Regulation (EU) 2021/2139, Annex I s. 7.7. Apartments (one independent case) are not in the sample."
+ "note": "L5 best-practice ratio: Harrell\u2013Davis quantile of 14 independent case studies (detached, townhouses); Harrell & Davis (1982) Biometrika 69, 635; percentile bootstrap (Efron & Tibshirani 1993). The Ambitious q = 0.15 follows the top-15% convention of Commission Delegated Regulation (EU) 2021/2139, Annex I s. 7.7. Apartments (one independent case) are not in the sample.",
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

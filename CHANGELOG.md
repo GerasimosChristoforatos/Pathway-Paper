@@ -4,6 +4,78 @@ Entries below the first use the vocabulary of their own version (S1/S2/S3-10, ce
 L2a/L2b, T, near-term market excess, ...); docs/RENAMING.md maps every one of those names to the
 release vocabulary.
 
+## model-v2.0.0: paper-ready structure; TL relative to P5 Moderate; pathway Monte Carlo
+
+From model-v1.1.0 (main, 4ad57f3). **No adopted number changes**: every value of the regression
+lock is reproduced to 1e-12 (tests/test_regression_model_v1.py, with the v1.1.0 list); every value
+MODEL v2.0.0 adds is listed in tests/regression_model_v2_additions.json, and
+tests/test_regression_model_v2.py requires every number of outputs/data/ to be covered by one of the
+two (3,765 values: the 165 v1.1.0 values no file captured and the 3,600 MODEL v2.0.0 adds).
+
+### Theoretical limit relative to P5 Moderate (TL7)
+
+* TL is unchanged (asserted to 1e-12 in every run). With TL1-TL6 active, every Ambitious lever setting
+  of P5 Ambitious is overridden except L4; that element is named **TL7 Building retention at -40%
+  (ambitious level)** (L4 at d = 0.40), so TL = P5 Moderate + TL1-TL7 is the same computation.
+* Shapley attribution over TL1-TL7 relative to P5 Moderate at full strength from 2027 (128 subsets,
+  exact rational arithmetic, efficiency exact), with the effect of full strength from 2027 as a
+  separate line (data/pathways/shapley_theoretical_limit_moderate.csv and _subsets.csv;
+  theoretical_limit.json "relative_to_P5_moderate"). Carbon 2026-2050 (kt; share of P5 Moderate from
+  2027 - TL): TL1 2,504 (20%), TL2 4,527 (37%), TL3 1,936 (16%), TL4 1,474 (12%), TL5 636 (5%), TL6 808
+  (7%), TL7 400 (3%); full strength from 2027 697. The TL1-TL6 attribution relative to P5 Ambitious
+  stays in shapley_theoretical_limit.csv (locked).
+
+### Pathway Monte Carlo (pathways_mc.py)
+
+* The 5,000 saved Reference draws run through the pathway layer for P5 (Moderate) and TL, levers
+  applied identically; TL3-TL6 targets absolute. The central draw reproduces the deterministic
+  Reference, P5 and TL runs (asserted to 1e-9; achieved 3.5e-16; a first criterion relative to
+  max(|y|, 1 kg) flagged TL's zero-building years, where the floor area is 2e-10 m2 of floating-point
+  noise; the criterion was corrected to the model's zero tolerances, the totals and every building
+  year matched to 2e-16).
+* 5-95%: Reference LoE AR 3.90-5.75 (equal to the AESA layer); P5 carbon 12,975-22,332 kt, LoE AR
+  3.03-4.81, AtP 12.1-19.3; TL carbon 3,383-5,800 kt, LoE AR 0.79-1.25, P(LoE AR <= 1) = 43.4%, LoE AtP
+  3.17-4.99, P(LoE AtP <= 1) = 0%. Data: data/pathways/montecarlo_{draws,summary,annual}.csv,
+  data/aesa/montecarlo_draw_budgets.csv. MonteCarlo.project gains full=True (default outputs
+  unchanged).
+
+### Grouped sensitivities (tools/sensitivity_tables.py; docs/SENSITIVITY_PLAN.md)
+
+* data/sensitivity/reference_carbon.csv, p5_carbon.csv, planetary_boundary.csv and
+  replacement_variants.csv, grouped by type of change. New rows: the population 5th / 95th rows on the
+  exact engine path (Reference 16,060 / 27,119 kt; the approximate rows stay in
+  sensitivity_one_at_a_time.csv), P1-P4 each at Ambitious within P5, P5 on the population 5th / 95th
+  paths (LoE with the budgets of each path), TL under Low / High replacement (LoE AR 0.97 / 1.09).
+  Every overlapping existing run is reproduced to 1e-12.
+* data/baseline/sensitivity_annual_carbon.csv: the annual carbon of every one-at-a-time row (each
+  path sums to its table total).
+
+### Paper / Extended Data / diagnostics
+
+* outputs/paper/ (paper.py): Fig1 schematic, Fig2 demand bands (history with the census-measured net
+  replacement and the unexplained building; carbon by band with maintenance), Fig3 Reference carbon by
+  stage and material with the committed emissions in years of the 2050 AR boundary, Fig4 pathways by
+  band, Fig5 annual emissions vs the boundaries with Monte Carlo bands for the Reference, P5 and TL and
+  the Shapley waterfall in cumulative LoE AR (AtP on the right axis), Fig6 solution space (89 mm);
+  Table 1 and Table 2; PAPER.md.
+* outputs/extended_data/ (extended_data.py): ED1-ED10.
+* outputs/headline/ and headline.py retired (H1->Fig1, H2->ED5a, H3->Fig2a, H4->Fig3a,b, H5->Fig5a,
+  H6->Fig3c, H7->Fig4 (+ED6), H8->Fig5a, H9->Fig5b, H10->Fig6, H11->ED1+ED4); D16, D17, D29, D31, D33
+  superseded by ED1, ED3, ED7/ED10, ED9, ED8 (data kept). docs/RENAMING.md section 6.
+* Maintenance is drawn as its own layer only in Fig3 and the demand-band breakdowns (Fig2, Fig4, D25,
+  D26, D32); every figure's audit record says whether it draws maintenance, and a test enforces the
+  rule. Removed as a layer or line from D23, D27 (as designed) and D19 (panel c, the component split
+  by variant, now the totals). The design document said no other figure drew it; the automatic audit
+  found D19 and D32: D19 was changed to follow the rule, D32 c is a carbon-by-demand-band breakdown
+  (Reference / P5 Ambitious / TL), which the rule allows, and is listed in
+  figure_plan.MAINTENANCE_ALLOWED. Every other diagnostic is byte-identical to model-v1.1.0.
+* New data for the figures: data/baseline/annual_by_stage.csv, annual_by_material.csv,
+  bands_history_replacement_split.csv (each checked against the locked totals).
+* Wording: the effect of starting at full strength in 2027 is labelled "full strength from 2027" (the
+  release vocabulary; "instant start" is an old term of docs/RENAMING.md).
+* Byte manifest: tests/output_manifest_model_v2.json (the v1.1 manifest stays at 4ad57f3).
+* Run time: about 12-24 min depending on the machine (release machine: full run 13.8 min including the tests; --pathways-only 133 s).
+
 ## model-v1.1.0: one adoption-window rule; D04, D05, D07; two band names
 
 Targeted fixes before the paper version, from model-v1.0.0 (tag model-v1.0.0, 0f0f21f). **No adopted

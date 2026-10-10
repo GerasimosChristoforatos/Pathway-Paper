@@ -9,6 +9,12 @@ Data covered: lines, filled areas (fill_between, stackplot) and bars (at their
 centre). Not data: vertical marker lines (axvline) and artists tagged
 gid=BOUNDARY (the AR / AtP boundaries, defined from t0 = 2025, not emissions). An x
 value counts as a calendar year when it lies in YEAR_RANGE.
+
+Maintenance (MODEL v2.0.0): every record says whether the figure draws maintenance (B2, B4) as
+its own layer or line ('maintenance_drawn'): a data artist (bar, filled area, line) on a data axes
+in the maintenance colour of style.py, or a legend entry naming maintenance. The schematic (axes
+switched off) carries no data. tests/test_release.py allows it only in the figures of
+figure_plan.MAINTENANCE_ALLOWED.
 """
 import json
 import os
@@ -43,6 +49,48 @@ def _years(ax):
     return (float(x.min()), float(x.max())) if x.size else (None, None)
 
 
+def _hex(c):
+    from matplotlib.colors import to_hex
+    try:
+        a = np.asarray(c, float)
+        if a.ndim == 2:
+            return {to_hex(x[:3]).upper() for x in a if x[3] > 0}
+        return {to_hex(a[:3]).upper()} if a.size >= 3 and (a.size == 3 or a[3] > 0) else set()
+    except (TypeError, ValueError):
+        return {to_hex(c).upper()} if c not in (None, 'none') else set()
+
+
+def maintenance_drawn(fig):
+    """[where] maintenance is drawn as its own layer or line: data artists in the maintenance colour
+    (style.BAND / style.COMPONENT) on axes that are switched on, and legend entries naming it."""
+    import style
+    colour = {style.BAND['maintenance'][0].upper(), style.COMPONENT['maintenance'][0].upper()}
+    out = []
+    for k, ax in enumerate(fig.get_axes()):
+        if not ax.axison:
+            continue
+        for a in ax.get_children():
+            if not a.get_visible() or a is ax.patch:
+                continue
+            if isinstance(a, Rectangle):
+                c = _hex(a.get_facecolor())
+            elif isinstance(a, PolyCollection):
+                c = _hex(a.get_facecolor())
+            elif isinstance(a, Line2D):
+                c = _hex(a.get_color())
+            else:
+                continue
+            if c & colour:
+                out.append(f'axes {k}: {type(a).__name__} in the maintenance colour')
+                break
+    legends = [ax.get_legend() for ax in fig.get_axes() if ax.get_legend()] + list(fig.legends)
+    for lg in legends:
+        for t in lg.get_texts():
+            if 'maintenance' in t.get_text().lower():
+                out.append(f'legend: {t.get_text()}')
+    return out
+
+
 def texts(fig):
     """Every visible text of a figure: titles, labels, tick labels, legend entries, annotations
     (tests/test_release.py checks them against the old names of docs/RENAMING.md)."""
@@ -74,5 +122,6 @@ def record(fig, name, note=None):
         axes.append(dict(title=ax.get_title(loc='left') or ax.get_title(), xlabel=ax.get_xlabel(),
                          ylabel=ax.get_ylabel(), year_min=y0, year_max=y1))
     with open(os.path.join(AUDIT_DIR, os.path.splitext(os.path.basename(name))[0] + '.json'), 'w') as f:
+        md = maintenance_drawn(fig)
         json.dump(dict(figure=os.path.splitext(os.path.basename(name))[0], producer=producer(), axes=axes,
-                       texts=texts(fig), note=note), f, indent=1)
+                       texts=texts(fig), note=note, maintenance_drawn=bool(md), maintenance_where=md), f, indent=1)

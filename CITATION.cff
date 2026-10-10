@@ -2,12 +2,13 @@ cff-version: 1.2.0
 message: >-
   If you use this model or its outputs, please cite it as below. The numbers
   of a release are those of its full run (python run_all.py), committed under
-  outputs/ and locked by tests/test_regression_model_v1.py.
+  outputs/ and locked by tests/test_regression_model_v1.py and
+  tests/test_regression_model_v2.py.
 type: software
 title: >-
   New Zealand new residential floor area and embodied carbon, 2026–2050:
   projection, planetary-boundary layer (AESA) and pathways
-version: 1.1.0
+version: 2.0.0
 authors:
   - family-names: Christoforatos
     given-names: Gerasimos
@@ -20,8 +21,9 @@ abstract: >-
   validation against the census record, an absolute environmental
   sustainability assessment (AESA) of climate change under the acquired-rights
   and ability-to-pay allocation principles, and five construction pathways
-  built from five levers with Shapley attribution, a back-cast and a
-  hyper-optimistic theoretical limit.
+  built from five levers with Shapley attribution, a back-cast, a
+  hyper-optimistic theoretical limit and a pathway Monte Carlo of the
+  Reference, the combined pathway and the theoretical limit.
 keywords:
   - embodied carbon
   - residential construction

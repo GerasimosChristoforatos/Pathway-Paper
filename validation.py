@@ -146,6 +146,57 @@ def _history_intervals(B, yh):
     return cy, list(zip(cy[:-1], cy[1:])) + [(cy[-1], int(yh[-1]))]
 
 
+def _census_replacement(B, yh, cal, cy):
+    """The census-measured net replacement rate of each year (the rate of its census interval, the
+    latest carried after the latest census) and the net replacement in dwellings (rate x the previous
+    year's stock of the consistent calibration)."""
+    rates = B['census_rates'].set_index(['y0', 'y1'])['rate']
+    rate = pd.Series(np.nan, index=yh)
+    for (y0, y1), r in rates.items():
+        rate.loc[(rate.index > y0) & (rate.index <= y1)] = r
+    rate.loc[rate.index > cy[-1]] = rates.loc[(cy[-2], cy[-1])]          # 2024-25: the latest rate carried
+    return rate, rate * cal['prev'].loc[yh]
+
+
+def history_replacement_split(B):
+    """The history's net replacement band of history_bands (floor area, interval means, in scope)
+    split into the census-measured net replacement and the unexplained building (MODEL v2.0.0
+    addition; Fig2a), in the units of the floor-area bands: each year's dwellings x that year's
+    new-dwelling size, x the interval's in-scope factor of history_bands. In dwellings the
+    household-identity residual cal['net'] is the census-measured replacement plus the unexplained
+    building of stock_identity_history (checked year by year), so the two parts add up to the
+    history's net replacement band exactly (checked)."""
+    yh = np.arange(1992, 2026)
+    D = B['blended_dwelling_size'].loc[yh]
+    cal = engine.calibrate_stock(B['years_hist'], B['hist_hh'],
+                                 engine.vacancy_knots(B['census'], float(B['empty_share_measured']), consistent_share(B)),
+                                 B['hist_units_all_c'], B['hist_rv_units_c'], projection.COMPLETION_RATE,
+                                 projection.DEMOLITION_RATE, projection.DEMOLITION_CALIB_START, B['calib_end'])
+    cy, intervals = _history_intervals(B, yh)
+    _, repl = _census_replacement(B, yh, cal, cy)
+    unexpl = cal['net'].loc[yh] - repl
+    built = B['hist_built_units'].loc[yh]
+    other = B['d_hh'].loc[yh] + (cal['allow'] + cal['change']).loc[yh] + repl + cal['rv'].loc[yh]
+    if not np.allclose(unexpl.values, (built - other).values, rtol=1e-9, atol=1e-6):
+        raise SystemExit('history_replacement_split: net - census replacement differs from the unexplained building.')
+    bands = history_bands(B)
+    band = N.band_data_label('replacement_history')
+    rows = []
+    for y0, y1 in intervals:
+        mean = lambda ser: float(np.mean(np.asarray(ser.loc[y0 + 1:y1], float)))
+        b = bands[(bands['interval'] == f'{y0}-{y1}') & (bands['band'] == band)].iloc[0]
+        net = mean(cal['net'].loc[yh] * D)
+        f = b['floor_area_Mm2_per_year'] * 1e6 / net                    # the in-scope factor of the interval
+        r_, u_ = mean(repl * D) * f / 1e6, mean(unexpl * D) * f / 1e6
+        if not np.isclose(r_ + u_, b['floor_area_Mm2_per_year'], rtol=1e-9, atol=0):
+            raise SystemExit(f'history_replacement_split: the parts do not add up to the band ({y0}-{y1}).')
+        rows.append(dict(interval=f'{y0}-{y1}', year_start=y0 + 1, year_end=y1,
+                         net_replacement_census_Mm2_per_year=r_, unexplained_building_Mm2_per_year=u_,
+                         net_replacement_band_Mm2_per_year=float(b['floor_area_Mm2_per_year']),
+                         households_from=b['households_from']))
+    return pd.DataFrame(rows)
+
+
 def stock_identity_history(B):
     """Dwellings built per year in the census intervals 1991-2023 (and 2023-2025) by component
     (MODEL v1.1.0; D05c), interval means over the years y0+1..y1, in scope:
@@ -166,12 +217,7 @@ def stock_identity_history(B):
     yh = np.arange(1992, 2026)
     cal = _consistent_calibration(B)
     cy, intervals = _history_intervals(B, yh)
-    rates = B['census_rates'].set_index(['y0', 'y1'])['rate']
-    rate = pd.Series(np.nan, index=yh)
-    for (y0, y1), r in rates.items():
-        rate.loc[(rate.index > y0) & (rate.index <= y1)] = r
-    rate.loc[rate.index > cy[-1]] = rates.loc[(cy[-2], cy[-1])]          # 2024-25: the latest rate carried
-    repl = rate * cal['prev'].loc[yh]
+    rate, repl = _census_replacement(B, yh, cal, cy)
     parts = dict(new_households=B['d_hh'].loc[yh], vacancy=(cal['allow'] + cal['change']).loc[yh],
                  net_replacement_census=repl, retirement_villages=cal['rv'].loc[yh])
     built = B['hist_built_units'].loc[yh]
@@ -440,6 +486,8 @@ def main():
     history_bands(B).to_csv(layout.writing(layout.data('baseline/bands_history.csv')), index=False)
     N.columns(stock_identity_history(B)).to_csv(layout.writing(layout.data('baseline/stock_identity_history.csv')),
                                                 index=False)
+    history_replacement_split(B).to_csv(layout.writing(layout.data('baseline/bands_history_replacement_split.csv')),
+                                        index=False)
     N.columns(household_formation_history(B)).to_csv(
         layout.writing(layout.data('baseline/household_formation_history.csv')), index=False)
 

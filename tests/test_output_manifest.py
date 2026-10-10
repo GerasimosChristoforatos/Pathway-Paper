@@ -1,6 +1,6 @@
-"""Byte reproducibility of the release outputs (MODEL v1.1.0).
+"""Byte reproducibility of the release outputs (MODEL v2.0.0).
 
-tests/output_manifest_model_v1_1.json holds the SHA-256 of every file the release run wrote
+tests/output_manifest_model_v2.json holds the SHA-256 of every file the release run wrote
 under outputs/ (tools/output_manifest.py; console logs excluded). Run after
 `python run_all.py` (or `--pathways-only`, which rewrites the pathway outputs), this test
 checks that the run reproduced every one of them byte for byte and wrote no other file.

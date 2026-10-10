@@ -2,8 +2,9 @@
 
     python run_all.py                   # full run: the only basis for reported results and tags
     python run_all.py --pathways-only   # the pathway layer only (the projection is unchanged):
-                                        # pathways.py (projection.main() in memory), the headline
-                                        # figures, the pathway documents and the indexes, then the
+                                        # pathways.py (projection.main() in memory), the pathway Monte
+                                        # Carlo, the grouped sensitivity tables, the paper and Extended
+                                        # Data figures, the pathway documents and the indexes, then the
                                         # pathway tests, the numerical regression lock, the
                                         # release checks and the byte manifest; only the pathway
                                         # figures are replaced
@@ -25,13 +26,15 @@ boundaries (AESA layer; reads the Monte Carlo draws) -> validation -> gap_2026 -
 overbuild_2026 -> scenarios -> reconciliation -> figures_report -> frozen-technology check
 (projection, Sensitivity, MonteCarlo, scenarios, boundaries with DECARB_MODE 'none', A4-A5
 held, whole life at construction; data in outputs/data/frozen_technology/, no figures) ->
-pathways -> metrics -> headline (the figures of the paper, from the data files) -> results ->
+pathways -> pathways_mc (the saved Reference draws through P5 and TL) -> sensitivity_tables (grouped
+one-at-a-time tables) -> metrics -> paper (Fig1-Fig6, Tables 1-2, PAPER.md) -> extended_data (ED1-ED10,
+EXTENDED_DATA.md), both from the data files -> results ->
 assumptions -> pathways_docs (LEVERS_TABLE.md) -> methods_draft (METHODS_DRAFT.md) -> check_outputs -> indexes
 (DIAGNOSTICS.md, outputs/INDEX.md) -> tests, last (incl. the v1.2.1 regression test, which reads
 the frozen-technology data, the regression lock of MODEL v1.0.0, which reads every data file, and
 the release checks of figures and indexes).
 Each script runs in its own process, with the non-interactive matplotlib backend and
-PATHWAY_SAVE_FIGURES=1, so every figure is written (outputs/headline/, outputs/diagnostics/;
+PATHWAY_SAVE_FIGURES=1, so every figure is written (outputs/paper/, outputs/extended_data/, outputs/diagnostics/;
 layout.py) and nothing is shown. Console output of each step goes to outputs/logs/<step>.log.
 """
 import os
@@ -84,8 +87,8 @@ def pipeline(quick=False):
     # every figure (and its audit record, figaudit.py) is written by this run; a full run also
     # rewrites every data file and report, so nothing stale survives (outputs/INDEX.md, the tests).
     # A quick run keeps the data: it does not re-run the frozen-technology Monte Carlo and AESA.
-    for d in (layout.HEADLINE, layout.DIAGNOSTICS, layout.FIGURE_AUDIT) + (() if quick else (layout.DATA,
-                                                                                          layout.REPORTS)):
+    for d in (layout.PAPER, layout.EXTENDED_DATA, layout.DIAGNOSTICS, layout.FIGURE_AUDIT) + (
+            () if quick else (layout.DATA, layout.REPORTS)):
         shutil.rmtree(d, ignore_errors=True)
     run('building_factors', [py, os.path.join(ROOT, 'Building_factors.py')])
     run('projection', [py, os.path.join(ROOT, 'projection.py')])
@@ -120,8 +123,9 @@ def pipeline(quick=False):
     run('sensitivity_tables', [py, tool('sensitivity_tables')])
     # metrics.json is a data file (locked by tests/test_regression_model_v1.py): written before the tests
     run('metrics', [py, tool('metrics')])
-    # the figures of the paper and HEADLINE.md, from the data files only
-    run('headline', [py, os.path.join(ROOT, 'headline.py')])
+    # the figures and tables of the paper (PAPER.md) and Extended Data (EXTENDED_DATA.md), from the data files only
+    run('paper', [py, os.path.join(ROOT, 'paper.py')])
+    run('extended_data', [py, os.path.join(ROOT, 'extended_data.py')])
     run('results', [py, tool('results')])
     run('assumptions', [py, tool('assumptions')])
     run('pathways_docs', [py, tool('pathways_methods'), '--sections'])
@@ -137,13 +141,15 @@ def pathways_only():
     """Pathways-only run mode: the projection is unchanged (every number locked by
     tests/test_regression_model_v1.py), so only the pathway layer runs. projection.main() is
     called in memory by pathways.py; no projection output is written; pathways.py overwrites
-    only the pathway figures."""
+    only the pathway diagnostics, paper.py and extended_data.py rewrite outputs/paper/ and
+    outputs/extended_data/ from the data files."""
     py = sys.executable
     env = {'PATHWAY_QUICK': '0'}
     step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
     step('pathways_mc', [py, os.path.join(ROOT, 'pathways_mc.py')], env)
     step('sensitivity_tables', [py, tool('sensitivity_tables')], env)
-    step('headline', [py, os.path.join(ROOT, 'headline.py')], env)
+    step('paper', [py, os.path.join(ROOT, 'paper.py')], env)
+    step('extended_data', [py, os.path.join(ROOT, 'extended_data.py')], env)
     step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
     step('methods_draft', [py, tool('methods_draft')], env)
     step('indexes', [py, os.path.join(ROOT, 'indexes.py')], env)
@@ -173,7 +179,8 @@ def main(argv=None):
         print(f'\nDone (pathways only; projection unchanged). Data: {layout.data("pathways", frozen=False)} '
               f'(log of each step in {LOGS})')
     else:
-        print(f'\nDone. Figures of the paper: {os.path.join(layout.HEADLINE, "HEADLINE.md")}; metrics: '
+        print(f'\nDone. Figures of the paper: {os.path.join(layout.PAPER, "PAPER.md")}; Extended Data: '
+              f'{os.path.join(layout.EXTENDED_DATA, "EXTENDED_DATA.md")}; metrics: '
               f'{layout.data("metrics.json", frozen=False)} (log of each step in {LOGS})')
     if '--quick' in argv:
         print('QUICK RUN, not for reporting: re-run without --quick before reporting or tagging.')

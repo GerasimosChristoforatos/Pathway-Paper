@@ -1,4 +1,4 @@
-"""One style for every figure of the model (MODEL v1.0.0).
+"""One style for every figure of the model (MODEL v1.0.0; layout of MODEL v2.0.0).
 
 Every plotting module imports this file and nothing else for colours, line styles,
 typeface, sizes and saving, so a figure cannot drift from the palette of
@@ -20,9 +20,9 @@ Rules (docs/PALETTE.md):
     the SIL Open Font License, so figures render identically on every machine);
   * print sizes: Nature Cities single column 89 mm, double column 183 mm; text 5-7 pt.
 
-save() writes PNG (300 dpi) and, for headline figures, vector PDF, with fixed metadata
+save() writes PNG (300 dpi) and, for the paper and Extended Data figures, vector PDF, with fixed metadata
 (no software version or creation date), so a re-run with the pinned environment
-reproduces every figure byte for byte (tests/output_manifest_model_v1_1.json).
+reproduces every figure byte for byte (tests/output_manifest_model_v2.json).
 """
 import os
 
@@ -107,6 +107,16 @@ COMPONENT = {'materials_construction': ('#762A83', None),       # A1-A5: the P4 
              'maintenance': ('#C7A3D0', None),                  # B2, B4 within 2026-2050
              'committed': ('#BDBDBD', '///')}                   # after 2050, a range
 
+# life-cycle stages of the Reference (Fig3a; labels in naming.STAGES): A1-A3 the P4 colour, A4-A5 a light orange
+# (CAM02-UCS distance >= 16 to the other stages under every simulated deficiency, tools/palette_check.py)
+STAGE = {'a1a3': ('#762A83', None), 'a4a5': ('#E7A44B', None), 'maintenance': COMPONENT['maintenance'],
+         'soil': COMPONENT['soil']}
+
+# unexplained building of the history (Fig2a, D05c): neutral, hatched (face, hatch, hatch colour); may be negative
+UNEXPLAINED = ('#F2F2F2', '////', '#8C8C8C')
+# the untargeted bands grouped into one segment (Fig4): the population-growth grey, hatched
+UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)
+
 # materials: the six Pride-flag stripes (author decision, baseline-pb-v2; one order in every
 # figure), soil faded and hatched on top
 MATERIAL = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF'),
@@ -163,14 +173,14 @@ def save(fig, path, pdf=False):
 
 def save_figure(fig, name, note=None):
     """Save a planned figure (figure_plan.py file id, e.g. 'D22_boundaries') to its place in
-    outputs/ (layout.figure): headline figures as PNG and PDF, diagnostics as PNG; the audit
+    outputs/ (layout.figure): paper and Extended Data figures as PNG and PDF, diagnostics as PNG; the audit
     record of the figure (axes, year ranges, every text, the note) is written first
     (figaudit.py). note: run-specific caption text for DIAGNOSTICS.md (numbers of this run)."""
     import figaudit
     import layout
     path = layout.figure(name)
     figaudit.record(fig, name, note=note)
-    save(fig, path, pdf=path.startswith(layout.HEADLINE))
+    save(fig, path, pdf=layout.vector(path))
 
 
 apply()

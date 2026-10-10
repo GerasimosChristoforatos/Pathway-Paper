@@ -71,3 +71,19 @@ def test_pb_rows_from_sources(tables):
             assert np.isclose(r['LoE_AtP'], s.loc[case, 'cum_LoE_AtP'], rtol=1e-12, atol=0)
     # the AESA technology / accounting rows (vi)-(xiii) are not in the planetary-boundary tornado
     assert not t['source'].str.contains(r'\((?:vi|vii|viii|ix|x|xi|xii|xiii)_', regex=True).any()
+
+
+def test_replacement_variants_reproduce_runs():
+    t = pd.read_csv(data('sensitivity/replacement_variants.csv'))
+    runs = pd.read_csv(data('pathways/runs.csv'))
+    assert len(t) == 9
+    for _, r in t.iterrows():
+        run = r['scenario'] if r['run'] == 'Reference' else r['run']
+        o = runs[(runs['scenario'] == r['scenario']) & (runs['run'] == run)]
+        if r['source'].startswith('data/pathways/runs.csv'):
+            assert np.isclose(r['carbon_kt'], o['carbon_kt'].iloc[0], rtol=1e-12, atol=0)
+            assert np.isclose(r['LoE_AR'], o['LoE_AR'].iloc[0], rtol=1e-12, atol=0)
+        else:
+            assert len(o) == 0 and r['run'] == 'TL' and r['scenario'] in ('LOW', 'HIGH')
+    tl = t[t['run'] == 'TL'].set_index('scenario')['carbon_kt']
+    assert tl['LOW'] < tl['REF'] < tl['HIGH']

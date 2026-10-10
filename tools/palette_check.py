@@ -33,19 +33,23 @@ def groups():
     """Colours that appear together in one figure (name -> {label: hex})."""
     import naming as N
     return {
-        'Boundaries and runs (H5, H8)': {'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
+        'Boundaries and runs (Fig5a)': {'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
                                          'Reference': S.REFERENCE, N.TL['TL']: S.TL,
                                          'TL, gradual adoption': S.TL_GRADUAL, 'P5 Combined': S.PATHWAY['P5']},
-        'Pathways (H9, H10)': dict({f'{p} {N.PATHWAYS[p]}': c for p, c in S.PATHWAY.items()},
+        'Pathways (Fig5b, Fig6)': dict({f'{p} {N.PATHWAYS[p]}': c for p, c in S.PATHWAY.items()},
                                    Reference=S.REFERENCE, **{N.TL['TL']: S.TL}),
-        'Demand bands (H3, H7)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER},
-        'Carbon components (H4)': {N.COMPONENTS[c]: S.COMPONENT[c][0] for c in S.COMPONENT},
-        'Projection variants and boundaries (H2, H5)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
+        'Demand bands (Fig2, Fig4)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER},
+        'Carbon components (Fig3c, diagnostics)': {N.COMPONENTS[c]: S.COMPONENT[c][0] for c in S.COMPONENT},
+        'Projection variants and boundaries (ED5, ED10)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                              for k in S.SCENARIO},
                                                             **{'Acquired rights (AR)': S.AR,
                                                                'Ability to pay (AtP)': S.ATP}),
-        'Materials (H4b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
-        'Categorical groups (diagnostics D16, D17; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
+        'Materials (Fig3b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
+        'Life-cycle stages (Fig3a)': {N.STAGES[k]: S.STAGE[k][0] for k in S.STAGE},
+        'History bands (Fig2a)': dict({N.BANDS[b]: S.BAND[b][0] for b in ('growth', 'smaller_households', 'extra_space',
+                                                                         'vacancy', 'replacement')},
+                                      **{N.UNEXPLAINED: S.UNEXPLAINED[0]}),
+        'Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
 
 
@@ -138,8 +142,8 @@ def main():
          f"text {S.FONT_SIZE:g} pt, legends and ticks {S.FONT_SMALL:g} pt, never below {S.FONT_MIN:g} pt; data "
          f"lines {S.LW:g} pt, emphasised lines {S.LW_BOLD:g} pt, grid and edges {S.LW_THIN:g} pt.",
          f"* **Files**: PNG at {S.DPI} dpi for every figure; vector PDF (TrueType fonts embedded) for the "
-         'headline figures; no software or date metadata, so re-runs are byte-identical.',
-         '* **Materials** (H4b and the diagnostics): the six stripes of the Pride flag in one order in every figure '
+         'paper and Extended Data figures; no software or date metadata, so re-runs are byte-identical.',
+         '* **Materials** (Fig3b and the diagnostics): the six stripes of the Pride flag in one order in every figure '
          '(author decision, baseline-pb-v2), soil carbon loss faded and hatched on top; kept because the '
          'material figures label every layer directly (see the check below).', '',
          '## Colour table', '', '| group | element | colour | lightness J\' |', '|---|---|---|---|']
@@ -167,7 +171,7 @@ def main():
     mono = all(a > b for a, b in zip(seq, seq[1:]))
     if not mono:
         fails.append('sequential ramp')
-    L += ['', '## Sequential ramp', '', 'Continuous fields (the solution space, H10) use one blue ramp, light to dark; '
+    L += ['', '## Sequential ramp', '', 'Continuous fields (the solution space, Fig6) use one blue ramp, light to dark; '
           'its CAM02-UCS lightness J\' must fall strictly so the order survives greyscale: '
           + ', '.join(f'`{h}` {j:.0f}' for h, j in zip(S.SEQUENTIAL, seq)) + f" ({'monotone' if mono else 'NOT monotone'})."]
     L += ['', '## Sources', '',

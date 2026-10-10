@@ -1,7 +1,7 @@
 """Numerical regression lock of MODEL v1.0.0. It replaces the byte lock of the baseline
 (tests/test_baseline_lock.py and tests/baseline_manifest.json, removed in this release): the
 refurbish renames files, columns and labels, so bytes change while numbers may not. Byte
-reproducibility of the release outputs is re-established by tests/output_manifest_model_v1_1.json.
+reproducibility of the release outputs is re-established by tests/output_manifest_model_v2.json.
 
 tests/regression_model_v1.json holds every number the pipeline reported at commit
 ee37ef1 (pathways v3.1), captured by tests/capture_regression_model_v1.py before any

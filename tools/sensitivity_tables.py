@@ -7,12 +7,14 @@ Writes outputs/data/sensitivity/:
   p5_carbon.csv            P5 Combined (Moderate) carbon 2026-2050 and its levels of exceedance, pathway
                            design rows (ED2)
   planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (ED4)
+  replacement_variants.csv the Reference, P5 and TL under Low / Reference / High replacement (ED10)
 
 Every row has its group, the row label, its side (low / high / single), the value, the change vs the
 central case and its basis. Rows are read from existing outputs; the only new runs are the P5 rows
 with one pathway at Ambitious (the others Moderate) and P5 on the Stats NZ 5th / 95th population
 paths (exact engine path: the projection's own percentile run, reproduced to 1e-12 before the levers
-are applied; the AR and AtP budgets move with the path, data/aesa/results.json population_paths).
+are applied; the AR and AtP budgets move with the path, data/aesa/results.json population_paths), and
+TL under Low and High replacement (every other run of that table reproduces runs.csv to 1e-12).
 One-at-a-time ranges are not additive and are not a joint interval.
 """
 import json
@@ -244,9 +246,52 @@ def pb_table():
     return pd.DataFrame(rows)
 
 
+# ---- 4. Replacement variants of the Reference, P5 and TL (ED10) ------------------------------------
+def replacement_variants():
+    """The Reference, P5 Combined (Moderate) and TL under the Low, Reference and High replacement
+    variants: carbon and floor area 2026-2050, committed after 2050, cumulative LoE AR and AtP.
+    Every run is computed with the pathway engine (pathways.run / run_tl and pathways.metrics, the
+    lever parameters of the Reference, as pathways.py) and every run that runs.csv already holds
+    (all but TL under Low and High) is asserted to reproduce it to 1e-12; TL under Low and High
+    replacement is new (TL1-TL7 on that scenario's projection: TL7 cuts that scenario's replacement
+    rates by 40%)."""
+    import Building_factors as BF
+    import pathways as PW
+    import validation
+    runs = pd.read_csv(data('pathways/runs.csv'))
+    bounds = PW.boundaries()
+    B_ref = PW.boss_state(PW.REFERENCE)
+    params = LV.resolve(B_ref, PW.load_factors_building(), validation.projection)
+    pT = LV.resolve_tl(BF.load_characteristics(), PW.load_factors_building(),
+                       pd.read_csv(validation.projection.FILE_FACTORS_TYPOLOGY), B_ref['OLF_USED'])
+    base = LV.pathway_levers('P5', 'moderate')
+    cols = ('gfa_Mm2', 'carbon_kt', 'committed_lower_kt', 'committed_upper_kt', 'LoE_AR', 'LoE_AtP')
+    rows = []
+    for scen in ('LOW', 'REF', 'HIGH'):
+        B = B_ref if scen == PW.REFERENCE else PW.boss_state(scen)
+        ctx = PW.base_context(B, scen, bounds)
+        for run, R, setting in ((scen, PW.run(ctx, params, {}), 'reference'),
+                                ('P5-moderate', PW.run(ctx, params, base), 'moderate'),
+                                ('TL', PW.run_tl(ctx, params, pT, LV.TL_COMPONENTS_V2, LV.TL_FROM2027,
+                                                 LV.TL_BASE_SETTING_V2), 'TL')):
+            m = PW.metrics(ctx, R, run, setting)
+            old = runs[(runs['scenario'] == scen) & (runs['run'] == run)]
+            if len(old):
+                o = old.iloc[0]
+                for c in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'committed_lower_kt', 'committed_upper_kt'):
+                    if not np.isclose(m[c], o[c], rtol=1e-12, atol=0):
+                        raise SystemExit(f'sensitivity_tables: {scen} {run} {c} {m[c]} does not reproduce runs.csv '
+                                         f'({o[c]}).')
+            rows.append(dict(scenario=scen, run='Reference' if run == scen else run,
+                             source='data/pathways/runs.csv (reproduced)' if len(old) else
+                             'new run (tools/sensitivity_tables.py)', **{c: float(m[c]) for c in cols}))
+    return pd.DataFrame(rows)
+
+
 def main():
     out = {'sensitivity/reference_carbon.csv': reference_table(), 'sensitivity/p5_carbon.csv': p5_table(),
-           'sensitivity/planetary_boundary.csv': pb_table()}
+           'sensitivity/planetary_boundary.csv': pb_table(),
+           'sensitivity/replacement_variants.csv': replacement_variants()}
     for rel, df in out.items():
         N.columns(df).to_csv(layout.writing(data(rel)), index=False)
         print(f'sensitivity_tables: {rel} ({len(df)} rows)')

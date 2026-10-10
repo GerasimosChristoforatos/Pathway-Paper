@@ -125,7 +125,7 @@ def test_committed_range_ordered():
 
 
 def test_every_figure_is_planned():
-    """Every figure file in outputs/headline/ and outputs/diagnostics/ is a figure of figure_plan.py
+    """Every figure file in outputs/paper/, outputs/extended_data/ and outputs/diagnostics/ is a figure of figure_plan.py
     (tools/check_outputs.py also refuses to finish otherwise)."""
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     import check_outputs
@@ -142,7 +142,7 @@ def test_no_historical_carbon_in_figures():
     import boundaries
     import layout
     audit = layout.FIGURE_AUDIT
-    files = {os.path.splitext(f)[0] for base in (layout.HEADLINE, layout.DIAGNOSTICS)
+    files = {os.path.splitext(f)[0] for base in (layout.PAPER, layout.EXTENDED_DATA, layout.DIAGNOSTICS)
              for _, _, fs in os.walk(base) for f in fs if f.endswith('.png')}
     recs = {f[:-5]: json.load(open(os.path.join(audit, f))) for f in os.listdir(audit) if f.endswith('.json')}
     assert files and files <= set(recs), sorted(files - set(recs))         # every saved figure audited

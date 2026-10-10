@@ -43,7 +43,7 @@ DATA_DIR = os.path.join(ROOT_DIR, 'data')          # inputs only
 FROZEN_RUN = layout.frozen_run()
 FACTORS_DIR = layout.FACTORS     # written by Building_factors.py
 SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
-# Save every figure (style.save_figure, outputs/diagnostics/ and outputs/headline/). Only when
+# Save every figure (style.save_figure, outputs/diagnostics/). Only when
 # projection.py is run as a script with PATHWAY_SAVE_FIGURES=1 (run_all.py), so re-runs from
 # other scripts never overwrite them.
 SAVE_FIGURES = False
@@ -1799,7 +1799,7 @@ def main():
     print(f"   {f'(consented equivalent, /{COMPLETION_RATE:.2f})':<58}{tg / COMPLETION_RATE:>12.2f}")
     print("=" * 80 + "\n")
 
-    # Demand bands (annual, 2026-2050; H3, H7, the band exports, D25/D26): one list, so the figures
+    # Demand bands (annual, 2026-2050; Fig2, Fig4, the band exports, D25/D26): one list, so the figures
     # and the tests use the same numbers. IN SCOPE: retirement-village (RV) units are a
     # constant share of every dwelling built (engine.forward), so instead of a negative RV
     # band every band is scaled by (1 - RV share of the stack) = in-scope total / sum of the
@@ -2166,6 +2166,46 @@ def export_annual(B, path_annual, path_bands):
     pd.DataFrame(out).to_csv(path_bands, index=False)
 
 
+def export_stage_material(B, path_stage, path_material):
+    """Annual carbon of the Reference 2026-2050 by life-cycle stage and by material (MODEL v2.0.0
+    additions, Fig3). No new computation: the stage split is the one main() prints (floor area by
+    typology x the stage factor path of each typology), the material split is flow_annual (D13);
+    both are checked against the engine's annual carbon (export_annual), so the parts add up to
+    the totals of data/baseline/annual.csv.
+
+    path_stage: year, A1-A3, A4-A5 (decarbonised factor paths), maintenance (B2, B4 in-window
+    events) and soil carbon loss (kt). path_material: year, material (the six material groups and
+    soil carbon loss), carbon (kt); each material includes its in-window maintenance."""
+    if not B['TIME_RESOLVED']:
+        raise SystemExit('export_stage_material: written for the time-resolved accounting.')
+    E = B['engine_out']['50th']
+    fy = np.asarray(B['forecast_years'])
+    typ = list(B['typ_names'])
+    ev, sp = B['evol_typ_total'], B['stage_path']
+
+    def stage(stg):
+        out = np.zeros(len(fy))
+        for t in typ:
+            k = sp[stg][t]
+            out += np.asarray(ev[t].values, float) * (np.asarray(k, float) if np.ndim(k) else float(k))
+        return out
+
+    a13, a45 = stage('A1-A3'), stage('A4-A5')
+    soil = (np.array([B['SOIL_INTENSITY'][t] for t in typ])[:, None] * E['gfa_t']).sum(axis=0) * E['soil_share']
+    maint = E['b_t'].sum(axis=0)
+    if not np.allclose((a13 + a45 + soil)[1:], E['upfront'][1:], rtol=1e-9, atol=0):
+        raise SystemExit('export_stage_material: A1-A3 + A4-A5 + soil does not reproduce the upfront carbon.')
+    rows = [dict(year=int(y), a1a3_kt=a13[i] / 1e6, a4a5_kt=a45[i] / 1e6, maintenance_kt=maint[i] / 1e6,
+                 soil_carbon_loss_kt=soil[i] / 1e6, carbon_kt=float(E['carbon'][i]) / 1e6)
+            for i, y in enumerate(fy) if i > 0]
+    pd.DataFrame(rows).to_csv(path_stage, index=False)
+    fa = B['flow_annual']
+    if not np.allclose(fa.sum(axis=1).values, np.asarray(E['carbon'], float)[1:], rtol=1e-9, atol=0):
+        raise SystemExit('export_stage_material: the materials do not add up to the annual carbon.')
+    pd.DataFrame([dict(year=int(y), material=m, carbon_kt=float(fa.loc[y, m]) / 1e6)
+                  for y in fa.index for m in fa.columns]).to_csv(path_material, index=False)
+
+
 if __name__ == "__main__":
     SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
     _B = main()
@@ -2173,3 +2213,5 @@ if __name__ == "__main__":
     if not FROZEN_RUN:                 # the frozen check run (whole life at construction) is an anchor only
         export_annual(_B, layout.writing(layout.data('baseline/annual.csv')),
                       layout.writing(layout.data('baseline/bands_annual.csv')))
+        export_stage_material(_B, layout.writing(layout.data('baseline/annual_by_stage.csv')),
+                              layout.writing(layout.data('baseline/annual_by_material.csv')))

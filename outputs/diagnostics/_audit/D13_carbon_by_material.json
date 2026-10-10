@@ -52,5 +52,7 @@
   "a",
   "b"
  ],
- "note": "Reference, construction (A1\u2013A5 and soil) plus maintenance (B2, B4) within 2026\u20132050; each material includes its maintenance."
+ "note": "Reference, construction (A1\u2013A5 and soil) plus maintenance (B2, B4) within 2026\u20132050; each material includes its maintenance.",
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

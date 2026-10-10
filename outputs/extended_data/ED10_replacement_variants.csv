@@ -1,0 +1,19 @@
+panel,series,x,value,unit
+a,"Reference, Low replacement",LOW,20311.07094079296,kt CO2e 2026-2050
+a,"Reference, Reference",REF,21577.50362382947,kt CO2e 2026-2050
+a,"Reference, High replacement",HIGH,23361.035469613533,kt CO2e 2026-2050
+a,"P5 Combined, Low replacement",LOW,16387.755772923996,kt CO2e 2026-2050
+a,"P5 Combined, Reference",REF,17560.3739977809,kt CO2e 2026-2050
+a,"P5 Combined, High replacement",HIGH,18827.66529644128,kt CO2e 2026-2050
+a,"TL Theoretical limit, Low replacement",LOW,4332.86704312269,kt CO2e 2026-2050
+a,"TL Theoretical limit, Reference",REF,4579.425374837593,kt CO2e 2026-2050
+a,"TL Theoretical limit, High replacement",HIGH,4871.300412950094,kt CO2e 2026-2050
+b,"Reference, Low replacement",LOW,4.563231141938038,cumulative LoE AR
+b,"Reference, Reference",REF,4.847757008409889,cumulative LoE AR
+b,"Reference, High replacement",HIGH,5.248458088379744,cumulative LoE AR
+b,"P5 Combined, Low replacement",LOW,3.681790965501997,cumulative LoE AR
+b,"P5 Combined, Reference",REF,3.945239801699218,cumulative LoE AR
+b,"P5 Combined, High replacement",HIGH,4.229958570926676,cumulative LoE AR
+b,"TL Theoretical limit, Low replacement",LOW,0.9734530435489944,cumulative LoE AR
+b,"TL Theoretical limit, Reference",REF,1.028846609986994,cumulative LoE AR
+b,"TL Theoretical limit, High replacement",HIGH,1.0944213533056404,cumulative LoE AR

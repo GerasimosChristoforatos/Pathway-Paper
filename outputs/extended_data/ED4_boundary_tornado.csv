@@ -1,0 +1,33 @@
+panel,series,x,value,unit
+a,Carrying capacity: SOS / I_glob pair C: 1 W/m² planetary boundary (single),value,9.144937736086248,cumulative LoE AR
+a,"Base window: AR base window 2021-2025 (5 yr, as Horup) (single)",value,4.7328791930069904,cumulative LoE AR
+a,Base window: AR base window 2006-2025 (20 yr) (single),value,5.831647784982924,cumulative LoE AR
+a,Base window: AR base window 1992-2025 (full consistent history) (single),value,5.931524001940762,cumulative LoE AR
+a,Economic measures: GDP per capita in current US$ (single),value,4.847757008409891,cumulative LoE AR
+a,Economic measures: α = 1 (Hjalsted et al. SI tables) (single),value,4.847757008409891,cumulative LoE AR
+a,Economic measures: s_sec with the FCE share as a ratio of sums (single),value,4.847757008409891,cumulative LoE AR
+a,Population source: NZ population: raw Stats NZ 2024-base median (single),value,4.83623979141291,cumulative LoE AR
+a,Population source: NZ population: WPP 2024 median (single),value,5.148713195540035,cumulative LoE AR
+a,Population source: Population: Stats NZ 5th / 95th percentile (carbon and boundaries together) (low),value,3.764998069892441,cumulative LoE AR
+a,Population source: Population: Stats NZ 5th / 95th percentile (carbon and boundaries together) (high),value,5.827612343861559,cumulative LoE AR
+a,Replacement scenario: Low / High replacement (high),value,5.248458088379745,cumulative LoE AR
+a,Replacement scenario: Low / High replacement (low),value,4.563231141938039,cumulative LoE AR
+a,Replacement scenario: Replacement half-life 5 / 15 yr (low),value,4.703631279042748,cumulative LoE AR
+a,Replacement scenario: Replacement half-life 5 / 15 yr (high),value,4.93661218674075,cumulative LoE AR
+a,central,value,4.847757008409891,cumulative LoE AR
+b,Carrying capacity: SOS / I_glob pair C: 1 W/m² planetary boundary (single),value,36.57292186353388,cumulative LoE AtP
+b,"Base window: AR base window 2021-2025 (5 yr, as Horup) (single)",value,19.38740791884835,cumulative LoE AtP
+b,Base window: AR base window 2006-2025 (20 yr) (single),value,19.38740791884835,cumulative LoE AtP
+b,Base window: AR base window 1992-2025 (full consistent history) (single),value,19.38740791884835,cumulative LoE AtP
+b,Economic measures: GDP per capita in current US$ (single),value,59.64968283617513,cumulative LoE AtP
+b,Economic measures: α = 1 (Hjalsted et al. SI tables) (single),value,8.180693336728101,cumulative LoE AtP
+b,Economic measures: s_sec with the FCE share as a ratio of sums (single),value,19.432503415891382,cumulative LoE AtP
+b,Population source: NZ population: raw Stats NZ 2024-base median (single),value,19.276425645363524,cumulative LoE AtP
+b,Population source: NZ population: WPP 2024 median (single),value,20.88332762249501,cumulative LoE AtP
+b,Population source: Population: Stats NZ 5th / 95th percentile (carbon and boundaries together) (low),value,15.057180726684985,cumulative LoE AtP
+b,Population source: Population: Stats NZ 5th / 95th percentile (carbon and boundaries together) (high),value,23.306097543123187,cumulative LoE AtP
+b,Replacement scenario: Low / High replacement (high),value,20.989913010877867,cumulative LoE AtP
+b,Replacement scenario: Low / High replacement (low),value,18.24951692571812,cumulative LoE AtP
+b,Replacement scenario: Replacement half-life 5 / 15 yr (low),value,18.81101262882145,cumulative LoE AtP
+b,Replacement scenario: Replacement half-life 5 / 15 yr (high),value,19.74276227860976,cumulative LoE AtP
+b,central,value,19.38740791884835,cumulative LoE AtP

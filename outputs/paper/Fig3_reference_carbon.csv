@@ -1,0 +1,285 @@
+panel,series,x,value,unit
+a,Materials (A1–A3),2026,974.0685225117934,kt CO2e per year
+a,Materials (A1–A3),2027,847.5712779229045,kt CO2e per year
+a,Materials (A1–A3),2028,782.3287777999367,kt CO2e per year
+a,Materials (A1–A3),2029,745.2015484995297,kt CO2e per year
+a,Materials (A1–A3),2030,720.9879980852598,kt CO2e per year
+a,Materials (A1–A3),2031,704.2801017702832,kt CO2e per year
+a,Materials (A1–A3),2032,683.0902650137072,kt CO2e per year
+a,Materials (A1–A3),2033,655.2948871190288,kt CO2e per year
+a,Materials (A1–A3),2034,633.1749414229238,kt CO2e per year
+a,Materials (A1–A3),2035,618.7062357183719,kt CO2e per year
+a,Materials (A1–A3),2036,599.4756731095093,kt CO2e per year
+a,Materials (A1–A3),2037,576.1649932318884,kt CO2e per year
+a,Materials (A1–A3),2038,549.5141869566468,kt CO2e per year
+a,Materials (A1–A3),2039,521.6600505463141,kt CO2e per year
+a,Materials (A1–A3),2040,499.5770992187968,kt CO2e per year
+a,Materials (A1–A3),2041,486.586791674739,kt CO2e per year
+a,Materials (A1–A3),2042,480.90809718440585,kt CO2e per year
+a,Materials (A1–A3),2043,482.5793670304428,kt CO2e per year
+a,Materials (A1–A3),2044,481.5680275634818,kt CO2e per year
+a,Materials (A1–A3),2045,473.098845026596,kt CO2e per year
+a,Materials (A1–A3),2046,464.7991080636119,kt CO2e per year
+a,Materials (A1–A3),2047,456.66094619773145,kt CO2e per year
+a,Materials (A1–A3),2048,448.6770224564781,kt CO2e per year
+a,Materials (A1–A3),2049,440.8404700005552,kt CO2e per year
+a,Materials (A1–A3),2050,433.14484905266977,kt CO2e per year
+a,Construction (A4–A5),2026,216.3924980928902,kt CO2e per year
+a,Construction (A4–A5),2027,187.95130004475644,kt CO2e per year
+a,Construction (A4–A5),2028,175.25999027979168,kt CO2e per year
+a,Construction (A4–A5),2029,168.7222054331099,kt CO2e per year
+a,Construction (A4–A5),2030,165.0516202476865,kt CO2e per year
+a,Construction (A4–A5),2031,161.28558178575088,kt CO2e per year
+a,Construction (A4–A5),2032,156.5069891565216,kt CO2e per year
+a,Construction (A4–A5),2033,150.2263361473449,kt CO2e per year
+a,Construction (A4–A5),2034,145.256589090483,kt CO2e per year
+a,Construction (A4–A5),2035,142.0527606313527,kt CO2e per year
+a,Construction (A4–A5),2036,137.7657130279967,kt CO2e per year
+a,Construction (A4–A5),2037,132.54804036380588,kt CO2e per year
+a,Construction (A4–A5),2038,126.56565084106448,kt CO2e per year
+a,Construction (A4–A5),2039,120.30671926394564,kt CO2e per year
+a,Construction (A4–A5),2040,115.37887262964742,kt CO2e per year
+a,Construction (A4–A5),2041,112.1518925844516,kt CO2e per year
+a,Construction (A4–A5),2042,110.626399392412,kt CO2e per year
+a,Construction (A4–A5),2043,110.80112296352434,kt CO2e per year
+a,Construction (A4–A5),2044,110.36733935832686,kt CO2e per year
+a,Construction (A4–A5),2045,108.2359656038732,kt CO2e per year
+a,Construction (A4–A5),2046,106.15770628879416,kt CO2e per year
+a,Construction (A4–A5),2047,104.13024617269063,kt CO2e per year
+a,Construction (A4–A5),2048,102.15141724059517,kt CO2e per year
+a,Construction (A4–A5),2049,100.21918219530136,kt CO2e per year
+a,Construction (A4–A5),2050,98.33162279745676,kt CO2e per year
+a,"Maintenance (B2, B4)",2026,0.0,kt CO2e per year
+a,"Maintenance (B2, B4)",2027,0.0,kt CO2e per year
+a,"Maintenance (B2, B4)",2028,0.0,kt CO2e per year
+a,"Maintenance (B2, B4)",2029,0.0,kt CO2e per year
+a,"Maintenance (B2, B4)",2030,0.0,kt CO2e per year
+a,"Maintenance (B2, B4)",2031,0.0,kt CO2e per year
+a,"Maintenance (B2, B4)",2032,0.0,kt CO2e per year
+a,"Maintenance (B2, B4)",2033,10.715541509157935,kt CO2e per year
+a,"Maintenance (B2, B4)",2034,11.1648733440389,kt CO2e per year
+a,"Maintenance (B2, B4)",2035,10.377918062214055,kt CO2e per year
+a,"Maintenance (B2, B4)",2036,10.021217300164457,kt CO2e per year
+a,"Maintenance (B2, B4)",2037,9.85677506022405,kt CO2e per year
+a,"Maintenance (B2, B4)",2038,10.071269583291237,kt CO2e per year
+a,"Maintenance (B2, B4)",2039,10.18240664384178,kt CO2e per year
+a,"Maintenance (B2, B4)",2040,18.61341980529712,kt CO2e per year
+a,"Maintenance (B2, B4)",2041,20.76512465494838,kt CO2e per year
+a,"Maintenance (B2, B4)",2042,24.10268246722617,kt CO2e per year
+a,"Maintenance (B2, B4)",2043,31.94452556027516,kt CO2e per year
+a,"Maintenance (B2, B4)",2044,30.70493440828685,kt CO2e per year
+a,"Maintenance (B2, B4)",2045,29.57306973608764,kt CO2e per year
+a,"Maintenance (B2, B4)",2046,28.69359659038575,kt CO2e per year
+a,"Maintenance (B2, B4)",2047,34.864891287629376,kt CO2e per year
+a,"Maintenance (B2, B4)",2048,38.53114999862878,kt CO2e per year
+a,"Maintenance (B2, B4)",2049,36.971184968323065,kt CO2e per year
+a,"Maintenance (B2, B4)",2050,36.02822150997158,kt CO2e per year
+a,Soil carbon loss,2026,179.62530108468877,kt CO2e per year
+a,Soil carbon loss,2027,153.49954210338117,kt CO2e per year
+a,Soil carbon loss,2028,143.7405429621607,kt CO2e per year
+a,Soil carbon loss,2029,139.9012322802844,kt CO2e per year
+a,Soil carbon loss,2030,138.8094806881053,kt CO2e per year
+a,Soil carbon loss,2031,137.4956371042794,kt CO2e per year
+a,Soil carbon loss,2032,135.0067153939596,kt CO2e per year
+a,Soil carbon loss,2033,130.80133803529213,kt CO2e per year
+a,Soil carbon loss,2034,127.8334111789376,kt CO2e per year
+a,Soil carbon loss,2035,126.63240303022988,kt CO2e per year
+a,Soil carbon loss,2036,124.15706981099216,kt CO2e per year
+a,Soil carbon loss,2037,120.54334068388933,kt CO2e per year
+a,Soil carbon loss,2038,115.9471709695034,kt CO2e per year
+a,Soil carbon loss,2039,110.89146007151288,kt CO2e per year
+a,Soil carbon loss,2040,107.18536656906792,kt CO2e per year
+a,Soil carbon loss,2041,105.29375986814334,kt CO2e per year
+a,Soil carbon loss,2042,105.27291707969928,kt CO2e per year
+a,Soil carbon loss,2043,107.1782775695696,kt CO2e per year
+a,Soil carbon loss,2044,108.35051102072448,kt CO2e per year
+a,Soil carbon loss,2045,107.4765296767713,kt CO2e per year
+a,Soil carbon loss,2046,106.6026399480945,kt CO2e per year
+a,Soil carbon loss,2047,105.728797677875,kt CO2e per year
+a,Soil carbon loss,2048,104.85497999202823,kt CO2e per year
+a,Soil carbon loss,2049,103.98117504135828,kt CO2e per year
+a,Soil carbon loss,2050,103.10737668775,kt CO2e per year
+b,Timber,2026,246.6542438159054,kt CO2e per year
+b,Timber,2027,210.1512402813328,kt CO2e per year
+b,Timber,2028,193.53736852520035,kt CO2e per year
+b,Timber,2029,183.928348585599,kt CO2e per year
+b,Timber,2030,177.53354376834852,kt CO2e per year
+b,Timber,2031,173.00126767003528,kt CO2e per year
+b,Timber,2032,167.39094088885776,kt CO2e per year
+b,Timber,2033,160.1912989580902,kt CO2e per year
+b,Timber,2034,154.40886832970645,kt CO2e per year
+b,Timber,2035,150.5141249739183,kt CO2e per year
+b,Timber,2036,145.48097658850423,kt CO2e per year
+b,Timber,2037,139.48284083405807,kt CO2e per year
+b,Timber,2038,132.7055970716459,kt CO2e per year
+b,Timber,2039,125.66988136792136,kt CO2e per year
+b,Timber,2040,120.0538380954469,kt CO2e per year
+b,Timber,2041,116.44445797474852,kt CO2e per year
+b,Timber,2042,114.60205741771487,kt CO2e per year
+b,Timber,2043,114.51363903979728,kt CO2e per year
+b,Timber,2044,113.78631870070414,kt CO2e per year
+b,Timber,2045,111.30469086081057,kt CO2e per year
+b,Timber,2046,108.8781458708378,kt CO2e per year
+b,Timber,2047,106.50432223139032,kt CO2e per year
+b,Timber,2048,104.18101511987936,kt CO2e per year
+b,Timber,2049,101.90615908505468,kt CO2e per year
+b,Timber,2050,99.6778157983628,kt CO2e per year
+b,Steel,2026,226.2474572666368,kt CO2e per year
+b,Steel,2027,197.85710098310065,kt CO2e per year
+b,Steel,2028,180.61056737122132,kt CO2e per year
+b,Steel,2029,170.03929102298164,kt CO2e per year
+b,Steel,2030,162.49759523990872,kt CO2e per year
+b,Steel,2031,157.644970454327,kt CO2e per year
+b,Steel,2032,151.8259742947044,kt CO2e per year
+b,Steel,2033,144.59454292586153,kt CO2e per year
+b,Steel,2034,138.67430931940123,kt CO2e per year
+b,Steel,2035,134.46829863234626,kt CO2e per year
+b,Steel,2036,129.262256839947,kt CO2e per year
+b,Steel,2037,123.22783551173843,kt CO2e per year
+b,Steel,2038,116.90791314647362,kt CO2e per year
+b,Steel,2039,110.36234558952016,kt CO2e per year
+b,Steel,2040,104.72009468496027,kt CO2e per year
+b,Steel,2041,101.74687919049217,kt CO2e per year
+b,Steel,2042,103.26179500658452,kt CO2e per year
+b,Steel,2043,108.83115674160577,kt CO2e per year
+b,Steel,2044,107.49093420805082,kt CO2e per year
+b,Steel,2045,105.03025874104628,kt CO2e per year
+b,Steel,2046,102.81645326277317,kt CO2e per year
+b,Steel,2047,100.72256046476612,kt CO2e per year
+b,Steel,2048,98.64953914576732,kt CO2e per year
+b,Steel,2049,96.55974837400792,kt CO2e per year
+b,Steel,2050,94.4777362820794,kt CO2e per year
+b,Concrete,2026,281.14145517019824,kt CO2e per year
+b,Concrete,2027,248.7062374523834,kt CO2e per year
+b,Concrete,2028,230.2881950537691,kt CO2e per year
+b,Concrete,2029,220.08169151064055,kt CO2e per year
+b,Concrete,2030,213.6609227987232,kt CO2e per year
+b,Concrete,2031,208.5733027612672,kt CO2e per year
+b,Concrete,2032,202.1644762734366,kt CO2e per year
+b,Concrete,2033,193.80905703454096,kt CO2e per year
+b,Concrete,2034,187.1408128931178,kt CO2e per year
+b,Concrete,2035,182.73999981912584,kt CO2e per year
+b,Concrete,2036,176.9382458022349,kt CO2e per year
+b,Concrete,2037,169.93960121608035,kt CO2e per year
+b,Concrete,2038,161.9647878561818,kt CO2e per year
+b,Concrete,2039,153.64537284920607,kt CO2e per year
+b,Concrete,2040,147.03499530387745,kt CO2e per year
+b,Concrete,2041,142.7804011140687,kt CO2e per year
+b,Concrete,2042,140.68204696071686,kt CO2e per year
+b,Concrete,2043,140.7314628832858,kt CO2e per year
+b,Concrete,2044,139.9918754118326,kt CO2e per year
+b,Concrete,2045,137.0869030693804,kt CO2e per year
+b,Concrete,2046,134.2405342313408,kt CO2e per year
+b,Concrete,2047,131.45018835032215,kt CO2e per year
+b,Concrete,2048,128.71346122100385,kt CO2e per year
+b,Concrete,2049,126.0281049849507,kt CO2e per year
+b,Concrete,2050,123.3920142264302,kt CO2e per year
+b,Plastics & paint,2026,102.64413530961372,kt CO2e per year
+b,Plastics & paint,2027,89.31140314037934,kt CO2e per year
+b,Plastics & paint,2028,83.73399588993186,kt CO2e per year
+b,Plastics & paint,2029,81.04847698977244,kt CO2e per year
+b,Plastics & paint,2030,79.71536701401205,kt CO2e per year
+b,Plastics & paint,2031,78.49670342235117,kt CO2e per year
+b,Plastics & paint,2032,76.75841725458191,kt CO2e per year
+b,Plastics & paint,2033,84.9623022070347,kt CO2e per year
+b,Plastics & paint,2034,83.50998165995993,kt CO2e per year
+b,Plastics & paint,2035,81.67431928484626,kt CO2e per year
+b,Plastics & paint,2036,79.70093098455065,kt CO2e per year
+b,Plastics & paint,2037,77.41659170550449,kt CO2e per year
+b,Plastics & paint,2038,74.71916973020733,kt CO2e per year
+b,Plastics & paint,2039,71.7791732410528,kt CO2e per year
+b,Plastics & paint,2040,78.18825962898859,kt CO2e per year
+b,Plastics & paint,2041,79.15993714206574,kt CO2e per year
+b,Plastics & paint,2042,77.79495027260309,kt CO2e per year
+b,Plastics & paint,2043,77.7840383012669,kt CO2e per year
+b,Plastics & paint,2044,77.60312560383721,kt CO2e per year
+b,Plastics & paint,2045,76.48630550804374,kt CO2e per year
+b,Plastics & paint,2046,75.308649255327,kt CO2e per year
+b,Plastics & paint,2047,81.06907205672225,kt CO2e per year
+b,Plastics & paint,2048,84.36462411064903,kt CO2e per year
+b,Plastics & paint,2049,82.52951644907509,kt CO2e per year
+b,Plastics & paint,2050,81.36526886176277,kt CO2e per year
+b,Plasterboard,2026,59.880622483766494,kt CO2e per year
+b,Plasterboard,2027,52.37033075430716,kt CO2e per year
+b,Plasterboard,2028,48.97377945434314,kt CO2e per year
+b,Plasterboard,2029,47.28068578448745,kt CO2e per year
+b,Plasterboard,2030,46.38223272429196,kt CO2e per year
+b,Plasterboard,2031,45.55626714470892,kt CO2e per year
+b,Plasterboard,2032,44.43330510832572,kt CO2e per year
+b,Plasterboard,2033,42.86914057983729,kt CO2e per year
+b,Plasterboard,2034,41.663892333420605,kt CO2e per year
+b,Plasterboard,2035,40.95438459788076,kt CO2e per year
+b,Plasterboard,2036,39.92270715339459,kt CO2e per year
+b,Plasterboard,2037,38.608381927868926,kt CO2e per year
+b,Plasterboard,2038,37.05568861162314,kt CO2e per year
+b,Plasterboard,2039,35.40469862016617,kt CO2e per year
+b,Plasterboard,2040,34.12954456379544,kt CO2e per year
+b,Plasterboard,2041,33.36020852576991,kt CO2e per year
+b,Plasterboard,2042,33.09037473808633,kt CO2e per year
+b,Plasterboard,2043,33.32810339474575,kt CO2e per year
+b,Plasterboard,2044,33.383608180319975,kt CO2e per year
+b,Plasterboard,2045,32.92253407057175,kt CO2e per year
+b,Plasterboard,2046,32.4716831790249,kt CO2e per year
+b,Plasterboard,2047,32.03055047044587,kt CO2e per year
+b,Plasterboard,2048,31.598663597770223,kt CO2e per year
+b,Plasterboard,2049,31.175578811901733,kt CO2e per year
+b,Plasterboard,2050,30.76087823735039,kt CO2e per year
+b,Others,2026,273.89310655856286,kt CO2e per year
+b,Others,2027,237.1262653561576,kt CO2e per year
+b,Others,2028,220.44486178526265,kt CO2e per year
+b,Others,2029,211.5452600391585,kt CO2e per year
+b,Others,2030,206.2499567876617,kt CO2e per year
+b,Others,2031,202.2931721033444,kt CO2e per year
+b,Others,2032,197.02414035032228,kt CO2e per year
+b,Others,2033,189.8104230701668,kt CO2e per year
+b,Others,2034,184.19853932183972,kt CO2e per year
+b,Others,2035,180.7857871038212,kt CO2e per year
+b,Others,2036,175.9574860690391,kt CO2e per year
+b,Others,2037,169.894557460668,kt CO2e per year
+b,Others,2038,162.7979509648706,kt CO2e per year
+b,Others,2039,155.287704786235,kt CO2e per year
+b,Others,2040,149.4426593766727,kt CO2e per year
+b,Others,2041,146.01192496699392,kt CO2e per year
+b,Others,2042,146.20595464833838,kt CO2e per year
+b,Others,2043,150.1366151935407,kt CO2e per year
+b,Others,2044,150.38443922535075,kt CO2e per year
+b,Others,2045,148.07718811670418,kt CO2e per year
+b,Others,2046,145.9349451434882,kt CO2e per year
+b,Others,2047,143.87939008440472,kt CO2e per year
+b,Others,2048,141.85228650063223,kt CO2e per year
+b,Others,2049,139.83172945918946,kt CO2e per year
+b,Others,2050,137.83097995411242,kt CO2e per year
+b,Soil carbon loss,2026,179.62530108468877,kt CO2e per year
+b,Soil carbon loss,2027,153.49954210338117,kt CO2e per year
+b,Soil carbon loss,2028,143.74054296216067,kt CO2e per year
+b,Soil carbon loss,2029,139.9012322802844,kt CO2e per year
+b,Soil carbon loss,2030,138.8094806881053,kt CO2e per year
+b,Soil carbon loss,2031,137.4956371042794,kt CO2e per year
+b,Soil carbon loss,2032,135.00671539395964,kt CO2e per year
+b,Soil carbon loss,2033,130.80133803529216,kt CO2e per year
+b,Soil carbon loss,2034,127.8334111789376,kt CO2e per year
+b,Soil carbon loss,2035,126.63240303022988,kt CO2e per year
+b,Soil carbon loss,2036,124.15706981099216,kt CO2e per year
+b,Soil carbon loss,2037,120.54334068388933,kt CO2e per year
+b,Soil carbon loss,2038,115.9471709695034,kt CO2e per year
+b,Soil carbon loss,2039,110.89146007151288,kt CO2e per year
+b,Soil carbon loss,2040,107.18536656906792,kt CO2e per year
+b,Soil carbon loss,2041,105.29375986814334,kt CO2e per year
+b,Soil carbon loss,2042,105.27291707969928,kt CO2e per year
+b,Soil carbon loss,2043,107.1782775695696,kt CO2e per year
+b,Soil carbon loss,2044,108.3505110207245,kt CO2e per year
+b,Soil carbon loss,2045,107.47652967677132,kt CO2e per year
+b,Soil carbon loss,2046,106.60263994809448,kt CO2e per year
+b,Soil carbon loss,2047,105.728797677875,kt CO2e per year
+b,Soil carbon loss,2048,104.85497999202823,kt CO2e per year
+b,Soil carbon loss,2049,103.98117504135826,kt CO2e per year
+b,Soil carbon loss,2050,103.10737668774998,kt CO2e per year
+c,Materials (A1–A3),cumulative 2026-2050,14759.960083177606,kt CO2e
+c,Construction (A4–A5),cumulative 2026-2050,3364.443761633574,kt CO2e
+c,"Maintenance (B2, B4)",cumulative 2026-2050,403.1828024899923,kt CO2e
+c,Soil carbon loss,cumulative 2026-2050,3049.9169765282986,kt CO2e
+c,"Committed after 2050, lower (2050 factors held)",after 2050,8208.057437900507,kt CO2e
+c,"Committed after 2050, upper (2025 factors)",after 2050,8969.011246290376,kt CO2e
+c,"Committed after 2050, lower",years of the 2050 AR boundary,44.74140901447706,years
+c,"Committed after 2050, upper",years of the 2050 AR boundary,48.88930220843644,years
+c,AR boundary 2050,2050,183.45549723846673,kt CO2e per year

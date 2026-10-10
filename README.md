@@ -66,7 +66,7 @@ python run_all.py --quick              # development only: outputs marked "QUICK
 | run mode | what it runs | time |
 |---|---|---|
 | full | every step below, then the tests | about 12–24 min depending on the machine (Monte Carlo and AESA most of it) |
-| `--pathways-only` | `pathways.py` (the projection in memory), `pathways_mc.py`, `tools/sensitivity_tables.py`, `paper.py`, `extended_data.py`, the pathway documents, `tools/methods_draft.py`, `indexes.py`, then the pathway, pathway Monte Carlo and sensitivity-table tests, the regression locks, the release checks and the byte manifest | PATHWAYS_ONLY_TIME |
+| `--pathways-only` | `pathways.py` (the projection in memory), `pathways_mc.py`, `tools/sensitivity_tables.py`, `paper.py`, `extended_data.py`, the pathway documents, `tools/methods_draft.py`, `indexes.py`, then the pathway, pathway Monte Carlo and sensitivity-table tests, the regression locks, the release checks and the byte manifest | about 2 min (133 s on the release machine) |
 | `--quick` | as the full run with 1,000 instead of 5,000 Monte Carlo draws per variant and 128 Sobol base samples, without the frozen-technology Monte Carlo and AESA steps; Monte Carlo regression checks skipped | not timed for this release |
 
 The full run executes, each script in its own process with the non-interactive backend and
@@ -117,7 +117,7 @@ prints its name and the log to read, and the run stops (exit code 1 from the com
   metadata).
 * **Release checks** (`tests/test_release.py`): the new values add up to the locked numbers;
   every planned figure (paper, Extended Data, diagnostics) exists within its print width and no
-  other; maintenance is drawn as its own layer only in Fig2–Fig4, D25 and D26 (figure audit);
+  other; maintenance is drawn as its own layer only in Fig2–Fig4 and the band breakdowns D25, D26, D32 (figure audit);
   every output file is indexed once; no old term in any reader-facing text; every figure module
   uses the shared style.
 * **Pathway Monte Carlo** (`tests/test_pathways_mc.py`): the central draw reproduces the

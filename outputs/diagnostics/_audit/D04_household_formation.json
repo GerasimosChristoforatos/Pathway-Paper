@@ -84,5 +84,7 @@
   "census-benchmarked",
   "r = +0.73, p = 2e-06"
  ],
- "note": "Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885\u20130.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024\u20132025 hatched (consent-derived estimates, no census check); projection annual and lighter, from 2026; the line is the net of the two parts."
+ "note": "Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885\u20130.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024\u20132025 hatched (consent-derived estimates, no census check); projection annual and lighter, from 2026; the line is the net of the two parts.",
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

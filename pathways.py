@@ -720,13 +720,13 @@ def bank(raw):
     return dict(built=built, bank=bnk, added=added, used=used)
 
 
-def run_tl(ctx, params, pT, comps, ramp_name=LV.TL_FROM2027):
+def run_tl(ctx, params, pT, comps, ramp_name=LV.TL_FROM2027, base_setting=LV.TL_BASE_SETTING):
     """A TL-family run. 1) the TL inputs (levers.apply_tl); 2) the requirement without a join; 3) the
     banking rule on requirement + absorbed near-term excess; 4) engine.forward with the stock-adding
     join join_t = built_t - requirement_t (join_redev = 0), so the stock identity holds and dwellings
     built = built_t >= 0; 5) soil: the TL5 / TL6 soil factor of each year and the soil-bearing share
     clipped to [0, 1] (zero-building years) applied exactly through the intensity (see below)."""
-    fi, join_abs, _, info = LV.apply_tl(ctx, params, pT, comps, ramp_name, ctx['E_nojoin'])
+    fi, join_abs, _, info = LV.apply_tl(ctx, params, pT, comps, ramp_name, ctx['E_nojoin'], base_setting)
     n = len(ctx['years'])
     zeros = np.zeros(n)
     E1 = engine.forward(ctx['pop'], ctx['hh'], ctx['growth'], join=zeros, join_redev=zeros, **fi)
@@ -855,6 +855,47 @@ def compute_tl(res, verbose=True):
                                             f"not a Shapley player)"),
                               reduction=float(p5s[metric] - vals[metric][frozenset()]),
                               share_of_P5_ambitious_from2027_minus_TL=float('nan')))
+    # ---- MODEL v2.0.0: TL relative to P5 Moderate (TL1-TL7, 128 subsets) -------------------------
+    # TL = P5 Moderate + TL1-TL7 must be TL (P5 Ambitious + TL1-TL6) exactly: TL1-TL6 override every
+    # Ambitious lever setting but L4, which TL7 sets to its Ambitious d.
+    cache2 = {}
+
+    def getT2(comps):
+        key = tuple(c for c in LV.TL_COMPONENTS_V2 if c in comps)
+        if key not in cache2:
+            cache2[key] = run_tl(ref, params, pT, comps, LV.TL_FROM2027, LV.TL_BASE_SETTING_V2)
+        return cache2[key]
+
+    full2 = LV.TL_COMPONENTS_V2
+    RT2 = getT2(full2)
+    for k in ('carbon', 'total', 'upfront', 'dwell_in_scope'):
+        a, b = np.asarray(RT2['E'][k], float), np.asarray(RT['E'][k], float)
+        if not np.allclose(a, b, rtol=1e-12, atol=0.0):
+            raise SystemExit(f'STOP: TL relative to P5 Moderate (TL1-TL7) differs from TL in {k!r}.')
+    vals2 = {'carbon_kt': {}, 'LoE_AR': {}, 'LoE_AtP': {}}
+    sub2 = []
+    for S_ in subsets(full2):
+        R_ = getT2(S_)
+        m = metrics(ref, R_, LV.tl_label(S_, components=full2, base='moderate'), 'TL')
+        for metric in vals2:
+            vals2[metric][S_] = m[metric]
+        sub2.append(dict(level='TL', subset=LV.tl_label(S_, components=full2, base='moderate'), n_players=len(S_),
+                         carbon_kt=m['carbon_kt'], LoE_AR=m['LoE_AR'], LoE_AtP=m['LoE_AtP'], gfa_Mm2=m['gfa_Mm2'],
+                         dwellings_built_min_year=m['dwellings_built_min_year']))
+    shap2, exact2 = [], {}
+    for metric, v in vals2.items():
+        r_, ex = shapley_rows(v, full2, 'TL', metric, 'TL', LV.TL_NAMES)
+        for x in r_:
+            x['share_of_P5_moderate_from2027_minus_TL'] = x.pop('share_of_reference_minus_P5')
+        shap2 += r_
+        exact2[metric] = ex
+    p5m = res['runs'][(res['runs']['run'] == 'P5-moderate') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
+    for metric in vals2:
+        shap2.append(dict(level='TL', setting='TL', metric=metric, player=LV.TL_FROM2027,
+                          name=N._ascii(f"P5 Combined: adoption path -> {N.ADOPTION['from2027']} (separate line, "
+                                        f"not a Shapley player)"),
+                          reduction=float(p5m[metric] - vals2[metric][frozenset()]),
+                          share_of_P5_moderate_from2027_minus_TL=float('nan')))
     # gap
     bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
     gap = {}
@@ -889,6 +930,7 @@ def compute_tl(res, verbose=True):
                   note='TL5 and TL6 lower soil carbon loss, which the demand-intensity plane does not show')
     out = dict(params_T=pT, rows=rows, annual=annual, bands=bd, shapley=pd.DataFrame(shap_rows),
                subsets=pd.DataFrame(sub_rows), shapley_exact=exact, gap=gap, solution_space_marker=marker,
+               shapley_v2=pd.DataFrame(shap2), subsets_v2=pd.DataFrame(sub2), shapley_exact_v2=exact2, cache_v2=cache2,
                indicators={'TL': tl_indicators(ref, RT), 'TL-gradual': tl_indicators(ref, RTr)},
                cache=cache, getT=getT, seconds=time.time() - t0)
     if verbose:
@@ -921,7 +963,7 @@ def checks_tl(res, rt):
                 raise SystemExit(f'STOP: dwelling size below the occupied area in TL run {key} ({t}).')
         if abs(E['carbon'][1] / E0['carbon'][1] - 1) > 1e-12 or abs(E['total'][1] / E0['total'][1] - 1) > 1e-12:
             raise SystemExit(f'TL run {key}: 2026 changed.')
-    for metric, (phi, total) in rt['shapley_exact'].items():
+    for metric, (phi, total) in list(rt['shapley_exact'].items()) + list(rt['shapley_exact_v2'].items()):
         if sum(phi.values()) != total:
             raise SystemExit(f'TL Shapley efficiency fails ({metric}).')
 
@@ -933,17 +975,24 @@ def write_tl(res, rt):
     _csv(pd.concat([res['bands'], rt['bands']], ignore_index=True), 'bands.csv')
     _csv(rt['shapley'], 'shapley_theoretical_limit.csv')
     _csv(rt['subsets'], 'shapley_theoretical_limit_subsets.csv')
+    _csv(rt['shapley_v2'], 'shapley_theoretical_limit_moderate.csv')            # MODEL v2.0.0: TL1-TL7 vs P5 Moderate
+    _csv(rt['subsets_v2'], 'shapley_theoretical_limit_moderate_subsets.csv')
     rows = {r['run']: r for r in rt['rows']}
     out = dict(run_mode=RUN_MODE, disclaimer=LV.TL_DISCLAIMER, definition=dict(
         base='P5 Ambitious (L4 removals -40%; L2 / L3 replaced by TL1)', start=2027, bau=LV.TL_BAU_NOTE,
         tl6=dict(share=LV.TL6_SHARE, components=LV.TL6_COMPONENTS, source=LV.TL6_SOURCE, assumptions=LV.TL6_ASSUMPTIONS),
         adoption=('from2027: w = 1 for every lever in 2027-2050; 2026 observed and untouched (TL, gradual adoption: '
                   'the adopted logistic path, full by 2035)'),
-        components=LV.TL_NAMES), resolved=rt['params_T'],
+        components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS}), resolved=rt['params_T'],
         metrics={k: {c: v for c, v in r.items() if isinstance(v, (int, float, str, bool, np.floating, np.integer))}
                  for k, r in rows.items()},
         indicators=rt['indicators'], gap=rt['gap'], solution_space_marker=rt['solution_space_marker'],
-        shapley=N.columns(rt['shapley']).to_dict(orient='records'))
+        shapley=N.columns(rt['shapley']).to_dict(orient='records'),
+        relative_to_P5_moderate=dict(
+            definition='TL = P5 Combined (Moderate) with TL1-TL7 at full strength from 2027; identical to P5 Ambitious '
+                       'with TL1-TL6 (TL1-TL6 override every Ambitious setting but L4; TL7 = L4 at d = 0.40)',
+            components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS_V2},
+            shapley=N.columns(rt['shapley_v2']).to_dict(orient='records')))
     _json(out, 'theoretical_limit.json')
 
 

@@ -34,6 +34,10 @@ import naming as N
 import style
 
 OUT_CSV = layout.data('baseline/sensitivity_one_at_a_time.csv')
+# MODEL v2.0.0: annual carbon 2026-2050 of every row (Extended Data sensitivity paths), with the population
+# rows also from the exact engine paths of the projection (carbon and floor area of the 5th / 95th paths)
+OUT_ANNUAL = layout.data('baseline/sensitivity_annual_carbon.csv')
+POP_ENGINE = 'Population: Stats NZ {p} percentile (engine path)'
 SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: save every figure
 SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
 N_PATHS = 6              # cases drawn in the annual-path figure (largest effects)
@@ -109,6 +113,8 @@ def main():
     g0, c0 = totals(base)
     rows = [('Reference', 'Reference (adopted settings)', g0, c0)]
     paths = {}                                   # annual built floor area, per case
+    years = np.asarray(base['forecast_years'])
+    annual = {('Reference', 'Reference (adopted settings)'): base['carbon_total_typ'].sum(axis=1).values}
 
     # Carbon per m2 of each year's typology mix (identical across percentiles).
     shares = base['evolving_gfa_shares']
@@ -118,12 +124,16 @@ def main():
         rows.append(('Population', f'Population: Stats NZ {p} percentile', tot[1:].sum() / 1e6,
                      float((tot[1:] * mix_int[1:]).sum()) / 1e6))
         paths[f'Population: Stats NZ {p} percentile'] = tot
+        annual[('Population', f'Population: Stats NZ {p} percentile')] = np.concatenate(
+            [[np.nan], tot[1:] * mix_int[1:]])          # the approximation of this row, by year
+        annual[('Population', POP_ENGINE.format(p=p))] = np.asarray(base['engine_out'][p]['carbon'], float)
 
     for grp, lab, kw in CASES + DECARB_CASES[projection.DECARB_MODE]:
         st = run(**kw)
         g, c = totals(st)
         rows.append((grp, lab, g, c))
         paths[lab] = st['results']['50th']['total']
+        annual[(grp, lab)] = st['carbon_total_typ'].sum(axis=1).values
 
     # ---- carbon factors: re-weight the adopted floor area -------------------
     typ = base['typ_names']
@@ -145,6 +155,17 @@ def main():
               - float((base['evol_typ_total'][t].values * base['soil_frac'])[1:].sum()) * base['SOIL_INTENSITY'][t]
               for t in typ} if base['TIME_RESOLVED'] else None)
 
+    def carbon_with_annual(emb, soc):
+        """carbon_with by year (kg), the same terms year by year (time-resolved accounting)."""
+        if mat_c is None:
+            return None
+        out = np.zeros(len(years))
+        for t in typ:
+            soil_y = (base['evol_typ_total'][t].values * base['soil_frac']) * base['SOIL_INTENSITY'][t]
+            mat_y = base['carbon_total_typ'][t].values - soil_y
+            out += mat_y * emb[t] / emb0[t] + base['evol_typ_total'][t].values * base['soil_frac'] * soc[t]
+        return out
+
     def carbon_with(emb, soc):
         if mat_c is not None:
             return float(sum(mat_c[t] * emb[t] / emb0[t] + soil_gfa_t[t] * soc[t] for t in typ)) / 1e6
@@ -160,15 +181,31 @@ def main():
                          ('Materials: lowest single case study', 'emb_building_min'),
                          ('Materials: highest single case study', 'emb_building_max')]:
             rows.append(('Carbon factors', lab, g0, carbon_with(tf[col], soc0)))
+            annual[('Carbon factors', lab)] = carbon_with_annual(tf[col], soc0)
     else:
         print("factors_typology.csv has no spread columns: re-run Building_factors.py.")
     rows.append(('Carbon factors', 'Soil carbon: lowest soil order (Raw)', g0, carbon_with(emb0, tf['SOC_low'])))
     rows.append(('Carbon factors', 'Soil carbon: highest soil order (Organic)', g0, carbon_with(emb0, tf['SOC_high'])))
+    annual[('Carbon factors', 'Soil carbon: lowest soil order (Raw)')] = carbon_with_annual(emb0, tf['SOC_low'])
+    annual[('Carbon factors', 'Soil carbon: highest soil order (Organic)')] = carbon_with_annual(emb0, tf['SOC_high'])
 
     out = pd.DataFrame(rows, columns=['group', 'case', 'GFA_Mm2', 'carbon_kt'])
     out['GFA_change_pct'] = 100 * (out['GFA_Mm2'] / g0 - 1)
     out['carbon_change_pct'] = 100 * (out['carbon_kt'] / c0 - 1)
     N.columns(out).to_csv(layout.writing(OUT_CSV), index=False)
+    # annual carbon of every row; each row's 2026-2050 sum must equal its total in the table
+    tot = {(r.group, r.case): r.carbon_kt for r in out.itertuples()}
+    arows = []
+    for (grp, lab), v in annual.items():
+        if v is None:
+            continue
+        v = np.asarray(v, float)
+        if lab in [k[1] for k in tot] and np.isfinite(tot[(grp, lab)]):
+            if not np.isclose(np.nansum(v[1:]) / 1e6, tot[(grp, lab)], rtol=1e-9):
+                raise SystemExit(f'Sensitivity: annual carbon of {lab!r} does not add up to its total.')
+        arows += [dict(group=grp, case=lab, year=int(y), carbon_kt=float(v[i]) / 1e6)
+                  for i, y in enumerate(years) if y >= 2026]
+    N.columns(pd.DataFrame(arows)).to_csv(layout.writing(OUT_ANNUAL), index=False)
 
     print("=" * 96)
     print(" ONE-AT-A-TIME SENSITIVITY, 2026-2050 (median population unless stated)")

@@ -115,6 +115,9 @@ def pipeline(quick=False):
     # the pathway Monte Carlo: the saved Reference draws through P5 (Moderate) and TL (reads the draw budgets
     # written by boundaries.py)
     run('pathways_mc', [py, os.path.join(ROOT, 'pathways_mc.py')])
+    # the grouped one-at-a-time sensitivity tables (Reference carbon, P5 carbon, planetary boundary):
+    # existing rows from the data files; the rows MODEL v2.0.0 adds computed on the engine path
+    run('sensitivity_tables', [py, tool('sensitivity_tables')])
     # metrics.json is a data file (locked by tests/test_regression_model_v1.py): written before the tests
     run('metrics', [py, tool('metrics')])
     # the figures of the paper and HEADLINE.md, from the data files only
@@ -139,6 +142,7 @@ def pathways_only():
     env = {'PATHWAY_QUICK': '0'}
     step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
     step('pathways_mc', [py, os.path.join(ROOT, 'pathways_mc.py')], env)
+    step('sensitivity_tables', [py, tool('sensitivity_tables')], env)
     step('headline', [py, os.path.join(ROOT, 'headline.py')], env)
     step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
     step('methods_draft', [py, tool('methods_draft')], env)
@@ -146,6 +150,8 @@ def pathways_only():
     step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
                             os.path.join(ROOT, 'tests', 'test_regression_model_v1.py'),
                             os.path.join(ROOT, 'tests', 'test_regression_model_v2.py'),
+                            os.path.join(ROOT, 'tests', 'test_pathways_mc.py'),
+                            os.path.join(ROOT, 'tests', 'test_sensitivity_tables.py'),
                             os.path.join(ROOT, 'tests', 'test_release.py'),
                             os.path.join(ROOT, 'tests', 'test_output_manifest.py')], env)
 

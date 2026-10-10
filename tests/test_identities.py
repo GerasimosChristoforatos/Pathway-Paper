@@ -192,3 +192,47 @@ def test_household_size_shape_passes_through_published_knots():
     assert close(S_ann.loc[yrs].values, S_k['S'].values, rel=1e-12)
     if projection.S_TAIL == 'hermite_clamped':
         assert close(S_ann.loc[yrs[-1]:].values, np.full(len(S_ann.loc[yrs[-1]:]), S_k['S'].values[-1]), rel=1e-12)
+
+
+def test_d05_history_bands_sum_to_dwellings_built(B):
+    """D05c history (validation.stock_identity_history, MODEL v1.1.0): per census interval, new
+    households + vacancy + census-measured net replacement + retirement villages + unexplained
+    building = dwellings built (in scope); the census-measured replacement is the interval's rate
+    of the census dwelling-count identity (D07) x the previous year's stock; the unexplained band
+    is the household-identity residual minus that replacement."""
+    import validation
+    h = validation.stock_identity_history(B)
+    parts = ['new_households_per_year', 'vacancy_per_year', 'net_replacement_census_per_year',
+             'retirement_villages_per_year', 'unexplained_building_per_year']
+    assert np.allclose(h[parts].sum(axis=1), h['dwellings_built_per_year'], rtol=1e-12, atol=1e-6)
+    built = B['hist_built_units']
+    for r in h.itertuples():
+        assert r.dwellings_built_per_year == pytest.approx(built.loc[r.year_start:r.year_end].mean(), rel=1e-12)
+    rates = B['census_rates'].set_index('y1')['rate']
+    for r in h[h['households_from'] == 'census'].itertuples():
+        assert r.net_replacement_rate == pytest.approx(rates.loc[r.year_end], rel=1e-15)
+    cal = validation._consistent_calibration(B)
+    for r in h.itertuples():
+        yrs = slice(r.year_start, r.year_end)
+        assert r.net_replacement_census_per_year == pytest.approx(r.net_replacement_rate * cal['prev'].loc[yrs].mean(),
+                                                                  rel=1e-12)
+        assert r.unexplained_building_per_year == pytest.approx(
+            r.household_identity_residual_per_year - r.net_replacement_census_per_year, rel=1e-9, abs=1e-6)
+    assert list(h['interval'])[:6] == ['1991-1996', '1996-2001', '2001-2006', '2006-2013', '2013-2018', '2018-2023']
+
+
+def test_d04_interval_sums_equal_annual_sums(B):
+    """D04c history (validation.household_formation_history, MODEL v1.1.0): per census interval,
+    interval mean x length = the sum of the annual values within the interval, for both parts; the
+    two parts add up to the census-anchored change in households."""
+    import validation
+    h = validation.household_formation_history(B)
+    pop, hh, S_ = B['hist_pop'], B['hist_hh'], B['hist_S']
+    for r in h.itertuples():
+        yrs = range(r.year_start, r.year_end + 1)
+        pop_part = sum(float((pop.loc[y] - pop.loc[y - 1]) / S_.loc[y]) for y in yrs)
+        d_hh = sum(float(hh.loc[y] - hh.loc[y - 1]) for y in yrs)
+        assert r.from_population_growth_per_year * r.years == pytest.approx(pop_part, rel=1e-12)
+        assert (r.from_population_growth_per_year + r.from_household_size_change_per_year) * r.years == \
+            pytest.approx(d_hh, rel=1e-12)
+        assert d_hh == pytest.approx(r.households_end - r.households_start, rel=1e-12)

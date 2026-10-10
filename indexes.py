@@ -47,6 +47,11 @@ FILES = [
      'projection.py'),
     ('data/baseline/bands_history.csv', 'The demand bands of the history by census interval (interval means, one '
      'vacancy definition)', 'validation.py'),
+    ('data/baseline/stock_identity_history.csv', 'Dwellings built by component per census interval (D05c): new '
+     'households, vacancy, census-measured net replacement, retirement villages and unexplained building',
+     'validation.py'),
+    ('data/baseline/household_formation_history.csv', 'New households per census interval by source (D04c): from '
+     'population growth and from household-size change', 'validation.py'),
     ('data/baseline/validation.json', 'Rolling-origin hindcast and the 2026 out-of-sample check', 'validation.py'),
     ('data/baseline/gap_2026.json', 'The 2026 gap between observed building and the requirement',
      'gap_2026.py'),

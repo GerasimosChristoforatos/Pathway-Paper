@@ -179,6 +179,10 @@ def levers_table(p, t=None):
         L += [f"> **{p['run_mode']}**", '']
     L += ['The Reference projection; each lever follows a normalised logistic adoption path from 2026 (observed, '
           f"unchanged) to full strength in 2035 ({LV.RAMP_BASIS}; sensitivities: full roll-out by 2030 and by 2045). "
+          'One rule for every adoption window 2026 → E (W = E − 2026): midpoint 2026 + W/2, speed k = ln(81) / (2W/3), '
+          '10-90% of adoption within the middle two-thirds of the window; w(2026) = 0, w(E) = 1, w = 1 after E '
+          f"(by 2035: midpoint 2030.5, k = {LV.RAMP_K:.4f}; by 2030: {LV.ADOPTION_BY2030['mid']:g}, "
+          f"{LV.ADOPTION_BY2030['k']:.4f}; by 2045: {LV.ADOPTION_BY2045['mid']:g}, {LV.ADOPTION_BY2045['k']:.4f}). "
           'Levers L1-L5; the typology shares stay at the Reference held mix in every run. Tags: DATA (measured), '
           'LITERATURE (cited), DECISION (author).', '']
     L += table(['item', 'pathway', 'demand band targeted', 'how it works (model terms)', 'assumption', 'Moderate',
@@ -261,13 +265,15 @@ def lines():
         'exogenous (as in Pellan et al. 2024). Every run reports floor area and carbon by demand band '
         '(outputs/data/pathways/bands.csv), so the attribution by band is exact and needs no decomposition.', '',
         '## Conventions', '',
-        f"* Adoption path (all levers): s(y) = 1 / (1 + exp(−k (y − {ad['mid']}))), k = ln(81)/6 = {ad['k']:.4f} "
-        '(s rises from 10% to 90% within 6 years); w(y) = (s(y) − s(2026)) / (s(2035) − s(2026)) for 2026 ≤ y ≤ 2035, '
-        f"w = 1 after 2035, w(2026) = 0: {N.ADOPTION['by2035']}. A lever moves a quantity from its Reference "
-        f"value b to its target x as b + w(y)(x − b). Basis: {LV.RAMP_BASIS}. Sensitivities (P5), same k: full "
-        f"roll-out by 2030 (midpoint {LV.ADOPTION_BY2030['mid']}, full strength {LV.ADOPTION_BY2030['end']}) and by "
-        f"2045 (midpoint {LV.ADOPTION_BY2045['mid']}, full strength {LV.ADOPTION_BY2045['end']}; the same adoption "
-        'speed ten years later).',
+        '* Adoption path (all levers), one rule for every adoption window from 2026 to its end year E '
+        '(W = E − 2026 years): a normalised logistic s(y) = 1 / (1 + exp(−k (y − m))) with midpoint m = 2026 + W/2 '
+        'and speed k = ln(81) / (2W/3), so that s rises from 10% to 90% within the middle two-thirds of the window; '
+        'w(y) = (s(y) − s(2026)) / (s(E) − s(2026)) for 2026 ≤ y ≤ E, w(2026) = 0, w(E) = 1 and w = 1 after E. '
+        f"Adopted, {N.ADOPTION['by2035']}: E = 2035, m = {ad['mid']}, k = ln(81)/6 = {ad['k']:.4f}. A lever moves a "
+        f"quantity from its Reference value b to its target x as b + w(y)(x − b). Basis: {LV.RAMP_BASIS}. "
+        f"Sensitivities (P5): full roll-out by 2030 (E = {LV.ADOPTION_BY2030['end']}, m = "
+        f"{LV.ADOPTION_BY2030['mid']:g}, k = {LV.ADOPTION_BY2030['k']:.4f}) and by 2045 (E = "
+        f"{LV.ADOPTION_BY2045['end']}, m = {LV.ADOPTION_BY2045['mid']:g}, k = {LV.ADOPTION_BY2045['k']:.4f}).",
         '* 2026 is observed (consented floor area fixed) and identical in every run.',
         '* 2026 overbuild: held at the Reference path, in dwellings, except where L3 absorbs it (it is the observed '
         '2026 pipeline, not demand).',
@@ -425,9 +431,11 @@ def lines():
     L += table(['projection variant', 'run', 'floor area (Mm²)', 'carbon (kt)', 'LoE AR', 'LoE AtP',
                 'carbon vs the variant without levers'], erows)
     L += ['', '### End of the adoption path (P2)', '']
-    L += table(['run', 'w(2035) − w(2034)', 'carbon 2035 → 2036 (kt)', 'Reference 2035 → 2036 (kt)',
-                'step relative to the Reference (kt)', 'dwellings 2035 → 2036'],
-               [[N.run_label(k.replace('end_of_ramp_step_', '')), f"{d['w_2035_minus_w_2034']:.4f}",
+    L += ['Year-on-year step at the end E of each adoption window (E → E + 1), P2 Occupied stock:', '']
+    L += table(['run', 'end year E', 'w(E) − w(E − 1)', 'carbon E → E + 1 (kt)', 'Reference E → E + 1 (kt)',
+                'step relative to the Reference (kt)', 'dwellings E → E + 1'],
+               [[N.run_label(k.replace('end_of_ramp_step_', '')), str(d.get('end_year', 2035)),
+                 f"{d.get('w_E_minus_w_E_minus_1', d.get('w_2035_minus_w_2034')):.4f}",
                  f"{d['carbon_step_kt']:+.1f}", f"{d['reference_carbon_step_kt']:+.1f}",
                  f"{d['step_relative_to_reference_kt']:+.1f}", f"{d['dwellings_step']:+,.0f}"]
                 for k, d in p['diagnostics'].items() if k.startswith('end_of_ramp_step')])
@@ -437,7 +445,8 @@ def lines():
           f"cumulative LoE AR / AtP; {N.SCENARIOS['LOW']} and {N.SCENARIOS['HIGH']} without levers = their runs in the "
           'planetary-boundary layer (AESA).',
           '* Each lever at zero strength = the Reference; 2026 identical in every run; lever functions never modify '
-          'their inputs; the logistic adoption path is 0 in 2026, 1 from 2035 and monotone.',
+          'their inputs; every adoption path is 0 in 2026, 1 from its end year and monotone, and the adopted path is '
+          'the window rule at E = 2035 (identical to k = ln(81)/6, midpoint 2030.5).',
           '* L1 sizes ≥ occupied area S·OLF in every typology, year and run; D ≥ S·OLF (engine extra_clip = 0); implied '
           f"vacancy ≥ {100 * p['L2']['floor']:.1f}%; no negative dwellings built.",
           '* Harrell-Davis = scipy.stats.mstats.hdquantiles (≤ 1e-10); pathway and lever Shapley efficiency exact; '

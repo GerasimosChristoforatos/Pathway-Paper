@@ -92,12 +92,17 @@ S_f = DF['PopTotal_50th'].values / B['households_forecast']['50th']
 
 # components of the stock identity: (label, colour, hatch), labels in the release vocabulary
 RV = ('#BDBDBD', 'xxxx')                       # retirement villages: out of scope, grey cross-hatch
+UNEXPLAINED = ('#F2F2F2', '////', '#8C8C8C')   # unexplained building: neutral, hatched (face, hatch, hatch colour)
 COMP = {'new_households': ('New households', '#9E9E9E', None),
         'vacancy': ('Vacancy (allowance and change)',) + S.BAND['vacancy'],
-        'replacement': ('Replacement (net of unconsented additions)',) + S.BAND['replacement'],
+        'replacement': (N.BANDS['replacement'],) + S.BAND['replacement'],
         'redevelopment': (N.BANDS['redevelopment'],) + S.BAND['redevelopment'],
         'retirement_villages': (N.BAND_DETAIL['retirement_villages'],) + RV,
-        'overbuild_2026': (N.BANDS['overbuild_2026'],) + S.BAND['overbuild_2026']}
+        'overbuild_2026': (N.BANDS['overbuild_2026'],) + S.BAND['overbuild_2026'],
+        # history only (D05c): census-measured net replacement, and what the components leave unexplained
+        'net_replacement_census': ('Net replacement, history (census dwelling counts; parts not separable)',) + S.BAND['replacement'],
+        'unexplained_building': ('Unexplained building', UNEXPLAINED[0], UNEXPLAINED[1])}
+EDGE = {'unexplained_building': UNEXPLAINED[2]}    # hatch drawn in grey (neutral band); white elsewhere
 
 # History of the stock identity on ONE vacancy definition throughout (the pooled
 # 2018/2023 private empty share applied to every census, validation.consistent_share):
@@ -133,13 +138,6 @@ def bars(ax, years, parts, projected=False):
     ax.axhline(0, color=S.INK, lw=S.LW_THIN)
 
 
-def interval_means(parts):
-    """parts: [(component id, annual Series over YH)] -> per census interval, the mean of each
-    part over the years y0+1..y1: [(y0, y1, [(component id, mean)])]."""
-    return [(y0, y1, [(cid, float(np.mean(np.asarray(ser.loc[y0 + 1:y1], float)))) for cid, ser in parts])
-            for y0, y1 in INTERVALS]
-
-
 def interval_bars(ax, groups, scale=1.0):
     """One stacked bar per census interval, spanning its years (signed: a negative mean is drawn
     below zero). The interval after the latest census is faint."""
@@ -150,7 +148,7 @@ def interval_bars(ax, groups, scale=1.0):
             _, colour, hatch = COMP[cid]
             m = m / scale
             kw = dict(width=y1 - y0, align='edge', color=colour, hatch=hatch, alpha=0.4 if faint else 1.0,
-                      edgecolor='white', linewidth=S.LW_THIN)
+                      edgecolor=EDGE.get(cid, 'white'), linewidth=S.LW_THIN)
             if m >= 0:
                 ax.bar(y0 + 0.5, m, bottom=up, **kw)
                 up += m
@@ -161,7 +159,8 @@ def interval_bars(ax, groups, scale=1.0):
 
 
 def comp_handles(ids):
-    return [Patch(facecolor=COMP[c][1], hatch=COMP[c][2], edgecolor='white', label=COMP[c][0]) for c in ids]
+    return [Patch(facecolor=COMP[c][1], hatch=COMP[c][2], edgecolor=EDGE.get(c, 'white'), label=COMP[c][0])
+            for c in ids]
 
 
 def finish(fig, fid, note=None):
@@ -214,35 +213,60 @@ a.legend(handles=[Patch(color=S.MUTED, label='census-benchmarked'),
 R19 = (f'{_r19.min():.3f}–{_r19.max():.3f}' if _r19.max() - _r19.min() >= 5e-4 else f'flat at {_r19.iloc[0]:.3f}')
 
 a = ax[2]
-pop_part_h = pop_h.diff().loc[YH] / S_h.loc[YH]
-size_part_h = hh_h.diff().loc[YH] - pop_part_h
+# history: one column per census interval (interval means; households census-anchored at both ends),
+# 2024-25 hatched (consent-derived estimates, no census check); projection annual, lighter
+HFH = validation.household_formation_history(B)
+for r in HFH.itertuples():
+    y0, y1 = int(r.interval[:4]), int(r.year_end)
+    est = r.households_from != 'census'
+    up = dn = 0.0
+    for bid, m in (('growth', r.from_population_growth_per_year), ('smaller_households',
+                                                                    r.from_household_size_change_per_year)):
+        m = m / 1e3
+        st = dict(P.band_style(bid), width=y1 - y0, align='edge')
+        if est:
+            st.update(hatch='////', alpha=0.5)
+        if m >= 0:
+            a.bar(y0 + 0.5, m, bottom=up, **st)
+            up += m
+        else:
+            a.bar(y0 + 0.5, m, bottom=dn, **st)
+            dn += m
+    a.hlines(r.net_new_households_per_year / 1e3, y0 + 0.5, y1 + 0.5, color=S.INK, lw=S.LW,
+             ls=':' if est else '-', label='Net new households' if y0 == int(HFH['interval'].iloc[0][:4]) else None)
 pop_part_f = DF['PopGrowth_50th'].values[1:] / S_f[1:]
 size_part_f = R['d_hh'][1:] - pop_part_f
-for yrs, parts, proj in ((YH, (pop_part_h, size_part_h), False), (PF, (pop_part_f, size_part_f), True)):
-    up, dn = np.zeros(len(yrs)), np.zeros(len(yrs))
-    for bid, v in zip(('growth', 'smaller_households'), parts):
-        v = np.asarray(v, float) / 1e3
-        st = dict(P.band_style(bid), alpha=0.55 if proj else 1.0, linewidth=0)   # many thin bars: no outline
-        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
-        a.bar(yrs, pos, bottom=up, width=0.82, **st)
-        a.bar(yrs, neg, bottom=dn, width=0.82, **st)
-        up, dn = up + pos, dn + neg
+up, dn = np.zeros(len(PF)), np.zeros(len(PF))
+for bid, v in zip(('growth', 'smaller_households'), (pop_part_f, size_part_f)):
+    v = np.asarray(v, float) / 1e3
+    st = dict(P.band_style(bid), alpha=0.55, linewidth=0)   # many thin bars: no outline
+    pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
+    a.bar(PF, pos, bottom=up, width=0.82, **st)
+    a.bar(PF, neg, bottom=dn, width=0.82, **st)
+    up, dn = up + pos, dn + neg
 a.axhline(0, color=S.INK, lw=S.LW_THIN)
-a.plot(YH, hh_h.diff().loc[YH] / 1e3, color=S.INK, lw=S.LW, label='Net new households')
 a.plot(PF, R['d_hh'][1:] / 1e3, color=S.INK, lw=S.LW, ls='--')
 P.split(a)
 a.set_xlim(1991, 2050)
 a.set_ylabel('Households (thousand per year)')
 a.legend(handles=[Patch(label='From population growth', **dict(P.band_style('growth'), edgecolor='#555555')),
-                  Patch(label='From household size change', **dict(P.band_style('smaller_households'),
-                                                                     edgecolor='#555555'))]
+                  Patch(label='From household-size change', **dict(P.band_style('smaller_households'),
+                                                                     edgecolor='#555555')),
+                  Patch(facecolor='white', edgecolor='#555555', hatch='////',
+                        label=f"{HFH['year_start'].iloc[-1]}–{HFH['year_end'].iloc[-1] % 100:02d}: consent-derived "
+                              'estimates, no census check')]
          + a.get_legend_handles_labels()[0], loc='upper left', fontsize=S.FONT_MIN)
+_y0, _y1 = a.get_ylim()
+a.set_ylim(_y0, _y1 + 0.42 * (_y1 - _y0))            # room for the legend above the columns
 P.panel(a, 'c', 'New households per year, by source')
 fig.tight_layout()
 finish(fig, 'D04_household_formation',
        'Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing '
-       f'supply meets migration). b: households per previous-year consent vary before 2019 and are {R19} from 2019 '
-       '(consent-derived). c: projection lighter, from 2026; the line is the net of the two parts.')
+       f'supply meets migration). b: households per previous-year consent vary before 2019 and are {R19} from 2019: '
+       'these years are estimated from consents and are not independent evidence. c: history one column per census '
+       'interval (interval means; households census-anchored at both ends), stacked from population growth and from '
+       f"household-size change; {HFH['year_start'].iloc[-1]}–{HFH['year_end'].iloc[-1]} hatched (consent-derived "
+       'estimates, no census check); projection annual and lighter, from 2026; the line is the net of the two parts.')
 
 # =============================================================================
 # D05 -- the stock: built (in scope) = households + vacancy + net replacement - retirement villages
@@ -296,31 +320,27 @@ a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09), fontsize=S.FONT_MIN, n
 P.panel(a, 'b', 'Stock = households / (1 − vacancy) + 2026 overbuild')
 
 a = fig.add_subplot(gs[1, :])
-hist_parts = [('new_households', B['d_hh'].loc[YH]),
-              ('vacancy', (SCc['allow'] + SCc['change']).loc[YH]),
-              ('replacement', SCc['net'].loc[YH]),
-              ('retirement_villages', SCc['rv'].loc[YH])]
-interval_bars(a, interval_means(hist_parts), 1e3)
+# history: census-measured net replacement (the rate of D07 x the previous year's stock) and the
+# building the components leave unexplained (validation.stock_identity_history; it may be negative)
+SIH = validation.stock_identity_history(B)
+HIST_IDS = ('new_households', 'vacancy', 'net_replacement_census', 'retirement_villages', 'unexplained_building')
+interval_bars(a, [(int(r.interval[:4]), int(r.year_end), [(c, getattr(r, f'{c}_per_year')) for c in HIST_IDS])
+                  for r in SIH.itertuples()], 1e3)
 _wave_u = (np.asarray(B['rate_path'], float) - (B['demolition_rate'] + B['unconsented_rate'])) * E50['prev']
 fut_parts = [('new_households', R['d_hh'][1:]), ('vacancy', SF['allow'][1:]),
              ('replacement', (SF['demol'] + SF['uncons'] - _wave_u)[1:]), ('redevelopment', _wave_u[1:]),
              ('retirement_villages', SF['rv'][1:]), ('overbuild_2026', SF['join'][1:])]
 bars(a, PF, [(c, np.asarray(v) / 1e3) for c, v in fut_parts], projected=True)
-# Historical analogue of the 2026 overbuild (per census interval; households and vacancy are
-# census values at both ends, so no consent-vs-consent comparison): building (all categories)
-# minus the structural requirement (new households + vacancy allowance + long-run net
-# replacement) = vacancy change + (net replacement - long-run replacement), i.e. existing
-# components of the identity, shown as one annotated quantity. Only full census intervals
-# within the calibration (from 1991: 1986-91 is not covered).
-_lr = float(B['demolition_rate'] + B['unconsented_rate'])
-_beyond = SCc['change'] + SCc['net'] - _lr * SCc['prev']
-BEYOND_HIST = [(y0, y1, float(_beyond.loc[y0 + 1:y1].mean())) for y0, y1 in INTERVALS if y1 in CENSUS_Y]
-for _i, (y0, y1, m) in enumerate(BEYOND_HIST):
-    a.hlines(m / 1e3, y0 + 0.5, y1 + 0.5, color=S.BAND['overbuild_2026'][0], lw=S.LW_BOLD, zorder=6,
-             label='Building beyond household formation (history, per census interval)' if _i == 0 else None)
-    a.annotate(f'{m / 1e3:+.1f}k/yr', ((y0 + y1) / 2 + 0.5, m / 1e3), xytext=(0, 3 if m >= 0 else -8),
-               textcoords='offset points', ha='center', fontsize=S.FONT_MIN, color=S.BAND['overbuild_2026'][0],
-               zorder=7)
+# the per-interval "building beyond household formation" annotation of model-v1.0.0 is not drawn:
+# its parts (vacancy change, replacement above the long-run rate) are now drawn as bands, and what
+# the components leave over is the unexplained band
+for r in SIH.itertuples():                          # the unexplained building of each interval, labelled at
+    m = r.unexplained_building_per_year / 1e3       # the end of the stack it extends (top if positive)
+    vals = [getattr(r, f'{c}_per_year') / 1e3 for c in HIST_IDS]
+    y = sum(v for v in vals if v > 0) if m >= 0 else sum(v for v in vals if v < 0)
+    a.annotate(f'unexpl. {m:+.1f}k', ((int(r.interval[:4]) + int(r.year_end)) / 2 + 0.5, y),
+               xytext=(0, 2 if m >= 0 else -2), textcoords='offset points', ha='center',
+               va='bottom' if m >= 0 else 'top', fontsize=S.FONT_MIN, color='#595959', zorder=7)
 a.text(1991.6, 0.02, '1986–91 not covered (calibration starts 1991)', transform=a.get_xaxis_transform(),
        fontsize=S.FONT_MIN, color=S.MUTED)
 built_h = B['hist_built_units'].loc[YH]          # in-scope dwellings built (lagged completions)
@@ -333,15 +353,20 @@ a.set_ylabel('Dwellings (thousand per year)')
 _y0, _y1 = a.get_ylim()
 a.set_ylim(_y0 - 0.06 * (_y1 - _y0), _y1)          # room for the labels of the negative interval means
 P.panel(a, 'c', 'Dwellings per year by component')
-a.legend(handles=comp_handles(['new_households', 'vacancy', 'replacement', 'redevelopment', 'retirement_villages',
-                               'overbuild_2026']) + a.get_legend_handles_labels()[0],
+a.legend(handles=comp_handles(['new_households', 'vacancy', 'net_replacement_census', 'replacement', 'redevelopment',
+                               'retirement_villages', 'overbuild_2026', 'unexplained_building'])
+         + a.get_legend_handles_labels()[0],
          loc='upper center', bbox_to_anchor=(0.5, -0.07), ncol=3, fontsize=S.FONT_MIN)
 if max(_vc, key=_vc.get) != 2023:                 # the wording names 2023 as the series maximum
     raise SystemExit('D05: the consistent vacancy series no longer peaks in 2023; revise naming.VACANCY_WORDING.')
 VACANCY = N.vacancy_wording(B['v_forward'], max(_vc.values()), min(_vc.values()), min(_vc, key=_vc.get), _v_imp[-1])
 finish(fig, 'D05_stock_and_vacancy',
-       f'a: {VACANCY[0].upper() + VACANCY[1:]}. c: {HIST_NOTE} In the history, net replacement is the residual of '
-       'the household identity; the model\'s rate comes from census dwelling counts (D07).')
+       f'a: {VACANCY[0].upper() + VACANCY[1:]}. c: {HIST_NOTE} History: net replacement is census-measured, the '
+       'rate of the census dwelling-count identity of each interval (D07; under-construction corrected) x the '
+       f'previous year\'s stock, the quantity the model uses ({CENSUS_Y[-1] + 1}–{YH[-1]}: the latest rate carried). '
+       'Unexplained building (hatched grey, labelled per interval in thousand dwellings per year): building not '
+       'explained by household formation, vacancy and census-measured replacement: redevelopment not captured by '
+       'the census counts, error in the household estimates, or residual; it may be negative.')
 
 # =============================================================================
 # D06 (appendix) -- which vacancy definition is plausible

@@ -4,6 +4,82 @@ Entries below the first use the vocabulary of their own version (S1/S2/S3-10, ce
 L2a/L2b, T, near-term market excess, ...); docs/RENAMING.md maps every one of those names to the
 release vocabulary.
 
+## model-v1.1.0: one adoption-window rule; D04, D05, D07; two band names
+
+Targeted fixes before the paper version, from model-v1.0.0 (tag model-v1.0.0, 0f0f21f). **No adopted
+result changes**: every value of the regression lock is reproduced to 1e-12 except the adoption-path
+sensitivities listed below.
+
+### Adoption-window rule (levers.adoption_window)
+
+* One rule for every adoption window 2026 -> E (W = E - 2026): normalised logistic with midpoint
+  2026 + W/2 and speed k = ln(81) / (2W/3), so that 10-90% of adoption falls within the middle
+  two-thirds of the window; w(2026) = 0, w(E) = 1, w = 1 after E.
+* Adopted, full roll-out by 2035: midpoint 2030.5, k = ln(81)/6, identical bit for bit to model-v1.0.0
+  (asserted at import and tested): every adopted run is unchanged.
+* Sensitivities (P5, every replacement variant): full roll-out by 2030, midpoint 2028.5 -> 2028 and
+  k = ln(81)/6 -> ln(81)/(8/3); full roll-out by 2045, midpoint 2035.5 (unchanged) and
+  k = ln(81)/6 -> ln(81)/(38/3). In model-v1.0.0 both kept the adopted speed, so the by2030 window
+  was not symmetric about its midpoint and the by2045 window reached 90% in 2038.5.
+* Changed values (tests/regression_model_v1_1.json: 3,191 values, each with its old and new value):
+  the by2030 / by2045 rows of data/pathways/runs.csv (416), annual.csv (2,082) and bands.csv (671),
+  and the two sensitivity paths of levers.json (22). The Reference rows:
+
+  | run (Reference) | floor area (Mm²) | carbon 2026-2050 (kt) | cumulative LoE AR | cumulative LoE AtP |
+  |---|---|---|---|---|
+  | P5 Moderate, by 2030 | 74.585 -> 74.526 | 17,150.7 -> 17,129.5 | 3.853 -> 3.848 | 15.41 -> 15.39 |
+  | P5 Ambitious, by 2030 | 63.295 -> 63.196 | 13,844.3 -> 13,811.9 | 3.110 -> 3.103 | 12.44 -> 12.41 |
+  | P5 Moderate, by 2045 | 77.973 -> 77.909 | 18,357.5 -> 18,320.3 | 4.124 -> 4.116 | 16.49 -> 16.46 |
+  | P5 Ambitious, by 2045 | 69.791 -> 69.651 | 16,080.8 -> 15,994.4 | 3.613 -> 3.593 | 14.45 -> 14.37 |
+
+* tests/test_regression_model_v1.py requires each listed value to equal its new value, every other
+  captured value its captured one, and the list to be exact (an unlisted change, or a listed value
+  that did not change, fails); tests/capture_regression_model_v1_1.py writes the list and refuses to
+  if any value outside the two sensitivities changed.
+* New diagnostics (levers.json; methods draft, "End of the adoption path (P2)"): the year-on-year step
+  of P2 Occupied stock at the end E of each window (E -> E + 1), relative to the Reference's step:
+  by 2035 +25.3 kt (Moderate) / +49.2 kt (Ambitious); by 2030 +77.8 / +161.9 kt; by 2045 +9.8 / +17.6 kt.
+* The rule is documented in METHODS_DRAFT.md, LEVERS_TABLE.md and ARCHITECTURE.md.
+
+### Figures D04, D05, D07
+
+* D05 panel c, history: net replacement is the census-measured quantity the model uses, the rate of
+  the census dwelling-count identity of each interval (D07; under-construction corrected) x the
+  previous year's stock, replacing the household-identity residual (2024-25: the 2018-23 rate
+  carried). New band "Unexplained building" (neutral, hatched): dwellings built - (new households +
+  vacancy + census-measured replacement + retirement villages), per interval, labelled; building not
+  explained by household formation, vacancy and census-measured replacement: redevelopment not
+  captured by the census counts, error in the household estimates, or residual. Per interval
+  (dwellings per year): 1991-96 +2,111; 1996-2001 +2,622; 2001-06 -325; 2006-13 -10; 2013-18 -5,881;
+  2018-23 +842; 2024-25 -560 (consent-derived households). The per-interval "building beyond household
+  formation" annotation is removed (its parts are now bands). Projection and vacancy unchanged.
+* D04 panel c, history: one column per census interval, stacked from population growth and from
+  household-size change (interval means, census-anchored endpoints); 2024-25 hatched (consent-derived
+  estimates, no census check). The caption states that the 2019-on households of panel b are estimated
+  from consents and are not independent evidence.
+* D07 caption: negative values mean the stock grew by more than consented new building, i.e. more
+  dwellings appeared through conversions and unconsented additions than were demolished.
+* New data files (validation.py; indexed): data/baseline/stock_identity_history.csv and
+  household_formation_history.csv. Tests: the D05 history bands sum to dwellings built per interval
+  (including the unexplained band); the D04 interval means x length equal the annual sums.
+
+### Renaming (labels only)
+
+* Demand band "Replacement" -> "Historical replacement" (the long-run net replacement rate:
+  demolition net of unconsented additions, 1991-2023 ratio of sums); "Redevelopment" -> "Recent
+  replacement surge" (the scenario rate above that long-run rate: the 2018-2023 knock-down-and-rebuild
+  wave, fading in the Reference); their sub-rows and the history band follow. Every figure, table,
+  column label, caption and document; docs/RENAMING.md section 10. The model-v1.0.0 additions map
+  through naming.BAND_RELABEL_V1_1; the old names are grepped in every reader-facing text.
+
+### Outputs
+
+* Full run and --pathways-only regenerated; tests/output_manifest_model_v1_1.json replaces the
+  model-v1.0.0 manifest (kept at tag model-v1.0.0). Headline figures and numbers are unchanged
+  (HEADLINE.md changes only in the band names of the H3 caption and finding 2). Full run 719 s, then
+  --pathways-only 37 s: 229 passed, 4 skipped (author workbook absent; manifest not yet written) and
+  138 passed, 2 skipped.
+
 ## model-v1.0.0: one model, release vocabulary, figures of the paper
 
 The baseline projection, the planetary-boundary layer (AESA) and the pathways, refurbished as one

@@ -3,37 +3,37 @@ history,Population growth,1992-1996,1.6408835190351825,Mm2 per year (interval me
 history,Smaller households,1992-1996,0.0552451224771384,Mm2 per year (interval mean)
 history,Extra space,1992-1996,1.1907431905524617,Mm2 per year (interval mean)
 history,Vacancy,1992-1996,-0.15984500580938,Mm2 per year (interval mean)
-history,Replacement and redevelopment (history; not separable),1992-1996,0.4702521337445974,Mm2 per year (interval mean)
+history,Net replacement (history; historical replacement and recent surge not separable),1992-1996,0.4702521337445974,Mm2 per year (interval mean)
 history,Population growth,1997-2001,1.0400687573430232,Mm2 per year (interval mean)
 history,Smaller households,1997-2001,0.55151815626529,Mm2 per year (interval mean)
 history,Extra space,1997-2001,1.2049112270970213,Mm2 per year (interval mean)
 history,Vacancy,1997-2001,0.5280879244865091,Mm2 per year (interval mean)
-history,Replacement and redevelopment (history; not separable),1997-2001,0.1788830248081567,Mm2 per year (interval mean)
+history,Net replacement (history; historical replacement and recent surge not separable),1997-2001,0.1788830248081567,Mm2 per year (interval mean)
 history,Population growth,2002-2006,1.8542422376377008,Mm2 per year (interval mean)
 history,Smaller households,2002-2006,0.4549867544998459,Mm2 per year (interval mean)
 history,Extra space,2002-2006,2.321130500753068,Mm2 per year (interval mean)
 history,Vacancy,2002-2006,0.2290620841041838,Mm2 per year (interval mean)
-history,Replacement and redevelopment (history; not separable),2002-2006,-0.0103783769947976,Mm2 per year (interval mean)
+history,Net replacement (history; historical replacement and recent surge not separable),2002-2006,-0.0103783769947976,Mm2 per year (interval mean)
 history,Population growth,2007-2013,1.0877781297992732,Mm2 per year (interval mean)
 history,Smaller households,2007-2013,0.1508318585998974,Mm2 per year (interval mean)
 history,Extra space,2007-2013,1.377711993163658,Mm2 per year (interval mean)
 history,Vacancy,2007-2013,0.3394052954020842,Mm2 per year (interval mean)
-history,Replacement and redevelopment (history; not separable),2007-2013,0.2780271230350871,Mm2 per year (interval mean)
+history,Net replacement (history; historical replacement and recent surge not separable),2007-2013,0.2780271230350871,Mm2 per year (interval mean)
 history,Population growth,2014-2018,2.573874854087732,Mm2 per year (interval mean)
 history,Smaller households,2014-2018,0.0463205343538427,Mm2 per year (interval mean)
 history,Extra space,2014-2018,2.453276707516184,Mm2 per year (interval mean)
 history,Vacancy,2014-2018,0.1826159785328403,Mm2 per year (interval mean)
-history,Replacement and redevelopment (history; not separable),2014-2018,-0.5222435844905989,Mm2 per year (interval mean)
+history,Net replacement (history; historical replacement and recent surge not separable),2014-2018,-0.5222435844905989,Mm2 per year (interval mean)
 history,Population growth,2019-2023,1.6424945255756227,Mm2 per year (interval mean)
 history,Smaller households,2019-2023,0.9899921553741242,Mm2 per year (interval mean)
 history,Extra space,2019-2023,1.7099094704048787,Mm2 per year (interval mean)
 history,Vacancy,2019-2023,0.4226432073175698,Mm2 per year (interval mean)
-history,Replacement and redevelopment (history; not separable),2019-2023,1.031643281327805,Mm2 per year (interval mean)
+history,Net replacement (history; historical replacement and recent surge not separable),2019-2023,1.031643281327805,Mm2 per year (interval mean)
 history,Population growth,2024-2025,1.3250768571125635,Mm2 per year (interval mean)
 history,Smaller households,2024-2025,0.9239771255131582,Mm2 per year (interval mean)
 history,Extra space,2024-2025,1.2409456738682725,Mm2 per year (interval mean)
 history,Vacancy,2024-2025,0.1985920689902518,Mm2 per year (interval mean)
-history,Replacement and redevelopment (history; not separable),2024-2025,0.8021983995157536,Mm2 per year (interval mean)
+history,Net replacement (history; historical replacement and recent surge not separable),2024-2025,0.8021983995157536,Mm2 per year (interval mean)
 projection,Population growth,2026,1.1420836054117558,Mm2 per year
 projection,Population growth,2027,1.7005246629387103,Mm2 per year
 projection,Population growth,2028,1.7326100339375532,Mm2 per year
@@ -134,56 +134,56 @@ projection,Vacancy,2047,0.1385967170681103,Mm2 per year
 projection,Vacancy,2048,0.1374512896543214,Mm2 per year
 projection,Vacancy,2049,0.1363058622405361,Mm2 per year
 projection,Vacancy,2050,0.1351604348267508,Mm2 per year
-projection,Replacement,2026,0.2837803505378276,Mm2 per year
-projection,Replacement,2027,0.284717965924429,Mm2 per year
-projection,Replacement,2028,0.2877806021233623,Mm2 per year
-projection,Replacement,2029,0.2909383777865813,Mm2 per year
-projection,Replacement,2030,0.2941751880168213,Mm2 per year
-projection,Replacement,2031,0.2974748869635356,Mm2 per year
-projection,Replacement,2032,0.3007888562836828,Mm2 per year
-projection,Replacement,2033,0.3040659769380869,Mm2 per year
-projection,Replacement,2034,0.3072526671821458,Mm2 per year
-projection,Replacement,2035,0.310373198449463,Mm2 per year
-projection,Replacement,2036,0.3134676890316034,Mm2 per year
-projection,Replacement,2037,0.3165033514890426,Mm2 per year
-projection,Replacement,2038,0.3194515003186291,Mm2 per year
-projection,Replacement,2039,0.3222876676834166,Mm2 per year
-projection,Replacement,2040,0.3250003869106114,Mm2 per year
-projection,Replacement,2041,0.3276225606169511,Mm2 per year
-projection,Replacement,2042,0.3301985204337278,Mm2 per year
-projection,Replacement,2043,0.332774003782326,Mm2 per year
-projection,Replacement,2044,0.3353961194198627,Mm2 per year
-projection,Replacement,2045,0.3380469229195878,Mm2 per year
-projection,Replacement,2046,0.3406763489717347,Mm2 per year
-projection,Replacement,2047,0.3432843975763029,Mm2 per year
-projection,Replacement,2048,0.3458710687332927,Mm2 per year
-projection,Replacement,2049,0.3484363624427041,Mm2 per year
-projection,Replacement,2050,0.3509802787045372,Mm2 per year
-projection,Redevelopment,2026,0.557379517674656,Mm2 per year
-projection,Redevelopment,2027,0.521771744852929,Mm2 per year
-projection,Redevelopment,2028,0.4920669568476498,Mm2 per year
-projection,Redevelopment,2029,0.4641525052149142,Mm2 per year
-projection,Redevelopment,2030,0.4378876795555588,Mm2 per year
-projection,Redevelopment,2031,0.4131464210162668,Mm2 per year
-projection,Redevelopment,2032,0.3897736082806816,Mm2 per year
-projection,Redevelopment,2033,0.3676338697421547,Mm2 per year
-projection,Redevelopment,2034,0.3466094104427538,Mm2 per year
-projection,Redevelopment,2035,0.3266825223865806,Mm2 per year
-projection,Redevelopment,2036,0.3078445512310657,Mm2 per year
-projection,Redevelopment,2037,0.2900106872814454,Mm2 per year
-projection,Redevelopment,2038,0.2731100123885709,Mm2 per year
-projection,Redevelopment,2039,0.2570830110025262,Mm2 per year
-projection,Redevelopment,2040,0.241885908594726,Mm2 per year
-projection,Redevelopment,2041,0.2275084289378521,Mm2 per year
-projection,Redevelopment,2042,0.2139418832674658,Mm2 per year
-projection,Redevelopment,2043,0.2011717917144628,Mm2 per year
-projection,Redevelopment,2044,0.1891789130474656,Mm2 per year
-projection,Redevelopment,2045,0.1779052154246728,Mm2 per year
-projection,Redevelopment,2046,0.1672825644139485,Mm2 per year
-projection,Redevelopment,2047,0.1572750234803551,Mm2 per year
-projection,Redevelopment,2048,0.1478485024681058,Mm2 per year
-projection,Redevelopment,2049,0.1389706746203046,Mm2 per year
-projection,Redevelopment,2050,0.1306108962212211,Mm2 per year
+projection,Historical replacement,2026,0.2837803505378276,Mm2 per year
+projection,Historical replacement,2027,0.284717965924429,Mm2 per year
+projection,Historical replacement,2028,0.2877806021233623,Mm2 per year
+projection,Historical replacement,2029,0.2909383777865813,Mm2 per year
+projection,Historical replacement,2030,0.2941751880168213,Mm2 per year
+projection,Historical replacement,2031,0.2974748869635356,Mm2 per year
+projection,Historical replacement,2032,0.3007888562836828,Mm2 per year
+projection,Historical replacement,2033,0.3040659769380869,Mm2 per year
+projection,Historical replacement,2034,0.3072526671821458,Mm2 per year
+projection,Historical replacement,2035,0.310373198449463,Mm2 per year
+projection,Historical replacement,2036,0.3134676890316034,Mm2 per year
+projection,Historical replacement,2037,0.3165033514890426,Mm2 per year
+projection,Historical replacement,2038,0.3194515003186291,Mm2 per year
+projection,Historical replacement,2039,0.3222876676834166,Mm2 per year
+projection,Historical replacement,2040,0.3250003869106114,Mm2 per year
+projection,Historical replacement,2041,0.3276225606169511,Mm2 per year
+projection,Historical replacement,2042,0.3301985204337278,Mm2 per year
+projection,Historical replacement,2043,0.332774003782326,Mm2 per year
+projection,Historical replacement,2044,0.3353961194198627,Mm2 per year
+projection,Historical replacement,2045,0.3380469229195878,Mm2 per year
+projection,Historical replacement,2046,0.3406763489717347,Mm2 per year
+projection,Historical replacement,2047,0.3432843975763029,Mm2 per year
+projection,Historical replacement,2048,0.3458710687332927,Mm2 per year
+projection,Historical replacement,2049,0.3484363624427041,Mm2 per year
+projection,Historical replacement,2050,0.3509802787045372,Mm2 per year
+projection,Recent replacement surge,2026,0.557379517674656,Mm2 per year
+projection,Recent replacement surge,2027,0.521771744852929,Mm2 per year
+projection,Recent replacement surge,2028,0.4920669568476498,Mm2 per year
+projection,Recent replacement surge,2029,0.4641525052149142,Mm2 per year
+projection,Recent replacement surge,2030,0.4378876795555588,Mm2 per year
+projection,Recent replacement surge,2031,0.4131464210162668,Mm2 per year
+projection,Recent replacement surge,2032,0.3897736082806816,Mm2 per year
+projection,Recent replacement surge,2033,0.3676338697421547,Mm2 per year
+projection,Recent replacement surge,2034,0.3466094104427538,Mm2 per year
+projection,Recent replacement surge,2035,0.3266825223865806,Mm2 per year
+projection,Recent replacement surge,2036,0.3078445512310657,Mm2 per year
+projection,Recent replacement surge,2037,0.2900106872814454,Mm2 per year
+projection,Recent replacement surge,2038,0.2731100123885709,Mm2 per year
+projection,Recent replacement surge,2039,0.2570830110025262,Mm2 per year
+projection,Recent replacement surge,2040,0.241885908594726,Mm2 per year
+projection,Recent replacement surge,2041,0.2275084289378521,Mm2 per year
+projection,Recent replacement surge,2042,0.2139418832674658,Mm2 per year
+projection,Recent replacement surge,2043,0.2011717917144628,Mm2 per year
+projection,Recent replacement surge,2044,0.1891789130474656,Mm2 per year
+projection,Recent replacement surge,2045,0.1779052154246728,Mm2 per year
+projection,Recent replacement surge,2046,0.1672825644139485,Mm2 per year
+projection,Recent replacement surge,2047,0.1572750234803551,Mm2 per year
+projection,Recent replacement surge,2048,0.1478485024681058,Mm2 per year
+projection,Recent replacement surge,2049,0.1389706746203046,Mm2 per year
+projection,Recent replacement surge,2050,0.1306108962212211,Mm2 per year
 projection,2026 overbuild,2026,2.2167932062851654,Mm2 per year
 projection,2026 overbuild,2027,0.6889822732863248,Mm2 per year
 projection,2026 overbuild,2028,0.3569058836339339,Mm2 per year

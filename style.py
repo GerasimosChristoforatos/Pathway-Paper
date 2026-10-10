@@ -22,7 +22,7 @@ Rules (docs/PALETTE.md):
 
 save() writes PNG (300 dpi) and, for headline figures, vector PDF, with fixed metadata
 (no software version or creation date), so a re-run with the pinned environment
-reproduces every figure byte for byte (tests/output_manifest_model_v1.json).
+reproduces every figure byte for byte (tests/output_manifest_model_v1_1.json).
 """
 import os
 

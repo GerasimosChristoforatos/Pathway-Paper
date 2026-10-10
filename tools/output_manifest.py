@@ -1,4 +1,5 @@
-"""Byte manifest of the release outputs (MODEL v1.0.0): tests/output_manifest_model_v1.json.
+"""Byte manifest of the release outputs (MODEL v1.1.0): tests/output_manifest_model_v1_1.json
+(the model-v1.0.0 manifest is kept at tag model-v1.0.0).
 
     python tools/output_manifest.py          # after the release run (python run_all.py)
 
@@ -23,7 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import layout  # noqa: E402
 
-TARGET = os.path.join(ROOT, 'tests', 'output_manifest_model_v1.json')
+TARGET = os.path.join(ROOT, 'tests', 'output_manifest_model_v1_1.json')
 EXCLUDED = ('logs',)                               # console logs: git-ignored, not part of the release
 
 
@@ -68,7 +69,7 @@ def main():
         raise SystemExit(f'output_manifest: the outputs are from a {mode!r} run; run python run_all.py first.')
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     files = {rel: sha256(os.path.join(layout.OUT, rel)) for rel in output_files()}
-    man = dict(meta=dict(purpose='MODEL v1.0.0: SHA-256 of every release output (tests/test_output_manifest.py)',
+    man = dict(meta=dict(purpose='MODEL v1.1.0: SHA-256 of every release output (tests/test_output_manifest.py)',
                          code_commit=commit, run='python run_all.py (full)', environment=environment(),
                          n_files=len(files)),
                files=files)

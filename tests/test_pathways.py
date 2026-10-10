@@ -113,8 +113,28 @@ def test_logistic_ramp():
     assert w45[1] == 0 and w45[20] == 1 and (np.diff(w45) >= 0).all()
     w30 = LV.ramp_named(y, 'by2030')
     assert w30[1] == 0 and w30[5] == 1 and (w30[5:] == 1).all() and (np.diff(w30) >= 0).all()
-    s30 = lambda t: 1 / (1 + np.exp(-np.log(81) / 6 * (t - 2028.5)))
+    s30 = lambda t: 1 / (1 + np.exp(-np.log(81) / (8 / 3) * (t - 2028)))
     assert w30[2] == pytest.approx((s30(2027) - s30(2026)) / (s30(2030) - s30(2026)), rel=1e-12)
+
+
+@pytest.mark.parametrize('E', [2030, 2035, 2040, 2045])
+def test_adoption_window_rule(E):
+    """One rule for every window 2026 -> E (W = E - 2026): midpoint 2026 + W/2, k = ln(81) / (2W/3);
+    w(2026) = 0, w(E) = 1, monotone, 1 after E; s goes from 10% to 90% within the middle two-thirds of
+    the window; the adopted path (E = 2035) is k = ln(81)/6, midpoint 2030.5, bit for bit."""
+    W = E - 2026
+    r = LV.adoption_window(E)
+    assert r['mid'] == 2026 + W / 2 and r['k'] == np.log(81) / (2 * W / 3)
+    y = np.arange(2025, 2051)
+    w = LV.ramp(y, mid=r['mid'], end=r['end'], k=r['k'])
+    assert w[y == 2026][0] == 0 and w[y == E][0] == 1 and (w[y >= E] == 1).all() and (np.diff(w) >= 0).all()
+    s = lambda t: 1 / (1 + np.exp(-r['k'] * (t - r['mid'])))
+    assert s(2026 + W / 6) == pytest.approx(0.1, rel=1e-12) and s(E - W / 6) == pytest.approx(0.9, rel=1e-12)
+    if E == 2035:
+        assert r['k'] == np.log(81.0) / 6.0 and r['mid'] == 2030.5
+        assert np.array_equal(w, LV.ramp(y)) and LV.RAMP_K == r['k'] and LV.RAMP_MID == r['mid']
+    for rs in LV.ADOPTION_SENSITIVITIES:
+        assert rs == LV.adoption_window(rs['end'])
 
 
 def test_2026_unchanged_in_every_run(res):

@@ -17,7 +17,7 @@ A bottom-up, demand-driven model of the new residential floor area New Zealand b
   Moderate and Ambitious settings, their Shapley attribution, the back-cast to the AR budget and
   a hyper-optimistic theoretical limit (TL; a thought experiment, not a pathway).
 
-Release **MODEL v1.0.0** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
+Release **MODEL v1.1.0** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
 
 ![H1. How the model works](outputs/headline/H1_model_schematic.png)
 
@@ -92,8 +92,10 @@ prints its name and the log to read, and the run stops (exit code 1 from the com
 * **Numerical regression lock** (`tests/test_regression_model_v1.py`): every one of the
   488,484 numbers the pipeline reported at commit ee37ef1 (pathways v3.1), captured in
   `tests/regression_model_v1.json`, is found at its release location through the renaming map
-  (`naming.LEGACY`, docs/RENAMING.md) and reproduced to 1e-12 relative.
-* **Byte reproducibility** (`tests/output_manifest_model_v1.json`): the SHA-256 of every
+  (`naming.LEGACY`, docs/RENAMING.md) and reproduced to 1e-12 relative, except the values of the
+  adoption-path sensitivities (full roll-out by 2030 and by 2045) that MODEL v1.1.0 changes, each
+  listed with its old and new value in `tests/regression_model_v1_1.json`.
+* **Byte reproducibility** (`tests/output_manifest_model_v1_1.json`): the SHA-256 of every
   committed output; a re-run reproduces them (figures are written without software or date
   metadata).
 * **Release checks** (`tests/test_release.py`): the new values add up to the locked numbers;

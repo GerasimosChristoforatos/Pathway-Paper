@@ -20,7 +20,7 @@
    "title": "New households per year, by source",
    "xlabel": "",
    "ylabel": "Households (thousand per year)",
-   "year_min": 1992.0,
+   "year_min": 1994.0,
    "year_max": 2050.0
   }
  ],
@@ -61,16 +61,15 @@
   "$\\mathdefault{\u22120.04}$",
   "$\\mathdefault{\u22120.05}$",
   "$\\mathdefault{\u221210}$",
-  "$\\mathdefault{\u221220}$",
-  "$\\mathdefault{\u221230}$",
   "$\\mathdefault{\u221250}$",
   "1992\u20132023 (census-benchmarked)",
   "2019 on: consent-derived",
   "2024",
+  "2024\u201325: consent-derived estimates, no census check",
   "2024\u201325: consent-derived, no census check",
   "2025",
   "Change in household size (persons per household)",
-  "From household size change",
+  "From household-size change",
   "From population growth",
   "Household growth per consent",
   "Household size vs arrivals",
@@ -85,5 +84,5 @@
   "census-benchmarked",
   "r = +0.73, p = 2e-06"
  ],
- "note": "Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885\u20130.889 from 2019 (consent-derived). c: projection lighter, from 2026; the line is the net of the two parts."
+ "note": "Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885\u20130.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024\u20132025 hatched (consent-derived estimates, no census check); projection annual and lighter, from 2026; the line is the net of the two parts."
 }

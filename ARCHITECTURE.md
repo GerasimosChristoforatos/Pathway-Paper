@@ -23,7 +23,8 @@ H1–H11 and D01–D34). Parameter values quoted below are the adopted settings 
 How much new residential floor area New Zealand will build from 2026 to 2050,
 and how much embodied carbon that floor area carries, split by reason for
 building (the demand bands: population growth, smaller households, extra space,
-vacancy, the 2026 overbuild, replacement, redevelopment) and by material and
+vacancy, the 2026 overbuild, historical replacement, the recent replacement
+surge) and by material and
 life-cycle stage. Building type (detached houses, townhouses, apartments) is
 internal to the model: it weights the case-study carbon factors and the lever
 parameters, and no result is reported by typology.
@@ -233,9 +234,11 @@ The floor area is reported in demand bands (bookkeeping; they add up to the
 total), bottom to top: Population growth (at the occupied area per person, net
 of consolidation), Smaller households (from falling household size), Extra space
 (new-dwelling size above the occupied area), Vacancy (the vacancy allowance on
-new households and the change in the vacancy rate), 2026 overbuild, Replacement
-(long-run net replacement: demolition net of unconsented additions) and
-Redevelopment (net replacement above the long-run rate, fading); carbon has one
+new households and the change in the vacancy rate), 2026 overbuild, Historical
+replacement (the long-run net replacement rate: demolition net of unconsented
+additions, 1991–2023 ratio of sums) and Recent replacement surge (the variant's
+rate above that long-run rate: the 2018–2023 knock-down-and-rebuild wave, fading
+in the Reference); carbon has one
 further band, Maintenance (B2, B4), 2026–2050. In the figures and the data files
 of the bands RV units are removed from every band in proportion (each band ×
 (1 − RV share)), so all bands are in scope and sum exactly to the in-scope total
@@ -299,11 +302,22 @@ never from inside the computation.
 
 Runs `projection.main()` once: household formation and the DHE/consent
 relationship (D04), the stock and vacancy (D05), and the vacancy-definition
-appendix (D06). The history of the stock identity (D05) and of the demand bands
-(H3; `outputs/data/baseline/bands_history.csv`, written by `validation.py`) is
+appendix (D06). The history of household formation (D04c), of the stock identity
+(D05c) and of the demand bands (H3; `outputs/data/baseline/bands_history.csv`) is
 one bar per census interval (interval means, one vacancy definition): between
-censuses annual detail is not identified. Accounting identities and factor sums
-are checked in `tests/test_identities.py`.
+censuses annual detail is not identified. In D05c the history's net replacement
+is census-measured, the rate of the census dwelling-count identity of each
+interval (D07) × the previous year's stock, the quantity the model uses (2024–25:
+the 2018–23 rate carried), and an "Unexplained building" band holds what household
+formation, vacancy and census-measured replacement leave over (redevelopment not
+captured by the census counts, error in the household estimates, or residual; it
+may be negative). In D04c the history is stacked from population growth and from
+household-size change, census-anchored at both ends; 2024–25 are consent-derived
+estimates with no census check. The interval values are computed by
+`validation.stock_identity_history` and `validation.household_formation_history`
+and written to `outputs/data/baseline/stock_identity_history.csv` and
+`household_formation_history.csv`. Accounting identities, factor sums and the
+two interval histories are checked in `tests/test_identities.py`.
 
 ## 6. `Sensitivity.py`
 
@@ -461,9 +475,13 @@ flowchart LR
 ```
 
 1. **Pathways and levers** (settings Moderate and Ambitious). Adoption path: a
-   normalised logistic, w = 0 in 2026 and 1 from 2035 (full roll-out by 2035
-   (adopted), following RECC, Pauliuk et al. 2024; P5 sensitivities: full
-   roll-out by 2030 and by 2045). P1 Right-sized dwellings = L1 Dwelling size
+   normalised logistic, one rule for every adoption window 2026 → E (W = E −
+   2026): midpoint 2026 + W/2 and speed k = ln(81) / (2W/3), so that 10–90% of
+   adoption falls within the middle two-thirds of the window; w(2026) = 0,
+   w(E) = 1, w = 1 after E (`levers.adoption_window`). Adopted: full roll-out by
+   2035 (midpoint 2030.5, k = ln(81)/6), following RECC, Pauliuk et al. 2024; P5
+   sensitivities: full roll-out by 2030 (midpoint 2028) and by 2045 (midpoint
+   2035.5). P1 Right-sized dwellings = L1 Dwelling size
    (`size` per typology and year: a share f of the space above the engine's
    occupied area S × OLF removed, f = 0.25 / 0.50, constant from 2035 to 2050).
    The typology shares stay at the Reference held mix in every run (the denser
@@ -473,7 +491,7 @@ flowchart LR
    vacancy path `v`, v(y) = v0 + w (v* − v0), v* = 4.7% / 4.0%) + L3 Overbuild
    absorption (the 2026 overbuild absorbed at 0.10 / 0.20 a year: `join` from
    `engine.market_excess(..., 'surplus', absorption)`). P3 Retained stock = L4
-   Building retention (`rate_demol` and the redevelopment component of
+   Building retention (`rate_demol` and the recent-surge component of
    `rate_unc` × (1 − w d), d = 0.20 / 0.40). P4 Low-carbon materials = L5
    Material carbon (`intensity`, `intensity_upfront`: the A1–A3 term scaled
    towards r, the Harrell-Davis quantile (q = 0.25 / 0.15) of the case-study
@@ -658,10 +676,15 @@ Reference run per session (it needs the factor files of `Building_factors.py`).
   mix-trend setting). The values the release adds are locked by the same test
   once captured from the release run (`capture_regression_model_v1.py
   --additions`); until then that test is skipped. This lock replaces the byte
-  lock of earlier versions.
+  lock of earlier versions. MODEL v1.1.0 changes only the values of the adoption-path
+  sensitivities (full roll-out by 2030 and by 2045): `tests/regression_model_v1_1.json`
+  lists each with its old and new value (written by
+  `tests/capture_regression_model_v1_1.py`, which refuses any other change), and the
+  test requires the listed values to equal their new value, every other value its
+  captured one, and the list to be exact.
 * **`test_output_manifest.py`**: byte reproducibility of the release. The
   SHA-256 of every release output (console logs excluded) is recorded in
-  `tests/output_manifest_model_v1.json` by `tools/output_manifest.py`, with the
+  `tests/output_manifest_model_v1_1.json` by `tools/output_manifest.py`, with the
   environment that wrote it (Python, numpy, pandas, scipy, matplotlib, FreeType,
   machine); after a run in the same environment every file must be reproduced
   byte for byte and no other written. Elsewhere the test is skipped with the
@@ -728,7 +751,7 @@ Reference run per session (it needs the factor files of `Building_factors.py`).
 | floor area | gross floor area (GFA), m² |
 | Reference | the adopted projection with no interventions (replacement half-life 10 years) |
 | Low / High replacement | the replacement variants of the Reference: the 1991–2023 long-run rate throughout / the 2018–2023 rate persists |
-| demand band | a reason for building (population growth, smaller households, extra space, vacancy, 2026 overbuild, replacement, redevelopment; for carbon also maintenance (B2, B4), 2026–2050) |
+| demand band | a reason for building (population growth, smaller households, extra space, vacancy, 2026 overbuild, historical replacement, recent replacement surge; for carbon also maintenance (B2, B4), 2026–2050) |
 | 2026 overbuild | observed 2026 building above the requirement, fading at ρ; never absorbed in the Reference |
 | DHE | Stats NZ Dwelling and Household Estimates |
 | ERP | estimated resident population |

@@ -55,11 +55,11 @@ BAND_TARGET = {
     'L1': 'Extra space (and the dwelling size of every band except Population growth)',
     'L2': 'Vacancy (including the change in the vacancy rate)',
     'L3': '2026 overbuild',
-    'L4': 'Replacement and Redevelopment',
+    'L4': f"{N.BANDS['replacement']} and {N.BANDS['redevelopment']}",
     'L5': 'None: carbon per m2 (A1-A3) of every band'}
 LEVER_PARAMETER = {'L1': 'size (engine.forward), per typology and year',
                    'L2': 'v (stock-wide vacancy rate)', 'L3': 'join, join_redev (engine.market_excess absorption)',
-                   'L4': 'rate_demol, rate_unc (redevelopment component)',
+                   'L4': 'rate_demol, rate_unc (recent-surge component)',
                    'L5': 'intensity, intensity_upfront (A1-A3 term only)'}
 
 OBSERVED_YEAR = 2026            # last observed year: w = 0 up to and including it
@@ -339,7 +339,7 @@ def l3_join(E_nojoin, O26, rho, gap_ref, absorption):
 
 
 def l4_rates(rate_demol, rate_unc, long_run_residual, d, w):
-    """L4: demolition rate x (1 - w d); the redevelopment component of the residual
+    """L4: demolition rate x (1 - w d); the recent-surge component of the residual
     path (rate_unc - long-run residual) x (1 - w d); the long-run residual untouched."""
     f = 1.0 - w * float(d)
     return float(rate_demol) * f, float(long_run_residual) + (np.asarray(rate_unc, float) - long_run_residual) * f
@@ -485,7 +485,7 @@ def lever_table(p):
              source='DECISION (author): the absorption sensitivities of the 2026 overbuild in the projection '
                     '(projection.OVERBUILD_ABSORPTION 0.10 / 0.20)', tag='DECISION'),
         dict(item='L4 ' + LEVER_NAMES['L4'], pathway='P3 ' + PATHWAY_NAMES['P3'], band=BAND_TARGET['L4'],
-             how='demolition x (1 - w d); redevelopment component of the residual x (1 - w d) (`rate_demol`, '
+             how='demolition x (1 - w d); recent-surge component of the residual x (1 - w d) (`rate_demol`, '
                  '`rate_unc`); the long-run residual untouched',
              assumption='renovation carbon of the kept stock not modelled (upper bound; Napiontek et al. 2025, '
                         'Resources, Conservation and Recycling 215, 108117)',

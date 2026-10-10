@@ -51,8 +51,8 @@ TERMS = [
     ('growth (net of consolidation), growth demand', 'population growth'),
     ('extra space per dwelling, consumption: extra space', 'extra space'),
     ('vacancy allowance, consumption: vacancy', 'vacancy'),
-    ('demolition replacement + calibrated stock residual; long-run background replacement', 'replacement (net of unconsented additions)'),
-    ('redevelopment wave', 'redevelopment'),
+    ('demolition replacement + calibrated stock residual; long-run background replacement', 'historical replacement (net of unconsented additions; MODEL v1.1.0, was "replacement" in model-v1.0.0)'),
+    ('redevelopment wave', 'recent replacement surge (MODEL v1.1.0, was "redevelopment" in model-v1.0.0)'),
     ('replacements & repaints (B2, B4) within 2026-2050', 'maintenance (B2, B4), 2026–2050'),
     ('upfront (A1-A5 + soil)', 'materials and construction (A1–A5) + soil carbon loss (both named); "upfront" kept only as the defined sum in data files'),
     ('soil (land-use change)', 'soil carbon loss'),
@@ -195,8 +195,9 @@ def _vocabulary():
                [[code(k), v, '; '.join(f'"{x}"' for x in leg.get(v, [])), N.BAND_DEFINITIONS.get(k, '')]
                 for k, v in N.BANDS.items()]
                + [[code(k), v, '; '.join(f'"{x}"' for x in leg.get(v, [])),
-                   'history band (census intervals, H3): replacement and redevelopment are not separable before 2026'
-                   if k == 'replacement_history' else 'sub-row of Replacement in data tables'
+                   'history band (census intervals, H3): historical replacement and the recent surge are not '
+                   'separable before 2026'
+                   if k == 'replacement_history' else f"sub-row of {N.BANDS['replacement']} in data tables"
                    if k.startswith('replacement') else 'bookkeeping row, out of scope; not a band in figures']
                   for k, v in N.BAND_DETAIL.items()])
     L += ['', '### Carbon components, boundaries and metrics', '']
@@ -324,6 +325,18 @@ def _labels():
           '(model inputs keep their source names), and setting names echoed from module constants (e.g. '
           'PB_YEARS in the AESA settings block).', '']
     L += table(['v3.1 identifier', 'release identifier'], EXTENSIONS)
+    L += ['', '## 10. MODEL v1.1.0 renaming', '',
+          'Two demand bands renamed (labels only; IDs, definitions of the quantities and every number unchanged). '
+          'The data labels of the bands follow (naming.band_data_label); the model-v1.0.0 additions captured with the '
+          'old labels are mapped by naming.BAND_RELABEL_V1_1. tests/test_release.py greps every reader-facing text '
+          'for the old names (naming.OLD_TERMS).', '']
+    L += table(['ID', 'model-v1.0.0 label', 'MODEL v1.1.0 label', 'definition'],
+               [[code('replacement'), 'Replacement', N.BANDS['replacement'], N.BAND_DEFINITIONS['replacement']],
+                [code('redevelopment'), 'Redevelopment', N.BANDS['redevelopment'], N.BAND_DEFINITIONS['redevelopment']]]
+               + [[code(k), o, N.BAND_RELABEL_V1_1[o], ''] for k, o in
+                  (('replacement_demolition', 'Replacement: demolition (BRANZ rate)'),
+                   ('replacement_residual', 'Replacement: net unconsented additions (calibrated residual)'),
+                   ('replacement_history', 'Replacement and redevelopment (history; not separable)'))])
     return L
 
 

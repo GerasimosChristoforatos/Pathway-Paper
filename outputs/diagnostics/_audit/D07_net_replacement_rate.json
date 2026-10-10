@@ -34,5 +34,5 @@
   "Net replacement (% of the previous year's stock per year)",
   "Reference"
  ],
- "note": "Net replacement rate (demolition net of unconsented additions). Long run 1991\u20132023: 0.101% per year; 2018\u201323: 0.312% per year. Each step is one intercensal interval; the 2018\u201323 step is a single interval."
+ "note": "Net replacement rate (demolition net of unconsented additions). Long run 1991\u20132023: 0.101% per year; 2018\u201323: 0.312% per year. Each step is one intercensal interval; the 2018\u201323 step is a single interval. Negative values mean the stock grew by more than consented new building, i.e. more dwellings appeared through conversions and unconsented additions than were demolished."
 }

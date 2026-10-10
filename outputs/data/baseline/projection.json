@@ -45,17 +45,17 @@
       "carbon_kt": 974.8586525222178
     },
     {
-      "band": "Replacement: demolition (BRANZ rate)",
+      "band": "Historical replacement: demolition (BRANZ rate)",
       "floor_area_Mm2": 11.313767245341518,
       "carbon_kt": 2252.040503589108
     },
     {
-      "band": "Replacement: net unconsented additions (calibrated residual)",
+      "band": "Historical replacement: net unconsented additions (calibrated residual)",
       "floor_area_Mm2": -2.8873031330516987,
       "carbon_kt": -574.7266547709394
     },
     {
-      "band": "Redevelopment",
+      "band": "Recent replacement surge",
       "floor_area_Mm2": 7.883319196922969,
       "carbon_kt": 1628.322097893969
     },

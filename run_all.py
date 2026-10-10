@@ -141,6 +141,7 @@ def pathways_only():
     step('indexes', [py, os.path.join(ROOT, 'indexes.py')], env)
     step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
                             os.path.join(ROOT, 'tests', 'test_regression_model_v1.py'),
+                            os.path.join(ROOT, 'tests', 'test_regression_model_v2.py'),
                             os.path.join(ROOT, 'tests', 'test_release.py'),
                             os.path.join(ROOT, 'tests', 'test_output_manifest.py')], env)
 

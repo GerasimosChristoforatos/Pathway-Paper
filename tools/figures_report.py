@@ -236,7 +236,9 @@ def main():
     _savefig(fig, 'D07_net_replacement_rate',
              f"Net replacement rate (demolition net of unconsented additions). Long run {_w[0]}–{_w[1]}: "
              f"{100 * long_rate:.3f}% per year; 2018–23: {100 * Bref['rate_recent']:.3f}% per year. Each step is one "
-             f"intercensal interval; the 2018–23 step is a single interval.")
+             f"intercensal interval; the 2018–23 step is a single interval. Negative values mean the stock grew by more "
+             f"than consented new building, i.e. more dwellings appeared through conversions and unconsented additions "
+             f"than were demolished.")
     plt.close(fig)
 
     # ---- D19 variants ------------------------------------------------------------

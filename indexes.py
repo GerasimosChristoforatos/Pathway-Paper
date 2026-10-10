@@ -65,6 +65,14 @@ FILES = [
      'handover', 'tools/figures_report.py'),
     ('data/baseline/sensitivity_one_at_a_time.csv', 'Every one-at-a-time sensitivity: floor area and carbon',
      'Sensitivity.py'),
+    ('data/baseline/sensitivity_annual_carbon.csv', 'Annual carbon 2026-2050 of every one-at-a-time sensitivity '
+     '(and the population 5th / 95th percentile engine paths)', 'Sensitivity.py'),
+    ('data/sensitivity/reference_carbon.csv', 'Grouped one-at-a-time sensitivity of the Reference carbon 2026-2050 '
+     '(ED1, ED3)', 'tools/sensitivity_tables.py'),
+    ('data/sensitivity/p5_carbon.csv', 'Grouped one-at-a-time sensitivity of P5 Combined (Moderate): carbon and '
+     'cumulative LoE AR / AtP (ED2)', 'tools/sensitivity_tables.py'),
+    ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
+     'AR and AtP (ED4)', 'tools/sensitivity_tables.py'),
     # data: Monte Carlo
     ('data/montecarlo/draws_*.csv', 'Monte Carlo draws of a variant (Latin hypercube): inputs and outputs per draw',
      'MonteCarlo.py'),

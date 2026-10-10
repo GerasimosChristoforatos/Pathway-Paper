@@ -269,24 +269,17 @@ def main():
     a.grid(axis='x', visible=False)
     P.panel(a, 'b', 'Floor area 2026–2050')
     a = ax[2]
-    mat = [float(runs[k]['B']['_upfront']) for k in ks]
-    soil = [float(runs[k]['B']['_soil'] / M6) for k in ks]
+    # MODEL v2.0.0: the totals only (maintenance is drawn as its own layer only in Fig3 and the demand-band
+    # breakdowns; the component split of the Reference is Fig3, of every variant data/baseline/scenarios.json)
     tot = [float(runs[k]['B']['tot_carbon_median']) for k in ks]
-    rest = np.subtract(tot, np.add(mat, soil))
-    bottom = np.zeros(len(ks))
-    for cid, v in (('materials_construction', mat), ('soil', soil),
-                   ('maintenance' if runs[ks[0]]['B']['TIME_RESOLVED'] else 'committed', rest)):
-        colour, hatch = S.COMPONENT[cid]
-        a.bar(range(len(ks)), v, bottom=bottom, color=colour, hatch=hatch, edgecolor='white', lw=S.LW_THIN, width=0.62,
-              label=N.COMPONENTS[cid] if runs[ks[0]]['B']['TIME_RESOLVED'] or cid != 'committed'
-              else 'Later stages (B, C), booked at construction')
-        bottom = bottom + np.asarray(v)
+    a.bar(range(len(ks)), tot, color=[S.SCENARIO[k]['color'] for k in ks], width=0.62)
+    for i, v in enumerate(tot):
+        a.text(i, v, P.fmt_kt(v), ha='center', va='bottom', fontsize=S.FONT_MIN)
     a.set_xticks(range(len(ks)))
     a.set_xticklabels([N.SCENARIOS[k].replace(' replacement', '\nreplacement') for k in ks], fontsize=S.FONT_MIN)
     a.set_ylabel('Embodied carbon 2026–2050 (kt CO₂e)')
     P.thousands(a.yaxis)
     a.grid(axis='x', visible=False)
-    a.legend(loc='lower center', bbox_to_anchor=(0.5, -0.5), fontsize=S.FONT_MIN)
     P.panel(a, 'c', 'Carbon 2026–2050')
     fig.tight_layout()
     _savefig(fig, 'D19_variants')

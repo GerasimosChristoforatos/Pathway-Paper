@@ -26,5 +26,7 @@
   "Including 'residents away'\n(rejected)",
   "Unconsented additions required, 1992\u20132023\n(dwellings per year)"
  ],
- "note": "The unconsented additions each vacancy definition requires to close the stock identity, assuming the BRANZ demolition rate; counting residents-away dwellings as vacant requires implausibly many."
+ "note": "The unconsented additions each vacancy definition requires to close the stock identity, assuming the BRANZ demolition rate; counting residents-away dwellings as vacant requires implausibly many.",
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

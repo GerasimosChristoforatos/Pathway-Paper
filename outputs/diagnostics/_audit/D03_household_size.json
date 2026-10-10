@@ -60,5 +60,7 @@
   "a",
   "b"
  ],
- "note": null
+ "note": null,
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

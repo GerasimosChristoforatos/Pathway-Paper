@@ -1,0 +1,17 @@
+panel,series,x,value,unit
+a,"L1 Dwelling size, Moderate",value,20246.09357304601,kt CO2e 2026-2050
+a,"L1 Dwelling size, Ambitious",value,18871.647781892298,kt CO2e 2026-2050
+a,"L2 Vacancy rate, Moderate",value,20904.924427355727,kt CO2e 2026-2050
+a,"L2 Vacancy rate, Ambitious",value,20229.83790722024,kt CO2e 2026-2050
+a,"L3 Overbuild absorption, Moderate",value,20729.61603222003,kt CO2e 2026-2050
+a,"L3 Overbuild absorption, Ambitious",value,20623.560052829773,kt CO2e 2026-2050
+a,"L4 Building retention, Moderate",value,21031.65475248247,kt CO2e 2026-2050
+a,"L4 Building retention, Ambitious",value,20485.805881135468,kt CO2e 2026-2050
+a,"L5 Material carbon, Moderate",value,20673.70384264511,kt CO2e 2026-2050
+a,"L5 Material carbon, Ambitious",value,19720.31130209545,kt CO2e 2026-2050
+a,Reference,value,21577.50362382947,kt CO2e 2026-2050
+b,L1 Dwelling size,Shapley value,1234.6444363372584,kt CO2e 2026-2050
+b,L2 Vacancy rate,Shapley value,641.8232369957458,kt CO2e 2026-2050
+b,L3 Overbuild absorption,Shapley value,808.387899359773,kt CO2e 2026-2050
+b,L4 Building retention,Shapley value,506.6767164537025,kt CO2e 2026-2050
+b,L5 Material carbon,Shapley value,825.5973369020927,kt CO2e 2026-2050

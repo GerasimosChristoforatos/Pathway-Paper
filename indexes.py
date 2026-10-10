@@ -91,7 +91,7 @@ FILES = [
     ('data/baseline/annual_by_stage.csv', 'Annual carbon of the Reference 2026-2050 by life-cycle stage (A1-A3, '
      'A4-A5, maintenance B2/B4, soil carbon loss) (Fig3)', 'projection.py'),
     ('data/baseline/annual_by_material.csv', 'Annual carbon of the Reference 2026-2050 by material (each with its '
-     'in-window maintenance) and soil carbon loss (Fig3)', 'projection.py'),
+     'maintenance within 2026-2050) and soil carbon loss (Fig3)', 'projection.py'),
     # data: Monte Carlo
     ('data/montecarlo/draws_*.csv', 'Monte Carlo draws of a variant (Latin hypercube): inputs and outputs per draw',
      'MonteCarlo.py'),
@@ -186,7 +186,7 @@ def diagnostics_md():
              'Every figure: PNG 300 dpi, at most 183 mm wide (D06: single column, 89 mm), release style '
              '(docs/PALETTE.md) and vocabulary '
              '(docs/RENAMING.md). The figures of the paper are in ../paper/PAPER.md, the Extended Data in '
-             '../extended_data/EXTENDED_DATA.md; D16, D17, D29, D31 and D33 of model-v1.1.0 are superseded by Extended '
+             '../extended_data/EXTENDED_DATA.md; D16, D17, D29, D31 and D33 of the previous release are superseded by Extended '
              'Data (ED1, ED3, ED7 and ED10, ED9, ED8; their data stay in outputs/data/); the earlier file name of each '
              'figure is in docs/FIGURE_PLAN.md._', '']
     for group, rows in FP.DIAGNOSTICS.items():

@@ -37,5 +37,7 @@
   "Projection: population / household size, median",
   "Stats NZ household estimates as published"
  ],
- "note": "Projection from the 2023 census point; 2019\u201323 Stats NZ estimates scaled to the 2023 census (\u00d70.824)."
+ "note": "Projection from the 2023 census point; 2019\u201323 Stats NZ estimates scaled to the 2023 census (\u00d70.824).",
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

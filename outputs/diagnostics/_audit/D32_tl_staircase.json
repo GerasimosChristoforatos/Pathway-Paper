@@ -88,5 +88,10 @@
   "b",
   "c"
  ],
- "note": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). TL1 No vacancy (vacancy 0, 2026 overbuild absorbed), TL2 No extra space (size = household size \u00d7 occupant load factor), TL3 Minimum space per person (the smallest occupant load factor of the case studies, 19.7 m\u00b2 per person, for every typology), TL4 Best-practice materials (each typology's best case-study A1\u2013A3), TL5 Lowest-carbon soils (lowest soil order), TL6 Urban infill (65% of non-replacement floor area on developed land, no soil carbon loss; Auckland Council 2021); the adopted decarbonisation applies. In its zero-building years (released vacant stock used, banking rule) every band is zero."
+ "note": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). TL1 No vacancy (vacancy 0, 2026 overbuild absorbed), TL2 No extra space (size = household size \u00d7 occupant load factor), TL3 Minimum space per person (the smallest occupant load factor of the case studies, 19.7 m\u00b2 per person, for every typology), TL4 Best-practice materials (each typology's best case-study A1\u2013A3), TL5 Lowest-carbon soils (lowest soil order), TL6 Urban infill (65% of non-replacement floor area on developed land, no soil carbon loss; Auckland Council 2021); the adopted decarbonisation applies. In its zero-building years (released vacant stock used, banking rule) every band is zero.",
+ "maintenance_drawn": true,
+ "maintenance_where": [
+  "axes 2: Rectangle in the maintenance colour",
+  "legend: Maintenance (B2, B4), 2026\u20132050"
+ ]
 }

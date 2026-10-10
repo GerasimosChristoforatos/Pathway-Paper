@@ -41,5 +41,7 @@
   "P5 Combined, Moderate",
   "Reference"
  ],
- "note": "Reference variant; Moderate solid, Ambitious dashed. Construction (A1\u2013A5 and soil) in the construction year plus maintenance (B2, B4) within 2026\u20132050. 2026 is observed and identical in every run; the levers follow the adopted logistic adoption path (full roll-out by 2035 (adopted))."
+ "note": "Reference variant; Moderate solid, Ambitious dashed. Construction (A1\u2013A5 and soil) in the construction year plus maintenance (B2, B4) within 2026\u20132050. 2026 is observed and identical in every run; the levers follow the adopted logistic adoption path (full roll-out by 2035 (adopted)).",
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

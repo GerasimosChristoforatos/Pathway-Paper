@@ -151,9 +151,10 @@ SUPERSEDED = {'D16_one_at_a_time': 'ED1', 'D17_sensitivity_paths': 'ED3', 'D29_a
               'D31_shapley_levers': 'ED9', 'D33_tl_shapley': 'ED8'}
 
 # Maintenance (B2, B4) is drawn as its own layer only in Fig3 and in the demand-band breakdowns (Fig2 and Fig4
-# carbon panels, D25, D26); elsewhere it is in the totals (figaudit.maintenance_drawn; tests/test_release.py)
+# carbon panels, D25, D26, and D32 c, the carbon by demand band of Reference / P5 Ambitious / TL, which the design
+# document did not list); elsewhere it is in the totals (figaudit.maintenance_drawn; tests/test_release.py)
 MAINTENANCE_ALLOWED = ('Fig2_demand_bands', 'Fig3_reference_carbon', 'Fig4_pathways_bands', 'D25_annual_carbon_by_band',
-                       'D26_cumulative_carbon_by_band')
+                       'D26_cumulative_carbon_by_band', 'D32_tl_staircase')
 
 # ---------------------------------------------------------------------------
 # Diagnostics (outputs/diagnostics/<group>/): PNG 300 dpi

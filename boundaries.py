@@ -517,6 +517,12 @@ def main():
             mc_rows.append(row)
         ca = m['carbon'][:, sel].sum(axis=1) / bar[:, sel].sum(axis=1)
         ct = m['carbon'][:, sel].sum(axis=1) / batp[:, sel].sum(axis=1)
+        if name == 'REF':      # MODEL v2.0.0: each draw's cumulative budgets, read by the pathway Monte Carlo
+            N.columns(pd.DataFrame(dict(
+                draw=np.arange(len(ca)), carbon_kt_2026_2050=m['carbon'][:, sel].sum(axis=1) / M6,
+                B_AR_kt_2026_2050=bar[:, sel].sum(axis=1) / M6, B_AtP_kt_2026_2050=batp[:, sel].sum(axis=1) / M6,
+                LoE_AR=ca, LoE_AtP=ct))).to_csv(layout.writing(layout.data('aesa/montecarlo_draw_budgets.csv')),
+                                                index=False)
         mc_cum[name] = {f'LoE_AR_p{p}': float(np.percentile(ca, p)) for p in MC_PCT}
         mc_cum[name].update({f'LoE_AtP_p{p}': float(np.percentile(ct, p)) for p in MC_PCT})
         mc_cum[name]['n_draws'] = int(len(ca))

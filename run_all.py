@@ -112,6 +112,9 @@ def pipeline(quick=False):
     # the pathway layer (levers, pathways, attribution, AESA gap): after the AESA layer, whose
     # boundaries it reads
     run('pathways', [py, os.path.join(ROOT, 'pathways.py')])
+    # the pathway Monte Carlo: the saved Reference draws through P5 (Moderate) and TL (reads the draw budgets
+    # written by boundaries.py)
+    run('pathways_mc', [py, os.path.join(ROOT, 'pathways_mc.py')])
     # metrics.json is a data file (locked by tests/test_regression_model_v1.py): written before the tests
     run('metrics', [py, tool('metrics')])
     # the figures of the paper and HEADLINE.md, from the data files only
@@ -135,6 +138,7 @@ def pathways_only():
     py = sys.executable
     env = {'PATHWAY_QUICK': '0'}
     step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
+    step('pathways_mc', [py, os.path.join(ROOT, 'pathways_mc.py')], env)
     step('headline', [py, os.path.join(ROOT, 'headline.py')], env)
     step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
     step('methods_draft', [py, tool('methods_draft')], env)

@@ -323,8 +323,8 @@ def h3():
                replacement=tot[N.band_data_label('replacement')] + tot[N.band_data_label('redevelopment')])
     cap = (fill('H3') + f" Over 2026–2050 the untargeted bands are {100 * num['untargeted_share']:.0f}% of the "
            f"{total:.1f} million m² built. History: interval means between censuses (vacancy on one definition, "
-           'the pooled 2018/2023 empty share); the history\'s replacement band holds any redevelopment (not '
-           'separable); the faint bar after the latest census uses consent-derived households. Retirement villages '
+           'the pooled 2018/2023 empty share); the history\'s net replacement band holds the historical replacement and '
+           'any recent surge (not separable); the faint bar after the latest census uses consent-derived households. Retirement villages '
            '(out of scope) are removed from every band in proportion.')
     return dict(num, caption=cap)
 
@@ -1039,8 +1039,8 @@ def findings(r):
          f"brackets it at {h2['gfa_low']:.1f}–{h2['gfa_high']:.1f} million m².",
          'data/baseline/scenarios.json, data/montecarlo/summary_REF.csv'),
         (f"{100 * h3['untargeted_share']:.0f}% of that floor area serves population growth and smaller households, "
-         'which no construction pathway targets; the rest is extra space, vacancy, the 2026 overbuild, replacement and '
-         'redevelopment.', 'data/baseline/bands_annual.csv'),
+         'which no construction pathway targets; the rest is extra space, vacancy, the 2026 overbuild, historical '
+         'replacement and the recent replacement surge.', 'data/baseline/bands_annual.csv'),
         (f"Its embodied carbon is {h4['carbon']:,.0f} kt CO₂e within 2026–2050 (materials and construction "
          f"{h4['materials']:,.0f} kt, soil carbon loss {h4['soil']:,.0f} kt, maintenance {h4['maintenance']:,.0f} kt), "
          f"with a further {h4['com_lo']:,.0f}–{h4['com_hi']:,.0f} kt committed after 2050.",

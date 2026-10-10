@@ -1,7 +1,7 @@
 """Numerical regression lock of MODEL v1.0.0. It replaces the byte lock of the baseline
 (tests/test_baseline_lock.py and tests/baseline_manifest.json, removed in this release): the
 refurbish renames files, columns and labels, so bytes change while numbers may not. Byte
-reproducibility of the release outputs is re-established by tests/output_manifest_model_v1.json.
+reproducibility of the release outputs is re-established by tests/output_manifest_model_v1_1.json.
 
 tests/regression_model_v1.json holds every number the pipeline reported at commit
 ee37ef1 (pathways v3.1), captured by tests/capture_regression_model_v1.py before any
@@ -30,6 +30,15 @@ REL_TOL = 1e-12
 with open(CAPTURE) as _f:
     CAP = json.load(_f)
 
+# MODEL v1.1.0: the values the adoption-window rule changes (full roll-out by 2030 and by 2045 only;
+# tests/capture_regression_model_v1_1.py). Each listed value must equal its new value, and the list
+# must be exact: every other captured value is unchanged to 1e-12.
+V11_FILE = os.path.join(ROOT, 'tests', 'regression_model_v1_1.json')
+V11 = {}
+if os.path.exists(V11_FILE):
+    with open(V11_FILE) as _f:
+        V11 = {f: {d['key']: d for d in v} for f, v in json.load(_f)['changed'].items()}
+
 
 class _Identity:
     """The map before the refurbish: every identifier where it was captured."""
@@ -56,9 +65,11 @@ class _Identity:
 
 try:
     import naming
+    from naming import _ascii
     LEGACY = naming.LEGACY
 except (ImportError, AttributeError):
     LEGACY = _Identity()
+    _ascii = str
 
 
 def _same(expected, actual):
@@ -131,6 +142,30 @@ def _check_csv(old_file, entry):
     return bad, missing
 
 
+def _key(kind, item):
+    """(key, captured value, current value) of one entry of a 'bad' list."""
+    if kind == 'json':
+        return item[0], item[1], item[2]
+    return json.dumps([json.loads(item[0]), item[1]]), item[2], item[3]
+
+
+def _apply_v11(section, old_file, kind, bad):
+    """Remove from `bad` the values MODEL v1.1.0 changed, after checking each against its listed
+    old and new value; return (still bad, listed values that did not change)."""
+    listed = V11.get(f'{section}:{old_file}', {})
+    if not listed:
+        return bad, []
+    rest, seen = [], set()
+    for item in bad:
+        k, e, a = _key(kind, item)
+        d = listed.get(k)
+        if d is not None and _same(d['old'], e) and _same(d['new'], _py(a)):
+            seen.add(k)
+        else:
+            rest.append(item)
+    return rest, sorted(set(listed) - seen)
+
+
 def _flatten(obj, prefix=''):
     out = {}
     if isinstance(obj, dict):
@@ -168,8 +203,23 @@ def test_every_captured_number_is_reproduced(old_file):
     new = os.path.join(OUT, LEGACY.file(old_file))
     assert os.path.exists(new), f'{old_file}: the current file {LEGACY.file(old_file)} does not exist'
     bad, missing = (_check_json if entry['kind'] == 'json' else _check_csv)(old_file, entry)
+    bad, unchanged = _apply_v11('files', old_file, 'json' if entry['kind'] == 'json' else entry['kind'], bad)
     assert not missing, f'{old_file}: {len(missing)} captured values absent, e.g. {missing[:5]}'
     assert not bad, f'{old_file}: {len(bad)} values differ beyond 1e-12 relative, e.g. {bad[:5]}'
+    assert not unchanged, f'{old_file}: {len(unchanged)} values listed as changed in v1.1 did not change, e.g. {unchanged[:3]}'
+
+
+def test_v11_changes_are_only_the_adoption_sensitivities():
+    """Every value listed in tests/regression_model_v1_1.json belongs to the full roll-out by 2030 /
+    by 2045 sensitivities (a pathway row with that adoption path, or the paths in levers.json)."""
+    if not V11:
+        pytest.skip('no v1.1 changes listed')
+    for f, keys in V11.items():
+        for k in keys:
+            if f.endswith('levers.json'):
+                assert k.startswith(('ramp/sensitivit', 'ramp/w_sensitivity')), (f, k)
+            else:
+                assert any(t in k for t in ('ramp2030', 'ramp2045')), (f, k)
 
 
 def test_capture_meta():
@@ -182,7 +232,13 @@ ADDITIONS = CAP.get('additions', {}).get('files', {})
 
 
 class _Release(_Identity):
-    """Additions are captured at their release locations: no map."""
+    """Additions are captured at their release locations: no map, except the MODEL v1.1.0
+    renaming of two demand-band labels (naming.BAND_RELABEL_V1_1)."""
+    @staticmethod
+    def cell(old_file, col, value, row):
+        if col == 'band':
+            return _ascii(getattr(naming, 'BAND_RELABEL_V1_1', {}).get(value, value))
+        return value
 
 
 @pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1', reason='quick run: Monte Carlo outputs differ by design')
@@ -198,5 +254,7 @@ def test_every_added_number_is_reproduced(new_file):
         bad, missing = (_check_json if entry['kind'] == 'json' else _check_csv)(new_file, entry)
     finally:
         LEGACY = saved
+    bad, unchanged = _apply_v11('additions', new_file, 'json' if entry['kind'] == 'json' else entry['kind'], bad)
     assert not missing, f'{new_file}: {len(missing)} added values absent, e.g. {missing[:5]}'
     assert not bad, f'{new_file}: {len(bad)} values differ beyond 1e-12 relative, e.g. {bad[:5]}'
+    assert not unchanged, f'{new_file}: {len(unchanged)} values listed as changed in v1.1 did not change'

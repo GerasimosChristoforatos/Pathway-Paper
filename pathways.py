@@ -573,6 +573,24 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
             w_2035_minus_w_2034=float(w[10] - w[9]), carbon_2035_kt=c35, carbon_2036_kt=c36,
             carbon_step_kt=c36 - c35, carbon_step_pct=100 * (c36 / c35 - 1), reference_carbon_step_kt=p36 - p35,
             step_relative_to_reference_kt=(c36 - c35) - (p36 - p35), dwellings_step=d36 - d35)
+    # the same step for P2 under each adoption-path sensitivity: end year E -> E + 1 (P2 runs under
+    # these windows are computed here only; they are not rows of runs.csv)
+    yrs = list(ref['years'])
+    p_ref = a_ref.loc[REFERENCE, 'carbon_kt']
+    for rs in LV.ADOPTION_SENSITIVITIES:
+        E = rs['end']
+        wr = LV.ramp_named(ref['years'], rs['name'])
+        for s in LV.SETTINGS:
+            R = get(REFERENCE, LV.pathway_levers('P2', s), rs['name'], False)
+            c = pd.Series(np.asarray(R['E']['carbon'], float) / M6, index=yrs)
+            d = pd.Series(np.asarray(R['E']['dwell_in_scope'], float), index=yrs)
+            diag[f"end_of_ramp_step_{run_name('P2', s, rs['name'])}"] = dict(
+                end_year=E, w_E_minus_w_E_minus_1=float(wr[yrs.index(E)] - wr[yrs.index(E - 1)]),
+                carbon_E_kt=float(c[E]), carbon_E_plus_1_kt=float(c[E + 1]), carbon_step_kt=float(c[E + 1] - c[E]),
+                carbon_step_pct=float(100 * (c[E + 1] / c[E] - 1)),
+                reference_carbon_step_kt=float(p_ref[E + 1] - p_ref[E]),
+                step_relative_to_reference_kt=float((c[E + 1] - c[E]) - (p_ref[E + 1] - p_ref[E])),
+                dwellings_step=float(d[E + 1] - d[E]))
     out = dict(params=params, runs=runs_df, annual=pd.DataFrame(annual), bands=bands_df,
                shapley_pathways=pd.DataFrame(shap_p), shapley_levers=pd.DataFrame(shap_l),
                shapley_runs=pd.DataFrame(shap_runs), shapley_exact=shap_exact, backcast=backcast_out,

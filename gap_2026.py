@@ -157,7 +157,7 @@ def main():
     L += ['', 'Columns (ii)-(iv) sum to the gap exactly (sequential decomposition; the order is a choice).',
           '', '## Where the 2018-2023 excess building went (census counts, private dwellings)', '',
           f"Completions {boom['built']:,.0f} (consents lagged W, so the pipeline is already excluded); "
-          f"net stock change {boom['d_stock']:,.0f}; net removals (redevelopment) = completions - stock "
+          f"net stock change {boom['d_stock']:,.0f}; net removals (the recent replacement surge) = completions - stock "
           f"change = {boom['net_removals']:,.0f}; a higher vacancy rate absorbed "
           f"{boom['vacancy_rate_rise_absorbed']:+,.0f}; households (occupied + away) {boom['households']:+,.0f}. "
           f"For information: dwellings under construction at census changed by "

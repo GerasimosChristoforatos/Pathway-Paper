@@ -133,6 +133,84 @@ def history_bands(B):
     return pd.DataFrame(rows)
 
 
+def _consistent_calibration(B):
+    """The stock identity of the history on ONE vacancy definition (consistent_share), as D05."""
+    return engine.calibrate_stock(B['years_hist'], B['hist_hh'],
+                                  engine.vacancy_knots(B['census'], float(B['empty_share_measured']), consistent_share(B)),
+                                  B['hist_units_all_c'], B['hist_rv_units_c'], projection.COMPLETION_RATE,
+                                  projection.DEMOLITION_RATE, projection.DEMOLITION_CALIB_START, B['calib_end'])
+
+
+def _history_intervals(B, yh):
+    cy = [int(y) for y in B['census'].index if yh[0] - 1 <= y <= int(B['calib_end'])]
+    return cy, list(zip(cy[:-1], cy[1:])) + [(cy[-1], int(yh[-1]))]
+
+
+def stock_identity_history(B):
+    """Dwellings built per year in the census intervals 1991-2023 (and 2023-2025) by component
+    (MODEL v1.1.0; D05c), interval means over the years y0+1..y1, in scope:
+
+        dwellings built = new households + vacancy (allowance and change, ONE definition)
+                          + net replacement (census-measured) + retirement villages (negative)
+                          + unexplained building
+
+    Net replacement is the census-measured quantity the model uses: the rate of the census
+    dwelling-count identity of its interval (engine.census_interval_rates: completions,
+    under-construction corrected, minus the change in census private dwellings, per stock-year;
+    D07) times the previous year's stock of the consistent calibration, year by year. After the
+    latest census (2024-2025, households consent-derived) the latest interval's rate is carried, as
+    in the AESA history. Unexplained building is what remains: building not explained by household
+    formation, vacancy and census-measured replacement (redevelopment not captured by the census
+    counts, error in the household estimates, or residual); it may be negative. It equals the
+    household-identity residual (cal['net']) minus the census-measured replacement."""
+    yh = np.arange(1992, 2026)
+    cal = _consistent_calibration(B)
+    cy, intervals = _history_intervals(B, yh)
+    rates = B['census_rates'].set_index(['y0', 'y1'])['rate']
+    rate = pd.Series(np.nan, index=yh)
+    for (y0, y1), r in rates.items():
+        rate.loc[(rate.index > y0) & (rate.index <= y1)] = r
+    rate.loc[rate.index > cy[-1]] = rates.loc[(cy[-2], cy[-1])]          # 2024-25: the latest rate carried
+    repl = rate * cal['prev'].loc[yh]
+    parts = dict(new_households=B['d_hh'].loc[yh], vacancy=(cal['allow'] + cal['change']).loc[yh],
+                 net_replacement_census=repl, retirement_villages=cal['rv'].loc[yh])
+    built = B['hist_built_units'].loc[yh]
+    parts['unexplained_building'] = built - sum(parts.values())
+    rows = []
+    for y0, y1 in intervals:
+        mean = lambda ser: float(np.mean(np.asarray(ser.loc[y0 + 1:y1], float)))
+        rows.append(dict(interval=f'{y0}-{y1}', year_start=y0 + 1, year_end=y1,
+                         **{f'{k}_per_year': mean(v) for k, v in parts.items()},
+                         dwellings_built_per_year=mean(built), net_replacement_rate=float(rate.loc[y1]),
+                         household_identity_residual_per_year=mean(cal['net'].loc[yh]),
+                         households_from=('census' if y1 <= cy[-1] else 'consents')))
+    return pd.DataFrame(rows)
+
+
+def household_formation_history(B):
+    """New households per year in the census intervals 1991-2023 (and 2023-2025) by source (MODEL
+    v1.1.0; D04c), interval means over the years y0+1..y1: from population growth (dP / S) and from
+    the change in household size (the rest of the change in households). Households are census-
+    benchmarked at the census years, so each interval's total is the census-anchored change
+    divided by its length; 2024-2025 are consent-derived estimates with no census check."""
+    yh = np.arange(1992, 2026)
+    pop, hh, S = B['hist_pop'], B['hist_hh'], B['hist_S']
+    pop_part = pop.diff().loc[yh] / S.loc[yh]
+    d_hh = hh.diff().loc[yh]
+    cy, intervals = _history_intervals(B, yh)
+    rows = []
+    for y0, y1 in intervals:
+        n = y1 - y0
+        mean = lambda ser: float(np.mean(np.asarray(ser.loc[y0 + 1:y1], float)))
+        rows.append(dict(interval=f'{y0}-{y1}', year_start=y0 + 1, year_end=y1, years=n,
+                         from_population_growth_per_year=mean(pop_part),
+                         from_household_size_change_per_year=mean(d_hh - pop_part),
+                         net_new_households_per_year=mean(d_hh),
+                         households_start=float(hh.loc[y0]), households_end=float(hh.loc[y1]),
+                         households_from=('census' if y1 <= cy[-1] else 'consents')))
+    return pd.DataFrame(rows)
+
+
 def hindcast(B, const_share=None):
     yh = B['years_hist']
     end = int(B['calib_end'])
@@ -360,6 +438,10 @@ def main():
     main_rows = rows_c if VALIDATION_VACANCY == 'consistent' else rows_p
     write(main_rows, chk, hindcast_stock(B), dhe_crosscheck(B), rows_pub=rows_p, vac=vac)
     history_bands(B).to_csv(layout.writing(layout.data('baseline/bands_history.csv')), index=False)
+    N.columns(stock_identity_history(B)).to_csv(layout.writing(layout.data('baseline/stock_identity_history.csv')),
+                                                index=False)
+    N.columns(household_formation_history(B)).to_csv(
+        layout.writing(layout.data('baseline/household_formation_history.csv')), index=False)
 
 
 if __name__ == '__main__':

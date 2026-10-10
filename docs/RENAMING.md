@@ -82,13 +82,13 @@ TL caption wording: "hyper-optimistic theoretical limit; a thought experiment, n
 | `extra_space` | Extra space | "Extra space per dwelling"; "Consumption: extra space per dwelling" | new-dwelling size above the occupied area (household size x floor area per design occupant) |
 | `vacancy` | Vacancy | "Vacancy allowance"; "Consumption: vacancy allowance" | the vacancy allowance on new households and the change in the vacancy rate |
 | `overbuild_2026` | 2026 overbuild | "Near-term market excess"; "Near-term market excess (2026 observed building above requirement, fading at rho)" | observed 2026 building above the requirement, fading at the persistence rho; never absorbed |
-| `replacement` | Replacement | "Replacement: long-run background (net of unconsented additions)" | long-run net replacement: demolition net of unconsented additions (the census identifies only their sum) |
-| `redevelopment` | Redevelopment | "Redevelopment wave (scenario - long run)"; "Replacement: recent redevelopment wave (fading)" | the recent redevelopment wave: net replacement above the long-run rate, fading |
+| `replacement` | Historical replacement | "Replacement: long-run background (net of unconsented additions)" | the long-run net replacement rate: demolition net of unconsented additions, 1991–2023 ratio of sums of the census dwelling-count identity (the census identifies only their sum) |
+| `redevelopment` | Recent replacement surge | "Redevelopment wave (scenario - long run)"; "Replacement: recent redevelopment wave (fading)" | the scenario rate above that long-run rate: the 2018–2023 knock-down-and-rebuild wave, fading in the Reference |
 | `maintenance` | Maintenance (B2, B4), 2026–2050 | "Replacements & repaints, within 2026-2050" | replacement and repaint events (B2, B4) of the new buildings within 2026–2050 (carbon only) |
-| `replacement_demolition` | Replacement: demolition (BRANZ rate) | "Demolition replacement" | sub-row of Replacement in data tables |
-| `replacement_residual` | Replacement: net unconsented additions (calibrated residual) | "Calibrated stock residual (long run)" | sub-row of Replacement in data tables |
+| `replacement_demolition` | Historical replacement: demolition (BRANZ rate) | "Demolition replacement" | sub-row of Historical replacement in data tables |
+| `replacement_residual` | Historical replacement: net unconsented additions (calibrated residual) | "Calibrated stock residual (long run)" | sub-row of Historical replacement in data tables |
 | `retirement_villages` | Retirement villages (out of scope) | "Housed in RV units (out of scope)" | bookkeeping row, out of scope; not a band in figures |
-| `replacement_history` | Replacement and redevelopment (history; not separable) |  | history band (census intervals, H3): replacement and redevelopment are not separable before 2026 |
+| `replacement_history` | Net replacement (history; historical replacement and recent surge not separable) |  | history band (census intervals, H3): historical replacement and the recent surge are not separable before 2026 |
 
 ### Carbon components, boundaries and metrics
 
@@ -122,8 +122,8 @@ TL caption wording: "hyper-optimistic theoretical limit; a thought experiment, n
 | growth (net of consolidation), growth demand | population growth |
 | extra space per dwelling, consumption: extra space | extra space |
 | vacancy allowance, consumption: vacancy | vacancy |
-| demolition replacement + calibrated stock residual; long-run background replacement | replacement (net of unconsented additions) |
-| redevelopment wave | redevelopment |
+| demolition replacement + calibrated stock residual; long-run background replacement | historical replacement (net of unconsented additions; MODEL v1.1.0, was "replacement" in model-v1.0.0) |
+| redevelopment wave | recent replacement surge (MODEL v1.1.0, was "redevelopment" in model-v1.0.0) |
 | replacements & repaints (B2, B4) within 2026-2050 | maintenance (B2, B4), 2026–2050 |
 | upfront (A1-A5 + soil) | materials and construction (A1–A5) + soil carbon loss (both named); "upfront" kept only as the defined sum in data files |
 | soil (land-use change) | soil carbon loss |
@@ -464,9 +464,9 @@ Distinct values of identifying (text) columns that change.
 | `pathways/pathways_bands.csv` | `band` | House-splitting | Smaller households |
 | `pathways/pathways_bands.csv` | `band` | Extra space per dwelling | Extra space |
 | `pathways/pathways_bands.csv` | `band` | Vacancy allowance | Vacancy |
-| `pathways/pathways_bands.csv` | `band` | Demolition replacement | Replacement: demolition (BRANZ rate) |
-| `pathways/pathways_bands.csv` | `band` | Calibrated stock residual (long run) | Replacement: net unconsented additions (calibrated residual) |
-| `pathways/pathways_bands.csv` | `band` | Redevelopment wave (scenario - long run) | Redevelopment |
+| `pathways/pathways_bands.csv` | `band` | Demolition replacement | Historical replacement: demolition (BRANZ rate) |
+| `pathways/pathways_bands.csv` | `band` | Calibrated stock residual (long run) | Historical replacement: net unconsented additions (calibrated residual) |
+| `pathways/pathways_bands.csv` | `band` | Redevelopment wave (scenario - long run) | Recent replacement surge |
 | `pathways/pathways_bands.csv` | `band` | Near-term market excess | 2026 overbuild |
 | `pathways/pathways_bands.csv` | `band` | Housed in RV units (out of scope) | Retirement villages (out of scope) |
 | `pathways/pathways_bands.csv` | `definition` | in_scope_figure | in_scope |
@@ -474,8 +474,8 @@ Distinct values of identifying (text) columns that change.
 | `pathways/pathways_bands.csv` | `band` | House-splitting demand | Smaller households |
 | `pathways/pathways_bands.csv` | `band` | Consumption: extra space per dwelling | Extra space |
 | `pathways/pathways_bands.csv` | `band` | Consumption: vacancy allowance | Vacancy |
-| `pathways/pathways_bands.csv` | `band` | Replacement: long-run background (net of unconsented additions) | Replacement |
-| `pathways/pathways_bands.csv` | `band` | Replacement: recent redevelopment wave (fading) | Redevelopment |
+| `pathways/pathways_bands.csv` | `band` | Replacement: long-run background (net of unconsented additions) | Historical replacement |
+| `pathways/pathways_bands.csv` | `band` | Replacement: recent redevelopment wave (fading) | Recent replacement surge |
 | `pathways/pathways_bands.csv` | `band` | Near-term market excess (2026 observed building above requirement, fading at rho) | 2026 overbuild |
 | `pathways/pathways_bands.csv` | `band` | Replacements & repaints, within 2026-2050 | Maintenance (B2, B4), 2026-2050 |
 | `pathways/pathways_bands.csv` | `run` | L1-central | L1-moderate |
@@ -894,12 +894,12 @@ Distinct keys that change, per file (paths are joined by "/"; list indices uncha
 | `pathways/levers.json` | `band Extra space per dwelling carbon_kt` | `band Extra space carbon_kt` |
 | `pathways/levers.json` | `band Vacancy allowance gfa_Mm2` | `band Vacancy floor_area_Mm2` |
 | `pathways/levers.json` | `band Vacancy allowance carbon_kt` | `band Vacancy carbon_kt` |
-| `pathways/levers.json` | `band Demolition replacement gfa_Mm2` | `band Replacement: demolition (BRANZ rate) floor_area_Mm2` |
-| `pathways/levers.json` | `band Demolition replacement carbon_kt` | `band Replacement: demolition (BRANZ rate) carbon_kt` |
-| `pathways/levers.json` | `band Calibrated stock residual (long run) gfa_Mm2` | `band Replacement: net unconsented additions (calibrated residual) floor_area_Mm2` |
-| `pathways/levers.json` | `band Calibrated stock residual (long run) carbon_kt` | `band Replacement: net unconsented additions (calibrated residual) carbon_kt` |
-| `pathways/levers.json` | `band Redevelopment wave (scenario - long run) gfa_Mm2` | `band Redevelopment floor_area_Mm2` |
-| `pathways/levers.json` | `band Redevelopment wave (scenario - long run) carbon_kt` | `band Redevelopment carbon_kt` |
+| `pathways/levers.json` | `band Demolition replacement gfa_Mm2` | `band Historical replacement: demolition (BRANZ rate) floor_area_Mm2` |
+| `pathways/levers.json` | `band Demolition replacement carbon_kt` | `band Historical replacement: demolition (BRANZ rate) carbon_kt` |
+| `pathways/levers.json` | `band Calibrated stock residual (long run) gfa_Mm2` | `band Historical replacement: net unconsented additions (calibrated residual) floor_area_Mm2` |
+| `pathways/levers.json` | `band Calibrated stock residual (long run) carbon_kt` | `band Historical replacement: net unconsented additions (calibrated residual) carbon_kt` |
+| `pathways/levers.json` | `band Redevelopment wave (scenario - long run) gfa_Mm2` | `band Recent replacement surge floor_area_Mm2` |
+| `pathways/levers.json` | `band Redevelopment wave (scenario - long run) carbon_kt` | `band Recent replacement surge carbon_kt` |
 | `pathways/levers.json` | `band Near-term market excess gfa_Mm2` | `band 2026 overbuild floor_area_Mm2` |
 | `pathways/levers.json` | `band Near-term market excess carbon_kt` | `band 2026 overbuild carbon_kt` |
 | `pathways/levers.json` | `band Housed in RV units (out of scope) gfa_Mm2` | `band Retirement villages (out of scope) floor_area_Mm2` |
@@ -1159,3 +1159,15 @@ Identifiers of the captured outputs that the approved map left in the v3.1 vocab
 | montecarlo_sobol.csv output names | as the draws columns (floor_area_Mm2, retirement_village_units, ...) |
 | reconciliation.json v2_frozen_whole_life_kt, v2_adopted_whole_life_kt and the two checks naming "v2" | whole_life_2025_factors_kt, whole_life_a45_held_kt; the checks name the whole-life totals and "maintenance decarbonisation" |
 | pb_sensitivity.csv labels "(xiii) Wider scope: ... the replacements and repaints of every cohort ..." and "Note (not in tornado): ..." | "(xiii) Wider scope: ... the maintenance (B2, B4) of every cohort ..." and "Note (not drawn in D18 or H11): ..." |
+
+## 10. MODEL v1.1.0 renaming
+
+Two demand bands renamed (labels only; IDs, definitions of the quantities and every number unchanged). The data labels of the bands follow (naming.band_data_label); the model-v1.0.0 additions captured with the old labels are mapped by naming.BAND_RELABEL_V1_1. tests/test_release.py greps every reader-facing text for the old names (naming.OLD_TERMS).
+
+| ID | model-v1.0.0 label | MODEL v1.1.0 label | definition |
+|---|---|---|---|
+| `replacement` | Replacement | Historical replacement | the long-run net replacement rate: demolition net of unconsented additions, 1991–2023 ratio of sums of the census dwelling-count identity (the census identifies only their sum) |
+| `redevelopment` | Redevelopment | Recent replacement surge | the scenario rate above that long-run rate: the 2018–2023 knock-down-and-rebuild wave, fading in the Reference |
+| `replacement_demolition` | Replacement: demolition (BRANZ rate) | Historical replacement: demolition (BRANZ rate) |  |
+| `replacement_residual` | Replacement: net unconsented additions (calibrated residual) | Historical replacement: net unconsented additions (calibrated residual) |  |
+| `replacement_history` | Replacement and redevelopment (history; not separable) | Net replacement (history; historical replacement and recent surge not separable) |  |

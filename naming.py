@@ -73,15 +73,16 @@ BANDS = {'growth': 'Population growth',
          'extra_space': 'Extra space',
          'vacancy': 'Vacancy',
          'overbuild_2026': '2026 overbuild',
-         'replacement': 'Replacement',
-         'redevelopment': 'Redevelopment',
+         'replacement': 'Historical replacement',
+         'redevelopment': 'Recent replacement surge',
          'maintenance': 'Maintenance (B2, B4), 2026–2050'}
-BAND_DETAIL = {'replacement_demolition': 'Replacement: demolition (BRANZ rate)',
-               'replacement_residual': 'Replacement: net unconsented additions (calibrated residual)',
+BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BRANZ rate)',
+               'replacement_residual': 'Historical replacement: net unconsented additions (calibrated residual)',
                'retirement_villages': 'Retirement villages (out of scope)',
                # history (census intervals): the net replacement observed in the dwelling counts holds the
-               # long-run rate and any redevelopment; the two are not separable before the projection
-               'replacement_history': 'Replacement and redevelopment (history; not separable)'}
+               # long-run rate and any surge above it; the two are not separable before the projection
+               'replacement_history': 'Net replacement (history; historical replacement and recent surge not '
+                                      'separable)'}
 BANDS_HISTORY = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement_history')
 BAND_DEFINITIONS = {
     'growth': 'population growth at the occupied area per person, net of consolidation (untargeted)',
@@ -89,9 +90,10 @@ BAND_DEFINITIONS = {
     'extra_space': 'new-dwelling size above the occupied area (household size x floor area per design occupant)',
     'vacancy': 'the vacancy allowance on new households and the change in the vacancy rate',
     'overbuild_2026': 'observed 2026 building above the requirement, fading at the persistence rho; never absorbed',
-    'replacement': 'long-run net replacement: demolition net of unconsented additions (the census identifies only '
-                   'their sum)',
-    'redevelopment': 'the recent redevelopment wave: net replacement above the long-run rate, fading',
+    'replacement': 'the long-run net replacement rate: demolition net of unconsented additions, 1991–2023 ratio of '
+                   'sums of the census dwelling-count identity (the census identifies only their sum)',
+    'redevelopment': 'the scenario rate above that long-run rate: the 2018–2023 knock-down-and-rebuild wave, fading '
+                     'in the Reference',
     'maintenance': 'replacement and repaint events (B2, B4) of the new buildings within 2026–2050 (carbon only)',
 }
 UNTARGETED = ('growth', 'smaller_households')
@@ -154,6 +156,12 @@ OLD_TERMS = [
     (r'Projected Median|Projected Total|Uncertainty \(5th', 'legend entries of docs/RENAMING.md §7'),
     (r'(?i)held at the 2023 census|vacancy (?:rate )?(?:is |stays |remains )?(?:held|constant|fixed) at',
      'the vacancy wording (VACANCY_WORDING)'),
+    # MODEL v1.1.0: the demand bands "Replacement" and "Redevelopment" (lower-case "redevelopment" stays
+    # where it names the 2026-overbuild booking setting or the knock-down-and-rebuild process in prose)
+    (r'\bRedevelopment\b|(?i:redevelopment (?:wave|band|component|channel)|replacement and redevelopment)',
+     'Recent replacement surge (MODEL v1.1.0)'),
+    (r'(?<!Historical )(?<!historical )\bReplacement(?= bands?\b|\s*\(net of unconsented|\s*\||\s*:\s*(?:demolition|net '
+     r'unconsented|long-run))', 'Historical replacement (MODEL v1.1.0)'),
 ]
 
 
@@ -409,6 +417,13 @@ _BAND_LEGACY = {
     'Replacements & repaints, within 2026-2050': BANDS['maintenance'],
 }
 BAND_DEFINITION_LEGACY = {'boss_results': 'with_retirement_villages', 'in_scope_figure': 'in_scope'}
+# MODEL v1.1.0 renaming of two demand bands (labels only): model-v1.0.0 data label -> v1.1.0 data label.
+# Used by tests/test_regression_model_v1.py for the model-v1.0.0 additions, which were captured with
+# the v1.0.0 labels (the ee37ef1 capture maps through _BAND_LEGACY and BANDS directly).
+BAND_RELABEL_V1_1 = {'Replacement': BANDS['replacement'], 'Redevelopment': BANDS['redevelopment'],
+                     'Replacement: demolition (BRANZ rate)': BAND_DETAIL['replacement_demolition'],
+                     'Replacement: net unconsented additions (calibrated residual)': BAND_DETAIL['replacement_residual'],
+                     'Replacement and redevelopment (history; not separable)': BAND_DETAIL['replacement_history']}
 
 
 def band_label(old):

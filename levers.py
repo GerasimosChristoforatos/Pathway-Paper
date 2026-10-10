@@ -11,11 +11,13 @@ Years: model index 0 = 2025, 1 = 2026 (observed; no lever touches it). A lever
 at full strength moves a quantity from its baseline b to its target x as
 b + w(y) (x - b), with the adoption path (normalised logistic ramp)
 
-    s(y) = 1 / (1 + exp(-k (y - m))),  k = ln(81) / 6,  m = 2030.5
-    w(y) = (s(y) - s(2026)) / (s(2035) - s(2026))  for 2026 <= y <= 2035;  w = 1 after 2035
+    s(y) = 1 / (1 + exp(-k (y - m))),  w(y) = (s(y) - s(2026)) / (s(E) - s(2026))  for 2026 <= y <= E;
+    w = 1 after E,  with  W = E - 2026,  m = 2026 + W/2,  k = ln(81) / (2W/3)
 
-(10% -> 90% of s within 6 years; full roll-out by 2035 following RECC, Pauliuk et al. 2024;
-sensitivities 'by2030': m = 2028.5, end 2030, and 'by2045': m = 2035.5, end 2045; same k).
+one rule for every window (adoption_window): 10% -> 90% of s within the middle two-thirds of
+the window. Adopted E = 2035 (m = 2030.5, k = ln(81) / 6; full roll-out by 2035 following RECC,
+Pauliuk et al. 2024); sensitivities 'by2030' (m = 2028, k = ln(81) / (8/3)) and 'by2045'
+(m = 2035.5, k = ln(81) / (38/3)).
 Typology shares stay at the Reference (held) mix in every run: the denser typology mix
 (lever of pathways_v2, removed in pathways_v3.1) is described in DENSER_MIX_V2_NOTE.
 
@@ -53,20 +55,33 @@ BAND_TARGET = {
     'L1': 'Extra space (and the dwelling size of every band except Population growth)',
     'L2': 'Vacancy (including the change in the vacancy rate)',
     'L3': '2026 overbuild',
-    'L4': 'Replacement and Redevelopment',
+    'L4': f"{N.BANDS['replacement']} and {N.BANDS['redevelopment']}",
     'L5': 'None: carbon per m2 (A1-A3) of every band'}
 LEVER_PARAMETER = {'L1': 'size (engine.forward), per typology and year',
                    'L2': 'v (stock-wide vacancy rate)', 'L3': 'join, join_redev (engine.market_excess absorption)',
-                   'L4': 'rate_demol, rate_unc (redevelopment component)',
+                   'L4': 'rate_demol, rate_unc (recent-surge component)',
                    'L5': 'intensity, intensity_upfront (A1-A3 term only)'}
 
 OBSERVED_YEAR = 2026            # last observed year: w = 0 up to and including it
-RAMP_END = 2035                 # full strength from this year (adopted: by2035)
-RAMP_MID = 2030.5
-RAMP_K = math.log(81.0) / 6.0   # s rises from 0.1 to 0.9 within 6 years
+
+
+def adoption_window(end, name=None, start=OBSERVED_YEAR):
+    """The adoption path of a window start -> end (W = end - start years), one rule for every
+    window: normalised logistic with midpoint start + W/2 and speed k = ln(81) / (2W/3), so that
+    s rises from 10% to 90% within the middle two-thirds of the window; w(start) = 0, w(end) = 1,
+    w = 1 after end (ramp())."""
+    W = end - start
+    return dict(name=name or f'by{end}', mid=start + W / 2.0, end=end, k=math.log(81.0) / (2.0 * W / 3.0))
+
+
+ADOPTED_WINDOW = adoption_window(2035)
+RAMP_END = ADOPTED_WINDOW['end']    # full strength from this year (adopted: by2035)
+RAMP_MID = ADOPTED_WINDOW['mid']    # 2030.5
+RAMP_K = ADOPTED_WINDOW['k']        # ln(81) / 6: s rises from 0.1 to 0.9 within 6 years
+assert RAMP_MID == 2030.5 and RAMP_K == math.log(81.0) / 6.0    # the adopted path of model-v1.0.0, bit for bit
 ADOPTION_ADOPTED = 'by2035'
-ADOPTION_BY2045 = dict(name='by2045', mid=2035.5, end=2045)    # sensitivity (P5 only); same k
-ADOPTION_BY2030 = dict(name='by2030', mid=2028.5, end=2030)    # sensitivity (P5 only); same k
+ADOPTION_BY2045 = adoption_window(2045)    # sensitivity (P5 only): midpoint 2035.5, k = ln(81) / (38/3)
+ADOPTION_BY2030 = adoption_window(2030)    # sensitivity (P5 only): midpoint 2028, k = ln(81) / (8/3)
 ADOPTION_SENSITIVITIES = (ADOPTION_BY2030, ADOPTION_BY2045)
 RAMP_BASIS = ('full roll-out by 2035 following RECC (Pauliuk et al. 2024, J. Ind. Ecol. 28, 1699: circular-economy '
               'strategies fully implemented by 2035)')
@@ -148,7 +163,7 @@ def ramp_named(years, name=None):
         return ramp(years)
     for r in ADOPTION_SENSITIVITIES:
         if name == r['name']:
-            return ramp(years, mid=r['mid'], end=r['end'])
+            return ramp(years, mid=r['mid'], end=r['end'], k=r['k'])
     raise ValueError(f'Unknown adoption path {name!r}.')
 
 
@@ -324,7 +339,7 @@ def l3_join(E_nojoin, O26, rho, gap_ref, absorption):
 
 
 def l4_rates(rate_demol, rate_unc, long_run_residual, d, w):
-    """L4: demolition rate x (1 - w d); the redevelopment component of the residual
+    """L4: demolition rate x (1 - w d); the recent-surge component of the residual
     path (rate_unc - long-run residual) x (1 - w d); the long-run residual untouched."""
     f = 1.0 - w * float(d)
     return float(rate_demol) * f, float(long_run_residual) + (np.asarray(rate_unc, float) - long_run_residual) * f
@@ -470,7 +485,7 @@ def lever_table(p):
              source='DECISION (author): the absorption sensitivities of the 2026 overbuild in the projection '
                     '(projection.OVERBUILD_ABSORPTION 0.10 / 0.20)', tag='DECISION'),
         dict(item='L4 ' + LEVER_NAMES['L4'], pathway='P3 ' + PATHWAY_NAMES['P3'], band=BAND_TARGET['L4'],
-             how='demolition x (1 - w d); redevelopment component of the residual x (1 - w d) (`rate_demol`, '
+             how='demolition x (1 - w d); recent-surge component of the residual x (1 - w d) (`rate_demol`, '
                  '`rate_unc`); the long-run residual untouched',
              assumption='renovation carbon of the kept stock not modelled (upper bound; Napiontek et al. 2025, '
                         'Resources, Conservation and Recycling 215, 108117)',
@@ -554,8 +569,10 @@ def register(p):
          'design', 'DECISION (author)'),
         ('Adoption path', f"normalised logistic s(y) = 1 / (1 + exp(-k (y - {p['adoption']['mid']}))), k = ln(81)/6 = "
          f"{p['adoption']['k']:.4f}; w = (s(y) - s(2026)) / (s(2035) - s(2026)), 1 after 2035, 0 up to 2026 (full "
-         "roll-out by 2035, adopted); sensitivities (P5): full roll-out by 2030 (midpoint 2028.5) and by 2045 "
-         "(midpoint 2035.5), same k",
+         "roll-out by 2035, adopted); one rule for every window 2026 -> E (W = E - 2026): midpoint 2026 + W/2, "
+         "k = ln(81) / (2W/3), 10-90% of adoption within the middle two-thirds of the window; sensitivities (P5): "
+         f"full roll-out by 2030 (midpoint {ADOPTION_BY2030['mid']:g}, k = {ADOPTION_BY2030['k']:.4f}) and by 2045 "
+         f"(midpoint {ADOPTION_BY2045['mid']:g}, k = {ADOPTION_BY2045['k']:.4f})",
          'LITERATURE: ' + RAMP_BASIS + '; DECISION (author): the logistic form'),
         ('Typology mix', 'Reference (held) shares in every run; ' + note['text'] + ' Values from git tag pathways_v2 '
          '(Reference): '

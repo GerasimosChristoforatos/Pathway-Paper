@@ -1,0 +1,192 @@
+panel,series,x,value,unit
+a,TL1 No vacancy,LoE AR,0.562539638070454,cumulative LoE AR
+a,TL1 No vacancy,carbon,2503.8798475162,kt CO2e 2026-2050
+a,TL2 No extra space,LoE AR,1.017170714266105,cumulative LoE AR
+a,TL2 No extra space,carbon,4527.4556325852745,kt CO2e 2026-2050
+a,TL3 Minimum space per person,LoE AR,0.4348798853637141,cumulative LoE AR
+a,TL3 Minimum space per person,carbon,1935.6626757668296,kt CO2e 2026-2050
+a,TL4 Best-practice materials,LoE AR,0.3311474769517365,cumulative LoE AR
+a,TL4 Best-practice materials,carbon,1473.9467905574377,kt CO2e 2026-2050
+a,TL5 Lowest-carbon soils,LoE AR,0.1428237018502411,cumulative LoE AR
+a,TL5 Lowest-carbon soils,carbon,635.7123384889238,kt CO2e 2026-2050
+a,TL6 Urban infill,LoE AR,0.1814353022518925,cumulative LoE AR
+a,TL6 Urban infill,carbon,807.5736644883814,kt CO2e 2026-2050
+a,TL7 Building retention at −40% (ambitious level),LoE AR,0.0897823856605871,cumulative LoE AR
+a,TL7 Building retention at −40% (ambitious level),carbon,399.62393919220426,kt CO2e 2026-2050
+a,Full strength from 2027,LoE AR,0.1566140872974935,cumulative LoE AR
+a,Full strength from 2027,carbon,697.0937343480546,kt CO2e 2026-2050
+b,Reference: new-dwelling size,2026,141.9576926102206,m2 per dwelling
+b,Reference: new-dwelling size,2027,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2028,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2029,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2030,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2031,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2032,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2033,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2034,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2035,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2036,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2037,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2038,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2039,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2040,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2041,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2042,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2043,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2044,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2045,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2046,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2047,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2048,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2049,141.32058771513013,m2 per dwelling
+b,Reference: new-dwelling size,2050,141.32058771513013,m2 per dwelling
+b,TL: new-dwelling size,2026,141.9576926102206,m2 per dwelling
+b,TL: new-dwelling size,2027,52.67349878830944,m2 per dwelling
+b,TL: new-dwelling size,2028,52.619656018323845,m2 per dwelling
+b,TL: new-dwelling size,2029,52.55284658878239,m2 per dwelling
+b,TL: new-dwelling size,2030,52.47639506592338,m2 per dwelling
+b,TL: new-dwelling size,2031,52.399134893614004,m2 per dwelling
+b,TL: new-dwelling size,2032,52.32989951572134,m2 per dwelling
+b,TL: new-dwelling size,2033,52.2775223761126,m2 per dwelling
+b,TL: new-dwelling size,2034,52.236058566608115,m2 per dwelling
+b,TL: new-dwelling size,2035,52.19648075444681,m2 per dwelling
+b,TL: new-dwelling size,2036,52.162998746623586,m2 per dwelling
+b,TL: new-dwelling size,2037,52.139822350133386,m2 per dwelling
+b,TL: new-dwelling size,2038,52.13116137197113,m2 per dwelling
+b,TL: new-dwelling size,2039,52.139015783086414,m2 per dwelling
+b,TL: new-dwelling size,2040,52.157745532669075,m2 per dwelling
+b,TL: new-dwelling size,2041,52.18010039507418,m2 per dwelling
+b,TL: new-dwelling size,2042,52.19883014465685,m2 per dwelling
+b,TL: new-dwelling size,2043,52.20668455577215,m2 per dwelling
+b,TL: new-dwelling size,2044,52.20668455577215,m2 per dwelling
+b,TL: new-dwelling size,2045,52.20668455577215,m2 per dwelling
+b,TL: new-dwelling size,2046,52.20668455577215,m2 per dwelling
+b,TL: new-dwelling size,2047,52.20668455577215,m2 per dwelling
+b,TL: new-dwelling size,2048,52.20668455577215,m2 per dwelling
+b,TL: new-dwelling size,2049,52.20668455577215,m2 per dwelling
+b,TL: new-dwelling size,2050,52.20668455577215,m2 per dwelling
+b,TL: floor area per person in new dwellings,2026,53.011589409779646,m2 per person
+b,TL: floor area per person in new dwellings,2027,19.68761905,m2 per person
+b,TL: floor area per person in new dwellings,2028,19.687619049999995,m2 per person
+b,TL: floor area per person in new dwellings,2029,19.68761905,m2 per person
+b,TL: floor area per person in new dwellings,2030,19.687619049999995,m2 per person
+b,TL: floor area per person in new dwellings,2031,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2032,19.687619049999995,m2 per person
+b,TL: floor area per person in new dwellings,2033,19.68761905,m2 per person
+b,TL: floor area per person in new dwellings,2034,19.68761905,m2 per person
+b,TL: floor area per person in new dwellings,2035,19.68761905,m2 per person
+b,TL: floor area per person in new dwellings,2036,19.687619049999995,m2 per person
+b,TL: floor area per person in new dwellings,2037,19.687619049999995,m2 per person
+b,TL: floor area per person in new dwellings,2038,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2039,19.68761905,m2 per person
+b,TL: floor area per person in new dwellings,2040,19.68761905,m2 per person
+b,TL: floor area per person in new dwellings,2041,19.68761905,m2 per person
+b,TL: floor area per person in new dwellings,2042,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2043,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2044,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2045,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2046,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2047,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2048,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2049,19.687619050000002,m2 per person
+b,TL: floor area per person in new dwellings,2050,19.687619050000002,m2 per person
+c,Reference: dwellings built,2026,36466.15132167409,dwellings per year
+c,Reference: dwellings built,2027,32135.637335862863,dwellings per year
+c,Reference: dwellings built,2028,30266.85607517723,dwellings per year
+c,Reference: dwellings built,2029,29430.64070221546,dwellings per year
+c,Reference: dwellings built,2030,29079.719293214817,dwellings per year
+c,Reference: dwellings built,2031,28701.78506777105,dwellings per year
+c,Reference: dwellings built,2032,28131.315681339827,dwellings per year
+c,Reference: dwellings built,2033,27273.77967596052,dwellings per year
+c,Reference: dwellings built,2034,26636.55400762113,dwellings per year
+c,Reference: dwellings built,2035,26310.846459618024,dwellings per year
+c,Reference: dwellings built,2036,25773.252656954814,dwellings per year
+c,Reference: dwellings built,2037,25046.344111853385,dwellings per year
+c,Reference: dwellings built,2038,24156.267669857625,dwellings per year
+c,Reference: dwellings built,2039,23192.459409684645,dwellings per year
+c,Reference: dwellings built,2040,22466.02083434171,dwellings per year
+c,Reference: dwellings built,2041,22057.151073579716,dwellings per year
+c,Reference: dwellings built,2042,21975.79186791497,dwellings per year
+c,Reference: dwellings built,2043,22231.709687889488,dwellings per year
+c,Reference: dwellings built,2044,22367.230769227677,dwellings per year
+c,Reference: dwellings built,2045,22155.736235486333,dwellings per year
+c,Reference: dwellings built,2046,21948.713083796283,dwellings per year
+c,Reference: dwellings built,2047,21745.899420576432,dwellings per year
+c,Reference: dwellings built,2048,21547.050081788235,dwellings per year
+c,Reference: dwellings built,2049,21351.934279610723,dwellings per year
+c,Reference: dwellings built,2050,21160.33411891406,dwellings per year
+c,TL: dwellings built,2026,36466.15132167409,dwellings per year
+c,TL: dwellings built,2027,0.0,dwellings per year
+c,TL: dwellings built,2028,4.424784600887367e-12,dwellings per year
+c,TL: dwellings built,2029,0.0,dwellings per year
+c,TL: dwellings built,2030,4.436864296058762e-12,dwellings per year
+c,TL: dwellings built,2031,0.0,dwellings per year
+c,TL: dwellings built,2032,21777.476350581186,dwellings per year
+c,TL: dwellings built,2033,23549.84414204661,dwellings per year
+c,TL: dwellings built,2034,23076.998989746902,dwellings per year
+c,TL: dwellings built,2035,22855.120201391906,dwellings per year
+c,TL: dwellings built,2036,22408.67425548233,dwellings per year
+c,TL: dwellings built,2037,21769.615178292162,dwellings per year
+c,TL: dwellings built,2038,20968.285749128965,dwellings per year
+c,TL: dwellings built,2039,20092.302545756454,dwellings per year
+c,TL: dwellings built,2040,19437.59038866413,dwellings per year
+c,TL: dwellings built,2041,19080.675272206216,dwellings per year
+c,TL: dwellings built,2042,19031.20967586302,dwellings per year
+c,TL: dwellings built,2043,19298.506360183528,dwellings per year
+c,TL: dwellings built,2044,19449.533307197402,dwellings per year
+c,TL: dwellings built,2045,19270.15372298399,dwellings per year
+c,TL: dwellings built,2046,19093.308416635475,dwellings per year
+c,TL: dwellings built,2047,18918.860107318455,dwellings per year
+c,TL: dwellings built,2048,18746.675521538058,dwellings per year
+c,TL: dwellings built,2049,18576.626703102946,dwellings per year
+c,TL: dwellings built,2050,18408.591541581613,dwellings per year
+d,Reference: soil carbon loss per m2 built,2026,34.69913492225557,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2027,33.79984680313821,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2028,33.60520387670351,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2029,33.6369328507287,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2030,33.77718749539359,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2031,33.89803899247444,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2032,33.959390908708016,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2033,33.93606038203643,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2034,33.95947003002467,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2035,34.05685914865952,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2036,34.087628516435515,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2037,34.055984946136,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2038,33.96447363239097,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2039,33.83341701208931,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2040,33.76011407051614,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2041,33.779077217199756,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2042,33.89742348867451,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2043,34.11367250590102,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2044,34.27782920902466,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2045,34.32590639838913,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2046,34.36793700053525,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2047,34.404122366173965,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2048,34.43466051708625,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2049,34.4597452050123,kg CO2e per m2 (NaN: nothing built)
+d,Reference: soil carbon loss per m2 built,2050,34.47956528897425,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2026,34.69913492225557,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2027,,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2028,,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2029,,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2030,,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2031,,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2032,5.823786558686898,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2033,5.902579905299215,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2034,5.909992635727262,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2035,5.923759688491504,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2036,5.930117100674414,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2037,5.929892427631855,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2038,5.9235431361281785,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2039,5.913195476879602,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2040,5.908606019158541,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2041,5.913187635222019,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2042,5.927536193217395,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2043,5.951314948703098,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2044,5.969729056691207,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2045,5.976718417501181,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2046,5.983039825551296,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2047,5.988717924671063,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2048,5.9937764742824315,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2049,5.998238385530553,kg CO2e per m2 (NaN: nothing built)
+d,TL Theoretical limit: soil carbon loss per m2 built,2050,6.002125736489478,kg CO2e per m2 (NaN: nothing built)

@@ -89,5 +89,7 @@
   "a",
   "b"
  ],
- "note": "One setting changed per row; labels show the cumulative LoE of that row and its change from the Reference. Rows that do not enter a principle (e.g. the GDP measure for AR) show no change. Percentages are relative to carbon 2026\u20132050 (time-resolved accounting); fixed absolute terms such as soil carbon loss therefore show larger percentage effects than under whole-life accounting. The largest effects on the AR LoE, with the model inputs and the population paths: H11."
+ "note": "One setting changed per row; labels show the cumulative LoE of that row and its change from the Reference. Rows that do not enter a principle (e.g. the GDP measure for AR) show no change. Percentages are relative to carbon 2026\u20132050 (time-resolved accounting); fixed absolute terms such as soil carbon loss therefore show larger percentage effects than under whole-life accounting. The largest effects on the AR and AtP LoE, grouped: Extended Data ED4 (carbon: ED1).",
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

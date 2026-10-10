@@ -52,5 +52,7 @@
   "b",
   "design capacity (bedrooms + 1)"
  ],
- "note": null
+ "note": null,
+ "maintenance_drawn": false,
+ "maintenance_where": []
 }

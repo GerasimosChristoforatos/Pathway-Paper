@@ -1115,5 +1115,235 @@
       "reduction": 0.26305314387353373,
       "share_of_P5_ambitious_from2027_minus_TL": null
     }
-  ]
+  ],
+  "relative_to_P5_moderate": {
+    "definition": "TL = P5 Combined (Moderate) with TL1-TL7 at full strength from 2027; identical to P5 Ambitious with TL1-TL6 (TL1-TL6 override every Ambitious setting but L4; TL7 = L4 at d = 0.40)",
+    "components": {
+      "TL1": "No vacancy",
+      "TL2": "No extra space",
+      "TL3": "Minimum space per person",
+      "TL4": "Best-practice materials",
+      "TL5": "Lowest-carbon soils",
+      "TL6": "Urban infill",
+      "TL7": "Building retention at \u221240% (ambitious level)"
+    },
+    "shapley": [
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "carbon_kt",
+        "player": "TL1",
+        "name": "No vacancy",
+        "reduction": 2503.8798475161993,
+        "share_of_P5_moderate_from2027_minus_TL": 0.20383502330696587
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "carbon_kt",
+        "player": "TL2",
+        "name": "No extra space",
+        "reduction": 4527.4556325852745,
+        "share_of_P5_moderate_from2027_minus_TL": 0.3685696121979362
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "carbon_kt",
+        "player": "TL3",
+        "name": "Minimum space per person",
+        "reduction": 1935.6626757668296,
+        "share_of_P5_moderate_from2027_minus_TL": 0.15757778753670923
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "carbon_kt",
+        "player": "TL4",
+        "name": "Best-practice materials",
+        "reduction": 1473.9467905574377,
+        "share_of_P5_moderate_from2027_minus_TL": 0.1199905733114692
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "carbon_kt",
+        "player": "TL5",
+        "name": "Lowest-carbon soils",
+        "reduction": 635.7123384889238,
+        "share_of_P5_moderate_from2027_minus_TL": 0.051751860002770045
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "carbon_kt",
+        "player": "TL6",
+        "name": "Urban infill",
+        "reduction": 807.5736644883814,
+        "share_of_P5_moderate_from2027_minus_TL": 0.06574269004416197
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "carbon_kt",
+        "player": "TL7",
+        "name": "Building retention at \u221240% (ambitious level)",
+        "reduction": 399.62393919220426,
+        "share_of_P5_moderate_from2027_minus_TL": 0.03253245359998747
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AR",
+        "player": "TL1",
+        "name": "No vacancy",
+        "reduction": 0.562539638070454,
+        "share_of_P5_moderate_from2027_minus_TL": 0.20383502330696587
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AR",
+        "player": "TL2",
+        "name": "No extra space",
+        "reduction": 1.017170714266105,
+        "share_of_P5_moderate_from2027_minus_TL": 0.3685696121979362
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AR",
+        "player": "TL3",
+        "name": "Minimum space per person",
+        "reduction": 0.43487988536371414,
+        "share_of_P5_moderate_from2027_minus_TL": 0.15757778753670923
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AR",
+        "player": "TL4",
+        "name": "Best-practice materials",
+        "reduction": 0.3311474769517365,
+        "share_of_P5_moderate_from2027_minus_TL": 0.11999057331146919
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AR",
+        "player": "TL5",
+        "name": "Lowest-carbon soils",
+        "reduction": 0.14282370185024118,
+        "share_of_P5_moderate_from2027_minus_TL": 0.05175186000277003
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AR",
+        "player": "TL6",
+        "name": "Urban infill",
+        "reduction": 0.18143530225189258,
+        "share_of_P5_moderate_from2027_minus_TL": 0.06574269004416199
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AR",
+        "player": "TL7",
+        "name": "Building retention at \u221240% (ambitious level)",
+        "reduction": 0.08978238566058713,
+        "share_of_P5_moderate_from2027_minus_TL": 0.032532453599987445
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AtP",
+        "player": "TL1",
+        "name": "No vacancy",
+        "reduction": 2.249738469744493,
+        "share_of_P5_moderate_from2027_minus_TL": 0.20383502330696585
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AtP",
+        "player": "TL2",
+        "name": "No extra space",
+        "reduction": 4.067923273871305,
+        "share_of_P5_moderate_from2027_minus_TL": 0.3685696121979362
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AtP",
+        "player": "TL3",
+        "name": "Minimum space per person",
+        "reduction": 1.7391947902136797,
+        "share_of_P5_moderate_from2027_minus_TL": 0.15757778753670923
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AtP",
+        "player": "TL4",
+        "name": "Best-practice materials",
+        "reduction": 1.3243426198596948,
+        "share_of_P5_moderate_from2027_minus_TL": 0.11999057331146921
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AtP",
+        "player": "TL5",
+        "name": "Lowest-carbon soils",
+        "reduction": 0.5711881522623709,
+        "share_of_P5_moderate_from2027_minus_TL": 0.05175186000277006
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AtP",
+        "player": "TL6",
+        "name": "Urban infill",
+        "reduction": 0.7256057202402516,
+        "share_of_P5_moderate_from2027_minus_TL": 0.06574269004416197
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AtP",
+        "player": "TL7",
+        "name": "Building retention at \u221240% (ambitious level)",
+        "reduction": 0.3590624966782551,
+        "share_of_P5_moderate_from2027_minus_TL": 0.03253245359998745
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "carbon_kt",
+        "player": "from2027",
+        "name": "P5 Combined: adoption path -> full strength from 2027 (separate line, not a Shapley player)",
+        "reduction": 697.0937343480546,
+        "share_of_P5_moderate_from2027_minus_TL": null
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AR",
+        "player": "from2027",
+        "name": "P5 Combined: adoption path -> full strength from 2027 (separate line, not a Shapley player)",
+        "reduction": 0.1566140872974935,
+        "share_of_P5_moderate_from2027_minus_TL": null
+      },
+      {
+        "level": "TL",
+        "setting": "TL",
+        "metric": "LoE_AtP",
+        "player": "from2027",
+        "name": "P5 Combined: adoption path -> full strength from 2027 (separate line, not a Shapley player)",
+        "reduction": 0.6263393959324244,
+        "share_of_P5_moderate_from2027_minus_TL": null
+      }
+    ]
+  }
 }

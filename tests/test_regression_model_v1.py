@@ -1,7 +1,7 @@
 """Numerical regression lock of MODEL v1.0.0. It replaces the byte lock of the baseline
 (tests/test_baseline_lock.py and tests/baseline_manifest.json, removed in this release): the
 refurbish renames files, columns and labels, so bytes change while numbers may not. Byte
-reproducibility of the release outputs is re-established by tests/output_manifest_model_v1_1.json.
+reproducibility of the release outputs is re-established by tests/output_manifest_model_v2.json.
 
 tests/regression_model_v1.json holds every number the pipeline reported at commit
 ee37ef1 (pathways v3.1), captured by tests/capture_regression_model_v1.py before any
@@ -72,6 +72,11 @@ except (ImportError, AttributeError):
     _ascii = str
 
 
+# Release keys the checks found, (file, row key | None, column) for CSV and (file, path) for JSON:
+# read by tests/test_regression_model_v2.py, which requires every number of outputs/data/ to be locked.
+COVER = set()
+
+
 def _same(expected, actual):
     if isinstance(expected, str):                       # 'NaN', 'Infinity', '-Infinity'
         if not isinstance(actual, (int, float)) or isinstance(actual, bool):
@@ -106,6 +111,7 @@ def _check_csv(old_file, entry):
                     missing.append(c)
                 continue
             got = [_py(v) for v in df[col(c)].tolist()]
+            COVER.add((LEGACY.file(old_file), None, col(c)))
             if len(got) != len(vals):
                 bad.append((c, f'{len(got)} rows, captured {len(vals)}'))
                 continue
@@ -137,6 +143,7 @@ def _check_csv(old_file, entry):
                 if not LEGACY.removed(old_file, row=old_cells, col=c):
                     missing.append((rk, c))
                 continue
+            COVER.add((LEGACY.file(old_file), new_rk, col(c)))
             if not _same(e, _py(row[col(c)])):
                 bad.append((rk, c, e, row[col(c)]))
     return bad, missing
@@ -189,6 +196,7 @@ def _check_json(old_file, entry):
             if not LEGACY.removed(old_file, path=p):
                 missing.append(p)
             continue
+        COVER.add((LEGACY.file(old_file), q))
         if not _same(e, got[q]):
             bad.append((p, e, got[q]))
     return bad, missing

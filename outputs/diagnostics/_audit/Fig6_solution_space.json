@@ -1,0 +1,53 @@
+{
+ "figure": "Fig6_solution_space",
+ "producer": "paper.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "Demand reduction: cut of\n2027\u20132050 floor area (%)",
+   "ylabel": "Intensity reduction: cut of\nnon-soil carbon per m\u00b2 (%)",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Cumulative LoE AR (log scale)",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{100}$",
+  "$\\mathdefault{20}$",
+  "$\\mathdefault{40}$",
+  "$\\mathdefault{60}$",
+  "$\\mathdefault{80}$",
+  "0.25",
+  "0.5",
+  "1",
+  "2",
+  "3",
+  "5",
+  "AR 1",
+  "Cumulative LoE AR (log scale)",
+  "Demand reduction: cut of\n2027\u20132050 floor area (%)",
+  "Intensity reduction: cut of\nnon-soil carbon per m\u00b2 (%)",
+  "LoE AR = 1",
+  "P1",
+  "P1 Right-sized dwellings",
+  "P2",
+  "P2 Occupied stock",
+  "P3",
+  "P3 Retained stock",
+  "P4",
+  "P4 Low-carbon materials",
+  "P5",
+  "P5 Combined",
+  "TL Theoretical limit"
+ ],
+ "note": null,
+ "maintenance_drawn": false,
+ "maintenance_where": []
+}

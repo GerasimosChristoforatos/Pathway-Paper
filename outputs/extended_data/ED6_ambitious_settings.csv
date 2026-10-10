@@ -1,0 +1,23 @@
+panel,series,x,value,unit
+a,"P1 Right-sized dwellings, Moderate",value,20246.09357304601,kt CO2e 2026-2050
+a,"P1 Right-sized dwellings, Ambitious",value,18871.647781892298,kt CO2e 2026-2050
+a,"P2 Occupied stock, Moderate",value,20057.036835746287,kt CO2e 2026-2050
+a,"P2 Occupied stock, Ambitious",value,19275.894336220543,kt CO2e 2026-2050
+a,"P3 Retained stock, Moderate",value,21031.65475248247,kt CO2e 2026-2050
+a,"P3 Retained stock, Ambitious",value,20485.805881135468,kt CO2e 2026-2050
+a,"P4 Low-carbon materials, Moderate",value,20673.70384264511,kt CO2e 2026-2050
+a,"P4 Low-carbon materials, Ambitious",value,19720.31130209545,kt CO2e 2026-2050
+a,"P5 Combined, Moderate",value,17560.3739977809,kt CO2e 2026-2050
+a,"P5 Combined, Ambitious",value,14581.08680002677,kt CO2e 2026-2050
+a,Reference,value,21577.50362382947,kt CO2e 2026-2050
+b,"P1 Right-sized dwellings, Moderate",value,4.54863285960776,cumulative LoE AR
+b,"P1 Right-sized dwellings, Ambitious",value,4.239839992142473,cumulative LoE AR
+b,"P2 Occupied stock, Moderate",value,4.506158014546457,cumulative LoE AR
+b,"P2 Occupied stock, Ambitious",value,4.330660927735138,cumulative LoE AR
+b,"P3 Retained stock, Moderate",value,4.725122678798065,cumulative LoE AR
+b,"P3 Retained stock, Ambitious",value,4.602488349186239,cumulative LoE AR
+b,"P4 Low-carbon materials, Moderate",value,4.644702855352206,cumulative LoE AR
+b,"P4 Low-carbon materials, Ambitious",value,4.430506836628744,cumulative LoE AR
+b,"P5 Combined, Moderate",value,3.945239801699218,cumulative LoE AR
+b,"P5 Combined, Ambitious",value,3.2758917323040064,cumulative LoE AR
+b,Reference,value,4.847757008409889,cumulative LoE AR

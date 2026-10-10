@@ -337,9 +337,11 @@ def interp_z(z, zs, ys):
     return ys[k] + w * (ys[k + 1] - ys[k])
 
 
-def project(su, p):
+def project(su, p, full=False):
     """One draw through the shared engine. Reads only su (a snapshot) and p;
-    inputs not in p are held at their central values."""
+    inputs not in p are held at their central values. full=True also returns the draw's
+    engine inputs and intermediate results under 'draw' (pathways_mc.py applies the pathway
+    levers to them); the outputs are the same either way."""
     p = {**central(su), **p}
     fy, typ, yh = su['fy'], su['typ'], su['years_hist']
     # ---- population and household size (same rank z) ----
@@ -392,15 +394,27 @@ def project(su, p):
         gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
         soil_on_replacement=su['soil_on_repl'], events=events)
     E = fwd()
+    E_nojoin, join, ji = E, None, None
     if su['join_mode'] == 'market_excess':
         b26 = c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
                    + su['lag_w'] * float(su['units_all_raw'].loc[2025]))
         join, ji = engine.market_excess(E, b26, dv['rho'], su['near_gap_ref'], su['near_mode'],
                                         su['near_absorption'])
         E = fwd(join, ji['redev'])
-    return dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
-                hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],
-                I=np.array([I[t] for t in typ]), U=np.array([U[t] for t in typ]))
+    out = dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
+               hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],
+               I=np.array([I[t] for t in typ]), U=np.array([U[t] for t in typ]))
+    if full:
+        out['draw'] = dict(
+            pop=pop, hh=hh, growth=np.insert(np.diff(pop), 0, 0).clip(min=0), unc_long=float(unc_long), red=red,
+            kc=None if p['carbon'] is None else min(int(p['carbon'] * N_BOOT), N_BOOT - 1),
+            fwd_inputs=dict(v=v, rate_demol=su['demol_rate'], rate_unc=unc, dev_2025=dev, rho_dev=dv['rho'],
+                            rv_share=su['rv_share'], shares=shares, size=size, olf=su['olf'], intensity=I,
+                            intensity_upfront=U, soil={t: su['soc'][j] for j, t in enumerate(typ)},
+                            gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
+                            soil_on_replacement=su['soil_on_repl'], events=events),
+            E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']))
+    return out
 
 
 def summarise(out):

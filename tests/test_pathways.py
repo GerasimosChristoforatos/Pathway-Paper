@@ -489,3 +489,26 @@ def test_TL_residual_in_people(rt):
     S = E['pop'] / E['hh']
     assert res_['new_residents_housed_in_existing_dwellings'] == pytest.approx(cut * (E['dwell_in_scope'][2:] * S[2:]).sum(),
                                                                                rel=1e-12)
+
+
+def test_TL_relative_to_P5_moderate_is_TL(rt):
+    """MODEL v2.0.0: TL = P5 Moderate + TL1-TL7 (TL7 = L4 at d = 0.40) is TL = P5 Ambitious + TL1-TL6,
+    to 1e-12 in every annual quantity (TL1-TL6 override every Ambitious setting but L4)."""
+    a = rt['cache_v2'][LV.TL_COMPONENTS_V2]['E']
+    b = rt['cache'][(LV.TL_COMPONENTS, LV.TL_FROM2027)]['E']
+    for k in ('carbon', 'upfront', 'total', 'dwell_in_scope', 'stock', 'soil_share'):
+        assert np.allclose(np.asarray(a[k], float), np.asarray(b[k], float), rtol=1e-12, atol=0.0), k
+
+
+def test_TL_shapley_relative_to_P5_moderate(rt):
+    """128 subsets of TL1-TL7; efficiency exact (rational arithmetic); the players sum to
+    P5 Moderate (full strength from 2027) - TL; with the instant-start line they sum to P5 Moderate - TL."""
+    assert len(rt['subsets_v2']) == 2 ** 7
+    for metric, (phi, total) in rt['shapley_exact_v2'].items():
+        assert sum(phi.values()) == total, metric
+    sh = rt['shapley_v2']
+    for metric in ('carbon_kt', 'LoE_AR', 'LoE_AtP'):
+        s = sh[sh['metric'] == metric]
+        tl = rt['subsets_v2'].set_index('subset').loc['TL', metric]
+        base = rt['subsets_v2'].set_index('subset').loc['P5-moderate-from2027', metric]
+        assert s[s['player'] != LV.TL_FROM2027]['reduction'].sum() == pytest.approx(base - tl, rel=1e-12)

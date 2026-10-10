@@ -70,16 +70,18 @@ def tl_methods(t, runs):
     ind, gap = t['indicators']['TL'], t['gap']
     r = {n: runs[(runs['run'] == n) & (runs['scenario'] == REF)].iloc[0]
          for n in (REF, 'P5-moderate', 'P5-ambitious', 'TL', 'TL-gradual')}
-    sh = pd.DataFrame(t['shapley'])
     tl6 = t['definition']['tl6']
     L = ['', '## Theoretical limit TL', '', '> ' + t['disclaimer'], '',
-         '**Definition.** TL = P5 Ambitious with six overrides at full strength from 1 January 2027 (w = 1 for every '
+         '**Definition.** TL = P5 Combined (Moderate) with seven overrides at full strength from 1 January 2027 '
+         '(identical, to 1e-12, to P5 Ambitious with TL1-TL6: TL1-TL6 override every Ambitious lever setting but L4, '
+         'which TL7 sets to its Ambitious level). Equivalently, P5 Ambitious with six overrides (w = 1 for every '
          'lever in 2027-2050, no adoption path; 2026 observed and untouched): TL1 No vacancy (v = 0; the 2026 overbuild '
          'absorbed in full), TL2 No extra space (new-dwelling size = occupied area S(t) · OLF), TL3 Minimum space per '
          'person (OLF of every new building = the lowest independent design OLF), TL4 Best-practice materials (each '
          'typology at its own best independent case; apartments held), TL5 Lowest-carbon soils (lowest soil order), '
          'TL6 Urban infill (a share s of the non-replacement new floor area on previously developed land, zero soil '
-         'carbon loss). L4 (−40%) as P5 Ambitious; the typology shares stay at the Reference held mix. '
+         'carbon loss), TL7 Building retention at −40% (L4 at d = 0.40, its Ambitious level). The typology shares '
+         'stay at the Reference held mix. '
          + t['definition']['bau'] + ' The potentials hierarchy (theoretical > technical > realisable) places TL at '
          'the theoretical end; ' + N.TL_GRADUAL + ' is a sensitivity.', '']
     L += table(['item', 'how it works (model terms)', 'assumption', 'TL value', 'source (full citation)', 'tag'],
@@ -135,22 +137,26 @@ def tl_methods(t, runs):
               'median path); where they would be housed is not modelled (TL1 already sets vacancy to zero). '
               f"AtP: TL {b['LoE_AtP_at_k1']:.2f}; the minimum attainable (2026 cohort alone) is {b['LoE_AtP_min_k0']:.2f}, "
               'so AtP is not attainable within 2026-2050.']
-    L += ['', '### Shapley attribution of P5 Ambitious (full strength from 2027) − TL', '']
+    L += ['', '### Shapley attribution of P5 Combined (Moderate, full strength from 2027) − TL', '']
+    v2 = t['relative_to_P5_moderate']
+    sh2 = pd.DataFrame(v2['shapley'])
     rows = []
-    comps = list(t['definition']['components'])
-    for pl in comps + [LV.TL_FROM2027]:
-        c = sh[(sh['metric'] == 'carbon_kt') & (sh['player'] == pl)].iloc[0]
-        a = sh[(sh['metric'] == 'LoE_AR') & (sh['player'] == pl)].iloc[0]
-        share = c['share_of_P5_ambitious_from2027_minus_TL']
+    comps2 = list(v2['components'])
+    for pl in comps2 + [LV.TL_FROM2027]:
+        c = sh2[(sh2['metric'] == 'carbon_kt') & (sh2['player'] == pl)].iloc[0]
+        a = sh2[(sh2['metric'] == 'LoE_AR') & (sh2['player'] == pl)].iloc[0]
+        p = sh2[(sh2['metric'] == 'LoE_AtP') & (sh2['player'] == pl)].iloc[0]
+        share = c['share_of_P5_moderate_from2027_minus_TL']
         rows.append([N.ADOPTION['from2027'] + ' (separate line)' if pl == LV.TL_FROM2027
-                     else f"{pl} {t['definition']['components'][pl]}",
+                     else f"{pl} {v2['components'][pl]}",
                      f"{c['reduction']:,.0f}" + ('' if pd.isna(share) else f" ({100 * share:.0f}%)"),
-                     f"{a['reduction']:.3f}"])
-    L += table(['player', 'carbon (kt)', 'LoE AR'], rows)
-    L += ['', f"Players TL1-TL{len(comps)} over {2 ** len(comps)} subsets, each applied at full strength from 2027 "
-          '(exact rational arithmetic; the values add up to P5 Ambitious at full strength from 2027 − TL exactly; '
-          'tested). "Full strength from 2027" is a separate line, not a player: P5 Ambitious on its adoption path minus '
-          'P5 Ambitious at full strength from 2027. '
+                     f"{a['reduction']:.3f}", f"{p['reduction']:.2f}"])
+    L += table(['player', 'carbon (kt)', 'LoE AR', 'LoE AtP'], rows)
+    L += ['', f"Players TL1-TL{len(comps2)} over {2 ** len(comps2)} subsets, each applied at full strength from 2027 "
+          '(exact rational arithmetic; the values add up to P5 Combined (Moderate) at full strength from 2027 − TL '
+          'exactly; tested). "Full strength from 2027" is a separate line, not a player: P5 Combined on its adoption '
+          'path minus P5 Combined at full strength from 2027. The earlier attribution of TL1-TL6 relative to P5 '
+          'Ambitious (64 subsets) is kept in outputs/data/pathways/shapley_theoretical_limit.csv. '
           f"Sensitivity: {N.TL_GRADUAL} gives LoE AR {r['TL-gradual']['LoE_AR']:.3f}.", '',
           '### Limitations of TL', '',
           '* TL combines attributes of different buildings and places (the OLF of A_1, an apartment block, applied to '

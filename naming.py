@@ -56,7 +56,8 @@ PATHWAY_LEVERS = {'P1': ('L1',), 'P2': ('L2', 'L3'), 'P3': ('L4',), 'P4': ('L5',
 DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.1)'
 
 TL = {'TL': 'Theoretical limit', 'TL1': 'No vacancy', 'TL2': 'No extra space', 'TL3': 'Minimum space per person',
-      'TL4': 'Best-practice materials', 'TL5': 'Lowest-carbon soils', 'TL6': 'Urban infill'}
+      'TL4': 'Best-practice materials', 'TL5': 'Lowest-carbon soils', 'TL6': 'Urban infill',
+      'TL7': 'Building retention at −40% (ambitious level)'}
 TL_LEGACY = {'T': 'TL', 'T1': 'TL1', 'T2': 'TL2', 'T3': 'TL3', 'T4': 'TL4', 'T5': 'TL5', 'T6': 'TL6'}
 TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pathway'
 TL_GRADUAL = 'TL, gradual adoption (SI)'

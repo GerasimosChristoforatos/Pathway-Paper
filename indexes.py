@@ -79,6 +79,8 @@ FILES = [
     ('data/aesa/annual.csv', 'Annual carbon, boundaries and levels of exceedance by variant', 'boundaries.py'),
     ('data/aesa/montecarlo_annual.csv', 'Monte Carlo percentiles of carbon, boundaries and levels of exceedance by '
      'year', 'boundaries.py'),
+    ('data/aesa/montecarlo_draw_budgets.csv', 'Each Monte Carlo draw of the Reference: carbon 2026-2050 and the '
+     'cumulative AR and AtP budgets of that draw (read by pathways_mc.py)', 'boundaries.py'),
     ('data/aesa/sensitivity.csv', 'Every AESA sensitivity row: cumulative levels of exceedance', 'boundaries.py'),
     # data: pathways
     ('data/pathways/levers.json', 'Lever parameters and their sources', 'pathways.py'),
@@ -88,6 +90,12 @@ FILES = [
     ('data/pathways/bands.csv', 'Floor area and carbon by demand band of every pathway run', 'pathways.py'),
     ('data/pathways/shapley_*.csv', 'Shapley attribution (pathways, levers, theoretical limit) and its subsets',
      'pathways.py'),
+    ('data/pathways/montecarlo_draws.csv', 'Pathway Monte Carlo: each saved Reference draw through P5 Combined '
+     '(Moderate) and TL: inputs, carbon, floor area, budgets and levels of exceedance', 'pathways_mc.py'),
+    ('data/pathways/montecarlo_summary.csv', 'Pathway Monte Carlo: percentiles of carbon, floor area and the levels '
+     'of exceedance of the Reference, P5 and TL; P(LoE <= 1)', 'pathways_mc.py'),
+    ('data/pathways/montecarlo_annual.csv', 'Pathway Monte Carlo: percentiles of annual carbon of the Reference, P5 '
+     'and TL', 'pathways_mc.py'),
     ('data/pathways/backcast.json', 'Back-cast to LoE AR = 1 and the solution-space markers', 'pathways.py'),
     ('data/pathways/solution_space.csv', 'Cumulative LoE over the demand and intensity cuts (5% grid)',
      'pathways.py'),

@@ -1,9 +1,11 @@
-"""Output layout of the model (MODEL v1.0.0): where every file the pipeline writes goes.
+"""Output layout of the model (MODEL v2.0.0): where every file the pipeline writes goes.
 
     outputs/
-      headline/       the figures of the paper (H1-H11: PNG 300 dpi and vector PDF), their
-                      tables and HEADLINE.md (findings, every figure with its caption)
-      diagnostics/    every other figure, by group (D01-D34: PNG 300 dpi), DIAGNOSTICS.md, and
+      paper/          the figures of the paper (Fig1-Fig6: PNG 300 dpi, vector PDF and source-data
+                      CSV), Tables 1-2 (Markdown and CSV) and PAPER.md (headline findings, every
+                      figure with its caption)
+      extended_data/  the Extended Data figures (ED1-ED10, same formats) and EXTENDED_DATA.md
+      diagnostics/    every other figure, by group (PNG 300 dpi), DIAGNOSTICS.md, and
                       _audit/: the record of every figure (figaudit.py; read by the tests)
       data/           every number the model reports, as CSV and JSON, in the release names of
                       naming.py: baseline/ (the Reference projection and its checks), montecarlo/,
@@ -24,7 +26,8 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, 'outputs')
 DATA = os.path.join(OUT, 'data')
 REPORTS = os.path.join(OUT, 'reports')
-HEADLINE = os.path.join(OUT, 'headline')
+PAPER = os.path.join(OUT, 'paper')
+EXTENDED_DATA = os.path.join(OUT, 'extended_data')
 DIAGNOSTICS = os.path.join(OUT, 'diagnostics')
 FIGURE_AUDIT = os.path.join(DIAGNOSTICS, '_audit')
 LOGS = os.path.join(OUT, 'logs')
@@ -66,13 +69,19 @@ def writing(path):
 
 
 def figure(name):
-    """outputs/headline/<file> or outputs/diagnostics/<group>/<file> (no extension) of a figure,
-    from its file id in figure_plan.py (e.g. 'H5_boundaries', 'D22_boundaries')."""
+    """outputs/paper/<file>, outputs/extended_data/<file> or outputs/diagnostics/<group>/<file> (no
+    extension) of a figure, from its file id in figure_plan.py (e.g. 'Fig5_boundaries_attribution',
+    'ED1_reference_carbon_tornado', 'D22_boundaries')."""
     import figure_plan as FP
-    for h in FP.HEADLINE:
-        if h['file'] == name:
-            return os.path.join(HEADLINE, name)
+    for base, items in ((PAPER, FP.PAPER), (EXTENDED_DATA, FP.EXTENDED_DATA)):
+        if name in (h['file'] for h in items):
+            return os.path.join(base, name)
     for g, rows in FP.DIAGNOSTICS.items():
         if name in (f for f, _, _ in rows):
             return os.path.join(DIAGNOSTICS, g, name)
     raise KeyError(f'{name!r} is not a figure of figure_plan.py')
+
+
+def vector(path):
+    """True for a figure of the paper or Extended Data (written as PNG and vector PDF)."""
+    return path.startswith(PAPER + os.sep) or path.startswith(EXTENDED_DATA + os.sep)

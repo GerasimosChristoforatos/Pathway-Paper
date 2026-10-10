@@ -2,7 +2,7 @@
 (S3-10), High (S2), typology shares held), Low and Reference unchanged from
 baseline-pb-v1.2 under the v2 accounting (tests/regression_pb_v1_2_low_ref.json, tag
 baseline-PB_v1.2),
-the largest parameters shown with both ends (H11 since MODEL v1.0.0), Pride colours for the six
+the largest parameters shown with both ends (H11 in model-v1; ED1 / ED4 since MODEL v2.0.0), Pride colours for the six
 material classes in one order, soil always the top layer."""
 import json
 import os
@@ -72,22 +72,6 @@ def test_low_and_reference_deterministic_unchanged():
             assert r[f] == v, (k, f, r[f], v)
 
 
-def test_top_parameters_keep_both_ends_of_a_parameter():
-    """H11 (headline.py) shows all rows of the parameters with the largest absolute effect, both ends
-    of a paired parameter together (Sensitivity.top_parameters); the accounting-convention row
-    (whole life) and the reference are not drawn."""
-    import headline
-    import Sensitivity as S
-    d = pd.DataFrame(dict(case=['a_lo', 'a_hi', 'b', 'c', 'd', 'e', 'f', 'g_lo', 'g_hi'], group='Stock',
-                          GFA_change_pct=[0, 0, 0, 0, 0, 0, 50, 0, 0],
-                          carbon_change_pct=[-1, 9, 8, 7, 6, 2, 0.1, 5, -0.5]))
-    par = {'a_lo': 'a', 'a_hi': 'a', 'g_lo': 'g', 'g_hi': 'g'}
-    top = S.top_parameters(d, 5, parameter=par)
-    assert set(top.case) == {'a_lo', 'a_hi', 'b', 'c', 'd', 'g_lo', 'g_hi'}   # f: floor area only
-    assert list(top.case) == list(top.sort_values('order').case)
-    assert 'xii_whole_life' in headline.AESA_NOT_DRAWN and 'reference' in headline.AESA_NOT_DRAWN
-
-
 def test_whole_life_row_only_in_pb_sensitivity():
     import Sensitivity as S
     assert not any('whole life' in lab.lower() for _, lab, _ in S.CASES + S.DECARB_CASES['horup_item'])
@@ -103,7 +87,7 @@ def test_pride_colours_in_one_order():
     assert [col for col, _, _ in style.MATERIAL] == ['TIMBER', 'STEEL', 'CONCRETE (incl. reinforced)', 'PLASTICS & PAINT',
                                                      'PLASTERBOARD', 'OTHERS', 'SOIL']
     # every per-material figure draws through plotting.stack_materials / plotting.material_patch
-    for f in ('Diagnostics.py', 'projection.py', 'boundaries.py', 'headline.py', 'plotting.py',
+    for f in ('Diagnostics.py', 'projection.py', 'boundaries.py', 'paper.py', 'extended_data.py', 'plotting.py',
               os.path.join('tools', 'figures_report.py')):
         src = open(os.path.join(ROOT, f), encoding='utf-8').read()
         assert not re.search(r"'#8B5A2B'|'#8E9296'|'#2EE62E'", src), f      # the pre-v2 material colours

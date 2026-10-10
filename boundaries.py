@@ -18,8 +18,8 @@ called. Equations: aesa.py. Every constant below carries its source.
 
 Writes outputs/data/aesa/ (annual.csv, montecarlo_annual.csv, sensitivity.csv, results.json;
 layout.py) and the AESA diagnostics D18, D21-D27 (outputs/diagnostics/; style.save_figure)
-when PATHWAY_SAVE_FIGURES=1, as run_all.py sets; the headline figures H5, H6 and H11 are
-drawn from these data by headline.py.
+when PATHWAY_SAVE_FIGURES=1, as run_all.py sets; the paper and Extended Data figures (Fig3, Fig5,
+ED4, ED5) are drawn from these data by paper.py and extended_data.py.
 
     python boundaries.py
 """
@@ -471,7 +471,7 @@ def main():
     cum_det = {k: dict(label=r['label'], I_kt=float(r['I'].loc[slice(*PB_YEARS)].sum() / M6),
                        LoE_AR=cum(r['I'], b_ar), LoE_AtP=cum(r['I'], b_atp)) for k, r in runs.items()}
 
-    # ---- population paths (MODEL v1.0.0 addition; the population rows of H11) ------------
+    # ---- population paths (MODEL v1.0.0 addition; the population rows of ED1, ED2 and ED4) ------------
     # The Stats NZ 5th / 95th percentile paths move both the embodied carbon (the projection's own
     # engine run of that path, every other input at the Reference) and the boundaries (population
     # modifier of AR, Horup et al. 2025 Eq. 1; per-capita AtP), with I_sec,base unchanged. The
@@ -790,7 +790,7 @@ LIMITATIONS = [
     ('Accounting (time-resolved): the sector impact of 2026-2050 counts materials and construction (A1-A5) and '
      'soil carbon loss in the construction year and maintenance (B2, B4) in the year it occurs. Maintenance after '
      '2050 and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed after 2050, outside 2026-2050; '
-     'they are reported as a range (outputs/data/aesa/results.json "committed", H6) in years of the 2050 AR boundary and are '
+     'they are reported as a range (outputs/data/aesa/results.json "committed", Fig3c) in years of the 2050 AR boundary and are '
      'not compared with the 2026-2050 boundary. Whole life at construction is a sensitivity.'
      if projection.ACCOUNTING == 'time_resolved' else
      'B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future '
@@ -833,7 +833,7 @@ LIMITATIONS = [
 # ============================================================
 # FIGURES
 # ============================================================
-# rows of the AESA sensitivity that are alternative settings of one parameter (H11 groups them)
+# rows of the AESA sensitivity that are alternative settings of one parameter (grouped in model-v1 H11)
 PB_PARAMETER = {'iii_base_window': 'AR base window', 'iii_base_window_20': 'AR base window',
                 'iii_base_window_full': 'AR base window', 'iv_pop_statsnz': 'NZ population source',
                 'iv_pop_wpp': 'NZ population source', 'ix_a45_held': 'A4-A5 path', 'x_a45_item': 'A4-A5 path'}
@@ -883,8 +883,9 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     """The diagnostics of the planetary-boundary layer (docs/FIGURE_PLAN.md): D18 every AESA
     sensitivity row, D21 the Monte Carlo fan with the AR base window, D22 the boundaries,
     D23 the annual LoE, D24 the headroom, D25 / D26 annual and cumulative carbon by demand band,
-    D27 the variants. The headline figures (H5, H6, H11) are drawn by headline.py from the data
-    files written by main()."""
+    D27 the variants (totals; maintenance is drawn as its own layer only in Fig3 and the band breakdowns,
+    D25 and D26). The paper and Extended Data figures are drawn by paper.py and extended_data.py from
+    the data files written by main()."""
     import plotting as P
     S = style
     S.apply()
@@ -937,22 +938,15 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
                     label='Monte Carlo 5–95% (Reference)', **S.MC_BAND)
     for key in VARS:
         a1.plot(py, runs[key]['I'].loc[py] / M6, label=N.SCENARIOS[key], **scen_line(key))
-    _r = runs['REF']
-    if _r['b_inwindow'].loc[py].sum() > 0:
-        a1.fill_between(py, (_r['I'] - _r['b_inwindow']).loc[py] / M6, _r['I'].loc[py] / M6,
-                        color=S.COMPONENT['maintenance'][0], lw=0, label=f"Reference: {N.COMPONENTS['maintenance']}")
     P.boundary_lines(a1, py, bar_ / M6, batp_ / M6)
     a1.set_ylim(0, None)
     a1.set_xlim(PB_YEARS[0], PB_YEARS[1])
     a1.set_ylabel('Embodied carbon (kt CO₂e per year)')
     a1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=S.FONT_MIN)
     P.panel(a1, 'a', 'Annual')
-    _bi = np.array([runs[k]['b_inwindow'].loc[py].sum() / M6 for k in VARS])
-    _up = np.array([runs[k]['I'].loc[py].sum() / M6 for k in VARS]) - _bi
-    a2.bar(range(len(VARS)), _up, color=[S.SCENARIO[k]['color'] for k in VARS], width=0.62,
-           label='Construction year (A1–A5 and soil)')
-    a2.bar(range(len(VARS)), _bi, bottom=_up, color=S.COMPONENT['maintenance'][0], width=0.62,
-           label=N.COMPONENTS['maintenance'])
+    # MODEL v2.0.0: the totals only (maintenance is drawn as its own layer only in Fig3 and the band breakdowns)
+    a2.bar(range(len(VARS)), [runs[k]['I'].loc[py].sum() / M6 for k in VARS],
+           color=[S.SCENARIO[k]['color'] for k in VARS], width=0.62, label='Embodied carbon 2026–2050')
     for key in ('AR', 'AtP'):
         v = (bar_ if key == 'AR' else batp_).sum() / M6
         P.boundary_hline(a2, key, v, label=f"{S.BOUNDARY[key]['label']}: {v:,.0f} kt")
@@ -1057,9 +1051,6 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
             a.plot(py, runs[name]['I'].loc[py] / bb.loc[py],
                    label=f"{N.SCENARIOS[name]} ({'band' if name == 'REF' else 'thin lines'}: Monte Carlo 5–95%)",
                    **scen_line(name))
-        if _r['b_inwindow'].loc[py].sum() > 0:
-            a.plot(py, (_r['I'] - _r['b_inwindow']).loc[py] / bb.loc[py], color=S.REFERENCE, lw=S.LW_THIN, ls='-.',
-                   label='Reference without maintenance (B2, B4)')
         a.axhline(1, color=S.INK, lw=S.LW, ls=(0, (1, 1)), label='LoE = 1')
         a.set_yscale('log')
         a.set_xlim(PB_YEARS[0], PB_YEARS[1])
@@ -1113,7 +1104,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
                  'Reference. Rows that do not enter a principle (e.g. the GDP measure for AR) show no change. '
                  'Percentages are relative to carbon 2026–2050 (time-resolved accounting); fixed absolute terms such as '
                  'soil carbon loss therefore show larger percentage effects than under whole-life accounting. The largest '
-                 'effects on the AR LoE, with the model inputs and the population paths: H11.')
+                 'effects on the AR and AtP LoE, grouped: Extended Data ED4 (carbon: ED1).')
     if not SAVE_FIGURES:
         plt.show()
 

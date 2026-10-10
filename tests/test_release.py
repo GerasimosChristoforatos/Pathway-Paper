@@ -2,14 +2,17 @@
 
 1. The values the release adds (annual component split, annual and census-interval demand
    bands, the annual series of the projection variants, the population paths of the AESA
-   layer) agree with the numbers locked by tests/test_regression_model_v1.py: the H4
+   layer) agree with the numbers locked by tests/test_regression_model_v1.py: the annual
    components add up exactly to the captured annual carbon, the bands to the captured band
    totals, the variants to the captured variant totals.
-2. The headline set: every figure of figure_plan.HEADLINE exists as PNG, PDF and source data
-   (CSV), and HEADLINE.md shows every one with a filled caption.
-3. Figure audit and indexes: every planned figure exists and no other; every output file is
-   indexed once; DIAGNOSTICS.md shows every diagnostic with the script that draws it.
-4. Vocabulary and style: no reader-facing text of the release (generated reports, HEADLINE.md,
+2. The paper and Extended Data (MODEL v2.0.0): every figure of figure_plan.PAPER and EXTENDED_DATA
+   exists as PNG, PDF and source data (CSV) within its print width; PAPER.md and EXTENDED_DATA.md show
+   every one with a filled caption; Table 2 carries the Monte Carlo intervals and P(LoE <= 1) of TL
+   under AR and AtP; outputs/headline/ is retired.
+3. Figure audit and indexes: every planned figure exists and no other (the superseded diagnostics
+   are not drawn); maintenance is drawn as its own layer only in figure_plan.MAINTENANCE_ALLOWED;
+   every output file is indexed once; DIAGNOSTICS.md shows every diagnostic with its script.
+4. Vocabulary and style: no reader-facing text of the release (generated reports, PAPER.md, EXTENDED_DATA.md,
    DIAGNOSTICS.md, INDEX.md, the texts of every figure) uses a term of the earlier versions
    (naming.OLD_TERMS, docs/RENAMING.md); every module that draws a figure imports style.py and
    plotting.py, and only style.save_figure writes figure files.
@@ -100,6 +103,34 @@ def test_history_bands_by_census_interval():
     assert h['floor_area_Mm2_per_year'].notna().all()
 
 
+def test_stage_and_material_split_add_up_to_the_annual_carbon():
+    """MODEL v2.0.0 (Fig3): the annual stage and material splits of the Reference add up to the locked annual
+    carbon; the stage totals equal the A1-A3 / A4-A5 totals of the pathway layer (runs.csv, Reference)."""
+    an = pd.read_csv(data('baseline/annual.csv'))
+    p = an[an['source'] == 'projection'].set_index('year')
+    st = pd.read_csv(data('baseline/annual_by_stage.csv')).set_index('year')
+    parts = st['a1a3_kt'] + st['a4a5_kt'] + st['maintenance_kt'] + st['soil_carbon_loss_kt']
+    assert np.allclose(parts, p['carbon_kt'], rtol=1e-9, atol=0)
+    assert np.allclose(st['a1a3_kt'] + st['a4a5_kt'], p['materials_construction_kt'], rtol=1e-9, atol=0)
+    assert np.allclose(st['maintenance_kt'], p['maintenance_kt'], rtol=1e-12, atol=0)
+    r = pd.read_csv(data('pathways/runs.csv'))
+    r = r[(r['scenario'] == 'REF') & (r['run'] == 'REF')].iloc[0]
+    assert math.isclose(st['a1a3_kt'].sum(), r['a1a3_kt'], rel_tol=1e-9)
+    assert math.isclose(st['a4a5_kt'].sum(), r['a4a5_kt'], rel_tol=1e-9)
+    m = pd.read_csv(data('baseline/annual_by_material.csv')).groupby('year')['carbon_kt'].sum()
+    assert np.allclose(m.loc[p.index], p['carbon_kt'], rtol=1e-9, atol=0)
+
+
+def test_history_replacement_split_adds_up_to_the_band():
+    sp = pd.read_csv(data('baseline/bands_history_replacement_split.csv')).set_index('interval')
+    h = pd.read_csv(data('baseline/bands_history.csv'))
+    band = h[h['band'] == N.band_data_label('replacement_history')].set_index('interval')['floor_area_Mm2_per_year']
+    assert list(sp.index) == list(band.index)
+    assert np.allclose(sp['net_replacement_census_Mm2_per_year'] + sp['unexplained_building_Mm2_per_year'], band,
+                       rtol=1e-9, atol=1e-12)
+    assert np.allclose(sp['net_replacement_band_Mm2_per_year'], band, rtol=0, atol=0)
+
+
 def test_population_paths_reproduce_the_reference():
     r = json.load(open(data('aesa/results.json')))
     pp, d = r['population_paths'], r['deterministic']['REF']
@@ -109,46 +140,95 @@ def test_population_paths_reproduce_the_reference():
     assert pp['5th']['B_AR_kt'] < pp['50th']['B_AR_kt'] < pp['95th']['B_AR_kt']
 
 
-# ---- 2. headline set ---------------------------------------------------------------------------
-@pytest.mark.parametrize('h', FP.HEADLINE, ids=[h['id'] for h in FP.HEADLINE])
-def test_headline_figure_files(h):
+# ---- 2. paper and Extended Data ------------------------------------------------------------------
+VECTOR = [(L.PAPER, h) for h in FP.PAPER] + [(L.EXTENDED_DATA, h) for h in FP.EXTENDED_DATA]
+
+
+@pytest.mark.parametrize('base,h', VECTOR, ids=[h['id'] for _, h in VECTOR])
+def test_paper_and_extended_data_figure_files(base, h):
     for ext in ('png', 'pdf', 'csv'):
-        p = os.path.join(L.HEADLINE, f"{h['file']}.{ext}")
+        p = os.path.join(base, f"{h['file']}.{ext}")
         assert os.path.exists(p) and os.path.getsize(p) > 0, p
-    src = pd.read_csv(os.path.join(L.HEADLINE, f"{h['file']}.csv"))
+    src = pd.read_csv(os.path.join(base, f"{h['file']}.csv"))
     assert list(src.columns) == ['panel', 'series', 'x', 'value', 'unit'] and len(src) > 0
 
 
-def test_headline_md_shows_every_figure_with_a_filled_caption():
-    md = open(os.path.join(L.HEADLINE, 'HEADLINE.md'), encoding='utf-8').read()
-    for h in FP.HEADLINE:
-        assert f"![{h['id']}]({h['file']}.png)" in md, h['id']
+def _md_check(md, items):
     import re
+    for h in items:
+        assert f"![{h['id']}]({h['file']}.png)" in md, h['id']
     assert not re.search(r'\{[a-z_0-9]+(:[^}]*)?\}', md), 'unfilled caption placeholder'
+
+
+def test_paper_md_shows_every_figure_the_findings_and_the_tables():
+    md = open(os.path.join(L.PAPER, 'PAPER.md'), encoding='utf-8').read()
+    _md_check(md, FP.PAPER)
     findings = md.split('## Findings')[1].split('## Figures')[0]
     n = sum(1 for line in findings.splitlines() if line[:2].rstrip('.').isdigit())
     assert 6 <= n <= 8, n
+    assert '### Table 1.' in md and '### Table 2.' in md
+    for t in FP.TABLES:
+        for ext in ('md', 'csv'):
+            assert os.path.exists(os.path.join(L.PAPER, f"{t['file']}.{ext}")), t['file']
+
+
+def test_table2_reports_the_monte_carlo_and_both_probabilities_for_tl():
+    t = pd.read_csv(os.path.join(L.PAPER, 'Table2_results.csv')).set_index('run_id')
+    assert list(t.index) == ['REF', 'P1-moderate', 'P2-moderate', 'P3-moderate', 'P4-moderate', 'P5-moderate', 'TL']
+    for run in ('REF', 'P5-moderate', 'TL'):
+        assert t.loc[run, 'carbon_kt_mc_p5'] < t.loc[run, 'carbon_kt'] < t.loc[run, 'carbon_kt_mc_p95']
+    s = pd.read_csv(data('pathways/montecarlo_summary.csv')).set_index(['run', 'quantity'])
+    for key in ('AR', 'AtP'):
+        assert t.loc['TL', f'P_LoE_{key}_at_most_1'] == s.loc[('TL', f'LoE_{key}'), 'probability_LoE_at_most_1']
+    runs = pd.read_csv(data('pathways/runs.csv'))
+    runs = runs[runs['scenario'] == 'REF'].set_index('run')
+    for run in t.index:
+        assert t.loc[run, 'carbon_kt'] == runs.loc[run, 'carbon_kt']
+
+
+def test_extended_data_md_shows_every_figure():
+    _md_check(open(os.path.join(L.EXTENDED_DATA, 'EXTENDED_DATA.md'), encoding='utf-8').read(), FP.EXTENDED_DATA)
+
+
+def test_headline_folder_retired():
+    assert not os.path.exists(os.path.join(L.OUT, 'headline'))
+    assert not os.path.exists(os.path.join(ROOT, 'headline.py'))
 
 
 # ---- 3. figure audit and indexes --------------------------------------------------------------
 def planned_figures():
-    out = {h['file']: os.path.join(L.HEADLINE, h['file']) for h in FP.HEADLINE}
+    out = {h['file']: os.path.join(base, h['file']) for base, h in VECTOR}
     out.update({f: os.path.join(L.DIAGNOSTICS, g, f) for g, rows in FP.DIAGNOSTICS.items() for f, _, _ in rows})
     return out
 
 
 def test_every_planned_figure_exists_and_no_other():
-    """Every figure of docs/FIGURE_PLAN.md exists (headline: PNG and PDF; diagnostics: PNG) with
+    """Every figure of the figure plan exists (paper and Extended Data: PNG and PDF; diagnostics: PNG) with
     its audit record, and no figure outside the plan is written."""
     plan = planned_figures()
     for fid, base in plan.items():
-        exts = ('png', 'pdf') if fid.startswith('H') else ('png',)
+        exts = ('png', 'pdf') if fid.startswith(('Fig', 'ED')) else ('png',)
         for ext in exts:
             assert os.path.exists(f'{base}.{ext}'), f'{fid}.{ext}'
         assert os.path.exists(os.path.join(L.FIGURE_AUDIT, f'{fid}.json')), fid
-    written = {os.path.splitext(f)[0] for base in (L.HEADLINE, L.DIAGNOSTICS) for _, _, fs in os.walk(base)
-               for f in fs if f.endswith('.png')}
+    written = {os.path.splitext(f)[0] for base in (L.PAPER, L.EXTENDED_DATA, L.DIAGNOSTICS)
+               for _, _, fs in os.walk(base) for f in fs if f.endswith('.png')}
     assert written == set(plan), sorted(written ^ set(plan))
+    assert not set(FP.SUPERSEDED) & written
+    audits = {os.path.splitext(f)[0] for f in os.listdir(L.FIGURE_AUDIT)}
+    assert audits == set(plan), sorted(audits ^ set(plan))
+
+
+def test_maintenance_drawn_only_where_allowed():
+    """Maintenance (B2, B4) is drawn as its own layer or line only in Fig2, Fig3, Fig4, D25 and D26
+    (figaudit.maintenance_drawn: data artists in the maintenance colour, legend entries naming it)."""
+    drawn = set()
+    for f in os.listdir(L.FIGURE_AUDIT):
+        rec = json.load(open(os.path.join(L.FIGURE_AUDIT, f)))
+        assert 'maintenance_drawn' in rec, f
+        if rec['maintenance_drawn']:
+            drawn.add(rec['figure'])
+    assert drawn == set(FP.MAINTENANCE_ALLOWED), sorted(drawn ^ set(FP.MAINTENANCE_ALLOWED))
 
 
 def test_every_output_file_is_indexed_once():
@@ -177,19 +257,21 @@ def test_diagnostics_md_shows_every_diagnostic_with_its_script():
             assert f"drawn by `{rec['producer']}`" in md, fid
 
 
-def test_headline_figures_print_within_183_mm():
+def test_paper_and_extended_data_figures_print_within_their_width():
     from PIL import Image
     import style as S
-    for h in FP.HEADLINE:
-        with Image.open(os.path.join(L.HEADLINE, f"{h['file']}.png")) as im:
-            assert im.size[0] / S.DPI * 25.4 <= 183.0 + 1e-6, h['file']
+    for base, h in VECTOR:
+        with Image.open(os.path.join(base, f"{h['file']}.png")) as im:
+            assert im.size[0] / S.DPI * 25.4 <= {'single': 89.0, 'double': 183.0}[h['width']] + 1e-6, h['file']
 
 
 # ---- 4. vocabulary and style -------------------------------------------------------------------
 def _reader_texts():
     """(file relative to outputs/, line number, text) of every reader-facing text of the run."""
     md = [os.path.join(d, f) for d, _, fs in os.walk(L.REPORTS) for f in fs if f.endswith('.md')]
-    md += [os.path.join(L.HEADLINE, 'HEADLINE.md'), os.path.join(L.DIAGNOSTICS, 'DIAGNOSTICS.md'),
+    md += [os.path.join(L.PAPER, 'PAPER.md'), os.path.join(L.EXTENDED_DATA, 'EXTENDED_DATA.md'),
+           os.path.join(L.PAPER, 'Table1_levers.md'), os.path.join(L.PAPER, 'Table2_results.md'),
+           os.path.join(L.DIAGNOSTICS, 'DIAGNOSTICS.md'),
            os.path.join(L.OUT, 'INDEX.md')]
     for p in sorted(md):
         with open(p, encoding='utf-8') as f:
@@ -209,7 +291,7 @@ def test_no_old_vocabulary_in_reader_facing_texts():
     assert not hits, '\n'.join(hits[:50])
 
 
-FIGURE_MODULES = ('headline.py', 'projection.py', 'Diagnostics.py', 'Sensitivity.py', 'MonteCarlo.py',
+FIGURE_MODULES = ('paper.py', 'extended_data.py', 'projection.py', 'Diagnostics.py', 'MonteCarlo.py',
                   'boundaries.py', 'pathways.py', 'tools/figures_report.py')
 
 

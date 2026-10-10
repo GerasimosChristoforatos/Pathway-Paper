@@ -1,9 +1,9 @@
 """
-INDEXES (MODEL v1.0.0): DIAGNOSTICS.md and the index of every output file
-========================================================================
+INDEXES (MODEL v1.0.0; layout of MODEL v2.0.0): DIAGNOSTICS.md and the index of every output file
+=================================================================================================
 Writes, from the files the run produced (nothing is computed here):
 
-  outputs/diagnostics/DIAGNOSTICS.md  every diagnostic figure (D01-D34, docs/FIGURE_PLAN.md) by
+  outputs/diagnostics/DIAGNOSTICS.md  every diagnostic figure (figure_plan.DIAGNOSTICS, docs/FIGURE_PLAN.md) by
                                       group, with its content, the run-specific note the drawing
                                       script recorded (figaudit.py) and the script that draws it
   outputs/INDEX.md                    every file under outputs/ with one line on what it holds and
@@ -13,7 +13,7 @@ FILES below is the registry of output files; tests/test_release.py checks that e
 outputs/ (except the git-ignored logs) matches exactly one entry and that no entry is stale, so
 a new output cannot be added without being described.
 
-    python indexes.py            (run_all.py runs it after headline.py)
+    python indexes.py            (run_all.py runs it after paper.py and extended_data.py)
 """
 import fnmatch
 import json
@@ -28,13 +28,22 @@ import naming as N  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # headline
-    ('headline/HEADLINE.md', 'The headline findings (one sentence each, with numbers and source files) and every '
-     'headline figure with its caption', 'headline.py'),
-    ('headline/H*.png', 'Headline figure, 300 dpi PNG, 183 mm wide', 'headline.py'),
-    ('headline/H*.pdf', 'Headline figure, vector PDF (fonts embedded)', 'headline.py'),
-    ('headline/H*.csv', 'Source data of the headline figure: every plotted value (panel, series, x, value, unit)',
-     'headline.py'),
+    # paper (Fig1-Fig6, Tables 1-2) and Extended Data (ED1-ED10)
+    ('paper/PAPER.md', 'The headline findings (one sentence each, with numbers and source files), every paper figure '
+     'with its caption, and Tables 1-2', 'paper.py'),
+    ('paper/Fig*.png', 'Paper figure, 300 dpi PNG, 183 mm (Fig6: 89 mm) wide', 'paper.py'),
+    ('paper/Fig*.pdf', 'Paper figure, vector PDF (fonts embedded)', 'paper.py'),
+    ('paper/Fig*.csv', 'Source data of the paper figure: every plotted value (panel, series, x, value, unit)',
+     'paper.py'),
+    ('paper/Table1_levers.*', 'Table 1: the levers (Moderate, Ambitious) and the theoretical-limit assumptions '
+     'TL1-TL7 (Markdown and CSV)', 'paper.py'),
+    ('paper/Table2_results.*', 'Table 2: results 2026-2050 of the Reference, P1-P5 and TL, with Monte Carlo 5-95% and '
+     'P(LoE <= 1) (Markdown and CSV)', 'paper.py'),
+    ('extended_data/EXTENDED_DATA.md', 'Every Extended Data figure with its caption', 'extended_data.py'),
+    ('extended_data/ED*.png', 'Extended Data figure, 300 dpi PNG, 183 mm wide', 'extended_data.py'),
+    ('extended_data/ED*.pdf', 'Extended Data figure, vector PDF (fonts embedded)', 'extended_data.py'),
+    ('extended_data/ED*.csv', 'Source data of the Extended Data figure: every plotted value (panel, series, x, value, '
+     'unit)', 'extended_data.py'),
     # diagnostics
     ('diagnostics/DIAGNOSTICS.md', 'Every diagnostic figure by group, with its content and note', 'indexes.py'),
     ('diagnostics/*/D*.png', 'Diagnostic figure, 300 dpi PNG (DIAGNOSTICS.md)', 'see DIAGNOSTICS.md'),
@@ -73,6 +82,16 @@ FILES = [
      'cumulative LoE AR / AtP (ED2)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
      'AR and AtP (ED4)', 'tools/sensitivity_tables.py'),
+    ('data/baseline/bands_history_replacement_split.csv', 'The net replacement band of the history (census intervals) '
+     'split into the census-measured net replacement and the unexplained building, in floor area (Fig2a)',
+     'validation.py'),
+    ('data/sensitivity/replacement_variants.csv', 'The Reference, P5 Combined (Moderate) and TL under Low / Reference '
+     '/ High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED10)',
+     'tools/sensitivity_tables.py'),
+    ('data/baseline/annual_by_stage.csv', 'Annual carbon of the Reference 2026-2050 by life-cycle stage (A1-A3, '
+     'A4-A5, maintenance B2/B4, soil carbon loss) (Fig3)', 'projection.py'),
+    ('data/baseline/annual_by_material.csv', 'Annual carbon of the Reference 2026-2050 by material (each with its '
+     'in-window maintenance) and soil carbon loss (Fig3)', 'projection.py'),
     # data: Monte Carlo
     ('data/montecarlo/draws_*.csv', 'Monte Carlo draws of a variant (Latin hypercube): inputs and outputs per draw',
      'MonteCarlo.py'),
@@ -131,8 +150,8 @@ FILES = [
     (f'reports/{L.FROZEN}_*.md', 'Report of the frozen-technology check run (2025 factors held)',
      'run_all.py (frozen_* steps)'),
     # audit and the index itself
-    ('diagnostics/_audit/*.json', 'Audit record of a figure (headline and diagnostics): axes, year ranges, texts, note, '
-     'drawing script (figaudit.py; read by the tests)', 'style.save_figure'),
+    ('diagnostics/_audit/*.json', 'Audit record of a figure (paper, Extended Data and diagnostics): axes, year ranges, '
+     'texts, note, drawing script, whether maintenance is drawn (figaudit.py; read by the tests)', 'style.save_figure'),
     ('INDEX.md', 'This index', 'indexes.py'),
 ]
 EXCLUDED = ('logs',)                    # console logs: git-ignored, not part of the release
@@ -166,8 +185,10 @@ def diagnostics_md():
              '_Generated by indexes.py from docs/FIGURE_PLAN.md and the figure audit records (do not edit by hand). '
              'Every figure: PNG 300 dpi, at most 183 mm wide (D06: single column, 89 mm), release style '
              '(docs/PALETTE.md) and vocabulary '
-             '(docs/RENAMING.md). The figures of the paper are in ../headline/HEADLINE.md; the earlier file name of '
-             'each figure is in docs/FIGURE_PLAN.md._', '']
+             '(docs/RENAMING.md). The figures of the paper are in ../paper/PAPER.md, the Extended Data in '
+             '../extended_data/EXTENDED_DATA.md; D16, D17, D29, D31 and D33 of model-v1.1.0 are superseded by Extended '
+             'Data (ED1, ED3, ED7 and ED10, ED9, ED8; their data stay in outputs/data/); the earlier file name of each '
+             'figure is in docs/FIGURE_PLAN.md._', '']
     for group, rows in FP.DIAGNOSTICS.items():
         lines += [f'## {group.replace("_", " ").capitalize()}', '']
         for fid, content, _ in rows:
@@ -193,7 +214,8 @@ def index_md():
     lines = ['# Outputs', '',
              '_Generated by indexes.py (do not edit by hand): every file under outputs/ with what it holds and the '
              'script that writes it. Console logs (outputs/logs/) are not versioned. Data files use the release '
-             'names of docs/RENAMING.md; their numbers are locked by tests/test_regression_model_v1.py._', '',
+             'names of docs/RENAMING.md; their numbers are locked by tests/test_regression_model_v1.py and '
+             'tests/test_regression_model_v2.py._', '',
              '| file | content | written by |', '|---|---|---|']
     lines += [f'| `{r}` | {c} | {w} |' for r, c, w in rows]
     path = L.writing(os.path.join(L.OUT, 'INDEX.md'))

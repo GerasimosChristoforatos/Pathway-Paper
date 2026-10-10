@@ -53,8 +53,9 @@ def table(head, rows):
 def tl_levers_table(t):
     import levers as LV
     L = ['', '## Theoretical limit TL', '', '> ' + t['disclaimer'], '',
-         'TL = P5 Ambitious (L4 removals -40%; L1, L2 / L3 and L5 replaced by TL2, TL1 and TL4) with the overrides '
-         'below, all at full strength from 1 January 2027 (no adoption path); 2026 observed and untouched. '
+         'TL = P5 Combined (Moderate) with the seven overrides below (TL1-TL7), all at full strength from 1 January '
+         '2027 (no adoption path); 2026 observed and untouched. This is identical to P5 Ambitious with TL1-TL6 '
+         '(TL1-TL6 replace L1, L2 / L3 and L5; TL7 is the Ambitious L4), asserted to 1e-12 in every run. '
          + LV.TL_BAU_NOTE + ' Sensitivity: ' + N.TL_GRADUAL + ', the same TL on the adoption path of the levers, '
          + N.ADOPTION['by2035'] + '.', '']
     L += table(['item', 'pathway', 'demand band targeted', 'how it works (model terms)', 'assumption', 'TL value',

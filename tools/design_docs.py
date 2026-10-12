@@ -193,7 +193,8 @@ def _vocabulary():
     L += table(['v3.1', 'model-v2.0.0'], [[f'{o} {old_t[o]}' if o != 'T' else old_t[o], n]
                                           for o, n in N.TL_LEGACY.items()])
     L += ['', '**MODEL v2.1.0.** TL is rebuilt: P5 Moderate with TL1-TL10, each the limit of one lever (TL10 none), '
-          'all at full strength from 2027; TL gradual adoption is removed.', '']
+          'all at full strength from 2027. **MODEL v2.1.1.** TL is adopted by 2030 (the pathways\' 2030 window) with its '
+          'released dwellings re-occupied at a constant share of each year\'s need; the instant TL is a sensitivity.', '']
     L += table(['v2.1.0 ID', 'v2.1.0 label', 'limit of'],
                [[k, N.TL[k], (f'{N.TL_LIMIT_OF[k]} {N.LEVERS[N.TL_LIMIT_OF[k]]}' if N.TL_LIMIT_OF[k] else 'no lever')]
                 for k in N.TL if k != 'TL'])

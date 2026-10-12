@@ -523,24 +523,30 @@ flowchart LR
 
 Methods as implemented: part 3 of `outputs/reports/METHODS_DRAFT.md`.
 
-**Theoretical limit TL (MODEL v2.1.0).** A hyper-optimistic theoretical limit; a thought
-experiment, not a pathway: P5 Moderate with TL1–TL10 at full strength from 1 January 2027
-(`levers.apply_tl`), each the limit of one lever: TL1 f = 1 (size = occupied area), TL2 the
-historical maximum household size (2.7905, 1991), TL3 v = 0, TL4 the 2026 overbuild absorbed in
-2027, TL5 the surge removed and demolition −40%, TL6 r = min(own best independent case,
-r_Ambitious) per typology, TL7 A4–A5 = 0, TL8 the lowest soil order, TL9 brownfield share 0.89
+**Theoretical limit TL (MODEL v2.1.1).** A hyper-optimistic theoretical limit; a thought
+experiment, not a pathway: P5 Moderate with TL1–TL10, every lever and item on the standard adoption
+rule with full roll-out by 2030 (logistic, midpoint 2028, k = ln(81)/(8/3), the window of the
+pathways' 2030 sensitivity; the pathways keep full roll-out by 2035; `levers.apply_tl`), each the
+limit of one lever: TL1 f = 1 (size = occupied area), TL2 the historical maximum household size
+(2.7905, 1991), TL3 v = 0, TL4 the 2026 overbuild absorbed in full (absorption rate; not on the
+adoption path, as L4), TL5 the surge removed and demolition −40%, TL6 r = min(own best independent
+case, r_Ambitious) per typology, TL7 A4–A5 = 0, TL8 the lowest soil order, TL9 brownfield share 0.89
 (London), TL10 OLF 19.69 m² per person (no lever counterpart). Every item is asserted at least as
-strong as its Ambitious lever (otherwise the run stops). `pathways.run_tl` applies proportional
-reoccupation (MODEL v2.1.1; `pathways.reoccupation`): the dwellings released from 2027 by the vacancy
-falling, by a fall in households (TL2) and by the absorbed 2026 overbuild, R, are brought back into
-use in proportion to each year's need, built_t = gross_t × (1 − R/G) with G the total 2027–2050 gross
-need, entered as a stock-adding join; built_t > 0 in every year is asserted (the run stops otherwise)
-and the dwellings reoccupied add up to R. The rule applies to every TL-family run, including the TL
-base (P5 Moderate at full strength from 2027, reoccupied). Shapley over TL1–TL10 (1,024 subsets,
-exact) relative to the TL base, with two separate lines (full strength from 2027; released dwellings
-reoccupied) closing the gap to P5 Moderate on its adoption path
-(`shapley_theoretical_limit.csv`; Fig5b, ED8); the sequential waterfall Reference → P1 … P4 (= P5) →
-full strength from 2027 → released dwellings reoccupied → TL1 … TL10 (= TL) by demand band (`waterfall_sequential.csv`; K5).
+strong as its Ambitious lever (otherwise the run stops). `pathways.run_tl` re-occupies the released
+dwellings at a constant share of need (`pathways.reoccupation`): the dwellings released in 2027–2050
+on the adoption path by zero vacancy, by the household-size change (TL2) and by the absorbed 2026
+overbuild, R, meet a constant share s = min(R, G+)/G+ of each year's need (G+ the positive need
+2027–2050), never ahead of the cumulative release nor above the year's need (a shortfall is carried
+forward; where each constraint binds is recorded); built_t = max(gross_t, 0) − re-occupied_t enters
+`engine.forward` as a stock-adding join. Where R > G+ the surplus stays vacant in 2050. Asserted:
+built_t ≥ 0 in every run, Σ re-occupied = min(R, G+), built_t > 0 in every year of the deterministic
+TL. The rule applies to every TL-family run, including the TL base (P5 Moderate by 2030,
+re-occupied). Shapley over TL1–TL10 (1,024 subsets, exact) relative to the TL base, with two
+separate lines (TL's faster adoption, by 2030 instead of 2035; the re-occupation rule) closing the
+gap to P5 Moderate exactly (`shapley_theoretical_limit.csv`; Fig5b, ED8); the sequential waterfall
+Reference → P1 … P4 (= P5) → full roll-out by 2030 → released dwellings re-occupied → TL1 … TL10
+(= TL) by demand band (`waterfall_sequential.csv`; K5). Sensitivity: TL with every limit from
+1 January 2027 (instant, same rule; run `TL-from2027`, deterministic and Monte Carlo; ED7).
 
 **Pathway Monte Carlo (`pathways_mc.py`).** The 5,000 saved Reference draws of `MonteCarlo.py` are
 run through P5 (Moderate) and TL with the levers applied identically (L6 and L7 on each draw's own
@@ -766,8 +772,8 @@ Reference run per session (it needs the factor files of `Building_factors.py`).
   strength, 2026 unchanged, the adoption path, L1 sizes never below the occupied
   area, implied vacancy and dwellings built in every run, the Harrell-Davis
   estimator against scipy, exact Shapley efficiency, band sums, the back-cast,
-  proportional reoccupation (built_t > 0, dwellings reoccupied = R) and the TL
-  components.
+  constant-share re-occupation (known paths; built_t ≥ 0, re-occupied = min(R, G+),
+  never ahead of the release) and the TL components.
 * **`test_census_uc.py`, `test_soil.py`, `test_overbuild_2026.py`,
   `test_validation.py`**: the under-construction correction, soil carbon loss
   zero on net replacement, the replacement paths, nowcast and 2026 overbuild
@@ -805,5 +811,5 @@ Reference run per session (it needs the factor files of `Building_factors.py`).
 | s_sec | the sector's share of final consumption expenditure (upscaling, Hjalsted Eq. 6) |
 | P1–P5, L1–L9 | pathways (Space per person, Existing stock, Construction, Land, Combined) and levers (Dwelling size, Household occupancy, Vacancy, Overbuild absorption, Building lifetime extension, Material carbon, Construction-stage carbon, Soil-aware planning, Brownfield development) |
 | Moderate / Ambitious | the two settings of every lever |
-| adoption path | the share w(y) of a lever's full strength: full roll-out by 2035 (adopted), by 2030 or by 2045 (sensitivities), full strength from 2027 (TL) |
+| adoption path | the share w(y) of a lever's full strength: full roll-out by 2035 (adopted), by 2030 or by 2045 (sensitivities; by 2030 is also TL's path), full strength from 2027 (the instant TL sensitivity) |
 | TL, TL1–TL10 | theoretical limit and its ten items, each the limit of one lever (No extra space, Historical maximum household size, No vacancy, Overbuild fully absorbed, Building lifetime extension at the limit, Best-practice materials, Zero-emission construction, Lowest-carbon soils, Brownfield maximum; TL10 Minimum space per person) |

@@ -530,14 +530,17 @@ historical maximum household size (2.7905, 1991), TL3 v = 0, TL4 the 2026 overbu
 2027, TL5 the surge removed and demolition −40%, TL6 r = min(own best independent case,
 r_Ambitious) per typology, TL7 A4–A5 = 0, TL8 the lowest soil order, TL9 brownfield share 0.89
 (London), TL10 OLF 19.69 m² per person (no lever counterpart). Every item is asserted at least as
-strong as its Ambitious lever (otherwise the run stops). `pathways.run_tl` applies the banking rule
-(`pathways.bank`: dwellings built never negative; dwellings released by the vacancy, by a fall in
-households (TL2) and by the absorbed overbuild are used before any new building) as a stock-adding
-join; in banked zero-building years every demand band is zero except the maintenance of the cohorts
-already built. Shapley over TL1–TL10 (1,024 subsets, exact) relative to P5 Moderate at full strength
-from 2027, with the effect of full strength from 2027 a separate line
+strong as its Ambitious lever (otherwise the run stops). `pathways.run_tl` applies proportional
+reoccupation (MODEL v2.1.1; `pathways.reoccupation`): the dwellings released from 2027 by the vacancy
+falling, by a fall in households (TL2) and by the absorbed 2026 overbuild, R, are brought back into
+use in proportion to each year's need, built_t = gross_t × (1 − R/G) with G the total 2027–2050 gross
+need, entered as a stock-adding join; built_t > 0 in every year is asserted (the run stops otherwise)
+and the dwellings reoccupied add up to R. The rule applies to every TL-family run, including the TL
+base (P5 Moderate at full strength from 2027, reoccupied). Shapley over TL1–TL10 (1,024 subsets,
+exact) relative to the TL base, with two separate lines (full strength from 2027; released dwellings
+reoccupied) closing the gap to P5 Moderate on its adoption path
 (`shapley_theoretical_limit.csv`; Fig5b, ED8); the sequential waterfall Reference → P1 … P4 (= P5) →
-full strength from 2027 → TL1 … TL10 (= TL) by demand band (`waterfall_sequential.csv`; K5).
+full strength from 2027 → released dwellings reoccupied → TL1 … TL10 (= TL) by demand band (`waterfall_sequential.csv`; K5).
 
 **Pathway Monte Carlo (`pathways_mc.py`).** The 5,000 saved Reference draws of `MonteCarlo.py` are
 run through P5 (Moderate) and TL with the levers applied identically (L6 and L7 on each draw's own
@@ -763,7 +766,8 @@ Reference run per session (it needs the factor files of `Building_factors.py`).
   strength, 2026 unchanged, the adoption path, L1 sizes never below the occupied
   area, implied vacancy and dwellings built in every run, the Harrell-Davis
   estimator against scipy, exact Shapley efficiency, band sums, the back-cast,
-  the banking rule and the TL components.
+  proportional reoccupation (built_t > 0, dwellings reoccupied = R) and the TL
+  components.
 * **`test_census_uc.py`, `test_soil.py`, `test_overbuild_2026.py`,
   `test_validation.py`**: the under-construction correction, soil carbon loss
   zero on net replacement, the replacement paths, nowcast and 2026 overbuild

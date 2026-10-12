@@ -93,41 +93,50 @@ ACCENT_BLUE = '#1F5FA8'
 
 # runs
 REFERENCE = '#4D4D4D'
-TL = '#141414'
+TL = '#0DB2C7'          # MODEL v2.1.1: a clear cyan, outside every family, apart from Population growth and the zones
 SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),
             'LOW': dict(color='#9E9E9E', ls='--', lw=LW, label='Low replacement'),
             'HIGH': dict(color='#6E6E6E', ls=':', lw=LW, label='High replacement')}
 MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% band
 
-# four pathway colour families (MODEL v2.1.0), each lever a distinct shade within its family (the nine shades
-# chosen by maximising the minimum CAM02-UCS distance under every simulated deficiency: 13.5 >= 10,
-# tools/palette_check.py): P1 Space per person greens, P2 Existing stock magentas, P3 Construction purples,
-# P4 Land ochres; P5 sky blue, TL near-black, Reference dark grey
-LEVER = {'L1': '#1B7837', 'L2': '#74C476', 'L3': '#C51B7D', 'L4': '#67001F', 'L5': '#F1B6DA',
-         'L6': '#3F007D', 'L7': '#9E9AC8', 'L8': '#CC8B00', 'L9': '#FFF3B0'}
-PATHWAY = {'P1': LEVER['L1'], 'P2': LEVER['L3'], 'P3': LEVER['L6'], 'P4': LEVER['L8'], 'P5': '#56B4E9'}
+# MODEL v2.1.1 palette, inspired by Francis Bacon, Head VI (1949): four pathway families, each lever a shade within
+# its family. P1 Space per person golds / ochres (L1 deep ochre, L2 light gold), P2 Existing stock mauves (L4
+# 2026 overbuild deep mauve, L3 vacancy rose-lilac, lighter; L5 replacement lighter still), P3 Construction blues
+# (L6 dark, L7 light), P4 Land browns (L8 dark brown, L9 light tan); P5 vermilion and TL cyan, outside every family;
+# Reference grey. The hue families are fixed; lightness and chroma were chosen by maximising the minimum CAM02-UCS
+# distance of every group shown together under every simulated deficiency, with each slot's tone kept (lightness
+# bounds: overbuild < vacancy < replacement; browns and the near-black growth keep a visible hue); every group
+# >= 10 (tools/palette_check.py; docs/PALETTE.md). Where a group failed, the lightness of one colour moved within
+# its hue family (L7 lighter and TL lighter so TL stays apart from L7 under protanomaly; committed lighter than
+# maintenance; the unexplained-building face lighter than Historical replacement)
+LEVER = {'L1': '#DFA538', 'L2': '#F4D168', 'L3': '#AA7C9D', 'L4': '#683861', 'L5': '#E1D2DD',
+         'L6': '#4A6192', 'L7': '#ABD3FA', 'L8': '#8D6545', 'L9': '#C7B395'}
+PATHWAY = {'P1': LEVER['L1'], 'P2': LEVER['L4'], 'P3': LEVER['L6'], 'P4': LEVER['L8'], 'P5': '#EB6123'}
 SETTING = {'moderate': dict(ls='-', marker_fill='none', label='Moderate'),
            'ambitious': dict(ls='--', marker_fill='full', label='Ambitious')}
 
 # demand bands, bottom to top: (colour, hatch), coloured by the lever that targets them; labels in naming.BANDS.
-# Population growth (untargeted) mid grey and hatched; the recent replacement surge the L5 shade, hatched (both
-# replacement bands are targeted by L5)
-UNTARGETED_HATCH = '....'
-BAND = {'growth': ('#969696', UNTARGETED_HATCH),
+# Population growth (untargeted) near-black with a deep green-blue hue, solid; the recent replacement surge the L5
+# shade with a fine, light hatch (both replacement bands are targeted by L5)
+UNTARGETED_HATCH = None
+GROWTH = '#102A2E'
+HATCH_LIGHT = '#FFFFFF'                 # the fine hatch of the surge band: drawn in a light colour on its light face
+BAND = {'growth': (GROWTH, None),
         'smaller_households': (LEVER['L2'], None),
         'extra_space': (LEVER['L1'], None),
         'vacancy': (LEVER['L3'], None),
         'overbuild_2026': (LEVER['L4'], None),
         'replacement': (LEVER['L5'], None),
-        'redevelopment': (LEVER['L5'], '\\\\'),
-        'maintenance': ('#0082DC', None)}      # >= 15 from every band and stage under every deficiency
+        'redevelopment': (LEVER['L5'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR)
+        'maintenance': ('#AAAAAA', None)}      # neutral (MODEL v2.1.1)
 BAND_ORDER = list(BAND)
+BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}
 
 # carbon components (labels in naming.COMPONENTS)
-COMPONENT = {'materials_construction': (LEVER['L6'], None),     # A1-A5: the P3 Construction family
-             'soil': (LEVER['L8'], None),                       # the P4 Land family
+COMPONENT = {'materials_construction': (LEVER['L6'], None),     # A1-A3: P3 dark blue
+             'soil': (LEVER['L8'], None),                       # P4 brown
              'maintenance': (BAND['maintenance'][0], None),     # B2, B4 within 2026-2050
-             'committed': ('#BDBDBD', '///')}                   # after 2050, a range
+             'committed': ('#D0D0D0', '///')}                   # after 2050, a range; lighter than maintenance
 
 # life-cycle stages (Fig3a; labels in naming.STAGES): A1-A3 the L6 shade, A4-A5 the L7 shade, soil the L8
 # shade, maintenance its band colour; stacked A1-A3, A4-A5, soil, maintenance (A4-A5 and maintenance not adjacent)
@@ -135,9 +144,9 @@ STAGE = {'a1a3': COMPONENT['materials_construction'], 'a4a5': (LEVER['L7'], None
          'maintenance': COMPONENT['maintenance']}
 
 # unexplained building of the history (Fig2a, D05c): neutral, hatched (face, hatch, hatch colour); may be negative
-UNEXPLAINED = ('#F2F2F2', '////', '#8C8C8C')
+UNEXPLAINED = ('#FAFAFA', '////', '#8C8C8C')
 # the untargeted band (Fig4): the population-growth grey, hatched
-UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)
+UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)      # solid since MODEL v2.1.1
 
 # materials: the six Pride-flag stripes (author decision, baseline-pb-v2; one order in every
 # figure), soil faded and hatched on top
@@ -146,8 +155,21 @@ MATERIAL = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF'),
             ('PLASTICS & PAINT', 'Plastics & paint', '#FFED00'),
             ('PLASTERBOARD', 'Plasterboard', '#FF8C00'), ('OTHERS', 'Others', '#E40303'),
             ('SOIL', 'Soil carbon loss', '#B5A48B')]
-EDGE = dict(edgecolor='#555555', linewidth=0.3)
-SOIL = dict(alpha=0.5, hatch='///', edgecolor='#8C7B66')          # the soil layer of a material stack
+SOIL = dict(alpha=0.5, hatch='///', hatchcolor='#8C7B66')         # the soil layer of a material stack
+
+# stacked bars and areas (MODEL v2.1.1): no white borders between segments. Every segment's edge is its own face
+# colour at LW_SEAM (it covers the antialiasing seam between adjacent segments without drawing a line); hatches are
+# drawn in an explicit thin hatch colour (matplotlib hatchcolor), never in the edge colour
+LW_SEAM = 0.3
+HATCH_COLOUR = '#6E6E6E'
+
+
+def fill(face, hatch=None, hatchcolor=None, alpha=1.0):
+    """Patch style of one stacked segment: edge = face at LW_SEAM; a hatch in hatchcolor (default HATCH_COLOUR)."""
+    d = dict(facecolor=face, edgecolor=face, linewidth=LW_SEAM, alpha=alpha)
+    if hatch:
+        d.update(hatch=hatch, hatchcolor=hatchcolor or HATCH_COLOUR)
+    return d
 
 # categorical groups in the diagnostics (sensitivity groups, the cases of D17): the Okabe-Ito
 # palette (Okabe & Ito 2008, Color Universal Design), distinguishable under the common colour-vision

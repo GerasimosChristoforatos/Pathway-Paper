@@ -69,7 +69,10 @@ def note(fig, text, y=0.0):
 # boundaries
 # ---------------------------------------------------------------------------
 def boundary_lines(ax, x, ar, atp, label=True, **kw):
-    """The two allocation principles as lines (never shaded as a range, never averaged)."""
+    """The two allocation principles as thin lines (never averaged) with the boundary zones of style.py
+    (below AtP darker green, between AtP and AR light green, above AR light red: style.boundary_zones)."""
+    if ar is not None and atp is not None:
+        S.boundary_zones(ax, x, ar, atp, lines=False)
     import figaudit
     for key, y in (('AR', ar), ('AtP', atp)):
         if y is None:
@@ -77,16 +80,7 @@ def boundary_lines(ax, x, ar, atp, label=True, **kw):
         st = dict(S.BOUNDARY[key])
         lab = st.pop('label')
         st.update(kw)
-        ax.plot(x, y, gid=figaudit.BOUNDARY, label=lab if label else None, **st)
-
-
-def boundary_hline(ax, key, value, label=None, **kw):
-    """A cumulative budget (one value) as a horizontal boundary line."""
-    import figaudit
-    st = dict(S.BOUNDARY[key])
-    lab = st.pop('label')
-    st.update(kw)
-    ax.axhline(value, gid=figaudit.BOUNDARY, label=lab if label is None else label, **st)
+        ax.plot(x, y, gid=figaudit.BOUNDARY, label=lab if label else None, zorder=3, **st)
 
 
 # ---------------------------------------------------------------------------

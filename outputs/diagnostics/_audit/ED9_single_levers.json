@@ -53,7 +53,7 @@
   "250",
   "500",
   "750",
-  "Ambitious (filled)",
+  "Ambitious (hollow)",
   "Embodied carbon 2026\u20132050, one lever alone (kt CO\u2082e)",
   "L1 Dwelling size",
   "L2 Household\noccupancy",
@@ -64,7 +64,7 @@
   "L7 Construction-\nstage carbon",
   "L8 Soil-aware\nplanning",
   "L9 Brownfield\ndevelopment",
-  "Moderate (open)",
+  "Moderate (filled)",
   "Reference",
   "Shapley value of Reference \u2212 P5 (Moderate; total 6,267 kt CO\u2082e)",
   "a",
@@ -75,5 +75,11 @@
  "maintenance_where": [],
  "boundary_drawn": false,
  "boundary_zones": false,
- "white_segment_edges": 0
+ "white_segment_edges": 0,
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": []
 }

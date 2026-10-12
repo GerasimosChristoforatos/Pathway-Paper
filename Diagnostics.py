@@ -92,7 +92,7 @@ S_f = DF['PopTotal_50th'].values / B['households_forecast']['50th']
 
 # components of the stock identity: (label, colour, hatch), labels in the release vocabulary
 RV = ('#BDBDBD', 'xxxx')                       # retirement villages: out of scope, grey cross-hatch
-UNEXPLAINED = S.UNEXPLAINED                    # unexplained building: neutral, hatched (face, hatch, hatch colour)
+UNEXPLAINED = S.UNEXPLAINED                    # unexplained building: faded red, no hatch (face, hatch, hatch colour)
 COMP = {'new_households': ('New households', '#9E9E9E', None),
         'vacancy': ('Vacancy (allowance and change)',) + S.BAND['vacancy'],
         'replacement': (N.BANDS['replacement'],) + S.BAND['replacement'],
@@ -121,38 +121,22 @@ HIST_NOTE = (f'History: one bar per census interval (interval means; vacancy on 
 
 
 def bars(ax, years, parts, projected=False):
-    """Signed stacked bars, positive parts up and negative parts down from zero.
+    """Signed stacked bars by component, net-total convention (MODEL v2.1.2; plotting.signed_stack_styled):
+    negative parts drawn down from the top of the stack, so each bar ends at its net total.
     parts: [(component id, values)]; projected years lighter."""
-    up = np.zeros(len(years))
-    dn = np.zeros(len(years))
-    for cid, vals in parts:
-        _, colour, hatch = COMP[cid]
-        v = np.asarray(vals, dtype=float)
-        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
-        kw = dict(S.fill(colour, hatch, EDGE.get(cid), 0.55 if projected else 1.0), width=0.82)
-        ax.bar(years, pos, bottom=up, **kw)
-        ax.bar(years, neg, bottom=dn, **kw)
-        up += pos
-        dn += neg
+    P.signed_stack_styled(ax, years, [(S.fill(COMP[cid][1], COMP[cid][2], EDGE.get(cid), 0.55 if projected else 1.0),
+                                       np.asarray(vals, float)) for cid, vals in parts], width=0.82)
     ax.axhline(0, color=S.INK, lw=S.LW_THIN)
 
 
 def interval_bars(ax, groups, scale=1.0):
-    """One stacked bar per census interval, spanning its years (signed: a negative mean is drawn
-    below zero). The interval after the latest census is faint."""
+    """One stacked bar per census interval, spanning its years (net-total convention: a negative mean is drawn
+    down from the top of the stack). The interval after the latest census is faint."""
     for y0, y1, parts in groups:
-        up = dn = 0.0
         faint = y0 == CENSUS_Y[-1]
-        for cid, m in parts:
-            _, colour, hatch = COMP[cid]
-            m = m / scale
-            kw = dict(S.fill(colour, hatch, EDGE.get(cid), 0.4 if faint else 1.0), width=y1 - y0, align='edge')
-            if m >= 0:
-                ax.bar(y0 + 0.5, m, bottom=up, **kw)
-                up += m
-            else:
-                ax.bar(y0 + 0.5, m, bottom=dn, **kw)
-                dn += m
+        P.signed_stack_styled(ax, [y0 + 0.5 + (y1 - y0) / 2],
+                              [(S.fill(COMP[cid][1], COMP[cid][2], EDGE.get(cid), 0.4 if faint else 1.0), m / scale)
+                               for cid, m in parts], width=y1 - y0)
     ax.axhline(0, color=S.INK, lw=S.LW_THIN)
 
 
@@ -217,31 +201,19 @@ HFH = validation.household_formation_history(B)
 for r in HFH.itertuples():
     y0, y1 = int(r.interval[:4]), int(r.year_end)
     est = r.households_from != 'census'
-    up = dn = 0.0
-    for bid, m in (('growth', r.from_population_growth_per_year), ('smaller_households',
-                                                                    r.from_household_size_change_per_year)):
-        m = m / 1e3
-        st = dict(P.band_style(bid), width=y1 - y0, align='edge')
-        if est:
-            st.update(hatch='////', alpha=0.5)
-        if m >= 0:
-            a.bar(y0 + 0.5, m, bottom=up, **st)
-            up += m
-        else:
-            a.bar(y0 + 0.5, m, bottom=dn, **st)
-            dn += m
-    a.hlines(r.net_new_households_per_year / 1e3, y0 + 0.5, y1 + 0.5, color=S.INK, lw=S.LW,
+    # MODEL v2.1.2: a gap between census-interval columns; negative parts by the net-total convention
+    gap = 0.5
+    kw = dict(hatch='////', alpha=0.5) if est else {}
+    P.signed_stack(a, [(y0 + y1) / 2 + 0.5], [('growth', r.from_population_growth_per_year / 1e3),
+                                               ('smaller_households', r.from_household_size_change_per_year / 1e3)],
+                   width=(y1 - y0) - gap, **kw)
+    a.hlines(r.net_new_households_per_year / 1e3, y0 + 0.5 + gap / 2, y1 + 0.5 - gap / 2, color=S.INK, lw=S.LW,
              ls=':' if est else '-', label='Net new households' if y0 == int(HFH['interval'].iloc[0][:4]) else None)
 pop_part_f = DF['PopGrowth_50th'].values[1:] / S_f[1:]
 size_part_f = R['d_hh'][1:] - pop_part_f
-up, dn = np.zeros(len(PF)), np.zeros(len(PF))
-for bid, v in zip(('growth', 'smaller_households'), (pop_part_f, size_part_f)):
-    v = np.asarray(v, float) / 1e3
-    st = dict(P.band_style(bid), alpha=0.55, linewidth=0)   # many thin bars: no outline
-    pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
-    a.bar(PF, pos, bottom=up, width=0.82, **st)
-    a.bar(PF, neg, bottom=dn, width=0.82, **st)
-    up, dn = up + pos, dn + neg
+# projection: annual, a gentle fade (MODEL v2.1.2: alpha 0.75, was 0.55), net-total convention
+P.signed_stack(a, PF, [('growth', np.asarray(pop_part_f, float) / 1e3),
+                       ('smaller_households', np.asarray(size_part_f, float) / 1e3)], width=0.82, alpha=0.75)
 a.axhline(0, color=S.INK, lw=S.LW_THIN)
 a.plot(PF, R['d_hh'][1:] / 1e3, color=S.INK, lw=S.LW, ls='--')
 P.split(a)
@@ -264,7 +236,9 @@ finish(fig, 'D04_household_formation',
        'these years are estimated from consents and are not independent evidence. c: history one column per census '
        'interval (interval means; households census-anchored at both ends), stacked from population growth and from '
        f"household-size change; {HFH['year_start'].iloc[-1]}–{HFH['year_end'].iloc[-1]} hatched (consent-derived "
-       'estimates, no census check); projection annual and lighter, from 2026; the line is the net of the two parts.')
+       'estimates, no census check); projection annual, faded, from 2026; the line is the net of the two parts. A '
+       'negative part (household-size change, where households grow larger) is drawn down from the top of the stack, '
+       'so each column ends at its net total (short tick).')
 
 # =============================================================================
 # D05 -- the stock: built (in scope) = households + vacancy + net replacement - retirement villages
@@ -335,7 +309,7 @@ bars(a, PF, [(c, np.asarray(v) / 1e3) for c, v in fut_parts], projected=True)
 for r in SIH.itertuples():                          # the unexplained building of each interval, labelled at
     m = r.unexplained_building_per_year / 1e3       # the end of the stack it extends (top if positive)
     vals = [getattr(r, f'{c}_per_year') / 1e3 for c in HIST_IDS]
-    y = sum(v for v in vals if v > 0) if m >= 0 else sum(v for v in vals if v < 0)
+    y = sum(v for v in vals if v > 0) if m >= 0 else sum(vals)        # negative: at the net total
     a.annotate(f'unexpl. {m:+.1f}k', ((int(r.interval[:4]) + int(r.year_end)) / 2 + 0.5, y),
                xytext=(0, 2 if m >= 0 else -2), textcoords='offset points', ha='center',
                va='bottom' if m >= 0 else 'top', fontsize=S.FONT_MIN, color='#595959', zorder=7)
@@ -362,7 +336,7 @@ finish(fig, 'D05_stock_and_vacancy',
        f'a: {VACANCY[0].upper() + VACANCY[1:]}. c: {HIST_NOTE} History: net replacement is census-measured, the '
        'rate of the census dwelling-count identity of each interval (D07; under-construction corrected) x the '
        f'previous year\'s stock, the quantity the model uses ({CENSUS_Y[-1] + 1}–{YH[-1]}: the latest rate carried). '
-       'Unexplained building (hatched grey, labelled per interval in thousand dwellings per year): building not '
+       'Unexplained building (faded red, labelled per interval in thousand dwellings per year): building not '
        'explained by household formation, vacancy and census-measured replacement: redevelopment not captured by '
        'the census counts, error in the household estimates, or residual; it may be negative.')
 

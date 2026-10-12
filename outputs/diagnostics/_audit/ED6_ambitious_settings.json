@@ -51,11 +51,11 @@
   "4.14 | 4.52",
   "4.55 | 4.67",
   "5,000",
-  "Ambitious (filled)",
+  "Ambitious (hollow)",
   "Cumulative level of exceedance, 2026\u20132050, AR",
   "Cumulative level of exceedance, AtP",
   "Embodied carbon 2026\u20132050 (kt CO\u2082e)",
-  "Moderate (open)",
+  "Moderate (filled)",
   "P1 Space per person",
   "P2 Existing stock",
   "P3 Construction",
@@ -70,5 +70,13 @@
  "maintenance_where": [],
  "boundary_drawn": true,
  "boundary_zones": true,
- "white_segment_edges": 0
+ "white_segment_edges": 0,
+ "atp_linestyles": [
+  "dotted"
+ ],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": []
 }

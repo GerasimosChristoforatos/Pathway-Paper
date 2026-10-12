@@ -1255,7 +1255,7 @@ def fig_l6_estimator(res):
         e = p['estimator'][s_]
         ax.axvline(e['q'], color=S.LEVER['L6'], lw=S.LW_THIN, ls=S.SETTING[s_]['ls'])
         ax.errorbar(e['q'], e['r'], yerr=[[e['r'] - e['ci_lo']], [e['ci_hi'] - e['r']]], fmt='D', color=S.LEVER['L6'],
-                    mfc='white' if s_ == 'moderate' else S.LEVER['L6'], ms=4, capsize=2, lw=S.LW, zorder=6,
+                    mfc=S.LEVER['L6'] if s_ == 'moderate' else 'white', ms=4, capsize=2, lw=S.LW, zorder=6,
                     label=f"{N.SETTINGS[s_]}: q = {e['q']:.2f}, r = {e['r']:.3f} (95% CI {e['ci_lo']:.3f}–{e['ci_hi']:.3f})")
     ax.axhline(1.0, color=S.MUTED, lw=S.LW_THIN)
     ax.text(0.99, 1.005, 'pooled typology factor (r = 1)', ha='right', va='bottom', fontsize=S.FONT_SMALL, color=S.MUTED)

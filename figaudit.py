@@ -136,6 +136,52 @@ def white_edges(fig):
     return n
 
 
+def _dash_kind(line):
+    """'solid', 'dotted' (every on-segment at most 1.5 x the line width) or 'dashed', from the line's dash pattern."""
+    ls = line.get_linestyle()
+    if ls in ('-', 'solid', 'None', ' ', ''):
+        return 'solid'
+    _, seq = getattr(line, '_unscaled_dash_pattern', (0, None))
+    if not seq:
+        return 'dotted' if ls in (':', 'dotted') else 'dashed'
+    return 'dotted' if max(seq[0::2]) <= 1.5 else 'dashed'
+
+
+def styling(fig):
+    """MODEL v2.1.2 styling facts: the line style of every AtP boundary line (dotted required), the negative band
+    segments and net-total ticks (net-total convention: plotting.signed_stack / signed_areas), negative-height
+    band rectangles (the old convention, drawn down from zero; none allowed) and whether the TL colour is used."""
+    import style as S
+    from matplotlib.colors import to_hex
+    atp, neg, ticks, down, tl, old = [], 0, 0, 0, False, set()
+    tlhex = S.TL.upper()
+    retired = {'#0DB2C7', '#00ACC1', '#102A2E'}       # TL and Population growth of model-v2.1.1
+    from matplotlib.collections import Collection
+    from matplotlib.patches import Patch
+    for ax in fig.get_axes():
+        for a in ax.get_children():
+            g = a.get_gid()
+            if g == BOUNDARY and isinstance(a, Line2D) and to_hex(a.get_color()).upper() == S.ATP.upper():
+                atp.append(_dash_kind(a))
+            if g == 'negative_band':
+                neg += 1
+            elif g == 'net_total':
+                ticks += 1
+            elif g == 'band_segment' and isinstance(a, Rectangle) and a.get_height() < 0:
+                down += 1
+            if not isinstance(a, (Line2D, Collection, Patch)):
+                continue
+            for attr in ('get_color', 'get_facecolor', 'get_markerfacecolor', 'get_edgecolor'):
+                try:
+                    cols = _hex(getattr(a, attr)())
+                except (AttributeError, TypeError, ValueError):
+                    continue
+                tl = tl or tlhex in cols
+                old |= cols & retired
+    return dict(atp_linestyles=sorted(set(atp)), negative_band_segments=neg, net_total_ticks=ticks,
+                band_rectangles_below_zero=down, tl_colour_used=tl, retired_colours=sorted(old))
+
+
 def record(fig, name, note=None):
     """Write the audit record of a figure about to be saved under name (no extension): per
     axes its title, labels and the year range of its data; the figure's texts; the note
@@ -152,4 +198,4 @@ def record(fig, name, note=None):
         json.dump(dict(figure=os.path.splitext(os.path.basename(name))[0], producer=producer(), axes=axes,
                        texts=texts(fig), note=note, maintenance_drawn=bool(md), maintenance_where=md,
                        boundary_drawn=BOUNDARY in gids, boundary_zones=ZONE in gids,
-                       white_segment_edges=white_edges(fig)), f, indent=1)
+                       white_segment_edges=white_edges(fig), **styling(fig)), f, indent=1)

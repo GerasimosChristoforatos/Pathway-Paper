@@ -879,6 +879,54 @@ def aesa_tornado(s, ref, name, note):
     _save(fig, name, note)
 
 
+def fig_d21():
+    """D21 (MODEL v2.1.2: from the stored data only, outputs/data/aesa/annual.csv and montecarlo_annual.csv, so it
+    can be redrawn without a model run): the Monte Carlo fan of the Reference's embodied carbon with the boundary
+    bands, and the sector carbon of the AR base window as a thin line joined to the projection's 2026 median (no
+    gap between 2025 and 2026)."""
+    S = style
+    S.apply()
+    import plotting as P
+    an = pd.read_csv(layout.data('aesa/annual.csv', frozen=False))
+    hb = an[an['scenario'] == 'history'].set_index('year').loc[AR_BASE_WINDOW[0]:AR_BASE_WINDOW[1], 'I_sec_kgCO2e']
+    m = pd.read_csv(layout.data('aesa/montecarlo_annual.csv', frozen=False))
+    m = m[m['scenario'] == 'REF'].set_index('year').sort_index()
+    fig, ax = plt.subplots(figsize=S.figsize('double', 80))
+    ax.axvspan(AR_BASE_WINDOW[0] - 0.5, AR_BASE_WINDOW[1] + 0.5, color=S.MUTED, alpha=0.10, lw=0,
+               label=f'AR base window {AR_BASE_WINDOW[0]}–{AR_BASE_WINDOW[1]}')
+    ax.fill_between(m.index, m['I_sec_kgCO2e_p5'] / M6, m['I_sec_kgCO2e_p95'] / M6,
+                    label='Embodied carbon, Monte Carlo 5–95%', **S.MC_BAND)
+    ax.plot(m.index, m['I_sec_kgCO2e_p50'] / M6, color=S.REFERENCE, lw=S.LW_BOLD,
+            label='Embodied carbon, Monte Carlo median')
+    # history: thin and fine, joined to the 2026 median (the step 2025 -> 2026 is drawn, not left as a gap)
+    xh = list(hb.index) + [int(m.index[0])]
+    yh = list(hb.values / M6) + [float(m['I_sec_kgCO2e_p50'].iloc[0]) / M6]
+    ax.plot(xh, yh, color=S.INK, lw=S.LW_THIN,
+            label='Sector carbon in the base window, at 2025 factors (accounting as the projection)')
+    S.boundary_zones(ax, m.index, m['B_AR_kgCO2e_p50'] / M6, m['B_AtP_kgCO2e_p50'] / M6, lines=False)
+    for k, key in (('B_AR', 'AR'), ('B_AtP', 'AtP')):
+        st = dict(S.BOUNDARY[key])
+        lab = st.pop('label')
+        ax.fill_between(m.index, m[f'{k}_kgCO2e_p5'] / M6, m[f'{k}_kgCO2e_p95'] / M6, color=st['color'], alpha=0.25,
+                        lw=0, gid=figaudit.BOUNDARY)
+        ax.plot(m.index, m[f'{k}_kgCO2e_p50'] / M6, gid=figaudit.BOUNDARY,
+                label=f'{lab}: Monte Carlo median and 5–95%', **st)
+    P.split(ax)
+    ax.set_xlim(AR_BASE_WINDOW[0] - 0.5, 2050)
+    ax.set_ylim(0, 1.6 * max(hb.max(), m['I_sec_kgCO2e_p95'].max()) / M6)
+    ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
+    ax.legend(loc='upper left', fontsize=S.FONT_SMALL)
+    spread = 100 * float(np.max(np.abs(np.r_[m['B_AR_kgCO2e_p95'] / m['B_AR_kgCO2e_p50'] - 1,
+                                              m['B_AR_kgCO2e_p5'] / m['B_AR_kgCO2e_p50'] - 1])))
+    fig.tight_layout()
+    _save(fig, 'D21_fan_and_boundaries',
+          f'Reference. AR base window {AR_BASE_WINDOW[0]}–{AR_BASE_WINDOW[1]} at 2025 factors, soil only on '
+          'non-replacement floor area (as the projection); the thin history line is joined to the 2026 Monte Carlo '
+          'median. Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the '
+          'draw\'s 2025 carbon factors), AtP with population only; AR '
+          f'5th–95th within {spread:.1f}% of the median in every year.')
+
+
 def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell):
     """The diagnostics of the planetary-boundary layer (docs/FIGURE_PLAN.md): D18 every AESA
     sensitivity row, D21 the Monte Carlo fan with the AR base window, D22 the boundaries,
@@ -961,37 +1009,8 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     fig.tight_layout()
     _save(fig, 'D27_variants_vs_boundaries', 'The boundaries are the same in every variant (same population path). ' + cap)
 
-    # ---- D21: Monte Carlo fan with the AR base window ------------------------------------
-    fig, ax = plt.subplots(figsize=S.figsize('double', 80))
-    hb = hist.loc[AR_BASE_WINDOW[0]:AR_BASE_WINDOW[1], 'I_sec_kg']           # only where the AESA needs it
-    ax.axvspan(AR_BASE_WINDOW[0] - 0.5, AR_BASE_WINDOW[1] + 0.5, color=S.MUTED, alpha=0.10, lw=0,
-               label=f'AR base window {AR_BASE_WINDOW[0]}–{AR_BASE_WINDOW[1]}')
-    ax.plot(hb.index, hb / M6, color=S.INK, lw=S.LW_BOLD,
-            label='Sector carbon in the base window, at 2025 factors (accounting as the projection)')
-    ax.fill_between(m.index, m['I_sec_kgCO2e_p5'] / M6, m['I_sec_kgCO2e_p95'] / M6,
-                    label='Embodied carbon, Monte Carlo 5–95%', **S.MC_BAND)
-    ax.plot(m.index, m['I_sec_kgCO2e_p50'] / M6, color=S.REFERENCE, lw=S.LW_BOLD, label='Embodied carbon, Monte Carlo median')
-    S.boundary_zones(ax, m.index, m['B_AR_kgCO2e_p50'] / M6, m['B_AtP_kgCO2e_p50'] / M6, lines=False)
-    for k, key in (('B_AR', 'AR'), ('B_AtP', 'AtP')):
-        st = dict(S.BOUNDARY[key])
-        lab = st.pop('label')
-        ax.fill_between(m.index, m[f'{k}_kgCO2e_p5'] / M6, m[f'{k}_kgCO2e_p95'] / M6, color=st['color'], alpha=0.25,
-                        lw=0, gid=figaudit.BOUNDARY)
-        ax.plot(m.index, m[f'{k}_kgCO2e_p50'] / M6, gid=figaudit.BOUNDARY,
-                label=f'{lab}: Monte Carlo median and 5–95%', **st)
-    P.split(ax)
-    ax.set_xlim(AR_BASE_WINDOW[0] - 0.5, 2050)
-    ax.set_ylim(0, 1.6 * max(hb.max(), m['I_sec_kgCO2e_p95'].max()) / M6)
-    ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
-    ax.legend(loc='upper left', fontsize=S.FONT_SMALL)
-    spread = 100 * float(np.max(np.abs(np.r_[m['B_AR_kgCO2e_p95'] / m['B_AR_kgCO2e_p50'] - 1,
-                                              m['B_AR_kgCO2e_p5'] / m['B_AR_kgCO2e_p50'] - 1])))
-    fig.tight_layout()
-    _save(fig, 'D21_fan_and_boundaries',
-          f'Reference. AR base window {AR_BASE_WINDOW[0]}–{AR_BASE_WINDOW[1]} at 2025 factors, soil only on '
-          'non-replacement floor area (as the projection). Boundary bands: AR varies with the NZ population of each '
-          'draw and its AR base (recomputed from the draw\'s 2025 carbon factors), AtP with population only; AR '
-          f'5th–95th within {spread:.1f}% of the median in every year.')
+    # ---- D21: Monte Carlo fan with the AR base window (MODEL v2.1.2: drawn from the stored data) ---------
+    fig_d21()
 
     # ---- D22: the boundaries -------------------------------------------------------------
     yb = np.arange(T0, PB_YEARS[1] + 1)
@@ -1116,4 +1135,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
 
 
 if __name__ == '__main__':
-    main()
+    if '--d21' in sys.argv[1:]:          # D21 alone, from the stored data (no model run)
+        fig_d21()
+    else:
+        main()

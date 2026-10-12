@@ -31,8 +31,6 @@
   "$\\mathdefault{40}$",
   "$\\mathdefault{60}$",
   "$\\mathdefault{80}$",
-  "$\\mathdefault{\u221220}$",
-  "-5,000",
   "0",
   "0.2",
   "0.5",
@@ -96,5 +94,13 @@
  ],
  "boundary_drawn": true,
  "boundary_zones": true,
- "white_segment_edges": 0
+ "white_segment_edges": 0,
+ "atp_linestyles": [
+  "dotted"
+ ],
+ "negative_band_segments": 2,
+ "net_total_ticks": 2,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": []
 }

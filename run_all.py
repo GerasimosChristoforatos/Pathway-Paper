@@ -8,6 +8,7 @@
                                         # pathway tests, the numerical regression lock, the
                                         # release checks and the byte manifest; only the pathway
                                         # figures are replaced
+    python run_all.py --figures-only    # MODEL v2.1.2: redraw every figure, no data may change (byte-checked)
     python run_all.py --export          # also the vector PDF and source-data CSV of every paper, Extended Data
                                         # and key figure (PATHWAY_EXPORT=1); combinable with the modes above
                                         # (default: PNG only)
@@ -145,6 +146,31 @@ def pipeline(quick=False, export=False):
     run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
 
 
+def figures_only(export=False):
+    """Figures-only run mode (MODEL v2.1.2): no data may change. The model scripts that draw diagnostics in-process
+    (projection, Diagnostics, MonteCarlo, boundaries, figures_report, pathways) are re-run with figures saved; the
+    pathway Monte Carlo, the frozen-technology check and the sensitivity tables are not run; the paper, Extended Data
+    and key figures are drawn from the data files; nothing is deleted first. The last step requires every file of
+    outputs/data/ to be byte-identical to tests/data_snapshot_model_v2_1_1.json (tests/test_data_unchanged.py) and
+    stops otherwise."""
+    py = sys.executable
+    env = dict({'PATHWAY_QUICK': '0'}, **export_env(export))
+    step('projection', [py, os.path.join(ROOT, 'projection.py')], env)
+    step('diagnostics', [py, os.path.join(ROOT, 'Diagnostics.py')], env)
+    step('montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')], env)
+    step('boundaries', [py, os.path.join(ROOT, 'boundaries.py')], env)
+    step('figures_report', [py, tool('figures_report')], env)
+    step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
+    step('data_unchanged', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_data_unchanged.py')], env)
+    step('paper', [py, os.path.join(ROOT, 'paper.py')], env)
+    step('extended_data', [py, os.path.join(ROOT, 'extended_data.py')], env)
+    step('key_figures', [py, os.path.join(ROOT, 'key_figures.py')], env)
+    step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
+    step('methods_draft', [py, tool('methods_draft')], env)
+    step('indexes', [py, os.path.join(ROOT, 'indexes.py')], env)
+    step('data_unchanged_final', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_data_unchanged.py')], env)
+
+
 def pathways_only(export=False):
     """Pathways-only run mode: the projection is unchanged (every number locked by
     tests/test_regression_model_v1.py), so only the pathway layer runs. projection.main() is
@@ -177,7 +203,9 @@ def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     print('run_all:')
     try:
-        if '--pathways-only' in argv:
+        if '--figures-only' in argv:
+            figures_only(export='--export' in argv)
+        elif '--pathways-only' in argv:
             pathways_only(export='--export' in argv)
         else:
             pipeline(quick='--quick' in argv, export='--export' in argv)

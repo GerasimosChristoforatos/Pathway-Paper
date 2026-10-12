@@ -1020,13 +1020,22 @@ Every v3.1 figure, its release figure(s) or the reason it is not carried. Plan: 
 
 | v3.1 figure | release |
 |---|---|
+| `Fig2_demand_bands (a)` | paper/Fig2_floor_area_bands |
+| `Fig2_demand_bands (b)` | paper/Fig3_reference_carbon |
+| `Fig3_reference_carbon (a, b)` | paper/Fig3_reference_carbon |
+| `Fig3_reference_carbon (c)` | paper/Fig4_reference_boundaries |
+| `Fig4_pathways_bands` | paper/Fig5_pathways |
+| `Fig5_boundaries_attribution (a)` | paper/Fig4_reference_boundaries; paper/Fig6_emissions_solution_space |
+| `Fig5_boundaries_attribution (b)` | paper/Fig5_pathways |
+| `Fig6_solution_space` | paper/Fig6_emissions_solution_space |
+| `K5_band_waterfall` | paper/Fig5_pathways |
 | `boss_01_population` | data_calibration/D01_population |
 | `boss_02_households` | data_calibration/D02_households |
 | `boss_03_cumulative_gfa` | data_calibration/D09_cumulative_floor_area |
-| `boss_04_annual_gfa` | paper/Fig2_demand_bands; removed: superseded by Fig2 (bands, history and projection); its typology panel is by-typology reporting |
+| `boss_04_annual_gfa` | paper/Fig2_floor_area_bands; removed: superseded by Fig2 (bands, history and projection); its typology panel is by-typology reporting |
 | `boss_05_annual_carbon` | paper/Fig3_reference_carbon; removed: superseded by Fig3 (stages, materials) and D25 (carbon by band); typology panel removed |
-| `boss_05_annual_carbon_pb` | paper/Fig5_boundaries_attribution; removed: duplicate of D25 with a typology panel |
-| `boss_06_cumulative_carbon` | paper/Fig3_reference_carbon; removed: duplicate of D26 without the boundaries; typology panel removed |
+| `boss_05_annual_carbon_pb` | removed: duplicate of D25 with a typology panel |
+| `boss_06_cumulative_carbon` | removed: duplicate of D26 without the boundaries; typology panel removed |
 | `boss_06_cumulative_carbon_pb` | planetary_boundary/D26_cumulative_carbon_by_band |
 | `boss_07_typology_share` | removed: by-typology reporting (typology shares are held; internal to the model) |
 | `boss_08_demographic_drivers` | data_calibration/D03_household_size |
@@ -1035,7 +1044,7 @@ Every v3.1 figure, its release figure(s) or the reason it is not carried. Plan: 
 | `diag_2_household_engines` | data_calibration/D04_household_formation |
 | `diag_3_stock_bucket` | data_calibration/D05_stock_and_vacancy |
 | `diag_3b_appendix_vacancy_definition` | data_calibration/D06_vacancy_definition |
-| `diag_4_floor_area` | paper/Fig2_demand_bands; removed: demand-band panel superseded by Fig2; typology, mix and per-typology size panels are by-typology reporting |
+| `diag_4_floor_area` | paper/Fig2_floor_area_bands; removed: demand-band panel superseded by Fig2; typology, mix and per-typology size panels are by-typology reporting |
 | `diag_5_carbon` | paper/Fig3_reference_carbon; removed: material panels duplicate D13; typology panels are by-typology reporting |
 | `fig_bridge` | data_calibration/D10_floor_area_bridge |
 | `fig_bridge_appendix_split` | data_calibration/D11_floor_area_bridge_split |
@@ -1043,27 +1052,27 @@ Every v3.1 figure, its release figure(s) or the reason it is not carried. Plan: 
 | `fig_reality_checks` | validation/D15_reality_checks |
 | `fig_replacement_rate` | data_calibration/D07_net_replacement_rate |
 | `fig_scenarios` | sensitivity/D19_variants |
-| `fig_scenarios_pb` | paper/Fig5_boundaries_attribution; planetary_boundary/D27_variants_vs_boundaries |
+| `fig_scenarios_pb` | planetary_boundary/D27_variants_vs_boundaries |
 | `fig_validation` | validation/D14_hindcast |
 | `mc_1_fan` | extended_data/ED5_monte_carlo; removed: superseded by the Monte Carlo bands of ED5 (floor area and carbon) |
 | `mc_1_fan_pb` | monte_carlo/D21_fan_and_boundaries |
 | `mc_3_sobol` | monte_carlo/D20_sobol |
 | `pb_1_boundaries` | planetary_boundary/D22_boundaries |
-| `pb_2_loe` | paper/Fig5_boundaries_attribution; planetary_boundary/D23_annual_loe |
+| `pb_2_loe` | paper/Fig4_reference_boundaries; planetary_boundary/D23_annual_loe |
 | `pb_3_headroom` | planetary_boundary/D24_headroom |
 | `pb_4_sensitivity` | extended_data/ED4_boundary_tornado; removed: superseded by ED4; all rows in D18 |
 | `pb_4_sensitivity_SI` | sensitivity/D18_aesa_sensitivity |
 | `pb_5_demand_vs_boundary` | planetary_boundary/D25_annual_carbon_by_band |
-| `pb_6_committed` | paper/Fig3_reference_carbon |
-| `pw_10_T_annual_SI` | paper/Fig5_boundaries_attribution; pathways_si/D34_tl_dwellings |
-| `pw_1_bands_by_pathway` | paper/Fig4_pathways_bands |
-| `pw_2_shapley_waterfall` | paper/Fig5_boundaries_attribution |
-| `pw_3_solution_space` | paper/Fig6_solution_space |
-| `pw_4_annual_SI` | paper/Fig5_boundaries_attribution; pathways_si/D28_pathways_annual |
+| `pb_6_committed` | paper/Fig4_reference_boundaries |
+| `pw_10_T_annual_SI` | pathways_si/D34_tl_dwellings |
+| `pw_1_bands_by_pathway` | paper/Fig5_pathways |
+| `pw_2_shapley_waterfall` | paper/Fig5_pathways |
+| `pw_3_solution_space` | paper/Fig6_emissions_solution_space |
+| `pw_4_annual_SI` | paper/Fig6_emissions_solution_space; pathways_si/D28_pathways_annual |
 | `pw_5_envelope_SI` | extended_data/ED7_rollout_timing |
 | `pw_6_L5_estimator_SI` | pathways_si/D30_l6_estimator |
 | `pw_7_shapley_levers_SI` | extended_data/ED9_single_levers |
-| `pw_8_staircase` | paper/Fig5_boundaries_attribution; pathways_si/D32_tl_staircase |
+| `pw_8_staircase` | paper/Fig5_pathways; pathways_si/D32_tl_staircase |
 | `pw_9_T_shapley_SI` | extended_data/ED8_theoretical_limit |
 | `sens_1_tornado` | extended_data/ED1_reference_carbon_tornado; removed: superseded by ED1 (grouped tornado of the Reference carbon) and ED4 (levels of exceedance) |
 | `sens_1_tornado_SI` | extended_data/ED1_reference_carbon_tornado |
@@ -1073,18 +1082,18 @@ Every v3.1 figure, its release figure(s) or the reason it is not carried. Plan: 
 
 The paper / Extended Data / key figures / diagnostics layout of MODEL v2.1.0 (docs/FIGURE_PLAN_v2.md section 5, amended by the v2.1.0 entries of figure_plan.py). Removing a figure never removes its data.
 
-| model-v1.1.0 | MODEL v2.0.0 |
+| model-v1.1.0 | MODEL v2.1.2 location |
 |---|---|
 | `H1` | Fig1 |
 | `H2` | ED5 (a) |
-| `H3` | Fig2 (a) |
-| `H4` | Fig3 (a, b) |
-| `H5` | Fig5 (a) (with P5, TL and their Monte Carlo bands) |
-| `H6` | Fig3 (c) |
-| `H7` | Fig4 (Moderate; Ambitious in ED6) |
-| `H8` | Fig5 (a) |
-| `H9` | Fig5 (b) (Moderate; TL1-TL10 relative to P5 Moderate) |
-| `H10` | Fig6 |
+| `H3` | Fig2 |
+| `H4` | Fig3 (b, c) |
+| `H5` | Fig4 (a) and Fig6 (a) (with P5, TL and their Monte Carlo bands) |
+| `H6` | Fig4 (b) |
+| `H7` | Fig5 (a) (Moderate; Ambitious in ED6) |
+| `H8` | Fig6 (a) |
+| `H9` | ED8, ED9 and Table 2 (Shapley; the sequential path in Fig5 (c)) |
+| `H10` | Fig6 (b) |
 | `H11` | ED1 (carbon) and ED4 (LoE) |
 | `D16` | ED1 |
 | `D17` | ED3 |
@@ -1092,6 +1101,18 @@ The paper / Extended Data / key figures / diagnostics layout of MODEL v2.1.0 (do
 | `D31` | ED9 |
 | `D33` | ED8 |
 | `outputs/headline/ (HEADLINE.md)` | outputs/paper/ (PAPER.md) and outputs/extended_data/ (EXTENDED_DATA.md) |
+
+### MODEL v2.1.2: paper figures (old file -> new figure)
+
+Figures only; no number changes (outputs/data/ byte-identical to model-v2.1.1). The paper set is Fig1 schematic, Fig2 floor area by demand band, Fig3 Reference carbon (band, stage, material), Fig4 the Reference against the boundaries (with the committed emissions), Fig5 the pathways (band, stage, band waterfall), Fig6 annual emissions and the solution space.
+
+| model-v2.1.1 paper figure | MODEL v2.1.2 |
+|---|---|
+| `Fig2_demand_bands` | Fig2_floor_area_bands (a); its carbon panel (b) is Fig3 (a) |
+| `Fig4_pathways_bands` | Fig5_pathways (a) (carbon; floor area in Table 2) |
+| `Fig5_boundaries_attribution` | Fig4_reference_boundaries (a) and Fig6_emissions_solution_space (a); the Shapley waterfall (b) is ED8 / ED9 and Table 2, the sequential waterfall Fig5_pathways (c) |
+| `Fig6_solution_space` | Fig6_emissions_solution_space (b) |
+| `Fig3_reference_carbon (c, committed)` | Fig4_reference_boundaries (b) |
 
 ## 7. Axis labels and legend entries
 

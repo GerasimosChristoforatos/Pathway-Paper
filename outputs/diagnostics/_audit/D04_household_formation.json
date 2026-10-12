@@ -54,13 +54,11 @@
   "$\\mathdefault{30}$",
   "$\\mathdefault{40}$",
   "$\\mathdefault{50}$",
-  "$\\mathdefault{60}$",
   "$\\mathdefault{\u22120.01}$",
   "$\\mathdefault{\u22120.02}$",
   "$\\mathdefault{\u22120.03}$",
   "$\\mathdefault{\u22120.04}$",
   "$\\mathdefault{\u22120.05}$",
-  "$\\mathdefault{\u221210}$",
   "$\\mathdefault{\u221250}$",
   "1992\u20132023 (census-benchmarked)",
   "2019 on: consent-derived",
@@ -84,10 +82,16 @@
   "census-benchmarked",
   "r = +0.73, p = 2e-06"
  ],
- "note": "Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885\u20130.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024\u20132025 hatched (consent-derived estimates, no census check); projection annual and lighter, from 2026; the line is the net of the two parts.",
+ "note": "Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885\u20130.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024\u20132025 hatched (consent-derived estimates, no census check); projection annual, faded, from 2026; the line is the net of the two parts. A negative part (household-size change, where households grow larger) is drawn down from the top of the stack, so each column ends at its net total (short tick).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
  "boundary_zones": false,
- "white_segment_edges": 0
+ "white_segment_edges": 0,
+ "atp_linestyles": [],
+ "negative_band_segments": 27,
+ "net_total_ticks": 11,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": []
 }

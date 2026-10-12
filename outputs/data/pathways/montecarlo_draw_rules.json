@@ -7,5 +7,29 @@
   "Apartments": 2705
  },
  "L2_target_vs_montecarlo_high_variant_max_abs_diff": 4.440892098500626e-16,
- "n_draws": 5000
+ "n_draws": 5000,
+ "banking_rule": "safety net (pathways.bank): binds in a year where built_t != raw_t",
+ "TL_banking_binds_draws": 5000,
+ "TL_banking_binding_years_percentiles": {
+  "p0": 4.0,
+  "p5": 6.0,
+  "p50": 11.0,
+  "p95": 17.0,
+  "p100": 24.0
+ },
+ "TL_banking_last_binding_year_percentiles": {
+  "p0": 2031.0,
+  "p5": 2033.0,
+  "p50": 2037.0,
+  "p95": 2043.0,
+  "p100": 2050.0
+ },
+ "TL_from2027_banking_binds_draws": 5000,
+ "TL_from2027_banking_binding_years_percentiles": {
+  "p0": 5.0,
+  "p5": 7.0,
+  "p50": 11.0,
+  "p95": 18.0,
+  "p100": 24.0
+ }
 }

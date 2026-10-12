@@ -1,0 +1,63 @@
+{
+ "figure": "ED12_mc_importance",
+ "producer": "extended_data.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "SRC of the cumulative LoE AR",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "",
+   "xlabel": "PRCC of the cumulative LoE AR",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "",
+   "xlabel": "Sobol index of the Reference carbon",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0.0}$",
+  "$\\mathdefault{0.2}$",
+  "$\\mathdefault{0.4}$",
+  "$\\mathdefault{0.5}$",
+  "$\\mathdefault{0.6}$",
+  "$\\mathdefault{0.8}$",
+  "$\\mathdefault{1.0}$",
+  "$\\mathdefault{1.5}$",
+  "$\\mathdefault{\u22120.5}$",
+  "$\\mathdefault{\u22121.0}$",
+  "$\\mathdefault{\u22121.5}$",
+  "Carbon-factor index",
+  "Completion rate",
+  "Dwelling-size multiplier",
+  "P5 Combined",
+  "P5 Combined (R\u00b2 0.992)",
+  "PRCC of the cumulative LoE AR",
+  "Population rank (z-score)",
+  "Reference",
+  "Reference (R\u00b2 0.988)",
+  "SRC of the cumulative LoE AR",
+  "Sobol index of the Reference carbon",
+  "TL",
+  "TL (R\u00b2 0.993)",
+  "a",
+  "b",
+  "c",
+  "first-order index",
+  "total-order index"
+ ],
+ "note": null,
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false
+}

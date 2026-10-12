@@ -91,5 +91,7 @@
  ],
  "note": "Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the information available then; errors at the end of each window, vacancy on the consistent definition unless noted. d: consents observed January\u2013July 2026 against the model, which uses no 2026 data.",
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false
 }

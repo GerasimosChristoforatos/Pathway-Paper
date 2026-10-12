@@ -1,15 +1,34 @@
-level,setting,metric,player,name,reduction,share_of_P5_ambitious_from2027_minus_TL
-TL,TL,carbon_kt,TL1,No vacancy,1804.152035230623,0.20430211628902717
-TL,TL,carbon_kt,TL2,No extra space,2825.0725294846225,0.31991111900385083
-TL,TL,carbon_kt,TL3,Minimum space per person,2196.3841359761304,0.24871846629389505
-TL,TL,carbon_kt,TL4,Best-practice materials,722.0268988269602,0.08176230193875816
-TL,TL,carbon_kt,TL5,Lowest-carbon soils,564.6861380350962,0.06394503943504998
-TL,TL,carbon_kt,TL6,Urban infill,718.482700508681,0.08136095703941885
-TL,TL,LoE_AR,TL1,No vacancy,0.40533375989645665,0.20430211628902717
-TL,TL,LoE_AR,TL2,No extra space,0.6347010939185171,0.31991111900385083
-TL,TL,LoE_AR,TL3,Minimum space per person,0.4934554420178524,0.248718466293895
-TL,TL,LoE_AR,TL4,Best-practice materials,0.16221575118556988,0.08176230193875816
-TL,TL,LoE_AR,TL5,Lowest-carbon soils,0.12686644530039112,0.06394503943505
-TL,TL,LoE_AR,TL6,Urban infill,0.16141948612469148,0.08136095703941884
-TL,TL,carbon_kt,from2027,"P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player)",1170.856987127063,
-TL,TL,LoE_AR,from2027,"P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player)",0.26305314387353373,
+level,setting,metric,player,name,reduction,share_of_P5_moderate_from2027_minus_TL
+TL,TL,carbon_kt,TL1,No extra space,2831.011598745602,0.24350775791069534
+TL,TL,carbon_kt,TL2,Historical maximum household size,1401.5195618867228,0.12055086116010075
+TL,TL,carbon_kt,TL3,No vacancy,1979.517466657371,0.17026700288489763
+TL,TL,carbon_kt,TL4,Overbuild fully absorbed,67.31878488391578,0.005790384744314785
+TL,TL,carbon_kt,TL5,Building lifetime extension at the limit,817.2904635224353,0.07029874707059618
+TL,TL,carbon_kt,TL6,Best-practice materials,1427.6601019580996,0.12279932397324363
+TL,TL,carbon_kt,TL7,Zero-emission construction,1040.911649230026,0.08953338870085813
+TL,TL,carbon_kt,TL8,Lowest-carbon soils,288.250215671303,0.024793668724810067
+TL,TL,carbon_kt,TL9,Brownfield maximum,542.0952233032547,0.046627994197962076
+TL,TL,carbon_kt,TL10,Minimum space per person,1230.3855320120545,0.10583087063252143
+TL,TL,LoE_AR,TL1,No extra space,0.6360354078936309,0.24350775791069534
+TL,TL,LoE_AR,TL2,Historical maximum household size,0.31487545533564887,0.12055086116010075
+TL,TL,LoE_AR,TL3,No vacancy,0.444732617802011,0.17026700288489763
+TL,TL,LoE_AR,TL4,Overbuild fully absorbed,0.01512432192842896,0.005790384744314767
+TL,TL,LoE_AR,TL5,Building lifetime extension at the limit,0.18361834814254993,0.07029874707059616
+TL,TL,LoE_AR,TL6,Best-practice materials,0.3207483768998788,0.12279932397324364
+TL,TL,LoE_AR,TL7,Zero-emission construction,0.2338586905446108,0.08953338870085814
+TL,TL,LoE_AR,TL8,Lowest-carbon soils,0.06476036466299163,0.024793668724810043
+TL,TL,LoE_AR,TL9,Brownfield maximum,0.12179100807063062,0.046627994197962076
+TL,TL,LoE_AR,TL10,Minimum space per person,0.27642725450734956,0.10583087063252142
+TL,TL,LoE_AtP,TL1,No extra space,2.5436666652790074,0.24350775791069534
+TL,TL,LoE_AtP,TL2,Historical maximum household size,1.2592666847028522,0.12055086116010075
+TL,TL,LoE_AtP,TL3,No vacancy,1.7785983623327342,0.17026700288489763
+TL,TL,LoE_AtP,TL4,Overbuild fully absorbed,0.06048599346331822,0.005790384744314772
+TL,TL,LoE_AtP,TL5,Building lifetime extension at the limit,0.7343362735898352,0.07029874707059616
+TL,TL,LoE_AtP,TL6,Best-practice materials,1.2827539852923,0.12279932397324363
+TL,TL,LoE_AtP,TL7,Zero-emission construction,0.9352601256809404,0.08953338870085813
+TL,TL,LoE_AtP,TL8,Lowest-carbon soils,0.25899309815172006,0.024793668724810054
+TL,TL,LoE_AtP,TL9,Brownfield maximum,0.4870730835346814,0.046627994197962076
+TL,TL,LoE_AtP,TL10,Minimum space per person,1.1055025929979871,0.10583087063252143
+TL,TL,carbon_kt,from2027,"P5 Combined: adoption path -> full strength from 2027 (separate line, not a Shapley player)",865.8743615543372,
+TL,TL,LoE_AR,from2027,"P5 Combined: adoption path -> full strength from 2027 (separate line, not a Shapley player)",0.19453355577203313,
+TL,TL,LoE_AtP,from2027,"P5 Combined: adoption path -> full strength from 2027 (separate line, not a Shapley player)",0.7779889530588342,

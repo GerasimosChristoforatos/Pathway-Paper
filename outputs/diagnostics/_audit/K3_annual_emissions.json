@@ -1,0 +1,50 @@
+{
+ "figure": "K3_annual_emissions",
+ "producer": "key_figures.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year, log scale)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{2055}$",
+  "1,000",
+  "100",
+  "2,000",
+  "20",
+  "200",
+  "50",
+  "500",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Boundary exceeded (above AR)",
+  "Embodied carbon (kt CO\u2082e per year, log scale)",
+  "P1 Space per person",
+  "P2 Existing stock",
+  "P3 Construction",
+  "P4 Land",
+  "P5 Combined",
+  "Reference",
+  "Reference, Monte Carlo 5\u201395%",
+  "TL Theoretical limit",
+  "TL builds nothing 2027\u20132036\n(released dwellings used)",
+  "TL zero-building years",
+  "Within AR only (between AtP and AR)",
+  "Within both budgets (below AtP)"
+ ],
+ "note": null,
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_zones": true
+}

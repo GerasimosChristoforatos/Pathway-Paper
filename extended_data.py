@@ -725,7 +725,7 @@ def ed12():
     c = axes[2]
     so = sob[sob['output'] == 'carbon_kt'].set_index('input')
     sob_inputs = {'z_pop': 'z_pop', 'size': 'size', 'complete': 'complete', 'carbon_index': 'carbon'}
-    for k_, (col, off_, lab) in enumerate((('S1', -0.15, 'first order S1'), ('ST', 0.15, 'total ST'))):
+    for k_, (col, off_, lab) in enumerate((('S1', -0.15, 'first-order index'), ('ST', 0.15, 'total-order index'))):
         v = [so.loc[sob_inputs[i], col] for i in MC_INPUTS]
         lo = [so.loc[sob_inputs[i], f'{col}_lo'] for i in MC_INPUTS]
         hi = [so.loc[sob_inputs[i], f'{col}_hi'] for i in MC_INPUTS]

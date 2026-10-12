@@ -68,5 +68,7 @@
  ],
  "note": "Each bar is one demand band, 2026\u20132050 (median population); retirement-village units are out of scope and leave the total as a negative step.",
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false
 }

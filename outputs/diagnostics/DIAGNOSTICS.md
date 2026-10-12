@@ -212,19 +212,19 @@ Reference variant; Moderate solid, Ambitious dashed. Construction (A1–A5 and s
 
 File: [pathways_si/D28_pathways_annual.png](pathways_si/D28_pathways_annual.png); drawn by `pathways.py`.
 
-### D30. L5 material carbon: Harrell-Davis estimator of the case-study ratios
+### D30. L6 material carbon: Harrell-Davis estimator of the case-study ratios
 
-![D30](pathways_si/D30_l5_estimator.png)
+![D30](pathways_si/D30_l6_estimator.png)
 
-L5 best-practice ratio: Harrell–Davis quantile of 14 independent case studies (detached, townhouses); Harrell & Davis (1982) Biometrika 69, 635; percentile bootstrap (Efron & Tibshirani 1993). The Ambitious q = 0.15 follows the top-15% convention of Commission Delegated Regulation (EU) 2021/2139, Annex I s. 7.7. Apartments (one independent case) are not in the sample.
+L6 best-practice ratio: Harrell–Davis quantile of 14 independent case studies (detached, townhouses); Harrell & Davis (1982) Biometrika 69, 635; percentile bootstrap (Efron & Tibshirani 1993). The Ambitious q = 0.15 follows the top-15% convention of Commission Delegated Regulation (EU) 2021/2139, Annex I s. 7.7. Apartments (one independent case) are not in the sample.
 
-File: [pathways_si/D30_l5_estimator.png](pathways_si/D30_l5_estimator.png); drawn by `pathways.py`.
+File: [pathways_si/D30_l6_estimator.png](pathways_si/D30_l6_estimator.png); drawn by `pathways.py`.
 
 ### D32. Reference -> P5 -> TL: cumulative LoE and the human terms (size, space per person, dwellings built)
 
 ![D32](pathways_si/D32_tl_staircase.png)
 
-TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). TL1 No vacancy (vacancy 0, 2026 overbuild absorbed), TL2 No extra space (size = household size × occupant load factor), TL3 Minimum space per person (the smallest occupant load factor of the case studies, 19.7 m² per person, for every typology), TL4 Best-practice materials (each typology's best case-study A1–A3), TL5 Lowest-carbon soils (lowest soil order), TL6 Urban infill (65% of non-replacement floor area on developed land, no soil carbon loss; Auckland Council 2021); the adopted decarbonisation applies. In its zero-building years (released vacant stock used, banking rule) every band is zero.
+TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). TL = P5 Combined (Moderate) with TL1 No extra space, TL2 Historical maximum household size, TL3 No vacancy, TL4 Overbuild fully absorbed, TL5 Building lifetime extension at the limit, TL6 Best-practice materials, TL7 Zero-emission construction, TL8 Lowest-carbon soils, TL9 Brownfield maximum, TL10 Minimum space per person, each at full strength from 2027. In its zero-building years (released dwellings used, banking rule) every band is zero.
 
 File: [pathways_si/D32_tl_staircase.png](pathways_si/D32_tl_staircase.png); drawn by `pathways.py`.
 

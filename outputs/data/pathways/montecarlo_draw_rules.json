@@ -1,0 +1,11 @@
+{
+ "L2_floor_binds_draws": 250,
+ "TL2_floor_binds_draws": 0,
+ "TL6_capped_draws": {
+  "Detached": 0,
+  "Townhouses": 2377,
+  "Apartments": 2705
+ },
+ "L2_target_vs_montecarlo_high_variant_max_abs_diff": 4.440892098500626e-16,
+ "n_draws": 5000
+}

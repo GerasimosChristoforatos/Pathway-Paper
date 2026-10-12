@@ -1,17 +1,17 @@
 level,setting,metric,player,name,reduction,share_of_reference_minus_P5
-pathways,moderate,carbon_kt,P1,Right-sized dwellings,1234.6444363372584,0.30734493314115674
-pathways,moderate,carbon_kt,P2,Occupied stock,1450.2111363555186,0.36100680619111886
-pathways,moderate,carbon_kt,P3,Retained stock,506.6767164537023,0.12612904327712524
-pathways,moderate,carbon_kt,P4,Low-carbon materials,825.597336902093,0.2055192173905992
-pathways,moderate,LoE_AR,P1,Right-sized dwellings,0.2773840905552348,0.30734493314115674
-pathways,moderate,LoE_AR,P2,Occupied stock,0.32581485432714946,0.3610068061911191
-pathways,moderate,LoE_AR,P3,Retained stock,0.11383363182356036,0.12612904327712515
-pathways,moderate,LoE_AR,P4,Low-carbon materials,0.18548463000472667,0.20551921739059906
-pathways,ambitious,carbon_kt,P1,Right-sized dwellings,2371.3316566027356,0.33893516014299824
-pathways,ambitious,carbon_kt,P2,Occupied stock,2111.9047398370926,0.3018551914534485
-pathways,ambitious,carbon_kt,P3,Retained stock,936.3988451017043,0.13383977379906184
-pathways,ambitious,carbon_kt,P4,Low-carbon materials,1576.781582261169,0.2253698746044914
-pathways,ambitious,LoE_AR,P1,Right-sized dwellings,0.5327604090801655,0.33893516014299824
-pathways,ambitious,LoE_AR,P2,Occupied stock,0.474475693857969,0.3018551914534485
-pathways,ambitious,LoE_AR,P3,Retained stock,0.21037809299661123,0.1338397737990618
-pathways,ambitious,LoE_AR,P4,Low-carbon materials,0.3542510801711371,0.22536987460449143
+pathways,moderate,carbon_kt,P1,Space per person,2352.2191119036147,0.3753202304147257
+pathways,moderate,carbon_kt,P2,Existing stock,1921.5992822980268,0.3066105031402447
+pathways,moderate,carbon_kt,P3,Construction,1283.5030844240034,0.20479583340948865
+pathways,moderate,carbon_kt,P4,Land,709.9109306277351,0.11327343303554101
+pathways,moderate,LoE_AR,P1,Space per person,0.5284664474556434,0.37532023041472556
+pathways,moderate,LoE_AR,P2,Existing stock,0.4317203023350675,0.3066105031402447
+pathways,moderate,LoE_AR,P3,Construction,0.2883610255062445,0.20479583340948868
+pathways,moderate,LoE_AR,P4,Land,0.15949369071113215,0.11327343303554104
+pathways,ambitious,carbon_kt,P1,Space per person,3240.1132847040217,0.32513103820892664
+pathways,ambitious,carbon_kt,P2,Existing stock,2934.348075864387,0.2944488517966447
+pathways,ambitious,carbon_kt,P3,Construction,2631.8933527871363,0.26409885798947363
+pathways,ambitious,carbon_kt,P4,Land,1159.2065648080945,0.11632125200495505
+pathways,ambitious,LoE_AR,P1,Space per person,0.7279471322446824,0.3251310382089266
+pathways,ambitious,LoE_AR,P2,Existing stock,0.6592517233632178,0.29444885179664476
+pathways,ambitious,LoE_AR,P3,Construction,0.591300072000492,0.26409885798947363
+pathways,ambitious,LoE_AR,P4,Land,0.2604356762817154,0.11632125200495502

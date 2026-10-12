@@ -28,5 +28,7 @@
  ],
  "note": "The unconsented additions each vacancy definition requires to close the stock identity, assuming the BRANZ demolition rate; counting residents-away dwellings as vacant requires implausibly many.",
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false
 }

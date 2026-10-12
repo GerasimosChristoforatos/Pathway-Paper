@@ -1,7 +1,7 @@
 """Pathway Monte Carlo (MODEL v2.1.0; pathways_mc.py).
 
 * The central draw reproduces the deterministic P5 Combined (Moderate) and TL runs to 1e-9 (every year
-  with building and the 2026-2050 totals; zero-building years zero by the model's tolerances).
+  with building and the 2026-2050 totals; zero-building years, none since MODEL v2.1.1, by the model's tolerances).
 * The re-run carbon-factor bootstrap reproduces the saved setup exactly (no new random numbers).
 * The Reference of the pathway Monte Carlo is the AESA Monte Carlo: its cumulative LoE AR and AtP
   percentiles equal those of data/aesa/results.json.

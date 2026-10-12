@@ -154,7 +154,7 @@ def main():
     chg = 100 * Bref['hist_total_gfa'].pct_change().loc[1992:2025].values
     R0 = Bref['results']['50th']['total']
     step = 100 * (R0[2] / R0[1] - 1)
-    a.hist(chg, bins=14, color='#BDBDBD', edgecolor='white')
+    a.hist(chg, bins=14, **S.fill('#BDBDBD'))
     a.set_ylim(0, a.get_ylim()[1] * 1.45)                 # room for the legend above the bars
     a.axvline(step, color=S.ACCENT_ORANGE, lw=S.LW_BOLD, label=f'2026 → 2027 handover (observed → model): {step:+.1f}%')
     a.axvline(np.median(chg), color=S.INK, lw=S.LW, ls='--', label=f'Median year, 1992–2025: {np.median(chg):+.1f}%')
@@ -195,7 +195,7 @@ def main():
         fig.tight_layout()
         _savefig(fig, fname, note)
         plt.close(fig)
-    rv_style = dict(color='#BDBDBD', hatch='xxxx', edgecolor='white', linewidth=S.LW_THIN)
+    rv_style = S.fill('#BDBDBD', 'xxxx', '#7A7A7A')
     bst = lambda b: {k: v for k, v in P.band_style(b).items()}      # noqa: E731
     common = [(('growth',), N.BANDS['growth'], bst('growth')),
               (('hs_pos',), N.BANDS['smaller_households'], bst('smaller_households')),
@@ -208,7 +208,7 @@ def main():
            'Each bar is one demand band, 2026–2050 (median population); retirement-village units are out of scope '
            'and leave the total as a negative step.')
     bridge(common + [(('repl',), N.BAND_DETAIL['replacement_demolition'], bst('replacement')),
-                     (('unc',), N.BAND_DETAIL['replacement_residual'], dict(bst('replacement'), hatch='////'))] + tail,
+                     (('unc',), N.BAND_DETAIL['replacement_residual'], dict(bst('replacement'), hatch='////', hatchcolor=S.HATCH_COLOUR))] + tail,
            'D11_floor_area_bridge_split',
            'Appendix: replacement split into demolition and the calibrated residual; the split assumes the BRANZ '
            'demolition rate: only their sum is identified by the census data.')

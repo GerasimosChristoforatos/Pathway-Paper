@@ -747,6 +747,8 @@ def register(p):
 # TL = P5 Moderate with TL1-TL10, every lever and every TL item at full strength from 1 January 2027 (no
 # adoption path; 2026 observed and untouched). TLn is the limit of Ln; TL10 (minimum space per person) has no
 # lever counterpart. Every TL item is at least as strong as the Ambitious setting of its lever (tl_strength).
+TL_REOCCUPATION = 'reoccupation'          # MODEL v2.1.1: separate line of the TL attribution
+TL_BASE_LABEL = 'P5-moderate-from2027-reoccupied'   # the TL base: P5 Moderate from 2027, even reoccupation
 TL_COMPONENTS = tuple(f'TL{k}' for k in range(1, 11))
 TL_NAMES = {k: N.TL[k] for k in TL_COMPONENTS}
 TL_BASE_SETTING = 'moderate'
@@ -895,9 +897,10 @@ def apply_tl(base, params, pT, comps, E_nojoin=None):
 
 
 def tl_label(comps, components=TL_COMPONENTS):
-    """'TL' for every component, 'P5-moderate-from2027' for none, else e.g. 'TL[TL1+TL3]'."""
+    """'TL' for every component, TL_BASE_LABEL for none (P5 Moderate from 2027 with even reoccupation), else e.g.
+    'TL[TL1+TL3]'."""
     c = [x for x in components if x in comps]
-    return 'TL' if len(c) == len(components) else ('P5-moderate-from2027' if not c else f"TL[{'+'.join(c)}]")
+    return 'TL' if len(c) == len(components) else (TL_BASE_LABEL if not c else f"TL[{'+'.join(c)}]")
 
 
 def tl_table(t):

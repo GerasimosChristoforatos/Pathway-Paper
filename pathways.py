@@ -746,52 +746,61 @@ T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of built = req + (0 - req
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
 
 
-def bank(raw):
-    """Banking rule (TL): dwellings built can never be negative. raw_t = the requirement of the year
-    (new households + vacancy allowance + vacancy change + removals + absorbed near-term excess - dwellings
-    released by a household decline), negative when the release exceeds it. Unused release is carried
-    forward and used before any new building, until exhausted:
+REOCCUPATION_YEARS = (2027, 2050)     # MODEL v2.1.1: released dwellings brought back into use evenly over these years
 
-        D_t = raw_t - bank_{t-1};  built_t = max(0, D_t);  bank_t = max(0, -D_t)
 
-    Index 0 (2025, the anchor year) is passed through. Returns built, bank, added, used (arrays)."""
-    raw = np.asarray(raw, float)
-    n = len(raw)
-    built, bnk, added, used = raw.copy(), np.zeros(n), np.zeros(n), np.zeros(n)
-    prev = 0.0
-    for i in range(1, n):
-        d = raw[i] - prev
-        built[i] = max(0.0, d)
-        bnk[i] = max(0.0, -d)
-        added[i] = max(0.0, -raw[i])
-        used[i] = min(prev, max(raw[i], 0.0))
-        prev = bnk[i]
-    return dict(built=built, bank=bnk, added=added, used=used)
+def reoccupation(years, gross, released):
+    """Even reoccupation (MODEL v2.1.1, TL family): the dwellings released in 2027-2050 (vacancy falling to its TL
+    level, households falling under TL2, the absorbed 2026 overbuild), R = sum(released), are brought back into use
+    at a constant rate R / 24 a year over 2027-2050, so dwellings built_t = gross requirement_t - R / 24 (the gross
+    requirement: the requirement before any release). Index 0 (2025) and 2026 are passed through. Returns built,
+    R, rate, reoccupied by year (arrays) and the mask of the reoccupation years."""
+    years = np.asarray(years)
+    mask = (years >= REOCCUPATION_YEARS[0]) & (years <= REOCCUPATION_YEARS[1])
+    n_years = REOCCUPATION_YEARS[1] - REOCCUPATION_YEARS[0] + 1
+    if mask.sum() != n_years:
+        raise SystemExit(f'reoccupation: {mask.sum()} years in {REOCCUPATION_YEARS}, expected {n_years}.')
+    R = float(np.asarray(released, float)[mask].sum())
+    rate = R / n_years
+    reocc = np.where(mask, rate, 0.0)
+    return dict(built=np.asarray(gross, float) - reocc, R=R, rate=rate, reoccupied=reocc, mask=mask)
 
 
 def run_tl(ctx, params, pT, comps):
     """A TL-family run (P5 Moderate with the TL items in comps, everything at full strength from 2027).
-    1) the TL inputs and households (levers.apply_tl); 2) the requirement without a join; 3) the banking rule on
-    requirement + absorbed 2026 overbuild - dwellings released by a household decline (TL2: households =
-    population / S fall in 2027; release_t = -min(d_hh_raw, 0) / (1 - v_t), the stock those households no longer
-    need); 4) engine.forward with the stock-adding join join_t = built_t - requirement_t (join_redev = 0), so
-    dwellings built = built_t >= 0. The soil factor by year, the brownfield share and the clipped soil-bearing share
-    (zero-building years) are applied inside engine.forward."""
+    1) the TL inputs and households (levers.apply_tl); 2) the requirement without a join, E1; 3) the dwellings
+    released from 2027: by the vacancy falling (-min(vacancy change, 0)), by households falling under TL2
+    (-min(d households, 0) / (1 - v), the stock those households no longer need) and the absorbed 2026 overbuild
+    (-min(join, 0)); 4) even reoccupation: built_t = gross requirement_t - R / 24 over 2027-2050 (gross = requirement
+    + vacancy release + positive join; 2026 observed and unchanged); built_t > 0 in every year (else STOP);
+    5) engine.forward with the stock-adding join join_t = built_t - requirement_t (join_redev = 0), so the stock
+    identity holds and the released dwellings stay vacant until reoccupied (implied vacancy falls to the TL level
+    by 2050). The soil factor by year and the brownfield share are applied inside engine.forward."""
     fi, join_abs, _, info = LV.apply_tl(ctx, params, pT, comps, ctx['E_nojoin'])
-    n = len(ctx['years'])
+    years = np.asarray(ctx['years'])
+    n = len(years)
     zeros = np.zeros(n)
     hh = info['hh']
     E1 = engine.forward(ctx['pop'], hh, ctx['growth'], join=zeros, join_redev=zeros, **fi)
     req = np.asarray(engine.requirement(E1), float)
+    late = years >= REOCCUPATION_YEARS[0]
     v = np.broadcast_to(np.asarray(E1['v'], float), (n,))
-    release = -np.minimum(E1['d_hh_raw'], 0.0) / (1.0 - v)
-    release[0] = 0.0
-    bk = bank(req + np.asarray(join_abs, float) - release)
-    join_T = bk['built'] - req
+    jab = np.asarray(join_abs, float)
+    rel_vac = np.where(late, -np.minimum(np.asarray(E1['change'], float), 0.0), 0.0)
+    rel_hh = np.where(late, -np.minimum(np.asarray(E1['d_hh_raw'], float), 0.0) / (1.0 - v), 0.0)
+    rel_ob = np.where(late, -np.minimum(jab, 0.0), 0.0)
+    gross = req + rel_vac + np.where(late, np.maximum(jab, 0.0), jab)
+    ro = reoccupation(years, gross, rel_vac + rel_hh + rel_ob)
+    built = ro['built']
+    if (built[late] <= 0.0).any():
+        bad = [int(y) for y, b in zip(years[late], built[late]) if b <= 0.0]
+        raise SystemExit(f'STOP: even reoccupation gives dwellings built <= 0 in {bad} (TL run {tuple(comps)}).')
+    join_T = built - req
     join_T[0] = 0.0
     E = engine.forward(ctx['pop'], hh, ctx['growth'], join=join_T, join_redev=zeros, **fi)
-    info.update(bank=bk, requirement_nojoin=req, join_absorbed=np.asarray(join_abs, float), join_T=join_T,
-                household_release=release)
+    info.update(reoccupation=dict(R=ro['R'], rate=ro['rate'], reoccupied=ro['reoccupied'], built=built, gross=gross,
+                                  released_vacancy=rel_vac, released_households=rel_hh, released_overbuild=rel_ob),
+                requirement_nojoin=req, join_absorbed=jab, join_T=join_T, household_release=rel_hh)
     return dict(E=E, inputs=fi, info=info, active={}, ramp=LV.TL_FROM2027, l6_apartments_held=False,
                 scenario=ctx['scenario'], comps=tuple(info['comps']))
 
@@ -805,8 +814,7 @@ def tl_indicators(ctx, R):
     size = {t: np.broadcast_to(np.asarray(R['inputs']['size'][t], float), S.shape) for t in ctx['typ']}
     built = np.asarray(engine.requirement(E), float)
     v_impl = implied_vacancy(E)
-    bk = info['bank']
-    zero_years = [int(y) for y, b in zip(years[f], built[f]) if b <= T_ZERO_TOL_DWELLINGS]
+    ro = info['reoccupation']
     return dict(
         new_dwelling_size_m2={t: {int(y): float(size[t][i]) for i, y in enumerate(years) if y in (2026, 2027, 2035, 2050)}
                               for t in ctx['typ']},
@@ -816,20 +824,20 @@ def tl_indicators(ctx, R):
         dwellings_built_all_categories={int(y): float(built[i]) for i, y in enumerate(years) if y >= 2026},
         dwellings_built_in_scope={int(y): float(E['dwell_in_scope'][i]) for i, y in enumerate(years) if y >= 2026},
         implied_vacancy={int(y): float(v_impl[i]) for i, y in enumerate(years) if y >= 2026},
-        released_dwellings=dict(
-            vacancy_change=float(-np.minimum(E['change'][f], 0.0).sum()),
-            household_decline=float(info['household_release'][f].sum()),
-            overbuild_2026_absorbed=float(-np.minimum(info['join_absorbed'][f], 0.0).sum())),
-        bank={int(y): dict(raw=float(info['requirement_nojoin'][i] + info['join_absorbed'][i] - info['household_release'][i]),
-                           built=float(bk['built'][i]), bank_end=float(bk['bank'][i]), added=float(bk['added'][i]),
-                           used=float(bk['used'][i])) for i, y in enumerate(years) if y >= 2026},
-        release_added_total=float(bk['added'][f].sum()), release_used_total=float(bk['used'][f].sum()),
-        bank_unused_2050=float(bk['bank'][-1]), zero_building_years=zero_years, n_zero_building_years=len(zero_years))
+        released_dwellings=dict(vacancy_change=float(ro['released_vacancy'][f].sum()),
+                                household_decline=float(ro['released_households'][f].sum()),
+                                overbuild_2026_absorbed=float(ro['released_overbuild'][f].sum())),
+        reoccupation=dict(R=ro['R'], rate_per_year=ro['rate'], years=list(REOCCUPATION_YEARS),
+                          rule='released dwellings brought back into use evenly over 2027-2050; 2026 observed',
+                          by_year={int(y): dict(gross_requirement=float(ro['gross'][i]), reoccupied=float(ro['reoccupied'][i]),
+                                                built=float(ro['built'][i])) for i, y in enumerate(years) if y >= 2026}),
+        dwellings_built_min_2027_2050=float(built[np.asarray(years) >= REOCCUPATION_YEARS[0]].min()))
 
 
 def compute_tl(res, verbose=True):
-    """TL (P5 Moderate + TL1-TL10 at full strength from 2027), the 1,024 Shapley subsets of TL1-TL10 relative to
-    P5 Moderate at full strength from 2027 (the effect of full strength from 2027 a separate line), metrics,
+    """TL (P5 Moderate + TL1-TL10 at full strength from 2027, even reoccupation), the 1,024 Shapley subsets of
+    TL1-TL10 relative to the TL base (P5 Moderate at full strength from 2027 with even reoccupation; the effects of
+    full strength from 2027 and of even reoccupation two separate lines), metrics,
     bands, annual rows, gap, indicators. Every TL item is asserted at least as strong as its Ambitious lever."""
     import Building_factors as BF
     t0 = time.time()
@@ -882,12 +890,21 @@ def compute_tl(res, verbose=True):
             x['share_of_P5_moderate_from2027_minus_TL'] = x.pop('share_of_reference_minus_P5')
         shap_rows += r_
         exact[metric] = ex
+    # two separate lines (not Shapley players), adding up exactly to P5 Moderate - TL base: full strength from 2027
+    # (the pathway run of P5 Moderate at full strength from 2027) and even reoccupation (that run with its released
+    # dwellings brought back into use evenly over 2027-2050, the TL base)
     p5m = res['runs'][(res['runs']['run'] == 'P5-moderate') & (res['runs']['scenario'] == REFERENCE)].iloc[0]
+    m27 = metrics(ref, res['get'](REFERENCE, LV.pathway_levers('P5', 'moderate'), LV.TL_FROM2027), 'P5-from2027', 'TL')
     for metric in vals:
         shap_rows.append(dict(level='TL', setting='TL', metric=metric, player=LV.TL_FROM2027,
                               name=N._ascii(f"P5 Combined: adoption path -> {N.ADOPTION['from2027']} (separate line, "
                                             f"not a Shapley player)"),
-                              reduction=float(p5m[metric] - vals[metric][frozenset()]),
+                              reduction=float(p5m[metric] - m27[metric]),
+                              share_of_P5_moderate_from2027_minus_TL=float('nan')))
+        shap_rows.append(dict(level='TL', setting='TL', metric=metric, player=LV.TL_REOCCUPATION,
+                              name=N._ascii('P5 Combined from 2027: released dwellings brought back into use evenly over '
+                                            '2027-2050 (separate line, not a Shapley player)'),
+                              reduction=float(m27[metric] - vals[metric][frozenset()]),
                               share_of_P5_moderate_from2027_minus_TL=float('nan')))
     # gap and residual
     bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
@@ -925,20 +942,23 @@ def compute_tl(res, verbose=True):
 
 
 def checks_tl(res, rt):
-    """STOP conditions of the TL family: dwellings built >= 0 every year, the stock identity (engine dwellings
-    built = banked dwellings), physical implied vacancy >= 0, size >= occupied area (within 1e-12 relative), 2026
-    unchanged, Shapley efficiency exact; and the identity of the TL base (no TL item, banking not binding) with the
-    pathway engine run of P5 Moderate at full strength from 2027 (levers.apply_tl = levers.apply)."""
+    """STOP conditions of the TL family: dwellings built > 0 in every year 2027-2050 (even reoccupation), the stock
+    identity (engine dwellings built = the reoccupation path), the dwellings reoccupied add up to the dwellings
+    released (R), physical implied vacancy >= 0, size >= occupied area (within 1e-12 relative), 2026 unchanged,
+    Shapley efficiency exact."""
     ref = res['ctxs'][REFERENCE]
     E0 = res['get'](REFERENCE, {})['E']
+    years = np.asarray(ref['years'])
+    late = years >= REOCCUPATION_YEARS[0]
     for key, R in rt['cache'].items():
-        E, bk = R['E'], R['info']['bank']
+        E, ro = R['E'], R['info']['reoccupation']
         built = np.asarray(engine.requirement(E), float)
-        if (built[1:] < -T_ZERO_TOL_DWELLINGS).any() or (E['dwell_in_scope'][1:] < -T_ZERO_TOL_DWELLINGS).any() \
-                or (E['total'][1:] < -T_ZERO_TOL_M2).any():
-            raise SystemExit(f'STOP: negative dwellings built in TL run {key}.')
-        if not np.allclose(built[1:], bk['built'][1:], rtol=1e-12, atol=1e-6):
-            raise SystemExit(f'STOP: banking breaks the stock identity in TL run {key}.')
+        if (built[late] <= 0.0).any() or (E['dwell_in_scope'][late] <= 0.0).any() or (E['total'][late] <= 0.0).any():
+            raise SystemExit(f'STOP: dwellings built <= 0 under even reoccupation in TL run {key}.')
+        if not np.allclose(built[1:], ro['built'][1:], rtol=1e-12, atol=1e-6):
+            raise SystemExit(f'STOP: reoccupation breaks the stock identity in TL run {key}.')
+        if abs((ro['gross'] - ro['built'])[late].sum() - ro['R']) > 1e-6 * max(1.0, ro['R']):
+            raise SystemExit(f'STOP: the dwellings reoccupied do not add up to the dwellings released in TL run {key}.')
         if (implied_vacancy(E)[1:] < -1e-12).any():
             raise SystemExit(f'STOP: negative implied vacancy in TL run {key}.')
         S = E['pop'] / E['hh']
@@ -952,13 +972,6 @@ def checks_tl(res, rt):
     for metric, (phi, total) in rt['shapley_exact'].items():
         if sum(phi.values()) != total:
             raise SystemExit(f'TL Shapley efficiency fails ({metric}).')
-    R0, Rp = rt['cache'][()], res['get'](REFERENCE, LV.pathway_levers('P5', 'moderate'), LV.TL_FROM2027)
-    if np.all(R0['info']['bank']['bank'] == 0.0) and not np.all(R0['info']['household_release'] == 0.0):
-        raise SystemExit('TL base: unexpected household release.')
-    if np.all(R0['info']['bank']['bank'] == 0.0):
-        for k in ('carbon', 'total', 'upfront'):
-            if not np.allclose(R0['E'][k], Rp['E'][k], rtol=1e-12, atol=1e-6):
-                raise SystemExit(f'TL base (P5 Moderate from 2027) differs from the pathway run in {k!r}.')
 
 
 def write_tl(res, rt):
@@ -984,7 +997,7 @@ def write_tl(res, rt):
 
 def waterfall_sequential(res, rt):
     """K5: the sequential path Reference -> P1 -> +P2 -> +P3 -> +P4 (= P5 Moderate) -> full strength from 2027 ->
-    +TL1 ... +TL10 (= TL), every step a run of the model; each step's change split exactly into the in-scope demand
+    even reoccupation (the TL base) -> +TL1 ... +TL10 (= TL), every step a run of the model; each step's change split exactly into the in-scope demand
     bands (band_rows 'in_scope': the bands add up to the run's floor area and carbon). Sequential steps depend on
     the order (the order-free values are the Shapley tables). Writes waterfall_sequential.csv."""
     ref = res['ctxs'][REFERENCE]
@@ -995,7 +1008,9 @@ def waterfall_sequential(res, rt):
         acc.update(LV.pathway_levers(P, 'moderate'))
         steps.append((P, f'+ {P} {N.PATHWAYS[P]}' + (' (= P5 Combined)' if P == 'P4' else ''),
                       res['get'](REFERENCE, dict(acc))))
-    steps.append(('from2027', N.ADOPTION['from2027'].capitalize(), rt['cache'][()]))
+    steps.append(('from2027', N.ADOPTION['from2027'].capitalize(),
+                  res['get'](REFERENCE, LV.pathway_levers('P5', 'moderate'), LV.TL_FROM2027)))
+    steps.append((LV.TL_REOCCUPATION, 'Released dwellings reoccupied evenly 2027-2050', rt['cache'][()]))
     for k in range(1, len(LV.TL_COMPONENTS) + 1):
         t = LV.TL_COMPONENTS[k - 1]
         steps.append((t, f'+ {t} {N.TL[t]}' + (' (= TL)' if k == len(LV.TL_COMPONENTS) else ''),

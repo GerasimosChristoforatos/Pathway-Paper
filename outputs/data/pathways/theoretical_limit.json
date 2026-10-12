@@ -1,6 +1,6 @@
 {
   "run_mode": "full",
-  "disclaimer": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
+  "disclaimer": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable); a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.",
   "definition": {
     "base": "P5 Combined (Moderate)",
     "start": 2027,
@@ -155,7 +155,7 @@
         "Apartments": 20.632169315
       }
     },
-    "disclaimer": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
+    "disclaimer": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable); a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.",
     "base_setting": "moderate",
     "start_year": 2027
   },
@@ -231,54 +231,54 @@
       "l6_apartments_held": false,
       "floor_area_Mm2": 18.357479756584006,
       "floor_area_2027_2050_Mm2": 13.180829056584008,
-      "carbon_kt": 2818.4362551509694,
-      "upfront_kt": 2752.6190346116337,
-      "maintenance_kt": 65.81722053933613,
-      "soil_carbon_loss_kt": 206.87638654587008,
-      "a1a3_kt": 2329.3501499728723,
+      "carbon_kt": 2924.0947417187267,
+      "upfront_kt": 2825.86576446249,
+      "maintenance_kt": 98.22897725623613,
+      "soil_carbon_loss_kt": 206.81619621100305,
+      "a1a3_kt": 2402.657070158596,
       "a4a5_kt": 216.3924980928902,
-      "carbon_excl_soil_kt": 2611.5598686051,
-      "committed_lower_kt": 1698.5790413714424,
-      "committed_upper_kt": 1857.489659317914,
-      "committed_b2b4_lower_kt": 696.5782106959148,
-      "committed_b2b4_upper_kt": 855.4888286423864,
+      "carbon_excl_soil_kt": 2717.2785455077237,
+      "committed_lower_kt": 1666.714550384276,
+      "committed_upper_kt": 1820.2881570330262,
+      "committed_b2b4_lower_kt": 664.7137197087483,
+      "committed_b2b4_upper_kt": 818.2873263574984,
       "committed_c1c4_kt": 1002.0008306755277,
-      "committed_years_B_AR_2050_lower": 9.258806996464786,
-      "committed_years_B_AR_2050_upper": 10.125014988803711,
+      "committed_years_B_AR_2050_lower": 9.085116420456878,
+      "committed_years_B_AR_2050_upper": 9.92223282721751,
       "B_AR_kt": 4451.0282974985785,
       "B_AtP_kt": 1112.9648539994828,
-      "LoE_AR": 0.6332101408420376,
-      "LoE_AtP": 2.5323677068712533,
-      "remaining_reduction_AR": -0.5792545562681739,
-      "remaining_reduction_AtP": 0.6051126393348687,
-      "dwellings_built": 276388.77890396107,
+      "LoE_AR": 0.6569481356391356,
+      "LoE_AtP": 2.6273019594562017,
+      "remaining_reduction_AR": -0.5221901787225778,
+      "remaining_reduction_AtP": 0.619381397558513,
+      "dwellings_built": 276388.778903961,
       "dwellings_built_all_categories": 293118.50403138506,
-      "dwellings_built_min_year": -4.238074825741558e-12,
-      "mean_dwelling_size_m2": 66.41904866536865,
-      "carbon_per_m2_kg": 153.53067482698012,
-      "carbon_per_dwelling_t": 10.197361362960084,
+      "dwellings_built_min_year": 529.9247003181201,
+      "mean_dwelling_size_m2": 66.41904866536866,
+      "carbon_per_m2_kg": 159.28628441875222,
+      "carbon_per_dwelling_t": 10.579643476534859,
       "implied_vacancy_min": 5.865888885736581e-10,
       "implied_vacancy_2050": 5.865888885736581e-10,
-      "implied_vacancy_max": 0.08987233410679862,
+      "implied_vacancy_max": 0.0901111984069044,
       "stock_vacancy_2050": 0.0,
       "D_minus_occ_min_m2": 0.0,
       "extra_clip_max_m2": 0.0,
-      "overbuild_2026_dwellings": -62084.809908274954,
+      "overbuild_2026_dwellings": -62084.80990827494,
       "existing_dwellings_released": 114398.67585300712,
       "vacancy_change_dwellings": -114398.67585300712,
       "size_minus_occupied_min_m2": -7.105427357601002e-15,
       "l1_held_typology_years": 0,
       "households_min_change": -62084.811298716115,
       "households_released": 62084.811298716115,
-      "brownfield_share": 0.7116030291536853,
+      "brownfield_share": 0.6862431291174771,
       "replacement_share": 0.11377674294653632,
       "mean_household_size_2050": 2.7904761904761908,
-      "delta_carbon_kt_vs_reference_pct": -86.9380800286907,
-      "delta_LoE_AR_vs_reference_pct": -86.9380800286907,
-      "delta_LoE_AtP_vs_reference_pct": -86.9380800286907,
+      "delta_carbon_kt_vs_reference_pct": -86.44841037825407,
+      "delta_LoE_AR_vs_reference_pct": -86.44841037825407,
+      "delta_LoE_AtP_vs_reference_pct": -86.44841037825407,
       "delta_floor_area_Mm2_vs_reference_pct": -79.50379325109638,
-      "delta_committed_lower_kt_vs_reference_pct": -79.30595571214822,
-      "delta_committed_upper_kt_vs_reference_pct": -79.28991715685294
+      "delta_committed_lower_kt_vs_reference_pct": -79.69416560502779,
+      "delta_committed_upper_kt_vs_reference_pct": -79.70469534436245
     }
   },
   "indicators": {
@@ -386,83 +386,83 @@
       },
       "dwellings_built_all_categories": {
         "2026": 38862.6,
-        "2027": 0.0,
-        "2028": 0.0,
-        "2029": 0.0,
-        "2030": 0.0,
-        "2031": 0.0,
-        "2032": 0.0,
-        "2033": 0.0,
-        "2034": 0.0,
-        "2035": 0.0,
-        "2036": 0.0,
-        "2037": 9588.531487868997,
-        "2038": 19627.146893837362,
-        "2039": 19494.14625976015,
-        "2040": 19360.273989185112,
-        "2041": 19225.918034868046,
-        "2042": 19091.279363697024,
-        "2043": 18956.46208033102,
-        "2044": 18821.520112956474,
-        "2045": 18686.48139739856,
-        "2046": 18551.360404941443,
-        "2047": 18416.1646319883,
-        "2048": 18280.89796181599,
-        "2049": 18145.562406035602,
-        "2050": 18010.159006700993
+        "2027": 561.5830616132007,
+        "2028": 11509.886141357432,
+        "2029": 11515.004044565723,
+        "2030": 11520.121947773881,
+        "2031": 11525.239850981907,
+        "2032": 11530.357754189932,
+        "2033": 11535.475657398485,
+        "2034": 11511.273620098096,
+        "2035": 11441.449138709562,
+        "2036": 11345.527610418187,
+        "2037": 11243.043530902261,
+        "2038": 11153.54049433719,
+        "2039": 11077.024566384187,
+        "2040": 11000.47072803837,
+        "2041": 10923.878979297626,
+        "2042": 10847.249320162748,
+        "2043": 10770.581750633999,
+        "2044": 10693.87627071085,
+        "2045": 10617.132880394096,
+        "2046": 10540.351579682416,
+        "2047": 10463.53236857713,
+        "2048": 10386.67524707771,
+        "2049": 10309.780215183888,
+        "2050": 10232.8472728962
       },
       "dwellings_built_in_scope": {
         "2026": 36466.15132167409,
-        "2027": 0.0,
-        "2028": 0.0,
-        "2029": 4.238074825741558e-12,
-        "2030": 4.238074825741558e-12,
-        "2031": 4.238074825741558e-12,
-        "2032": 0.0,
-        "2033": 4.238074825741558e-12,
-        "2034": 0.0,
-        "2035": 0.0,
-        "2036": -4.238074825741558e-12,
-        "2037": 9047.993115397048,
-        "2038": 18520.697376339813,
-        "2039": 18395.19444369611,
-        "2040": 18268.869011690393,
-        "2041": 18142.08716285239,
-        "2042": 18015.038534878142,
-        "2043": 17887.821363690313,
-        "2044": 17760.486537358698,
-        "2045": 17633.060416870292,
-        "2046": 17505.55665771339,
-        "2047": 17377.98233369324,
-        "2048": 17250.341109173074,
-        "2049": 17122.634882362578,
-        "2050": 16994.864636571456
+        "2027": 529.9247003181201,
+        "2028": 10861.03442406808,
+        "2029": 10865.863813537417,
+        "2030": 10870.693203006625,
+        "2031": 10875.522592475709,
+        "2032": 10880.351981944788,
+        "2033": 10885.181371414374,
+        "2034": 10862.343685878319,
+        "2035": 10796.455449740291,
+        "2036": 10705.94134664778,
+        "2037": 10609.234645828054,
+        "2038": 10524.777202092018,
+        "2039": 10452.574739158787,
+        "2040": 10380.336502971475,
+        "2041": 10308.062493528087,
+        "2042": 10235.752710829373,
+        "2043": 10163.407154875578,
+        "2044": 10091.025825666207,
+        "2045": 10018.608723202007,
+        "2046": 9946.155847481732,
+        "2047": 9873.667198506624,
+        "2048": 9801.142776276196,
+        "2049": 9728.582580790186,
+        "2050": 9655.9866120491
       },
       "implied_vacancy": {
         "2026": 0.06128359836712405,
-        "2027": 0.08987233410679862,
-        "2028": 0.08043660543550946,
-        "2029": 0.07098896004974586,
-        "2030": 0.061529263134892154,
-        "2031": 0.05205737933907162,
-        "2032": 0.04257317276627226,
-        "2033": 0.03307650696941844,
-        "2034": 0.023591441938130675,
-        "2035": 0.014155541103921365,
-        "2036": 0.004790308981209579,
-        "2037": 3.3603413664984316e-06,
-        "2038": 1.725691495813031e-06,
-        "2039": 8.86346560258211e-07,
-        "2040": 4.5530613834721123e-07,
-        "2041": 2.3391702896891076e-07,
-        "2042": 1.2019251416361953e-07,
-        "2043": 6.176594891105225e-08,
-        "2044": 3.174503704350684e-08,
-        "2045": 1.631760848663788e-08,
-        "2046": 8.388611583143302e-09,
-        "2047": 4.312961654484582e-09,
-        "2048": 2.217746986055147e-09,
-        "2049": 1.1405083544246963e-09,
+        "2027": 0.0901111984069044,
+        "2028": 0.0855987468095033,
+        "2029": 0.08112892543834282,
+        "2030": 0.07670108601831227,
+        "2031": 0.07231459331691148,
+        "2032": 0.06796882481785838,
+        "2033": 0.06366317040444747,
+        "2034": 0.05940788437176214,
+        "2035": 0.05521877968966904,
+        "2036": 0.051103953756190035,
+        "2037": 0.047064158594065764,
+        "2038": 0.04309314753862681,
+        "2039": 0.0391848949687037,
+        "2040": 0.03533814057009366,
+        "2041": 0.03155166010339694,
+        "2042": 0.027824264157162104,
+        "2043": 0.024154796952911894,
+        "2044": 0.02054213519956316,
+        "2045": 0.016985186994878387,
+        "2046": 0.013482890771723599,
+        "2047": 0.010034214287024557,
+        "2048": 0.006638153651427725,
+        "2049": 0.0032937323977724198,
         "2050": 5.865888885736581e-10
       },
       "released_dwellings": {
@@ -470,218 +470,163 @@
         "household_decline": 62084.811298716115,
         "overbuild_2026_absorbed": 16759.674014518656
       },
-      "bank": {
-        "2026": {
-          "raw": 38862.6,
-          "built": 38862.6,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2027": {
-          "raw": -187088.18563059843,
-          "built": 0.0,
-          "bank_end": 187088.18563059843,
-          "added": 187088.18563059843,
-          "used": 0.0
-        },
-        "2028": {
-          "raw": 17767.602755329426,
-          "built": 0.0,
-          "bank_end": 169320.582875269,
-          "added": 0.0,
-          "used": 17767.602755329426
-        },
-        "2029": {
-          "raw": 18976.834563771296,
-          "built": 0.0,
-          "bank_end": 150343.7483114977,
-          "added": 0.0,
-          "used": 18976.834563771296
-        },
-        "2030": {
-          "raw": 19607.581105770292,
-          "built": 0.0,
-          "bank_end": 130736.16720572741,
-          "added": 0.0,
-          "used": 19607.581105770292
-        },
-        "2031": {
-          "raw": 19938.66130917936,
-          "built": 0.0,
-          "bank_end": 110797.50589654806,
-          "added": 0.0,
-          "used": 19938.66130917936
-        },
-        "2032": {
-          "raw": 20114.5086662344,
-          "built": 0.0,
-          "bank_end": 90682.99723031366,
-          "added": 0.0,
-          "used": 20114.5086662344
-        },
-        "2033": {
-          "raw": 20209.94246499557,
-          "built": 0.0,
-          "bank_end": 70473.05476531808,
-          "added": 0.0,
-          "used": 20209.94246499557
-        },
-        "2034": {
-          "raw": 20212.116420008377,
-          "built": 0.0,
-          "bank_end": 50260.93834530971,
-          "added": 0.0,
-          "used": 20212.116420008377
-        },
-        "2035": {
-          "raw": 20112.414849455465,
-          "built": 0.0,
-          "bank_end": 30148.523495854246,
-          "added": 0.0,
-          "used": 20112.414849455465
-        },
-        "2036": {
-          "raw": 19955.60353063398,
-          "built": 0.0,
-          "bank_end": 10192.919965220266,
-          "added": 0.0,
-          "used": 19955.60353063398
-        },
-        "2037": {
-          "raw": 19781.451453089263,
-          "built": 9588.531487868997,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 10192.919965220266
-        },
-        "2038": {
-          "raw": 19627.146893837362,
-          "built": 19627.146893837362,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2039": {
-          "raw": 19494.14625976015,
-          "built": 19494.14625976015,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2040": {
-          "raw": 19360.273989185112,
-          "built": 19360.273989185112,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2041": {
-          "raw": 19225.918034868046,
-          "built": 19225.918034868046,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2042": {
-          "raw": 19091.279363697024,
-          "built": 19091.279363697024,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2043": {
-          "raw": 18956.46208033102,
-          "built": 18956.46208033102,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2044": {
-          "raw": 18821.520112956474,
-          "built": 18821.520112956474,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2045": {
-          "raw": 18686.48139739856,
-          "built": 18686.48139739856,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2046": {
-          "raw": 18551.360404941443,
-          "built": 18551.360404941443,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2047": {
-          "raw": 18416.1646319883,
-          "built": 18416.1646319883,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2048": {
-          "raw": 18280.89796181599,
-          "built": 18280.89796181599,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2049": {
-          "raw": 18145.562406035602,
-          "built": 18145.562406035602,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
-        },
-        "2050": {
-          "raw": 18010.159006700993,
-          "built": 18010.159006700993,
-          "bank_end": 0.0,
-          "added": 0.0,
-          "used": 0.0
+      "reoccupation": {
+        "R": 193243.1611662419,
+        "G": 447499.06519762694,
+        "share_of_need": 0.4318291951758621,
+        "years": [
+          2027,
+          2050
+        ],
+        "rule": "released dwellings brought back into use in proportion to each year's need over 2027-2050; 2026 observed",
+        "by_year": {
+          "2026": {
+            "gross_requirement": 38862.6,
+            "reoccupied": 0.0,
+            "built": 38862.6
+          },
+          "2027": {
+            "gross_requirement": 988.4053472036903,
+            "reoccupied": 426.82228559048815,
+            "built": 561.5830616132022
+          },
+          "2028": {
+            "gross_requirement": 20257.79227589846,
+            "reoccupied": 8747.906134541028,
+            "built": 11509.886141357432
+          },
+          "2029": {
+            "gross_requirement": 20266.799960145585,
+            "reoccupied": 8751.795915579862,
+            "built": 11515.004044565723
+          },
+          "2030": {
+            "gross_requirement": 20275.807644392477,
+            "reoccupied": 8755.685696618595,
+            "built": 11520.121947773881
+          },
+          "2031": {
+            "gross_requirement": 20284.815328639135,
+            "reoccupied": 8759.575477657228,
+            "built": 11525.239850981907
+          },
+          "2032": {
+            "gross_requirement": 20293.823012885794,
+            "reoccupied": 8763.465258695862,
+            "built": 11530.357754189932
+          },
+          "2033": {
+            "gross_requirement": 20302.83069713338,
+            "reoccupied": 8767.355039734895,
+            "built": 11535.475657398485
+          },
+          "2034": {
+            "gross_requirement": 20260.23428581675,
+            "reoccupied": 8748.960665718654,
+            "built": 11511.273620098096
+          },
+          "2035": {
+            "gross_requirement": 20137.3408164662,
+            "reoccupied": 8695.891677756637,
+            "built": 11441.449138709562
+          },
+          "2036": {
+            "gross_requirement": 19968.51565424924,
+            "reoccupied": 8622.988043831054,
+            "built": 11345.527610418187
+          },
+          "2037": {
+            "gross_requirement": 19788.14017799145,
+            "reoccupied": 8545.096647089187,
+            "built": 11243.043530902261
+          },
+          "2038": {
+            "gross_requirement": 19630.611780183728,
+            "reoccupied": 8477.071285846538,
+            "built": 11153.54049433719
+          },
+          "2039": {
+            "gross_requirement": 19495.94113659674,
+            "reoccupied": 8418.916570212552,
+            "built": 11077.024566384187
+          },
+          "2040": {
+            "gross_requirement": 19361.20376942506,
+            "reoccupied": 8360.733041386691,
+            "built": 11000.47072803837
+          },
+          "2041": {
+            "gross_requirement": 19226.399678664977,
+            "reoccupied": 8302.520699367351,
+            "built": 10923.878979297626
+          },
+          "2042": {
+            "gross_requirement": 19091.528864317876,
+            "reoccupied": 8244.279544155128,
+            "built": 10847.249320162748
+          },
+          "2043": {
+            "gross_requirement": 18956.591326384227,
+            "reoccupied": 8186.009575750229,
+            "built": 10770.581750633999
+          },
+          "2044": {
+            "gross_requirement": 18821.5870648631,
+            "reoccupied": 8127.710794152249,
+            "built": 10693.87627071085
+          },
+          "2045": {
+            "gross_requirement": 18686.516079755886,
+            "reoccupied": 8069.38319936179,
+            "built": 10617.132880394096
+          },
+          "2046": {
+            "gross_requirement": 18551.378371060266,
+            "reoccupied": 8011.02679137785,
+            "built": 10540.351579682416
+          },
+          "2047": {
+            "gross_requirement": 18416.173938778564,
+            "reoccupied": 7952.641570201434,
+            "built": 10463.53236857713
+          },
+          "2048": {
+            "gross_requirement": 18280.902782909845,
+            "reoccupied": 7894.227535832136,
+            "built": 10386.67524707771
+          },
+          "2049": {
+            "gross_requirement": 18145.564903453647,
+            "reoccupied": 7835.784688269759,
+            "built": 10309.780215183888
+          },
+          "2050": {
+            "gross_requirement": 18010.160300410902,
+            "reoccupied": 7777.313027514702,
+            "built": 10232.8472728962
+          }
         }
       },
-      "release_added_total": 187088.18563059843,
-      "release_used_total": 187088.18563059843,
-      "bank_unused_2050": 0.0,
-      "zero_building_years": [
-        2027,
-        2028,
-        2029,
-        2030,
-        2031,
-        2032,
-        2033,
-        2034,
-        2035,
-        2036
-      ],
-      "n_zero_building_years": 10
+      "dwellings_built_min_2027_2050": 561.5830616132007
     }
   },
   "gap": {
     "TL": {
-      "LoE_AR": 0.6332101408420376,
+      "LoE_AR": 0.6569481356391356,
       "within_AR": true,
-      "margin_AR_kt": 1632.5920423476086,
-      "margin_AR_share": 0.36678985915796236,
-      "LoE_AtP": 2.5323677068712533,
+      "margin_AR_kt": 1526.9335557798515,
+      "margin_AR_share": 0.34305186436086443,
+      "LoE_AtP": 2.6273019594562017,
       "LoE_AtP_min_k0": 1.276627218331403
     }
   },
   "solution_space_marker": {
     "run": "TL",
     "demand_reduction": 0.8438079497880937,
-    "intensity_reduction": 0.4924640186395829,
-    "LoE_AR_run": 0.6332101408420376,
-    "LoE_AR_on_grid_at_coordinates": 0.7278097766765609,
-    "LoE_AtP_run": 2.5323677068712533,
+    "intensity_reduction": 0.45330886152465577,
+    "LoE_AR_run": 0.6569481356391356,
+    "LoE_AR_on_grid_at_coordinates": 0.7515612942667852,
+    "LoE_AtP_run": 2.6273019594562017,
     "note": "TL8 and TL9 lower soil carbon loss, which the demand-intensity plane does not show"
   },
   "shapley": [
@@ -691,8 +636,8 @@
       "metric": "carbon_kt",
       "player": "TL1",
       "name": "No extra space",
-      "reduction": 2831.011598745602,
-      "share_of_P5_moderate_from2027_minus_TL": 0.24350775791069534
+      "reduction": 2923.334338903261,
+      "share_of_TL_base_minus_TL": 0.2519905051889562
     },
     {
       "level": "TL",
@@ -700,8 +645,8 @@
       "metric": "carbon_kt",
       "player": "TL2",
       "name": "Historical maximum household size",
-      "reduction": 1401.5195618867228,
-      "share_of_P5_moderate_from2027_minus_TL": 0.12055086116010075
+      "reduction": 1310.2263846520466,
+      "share_of_TL_base_minus_TL": 0.11294110433643927
     },
     {
       "level": "TL",
@@ -709,8 +654,8 @@
       "metric": "carbon_kt",
       "player": "TL3",
       "name": "No vacancy",
-      "reduction": 1979.517466657371,
-      "share_of_P5_moderate_from2027_minus_TL": 0.17026700288489763
+      "reduction": 1831.741816746305,
+      "share_of_TL_base_minus_TL": 0.1578955713805928
     },
     {
       "level": "TL",
@@ -718,8 +663,8 @@
       "metric": "carbon_kt",
       "player": "TL4",
       "name": "Overbuild fully absorbed",
-      "reduction": 67.31878488391578,
-      "share_of_P5_moderate_from2027_minus_TL": 0.005790384744314785
+      "reduction": 45.76093836520145,
+      "share_of_TL_base_minus_TL": 0.003944578566710907
     },
     {
       "level": "TL",
@@ -727,8 +672,8 @@
       "metric": "carbon_kt",
       "player": "TL5",
       "name": "Building lifetime extension at the limit",
-      "reduction": 817.2904635224353,
-      "share_of_P5_moderate_from2027_minus_TL": 0.07029874707059618
+      "reduction": 826.5744175718764,
+      "share_of_TL_base_minus_TL": 0.07125045612755589
     },
     {
       "level": "TL",
@@ -736,8 +681,8 @@
       "metric": "carbon_kt",
       "player": "TL6",
       "name": "Best-practice materials",
-      "reduction": 1427.6601019580996,
-      "share_of_P5_moderate_from2027_minus_TL": 0.12279932397324363
+      "reduction": 1457.4136032161957,
+      "share_of_TL_base_minus_TL": 0.1256285965160892
     },
     {
       "level": "TL",
@@ -745,8 +690,8 @@
       "metric": "carbon_kt",
       "player": "TL7",
       "name": "Zero-emission construction",
-      "reduction": 1040.911649230026,
-      "share_of_P5_moderate_from2027_minus_TL": 0.08953338870085813
+      "reduction": 1099.4061636099036,
+      "share_of_TL_base_minus_TL": 0.09476846725641658
     },
     {
       "level": "TL",
@@ -754,8 +699,8 @@
       "metric": "carbon_kt",
       "player": "TL8",
       "name": "Lowest-carbon soils",
-      "reduction": 288.250215671303,
-      "share_of_P5_moderate_from2027_minus_TL": 0.024793668724810067
+      "reduction": 288.3302685801691,
+      "share_of_TL_base_minus_TL": 0.024853978921905516
     },
     {
       "level": "TL",
@@ -763,8 +708,8 @@
       "metric": "carbon_kt",
       "player": "TL9",
       "name": "Brownfield maximum",
-      "reduction": 542.0952233032547,
-      "share_of_P5_moderate_from2027_minus_TL": 0.046627994197962076
+      "reduction": 542.2630580466974,
+      "share_of_TL_base_minus_TL": 0.04674290590851827
     },
     {
       "level": "TL",
@@ -772,8 +717,8 @@
       "metric": "carbon_kt",
       "player": "TL10",
       "name": "Minimum space per person",
-      "reduction": 1230.3855320120545,
-      "share_of_P5_moderate_from2027_minus_TL": 0.10583087063252143
+      "reduction": 1275.9192004795386,
+      "share_of_TL_base_minus_TL": 0.10998383579681537
     },
     {
       "level": "TL",
@@ -781,8 +726,8 @@
       "metric": "LoE_AR",
       "player": "TL1",
       "name": "No extra space",
-      "reduction": 0.6360354078936309,
-      "share_of_P5_moderate_from2027_minus_TL": 0.24350775791069534
+      "reduction": 0.6567772980787694,
+      "share_of_TL_base_minus_TL": 0.2519905051889562
     },
     {
       "level": "TL",
@@ -790,8 +735,8 @@
       "metric": "LoE_AR",
       "player": "TL2",
       "name": "Historical maximum household size",
-      "reduction": 0.31487545533564887,
-      "share_of_P5_moderate_from2027_minus_TL": 0.12055086116010075
+      "reduction": 0.29436487415467055,
+      "share_of_TL_base_minus_TL": 0.11294110433643927
     },
     {
       "level": "TL",
@@ -799,8 +744,8 @@
       "metric": "LoE_AR",
       "player": "TL3",
       "name": "No vacancy",
-      "reduction": 0.444732617802011,
-      "share_of_P5_moderate_from2027_minus_TL": 0.17026700288489763
+      "reduction": 0.41153227845702994,
+      "share_of_TL_base_minus_TL": 0.15789557138059276
     },
     {
       "level": "TL",
@@ -808,8 +753,8 @@
       "metric": "LoE_AR",
       "player": "TL4",
       "name": "Overbuild fully absorbed",
-      "reduction": 0.01512432192842896,
-      "share_of_P5_moderate_from2027_minus_TL": 0.005790384744314767
+      "reduction": 0.010280981226499614,
+      "share_of_TL_base_minus_TL": 0.0039445785667109046
     },
     {
       "level": "TL",
@@ -817,8 +762,8 @@
       "metric": "LoE_AR",
       "player": "TL5",
       "name": "Building lifetime extension at the limit",
-      "reduction": 0.18361834814254993,
-      "share_of_P5_moderate_from2027_minus_TL": 0.07029874707059616
+      "reduction": 0.18570414796877407,
+      "share_of_TL_base_minus_TL": 0.0712504561275559
     },
     {
       "level": "TL",
@@ -826,8 +771,8 @@
       "metric": "LoE_AR",
       "player": "TL6",
       "name": "Best-practice materials",
-      "reduction": 0.3207483768998788,
-      "share_of_P5_moderate_from2027_minus_TL": 0.12279932397324364
+      "reduction": 0.32743301228510363,
+      "share_of_TL_base_minus_TL": 0.12562859651608924
     },
     {
       "level": "TL",
@@ -835,8 +780,8 @@
       "metric": "LoE_AR",
       "player": "TL7",
       "name": "Zero-emission construction",
-      "reduction": 0.2338586905446108,
-      "share_of_P5_moderate_from2027_minus_TL": 0.08953338870085814
+      "reduction": 0.24700048845516354,
+      "share_of_TL_base_minus_TL": 0.09476846725641659
     },
     {
       "level": "TL",
@@ -844,8 +789,8 @@
       "metric": "LoE_AR",
       "player": "TL8",
       "name": "Lowest-carbon soils",
-      "reduction": 0.06476036466299163,
-      "share_of_P5_moderate_from2027_minus_TL": 0.024793668724810043
+      "reduction": 0.06477834992471447,
+      "share_of_TL_base_minus_TL": 0.024853978921905506
     },
     {
       "level": "TL",
@@ -853,8 +798,8 @@
       "metric": "LoE_AR",
       "player": "TL9",
       "name": "Brownfield maximum",
-      "reduction": 0.12179100807063062,
-      "share_of_P5_moderate_from2027_minus_TL": 0.046627994197962076
+      "reduction": 0.1218287150300622,
+      "share_of_TL_base_minus_TL": 0.04674290590851825
     },
     {
       "level": "TL",
@@ -862,8 +807,8 @@
       "metric": "LoE_AR",
       "player": "TL10",
       "name": "Minimum space per person",
-      "reduction": 0.27642725450734956,
-      "share_of_P5_moderate_from2027_minus_TL": 0.10583087063252142
+      "reduction": 0.28665717564558935,
+      "share_of_TL_base_minus_TL": 0.10998383579681535
     },
     {
       "level": "TL",
@@ -871,8 +816,8 @@
       "metric": "LoE_AtP",
       "player": "TL1",
       "name": "No extra space",
-      "reduction": 2.5436666652790074,
-      "share_of_P5_moderate_from2027_minus_TL": 0.24350775791069534
+      "reduction": 2.626618736789526,
+      "share_of_TL_base_minus_TL": 0.2519905051889562
     },
     {
       "level": "TL",
@@ -880,8 +825,8 @@
       "metric": "LoE_AtP",
       "player": "TL2",
       "name": "Historical maximum household size",
-      "reduction": 1.2592666847028522,
-      "share_of_P5_moderate_from2027_minus_TL": 0.12055086116010075
+      "reduction": 1.177239676476482,
+      "share_of_TL_base_minus_TL": 0.11294110433643927
     },
     {
       "level": "TL",
@@ -889,8 +834,8 @@
       "metric": "LoE_AtP",
       "player": "TL3",
       "name": "No vacancy",
-      "reduction": 1.7785983623327342,
-      "share_of_P5_moderate_from2027_minus_TL": 0.17026700288489763
+      "reduction": 1.645821797664022,
+      "share_of_TL_base_minus_TL": 0.1578955713805928
     },
     {
       "level": "TL",
@@ -898,8 +843,8 @@
       "metric": "LoE_AtP",
       "player": "TL4",
       "name": "Overbuild fully absorbed",
-      "reduction": 0.06048599346331822,
-      "share_of_P5_moderate_from2027_minus_TL": 0.005790384744314772
+      "reduction": 0.04111624747246742,
+      "share_of_TL_base_minus_TL": 0.003944578566710896
     },
     {
       "level": "TL",
@@ -907,8 +852,8 @@
       "metric": "LoE_AtP",
       "player": "TL5",
       "name": "Building lifetime extension at the limit",
-      "reduction": 0.7343362735898352,
-      "share_of_P5_moderate_from2027_minus_TL": 0.07029874707059616
+      "reduction": 0.7426779153012325,
+      "share_of_TL_base_minus_TL": 0.0712504561275559
     },
     {
       "level": "TL",
@@ -916,8 +861,8 @@
       "metric": "LoE_AtP",
       "player": "TL6",
       "name": "Best-practice materials",
-      "reduction": 1.2827539852923,
-      "share_of_P5_moderate_from2027_minus_TL": 0.12279932397324363
+      "reduction": 1.309487535009684,
+      "share_of_TL_base_minus_TL": 0.1256285965160892
     },
     {
       "level": "TL",
@@ -925,8 +870,8 @@
       "metric": "LoE_AtP",
       "player": "TL7",
       "name": "Zero-emission construction",
-      "reduction": 0.9352601256809404,
-      "share_of_P5_moderate_from2027_minus_TL": 0.08953338870085813
+      "reduction": 0.9878175035439299,
+      "share_of_TL_base_minus_TL": 0.09476846725641658
     },
     {
       "level": "TL",
@@ -934,8 +879,8 @@
       "metric": "LoE_AtP",
       "player": "TL8",
       "name": "Lowest-carbon soils",
-      "reduction": 0.25899309815172006,
-      "share_of_P5_moderate_from2027_minus_TL": 0.024793668724810054
+      "reduction": 0.25906502576792323,
+      "share_of_TL_base_minus_TL": 0.024853978921905502
     },
     {
       "level": "TL",
@@ -943,8 +888,8 @@
       "metric": "LoE_AtP",
       "player": "TL9",
       "name": "Brownfield maximum",
-      "reduction": 0.4870730835346814,
-      "share_of_P5_moderate_from2027_minus_TL": 0.046627994197962076
+      "reduction": 0.48722388321432936,
+      "share_of_TL_base_minus_TL": 0.04674290590851825
     },
     {
       "level": "TL",
@@ -952,8 +897,8 @@
       "metric": "LoE_AtP",
       "player": "TL10",
       "name": "Minimum space per person",
-      "reduction": 1.1055025929979871,
-      "share_of_P5_moderate_from2027_minus_TL": 0.10583087063252143
+      "reduction": 1.1464146382470863,
+      "share_of_TL_base_minus_TL": 0.10998383579681537
     },
     {
       "level": "TL",
@@ -961,8 +906,17 @@
       "metric": "carbon_kt",
       "player": "from2027",
       "name": "P5 Combined: adoption path -> full strength from 2027 (separate line, not a Shapley player)",
-      "reduction": 865.8743615543372,
-      "share_of_P5_moderate_from2027_minus_TL": null
+      "reduction": 865.8743615543353,
+      "share_of_TL_base_minus_TL": null
+    },
+    {
+      "level": "TL",
+      "setting": "TL",
+      "metric": "carbon_kt",
+      "player": "reoccupation",
+      "name": "P5 Combined from 2027: released dwellings brought back into use in proportion to each year's need, 2027-2050 (separate line, not a Shapley player)",
+      "reduction": -80.66807886816605,
+      "share_of_TL_base_minus_TL": null
     },
     {
       "level": "TL",
@@ -970,8 +924,17 @@
       "metric": "LoE_AR",
       "player": "from2027",
       "name": "P5 Combined: adoption path -> full strength from 2027 (separate line, not a Shapley player)",
-      "reduction": 0.19453355577203313,
-      "share_of_P5_moderate_from2027_minus_TL": null
+      "reduction": 0.19453355577203268,
+      "share_of_TL_base_minus_TL": null
+    },
+    {
+      "level": "TL",
+      "setting": "TL",
+      "metric": "LoE_AR",
+      "player": "reoccupation",
+      "name": "P5 Combined from 2027: released dwellings brought back into use in proportion to each year's need, 2027-2050 (separate line, not a Shapley player)",
+      "reduction": -0.018123470235743344,
+      "share_of_TL_base_minus_TL": null
     },
     {
       "level": "TL",
@@ -979,8 +942,17 @@
       "metric": "LoE_AtP",
       "player": "from2027",
       "name": "P5 Combined: adoption path -> full strength from 2027 (separate line, not a Shapley player)",
-      "reduction": 0.7779889530588342,
-      "share_of_P5_moderate_from2027_minus_TL": null
+      "reduction": 0.7779889530588324,
+      "share_of_TL_base_minus_TL": null
+    },
+    {
+      "level": "TL",
+      "setting": "TL",
+      "metric": "LoE_AtP",
+      "player": "reoccupation",
+      "name": "P5 Combined from 2027: released dwellings brought back into use in proportion to each year's need, 2027-2050 (separate line, not a Shapley player)",
+      "reduction": -0.07248034704625361,
+      "share_of_TL_base_minus_TL": null
     }
   ]
 }

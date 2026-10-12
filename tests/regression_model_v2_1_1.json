@@ -1,0 +1,3371 @@
+{
+"meta": {
+"purpose": "MODEL v2.1.1: the keys of the pathway domain that changed since tests/regression_model_v2_1.json (TL gradual reoccupation; theoretical limit only)",
+"label": "dev check",
+"code_commit": "0c33c0fbbfa0f3717e6e61cdc104642d165b2ce5",
+"n_changed": 761,
+"n_added": 162,
+"n_removed": 139,
+"files": [
+"data/pathways/annual.csv",
+"data/pathways/bands.csv",
+"data/pathways/runs.csv",
+"data/pathways/shapley_theoretical_limit.csv",
+"data/pathways/shapley_theoretical_limit_subsets.csv",
+"data/pathways/theoretical_limit.json",
+"data/pathways/waterfall_sequential.csv"
+],
+"captured_utc": "2026-10-12 09:35 UTC"
+},
+"changed": {
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"LoE_AR\", \"min\"]": {
+"old": -1.4281871451140734e-16,
+"new": 0.0210383987120077
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"LoE_AR\", \"sha256\"]": {
+"old": "6ef7508fd69a830506f4640f7821145b68d4be323e83b3b4aad829452d4960df",
+"new": "c1086b5a1aec47e1266317a6c328cd0646408b85f8ce11f04d985b62981e41a8"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"LoE_AR\", \"sum\"]": {
+"old": 15.936517383845072,
+"new": 16.623178207830094
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"LoE_AtP\", \"min\"]": {
+"old": -5.711682066313842e-16,
+"new": 0.084137884197058
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"LoE_AtP\", \"sha256\"]": {
+"old": "f3517313544b611c9652adbf6698bab20a8c7c9c2a33d63cc5504d0f80ad3abf",
+"new": "4bad95de645401c7214f165e85e5a6f5cdb053c862f83af0a9f77984bbf46cd5"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"LoE_AtP\", \"sum\"]": {
+"old": 63.73416876927308,
+"new": 66.4802992938426
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"b_kt\", \"max\"]": {
+"old": 10.715541509157935,
+"new": 11.614462874577525
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"b_kt\", \"sha256\"]": {
+"old": "4c4e4287513e2d9cde43004e7ccef568cd045ac43613b026983f687106e0f1cd",
+"new": "0522fc8893029c34331293bec5e0824d50511c70874f4ea8061fe9ae742a3433"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"b_kt\", \"sum\"]": {
+"old": 65.81722053933613,
+"new": 98.22897725623615
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"brownfield_share\", \"max\"]": {
+"old": 0.89,
+"new": 1.7600341156380228
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"brownfield_share\", \"min\"]": {
+"old": 0.0,
+"new": 0.1625427927540847
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"brownfield_share\", \"sha256\"]": {
+"old": "9ed6f167769f17ce9cc0aed926bc68c29d91b485c9c4bd7487623da3cbedee40",
+"new": "15600492e7e82dfeb3003ef07df09ba83aeca9978be1d562a02210d376f2a15f"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"brownfield_share\", \"sum\"]": {
+"old": 12.622542792754084,
+"new": 22.39257690839211
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"carbon_kt\", \"min\"]": {
+"old": -2.5290099592762072e-14,
+"new": 3.65358092183811
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"carbon_kt\", \"sha256\"]": {
+"old": "7fd4d5267acf3e2baa640d21b4636f04a4ac87c4f5b036641e7eb7baea40f932",
+"new": "427ead102ec53a88dcceb74e1df47706d34efbb0a12400213e6ffaeb1a7002da"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"carbon_kt\", \"sum\"]": {
+"old": 2818.43625515097,
+"new": 2924.0947417187263
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"dwellings_built\", \"min\"]": {
+"old": -4.238074825741558e-12,
+"new": 529.9247003181201
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"dwellings_built\", \"sha256\"]": {
+"old": "31d1bb87542826da182a7761ca4491f6bf4784692c90fe0b793d31c1003d8738",
+"new": "d3d4e80cf455a1d96867c18c519a57f9932ea05167f30144d0fbd94ccaff87a5"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"floor_area_Mm2\", \"min\"]": {
+"old": -2.328306436538696e-16,
+"new": 0.0291129142679926
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"floor_area_Mm2\", \"sha256\"]": {
+"old": "0505b9c911f9176af0362aad66b316fcc0d59159a0130bc75d161fdfc5a3fa5f",
+"new": "7afa475c806376ecf6d495c1001789391dddafb58ac3301633d918a821945ade"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"implied_vacancy\", \"max\"]": {
+"old": 0.0898723341067986,
+"new": 0.0901111984069044
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"implied_vacancy\", \"sha256\"]": {
+"old": "4c8029ba66a5f8ff4ced9287d37797757dfd09b2c5babc7247d6b6ca83c0d098",
+"new": "fec7a752f3f645bc60b3bf9b6c5ec3b724d31411c8921a67835affcec07c0707"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"implied_vacancy\", \"sum\"]": {
+"old": 0.5343620204622094,
+"new": 1.083688138170964
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"overbuild_2026_dwellings\", \"max\"]": {
+"old": 113410.27050580343,
+"new": 113971.85356741663
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"overbuild_2026_dwellings\", \"min\"]": {
+"old": -20302.83069713338,
+"new": -8767.355039734895
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"overbuild_2026_dwellings\", \"sha256\"]": {
+"old": "6ff7d7f3d3f8982261f1a6dbcda15863acc3e77d93b5673e8ebf7b4f82ac0904",
+"new": "498045c6ddf3c24de012d53936e371e52ac8393b11fb0b44ee994758cd9b7d54"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"replacement_share\", \"max\"]": {
+"old": 0.1625427927540847,
+"new": 1.7600341156380228
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"replacement_share\", \"min\"]": {
+"old": 0.0,
+"new": 0.0787372202114735
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"replacement_share\", \"sha256\"]": {
+"old": "c92815af71ab885b9bde207b92e1d55f65e0734de5c2b31894940092805edc3f",
+"new": "dedc8c6964ccd683e3276242e33a7296ebffc1e55c5f57f150266f13d0ce1da4"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"replacement_share\", \"sum\"]": {
+"old": 0.9893467258142544,
+"new": 4.022338253316839
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"soil_carbon_loss_kt\", \"sha256\"]": {
+"old": "1d279a964d98a4320bbd809dc6d4cb7fa97c60a5b822992fbb6790911593e2c6",
+"new": "b1db01324a210445771941851f507824a7fd6dfc11bc829b5f891b73f6e7fbf9"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"soil_carbon_loss_kt\", \"sum\"]": {
+"old": 206.87638654587005,
+"new": 206.81619621100302
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"upfront_kt\", \"min\"]": {
+"old": -2.5769004666525943e-14,
+"new": 3.65358092183811
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"upfront_kt\", \"sha256\"]": {
+"old": "3d21f69fa42ff6c2ca162470f84648b71fe6f6d9e4102a3f600869b0f6c38d77",
+"new": "f8f734f8febf497b9cb80251ee9127a44589a50a1059ae49cf5df6451747e792"
+},
+"[\"data/pathways/annual.csv\", \"#group\", \"TL\", \"upfront_kt\", \"sum\"]": {
+"old": 2752.619034611634,
+"new": 2825.865764462491
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 542.5010162545843,
+"new": 233.6328393363044
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt_vs_reference\"]": {
+"old": -437.88824301671207,
+"new": -746.756419934992
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"2026 overbuild\\\"]\", \"delta_floor_area_Mm2_vs_reference\"]": {
+"old": -1.958608308084819,
+"new": -5.516840913274057
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.687664745358267,
+"new": -1.8705678598309703
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 143.2093650155894,
+"new": 200.899689607536
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt_vs_reference\"]": {
+"old": -1441.4855654060634,
+"new": -1383.7952408141168
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Historical replacement\\\"]\", \"delta_floor_area_Mm2_vs_reference\"]": {
+"old": -6.9112109853442085,
+"new": -6.420337905181722
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.0401342638960578,
+"new": 1.531007344058544
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 62.98334119093929,
+"new": 93.30103127439288
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt_vs_reference\"]": {
+"old": -318.30347920791684,
+"new": -287.9857891244633
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 1676.5122247774032,
+"new": 2747.292672331454
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt_vs_reference\"]": {
+"old": -8104.944202611889,
+"new": -7034.163755057838
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Population growth\\\"]\", \"delta_floor_area_Mm2_vs_reference\"]": {
+"old": -26.374484669606492,
+"new": -17.37660645529904
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 14.095687209564348,
+"new": 23.0935654238718
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 30.978550072856,
+"new": -713.2832486705645
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt_vs_reference\"]": {
+"old": -889.9259340854818,
+"new": -1634.1877328289024
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Vacancy\\\"]\", \"delta_floor_area_Mm2_vs_reference\"]": {
+"old": -3.68556883979398,
+"new": -9.616087529074738
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"in_scope\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.1141438736181617,
+"new": -5.816374815662597
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"with_retirement_villages\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 196.89070436175305,
+"new": 251.77564367870255
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"with_retirement_villages\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt_vs_reference\"]": {
+"old": -842.2712386610947,
+"new": -787.3862993441451
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"with_retirement_villages\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 2880.08113156292,
+"new": 2902.8187729222545
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"with_retirement_villages\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt_vs_reference\"]": {
+"old": -7473.94503905797,
+"new": -7451.207397698635
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"with_retirement_villages\\\", \\\"Retirement villages (out of scope)\\\"]\", \"carbon_kt\"]": {
+"old": -164.91818432382323,
+"new": -169.29403514925096
+},
+"[\"data/pathways/bands.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"with_retirement_villages\\\", \\\"Retirement villages (out of scope)\\\"]\", \"delta_carbon_kt_vs_reference\"]": {
+"old": 1100.5353977354882,
+"new": 1096.1595469100605
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"LoE_AR\"]": {
+"old": 0.6332101408420376,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"LoE_AtP\"]": {
+"old": 2.5323677068712533,
+"new": 2.6273019594562017
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"a1a3_kt\"]": {
+"old": 2329.3501499728723,
+"new": 2402.657070158596
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"brownfield_share\"]": {
+"old": 0.7116030291536853,
+"new": 0.6862431291174771
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"carbon_excl_soil_kt\"]": {
+"old": 2611.5598686051,
+"new": 2717.278545507724
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"carbon_per_dwelling_t\"]": {
+"old": 10.197361362960084,
+"new": 10.57964347653486
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"carbon_per_m2_kg\"]": {
+"old": 153.53067482698012,
+"new": 159.28628441875222
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"committed_b2b4_lower_kt\"]": {
+"old": 696.5782106959148,
+"new": 664.7137197087483
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"committed_b2b4_upper_kt\"]": {
+"old": 855.4888286423864,
+"new": 818.2873263574984
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"committed_lower_kt\"]": {
+"old": 1698.5790413714424,
+"new": 1666.714550384276
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"committed_upper_kt\"]": {
+"old": 1857.489659317914,
+"new": 1820.2881570330264
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"committed_years_B_AR_2050_lower\"]": {
+"old": 9.258806996464786,
+"new": 9.085116420456878
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"committed_years_B_AR_2050_upper\"]": {
+"old": 10.125014988803713,
+"new": 9.92223282721751
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"delta_LoE_AR_vs_reference_pct\"]": {
+"old": -86.9380800286907,
+"new": -86.44841037825407
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"delta_LoE_AtP_vs_reference_pct\"]": {
+"old": -86.9380800286907,
+"new": -86.44841037825407
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"delta_carbon_kt_vs_reference_pct\"]": {
+"old": -86.9380800286907,
+"new": -86.44841037825407
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"delta_committed_lower_kt_vs_reference_pct\"]": {
+"old": -79.30595571214822,
+"new": -79.69416560502779
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"delta_committed_upper_kt_vs_reference_pct\"]": {
+"old": -79.28991715685294,
+"new": -79.70469534436245
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"dwellings_built_min_year\"]": {
+"old": -4.238074825741558e-12,
+"new": 529.9247003181201
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"implied_vacancy_max\"]": {
+"old": 0.0898723341067986,
+"new": 0.0901111984069044
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"maintenance_kt\"]": {
+"old": 65.81722053933613,
+"new": 98.22897725623612
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"remaining_reduction_AR\"]": {
+"old": -0.5792545562681739,
+"new": -0.5221901787225778
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"remaining_reduction_AtP\"]": {
+"old": 0.6051126393348687,
+"new": 0.619381397558513
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"soil_carbon_loss_kt\"]": {
+"old": 206.87638654587008,
+"new": 206.81619621100305
+},
+"[\"data/pathways/runs.csv\", \"[\\\"TL\\\", \\\"REF\\\", \\\"TL\\\", \\\"P5-moderate+TL1+TL2+TL3+TL4+TL5+TL6+TL7+TL8+TL9+TL10\\\", \\\"from2027\\\", false]\", \"upfront_kt\"]": {
+"old": 2752.6190346116337,
+"new": 2825.86576446249
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL10\\\", \\\"Minimum space per person\\\"]\", \"reduction\"]": {
+"old": 0.2764272545073495,
+"new": 0.2866571756455893
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL10\\\", \\\"Minimum space per person\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1058308706325214,
+"new": 0.1099838357968153
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL1\\\", \\\"No extra space\\\"]\", \"reduction\"]": {
+"old": 0.6360354078936309,
+"new": 0.6567772980787694
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL1\\\", \\\"No extra space\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.2435077579106953,
+"new": 0.2519905051889562
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL2\\\", \\\"Historical maximum household size\\\"]\", \"reduction\"]": {
+"old": 0.3148754553356488,
+"new": 0.2943648741546705
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL2\\\", \\\"Historical maximum household size\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1205508611601007,
+"new": 0.1129411043364392
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL3\\\", \\\"No vacancy\\\"]\", \"reduction\"]": {
+"old": 0.444732617802011,
+"new": 0.4115322784570299
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL3\\\", \\\"No vacancy\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1702670028848976,
+"new": 0.1578955713805927
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL4\\\", \\\"Overbuild fully absorbed\\\"]\", \"reduction\"]": {
+"old": 0.0151243219284289,
+"new": 0.0102809812264996
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL4\\\", \\\"Overbuild fully absorbed\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.0057903847443147,
+"new": 0.0039445785667109
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL5\\\", \\\"Building lifetime extension at the limit\\\"]\", \"reduction\"]": {
+"old": 0.1836183481425499,
+"new": 0.185704147968774
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL5\\\", \\\"Building lifetime extension at the limit\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.0702987470705961,
+"new": 0.0712504561275559
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL6\\\", \\\"Best-practice materials\\\"]\", \"reduction\"]": {
+"old": 0.3207483768998788,
+"new": 0.3274330122851036
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL6\\\", \\\"Best-practice materials\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1227993239732436,
+"new": 0.1256285965160892
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL7\\\", \\\"Zero-emission construction\\\"]\", \"reduction\"]": {
+"old": 0.2338586905446108,
+"new": 0.2470004884551635
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL7\\\", \\\"Zero-emission construction\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.0895333887008581,
+"new": 0.0947684672564165
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL8\\\", \\\"Lowest-carbon soils\\\"]\", \"reduction\"]": {
+"old": 0.0647603646629916,
+"new": 0.0647783499247144
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL8\\\", \\\"Lowest-carbon soils\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.02479366872481,
+"new": 0.0248539789219055
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL9\\\", \\\"Brownfield maximum\\\"]\", \"reduction\"]": {
+"old": 0.1217910080706306,
+"new": 0.1218287150300622
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"TL9\\\", \\\"Brownfield maximum\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.046627994197962,
+"new": 0.0467429059085182
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL10\\\", \\\"Minimum space per person\\\"]\", \"reduction\"]": {
+"old": 1.1055025929979871,
+"new": 1.1464146382470863
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL10\\\", \\\"Minimum space per person\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1058308706325214,
+"new": 0.1099838357968153
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL1\\\", \\\"No extra space\\\"]\", \"reduction\"]": {
+"old": 2.5436666652790074,
+"new": 2.626618736789526
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL1\\\", \\\"No extra space\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.2435077579106953,
+"new": 0.2519905051889562
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL2\\\", \\\"Historical maximum household size\\\"]\", \"reduction\"]": {
+"old": 1.2592666847028522,
+"new": 1.177239676476482
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL2\\\", \\\"Historical maximum household size\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1205508611601007,
+"new": 0.1129411043364392
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL3\\\", \\\"No vacancy\\\"]\", \"reduction\"]": {
+"old": 1.7785983623327342,
+"new": 1.645821797664022
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL3\\\", \\\"No vacancy\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1702670028848976,
+"new": 0.1578955713805928
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL4\\\", \\\"Overbuild fully absorbed\\\"]\", \"reduction\"]": {
+"old": 0.0604859934633182,
+"new": 0.0411162474724674
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL4\\\", \\\"Overbuild fully absorbed\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.0057903847443147,
+"new": 0.0039445785667108
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL5\\\", \\\"Building lifetime extension at the limit\\\"]\", \"reduction\"]": {
+"old": 0.7343362735898352,
+"new": 0.7426779153012325
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL5\\\", \\\"Building lifetime extension at the limit\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.0702987470705961,
+"new": 0.0712504561275559
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL6\\\", \\\"Best-practice materials\\\"]\", \"reduction\"]": {
+"old": 1.2827539852923,
+"new": 1.309487535009684
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL6\\\", \\\"Best-practice materials\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1227993239732436,
+"new": 0.1256285965160892
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL7\\\", \\\"Zero-emission construction\\\"]\", \"reduction\"]": {
+"old": 0.9352601256809404,
+"new": 0.98781750354393
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL7\\\", \\\"Zero-emission construction\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.0895333887008581,
+"new": 0.0947684672564165
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL8\\\", \\\"Lowest-carbon soils\\\"]\", \"reduction\"]": {
+"old": 0.25899309815172,
+"new": 0.2590650257679232
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL8\\\", \\\"Lowest-carbon soils\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.02479366872481,
+"new": 0.0248539789219055
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL9\\\", \\\"Brownfield maximum\\\"]\", \"reduction\"]": {
+"old": 0.4870730835346814,
+"new": 0.4872238832143293
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"TL9\\\", \\\"Brownfield maximum\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.046627994197962,
+"new": 0.0467429059085182
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL10\\\", \\\"Minimum space per person\\\"]\", \"reduction\"]": {
+"old": 1230.3855320120545,
+"new": 1275.9192004795386
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL10\\\", \\\"Minimum space per person\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1058308706325214,
+"new": 0.1099838357968153
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL1\\\", \\\"No extra space\\\"]\", \"reduction\"]": {
+"old": 2831.011598745602,
+"new": 2923.334338903261
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL1\\\", \\\"No extra space\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.2435077579106953,
+"new": 0.2519905051889562
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL2\\\", \\\"Historical maximum household size\\\"]\", \"reduction\"]": {
+"old": 1401.5195618867228,
+"new": 1310.2263846520466
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL2\\\", \\\"Historical maximum household size\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1205508611601007,
+"new": 0.1129411043364392
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL3\\\", \\\"No vacancy\\\"]\", \"reduction\"]": {
+"old": 1979.517466657371,
+"new": 1831.741816746305
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL3\\\", \\\"No vacancy\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1702670028848976,
+"new": 0.1578955713805928
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL4\\\", \\\"Overbuild fully absorbed\\\"]\", \"reduction\"]": {
+"old": 67.31878488391578,
+"new": 45.76093836520145
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL4\\\", \\\"Overbuild fully absorbed\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.0057903847443147,
+"new": 0.0039445785667109
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL5\\\", \\\"Building lifetime extension at the limit\\\"]\", \"reduction\"]": {
+"old": 817.2904635224353,
+"new": 826.5744175718764
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL5\\\", \\\"Building lifetime extension at the limit\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.0702987470705961,
+"new": 0.0712504561275558
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL6\\\", \\\"Best-practice materials\\\"]\", \"reduction\"]": {
+"old": 1427.6601019580996,
+"new": 1457.4136032161955
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL6\\\", \\\"Best-practice materials\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.1227993239732436,
+"new": 0.1256285965160892
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL7\\\", \\\"Zero-emission construction\\\"]\", \"reduction\"]": {
+"old": 1040.911649230026,
+"new": 1099.4061636099036
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL7\\\", \\\"Zero-emission construction\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.0895333887008581,
+"new": 0.0947684672564165
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL8\\\", \\\"Lowest-carbon soils\\\"]\", \"reduction\"]": {
+"old": 288.250215671303,
+"new": 288.3302685801691
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL8\\\", \\\"Lowest-carbon soils\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.02479366872481,
+"new": 0.0248539789219055
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL9\\\", \\\"Brownfield maximum\\\"]\", \"reduction\"]": {
+"old": 542.0952233032547,
+"new": 542.2630580466974
+},
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"TL9\\\", \\\"Brownfield maximum\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.046627994197962,
+"new": 0.0467429059085182
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"LoE_AR\", \"max\"]": {
+"old": 3.2451819866297686,
+"new": 3.2633054568655124
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"LoE_AR\", \"min\"]": {
+"old": 0.6332101408420376,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"LoE_AR\", \"sha256\"]": {
+"old": "c00e6566dbb91fc00cec13f6a7012d25d4c1501e175627795c214f3331b395b7",
+"new": "411eebac638451da1f8e14dbe40c47794b6d82f3a401230cfdf549e1793d5c95"
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"LoE_AR\", \"sum\"]": {
+"old": 1589.206597380563,
+"new": 1633.9195456371585
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"LoE_AtP\", \"max\"]": {
+"old": 12.97830457189663,
+"new": 13.050784918942885
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"LoE_AtP\", \"min\"]": {
+"old": 2.5323677068712533,
+"new": 2.6273019594562017
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"LoE_AtP\", \"sha256\"]": {
+"old": "b6b51361e9b8454d50b98be13440c9cc7b289e6134338f85aa93bbcc60bd265f",
+"new": "a348a73ab9eaf9569a72bde20eda42f205103b08bf0b13eca41f518a15fc9943"
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"LoE_AtP\", \"sum\"]": {
+"old": 6355.639632368482,
+"new": 6534.458035518875
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"carbon_kt\", \"max\"]": {
+"old": 14444.396853021752,
+"new": 14525.06493188992
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"carbon_kt\", \"min\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"carbon_kt\", \"sha256\"]": {
+"old": "28fefc02578f63f9200d0b8dc8deca6c13dc3ff8bd365baa2aa10bec7008b041",
+"new": "9dbf01aec3c79744e29bf1f93a02aa1bbd3de202750b24fa410841e21bf72615"
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"carbon_kt\", \"sum\"]": {
+"old": 7073603.535512314,
+"new": 7272622.133467012
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"dwellings_built_min_year\", \"max\"]": {
+"old": 8521.943128539659,
+"new": 17691.95224756539
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"dwellings_built_min_year\", \"min\"]": {
+"old": -5.3913110574759366e-12,
+"new": 529.9247003181201
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"dwellings_built_min_year\", \"sha256\"]": {
+"old": "9aa90f7b46ea93d06569de8e41162925f012e1cdc73f87c66e610e2c703827d3",
+"new": "90427240c13358e45df4d17ff69e1234dcc311a1136dc5814fdf30ec345fd3e2"
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"dwellings_built_min_year\", \"sum\"]": {
+"old": 867148.1533074013,
+"new": 8973246.40680271
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"floor_area_Mm2\", \"max\"]": {
+"old": 68.91805231452665,
+"new": 68.91748067573435
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"floor_area_Mm2\", \"sha256\"]": {
+"old": "facb218188c7ce2ef5a847d9b4087b422630cde515c22d998a8c678c157614aa",
+"new": "c5d8eb163d6ce7d311e20df58e96cedcdc7911f2faa38cf93a15bbcca9a5f0ef"
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"floor_area_Mm2\", \"sum\"]": {
+"old": 42275.525858234076,
+"new": 42273.12988995308
+},
+"[\"data/pathways/shapley_theoretical_limit_subsets.csv\", \"#group\", \"all\", \"subset\", \"sha256\"]": {
+"old": "f0328d75be3c302f73744297f609f880953349e338b95ab8eaf1e9af082f82ee",
+"new": "4c3a44bcc6c74c41073095a749173fedbb019769b65a3e2d0dff2b600eabaf7c"
+},
+"[\"data/pathways/theoretical_limit.json\", \"gap/TL/LoE_AR\"]": {
+"old": 0.6332101408420376,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/theoretical_limit.json\", \"gap/TL/LoE_AtP\"]": {
+"old": 2.5323677068712533,
+"new": 2.6273019594562017
+},
+"[\"data/pathways/theoretical_limit.json\", \"gap/TL/margin_AR_kt\"]": {
+"old": 1632.5920423476086,
+"new": 1526.9335557798515
+},
+"[\"data/pathways/theoretical_limit.json\", \"gap/TL/margin_AR_share\"]": {
+"old": 0.36678985915796236,
+"new": 0.34305186436086443
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2027\"]": {
+"old": 0.0,
+"new": 561.5830616132007
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2028\"]": {
+"old": 0.0,
+"new": 11509.886141357432
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2029\"]": {
+"old": 0.0,
+"new": 11515.004044565723
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2030\"]": {
+"old": 0.0,
+"new": 11520.121947773881
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2031\"]": {
+"old": 0.0,
+"new": 11525.239850981907
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2032\"]": {
+"old": 0.0,
+"new": 11530.357754189932
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2033\"]": {
+"old": 0.0,
+"new": 11535.475657398485
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2034\"]": {
+"old": 0.0,
+"new": 11511.273620098096
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2035\"]": {
+"old": 0.0,
+"new": 11441.449138709562
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2036\"]": {
+"old": 0.0,
+"new": 11345.527610418187
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2037\"]": {
+"old": 9588.531487868997,
+"new": 11243.043530902261
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2038\"]": {
+"old": 19627.146893837362,
+"new": 11153.54049433719
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2039\"]": {
+"old": 19494.14625976015,
+"new": 11077.024566384187
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2040\"]": {
+"old": 19360.273989185112,
+"new": 11000.47072803837
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2041\"]": {
+"old": 19225.918034868046,
+"new": 10923.878979297626
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2042\"]": {
+"old": 19091.279363697024,
+"new": 10847.249320162748
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2043\"]": {
+"old": 18956.46208033102,
+"new": 10770.581750633999
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2044\"]": {
+"old": 18821.520112956474,
+"new": 10693.87627071085
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2045\"]": {
+"old": 18686.48139739856,
+"new": 10617.132880394096
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2046\"]": {
+"old": 18551.360404941443,
+"new": 10540.351579682416
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2047\"]": {
+"old": 18416.1646319883,
+"new": 10463.53236857713
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2048\"]": {
+"old": 18280.89796181599,
+"new": 10386.67524707771
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2049\"]": {
+"old": 18145.562406035602,
+"new": 10309.780215183888
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_all_categories/2050\"]": {
+"old": 18010.159006700993,
+"new": 10232.8472728962
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2027\"]": {
+"old": 0.0,
+"new": 529.9247003181201
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2028\"]": {
+"old": 0.0,
+"new": 10861.03442406808
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2029\"]": {
+"old": 4.238074825741558e-12,
+"new": 10865.863813537417
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2030\"]": {
+"old": 4.238074825741558e-12,
+"new": 10870.693203006625
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2031\"]": {
+"old": 4.238074825741558e-12,
+"new": 10875.522592475709
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2032\"]": {
+"old": 0.0,
+"new": 10880.351981944788
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2033\"]": {
+"old": 4.238074825741558e-12,
+"new": 10885.181371414374
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2034\"]": {
+"old": 0.0,
+"new": 10862.343685878319
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2035\"]": {
+"old": 0.0,
+"new": 10796.455449740291
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2036\"]": {
+"old": -4.238074825741558e-12,
+"new": 10705.94134664778
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2037\"]": {
+"old": 9047.993115397048,
+"new": 10609.234645828054
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2038\"]": {
+"old": 18520.697376339813,
+"new": 10524.777202092018
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2039\"]": {
+"old": 18395.19444369611,
+"new": 10452.574739158787
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2040\"]": {
+"old": 18268.869011690393,
+"new": 10380.336502971475
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2041\"]": {
+"old": 18142.08716285239,
+"new": 10308.062493528087
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2042\"]": {
+"old": 18015.038534878142,
+"new": 10235.752710829373
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2043\"]": {
+"old": 17887.821363690313,
+"new": 10163.407154875578
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2044\"]": {
+"old": 17760.486537358698,
+"new": 10091.025825666207
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2045\"]": {
+"old": 17633.060416870292,
+"new": 10018.608723202007
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2046\"]": {
+"old": 17505.55665771339,
+"new": 9946.155847481732
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2047\"]": {
+"old": 17377.98233369324,
+"new": 9873.667198506624
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2048\"]": {
+"old": 17250.341109173074,
+"new": 9801.142776276196
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2049\"]": {
+"old": 17122.634882362578,
+"new": 9728.582580790186
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_in_scope/2050\"]": {
+"old": 16994.864636571456,
+"new": 9655.9866120491
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2027\"]": {
+"old": 0.08987233410679862,
+"new": 0.0901111984069044
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2028\"]": {
+"old": 0.08043660543550946,
+"new": 0.0855987468095033
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2029\"]": {
+"old": 0.07098896004974586,
+"new": 0.08112892543834282
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2030\"]": {
+"old": 0.061529263134892154,
+"new": 0.07670108601831227
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2031\"]": {
+"old": 0.05205737933907162,
+"new": 0.07231459331691148
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2032\"]": {
+"old": 0.04257317276627226,
+"new": 0.06796882481785838
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2033\"]": {
+"old": 0.03307650696941844,
+"new": 0.06366317040444747
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2034\"]": {
+"old": 0.023591441938130675,
+"new": 0.05940788437176214
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2035\"]": {
+"old": 0.014155541103921365,
+"new": 0.05521877968966904
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2036\"]": {
+"old": 0.004790308981209579,
+"new": 0.051103953756190035
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2037\"]": {
+"old": 3.3603413664984316e-06,
+"new": 0.047064158594065764
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2038\"]": {
+"old": 1.725691495813031e-06,
+"new": 0.04309314753862681
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2039\"]": {
+"old": 8.86346560258211e-07,
+"new": 0.0391848949687037
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2040\"]": {
+"old": 4.5530613834721123e-07,
+"new": 0.03533814057009366
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2041\"]": {
+"old": 2.3391702896891076e-07,
+"new": 0.03155166010339694
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2042\"]": {
+"old": 1.2019251416361953e-07,
+"new": 0.027824264157162104
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2043\"]": {
+"old": 6.176594891105225e-08,
+"new": 0.024154796952911894
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2044\"]": {
+"old": 3.174503704350684e-08,
+"new": 0.02054213519956316
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2045\"]": {
+"old": 1.631760848663788e-08,
+"new": 0.016985186994878387
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2046\"]": {
+"old": 8.388611583143302e-09,
+"new": 0.013482890771723599
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2047\"]": {
+"old": 4.312961654484582e-09,
+"new": 0.010034214287024557
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2048\"]": {
+"old": 2.217746986055147e-09,
+"new": 0.006638153651427725
+},
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/implied_vacancy/2049\"]": {
+"old": 1.1405083544246963e-09,
+"new": 0.0032937323977724198
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/LoE_AR\"]": {
+"old": 0.6332101408420376,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/LoE_AtP\"]": {
+"old": 2.5323677068712533,
+"new": 2.6273019594562017
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/a1a3_kt\"]": {
+"old": 2329.3501499728723,
+"new": 2402.657070158596
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/brownfield_share\"]": {
+"old": 0.7116030291536853,
+"new": 0.6862431291174771
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/carbon_excl_soil_kt\"]": {
+"old": 2611.5598686051,
+"new": 2717.2785455077237
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/carbon_per_dwelling_t\"]": {
+"old": 10.197361362960084,
+"new": 10.579643476534859
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/carbon_per_m2_kg\"]": {
+"old": 153.53067482698012,
+"new": 159.28628441875222
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/committed_b2b4_lower_kt\"]": {
+"old": 696.5782106959148,
+"new": 664.7137197087483
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/committed_b2b4_upper_kt\"]": {
+"old": 855.4888286423864,
+"new": 818.2873263574984
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/committed_lower_kt\"]": {
+"old": 1698.5790413714424,
+"new": 1666.714550384276
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/committed_upper_kt\"]": {
+"old": 1857.489659317914,
+"new": 1820.2881570330262
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/committed_years_B_AR_2050_lower\"]": {
+"old": 9.258806996464786,
+"new": 9.085116420456878
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/committed_years_B_AR_2050_upper\"]": {
+"old": 10.125014988803711,
+"new": 9.92223282721751
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/delta_LoE_AR_vs_reference_pct\"]": {
+"old": -86.9380800286907,
+"new": -86.44841037825407
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/delta_LoE_AtP_vs_reference_pct\"]": {
+"old": -86.9380800286907,
+"new": -86.44841037825407
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/delta_carbon_kt_vs_reference_pct\"]": {
+"old": -86.9380800286907,
+"new": -86.44841037825407
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/delta_committed_lower_kt_vs_reference_pct\"]": {
+"old": -79.30595571214822,
+"new": -79.69416560502779
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/delta_committed_upper_kt_vs_reference_pct\"]": {
+"old": -79.28991715685294,
+"new": -79.70469534436245
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/dwellings_built_min_year\"]": {
+"old": -4.238074825741558e-12,
+"new": 529.9247003181201
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/implied_vacancy_max\"]": {
+"old": 0.08987233410679862,
+"new": 0.0901111984069044
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/maintenance_kt\"]": {
+"old": 65.81722053933613,
+"new": 98.22897725623613
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/remaining_reduction_AR\"]": {
+"old": -0.5792545562681739,
+"new": -0.5221901787225778
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/remaining_reduction_AtP\"]": {
+"old": 0.6051126393348687,
+"new": 0.619381397558513
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/soil_carbon_loss_kt\"]": {
+"old": 206.87638654587008,
+"new": 206.81619621100305
+},
+"[\"data/pathways/theoretical_limit.json\", \"metrics/TL/upfront_kt\"]": {
+"old": 2752.6190346116337,
+"new": 2825.86576446249
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/0/reduction\"]": {
+"old": 2831.011598745602,
+"new": 2923.334338903261
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/0/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.24350775791069534,
+"new": 0.2519905051889562
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/1/reduction\"]": {
+"old": 1401.5195618867228,
+"new": 1310.2263846520466
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/1/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.12055086116010075,
+"new": 0.11294110433643927
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/10/reduction\"]": {
+"old": 0.6360354078936309,
+"new": 0.6567772980787694
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/10/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.24350775791069534,
+"new": 0.2519905051889562
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/11/reduction\"]": {
+"old": 0.31487545533564887,
+"new": 0.29436487415467055
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/11/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.12055086116010075,
+"new": 0.11294110433643927
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/12/reduction\"]": {
+"old": 0.444732617802011,
+"new": 0.41153227845702994
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/12/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.17026700288489763,
+"new": 0.15789557138059276
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/13/reduction\"]": {
+"old": 0.01512432192842896,
+"new": 0.010280981226499614
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/13/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.005790384744314767,
+"new": 0.0039445785667109046
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/14/reduction\"]": {
+"old": 0.18361834814254993,
+"new": 0.18570414796877407
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/14/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.07029874707059616,
+"new": 0.0712504561275559
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/15/reduction\"]": {
+"old": 0.3207483768998788,
+"new": 0.32743301228510363
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/15/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.12279932397324364,
+"new": 0.12562859651608924
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/16/reduction\"]": {
+"old": 0.2338586905446108,
+"new": 0.24700048845516354
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/16/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.08953338870085814,
+"new": 0.09476846725641659
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/17/reduction\"]": {
+"old": 0.06476036466299163,
+"new": 0.06477834992471447
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/17/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.024793668724810043,
+"new": 0.024853978921905506
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/18/reduction\"]": {
+"old": 0.12179100807063062,
+"new": 0.1218287150300622
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/18/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.046627994197962076,
+"new": 0.04674290590851825
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/19/reduction\"]": {
+"old": 0.27642725450734956,
+"new": 0.28665717564558935
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/19/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.10583087063252142,
+"new": 0.10998383579681535
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/2/reduction\"]": {
+"old": 1979.517466657371,
+"new": 1831.741816746305
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/2/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.17026700288489763,
+"new": 0.1578955713805928
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/20/reduction\"]": {
+"old": 2.5436666652790074,
+"new": 2.626618736789526
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/20/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.24350775791069534,
+"new": 0.2519905051889562
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/21/reduction\"]": {
+"old": 1.2592666847028522,
+"new": 1.177239676476482
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/21/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.12055086116010075,
+"new": 0.11294110433643927
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/22/reduction\"]": {
+"old": 1.7785983623327342,
+"new": 1.645821797664022
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/22/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.17026700288489763,
+"new": 0.1578955713805928
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/23/reduction\"]": {
+"old": 0.06048599346331822,
+"new": 0.04111624747246742
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/23/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.005790384744314772,
+"new": 0.003944578566710896
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/24/reduction\"]": {
+"old": 0.7343362735898352,
+"new": 0.7426779153012325
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/24/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.07029874707059616,
+"new": 0.0712504561275559
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/25/reduction\"]": {
+"old": 1.2827539852923,
+"new": 1.309487535009684
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/25/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.12279932397324363,
+"new": 0.1256285965160892
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/26/reduction\"]": {
+"old": 0.9352601256809404,
+"new": 0.9878175035439299
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/26/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.08953338870085813,
+"new": 0.09476846725641658
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/27/reduction\"]": {
+"old": 0.25899309815172006,
+"new": 0.25906502576792323
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/27/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.024793668724810054,
+"new": 0.024853978921905502
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/28/reduction\"]": {
+"old": 0.4870730835346814,
+"new": 0.48722388321432936
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/28/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.046627994197962076,
+"new": 0.04674290590851825
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/29/reduction\"]": {
+"old": 1.1055025929979871,
+"new": 1.1464146382470863
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/29/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.10583087063252143,
+"new": 0.10998383579681537
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/3/reduction\"]": {
+"old": 67.31878488391578,
+"new": 45.76093836520145
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/3/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.005790384744314785,
+"new": 0.003944578566710907
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/31/reduction\"]": {
+"old": 0.19453355577203313,
+"new": -80.66807886816605
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/32/reduction\"]": {
+"old": 0.7779889530588342,
+"new": 0.19453355577203268
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/4/reduction\"]": {
+"old": 817.2904635224353,
+"new": 826.5744175718764
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/4/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.07029874707059618,
+"new": 0.07125045612755589
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/5/reduction\"]": {
+"old": 1427.6601019580996,
+"new": 1457.4136032161957
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/5/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.12279932397324363,
+"new": 0.1256285965160892
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/6/reduction\"]": {
+"old": 1040.911649230026,
+"new": 1099.4061636099036
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/6/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.08953338870085813,
+"new": 0.09476846725641658
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/7/reduction\"]": {
+"old": 288.250215671303,
+"new": 288.3302685801691
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/7/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.024793668724810067,
+"new": 0.024853978921905516
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/8/reduction\"]": {
+"old": 542.0952233032547,
+"new": 542.2630580466974
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/8/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.046627994197962076,
+"new": 0.04674290590851827
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/9/reduction\"]": {
+"old": 1230.3855320120545,
+"new": 1275.9192004795386
+},
+"[\"data/pathways/theoretical_limit.json\", \"shapley/9/share_of_P5_moderate_from2027_minus_TL\"]": {
+"old": 0.10583087063252143,
+"new": 0.10998383579681537
+},
+"[\"data/pathways/theoretical_limit.json\", \"solution_space_marker/LoE_AR_on_grid_at_coordinates\"]": {
+"old": 0.7278097766765609,
+"new": 0.7515612942667852
+},
+"[\"data/pathways/theoretical_limit.json\", \"solution_space_marker/LoE_AR_run\"]": {
+"old": 0.6332101408420376,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/theoretical_limit.json\", \"solution_space_marker/LoE_AtP_run\"]": {
+"old": 2.5323677068712533,
+"new": 2.6273019594562017
+},
+"[\"data/pathways/theoretical_limit.json\", \"solution_space_marker/intensity_reduction\"]": {
+"old": 0.4924640186395829,
+"new": 0.45330886152465577
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 0.6332101408420375,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 542.5010162545843,
+"new": 233.6328393363044
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": -42.99597647490856,
+"new": -266.31408962939656
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"2026 overbuild\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": -0.3847213524490809,
+"new": -2.9718588082549084
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.687664745358267,
+"new": -1.8705678598309703
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 15,
+"new": 16
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 0.6332101408420375,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Extra space\\\"]\", \"delta_carbon_kt\"]": {
+"old": -1.1368683772161605e-13,
+"new": -2.557953848736361e-13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Extra space\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": -1.2212453270876722e-15,
+"new": -2.4424906541753444e-15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 15,
+"new": 16
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 0.6332101408420375,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 143.2093650155894,
+"new": 200.899689607536
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": 56.6001205040246,
+"new": 98.47118703571448
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Historical replacement\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.5499335642758683,
+"new": 0.906840004254813
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.0401342638960578,
+"new": 1.531007344058544
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 15,
+"new": 16
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 0.6332101408420375,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 62.98334119093929,
+"new": 93.30103127439288
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": 10.297565265239577,
+"new": 32.58305223800339
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 15,
+"new": 16
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 0.6332101408420375,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 1676.5122247774032,
+"new": 2747.292672331454
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": 992.2686342536553,
+"new": 1769.3944611556344
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Population growth\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 9.418370519984906,
+"new": 15.960592553773296
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 14.095687209564348,
+"new": 23.0935654238718
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 15,
+"new": 16
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 0.6332101408420375,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 15,
+"new": 16
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 0.6332101408420375,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": 6.323830348264892e-12,
+"new": 1.077182787412312e-11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Smaller households\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 5.920264278813647e-14,
+"new": 9.700573677662305e-14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 15,
+"new": 16
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 0.6332101408420375,
+"new": 0.6569481356391356
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 30.978550072856,
+"new": -713.2832486705645
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt\"]": {
+"old": 0.0,
+"new": -541.1415694540206
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Vacancy\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.0,
+"new": -4.311991017961537
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.1141438736181617,
+"new": -5.816374815662597
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 15,
+"new": 16
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL10\\\", \\\"+ TL10 Minimum space per person (= TL)\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 2818.4362551509694,
+"new": 2924.0947417187267
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 2.38032024341626,
+"new": 2.3930090891199933
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 358.7019162828649,
+"new": 401.991142239477
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": -102.19572303780792,
+"new": -83.50564608589912
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"2026 overbuild\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": -0.519296646899136,
+"new": -0.5176436752733485
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.9822325561809854,
+"new": 0.9800079457629038
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 6,
+"new": 7
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 10594.872760554475,
+"new": 10651.351171844388
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 2.38032024341626,
+"new": 2.3930090891199933
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Extra space\\\"]\", \"delta_carbon_kt\"]": {
+"old": 3322.314467787252,
+"new": 3319.1151664773884
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 6,
+"new": 7
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 10594.872760554475,
+"new": 10651.351171844388
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 2.38032024341626,
+"new": 2.3930090891199933
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 695.5227499235531,
+"new": 695.5880859108951
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": 264.2116689055845,
+"new": 264.23726780992183
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 6,
+"new": 7
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 10594.872760554475,
+"new": 10651.351171844388
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 2.38032024341626,
+"new": 2.3930090891199933
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 210.31088911329505,
+"new": 218.39086652334595
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": 68.33905160074761,
+"new": 71.72692759718723
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 6,
+"new": 7
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 10594.872760554475,
+"new": 10651.351171844388
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 2.38032024341626,
+"new": 2.3930090891199933
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 8133.825374957176,
+"new": 8126.210898405022
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": -0.6500815769240944,
+"new": -0.6636958162998781
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 6,
+"new": 7
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 10594.872760554475,
+"new": 10651.351171844388
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 2.38032024341626,
+"new": 2.3930090891199933
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Recent replacement surge\\\"]\", \"carbon_kt\"]": {
+"old": 774.6540047192874,
+"new": 774.6988702591856
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Recent replacement surge\\\"]\", \"delta_carbon_kt\"]": {
+"old": 271.6413098970535,
+"new": 271.6589737933597
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 6,
+"new": 7
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 10594.872760554475,
+"new": 10651.351171844388
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 2.38032024341626,
+"new": 2.3930090891199933
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Smaller households\\\"]\", \"carbon_kt\"]": {
+"old": 135.6647177274563,
+"new": 135.70362418555948
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": -0.0027647990844172,
+"new": -0.0027718764247595
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 6,
+"new": 7
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 10594.872760554475,
+"new": 10651.351171844388
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 2.38032024341626,
+"new": 2.3930090891199933
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 93.1433707548522,
+"new": 105.71794724490763
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt\"]": {
+"old": 25.866163690454783,
+"new": 31.1475381463016
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 6,
+"new": 7
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL1\\\", \\\"+ TL1 No extra space\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 10594.872760554475,
+"new": 10651.351171844388
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 2.0277758375689614,
+"new": 2.076719925593044
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 294.0416366677626,
+"new": -786.6103684558724
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": 64.6602796151023,
+"new": 1188.6015106953494
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"2026 overbuild\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.2600842136444961,
+"new": 5.880285728327826
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.7221483425364893,
+"new": -4.900277782564922
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 7,
+"new": 8
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 9025.687634003329,
+"new": 9243.539154793782
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 2.0277758375689614,
+"new": 2.076719925593044
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 7,
+"new": 8
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 9025.687634003329,
+"new": 9243.539154793782
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 2.0277758375689614,
+"new": 2.076719925593044
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 584.5263792499494,
+"new": 696.5778916898205
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": 110.99637067360368,
+"new": -0.9898057789254152
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Historical replacement\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.5426401548931503,
+"new": -0.0047842451650388
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 3.300850661723269,
+"new": 3.848275061781457
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 7,
+"new": 8
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 9025.687634003329,
+"new": 9243.539154793782
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 2.0277758375689614,
+"new": 2.076719925593044
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 148.2390974987551,
+"new": 184.6256324702045
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": 62.07179161453996,
+"new": 33.76523405314143
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 7,
+"new": 8
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 9025.687634003329,
+"new": 9243.539154793782
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 2.0277758375689614,
+"new": 2.076719925593044
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 6838.141000871249,
+"new": 8065.917617884926
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": 1295.6843740859267,
+"new": 60.29328052009623
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Population growth\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 5.365366224230215,
+"new": 0.1675361224175588
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 33.85632787583245,
+"new": 39.054157977645104
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 7,
+"new": 8
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 9025.687634003329,
+"new": 9243.539154793782
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 2.0277758375689614,
+"new": 2.076719925593044
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Recent replacement surge\\\"]\", \"carbon_kt\"]": {
+"old": 573.7308713751182,
+"new": 776.8970813136367
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Recent replacement surge\\\"]\", \"delta_carbon_kt\"]": {
+"old": 200.9231333441692,
+"new": -2.198211054451121
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Recent replacement surge\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.9817538034650704,
+"new": -0.0105023547081222
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Recent replacement surge\\\"]\", \"floor_area_Mm2\"]": {
+"old": 3.0752790022919663,
+"new": 4.067535160465159
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 7,
+"new": 8
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 9025.687634003329,
+"new": 9243.539154793782
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 2.0277758375689614,
+"new": 2.076719925593044
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": 94.6407916980362,
+"new": 94.67969815613218
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 7,
+"new": 8
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 9025.687634003329,
+"new": 9243.539154793782
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 2.0277758375689614,
+"new": 2.076719925593044
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 352.9349852350798,
+"new": 72.05763678564482
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt\"]": {
+"old": -259.7916144802276,
+"new": 33.66031045926282
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Vacancy\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": -1.0334652868477374,
+"new": 0.0816192480949123
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.727543118854029,
+"new": 0.6124585839113782
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 7,
+"new": 8
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL2\\\", \\\"+ TL2 Historical maximum household size\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 9025.687634003329,
+"new": 9243.539154793782
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 1.5054963072292065,
+"new": 1.5822124683465513
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 132.6007663138582,
+"new": -381.716706972936
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": 161.4408703539044,
+"new": -404.8936614829364
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"2026 overbuild\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.7092884080779301,
+"new": -0.2741420836664465
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.0128599344585591,
+"new": -4.626135698898476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 8,
+"new": 9
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 6701.006665256812,
+"new": 7042.472469265574
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 1.5054963072292065,
+"new": 1.5822124683465513
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 8,
+"new": 9
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 6701.006665256812,
+"new": 7042.472469265574
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 1.5054963072292065,
+"new": 1.5822124683465513
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 457.6221721122029,
+"new": 668.3738011084452
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": 126.90420713774648,
+"new": 28.20409058137534
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Historical replacement\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.6775626482333523,
+"new": 0.1609593750159939
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 2.623288013489917,
+"new": 3.687315686765463
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 8,
+"new": 9
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 6701.006665256812,
+"new": 7042.472469265574
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 1.5054963072292065,
+"new": 1.5822124683465513
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 87.27408202697885,
+"new": 146.41651477872114
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": 60.96501547177624,
+"new": 38.209117691483385
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 8,
+"new": 9
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 6701.006665256812,
+"new": 7042.472469265574
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 1.5054963072292065,
+"new": 1.5822124683465513
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 5346.273448125159,
+"new": 8145.051528449159
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": 1491.86755274609,
+"new": -79.1339105642337
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Population growth\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 6.925819842326359,
+"new": 7.105427357601002e-15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 26.93050803350609,
+"new": 39.0541579776451
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 8,
+"new": 9
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 6701.006665256812,
+"new": 7042.472469265574
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 1.5054963072292065,
+"new": 1.5822124683465513
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Recent replacement surge\\\"]\", \"carbon_kt\"]": {
+"old": 412.18398350035096,
+"new": 749.2505274604822
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Recent replacement surge\\\"]\", \"delta_carbon_kt\"]": {
+"old": 161.54688787476726,
+"new": 27.6465538531545
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Recent replacement surge\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.8533769873071653,
+"new": 0.1518054222958658
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Recent replacement surge\\\"]\", \"floor_area_Mm2\"]": {
+"old": 2.221902014984801,
+"new": 3.915729738169293
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 8,
+"new": 9
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 6701.006665256812,
+"new": 7042.472469265574
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 1.5054963072292065,
+"new": 1.5822124683465513
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": 7.965184067870723e-12,
+"new": -4.831690603168681e-13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Smaller households\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 3.6692870963861424e-14,
+"new": 0.0
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 8,
+"new": 9
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 6701.006665256812,
+"new": 7042.472469265574
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 1.5054963072292065,
+"new": 1.5822124683465513
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 30.978550072856,
+"new": -2518.976858663719
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt\"]": {
+"old": 321.9564351622238,
+"new": 2591.034495449364
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Vacancy\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 1.6133992452358672,
+"new": 10.740824417535288
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.1141438736181617,
+"new": -10.12836583362391
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 8,
+"new": 9
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL3\\\", \\\"+ TL3 No vacancy\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 6701.006665256812,
+"new": 7042.472469265574
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 1.4926616090111753,
+"new": 1.571050635890195
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 516.0166907787535,
+"new": -819.7625687350449
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": -383.4159244648953,
+"new": 438.04586176210887
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"2026 overbuild\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": -1.7948633040646869,
+"new": 0.2162909691875931
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.807723238523246,
+"new": -4.842426668086069
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 9,
+"new": 10
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 6643.8790602985,
+"new": 6992.790837150394
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 1.4926616090111753,
+"new": 1.571050635890195
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 9,
+"new": 10
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 6643.8790602985,
+"new": 6992.790837150394
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 1.4926616090111753,
+"new": 1.571050635890195
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 432.3191891671487,
+"new": 668.360408991691
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": 25.302982945054225,
+"new": 0.0133921167541757
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Historical replacement\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.1371224224871889,
+"new": 0.0
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 2.486165591002728,
+"new": 3.687315686765463
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 9,
+"new": 10
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 6643.8790602985,
+"new": 6992.790837150394
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 1.4926616090111753,
+"new": 1.571050635890195
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 84.23716150380007,
+"new": 144.30972511630895
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": 3.036920523178779,
+"new": 2.106789662412183
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 9,
+"new": 10
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 6643.8790602985,
+"new": 6992.790837150394
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 1.4926616090111753,
+"new": 1.571050635890195
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 4963.186298934777,
+"new": 8145.325557394842
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": 383.08714919038175,
+"new": -0.274028945682403
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Population growth\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 1.7161823239861178,
+"new": 0.0
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 25.21432570951997,
+"new": 39.0541579776451
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 9,
+"new": 10
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 6643.8790602985,
+"new": 6992.790837150394
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 1.4926616090111753,
+"new": 1.571050635890195
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Recent replacement surge\\\"]\", \"carbon_kt\"]": {
+"old": 383.0675067357592,
+"new": 749.240599239567
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Recent replacement surge\\\"]\", \"delta_carbon_kt\"]": {
+"old": 29.116476764591766,
+"new": 0.0099282209151851
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Recent replacement surge\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.1578495267790063,
+"new": -8.881784197001252e-16
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Recent replacement surge\\\"]\", \"floor_area_Mm2\"]": {
+"old": 2.0640524882057947,
+"new": 3.915729738169294
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 9,
+"new": 10
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 6643.8790602985,
+"new": 6992.790837150394
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 1.4926616090111753,
+"new": 1.571050635890195
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": -7.105427357601002e-15,
+"new": 0.0
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 9,
+"new": 10
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 6643.8790602985,
+"new": 6992.790837150394
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 1.4926616090111753,
+"new": 1.571050635890195
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 30.978550072856,
+"new": -2128.7565479623904
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt\"]": {
+"old": 0.0,
+"new": -390.2203107013288
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Vacancy\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.0,
+"new": 3.3750779948604765e-14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.1141438736181617,
+"new": -10.128365833623944
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 9,
+"new": 10
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL4\\\", \\\"+ TL4 Overbuild fully absorbed\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 6643.8790602985,
+"new": 6992.790837150394
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 1.2861451697362067,
+"new": 1.357586811603519
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 414.8479501906714,
+"new": -733.3912086776612
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": 101.16874058808207,
+"new": -86.37136005738364
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"2026 overbuild\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.50477984561406,
+"new": -1.900701818158268e-13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.302943392909186,
+"new": -4.842426668085879
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 10,
+"new": 11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 5724.668545186969,
+"new": 6042.657314758135
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 1.2861451697362067,
+"new": 1.357586811603519
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 10,
+"new": 11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 5724.668545186969,
+"new": 6042.657314758135
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 1.2861451697362067,
+"new": 1.357586811603519
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 281.6254044375299,
+"new": 446.96781665646665
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": 150.6937847296188,
+"new": 221.39259233522432
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Historical replacement\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.8960977628308018,
+"new": 1.249468338452106
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.590067828171926,
+"new": 2.437847348313357
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 10,
+"new": 11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 5724.668545186969,
+"new": 6042.657314758135
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 1.2861451697362067,
+"new": 1.357586811603519
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 73.22282019888318,
+"new": 125.62534646891189
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": 11.014341304916885,
+"new": 18.684378647397068
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 10,
+"new": 11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 5724.668545186969,
+"new": 6042.657314758135
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 1.2861451697362067,
+"new": 1.357586811603519
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 4561.742062447412,
+"new": 7969.96015043315
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": 401.44423648736574,
+"new": 175.3654069616914
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Population growth\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 1.700267979970718,
+"new": 0.0
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 23.51405772954925,
+"new": 39.0541579776451
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 10,
+"new": 11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 5724.668545186969,
+"new": 6042.657314758135
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 1.2861451697362067,
+"new": 1.357586811603519
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Recent replacement surge\\\"]\", \"delta_carbon_kt\"]": {
+"old": 254.88941200154267,
+"new": 621.0625045053505
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Recent replacement surge\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 1.506672970531139,
+"new": 3.3583502204946383
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 10,
+"new": 11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 5724.668545186969,
+"new": 6042.657314758135
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 1.2861451697362067,
+"new": 1.357586811603519
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": 5.3361759455583516e-12,
+"new": 1.0729195309977513e-12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Smaller households\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 2.3953061756287752e-14,
+"new": 0.0
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 10,
+"new": 11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 5724.668545186969,
+"new": 6042.657314758135
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 1.2861451697362067,
+"new": 1.357586811603519
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 30.978550072856,
+"new": -2128.7565479623686
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt\"]": {
+"old": 0.0,
+"new": -2.182787284255028e-11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Vacancy\\\"]\", \"delta_floor_area_Mm2\"]": {
+"old": 0.0,
+"new": 1.900701818158268e-13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.1141438736181617,
+"new": -10.128365833624134
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 10,
+"new": 11
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL5\\\", \\\"+ TL5 Building lifetime extension at the limit\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 5724.668545186969,
+"new": 6042.657314758135
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 1.0954435776040243,
+"new": 1.156803689848603
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 451.05019768426354,
+"new": -519.3081676097173
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": -36.2022474935921,
+"new": -214.0830410679439
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.302943392909186,
+"new": -4.842426668085879
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 11,
+"new": 12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 4875.8503622285925,
+"new": 5148.965958166901
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 1.0954435776040243,
+"new": 1.156803689848603
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 11,
+"new": 12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 4875.8503622285925,
+"new": 5148.965958166901
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 1.0954435776040243,
+"new": 1.156803689848603
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 232.89537930864688,
+"new": 362.3683572408048
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": 48.730025128883,
+"new": 84.5994594156619
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.590067828171926,
+"new": 2.437847348313357
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 11,
+"new": 12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 4875.8503622285925,
+"new": 5148.965958166901
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 1.0954435776040243,
+"new": 1.156803689848603
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 73.24140959083606,
+"new": 125.70902159261476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": -0.0185893919528723,
+"new": -0.083675123702875
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 11,
+"new": 12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 4875.8503622285925,
+"new": 5148.965958166901
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 1.0954435776040243,
+"new": 1.156803689848603
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 3725.43306773238,
+"new": 6481.501248508301
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": 836.308994715032,
+"new": 1488.4589019248497
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 23.51405772954925,
+"new": 39.0541579776451
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 11,
+"new": 12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 4875.8503622285925,
+"new": 5148.965958166901
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 1.0954435776040243,
+"new": 1.156803689848603
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 11,
+"new": 12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 4875.8503622285925,
+"new": 5148.965958166901
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 1.0954435776040243,
+"new": 1.156803689848603
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": 5.3290705182007506e-12,
+"new": 9.137579581874888e-12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 11,
+"new": 12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 4875.8503622285925,
+"new": 5148.965958166901
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 1.0954435776040243,
+"new": 1.156803689848603
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 30.978550072856,
+"new": -1663.5562594047265
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt\"]": {
+"old": 0.0,
+"new": -465.2002885576421
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.1141438736181617,
+"new": -10.128365833624134
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 11,
+"new": 12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL6\\\", \\\"+ TL6 Best-practice materials\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 4875.8503622285925,
+"new": 5148.965958166901
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 0.9658976002110712,
+"new": 1.0066645707062234
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 478.7134007037517,
+"new": -420.4829371225087
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": -27.663203019488208,
+"new": -98.8252304872086
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.302943392909186,
+"new": -4.842426668085879
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 12,
+"new": 13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 4299.237551025447,
+"new": 4480.692490302659
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 0.9658976002110712,
+"new": 1.0066645707062234
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 12,
+"new": 13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 4299.237551025447,
+"new": 4480.692490302659
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 0.9658976002110712,
+"new": 1.0066645707062234
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 199.7786933238522,
+"new": 299.2723804802012
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": 33.116685984794685,
+"new": 63.09597676060355
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.590067828171926,
+"new": 2.437847348313357
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 12,
+"new": 13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 4299.237551025447,
+"new": 4480.692490302659
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 0.9658976002110712,
+"new": 1.0066645707062234
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 73.2594222864612,
+"new": 125.79066206731264
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": -0.0180126956251456,
+"new": -0.0816404746978776
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 12,
+"new": 13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 4299.237551025447,
+"new": 4480.692490302659
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 0.9658976002110712,
+"new": 1.0066645707062234
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 3154.2557267989187,
+"new": 5368.28544516262
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": 571.177340933461,
+"new": 1113.2158033456808
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 23.51405772954925,
+"new": 39.0541579776451
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 12,
+"new": 13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 4299.237551025447,
+"new": 4480.692490302659
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 0.9658976002110712,
+"new": 1.0066645707062234
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 12,
+"new": 13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 4299.237551025447,
+"new": 4480.692490302659
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 0.9658976002110712,
+"new": 1.0066645707062234
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": 3.751665644813329e-12,
+"new": 6.892264536872972e-12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 12,
+"new": 13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 4299.237551025447,
+"new": 4480.692490302659
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 0.9658976002110712,
+"new": 1.0066645707062234
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 30.978550072856,
+"new": -1254.424818124585
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt\"]": {
+"old": 0.0,
+"new": -409.1314412801414
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.1141438736181617,
+"new": -10.128365833624134
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 12,
+"new": 13
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL7\\\", \\\"+ TL7 Zero-emission construction\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 4299.237551025447,
+"new": 4480.692490302659
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 0.907651134324886,
+"new": 0.9485467556325538
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 490.3148039866974,
+"new": -204.1023548351016
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": -11.601403282945682,
+"new": -216.3805822874071
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.302943392909186,
+"new": -4.842426668085879
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 13,
+"new": 14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 4039.980883136751,
+"new": 4222.008450820966
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 0.907651134324886,
+"new": 0.9485467556325538
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 13,
+"new": 14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 4039.980883136751,
+"new": 4222.008450820966
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 0.907651134324886,
+"new": 0.9485467556325538
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 199.79454352193287,
+"new": 299.323323397813
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": -0.0158501980807272,
+"new": -0.0509429176117919
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.590067828171926,
+"new": 2.437847348313357
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 13,
+"new": 14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 4039.980883136751,
+"new": 4222.008450820966
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 0.907651134324886,
+"new": 0.9485467556325538
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 73.27048636295089,
+"new": 125.83899976191913
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": -0.0110640764896885,
+"new": -0.0483376946064737
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 13,
+"new": 14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 4039.980883136751,
+"new": 4222.008450820966
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 0.907651134324886,
+"new": 0.9485467556325538
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 2883.370741352708,
+"new": 4893.121542781302
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": 270.884985446211,
+"new": 475.1639023813177
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 23.51405772954925,
+"new": 39.0541579776451
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 13,
+"new": 14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 4039.980883136751,
+"new": 4222.008450820966
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 0.907651134324886,
+"new": 0.9485467556325538
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 13,
+"new": 14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 4039.980883136751,
+"new": 4222.008450820966
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 0.907651134324886,
+"new": 0.9485467556325538
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": 1.6910917111090384e-12,
+"new": 2.9061197892588098e-12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 13,
+"new": 14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 4039.980883136751,
+"new": 4222.008450820966
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 0.907651134324886,
+"new": 0.9485467556325538
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 30.978550072856,
+"new": -1254.424818124585
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.1141438736181617,
+"new": -10.128365833624134
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 13,
+"new": 14
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL8\\\", \\\"+ TL8 Lowest-carbon soils\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 4039.980883136751,
+"new": 4222.008450820966
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": {
+"old": 0.8615102718744763,
+"new": 0.9025078059652476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": {
+"old": 499.50503977967577,
+"new": -32.68125029309223
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": {
+"old": -9.190235792978342,
+"new": -171.42110454200937
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.302943392909186,
+"new": -4.842426668085879
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"2026 overbuild\\\"]\", \"step\"]": {
+"old": 14,
+"new": 15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": {
+"old": 3834.606598698988,
+"new": 4017.0877830646727
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": {
+"old": 0.8615102718744763,
+"new": 0.9025078059652476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Extra space\\\"]\", \"step\"]": {
+"old": 14,
+"new": 15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": {
+"old": 3834.606598698988,
+"new": 4017.0877830646727
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": {
+"old": 0.8615102718744763,
+"new": 0.9025078059652476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": {
+"old": 199.809485519614,
+"new": 299.3708766432505
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": {
+"old": -0.0149419976810918,
+"new": -0.0475532454374842
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": {
+"old": 1.590067828171926,
+"new": 2.437847348313357
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Historical replacement\\\"]\", \"step\"]": {
+"old": 14,
+"new": 15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": {
+"old": 3834.606598698988,
+"new": 4017.0877830646727
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": {
+"old": 0.8615102718744763,
+"new": 0.9025078059652476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": {
+"old": 73.28090645617887,
+"new": 125.88408351239627
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": {
+"old": -0.0104200932279781,
+"new": -0.0450837504771612
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": {
+"old": 14,
+"new": 15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": {
+"old": 3834.606598698988,
+"new": 4017.0877830646727
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": {
+"old": 0.8615102718744763,
+"new": 0.9025078059652476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": {
+"old": 2668.7808590310583,
+"new": 4516.687133487088
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": {
+"old": 214.58988232164936,
+"new": 376.43440929421376
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": {
+"old": 23.51405772954925,
+"new": 39.0541579776451
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Population growth\\\"]\", \"step\"]": {
+"old": 14,
+"new": 15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": {
+"old": 3834.606598698988,
+"new": 4017.0877830646727
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": {
+"old": 0.8615102718744763,
+"new": 0.9025078059652476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": {
+"old": 14,
+"new": 15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": {
+"old": 3834.606598698988,
+"new": 4017.0877830646727
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": {
+"old": 0.8615102718744763,
+"new": 0.9025078059652476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": {
+"old": 1.3500311979441906e-12,
+"new": 2.302158463862725e-12
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Smaller households\\\"]\", \"step\"]": {
+"old": 14,
+"new": 15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": {
+"old": 3834.606598698988,
+"new": 4017.0877830646727
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": {
+"old": 0.8615102718744763,
+"new": 0.9025078059652476
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": {
+"old": 30.978550072856,
+"new": -1254.424818124585
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": {
+"old": 0.1141438736181617,
+"new": -10.128365833624134
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Vacancy\\\"]\", \"step\"]": {
+"old": 14,
+"new": 15
+},
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"TL9\\\", \\\"+ TL9 Brownfield maximum\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": {
+"old": 3834.606598698988,
+"new": 4017.0877830646727
+}
+},
+"added": {
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"reoccupation\\\", \\\"P5 Combined from 2027: released dwellings brought back into use in proportion to each year's need, 2027-2050 (separate line, not a Shapley player)\\\"]\", \"reduction\"]": -0.0181234702357433,
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AR\\\", \\\"reoccupation\\\", \\\"P5 Combined from 2027: released dwellings brought back into use in proportion to each year's need, 2027-2050 (separate line, not a Shapley player)\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": "NaN",
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"reoccupation\\\", \\\"P5 Combined from 2027: released dwellings brought back into use in proportion to each year's need, 2027-2050 (separate line, not a Shapley player)\\\"]\", \"reduction\"]": -0.0724803470462536,
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"LoE_AtP\\\", \\\"reoccupation\\\", \\\"P5 Combined from 2027: released dwellings brought back into use in proportion to each year's need, 2027-2050 (separate line, not a Shapley player)\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": "NaN",
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"reoccupation\\\", \\\"P5 Combined from 2027: released dwellings brought back into use in proportion to each year's need, 2027-2050 (separate line, not a Shapley player)\\\"]\", \"reduction\"]": -80.66807886816605,
+"[\"data/pathways/shapley_theoretical_limit.csv\", \"[\\\"TL\\\", \\\"TL\\\", \\\"carbon_kt\\\", \\\"reoccupation\\\", \\\"P5 Combined from 2027: released dwellings brought back into use in proportion to each year's need, 2027-2050 (separate line, not a Shapley player)\\\"]\", \"share_of_P5_moderate_from2027_minus_TL\"]": "NaN",
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/dwellings_built_min_2027_2050\"]": 561.5830616132007,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/G\"]": 447499.06519762694,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/R\"]": 193243.1611662419,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2026/built\"]": 38862.6,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2026/gross_requirement\"]": 38862.6,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2026/reoccupied\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2027/built\"]": 561.5830616132022,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2027/gross_requirement\"]": 988.4053472036903,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2027/reoccupied\"]": 426.82228559048815,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2028/built\"]": 11509.886141357432,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2028/gross_requirement\"]": 20257.79227589846,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2028/reoccupied\"]": 8747.906134541028,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2029/built\"]": 11515.004044565723,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2029/gross_requirement\"]": 20266.799960145585,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2029/reoccupied\"]": 8751.795915579862,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2030/built\"]": 11520.121947773881,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2030/gross_requirement\"]": 20275.807644392477,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2030/reoccupied\"]": 8755.685696618595,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2031/built\"]": 11525.239850981907,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2031/gross_requirement\"]": 20284.815328639135,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2031/reoccupied\"]": 8759.575477657228,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2032/built\"]": 11530.357754189932,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2032/gross_requirement\"]": 20293.823012885794,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2032/reoccupied\"]": 8763.465258695862,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2033/built\"]": 11535.475657398485,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2033/gross_requirement\"]": 20302.83069713338,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2033/reoccupied\"]": 8767.355039734895,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2034/built\"]": 11511.273620098096,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2034/gross_requirement\"]": 20260.23428581675,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2034/reoccupied\"]": 8748.960665718654,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2035/built\"]": 11441.449138709562,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2035/gross_requirement\"]": 20137.3408164662,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2035/reoccupied\"]": 8695.891677756637,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2036/built\"]": 11345.527610418187,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2036/gross_requirement\"]": 19968.51565424924,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2036/reoccupied\"]": 8622.988043831054,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2037/built\"]": 11243.043530902261,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2037/gross_requirement\"]": 19788.14017799145,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2037/reoccupied\"]": 8545.096647089187,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2038/built\"]": 11153.54049433719,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2038/gross_requirement\"]": 19630.611780183728,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2038/reoccupied\"]": 8477.071285846538,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2039/built\"]": 11077.024566384187,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2039/gross_requirement\"]": 19495.94113659674,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2039/reoccupied\"]": 8418.916570212552,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2040/built\"]": 11000.47072803837,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2040/gross_requirement\"]": 19361.20376942506,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2040/reoccupied\"]": 8360.733041386691,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2041/built\"]": 10923.878979297626,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2041/gross_requirement\"]": 19226.399678664977,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2041/reoccupied\"]": 8302.520699367351,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2042/built\"]": 10847.249320162748,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2042/gross_requirement\"]": 19091.528864317876,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2042/reoccupied\"]": 8244.279544155128,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2043/built\"]": 10770.581750633999,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2043/gross_requirement\"]": 18956.591326384227,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2043/reoccupied\"]": 8186.009575750229,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2044/built\"]": 10693.87627071085,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2044/gross_requirement\"]": 18821.5870648631,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2044/reoccupied\"]": 8127.710794152249,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2045/built\"]": 10617.132880394096,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2045/gross_requirement\"]": 18686.516079755886,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2045/reoccupied\"]": 8069.38319936179,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2046/built\"]": 10540.351579682416,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2046/gross_requirement\"]": 18551.378371060266,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2046/reoccupied\"]": 8011.02679137785,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2047/built\"]": 10463.53236857713,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2047/gross_requirement\"]": 18416.173938778564,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2047/reoccupied\"]": 7952.641570201434,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2048/built\"]": 10386.67524707771,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2048/gross_requirement\"]": 18280.902782909845,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2048/reoccupied\"]": 7894.227535832136,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2049/built\"]": 10309.780215183888,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2049/gross_requirement\"]": 18145.564903453647,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2049/reoccupied\"]": 7835.784688269759,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2050/built\"]": 10232.8472728962,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2050/gross_requirement\"]": 18010.160300410902,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/by_year/2050/reoccupied\"]": 7777.313027514702,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/share_of_need\"]": 0.4318291951758621,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/years/0\"]": 2027,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/reoccupation/years/1\"]": 2050,
+"[\"data/pathways/theoretical_limit.json\", \"shapley/33/reduction\"]": -0.018123470235743344,
+"[\"data/pathways/theoretical_limit.json\", \"shapley/34/reduction\"]": 0.7779889530588324,
+"[\"data/pathways/theoretical_limit.json\", \"shapley/35/reduction\"]": -0.07248034704625361,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"2026 overbuild\\\"]\", \"B_AR_kt\"]": 4451.0282974985785,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"2026 overbuild\\\"]\", \"B_AtP_kt\"]": 1112.9648539994828,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"2026 overbuild\\\"]\", \"LoE_AR\"]": 3.263305456865512,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"2026 overbuild\\\"]\", \"carbon_kt\"]": 318.4854961535779,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"2026 overbuild\\\"]\", \"delta_carbon_kt\"]": -61.979302908520935,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"2026 overbuild\\\"]\", \"delta_floor_area_Mm2\"]": 0.0005716387922941,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"2026 overbuild\\\"]\", \"floor_area_Mm2\"]": 0.4623642704895553,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"2026 overbuild\\\"]\", \"step\"]": 6,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"2026 overbuild\\\"]\", \"total_carbon_kt\"]": 14525.06493188992,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Extra space\\\"]\", \"B_AR_kt\"]": 4451.0282974985785,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Extra space\\\"]\", \"B_AtP_kt\"]": 1112.9648539994828,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Extra space\\\"]\", \"LoE_AR\"]": 3.263305456865512,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Extra space\\\"]\", \"carbon_kt\"]": 3512.164903553381,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Extra space\\\"]\", \"delta_carbon_kt\"]": 3.1993013098635856,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Extra space\\\"]\", \"delta_floor_area_Mm2\"]": 0.0,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Extra space\\\"]\", \"floor_area_Mm2\"]": 16.86002795251913,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Extra space\\\"]\", \"step\"]": 6,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Extra space\\\"]\", \"total_carbon_kt\"]": 14525.06493188992,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Historical replacement\\\"]\", \"B_AR_kt\"]": 4451.0282974985785,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Historical replacement\\\"]\", \"B_AtP_kt\"]": 1112.9648539994828,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Historical replacement\\\"]\", \"LoE_AR\"]": 3.263305456865512,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Historical replacement\\\"]\", \"carbon_kt\"]": 959.8253537208168,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Historical replacement\\\"]\", \"delta_carbon_kt\"]": -0.0909348916793533,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Historical replacement\\\"]\", \"delta_floor_area_Mm2\"]": 0.0,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Historical replacement\\\"]\", \"floor_area_Mm2\"]": 5.335476388401531,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Historical replacement\\\"]\", \"step\"]": 6,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Historical replacement\\\"]\", \"total_carbon_kt\"]": 14525.06493188992,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"B_AR_kt\"]": 4451.0282974985785,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"B_AtP_kt\"]": 1112.9648539994828,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"LoE_AR\"]": 3.263305456865512,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"carbon_kt\"]": 290.1177941205332,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_carbon_kt\"]": -11.46785340649052,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"delta_floor_area_Mm2\"]": 0.0,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"floor_area_Mm2\"]": 0.0,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"step\"]": 6,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Maintenance (B2, B4), 2026-2050\\\"]\", \"total_carbon_kt\"]": 14525.06493188992,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Population growth\\\"]\", \"B_AR_kt\"]": 4451.0282974985785,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Population growth\\\"]\", \"B_AtP_kt\"]": 1112.9648539994828,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Population growth\\\"]\", \"LoE_AR\"]": 3.263305456865512,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Population growth\\\"]\", \"carbon_kt\"]": 8125.547202588722,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Population growth\\\"]\", \"delta_carbon_kt\"]": 7.628090791529757,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Population growth\\\"]\", \"delta_floor_area_Mm2\"]": -7.105427357601002e-15,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Population growth\\\"]\", \"floor_area_Mm2\"]": 39.22169410006266,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Population growth\\\"]\", \"step\"]": 6,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Population growth\\\"]\", \"total_carbon_kt\"]": 14525.06493188992,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Recent replacement surge\\\"]\", \"B_AR_kt\"]": 4451.0282974985785,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Recent replacement surge\\\"]\", \"B_AtP_kt\"]": 1112.9648539994828,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Recent replacement surge\\\"]\", \"LoE_AR\"]": 3.263305456865512,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Recent replacement surge\\\"]\", \"carbon_kt\"]": 1046.3578440525453,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Recent replacement surge\\\"]\", \"delta_carbon_kt\"]": -0.0625294362041586,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Recent replacement surge\\\"]\", \"delta_floor_area_Mm2\"]": 0.0,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Recent replacement surge\\\"]\", \"floor_area_Mm2\"]": 5.527381689306418,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Recent replacement surge\\\"]\", \"step\"]": 6,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Recent replacement surge\\\"]\", \"total_carbon_kt\"]": 14525.06493188992,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Smaller households\\\"]\", \"B_AR_kt\"]": 4451.0282974985785,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Smaller households\\\"]\", \"B_AtP_kt\"]": 1112.9648539994828,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Smaller households\\\"]\", \"LoE_AR\"]": 3.263305456865512,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Smaller households\\\"]\", \"carbon_kt\"]": 135.70085230913472,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Smaller households\\\"]\", \"delta_carbon_kt\"]": -0.0388993807628708,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Smaller households\\\"]\", \"delta_floor_area_Mm2\"]": 0.0,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Smaller households\\\"]\", \"floor_area_Mm2\"]": 0.5741518608529472,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Smaller households\\\"]\", \"step\"]": 6,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Smaller households\\\"]\", \"total_carbon_kt\"]": 14525.06493188992,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Vacancy\\\"]\", \"B_AR_kt\"]": 4451.0282974985785,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Vacancy\\\"]\", \"B_AtP_kt\"]": 1112.9648539994828,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Vacancy\\\"]\", \"LoE_AR\"]": 3.263305456865512,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Vacancy\\\"]\", \"carbon_kt\"]": 136.86548539120923,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Vacancy\\\"]\", \"delta_carbon_kt\"]": -17.85595094590225,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Vacancy\\\"]\", \"delta_floor_area_Mm2\"]": -1.1102230246251563e-16,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Vacancy\\\"]\", \"floor_area_Mm2\"]": 0.9363844141021131,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Vacancy\\\"]\", \"step\"]": 6,
+"[\"data/pathways/waterfall_sequential.csv\", \"[\\\"reoccupation\\\", \\\"Released dwellings reoccupied in proportion to need\\\", \\\"Vacancy\\\"]\", \"total_carbon_kt\"]": 14525.06493188992
+},
+"removed": {
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2026/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2026/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2026/built\"]": 38862.6,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2026/raw\"]": 38862.6,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2026/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2027/added\"]": 187088.18563059843,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2027/bank_end\"]": 187088.18563059843,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2027/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2027/raw\"]": -187088.18563059843,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2027/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2028/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2028/bank_end\"]": 169320.582875269,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2028/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2028/raw\"]": 17767.602755329426,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2028/used\"]": 17767.602755329426,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2029/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2029/bank_end\"]": 150343.7483114977,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2029/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2029/raw\"]": 18976.834563771296,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2029/used\"]": 18976.834563771296,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2030/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2030/bank_end\"]": 130736.16720572741,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2030/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2030/raw\"]": 19607.581105770292,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2030/used\"]": 19607.581105770292,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2031/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2031/bank_end\"]": 110797.50589654806,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2031/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2031/raw\"]": 19938.66130917936,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2031/used\"]": 19938.66130917936,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2032/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2032/bank_end\"]": 90682.99723031366,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2032/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2032/raw\"]": 20114.5086662344,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2032/used\"]": 20114.5086662344,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2033/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2033/bank_end\"]": 70473.05476531808,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2033/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2033/raw\"]": 20209.94246499557,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2033/used\"]": 20209.94246499557,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2034/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2034/bank_end\"]": 50260.93834530971,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2034/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2034/raw\"]": 20212.116420008377,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2034/used\"]": 20212.116420008377,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2035/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2035/bank_end\"]": 30148.523495854246,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2035/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2035/raw\"]": 20112.414849455465,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2035/used\"]": 20112.414849455465,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2036/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2036/bank_end\"]": 10192.919965220266,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2036/built\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2036/raw\"]": 19955.60353063398,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2036/used\"]": 19955.60353063398,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2037/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2037/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2037/built\"]": 9588.531487868997,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2037/raw\"]": 19781.451453089263,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2037/used\"]": 10192.919965220266,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2038/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2038/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2038/built\"]": 19627.146893837362,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2038/raw\"]": 19627.146893837362,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2038/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2039/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2039/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2039/built\"]": 19494.14625976015,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2039/raw\"]": 19494.14625976015,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2039/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2040/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2040/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2040/built\"]": 19360.273989185112,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2040/raw\"]": 19360.273989185112,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2040/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2041/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2041/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2041/built\"]": 19225.918034868046,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2041/raw\"]": 19225.918034868046,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2041/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2042/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2042/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2042/built\"]": 19091.279363697024,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2042/raw\"]": 19091.279363697024,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2042/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2043/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2043/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2043/built\"]": 18956.46208033102,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2043/raw\"]": 18956.46208033102,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2043/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2044/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2044/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2044/built\"]": 18821.520112956474,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2044/raw\"]": 18821.520112956474,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2044/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2045/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2045/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2045/built\"]": 18686.48139739856,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2045/raw\"]": 18686.48139739856,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2045/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2046/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2046/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2046/built\"]": 18551.360404941443,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2046/raw\"]": 18551.360404941443,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2046/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2047/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2047/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2047/built\"]": 18416.1646319883,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2047/raw\"]": 18416.1646319883,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2047/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2048/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2048/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2048/built\"]": 18280.89796181599,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2048/raw\"]": 18280.89796181599,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2048/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2049/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2049/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2049/built\"]": 18145.562406035602,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2049/raw\"]": 18145.562406035602,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2049/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2050/added\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2050/bank_end\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2050/built\"]": 18010.159006700993,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2050/raw\"]": 18010.159006700993,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank/2050/used\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/bank_unused_2050\"]": 0.0,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/n_zero_building_years\"]": 10,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/release_added_total\"]": 187088.18563059843,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/release_used_total\"]": 187088.18563059843,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/0\"]": 2027,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/1\"]": 2028,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/2\"]": 2029,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/3\"]": 2030,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/4\"]": 2031,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/5\"]": 2032,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/6\"]": 2033,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/7\"]": 2034,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/8\"]": 2035,
+"[\"data/pathways/theoretical_limit.json\", \"indicators/TL/zero_building_years/9\"]": 2036
+}
+}

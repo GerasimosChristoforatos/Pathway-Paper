@@ -4,6 +4,54 @@ Entries below the first use the vocabulary of their own version (S1/S2/S3-10, ce
 L2a/L2b, T, near-term market excess, ...); docs/RENAMING.md maps every one of those names to the
 release vocabulary.
 
+## model-v2.1.2: figures only (palette, boundary styling, net-total bands, new paper figure set)
+
+From model-v2.1.1 (main, 1be3ea3). **No number changes**: every file of outputs/data/ is byte-identical to
+model-v2.1.1 (88 files, SHA-256 frozen before any change in tests/data_snapshot_model_v2_1_1.json;
+tests/test_data_unchanged.py). The model scripts that draw diagnostics in-process (projection, Diagnostics,
+MonteCarlo, boundaries, figures_report, pathways) were re-run with `run_all.py --figures-only` (author's decision;
+no pathway Monte Carlo, no frozen-technology run), and the byte check passed after them and at the end.
+
+### Style (style.py, docs/PALETTE.md)
+
+* Population growth the same deep green-blue hue, clearly lighter (`#586E71`, J' 47; was 11). Historical
+  replacement a darker, slightly bluer lilac (`#D0BBDC`) than the Recent replacement surge, which keeps the L5 face
+  and its light hatch. Unexplained building a faded red, no hatch (`#C6A3A4`).
+* AtP boundary dotted. Zones much lighter (on white J' 90 / 95 / 99): boundary exceeded far paler, within AR only
+  much lighter, within both budgets a little darker than within AR only, also faded.
+* TL a deep forest green (`#13412B`, J' 25), a larger circle on point plots. A mid green at the lightness of AR
+  merges with AR under deuteranomaly / protanomaly (CAM02-UCS distance 0.4), so TL is far darker than the zones.
+* Colour-vision check (CAM02-UCS, Machado et al. 2009): every group >= 10 except the boundary zones (pale by
+  design, minimum 5.0; their lightness order holds under every simulated deficiency, tested). Historical
+  replacement vs the surge face 4.5-6.7, told apart by lightness, hue and the surge's hatch (reported).
+* Net-total convention for negative bands in every stacked bar or area by band (plotting.signed_stack,
+  signed_areas, signed_stack_styled): a negative band is a faded, hatched downward segment from the top of the
+  positive stack, so the bar ends at its net total, marked by a short tick ("negative: dwellings released by lower
+  vacancy replace new building"). Stacks stay seamless.
+
+### Figures
+
+* Paper (outputs/paper/, PAPER.md): Fig1 schematic (kept for completeness); **Fig2** floor area by demand band
+  (the old Fig2 a) with the observed annual floor area built as a thin line (each history column is its interval
+  mean; checked); **Fig3** the Reference carbon per year by demand band, life-cycle stage and material (1 x 3,
+  shared y; no committed carbon); **Fig4** the Reference against the boundaries: annual with the Monte Carlo band and
+  the history line joined to 2026, and the cumulative column with its whisker, the emissions committed after 2050
+  stacked above it (hatched, 8,208-8,969 kt) and the budgets over the 2026-2050 column only; **Fig5** the pathways:
+  cumulative carbon by band and by stage (Reference, P1-P5 Moderate, TL) and the band waterfall; **Fig6** annual
+  emissions of the Reference, P5 and TL with their Monte Carlo bands (linear axis) and the solution space.
+  Superseded files (docs/RENAMING.md, figure_plan.PAPER_SUPERSEDED): Fig2_demand_bands, Fig4_pathways_bands,
+  Fig5_boundaries_attribution, Fig6_solution_space; the Shapley waterfall stays in ED8 / ED9 and Table 2.
+* K1 unexplained building faded red; K4 horizontal contour labels without a box ("Acquired rights: LoE = 1",
+  "LoE = 2", ...), Moderate filled, Ambitious hollow, no on-plot names, TL a larger circle; K5 one "TL timing
+  (adoption by 2030, gradual re-occupation)" step (values and band segments summed, checked), a dotted line between
+  the pathways and the theoretical limit, end labels above the bars.
+* D04 gaps between the census-interval columns and a gentler fade from 2026 (alpha 0.75, was 0.55); D21 drawn
+  from the stored AESA data (boundaries.fig_d21), thin history line joined to the 2026 median.
+* Settings markers: Moderate filled, Ambitious hollow everywhere (the convention asked for the solution space,
+  applied also to ED6, ED7, ED9 and D30 so the paper uses one convention; was Moderate open, Ambitious filled).
+* Fig4 (a) shows the sector carbon of the AR base window 2016-2025, as D21 (tests/test_v3.py allows it there).
+* Figure audit: AtP dash kind, negative-band segments and net ticks, TL colour; tests in tests/test_palette.py.
+
 ## model-v2.1.1: palette, seamless stacks, TL adopted by 2030 with constant-share re-occupation
 
 From model-v2.1.0 (main, 29882f9). **Every number outside the theoretical limit is unchanged**: the

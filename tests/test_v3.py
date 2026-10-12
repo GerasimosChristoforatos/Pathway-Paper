@@ -137,7 +137,7 @@ CARBON_AXIS = re.compile(r'CO₂|CO2|carbon|LoE|exceedance|\bkt\b|\bMt\b', re.I)
 
 def test_no_historical_carbon_in_figures():
     """No figure shows carbon before the projection (from 2026), except the Monte Carlo fan
-    with the boundaries (D21), which shows the AR base window at 2025 factors (figaudit records,
+    with the boundaries (D21) and Fig4 (a), which show the AR base window at 2025 factors (figaudit records,
     written when each figure is saved)."""
     import boundaries
     import layout
@@ -146,7 +146,9 @@ def test_no_historical_carbon_in_figures():
              for _, _, fs in os.walk(base) for f in fs if f.endswith('.png')}
     recs = {f[:-5]: json.load(open(os.path.join(audit, f))) for f in os.listdir(audit) if f.endswith('.json')}
     assert files and files <= set(recs), sorted(files - set(recs))         # every saved figure audited
-    allowed = {'D21_fan_and_boundaries': boundaries.AR_BASE_WINDOW[0]}
+    # MODEL v2.1.2: Fig4 (a) shows the same AR base window history as D21 (a thin line joined to the projection)
+    allowed = {'D21_fan_and_boundaries': boundaries.AR_BASE_WINDOW[0],
+               'Fig4_reference_boundaries': boundaries.AR_BASE_WINDOW[0]}
     bad = []
     for name in files:
         for ax in recs[name]['axes']:

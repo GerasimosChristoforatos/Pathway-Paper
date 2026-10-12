@@ -181,7 +181,7 @@ def main():
          f"green ({S.ZONE['within_ar']['color']}, alpha {S.ZONE['within_ar']['alpha']}) and above AR light red "
          f"({S.ZONE['exceeded']['color']}, alpha {S.ZONE['exceeded']['alpha']}, \"boundary exceeded\"), on annual, "
          'cumulative and level-of-exceedance axes alike. The two principles are never averaged.',
-         '* **Settings**: Moderate solid line or open marker; Ambitious dashed line or filled marker '
+         '* **Settings**: Moderate solid line or filled marker; Ambitious dashed line or hollow marker (MODEL v2.1.2) '
          '(bars: Moderate bars, Ambitious whiskers).',
          f"* **Typeface**: {S.FONT} only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open "
          'Font License 1.1, registered by style.py, so every machine renders the same glyphs.',

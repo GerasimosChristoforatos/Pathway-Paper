@@ -153,8 +153,11 @@ def styling(fig):
     band rectangles (the old convention, drawn down from zero; none allowed) and whether the TL colour is used."""
     import style as S
     from matplotlib.colors import to_hex
-    atp, neg, ticks, down, tl = [], 0, 0, 0, False
+    atp, neg, ticks, down, tl, old = [], 0, 0, 0, False, set()
     tlhex = S.TL.upper()
+    retired = {'#0DB2C7', '#00ACC1', '#102A2E'}       # TL and Population growth of model-v2.1.1
+    from matplotlib.collections import Collection
+    from matplotlib.patches import Patch
     for ax in fig.get_axes():
         for a in ax.get_children():
             g = a.get_gid()
@@ -166,16 +169,17 @@ def styling(fig):
                 ticks += 1
             elif g == 'band_segment' and isinstance(a, Rectangle) and a.get_height() < 0:
                 down += 1
-            if not tl:
-                for attr in ('get_color', 'get_facecolor', 'get_markerfacecolor', 'get_edgecolor'):
-                    try:
-                        if tlhex in _hex(getattr(a, attr)()):
-                            tl = True
-                            break
-                    except (AttributeError, TypeError, ValueError):
-                        pass
+            if not isinstance(a, (Line2D, Collection, Patch)):
+                continue
+            for attr in ('get_color', 'get_facecolor', 'get_markerfacecolor', 'get_edgecolor'):
+                try:
+                    cols = _hex(getattr(a, attr)())
+                except (AttributeError, TypeError, ValueError):
+                    continue
+                tl = tl or tlhex in cols
+                old |= cols & retired
     return dict(atp_linestyles=sorted(set(atp)), negative_band_segments=neg, net_total_ticks=ticks,
-                band_rectangles_below_zero=down, tl_colour_used=tl)
+                band_rectangles_below_zero=down, tl_colour_used=tl, retired_colours=sorted(old))
 
 
 def record(fig, name, note=None):

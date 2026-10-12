@@ -7,15 +7,14 @@ tools/palette_check.py (CAM02-UCS distances under simulated deuteranomaly,
 protanomaly and tritanomaly, colorspacious; Machado et al. 2009), which also writes
 docs/PALETTE.md and docs/palette_preview.png.
 
-Rules (docs/PALETTE.md):
-  * demand bands are coloured by the pathway that targets them (Extra space: P1
-    family; Vacancy and 2026 overbuild: P2 family; Replacement and Redevelopment: P3
-    family); the untargeted bands (Population growth, Smaller households) are neutral
-    greys and hatched; the P4 colour marks intensity / material effects;
-  * Reference dark grey, TL near-black, TL gradual adoption light grey;
-  * boundaries: acquired rights (AR) blue solid, ability to pay (AtP) orange dashed,
-    never shaded as a range;
-  * settings: Moderate solid line / open marker, Ambitious dashed line / filled marker;
+Rules (docs/PALETTE.md, MODEL v2.1.2):
+  * demand bands are coloured by the lever that targets them (four pathway families after Francis Bacon, Head VI);
+    the only untargeted band, Population growth, a solid deep green-blue; negative bands drawn down from the top of
+    the positive stack (net-total convention, plotting.signed_stack);
+  * Reference dark grey, P5 vermilion, TL a deep forest green (a larger circle on point plots);
+  * boundaries: acquired rights (AR) a thin red line, ability to pay (AtP) a thin dark-red dotted line, light zones
+    below AtP, between AtP and AR and above AR;
+  * settings: Moderate solid line / filled marker, Ambitious dashed line / hollow marker;
   * one typeface (Liberation Sans, metric-compatible with Arial; bundled in fonts/ under
     the SIL Open Font License, so figures render identically on every machine);
   * print sizes: Nature Cities single column 89 mm, double column 183 mm; text 5-7 pt.
@@ -119,8 +118,9 @@ MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% b
 LEVER = {'L1': '#DFA538', 'L2': '#F4D168', 'L3': '#AA7C9D', 'L4': '#683861', 'L5': '#E1D2DD',
          'L6': '#4A6192', 'L7': '#ABD3FA', 'L8': '#8D6545', 'L9': '#C7B395'}
 PATHWAY = {'P1': LEVER['L1'], 'P2': LEVER['L4'], 'P3': LEVER['L6'], 'P4': LEVER['L8'], 'P5': '#EB6123'}
-SETTING = {'moderate': dict(ls='-', marker_fill='none', label='Moderate'),
-           'ambitious': dict(ls='--', marker_fill='full', label='Ambitious')}
+# MODEL v2.1.2: Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
+SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
+           'ambitious': dict(ls='--', marker_fill='none', label='Ambitious')}
 
 # demand bands, bottom to top: (colour, hatch), coloured by the lever that targets them; labels in naming.BANDS.
 # Population growth (untargeted) the deep green-blue hue, solid, clearly lighter since MODEL v2.1.2 (J' 47, was 11);

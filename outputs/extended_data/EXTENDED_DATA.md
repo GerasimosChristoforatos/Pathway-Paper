@@ -70,7 +70,7 @@ Files: [ED8_theoretical_limit.png](ED8_theoretical_limit.png) (PDF and source da
 
 ![ED9](ED9_single_levers.png)
 
-**ED9.** Each lever alone at the Moderate and Ambitious settings, and the lever attribution of P5 (Moderate). (a) Each lever alone on the Reference, Moderate (open) and Ambitious (filled), full roll-out by 2035; the cumulative LoE AR of every run: data/pathways/runs.csv. (b) Order-free (Shapley) attribution of Reference − P5 Combined (Moderate) to the nine levers (exact, 512 subsets; adds up to the difference).
+**ED9.** Each lever alone at the Moderate and Ambitious settings, and the lever attribution of P5 (Moderate). (a) Each lever alone on the Reference, Moderate (filled) and Ambitious (hollow), full roll-out by 2035; the cumulative LoE AR of every run: data/pathways/runs.csv. (b) Order-free (Shapley) attribution of Reference − P5 Combined (Moderate) to the nine levers (exact, 512 subsets; adds up to the difference).
 
 Files: [ED9_single_levers.png](ED9_single_levers.png) (PDF and source data: run_all.py --export). Data (outputs/): data/pathways/runs.csv, data/pathways/shapley_levers.csv.
 

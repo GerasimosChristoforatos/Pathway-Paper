@@ -28,7 +28,7 @@ File: [data_calibration/D03_household_size.png](data_calibration/D03_household_s
 
 ![D04](data_calibration/D04_household_formation.png)
 
-Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885–0.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024–2025 hatched (consent-derived estimates, no census check); projection annual and lighter, from 2026; the line is the net of the two parts.
+Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885–0.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024–2025 hatched (consent-derived estimates, no census check); projection annual, faded, from 2026; the line is the net of the two parts. A negative part (household-size change, where households grow larger) is drawn down from the top of the stack, so each column ends at its net total (short tick).
 
 File: [data_calibration/D04_household_formation.png](data_calibration/D04_household_formation.png); drawn by `Diagnostics.py`.
 
@@ -36,7 +36,7 @@ File: [data_calibration/D04_household_formation.png](data_calibration/D04_househ
 
 ![D05](data_calibration/D05_stock_and_vacancy.png)
 
-a: The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); implied stock vacancy rises to ≈6.4% because the 2026 overbuild is not absorbed. c: History: one bar per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. Faint bar: 2024–2025, households consent-derived. Projection annual, lighter. History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (D07; under-construction corrected) x the previous year's stock, the quantity the model uses (2024–2025: the latest rate carried). Unexplained building (hatched grey, labelled per interval in thousand dwellings per year): building not explained by household formation, vacancy and census-measured replacement: redevelopment not captured by the census counts, error in the household estimates, or residual; it may be negative.
+a: The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); implied stock vacancy rises to ≈6.4% because the 2026 overbuild is not absorbed. c: History: one bar per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. Faint bar: 2024–2025, households consent-derived. Projection annual, lighter. History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (D07; under-construction corrected) x the previous year's stock, the quantity the model uses (2024–2025: the latest rate carried). Unexplained building (faded red, labelled per interval in thousand dwellings per year): building not explained by household formation, vacancy and census-measured replacement: redevelopment not captured by the census counts, error in the household estimates, or residual; it may be negative.
 
 File: [data_calibration/D05_stock_and_vacancy.png](data_calibration/D05_stock_and_vacancy.png); drawn by `Diagnostics.py`.
 
@@ -148,7 +148,7 @@ File: [monte_carlo/D20_sobol.png](monte_carlo/D20_sobol.png); drawn by `MonteCar
 
 ![D21](monte_carlo/D21_fan_and_boundaries.png)
 
-Reference. AR base window 2016–2025 at 2025 factors, soil only on non-replacement floor area (as the projection). Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th–95th within 9.9% of the median in every year.
+Reference. AR base window 2016–2025 at 2025 factors, soil only on non-replacement floor area (as the projection); the thin history line is joined to the 2026 Monte Carlo median. Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th–95th within 9.9% of the median in every year.
 
 File: [monte_carlo/D21_fan_and_boundaries.png](monte_carlo/D21_fan_and_boundaries.png); drawn by `boundaries.py`.
 

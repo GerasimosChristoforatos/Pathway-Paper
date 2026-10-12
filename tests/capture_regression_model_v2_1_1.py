@@ -3,7 +3,7 @@
 
     python tests/capture_regression_model_v2_1_1.py "<label>"     # after the full run of the release
 
-MODEL v2.1.1 changes the theoretical limit only (TL gradual reoccupation): if any changed, added or removed key
+MODEL v2.1.1 changes the theoretical limit only (adopted by 2030; constant-share re-occupation; instant sensitivity): if any changed, added or removed key
 is not a TL key (regression_v2_1.is_tl_key), nothing is written and the script stops (exit 1).
 """
 import datetime
@@ -31,7 +31,7 @@ def main():
     key = lambda k: json.dumps(list(k))
     out = dict(meta=dict(
         purpose='MODEL v2.1.1: the keys of the pathway domain that changed since tests/regression_model_v2_1.json '
-                '(TL gradual reoccupation; theoretical limit only)', label=label, code_commit=commit,
+                '(TL adopted by 2030, constant-share re-occupation, instant sensitivity; theoretical limit only)', label=label, code_commit=commit,
         n_changed=len(changed), n_added=len(added), n_removed=len(removed),
         files=sorted({k[0] for k in list(changed) + list(added) + list(removed)}),
         captured_utc=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')),

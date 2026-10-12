@@ -20,7 +20,7 @@ spacing is at most 1e-12 relative, so any value that moves by 1e-12 relative or 
 hash (tested): the detection power is at least that of the value-by-value lock at 1e-12 (stricter below it, which
 the deterministic, byte-reproduced run allows), and the summary statistics give the size of a change. Every other file of the domain is held value by value.
 
-MODEL v2.1.1 changes the theoretical limit only (TL gradual reoccupation); tests/regression_model_v2_1_1.json lists
+MODEL v2.1.1 changes the theoretical limit only (TL adopted by 2030 with constant-share re-occupation); tests/regression_model_v2_1_1.json lists
 every key that changed (old and new value or hash), and tests/test_regression_model_v2_1.py requires every one of
 them to be a TL key (is_tl_key) and every other key to be unchanged.
 """

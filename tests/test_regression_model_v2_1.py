@@ -40,13 +40,40 @@ def test_every_domain_number_is_locked_and_reproduced(cur):
 def test_only_the_theoretical_limit_changed_in_v2_1_1():
     assert CHANGES, 'tests/regression_model_v2_1_1.json missing (tests/capture_regression_model_v2_1_1.py)'
     keys = list(CHANGES['changed']) + list(CHANGES['added']) + list(CHANGES['removed'])
-    assert keys and all(R21.is_tl_key(k) for k in keys), [k for k in keys if not R21.is_tl_key(k)][:10]
+    ok = lambda k: R21.is_tl_key(k) or R21.is_tl_derived(k)
+    assert keys and all(ok(k) for k in keys), [k for k in keys if not ok(k)][:10]
     m = CHANGES['meta']
     assert (m['n_changed'], m['n_added'], m['n_removed']) == (len(CHANGES['changed']), len(CHANGES['added']),
                                                               len(CHANGES['removed']))
     # the lever, pathway and Reference runs are untouched: none of their keys is listed
     for k in keys:
         assert not any(str(x).startswith(('P1-', 'P2-', 'P3-', 'P4-', 'L1-', 'L9-', 'REF')) for x in k[1:2]), k
+
+
+def test_tl_derived_keys_change_only_through_the_theoretical_limit():
+    """The invariants behind regression_v2_1.TL_DERIVED, on the current outputs."""
+    import json
+    import pandas as pd
+    import layout
+    d = lambda rel: layout.data(rel, frozen=False)
+    keys = [json.loads(k) if isinstance(k, str) and k.startswith('[') else k
+            for k in list(CHANGES['changed']) + list(CHANGES['added']) + list(CHANGES['removed'])]
+    derived = [k for k in keys if R21.is_tl_derived(tuple(k)) and not R21.is_tl_key(tuple(k))]
+    assert derived, 'no TL-derived key recorded'
+    # the waterfall step 'by2030' is the unchanged pathway run P5-moderate-by2030
+    w = pd.read_csv(d('pathways/waterfall_sequential.csv'))
+    r = pd.read_csv(d('pathways/runs.csv'))
+    p30 = r[(r['run'] == 'P5-moderate-by2030') & (r['scenario'] == 'REF')].iloc[0]
+    st = w[w['step_id'] == 'by2030']
+    assert len(st) and abs(st['total_carbon_kt'].iloc[0] / p30['carbon_kt'] - 1) < 1e-12
+    assert abs(st['carbon_kt'].sum() / p30['carbon_kt'] - 1) < 1e-9
+    # annual.csv: the added rows are the instant TL sensitivity's
+    a = pd.read_csv(d('pathways/annual.csv'))
+    base_rows = R21.load_base_lock()[('data/pathways/annual.csv', '#n_rows')]
+    assert len(a) - base_rows == (a['run'] == 'TL-from2027').sum() == 25
+    # the pooled central-draw diagnostic stays at floating-point level
+    s = pd.read_csv(d('pathways/montecarlo_summary.csv'))
+    assert (s['central_draw_max_rel_diff'] < 1e-9).all()
 
 
 def test_is_tl_key():

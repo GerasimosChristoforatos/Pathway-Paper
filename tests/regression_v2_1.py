@@ -170,6 +170,30 @@ def is_tl_key(key):
     return any(_TL.search(str(x)) for x in key[1:] if x is not None)
 
 
+# Keys outside the TL patterns that MODEL v2.1.1 changes only through the theoretical limit, each with the
+# invariant that shows it (tests/test_regression_model_v2_1.py checks every one on the current outputs):
+#   central_draw_max_rel_diff (montecarlo_summary.csv): one pooled diagnostic, the maximum relative difference of
+#     the central-draw check over P5, TL and the instant TL, repeated on every row; P5's own term is deterministic
+#     and unchanged, so a change comes from the TL terms;
+#   #n_rows of annual.csv: the 25 rows of the instant TL sensitivity (TL-from2027) added; every other run's rows
+#     are hashed per run and unchanged;
+#   the 'by2030' step of waterfall_sequential.csv: TL's faster adoption, a step of the TL waterfall whose values are
+#     those of the unchanged pathway run P5-moderate-by2030 (checked to 1e-12).
+TL_DERIVED = ('central_draw_max_rel_diff (pooled over P5, TL, instant TL)', 'annual.csv #n_rows (+ TL-from2027)',
+              'waterfall_sequential.csv step by2030 (TL waterfall step = pathway run P5-moderate-by2030)')
+
+
+def is_tl_derived(key):
+    """True for a key that changes only through the theoretical limit although it matches no TL pattern
+    (TL_DERIVED)."""
+    rel = key[0]
+    if rel == 'data/pathways/montecarlo_summary.csv' and key[-1] == 'central_draw_max_rel_diff':
+        return True
+    if rel == 'data/pathways/annual.csv' and tuple(key[1:]) == ('#n_rows',):
+        return True
+    return rel == 'data/pathways/waterfall_sequential.csv' and str(key[1]).startswith('["by2030"')
+
+
 def load_lock():
     """{key: value} of tests/regression_model_v2_1.json with MODEL v2.1.1's changes applied, and its meta."""
     if not os.path.exists(LOCK_FILE):

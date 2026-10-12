@@ -13,8 +13,8 @@ L8 soil factor; L9 no double counting (soil-free share >= the Reference share, =
 Attribution: pathway Shapley (16 subsets) and lever Shapley (512 subsets per setting) efficiency exact; demand
 bands add up to the totals; the back-cast gives cumulative LoE AR = 1.
 
-Theoretical limit (MODEL v2.1.1: adopted by 2030; instant sensitivity): banking rule (safety net; where it binds)
-and stock identity; every TL item at least as strong as its Ambitious lever
+Theoretical limit (MODEL v2.1.1: adopted by 2030; instant sensitivity): constant-share reoccupation (known paths;
+built >= 0, reoccupied = min(R, G+), never ahead of the release) and stock identity; every TL item at least as strong as its Ambitious lever
 (TL2 = the historical maximum household size, TL6 = min(own best independent case, r_Ambitious)); TL1 size = the
 occupied area; TL9 brownfield share; TL Shapley over TL1-TL10 (1,024 subsets) exact; TL residual in people.
 """
@@ -323,34 +323,69 @@ def full(rt):
     return rt['cache'][LV.TL_COMPONENTS]
 
 
-def test_bank_rule_on_a_known_path():
-    raw = np.array([5.0, 10.0, -30.0, 8.0, 12.0, 20.0, -5.0, 3.0])
-    b = PW.bank(raw)
-    assert list(b['built']) == [5.0, 10.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0]
-    assert list(b['bank']) == [0.0, 0.0, 30.0, 22.0, 10.0, 0.0, 5.0, 2.0]
-    assert b['added'][1:].sum() == 35.0 and b['used'][1:].sum() == 33.0
-    # binds where built != raw: clipped (2, 6) or a carried release used (3, 4, 5, 7)
-    assert list(b['binds']) == [False, False, True, True, True, True, True, True]
-    assert np.array_equal(b['binds'][1:], (b['built'] != raw)[1:])
+def test_reoccupation_rule_on_a_known_path():
+    """Constant share s = min(R, G+) / G+ of each year's need; never ahead of the cumulative release (shortfall
+    carried forward); 2025 and 2026 passed through."""
+    years = np.arange(2025, 2051)
+    gross = np.full(len(years), 100.0)
+    gross[1] = 500.0                                     # 2026: observed, passed through
+    released = np.zeros(len(years))
+    released[1] = 1e6                                    # 2026 is outside the reoccupation years: ignored
+    released[2], released[3], released[10] = 10.0, 30.0, 560.0     # R = 600; G+ = 2,400; s = 0.25
+    ro = PW.reoccupation(years, gross, released)
+    assert ro['R'] == 600.0 and ro['G_plus'] == 2400.0 and ro['share'] == 0.25
+    assert ro['built'][0] == 100.0 and ro['built'][1] == 500.0 and (ro['reoccupied'][:2] == 0).all()
+    # 2027: target 25 > released 10 -> 10 reoccupied, 15 carried; 2028: 25 + 15 = 40 = cumulative release 40 - 10
+    assert ro['reoccupied'][2] == 10.0 and ro['carry'][2] == 15.0 and ro['release_binds'][2]
+    assert ro['reoccupied'][3] == 30.0 and ro['carry'][3] == 10.0 and ro['release_binds'][3]
+    assert (ro['reoccupied'][4:10] == 0).all() and ro['release_binds'][4:10].all()   # nothing left to re-occupy
+    # 2035: 560 released; target 25 + carry 160 = 185 > need 100 -> 100 (need cap binds, nothing built), 85 carried;
+    # 2036: 25 + 85 = 110 -> 100, 10 carried; 2037: 35; then 25 a year
+    assert ro['reoccupied'][10] == 100.0 and ro['need_binds'][10] and ro['built'][10] == 0.0 and ro['carry'][10] == 85.0
+    assert ro['reoccupied'][11] == 100.0 and ro['reoccupied'][12] == 35.0 and (ro['reoccupied'][13:] == 25.0).all()
+    assert ro['reoccupied'].sum() == pytest.approx(600.0, rel=1e-14) and ro['carry'][-1] == pytest.approx(0, abs=1e-12)
+    assert (ro['built'][2:] >= 0).all() and ro['surplus_vacant_2050'] == pytest.approx(0, abs=1e-12)
 
 
-def test_TL_banking_and_stock_identity(rt):
+def test_reoccupation_need_cap_and_surplus():
+    years = np.arange(2025, 2051)
+    gross = np.full(len(years), 100.0)
+    gross[5] = -20.0                                     # 2030: need <= 0 builds nothing; its excess stays vacant
+    released = np.zeros(len(years))
+    released[2] = 3000.0                                 # R > G+: s = 1, the surplus stays vacant in 2050
+    ro = PW.reoccupation(years, gross, released)
+    Gp = 100.0 * 23
+    assert ro['share'] == 1.0 and ro['G_plus'] == Gp and ro['surplus_vacant_2050'] == pytest.approx(3000.0 - Gp)
+    assert (ro['built'][2:] == 0).all() and ro['reoccupied'].sum() == pytest.approx(Gp)
+    assert ro['nonpositive_need'] == 20.0 and ro['nonpositive_need_years'] == [2030]
+    # need cap binding: a carried shortfall larger than the year's need
+    released = np.zeros(len(years))
+    released[12] = 1000.0                                # nothing until 2037: 10 years of target (40 each) carried
+    ro = PW.reoccupation(years, np.full(len(years), 100.0), released)
+    assert ro['share'] == pytest.approx(1000.0 / 2400.0)
+    assert ro['need_binds'][12] and ro['reoccupied'][12] == 100.0 and ro['built'][12] == 0.0
+    assert ro['reoccupied'].sum() == pytest.approx(1000.0, rel=1e-12)
+
+
+def test_TL_reoccupation_and_stock_identity(rt):
     for key, R in list(rt['cache'].items()) + [('instant', rt['instant'])]:
-        E, bk = R['E'], R['info']['bank']
+        E, ro = R['E'], R['info']['reoccupation']
         built = np.asarray(PW.engine.requirement(E), float)
-        assert (built[1:] >= -PW.T_ZERO_TOL_DWELLINGS).all() and (bk['built'][1:] >= 0).all(), key
-        assert np.allclose(built[1:], bk['built'][1:], rtol=1e-12, atol=1e-6), key
+        assert (ro['built'][2:] >= 0).all() and (built[1:] >= -PW.T_ZERO_TOL_DWELLINGS).all(), key
+        assert np.allclose(built[2:], ro['built'][2:], rtol=1e-12, atol=1e-6), key
+        assert ro['reoccupied'].sum() == pytest.approx(min(ro['R'], ro['G_plus']), rel=1e-12), key
+        rel = (ro['released_vacancy'] + ro['released_households'] + ro['released_overbuild'])[2:]
+        assert (np.cumsum(ro['reoccupied'][2:]) <= np.cumsum(rel) * (1 + 1e-12) + 1e-6).all(), key
+        assert np.allclose(ro['built'][2:] + ro['reoccupied'][2:], np.maximum(ro['gross'][2:], 0), rtol=1e-12), key
         assert (E['join_redev'] == 0).all()
-        assert np.all(np.cumsum(bk['used']) <= np.cumsum(bk['added']) + 1e-6), key
-        assert bk['bank'][-1] == pytest.approx(bk['added'].sum() - bk['used'].sum(), abs=1e-6)
         assert (PW.implied_vacancy(E)[1:] >= -1e-9).all(), key
-        raw = R['info']['requirement_nojoin'] + R['info']['join_absorbed'] - R['info']['household_release']
-        assert np.array_equal(bk['binds'][1:], np.abs(bk['built'] - raw)[1:] > 1e-9 * np.abs(raw).max()), key
+    for R in (full(rt), rt['instant']):                 # deterministic TL and instant TL: built > 0 every year
+        assert (R['info']['reoccupation']['built'][2:] > 0).all()
 
 
 def test_TL_adopted_by_2030_and_instant_sensitivity(res, rt):
-    """MODEL v2.1.1: every TL-family run on the 2030 adoption path; the instant sensitivity = the TL of MODEL v2.1.0
-    (full strength from 2027); the TL base = the pathway run of P5 Moderate adopted by 2030."""
+    """MODEL v2.1.1: every TL-family run on the 2030 adoption path; the instant sensitivity on full strength from
+    2027 (same reoccupation rule); the TL base has the inputs of the pathway run of P5 Moderate adopted by 2030."""
     y = np.asarray(res['ctxs'][REF]['years'])
     w30 = LV.ramp_named(y, 'by2030')
     for key, R in rt['cache'].items():
@@ -358,11 +393,8 @@ def test_TL_adopted_by_2030_and_instant_sensitivity(res, rt):
     assert rt['instant']['ramp'] == LV.TL_FROM2027 and np.array_equal(rt['instant']['info']['w'], LV.ramp_from2027(y))
     rows = {r['run']: r for r in rt['rows']}
     assert set(rows) == {'TL', LV.TL_INSTANT_LABEL}
-    p30 = run_row(res, 'P5-moderate-by2030')
-    base = rt['subsets'].set_index('subset').loc[LV.TL_BASE_LABEL]
-    for m in ('carbon_kt', 'LoE_AR'):
-        assert base[m] == pytest.approx(p30[m], rel=1e-12)
-    assert rt['banking']['subsets'] == 2 ** 10
+    assert rt['reoccupation']['subsets'] == 2 ** 10
+    assert rt['subsets']['subset'].iloc[0] == LV.TL_BASE_LABEL == 'P5-moderate-by2030'
 
 
 def test_TL_items_at_least_as_strong_as_ambitious(rt, res):
@@ -407,9 +439,10 @@ def test_TL_shapley_efficiency_exact(res, rt):
     p5m = run_row(res, 'P5-moderate')
     for metric in ('carbon_kt', 'LoE_AR'):
         m = sh[sh['metric'] == metric].set_index('player')['reduction']
-        assert m.drop(LV.TL_ADOPTION).sum() == pytest.approx(s.loc[LV.TL_BASE_LABEL, metric] - s.loc['TL', metric],
-                                                             rel=1e-12)
-        # the separate line (TL's faster adoption) closes the gap to P5 Moderate exactly
+        sep = [LV.TL_ADOPTION, LV.TL_REOCCUPATION]
+        assert m.drop(sep).sum() == pytest.approx(s.loc[LV.TL_BASE_LABEL, metric] - s.loc['TL', metric], rel=1e-12)
+        assert m[LV.TL_ADOPTION] == pytest.approx(p5m[metric] - run_row(res, 'P5-moderate-by2030')[metric], rel=1e-12)
+        # the two separate lines (TL's faster adoption; reoccupation) close the gap to P5 Moderate exactly
         assert m.sum() == pytest.approx(p5m[metric] - s.loc['TL', metric], rel=1e-12)
 
 
@@ -434,7 +467,9 @@ def test_waterfall_reaches_P5_and_TL(res, rt):
     assert st.loc['TL10', 'total_carbon_kt'] == pytest.approx(rt['rows'][0]['carbon_kt'], rel=1e-12)
     assert st.loc[LV.TL_ADOPTION, 'total_carbon_kt'] == pytest.approx(run_row(res, 'P5-moderate-by2030')['carbon_kt'],
                                                                      rel=1e-12)
+    base = rt['subsets'].set_index('subset').loc[LV.TL_BASE_LABEL, 'carbon_kt']
+    assert st.loc[LV.TL_REOCCUPATION, 'total_carbon_kt'] == pytest.approx(base, rel=1e-12)
     ids = list(st.index)
-    assert ids.index('P4') + 1 == ids.index(LV.TL_ADOPTION) == ids.index('TL1') - 1
+    assert ids.index('P4') + 1 == ids.index(LV.TL_ADOPTION) == ids.index(LV.TL_REOCCUPATION) - 1 == ids.index('TL1') - 2
     for step, g in w.groupby('step'):
         assert g['carbon_kt'].sum() == pytest.approx(g['total_carbon_kt'].iloc[0], rel=1e-9)

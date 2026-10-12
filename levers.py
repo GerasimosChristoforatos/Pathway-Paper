@@ -747,21 +747,26 @@ def register(p):
 # TL = P5 Moderate with TL1-TL10, every lever and every TL item on the standard adoption rule with full roll-out
 # by 2030 (the logistic of the 2030 sensitivity of the pathways: midpoint 2028, k = ln(81) / (8/3); MODEL v2.1.1;
 # the pathways keep full roll-out by 2035); 2026 observed and untouched. L4 / TL4 act through the absorption rate,
-# not the adoption path, in the pathways and in TL alike. The banking rule (dwellings built never negative, unused
-# release carried forward; pathways.bank) stays as a safety net; how often it binds is reported. MODEL v2.1.0 TL,
-# every limit at full strength from 1 January 2027, is kept as one sensitivity ('from2027', instant). TLn is the limit of Ln; TL10 (minimum space per person) has no
+# not the adoption path, in the pathways and in TL alike. The released dwellings (zero vacancy, the household-size
+# change, the 2026 overbuild) are re-occupied at a constant share of each year's need (pathways.reoccupation), in
+# every TL-family run. TL with every limit at full strength from 1 January 2027 (instant, same rule) is kept as one
+# sensitivity ('from2027'). TLn is the limit of Ln; TL10 (minimum space per person) has no
 # lever counterpart. Every TL item is at least as strong as the Ambitious setting of its lever (tl_strength).
 TL_COMPONENTS = tuple(f'TL{k}' for k in range(1, 11))
 TL_NAMES = {k: N.TL[k] for k in TL_COMPONENTS}
 TL_BASE_SETTING = 'moderate'
 TL_FROM2027 = 'from2027'           # adoption: full strength from 2027 (the instant TL sensitivity)
 TL_ADOPTION = ADOPTION_BY2030['name']    # 'by2030': the adoption path of TL and its Shapley subsets (MODEL v2.1.1)
+TL_REOCCUPATION = 'reoccupation'   # the separate line: P5 Moderate by 2030 -> the TL base (reoccupation rule)
 TL_INSTANT_LABEL = 'TL-from2027'   # the sensitivity run: TL with every limit from 1 January 2027 (MODEL v2.1.0 TL)
 TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at its '
                  'limit, adopted by 2030, combining best observed attributes of different buildings and places; not a '
                  'proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).')
-TL_STEP_NOTE = ('TL: every lever at its limit, adopted by 2030; the end of the release of vacant dwellings and of the '
-                'household-size change shows as a step around 2030–31.')
+def tl_caption(share):
+    """The TL caption (MODEL v2.1.1, author's wording) with the constant share s of each year's need (share in 0-1)."""
+    return ('TL: every lever at its limit, adopted by 2030; dwellings released by zero vacancy, the household-size '
+            'change and the 2026 overbuild are re-occupied gradually, meeting a constant share '
+            f'(~{100 * share:.0f}%) of each year\'s need; 2026 observed.')
 TL_BAU_NOTE = ('The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 '
                'e^(-0.01 (t - 2025)) until TL7 sets A4-A5 to zero).')
 TL5_SURGE_REMOVED = 1.0            # TL5: the recent replacement surge removed entirely (as the Low variant)
@@ -839,8 +844,8 @@ def tl_strength(params, pT, years):
 def apply_tl(base, params, pT, comps, E_nojoin=None, ramp_name=TL_ADOPTION):
     """Inputs of a TL-family run: P5 Moderate with the TL items in `comps` (subset of TL1..TL10), every lever and
     item on the adoption path ramp_name (TL_ADOPTION, full roll-out by 2030; TL_FROM2027: w = 1 in 2027-2050, the
-    instant sensitivity). TLn overrides Ln. Returns (inputs, join_absorbed, join_redev, info); the banking rule
-    (safety net) is applied by pathways.run_tl."""
+    instant sensitivity). TLn overrides Ln. Returns (inputs, join_absorbed, join_redev, info); the reoccupation rule
+    is applied by pathways.run_tl."""
     unknown = set(comps) - set(TL_COMPONENTS)
     if unknown:
         raise ValueError(f'Unknown TL component(s) {unknown}.')
@@ -925,12 +930,12 @@ def tl_table(t):
         mk('TL1', 'L1 with f = 1: new-dwelling size = occupied area S x OLF', 'f = 1', 'DECISION (author): limit of L1',
            'DECISION', BAND_TARGET['L1']),
         mk('TL2', 'S = the highest household size in the model history, reached by 2030; households = population / S; '
-                  'household decline releases dwellings (banking rule as a safety net)',
+                  'household decline releases dwellings (re-occupied at a constant share of each year\'s need)',
            f"S = {r['TL2']['S']:.4f} ({r['TL2']['year']}; history {r['TL2']['history_first_year']}-"
            f"{r['TL2']['history_last_year']})", 'DATA: Stats NZ population and household estimates (projection history)',
            'DATA', BAND_TARGET['L2']),
-        mk('TL3', 'v = 0 by 2030; banking rule as a safety net: built_t = max(0, raw_t - bank_(t-1)), unused release '
-                  'carried forward',
+        mk('TL3', 'v = 0 by 2030; the dwellings released are re-occupied at a constant share s = min(R, G+) / G+ of '
+                  'each year\'s need, never ahead of the cumulative release',
            'v = 0', 'DECISION (author): limit of L3', 'DECISION', BAND_TARGET['L3']),
         mk('TL4', 'the 2026 overbuild absorbed in full from 2027 (absorption 1; L4 / TL4 act through the absorption '
                   'rate, not the adoption path)', 'a = 1', 'DECISION (author): limit of L4',
@@ -964,7 +969,9 @@ def register_tl(t):
              f"on the standard adoption rule with full roll-out by 2030 (logistic, midpoint {ADOPTION_BY2030['mid']:g}, "
              f"k = ln(81) / (8/3) = {ADOPTION_BY2030['k']:.4f}; the window of the pathways' 2030 sensitivity); 2026 "
              'untouched; every TL item at least as strong as the Ambitious setting of its lever (asserted). '
-             'Sensitivity: every limit at full strength from 1 January 2027 (instant). ' + TL_BAU_NOTE,
+             'Released dwellings (zero vacancy, the household-size change, the 2026 overbuild) re-occupied at a constant '
+             'share of each year\'s need 2027-2050. Sensitivity: every limit at full strength from 1 January 2027 '
+             '(instant, same rule). ' + TL_BAU_NOTE,
              'DECISION (author)')]
     for r in tl_table(t):
         rows.append((r['item'], f"{r['value']}; how: {r['how']}; {r['assumption']}", tagged(r)))

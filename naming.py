@@ -87,6 +87,7 @@ ADOPTION_LEGACY = {'ramp2035': 'by2035', 'ramp2030': 'by2030', 'ramp2045': 'by20
 TL_ADOPTION_LABEL = 'full roll-out by 2030 (TL adoption)'
 TL_FASTER_ADOPTION = "TL's faster adoption (by 2030 instead of 2035)"
 TL_INSTANT = 'TL, all limits from 1 January 2027 (instant)'
+TL_REOCCUPATION_LINE = 'released dwellings re-occupied at a constant share of each year\'s need'
 
 # Demand bands (why floor area is built), bottom to top. Retirement villages are a
 # bookkeeping row (out of scope), never a band in figures.

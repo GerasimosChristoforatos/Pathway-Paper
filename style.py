@@ -7,15 +7,14 @@ tools/palette_check.py (CAM02-UCS distances under simulated deuteranomaly,
 protanomaly and tritanomaly, colorspacious; Machado et al. 2009), which also writes
 docs/PALETTE.md and docs/palette_preview.png.
 
-Rules (docs/PALETTE.md):
-  * demand bands are coloured by the pathway that targets them (Extra space: P1
-    family; Vacancy and 2026 overbuild: P2 family; Replacement and Redevelopment: P3
-    family); the untargeted bands (Population growth, Smaller households) are neutral
-    greys and hatched; the P4 colour marks intensity / material effects;
-  * Reference dark grey, TL near-black, TL gradual adoption light grey;
-  * boundaries: acquired rights (AR) blue solid, ability to pay (AtP) orange dashed,
-    never shaded as a range;
-  * settings: Moderate solid line / open marker, Ambitious dashed line / filled marker;
+Rules (docs/PALETTE.md, MODEL v2.1.2):
+  * demand bands are coloured by the lever that targets them (four pathway families after Francis Bacon, Head VI);
+    the only untargeted band, Population growth, a solid deep green-blue; negative bands drawn down from the top of
+    the positive stack (net-total convention, plotting.signed_stack);
+  * Reference dark grey, P5 vermilion, TL a deep forest green (a larger circle on point plots);
+  * boundaries: acquired rights (AR) a thin red line, ability to pay (AtP) a thin dark-red dotted line, light zones
+    below AtP, between AtP and AR and above AR;
+  * settings: Moderate solid line / filled marker, Ambitious dashed line / hollow marker;
   * one typeface (Liberation Sans, metric-compatible with Arial; bundled in fonts/ under
     the SIL Open Font License, so figures render identically on every machine);
   * print sizes: Nature Cities single column 89 mm, double column 183 mm; text 5-7 pt.
@@ -80,11 +79,14 @@ MUTED = '#6E6E6E'                               # secondary text, leader lines
 AR = '#D7191C'
 ATP = '#67000D'
 LW_BOUNDARY = 0.9
+# MODEL v2.1.2: AtP dotted; the zones much lighter (on white: within both J' 90, within AR only 95, exceeded 99;
+# the lightness order still holds under every simulated deficiency; tools/palette_check.py)
+ATP_LS = (0, (1, 1.3))                          # dotted ·····
 BOUNDARY = {'AR': dict(color=AR, ls='-', lw=LW_BOUNDARY, label='Acquired rights (AR)'),
-            'AtP': dict(color=ATP, ls='--', lw=LW_BOUNDARY, label='Ability to pay (AtP)')}
-ZONE = {'within_both': dict(color='#238B45', alpha=0.50, label='Within both budgets (below AtP)'),
-        'within_ar': dict(color='#A1D99B', alpha=0.60, label='Within AR only (between AtP and AR)'),
-        'exceeded': dict(color='#FB6A4A', alpha=0.08, label='Boundary exceeded (above AR)')}
+            'AtP': dict(color=ATP, ls=ATP_LS, lw=LW_BOUNDARY, label='Ability to pay (AtP)')}
+ZONE = {'within_both': dict(color='#41AB5D', alpha=0.30, label='Within both budgets (below AtP)'),
+        'within_ar': dict(color='#A1D99B', alpha=0.30, label='Within AR only (between AtP and AR)'),
+        'exceeded': dict(color='#FB6A4A', alpha=0.035, label='Boundary exceeded (above AR)')}
 ZONE_GID = 'boundary_zone'
 # two accent colours for lines that are not boundaries (household formation, floor area in the diagnostics): the
 # boundary pair of model-v2.0.0, kept so those diagnostics are unchanged
@@ -93,7 +95,11 @@ ACCENT_BLUE = '#1F5FA8'
 
 # runs
 REFERENCE = '#4D4D4D'
-TL = '#0DB2C7'          # MODEL v2.1.1: a clear cyan, outside every family, apart from Population growth and the zones
+# MODEL v2.1.2: TL a deep forest green, far darker than the zones; at CAM02-UCS J' 25 it is >= 10 from AR, AtP,
+# the Reference, P5, every lever, Population growth and the zones under every simulated deficiency (a mid green
+# at the lightness of AR merges with it under deuteranomaly / protanomaly)
+TL = '#13412B'
+TL_MARKER = dict(marker='o', ms=8)             # TL on point plots: a larger circle (no star)
 SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),
             'LOW': dict(color='#9E9E9E', ls='--', lw=LW, label='Low replacement'),
             'HIGH': dict(color='#6E6E6E', ls=':', lw=LW, label='High replacement')}
@@ -112,21 +118,24 @@ MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% b
 LEVER = {'L1': '#DFA538', 'L2': '#F4D168', 'L3': '#AA7C9D', 'L4': '#683861', 'L5': '#E1D2DD',
          'L6': '#4A6192', 'L7': '#ABD3FA', 'L8': '#8D6545', 'L9': '#C7B395'}
 PATHWAY = {'P1': LEVER['L1'], 'P2': LEVER['L4'], 'P3': LEVER['L6'], 'P4': LEVER['L8'], 'P5': '#EB6123'}
-SETTING = {'moderate': dict(ls='-', marker_fill='none', label='Moderate'),
-           'ambitious': dict(ls='--', marker_fill='full', label='Ambitious')}
+# MODEL v2.1.2: Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
+SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
+           'ambitious': dict(ls='--', marker_fill='none', label='Ambitious')}
 
 # demand bands, bottom to top: (colour, hatch), coloured by the lever that targets them; labels in naming.BANDS.
-# Population growth (untargeted) near-black with a deep green-blue hue, solid; the recent replacement surge the L5
-# shade with a fine, light hatch (both replacement bands are targeted by L5)
+# Population growth (untargeted) the deep green-blue hue, solid, clearly lighter since MODEL v2.1.2 (J' 47, was 11);
+# Historical replacement a darker lilac with a slightly bluer hue (MODEL v2.1.2) than the Recent replacement surge,
+# which keeps the L5 face with a fine, light hatch (both replacement bands are targeted by L5)
 UNTARGETED_HATCH = None
-GROWTH = '#102A2E'
+GROWTH = '#586E71'
+REPLACEMENT = '#D0BBDC'
 HATCH_LIGHT = '#FFFFFF'                 # the fine hatch of the surge band: drawn in a light colour on its light face
 BAND = {'growth': (GROWTH, None),
         'smaller_households': (LEVER['L2'], None),
         'extra_space': (LEVER['L1'], None),
         'vacancy': (LEVER['L3'], None),
         'overbuild_2026': (LEVER['L4'], None),
-        'replacement': (LEVER['L5'], None),
+        'replacement': (REPLACEMENT, None),
         'redevelopment': (LEVER['L5'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR)
         'maintenance': ('#AAAAAA', None)}      # neutral (MODEL v2.1.1)
 BAND_ORDER = list(BAND)
@@ -143,8 +152,9 @@ COMPONENT = {'materials_construction': (LEVER['L6'], None),     # A1-A3: P3 dark
 STAGE = {'a1a3': COMPONENT['materials_construction'], 'a4a5': (LEVER['L7'], None), 'soil': COMPONENT['soil'],
          'maintenance': COMPONENT['maintenance']}
 
-# unexplained building of the history (Fig2a, D05c): neutral, hatched (face, hatch, hatch colour); may be negative
-UNEXPLAINED = ('#FAFAFA', '////', '#8C8C8C')
+# unexplained building of the history (Fig2, D05c, K1): a faded reddish face, no hatch (MODEL v2.1.2; face, hatch,
+# hatch colour); may be negative
+UNEXPLAINED = ('#C6A3A4', None, None)
 # the untargeted band (Fig4): the population-growth grey, hatched
 UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)      # solid since MODEL v2.1.1
 

@@ -40,14 +40,17 @@ def groups():
                                          Reference=S.REFERENCE, **{N.TL['TL']: S.TL}),
         'Levers (ED8, ED9, Fig5b TL steps)': {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
-        # the Recent replacement surge is the Historical replacement face with a fine light hatch (BAND_HATCHCOLOR),
-        # so it is told apart by its hatch, not its colour, and is left out of the distance check
-        'Demand bands (Fig2, Fig4; the surge by its hatch)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
-                                                              if b != 'redevelopment'},
-        'P5 and TL against every lever family, growth and the Reference': dict(
+        # MODEL v2.1.2: the Recent replacement surge (L5 face, fine light hatch) and Historical replacement (a darker,
+        # slightly bluer lilac) differ in lightness, hue and hatch; the surge face is checked against every other
+        # band in the next group, the replacement-surge pair is reported in the text
+        'Demand bands (Fig2-Fig5, K5)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER if b != 'redevelopment'},
+        'Recent replacement surge face against the other bands': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
+                                                                   if b != 'replacement'},
+        'P5 and TL against every lever, growth, the Reference, the boundaries and the zones': dict(
             {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
             **{f"P5 {N.PATHWAYS['P5']}": S.PATHWAY['P5'], N.TL['TL']: S.TL, N.BANDS['growth']: S.GROWTH,
-               'Reference': S.REFERENCE}),
+               'Reference': S.REFERENCE, 'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
+            **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
         'Carbon components (Fig3c, diagnostics)': {N.COMPONENTS[c]: S.COMPONENT[c][0] for c in S.COMPONENT},
         'Projection variants and boundaries (ED5, ED10)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                              for k in S.SCENARIO},
@@ -60,6 +63,15 @@ def groups():
                                       **{N.UNEXPLAINED: S.UNEXPLAINED[0]}),
         'Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
+
+
+def focus():
+    """Groups checked only for the pairs that involve the listed colours (the others never share a figure as
+    adjacent fills; their own groups check them)."""
+    import naming as N
+    return {'Recent replacement surge face against the other bands': [N.BANDS['redevelopment']],
+            'P5 and TL against every lever, growth, the Reference, the boundaries and the zones':
+                [f"P5 {N.PATHWAYS['P5']}", N.TL['TL']]}
 
 
 def zone_on_white(z):
@@ -84,12 +96,12 @@ def jab(h, vision):
     return cspace_convert(simulate(h, vision), 'sRGB1', 'CAM02-UCS')
 
 
-def min_distance(cols):
-    """{vision: (distance, label a, label b)} of the closest pair."""
+def min_distance(cols, only=None):
+    """{vision: (distance, label a, label b)} of the closest pair (with only: the pairs involving those labels)."""
     out = {}
+    pairs = [(a, b) for a, b in itertools.combinations(cols, 2) if not only or a in only or b in only]
     for v in VISION:
-        out[v] = min((float(np.linalg.norm(jab(cols[a], v) - jab(cols[b], v))), a, b)
-                     for a, b in itertools.combinations(cols, 2))
+        out[v] = min((float(np.linalg.norm(jab(cols[a], v) - jab(cols[b], v))), a, b) for a, b in pairs)
     return out
 
 
@@ -147,11 +159,16 @@ def main():
          f"rose-lilac {S.LEVER['L3']}, L5 lighter still {S.LEVER['L5']}), P3 Construction blues (L6 dark "
          f"{S.LEVER['L6']}, L7 light {S.LEVER['L7']}), P4 Land browns (L8 dark brown {S.LEVER['L8']}, L9 light tan "
          f"{S.LEVER['L9']}); P1-P4 take the colour of their first (darkest) lever; P5 Combined vermilion "
-         f"({S.PATHWAY['P5']}) and TL cyan ({S.TL}), each outside every family and apart from Population growth.",
+         f"({S.PATHWAY['P5']}) and TL a deep forest green ({S.TL}; MODEL v2.1.2, far darker than the zones; a larger "
+         'circle on point plots), each outside every family and apart from Population growth.',
          '* **Demand bands** are coloured by the lever that targets them (Smaller households L2, Extra space L1, '
-         'Vacancy L3, 2026 overbuild L4, Historical replacement L5; the Recent replacement surge the L5 face with a '
-         'fine light hatch). The only untargeted band, Population growth, is a solid near-black deep green-blue '
-         f"({S.GROWTH}). Maintenance (B2, B4) is neutral grey ({S.BAND['maintenance'][0]}); committed emissions "
+         f"Vacancy L3, 2026 overbuild L4; Historical replacement a darker, slightly bluer lilac ({S.REPLACEMENT}) than "
+         f"the Recent replacement surge, which keeps the L5 face ({S.LEVER['L5']}) with a fine light hatch; both targeted "
+         'by L5). The only untargeted band, Population growth, is a solid deep green-blue, clearly lighter since MODEL '
+         f"v2.1.2 ({S.GROWTH}). Unexplained building of the history: a faded reddish face, no hatch "
+         f"({S.UNEXPLAINED[0]}). Negative band values are drawn as a downward segment from the top of the positive "
+         'stack, so a bar ends at its net total, marked by a short tick. '
+         f"Maintenance (B2, B4) is neutral grey ({S.BAND['maintenance'][0]}); committed emissions "
          f"after 2050 a lighter grey, hatched ({S.COMPONENT['committed'][0]}). Carbon stages: A1-A3 the L6 dark "
          'blue, A4-A5 the L7 light blue, soil carbon loss the L8 brown.',
          f"* **Reference** dark grey ({S.REFERENCE}); Low and High replacement mid greys with dashed and dotted lines.",
@@ -159,12 +176,12 @@ def main():
          f"{S.LW_SEAM:g} pt (no white borders, no anti-aliasing gaps); a hatch is drawn in a thin hatch colour only "
          f"(default {S.HATCH_COLOUR}; the surge band {S.HATCH_LIGHT}). Legend handles keep a thin grey outline.",
          f"* **Boundaries** (every planetary-boundary figure, one implementation in style.py): acquired rights (AR) "
-         f"thin red line ({S.AR}), ability to pay (AtP) thin dark-red dashed line ({S.ATP}); zones below AtP darker "
-         f"green ({S.ZONE['within_both']['color']}, alpha {S.ZONE['within_both']['alpha']}), between AtP and AR light "
+         f"thin red line ({S.AR}), ability to pay (AtP) thin dark-red dotted line ({S.ATP}); zones (MODEL v2.1.2: much lighter) below AtP "
+         f"faded green ({S.ZONE['within_both']['color']}, alpha {S.ZONE['within_both']['alpha']}), between AtP and AR light "
          f"green ({S.ZONE['within_ar']['color']}, alpha {S.ZONE['within_ar']['alpha']}) and above AR light red "
          f"({S.ZONE['exceeded']['color']}, alpha {S.ZONE['exceeded']['alpha']}, \"boundary exceeded\"), on annual, "
          'cumulative and level-of-exceedance axes alike. The two principles are never averaged.',
-         '* **Settings**: Moderate solid line or open marker; Ambitious dashed line or filled marker '
+         '* **Settings**: Moderate solid line or filled marker; Ambitious dashed line or hollow marker (MODEL v2.1.2) '
          '(bars: Moderate bars, Ambitious whiskers).',
          f"* **Typeface**: {S.FONT} only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open "
          'Font License 1.1, registered by style.py, so every machine renders the same glyphs.',
@@ -188,8 +205,9 @@ def main():
           f'"clearly distinguishable" adjacent fills: {THRESHOLD:g} (stated convention).', '',
           '| group | ' + ' | '.join(VISION) + ' | passes |', '|---|' + '---|' * (len(VISION) + 1)]
     fails = []
+    F = focus()
     for gname, g in G.items():
-        d = min_distance(g)
+        d = min_distance(g, F.get(gname))
         ok = all(v[0] >= THRESHOLD for v in d.values())
         if not ok:
             fails.append(gname)
@@ -201,6 +219,11 @@ def main():
               'red under every simulated deficiency), so their order survives without hue; any other group below the '
               'threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so '
               'the reading never depends on colour alone.']
+    rs = min_distance({'Historical replacement': S.REPLACEMENT, 'Recent replacement surge': S.LEVER['L5']})
+    L += ['', 'Historical replacement against the Recent replacement surge face: '
+          + ', '.join(f'{v} {rs[v][0]:.1f}' for v in VISION)
+          + ' (below the threshold by design: told apart by lightness, a slightly different hue and the surge\'s '
+          'fine light hatch, and labelled in every figure).']
     Jz = {k: [lightness(zone_on_white(z))] + [float(jab(zone_on_white(z), v)[0]) for v in VISION[1:]]
           for k, z in S.ZONE.items()}
     order = ('within_both', 'within_ar', 'exceeded')

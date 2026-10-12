@@ -10,8 +10,8 @@ panel functions, labels and saving it reuses, so a key figure can never disagree
   K3  annual emissions of the Reference (Monte Carlo 5-95% band), P1-P5 (Moderate) and TL against the AR and AtP
       boundaries
   K4  the solution space (as Fig6)
-  K5  the sequential waterfall Reference -> P1 -> P2 -> P3 -> P4 (= P5) -> full roll-out by 2030 -> released
-      dwellings re-occupied at a constant share of need -> TL1 ... TL10
+  K5  the sequential waterfall Reference -> P1 -> P2 -> P3 -> P4 (= P5) -> TL timing (adoption by 2030, gradual
+      re-occupation) -> TL1 ... TL10
       (= TL), each step segmented by its exact demand-band deltas, against the cumulative budgets
   K6  the schematic of levers, pathways and the theoretical limit (as Fig1)
 
@@ -22,7 +22,6 @@ Every planetary-boundary figure uses the boundary styling of style.py. Written t
 """
 import os
 import sys
-import textwrap
 
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -57,7 +56,8 @@ def k1():
     fig, a = plt.subplots(figsize=S.figsize('double', 92))
     ba = PP.bands_history_panel(a, src, letter='a')
     handles = P.band_handles([b for b in N.BANDS_IN_SCOPE if b != 'maintenance'])
-    handles.append(Patch(label=N.UNEXPLAINED, **dict(PP.unexplained_style())))
+    handles.append(Patch(label=N.UNEXPLAINED, **dict(PP.unexplained_style(), edgecolor='#555555',
+                                                       linewidth=S.LW_THIN)))
     fig.legend(handles=handles, loc='lower center', ncol=4, bbox_to_anchor=(0.5, -0.01), frameon=False,
                handlelength=1.4, columnspacing=1.2)
     fig.tight_layout(rect=(0, 0.14, 1, 1))
@@ -65,9 +65,10 @@ def k1():
     tot = ba.groupby('band')['floor_area_Mm2'].sum()
     share = tot[N.band_data_label('growth')] / tot.sum()
     return dict(caption=h['caption'] + f" Population growth, the only untargeted band, is {100 * share:.0f}% of the "
-                f"{tot.sum():.1f} million m² built in 2026–2050. History: interval means between censuses; the hatched "
+                f"{tot.sum():.1f} million m² built in 2026–2050. History: interval means between censuses; the faded red "
                 'band is the building that household formation, vacancy and census-measured replacement leave '
-                'unexplained.')
+                'unexplained (it may be negative). ' + P.NEGATIVE_NOTE[0].upper() + P.NEGATIVE_NOTE[1:]
+                + ' (drawn down from the top of the stack; the column ends at its net total, marked by a short tick).')
 
 
 def k2():
@@ -132,72 +133,29 @@ def k3():
 
 
 def k4():
+    """K4: the solution space alone (as Fig6 b; PP.solution_space_panel)."""
     h = PLAN['K4']
-    return dict(caption=PP.fig6(h, L.KEY_FIGURES)['caption'])          # fig6 builds the caption on h['caption']
+    src = source(h['file'])
+    fig = plt.figure(figsize=S.figsize('single', 108))
+    ax = fig.add_axes([0.17, 0.36, 0.78, 0.61])
+    num, handles = PP.solution_space_panel(ax, src)
+    fig.legend(handles=handles + S.boundary_handles() + S.zone_handles(), loc='lower center', ncol=2,
+               bbox_to_anchor=(0.5, 0.0), frameon=False, fontsize=S.FONT_MIN)
+    save(fig, h, src)
+    return dict(caption=h['caption'] + ' ' + PP.solution_space_caption(num))
 
 
 def k5():
+    """K5: the band waterfall (PP.band_waterfall; also Fig5 c)."""
     h = PLAN['K5']
     src = source(h['file'])
-    w = read_csv('pathways/waterfall_sequential.csv')
-    steps = w.drop_duplicates('step').sort_values('step')
-    bands = list(w['band'].drop_duplicates())
-    bid = {N.band_data_label(b): b for b in N.BANDS_IN_SCOPE}
     fig, ax = plt.subplots(figsize=S.figsize('double', 120))
-    bar_ar, bar_atp = float(steps['B_AR_kt'].iloc[0]), float(steps['B_AtP_kt'].iloc[0])
-    S.boundary_hzones(ax, bar_ar, bar_atp, label=False)
-    width = 0.7
-    labels = []
-    totals_at = {'REF', 'P4', N_TL_LAST}
-    xs = []
-    x = 0
-    prev_total = None                                   # set by the Reference step (the first)
-    for _, srow in steps.iterrows():
-        sid = srow['step_id']
-        d = w[w['step'] == srow['step']].set_index('band')
-        if sid == 'REF':
-            P.signed_stack(ax, [x], [(bid[b], float(d.loc[b, 'carbon_kt'])) for b in bands], width=width)
-            labels.append(N.SCENARIOS['REF'])
-        else:
-            cur = float(prev_total)
-            for b in bands:
-                dv = float(d.loc[b, 'delta_carbon_kt'])
-                if dv == 0.0:
-                    continue
-                ax.bar(x, -dv, bottom=cur, width=width, **P.band_style(bid[b]))
-                cur -= dv
-                src.add('steps', f'{sid}: {N.BANDS[bid[b]]}', 'reduction', dv, 'kt CO2e 2026-2050')
-            check(abs(cur - float(srow['total_carbon_kt'])) <= 1e-6 * max(1.0, cur),
-                  f'K5: the band deltas of step {sid} do not reach its total')
-            ax.plot([x - 1 + width / 2, x - width / 2], [prev_total, prev_total], color=S.MUTED, lw=S.LW_THIN)
-            labels.append(textwrap.fill(srow['label'], 26))
-        tot = float(srow['total_carbon_kt'])
-        src.add('totals', srow['label'], 'carbon', tot, 'kt CO2e 2026-2050')
-        if sid in totals_at:
-            ax.text(x, tot, f'{tot:,.0f}\nLoE AR {srow["LoE_AR"]:.2f}', ha='center', va='bottom', fontsize=S.FONT_MIN)
-        prev_total = tot
-        xs.append(x)
-        x += 1
-    ax.axhline(0, color=S.INK, lw=S.LW_THIN)
-    ax.set_ylim(0, float(steps['total_carbon_kt'].max()) * 1.09)
-    ax.set_xticks(xs)
-    ax.set_xticklabels(labels, rotation=90, fontsize=S.FONT_MIN, linespacing=1.0)
-    ax.set_xlim(-0.6, xs[-1] + 0.6)
-    ax.set_ylabel('Embodied carbon 2026–2050 (kt CO₂e)')
-    P.thousands(ax.yaxis)
-    ax.grid(axis='x', visible=False)
+    wf = PP.band_waterfall(ax, src, 'steps')
     P.band_legend(fig, list(N.BANDS_IN_SCOPE), ncol=4, y=-0.005,
                   extra=[Line2D([0], [0], **{k: v for k, v in S.BOUNDARY[b].items()}) for b in ('AR', 'AtP')])
     fig.tight_layout(rect=(0, 0.1, 1, 1))
     save(fig, h, src)
-    r = steps.set_index('step_id')
-    return dict(caption=h['caption'] + f" Reference {r.loc['REF', 'total_carbon_kt']:,.0f} kt (LoE AR "
-                f"{r.loc['REF', 'LoE_AR']:.2f}), P5 {r.loc['P4', 'total_carbon_kt']:,.0f} kt ({r.loc['P4', 'LoE_AR']:.2f}), "
-                f"TL {r.loc[N_TL_LAST, 'total_carbon_kt']:,.0f} kt ({r.loc[N_TL_LAST, 'LoE_AR']:.2f}); cumulative AR "
-                f"budget {bar_ar:,.0f} kt, AtP {bar_atp:,.0f} kt. A segment above its step's start marks a band that grows at "
-                'that step (a lever shifts building between bands). From the re-occupation step on, the 2026-overbuild '
-                'band also carries the re-occupation of released dwellings (zero vacancy, the household-size change and '
-                'the absorbed overbuild) at a constant share of each year\'s need. '
+    return dict(caption=h['caption'] + ' ' + PP.waterfall_caption(wf) + ' '
                 + N.tl_caption(read_json('pathways/theoretical_limit.json')['indicators']['TL']['reoccupation']
                                ['share_of_need']))
 

@@ -6,7 +6,7 @@
    "title": "",
    "xlabel": "",
    "ylabel": "Floor area (Mm\u00b2 per year)",
-   "year_min": 1994.0,
+   "year_min": 1992.464,
    "year_max": 2050.0
   }
  ],
@@ -28,8 +28,6 @@
   "$\\mathdefault{5}$",
   "$\\mathdefault{6}$",
   "$\\mathdefault{7}$",
-  "$\\mathdefault{\u22121}$",
-  "$\\mathdefault{\u22122}$",
   "2026 overbuild",
   "Extra space",
   "Floor area (Mm\u00b2 per year)",
@@ -47,5 +45,11 @@
  "maintenance_where": [],
  "boundary_drawn": false,
  "boundary_zones": false,
- "white_segment_edges": 0
+ "white_segment_edges": 0,
+ "atp_linestyles": [],
+ "negative_band_segments": 6,
+ "net_total_ticks": 6,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": []
 }

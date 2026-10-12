@@ -323,7 +323,13 @@ def _figures():
           'The paper / Extended Data / key figures / diagnostics layout of MODEL v2.1.0 (docs/FIGURE_PLAN_v2.md section 5, '
          'amended by the v2.1.0 entries of figure_plan.py). '
           'Removing a figure never removes its data.', '']
-    L += table(['model-v1.1.0', 'MODEL v2.0.0'], [[code(k), v] for k, v in FP.V1_MAP.items()])
+    L += table(['model-v1.1.0', 'MODEL v2.1.2 location'], [[code(k), v] for k, v in FP.V1_MAP.items()])
+    L += ['', '### MODEL v2.1.2: paper figures (old file -> new figure)', '',
+          'Figures only; no number changes (outputs/data/ byte-identical to model-v2.1.1). The paper set is Fig1 '
+          'schematic, Fig2 floor area by demand band, Fig3 Reference carbon (band, stage, material), Fig4 the Reference '
+          'against the boundaries (with the committed emissions), Fig5 the pathways (band, stage, band waterfall), Fig6 '
+          'annual emissions and the solution space.', '']
+    L += table(['model-v2.1.1 paper figure', 'MODEL v2.1.2'], [[code(k), v] for k, v in FP.PAPER_SUPERSEDED.items()])
     return L
 
 
@@ -458,6 +464,8 @@ def figure_plan():
         L += ['']
     L += ['## Superseded diagnostics of model-v1.1.0 (data kept in outputs/data/)', '']
     L += table(['model-v1.1.0 figure', 'MODEL v2.0.0'], [[code(k), v] for k, v in FP.SUPERSEDED.items()])
+    L += ['', '## Paper figures superseded in MODEL v2.1.2 (old file -> new location)', '']
+    L += table(['MODEL v2.1.1 paper figure', 'MODEL v2.1.2'], [[code(k), v] for k, v in FP.PAPER_SUPERSEDED.items()])
     L += ['', '## Not carried into the release (v3.1)', '']
     L += table(['v3.1 figure', 'reason'], [[code(k), v] for k, v in FP.REMOVED.items()])
     L += ['', '## Decisions of model-v1.0.0 (historical; figure ids of that release)', '',

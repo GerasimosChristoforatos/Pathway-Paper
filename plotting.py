@@ -97,36 +97,72 @@ def band_style(bid):
     return S.fill(colour, hatch, S.BAND_HATCHCOLOR.get(key))
 
 
-def signed_stack(ax, x, parts, width, **kw):
-    """Bars: stack positive parts upwards and negative parts downwards from zero.
-    parts: [(band id, values)]. Returns the tops (up, down)."""
+NEG_GID = 'negative_band'           # a negative band segment (figure audit)
+NET_GID = 'net_total'               # the tick at a bar's net total (figure audit)
+NEGATIVE_NOTE = 'negative: dwellings released by lower vacancy replace new building'
+
+
+def negative_style(st):
+    """A negative band segment, drawn over the top of the positive stack: the band colour faded, with a light
+    hatch (unless the band has its own hatch), so the solid part of the bar ends at the net total."""
+    out = dict(st, alpha=0.45 * float(st.get('alpha', 1.0) or 1.0))
+    if not out.get('hatch'):
+        out.update(hatch='////', hatchcolor='#FFFFFF')
+    return out
+
+
+def signed_stack_styled(ax, x, parts, width, tick=True):
+    """The net-total convention (see signed_stack) with explicit patch styles: parts [(style dict, values)].
+    Returns (positive sum, negative sum) per x."""
     x = np.atleast_1d(np.asarray(x, float))
     up, dn = np.zeros(len(x)), np.zeros(len(x))
-    for bid, v in parts:
-        v = np.atleast_1d(np.asarray(v, float))
-        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
-        st = dict(band_style(bid), **kw)
-        ax.bar(x, pos, bottom=up, width=width, **st)
-        ax.bar(x, neg, bottom=dn, width=width, **st)
-        up, dn = up + pos, dn + neg
+    for st, v in parts:
+        pos = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), 0, None)
+        ax.bar(x, pos, bottom=up, width=width, gid='band_segment', **st)
+        up = up + pos
+    top = up.copy()
+    for st, v in parts:
+        neg = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), None, 0)
+        if np.any(neg < 0):
+            ax.bar(x, -neg, bottom=top + neg, width=width, gid=NEG_GID, **negative_style(st))
+        top, dn = top + neg, dn + neg
+    if tick:
+        for xi, t, d in zip(x, top, dn):
+            if d < 0:
+                ax.plot([xi - 0.32 * width, xi + 0.32 * width], [t, t], color=S.INK, lw=S.LW_BOLD,
+                        solid_capstyle='butt', zorder=5, gid=NET_GID)
+    if np.any(top < 0):
+        ax.axhline(0, color=S.INK, lw=S.LW_THIN)
     return up, dn
 
 
+def signed_stack(ax, x, parts, width, tick=True, **kw):
+    """Bars by demand band, net-total convention (MODEL v2.1.2): positive parts are stacked upwards from zero;
+    each negative part is drawn as a downward segment from the top of the stack so far, so the bar ends at its
+    net total, marked by a short tick (where a bar has a negative part). parts: [(band id, values)]. Returns
+    (sum of the positive parts, sum of the negative parts); their sum is the net total."""
+    return signed_stack_styled(ax, x, [(dict(band_style(bid), **kw), v) for bid, v in parts], width, tick)
+
+
 def signed_areas(ax, x, parts, **kw):
-    """Areas: the same signed stack as signed_stack, as filled areas over a year axis.
-    parts: [(band id, values)]. No total line: the stack is the total. Returns (up, down)."""
+    """Areas by demand band over a year axis, net-total convention (as signed_stack): positive parts stacked from
+    zero, each negative part a downward band from the top of the stack so far, so the stack ends at the net
+    total. parts: [(band id, values)]. No total line: the stack is the total. Returns (positive sum, negative
+    sum)."""
     x = np.asarray(x, float)
     up, dn = np.zeros(len(x)), np.zeros(len(x))
     for bid, v in parts:
-        v = np.asarray(v, float)
-        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
-        st = dict(band_style(bid), **kw)
+        pos = np.clip(np.asarray(v, float), 0, None)
         if np.any(pos > 0):
-            ax.fill_between(x, up, up + pos, **st)
+            ax.fill_between(x, up, up + pos, **dict(band_style(bid), **kw))
+        up = up + pos
+    top = up.copy()
+    for bid, v in parts:
+        neg = np.clip(np.asarray(v, float), None, 0)
         if np.any(neg < 0):
-            ax.fill_between(x, dn + neg, dn, **st)
-        up, dn = up + pos, dn + neg
-    if np.any(dn < 0):
+            ax.fill_between(x, top + neg, top, gid=NEG_GID, **negative_style(dict(band_style(bid), **kw)))
+        top, dn = top + neg, dn + neg
+    if np.any(top < 0):
         ax.axhline(0, color=S.INK, lw=S.LW_THIN)
     else:
         for c in ax.collections:

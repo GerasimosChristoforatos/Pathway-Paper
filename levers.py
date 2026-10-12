@@ -748,7 +748,7 @@ def register(p):
 # adoption path; 2026 observed and untouched). TLn is the limit of Ln; TL10 (minimum space per person) has no
 # lever counterpart. Every TL item is at least as strong as the Ambitious setting of its lever (tl_strength).
 TL_REOCCUPATION = 'reoccupation'          # MODEL v2.1.1: separate line of the TL attribution
-TL_BASE_LABEL = 'P5-moderate-from2027-reoccupied'   # the TL base: P5 Moderate from 2027, even reoccupation
+TL_BASE_LABEL = 'P5-moderate-from2027-reoccupied'   # the TL base: P5 Moderate from 2027, reoccupation
 TL_COMPONENTS = tuple(f'TL{k}' for k in range(1, 11))
 TL_NAMES = {k: N.TL[k] for k in TL_COMPONENTS}
 TL_BASE_SETTING = 'moderate'
@@ -756,7 +756,8 @@ TL_FROM2027 = 'from2027'           # adoption: full strength from 2027 (TL and i
 TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at '
                  'full strength from 1 January 2027, combining best observed attributes of different buildings and '
                  'places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > '
-                 'realisable).')
+                 'realisable); a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.')
+TL_REOCCUPATION_NOTE = ("In 2027 households re-form at the 1991 household size, so almost no new households form that year; released dwellings are brought back into use in proportion to each year's need; 2026 observed.")
 TL_BAU_NOTE = ('The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 '
                'e^(-0.01 (t - 2025)) until TL7 sets A4-A5 to zero).')
 TL5_SURGE_REMOVED = 1.0            # TL5: the recent replacement surge removed entirely (as the Low variant)
@@ -834,7 +835,7 @@ def tl_strength(params, pT, years):
 def apply_tl(base, params, pT, comps, E_nojoin=None):
     """Inputs of a TL-family run: P5 Moderate with the TL items in `comps` (subset of TL1..TL10), every lever and
     item at full strength from 2027 (w = 1 in 2027-2050). TLn overrides Ln. Returns (inputs, join_absorbed,
-    join_redev, info); the banking rule is applied by pathways.run_tl."""
+    join_redev, info); the reoccupation of released dwellings is applied by pathways.run_tl."""
     unknown = set(comps) - set(TL_COMPONENTS)
     if unknown:
         raise ValueError(f'Unknown TL component(s) {unknown}.')
@@ -897,7 +898,7 @@ def apply_tl(base, params, pT, comps, E_nojoin=None):
 
 
 def tl_label(comps, components=TL_COMPONENTS):
-    """'TL' for every component, TL_BASE_LABEL for none (P5 Moderate from 2027 with even reoccupation), else e.g.
+    """'TL' for every component, TL_BASE_LABEL for none (P5 Moderate from 2027 with reoccupation), else e.g.
     'TL[TL1+TL3]'."""
     c = [x for x in components if x in comps]
     return 'TL' if len(c) == len(components) else (TL_BASE_LABEL if not c else f"TL[{'+'.join(c)}]")
@@ -917,11 +918,11 @@ def tl_table(t):
         mk('TL1', 'L1 with f = 1: new-dwelling size = occupied area S x OLF', 'f = 1', 'DECISION (author): limit of L1',
            'DECISION', BAND_TARGET['L1']),
         mk('TL2', 'S = the highest household size in the model history from 2027; households = population / S; '
-                  'household decline releases dwellings (banking rule)',
+                  'household decline releases dwellings, reoccupied in proportion to each year\'s need',
            f"S = {r['TL2']['S']:.4f} ({r['TL2']['year']}; history {r['TL2']['history_first_year']}-"
            f"{r['TL2']['history_last_year']})", 'DATA: Stats NZ population and household estimates (projection history)',
            'DATA', BAND_TARGET['L2']),
-        mk('TL3', 'v = 0 from 2027; banking rule: built_t = max(0, raw_t - bank_(t-1)), unused release carried forward',
+        mk('TL3', 'v = 0 from 2027; the released dwellings reoccupied in proportion to need: built_t = gross_t (1 - R/G)',
            'v = 0', 'DECISION (author): limit of L3', 'DECISION', BAND_TARGET['L3']),
         mk('TL4', 'the 2026 overbuild absorbed in full in 2027 (absorption 1)', 'a = 1', 'DECISION (author): limit of L4',
            'DECISION', BAND_TARGET['L4']),

@@ -5,7 +5,8 @@ Every saved Monte Carlo draw of the Reference (outputs/data/montecarlo/draws_REF
 hypercube draws of population rank, dwelling-size multiplier, completion rate and the case-study
 carbon-factor bootstrap) is re-run through MonteCarlo.project (unchanged outputs; full=True exposes
 the draw's engine inputs) and then through the pathway layer, for P5 Combined (Moderate, full
-roll-out by 2035) and TL (P5 Moderate with TL1-TL10 at full strength from 2027, banking rule).
+roll-out by 2035) and TL (P5 Moderate with TL1-TL10 at full strength from 2027; released dwellings brought back
+into use in proportion to each year's need, 2027-2050).
 Population and household size share one draw: the household-size path is interpolated between the
 Stats NZ Low, Medium and High variants at the draw's population rank (MonteCarlo.project).
 
@@ -171,8 +172,8 @@ def check_central(su, ctx, params, pT, p5, tl):
     e5, et = r5['E'], rt['E']
     worst = {}
     for name, (a, b) in (('P5', (e5, p5)), ('TL', (et, tl))):
-        # years with building: relative difference of every quantity; zero-building years (TL banking rule,
-        # floor area <= pathways.T_ZERO_TOL_M2 in the deterministic run): both runs must be zero by the model's
+        # years with building: relative difference of every quantity; zero-building years (none under proportional
+        # reoccupation; kept as a guard: floor area <= pathways.T_ZERO_TOL_M2 in the deterministic run): both zero by the model's
         # own definition (floor area and dwellings below its zero tolerances; carbon there is floating-point
         # noise of order 1e-8 kg and is compared through the 2026-2050 total); 2026-2050 totals relative.
         built = np.asarray(b['total'], float)[WINDOW] > PW.T_ZERO_TOL_M2
@@ -337,13 +338,14 @@ def main():
         c_ref = float(o['carbon'][WINDOW].sum()) / M6
         if abs(c_ref / b['carbon_kt_2026_2050'] - 1) > 1e-9:
             raise SystemExit(f'pathways_mc: draw {j}: the Reference carbon differs from the AESA Monte Carlo.')
-        tl_built = np.asarray(PW.engine.requirement(rt['E']), float)[WINDOW]
+        tl_built = np.asarray(PW.engine.requirement(rt['E']), float)[2:]           # 2027-2050 (index 0 is 2025)
         row = dict(draw=j, **{N.identifier(k): float(X[j, i]) for i, k in enumerate(MC.PARAMS)},
                    carbon_index=carbon_index(o, I_c, gfa_c),
                    B_AR_kt_2026_2050=float(b['B_AR_kt_2026_2050']), B_AtP_kt_2026_2050=float(b['B_AtP_kt_2026_2050']),
                    L2_floor_binds=bool(np.any(S_mod[late] < S_d[late])),
                    TL2_floor_binds=bool(np.any(S_tl < S_d[late])),
-                   TL6_capped=';'.join(capped), TL_zero_building_years=int(np.sum(tl_built <= PW.T_ZERO_TOL_DWELLINGS)))
+                   TL6_capped=';'.join(capped), TL_dwellings_built_min_2027_2050=float(tl_built.min()),
+                   TL_reoccupied_share_of_need=float(rt['info']['reoccupation']['share']))
         for r, E in (('REF', o), ('P5', r5['E']), ('TL', rt['E'])):
             carbon = np.asarray(E['carbon'], float)
             annual[r][j] = carbon

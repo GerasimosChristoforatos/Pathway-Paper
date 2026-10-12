@@ -152,6 +152,7 @@ def vacancy_wording(v0, vmax, vmin, ymin, v2050):
 # wave" and "vacancy allowance" of the release band definitions, and the typology words, which stay
 # in the descriptions of model inputs (case studies, consents; by-typology results are removed).
 OLD_TERMS = [
+    (r'(?i)banking rule|zero-building year', 'proportional reoccupation (MODEL v2.1.1)'),
     (r'\bS3(?:-(?:10|5|15))?(?:-noUC)?\b', 'Reference (REF, REF_HL5, REF_HL15)'),
     (r'(?<!Eq\. )(?<!Table )(?<!SI )(?<!Fig\. )\bS[12](?:-noUC)?\b', 'Low / High replacement (LOW, HIGH)'),
     (r'noUC', ', no census under-construction correction'),

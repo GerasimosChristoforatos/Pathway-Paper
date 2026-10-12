@@ -91,8 +91,10 @@ def band_label(bid):
 
 
 def band_style(bid):
-    colour, hatch = S.BAND[bid if bid in S.BAND else 'replacement']
-    return dict(facecolor=colour, hatch=hatch, edgecolor='white', linewidth=S.LW_THIN)
+    """Seamless style of one demand band (style.fill: edge = face, hatch in its own colour)."""
+    key = bid if bid in S.BAND else 'replacement'
+    colour, hatch = S.BAND[key]
+    return S.fill(colour, hatch, S.BAND_HATCHCOLOR.get(key))
 
 
 def signed_stack(ax, x, parts, width, **kw):
@@ -118,8 +120,7 @@ def signed_areas(ax, x, parts, **kw):
     for bid, v in parts:
         v = np.asarray(v, float)
         pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
-        st = dict(band_style(bid), lw=0, **kw)
-        st.pop('linewidth')
+        st = dict(band_style(bid), **kw)
         if np.any(pos > 0):
             ax.fill_between(x, up, up + pos, **st)
         if np.any(neg < 0):
@@ -134,7 +135,8 @@ def signed_areas(ax, x, parts, **kw):
 
 
 def band_handles(bids):
-    return [Patch(label=band_label(b), **dict(band_style(b), edgecolor='#555555')) for b in bids]
+    # legend keys keep a thin dark outline (light swatches on white); the plotted segments have none
+    return [Patch(label=band_label(b), **dict(band_style(b), edgecolor='#555555', linewidth=S.LW_THIN)) for b in bids]
 
 
 def band_legend(fig, bids, loc='lower center', ncol=4, y=-0.02, extra=()):
@@ -160,9 +162,8 @@ def zero_floor(ax, *series):
 def material_patch(code, colour, alpha=1.0):
     """Patch style of one material layer (style.MATERIAL): soil faded and hatched."""
     if code == 'SOIL':
-        return dict(facecolor=colour, alpha=alpha * S.SOIL['alpha'], hatch=S.SOIL['hatch'],
-                    edgecolor=S.SOIL['edgecolor'], linewidth=S.LW_THIN)
-    return dict(facecolor=colour, alpha=alpha, **S.EDGE)
+        return S.fill(colour, S.SOIL['hatch'], S.SOIL['hatchcolor'], alpha * S.SOIL['alpha'])
+    return S.fill(colour, alpha=alpha)
 
 
 def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):

@@ -92,7 +92,7 @@ S_f = DF['PopTotal_50th'].values / B['households_forecast']['50th']
 
 # components of the stock identity: (label, colour, hatch), labels in the release vocabulary
 RV = ('#BDBDBD', 'xxxx')                       # retirement villages: out of scope, grey cross-hatch
-UNEXPLAINED = ('#F2F2F2', '////', '#8C8C8C')   # unexplained building: neutral, hatched (face, hatch, hatch colour)
+UNEXPLAINED = S.UNEXPLAINED                    # unexplained building: neutral, hatched (face, hatch, hatch colour)
 COMP = {'new_households': ('New households', '#9E9E9E', None),
         'vacancy': ('Vacancy (allowance and change)',) + S.BAND['vacancy'],
         'replacement': (N.BANDS['replacement'],) + S.BAND['replacement'],
@@ -102,7 +102,7 @@ COMP = {'new_households': ('New households', '#9E9E9E', None),
         # history only (D05c): census-measured net replacement, and what the components leave unexplained
         'net_replacement_census': ('Net replacement, history (census dwelling counts; parts not separable)',) + S.BAND['replacement'],
         'unexplained_building': ('Unexplained building', UNEXPLAINED[0], UNEXPLAINED[1])}
-EDGE = {'unexplained_building': UNEXPLAINED[2]}    # hatch drawn in grey (neutral band); white elsewhere
+EDGE = {'unexplained_building': UNEXPLAINED[2], **S.BAND_HATCHCOLOR}    # hatch colours (style.fill)
 
 # History of the stock identity on ONE vacancy definition throughout (the pooled
 # 2018/2023 private empty share applied to every census, validation.consistent_share):
@@ -129,8 +129,7 @@ def bars(ax, years, parts, projected=False):
         _, colour, hatch = COMP[cid]
         v = np.asarray(vals, dtype=float)
         pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
-        kw = dict(color=colour, hatch=hatch, width=0.82, alpha=0.55 if projected else 1.0, edgecolor='white',
-                  linewidth=S.LW_THIN)
+        kw = dict(S.fill(colour, hatch, EDGE.get(cid), 0.55 if projected else 1.0), width=0.82)
         ax.bar(years, pos, bottom=up, **kw)
         ax.bar(years, neg, bottom=dn, **kw)
         up += pos
@@ -147,8 +146,7 @@ def interval_bars(ax, groups, scale=1.0):
         for cid, m in parts:
             _, colour, hatch = COMP[cid]
             m = m / scale
-            kw = dict(width=y1 - y0, align='edge', color=colour, hatch=hatch, alpha=0.4 if faint else 1.0,
-                      edgecolor=EDGE.get(cid, 'white'), linewidth=S.LW_THIN)
+            kw = dict(S.fill(colour, hatch, EDGE.get(cid), 0.4 if faint else 1.0), width=y1 - y0, align='edge')
             if m >= 0:
                 ax.bar(y0 + 0.5, m, bottom=up, **kw)
                 up += m
@@ -159,8 +157,8 @@ def interval_bars(ax, groups, scale=1.0):
 
 
 def comp_handles(ids):
-    return [Patch(facecolor=COMP[c][1], hatch=COMP[c][2], edgecolor=EDGE.get(c, 'white'), label=COMP[c][0])
-            for c in ids]
+    return [Patch(label=COMP[c][0], **dict(S.fill(COMP[c][1], COMP[c][2], EDGE.get(c)), edgecolor='#555555',
+                                           linewidth=S.LW_THIN)) for c in ids]
 
 
 def finish(fig, fid, note=None):

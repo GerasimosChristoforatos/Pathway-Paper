@@ -85,8 +85,8 @@ def tornado(ax, t, value, central, groups, src, panel, unit, fmt, wrap=46):
             # the bar farther from the central value first, so both ends stay visible when they lie on one side
             for _, r in sorted(rr.iterrows(), key=lambda kv: -abs(float(kv[1][value]) - central)):
                 v = float(r[value])
-                ax.barh(y, v - central, left=central, height=0.62, color=cols[g], edgecolor='white', lw=S.LW_THIN,
-                        alpha=0.55 if r['side'] == 'low' else 1.0)
+                ax.barh(y, v - central, left=central, height=0.62,
+                        **S.fill(cols[g], alpha=0.55 if r['side'] == 'low' else 1.0))
                 if not same_side:
                     ax.text(v, y, f' {fmt(v)} ', va='center', ha='left' if v >= central else 'right',
                             fontsize=S.FONT_MIN)
@@ -471,15 +471,17 @@ def ed8():
     ind = tl['indicators']['TL']
     fig, axes = plt.subplots(2, 2, figsize=S.figsize('double', 140))
     a = axes[0, 0]
-    players = [f'TL{k}' for k in range(1, 11)] + ['from2027']
-    lab = {p: (f'{p} {N.TL[p]}' if p != 'from2027' else N.ADOPTION['from2027'].capitalize()) for p in players}
+    sep = ('from2027', 'reoccupation')                     # the two separate lines (not Shapley players)
+    players = [f'TL{k}' for k in range(1, 11)] + list(sep)
+    lab = {p: (f'{p} {N.TL[p]}' if p not in sep else N.ADOPTION['from2027'].capitalize() if p == 'from2027'
+               else 'Released dwellings reoccupied in proportion to need') for p in players}
     car = st[st['metric'] == 'carbon_kt'].set_index('player')['reduction']
     loe = st[st['metric'] == 'LoE_AR'].set_index('player')['reduction']
-    share = st[st['metric'] == 'carbon_kt'].set_index('player')['share_of_P5_moderate_from2027_minus_TL']
+    share = st[st['metric'] == 'carbon_kt'].set_index('player')['share_of_TL_base_minus_TL']
     for i, p in enumerate(players):
-        a.barh(i, loe[p], color=S.LEVER[N.TL_LIMIT_OF[p]] if p != 'from2027' and N.TL_LIMIT_OF[p] else
-               (S.PATHWAY['P5'] if p == 'from2027' else S.TL), height=0.66, edgecolor='white')
-        txt = f"{loe[p]:.2f} ({car[p]:,.0f} kt" + (f', {100 * share[p]:.0f}%)' if p != 'from2027' else ')')
+        a.barh(i, loe[p], color=S.LEVER[N.TL_LIMIT_OF[p]] if p not in sep and N.TL_LIMIT_OF[p] else
+               (S.PATHWAY['P5'] if p in sep else S.TL), height=0.66, edgecolor='#555555', lw=S.LW_SEAM)
+        txt = f"{loe[p]:+.2f} ({car[p]:,.0f} kt" + (f', {100 * share[p]:.0f}%)' if p not in sep else ')')
         a.text(loe[p], i, ' ' + txt, va='center', fontsize=S.FONT_MIN)
         src.add('a', lab[p], 'LoE AR', loe[p], 'cumulative LoE AR')
         src.add('a', lab[p], 'carbon', car[p], 'kt CO2e 2026-2050')
@@ -512,7 +514,7 @@ def ed8():
     check(np.allclose(dw_tl, tla.loc[yrs, 'dwellings_built'].values, rtol=1e-9, atol=1e-6),
           'ED8: TL dwellings built differ between the indicators and annual.csv')
     c.bar(yrs, ref.loc[yrs, 'dwellings_built'] / 1e3, width=0.8, color=S.REFERENCE, alpha=0.35, label='Reference')
-    c.bar(yrs, np.asarray(dw_tl) / 1e3, width=0.5, color=S.TL, label='TL (banking rule)')
+    c.bar(yrs, np.asarray(dw_tl) / 1e3, width=0.5, color=S.TL, label='TL (proportional reoccupation)')
     src.add('c', 'Reference: dwellings built', yrs, ref.loc[yrs, 'dwellings_built'].values, 'dwellings per year')
     src.add('c', 'TL: dwellings built', yrs, dw_tl, 'dwellings per year')
     c.set_xlim(2025.4, 2050.6)
@@ -536,19 +538,18 @@ def ed8():
     P.panel(d, 'd', 'Soil carbon loss per m² built (TL8, TL9)')
     fig.tight_layout()
     save(fig, fid, src)
-    z = ind['zero_building_years']
-    rel = ind['released_dwellings']
-    cap = (h['caption'] + ' (a) Shapley values (exact, 1,024 subsets) of TL1–TL10 relative to P5 Combined (Moderate) at '
-           'full strength from 2027, in cumulative LoE AR (carbon and share of that run − TL in brackets); they add up '
-           'exactly to that difference. Bars in the colour of the lever each item is the limit of (TL10 has no lever '
-           'counterpart). The effect of full strength from 2027 (P5 on the adoption path → from 2027) is a separate '
-           'line, not a Shapley player. (b) New-dwelling size and floor area per person (TL10 with TL2: '
-           f"{ind['m2_per_person_new_dwellings']['2030']:.2f} m² per person). (c) Dwellings built: TL builds nothing in "
-           f"{min(z)}–{max(z)} (banking rule: released dwellings meet the requirement: {rel['vacancy_change']:,.0f} from "
-           f"the vacancy (TL3), {rel['household_decline']:,.0f} from the larger households (TL2) and "
-           f"{rel['overbuild_2026_absorbed']:,.0f} from the 2026 overbuild (TL4)). (d) Soil carbon "
-           'loss per m² of floor area built (soil carbon loss / floor area, annual data; not defined in years with no '
-           'building).')
+    rel, ro = ind['released_dwellings'], ind['reoccupation']
+    cap = (h['caption'] + ' (a) Shapley values (exact, 1,024 subsets) of TL1–TL10 relative to the TL base (P5 Combined, '
+           'Moderate, at full strength from 2027 with its released dwellings reoccupied in proportion to need), in '
+           'cumulative LoE AR (carbon and share of base − TL in brackets); they add up exactly to that difference. Bars '
+           'in the colour of the lever each item is the limit of (TL10 has no lever counterpart). Two separate lines, '
+           'not Shapley players: full strength from 2027 (P5 on the adoption path → from 2027) and the reoccupation '
+           'of P5\'s own released dwellings (→ the base). (b) New-dwelling size and floor area per person (TL10 with '
+           f"TL2: {ind['m2_per_person_new_dwellings']['2030']:.2f} m² per person). (c) Dwellings built. "
+           + FP.TL_REOCCUPATION_NOTE + f" Released: {rel['vacancy_change']:,.0f} dwellings from the vacancy (TL3), "
+           f"{rel['household_decline']:,.0f} from the larger households (TL2) and {rel['overbuild_2026_absorbed']:,.0f} "
+           f"from the 2026 overbuild (TL4), R = {ro['R']:,.0f}, {100 * ro['share_of_need']:.1f}% of the 2027–2050 need. "
+           '(d) Soil carbon loss per m² of floor area built (soil carbon loss / floor area, annual data).')
     return dict(caption=cap)
 
 
@@ -614,7 +615,9 @@ def ed10():
                 ax.bar(i + (j - 1) * w, v, width=w * 0.92, color=PP.colour('TL' if run == 'TL' else
                                                                           (REF if run == 'Reference' else run)),
                        alpha={'LOW': 0.45, 'REF': 1.0, 'HIGH': 0.75}[sc],
-                       hatch={'LOW': None, 'REF': None, 'HIGH': '///'}[sc], edgecolor='white', lw=S.LW_THIN)
+                       hatch={'LOW': None, 'REF': None, 'HIGH': '///'}[sc], edgecolor=PP.colour('TL' if run == 'TL' else
+                                                                                     (REF if run == 'Reference' else run)),
+                       hatchcolor='white', lw=S.LW_SEAM)
                 ax.text(i + (j - 1) * w, v, fmt(v), ha='center', va='bottom', fontsize=S.FONT_MIN, rotation=90)
                 src.add(letter, f'{lab}, {st["label"]}', sc, v, unit)
         ax.set_xticks(range(len(runs)))
@@ -630,7 +633,7 @@ def ed10():
     S.boundary_hzones(b, 1.0, 1.0 / PP.budget_ratio(rr), label=False)
     fig.legend(handles=[Patch(facecolor=S.MUTED, alpha=0.45, label=N.SCENARIOS['LOW'] + ' (left)'),
                         Patch(facecolor=S.MUTED, label=N.SCENARIOS['REF'] + ' replacement (middle)'),
-                        Patch(facecolor=S.MUTED, alpha=0.75, hatch='///', edgecolor='white',
+                        Patch(facecolor=S.MUTED, alpha=0.75, hatch='///', edgecolor=S.MUTED, hatchcolor='white',
                               label=N.SCENARIOS['HIGH'] + ' (right)'),
                         *S.boundary_handles()],
                loc='lower center', ncol=5, bbox_to_anchor=(0.5, -0.005), frameon=False)
@@ -709,7 +712,7 @@ def ed12():
                                 (axes[1], 'prcc', 'b', 'PRCC of the cumulative LoE AR')):
         for k, run, lab in MC_RUNS:
             d = imp[(imp['run'] == k) & (imp['output'] == 'LoE_AR')].set_index('input').loc[list(MC_INPUTS)]
-            ax.barh(y + off[k], d[m], height=0.24, color=PP.colour(run), edgecolor='white', lw=S.LW_THIN,
+            ax.barh(y + off[k], d[m], height=0.24, **S.fill(PP.colour(run)),
                     label=lab + (f" (R² {d['src_r2'].iloc[0]:.3f})" if m == 'src' else ''))
             ax.errorbar(d[m], y + off[k], xerr=[d[m] - d[f'{m}_lo'], d[f'{m}_hi'] - d[m]], fmt='none',
                         ecolor=S.INK, lw=S.LW_THIN, capsize=1.5)
@@ -729,7 +732,7 @@ def ed12():
         v = [so.loc[sob_inputs[i], col] for i in MC_INPUTS]
         lo = [so.loc[sob_inputs[i], f'{col}_lo'] for i in MC_INPUTS]
         hi = [so.loc[sob_inputs[i], f'{col}_hi'] for i in MC_INPUTS]
-        c.barh(y + off_, v, height=0.28, color=S.REFERENCE, alpha=0.5 if col == 'S1' else 1.0, edgecolor='white',
+        c.barh(y + off_, v, height=0.28, **S.fill(S.REFERENCE, alpha=0.5 if col == 'S1' else 1.0),
                label=lab)
         c.errorbar(v, y + off_, xerr=[np.subtract(v, lo), np.subtract(hi, v)], fmt='none', ecolor=S.INK,
                    lw=S.LW_THIN, capsize=1.5)

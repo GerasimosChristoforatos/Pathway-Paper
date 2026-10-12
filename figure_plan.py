@@ -1,4 +1,4 @@
-"""The figure plan of MODEL v2.1.0 (docs/FIGURE_PLAN_v2.md, amended by the v2.1.0 entries): one entry per figure of the release,
+"""The figure plan of MODEL v2.1.1 (docs/FIGURE_PLAN_v2.md, amended by the v2.1.0 and v2.1.1 entries): one entry per figure of the release,
 with its title, panels, data source, draft caption and the earlier figures it replaces.
 
     outputs/paper/           Fig1-Fig6 (PAPER) and Tables 1-2, PAPER.md            paper.py
@@ -17,7 +17,10 @@ the figure is drawn, never typed by hand.
 """
 PAPER_GROUP = 'paper'
 ED_GROUP = 'extended_data'
-TL_NOTE = 'TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway.'
+TL_NOTE = ('TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; '
+           'a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.')
+# MODEL v2.1.1: the reoccupation rule of TL, in every TL caption
+TL_REOCCUPATION_NOTE = ("In 2027 households re-form at the 1991 household size, so almost no new households form that year; released dwellings are brought back into use in proportion to each year's need; 2026 observed.")
 
 # ---------------------------------------------------------------------------
 # Paper figures (outputs/paper/): PNG 300 dpi + vector PDF + source-data CSV
@@ -68,8 +71,9 @@ PAPER = [
     dict(id='Fig5', file='Fig5_boundaries_attribution', width='double',
          title='Emissions against the boundaries, and what closes the gap',
          panels='(a) annual emissions of the Reference, P5 and TL against the annual AR and AtP boundaries (log axis), '
-                'Monte Carlo 5-95% bands, TL zero-building years shaded; (b) Shapley waterfall of the cumulative LoE '
-                'AR (AtP on the right axis): Reference -> P1-P4 -> P5 -> full strength from 2027 -> TL1-TL10 -> TL, '
+                'Monte Carlo 5-95% bands; (b) Shapley waterfall of the cumulative LoE '
+                'AR (AtP on the right axis): Reference -> P1-P4 -> P5 -> full strength from 2027 -> reoccupation in proportion to '
+                'need (the TL base) -> TL1-TL10 -> TL, '
                 'budgets as lines with the boundary zones, Monte Carlo whiskers, committed after 2050 as hatched companion bars, TL residual '
                 'in dwellings and people',
          source='data/pathways/annual.csv, data/pathways/montecarlo_annual.csv, data/aesa/montecarlo_annual.csv, '
@@ -179,7 +183,7 @@ KEY_FIGURES = [
     dict(id='K3', file='K3_annual_emissions', width='double', title='Annual emissions against the boundaries',
          source='data/pathways/annual.csv, data/aesa/montecarlo_annual.csv, data/pathways/theoretical_limit.json',
          caption='Annual embodied carbon of the Reference (Monte Carlo 5-95% band), P1-P5 (Moderate) and TL against '
-                 'the AR and AtP boundaries; TL zero-building years shaded. ' + TL_NOTE),
+                 'the AR and AtP boundaries. ' + TL_NOTE),
     dict(id='K4', file='K4_solution_space', width='single', title='Solution space',
          source='data/pathways/solution_space.csv, data/pathways/backcast.json, data/pathways/theoretical_limit.json',
          caption='Cumulative LoE AR over uniform cuts of 2027-2050 floor area and non-soil carbon per m2, in the '
@@ -187,7 +191,8 @@ KEY_FIGURES = [
     dict(id='K5', file='K5_band_waterfall', width='double', title='From the Reference to the theoretical limit',
          source='data/pathways/waterfall_sequential.csv',
          caption='Sequential waterfall of carbon 2026-2050, each step segmented by its exact demand-band deltas: '
-                 'Reference -> P1 -> P2 -> P3 -> P4 (= P5 Combined, Moderate) -> TL1 ... TL10 (= TL), against the '
+                 'Reference -> P1 -> P2 -> P3 -> P4 (= P5 Combined, Moderate) -> full strength from 2027 -> reoccupation in '
+                 'proportion to need -> TL1 ... TL10 (= TL), against the '
                  'cumulative budgets. Sequential steps depend on the order; the order-free Shapley values are in '
                  'Table 2, ED8 and ED9. ' + TL_NOTE),
     dict(id='K6', file='K6_schematic', width='double', title='Levers, pathways and the theoretical limit',
@@ -289,7 +294,8 @@ DIAGNOSTICS = {
          ['pw_6_L5_estimator_SI']),
         ('D32_tl_staircase', 'Reference -> P5 -> TL: cumulative LoE and the human terms (size, space per '
          'person, dwellings built)', ['pw_8_staircase']),
-        ('D34_tl_dwellings', 'TL: dwellings built per year (banking rule) and annual carbon', ['pw_10_T_annual_SI']),
+        ('D34_tl_dwellings', 'TL: dwellings built per year (proportional reoccupation) and annual carbon',
+         ['pw_10_T_annual_SI']),
     ],
 }
 

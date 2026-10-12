@@ -116,6 +116,26 @@ def producer():
     return os.path.relpath(main, layout.ROOT).replace(os.sep, '/') if main else None
 
 
+def white_edges(fig):
+    """Filled segments (bars, stacked areas) drawn with a white edge on a non-white face: a white border between
+    stacked segments (MODEL v2.1.1: none allowed; style.fill draws the edge in the face colour)."""
+    from matplotlib.colors import to_rgba_array
+    n = 0
+    for ax in fig.get_axes():
+        for a in list(ax.patches) + list(ax.collections):
+            if a.get_gid() == ZONE or not hasattr(a, 'get_edgecolor') or not hasattr(a, 'get_facecolor'):
+                continue
+            lw = np.atleast_1d(a.get_linewidth())
+            ec, fc = to_rgba_array(a.get_edgecolor()), to_rgba_array(a.get_facecolor())
+            if not len(ec) or not len(fc) or float(np.max(lw)) <= 0:
+                continue
+            white_e = (ec[:, :3] > 0.98).all(axis=1) & (ec[:, 3] > 0)
+            white_f = (fc[:, :3] > 0.98).all(axis=1)
+            if white_e.any() and not white_f.all():
+                n += 1
+    return n
+
+
 def record(fig, name, note=None):
     """Write the audit record of a figure about to be saved under name (no extension): per
     axes its title, labels and the year range of its data; the figure's texts; the note
@@ -131,4 +151,5 @@ def record(fig, name, note=None):
         gids = {a.get_gid() for ax in fig.get_axes() for a in ax.get_children()}
         json.dump(dict(figure=os.path.splitext(os.path.basename(name))[0], producer=producer(), axes=axes,
                        texts=texts(fig), note=note, maintenance_drawn=bool(md), maintenance_where=md,
-                       boundary_drawn=BOUNDARY in gids, boundary_zones=ZONE in gids), f, indent=1)
+                       boundary_drawn=BOUNDARY in gids, boundary_zones=ZONE in gids,
+                       white_segment_edges=white_edges(fig)), f, indent=1)

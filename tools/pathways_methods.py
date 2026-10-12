@@ -54,8 +54,9 @@ def tl_levers_table(t):
     import levers as LV
     L = ['', '## Theoretical limit TL', '', '> ' + t['disclaimer'], '',
          'TL = P5 Combined (Moderate) with TL1-TL10, every lever and TL item at full strength from 1 January 2027 '
-         '(no adoption path); 2026 observed and untouched; the banking rule applies (dwellings released by the vacancy, '
-         'by larger households and by the absorbed 2026 overbuild are used before any new building). Each TL item is '
+         '(no adoption path); 2026 observed and untouched; the dwellings released by the vacancy, by larger households '
+         'and by the absorbed 2026 overbuild are brought back into use in proportion to each year\'s need over '
+         '2027-2050. Each TL item is '
          'the limit of one lever (TL10 has no lever counterpart) and is asserted at least as strong as that lever\'s '
          'Ambitious setting (pathways.compute_tl stops otherwise). ' + LV.TL_BAU_NOTE, '']
     L += table(['item', 'limit of', 'TL value', 'vs Ambitious', 'how it works (model terms)', 'source (full citation)',
@@ -93,16 +94,23 @@ def tl_methods(t, runs):
           'case exists ('
           + ', '.join(f"{k} r = {v['r']:.3f}" + (f" ({v['own_best_building']})" if v['exceeds_ambitious'] else
                                                   ' = r_Ambitious') for k, v in res_['TL6'].items()) + ').', '',
-          '**Banking rule.** raw_t = requirement_t + absorbed 2026 overbuild_t − release_t, with release_t = −min(Δ '
-          'households_t, 0) / (1 − v_t) the dwellings that a fall in households (TL2) no longer needs; D_t = raw_t − '
-          'bank_(t−1); built_t = max(0, D_t); bank_t = max(0, −D_t). The banked path enters engine.forward as a '
-          'stock-adding join, join_t = built_t − requirement_t (join_redev = 0), so the stock identity holds and the '
-          'implied vacancy is never negative. Banked zero-building years carry floating-point noise of about 1e-12 '
-          'dwellings; the checks use 1e-6 dwellings. In those years every demand band is zero except the maintenance '
-          '(B2, B4) of the cohorts already built.', '',
+          '**Reoccupation of released dwellings (MODEL v2.1.1).** R = the dwellings released in 2027-2050: by the '
+          'vacancy falling to its TL level (−min(vacancy change, 0)), by households falling under TL2 (−min(Δ '
+          'households, 0) / (1 − v)) and the absorbed 2026 overbuild (−min(join, 0)). They are brought back into use '
+          'in proportion to each year\'s need: built_t = gross_t × (1 − R/G), with gross_t the requirement before any '
+          'release and G its 2027-2050 total, so the dwellings reoccupied add up to R exactly and built_t > 0 in every '
+          'year (both asserted in every TL-family run). The path enters engine.forward as a stock-adding join, join_t = '
+          'built_t − requirement_t (join_redev = 0), so the stock identity holds and the released dwellings stay vacant '
+          'until reoccupied. The rule applies to every TL-family run, the TL base (P5 Moderate at full strength from '
+          '2027) included, so a TL item never switches the accounting rule; the difference between the base and the '
+          'pathway run of P5 at full strength from 2027 is reported as a separate line. An even rate R/24 was '
+          f"specified first and is not feasible: with TL2 the 2027 need "
+          f"({LV.by_year(ind['reoccupation']['by_year'], 2027)['gross_requirement']:,.0f} dwellings) is below R/24 "
+          f"({ind['reoccupation']['R'] / 24:,.0f}). " + LV.TL_REOCCUPATION_NOTE, '',
           '**Soil (TL8, TL9).** The soil factor by year (TL8: lowest soil order) and the brownfield share of all new '
           'floor area (TL9: s = 0.89, London) are applied inside engine.forward; the soil-bearing share is clipped to '
-          '[0, 1] and set to 0 where the floor area built is at most 1e-3 m² (banked zero-building years).', '',
+          '[0, 1] and set to 0 where the floor area built is at most 1e-3 m² (a guard; under proportional '
+          'reoccupation every year builds).', '',
           '### Results (Reference)', '']
     rows = [[N.run_label(n), f"{x['floor_area_Mm2']:.2f}", f"{x['carbon_kt']:,.0f}",
              f"{x['committed_lower_kt']:,.0f}-{x['committed_upper_kt']:,.0f}",
@@ -111,16 +119,16 @@ def tl_methods(t, runs):
     L += table(['run', 'floor area (Mm²)', 'carbon 2026-2050 (kt)', 'committed after 2050 (kt)', 'LoE AR', 'LoE AtP',
                 'carbon vs Reference'], rows)
     L += ['', f"Table note: {t['disclaimer']}"]
-    zy, rel = ind['zero_building_years'], ind['released_dwellings']
+    rel, ro = ind['released_dwellings'], ind['reoccupation']
     L += ['', '**Human terms (TL, 2027-2050).** New-dwelling size '
           + ', '.join(f"{k} {LV.by_year(v, 2050):.1f} m²" for k, v in ind['new_dwelling_size_m2'].items())
           + f" (2050); floor area per person in new dwellings {LV.by_year(ind['m2_per_person_new_dwellings'], 2050):.1f} m²; "
           f"household size {LV.by_year(ind['household_size_by_year'], 2050):.3f} (2050). Released dwellings: "
           f"{rel['vacancy_change']:,.0f} from the vacancy (TL3), {rel['household_decline']:,.0f} from the larger households "
-          f"(TL2) and {rel['overbuild_2026_absorbed']:,.0f} from the 2026 overbuild (TL4); release in excess of the yearly "
-          f"need {ind['release_added_total']:,.0f} dwellings, used {ind['release_used_total']:,.0f}, unused in 2050 "
-          f"{ind['bank_unused_2050']:,.0f}; no new building in {len(zy)} years"
-          + (f" ({zy[0]}-{zy[-1]})" if zy else '') + '. By year: outputs/data/pathways/theoretical_limit.json.', '']
+          f"(TL2) and {rel['overbuild_2026_absorbed']:,.0f} from the 2026 overbuild (TL4), R = {ro['R']:,.0f}, "
+          f"{100 * ro['share_of_need']:.1f}% of the 2027-2050 need (G = {ro['G']:,.0f}); dwellings built at least "
+          f"{ind['dwellings_built_min_2027_2050']:,.0f} a year in 2027-2050. By year: "
+          'outputs/data/pathways/theoretical_limit.json.', '']
     g = gap['TL']
     if g['within_AR']:
         L += [f"**Gap.** TL is within the AR budget (cumulative LoE AR {g['LoE_AR']:.3f}): margin "
@@ -133,23 +141,27 @@ def tl_methods(t, runs):
               f"{100 * b['cut_AR']:.1f}% of 2027-2050 construction would reach LoE AR = 1, i.e. "
               f"{rs['dwellings_not_built_2027_2050']:,.0f} dwellings not built and "
               f"{rs['new_residents_housed_in_existing_dwellings']:,.0f} new residents housed in existing dwellings."]
-    L += ['', '### Shapley attribution of P5 Combined (Moderate, full strength from 2027) − TL', '']
+    L += ['', '### Shapley attribution of TL base − TL', '']
     sh = pd.DataFrame(t['shapley'])
     rows = []
-    for pl in list(t['definition']['components']) + [LV.TL_FROM2027]:
+    sep = {LV.TL_FROM2027: N.ADOPTION['from2027'] + ' (separate line)',
+           LV.TL_REOCCUPATION: 'Released dwellings reoccupied in proportion to need (separate line)'}
+    for pl in list(t['definition']['components']) + list(sep):
         c = sh[(sh['metric'] == 'carbon_kt') & (sh['player'] == pl)].iloc[0]
         a = sh[(sh['metric'] == 'LoE_AR') & (sh['player'] == pl)].iloc[0]
-        share = c['share_of_P5_moderate_from2027_minus_TL']
-        rows.append([N.ADOPTION['from2027'] + ' (separate line)' if pl == LV.TL_FROM2027
+        share = c['share_of_TL_base_minus_TL']
+        rows.append([sep[pl] if pl in sep
                      else f"{pl} {t['definition']['components'][pl]}",
                      f"{c['reduction']:,.0f}" + ('' if pd.isna(share) else f" ({100 * share:.0f}%)"),
                      f"{a['reduction']:.3f}"])
     L += table(['player', 'carbon (kt)', 'LoE AR'], rows)
     n_ = len(t['definition']['components'])
     L += ['', f"Players TL1-TL{n_} over {2 ** n_:,} subsets, each applied at full strength from 2027 (exact rational "
-          'arithmetic; the values add up to P5 Combined (Moderate) at full strength from 2027 − TL exactly; tested). '
-          '"Full strength from 2027" is a separate line, not a player: P5 Combined on its adoption path minus P5 '
-          'Combined at full strength from 2027.', '',
+          'arithmetic; the values add up to TL base − TL exactly; tested). The TL base is P5 Combined (Moderate) at '
+          'full strength from 2027 with its released dwellings reoccupied in proportion to each year\'s need '
+          '(2027-2050). Two separate lines, not players, close the gap to P5 Combined on its adoption path: '
+          '"full strength from 2027" (P5 Combined on its adoption path minus P5 Combined at full strength from 2027) '
+          'and "released dwellings reoccupied" (P5 Combined at full strength from 2027 minus the TL base).', '',
           '### Limitations of TL', '',
           '* TL combines attributes of different buildings and places (the OLF of one apartment case for every '
           'typology; each typology\'s best A1-A3 case; the lowest soil order everywhere; London\'s brownfield share '

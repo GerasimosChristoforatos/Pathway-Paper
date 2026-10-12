@@ -13,7 +13,7 @@ L8 soil factor; L9 no double counting (soil-free share >= the Reference share, =
 Attribution: pathway Shapley (16 subsets) and lever Shapley (512 subsets per setting) efficiency exact; demand
 bands add up to the totals; the back-cast gives cumulative LoE AR = 1.
 
-Theoretical limit: banking rule and stock identity; every TL item at least as strong as its Ambitious lever
+Theoretical limit: proportional reoccupation (built_t > 0, dwellings reoccupied = R) and stock identity; every TL item at least as strong as its Ambitious lever
 (TL2 = the historical maximum household size, TL6 = min(own best independent case, r_Ambitious)); TL1 size = the
 occupied area; TL9 brownfield share; TL Shapley over TL1-TL10 (1,024 subsets) exact; TL residual in people.
 """
@@ -322,24 +322,44 @@ def full(rt):
     return rt['cache'][LV.TL_COMPONENTS]
 
 
-def test_bank_rule_on_a_known_path():
-    raw = np.array([5.0, 10.0, -30.0, 8.0, 12.0, 20.0, -5.0, 3.0])
-    b = PW.bank(raw)
-    assert list(b['built']) == [5.0, 10.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0]
-    assert list(b['bank']) == [0.0, 0.0, 30.0, 22.0, 10.0, 0.0, 5.0, 2.0]
-    assert b['added'][1:].sum() == 35.0 and b['used'][1:].sum() == 33.0
+def test_reoccupation_rule_on_a_known_path():
+    years = np.arange(2025, 2051)
+    gross = np.linspace(100.0, 330.0, len(years))
+    released = np.zeros(len(years))
+    released[2], released[5] = 900.0, 300.0
+    released[1] = 5000.0  # 2026 is outside the reoccupation years and is ignored
+    ro = PW.reoccupation(years, gross, released)
+    G = gross[2:].sum()
+    assert ro['R'] == 1200.0 and ro['G'] == pytest.approx(G, rel=1e-15) and ro['share'] == pytest.approx(1200.0 / G)
+    assert np.allclose(ro['built'][2:], gross[2:] * (1 - 1200.0 / G), rtol=1e-14, atol=0)
+    assert np.array_equal(ro['built'][:2], gross[:2]) and (ro['reoccupied'][:2] == 0).all()
+    assert ro['reoccupied'].sum() == pytest.approx(1200.0, rel=1e-14)
+    assert (ro['built'][2:] > 0).all()
 
 
-def test_TL_banking_and_stock_identity(rt):
+def test_TL_reoccupation_and_stock_identity(rt):
     for key, R in rt['cache'].items():
-        E, bk = R['E'], R['info']['bank']
+        E, ro = R['E'], R['info']['reoccupation']
         built = np.asarray(PW.engine.requirement(E), float)
-        assert (built[1:] >= -PW.T_ZERO_TOL_DWELLINGS).all() and (bk['built'][1:] >= 0).all(), key
-        assert np.allclose(built[1:], bk['built'][1:], rtol=1e-12, atol=1e-6), key
+        # built_t > 0 in every year 2027-2050 and the dwellings reoccupied add up to R
+        assert (ro['built'][2:] > 0).all() and (built[2:] > 0).all(), key
+        assert ro['reoccupied'].sum() == pytest.approx(ro['R'], rel=1e-12), key
+        assert (ro['gross'] - ro['built']).sum() == pytest.approx(ro['R'], rel=1e-12), key
+        assert ro['R'] == pytest.approx((ro['released_vacancy'] + ro['released_households']
+                                         + ro['released_overbuild'])[2:].sum(), rel=1e-12), key
+        assert np.allclose(ro['reoccupied'][2:], ro['gross'][2:] * ro['share'], rtol=1e-12, atol=0), key
+        # the stock-adding join gives the engine's requirement = dwellings built; no redevelopment join
+        assert np.allclose(built[2:], ro['built'][2:], rtol=1e-12, atol=1e-6), key
         assert (E['join_redev'] == 0).all()
-        assert np.all(np.cumsum(bk['used']) <= np.cumsum(bk['added']) + 1e-6), key
-        assert bk['bank'][-1] == pytest.approx(bk['added'].sum() - bk['used'].sum(), abs=1e-6)
         assert (PW.implied_vacancy(E)[1:] >= -1e-9).all(), key
+
+
+def test_TL_releases_full(rt):
+    """The full TL releases the 2027 vacancy fall, the TL2 household change and the 2026 overbuild."""
+    ro = full(rt)['info']['reoccupation']
+    assert ro['released_households'][2] > 0 and ro['released_vacancy'][2] > 0
+    assert ro['released_overbuild'][2:].sum() == pytest.approx(16760, rel=1e-3)
+    assert 0 < ro['share'] < 1
 
 
 def test_TL_items_at_least_as_strong_as_ambitious(rt, res):
@@ -369,15 +389,20 @@ def test_TL_2026_unchanged(res, rt):
             assert E[k][1] == pytest.approx(E0[k][1], rel=1e-12), (key, k)
 
 
-def test_TL_shapley_efficiency_exact(rt):
+def test_TL_shapley_efficiency_exact(res, rt):
     assert len(rt['subsets']) == 2 ** 10
     for metric, (phi, total) in rt['shapley_exact'].items():
         assert sum(phi.values()) == total, metric
     s = rt['subsets'].set_index('subset')
     sh = rt['shapley']
+    sep = (LV.TL_FROM2027, LV.TL_REOCCUPATION)
+    p5m = run_row(res, 'P5-moderate')
     for metric in ('carbon_kt', 'LoE_AR'):
-        x = sh[(sh['metric'] == metric) & (sh['player'] != LV.TL_FROM2027)]['reduction'].sum()
-        assert x == pytest.approx(s.loc['P5-moderate-from2027', metric] - s.loc['TL', metric], rel=1e-12)
+        m = sh[sh['metric'] == metric].set_index('player')['reduction']
+        x = m.drop(list(sep)).sum()
+        assert x == pytest.approx(s.loc[LV.TL_BASE_LABEL, metric] - s.loc['TL', metric], rel=1e-12)
+        # the two separate lines close the gap to P5 Moderate on its adoption path exactly
+        assert m.sum() == pytest.approx(p5m[metric] - s.loc['TL', metric], rel=1e-12)
 
 
 def test_TL_checks_pass(res, rt):
@@ -399,5 +424,11 @@ def test_waterfall_reaches_P5_and_TL(res, rt):
     st = w.drop_duplicates('step').set_index('step_id')
     assert st.loc['P4', 'total_carbon_kt'] == pytest.approx(run_row(res, 'P5-moderate')['carbon_kt'], rel=1e-12)
     assert st.loc['TL10', 'total_carbon_kt'] == pytest.approx(rt['rows'][0]['carbon_kt'], rel=1e-12)
+    m27 = res['get'](REF, LV.pathway_levers('P5', 'moderate'), LV.TL_FROM2027)['E']['carbon'][1:].sum() / PW.M6
+    assert st.loc['from2027', 'total_carbon_kt'] == pytest.approx(m27, rel=1e-9)
+    base = rt['cache'][()]['E']['carbon'][1:].sum() / PW.M6
+    assert st.loc[LV.TL_REOCCUPATION, 'total_carbon_kt'] == pytest.approx(base, rel=1e-9)
+    ids = list(st.index)
+    assert ids.index('P4') < ids.index('from2027') < ids.index(LV.TL_REOCCUPATION) < ids.index('TL1')
     for step, g in w.groupby('step'):
         assert g['carbon_kt'].sum() == pytest.approx(g['total_carbon_kt'].iloc[0], rel=1e-9)

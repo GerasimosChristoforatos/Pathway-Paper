@@ -67,7 +67,7 @@ STAT_TOL = 1e-12
 TL_FILES = ('data/pathways/theoretical_limit.json', 'data/pathways/shapley_theoretical_limit.csv',
             'data/pathways/shapley_theoretical_limit_subsets.csv', 'data/pathways/montecarlo_conditional_tl.csv',
             'data/pathways/montecarlo_conditional_tl.json')
-_TL = re.compile(r'(^|[^A-Za-z0-9])TL|from2027')
+_TL = re.compile(r'(^|[^A-Za-z0-9])TL|from2027|reoccup')
 
 
 def canonical(v):

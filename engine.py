@@ -197,6 +197,9 @@ def nowcast_year(consents, year, method, seasonal_years):
                 estimated_missing=est, total=ytd + est)
 
 
+SOIL_ZERO_TOL_M2 = 1e-3          # floor area treated as zero (theoretical limit, banked zero-building years)
+
+
 def requirement(E):
     """Dwellings built, all categories (incl. retirement villages), in a
     forward() result: new households (floored as in forward) + vacancy
@@ -267,7 +270,8 @@ def blend(shares, per_unit, typ_names):
 
 def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_share,
             shares, size, olf, intensity, intensity_upfront, join=None, join_redev=None,
-            soil=None, soil_on_replacement=True, gfa_fixed=None, events=None):
+            soil=None, soil_on_replacement=True, gfa_fixed=None, events=None,
+            brownfield_share=None, brownfield_w=None, clip_soil_share=False):
     """One forward path, 2025..2050 (index 0 = 2025, a model value; callers that
     anchor 2025 on observations overwrite it).
 
@@ -302,6 +306,15 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                              repaint emissions, kg/m2 of the cohort built in year i
                              occurring in year j (events.kernel); b_t = gfa_t @ K is
                              added to carbon_t (time-resolved accounting).
+    MODEL v2.1.0 (pathway levers; every default reproduces the earlier result bit for bit):
+    soil[t] may be an array over the years (L8 soil-aware planning, TL8 lowest-carbon soils).
+    brownfield_share, brownfield_w : optional arrays over the years (L9 brownfield development):
+                             target share s of ALL new floor area on previously developed land
+                             and its adoption weight w; the soil-free floor area becomes
+                             soil_free + w max(0, s total - soil_free), so the replacement floor
+                             area (already soil-free) is never counted twice.
+    clip_soil_share        : True (theoretical limit, banked zero-building years): the soil-bearing
+                             share is clipped to [0, 1] and set to 0 where nothing is built.
 
     Floor area built (in scope) = structural + gross consumption, where
         structural  = d_hh x occupied area per dwelling
@@ -367,13 +380,23 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         soil_share, soil_free = np.ones(len(hh)), np.zeros(len(hh))
         carbon_t, upfront_t = I * gfa_t, U * gfa_t
     else:
-        s = np.array([soil[t] for t in typ])
+        if any(np.ndim(soil[t]) for t in typ):        # soil factor by year (MODEL v2.1.0 levers)
+            sY = np.array([np.broadcast_to(np.asarray(soil[t], float), (len(hh),)) for t in typ])
+        else:
+            sY = np.array([soil[t] for t in typ])[:, None]
         soil_free = (np.zeros(len(hh)) if soil_on_replacement else
                      np.clip(demol + unc + join_redev, 0.0, None) * (1.0 - rv_share) * D)
+        soil_free_repl = soil_free
+        if brownfield_share is not None:
+            soil_free = soil_free + np.asarray(brownfield_w, float) * np.maximum(
+                0.0, np.asarray(brownfield_share, float) * total - soil_free)
         soil_share = (1.0 - np.divide(soil_free, total, out=np.zeros(len(hh)),
                                                          where=total != 0))
-        carbon_t = (I - s[:, None]) * gfa_t + (s[:, None] * gfa_t) * soil_share
-        upfront_t = (U - s[:, None]) * gfa_t + (s[:, None] * gfa_t) * soil_share
+        if clip_soil_share:
+            soil_share = np.where(total <= SOIL_ZERO_TOL_M2, 0.0, np.clip(soil_share, 0.0, 1.0))
+            soil_share[0] = 1.0 - (soil_free[0] / total[0] if total[0] != 0 else 0.0)
+        carbon_t = (I - sY) * gfa_t + (sY * gfa_t) * soil_share
+        upfront_t = (U - sY) * gfa_t + (sY * gfa_t) * soil_share
     b_t = np.zeros_like(gfa_t)
     if events is not None:                           # time-resolved B2/B4 of the new cohorts
         b_t = np.array([gfa_t[k] @ events[t] for k, t in enumerate(typ)])
@@ -386,4 +409,6 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         v=np.array(v), stock=stock, prev=prev, allow=allow, change=change, demol=demol,
         unc=unc, dev=dev, join=join, join_redev=join_redev, stock_join=stock_join, rv=rv, dwell_in_scope=total / D, rv_units=-rv,
         gfa_t=gfa_t, carbon_t=carbon_t, carbon=carbon_t.sum(axis=0), upfront=upfront_t.sum(axis=0), b_t=b_t,
-        soil_share=soil_share, soil_free_gfa=soil_free, gfa_adj=gfa_adj)
+        soil_share=soil_share, soil_free_gfa=soil_free, gfa_adj=gfa_adj,
+        soil_free_replacement_gfa=(soil_free_repl if soil is not None else np.zeros(len(hh))),
+        soil=((sY * gfa_t) * soil_share).sum(axis=0) if soil is not None else None)

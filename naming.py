@@ -41,26 +41,42 @@ SCENARIO_LEGACY = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH', 'S3-5': 'REF_HL5',
                    'S1-noUC': 'LOW_NOUC', 'S3-10-noUC': 'REF_NOUC', 'S2-noUC': 'HIGH_NOUC'}
 FROZEN = 'Frozen technology (2025 carbon factors held; check run)'
 
-PATHWAYS = {'P1': 'Right-sized dwellings', 'P2': 'Occupied stock', 'P3': 'Retained stock',
-            'P4': 'Low-carbon materials', 'P5': 'Combined'}
+# MODEL v2.1.0: four pathway families of nine levers (the final lever set); P5 = every lever
+PATHWAYS = {'P1': 'Space per person', 'P2': 'Existing stock', 'P3': 'Construction', 'P4': 'Land',
+            'P5': 'Combined'}
 SETTINGS = {'moderate': 'Moderate', 'ambitious': 'Ambitious'}
 SETTING_LEGACY = {'central': 'moderate', 'stretch': 'ambitious'}
 
-# Levers (renumbered): new id -> label; LEVER_LEGACY: v3.1 id -> new id
-LEVERS = {'L1': 'Dwelling size', 'L2': 'Vacancy rate', 'L3': 'Overbuild absorption',
-          'L4': 'Building retention', 'L5': 'Material carbon'}
+# Levers: id -> label. LEVER_LEGACY: v3.1 id -> model-v1/v2.0 id (the regression map of the captured
+# v3.1 outputs); LEVER_V2_0: model-v2.0.0 id -> MODEL v2.1.0 id (docs/RENAMING.md)
+LEVERS = {'L1': 'Dwelling size', 'L2': 'Household occupancy', 'L3': 'Vacancy', 'L4': 'Overbuild absorption',
+          'L5': 'Building lifetime extension', 'L6': 'Material carbon', 'L7': 'Construction-stage carbon',
+          'L8': 'Soil-aware planning', 'L9': 'Brownfield development'}
 LEVER_LEGACY = {'L1': 'L1', 'L2a': 'L2', 'L2b': 'L3', 'L3': 'L4', 'L5': 'L5'}
-PATHWAY_LEVERS = {'P1': ('L1',), 'P2': ('L2', 'L3'), 'P3': ('L4',), 'P4': ('L5',)}
+LEVER_V2_0 = {'L1': 'L1', 'L2': 'L3', 'L3': 'L4', 'L4': 'L5', 'L5': 'L6'}
+LEVER_NAMES_V2_0 = {'L1': 'Dwelling size', 'L2': 'Vacancy rate', 'L3': 'Overbuild absorption',
+                    'L4': 'Building retention', 'L5': 'Material carbon'}
+PATHWAYS_V2_0 = {'P1': 'Right-sized dwellings', 'P2': 'Occupied stock', 'P3': 'Retained stock',
+                 'P4': 'Low-carbon materials', 'P5': 'Combined'}
+PATHWAY_LEVERS = {'P1': ('L1', 'L2'), 'P2': ('L3', 'L4', 'L5'), 'P3': ('L6', 'L7'), 'P4': ('L8', 'L9')}
+LEVER_PATHWAY = {L: P for P, ls in PATHWAY_LEVERS.items() for L in ls}
 # The denser-typology-mix lever of pathways_v2 (numbered L4 in that version) was removed in
-# v3.1; it is never given a lever number in the release, because L4 is now Building retention.
+# v3.1; it is never given a lever number in the release.
 DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.1)'
 
-TL = {'TL': 'Theoretical limit', 'TL1': 'No vacancy', 'TL2': 'No extra space', 'TL3': 'Minimum space per person',
-      'TL4': 'Best-practice materials', 'TL5': 'Lowest-carbon soils', 'TL6': 'Urban infill',
-      'TL7': 'Building retention at −40% (ambitious level)'}
+# Theoretical limit (MODEL v2.1.0): TLn is the limit of Ln; TL10 has no lever counterpart
+TL = {'TL': 'Theoretical limit', 'TL1': 'No extra space', 'TL2': 'Historical maximum household size',
+      'TL3': 'No vacancy', 'TL4': 'Overbuild fully absorbed', 'TL5': 'Building lifetime extension at the limit',
+      'TL6': 'Best-practice materials', 'TL7': 'Zero-emission construction', 'TL8': 'Lowest-carbon soils',
+      'TL9': 'Brownfield maximum', 'TL10': 'Minimum space per person'}
+TL_LIMIT_OF = {'TL1': 'L1', 'TL2': 'L2', 'TL3': 'L3', 'TL4': 'L4', 'TL5': 'L5', 'TL6': 'L6', 'TL7': 'L7',
+               'TL8': 'L8', 'TL9': 'L9', 'TL10': None}
 TL_LEGACY = {'T': 'TL', 'T1': 'TL1', 'T2': 'TL2', 'T3': 'TL3', 'T4': 'TL4', 'T5': 'TL5', 'T6': 'TL6'}
+# model-v2.0.0 TL ids -> MODEL v2.1.0 (docs/RENAMING.md)
+TL_V2_0 = {'TL1 No vacancy': 'TL3 (+ TL4)', 'TL2 No extra space': 'TL1', 'TL3 Minimum space per person': 'TL10',
+           'TL4 Best-practice materials': 'TL6', 'TL5 Lowest-carbon soils': 'TL8', 'TL6 Urban infill': 'TL9',
+           'TL7 Building retention at -40% (ambitious level)': 'TL5'}
 TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pathway'
-TL_GRADUAL = 'TL, gradual adoption (SI)'
 
 # adoption paths of the levers (v3.1 'ramp' names)
 ADOPTION = {'by2035': 'full roll-out by 2035 (adopted)', 'by2030': 'full roll-out by 2030 (sensitivity)',
@@ -87,7 +103,7 @@ BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BR
 BANDS_HISTORY = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement_history')
 BAND_DEFINITIONS = {
     'growth': 'population growth at the occupied area per person, net of consolidation (untargeted)',
-    'smaller_households': 'additional households from falling household size (untargeted)',
+    'smaller_households': 'additional households from falling household size (targeted by L2 Household occupancy, P1)',
     'extra_space': 'new-dwelling size above the occupied area (household size x floor area per design occupant)',
     'vacancy': 'the vacancy allowance on new households and the change in the vacancy rate',
     'overbuild_2026': 'observed 2026 building above the requirement, fading at the persistence rho; never absorbed',
@@ -97,7 +113,7 @@ BAND_DEFINITIONS = {
                      'in the Reference',
     'maintenance': 'replacement and repaint events (B2, B4) of the new buildings within 2026–2050 (carbon only)',
 }
-UNTARGETED = ('growth', 'smaller_households')
+UNTARGETED = ('growth',)          # MODEL v2.1.0: smaller households are targeted by L2 (P1)
 
 COMPONENTS = {'materials_construction': 'Materials and construction (A1–A5)',
               'soil': 'Soil carbon loss',
@@ -107,7 +123,7 @@ UPFRONT = 'Upfront (A1–A5 and soil carbon loss)'
 # life-cycle stages of the carbon (MODEL v2.0.0, Fig3a)
 STAGES = {'a1a3': 'Materials (A1–A3)', 'a4a5': 'Construction (A4–A5)', 'maintenance': 'Maintenance (B2, B4)',
           'soil': 'Soil carbon loss'}
-UNTARGETED_GROUP = 'Untargeted: population growth and smaller households'
+UNTARGETED_GROUP = 'Untargeted: population growth'
 UNEXPLAINED = 'Unexplained building (history; may be negative)'
 REPLACEMENT_CENSUS = 'Net replacement, census-measured (history)'
 
@@ -165,6 +181,15 @@ OLD_TERMS = [
      'the vacancy wording (VACANCY_WORDING)'),
     # MODEL v1.1.0: the demand bands "Replacement" and "Redevelopment" (lower-case "redevelopment" stays
     # where it names the 2026-overbuild booking setting or the knock-down-and-rebuild process in prose)
+    # MODEL v2.1.0: the final lever set (old pathway, lever and TL labels and numbers; docs/RENAMING.md)
+    (r'Right-sized dwellings|Occupied stock|Retained stock|Low-carbon materials',
+     'pathway labels of MODEL v2.1.0 (P1 Space per person, P2 Existing stock, P3 Construction, P4 Land)'),
+    (r'Building retention|Urban infill|\bL2 Vacancy|\bL3 Overbuild|\bL4 Building|\bL5 Material',
+     'lever and TL labels of MODEL v2.1.0 (L3 Vacancy, L4 Overbuild absorption, L5 Building lifetime extension, '
+     'L6 Material carbon)'),
+    (r'(?i)smaller households(?:\)|,)? (?:are |is )?untargeted|growth and smaller households|smaller households \(untargeted',
+     'only population growth is untargeted (MODEL v2.1.0)'),
+    (r'(?i)gradual adoption', 'removed in MODEL v2.1.0 (TL is at full strength from 2027 only)'),
     (r'\bRedevelopment\b|(?i:redevelopment (?:wave|band|component|channel)|replacement and redevelopment)',
      'Recent replacement surge (MODEL v1.1.0)'),
     (r'(?<!Historical )(?<!historical )\bReplacement(?= bands?\b|\s*\(net of unconsented|\s*\||\s*:\s*(?:demolition|net '
@@ -178,13 +203,11 @@ def scenario_label(code):
 
 def run_label(run, scenario='REF'):
     """Reader-facing label of a pathway-layer run id (release ids: REF/LOW/HIGH, P1-moderate,
-    L2-ambitious, P5-moderate-by2030, P4-moderate-apartments-held, TL, TL-gradual)."""
+    L2-ambitious, P5-moderate-by2030, P3-moderate-apartments-held, TL)."""
     if run in SCENARIOS:
         return SCENARIOS[run]
     if run == 'TL':
         return f"TL {TL['TL']}"
-    if run == 'TL-gradual':
-        return TL_GRADUAL
     parts = run.split('-')
     head, setting = parts[0], parts[1] if len(parts) > 1 else None
     name = f'{head} {PATHWAYS.get(head) or LEVERS.get(head)}'

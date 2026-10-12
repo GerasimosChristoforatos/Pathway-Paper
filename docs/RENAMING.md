@@ -68,7 +68,7 @@ Removed in v3.1: the denser typology mix (lever of pathways_v2, removed in pathw
 | T5 Best soil | TL5 |
 | T6 Urban densification | TL6 |
 
-**MODEL v2.1.0.** TL is rebuilt: P5 Moderate with TL1-TL10, each the limit of one lever (TL10 none), all at full strength from 2027; TL gradual adoption is removed.
+**MODEL v2.1.0.** TL is rebuilt: P5 Moderate with TL1-TL10, each the limit of one lever (TL10 none), all at full strength from 2027. **MODEL v2.1.1.** TL is adopted by 2030 (the pathways' 2030 window) with its released dwellings re-occupied at a constant share of each year's need; the instant TL is a sensitivity.
 
 | v2.1.0 ID | v2.1.0 label | limit of |
 |---|---|---|

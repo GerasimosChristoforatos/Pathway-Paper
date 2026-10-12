@@ -1115,7 +1115,7 @@ def waterfall_sequential(res, rt):
         acc.update(LV.pathway_levers(P, 'moderate'))
         steps.append((P, f'+ {P} {N.PATHWAYS[P]}' + (' (= P5 Combined)' if P == 'P4' else ''),
                       res['get'](REFERENCE, dict(acc))))
-    steps.append((LV.TL_ADOPTION, N.TL_ADOPTION_LABEL.capitalize(),
+    steps.append((LV.TL_ADOPTION, N.TL_ADOPTION_LABEL[0].upper() + N.TL_ADOPTION_LABEL[1:],
                   res['get'](REFERENCE, LV.pathway_levers('P5', 'moderate'), LV.TL_ADOPTION)))
     steps.append((LV.TL_REOCCUPATION, N.TL_REOCCUPATION_LINE.capitalize(), rt['cache'][()]))
     for k in range(1, len(LV.TL_COMPONENTS) + 1):

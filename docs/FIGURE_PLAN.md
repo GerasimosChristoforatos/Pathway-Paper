@@ -33,15 +33,15 @@ MODEL v2.1.1 (design: [FIGURE_PLAN_v2.md](FIGURE_PLAN_v2.md), amended by the v2.
 * File: `outputs/paper/Fig4_pathways_bands.png` / `.pdf` / `.csv` (183 mm)
 * Panels: (a) floor area and (b) carbon 2026-2050 by demand band for the Reference, P1-P5 and TL; untargeted band (population growth) at the bottom; maintenance its own layer in (b); change vs the Reference on each bar; cumulative AR and AtP budgets as lines with the boundary zones in (b)
 * Data: data/pathways/bands.csv, data/pathways/runs.csv
-* Draft caption: Pathways by demand band (each pathway at its Moderate setting, full roll-out by 2035). Each pathway acts on the bands it targets; P3 and P4 lower carbon per m2 of every band. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.
+* Draft caption: Pathways by demand band (each pathway at its Moderate setting, full roll-out by 2035). Each pathway acts on the bands it targets; P3 and P4 lower carbon per m2 of every band. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; every lever at its limit, adopted by 2030.
 * Replaces (model-v1.1.0): H7; (v3.1): pw_1_bands_by_pathway
 
 ### Fig5. Emissions against the boundaries, and what closes the gap
 
 * File: `outputs/paper/Fig5_boundaries_attribution.png` / `.pdf` / `.csv` (183 mm)
-* Panels: (a) annual emissions of the Reference, P5 and TL against the annual AR and AtP boundaries (log axis), Monte Carlo 5-95% bands; (b) Shapley waterfall of the cumulative LoE AR (AtP on the right axis): Reference -> P1-P4 -> P5 -> full strength from 2027 -> reoccupation in proportion to need (the TL base) -> TL1-TL10 -> TL, budgets as lines with the boundary zones, Monte Carlo whiskers, committed after 2050 as hatched companion bars, TL residual in dwellings and people
+* Panels: (a) annual emissions of the Reference, P5 and TL against the annual AR and AtP boundaries (log axis), Monte Carlo 5-95% bands; (b) Shapley waterfall of the cumulative LoE AR (AtP on the right axis): Reference -> P1-P4 -> P5 -> full roll-out by 2030 (TL's faster adoption) -> released dwellings re-occupied at a constant share of need (the TL base) -> TL1-TL10 -> TL, budgets as lines with the boundary zones, Monte Carlo whiskers, committed after 2050 as hatched companion bars, TL residual in dwellings and people
 * Data: data/pathways/annual.csv, data/pathways/montecarlo_annual.csv, data/aesa/montecarlo_annual.csv, data/pathways/shapley_pathways.csv, data/pathways/shapley_theoretical_limit.csv, data/pathways/montecarlo_summary.csv, data/pathways/runs.csv, data/pathways/theoretical_limit.json
-* Draft caption: Absolute sustainability of the Reference, P5 Combined and the theoretical limit. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.
+* Draft caption: Absolute sustainability of the Reference, P5 Combined and the theoretical limit. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; every lever at its limit, adopted by 2030.
 * Replaces (model-v1.1.0): H5, H8, H9; (v3.1): pb_2_loe, boss_05_annual_carbon_pb, fig_scenarios_pb, pw_4_annual_SI, pw_10_T_annual_SI, pw_2_shapley_waterfall, pw_8_staircase
 
 ### Fig6. Solution space: demand and intensity
@@ -112,7 +112,7 @@ MODEL v2.1.1 (design: [FIGURE_PLAN_v2.md](FIGURE_PLAN_v2.md), amended by the v2.
 
 * File: `outputs/extended_data/ED8_theoretical_limit.png` / `.pdf` / `.csv`
 * Data: data/pathways/shapley_theoretical_limit.csv, data/pathways/theoretical_limit.json, data/pathways/annual.csv
-* Draft caption: Order-free attribution of P5 Combined (Moderate) to TL over TL1-TL10 (1,024 subsets), and the TL indicators. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.
+* Draft caption: Order-free attribution of P5 Combined (Moderate) to TL over TL1-TL10 (1,024 subsets), and the TL indicators. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; every lever at its limit, adopted by 2030.
 * Replaces (model-v1.1.0): D33
 
 ### ED9. Single levers
@@ -147,7 +147,7 @@ MODEL v2.1.1 (design: [FIGURE_PLAN_v2.md](FIGURE_PLAN_v2.md), amended by the v2.
 
 * File: `outputs/extended_data/ED13_conditional_tl.png` / `.pdf` / `.csv`
 * Data: data/pathways/montecarlo_draws.csv, data/pathways/montecarlo_conditional_tl.csv
-* Draft caption: TL cumulative LoE AR against the population rank of each draw, coloured by the carbon-factor index, with LoE AR = 1; logistic regression of P(TL LoE AR <= 1) on the sampled inputs (odds ratios with 95% intervals). TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.
+* Draft caption: TL cumulative LoE AR against the population rank of each draw, coloured by the carbon-factor index, with LoE AR = 1; logistic regression of P(TL LoE AR <= 1) on the sampled inputs (odds ratios with 95% intervals). TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; every lever at its limit, adopted by 2030.
 * Replaces (model-v1.1.0): new
 
 ## Key figures
@@ -168,7 +168,7 @@ MODEL v2.1.1 (design: [FIGURE_PLAN_v2.md](FIGURE_PLAN_v2.md), amended by the v2.
 
 * File: `outputs/key_figures/K3_annual_emissions.png` (183 mm)
 * Data: data/pathways/annual.csv, data/aesa/montecarlo_annual.csv, data/pathways/theoretical_limit.json
-* Draft caption: Annual embodied carbon of the Reference (Monte Carlo 5-95% band), P1-P5 (Moderate) and TL against the AR and AtP boundaries. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.
+* Draft caption: Annual embodied carbon of the Reference (Monte Carlo 5-95% band), P1-P5 (Moderate) and TL against the AR and AtP boundaries. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; every lever at its limit, adopted by 2030.
 
 ### K4. Solution space
 
@@ -180,7 +180,7 @@ MODEL v2.1.1 (design: [FIGURE_PLAN_v2.md](FIGURE_PLAN_v2.md), amended by the v2.
 
 * File: `outputs/key_figures/K5_band_waterfall.png` (183 mm)
 * Data: data/pathways/waterfall_sequential.csv
-* Draft caption: Sequential waterfall of carbon 2026-2050, each step segmented by its exact demand-band deltas: Reference -> P1 -> P2 -> P3 -> P4 (= P5 Combined, Moderate) -> full strength from 2027 -> reoccupation in proportion to need -> TL1 ... TL10 (= TL), against the cumulative budgets. Sequential steps depend on the order; the order-free Shapley values are in Table 2, ED8 and ED9. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size.
+* Draft caption: Sequential waterfall of carbon 2026-2050, each step segmented by its exact demand-band deltas: Reference -> P1 -> P2 -> P3 -> P4 (= P5 Combined, Moderate) -> full roll-out by 2030 -> released dwellings re-occupied at a constant share of need -> TL1 ... TL10 (= TL), against the cumulative budgets. Sequential steps depend on the order; the order-free Shapley values are in Table 2, ED8 and ED9. TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; every lever at its limit, adopted by 2030.
 
 ### K6. Levers, pathways and the theoretical limit
 
@@ -247,7 +247,7 @@ MODEL v2.1.1 (design: [FIGURE_PLAN_v2.md](FIGURE_PLAN_v2.md), amended by the v2.
 | `outputs/diagnostics/pathways_si/D28_pathways_annual.png` | Annual carbon of the Reference and P1-P5 against the boundaries | pw_4_annual_SI |
 | `outputs/diagnostics/pathways_si/D30_l6_estimator.png` | L6 material carbon: Harrell-Davis estimator of the case-study ratios | pw_6_L5_estimator_SI |
 | `outputs/diagnostics/pathways_si/D32_tl_staircase.png` | Reference -> P5 -> TL: cumulative LoE and the human terms (size, space per person, dwellings built) | pw_8_staircase |
-| `outputs/diagnostics/pathways_si/D34_tl_dwellings.png` | TL: dwellings built per year (proportional reoccupation) and annual carbon | pw_10_T_annual_SI |
+| `outputs/diagnostics/pathways_si/D34_tl_dwellings.png` | TL: dwellings built and re-occupied per year (constant-share reoccupation) and annual carbon | pw_10_T_annual_SI |
 
 ## Superseded diagnostics of model-v1.1.0 (data kept in outputs/data/)
 

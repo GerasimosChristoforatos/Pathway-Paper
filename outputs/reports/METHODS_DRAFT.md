@@ -720,32 +720,32 @@ Cumulative budgets 2026–2050: AR 4,451 kt, AtP 1,113 kt.
 
 ### Theoretical limit TL
 
-> TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).
+> TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at its limit, adopted by 2030, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).
 
-**Definition.** TL = P5 Combined (Moderate) with ten items at full strength from 1 January 2027 (w = 1 for every lever and item in 2027–2050; 2026 observed and untouched): TL1 No extra space (limit of L1); TL2 Historical maximum household size (limit of L2); TL3 No vacancy (limit of L3); TL4 Overbuild fully absorbed (limit of L4); TL5 Building lifetime extension at the limit (limit of L5); TL6 Best-practice materials (limit of L6); TL7 Zero-emission construction (limit of L7); TL8 Lowest-carbon soils (limit of L8); TL9 Brownfield maximum (limit of L9); TL10 Minimum space per person (limit of no lever). The typology shares stay at the Reference held mix. The adopted decarbonisation applies in TL as in every run (A1–A3 item paths of Horup et al. 2025; A4–A5 e^(-0.01 (t - 2025)) until TL7 sets A4–A5 to zero). The potentials hierarchy (theoretical > technical > realisable) places TL at the theoretical end.
+**Definition.** TL = P5 Combined (Moderate) with ten items, every lever and item on the standard adoption rule with full roll-out by 2030 (normalised logistic, midpoint 2028, k = ln(81) / (8/3) = 1.6479, the window of the pathways' 2030 sensitivity; the pathways keep full roll-out by 2035; L4 / TL4 act through the absorption rate, as in the pathways; 2026 observed and untouched): TL1 No extra space (limit of L1); TL2 Historical maximum household size (limit of L2); TL3 No vacancy (limit of L3); TL4 Overbuild fully absorbed (limit of L4); TL5 Building lifetime extension at the limit (limit of L5); TL6 Best-practice materials (limit of L6); TL7 Zero-emission construction (limit of L7); TL8 Lowest-carbon soils (limit of L8); TL9 Brownfield maximum (limit of L9); TL10 Minimum space per person (limit of no lever). The typology shares stay at the Reference held mix. The adopted decarbonisation applies in TL as in every run (A1–A3 item paths of Horup et al. 2025; A4–A5 e^(-0.01 (t - 2025)) until TL7 sets A4–A5 to zero). The potentials hierarchy (theoretical > technical > realisable) places TL at the theoretical end.
 
 | item | limit of | TL value | vs Ambitious | how it works (model terms) | source (full citation) | tag |
 |---|---|---|---|---|---|---|
 | TL1 No extra space | limit of L1 Dwelling size | f = 1 | f = 0.5 | L1 with f = 1: new-dwelling size = occupied area S x OLF | DECISION (author): limit of L1 | DECISION |
-| TL2 Historical maximum household size | limit of L2 Household occupancy | S = 2.7905 (1991; history 1991–2025) | S target 2.6933 | S = the highest household size in the model history from 2027; households = population / S; household decline releases dwellings (banking rule) | DATA: Stats NZ population and household estimates (projection history) | DATA |
-| TL3 No vacancy | limit of L3 Vacancy | v = 0 | v* = 0.04 | v = 0 from 2027; banking rule: built_t = max(0, raw_t - bank_(t-1)), unused release carried forward | DECISION (author): limit of L3 | DECISION |
-| TL4 Overbuild fully absorbed | limit of L4 Overbuild absorption | a = 1 | a = 0.2 | the 2026 overbuild absorbed in full in 2027 (absorption 1) | DECISION (author): limit of L4 | DECISION |
+| TL2 Historical maximum household size | limit of L2 Household occupancy | S = 2.7905 (1991; history 1991–2025) | S target 2.6933 | S = the highest household size in the model history, reached by 2030; households = population / S; household decline releases dwellings (re-occupied at a constant share of each year's need) | DATA: Stats NZ population and household estimates (projection history) | DATA |
+| TL3 No vacancy | limit of L3 Vacancy | v = 0 | v* = 0.04 | v = 0 by 2030; the dwellings released are re-occupied at a constant share s = min(R, G+) / G+ of each year's need, never ahead of the cumulative release | DECISION (author): limit of L3 | DECISION |
+| TL4 Overbuild fully absorbed | limit of L4 Overbuild absorption | a = 1 | a = 0.2 | the 2026 overbuild absorbed in full from 2027 (absorption 1; L4 / TL4 act through the absorption rate, not the adoption path) | DECISION (author): limit of L4 | DECISION |
 | TL5 Building lifetime extension at the limit | limit of L5 Building lifetime extension | d = 0.40 (demolition); surge removed | d = 0.4 (both) | demolition x (1 - 0.40); the recent replacement surge removed (replacement at the long-run 1991–2023 rate, as the Low variant) | LITERATURE: Pellan2024; DATA: the long-run census rate | LITERATURE + DATA |
 | TL6 Best-practice materials | limit of L6 Material carbon | Detached r = 0.530 (SD_2), Townhouses r = 0.827 (= r_Ambitious), Apartments r = 0.827 (= r_Ambitious) | r = 0.827 | r per typology = min(own best independent case, r_Ambitious); exceeds Ambitious only where case-study evidence exists (detached) | DATA: case studies (outputs/data/factors/factors_building.csv, 2025 factors) | DATA |
-| TL7 Zero-emission construction | limit of L7 Construction-stage carbon | A4–A5 factor 0 | linear to zero in 2050 | A4–A5 = 0 from 2027 (emission-free construction sites, zero-carbon transport) | LITERATURE: City of Oslo (2025) Climate and environmental requirements for the City of Oslo's construction sites (emission-free construction sites) | LITERATURE |
+| TL7 Zero-emission construction | limit of L7 Construction-stage carbon | A4–A5 factor 0 | linear to zero in 2050 | A4–A5 = 0 by 2030 (emission-free construction sites, zero-carbon transport) | LITERATURE: City of Oslo (2025) Climate and environmental requirements for the City of Oslo's construction sites (emission-free construction sites) | LITERATURE |
 | TL8 Lowest-carbon soils | limit of L8 Soil-aware planning | Detached 22.9 (vs 50.1), Townhouses 13.8 (vs 30.3), Apartments 2.5 (vs 5.5) kg CO₂e/m² | Detached 42.81, Townhouses 25.85, Apartments 4.71 | soil factor at the lowest soil order (SOC_low) for every typology | DATA: Christoforatos G, Pickering K, Schipper LA (2026) Integrating soil organic carbon loss into building life cycle assessment and urban planning. Journal of Environmental Management 415, 130603, doi:10.1016/j.jenvman.2026.130603 (SOC-aware scenario: same developed area, inverse-SOC allocation, 14.6% less SOC loss than BAU) | DATA |
 | TL9 Brownfield maximum | limit of L9 Brownfield development | s = 0.89 (London) | s = 0.59 | L9 with s = 0.89 | DATA: UK Department for Levelling Up, Housing and Communities (2022) Land use change statistics in England: new residential addresses 2020 to 2021 (66% on previously developed land in 2020–21; 59% three-year average; regions 41% North East - 89% London) | DATA |
 | TL10 Minimum space per person | no lever counterpart | 19.69 m²/person (A_1); replaces Detached 36.46, Townhouses 33.11, Apartments 20.63 | no lever (Reference OLF per typology) | OLF of every new building = the lowest design OLF of the independent case studies (`olf`) | DATA: Christoforatos G, Pickering K (2025) Smart and Sustainable Built Environment, doi:10.1108/SASBE-06-2025-0304 | DATA |
 
-Strength check (every TL item against the Ambitious setting of its lever): TL1 f = 1 vs f = 0.5: OK; TL2 S = 2.7905 vs S target 2.6933: OK; TL3 v = 0 vs v* = 0.04: OK; TL4 a = 1 vs a = 0.2: OK; TL5 demolition d = 0.4, surge removed (d = 1) vs d = 0.4 (both): OK; TL6 Detached r = 0.530, Townhouses r = 0.827, Apartments r = 0.827 vs r = 0.827: OK; TL7 A4–A5 = 0 from 2027 vs linear to zero in 2050: OK; TL8 Detached 22.93, Townhouses 13.84, Apartments 2.52 vs Detached 42.81, Townhouses 25.85, Apartments 4.71: OK; TL9 s = 0.89 vs s = 0.59: OK; TL10 OLF 19.69 m²/person vs no lever (Reference OLF per typology): OK.
+Strength check (every TL item against the Ambitious setting of its lever): TL1 f = 1 vs f = 0.5: OK; TL2 S = 2.7905 vs S target 2.6933: OK; TL3 v = 0 vs v* = 0.04: OK; TL4 a = 1 vs a = 0.2: OK; TL5 demolition d = 0.4, surge removed (d = 1) vs d = 0.4 (both): OK; TL6 Detached r = 0.530, Townhouses r = 0.827, Apartments r = 0.827 vs r = 0.827: OK; TL7 A4–A5 = 0 by 2030 vs linear to zero in 2050: OK; TL8 Detached 22.93, Townhouses 13.84, Apartments 2.52 vs Detached 42.81, Townhouses 25.85, Apartments 4.71: OK; TL9 s = 0.89 vs s = 0.59: OK; TL10 OLF 19.69 m²/person vs no lever (Reference OLF per typology): OK.
 
-Table note: TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).
+Table note: TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at its limit, adopted by 2030, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).
 
-**TL2 and TL6.** TL2 sets the household size to 2.7905, the highest of the model's household-size history (1991; history 1991–2025), from 2027. TL6 applies one rule to every typology: r_TL = min(own best independent case, r_Ambitious); it exceeds the Ambitious ratio only where case-study evidence of a better case exists (Detached r = 0.530 (SD_2), Townhouses r = 0.827 = r_Ambitious, Apartments r = 0.827 = r_Ambitious).
+**TL2 and TL6.** TL2 sets the household size to 2.7905, the highest of the model's household-size history (1991; history 1991–2025), reached along the adoption path (full by 2030). TL6 applies one rule to every typology: r_TL = min(own best independent case, r_Ambitious); it exceeds the Ambitious ratio only where case-study evidence of a better case exists (Detached r = 0.530 (SD_2), Townhouses r = 0.827 = r_Ambitious, Apartments r = 0.827 = r_Ambitious).
 
-**Banking rule.** raw_t = requirement_t + absorbed 2026 overbuild_t − release_t, with release_t = −min(Δ households_t, 0) / (1 − v_t) the dwellings that a fall in households (TL2) no longer needs; D_t = raw_t − bank_(t−1); built_t = max(0, D_t); bank_t = max(0, −D_t). The banked path enters engine.forward as a stock-adding join, join_t = built_t − requirement_t (join_redev = 0), so the stock identity holds and the implied vacancy is never negative. Banked zero-building years carry floating-point noise of about 1e-12 dwellings; the checks use 1e-6 dwellings. In those years every demand band is zero except the maintenance (B2, B4) of the cohorts already built.
+**Re-occupation of released dwellings (constant share).** In every TL-family run (the TL base, the Shapley subsets, TL and the instant sensitivity) the dwellings released in 2027–2050 on the adoption path, released_t = −min(Δ vacant stock_t, 0) (zero vacancy, TL3) + −min(Δ households_t, 0) / (1 − v_t) (the household-size change, TL2) + −min(join_t, 0) (the absorbed 2026 overbuild, TL4), R = Σ released_t, meet a constant share of each year's need: target_t = max(gross_t, 0) × s, s = min(R, G+) / G+, G+ = Σ max(gross_t, 0) over 2027–2050, gross_t the need before any release (requirement + vacancy release + positive join). Two constraints apply in year order: the dwellings re-occupied up to year t never exceed those released up to t, and re-occupied_t never exceeds max(gross_t, 0); where either binds the shortfall is carried forward (re-occupied_t = min(target_t + carry_(t−1), released up to t − re-occupied up to t−1, max(gross_t, 0))). built_t = max(gross_t, 0) − re-occupied_t enters engine.forward as a stock-adding join, join_t = built_t − requirement_t (join_redev = 0), so the stock identity holds and the released dwellings stay vacant until re-occupied (implied vacancy never negative; checked). Where R > G+ (more released than the whole need; low-growth Monte Carlo draws) s = 1 and the surplus R − G+ stays vacant in 2050; a year with gross_t ≤ 0 builds nothing and its excess stock also stays vacant. Asserted: built_t ≥ 0 in every run, Σ re-occupied = min(R, G+), built_t > 0 in every year 2027–2050 of the deterministic TL and instant TL. TL: R = 153,151, G+ = 414,909, s = 36.9%; the release constraint binds in 0 years and the need cap in 0; over the 1,024 Shapley subsets the release constraint binds in 128 and the need cap in 0. An even rate R / 24 and a rule proportional to the need from 2027 at full strength were tried first and rejected (CHANGELOG): with every limit from 2027 the 2027 need is below R / 24, and in 89 of 5,000 Monte Carlo draws the proportional rule gave dwellings built ≤ 0.
 
-**Soil (TL8, TL9).** The soil factor by year (TL8: lowest soil order) and the brownfield share of all new floor area (TL9: s = 0.89, London) are applied inside engine.forward; the soil-bearing share is clipped to [0, 1] and set to 0 where the floor area built is at most 1e-3 m² (banked zero-building years).
+**Soil (TL8, TL9).** The soil factor by year (TL8: lowest soil order) and the brownfield share of all new floor area (TL9: s = 0.89, London) are applied inside engine.forward; the soil-bearing share is clipped to [0, 1] and set to 0 where the floor area built is at most 1e-3 m² (a zero-building year: none in the deterministic TL).
 
 #### Results (Reference)
 
@@ -754,37 +754,43 @@ Table note: TL is a hyper-optimistic theoretical limit; a thought experiment, no
 | Reference | 89.57 | 21,578 | 8,208–8,969 | 4.848 | 19.39 | +0.0% |
 | P5 Combined, Moderate | 70.73 | 15,310 | 6,482–7,083 | 3.440 | 13.76 | -29.0% |
 | P5 Combined, Ambitious | 60.90 | 11,612 | 5,589–6,108 | 2.609 | 10.43 | -46.2% |
-| TL Theoretical limit | 18.36 | 2,818 | 1,699–1,857 | 0.633 | 2.53 | -86.9% |
+| TL Theoretical limit | 19.61 | 3,211 | 1,783–1,947 | 0.721 | 2.89 | -85.1% |
+| TL, all limits from 1 January 2027 (instant) | 18.36 | 2,924 | 1,667–1,820 | 0.657 | 2.63 | -86.4% |
 
-Table note: TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).
+Table note: TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at its limit, adopted by 2030, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).
 
-**Human terms (TL, 2027–2050).** New-dwelling size Detached 54.9 m², Townhouses 54.9 m², Apartments 54.9 m² (2050); floor area per person in new dwellings 19.7 m²; household size 2.790 (2050). Released dwellings: 114,399 from the vacancy (TL3), 62,085 from the larger households (TL2) and 16,760 from the 2026 overbuild (TL4); release in excess of the yearly need 187,088 dwellings, used 187,088, unused in 2050 0; no new building in 10 years (2027–2036). By year: outputs/data/pathways/theoretical_limit.json.
+**Human terms (TL, 2027–2050).** New-dwelling size Detached 54.9 m², Townhouses 54.9 m², Apartments 54.9 m² (2050); floor area per person in new dwellings 19.7 m²; household size 2.790 (2050). Released dwellings: 114,515 from the vacancy (TL3), 21,876 from the larger households (TL2) and 16,760 from the 2026 overbuild (TL4), re-occupied at 36.9% of each year's need; TL builds at least 984 dwellings a year in 2027–2050. By year: outputs/data/pathways/theoretical_limit.json.
 
-**Gap.** TL is within the AR budget (cumulative LoE AR 0.633): margin 1,633 kt (36.7% of the budget). AtP: TL 2.53; the minimum attainable (2026 cohort alone) is 1.28, so AtP is not attainable within 2026–2050.
+**Gap.** TL is within the AR budget (cumulative LoE AR 0.721): margin 1,240 kt (27.9% of the budget). AtP: TL 2.89; the minimum attainable (2026 cohort alone) is 1.28, so AtP is not attainable within 2026–2050.
 
-#### Shapley attribution of P5 Combined (Moderate, full strength from 2027) − TL
+#### Shapley attribution of TL base − TL, and the two separate lines
 
 | player | carbon (kt) | LoE AR |
 |---|---|---|
-| TL1 No extra space | 2,831 (24%) | 0.636 |
-| TL2 Historical maximum household size | 1,402 (12%) | 0.315 |
-| TL3 No vacancy | 1,980 (17%) | 0.445 |
-| TL4 Overbuild fully absorbed | 67 (1%) | 0.015 |
-| TL5 Building lifetime extension at the limit | 817 (7%) | 0.184 |
-| TL6 Best-practice materials | 1,428 (12%) | 0.321 |
-| TL7 Zero-emission construction | 1,041 (9%) | 0.234 |
-| TL8 Lowest-carbon soils | 288 (2%) | 0.065 |
-| TL9 Brownfield maximum | 542 (5%) | 0.122 |
-| TL10 Minimum space per person | 1,230 (11%) | 0.276 |
-| full strength from 2027 (separate line) | 866 | 0.195 |
+| TL1 No extra space | 2,730 (23%) | 0.613 |
+| TL2 Historical maximum household size | 1,752 (15%) | 0.394 |
+| TL3 No vacancy | 1,930 (17%) | 0.434 |
+| TL4 Overbuild fully absorbed | 94 (1%) | 0.021 |
+| TL5 Building lifetime extension at the limit | 764 (7%) | 0.172 |
+| TL6 Best-practice materials | 1,374 (12%) | 0.309 |
+| TL7 Zero-emission construction | 1,021 (9%) | 0.229 |
+| TL8 Lowest-carbon soils | 277 (2%) | 0.062 |
+| TL9 Brownfield maximum | 517 (4%) | 0.116 |
+| TL10 Minimum space per person | 1,177 (10%) | 0.264 |
+| TL's faster adoption (by 2030 instead of 2035) (separate line) | 546 | 0.123 |
+| Released dwellings re-occupied at a constant share of each year's need (separate line) | -82 | -0.018 |
 
-Players TL1-TL10 over 1,024 subsets, each applied at full strength from 2027 (exact rational arithmetic; the values add up to P5 Combined (Moderate) at full strength from 2027 − TL exactly; tested). "Full strength from 2027" is a separate line, not a player: P5 Combined on its adoption path minus P5 Combined at full strength from 2027.
+Players TL1-TL10 over 1,024 subsets, every subset adopted by 2030 with the re-occupation rule (exact rational arithmetic; the values add up to TL base − TL exactly; tested). The TL base is P5 Combined (Moderate) adopted by 2030 with its released dwellings re-occupied at a constant share of need; its inputs are checked identical to the pathway run of P5 Moderate by 2030. Two separate lines, not players, close the gap to P5 Combined on its adoption path exactly: TL's faster adoption (P5 by 2035 − P5 by 2030, pathway runs) and the re-occupation rule (P5 by 2030 − TL base; negative where deferring the use of released dwellings moves construction to earlier years with higher carbon per m²).
+
+#### Sensitivity: every limit from 1 January 2027 (instant)
+
+TL with every lever and item at full strength from 2027 and the same re-occupation rule: 2,924 kt, LoE AR 0.657, LoE AtP 2.63 (TL adopted by 2030: 3,211 kt, 0.721, 2.89); share of need 43.2%. Monte Carlo: outputs/data/pathways/montecarlo_summary.csv (run TL_from2027); ED7.
 
 #### Limitations of TL
 
 * TL combines attributes of different buildings and places (the OLF of one apartment case for every typology; each typology's best A1–A3 case; the lowest soil order everywhere; London's brownfield share nationally; the 1991 household size) that have not been observed together; it is a hyper-optimistic thought experiment, not a design, a policy or a feasible pathway.
 * TL1 + TL10 give every new dwelling the occupied area of the case-study minimum (about 20 m² per person); no design rule, accessibility standard or household-size variation is modelled.
-* TL2 and TL3 assume every released dwelling is usable where it is needed (no spatial or condition mismatch; Napiontek et al. 2025 on hibernating stock) and an immediate reallocation in 2027.
+* TL2 and TL3 assume every released dwelling is usable where it is needed (no spatial or condition mismatch; Napiontek et al. 2025 on hibernating stock); the constant-share re-occupation is a modelling rule for the timing of that reuse, not an observed process.
 * TL7 treats A5 as energy-related (an upper bound of the construction-stage saving).
 * As in P1-P5, the renovation carbon of the retained stock (L5, TL5) and any rebound are not modelled; static budgets.
 

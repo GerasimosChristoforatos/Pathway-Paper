@@ -19,10 +19,12 @@
   "$\\mathdefault{2050}$",
   "$\\mathdefault{2055}$",
   "1,000",
+  "10",
   "100",
   "2,000",
   "20",
   "200",
+  "5",
   "50",
   "500",
   "Ability to pay (AtP)",
@@ -37,8 +39,6 @@
   "Reference",
   "Reference, Monte Carlo 5\u201395%",
   "TL Theoretical limit",
-  "TL builds nothing 2027\u20132036\n(released dwellings used)",
-  "TL zero-building years",
   "Within AR only (between AtP and AR)",
   "Within both budgets (below AtP)"
  ],
@@ -46,5 +46,6 @@
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,
- "boundary_zones": true
+ "boundary_zones": true,
+ "white_segment_edges": 0
 }

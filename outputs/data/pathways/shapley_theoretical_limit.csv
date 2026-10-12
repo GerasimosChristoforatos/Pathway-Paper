@@ -1,34 +1,37 @@
 level,setting,metric,player,name,reduction,share_of_TL_base_minus_TL
-TL,TL,carbon_kt,TL1,No extra space,2748.0726001030544,0.23089968288639542
-TL,TL,carbon_kt,TL2,Historical maximum household size,1587.1061252034253,0.1333524816639794
-TL,TL,carbon_kt,TL3,No vacancy,2200.4391058915135,0.1848861968719897
-TL,TL,carbon_kt,TL4,Overbuild fully absorbed,237.7918894552134,0.019979847645257467
-TL,TL,carbon_kt,TL5,Building lifetime extension at the limit,738.8005187662588,0.06207580014190179
-TL,TL,carbon_kt,TL6,Best-practice materials,1384.3037238137558,0.11631253513282946
-TL,TL,carbon_kt,TL7,Zero-emission construction,1002.8151175334727,0.08425894302191252
-TL,TL,carbon_kt,TL8,Lowest-carbon soils,280.79221202195566,0.023592838380764657
-TL,TL,carbon_kt,TL9,Brownfield maximum,527.5022551433773,0.044322010790361466
-TL,TL,carbon_kt,TL10,Minimum space per person,1193.9631747103294,0.10031966346460812
-TL,TL,LoE_AR,TL1,No extra space,0.6174017365037731,0.23089968288639545
-TL,TL,LoE_AR,TL2,Historical maximum household size,0.35657066617513056,0.1333524816639794
-TL,TL,LoE_AR,TL3,No vacancy,0.49436646069586493,0.1848861968719897
-TL,TL,LoE_AR,TL4,Overbuild fully absorbed,0.05342403452902094,0.01997984764525746
-TL,TL,LoE_AR,TL5,Building lifetime extension at the limit,0.16598423316730102,0.06207580014190179
-TL,TL,LoE_AR,TL6,Best-practice materials,0.31100762145046734,0.11631253513282946
-TL,TL,LoE_AR,TL7,Zero-emission construction,0.2252996499925741,0.08425894302191249
-TL,TL,LoE_AR,TL8,Lowest-carbon soils,0.06308479597394549,0.023592838380764668
-TL,TL,LoE_AR,TL9,Brownfield maximum,0.11851244698664953,0.04432201079036146
-TL,TL,LoE_AR,TL10,Minimum space per person,0.26824434600456754,0.10031966346460813
-TL,TL,LoE_AtP,TL1,No extra space,2.4691458946145044,0.23089968288639542
-TL,TL,LoE_AtP,TL2,Historical maximum household size,1.4260163917127278,0.1333524816639794
-TL,TL,LoE_AtP,TL3,No vacancy,1.9770966693010557,0.1848861968719897
-TL,TL,LoE_AtP,TL4,Overbuild fully absorbed,0.2136562431425386,0.01997984764525747
-TL,TL,LoE_AtP,TL5,Building lifetime extension at the limit,0.6638129821542434,0.062075800141901796
-TL,TL,LoE_AtP,TL6,Best-practice materials,1.2437982375087642,0.11631253513282946
-TL,TL,LoE_AtP,TL7,Zero-emission construction,0.9010303550285682,0.0842589430219125
-TL,TL,LoE_AtP,TL8,Lowest-carbon soils,0.25229207464451164,0.02359283838076465
-TL,TL,LoE_AtP,TL9,Brownfield maximum,0.4739612874995803,0.044322010790361466
-TL,TL,LoE_AtP,TL10,Minimum space per person,1.072777069661972,0.10031966346460813
+TL,TL,carbon_kt,TL1,No extra space,2730.4924992204315,0.2346669305351927
+TL,TL,carbon_kt,TL2,Historical maximum household size,1752.1002387419735,0.150580887928806
+TL,TL,carbon_kt,TL3,No vacancy,1929.9981167770954,0.16586997918217697
+TL,TL,carbon_kt,TL4,Overbuild fully absorbed,93.74209233192025,0.008056483977069678
+TL,TL,carbon_kt,TL5,Building lifetime extension at the limit,763.8304401326761,0.06564593928987385
+TL,TL,carbon_kt,TL6,Best-practice materials,1374.1837197043683,0.1181015789592998
+TL,TL,carbon_kt,TL7,Zero-emission construction,1020.706879566016,0.0877226912259592
+TL,TL,carbon_kt,TL8,Lowest-carbon soils,277.2156181582324,0.023824763564881227
+TL,TL,carbon_kt,TL9,Brownfield maximum,516.8276241052007,0.0444177569428191
+TL,TL,carbon_kt,TL10,Minimum space per person,1176.5111332632382,0.10111298839392148
+TL,TL,LoE_AR,TL1,No extra space,0.6134520647183785,0.2346669305351927
+TL,TL,LoE_AR,TL2,Historical maximum household size,0.39363942928123635,0.150580887928806
+TL,TL,LoE_AR,TL3,No vacancy,0.43360724483862084,0.16586997918217697
+TL,TL,LoE_AR,TL4,Overbuild fully absorbed,0.021060772043305632,0.008056483977069684
+TL,TL,LoE_AR,TL5,Building lifetime extension at the limit,0.17160763515296884,0.06564593928987385
+TL,TL,LoE_AR,TL6,Best-practice materials,0.30873398861037177,0.11810157895929982
+TL,TL,LoE_AR,TL7,Zero-emission construction,0.22931934181133837,0.08772269122595919
+TL,TL,LoE_AR,TL8,Lowest-carbon soils,0.06228125269705074,0.023824763564881234
+TL,TL,LoE_AR,TL9,Brownfield maximum,0.11611420767548282,0.044417756942819096
+TL,TL,LoE_AR,TL10,Minimum space per person,0.26432344497212534,0.10111298839392148
+TL,TL,LoE_AtP,TL1,No extra space,2.453350156932898,0.23466693053519272
+TL,TL,LoE_AtP,TL2,Historical maximum household size,1.5742637626388043,0.150580887928806
+TL,TL,LoE_AtP,TL3,No vacancy,1.734105178471334,0.16586997918217697
+TL,TL,LoE_AtP,TL4,Overbuild fully absorbed,0.08422736081472332,0.008056483977069684
+TL,TL,LoE_AtP,TL5,Building lifetime extension at the limit,0.6863023907608774,0.06564593928987385
+TL,TL,LoE_AtP,TL6,Best-practice materials,1.2347054040082084,0.1181015789592998
+TL,TL,LoE_AtP,TL7,Zero-emission construction,0.9171061205554386,0.08772269122595919
+TL,TL,LoE_AtP,TL8,Lowest-carbon soils,0.24907850159153458,0.023824763564881217
+TL,TL,LoE_AtP,TL9,Brownfield maximum,0.4643701211659651,0.044417756942819096
+TL,TL,LoE_AtP,TL10,Minimum space per person,1.0570963935073054,0.10111298839392148
 TL,TL,carbon_kt,by2030,"P5 Combined: TL's faster adoption (by 2030 instead of 2035) (separate line, not a Shapley player)",545.8986237673253,
+TL,TL,carbon_kt,reoccupation,"P5 Combined by 2030: released dwellings re-occupied at a constant share of each year's need (separate line, not a Shapley player)",-82.2339445037178,
 TL,TL,LoE_AR,by2030,"P5 Combined: TL's faster adoption (by 2030 instead of 2035) (separate line, not a Shapley player)",0.12264550734806878,
+TL,TL,LoE_AR,reoccupation,"P5 Combined by 2030: released dwellings re-occupied at a constant share of each year's need (separate line, not a Shapley player)",-0.01847526886089046,
 TL,TL,LoE_AtP,by2030,"P5 Combined: TL's faster adoption (by 2030 instead of 2035) (separate line, not a Shapley player)",0.4904904425378884,
+TL,TL,LoE_AtP,reoccupation,"P5 Combined by 2030: released dwellings re-occupied at a constant share of each year's need (separate line, not a Shapley player)",-0.07388727883742696,

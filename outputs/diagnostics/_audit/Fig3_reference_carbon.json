@@ -85,5 +85,6 @@
   "legend: Maintenance (B2, B4)"
  ],
  "boundary_drawn": false,
- "boundary_zones": false
+ "boundary_zones": false,
+ "white_segment_edges": 0
 }

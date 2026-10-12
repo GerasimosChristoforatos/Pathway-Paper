@@ -60,7 +60,7 @@
   "TL8 Lowest-carbon soils",
   "TL9 Brownfield maximum",
   "TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway.",
-  "Theoretical limit TL = P5 with TL1\u2013TL10, each at its limit from 2027",
+  "Theoretical limit TL = P5 with TL1\u2013TL10, each at its limit, adopted by 2030",
   "Vacancy",
   "against the boundaries",
   "household size",
@@ -71,5 +71,6 @@
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
- "boundary_zones": false
+ "boundary_zones": false,
+ "white_segment_edges": 0
 }

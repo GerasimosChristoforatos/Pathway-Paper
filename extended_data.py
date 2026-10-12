@@ -335,8 +335,8 @@ def setting_dots(ax, r, rows, value, src, panel, unit, fmt):
         else:                                     # a lever: its shade, with a dark edge (light shades stay visible)
             col, edge, line = S.LEVER[pw], '#555555', '#8C8C8C'
         ax.plot([m_, a_], [i, i], color=line, lw=S.LW)
-        ax.plot(m_, i, marker='o', mfc='white', mec=edge, mew=S.LW, ms=5, lw=0)
-        ax.plot(a_, i, marker='o', mfc=col, mec=edge, mew=S.LW_THIN, ms=5, lw=0)
+        ax.plot(m_, i, marker='o', mfc=col, mec=edge, mew=S.LW_THIN, ms=5, lw=0)       # Moderate filled
+        ax.plot(a_, i, marker='o', mfc='white', mec=edge, mew=S.LW, ms=5, lw=0)        # Ambitious hollow
         ax.text(min(m_, a_), i - 0.16, f'{fmt(a_)} | {fmt(m_)}', ha='left', va='bottom', fontsize=S.FONT_MIN)
         src.add(panel, f'{lab}, Moderate', 'value', m_, unit)
         src.add(panel, f'{lab}, Ambitious', 'value', a_, unit)
@@ -355,8 +355,9 @@ def N_P(lever):
 
 
 def setting_legend(fig):
-    fig.legend(handles=[Line2D([0], [0], marker='o', mfc='white', mec=S.INK, lw=0, ms=5, label='Moderate (open)'),
-                        Line2D([0], [0], marker='o', mfc=S.INK, mec=S.INK, lw=0, ms=5, label='Ambitious (filled)'),
+    fig.legend(handles=[Line2D([0], [0], marker='o', mfc=S.INK, mec=S.INK, lw=0, ms=5, label='Moderate (filled)'),
+                        Line2D([0], [0], marker='o', mfc='white', mec=S.INK, mew=S.LW, lw=0, ms=5,
+                               label='Ambitious (hollow)'),
                         Line2D([0], [0], color=S.REFERENCE, lw=S.LW_BOLD, label='Reference')],
                loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.005), frameon=False)
 
@@ -433,7 +434,7 @@ def ed7():
     ins.set_title('adoption path w(y)', fontsize=S.FONT_MIN, fontweight='normal', pad=2)
     ins.tick_params(labelsize=S.FONT_MIN)
     for i, (w, suf) in enumerate(windows):
-        for setting, mfc in (('moderate', 'white'), ('ambitious', S.PATHWAY['P5'])):
+        for setting, mfc in (('moderate', S.PATHWAY['P5']), ('ambitious', 'white')):
             v = float(r.loc[f'P5-{setting}{suf}', 'LoE_AR'])
             b.plot(v, i, marker='o', mfc=mfc, mec=S.PATHWAY['P5'], mew=S.LW, ms=5, lw=0)
             b.text(v, i - 0.18, f'{v:.2f}', ha='center', va='bottom', fontsize=S.FONT_MIN)
@@ -636,7 +637,7 @@ def ed9():
     setting_legend(fig)
     fig.tight_layout(rect=(0, 0.07, 1, 1))
     save(fig, fid, src)
-    cap = (h['caption'] + ' (a) Each lever alone on the Reference, Moderate (open) and Ambitious (filled), full roll-out '
+    cap = (h['caption'] + ' (a) Each lever alone on the Reference, Moderate (filled) and Ambitious (hollow), full roll-out '
            'by 2035; the cumulative LoE AR of every run: data/pathways/runs.csv. (b) Order-free (Shapley) attribution of '
            'Reference − P5 Combined (Moderate) to the nine levers (exact, 512 subsets; adds up to the difference).')
     return dict(caption=cap)

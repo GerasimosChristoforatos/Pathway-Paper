@@ -96,3 +96,39 @@ def test_no_white_borders_between_filled_segments():
     assert not missing, missing
     bad = {r['figure']: r['white_segment_edges'] for r in recs if r['white_segment_edges']}
     assert not bad, bad
+
+
+def _records():
+    return [json.load(open(os.path.join(L.FIGURE_AUDIT, f))) for f in sorted(os.listdir(L.FIGURE_AUDIT))]
+
+
+def test_atp_dotted_in_every_boundary_figure():
+    """MODEL v2.1.2: every AtP boundary line is dotted (figaudit.styling)."""
+    import figure_plan as FP
+    recs = {r['figure']: r for r in _records()}
+    for f in FP.PB_FIGURES:
+        assert 'atp_linestyles' in recs[f], f
+        assert set(recs[f]['atp_linestyles']) <= {'dotted'}, (f, recs[f]['atp_linestyles'])
+    bad = {r['figure']: r['atp_linestyles'] for r in recs.values() if set(r.get('atp_linestyles', [])) - {'dotted'}}
+    assert not bad, bad
+
+
+def test_net_total_convention_for_negative_bands():
+    """No band segment drawn down from zero (the old convention); a figure with negative bar segments marks the net
+    totals with ticks (area figures have no tick: the stack is the total)."""
+    recs = _records()
+    down = {r['figure']: r['band_rectangles_below_zero'] for r in recs if r.get('band_rectangles_below_zero')}
+    assert not down, down
+    area_only = {'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band'}
+    no_tick = [r['figure'] for r in recs if r.get('negative_band_segments') and not r.get('net_total_ticks')
+               and r['figure'] not in area_only]
+    assert not no_tick, no_tick
+
+
+def test_tl_colour_and_no_retired_colours():
+    recs = {r['figure']: r for r in _records()}
+    for f in ('Fig6_emissions_solution_space', 'K3_annual_emissions', 'K4_solution_space', 'D34_tl_dwellings',
+              'ED7_rollout_timing', 'ED8_theoretical_limit'):
+        assert recs[f]['tl_colour_used'], f
+    old = {f: r['retired_colours'] for f, r in recs.items() if r.get('retired_colours')}
+    assert not old, old

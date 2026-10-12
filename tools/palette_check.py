@@ -40,7 +40,14 @@ def groups():
                                          Reference=S.REFERENCE, **{N.TL['TL']: S.TL}),
         'Levers (ED8, ED9, Fig5b TL steps)': {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
-        'Demand bands (Fig2, Fig4)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER},
+        # the Recent replacement surge is the Historical replacement face with a fine light hatch (BAND_HATCHCOLOR),
+        # so it is told apart by its hatch, not its colour, and is left out of the distance check
+        'Demand bands (Fig2, Fig4; the surge by its hatch)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
+                                                              if b != 'redevelopment'},
+        'P5 and TL against every lever family, growth and the Reference': dict(
+            {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
+            **{f"P5 {N.PATHWAYS['P5']}": S.PATHWAY['P5'], N.TL['TL']: S.TL, N.BANDS['growth']: S.GROWTH,
+               'Reference': S.REFERENCE}),
         'Carbon components (Fig3c, diagnostics)': {N.COMPONENTS[c]: S.COMPONENT[c][0] for c in S.COMPONENT},
         'Projection variants and boundaries (ED5, ED10)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                              for k in S.SCENARIO},
@@ -116,6 +123,7 @@ def preview(G, path):
         ax.text(0.42 + 0.115 * j + 0.0525, 0.55, v, ha='center', va='bottom', fontsize=S.FONT_SMALL, rotation=0)
     ax.set_xlim(-0.03, 1.0)
     ax.set_ylim(-y, 1.2)
+    fig.subplots_adjust(top=0.985, bottom=0.005, left=0.01, right=0.99)
     fig.suptitle('Release palette: normal vision, simulated colour-vision deficiency (full severity; '
                  'Machado et al. 2009) and greyscale', fontsize=S.FONT_SIZE)
     S.save(fig, path)
@@ -130,18 +138,26 @@ def main():
          'plotting module imports it. Preview with simulated colour-vision deficiency: '
          '[palette_preview.png](palette_preview.png).', '',
          '## Rules', '',
-         '* **Four pathway families, lever shades** (MODEL v2.1.0): P1 Space per person greens (L1 '
-         f"{S.LEVER['L1']}, L2 {S.LEVER['L2']}), P2 Existing stock magentas (L3 {S.LEVER['L3']}, L4 {S.LEVER['L4']}, "
-         f"L5 {S.LEVER['L5']}), P3 Construction purples (L6 {S.LEVER['L6']}, L7 {S.LEVER['L7']}), P4 Land "
-         f"ochres (L8 {S.LEVER['L8']}, L9 {S.LEVER['L9']}); each pathway takes the colour of its first lever; P5 "
-         f"Combined sky blue ({S.PATHWAY['P5']}).",
+         '* **Source** (MODEL v2.1.1): the palette is inspired by Francis Bacon, *Head VI* (1949): golds, mauves, '
+         'deep blues and browns on a near-black ground. The hue families are fixed by that choice; lightness and '
+         'chroma were set by maximising the minimum CAM02-UCS distance of every group below under every simulated '
+         'deficiency, and where a group failed only the lightness of one colour was moved within its family.',
+         '* **Four pathway families, lever shades**: P1 Space per person golds / ochres (L1 '
+         f"{S.LEVER['L1']}, L2 {S.LEVER['L2']}), P2 Existing stock mauves (L4 deep mauve {S.LEVER['L4']}, L3 "
+         f"rose-lilac {S.LEVER['L3']}, L5 lighter still {S.LEVER['L5']}), P3 Construction blues (L6 dark "
+         f"{S.LEVER['L6']}, L7 light {S.LEVER['L7']}), P4 Land browns (L8 dark brown {S.LEVER['L8']}, L9 light tan "
+         f"{S.LEVER['L9']}); P1-P4 take the colour of their first (darkest) lever; P5 Combined vermilion "
+         f"({S.PATHWAY['P5']}) and TL cyan ({S.TL}), each outside every family and apart from Population growth.",
          '* **Demand bands** are coloured by the lever that targets them (Smaller households L2, Extra space L1, '
-         'Vacancy L3, 2026 overbuild L4, Historical replacement and Recent replacement surge L5, the surge hatched). '
-         'The only untargeted band, Population growth, is neutral grey with a dot hatch. Maintenance (B2, B4) is '
-         f"blue ({S.BAND['maintenance'][0]}). Carbon stages: A1-A3 in the L6 colour, A4-A5 in the L7 colour, soil "
-         'carbon loss in the L8 colour.',
-         f"* **Reference** dark grey ({S.REFERENCE}); **TL** near-black ({S.TL}); Low and High replacement mid greys "
-         'with dashed and dotted lines.',
+         'Vacancy L3, 2026 overbuild L4, Historical replacement L5; the Recent replacement surge the L5 face with a '
+         'fine light hatch). The only untargeted band, Population growth, is a solid near-black deep green-blue '
+         f"({S.GROWTH}). Maintenance (B2, B4) is neutral grey ({S.BAND['maintenance'][0]}); committed emissions "
+         f"after 2050 a lighter grey, hatched ({S.COMPONENT['committed'][0]}). Carbon stages: A1-A3 the L6 dark "
+         'blue, A4-A5 the L7 light blue, soil carbon loss the L8 brown.',
+         f"* **Reference** dark grey ({S.REFERENCE}); Low and High replacement mid greys with dashed and dotted lines.",
+         f"* **Stacked bars and areas** are drawn seamless: each segment's edge is its own face colour at "
+         f"{S.LW_SEAM:g} pt (no white borders, no anti-aliasing gaps); a hatch is drawn in a thin hatch colour only "
+         f"(default {S.HATCH_COLOUR}; the surge band {S.HATCH_LIGHT}). Legend handles keep a thin grey outline.",
          f"* **Boundaries** (every planetary-boundary figure, one implementation in style.py): acquired rights (AR) "
          f"thin red line ({S.AR}), ability to pay (AtP) thin dark-red dashed line ({S.ATP}); zones below AtP darker "
          f"green ({S.ZONE['within_both']['color']}, alpha {S.ZONE['within_both']['alpha']}), between AtP and AR light "
@@ -180,9 +196,7 @@ def main():
         L.append(f'| {gname} | ' + ' | '.join(f'{d[v][0]:.1f} ({d[v][1]} / {d[v][2]})' for v in VISION)
                  + f" | {'yes' if ok else 'no'} |")
     if fails:
-        L += ['', 'Groups below the threshold: ' + '; '.join(fails) + '. Why each still reads: Historical '
-              'replacement and Recent replacement surge share the L5 colour by design (both are targeted by L5) and '
-              'differ by the surge\'s hatch; the boundary zones are pale by design (data drawn over them), always '
+        L += ['', 'Groups below the threshold: ' + '; '.join(fails) + '. Why each still reads: the boundary zones are pale by design (data drawn over them), always '
               'bounded by the AR and AtP lines and ordered strictly in lightness (darker green < light green < palest '
               'red under every simulated deficiency), so their order survives without hue; any other group below the '
               'threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so '

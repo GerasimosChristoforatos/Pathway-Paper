@@ -4,7 +4,8 @@
     python tests/capture_regression_model_v2_1_1.py "<label>"     # after the full run of the release
 
 MODEL v2.1.1 changes the theoretical limit only (adopted by 2030; constant-share re-occupation; instant sensitivity): if any changed, added or removed key
-is not a TL key (regression_v2_1.is_tl_key), nothing is written and the script stops (exit 1).
+is neither a TL key (regression_v2_1.is_tl_key) nor one of the documented TL-derived keys (is_tl_derived, each with
+its invariant tested), nothing is written and the script stops (exit 1).
 """
 import datetime
 import json
@@ -23,7 +24,7 @@ def main():
     changed = {k: dict(old=base[k], new=cur[k]) for k in base if k in cur and not R21.same_compact(k, base[k], cur[k])}
     added = {k: cur[k] for k in cur if k not in base}
     removed = {k: base[k] for k in base if k not in cur}
-    non_tl = [k for k in list(changed) + list(added) + list(removed) if not R21.is_tl_key(k)]
+    non_tl = [k for k in list(changed) + list(added) + list(removed) if not (R21.is_tl_key(k) or R21.is_tl_derived(k))]
     if non_tl:
         print('\n'.join(map(str, non_tl[:30])))
         raise SystemExit(f'STOP: {len(non_tl)} keys outside the theoretical limit changed (nothing written).')
@@ -33,6 +34,8 @@ def main():
         purpose='MODEL v2.1.1: the keys of the pathway domain that changed since tests/regression_model_v2_1.json '
                 '(TL adopted by 2030, constant-share re-occupation, instant sensitivity; theoretical limit only)', label=label, code_commit=commit,
         n_changed=len(changed), n_added=len(added), n_removed=len(removed),
+        tl_derived=dict(rules=list(R21.TL_DERIVED), n=sum(not R21.is_tl_key(k) for k in list(changed) + list(added)
+                                                         + list(removed))),
         files=sorted({k[0] for k in list(changed) + list(added) + list(removed)}),
         captured_utc=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')),
         changed={key(k): v for k, v in sorted(changed.items(), key=lambda kv: key(kv[0]))},
@@ -41,7 +44,7 @@ def main():
     with open(R21.CHANGES_FILE, 'w') as f:
         json.dump(out, f, indent=0)
         f.write('\n')
-    print(f'regression v2.1.1: {len(changed)} changed, {len(added)} added, {len(removed)} removed (all TL) -> '
+    print(f'regression v2.1.1: {len(changed)} changed, {len(added)} added, {len(removed)} removed (all TL or TL-derived) -> '
           f'{os.path.relpath(R21.CHANGES_FILE, R21.ROOT)}')
 
 

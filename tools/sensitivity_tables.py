@@ -1,4 +1,4 @@
-"""Grouped one-at-a-time sensitivity tables (MODEL v2.0.0; docs/SENSITIVITY_PLAN.md).
+"""Grouped one-at-a-time sensitivity tables (MODEL v2.1.0; docs/SENSITIVITY_PLAN.md).
 
     python tools/sensitivity_tables.py         (run_all.py runs it after the pathway Monte Carlo)
 
@@ -11,7 +11,7 @@ Writes outputs/data/sensitivity/:
 
 Every row has its group, the row label, its side (low / high / single), the value, the change vs the
 central case and its basis. Rows are read from existing outputs; the only new runs are the P5 rows
-with one pathway at Ambitious (the others Moderate) and P5 on the Stats NZ 5th / 95th population
+with one lever (L1-L9) at Ambitious (the others Moderate) and P5 on the Stats NZ 5th / 95th population
 paths (exact engine path: the projection's own percentile run, reproduced to 1e-12 before the levers
 are applied; the AR and AtP budgets move with the path, data/aesa/results.json population_paths), and
 TL under Low and High replacement (every other run of that table reproduces runs.csv to 1e-12).
@@ -152,11 +152,10 @@ def p5_table():
     with open(data('aesa/results.json')) as f:
         aesa = json.load(f)
     pp = aesa['population_paths']
-    tl = json.load(open(data('pathways/theoretical_limit.json')))
     B = PW.boss_state(PW.REFERENCE)
     bounds = PW.boundaries()
     ctx = PW.base_context(B, PW.REFERENCE, bounds)
-    params = LV.resolve(B, PW.load_factors_building(), validation.projection)
+    params = LV.resolve(B, PW.load_factors_building(), validation.projection, PW.household_size_variants(B))
     bar, batp = float(ctx['b_ar'].sum()) / M6, float(ctx['b_atp'].sum()) / M6
 
     def run_row(scen, name):
@@ -175,12 +174,12 @@ def p5_table():
     cc = float(np.asarray(PW.run(ctx, params, base)['E']['carbon'], float)[1:].sum()) / M6
     if not np.isclose(cc, c0, rtol=1e-12, atol=0):     # the context reproduces the adopted P5 run
         raise SystemExit(f'sensitivity_tables: P5 Moderate {cc} kt does not reproduce runs.csv {c0} kt.')
-    for P in ('P1', 'P2', 'P3', 'P4'):                       # one pathway at Ambitious, the others Moderate
-        active = dict(base, **{L: 'ambitious' for L in LV.PATHWAYS[P]})
-        E = PW.run(ctx, params, active)['E']
+    tags = {r_['item'].split()[0]: r_['tag'] for r_ in LV.lever_table(params)}
+    for L in LV.LEVERS:                                      # one lever at Ambitious, the others Moderate
+        E = PW.run(ctx, params, dict(base, **{L: 'ambitious'}))['E']
         c = float(np.asarray(E['carbon'], float)[1:].sum()) / M6
-        add('Ambition of one pathway', f"{P} {LV.PATHWAY_NAMES[P]} at Ambitious", 'single', c, c / bar, c / batp,
-            'new run (tools/sensitivity_tables.py)', 'DECISION (author): the Ambitious setting of that pathway')
+        add('Ambition of one lever', f"{L} {N.LEVERS[L]} at Ambitious", 'single', c, c / bar, c / batp,
+            'new run (tools/sensitivity_tables.py)', f"{tags[L]}: the Ambitious setting of {L}")
     add('Ambition of all', 'P5 Combined, Ambitious', 'single', *run_row('REF', 'P5-ambitious'),
         'data/pathways/runs.csv', 'DECISION (author): every lever at Ambitious')
     for side, nm in (('low', 'P5-moderate-by2030'), ('high', 'P5-moderate-by2045')):
@@ -196,9 +195,6 @@ def p5_table():
         add('Demographics', 'Population: Stats NZ 5th / 95th percentile', side, c, c / pp[pct]['B_AR_kt'],
             c / pp[pct]['B_AtP_kt'], 'new run (exact engine path; budgets move with the path)',
             'DATA: Stats NZ 2024-base stochastic projection')
-    g = tl['metrics']['TL-gradual']
-    add('Separate marker', 'TL, gradual adoption', 'marker', float(g['carbon_kt']), float(g['LoE_AR']),
-        float(g['LoE_AtP']), 'data/pathways/theoretical_limit.json', 'the theoretical limit on the adopted path')
     return pd.DataFrame(rows)
 
 
@@ -253,17 +249,18 @@ def replacement_variants():
     Every run is computed with the pathway engine (pathways.run / run_tl and pathways.metrics, the
     lever parameters of the Reference, as pathways.py) and every run that runs.csv already holds
     (all but TL under Low and High) is asserted to reproduce it to 1e-12; TL under Low and High
-    replacement is new (TL1-TL7 on that scenario's projection: TL7 cuts that scenario's replacement
-    rates by 40%)."""
+    replacement is new (TL1-TL10 on that scenario's projection: TL5 removes that scenario's surge and cuts its
+    demolition rate by 40%)."""
     import Building_factors as BF
     import pathways as PW
     import validation
     runs = pd.read_csv(data('pathways/runs.csv'))
     bounds = PW.boundaries()
     B_ref = PW.boss_state(PW.REFERENCE)
-    params = LV.resolve(B_ref, PW.load_factors_building(), validation.projection)
+    params = LV.resolve(B_ref, PW.load_factors_building(), validation.projection, PW.household_size_variants(B_ref))
     pT = LV.resolve_tl(BF.load_characteristics(), PW.load_factors_building(),
-                       pd.read_csv(validation.projection.FILE_FACTORS_TYPOLOGY), B_ref['OLF_USED'])
+                       pd.read_csv(validation.projection.FILE_FACTORS_TYPOLOGY), B_ref['OLF_USED'], B_ref['hist_S'],
+                       params)
     base = LV.pathway_levers('P5', 'moderate')
     cols = ('gfa_Mm2', 'carbon_kt', 'committed_lower_kt', 'committed_upper_kt', 'LoE_AR', 'LoE_AtP')
     rows = []
@@ -272,8 +269,7 @@ def replacement_variants():
         ctx = PW.base_context(B, scen, bounds)
         for run, R, setting in ((scen, PW.run(ctx, params, {}), 'reference'),
                                 ('P5-moderate', PW.run(ctx, params, base), 'moderate'),
-                                ('TL', PW.run_tl(ctx, params, pT, LV.TL_COMPONENTS_V2, LV.TL_FROM2027,
-                                                 LV.TL_BASE_SETTING_V2), 'TL')):
+                                ('TL', PW.run_tl(ctx, params, pT, LV.TL_COMPONENTS), 'TL')):
             m = PW.metrics(ctx, R, run, setting)
             old = runs[(runs['scenario'] == scen) & (runs['run'] == run)]
             if len(old):

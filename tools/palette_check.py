@@ -33,11 +33,13 @@ def groups():
     """Colours that appear together in one figure (name -> {label: hex})."""
     import naming as N
     return {
-        'Boundaries and runs (Fig5a)': {'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
-                                         'Reference': S.REFERENCE, N.TL['TL']: S.TL,
-                                         'TL, gradual adoption': S.TL_GRADUAL, 'P5 Combined': S.PATHWAY['P5']},
-        'Pathways (Fig5b, Fig6)': dict({f'{p} {N.PATHWAYS[p]}': c for p, c in S.PATHWAY.items()},
-                                   Reference=S.REFERENCE, **{N.TL['TL']: S.TL}),
+        'Boundaries and runs (Fig5a, K3)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
+                                                 'Reference': S.REFERENCE, N.TL['TL']: S.TL},
+                                                **{f'{p} {N.PATHWAYS[p]}': c for p, c in S.PATHWAY.items()}),
+        'Pathways (Fig4, Fig5b, Fig6)': dict({f'{p} {N.PATHWAYS[p]}': c for p, c in S.PATHWAY.items()},
+                                         Reference=S.REFERENCE, **{N.TL['TL']: S.TL}),
+        'Levers (ED8, ED9, Fig5b TL steps)': {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
+        'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
         'Demand bands (Fig2, Fig4)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER},
         'Carbon components (Fig3c, diagnostics)': {N.COMPONENTS[c]: S.COMPONENT[c][0] for c in S.COMPONENT},
         'Projection variants and boundaries (ED5, ED10)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
@@ -51,6 +53,12 @@ def groups():
                                       **{N.UNEXPLAINED: S.UNEXPLAINED[0]}),
         'Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
+
+
+def zone_on_white(z):
+    """The colour a boundary zone shows on a white background (alpha compositing)."""
+    rgb = 1 - z['alpha'] * (1 - _rgb(z['color']))
+    return '#' + ''.join(f'{int(round(255 * c)):02X}' for c in rgb)
 
 
 def _rgb(h):
@@ -122,17 +130,24 @@ def main():
          'plotting module imports it. Preview with simulated colour-vision deficiency: '
          '[palette_preview.png](palette_preview.png).', '',
          '## Rules', '',
-         '* **Demand bands** are coloured by the pathway that targets them: Extra space in the P1 colour; '
-         'Vacancy and 2026 overbuild in the P2 family; Historical replacement and Recent replacement surge in the P3 family. The '
-         'untargeted bands (Population growth, Smaller households) are neutral greys with a light dot hatch, '
-         'so they read as untargeted without colour. Maintenance (B2, B4) within 2026-2050 is a light tint of '
-         'the P4 colour (material carbon).',
-         '* **P4** (Low-carbon materials) marks intensity and material effects; Materials and construction '
-         '(A1-A5) take the P4 colour in the component figure.',
-         f"* **Reference** dark grey ({S.REFERENCE}); **TL** near-black ({S.TL}); TL gradual adoption light grey "
-         f"({S.TL_GRADUAL}); Low and High replacement mid greys with dashed and dotted lines.",
-         f"* **Boundaries**: acquired rights (AR) blue solid ({S.AR}), ability to pay (AtP) orange dashed "
-         f"({S.ATP}); the two principles are never shaded as a range and never averaged.",
+         '* **Four pathway families, lever shades** (MODEL v2.1.0): P1 Space per person greens (L1 '
+         f"{S.LEVER['L1']}, L2 {S.LEVER['L2']}), P2 Existing stock magentas (L3 {S.LEVER['L3']}, L4 {S.LEVER['L4']}, "
+         f"L5 {S.LEVER['L5']}), P3 Construction purples (L6 {S.LEVER['L6']}, L7 {S.LEVER['L7']}), P4 Land "
+         f"ochres (L8 {S.LEVER['L8']}, L9 {S.LEVER['L9']}); each pathway takes the colour of its first lever; P5 "
+         f"Combined sky blue ({S.PATHWAY['P5']}).",
+         '* **Demand bands** are coloured by the lever that targets them (Smaller households L2, Extra space L1, '
+         'Vacancy L3, 2026 overbuild L4, Historical replacement and Recent replacement surge L5, the surge hatched). '
+         'The only untargeted band, Population growth, is neutral grey with a dot hatch. Maintenance (B2, B4) is '
+         f"blue ({S.BAND['maintenance'][0]}). Carbon stages: A1-A3 in the L6 colour, A4-A5 in the L7 colour, soil "
+         'carbon loss in the L8 colour.',
+         f"* **Reference** dark grey ({S.REFERENCE}); **TL** near-black ({S.TL}); Low and High replacement mid greys "
+         'with dashed and dotted lines.',
+         f"* **Boundaries** (every planetary-boundary figure, one implementation in style.py): acquired rights (AR) "
+         f"thin red line ({S.AR}), ability to pay (AtP) thin dark-red dashed line ({S.ATP}); zones below AtP darker "
+         f"green ({S.ZONE['within_both']['color']}, alpha {S.ZONE['within_both']['alpha']}), between AtP and AR light "
+         f"green ({S.ZONE['within_ar']['color']}, alpha {S.ZONE['within_ar']['alpha']}) and above AR light red "
+         f"({S.ZONE['exceeded']['color']}, alpha {S.ZONE['exceeded']['alpha']}, \"boundary exceeded\"), on annual, "
+         'cumulative and level-of-exceedance axes alike. The two principles are never averaged.',
          '* **Settings**: Moderate solid line or open marker; Ambitious dashed line or filled marker '
          '(bars: Moderate bars, Ambitious whiskers).',
          f"* **Typeface**: {S.FONT} only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open "
@@ -141,8 +156,9 @@ def main():
          f"{S.WIDTH['double'] / S.MM:.0f} mm (double column), page depth at most {S.MAX_HEIGHT / S.MM:.0f} mm; "
          f"text {S.FONT_SIZE:g} pt, legends and ticks {S.FONT_SMALL:g} pt, never below {S.FONT_MIN:g} pt; data "
          f"lines {S.LW:g} pt, emphasised lines {S.LW_BOLD:g} pt, grid and edges {S.LW_THIN:g} pt.",
-         f"* **Files**: PNG at {S.DPI} dpi for every figure; vector PDF (TrueType fonts embedded) for the "
-         'paper and Extended Data figures; no software or date metadata, so re-runs are byte-identical.',
+         f"* **Files**: PNG at {S.DPI} dpi for every figure; with run_all.py --export also a vector PDF (TrueType "
+         'fonts embedded) and source-data CSV for the paper, Extended Data and key figures; no software or date '
+         'metadata, so re-runs are byte-identical.',
          '* **Materials** (Fig3b and the diagnostics): the six stripes of the Pride flag in one order in every figure '
          '(author decision, baseline-pb-v2), soil carbon loss faded and hatched on top; kept because the '
          'material figures label every layer directly (see the check below).', '',
@@ -164,9 +180,23 @@ def main():
         L.append(f'| {gname} | ' + ' | '.join(f'{d[v][0]:.1f} ({d[v][1]} / {d[v][2]})' for v in VISION)
                  + f" | {'yes' if ok else 'no'} |")
     if fails:
-        L += ['', 'Groups below the threshold: ' + '; '.join(fails) + '. They are labelled directly in every '
-              'figure (text on or beside each layer) and, where noted, carry a hatch, so the reading never '
-              'depends on colour alone.']
+        L += ['', 'Groups below the threshold: ' + '; '.join(fails) + '. Why each still reads: Historical '
+              'replacement and Recent replacement surge share the L5 colour by design (both are targeted by L5) and '
+              'differ by the surge\'s hatch; the boundary zones are pale by design (data drawn over them), always '
+              'bounded by the AR and AtP lines and ordered strictly in lightness (darker green < light green < palest '
+              'red under every simulated deficiency), so their order survives without hue; any other group below the '
+              'threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so '
+              'the reading never depends on colour alone.']
+    Jz = {k: [lightness(zone_on_white(z))] + [float(jab(zone_on_white(z), v)[0]) for v in VISION[1:]]
+          for k, z in S.ZONE.items()}
+    order = ('within_both', 'within_ar', 'exceeded')
+    zmono = all(max(Jz[a]) < min(Jz[b]) for a, b in zip(order, order[1:]))
+    if not zmono:
+        fails.append('boundary zones lightness order')
+    L += ['', '## Boundary zones: lightness order', '',
+          'J\' of each zone on white (normal, deuteranomaly, protanomaly, tritanomaly): '
+          + '; '.join(f"{S.ZONE[k]['label']} " + ' / '.join(f'{x:.1f}' for x in Jz[k]) for k in order)
+          + f". Strictly increasing under every vision type: {'yes' if zmono else 'NO'}."]
     seq = [lightness(h) for h in S.SEQUENTIAL]
     mono = all(a > b for a, b in zip(seq, seq[1:]))
     if not mono:

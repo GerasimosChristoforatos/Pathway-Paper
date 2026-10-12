@@ -156,7 +156,7 @@ def main():
     step = 100 * (R0[2] / R0[1] - 1)
     a.hist(chg, bins=14, color='#BDBDBD', edgecolor='white')
     a.set_ylim(0, a.get_ylim()[1] * 1.45)                 # room for the legend above the bars
-    a.axvline(step, color=S.ATP, lw=S.LW_BOLD, label=f'2026 → 2027 handover (observed → model): {step:+.1f}%')
+    a.axvline(step, color=S.ACCENT_ORANGE, lw=S.LW_BOLD, label=f'2026 → 2027 handover (observed → model): {step:+.1f}%')
     a.axvline(np.median(chg), color=S.INK, lw=S.LW, ls='--', label=f'Median year, 1992–2025: {np.median(chg):+.1f}%')
     a.set_xlabel('Change from the previous year (%)')
     a.set_ylabel('Number of years')
@@ -289,9 +289,9 @@ def main():
     p = ref['p']
     yrs = np.arange(2027, 2051)
     chain = [('Population growth', p['dpop'], dict(color=S.INK)),
-             ('Households formed', p['d_hh'], dict(color=S.ATP)),
+             ('Households formed', p['d_hh'], dict(color=S.ACCENT_ORANGE)),
              ('Dwellings built', p['built'], dict(color=S.MUTED, ls='--', lw=S.LW_BOLD)),
-             ('Floor area', p['gfa'], dict(color=S.AR)),
+             ('Floor area', p['gfa'], dict(color=S.ACCENT_BLUE)),
              ('Carbon', p['carbon'], dict(color=S.PATHWAY['P4']))]
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 70))
     for lab, s_, st in chain:
@@ -341,7 +341,7 @@ def main():
                 err.append(f"{'Low replacement' if k == 'LOW' else 'Reference'} {r['error_pct']:+.1f}%")
         for r in pub:
             if r['origin'] == o and r['method'] == 'reference' and 'years' in r:
-                a.plot(r['years'], np.cumsum(r['predicted_path']) / 1e3, lw=S.LW, ls=':', color=S.ATP,
+                a.plot(r['years'], np.cumsum(r['predicted_path']) / 1e3, lw=S.LW, ls=':', color=S.ACCENT_ORANGE,
                        label='Reference, vacancy as published')
                 err.append(f"Vacancy as published {r['error_pct']:+.1f}%")
         a.text(0.97, 0.03, 'Error at the end:\n' + '\n'.join(err), transform=a.transAxes, ha='right', va='bottom',

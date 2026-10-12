@@ -5,9 +5,11 @@ Every saved Monte Carlo draw of the Reference (outputs/data/montecarlo/draws_REF
 hypercube draws of population rank, dwelling-size multiplier, completion rate and the case-study
 carbon-factor bootstrap) is re-run through MonteCarlo.project (unchanged outputs; full=True exposes
 the draw's engine inputs) and then through the pathway layer, for P5 Combined (Moderate, full
-roll-out by 2035) and TL (P5 Moderate with TL1-TL10, every lever and item with full roll-out by 2030; the banking
-rule a safety net, the years where it binds counted per draw), and the instant TL sensitivity (every limit at full
-strength from 1 January 2027; summary only, not in the insight analyses).
+roll-out by 2035) and TL (P5 Moderate with TL1-TL10, every lever and item with full roll-out by 2030; constant-share
+reoccupation of the released dwellings, pathways.reoccupation: per draw the share s, R, G+, the surplus left vacant
+in 2050 where R > G+, the non-positive need, and the years where each constraint binds), and the instant TL
+sensitivity (every limit at full strength from 1 January 2027, same rule; summary only, not in the insight
+analyses).
 Population and household size share one draw: the household-size path is interpolated between the
 Stats NZ Low, Medium and High variants at the draw's population rank (MonteCarlo.project).
 
@@ -49,13 +51,13 @@ central run's floor area by typology and year 2026-2050, over the same weighted 
 
 Checks that stop the run: the central draw reproduces the deterministic P5 Moderate and TL runs to
 1e-9 (annual carbon, floor area and dwellings built in every year with building, and their 2026-2050
-totals; in TL's zero-building years, where the banking rule binds, both runs are zero by the model's own
-tolerances, the carbon there being floating-point noise of order 1e-8 kg); every draw's Reference carbon equals the saved draw; the
+totals; in any zero-building year, both runs are zero by the model's own tolerances, the carbon there being
+floating-point noise of order 1e-8 kg); every draw's Reference carbon equals the saved draw; the
 bootstrap is reproduced exactly; TL2 and TL6 never weaker than their Ambitious levers in any draw.
 
 Writes outputs/data/pathways/montecarlo_draws.csv (per draw), montecarlo_summary.csv (percentiles,
 P(LoE <= 1)), montecarlo_annual.csv (annual carbon percentiles of the Reference, P5, TL and the instant TL), the
-banking counts in montecarlo_draw_rules.json and the insight
+reoccupation counts in montecarlo_draw_rules.json and the insight
 files above.
 
     python pathways_mc.py          (run_all.py runs it after pathways.py)
@@ -177,7 +179,7 @@ def check_central(su, ctx, params, pT, p5, tl, ti):
     r5, rt, ri = runs_for_draw(cd, params, tl_params_for_draw(pT, params, ctx, cd)[0], instant=True)
     worst = {}
     for name, (a, b) in (('P5', (r5['E'], p5)), ('TL', (rt['E'], tl)), (INSTANT, (ri['E'], ti))):
-        # years with building: relative difference of every quantity; zero-building years (TL banking rule,
+        # years with building: relative difference of every quantity; zero-building years (none in the deterministic TL,
         # floor area <= pathways.T_ZERO_TOL_M2 in the deterministic run): both runs must be zero by the model's
         # own definition (floor area and dwellings below its zero tolerances; carbon there is floating-point
         # noise of order 1e-8 kg and is compared through the 2026-2050 total); 2026-2050 totals relative.
@@ -303,6 +305,32 @@ def insights(df):
     return pd.DataFrame(imp), pd.DataFrame(fits), pd.DataFrame(cond), summary
 
 
+def reoccupation_counts(df):
+    """How often each constraint of the reoccupation rule binds over the draws, the share s, and the draws where
+    R > G+ (the surplus left vacant in 2050), for TL and the instant TL."""
+    pc = lambda v: {f'p{p}': float(np.percentile(v, p)) for p in (0, 5, 25, 50, 75, 95, 100)}
+    out = dict(rule='constant share s = min(R, G+) / G+ of each year\'s need; reoccupied never ahead of the cumulative '
+                    'release nor above the year\'s need, the shortfall carried forward (pathways.reoccupation)')
+    for lab_ in ('TL', INSTANT):
+        sur = df[f'{lab_}_surplus_vacant_2050']
+        exceed = df[f'{lab_}_released_R'] > df[f'{lab_}_need_G_plus']
+        npn = df[f'{lab_}_nonpositive_need_years'] > 0
+        out[lab_] = dict(
+            share_percentiles=pc(df[f'{lab_}_reoccupation_share']),
+            draws_R_exceeds_G_plus=int(exceed.sum()),
+            surplus_vacant_2050_where_R_exceeds_G_plus=pc(sur[exceed]) if exceed.any() else None,
+            draws_with_nonpositive_need_year=int(npn.sum()),
+            nonpositive_need_dwellings_where_any=pc(df.loc[npn, f'{lab_}_nonpositive_need_dwellings']) if npn.any()
+            else None,
+            draws_release_constraint_binds=int((df[f'{lab_}_release_constraint_binding_years'] > 0).sum()),
+            release_constraint_binding_years_percentiles=pc(df[f'{lab_}_release_constraint_binding_years']),
+            draws_need_cap_binds=int((df[f'{lab_}_need_cap_binding_years'] > 0).sum()),
+            draws_with_a_zero_building_year=int((df[f'{lab_}_dwellings_built_min_2027_2050']
+                                                 <= PW.T_ZERO_TOL_DWELLINGS).sum()),
+            dwellings_built_min_2027_2050_percentiles=pc(df[f'{lab_}_dwellings_built_min_2027_2050']))
+    return out
+
+
 def main():
     t0 = time.time()
     ctx, params, pT, p5_det, tl_det, ti_det = deterministic()
@@ -344,16 +372,24 @@ def main():
         c_ref = float(o['carbon'][WINDOW].sum()) / M6
         if abs(c_ref / b['carbon_kt_2026_2050'] - 1) > 1e-9:
             raise SystemExit(f'pathways_mc: draw {j}: the Reference carbon differs from the AESA Monte Carlo.')
-        tl_built = np.asarray(PW.engine.requirement(rt['E']), float)[WINDOW]
+        tl_built = np.asarray(PW.engine.requirement(rt['E']), float)[2:]           # 2027-2050 (index 0 is 2025)
+        reo = {}
+        for lab_, R_ in (('TL', rt), (INSTANT, ri)):
+            ro = R_['info']['reoccupation']
+            reo.update({f'{lab_}_reoccupation_share': ro['share'], f'{lab_}_released_R': ro['R'],
+                        f'{lab_}_need_G_plus': ro['G_plus'], f'{lab_}_surplus_vacant_2050': ro['surplus_vacant_2050'],
+                        f'{lab_}_nonpositive_need_dwellings': ro['nonpositive_need'],
+                        f'{lab_}_nonpositive_need_years': len(ro['nonpositive_need_years']),
+                        f'{lab_}_release_constraint_binding_years': int(ro['release_binds'].sum()),
+                        f'{lab_}_need_cap_binding_years': int(ro['need_binds'].sum()),
+                        f'{lab_}_dwellings_built_min_2027_2050': float(ro['built'][2:].min())})
         row = dict(draw=j, **{N.identifier(k): float(X[j, i]) for i, k in enumerate(MC.PARAMS)},
                    carbon_index=carbon_index(o, I_c, gfa_c),
                    B_AR_kt_2026_2050=float(b['B_AR_kt_2026_2050']), B_AtP_kt_2026_2050=float(b['B_AtP_kt_2026_2050']),
                    L2_floor_binds=bool(np.any(S_mod[late] < S_d[late])),
                    TL2_floor_binds=bool(np.any(S_tl < S_d[late])),
                    TL6_capped=';'.join(capped), TL_zero_building_years=int(np.sum(tl_built <= PW.T_ZERO_TOL_DWELLINGS)),
-                   TL_banking_binding_years=int(rt['info']['bank']['binds'][2:].sum()),
-                   TL_banking_last_binding_year=max(PW.bank_binding_years(rt, years), default=0),
-                   TL_from2027_banking_binding_years=int(ri['info']['bank']['binds'][2:].sum()))
+                   **reo)
         for r, E in (('REF', o), ('P5', r5['E']), ('TL', rt['E']), (INSTANT, ri['E'])):
             carbon = np.asarray(E['carbon'], float)
             annual[r][j] = carbon
@@ -386,15 +422,7 @@ def main():
         TL6_capped_draws={t: int(df['TL6_capped'].fillna('').str.split(';').apply(lambda x, t=t: t in x).sum())
                           for t in pT['TL6']},
         L2_target_vs_montecarlo_high_variant_max_abs_diff=l2_vs_mc, n_draws=n,
-        banking_rule='safety net (pathways.bank): binds in a year where built_t != raw_t',
-        TL_banking_binds_draws=int((df['TL_banking_binding_years'] > 0).sum()),
-        TL_banking_binding_years_percentiles={f'p{p}': float(np.percentile(df['TL_banking_binding_years'], p))
-                                              for p in (0, 5, 50, 95, 100)},
-        TL_banking_last_binding_year_percentiles={f'p{p}': float(np.percentile(df['TL_banking_last_binding_year'], p))
-                                                  for p in (0, 5, 50, 95, 100)},
-        TL_from2027_banking_binds_draws=int((df['TL_from2027_banking_binding_years'] > 0).sum()),
-        TL_from2027_banking_binding_years_percentiles={
-            f'p{p}': float(np.percentile(df['TL_from2027_banking_binding_years'], p)) for p in (0, 5, 50, 95, 100)})
+        reoccupation=reoccupation_counts(df))
     import json
     with open(layout.writing(layout.data('pathways/montecarlo_draw_rules.json', frozen=False)), 'w') as f:
         json.dump(rules, f, indent=1)

@@ -29,7 +29,7 @@ ZONES = 'Boundary zones on white (every boundary figure)'
 @pytest.mark.parametrize('group', [g for g in PC.groups() if g != ZONES])
 def test_every_group_passes_the_cvd_check(group):
     cols = PC.groups()[group]
-    d = PC.min_distance(cols)
+    d = PC.min_distance(cols, PC.focus().get(group))
     low = {v: x for v, x in d.items() if x[0] < PC.THRESHOLD}
     assert not low, (group, low)
 
@@ -52,8 +52,16 @@ def test_family_tone_order():
 
 
 def test_band_semantics():
+    from colorspacious import cspace_convert
     assert S.BAND['growth'] == (S.GROWTH, None)
-    assert S.BAND['redevelopment'][0] == S.BAND['replacement'][0] and S.BAND['redevelopment'][1]
+    # MODEL v2.1.2: Historical replacement darker than the surge face and of a slightly different hue; surge hatched
+    assert S.BAND['redevelopment'][0] == S.LEVER['L5'] and S.BAND['redevelopment'][1]
+    assert S.BAND['replacement'][0] == S.REPLACEMENT and PC.lightness(S.REPLACEMENT) < PC.lightness(S.LEVER['L5'])
+    h = lambda c: cspace_convert(PC._rgb(c), 'sRGB1', 'JCh')[2]
+    assert 5 < abs(h(S.REPLACEMENT) - h(S.LEVER['L5'])) < 40
+    # lighter, same hue as model-v2.1.1 (210.7 deg; 3 deg allows the 8-bit rounding of a low-chroma colour)
+    assert PC.lightness(S.GROWTH) > 40 and abs(h(S.GROWTH) - 210.7) < 3
+    assert S.UNEXPLAINED[1] is None
     assert S.BAND_HATCHCOLOR['redevelopment'] == S.HATCH_LIGHT
     assert S.BAND['overbuild_2026'][0] == S.LEVER['L4'] and S.BAND['vacancy'][0] == S.LEVER['L3']
 
@@ -61,7 +69,18 @@ def test_band_semantics():
 def test_p5_and_tl_outside_every_family():
     fam = set(S.LEVER.values()) | {S.GROWTH, S.REFERENCE}
     assert S.PATHWAY['P5'] not in fam and S.TL not in fam and S.TL != S.PATHWAY['P5']
-    assert PC.lightness(S.TL) > 30, 'TL must not be black'
+    from colorspacious import cspace_convert
+    J, C, hue = cspace_convert(PC._rgb(S.TL), 'sRGB1', 'JCh')
+    assert 125 < hue < 165 and C > 20, 'TL: a forest green'
+    zones = [PC.lightness(PC.zone_on_white(z)) for z in S.ZONE.values()]
+    assert PC.lightness(S.TL) < min(zones) - 40, 'TL clearly darker than the boundary zones'
+    assert S.TL_MARKER['marker'] == 'o'
+
+
+def test_atp_dotted_and_zones_light():
+    assert S.BOUNDARY['AtP']['ls'] == S.ATP_LS and S.ATP_LS[1][0] <= 1.0      # dots, not dashes
+    on = {k: PC.lightness(PC.zone_on_white(z)) for k, z in S.ZONE.items()}
+    assert on['within_both'] < on['within_ar'] < on['exceeded'] and on['within_both'] > 85
 
 
 def test_fill_is_seamless():

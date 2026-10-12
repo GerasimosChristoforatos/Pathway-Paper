@@ -48,8 +48,8 @@ central run's floor area by typology and year 2026-2050, over the same weighted 
 
 Checks that stop the run: the central draw reproduces the deterministic P5 Moderate and TL runs to
 1e-9 (annual carbon, floor area and dwellings built in every year with building, and their 2026-2050
-totals; in TL's zero-building years both runs are zero by the model's own tolerances, the carbon there
-being floating-point noise of order 1e-8 kg); every draw's Reference carbon equals the saved draw; the
+totals; zero-building years, none under the proportional reoccupation of MODEL v2.1.1, would be compared
+by the model's own zero tolerances, kept as a guard); every draw's Reference carbon equals the saved draw; the
 bootstrap is reproduced exactly; TL2 and TL6 never weaker than their Ambitious levers in any draw.
 
 Writes outputs/data/pathways/montecarlo_draws.csv (per draw), montecarlo_summary.csv (percentiles,

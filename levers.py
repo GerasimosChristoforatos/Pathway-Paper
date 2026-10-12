@@ -762,11 +762,7 @@ TL_INSTANT_LABEL = 'TL-from2027'   # the sensitivity run: TL with every limit fr
 TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at its '
                  'limit, adopted by 2030, combining best observed attributes of different buildings and places; not a '
                  'proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).')
-def tl_caption(share):
-    """The TL caption (MODEL v2.1.1, author's wording) with the constant share s of each year's need (share in 0-1)."""
-    return ('TL: every lever at its limit, adopted by 2030; dwellings released by zero vacancy, the household-size '
-            'change and the 2026 overbuild are re-occupied gradually, meeting a constant share '
-            f'(~{100 * share:.0f}%) of each year\'s need; 2026 observed.')
+tl_caption = N.tl_caption              # the TL caption with the constant share (naming.tl_caption)
 TL_BAU_NOTE = ('The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 '
                'e^(-0.01 (t - 2025)) until TL7 sets A4-A5 to zero).')
 TL5_SURGE_REMOVED = 1.0            # TL5: the recent replacement surge removed entirely (as the Low variant)

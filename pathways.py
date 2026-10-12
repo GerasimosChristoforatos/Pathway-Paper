@@ -338,7 +338,8 @@ def band_rows(ctx, R, label):
     raw_g = {b: sum((g[k] if k != 'bev' else 0.0 * g['growth']) for k in ks)[f] for b, ks in FIG_BANDS}
     raw_c = {b: sum(c[k] for k in ks)[f] for b, ks in FIG_BANDS}
     sg, sc = sum(raw_g.values()), sum(raw_c.values())
-    # banked zero-building years (TL): nothing is built, so every in-scope band is zero there. The test uses the
+    # zero-building years: nothing is built, so every in-scope band is zero there (a guard: under the proportional
+    # reoccupation of MODEL v2.1.1 every TL year 2027-2050 builds, built_t > 0 being asserted by run_tl). The test uses the
     # model's zero tolerance (T_ZERO_TOL_M2): there the total and the band sum are both floating-point noise, and
     # their ratio would multiply large offsetting bands (released dwellings against new households) by an
     # arbitrary factor
@@ -742,7 +743,7 @@ def write(res, identity):
 # THEORETICAL LIMIT TL (MODEL v2.1.0; levers.apply_tl) -- a thought experiment, not a pathway
 # ============================================================
 T_RUNS = ('TL',)
-T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of built = req + (0 - req) in banked zero years (~1e-12)
+T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of built = req + (0 - req) in a zero-building year (a guard since MODEL v2.1.1)
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
 
 

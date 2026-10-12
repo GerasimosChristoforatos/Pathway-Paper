@@ -338,10 +338,22 @@ def band_rows(ctx, R, label):
     raw_g = {b: sum((g[k] if k != 'bev' else 0.0 * g['growth']) for k in ks)[f] for b, ks in FIG_BANDS}
     raw_c = {b: sum(c[k] for k in ks)[f] for b, ks in FIG_BANDS}
     sg, sc = sum(raw_g.values()), sum(raw_c.values())
-    fg = np.divide(tot_g, sg, out=np.zeros_like(tot_g), where=sg != 0)     # 0 / 0 only in banked zero-building years (TL)
-    fc = np.divide(tot_c, sc, out=np.zeros_like(tot_c), where=sc != 0)
+    # banked zero-building years (TL): nothing is built, so every in-scope band is zero there. The test uses the
+    # model's zero tolerance (T_ZERO_TOL_M2): there the total and the band sum are both floating-point noise, and
+    # their ratio would multiply large offsetting bands (released dwellings against new households) by an
+    # arbitrary factor
+    built = tot_g > T_ZERO_TOL_M2
+    fg = np.divide(tot_g, sg, out=np.zeros_like(tot_g), where=built & (sg != 0))
+    fc = np.divide(tot_c, sc, out=np.zeros_like(tot_c), where=built & (sc != 0))
+    # in a zero-building year the only carbon is the maintenance (B2, B4) of the cohorts already built: the
+    # maintenance band keeps its value there (unscaled; checked against the run's carbon), every other band is zero
+    mb = N.band_data_label('maintenance')
+    zero_c = np.where(built, 0.0, raw_c[mb])
+    if np.any(~built) and not np.allclose(zero_c[~built], tot_c[~built], rtol=1e-9, atol=1.0):
+        raise SystemExit(f'{label}: the carbon of a zero-building year is not its maintenance')
     rows += [dict(run=label, scenario=ctx['scenario'], definition='in_scope', band=b,
-                  gfa_Mm2=(raw_g[b] * fg).sum() / M6, carbon_kt=(raw_c[b] * fc).sum() / M6) for b, _ in FIG_BANDS]
+                  gfa_Mm2=(raw_g[b] * fg).sum() / M6,
+                  carbon_kt=((raw_c[b] * fc) + (zero_c if b == mb else 0.0)).sum() / M6) for b, _ in FIG_BANDS]
     return rows
 
 
@@ -970,6 +982,49 @@ def write_tl(res, rt):
     _json(out, 'theoretical_limit.json')
 
 
+def waterfall_sequential(res, rt):
+    """K5: the sequential path Reference -> P1 -> +P2 -> +P3 -> +P4 (= P5 Moderate) -> full strength from 2027 ->
+    +TL1 ... +TL10 (= TL), every step a run of the model; each step's change split exactly into the in-scope demand
+    bands (band_rows 'in_scope': the bands add up to the run's floor area and carbon). Sequential steps depend on
+    the order (the order-free values are the Shapley tables). Writes waterfall_sequential.csv."""
+    ref = res['ctxs'][REFERENCE]
+    bar = float(np.sum(ref['b_ar'])) / M6
+    steps = [('REF', N.SCENARIOS['REF'], res['get'](REFERENCE, {}))]
+    acc = {}
+    for P in ('P1', 'P2', 'P3', 'P4'):
+        acc.update(LV.pathway_levers(P, 'moderate'))
+        steps.append((P, f'+ {P} {N.PATHWAYS[P]}' + (' (= P5 Combined)' if P == 'P4' else ''),
+                      res['get'](REFERENCE, dict(acc))))
+    steps.append(('from2027', N.ADOPTION['from2027'].capitalize(), rt['cache'][()]))
+    for k in range(1, len(LV.TL_COMPONENTS) + 1):
+        t = LV.TL_COMPONENTS[k - 1]
+        steps.append((t, f'+ {t} {N.TL[t]}' + (' (= TL)' if k == len(LV.TL_COMPONENTS) else ''),
+                      rt['cache'][LV.TL_COMPONENTS[:k]]))
+    rows, prev = [], None
+    for i, (sid, lab, R) in enumerate(steps):
+        b = pd.DataFrame([r_ for r_ in band_rows(ref, R, sid) if r_['definition'] == 'in_scope']).set_index('band')
+        tot_c = float(np.asarray(R['E']['carbon'], float)[1:].sum()) / M6
+        if abs(b['carbon_kt'].sum() / tot_c - 1) > 1e-9:
+            raise SystemExit(f'waterfall: the bands of step {sid} do not add up to its carbon')
+        for band in b.index:
+            rows.append(dict(step=i, step_id=sid, label=lab, band=band, gfa_Mm2=float(b.loc[band, 'gfa_Mm2']),
+                             carbon_kt=float(b.loc[band, 'carbon_kt']),
+                             delta_gfa_Mm2=0.0 if prev is None else float(prev.loc[band, 'gfa_Mm2'] - b.loc[band, 'gfa_Mm2']),
+                             delta_carbon_kt=0.0 if prev is None else float(prev.loc[band, 'carbon_kt'] - b.loc[band, 'carbon_kt']),
+                             total_carbon_kt=tot_c, LoE_AR=tot_c / bar, B_AR_kt=bar,
+                             B_AtP_kt=float(np.sum(ref['b_atp'])) / M6))
+        prev = b
+    df = pd.DataFrame(rows)
+    p5 = res['runs'][(res['runs']['scenario'] == REFERENCE) & (res['runs']['run'] == 'P5-moderate')].iloc[0]
+    tl = rt['rows'][0]
+    for sid, target in (('P4', float(p5['carbon_kt'])), (LV.TL_COMPONENTS[-1], float(tl['carbon_kt']))):
+        got = float(df[df['step_id'] == sid]['total_carbon_kt'].iloc[0])
+        if abs(got / target - 1) > 1e-12:
+            raise SystemExit(f'waterfall: step {sid} ({got}) does not reproduce its run ({target})')
+    _csv(df, 'waterfall_sequential.csv')
+    return df
+
+
 def main():
     res = compute()
     identity = checks(res)
@@ -978,6 +1033,7 @@ def main():
     rt = compute_tl(res)
     checks_tl(res, rt)
     write_tl(res, rt)
+    waterfall_sequential(res, rt)
     res['T'] = rt
     if SAVE_FIGURES:
         figures(res)

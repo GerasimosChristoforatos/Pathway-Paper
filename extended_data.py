@@ -1,14 +1,16 @@
 """
-EXTENDED DATA FIGURES (MODEL v2.0.0): ED1-ED10, EXTENDED_DATA.md
+EXTENDED DATA FIGURES (MODEL v2.1.0): ED1-ED13, EXTENDED_DATA.md
 ===============================================================
 Every figure is drawn from the data files of outputs/data/ only (as paper.py, whose helpers it uses:
 source data, saving, labels): the grouped sensitivity tables (outputs/data/sensitivity/,
 tools/sensitivity_tables.py; docs/SENSITIVITY_PLAN.md), the Monte Carlo of the Reference and the
 pathway Monte Carlo, and the pathway runs at the settings the paper does not show (Ambitious,
-roll-out by 2030 / 2045, single levers, Low / High replacement).
+roll-out by 2030 / 2045, single levers, Low / High replacement), and the Monte Carlo insight analyses
+(ED11-ED13: pathways_mc.py, mcstats.py).
 
-For each figure this writes, in outputs/extended_data/: ED<n>_<name>.png / .pdf (183 mm) and .csv (every
-plotted value: panel, series, x, value, unit), and EXTENDED_DATA.md with every figure and its caption.
+For each figure this writes, in outputs/extended_data/: ED<n>_<name>.png (183 mm) and, with run_all.py --export,
+.pdf and .csv (every plotted value: panel, series, x, value, unit); and EXTENDED_DATA.md with every figure and its
+caption.
 
     python extended_data.py      (run_all.py runs it after paper.py)
 """
@@ -18,6 +20,7 @@ import sys
 import textwrap
 
 import numpy as np
+import pandas as pd
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
@@ -37,7 +40,7 @@ REF = PP.REF
 read_csv, read_json, check = PP.read_csv, PP.read_json, PP.check
 REF_GROUPS = ('Demographics', 'Housing stock & calibration', 'Replacement scenario', 'Carbon factors & technology',
               'Accounting')
-P5_GROUPS = ('Ambition of one pathway', 'Ambition of all', 'Roll-out timing', 'Replacement scenario', 'Demographics')
+P5_GROUPS = ('Ambition of one lever', 'Ambition of all', 'Roll-out timing', 'Replacement scenario', 'Demographics')
 PB_GROUPS = ('Carrying capacity', 'Base window', 'Economic measures', 'Population source', 'Replacement scenario')
 
 
@@ -143,17 +146,11 @@ def ed2():
     src = source(fid)
     t = read_csv('sensitivity/p5_carbon.csv')
     c0 = float(t['central_carbon_kt'].iloc[0])
-    bars = t[t['side'] != 'marker']
-    mk = t[t['side'] == 'marker'].iloc[0]
+    bars = t
     fig, ax = plt.subplots(figsize=S.figsize('double', 30 + 4.6 * bars['row'].nunique()))
     tornado(ax, bars, 'carbon_kt', c0, P5_GROUPS, src, 'a', 'kt CO2e 2026-2050', lambda v: f'{v:,.0f}', wrap=58)
     ax.set_xlabel(f'Embodied carbon 2026–2050, P5 Combined (kt CO₂e; central: Moderate, full roll-out by 2035, {c0:,.0f})')
     P.thousands(ax.xaxis)
-    ax.annotate(f"← {mk['row']}: {mk['carbon_kt']:,.0f} kt ({mk['change_pct']:+.0f}%; LoE AR {mk['LoE_AR']:.2f}), "
-                'off the axis', xy=(ax.get_xlim()[0], ax.get_ylim()[0] - 0.55), xycoords='data', va='center',
-                fontsize=S.FONT_SMALL, color=S.TL, annotation_clip=False)
-    ax.set_ylim(ax.get_ylim()[0] - 1.1, ax.get_ylim()[1])                # a row of its own for the marker
-    src.add('a', f"marker: {mk['row']}", 'value', mk['carbon_kt'], 'kt CO2e 2026-2050')
     for _, r in t.iterrows():
         src.add('table', f"{r['group']}: {r['row']} ({r['side']})", 'LoE AR', r['LoE_AR'], 'cumulative LoE AR')
         src.add('table', f"{r['group']}: {r['row']} ({r['side']})", 'LoE AtP', r['LoE_AtP'], 'cumulative LoE AtP')
@@ -162,10 +159,10 @@ def ed2():
     save(fig, fid, src)
     pop = t[t['group'] == 'Demographics'].set_index('side')
     cap = (h['caption'] + f" Central: P5 Combined (Moderate, full roll-out by 2035), {c0:,.0f} kt CO₂e (LoE AR "
-           f"{t['central_LoE_AR'].iloc[0]:.2f}). P1–P4 at Ambitious: one pathway at its Ambitious setting with the others "
+           f"{t['central_LoE_AR'].iloc[0]:.2f}). L1–L9 at Ambitious: one lever at its Ambitious setting with the others "
            f"at Moderate (new runs). Population 5th / 95th: P5 on the projection's own percentile run (exact engine "
            f"path), LoE AR {pop.loc['low', 'LoE_AR']:.2f}–{pop.loc['high', 'LoE_AR']:.2f} with the budgets of each path. "
-           'TL, gradual adoption is a separate marker (off the axis, annotated). The levels of exceedance of every row: '
+           'The levels of exceedance of every row: '
            'data/sensitivity/p5_carbon.csv.')
     return dict(caption=cap)
 
@@ -268,6 +265,10 @@ def ed5():
                         label='Monte Carlo 25–75%')
         ax.plot(yrs, f(mc.loc[yrs, f'{q}_50']), color=S.REFERENCE, lw=S.LW, ls='--', label='Monte Carlo median')
         ax.plot(yrs, an.loc[yrs, col], color=S.INK, lw=S.LW_BOLD, label='Reference (deterministic)')
+        if q == 'carbon':                          # the annual boundaries (pathways/annual.csv, Reference run)
+            pb = read_csv('pathways/annual.csv')
+            pb = pb[(pb['scenario'] == REF) & (pb['run'] == REF)].set_index('year').loc[yrs]
+            P.boundary_lines(ax, yrs, pb['B_AR_kt'].values, pb['B_AtP_kt'].values)
         for p_ in ('5', '25', '50', '75', '95'):
             src.add(letter, f'Monte Carlo {p_}%', yrs, f(mc.loc[yrs, f'{q}_{p_}']).values, unit)
         src.add(letter, 'Reference', yrs, an.loc[yrs, col].values, unit)
@@ -295,8 +296,10 @@ def ed5():
         ax.set_xlabel(xlab)
         P.panel_label(ax, letter)
     axes[1, 0].xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'{v:,.0f}'))
+    k5 = PP.budget_ratio(r)
+    S.boundary_vzones(axes[1, 0], float(r.loc[REF, 'B_AR_kt']), float(r.loc[REF, 'B_AtP_kt']), label=False)
     d = axes[1, 1]
-    d.axvline(1.0, color=S.AR, lw=S.LW_BOLD)
+    S.boundary_vzones(d, 1.0, 1.0 / k5, label=False)
     p_ar = float(mcs.loc[('TL', 'LoE_AR'), 'probability_LoE_at_most_1'])
     p_atp = float(mcs.loc[('TL', 'LoE_AtP'), 'probability_LoE_at_most_1'])
     d.plot([1.0], [p_ar], marker='o', ms=4, color=S.TL)
@@ -304,8 +307,7 @@ def ed5():
                xytext=(1.5, 0.30), fontsize=S.FONT_SMALL, arrowprops=dict(arrowstyle='-', color=S.MUTED, lw=S.LW_THIN))
     src.add('d', 'TL, P(LoE AR <= 1)', 'probability', p_ar, 'share of draws')
     src.add('d', 'TL, P(LoE AtP <= 1)', 'probability', p_atp, 'share of draws')
-    d.legend(handles=d.get_legend_handles_labels()[0] + [Line2D([0], [0], color=S.AR, lw=S.LW_BOLD, label='LoE AR = 1'),
-                                                         Line2D([0], [0], color=S.MUTED, lw=S.LW_THIN, ls=':',
+    d.legend(handles=d.get_legend_handles_labels()[0] + S.boundary_handles() + [Line2D([0], [0], color=S.MUTED, lw=S.LW_THIN, ls=':',
                                                                 label='deterministic run')],
              loc='lower right', fontsize=S.FONT_MIN)
     fig.tight_layout()
@@ -328,10 +330,13 @@ def ed5():
 def setting_dots(ax, r, rows, value, src, panel, unit, fmt):
     for i, (pw, lab) in enumerate(rows):
         m_, a_ = float(r.loc[f'{pw}-moderate', value]), float(r.loc[f'{pw}-ambitious', value])
-        col = S.PATHWAY.get(pw) or S.PATHWAY[N_P(pw)]
-        ax.plot([m_, a_], [i, i], color=col, lw=S.LW)
-        ax.plot(m_, i, marker='o', mfc='white', mec=col, mew=S.LW, ms=5, lw=0)
-        ax.plot(a_, i, marker='o', mfc=col, mec=col, ms=5, lw=0)
+        if pw in S.PATHWAY:
+            col, edge, line = S.PATHWAY[pw], S.PATHWAY[pw], S.PATHWAY[pw]
+        else:                                     # a lever: its shade, with a dark edge (light shades stay visible)
+            col, edge, line = S.LEVER[pw], '#555555', '#8C8C8C'
+        ax.plot([m_, a_], [i, i], color=line, lw=S.LW)
+        ax.plot(m_, i, marker='o', mfc='white', mec=edge, mew=S.LW, ms=5, lw=0)
+        ax.plot(a_, i, marker='o', mfc=col, mec=edge, mew=S.LW_THIN, ms=5, lw=0)
         ax.text(min(m_, a_), i - 0.16, f'{fmt(a_)} | {fmt(m_)}', ha='left', va='bottom', fontsize=S.FONT_MIN)
         src.add(panel, f'{lab}, Moderate', 'value', m_, unit)
         src.add(panel, f'{lab}, Ambitious', 'value', a_, unit)
@@ -369,6 +374,8 @@ def ed6():
     P.thousands(a.xaxis)
     b.set_xlabel(N.METRICS['cumulative_LoE'] + ', AR')
     k = PP.budget_ratio(r)
+    S.boundary_vzones(a, float(r.loc[REF, 'B_AR_kt']), float(r.loc[REF, 'B_AtP_kt']), label=False)
+    S.boundary_vzones(b, 1.0, 1.0 / k, label=False)
     sec = b.secondary_xaxis('top', functions=(lambda v: v * k, lambda v: v / k))
     sec.set_xlabel('Cumulative level of exceedance, AtP')
     P.panel_label(a, 'a')
@@ -408,6 +415,7 @@ def ed7():
                     lw=S.LW if setting == 'moderate' else S.LW_THIN * 1.6, alpha=1.0 if setting == 'moderate' else 0.6,
                     label=f"P5, {N.SETTINGS[setting]}, {N.ADOPTION[w]}")
             src.add('a', N.run_label(run), d['year'], d['carbon_kt'], 'kt CO2e per year')
+    P.boundary_lines(a, d0['year'], d0['B_AR_kt'], d0['B_AtP_kt'])
     a.set_xlim(2026, 2050)
     a.set_ylim(0, None)
     a.set_ylabel('Embodied carbon (kt CO₂e per year)')
@@ -431,6 +439,7 @@ def ed7():
             b.text(v, i - 0.18, f'{v:.2f}', ha='center', va='bottom', fontsize=S.FONT_MIN)
             src.add('b', f"P5, {N.SETTINGS[setting]}, {N.ADOPTION[w]}", 'value', v, 'cumulative LoE AR')
     b.axvline(float(r.loc[REF, 'LoE_AR']), color=S.REFERENCE, lw=S.LW_BOLD)
+    S.boundary_vzones(b, 1.0, 1.0 / PP.budget_ratio(r), label=False)
     b.set_yticks(range(3))
     b.set_yticklabels([N.ADOPTION[w] for w, _ in windows])
     b.set_ylim(2.6, -0.6)
@@ -455,20 +464,21 @@ def ed8():
     h = PLAN['ED8']
     fid = h['file']
     src = source(fid)
-    st = read_csv('pathways/shapley_theoretical_limit_moderate.csv')
+    st = read_csv('pathways/shapley_theoretical_limit.csv')
     tl = read_json('pathways/theoretical_limit.json')
     an = read_csv('pathways/annual.csv')
     an = an[an['scenario'] == REF]
     ind = tl['indicators']['TL']
-    fig, axes = plt.subplots(2, 2, figsize=S.figsize('double', 128))
+    fig, axes = plt.subplots(2, 2, figsize=S.figsize('double', 140))
     a = axes[0, 0]
-    players = [f'TL{k}' for k in range(1, 8)] + ['from2027']
+    players = [f'TL{k}' for k in range(1, 11)] + ['from2027']
     lab = {p: (f'{p} {N.TL[p]}' if p != 'from2027' else N.ADOPTION['from2027'].capitalize()) for p in players}
     car = st[st['metric'] == 'carbon_kt'].set_index('player')['reduction']
     loe = st[st['metric'] == 'LoE_AR'].set_index('player')['reduction']
     share = st[st['metric'] == 'carbon_kt'].set_index('player')['share_of_P5_moderate_from2027_minus_TL']
     for i, p in enumerate(players):
-        a.barh(i, loe[p], color='#7A7A7A' if p != 'from2027' else S.TL_GRADUAL, height=0.66, edgecolor='white')
+        a.barh(i, loe[p], color=S.LEVER[N.TL_LIMIT_OF[p]] if p != 'from2027' and N.TL_LIMIT_OF[p] else
+               (S.PATHWAY['P5'] if p == 'from2027' else S.TL), height=0.66, edgecolor='white')
         txt = f"{loe[p]:.2f} ({car[p]:,.0f} kt" + (f', {100 * share[p]:.0f}%)' if p != 'from2027' else ')')
         a.text(loe[p], i, ' ' + txt, va='center', fontsize=S.FONT_MIN)
         src.add('a', lab[p], 'LoE AR', loe[p], 'cumulative LoE AR')
@@ -523,17 +533,20 @@ def ed8():
     d.set_ylim(0, None)
     d.set_ylabel('Soil carbon loss per m² built (kg CO₂e/m²)')
     d.legend(loc='center right', fontsize=S.FONT_MIN)
-    P.panel(d, 'd', 'Soil carbon loss per m² built (TL5, TL6)')
+    P.panel(d, 'd', 'Soil carbon loss per m² built (TL8, TL9)')
     fig.tight_layout()
     save(fig, fid, src)
     z = ind['zero_building_years']
-    cap = (h['caption'] + ' (a) Shapley values (exact, 128 subsets) of TL1–TL7 relative to P5 Combined (Moderate) at full '
-           'strength from 2027, in cumulative LoE AR (carbon and share of that run − TL in brackets); they add up exactly '
-           'to that difference. The effect of full strength from 2027 (P5 on the adoption path → from 2027) is a separate '
-           'line, not a Shapley player. The earlier attribution of TL1–TL6 relative to P5 Ambitious stays in '
-           'data/pathways/shapley_theoretical_limit.csv. (b) New-dwelling size and floor area per person (TL3: '
+    rel = ind['released_dwellings']
+    cap = (h['caption'] + ' (a) Shapley values (exact, 1,024 subsets) of TL1–TL10 relative to P5 Combined (Moderate) at '
+           'full strength from 2027, in cumulative LoE AR (carbon and share of that run − TL in brackets); they add up '
+           'exactly to that difference. Bars in the colour of the lever each item is the limit of (TL10 has no lever '
+           'counterpart). The effect of full strength from 2027 (P5 on the adoption path → from 2027) is a separate '
+           'line, not a Shapley player. (b) New-dwelling size and floor area per person (TL10 with TL2: '
            f"{ind['m2_per_person_new_dwellings']['2030']:.2f} m² per person). (c) Dwellings built: TL builds nothing in "
-           f"{min(z)}–{max(z)} (banking rule: the vacant stock released by TL1 absorbs the requirement). (d) Soil carbon "
+           f"{min(z)}–{max(z)} (banking rule: released dwellings meet the requirement: {rel['vacancy_change']:,.0f} from "
+           f"the vacancy (TL3), {rel['household_decline']:,.0f} from the larger households (TL2) and "
+           f"{rel['overbuild_2026_absorbed']:,.0f} from the 2026 overbuild (TL4)). (d) Soil carbon "
            'loss per m² of floor area built (soil carbon loss / floor area, annual data; not defined in years with no '
            'building).')
     return dict(caption=cap)
@@ -549,8 +562,8 @@ def ed9():
     r = PP.runs_ref()
     sl = read_csv('pathways/shapley_levers.csv')
     sl = sl[(sl['setting'] == 'moderate') & (sl['metric'] == 'carbon_kt')].set_index('player')
-    rows = [(f'L{k}', f"L{k} {N.LEVERS[f'L{k}']}") for k in range(1, 6)]
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 72))
+    rows = [(f'L{k}', textwrap.fill(f"L{k} {N.LEVERS[f'L{k}']}", 20)) for k in range(1, 10)]
+    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 96))
     setting_dots(a, r, rows, 'carbon_kt', src, 'a', 'kt CO2e 2026-2050', lambda v: f'{v:,.0f}')
     a.set_xlabel('Embodied carbon 2026–2050, one lever alone (kt CO₂e)')
     P.thousands(a.xaxis)
@@ -559,14 +572,14 @@ def ed9():
     check(math.isclose(sl['reduction'].sum(), tot, rel_tol=1e-12), 'ED9: the lever Shapley values do not add up')
     for i, (lv, lab) in enumerate(rows):
         v = float(sl.loc[lv, 'reduction'])
-        b.barh(i, v, color=S.PATHWAY[N_P(lv)], height=0.62, edgecolor='white')
+        b.barh(i, v, color=S.LEVER[lv], height=0.62, edgecolor='#555555', lw=S.LW_THIN)
         b.text(v, i, f" {v:,.0f} kt ({100 * sl.loc[lv, 'share_of_reference_minus_P5']:.0f}%)", va='center',
                fontsize=S.FONT_MIN)
         src.add('b', lab, 'Shapley value', v, 'kt CO2e 2026-2050')
     b.set_yticks(range(len(rows)))
     b.set_yticklabels([lab for _, lab in rows])
     b.set_ylim(len(rows) - 0.4, -0.6)
-    b.set_xlim(0, sl['reduction'].max() * 1.45)
+    b.set_xlim(0, sl['reduction'].max() * 1.6)
     b.set_xlabel(f'Shapley value of Reference − P5 (Moderate; total {tot:,.0f} kt CO₂e)')
     P.thousands(b.xaxis)
     b.grid(axis='y', visible=False)
@@ -576,7 +589,7 @@ def ed9():
     save(fig, fid, src)
     cap = (h['caption'] + ' (a) Each lever alone on the Reference, Moderate (open) and Ambitious (filled), full roll-out '
            'by 2035; the cumulative LoE AR of every run: data/pathways/runs.csv. (b) Order-free (Shapley) attribution of '
-           'Reference − P5 Combined (Moderate) to the five levers (exact; adds up to the difference).')
+           'Reference − P5 Combined (Moderate) to the nine levers (exact, 512 subsets; adds up to the difference).')
     return dict(caption=cap)
 
 
@@ -612,13 +625,15 @@ def ed10():
     a.set_ylabel('Embodied carbon 2026–2050 (kt CO₂e)')
     P.thousands(a.yaxis)
     b.set_ylabel(N.METRICS['cumulative_LoE'] + ', AR')
-    b.axhline(1.0, color=S.AR, lw=S.LW)
+    rr = PP.runs_ref()
+    S.boundary_hzones(a, float(rr.loc[REF, 'B_AR_kt']), float(rr.loc[REF, 'B_AtP_kt']), label=False)
+    S.boundary_hzones(b, 1.0, 1.0 / PP.budget_ratio(rr), label=False)
     fig.legend(handles=[Patch(facecolor=S.MUTED, alpha=0.45, label=N.SCENARIOS['LOW'] + ' (left)'),
                         Patch(facecolor=S.MUTED, label=N.SCENARIOS['REF'] + ' replacement (middle)'),
                         Patch(facecolor=S.MUTED, alpha=0.75, hatch='///', edgecolor='white',
                               label=N.SCENARIOS['HIGH'] + ' (right)'),
-                        Line2D([0], [0], color=S.AR, lw=S.LW, label='LoE AR = 1')],
-               loc='lower center', ncol=4, bbox_to_anchor=(0.5, -0.005), frameon=False)
+                        *S.boundary_handles()],
+               loc='lower center', ncol=5, bbox_to_anchor=(0.5, -0.005), frameon=False)
     fig.tight_layout(rect=(0, 0.07, 1, 1))
     save(fig, fid, src)
     tlr = t[t['run'] == 'TL'].set_index('scenario')
@@ -631,6 +646,201 @@ def ed10():
 
 
 # ============================================================
+# ED11-ED13  Monte Carlo insights (pathways_mc.py, mcstats.py)
+# ============================================================
+MC_INPUTS = ('z_pop', 'size', 'complete', 'carbon_index')
+MC_INPUT_LABELS = {'z_pop': 'Population rank (z-score)', 'size': 'Dwelling-size multiplier',
+                   'complete': 'Completion rate', 'carbon_index': 'Carbon-factor index'}
+MC_OUTPUTS = (('floor_area_Mm2', 'Floor area 2026–2050 (Mm²)'), ('carbon_kt', 'Carbon 2026–2050 (kt CO₂e)'),
+              ('LoE_AR', 'Cumulative LoE AR'))
+MC_RUNS = (('REF', REF, 'Reference'), ('P5', 'P5-moderate', 'P5 Combined'), ('TL', 'TL', 'TL'))
+
+
+def ed11():
+    h = PLAN['ED11']
+    fid = h['file']
+    src = source(fid)
+    dr = read_csv('pathways/montecarlo_draws.csv')
+    fits = read_csv('pathways/montecarlo_fits.csv')
+    fig, axes = plt.subplots(len(MC_OUTPUTS), len(MC_INPUTS), figsize=S.figsize('double', 150), sharex='col')
+    for i, (q, ylab) in enumerate(MC_OUTPUTS):
+        for j, c in enumerate(MC_INPUTS):
+            ax = axes[i, j]
+            for k, run, lab in MC_RUNS:
+                col = PP.colour(run)
+                ax.scatter(dr[c], dr[f'{k}_{q}'], s=0.6, color=col, alpha=0.18, lw=0, rasterized=True)
+                f = fits[(fits['run'] == k) & (fits['output'] == q) & (fits['input'] == c)]
+                ax.plot(f['x'], f['lowess'], color=col, lw=S.LW, zorder=4)
+                ax.plot(f['x'], f['ols'], color=col, lw=S.LW_THIN, ls='--', zorder=4)
+                src.add(f'{q} vs {c}', f'{lab}: LOWESS', f['x'].values, f['lowess'].values, ylab)
+                src.add(f'{q} vs {c}', f'{lab}: least squares', f['x'].values, f['ols'].values, ylab)
+            if q == 'LoE_AR':                    # AR budget at 1; AtP at the deterministic B_AtP / B_AR
+                S.boundary_hzones(ax, 1.0, 1.0 / PP.budget_ratio(PP.runs_ref()), label=False)
+            if j == 0:
+                ax.set_ylabel(ylab, fontsize=S.FONT_SMALL)
+            if i == len(MC_OUTPUTS) - 1:
+                ax.set_xlabel(MC_INPUT_LABELS[c], fontsize=S.FONT_SMALL)
+            ax.tick_params(labelsize=S.FONT_MIN)
+    handles = [Line2D([0], [0], marker='o', lw=0, ms=3, color=PP.colour(run), label=lab) for _, run, lab in MC_RUNS]
+    handles += [Line2D([0], [0], color=S.INK, lw=S.LW, label='LOWESS (frac 2/3, 3 robustness iterations)'),
+                Line2D([0], [0], color=S.INK, lw=S.LW_THIN, ls='--', label='Least-squares line')]
+    handles += S.boundary_handles()
+    fig.legend(handles=handles, loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.005), frameon=False)
+    fig.tight_layout(rect=(0, 0.07, 1, 1))
+    save(fig, fid, src)
+    cap = (h['caption'] + ' Each point is one of the 5,000 Latin-hypercube draws; population rank and household size '
+           'share one draw (the household-size path is interpolated between the Stats NZ variants at the population '
+           'rank). The carbon-factor index is the draw\'s carbon per m² at the central floor-area mix relative to the '
+           'central factors (the sampled carbon input selects a bootstrap replicate and has no order). LOWESS after '
+           'Cleveland (1979), implemented in mcstats.py and checked against statsmodels.')
+    return dict(caption=cap)
+
+
+def ed12():
+    h = PLAN['ED12']
+    fid = h['file']
+    src = source(fid)
+    imp = read_csv('pathways/montecarlo_importance.csv')
+    sob = read_csv(L.montecarlo('sobol', REF, frozen=False))
+    fig, axes = plt.subplots(1, 3, figsize=S.figsize('double', 78), sharey=True)
+    y = np.arange(len(MC_INPUTS))
+    off = {'REF': -0.25, 'P5': 0.0, 'TL': 0.25}
+    for ax, m, letter, xlab in ((axes[0], 'src', 'a', 'SRC of the cumulative LoE AR'),
+                                (axes[1], 'prcc', 'b', 'PRCC of the cumulative LoE AR')):
+        for k, run, lab in MC_RUNS:
+            d = imp[(imp['run'] == k) & (imp['output'] == 'LoE_AR')].set_index('input').loc[list(MC_INPUTS)]
+            ax.barh(y + off[k], d[m], height=0.24, color=PP.colour(run), edgecolor='white', lw=S.LW_THIN,
+                    label=lab + (f" (R² {d['src_r2'].iloc[0]:.3f})" if m == 'src' else ''))
+            ax.errorbar(d[m], y + off[k], xerr=[d[m] - d[f'{m}_lo'], d[f'{m}_hi'] - d[m]], fmt='none',
+                        ecolor=S.INK, lw=S.LW_THIN, capsize=1.5)
+            for c in MC_INPUTS:
+                src.add(letter, f'{lab}: {c}', ['estimate', '2.5%', '97.5%'],
+                        [d.loc[c, m], d.loc[c, f'{m}_lo'], d.loc[c, f'{m}_hi']], m.upper())
+        ax.axvline(0, color=S.INK, lw=S.LW_THIN)
+        ax.set_xlim(-1.05, 1.05)
+        ax.set_xlabel(xlab)
+        ax.legend(loc='lower left' if m == 'src' else 'lower right', fontsize=S.FONT_MIN)
+        ax.grid(axis='y', visible=False)
+        P.panel_label(ax, letter)
+    c = axes[2]
+    so = sob[sob['output'] == 'carbon_kt'].set_index('input')
+    sob_inputs = {'z_pop': 'z_pop', 'size': 'size', 'complete': 'complete', 'carbon_index': 'carbon'}
+    for k_, (col, off_, lab) in enumerate((('S1', -0.15, 'first order S1'), ('ST', 0.15, 'total ST'))):
+        v = [so.loc[sob_inputs[i], col] for i in MC_INPUTS]
+        lo = [so.loc[sob_inputs[i], f'{col}_lo'] for i in MC_INPUTS]
+        hi = [so.loc[sob_inputs[i], f'{col}_hi'] for i in MC_INPUTS]
+        c.barh(y + off_, v, height=0.28, color=S.REFERENCE, alpha=0.5 if col == 'S1' else 1.0, edgecolor='white',
+               label=lab)
+        c.errorbar(v, y + off_, xerr=[np.subtract(v, lo), np.subtract(hi, v)], fmt='none', ecolor=S.INK,
+                   lw=S.LW_THIN, capsize=1.5)
+        for i_, inp in enumerate(MC_INPUTS):
+            src.add('c', f'Sobol {col}: {inp}', ['estimate', 'lower', 'upper'], [v[i_], lo[i_], hi[i_]], 'index')
+    c.set_xlim(0, 1.0)
+    c.set_xlabel('Sobol index of the Reference carbon')
+    c.legend(loc='lower right', fontsize=S.FONT_MIN)
+    c.grid(axis='y', visible=False)
+    P.panel_label(c, 'c')
+    axes[0].set_yticks(y)
+    axes[0].set_yticklabels([MC_INPUT_LABELS[i] for i in MC_INPUTS])
+    axes[0].set_ylim(len(MC_INPUTS) - 0.5, -0.5)
+    fig.tight_layout()
+    save(fig, fid, src)
+    r = imp[imp['output'] == 'LoE_AR'].set_index(['run', 'input'])
+    cap = (h['caption'] + ' (a) Standardised regression coefficients (linear model of the cumulative LoE AR on the '
+           'four inputs; R² in the legend) and (b) partial rank correlation coefficients, each with its percentile '
+           'bootstrap 95% interval (1,000 resamples of the draws; mcstats.py). (c) Sobol first-order and total indices '
+           'of the Reference carbon 2026–2050 (MonteCarlo.py; Saltelli 2010 / Jansen estimators), where the carbon '
+           'input is the bootstrap selector itself (variance-based indices need no order). Carbon-factor uncertainty '
+           f"barely moves the Reference LoE AR (PRCC {r.loc[('REF', 'carbon_index'), 'prcc']:+.2f}): the AR budget is "
+           'grandfathered from each draw\'s own 2025 carbon factors, so carbon and budget move together; under TL it '
+           f"lowers the LoE AR (PRCC {r.loc[('TL', 'carbon_index'), 'prcc']:+.2f}) because TL's carbon targets are "
+           'absolute while the budget scales with the factors.')
+    return dict(caption=cap)
+
+
+def ed13():
+    h = PLAN['ED13']
+    fid = h['file']
+    src = source(fid)
+    dr = read_csv('pathways/montecarlo_draws.csv')
+    cond = read_csv('pathways/montecarlo_conditional_tl.csv')
+    cs = read_json('pathways/montecarlo_conditional_tl.json')
+    r = PP.runs_ref()
+    k_atp = PP.budget_ratio(r)
+    ratio = dr['B_AtP_kt_2026_2050'] / dr['B_AR_kt_2026_2050']
+    fig = plt.figure(figsize=S.figsize('double', 84))
+    gs = fig.add_gridspec(1, 3, width_ratios=[1.5, 1.2, 0.9], wspace=0.45, left=0.07, right=0.98, bottom=0.2, top=0.93)
+    a, b, c = (fig.add_subplot(gs[k]) for k in range(3))
+    from matplotlib.colors import LinearSegmentedColormap
+    cmap = LinearSegmentedColormap.from_list('seq', S.SEQUENTIAL)
+    S.boundary_hzones(a, 1.0, 1.0 / k_atp)
+    sc = a.scatter(dr['z_pop'], dr['TL_LoE_AR'], c=dr['carbon_index'], cmap=cmap, s=1.2, lw=0, rasterized=True,
+                   zorder=2)
+    ex = dr[dr['TL_LoE_AR'] > 1.0]
+    a.scatter(ex['z_pop'], ex['TL_LoE_AR'], s=14, facecolor='none', edgecolor=S.AR, lw=S.LW, zorder=5,
+              label=f'TL above the AR budget ({len(ex)} of {len(dr):,} draws)')
+    src.add('a', 'TL cumulative LoE AR', dr['z_pop'].values, dr['TL_LoE_AR'].values, 'cumulative LoE AR (x: z_pop)')
+    src.add('a', 'carbon-factor index', dr['z_pop'].values, dr['carbon_index'].values, 'index (x: z_pop)')
+    a.set_xlabel(MC_INPUT_LABELS['z_pop'])
+    a.set_ylabel('TL cumulative LoE AR 2026–2050')
+    a.set_ylim(0, max(1.25, float(dr['TL_LoE_AR'].max()) * 1.05))
+    a.legend(loc='upper left', fontsize=S.FONT_MIN)
+    cax = a.inset_axes([0.62, 0.12, 0.33, 0.035])
+    cb = fig.colorbar(sc, cax=cax, orientation='horizontal')
+    cb.set_label('Carbon-factor index', fontsize=S.FONT_MIN, labelpad=1)
+    cb.ax.tick_params(labelsize=S.FONT_MIN)
+    P.panel_label(a, 'a')
+    terms = [t for t in MC_INPUTS]
+    yy = np.arange(len(terms))
+    for model, off, mk, lab in (('univariable', -0.15, 'o', 'one input at a time'),
+                                ('multivariable', 0.15, 's', 'all four inputs')):
+        sel = cond[cond['model'].str.startswith(model) & (cond['term'] != 'intercept')].set_index('term').loc[terms]
+        b.errorbar(sel['odds_ratio_per_sd'], yy + off, xerr=[sel['odds_ratio_per_sd'] - sel['or_lo'],
+                                                              sel['or_hi'] - sel['odds_ratio_per_sd']],
+                   fmt=mk, ms=3.5, color=S.INK, mfc='white' if model == 'univariable' else S.INK, lw=S.LW_THIN,
+                   capsize=1.5, label=lab)
+        for t in terms:
+            src.add('b', f'{model}: {t}', ['OR per SD', '2.5%', '97.5%'],
+                    [sel.loc[t, 'odds_ratio_per_sd'], sel.loc[t, 'or_lo'], sel.loc[t, 'or_hi']], 'odds ratio')
+    b.axvline(1.0, color=S.MUTED, lw=S.LW_THIN, ls=':')
+    b.set_xscale('log')
+    b.set_yticks(yy)
+    b.set_yticklabels([MC_INPUT_LABELS[t] for t in terms], fontsize=S.FONT_SMALL)
+    b.set_ylim(len(terms) - 0.5, -0.5)
+    b.set_xlabel('Odds ratio of TL within AR,\nper SD of the input (log scale)')
+    b.legend(loc='lower left', fontsize=S.FONT_MIN)
+    b.grid(axis='y', visible=False)
+    P.panel_label(b, 'b')
+    qd = pd.DataFrame(cs['by_population_quintile'])
+    c.errorbar(qd['quintile'], 100 * qd['p_within_AR'], yerr=[100 * (qd['p_within_AR'] - qd['wilson_lo']),
+                                                             100 * (qd['wilson_hi'] - qd['p_within_AR'])],
+               fmt='o', ms=3.5, color=S.TL, lw=S.LW_THIN, capsize=1.5)
+    src.add('c', 'P(TL LoE AR <= 1) by population quintile', qd['quintile'].values, qd['p_within_AR'].values, 'share')
+    c.set_xticks(qd['quintile'])
+    c.set_xlabel('Population-rank quintile')
+    c.set_ylabel('P(TL within the AR budget) (%)')
+    c.set_ylim(min(98.0, 100 * float(qd['wilson_lo'].min()) - 0.5), 100.3)
+    P.panel_label(c, 'c')
+    save(fig, fid, src)
+    uv = cond[(cond['model'] == 'univariable: z_pop') & (cond['term'] == 'z_pop')].iloc[0]
+    exr = cs['exceeding_draws']
+    cap = (h['caption'] + f" TL stays within the AR budget in {cs['within_AR']:,} of {cs['n']:,} draws "
+           f"({100 * cs['p_within_AR']:.2f}%; Wilson 95% {100 * cs['wilson_95'][0]:.2f}–{100 * cs['wilson_95'][1]:.2f}%). "
+           f"The {len(exr)} draws above it are the draws with the highest population ranks (percentile ranks "
+           + ', '.join(f"{100 * e['z_pop_percentile_rank']:.2f}" for e in exr) + '); TL LoE AR '
+           + ', '.join(f"{e['TL_LoE_AR']:.3f}" for e in exr) + '. (a) Shading: the AR and AtP budget zones (the AtP '
+           f"line at the deterministic B_AtP / B_AR = {1 / k_atp:.3f}; across draws {ratio.min():.3f}–{ratio.max():.3f}). "
+           '(b) Firth penalised-likelihood logistic regression (Heinze & Schemper 2002) with profile-likelihood 95% '
+           f"intervals; the maximum-likelihood estimate does not exist (separation) for the population models. Odds "
+           f"ratio per SD of population rank, alone: {uv['odds_ratio_per_sd']:.2g} ({uv['or_lo']:.2g}–{uv['or_hi']:.2g}). "
+           f"With {cs['events_rarer_class']} exceedances ({cs['events_per_variable_multivariable']:.0f} per variable in the "
+           'multivariable model, below the conventional 10) the multivariable odds ratios are indicative only; the model '
+           'is deterministic, so the intervals describe the 5,000-draw design. (c) Share of draws within the AR budget by '
+           'population-rank quintile, Wilson 95% intervals.')
+    return dict(caption=cap)
+
+
+# ============================================================
 # EXTENDED_DATA.md
 # ============================================================
 def md_path():
@@ -639,8 +849,8 @@ def md_path():
 
 def write_md(rr):
     lines = ['# Extended Data', '',
-             '_Generated by extended_data.py from outputs/data/ (do not edit by hand). Figures: 183 mm wide, PNG 300 dpi '
-             'and vector PDF; the source data of every figure in the CSV of the same name. The figures of the paper: '
+             '_Generated by extended_data.py from outputs/data/ (do not edit by hand). Figures: 183 mm wide, PNG 300 dpi; '
+             'with run_all.py --export also the vector PDF and the source data of every figure (CSV of the same name). The figures of the paper: '
              '../paper/PAPER.md; rows and groups of the sensitivity figures: docs/SENSITIVITY_PLAN.md._', '']
     if PP.quick_run():
         lines += ['> **QUICK RUN, not for reporting** (run_all.py --quick: fewer Monte Carlo draws).', '']
@@ -648,13 +858,15 @@ def write_md(rr):
         f = h['file']
         lines += [f"## {h['id']}. {N.typeset(h['title'])}", '', f'![{h["id"]}]({f}.png)', '',
                   f"**{h['id']}.** {N.typeset(rr[h['id']]['caption'])}", '',
-                  f"Files: [{f}.png]({f}.png), [{f}.pdf]({f}.pdf), source data [{f}.csv]({f}.csv). "
-                  f"Data (outputs/): {h['source']}.", '']
+                  f"Files: [{f}.png]({f}.png)" + (f", [{f}.pdf]({f}.pdf), source data [{f}.csv]({f}.csv)"
+                                                    if S.export_run() else ' (PDF and source data: run_all.py --export)')
+                  + f". Data (outputs/): {h['source']}.", '']
     with open(md_path(), 'w', encoding='utf-8') as fh:
         fh.write('\n'.join(lines) + '\n')
 
 
-FIGURES = dict(ED1=ed1, ED2=ed2, ED3=ed3, ED4=ed4, ED5=ed5, ED6=ed6, ED7=ed7, ED8=ed8, ED9=ed9, ED10=ed10)
+FIGURES = dict(ED1=ed1, ED2=ed2, ED3=ed3, ED4=ed4, ED5=ed5, ED6=ed6, ED7=ed7, ED8=ed8, ED9=ed9, ED10=ed10,
+               ED11=ed11, ED12=ed12, ED13=ed13)
 
 
 def main(only=None):

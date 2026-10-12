@@ -21,7 +21,7 @@
    "xlabel": "",
    "ylabel": "Dwellings (thousand per year)",
    "year_min": 1992.0,
-   "year_max": 2050.0
+   "year_max": 2050.2624
   }
  ],
  "texts": [
@@ -55,7 +55,6 @@
   "$\\mathdefault{6}$",
   "$\\mathdefault{8}$",
   "$\\mathdefault{\u221210}$",
-  "$\\mathdefault{\u221220}$",
   "1986\u201391 not covered (calibration starts 1991)",
   "2013 \u2192 2018 empty / away definition break",
   "2019\u201323: Stats NZ estimates scaled to the 2023 census (\u00d70.824)",
@@ -100,10 +99,16 @@
   "unexpl. -0.6k",
   "unexpl. -5.9k"
  ],
- "note": "a: The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); implied stock vacancy rises to \u22486.4% because the 2026 overbuild is not absorbed. c: History: one bar per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. Faint bar: 2024\u20132025, households consent-derived. Projection annual, lighter. History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (D07; under-construction corrected) x the previous year's stock, the quantity the model uses (2024\u20132025: the latest rate carried). Unexplained building (hatched grey, labelled per interval in thousand dwellings per year): building not explained by household formation, vacancy and census-measured replacement: redevelopment not captured by the census counts, error in the household estimates, or residual; it may be negative.",
+ "note": "a: The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); implied stock vacancy rises to \u22486.4% because the 2026 overbuild is not absorbed. c: History: one bar per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. Faint bar: 2024\u20132025, households consent-derived. Projection annual, lighter. History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (D07; under-construction corrected) x the previous year's stock, the quantity the model uses (2024\u20132025: the latest rate carried). Unexplained building (faded red, labelled per interval in thousand dwellings per year): building not explained by household formation, vacancy and census-measured replacement: redevelopment not captured by the census counts, error in the household estimates, or residual; it may be negative.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
  "boundary_zones": false,
- "white_segment_edges": 0
+ "white_segment_edges": 0,
+ "atp_linestyles": [],
+ "negative_band_segments": 38,
+ "net_total_ticks": 32,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": []
 }

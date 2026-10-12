@@ -54,10 +54,10 @@
   "800",
   "Ability to pay (AtP)",
   "Acquired rights (AR)",
-  "Ambitious (filled)",
+  "Ambitious (hollow)",
   "Cumulative level of exceedance, 2026\u20132050, AR",
   "Embodied carbon (kt CO\u2082e per year)",
-  "Moderate (open)",
+  "Moderate (filled)",
   "P5, Ambitious, full roll-out by 2030 (sensitivity)",
   "P5, Ambitious, full roll-out by 2035 (adopted)",
   "P5, Ambitious, full roll-out by 2045 (sensitivity)",
@@ -79,5 +79,13 @@
  "maintenance_where": [],
  "boundary_drawn": true,
  "boundary_zones": true,
- "white_segment_edges": 0
+ "white_segment_edges": 0,
+ "atp_linestyles": [
+  "dotted"
+ ],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": []
 }

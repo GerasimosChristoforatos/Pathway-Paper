@@ -97,5 +97,13 @@
  "maintenance_where": [],
  "boundary_drawn": true,
  "boundary_zones": true,
- "white_segment_edges": 0
+ "white_segment_edges": 0,
+ "atp_linestyles": [
+  "dotted"
+ ],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": []
 }

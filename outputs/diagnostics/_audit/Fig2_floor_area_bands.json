@@ -1,19 +1,12 @@
 {
- "figure": "Fig2_demand_bands",
+ "figure": "Fig2_floor_area_bands",
  "producer": "paper.py",
  "axes": [
   {
    "title": "",
    "xlabel": "",
    "ylabel": "Floor area (Mm\u00b2 per year)",
-   "year_min": 1994.0,
-   "year_max": 2050.0
-  },
-  {
-   "title": "",
-   "xlabel": "",
-   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
-   "year_min": 2026.0,
+   "year_min": 1992.0,
    "year_max": 2050.0
   }
  ],
@@ -25,13 +18,9 @@
   "$\\mathdefault{2000}$",
   "$\\mathdefault{2010}$",
   "$\\mathdefault{2020}$",
-  "$\\mathdefault{2025}$",
   "$\\mathdefault{2030}$",
-  "$\\mathdefault{2035}$",
   "$\\mathdefault{2040}$",
-  "$\\mathdefault{2045}$",
   "$\\mathdefault{2050}$",
-  "$\\mathdefault{2055}$",
   "$\\mathdefault{2060}$",
   "$\\mathdefault{2}$",
   "$\\mathdefault{3}$",
@@ -39,38 +28,28 @@
   "$\\mathdefault{5}$",
   "$\\mathdefault{6}$",
   "$\\mathdefault{7}$",
-  "$\\mathdefault{\u22121}$",
-  "$\\mathdefault{\u22122}$",
-  "0",
-  "1,000",
-  "1,200",
-  "1,400",
-  "200",
+  "$\\mathdefault{8}$",
   "2026 overbuild",
-  "400",
-  "600",
-  "800",
-  "Embodied carbon (kt CO\u2082e per year)",
   "Extra space",
   "Floor area (Mm\u00b2 per year)",
   "Historical replacement (history: net, census-measured)",
   "History: census intervals ",
-  "Maintenance (B2, B4), 2026\u20132050",
   "Population growth (untargeted)",
   "Recent replacement surge",
   "Smaller households",
   "Unexplained building (history; may be negative)",
-  "Vacancy",
-  "a",
-  "b"
+  "Vacancy"
  ],
  "note": null,
- "maintenance_drawn": true,
- "maintenance_where": [
-  "axes 1: Rectangle in the maintenance colour",
-  "legend: Maintenance (B2, B4), 2026\u20132050"
- ],
+ "maintenance_drawn": false,
+ "maintenance_where": [],
  "boundary_drawn": false,
  "boundary_zones": false,
- "white_segment_edges": 0
+ "white_segment_edges": 0,
+ "atp_linestyles": [],
+ "negative_band_segments": 6,
+ "net_total_ticks": 6,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": []
 }

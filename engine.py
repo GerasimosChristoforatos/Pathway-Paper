@@ -197,7 +197,7 @@ def nowcast_year(consents, year, method, seasonal_years):
                 estimated_missing=est, total=ytd + est)
 
 
-SOIL_ZERO_TOL_M2 = 1e-3          # floor area treated as zero (a guard for zero-building years; none under the proportional reoccupation of MODEL v2.1.1)
+SOIL_ZERO_TOL_M2 = 1e-3          # floor area treated as zero (theoretical limit, banked zero-building years)
 
 
 def requirement(E):
@@ -313,7 +313,7 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                              and its adoption weight w; the soil-free floor area becomes
                              soil_free + w max(0, s total - soil_free), so the replacement floor
                              area (already soil-free) is never counted twice.
-    clip_soil_share        : True (theoretical limit; a guard for zero-building years): the soil-bearing
+    clip_soil_share        : True (theoretical limit, banked zero-building years): the soil-bearing
                              share is clipped to [0, 1] and set to 0 where nothing is built.
 
     Floor area built (in scope) = structural + gross consumption, where

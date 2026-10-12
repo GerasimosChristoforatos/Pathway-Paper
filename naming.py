@@ -82,6 +82,11 @@ TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pa
 ADOPTION = {'by2035': 'full roll-out by 2035 (adopted)', 'by2030': 'full roll-out by 2030 (sensitivity)',
             'by2045': 'full roll-out by 2045 (sensitivity)', 'from2027': 'full strength from 2027'}
 ADOPTION_LEGACY = {'ramp2035': 'by2035', 'ramp2030': 'by2030', 'ramp2045': 'by2045', 'instant': 'from2027'}
+# MODEL v2.1.1: TL is adopted by 2030 (the window of the pathways' 2030 sensitivity); its instant variant is one
+# sensitivity row
+TL_ADOPTION_LABEL = 'full roll-out by 2030 (TL adoption)'
+TL_FASTER_ADOPTION = "TL's faster adoption (by 2030 instead of 2035)"
+TL_INSTANT = 'TL, all limits from 1 January 2027 (instant)'
 
 # Demand bands (why floor area is built), bottom to top. Retirement villages are a
 # bookkeeping row (out of scope), never a band in figures.
@@ -152,7 +157,6 @@ def vacancy_wording(v0, vmax, vmin, ymin, v2050):
 # wave" and "vacancy allowance" of the release band definitions, and the typology words, which stay
 # in the descriptions of model inputs (case studies, consents; by-typology results are removed).
 OLD_TERMS = [
-    (r'(?i)banking rule|zero-building year', 'proportional reoccupation (MODEL v2.1.1)'),
     (r'\bS3(?:-(?:10|5|15))?(?:-noUC)?\b', 'Reference (REF, REF_HL5, REF_HL15)'),
     (r'(?<!Eq\. )(?<!Table )(?<!SI )(?<!Fig\. )\bS[12](?:-noUC)?\b', 'Low / High replacement (LOW, HIGH)'),
     (r'noUC', ', no census under-construction correction'),
@@ -209,6 +213,8 @@ def run_label(run, scenario='REF'):
         return SCENARIOS[run]
     if run == 'TL':
         return f"TL {TL['TL']}"
+    if run == 'TL-from2027':
+        return TL_INSTANT
     parts = run.split('-')
     head, setting = parts[0], parts[1] if len(parts) > 1 else None
     name = f'{head} {PATHWAYS.get(head) or LEVERS.get(head)}'

@@ -97,7 +97,7 @@ asserts every scenario shares the population path).
 
 | item | input(s) modified | modification |
 |---|---|---|
-| T1 no idle stock | `fwd_inputs['v']`; `join`, `join_redev` | `v = 0` from 2027; `engine.market_excess(..., 'surplus', absorption=1)`; banking rule (`pathways.bank`) entered as a stock-adding join = banked built − requirement, `join_redev = 0` |
+| T1 no idle stock | `fwd_inputs['v']`; `join`, `join_redev` | `v = 0` from 2027; `engine.market_excess(..., 'surplus', absorption=1)`; proportional reoccupation (`pathways.reoccupation`, MODEL v2.1.1) entered as a stock-adding join = built − requirement, `join_redev = 0` |
 | T2 no extra space | `fwd_inputs['size']` | L1 with `f = 1`: size = S(y) × OLF (T3's OLF when T3 is active) |
 | T3 minimum space per person | `fwd_inputs['olf']` | every typology at the lowest independent case-study design OLF |
 | T4 best materials | `fwd_inputs['intensity']`, `fwd_inputs['intensity_upfront']` | L5 form with r per typology = its own best independent case (apartments held at 1) |

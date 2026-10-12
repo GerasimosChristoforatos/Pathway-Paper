@@ -24,7 +24,7 @@ A bottom-up, demand-driven model of the new residential floor area New Zealand b
   The paper shows the Reference, P1–P5 at the Moderate setting with full roll-out by 2035, and TL;
   every other setting is Extended Data; the story in six figures is in the key figures.
 
-Release **MODEL v2.1.0** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
+Release **MODEL v2.1.1** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
 
 ![Fig1. How the model works](outputs/paper/Fig1_model_schematic.png)
 

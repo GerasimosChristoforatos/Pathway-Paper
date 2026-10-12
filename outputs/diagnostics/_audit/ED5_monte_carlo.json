@@ -20,8 +20,8 @@
    "title": "",
    "xlabel": "Cumulative embodied carbon 2026\u20132050 (kt CO\u2082e)",
    "ylabel": "Share of draws at or below",
-   "year_min": 1900.354891994805,
-   "year_max": 2199.995965302527
+   "year_min": 1900.4516116256648,
+   "year_max": 2199.822258126276
   },
   {
    "title": "",
@@ -85,7 +85,7 @@
   "Reference (deterministic)",
   "Share of draws at or below",
   "TL Theoretical limit",
-  "TL: P(LoE AR \u2264 1) = 99.9%\n(P(LoE AtP \u2264 1) = 0.0%)",
+  "TL: P(LoE AR \u2264 1) = 96.0%\n(P(LoE AtP \u2264 1) = 0.0%)",
   "a",
   "b",
   "c",
@@ -96,5 +96,6 @@
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,
- "boundary_zones": true
+ "boundary_zones": true,
+ "white_segment_edges": 0
 }

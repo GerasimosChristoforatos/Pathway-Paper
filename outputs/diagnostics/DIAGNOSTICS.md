@@ -224,15 +224,15 @@ File: [pathways_si/D30_l6_estimator.png](pathways_si/D30_l6_estimator.png); draw
 
 ![D32](pathways_si/D32_tl_staircase.png)
 
-TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). TL = P5 Combined (Moderate) with TL1 No extra space, TL2 Historical maximum household size, TL3 No vacancy, TL4 Overbuild fully absorbed, TL5 Building lifetime extension at the limit, TL6 Best-practice materials, TL7 Zero-emission construction, TL8 Lowest-carbon soils, TL9 Brownfield maximum, TL10 Minimum space per person, each at full strength from 2027. In its zero-building years (released dwellings used, banking rule) every band is zero.
+TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at its limit, adopted by 2030, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). TL = P5 Combined (Moderate) with TL1 No extra space, TL2 Historical maximum household size, TL3 No vacancy, TL4 Overbuild fully absorbed, TL5 Building lifetime extension at the limit, TL6 Best-practice materials, TL7 Zero-emission construction, TL8 Lowest-carbon soils, TL9 Brownfield maximum, TL10 Minimum space per person. TL: every lever at its limit, adopted by 2030; dwellings released by zero vacancy, the household-size change and the 2026 overbuild are re-occupied gradually, meeting a constant share (~37%) of each year's need; 2026 observed.
 
 File: [pathways_si/D32_tl_staircase.png](pathways_si/D32_tl_staircase.png); drawn by `pathways.py`.
 
-### D34. TL: dwellings built per year (banking rule) and annual carbon
+### D34. TL: dwellings built and re-occupied per year (constant-share reoccupation) and annual carbon
 
 ![D34](pathways_si/D34_tl_dwellings.png)
 
-TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).
+TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at its limit, adopted by 2030, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). TL: every lever at its limit, adopted by 2030; dwellings released by zero vacancy, the household-size change and the 2026 overbuild are re-occupied gradually, meeting a constant share (~37%) of each year's need; 2026 observed. Dashed: TL, all limits from 1 January 2027 (instant) (sensitivity, same rule).
 
 File: [pathways_si/D34_tl_dwellings.png](pathways_si/D34_tl_dwellings.png); drawn by `pathways.py`.
 

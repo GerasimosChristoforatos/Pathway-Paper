@@ -18,13 +18,13 @@ A bottom-up, demand-driven model of the new residential floor area New Zealand b
   P4 Land: L8 Soil-aware planning, L9 Brownfield development) and P5 Combined, at Moderate and
   Ambitious settings; only population growth is untargeted. Their Shapley attribution, the
   back-cast to the AR budget and a hyper-optimistic theoretical limit (TL = P5 Moderate with
-  TL1–TL10 at full strength from 2027, each the limit of one lever; a thought experiment, not a
+  TL1–TL10, each the limit of one lever, adopted by 2030; a thought experiment, not a
   pathway). The pathway Monte Carlo runs the 5,000 Reference draws through P5 and TL
   (`pathways_mc.py`) and analyses what drives them (SRC, PRCC, LOWESS, conditional TL; `mcstats.py`).
   The paper shows the Reference, P1–P5 at the Moderate setting with full roll-out by 2035, and TL;
   every other setting is Extended Data; the story in six figures is in the key figures.
 
-Release **MODEL v2.1.0** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
+Release **MODEL v2.1.1** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
 
 ![Fig1. How the model works](outputs/paper/Fig1_model_schematic.png)
 

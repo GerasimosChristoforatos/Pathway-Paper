@@ -4,6 +4,76 @@ Entries below the first use the vocabulary of their own version (S1/S2/S3-10, ce
 L2a/L2b, T, near-term market excess, ...); docs/RENAMING.md maps every one of those names to the
 release vocabulary.
 
+## model-v2.1.1: palette, seamless stacks, TL adopted by 2030 with constant-share re-occupation
+
+From model-v2.1.0 (main, 29882f9). **Every number outside the theoretical limit is unchanged**: the
+Reference, the baseline, the AESA layer, the baseline Monte Carlo, every lever and P1-P5 run are
+reproduced to 1e-12 (tests/regression_model_v1.json, v2 locks, tests/regression_model_v2_1.json). The
+keys that changed are listed in tests/regression_model_v2_1_1.json, each a TL key or one of three
+documented TL-derived keys (regression_v2_1.TL_DERIVED, each invariant tested): the pooled
+central-draw diagnostic of the pathway Monte Carlo (P5's own term 2.2e-16, unchanged; the TL terms
+changed), the row count of annual.csv (+25 rows of the instant TL), and the waterfall step "full
+roll-out by 2030", equal to the unchanged pathway run P5-moderate-by2030.
+
+### Theoretical limit: adoption and released dwellings
+
+* **Adoption.** TL1-TL10 and every lever of TL follow the standard adoption rule with full roll-out by
+  2030 (logistic, midpoint 2028, k = ln(81)/(8/3), the window of the pathways' 2030 sensitivity); the
+  pathways keep full roll-out by 2035. L4 / TL4 act through the absorption rate, as before.
+* **Released dwellings.** In every TL-family run (TL base, the 1,024 Shapley subsets, TL and the instant
+  sensitivity) the dwellings released on the adoption path by zero vacancy, the household-size change
+  (TL2) and the absorbed 2026 overbuild, R, meet a constant share of each year's need:
+  re-occupied_t = max(gross_t, 0) x min(R, G+)/G+ (G+ the positive need 2027-2050), never ahead of the
+  cumulative release and never above the year's need (shortfall carried forward; where each binds is
+  recorded); built_t = max(gross_t, 0) - re-occupied_t, entered as a stock-adding join. Where R > G+
+  the surplus stays vacant in 2050. Asserted: built_t >= 0 in every run, sum(re-occupied) = min(R, G+),
+  built_t > 0 in every year of the deterministic TL (minimum 984 dwellings, 2029). TL: R = 153,151,
+  G+ = 414,909, **share s = 36.9%**.
+* **How often the constraints bind.** Deterministic TL and instant TL: neither. Shapley subsets: the
+  release constraint in 128 of 1,024, the need cap in none. Monte Carlo (5,000 draws), TL: release
+  constraint 0 draws, need cap 0 draws; R > G+ in 39 draws (surplus left vacant in 2050: median 25,644
+  dwellings, 5-95% 2,182-94,217, max 128,772); a year of non-positive need in 4 draws (at most 12
+  dwellings); a year with nothing built in 42 draws (each a draw with R > G+ or a
+  non-positive need year: with s < 1 and the need cap never binding, built_t > 0 wherever gross_t > 0). Instant TL: R > G+ in 49 draws, non-positive need in 41, a zero-building year
+  in 89. Share s over the draws: TL median 37.3% (5-95% 22.3-68.7%).
+* **Rules tried and rejected (recorded for transparency).** (1) An even rate R/24 with every limit from
+  2027: the 2027 need with TL2 (988 dwellings) is below R/24 (8,052). (2) Proportional reoccupation,
+  built_t = gross_t (1 - R/G): dwellings built <= 0 in 89 of 5,000 Monte Carlo draws. (3) Adoption by
+  2030 with the banking rule: the rule binds every year 2027-2037 (no building 2027-2036) and in all
+  5,000 draws, so it would not be a safety net. The banking rule is removed.
+* **Attribution.** TL1-TL10 Shapley relative to the TL base (P5 Moderate by 2030, re-occupied; its
+  inputs checked identical to the pathway run P5-moderate-by2030). Two separate lines close the gap to P5
+  Moderate exactly: TL's faster adoption (2035 -> 2030: -0.12 LoE AR, 546 kt) and the re-occupation rule
+  (+0.02, -82 kt: deferring the use of released dwellings moves construction to earlier years with higher
+  carbon per m2). TL1 0.61, TL3 0.43, TL2 0.39, TL6 0.31, TL10 0.26, TL7 0.23, TL5 0.17, TL9 0.12, TL8
+  0.06, TL4 0.02 (cumulative LoE AR).
+* **Sensitivity** (ED7, not in the headline figures): TL with every limit from 1 January 2027 (instant),
+  same re-occupation rule.
+
+| TL | carbon (kt) | LoE AR | LoE AtP | P(LoE AR <= 1) | P(LoE AtP <= 1) |
+|---|---|---|---|---|---|
+| model-v2.1.0 (instant, banking rule) | 2,818 | 0.633 (MC 0.42-0.82) | 2.53 | 99.92% | 0% |
+| model-v2.1.1 instant sensitivity (constant-share re-occupation) | 2,924 | 0.657 (MC 0.44-0.84) | 2.63 | 99.88% | 0% |
+| **model-v2.1.1 TL, adopted by 2030** | **3,211** | **0.721 (MC 0.45-0.98)** | **2.89** | **95.96%** | **0%** |
+
+### Palette, rendering, captions
+
+* Palette after Francis Bacon, Head VI (1949): P1 golds, P2 mauves (2026 overbuild deep mauve, vacancy
+  rose-lilac, replacement lighter, the surge the same face with a fine light hatch), P3 blues, P4 browns;
+  P5 vermilion, TL cyan; Population growth solid near-black green-blue; maintenance neutral, committed a
+  lighter grey, hatched. Colour-vision check (CAM02-UCS, Machado et al. 2009) for every group; where a
+  group failed only lightness moved within its family (L7, TL, committed, the unexplained face). Every
+  group >= 10 except the boundary zones (unchanged by design; lightness order holds). docs/PALETTE.md,
+  docs/palette_preview.png; tests/test_palette.py.
+* Stacked bars and areas are seamless (edge = face at 0.3 pt; hatches in a thin hatch colour); the
+  figure audit records white borders between filled segments (0 in every figure; tested).
+* TL captions: "TL: every lever at its limit, adopted by 2030; dwellings released by zero vacancy, the
+  household-size change and the 2026 overbuild are re-occupied gradually, meeting a constant share
+  (~37%) of each year's need; 2026 observed." (share read from the data). Fixed two model-v2.1.0
+  caption bugs ("a further nan%", "not building nan dwellings"): the margin to the AR budget in kt.
+* Regression lock compacted (22 MB -> 3.3 MB): the large files by per-group SHA-256 at 13 significant
+  digits plus n, sum, min, max (a change >= 1e-12 relative changes the hash; tested).
+
 ## model-v2.1.0: final lever set, rebuilt pathways and theoretical limit, Monte Carlo insights, key figures, boundary styling
 
 From model-v2.0.0 (main, b5fdf83). **The Reference, the baseline, the AESA layer and the baseline Monte Carlo are

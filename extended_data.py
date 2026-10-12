@@ -85,8 +85,8 @@ def tornado(ax, t, value, central, groups, src, panel, unit, fmt, wrap=46):
             # the bar farther from the central value first, so both ends stay visible when they lie on one side
             for _, r in sorted(rr.iterrows(), key=lambda kv: -abs(float(kv[1][value]) - central)):
                 v = float(r[value])
-                ax.barh(y, v - central, left=central, height=0.62, color=cols[g], edgecolor='white', lw=S.LW_THIN,
-                        alpha=0.55 if r['side'] == 'low' else 1.0)
+                ax.barh(y, v - central, left=central, height=0.62,
+                        **S.fill(cols[g], alpha=0.55 if r['side'] == 'low' else 1.0))
                 if not same_side:
                     ax.text(v, y, f' {fmt(v)} ', va='center', ha='left' if v >= central else 'right',
                             fontsize=S.FONT_MIN)
@@ -438,11 +438,28 @@ def ed7():
             b.plot(v, i, marker='o', mfc=mfc, mec=S.PATHWAY['P5'], mew=S.LW, ms=5, lw=0)
             b.text(v, i - 0.18, f'{v:.2f}', ha='center', va='bottom', fontsize=S.FONT_MIN)
             src.add('b', f"P5, {N.SETTINGS[setting]}, {N.ADOPTION[w]}", 'value', v, 'cumulative LoE AR')
+    # the TL sensitivity row: TL adopted by 2030 (the TL of the release) against TL with every limit from 1 January
+    # 2027 (instant), deterministic value and Monte Carlo 5-95% (same reoccupation rule)
+    mcs = PP.mc_summary()
+    tl_rows = (('TL', 'TL, adopted by 2030 (release)', 'white'), ('TL-from2027', N.TL_INSTANT, S.TL))
+    for k, (run, lab_, mfc) in enumerate(tl_rows):
+        yy_ = 3.4 + k * 0.8
+        v = float(r.loc[run, 'LoE_AR'])
+        q = mcs.loc[(PP.mc_key(run), 'LoE_AR')]
+        b.plot([q['p5'], q['p95']], [yy_, yy_], color=S.TL, lw=S.LW_THIN)
+        b.plot(v, yy_, marker='s', mfc=mfc, mec=S.TL, mew=S.LW, ms=5, lw=0)
+        b.text(v, yy_ - 0.18, f'{v:.2f}', ha='center', va='bottom', fontsize=S.FONT_MIN)
+        src.add('b', lab_, 'value', v, 'cumulative LoE AR')
+        src.add('b', lab_ + ', Monte Carlo 5%', 'value', float(q['p5']), 'cumulative LoE AR')
+        src.add('b', lab_ + ', Monte Carlo 95%', 'value', float(q['p95']), 'cumulative LoE AR')
+        src.add('b', lab_ + ', P(LoE AR <= 1)', 'Monte Carlo', float(q['probability_LoE_at_most_1']), 'probability')
+    b.axhline(2.7, color=S.MUTED, lw=S.LW_THIN, ls=':')
     b.axvline(float(r.loc[REF, 'LoE_AR']), color=S.REFERENCE, lw=S.LW_BOLD)
     S.boundary_vzones(b, 1.0, 1.0 / PP.budget_ratio(r), label=False)
-    b.set_yticks(range(3))
-    b.set_yticklabels([N.ADOPTION[w] for w, _ in windows])
-    b.set_ylim(2.6, -0.6)
+    b.set_yticks([0, 1, 2, 3.4, 4.2])
+    b.set_yticklabels([N.ADOPTION[w] for w, _ in windows]
+                      + [textwrap.fill(lab_, 22) for _, lab_, _ in tl_rows], fontsize=S.FONT_MIN)
+    b.set_ylim(4.7, -0.6)
     b.set_xlabel(N.METRICS['cumulative_LoE'] + ', AR')
     b.grid(axis='y', visible=False)
     P.panel_label(b, 'b')
@@ -452,8 +469,26 @@ def ed7():
     cap = (h['caption'] + ' One rule for every adoption window 2026 → E: a normalised logistic path, 10–90% of adoption '
            f"within the middle two-thirds of the window (inset). Cumulative LoE AR of P5 (Moderate): "
            f"{r.loc['P5-moderate-by2030', 'LoE_AR']:.2f} (by 2030), {r.loc['P5-moderate', 'LoE_AR']:.2f} (by 2035) and "
-           f"{r.loc['P5-moderate-by2045', 'LoE_AR']:.2f} (by 2045).")
+           f"{r.loc['P5-moderate-by2045', 'LoE_AR']:.2f} (by 2045). " + tl_sensitivity_sentence(r))
     return dict(caption=cap)
+
+
+def tl_sensitivity_sentence(r):
+    """The TL adoption sensitivity row of ED7: TL adopted by 2030 against every limit from 1 January 2027 (instant),
+    deterministic and Monte Carlo (same reoccupation rule)."""
+    mcs = PP.mc_summary()
+    tl = read_json('pathways/theoretical_limit.json')
+    out = []
+    for run, lab_ in (('TL', 'TL adopted by 2030'), ('TL-from2027', N.TL_INSTANT)):
+        q, qa = mcs.loc[(PP.mc_key(run), 'LoE_AR')], mcs.loc[(PP.mc_key(run), 'LoE_AtP')]
+        sh = tl['reoccupation']['TL' if run == 'TL' else 'TL_from2027']['share_of_need']
+        out.append(f"{lab_}: {float(r.loc[run, 'carbon_kt']):,.0f} kt, LoE AR {float(r.loc[run, 'LoE_AR']):.3f} "
+                   f"(Monte Carlo {q['p5']:.2f}–{q['p95']:.2f}; P(LoE AR ≤ 1) = {100 * q['probability_LoE_at_most_1']:.1f}%), "
+                   f"LoE AtP {float(r.loc[run, 'LoE_AtP']):.2f} (P(LoE AtP ≤ 1) = "
+                   f"{100 * qa['probability_LoE_at_most_1']:.1f}%), released dwellings meeting {100 * sh:.0f}% of each "
+                   "year's need")
+    return ('TL sensitivity (squares, Monte Carlo 5–95% lines; not in the headline figures): ' + '; '.join(out)
+            + '; both with the same constant-share reoccupation.')
 
 
 # ============================================================
@@ -471,25 +506,29 @@ def ed8():
     ind = tl['indicators']['TL']
     fig, axes = plt.subplots(2, 2, figsize=S.figsize('double', 140))
     a = axes[0, 0]
-    players = [f'TL{k}' for k in range(1, 11)] + ['from2027']
-    lab = {p: (f'{p} {N.TL[p]}' if p != 'from2027' else N.ADOPTION['from2027'].capitalize()) for p in players}
+    sep = ('by2030', 'reoccupation')                       # the two separate lines (not Shapley players)
+    players = [f'TL{k}' for k in range(1, 11)] + list(sep)
+    sep_lab = {'by2030': N.TL_FASTER_ADOPTION[0].upper() + N.TL_FASTER_ADOPTION[1:],
+               'reoccupation': N.TL_REOCCUPATION_LINE.capitalize()}
+    lab = {p: f'{p} {N.TL[p]}' if p not in sep else sep_lab[p] for p in players}
     car = st[st['metric'] == 'carbon_kt'].set_index('player')['reduction']
     loe = st[st['metric'] == 'LoE_AR'].set_index('player')['reduction']
-    share = st[st['metric'] == 'carbon_kt'].set_index('player')['share_of_P5_moderate_from2027_minus_TL']
+    share = st[st['metric'] == 'carbon_kt'].set_index('player')['share_of_TL_base_minus_TL']
     for i, p in enumerate(players):
-        a.barh(i, loe[p], color=S.LEVER[N.TL_LIMIT_OF[p]] if p != 'from2027' and N.TL_LIMIT_OF[p] else
-               (S.PATHWAY['P5'] if p == 'from2027' else S.TL), height=0.66, edgecolor='white')
-        txt = f"{loe[p]:.2f} ({car[p]:,.0f} kt" + (f', {100 * share[p]:.0f}%)' if p != 'from2027' else ')')
-        a.text(loe[p], i, ' ' + txt, va='center', fontsize=S.FONT_MIN)
+        a.barh(i, loe[p], color=S.LEVER[N.TL_LIMIT_OF[p]] if p not in sep and N.TL_LIMIT_OF[p] else
+               (S.PATHWAY['P5'] if p in sep else S.TL), height=0.66, edgecolor='#555555', lw=S.LW_SEAM)
+        txt = f"{loe[p]:+.2f} ({car[p]:,.0f} kt" + (f', {100 * share[p]:.0f}%)' if p not in sep else ')')
+        a.text(max(loe[p], 0.0), i, ' ' + txt.replace('-', '−'), va='center', fontsize=S.FONT_MIN)
         src.add('a', lab[p], 'LoE AR', loe[p], 'cumulative LoE AR')
         src.add('a', lab[p], 'carbon', car[p], 'kt CO2e 2026-2050')
     a.set_yticks(range(len(players)))
     a.set_yticklabels([textwrap.fill(lab[p], 30) for p in players], fontsize=S.FONT_MIN, linespacing=1.0)
     a.set_ylim(len(players) - 0.4, -0.6)
-    a.set_xlim(0, loe.max() * 1.55)
+    a.set_xlim(min(0.0, loe.min() * 1.6), loe.max() * 1.55)
+    a.axvline(0, color=S.INK, lw=S.LW_THIN)
     a.set_xlabel('Reduction of the cumulative LoE AR')
     a.grid(axis='y', visible=False)
-    P.panel(a, 'a', 'Shapley values relative to P5 at full strength from 2027')
+    P.panel(a, 'a', 'Shapley values relative to the TL base')
     yrs = np.arange(2026, 2051)
     ref = an[an['run'] == REF].set_index('year')
     tla = an[an['run'] == 'TL'].set_index('year')
@@ -512,7 +551,10 @@ def ed8():
     check(np.allclose(dw_tl, tla.loc[yrs, 'dwellings_built'].values, rtol=1e-9, atol=1e-6),
           'ED8: TL dwellings built differ between the indicators and annual.csv')
     c.bar(yrs, ref.loc[yrs, 'dwellings_built'] / 1e3, width=0.8, color=S.REFERENCE, alpha=0.35, label='Reference')
-    c.bar(yrs, np.asarray(dw_tl) / 1e3, width=0.5, color=S.TL, label='TL (banking rule)')
+    c.bar(yrs, np.asarray(dw_tl) / 1e3, width=0.5, color=S.TL, label='TL (constant-share reoccupation)')
+    reo_y = [ind['reoccupation']['by_year'][str(y)]['reoccupied'] for y in yrs]
+    c.plot(yrs, np.asarray(reo_y) / 1e3, color=S.INK, lw=S.LW_THIN, ls='--', label='TL: dwellings re-occupied')
+    src.add('c', 'TL: dwellings re-occupied (all categories)', yrs, reo_y, 'dwellings per year')
     src.add('c', 'Reference: dwellings built', yrs, ref.loc[yrs, 'dwellings_built'].values, 'dwellings per year')
     src.add('c', 'TL: dwellings built', yrs, dw_tl, 'dwellings per year')
     c.set_xlim(2025.4, 2050.6)
@@ -536,19 +578,26 @@ def ed8():
     P.panel(d, 'd', 'Soil carbon loss per m² built (TL8, TL9)')
     fig.tight_layout()
     save(fig, fid, src)
-    z = ind['zero_building_years']
-    rel = ind['released_dwellings']
-    cap = (h['caption'] + ' (a) Shapley values (exact, 1,024 subsets) of TL1–TL10 relative to P5 Combined (Moderate) at '
-           'full strength from 2027, in cumulative LoE AR (carbon and share of that run − TL in brackets); they add up '
-           'exactly to that difference. Bars in the colour of the lever each item is the limit of (TL10 has no lever '
-           'counterpart). The effect of full strength from 2027 (P5 on the adoption path → from 2027) is a separate '
-           'line, not a Shapley player. (b) New-dwelling size and floor area per person (TL10 with TL2: '
-           f"{ind['m2_per_person_new_dwellings']['2030']:.2f} m² per person). (c) Dwellings built: TL builds nothing in "
-           f"{min(z)}–{max(z)} (banking rule: released dwellings meet the requirement: {rel['vacancy_change']:,.0f} from "
-           f"the vacancy (TL3), {rel['household_decline']:,.0f} from the larger households (TL2) and "
-           f"{rel['overbuild_2026_absorbed']:,.0f} from the 2026 overbuild (TL4)). (d) Soil carbon "
-           'loss per m² of floor area built (soil carbon loss / floor area, annual data; not defined in years with no '
-           'building).')
+    rel, ro = ind['released_dwellings'], ind['reoccupation']
+    rq = tl['reoccupation']
+    cap = (h['caption'] + ' ' + N.tl_caption(ro['share_of_need']) + ' (a) Shapley values (exact, 1,024 subsets) of '
+           'TL1–TL10 relative to the TL base (P5 Combined, Moderate, adopted by 2030, its released dwellings '
+           're-occupied at a constant share of each year\'s need), in cumulative LoE AR (carbon and share of base − TL '
+           'in brackets); they add up exactly to that difference. Bars in the colour of the lever each item is the '
+           'limit of (TL10 has no lever counterpart). Two separate lines, not Shapley players, close the gap to P5 '
+           f"exactly: TL's faster adoption (P5 by 2035 → by 2030; {loe['by2030']:+.3f}) and the gradual "
+           f"re-occupation of P5's own released dwellings (→ the base; {loe['reoccupation']:+.3f}: deferring the use "
+           'of released dwellings moves construction earlier, when carbon per m² is higher). (b) New-dwelling size and '
+           f"floor area per person (TL10 with TL2: {ind['m2_per_person_new_dwellings']['2030']:.2f} m² per person in "
+           f"2030). (c) Dwellings built and re-occupied. Released: {rel['vacancy_change']:,.0f} dwellings from zero "
+           f"vacancy (TL3), {rel['household_decline']:,.0f} from the household-size change (TL2) and "
+           f"{rel['overbuild_2026_absorbed']:,.0f} from the 2026 overbuild (TL4), R = {ro['R']:,.0f}, "
+           f"{100 * ro['share_of_need']:.1f}% of the 2027–2050 need (G+ = {ro['G_plus']:,.0f}); TL builds at least "
+           f"{ind['dwellings_built_min_2027_2050']:,.0f} dwellings a year. The re-occupation never runs ahead of the "
+           'cumulative release and never exceeds a year\'s need (a shortfall would be carried forward): neither '
+           f"constraint binds in TL; the release constraint binds in {rq['subsets_release_constraint_binds']} of the "
+           f"{rq['subsets']:,} Shapley subsets and the need cap in {rq['subsets_need_cap_binds']}. (d) Soil carbon loss "
+           'per m² of floor area built (soil carbon loss / floor area, annual data).')
     return dict(caption=cap)
 
 
@@ -614,7 +663,9 @@ def ed10():
                 ax.bar(i + (j - 1) * w, v, width=w * 0.92, color=PP.colour('TL' if run == 'TL' else
                                                                           (REF if run == 'Reference' else run)),
                        alpha={'LOW': 0.45, 'REF': 1.0, 'HIGH': 0.75}[sc],
-                       hatch={'LOW': None, 'REF': None, 'HIGH': '///'}[sc], edgecolor='white', lw=S.LW_THIN)
+                       hatch={'LOW': None, 'REF': None, 'HIGH': '///'}[sc], edgecolor=PP.colour('TL' if run == 'TL' else
+                                                                                     (REF if run == 'Reference' else run)),
+                       hatchcolor='white', lw=S.LW_SEAM)
                 ax.text(i + (j - 1) * w, v, fmt(v), ha='center', va='bottom', fontsize=S.FONT_MIN, rotation=90)
                 src.add(letter, f'{lab}, {st["label"]}', sc, v, unit)
         ax.set_xticks(range(len(runs)))
@@ -630,7 +681,7 @@ def ed10():
     S.boundary_hzones(b, 1.0, 1.0 / PP.budget_ratio(rr), label=False)
     fig.legend(handles=[Patch(facecolor=S.MUTED, alpha=0.45, label=N.SCENARIOS['LOW'] + ' (left)'),
                         Patch(facecolor=S.MUTED, label=N.SCENARIOS['REF'] + ' replacement (middle)'),
-                        Patch(facecolor=S.MUTED, alpha=0.75, hatch='///', edgecolor='white',
+                        Patch(facecolor=S.MUTED, alpha=0.75, hatch='///', edgecolor=S.MUTED, hatchcolor='white',
                               label=N.SCENARIOS['HIGH'] + ' (right)'),
                         *S.boundary_handles()],
                loc='lower center', ncol=5, bbox_to_anchor=(0.5, -0.005), frameon=False)
@@ -709,7 +760,7 @@ def ed12():
                                 (axes[1], 'prcc', 'b', 'PRCC of the cumulative LoE AR')):
         for k, run, lab in MC_RUNS:
             d = imp[(imp['run'] == k) & (imp['output'] == 'LoE_AR')].set_index('input').loc[list(MC_INPUTS)]
-            ax.barh(y + off[k], d[m], height=0.24, color=PP.colour(run), edgecolor='white', lw=S.LW_THIN,
+            ax.barh(y + off[k], d[m], height=0.24, **S.fill(PP.colour(run)),
                     label=lab + (f" (R² {d['src_r2'].iloc[0]:.3f})" if m == 'src' else ''))
             ax.errorbar(d[m], y + off[k], xerr=[d[m] - d[f'{m}_lo'], d[f'{m}_hi'] - d[m]], fmt='none',
                         ecolor=S.INK, lw=S.LW_THIN, capsize=1.5)
@@ -729,7 +780,7 @@ def ed12():
         v = [so.loc[sob_inputs[i], col] for i in MC_INPUTS]
         lo = [so.loc[sob_inputs[i], f'{col}_lo'] for i in MC_INPUTS]
         hi = [so.loc[sob_inputs[i], f'{col}_hi'] for i in MC_INPUTS]
-        c.barh(y + off_, v, height=0.28, color=S.REFERENCE, alpha=0.5 if col == 'S1' else 1.0, edgecolor='white',
+        c.barh(y + off_, v, height=0.28, **S.fill(S.REFERENCE, alpha=0.5 if col == 'S1' else 1.0),
                label=lab)
         c.errorbar(v, y + off_, xerr=[np.subtract(v, lo), np.subtract(hi, v)], fmt='none', ecolor=S.INK,
                    lw=S.LW_THIN, capsize=1.5)

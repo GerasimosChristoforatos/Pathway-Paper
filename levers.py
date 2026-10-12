@@ -90,7 +90,7 @@ RAMP_K = ADOPTED_WINDOW['k']        # ln(81) / 6: s rises from 0.1 to 0.9 within
 assert RAMP_MID == 2030.5 and RAMP_K == math.log(81.0) / 6.0    # the adopted path of model-v1.0.0, bit for bit
 ADOPTION_ADOPTED = 'by2035'
 ADOPTION_BY2045 = adoption_window(2045)    # sensitivity (P5 only): midpoint 2035.5, k = ln(81) / (38/3)
-ADOPTION_BY2030 = adoption_window(2030)    # sensitivity (P5 only): midpoint 2028, k = ln(81) / (8/3)
+ADOPTION_BY2030 = adoption_window(2030)    # P5 sensitivity and the adoption path of TL: midpoint 2028, k = ln(81) / (8/3)
 ADOPTION_SENSITIVITIES = (ADOPTION_BY2030, ADOPTION_BY2045)
 RAMP_BASIS = ('full roll-out by 2035 following RECC (Pauliuk et al. 2024, J. Ind. Ecol. 28, 1699: circular-economy '
               'strategies fully implemented by 2035)')
@@ -198,7 +198,7 @@ def ramp(years, mid=RAMP_MID, end=RAMP_END, start=OBSERVED_YEAR, k=RAMP_K):
 
 def ramp_named(years, name=None):
     """The adopted adoption path (name None or 'by2035'), a sensitivity ('by2030', 'by2045') or full
-    strength from 2027 ('from2027', the theoretical-limit family)."""
+    strength from 2027 ('from2027', the instant sensitivity of the theoretical limit)."""
     if name is None or name == ADOPTION_ADOPTED:
         return ramp(years)
     if name == TL_FROM2027:
@@ -742,19 +742,27 @@ def register(p):
 
 
 # ============================================================
-# THEORETICAL LIMIT TL (MODEL v2.1.0): a thought experiment, not a pathway
+# THEORETICAL LIMIT TL (MODEL v2.1.1): a thought experiment, not a pathway
 # ============================================================
-# TL = P5 Moderate with TL1-TL10, every lever and every TL item at full strength from 1 January 2027 (no
-# adoption path; 2026 observed and untouched). TLn is the limit of Ln; TL10 (minimum space per person) has no
+# TL = P5 Moderate with TL1-TL10, every lever and every TL item on the standard adoption rule with full roll-out
+# by 2030 (the logistic of the 2030 sensitivity of the pathways: midpoint 2028, k = ln(81) / (8/3); MODEL v2.1.1;
+# the pathways keep full roll-out by 2035); 2026 observed and untouched. L4 / TL4 act through the absorption rate,
+# not the adoption path, in the pathways and in TL alike. The released dwellings (zero vacancy, the household-size
+# change, the 2026 overbuild) are re-occupied at a constant share of each year's need (pathways.reoccupation), in
+# every TL-family run. TL with every limit at full strength from 1 January 2027 (instant, same rule) is kept as one
+# sensitivity ('from2027'). TLn is the limit of Ln; TL10 (minimum space per person) has no
 # lever counterpart. Every TL item is at least as strong as the Ambitious setting of its lever (tl_strength).
 TL_COMPONENTS = tuple(f'TL{k}' for k in range(1, 11))
 TL_NAMES = {k: N.TL[k] for k in TL_COMPONENTS}
 TL_BASE_SETTING = 'moderate'
-TL_FROM2027 = 'from2027'           # adoption: full strength from 2027 (TL and its Shapley subsets)
-TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at '
-                 'full strength from 1 January 2027, combining best observed attributes of different buildings and '
-                 'places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > '
-                 'realisable).')
+TL_FROM2027 = 'from2027'           # adoption: full strength from 2027 (the instant TL sensitivity)
+TL_ADOPTION = ADOPTION_BY2030['name']    # 'by2030': the adoption path of TL and its Shapley subsets (MODEL v2.1.1)
+TL_REOCCUPATION = 'reoccupation'   # the separate line: P5 Moderate by 2030 -> the TL base (reoccupation rule)
+TL_INSTANT_LABEL = 'TL-from2027'   # the sensitivity run: TL with every limit from 1 January 2027 (MODEL v2.1.0 TL)
+TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at its '
+                 'limit, adopted by 2030, combining best observed attributes of different buildings and places; not a '
+                 'proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).')
+tl_caption = N.tl_caption              # the TL caption with the constant share (naming.tl_caption)
 TL_BAU_NOTE = ('The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 '
                'e^(-0.01 (t - 2025)) until TL7 sets A4-A5 to zero).')
 TL5_SURGE_REMOVED = 1.0            # TL5: the recent replacement surge removed entirely (as the Low variant)
@@ -818,7 +826,7 @@ def tl_strength(params, pT, years):
             ('TL6', ', '.join(f"{t} r = {v['r']:.3f}" for t, v in pT['TL6'].items()),
              f"r = {params['L6']['estimator']['ambitious']['r']:.3f}",
              all(v['r'] <= params['L6']['estimator']['ambitious']['r'] for v in pT['TL6'].values())),
-            ('TL7', 'A4-A5 = 0 from 2027', 'linear to zero in 2050', bool(np.all(0.0 <= amb45))),
+            ('TL7', 'A4-A5 = 0 by 2030', 'linear to zero in 2050', bool(np.all(0.0 <= amb45))),
             ('TL8', ', '.join(f"{t} {v['soc_low']:.2f}" for t, v in pT['TL8'].items()),
              ', '.join(f"{t} {v * 1.0:.2f}" for t, v in params['L8']['factor']['ambitious'].items()),
              all(pT['TL8'][t]['soc_low'] <= params['L8']['factor']['ambitious'][t] for t in pT['TL8'])),
@@ -829,19 +837,20 @@ def tl_strength(params, pT, years):
     return rows
 
 
-def apply_tl(base, params, pT, comps, E_nojoin=None):
+def apply_tl(base, params, pT, comps, E_nojoin=None, ramp_name=TL_ADOPTION):
     """Inputs of a TL-family run: P5 Moderate with the TL items in `comps` (subset of TL1..TL10), every lever and
-    item at full strength from 2027 (w = 1 in 2027-2050). TLn overrides Ln. Returns (inputs, join_absorbed,
-    join_redev, info); the banking rule is applied by pathways.run_tl."""
+    item on the adoption path ramp_name (TL_ADOPTION, full roll-out by 2030; TL_FROM2027: w = 1 in 2027-2050, the
+    instant sensitivity). TLn overrides Ln. Returns (inputs, join_absorbed, join_redev, info); the reoccupation rule
+    is applied by pathways.run_tl."""
     unknown = set(comps) - set(TL_COMPONENTS)
     if unknown:
         raise ValueError(f'Unknown TL component(s) {unknown}.')
     s = TL_BASE_SETTING
     years = base['years']
-    w = ramp_from2027(years)
+    w = ramp_named(years, ramp_name)
     typ = list(base['typ'])
     fi = dict(base['fwd_inputs'])
-    # L2 / TL2: household size (TL2: the historical maximum from 2027)
+    # L2 / TL2: household size (TL2: the historical maximum, reached along the adoption path)
     S_target = np.full(len(years), pT['TL2']['S']) if 'TL2' in comps else params['L2']['S_target'][s]
     hh, S = l2_households(base['pop'], base['hh'], S_target, w)
     # TL10: OLF of every new building = the lowest independent design OLF
@@ -894,10 +903,13 @@ def apply_tl(base, params, pT, comps, E_nojoin=None):
     return fi, join, redev, info
 
 
+TL_BASE_LABEL = f'P5-moderate-{TL_ADOPTION}'
+
+
 def tl_label(comps, components=TL_COMPONENTS):
-    """'TL' for every component, 'P5-moderate-from2027' for none, else e.g. 'TL[TL1+TL3]'."""
+    """'TL' for every component, TL_BASE_LABEL ('P5-moderate-by2030') for none, else e.g. 'TL[TL1+TL3]'."""
     c = [x for x in components if x in comps]
-    return 'TL' if len(c) == len(components) else ('P5-moderate-from2027' if not c else f"TL[{'+'.join(c)}]")
+    return 'TL' if len(c) == len(components) else (TL_BASE_LABEL if not c else f"TL[{'+'.join(c)}]")
 
 
 def tl_table(t):
@@ -913,14 +925,16 @@ def tl_table(t):
     return [
         mk('TL1', 'L1 with f = 1: new-dwelling size = occupied area S x OLF', 'f = 1', 'DECISION (author): limit of L1',
            'DECISION', BAND_TARGET['L1']),
-        mk('TL2', 'S = the highest household size in the model history from 2027; households = population / S; '
-                  'household decline releases dwellings (banking rule)',
+        mk('TL2', 'S = the highest household size in the model history, reached by 2030; households = population / S; '
+                  'household decline releases dwellings (re-occupied at a constant share of each year\'s need)',
            f"S = {r['TL2']['S']:.4f} ({r['TL2']['year']}; history {r['TL2']['history_first_year']}-"
            f"{r['TL2']['history_last_year']})", 'DATA: Stats NZ population and household estimates (projection history)',
            'DATA', BAND_TARGET['L2']),
-        mk('TL3', 'v = 0 from 2027; banking rule: built_t = max(0, raw_t - bank_(t-1)), unused release carried forward',
+        mk('TL3', 'v = 0 by 2030; the dwellings released are re-occupied at a constant share s = min(R, G+) / G+ of '
+                  'each year\'s need, never ahead of the cumulative release',
            'v = 0', 'DECISION (author): limit of L3', 'DECISION', BAND_TARGET['L3']),
-        mk('TL4', 'the 2026 overbuild absorbed in full in 2027 (absorption 1)', 'a = 1', 'DECISION (author): limit of L4',
+        mk('TL4', 'the 2026 overbuild absorbed in full from 2027 (absorption 1; L4 / TL4 act through the absorption '
+                  'rate, not the adoption path)', 'a = 1', 'DECISION (author): limit of L4',
            'DECISION', BAND_TARGET['L4']),
         mk('TL5', 'demolition x (1 - 0.40); the recent replacement surge removed (replacement at the long-run 1991-2023 '
                   'rate, as the Low variant)', 'd = 0.40 (demolition); surge removed', 'LITERATURE: Pellan2024; DATA: the '
@@ -930,7 +944,7 @@ def tl_table(t):
                                                                                  if v['exceeds_ambitious'] else ' (= r_Ambitious)')
                                                          for k, v in TL6.items()),
            'DATA: case studies (outputs/data/factors/factors_building.csv, 2025 factors)', 'DATA', BAND_TARGET['L6']),
-        mk('TL7', 'A4-A5 = 0 from 2027 (emission-free construction sites, zero-carbon transport)', 'A4-A5 factor 0',
+        mk('TL7', 'A4-A5 = 0 by 2030 (emission-free construction sites, zero-carbon transport)', 'A4-A5 factor 0',
            'LITERATURE: ' + SOURCES['Oslo2025'], 'LITERATURE', BAND_TARGET['L7']),
         mk('TL8', 'soil factor at the lowest soil order (SOC_low) for every typology',
            ', '.join(f"{k} {v['soc_low']:.1f} (vs {v['soc_avg']:.1f})" for k, v in TL8.items()) + ' kg CO2e/m2',
@@ -948,8 +962,13 @@ def tl_table(t):
 def register_tl(t):
     """(setting, value, basis) rows of the theoretical limit TL, from outputs/data/pathways/theoretical_limit.json."""
     rows = [('Theoretical limit TL', TL_DISCLAIMER + ' TL = P5 Combined (Moderate) with TL1-TL10, every lever and item '
-             'at full strength from 1 January 2027 (no adoption path); 2026 untouched; every TL item at least as '
-             'strong as the Ambitious setting of its lever (asserted). ' + TL_BAU_NOTE, 'DECISION (author)')]
+             f"on the standard adoption rule with full roll-out by 2030 (logistic, midpoint {ADOPTION_BY2030['mid']:g}, "
+             f"k = ln(81) / (8/3) = {ADOPTION_BY2030['k']:.4f}; the window of the pathways' 2030 sensitivity); 2026 "
+             'untouched; every TL item at least as strong as the Ambitious setting of its lever (asserted). '
+             'Released dwellings (zero vacancy, the household-size change, the 2026 overbuild) re-occupied at a constant '
+             'share of each year\'s need 2027-2050. Sensitivity: every limit at full strength from 1 January 2027 '
+             '(instant, same rule). ' + TL_BAU_NOTE,
+             'DECISION (author)')]
     for r in tl_table(t):
         rows.append((r['item'], f"{r['value']}; how: {r['how']}; {r['assumption']}", tagged(r)))
     return rows

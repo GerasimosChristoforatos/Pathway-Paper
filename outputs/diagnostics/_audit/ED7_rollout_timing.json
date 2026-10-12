@@ -36,6 +36,8 @@
   "$\\mathdefault{5}$",
   "$\\mathdefault{6}$",
   "0",
+  "0.66",
+  "0.72",
   "1,000",
   "1,200",
   "1,400",
@@ -63,6 +65,8 @@
   "P5, Moderate, full roll-out by 2035 (adopted)",
   "P5, Moderate, full roll-out by 2045 (sensitivity)",
   "Reference",
+  "TL, adopted by 2030\n(release)",
+  "TL, all limits from 1\nJanuary 2027 (instant)",
   "a",
   "adoption path w(y)",
   "b",
@@ -74,5 +78,6 @@
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,
- "boundary_zones": true
+ "boundary_zones": true,
+ "white_segment_edges": 0
 }

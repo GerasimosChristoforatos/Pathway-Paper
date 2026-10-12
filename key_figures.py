@@ -8,9 +8,10 @@ panel functions, labels and saving it reuses, so a key figure can never disagree
   K2  the Reference carbon by life-cycle stage, by material and by demand band, and the emissions committed
       after 2050
   K3  annual emissions of the Reference (Monte Carlo 5-95% band), P1-P5 (Moderate) and TL against the AR and AtP
-      boundaries, TL zero-building years shaded
+      boundaries
   K4  the solution space (as Fig6)
-  K5  the sequential waterfall Reference -> P1 -> P2 -> P3 -> P4 (= P5) -> full strength from 2027 -> TL1 ... TL10
+  K5  the sequential waterfall Reference -> P1 -> P2 -> P3 -> P4 (= P5) -> full roll-out by 2030 -> released
+      dwellings re-occupied at a constant share of need -> TL1 ... TL10
       (= TL), each step segmented by its exact demand-band deltas, against the cumulative budgets
   K6  the schematic of levers, pathways and the theoretical limit (as Fig1)
 
@@ -23,7 +24,6 @@ import os
 import sys
 import textwrap
 
-import numpy as np
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
@@ -97,12 +97,11 @@ def k3():
     an = read_csv('pathways/annual.csv')
     an = an[an['scenario'] == REF]
     mca = read_csv('pathways/montecarlo_annual.csv')
-    zero = PP.zero_building_years(an)
+    b27, bmin = PP.tl_built_2027(an)
     yrs = list(range(PP.WINDOW[0], PP.WINDOW[1] + 1))
     fig, ax = plt.subplots(figsize=S.figsize('double', 100))
     d0 = an[an['run'] == REF].set_index('year').loc[yrs]
     P.boundary_lines(ax, yrs, d0['B_AR_kt'].values, d0['B_AtP_kt'].values)
-    ax.axvspan(zero[0] - 0.5, zero[-1] + 0.5, facecolor='none', edgecolor=S.MUTED, hatch='////', lw=0, zorder=1)
     m = mca[mca['run'] == 'REF'].set_index('year').loc[yrs]
     ax.fill_between(yrs, m['carbon_kt_p5'], m['carbon_kt_p95'], color=S.REFERENCE, alpha=0.18, lw=0, zorder=2,
                     label='Reference, Monte Carlo 5–95%')
@@ -115,23 +114,21 @@ def k3():
         src.add('a', PP.label(run), yrs, d['carbon_kt'].values, 'kt CO2e per year')
     src.add('a', N.METRICS['AR'] + ' boundary', yrs, d0['B_AR_kt'].values, 'kt CO2e per year')
     src.add('a', N.METRICS['AtP'] + ' boundary', yrs, d0['B_AtP_kt'].values, 'kt CO2e per year')
-    src.add('a', 'TL zero-building years', zero, np.zeros(len(zero)), 'dwellings built')
+    src.add('a', 'TL dwellings built, 2027', 2027, b27, 'dwellings')
     ax.set_yscale('log', nonpositive='clip')
-    ax.set_ylim(20, 3000)
+    ax.set_ylim(5, 3000)
     ax.set_xlim(PP.WINDOW[0] - 0.5, PP.WINDOW[1] + 0.5)
-    P.log_ticks(ax.yaxis, (20, 50, 100, 200, 500, 1000, 2000))
+    P.log_ticks(ax.yaxis, (5, 10, 20, 50, 100, 200, 500, 1000, 2000))
     ax.set_ylabel('Embodied carbon (kt CO₂e per year, log scale)')
-    ax.text((zero[0] + zero[-1]) / 2, 22, f'TL builds nothing {zero[0]}–{zero[-1]}\n(released dwellings used)',
-            ha='center', va='bottom', fontsize=S.FONT_SMALL, color=S.INK,
-            bbox=dict(facecolor='white', edgecolor='none', pad=1.0, alpha=0.9), zorder=5)
     hd, _ = ax.get_legend_handles_labels()
-    hd += S.zone_handles() + [Patch(facecolor='none', edgecolor=S.MUTED, hatch='////', label='TL zero-building years')]
+    hd += S.zone_handles()
     fig.legend(handles=hd, loc='lower center', ncol=4, bbox_to_anchor=(0.5, -0.01), frameon=False, fontsize=S.FONT_SMALL)
     fig.tight_layout(rect=(0, 0.2, 1, 1))
     save(fig, h, src)
-    return dict(caption=h['caption'] + ' Log scale; the TL line sits at the axis floor in its zero-building years (its '
-                'value is zero). Shading: below AtP (darker green), between AtP and AR (light green), above AR (light '
-                'red, boundary exceeded).')
+    share = read_json('pathways/theoretical_limit.json')['indicators']['TL']['reoccupation']['share_of_need']
+    return dict(caption=h['caption'] + ' Log scale. ' + N.tl_caption(share) + f' TL builds {b27:,.0f} dwellings in '
+                f'2027 (at least {bmin:,.0f} a year in 2027–2050). Shading: below AtP (darker green), between AtP and AR '
+                '(light green), above AR (light red, boundary exceeded).')
 
 
 def k4():
@@ -198,9 +195,11 @@ def k5():
                 f"{r.loc['REF', 'LoE_AR']:.2f}), P5 {r.loc['P4', 'total_carbon_kt']:,.0f} kt ({r.loc['P4', 'LoE_AR']:.2f}), "
                 f"TL {r.loc[N_TL_LAST, 'total_carbon_kt']:,.0f} kt ({r.loc[N_TL_LAST, 'LoE_AR']:.2f}); cumulative AR "
                 f"budget {bar_ar:,.0f} kt, AtP {bar_atp:,.0f} kt. A segment above its step's start marks a band that grows at "
-                'that step (a lever shifts building between bands). In the TL steps the 2026-overbuild band also carries '
-                'the banking adjustment (dwellings released by vacancy, larger households and the absorbed overbuild); in '
-                'zero-building years every band is zero except the maintenance of the cohorts already built.')
+                'that step (a lever shifts building between bands). From the re-occupation step on, the 2026-overbuild '
+                'band also carries the re-occupation of released dwellings (zero vacancy, the household-size change and '
+                'the absorbed overbuild) at a constant share of each year\'s need. '
+                + N.tl_caption(read_json('pathways/theoretical_limit.json')['indicators']['TL']['reoccupation']
+                               ['share_of_need']))
 
 
 def k6():

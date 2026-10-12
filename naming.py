@@ -82,6 +82,19 @@ TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pa
 ADOPTION = {'by2035': 'full roll-out by 2035 (adopted)', 'by2030': 'full roll-out by 2030 (sensitivity)',
             'by2045': 'full roll-out by 2045 (sensitivity)', 'from2027': 'full strength from 2027'}
 ADOPTION_LEGACY = {'ramp2035': 'by2035', 'ramp2030': 'by2030', 'ramp2045': 'by2045', 'instant': 'from2027'}
+# MODEL v2.1.1: TL is adopted by 2030 (the window of the pathways' 2030 sensitivity); its instant variant is one
+# sensitivity row
+TL_ADOPTION_LABEL = 'full roll-out by 2030 (TL adoption)'
+TL_FASTER_ADOPTION = "TL's faster adoption (by 2030 instead of 2035)"
+TL_INSTANT = 'TL, all limits from 1 January 2027 (instant)'
+TL_REOCCUPATION_LINE = 'released dwellings re-occupied at a constant share of each year\'s need'
+
+
+def tl_caption(share):
+    """The TL caption (MODEL v2.1.1, author's wording) with the constant share s of each year's need (share 0-1)."""
+    return ('TL: every lever at its limit, adopted by 2030; dwellings released by zero vacancy, the household-size '
+            'change and the 2026 overbuild are re-occupied gradually, meeting a constant share '
+            f'(~{100 * share:.0f}%) of each year\'s need; 2026 observed.')
 
 # Demand bands (why floor area is built), bottom to top. Retirement villages are a
 # bookkeeping row (out of scope), never a band in figures.
@@ -189,7 +202,8 @@ OLD_TERMS = [
      'L6 Material carbon)'),
     (r'(?i)smaller households(?:\)|,)? (?:are |is )?untargeted|growth and smaller households|smaller households \(untargeted',
      'only population growth is untargeted (MODEL v2.1.0)'),
-    (r'(?i)gradual adoption', 'removed in MODEL v2.1.0 (TL is at full strength from 2027 only)'),
+    (r'(?i)gradual adoption', 'TL adopted by 2030 (MODEL v2.1.1; the v2.0 term is not used)'),
+    (r'(?i)banking rule|banked|zero-building years? \(released', 'constant-share re-occupation (MODEL v2.1.1)'),
     (r'\bRedevelopment\b|(?i:redevelopment (?:wave|band|component|channel)|replacement and redevelopment)',
      'Recent replacement surge (MODEL v1.1.0)'),
     (r'(?<!Historical )(?<!historical )\bReplacement(?= bands?\b|\s*\(net of unconsented|\s*\||\s*:\s*(?:demolition|net '
@@ -208,6 +222,8 @@ def run_label(run, scenario='REF'):
         return SCENARIOS[run]
     if run == 'TL':
         return f"TL {TL['TL']}"
+    if run == 'TL-from2027':
+        return TL_INSTANT
     parts = run.split('-')
     head, setting = parts[0], parts[1] if len(parts) > 1 else None
     name = f'{head} {PATHWAYS.get(head) or LEVERS.get(head)}'

@@ -27,42 +27,73 @@ In the pathway tables the run without interventions takes the ID of its variant:
 
 ### Pathways, settings, levers
 
-| ID | release label | v3.1 label | levers |
-|---|---|---|---|
-| P1 | Right-sized dwellings | Right-size space | L1 Dwelling size |
-| P2 | Occupied stock | Occupy the existing stock | L2 Vacancy rate, L3 Overbuild absorption |
-| P3 | Retained stock | Keep and reuse | L4 Building retention |
-| P4 | Low-carbon materials | Build better | L5 Material carbon |
-| P5 | Combined | All pathways | all five |
+| ID | release label (MODEL v2.1.0) | model-v2.0.0 label | v3.1 label | levers (v2.1.0) |
+|---|---|---|---|---|
+| P1 | Space per person | Right-sized dwellings | Right-size space | L1 Dwelling size, L2 Household occupancy |
+| P2 | Existing stock | Occupied stock | Occupy the existing stock | L3 Vacancy, L4 Overbuild absorption, L5 Building lifetime extension |
+| P3 | Construction | Retained stock | Keep and reuse | L6 Material carbon, L7 Construction-stage carbon |
+| P4 | Land | Low-carbon materials | Build better | L8 Soil-aware planning, L9 Brownfield development |
+| P5 | Combined | Combined | All pathways | all nine |
 
 | setting ID | release label | v3.1 |
 |---|---|---|
 | `moderate` | Moderate | `central` |
 | `ambitious` | Ambitious | `stretch` |
 
-| release ID | release label | v3.1 ID | v3.1 label | pathway |
+**MODEL v2.1.0 lever numbers.** The v2.0.0 levers keep their content under new numbers (old L numbers -> new); L2 Household occupancy, L7 Construction-stage carbon, L8 Soil-aware planning and L9 Brownfield development are new.
+
+| v2.1.0 ID | v2.1.0 label | pathway (v2.1.0) | model-v2.0.0 ID and label | v3.1 ID and label |
 |---|---|---|---|---|
-| L1 | Dwelling size | L1 | Right-sized new dwellings | P1 |
-| L2 | Vacancy rate | L2a | Lower vacancy | P2 |
-| L3 | Overbuild absorption | L2b | Near-term surplus absorbed | P2 |
-| L4 | Building retention | L3 | Fewer removals | P3 |
-| L5 | Material carbon | L5 | Best-practice materials | P4 |
+| L1 | Dwelling size | P1 | L1 Dwelling size | L1 Right-sized new dwellings |
+| L2 | Household occupancy | P1 | new in v2.1.0 | - |
+| L3 | Vacancy | P2 | L2 Vacancy rate | L2a Lower vacancy |
+| L4 | Overbuild absorption | P2 | L3 Overbuild absorption | L2b Near-term surplus absorbed |
+| L5 | Building lifetime extension | P2 | L4 Building retention | L3 Fewer removals |
+| L6 | Material carbon | P3 | L5 Material carbon | L5 Best-practice materials |
+| L7 | Construction-stage carbon | P3 | new in v2.1.0 | - |
+| L8 | Soil-aware planning | P4 | new in v2.1.0 | - |
+| L9 | Brownfield development | P4 | new in v2.1.0 | - |
 
 Removed in v3.1: the denser typology mix (lever of pathways_v2, removed in pathways_v3.1). It is never referred to as "L4" in the release.
 
 ### Theoretical limit
 
-| release ID | release label | v3.1 |
-|---|---|---|
-| TL | Theoretical limit | T theoretical limit |
-| TL1 | No vacancy | T1 No idle stock |
-| TL2 | No extra space | T2 No extra space |
-| TL3 | Minimum space per person | T3 Minimum space per person |
-| TL4 | Best-practice materials | T4 Best materials |
-| TL5 | Lowest-carbon soils | T5 Best soil |
-| TL6 | Urban infill | T6 Urban densification |
+| v3.1 | model-v2.0.0 |
+|---|---|
+| T theoretical limit | TL |
+| T1 No idle stock | TL1 |
+| T2 No extra space | TL2 |
+| T3 Minimum space per person | TL3 |
+| T4 Best materials | TL4 |
+| T5 Best soil | TL5 |
+| T6 Urban densification | TL6 |
 
-TL caption wording: "hyper-optimistic theoretical limit; a thought experiment, not a pathway". T-ramp -> "TL, gradual adoption (SI)" (run ID `TL-gradual`).
+**MODEL v2.1.0.** TL is rebuilt: P5 Moderate with TL1-TL10, each the limit of one lever (TL10 none), all at full strength from 2027; TL gradual adoption is removed.
+
+| v2.1.0 ID | v2.1.0 label | limit of |
+|---|---|---|
+| TL1 | No extra space | L1 Dwelling size |
+| TL2 | Historical maximum household size | L2 Household occupancy |
+| TL3 | No vacancy | L3 Vacancy |
+| TL4 | Overbuild fully absorbed | L4 Overbuild absorption |
+| TL5 | Building lifetime extension at the limit | L5 Building lifetime extension |
+| TL6 | Best-practice materials | L6 Material carbon |
+| TL7 | Zero-emission construction | L7 Construction-stage carbon |
+| TL8 | Lowest-carbon soils | L8 Soil-aware planning |
+| TL9 | Brownfield maximum | L9 Brownfield development |
+| TL10 | Minimum space per person | no lever |
+
+| model-v2.0.0 TL item | v2.1.0 item |
+|---|---|
+| TL1 No vacancy | TL3 (+ TL4) |
+| TL2 No extra space | TL1 |
+| TL3 Minimum space per person | TL10 |
+| TL4 Best-practice materials | TL6 |
+| TL5 Lowest-carbon soils | TL8 |
+| TL6 Urban infill | TL9 |
+| TL7 Building retention at -40% (ambitious level) | TL5 |
+
+TL caption wording: "hyper-optimistic theoretical limit; a thought experiment, not a pathway".
 
 ### Adoption paths of the levers
 
@@ -78,7 +109,7 @@ TL caption wording: "hyper-optimistic theoretical limit; a thought experiment, n
 | ID | release label | v3.1 labels | definition |
 |---|---|---|---|
 | `growth` | Population growth | "Growth (net of consolidation)"; "Growth demand (net of consolidation)" | population growth at the occupied area per person, net of consolidation (untargeted) |
-| `smaller_households` | Smaller households | "House-splitting"; "House-splitting demand" | additional households from falling household size (untargeted) |
+| `smaller_households` | Smaller households | "House-splitting"; "House-splitting demand" | additional households from falling household size (targeted by L2 Household occupancy, P1) |
 | `extra_space` | Extra space | "Extra space per dwelling"; "Consumption: extra space per dwelling" | new-dwelling size above the occupied area (household size x floor area per design occupant) |
 | `vacancy` | Vacancy | "Vacancy allowance"; "Consumption: vacancy allowance" | the vacancy allowance on new households and the change in the vacancy rate |
 | `overbuild_2026` | 2026 overbuild | "Near-term market excess"; "Near-term market excess (2026 observed building above requirement, fading at rho)" | observed 2026 building above the requirement, fading at the persistence rho; never absorbed |
@@ -574,15 +605,17 @@ Distinct values of identifying (text) columns that change.
 | `pathways/shapley_T.csv` | `level` | T | TL |
 | `pathways/shapley_T.csv` | `setting` | T | TL |
 | `pathways/shapley_T.csv` | `player` | T1 | TL1 |
-| `pathways/shapley_T.csv` | `name` | No idle stock | No vacancy |
+| `pathways/shapley_T.csv` | `name` | No idle stock | No extra space |
 | `pathways/shapley_T.csv` | `player` | T2 | TL2 |
+| `pathways/shapley_T.csv` | `name` | No extra space | Historical maximum household size |
 | `pathways/shapley_T.csv` | `player` | T3 | TL3 |
+| `pathways/shapley_T.csv` | `name` | Minimum space per person | No vacancy |
 | `pathways/shapley_T.csv` | `player` | T4 | TL4 |
-| `pathways/shapley_T.csv` | `name` | Best materials | Best-practice materials |
+| `pathways/shapley_T.csv` | `name` | Best materials | Overbuild fully absorbed |
 | `pathways/shapley_T.csv` | `player` | T5 | TL5 |
-| `pathways/shapley_T.csv` | `name` | Best soil | Lowest-carbon soils |
+| `pathways/shapley_T.csv` | `name` | Best soil | Building lifetime extension at the limit |
 | `pathways/shapley_T.csv` | `player` | T6 | TL6 |
-| `pathways/shapley_T.csv` | `name` | Urban densification | Urban infill |
+| `pathways/shapley_T.csv` | `name` | Urban densification | Best-practice materials |
 | `pathways/shapley_T.csv` | `player` | instant start | from2027 |
 | `pathways/shapley_T.csv` | `name` | P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player) | P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player) |
 | `pathways/shapley_T_subsets.csv` | `level` | T | TL |
@@ -653,18 +686,18 @@ Distinct values of identifying (text) columns that change.
 | `pathways/shapley_levers.csv` | `setting` | central | moderate |
 | `pathways/shapley_levers.csv` | `name` | Right-sized new dwellings | Dwelling size |
 | `pathways/shapley_levers.csv` | `player` | L2a | L2 |
-| `pathways/shapley_levers.csv` | `name` | Lower vacancy | Vacancy rate |
+| `pathways/shapley_levers.csv` | `name` | Lower vacancy | Household occupancy |
 | `pathways/shapley_levers.csv` | `player` | L2b | L3 |
-| `pathways/shapley_levers.csv` | `name` | Near-term surplus absorbed | Overbuild absorption |
+| `pathways/shapley_levers.csv` | `name` | Near-term surplus absorbed | Vacancy |
 | `pathways/shapley_levers.csv` | `player` | L3 | L4 |
-| `pathways/shapley_levers.csv` | `name` | Fewer removals | Building retention |
-| `pathways/shapley_levers.csv` | `name` | Best-practice materials | Material carbon |
+| `pathways/shapley_levers.csv` | `name` | Fewer removals | Overbuild absorption |
+| `pathways/shapley_levers.csv` | `name` | Best-practice materials | Building lifetime extension |
 | `pathways/shapley_levers.csv` | `setting` | stretch | ambitious |
 | `pathways/shapley_pathways.csv` | `setting` | central | moderate |
-| `pathways/shapley_pathways.csv` | `name` | Right-size space | Right-sized dwellings |
-| `pathways/shapley_pathways.csv` | `name` | Occupy the existing stock | Occupied stock |
-| `pathways/shapley_pathways.csv` | `name` | Keep and reuse | Retained stock |
-| `pathways/shapley_pathways.csv` | `name` | Build better | Low-carbon materials |
+| `pathways/shapley_pathways.csv` | `name` | Right-size space | Space per person |
+| `pathways/shapley_pathways.csv` | `name` | Occupy the existing stock | Existing stock |
+| `pathways/shapley_pathways.csv` | `name` | Keep and reuse | Construction |
+| `pathways/shapley_pathways.csv` | `name` | Build better | Land |
 | `pathways/shapley_pathways.csv` | `setting` | stretch | ambitious |
 | `pathways/shapley_subsets.csv` | `setting` | central | moderate |
 | `pathways/shapley_subsets.csv` | `levers` | P0 | none |
@@ -1028,7 +1061,7 @@ Every v3.1 figure, its release figure(s) or the reason it is not carried. Plan: 
 | `pw_3_solution_space` | paper/Fig6_solution_space |
 | `pw_4_annual_SI` | paper/Fig5_boundaries_attribution; pathways_si/D28_pathways_annual |
 | `pw_5_envelope_SI` | extended_data/ED7_rollout_timing |
-| `pw_6_L5_estimator_SI` | pathways_si/D30_l5_estimator |
+| `pw_6_L5_estimator_SI` | pathways_si/D30_l6_estimator |
 | `pw_7_shapley_levers_SI` | extended_data/ED9_single_levers |
 | `pw_8_staircase` | paper/Fig5_boundaries_attribution; pathways_si/D32_tl_staircase |
 | `pw_9_T_shapley_SI` | extended_data/ED8_theoretical_limit |
@@ -1038,7 +1071,7 @@ Every v3.1 figure, its release figure(s) or the reason it is not carried. Plan: 
 
 ### MODEL v2.0.0: model-v1.1.0 figures and folders
 
-The paper / Extended Data / diagnostics layout of MODEL v2.0.0 (docs/FIGURE_PLAN_v2.md section 5). Removing a figure never removes its data.
+The paper / Extended Data / key figures / diagnostics layout of MODEL v2.1.0 (docs/FIGURE_PLAN_v2.md section 5, amended by the v2.1.0 entries of figure_plan.py). Removing a figure never removes its data.
 
 | model-v1.1.0 | MODEL v2.0.0 |
 |---|---|
@@ -1050,7 +1083,7 @@ The paper / Extended Data / diagnostics layout of MODEL v2.0.0 (docs/FIGURE_PLAN
 | `H6` | Fig3 (c) |
 | `H7` | Fig4 (Moderate; Ambitious in ED6) |
 | `H8` | Fig5 (a) |
-| `H9` | Fig5 (b) (Moderate; TL1-TL7 relative to P5 Moderate) |
+| `H9` | Fig5 (b) (Moderate; TL1-TL10 relative to P5 Moderate) |
 | `H10` | Fig6 |
 | `H11` | ED1 (carbon) and ED4 (LoE) |
 | `D16` | ED1 |

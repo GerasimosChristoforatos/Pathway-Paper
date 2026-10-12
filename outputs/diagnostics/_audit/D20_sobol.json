@@ -45,5 +45,7 @@
  ],
  "note": "Reference, 5,000 Latin hypercube draws. Within-scenario parametric uncertainty only; the replacement variant, the carbon-factor and soil bounds are reported separately (D16).",
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false
 }

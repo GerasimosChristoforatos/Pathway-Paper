@@ -10,6 +10,10 @@ centre). Not data: vertical marker lines (axvline) and artists tagged
 gid=BOUNDARY (the AR / AtP boundaries, defined from t0 = 2025, not emissions). An x
 value counts as a calendar year when it lies in YEAR_RANGE.
 
+Boundaries (MODEL v2.1.0): every record says whether the figure draws a planetary boundary (an artist tagged
+BOUNDARY) and the boundary zones of style.py (tagged ZONE); tests/test_release.py requires the zones wherever a
+boundary is drawn.
+
 Maintenance (MODEL v2.0.0): every record says whether the figure draws maintenance (B2, B4) as
 its own layer or line ('maintenance_drawn'): a data artist (bar, filled area, line) on a data axes
 in the maintenance colour of style.py, or a legend entry naming maintenance. The schematic (axes
@@ -28,13 +32,14 @@ from matplotlib.patches import Rectangle
 
 YEAR_RANGE = (1900, 2200)
 BOUNDARY = 'boundary'
+ZONE = 'boundary_zone'             # style.ZONE_GID: the boundary zones (MODEL v2.1.0 styling)
 AUDIT_DIR = layout.FIGURE_AUDIT
 
 
 def _years(ax):
     xs = []
     for a in ax.get_children():
-        if not a.get_visible() or a.get_gid() == BOUNDARY:
+        if not a.get_visible() or a.get_gid() in (BOUNDARY, ZONE):
             continue
         if isinstance(a, Line2D):
             x = np.asarray(a.get_xdata(), float).ravel()
@@ -123,5 +128,7 @@ def record(fig, name, note=None):
                          ylabel=ax.get_ylabel(), year_min=y0, year_max=y1))
     with open(os.path.join(AUDIT_DIR, os.path.splitext(os.path.basename(name))[0] + '.json'), 'w') as f:
         md = maintenance_drawn(fig)
+        gids = {a.get_gid() for ax in fig.get_axes() for a in ax.get_children()}
         json.dump(dict(figure=os.path.splitext(os.path.basename(name))[0], producer=producer(), axes=axes,
-                       texts=texts(fig), note=note, maintenance_drawn=bool(md), maintenance_where=md), f, indent=1)
+                       texts=texts(fig), note=note, maintenance_drawn=bool(md), maintenance_where=md,
+                       boundary_drawn=BOUNDARY in gids, boundary_zones=ZONE in gids), f, indent=1)

@@ -2008,9 +2008,9 @@ def figures(B):
     P.panel(a, 'a', 'Household size')
     pyr = fy[1:]
     b.plot(yh[1:], B['d_pop'].values[1:] / 1e3, color=S.INK, label='Population growth, history')   # 1991: no flow
-    b.plot(yh[1:], B['d_hh'].values[1:] / 1e3, color=S.ATP, label='Household formation, history')
+    b.plot(yh[1:], B['d_hh'].values[1:] / 1e3, color=S.ACCENT_ORANGE, label='Household formation, history')
     b.plot(pyr, df['PopGrowth_50th'].values[1:] / 1e3, color=S.INK, ls='--', label='Population growth, projection')
-    b.plot(pyr, np.diff(hf['50th']) / 1e3, color=S.ATP, ls='--', label='Household formation, projection')
+    b.plot(pyr, np.diff(hf['50th']) / 1e3, color=S.ACCENT_ORANGE, ls='--', label='Household formation, projection')
     P.split(b)
     b.set_xlim(yh[0], fy[-1])
     b.set_ylabel('Persons or households per year (thousand)')

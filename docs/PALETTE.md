@@ -4,50 +4,65 @@ One palette for every figure; `style.py` is the only place colours are defined, 
 
 ## Rules
 
-* **Demand bands** are coloured by the pathway that targets them: Extra space in the P1 colour; Vacancy and 2026 overbuild in the P2 family; Historical replacement and Recent replacement surge in the P3 family. The untargeted bands (Population growth, Smaller households) are neutral greys with a light dot hatch, so they read as untargeted without colour. Maintenance (B2, B4) within 2026-2050 is a light tint of the P4 colour (material carbon).
-* **P4** (Low-carbon materials) marks intensity and material effects; Materials and construction (A1-A5) take the P4 colour in the component figure.
-* **Reference** dark grey (#4D4D4D); **TL** near-black (#141414); TL gradual adoption light grey (#A6A6A6); Low and High replacement mid greys with dashed and dotted lines.
-* **Boundaries**: acquired rights (AR) blue solid (#1F5FA8), ability to pay (AtP) orange dashed (#C2571A); the two principles are never shaded as a range and never averaged.
+* **Four pathway families, lever shades** (MODEL v2.1.0): P1 Space per person greens (L1 #1B7837, L2 #74C476), P2 Existing stock magentas (L3 #C51B7D, L4 #67001F, L5 #F1B6DA), P3 Construction purples (L6 #3F007D, L7 #9E9AC8), P4 Land ochres (L8 #CC8B00, L9 #FFF3B0); each pathway takes the colour of its first lever; P5 Combined sky blue (#56B4E9).
+* **Demand bands** are coloured by the lever that targets them (Smaller households L2, Extra space L1, Vacancy L3, 2026 overbuild L4, Historical replacement and Recent replacement surge L5, the surge hatched). The only untargeted band, Population growth, is neutral grey with a dot hatch. Maintenance (B2, B4) is blue (#0082DC). Carbon stages: A1-A3 in the L6 colour, A4-A5 in the L7 colour, soil carbon loss in the L8 colour.
+* **Reference** dark grey (#4D4D4D); **TL** near-black (#141414); Low and High replacement mid greys with dashed and dotted lines.
+* **Boundaries** (every planetary-boundary figure, one implementation in style.py): acquired rights (AR) thin red line (#D7191C), ability to pay (AtP) thin dark-red dashed line (#67000D); zones below AtP darker green (#238B45, alpha 0.5), between AtP and AR light green (#A1D99B, alpha 0.6) and above AR light red (#FB6A4A, alpha 0.08, "boundary exceeded"), on annual, cumulative and level-of-exceedance axes alike. The two principles are never averaged.
 * **Settings**: Moderate solid line or open marker; Ambitious dashed line or filled marker (bars: Moderate bars, Ambitious whiskers).
 * **Typeface**: Liberation Sans only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open Font License 1.1, registered by style.py, so every machine renders the same glyphs.
 * **Sizes** (Nature Cities): width 89 mm (single column) or 183 mm (double column), page depth at most 247 mm; text 7 pt, legends and ticks 6 pt, never below 5 pt; data lines 1 pt, emphasised lines 1.5 pt, grid and edges 0.5 pt.
-* **Files**: PNG at 300 dpi for every figure; vector PDF (TrueType fonts embedded) for the paper and Extended Data figures; no software or date metadata, so re-runs are byte-identical.
+* **Files**: PNG at 300 dpi for every figure; with run_all.py --export also a vector PDF (TrueType fonts embedded) and source-data CSV for the paper, Extended Data and key figures; no software or date metadata, so re-runs are byte-identical.
 * **Materials** (Fig3b and the diagnostics): the six stripes of the Pride flag in one order in every figure (author decision, baseline-pb-v2), soil carbon loss faded and hatched on top; kept because the material figures label every layer directly (see the check below).
 
 ## Colour table
 
 | group | element | colour | lightness J' |
 |---|---|---|---|
-| Boundaries and runs (Fig5a) | Acquired rights (AR) | `#1F5FA8` | 41 |
-| Boundaries and runs (Fig5a) | Ability to pay (AtP) | `#C2571A` | 55 |
-| Boundaries and runs (Fig5a) | Reference | `#4D4D4D` | 35 |
-| Boundaries and runs (Fig5a) | Theoretical limit | `#141414` | 10 |
-| Boundaries and runs (Fig5a) | TL, gradual adoption | `#A6A6A6` | 71 |
-| Boundaries and runs (Fig5a) | P5 Combined | `#56B4E9` | 71 |
-| Pathways (Fig5b, Fig6) | P1 Right-sized dwellings | `#228833` | 51 |
-| Pathways (Fig5b, Fig6) | P2 Occupied stock | `#F0B400` | 80 |
-| Pathways (Fig5b, Fig6) | P3 Retained stock | `#E15A97` | 63 |
-| Pathways (Fig5b, Fig6) | P4 Low-carbon materials | `#762A83` | 36 |
-| Pathways (Fig5b, Fig6) | P5 Combined | `#56B4E9` | 71 |
-| Pathways (Fig5b, Fig6) | Reference | `#4D4D4D` | 35 |
-| Pathways (Fig5b, Fig6) | Theoretical limit | `#141414` | 10 |
-| Demand bands (Fig2, Fig4) | Population growth | `#CCCCCC` | 84 |
-| Demand bands (Fig2, Fig4) | Smaller households | `#6E6E6E` | 49 |
-| Demand bands (Fig2, Fig4) | Extra space | `#228833` | 51 |
-| Demand bands (Fig2, Fig4) | Vacancy | `#F0B400` | 80 |
-| Demand bands (Fig2, Fig4) | 2026 overbuild | `#6B4C00` | 37 |
-| Demand bands (Fig2, Fig4) | Historical replacement | `#E15A97` | 63 |
-| Demand bands (Fig2, Fig4) | Recent replacement surge | `#7A1A4B` | 32 |
-| Demand bands (Fig2, Fig4) | Maintenance (B2, B4), 2026–2050 | `#C7A3D0` | 75 |
-| Carbon components (Fig3c, diagnostics) | Materials and construction (A1–A5) | `#762A83` | 36 |
-| Carbon components (Fig3c, diagnostics) | Soil carbon loss | `#8C6D46` | 51 |
-| Carbon components (Fig3c, diagnostics) | Maintenance (B2, B4), 2026–2050 | `#C7A3D0` | 75 |
+| Boundaries and runs (Fig5a, K3) | Acquired rights (AR) | `#D7191C` | 52 |
+| Boundaries and runs (Fig5a, K3) | Ability to pay (AtP) | `#67000D` | 24 |
+| Boundaries and runs (Fig5a, K3) | Reference | `#4D4D4D` | 35 |
+| Boundaries and runs (Fig5a, K3) | Theoretical limit | `#141414` | 10 |
+| Boundaries and runs (Fig5a, K3) | P1 Space per person | `#1B7837` | 45 |
+| Boundaries and runs (Fig5a, K3) | P2 Existing stock | `#C51B7D` | 50 |
+| Boundaries and runs (Fig5a, K3) | P3 Construction | `#3F007D` | 21 |
+| Boundaries and runs (Fig5a, K3) | P4 Land | `#CC8B00` | 67 |
+| Boundaries and runs (Fig5a, K3) | P5 Combined | `#56B4E9` | 71 |
+| Pathways (Fig4, Fig5b, Fig6) | P1 Space per person | `#1B7837` | 45 |
+| Pathways (Fig4, Fig5b, Fig6) | P2 Existing stock | `#C51B7D` | 50 |
+| Pathways (Fig4, Fig5b, Fig6) | P3 Construction | `#3F007D` | 21 |
+| Pathways (Fig4, Fig5b, Fig6) | P4 Land | `#CC8B00` | 67 |
+| Pathways (Fig4, Fig5b, Fig6) | P5 Combined | `#56B4E9` | 71 |
+| Pathways (Fig4, Fig5b, Fig6) | Reference | `#4D4D4D` | 35 |
+| Pathways (Fig4, Fig5b, Fig6) | Theoretical limit | `#141414` | 10 |
+| Levers (ED8, ED9, Fig5b TL steps) | L1 Dwelling size | `#1B7837` | 45 |
+| Levers (ED8, ED9, Fig5b TL steps) | L2 Household occupancy | `#74C476` | 74 |
+| Levers (ED8, ED9, Fig5b TL steps) | L3 Vacancy | `#C51B7D` | 50 |
+| Levers (ED8, ED9, Fig5b TL steps) | L4 Overbuild absorption | `#67001F` | 24 |
+| Levers (ED8, ED9, Fig5b TL steps) | L5 Building lifetime extension | `#F1B6DA` | 84 |
+| Levers (ED8, ED9, Fig5b TL steps) | L6 Material carbon | `#3F007D` | 21 |
+| Levers (ED8, ED9, Fig5b TL steps) | L7 Construction-stage carbon | `#9E9AC8` | 68 |
+| Levers (ED8, ED9, Fig5b TL steps) | L8 Soil-aware planning | `#CC8B00` | 67 |
+| Levers (ED8, ED9, Fig5b TL steps) | L9 Brownfield development | `#FFF3B0` | 96 |
+| Boundary zones on white (every boundary figure) | Within both budgets (below AtP) | `#91C5A2` | 77 |
+| Boundary zones on white (every boundary figure) | Within AR only (between AtP and AR) | `#C7E8C3` | 90 |
+| Boundary zones on white (every boundary figure) | Boundary exceeded (above AR) | `#FFF3F1` | 97 |
+| Demand bands (Fig2, Fig4) | Population growth | `#969696` | 65 |
+| Demand bands (Fig2, Fig4) | Smaller households | `#74C476` | 74 |
+| Demand bands (Fig2, Fig4) | Extra space | `#1B7837` | 45 |
+| Demand bands (Fig2, Fig4) | Vacancy | `#C51B7D` | 50 |
+| Demand bands (Fig2, Fig4) | 2026 overbuild | `#67001F` | 24 |
+| Demand bands (Fig2, Fig4) | Historical replacement | `#F1B6DA` | 84 |
+| Demand bands (Fig2, Fig4) | Recent replacement surge | `#F1B6DA` | 84 |
+| Demand bands (Fig2, Fig4) | Maintenance (B2, B4), 2026–2050 | `#0082DC` | 54 |
+| Carbon components (Fig3c, diagnostics) | Materials and construction (A1–A5) | `#3F007D` | 21 |
+| Carbon components (Fig3c, diagnostics) | Soil carbon loss | `#CC8B00` | 67 |
+| Carbon components (Fig3c, diagnostics) | Maintenance (B2, B4), 2026–2050 | `#0082DC` | 54 |
 | Carbon components (Fig3c, diagnostics) | Committed after 2050 (later B2/B4 and C1–C4) | `#BDBDBD` | 79 |
 | Projection variants and boundaries (ED5, ED10) | Reference | `#4D4D4D` | 35 |
 | Projection variants and boundaries (ED5, ED10) | Low replacement | `#9E9E9E` | 68 |
 | Projection variants and boundaries (ED5, ED10) | High replacement | `#6E6E6E` | 49 |
-| Projection variants and boundaries (ED5, ED10) | Acquired rights (AR) | `#1F5FA8` | 41 |
-| Projection variants and boundaries (ED5, ED10) | Ability to pay (AtP) | `#C2571A` | 55 |
+| Projection variants and boundaries (ED5, ED10) | Acquired rights (AR) | `#D7191C` | 52 |
+| Projection variants and boundaries (ED5, ED10) | Ability to pay (AtP) | `#67000D` | 24 |
 | Materials (Fig3b, diagnostics) | Timber | `#750787` | 32 |
 | Materials (Fig3b, diagnostics) | Steel | `#004DFF` | 42 |
 | Materials (Fig3b, diagnostics) | Concrete | `#008026` | 47 |
@@ -55,15 +70,15 @@ One palette for every figure; `style.py` is the only place colours are defined, 
 | Materials (Fig3b, diagnostics) | Plasterboard | `#FF8C00` | 74 |
 | Materials (Fig3b, diagnostics) | Others | `#E40303` | 54 |
 | Materials (Fig3b, diagnostics) | Soil carbon loss | `#B5A48B` | 71 |
-| Life-cycle stages (Fig3a) | Materials (A1–A3) | `#762A83` | 36 |
-| Life-cycle stages (Fig3a) | Construction (A4–A5) | `#E7A44B` | 76 |
-| Life-cycle stages (Fig3a) | Maintenance (B2, B4) | `#C7A3D0` | 75 |
-| Life-cycle stages (Fig3a) | Soil carbon loss | `#8C6D46` | 51 |
-| History bands (Fig2a) | Population growth | `#CCCCCC` | 84 |
-| History bands (Fig2a) | Smaller households | `#6E6E6E` | 49 |
-| History bands (Fig2a) | Extra space | `#228833` | 51 |
-| History bands (Fig2a) | Vacancy | `#F0B400` | 80 |
-| History bands (Fig2a) | Historical replacement | `#E15A97` | 63 |
+| Life-cycle stages (Fig3a) | Materials (A1–A3) | `#3F007D` | 21 |
+| Life-cycle stages (Fig3a) | Construction (A4–A5) | `#9E9AC8` | 68 |
+| Life-cycle stages (Fig3a) | Soil carbon loss | `#CC8B00` | 67 |
+| Life-cycle stages (Fig3a) | Maintenance (B2, B4) | `#0082DC` | 54 |
+| History bands (Fig2a) | Population growth | `#969696` | 65 |
+| History bands (Fig2a) | Smaller households | `#74C476` | 74 |
+| History bands (Fig2a) | Extra space | `#1B7837` | 45 |
+| History bands (Fig2a) | Vacancy | `#C51B7D` | 50 |
+| History bands (Fig2a) | Historical replacement | `#F1B6DA` | 84 |
 | History bands (Fig2a) | Unexplained building (history; may be negative) | `#F2F2F2` | 96 |
 | Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 1 | `#000000` | 0 |
 | Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 2 | `#E69F00` | 75 |
@@ -80,15 +95,23 @@ Minimum pairwise distance within each group (CAM02-UCS, Luo, Cui & Li 2006) afte
 
 | group | normal | deuteranomaly | protanomaly | tritanomaly | passes |
 |---|---|---|---|---|---|
-| Boundaries and runs (Fig5a) | 24.3 (Reference / Theoretical limit) | 23.2 (TL, gradual adoption / P5 Combined) | 20.8 (TL, gradual adoption / P5 Combined) | 21.9 (Acquired rights (AR) / Reference) | yes |
-| Pathways (Fig5b, Fig6) | 24.3 (Reference / Theoretical limit) | 20.9 (P4 Low-carbon materials / Reference) | 22.4 (P3 Retained stock / P5 Combined) | 20.5 (P4 Low-carbon materials / Reference) | yes |
-| Demand bands (Fig2, Fig4) | 19.5 (Population growth / Maintenance (B2, B4), 2026–2050) | 13.8 (Extra space / 2026 overbuild) | 14.7 (Smaller households / Historical replacement) | 14.1 (Population growth / Maintenance (B2, B4), 2026–2050) | yes |
-| Carbon components (Fig3c, diagnostics) | 17.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 13.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 16.3 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 11.4 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | yes |
+| Boundaries and runs (Fig5a, K3) | 23.3 (Acquired rights (AR) / P2 Existing stock) | 14.3 (Acquired rights (AR) / P4 Land) | 11.1 (Acquired rights (AR) / P1 Space per person) | 12.3 (Acquired rights (AR) / P2 Existing stock) | yes |
+| Pathways (Fig4, Fig5b, Fig6) | 24.3 (Reference / Theoretical limit) | 16.8 (P2 Existing stock / Reference) | 17.2 (P1 Space per person / P4 Land) | 17.1 (P3 Construction / Theoretical limit) | yes |
+| Levers (ED8, ED9, Fig5b TL steps) | 23.1 (L5 Building lifetime extension / L7 Construction-stage carbon) | 15.9 (L2 Household occupancy / L8 Soil-aware planning) | 13.5 (L5 Building lifetime extension / L7 Construction-stage carbon) | 16.4 (L5 Building lifetime extension / L9 Brownfield development) | yes |
+| Boundary zones on white (every boundary figure) | 13.7 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | 9.5 (Within AR only (between AtP and AR) / Boundary exceeded (above AR)) | 10.2 (Within AR only (between AtP and AR) / Boundary exceeded (above AR)) | 14.2 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | no |
+| Demand bands (Fig2, Fig4) | 0.0 (Historical replacement / Recent replacement surge) | 0.0 (Historical replacement / Recent replacement surge) | 0.0 (Historical replacement / Recent replacement surge) | 0.0 (Historical replacement / Recent replacement surge) | no |
+| Carbon components (Fig3c, diagnostics) | 33.2 (Soil carbon loss / Committed after 2050 (later B2/B4 and C1–C4)) | 30.3 (Materials and construction (A1–A5) / Maintenance (B2, B4), 2026–2050) | 33.7 (Soil carbon loss / Committed after 2050 (later B2/B4 and C1–C4)) | 28.5 (Soil carbon loss / Committed after 2050 (later B2/B4 and C1–C4)) | yes |
 | Projection variants and boundaries (ED5, ED10) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | yes |
 | Materials (Fig3b, diagnostics) | 25.9 (Plasterboard / Soil carbon loss) | 12.8 (Concrete / Others) | 13.0 (Concrete / Others) | 16.5 (Steel / Concrete) | yes |
-| Life-cycle stages (Fig3a) | 27.0 (Construction (A4–A5) / Soil carbon loss) | 27.3 (Construction (A4–A5) / Soil carbon loss) | 25.1 (Construction (A4–A5) / Soil carbon loss) | 16.0 (Construction (A4–A5) / Maintenance (B2, B4)) | yes |
-| History bands (Fig2a) | 12.0 (Population growth / Unexplained building (history; may be negative)) | 12.0 (Population growth / Unexplained building (history; may be negative)) | 12.0 (Population growth / Unexplained building (history; may be negative)) | 12.0 (Population growth / Unexplained building (history; may be negative)) | yes |
+| Life-cycle stages (Fig3a) | 24.4 (Construction (A4–A5) / Maintenance (B2, B4)) | 21.6 (Construction (A4–A5) / Maintenance (B2, B4)) | 15.0 (Construction (A4–A5) / Maintenance (B2, B4)) | 19.8 (Construction (A4–A5) / Maintenance (B2, B4)) | yes |
+| History bands (Fig2a) | 22.1 (Historical replacement / Unexplained building (history; may be negative)) | 14.1 (Historical replacement / Unexplained building (history; may be negative)) | 19.1 (Historical replacement / Unexplained building (history; may be negative)) | 20.7 (Population growth / Smaller households) | yes |
 | Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | 20.8 (group 2 / group 5) | 14.8 (group 4 / group 8) | 14.0 (group 6 / group 8) | 11.0 (group 2 / group 8) | yes |
+
+Groups below the threshold: Boundary zones on white (every boundary figure); Demand bands (Fig2, Fig4). Why each still reads: Historical replacement and Recent replacement surge share the L5 colour by design (both are targeted by L5) and differ by the surge's hatch; the boundary zones are pale by design (data drawn over them), always bounded by the AR and AtP lines and ordered strictly in lightness (darker green < light green < palest red under every simulated deficiency), so their order survives without hue; any other group below the threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so the reading never depends on colour alone.
+
+## Boundary zones: lightness order
+
+J' of each zone on white (normal, deuteranomaly, protanomaly, tritanomaly): Within both budgets (below AtP) 76.9 / 77.0 / 79.1 / 76.7; Within AR only (between AtP and AR) 89.9 / 90.0 / 91.2 / 89.7; Boundary exceeded (above AR) 97.4 / 97.5 / 96.9 / 97.2. Strictly increasing under every vision type: yes.
 
 ## Sequential ramp
 

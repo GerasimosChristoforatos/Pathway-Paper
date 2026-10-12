@@ -36,5 +36,7 @@
  ],
  "note": "Reference. AR base window 2016\u20132025 at 2025 factors, soil only on non-replacement floor area (as the projection). Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th\u201395th within 9.9% of the median in every year.",
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_zones": true
 }

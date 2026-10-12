@@ -4,6 +4,72 @@ Entries below the first use the vocabulary of their own version (S1/S2/S3-10, ce
 L2a/L2b, T, near-term market excess, ...); docs/RENAMING.md maps every one of those names to the
 release vocabulary.
 
+## model-v2.1.0: final lever set, rebuilt pathways and theoretical limit, Monte Carlo insights, key figures, boundary styling
+
+From model-v2.0.0 (main, b5fdf83). **The Reference, the baseline, the AESA layer and the baseline Monte Carlo are
+unchanged**: every number outside the pathway domain is reproduced to 1e-12 (tests/test_regression_model_v1.py,
+tests/test_regression_model_v2.py, which now skip only the pathway domain). The pathway domain (data/pathways/*,
+the P5 sensitivity table, the P5/TL rows of the replacement variants) changes by design and is re-locked by
+tests/regression_model_v2_1.json (163,414 values; tests/test_regression_model_v2_1.py).
+
+### Levers (old number -> new; docs/RENAMING.md)
+
+* P1 Space per person: L1 Dwelling size (unchanged); **L2 Household occupancy** (new: S(y) = S_ref + w(S_target -
+  S_ref), floored at S_ref; Moderate = the Stats NZ High variant, identified as the largest S path; Ambitious = its
+  maximum 2.6933 (2043) held; Ambitious >= Moderate >= Reference asserted every year).
+* P2 Existing stock: L3 Vacancy (old L2), L4 Overbuild absorption (old L3), L5 Building lifetime extension (old L4;
+  renovation carbon not modelled).
+* P3 Construction: L6 Material carbon (old L5); **L7 Construction-stage carbon** (new: A4-A5 towards
+  e^(-(ln2/25)t) / 1 - t/25; A5 treated as energy, an upper bound).
+* P4 Land: **L8 Soil-aware planning** (soil factor x (1 - w x), x 0.073 / 0.146) and **L9 Brownfield development**
+  (s 0.41 / 0.59 of all new floor area, no double counting with replacement; Reference implied share ~17%).
+* Only population growth is untargeted. Logistic adoption, full by 2035 (2030 / 2045 sensitivities).
+
+### Results (Reference variant; cumulative 2026-2050)
+
+| run | floor area (Mm2) | carbon (kt) | LoE AR | LoE AtP |
+|---|---|---|---|---|
+| Reference | 89.6 | 21,578 | 4.85 | 19.4 |
+| P1 / P2 / P3 / P4 (Moderate) | 78.8 / 80.9 / 89.6 / 89.6 | 18,990 / 19,515 / 20,128 / 20,792 | 4.27 / 4.38 / 4.52 / 4.67 | |
+| P5 Combined, Moderate | 70.7 | 15,310 | 3.44 (MC 2.36-4.43) | 13.8 |
+| P5 Combined, Ambitious | 60.9 | 11,612 | 2.61 | 10.4 |
+| TL | 18.4 | 2,818 | 0.63 (MC 0.42-0.82; P(<= 1) 99.9%) | 2.5 (P(<= 1) 0%) |
+
+Pathway Shapley (Moderate carbon): P1 37.5%, P2 30.7%, P3 20.5%, P4 11.3%.
+
+### Theoretical limit rebuilt
+
+* TL = P5 Moderate + TL1-TL10 at full strength from 1 Jan 2027, banking rule (now also releasing dwellings when
+  households fall under TL2); each item the limit of one lever and asserted at least as strong as Ambitious: TL1
+  f = 1, TL2 S = 2.7905 (1991 historical maximum), TL3 v = 0, TL4 overbuild absorbed in 2027, TL5 surge removed +
+  demolition -40%, TL6 r = min(own best independent case, r_Ambitious) (detached 0.530 SD_2; townhouses and
+  apartments = r_Ambitious 0.827; exceeds Ambitious only where case-study evidence exists), TL7 A4-A5 = 0, TL8
+  lowest soil order, TL9 brownfield 0.89 (London), TL10 OLF 19.69. TL gradual adoption removed.
+* TL Shapley over TL1-TL10 (1,024 subsets, exact), LoE AR: TL1 0.636, TL2 0.315, TL3 0.445, TL4 0.015, TL5 0.184,
+  TL6 0.321, TL7 0.234, TL8 0.065, TL9 0.122, TL10 0.276; full strength from 2027 (separate line) 0.195. TL builds
+  nothing in 2027-2036 (released dwellings used).
+* Correction: in banked zero-building years the in-scope demand bands were scaled by the ratio of two
+  floating-point zeros; they are now zero there except the maintenance of earlier cohorts (pathways.band_rows).
+
+### Pathway Monte Carlo and insight analyses
+
+* 5,000 draws through P5 and the new TL; central draw reproduces the deterministic runs (3.1e-16); TL targets
+  fixed absolute values (TL6 capped at the Ambitious ratio per draw).
+* mcstats.py (numpy / scipy; checked against statsmodels and firthlogist): SRC / PRCC with bootstrap CIs, LOWESS,
+  Firth logistic regression with profile intervals. Findings: population rank dominates every run (TL SRC 0.99);
+  carbon-factor uncertainty cancels out of the Reference LoE AR (the AR budget is grandfathered from each draw's
+  own factors; PRCC -0.04) and lowers TL's (absolute targets; PRCC -0.60). TL exceeds the AR budget in only 4 of
+  5,000 draws, the four highest population ranks; the maximum-likelihood logistic estimate does not exist
+  (separation) and the Firth odds ratios are reported with their events-per-variable caveat.
+
+### Figures and outputs
+
+* Boundary styling in every planetary-boundary figure, implemented once in style.py (AR / AtP lines; zones below
+  AtP, between AtP and AR, above AR; audited). New palette (four families, lever shades); CVD check fixes (AR,
+  maintenance, zone lightness order).
+* New: ED11-ED13 (MC insights), outputs/key_figures/ K1-K6 + KEY_FIGURES.md. PNG only by default; `run_all.py
+  --export` writes PDF and source-data CSV.
+
 ## model-v2.0.0: paper-ready structure; TL relative to P5 Moderate; pathway Monte Carlo
 
 From model-v1.1.0 (main, 4ad57f3). **No adopted number changes**: every value of the regression

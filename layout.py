@@ -5,6 +5,7 @@
                       CSV), Tables 1-2 (Markdown and CSV) and PAPER.md (headline findings, every
                       figure with its caption)
       extended_data/  the Extended Data figures (ED1-ED10, same formats) and EXTENDED_DATA.md
+      key_figures/    K1-K6 (MODEL v2.1.0): the story in six figures, KEY_FIGURES.md
       diagnostics/    every other figure, by group (PNG 300 dpi), DIAGNOSTICS.md, and
                       _audit/: the record of every figure (figaudit.py; read by the tests)
       data/           every number the model reports, as CSV and JSON, in the release names of
@@ -28,6 +29,7 @@ DATA = os.path.join(OUT, 'data')
 REPORTS = os.path.join(OUT, 'reports')
 PAPER = os.path.join(OUT, 'paper')
 EXTENDED_DATA = os.path.join(OUT, 'extended_data')
+KEY_FIGURES = os.path.join(OUT, 'key_figures')
 DIAGNOSTICS = os.path.join(OUT, 'diagnostics')
 FIGURE_AUDIT = os.path.join(DIAGNOSTICS, '_audit')
 LOGS = os.path.join(OUT, 'logs')
@@ -73,7 +75,7 @@ def figure(name):
     extension) of a figure, from its file id in figure_plan.py (e.g. 'Fig5_boundaries_attribution',
     'ED1_reference_carbon_tornado', 'D22_boundaries')."""
     import figure_plan as FP
-    for base, items in ((PAPER, FP.PAPER), (EXTENDED_DATA, FP.EXTENDED_DATA)):
+    for base, items in ((PAPER, FP.PAPER), (EXTENDED_DATA, FP.EXTENDED_DATA), (KEY_FIGURES, FP.KEY_FIGURES)):
         if name in (h['file'] for h in items):
             return os.path.join(base, name)
     for g, rows in FP.DIAGNOSTICS.items():
@@ -83,5 +85,5 @@ def figure(name):
 
 
 def vector(path):
-    """True for a figure of the paper or Extended Data (written as PNG and vector PDF)."""
-    return path.startswith(PAPER + os.sep) or path.startswith(EXTENDED_DATA + os.sep)
+    """True for a figure of the paper, Extended Data or the key figures (vector PDF with run_all.py --export)."""
+    return any(path.startswith(b + os.sep) for b in (PAPER, EXTENDED_DATA, KEY_FIGURES))

@@ -13,7 +13,7 @@ limit). Every other figure is indexed in `outputs/diagnostics/DIAGNOSTICS.md`, a
 every output file, with the script that writes it, in `outputs/INDEX.md`. Labels
 follow one vocabulary (`naming.py`; `docs/RENAMING.md` maps the earlier names to
 the release names, `docs/FIGURE_PLAN.md` the earlier figure names to the figure ids
-Fig1–Fig6, ED1–ED10 and the diagnostics D01–D34; the model-v1.1.0 ids H1–H11 are mapped in
+Fig1–Fig6, ED1–ED13, the key figures K1–K6 and the diagnostics D01–D34; the model-v1.1.0 ids H1–H11 are mapped in
 `docs/RENAMING.md`, section 6). Parameter values quoted below are the adopted settings in
 `projection.py` unless another module is named.
 
@@ -23,7 +23,7 @@ Fig1–Fig6, ED1–ED10 and the diagnostics D01–D34; the model-v1.1.0 ids H1�
 
 How much new residential floor area New Zealand will build from 2026 to 2050,
 and how much embodied carbon that floor area carries, split by reason for
-building (the demand bands: population growth, smaller households, extra space,
+building (the demand bands: population growth (untargeted), smaller households, extra space,
 vacancy, the 2026 overbuild, historical replacement, the recent replacement
 surge) and by material and
 life-cycle stage. Building type (detached houses, townhouses, apartments) is
@@ -81,7 +81,7 @@ flowchart LR
     MC & BND & PW --> PMC[pathways_mc.py<br/>pathway Monte Carlo]
     SENS & BND & PW --> ST[tools/sensitivity_tables.py]
     SENS & MC & VAL & BND & PW & PMC & ST --> DATA[("outputs/data/")]
-    DATA --> HL[paper.py, extended_data.py<br/>Fig1-Fig6, Tables, ED1-ED10]
+    DATA --> HL[paper.py, extended_data.py, key_figures.py<br/>Fig1-Fig6, Tables, ED1-ED13, K1-K6]
     DATA --> REP[tools/ reports, indexes.py]
 ```
 
@@ -245,8 +245,8 @@ in the Reference); carbon has one
 further band, Maintenance (B2, B4), 2026–2050. In the figures and the data files
 of the bands RV units are removed from every band in proportion (each band ×
 (1 − RV share)), so all bands are in scope and sum exactly to the in-scope total
-(tested). Population growth and smaller households are untargeted by the
-pathways.
+(tested). Only population growth is untargeted by the pathways (smaller households are targeted
+by L2 Household occupancy).
 
 ### 4.9 Carbon
 
@@ -474,7 +474,7 @@ flowchart LR
     FB["outputs/data/factors/factors_building.csv"] --> L5["L5: Harrell-Davis quantile<br/>+ bootstrap"]
     LEV["levers.py<br/>L1 / L2, L3 / L4 / L5; TL1-TL6<br/>adoption path to 2035"] --> RUN
     L5 --> LEV
-    CTX --> RUN["engine.forward per run<br/>Reference, levers, P1-P5, TL; 16 + 32 + 64 subsets"]
+    CTX --> RUN["engine.forward per run<br/>Reference, levers, P1-P5, TL; 16 + 512 + 1,024 subsets"]
     AESA["outputs/data/aesa/annual.csv<br/>B_AR, B_AtP of the Reference"] --> GAP
     RUN --> GAP["bands, cumulative LoE, committed,<br/>Shapley, back-cast, solution space"]
     GAP --> OUTP[("outputs/data/pathways/*.csv, *.json;<br/>D28-D34")]
@@ -487,94 +487,72 @@ flowchart LR
    w(E) = 1, w = 1 after E (`levers.adoption_window`). Adopted: full roll-out by
    2035 (midpoint 2030.5, k = ln(81)/6), following RECC, Pauliuk et al. 2024; P5
    sensitivities: full roll-out by 2030 (midpoint 2028) and by 2045 (midpoint
-   2035.5). P1 Right-sized dwellings = L1 Dwelling size
-   (`size` per typology and year: a share f of the space above the engine's
-   occupied area S × OLF removed, f = 0.25 / 0.50, constant from 2035 to 2050).
-   The typology shares stay at the Reference held mix in every run (the denser
-   typology mix of an earlier pathway version was not carried forward: within
-   the embodied-carbon scope it raises A1–A3 per m², and its benefits are
-   outside the scope). P2 Occupied stock = L2 Vacancy rate (the stock-wide
-   vacancy path `v`, v(y) = v0 + w (v* − v0), v* = 4.7% / 4.0%) + L3 Overbuild
-   absorption (the 2026 overbuild absorbed at 0.10 / 0.20 a year: `join` from
-   `engine.market_excess(..., 'surplus', absorption)`). P3 Retained stock = L4
-   Building retention (`rate_demol` and the recent-surge component of
-   `rate_unc` × (1 − w d), d = 0.20 / 0.40). P4 Low-carbon materials = L5
-   Material carbon (`intensity`, `intensity_upfront`: the A1–A3 term scaled
-   towards r, the Harrell-Davis quantile (q = 0.25 / 0.15) of the case-study
-   ratios with a bootstrap interval; decarbonisation applies on top). P5
-   Combined = all five levers. Resolved values:
-   `outputs/data/pathways/levers.json`; Table 1:
-   `outputs/reports/LEVERS_TABLE.md`.
+   2035.5). Nine levers in four families (MODEL v2.1.0; business-as-usual
+   decarbonisation applies in every run; only population growth is untargeted):
+   P1 Space per person = L1 Dwelling size (`size`: a share f = 0.25 / 0.50 of the
+   space above the occupied area S × OLF removed, never below it) + L2 Household
+   occupancy (households = population / S, S(y) = max(S_ref, S_ref + w (S_target
+   − S_ref)); Moderate the Stats NZ High variant, Ambitious its maximum 2.6933
+   (2043) held; Ambitious ≥ Moderate ≥ Reference asserted every year). P2
+   Existing stock = L3 Vacancy (v* = 4.7% / 4.0%) + L4 Overbuild absorption
+   (0.10 / 0.20, `engine.market_excess(..., 'surplus', a)`) + L5 Building
+   lifetime extension (`rate_demol` and the surge × (1 − w d), d = 0.20 / 0.40;
+   renovation carbon not modelled). P3 Construction = L6 Material carbon (A1–A3
+   towards the Harrell-Davis ratio r = 0.916 / 0.827) + L7 Construction-stage
+   carbon (A4–A5 factor towards e^(−(ln2/25)t) / 1 − t/25; A5 as energy, an upper
+   bound). P4 Land = L8 Soil-aware planning (soil factor × (1 − w x), x = 0.073 /
+   0.146) + L9 Brownfield development (soil-free floor area = replacement + w ·
+   max(0, s · total − replacement), s = 0.41 / 0.59; `engine.forward`
+   `brownfield_share`). P5 Combined = all nine. The typology shares stay at the
+   Reference held mix. Resolved values: `outputs/data/pathways/levers.json`;
+   Table 1: `outputs/reports/LEVERS_TABLE.md`.
 2. **Identity.** With every lever off the call is the reference call of the
-   projection, and the run reproduces the Reference (annual carbon, upfront,
-   maintenance 2026–2050, floor area by typology, demand bands, committed range,
-   cumulative LoE) to 1e-9; each lever at zero strength is the Reference
-   (`tests/test_pathways.py`). The 2026 overbuild is unchanged except under L3;
-   2026 is never changed.
-3. **Per run**: carbon 2026–2050, upfront, maintenance, soil carbon loss, A1–A3,
-   A4–A5, floor area and floor area by demand band (with the change vs the
-   Reference, exact), committed after 2050 (`events.committed`, the run's floor
-   area), dwellings built, mean dwelling size, existing dwellings released,
-   implied vacancy, and cumulative LoE against the Reference budgets of
-   `outputs/data/aesa/annual.csv`. Checks that stop the run: identity, sizes
-   below the occupied area, implied vacancy below 4.0%, negative dwellings
-   built, fewer than 10 independent L5 cases or r ≥ 1, Shapley efficiency.
-4. **Attribution**: Shapley values over the 16 pathway subsets (main) and the 32
-   lever subsets (SI), exact rational arithmetic (they sum to Reference − P5
-   exactly).
-5. **Variants**: the Reference and P5 under Low and High replacement (full
-   projection runs).
-6. **Gap**: back-cast of P5 (Moderate, Ambitious) and the Reference (uniform
-   factor k on every 2027–2050 cohort, `scipy.optimize.brentq` for cumulative
-   LoE AR = 1; AtP minimum at k = 0) and the demand × intensity solution space
-   on the Reference (Horup et al. 2025, Fig. 6 style).
+   projection, and the run reproduces the Reference to 1e-9; each lever at zero
+   strength is the Reference (`tests/test_pathways.py`); 2026 is never changed.
+3. **Per run**: carbon 2026–2050 by stage, floor area by demand band (exact),
+   committed after 2050, dwellings built, household size, soil-free share,
+   implied vacancy, cumulative LoE. Checks that stop the run: identity, sizes
+   below the occupied area, implied vacancy below 4.0%, negative dwellings built,
+   a household decline in a pathway run, the L2 ordering, fewer than 10
+   independent L6 cases or r ≥ 1, Shapley efficiency.
+4. **Attribution**: Shapley values over the 16 pathway subsets (main) and the 512
+   lever subsets (Extended Data), exact rational arithmetic.
+5. **Variants**: the Reference and P5 under Low and High replacement.
+6. **Gap**: back-cast (k on every 2027–2050 cohort, brentq) and the demand ×
+   intensity solution space (Horup et al. 2025, Fig. 6 style).
 
 Methods as implemented: part 3 of `outputs/reports/METHODS_DRAFT.md`.
 
-**Theoretical limit TL.** A hyper-optimistic theoretical limit; a thought
-experiment, not a pathway: P5 Ambitious with TL1 No vacancy (v = 0, the 2026
-overbuild absorbed in full), TL2 No extra space (size = S × OLF), TL3 Minimum
-space per person (the lowest independent case-study OLF for every typology),
-TL4 Best-practice materials (each typology's best independent case-study A1–A3;
-apartments held, one independent case), TL5 Lowest-carbon soils (the lowest soil
-order), TL6 Urban infill (65% of the non-replacement floor area on developed
-land with zero soil carbon loss; Auckland Council 2021), all at full strength
-from 2027 (`levers.apply_tl`); the adopted decarbonisation applies. TL, gradual
-adoption (SI) uses the adopted adoption path instead. `pathways.run_tl` applies
-the banking rule (`pathways.bank`: dwellings built never negative; unused
-release carried forward) as a stock-adding 2026 overbuild term (join = banked
-built − requirement, join_redev = 0) so the stock identity holds, and the
-year-dependent soil factor exactly through the engine's soil-bearing share
-(intensity minus (soil_avg − soil_path) × share; two passes, the share checked
-identical; the share is clipped to [0, 1] and set to 0 in years with no new
-building, where the engine's ratio is undefined). Shapley over TL1–TL6 (64
-subsets, full strength from 2027), gap and back-cast as for P5; where TL exceeds
-the AR budget the back-cast cut is expressed as dwellings not built 2027–2050
-and new residents housed in existing dwellings
-(`outputs/data/pathways/theoretical_limit.json`,
-`shapley_theoretical_limit.csv`; D32, D34).
+**Theoretical limit TL (MODEL v2.1.0).** A hyper-optimistic theoretical limit; a thought
+experiment, not a pathway: P5 Moderate with TL1–TL10 at full strength from 1 January 2027
+(`levers.apply_tl`), each the limit of one lever: TL1 f = 1 (size = occupied area), TL2 the
+historical maximum household size (2.7905, 1991), TL3 v = 0, TL4 the 2026 overbuild absorbed in
+2027, TL5 the surge removed and demolition −40%, TL6 r = min(own best independent case,
+r_Ambitious) per typology, TL7 A4–A5 = 0, TL8 the lowest soil order, TL9 brownfield share 0.89
+(London), TL10 OLF 19.69 m² per person (no lever counterpart). Every item is asserted at least as
+strong as its Ambitious lever (otherwise the run stops). `pathways.run_tl` applies the banking rule
+(`pathways.bank`: dwellings built never negative; dwellings released by the vacancy, by a fall in
+households (TL2) and by the absorbed overbuild are used before any new building) as a stock-adding
+join; in banked zero-building years every demand band is zero except the maintenance of the cohorts
+already built. Shapley over TL1–TL10 (1,024 subsets, exact) relative to P5 Moderate at full strength
+from 2027, with the effect of full strength from 2027 a separate line
+(`shapley_theoretical_limit.csv`; Fig5b, ED8); the sequential waterfall Reference → P1 … P4 (= P5) →
+full strength from 2027 → TL1 … TL10 (= TL) by demand band (`waterfall_sequential.csv`; K5).
 
-**TL relative to P5 Moderate (MODEL v2.0.0).** With TL1–TL6 active every Ambitious lever setting
-of P5 Ambitious is overridden except L4, so that element is named TL7 (L4 at d = 0.40): TL = P5
-Moderate + TL1–TL7 is the same run (asserted to 1e-12, otherwise the run stops). The Shapley
-attribution over TL1–TL7 (128 subsets, exact rational arithmetic) is relative to P5 Moderate at full
-strength from 2027, with the effect of full strength from 2027 as a separate line
-(`shapley_theoretical_limit_moderate.csv`; Fig5b, ED8). The TL1–TL6 attribution relative to P5
-Ambitious stays in `shapley_theoretical_limit.csv`.
-
-**Pathway Monte Carlo (`pathways_mc.py`).** The 5,000 saved Reference draws of `MonteCarlo.py`
-(`MonteCarlo.project(..., full=True)` returns each draw's inputs; its A1–A3 factors are re-derived
-with the same bootstrap and seed, checked identical) are run through the pathway layer for P5
-(Moderate) and TL with the levers applied identically; the TL targets TL3–TL6 are absolute (TL4
-scales each draw's ratio so the A1–A3 per m² equals the deterministic best case). Each draw's AR and
-AtP budgets are those of the AESA layer for that draw. The central draw must reproduce the
-deterministic Reference, P5 and TL runs to 1e-9 (otherwise the run stops). Writes
-`montecarlo_draws.csv`, `montecarlo_summary.csv` (percentiles, P(LoE ≤ 1)) and
-`montecarlo_annual.csv` in `outputs/data/pathways/`.
+**Pathway Monte Carlo (`pathways_mc.py`).** The 5,000 saved Reference draws of `MonteCarlo.py` are
+run through P5 (Moderate) and TL with the levers applied identically (L6 and L7 on each draw's own
+A1–A3 and A4–A5, re-derived with the same bootstrap and seed, checked identical); the TL targets
+are fixed absolute values (TL6 capped at the Ambitious ratio so TL ≥ Ambitious in every draw).
+Population and household size share one draw. The central draw must reproduce the deterministic
+runs to 1e-9 (otherwise the run stops). Insight analyses (`mcstats.py`, numpy / scipy, checked
+against statsmodels): SRC and PRCC with bootstrap 95% intervals, LOWESS and least-squares fits, and
+the conditional TL (Firth penalised-likelihood logistic regression of P(TL LoE AR ≤ 1), profile
+intervals; the maximum-likelihood estimate does not exist under separation), on the inputs with the
+carbon selector replaced by a carbon-factor index (ED11–ED13).
 
 **Grouped sensitivity tables (`tools/sensitivity_tables.py`).** The rows of
 `docs/SENSITIVITY_PLAN.md`, grouped by type of change, from the existing data files; the new rows
-(P1–P4 each at Ambitious within P5; P5 on the population 5th / 95th paths, exact engine path; TL
+(L1–L9 each at Ambitious within P5; P5 on the population 5th / 95th paths, exact engine path; TL
 under Low / High replacement) are computed with the pathway engine, and every run that an existing
 file holds is asserted to reproduce it (1e-12). Writes `outputs/data/sensitivity/`.
 
@@ -638,7 +616,8 @@ what it holds and the script that writes it (the registry is `indexes.FILES`).
 | folder | content |
 |---|---|
 | `outputs/paper/` | the figures of the paper Fig1–Fig6 (PNG and PDF), the source data of each (`Fig*.csv`), Tables 1–2 (Markdown and CSV) and `PAPER.md` |
-| `outputs/extended_data/` | the Extended Data ED1–ED10 (PNG, PDF, source data) and `EXTENDED_DATA.md` |
+| `outputs/extended_data/` | the Extended Data ED1–ED13 (PNG; with `--export` PDF and source data) and `EXTENDED_DATA.md` |
+| `outputs/key_figures/` | the key figures K1–K6 (PNG; with `--export` PDF and source data) and `KEY_FIGURES.md` |
 | `outputs/diagnostics/<group>/` | every other figure (PNG; D16, D17, D29, D31 and D33 are superseded by Extended Data) in the groups data_calibration, validation, sensitivity, monte_carlo, planetary_boundary, pathways_si; `DIAGNOSTICS.md`; `_audit/` the figure audit records |
 | `outputs/data/baseline/` | the Reference projection and its checks (projection, annual series, demand bands, variants, validation, 2026 gap and overbuild, reconciliation, reality checks, one-at-a-time sensitivity) |
 | `outputs/data/montecarlo/` | draws, summaries, annual percentiles by variant; Sobol indices of the Reference |
@@ -659,7 +638,7 @@ Data files carry the release names of `naming.py` (ASCII hyphens; variant ids
 ## 13. Figures
 
 * **`figure_plan.py`** lists every figure of the release: the paper Fig1–Fig6 and
-  Tables 1–2, the Extended Data ED1–ED10 (title, panels, data source, draft caption,
+  Tables 1–2, the Extended Data ED1–ED13, the key figures K1–K6 (title, panels, data source, draft caption,
   print width) and the diagnostics by group, with the earlier figures each replaces
   (`docs/FIGURE_PLAN.md`), and the figures allowed to draw maintenance as its own layer.
 * **`style.py`** holds the palette (`docs/PALETTE.md`, checked for colour-vision
@@ -686,7 +665,8 @@ Data files carry the release names of `naming.py` (ASCII hyphens; variant ids
   `outputs/data/` only (no model is run), with the source data of each figure (panel,
   series, x, value, unit) and `PAPER.md`: the headline findings, every figure with its
   caption (numbers filled from the data) and the tables. **`extended_data.py`** does the
-  same for ED1–ED10 and `EXTENDED_DATA.md`.
+  same for ED1–ED13 and `EXTENDED_DATA.md`; **`key_figures.py`** draws K1–K6 and `KEY_FIGURES.md` (reusing
+  the panel functions of `paper.py`).
 * **`indexes.py`** writes `outputs/diagnostics/DIAGNOSTICS.md` (every diagnostic
   by group, with its note and drawing script) and `outputs/INDEX.md`.
 
@@ -819,7 +799,7 @@ Reference run per session (it needs the factor files of `Building_factors.py`).
 | AR / AtP | acquired rights / ability to pay (allocation principles) |
 | LoE | level of exceedance = impact / boundary (> 1: exceeded); LoE AR and LoE AtP against each principle |
 | s_sec | the sector's share of final consumption expenditure (upscaling, Hjalsted Eq. 6) |
-| P1–P5, L1–L5 | pathways (Right-sized dwellings, Occupied stock, Retained stock, Low-carbon materials, Combined) and levers (Dwelling size, Vacancy rate, Overbuild absorption, Building retention, Material carbon) |
+| P1–P5, L1–L9 | pathways (Space per person, Existing stock, Construction, Land, Combined) and levers (Dwelling size, Household occupancy, Vacancy, Overbuild absorption, Building lifetime extension, Material carbon, Construction-stage carbon, Soil-aware planning, Brownfield development) |
 | Moderate / Ambitious | the two settings of every lever |
 | adoption path | the share w(y) of a lever's full strength: full roll-out by 2035 (adopted), by 2030 or by 2045 (sensitivities), full strength from 2027 (TL) |
-| TL, TL1–TL6 | theoretical limit and its six assumptions (No vacancy, No extra space, Minimum space per person, Best-practice materials, Lowest-carbon soils, Urban infill) |
+| TL, TL1–TL10 | theoretical limit and its ten items, each the limit of one lever (No extra space, Historical maximum household size, No vacancy, Overbuild fully absorbed, Building lifetime extension at the limit, Best-practice materials, Zero-emission construction, Lowest-carbon soils, Brownfield maximum; TL10 Minimum space per person) |

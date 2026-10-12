@@ -8,13 +8,6 @@
    "ylabel": "Intensity reduction: cut of\nnon-soil carbon per m\u00b2 (%)",
    "year_min": null,
    "year_max": null
-  },
-  {
-   "title": "",
-   "xlabel": "",
-   "ylabel": "Cumulative LoE AR (log scale)",
-   "year_min": null,
-   "year_max": null
   }
  ],
  "texts": [
@@ -24,30 +17,30 @@
   "$\\mathdefault{40}$",
   "$\\mathdefault{60}$",
   "$\\mathdefault{80}$",
-  "0.25",
-  "0.5",
-  "1",
-  "2",
-  "3",
-  "5",
-  "AR 1",
-  "Cumulative LoE AR (log scale)",
+  "AR budget",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Boundary exceeded (above AR)",
   "Demand reduction: cut of\n2027\u20132050 floor area (%)",
   "Intensity reduction: cut of\nnon-soil carbon per m\u00b2 (%)",
-  "LoE AR = 1",
+  "LoE AR 2",
   "P1",
-  "P1 Right-sized dwellings",
+  "P1 Space per person",
   "P2",
-  "P2 Occupied stock",
+  "P2 Existing stock",
   "P3",
-  "P3 Retained stock",
+  "P3 Construction",
   "P4",
-  "P4 Low-carbon materials",
+  "P4 Land",
   "P5",
   "P5 Combined",
-  "TL Theoretical limit"
+  "TL Theoretical limit",
+  "Within AR only (between AtP and AR)",
+  "Within both budgets (below AtP)"
  ],
  "note": null,
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_zones": true
 }

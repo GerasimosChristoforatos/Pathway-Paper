@@ -58,5 +58,7 @@
  ],
  "note": "a: 2026 is not the base year: it is observed building and carries the one-off population shortfall and the 2026 overbuild. b: decarbonisation, maintenance within 2026\u20132050 and the soil-bearing share; typology shares held.",
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false
 }

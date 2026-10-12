@@ -8,7 +8,7 @@ type: software
 title: >-
   New Zealand new residential floor area and embodied carbon, 2026–2050:
   projection, planetary-boundary layer (AESA) and pathways
-version: 2.0.0
+version: 2.1.0
 authors:
   - family-names: Christoforatos
     given-names: Gerasimos

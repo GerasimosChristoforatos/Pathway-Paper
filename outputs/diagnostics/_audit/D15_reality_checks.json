@@ -173,5 +173,7 @@
  ],
  "note": "Projection 2026\u20132050 against the 1991\u20132025 range (grey band); a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. h: the 2026 \u2192 2027 step of the Reference (2026 observed, 2027 the first model year) against the year-to-year changes in consented floor area, 1992\u20132025.",
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false
 }

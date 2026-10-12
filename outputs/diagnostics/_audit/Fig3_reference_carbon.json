@@ -83,5 +83,7 @@
   "axes 0: Rectangle in the maintenance colour",
   "axes 2: Rectangle in the maintenance colour",
   "legend: Maintenance (B2, B4)"
- ]
+ ],
+ "boundary_drawn": false,
+ "boundary_zones": false
 }

@@ -20,8 +20,8 @@
    "title": "",
    "xlabel": "Cumulative embodied carbon 2026\u20132050 (kt CO\u2082e)",
    "ylabel": "Share of draws at or below",
-   "year_min": 1947.6185280160264,
-   "year_max": 2199.826667883594
+   "year_min": 1900.354891994805,
+   "year_max": 2199.995965302527
   },
   {
    "title": "",
@@ -52,6 +52,8 @@
   "$\\mathdefault{5}$",
   "$\\mathdefault{6}$",
   "$\\mathdefault{7}$",
+  "$\\mathdefault{\u22121}$",
+  "-5,000",
   "0",
   "1,000",
   "1,200",
@@ -69,11 +71,12 @@
   "5,000",
   "600",
   "800",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
   "Cumulative embodied carbon 2026\u20132050 (kt CO\u2082e)",
   "Cumulative level of exceedance, 2026\u20132050, AR",
   "Embodied carbon (kt CO\u2082e per year)",
   "Floor area (Mm\u00b2 per year)",
-  "LoE AR = 1",
   "Monte Carlo 25\u201375%",
   "Monte Carlo 5\u201395%",
   "Monte Carlo median",
@@ -82,7 +85,7 @@
   "Reference (deterministic)",
   "Share of draws at or below",
   "TL Theoretical limit",
-  "TL: P(LoE AR \u2264 1) = 43.4%\n(P(LoE AtP \u2264 1) = 0.0%)",
+  "TL: P(LoE AR \u2264 1) = 99.9%\n(P(LoE AtP \u2264 1) = 0.0%)",
   "a",
   "b",
   "c",
@@ -91,5 +94,7 @@
  ],
  "note": null,
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_zones": true
 }

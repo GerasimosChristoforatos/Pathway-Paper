@@ -31,6 +31,8 @@
   "$\\mathdefault{40}$",
   "$\\mathdefault{60}$",
   "$\\mathdefault{80}$",
+  "$\\mathdefault{\u221220}$",
+  "-5,000",
   "0",
   "0.2",
   "0.5",
@@ -41,7 +43,7 @@
   "15,310",
   "18.4",
   "2",
-  "2,818",
+  "2,924",
   "20",
   "20,000",
   "2026 overbuild",
@@ -51,7 +53,7 @@
   "5,000",
   "70.7",
   "89.6",
-  "AR 0.63 \u00b7 AtP 2.53\n(-87%)",
+  "AR 0.66 \u00b7 AtP 2.63\n(-86%)",
   "AR 2.61 \u00b7 AtP 10.43\n(-46%)",
   "AR 3.44 \u00b7 AtP 13.76\n(-29%)",
   "AR 4.85 \u00b7 AtP 19.39",
@@ -78,7 +80,7 @@
   "Smaller households",
   "TL",
   "TL Theoretical\nlimit\n55 m\u00b2 per new dwelling\n20 m\u00b2 per person\n10.6k dwellings per year",
-  "TL within the AR budget: margin 1,633 kt",
+  "TL within the AR budget: margin 1,527 kt",
   "Vacancy",
   "Within AR only (between AtP and AR)",
   "Within both budgets (below AtP)",
@@ -86,12 +88,13 @@
   "b",
   "c"
  ],
- "note": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). TL = P5 Combined (Moderate) with TL1 No extra space, TL2 Historical maximum household size, TL3 No vacancy, TL4 Overbuild fully absorbed, TL5 Building lifetime extension at the limit, TL6 Best-practice materials, TL7 Zero-emission construction, TL8 Lowest-carbon soils, TL9 Brownfield maximum, TL10 Minimum space per person, each at full strength from 2027. In its zero-building years (released dwellings used, banking rule) every band is zero.",
+ "note": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable); a thought experiment combining instant limits; its early years rely on re-occupying all vacant dwellings and a return to 1991 household size. TL = P5 Combined (Moderate) with TL1 No extra space, TL2 Historical maximum household size, TL3 No vacancy, TL4 Overbuild fully absorbed, TL5 Building lifetime extension at the limit, TL6 Best-practice materials, TL7 Zero-emission construction, TL8 Lowest-carbon soils, TL9 Brownfield maximum, TL10 Minimum space per person, each at full strength from 2027. In 2027 households re-form at the 1991 household size, so almost no new households form that year; released dwellings are brought back into use in proportion to each year's need; 2026 observed.",
  "maintenance_drawn": true,
  "maintenance_where": [
   "axes 2: Rectangle in the maintenance colour",
   "legend: Maintenance (B2, B4), 2026\u20132050"
  ],
  "boundary_drawn": true,
- "boundary_zones": true
+ "boundary_zones": true,
+ "white_segment_edges": 0
 }

@@ -77,6 +77,13 @@ except (ImportError, AttributeError):
 COVER = set()
 
 
+def _superseded(key):
+    """MODEL v2.1.0: a key of the pathway domain (tests/regression_v2_1.py), re-locked by
+    tests/regression_model_v2_1.json; the checks here skip it (neither compared nor counted as covered)."""
+    import regression_v2_1
+    return regression_v2_1.in_domain(key)
+
+
 def _same(expected, actual):
     if isinstance(expected, str):                       # 'NaN', 'Infinity', '-Infinity'
         if not isinstance(actual, (int, float)) or isinstance(actual, bool):
@@ -101,11 +108,15 @@ def _row_key(vals):
 
 
 def _check_csv(old_file, entry):
+    if _superseded((LEGACY.file(old_file), '')):          # a whole file of the MODEL v2.1.0 pathway domain
+        return [], []
     df = pd.read_csv(os.path.join(OUT, LEGACY.file(old_file)))
     bad, missing = [], []
     col = lambda c: LEGACY.column(old_file, c)
     if entry['kind'] == 'csv_by_row_number':
         for c, vals in entry['columns'].items():
+            if _superseded((LEGACY.file(old_file), None, col(c))):
+                continue
             if col(c) not in df.columns:
                 if not LEGACY.removed(old_file, col=c):
                     missing.append(c)
@@ -133,6 +144,8 @@ def _check_csv(old_file, entry):
         ctx = dict(zip(keys, old_cells))                   # the row's captured identifying cells
         cells = [LEGACY.cell(old_file, k, v, ctx) for k, v in zip(keys, old_cells[:len(keys)])] + old_cells[len(keys):]
         new_rk = _row_key(cells)
+        if _superseded((LEGACY.file(old_file), new_rk, None)):
+            continue
         if new_rk not in index:
             if not LEGACY.removed(old_file, row=old_cells):
                 missing.append(rk)
@@ -187,11 +200,15 @@ def _flatten(obj, prefix=''):
 
 
 def _check_json(old_file, entry):
+    if _superseded((LEGACY.file(old_file), '')):
+        return [], []
     with open(os.path.join(OUT, LEGACY.file(old_file))) as f:
         got = _flatten(json.load(f))
     bad, missing = [], []
     for p, e in entry['values'].items():
         q = LEGACY.json_path(old_file, p)
+        if _superseded((LEGACY.file(old_file), q)):
+            continue
         if q not in got:
             if not LEGACY.removed(old_file, path=p):
                 missing.append(p)
@@ -212,6 +229,8 @@ def test_every_captured_number_is_reproduced(old_file):
     assert os.path.exists(new), f'{old_file}: the current file {LEGACY.file(old_file)} does not exist'
     bad, missing = (_check_json if entry['kind'] == 'json' else _check_csv)(old_file, entry)
     bad, unchanged = _apply_v11('files', old_file, 'json' if entry['kind'] == 'json' else entry['kind'], bad)
+    if _superseded((LEGACY.file(old_file), '')):          # a whole file of the MODEL v2.1.0 pathway domain
+        unchanged = []
     assert not missing, f'{old_file}: {len(missing)} captured values absent, e.g. {missing[:5]}'
     assert not bad, f'{old_file}: {len(bad)} values differ beyond 1e-12 relative, e.g. {bad[:5]}'
     assert not unchanged, f'{old_file}: {len(unchanged)} values listed as changed in v1.1 did not change, e.g. {unchanged[:3]}'
@@ -263,6 +282,8 @@ def test_every_added_number_is_reproduced(new_file):
     finally:
         LEGACY = saved
     bad, unchanged = _apply_v11('additions', new_file, 'json' if entry['kind'] == 'json' else entry['kind'], bad)
+    if _superseded((new_file, '')):
+        unchanged = []
     assert not missing, f'{new_file}: {len(missing)} added values absent, e.g. {missing[:5]}'
     assert not bad, f'{new_file}: {len(bad)} values differ beyond 1e-12 relative, e.g. {bad[:5]}'
     assert not unchanged, f'{new_file}: {len(unchanged)} values listed as changed in v1.1 did not change'

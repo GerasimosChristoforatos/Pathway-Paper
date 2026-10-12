@@ -8,6 +8,9 @@
                                         # pathway tests, the numerical regression lock, the
                                         # release checks and the byte manifest; only the pathway
                                         # figures are replaced
+    python run_all.py --export          # also the vector PDF and source-data CSV of every paper, Extended Data
+                                        # and key figure (PATHWAY_EXPORT=1); combinable with the modes above
+                                        # (default: PNG only)
     python run_all.py --quick           # development: Monte Carlo with fewer draws, no
                                         # frozen-technology Monte Carlo or AESA step, regression
                                         # checks of the Monte Carlo skipped; every output and figure
@@ -27,8 +30,8 @@ overbuild_2026 -> scenarios -> reconciliation -> figures_report -> frozen-techno
 (projection, Sensitivity, MonteCarlo, scenarios, boundaries with DECARB_MODE 'none', A4-A5
 held, whole life at construction; data in outputs/data/frozen_technology/, no figures) ->
 pathways -> pathways_mc (the saved Reference draws through P5 and TL) -> sensitivity_tables (grouped
-one-at-a-time tables) -> metrics -> paper (Fig1-Fig6, Tables 1-2, PAPER.md) -> extended_data (ED1-ED10,
-EXTENDED_DATA.md), both from the data files -> results ->
+one-at-a-time tables) -> metrics -> paper (Fig1-Fig6, Tables 1-2, PAPER.md) -> extended_data (ED1-ED13,
+EXTENDED_DATA.md) -> key_figures (K1-K6, KEY_FIGURES.md), all from the data files -> results ->
 assumptions -> pathways_docs (LEVERS_TABLE.md) -> methods_draft (METHODS_DRAFT.md) -> check_outputs -> indexes
 (DIAGNOSTICS.md, outputs/INDEX.md) -> tests, last (incl. the v1.2.1 regression test, which reads
 the frozen-technology data, the regression lock of MODEL v1.0.0, which reads every data file, and
@@ -77,9 +80,13 @@ def tool(name):
     return os.path.join(ROOT, 'tools', f'{name}.py')
 
 
-def pipeline(quick=False):
+def export_env(export):
+    return {'PATHWAY_EXPORT': '1' if export else '0'}
+
+
+def pipeline(quick=False, export=False):
     py = sys.executable
-    q = {'PATHWAY_QUICK': '1'} if quick else {'PATHWAY_QUICK': '0'}
+    q = dict({'PATHWAY_QUICK': '1'} if quick else {'PATHWAY_QUICK': '0'}, **export_env(export))
 
     def run(name, cmd, **extra):
         step(name, cmd, dict(q, **extra))
@@ -87,7 +94,7 @@ def pipeline(quick=False):
     # every figure (and its audit record, figaudit.py) is written by this run; a full run also
     # rewrites every data file and report, so nothing stale survives (outputs/INDEX.md, the tests).
     # A quick run keeps the data: it does not re-run the frozen-technology Monte Carlo and AESA.
-    for d in (layout.PAPER, layout.EXTENDED_DATA, layout.DIAGNOSTICS, layout.FIGURE_AUDIT) + (
+    for d in (layout.PAPER, layout.EXTENDED_DATA, layout.KEY_FIGURES, layout.DIAGNOSTICS, layout.FIGURE_AUDIT) + (
             () if quick else (layout.DATA, layout.REPORTS)):
         shutil.rmtree(d, ignore_errors=True)
     run('building_factors', [py, os.path.join(ROOT, 'Building_factors.py')])
@@ -126,6 +133,7 @@ def pipeline(quick=False):
     # the figures and tables of the paper (PAPER.md) and Extended Data (EXTENDED_DATA.md), from the data files only
     run('paper', [py, os.path.join(ROOT, 'paper.py')])
     run('extended_data', [py, os.path.join(ROOT, 'extended_data.py')])
+    run('key_figures', [py, os.path.join(ROOT, 'key_figures.py')])
     run('results', [py, tool('results')])
     run('assumptions', [py, tool('assumptions')])
     run('pathways_docs', [py, tool('pathways_methods'), '--sections'])
@@ -137,25 +145,28 @@ def pipeline(quick=False):
     run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
 
 
-def pathways_only():
+def pathways_only(export=False):
     """Pathways-only run mode: the projection is unchanged (every number locked by
     tests/test_regression_model_v1.py), so only the pathway layer runs. projection.main() is
     called in memory by pathways.py; no projection output is written; pathways.py overwrites
     only the pathway diagnostics, paper.py and extended_data.py rewrite outputs/paper/ and
     outputs/extended_data/ from the data files."""
     py = sys.executable
-    env = {'PATHWAY_QUICK': '0'}
+    env = dict({'PATHWAY_QUICK': '0'}, **export_env(export))
     step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
     step('pathways_mc', [py, os.path.join(ROOT, 'pathways_mc.py')], env)
     step('sensitivity_tables', [py, tool('sensitivity_tables')], env)
     step('paper', [py, os.path.join(ROOT, 'paper.py')], env)
     step('extended_data', [py, os.path.join(ROOT, 'extended_data.py')], env)
+    step('key_figures', [py, os.path.join(ROOT, 'key_figures.py')], env)
     step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
     step('methods_draft', [py, tool('methods_draft')], env)
     step('indexes', [py, os.path.join(ROOT, 'indexes.py')], env)
     step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
                             os.path.join(ROOT, 'tests', 'test_regression_model_v1.py'),
                             os.path.join(ROOT, 'tests', 'test_regression_model_v2.py'),
+                            os.path.join(ROOT, 'tests', 'test_regression_model_v2_1.py'),
+                            os.path.join(ROOT, 'tests', 'test_mcstats.py'),
                             os.path.join(ROOT, 'tests', 'test_pathways_mc.py'),
                             os.path.join(ROOT, 'tests', 'test_sensitivity_tables.py'),
                             os.path.join(ROOT, 'tests', 'test_release.py'),
@@ -167,9 +178,9 @@ def main(argv=None):
     print('run_all:')
     try:
         if '--pathways-only' in argv:
-            pathways_only()
+            pathways_only(export='--export' in argv)
         else:
-            pipeline(quick='--quick' in argv)
+            pipeline(quick='--quick' in argv, export='--export' in argv)
     except StepFailed as e:
         print(f'\n{e}')
         if interactive():

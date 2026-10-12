@@ -51,10 +51,11 @@ def test_p5_central_and_rows(tables):
     a = runs[(runs['scenario'] == 'REF') & (runs['run'] == 'P5-ambitious')].iloc[0]
     r = t[t['row'] == 'P5 Combined, Ambitious'].iloc[0]
     assert np.isclose(r['carbon_kt'], a['carbon_kt'], rtol=1e-12, atol=0)
-    one = t[t['group'] == 'Ambition of one pathway']
-    assert len(one) == 4
-    # one pathway at Ambitious lies between P5 Moderate and P5 Ambitious
+    one = t[t['group'] == 'Ambition of one lever']
+    assert len(one) == 9 and list(one['row'].str.split().str[0]) == [f'L{k}' for k in range(1, 10)]
+    # one lever at Ambitious (the others Moderate) lies between P5 Moderate and P5 Ambitious
     assert (one['carbon_kt'] < c['carbon_kt']).all() and (one['carbon_kt'] > a['carbon_kt']).all()
+    assert (t['side'] != 'marker').all()
     pop = t[t['group'] == 'Demographics'].set_index('side')
     assert pop.loc['low', 'carbon_kt'] < c['carbon_kt'] < pop.loc['high', 'carbon_kt']
 

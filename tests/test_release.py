@@ -141,16 +141,26 @@ def test_population_paths_reproduce_the_reference():
 
 
 # ---- 2. paper and Extended Data ------------------------------------------------------------------
-VECTOR = [(L.PAPER, h) for h in FP.PAPER] + [(L.EXTENDED_DATA, h) for h in FP.EXTENDED_DATA]
+VECTOR = ([(L.PAPER, h) for h in FP.PAPER] + [(L.EXTENDED_DATA, h) for h in FP.EXTENDED_DATA]
+          + [(L.KEY_FIGURES, h) for h in FP.KEY_FIGURES])
+
+
+def export_run():
+    """MODEL v2.1.0: PNG only by default; run_all.py --export (PATHWAY_EXPORT=1) also writes the vector PDF and the
+    source-data CSV of every paper, Extended Data and key figure."""
+    return os.environ.get('PATHWAY_EXPORT') == '1'
 
 
 @pytest.mark.parametrize('base,h', VECTOR, ids=[h['id'] for _, h in VECTOR])
 def test_paper_and_extended_data_figure_files(base, h):
-    for ext in ('png', 'pdf', 'csv'):
+    p = os.path.join(base, f"{h['file']}.png")
+    assert os.path.exists(p) and os.path.getsize(p) > 0, p
+    for ext in ('pdf', 'csv'):
         p = os.path.join(base, f"{h['file']}.{ext}")
-        assert os.path.exists(p) and os.path.getsize(p) > 0, p
-    src = pd.read_csv(os.path.join(base, f"{h['file']}.csv"))
-    assert list(src.columns) == ['panel', 'series', 'x', 'value', 'unit'] and len(src) > 0
+        assert os.path.exists(p) == export_run(), p
+    if export_run():
+        src = pd.read_csv(os.path.join(base, f"{h['file']}.csv"))
+        assert list(src.columns) == ['panel', 'series', 'x', 'value', 'unit'] and len(src) > 0
 
 
 def _md_check(md, items):
@@ -178,8 +188,9 @@ def test_table2_reports_the_monte_carlo_and_both_probabilities_for_tl():
     for run in ('REF', 'P5-moderate', 'TL'):
         assert t.loc[run, 'carbon_kt_mc_p5'] < t.loc[run, 'carbon_kt'] < t.loc[run, 'carbon_kt_mc_p95']
     s = pd.read_csv(data('pathways/montecarlo_summary.csv')).set_index(['run', 'quantity'])
-    for key in ('AR', 'AtP'):
-        assert t.loc['TL', f'P_LoE_{key}_at_most_1'] == s.loc[('TL', f'LoE_{key}'), 'probability_LoE_at_most_1']
+    for run, k in (('P5-moderate', 'P5'), ('TL', 'TL')):
+        for key in ('AR', 'AtP'):
+            assert t.loc[run, f'P_LoE_{key}_at_most_1'] == s.loc[(k, f'LoE_{key}'), 'probability_LoE_at_most_1']
     runs = pd.read_csv(data('pathways/runs.csv'))
     runs = runs[runs['scenario'] == 'REF'].set_index('run')
     for run in t.index:
@@ -188,6 +199,10 @@ def test_table2_reports_the_monte_carlo_and_both_probabilities_for_tl():
 
 def test_extended_data_md_shows_every_figure():
     _md_check(open(os.path.join(L.EXTENDED_DATA, 'EXTENDED_DATA.md'), encoding='utf-8').read(), FP.EXTENDED_DATA)
+
+
+def test_key_figures_md_shows_every_figure():
+    _md_check(open(os.path.join(L.KEY_FIGURES, 'KEY_FIGURES.md'), encoding='utf-8').read(), FP.KEY_FIGURES)
 
 
 def test_headline_folder_retired():
@@ -207,11 +222,11 @@ def test_every_planned_figure_exists_and_no_other():
     its audit record, and no figure outside the plan is written."""
     plan = planned_figures()
     for fid, base in plan.items():
-        exts = ('png', 'pdf') if fid.startswith(('Fig', 'ED')) else ('png',)
+        exts = ('png', 'pdf') if fid.startswith(('Fig', 'ED', 'K')) and export_run() else ('png',)
         for ext in exts:
             assert os.path.exists(f'{base}.{ext}'), f'{fid}.{ext}'
         assert os.path.exists(os.path.join(L.FIGURE_AUDIT, f'{fid}.json')), fid
-    written = {os.path.splitext(f)[0] for base in (L.PAPER, L.EXTENDED_DATA, L.DIAGNOSTICS)
+    written = {os.path.splitext(f)[0] for base in (L.PAPER, L.EXTENDED_DATA, L.KEY_FIGURES, L.DIAGNOSTICS)
                for _, _, fs in os.walk(base) for f in fs if f.endswith('.png')}
     assert written == set(plan), sorted(written ^ set(plan))
     assert not set(FP.SUPERSEDED) & written
@@ -231,6 +246,21 @@ def test_maintenance_drawn_only_where_allowed():
     assert drawn == set(FP.MAINTENANCE_ALLOWED), sorted(drawn ^ set(FP.MAINTENANCE_ALLOWED))
 
 
+def test_boundary_styling_in_every_planetary_boundary_figure():
+    """MODEL v2.1.0: every planetary-boundary figure (figure_plan.PB_FIGURES) draws the AR / AtP lines and the zones of
+    style.py (figaudit: boundary_drawn, boundary_zones), and no other figure draws a boundary."""
+    drawn, zoned = set(), set()
+    for f in os.listdir(L.FIGURE_AUDIT):
+        rec = json.load(open(os.path.join(L.FIGURE_AUDIT, f)))
+        if rec.get('boundary_drawn'):
+            drawn.add(rec['figure'])
+        if rec.get('boundary_zones'):
+            zoned.add(rec['figure'])
+    pb = set(FP.PB_FIGURES)
+    assert zoned == pb, sorted(zoned ^ pb)
+    assert drawn == pb, sorted(drawn ^ pb)
+
+
 def test_every_output_file_is_indexed_once():
     """outputs/INDEX.md covers every file the run wrote (indexes.FILES), each by exactly one entry,
     and no entry of the registry is stale."""
@@ -240,6 +270,9 @@ def test_every_output_file_is_indexed_once():
     bad = {f: len(indexes.entry(f)) for f in files if len(indexes.entry(f)) != 1}
     assert not bad, bad
     stale = [e[0] for e in indexes.FILES if not any(indexes.fnmatch.fnmatch(f, e[0]) for f in files)]
+    if not export_run():                       # PDFs and source data exist only after run_all.py --export
+        stale = [e for e in stale if not e.endswith(('.pdf', '.csv')) or not e.split('/')[0] in
+                 ('paper', 'extended_data', 'key_figures')]
     assert not stale, stale
     md = open(os.path.join(L.OUT, 'INDEX.md'), encoding='utf-8').read()
     assert 'NOT INDEXED' not in md
@@ -270,6 +303,7 @@ def _reader_texts():
     """(file relative to outputs/, line number, text) of every reader-facing text of the run."""
     md = [os.path.join(d, f) for d, _, fs in os.walk(L.REPORTS) for f in fs if f.endswith('.md')]
     md += [os.path.join(L.PAPER, 'PAPER.md'), os.path.join(L.EXTENDED_DATA, 'EXTENDED_DATA.md'),
+           os.path.join(L.KEY_FIGURES, 'KEY_FIGURES.md'),
            os.path.join(L.PAPER, 'Table1_levers.md'), os.path.join(L.PAPER, 'Table2_results.md'),
            os.path.join(L.DIAGNOSTICS, 'DIAGNOSTICS.md'),
            os.path.join(L.OUT, 'INDEX.md')]
@@ -291,7 +325,7 @@ def test_no_old_vocabulary_in_reader_facing_texts():
     assert not hits, '\n'.join(hits[:50])
 
 
-FIGURE_MODULES = ('paper.py', 'extended_data.py', 'projection.py', 'Diagnostics.py', 'MonteCarlo.py',
+FIGURE_MODULES = ('paper.py', 'extended_data.py', 'key_figures.py', 'projection.py', 'Diagnostics.py', 'MonteCarlo.py',
                   'boundaries.py', 'pathways.py', 'tools/figures_report.py')
 
 

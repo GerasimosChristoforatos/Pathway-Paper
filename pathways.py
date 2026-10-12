@@ -21,8 +21,9 @@ Runs (naming.py vocabulary; the Reference projection unless stated; settings Mod
                       with REPLACEMENT_VARIANT changed, as tools/replacement_scenarios.py)
   sensitivities       P5 with full roll-out by 2030 and by 2045 (all three variants); P3 and P5
                       with the apartments held at r = 1 (L6)
-  theoretical limit   TL = P5 Moderate with TL1-TL10, at full strength from 2027; Shapley over TL1-TL10
-                      (1,024 subsets)
+  theoretical limit   TL = P5 Moderate with TL1-TL10, adopted by 2030, released dwellings re-occupied at a
+                      constant share of need; Shapley over TL1-TL10 (1,024 subsets); the instant TL (every
+                      limit from 2027) a sensitivity
 
 AESA gap: boundaries B_AR, B_AtP by year for the Reference from outputs/data/aesa/annual.csv;
 cumulative LoE = ratio of sums (aesa.cumulative_loe). Back-cast on P5 Moderate,

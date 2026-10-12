@@ -10,7 +10,8 @@ panel functions, labels and saving it reuses, so a key figure can never disagree
   K3  annual emissions of the Reference (Monte Carlo 5-95% band), P1-P5 (Moderate) and TL against the AR and AtP
       boundaries
   K4  the solution space (as Fig6)
-  K5  the sequential waterfall Reference -> P1 -> P2 -> P3 -> P4 (= P5) -> full strength from 2027 -> TL1 ... TL10
+  K5  the sequential waterfall Reference -> P1 -> P2 -> P3 -> P4 (= P5) -> full roll-out by 2030 -> released
+      dwellings re-occupied at a constant share of need -> TL1 ... TL10
       (= TL), each step segmented by its exact demand-band deltas, against the cumulative budgets
   K6  the schematic of levers, pathways and the theoretical limit (as Fig1)
 
@@ -115,16 +116,17 @@ def k3():
     src.add('a', N.METRICS['AtP'] + ' boundary', yrs, d0['B_AtP_kt'].values, 'kt CO2e per year')
     src.add('a', 'TL dwellings built, 2027', 2027, b27, 'dwellings')
     ax.set_yscale('log', nonpositive='clip')
-    ax.set_ylim(20, 3000)
+    ax.set_ylim(5, 3000)
     ax.set_xlim(PP.WINDOW[0] - 0.5, PP.WINDOW[1] + 0.5)
-    P.log_ticks(ax.yaxis, (20, 50, 100, 200, 500, 1000, 2000))
+    P.log_ticks(ax.yaxis, (5, 10, 20, 50, 100, 200, 500, 1000, 2000))
     ax.set_ylabel('Embodied carbon (kt CO₂e per year, log scale)')
     hd, _ = ax.get_legend_handles_labels()
     hd += S.zone_handles()
     fig.legend(handles=hd, loc='lower center', ncol=4, bbox_to_anchor=(0.5, -0.01), frameon=False, fontsize=S.FONT_SMALL)
     fig.tight_layout(rect=(0, 0.2, 1, 1))
     save(fig, h, src)
-    return dict(caption=h['caption'] + ' Log scale. ' + FP.TL_REOCCUPATION_NOTE + f' TL builds {b27:,.0f} dwellings in '
+    share = read_json('pathways/theoretical_limit.json')['indicators']['TL']['reoccupation']['share_of_need']
+    return dict(caption=h['caption'] + ' Log scale. ' + N.tl_caption(share) + f' TL builds {b27:,.0f} dwellings in '
                 f'2027 (at least {bmin:,.0f} a year in 2027–2050). Shading: below AtP (darker green), between AtP and AR '
                 '(light green), above AR (light red, boundary exceeded).')
 
@@ -193,9 +195,11 @@ def k5():
                 f"{r.loc['REF', 'LoE_AR']:.2f}), P5 {r.loc['P4', 'total_carbon_kt']:,.0f} kt ({r.loc['P4', 'LoE_AR']:.2f}), "
                 f"TL {r.loc[N_TL_LAST, 'total_carbon_kt']:,.0f} kt ({r.loc[N_TL_LAST, 'LoE_AR']:.2f}); cumulative AR "
                 f"budget {bar_ar:,.0f} kt, AtP {bar_atp:,.0f} kt. A segment above its step's start marks a band that grows at "
-                'that step (a lever shifts building between bands). From the reoccupation step on, the 2026-overbuild '
-                'band also carries the reoccupation of released dwellings (vacancy, larger households and the absorbed '
-                'overbuild), in proportion to each year\'s need. ' + FP.TL_REOCCUPATION_NOTE)
+                'that step (a lever shifts building between bands). From the re-occupation step on, the 2026-overbuild '
+                'band also carries the re-occupation of released dwellings (zero vacancy, the household-size change and '
+                'the absorbed overbuild) at a constant share of each year\'s need. '
+                + N.tl_caption(read_json('pathways/theoretical_limit.json')['indicators']['TL']['reoccupation']
+                               ['share_of_need']))
 
 
 def k6():

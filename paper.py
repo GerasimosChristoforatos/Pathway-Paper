@@ -148,7 +148,7 @@ def mc_summary():
 
 
 def mc_key(run):
-    return {REF: 'REF', 'P5-moderate': 'P5', 'TL': 'TL'}[run]
+    return {REF: 'REF', 'P5-moderate': 'P5', 'TL': 'TL', 'TL-from2027': 'TL_from2027'}[run]
 
 
 def budget_ratio(r):
@@ -262,7 +262,7 @@ def fig1(h=None, base=None):
     heading(1.0, 32.0, 'Pathways (levers combined; Moderate setting, full roll-out by 2035)')
     row(27.5, [(f"{pw} {N.PATHWAYS[pw]} ({'+'.join(N.PATHWAY_LEVERS.get(pw, ('L1–L9',)))})",
                 dict(color=S.PATHWAY[pw], fontweight='bold')) for pw in PATHWAY_IDS])
-    heading(1.0, 21.5, 'Theoretical limit TL = P5 with TL1–TL10, each at its limit from 2027', color=S.TL)
+    heading(1.0, 21.5, 'Theoretical limit TL = P5 with TL1–TL10, each at its limit, adopted by 2030', color=S.TL)
     row(17.0, [(f"TL{k} {N.TL[f'TL{k}']}", dict(color=S.TL)) for k in range(1, 5)])
     row(12.5, [(f"TL{k} {N.TL[f'TL{k}']}", dict(color=S.TL)) for k in range(5, 8)])
     row(8.0, [(f"TL{k} {N.TL[f'TL{k}']}", dict(color=S.TL)) for k in range(8, 11)])
@@ -601,7 +601,8 @@ FIG5_RUNS = [(REF, S.REFERENCE, S.LW_BOLD), ('P5-moderate', S.PATHWAY['P5'], S.L
 
 
 def tl_built_2027(an):
-    """TL dwellings built in 2027 and the 2027-2050 minimum (proportional reoccupation: positive in every year)."""
+    """TL dwellings built in 2027 and the 2027-2050 minimum (constant-share reoccupation: positive in every year of
+    the deterministic TL, asserted by pathways.compute_tl and here)."""
     d = an[an['run'] == 'TL'].set_index('year')['dwellings_built']
     late = d.loc[2027:WINDOW[1]]
     check((late > 0).all(), 'TL: dwellings built <= 0 in a year of 2027-2050')
@@ -644,10 +645,10 @@ def fig5():
     src.add('a', N.METRICS['AtP'] + ' boundary', yrs, d0['B_AtP_kt'].values, 'kt CO2e per year')
     src.add('a', 'TL dwellings built, 2027', 2027, b27, 'dwellings')
     a.set_yscale('log', nonpositive='clip')
-    a.set_ylim(20, 8000)
+    a.set_ylim(5, 8000)
     a.set_xlim(WINDOW[0] - 0.5, WINDOW[1] + 0.5)
     a.set_ylabel('Embodied carbon and boundaries\n(kt CO₂e per year, log scale)')
-    P.log_ticks(a.yaxis, (20, 50, 100, 200, 500, 1000, 2000))
+    P.log_ticks(a.yaxis, (5, 10, 20, 50, 100, 200, 500, 1000, 2000))
     hd, lb = a.get_legend_handles_labels()
     hd.append(Patch(facecolor=S.REFERENCE, alpha=0.16, label='Monte Carlo 5–95% (each run)'))
     a.legend(handles=hd, loc='upper right', ncol=3, fontsize=S.FONT_MIN)
@@ -662,10 +663,11 @@ def fig5():
     check(math.isclose(ref - sum(sp[p] for p in ('P1', 'P2', 'P3', 'P4')), p5, rel_tol=1e-12),
           'Fig5: the pathway Shapley values do not add up to Reference - P5')
     tl_ids = [f'TL{k}' for k in range(1, 11)]
-    f27 = float(st['from2027'])
-    fre = float(st['reoccupation'])
+    f27 = float(st['by2030'])                           # TL's faster adoption (separate line)
+    fre = float(st['reoccupation'])                     # constant-share reoccupation (separate line)
+    share = float(tl['indicators']['TL']['reoccupation']['share_of_need'])
     check(math.isclose(p5 - f27 - fre - sum(st[t] for t in tl_ids), tlr, rel_tol=1e-12),
-          'Fig5: P5 - full strength from 2027 - TL1..TL10 does not reach TL')
+          'Fig5: P5 - faster adoption - reoccupation - TL1..TL10 does not reach TL')
     w = 0.66
     labels, x, prev = [], 0, ref
 
@@ -674,7 +676,10 @@ def fig5():
         q = mcs.loc[(mc_key(run), 'LoE_AR')]
         b.errorbar(xx, v, yerr=[[v - q['p5']], [q['p95'] - v]], color=S.INK if run != 'TL' else '#8C8C8C',
                    capsize=2.0, lw=S.LW_THIN, capthick=S.LW_THIN)
-        b.text(xx + w / 2 + 0.04, q['p95'], f'{v:.2f}', ha='left', va='bottom', fontsize=S.FONT_MIN)
+        if run == 'TL':                    # left of the bar: the budget labels sit to its right
+            b.text(xx - w / 2 - 0.04, q['p95'], f'{v:.2f}', ha='right', va='bottom', fontsize=S.FONT_MIN)
+        else:
+            b.text(xx + w / 2 + 0.04, q['p95'], f'{v:.2f}', ha='left', va='bottom', fontsize=S.FONT_MIN)
         labels.append(lab)
         src.add('b', lab, 'total', v, 'cumulative LoE AR 2026-2050')
         src.add('b', lab + ', Monte Carlo 5%', 'total', q['p5'], 'cumulative LoE AR 2026-2050')
@@ -696,9 +701,9 @@ def fig5():
     x += 1
     total(x, p5, S.PATHWAY['P5'], f"P5 {N.PATHWAYS['P5']}", 'P5-moderate')
     x += 1
-    step(x, p5, f27, S.PATHWAY['P5'], N.ADOPTION['from2027'].capitalize())
+    step(x, p5, f27, S.PATHWAY['P5'], N.TL_FASTER_ADOPTION[0].upper() + N.TL_FASTER_ADOPTION[1:])
     x += 1
-    step(x, p5 - f27, fre, S.PATHWAY['P5'], 'Released dwellings reoccupied in proportion to need')
+    step(x, p5 - f27, fre, S.PATHWAY['P5'], N.TL_REOCCUPATION_LINE.capitalize())
     prev = p5 - f27 - fre
     for t in tl_ids:
         x += 1
@@ -759,7 +764,7 @@ def fig5():
     rs = g.get('residual', {})
     q = {run: {k: mcs.loc[(mc_key(run), k)] for k in ('carbon_kt', 'LoE_AR', 'LoE_AtP')} for run in (REF, 'P5-moderate', 'TL')}
     q_p5 = {k: float(mcs.loc[('P5', f'LoE_{k}'), 'probability_LoE_at_most_1']) for k in ('AR', 'AtP')}
-    num = dict(ref=ref, p5=p5, tl=tlr, from2027=f27, reoccupation=fre, k_atp=k_atp, q=q, p_tl=q_tl, p_p5=q_p5,
+    num = dict(ref=ref, p5=p5, tl=tlr, faster_adoption=f27, reoccupation=fre, reoccupation_share=share, k_atp=k_atp, q=q, p_tl=q_tl, p_p5=q_p5,
                dw=rs.get('dwellings_not_built_2027_2050', float('nan')), within_AR=bool(g['within_AR']),
                margin_AR_kt=float(g.get('margin_AR_kt', float('nan'))),
                res=rs.get('new_residents_housed_in_existing_dwellings', float('nan')),
@@ -770,14 +775,16 @@ def fig5():
     cap = (h['caption'] + " (a) Annual embodied carbon against the annual AR and AtP boundaries (log scale), with the "
            'Monte Carlo 5–95% band of each run (5,000 Latin-hypercube draws of the Reference, each also run through P5 '
            'and TL with the levers applied identically and the TL targets held at their absolute values). '
-           + FP.TL_REOCCUPATION_NOTE + f" TL builds {b27:,.0f} dwellings in 2027 (at least {bmin:,.0f} a year in "
+           + N.tl_caption(share) + f" TL builds {b27:,.0f} dwellings in 2027 (at least {bmin:,.0f} a year in "
            '2027–2050). In 2050 the Reference emits '
            f"{num['a50'][REF]:,.0f} kt, P5 {num['a50']['P5-moderate']:,.0f} kt and TL {num['a50']['TL']:,.0f} kt "
            f"against an AR boundary of {num['ar50']:,.0f} kt and an AtP boundary of {num['atp50']:,.0f} kt. "
            f"(b) Order-free attribution (Shapley values, exact) of the cumulative LoE AR 2026–2050: the four pathways "
-           f"(Moderate; they add up exactly to Reference − P5), two separate lines (not Shapley players): starting P5 at "
-           f"full strength in 2027 ({f27:.2f}) and bringing its released dwellings back into use in proportion to need "
-           f"({fre:+.2f}; the TL base), and TL1–TL10 relative to that base (1,024 subsets; they add up exactly to base − TL). Right axis: the same quantity as a cumulative AtP "
+           f"(Moderate; they add up exactly to Reference − P5), two separate lines (not Shapley players): TL's faster "
+           f"adoption, P5 with full roll-out by 2030 instead of 2035 ({-f27:+.2f} LoE AR), and re-occupying P5's released "
+           f"dwellings at a constant {100 * share:.0f}% of each year's need ({-fre:+.2f}; the TL base), and TL1–TL10 "
+           f"relative to that base (1,024 subsets; they add up exactly to base − TL). Right axis: the same quantity "
+           f"as a cumulative AtP "
            f"level of exceedance (×{k_atp:.2f}; the budgets of every run are the Reference's). Whiskers: Monte Carlo "
            f"5–95% (Reference {q[REF]['LoE_AR']['p5']:.2f}–{q[REF]['LoE_AR']['p95']:.2f}, P5 "
            f"{q['P5-moderate']['LoE_AR']['p5']:.2f}–{q['P5-moderate']['LoE_AR']['p95']:.2f}, TL "
@@ -966,12 +973,14 @@ def table2():
 # PAPER.md
 # ============================================================
 def tl_gap_sentence(sh, f27, fre):
-    """The gap between P5 and TL by its two largest Shapley contributions (TL1-TL10; values from the data)."""
+    """The gap between P5 and TL by its two largest Shapley contributions (TL1-TL10) and the two separate lines
+    (TL's faster adoption; constant-share reoccupation); values from the data."""
     top = sorted((k for k in sh if k.startswith('TL')), key=lambda k: -sh[k])[:2]
     a, b = top
     return (f"Of the gap between P5 and TL, the largest contributions are {a} {N.TL[a].lower()} ({sh[a]:.2f} of LoE AR) "
-            f"and {b} {N.TL[b].lower()} ({sh[b]:.2f}); starting at full strength in 2027 adds {f27:.2f} and bringing "
-            f"P5's released dwellings back into use in proportion to need {fre:+.2f}.")
+            f"and {b} {N.TL[b].lower()} ({sh[b]:.2f}); TL's faster adoption (by 2030 instead of 2035) lowers it by "
+            f"{f27:.2f}, and re-occupying released dwellings gradually, at a constant share of each year's need, "
+            f"{'raises' if fre < 0 else 'lowers'} it by {abs(fre):.2f}.")
 
 
 def findings(rr, t2):
@@ -1000,15 +1009,17 @@ def findings(rr, t2):
          f"{-f4['runs']['P5-moderate']['d_carbon']:.0f}%: the cumulative LoE AR falls from {f5['ref']:.2f} to "
          f"{f5['p5']:.2f} (Monte Carlo {q['P5-moderate']['LoE_AR']['p5']:.2f}–{q['P5-moderate']['LoE_AR']['p95']:.2f}; "
          f"P(LoE AR ≤ 1) = {100 * f5['p_p5']['AR']:.0f}%), far above the acquired-rights budget.", 'data/pathways/runs.csv, data/pathways/montecarlo_summary.csv'),
-        (f"The hyper-optimistic theoretical limit (TL; a thought experiment combining instant limits, not a pathway) "
+        (f"The hyper-optimistic theoretical limit (TL; a thought experiment with every lever at its limit, adopted by "
+         f"2030, not a pathway) "
          f"reaches LoE AR {f5['tl']:.2f} (Monte Carlo {q['TL']['LoE_AR']['p5']:.2f}–{q['TL']['LoE_AR']['p95']:.2f}; "
          f"P(LoE AR ≤ 1) = {100 * f5['p_tl']['AR']:.1f}%)"
          + (f", within the acquired-rights budget by {f5['margin_AR_kt']:,.0f} kt," if f5['within_AR'] else
             f"; reaching the AR budget means not building {f5['dw']:,.0f} dwellings in 2027–2050,")
-         + f" but LoE AtP {t.loc['TL', 'LoE_AtP']:.1f} (P(LoE AtP ≤ 1) = {100 * f5['p_tl']['AtP']:.0f}%); its early "
-         'years rely on re-occupying all vacant dwellings and a return to the 1991 household size.',
+         + f" but LoE AtP {t.loc['TL', 'LoE_AtP']:.1f} (P(LoE AtP ≤ 1) = {100 * f5['p_tl']['AtP']:.0f}%); it re-occupies "
+         f"all vacant dwellings and returns to the 1991 household size, the released dwellings meeting "
+         f"{100 * f5['reoccupation_share']:.0f}% of each year's need.",
          'data/pathways/runs.csv, data/pathways/montecarlo_summary.csv, data/pathways/theoretical_limit.json'),
-        (tl_gap_sentence(rr['_tl_shapley'], f5['from2027'], f5['reoccupation']),
+        (tl_gap_sentence(rr['_tl_shapley'], f5['faster_adoption'], f5['reoccupation']),
          'data/pathways/shapley_theoretical_limit.csv'),
         (f"No cut of 2027–2050 floor area or carbon per m² reaches the ability-to-pay budget: the observed 2026 cohort "
          f"alone gives a cumulative LoE AtP of {f6['a0'] / f6['atp_one']:.2f}." if not f6['atp_reachable'] else

@@ -10,7 +10,7 @@
    "year_max": 2050.0
   },
   {
-   "title": "Dwellings built, all categories (banking rule: never negative)",
+   "title": "Dwellings built and re-occupied, all categories",
    "xlabel": "",
    "ylabel": "Dwellings (thousand per year)",
    "year_min": 2026.0,
@@ -46,17 +46,22 @@
   "Acquired rights (AR)",
   "Annual carbon",
   "Dwellings (thousand per year)",
-  "Dwellings built, all categories (banking rule: never negative)",
+  "Dwellings built and re-occupied, all categories",
   "Embodied carbon (kt CO\u2082e per year)",
   "P5 Combined, Moderate",
+  "P5 Combined, Moderate: built",
   "TL Theoretical limit",
-  "TL: no new construction\n2027\u20132036\n(released dwellings\nabsorbed)",
+  "TL Theoretical limit: built",
+  "TL, all limits from 1 January 2027 (instant)",
+  "TL: need before any release",
+  "TL: re-occupied (37% of need)",
   "a",
   "b"
  ],
- "note": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: all assumptions at full strength from 1 January 2027, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
+ "note": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at its limit, adopted by 2030, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable). TL: every lever at its limit, adopted by 2030; dwellings released by zero vacancy, the household-size change and the 2026 overbuild are re-occupied gradually, meeting a constant share (~37%) of each year's need; 2026 observed. Dashed: TL, all limits from 1 January 2027 (instant) (sensitivity, same rule).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,
- "boundary_zones": true
+ "boundary_zones": true,
+ "white_segment_edges": 0
 }

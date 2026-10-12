@@ -1,6 +1,6 @@
 """Pathway Monte Carlo (MODEL v2.1.0; pathways_mc.py).
 
-* The central draw reproduces the deterministic P5 Combined (Moderate) and TL runs to 1e-9 (every year
+* The central draw reproduces the deterministic P5 Combined (Moderate), TL and instant TL runs to 1e-9 (every year
   with building and the 2026-2050 totals; zero-building years zero by the model's tolerances).
 * The re-run carbon-factor bootstrap reproduces the saved setup exactly (no new random numbers).
 * The Reference of the pathway Monte Carlo is the AESA Monte Carlo: its cumulative LoE AR and AtP
@@ -33,10 +33,10 @@ def summary():
 def test_central_draw_reproduces_the_deterministic_runs():
     import MonteCarlo as MC
     import pathways_mc as PM
-    ctx, params, pT, p5, tl = PM.deterministic()
+    ctx, params, pT, p5, tl, ti = PM.deterministic()
     with contextlib.redirect_stdout(io.StringIO()):
         su = MC.build_setup(MC.MC_SCENARIOS[0][1])
-    worst = PM.check_central(su, ctx, params, pT, p5, tl)       # raises SystemExit otherwise
+    worst = PM.check_central(su, ctx, params, pT, p5, tl, ti)       # raises SystemExit otherwise
     assert max(worst.values()) < 1e-9
     a13, red13, a45 = PM.bootstrap_factors(su)                  # raises unless the bootstrap is reproduced
     assert a13.shape == a45.shape == (MC.N_BOOT, len(su['typ']))

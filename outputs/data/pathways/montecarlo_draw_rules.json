@@ -7,5 +7,112 @@
   "Apartments": 2705
  },
  "L2_target_vs_montecarlo_high_variant_max_abs_diff": 4.440892098500626e-16,
- "n_draws": 5000
+ "n_draws": 5000,
+ "reoccupation": {
+  "rule": "constant share s = min(R, G+) / G+ of each year's need; reoccupied never ahead of the cumulative release nor above the year's need, the shortfall carried forward (pathways.reoccupation)",
+  "TL": {
+   "share_percentiles": {
+    "p0": 0.14827102238745354,
+    "p5": 0.2229352252572636,
+    "p25": 0.30277131545657543,
+    "p50": 0.3731780714371449,
+    "p75": 0.46943685636084476,
+    "p95": 0.6865221072641616,
+    "p100": 1.0
+   },
+   "draws_R_exceeds_G_plus": 39,
+   "surplus_vacant_2050_where_R_exceeds_G_plus": {
+    "p0": 605.7635462340259,
+    "p5": 2182.184032717289,
+    "p25": 11977.61967710605,
+    "p50": 25643.980964024086,
+    "p75": 49171.45472302158,
+    "p95": 94216.61560039844,
+    "p100": 128771.87254313575
+   },
+   "draws_with_nonpositive_need_year": 4,
+   "nonpositive_need_dwellings_where_any": {
+    "p0": 1.7371585728815262,
+    "p5": 2.6817213822798296,
+    "p25": 6.459972619873042,
+    "p50": 8.683940531636836,
+    "p75": 9.913426032332609,
+    "p95": 11.304919483362573,
+    "p100": 11.652792846120064
+   },
+   "draws_release_constraint_binds": 0,
+   "release_constraint_binding_years_percentiles": {
+    "p0": 0.0,
+    "p5": 0.0,
+    "p25": 0.0,
+    "p50": 0.0,
+    "p75": 0.0,
+    "p95": 0.0,
+    "p100": 0.0
+   },
+   "draws_need_cap_binds": 0,
+   "draws_with_a_zero_building_year": 42,
+   "dwellings_built_min_2027_2050_percentiles": {
+    "p0": 0.0,
+    "p5": 248.8715911091191,
+    "p25": 576.8103433723352,
+    "p50": 886.9126267605984,
+    "p75": 1128.086322786582,
+    "p95": 1560.817220740219,
+    "p100": 16833.771695538773
+   }
+  },
+  "TL_from2027": {
+   "share_percentiles": {
+    "p0": 0.16666250679059152,
+    "p5": 0.28158673232781917,
+    "p25": 0.36367054415957667,
+    "p50": 0.4359913025912188,
+    "p75": 0.5330699091417274,
+    "p95": 0.741048213333339,
+    "p100": 1.0
+   },
+   "draws_R_exceeds_G_plus": 49,
+   "surplus_vacant_2050_where_R_exceeds_G_plus": {
+    "p0": 360.1988651349384,
+    "p5": 969.5992809771099,
+    "p25": 9623.828365231137,
+    "p50": 27981.877568873693,
+    "p75": 51124.51240173078,
+    "p95": 95414.71537750572,
+    "p100": 136250.41102323358
+   },
+   "draws_with_nonpositive_need_year": 41,
+   "nonpositive_need_dwellings_where_any": {
+    "p0": 0.041214734155801125,
+    "p5": 0.9075991207791958,
+    "p25": 3.839076075790217,
+    "p50": 8.169250413338887,
+    "p75": 12.021263041271595,
+    "p95": 15.258095115641481,
+    "p100": 15.856154937166139
+   },
+   "draws_release_constraint_binds": 0,
+   "release_constraint_binding_years_percentiles": {
+    "p0": 0.0,
+    "p5": 0.0,
+    "p25": 0.0,
+    "p50": 0.0,
+    "p75": 0.0,
+    "p95": 0.0,
+    "p100": 0.0
+   },
+   "draws_need_cap_binds": 0,
+   "draws_with_a_zero_building_year": 89,
+   "dwellings_built_min_2027_2050_percentiles": {
+    "p0": 0.0,
+    "p5": 26.822844789381865,
+    "p25": 224.78968443681111,
+    "p50": 475.9123382282801,
+    "p75": 656.9619271335423,
+    "p95": 825.8990873597895,
+    "p100": 1009.1491109182859
+   }
+  }
+ }
 }

@@ -12,15 +12,19 @@ A bottom-up, demand-driven model of the new residential floor area New Zealand b
   sustainability assessment for climate change; the carbon 2026–2050 against the sector's
   share of a global carrying capacity under two allocation principles, acquired rights (AR) and
   ability to pay (AtP), reported side by side and never averaged.
-* **Pathways** (`levers.py`, `pathways.py`): five levers in five pathways (P1 Right-sized
-  dwellings, P2 Occupied stock, P3 Retained stock, P4 Low-carbon materials, P5 Combined) at
-  Moderate and Ambitious settings, their Shapley attribution, the back-cast to the AR budget and
-  a hyper-optimistic theoretical limit (TL = P5 Moderate with TL1–TL7 from 2027; a thought
-  experiment, not a pathway). The pathway Monte Carlo runs the 5,000 Reference draws through P5
-  and TL (`pathways_mc.py`). The paper shows the Reference, P1–P5 at the Moderate setting with
-  full roll-out by 2035, and TL; every other setting is Extended Data.
+* **Pathways** (`levers.py`, `pathways.py`): nine levers in four families (P1 Space per person:
+  L1 Dwelling size, L2 Household occupancy; P2 Existing stock: L3 Vacancy, L4 Overbuild absorption,
+  L5 Building lifetime extension; P3 Construction: L6 Material carbon, L7 Construction-stage carbon;
+  P4 Land: L8 Soil-aware planning, L9 Brownfield development) and P5 Combined, at Moderate and
+  Ambitious settings; only population growth is untargeted. Their Shapley attribution, the
+  back-cast to the AR budget and a hyper-optimistic theoretical limit (TL = P5 Moderate with
+  TL1–TL10 at full strength from 2027, each the limit of one lever; a thought experiment, not a
+  pathway). The pathway Monte Carlo runs the 5,000 Reference draws through P5 and TL
+  (`pathways_mc.py`) and analyses what drives them (SRC, PRCC, LOWESS, conditional TL; `mcstats.py`).
+  The paper shows the Reference, P1–P5 at the Moderate setting with full roll-out by 2035, and TL;
+  every other setting is Extended Data; the story in six figures is in the key figures.
 
-Release **MODEL v2.0.0** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
+Release **MODEL v2.1.0** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
 
 ![Fig1. How the model works](outputs/paper/Fig1_model_schematic.png)
 
@@ -29,7 +33,8 @@ Release **MODEL v2.0.0** (see [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.
 | what | where |
 |---|---|
 | **Paper**: headline findings, Fig1–Fig6 with captions, Table 1 (levers and TL assumptions) and Table 2 (results with Monte Carlo intervals) | [outputs/paper/PAPER.md](outputs/paper/PAPER.md) |
-| **Extended Data**: ED1–ED10 (grouped sensitivity tornados and paths, Monte Carlo, Ambitious settings, roll-out timing, the TL attribution, single levers, Low / High replacement) | [outputs/extended_data/EXTENDED_DATA.md](outputs/extended_data/EXTENDED_DATA.md) |
+| **Extended Data**: ED1–ED13 (grouped sensitivity tornados and paths, Monte Carlo, Ambitious settings, roll-out timing, the TL attribution, single levers, Low / High replacement, Monte Carlo insights) | [outputs/extended_data/EXTENDED_DATA.md](outputs/extended_data/EXTENDED_DATA.md) |
+| **Key figures**: K1–K6 (demand bands, Reference carbon, annual emissions against the boundaries, solution space, the sequential band waterfall, the schematic) | [outputs/key_figures/KEY_FIGURES.md](outputs/key_figures/KEY_FIGURES.md) |
 | **Diagnostics**: every other figure, by group, with notes | [outputs/diagnostics/DIAGNOSTICS.md](outputs/diagnostics/DIAGNOSTICS.md) |
 | Grouped one-at-a-time sensitivity tables (Reference carbon, P5 carbon, planetary boundary, replacement variants) | [outputs/data/sensitivity/](outputs/data/sensitivity/) |
 | Results summary | [outputs/reports/RESULTS.md](outputs/reports/RESULTS.md) |
@@ -60,6 +65,7 @@ python -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt        # pinned; Python 3.11
 python run_all.py                      # full run: the only basis for reported results
 python run_all.py --pathways-only      # the pathway layer only (the projection is unchanged)
+python run_all.py --export             # also vector PDF and source-data CSV of the paper, Extended Data and key figures (default: PNG only)
 python run_all.py --quick              # development only: outputs marked "QUICK RUN, not for reporting"
 ```
 
@@ -134,12 +140,12 @@ prints its name and the log to read, and the run stops (exit code 1 from the com
 | path | what |
 |---|---|
 | `projection.py` | the baseline projection: data, calibration, projection, figures D01–D03, D08, D09, D13 |
-| `paper.py`, `extended_data.py` | the paper (Fig1–Fig6, Tables 1–2, PAPER.md) and Extended Data (ED1–ED10, EXTENDED_DATA.md), from the data files only |
+| `paper.py`, `extended_data.py`, `key_figures.py` | the paper (Fig1–Fig6, Tables 1–2, PAPER.md), Extended Data (ED1–ED13, EXTENDED_DATA.md) and the key figures (K1–K6, KEY_FIGURES.md), from the data files only |
 | `engine.py` | the forward model (pure functions), shared by the projection, the Monte Carlo and the pathways |
 | `Building_factors.py`, `events.py` | case-study carbon factors; time-resolved maintenance (B2, B4) and committed emissions |
 | `Diagnostics.py`, `Sensitivity.py`, `MonteCarlo.py`, `validation.py`, `gap_2026.py` | diagnostics, one-at-a-time sensitivities (data only), Monte Carlo and Sobol indices, rolling-origin hindcast, 2026 gap |
 | `aesa.py`, `boundaries.py` | planetary-boundary layer (AESA): boundaries, levels of exceedance |
-| `levers.py`, `pathways.py`, `pathways_mc.py` | levers, pathways, attribution, back-cast, solution space, theoretical limit; the pathway Monte Carlo |
+| `levers.py`, `pathways.py`, `pathways_mc.py`, `mcstats.py` | levers, pathways, attribution, back-cast, solution space, theoretical limit; the pathway Monte Carlo and its insight statistics (numpy / scipy; checked against statsmodels) |
 | `indexes.py` | DIAGNOSTICS.md and outputs/INDEX.md |
 | `naming.py`, `style.py`, `plotting.py`, `figaudit.py`, `layout.py`, `figure_plan.py` | vocabulary and the renaming map; palette, sizes and saving; shared drawing rules; figure audit; output layout; figure plan |
 | `tools/` | reports (overbuild, variants, reconciliation, reality checks, metrics, results, assumptions, methods draft, levers table), the grouped sensitivity tables, output checks, design documents, palette check |

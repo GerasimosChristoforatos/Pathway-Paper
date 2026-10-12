@@ -183,12 +183,12 @@ a.plot(xx / 1e3, lr.intercept + lr.slope * xx, color=S.INK, lw=S.LW,
        label=f'r = {lr.rvalue:+.2f}, p = {lr.pvalue:.0e}')
 late = [y for y in YH if y > HR['years_fit'][-1]]
 dP_l, dS_l = pop_h.diff().loc[late], S_h.diff().loc[late]
-a.scatter(dP_l / 1e3, dS_l, facecolor='none', edgecolor=S.ATP, s=22, zorder=4, lw=S.LW_THIN,
+a.scatter(dP_l / 1e3, dS_l, facecolor='none', edgecolor=S.ACCENT_ORANGE, s=22, zorder=4, lw=S.LW_THIN,
           label=f'{late[0]}–{late[-1] % 100:02d}: consent-derived, no census check')
 for y in (2024, 2025):                          # label the left point to the left, the right one to the right
     left = dP_l[y] <= dP_l[[2024, 2025]].min()
     a.annotate(str(y), (dP_l[y] / 1e3, dS_l[y]), xytext=(-4 if left else 4, 4), textcoords='offset points',
-               ha='right' if left else 'left', fontsize=S.FONT_MIN, color=S.ATP)
+               ha='right' if left else 'left', fontsize=S.FONT_MIN, color=S.ACCENT_ORANGE)
 a.axhline(0, color=S.INK, lw=S.LW_THIN)
 a.set_xlabel('Population growth (thousand per year)')
 a.set_ylabel('Change in household size (persons per household)')
@@ -199,7 +199,7 @@ a = ax[1]
 cons_all = (B['hist_total_units'] + B['hist_rv_units']).shift(1)
 ratio = (B['hist_hh_dhe'].diff() / cons_all).loc[YH]
 bases = [1991, 1996, 2001, 2006, 2013, 2018]
-a.bar(YH, ratio, color=[S.ATP if y > 2018 else S.MUTED for y in YH], width=0.8)
+a.bar(YH, ratio, color=[S.ACCENT_ORANGE if y > 2018 else S.MUTED for y in YH], width=0.8)
 for y in bases:
     a.axvline(y + 0.5, color=S.INK, lw=S.LW_THIN, ls=':')
 _r19 = ratio.loc[2019:]
@@ -208,7 +208,7 @@ a.set_xlim(1991, 2026)
 a.set_ylim(0, 1.45)
 P.panel(a, 'b', 'Household growth per consent')
 a.legend(handles=[Patch(color=S.MUTED, label='census-benchmarked'),
-                  Patch(color=S.ATP, label='2019 on: consent-derived')], loc='upper left', ncol=2,
+                  Patch(color=S.ACCENT_ORANGE, label='2019 on: consent-derived')], loc='upper left', ncol=2,
          fontsize=S.FONT_MIN)
 R19 = (f'{_r19.min():.3f}–{_r19.max():.3f}' if _r19.max() - _r19.min() >= 5e-4 else f'flat at {_r19.iloc[0]:.3f}')
 
@@ -294,11 +294,11 @@ a.plot(FY, 100 * _v_imp, color=S.INK, lw=S.LW, ls='--',
 meas = cen['empty'].notna()
 for y, v in knots.items():
     filled = bool(meas.get(y, False))
-    a.scatter(y, 100 * v, s=12, zorder=5, color=S.ATP if filled else 'white', edgecolor=S.ATP, lw=S.LW_THIN)
+    a.scatter(y, 100 * v, s=12, zorder=5, color=S.ACCENT_ORANGE if filled else 'white', edgecolor=S.ACCENT_ORANGE, lw=S.LW_THIN)
     a.scatter(y, 100 * cen.loc[y, 'unoccupied'] / cen.loc[y, 'total_private'], marker='x', color=S.MUTED, s=12,
               lw=S.LW_THIN)
-a.scatter([], [], color=S.ATP, s=12, label='Census empty (published)')
-a.scatter([], [], color='white', edgecolor=S.ATP, s=12, label='Census empty (2013 split applied)')
+a.scatter([], [], color=S.ACCENT_ORANGE, s=12, label='Census empty (published)')
+a.scatter([], [], color='white', edgecolor=S.ACCENT_ORANGE, s=12, label='Census empty (2013 split applied)')
 a.scatter([], [], marker='x', color=S.MUTED, s=12, label='All unoccupied (rejected)')
 P.split(a)
 a.set_xlim(1985, 2050)
@@ -309,10 +309,10 @@ P.panel(a, 'a', 'Vacancy: empty homes only')
 
 a = fig.add_subplot(gs[0, 1])
 a.plot(SC['stock'].index, SC['stock'] / M6, color=S.INK, lw=S.LW, label='Dwelling stock')
-P.history_estimated(a, hh_h, M.S_ANCHOR_YEAR, M6, color=S.ATP, label='Households', k=B['hh_rebase_k'])
+P.history_estimated(a, hh_h, M.S_ANCHOR_YEAR, M6, color=S.ACCENT_ORANGE, label='Households', k=B['hh_rebase_k'])
 a.plot(FY, (SF['stock'] + SF['stock_join']) / M6, color=S.INK, lw=S.LW, ls='--',
        label='Stock, projection (incl. the unabsorbed 2026 overbuild)')
-a.plot(FY, B['households_forecast']['50th'] / M6, color=S.ATP, lw=S.LW, ls='--', label='Households, projection')
+a.plot(FY, B['households_forecast']['50th'] / M6, color=S.ACCENT_ORANGE, lw=S.LW, ls='--', label='Households, projection')
 P.split(a)
 a.set_xlim(1991, 2050)
 a.set_ylabel('Dwellings or households (million)')

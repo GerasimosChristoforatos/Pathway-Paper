@@ -1,5 +1,5 @@
 """
-PAPER FIGURES AND TABLES (MODEL v2.0.0): Fig1-Fig6, Table 1-2, PAPER.md
+PAPER FIGURES AND TABLES (MODEL v2.1.0): Fig1-Fig6, Table 1-2, PAPER.md
 ======================================================================
 Every figure and table is drawn from the data files of outputs/data/ (layout.py) and nothing else:
 no model is run here, so a figure can never disagree with the data it shows. Labels come from
@@ -11,9 +11,9 @@ roll-out by 2035 (named without a setting suffix) and TL. Every other setting is
 (extended_data.py) and the diagnostics.
 
 For each figure this writes, in outputs/paper/:
-  Fig<n>_<name>.png / .pdf   300 dpi PNG and vector PDF, 183 mm (double) or 89 mm (single column) wide
-  Fig<n>_<name>.csv          the source data: every plotted value in long format (panel, series, x,
-                             value, unit), as Nature's Source Data files
+  Fig<n>_<name>.png          300 dpi PNG, 183 mm (double) or 89 mm (single column) wide
+  Fig<n>_<name>.pdf / .csv   with run_all.py --export only: the vector PDF and the source data (every plotted
+                             value in long format: panel, series, x, value, unit), as Nature's Source Data files
 and Table1_levers.md / .csv, Table2_results.md / .csv, and PAPER.md: the headline findings (one
 sentence each, with the numbers and the data files they come from), every figure with its caption
 (numbers filled from the data) and the tables.
@@ -114,11 +114,18 @@ class Source:
 
 
 def save(fig, fid, src, width):
-    """Source data, then the figure (style.save_figure: PNG and PDF, with its audit record); the PNG
-    must print within its Nature width (89 or 183 mm), so a wider figure (labels outside the frame)
-    is refused."""
+    """The figure (style.save_figure: PNG, with its audit record) and, with run_all.py --export
+    (style.export_run), its vector PDF and source-data CSV; without --export an earlier PDF / CSV of the figure is
+    removed, so no stale export survives. The PNG must print within its Nature width (89 or 183 mm), so a wider
+    figure (labels outside the frame) is refused."""
     from PIL import Image
-    src.write()
+    if S.export_run():
+        src.write()
+    else:
+        for ext in ('pdf', 'csv'):
+            old = os.path.join(src.base, f'{fid}.{ext}')
+            if os.path.exists(old):
+                os.remove(old)
     S.save_figure(fig, fid)
     with Image.open(L.figure(fid) + '.png') as im:
         w_mm = im.size[0] / S.DPI * 25.4
@@ -157,12 +164,13 @@ def budget_ratio(r):
 # ============================================================
 # Fig1  How the model works (structure only; no numbers)
 # ============================================================
-def fig1():
+def fig1(h=None, base=None):
     """Drawn on a millimetre grid of the printed figure (183 x 102 mm), so every box and label is
-    placed at its print size."""
-    h = PLAN['Fig1']
+    placed at its print size. h, base: the plan entry and folder (default Fig1 in outputs/paper/; key_figures.py
+    draws K6 with it)."""
+    h = h or PLAN['Fig1']
     fid = h['file']
-    src = Source(fid, L.PAPER)
+    src = Source(fid, base or L.PAPER)
     W, H = 183.0, 102.0
     fig = plt.figure(figsize=S.figsize('double', H))
     m = 0.6
@@ -204,8 +212,8 @@ def fig1():
     heading(xb_, yb + 5.5, 'Demand bands: why floor area is built')
     heading(1.0, yb + 5.5, 'Pathway levers')
     arrow((xs[2] + bw / 2, y0), (xs[2] + bw / 2, yb + 8.0))
-    bands = [('growth', None), ('smaller_households', None), ('extra_space', 'L1'), ('vacancy', 'L2'),
-             ('overbuild_2026', 'L3'), ('replacement', 'L4'), ('redevelopment', 'L4')]
+    bands = [('growth', None), ('smaller_households', 'L2'), ('extra_space', 'L1'), ('vacancy', 'L3'),
+             ('overbuild_2026', 'L4'), ('replacement', 'L5'), ('redevelopment', 'L5')]
     for k, (bid, lev) in enumerate(bands):
         y = yb - k * 5.6
         face, hatch = S.BAND[bid]
@@ -229,12 +237,14 @@ def fig1():
         face, hatch = S.STAGE[sid]
         swatch(xc, y, face, hatch)
         ax.text(xc + 5.2, y, N.STAGES[sid], va='center', fontsize=S.FONT_SMALL, color=S.INK)
-    yl5 = yc - 4 * 5.6 - 0.5
-    ax.text(xc, yl5, f"L5 {N.LEVERS['L5']}: carbon per m² (A1–A3)", fontsize=S.FONT_SMALL,
-            color=S.PATHWAY['P4'], fontweight='bold', va='center')
-    ax.plot([xc - 1.0, xc - 3.0, xc - 3.0], [yl5, yl5, yc], color=S.PATHWAY['P4'], lw=S.LW_THIN,
-            solid_joinstyle='miter')
-    arrow((xc - 3.0, yc), (xc - 0.3, yc), color=S.PATHWAY['P4'])
+    # the levers on carbon per m2: L6 -> A1-A3, L7 -> A4-A5, L8 and L9 -> soil carbon loss
+    for k, (levs, sid) in enumerate(((('L6',), 'a1a3'), (('L7',), 'a4a5'), (('L8',), 'soil'), (('L9',), 'soil'))):
+        y = yc - 4 * 5.6 - 0.6 - k * 4.6
+        pw = N.LEVER_PATHWAY[levs[0]]
+        ax.text(xc, y, ' + '.join(f'{L_} {N.LEVERS[L_]}' for L_ in levs) + f' → {N.STAGES[sid].split(" (")[0]}',
+                fontsize=S.FONT_SMALL, color=S.PATHWAY[pw], fontweight='bold', va='center')
+        for L_ in levs:
+            src.add('stages', N.STAGES[sid], 'lever', int(L_[1]), 'lever number')
     xa_ = xs[5]
     box(xa_, 54.0 + dy, bw, 15.0, 'AESA boundaries', 'AR: acquired rights\nAtP: ability to pay')
     arrow((xa_ + bw / 2, 69.0 + dy), (xa_ + bw / 2, y0))
@@ -249,13 +259,14 @@ def fig1():
         if x - 4.0 > W - m:
             raise SystemExit('Fig1: a row of labels is wider than the figure.')
 
-    heading(1.0, 31.0, 'Pathways (levers combined; Moderate setting, full roll-out by 2035)')
-    row(26.0, [(f"{pw} {N.PATHWAYS[pw]} ({'+'.join(N.PATHWAY_LEVERS.get(pw, ('L1–L5',)))})",
+    heading(1.0, 32.0, 'Pathways (levers combined; Moderate setting, full roll-out by 2035)')
+    row(27.5, [(f"{pw} {N.PATHWAYS[pw]} ({'+'.join(N.PATHWAY_LEVERS.get(pw, ('L1–L9',)))})",
                 dict(color=S.PATHWAY[pw], fontweight='bold')) for pw in PATHWAY_IDS])
-    heading(1.0, 19.0, 'Theoretical limit TL = P5 with TL1–TL7, each at its limit from 2027', color=S.TL)
-    row(14.0, [(f"TL{k} {N.TL[f'TL{k}']}", dict(color=S.TL)) for k in range(1, 5)])
-    row(9.0, [(f"TL{k} {N.TL[f'TL{k}']}", dict(color=S.TL)) for k in range(5, 8)])
-    ax.text(1.0, 3.5, 'TL: ' + N.TL_CAPTION + '.', fontsize=S.FONT_SMALL, color=S.MUTED, style='italic',
+    heading(1.0, 21.5, 'Theoretical limit TL = P5 with TL1–TL10, each at its limit from 2027', color=S.TL)
+    row(17.0, [(f"TL{k} {N.TL[f'TL{k}']}", dict(color=S.TL)) for k in range(1, 5)])
+    row(12.5, [(f"TL{k} {N.TL[f'TL{k}']}", dict(color=S.TL)) for k in range(5, 8)])
+    row(8.0, [(f"TL{k} {N.TL[f'TL{k}']}", dict(color=S.TL)) for k in range(8, 11)])
+    ax.text(1.0, 3.0, 'TL: ' + N.TL_CAPTION + '.', fontsize=S.FONT_SMALL, color=S.MUTED, style='italic',
             va='center')
     save(fig, fid, src, h['width'])
     return dict(caption=h['caption'])
@@ -282,14 +293,11 @@ def unexplained_style():
     return dict(facecolor=face, hatch=hatch, edgecolor=edge, linewidth=S.LW_THIN)
 
 
-def fig2():
-    h = PLAN['Fig2']
-    fid = h['file']
-    src = Source(fid, L.PAPER)
+def bands_history_panel(a, src, letter='a'):
+    """Floor area by demand band: history per census interval and the Reference projection (Fig2 a, K1)."""
     ba = read_csv('baseline/bands_annual.csv')
     bh = read_csv('baseline/bands_history.csv')
     sp = read_csv('baseline/bands_history_replacement_split.csv').set_index('interval')
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 84), gridspec_kw=dict(width_ratios=[1.75, 1]))
     # (a) history: one column per census interval, the net replacement split into its census-measured part
     # and the unexplained building
     rep_lab = N.band_data_label('replacement_history')
@@ -307,17 +315,17 @@ def fig2():
         stack_styled(a, [y0 - 0.5 + (y1 - y0 + 1) / 2], parts, width=(y1 - y0 + 1) * 0.96,
                      alpha=0.45 if faint else 1.0)
         for bid in ('growth', 'smaller_households', 'extra_space', 'vacancy'):
-            src.add('a', N.BANDS[bid], f'{y0}-{y1}', val(bid), 'Mm2 per year (interval mean)')
-        src.add('a', N.REPLACEMENT_CENSUS, f'{y0}-{y1}', s['net_replacement_census_Mm2_per_year'],
+            src.add(letter, N.BANDS[bid], f'{y0}-{y1}', val(bid), 'Mm2 per year (interval mean)')
+        src.add(letter, N.REPLACEMENT_CENSUS, f'{y0}-{y1}', s['net_replacement_census_Mm2_per_year'],
                 'Mm2 per year (interval mean)')
-        src.add('a', N.UNEXPLAINED, f'{y0}-{y1}', s['unexplained_building_Mm2_per_year'], 'Mm2 per year (interval mean)')
+        src.add(letter, N.UNEXPLAINED, f'{y0}-{y1}', s['unexplained_building_Mm2_per_year'], 'Mm2 per year (interval mean)')
     years = sorted(ba['year'].unique())
     proj = [b_ for b_ in N.BANDS_IN_SCOPE if b_ != 'maintenance']
     parts = []
     for bid in proj:
         v = ba[ba['band'] == N.band_data_label(bid)].set_index('year').loc[years, 'floor_area_Mm2'].values
         parts.append((bid, v))
-        src.add('a', N.BANDS[bid], years, v, 'Mm2 per year')
+        src.add(letter, N.BANDS[bid], years, v, 'Mm2 per year')
     P.signed_stack(a, years, parts, width=0.82)
     a.axhline(0, color=S.INK, lw=S.LW_THIN)
     P.split(a)
@@ -330,13 +338,20 @@ def fig2():
     a.set_xlim(1991, 2050.6)
     a.set_ylabel('Floor area (Mm² per year)')
     a.grid(axis='x', visible=False)
-    P.panel_label(a, 'a')
+    P.panel_label(a, letter)
+    return ba
+
+
+def bands_carbon_panel(b, src, letter='b'):
+    """The Reference demand bands as carbon per year, maintenance its own layer (Fig2 b, K2)."""
+    ba = read_csv('baseline/bands_annual.csv')
+    years = sorted(ba['year'].unique())
     # (b) the Reference bands as carbon, maintenance its own layer
     cparts = []
     for bid in N.BANDS_IN_SCOPE:
         v = ba[ba['band'] == N.band_data_label(bid)].set_index('year').loc[years, 'carbon_kt'].values
         cparts.append((bid, v))
-        src.add('b', N.BANDS[bid], years, v, 'kt CO2e per year')
+        src.add(letter, N.BANDS[bid], years, v, 'kt CO2e per year')
     up, dn = P.signed_stack(b, years, cparts, width=0.82)
     an = read_csv('baseline/annual.csv')
     an = an[an['source'] == 'projection'].set_index('year')
@@ -347,7 +362,16 @@ def fig2():
     b.set_ylabel('Embodied carbon (kt CO₂e per year)')
     P.thousands(b.yaxis)
     b.grid(axis='x', visible=False)
-    P.panel_label(b, 'b')
+    P.panel_label(b, letter)
+
+
+def fig2():
+    h = PLAN['Fig2']
+    fid = h['file']
+    src = Source(fid, L.PAPER)
+    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 84), gridspec_kw=dict(width_ratios=[1.75, 1]))
+    ba = bands_history_panel(a, src)
+    bands_carbon_panel(b, src)
     handles = P.band_handles(['growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild_2026', 'replacement',
                               'redevelopment', 'maintenance'])
     for hd in handles:
@@ -364,7 +388,7 @@ def fig2():
     num = dict(untargeted_share=unt / total, total=total,
                untargeted_carbon_share=sum(tot.loc[N.band_data_label(b_), 'carbon_kt'] for b_ in N.UNTARGETED)
                / tot['carbon_kt'].sum())
-    cap = (h['caption'] + f" Over 2026–2050 the untargeted bands are {100 * num['untargeted_share']:.0f}% of the "
+    cap = (h['caption'] + f" Over 2026–2050 the untargeted band (population growth) is {100 * num['untargeted_share']:.0f}% of the "
            f"{total:.1f} million m² built (a) and {100 * num['untargeted_carbon_share']:.0f}% of the carbon (b). History "
            '(a): interval means between censuses (vacancy on one definition, the pooled 2018/2023 empty share); the net '
            'replacement is census-measured (the census-interval rate of the dwelling-count identity × the previous '
@@ -378,31 +402,19 @@ def fig2():
 # ============================================================
 # Fig3  Embodied carbon of the Reference (stages, materials, committed)
 # ============================================================
-def fig3():
-    h = PLAN['Fig3']
-    fid = h['file']
-    src = Source(fid, L.PAPER)
+STAGE_COLS = [('a1a3', 'a1a3_kt'), ('a4a5', 'a4a5_kt'), ('maintenance', 'maintenance_kt'), ('soil', 'soil_carbon_loss_kt')]
+
+
+def stage_panel(a, src, letter='a'):
+    """Annual Reference carbon by life-cycle stage (Fig3 a, K2)."""
     st = read_csv('baseline/annual_by_stage.csv').set_index('year')
-    mat = read_csv('baseline/annual_by_material.csv').pivot(index='year', columns='material', values='carbon_kt')
-    res = read_json('aesa/results.json')
-    an = read_csv('baseline/annual.csv')
-    an = an[an['source'] == 'projection'].set_index('year')
-    years = st.index.values
-    cols = [('a1a3', 'a1a3_kt'), ('a4a5', 'a4a5_kt'), ('maintenance', 'maintenance_kt'), ('soil', 'soil_carbon_loss_kt')]
-    check(np.allclose(sum(st[c] for _, c in cols).values, an.loc[years, 'carbon_kt'].values, rtol=1e-9, atol=0),
-          'Fig3: the stages do not add up to the annual carbon')
-    check(np.allclose(mat.loc[years].sum(axis=1).values, an.loc[years, 'carbon_kt'].values, rtol=1e-9, atol=0),
-          'Fig3: the materials do not add up to the annual carbon')
-    fig = plt.figure(figsize=S.figsize('double', 78))
-    gs = fig.add_gridspec(1, 3, width_ratios=[1.25, 1.25, 0.75], wspace=0.42, left=0.065, right=0.93, bottom=0.30,
-                          top=0.95)
-    a, b, c = (fig.add_subplot(gs[k]) for k in range(3))
+    years, cols = st.index.values, STAGE_COLS
     base = np.zeros(len(years))
     for sid, col in cols:
         face, hatch = S.STAGE[sid]
         a.bar(years, st[col].values, bottom=base, width=0.82, color=face, hatch=hatch, edgecolor='white', lw=S.LW_THIN,
               label=N.STAGES[sid])
-        src.add('a', N.STAGES[sid], years, st[col].values, 'kt CO2e per year')
+        src.add(letter, N.STAGES[sid], years, st[col].values, 'kt CO2e per year')
         base = base + st[col].values
     a.set_xlim(2025.4, 2050.6)
     a.set_ylabel('Embodied carbon (kt CO₂e per year)')
@@ -410,16 +422,31 @@ def fig3():
     a.grid(axis='x', visible=False)
     a.legend(handles=a.get_legend_handles_labels()[0][::-1], loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2,
              fontsize=S.FONT_SMALL)
-    P.panel_label(a, 'a')
+    P.panel_label(a, letter)
+
+
+def material_panel(b, src, letter='b'):
+    """Annual Reference carbon by material (Fig3 b, K2)."""
+    st = read_csv('baseline/annual_by_stage.csv').set_index('year')
+    mat = read_csv('baseline/annual_by_material.csv').pivot(index='year', columns='material', values='carbon_kt')
+    years = st.index.values
     frame = mat.loc[years]
     handles = P.stack_materials(b, years, frame)
     for code_, lab, _ in S.MATERIAL:
-        src.add('b', lab, years, frame[code_].values, 'kt CO2e per year')
+        src.add(letter, lab, years, frame[code_].values, 'kt CO2e per year')
     b.set_xlim(years[0], years[-1])
     b.set_ylabel('Embodied carbon (kt CO₂e per year)')
     P.thousands(b.yaxis)
     b.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=3, fontsize=S.FONT_SMALL)
-    P.panel_label(b, 'b')
+    P.panel_label(b, letter)
+
+
+def committed_panel(c, src, letter='c'):
+    """Cumulative Reference carbon 2026-2050 by stage and the emissions committed after 2050 (Fig3 c, K2).
+    Returns (committed record, 2050 AR boundary in kt per year)."""
+    st = read_csv('baseline/annual_by_stage.csv').set_index('year')
+    res = read_json('aesa/results.json')
+    cols = STAGE_COLS
     # (c) cumulative 2026-2050 (stages) and committed after 2050, years of the 2050 AR boundary on the right
     com = res['committed'][REF]
     k_lo, k_hi = com['lower_kt'] / com['years_of_B_AR_2050_lower'], com['upper_kt'] / com['years_of_B_AR_2050_upper']
@@ -429,7 +456,7 @@ def fig3():
         v = float(st[col].sum())
         face, hatch = S.STAGE[sid]
         c.bar(0, v, bottom=bottom, width=0.62, color=face, hatch=hatch, edgecolor='white', lw=S.LW_THIN)
-        src.add('c', N.STAGES[sid], 'cumulative 2026-2050', v, 'kt CO2e')
+        src.add(letter, N.STAGES[sid], 'cumulative 2026-2050', v, 'kt CO2e')
         bottom += v
     c.text(0, bottom, P.fmt_kt(bottom), ha='center', va='bottom', fontsize=S.FONT_SMALL)
     face, hatch = S.COMPONENT['committed']
@@ -438,11 +465,11 @@ def fig3():
           hatch=hatch, lw=S.LW_THIN, alpha=0.5)
     c.text(1, com['upper_kt'], f"{com['lower_kt']:,.0f}–\n{com['upper_kt']:,.0f}", ha='center', va='bottom',
            fontsize=S.FONT_MIN)
-    src.add('c', 'Committed after 2050, lower (2050 factors held)', 'after 2050', com['lower_kt'], 'kt CO2e')
-    src.add('c', 'Committed after 2050, upper (2025 factors)', 'after 2050', com['upper_kt'], 'kt CO2e')
-    src.add('c', 'Committed after 2050, lower', 'years of the 2050 AR boundary', com['years_of_B_AR_2050_lower'], 'years')
-    src.add('c', 'Committed after 2050, upper', 'years of the 2050 AR boundary', com['years_of_B_AR_2050_upper'], 'years')
-    src.add('c', 'AR boundary 2050', '2050', k_lo, 'kt CO2e per year')
+    src.add(letter, 'Committed after 2050, lower (2050 factors held)', 'after 2050', com['lower_kt'], 'kt CO2e')
+    src.add(letter, 'Committed after 2050, upper (2025 factors)', 'after 2050', com['upper_kt'], 'kt CO2e')
+    src.add(letter, 'Committed after 2050, lower', 'years of the 2050 AR boundary', com['years_of_B_AR_2050_lower'], 'years')
+    src.add(letter, 'Committed after 2050, upper', 'years of the 2050 AR boundary', com['years_of_B_AR_2050_upper'], 'years')
+    src.add(letter, 'AR boundary 2050', '2050', k_lo, 'kt CO2e per year')
     c.set_xticks([0, 1])
     c.set_xticklabels(['2026–\n2050', 'Committed\nafter 2050'])
     c.set_xlim(-0.6, 1.6)
@@ -455,7 +482,31 @@ def fig3():
     c.legend(handles=[Patch(facecolor='white', edgecolor=S.MUTED, hatch=hatch, label='lower bound'),
                       Patch(facecolor=face, edgecolor=S.MUTED, hatch=hatch, alpha=0.5, label='range to the upper bound')],
              loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=1, fontsize=S.FONT_SMALL)
-    P.panel_label(c, 'c')
+    P.panel_label(c, letter)
+    return com, k_lo
+
+
+def fig3():
+    h = PLAN['Fig3']
+    fid = h['file']
+    src = Source(fid, L.PAPER)
+    st = read_csv('baseline/annual_by_stage.csv').set_index('year')
+    mat = read_csv('baseline/annual_by_material.csv').pivot(index='year', columns='material', values='carbon_kt')
+    an = read_csv('baseline/annual.csv')
+    an = an[an['source'] == 'projection'].set_index('year')
+    years = st.index.values
+    cols = STAGE_COLS
+    check(np.allclose(sum(st[c] for _, c in cols).values, an.loc[years, 'carbon_kt'].values, rtol=1e-9, atol=0),
+          'Fig3: the stages do not add up to the annual carbon')
+    check(np.allclose(mat.loc[years].sum(axis=1).values, an.loc[years, 'carbon_kt'].values, rtol=1e-9, atol=0),
+          'Fig3: the materials do not add up to the annual carbon')
+    fig = plt.figure(figsize=S.figsize('double', 78))
+    gs = fig.add_gridspec(1, 3, width_ratios=[1.25, 1.25, 0.75], wspace=0.42, left=0.065, right=0.93, bottom=0.30,
+                          top=0.95)
+    a, b, c = (fig.add_subplot(gs[k]) for k in range(3))
+    stage_panel(a, src)
+    material_panel(b, src)
+    com, k_lo = committed_panel(c, src)
     save(fig, fid, src, h['width'])
     tot = {sid: float(st[col].sum()) for sid, col in cols}
     num = dict(carbon=sum(tot.values()), **{f'{k}_kt': v for k, v in tot.items()}, com_lo=com['lower_kt'],
@@ -475,7 +526,7 @@ def fig3():
 # ============================================================
 # Fig4  Pathways by demand band
 # ============================================================
-TARGETED = ('extra_space', 'vacancy', 'overbuild_2026', 'replacement', 'redevelopment')
+TARGETED = ('smaller_households', 'extra_space', 'vacancy', 'overbuild_2026', 'replacement', 'redevelopment')
 
 
 def fig4():
@@ -515,17 +566,16 @@ def fig4():
             P.thousands(ax.yaxis)
         ax.grid(axis='x', visible=False)
         P.panel_label(ax, letter)
-    import figaudit
     ax = axes[1]
     extra = []
+    S.boundary_hzones(ax, float(r.loc[REF, 'B_AR_kt']), float(r.loc[REF, 'B_AtP_kt']), label=False)
     for key in ('AR', 'AtP'):
         v = float(r.loc[REF, f'B_{key}_kt'])
         stl = dict(S.BOUNDARY[key])
         lab = stl.pop('label')
-        for i in range(len(STORY)):
-            ax.plot([i - 0.42, i + 0.42], [v, v], gid=figaudit.BOUNDARY, solid_capstyle='butt', zorder=4, **stl)
         extra.append(Line2D([0], [0], **stl, label=f'{lab} budget 2026–2050: {v:,.0f} kt'))
         src.add('b', f'{lab} budget 2026-2050', 'cumulative', v, 'kt CO2e')
+    extra += S.zone_handles()
     handles = [Patch(label=N.UNTARGETED_GROUP, **dict(ust, edgecolor='#555555'))]
     handles += P.band_handles(list(TARGETED) + ['maintenance']) + extra
     fig.legend(handles=handles, loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.01), frameon=False,
@@ -537,10 +587,10 @@ def fig4():
                      d_floor_area=100 * (float(r.loc[run, 'floor_area_Mm2']) / float(r.loc[REF, 'floor_area_Mm2']) - 1))
            for run in STORY}
     cap = (h['caption'] + f" P5 Combined lowers carbon 2026–2050 by {-num['P5-moderate']['d_carbon']:.0f}% against the "
-           f"Reference and TL by {-num['TL']['d_carbon']:.0f}%. Bottom segment (grey, dotted): the untargeted bands "
-           '(population growth and smaller households), which no pathway acts on; negative bands (below zero) release '
+           f"Reference and TL by {-num['TL']['d_carbon']:.0f}%. Bottom segment (grey, dotted): the untargeted band "
+           '(population growth), which no pathway acts on; negative bands (below zero) release '
            'existing dwellings; maintenance (B2, B4) within 2026–2050 is its own layer in b. Labels: total and change '
-           'against the Reference. Short lines in b: the cumulative AR and AtP budgets 2026–2050.')
+           'against the Reference. Lines in b: the cumulative AR and AtP budgets 2026–2050; shading: below AtP (darker green), between AtP and AR (light green), above AR (light red, boundary exceeded).')
     return dict(runs=num, caption=cap)
 
 
@@ -582,7 +632,7 @@ def fig5():
         check(np.allclose(ref_mc.loc[yrs, f'carbon_kt_{q}'].values, am.loc[yrs, f'I_sec_kgCO2e_{qa}'].values / M6,
                           rtol=1e-9, atol=0), 'Fig5: the Reference Monte Carlo band differs from the AESA layer')
     a.axvspan(zero[0] - 0.5, zero[-1] + 0.5, color='#EDEDED', lw=0, zorder=0)
-    a.text((zero[0] + zero[-1]) / 2, 0.97, 'TL: no new construction,\nvacant stock absorbed\n(TL line at the axis floor: zero)',
+    a.text((zero[0] + zero[-1]) / 2, 0.97, 'TL: no new construction,\nreleased dwellings used\n(TL line at the axis floor: zero)',
            transform=a.get_xaxis_transform(), ha='center', va='top', fontsize=S.FONT_MIN, color=S.INK)
     for run, col, lw in FIG5_RUNS:
         m = mca[mca['run'] == mc_key(run)].set_index('year').loc[yrs]
@@ -609,16 +659,16 @@ def fig5():
     # (b) the Shapley waterfall in cumulative LoE AR
     sp = read_csv('pathways/shapley_pathways.csv')
     sp = sp[(sp['setting'] == 'moderate') & (sp['metric'] == 'LoE_AR')].set_index('player')['reduction']
-    st = read_csv('pathways/shapley_theoretical_limit_moderate.csv')
+    st = read_csv('pathways/shapley_theoretical_limit.csv')
     st = st[st['metric'] == 'LoE_AR'].set_index('player')['reduction']
     tl = read_json('pathways/theoretical_limit.json')
     ref, p5, tlr = (float(r.loc[k, 'LoE_AR']) for k in (REF, 'P5-moderate', 'TL'))
     check(math.isclose(ref - sum(sp[p] for p in ('P1', 'P2', 'P3', 'P4')), p5, rel_tol=1e-12),
           'Fig5: the pathway Shapley values do not add up to Reference - P5')
-    tl_ids = [f'TL{k}' for k in range(1, 8)]
+    tl_ids = [f'TL{k}' for k in range(1, 11)]
     f27 = float(st['from2027'])
     check(math.isclose(p5 - f27 - sum(st[t] for t in tl_ids), tlr, rel_tol=1e-12),
-          'Fig5: P5 - full strength from 2027 - TL1..TL7 does not reach TL')
+          'Fig5: P5 - full strength from 2027 - TL1..TL10 does not reach TL')
     w = 0.66
     labels, x, prev = [], 0, ref
 
@@ -634,7 +684,7 @@ def fig5():
         src.add('b', lab + ', Monte Carlo 95%', 'total', q['p95'], 'cumulative LoE AR 2026-2050')
 
     def step(xx, start, red, col, lab):
-        b.bar(xx, -red, bottom=start, width=w, color=col, edgecolor='white')
+        b.bar(xx, -red, bottom=start, width=w, color=col, edgecolor='#555555', lw=S.LW_THIN)
         b.plot([xx - 1 + w / 2, xx - w / 2], [start, start], color=S.MUTED, lw=S.LW_THIN)
         b.text(xx, start - red, f'−{red:.2f}' if red >= 0 else f'+{-red:.2f}', ha='center', va='top',
                fontsize=S.FONT_MIN)
@@ -649,11 +699,11 @@ def fig5():
     x += 1
     total(x, p5, S.PATHWAY['P5'], f"P5 {N.PATHWAYS['P5']}", 'P5-moderate')
     x += 1
-    step(x, p5, f27, S.TL_GRADUAL, N.ADOPTION['from2027'].capitalize())
+    step(x, p5, f27, S.PATHWAY['P5'], N.ADOPTION['from2027'].capitalize())
     prev = p5 - f27
     for t in tl_ids:
         x += 1
-        step(x, prev, float(st[t]), '#7A7A7A', f'{t} {N.TL[t]}')
+        step(x, prev, float(st[t]), S.LEVER[N.TL_LIMIT_OF[t]] if N.TL_LIMIT_OF[t] else '#7A7A7A', f'{t} {N.TL[t]}')
         prev -= float(st[t])
     x += 1
     total(x, tlr, S.TL, 'TL Theoretical limit', 'TL')
@@ -672,16 +722,15 @@ def fig5():
         labels.append(f'{short(run)}\ncommitted\nafter 2050')
         src.add('b', f'{short(run)} committed after 2050, lower', 'multiples of the AR budget 2026-2050', lo, 'ratio')
         src.add('b', f'{short(run)} committed after 2050, upper', 'multiples of the AR budget 2026-2050', hi, 'ratio')
-    import figaudit
+    S.boundary_hzones(b, 1.0, 1.0 / k_atp, label=False, xspan=(-0.6, x_last + 0.5))
     for key, v in (('AR', 1.0), ('AtP', 1.0 / k_atp)):
         stl = dict(S.BOUNDARY[key])
         lab = stl.pop('label')
-        b.plot([-0.5, x_last + 0.5], [v, v], gid=figaudit.BOUNDARY, **dict(stl, lw=S.LW))
         b.text(x_last + 0.5, v, f' {key} budget', va='center', ha='left', fontsize=S.FONT_MIN, color=stl['color'])
         src.add('b', f'{lab} budget 2026-2050', 'cumulative LoE AR units', v, 'cumulative LoE AR 2026-2050')
     g = tl['gap']['TL']
     q_tl = {k: float(mcs.loc[('TL', f'LoE_{k}'), 'probability_LoE_at_most_1']) for k in ('AR', 'AtP')}
-    note = (f"TL: P(LoE AR ≤ 1) = {100 * q_tl['AR']:.0f}%, P(LoE AtP ≤ 1) = {100 * q_tl['AtP']:.0f}% (Monte Carlo)")
+    note = (f"TL: P(LoE AR ≤ 1) = {100 * q_tl['AR']:.1f}%, P(LoE AtP ≤ 1) = {100 * q_tl['AtP']:.1f}% (Monte Carlo)")
     if not g['within_AR']:
         rs = g['residual']
         note = (f"TL exceeds the AR budget (LoE AR {g['LoE_AR']:.2f}): reaching it means\n"
@@ -710,7 +759,8 @@ def fig5():
     save(fig, fid, src, h['width'])
     rs = g.get('residual', {})
     q = {run: {k: mcs.loc[(mc_key(run), k)] for k in ('carbon_kt', 'LoE_AR', 'LoE_AtP')} for run in (REF, 'P5-moderate', 'TL')}
-    num = dict(ref=ref, p5=p5, tl=tlr, from2027=f27, k_atp=k_atp, zero=zero, q=q, p_tl=q_tl,
+    q_p5 = {k: float(mcs.loc[('P5', f'LoE_{k}'), 'probability_LoE_at_most_1']) for k in ('AR', 'AtP')}
+    num = dict(ref=ref, p5=p5, tl=tlr, from2027=f27, k_atp=k_atp, zero=zero, q=q, p_tl=q_tl, p_p5=q_p5,
                dw=rs.get('dwellings_not_built_2027_2050', float('nan')),
                res=rs.get('new_residents_housed_in_existing_dwellings', float('nan')),
                cut=g.get('backcast', {}).get('cut_AR', float('nan')),
@@ -720,14 +770,14 @@ def fig5():
     cap = (h['caption'] + f" (a) Annual embodied carbon against the annual AR and AtP boundaries (log scale), with the "
            'Monte Carlo 5–95% band of each run (5,000 Latin-hypercube draws of the Reference, each also run through P5 '
            'and TL with the levers applied identically and the TL targets held at their absolute values). In '
-           f"{zero[0]}–{zero[-1]} TL builds nothing (banking rule: the vacant stock released by TL1 absorbs the "
-           'requirement); its true value, zero, is drawn at the axis floor. In 2050 the Reference emits '
+           f"{zero[0]}–{zero[-1]} TL builds nothing (banking rule: the dwellings released by TL3 (no vacancy), TL2 "
+           '(the historical maximum household size) and TL4 (the overbuild absorbed) meet the requirement); its true value, zero, is drawn at the axis floor. In 2050 the Reference emits '
            f"{num['a50'][REF]:,.0f} kt, P5 {num['a50']['P5-moderate']:,.0f} kt and TL {num['a50']['TL']:,.0f} kt "
            f"against an AR boundary of {num['ar50']:,.0f} kt and an AtP boundary of {num['atp50']:,.0f} kt. "
            f"(b) Order-free attribution (Shapley values, exact) of the cumulative LoE AR 2026–2050: the four pathways "
            f"(Moderate; they add up exactly to Reference − P5), the effect of starting P5 at full strength in 2027 "
-           f"({f27:.2f}; a separate line, not a Shapley player) and TL1–TL7 relative to P5 at full strength from 2027 "
-           f"(128 subsets; they add up exactly to that run − TL). Right axis: the same quantity as a cumulative AtP "
+           f"({f27:.2f}; a separate line, not a Shapley player) and TL1–TL10 relative to P5 at full strength from 2027 "
+           f"(1,024 subsets; they add up exactly to that run − TL). Right axis: the same quantity as a cumulative AtP "
            f"level of exceedance (×{k_atp:.2f}; the budgets of every run are the Reference's). Whiskers: Monte Carlo "
            f"5–95% (Reference {q[REF]['LoE_AR']['p5']:.2f}–{q[REF]['LoE_AR']['p95']:.2f}, P5 "
            f"{q['P5-moderate']['LoE_AR']['p5']:.2f}–{q['P5-moderate']['LoE_AR']['p95']:.2f}, TL "
@@ -756,10 +806,11 @@ def bilinear(space):
     return f, a
 
 
-def fig6():
-    h = PLAN['Fig6']
+def fig6(h=None, base=None):
+    """h, base: the plan entry and folder (default Fig6 in outputs/paper/; key_figures.py draws K4 with it)."""
+    h = h or PLAN['Fig6']
     fid = h['file']
-    src = Source(fid, L.PAPER)
+    src = Source(fid, base or L.PAPER)
     space = read_csv('pathways/solution_space.csv')
     bc = read_json('pathways/backcast.json')
     tl = read_json('pathways/theoretical_limit.json')['solution_space_marker']
@@ -768,29 +819,29 @@ def fig6():
     f, a0 = bilinear(space)
     atp_one = 1.0 / k_atp                                   # LoE AtP = 1 in LoE AR units
     atp_reachable = a0 < atp_one
-    from matplotlib.colors import LinearSegmentedColormap, LogNorm
-    cmap = LinearSegmentedColormap.from_list('seq', S.SEQUENTIAL)
-    norm = LogNorm(vmin=0.25, vmax=5.0)
     marks = [m for m in bc['solution_space_markers'] if m['run'].endswith('-moderate')]
     check(len(marks) == 5, 'Fig6: P1-P5 Moderate markers missing')
     fig = plt.figure(figsize=S.figsize('single', 100))
-    ax = fig.add_axes([0.17, 0.33, 0.66, 0.64])
-    cax = fig.add_axes([0.85, 0.33, 0.03, 0.64])
+    ax = fig.add_axes([0.17, 0.33, 0.76, 0.64])
     dx = np.linspace(0, 100, 401)
     D, I = np.meshgrid(dx / 100, dx / 100)
     Z = f(D, I)
-    pm = ax.pcolormesh(dx, dx, Z, cmap=cmap, norm=norm, shading='auto', rasterized=True)
-    lv = [v for v in (1, 2, 3, 5) if Z.min() < v < Z.max()]
-    cs = ax.contour(100 * D, 100 * I, Z, levels=lv, colors=[S.INK if v == 1 else '#FFFFFF' for v in lv],
-                    linewidths=[S.LW_BOLD if v == 1 else S.LW_THIN for v in lv])
-    ax.clabel(cs, fmt=lambda v: f'AR {v:g}' if v == 1 else f'{v:g}', fontsize=S.FONT_MIN)
-    if atp_reachable:
-        ca = ax.contour(100 * D, 100 * I, Z, levels=[atp_one], colors=[S.ATP], linewidths=[S.LW_BOLD], linestyles='--')
-        ax.clabel(ca, fmt=lambda v: 'AtP 1', fontsize=S.FONT_MIN)
+    # the boundary zones of style.py (below AtP, between AtP and AR, above AR) and the two budget contours
+    S.boundary_field(ax, 100 * D, 100 * I, Z, 1.0, atp_one)
+    lv = [v for v in (2, 3, 5) if Z.min() < v < Z.max()]
+    ax.contour(100 * D, 100 * I, Z, levels=lv, colors=[S.MUTED], linewidths=[S.LW_THIN], linestyles=':')
+    # contour labels at 50% intensity reduction: the plane is bilinear, so the demand cut of level v there is
+    # d = 1 - (v - a0) / f_slope, with f_slope = f(0, 0.5) - a0
+    slope = f(0.0, 0.5) - a0
+    for v, txt, col in [(1.0, 'AR budget', S.AR), (atp_one, 'AtP budget', S.ATP)] + [(v, f'LoE AR {v:g}', S.MUTED) for v in lv]:
+        d_v = 1.0 - (v - a0) / slope
+        if 0.0 < d_v < 1.0:
+            ax.text(100 * d_v, 50.0, txt, rotation=90, ha='center', va='center', fontsize=S.FONT_MIN, color=col,
+                    bbox=dict(facecolor='white', edgecolor='none', pad=0.6, alpha=0.85), zorder=4)
     for m in marks:
         pw = m['run'].split('-')[0]
         ax.plot(100 * m['demand_reduction'], 100 * m['intensity_reduction'], marker='o', ms=4, mfc=S.PATHWAY[pw],
-                mec='white', mew=S.LW_THIN, lw=0, clip_on=False, zorder=5)
+                mec=S.INK, mew=S.LW_THIN, lw=0, clip_on=False, zorder=5)
         src.add('markers', f'{pw} {N.PATHWAYS[pw]}', 'demand reduction', 100 * m['demand_reduction'], '%')
         src.add('markers', f'{pw} {N.PATHWAYS[pw]}', 'intensity reduction', 100 * m['intensity_reduction'], '%')
         src.add('markers', f'{pw} {N.PATHWAYS[pw]}', 'cumulative LoE AR (run)', m['LoE_AR_run'], 'level of exceedance')
@@ -799,8 +850,8 @@ def fig6():
     for m in marks:
         pw = m['run'].split('-')[0]
         ax.annotate(pw, xy=(100 * m['demand_reduction'], 100 * m['intensity_reduction']), xytext=label_at[pw],
-                    fontsize=S.FONT_MIN, color='white', fontweight='bold', ha='left', va='bottom', annotation_clip=False,
-                    arrowprops=dict(arrowstyle='-', color='white', lw=S.LW_THIN, shrinkA=0, shrinkB=2.5))
+                    fontsize=S.FONT_MIN, color=S.INK, fontweight='bold', ha='left', va='bottom', annotation_clip=False,
+                    arrowprops=dict(arrowstyle='-', color=S.MUTED, lw=S.LW_THIN, shrinkA=0, shrinkB=2.5))
     ax.plot(100 * tl['demand_reduction'], 100 * tl['intensity_reduction'], marker='*', ms=8, mfc=S.TL, mec='white',
             mew=S.LW_THIN, lw=0, zorder=6)
     for k in ('demand_reduction', 'intensity_reduction'):
@@ -818,15 +869,10 @@ def fig6():
     ax.set_xlabel('Demand reduction: cut of\n2027–2050 floor area (%)')
     ax.set_ylabel('Intensity reduction: cut of\nnon-soil carbon per m² (%)')
     ax.grid(False)
-    cb = fig.colorbar(pm, cax=cax)
-    cb.set_label('Cumulative LoE AR (log scale)')
-    cb.set_ticks([0.25, 0.5, 1, 2, 3, 5])
-    cb.set_ticklabels(['0.25', '0.5', '1', '2', '3', '5'])
-    cb.minorticks_off()
     handles = [Line2D([0], [0], marker='o', mfc=S.PATHWAY[pw], mec='white', lw=0, ms=4, label=f'{pw} {N.PATHWAYS[pw]}')
                for pw in PATHWAY_IDS]
-    handles += [Line2D([0], [0], marker='*', mfc=S.TL, mec='white', lw=0, ms=8, label='TL Theoretical limit'),
-                Line2D([0], [0], color=S.INK, lw=S.LW_BOLD, label='LoE AR = 1')]
+    handles += [Line2D([0], [0], marker='*', mfc=S.TL, mec='white', lw=0, ms=8, label='TL Theoretical limit')]
+    handles += S.boundary_handles() + S.zone_handles()
     fig.legend(handles=handles, loc='lower center', ncol=2, bbox_to_anchor=(0.5, 0.0), frameon=False)
     save(fig, fid, src, h['width'])
     num = dict(tl_demand=100 * tl['demand_reduction'], tl_intensity=100 * tl['intensity_reduction'],
@@ -855,7 +901,7 @@ def md_table(head, rows):
 
 
 def table1():
-    """Table 1: the levers (Moderate column first) and the TL assumptions TL1-TL7, from levers.json and
+    """Table 1: the levers (Moderate column first) and the TL assumptions TL1-TL10, from levers.json and
     theoretical_limit.json through levers.lever_table / levers.tl_table (the rows of LEVERS_TABLE.md)."""
     import levers as LV
     p, t = read_json('pathways/levers.json'), read_json('pathways/theoretical_limit.json')
@@ -864,8 +910,8 @@ def table1():
             for r in LV.lever_table(p)]
     rows += [dict(item=r['item'], pathway=r['pathway'], band=r['band'], how=r['how'], assumption=r['assumption'],
                   moderate=r['value'], ambitious='', source=r['source'], tag=r['tag']) for r in LV.tl_table(t)]
-    check([r['item'].split()[0] for r in rows] == ['L1', 'L2', 'L3', 'L4', 'L5'] + [f'TL{k}' for k in range(1, 8)],
-          'Table 1: the rows are not L1-L5 and TL1-TL7')
+    check([r['item'].split()[0] for r in rows] == [f'L{k}' for k in range(1, 10)] + [f'TL{k}' for k in range(1, 11)],
+          'Table 1: the rows are not L1-L9 and TL1-TL10')
     df = pd.DataFrame(rows)
     df.to_csv(L.writing(os.path.join(L.PAPER, 'Table1_levers.csv')), index=False)
     head = ['item', 'pathway', 'demand band targeted', 'how it works (model terms)', 'assumption',
@@ -877,7 +923,7 @@ def table1():
 
 def table2():
     """Table 2: the Reference, P1-P5 (Moderate, by 2035) and TL; Monte Carlo 5-95% for the Reference, P5 and
-    TL; P(LoE <= 1) for TL under AR and AtP."""
+    TL; P(LoE <= 1) for P5 and TL under AR and AtP."""
     r = runs_ref()
     mcs = mc_summary()
     rows = []
@@ -894,9 +940,9 @@ def table2():
                 d[f'{qn}_mc_p95'] = float(mcs.loc[(k, qn), 'p95'])
             check(math.isclose(float(mcs.loc[(k, 'carbon_kt'), 'central_draw_max_rel_diff']) + 1.0, 1.0, abs_tol=1e-9),
                   f'Table 2: the central draw of {run} does not reproduce the deterministic run')
-        if run == 'TL':
+        if run in ('P5-moderate', 'TL'):
             for key in ('AR', 'AtP'):
-                d[f'P_LoE_{key}_at_most_1'] = float(mcs.loc[('TL', f'LoE_{key}'), 'probability_LoE_at_most_1'])
+                d[f'P_LoE_{key}_at_most_1'] = float(mcs.loc[(mc_key(run), f'LoE_{key}'), 'probability_LoE_at_most_1'])
         rows.append(d)
     df = pd.DataFrame(rows)
     df.to_csv(L.writing(os.path.join(L.PAPER, 'Table2_results.csv')), index=False)
@@ -918,6 +964,14 @@ def table2():
 # ============================================================
 # PAPER.md
 # ============================================================
+def tl_gap_sentence(sh, f27):
+    """The gap between P5 and TL by its two largest Shapley contributions (TL1-TL10; values from the data)."""
+    top = sorted((k for k in sh if k.startswith('TL')), key=lambda k: -sh[k])[:2]
+    a, b = top
+    return (f"Of the gap between P5 and TL, the largest contributions are {a} {N.TL[a].lower()} ({sh[a]:.2f} of LoE AR) "
+            f"and {b} {N.TL[b].lower()} ({sh[b]:.2f}); starting at full strength in 2027 adds {f27:.2f}.")
+
+
 def findings(rr, t2):
     """The headline findings: one sentence each, with its numbers and the data files they come from."""
     f2, f3, f4, f5, f6 = (rr[k] for k in ('Fig2', 'Fig3', 'Fig4', 'Fig5', 'Fig6'))
@@ -927,8 +981,8 @@ def findings(rr, t2):
     return [
         (f"New Zealand builds {t.loc[REF, 'floor_area_Mm2']:.1f} million m² of new residential floor area in 2026–2050 "
          f"in the Reference (Monte Carlo 90% interval {ms.loc['floor_area_Mm2', 'p5']:.1f}–"
-         f"{ms.loc['floor_area_Mm2', 'p95']:.1f}); {100 * f2['untargeted_share']:.0f}% of it serves population growth "
-         'and smaller households, which no construction pathway targets.',
+         f"{ms.loc['floor_area_Mm2', 'p95']:.1f}); {100 * f2['untargeted_share']:.0f}% of it serves population growth, "
+         'the only demand no pathway targets.',
          'data/pathways/runs.csv, data/montecarlo/summary_REF.csv, data/baseline/bands_annual.csv'),
         (f"Its embodied carbon is {f3['carbon']:,.0f} kt CO₂e within 2026–2050 (Monte Carlo "
          f"{q[REF]['carbon_kt']['p5']:,.0f}–{q[REF]['carbon_kt']['p95']:,.0f}; materials A1–A3 {f3['a1a3_kt']:,.0f} kt), "
@@ -942,18 +996,15 @@ def findings(rr, t2):
          'data/pathways/runs.csv, data/pathways/montecarlo_summary.csv'),
         (f"Combining the four pathways (P5, Moderate, full roll-out by 2035) lowers carbon 2026–2050 by "
          f"{-f4['runs']['P5-moderate']['d_carbon']:.0f}%: the cumulative LoE AR falls from {f5['ref']:.2f} to "
-         f"{f5['p5']:.2f} (Monte Carlo {q['P5-moderate']['LoE_AR']['p5']:.2f}–{q['P5-moderate']['LoE_AR']['p95']:.2f}), "
-         'far above the acquired-rights budget.', 'data/pathways/runs.csv, data/pathways/montecarlo_summary.csv'),
+         f"{f5['p5']:.2f} (Monte Carlo {q['P5-moderate']['LoE_AR']['p5']:.2f}–{q['P5-moderate']['LoE_AR']['p95']:.2f}; "
+         f"P(LoE AR ≤ 1) = {100 * f5['p_p5']['AR']:.0f}%), far above the acquired-rights budget.", 'data/pathways/runs.csv, data/pathways/montecarlo_summary.csv'),
         (f"Even the hyper-optimistic theoretical limit (TL; a thought experiment, not a pathway) reaches only LoE AR "
          f"{f5['tl']:.2f} (Monte Carlo {q['TL']['LoE_AR']['p5']:.2f}–{q['TL']['LoE_AR']['p95']:.2f}; P(LoE AR ≤ 1) = "
          f"{100 * f5['p_tl']['AR']:.0f}%) and LoE AtP {t.loc['TL', 'LoE_AtP']:.1f} (P(LoE AtP ≤ 1) = "
          f"{100 * f5['p_tl']['AtP']:.0f}%); reaching the AR budget means not building {f5['dw']:,.0f} dwellings in "
          f"2027–2050, i.e. housing {f5['res']:,.0f} new residents in existing dwellings.",
          'data/pathways/runs.csv, data/pathways/montecarlo_summary.csv, data/pathways/theoretical_limit.json'),
-        (f"Of the gap between P5 and TL, the largest contributions are removing the extra space (TL2, "
-         f"{rr['_tl_shapley']['TL2']:.2f} of LoE AR) and the vacancy (TL1, {rr['_tl_shapley']['TL1']:.2f}); starting at "
-         f"full strength in 2027 adds {f5['from2027']:.2f}.",
-         'data/pathways/shapley_theoretical_limit_moderate.csv'),
+        (tl_gap_sentence(rr['_tl_shapley'], f5['from2027']), 'data/pathways/shapley_theoretical_limit.csv'),
         (f"No cut of 2027–2050 floor area or carbon per m² reaches the ability-to-pay budget: the observed 2026 cohort "
          f"alone gives a cumulative LoE AtP of {f6['a0'] / f6['atp_one']:.2f}." if not f6['atp_reachable'] else
          f"Cutting 2027–2050 construction alone by {f6['cut_ref']:.1f}% brings the Reference to LoE AR = 1.",
@@ -979,7 +1030,9 @@ def write_md(rr, t1md, t2md, t2):
         data = f"Data (outputs/): {h['source']}" if h['source'].startswith('data/') else f"Data: {h['source']}"
         lines += [f"### {h['id']}. {N.typeset(h['title'])}", '', f'![{h["id"]}]({f}.png)', '',
                   f"**{h['id']}.** {N.typeset(rr[h['id']]['caption'])}", '',
-                  f"Files: [{f}.png]({f}.png), [{f}.pdf]({f}.pdf), source data [{f}.csv]({f}.csv). {data}.", '']
+                  f"Files: [{f}.png]({f}.png)" + (f", [{f}.pdf]({f}.pdf), source data [{f}.csv]({f}.csv)"
+                                                    if S.export_run() else ' (PDF and source data: run_all.py --export)')
+                  + f". {data}.", '']
     lines += ['## Tables', '', '### Table 1. Levers and the theoretical-limit assumptions', '',
               'Moderate is the setting of the paper; Ambitious is reported in Extended Data. '
               + N.typeset(FP.TL_NOTE), ''] + t1md
@@ -1010,7 +1063,7 @@ def main(only=None):
         rr[k] = fn()
         print(f'paper: {k} {PLAN[k]["file"]}')
     if not only:
-        st = read_csv('pathways/shapley_theoretical_limit_moderate.csv')
+        st = read_csv('pathways/shapley_theoretical_limit.csv')
         rr['_tl_shapley'] = st[st['metric'] == 'LoE_AR'].set_index('player')['reduction'].to_dict()
         _, t1md = table1()
         t2, t2md = table2()

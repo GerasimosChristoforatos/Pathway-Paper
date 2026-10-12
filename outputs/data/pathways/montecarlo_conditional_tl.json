@@ -1,0 +1,118 @@
+{
+ "outcome": "TL cumulative LoE AR 2026-2050 <= 1",
+ "n": 5000,
+ "within_AR": 4996,
+ "p_within_AR": 0.9992,
+ "wilson_95": [
+  0.9979446733541565,
+  0.9996888530238984
+ ],
+ "events_rarer_class": 4,
+ "events_per_variable_multivariable": 1.0,
+ "auc_multivariable_firth": 1.0,
+ "by_population_quintile": [
+  {
+   "quintile": 1,
+   "z_lo": -3.6638040314251663,
+   "z_hi": -0.8416220164610166,
+   "n": 1000,
+   "within_AR": 1000,
+   "p_within_AR": 1.0,
+   "wilson_lo": 0.996173241514445,
+   "wilson_hi": 1.0
+  },
+  {
+   "quintile": 2,
+   "z_lo": -0.8416220164610166,
+   "z_hi": -0.25336016153307134,
+   "n": 1000,
+   "within_AR": 1000,
+   "p_within_AR": 1.0,
+   "wilson_lo": 0.996173241514445,
+   "wilson_hi": 1.0
+  },
+  {
+   "quintile": 3,
+   "z_lo": -0.25336016153307134,
+   "z_hi": 0.25342012641315403,
+   "n": 1000,
+   "within_AR": 1000,
+   "p_within_AR": 1.0,
+   "wilson_lo": 0.996173241514445,
+   "wilson_hi": 1.0
+  },
+  {
+   "quintile": 4,
+   "z_lo": 0.25342012641315403,
+   "z_hi": 0.8414042674716006,
+   "n": 1000,
+   "within_AR": 1000,
+   "p_within_AR": 1.0,
+   "wilson_lo": 0.996173241514445,
+   "wilson_hi": 1.0
+  },
+  {
+   "quintile": 5,
+   "z_lo": 0.8414042674716006,
+   "z_hi": 4.017295493433392,
+   "n": 1000,
+   "within_AR": 996,
+   "p_within_AR": 0.996,
+   "wilson_lo": 0.9897604437227377,
+   "wilson_hi": 0.9984434118595916
+  }
+ ],
+ "exceeding_draws": [
+  {
+   "draw": 637,
+   "TL_LoE_AR": 1.0013399074959226,
+   "z_pop": 3.242586585142356,
+   "size": 1.0128713879774678,
+   "complete": 0.9575663605635156,
+   "carbon_index": 1.0365896637685452,
+   "z_pop_percentile_rank": 0.9996,
+   "size_percentile_rank": 0.572,
+   "complete_percentile_rank": 0.8784,
+   "carbon_index_percentile_rank": 0.8668
+  },
+  {
+   "draw": 1124,
+   "TL_LoE_AR": 1.0004697122615571,
+   "z_pop": 3.025319155542757,
+   "size": 1.066392518376719,
+   "complete": 0.954082161200454,
+   "carbon_index": 0.9750973227482982,
+   "z_pop_percentile_rank": 0.9988,
+   "size_percentile_rank": 0.8188,
+   "complete_percentile_rank": 0.7042,
+   "carbon_index_percentile_rank": 0.2368
+  },
+  {
+   "draw": 3137,
+   "TL_LoE_AR": 1.0085240914216005,
+   "z_pop": 3.4032760268745363,
+   "size": 1.056346366927767,
+   "complete": 0.923807241269176,
+   "carbon_index": 0.976287428165915,
+   "z_pop_percentile_rank": 0.9998,
+   "size_percentile_rank": 0.7814,
+   "complete_percentile_rank": 0.0636,
+   "carbon_index_percentile_rank": 0.2454
+  },
+  {
+   "draw": 4032,
+   "TL_LoE_AR": 1.1303262203316524,
+   "z_pop": 4.017295493433392,
+   "size": 0.9551744889592344,
+   "complete": 0.935791421793874,
+   "carbon_index": 0.9316157330956332,
+   "z_pop_percentile_rank": 1.0,
+   "size_percentile_rank": 0.258,
+   "complete_percentile_rank": 0.2632,
+   "carbon_index_percentile_rank": 0.0157
+  }
+ ],
+ "inputs_standardised": true,
+ "method": "Firth (1993) penalised-likelihood logistic regression with profile penalised-likelihood 95% intervals (Heinze & Schemper 2002), odds ratio per standard deviation of each input; univariable models (one input; the others random) and the multivariable model; whether the maximum-likelihood estimate exists is reported. Proportions: Wilson score intervals.",
+ "caveat": "the pathway model is deterministic: given all four inputs the outcome is fixed, and the intervals describe the 5,000-draw design, not a sampling process; with fewer than 10 events per variable (Peduzzi et al. 1996, J Clin Epidemiol 49, 1373) the multivariable odds ratios are indicative only"
+}

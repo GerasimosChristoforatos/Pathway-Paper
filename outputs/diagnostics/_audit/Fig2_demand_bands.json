@@ -58,7 +58,7 @@
   "Maintenance (B2, B4), 2026\u20132050",
   "Population growth (untargeted)",
   "Recent replacement surge",
-  "Smaller households (untargeted)",
+  "Smaller households",
   "Unexplained building (history; may be negative)",
   "Vacancy",
   "a",
@@ -69,5 +69,7 @@
  "maintenance_where": [
   "axes 1: Rectangle in the maintenance colour",
   "legend: Maintenance (B2, B4), 2026\u20132050"
- ]
+ ],
+ "boundary_drawn": false,
+ "boundary_zones": false
 }

@@ -56,5 +56,7 @@
  ],
  "note": "Reference, median population. Fitting carbon per m\u00b2 = B(t) / floor area(t); fitting floor area = B(t) / (carbon per m\u00b2 of the Reference); per dwelling = B(t) / dwellings built(t), dwellings = floor area / blended dwelling size. Carbon: construction (A1\u2013A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1\u2013C4 are committed after 2050; A1\u2013A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4\u2013A5 e^(\u22120.01 (t \u2212 2025)) after Resch et al. 2021, C1\u2013C4 and soil at 2025; carbon per m\u00b2 also varies with the mix and the soil-bearing share. 2 \u00b0C carrying capacity (Bj\u00f8rn & Hauschild 2015).",
  "maintenance_drawn": false,
- "maintenance_where": []
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_zones": true
 }

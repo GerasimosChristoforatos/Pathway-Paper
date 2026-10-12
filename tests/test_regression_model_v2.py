@@ -12,14 +12,17 @@ import os
 import pytest
 
 import regression_v2 as R
+import regression_v2_1 as R21
 
 pytestmark = pytest.mark.skipif(os.environ.get('PATHWAY_QUICK') == '1', reason='quick run: Monte Carlo outputs differ')
-ADD, META = R.load_additions()
+ADD_ALL, META = R.load_additions()
+# MODEL v2.1.0: the pathway domain is re-locked by tests/regression_model_v2_1.json (tests/regression_v2_1.py)
+ADD = {k: v for k, v in ADD_ALL.items() if not R21.in_domain(k)}
 
 
 @pytest.fixture(scope='module')
 def unc():
-    return R.uncovered()
+    return {k: v for k, v in R.uncovered().items() if not R21.in_domain(k)}
 
 
 def test_every_number_of_the_data_files_is_locked(unc):
@@ -35,4 +38,4 @@ def test_every_v2_addition_is_reproduced(unc):
 
 
 def test_additions_meta():
-    assert META and META['n_values'] == len(ADD) and sum(b['n_values'] for b in META['batches']) == len(ADD)
+    assert META and META['n_values'] == len(ADD_ALL) and sum(b['n_values'] for b in META['batches']) == len(ADD_ALL)

@@ -27,6 +27,7 @@ reproduces every figure byte for byte (tests/output_manifest_model_v2.json).
 import os
 
 import matplotlib
+import numpy as np
 from matplotlib import font_manager
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -69,52 +70,73 @@ RC = {
 INK = '#1A1A1A'                                 # text, axes
 MUTED = '#6E6E6E'                               # secondary text, leader lines
 
-# boundaries (validated pair, unchanged from the planetary-boundary layer)
-AR = '#1F5FA8'
-ATP = '#C2571A'
-BOUNDARY = {'AR': dict(color=AR, ls='-', lw=LW_BOLD, label='Acquired rights (AR)'),
-            'AtP': dict(color=ATP, ls='--', lw=LW_BOLD, label='Ability to pay (AtP)')}
+# boundaries (MODEL v2.1.0 styling, implemented once here: boundary_zones / boundary_hzones): AR a thin red line,
+# AtP a thin dark-red line (dashed, so the two principles stay apart under colour-vision deficiency); the area
+# below AtP darker green (within both budgets), between AtP and AR light green (within AR only), above AR light
+# red at low opacity (boundary exceeded); the same on annual and cumulative axes. The three zones (as seen on
+# white) fall strictly in lightness under every simulated deficiency (darker green < light green < palest red;
+# CAM02-UCS J' 77 / 90 / 97 at least / at most), so they never depend on hue alone; AR '#D7191C' keeps >= 10 from
+# every run colour under every deficiency (tools/palette_check.py; docs/PALETTE.md)
+AR = '#D7191C'
+ATP = '#67000D'
+LW_BOUNDARY = 0.9
+BOUNDARY = {'AR': dict(color=AR, ls='-', lw=LW_BOUNDARY, label='Acquired rights (AR)'),
+            'AtP': dict(color=ATP, ls='--', lw=LW_BOUNDARY, label='Ability to pay (AtP)')}
+ZONE = {'within_both': dict(color='#238B45', alpha=0.50, label='Within both budgets (below AtP)'),
+        'within_ar': dict(color='#A1D99B', alpha=0.60, label='Within AR only (between AtP and AR)'),
+        'exceeded': dict(color='#FB6A4A', alpha=0.08, label='Boundary exceeded (above AR)')}
+ZONE_GID = 'boundary_zone'
+# two accent colours for lines that are not boundaries (household formation, floor area in the diagnostics): the
+# boundary pair of model-v2.0.0, kept so those diagnostics are unchanged
+ACCENT_ORANGE = '#C2571A'
+ACCENT_BLUE = '#1F5FA8'
 
 # runs
 REFERENCE = '#4D4D4D'
 TL = '#141414'
-TL_GRADUAL = '#A6A6A6'
 SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),
             'LOW': dict(color='#9E9E9E', ls='--', lw=LW, label='Low replacement'),
             'HIGH': dict(color='#6E6E6E', ls=':', lw=LW, label='High replacement')}
 MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% band
 
-# pathways (P1-P4 keep their hue families; P5 sky blue; see docs/PALETTE.md)
-PATHWAY = {'P1': '#228833', 'P2': '#F0B400', 'P3': '#E15A97', 'P4': '#762A83', 'P5': '#56B4E9'}
+# four pathway colour families (MODEL v2.1.0), each lever a distinct shade within its family (the nine shades
+# chosen by maximising the minimum CAM02-UCS distance under every simulated deficiency: 13.5 >= 10,
+# tools/palette_check.py): P1 Space per person greens, P2 Existing stock magentas, P3 Construction purples,
+# P4 Land ochres; P5 sky blue, TL near-black, Reference dark grey
+LEVER = {'L1': '#1B7837', 'L2': '#74C476', 'L3': '#C51B7D', 'L4': '#67001F', 'L5': '#F1B6DA',
+         'L6': '#3F007D', 'L7': '#9E9AC8', 'L8': '#CC8B00', 'L9': '#FFF3B0'}
+PATHWAY = {'P1': LEVER['L1'], 'P2': LEVER['L3'], 'P3': LEVER['L6'], 'P4': LEVER['L8'], 'P5': '#56B4E9'}
 SETTING = {'moderate': dict(ls='-', marker_fill='none', label='Moderate'),
            'ambitious': dict(ls='--', marker_fill='full', label='Ambitious')}
 
-# demand bands, bottom to top: (id, colour, hatch); labels in naming.BANDS
+# demand bands, bottom to top: (colour, hatch), coloured by the lever that targets them; labels in naming.BANDS.
+# Population growth (untargeted) mid grey and hatched; the recent replacement surge the L5 shade, hatched (both
+# replacement bands are targeted by L5)
 UNTARGETED_HATCH = '....'
-BAND = {'growth': ('#CCCCCC', UNTARGETED_HATCH),
-        'smaller_households': ('#6E6E6E', UNTARGETED_HATCH),
-        'extra_space': (PATHWAY['P1'], None),
-        'vacancy': (PATHWAY['P2'], None),
-        'overbuild_2026': ('#6B4C00', None),
-        'replacement': (PATHWAY['P3'], None),
-        'redevelopment': ('#7A1A4B', None),
-        'maintenance': ('#C7A3D0', None)}
+BAND = {'growth': ('#969696', UNTARGETED_HATCH),
+        'smaller_households': (LEVER['L2'], None),
+        'extra_space': (LEVER['L1'], None),
+        'vacancy': (LEVER['L3'], None),
+        'overbuild_2026': (LEVER['L4'], None),
+        'replacement': (LEVER['L5'], None),
+        'redevelopment': (LEVER['L5'], '\\\\'),
+        'maintenance': ('#0082DC', None)}      # >= 15 from every band and stage under every deficiency
 BAND_ORDER = list(BAND)
 
 # carbon components (labels in naming.COMPONENTS)
-COMPONENT = {'materials_construction': ('#762A83', None),       # A1-A5: the P4 colour
-             'soil': ('#8C6D46', None),
-             'maintenance': ('#C7A3D0', None),                  # B2, B4 within 2026-2050
+COMPONENT = {'materials_construction': (LEVER['L6'], None),     # A1-A5: the P3 Construction family
+             'soil': (LEVER['L8'], None),                       # the P4 Land family
+             'maintenance': (BAND['maintenance'][0], None),     # B2, B4 within 2026-2050
              'committed': ('#BDBDBD', '///')}                   # after 2050, a range
 
-# life-cycle stages of the Reference (Fig3a; labels in naming.STAGES): A1-A3 the P4 colour, A4-A5 a light orange
-# (CAM02-UCS distance >= 16 to the other stages under every simulated deficiency, tools/palette_check.py)
-STAGE = {'a1a3': ('#762A83', None), 'a4a5': ('#E7A44B', None), 'maintenance': COMPONENT['maintenance'],
-         'soil': COMPONENT['soil']}
+# life-cycle stages (Fig3a; labels in naming.STAGES): A1-A3 the L6 shade, A4-A5 the L7 shade, soil the L8
+# shade, maintenance its band colour; stacked A1-A3, A4-A5, soil, maintenance (A4-A5 and maintenance not adjacent)
+STAGE = {'a1a3': COMPONENT['materials_construction'], 'a4a5': (LEVER['L7'], None), 'soil': COMPONENT['soil'],
+         'maintenance': COMPONENT['maintenance']}
 
 # unexplained building of the history (Fig2a, D05c): neutral, hatched (face, hatch, hatch colour); may be negative
 UNEXPLAINED = ('#F2F2F2', '////', '#8C8C8C')
-# the untargeted bands grouped into one segment (Fig4): the population-growth grey, hatched
+# the untargeted band (Fig4): the population-growth grey, hatched
 UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)
 
 # materials: the six Pride-flag stripes (author decision, baseline-pb-v2; one order in every
@@ -171,16 +193,141 @@ def save(fig, path, pdf=False):
     plt.close(fig)
 
 
+def export_run():
+    """True with run_all.py --export (PATHWAY_EXPORT=1): the paper and Extended Data figures are also written as
+    vector PDF with their source-data CSV (Nature source data, at acceptance). Default: PNG only."""
+    return os.environ.get('PATHWAY_EXPORT') == '1'
+
+
 def save_figure(fig, name, note=None):
     """Save a planned figure (figure_plan.py file id, e.g. 'D22_boundaries') to its place in
-    outputs/ (layout.figure): paper and Extended Data figures as PNG and PDF, diagnostics as PNG; the audit
-    record of the figure (axes, year ranges, every text, the note) is written first
-    (figaudit.py). note: run-specific caption text for DIAGNOSTICS.md (numbers of this run)."""
+    outputs/ (layout.figure): PNG; with --export also a vector PDF of the paper and Extended Data figures. The
+    audit record of the figure (axes, year ranges, every text, the note, maintenance and boundary styling) is
+    written first (figaudit.py). note: run-specific caption text for DIAGNOSTICS.md (numbers of this run)."""
     import figaudit
     import layout
     path = layout.figure(name)
     figaudit.record(fig, name, note=note)
-    save(fig, path, pdf=layout.vector(path))
+    save(fig, path, pdf=layout.vector(path) and export_run())
+
+
+# ---------------------------------------------------------------------------
+# Planetary-boundary styling (every figure with boundaries: paper, Extended Data, diagnostics, key figures)
+# ---------------------------------------------------------------------------
+_ZONE_TOP = 1e15                   # the 'exceeded' zone extends far above any axis (clipped by the axes)
+
+
+def _keep_limits(ax, draw):
+    """Draw the zones without changing the data limits (autoscaling follows the data, not the zones)."""
+    saved = ax.dataLim.frozen()
+    ignore = ax.ignore_existing_data_limits
+    draw()
+    ax.dataLim.set(saved)
+    ax.ignore_existing_data_limits = ignore
+
+
+def boundary_zones(ax, x, ar, atp, lines=True, label=True):
+    """Annual (or cumulative-by-year) boundaries: the zones below AtP (darker green), between AtP and AR (light
+    green) and above AR (light red, low opacity), and the two thin boundary lines. Zones start just above zero
+    (a positive floor, so log axes work) and are tagged ZONE_GID for the figure audit; lines are tagged as
+    boundaries (figaudit.BOUNDARY)."""
+    import figaudit
+    x = np.asarray(x, float)
+    ar, atp = np.asarray(ar, float), np.asarray(atp, float)
+    floor = 1e-6 * float(np.nanmin(atp))
+
+    def draw():
+        for lo, hi, key in ((np.full(len(x), floor), atp, 'within_both'), (atp, ar, 'within_ar'),
+                            (ar, np.full(len(x), _ZONE_TOP), 'exceeded')):
+            z = dict(ZONE[key])
+            z.pop('label')
+            ax.fill_between(x, lo, hi, lw=0, zorder=0, gid=ZONE_GID, **z)
+    _keep_limits(ax, draw)
+    if lines:
+        for key, y in (('AR', ar), ('AtP', atp)):
+            st = dict(BOUNDARY[key])
+            lab = st.pop('label')
+            ax.plot(x, y, gid=figaudit.BOUNDARY, label=lab if label else None, zorder=3, **st)
+
+
+def boundary_hzones(ax, ar, atp, lines=True, label=True, xspan=None):
+    """Cumulative budgets on a bar axis (one value each): horizontal zones over the whole axes width (or xspan
+    in data units) and the two thin budget lines."""
+    import figaudit
+
+    def draw():
+        for lo, hi, key in ((1e-6 * atp, atp, 'within_both'), (atp, ar, 'within_ar'), (ar, _ZONE_TOP, 'exceeded')):
+            z = dict(ZONE[key])
+            z.pop('label')
+            if xspan is None:
+                ax.axhspan(lo, hi, lw=0, zorder=0, gid=ZONE_GID, **z)
+            else:
+                ax.fill_between(list(xspan), [lo, lo], [hi, hi], lw=0, zorder=0, gid=ZONE_GID, **z)
+    _keep_limits(ax, draw)
+    if lines:
+        for key, v in (('AR', ar), ('AtP', atp)):
+            st = dict(BOUNDARY[key])
+            lab = st.pop('label')
+            if xspan is None:
+                ax.axhline(v, gid=figaudit.BOUNDARY, label=lab if label else None, zorder=3, **st)
+            else:
+                ax.plot(list(xspan), [v, v], gid=figaudit.BOUNDARY, label=lab if label else None, zorder=3, **st)
+
+
+def zone_handles():
+    """Legend handles of the three boundary zones."""
+    from matplotlib.patches import Patch
+    return [Patch(facecolor=z['color'], alpha=z['alpha'], edgecolor='none', label=z['label']) for z in ZONE.values()]
+
+
+def boundary_handles():
+    """Legend handles of the two boundary lines."""
+    from matplotlib.lines import Line2D
+    return [Line2D([0], [0], **{k: v for k, v in BOUNDARY[b].items()}) for b in ('AR', 'AtP')]
+
+
+def boundary_vzones(ax, ar, atp, lines=True, label=True):
+    """Budgets on an x axis (e.g. a cumulative level of exceedance: AR at 1, AtP at its AR equivalent): vertical
+    zones and lines."""
+    import figaudit
+
+    def draw():
+        for lo, hi, key in ((1e-6 * atp, atp, 'within_both'), (atp, ar, 'within_ar'), (ar, _ZONE_TOP, 'exceeded')):
+            z = dict(ZONE[key])
+            z.pop('label')
+            ax.axvspan(lo, hi, lw=0, zorder=0, gid=ZONE_GID, **z)
+    _keep_limits(ax, draw)
+    if lines:
+        for key, v in (('AR', ar), ('AtP', atp)):
+            st = dict(BOUNDARY[key])
+            lab = st.pop('label')
+            ax.axvline(v, gid=figaudit.BOUNDARY, label=lab if label else None, zorder=3, **st)
+
+
+def boundary_field(ax, X, Y, Z, ar, atp, lines=True):
+    """A field of cumulative carbon (Z, in any unit where the budgets are ar and atp, e.g. LoE AR: ar = 1,
+    atp = B_AtP / B_AR) on a plane: the three zones as filled regions and the two budgets as contour lines
+    (the solution space). Only the levels inside the range of Z are drawn."""
+    import figaudit
+    zmin, zmax = float(np.nanmin(Z)), float(np.nanmax(Z))
+    edges = [min(zmin, atp) - 1.0, atp, ar, max(zmax, ar) + 1.0]
+    keys = ('within_both', 'within_ar', 'exceeded')
+    for (lo, hi), key in zip(zip(edges[:-1], edges[1:]), keys):
+        if hi <= zmin or lo >= zmax:
+            continue
+        cf = ax.contourf(X, Y, Z, levels=[lo, hi], colors=[ZONE[key]['color']], alpha=ZONE[key]['alpha'],
+                         zorder=0)
+        cf.set_gid(ZONE_GID)
+    out = {}
+    if lines:
+        for key, v in (('AR', ar), ('AtP', atp)):
+            if zmin < v < zmax:
+                st = BOUNDARY[key]
+                cs = ax.contour(X, Y, Z, levels=[v], colors=[st['color']], linewidths=[st['lw']],
+                                linestyles=[st['ls']], zorder=3)
+                cs.set_gid(figaudit.BOUNDARY)
+                out[key] = cs
+    return out
 
 
 apply()

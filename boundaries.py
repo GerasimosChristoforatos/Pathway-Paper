@@ -947,9 +947,10 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     # MODEL v2.0.0: the totals only (maintenance is drawn as its own layer only in Fig3 and the band breakdowns)
     a2.bar(range(len(VARS)), [runs[k]['I'].loc[py].sum() / M6 for k in VARS],
            color=[S.SCENARIO[k]['color'] for k in VARS], width=0.62, label='Embodied carbon 2026–2050')
-    for key in ('AR', 'AtP'):
-        v = (bar_ if key == 'AR' else batp_).sum() / M6
-        P.boundary_hline(a2, key, v, label=f"{S.BOUNDARY[key]['label']}: {v:,.0f} kt")
+    v_ar, v_atp = bar_.sum() / M6, batp_.sum() / M6
+    S.boundary_hzones(a2, v_ar, v_atp, label=False)
+    for line, (key, v) in zip(a2.get_lines()[-2:], (('AR', v_ar), ('AtP', v_atp))):
+        line.set_label(f"{S.BOUNDARY[key]['label']}: {v:,.0f} kt")
     a2.set_xticks(range(len(VARS)))
     a2.set_xticklabels([N.SCENARIOS[k].replace(' replacement', '\nreplacement') for k in VARS], fontsize=S.FONT_MIN)
     a2.set_ylabel('Embodied carbon 2026–2050 (kt CO₂e)')
@@ -970,6 +971,7 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     ax.fill_between(m.index, m['I_sec_kgCO2e_p5'] / M6, m['I_sec_kgCO2e_p95'] / M6,
                     label='Embodied carbon, Monte Carlo 5–95%', **S.MC_BAND)
     ax.plot(m.index, m['I_sec_kgCO2e_p50'] / M6, color=S.REFERENCE, lw=S.LW_BOLD, label='Embodied carbon, Monte Carlo median')
+    S.boundary_zones(ax, m.index, m['B_AR_kgCO2e_p50'] / M6, m['B_AtP_kgCO2e_p50'] / M6, lines=False)
     for k, key in (('B_AR', 'AR'), ('B_AtP', 'AtP')):
         st = dict(S.BOUNDARY[key])
         lab = st.pop('label')
@@ -1051,7 +1053,11 @@ def figures(B, hist, runs, mc, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
             a.plot(py, runs[name]['I'].loc[py] / bb.loc[py],
                    label=f"{N.SCENARIOS[name]} ({'band' if name == 'REF' else 'thin lines'}: Monte Carlo 5–95%)",
                    **scen_line(name))
-        a.axhline(1, color=S.INK, lw=S.LW, ls=(0, (1, 1)), label='LoE = 1')
+        r_ = res['B_AtP_over_B_AR']['min']        # AtP / AR, constant in every year (static design)
+        if k == 'AR':                              # LoE AR: AR at 1, AtP at B_AtP / B_AR
+            S.boundary_hzones(a, 1.0, r_)
+        else:                                      # LoE AtP: AtP at 1, AR at B_AR / B_AtP
+            S.boundary_hzones(a, 1.0 / r_, 1.0)
         a.set_yscale('log')
         a.set_xlim(PB_YEARS[0], PB_YEARS[1])
         P.log_ticks(a.yaxis, (0.5, 1, 2, 5, 10, 20, 50, 100))

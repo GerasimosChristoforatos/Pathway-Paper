@@ -341,5 +341,5 @@ def d19():
     S.save_figure(fig, fid, source=_src(fid))
 
 
-FIGURES = {'D07_net_replacement_rate': d07, 'D10_floor_area_bridge': d10, 'D11_floor_area_bridge_split': d11,
+FIGURES = {'D07_net_replacement_rate': d07, 'D10_floor_area_bridge': d10,
            'D12_conversion_chain': d12, 'D14_hindcast': d14, 'D15_reality_checks': d15, 'D19_variants': d19}

@@ -28,7 +28,7 @@ PAPER_MAIN = [
                  'ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with the committed '
                  'range after 2050 as a hollow segment on top, the AR and AtP budgets as ticks, and three thin 100% '
                  'share bars by demand band, material and stage.',
-         source=['aesa/annual.csv', 'aesa/montecarlo_annual.csv', 'aesa/results.json', 'baseline/projection.json',
+         source=['aesa/annual.csv', 'montecarlo/annual_REF.csv', 'baseline/projection.json',
                  'baseline/bands_annual.csv', 'baseline/annual_by_material.csv', 'baseline/annual_by_stage.csv']),
     dict(id='Fig4', file='Fig4_pathways_annual', width='double', module='figures.paper_main',
          title='Pathways against the boundaries',

@@ -1,46 +1,26 @@
-"""Run the whole pipeline headless, save every figure, and collect the metrics.
+"""Run the whole pipeline headless (MODEL v3.0.0).
 
-    python run_all.py                   # full run: the only basis for reported results and tags
-    python run_all.py --pathways-only   # the pathway layer only (the projection is unchanged):
-                                        # pathways.py (projection.main() in memory), the pathway Monte
-                                        # Carlo, the grouped sensitivity tables, the paper and Extended
-                                        # Data figures, the pathway documents and the indexes, then the
-                                        # pathway tests, the numerical regression lock, the
-                                        # release checks and the byte manifest; only the pathway
-                                        # figures are replaced
-    python run_all.py --figures-only    # MODEL v2.1.2: redraw every figure, no data may change (byte-checked)
-    python run_all.py --export          # also the vector PDF and source-data CSV of every paper, Extended Data
-                                        # and key figure (PATHWAY_EXPORT=1); combinable with the modes above
-                                        # (default: PNG only)
-    python run_all.py --quick           # development: Monte Carlo with fewer draws, no
-                                        # frozen-technology Monte Carlo or AESA step, regression
-                                        # checks of the Monte Carlo skipped; every output and figure
-                                        # marked "QUICK RUN, not for reporting"
+    python run_all.py                       # light profile (DEFAULT, temporary): outputs/_light/
+    python run_all.py --profile full        # full profile: outputs/ (5,000 draws, Sobol, PDF + PNG 600 dpi)
+    python run_all.py --figures-only        # redraw every figure from the data files; outputs/data must stay
+                                            # byte-identical (checked: SHA-256 of every file before and after)
+    python run_all.py --reference-legacy    # the MODEL v2.1 Reference (overbuild never absorbed) in outputs/_legacy/,
+                                            # checked against the v2.1 fixture to 1e-12 (tests/test_reference_legacy.py)
 
-In Spyder (or any IPython console): open run_all.py and Run (F5), or
-    runfile('run_all.py')                        # full run
-    runfile('run_all.py', args='--pathways-only')
-Paths are resolved from this file's folder, so the working directory does not
-matter. A failed step prints its name and the log to read, and the run stops
-there; from the command line the exit code is non-zero, in an interactive
-console no SystemExit is raised.
+Run profiles (runprofile.py): light = 1,000 Latin hypercube draws with their own seed, no Sobol indices, bootstrap 500,
+PNG at 200 dpi with a "LIGHT RUN" footer, every output under outputs/_light/; full = 5,000 draws with the existing
+seed, Sobol, bootstrap 2,000, PDF + PNG at 600 dpi under outputs/. The deterministic results do not depend on the
+profile (tests/test_profiles.py).
 
-Order: Building_factors -> projection -> Diagnostics -> Sensitivity -> MonteCarlo ->
-boundaries (AESA layer; reads the Monte Carlo draws) -> validation -> gap_2026 ->
-overbuild_2026 -> scenarios -> reconciliation -> figures_report -> frozen-technology check
-(projection, Sensitivity, MonteCarlo, scenarios, boundaries with DECARB_MODE 'none', A4-A5
-held, whole life at construction; data in outputs/data/frozen_technology/, no figures) ->
-pathways -> pathways_mc (the saved Reference draws through P5 and TL) -> sensitivity_tables (grouped
-one-at-a-time tables) -> metrics -> paper (Fig1-Fig6, Tables 1-2, PAPER.md) -> extended_data (ED1-ED13,
-EXTENDED_DATA.md) -> key_figures (K1-K6, KEY_FIGURES.md), all from the data files -> results ->
-assumptions -> pathways_docs (LEVERS_TABLE.md) -> methods_draft (METHODS_DRAFT.md) -> check_outputs -> indexes
-(DIAGNOSTICS.md, outputs/INDEX.md) -> tests, last (incl. the v1.2.1 regression test, which reads
-the frozen-technology data, the regression lock of MODEL v1.0.0, which reads every data file, and
-the release checks of figures and indexes).
-Each script runs in its own process, with the non-interactive matplotlib backend and
-PATHWAY_SAVE_FIGURES=1, so every figure is written (outputs/paper/, outputs/extended_data/, outputs/diagnostics/;
-layout.py) and nothing is shown. Console output of each step goes to outputs/logs/<step>.log.
+Order (compute, then draw): Building_factors -> projection -> Diagnostics -> Sensitivity -> MonteCarlo -> boundaries
+(AESA; reads the Monte Carlo draws) -> validation -> gap_2026 -> overbuild_2026 -> scenarios -> reconciliation ->
+figures_report -> pathways -> pathways_mc -> sensitivity_tables -> metrics -> results -> assumptions -> methods
+(docs/LEVERS_TABLE.md, docs/METHODS_DRAFT.md) -> run_meta -> figures (python -m figures: every figure and
+FIGURES.md, from the data files only) -> check_outputs -> indexes -> tests. Model scripts write CSV / JSON only.
+Each step runs in its own process; its console output goes to <outputs>/logs/<step>.log.
 """
+import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -49,9 +29,6 @@ import time
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
-import layout  # noqa: E402
-
-LOGS = layout.LOGS
 
 
 class StepFailed(Exception):
@@ -59,20 +36,30 @@ class StepFailed(Exception):
 
 
 def interactive():
-    """True inside Spyder, IPython or Jupyter, or python -i."""
     return (hasattr(sys, 'ps1') or bool(sys.flags.interactive)
             or any(m in sys.modules for m in ('spyder_kernels', 'IPython', 'ipykernel')))
 
 
-def step(name, cmd, env_extra=None):
-    os.makedirs(LOGS, exist_ok=True)
-    env = dict(os.environ, MPLBACKEND='Agg', PATHWAY_SAVE_FIGURES='1', PYTHONWARNINGS='ignore')
-    env.update(env_extra or {})                      # a step's own settings override the defaults
-    log_path = os.path.join(LOGS, f'{name}.log')
+def _layout():
+    import importlib
+    import runprofile
+    import layout
+    importlib.reload(runprofile)
+    return importlib.reload(layout)
+
+
+TIMINGS = {}
+
+
+def step(name, cmd, env):
+    L = _layout()
+    os.makedirs(L.LOGS, exist_ok=True)
+    log_path = os.path.join(L.LOGS, f'{name}.log')
     t = time.time()
     with open(log_path, 'w') as log:
         rc = subprocess.call(cmd, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
-    print(f'  {name:<18} {"ok" if rc == 0 else f"FAILED (exit {rc})":<10} {time.time() - t:6.1f} s')
+    TIMINGS[name] = round(time.time() - t, 1)
+    print(f'  {name:<18} {"ok" if rc == 0 else f"FAILED (exit {rc})":<10} {TIMINGS[name]:7.1f} s')
     if rc != 0:
         raise StepFailed(f'Step "{name}" failed (exit {rc}). Read the log: {log_path}')
 
@@ -81,148 +68,142 @@ def tool(name):
     return os.path.join(ROOT, 'tools', f'{name}.py')
 
 
-def export_env(export):
-    return {'PATHWAY_EXPORT': '1' if export else '0'}
+def script(name):
+    return os.path.join(ROOT, f'{name}.py')
 
 
-def pipeline(quick=False, export=False):
+def data_hashes(data_dir):
+    out = {}
+    for d, _, fs in os.walk(data_dir):
+        for f in fs:
+            p = os.path.join(d, f)
+            with open(p, 'rb') as fh:
+                out[os.path.relpath(p, data_dir)] = hashlib.sha256(fh.read()).hexdigest()
+    return out
+
+
+def input_hash():
+    """SHA-256 over every input file under data/ (path and content), the data the model reads."""
+    h = hashlib.sha256()
+    base = os.path.join(ROOT, 'data')
+    for d, _, fs in sorted(os.walk(base)):
+        for f in sorted(fs):
+            p = os.path.join(d, f)
+            h.update(os.path.relpath(p, base).encode())
+            with open(p, 'rb') as fh:
+                h.update(fh.read())
+    return h.hexdigest()
+
+
+def write_run_meta(env, mode):
+    import runprofile
+    L = _layout()
+    git = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+    dirty = bool(subprocess.run(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=ROOT,
+                                capture_output=True, text=True).stdout.strip())
+    p = runprofile.PROFILES[env['PATHWAY_PROFILE']]
+    import levers
+    meta = dict(profile=p['name'], mode=mode, n_draws=p['n_draws'], sobol=p['sobol'], bootstrap=p['bootstrap'],
+                seeds=dict(montecarlo=p['mc_seed'], hd_bootstrap_L6=levers.HD_BOOTSTRAP_SEED,
+                           hd_bootstrap_L2=levers.HD_BOOTSTRAP_SEED + 1, insight_bootstrap=p['mc_seed'] + 2101,
+                           sobol=p['mc_seed'] + 2 if p['sobol'] else None),
+                figures=dict(formats=list(p['formats']), dpi=p['dpi'], footer=p['footer']),
+                git_hash=git, git_dirty=dirty, input_hash=input_hash(),
+                timestamp=time.strftime('%Y-%m-%dT%H:%M:%S%z'), step_seconds=dict(TIMINGS),
+                reference_legacy=env.get('PATHWAY_REFERENCE_LEGACY') == '1')
+    with open(L.writing(L.RUN_META), 'w') as f:
+        json.dump(meta, f, indent=1)
+
+
+def base_env(profile, legacy=False):
+    return dict(os.environ, MPLBACKEND='Agg', PYTHONWARNINGS='ignore', PATHWAY_PROFILE=profile,
+                PATHWAY_SAVE_FIGURES='0', PATHWAY_REFERENCE_LEGACY='1' if legacy else '0')
+
+
+def pipeline(profile):
+    env = base_env(profile)
+    os.environ.update(PATHWAY_PROFILE=profile, PATHWAY_REFERENCE_LEGACY='0')
+    L = _layout()
     py = sys.executable
-    q = dict({'PATHWAY_QUICK': '1'} if quick else {'PATHWAY_QUICK': '0'}, **export_env(export))
-
-    def run(name, cmd, **extra):
-        step(name, cmd, dict(q, **extra))
-
-    # every figure (and its audit record, figaudit.py) is written by this run; a full run also
-    # rewrites every data file and report, so nothing stale survives (outputs/INDEX.md, the tests).
-    # A quick run keeps the data: it does not re-run the frozen-technology Monte Carlo and AESA.
-    for d in (layout.PAPER, layout.EXTENDED_DATA, layout.KEY_FIGURES, layout.DIAGNOSTICS, layout.FIGURE_AUDIT) + (
-            () if quick else (layout.DATA, layout.REPORTS)):
+    # a full rebuild: nothing stale survives (data, reports, every figure folder; the retired v2 folders)
+    for d in (L.DATA, L.REPORTS, L.PAPER_MAIN, L.PAPER_EXTENDED, L.DIAGNOSTICS) + L.RETIRED:
         shutil.rmtree(d, ignore_errors=True)
-    run('building_factors', [py, os.path.join(ROOT, 'Building_factors.py')])
-    run('projection', [py, os.path.join(ROOT, 'projection.py')])
-    run('diagnostics', [py, os.path.join(ROOT, 'Diagnostics.py')])
-    run('sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')])
-    run('montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')])
-    run('boundaries', [py, os.path.join(ROOT, 'boundaries.py')])
-    run('validation', [py, os.path.join(ROOT, 'validation.py')])
-    run('gap_2026', [py, os.path.join(ROOT, 'gap_2026.py')])
-    run('overbuild_2026', [py, tool('overbuild_2026')])
-    run('scenarios', [py, tool('replacement_scenarios')])
-    run('reconciliation', [py, tool('reconciliation')])
-    run('figures_report', [py, tool('figures_report')])
-    # frozen-technology check run (DECARB_MODE 'none', outputs/data/frozen_technology/): the
-    # v1.2.1 regression test compares it with v1.2.1; figures are not saved
-    fz = dict(PATHWAY_FROZEN='1', PATHWAY_SAVE_FIGURES='0')
-    run('frozen_projection', [py, os.path.join(ROOT, 'projection.py')], **fz)
-    run('frozen_sensitivity', [py, os.path.join(ROOT, 'Sensitivity.py')], **fz)
-    if not quick:
-        run('frozen_montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')], **fz)
-    run('frozen_scenarios', [py, tool('replacement_scenarios')], **fz)
-    if not quick:
-        run('frozen_boundaries', [py, os.path.join(ROOT, 'boundaries.py')], **fz)
-    # the pathway layer (levers, pathways, attribution, AESA gap): after the AESA layer, whose
-    # boundaries it reads
-    run('pathways', [py, os.path.join(ROOT, 'pathways.py')])
-    # the pathway Monte Carlo: the saved Reference draws through P5 (Moderate) and TL (reads the draw budgets
-    # written by boundaries.py)
-    run('pathways_mc', [py, os.path.join(ROOT, 'pathways_mc.py')])
-    # the grouped one-at-a-time sensitivity tables (Reference carbon, P5 carbon, planetary boundary):
-    # existing rows from the data files; the rows MODEL v2.0.0 adds computed on the engine path
-    run('sensitivity_tables', [py, tool('sensitivity_tables')])
-    # metrics.json is a data file (locked by tests/test_regression_model_v1.py): written before the tests
-    run('metrics', [py, tool('metrics')])
-    # the figures and tables of the paper (PAPER.md) and Extended Data (EXTENDED_DATA.md), from the data files only
-    run('paper', [py, os.path.join(ROOT, 'paper.py')])
-    run('extended_data', [py, os.path.join(ROOT, 'extended_data.py')])
-    run('key_figures', [py, os.path.join(ROOT, 'key_figures.py')])
-    run('results', [py, tool('results')])
-    run('assumptions', [py, tool('assumptions')])
-    run('pathways_docs', [py, tool('pathways_methods'), '--sections'])
-    run('methods_draft', [py, tool('methods_draft')])
-    run('check_outputs', [py, tool('check_outputs')])
-    # DIAGNOSTICS.md and outputs/INDEX.md, once every output is written; then the tests, last, on
-    # the complete output set (figure audit, index, regression lock)
-    run('indexes', [py, os.path.join(ROOT, 'indexes.py')])
-    run('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')])
+    for f in (L.FIGURES_INDEX, os.path.join(L.OUT, 'INDEX.md')):
+        if os.path.exists(f):
+            os.remove(f)
+    t0 = time.time()
+    for name in ('Building_factors', 'projection', 'Diagnostics', 'Sensitivity', 'MonteCarlo', 'boundaries',
+                 'validation', 'gap_2026'):
+        step(name.lower(), [py, script(name)], env)
+    for name, t in (('overbuild_2026', 'overbuild_2026'), ('scenarios', 'replacement_scenarios'),
+                    ('reconciliation', 'reconciliation'), ('figures_report', 'figures_report')):
+        step(name, [py, tool(t)], env)
+    step('pathways', [py, script('pathways')], env)
+    step('pathways_mc', [py, script('pathways_mc')], env)
+    for t in ('sensitivity_tables', 'metrics', 'results', 'assumptions', 'methods'):
+        step(t, [py, tool(t)], env)
+    TIMINGS['compute_total'] = round(time.time() - t0, 1)
+    write_run_meta(env, 'pipeline')
+    step('figures', [py, '-m', 'figures'], env)
+    step('check_outputs', [py, tool('check_outputs')], env)
+    step('indexes', [py, script('indexes')], env)
+    TIMINGS['total_before_tests'] = round(time.time() - t0, 1)
+    write_run_meta(env, 'pipeline')
+    step('tests', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests')], env)
 
 
-def figures_only(export=False):
-    """Figures-only run mode (MODEL v2.1.2): no data may change. The model scripts that draw diagnostics in-process
-    (projection, Diagnostics, MonteCarlo, boundaries, figures_report, pathways) are re-run with figures saved; the
-    pathway Monte Carlo, the frozen-technology check and the sensitivity tables are not run; the paper, Extended Data
-    and key figures are drawn from the data files; nothing is deleted first. The last step requires every file of
-    outputs/data/ to be byte-identical to tests/data_snapshot_model_v2_1_1.json (tests/test_data_unchanged.py) and
-    stops otherwise."""
+def figures_only(profile):
+    """Redraw every figure from the data files; STOP unless every file of outputs/data is byte-identical after."""
+    env = base_env(profile)
+    os.environ.update(PATHWAY_PROFILE=profile, PATHWAY_REFERENCE_LEGACY='0')
+    L = _layout()
+    before = data_hashes(L.DATA)
+    for d in (L.PAPER_MAIN, L.PAPER_EXTENDED, L.DIAGNOSTICS):
+        shutil.rmtree(d, ignore_errors=True)
+    step('figures', [sys.executable, '-m', 'figures'], env)
+    after = data_hashes(L.DATA)
+    changed = sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k))
+    with open(L.writing(os.path.join(L.LOGS, 'figures_only_check.json')), 'w') as f:
+        json.dump(dict(files=len(before), changed=changed), f, indent=1)
+    if changed:
+        raise StepFailed(f'figures-only: outputs/data changed: {changed[:10]}')
+    print(f'  figures-only: {len(before)} data files byte-identical')
+
+
+def reference_legacy(profile):
+    """The MODEL v2.1 Reference (overbuild never absorbed): projection, Monte Carlo and AESA in outputs/_legacy/, and
+    the legacy lock (tests/test_reference_legacy.py, 1e-12)."""
+    env = base_env(profile, legacy=True)
+    os.environ.update(PATHWAY_PROFILE=profile, PATHWAY_REFERENCE_LEGACY='1')
     py = sys.executable
-    env = dict({'PATHWAY_QUICK': '0'}, **export_env(export))
-    step('projection', [py, os.path.join(ROOT, 'projection.py')], env)
-    step('diagnostics', [py, os.path.join(ROOT, 'Diagnostics.py')], env)
-    step('montecarlo', [py, os.path.join(ROOT, 'MonteCarlo.py')], env)
-    step('boundaries', [py, os.path.join(ROOT, 'boundaries.py')], env)
-    step('figures_report', [py, tool('figures_report')], env)
-    step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
-    step('data_unchanged', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_data_unchanged.py')], env)
-    step('paper', [py, os.path.join(ROOT, 'paper.py')], env)
-    step('extended_data', [py, os.path.join(ROOT, 'extended_data.py')], env)
-    step('key_figures', [py, os.path.join(ROOT, 'key_figures.py')], env)
-    step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
-    step('methods_draft', [py, tool('methods_draft')], env)
-    step('indexes', [py, os.path.join(ROOT, 'indexes.py')], env)
-    step('data_unchanged_final', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_data_unchanged.py')], env)
-
-
-def pathways_only(export=False):
-    """Pathways-only run mode: the projection is unchanged (every number locked by
-    tests/test_regression_model_v1.py), so only the pathway layer runs. projection.main() is
-    called in memory by pathways.py; no projection output is written; pathways.py overwrites
-    only the pathway diagnostics, paper.py and extended_data.py rewrite outputs/paper/ and
-    outputs/extended_data/ from the data files."""
-    py = sys.executable
-    env = dict({'PATHWAY_QUICK': '0'}, **export_env(export))
-    step('pathways', [py, os.path.join(ROOT, 'pathways.py')], env)
-    step('pathways_mc', [py, os.path.join(ROOT, 'pathways_mc.py')], env)
-    step('sensitivity_tables', [py, tool('sensitivity_tables')], env)
-    step('paper', [py, os.path.join(ROOT, 'paper.py')], env)
-    step('extended_data', [py, os.path.join(ROOT, 'extended_data.py')], env)
-    step('key_figures', [py, os.path.join(ROOT, 'key_figures.py')], env)
-    step('pathways_docs', [py, tool('pathways_methods'), '--sections'], env)
-    step('methods_draft', [py, tool('methods_draft')], env)
-    step('indexes', [py, os.path.join(ROOT, 'indexes.py')], env)
-    step('tests_pathways', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_pathways.py'),
-                            os.path.join(ROOT, 'tests', 'test_regression_model_v1.py'),
-                            os.path.join(ROOT, 'tests', 'test_regression_model_v2.py'),
-                            os.path.join(ROOT, 'tests', 'test_regression_model_v2_1.py'),
-                            os.path.join(ROOT, 'tests', 'test_mcstats.py'),
-                            os.path.join(ROOT, 'tests', 'test_pathways_mc.py'),
-                            os.path.join(ROOT, 'tests', 'test_sensitivity_tables.py'),
-                            os.path.join(ROOT, 'tests', 'test_release.py'),
-                            os.path.join(ROOT, 'tests', 'test_output_manifest.py')], env)
+    for name in ('Building_factors', 'projection', 'MonteCarlo', 'boundaries'):
+        step(name.lower(), [py, script(name)], env)
+    step('legacy_lock', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_reference_legacy.py')], env)
+    write_run_meta(env, 'reference_legacy')
 
 
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
-    print('run_all:')
+    profile = 'light'
+    if '--profile' in argv:
+        profile = argv[argv.index('--profile') + 1]
+    if profile not in ('light', 'full'):
+        raise SystemExit(f'--profile {profile!r}: light | full')
+    print(f'run_all ({profile} profile):')
     try:
         if '--figures-only' in argv:
-            figures_only(export='--export' in argv)
-        elif '--pathways-only' in argv:
-            pathways_only(export='--export' in argv)
+            figures_only(profile)
+        elif '--reference-legacy' in argv:
+            reference_legacy(profile)
         else:
-            pipeline(quick='--quick' in argv, export='--export' in argv)
+            pipeline(profile)
     except StepFailed as e:
         print(f'\n{e}')
         if interactive():
             return False
         sys.exit(1)
-    if '--pathways-only' in argv:
-        print(f'\nDone (pathways only; projection unchanged). Data: {layout.data("pathways", frozen=False)} '
-              f'(log of each step in {LOGS})')
-    else:
-        print(f'\nDone. Figures of the paper: {os.path.join(layout.PAPER, "PAPER.md")}; Extended Data: '
-              f'{os.path.join(layout.EXTENDED_DATA, "EXTENDED_DATA.md")}; metrics: '
-              f'{layout.data("metrics.json", frozen=False)} (log of each step in {LOGS})')
-    if '--quick' in argv:
-        print('QUICK RUN, not for reporting: re-run without --quick before reporting or tagging.')
+    L = _layout()
+    print(f'\nDone. Figures: {L.FIGURES_INDEX}; run metadata: {L.RUN_META}')
     return True
 
 

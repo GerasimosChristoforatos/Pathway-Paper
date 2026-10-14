@@ -123,9 +123,10 @@ MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% b
 # its hue family (L7 lighter and TL lighter so TL stays apart from L7 under protanomaly; committed lighter than
 # maintenance; the unexplained-building face lighter than Historical replacement)
 # MODEL v3.0.0: nine levers renumbered (P1 L1-L3 golds / ochres, P2 L4-L5 mauves, P3 L6-L7 blues, P4 L8-L9 browns);
-# L2 Design density a deep amber added to the gold family; the deep mauve of the retired overbuild lever stays the
+# L2 Design density a deep amber added to the gold family (colours re-tuned so that every group keeps a CAM02-UCS
+# distance >= 10 under every simulated deficiency, tools/palette_check.py); the deep mauve of the retired overbuild lever stays the
 # P2 anchor and the 2026 overbuild band
-LEVER = {'L1': '#DFA538', 'L2': '#A8741C', 'L3': '#F4D168', 'L4': '#AA7C9D', 'L5': '#E1D2DD',
+LEVER = {'L1': '#DFA538', 'L2': '#944E02', 'L3': '#F4D168', 'L4': '#AA7C9D', 'L5': '#E1D2DD',
          'L6': '#4A6192', 'L7': '#ABD3FA', 'L8': '#8D6545', 'L9': '#C7B395'}
 P2_ANCHOR = '#683861'
 PATHWAY = {'P1': LEVER['L1'], 'P2': P2_ANCHOR, 'P3': LEVER['L6'], 'P4': LEVER['L8'], 'P5': '#EB6123'}
@@ -146,12 +147,12 @@ BAND = {'growth': (GROWTH, None),
         'extra_space': (LEVER['L1'], None),
         'vacancy': (LEVER['L4'], None),
         'overbuild_2026': (P2_ANCHOR, None),
-        'overbuild_absorbed': ('#9C5C93', None),      # negative: outline only (P2 mauve family)
+        'overbuild_absorbed': ('#8D5D93', None),      # negative: outline only (P2 mauve family)
         'replacement': (REPLACEMENT, None),
-        'unconsented': ('#7E6A94', None),             # negative: outline only (replacement lilac family, darker)
+        'unconsented': ('#BA9AC1', None),             # negative: outline only (replacement lilac family, darker)
         'redevelopment': (LEVER['L5'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
-        'released_tl': ('#2F7A52', None),             # negative: outline only (TL green family)
-        'maintenance': ('#AAAAAA', None)}      # neutral (MODEL v2.1.1)
+        'released_tl': ('#95C283', None),             # negative: outline only (TL green family)
+        'maintenance': ('#9E9E9E', None)}      # neutral; MODEL v3.0.0 slightly darker (CVD distance >= 10)
 BAND_ORDER = list(BAND)
 NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'released_tl')
 BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}

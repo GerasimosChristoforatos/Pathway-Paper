@@ -44,15 +44,15 @@ def pathways_section():
     with open(lv_path) as f:
         lv = json.load(f)
     L = ['', PATHWAYS_MARK, '',
-         'Resolved values from outputs/data/pathways/levers.json and, for the theoretical limit TL, '
-         'outputs/data/pathways/theoretical_limit.json; Table 1 of the paper: outputs/reports/LEVERS_TABLE.md; '
-         'methods as implemented: outputs/reports/METHODS_DRAFT.md (3. Pathways and the theoretical limit).', '',
+         'Resolved values from data/pathways/levers.json (MODEL v3.0.0 lever rule: Levels 1-4); Table 1 of the paper: '
+         'docs/LEVERS_TABLE.md; methods as implemented: docs/METHODS_DRAFT.md (3. Pathways and the theoretical limit).',
+         '',
          '| setting | value | basis |', '|---|---|---|']
-    L += [f'| {a} | {v} | {b} |' for a, v, b in LV.register(lv)]
-    t_path = layout.data('pathways/theoretical_limit.json', frozen=False)
-    if os.path.exists(t_path):                     # the theoretical limit TL
-        with open(t_path) as f:
-            L += [f'| {a} | {v} | {b} |' for a, v, b in LV.register_tl(json.load(f))]
+    for r in LV.lever_table(lv):
+        L.append(f"| {r['item']} ({r['pathway']}) | sub-rule {r['subrule']}: {r['anchor']}; Moderate {r['moderate']}; "
+                 f"Ambitious {r['ambitious']}; TL {r['tl']} | {LV.SUBRULE_TEXT[r['subrule']]} |")
+    for r in lv.get('tl_strength', []):
+        L.append(f"| {r['item']} vs Ambitious | {r['tl']} vs {r['ambitious']} | asserted at least as strong: {r['ok']} |")
     L += ['', '### All settings in levers.py', '', '| setting | value |', '|---|---|']
     for k in sorted(vars(LV)):
         v = getattr(LV, k)

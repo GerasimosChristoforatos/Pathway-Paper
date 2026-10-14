@@ -1,4 +1,4 @@
-"""Grouped one-at-a-time sensitivity tables (MODEL v2.1.0; docs/SENSITIVITY_PLAN.md).
+"""Grouped one-at-a-time sensitivity tables (MODEL v3.0.0; docs/SENSITIVITY_PLAN.md).
 
     python tools/sensitivity_tables.py         (run_all.py runs it after the pathway Monte Carlo)
 
@@ -8,6 +8,8 @@ Writes outputs/data/sensitivity/:
                            design rows (ED2)
   planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (ED4)
   replacement_variants.csv the Reference, P5 and TL under Low / Reference / High replacement (ED10)
+  tornado.csv              Fig7: the eight inputs of the Reference tornado (low / high), cumulative carbon and the
+                           cumulative LoE AR and AtP (the budgets move only with the population path)
 
 Every row has its group, the row label, its side (low / high / single), the value, the change vs the
 central case and its basis. Rows are read from existing outputs; the only new runs are the P5 rows
@@ -65,10 +67,15 @@ REF_ROWS = [
      'No census under-construction correction', 'DATA: census under-construction counts'),
     ('Housing stock & calibration', 'Dwelling-size window 2016-2025', 'single', 'Dwelling size: 2016-2025 reference',
      'DATA: consents'),
-    ('Housing stock & calibration', '2026 overbuild: payback at absorption 0.20 / 0.10 a year', 'low',
-     'Temporary surplus with payback, absorption 0.20/yr', 'DECISION (author): booking of observed 2026 building'),
-    ('Housing stock & calibration', '2026 overbuild: payback at absorption 0.20 / 0.10 a year', 'high',
-     'Temporary surplus with payback, absorption 0.10/yr', 'DECISION (author): booking of observed 2026 building'),
+    ('Housing stock & calibration', '2026 overbuild absorbed by 2030 / by 2045', 'low', 'Overbuild absorbed by 2030',
+     'THEORY: reversion to the equilibrium vacancy (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; '
+     'Gabriel & Nothaft 2001) fixes the direction, not the speed; speed bracketed'),
+    ('Housing stock & calibration', '2026 overbuild absorbed by 2030 / by 2045', 'high', 'Overbuild absorbed by 2045',
+     'THEORY: as above; adopted 2035 (the common RECC window)'),
+    ('Housing stock & calibration', '2026 overbuild never absorbed (MODEL v2.1 Reference)', 'single',
+     'Overbuild never absorbed (MODEL v2.1 Reference)', 'DECISION: the permanent-surplus bound'),
+    ('Housing stock & calibration', 'Vacancy parameter: 1986-2023 census mean (one definition)', 'single',
+     'Vacancy parameter: 1986-2023 census mean, one definition', 'DATA: Stats NZ censuses 1986-2023'),
     ('Housing stock & calibration', '2026 overbuild booked as stock-neutral redevelopment', 'single',
      'Booked as redevelopment, stock-neutral', 'DECISION (author): booking of observed 2026 building'),
     ('Housing stock & calibration', '2026 overbuild gap vs the 2026 requirement', 'single',
@@ -126,10 +133,14 @@ def reference_table():
 
 
 # ---- 2. P5 carbon (pathway design) ---------------------------------------------------------------
+PARAMS = {}
+
+
 def percentile_context(PW, B, pct, bounds):
     """The pathway context of the projection's own population percentile run (pop, households and the
     2026 overbuild of that path; every other input as the Reference); reproduces engine_out[pct]."""
     ctx = PW.base_context(B, PW.REFERENCE, bounds)
+    ctx['P'] = PARAMS['p']
     df, ji = B['df_forecast'], B['join_info'][pct]
     pop = df[f'PopTotal_{pct}'].values
     growth = df[f'PopGrowth_{pct}'].clip(lower=0).values
@@ -140,14 +151,16 @@ def percentile_context(PW, B, pct, bounds):
     for k in ('carbon', 'total'):
         if not np.allclose(np.asarray(E[k], float)[1:], np.asarray(ref[k], float)[1:], rtol=1e-12, atol=0):
             raise SystemExit(f'sensitivity_tables: the {pct} population context does not reproduce the projection ({k}).')
-    ctx.update(pop=pop, growth=growth, hh=hh, join=ji['join'], join_redev=ji['redev'], O26=float(ji['O26']),
-               E_nojoin=engine.forward(pop, hh, growth, **fi))
+    ctx.update(pop=pop, growth=growth, hh=hh, excess=np.asarray(ji['excess'], float).copy(),
+               join_reference=np.asarray(ji['join'], float))
+    if not np.allclose(np.asarray(PW.run(ctx, ctx['P'], {})['E']['carbon'], float)[1:],
+                       np.asarray(ref['carbon'], float)[1:], rtol=1e-12, atol=0):
+        raise SystemExit(f'sensitivity_tables: the {pct} pathway run does not reproduce the projection.')
     return ctx
 
 
 def p5_table():
     import pathways as PW
-    import validation
     runs = pd.read_csv(data('pathways/runs.csv'))
     with open(data('aesa/results.json')) as f:
         aesa = json.load(f)
@@ -155,7 +168,7 @@ def p5_table():
     B = PW.boss_state(PW.REFERENCE)
     bounds = PW.boundaries()
     ctx = PW.base_context(B, PW.REFERENCE, bounds)
-    params = LV.resolve(B, PW.load_factors_building(), validation.projection, PW.household_size_variants(B))
+    params = PARAMS.setdefault('p', PW.resolve_params(B))
     bar, batp = float(ctx['b_ar'].sum()) / M6, float(ctx['b_atp'].sum()) / M6
 
     def run_row(scen, name):
@@ -174,7 +187,7 @@ def p5_table():
     cc = float(np.asarray(PW.run(ctx, params, base)['E']['carbon'], float)[1:].sum()) / M6
     if not np.isclose(cc, c0, rtol=1e-12, atol=0):     # the context reproduces the adopted P5 run
         raise SystemExit(f'sensitivity_tables: P5 Moderate {cc} kt does not reproduce runs.csv {c0} kt.')
-    tags = {r_['item'].split()[0]: r_['tag'] for r_ in LV.lever_table(params)}
+    tags = {L: f"sub-rule {LV.SUBRULE[L]}" for L in LV.LEVERS}
     for L in LV.LEVERS:                                      # one lever at Ambitious, the others Moderate
         E = PW.run(ctx, params, dict(base, **{L: 'ambitious'}))['E']
         c = float(np.asarray(E['carbon'], float)[1:].sum()) / M6
@@ -185,6 +198,8 @@ def p5_table():
     for side, nm in (('low', 'P5-moderate-by2030'), ('high', 'P5-moderate-by2045')):
         add('Roll-out timing', 'Full roll-out by 2030 / by 2045', side, *run_row('REF', nm), 'data/pathways/runs.csv',
             'LITERATURE: RECC (Pauliuk et al. 2024) adopted 2035; window rule of MODEL v1.1.0')
+    add('Theoretical limit', 'TL (every lever at Level 4)', 'single', *run_row('REF', 'TL'), 'data/pathways/runs.csv',
+        'DECISION (author): Level 4 of every lever')
     for side, sc in (('low', 'LOW'), ('high', 'HIGH')):
         add('Replacement scenario', 'Low / High replacement', side, *run_row(sc, 'P5-moderate'),
             'data/pathways/runs.csv', 'DATA: long-run rate / 2018-2023 rate persists')
@@ -244,48 +259,78 @@ def pb_table():
 
 # ---- 4. Replacement variants of the Reference, P5 and TL (ED10) ------------------------------------
 def replacement_variants():
-    """The Reference, P5 Combined (Moderate) and TL under the Low, Reference and High replacement
-    variants: carbon and floor area 2026-2050, committed after 2050, cumulative LoE AR and AtP.
-    Every run is computed with the pathway engine (pathways.run / run_tl and pathways.metrics, the
-    lever parameters of the Reference, as pathways.py) and every run that runs.csv already holds
-    (all but TL under Low and High) is asserted to reproduce it to 1e-12; TL under Low and High
-    replacement is new (TL1-TL10 on that scenario's projection: TL5 removes that scenario's surge and cuts its
-    demolition rate by 40%)."""
-    import Building_factors as BF
+    """The Reference, P5 Combined (Moderate, Ambitious) and TL under the Low, Reference and High replacement variants:
+    carbon and floor area 2026-2050, committed after 2050, cumulative LoE AR and AtP; every run recomputed with the
+    pathway engine (pathways.run and pathways.metrics, the lever parameters of the Reference) and asserted to
+    reproduce runs.csv to 1e-12."""
     import pathways as PW
-    import validation
     runs = pd.read_csv(data('pathways/runs.csv'))
     bounds = PW.boundaries()
     B_ref = PW.boss_state(PW.REFERENCE)
-    params = LV.resolve(B_ref, PW.load_factors_building(), validation.projection, PW.household_size_variants(B_ref))
-    pT = LV.resolve_tl(BF.load_characteristics(), PW.load_factors_building(),
-                       pd.read_csv(validation.projection.FILE_FACTORS_TYPOLOGY), B_ref['OLF_USED'], B_ref['hist_S'],
-                       params)
-    base = LV.pathway_levers('P5', 'moderate')
+    params = PARAMS.setdefault('p', PW.resolve_params(B_ref))
     cols = ('gfa_Mm2', 'carbon_kt', 'committed_lower_kt', 'committed_upper_kt', 'LoE_AR', 'LoE_AtP')
     rows = []
     for scen in ('LOW', 'REF', 'HIGH'):
         B = B_ref if scen == PW.REFERENCE else PW.boss_state(scen)
         ctx = PW.base_context(B, scen, bounds)
-        for run, R, setting in ((scen, PW.run(ctx, params, {}), 'reference'),
-                                ('P5-moderate', PW.run(ctx, params, base), 'moderate'),
-                                ('TL', PW.run_tl(ctx, params, pT, LV.TL_COMPONENTS), 'TL')):
-            m = PW.metrics(ctx, R, run, setting)
-            old = runs[(runs['scenario'] == scen) & (runs['run'] == run)]
-            if len(old):
-                o = old.iloc[0]
-                for c in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'committed_lower_kt', 'committed_upper_kt'):
-                    if not np.isclose(m[c], o[c], rtol=1e-12, atol=0):
-                        raise SystemExit(f'sensitivity_tables: {scen} {run} {c} {m[c]} does not reproduce runs.csv '
-                                         f'({o[c]}).')
+        for run, levels, setting in ((scen, {}, 'reference'),
+                                     ('P5-moderate', LV.pathway_levers('P5', 'moderate'), 'moderate'),
+                                     ('P5-ambitious', LV.pathway_levers('P5', 'ambitious'), 'ambitious'),
+                                     ('TL', LV.tl_levels(LV.TL_COMPONENTS), 'tl')):
+            m = PW.metrics(ctx, PW.run(ctx, params, levels), run, setting)
+            o = runs[(runs['scenario'] == scen) & (runs['run'] == run)].iloc[0]
+            for c in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'committed_lower_kt', 'committed_upper_kt'):
+                if not np.isclose(m[c], o[c], rtol=1e-12, atol=0):
+                    raise SystemExit(f'sensitivity_tables: {scen} {run} {c} {m[c]} does not reproduce runs.csv ({o[c]}).')
             rows.append(dict(scenario=scen, run='Reference' if run == scen else run,
-                             source='data/pathways/runs.csv (reproduced)' if len(old) else
-                             'new run (tools/sensitivity_tables.py)', **{c: float(m[c]) for c in cols}))
+                             source='data/pathways/runs.csv (reproduced)', **{c: float(m[c]) for c in cols}))
+    return pd.DataFrame(rows)
+
+
+# ---- 5. Fig7 tornado: eight inputs of the Reference ------------------------------------------------
+TORNADO = [   # (input, low case, high case) in reference_table() rows
+    ('Population (Stats NZ 5th / 95th percentile)', 'Population: Stats NZ 5th / 95th percentile'),
+    ('Household size (Stats NZ High / Low variant)', 'Household size: Stats NZ High / Low variant'),
+    ('Replacement (Low / High)', 'Low / High replacement'),
+    ('Replacement half-life (5 / 15 yr)', 'Replacement half-life 5 / 15 yr'),
+    ('Completion rate (0.92 / 0.96)', 'Completion rate 0.92 / 0.96'),
+    ('Case-study carbon factors (jackknife)', 'Case studies: jackknife low / high'),
+    ('Soil order (Raw / Organic)', 'Soil order: lowest (Raw) / highest (Organic)'),
+    ('Overbuild absorption (by 2030 / by 2045)', '2026 overbuild absorbed by 2030 / by 2045'),
+]
+
+
+def tornado(ref):
+    """Fig7: for each input its low and high case: cumulative carbon 2026-2050 and the cumulative LoE AR and AtP. The
+    boundaries depend on the population path only (aesa): the population rows use that path's budgets
+    (aesa/results.json population_paths), every other row the Reference budgets."""
+    with open(data('aesa/results.json')) as f:
+        r = json.load(f)
+    a = pd.read_csv(data('aesa/annual.csv'))
+    a = a[(a['scenario'] == 'REF') & (a['year'] >= 2026)]
+    bar, batp = a['B_AR_kgCO2e'].sum() / M6, a['B_AtP_kgCO2e'].sum() / M6
+    pp = r['population_paths']
+    c0 = float(ref['central_carbon_kt'].iloc[0])
+    rows = []
+    for name, row in TORNADO:
+        t = ref[ref['row'] == row].set_index('side')
+        for side in ('low', 'high'):
+            c = float(t.loc[side, 'carbon_kt'])
+            if name.startswith('Population'):
+                pct = '5th' if side == 'low' else '95th'
+                b1, b2 = pp[pct]['B_AR_kt'], pp[pct]['B_AtP_kt']
+            else:
+                b1, b2 = bar, batp
+            rows.append(dict(input=name, side=side, case=t.loc[side, 'case'], carbon_kt=c, LoE_AR=c / b1,
+                             LoE_AtP=c / b2, central_carbon_kt=c0, central_LoE_AR=c0 / bar, central_LoE_AtP=c0 / batp,
+                             change_carbon_pct=100 * (c / c0 - 1)))
     return pd.DataFrame(rows)
 
 
 def main():
-    out = {'sensitivity/reference_carbon.csv': reference_table(), 'sensitivity/p5_carbon.csv': p5_table(),
+    ref = reference_table()
+    out = {'sensitivity/reference_carbon.csv': ref, 'sensitivity/tornado.csv': tornado(ref),
+           'sensitivity/p5_carbon.csv': p5_table(),
            'sensitivity/planetary_boundary.csv': pb_table(),
            'sensitivity/replacement_variants.csv': replacement_variants()}
     for rel, df in out.items():

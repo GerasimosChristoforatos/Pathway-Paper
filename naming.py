@@ -176,7 +176,8 @@ METRICS = {'AR': 'Acquired rights (AR)', 'AtP': 'Ability to pay (AtP)', 'LoE': '
 # definition (pooled 2018/2023 empty share of unoccupied dwellings) 2023 is the series maximum.
 VACANCY_WORDING = ('the vacancy-rate parameter is held at its published 2023 census value ({v0:.2f}%; on the '
                    'consistent definition 2023 is the series maximum, {vmax:.2f}%, minimum {vmin:.2f}% in {ymin}); '
-                   'implied stock vacancy rises to ≈{v2050:.1f}% because the 2026 overbuild is not absorbed')
+                   'the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied '
+                   'vacancy returns to the parameter ({v2050:.2f}% in 2050)')
 
 
 def vacancy_wording(v0, vmax, vmin, ymin, v2050):

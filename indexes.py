@@ -171,7 +171,9 @@ FILES = [
      'tools/sensitivity_tables.py'),
 ]
 
-EXCLUDED = ('logs',)                    # console logs: git-ignored, not part of the release
+# console logs, and the light-profile and legacy-Reference mirrors (outputs/_light/, outputs/_legacy/): git-ignored,
+# not part of the release
+EXCLUDED = ('logs', '_light', '_legacy')
 
 
 def output_files():

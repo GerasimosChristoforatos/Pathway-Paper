@@ -234,3 +234,8 @@ data/raw/Absolute_Analysis.xlsm
 # World Bank WDI bulk CSV archives are small and were supplied (not re-fetchable as the same
 # release), so they are versioned despite the *.zip rule above.
 !data/raw/API_*_DS2_en_csv_v2_*.zip
+
+# MODEL v3.0.0: light-profile and legacy-Reference outputs are reproducible working copies (run_all.py); the
+# committed outputs are those of the full profile
+outputs/_light/
+outputs/_legacy/

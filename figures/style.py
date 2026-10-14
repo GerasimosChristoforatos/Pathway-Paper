@@ -10,7 +10,7 @@ docs/PALETTE.md and docs/palette_preview.png.
 Rules (docs/PALETTE.md, MODEL v2.1.2):
   * demand bands are coloured by the lever that targets them (four pathway families after Francis Bacon, Head VI);
     the only untargeted band, Population growth, a solid deep green-blue; negative bands drawn down from the top of
-    the positive stack (net-total convention, plotting.signed_stack);
+    the positive stack (net-total convention; MODEL v3.0.0: figures/draw.py, see below);
   * Reference dark grey, P5 vermilion, TL a deep forest green (a larger circle on point plots);
   * boundaries: acquired rights (AR) a thin red line, ability to pay (AtP) a thin dark-red dotted line, light zones
     below AtP, between AtP and AR and above AR;
@@ -20,12 +20,12 @@ Rules (docs/PALETTE.md, MODEL v2.1.2):
   * print sizes: Nature Cities single column 89 mm, double column 183 mm; text 5-7 pt.
 
 MODEL v3.0.0: save() writes the formats of the run profile (runprofile.py: light PNG at 200 dpi with a small grey
-footer "LIGHT RUN - n=1000"; full PDF + PNG at 600 dpi) with fixed metadata (no software version or creation
+footer "LIGHT RUN — n=1000"; full PDF + PNG at 600 dpi) with fixed metadata (no software version or creation
 date), so a re-run with the pinned environment reproduces every figure byte for byte. Negative bands keep their
 sign in the data: in time series they are stacked down from zero (positives up from zero, the net a black line);
 in cumulative bars each negative band is an unfilled, unhatched segment outlined in its band colour hanging from the
 top of the positive stack, so the bar ends at the net total (figures/draw.py). Only the surge band is hatched.
-registry() lists every colour of every group; tests/test_palette.py requires no duplicate (colour, hatch) within a
+registry() lists every colour of every group; tests/test_figures_v3.py requires no duplicate (colour, hatch) within a
 group.
 """
 import os
@@ -222,7 +222,7 @@ def figsize(width='double', height_mm=100.0):
 def save(fig, path):
     """Write the formats of the run profile (light: PNG at 200 dpi; full: PDF + PNG at 600 dpi), no software / date
     metadata, then close the figure. In the light profile every figure carries a small grey footer
-    'LIGHT RUN - n=1000'."""
+    'LIGHT RUN — n=1000'."""
     import matplotlib.pyplot as plt
     os.makedirs(os.path.dirname(path), exist_ok=True)
     footer = runprofile.get('footer')

@@ -194,7 +194,7 @@ def main():
          f"{S.WIDTH['double'] / S.MM:.0f} mm (double column), page depth at most {S.MAX_HEIGHT / S.MM:.0f} mm; "
          f"text {S.FONT_SIZE:g} pt, legends and ticks {S.FONT_SMALL:g} pt, never below {S.FONT_MIN:g} pt; data "
          f"lines {S.LW:g} pt, emphasised lines {S.LW_BOLD:g} pt, grid and edges {S.LW_THIN:g} pt.",
-         '* **Files** (run profiles, runprofile.py): light PNG at 200 dpi with a small grey footer "LIGHT RUN - '
+         '* **Files** (run profiles, runprofile.py): light PNG at 200 dpi with a small grey footer "LIGHT RUN — '
          'n=1000"; full PDF (TrueType fonts embedded) + PNG at 600 dpi; no software or date metadata, so re-runs are '
          'byte-identical.',
          '* **Materials** (Fig3b and the diagnostics): the six stripes of the Pride flag in one order in every figure '

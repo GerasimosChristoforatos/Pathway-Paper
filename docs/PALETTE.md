@@ -15,7 +15,7 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 * **Settings**: lines: Moderate solid bold, Ambitious the same colour thin dotted; markers: Moderate filled, Ambitious hollow; bars (Fig8): Moderate hollow, Ambitious filled, TL a large deep-green dot.
 * **Typeface**: Liberation Sans only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open Font License 1.1, registered by figures/style.py, so every machine renders the same glyphs.
 * **Sizes** (Nature Cities): width 89 mm (single column) or 183 mm (double column), page depth at most 247 mm; text 7 pt, legends and ticks 6 pt, never below 5 pt; data lines 1 pt, emphasised lines 1.5 pt, grid and edges 0.5 pt.
-* **Files** (run profiles, runprofile.py): light PNG at 200 dpi with a small grey footer "LIGHT RUN - n=1000"; full PDF (TrueType fonts embedded) + PNG at 600 dpi; no software or date metadata, so re-runs are byte-identical.
+* **Files** (run profiles, runprofile.py): light PNG at 200 dpi with a small grey footer "LIGHT RUN — n=1000"; full PDF (TrueType fonts embedded) + PNG at 600 dpi; no software or date metadata, so re-runs are byte-identical.
 * **Materials** (Fig3b and the diagnostics): the six stripes of the Pride flag in one order in every figure (author decision, baseline-pb-v2), soil carbon loss faded on top (no hatch since MODEL v3.0.0); kept because the material figures label every layer directly (see the check below).
 
 ## Colour table

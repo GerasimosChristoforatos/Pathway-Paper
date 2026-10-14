@@ -1,25 +1,23 @@
 """Output layout of the model (MODEL v3.0.0): where every file the pipeline writes goes.
 
-    outputs/
-      paper/          the figures of the paper (Fig1-Fig6: PNG 300 dpi, vector PDF and source-data
-                      CSV), Tables 1-2 (Markdown and CSV) and PAPER.md (headline findings, every
-                      figure with its caption)
-      extended_data/  the Extended Data figures (ED1-ED10, same formats) and EXTENDED_DATA.md
-      key_figures/    K1-K6 (MODEL v2.1.0): the story in six figures, KEY_FIGURES.md
-      diagnostics/    every other figure, by group (PNG 300 dpi), DIAGNOSTICS.md, and
-                      _audit/: the record of every figure (figaudit.py; read by the tests)
-      data/           every number the model reports, as CSV and JSON, in the release names of
-                      naming.py: baseline/ (the Reference projection and its checks), montecarlo/,
-                      aesa/ (boundaries and levels of exceedance), pathways/, factors/ (case-study
-                      factors), frozen_technology/ (the check run at 2025 factors), metrics.json
-      reports/        generated documents: RESULTS, ASSUMPTIONS, the methods draft, the levers
-                      table, the validation and reality-check reports (frozen-technology run:
-                      frozen_technology_<name>.md)
-      logs/           console output of each run_all.py step (not versioned)
+    outputs/                  full profile (run_all.py --profile full); outputs/_light/ mirrors this tree for the
+                              light profile (the default) and outputs/_legacy/ for --reference-legacy
+      paper_main/             Fig1-Fig8 of the paper (figure_plan.PAPER_MAIN)
+      paper_extended/         Extended Data ED1-ED14 and the table EDT1 (figure_plan.PAPER_EXTENDED)
+      diagnostics/<group>/    calibration, validation, boundaries, pathways, montecarlo, sensitivity; _audit/: the
+                              record of every drawn figure (figures/audit.py; read by the tests)
+      FIGURES.md              the index of every figure (indexes / figures/index.py, from figure_plan.py)
+      run_meta.json           profile, draws, seeds, git hash, input hash, timestamp, step timings
+      data/                   every number the model reports, as CSV and JSON, in the release names of naming.py:
+                              baseline/, montecarlo/, aesa/, pathways/, sensitivity/, factors/, figure_source/
+                              (the arrays the figures draw that are not otherwise exported), metrics.json
+      reports/                generated documents (RESULTS, ASSUMPTIONS, methods draft, levers table, validation)
+      logs/                   console output of each run_all.py step (not versioned)
 
-Every module takes its paths from here, so the layout is defined once. The data file names
-are those of naming._file (docs/RENAMING.md, section 2); tests/test_release.py checks that
-the two agree and that every file in outputs/ is indexed.
+Every module takes its paths from here, so the layout is defined once. The folders of MODEL v2.1.2 (outputs/paper,
+outputs/extended_data, outputs/key_figures) are RETIRED and deleted by run_all.py. The frozen-technology helpers
+below are kept for the data layout of earlier releases; MODEL v3.0.0 does not run the frozen-technology check
+(docs/CHANGELOG_v3.md).
 """
 import os
 

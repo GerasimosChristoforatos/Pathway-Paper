@@ -103,9 +103,15 @@ BANDS = {'growth': 'Population growth',
          'extra_space': 'Extra space',
          'vacancy': 'Vacancy',
          'overbuild_2026': '2026 overbuild',
-         'replacement': 'Historical replacement',
+         'overbuild_absorbed': 'Overbuild absorbed',
+         'replacement': 'Demolition replacement',
+         'unconsented': 'Unconsented additions',
          'redevelopment': 'Recent replacement surge',
+         'released_tl': 'Released dwellings (TL)',
          'maintenance': 'Maintenance (B2, B4), 2026–2050'}
+# MODEL v3.0.0: bands whose values are negative by construction (drawn as outlined segments hanging from the
+# top of the positive stack; the data keep the sign)
+NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'released_tl')
 BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BRANZ rate)',
                'replacement_residual': 'Historical replacement: net unconsented additions (calibrated residual)',
                'retirement_villages': 'Retirement villages (out of scope)',
@@ -119,9 +125,15 @@ BAND_DEFINITIONS = {
     'smaller_households': 'additional households from falling household size (targeted by L2 Household occupancy, P1)',
     'extra_space': 'new-dwelling size above the occupied area (household size x floor area per design occupant)',
     'vacancy': 'the vacancy allowance on new households and the change in the vacancy rate',
-    'overbuild_2026': 'observed 2026 building above the requirement, fading at the persistence rho; never absorbed',
-    'replacement': 'the long-run net replacement rate: demolition net of unconsented additions, 1991–2023 ratio of '
-                   'sums of the census dwelling-count identity (the census identifies only their sum)',
+    'overbuild_2026': 'observed 2026 building above the requirement, continuing above it in 2027-2050 at the '
+                      'persistence rho (the market excess)',
+    'overbuild_absorbed': 'the cumulative overbuild absorbed by building less, logistic 2026 -> 2035 (negative; '
+                          'MODEL v3.0.0 Reference)',
+    'replacement': 'demolition replacement at the fixed BRANZ SR214 rate (0.135% of the stock a year)',
+    'unconsented': 'unconsented additions: the calibrated long-run residual of the census dwelling-count identity '
+                   '(negative: dwellings that appear without a new-dwelling consent)',
+    'released_tl': 'existing dwellings released by TL3 (household size) and TL4 (zero vacancy) and re-occupied '
+                   '(negative; theoretical limit only)',
     'redevelopment': 'the scenario rate above that long-run rate: the 2018–2023 knock-down-and-rebuild wave, fading '
                      'in the Reference',
     'maintenance': 'replacement and repaint events (B2, B4) of the new buildings within 2026–2050 (carbon only)',
@@ -241,11 +253,16 @@ def run_label(run, scenario='REF'):
 # and net unconsented additions, and the retirement-village row (negative: households housed
 # in retirement villages, out of scope). 'in_scope' (bands.csv, the band figures): retirement
 # villages removed from every band in proportion, replacement one band, maintenance a carbon band.
+# MODEL v3.0.0: '2026 overbuild' split into the market excess (positive) and 'Overbuild absorbed' (negative);
+# in scope, 'Historical replacement' split into 'Demolition replacement' and 'Unconsented additions' (negative);
+# the theoretical-limit runs add 'Released dwellings (TL)' (negative; *_TL lists).
 BANDS_WITH_RETIREMENT_VILLAGES = ('growth', 'smaller_households', 'extra_space', 'vacancy',
                                   'replacement_demolition', 'replacement_residual', 'redevelopment',
-                                  'overbuild_2026', 'retirement_villages')
-BANDS_IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement', 'redevelopment',
-                  'overbuild_2026', 'maintenance')
+                                  'overbuild_2026', 'overbuild_absorbed', 'retirement_villages')
+BANDS_IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild_2026', 'replacement',
+                  'redevelopment', 'overbuild_absorbed', 'unconsented', 'maintenance')
+BANDS_WITH_RETIREMENT_VILLAGES_TL = BANDS_WITH_RETIREMENT_VILLAGES[:-1] + ('released_tl', 'retirement_villages')
+BANDS_IN_SCOPE_TL = BANDS_IN_SCOPE[:-1] + ('released_tl', 'maintenance')
 BAND_DEFINITION_IDS = ('with_retirement_villages', 'in_scope')
 
 

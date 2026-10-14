@@ -55,12 +55,14 @@ CASES = [   # earlier, longer tables are preserved at the git tags (CHANGELOG)
     ('Stock', 'Completion rate 0.96', dict(COMPLETION_RATE=0.96)),
     ('Stock', "Completion lag on (Little's law)", dict(COMPLETION_LAG='littles_law')),
     ('Stock', 'No census under-construction correction', dict(CENSUS_UC_CORRECTION=False)),
-    ('2026 overbuild: how it is booked', 'Temporary surplus with payback, absorption 0.20/yr',
-     dict(OVERBUILD_BOOKING='surplus', OVERBUILD_ABSORPTION=0.20)),
-    ('2026 overbuild: how it is booked', 'Temporary surplus with payback, absorption 0.10/yr',
-     dict(OVERBUILD_BOOKING='surplus', OVERBUILD_ABSORPTION=0.10)),
+    # MODEL v3.0.0: the Reference absorbs the overbuild by 2035 (logistic); the speed is bracketed here
+    ('2026 overbuild: absorption', 'Overbuild never absorbed (MODEL v2.1 Reference)',
+     dict(OVERBUILD_ABSORPTION_END=None)),
+    ('2026 overbuild: absorption', 'Overbuild absorbed by 2030', dict(OVERBUILD_ABSORPTION_END=2030)),
+    ('2026 overbuild: absorption', 'Overbuild absorbed by 2045', dict(OVERBUILD_ABSORPTION_END=2045)),
     ('2026 overbuild: how it is booked', 'Booked as redevelopment, stock-neutral',
      dict(OVERBUILD_BOOKING='redevelopment')),
+    ('Stock', 'Vacancy parameter: 1986-2023 census mean, one definition', dict(VACANCY_PARAMETER='consistent_mean')),
     ('2026 overbuild: rule variant', 'Gap measured against the 2026 requirement', dict(OVERBUILD_GAP_REF='2026')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
 ]

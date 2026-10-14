@@ -350,10 +350,27 @@ RECENT_INTERVAL = (2018, 2023)
 #   = 1 - households / (stock + cumulative excess). Sensitivities: 'redevelopment'
 #   (stock-neutral), payback (OVERBUILD_ABSORPTION 0.20 / 0.10), and
 #   OVERBUILD_GAP_REF = '2026'.
+#   MODEL v3.0.0 (Reference): the surplus is ABSORBED by OVERBUILD_ABSORPTION_END along the
+#   normalised logistic of the levers (engine.logistic_weights, 2026 -> 2035: w(2026) = 0,
+#   w >= 2035 = 1): remaining surplus U(t) = C(t) (1 - w(t)), C the cumulative excess; the
+#   absorbed part is built less (payback, capped at the year's building, shortfall carried;
+#   engine.absorb_overbuild). Implied vacancy 1 - hh / (stock + U) returns to the vacancy
+#   parameter by 2035. Theory (stock-flow models of the housing market: Rosen & Smith 1983;
+#   Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the DIRECTION
+#   (reversion of vacancy to its equilibrium rate), not the speed; 2035 is the common RECC
+#   adoption window of the model; the speed is bracketed by sensitivity rows (never absorbed =
+#   MODEL v2.1; by 2030; by 2045). OVERBUILD_ABSORPTION_END None = never absorbed with
+#   OVERBUILD_ABSORPTION the constant share (MODEL v2.1; run_all.py --reference-legacy).
 OVERBUILD_RULE = 'market_excess'
 OVERBUILD_GAP_REF = '2027'
 OVERBUILD_BOOKING = 'surplus'
 OVERBUILD_ABSORPTION = 0.0
+REFERENCE_LEGACY = os.environ.get('PATHWAY_REFERENCE_LEGACY') == '1'
+# VACANCY_PARAMETER: 'census_2023' (adopted; the published 2023 census value, 5.39%) or 'consistent_mean'
+#   (sensitivity: the mean of the 1986-2023 censuses on one definition)
+VACANCY_PARAMETER = 'census_2023'
+OVERBUILD_ABSORPTION_START = 2026
+OVERBUILD_ABSORPTION_END = None if REFERENCE_LEGACY else 2035
 # NOWCAST_METHOD: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
 #   (August 2025 - July 2026), no seasonal estimation. It is the year to July
 #   2026, not calendar 2026: replace it with calendar 2026 when published.
@@ -1192,6 +1209,15 @@ def main():
     # long-run residual beyond the BRANZ demolition rate (census dwelling counts)
     unconsented_rate = engine.census_window_rate(census_rates, *_nr_window) - demolition_rate
     v_forward = float(stock_cal['knots'][max(stock_cal['knots'])])   # vacancy-rate parameter: its published 2023 census value
+    # MODEL v3.0.0 sensitivity: the long-run mean of the census vacancy on one definition (the pooled 2018/2023 empty
+    # share of unoccupied private dwellings applied to every census, 1986-2023)
+    _cs = float(census.loc[[2018, 2023], 'empty'].sum() / census.loc[[2018, 2023], 'unoccupied'].sum())
+    vacancy_consistent = (census['unoccupied'] * _cs / census['total_private']).dropna()
+    vacancy_consistent_mean = float(vacancy_consistent.mean())
+    if VACANCY_PARAMETER == 'consistent_mean':
+        v_forward = vacancy_consistent_mean
+    elif VACANCY_PARAMETER != 'census_2023':
+        raise ValueError(f"Unknown VACANCY_PARAMETER '{VACANCY_PARAMETER}'.")
 
     # 2025's departure from the calibrated identity, and its persistence. Carried
     # forward fading at rho, booked to the residual (see engine.forward).
@@ -1448,8 +1474,10 @@ def main():
         E = engine.forward(pop_total, hh_arr, pop_growth, **fwd_inputs)
         if _join_mode == 'market_excess':
             _b26 = _completion * ((1.0 - lag_w) * float(nowcast['total']) + lag_w * float(hist_units_all.loc[2025]))
+            _aw = (None if OVERBUILD_ABSORPTION_END is None or OVERBUILD_BOOKING != 'surplus' else
+                   engine.logistic_weights(forecast_years, OVERBUILD_ABSORPTION_START, OVERBUILD_ABSORPTION_END))
             join, ji = engine.market_excess(E, _b26, rho_other, OVERBUILD_GAP_REF, OVERBUILD_BOOKING,
-                                            OVERBUILD_ABSORPTION)
+                                            OVERBUILD_ABSORPTION, absorb_w=_aw)
             E = engine.forward(pop_total, hh_arr, pop_growth, join=join, join_redev=ji['redev'],
                                **fwd_inputs)
             join_info[col] = dict(ji, join=join)
@@ -1475,7 +1503,10 @@ def main():
         wave_gfa = (np.asarray(rate_path, float) - (demolition_rate + unconsented_rate)) * E['prev'] * _D
         unc_gfa = E['unc'] * _D - wave_gfa         # long-run residual, m2
         rv_gfa = E['rv'] * _D                      # housed in RV units, m2 (<0)
-        join_gfa = E['join'] * _D + E['gfa_adj']   # near-term join (A1), m2; 2026 = observed GFA
+        # MODEL v3.0.0: the join = market excess - overbuild absorbed (payback, <= 0); two bands
+        _pay = np.asarray(join_info[col]['payback'], float) if col in join_info else np.zeros(len(_D))
+        join_gfa = (E['join'] - _pay) * _D + E['gfa_adj']   # 2026 overbuild (market excess), m2; 2026 = observed GFA
+        absorbed_gfa = _pay * _D                   # overbuild absorbed (payback), m2 (<= 0)
         growth_check[col] = float(g_demand[1:].min())
 
         g_demand[0] = real_2025_total * anchor['growth']
@@ -1495,6 +1526,7 @@ def main():
         # (the near-term join starts in 2026; it has no 2025 share).
         join_gfa = join_gfa.copy()
         join_gfa[0] = 0.0
+        absorbed_gfa[0] = 0.0
         _t1 = vac_gfa[1] + repl_gfa[1] + unc_gfa[1] + wave_gfa[1] + rv_gfa[1]
         _t1 = _t1 if abs(_t1) > 1e-9 else 1.0
         for _arr in (vac_gfa, repl_gfa, unc_gfa, wave_gfa, rv_gfa):
@@ -1508,7 +1540,7 @@ def main():
         results[col] = dict(total=total, growth=g_demand, growth_gross=g_gross,
                             hs_pos=hs_pos, hs_avoided=hs_avoided, c_gross=c_gross,
                             extra=extra_space, other=other_cons, vac=vac_gfa, repl=repl_gfa, unc=unc_gfa, wave=wave_gfa, rv=rv_gfa,
-                            join=join_gfa,
+                            join=join_gfa, absorbed=absorbed_gfa,
                             structural=structural, occ_per_dw=occ_per_dw_f, d_hh=d_hh_f)
 
         df_forecast[f'Ann_GFA_Total_{col}'] = total
@@ -1524,6 +1556,7 @@ def main():
         df_forecast[f'Ann_GFA_Cons_Wave_{col}'] = wave_gfa
         df_forecast[f'Ann_GFA_Cons_RV_{col}'] = rv_gfa
         df_forecast[f'Ann_GFA_Cons_Join_{col}'] = join_gfa
+        df_forecast[f'Ann_GFA_Cons_Absorbed_{col}'] = absorbed_gfa
 
     # ---- retirement-village floor area: reported, out of scope (A4) ----
     rv_floor_area, rv_size_ref = None, float('nan')
@@ -1578,6 +1611,7 @@ def main():
     evol_typ_wave = split_typ(df_forecast['Ann_GFA_Cons_Wave_50th'].values)
     evol_typ_rv = split_typ(df_forecast['Ann_GFA_Cons_RV_50th'].values)
     evol_typ_join = split_typ(df_forecast['Ann_GFA_Cons_Join_50th'].values)   # 0 in 2025
+    evol_typ_absorbed = split_typ(df_forecast['Ann_GFA_Cons_Absorbed_50th'].values)   # 0 in 2025, 2026
     evol_typ_total = pd.DataFrame(engine_out['50th']['gfa_t'].T, index=forecast_years,
                                   columns=typ_names)
 
@@ -1592,7 +1626,8 @@ def main():
         evol_typ_extra.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor * anchor['consumption'] * anchor_extra_share
         evol_typ_other.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor * anchor['consumption'] * (1 - anchor_extra_share)
         _o1 = float(df_forecast['Ann_GFA_Cons_Other_50th'].iloc[1]
-                    - df_forecast['Ann_GFA_Cons_Join_50th'].iloc[1]) or 1.0
+                    - df_forecast['Ann_GFA_Cons_Join_50th'].iloc[1]
+                    - df_forecast['Ann_GFA_Cons_Absorbed_50th'].iloc[1]) or 1.0
         for _ev, _c in ((evol_typ_vac, 'Vacancy'), (evol_typ_repl, 'Replacement'),
                         (evol_typ_unc, 'Unconsented'), (evol_typ_wave, 'Wave'), (evol_typ_rv, 'RV')):
             _ev.loc[2025, n] = (evol_typ_other.loc[2025, n]
@@ -1643,14 +1678,16 @@ def main():
     carbon_wave_typ = band_carbon(evol_typ_wave, f_repl)     # replacement: no soil
     carbon_rv_typ = band_carbon(evol_typ_rv, f_rv)   # in-scope carbon NOT incurred; RV carbon out of scope
     carbon_join_typ = band_carbon(evol_typ_join, f_join)
+    carbon_absorbed_typ = band_carbon(evol_typ_absorbed, f_join)   # building avoided: as soil-bearing as the excess
     carbon_other_typ = (carbon_vac_typ + carbon_repl_typ + carbon_unc_typ + carbon_wave_typ + carbon_rv_typ
-                        + carbon_join_typ)
+                        + carbon_join_typ + carbon_absorbed_typ)
     carbon_cons_typ = carbon_extra_typ + carbon_other_typ
     soil_fracs = {'Growth (net of consolidation)': f_new, 'House-splitting': f_new,
                   'Consumption: extra space': f_new, 'Consumption: vacancy': f_new,
                   'Consumption: demolition': f_repl, 'Calibrated stock residual': f_repl,
                   'Redevelopment wave': f_repl,
-                  'Housed in RV units (out of scope)': f_rv, 'Near-term market excess': f_join}
+                  'Housed in RV units (out of scope)': f_rv, 'Near-term market excess': f_join,
+                  'Overbuild absorbed': f_join}
     # replacements and repaints within the window (time-resolved; zero otherwise)
     carbon_bev_typ = pd.DataFrame(engine_out['50th']['b_t'].T, index=forecast_years, columns=typ_names)
     carbon_total_typ = pd.DataFrame(engine_out['50th']['carbon_t'].T, index=forecast_years,
@@ -1785,7 +1822,7 @@ def main():
                 extra=(evol_typ_extra, carbon_extra_typ), vac=(evol_typ_vac, carbon_vac_typ),
                 repl=(evol_typ_repl, carbon_repl_typ), unc=(evol_typ_unc, carbon_unc_typ),
                 wave=(evol_typ_wave, carbon_wave_typ), join=(evol_typ_join, carbon_join_typ),
-                rv=(evol_typ_rv, carbon_rv_typ))
+                absorbed=(evol_typ_absorbed, carbon_absorbed_typ), rv=(evol_typ_rv, carbon_rv_typ))
     rows = [(N.band_data_label(b), _src[k][0].iloc[1:].sum().sum() / 1e6, _src[k][1].iloc[1:].sum().sum() / 1e6)
             for b, k in zip(N.BANDS_WITH_RETIREMENT_VILLAGES, _src)]
     tg = sum(r[1] for r in rows)
@@ -1806,16 +1843,18 @@ def main():
     # bands before RV; the bands then add up exactly to the typology total. Demolition and the
     # calibrated residual are shown as one band (only their sum is identified).
     def _band_list(get, total):
-        keys = (('growth',), ('hs_pos',), ('extra',), ('vac',), ('repl', 'unc'), ('wave',), ('join',), ('bev',))
-        spec = [(N.band_data_label(b), k, style.BAND[b][0]) for b, k in zip(N.BANDS_IN_SCOPE, keys)]
+        keys = (('growth',), ('hs_pos',), ('extra',), ('vac',), ('join',), ('repl',), ('wave',), ('absorbed',),
+                ('unc',), ('bev',))
+        spec = [(N.band_data_label(b), k, b) for b, k in zip(N.BANDS_IN_SCOPE, keys)]   # (label, keys, band id)
         raw = [(lab, sum(np.asarray(get(k), float) for k in keys), col) for lab, keys, col in spec]
         f = total / sum(v for _, v, _ in raw)
         return [(lab, v * f, col) for lab, v, col in raw], total
     _gfa_cols = dict(growth='Growth', hs_pos='HouseSplit_Pos', extra='Cons_ExtraSpace', vac='Cons_Vacancy',
-                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join')
+                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join',
+                     absorbed='Cons_Absorbed')
     _carb = dict(growth=carbon_growth_typ, hs_pos=carbon_hs_pos_typ, extra=carbon_extra_typ, vac=carbon_vac_typ,
                  repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ,
-                 bev=carbon_bev_typ)
+                 absorbed=carbon_absorbed_typ, bev=carbon_bev_typ)
     fig_bands = {
         'gfa': _band_list(lambda k: (np.zeros(len(forecast_years) - 1) if k == 'bev' else
                                      df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:] / 1e6),
@@ -1853,7 +1892,8 @@ def main():
                     'Calibrated stock residual': evol_typ_unc,
                     'Redevelopment wave': evol_typ_wave,
                     'Housed in RV units (out of scope)': evol_typ_rv,
-                    'Near-term market excess': evol_typ_join}
+                    'Near-term market excess': evol_typ_join,
+                    'Overbuild absorbed': evol_typ_absorbed}
     dem_mat = pd.DataFrame(
         {lab: [sum((df[t].iloc[1:].sum() * MAT_BASE.loc[m, t]) if DECARB is None
                    else wsum(df[t].values, mat_int(m, t)) for t in typ_names)
@@ -2094,7 +2134,7 @@ def export_results(B, path):
     f = slice(1, None)
     tot = lambda df: float(df.iloc[f].sum().sum())
     # demand bands, definition 'with_retirement_villages' (naming.BANDS_WITH_RETIREMENT_VILLAGES)
-    keys = ('growth', 'hs_pos', 'extra', 'vac', 'repl', 'unc', 'wave', 'join', 'rv')
+    keys = ('growth', 'hs_pos', 'extra', 'vac', 'repl', 'unc', 'wave', 'join', 'absorbed', 'rv')
     bands = [(N.band_data_label(b), f'evol_typ_{k}', f'carbon_{k}_typ')
              for b, k in zip(N.BANDS_WITH_RETIREMENT_VILLAGES, keys)]
     typ = list(B['typ_names'])
@@ -2166,6 +2206,43 @@ def export_annual(B, path_annual, path_bands):
     pd.DataFrame(out).to_csv(path_bands, index=False)
 
 
+def export_absorption_log(B, path):
+    """MODEL v3.0.0: the overbuild absorption of the Reference by year (median population path; engine.absorb_overbuild):
+    market excess, cumulative excess C, absorption weight w, target surplus U* = C (1 - w), target payback, the
+    year's building before the payback (gross), the payback paid (capped at max(gross, 0)), the carried shortfall,
+    the surplus still vacant U, dwellings built, and the implied vacancy 1 - hh / (stock + U) against the vacancy
+    parameter. Written whatever the absorption setting (never absorbed: w = 0, payback 0)."""
+    ji = B['join_info']['50th']
+    E = B['engine_out']['50th']
+    fy = np.asarray(B['forecast_years'])
+    n = len(fy)
+    ab = ji.get('absorption')
+    if ab is None:                                     # MODEL v2.1 rule (constant share; never absorbed by default)
+        C = np.cumsum(ji['excess'])
+        ab = dict(excess=ji['excess'], C=C, w=np.zeros(n), U_target=np.asarray(ji['surplus'], float),
+                  payback_target=-np.asarray(ji['payback'], float), need=engine.requirement(E) - E['join'],
+                  gross=engine.requirement(E) - E['join'] + ji['excess'], paid=-np.asarray(ji['payback'], float),
+                  carry=np.zeros(n), cap_binds=np.zeros(n, bool), U=np.asarray(ji['surplus'], float))
+        ab['built'] = ab['gross'] - ab['paid']
+    stock = np.asarray(E['stock'], float)
+    v_par = np.broadcast_to(np.asarray(E['v'], float), (n,))
+    rows = []
+    for i, y in enumerate(fy):
+        rows.append(dict(year=int(y), excess_dwellings=float(ab['excess'][i]), cumulative_excess=float(ab['C'][i]),
+                         absorption_weight=float(ab['w'][i]), surplus_target=float(ab['U_target'][i]),
+                         payback_target=float(ab['payback_target'][i]), building_before_payback=float(ab['gross'][i]),
+                         payback_paid=float(ab['paid'][i]), payback_carried=float(ab['carry'][i]),
+                         cap_binds=bool(ab['cap_binds'][i]), surplus_vacant=float(ab['U'][i]),
+                         dwellings_built=float(engine.requirement(E)[i]),
+                         implied_vacancy=float(1.0 - E['hh'][i] / (stock[i] + E['stock_join'][i])),
+                         vacancy_parameter=float(v_par[i])))
+    df = pd.DataFrame(rows)
+    if not np.allclose(df['surplus_vacant'].values, np.asarray(E['stock_join'], float), rtol=1e-12, atol=1e-6):
+        raise SystemExit('export_absorption_log: the surplus U differs from the engine stock_join.')
+    df.to_csv(path, index=False)
+    return df
+
+
 def export_stage_material(B, path_stage, path_material):
     """Annual carbon of the Reference 2026-2050 by life-cycle stage and by material (MODEL v2.0.0
     additions, Fig3). No new computation: the stage split is the one main() prints (floor area by
@@ -2215,3 +2292,4 @@ if __name__ == "__main__":
                       layout.writing(layout.data('baseline/bands_annual.csv')))
         export_stage_material(_B, layout.writing(layout.data('baseline/annual_by_stage.csv')),
                               layout.writing(layout.data('baseline/annual_by_material.csv')))
+        export_absorption_log(_B, layout.writing(layout.data('baseline/overbuild_absorption_log.csv')))

@@ -1,0 +1,69 @@
+{
+ "figure": "D37_mc_convergence",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "axes": [
+  {
+   "title": "Embodied carbon",
+   "xlabel": "Number of Latin hypercube draws",
+   "ylabel": "2026\u20132050 total (kt CO\u2082e)",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "Floor area",
+   "xlabel": "Number of Latin hypercube draws",
+   "ylabel": "2026\u20132050 total (Mm\u00b2)",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{100}$",
+  "$\\mathdefault{10^{1}}$",
+  "$\\mathdefault{10^{2}}$",
+  "$\\mathdefault{10^{3}}$",
+  "$\\mathdefault{10^{4}}$",
+  "$\\mathdefault{110}$",
+  "$\\mathdefault{120}$",
+  "$\\mathdefault{14000}$",
+  "$\\mathdefault{16000}$",
+  "$\\mathdefault{18000}$",
+  "$\\mathdefault{20000}$",
+  "$\\mathdefault{22000}$",
+  "$\\mathdefault{24000}$",
+  "$\\mathdefault{26000}$",
+  "$\\mathdefault{28000}$",
+  "$\\mathdefault{60}$",
+  "$\\mathdefault{70}$",
+  "$\\mathdefault{80}$",
+  "$\\mathdefault{90}$",
+  "2026\u20132050 total (Mm\u00b2)",
+  "2026\u20132050 total (kt CO\u2082e)",
+  "Embodied carbon",
+  "Floor area",
+  "Number of Latin hypercube draws",
+  "a",
+  "b",
+  "mean",
+  "p5",
+  "p50",
+  "p95"
+ ],
+ "note": "Percentiles over the first n draws (largest n = 5,000).",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "montecarlo/convergence_REF.csv"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

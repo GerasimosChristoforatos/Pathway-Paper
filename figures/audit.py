@@ -37,6 +37,12 @@ AUDIT_DIR = layout.FIGURE_AUDIT
 
 
 def _years(ax):
+    """Year range of the x data of an axes, or (None, None) when the x-axis is not calendar years: x values in
+    YEAR_RANGE count as years unless the x-axis label names another quantity (year axes carry no label or a label
+    with 'year'; e.g. D37 plots the number of Monte Carlo draws, 100-5,000)."""
+    xl = ax.get_xlabel().strip().lower()
+    if xl and 'year' not in xl:
+        return (None, None)
     xs = []
     for a in ax.get_children():
         if not a.get_visible() or a.get_gid() in (BOUNDARY, ZONE):

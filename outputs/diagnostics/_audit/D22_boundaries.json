@@ -1,6 +1,6 @@
 {
  "figure": "D22_boundaries",
- "producer": "boundaries.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Boundaries 2025\u20132050",
@@ -10,7 +10,7 @@
    "year_max": null
   },
   {
-   "title": "Population modifier [P_NZ(t) / P_NZ(2025)] \u00b7 [P_W(2025) / P_W(t)]",
+   "title": "Population modifier\n[P_NZ(t) / P_NZ(2025)] \u00b7 [P_W(2025) / P_W(t)]",
    "xlabel": "",
    "ylabel": "Index (2025 = 1)",
    "year_min": 2025.0,
@@ -58,7 +58,7 @@
   "Boundary (kt CO\u2082e per year, log scale)",
   "Components",
   "Index (2025 = 1)",
-  "Population modifier [P_NZ(t) / P_NZ(2025)] \u00b7 [P_W(2025) / P_W(t)]",
+  "Population modifier\n[P_NZ(t) / P_NZ(2025)] \u00b7 [P_W(2025) / P_W(t)]",
   "a",
   "b",
   "c"
@@ -69,6 +69,9 @@
  "boundary_drawn": true,
  "boundary_zones": true,
  "white_segment_edges": 0,
+ "source": [
+  "figure_source/D22_boundaries.json"
+ ],
  "atp_linestyles": [
   "dotted"
  ],
@@ -76,5 +79,7 @@
  "net_total_ticks": 0,
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
- "retired_colours": []
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
 }

@@ -1,0 +1,65 @@
+{
+ "figure": "D40_src_prcc",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "Floor area",
+   "xlabel": "PRCC (95% bootstrap interval)",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "Carbon",
+   "xlabel": "PRCC (95% bootstrap interval)",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "LoE AR",
+   "xlabel": "PRCC (95% bootstrap interval)",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0.0}$",
+  "$\\mathdefault{0.5}$",
+  "$\\mathdefault{1.0}$",
+  "$\\mathdefault{\u22120.5}$",
+  "$\\mathdefault{\u22121.0}$",
+  "Carbon",
+  "Floor area",
+  "LoE AR",
+  "P5",
+  "PRCC (95% bootstrap interval)",
+  "REF",
+  "TL",
+  "a",
+  "b",
+  "c",
+  "carbon_index",
+  "complete",
+  "size",
+  "z_pop"
+ ],
+ "note": "Bootstrap resamples: 2000; SRC and R\u00b2 in the data file.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/montecarlo_importance.csv"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

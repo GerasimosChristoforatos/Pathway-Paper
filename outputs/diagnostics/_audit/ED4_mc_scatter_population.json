@@ -1,0 +1,73 @@
+{
+ "figure": "ED4_mc_scatter_population",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "Population rank (z-score of the draw)",
+   "ylabel": "Cumulative LoE AR 2026-2050",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "",
+   "xlabel": "Population rank (z-score of the draw)",
+   "ylabel": "Cumulative LoE AtP 2026-2050",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{10^{-1}}$",
+  "$\\mathdefault{10^{0}}$",
+  "$\\mathdefault{10^{1}}$",
+  "$\\mathdefault{10^{2}}$",
+  "$\\mathdefault{1}$",
+  "$\\mathdefault{2\\times10^{-1}}$",
+  "$\\mathdefault{2\\times10^{0}}$",
+  "$\\mathdefault{2}$",
+  "$\\mathdefault{3\\times10^{-1}}$",
+  "$\\mathdefault{3\\times10^{0}}$",
+  "$\\mathdefault{3}$",
+  "$\\mathdefault{4\\times10^{-1}}$",
+  "$\\mathdefault{4\\times10^{0}}$",
+  "$\\mathdefault{4}$",
+  "$\\mathdefault{5}$",
+  "$\\mathdefault{6\\times10^{-1}}$",
+  "$\\mathdefault{6\\times10^{0}}$",
+  "$\\mathdefault{\u22121}$",
+  "$\\mathdefault{\u22122}$",
+  "$\\mathdefault{\u22123}$",
+  "$\\mathdefault{\u22124}$",
+  "$\\mathdefault{\u22125}$",
+  "Cumulative LoE AR 2026-2050",
+  "Cumulative LoE AtP 2026-2050",
+  "P5 Ambitious",
+  "P5 Moderate",
+  "Population rank (z-score of the draw)",
+  "Reference",
+  "Theoretical limit",
+  "a",
+  "b"
+ ],
+ "note": "5,000 Latin hypercube draws.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/montecarlo_draws.csv"
+ ],
+ "atp_linestyles": [
+  "dotted"
+ ],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

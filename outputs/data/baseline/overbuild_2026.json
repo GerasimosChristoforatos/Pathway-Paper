@@ -2,12 +2,12 @@
   "mode": "market_excess",
   "near_mode": "surplus",
   "gap_ref_basis": "2027",
-  "surplus_2026_2028": 24602.629042152665,
-  "limitation": "The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); implied stock vacancy rises to \u22486.4% because the 2026 overbuild is not absorbed. The 2026 overbuild (\u224827,500 dwellings over 2026-2050, of which \u224824,600 in 2026-2028) is not absorbed by later demand, so the implied stock vacancy stays about 1 percentage point above the 1986-2023 range on a consistent definition (4.0-5.4%). Absorption is not modelled: the persistence rho = 0.52 (lag-1 autocorrelation of the annual departure of building from the calibrated stock identity, 1992-2023) describes how a flow deviation fades (already used for the excess), not a payback of the stock, and the eight census vacancy observations do not identify a mean-reversion rate.",
+  "surplus_2026_2028": 21889.461527882646,
+  "limitation": "The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). The 2026 overbuild (market excess \u224827,500 dwellings over 2026-2050, of which \u224824,600 in 2026-2028) is absorbed by 2035 along the normalised logistic of the levers (\u224827,500 dwellings built less; implied vacancy peaks at 6.33% in 2028). Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, reversion of vacancy to its equilibrium rate, not the speed; 2035 is the common RECC adoption window of the model and the speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). The persistence rho = 0.52 describes how the flow deviation fades, not the payback of the stock.",
   "vacancy": {
-    "peak": 0.0651592557250733,
-    "peak_year": 2031,
-    "v_2050": 0.06363416985835924,
+    "peak": 0.06332387645560078,
+    "peak_year": 2028,
+    "v_2050": 0.05387454644033862,
     "v_forward": 0.05387454644033866,
     "census_min": 0.05075373310444933,
     "census_max": 0.08090044277034486,
@@ -40,6 +40,9 @@
   "e26": 16759.675404959813,
   "gap_ref": 9973.711263233039,
   "rho": 0.5180189643073912,
-  "overbuild_2026_dwellings_2026_2050": 27479.123839651176,
+  "overbuild_2026_dwellings_2026_2050": 1.1005853563575418e-11,
+  "excess_2026_2050": 27479.123839651176,
+  "absorbed_2026_2050": 27479.12383965116,
+  "absorption_end": 2035,
   "scenario": "REF"
 }

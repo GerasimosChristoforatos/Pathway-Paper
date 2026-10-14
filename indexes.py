@@ -6,9 +6,8 @@ Writes, from the files the run produced (nothing is computed here):
   outputs/INDEX.md                    every file under outputs/ with one line on what it holds and
                                       which script writes it
 
-FILES below is the registry of output files; tests/test_release.py checks that every file in
-outputs/ (except the git-ignored logs) matches exactly one entry and that no entry is stale, so
-a new output cannot be added without being described.
+FILES below is the registry of output files; main() stops the run (run_all.py step 'indexes') if a file under
+outputs/ (except the git-ignored logs) matches no entry, so a new output cannot be added without being described.
 
     python indexes.py            (run_all.py runs it after the figures)
 """

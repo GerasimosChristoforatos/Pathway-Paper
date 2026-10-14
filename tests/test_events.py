@@ -1,4 +1,8 @@
-"""baseline-pb-v3: time-resolved B2/B4 (replacement and repaint events), committed
+"""Time-resolved B2/B4 (MODEL v3.0.0: restored from tests/retired/test_v3.py, the baseline-pb-v3 tests; the two
+anchors of baseline-PB_v2 are checked on the MODEL v2.1 Reference, OVERBUILD_ABSORPTION_END = None, which
+tests/test_reference_legacy.py locks to v2.1; the identity and the other checks run on the v3 Reference).
+
+baseline-pb-v3: time-resolved B2/B4 (replacement and repaint events), committed
 post-2050 emissions, A4-A5 decarbonisation. Checks: the event table reproduces the
 supplied tables; events per line equal the counts and add up to the line B2/B4;
 within-window + committed (2025 factors) = whole-life total; the
@@ -24,6 +28,8 @@ FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_pb_v2.json')))
 EV = pd.read_csv(BF.FILE_EVENTS).fillna({'event_type': '', 'event_path': ''})
 ITEMS = pd.read_csv(BF.FILE_ITEMS)
 WHOLE_LIFE = dict(ACCOUNTING='whole_life_at_construction', DECARB_A45='held')
+# the Reference of the captured anchors: the 2026 overbuild never absorbed (MODEL v2.1)
+LEGACY = dict(OVERBUILD_ABSORPTION_END=None)
 
 
 @pytest.fixture(scope='module')
@@ -82,7 +88,7 @@ def test_event_timing_first_event():
 
 
 def test_whole_life_with_a45_held_reproduces_v2():
-    B = run_boss(**WHOLE_LIFE)
+    B = run_boss(**WHOLE_LIFE, **LEGACY)
     a = FX['adopted']
     assert B['tot_carbon_median'] == a['carbon_kt']
     assert B['_upfront'] + B['_soil'] / 1e6 == a['upfront_kt']
@@ -90,15 +96,15 @@ def test_whole_life_with_a45_held_reproduces_v2():
 
 
 def test_none_reproduces_the_frozen_anchor():
-    B = run_boss(DECARB_MODE='none', **WHOLE_LIFE)
+    B = run_boss(DECARB_MODE='none', **WHOLE_LIFE, **LEGACY)
     f = FX['frozen']
     assert B['tot_carbon_median'] == f['carbon_kt']
     assert [float(v / 1e6) for v in B['carbon_total_typ'].sum(axis=1).values] == f['annual_carbon_kt']
 
 
 def test_within_window_plus_committed_equals_whole_life(tr_frozen):
-    """At 2025 factors: upfront + in-window B + committed B (upper) + C1-C4 = whole life."""
-    whole = FX['frozen']['carbon_kt']
+    """At 2025 factors: upfront + in-window B + committed B (upper) + C1-C4 = whole life (both on the v3 Reference)."""
+    whole = run_boss(DECARB_MODE='none', **WHOLE_LIFE)['tot_carbon_median']
     c = tr_frozen['COMMITTED']
     up = tr_frozen['_upfront'] + tr_frozen['_soil'] / 1e6
     assert up + c['B_inwindow_kt'] + c['B_upper_kt'] + c['C_kt'] == pytest.approx(whole, rel=1e-12)
@@ -125,7 +131,7 @@ def test_committed_range_ordered():
 
 
 def test_every_figure_is_planned():
-    """Every figure file in outputs/paper/, outputs/extended_data/ and outputs/diagnostics/ is a figure of figure_plan.py
+    """Every figure file in outputs/paper_main/, outputs/paper_extended/ and outputs/diagnostics/ is a figure of figure_plan.py
     (tools/check_outputs.py also refuses to finish otherwise)."""
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     import check_outputs
@@ -137,18 +143,21 @@ CARBON_AXIS = re.compile(r'CO₂|CO2|carbon|LoE|exceedance|\bkt\b|\bMt\b', re.I)
 
 def test_no_historical_carbon_in_figures():
     """No figure shows carbon before the projection (from 2026), except the Monte Carlo fan
-    with the boundaries (D21) and Fig4 (a), which show the AR base window at 2025 factors (figaudit records,
+    with the boundaries (D21) and Fig3 (a) (MODEL v3.0.0 numbering), which show the AR base window at 2025 factors (figaudit records,
     written when each figure is saved)."""
     import boundaries
     import layout
     audit = layout.FIGURE_AUDIT
-    files = {os.path.splitext(f)[0] for base in (layout.PAPER, layout.EXTENDED_DATA, layout.DIAGNOSTICS)
+    files = {os.path.splitext(f)[0] for base in (layout.PAPER_MAIN, layout.PAPER_EXTENDED, layout.DIAGNOSTICS)
              for _, _, fs in os.walk(base) for f in fs if f.endswith('.png')}
     recs = {f[:-5]: json.load(open(os.path.join(audit, f))) for f in os.listdir(audit) if f.endswith('.json')}
     assert files and files <= set(recs), sorted(files - set(recs))         # every saved figure audited
-    # MODEL v2.1.2: Fig4 (a) shows the same AR base window history as D21 (a thin line joined to the projection)
+    # Fig3 (a) (Fig4 in MODEL v2.1.2) shows the same AR base window history as D21 (a thin line joined to the projection)
     allowed = {'D21_fan_and_boundaries': boundaries.AR_BASE_WINDOW[0],
-               'Fig4_reference_boundaries': boundaries.AR_BASE_WINDOW[0]}
+               'Fig3_reference_boundaries': boundaries.AR_BASE_WINDOW[0],
+               # D29 plots each lever's native parameter (dimensionless; the L7 A4-A5 factor path is anchored at
+               # 2025 = 1), not carbon: its panel titles name the levers ('Construction-stage carbon')
+               'D29_ramps': 2025}
     bad = []
     for name in files:
         for ax in recs[name]['axes']:

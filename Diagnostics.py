@@ -1,7 +1,7 @@
 """
 DIAGNOSTICS -- sanity checks of projection.py, past and future together
 ======================================================================
-Three diagnostics (outputs/diagnostics/data_calibration/, docs/FIGURE_PLAN.md), read
+Three diagnostics (outputs/diagnostics/calibration/, docs/FIGURE_PLAN_v3.md), read
 from ONE run of projection.py, so the two scripts can never disagree:
 
   D04  household formation      people arriving vs household size changing

@@ -3,11 +3,11 @@
     python tools/sensitivity_tables.py         (run_all.py runs it after the pathway Monte Carlo)
 
 Writes outputs/data/sensitivity/:
-  reference_carbon.csv     Reference carbon 2026-2050, rows grouped by type of change (ED1, ED3)
+  reference_carbon.csv     Reference carbon 2026-2050, rows grouped by type of change (D16)
   p5_carbon.csv            P5 Combined (Moderate) carbon 2026-2050 and its levels of exceedance, pathway
-                           design rows (ED2)
-  planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (ED4)
-  replacement_variants.csv the Reference, P5 and TL under Low / Reference / High replacement (ED10)
+                           design rows (D41)
+  planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42)
+  replacement_variants.csv the Reference, P5 and TL under Low / Reference / High replacement (ED13)
   tornado.csv              Fig7: the eight inputs of the Reference tornado (low / high), cumulative carbon and the
                            cumulative LoE AR and AtP (the budgets move only with the population path)
 

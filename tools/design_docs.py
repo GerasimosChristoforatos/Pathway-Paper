@@ -1,4 +1,6 @@
-"""Design documents of the MODEL v1.0.0 release, generated from the code that enforces them:
+"""Design documents of the MODEL v1.0.0-v2.1.2 releases (historical; MODEL v3.0.0 uses tools/design_docs_v3.py,
+which keeps sections 1-10 of docs/RENAMING.md as generated here and writes section 11 and docs/FIGURE_PLAN_v3.md;
+this script reads the v2 registries of figure_plan.py, which MODEL v3.0.0 replaced, and is not run any more):
 
   docs/RENAMING.md     the complete old -> new map: vocabulary (naming.py), every file,
                        column, identifying cell and JSON key of the outputs captured at

@@ -2,7 +2,7 @@
 
     light (DEFAULT, temporary)  Monte Carlo 1,000 Latin-hypercube draws (its own fixed seed), Sobol indices off,
                                 bootstrap 500 replicates; figures PNG at 200 dpi with a grey footer
-                                "LIGHT RUN - n=1000"; every output under outputs/_light/ (a mirror of the outputs/
+                                "LIGHT RUN — n=1000"; every output under outputs/_light/ (a mirror of the outputs/
                                 tree), so the full outputs are never overwritten.
     full                        Monte Carlo 5,000 Latin-hypercube draws (the existing design and seed), Sobol on,
                                 bootstrap 2,000 replicates; figures PDF + PNG at 600 dpi; outputs under outputs/.
@@ -18,7 +18,7 @@ import os
 DEFAULT = 'light'
 PROFILES = {
     'light': dict(name='light', n_draws=1000, mc_seed=20261014, sobol=False, bootstrap=500, dpi=200,
-                  formats=('png',), out_subdir='_light', footer='LIGHT RUN – n=1000'),
+                  formats=('png',), out_subdir='_light', footer='LIGHT RUN — n=1000'),
     'full': dict(name='full', n_draws=5000, mc_seed=20260924, sobol=True, bootstrap=2000, dpi=600,
                  formats=('pdf', 'png'), out_subdir='', footer=None),
 }

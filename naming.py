@@ -138,7 +138,7 @@ BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BR
 BANDS_HISTORY = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement_history')
 BAND_DEFINITIONS = {
     'growth': 'population growth at the occupied area per person, net of consolidation (untargeted)',
-    'smaller_households': 'additional households from falling household size (targeted by L2 Household occupancy, P1)',
+    'smaller_households': 'additional households from falling household size (targeted by L3 Household size, P1)',
     'extra_space': 'new-dwelling size above the occupied area (household size x floor area per design occupant)',
     'vacancy': 'the vacancy allowance on new households and the change in the vacancy rate',
     'overbuild_2026': 'observed 2026 building above the requirement, continuing above it in 2027-2050 at the '
@@ -154,7 +154,7 @@ BAND_DEFINITIONS = {
                      'in the Reference',
     'maintenance': 'replacement and repaint events (B2, B4) of the new buildings within 2026–2050 (carbon only)',
 }
-UNTARGETED = ('growth',)          # MODEL v2.1.0: smaller households are targeted by L2 (P1)
+UNTARGETED = ('growth',)          # smaller households are targeted by L3 Household size (P1; MODEL v3.0.0 numbering)
 
 COMPONENTS = {'materials_construction': 'Materials and construction (A1–A5)',
               'soil': 'Soil carbon loss',

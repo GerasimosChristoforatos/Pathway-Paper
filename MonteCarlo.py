@@ -168,6 +168,11 @@ def build_setup(settings=None):
               nowcast=B['nowcast'], units_all_raw=B['hist_units_all'],
               near_gap_ref=projection.OVERBUILD_GAP_REF, near_mode=projection.OVERBUILD_BOOKING,
               near_absorption=projection.OVERBUILD_ABSORPTION,
+              # MODEL v3.0.0: logistic absorption of the overbuild (None: never absorbed, the legacy Reference)
+              near_absorb_w=(None if projection.OVERBUILD_ABSORPTION_END is None
+                             or projection.OVERBUILD_BOOKING != 'surplus' else
+                             engine.logistic_weights(fy, projection.OVERBUILD_ABSORPTION_START,
+                                                     projection.OVERBUILD_ABSORPTION_END)),
               # observed 2026 floor area (fixed in every draw)
               gfa_2026=(B['gfa_nowcast']['total'] if B['gfa_nowcast'] else None))
 
@@ -399,7 +404,7 @@ def project(su, p, full=False):
         b26 = c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
                    + su['lag_w'] * float(su['units_all_raw'].loc[2025]))
         join, ji = engine.market_excess(E, b26, dv['rho'], su['near_gap_ref'], su['near_mode'],
-                                        su['near_absorption'])
+                                        su['near_absorption'], absorb_w=su['near_absorb_w'])
         E = fwd(join, ji['redev'])
     out = dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
                hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],

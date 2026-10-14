@@ -68,7 +68,7 @@ def _hex(c):
 def maintenance_drawn(fig):
     """[where] maintenance is drawn as its own layer or line: data artists in the maintenance colour
     (style.BAND / style.COMPONENT) on axes that are switched on, and legend entries naming it."""
-    import style
+    from figures import style
     colour = {style.BAND['maintenance'][0].upper(), style.COMPONENT['maintenance'][0].upper()}
     out = []
     for k, ax in enumerate(fig.get_axes()):
@@ -151,7 +151,7 @@ def styling(fig):
     """MODEL v2.1.2 styling facts: the line style of every AtP boundary line (dotted required), the negative band
     segments and net-total ticks (net-total convention: plotting.signed_stack / signed_areas), negative-height
     band rectangles (the old convention, drawn down from zero; none allowed) and whether the TL colour is used."""
-    import style as S
+    from figures import style as S
     from matplotlib.colors import to_hex
     atp, neg, ticks, down, tl, old = [], 0, 0, 0, False, set()
     tlhex = S.TL.upper()
@@ -182,7 +182,21 @@ def styling(fig):
                 band_rectangles_below_zero=down, tl_colour_used=tl, retired_colours=sorted(old))
 
 
-def record(fig, name, note=None):
+def negatives(fig):
+    """MODEL v3.0.0 sign rules: the negative band segments of cumulative bars (gid NEG_BAR) must be unfilled and
+    unhatched; returns (count, count filled or hatched) and the net-total ticks / lines drawn."""
+    n, bad = 0, 0
+    for ax in fig.get_axes():
+        for a in ax.get_children():
+            if a.get_gid() == 'negative_bar':
+                n += 1
+                fc = np.atleast_2d(np.asarray(a.get_facecolor(), float))
+                if (fc[:, 3] > 0).any() or (hasattr(a, 'get_hatch') and a.get_hatch()):
+                    bad += 1
+    return dict(negative_bar_segments=n, negative_bar_segments_filled=bad)
+
+
+def record(fig, name, note=None, source=None):
     """Write the audit record of a figure about to be saved under name (no extension): per
     axes its title, labels and the year range of its data; the figure's texts; the note
     (run-specific caption text, used by DIAGNOSTICS.md)."""
@@ -198,4 +212,5 @@ def record(fig, name, note=None):
         json.dump(dict(figure=os.path.splitext(os.path.basename(name))[0], producer=producer(), axes=axes,
                        texts=texts(fig), note=note, maintenance_drawn=bool(md), maintenance_where=md,
                        boundary_drawn=BOUNDARY in gids, boundary_zones=ZONE in gids,
-                       white_segment_edges=white_edges(fig), **styling(fig)), f, indent=1)
+                       white_segment_edges=white_edges(fig), source=source, **styling(fig), **negatives(fig)),
+                  f, indent=1)

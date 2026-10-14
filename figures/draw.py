@@ -1,26 +1,29 @@
 """
-PLOTTING: drawing helpers shared by every figure (MODEL v1.0.0)
-==============================================================
-style.py holds the colours, sizes and saving, naming.py the labels; this module draws
-with them, so the paper and Extended Data figures (paper.py, extended_data.py) and the diagnostics (projection.py,
-Diagnostics.py, tools/figures_report.py, Sensitivity.py, MonteCarlo.py, boundaries.py,
-pathways.py) stack bands, materials and boundaries the same way.
+DRAW: drawing helpers shared by every figure (MODEL v3.0.0, figures/ package)
+=============================================================================
+figures/style.py holds the colours, sizes and saving, naming.py the labels; this module draws with them, so every
+figure stacks bands, materials and boundaries the same way. The figures read data files only (outputs/data/).
 
-Rules kept here (docs/FIGURE_PLAN.md):
-  * demand bands are stacked and sum to the total: no separate total line is drawn;
-  * negative parts are drawn below zero, never clipped (zero_floor raises if a series
-    that must be non-negative is not);
-  * the two allocation principles (AR, AtP) are lines, never a shaded range and never
-    averaged; they are tagged as boundaries for the figure audit (figaudit.py).
+Sign rules (MODEL v3.0.0; the data keep the sign of every band, the figures never flip it):
+  * time series (stack_series): positive bands stacked up from zero, negative bands stacked down from zero, in the
+    fixed band order; the net is a black line (up - |down| = net, checked to 1e-9);
+  * cumulative bars (bars_cumulative): positive bands stacked; each negative band (Overbuild absorbed, Released
+    dwellings (TL), Unconsented additions, and any band negative in a run) an unfilled, unhatched segment outlined in
+    its band colour, hanging down from the top of the positive stack; the bar ends at the net total, marked by a net
+    tick (checked to 1e-9); one legend entry per band;
+  * material and stage values are never negative (nonnegative() raises: STOP);
+  * the two allocation principles (AR, AtP) are lines, never a shaded range and never averaged; tagged as
+    boundaries for the figure audit (figures/audit.py).
 """
 import numpy as np
 import matplotlib
 from matplotlib.patches import Patch
 
 import naming as N
-import style as S
+from figures import style as S
 
 HISTORY_SPLIT = 2025.5             # vertical divider between history (to 2025) and projection (2026 on)
+NET_RTOL = 1e-9
 
 
 # ---------------------------------------------------------------------------
@@ -73,7 +76,7 @@ def boundary_lines(ax, x, ar, atp, label=True, **kw):
     (below AtP darker green, between AtP and AR light green, above AR light red: style.boundary_zones)."""
     if ar is not None and atp is not None:
         S.boundary_zones(ax, x, ar, atp, lines=False)
-    import figaudit
+    from figures import audit as figaudit
     for key, y in (('AR', ar), ('AtP', atp)):
         if y is None:
             continue
@@ -97,72 +100,51 @@ def band_style(bid):
     return S.fill(colour, hatch, S.BAND_HATCHCOLOR.get(key))
 
 
-NEG_GID = 'negative_band'           # a negative band segment (figure audit)
-NET_GID = 'net_total'               # the tick at a bar's net total (figure audit)
-NEGATIVE_NOTE = 'negative: dwellings released by lower vacancy replace new building'
+NEG_GID = 'negative_band'           # a negative band area of a time series (figure audit)
+NEG_BAR_GID = 'negative_bar'        # a negative band segment of a cumulative bar: unfilled, outlined (figure audit)
+NET_GID = 'net_total'               # the net tick of a bar / the net line of a time series (figure audit)
 
 
-def negative_style(st):
-    """A negative band segment, drawn over the top of the positive stack: the band colour faded, with a light
-    hatch (unless the band has its own hatch), so the solid part of the bar ends at the net total."""
-    out = dict(st, alpha=0.45 * float(st.get('alpha', 1.0) or 1.0))
-    if not out.get('hatch'):
-        out.update(hatch='////', hatchcolor='#FFFFFF')
-    return out
+class SignError(SystemExit):
+    pass
 
 
-def signed_stack_styled(ax, x, parts, width, tick=True):
-    """The net-total convention (see signed_stack) with explicit patch styles: parts [(style dict, values)].
-    Returns (positive sum, negative sum) per x."""
-    x = np.atleast_1d(np.asarray(x, float))
-    up, dn = np.zeros(len(x)), np.zeros(len(x))
-    for st, v in parts:
-        pos = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), 0, None)
-        ax.bar(x, pos, bottom=up, width=width, gid='band_segment', **st)
-        up = up + pos
-    top = up.copy()
-    for st, v in parts:
-        neg = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), None, 0)
-        if np.any(neg < 0):
-            ax.bar(x, -neg, bottom=top + neg, width=width, gid=NEG_GID, **negative_style(st))
-        top, dn = top + neg, dn + neg
-    if tick:
-        for xi, t, d in zip(x, top, dn):
-            if d < 0:
-                ax.plot([xi - 0.32 * width, xi + 0.32 * width], [t, t], color=S.INK, lw=S.LW_BOLD,
-                        solid_capstyle='butt', zorder=5, gid=NET_GID)
-    if np.any(top < 0):
-        ax.axhline(0, color=S.INK, lw=S.LW_THIN)
-    return up, dn
+def nonnegative(name, *series):
+    """STOP if a material or stage series is negative (MODEL v3.0.0: never drawn, never clipped)."""
+    lo = min(float(np.nanmin(np.asarray(v, float))) for v in series)
+    if lo < -1e-9:
+        raise SignError(f'STOP: negative {name} value ({lo:g}); material and stage values are never negative.')
 
 
-def signed_stack(ax, x, parts, width, tick=True, **kw):
-    """Bars by demand band, net-total convention (MODEL v2.1.2): positive parts are stacked upwards from zero;
-    each negative part is drawn as a downward segment from the top of the stack so far, so the bar ends at its
-    net total, marked by a short tick (where a bar has a negative part). parts: [(band id, values)]. Returns
-    (sum of the positive parts, sum of the negative parts); their sum is the net total."""
-    return signed_stack_styled(ax, x, [(dict(band_style(bid), **kw), v) for bid, v in parts], width, tick)
+def _check_net(up, dn, net, what):
+    if net is None:
+        return
+    net = np.asarray(net, float)
+    tot = up + dn
+    scale = np.maximum(np.abs(net), np.maximum(np.abs(up), 1.0))
+    err = float(np.max(np.abs(tot - net) / scale))
+    if err > NET_RTOL:
+        raise SignError(f'STOP: {what}: the drawn stack does not end at the net total (max rel. diff {err:.2e}).')
 
 
-def signed_areas(ax, x, parts, **kw):
-    """Areas by demand band over a year axis, net-total convention (as signed_stack): positive parts stacked from
-    zero, each negative part a downward band from the top of the stack so far, so the stack ends at the net
-    total. parts: [(band id, values)]. No total line: the stack is the total. Returns (positive sum, negative
-    sum)."""
+def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', **kw):
+    """Time series by band: positive values stacked up from zero, negative values stacked down from zero (fixed
+    order), the net a black line. parts: [(band id, values)]; net: the run's total to check against (1e-9).
+    Returns (up, down) with down <= 0."""
     x = np.asarray(x, float)
     up, dn = np.zeros(len(x)), np.zeros(len(x))
     for bid, v in parts:
-        pos = np.clip(np.asarray(v, float), 0, None)
+        v = np.asarray(v, float)
+        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
         if np.any(pos > 0):
-            ax.fill_between(x, up, up + pos, **dict(band_style(bid), **kw))
-        up = up + pos
-    top = up.copy()
-    for bid, v in parts:
-        neg = np.clip(np.asarray(v, float), None, 0)
+            ax.fill_between(x, up, up + pos, gid='band_area', **dict(band_style(bid), **kw))
         if np.any(neg < 0):
-            ax.fill_between(x, top + neg, top, gid=NEG_GID, **negative_style(dict(band_style(bid), **kw)))
-        top, dn = top + neg, dn + neg
-    if np.any(top < 0):
+            ax.fill_between(x, dn + neg, dn, gid=NEG_GID, **dict(band_style(bid), **kw))
+        up, dn = up + pos, dn + neg
+    _check_net(up, dn, net, 'stack_series')
+    if net_line and np.any(dn < 0):
+        ax.plot(x, up + dn, color=S.INK, lw=S.LW, gid=NET_GID, label=net_label, zorder=6)
+    if np.any(dn < 0):
         ax.axhline(0, color=S.INK, lw=S.LW_THIN)
     else:
         for c in ax.collections:
@@ -170,13 +152,55 @@ def signed_areas(ax, x, parts, **kw):
     return up, dn
 
 
-def band_handles(bids):
-    # legend keys keep a thin dark outline (light swatches on white); the plotted segments have none
-    return [Patch(label=band_label(b), **dict(band_style(b), edgecolor='#555555', linewidth=S.LW_THIN)) for b in bids]
+def negative_bar_style(bid):
+    colour = S.BAND[bid][0] if bid in S.BAND else S.BAND['replacement'][0]
+    return dict(facecolor='none', edgecolor=colour, linewidth=S.LW_OUTLINE, hatch=None)
 
 
-def band_legend(fig, bids, loc='lower center', ncol=4, y=-0.02, extra=()):
-    fig.legend(handles=band_handles(bids) + list(extra), loc=loc, ncol=ncol, bbox_to_anchor=(0.5, y),
+def bars_cumulative(ax, x, parts, width, net=None, tick=True, styles=None):
+    """Cumulative bars by band: positive values stacked from zero; each negative value an unfilled, unhatched
+    segment outlined in its band colour, hanging down from the top of the positive stack (in the fixed band
+    order), so the bar ends at the net total, marked by a short tick. parts: [(band id, values)]; styles: optional
+    {band id: patch style} for the positive segments. Returns (up, down, end)."""
+    x = np.atleast_1d(np.asarray(x, float))
+    up, dn = np.zeros(len(x)), np.zeros(len(x))
+    for bid, v in parts:
+        pos = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), 0, None)
+        st = (styles or {}).get(bid, band_style(bid))
+        if np.any(pos > 0):
+            ax.bar(x, pos, bottom=up, width=width, gid='band_segment', **st)
+        up = up + pos
+    top = up.copy()
+    for bid, v in parts:
+        neg = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), None, 0)
+        if np.any(neg < 0):
+            ax.bar(x, -neg, bottom=top + neg, width=width, gid=NEG_BAR_GID, **negative_bar_style(bid))
+        top, dn = top + neg, dn + neg
+    _check_net(up, dn, net, 'bars_cumulative')
+    if tick:
+        for xi, t, d in zip(x, top, dn):
+            if d < 0:
+                ax.plot([xi - 0.36 * width, xi + 0.36 * width], [t, t], color=S.INK, lw=S.LW_BOLD,
+                        solid_capstyle='butt', zorder=5, gid=NET_GID)
+    if np.any(top < 0):
+        ax.axhline(0, color=S.INK, lw=S.LW_THIN)
+    return up, dn, top
+
+
+def band_handles(bids, negative=None):
+    """One legend entry per band; a negative band (style.NEGATIVE_BANDS, or the ids in `negative`) as an outline."""
+    neg = set(S.NEGATIVE_BANDS) | set(negative or ())
+    out = []
+    for b in bids:
+        if b in neg:
+            out.append(Patch(label=band_label(b), **negative_bar_style(b)))
+        else:
+            out.append(Patch(label=band_label(b), **dict(band_style(b), edgecolor='#555555', linewidth=S.LW_THIN)))
+    return out
+
+
+def band_legend(fig, bids, loc='lower center', ncol=4, y=-0.02, extra=(), negative=None):
+    fig.legend(handles=band_handles(bids, negative) + list(extra), loc=loc, ncol=ncol, bbox_to_anchor=(0.5, y),
                frameon=False, handlelength=1.4, columnspacing=1.2)
 
 

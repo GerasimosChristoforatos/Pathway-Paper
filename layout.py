@@ -1,4 +1,4 @@
-"""Output layout of the model (MODEL v2.0.0): where every file the pipeline writes goes.
+"""Output layout of the model (MODEL v3.0.0): where every file the pipeline writes goes.
 
     outputs/
       paper/          the figures of the paper (Fig1-Fig6: PNG 300 dpi, vector PDF and source-data
@@ -23,18 +23,29 @@ the two agree and that every file in outputs/ is indexed.
 """
 import os
 
+import runprofile
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(ROOT, 'outputs')
+OUT_FULL = os.path.join(ROOT, 'outputs')
+# MODEL v3.0.0 run profiles (runprofile.py): the light profile writes a mirror of the tree under outputs/_light/,
+# so a light run never overwrites the outputs of a full run
+OUT = os.path.join(OUT_FULL, runprofile.get('out_subdir')) if runprofile.get('out_subdir') else OUT_FULL
 DATA = os.path.join(OUT, 'data')
 REPORTS = os.path.join(OUT, 'reports')
-PAPER = os.path.join(OUT, 'paper')
-EXTENDED_DATA = os.path.join(OUT, 'extended_data')
-KEY_FIGURES = os.path.join(OUT, 'key_figures')
+# MODEL v3.0.0 output architecture: paper_main/ (Fig1-Fig8), paper_extended/ (the Extended Data), diagnostics/
+# by group (calibration, validation, boundaries, pathways, montecarlo, sensitivity), FIGURES.md
+PAPER_MAIN = os.path.join(OUT, 'paper_main')
+PAPER_EXTENDED = os.path.join(OUT, 'paper_extended')
 DIAGNOSTICS = os.path.join(OUT, 'diagnostics')
+DIAGNOSTIC_GROUPS = ('calibration', 'validation', 'boundaries', 'pathways', 'montecarlo', 'sensitivity')
+FIGURES_INDEX = os.path.join(OUT, 'FIGURES.md')
+RUN_META = os.path.join(OUT, 'run_meta.json')
 FIGURE_AUDIT = os.path.join(DIAGNOSTICS, '_audit')
 LOGS = os.path.join(OUT, 'logs')
 FACTORS = os.path.join(DATA, 'factors')          # written by Building_factors.py (inputs of every run)
 FROZEN = 'frozen_technology'                     # data/ sub-folder and reports/ file prefix of the check run
+# retired in MODEL v3.0.0 (deleted by run_all.py): outputs/paper, outputs/extended_data, outputs/key_figures
+RETIRED = tuple(os.path.join(OUT, d) for d in ('paper', 'extended_data', 'key_figures'))
 
 
 def frozen_run():
@@ -71,19 +82,13 @@ def writing(path):
 
 
 def figure(name):
-    """outputs/paper/<file>, outputs/extended_data/<file> or outputs/diagnostics/<group>/<file> (no
-    extension) of a figure, from its file id in figure_plan.py (e.g. 'Fig5_boundaries_attribution',
-    'ED1_reference_carbon_tornado', 'D22_boundaries')."""
+    """The folder of a figure (no extension), from its id in figure_plan.py: outputs/paper_main/<file>,
+    outputs/paper_extended/<file> or outputs/diagnostics/<group>/<file>."""
     import figure_plan as FP
-    for base, items in ((PAPER, FP.PAPER), (EXTENDED_DATA, FP.EXTENDED_DATA), (KEY_FIGURES, FP.KEY_FIGURES)):
+    for base, items in ((PAPER_MAIN, FP.PAPER_MAIN), (PAPER_EXTENDED, FP.PAPER_EXTENDED)):
         if name in (h['file'] for h in items):
             return os.path.join(base, name)
     for g, rows in FP.DIAGNOSTICS.items():
-        if name in (f for f, _, _ in rows):
+        if name in (r['file'] for r in rows):
             return os.path.join(DIAGNOSTICS, g, name)
     raise KeyError(f'{name!r} is not a figure of figure_plan.py')
-
-
-def vector(path):
-    """True for a figure of the paper, Extended Data or the key figures (vector PDF with run_all.py --export)."""
-    return any(path.startswith(b + os.sep) for b in (PAPER, EXTENDED_DATA, KEY_FIGURES))

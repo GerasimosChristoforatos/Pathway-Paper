@@ -41,60 +41,76 @@ SCENARIO_LEGACY = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH', 'S3-5': 'REF_HL5',
                    'S1-noUC': 'LOW_NOUC', 'S3-10-noUC': 'REF_NOUC', 'S2-noUC': 'HIGH_NOUC'}
 FROZEN = 'Frozen technology (2025 carbon factors held; check run)'
 
-# MODEL v2.1.0: four pathway families of nine levers (the final lever set); P5 = every lever
+# MODEL v3.0.0: four pathway families of nine rule-based levers; P5 = every lever. Ambition levels follow the 2050
+# Pathways Calculator (DECC 2010; DESNZ 2023) and EUCalc (D2.5, 2020): Reference = Level 1, Moderate = Level 2,
+# Ambitious = Level 3, theoretical limit = Level 4.
 PATHWAYS = {'P1': 'Space per person', 'P2': 'Existing stock', 'P3': 'Construction', 'P4': 'Land',
             'P5': 'Combined'}
 SETTINGS = {'moderate': 'Moderate', 'ambitious': 'Ambitious'}
+LEVELS = {'reference': 'Reference (Level 1)', 'moderate': 'Moderate (Level 2)', 'ambitious': 'Ambitious (Level 3)',
+          'tl': 'Theoretical limit (Level 4)'}
 SETTING_LEGACY = {'central': 'moderate', 'stretch': 'ambitious'}
 
 # Levers: id -> label. LEVER_LEGACY: v3.1 id -> model-v1/v2.0 id (the regression map of the captured
-# v3.1 outputs); LEVER_V2_0: model-v2.0.0 id -> MODEL v2.1.0 id (docs/RENAMING.md)
-LEVERS = {'L1': 'Dwelling size', 'L2': 'Household occupancy', 'L3': 'Vacancy', 'L4': 'Overbuild absorption',
-          'L5': 'Building lifetime extension', 'L6': 'Material carbon', 'L7': 'Construction-stage carbon',
+# v3.1 outputs); LEVER_V2_0: model-v2.0.0 id -> MODEL v2.1.0 id; LEVER_V2_1: MODEL v2.1 id -> MODEL v3.0.0 id
+# (docs/RENAMING.md)
+LEVERS = {'L1': 'Dwelling size', 'L2': 'Design density', 'L3': 'Household size', 'L4': 'Vacancy',
+          'L5': 'Building lifetime', 'L6': 'Material carbon', 'L7': 'Construction-stage carbon',
           'L8': 'Soil-aware planning', 'L9': 'Brownfield development'}
 LEVER_LEGACY = {'L1': 'L1', 'L2a': 'L2', 'L2b': 'L3', 'L3': 'L4', 'L5': 'L5'}
 LEVER_V2_0 = {'L1': 'L1', 'L2': 'L3', 'L3': 'L4', 'L4': 'L5', 'L5': 'L6'}
 LEVER_NAMES_V2_0 = {'L1': 'Dwelling size', 'L2': 'Vacancy rate', 'L3': 'Overbuild absorption',
                     'L4': 'Building retention', 'L5': 'Material carbon'}
+LEVER_V2_1 = {'L1 Dwelling size': 'L1 Dwelling size (new rule)', 'L2 Household occupancy': 'L3 Household size',
+              'L3 Vacancy': 'L4 Vacancy', 'L4 Overbuild absorption': 'removed: Reference behaviour (absorbed by 2035)',
+              'L5 Building lifetime extension': 'L5 Building lifetime', 'L6 Material carbon': 'L6 Material carbon',
+              'L7 Construction-stage carbon': 'L7 Construction-stage carbon', 'L8 Soil-aware planning':
+              'L8 Soil-aware planning', 'L9 Brownfield development': 'L9 Brownfield development',
+              '(new)': 'L2 Design density'}
 PATHWAYS_V2_0 = {'P1': 'Right-sized dwellings', 'P2': 'Occupied stock', 'P3': 'Retained stock',
                  'P4': 'Low-carbon materials', 'P5': 'Combined'}
-PATHWAY_LEVERS = {'P1': ('L1', 'L2'), 'P2': ('L3', 'L4', 'L5'), 'P3': ('L6', 'L7'), 'P4': ('L8', 'L9')}
+PATHWAY_LEVERS = {'P1': ('L1', 'L2', 'L3'), 'P2': ('L4', 'L5'), 'P3': ('L6', 'L7'), 'P4': ('L8', 'L9')}
 LEVER_PATHWAY = {L: P for P, ls in PATHWAY_LEVERS.items() for L in ls}
+# The rule sub-rule each lever's Ambitious level follows (METHODS_DRAFT.md): A case-study distribution (Harrell-Davis
+# q0.15), B best value ever observed in NZ, C published reference value
+LEVER_SUBRULE = {'L1': 'B', 'L2': 'A', 'L3': 'C', 'L4': 'B', 'L5': 'C', 'L6': 'A', 'L7': 'C', 'L8': 'C', 'L9': 'C'}
 # The denser-typology-mix lever of pathways_v2 (numbered L4 in that version) was removed in
 # v3.1; it is never given a lever number in the release.
 DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.1)'
 
-# Theoretical limit (MODEL v2.1.0): TLn is the limit of Ln; TL10 has no lever counterpart
-TL = {'TL': 'Theoretical limit', 'TL1': 'No extra space', 'TL2': 'Historical maximum household size',
-      'TL3': 'No vacancy', 'TL4': 'Overbuild fully absorbed', 'TL5': 'Building lifetime extension at the limit',
-      'TL6': 'Best-practice materials', 'TL7': 'Zero-emission construction', 'TL8': 'Lowest-carbon soils',
-      'TL9': 'Brownfield maximum', 'TL10': 'Minimum space per person'}
-TL_LIMIT_OF = {'TL1': 'L1', 'TL2': 'L2', 'TL3': 'L3', 'TL4': 'L4', 'TL5': 'L5', 'TL6': 'L6', 'TL7': 'L7',
-               'TL8': 'L8', 'TL9': 'L9', 'TL10': None}
+# Theoretical limit (MODEL v3.0.0): TLn is Level 4 of Ln
+TL = {'TL': 'Theoretical limit', 'TL1': 'No extra space', 'TL2': 'Densest design', 'TL3': 'Historical maximum '
+      'household size', 'TL4': 'No vacancy', 'TL5': 'No demolition', 'TL6': 'Best-practice materials',
+      'TL7': 'Zero-emission construction', 'TL8': 'Lowest-carbon soils', 'TL9': 'All brownfield'}
+TL_LIMIT_OF = {f'TL{k}': f'L{k}' for k in range(1, 10)}
 TL_LEGACY = {'T': 'TL', 'T1': 'TL1', 'T2': 'TL2', 'T3': 'TL3', 'T4': 'TL4', 'T5': 'TL5', 'T6': 'TL6'}
 # model-v2.0.0 TL ids -> MODEL v2.1.0 (docs/RENAMING.md)
 TL_V2_0 = {'TL1 No vacancy': 'TL3 (+ TL4)', 'TL2 No extra space': 'TL1', 'TL3 Minimum space per person': 'TL10',
            'TL4 Best-practice materials': 'TL6', 'TL5 Lowest-carbon soils': 'TL8', 'TL6 Urban infill': 'TL9',
            'TL7 Building retention at -40% (ambitious level)': 'TL5'}
+# MODEL v2.1 TL ids -> MODEL v3.0.0
+TL_V2_1 = {'TL1 No extra space': 'TL1', 'TL2 Historical maximum household size': 'TL3', 'TL3 No vacancy': 'TL4',
+           'TL4 Overbuild fully absorbed': 'removed (Reference)', 'TL5 Building lifetime extension at the limit':
+           'TL5 No demolition', 'TL6 Best-practice materials': 'TL6', 'TL7 Zero-emission construction': 'TL7',
+           'TL8 Lowest-carbon soils': 'TL8', 'TL9 Brownfield maximum': 'TL9 All brownfield',
+           'TL10 Minimum space per person': 'TL2 Densest design'}
 TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pathway'
 
 # adoption paths of the levers (v3.1 'ramp' names)
 ADOPTION = {'by2035': 'full roll-out by 2035 (adopted)', 'by2030': 'full roll-out by 2030 (sensitivity)',
             'by2045': 'full roll-out by 2045 (sensitivity)', 'from2027': 'full strength from 2027'}
 ADOPTION_LEGACY = {'ramp2035': 'by2035', 'ramp2030': 'by2030', 'ramp2045': 'by2045', 'instant': 'from2027'}
-# MODEL v2.1.1: TL is adopted by 2030 (the window of the pathways' 2030 sensitivity); its instant variant is one
-# sensitivity row
-TL_ADOPTION_LABEL = 'full roll-out by 2030 (TL adoption)'
-TL_FASTER_ADOPTION = "TL's faster adoption (by 2030 instead of 2035)"
+# MODEL v3.0.0: TL is adopted on the same 2026 -> 2035 logistic as every level; its instant variant (every limit
+# from 1 January 2027) is one sensitivity row
 TL_INSTANT = 'TL, all limits from 1 January 2027 (instant)'
 TL_REOCCUPATION_LINE = 'released dwellings re-occupied at a constant share of each year\'s need'
 
 
 def tl_caption(share):
-    """The TL caption (MODEL v2.1.1, author's wording) with the constant share s of each year's need (share 0-1)."""
-    return ('TL: every lever at its limit, adopted by 2030; dwellings released by zero vacancy, the household-size '
-            'change and the 2026 overbuild are re-occupied gradually, meeting a constant share '
-            f'(~{100 * share:.0f}%) of each year\'s need; 2026 observed.')
+    """The TL caption with the constant share s of each year's need (share 0-1)."""
+    return ('TL: every lever at Level 4, adopted by 2035; dwellings released by TL3 (household size) and TL4 (zero '
+            f'vacancy) are re-occupied gradually, meeting a constant share (~{100 * share:.0f}%) of each year\'s '
+            'need; 2026 observed.')
 
 # Demand bands (why floor area is built), bottom to top. Retirement villages are a
 # bookkeeping row (out of scope), never a band in figures.

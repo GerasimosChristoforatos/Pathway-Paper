@@ -72,7 +72,6 @@ import time
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from scipy import stats
 from scipy.interpolate import PchipInterpolator
 from scipy.stats import qmc
@@ -81,21 +80,17 @@ import projection
 import engine
 import layout
 import naming as N
-import style
+import runprofile
 
-N_UNCERTAINTY = 5000             # Latin hypercube draws per scenario
+# MODEL v3.0.0 run profiles (runprofile.py): full = 5,000 Latin hypercube draws with the existing seed and the Sobol
+# indices; light = 1,000 draws with their own fixed seed, Sobol off. N_BOOT (the carbon-factor bootstrap that defines
+# the carbon input distribution) is part of the design and the same in both profiles.
+N_UNCERTAINTY = runprofile.get('n_draws')          # Latin hypercube draws per scenario
 N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
-# run_all.py --quick (env PATHWAY_QUICK=1): development only, never reported.
-# QUICK_N_UNCERTAINTY is checked against the full run in the CHANGELOG (v1.1).
-QUICK_RUN = os.environ.get('PATHWAY_QUICK') == '1'
-QUICK_N_UNCERTAINTY = 1000
-QUICK_N_SOBOL = 128
-if QUICK_RUN:
-    N_UNCERTAINTY, N_SOBOL = QUICK_N_UNCERTAINTY, QUICK_N_SOBOL
+RUN_SOBOL = runprofile.get('sobol')
 N_BOOT = 4000                    # carbon-factor bootstrap replicates
-SEED = 20260924
-SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'   # set by run_all.py: save every figure
-SHOW_FIGURES = not (os.environ.get('PATHWAY_SAVE_FIGURES') == '1')
+SEED = runprofile.get('mc_seed')   # full: 20260924 (MODEL v1.1 onwards); light: 20261014
+CONVERGENCE_STEPS = (100, 200, 500, 1000, 2000, 3000, 4000, 5000)
 Z_KNOTS = stats.norm.ppf([0.05, 0.25, 0.50, 0.75, 0.95])
 PCT_COLS = {5: 2, 25: 3, 50: 4, 75: 5, 95: 6}   # popdata.xlsx Table 1 (skiprows=5)
 VARIANT_Z = {'Low': Z_KNOTS[0], 'Medium': 0.0, 'High': Z_KNOTS[-1]}
@@ -521,10 +516,23 @@ def run_scenario(name, settings, reference):
     print(f"\nJOINT UNCERTAINTY within {name}, 2026-2050 ({N_UNCERTAINTY:,} Latin hypercube draws)")
     print(summ.loc[['floor_area_Mm2', 'carbon_kt', 'upfront_kt'],
                    ['mean', 'p5', 'p50', 'p95', 'reference', 'reference_percentile']].round(3).to_string())
-    if not reference:
+    if reference:                                      # input distributions and convergence (diagnostics)
+        qs = (0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
+        pd.DataFrame([dict(input=k, **{f'q{int(100 * a):02d}': float(np.atleast_1d(dists[k].ppf(a))[0]) for a in qs},
+                           sample_mean=float(X[i].mean()), sample_sd=float(X[i].std(ddof=1)))
+                      for i, k in enumerate(PARAMS)]).to_csv(
+            layout.writing(layout.data(f'montecarlo/input_distributions_{name}.csv')), index=False)
+        conv = []
+        for nn in [c for c in CONVERGENCE_STEPS if c <= N_UNCERTAINTY]:
+            for o in ('GFA_Mm2', 'carbon_kt'):
+                y = Y[OUTPUTS.index(o), :nn]
+                conv.append(dict(n=nn, output=N.identifier(o), mean=float(y.mean()),
+                                 **{f'p{p}': float(np.percentile(y, p)) for p in (5, 50, 95)}))
+        pd.DataFrame(conv).to_csv(layout.writing(layout.data(f'montecarlo/convergence_{name}.csv')), index=False)
+    if not reference or not RUN_SOBOL:
         return summ
 
-    # ---- Sobol indices (reference scenario) ----
+    # ---- Sobol indices (reference scenario; full profile only) ----
     rng = np.random.default_rng(SEED + 2)
     res = stats.sobol_indices(func=lambda x: evaluate(su, x), n=N_SOBOL,
                               dists=[dists[k] for k in PARAMS], rng=rng)
@@ -567,77 +575,7 @@ def main():
     importlib.reload(projection)                       # restore module defaults
     print(f"\nWritten: summary_<variant>.csv, draws_<variant>.csv, annual_<variant>.csv, sobol_REF.csv in "
           f"{os.path.dirname(layout.montecarlo('summary', 'REF'))}/  ({time.time() - t0:,.0f} s)")
-    figures()
-
-
-# ============================================================
-# FIGURES  (drawn from the CSVs, so --plot-only needs no re-run)
-# ============================================================
-INPUT_LABELS = {
-    'z_pop': 'Population (with household size)',
-    'size': 'Future dwelling size',
-    'complete': 'Completion rate',
-    'carbon': 'Carbon factors (case-study bootstrap)',
-}
-OUTPUT_LABELS = {
-    'floor_area_Mm2': ('Built floor area, 2026-2050', 'Mm²', 1),
-    'carbon_kt': ('Embodied carbon, 2026-2050', 'kt CO₂e', 1),
-}
-
-
-def _load_results():
-    """The Monte Carlo files of the Reference (draws, annual, Sobol, summary)."""
-    rd = {k: layout.montecarlo(k, 'REF') for k in ('draws', 'annual', 'sobol', 'summary')}
-    miss = [f for f in rd.values() if not os.path.exists(f)]
-    if miss:
-        raise FileNotFoundError(f"Missing {miss}: run a full Monte Carlo first.")
-    return (pd.read_csv(rd['draws']), pd.read_csv(rd['annual'], index_col=0), pd.read_csv(rd['sobol']),
-            pd.read_csv(rd['summary'], index_col=0))
-
-
-def _save(fig, name, note=None):
-    if SAVE_FIGURES:
-        style.save_figure(fig, name, note=note)
-
-
-def figures():
-    """D20: what drives the joint uncertainty of the Reference (Sobol indices). The Monte Carlo
-    bands of floor area and carbon are drawn in H2 and H4, those of the level of exceedance in H5
-    and D21-D23."""
-    import plotting as P
-    S = style
-    S.apply()
-    draws, annual, sob, summ = _load_results()
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 66))
-    for a, o, letter in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab'):
-        t = sob[(sob.output == o) & np.isfinite(sob.ST_lo)].sort_values('ST')
-        y = np.arange(len(t))
-        a.barh(y + 0.2, t.ST, 0.4, color=S.QUALITATIVE[5], xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor=S.INK,
-               capsize=1.5, error_kw=dict(lw=S.LW_THIN), label='Total effect (incl. interactions), 95% CI')
-        a.barh(y - 0.2, t.S1.clip(lower=0), 0.4, color=S.QUALITATIVE[2], label='First-order effect (on its own)')
-        for yi, v, hi in zip(y, t.ST, t.ST_hi):
-            a.text(max(v, hi) + 0.012, yi + 0.2, f'{v:.2f}', va='center', fontsize=S.FONT_MIN)
-        a.set_yticks(y)
-        a.set_yticklabels([INPUT_LABELS.get(i, i) for i in t.input], fontsize=S.FONT_SMALL)
-        a.set_xlim(0, max(0.7, t.ST_hi.max() + 0.08))
-        a.set_xlabel('Share of output variance')
-        a.grid(axis='y', visible=False)
-        P.panel(a, letter, OUTPUT_LABELS[o][0].replace('2026-2050', '2026–2050'))
-    fig.legend(*ax[0].get_legend_handles_labels(), loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.01),
-               frameon=False)
-    fig.tight_layout(rect=(0, 0.09, 1, 1))
-    _save(fig, 'D20_sobol',
-          note=f'Reference, {len(draws):,} Latin hypercube draws. Within-scenario parametric uncertainty only; the '
-               'replacement variant, the carbon-factor and soil bounds are reported separately (D16).')
-
-    if SAVE_FIGURES:
-        print("Figures written to outputs/diagnostics/monte_carlo/ (D20)")
-    if SHOW_FIGURES:
-        plt.show()
 
 
 if __name__ == '__main__':
-    if '--plot-only' in sys.argv:          # redraw D20 from the CSVs of the last full run (no model runs)
-        figures()
-    else:
-        main()
+    main()

@@ -108,7 +108,7 @@ REFERENCE = '#4D4D4D'
 TL = '#13412B'
 TL_MARKER = dict(marker='o', ms=8)             # TL on point plots: a larger circle (no star)
 SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),
-            'LOW': dict(color='#9E9E9E', ls='--', lw=LW, label='Low replacement'),
+            'LOW': dict(color='#B5B5B5', ls='--', lw=LW, label='Low replacement'),
             'HIGH': dict(color='#6E6E6E', ls=':', lw=LW, label='High replacement')}
 MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% band
 

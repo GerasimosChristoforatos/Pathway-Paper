@@ -30,6 +30,11 @@ OUT_FULL = os.path.join(ROOT, 'outputs')
 # MODEL v3.0.0 run profiles (runprofile.py): the light profile writes a mirror of the tree under outputs/_light/,
 # so a light run never overwrites the outputs of a full run
 OUT = os.path.join(OUT_FULL, runprofile.get('out_subdir')) if runprofile.get('out_subdir') else OUT_FULL
+# run_all.py --reference-legacy (PATHWAY_REFERENCE_LEGACY=1): the Reference of MODEL v2.1 (overbuild never absorbed),
+# written under outputs/_legacy/ so it never mixes with the v3 outputs
+LEGACY = os.environ.get('PATHWAY_REFERENCE_LEGACY') == '1'
+if LEGACY:
+    OUT = os.path.join(OUT_FULL, '_legacy')
 DATA = os.path.join(OUT, 'data')
 REPORTS = os.path.join(OUT, 'reports')
 # MODEL v3.0.0 output architecture: paper_main/ (Fig1-Fig8), paper_extended/ (the Extended Data), diagnostics/

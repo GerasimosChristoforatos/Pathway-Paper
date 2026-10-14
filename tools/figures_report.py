@@ -157,7 +157,6 @@ def main():
     common = dict(bands=[b for b, _ in BRIDGE], results_keys={b: x for b, x in BRIDGE}, variants=list(VARS),
                   labels=labels, unit='Mm2, 2026-2050 (median population)', bridge=bridge)
     figsource.write('D10_floor_area_bridge', **common)
-    figsource.write('D11_floor_area_bridge_split', **common)
 
     # ---- D07 net replacement rate: census record and variant paths --------------
     long_rate = float(Bref['demolition_rate'] + Bref['unconsented_rate'])
@@ -219,7 +218,7 @@ def main():
     with open(layout.writing(layout.report('reality_checks.md')), 'w') as f:
         f.write('\n'.join(L) + '\n')
 
-    print('figures_report: figure source data (D07, D10, D11, D12, D14, D15, D19), '
+    print('figures_report: figure source data (D07, D10, D12, D14, D15, D19), '
           'outputs/data/baseline/reality_checks.json, outputs/reports/reality_checks.md')
 
 

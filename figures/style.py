@@ -1,6 +1,6 @@
-"""One style for every figure of the model (MODEL v1.0.0; layout of MODEL v2.0.0).
+"""One style for every figure of the model (MODEL v3.0.0: moved into the figures/ package).
 
-Every plotting module imports this file and nothing else for colours, line styles,
+Every module of figures/ imports this file and nothing else for colours, line styles,
 typeface, sizes and saving, so a figure cannot drift from the palette of
 docs/PALETTE.md. The palette is checked for colour-vision deficiency by
 tools/palette_check.py (CAM02-UCS distances under simulated deuteranomaly,
@@ -19,9 +19,14 @@ Rules (docs/PALETTE.md, MODEL v2.1.2):
     the SIL Open Font License, so figures render identically on every machine);
   * print sizes: Nature Cities single column 89 mm, double column 183 mm; text 5-7 pt.
 
-save() writes PNG (300 dpi) and, for the paper and Extended Data figures, vector PDF, with fixed metadata
-(no software version or creation date), so a re-run with the pinned environment
-reproduces every figure byte for byte (tests/output_manifest_model_v2.json).
+MODEL v3.0.0: save() writes the formats of the run profile (runprofile.py: light PNG at 200 dpi with a small grey
+footer "LIGHT RUN - n=1000"; full PDF + PNG at 600 dpi) with fixed metadata (no software version or creation
+date), so a re-run with the pinned environment reproduces every figure byte for byte. Negative bands keep their
+sign in the data: in time series they are stacked down from zero (positives up from zero, the net a black line);
+in cumulative bars each negative band is an unfilled, unhatched segment outlined in its band colour hanging from the
+top of the positive stack, so the bar ends at the net total (figures/draw.py). Only the surge band is hatched.
+registry() lists every colour of every group; tests/test_palette.py requires no duplicate (colour, hatch) within a
+group.
 """
 import os
 
@@ -29,7 +34,7 @@ import matplotlib
 import numpy as np
 from matplotlib import font_manager
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_DIR = os.path.join(ROOT, 'fonts')
 for _f in ('LiberationSans-Regular.ttf', 'LiberationSans-Bold.ttf', 'LiberationSans-Italic.ttf'):
     font_manager.fontManager.addfont(os.path.join(FONT_DIR, _f))
@@ -47,7 +52,9 @@ FONT_MIN = 5.0                                  # never smaller (Nature: 5 pt mi
 LW = 1.0                                        # data lines, pt
 LW_THIN = 0.5                                   # grid, edges, reference lines
 LW_BOLD = 1.5                                   # the Reference / emphasised line
-DPI = 300
+import runprofile  # noqa: E402
+
+DPI = runprofile.get('dpi')                    # light 200, full 600
 
 RC = {
     'font.family': 'sans-serif', 'font.sans-serif': [FONT], 'font.size': FONT_SIZE,
@@ -115,9 +122,13 @@ MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% b
 # >= 10 (tools/palette_check.py; docs/PALETTE.md). Where a group failed, the lightness of one colour moved within
 # its hue family (L7 lighter and TL lighter so TL stays apart from L7 under protanomaly; committed lighter than
 # maintenance; the unexplained-building face lighter than Historical replacement)
-LEVER = {'L1': '#DFA538', 'L2': '#F4D168', 'L3': '#AA7C9D', 'L4': '#683861', 'L5': '#E1D2DD',
+# MODEL v3.0.0: nine levers renumbered (P1 L1-L3 golds / ochres, P2 L4-L5 mauves, P3 L6-L7 blues, P4 L8-L9 browns);
+# L2 Design density a deep amber added to the gold family; the deep mauve of the retired overbuild lever stays the
+# P2 anchor and the 2026 overbuild band
+LEVER = {'L1': '#DFA538', 'L2': '#A8741C', 'L3': '#F4D168', 'L4': '#AA7C9D', 'L5': '#E1D2DD',
          'L6': '#4A6192', 'L7': '#ABD3FA', 'L8': '#8D6545', 'L9': '#C7B395'}
-PATHWAY = {'P1': LEVER['L1'], 'P2': LEVER['L4'], 'P3': LEVER['L6'], 'P4': LEVER['L8'], 'P5': '#EB6123'}
+P2_ANCHOR = '#683861'
+PATHWAY = {'P1': LEVER['L1'], 'P2': P2_ANCHOR, 'P3': LEVER['L6'], 'P4': LEVER['L8'], 'P5': '#EB6123'}
 # MODEL v2.1.2: Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
 SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
            'ambitious': dict(ls='--', marker_fill='none', label='Ambitious')}
@@ -131,21 +142,26 @@ GROWTH = '#586E71'
 REPLACEMENT = '#D0BBDC'
 HATCH_LIGHT = '#FFFFFF'                 # the fine hatch of the surge band: drawn in a light colour on its light face
 BAND = {'growth': (GROWTH, None),
-        'smaller_households': (LEVER['L2'], None),
+        'smaller_households': (LEVER['L3'], None),
         'extra_space': (LEVER['L1'], None),
-        'vacancy': (LEVER['L3'], None),
-        'overbuild_2026': (LEVER['L4'], None),
+        'vacancy': (LEVER['L4'], None),
+        'overbuild_2026': (P2_ANCHOR, None),
+        'overbuild_absorbed': ('#9C5C93', None),      # negative: outline only (P2 mauve family)
         'replacement': (REPLACEMENT, None),
-        'redevelopment': (LEVER['L5'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR)
+        'unconsented': ('#7E6A94', None),             # negative: outline only (replacement lilac family, darker)
+        'redevelopment': (LEVER['L5'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
+        'released_tl': ('#2F7A52', None),             # negative: outline only (TL green family)
         'maintenance': ('#AAAAAA', None)}      # neutral (MODEL v2.1.1)
 BAND_ORDER = list(BAND)
+NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'released_tl')
 BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}
+LW_OUTLINE = 0.9                        # the outline of a negative band segment in a cumulative bar
 
 # carbon components (labels in naming.COMPONENTS)
 COMPONENT = {'materials_construction': (LEVER['L6'], None),     # A1-A3: P3 dark blue
              'soil': (LEVER['L8'], None),                       # P4 brown
              'maintenance': (BAND['maintenance'][0], None),     # B2, B4 within 2026-2050
-             'committed': ('#D0D0D0', '///')}                   # after 2050, a range; lighter than maintenance
+             'committed': ('#D0D0D0', None)}                    # after 2050, a range: drawn hollow (Fig3)
 
 # life-cycle stages (Fig3a; labels in naming.STAGES): A1-A3 the L6 shade, A4-A5 the L7 shade, soil the L8
 # shade, maintenance its band colour; stacked A1-A3, A4-A5, soil, maintenance (A4-A5 and maintenance not adjacent)
@@ -165,7 +181,7 @@ MATERIAL = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF'),
             ('PLASTICS & PAINT', 'Plastics & paint', '#FFED00'),
             ('PLASTERBOARD', 'Plasterboard', '#FF8C00'), ('OTHERS', 'Others', '#E40303'),
             ('SOIL', 'Soil carbon loss', '#B5A48B')]
-SOIL = dict(alpha=0.5, hatch='///', hatchcolor='#8C7B66')         # the soil layer of a material stack
+SOIL = dict(alpha=0.5, hatch=None, hatchcolor=None)          # MODEL v3.0.0: only the surge band is hatched
 
 # stacked bars and areas (MODEL v2.1.1): no white borders between segments. Every segment's edge is its own face
 # colour at LW_SEAM (it covers the antialiasing seam between adjacent segments without drawing a line); hatches are
@@ -202,45 +218,50 @@ def figsize(width='double', height_mm=100.0):
     return WIDTH[width], height_mm * MM
 
 
-QUICK_TEXT = 'QUICK RUN, not for reporting (run_all.py --quick: fewer Monte Carlo draws)'
-
-
-def quick_run():
-    return os.environ.get('PATHWAY_QUICK') == '1'
-
-
-def save(fig, path, pdf=False):
-    """Write path + '.png' (DPI, no software / date metadata) and, with pdf, path + '.pdf'
-    (vector, fonts embedded as TrueType, no producer / dates), then close the figure.
-    Fixed metadata make re-runs byte-identical. In a quick run (PATHWAY_QUICK=1) every figure
-    carries a red footer 'QUICK RUN, not for reporting'."""
+def save(fig, path):
+    """Write the formats of the run profile (light: PNG at 200 dpi; full: PDF + PNG at 600 dpi), no software / date
+    metadata, then close the figure. In the light profile every figure carries a small grey footer
+    'LIGHT RUN - n=1000'."""
     import matplotlib.pyplot as plt
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    if quick_run():
-        fig.text(0.5, 0.0, QUICK_TEXT, ha='center', va='top', color='white', fontsize=FONT_SIZE,
-                 fontweight='bold', bbox=dict(facecolor='#C0392B', edgecolor='none', pad=2))
-    fig.savefig(path + '.png', dpi=DPI, metadata={'Software': None})
-    if pdf:
-        fig.savefig(path + '.pdf', metadata={'Creator': None, 'Producer': None, 'CreationDate': None})
+    footer = runprofile.get('footer')
+    if footer:
+        fig.text(0.995, 0.002, footer, ha='right', va='bottom', color='#9A9A9A', fontsize=FONT_MIN)
+    for fmt in runprofile.get('formats'):
+        if fmt == 'png':
+            fig.savefig(path + '.png', dpi=DPI, metadata={'Software': None})
+        else:
+            fig.savefig(path + '.pdf', metadata={'Creator': None, 'Producer': None, 'CreationDate': None})
     plt.close(fig)
 
 
-def export_run():
-    """True with run_all.py --export (PATHWAY_EXPORT=1): the paper and Extended Data figures are also written as
-    vector PDF with their source-data CSV (Nature source data, at acceptance). Default: PNG only."""
-    return os.environ.get('PATHWAY_EXPORT') == '1'
-
-
-def save_figure(fig, name, note=None):
-    """Save a planned figure (figure_plan.py file id, e.g. 'D22_boundaries') to its place in
-    outputs/ (layout.figure): PNG; with --export also a vector PDF of the paper and Extended Data figures. The
-    audit record of the figure (axes, year ranges, every text, the note, maintenance and boundary styling) is
-    written first (figaudit.py). note: run-specific caption text for DIAGNOSTICS.md (numbers of this run)."""
-    import figaudit
+def save_figure(fig, name, note=None, source=None):
+    """Save a planned figure (figure_plan.py file id, e.g. 'D22_boundaries') to its place in outputs/
+    (layout.figure). The audit record (axes, year ranges, every text, the note, boundary and band styling) is
+    written first (figures/audit.py). note: run-specific caption text for FIGURES.md; source: the data files the
+    figure reads (relative to outputs/data/)."""
     import layout
+    from figures import audit
     path = layout.figure(name)
-    figaudit.record(fig, name, note=note)
-    save(fig, path, pdf=layout.vector(path) and export_run())
+    audit.record(fig, name, note=note, source=source)
+    save(fig, path)
+
+
+def registry():
+    """Every colour group of the palette: {group: {element: (colour, hatch)}} (tests/test_palette.py: no duplicate
+    (colour, hatch) within a group)."""
+    return {
+        'bands': {b: (c.upper(), h) for b, (c, h) in BAND.items()},
+        'levers': {k: (v.upper(), None) for k, v in LEVER.items()},
+        'runs': {'REF': (REFERENCE.upper(), None), **{k: (v.upper(), None) for k, v in PATHWAY.items()},
+                 'TL': (TL.upper(), None), 'LOW': (SCENARIO['LOW']['color'].upper(), None),
+                 'HIGH': (SCENARIO['HIGH']['color'].upper(), None)},
+        'stages': {k: (c.upper(), h) for k, (c, h) in STAGE.items()},
+        'components': {k: (c.upper(), h) for k, (c, h) in COMPONENT.items()},
+        'materials': {code: (c.upper(), None) for code, _, c in MATERIAL},
+        'boundaries': {'AR': (AR.upper(), None), 'AtP': (ATP.upper(), None)},
+        'zones': {k: (z['color'].upper(), None) for k, z in ZONE.items()},
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -263,7 +284,7 @@ def boundary_zones(ax, x, ar, atp, lines=True, label=True):
     green) and above AR (light red, low opacity), and the two thin boundary lines. Zones start just above zero
     (a positive floor, so log axes work) and are tagged ZONE_GID for the figure audit; lines are tagged as
     boundaries (figaudit.BOUNDARY)."""
-    import figaudit
+    from figures import audit as figaudit
     x = np.asarray(x, float)
     ar, atp = np.asarray(ar, float), np.asarray(atp, float)
     floor = 1e-6 * float(np.nanmin(atp))
@@ -285,7 +306,7 @@ def boundary_zones(ax, x, ar, atp, lines=True, label=True):
 def boundary_hzones(ax, ar, atp, lines=True, label=True, xspan=None):
     """Cumulative budgets on a bar axis (one value each): horizontal zones over the whole axes width (or xspan
     in data units) and the two thin budget lines."""
-    import figaudit
+    from figures import audit as figaudit
 
     def draw():
         for lo, hi, key in ((1e-6 * atp, atp, 'within_both'), (atp, ar, 'within_ar'), (ar, _ZONE_TOP, 'exceeded')):
@@ -321,7 +342,7 @@ def boundary_handles():
 def boundary_vzones(ax, ar, atp, lines=True, label=True):
     """Budgets on an x axis (e.g. a cumulative level of exceedance: AR at 1, AtP at its AR equivalent): vertical
     zones and lines."""
-    import figaudit
+    from figures import audit as figaudit
 
     def draw():
         for lo, hi, key in ((1e-6 * atp, atp, 'within_both'), (atp, ar, 'within_ar'), (ar, _ZONE_TOP, 'exceeded')):
@@ -340,7 +361,7 @@ def boundary_field(ax, X, Y, Z, ar, atp, lines=True):
     """A field of cumulative carbon (Z, in any unit where the budgets are ar and atp, e.g. LoE AR: ar = 1,
     atp = B_AtP / B_AR) on a plane: the three zones as filled regions and the two budgets as contour lines
     (the solution space). Only the levels inside the range of Z are drawn."""
-    import figaudit
+    from figures import audit as figaudit
     zmin, zmax = float(np.nanmin(Z)), float(np.nanmax(Z))
     edges = [min(zmin, atp) - 1.0, atp, ar, max(zmax, ar) + 1.0]
     keys = ('within_both', 'within_ar', 'exceeded')

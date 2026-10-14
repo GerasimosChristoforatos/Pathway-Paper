@@ -1,350 +1,227 @@
-"""The figure plan of MODEL v2.1.1 (docs/FIGURE_PLAN_v2.md, amended by the v2.1.0 and v2.1.1 entries): one entry per figure of the release,
-with its title, panels, data source, draft caption and the earlier figures it replaces.
+"""The figures of MODEL v3.0.0: one registry, read by layout.figure (where a figure is written), the figures/ package
+(what draws it), indexes.py (outputs/FIGURES.md) and the tests.
 
-    outputs/paper/           Fig1-Fig6 (PAPER) and Tables 1-2, PAPER.md            paper.py
-    outputs/extended_data/   ED1-ED10 (EXTENDED_DATA), EXTENDED_DATA.md             extended_data.py
-    outputs/key_figures/     K1-K6 (KEY_FIGURES), KEY_FIGURES.md                     key_figures.py
-    outputs/diagnostics/     every other figure, by group (DIAGNOSTICS), DIAGNOSTICS.md
+    outputs/paper_main/       Fig1-Fig8 (PAPER_MAIN)
+    outputs/paper_extended/   the Extended Data (PAPER_EXTENDED) and the per-typology level table
+    outputs/diagnostics/<group>/  calibration, validation, boundaries, pathways, montecarlo, sensitivity (DIAGNOSTICS)
 
-Figures are written as PNG (300 dpi); with run_all.py --export (PATHWAY_EXPORT=1) the paper, Extended Data and
-key figures also get a vector PDF and a source-data CSV. Every planetary-boundary figure (PB_FIGURES) uses the
-boundary styling of style.py (thin AR and AtP lines; zones below AtP, between AtP and AR, above AR).
-
-tools/design_docs.py writes docs/FIGURE_PLAN.md and the figure tables of docs/RENAMING.md from it;
-the figure audit (tests/test_release.py) requires every planned file to exist and every file in
-outputs/ to be indexed. Captions are drafts: numbers in braces are filled from the data files when
-the figure is drawn, never typed by hand.
+Every figure is drawn by a module of figures/ from the data files of outputs/data/ only (compute / draw
+separation); `module` names it, `source` lists the data files it reads (relative to outputs/data/).
+Formats follow the run profile (runprofile.py). Figure ids of MODEL v2.1 that are not carried forward are listed in
+RETIRED with the reason (docs/FIGURE_PLAN_v3.md).
 """
-PAPER_GROUP = 'paper'
-ED_GROUP = 'extended_data'
-TL_NOTE = ('TL: hyper-optimistic theoretical limit; a thought experiment, not a pathway; every lever at its limit, '
-           'adopted by 2030.')
-# MODEL v2.1.1: every TL caption also carries naming.tl_caption(share) (the constant share of each year's need met
-# by the released dwellings, read from the data when the figure is drawn)
-
-# ---------------------------------------------------------------------------
-# Paper figures (outputs/paper/): PNG 300 dpi + vector PDF + source-data CSV
-# ---------------------------------------------------------------------------
-PAPER = [
-    dict(id='Fig1', file='Fig1_model_schematic', width='double', title='How the model works',
-         panels='one panel: population -> households -> dwellings required -> floor area -> embodied carbon -> '
-                'level of exceedance against the AESA boundaries (AR, AtP); the demand bands branch off the dwellings '
-                'step, each lever (L1-L9) attached to the band or quantity it acts on; P1-P4 group the levers, P5 '
-                'combines them; TL1-TL10 at the end of the same arrows; the untargeted band (population growth) '
-                'marked',
-         source='naming.py, levers.py (structure only; no numbers)',
-         caption='Model structure. A bottom-up chain converts population and household projections into '
-                 'dwellings required, floor area by reason for building (demand bands) and embodied carbon, '
-                 'which is compared with two allocations of a global carrying capacity (acquired rights, AR; '
-                 'ability to pay, AtP). Pathway levers act on the band or quantity they target; only population '
-                 'growth is untargeted by design.',
-         v1=['H1'], legacy=[]),
-    dict(id='Fig2', file='Fig2_floor_area_bands', width='double', title='Why floor area is built',
-         panels='floor area by demand band: history one column per census interval with the census-measured net '
-                'replacement and the unexplained building (faded red; may be negative), the observed annual floor area '
-                'built as a thin line over the history columns (caption only, not in the legend), Reference projection '
-                'annual 2026-2050',
-         source='data/baseline/bands_history.csv, data/baseline/bands_history_replacement_split.csv, '
-                'data/baseline/bands_annual.csv, data/baseline/annual.csv',
-         caption='Floor area by reason for building. Bands sum to the in-scope total. Only population growth is '
-                 'untargeted; smaller households, extra space, vacancy, the 2026 overbuild, historical replacement and '
-                 'the recent replacement surge are the bands the pathways act on.',
-         v1=['H3'], legacy=['diag_4_floor_area', 'boss_04_annual_gfa', 'Fig2_demand_bands (a)']),
-    dict(id='Fig3', file='Fig3_reference_carbon', width='double', title='Embodied carbon of the Reference',
-         panels='1 x 3 panels, shared y axis, annual 2026-2050, stacked (kt CO2e): (a) by demand band, (b) by life-cycle '
-                'stage (A1-A3, A4-A5, maintenance B2/B4, soil carbon loss), (c) by material; no committed carbon; one '
-                'compact legend per panel',
-         source='data/baseline/bands_annual.csv, data/baseline/annual_by_stage.csv, data/baseline/annual_by_material.csv',
-         caption='Embodied carbon of new residential construction in the Reference, per year. Materials (A1-A3), '
-                 'construction (A4-A5) and soil carbon loss are counted in the construction year, maintenance (B2, B4) '
-                 'in the year it occurs within 2026-2050.',
-         v1=['H4'], legacy=['boss_05_annual_carbon', 'boss_10_material_flows', 'diag_5_carbon', 'Fig2_demand_bands (b)',
-                            'Fig3_reference_carbon (a, b)']),
-    dict(id='Fig4', file='Fig4_reference_boundaries', width='double', title='The Reference against the boundaries',
-         panels='(a) annual Reference carbon with its Monte Carlo 5-95% band, the thin history line joined to the '
-                'projection, the annual AR and AtP boundaries with the zones; (b) cumulative column: Reference carbon '
-                '2026-2050 with its Monte Carlo whisker and the emissions committed after 2050 stacked above it '
-                '(hatched, no whisker; accounting range as text), the cumulative AR and AtP budgets over the 2026-2050 '
-                'column only, LoE AR and AtP labelled',
-         source='data/pathways/annual.csv, data/pathways/montecarlo_annual.csv, data/pathways/montecarlo_summary.csv, '
-                'data/pathways/runs.csv, data/aesa/annual.csv, data/aesa/results.json',
-         caption='Absolute sustainability of the Reference.',
-         v1=['H5', 'H6'], legacy=['pb_2_loe', 'pb_6_committed', 'Fig3_reference_carbon (c)',
-                                  'Fig5_boundaries_attribution (a)']),
-    dict(id='Fig5', file='Fig5_pathways', width='double', title='What the pathways and the theoretical limit remove',
-         panels='(a) cumulative carbon 2026-2050 by demand band and (b) by life-cycle stage, for the Reference, P1-P5 '
-                '(Moderate) and TL, with the cumulative AR and AtP budgets and the boundary zones; net-total convention '
-                'for negative bands; (c) full width: the band waterfall (as K5; TL timing one step; dotted line between '
-                'the pathways and the theoretical limit; segments by demand band; cumulative budgets)',
-         source='data/pathways/bands.csv, data/pathways/runs.csv, data/pathways/waterfall_sequential.csv, '
-                'data/pathways/theoretical_limit.json',
-         caption='Pathways by demand band and life-cycle stage, and the sequential path to the theoretical limit. ' + TL_NOTE,
-         v1=['H7', 'H9'], legacy=['pw_1_bands_by_pathway', 'pw_2_shapley_waterfall', 'pw_8_staircase',
-                                  'Fig4_pathways_bands', 'Fig5_boundaries_attribution (b)', 'K5_band_waterfall']),
-    dict(id='Fig6', file='Fig6_emissions_solution_space', width='double', title='Emissions and the solution space',
-         panels='(a) annual emissions 2026-2050, linear axis: the Reference, P5 (Moderate) and TL, each with its Monte '
-                'Carlo 5-95% band, the annual boundaries; (b) the solution space (as K4): P1-P5 Moderate filled, '
-                'Ambitious hollow, TL a larger deep-green circle',
-         source='data/pathways/annual.csv, data/pathways/montecarlo_annual.csv, data/pathways/montecarlo_summary.csv, '
-                'data/pathways/solution_space.csv, data/pathways/backcast.json, data/pathways/theoretical_limit.json',
-         caption='Annual emissions of the Reference, P5 Combined and the theoretical limit, and the solution space '
-                 '(after Horup et al. 2025, Fig. 6). Markers sit at each run\'s effective reductions of 2027-2050 floor '
-                 'area and non-soil carbon per m2; L8, L9, TL8 and TL9 also lower soil carbon, which the plane does not '
-                 'show. ' + TL_NOTE,
-         v1=['H8', 'H10'], legacy=['pw_3_solution_space', 'pw_4_annual_SI', 'Fig5_boundaries_attribution (a)',
-                                   'Fig6_solution_space']),
+PAPER_MAIN = [
+    dict(id='Fig1', file='Fig1_floor_area', width='double', module='figures.paper_main',
+         title='Floor area: history and projection by demand band',
+         caption='Floor area built per year, history (census intervals) and the Reference projection 2026-2050, by '
+                 'demand band: positive bands stacked up from zero, negative bands (overbuild absorbed, unconsented '
+                 'additions) down from zero, the net a black line.',
+         source=['baseline/bands_history.csv', 'baseline/bands_annual.csv', 'baseline/annual.csv']),
+    dict(id='Fig2', file='Fig2_reference_carbon', width='double', module='figures.paper_main',
+         title='Embodied carbon of the Reference',
+         caption='Annual embodied carbon of the Reference 2026-2050 by (a) demand band, (b) material and (c) life-cycle '
+                 'stage; materials and stages are never negative.',
+         source=['baseline/bands_annual.csv', 'baseline/annual_by_material.csv', 'baseline/annual_by_stage.csv']),
+    dict(id='Fig3', file='Fig3_reference_boundaries', width='double', module='figures.paper_main',
+         title='The Reference against the planetary boundaries',
+         caption='(a) Annual carbon, Monte Carlo median with 50% and 90% bands, against the acquired-rights (AR) and '
+                 'ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with the committed '
+                 'range after 2050 as a hollow segment on top, the AR and AtP budgets as ticks, and three thin 100% '
+                 'share bars by demand band, material and stage.',
+         source=['aesa/annual.csv', 'aesa/montecarlo_annual.csv', 'aesa/results.json', 'baseline/projection.json',
+                 'baseline/bands_annual.csv', 'baseline/annual_by_material.csv', 'baseline/annual_by_stage.csv']),
+    dict(id='Fig4', file='Fig4_pathways_annual', width='double', module='figures.paper_main',
+         title='Pathways against the boundaries',
+         caption='Annual carbon of the Reference, P1-P5 and TL against AR and AtP: Moderate solid bold, Ambitious the '
+                 'same colour thin dotted.',
+         source=['pathways/annual.csv', 'aesa/annual.csv']),
+    dict(id='Fig5', file='Fig5_waterfall', width='double', module='figures.paper_main',
+         title='From the Reference to the theoretical limit',
+         caption='Cumulative carbon 2026-2050 by demand band along the sequential path Reference -> P1 ... P4 (= P5 '
+                 'Moderate) -> TL1 ... TL9 (= TL); negative bands outlined, hanging from the top of the positive stack; '
+                 'each bar ends at its net total.',
+         source=['pathways/waterfall.csv']),
+    dict(id='Fig6', file='Fig6_solution_space', width='double', module='figures.paper_main',
+         title='The solution space',
+         caption='Cumulative level of exceedance of AR and AtP over uniform cuts of 2027-2050 floor area and of carbon '
+                 'per m2 (after Horup et al. 2025), with P1-P5 (Moderate filled, Ambitious hollow) and TL.',
+         source=['pathways/solution_space.csv', 'pathways/backcast.json']),
+    dict(id='Fig7', file='Fig7_tornado', width='double', module='figures.paper_main',
+         title='What moves the Reference',
+         caption='One-at-a-time ranges of eight inputs, the overbuild absorption timing among them: (a) cumulative '
+                 'carbon 2026-2050, (b) cumulative LoE AR and AtP. Not additive, not a joint interval.',
+         source=['sensitivity/tornado.csv']),
+    dict(id='Fig8', file='Fig8_shapley_levers', width='double', module='figures.paper_main',
+         title='What each lever removes',
+         caption='Exact Shapley value of each lever (512 subsets) on cumulative carbon 2026-2050, from the Reference: '
+                 'hollow bar Moderate, filled bar Ambitious, large deep-green dot TL; sorted by Ambitious.',
+         source=['pathways/shapley.csv']),
 ]
 
-# MODEL v2.1.2: paper figures superseded by the new set (old file -> new location; docs/RENAMING.md)
-PAPER_SUPERSEDED = {'Fig2_demand_bands': 'Fig2_floor_area_bands (a); its carbon panel (b) is Fig3 (a)',
-                    'Fig4_pathways_bands': 'Fig5_pathways (a) (carbon; floor area in Table 2)',
-                    'Fig5_boundaries_attribution': 'Fig4_reference_boundaries (a) and Fig6_emissions_solution_space (a); '
-                                                   'the Shapley waterfall (b) is ED8 / ED9 and Table 2, the sequential '
-                                                   'waterfall Fig5_pathways (c)',
-                    'Fig6_solution_space': 'Fig6_emissions_solution_space (b)',
-                    'Fig3_reference_carbon (c, committed)': 'Fig4_reference_boundaries (b)'}
-
-TABLES = [
-    dict(id='Table1', file='Table1_levers', title='Levers and the theoretical-limit assumptions',
-         source='data/pathways/levers.json, data/pathways/theoretical_limit.json (outputs/reports/LEVERS_TABLE.md)'),
-    dict(id='Table2', file='Table2_results', title='Results 2026-2050: the Reference, P1-P5 and TL',
-         source='data/pathways/runs.csv, data/pathways/montecarlo_summary.csv'),
+PAPER_EXTENDED = [
+    dict(id='ED1', file='ED1_census_replacement_rates', module='figures.paper_extended',
+         title='Net replacement rates from census dwelling counts', source=['baseline/stock_identity_history.csv',
+                                                                            'figure_source/D07_net_replacement_rate.json']),
+    dict(id='ED2', file='ED2_household_formation_size', module='figures.paper_extended',
+         title='Household formation and household size', source=['baseline/household_formation_history.csv',
+                                                                 'figure_source/D03_household_size.json']),
+    dict(id='ED3', file='ED3_cumulative_households_population_floor_area', module='figures.paper_extended',
+         title='Cumulative households, population and floor area', source=['figure_source/projection_paths.json']),
+    dict(id='ED4', file='ED4_mc_scatter_population', module='figures.paper_extended',
+         title='Monte Carlo: LoE against the population rank', source=['pathways/montecarlo_draws.csv']),
+    dict(id='ED5', file='ED5_conditional_tl', module='figures.paper_extended',
+         title='When does TL stay within AR? (Firth logistic regression)',
+         source=['pathways/montecarlo_conditional_tl.csv', 'pathways/montecarlo_conditional_tl.json']),
+    dict(id='ED6', file='ED6_single_levers', module='figures.paper_extended',
+         title='Single-lever runs at Moderate, Ambitious and TL', source=['pathways/runs.csv']),
+    dict(id='ED7', file='ED7_waterfall_ambitious', module='figures.paper_extended',
+         title='Waterfall at Ambitious', source=['pathways/waterfall.csv']),
+    dict(id='ED8', file='ED8_tl_shapley_indicators', module='figures.paper_extended',
+         title='TL: Shapley values from P5 Moderate and human-terms indicators',
+         source=['pathways/shapley.csv', 'pathways/theoretical_limit.json']),
+    dict(id='ED9', file='ED9_rollout_timing', module='figures.paper_extended',
+         title='Roll-out timing (P5 by 2030, 2035, 2045)', source=['pathways/annual.csv', 'pathways/runs.csv']),
+    dict(id='ED10', file='ED10_lambda_sweep', module='figures.paper_extended',
+         title='Lambda-sweep of each lever (Reference 0, Moderate 0.5, Ambitious 1) and the TL point',
+         source=['pathways/lambda_sweep.csv']),
+    dict(id='ED11', file='ED11_hd_estimators', module='figures.paper_extended',
+         title='Harrell-Davis estimators of L2 and L6 with bootstrap intervals', source=['pathways/levers.json']),
+    dict(id='ED12', file='ED12_consent_sizes', module='figures.paper_extended',
+         title='L1: mean consented new-dwelling size by typology, 1990-2025, with the minima',
+         source=['pathways/levers.json']),
+    dict(id='ED13', file='ED13_replacement_variants', module='figures.paper_extended',
+         title='Low and High replacement: the Reference, P5 and TL', source=['sensitivity/replacement_variants.csv',
+                                                                             'pathways/annual.csv']),
+    dict(id='ED14', file='ED14_overbuild_absorption', module='figures.paper_extended',
+         title='Overbuild absorption: the Reference path and its timing sensitivity',
+         source=['baseline/overbuild_absorption_log.csv', 'baseline/sensitivity_annual_carbon.csv']),
 ]
+# tables of the Extended Data (Markdown + CSV, outputs/paper_extended/)
+EXTENDED_TABLES = [dict(id='EDT1', file='EDT1_levels_by_typology', title='Lever levels by typology: Moderate, '
+                        'Ambitious and TL', source=['pathways/levers.json'])]
 
-# ---------------------------------------------------------------------------
-# Extended Data (outputs/extended_data/): PNG 300 dpi + vector PDF + source-data CSV
-# ---------------------------------------------------------------------------
-ONE_AT_A_TIME = 'One-at-a-time ranges are not additive and are not a joint interval.'
-EXTENDED_DATA = [
-    dict(id='ED1', file='ED1_reference_carbon_tornado', width='double',
-         title='What moves the Reference carbon 2026-2050', source='data/sensitivity/reference_carbon.csv',
-         caption='One-at-a-time sensitivity of the Reference carbon 2026-2050, grouped by the type of change; '
-                 'population rows from the exact engine paths. ' + ONE_AT_A_TIME,
-         v1=['H11', 'D16'], legacy=['sens_1_tornado', 'sens_1_tornado_SI']),
-    dict(id='ED2', file='ED2_p5_carbon_tornado', width='double', title='What moves P5 carbon 2026-2050',
-         source='data/sensitivity/p5_carbon.csv',
-         caption='Sensitivity of P5 Combined (Moderate, full roll-out by 2035) to the pathway design, the roll-out '
-                 'timing, the replacement scenario and the population path. ' + ONE_AT_A_TIME, v1=[], legacy=[]),
-    dict(id='ED3', file='ED3_sensitivity_paths', width='double', title='Sensitivity paths of the Reference carbon',
-         source='data/baseline/sensitivity_annual_carbon.csv, data/sensitivity/reference_carbon.csv',
-         caption='Annual carbon 2026-2050 of every one-at-a-time row, one panel per group; the Reference in black.',
-         v1=['D17'], legacy=['sens_2_paths']),
-    dict(id='ED4', file='ED4_boundary_tornado', width='double',
-         title='What moves the cumulative level of exceedance', source='data/sensitivity/planetary_boundary.csv',
-         caption='One-at-a-time sensitivity of the cumulative level of exceedance of the Reference, AR and AtP side by '
-                 'side. ' + ONE_AT_A_TIME, v1=['H11'], legacy=['pb_4_sensitivity']),
-    dict(id='ED5', file='ED5_monte_carlo', width='double', title='Monte Carlo of the Reference, P5 and TL',
-         source='data/montecarlo/annual_REF.csv, data/montecarlo/summary_REF.csv, data/pathways/montecarlo_draws.csv, '
-                'data/pathways/montecarlo_summary.csv',
-         caption='Joint parametric uncertainty (Latin hypercube, 5,000 draws of the Reference; each draw also run '
-                 'through P5 and TL).', v1=['H2'], legacy=['mc_1_fan']),
-    dict(id='ED6', file='ED6_ambitious_settings', width='double', title='Ambitious settings',
-         source='data/pathways/runs.csv', caption='P1-P5 at the Ambitious setting against the Moderate setting.',
-         v1=[], legacy=[]),
-    dict(id='ED7', file='ED7_rollout_timing', width='double', title='Roll-out timing',
-         source='data/pathways/annual.csv, data/pathways/runs.csv, levers.py (adoption paths)',
-         caption='P5 Combined with full roll-out by 2030, 2035 (adopted) and 2045.', v1=['D29'],
-         legacy=['pw_5_envelope_SI']),
-    dict(id='ED8', file='ED8_theoretical_limit', width='double', title='The theoretical limit: attribution and indicators',
-         source='data/pathways/shapley_theoretical_limit.csv, data/pathways/theoretical_limit.json, '
-                'data/pathways/annual.csv',
-         caption='Order-free attribution of P5 Combined (Moderate) to TL over TL1-TL10 (1,024 subsets), and the TL '
-                 'indicators. ' + TL_NOTE,
-         v1=['D33'], legacy=['pw_9_T_shapley_SI']),
-    dict(id='ED9', file='ED9_single_levers', width='double', title='Single levers',
-         source='data/pathways/runs.csv, data/pathways/shapley_levers.csv',
-         caption='Each lever alone at the Moderate and Ambitious settings, and the lever attribution of P5 (Moderate).',
-         v1=['D31'], legacy=['pw_7_shapley_levers_SI']),
-    dict(id='ED10', file='ED10_replacement_variants', width='double', title='Low and High replacement',
-         source='data/sensitivity/replacement_variants.csv',
-         caption='The Reference, P5 Combined (Moderate) and TL under the Low, Reference and High replacement variants.',
-         v1=['D29', 'D27'], legacy=[]),
-    # MODEL v2.1.0: what the joint uncertainty says (the saved Reference draws through P5 and TL)
-    dict(id='ED11', file='ED11_mc_scatter', width='double', title='Monte Carlo inputs against outputs',
-         source='data/pathways/montecarlo_draws.csv, data/montecarlo/draws_REF.csv',
-         caption='Scatter matrix of the four sampled inputs (population rank, which also sets household size; '
-                 'dwelling-size multiplier; completion rate; carbon-factor index) against floor area, carbon and the '
-                 'cumulative LoE AR 2026-2050 of the Reference, P5 Combined (Moderate) and TL, with ordinary '
-                 'least-squares and LOWESS fits.', v1=[], legacy=[]),
-    dict(id='ED12', file='ED12_mc_importance', width='double', title='What drives the joint uncertainty',
-         source='data/pathways/montecarlo_importance.csv, data/montecarlo/sobol_REF.csv',
-         caption='Standardised regression coefficients (SRC) and partial rank correlation coefficients (PRCC) of the '
-                 'cumulative LoE AR with percentile-bootstrap 95% intervals, for the Reference, P5 Combined '
-                 '(Moderate) and TL, beside the Sobol indices of the Reference carbon.', v1=[], legacy=[]),
-    dict(id='ED13', file='ED13_conditional_tl', width='double', title='When does the theoretical limit stay within AR?',
-         source='data/pathways/montecarlo_draws.csv, data/pathways/montecarlo_conditional_tl.csv',
-         caption='TL cumulative LoE AR against the population rank of each draw, coloured by the carbon-factor index, '
-                 'with LoE AR = 1; logistic regression of P(TL LoE AR <= 1) on the sampled inputs (odds ratios '
-                 'with 95% intervals). ' + TL_NOTE, v1=[], legacy=[]),
-]
-
-# ---------------------------------------------------------------------------
-# Key figures (outputs/key_figures/, MODEL v2.1.0): the story in six figures, KEY_FIGURES.md
-# ---------------------------------------------------------------------------
-KEY_GROUP = 'key_figures'
-KEY_FIGURES = [
-    dict(id='K1', file='K1_demand_bands', width='double', title='Why floor area is built',
-         source='data/baseline/bands_history.csv, data/baseline/bands_annual.csv',
-         caption='Floor area by demand band: history per census interval and the Reference projection 2026-2050.'),
-    dict(id='K2', file='K2_reference_carbon', width='double', title='Embodied carbon of the Reference',
-         source='data/baseline/annual_by_stage.csv, data/baseline/annual_by_material.csv, data/baseline/bands_annual.csv, '
-                'data/pathways/runs.csv',
-         caption='Reference carbon 2026-2050 by life-cycle stage, by material and by demand band, and the emissions '
-                 'committed after 2050.'),
-    dict(id='K3', file='K3_annual_emissions', width='double', title='Annual emissions against the boundaries',
-         source='data/pathways/annual.csv, data/aesa/montecarlo_annual.csv, data/pathways/theoretical_limit.json',
-         caption='Annual embodied carbon of the Reference (Monte Carlo 5-95% band), P1-P5 (Moderate) and TL against '
-                 'the AR and AtP boundaries. ' + TL_NOTE),
-    dict(id='K4', file='K4_solution_space', width='single', title='Solution space',
-         source='data/pathways/solution_space.csv, data/pathways/backcast.json, data/pathways/theoretical_limit.json',
-         caption='Cumulative LoE AR over uniform cuts of 2027-2050 floor area and non-soil carbon per m2, in the '
-                 'boundary zones; P1-P5 (Moderate filled, Ambitious hollow) and TL at their effective coordinates.'),
-    dict(id='K5', file='K5_band_waterfall', width='double', title='From the Reference to the theoretical limit',
-         source='data/pathways/waterfall_sequential.csv',
-         caption='Sequential waterfall of carbon 2026-2050, each step segmented by its exact demand-band deltas: '
-                 'Reference -> P1 -> P2 -> P3 -> P4 (= P5 Combined, Moderate) -> TL timing (adoption by 2030, gradual '
-                 're-occupation) -> TL1 ... TL10 (= TL), against the cumulative budgets. ' + TL_NOTE),
-    dict(id='K6', file='K6_schematic', width='double', title='Levers, pathways and the theoretical limit',
-         source='naming.py, levers.py (structure only; no numbers)',
-         caption='The nine levers (L1-L9) by the demand band or quantity they target, grouped into P1-P4 and combined '
-                 'in P5; TL1-TL10 at the end of the same arrows.'),
-]
-
-# Every planetary-boundary figure (emissions or levels of exceedance against the AR / AtP budgets): drawn with the
-# boundary styling of style.py (the figure audit checks the AR / AtP lines and the zones; tests/test_release.py).
-# Figures of changes in the level of exceedance (tornados D18, ED4) have no boundary on their axis.
-PB_FIGURES = ('Fig4_reference_boundaries', 'Fig5_pathways', 'Fig6_emissions_solution_space',
-              'ED5_monte_carlo', 'ED6_ambitious_settings', 'ED7_rollout_timing', 'ED10_replacement_variants',
-              'ED11_mc_scatter', 'ED13_conditional_tl', 'D21_fan_and_boundaries', 'D22_boundaries', 'D23_annual_loe', 'D24_headroom',
-              'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band', 'D27_variants_vs_boundaries',
-              'D28_pathways_annual', 'D32_tl_staircase', 'D34_tl_dwellings', 'K3_annual_emissions',
-              'K4_solution_space', 'K5_band_waterfall')
-
-# model-v1.1.0 figure -> MODEL v2.0.0 location (docs/RENAMING.md, section MODEL v2.0.0)
-V1_MAP = {
-    'H1': 'Fig1', 'H2': 'ED5 (a)', 'H3': 'Fig2', 'H4': 'Fig3 (b, c)', 'H5': 'Fig4 (a) and Fig6 (a) (with P5, TL and '
-    'their Monte Carlo bands)', 'H6': 'Fig4 (b)', 'H7': 'Fig5 (a) (Moderate; Ambitious in ED6)', 'H8': 'Fig6 (a)',
-    'H9': 'ED8, ED9 and Table 2 (Shapley; the sequential path in Fig5 (c))', 'H10': 'Fig6 (b)',
-    'H11': 'ED1 (carbon) and ED4 (LoE)',
-    'D16': 'ED1', 'D17': 'ED3', 'D29': 'ED7, ED10', 'D31': 'ED9', 'D33': 'ED8',
-    'outputs/headline/ (HEADLINE.md)': 'outputs/paper/ (PAPER.md) and outputs/extended_data/ (EXTENDED_DATA.md)',
-}
-# model-v1.1.0 diagnostics superseded by Extended Data (their data stay in outputs/data/)
-SUPERSEDED = {'D16_one_at_a_time': 'ED1', 'D17_sensitivity_paths': 'ED3', 'D29_adoption_and_variants': 'ED7, ED10',
-              'D31_shapley_levers': 'ED9', 'D33_tl_shapley': 'ED8'}
-
-# Maintenance (B2, B4) is drawn as its own layer only in Fig3 and in the demand-band breakdowns (Fig2 and Fig4
-# carbon panels, D25, D26, and D32 c, the carbon by demand band of Reference / P5 Ambitious / TL, which the design
-# document did not list); elsewhere it is in the totals (figaudit.maintenance_drawn; tests/test_release.py)
-MAINTENANCE_ALLOWED = ('Fig3_reference_carbon', 'Fig5_pathways', 'D25_annual_carbon_by_band',
-                       'D26_cumulative_carbon_by_band', 'D32_tl_staircase',
-                       # MODEL v2.1.0 key figures: the Reference carbon by stage and band (K2), the band waterfall (K5)
-                       'K2_reference_carbon', 'K5_band_waterfall')
-
-# ---------------------------------------------------------------------------
-# Diagnostics (outputs/diagnostics/<group>/): PNG 300 dpi
-# ---------------------------------------------------------------------------
+_d = lambda file, title, module, source: dict(file=file, title=title, module=module, source=source)
 DIAGNOSTICS = {
-    'data_calibration': [
-        ('D01_population', 'Population, history and projection (median, 5th-95th)', ['boss_01_population']),
-        ('D02_households', 'Households: census-benchmarked history and projection', ['boss_02_households']),
-        ('D03_household_size', 'Household size and population vs household growth', ['boss_08_demographic_drivers']),
-        ('D04_household_formation', 'Household size vs arrivals; households per consent (2019 on consent-derived); new '
-         'households by source: history one column per census interval (population growth, household-size change; '
-         '2024-25 hatched, no census check), projection annual',
-         ['diag_2_household_engines']),
-        ('D05_stock_and_vacancy', 'Vacancy (definitions, consistent 1986-2023 range, implied vacancy), stock, '
-         'dwellings per year by component (history per census interval with census-measured net replacement and '
-         'unexplained building; projection annual)', ['diag_3_stock_bucket']),
-        ('D06_vacancy_definition', 'Why empty-only vacancy is used (appendix)', ['diag_3b_appendix_vacancy_definition']),
-        ('D07_net_replacement_rate', 'Net replacement rate: census intervals and the three variants',
-         ['fig_replacement_rate']),
-        ('D08_dwelling_space', 'Realised vs occupied floor area per new dwelling; occupancy utilisation',
-         ['boss_09_space_diagnostics']),
-        ('D09_cumulative_floor_area', 'Cumulative floor area 1991-2050 with the population 5th-95th band',
-         ['boss_03_cumulative_gfa']),
-        ('D10_floor_area_bridge', 'Floor area 2026-2050 by demand band, Low / Reference / High (waterfall)',
-         ['fig_bridge']),
-        ('D11_floor_area_bridge_split', 'The bridge with replacement split into demolition and net unconsented '
-         'additions (appendix; the split assumes the BRANZ rate)', ['fig_bridge_appendix_split']),
-        ('D12_conversion_chain', 'Population -> households -> dwellings -> floor area -> carbon (indices); '
-         'carbon intensity of new floor area by variant', ['fig_conversion_chain']),
-        ('D13_carbon_by_material', 'Embodied carbon by material, annual and cumulative', ['boss_10_material_flows']),
+    'calibration': [
+        _d('D01_population', 'Population, history and projection (median, 5th-95th)', 'figures.calibration',
+           ['figure_source/D01_population.json']),
+        _d('D02_households', 'Households: census-benchmarked history and projection', 'figures.calibration',
+           ['figure_source/D02_households.json']),
+        _d('D03_household_size', 'Household size and population vs household growth', 'figures.calibration',
+           ['figure_source/D03_household_size.json']),
+        _d('D04_household_formation', 'Household size vs arrivals; households per consent; new households by source',
+           'figures.calibration', ['figure_source/D04_household_formation.json']),
+        _d('D05_stock_and_vacancy', 'Vacancy, stock and dwellings per year by component', 'figures.calibration',
+           ['figure_source/D05_stock_and_vacancy.json']),
+        _d('D06_vacancy_definition', 'Why empty-only vacancy is used (appendix)', 'figures.calibration',
+           ['figure_source/D06_vacancy_definition.json']),
+        _d('D07_net_replacement_rate', 'Net replacement rate: census intervals and the three variants',
+           'figures.validation', ['figure_source/D07_net_replacement_rate.json']),
+        _d('D08_dwelling_space', 'Realised vs occupied floor area per new dwelling; occupancy utilisation',
+           'figures.calibration', ['figure_source/D08_dwelling_space.json']),
+        _d('D09_cumulative_floor_area', 'Cumulative floor area 1991-2050 with the population 5th-95th band',
+           'figures.calibration', ['figure_source/D09_cumulative_floor_area.json']),
+        _d('D35_overbuild_absorption', 'The 2026 overbuild in the Reference: excess, surplus, payback, implied vacancy',
+           'figures.calibration', ['baseline/overbuild_absorption_log.csv']),
     ],
     'validation': [
-        ('D14_hindcast', 'Rolling-origin hindcast of dwellings built and the 2026 out-of-sample check',
-         ['fig_validation']),
-        ('D15_reality_checks', 'Projection vs the 1991-2025 range and the 2026 -> 2027 handover',
-         ['fig_reality_checks']),
+        _d('D10_floor_area_bridge', 'Floor area 2026-2050 by demand band, Low / Reference / High (waterfall)',
+           'figures.validation', ['figure_source/D10_floor_area_bridge.json']),
+        _d('D11_floor_area_bridge_split', 'The bridge with replacement split into demolition and unconsented additions',
+           'figures.validation', ['figure_source/D11_floor_area_bridge_split.json']),
+        _d('D12_conversion_chain', 'Population -> households -> dwellings -> floor area -> carbon (indices)',
+           'figures.validation', ['figure_source/D12_conversion_chain.json']),
+        _d('D13_carbon_by_material', 'Embodied carbon by material, annual and cumulative', 'figures.calibration',
+           ['figure_source/D13_carbon_by_material.json']),
+        _d('D14_hindcast', 'Rolling-origin hindcast of dwellings built and the 2026 out-of-sample check',
+           'figures.validation', ['figure_source/D14_hindcast.json']),
+        _d('D15_reality_checks', 'Projection vs the 1991-2025 range and the 2026 -> 2027 handover',
+           'figures.validation', ['figure_source/D15_reality_checks.json']),
+    ],
+    'boundaries': [
+        _d('D18_aesa_sensitivity', 'All AESA sensitivity rows: cumulative LoE AR and AtP', 'figures.boundaries',
+           ['figure_source/D18_aesa_sensitivity.json']),
+        _d('D21_fan_and_boundaries', 'Monte Carlo fan of carbon, the AR base window and the boundary bands',
+           'figures.boundaries', ['figure_source/D21_fan_and_boundaries.json']),
+        _d('D22_boundaries', 'Boundaries AR and AtP 2025-2050, population modifier, components', 'figures.boundaries',
+           ['figure_source/D22_boundaries.json']),
+        _d('D23_annual_loe', 'Annual level of exceedance by variant with Monte Carlo bands', 'figures.boundaries',
+           ['figure_source/D23_annual_loe.json']),
+        _d('D24_headroom', 'Intensity, floor area and carbon per dwelling that would fit each boundary',
+           'figures.boundaries', ['figure_source/D24_headroom.json']),
+        _d('D25_annual_carbon_by_band', 'Annual carbon by demand band against the boundaries', 'figures.boundaries',
+           ['figure_source/D25_annual_carbon_by_band.json']),
+        _d('D26_cumulative_carbon_by_band', 'Cumulative carbon by demand band against the cumulative boundaries',
+           'figures.boundaries', ['figure_source/D26_cumulative_carbon_by_band.json']),
+        _d('D27_variants_vs_boundaries', 'Annual and cumulative carbon by variant against the boundaries',
+           'figures.boundaries', ['figure_source/D27_variants_vs_boundaries.json']),
+    ],
+    'pathways': [
+        _d('D28_pathways_annual', 'Annual carbon of the Reference, P1-P5 and TL against the boundaries',
+           'figures.pathways', ['pathways/annual.csv', 'aesa/annual.csv']),
+        _d('D29_ramps', 'The adoption path and each lever\'s native parameter at Moderate, Ambitious and TL',
+           'figures.pathways', ['pathways/levers.json']),
+        _d('D31_lever_annual', 'Annual carbon of each lever alone at Moderate, Ambitious and TL', 'figures.pathways',
+           ['pathways/lever_annual.csv']),
+        _d('D32_tl_staircase', 'Reference -> P5 -> TL: cumulative LoE and the human terms', 'figures.pathways',
+           ['pathways/runs.csv', 'pathways/theoretical_limit.json']),
+        _d('D33_ordering_checks', 'Ordering Reference >= Moderate >= Ambitious >= TL: carbon of each single-lever run',
+           'figures.pathways', ['pathways/ordering_checks.json', 'pathways/lever_annual.csv']),
+        _d('D34_tl_dwellings', 'TL: need, release, re-occupation and dwellings built per year (log)', 'figures.pathways',
+           ['pathways/reoccupation_log.csv']),
+        _d('D36_pathway_bands', 'Cumulative carbon by demand band of every pathway and TL', 'figures.pathways',
+           ['pathways/bands.csv']),
+    ],
+    'montecarlo': [
+        _d('D20_sobol', 'Sobol indices of the Reference (full profile only)', 'figures.montecarlo',
+           ['montecarlo/sobol_REF.csv']),
+        _d('D37_mc_convergence', 'Monte Carlo convergence of the 2026-2050 percentiles', 'figures.montecarlo',
+           ['montecarlo/convergence_REF.csv']),
+        _d('D38_mc_input_distributions', 'Monte Carlo input distributions (sample and quantiles)', 'figures.montecarlo',
+           ['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv']),
+        _d('D39_pathway_mc', 'Pathway Monte Carlo: Reference, P5 Moderate / Ambitious, TL', 'figures.montecarlo',
+           ['pathways/montecarlo_summary.csv', 'pathways/montecarlo_annual.csv']),
     ],
     'sensitivity': [
-        ('D18_aesa_sensitivity', 'All AESA sensitivity rows: cumulative LoE AR and AtP', ['pb_4_sensitivity_SI']),
-        ('D19_variants', 'Annual and cumulative floor area and carbon by projection variant', ['fig_scenarios']),
-    ],
-    'monte_carlo': [
-        ('D20_sobol', 'Sobol indices (Reference): what drives the joint uncertainty', ['mc_3_sobol']),
-        ('D21_fan_and_boundaries', 'Monte Carlo fan of carbon, the AR base window and the boundary bands',
-         ['mc_1_fan_pb']),
-    ],
-    'planetary_boundary': [
-        ('D22_boundaries', 'Boundaries AR and AtP 2025-2050, population modifier, components', ['pb_1_boundaries']),
-        ('D23_annual_loe', 'Annual level of exceedance by variant with Monte Carlo bands', ['pb_2_loe']),
-        ('D24_headroom', 'Intensity, floor area and carbon per dwelling that would fit each boundary',
-         ['pb_3_headroom']),
-        ('D25_annual_carbon_by_band', 'Annual carbon by demand band against the boundaries',
-         ['pb_5_demand_vs_boundary']),
-        ('D26_cumulative_carbon_by_band', 'Cumulative carbon by demand band against the cumulative boundaries',
-         ['boss_06_cumulative_carbon_pb']),
-        ('D27_variants_vs_boundaries', 'Annual and cumulative carbon by variant against the boundaries',
-         ['fig_scenarios_pb']),
-    ],
-    'pathways_si': [
-        ('D28_pathways_annual', 'Annual carbon of the Reference and P1-P5 against the boundaries', ['pw_4_annual_SI']),
-        ('D30_l6_estimator', 'L6 material carbon: Harrell-Davis estimator of the case-study ratios',
-         ['pw_6_L5_estimator_SI']),
-        ('D32_tl_staircase', 'Reference -> P5 -> TL: cumulative LoE and the human terms (size, space per '
-         'person, dwellings built)', ['pw_8_staircase']),
-        ('D34_tl_dwellings', 'TL: dwellings built and re-occupied per year (constant-share reoccupation) and annual carbon',
-         ['pw_10_T_annual_SI']),
+        _d('D16_one_at_a_time', 'Every one-at-a-time row of the Reference carbon', 'figures.sensitivity',
+           ['sensitivity/reference_carbon.csv']),
+        _d('D17_sensitivity_paths', 'Annual carbon of every sensitivity row', 'figures.sensitivity',
+           ['baseline/sensitivity_annual_carbon.csv']),
+        _d('D19_variants', 'Annual and cumulative floor area and carbon by projection variant', 'figures.validation',
+           ['figure_source/D19_variants.json']),
+        _d('D40_src_prcc', 'Monte Carlo SRC and PRCC with bootstrap intervals', 'figures.sensitivity',
+           ['pathways/montecarlo_importance.csv']),
+        _d('D41_p5_sensitivity', 'P5 Moderate: one-at-a-time rows', 'figures.sensitivity', ['sensitivity/p5_carbon.csv']),
+        _d('D42_pb_sensitivity', 'Planetary-boundary rows: cumulative LoE AR and AtP', 'figures.sensitivity',
+           ['sensitivity/planetary_boundary.csv']),
     ],
 }
+# figures drawn only in the full profile (their data exist only there)
+FULL_ONLY = ('D20_sobol',)
 
-# v3.1 figures that are not carried into the release, with the reason (CHANGELOG)
-REMOVED = {
-    'boss_04_annual_gfa': 'superseded by Fig2 (bands, history and projection); its typology panel is by-typology '
-                          'reporting',
-    'boss_05_annual_carbon': 'superseded by Fig3 (stages, materials) and D25 (carbon by band); typology panel removed',
-    'boss_05_annual_carbon_pb': 'duplicate of D25 with a typology panel',
-    'boss_06_cumulative_carbon': 'duplicate of D26 without the boundaries; typology panel removed',
-    'boss_07_typology_share': 'by-typology reporting (typology shares are held; internal to the model)',
-    'diag_4_floor_area': 'demand-band panel superseded by Fig2; typology, mix and per-typology size panels are '
-                         'by-typology reporting',
-    'diag_5_carbon': 'material panels duplicate D13; typology panels are by-typology reporting',
-    'mc_1_fan': 'superseded by the Monte Carlo bands of ED5 (floor area and carbon)',
-    'sens_1_tornado': 'superseded by ED1 (grouped tornado of the Reference carbon) and ED4 (levels of exceedance)',
-    'pb_4_sensitivity': 'superseded by ED4; all rows in D18',
+# Maintenance (B2, B4) drawn as its own layer: only in the band and stage breakdowns
+MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries', 'Fig5_waterfall', 'ED7_waterfall_ambitious',
+                       'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band', 'D32_tl_staircase',
+                       'D36_pathway_bands')
+# every figure with a planetary boundary on its axes (zones required; AtP dotted)
+PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways_annual', 'Fig6_solution_space', 'ED9_rollout_timing',
+              'ED13_replacement_variants', 'D21_fan_and_boundaries', 'D22_boundaries', 'D23_annual_loe',
+              'D24_headroom', 'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band',
+              'D27_variants_vs_boundaries', 'D28_pathways_annual')
+
+RETIRED = {
+    'outputs/paper/ (Fig1-Fig6 of MODEL v2.1.2)': 'outputs/paper_main/ Fig1-Fig8 (new set)',
+    'outputs/extended_data/ (ED1-ED13)': 'outputs/paper_extended/ ED1-ED14',
+    'outputs/key_figures/ (K1-K6)': 'retired: their content is in Fig1-Fig8',
+    'D30_l6_estimator': 'ED11 (L2 and L6 estimators)',
+    'Fig1_model_schematic': 'retired (schematic; the levers are in Table 1)',
 }
 
 
-def all_release_files():
-    """[(group, file id)] of every planned figure."""
-    out = [(PAPER_GROUP, h['file']) for h in PAPER] + [(ED_GROUP, h['file']) for h in EXTENDED_DATA]
-    out += [(KEY_GROUP, h['file']) for h in KEY_FIGURES]
-    out += [(g, f) for g, rows in DIAGNOSTICS.items() for f, _, _ in rows]
-    return out
-
-
-def legacy_map():
-    """v3.1 figure name -> [(group, release file id)] or [('removed', reason)]."""
-    m = {}
-    for grp, items in ((PAPER_GROUP, PAPER), (ED_GROUP, EXTENDED_DATA)):
-        for h in items:
-            for old in h['legacy']:
-                m.setdefault(old, []).append((grp, h['file']))
+def all_figures(profile_full=True):
+    """[(group, file id, module)] of every figure (diagnostics of FULL_ONLY only in the full profile)."""
+    out = [('paper_main', h['file'], h['module']) for h in PAPER_MAIN]
+    out += [('paper_extended', h['file'], h['module']) for h in PAPER_EXTENDED]
     for g, rows in DIAGNOSTICS.items():
-        for f, _, olds in rows:
-            for old in olds:
-                m.setdefault(old, []).append((g, f))
-    for old, why in REMOVED.items():
-        m.setdefault(old, []).append(('removed', why))
-    return m
+        out += [(g, r['file'], r['module']) for r in rows if profile_full or r['file'] not in FULL_ONLY]
+    return out

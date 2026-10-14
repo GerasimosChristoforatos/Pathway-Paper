@@ -4,8 +4,9 @@
 
 Runs the projection variants (Low replacement, Reference, High replacement; validation.run_boss) and writes the
 exact arrays of the report diagnostics as figure source data (figsource.write ->
-outputs/data/figure_source/<file id>.json): D07_net_replacement_rate, D10_floor_area_bridge,
-D11_floor_area_bridge_split, D12_conversion_chain, D14_hindcast, D15_reality_checks, D19_variants. The figures are
+outputs/data/figure_source/<file id>.json): D07_net_replacement_rate, D10_floor_area_bridge
+(D11 is retired: with demolition replacement and unconsented additions split in every band set it equals D10),
+D12_conversion_chain, D14_hindcast, D15_reality_checks, D19_variants. The figures are
 drawn from those files by figures/validation.py (python -m figures <file ids>); nothing is drawn here.
 
 Also writes where the projection leaves the 1991-2025 range -> outputs/data/baseline/reality_checks.json and
@@ -34,7 +35,7 @@ SCEN = [('LOW', N.SCENARIOS['LOW'], dict(REPLACEMENT_VARIANT='LOW')),
 VARS = ('LOW', 'REF', 'HIGH')
 M6 = 1e6
 
-# MODEL v3.0.0 floor-area bridge (D10, D11): the demand bands of the definition 'with retirement villages'
+# MODEL v3.0.0 floor-area bridge (D10; D11 retired): the demand bands of the definition 'with retirement villages'
 # (naming.BANDS_WITH_RETIREMENT_VILLAGES), in the in-scope band order (positive bands, then the bands negative by
 # construction), each with its key in projection results[...]; retirement villages (out of scope, negative) last.
 # The 2026 overbuild is the market excess ('join', >= 0) and 'Overbuild absorbed' the payback ('absorbed', <= 0);
@@ -143,7 +144,7 @@ def main():
                     m2_per_res_max=dict(year=int(_m2.idxmax()), value=float(_m2.max())),
                     handover_changes_pct=np.asarray(chg, float), handover=handover)
 
-    # ---- D10 / D11 bridge -----------------------------------------------------
+    # ---- D10 bridge -----------------------------------------------------------
     bridge = {}
     for k in VARS:
         R = runs[k]['B']['results']['50th']

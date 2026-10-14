@@ -18,8 +18,10 @@ decarbonisation rows of DECARB_CASES for the adopted mode are added.
 One-at-a-time ranges show which assumptions matter. They are not a joint
 uncertainty interval and must not be added in quadrature or summed.
 
-MODEL v2.0.0: the figures of this module (D16, D17) are superseded by Extended Data ED1 and ED3
-(extended_data.py, from the grouped tables of tools/sensitivity_tables.py); this module writes data only.
+This module writes data only (MODEL v3.0.0 compute / draw separation): D16 and D17 are drawn by
+figures/sensitivity.py and the Fig7 tornado by figures/paper_main.py, from the grouped tables of
+tools/sensitivity_tables.py. MODEL v3.0.0 adds the overbuild-absorption timing rows (never / by 2030 / by 2045) and
+the vacancy-parameter row (1986-2023 census mean).
 """
 
 import contextlib

@@ -171,7 +171,9 @@ def collect():
         val['model_consents_2026'] = v['check_2026']['model_consent_equivalent_2026']
         val['observed_to_model_2026'] = v['check_2026'].get('ratio_observed_to_model')
         m['validation'] = val
-    m['run_mode'] = ('QUICK RUN, not for reporting' if os.environ.get('PATHWAY_QUICK') == '1' else 'full')
+    import runprofile
+    # MODEL v3.0.0: the run profile (light results are a development check, never reported)
+    m['run_mode'] = ('light profile, not for reporting' if runprofile.name() == 'light' else 'full')
     with open(layout.writing(METRICS), 'w') as f:
         json.dump(N.keys(m), f, indent=2, sort_keys=True)
     return m

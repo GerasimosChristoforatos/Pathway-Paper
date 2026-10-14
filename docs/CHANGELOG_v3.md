@@ -41,6 +41,8 @@ Decisions:
 * **Shapley values are exact** over all 2⁹ = 512 subsets per game, with a run cache keyed by the lever setting
   (`levers.key`), so a subset shared by several games (and by the pathways, the λ-sweep and the waterfalls) is run
   once. Pathway step: about 15 s for 2,137 runs.
+* **`metrics.json`** reports the profile in `run_mode` ("light profile, not for reporting" or "full"; it read the
+  retired `--quick` flag before).
 * **`run_meta.json`** records profile, mode, draws, Sobol, bootstrap, every seed, figure formats, git hash and dirty
   flag, a SHA-256 of the inputs, timestamp and the seconds of every step.
 * **Light / legacy outputs are not versioned** (`.gitignore`): they are reproducible working copies; the committed
@@ -181,9 +183,16 @@ Decisions:
   `test_regression_model_v3.py` (deterministic hashes identical in both profiles; Monte Carlo hashes per profile;
   captured by `tests/capture_regression_model_v3.py`). `test_identities.py` updated for the new bands.
 * **Retired** to `tests/retired/` (not collected): the v1, v2, v2.1 and v1.2.1 locks, the data-unchanged and byte
-  manifest tests, and the v2-era pathway, Monte Carlo, release, release-map, sensitivity-table, palette and PB tests.
+  manifest tests, and the v2-era pathway, Monte Carlo, release, release-map, sensitivity-table and palette tests.
   Reason: MODEL v3.0.0 changes the Reference and the lever rule on purpose, so the earlier locks cannot hold. The
   link to v2.1 is kept by the legacy lock; their v3 counterparts are the tests above.
+* **Restored** (they test components MODEL v3.0.0 does not change): the AESA equations against their sources
+  (`test_aesa.py`, from `test_pb.py`) and the time-resolved B2/B4 events and committed emissions (`test_events.py`,
+  from the baseline-pb-v3 `test_v3.py`). The two captured anchors of baseline-PB_v2 are checked on the MODEL v2.1
+  Reference (`OVERBUILD_ABSORPTION_END = None`, itself locked by the legacy lock); the identity "in-window + committed
+  = whole life at 2025 factors" now runs on the v3 Reference; the historical-carbon figure check uses the v3 folders
+  and exempts D29, whose panels plot dimensionless lever parameters (the L7 A4–A5 factor path is anchored at
+  2025 = 1).
 * Documents: this file, `RENAMING.md` (section 11), `PALETTE.md`, `METHODS_DRAFT.md`, `REFERENCES.md`,
   `FIGURE_PLAN_v3.md`, `LEVERS_TABLE.md`, `PROJECT_STATE_v3.md`; README and ARCHITECTURE updated.
 

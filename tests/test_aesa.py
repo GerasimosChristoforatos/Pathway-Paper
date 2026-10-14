@@ -1,4 +1,6 @@
-"""AESA layer (boundaries.py, aesa.py): equations, reproduction of the earlier manuscript and
+"""MODEL v3.0.0: restored from tests/retired/test_pb.py (the AESA equations do not depend on the release).
+
+AESA layer (boundaries.py, aesa.py): equations, reproduction of the earlier manuscript and
 of its constants, identities of the method, units. Tests that read outputs/data/aesa/ rely on
 run_all.py having run boundaries.py before the tests (as it does)."""
 import json

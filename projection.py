@@ -10,23 +10,22 @@ material (typology is internal: it weights the case-study factors).
 
 All input data are read from DATA_DIR; every output path comes from layout.py.
 Case-study carbon and occupancy factors come from Building_factors.py (run it
-first; it writes them to outputs/data/factors/). figures(B) draws D01-D03, D08, D09
-and D13 from the state main() returns: shown when run on its own, saved through
-style.save_figure when PATHWAY_SAVE_FIGURES=1 (run_all.py).
+first; it writes them to outputs/data/factors/). MODEL v3.0.0 (compute / draw separation): this module draws
+nothing; run as a script it writes, with export_figure_sources(B), the exact arrays of D01-D03, D08, D09, D13 and
+the Extended Data paths (figure_source/projection_paths.json); figures/calibration.py draws them.
 """
 
 import os
 import re
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.interpolate import PchipInterpolator
 
 import engine
 import events as EV
 import layout
 import naming as N
-import style
+import figsource
 import Building_factors as BF
 
 # ============================================================
@@ -42,10 +41,10 @@ DATA_DIR = os.path.join(ROOT_DIR, 'data')          # inputs only
 # (layout.py: every path of the pipeline).
 FROZEN_RUN = layout.frozen_run()
 FACTORS_DIR = layout.FACTORS     # written by Building_factors.py
-SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
-# Save every figure (style.save_figure, outputs/diagnostics/). Only when
-# projection.py is run as a script with PATHWAY_SAVE_FIGURES=1 (run_all.py), so re-runs from
-# other scripts never overwrite them.
+# MODEL v3.0.0: projection.py draws nothing (figures/calibration.py draws D01-D03, D08, D09, D13 from the figure
+# source written by export_figure_sources). SHOW_PLOTS and SAVE_FIGURES are kept as inert attributes only, because
+# other scripts and the tests still set them (Diagnostics, Sensitivity, validation, tools, tests/conftest.py).
+SHOW_PLOTS = False
 SAVE_FIGURES = False
 # Monthly building consents: data/derived/consents_monthly.csv, built by
 # data/build_consents.py from the raw Stats NZ release download (provenance in
@@ -236,8 +235,8 @@ COL_CONSENT_COUNTS = {
     'Townhouses': 'Consents - Consents/Townhouses',
     'Apartments': 'Consents - Consents/Apartments',
 }
-# Colours and reader-facing labels of the figures: style.py and naming.py (docs/PALETTE.md,
-# docs/RENAMING.md); the figures are drawn by figures() from the state main() returns.
+# Reader-facing labels: naming.py (docs/RENAMING.md); the figures are drawn by the figures/ package from the
+# figure source written by export_figure_sources(), never from here.
 
 # Typology mix (author's decision, baseline-pb-v2): the typology floor-area shares are held at
 #   their MIX_HELD_WINDOW average (ratio of sums of consented floor area over the window, 2026 =
@@ -1980,142 +1979,10 @@ def main():
     print(dm.to_string())
 
     # Every intermediate result is returned, so Diagnostics.py and
-    # Sensitivity.py read the same run instead of re-deriving anything; the figures
-    # are drawn from it (figures()), never from inside the computation.
+    # Sensitivity.py read the same run instead of re-deriving anything; the figure source is
+    # written from it (export_figure_sources(), script run only), never from inside the computation.
     state = dict(locals())
-    if SAVE_FIGURES or SHOW_PLOTS:
-        figures(state)
     return state
-
-
-def figures(B):
-    """The diagnostics of the projection (outputs/diagnostics/data_calibration/, docs/FIGURE_PLAN.md),
-    drawn from the state main() returns, never from inside the computation: D01 population,
-    D02 households, D03 household size, D08 dwelling space, D09 cumulative floor area, D13 carbon
-    by material. Saved when SAVE_FIGURES (run_all.py), shown when SHOW_PLOTS (Spyder)."""
-    import plotting as P
-    style.apply()
-    S = style
-    yh, fy = np.asarray(B['years_hist']), np.asarray(B['forecast_years'])
-    df = B['df_forecast']
-    M6 = 1e6
-    figs = []
-
-    def done(fig, fid, note=None):
-        figs.append((fig, fid, note))
-
-    def projection_band(ax, lo, hi, label):
-        ax.fill_between(fy, lo, hi, label=label, **S.MC_BAND)
-
-    ref = dict(S.SCENARIO['REF'])
-    ref.pop('label')
-    # D01 population
-    fig, ax = plt.subplots(figsize=S.figsize('double', 62))
-    ax.plot(yh, B['hist_pop'].values / M6, color=S.INK, label='History (estimated resident population, 31 December)')
-    projection_band(ax, df['PopTotal_5th'] / M6, df['PopTotal_95th'] / M6, 'Population 5th–95th percentile')
-    ax.plot(fy, df['PopTotal_50th'] / M6, label='Reference projection (median)', **ref)
-    P.split(ax)
-    ax.set_xlim(yh[0], fy[-1])
-    ax.set_ylabel('Population (million)')
-    ax.legend(loc='upper left')
-    done(fig, 'D01_population')
-    # D02 households
-    hf = B['households_forecast']
-    fig, ax = plt.subplots(figsize=S.figsize('double', 66))
-    dhe = B['hist_hh_dhe'].loc[2018:]
-    ax.plot(dhe.index, dhe.values / M6, color=S.MUTED, lw=S.LW_THIN, label='Stats NZ household estimates as published')
-    P.history_estimated(ax, B['hist_hh'], S_ANCHOR_YEAR, M6, label='History (31 Dec)', k=B['hh_rebase_k'])
-    yb = np.r_[B['S_bridge'].index.values, fy[1:]]
-    projection_band(ax, hf['5th'] / M6, hf['95th'] / M6, '5th–95th population percentile (household size fixed)')
-    ax.plot(yb, np.r_[(B['hist_pop'].loc[B['S_bridge'].index] / B['S_bridge']).values, hf['50th'][1:]] / M6,
-            label='Projection: population / household size, median', **ref)
-    P.split(ax)
-    ax.set_xlim(yh[0], fy[-1])
-    ax.set_ylabel('Households (million)')
-    ax.legend(loc='upper left', fontsize=S.FONT_SMALL)
-    done(fig, 'D02_households', f'Projection from the {S_ANCHOR_YEAR} census point; 2019–23 Stats NZ estimates '
-                                f'scaled to the {S_ANCHOR_YEAR} census (×{B["hh_rebase_k"]:.3f}).')
-    # D03 household size and household formation
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 70))
-    P.history_estimated(a, B['hist_S'], S_ANCHOR_YEAR, 1.0, label='History', k=B['hh_rebase_k'])
-    a.plot(np.r_[B['S_bridge'].index.values, fy[1:]],
-           np.r_[B['S_bridge'].values, (df['PopTotal_50th'].values / hf['50th'])[1:]],
-           label=f'Projection (Stats NZ shape from the {S_ANCHOR_YEAR} census point)', **ref)
-    P.split(a)
-    a.set_xlim(yh[0], fy[-1])
-    a.set_ylabel('Household size (persons per household)')
-    a.legend(loc='upper right', fontsize=S.FONT_MIN)
-    P.panel(a, 'a', 'Household size')
-    pyr = fy[1:]
-    b.plot(yh[1:], B['d_pop'].values[1:] / 1e3, color=S.INK, label='Population growth, history')   # 1991: no flow
-    b.plot(yh[1:], B['d_hh'].values[1:] / 1e3, color=S.ACCENT_ORANGE, label='Household formation, history')
-    b.plot(pyr, df['PopGrowth_50th'].values[1:] / 1e3, color=S.INK, ls='--', label='Population growth, projection')
-    b.plot(pyr, np.diff(hf['50th']) / 1e3, color=S.ACCENT_ORANGE, ls='--', label='Household formation, projection')
-    P.split(b)
-    b.set_xlim(yh[0], fy[-1])
-    b.set_ylabel('Persons or households per year (thousand)')
-    b.legend(loc='upper left', fontsize=S.FONT_MIN)
-    P.panel(b, 'b', 'Population growth and household formation')
-    fig.tight_layout()
-    done(fig, 'D03_household_size')
-    # D08 dwelling space
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 66))
-    a.plot(yh, B['blended_dwelling_size'].values, color=S.INK, label='Realised new-dwelling size (floor area / consents)')
-    a.plot(yh, B['occupied_area_per_dwelling'].values, color=S.MUTED, ls='-.',
-           label='Occupied area per dwelling (household size × occupant load factor)')
-    a.fill_between(yh, B['occupied_area_per_dwelling'].values, B['blended_dwelling_size'].values,
-                   color=S.BAND['extra_space'][0], alpha=0.25, lw=0, label='Space above occupancy (under-utilisation)')
-    a.set_xlim(yh[0], yh[-1])
-    a.set_ylim(0, None)
-    a.set_ylabel('Floor area per dwelling (m²)')
-    a.legend(loc='lower left', fontsize=S.FONT_MIN)
-    P.panel(a, 'a', 'New dwellings: realised and occupied floor area')
-    b.plot(yh, 100 * B['utilisation'].values, color=S.INK)
-    b.axhline(100, color=S.MUTED, lw=S.LW_THIN)
-    b.text(yh[0] + 1, 101, 'design capacity (bedrooms + 1)', fontsize=S.FONT_SMALL, color=S.MUTED, va='bottom')
-    b.set_xlim(yh[0], yh[-1])
-    b.set_ylim(0, 110)
-    b.set_ylabel('Occupancy utilisation: household size / design capacity (%)')
-    P.panel(b, 'b', 'Occupancy utilisation of new dwellings')
-    fig.tight_layout()
-    done(fig, 'D08_dwelling_space')
-    # D09 cumulative floor area
-    fig, ax = plt.subplots(figsize=S.figsize('double', 66))
-    ax.plot(yh, B['hist_cum'].values / M6, color=S.INK,
-            label=f"History (consents timed as completions × {B['built_factor']:.2f}, completion lag weight "
-                  f"{B['lag_w']:.2f})")
-    projection_band(ax, df['Cum_GFA_Total_5th'] / M6, df['Cum_GFA_Total_95th'] / M6,
-                    'Population 5th–95th percentile (other inputs at the Reference)')
-    ax.plot(df['Year'], df['Cum_GFA_Total_50th'] / M6, label='Reference projection', **ref)
-    P.split(ax)
-    ax.set_xlim(yh[0], fy[-1])
-    ax.set_ylim(0, None)
-    ax.set_ylabel('Floor area, cumulative from 1991 (Mm²)')
-    ax.legend(loc='upper left')
-    done(fig, 'D09_cumulative_floor_area')
-    # D13 carbon by material
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 72))
-    py = fy[1:]
-    handles = P.stack_materials(a, py, B['flow_annual'], 1e6)
-    P.stack_materials(b, py, B['flow_cum'], 1e6)
-    for ax_, letter, title, ylab in ((a, 'a', 'Annual', 'Embodied carbon (kt CO₂e per year)'),
-                                    (b, 'b', 'Cumulative from 2026', 'Embodied carbon, cumulative from 2026 (kt CO₂e)')):
-        ax_.set_xlim(py[0], py[-1])
-        ax_.set_ylabel(ylab)
-        P.thousands(ax_.yaxis)
-        P.panel(ax_, letter, title)
-    fig.legend(handles=handles, loc='lower center', ncol=len(handles), bbox_to_anchor=(0.5, -0.01), frameon=False)
-    fig.tight_layout(rect=(0, 0.07, 1, 1))
-    acc = ('construction (A1–A5 and soil) plus maintenance (B2, B4) within 2026–2050' if B['TIME_RESOLVED'] else
-           'whole life booked at construction')
-    done(fig, 'D13_carbon_by_material', f'Reference, {acc}; each material includes its maintenance.')
-    for fig, fid, note in figs:
-        if SAVE_FIGURES:
-            style.save_figure(fig, fid, note=note)
-    if SHOW_PLOTS:
-        plt.show()
-    else:
-        plt.close('all')
 
 
 def wsum(values, k):
@@ -2283,8 +2150,52 @@ def export_stage_material(B, path_stage, path_material):
                   for y in fa.index for m in fa.columns]).to_csv(path_material, index=False)
 
 
+def export_figure_sources(B):
+    """MODEL v3.0.0 compute / draw separation: write the exact arrays of D01-D03, D08, D09 and D13 (drawn by
+    figures/calibration.py) and of the Extended Data paths (projection_paths, ED3) as figure source JSON
+    (figsource.write, outputs/data/figure_source/<id>.json). Units are the model's (persons, households, m2,
+    kg CO2e); the figures only rescale for display. Called by the script run only (main() writes nothing)."""
+    yh, fy = np.asarray(B['years_hist'], int), np.asarray(B['forecast_years'], int)
+    df = B['df_forecast']
+    hf = {p: np.asarray(B['households_forecast'][p], float) for p in ('5th', '50th', '95th')}
+    pop = {p: df[f'PopTotal_{p}'].to_numpy(float) for p in ('5th', '50th', '95th')}
+    sb = B['S_bridge']
+    yb = np.r_[sb.index.values.astype(int), fy[1:]]               # the projection drawn from the anchor census point
+    common = dict(years_hist=yh, forecast_years=fy, S_ANCHOR_YEAR=int(S_ANCHOR_YEAR),
+                  hh_rebase_k=float(B['hh_rebase_k']))
+    figsource.write('D01_population', years_hist=yh, forecast_years=fy, population_hist=B['hist_pop'],
+                    population_5th=pop['5th'], population_50th=pop['50th'], population_95th=pop['95th'])
+    figsource.write('D02_households', **common, households_hist=B['hist_hh'],
+                    households_dhe_published=B['hist_hh_dhe'].loc[2018:],
+                    households_5th=hf['5th'], households_50th=hf['50th'], households_95th=hf['95th'],
+                    projection_years=yb,
+                    projection_households=np.r_[(B['hist_pop'].loc[sb.index] / sb).values, hf['50th'][1:]])
+    figsource.write('D03_household_size', **common, household_size_hist=B['hist_S'], projection_years=yb,
+                    projection_household_size=np.r_[sb.values, (pop['50th'] / hf['50th'])[1:]],
+                    population_growth_hist=B['d_pop'], household_formation_hist=B['d_hh'],
+                    population_growth_50th=df['PopGrowth_50th'].to_numpy(float),
+                    household_formation_50th=np.r_[np.nan, np.diff(hf['50th'])])
+    figsource.write('D08_dwelling_space', years_hist=yh, realised_dwelling_size=B['blended_dwelling_size'],
+                    occupied_area_per_dwelling=B['occupied_area_per_dwelling'], utilisation=B['utilisation'])
+    figsource.write('D09_cumulative_floor_area', years_hist=yh, forecast_years=fy, cumulative_floor_area_hist=B['hist_cum'],
+                    built_factor=float(B['built_factor']), lag_w=float(B['lag_w']),
+                    cumulative_floor_area_5th=df['Cum_GFA_Total_5th'].to_numpy(float),
+                    cumulative_floor_area_50th=df['Cum_GFA_Total_50th'].to_numpy(float),
+                    cumulative_floor_area_95th=df['Cum_GFA_Total_95th'].to_numpy(float),
+                    projection_years=df['Year'].to_numpy(int))
+    figsource.write('D13_carbon_by_material', years=fy[1:], carbon_annual=B['flow_annual'],
+                    carbon_cumulative=B['flow_cum'], time_resolved=bool(B['TIME_RESOLVED']), unit='kg CO2e')
+    num = {c: df[c].to_numpy() for c in df.columns if pd.api.types.is_numeric_dtype(df[c])}
+    figsource.write('projection_paths', years_hist=yh, forecast_years=fy, S_ANCHOR_YEAR=int(S_ANCHOR_YEAR),
+                    population_hist=B['hist_pop'], households_hist=B['hist_hh'], household_size_hist=B['hist_S'],
+                    floor_area_built_hist=B['hist_built_gfa'], cumulative_floor_area_hist=B['hist_cum'],
+                    households_5th=hf['5th'], households_50th=hf['50th'], households_95th=hf['95th'],
+                    df_forecast=num,
+                    units=dict(population='persons', households='households', household_size='persons per household',
+                               floor_area='m2 (floor area built per year; cumulative from 1991)'))
+
+
 if __name__ == "__main__":
-    SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
     _B = main()
     export_results(_B, layout.writing(layout.data('baseline/projection.json')))
     if not FROZEN_RUN:                 # the frozen check run (whole life at construction) is an anchor only
@@ -2293,3 +2204,4 @@ if __name__ == "__main__":
         export_stage_material(_B, layout.writing(layout.data('baseline/annual_by_stage.csv')),
                               layout.writing(layout.data('baseline/annual_by_material.csv')))
         export_absorption_log(_B, layout.writing(layout.data('baseline/overbuild_absorption_log.csv')))
+        export_figure_sources(_B)

@@ -48,8 +48,9 @@ Decisions:
 * **Light / legacy outputs are not versioned** (`.gitignore`): they are reproducible working copies; the committed
   outputs are those of the full profile.
 * **Timings** (same machine): light pipeline 4 min 53 s including the tests and every figure (v2.1.2 full run about
-  22.6 min; v2.1.2 figures-only about 10 min; v3 light figures 38 s for 61 figures). Full-profile timings are in
-  `outputs/run_meta.json`.
+  22.6 min; v2.1.2 figures-only about 10 min; v3 light figures 38 s for the 61 light-profile figures). Full profile: 975.7 s
+  (16.3 min) before the tests (compute 885.2 s, of which the pathway Monte Carlo 378.3 s, AESA 229.2 s and the
+  Reference Monte Carlo 182.7 s; figures 88.9 s at 600 dpi PDF + PNG); tests about 40 s (`outputs/run_meta.json`).
 
 ## §1 The Reference absorbs the 2026 overbuild by 2035
 
@@ -195,6 +196,16 @@ Decisions:
   2025 = 1).
 * Documents: this file, `RENAMING.md` (section 11), `PALETTE.md`, `METHODS_DRAFT.md`, `REFERENCES.md`,
   `FIGURE_PLAN_v3.md`, `LEVERS_TABLE.md`, `PROJECT_STATE_v3.md`; README and ARCHITECTURE updated.
+
+## Fixes found by the full-profile run
+
+* `indexes.py` walked the whole of `outputs/` and so listed the git-ignored `outputs/_light/` mirror as unindexed
+  files; the mirrors (`_light`, `_legacy`) are now excluded.
+* The figure audit (`figures/audit.py`) took any x value between 1900 and 2100 as a calendar year, so the Monte
+  Carlo convergence diagnostic D37 (x = number of draws, up to 5,000) was flagged by the historical-carbon check.
+  An x-axis whose label names another quantity is no longer read as years. Only figures were affected: the figures
+  were redrawn with `--figures-only`, which confirmed every data file byte-identical (98 files, full; 97, light).
+  `outputs/run_meta.json` keeps the timings of the pipeline run.
 
 ## Checks (STOP conditions)
 

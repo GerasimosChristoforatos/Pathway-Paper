@@ -1,529 +1,554 @@
 group,case,year,carbon_kt
 Reference,Reference (adopted settings),2026,1370.0863216893727
-Reference,Reference (adopted settings),2027,1189.022120071042
-Reference,Reference (adopted settings),2028,1101.329311041889
-Reference,Reference (adopted settings),2029,1053.824986212924
-Reference,Reference (adopted settings),2030,1024.8490990210514
-Reference,Reference (adopted settings),2031,1003.0613206603134
-Reference,Reference (adopted settings),2032,974.6039695641883
-Reference,Reference (adopted settings),2033,947.0381028108237
-Reference,Reference (adopted settings),2034,917.4298150363834
-Reference,Reference (adopted settings),2035,897.7693174421685
-Reference,Reference (adopted settings),2036,871.4196732486625
-Reference,Reference (adopted settings),2037,839.1131493398076
-Reference,Reference (adopted settings),2038,802.0982783505058
-Reference,Reference (adopted settings),2039,763.0406365256144
-Reference,Reference (adopted settings),2040,740.7547582228092
-Reference,Reference (adopted settings),2041,724.7975687822824
-Reference,Reference (adopted settings),2042,720.9100961237434
-Reference,Reference (adopted settings),2043,732.5032931238119
-Reference,Reference (adopted settings),2044,730.99081235082
-Reference,Reference (adopted settings),2045,718.3844100433283
-Reference,Reference (adopted settings),2046,706.2530508908865
-Reference,Reference (adopted settings),2047,701.3848813359264
-Reference,Reference (adopted settings),2048,694.2145696877302
-Reference,Reference (adopted settings),2049,682.0120122055378
-Reference,Reference (adopted settings),2050,670.612070047848
+Reference,Reference (adopted settings),2027,1158.6719946601136
+Reference,Reference (adopted settings),2028,1035.3418751704116
+Reference,Reference (adopted settings),2029,939.5853691282753
+Reference,Reference (adopted settings),2030,862.1763901357574
+Reference,Reference (adopted settings),2031,818.7611713101606
+Reference,Reference (adopted settings),2032,813.1669203646703
+Reference,Reference (adopted settings),2033,834.486992140791
+Reference,Reference (adopted settings),2034,850.6677109630343
+Reference,Reference (adopted settings),2035,861.6829464144931
+Reference,Reference (adopted settings),2036,869.9827931493645
+Reference,Reference (adopted settings),2037,837.4314357893201
+Reference,Reference (adopted settings),2038,800.2802774655923
+Reference,Reference (adopted settings),2039,761.4177619870408
+Reference,Reference (adopted settings),2040,739.563370850409
+Reference,Reference (adopted settings),2041,723.8437313343956
+Reference,Reference (adopted settings),2042,719.9449442120826
+Reference,Reference (adopted settings),2043,731.3417136931503
+Reference,Reference (adopted settings),2044,729.1003975834029
+Reference,Reference (adopted settings),2045,715.8252345496173
+Reference,Reference (adopted settings),2046,703.303481817704
+Reference,Reference (adopted settings),2047,698.4224786974845
+Reference,Reference (adopted settings),2048,691.4833380806476
+Reference,Reference (adopted settings),2049,679.6500257772173
+Reference,Reference (adopted settings),2050,668.6772723920034
 Population,Population: Stats NZ 5th percentile,2026,1404.949951538133
-Population,Population: Stats NZ 5th percentile,2027,1002.9671671068193
-Population,Population: Stats NZ 5th percentile,2028,901.4316084255317
-Population,Population: Stats NZ 5th percentile,2029,856.4481723704879
-Population,Population: Stats NZ 5th percentile,2030,825.4892352290833
-Population,Population: Stats NZ 5th percentile,2031,804.3212605961032
-Population,Population: Stats NZ 5th percentile,2032,774.095031966188
-Population,Population: Stats NZ 5th percentile,2033,728.3784815810209
-Population,Population: Stats NZ 5th percentile,2034,692.8205395591893
-Population,Population: Stats NZ 5th percentile,2035,675.7550084016698
-Population,Population: Stats NZ 5th percentile,2036,652.4434930406492
-Population,Population: Stats NZ 5th percentile,2037,623.6630922243692
-Population,Population: Stats NZ 5th percentile,2038,590.4005691081983
-Population,Population: Stats NZ 5th percentile,2039,557.8669043844574
-Population,Population: Stats NZ 5th percentile,2040,533.493703815076
-Population,Population: Stats NZ 5th percentile,2041,517.3655613021621
-Population,Population: Stats NZ 5th percentile,2042,508.2295573670134
-Population,Population: Stats NZ 5th percentile,2043,506.140623370391
-Population,Population: Stats NZ 5th percentile,2044,500.4917045832695
-Population,Population: Stats NZ 5th percentile,2045,486.39602265233214
-Population,Population: Stats NZ 5th percentile,2046,472.01996205046885
-Population,Population: Stats NZ 5th percentile,2047,457.3623585000139
-Population,Population: Stats NZ 5th percentile,2048,442.4230764886177
-Population,Population: Stats NZ 5th percentile,2049,425.1122856729858
-Population,Population: Stats NZ 5th percentile,2050,408.19826097503574
+Population,Population: Stats NZ 5th percentile,2027,952.0572374930263
+Population,Population: Stats NZ 5th percentile,2028,784.5564747199214
+Population,Population: Stats NZ 5th percentile,2029,651.5652368199437
+Population,Population: Stats NZ 5th percentile,2030,532.5816816373869
+Population,Population: Stats NZ 5th percentile,2031,471.9278145873804
+Population,Population: Stats NZ 5th percentile,2032,482.6786955268692
+Population,Population: Stats NZ 5th percentile,2033,525.0834469464523
+Population,Population: Stats NZ 5th percentile,2034,572.5909452800446
+Population,Population: Stats NZ 5th percentile,2035,611.5074812387854
+Population,Population: Stats NZ 5th percentile,2036,651.4202546836683
+Population,Population: Stats NZ 5th percentile,2037,623.1377922959203
+Population,Population: Stats NZ 5th percentile,2038,590.1309137486896
+Population,Population: Stats NZ 5th percentile,2039,557.7284899375045
+Population,Population: Stats NZ 5th percentile,2040,533.422660390203
+Population,Population: Stats NZ 5th percentile,2041,517.3290121610287
+Population,Population: Stats NZ 5th percentile,2042,508.2107548301548
+Population,Population: Stats NZ 5th percentile,2043,506.13095080906373
+Population,Population: Stats NZ 5th percentile,2044,500.4867289073469
+Population,Population: Stats NZ 5th percentile,2045,486.3934631943326
+Population,Population: Stats NZ 5th percentile,2046,472.01864552571834
+Population,Population: Stats NZ 5th percentile,2047,457.3616813343675
+Population,Population: Stats NZ 5th percentile,2048,442.4227281950613
+Population,Population: Stats NZ 5th percentile,2049,425.112106538024
+Population,Population: Stats NZ 5th percentile,2050,408.19816884538574
 Population,Population: Stats NZ 5th percentile (engine path),2026,1370.0863216893727
-Population,Population: Stats NZ 5th percentile (engine path),2027,969.951199271648
-Population,Population: Stats NZ 5th percentile (engine path),2028,869.6938711319252
-Population,Population: Stats NZ 5th percentile (engine path),2029,825.8563826259573
-Population,Population: Stats NZ 5th percentile (engine path),2030,795.9388013454175
-Population,Population: Stats NZ 5th percentile (engine path),2031,775.7295225089622
-Population,Population: Stats NZ 5th percentile (engine path),2032,746.3933278532324
-Population,Population: Stats NZ 5th percentile (engine path),2033,712.2261579825993
-Population,Population: Stats NZ 5th percentile (engine path),2034,676.2234755005368
-Population,Population: Stats NZ 5th percentile (engine path),2035,658.7133447281434
-Population,Population: Stats NZ 5th percentile (engine path),2036,635.7241678289373
-Population,Population: Stats NZ 5th percentile (engine path),2037,607.3998322114982
-Population,Population: Stats NZ 5th percentile (engine path),2038,574.9613955149935
-Population,Population: Stats NZ 5th percentile (engine path),2039,543.0429234328095
-Population,Population: Stats NZ 5th percentile (engine path),2040,527.5178045856886
-Population,Population: Stats NZ 5th percentile (engine path),2041,512.606559802906
-Population,Population: Stats NZ 5th percentile (engine path),2042,506.63417394395026
-Population,Population: Stats NZ 5th percentile (engine path),2043,512.0722007089595
-Population,Population: Stats NZ 5th percentile (engine path),2044,504.0780780811245
-Population,Population: Stats NZ 5th percentile (engine path),2045,489.1577410016501
-Population,Population: Stats NZ 5th percentile (engine path),2046,474.2939665561874
-Population,Population: Stats NZ 5th percentile (engine path),2047,466.11774337737967
-Population,Population: Stats NZ 5th percentile (engine path),2048,454.02716921029725
-Population,Population: Stats NZ 5th percentile (engine path),2049,434.4909641355795
-Population,Population: Stats NZ 5th percentile (engine path),2050,416.7407037760189
+Population,Population: Stats NZ 5th percentile (engine path),2027,919.041269657855
+Population,Population: Stats NZ 5th percentile (engine path),2028,752.8187374263151
+Population,Population: Stats NZ 5th percentile (engine path),2029,620.973447075413
+Population,Population: Stats NZ 5th percentile (engine path),2030,503.03124775372106
+Population,Population: Stats NZ 5th percentile (engine path),2031,443.33607650023936
+Population,Population: Stats NZ 5th percentile (engine path),2032,454.97699141391365
+Population,Population: Stats NZ 5th percentile (engine path),2033,508.93112334803067
+Population,Population: Stats NZ 5th percentile (engine path),2034,555.6030304032216
+Population,Population: Stats NZ 5th percentile (engine path),2035,593.491544045128
+Population,Population: Stats NZ 5th percentile (engine path),2036,632.934070206846
+Population,Population: Stats NZ 5th percentile (engine path),2037,604.264082826654
+Population,Population: Stats NZ 5th percentile (engine path),2038,571.6277209607969
+Population,Population: Stats NZ 5th percentile (engine path),2039,540.0864301674752
+Population,Population: Stats NZ 5th percentile (engine path),2040,525.3531936003735
+Population,Population: Stats NZ 5th percentile (engine path),2041,510.9013473315829
+Population,Population: Stats NZ 5th percentile (engine path),2042,504.91167374659307
+Population,Population: Stats NZ 5th percentile (engine path),2043,509.99922592606856
+Population,Population: Stats NZ 5th percentile (engine path),2044,500.7053206203592
+Population,Population: Stats NZ 5th percentile (engine path),2045,484.56044894259486
+Population,Population: Stats NZ 5th percentile (engine path),2046,468.98131448346044
+Population,Population: Stats NZ 5th percentile (engine path),2047,460.775060575327
+Population,Population: Stats NZ 5th percentile (engine path),2048,449.1167310726127
+Population,Population: Stats NZ 5th percentile (engine path),2049,430.25133873021366
+Population,Population: Stats NZ 5th percentile (engine path),2050,413.26030038783426
 Population,Population: Stats NZ 95th percentile,2026,1404.949951538133
-Population,Population: Stats NZ 95th percentile,2027,1475.712883279399
-Population,Population: Stats NZ 95th percentile,2028,1361.101709505441
-Population,Population: Stats NZ 95th percentile,2029,1354.743501088429
-Population,Population: Stats NZ 95th percentile,2030,1349.3257208592825
-Population,Population: Stats NZ 95th percentile,2031,1329.588012216151
-Population,Population: Stats NZ 95th percentile,2032,1287.6931561032536
-Population,Population: Stats NZ 95th percentile,2033,1224.5981087932162
-Population,Population: Stats NZ 95th percentile,2034,1161.8978709853845
-Population,Population: Stats NZ 95th percentile,2035,1117.7850468160314
-Population,Population: Stats NZ 95th percentile,2036,1079.9041816283864
-Population,Population: Stats NZ 95th percentile,2037,1049.1597699164665
-Population,Population: Stats NZ 95th percentile,2038,1026.3862904051389
-Population,Population: Stats NZ 95th percentile,2039,1010.767520735342
-Population,Population: Stats NZ 95th percentile,2040,995.3762572141108
-Population,Population: Stats NZ 95th percentile,2041,980.400348792436
-Population,Population: Stats NZ 95th percentile,2042,963.9625743102325
-Population,Population: Stats NZ 95th percentile,2043,946.5450364732421
-Population,Population: Stats NZ 95th percentile,2044,919.6599717856656
-Population,Population: Stats NZ 95th percentile,2045,890.9067729952861
-Population,Population: Stats NZ 95th percentile,2046,872.7168746437254
-Population,Population: Stats NZ 95th percentile,2047,864.881055414318
-Population,Population: Stats NZ 95th percentile,2048,867.1896336583764
-Population,Population: Stats NZ 95th percentile,2049,873.9538020367081
-Population,Population: Stats NZ 95th percentile,2050,875.1293355764019
+Population,Population: Stats NZ 95th percentile,2027,1471.1706572425344
+Population,Population: Stats NZ 95th percentile,2028,1357.685289930591
+Population,Population: Stats NZ 95th percentile,2029,1351.4859981840234
+Population,Population: Stats NZ 95th percentile,2030,1345.9007687593964
+Population,Population: Stats NZ 95th percentile,2031,1326.2753363687905
+Population,Population: Stats NZ 95th percentile,2032,1285.06028737513
+Population,Population: Stats NZ 95th percentile,2033,1222.8926345074408
+Population,Population: Stats NZ 95th percentile,2034,1160.9541370958489
+Population,Population: Stats NZ 95th percentile,2035,1117.3133418209486
+Population,Population: Stats NZ 95th percentile,2036,1080.1158443924428
+Population,Population: Stats NZ 95th percentile,2037,1049.2684312406398
+Population,Population: Stats NZ 95th percentile,2038,1026.442070173701
+Population,Population: Stats NZ 95th percentile,2039,1010.7961525631343
+Population,Population: Stats NZ 95th percentile,2040,995.390952956871
+Population,Population: Stats NZ 95th percentile,2041,980.4079091933763
+Population,Population: Stats NZ 95th percentile,2042,963.9664637235795
+Population,Population: Stats NZ 95th percentile,2043,946.5470372984186
+Population,Population: Stats NZ 95th percentile,2044,919.6610010329682
+Population,Population: Stats NZ 95th percentile,2045,890.9073024339559
+Population,Population: Stats NZ 95th percentile,2046,872.717146974474
+Population,Population: Stats NZ 95th percentile,2047,864.881195489943
+Population,Population: Stats NZ 95th percentile,2048,867.18970570491
+Population,Population: Stats NZ 95th percentile,2049,873.9538390918095
+Population,Population: Stats NZ 95th percentile,2050,875.1293546339522
 Population,Population: Stats NZ 95th percentile (engine path),2026,1370.0863216893727
-Population,Population: Stats NZ 95th percentile (engine path),2027,1442.3950284107088
-Population,Population: Stats NZ 95th percentile (engine path),2028,1328.6678527671152
-Population,Population: Stats NZ 95th percentile (engine path),2029,1323.195876984449
-Population,Population: Stats NZ 95th percentile (engine path),2030,1318.6126387888862
-Population,Population: Stats NZ 95th percentile (engine path),2031,1299.6556413717528
-Population,Population: Stats NZ 95th percentile (engine path),2032,1258.4973998415933
-Population,Population: Stats NZ 95th percentile (engine path),2033,1206.819260026962
-Population,Population: Stats NZ 95th percentile (engine path),2034,1147.1890923694182
-Population,Population: Stats NZ 95th percentile (engine path),2035,1103.0852980351553
-Population,Population: Stats NZ 95th percentile (engine path),2036,1065.789774714961
-Population,Population: Stats NZ 95th percentile (engine path),2037,1035.7467524667072
-Population,Population: Stats NZ 95th percentile (engine path),2038,1013.8109958291881
-Population,Population: Stats NZ 95th percentile (engine path),2039,998.8008108103427
-Population,Population: Stats NZ 95th percentile (engine path),2040,992.1816888500905
-Population,Population: Stats NZ 95th percentile (engine path),2041,981.1277337905176
-Population,Population: Stats NZ 95th percentile (engine path),2042,968.7236222329266
-Population,Population: Stats NZ 95th percentile (engine path),2043,960.5178278439827
-Population,Population: Stats NZ 95th percentile (engine path),2044,934.6796564146192
-Population,Population: Stats NZ 95th percentile (engine path),2045,905.3582087267747
-Population,Population: Stats NZ 95th percentile (engine path),2046,887.1598176151016
-Population,Population: Stats NZ 95th percentile (engine path),2047,885.9728572978888
-Population,Population: Stats NZ 95th percentile (engine path),2048,893.2479673719929
-Population,Population: Stats NZ 95th percentile (engine path),2049,899.0586060417406
-Population,Population: Stats NZ 95th percentile (engine path),2050,899.074620129269
+Population,Population: Stats NZ 95th percentile (engine path),2027,1437.8528023738445
+Population,Population: Stats NZ 95th percentile (engine path),2028,1325.2514331922648
+Population,Population: Stats NZ 95th percentile (engine path),2029,1319.938374080043
+Population,Population: Stats NZ 95th percentile (engine path),2030,1315.1876866890004
+Population,Population: Stats NZ 95th percentile (engine path),2031,1296.3429655243922
+Population,Population: Stats NZ 95th percentile (engine path),2032,1255.8645311134696
+Population,Population: Stats NZ 95th percentile (engine path),2033,1205.1137857411863
+Population,Population: Stats NZ 95th percentile (engine path),2034,1146.2104864465427
+Population,Population: Stats NZ 95th percentile (engine path),2035,1102.5812145936172
+Population,Population: Stats NZ 95th percentile (engine path),2036,1065.9713296658754
+Population,Population: Stats NZ 95th percentile (engine path),2037,1035.823759784811
+Population,Population: Stats NZ 95th percentile (engine path),2038,1013.8355667115042
+Population,Population: Stats NZ 95th percentile (engine path),2039,998.8025123523546
+Population,Population: Stats NZ 95th percentile (engine path),2040,992.1768667063055
+Population,Population: Stats NZ 95th percentile (engine path),2041,981.0948487958656
+Population,Population: Stats NZ 95th percentile (engine path),2042,968.6872779105476
+Population,Population: Stats NZ 95th percentile (engine path),2043,960.4739945365566
+Population,Population: Stats NZ 95th percentile (engine path),2044,934.6073701987409
+Population,Population: Stats NZ 95th percentile (engine path),2045,905.2931084972153
+Population,Population: Stats NZ 95th percentile (engine path),2046,887.099465309685
+Population,Population: Stats NZ 95th percentile (engine path),2047,885.9194628275238
+Population,Population: Stats NZ 95th percentile (engine path),2048,893.1827348979377
+Population,Population: Stats NZ 95th percentile (engine path),2049,898.9949332489823
+Population,Population: Stats NZ 95th percentile (engine path),2050,899.0303529688513
 Replacement variant,Low replacement: long-run rate,2026,1393.1880814425865
-Replacement variant,Low replacement: long-run rate,2027,1142.7878347936205
-Replacement variant,Low replacement: long-run rate,2028,1028.2676998836623
-Replacement variant,Low replacement: long-run rate,2029,970.751563017898
-Replacement variant,Low replacement: long-run rate,2030,940.0834216722815
-Replacement variant,Low replacement: long-run rate,2031,919.8508523951732
-Replacement variant,Low replacement: long-run rate,2032,894.8308950151993
-Replacement variant,Low replacement: long-run rate,2033,871.5123264652211
-Replacement variant,Low replacement: long-run rate,2034,845.9043145664122
-Replacement variant,Low replacement: long-run rate,2035,830.4620820425553
-Replacement variant,Low replacement: long-run rate,2036,808.3589948856498
-Replacement variant,Low replacement: long-run rate,2037,780.1806742015245
-Replacement variant,Low replacement: long-run rate,2038,747.1141397584817
-Replacement variant,Low replacement: long-run rate,2039,711.7832155910537
-Replacement variant,Low replacement: long-run rate,2040,693.0057684813187
-Replacement variant,Low replacement: long-run rate,2041,679.8031619749772
-Replacement variant,Low replacement: long-run rate,2042,678.5651923553198
-Replacement variant,Low replacement: long-run rate,2043,692.5949946853838
-Replacement variant,Low replacement: long-run rate,2044,693.1131575604527
-Replacement variant,Low replacement: long-run rate,2045,682.7432369214276
-Replacement variant,Low replacement: long-run rate,2046,672.8518586182462
-Replacement variant,Low replacement: long-run rate,2047,670.154502385322
-Replacement variant,Low replacement: long-run rate,2048,664.7160549292034
-Replacement variant,Low replacement: long-run rate,2049,654.0813286403456
-Replacement variant,Low replacement: long-run rate,2050,644.3655885096387
+Replacement variant,Low replacement: long-run rate,2027,1103.8707923051757
+Replacement variant,Low replacement: long-run rate,2028,942.5064891076569
+Replacement variant,Low replacement: long-run rate,2029,821.8068876777988
+Replacement variant,Low replacement: long-run rate,2030,727.7764760684352
+Replacement variant,Low replacement: long-run rate,2031,679.2167213775349
+Replacement variant,Low replacement: long-run rate,2032,684.0005344534037
+Replacement variant,Low replacement: long-run rate,2033,724.5019400461929
+Replacement variant,Low replacement: long-run rate,2034,758.6960839501578
+Replacement variant,Low replacement: long-run rate,2035,783.3197153412169
+Replacement variant,Low replacement: long-run rate,2036,806.4460693785571
+Replacement variant,Low replacement: long-run rate,2037,777.9658699783206
+Replacement variant,Low replacement: long-run rate,2038,744.7302704160984
+Replacement variant,Low replacement: long-run rate,2039,709.6588016925767
+Replacement variant,Low replacement: long-run rate,2040,691.4472687876471
+Replacement variant,Low replacement: long-run rate,2041,678.5605667988191
+Replacement variant,Low replacement: long-run rate,2042,677.3084027241696
+Replacement variant,Low replacement: long-run rate,2043,691.0824398654821
+Replacement variant,Low replacement: long-run rate,2044,690.6517158971383
+Replacement variant,Low replacement: long-run rate,2045,679.405206099069
+Replacement variant,Low replacement: long-run rate,2046,669.0020147155018
+Replacement variant,Low replacement: long-run rate,2047,666.286625080253
+Replacement variant,Low replacement: long-run rate,2048,661.1528506557318
+Replacement variant,Low replacement: long-run rate,2049,651.0011366261521
+Replacement variant,Low replacement: long-run rate,2050,641.8410782450981
 Replacement variant,"Reference, replacement half-life 5 yr",2026,1371.6333774302805
-Replacement variant,"Reference, replacement half-life 5 yr",2027,1183.0371178854734
-Replacement variant,"Reference, replacement half-life 5 yr",2028,1085.4493033774877
-Replacement variant,"Reference, replacement half-life 5 yr",2029,1031.577483112166
-Replacement variant,"Reference, replacement half-life 5 yr",2030,998.4454233157671
-Replacement variant,"Reference, replacement half-life 5 yr",2031,973.7051689074593
-Replacement variant,"Reference, replacement half-life 5 yr",2032,943.288412708961
-Replacement variant,"Reference, replacement half-life 5 yr",2033,914.5036095916477
-Replacement variant,"Reference, replacement half-life 5 yr",2034,884.1833192919629
-Replacement variant,"Reference, replacement half-life 5 yr",2035,864.2299085123364
-Replacement variant,"Reference, replacement half-life 5 yr",2036,837.9632111173152
-Replacement variant,"Reference, replacement half-life 5 yr",2037,806.0441621124596
-Replacement variant,"Reference, replacement half-life 5 yr",2038,769.6580944722571
-Replacement variant,"Reference, replacement half-life 5 yr",2039,731.4175796530819
-Replacement variant,"Reference, replacement half-life 5 yr",2040,710.0938428821353
-Replacement variant,"Reference, replacement half-life 5 yr",2041,695.0671002138258
-Replacement variant,"Reference, replacement half-life 5 yr",2042,692.1536946701686
-Replacement variant,"Reference, replacement half-life 5 yr",2043,704.7601781995845
-Replacement variant,"Reference, replacement half-life 5 yr",2044,704.2470924900114
-Replacement variant,"Reference, replacement half-life 5 yr",2045,692.6673333656249
-Replacement variant,"Reference, replacement half-life 5 yr",2046,681.6111253389107
-Replacement variant,"Reference, replacement half-life 5 yr",2047,677.8416479331229
-Replacement variant,"Reference, replacement half-life 5 yr",2048,671.7327218349525
-Replacement variant,"Reference, replacement half-life 5 yr",2049,660.5406835409165
-Replacement variant,"Reference, replacement half-life 5 yr",2050,650.1443320607859
+Replacement variant,"Reference, replacement half-life 5 yr",2027,1151.9379945762844
+Replacement variant,"Reference, replacement half-life 5 yr",2028,1017.5611429736656
+Replacement variant,"Reference, replacement half-life 5 yr",2029,913.9352766796636
+Replacement variant,"Reference, replacement half-life 5 yr",2030,830.8764102099411
+Replacement variant,"Reference, replacement half-life 5 yr",2031,783.8338241643875
+Replacement variant,"Reference, replacement half-life 5 yr",2032,776.9599631907444
+Replacement variant,"Reference, replacement half-life 5 yr",2033,798.5368152986034
+Replacement variant,"Reference, replacement half-life 5 yr",2034,815.3937369859896
+Replacement variant,"Reference, replacement half-life 5 yr",2035,827.0465929409721
+Replacement variant,"Reference, replacement half-life 5 yr",2036,836.4741549036476
+Replacement variant,"Reference, replacement half-life 5 yr",2037,804.3070924066507
+Replacement variant,"Reference, replacement half-life 5 yr",2038,767.7827244638803
+Replacement variant,"Reference, replacement half-life 5 yr",2039,729.7443461771295
+Replacement variant,"Reference, replacement half-life 5 yr",2040,708.8657418159227
+Replacement variant,"Reference, replacement half-life 5 yr",2041,694.0850927139768
+Replacement variant,"Reference, replacement half-life 5 yr",2042,691.1601679151902
+Replacement variant,"Reference, replacement half-life 5 yr",2043,703.564452969211
+Replacement variant,"Reference, replacement half-life 5 yr",2044,702.3011470969966
+Replacement variant,"Reference, replacement half-life 5 yr",2045,690.0316018080945
+Replacement variant,"Reference, replacement half-life 5 yr",2046,678.5727031503778
+Replacement variant,"Reference, replacement half-life 5 yr",2047,674.7897012517537
+Replacement variant,"Reference, replacement half-life 5 yr",2048,668.9196083191907
+Replacement variant,"Reference, replacement half-life 5 yr",2049,658.1081910861288
+Replacement variant,"Reference, replacement half-life 5 yr",2050,648.151447555965
 Replacement variant,"Reference, replacement half-life 15 yr",2026,1369.5463436519651
-Replacement variant,"Reference, replacement half-life 15 yr",2027,1191.2087300374762
-Replacement variant,"Reference, replacement half-life 15 yr",2028,1107.4813807245189
-Replacement variant,"Reference, replacement half-life 15 yr",2029,1062.8056151188027
-Replacement variant,"Reference, replacement half-life 15 yr",2030,1035.9546575778893
-Replacement variant,"Reference, replacement half-life 15 yr",2031,1015.9368564765659
-Replacement variant,"Reference, replacement half-life 15 yr",2032,988.9341955691008
-Replacement variant,"Reference, replacement half-life 15 yr",2033,962.5751347143166
-Replacement variant,"Reference, replacement half-life 15 yr",2034,933.9903114845563
-Replacement variant,"Reference, replacement half-life 15 yr",2035,915.1892482202032
-Replacement variant,"Reference, replacement half-life 15 yr",2036,889.5375609173606
-Replacement variant,"Reference, replacement half-life 15 yr",2037,857.7825543283371
-Replacement variant,"Reference, replacement half-life 15 yr",2038,821.1873911033321
-Replacement variant,"Reference, replacement half-life 15 yr",2039,782.4306019667264
-Replacement variant,"Reference, replacement half-life 15 yr",2040,760.3382568913268
-Replacement variant,"Reference, replacement half-life 15 yr",2041,744.5559227862219
-Replacement variant,"Reference, replacement half-life 15 yr",2042,740.7771202705546
-Replacement variant,"Reference, replacement half-life 15 yr",2043,752.4149956442222
-Replacement variant,"Reference, replacement half-life 15 yr",2044,750.905052018333
-Replacement variant,"Reference, replacement half-life 15 yr",2045,738.2462969609282
-Replacement variant,"Reference, replacement half-life 15 yr",2046,725.9979421807788
-Replacement variant,"Reference, replacement half-life 15 yr",2047,720.9583565145483
-Replacement variant,"Reference, replacement half-life 15 yr",2048,713.5859623842848
-Replacement variant,"Reference, replacement half-life 15 yr",2049,701.159552913878
-Replacement variant,"Reference, replacement half-life 15 yr",2050,689.5004965031768
+Replacement variant,"Reference, replacement half-life 15 yr",2027,1161.1259560383178
+Replacement variant,"Reference, replacement half-life 15 yr",2028,1042.1768502001562
+Replacement variant,"Reference, replacement half-life 15 yr",2029,949.7900721479565
+Replacement variant,"Reference, replacement half-life 15 yr",2030,875.0440762834015
+Replacement variant,"Reference, replacement half-life 15 yr",2031,833.6420414931979
+Replacement variant,"Reference, replacement half-life 15 yr",2032,829.2579418497826
+Replacement variant,"Reference, replacement half-life 15 yr",2033,851.2536673060232
+Replacement variant,"Reference, replacement half-life 15 yr",2034,867.9581163949056
+Replacement variant,"Reference, replacement half-life 15 yr",2035,879.4978002552912
+Replacement variant,"Reference, replacement half-life 15 yr",2036,888.1195780942502
+Replacement variant,"Reference, replacement half-life 15 yr",2037,856.1208263698198
+Replacement variant,"Reference, replacement half-life 15 yr",2038,819.3900722557352
+Replacement variant,"Reference, replacement half-life 15 yr",2039,780.825871334748
+Replacement variant,"Reference, replacement half-life 15 yr",2040,759.1600938309706
+Replacement variant,"Reference, replacement half-life 15 yr",2041,743.6122162069281
+Replacement variant,"Reference, replacement half-life 15 yr",2042,739.8221711101048
+Replacement variant,"Reference, replacement half-life 15 yr",2043,751.2656939760303
+Replacement variant,"Reference, replacement half-life 15 yr",2044,749.0346037792002
+Replacement variant,"Reference, replacement half-life 15 yr",2045,735.7146668394357
+Replacement variant,"Reference, replacement half-life 15 yr",2046,723.0803513825767
+Replacement variant,"Reference, replacement half-life 15 yr",2047,718.0281848916571
+Replacement variant,"Reference, replacement half-life 15 yr",2048,710.8841948357508
+Replacement variant,"Reference, replacement half-life 15 yr",2049,698.8229329750366
+Replacement variant,"Reference, replacement half-life 15 yr",2050,687.5866016889328
 Replacement variant,High replacement: 2018-2023 rate persists,2026,1368.4282284012024
-Replacement variant,High replacement: 2018-2023 rate persists,2027,1195.897082236258
-Replacement variant,High replacement: 2018-2023 rate persists,2028,1121.2758476627719
-Replacement variant,High replacement: 2018-2023 rate persists,2029,1083.5990519066982
-Replacement variant,High replacement: 2018-2023 rate persists,2030,1062.5210349512597
-Replacement variant,High replacement: 2018-2023 rate persists,2031,1047.7922545150363
-Replacement variant,High replacement: 2018-2023 rate persists,2032,1025.6329110644047
-Replacement variant,High replacement: 2018-2023 rate persists,2033,1003.7841095425185
-Replacement variant,High replacement: 2018-2023 rate persists,2034,979.4839997716441
-Replacement variant,High replacement: 2018-2023 rate persists,2035,964.7619415945526
-Replacement variant,High replacement: 2018-2023 rate persists,2036,942.9639379034377
-Replacement variant,High replacement: 2018-2023 rate persists,2037,914.8443188005792
-Replacement variant,High replacement: 2018-2023 rate persists,2038,881.6739046706841
-Replacement variant,High replacement: 2018-2023 rate persists,2039,846.136498616737
-Replacement variant,High replacement: 2018-2023 rate persists,2040,827.0625265020335
-Replacement variant,High replacement: 2018-2023 rate persists,2041,814.3515785182885
-Replacement variant,High replacement: 2018-2023 rate persists,2042,813.5253928101475
-Replacement variant,High replacement: 2018-2023 rate persists,2043,827.9930682113722
-Replacement variant,High replacement: 2018-2023 rate persists,2044,829.2323658397045
-Replacement variant,High replacement: 2018-2023 rate persists,2045,819.2074909536534
-Replacement variant,High replacement: 2018-2023 rate persists,2046,809.4399302688586
-Replacement variant,High replacement: 2018-2023 rate persists,2047,806.7408029576649
-Replacement variant,High replacement: 2018-2023 rate persists,2048,801.6112510636123
-Replacement variant,High replacement: 2018-2023 rate persists,2049,791.3454306434268
-Replacement variant,High replacement: 2018-2023 rate persists,2050,781.7305102069867
+Replacement variant,High replacement: 2018-2023 rate persists,2027,1166.3776501600605
+Replacement variant,High replacement: 2018-2023 rate persists,2028,1057.4174406733725
+Replacement variant,High replacement: 2018-2023 rate persists,2029,973.1781206291882
+Replacement variant,High replacement: 2018-2023 rate persists,2030,905.346657506197
+Replacement variant,High replacement: 2018-2023 rate persists,2031,869.7498214317343
+Replacement variant,High replacement: 2018-2023 rate persists,2032,869.6907271927197
+Replacement variant,High replacement: 2018-2023 rate persists,2033,895.0704287606809
+Replacement variant,High replacement: 2018-2023 rate persists,2034,914.9998009530635
+Replacement variant,High replacement: 2018-2023 rate persists,2035,929.908071540469
+Replacement variant,High replacement: 2018-2023 rate persists,2036,941.586213495631
+Replacement variant,High replacement: 2018-2023 rate persists,2037,913.2250672101786
+Replacement variant,High replacement: 2018-2023 rate persists,2038,879.9204941762922
+Replacement variant,High replacement: 2018-2023 rate persists,2039,844.5702704757073
+Replacement variant,High replacement: 2018-2023 rate persists,2040,825.9124209472404
+Replacement variant,High replacement: 2018-2023 rate persists,2041,813.429340677977
+Replacement variant,High replacement: 2018-2023 rate persists,2042,812.5920618968134
+Replacement variant,High replacement: 2018-2023 rate persists,2043,826.869781372796
+Replacement variant,High replacement: 2018-2023 rate persists,2044,827.4042229525041
+Replacement variant,High replacement: 2018-2023 rate persists,2045,816.7342546221031
+Replacement variant,High replacement: 2018-2023 rate persists,2046,806.5901439428727
+Replacement variant,High replacement: 2018-2023 rate persists,2047,803.8789782022864
+Replacement variant,High replacement: 2018-2023 rate persists,2048,798.9719486029591
+Replacement variant,High replacement: 2018-2023 rate persists,2049,789.0625821977706
+Replacement variant,High replacement: 2018-2023 rate persists,2050,779.8609320864304
 Household size,Household size: Stats NZ Low variant,2026,1370.0252188494562
-Household size,Household size: Stats NZ Low variant,2027,1222.2177733991612
-Household size,Household size: Stats NZ Low variant,2028,1155.0090199974568
-Household size,Household size: Stats NZ Low variant,2029,1118.1806170457514
-Household size,Household size: Stats NZ Low variant,2030,1094.3325277952395
-Household size,Household size: Stats NZ Low variant,2031,1077.5998084207315
-Household size,Household size: Stats NZ Low variant,2032,1054.672972800886
-Household size,Household size: Stats NZ Low variant,2033,1033.6050217801392
-Household size,Household size: Stats NZ Low variant,2034,1009.4949646082351
-Household size,Household size: Stats NZ Low variant,2035,991.3590906010181
-Household size,Household size: Stats NZ Low variant,2036,963.5304153480005
-Household size,Household size: Stats NZ Low variant,2037,926.709716559627
-Household size,Household size: Stats NZ Low variant,2038,882.1331667517106
-Household size,Household size: Stats NZ Low variant,2039,849.5162719975518
-Household size,Household size: Stats NZ Low variant,2040,839.0739602606792
-Household size,Household size: Stats NZ Low variant,2041,819.3993181921932
-Household size,Household size: Stats NZ Low variant,2042,795.593281233473
-Household size,Household size: Stats NZ Low variant,2043,770.9185471432033
-Household size,Household size: Stats NZ Low variant,2044,745.9290926054293
-Household size,Household size: Stats NZ Low variant,2045,733.2796345109724
-Household size,Household size: Stats NZ Low variant,2046,721.1425902128826
-Household size,Household size: Stats NZ Low variant,2047,716.3079248713914
-Household size,Household size: Stats NZ Low variant,2048,709.2030238346911
-Household size,Household size: Stats NZ Low variant,2049,696.9462744304706
-Household size,Household size: Stats NZ Low variant,2050,685.2064820974915
+Household size,Household size: Stats NZ Low variant,2027,1195.802950458057
+Household size,Household size: Stats NZ Low variant,2028,1098.2374638892204
+Household size,Household size: Stats NZ Low variant,2029,1020.1672173013034
+Household size,Household size: Stats NZ Low variant,2030,954.889263378032
+Household size,Household size: Stats NZ Low variant,2031,919.6754472686898
+Household size,Household size: Stats NZ Low variant,2032,916.3671595569745
+Household size,Household size: Stats NZ Low variant,2033,937.1938969851064
+Household size,Household size: Stats NZ Low variant,2034,952.3100129367803
+Household size,Household size: Stats NZ Low variant,2035,960.451919528477
+Household size,Household size: Stats NZ Low variant,2036,962.3203526707125
+Household size,Household size: Stats NZ Low variant,2037,925.2796308658932
+Household size,Household size: Stats NZ Low variant,2038,880.5811928630926
+Household size,Household size: Stats NZ Low variant,2039,848.1288053293828
+Household size,Household size: Stats NZ Low variant,2040,838.0547708197819
+Household size,Household size: Stats NZ Low variant,2041,818.5803798562057
+Household size,Household size: Stats NZ Low variant,2042,794.7643151370011
+Household size,Household size: Stats NZ Low variant,2043,769.9208606204832
+Household size,Household size: Stats NZ Low variant,2044,744.3053086905114
+Household size,Household size: Stats NZ Low variant,2045,731.0847600239755
+Household size,Household size: Stats NZ Low variant,2046,718.6143942431505
+Household size,Household size: Stats NZ Low variant,2047,713.7694661852146
+Household size,Household size: Stats NZ Low variant,2048,706.8610190936622
+Household size,Household size: Stats NZ Low variant,2049,694.9201524366123
+Household size,Household size: Stats NZ Low variant,2050,683.5476102669468
 Household size,Household size: Stats NZ High variant,2026,1370.1428938002102
-Household size,Household size: Stats NZ High variant,2027,1161.1991709302397
-Household size,Household size: Stats NZ High variant,2028,1053.5200885212141
-Household size,Household size: Stats NZ High variant,2029,991.973865169735
-Household size,Household size: Stats NZ High variant,2030,955.7952651717478
-Household size,Household size: Stats NZ High variant,2031,930.6288923924569
-Household size,Household size: Stats NZ High variant,2032,902.3212067624142
-Household size,Household size: Stats NZ High variant,2033,878.1072733174187
-Household size,Household size: Stats NZ High variant,2034,844.2307911534705
-Household size,Household size: Stats NZ High variant,2035,816.5258289141407
-Household size,Household size: Stats NZ High variant,2036,790.704821536759
-Household size,Household size: Stats NZ High variant,2037,767.5852323061761
-Household size,Household size: Stats NZ High variant,2038,748.4459203759427
-Household size,Household size: Stats NZ High variant,2039,707.9583370626949
-Household size,Household size: Stats NZ High variant,2040,669.3037873176752
-Household size,Household size: Stats NZ High variant,2041,651.6260926795867
-Household size,Household size: Stats NZ High variant,2042,660.9721253001429
-Household size,Household size: Stats NZ High variant,2043,700.8722718263734
-Household size,Household size: Stats NZ High variant,2044,718.4765049941669
-Household size,Household size: Stats NZ High variant,2045,705.9741533658033
-Household size,Household size: Stats NZ High variant,2046,693.8875151664553
-Household size,Household size: Stats NZ High variant,2047,688.9927928421434
-Household size,Household size: Stats NZ High variant,2048,681.7618754017021
-Household size,Household size: Stats NZ High variant,2049,669.5728206705802
-Household size,Household size: Stats NZ High variant,2050,658.4402482650112
+Household size,Household size: Stats NZ High variant,2027,1127.5484087740956
+Household size,Household size: Stats NZ High variant,2028,979.8039135416933
+Household size,Household size: Stats NZ High variant,2029,864.126734556108
+Household size,Household size: Stats NZ High variant,2030,773.642192660481
+Household size,Household size: Stats NZ High variant,2031,724.2099028752391
+Household size,Household size: Stats NZ High variant,2032,721.4862437797854
+Household size,Household size: Stats NZ High variant,2033,752.0211446041877
+Household size,Household size: Stats NZ High variant,2034,769.4372756449724
+Household size,Household size: Stats NZ High variant,2035,776.0961775813057
+Household size,Household size: Stats NZ High variant,2036,789.0777561787689
+Household size,Household size: Stats NZ High variant,2037,765.6925154273315
+Household size,Household size: Stats NZ High variant,2038,746.40483502717
+Household size,Household size: Stats NZ High variant,2039,706.1380522351451
+Household size,Household size: Stats NZ High variant,2040,667.9679960581273
+Household size,Household size: Stats NZ High variant,2041,650.5591264267948
+Household size,Household size: Stats NZ High variant,2042,659.8927651608902
+Household size,Household size: Stats NZ High variant,2043,699.5732484187205
+Household size,Household size: Stats NZ High variant,2044,716.3624879730642
+Household size,Household size: Stats NZ High variant,2045,703.10947133139
+Household size,Household size: Stats NZ High variant,2046,690.5845800696205
+Household size,Household size: Stats NZ High variant,2047,685.6748691132053
+Household size,Household size: Stats NZ High variant,2048,678.7042346827969
+Household size,Household size: Stats NZ High variant,2049,666.9291744709601
+Household size,Household size: Stats NZ High variant,2050,656.2740569905678
 Household size,Household size after 2043: flat (kink at 2043),2026,1370.0863216893727
-Household size,Household size after 2043: flat (kink at 2043),2027,1189.022120071042
-Household size,Household size after 2043: flat (kink at 2043),2028,1101.329311041889
-Household size,Household size after 2043: flat (kink at 2043),2029,1053.824986212924
-Household size,Household size after 2043: flat (kink at 2043),2030,1024.8490990210514
-Household size,Household size after 2043: flat (kink at 2043),2031,1003.0613206603134
-Household size,Household size after 2043: flat (kink at 2043),2032,974.6039695641883
-Household size,Household size after 2043: flat (kink at 2043),2033,947.0381028108237
-Household size,Household size after 2043: flat (kink at 2043),2034,917.4298150363834
-Household size,Household size after 2043: flat (kink at 2043),2035,897.7693174421685
-Household size,Household size after 2043: flat (kink at 2043),2036,871.4196732486625
-Household size,Household size after 2043: flat (kink at 2043),2037,839.1131493398076
-Household size,Household size after 2043: flat (kink at 2043),2038,802.0982783505058
-Household size,Household size after 2043: flat (kink at 2043),2039,771.8072274257136
-Household size,Household size after 2043: flat (kink at 2043),2040,758.3464559746059
-Household size,Household size after 2043: flat (kink at 2043),2041,738.1741507163767
-Household size,Household size after 2043: flat (kink at 2043),2042,716.8699877873614
-Household size,Household size after 2043: flat (kink at 2043),2043,697.7329610321428
-Household size,Household size after 2043: flat (kink at 2043),2044,730.99081235082
-Household size,Household size after 2043: flat (kink at 2043),2045,718.3844100433283
-Household size,Household size after 2043: flat (kink at 2043),2046,706.3276575640349
-Household size,Household size after 2043: flat (kink at 2043),2047,701.5481434753958
-Household size,Household size after 2043: flat (kink at 2043),2048,694.3550085793348
-Household size,Household size after 2043: flat (kink at 2043),2049,681.9963057104642
-Household size,Household size after 2043: flat (kink at 2043),2050,670.3036033950854
+Household size,Household size after 2043: flat (kink at 2043),2027,1158.6719946601136
+Household size,Household size after 2043: flat (kink at 2043),2028,1035.3418751704116
+Household size,Household size after 2043: flat (kink at 2043),2029,939.5853691282753
+Household size,Household size after 2043: flat (kink at 2043),2030,862.1763901357574
+Household size,Household size after 2043: flat (kink at 2043),2031,818.7611713101606
+Household size,Household size after 2043: flat (kink at 2043),2032,813.1669203646703
+Household size,Household size after 2043: flat (kink at 2043),2033,834.486992140791
+Household size,Household size after 2043: flat (kink at 2043),2034,850.6677109630343
+Household size,Household size after 2043: flat (kink at 2043),2035,861.6829464144931
+Household size,Household size after 2043: flat (kink at 2043),2036,869.9827931493645
+Household size,Household size after 2043: flat (kink at 2043),2037,837.4314357893201
+Household size,Household size after 2043: flat (kink at 2043),2038,800.2802774655923
+Household size,Household size after 2043: flat (kink at 2043),2039,770.1843528871397
+Household size,Household size after 2043: flat (kink at 2043),2040,757.1550686022052
+Household size,Household size after 2043: flat (kink at 2043),2041,737.2203132684898
+Household size,Household size after 2043: flat (kink at 2043),2042,715.9048358757007
+Household size,Household size after 2043: flat (kink at 2043),2043,696.5713816014812
+Household size,Household size after 2043: flat (kink at 2043),2044,729.1003975834029
+Household size,Household size after 2043: flat (kink at 2043),2045,715.8252345496173
+Household size,Household size after 2043: flat (kink at 2043),2046,703.3780884908526
+Household size,Household size after 2043: flat (kink at 2043),2047,698.5857408369538
+Household size,Household size after 2043: flat (kink at 2043),2048,691.6237769722522
+Household size,Household size after 2043: flat (kink at 2043),2049,679.6343192821436
+Household size,Household size after 2043: flat (kink at 2043),2050,668.3688057392408
 Household size,Household size after 2043: secant-slope taper,2026,1370.0863216893727
-Household size,Household size after 2043: secant-slope taper,2027,1189.022120071042
-Household size,Household size after 2043: secant-slope taper,2028,1101.329311041889
-Household size,Household size after 2043: secant-slope taper,2029,1053.824986212924
-Household size,Household size after 2043: secant-slope taper,2030,1024.8490990210514
-Household size,Household size after 2043: secant-slope taper,2031,1003.0613206603134
-Household size,Household size after 2043: secant-slope taper,2032,974.6039695641883
-Household size,Household size after 2043: secant-slope taper,2033,947.0381028108237
-Household size,Household size after 2043: secant-slope taper,2034,917.4298150363834
-Household size,Household size after 2043: secant-slope taper,2035,897.7693174421685
-Household size,Household size after 2043: secant-slope taper,2036,871.4196732486625
-Household size,Household size after 2043: secant-slope taper,2037,839.1131493398076
-Household size,Household size after 2043: secant-slope taper,2038,802.0982783505058
-Household size,Household size after 2043: secant-slope taper,2039,752.3912590457529
-Household size,Household size after 2043: secant-slope taper,2040,745.9742982638408
-Household size,Household size after 2043: secant-slope taper,2041,735.3908370996958
-Household size,Household size after 2043: secant-slope taper,2042,726.2802625558394
-Household size,Household size after 2043: secant-slope taper,2043,721.9445038599994
-Household size,Household size after 2043: secant-slope taper,2044,711.0039325497825
-Household size,Household size after 2043: secant-slope taper,2045,702.6556549853732
-Household size,Household size after 2043: secant-slope taper,2046,694.7396940566198
-Household size,Household size after 2043: secant-slope taper,2047,694.3430509082307
-Household size,Household size after 2043: secant-slope taper,2048,691.6357306382506
-Household size,Household size after 2043: secant-slope taper,2049,681.6075010960122
-Household size,Household size after 2043: secant-slope taper,2050,670.0692328390804
+Household size,Household size after 2043: secant-slope taper,2027,1158.6719946601136
+Household size,Household size after 2043: secant-slope taper,2028,1035.3418751704116
+Household size,Household size after 2043: secant-slope taper,2029,939.5853691282753
+Household size,Household size after 2043: secant-slope taper,2030,862.1763901357574
+Household size,Household size after 2043: secant-slope taper,2031,818.7611713101606
+Household size,Household size after 2043: secant-slope taper,2032,813.1669203646703
+Household size,Household size after 2043: secant-slope taper,2033,834.486992140791
+Household size,Household size after 2043: secant-slope taper,2034,850.6677109630343
+Household size,Household size after 2043: secant-slope taper,2035,861.6829464144931
+Household size,Household size after 2043: secant-slope taper,2036,869.9827931493645
+Household size,Household size after 2043: secant-slope taper,2037,837.4314357893201
+Household size,Household size after 2043: secant-slope taper,2038,800.2802774655923
+Household size,Household size after 2043: secant-slope taper,2039,750.768384507179
+Household size,Household size after 2043: secant-slope taper,2040,744.7829108914401
+Household size,Household size after 2043: secant-slope taper,2041,734.4369996518088
+Household size,Household size after 2043: secant-slope taper,2042,725.3151106441788
+Household size,Household size after 2043: secant-slope taper,2043,720.7829244293378
+Household size,Household size after 2043: secant-slope taper,2044,709.1135177823653
+Household size,Household size after 2043: secant-slope taper,2045,700.0964794916623
+Household size,Household size after 2043: secant-slope taper,2046,691.7901249834371
+Household size,Household size after 2043: secant-slope taper,2047,691.3806482697887
+Household size,Household size after 2043: secant-slope taper,2048,688.9044990311679
+Household size,Household size after 2043: secant-slope taper,2049,679.2455146676916
+Household size,Household size after 2043: secant-slope taper,2050,668.1344351832358
 Household size,Household size after 2043: taper from the PCHIP end slope,2026,1370.0863216893727
-Household size,Household size after 2043: taper from the PCHIP end slope,2027,1189.022120071042
-Household size,Household size after 2043: taper from the PCHIP end slope,2028,1101.329311041889
-Household size,Household size after 2043: taper from the PCHIP end slope,2029,1053.824986212924
-Household size,Household size after 2043: taper from the PCHIP end slope,2030,1024.8490990210514
-Household size,Household size after 2043: taper from the PCHIP end slope,2031,1003.0613206603134
-Household size,Household size after 2043: taper from the PCHIP end slope,2032,974.6039695641883
-Household size,Household size after 2043: taper from the PCHIP end slope,2033,947.0381028108237
-Household size,Household size after 2043: taper from the PCHIP end slope,2034,917.4298150363834
-Household size,Household size after 2043: taper from the PCHIP end slope,2035,897.7693174421685
-Household size,Household size after 2043: taper from the PCHIP end slope,2036,871.4196732486625
-Household size,Household size after 2043: taper from the PCHIP end slope,2037,839.1131493398076
-Household size,Household size after 2043: taper from the PCHIP end slope,2038,802.0982783505058
-Household size,Household size after 2043: taper from the PCHIP end slope,2039,771.8072274257136
-Household size,Household size after 2043: taper from the PCHIP end slope,2040,758.3464559746059
-Household size,Household size after 2043: taper from the PCHIP end slope,2041,738.1741507163767
-Household size,Household size after 2043: taper from the PCHIP end slope,2042,716.8699877873614
-Household size,Household size after 2043: taper from the PCHIP end slope,2043,697.7329610321428
-Household size,Household size after 2043: taper from the PCHIP end slope,2044,681.6624569825867
-Household size,Household size after 2043: taper from the PCHIP end slope,2045,679.5913303177801
-Household size,Household size after 2043: taper from the PCHIP end slope,2046,678.1687494174804
-Household size,Household size after 2043: taper from the PCHIP end slope,2047,684.121112173362
-Household size,Household size after 2043: taper from the PCHIP end slope,2048,687.7567232260739
-Household size,Household size after 2043: taper from the PCHIP end slope,2049,680.8464214585755
-Household size,Household size after 2043: taper from the PCHIP end slope,2050,669.1723602462566
+Household size,Household size after 2043: taper from the PCHIP end slope,2027,1158.6719946601136
+Household size,Household size after 2043: taper from the PCHIP end slope,2028,1035.3418751704116
+Household size,Household size after 2043: taper from the PCHIP end slope,2029,939.5853691282753
+Household size,Household size after 2043: taper from the PCHIP end slope,2030,862.1763901357574
+Household size,Household size after 2043: taper from the PCHIP end slope,2031,818.7611713101606
+Household size,Household size after 2043: taper from the PCHIP end slope,2032,813.1669203646703
+Household size,Household size after 2043: taper from the PCHIP end slope,2033,834.486992140791
+Household size,Household size after 2043: taper from the PCHIP end slope,2034,850.6677109630343
+Household size,Household size after 2043: taper from the PCHIP end slope,2035,861.6829464144931
+Household size,Household size after 2043: taper from the PCHIP end slope,2036,869.9827931493645
+Household size,Household size after 2043: taper from the PCHIP end slope,2037,837.4314357893201
+Household size,Household size after 2043: taper from the PCHIP end slope,2038,800.2802774655923
+Household size,Household size after 2043: taper from the PCHIP end slope,2039,770.1843528871397
+Household size,Household size after 2043: taper from the PCHIP end slope,2040,757.1550686022052
+Household size,Household size after 2043: taper from the PCHIP end slope,2041,737.2203132684898
+Household size,Household size after 2043: taper from the PCHIP end slope,2042,715.9048358757007
+Household size,Household size after 2043: taper from the PCHIP end slope,2043,696.5713816014812
+Household size,Household size after 2043: taper from the PCHIP end slope,2044,679.7720422151698
+Household size,Household size after 2043: taper from the PCHIP end slope,2045,677.0321548240692
+Household size,Household size after 2043: taper from the PCHIP end slope,2046,675.219180344298
+Household size,Household size after 2043: taper from the PCHIP end slope,2047,681.1587095349203
+Household size,Household size after 2043: taper from the PCHIP end slope,2048,685.025491618991
+Household size,Household size after 2043: taper from the PCHIP end slope,2049,678.4844350302548
+Household size,Household size after 2043: taper from the PCHIP end slope,2050,667.237562590412
 Dwelling size,Dwelling size: 2016-2025 reference,2026,1368.2867578066039
-Dwelling size,Dwelling size: 2016-2025 reference,2027,1249.7940654445824
-Dwelling size,Dwelling size: 2016-2025 reference,2028,1157.6192013636248
-Dwelling size,Dwelling size: 2016-2025 reference,2029,1107.6868895487319
-Dwelling size,Dwelling size: 2016-2025 reference,2030,1077.230019788201
-Dwelling size,Dwelling size: 2016-2025 reference,2031,1054.3286492965858
-Dwelling size,Dwelling size: 2016-2025 reference,2032,1024.4168184585822
-Dwelling size,Dwelling size: 2016-2025 reference,2033,994.8943559342209
-Dwelling size,Dwelling size: 2016-2025 reference,2034,964.2293678066721
-Dwelling size,Dwelling size: 2016-2025 reference,2035,943.6550810429133
-Dwelling size,Dwelling size: 2016-2025 reference,2036,915.9586838239511
-Dwelling size,Dwelling size: 2016-2025 reference,2037,882.0009456331612
-Dwelling size,Dwelling size: 2016-2025 reference,2038,843.0756793691353
-Dwelling size,Dwelling size: 2016-2025 reference,2039,802.0217930626354
-Dwelling size,Dwelling size: 2016-2025 reference,2040,778.1660181472271
-Dwelling size,Dwelling size: 2016-2025 reference,2041,761.663185049974
-Dwelling size,Dwelling size: 2016-2025 reference,2042,757.5322360483563
-Dwelling size,Dwelling size: 2016-2025 reference,2043,769.4974845451904
-Dwelling size,Dwelling size: 2016-2025 reference,2044,768.3523828101564
-Dwelling size,Dwelling size: 2016-2025 reference,2045,755.1016564152865
-Dwelling size,Dwelling size: 2016-2025 reference,2046,742.3502530405594
-Dwelling size,Dwelling size: 2016-2025 reference,2047,736.8783195737738
-Dwelling size,Dwelling size: 2016-2025 reference,2048,729.430739187162
-Dwelling size,Dwelling size: 2016-2025 reference,2049,716.8702339746812
-Dwelling size,Dwelling size: 2016-2025 reference,2050,704.8876309477155
+Dwelling size,Dwelling size: 2016-2025 reference,2027,1217.8927189651656
+Dwelling size,Dwelling size: 2016-2025 reference,2028,1088.2590907702659
+Dwelling size,Dwelling size: 2016-2025 reference,2029,987.6083871719005
+Dwelling size,Dwelling size: 2016-2025 reference,2030,906.2429685443711
+Dwelling size,Dwelling size: 2016-2025 reference,2031,860.6087604650739
+Dwelling size,Dwelling size: 2016-2025 reference,2032,854.7285825320814
+Dwelling size,Dwelling size: 2016-2025 reference,2033,876.5906609901785
+Dwelling size,Dwelling size: 2016-2025 reference,2034,894.0549950519584
+Dwelling size,Dwelling size: 2016-2025 reference,2035,905.724304489214
+Dwelling size,Dwelling size: 2016-2025 reference,2036,914.4483635443326
+Dwelling size,Dwelling size: 2016-2025 reference,2037,880.2332782536414
+Dwelling size,Dwelling size: 2016-2025 reference,2038,841.1647588920613
+Dwelling size,Dwelling size: 2016-2025 reference,2039,800.3159720076416
+Dwelling size,Dwelling size: 2016-2025 reference,2040,776.9137379393679
+Dwelling size,Dwelling size: 2016-2025 reference,2041,760.6605961480142
+Dwelling size,Dwelling size: 2016-2025 reference,2042,756.5177543906275
+Dwelling size,Dwelling size: 2016-2025 reference,2043,768.2765357886636
+Dwelling size,Dwelling size: 2016-2025 reference,2044,766.3653473146306
+Dwelling size,Dwelling size: 2016-2025 reference,2045,752.4116792563416
+Dwelling size,Dwelling size: 2016-2025 reference,2046,739.2499289498166
+Dwelling size,Dwelling size: 2016-2025 reference,2047,733.7645059831898
+Dwelling size,Dwelling size: 2016-2025 reference,2048,726.559911978596
+Dwelling size,Dwelling size: 2016-2025 reference,2049,714.3875243842158
+Dwelling size,Dwelling size: 2016-2025 reference,2050,702.8539441160809
 Stock,Completion rate 0.92,2026,1333.197423832223
-Stock,Completion rate 0.92,2027,1145.254144187026
-Stock,Completion rate 0.92,2028,1057.5333733846985
-Stock,Completion rate 0.92,2029,1011.7381153288932
-Stock,Completion rate 0.92,2030,984.683600903645
-Stock,Completion rate 0.92,2031,964.236968354719
-Stock,Completion rate 0.92,2032,936.8410765135358
-Stock,Completion rate 0.92,2033,909.769633543471
-Stock,Completion rate 0.92,2034,880.7249835967948
-Stock,Completion rate 0.92,2035,861.6147451129187
-Stock,Completion rate 0.92,2036,835.760647591972
-Stock,Completion rate 0.92,2037,803.9061329284125
-Stock,Completion rate 0.92,2038,767.301645795844
-Stock,Completion rate 0.92,2039,728.6335690454656
-Stock,Completion rate 0.92,2040,706.459086951401
-Stock,Completion rate 0.92,2041,690.6299463248674
-Stock,Completion rate 0.92,2042,686.8530634114678
-Stock,Completion rate 0.92,2043,698.3991143864615
-Stock,Completion rate 0.92,2044,697.0679776862573
-Stock,Completion rate 0.92,2045,684.6979039064893
-Stock,Completion rate 0.92,2046,672.8045906870055
-Stock,Completion rate 0.92,2047,667.9463027352637
-Stock,Completion rate 0.92,2048,660.7953020777285
-Stock,Completion rate 0.92,2049,648.7717941847166
-Stock,Completion rate 0.92,2050,637.5749985546249
+Stock,Completion rate 0.92,2027,1114.8616828346746
+Stock,Completion rate 0.92,2028,991.9330282452291
+Stock,Completion rate 0.92,2029,898.6603513604912
+Stock,Completion rate 0.92,2030,824.0682556802984
+Stock,Completion rate 0.92,2031,782.5538026783075
+Stock,Completion rate 0.92,2032,777.8770418696978
+Stock,Completion rate 0.92,2033,799.0477690670753
+Stock,Completion rate 0.92,2034,815.1020171554954
+Stock,Completion rate 0.92,2035,826.1713150603593
+Stock,Completion rate 0.92,2036,834.4401849189718
+Stock,Completion rate 0.92,2037,802.3020875819985
+Stock,Completion rate 0.92,2038,765.5405232822136
+Stock,Completion rate 0.92,2039,727.0524152947339
+Stock,Completion rate 0.92,2040,705.2959833349155
+Stock,Completion rate 0.92,2041,689.693510864888
+Stock,Completion rate 0.92,2042,685.9009318379691
+Stock,Completion rate 0.92,2043,697.2505324457568
+Stock,Completion rate 0.92,2044,695.1980112188331
+Stock,Completion rate 0.92,2045,682.170026499818
+Stock,Completion rate 0.92,2046,669.8946595279101
+Stock,Completion rate 0.92,2047,665.0265930061511
+Stock,Completion rate 0.92,2048,658.1032475642834
+Stock,Completion rate 0.92,2049,646.4424023085395
+Stock,Completion rate 0.92,2050,635.6666141407893
 Stock,Completion rate 0.96,2026,1382.3826209750885
-Stock,Completion rate 0.96,2027,1203.6173082246412
-Stock,Completion rate 0.96,2028,1115.9667221232012
-Stock,Completion rate 0.96,2029,1067.9083655502182
-Stock,Completion rate 0.96,2030,1038.2912271542461
-Stock,Completion rate 0.96,2031,1016.0477507063684
-Stock,Completion rate 0.96,2032,987.225744845716
-Stock,Completion rate 0.96,2033,959.4851865027972
-Stock,Completion rate 0.96,2034,929.6812480334393
-Stock,Completion rate 0.96,2035,909.8319097787239
-Stock,Completion rate 0.96,2036,883.3133431798068
-Stock,Completion rate 0.96,2037,850.8535863448947
-Stock,Completion rate 0.96,2038,813.7001974011665
-Stock,Completion rate 0.96,2039,774.5115687262819
-Stock,Completion rate 0.96,2040,752.1878389296373
-Stock,Completion rate 0.96,2041,736.1875571629348
-Stock,Completion rate 0.96,2042,732.2631653280922
-Stock,Completion rate 0.96,2043,743.8721091502474
-Stock,Completion rate 0.96,2044,742.2992621238088
-Stock,Completion rate 0.96,2045,729.614236471316
-Stock,Completion rate 0.96,2046,717.4035014841335
-Stock,Completion rate 0.96,2047,712.5318874427102
-Stock,Completion rate 0.96,2048,705.3549787077686
-Stock,Completion rate 0.96,2049,693.0927504970338
-Stock,Completion rate 0.96,2050,681.6251589275009
+Stock,Completion rate 0.96,2027,1173.2810686623718
+Stock,Completion rate 0.96,2028,1049.845567046796
+Stock,Completion rate 0.96,2029,953.2636225313938
+Stock,Completion rate 0.96,2030,874.8945380713448
+Stock,Completion rate 0.96,2031,830.8193328798567
+Stock,Completion rate 0.96,2032,824.9050629043753
+Stock,Completion rate 0.96,2033,846.2756908206593
+Stock,Completion rate 0.96,2034,862.5059372902194
+Stock,Completion rate 0.96,2035,873.5103738120491
+Stock,Completion rate 0.96,2036,881.8306617790067
+Stock,Completion rate 0.96,2037,849.1413899092557
+Stock,Completion rate 0.96,2038,811.8601278504174
+Stock,Completion rate 0.96,2039,772.8726606526329
+Stock,Completion rate 0.96,2040,750.9856111596606
+Stock,Completion rate 0.96,2041,735.2270193277731
+Stock,Completion rate 0.96,2042,731.2930876915214
+Stock,Completion rate 0.96,2043,742.7057710068968
+Stock,Completion rate 0.96,2044,740.4015325768455
+Stock,Completion rate 0.96,2045,727.0439462944411
+Stock,Completion rate 0.96,2046,714.4398495023117
+Stock,Completion rate 0.96,2047,709.5542704152246
+Stock,Completion rate 0.96,2048,702.6097178512756
+Stock,Completion rate 0.96,2049,690.7190557606051
+Stock,Completion rate 0.96,2050,679.6808878701023
 Stock,Completion lag on (Little's law),2026,1307.8275723653462
-Stock,Completion lag on (Little's law),2027,1202.3709972506483
-Stock,Completion lag on (Little's law),2028,1147.6594317510842
-Stock,Completion lag on (Little's law),2029,1107.2763897725358
-Stock,Completion lag on (Little's law),2030,1075.2525944112756
-Stock,Completion lag on (Little's law),2031,1047.639849321325
-Stock,Completion lag on (Little's law),2032,1013.041253350368
-Stock,Completion lag on (Little's law),2033,979.6023600967693
-Stock,Completion lag on (Little's law),2034,946.126468796331
-Stock,Completion lag on (Little's law),2035,923.3588818180527
-Stock,Completion lag on (Little's law),2036,894.4219590179077
-Stock,Completion lag on (Little's law),2037,860.0167539362227
-Stock,Completion lag on (Little's law),2038,821.3012993250134
-Stock,Completion lag on (Little's law),2039,780.8836944922059
-Stock,Completion lag on (Little's law),2040,757.1172649161995
-Stock,Completion lag on (Little's law),2041,740.6336347450728
-Stock,Completion lag on (Little's law),2042,736.3530392362924
-Stock,Completion lag on (Little's law),2043,747.4429905765469
-Stock,Completion lag on (Little's law),2044,745.7273426790891
-Stock,Completion lag on (Little's law),2045,732.8307898016876
-Stock,Completion lag on (Little's law),2046,720.2418960696564
-Stock,Completion lag on (Little's law),2047,714.5741324723358
-Stock,Completion lag on (Little's law),2048,707.0985559821884
-Stock,Completion lag on (Little's law),2049,694.9248788751011
-Stock,Completion lag on (Little's law),2050,683.2939177957385
+Stock,Completion lag on (Little's law),2027,1176.750853634028
+Stock,Completion lag on (Little's law),2028,1088.1088132765158
+Stock,Completion lag on (Little's law),2029,998.346133451482
+Stock,Completion lag on (Little's law),2030,913.6061774799108
+Stock,Completion lag on (Little's law),2031,858.2420823383355
+Stock,Completion lag on (Little's law),2032,841.8524468593853
+Stock,Completion lag on (Little's law),2033,856.1817461534116
+Stock,Completion lag on (Little's law),2034,870.019364106765
+Stock,Completion lag on (Little's law),2035,880.2412377180916
+Stock,Completion lag on (Little's law),2036,888.5995232753008
+Stock,Completion lag on (Little's law),2037,855.2829582290215
+Stock,Completion lag on (Little's law),2038,817.335809856669
+Stock,Completion lag on (Little's law),2039,777.7343254368715
+Stock,Completion lag on (Little's law),2040,754.8440087903872
+Stock,Completion lag on (Little's law),2041,738.9508620413737
+Stock,Completion lag on (Little's law),2042,734.9152891945718
+Stock,Completion lag on (Little's law),2043,745.9906318391843
+Stock,Completion lag on (Little's law),2044,743.6647473727321
+Stock,Completion lag on (Little's law),2045,730.1318083074586
+Stock,Completion lag on (Little's law),2046,717.1360418201057
+Stock,Completion lag on (Little's law),2047,711.421817820587
+Stock,Completion lag on (Little's law),2048,704.1751077411188
+Stock,Completion lag on (Little's law),2049,692.3981349465067
+Stock,Completion lag on (Little's law),2050,681.2289495152598
 Stock,No census under-construction correction,2026,1357.193185908219
-Stock,No census under-construction correction,2027,1215.3895652361468
-Stock,No census under-construction correction,2028,1144.436692027615
-Stock,No census under-construction correction,2029,1103.9644821100967
-Stock,No census under-construction correction,2030,1077.1662343796897
-Stock,No census under-construction correction,2031,1055.6476133707047
-Stock,No census under-construction correction,2032,1026.3097132271243
-Stock,No census under-construction correction,2033,997.328380155253
-Stock,No census under-construction correction,2034,966.3748364615755
-Stock,No census under-construction correction,2035,945.1912704692974
-Stock,No census under-construction correction,2036,917.2417512277667
-Stock,No census under-construction correction,2037,883.3422186026474
-Stock,No census under-construction correction,2038,844.7783699515721
-Stock,No census under-construction correction,2039,804.2414987168454
-Stock,No census under-construction correction,2040,780.5468374401268
-Stock,No census under-construction correction,2041,763.5984538586089
-Stock,No census under-construction correction,2042,758.7479061130708
-Stock,No census under-construction correction,2043,769.4647992196174
-Stock,No census under-construction correction,2044,767.2785040644138
-Stock,No census under-construction correction,2045,753.8587530823288
-Stock,No census under-construction correction,2046,740.8776045600248
-Stock,No census under-construction correction,2047,735.1665763155097
-Stock,No census under-construction correction,2048,727.3730451111652
-Stock,No census under-construction correction,2049,714.6204521961898
-Stock,No census under-construction correction,2050,702.5827932094111
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2026,1370.0863216893727
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2027,1068.7293396159023
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2028,970.0636847076659
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2029,931.8334570143276
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2030,919.3103974710841
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2031,914.4820371184447
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2032,901.8510855242387
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2033,888.0580278857971
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2034,869.0766572985173
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2035,858.6475742057698
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2036,840.0268016945636
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2037,814.0284970977898
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2038,782.1087943618525
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2039,747.1085450467302
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2040,728.0553249382658
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2041,713.9192130103892
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2042,711.711818954687
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2043,724.5626372084326
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2044,723.6340857741792
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2045,712.1669623572302
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2046,701.1207943996911
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2047,697.2076517161231
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2048,690.2452311146731
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2049,678.1964138027004
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.20/yr",2050,667.3286988213445
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2026,1370.0863216893727
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2027,1128.875729843472
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2028,1029.774423074114
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2029,981.1217833825364
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2030,955.7071131462402
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2031,938.9315548420677
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2032,916.1355046771973
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2033,894.2327690561566
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2034,869.5306948679896
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2035,854.6504567942743
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2036,832.7706268884596
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2037,804.5423140487025
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2038,771.2129698582572
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2039,735.4525160242688
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2040,716.1163656296249
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2041,702.3798231669294
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2042,700.5941062235603
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2043,714.0274495397294
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2044,713.9522616678846
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2045,702.9684238610163
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2046,692.3775791666358
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2047,688.9329860367704
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2048,682.7598560107423
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2049,671.4429150522532
-2026 overbuild: how it is booked,"Temporary surplus with payback, absorption 0.10/yr",2050,661.0394876717743
+Stock,No census under-construction correction,2027,1189.8548767085429
+Stock,No census under-construction correction,2028,1089.5975973865036
+Stock,No census under-construction correction,2029,1009.3043845660799
+Stock,No census under-construction correction,2030,942.5014849627285
+Stock,No census under-construction correction,2031,903.1387318691076
+Stock,No census under-construction correction,2032,892.74835512648
+Stock,No census under-construction correction,2033,904.2253872646253
+Stock,No census under-construction correction,2034,911.1522706345935
+Stock,No census under-construction correction,2035,915.3448843354306
+Stock,No census under-construction correction,2036,916.0745156282528
+Stock,No census under-construction correction,2037,881.9618616497553
+Stock,No census under-construction correction,2038,843.2799834628432
+Stock,No census under-construction correction,2039,802.901808805802
+Stock,No census under-construction correction,2040,779.5627042179563
+Stock,No census under-construction correction,2041,762.807497125655
+Stock,No census under-construction correction,2042,757.947244573455
+Stock,No census under-construction correction,2043,768.5011775220527
+Stock,No census under-construction correction,2044,765.7101562435091
+Stock,No census under-construction correction,2045,751.7390216714045
+Stock,No census under-construction correction,2046,738.4360573653832
+Stock,No census under-construction correction,2047,732.7151645037783
+Stock,No census under-construction correction,2048,725.111247794007
+Stock,No census under-construction correction,2049,712.6636728870836
+Stock,No census under-construction correction,2050,700.980745794359
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2026,1370.0863216893727
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2027,1189.022120071042
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2028,1101.329311041889
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2029,1053.824986212924
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2030,1024.8490990210514
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2031,1003.0613206603134
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2032,974.6039695641883
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2033,947.0381028108237
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2034,917.4298150363834
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2035,897.7693174421685
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2036,871.4196732486625
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2037,839.1131493398076
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2038,802.0982783505058
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2039,763.0406365256144
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2040,740.7547582228092
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2041,724.7975687822824
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2042,720.9100961237434
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2043,732.5032931238119
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2044,730.99081235082
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2045,718.3844100433283
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2046,706.2530508908865
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2047,701.3848813359264
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2048,694.2145696877302
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2049,682.0120122055378
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2050,670.612070047848
+2026 overbuild: absorption,Overbuild absorbed by 2030,2026,1370.0863216893727
+2026 overbuild: absorption,Overbuild absorbed by 2030,2027,1082.523013840899
+2026 overbuild: absorption,Overbuild absorbed by 2030,2028,771.519273859322
+2026 overbuild: absorption,Overbuild absorbed by 2030,2029,700.0670100127883
+2026 overbuild: absorption,Overbuild absorbed by 2030,2030,879.8534240768737
+2026 overbuild: absorption,Overbuild absorbed by 2030,2031,990.4352494251614
+2026 overbuild: absorption,Overbuild absorbed by 2030,2032,968.1200851748889
+2026 overbuild: absorption,Overbuild absorbed by 2030,2033,943.7086262549302
+2026 overbuild: absorption,Overbuild absorbed by 2030,2034,914.9026077276551
+2026 overbuild: absorption,Overbuild absorbed by 2030,2035,894.1896994807319
+2026 overbuild: absorption,Overbuild absorbed by 2030,2036,867.7526930126045
+2026 overbuild: absorption,Overbuild absorbed by 2030,2037,837.2586649378477
+2026 overbuild: absorption,Overbuild absorbed by 2030,2038,801.6851469065135
+2026 overbuild: absorption,Overbuild absorbed by 2030,2039,762.8827358377106
+2026 overbuild: absorption,Overbuild absorbed by 2030,2040,740.5736143188685
+2026 overbuild: absorption,Overbuild absorbed by 2030,2041,723.9112662927467
+2026 overbuild: absorption,Overbuild absorbed by 2030,2042,718.3840933319824
+2026 overbuild: absorption,Overbuild absorbed by 2030,2043,728.9597818232243
+2026 overbuild: absorption,Overbuild absorbed by 2030,2044,727.2813791880018
+2026 overbuild: absorption,Overbuild absorbed by 2030,2045,714.4832435396224
+2026 overbuild: absorption,Overbuild absorbed by 2030,2046,703.2724014300891
+2026 overbuild: absorption,Overbuild absorbed by 2030,2047,700.3083351555941
+2026 overbuild: absorption,Overbuild absorbed by 2030,2048,693.5544411219324
+2026 overbuild: absorption,Overbuild absorbed by 2030,2049,679.8837965938708
+2026 overbuild: absorption,Overbuild absorbed by 2030,2050,667.5211233874298
+2026 overbuild: absorption,Overbuild absorbed by 2045,2026,1370.0863216893727
+2026 overbuild: absorption,Overbuild absorbed by 2045,2027,1177.0957526071215
+2026 overbuild: absorption,Overbuild absorbed by 2045,2028,1081.8990246337407
+2026 overbuild: absorption,Overbuild absorbed by 2045,2029,1026.8777232463733
+2026 overbuild: absorption,Overbuild absorbed by 2045,2030,989.532768655714
+2026 overbuild: absorption,Overbuild absorbed by 2045,2031,957.9623676287754
+2026 overbuild: absorption,Overbuild absorbed by 2045,2032,918.8291150473385
+2026 overbuild: absorption,Overbuild absorbed by 2045,2033,880.6144830660992
+2026 overbuild: absorption,Overbuild absorbed by 2045,2034,841.7356411737242
+2026 overbuild: absorption,Overbuild absorbed by 2045,2035,815.9396748366034
+2026 overbuild: absorption,Overbuild absorbed by 2045,2036,787.8838875908472
+2026 overbuild: absorption,Overbuild absorbed by 2045,2037,758.7113290283146
+2026 overbuild: absorption,Overbuild absorbed by 2045,2038,729.0041307755662
+2026 overbuild: absorption,Overbuild absorbed by 2045,2039,699.9607440304944
+2026 overbuild: absorption,Overbuild absorbed by 2045,2040,688.7086718415969
+2026 overbuild: absorption,Overbuild absorbed by 2045,2041,683.2365612767567
+2026 overbuild: absorption,Overbuild absorbed by 2045,2042,688.6291559167889
+2026 overbuild: absorption,Overbuild absorbed by 2045,2043,707.8993252240002
+2026 overbuild: absorption,Overbuild absorbed by 2045,2044,712.4028938801546
+2026 overbuild: absorption,Overbuild absorbed by 2045,2045,704.415185195352
+2026 overbuild: absorption,Overbuild absorbed by 2045,2046,704.783079247077
+2026 overbuild: absorption,Overbuild absorbed by 2045,2047,699.8199991589255
+2026 overbuild: absorption,Overbuild absorbed by 2045,2048,692.4940567365799
+2026 overbuild: absorption,Overbuild absorbed by 2045,2049,680.1222813086396
+2026 overbuild: absorption,Overbuild absorbed by 2045,2050,668.5981036793036
 2026 overbuild: how it is booked,"Booked as redevelopment, stock-neutral",2026,1277.0653823856317
 2026 overbuild: how it is booked,"Booked as redevelopment, stock-neutral",2027,1160.7061268184386
 2026 overbuild: how it is booked,"Booked as redevelopment, stock-neutral",2028,1086.6610895438405
@@ -549,353 +574,378 @@ Stock,No census under-construction correction,2050,702.5827932094111
 2026 overbuild: how it is booked,"Booked as redevelopment, stock-neutral",2048,694.2145412895412
 2026 overbuild: how it is booked,"Booked as redevelopment, stock-neutral",2049,682.0119974947374
 2026 overbuild: how it is booked,"Booked as redevelopment, stock-neutral",2050,670.6120624273743
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2026,1370.3026009326218
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2027,1155.4594193804066
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2028,1030.0256080396614
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2029,932.8483087491487
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2030,854.4541934286049
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2031,810.6177823296675
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2032,805.324496619578
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2033,827.395668549902
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2034,844.2541087302664
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2035,855.7206831388917
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2036,864.5800563929697
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2037,832.2161966882857
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2038,795.2901146418388
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2039,756.6707620277591
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2040,735.0113711827579
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2041,719.3878284167303
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2042,715.5152890839238
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2043,726.866744047119
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2044,724.5881566268263
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2045,711.3610914606239
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2046,698.8985260596294
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2047,694.0847948729053
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2048,687.2016366799764
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2049,675.4206947227103
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2050,664.5092578662627
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2026,1370.0863216893727
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2027,1315.176166207603
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2028,1165.6737716189975
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2029,1086.636166422516
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2030,1041.5765633053468
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2031,1011.6519109021302
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2032,979.0155076369903
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2033,949.3034289188996
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2034,919.561511373577
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2035,899.0281870027283
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2036,872.0682724126827
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2037,839.4473174144163
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2038,802.2704439362792
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2039,763.1619517538938
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2040,740.8498991707755
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2041,725.641698086347
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2042,721.6639623103543
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2043,733.3181798404867
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2044,732.2542805479688
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2045,719.0343368228954
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2046,706.587357923787
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2047,701.5568333551432
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2048,694.9309935206442
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2049,682.8523773328224
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2050,671.0464959700719
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2027,1279.9602502778077
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2028,1083.6832544576573
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2029,942.4603262981298
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2030,835.2567981827154
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2031,777.425169452699
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2032,773.6196825341646
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2033,805.995764424876
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2034,834.5277607035707
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2035,853.0447062622712
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2036,870.06800664792
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2037,837.2199859785068
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2038,799.9118787340418
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2039,761.0735205639578
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2040,739.3218345886697
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2041,724.442684824399
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2042,720.4533035233094
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2043,731.8612054419648
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2044,729.8839220327063
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2045,715.7979238539547
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2046,702.8449154349561
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2047,697.7920445630798
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2048,691.4734289446054
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2049,679.8683491617875
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2050,668.5955340227231
 Carbon factors,"Soil on all floor area, incl. replacement",2026,1404.949951538133
-Carbon factors,"Soil on all floor area, incl. replacement",2027,1222.1674680634358
-Carbon factors,"Soil on all floor area, incl. replacement",2028,1133.3797121538864
-Carbon factors,"Soil on all floor area, incl. replacement",2029,1084.8579302772007
-Carbon factors,"Soil on all floor area, incl. replacement",2030,1054.9356310297587
-Carbon factors,"Soil on all floor area, incl. replacement",2031,1032.266641235448
-Carbon factors,"Soil on all floor area, incl. replacement",2032,1002.9849059761467
-Carbon factors,"Soil on all floor area, incl. replacement",2033,974.6438178833627
-Carbon factors,"Soil on all floor area, incl. replacement",2034,944.3024283038451
-Carbon factors,"Soil on all floor area, incl. replacement",2035,923.9512181849606
-Carbon factors,"Soil on all floor area, incl. replacement",2036,896.9545438616926
-Carbon factors,"Soil on all floor area, incl. replacement",2037,864.0398391768583
-Carbon factors,"Soil on all floor area, incl. replacement",2038,826.4515432255754
-Carbon factors,"Soil on all floor area, incl. replacement",2039,786.8517806791152
-Carbon factors,"Soil on all floor area, incl. replacement",2040,764.0528155762407
-Carbon factors,"Soil on all floor area, incl. replacement",2041,747.6125031630575
-Carbon factors,"Soil on all floor area, incl. replacement",2042,743.2733362201525
-Carbon factors,"Soil on all floor area, incl. replacement",2043,754.4475522560925
-Carbon factors,"Soil on all floor area, incl. replacement",2044,752.5499491468637
-Carbon factors,"Soil on all floor area, incl. replacement",2045,739.5891606363102
-Carbon factors,"Soil on all floor area, incl. replacement",2046,727.1292936067151
-Carbon factors,"Soil on all floor area, incl. replacement",2047,721.9570175703765
-Carbon factors,"Soil on all floor area, incl. replacement",2048,714.5055997894688
-Carbon factors,"Soil on all floor area, incl. replacement",2049,702.0436079488032
-Carbon factors,"Soil on all floor area, incl. replacement",2050,690.4046438025634
+Carbon factors,"Soil on all floor area, incl. replacement",2027,1191.8173426525073
+Carbon factors,"Soil on all floor area, incl. replacement",2028,1067.392276282409
+Carbon factors,"Soil on all floor area, incl. replacement",2029,970.6183131925518
+Carbon factors,"Soil on all floor area, incl. replacement",2030,892.2629221444649
+Carbon factors,"Soil on all floor area, incl. replacement",2031,847.9664918852953
+Carbon factors,"Soil on all floor area, incl. replacement",2032,841.5478567766286
+Carbon factors,"Soil on all floor area, incl. replacement",2033,862.0927072133298
+Carbon factors,"Soil on all floor area, incl. replacement",2034,877.5403242304959
+Carbon factors,"Soil on all floor area, incl. replacement",2035,887.8648471572851
+Carbon factors,"Soil on all floor area, incl. replacement",2036,895.5176637623945
+Carbon factors,"Soil on all floor area, incl. replacement",2037,862.3581256263709
+Carbon factors,"Soil on all floor area, incl. replacement",2038,824.633542340662
+Carbon factors,"Soil on all floor area, incl. replacement",2039,785.2289061405417
+Carbon factors,"Soil on all floor area, incl. replacement",2040,762.8614282038405
+Carbon factors,"Soil on all floor area, incl. replacement",2041,746.6586657151707
+Carbon factors,"Soil on all floor area, incl. replacement",2042,742.3081843084917
+Carbon factors,"Soil on all floor area, incl. replacement",2043,753.285972825431
+Carbon factors,"Soil on all floor area, incl. replacement",2044,750.6595343794467
+Carbon factors,"Soil on all floor area, incl. replacement",2045,737.0299851425995
+Carbon factors,"Soil on all floor area, incl. replacement",2046,724.1797245335326
+Carbon factors,"Soil on all floor area, incl. replacement",2047,718.9946149319345
+Carbon factors,"Soil on all floor area, incl. replacement",2048,711.7743681823861
+Carbon factors,"Soil on all floor area, incl. replacement",2049,699.6816215204825
+Carbon factors,"Soil on all floor area, incl. replacement",2050,688.4698461467187
 Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2026,1391.3138851933293
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2027,1226.6965736459554
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2028,1154.528029593297
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2029,1122.762592953081
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2030,1109.9515214511039
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2031,1096.0162419011722
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2032,1074.4760082250966
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2033,1052.6650644184572
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2034,1028.9047955434453
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2035,1016.0383910050996
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2036,995.2638689696265
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2037,967.2266886500075
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2038,933.147806184248
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2039,896.0400751723581
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2040,876.9141838403342
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2041,863.6577120970992
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2042,865.696285793038
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2043,886.8516749303705
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2044,891.0267780984941
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2045,881.8649489773593
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2046,873.2028384440546
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2047,872.1781961278172
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2048,868.6402227763797
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2049,859.6572884165688
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2050,851.4254339363841
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2027,1195.4108772755098
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2028,1085.4432672113737
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2029,1001.263586802884
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2030,934.155887164301
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2031,895.1199872588651
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2032,896.963894363199
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2033,927.817656319771
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2034,954.2129117641973
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2035,975.346761836286
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2036,993.7282485698337
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2037,965.4540920660311
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2038,931.2409381039053
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2039,894.3390717880366
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2040,875.664390380368
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2041,862.6567865370056
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2042,864.6831408536923
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2043,885.6033069696316
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2044,888.9169687049172
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2045,878.9239063953843
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2046,869.6870512135016
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2047,868.5039925217075
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2048,865.1669046143126
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2049,856.6596031223254
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2050,849.02926709436
 Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2026,1370.7471960718149
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2027,1190.180031662651
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2028,1102.9651745129343
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2029,1055.9458764670303
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2030,1027.4686008297772
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2031,1005.8454655692793
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2032,977.5275158799811
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2033,950.2791533507965
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2034,920.8069521469605
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2035,901.2856083082725
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2036,875.051176716896
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2037,842.8302169388879
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2038,805.8777357891586
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2039,766.8565891352281
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2040,744.8696459778557
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2041,729.0390679418755
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2042,725.2360337032411
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2043,736.9843393334509
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2044,735.6117947107431
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2045,723.0812386987567
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2046,711.0211112653014
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2047,706.4620007276217
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2048,699.5226252326617
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2049,687.3694411923135
-Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2050,676.0399441879686
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2027,1159.8011517946297
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2028,1036.8824956838387
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2029,941.4829216680639
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2030,864.3919607067647
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2031,821.0482369742517
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2032,815.6199025796399
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2033,837.3750415396621
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2034,853.8161811975815
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2035,865.0590985771724
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2036,873.5890165757621
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2037,841.1111876534501
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2038,804.0145662883939
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2039,765.1904835376408
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2040,743.6447425188213
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2041,728.0573074467104
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2042,724.2415393749898
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2043,735.789496195758
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2044,733.674197317815
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2045,720.4650939470243
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2046,708.016908234841
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2047,703.457482340647
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2048,696.7589805384348
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2049,684.9759116337785
+Carbon factors,Decarbonisation: proxy-mapped items held at 2025,2050,674.0703928795542
 Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2026,1374.2873024758019
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2027,1196.3942041296891
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2028,1111.744374769045
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2029,1067.3280734483808
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2030,1041.5267000275985
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2031,1020.8555782287185
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2032,993.3514573408575
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2033,966.4811704081906
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2034,937.6560758239406
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2035,918.9705850335528
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2036,893.3851031696722
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2037,861.6226514762707
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2038,824.9300906949978
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2039,786.038943438563
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2040,764.0764180143135
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2041,748.2644101492082
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2042,744.8579009751277
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2043,757.3041122311433
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2044,756.5204447245164
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2045,744.2448150937414
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2046,732.4386394880352
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2047,727.890091557038
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2048,721.0338605867594
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2049,709.1398567529552
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2050,698.0429480036055
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2027,1165.8610075099728
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2028,1045.1505548742582
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2029,951.6665305316141
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2030,876.2822792258203
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2031,833.37845483288
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2032,828.8968760842403
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2033,851.6598297775352
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2034,869.4519176186297
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2035,882.0595718149372
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2036,891.9370625608275
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2037,859.9348414233409
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2038,823.1087684541607
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2039,784.4142638069795
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2040,762.8840517618531
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2041,747.3100530080874
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2042,743.8924733178112
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2043,756.1423865739014
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2044,754.6299524554112
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2045,741.685598544316
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2046,729.489048676661
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2047,724.927677414045
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2048,718.3026228938307
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2049,706.7778671066411
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2050,696.1081486468953
 Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2026,1372.2611024509663
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2027,1192.818988191717
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2028,1106.666772366558
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2029,1060.7106700400964
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2030,1033.3114765497894
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2031,1013.0346640455034
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2032,985.9520067015011
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2033,959.6492310084093
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2034,931.225158051085
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2035,912.8285087729226
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2036,887.5652606145127
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2037,856.1479320705869
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2038,819.8136854993747
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2039,781.2719875368236
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2040,759.7345280759238
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2041,744.6234866536972
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2042,741.8142513358706
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2043,754.8481242004739
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2044,754.5940630968539
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2045,742.8658770126513
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2046,731.586461228984
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2047,727.7138529188592
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2048,721.4633956691148
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2049,710.0266103093204
-Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2050,699.3834599567817
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2027,1162.3745750283795
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2028,1040.36857975301
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2029,945.7459645712192
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2030,869.3338559374492
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2031,826.9538810857911
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2032,822.6884159271909
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2033,845.6371926770413
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2034,863.4853445370655
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2035,876.1546893596274
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2036,886.1077961584496
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2037,854.4417291991685
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2038,817.9679230101998
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2039,779.6229236318406
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2040,758.522996370262
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2041,743.6530263237948
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2042,740.831809141263
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2043,753.665812089074
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2044,752.6699564780308
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2045,740.2607556849737
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2046,728.5851456633882
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2047,724.7017256708614
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2048,718.6865772328492
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2049,707.6222105869523
+Carbon factors,A4-A5 held at 2025 (no generic 1%/yr),2050,697.4093627202293
 Carbon factors,A4-A5 on each item's own Horup path,2026,1367.0399519847992
-Carbon factors,A4-A5 on each item's own Horup path,2027,1183.675580055669
-Carbon factors,A4-A5 on each item's own Horup path,2028,1093.7492340337396
-Carbon factors,A4-A5 on each item's own Horup path,2029,1043.963134783004
-Carbon factors,A4-A5 on each item's own Horup path,2030,1012.6266726978638
-Carbon factors,A4-A5 on each item's own Horup path,2031,990.8174343499138
-Carbon factors,A4-A5 on each item's own Horup path,2032,962.4109066666146
-Carbon factors,A4-A5 on each item's own Horup path,2033,935.08473460106
-Carbon factors,A4-A5 on each item's own Horup path,2034,905.5592690114848
-Carbon factors,A4-A5 on each item's own Horup path,2035,885.8254841526177
-Carbon factors,A4-A5 on each item's own Horup path,2036,859.4953402785975
-Carbon factors,A4-A5 on each item's own Horup path,2037,827.2958792497195
-Carbon factors,A4-A5 on each item's own Horup path,2038,790.4685937294423
-Carbon factors,A4-A5 on each item's own Horup path,2039,751.6399214980469
-Carbon factors,A4-A5 on each item's own Horup path,2040,729.5851709931661
-Carbon factors,A4-A5 on each item's own Horup path,2041,713.9202944220817
-Carbon factors,A4-A5 on each item's own Horup path,2042,710.1213726428159
-Carbon factors,A4-A5 on each item's own Horup path,2043,721.6525292463301
-Carbon factors,A4-A5 on each item's own Horup path,2044,720.0937124053588
-Carbon factors,A4-A5 on each item's own Horup path,2045,707.596302926048
-Carbon factors,A4-A5 on each item's own Horup path,2046,695.5603811798271
-Carbon factors,A4-A5 on each item's own Horup path,2047,690.9119323855969
-Carbon factors,A4-A5 on each item's own Horup path,2048,683.9093779600446
-Carbon factors,A4-A5 on each item's own Horup path,2049,671.758218605294
-Carbon factors,A4-A5 on each item's own Horup path,2050,660.4107597223941
+Carbon factors,A4-A5 on each item's own Horup path,2027,1153.4582254508869
+Carbon factors,A4-A5 on each item's own Horup path,2028,1028.2031240834096
+Carbon factors,A4-A5 on each item's own Horup path,2029,930.7620077159487
+Carbon factors,A4-A5 on each item's own Horup path,2030,851.8386808897653
+Carbon factors,A4-A5 on each item's own Horup path,2031,808.7032997225967
+Carbon factors,A4-A5 on each item's own Horup path,2032,802.9364115226558
+Carbon factors,A4-A5 on each item's own Horup path,2033,823.9374900567263
+Carbon factors,A4-A5 on each item's own Horup path,2034,839.6477024117032
+Carbon factors,A4-A5 on each item's own Horup path,2035,850.2024253335601
+Carbon factors,A4-A5 on each item's own Horup path,2036,858.0552948897154
+Carbon factors,A4-A5 on each item's own Horup path,2037,825.6023818691243
+Carbon factors,A4-A5 on each item's own Horup path,2038,788.6331108502246
+Carbon factors,A4-A5 on each item's own Horup path,2039,749.998937380603
+Carbon factors,A4-A5 on each item's own Horup path,2040,728.3792980530044
+Carbon factors,A4-A5 on each item's own Horup path,2041,712.9540708629263
+Carbon factors,A4-A5 on each item's own Horup path,2042,709.1429335794186
+Carbon factors,A4-A5 on each item's own Horup path,2043,720.4749097296766
+Carbon factors,A4-A5 on each item's own Horup path,2044,718.1774604667906
+Carbon factors,A4-A5 on each item's own Horup path,2045,705.0022218688234
+Carbon factors,A4-A5 on each item's own Horup path,2046,692.57224404095
+Carbon factors,A4-A5 on each item's own Horup path,2047,687.9134736537162
+Carbon factors,A4-A5 on each item's own Horup path,2048,681.1455769242394
+Carbon factors,A4-A5 on each item's own Horup path,2049,669.3654235200792
+Carbon factors,A4-A5 on each item's own Horup path,2050,658.4464151504881
 Carbon factors,Event timing: interval L / n,2026,1370.0863216893727
-Carbon factors,Event timing: interval L / n,2027,1189.022120071042
-Carbon factors,Event timing: interval L / n,2028,1101.329311041889
-Carbon factors,Event timing: interval L / n,2029,1053.824986212924
-Carbon factors,Event timing: interval L / n,2030,1024.8490990210514
-Carbon factors,Event timing: interval L / n,2031,1003.0613206603134
-Carbon factors,Event timing: interval L / n,2032,974.6039695641883
-Carbon factors,Event timing: interval L / n,2033,936.3225613016658
-Carbon factors,Event timing: interval L / n,2034,914.5805994775528
-Carbon factors,Event timing: interval L / n,2035,898.8215122555026
-Carbon factors,Event timing: interval L / n,2036,871.8739950834043
-Carbon factors,Event timing: interval L / n,2037,839.3092464460457
-Carbon factors,Event timing: interval L / n,2038,801.8845328409934
-Carbon factors,Event timing: interval L / n,2039,762.5697058073129
-Carbon factors,Event timing: interval L / n,2040,731.6612456491116
-Carbon factors,Event timing: interval L / n,2041,713.2792901520343
-Carbon factors,Event timing: interval L / n,2042,710.1278096128382
-Carbon factors,Event timing: interval L / n,2043,721.8230551360115
-Carbon factors,Event timing: interval L / n,2044,720.0781660490351
-Carbon factors,Event timing: interval L / n,2045,707.8096961882128
-Carbon factors,Event timing: interval L / n,2046,696.0088658548842
-Carbon factors,Event timing: interval L / n,2047,684.4986252865265
-Carbon factors,Event timing: interval L / n,2048,673.2084633116234
-Carbon factors,Event timing: interval L / n,2049,662.1316638248355
-Carbon factors,Event timing: interval L / n,2050,651.3078497826151
+Carbon factors,Event timing: interval L / n,2027,1158.6719946601136
+Carbon factors,Event timing: interval L / n,2028,1035.3418751704116
+Carbon factors,Event timing: interval L / n,2029,939.5853691282753
+Carbon factors,Event timing: interval L / n,2030,862.1763901357574
+Carbon factors,Event timing: interval L / n,2031,818.7611713101606
+Carbon factors,Event timing: interval L / n,2032,813.1669203646703
+Carbon factors,Event timing: interval L / n,2033,823.771450631633
+Carbon factors,Event timing: interval L / n,2034,848.0515024312891
+Carbon factors,Event timing: interval L / n,2035,863.1064415274535
+Carbon factors,Event timing: interval L / n,2036,870.9347351216824
+Carbon factors,Event timing: interval L / n,2037,838.1800231813199
+Carbon factors,Event timing: interval L / n,2038,800.4076858876333
+Carbon factors,Event timing: interval L / n,2039,760.8543402381964
+Carbon factors,Event timing: interval L / n,2040,730.0411209417503
+Carbon factors,Event timing: interval L / n,2041,712.0444614856016
+Carbon factors,Event timing: interval L / n,2042,709.340001983297
+Carbon factors,Event timing: interval L / n,2043,721.2849603399346
+Carbon factors,Event timing: interval L / n,2044,719.5637876282018
+Carbon factors,Event timing: interval L / n,2045,707.027041387401
+Carbon factors,Event timing: interval L / n,2046,694.753280569357
+Carbon factors,Event timing: interval L / n,2047,682.846792541083
+Carbon factors,Event timing: interval L / n,2048,671.4800418455707
+Carbon factors,Event timing: interval L / n,2049,660.702567017103
+Carbon factors,Event timing: interval L / n,2050,650.3442279144924
 Carbon factors,Materials: jackknife low (all typologies),2026,1318.7992219837329
-Carbon factors,Materials: jackknife low (all typologies),2027,1145.115290794261
-Carbon factors,Materials: jackknife low (all typologies),2028,1060.6973064700744
-Carbon factors,Materials: jackknife low (all typologies),2029,1015.016312978838
-Carbon factors,Materials: jackknife low (all typologies),2030,987.1947437598524
-Carbon factors,Materials: jackknife low (all typologies),2031,966.2671970073301
-Carbon factors,Materials: jackknife low (all typologies),2032,938.9038696325113
-Carbon factors,Materials: jackknife low (all typologies),2033,912.3181482085703
-Carbon factors,Materials: jackknife low (all typologies),2034,883.8361981641816
-Carbon factors,Materials: jackknife low (all typologies),2035,864.9518280043537
-Carbon factors,Materials: jackknife low (all typologies),2036,839.6084235087302
-Carbon factors,Materials: jackknife low (all typologies),2037,808.5136814659577
-Carbon factors,Materials: jackknife low (all typologies),2038,772.859325829206
-Carbon factors,Materials: jackknife low (all typologies),2039,735.2316636983903
-Carbon factors,Materials: jackknife low (all typologies),2040,713.7282410896943
-Carbon factors,Materials: jackknife low (all typologies),2041,698.3742232301589
-Carbon factors,Materials: jackknife low (all typologies),2042,694.7680551905505
-Carbon factors,Materials: jackknife low (all typologies),2043,706.1753702514397
-Carbon factors,Materials: jackknife low (all typologies),2044,704.7687955462337
-Carbon factors,Materials: jackknife low (all typologies),2045,692.6455252166026
-Carbon factors,Materials: jackknife low (all typologies),2046,680.9860058257918
-Carbon factors,Materials: jackknife low (all typologies),2047,676.2817612722062
-Carbon factors,Materials: jackknife low (all typologies),2048,669.375180983206
-Carbon factors,Materials: jackknife low (all typologies),2049,657.6491618479972
-Carbon factors,Materials: jackknife low (all typologies),2050,646.6888207722802
+Carbon factors,Materials: jackknife low (all typologies),2027,1115.8555051360818
+Carbon factors,Materials: jackknife low (all typologies),2028,997.0755400801133
+Carbon factors,Materials: jackknife low (all typologies),2029,904.8633950333957
+Carbon factors,Materials: jackknife low (all typologies),2030,830.3283947997506
+Carbon factors,Materials: jackknife low (all typologies),2031,788.5362442325282
+Carbon factors,Materials: jackknife low (all typologies),2032,783.2129874538105
+Carbon factors,Materials: jackknife low (all typologies),2033,803.7674446073732
+Carbon factors,Materials: jackknife low (all typologies),2034,819.4452159905021
+Carbon factors,Materials: jackknife low (all typologies),2035,830.1482330010899
+Carbon factors,Materials: jackknife low (all typologies),2036,838.2294096212405
+Carbon factors,Materials: jackknife low (all typologies),2037,806.9017885468734
+Carbon factors,Materials: jackknife low (all typologies),2038,771.1177384518741
+Carbon factors,Materials: jackknife low (all typologies),2039,733.6775501620855
+Carbon factors,Materials: jackknife low (all typologies),2040,712.5879904281105
+Carbon factors,Materials: jackknife low (all typologies),2041,697.4621901718419
+Carbon factors,Materials: jackknife low (all typologies),2042,693.8460178146219
+Carbon factors,Materials: jackknife low (all typologies),2043,705.0630560293264
+Carbon factors,Materials: jackknife low (all typologies),2044,702.9497305645697
+Carbon factors,Materials: jackknife low (all typologies),2045,690.174316795361
+Carbon factors,Materials: jackknife low (all typologies),2046,678.1263849878367
+Carbon factors,Materials: jackknife low (all typologies),2047,673.3977591269746
+Carbon factors,Materials: jackknife low (all typologies),2048,666.7099392653387
+Carbon factors,Materials: jackknife low (all typologies),2049,655.3460744127547
+Carbon factors,Materials: jackknife low (all typologies),2050,644.8083907111024
 Carbon factors,Materials: jackknife high (all typologies),2026,1417.0205725305698
-Carbon factors,Materials: jackknife high (all typologies),2027,1229.160856067552
-Carbon factors,Materials: jackknife high (all typologies),2028,1138.4639957656245
-Carbon factors,Materials: jackknife high (all typologies),2029,1089.2830739777903
-Carbon factors,Materials: jackknife high (all typologies),2030,1059.2422243916935
-Carbon factors,Materials: jackknife high (all typologies),2031,1036.6677102066687
-Carbon factors,Materials: jackknife high (all typologies),2032,1007.2100841444177
-Carbon factors,Materials: jackknife high (all typologies),2033,978.7626441843599
-Carbon factors,Materials: jackknife high (all typologies),2034,948.1248214264618
-Carbon factors,Materials: jackknife high (all typologies),2035,927.7532920913983
-Carbon factors,Materials: jackknife high (all typologies),2036,900.4831223649356
-Carbon factors,Materials: jackknife high (all typologies),2037,867.068652840223
-Carbon factors,Materials: jackknife high (all typologies),2038,828.8049000254539
-Carbon factors,Materials: jackknife high (all typologies),2039,788.4356052184344
-Carbon factors,Materials: jackknife high (all typologies),2040,765.4468397857275
-Carbon factors,Materials: jackknife high (all typologies),2041,748.9441964626633
-Carbon factors,Materials: jackknife high (all typologies),2042,744.82957756876
-Carbon factors,Materials: jackknife high (all typologies),2043,756.6470634999329
-Carbon factors,Materials: jackknife high (all typologies),2044,755.0297674708795
-Carbon factors,Materials: jackknife high (all typologies),2045,741.9795471771425
-Carbon factors,Materials: jackknife high (all typologies),2046,729.4165091717883
-Carbon factors,Materials: jackknife high (all typologies),2047,724.4079837529301
-Carbon factors,Materials: jackknife high (all typologies),2048,717.0022649839149
-Carbon factors,Materials: jackknife high (all typologies),2049,704.3624927903529
-Carbon factors,Materials: jackknife high (all typologies),2050,692.559948232561
+Carbon factors,Materials: jackknife high (all typologies),2027,1197.813964089714
+Carbon factors,Materials: jackknife high (all typologies),2028,1070.3145107586831
+Carbon factors,Materials: jackknife high (all typologies),2029,971.3095869957467
+Carbon factors,Materials: jackknife high (all typologies),2030,891.2660422834764
+Carbon factors,Materials: jackknife high (all typologies),2031,846.3675000533304
+Carbon factors,Materials: jackknife high (all typologies),2032,840.5248653141008
+Carbon factors,Materials: jackknife high (all typologies),2033,862.557948051239
+Carbon factors,Materials: jackknife high (all typologies),2034,879.1969300996165
+Carbon factors,Materials: jackknife high (all typologies),2035,890.4947069703516
+Carbon factors,Materials: jackknife high (all typologies),2036,898.9920839790004
+Carbon factors,Materials: jackknife high (all typologies),2037,865.3212455184043
+Carbon factors,Materials: jackknife high (all typologies),2038,826.9148526391773
+Carbon factors,Materials: jackknife high (all typologies),2039,786.7479779176098
+Carbon factors,Materials: jackknife high (all typologies),2040,764.2076001468522
+Carbon factors,Materials: jackknife high (all typologies),2041,747.9516778726903
+Carbon factors,Materials: jackknife high (all typologies),2042,743.8249387120696
+Carbon factors,Materials: jackknife high (all typologies),2043,755.4399422709326
+Carbon factors,Materials: jackknife high (all typologies),2044,753.0711617199463
+Carbon factors,Materials: jackknife high (all typologies),2045,739.3339305576104
+Carbon factors,Materials: jackknife high (all typologies),2046,726.3754757523545
+Carbon factors,Materials: jackknife high (all typologies),2047,721.3624577844611
+Carbon factors,Materials: jackknife high (all typologies),2048,714.1989911487237
+Carbon factors,Materials: jackknife high (all typologies),2049,701.9367970518249
+Carbon factors,Materials: jackknife high (all typologies),2050,690.5684107706484
 Carbon factors,Materials: lowest single case study,2026,1074.0528669381727
-Carbon factors,Materials: lowest single case study,2027,936.3412132331276
-Carbon factors,Materials: lowest single case study,2028,867.6795597245008
-Carbon factors,Materials: lowest single case study,2029,830.8436383153639
-Carbon factors,Materials: lowest single case study,2030,808.6853780973568
-Carbon factors,Materials: lowest single case study,2031,791.8540641270903
-Carbon factors,Materials: lowest single case study,2032,769.6952400348262
-Carbon factors,Materials: lowest single case study,2033,747.5097749906078
-Carbon factors,Materials: lowest single case study,2034,724.3809453300568
-Carbon factors,Materials: lowest single case study,2035,709.2141864959323
-Carbon factors,Materials: lowest single case study,2036,688.6669008345855
-Carbon factors,Materials: lowest single case study,2037,663.3369400060004
-Carbon factors,Materials: lowest single case study,2038,634.2439437989277
-Carbon factors,Materials: lowest single case study,2039,603.4947802732527
-Carbon factors,Materials: lowest single case study,2040,585.4883214527675
-Carbon factors,Materials: lowest single case study,2041,572.8952166225242
-Carbon factors,Materials: lowest single case study,2042,570.0869463915458
-Carbon factors,Materials: lowest single case study,2043,579.6331152856538
-Carbon factors,Materials: lowest single case study,2044,578.8740443672291
-Carbon factors,Materials: lowest single case study,2045,569.0866316674177
-Carbon factors,Materials: lowest single case study,2046,559.6766344529424
-Carbon factors,Materials: lowest single case study,2047,555.5807881889299
-Carbon factors,Materials: lowest single case study,2048,549.8257784558141
-Carbon factors,Materials: lowest single case study,2049,540.3939618910273
-Carbon factors,Materials: lowest single case study,2050,531.5369627433033
+Carbon factors,Materials: lowest single case study,2027,912.2659211914994
+Carbon factors,Materials: lowest single case study,2028,815.2956389116636
+Carbon factors,Materials: lowest single case study,2029,740.084795155027
+Carbon factors,Materials: lowest single case study,2030,679.3454499155239
+Carbon factors,Materials: lowest single case study,2031,645.2627076100779
+Carbon factors,Materials: lowest single case study,2032,641.2396050653135
+Carbon factors,Materials: lowest single case study,2033,657.9177029718699
+Carbon factors,Materials: lowest single case study,2034,671.2313332324529
+Carbon factors,Materials: lowest single case study,2035,680.5016031942795
+Carbon factors,Materials: lowest single case study,2036,687.5856856183232
+Carbon factors,Materials: lowest single case study,2037,662.0906146387163
+Carbon factors,Materials: lowest single case study,2038,632.9051347205188
+Carbon factors,Materials: lowest single case study,2039,602.3016952722189
+Carbon factors,Materials: lowest single case study,2040,584.6111019052993
+Carbon factors,Materials: lowest single case study,2041,572.1903284108178
+Carbon factors,Materials: lowest single case study,2042,569.3712331343839
+Carbon factors,Materials: lowest single case study,2043,578.7641361654696
+Carbon factors,Materials: lowest single case study,2044,577.4475574522078
+Carbon factors,Materials: lowest single case study,2045,567.1420151126972
+Carbon factors,Materials: lowest single case study,2046,557.4107665904771
+Carbon factors,Materials: lowest single case study,2047,553.2754489169694
+Carbon factors,Materials: lowest single case study,2048,547.6849336758027
+Carbon factors,Materials: lowest single case study,2049,538.5482895643465
+Carbon factors,Materials: lowest single case study,2050,530.0415869748167
 Carbon factors,Materials: highest single case study,2026,1648.6575131580134
-Carbon factors,Materials: highest single case study,2027,1427.0017152198425
-Carbon factors,Materials: highest single case study,2028,1321.4353472197074
-Carbon factors,Materials: highest single case study,2029,1263.9310701327245
-Carbon factors,Materials: highest single case study,2030,1228.581787091913
-Carbon factors,Materials: highest single case study,2031,1202.1275296900114
-Carbon factors,Materials: highest single case study,2032,1167.7387944735785
-Carbon factors,Materials: highest single case study,2033,1135.0347067334815
-Carbon factors,Materials: highest single case study,2034,1099.323255812387
-Carbon factors,Materials: highest single case study,2035,1075.4378780510174
-Carbon factors,Materials: highest single case study,2036,1043.626606224365
-Carbon factors,Materials: highest single case study,2037,1004.7502029213357
-Carbon factors,Materials: highest single case study,2038,960.299482125975
-Carbon factors,Materials: highest single case study,2039,913.4382944853165
-Carbon factors,Materials: highest single case study,2040,887.061110916252
-Carbon factors,Materials: highest single case study,2041,867.9063866016787
-Carbon factors,Materials: highest single case study,2042,862.8554247340494
-Carbon factors,Materials: highest single case study,2043,876.1102056534992
-Carbon factors,Materials: highest single case study,2044,873.9273479488435
-Carbon factors,Materials: highest single case study,2045,858.6764933776749
-Carbon factors,Materials: highest single case study,2046,843.9837321119194
-Carbon factors,Materials: highest single case study,2047,838.3416032828932
-Carbon factors,Materials: highest single case study,2048,829.8104398240952
-Carbon factors,Materials: highest single case study,2049,815.0060550983052
-Carbon factors,Materials: highest single case study,2050,801.2146870895491
+Carbon factors,Materials: highest single case study,2027,1390.7418346020825
+Carbon factors,Materials: highest single case study,2028,1242.6329361096077
+Carbon factors,Materials: highest single case study,2029,1127.5664928074107
+Carbon factors,Materials: highest single case study,2030,1034.4931820304525
+Carbon factors,Materials: highest single case study,2031,982.2862414623756
+Carbon factors,Materials: highest single case study,2032,975.2154188046777
+Carbon factors,Materials: highest single case study,2033,1000.84316643432
+Carbon factors,Materials: highest single case study,2034,1019.7316154854371
+Carbon factors,Materials: highest single case study,2035,1032.4044156165567
+Carbon factors,Materials: highest single case study,2036,1041.8609211456521
+Carbon factors,Materials: highest single case study,2037,1002.6675746401962
+Carbon factors,Materials: highest single case study,2038,958.0409076156112
+Carbon factors,Materials: highest single case study,2039,911.4199138953834
+Carbon factors,Materials: highest single case study,2040,885.5792465063668
+Carbon factors,Materials: highest single case study,2041,866.7203610047209
+Carbon factors,Materials: highest single case study,2042,861.6557031553252
+Carbon factors,Materials: highest single case study,2043,874.6755227637964
+Carbon factors,Materials: highest single case study,2044,871.6145236452071
+Carbon factors,Materials: highest single case study,2045,855.5680295401243
+Carbon factors,Materials: highest single case study,2046,840.4354929510694
+Carbon factors,Materials: highest single case study,2047,834.8164736428978
+Carbon factors,Materials: highest single case study,2048,826.5805733916034
+Carbon factors,Materials: highest single case study,2049,812.2061300669624
+Carbon factors,Materials: highest single case study,2050,798.9005186906236
 Carbon factors,Soil carbon: lowest soil order (Raw),2026,1272.608104267696
-Carbon factors,Soil carbon: lowest soil order (Raw),2027,1105.7217072175852
-Carbon factors,Soil carbon: lowest soil order (Raw),2028,1023.3248661526404
-Carbon factors,Soil carbon: lowest soil order (Raw),2029,977.9040404696051
-Carbon factors,Soil carbon: lowest soil order (Raw),2030,949.5206199204064
-Carbon factors,Soil carbon: lowest soil order (Raw),2031,928.4458320445768
-Carbon factors,Soil carbon: lowest soil order (Raw),2032,901.3391573295578
-Carbon factors,Soil carbon: lowest soil order (Raw),2033,876.0554450724303
-Carbon factors,Soil carbon: lowest soil order (Raw),2034,848.0577779491362
-Carbon factors,Soil carbon: lowest soil order (Raw),2035,829.0490378341738
-Carbon factors,Soil carbon: lowest soil order (Raw),2036,804.0426958830518
-Carbon factors,Soil carbon: lowest soil order (Raw),2037,773.6972535781113
-Carbon factors,Soil carbon: lowest soil order (Raw),2038,739.1766104510335
-Carbon factors,Soil carbon: lowest soil order (Raw),2039,702.8625781464019
-Carbon factors,Soil carbon: lowest soil order (Raw),2040,682.5879053142895
-Carbon factors,Soil carbon: lowest soil order (Raw),2041,667.6572441420833
-Carbon factors,Soil carbon: lowest soil order (Raw),2042,663.7810823503951
-Carbon factors,Soil carbon: lowest soil order (Raw),2043,674.3402872403504
-Carbon factors,Soil carbon: lowest soil order (Raw),2044,672.1916643062565
-Carbon factors,Soil carbon: lowest soil order (Raw),2045,660.0595501026896
-Carbon factors,Soil carbon: lowest soil order (Raw),2046,648.4024293368232
-Carbon factors,Soil carbon: lowest soil order (Raw),2047,644.0084724139051
-Carbon factors,Soil carbon: lowest soil order (Raw),2048,637.3123600564187
-Carbon factors,Soil carbon: lowest soil order (Raw),2049,625.5839949538698
-Carbon factors,Soil carbon: lowest soil order (Raw),2050,614.658241595761
+Carbon factors,Soil carbon: lowest soil order (Raw),2027,1077.886859530738
+Carbon factors,Soil carbon: lowest soil order (Raw),2028,962.8916414400003
+Carbon factors,Soil carbon: lowest soil order (Raw),2029,873.4325851688291
+Carbon factors,Soil carbon: lowest soil order (Raw),2030,800.9813615959279
+Carbon factors,Soil carbon: lowest soil order (Raw),2031,760.2971491080199
+Carbon factors,Soil carbon: lowest soil order (Raw),2032,754.1735585866525
+Carbon factors,Soil carbon: lowest soil order (Raw),2033,773.5416978282149
+Carbon factors,Soil carbon: lowest soil order (Raw),2034,787.2813505815253
+Carbon factors,Soil carbon: lowest soil order (Raw),2035,796.1882466748289
+Carbon factors,Soil carbon: lowest soil order (Raw),2036,802.6470903770877
+Carbon factors,Soil carbon: lowest soil order (Raw),2037,772.0369210497148
+Carbon factors,Soil carbon: lowest soil order (Raw),2038,737.3696853410395
+Carbon factors,Soil carbon: lowest soil order (Raw),2039,701.2454410692809
+Carbon factors,Soil carbon: lowest soil order (Raw),2040,681.3994900557288
+Carbon factors,Soil carbon: lowest soil order (Raw),2041,666.7049463055293
+Carbon factors,Soil carbon: lowest soil order (Raw),2042,662.8167279866028
+Carbon factors,Soil carbon: lowest soil order (Raw),2043,673.1791209546096
+Carbon factors,Soil carbon: lowest soil order (Raw),2044,670.3014635557435
+Carbon factors,Soil carbon: lowest soil order (Raw),2045,657.5004854737933
+Carbon factors,Soil carbon: lowest soil order (Raw),2046,645.4529176937173
+Carbon factors,Soil carbon: lowest soil order (Raw),2047,641.046099525332
+Carbon factors,Soil carbon: lowest soil order (Raw),2048,634.5811438603321
+Carbon factors,Soil carbon: lowest soil order (Raw),2049,623.2220165087375
+Carbon factors,Soil carbon: lowest soil order (Raw),2050,612.7234480753592
 Carbon factors,Soil carbon: highest soil order (Organic),2026,1782.7493386933909
-Carbon factors,Soil carbon: highest soil order (Organic),2027,1541.665003732803
-Carbon factors,Soil carbon: highest soil order (Organic),2028,1431.5523128482705
-Carbon factors,Soil carbon: highest soil order (Organic),2029,1375.2277298505976
-Carbon factors,Soil carbon: highest soil order (Organic),2030,1343.743702084279
-Carbon factors,Soil carbon: highest soil order (Organic),2031,1318.937559083933
-Carbon factors,Soil carbon: highest soil order (Organic),2032,1284.7622721743942
-Carbon factors,Soil carbon: highest soil order (Organic),2033,1247.5351622777268
-Carbon factors,Soil carbon: highest soil order (Organic),2034,1211.1084940001244
-Carbon factors,Soil carbon: highest soil order (Organic),2035,1188.6888547755304
-Carbon factors,Soil carbon: highest soil order (Organic),2036,1156.6524923515049
-Carbon factors,Soil carbon: highest soil order (Organic),2037,1116.0439511031077
-Carbon factors,Soil carbon: highest soil order (Organic),2038,1068.4700483429597
-Carbon factors,Soil carbon: highest soil order (Organic),2039,1017.7976456816691
-Carbon factors,Soil carbon: highest soil order (Organic),2040,986.9975563140383
-Carbon factors,Soil carbon: highest soil order (Organic),2041,966.6946754621409
-Carbon factors,Soil carbon: highest soil order (Organic),2042,962.7593195270804
-Carbon factors,Soil carbon: highest soil order (Organic),2043,978.7298052692256
-Carbon factors,Soil carbon: highest soil order (Organic),2044,979.9103604419803
-Carbon factors,Soil carbon: highest soil order (Organic),2045,965.2961130479498
-Carbon factors,Soil carbon: highest soil order (Organic),2046,951.1571192817481
-Carbon factors,Soil carbon: highest soil order (Organic),2047,944.2814241419355
-Carbon factors,Soil carbon: highest soil order (Organic),2048,935.1036433879087
-Carbon factors,Soil carbon: highest soil order (Organic),2049,920.8936460571034
-Carbon factors,Soil carbon: highest soil order (Organic),2050,907.4862792065908
+Carbon factors,Soil carbon: highest soil order (Organic),2027,1500.6667343397944
+Carbon factors,Soil carbon: highest soil order (Organic),2028,1342.051751742176
+Carbon factors,Soil carbon: highest soil order (Organic),2029,1219.6357037977077
+Carbon factors,Soil carbon: highest soil order (Organic),2030,1121.2386275344252
+Carbon factors,Soil carbon: highest soil order (Organic),2031,1066.2620020215
+Carbon factors,Soil carbon: highest soil order (Organic),2032,1062.9086503474443
+Carbon factors,Soil carbon: highest soil order (Organic),2033,1092.4920079119659
+Carbon factors,Soil carbon: highest soil order (Organic),2034,1119.0067040612093
+Carbon factors,Soil carbon: highest soil order (Organic),2035,1138.9473559125288
+Carbon factors,Soil carbon: highest soil order (Organic),2036,1155.0408809259538
+Carbon factors,Soil carbon: highest soil order (Organic),2037,1114.2717234119627
+Carbon factors,Soil carbon: highest soil order (Organic),2038,1066.605159416648
+Carbon factors,Soil carbon: highest soil order (Organic),2039,1016.1504822484518
+Carbon factors,Soil carbon: highest soil order (Organic),2040,985.7935868335906
+Carbon factors,Soil carbon: highest soil order (Organic),2041,965.7343202436745
+Carbon factors,Soil carbon: highest soil order (Organic),2042,961.7907912866544
+Carbon factors,Soil carbon: highest soil order (Organic),2043,977.5664768362338
+Carbon factors,Soil carbon: highest soil order (Organic),2044,978.0190396581876
+Carbon factors,Soil carbon: highest soil order (Organic),2045,962.7364682205742
+Carbon factors,Soil carbon: highest soil order (Organic),2046,948.2073070848272
+Carbon factors,Soil carbon: highest soil order (Organic),2047,941.318895560786
+Carbon factors,Soil carbon: highest soil order (Organic),2048,932.3723465401154
+Carbon factors,Soil carbon: highest soil order (Organic),2049,918.5316258328572
+Carbon factors,Soil carbon: highest soil order (Organic),2050,905.5514640438157

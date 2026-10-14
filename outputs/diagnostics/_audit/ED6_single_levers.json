@@ -1,0 +1,52 @@
+{
+ "figure": "ED6_single_levers",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "Change of cumulative carbon 2026-2050 vs the Reference (%), lever alone",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{\u221210}$",
+  "$\\mathdefault{\u221215}$",
+  "$\\mathdefault{\u221220}$",
+  "$\\mathdefault{\u221225}$",
+  "$\\mathdefault{\u221230}$",
+  "$\\mathdefault{\u22125}$",
+  "Ambitious",
+  "Change of cumulative carbon 2026-2050 vs the Reference (%), lever alone",
+  "L1 Dwelling size",
+  "L2 Design density",
+  "L3 Household size",
+  "L4 Vacancy",
+  "L5 Building lifetime",
+  "L6 Material carbon",
+  "L7 Construction-stage carbon",
+  "L8 Soil-aware planning",
+  "L9 Brownfield development",
+  "Moderate",
+  "TL (Level 4)"
+ ],
+ "note": null,
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/runs.csv"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

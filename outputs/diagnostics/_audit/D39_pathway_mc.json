@@ -1,0 +1,53 @@
+{
+ "figure": "D39_pathway_mc",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{1000}$",
+  "$\\mathdefault{1200}$",
+  "$\\mathdefault{1400}$",
+  "$\\mathdefault{1600}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{400}$",
+  "$\\mathdefault{600}$",
+  "$\\mathdefault{800}$",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "P5 Ambitious (median, 5\u201395%)",
+  "P5 Moderate (median, 5\u201395%)",
+  "Reference (median, 5\u201395%)",
+  "Theoretical limit (median, 5\u201395%)"
+ ],
+ "note": "P(cumulative LoE AR <= 1): REF 0.000, P5 0.000, P5A 0.000, TL 0.551, TL_from2027 0.979.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/montecarlo_annual.csv",
+  "pathways/montecarlo_summary.csv"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

@@ -1,0 +1,73 @@
+{
+ "figure": "Fig7_tornado",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "Cumulative carbon",
+   "xlabel": "Cumulative carbon 2026-2050 (kt CO\u2082e)",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "Levels of exceedance",
+   "xlabel": "Cumulative level of exceedance 2026-2050 (log scale)",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "1",
+  "10",
+  "12,000",
+  "14,000",
+  "16,000",
+  "18,000",
+  "2",
+  "20",
+  "20,000",
+  "22,000",
+  "24,000",
+  "26,000",
+  "28,000",
+  "3",
+  "5",
+  "Case-study carbon factors (jackknife)",
+  "Completion rate (0.92 / 0.96)",
+  "Cumulative carbon",
+  "Cumulative carbon 2026-2050 (kt CO\u2082e)",
+  "Cumulative level of exceedance 2026-2050 (log scale)",
+  "Household size (Stats NZ High / Low variant)",
+  "Levels of exceedance",
+  "LoE = 1",
+  "LoE of ability to pay (AtP)",
+  "LoE of acquired rights (AR)",
+  "Overbuild absorption (by 2030 / by 2045)",
+  "Population (Stats NZ 5th / 95th percentile)",
+  "Replacement (Low / High)",
+  "Replacement half-life (5 / 15 yr)",
+  "Soil order (Raw / Organic)",
+  "a",
+  "b",
+  "high case",
+  "low case"
+ ],
+ "note": "Reference 20,615 kt (LoE AR 4.63, AtP 18.5); population rows move the budgets with the path; one-at-a-time ranges are not additive.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "sensitivity/tornado.csv"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

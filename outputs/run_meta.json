@@ -1,0 +1,53 @@
+{
+ "profile": "full",
+ "mode": "pipeline",
+ "n_draws": 5000,
+ "sobol": true,
+ "bootstrap": 2000,
+ "seeds": {
+  "montecarlo": 20260924,
+  "hd_bootstrap_L6": 20261008,
+  "hd_bootstrap_L2": 20261009,
+  "insight_bootstrap": 20263025,
+  "sobol": 20260926
+ },
+ "figures": {
+  "formats": [
+   "pdf",
+   "png"
+  ],
+  "dpi": 600,
+  "footer": null
+ },
+ "git_hash": "ffabbb9edc1c1ad21325e8298404df69f107152e",
+ "git_dirty": true,
+ "input_hash": "bc52588133f328572bbf22a69fc5adc2b6a061865b505132eaf6da191acc9b70",
+ "timestamp": "2026-10-14T23:36:49+0000",
+ "step_seconds": {
+  "building_factors": 3.7,
+  "projection": 1.8,
+  "diagnostics": 2.2,
+  "sensitivity": 27.8,
+  "montecarlo": 182.7,
+  "boundaries": 229.2,
+  "validation": 2.9,
+  "gap_2026": 3.8,
+  "overbuild_2026": 2.8,
+  "scenarios": 9.1,
+  "reconciliation": 5.5,
+  "figures_report": 3.9,
+  "pathways": 16.1,
+  "pathways_mc": 378.3,
+  "sensitivity_tables": 10.1,
+  "metrics": 2.0,
+  "results": 0.5,
+  "assumptions": 1.3,
+  "methods": 1.6,
+  "compute_total": 885.2,
+  "figures": 88.9,
+  "check_outputs": 1.2,
+  "indexes": 0.0,
+  "total_before_tests": 975.7
+ },
+ "reference_legacy": false
+}

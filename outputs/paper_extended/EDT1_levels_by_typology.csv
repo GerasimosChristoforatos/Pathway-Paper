@@ -1,0 +1,28 @@
+lever,subrule,typology,parameter,moderate,ambitious,tl
+L1 Dwelling size,B,Detached,f (share of the extra-space margin removed),0.18592442009604268,0.37184884019208536,1.0
+L1 Dwelling size,B,Townhouses,f (share of the extra-space margin removed),0.04866780510513975,0.0973356102102795,1.0
+L1 Dwelling size,B,Apartments,f (share of the extra-space margin removed),0.0809804467914289,0.1619608935828578,1.0
+L2 Design density,A,Detached,r (ratio to the Reference),0.90969121305884,0.8193824261176801,0.7095046854082998
+L2 Design density,A,Townhouses,r (ratio to the Reference),0.90969121305884,0.8193824261176801,0.8193824261176801
+L2 Design density,A,Apartments,r (ratio to the Reference),0.90969121305884,0.8193824261176801,0.8193824261176801
+L3 Household size,C,Detached,household size 2050 (all typologies),2.6725256591184205,2.6932992489193404,2.7904761904761903
+L3 Household size,C,Townhouses,household size 2050 (all typologies),2.6725256591184205,2.6932992489193404,2.7904761904761903
+L3 Household size,C,Apartments,household size 2050 (all typologies),2.6725256591184205,2.6932992489193404,2.7904761904761903
+L4 Vacancy,B,Detached,vacancy rate (all typologies),0.04700352319218799,0.040132499944037336,0.0
+L4 Vacancy,B,Townhouses,vacancy rate (all typologies),0.04700352319218799,0.040132499944037336,0.0
+L4 Vacancy,B,Apartments,vacancy rate (all typologies),0.04700352319218799,0.040132499944037336,0.0
+L5 Building lifetime,C,Detached,"d, reduction of demolition and surge (all typologies)",0.2,0.4,1.0
+L5 Building lifetime,C,Townhouses,"d, reduction of demolition and surge (all typologies)",0.2,0.4,1.0
+L5 Building lifetime,C,Apartments,"d, reduction of demolition and surge (all typologies)",0.2,0.4,1.0
+L6 Material carbon,A,Detached,r (ratio to the Reference),0.9134832610100198,0.8269665220200395,0.529875123903523
+L6 Material carbon,A,Townhouses,r (ratio to the Reference),0.9134832610100198,0.8269665220200395,0.8269665220200395
+L6 Material carbon,A,Apartments,r (ratio to the Reference),0.9134832610100198,0.8269665220200395,0.8269665220200395
+L7 Construction-stage carbon,C,Detached,A4-A5 factor 2050 (all typologies),0.38940039153570244,0.0,0.0
+L7 Construction-stage carbon,C,Townhouses,A4-A5 factor 2050 (all typologies),0.38940039153570244,0.0,0.0
+L7 Construction-stage carbon,C,Apartments,A4-A5 factor 2050 (all typologies),0.38940039153570244,0.0,0.0
+L8 Soil-aware planning,C,Detached,soil carbon loss (kg CO2e/m2 floor area),46.47459568767808,42.81478394528272,22.92770192553271
+L8 Soil-aware planning,C,Townhouses,soil carbon loss (kg CO2e/m2 floor area),28.057709194579207,25.84820242952604,13.84194490791772
+L8 Soil-aware planning,C,Apartments,soil carbon loss (kg CO2e/m2 floor area),5.110292042427761,4.707863434987386,2.5211032170909298
+L9 Brownfield development,C,Detached,"s, brownfield share (all typologies)",0.3845820739401177,0.59,1.0
+L9 Brownfield development,C,Townhouses,"s, brownfield share (all typologies)",0.3845820739401177,0.59,1.0
+L9 Brownfield development,C,Apartments,"s, brownfield share (all typologies)",0.3845820739401177,0.59,1.0

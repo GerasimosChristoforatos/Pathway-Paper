@@ -1,0 +1,72 @@
+{
+ "figure": "Fig6_solution_space",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "Level of exceedance of AR",
+   "xlabel": "Cut in 2027-2050 floor area (%)",
+   "ylabel": "Cut in carbon per m\u00b2 of 2027-2050 floor area (%)",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "Level of exceedance of AtP",
+   "xlabel": "Cut in 2027-2050 floor area (%)",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{100}$",
+  "$\\mathdefault{20}$",
+  "$\\mathdefault{40}$",
+  "$\\mathdefault{60}$",
+  "$\\mathdefault{80}$",
+  "0.5",
+  "12",
+  "16",
+  "2",
+  "3",
+  "4",
+  "8",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Ambitious",
+  "Boundary exceeded (above AR)",
+  "Cut in 2027-2050 floor area (%)",
+  "Cut in carbon per m\u00b2 of 2027-2050 floor area (%)",
+  "Level of exceedance of AR",
+  "Level of exceedance of AtP",
+  "Moderate",
+  "P1 Space per person",
+  "P2 Existing stock",
+  "P3 Construction",
+  "P4 Land",
+  "P5 Combined",
+  "Theoretical limit",
+  "Within AR only (between AtP and AR)",
+  "Within both budgets (below AtP)",
+  "a",
+  "b"
+ ],
+ "note": "Markers at each run's effective cuts of 2027-2050 floor area and of non-soil carbon per m\u00b2; soil effects (L8, L9) are not on the plane.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_zones": true,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/solution_space.csv",
+  "pathways/backcast.json"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

@@ -90,14 +90,34 @@ def boundary_lines(ax, x, ar, atp, label=True, **kw):
 # demand bands
 # ---------------------------------------------------------------------------
 def band_label(bid):
+    if bid == 'unexplained_building':
+        return N.UNEXPLAINED
     return (N.BANDS.get(bid) or N.BAND_DETAIL[bid]) + (' (untargeted)' if bid in N.UNTARGETED else '')
 
 
 def band_style(bid):
-    """Seamless style of one demand band (style.fill: edge = face, hatch in its own colour)."""
+    """Seamless style of one demand band (style.fill: edge = face, hatch in its own colour). History-only ids:
+    'replacement_history' (the census net replacement: the replacement face) and 'unexplained_building'."""
+    if bid == 'unexplained_building':
+        return S.fill(S.UNEXPLAINED[0])
     key = bid if bid in S.BAND else 'replacement'
     colour, hatch = S.BAND[key]
     return S.fill(colour, hatch, S.BAND_HATCHCOLOR.get(key))
+
+
+def band_id(label):
+    """The band id of a band label of the data files (naming.band_data_label)."""
+    ids = {N.band_data_label(b): b for b in list(N.BANDS) + list(N.BAND_DETAIL)}
+    return ids[label]
+
+
+def steps(edges, values):
+    """Step coordinates of interval values: x = [e0, e1, e1, e2, ...], y duplicated, for fill_between / plot."""
+    x, y = [], []
+    for (a, b), v in zip(zip(edges[:-1], edges[1:]), values):
+        x += [a, b]
+        y += [v, v]
+    return np.asarray(x, float), np.asarray(y, float)
 
 
 NEG_GID = 'negative_band'           # a negative band area of a time series (figure audit)
@@ -187,9 +207,10 @@ def bars_cumulative(ax, x, parts, width, net=None, tick=True, styles=None):
     return up, dn, top
 
 
-def band_handles(bids, negative=None):
-    """One legend entry per band; a negative band (style.NEGATIVE_BANDS, or the ids in `negative`) as an outline."""
-    neg = set(S.NEGATIVE_BANDS) | set(negative or ())
+def band_handles(bids, negative=None, outline=True):
+    """One legend entry per band; in bar figures (outline True) a negative band (style.NEGATIVE_BANDS, or the ids in
+    `negative`) as an outline; in time-series figures (outline False) every band filled."""
+    neg = (set(S.NEGATIVE_BANDS) | set(negative or ())) if outline else set()
     out = []
     for b in bids:
         if b in neg:
@@ -199,8 +220,8 @@ def band_handles(bids, negative=None):
     return out
 
 
-def band_legend(fig, bids, loc='lower center', ncol=4, y=-0.02, extra=(), negative=None):
-    fig.legend(handles=band_handles(bids, negative) + list(extra), loc=loc, ncol=ncol, bbox_to_anchor=(0.5, y),
+def band_legend(fig, bids, loc='lower center', ncol=4, y=-0.02, extra=(), negative=None, outline=True):
+    fig.legend(handles=band_handles(bids, negative, outline) + list(extra), loc=loc, ncol=ncol, bbox_to_anchor=(0.5, y),
                frameon=False, handlelength=1.4, columnspacing=1.2)
 
 

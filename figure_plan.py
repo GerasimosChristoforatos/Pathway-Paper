@@ -204,7 +204,8 @@ MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries', 'Fi
                        'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band', 'D32_tl_staircase',
                        'D36_pathway_bands')
 # every figure with a planetary boundary on its axes (zones required; AtP dotted)
-PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways_annual', 'Fig6_solution_space', 'ED9_rollout_timing',
+PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways_annual', 'Fig5_waterfall', 'Fig6_solution_space',
+              'ED7_waterfall_ambitious', 'ED9_rollout_timing',
               'ED13_replacement_variants', 'D21_fan_and_boundaries', 'D22_boundaries', 'D23_annual_loe',
               'D24_headroom', 'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band',
               'D27_variants_vs_boundaries', 'D28_pathways_annual')

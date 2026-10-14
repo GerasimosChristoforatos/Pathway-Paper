@@ -86,7 +86,7 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 | Carbon components (Fig3c, diagnostics) | Maintenance (B2, B4), 2026–2050 | `#9E9E9E` | 68 |
 | Carbon components (Fig3c, diagnostics) | Committed after 2050 (later B2/B4 and C1–C4) | `#D0D0D0` | 86 |
 | Projection variants and boundaries (ED5, ED10) | Reference | `#4D4D4D` | 35 |
-| Projection variants and boundaries (ED5, ED10) | Low replacement | `#9E9E9E` | 68 |
+| Projection variants and boundaries (ED5, ED10) | Low replacement | `#B5B5B5` | 76 |
 | Projection variants and boundaries (ED5, ED10) | High replacement | `#6E6E6E` | 49 |
 | Projection variants and boundaries (ED5, ED10) | Acquired rights (AR) | `#D7191C` | 52 |
 | Projection variants and boundaries (ED5, ED10) | Ability to pay (AtP) | `#67000D` | 24 |

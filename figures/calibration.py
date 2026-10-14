@@ -108,7 +108,7 @@ UNEXPLAINED = S.UNEXPLAINED                    # unexplained building: faded red
 RV = ('#8C8C8C', None)                         # retirement villages: out of scope, grey (v3: no hatch; always
 #                                                negative, so an outline: darker than the v2.1.2 #BDBDBD face)
 # component id: (label, colour, hatch); colours by band (style.BAND), labels in the release vocabulary (naming)
-COMP = {'new_households': ('New households', '#9E9E9E', None),
+COMP = {'new_households': ('New households', '#B0B0B0', None),
         'vacancy': ('Vacancy (allowance and change)',) + S.BAND['vacancy'],
         'replacement': (N.BANDS['replacement'],) + S.BAND['replacement'],
         'unconsented': (N.BANDS['unconsented'],) + S.BAND['unconsented'],

@@ -127,14 +127,12 @@ DIAGNOSTICS = {
     'validation': [
         _d('D10_floor_area_bridge', 'Floor area 2026-2050 by demand band, Low / Reference / High (waterfall)',
            'figures.validation', ['figure_source/D10_floor_area_bridge.json']),
-        _d('D11_floor_area_bridge_split', 'The bridge with replacement split into demolition and unconsented additions',
-           'figures.validation', ['figure_source/D11_floor_area_bridge_split.json']),
         _d('D12_conversion_chain', 'Population -> households -> dwellings -> floor area -> carbon (indices)',
            'figures.validation', ['figure_source/D12_conversion_chain.json']),
         _d('D13_carbon_by_material', 'Embodied carbon by material, annual and cumulative', 'figures.calibration',
            ['figure_source/D13_carbon_by_material.json']),
         _d('D14_hindcast', 'Rolling-origin hindcast of dwellings built and the 2026 out-of-sample check',
-           'figures.validation', ['figure_source/D14_hindcast.json']),
+           'figures.validation', ['figure_source/D14_hindcast.json', 'baseline/validation.json']),
         _d('D15_reality_checks', 'Projection vs the 1991-2025 range and the 2026 -> 2027 handover',
            'figures.validation', ['figure_source/D15_reality_checks.json']),
     ],
@@ -188,7 +186,7 @@ DIAGNOSTICS = {
         _d('D17_sensitivity_paths', 'Annual carbon of every sensitivity row', 'figures.sensitivity',
            ['baseline/sensitivity_annual_carbon.csv']),
         _d('D19_variants', 'Annual and cumulative floor area and carbon by projection variant', 'figures.validation',
-           ['figure_source/D19_variants.json']),
+           ['figure_source/D19_variants.json', 'montecarlo/annual_REF.csv']),
         _d('D40_src_prcc', 'Monte Carlo SRC and PRCC with bootstrap intervals', 'figures.sensitivity',
            ['pathways/montecarlo_importance.csv']),
         _d('D41_p5_sensitivity', 'P5 Moderate: one-at-a-time rows', 'figures.sensitivity', ['sensitivity/p5_carbon.csv']),
@@ -215,6 +213,8 @@ RETIRED = {
     'outputs/extended_data/ (ED1-ED13)': 'outputs/paper_extended/ ED1-ED14',
     'outputs/key_figures/ (K1-K6)': 'retired: their content is in Fig1-Fig8',
     'D30_l6_estimator': 'ED11 (L2 and L6 estimators)',
+    'D11_floor_area_bridge_split': 'D10 (MODEL v3.0.0 splits demolition replacement and unconsented additions in '
+                                   'every band set, so the appendix bridge equals D10)',
     'Fig1_model_schematic': 'retired (schematic; the levers are in Table 1)',
 }
 

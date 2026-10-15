@@ -105,8 +105,9 @@ def test_population_modifier_is_one_at_t0():
 def test_ar_identity_over_base_window(B):
     """LoE_AR over the base window = I_glob / SOS by construction: the mean
     base-window impact over B_AR(t0) (modifier = 1) cancels the sector impact."""
-    hist = boundaries.historical_emissions(B, boundaries.AR_BASE_WINDOW_RANGE())
-    i_base = aesa.mean_over(hist['I_sec_kg'], boundaries.AR_BASE_WINDOW)
+    # MODEL v3.1.0: the base on the projection's emissions accounting rule (boundaries.window_base)
+    i_base, h = boundaries.window_base(B, boundaries.AR_BASE_WINDOW)
+    hist = h.loc[list(boundaries.AR_BASE_WINDOW_RANGE())]
     pr = boundaries.SOURCE_PAIRS[boundaries.SOURCE_PAIR]
     b_t0 = aesa.boundary_ar(pr['sos'], i_base, pr['i_glob'], 1.0, 1.0, 1.0, 1.0)
     assert aesa.cumulative_loe(hist['I_sec_kg'], np.full(len(hist), b_t0)) == pytest.approx(

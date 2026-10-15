@@ -66,15 +66,17 @@
   "TL7 Zero-emission construction",
   "TL8 Lowest-carbon soils",
   "TL9 All brownfield",
+  "Vacancy parameter -> 0 by 2035; physical vacancy falls\nas released stock is re-occupied over 2027-2050",
   "a",
   "b",
   "c",
   "m\u00b2 per person, new dwellings"
  ],
- "note": "TL re-occupies 117,044 released dwellings (attributed TL3 0, TL4 117,044, in proportion R3:R4).",
+ "note": "TL re-occupies 117,044 released dwellings (attributed TL3 0, TL4 117,044, in proportion R3:R4). (c) The vacancy parameter falls to 0 by 2035 (TL4); the physical (implied) vacancy falls as the released stock is re-occupied over 2027-2050.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
+ "boundary_outside": false,
  "boundary_zones": false,
  "white_segment_edges": 0,
  "source": [

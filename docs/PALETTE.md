@@ -52,10 +52,10 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 | Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Demolition replacement | `#D0BBDC` | 81 |
 | Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Unconsented additions | `#BA9AC1` | 71 |
 | Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Released dwellings (TL) | `#95C283` | 76 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Vacancy released | `#7B4E6E` | 42 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Surplus kept vacant (2050) | `#CFE3E0` | 90 |
+| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Vacancy released | `#481870` | 24 |
+| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Surplus kept vacant (2050) | `#D1E6C1` | 90 |
 | Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Maintenance (B2, B4), 2026–2050 | `#9E9E9E` | 68 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Legacy (pre-2026 activity) | `#BFB6A8` | 77 |
+| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Legacy (pre-2026 activity) | `#858277` | 57 |
 | Recent replacement surge face against the other bands | Population growth | `#586E71` | 47 |
 | Recent replacement surge face against the other bands | Smaller households | `#F4D168` | 87 |
 | Recent replacement surge face against the other bands | Extra space | `#DFA538` | 75 |
@@ -65,10 +65,10 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 | Recent replacement surge face against the other bands | Unconsented additions | `#BA9AC1` | 71 |
 | Recent replacement surge face against the other bands | Recent replacement surge | `#E1D2DD` | 88 |
 | Recent replacement surge face against the other bands | Released dwellings (TL) | `#95C283` | 76 |
-| Recent replacement surge face against the other bands | Vacancy released | `#7B4E6E` | 42 |
-| Recent replacement surge face against the other bands | Surplus kept vacant (2050) | `#CFE3E0` | 90 |
+| Recent replacement surge face against the other bands | Vacancy released | `#481870` | 24 |
+| Recent replacement surge face against the other bands | Surplus kept vacant (2050) | `#D1E6C1` | 90 |
 | Recent replacement surge face against the other bands | Maintenance (B2, B4), 2026–2050 | `#9E9E9E` | 68 |
-| Recent replacement surge face against the other bands | Legacy (pre-2026 activity) | `#BFB6A8` | 77 |
+| Recent replacement surge face against the other bands | Legacy (pre-2026 activity) | `#858277` | 57 |
 | P5 and TL against every lever, growth, the Reference, the boundaries and the zones | L1 Dwelling size | `#DFA538` | 75 |
 | P5 and TL against every lever, growth, the Reference, the boundaries and the zones | L2 Design density | `#944E02` | 45 |
 | P5 and TL against every lever, growth, the Reference, the boundaries and the zones | L3 Household size | `#F4D168` | 87 |
@@ -92,13 +92,13 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 | Carbon components (Fig3c, diagnostics) | Maintenance (B2, B4), 2026–2050 | `#9E9E9E` | 68 |
 | Carbon components (Fig3c, diagnostics) | Committed after 2050 (later B2/B4 and C1–C4) | `#D0D0D0` | 86 |
 | Carbon components (Fig3c, diagnostics) | Soil, after 2050 | `#C9B49A` | 77 |
-| Carbon components (Fig3c, diagnostics) | Legacy (pre-2026 activity) | `#BFB6A8` | 77 |
+| Carbon components (Fig3c, diagnostics) | Legacy (pre-2026 activity) | `#858277` | 57 |
 | Projection variants and boundaries (ED5, ED10) | Reference | `#4D4D4D` | 35 |
 | Projection variants and boundaries (ED5, ED10) | Low replacement | `#B5B5B5` | 76 |
 | Projection variants and boundaries (ED5, ED10) | High replacement | `#6E6E6E` | 49 |
 | Projection variants and boundaries (ED5, ED10) | Acquired rights (AR) | `#D7191C` | 52 |
 | Projection variants and boundaries (ED5, ED10) | Ability to pay (AtP) | `#67000D` | 24 |
-| Materials (Fig3b, diagnostics) | Legacy (pre-2026 activity) | `#BFB6A8` | 77 |
+| Materials (Fig3b, diagnostics) | Legacy (pre-2026 activity) | `#858277` | 57 |
 | Materials (Fig3b, diagnostics) | Timber | `#750787` | 32 |
 | Materials (Fig3b, diagnostics) | Steel | `#004DFF` | 42 |
 | Materials (Fig3b, diagnostics) | Concrete | `#008026` | 47 |
@@ -110,13 +110,13 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 | Life-cycle stages (Fig3a) | Construction (A4–A5) | `#ABD3FA` | 84 |
 | Life-cycle stages (Fig3a) | Soil carbon loss | `#8D6545` | 49 |
 | Life-cycle stages (Fig3a) | Maintenance (B2, B4) | `#9E9E9E` | 68 |
-| Life-cycle stages (Fig3a) | Legacy (pre-2026 activity) | `#BFB6A8` | 77 |
+| Life-cycle stages (Fig3a) | Legacy (pre-2026 activity) | `#858277` | 57 |
 | History bands (Fig1) | Population growth | `#586E71` | 47 |
 | History bands (Fig1) | Smaller households | `#F4D168` | 87 |
 | History bands (Fig1) | Extra space | `#DFA538` | 75 |
 | History bands (Fig1) | Vacancy | `#AA7C9D` | 61 |
 | History bands (Fig1) | Net replacement (census) | `#D0BBDC` | 81 |
-| History bands (Fig1) | Retirement villages (out of scope) | `#7D7D7D` | 55 |
+| History bands (Fig1) | Retirement villages (out of scope) | `#4E463E` | 32 |
 | History bands (Fig1) | Unexplained building | `#C6A3A4` | 74 |
 | Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 1 | `#000000` | 0 |
 | Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 2 | `#E69F00` | 75 |
@@ -136,17 +136,17 @@ Minimum pairwise distance within each group (CAM02-UCS, Luo, Cui & Li 2006) afte
 | Runs and boundaries (Fig4, D28) | 16.3 (Acquired rights (AR) / P5 Combined) | 10.7 (P1 Space per person / P5 Combined) | 10.8 (Acquired rights (AR) / P4 Land) | 10.6 (Acquired rights (AR) / P5 Combined) | yes |
 | Levers (Fig8, ED6, ED10, D29, D31) | 12.4 (L2 Design density / L8 Soil-aware planning) | 11.3 (L2 Design density / L8 Soil-aware planning) | 11.2 (L5 Building lifetime / L7 Construction-stage carbon) | 10.8 (L3 Household size / L5 Building lifetime) | yes |
 | Boundary zones on white (every boundary figure) | 6.7 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | 5.2 (Within AR only (between AtP and AR) / Boundary exceeded (above AR)) | 5.0 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | 7.3 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | no |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | 8.8 (2026 overbuild / Vacancy released) | 4.9 (Population growth / Vacancy released) | 9.1 (2026 overbuild / Vacancy released) | 5.4 (Demolition replacement / Legacy (pre-2026 activity)) | no |
-| Recent replacement surge face against the other bands | 12.9 (Recent replacement surge / Surplus kept vacant (2050)) | 2.5 (Recent replacement surge / Surplus kept vacant (2050)) | 6.1 (Recent replacement surge / Surplus kept vacant (2050)) | 10.7 (Recent replacement surge / Legacy (pre-2026 activity)) | no |
+| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | 10.9 (Demolition replacement / Unconsented additions) | 10.3 (Vacancy / Maintenance (B2, B4), 2026–2050) | 11.1 (Demolition replacement / Unconsented additions) | 10.3 (Unconsented additions / Maintenance (B2, B4), 2026–2050) | yes |
+| Recent replacement surge face against the other bands | 17.9 (Recent replacement surge / Surplus kept vacant (2050)) | 12.5 (Recent replacement surge / Surplus kept vacant (2050)) | 15.4 (Recent replacement surge / Surplus kept vacant (2050)) | 10.8 (Smaller households / Recent replacement surge) | yes |
 | P5 and TL against every lever, growth, the Reference, the boundaries and the zones | 16.3 (P5 Combined / Acquired rights (AR)) | 10.7 (L1 Dwelling size / P5 Combined) | 10.9 (Theoretical limit / Reference) | 10.6 (P5 Combined / Acquired rights (AR)) | yes |
-| Carbon components (Fig3c, diagnostics) | 4.4 (Soil, after 2050 / Legacy (pre-2026 activity)) | 4.1 (Soil, after 2050 / Legacy (pre-2026 activity)) | 3.8 (Soil, after 2050 / Legacy (pre-2026 activity)) | 4.8 (Soil, after 2050 / Legacy (pre-2026 activity)) | no |
+| Carbon components (Fig3c, diagnostics) | 11.9 (Maintenance (B2, B4), 2026–2050 / Legacy (pre-2026 activity)) | 11.8 (Maintenance (B2, B4), 2026–2050 / Legacy (pre-2026 activity)) | 12.1 (Maintenance (B2, B4), 2026–2050 / Legacy (pre-2026 activity)) | 11.4 (Maintenance (B2, B4), 2026–2050 / Legacy (pre-2026 activity)) | yes |
 | Projection variants and boundaries (ED5, ED10) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | yes |
-| Materials (Fig3b, diagnostics) | 7.0 (Legacy (pre-2026 activity) / Soil carbon loss) | 6.8 (Legacy (pre-2026 activity) / Soil carbon loss) | 7.4 (Legacy (pre-2026 activity) / Soil carbon loss) | 6.9 (Legacy (pre-2026 activity) / Soil carbon loss) | no |
-| Life-cycle stages (Fig3a) | 11.0 (Maintenance (B2, B4) / Legacy (pre-2026 activity)) | 11.2 (Maintenance (B2, B4) / Legacy (pre-2026 activity)) | 10.4 (Maintenance (B2, B4) / Legacy (pre-2026 activity)) | 10.9 (Maintenance (B2, B4) / Legacy (pre-2026 activity)) | yes |
-| History bands (Fig1) | 11.7 (Population growth / Retirement villages (out of scope)) | 9.9 (Population growth / Retirement villages (out of scope)) | 7.7 (Population growth / Retirement villages (out of scope)) | 10.6 (Extra space / Unexplained building) | no |
+| Materials (Fig3b, diagnostics) | 15.1 (Legacy (pre-2026 activity) / Soil carbon loss) | 12.8 (Concrete / Others) | 13.0 (Concrete / Others) | 15.5 (Legacy (pre-2026 activity) / Soil carbon loss) | yes |
+| Life-cycle stages (Fig3a) | 11.9 (Maintenance (B2, B4) / Legacy (pre-2026 activity)) | 11.8 (Maintenance (B2, B4) / Legacy (pre-2026 activity)) | 12.1 (Maintenance (B2, B4) / Legacy (pre-2026 activity)) | 11.4 (Maintenance (B2, B4) / Legacy (pre-2026 activity)) | yes |
+| History bands (Fig1) | 13.3 (Smaller households / Extra space) | 12.3 (Smaller households / Extra space) | 13.4 (Population growth / Vacancy) | 10.6 (Extra space / Unexplained building) | yes |
 | Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | 20.8 (group 2 / group 5) | 14.8 (group 4 / group 8) | 14.0 (group 6 / group 8) | 11.0 (group 2 / group 8) | yes |
 
-Groups below the threshold: Boundary zones on white (every boundary figure); Demand bands (Fig1, Fig2, Fig5, D25, D26, D36); Recent replacement surge face against the other bands; Carbon components (Fig3c, diagnostics); Materials (Fig3b, diagnostics); History bands (Fig1). Why each still reads: the boundary zones are pale by design (data drawn over them), always bounded by the AR and AtP lines and ordered strictly in lightness (darker green < light green < palest red under every simulated deficiency), so their order survives without hue; any other group below the threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so the reading never depends on colour alone.
+Groups below the threshold: Boundary zones on white (every boundary figure). Why each still reads: the boundary zones are pale by design (data drawn over them), always bounded by the AR and AtP lines and ordered strictly in lightness (darker green < light green < palest red under every simulated deficiency), so their order survives without hue; any other group below the threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so the reading never depends on colour alone.
 
 Historical replacement against the Recent replacement surge face: normal 9.9, deuteranomaly 10.0, protanomaly 10.2, tritanomaly 6.7 (below the threshold by design: told apart by lightness, a slightly different hue and the surge's fine light hatch, and labelled in every figure).
 

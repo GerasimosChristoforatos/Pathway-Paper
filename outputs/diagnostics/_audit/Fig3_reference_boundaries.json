@@ -48,6 +48,7 @@
   "Acquired rights (AR) budget 2026-2050",
   "Annual: the Reference against AR and AtP",
   "Boundary exceeded (above AR)",
+  "By\nband",
   "Committed after 2050, B2/B4 and C1-C4 (range)",
   "Cumulative 2026-2050",
   "Cumulative carbon (kt CO\u2082e)",
@@ -57,7 +58,6 @@
   "Monte Carlo 90% band",
   "Monte Carlo median",
   "Reference",
-  "Share by\nband",
   "Soil, after 2050",
   "Within AR only (between AtP and AR)",
   "Within both budgets (below AtP)",
@@ -72,6 +72,7 @@
   "axes 1: Rectangle in the maintenance colour"
  ],
  "boundary_drawn": true,
+ "boundary_outside": false,
  "boundary_zones": true,
  "white_segment_edges": 0,
  "source": [
@@ -86,10 +87,10 @@
   "dotted"
  ],
  "negative_band_segments": 0,
- "net_total_ticks": 0,
+ "net_total_ticks": 1,
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
  "retired_colours": [],
- "negative_bar_segments": 0,
+ "negative_bar_segments": 2,
  "negative_bar_segments_filled": 0
 }

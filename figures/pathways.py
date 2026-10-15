@@ -102,7 +102,8 @@ def d29():
     ax[1].legend(fontsize=S.FONT_MIN - 0.5, loc='best')
     fig.tight_layout()
     S.save_figure(fig, 'D29_ramps', note='Native parameter at each level (full strength); every level moves from the '
-                                         'Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint.',
+                                         'Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint. L3 (and '
+                                         'L7): the target paths by year before the adoption weighting w(y) is applied.',
                   source=['pathways/levers.json'])
 
 

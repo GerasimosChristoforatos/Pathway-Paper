@@ -49,6 +49,7 @@
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,
+ "boundary_outside": false,
  "boundary_zones": true,
  "white_segment_edges": 0,
  "source": [

@@ -152,9 +152,13 @@ BAND = {'growth': (GROWTH, None),
         'unconsented': ('#BA9AC1', None),             # negative: outline only (replacement lilac family, darker)
         'redevelopment': (LEVER['L5'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
         'released_tl': ('#95C283', None),             # negative: outline only (TL green family)
+        # MODEL v3.2.0 (A2, from v3.1.0): 'Vacancy released' (negative, outline; the L4 vacancy family, darker),
+        # 'Surplus kept vacant (2050)' (a pale neutral, 2050 only)
+        'vacancy_released': ('#481870', None),
+        'surplus_vacant': ('#D1E6C1', None),
         'maintenance': ('#9E9E9E', None)}      # neutral; MODEL v3.0.0 slightly darker (CVD distance >= 10)
 BAND_ORDER = list(BAND)
-NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'released_tl')
+NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl')
 BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}
 LW_OUTLINE = 0.9                        # the outline of a negative band segment in a cumulative bar
 
@@ -172,6 +176,13 @@ STAGE = {'a1a3': COMPONENT['materials_construction'], 'a4a5': (LEVER['L7'], None
 # unexplained building of the history (Fig2, D05c, K1): a faded reddish face, no hatch (MODEL v2.1.2; face, hatch,
 # hatch colour); may be negative
 UNEXPLAINED = ('#C6A3A4', None, None)
+# MODEL v3.2.0 (A3, from v3.1.0): the history bands of Fig1 (census intervals): household formation and vacancy as the projection
+# bands, the census-measured net replacement the replacement face, the retirement-village units a neutral outline
+# (negative, out of scope) and the unexplained building its faded reddish face
+HISTORY_BAND = {'growth': BAND['growth'], 'smaller_households': BAND['smaller_households'],
+                'extra_space': BAND['extra_space'], 'vacancy': BAND['vacancy'],
+                'replacement_census': (REPLACEMENT, None), 'retirement_villages': ('#4E463E', None),
+                'unexplained': (UNEXPLAINED[0], None)}
 # the untargeted band (Fig4): the population-growth grey, hatched
 UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)      # solid since MODEL v2.1.1
 
@@ -258,6 +269,7 @@ def registry():
                  'TL': (TL.upper(), None), 'LOW': (SCENARIO['LOW']['color'].upper(), None),
                  'HIGH': (SCENARIO['HIGH']['color'].upper(), None)},
         'stages': {k: (c.upper(), h) for k, (c, h) in STAGE.items()},
+        'history_bands': {k: (c.upper(), h) for k, (c, h) in HISTORY_BAND.items()},
         'components': {k: (c.upper(), h) for k, (c, h) in COMPONENT.items()},
         'materials': {code: (c.upper(), None) for code, _, c in MATERIAL},
         'boundaries': {'AR': (AR.upper(), None), 'AtP': (ATP.upper(), None)},

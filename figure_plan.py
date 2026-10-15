@@ -53,8 +53,9 @@ PAPER_MAIN = [
          source=['sensitivity/tornado.csv']),
     dict(id='Fig8', file='Fig8_shapley_levers', width='double', module='figures.paper_main',
          title='What each lever removes',
-         caption='Exact Shapley value of each lever (512 subsets) on cumulative carbon 2026-2050, from the Reference: '
-                 'hollow bar Moderate, filled bar Ambitious, large deep-green dot TL; sorted by Ambitious.',
+         caption='Shapley values within each combined game (Reference -> P5 Moderate, -> P5 Ambitious, -> TL; exact, '
+                 '512 subsets) on cumulative carbon 2026-2050: hollow bar Moderate, filled bar Ambitious, large deep-green '
+                 'dot TL; sorted by Ambitious. Standalone effects in ED10.',
          source=['pathways/shapley.csv']),
 ]
 
@@ -175,8 +176,9 @@ DIAGNOSTICS = {
            ['montecarlo/sobol_REF.csv']),
         _d('D37_mc_convergence', 'Monte Carlo convergence of the 2026-2050 percentiles', 'figures.montecarlo',
            ['montecarlo/convergence_REF.csv']),
-        _d('D38_mc_input_distributions', 'Monte Carlo input distributions (sample and quantiles)', 'figures.montecarlo',
-           ['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv']),
+        _d('D38_mc_input_distributions', 'Monte Carlo input distributions (sample and quantiles; the resulting A1-A3 '
+           'factors by typology)', 'figures.montecarlo',
+           ['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv', 'montecarlo/carbon_factors_REF.csv']),
         _d('D39_pathway_mc', 'Pathway Monte Carlo: Reference, P5 Moderate / Ambitious, TL', 'figures.montecarlo',
            ['pathways/montecarlo_summary.csv', 'pathways/montecarlo_annual.csv']),
     ],

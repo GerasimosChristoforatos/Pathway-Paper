@@ -53,6 +53,11 @@ def d17():
     S.save_figure(fig, 'D17_sensitivity_paths', source=['baseline/sensitivity_annual_carbon.csv'])
 
 
+D40_LABELS = {'z_pop': 'Population path\n(rank, z-score)', 'size': 'Dwelling size\n(multiplier)',
+              'complete': 'Completion rate', 'carbon_index': 'Carbon factors\n(index)'}
+D40_RUNS = {'REF': 'Reference', 'P5': 'P5 Moderate', 'P5A': 'P5 Ambitious', 'TL': 'Theoretical limit'}
+
+
 def d40():
     imp = D.csv('pathways/montecarlo_importance.csv')
     fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 70), sharey=True)
@@ -68,11 +73,13 @@ def d40():
                        color=col, lw=S.LW_THIN, label=run)
         a.axvline(0, color=S.INK, lw=S.LW_THIN)
         a.set_xlim(-1, 1)
-        a.set_xlabel('PRCC (95% bootstrap interval)')
+        a.set_xlabel('PRCC (95% bootstrap interval)', fontsize=S.FONT_SMALL)
+        a.tick_params(labelsize=S.FONT_SMALL)
         P.panel(a, letter, {'floor_area_Mm2': 'Floor area', 'carbon_kt': 'Carbon', 'LoE_AR': 'LoE AR'}[out])
     ax[0].set_yticks(y)
-    ax[0].set_yticklabels(inputs, fontsize=S.FONT_SMALL)
-    ax[0].legend(fontsize=S.FONT_MIN)
+    ax[0].set_yticklabels([D40_LABELS.get(i, i) for i in inputs], fontsize=S.FONT_SMALL)   # B3: readable labels
+    h, l_ = ax[0].get_legend_handles_labels()
+    ax[0].legend(h, [D40_RUNS.get(k, k) for k in l_], fontsize=S.FONT_SMALL, loc='lower left')
     fig.tight_layout()
     S.save_figure(fig, 'D40_src_prcc', note=f"Bootstrap resamples: {int(imp['bootstrap_resamples'].iloc[0])}; SRC and "
                                             "R² in the data file.", source=['pathways/montecarlo_importance.csv'])

@@ -61,12 +61,15 @@
   "Plastics & paint",
   "Population growth (untargeted)",
   "Recent replacement surge",
+  "Released dwellings (TL)",
   "Smaller households",
   "Soil carbon loss",
   "Steel",
+  "Surplus kept vacant (2050)",
   "Timber",
   "Unconsented additions",
   "Vacancy",
+  "Vacancy released",
   "a",
   "b",
   "c"
@@ -80,6 +83,7 @@
   "legend: Maintenance (B2, B4), 2026\u20132050"
  ],
  "boundary_drawn": false,
+ "boundary_outside": false,
  "boundary_zones": false,
  "white_segment_edges": 0,
  "source": [

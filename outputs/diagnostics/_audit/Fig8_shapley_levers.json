@@ -33,10 +33,11 @@
   "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e; exact Shapley value)",
   "Theoretical limit (Level 4)"
  ],
- "note": "Sum over levers (= Reference - P5 / TL, exact): moderate 5,542 kt, ambitious 9,694 kt, tl 16,257 kt; 512 subsets per setting.",
+ "note": "Shapley values within each combined game (Reference -> P5 Moderate, -> P5 Ambitious, -> TL); standalone effects in ED10. Sum over levers (= Reference - P5 / TL, exact): moderate 5,542 kt, ambitious 9,694 kt, tl 16,257 kt; 512 subsets per game.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
+ "boundary_outside": false,
  "boundary_zones": false,
  "white_segment_edges": 0,
  "source": [

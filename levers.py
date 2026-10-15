@@ -445,6 +445,15 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                      estimator=est6, r={'reference': 1.0, 'moderate': (1.0 + r6) / 2.0, 'ambitious': r6},
                      tl={t: v['r'] for t, v in tl6.items()}, tl_detail=tl6,
                      anchor=f'HD q0.15 of the {len(cases6)} case ratios = {r6:.4f}')
+    # MODEL v3.1.0 (A5): check row, report only: the estimator with the apartment case A_1 included (n = 15). A_1 is the
+    # one independent apartment case (A_2 is its duplicate_of), so its ratio to the apartment pooled value is ~1 by
+    # construction and carries no information on the spread; the adopted sample (n = 14) stays.
+    cases15, _ = case_ratios(factors_building, L6_SAMPLE_TYPOLOGIES + ('Apartments',))
+    est15 = hd_estimate(cases15['ratio'].values, HD_Q, bootstrap_B, HD_BOOTSTRAP_SEED)
+    out['L6']['check_with_A_1'] = dict(n=int(len(cases15)), r=float(est15['r']), ci_lo=est15.get('ci_lo'),
+                                       ci_hi=est15.get('ci_hi'), adopted_n=int(len(cases6)), adopted_r=float(r6),
+                                       A_1_ratio=float(cases15.loc[cases15['id'] == 'A_1', 'ratio'].iloc[0]),
+                                       note='report only; the adopted estimate keeps n = 14 (Detached, Townhouses)')
 
     # ---- L7 Construction-stage carbon [C] ----
     a45 = {t: float(B['MAT_STAGE']['A4-A5'][t].sum()) for t in typ}

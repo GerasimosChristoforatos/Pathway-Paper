@@ -59,9 +59,7 @@ def groups():
                                                                'Ability to pay (AtP)': S.ATP}),
         'Materials (Fig3b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
         'Life-cycle stages (Fig3a)': {N.STAGES[k]: S.STAGE[k][0] for k in S.STAGE},
-        'History bands (Fig1)': dict({N.BANDS[b]: S.BAND[b][0] for b in ('growth', 'smaller_households', 'extra_space',
-                                                                        'vacancy', 'replacement')},
-                                      **{N.UNEXPLAINED: S.UNEXPLAINED[0]}),
+        'History bands (Fig1)': {(N.BANDS.get(b) or N.BAND_DETAIL[b]): S.HISTORY_BAND[b][0] for b in S.HISTORY_BAND},
         'Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
 

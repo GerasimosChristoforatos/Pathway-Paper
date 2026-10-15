@@ -1,3 +1,16 @@
+# Project state: MODEL v3.2.0 (update)
+
+Branch `release/model-v3.2.0` (from `release/model-v3.0.0`; proposed tag `model-v3.2.0`, not yet tagged). MODEL v3.1.0
+is withdrawn. Decisions: [CHANGELOG_v3_2.md](CHANGELOG_v3_2.md). Every v3.0 headline below still holds: the
+Reference, every lever and pathway run and TL are unchanged (to 3.4e-16), and so are the Reference Monte Carlo and the
+AESA draws. What changes: the band composition (release accounting, A2), the TL waterfall steps TL1-TL3 and the TL
+Shapley values from P5 Moderate, the history split (A3), Fig6 (y = cut in total carbon per m2), and the pathway Monte
+Carlo draws with a negative-gross year (carry-forward) or a non-physical soil share (zero-year guard): P(TL LoE AR <= 1)
+stays 0.551, the 5th-95th percentiles of P5 Moderate, P5 Ambitious and TL are unchanged. New rows: TL with
+re-occupation as fast as demand allows (4,073 kt, LoE AR 0.915) and r_L6 with A_1 (0.841, report only).
+
+---
+
 # Project state: MODEL v3.0.0
 
 Status at the end of the v3.0.0 build (branch `release/model-v3.0.0`; proposed tag `model-v3.0.0`, not yet tagged).

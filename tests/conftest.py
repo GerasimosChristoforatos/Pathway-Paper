@@ -35,4 +35,6 @@ def B():
 
 # MODEL v3.0.0: the tests of the v2 lever set, figures and data locks are kept for the record in tests/retired/
 # (their locks describe MODEL v2.1; the legacy Reference is locked by tests/test_reference_legacy.py)
+# MODEL v3.3.0: tests/test_model_v3_2.py (equality with v3.0 under the v3.0-v3.2 run names) is retired there too;
+# its model-rule tests continue in tests/test_model_v3_3.py
 collect_ignore_glob = ['retired/*']

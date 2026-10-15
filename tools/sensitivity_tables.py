@@ -1,22 +1,23 @@
-"""Grouped one-at-a-time sensitivity tables (MODEL v3.0.0; docs/SENSITIVITY_PLAN.md).
+"""Grouped one-at-a-time sensitivity tables (MODEL v3.3.0; docs/SENSITIVITY_PLAN.md).
 
     python tools/sensitivity_tables.py         (run_all.py runs it after the pathway Monte Carlo)
 
 Writes outputs/data/sensitivity/:
   reference_carbon.csv     Reference carbon 2026-2050, rows grouped by type of change (D16)
-  p5_carbon.csv            P5 Combined (Moderate) carbon 2026-2050 and its levels of exceedance, pathway
-                           design rows (D41)
+  pathway_carbon.csv       the Moderate Pathway (every lever at Moderate; MODEL v3.0-v3.2: p5_carbon.csv, P5
+                           Combined) carbon 2026-2050 and its levels of exceedance, pathway design rows (D41)
   planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42)
-  replacement_variants.csv the Reference, P5 and TL under Low / Reference / High replacement (ED13)
+  replacement_variants.csv the Reference, the Moderate / Ambitious Pathway and TL under Low / Reference / High / Very
+                           High replacement (ED13)
   tornado.csv              Fig7: the eight inputs of the Reference tornado (low / high), cumulative carbon and the
                            cumulative LoE AR and AtP (the budgets move only with the population path)
 
 Every row has its group, the row label, its side (low / high / single), the value, the change vs the
-central case and its basis. Rows are read from existing outputs; the only new runs are the P5 rows
-with one lever (L1-L9) at Ambitious (the others Moderate) and P5 on the Stats NZ 5th / 95th population
+central case and its basis. Rows are read from existing outputs; the only new runs are the Moderate Pathway rows
+with one lever (L1-L9) at Ambitious (the others Moderate) and the Pathway on the Stats NZ 5th / 95th population
 paths (exact engine path: the projection's own percentile run, reproduced to 1e-12 before the levers
 are applied; the AR and AtP budgets move with the path, data/aesa/results.json population_paths), and
-TL under Low and High replacement (every other run of that table reproduces runs.csv to 1e-12).
+TL under the replacement variants (every other run of that table reproduces runs.csv to 1e-12).
 One-at-a-time ranges are not additive and are not a joint interval.
 """
 import json
@@ -84,10 +85,14 @@ REF_ROWS = [
      'DATA: 1991-2023 long-run rate'),
     ('Replacement scenario', 'Low / High replacement', 'high', 'High replacement: 2018-2023 rate persists',
      'DATA: 2018-2023 census-interval rate'),
+    ('Replacement scenario', 'Very High replacement (trend continues)', 'single',
+     'Very High replacement: 1991-2023 census trend continues',
+     'DATA / JUDGEMENT: interval-length-weighted OLS trend of the census-interval rates 1991-2023, extrapolated '
+     '(sensitivity, not adopted)'),
     ('Replacement scenario', 'Replacement half-life 5 / 15 yr', 'low', 'Reference, replacement half-life 5 yr',
-     'JUDGEMENT: the half-life is not identifiable from the census record'),
+     'JUDGEMENT: the half-life is not identifiable from the census record (sampled U(5, 15) yr in the Monte Carlo)'),
     ('Replacement scenario', 'Replacement half-life 5 / 15 yr', 'high', 'Reference, replacement half-life 15 yr',
-     'JUDGEMENT: the half-life is not identifiable from the census record'),
+     'JUDGEMENT: the half-life is not identifiable from the census record (sampled U(5, 15) yr in the Monte Carlo)'),
     ('Carbon factors & technology', 'Single case study: lowest / highest', 'low', 'Materials: lowest single case study',
      'DATA: 16 NZ case studies (Christoforatos & Pickering 2025)'),
     ('Carbon factors & technology', 'Single case study: lowest / highest', 'high', 'Materials: highest single case study',
@@ -132,7 +137,7 @@ def reference_table():
     return pd.DataFrame(rows)
 
 
-# ---- 2. P5 carbon (pathway design) ---------------------------------------------------------------
+# ---- 2. Moderate Pathway carbon (pathway design) ---------------------------------------------------
 PARAMS = {}
 
 
@@ -159,7 +164,7 @@ def percentile_context(PW, B, pct, bounds):
     return ctx
 
 
-def p5_table():
+def pathway_table():
     import pathways as PW
     runs = pd.read_csv(data('pathways/runs.csv'))
     with open(data('aesa/results.json')) as f:
@@ -175,7 +180,8 @@ def p5_table():
         r = runs[(runs['scenario'] == scen) & (runs['run'] == name)].iloc[0]
         return float(r['carbon_kt']), float(r['LoE_AR']), float(r['LoE_AtP'])
 
-    c0, a0, t0 = run_row('REF', 'P5-moderate')
+    PM_, PA_ = f'{LV.PATHWAY}-moderate', f'{LV.PATHWAY}-ambitious'
+    c0, a0, t0 = run_row('REF', PM_)
     rows = []
 
     def add(group, label, side, carbon, loe_ar, loe_atp, source, basis):
@@ -183,26 +189,28 @@ def p5_table():
                          central_carbon_kt=c0, central_LoE_AR=a0, central_LoE_AtP=t0,
                          change_pct=100 * (carbon / c0 - 1), source=source, basis=basis))
 
-    base = LV.pathway_levers('P5', 'moderate')
+    base = LV.pathway_levers(LV.PATHWAY, 'moderate')
     cc = float(np.asarray(PW.run(ctx, params, base)['E']['carbon'], float)[1:].sum()) / M6
-    if not np.isclose(cc, c0, rtol=1e-12, atol=0):     # the context reproduces the adopted P5 run
-        raise SystemExit(f'sensitivity_tables: P5 Moderate {cc} kt does not reproduce runs.csv {c0} kt.')
+    if not np.isclose(cc, c0, rtol=1e-12, atol=0):     # the context reproduces the adopted Moderate Pathway run
+        raise SystemExit(f'sensitivity_tables: the Moderate Pathway {cc} kt does not reproduce runs.csv {c0} kt.')
     tags = {L: f"sub-rule {LV.SUBRULE[L]}" for L in LV.LEVERS}
     for L in LV.LEVERS:                                      # one lever at Ambitious, the others Moderate
         E = PW.run(ctx, params, dict(base, **{L: 'ambitious'}))['E']
         c = float(np.asarray(E['carbon'], float)[1:].sum()) / M6
         add('Ambition of one lever', f"{L} {N.LEVERS[L]} at Ambitious", 'single', c, c / bar, c / batp,
             'new run (tools/sensitivity_tables.py)', f"{tags[L]}: the Ambitious setting of {L}")
-    add('Ambition of all', 'P5 Combined, Ambitious', 'single', *run_row('REF', 'P5-ambitious'),
+    add('Ambition of all', N.PATHWAY_RUNS[PA_], 'single', *run_row('REF', PA_),
         'data/pathways/runs.csv', 'DECISION (author): every lever at Ambitious')
-    for side, nm in (('low', 'P5-moderate-by2030'), ('high', 'P5-moderate-by2045')):
+    for side, nm in (('low', f'{PM_}-by2030'), ('high', f'{PM_}-by2045')):
         add('Roll-out timing', 'Full roll-out by 2030 / by 2045', side, *run_row('REF', nm), 'data/pathways/runs.csv',
             'LITERATURE: RECC (Pauliuk et al. 2024) adopted 2035; window rule of MODEL v1.1.0')
     add('Theoretical limit', 'TL (every lever at Level 4)', 'single', *run_row('REF', 'TL'), 'data/pathways/runs.csv',
         'DECISION (author): Level 4 of every lever')
     for side, sc in (('low', 'LOW'), ('high', 'HIGH')):
-        add('Replacement scenario', 'Low / High replacement', side, *run_row(sc, 'P5-moderate'),
+        add('Replacement scenario', 'Low / High replacement', side, *run_row(sc, PM_),
             'data/pathways/runs.csv', 'DATA: long-run rate / 2018-2023 rate persists')
+    add('Replacement scenario', N.SCENARIOS['VHIGH'], 'single', *run_row('VHIGH', PM_), 'data/pathways/runs.csv',
+        'DATA / JUDGEMENT: the 1991-2023 census trend continues (sensitivity, not adopted)')
     for side, pct in (('low', '5th'), ('high', '95th')):
         cp = percentile_context(PW, B, pct, bounds)
         E = PW.run(cp, params, base)['E']
@@ -254,12 +262,16 @@ def pb_table():
             d = r['deterministic'][k]
             add('Replacement scenario', lab, side, d['LoE_AR'], d['LoE_AtP'], f'data/aesa/results.json deterministic ({k})',
                 'DATA / JUDGEMENT (replacement variants)')
+    d = r['deterministic']['VHIGH']
+    add('Replacement scenario', N.SCENARIOS['VHIGH'], 'single', d['LoE_AR'], d['LoE_AtP'],
+        'data/aesa/results.json deterministic (VHIGH)', 'DATA / JUDGEMENT: the 1991-2023 census trend continues')
     return pd.DataFrame(rows)
 
 
-# ---- 4. Replacement variants of the Reference, P5 and TL (ED10) ------------------------------------
+# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED13) --------------------------
 def replacement_variants():
-    """The Reference, P5 Combined (Moderate, Ambitious) and TL under the Low, Reference and High replacement variants:
+    """The Reference, the Moderate / Ambitious Pathway and TL under the Low, Reference, High and Very High replacement
+    variants:
     carbon and floor area 2026-2050, committed after 2050, cumulative LoE AR and AtP; every run recomputed with the
     pathway engine (pathways.run and pathways.metrics, the lever parameters of the Reference) and asserted to
     reproduce runs.csv to 1e-12."""
@@ -270,12 +282,13 @@ def replacement_variants():
     params = PARAMS.setdefault('p', PW.resolve_params(B_ref))
     cols = ('gfa_Mm2', 'carbon_kt', 'committed_lower_kt', 'committed_upper_kt', 'LoE_AR', 'LoE_AtP')
     rows = []
-    for scen in ('LOW', 'REF', 'HIGH'):
+    for scen in ('LOW', 'REF', 'HIGH', 'VHIGH'):
         B = B_ref if scen == PW.REFERENCE else PW.boss_state(scen)
         ctx = PW.base_context(B, scen, bounds)
         for run, levels, setting in ((scen, {}, 'reference'),
-                                     ('P5-moderate', LV.pathway_levers('P5', 'moderate'), 'moderate'),
-                                     ('P5-ambitious', LV.pathway_levers('P5', 'ambitious'), 'ambitious'),
+                                     (f'{LV.PATHWAY}-moderate', LV.pathway_levers(LV.PATHWAY, 'moderate'), 'moderate'),
+                                     (f'{LV.PATHWAY}-ambitious', LV.pathway_levers(LV.PATHWAY, 'ambitious'),
+                                      'ambitious'),
                                      ('TL', LV.tl_levels(LV.TL_COMPONENTS), 'tl')):
             m = PW.metrics(ctx, PW.run(ctx, params, levels), run, setting)
             o = runs[(runs['scenario'] == scen) & (runs['run'] == run)].iloc[0]
@@ -292,6 +305,7 @@ TORNADO = [   # (input, low case, high case) in reference_table() rows
     ('Population (Stats NZ 5th / 95th percentile)', 'Population: Stats NZ 5th / 95th percentile'),
     ('Household size (Stats NZ High / Low variant)', 'Household size: Stats NZ High / Low variant'),
     ('Replacement (Low / High)', 'Low / High replacement'),
+    ('Replacement: Very High (trend continues; one-sided)', 'Very High replacement (trend continues)'),
     ('Replacement half-life (5 / 15 yr)', 'Replacement half-life 5 / 15 yr'),
     ('Completion rate (0.92 / 0.96)', 'Completion rate 0.92 / 0.96'),
     ('Case-study carbon factors (jackknife)', 'Case studies: jackknife low / high'),
@@ -314,6 +328,9 @@ def tornado(ref):
     rows = []
     for name, row in TORNADO:
         t = ref[ref['row'] == row].set_index('side')
+        if 'single' in t.index:                       # MODEL v3.3.0: a one-sided row (low = the central case)
+            t = pd.DataFrame({'case': ['central', t.loc['single', 'case']],
+                              'carbon_kt': [c0, t.loc['single', 'carbon_kt']]}, index=['low', 'high'])
         for side in ('low', 'high'):
             c = float(t.loc[side, 'carbon_kt'])
             if name.startswith('Population'):
@@ -330,7 +347,7 @@ def tornado(ref):
 def main():
     ref = reference_table()
     out = {'sensitivity/reference_carbon.csv': ref, 'sensitivity/tornado.csv': tornado(ref),
-           'sensitivity/p5_carbon.csv': p5_table(),
+           'sensitivity/pathway_carbon.csv': pathway_table(),
            'sensitivity/planetary_boundary.csv': pb_table(),
            'sensitivity/replacement_variants.csv': replacement_variants()}
     for rel, df in out.items():

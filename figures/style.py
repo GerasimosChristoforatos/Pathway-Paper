@@ -8,10 +8,10 @@ protanomaly and tritanomaly, colorspacious; Machado et al. 2009), which also wri
 docs/PALETTE.md and docs/palette_preview.png.
 
 Rules (docs/PALETTE.md, MODEL v2.1.2):
-  * demand bands are coloured by the lever that targets them (four pathway families after Francis Bacon, Head VI);
+  * demand bands are coloured by the lever that targets them (hue families after Francis Bacon, Head VI);
     the only untargeted band, Population growth, a solid deep green-blue; negative bands drawn down from the top of
     the positive stack (net-total convention; MODEL v3.0.0: figures/draw.py, see below);
-  * Reference dark grey, P5 vermilion, TL a deep forest green (a larger circle on point plots);
+  * Reference dark grey, the Moderate / Ambitious Pathway vermilion, TL a deep forest green (a larger circle on point plots);
   * boundaries: acquired rights (AR) a thin red line, ability to pay (AtP) a thin dark-red dotted line, light zones
     below AtP, between AtP and AR and above AR;
   * settings: Moderate solid line / filled marker, Ambitious dashed line / hollow marker;
@@ -103,33 +103,32 @@ ACCENT_BLUE = '#1F5FA8'
 # runs
 REFERENCE = '#4D4D4D'
 # MODEL v2.1.2: TL a deep forest green, far darker than the zones; at CAM02-UCS J' 25 it is >= 10 from AR, AtP,
-# the Reference, P5, every lever, Population growth and the zones under every simulated deficiency (a mid green
+# the Reference, the Pathways, every lever, Population growth and the zones under every simulated deficiency (a mid green
 # at the lightness of AR merges with it under deuteranomaly / protanomaly)
 TL = '#13412B'
 TL_MARKER = dict(marker='o', ms=8)             # TL on point plots: a larger circle (no star)
 SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),
             'LOW': dict(color='#B5B5B5', ls='--', lw=LW, label='Low replacement'),
-            'HIGH': dict(color='#6E6E6E', ls=':', lw=LW, label='High replacement')}
+            'HIGH': dict(color='#6E6E6E', ls=':', lw=LW, label='High replacement'),
+            # MODEL v3.3.0: Very High replacement (trend continues), the darkest grey, dash-dot
+            'VHIGH': dict(color='#1F1F1F', ls='-.', lw=LW, label='Very High replacement (trend continues)')}
 MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% band
 
-# MODEL v2.1.1 palette, inspired by Francis Bacon, Head VI (1949): four pathway families, each lever a shade within
-# its family. P1 Space per person golds / ochres (L1 deep ochre, L2 light gold), P2 Existing stock mauves (L4
-# 2026 overbuild deep mauve, L3 vacancy rose-lilac, lighter; L5 replacement lighter still), P3 Construction blues
-# (L6 dark, L7 light), P4 Land browns (L8 dark brown, L9 light tan); P5 vermilion and TL cyan, outside every family;
-# Reference grey. The hue families are fixed; lightness and chroma were chosen by maximising the minimum CAM02-UCS
-# distance of every group shown together under every simulated deficiency, with each slot's tone kept (lightness
-# bounds: overbuild < vacancy < replacement; browns and the near-black growth keep a visible hue); every group
-# >= 10 (tools/palette_check.py; docs/PALETTE.md). Where a group failed, the lightness of one colour moved within
-# its hue family (L7 lighter and TL lighter so TL stays apart from L7 under protanomaly; committed lighter than
-# maintenance; the unexplained-building face lighter than Historical replacement)
-# MODEL v3.0.0: nine levers renumbered (P1 L1-L3 golds / ochres, P2 L4-L5 mauves, P3 L6-L7 blues, P4 L8-L9 browns);
-# L2 Design density a deep amber added to the gold family (colours re-tuned so that every group keeps a CAM02-UCS
-# distance >= 10 under every simulated deficiency, tools/palette_check.py); the deep mauve of the retired overbuild lever stays the
-# P2 anchor and the 2026 overbuild band
-LEVER = {'L1': '#DFA538', 'L2': '#944E02', 'L3': '#F4D168', 'L4': '#AA7C9D', 'L5': '#E1D2DD',
-         'L6': '#4A6192', 'L7': '#ABD3FA', 'L8': '#8D6545', 'L9': '#C7B395'}
+# MODEL v2.1.1 palette, inspired by Francis Bacon, Head VI (1949): each lever a shade within a hue family (golds /
+# ochres, mauves, blues, browns); the Pathways vermilion and TL a deep forest green, outside every family; Reference
+# grey. Lightness and chroma chosen by maximising the minimum CAM02-UCS distance of every group shown together under
+# every simulated deficiency (tools/palette_check.py; docs/PALETTE.md). MODEL v3.3.0: the levers are renumbered by the
+# PAS 2080 strategies (naming.LEVER_V3_2) and each lever keeps its MODEL v3.0 colour: L1 Household size light gold,
+# L2 Vacancy rate rose-lilac, L3 Building lifetime pale mauve, L4 Extra space deep ochre, L5 Occupancy density deep
+# amber, L6 Brownfield-first light tan, L7 Soil-aware planning dark brown, L8 Material carbon efficiency dark blue,
+# L9 Construction-stage carbon light blue. The strategies reuse the former pathway colours: S1 Avoid the ochre of the
+# space-per-person family, S2 Switch the land brown, S3 Improve the construction blue; the deep mauve P2_ANCHOR stays
+# the 2026 overbuild band.
+LEVER = {'L4': '#DFA538', 'L5': '#944E02', 'L1': '#F4D168', 'L2': '#AA7C9D', 'L3': '#E1D2DD',
+         'L8': '#4A6192', 'L9': '#ABD3FA', 'L7': '#8D6545', 'L6': '#C7B395'}
 P2_ANCHOR = '#683861'
-PATHWAY = {'P1': LEVER['L1'], 'P2': P2_ANCHOR, 'P3': LEVER['L6'], 'P4': LEVER['L8'], 'P5': '#EB6123'}
+STRATEGY = {'S1': LEVER['L4'], 'S2': LEVER['L7'], 'S3': LEVER['L8']}
+PATHWAY = dict(STRATEGY, pathway='#EB6123')       # strategies and the Moderate / Ambitious Pathway (every lever)
 # MODEL v2.1.2: Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
 SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
            'ambitious': dict(ls='--', marker_fill='none', label='Ambitious')}
@@ -137,22 +136,22 @@ SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
 # demand bands, bottom to top: (colour, hatch), coloured by the lever that targets them; labels in naming.BANDS.
 # Population growth (untargeted) the deep green-blue hue, solid, clearly lighter since MODEL v2.1.2 (J' 47, was 11);
 # Historical replacement a darker lilac with a slightly bluer hue (MODEL v2.1.2) than the Recent replacement surge,
-# which keeps the L5 face with a fine, light hatch (both replacement bands are targeted by L5)
+# which keeps the L3 face with a fine, light hatch (both replacement bands are targeted by L3)
 UNTARGETED_HATCH = None
 GROWTH = '#586E71'
 REPLACEMENT = '#D0BBDC'
 HATCH_LIGHT = '#FFFFFF'                 # the fine hatch of the surge band: drawn in a light colour on its light face
 BAND = {'growth': (GROWTH, None),
-        'smaller_households': (LEVER['L3'], None),
-        'extra_space': (LEVER['L1'], None),
-        'vacancy': (LEVER['L4'], None),
+        'smaller_households': (LEVER['L1'], None),
+        'extra_space': (LEVER['L4'], None),
+        'vacancy': (LEVER['L2'], None),
         'overbuild_2026': (P2_ANCHOR, None),
         'overbuild_absorbed': ('#8D5D93', None),      # negative: outline only (P2 mauve family)
         'replacement': (REPLACEMENT, None),
         'unconsented': ('#BA9AC1', None),             # negative: outline only (replacement lilac family, darker)
-        'redevelopment': (LEVER['L5'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
+        'redevelopment': (LEVER['L3'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
         'released_tl': ('#95C283', None),             # negative: outline only (TL green family)
-        # MODEL v3.2.0 (A2, from v3.1.0): 'Vacancy released' (negative, outline; the L4 vacancy family, darker),
+        # MODEL v3.2.0 (A2, from v3.1.0): 'Vacancy released' (negative, outline; the L2 vacancy family, darker),
         # 'Surplus kept vacant (2050)' (a pale neutral, 2050 only)
         'vacancy_released': ('#481870', None),
         'surplus_vacant': ('#D1E6C1', None),
@@ -163,14 +162,14 @@ BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}
 LW_OUTLINE = 0.9                        # the outline of a negative band segment in a cumulative bar
 
 # carbon components (labels in naming.COMPONENTS)
-COMPONENT = {'materials_construction': (LEVER['L6'], None),     # A1-A3: P3 dark blue
-             'soil': (LEVER['L8'], None),                       # P4 brown
+COMPONENT = {'materials_construction': (LEVER['L8'], None),     # A1-A3: P3 dark blue
+             'soil': (LEVER['L7'], None),                       # P4 brown
              'maintenance': (BAND['maintenance'][0], None),     # B2, B4 within 2026-2050
              'committed': ('#D0D0D0', None)}                    # after 2050, a range: drawn hollow (Fig3)
 
-# life-cycle stages (Fig3a; labels in naming.STAGES): A1-A3 the L6 shade, A4-A5 the L7 shade, soil the L8
+# life-cycle stages (Fig3a; labels in naming.STAGES): A1-A3 the L8 shade, A4-A5 the L9 shade, soil the L7
 # shade, maintenance its band colour; stacked A1-A3, A4-A5, soil, maintenance (A4-A5 and maintenance not adjacent)
-STAGE = {'a1a3': COMPONENT['materials_construction'], 'a4a5': (LEVER['L7'], None), 'soil': COMPONENT['soil'],
+STAGE = {'a1a3': COMPONENT['materials_construction'], 'a4a5': (LEVER['L9'], None), 'soil': COMPONENT['soil'],
          'maintenance': COMPONENT['maintenance']}
 
 # unexplained building of the history (Fig2, D05c, K1): a faded reddish face, no hatch (MODEL v2.1.2; face, hatch,
@@ -267,7 +266,8 @@ def registry():
         'levers': {k: (v.upper(), None) for k, v in LEVER.items()},
         'runs': {'REF': (REFERENCE.upper(), None), **{k: (v.upper(), None) for k, v in PATHWAY.items()},
                  'TL': (TL.upper(), None), 'LOW': (SCENARIO['LOW']['color'].upper(), None),
-                 'HIGH': (SCENARIO['HIGH']['color'].upper(), None)},
+                 'HIGH': (SCENARIO['HIGH']['color'].upper(), None),
+                 'VHIGH': (SCENARIO['VHIGH']['color'].upper(), None)},
         'stages': {k: (c.upper(), h) for k, (c, h) in STAGE.items()},
         'history_bands': {k: (c.upper(), h) for k, (c, h) in HISTORY_BAND.items()},
         'components': {k: (c.upper(), h) for k, (c, h) in COMPONENT.items()},

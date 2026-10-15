@@ -8,11 +8,13 @@ import json
 import os
 import sys
 
+import numpy as np
 import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import engine  # noqa: E402
+import MonteCarlo as MC  # noqa: E402
 import layout  # noqa: E402
 import pathways as PW  # noqa: E402
 import projection  # noqa: E402
@@ -25,6 +27,13 @@ def _js(rel):
 
 def lines():
     sc = _js('baseline/scenarios.json')['meta']
+    tr = _js('baseline/projection.json')['replacement_trend']
+    # mean excess of net replacement over the long-run rate 2026-2050 (percentage points): the Reference's exponential
+    # fade (half-life 10 yr) and a linear path from the 2025 value to the long-run rate in 2050
+    d0 = sc['recent_pct'] - sc['long_run_pct']
+    k = np.arange(1, 26)
+    ex_exp = float(np.mean(d0 * 0.5 ** (k / projection.REPLACEMENT_HALF_LIFE)))
+    ex_lin = float(np.mean(d0 * (1.0 - k / 25.0)))
     hu = _js('baseline/history_unexplained.json')
     lv = _js('pathways/levers.json')
     runs = pd.read_csv(layout.data('pathways/runs.csv', frozen=False))
@@ -55,8 +64,8 @@ def lines():
          'of both waterfalls, every TL Shapley subset) the re-occupation pool holds every dwelling release present in '
          'the run (a vacancy-rate fall at any level, a household-size fall), with the constant-share rule, the '
          'availability constraint and attribution in proportion to the release of each source. The Reference, every '
-         'lever and pathway run and TL are unchanged from MODEL v3.0.0 (tested to 1e-9); the TL waterfall steps before '
-         'TL4 and the TL1-TL9 Shapley values from P5 Moderate change, and in the pathway Monte Carlo the draws with a '
+         'lever and pathway run and TL are unchanged from MODEL v3.0.0 (tested to 1e-9); the TL waterfall steps and the '
+         'TL1-TL9 Shapley values from the Moderate Pathway change (MODEL v3.2.0), and in the pathway Monte Carlo the draws with a '
          'negative-gross year (docs/CHANGELOG_v3_2.md).', '',
          '### Zero-year guard (engine.forward)', '',
          f'A year whose built floor area is below {engine.BUILT_ZERO_TOL_M2:g} m2 is a year in which nothing is built: '
@@ -74,11 +83,22 @@ def lines():
          f"({100 * hu['unexplained_share_of_built']:+.2f}% of the {hu['dwellings_built_1992_2025']:,.0f} built); the "
          'floor-area remainder equals the unexplained dwellings of the stock identity x the dwelling size '
          f"(difference {hu['difference_Mm2']:.1e} Mm²).", '',
-         '### Replacement in the Reference', '',
+         '### Replacement in the Reference and its variants (MODEL v3.3.0)', '',
          f"Net replacement fades from the 2018-23 census rate ({sc['recent_pct']:.2f}%) to the long-run 1991-2023 rate "
          f"({sc['long_run_pct']:.2f}%), half-life {projection.REPLACEMENT_HALF_LIFE:g} yr; BRANZ demolition "
          f"({sc['demolition_rate_pct']:.3f}%) only splits the net rate into the demolition, surge and "
-         'unconsented-additions bands.', '',
+         'unconsented-additions bands. The half-life is not identifiable from the census record (seven censuses, six '
+         f"interval rates), so the Monte Carlo samples it, U({MC.HALF_LIFE_RANGE[0]:g}, {MC.HALF_LIFE_RANGE[1]:g}) yr, "
+         'with the deterministic 10 yr as its median (it acts in the Reference variant only). The functional form '
+         f"matters little for the cumulative surge: the mean excess over the long-run rate 2026-2050 is {ex_exp:.3f} pp "
+         f"with the 10-yr half-life and {ex_lin:.3f} pp for a linear path that reaches the long-run rate in 2050.", '',
+         f"Very High replacement (trend continues; a sensitivity variant): the {tr['n']} census-interval rates "
+         f"{tr['window'][0]}-{tr['window'][1]} fitted by weighted least squares on the mean of each interval's years "
+         f"(weights = interval length), rate = {tr['a']:.6f} + {tr['b']:.4e} x year, extrapolated 2026-2050: "
+         f"{100 * tr['rate_2026']:.3f}% in 2026 and {100 * tr['rate_2050']:.3f}% in 2050. It is not adopted as the "
+         'Reference: six interval rates (seven censuses), one of them negative (1996-2001), the 2013-2018 census '
+         'definition break (empty / residents-away dwellings), and the unbounded extrapolation of a policy-driven '
+         'wave.', '',
          '### Completion rate in the Monte Carlo', '',
          f"Two-piece uniform on [{projection.COMPLETION_RATE_BAND[0]:.2f}, {projection.COMPLETION_RATE:.2f}] and "
          f"[{projection.COMPLETION_RATE:.2f}, {projection.COMPLETION_RATE_BAND[1]:.2f}], probability 1/2 on each piece: "
@@ -89,8 +109,8 @@ def lines():
          '### Check and sensitivity rows', '',
          f"TL with re-occupation as fast as demand allows (deterministic sensitivity row): {fast['carbon_kt']:,.1f} kt, "
          f"LoE AR {fast['LoE_AR']:.3f} (TL: {tl['carbon_kt']:,.1f} kt, LoE AR {tl['LoE_AR']:.3f}).", '',
-         f"L6 with the apartment case A_1 (n = {lv['L6']['check_with_A_1']['n']}): r = "
-         f"{lv['L6']['check_with_A_1']['r']:.3f} against the adopted {lv['L6']['check_with_A_1']['adopted_r']:.3f} "
-         f"(n = {lv['L6']['check_with_A_1']['adopted_n']}); report only (A_1's ratio to its pooled value is "
-         f"{lv['L6']['check_with_A_1']['A_1_ratio']:.4f} by construction)."]
+         f"L8 with the apartment case A_1 (n = {lv['L8']['check_with_A_1']['n']}): r = "
+         f"{lv['L8']['check_with_A_1']['r']:.3f} against the adopted {lv['L8']['check_with_A_1']['adopted_r']:.3f} "
+         f"(n = {lv['L8']['check_with_A_1']['adopted_n']}); report only (A_1's ratio to its pooled value is "
+         f"{lv['L8']['check_with_A_1']['A_1_ratio']:.4f} by construction)."]
     return L

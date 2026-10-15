@@ -35,10 +35,11 @@ def groups():
     return {
         'Runs and boundaries (Fig4, D28)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
                                                 'Reference': S.REFERENCE, N.TL['TL']: S.TL},
-                                               **{f'{p} {N.PATHWAYS[p]}': c for p, c in S.PATHWAY.items()}),
+                                               **{(f'{p} {N.STRATEGIES[p]}' if p in N.STRATEGIES else
+                                                   'Moderate / Ambitious Pathway'): c for p, c in S.PATHWAY.items()}),
         'Levers (Fig8, ED6, ED10, D29, D31)': {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
-        # MODEL v2.1.2: the Recent replacement surge (L5 face, fine light hatch) and Historical replacement (a darker,
+        # MODEL v2.1.2: the Recent replacement surge (L3 face, fine light hatch) and Historical replacement (a darker,
         # slightly bluer lilac) differ in lightness, hue and hatch; the surge face is checked against every other
         # band in the next group, the replacement-surge pair is reported in the text
         # MODEL v3.0.0: every band shown together (Fig1, Fig2, Fig5, D25, D26, D36): the negative bands as filled
@@ -47,9 +48,9 @@ def groups():
                                                            if b != 'redevelopment'},
         'Recent replacement surge face against the other bands': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
                                                                    if b != 'replacement'},
-        'P5 and TL against every lever, growth, the Reference, the boundaries and the zones': dict(
+        'The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones': dict(
             {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
-            **{f"P5 {N.PATHWAYS['P5']}": S.PATHWAY['P5'], N.TL['TL']: S.TL, N.BANDS['growth']: S.GROWTH,
+            **{'Moderate / Ambitious Pathway': S.PATHWAY[N.PATHWAY], N.TL['TL']: S.TL, N.BANDS['growth']: S.GROWTH,
                'Reference': S.REFERENCE, 'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
             **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
         'Carbon components (Fig3c, diagnostics)': {N.COMPONENTS[c]: S.COMPONENT[c][0] for c in S.COMPONENT},
@@ -69,8 +70,8 @@ def focus():
     adjacent fills; their own groups check them)."""
     import naming as N
     return {'Recent replacement surge face against the other bands': [N.BANDS['redevelopment']],
-            'P5 and TL against every lever, growth, the Reference, the boundaries and the zones':
-                [f"P5 {N.PATHWAYS['P5']}", N.TL['TL']]}
+            'The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones':
+                ['Moderate / Ambitious Pathway', N.TL['TL']]}
 
 
 def zone_on_white(z):
@@ -141,6 +142,7 @@ def preview(G, path):
 
 
 def main():
+    import naming as N
     G = groups()
     os.makedirs(DOCS, exist_ok=True)
     preview(G, os.path.join(DOCS, 'palette_preview'))
@@ -152,17 +154,20 @@ def main():
          '* **Source** (MODEL v2.1.1): the palette is inspired by Francis Bacon, *Head VI* (1949): golds, mauves, '
          'deep blues and browns on a near-black ground. The hue families are fixed by that choice; lightness and '
          'chroma were set by maximising the minimum CAM02-UCS distance of every group below under every simulated '
-         'deficiency (MODEL v3.0.0: the new lever L2, the three negative bands and the maintenance grey re-tuned).',
-         '* **Four pathway families, lever shades** (MODEL v3.0.0 numbering): P1 Space per person golds / ochres '
-         f"(L1 Dwelling size {S.LEVER['L1']}, L2 Design density a deep amber {S.LEVER['L2']}, L3 Household size a "
-         f"light gold {S.LEVER['L3']}), P2 Existing stock mauves (L4 Vacancy {S.LEVER['L4']}, L5 Building lifetime "
-         f"{S.LEVER['L5']}; the P2 anchor deep mauve {S.P2_ANCHOR}), P3 Construction blues (L6 {S.LEVER['L6']}, L7 "
-         f"{S.LEVER['L7']}), P4 Land browns (L8 {S.LEVER['L8']}, L9 {S.LEVER['L9']}); P5 Combined vermilion "
-         f"({S.PATHWAY['P5']}) and TL a deep forest green ({S.TL}; a larger circle on point plots).",
-         '* **Demand bands** are coloured by the lever family that targets them (Smaller households L3, Extra space L1, '
-         f"Vacancy L4, 2026 overbuild the P2 anchor, Overbuild absorbed a lighter mauve ({S.BAND['overbuild_absorbed'][0]}), "
+         'deficiency (MODEL v3.0.0: the new lever L5, the three negative bands and the maintenance grey re-tuned).',
+         '* **Lever shades in hue families** (each lever keeps its MODEL v3.0 colour; MODEL v3.3.0 numbering): golds / '
+         f"ochres (L4 Extra space {S.LEVER['L4']}, L5 Occupancy density a deep amber {S.LEVER['L5']}, L1 Household "
+         f"size a light gold {S.LEVER['L1']}), mauves (L2 Vacancy rate {S.LEVER['L2']}, L3 Building lifetime "
+         f"{S.LEVER['L3']}; the deep mauve anchor {S.P2_ANCHOR}), blues (L8 Material carbon efficiency "
+         f"{S.LEVER['L8']}, L9 Construction-stage carbon {S.LEVER['L9']}), browns (L7 Soil-aware planning "
+         f"{S.LEVER['L7']}, L6 Brownfield-first development {S.LEVER['L6']}). PAS 2080 strategies (MODEL v3.3.0, the "
+         f"former pathway colours): S1 Avoid {S.STRATEGY['S1']}, S2 Switch {S.STRATEGY['S2']}, S3 Improve "
+         f"{S.STRATEGY['S3']}; the Moderate / Ambitious Pathway vermilion ({S.PATHWAY[N.PATHWAY]}) and TL a deep forest "
+         f"green ({S.TL}; a larger circle on point plots).",
+         '* **Demand bands** are coloured by the lever family that targets them (Smaller households L1, Extra space L4, '
+         f"Vacancy L2, 2026 overbuild the deep mauve anchor, Overbuild absorbed a lighter mauve ({S.BAND['overbuild_absorbed'][0]}), "
          f"Demolition replacement a lilac ({S.REPLACEMENT}), Unconsented additions a darker lilac "
-         f"({S.BAND['unconsented'][0]}), the Recent replacement surge the L5 face ({S.LEVER['L5']}) with a fine light "
+         f"({S.BAND['unconsented'][0]}), the Recent replacement surge the L3 face ({S.LEVER['L3']}) with a fine light "
          f"hatch (the only hatched band), Released dwellings (TL) a light green ({S.BAND['released_tl'][0]})). The only "
          f"untargeted band, Population growth, is a solid deep green-blue ({S.GROWTH}). Unexplained building of the "
          f"history: a faded reddish face ({S.UNEXPLAINED[0]}).",
@@ -172,8 +177,8 @@ def main():
          'colour, hanging from the top of the positive stack, so the bar ends at its net total, marked by a net tick; '
          'one legend entry per band. Materials and stages are never negative (a STOP if they were).',
          f"* **Maintenance** (B2, B4) neutral grey ({S.BAND['maintenance'][0]}); committed emissions after 2050 a "
-         f"lighter grey drawn hollow ({S.COMPONENT['committed'][0]}). Carbon stages: A1-A3 the L6 dark blue, A4-A5 the "
-         'L7 light blue, soil carbon loss the L8 brown.',
+         f"lighter grey drawn hollow ({S.COMPONENT['committed'][0]}). Carbon stages: A1-A3 the L8 dark blue, A4-A5 the "
+         'L9 light blue, soil carbon loss the L7 brown.',
         f"* **Reference** dark grey ({S.REFERENCE}); Low and High replacement mid greys with dashed and dotted lines.",
          f"* **Stacked bars and areas** are drawn seamless: each segment's edge is its own face colour at "
          f"{S.LW_SEAM:g} pt (no white borders, no anti-aliasing gaps); a hatch is drawn in a thin hatch colour only "
@@ -222,7 +227,7 @@ def main():
               'red under every simulated deficiency), so their order survives without hue; any other group below the '
               'threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so '
               'the reading never depends on colour alone.']
-    rs = min_distance({'Historical replacement': S.REPLACEMENT, 'Recent replacement surge': S.LEVER['L5']})
+    rs = min_distance({'Historical replacement': S.REPLACEMENT, 'Recent replacement surge': S.LEVER['L3']})
     L += ['', 'Historical replacement against the Recent replacement surge face: '
           + ', '.join(f'{v} {rs[v][0]:.1f}' for v in VISION)
           + ' (below the threshold by design: told apart by lightness, a slightly different hue and the surge\'s '

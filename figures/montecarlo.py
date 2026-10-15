@@ -8,7 +8,8 @@ from figures import draw as P
 from figures import style as S
 
 INPUT_LABELS = {'z_pop': 'Population (with household size)', 'size': 'Future dwelling size',
-                'complete': 'Completion rate', 'carbon': 'Carbon factors (case-study bootstrap)'}
+                'complete': 'Completion rate', 'carbon': 'Carbon factors (case-study bootstrap)',
+                'half_life': 'Replacement half-life (yr)'}
 
 
 def d20():
@@ -60,7 +61,7 @@ def d38():
     dr = D.csv('montecarlo/draws_REF.csv')
     q = D.csv('montecarlo/input_distributions_REF.csv').set_index('input')
     cf = D.csv('montecarlo/carbon_factors_REF.csv')
-    cols = [c for c in ('z_pop', 'size', 'complete') if c in dr.columns]
+    cols = [c for c in ('z_pop', 'size', 'complete', 'half_life') if c in dr.columns]
     fig, ax = plt.subplots(1, len(cols) + 1, figsize=S.figsize('double', 55))
     for a, c in zip(ax, cols):
         a.hist(dr[c], bins=30, color=S.REFERENCE, alpha=0.6)
@@ -69,7 +70,7 @@ def d38():
         a.set_title(INPUT_LABELS[c], fontsize=S.FONT_SMALL, loc='left')
         a.tick_params(labelsize=S.FONT_MIN)
     a = ax[-1]
-    tcol = {'Detached': S.LEVER['L1'], 'Townhouses': S.LEVER['L6'], 'Apartments': S.LEVER['L4']}
+    tcol = {'Detached': S.LEVER['L4'], 'Townhouses': S.LEVER['L8'], 'Apartments': S.LEVER['L2']}
     for t, g in cf.groupby('typology', sort=False):
         v = g['a1a3_kg_per_m2'].to_numpy(float)
         a.hist(v, bins=30, color=tcol.get(t, S.MUTED), alpha=0.55, label=t)
@@ -88,8 +89,9 @@ def d38():
 def d39():
     a = D.csv('pathways/montecarlo_annual.csv')
     s = D.csv('pathways/montecarlo_summary.csv')
-    runs = [('REF', N.SCENARIOS['REF'], S.REFERENCE), ('P5', 'P5 Moderate', S.PATHWAY['P5']),
-            ('P5A', 'P5 Ambitious', S.LEVER['L2']), ('TL', N.TL['TL'], S.TL)]
+    runs = [('REF', N.SCENARIOS['REF'], S.REFERENCE),
+            ('pathway_moderate', N.PATHWAY_RUNS['pathway-moderate'], S.PATHWAY[N.PATHWAY]),
+            ('pathway_ambitious', N.PATHWAY_RUNS['pathway-ambitious'], S.LEVER['L5']), ('TL', N.TL['TL'], S.TL)]
     fig, ax = plt.subplots(figsize=S.figsize('double', 75))
     for r, lab, col in runs:
         t = a[a['run'] == r]

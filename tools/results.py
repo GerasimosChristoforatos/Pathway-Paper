@@ -82,7 +82,7 @@ def main():
                   '',
                   '| variant | maintenance (B2, B4) 2026-2050 | share of carbon 2026-2050 | committed B2/B4 | '
                   'committed C1-C4 | committed total | years of the 2050 AR boundary |', '|---|---|---|---|---|---|---|']
-            for k in ('LOW', 'REF', 'HIGH'):
+            for k in ('LOW', 'REF', 'HIGH', 'VHIGH'):
                 if k in cm:
                     c = cm[k]
                     L.append(f"| {SCEN_NAME[k]} | {c['maintenance_kt_sum_of_annual']:,.0f} | "

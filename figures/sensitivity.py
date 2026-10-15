@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import naming as N
 from figures import data as D
 from figures import draw as P
 from figures import style as S
@@ -54,8 +55,10 @@ def d17():
 
 
 D40_LABELS = {'z_pop': 'Population path\n(rank, z-score)', 'size': 'Dwelling size\n(multiplier)',
-              'complete': 'Completion rate', 'carbon_index': 'Carbon factors\n(index)'}
-D40_RUNS = {'REF': 'Reference', 'P5': 'P5 Moderate', 'P5A': 'P5 Ambitious', 'TL': 'Theoretical limit'}
+              'complete': 'Completion rate', 'carbon_index': 'Carbon factors\n(index)',
+              'half_life': 'Replacement\nhalf-life (yr)'}
+D40_RUNS = {'REF': 'Reference', 'pathway_moderate': 'Moderate Pathway', 'pathway_ambitious': 'Ambitious Pathway',
+            'TL': 'Theoretical Limit'}
 
 
 def d40():
@@ -68,9 +71,9 @@ def d40():
         for j, run in enumerate(runs):
             t = imp[(imp['run'] == run) & (imp['output'] == out)].set_index('input').loc[inputs]
             off = (j - (len(runs) - 1) / 2) * 0.2
-            col = {'REF': S.REFERENCE, 'P5': S.PATHWAY['P5'], 'TL': S.TL}.get(run, S.MUTED)
+            col = {'REF': S.REFERENCE, 'pathway_moderate': S.PATHWAY[N.PATHWAY], 'TL': S.TL}.get(run, S.MUTED)
             a.errorbar(t['prcc'], y + off, xerr=[t['prcc'] - t['prcc_lo'], t['prcc_hi'] - t['prcc']], fmt='o', ms=3,
-                       color=col, lw=S.LW_THIN, label=run)
+                       color=col, lw=S.LW_THIN, label=D40_RUNS.get(run, run))
         a.axvline(0, color=S.INK, lw=S.LW_THIN)
         a.set_xlim(-1, 1)
         a.set_xlabel('PRCC (95% bootstrap interval)', fontsize=S.FONT_SMALL)
@@ -86,12 +89,12 @@ def d40():
 
 
 def d41():
-    r = D.csv('sensitivity/p5_carbon.csv')
+    r = D.csv('sensitivity/pathway_carbon.csv')
     fig, ax = plt.subplots(figsize=S.figsize('double', 90))
     _rows(ax, r, 'carbon_kt', float(r['central_carbon_kt'].iloc[0]), 'Cumulative carbon 2026-2050 (kt CO₂e)')
     P.thousands(ax.xaxis)
     fig.tight_layout()
-    S.save_figure(fig, 'D41_p5_sensitivity', source=['sensitivity/p5_carbon.csv'])
+    S.save_figure(fig, 'D41_pathway_sensitivity', source=['sensitivity/pathway_carbon.csv'])
 
 
 def d42():
@@ -104,5 +107,5 @@ def d42():
     S.save_figure(fig, 'D42_pb_sensitivity', source=['sensitivity/planetary_boundary.csv'])
 
 
-FIGURES = {'D16_one_at_a_time': d16, 'D17_sensitivity_paths': d17, 'D40_src_prcc': d40, 'D41_p5_sensitivity': d41,
+FIGURES = {'D16_one_at_a_time': d16, 'D17_sensitivity_paths': d17, 'D40_src_prcc': d40, 'D41_pathway_sensitivity': d41,
            'D42_pb_sensitivity': d42}

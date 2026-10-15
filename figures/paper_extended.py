@@ -100,8 +100,10 @@ def ed4():
     dr = D.csv('pathways/montecarlo_draws.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 72), sharex=True)
     for a, q, letter in ((ax[0], 'LoE_AR', 'a'), (ax[1], 'LoE_AtP', 'b')):
-        for r, col, lab in (('REF', S.REFERENCE, N.SCENARIOS['REF']), ('P5', S.PATHWAY['P5'], 'P5 Moderate'),
-                            ('P5A', S.LEVER['L2'], 'P5 Ambitious'), ('TL', S.TL, N.TL['TL'])):
+        for r, col, lab in (('REF', S.REFERENCE, N.SCENARIOS['REF']),
+                            ('pathway_moderate', S.PATHWAY[N.PATHWAY], N.PATHWAY_RUNS['pathway-moderate']),
+                            ('pathway_ambitious', S.LEVER['L5'], N.PATHWAY_RUNS['pathway-ambitious']),
+                            ('TL', S.TL, N.TL['TL'])):
             a.scatter(dr['z_pop'], dr[f'{r}_{q}'], s=2, color=col, alpha=0.4, lw=0, label=lab)
         a.axhline(1.0, color=S.AR if q == 'LoE_AR' else S.ATP, lw=S.LW_BOUNDARY,
                   ls=S.BOUNDARY['AR' if q == 'LoE_AR' else 'AtP']['ls'], gid='boundary')
@@ -190,15 +192,15 @@ def ed7():
 
 def ed8():
     s = D.csv('pathways/shapley.csv')
-    s = s[(s['game'] == 'tl_from_p5_moderate') & (s['metric'] == 'carbon_kt')].set_index('player')
+    s = s[(s['game'] == 'tl_from_moderate_pathway') & (s['metric'] == 'carbon_kt')].set_index('player')
     t = D.js('pathways/theoretical_limit.json')['runs']['TL']
     fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 72), gridspec_kw={'width_ratios': [1.4, 1, 1]})
     order = list(s['reduction'].sort_values().index)
     ax[0].barh(np.arange(len(order)), s.loc[order, 'reduction'], color=[S.LEVER[LV.TL_LEVER[k]] for k in order])
     ax[0].set_yticks(np.arange(len(order)))
     ax[0].set_yticklabels([f'{k} {N.TL[k]}' for k in order], fontsize=S.FONT_MIN + 0.5)
-    ax[0].set_xlabel('Reduction from P5 Moderate (kt CO₂e; Shapley)')
-    P.panel(ax[0], 'a', 'TL1-TL9 from P5 Moderate')
+    ax[0].set_xlabel('Reduction from the Moderate Pathway (kt CO₂e; Shapley)')
+    P.panel(ax[0], 'a', 'TL1-TL9 from the Moderate Pathway')
     yrs = sorted(int(y) for y in t['household_size_by_year'])
     ax[1].plot(yrs, [t['m2_per_person_new_dwellings'][str(y)] for y in yrs], color=S.TL)
     ax[1].set_ylabel('m² per person, new dwellings')
@@ -210,9 +212,9 @@ def ed8():
                '2027-2050', transform=ax[2].transAxes, fontsize=S.FONT_MIN, color=S.MUTED, va='bottom')
     fig.tight_layout()
     _save(fig, 'ED8_tl_shapley_indicators', note=f"TL re-occupies {t['reoccupied']:,.0f} released dwellings "
-                                                 f"(attributed TL3 {t['reoccupied_attributed']['TL3']:,.0f}, TL4 "
-                                                 f"{t['reoccupied_attributed']['TL4']:,.0f}, in proportion R3:R4). (c) The "
-                                                 "vacancy parameter falls to 0 by 2035 (TL4); the physical (implied) "
+                                                 f"(attributed TL1 {t['reoccupied_attributed']['TL1']:,.0f}, TL2 "
+                                                 f"{t['reoccupied_attributed']['TL2']:,.0f}, in proportion R1:R2). (c) The "
+                                                 "vacancy parameter falls to 0 by 2035 (TL2); the physical (implied) "
                                                  "vacancy falls as the released stock is re-occupied over 2027-2050.")
 
 
@@ -226,11 +228,11 @@ def ed9():
         S.boundary_zones(b, yrs, ref['B_AR_kt'].values, ref['B_AtP_kt'].values)
         b.plot(yrs, ref['carbon_kt'], color=S.REFERENCE, lw=S.LW_BOLD, label=N.SCENARIOS['REF'])
         for suffix, ls, lab in (('-by2030', ':', 'by 2030'), ('', '-', 'by 2035 (adopted)'), ('-by2045', '--', 'by 2045')):
-            r = a[a['run'] == f'P5-{s}{suffix}'].set_index('year')
-            b.plot(yrs, r['carbon_kt'], color=S.PATHWAY['P5'], ls=ls, lw=S.LW, label=f'P5, full roll-out {lab}')
+            r = a[a['run'] == f'{N.PATHWAY}-{s}{suffix}'].set_index('year')
+            b.plot(yrs, r['carbon_kt'], color=S.PATHWAY[N.PATHWAY], ls=ls, lw=S.LW, label=f'Pathway, full roll-out {lab}')
         b.set_xlim(yrs[0], yrs[-1])
         b.set_ylim(0, None)
-        P.panel(b, letter, f'P5 {N.SETTINGS[s]}')
+        P.panel(b, letter, N.PATHWAY_RUNS[f'{N.PATHWAY}-{s}'])
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
     ax[0].legend(fontsize=S.FONT_MIN)
     fig.tight_layout()
@@ -253,19 +255,19 @@ def ed10():
     P.thousands(ax.yaxis)
     ax.legend(fontsize=S.FONT_MIN, ncol=3, loc='lower left')
     fig.tight_layout()
-    _save(fig, 'ED10_lambda_sweep', note='L9 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
+    _save(fig, 'ED10_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
                                          's_ref against the year-varying replacement share.')
 
 
 def ed11():
     p = D.js('pathways/levers.json')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 70))
-    for a, L, key, letter in ((ax[0], 'L2', 'ratio', 'a'), (ax[1], 'L6', 'ratio', 'b')):
+    for a, L, key, letter in ((ax[0], 'L5', 'ratio', 'a'), (ax[1], 'L8', 'ratio', 'b')):
         q = p[L]
         cases = pd.DataFrame(q['cases']).sort_values(key)
         typ = cases['Typology'] if 'Typology' in cases else cases['typology']
         y = np.arange(len(cases))
-        cols = {'Detached': S.LEVER['L1'], 'Townhouses': S.LEVER['L6'], 'Apartments': S.LEVER['L4']}
+        cols = {'Detached': S.LEVER['L4'], 'Townhouses': S.LEVER['L8'], 'Apartments': S.LEVER['L2']}
         a.scatter(cases[key], y, c=[cols[t] for t in typ], s=14, zorder=3)
         e = q['estimator']
         a.axvspan(e['ci_lo'], e['ci_hi'], color=S.MUTED, alpha=0.15, lw=0, label='95% bootstrap interval')
@@ -278,9 +280,9 @@ def ed11():
         a.legend(fontsize=S.FONT_MIN, loc='lower right')
         P.panel(a, letter, f"{L} {N.LEVERS[L]} (n = {q['n']}, B = {e['bootstrap']['B']})")
     fig.tight_layout()
-    c15 = p['L6'].get('check_with_A_1')
+    c15 = p['L8'].get('check_with_A_1')
     _save(fig, 'ED11_hd_estimators',
-          note=('L6 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
+          note=('L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
                 'its ratio to the apartment pooled value is ~1 by construction'
                 + (f" ({c15['A_1_ratio']:.4f}); with A_1 (n = {c15['n']}) r = {c15['r']:.3f} (95% CI "
                    f"{c15['ci_lo']:.3f}-{c15['ci_hi']:.3f}) against the adopted r = {c15['adopted_r']:.3f} "
@@ -288,9 +290,9 @@ def ed11():
 
 
 def ed12():
-    p = D.js('pathways/levers.json')['L1']
+    p = D.js('pathways/levers.json')['L4']
     fig, ax = plt.subplots(figsize=S.figsize('double', 70))
-    cols = {'Detached': S.LEVER['L1'], 'Townhouses': S.LEVER['L6'], 'Apartments': S.LEVER['L4']}
+    cols = {'Detached': S.LEVER['L4'], 'Townhouses': S.LEVER['L8'], 'Apartments': S.LEVER['L2']}
     for t, ser in p['consent_size_series'].items():
         yrs = sorted(int(y) for y in ser)
         ax.plot(yrs, [ser[str(y)] for y in yrs], color=cols[t], label=t)
@@ -306,6 +308,9 @@ def ed12():
                                           'series and a recession year.')
 
 
+VARIANT_LS = (('LOW', '--'), ('REF', '-'), ('HIGH', ':'), ('VHIGH', '-.'))     # MODEL v3.3.0: + Very High
+
+
 def ed13():
     a = D.csv('pathways/annual.csv')
     v = D.csv('sensitivity/replacement_variants.csv')
@@ -313,27 +318,31 @@ def ed13():
     yrs = ref.index.values.astype(float)
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 75), gridspec_kw={'width_ratios': [1.6, 1]})
     S.boundary_zones(ax[0], yrs, ref['B_AR_kt'].values, ref['B_AtP_kt'].values)
-    for scen, ls in (('LOW', '--'), ('REF', '-'), ('HIGH', ':')):
-        for run, col in ((scen, S.REFERENCE), ('P5-moderate', S.PATHWAY['P5']), ('TL', S.TL)):
+    for scen, ls in VARIANT_LS:
+        for run, col in ((scen, S.REFERENCE), ('pathway-moderate', S.PATHWAY[N.PATHWAY]), ('TL', S.TL)):
             r = a[(a['scenario'] == scen) & (a['run'] == run)].set_index('year')
             ax[0].plot(yrs, r['carbon_kt'], color=col, ls=ls, lw=S.LW)
     ax[0].set_xlim(yrs[0], yrs[-1])
     ax[0].set_ylim(0, None)
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
     ax[0].legend(handles=[Line2D([0], [0], color=S.REFERENCE, label='Reference / variant'),
-                          Line2D([0], [0], color=S.PATHWAY['P5'], label='P5 Moderate'),
+                          Line2D([0], [0], color=S.PATHWAY[N.PATHWAY], label=N.PATHWAY_RUNS['pathway-moderate']),
                           Line2D([0], [0], color=S.TL, label=N.TL['TL'])] +
-                 [Line2D([0], [0], color=S.MUTED, ls=ls, label=N.SCENARIOS[k]) for k, ls in
-                  (('LOW', '--'), ('REF', '-'), ('HIGH', ':'))], fontsize=S.FONT_MIN)
+                 [Line2D([0], [0], color=S.MUTED, ls=ls, label=N.SCENARIOS[k]) for k, ls in VARIANT_LS],
+                 fontsize=S.FONT_MIN)
     P.panel(ax[0], 'a', 'Annual')
-    piv = v.pivot(index='run', columns='scenario', values='LoE_AR').loc[['Reference', 'P5-moderate', 'P5-ambitious', 'TL']]
+    piv = v.pivot(index='run', columns='scenario', values='LoE_AR').loc[['Reference', 'pathway-moderate',
+                                                                        'pathway-ambitious', 'TL']]
     x = np.arange(len(piv))
-    for j, scen in enumerate(('LOW', 'REF', 'HIGH')):
-        ax[1].bar(x + (j - 1) * 0.25, piv[scen], width=0.25, color=S.SCENARIO[scen]['color'], label=N.SCENARIOS[scen])
+    wd = 0.8 / len(VARIANT_LS)
+    for j, (scen, _) in enumerate(VARIANT_LS):
+        ax[1].bar(x + (j - (len(VARIANT_LS) - 1) / 2) * wd, piv[scen], width=wd, color=S.SCENARIO[scen]['color'],
+                  label=N.SCENARIOS[scen])
     ax[1].axhline(1, **{k: val for k, val in S.BOUNDARY['AR'].items() if k != 'label'}, gid='boundary')
     S.boundary_hzones(ax[1], 1.0, float(ref['B_AtP_kt'].sum() / ref['B_AR_kt'].sum()), lines=False)
     ax[1].set_xticks(x)
-    ax[1].set_xticklabels(piv.index, rotation=30, ha='right', fontsize=S.FONT_MIN + 0.5)
+    ax[1].set_xticklabels([r if r == 'Reference' else N.run_label(r) for r in piv.index], rotation=30, ha='right',
+                          fontsize=S.FONT_MIN + 0.5)
     ax[1].set_ylabel('Cumulative LoE AR 2026-2050')
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Cumulative')
@@ -379,31 +388,31 @@ def ed14():
 def edt1():
     """EDT1: each lever's native parameter by typology at Moderate, Ambitious and TL (Markdown + CSV)."""
     p = D.js('pathways/levers.json')
-    typ = list(p['L1']['size_ref'])
+    typ = list(p['L4']['size_ref'])
     rows = []
     for L in LV.LEVERS:
         for t in typ:
             q = p[L]
-            if L == 'L1':
+            if L == 'L4':
                 v = [q['f']['moderate'][t], q['f']['ambitious'][t], q['tl'][t]]
                 par = 'f (share of the extra-space margin removed)'
-            elif L in ('L2', 'L6'):
+            elif L in ('L5', 'L8'):
                 v = [q['r']['moderate'], q['r']['ambitious'], q['tl'][t]]
                 par = 'r (ratio to the Reference)'
-            elif L == 'L8':
+            elif L == 'L7':
                 s0 = q['soil_factor_2025'][t]
                 v = [s0 * (1 - q['x']['moderate']), s0 * (1 - q['x']['ambitious']), q['tl'][t]]
                 par = 'soil carbon loss (kg CO2e/m2 floor area)'
-            elif L == 'L3':
+            elif L == 'L1':
                 v = [q['S']['moderate']['2050'], q['S']['ambitious']['2050'], q['tl']]
                 par = 'household size 2050 (all typologies)'
-            elif L == 'L4':
+            elif L == 'L2':
                 v = [q['v']['moderate'], q['v']['ambitious'], q['tl']]
                 par = 'vacancy rate (all typologies)'
-            elif L == 'L5':
+            elif L == 'L3':
                 v = [q['d']['moderate'], q['d']['ambitious'], 1.0]
                 par = 'd, reduction of demolition and surge (all typologies)'
-            elif L == 'L7':
+            elif L == 'L9':
                 v = [q['target']['moderate']['2050'], q['target']['ambitious']['2050'], 0.0]
                 par = 'A4-A5 factor 2050 (all typologies)'
             else:

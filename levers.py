@@ -9,7 +9,7 @@ object itself, so that the identity run is the reference call of projection.main
 AMBITION LEVELS (the 2050 Pathways Calculator, DECC 2010 and DESNZ 2023; EUCalc D2.5, 2020)
   Reference  = Level 1   the lever's native parameter at its Reference value (the lever is off)
   Moderate   = Level 2   the exact midpoint between Reference and Ambitious in the native parameter (per year for the
-                         path levers L3 and L7)
+                         path levers L1 and L9)
   Ambitious  = Level 3   the best value already achieved, by the first applicable sub-rule:
                  A  a case-study distribution exists -> Harrell-Davis q0.15 of the pooled scale-free case ratios
                     (the top-15% convention of the EU Taxonomy, Delegated Regulation 2021/2139, Annex I s. 7.7),
@@ -24,24 +24,25 @@ x(lambda) = x_ref + lambda (x_amb - x_ref)); Moderate is lambda = 0.5 exactly (t
 
 ADOPTION. Every level, TL included, moves from the Reference along the normalised logistic 2026 -> 2035 (midpoint
 2030.5, k = ln(81) / 6; RECC full roll-out by 2035, Pauliuk et al. 2024): x(y) = x_ref + w(y) (x_level - x_ref).
-Sensitivities: by 2030, by 2045 (P5) and the instant TL (full strength from 2027). Years: model index 0 = 2025,
+Sensitivities: by 2030, by 2045 (the Pathways) and the instant TL (full strength from 2027). Years: model index 0 = 2025,
 1 = 2026 (observed; no lever touches it).
 
-LEVERS (pathways naming.PATHWAY_LEVERS; sub-rule naming.LEVER_SUBRULE)
-  P1 Space per person  L1 Dwelling size [B]     share f of the extra-space margin (size - occupied area) removed,
-                                                applied after L2; f_amb,t = (size_ref - size_min) / (size_ref -
-                                                occ_ref), size_min = the smallest annual mean consented size 1990-2025
-                       L2 Design density [A]    every typology's OLF and dwelling size x r, r = HD q0.15 of the 16
-                                                case-study ratios OLF_i / typology median
-                       L3 Household size [C]    S = S_ref + gap, gap = Stats NZ High - Medium household size (held
-                                                at its 2043 value after 2043)
-  P2 Existing stock    L4 Vacancy [B]           vacancy parameter -> the 1996 census minimum (one definition)
-                       L5 Building lifetime [C] demolition and the recent-surge component x (1 - d), d = 0.40
-  P3 Construction      L6 Material carbon [A]   A1-A3 x r, r = HD q0.15 of the case ratios A1-A3_i / pooled
-                       L7 Construction-stage carbon [C]  A4-A5 linear to zero by 2050
-  P4 Land              L8 Soil-aware planning [C] soil carbon loss per m2 x (1 - x), x = 0.146
-                       L9 Brownfield development [C] share s of new floor area on previously developed land, 0.59
-  P5 Combined          every lever
+LEVERS (MODEL v3.3.0: grouped by the PAS 2080:2023 hierarchy, naming.STRATEGY_LEVERS; sub-rule naming.LEVER_SUBRULE;
+settings unchanged from MODEL v3.0.0, only grouping, numbering, names and order changed: naming.LEVER_V3_2)
+  S1 Avoid    L1 Household size [C]    S = S_ref + gap, gap = Stats NZ High - Medium household size (held at its 2043
+                                       value after 2043)
+              L2 Vacancy rate [B]      vacancy parameter -> the 1996 census minimum (one definition)
+              L3 Building lifetime [C] demolition and the recent-surge component x (1 - d), d = 0.40
+              L4 Extra space [B]       share f of the extra-space margin (size - occupied area) removed, applied
+                                       after L5; f_amb,t = (size_ref - size_min) / (size_ref - occ_ref), size_min = the
+                                       smallest annual mean consented size 1990-2025
+              L5 Occupancy density [A] every typology's OLF and dwelling size x r, r = HD q0.15 of the 16 case-study
+                                       ratios OLF_i / typology median
+  S2 Switch   L6 Brownfield-first development [C] share s of new floor area on previously developed land, 0.59
+              L7 Soil-aware planning [C] soil carbon loss per m2 x (1 - x), x = 0.146
+              L8 Material carbon efficiency [A] A1-A3 x r, r = HD q0.15 of the case ratios A1-A3_i / pooled
+  S3 Improve  L9 Construction-stage carbon [C]  A4-A5 linear to zero by 2050
+  Moderate / Ambitious Pathway: every lever at that setting.
 Resolved values: outputs/data/pathways/levers.json.
 """
 import math
@@ -51,15 +52,16 @@ import pandas as pd
 
 import naming as N
 
-LEVERS = tuple(N.LEVERS)                          # ('L1', ..., 'L9')
+LEVERS = tuple(N.LEVERS)                          # ('L1', ..., 'L9'), in the PAS 2080 order
 SETTINGS = tuple(N.SETTINGS)                      # ('moderate', 'ambitious')
 LEVELS = ('reference', 'moderate', 'ambitious', 'tl')
 LAMBDA = {'reference': 0.0, 'moderate': 0.5, 'ambitious': 1.0}
 SETTING_NAMES = dict(N.SETTINGS)
 LEVER_NAMES = dict(N.LEVERS)
-PATHWAYS = dict(N.PATHWAY_LEVERS)                 # P1-P4 -> their levers; P5 = every lever
-PATHWAY_NAMES = dict(N.PATHWAYS)
-LEVER_PATHWAY = {L: P for P, ls in PATHWAYS.items() for L in ls}
+STRATEGIES = dict(N.STRATEGY_LEVERS)              # S1 Avoid, S2 Switch, S3 Improve -> their levers
+STRATEGY_NAMES = dict(N.STRATEGIES)
+LEVER_STRATEGY = dict(N.LEVER_STRATEGY)
+PATHWAY = N.PATHWAY                               # the Moderate / Ambitious Pathway: every lever
 SUBRULE = dict(N.LEVER_SUBRULE)
 SUBRULE_TEXT = {'A': 'A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios',
                 'B': 'B: best value ever observed in NZ (no structural trend)',
@@ -67,24 +69,24 @@ SUBRULE_TEXT = {'A': 'A: case-study distribution, Harrell-Davis q0.15 of the poo
                      'scenario > peer-country value)'}
 # demand band(s) each lever targets (naming.BANDS; LEVERS_TABLE.md)
 BAND_TARGET = {
-    'L1': 'Extra space (and the dwelling size of every band except Population growth)',
-    'L2': 'Every band: occupied area per person (OLF) and dwelling size of every typology',
-    'L3': 'Smaller households (and the number of households of every band)',
-    'L4': 'Vacancy (including the change in the vacancy rate)',
-    'L5': f"{N.BANDS['replacement']} and {N.BANDS['redevelopment']}",
-    'L6': 'None: carbon per m2 (A1-A3) of every band',
-    'L7': 'None: carbon per m2 (A4-A5) of every band',
-    'L8': 'None: soil carbon loss per m2 of every soil-bearing band',
-    'L9': 'None: the soil-bearing share of every band'}
-LEVER_PARAMETER = {'L1': 'f, share of the extra-space margin removed (engine `size`), per typology',
-                   'L2': 'r, design density ratio (engine `olf` and `size`), per typology',
-                   'L3': 'S, household size path (households = population / S)',
-                   'L4': 'v, vacancy-rate parameter (engine `v`)',
-                   'L5': 'd, reduction of demolition and of the recent-surge component (`rate_demol`, `rate_unc`)',
-                   'L6': 'r, A1-A3 ratio (`intensity`, A1-A3 term only), per typology',
-                   'L7': 'A4-A5 factor path relative to 2025 (`intensity`, A4-A5 term only)',
-                   'L8': 'x, reduction of soil carbon loss per m2 (engine `soil`)',
-                   'L9': 's, share of new floor area on previously developed land (`brownfield_share`)'}
+    'L4': 'Extra space (and the dwelling size of every band except Population growth)',
+    'L5': 'Every band: occupied area per person (OLF) and dwelling size of every typology',
+    'L1': 'Smaller households (and the number of households of every band)',
+    'L2': 'Vacancy (including the change in the vacancy rate)',
+    'L3': f"{N.BANDS['replacement']} and {N.BANDS['redevelopment']}",
+    'L8': 'None: carbon per m2 (A1-A3) of every band',
+    'L9': 'None: carbon per m2 (A4-A5) of every band',
+    'L7': 'None: soil carbon loss per m2 of every soil-bearing band',
+    'L6': 'None: the soil-bearing share of every band'}
+LEVER_PARAMETER = {'L4': 'f, share of the extra-space margin removed (engine `size`), per typology',
+                   'L5': 'r, design density ratio (engine `olf` and `size`), per typology',
+                   'L1': 'S, household size path (households = population / S)',
+                   'L2': 'v, vacancy-rate parameter (engine `v`)',
+                   'L3': 'd, reduction of demolition and of the recent-surge component (`rate_demol`, `rate_unc`)',
+                   'L8': 'r, A1-A3 ratio (`intensity`, A1-A3 term only), per typology',
+                   'L9': 'A4-A5 factor path relative to 2025 (`intensity`, A4-A5 term only)',
+                   'L7': 'x, reduction of soil carbon loss per m2 (engine `soil`)',
+                   'L6': 's, share of new floor area on previously developed land (`brownfield_share`)'}
 
 OBSERVED_YEAR = 2026            # last observed year: w = 0 up to and including it
 
@@ -104,8 +106,8 @@ RAMP_MID = ADOPTED_WINDOW['mid']    # 2030.5
 RAMP_K = ADOPTED_WINDOW['k']        # ln(81) / 6: s rises from 0.1 to 0.9 within 6 years
 assert RAMP_MID == 2030.5 and RAMP_K == math.log(81.0) / 6.0
 ADOPTION_ADOPTED = 'by2035'
-ADOPTION_BY2045 = adoption_window(2045)    # sensitivity (P5): midpoint 2035.5, k = ln(81) / (38/3)
-ADOPTION_BY2030 = adoption_window(2030)    # sensitivity (P5): midpoint 2028, k = ln(81) / (8/3)
+ADOPTION_BY2045 = adoption_window(2045)    # sensitivity (the Pathways): midpoint 2035.5, k = ln(81) / (38/3)
+ADOPTION_BY2030 = adoption_window(2030)    # sensitivity (the Pathways): midpoint 2028, k = ln(81) / (8/3)
 ADOPTION_SENSITIVITIES = (ADOPTION_BY2030, ADOPTION_BY2045)
 RAMP_BASIS = ('full roll-out by 2035 following RECC (Pauliuk et al. 2024, J. Ind. Ecol. 28, 1699: circular-economy '
               'strategies fully implemented by 2035)')
@@ -115,25 +117,25 @@ RAMP_BASIS = ('full roll-out by 2035 following RECC (Pauliuk et al. 2024, J. Ind
 # ---------------------------------------------------------------------------
 HD_Q = 0.15                       # sub-rule A: top 15% (EU Taxonomy 2021/2139, Annex I s. 7.7)
 HD_CI = 0.95
-HD_BOOTSTRAP_SEED = 20261008      # L6 (as MODEL v2.1); L2 uses seed + 1
-L1_CONSENT_YEARS = (1990, 2025)
-L1_FULL_STRENGTH_YEAR = 2035      # occ_ref = S_ref(2035) x OLF_t: the size at full strength equals size_min
-L1_REPORT_YEARS = (2035, 2050)
-L2_N_CASES = 16
-L2_TYPOLOGIES = ('Detached', 'Townhouses', 'Apartments')
-L3_VARIANTS = ('Low', 'Medium', 'High')
-L3_REFERENCE_VARIANT = 'Medium'
-L3_AMBITIOUS_VARIANT = 'High'
-L3_GAP_HELD_AFTER = 2043          # the last published Stats NZ knot
-L4_VACANCY_FLOOR = 0.040          # implied vacancy must never fall below this in a non-TL run (check)
-L5_D_AMBITIOUS = 0.40             # Pellan et al. 2024: demolition 150,000 -> 90,000 a year
-L6_SAMPLE_TYPOLOGIES = ('Detached', 'Townhouses')
-L6_MIN_CASES = 10
-L7_REF_RATE = 0.01
-L7_ZERO_YEAR = 2050
-L8_X_AMBITIOUS = 0.146            # Christoforatos, Pickering & Schipper 2026 (SOC-aware allocation)
-L9_S_AMBITIOUS = 0.59             # DLUHC 2022: England, three-year average 2018-21
-L9_CONTEXT = dict(us_epa_2014_infill=0.21, england_2020_21=0.66, england_3yr=0.59, north_east=0.41, london=0.89)
+HD_BOOTSTRAP_SEED = 20261008      # L8 (as MODEL v2.1); L5 uses seed + 1
+L4_CONSENT_YEARS = (1990, 2025)
+L4_FULL_STRENGTH_YEAR = 2035      # occ_ref = S_ref(2035) x OLF_t: the size at full strength equals size_min
+L4_REPORT_YEARS = (2035, 2050)
+L5_N_CASES = 16
+L5_TYPOLOGIES = ('Detached', 'Townhouses', 'Apartments')
+L1_VARIANTS = ('Low', 'Medium', 'High')
+L1_REFERENCE_VARIANT = 'Medium'
+L1_AMBITIOUS_VARIANT = 'High'
+L1_GAP_HELD_AFTER = 2043          # the last published Stats NZ knot
+L2_VACANCY_FLOOR = 0.040          # implied vacancy must never fall below this in a non-TL run (check)
+L3_D_AMBITIOUS = 0.40             # Pellan et al. 2024: demolition 150,000 -> 90,000 a year
+L8_SAMPLE_TYPOLOGIES = ('Detached', 'Townhouses')
+L8_MIN_CASES = 10
+L9_REF_RATE = 0.01
+L9_ZERO_YEAR = 2050
+L7_X_AMBITIOUS = 0.146            # Christoforatos, Pickering & Schipper 2026 (SOC-aware allocation)
+L6_S_AMBITIOUS = 0.59             # DLUHC 2022: England, three-year average 2018-21
+L6_CONTEXT = dict(us_epa_2014_infill=0.21, england_2020_21=0.66, england_3yr=0.59, north_east=0.41, london=0.89)
 
 SOURCES = {
     'DECC2010': 'DECC (2010) 2050 Pathways Analysis. Department of Energy and Climate Change, London (ambition levels 1-4)',
@@ -251,8 +253,8 @@ def hd_estimate(x, q, B, seed):
                 bootstrap=dict(B=int(B), seed=int(seed), ci=HD_CI, method='percentile'))
 
 
-def case_ratios(fb, typologies=L6_SAMPLE_TYPOLOGIES):
-    """L6 sample: x_i = A1-A3_i / pooled A1-A3 of its typology (2025 factors, factors_building.csv),
+def case_ratios(fb, typologies=L8_SAMPLE_TYPOLOGIES):
+    """L8 sample: x_i = A1-A3_i / pooled A1-A3 of its typology (2025 factors, factors_building.csv),
     independent cases only (empty duplicate_of). Pooling as Building_factors.pool: equal
     weight per sub-type, then per building (over every case of the typology, as the model)."""
     rows, pooled = [], {}
@@ -266,7 +268,7 @@ def case_ratios(fb, typologies=L6_SAMPLE_TYPOLOGIES):
 
 
 def design_ratios(chars, fb):
-    """L2 sample: x_i = design floor area per occupant (OLF_i = total GFA / design occupants) / the median OLF of the
+    """L5 sample: x_i = design floor area per occupant (OLF_i = total GFA / design occupants) / the median OLF of the
     case's typology, every one of the 16 case studies (A_2 included: a distinct design, 4,078 vs 3,721 m2 for the
     same 189 occupants)."""
     c = chars[['Total GFA', 'Occupants', 'OLF']].join(fb.set_index('id')[['Typology', 'Subtype']], how='inner')
@@ -277,22 +279,22 @@ def design_ratios(chars, fb):
 
 
 # ============================================================
-# L7 PATHS (A4-A5 factor relative to 2025)
+# L9 PATHS (A4-A5 factor relative to 2025)
 # ============================================================
 def a45_reference(years):
     """The adopted A4-A5 factor e^(-0.01 (y - 2025)) (Building_factors.generic_path, DECARB_A45 'resch')."""
     t = np.asarray(years, float)
-    return np.exp(-L7_REF_RATE * np.clip(t - 2025.0, 0.0, None))
+    return np.exp(-L9_REF_RATE * np.clip(t - 2025.0, 0.0, None))
 
 
 def a45_ambitious(years):
-    """L7 Ambitious: linear to zero in 2050, 1 - (y - 2025) / 25 (Zero Carbon Act s. 5Q; Oslo 2025)."""
+    """L9 Ambitious: linear to zero in 2050, 1 - (y - 2025) / 25 (Zero Carbon Act s. 5Q; Oslo 2025)."""
     t = np.clip(np.asarray(years, float) - 2025.0, 0.0, None)
-    return np.clip(1.0 - t / (L7_ZERO_YEAR - 2025.0), 0.0, None)
+    return np.clip(1.0 - t / (L9_ZERO_YEAR - 2025.0), 0.0, None)
 
 
 def a45_target(years, lam):
-    """L7 target factor path at level lambda (per-year interpolation; 0.5 = Moderate = the per-year midpoint);
+    """L9 target factor path at level lambda (per-year interpolation; 0.5 = Moderate = the per-year midpoint);
     lam 'tl': zero."""
     if lam == 'tl':
         return np.zeros(len(np.asarray(years)))
@@ -308,8 +310,8 @@ def household_size(B):
     return np.asarray(B['df_forecast']['PopTotal_50th'].values, float) / np.asarray(B['households_forecast']['50th'], float)
 
 
-def consent_size_minima(B, settings, years=L1_CONSENT_YEARS):
-    """L1 sub-rule B: annual mean new-dwelling size (consented floor area / consents) by typology, years[0]-years[1];
+def consent_size_minima(B, settings, years=L4_CONSENT_YEARS):
+    """L4 sub-rule B: annual mean new-dwelling size (consented floor area / consents) by typology, years[0]-years[1];
     the minimum and its year."""
     d = B['df_consents']
     d = d[(d['Year'] >= years[0]) & (d['Year'] <= years[1])]
@@ -338,12 +340,12 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                              sensitivities=[dict(r) for r in ADOPTION_SENSITIVITIES]),
                levels=dict(N.LEVELS), lambda_=dict(LAMBDA), subrule=dict(SUBRULE))
 
-    # ---- L2 Design density [A] (first: L1 acts on the margin after L2) ----
+    # ---- L5 Design density [A] (first: L4 acts on the margin after L5) ----
     cases2, med2 = design_ratios(chars, factors_building)
     present = sorted(set(cases2['Typology']))
-    if len(cases2) != L2_N_CASES or set(present) != set(L2_TYPOLOGIES):
-        raise SystemExit(f'STOP (L2): design-density sample n = {len(cases2)} (expected {L2_N_CASES}), typologies '
-                         f'{present} (expected {list(L2_TYPOLOGIES)}).')
+    if len(cases2) != L5_N_CASES or set(present) != set(L5_TYPOLOGIES):
+        raise SystemExit(f'STOP (L5): design-density sample n = {len(cases2)} (expected {L5_N_CASES}), typologies '
+                         f'{present} (expected {list(L5_TYPOLOGIES)}).')
     est2 = hd_estimate(cases2['ratio'].values, HD_Q, bootstrap_B, HD_BOOTSTRAP_SEED + 1)
     r2 = est2['r']
     tl2 = {}
@@ -352,80 +354,80 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
         own = float(g['ratio'].min())
         tl2[t] = dict(own_densest=own, own_densest_case=str(g.loc[g['ratio'].idxmin(), 'id']), r=min(own, r2),
                       exceeds_ambitious=bool(own < r2))
-    out['L2'] = dict(subrule='A', n=int(len(cases2)), typologies=present, median_olf={k: float(v) for k, v in med2.items()},
+    out['L5'] = dict(subrule='A', n=int(len(cases2)), typologies=present, median_olf={k: float(v) for k, v in med2.items()},
                      cases=cases2[['id', 'Typology', 'Subtype', 'Total GFA', 'Occupants', 'OLF', 'median_olf', 'ratio']]
                      .to_dict(orient='records'), estimator=est2,
                      r={'reference': 1.0, 'moderate': (1.0 + r2) / 2.0, 'ambitious': r2},
                      tl={t: v['r'] for t, v in tl2.items()}, tl_detail=tl2, olf_reference=olf,
                      anchor=f'HD q0.15 of the 16 case-study design ratios = {r2:.4f}')
 
-    # ---- L1 Dwelling size [B] ----
+    # ---- L4 Dwelling size [B] ----
     mins = consent_size_minima(B, settings)
-    i35 = int(np.where(years == L1_FULL_STRENGTH_YEAR)[0][0])
+    i35 = int(np.where(years == L4_FULL_STRENGTH_YEAR)[0][0])
     occ_ref = {t: float(S[i35] * olf[t]) for t in typ}
     f_amb = {t: (size_ref[t] - mins[t]['size_min']) / (size_ref[t] - occ_ref[t]) for t in typ}
     bad = {t: v for t, v in f_amb.items() if not 0.0 <= v <= 1.0}
     if bad:
-        raise SystemExit(f'STOP (L1): f_t outside [0, 1]: {bad}')
-    out['L1'] = dict(subrule='B', size_ref=size_ref, size_ref_window=list(settings.DWELLING_SIZE_REF),
-                     consent_years=list(L1_CONSENT_YEARS), minima={t: {k: v for k, v in m.items() if k != 'series'}
+        raise SystemExit(f'STOP (L4): f_t outside [0, 1]: {bad}')
+    out['L4'] = dict(subrule='B', size_ref=size_ref, size_ref_window=list(settings.DWELLING_SIZE_REF),
+                     consent_years=list(L4_CONSENT_YEARS), minima={t: {k: v for k, v in m.items() if k != 'series'}
                                                                   for t, m in mins.items()},
                      consent_size_series={t: m['series'] for t, m in mins.items()},
-                     occ_ref=occ_ref, occ_ref_year=L1_FULL_STRENGTH_YEAR, S_ref_occ_year=float(S[i35]), olf=olf,
+                     occ_ref=occ_ref, occ_ref_year=L4_FULL_STRENGTH_YEAR, S_ref_occ_year=float(S[i35]), olf=olf,
                      f={'reference': {t: 0.0 for t in typ}, 'moderate': {t: f_amb[t] / 2.0 for t in typ},
                         'ambitious': f_amb}, tl={t: 1.0 for t in typ},
                      anchor=', '.join(f"{t} {mins[t]['size_min']:.1f} m2 ({mins[t]['year']})" for t in typ),
                      note='1990 is the first year of the consent series and a recession year')
 
-    # ---- L3 Household size [C] ----
+    # ---- L1 Household size [C] ----
     if not all(np.array_equal(np.asarray(B['df_forecast']['PopTotal_50th']), np.asarray(p['pop'])) for p in S_variants.values()):
-        raise SystemExit('STOP (L3): the household-size variants do not share the Reference population path.')
-    S_med = np.asarray(S_variants[L3_REFERENCE_VARIANT]['S'], float)
-    S_high = np.asarray(S_variants[L3_AMBITIOUS_VARIANT]['S'], float)
+        raise SystemExit('STOP (L1): the household-size variants do not share the Reference population path.')
+    S_med = np.asarray(S_variants[L1_REFERENCE_VARIANT]['S'], float)
+    S_high = np.asarray(S_variants[L1_AMBITIOUS_VARIANT]['S'], float)
     if not np.allclose(S_med, S, rtol=1e-12, atol=0):
-        raise SystemExit('STOP (L3): the Reference household size is not the Medium variant.')
-    held = years > L3_GAP_HELD_AFTER
+        raise SystemExit('STOP (L1): the Reference household size is not the Medium variant.')
+    held = years > L1_GAP_HELD_AFTER
     gap_raw = S_high - S_med
     if np.any(gap_raw[~held] < 0):
         bad = [int(y) for y, g in zip(years[~held], gap_raw[~held]) if g < 0]
-        raise SystemExit(f'STOP (L3): High household size below Medium in {bad}.')
-    gap = np.where(held, gap_raw[int(np.where(years == L3_GAP_HELD_AFTER)[0][0])], gap_raw)
+        raise SystemExit(f'STOP (L1): High household size below Medium in {bad}.')
+    gap = np.where(held, gap_raw[int(np.where(years == L1_GAP_HELD_AFTER)[0][0])], gap_raw)
     if np.any(S_high < S_med):
         bad = [int(y) for y, h, m in zip(years, S_high, S_med) if h < m]
-        raise SystemExit(f'STOP (L3): High household size below Medium in {bad}.')
+        raise SystemExit(f'STOP (L1): High household size below Medium in {bad}.')
     hS = B['hist_S'].dropna()
     S_tl = float(hS.max())
     S_amb = S + gap
-    out['L3'] = dict(subrule='C', variants={v: yy(S_variants[v]['S']) for v in S_variants}, gap=yy(gap),
-                     gap_held_after=L3_GAP_HELD_AFTER, S_ref=yy(S),
+    out['L1'] = dict(subrule='C', variants={v: yy(S_variants[v]['S']) for v in S_variants}, gap=yy(gap),
+                     gap_held_after=L1_GAP_HELD_AFTER, S_ref=yy(S),
                      S={'reference': yy(S), 'moderate': yy(S + gap / 2.0), 'ambitious': yy(S_amb)},
                      tl=S_tl, tl_year=int(hS.idxmax()), high_ge_medium_every_year=True,
                      anchor=f'Stats NZ High - Medium household size gap (2050: +{gap[-1]:.4f})')
 
-    # ---- L4 Vacancy [B] ----
+    # ---- L2 Vacancy [B] ----
     v0 = float(B['v_forward'])
     vc = B['vacancy_consistent']
     v_min, y_min = float(vc.min()), int(vc.idxmin())
-    out['L4'] = dict(subrule='B', v={'reference': v0, 'moderate': (v0 + v_min) / 2.0, 'ambitious': v_min}, tl=0.0,
+    out['L2'] = dict(subrule='B', v={'reference': v0, 'moderate': (v0 + v_min) / 2.0, 'ambitious': v_min}, tl=0.0,
                      census_consistent={int(k): float(v) for k, v in vc.items()}, census_consistent_min_year=y_min,
-                     census_consistent_2023=float(vc.loc[2023]), floor=L4_VACANCY_FLOOR,
+                     census_consistent_2023=float(vc.loc[2023]), floor=L2_VACANCY_FLOOR,
                      anchor=f'{100 * v_min:.2f}% ({y_min} census minimum, one definition)',
                      note=f'Reference = the published 2023 census value {100 * v0:.2f}%; on the consistent definition '
                           f'2023 is {100 * float(vc.loc[2023]):.2f}%')
 
-    # ---- L5 Building lifetime [C] ----
-    out['L5'] = dict(subrule='C', d={'reference': 0.0, 'moderate': L5_D_AMBITIOUS / 2.0, 'ambitious': L5_D_AMBITIOUS},
+    # ---- L3 Building lifetime [C] ----
+    out['L3'] = dict(subrule='C', d={'reference': 0.0, 'moderate': L3_D_AMBITIOUS / 2.0, 'ambitious': L3_D_AMBITIOUS},
                      tl=dict(d_demolition=1.0, d_surge=1.0), demolition_rate=float(B['demolition_rate']),
                      long_run_residual=float(B['unconsented_rate']),
                      anchor='-40% demolition (Pellan et al. 2024)',
                      tl_note='zero demolition, no redevelopment wave; unconsented additions kept at the long-run rate')
 
-    # ---- L6 Material carbon [A] ----
+    # ---- L8 Material carbon [A] ----
     cases6, pooled6 = case_ratios(factors_building)
     est6 = hd_estimate(cases6['ratio'].values, HD_Q, bootstrap_B, HD_BOOTSTRAP_SEED)
     r6 = est6['r']
-    if len(cases6) < L6_MIN_CASES or r6 >= 1.0:
-        raise SystemExit(f'STOP (L6): n = {len(cases6)}, r = {r6:.4f}.')
+    if len(cases6) < L8_MIN_CASES or r6 >= 1.0:
+        raise SystemExit(f'STOP (L8): n = {len(cases6)}, r = {r6:.4f}.')
     fb = factors_building.set_index('id')
     tl6 = {}
     for t in typ:
@@ -440,7 +442,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                       rule='min(own best independent case, r_Ambitious)' if evidence else
                            'r_Ambitious (one independent case)')
     a13 = {t: float(B['MAT_STAGE']['A1-A3'][t].sum()) for t in typ}
-    out['L6'] = dict(subrule='A', n=int(len(cases6)), sample_typologies=list(L6_SAMPLE_TYPOLOGIES),
+    out['L8'] = dict(subrule='A', n=int(len(cases6)), sample_typologies=list(L8_SAMPLE_TYPOLOGIES),
                      cases=cases6.to_dict(orient='records'), pooled_a13=pooled6, a13_2025_pooled=a13,
                      estimator=est6, r={'reference': 1.0, 'moderate': (1.0 + r6) / 2.0, 'ambitious': r6},
                      tl={t: v['r'] for t, v in tl6.items()}, tl_detail=tl6,
@@ -448,40 +450,40 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     # MODEL v3.1.0 (A5): check row, report only: the estimator with the apartment case A_1 included (n = 15). A_1 is the
     # one independent apartment case (A_2 is its duplicate_of), so its ratio to the apartment pooled value is ~1 by
     # construction and carries no information on the spread; the adopted sample (n = 14) stays.
-    cases15, _ = case_ratios(factors_building, L6_SAMPLE_TYPOLOGIES + ('Apartments',))
+    cases15, _ = case_ratios(factors_building, L8_SAMPLE_TYPOLOGIES + ('Apartments',))
     est15 = hd_estimate(cases15['ratio'].values, HD_Q, bootstrap_B, HD_BOOTSTRAP_SEED)
-    out['L6']['check_with_A_1'] = dict(n=int(len(cases15)), r=float(est15['r']), ci_lo=est15.get('ci_lo'),
+    out['L8']['check_with_A_1'] = dict(n=int(len(cases15)), r=float(est15['r']), ci_lo=est15.get('ci_lo'),
                                        ci_hi=est15.get('ci_hi'), adopted_n=int(len(cases6)), adopted_r=float(r6),
                                        A_1_ratio=float(cases15.loc[cases15['id'] == 'A_1', 'ratio'].iloc[0]),
                                        note='report only; the adopted estimate keeps n = 14 (Detached, Townhouses)')
 
-    # ---- L7 Construction-stage carbon [C] ----
+    # ---- L9 Construction-stage carbon [C] ----
     a45 = {t: float(B['MAT_STAGE']['A4-A5'][t].sum()) for t in typ}
     ref45 = a45_reference(years)
     red45 = {t: np.asarray(B['RED45_TOT'][t], float) for t in typ}
     chk = max(float(np.max(np.abs(a45[t] * (1.0 - ref45) - red45[t]))) for t in typ)
     if chk > 1e-9:
-        raise SystemExit(f'L7: the model A4-A5 path is not a45_2025 x e^(-0.01 (y - 2025)) (max abs diff {chk:.2e}).')
-    out['L7'] = dict(subrule='C', a45_2025=a45, target={lv: yy(a45_target(years, LAMBDA[lv])) for lv in LAMBDA},
+        raise SystemExit(f'L9: the model A4-A5 path is not a45_2025 x e^(-0.01 (y - 2025)) (max abs diff {chk:.2e}).')
+    out['L9'] = dict(subrule='C', a45_2025=a45, target={lv: yy(a45_target(years, LAMBDA[lv])) for lv in LAMBDA},
                      tl=0.0, reference_check_max_abs=chk,
                      anchor='A4-A5 linear to zero by 2050 (Zero Carbon Act s. 5Q; Oslo 2025)',
                      assumption='A5 treated as energy: site waste assumed eliminated (upper bound)')
 
-    # ---- L8 Soil-aware planning [C] ----
+    # ---- L7 Soil-aware planning [C] ----
     soil = {t: float(B['SOIL_INTENSITY'][t]) for t in typ}
     ft = factors_typology.set_index('Typology')
     tl8 = {t: dict(soc_avg=float(ft.loc[t, 'SOC_avg']), soc_low=float(ft.loc[t, 'SOC_low'])) for t in typ}
-    out['L8'] = dict(subrule='C', x={'reference': 0.0, 'moderate': L8_X_AMBITIOUS / 2.0, 'ambitious': L8_X_AMBITIOUS},
+    out['L7'] = dict(subrule='C', x={'reference': 0.0, 'moderate': L7_X_AMBITIOUS / 2.0, 'ambitious': L7_X_AMBITIOUS},
                      soil_factor_2025=soil, tl={t: v['soc_low'] for t, v in tl8.items()}, tl_detail=tl8,
                      tl_x={t: 1.0 - tl8[t]['soc_low'] / soil[t] for t in typ},
                      anchor='-14.6% soil carbon loss (SOC-aware allocation; Christoforatos, Pickering & Schipper 2026)')
 
-    # ---- L9 Brownfield development [C] ----
+    # ---- L6 Brownfield development [C] ----
     E0 = B['engine_out']['50th']
     s_ref = float(np.sum(E0['soil_free_gfa'][1:]) / np.sum(E0['total'][1:]))
-    out['L9'] = dict(subrule='C', s={'reference': s_ref, 'moderate': (s_ref + L9_S_AMBITIOUS) / 2.0,
-                                     'ambitious': L9_S_AMBITIOUS}, tl=1.0, s_ref_basis='the v3 Reference: replacement '
-                     '(soil-free) floor area / total, ratio of sums 2026-2050', context=dict(L9_CONTEXT),
+    out['L6'] = dict(subrule='C', s={'reference': s_ref, 'moderate': (s_ref + L6_S_AMBITIOUS) / 2.0,
+                                     'ambitious': L6_S_AMBITIOUS}, tl=1.0, s_ref_basis='the v3 Reference: replacement '
+                     '(soil-free) floor area / total, ratio of sums 2026-2050', context=dict(L6_CONTEXT),
                      anchor='59% of new floor area on previously developed land (England 2018-21, DLUHC 2022)',
                      note='lambda = 0 is the lever off (the Reference); a constant s = s_ref would act in the years whose '
                           'own replacement share is below s_ref')
@@ -492,27 +494,27 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
 def tl_strength(p, years):
     """Every TLn against the Ambitious level of Ln (at least as strong in every typology and year)."""
     yrs = [int(y) for y in years]
-    amb3 = np.array([by_year(p['L3']['S']['ambitious'], y) for y in yrs])
-    soil = p['L8']['soil_factor_2025']
+    amb3 = np.array([by_year(p['L1']['S']['ambitious'], y) for y in yrs])
+    soil = p['L7']['soil_factor_2025']
     return [
-        dict(item='TL1', tl='f = 1', ambitious=str({t: round(v, 4) for t, v in p['L1']['f']['ambitious'].items()}),
-             ok=all(1.0 >= v for v in p['L1']['f']['ambitious'].values())),
-        dict(item='TL2', tl=str({t: round(v, 4) for t, v in p['L2']['tl'].items()}),
-             ambitious=f"r = {p['L2']['r']['ambitious']:.4f}",
-             ok=all(v <= p['L2']['r']['ambitious'] for v in p['L2']['tl'].values())),
-        dict(item='TL3', tl=f"S = {p['L3']['tl']:.4f}", ambitious=f'S_amb max {amb3.max():.4f}',
-             ok=bool(np.all(p['L3']['tl'] >= amb3))),
-        dict(item='TL4', tl='v = 0', ambitious=f"v = {p['L4']['v']['ambitious']:.4f}", ok=0.0 <= p['L4']['v']['ambitious']),
-        dict(item='TL5', tl='d = 1 (demolition and surge)', ambitious=f"d = {p['L5']['d']['ambitious']}",
-             ok=min(p['L5']['tl'].values()) >= p['L5']['d']['ambitious']),
-        dict(item='TL6', tl=str({t: round(v, 4) for t, v in p['L6']['tl'].items()}),
-             ambitious=f"r = {p['L6']['r']['ambitious']:.4f}",
-             ok=all(v <= p['L6']['r']['ambitious'] for v in p['L6']['tl'].values())),
-        dict(item='TL7', tl='A4-A5 = 0', ambitious='linear to zero in 2050', ok=bool(np.all(a45_ambitious(years) >= 0.0))),
-        dict(item='TL8', tl=str({t: round(v, 2) for t, v in p['L8']['tl'].items()}),
-             ambitious=f"x = {p['L8']['x']['ambitious']}",
-             ok=all(p['L8']['tl'][t] <= soil[t] * (1 - p['L8']['x']['ambitious']) for t in soil)),
-        dict(item='TL9', tl='s = 1', ambitious=f"s = {p['L9']['s']['ambitious']}", ok=1.0 >= p['L9']['s']['ambitious'])]
+        dict(item='TL4', tl='f = 1', ambitious=str({t: round(v, 4) for t, v in p['L4']['f']['ambitious'].items()}),
+             ok=all(1.0 >= v for v in p['L4']['f']['ambitious'].values())),
+        dict(item='TL5', tl=str({t: round(v, 4) for t, v in p['L5']['tl'].items()}),
+             ambitious=f"r = {p['L5']['r']['ambitious']:.4f}",
+             ok=all(v <= p['L5']['r']['ambitious'] for v in p['L5']['tl'].values())),
+        dict(item='TL1', tl=f"S = {p['L1']['tl']:.4f}", ambitious=f'S_amb max {amb3.max():.4f}',
+             ok=bool(np.all(p['L1']['tl'] >= amb3))),
+        dict(item='TL2', tl='v = 0', ambitious=f"v = {p['L2']['v']['ambitious']:.4f}", ok=0.0 <= p['L2']['v']['ambitious']),
+        dict(item='TL3', tl='d = 1 (demolition and surge)', ambitious=f"d = {p['L3']['d']['ambitious']}",
+             ok=min(p['L3']['tl'].values()) >= p['L3']['d']['ambitious']),
+        dict(item='TL8', tl=str({t: round(v, 4) for t, v in p['L8']['tl'].items()}),
+             ambitious=f"r = {p['L8']['r']['ambitious']:.4f}",
+             ok=all(v <= p['L8']['r']['ambitious'] for v in p['L8']['tl'].values())),
+        dict(item='TL9', tl='A4-A5 = 0', ambitious='linear to zero in 2050', ok=bool(np.all(a45_ambitious(years) >= 0.0))),
+        dict(item='TL7', tl=str({t: round(v, 2) for t, v in p['L7']['tl'].items()}),
+             ambitious=f"x = {p['L7']['x']['ambitious']}",
+             ok=all(p['L7']['tl'][t] <= soil[t] * (1 - p['L7']['x']['ambitious']) for t in soil)),
+        dict(item='TL6', tl='s = 1', ambitious=f"s = {p['L6']['s']['ambitious']}", ok=1.0 >= p['L6']['s']['ambitious'])]
 
 
 def stop_checks(p):
@@ -541,42 +543,42 @@ def lam_of(level):
 
 
 def native(p, lever, level, years):
-    """The native parameter of `lever` at `level` (by typology for L1, L2, L6, L8; by year for L3, L7; scalars
+    """The native parameter of `lever` at `level` (by typology for L4, L5, L8, L7; by year for L1, L9; scalars
     otherwise). Moderate is the exact midpoint of Reference and Ambitious (lambda = 0.5)."""
     lam = lam_of(level)
     tl = lam == 'tl'
     interp = lambda ref, amb: ref + lam * (amb - ref)
-    if lever == 'L1':
-        return dict(p['L1']['tl']) if tl else {t: lam * v for t, v in p['L1']['f']['ambitious'].items()}
-    if lever == 'L2':
-        return dict(p['L2']['tl']) if tl else {t: interp(1.0, p['L2']['r']['ambitious']) for t in p['L2']['tl']}
-    if lever == 'L3':
-        S = np.array([by_year(p['L3']['S_ref'], int(y)) for y in years])
-        gap = np.array([by_year(p['L3']['gap'], int(y)) for y in years])
-        return np.full(len(years), p['L3']['tl']) if tl else S + lam * gap
     if lever == 'L4':
-        return p['L4']['tl'] if tl else interp(p['L4']['v']['reference'], p['L4']['v']['ambitious'])
+        return dict(p['L4']['tl']) if tl else {t: lam * v for t, v in p['L4']['f']['ambitious'].items()}
     if lever == 'L5':
-        return dict(p['L5']['tl']) if tl else dict(d_demolition=lam * p['L5']['d']['ambitious'],
-                                                    d_surge=lam * p['L5']['d']['ambitious'])
-    if lever == 'L6':
-        return dict(p['L6']['tl']) if tl else {t: interp(1.0, p['L6']['r']['ambitious']) for t in p['L6']['tl']}
-    if lever == 'L7':
-        return a45_target(years, lam)
+        return dict(p['L5']['tl']) if tl else {t: interp(1.0, p['L5']['r']['ambitious']) for t in p['L5']['tl']}
+    if lever == 'L1':
+        S = np.array([by_year(p['L1']['S_ref'], int(y)) for y in years])
+        gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
+        return np.full(len(years), p['L1']['tl']) if tl else S + lam * gap
+    if lever == 'L2':
+        return p['L2']['tl'] if tl else interp(p['L2']['v']['reference'], p['L2']['v']['ambitious'])
+    if lever == 'L3':
+        return dict(p['L3']['tl']) if tl else dict(d_demolition=lam * p['L3']['d']['ambitious'],
+                                                    d_surge=lam * p['L3']['d']['ambitious'])
     if lever == 'L8':
-        soil = p['L8']['soil_factor_2025']
-        return dict(p['L8']['tl']) if tl else {t: soil[t] * (1.0 - lam * p['L8']['x']['ambitious']) for t in soil}
+        return dict(p['L8']['tl']) if tl else {t: interp(1.0, p['L8']['r']['ambitious']) for t in p['L8']['tl']}
     if lever == 'L9':
-        return p['L9']['tl'] if tl else interp(p['L9']['s']['reference'], p['L9']['s']['ambitious'])
+        return a45_target(years, lam)
+    if lever == 'L7':
+        soil = p['L7']['soil_factor_2025']
+        return dict(p['L7']['tl']) if tl else {t: soil[t] * (1.0 - lam * p['L7']['x']['ambitious']) for t in soil}
+    if lever == 'L6':
+        return p['L6']['tl'] if tl else interp(p['L6']['s']['reference'], p['L6']['s']['ambitious'])
     raise ValueError(lever)
 
 
 # ============================================================
 # LEVER FUNCTIONS (each returns new inputs)
 # ============================================================
-def l1_size(size_base, olf_y, S, f, w):
-    """L1: size_t(y) = occ_t(y) + [1 - f_t w(y)] (size_base_t(y) - occ_t(y)), occ_t = S(y) OLF_t(y), with the size and
-    OLF after L2 (size_base = size_ref x the L2 factor). Where size_base <= occ the typology / year is held at
+def l4_size(size_base, olf_y, S, f, w):
+    """L4: size_t(y) = occ_t(y) + [1 - f_t w(y)] (size_base_t(y) - occ_t(y)), occ_t = S(y) OLF_t(y), with the size and
+    OLF after L5 (size_base = size_ref x the L5 factor). Where size_base <= occ the typology / year is held at
     size_base (never below the occupied area). Returns (size {typology: array}, held {typology: bool array})."""
     S = np.asarray(S, float)
     size, held = {}, {}
@@ -589,42 +591,42 @@ def l1_size(size_base, olf_y, S, f, w):
     return size, held
 
 
-def l3_households(hh, S_ref, S_target, w):
-    """L3: S(y) = S_ref(y) + w(y) (S_target(y) - S_ref(y)); households = hh x S_ref / S (w = 0 returns hh exactly)."""
+def l1_households(hh, S_ref, S_target, w):
+    """L1: S(y) = S_ref(y) + w(y) (S_target(y) - S_ref(y)); households = hh x S_ref / S (w = 0 returns hh exactly)."""
     hh = np.asarray(hh, float)
     S_ref = np.asarray(S_ref, float)
     S = S_ref + w * (np.asarray(S_target, float) - S_ref)
     return hh * (S_ref / S), S
 
 
-def l4_vacancy(v0, v_level, w):
-    """L4: stock-wide vacancy v(y) = v0 + w(y) (v_level - v0)."""
+def l2_vacancy(v0, v_level, w):
+    """L2: stock-wide vacancy v(y) = v0 + w(y) (v_level - v0)."""
     return v0 + w * (v_level - v0)
 
 
-def l5_rates(rate_demol, rate_unc, long_run_residual, d_demolition, w, d_surge=None):
-    """L5: demolition rate x (1 - w d); the recent-surge component of the residual path (rate_unc - long-run
+def l3_rates(rate_demol, rate_unc, long_run_residual, d_demolition, w, d_surge=None):
+    """L3: demolition rate x (1 - w d); the recent-surge component of the residual path (rate_unc - long-run
     residual) x (1 - w d_surge); the long-run residual (unconsented additions) untouched."""
     d_surge = d_demolition if d_surge is None else d_surge
     return (float(rate_demol) * (1.0 - w * float(d_demolition)),
             float(long_run_residual) + (np.asarray(rate_unc, float) - long_run_residual) * (1.0 - w * float(d_surge)))
 
 
-def l6_intensity(intensity, a13_2025, red13, r, w):
-    """L6: intensity_t(y) - w(y) (1 - r_t) (A1-A3_t,2025 - red13_t(y)): only the A1-A3 term is scaled, so
+def l8_intensity(intensity, a13_2025, red13, r, w):
+    """L8: intensity_t(y) - w(y) (1 - r_t) (A1-A3_t,2025 - red13_t(y)): only the A1-A3 term is scaled, so
     A1-A3(y) = [1 - w (1 - r)] (A1-A3_2025 - reduction(y)) and decarbonisation still applies on top."""
     return {t: np.asarray(intensity[t], float) - w * (1.0 - float(r[t])) * (float(a13_2025[t]) - np.asarray(red13[t], float))
             for t in intensity}
 
 
 def a13_path(a13_2025, red13, r, w):
-    """A1-A3 intensity (kg/m2) by typology and year under L6 (r = 1: the baseline path)."""
+    """A1-A3 intensity (kg/m2) by typology and year under L8 (r = 1: the baseline path)."""
     return {t: (1.0 - w * (1.0 - float(r[t]))) * (float(a13_2025[t]) - np.asarray(red13[t], float))
             for t in a13_2025}
 
 
-def l7_delta(a45_2025, years, target, w):
-    """L7: change of the A4-A5 intensity (kg/m2): a45_2025 x w (target - ref), ref = e^(-0.01 (y - 2025))."""
+def l9_delta(a45_2025, years, target, w):
+    """L9: change of the A4-A5 intensity (kg/m2): a45_2025 x w (target - ref), ref = e^(-0.01 (y - 2025))."""
     ref = a45_reference(years)
     return {t: float(a45_2025[t]) * w * (np.asarray(target, float) - ref) for t in a45_2025}
 
@@ -654,7 +656,7 @@ def inputs(base, p, levels, ramp_name=None):
     """engine.forward inputs and households for the levers in `levels` ({lever: 'moderate' | 'ambitious' | 'tl' |
     lambda}); a lever not in `levels` (or at lambda 0) keeps the very objects of the Reference run.
     base: pathways.base_context (Reference inputs of one projection state or Monte Carlo draw). Returns (fi, info);
-    info['hh'] the households, info['tl'] the levers at Level 4 (re-occupation of the TL3 / TL4 releases)."""
+    info['hh'] the households, info['tl'] the levers at Level 4 (re-occupation of the TL1 / TL2 releases)."""
     unknown = set(levels) - set(LEVERS)
     if unknown:
         raise ValueError(f'Unknown lever(s) {unknown}.')
@@ -664,61 +666,61 @@ def inputs(base, p, levels, ramp_name=None):
     typ = list(base['typ'])
     w = ramp_named(years, ramp_name)
     hh, S = base['hh'], np.asarray(base['pop'], float) / np.asarray(base['hh'], float)
-    info = dict(w=w, l1_held=None, levels=dict(lv), tl=tuple(L for L in LEVERS if lv.get(L) == 'tl'))
-    # L3 household size (the draw's own Reference S plus the published gap; TL3: the historical maximum)
-    if 'L3' in lv:
-        gap = np.array([by_year(p['L3']['gap'], int(y)) for y in years])
-        if lv['L3'] == 'tl':                          # never weaker than Ambitious (a Monte Carlo draw's own S)
-            target = np.maximum(p['L3']['tl'], S + gap)
+    info = dict(w=w, l4_held=None, levels=dict(lv), tl=tuple(L for L in LEVERS if lv.get(L) == 'tl'))
+    # L1 household size (the draw's own Reference S plus the published gap; TL1: the historical maximum)
+    if 'L1' in lv:
+        gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
+        if lv['L1'] == 'tl':                          # never weaker than Ambitious (a Monte Carlo draw's own S)
+            target = np.maximum(p['L1']['tl'], S + gap)
         else:
-            target = S + lv['L3'] * gap
-        hh, S = l3_households(base['hh'], S, target, w)
-    # L2 design density: OLF and dwelling size x k2(y), k2 = 1 - w (1 - r_t)
+            target = S + lv['L1'] * gap
+        hh, S = l1_households(base['hh'], S, target, w)
+    # L5 design density: OLF and dwelling size x k2(y), k2 = 1 - w (1 - r_t)
     k2 = None
-    if 'L2' in lv:
-        r2 = native(p, 'L2', lv['L2'], years)
+    if 'L5' in lv:
+        r2 = native(p, 'L5', lv['L5'], years)
         k2 = {t: 1.0 - w * (1.0 - float(r2[t])) for t in typ}
         fi['olf'] = {t: float(base['olf'][t]) * k2[t] for t in typ}
         fi['size'] = {t: np.asarray(base['size_ref'][t], float) * k2[t] for t in typ}
-    # L1 dwelling size: a share f of the extra-space margin after L2
-    if 'L1' in lv:
+    # L4 dwelling size: a share f of the extra-space margin after L5
+    if 'L4' in lv:
         olf_y = fi['olf'] if k2 is not None else {t: np.full(len(years), float(base['olf'][t])) for t in typ}
         size_b = fi['size'] if k2 is not None else {t: np.broadcast_to(np.asarray(base['size_ref'][t], float),
                                                                        (len(years),)) for t in typ}
-        fi['size'], info['l1_held'] = l1_size(size_b, olf_y, S, native(p, 'L1', lv['L1'], years), w)
-    # L4 vacancy
-    if 'L4' in lv:
-        fi['v'] = l4_vacancy(base['v0'], native(p, 'L4', lv['L4'], years), w)
-    # L5 building lifetime
-    if 'L5' in lv:
-        d = native(p, 'L5', lv['L5'], years)
-        fi['rate_demol'], fi['rate_unc'] = l5_rates(base['rate_demol'], base['rate_unc'], base['long_run_residual'],
+        fi['size'], info['l4_held'] = l4_size(size_b, olf_y, S, native(p, 'L4', lv['L4'], years), w)
+    # L2 vacancy
+    if 'L2' in lv:
+        fi['v'] = l2_vacancy(base['v0'], native(p, 'L2', lv['L2'], years), w)
+    # L3 building lifetime
+    if 'L3' in lv:
+        d = native(p, 'L3', lv['L3'], years)
+        fi['rate_demol'], fi['rate_unc'] = l3_rates(base['rate_demol'], base['rate_unc'], base['long_run_residual'],
                                                     d['d_demolition'], w, d['d_surge'])
-    # L6 material carbon
+    # L8 material carbon
     r6 = {t: 1.0 for t in typ}
-    if 'L6' in lv:
-        r6 = native(p, 'L6', lv['L6'], years)
+    if 'L8' in lv:
+        r6 = native(p, 'L8', lv['L8'], years)
         for k in ('intensity', 'intensity_upfront'):
-            fi[k] = l6_intensity(fi[k], base['a13_2025'], base['red13'], r6, w)
-    # L7 construction-stage carbon
+            fi[k] = l8_intensity(fi[k], base['a13_2025'], base['red13'], r6, w)
+    # L9 construction-stage carbon
     target45 = None
-    if 'L7' in lv:
-        target45 = native(p, 'L7', lv['L7'], years)
-        d45 = l7_delta(base['a45_2025'], years, target45, w)
+    if 'L9' in lv:
+        target45 = native(p, 'L9', lv['L9'], years)
+        d45 = l9_delta(base['a45_2025'], years, target45, w)
         for k in ('intensity', 'intensity_upfront'):
             fi[k] = _add(fi[k], d45)
-    # L8 soil-aware planning: soil factor by year
+    # L7 soil-aware planning: soil factor by year
     soil_path = None
-    if 'L8' in lv:
-        lev = native(p, 'L8', lv['L8'], years)
+    if 'L7' in lv:
+        lev = native(p, 'L7', lv['L7'], years)
         soil_path = {t: float(base['soil'][t]) + w * (float(lev[t]) - float(base['soil'][t])) for t in typ}
         ds = {t: soil_path[t] - float(base['soil'][t]) for t in typ}
         for k in ('intensity', 'intensity_upfront'):
             fi[k] = _add(fi[k], ds)
         fi['soil'] = soil_path
-    # L9 brownfield development
-    if 'L9' in lv:
-        fi['brownfield_share'] = np.full(len(years), float(native(p, 'L9', lv['L9'], years)))
+    # L6 brownfield development
+    if 'L6' in lv:
+        fi['brownfield_share'] = np.full(len(years), float(native(p, 'L6', lv['L6'], years)))
         fi['brownfield_w'] = w
     if info['tl']:
         fi['clip_soil_share'] = True                  # zero-building years possible in TL-family runs
@@ -728,15 +730,16 @@ def inputs(base, p, levels, ramp_name=None):
 
 
 def pathway_levers(pathway, setting):
-    """{lever: setting} of a pathway ('P1'..'P5'; a projection variant id such as 'REF': no lever)."""
+    """{lever: setting} of a strategy ('S1'..'S3') or of the Pathway (PATHWAY: every lever); a projection variant id
+    such as 'REF': no lever."""
     if pathway in N.SCENARIOS:
         return {}
-    levers = LEVERS if pathway == 'P5' else PATHWAYS[pathway]
+    levers = LEVERS if pathway == PATHWAY else STRATEGIES[pathway]
     return {L: setting for L in levers}
 
 
 def label(levels):
-    """'none' for no lever; otherwise e.g. 'L1:moderate+L4:tl' (lambda levels as 'L2:0.3')."""
+    """'none' for no lever; otherwise e.g. 'L4:moderate+L2:tl' (lambda levels as 'L5:0.3')."""
     fmt = lambda x: x if isinstance(x, str) else f'{float(x):g}'
     return '+'.join(f'{k}:{fmt(levels[k])}' for k in LEVERS if k in levels) or 'none'
 
@@ -753,20 +756,21 @@ def key(levels, ramp_name=None):
 TL_COMPONENTS = tuple(f'TL{k}' for k in range(1, 10))
 TL_NAMES = {k: N.TL[k] for k in TL_COMPONENTS}
 TL_LEVER = {f'TL{k}': f'L{k}' for k in range(1, 10)}
-TL_RELEASE_ITEMS = ('TL3', 'TL4')       # their released dwellings are re-occupied (pathways.reoccupation)
+TL_RELEASE_ITEMS = ('TL1', 'TL2')       # their released dwellings are re-occupied (pathways.reoccupation)
 TL_INSTANT_LABEL = 'TL-from2027'
 TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at '
                  'Level 4 (the definitional zero or full, or the best single observation), adopted by 2035, combining '
                  'best observed attributes of different buildings and places; not a proposal or a feasible pathway '
                  '(potentials hierarchy: theoretical > technical > realisable).')
 TL_BAU_NOTE = ('The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 '
-               'e^(-0.01 (t - 2025)) until TL7 sets A4-A5 to zero).')
+               'e^(-0.01 (t - 2025)) until TL9 sets A4-A5 to zero).')
 tl_caption = N.tl_caption
 
 
 def tl_levels(comps, base_setting='moderate'):
     """{lever: level} of a TL-family run: the levers of comps (TL1..TL9) at 'tl', the others at base_setting
-    ('moderate': P5 Moderate, the base of the TL waterfall and of its Shapley game; 'ambitious': P5 Ambitious;
+    ('moderate': the Moderate Pathway, the base of the TL waterfall and of its Shapley game; 'ambitious': the
+    Ambitious Pathway;
     'reference': the base of the per-lever TL Shapley game of Fig8)."""
     out = {} if base_setting == 'reference' else {L: base_setting for L in LEVERS}
     out.update({TL_LEVER[c]: 'tl' for c in comps})
@@ -775,16 +779,16 @@ def tl_levels(comps, base_setting='moderate'):
 
 def tl_label(comps, base_setting='moderate'):
     c = [x for x in TL_COMPONENTS if x in comps]
-    base = {'moderate': 'P5-moderate', 'ambitious': 'P5-ambitious', 'reference': 'REF'}[base_setting]
+    base = {'moderate': f'{PATHWAY}-moderate', 'ambitious': f'{PATHWAY}-ambitious', 'reference': 'REF'}[base_setting]
     return 'TL' if len(c) == len(TL_COMPONENTS) else (base if not c else f"{base}+{'+'.join(c)}")
 
 
 OMITTED = [
     ('Lightweighting', 'the case studies give A1-A3 per m2 by material and item, not structural mass by design '
-     'alternative; a mass reduction cannot be separated from the material choice already covered by L6'),
+     'alternative; a mass reduction cannot be separated from the material choice already covered by L8'),
     ('Bio-based archetypes', 'no typology has a bio-based archetype among the 16 case studies, and the model\'s '
-     'biogenic-carbon convention (timber C1-C4 excludes biogenic CO2) would need extending; overlaps L6'),
-    ('Renovation carbon of retained buildings', 'not modelled: L5 is an upper bound of the effect of building '
+     'biogenic-carbon convention (timber C1-C4 excludes biogenic CO2) would need extending; overlaps L8'),
+    ('Renovation carbon of retained buildings', 'not modelled: L3 is an upper bound of the effect of building '
      'lifetime extension (Napiontek et al. 2025)'),
 ]
 
@@ -800,31 +804,31 @@ def lever_table(p):
     t3 = lambda d: ', '.join(f'{k} {v:.3f}' for k, v in d.items())
     for L in LEVERS:
         q = p[L]
-        if L == 'L1':
+        if L == 'L4':
             mod, amb, tl = 'f = ' + t3(q['f']['moderate']), 'f = ' + t3(q['f']['ambitious']), 'f = 1 (size = occupied area)'
-        elif L in ('L2', 'L6'):
+        elif L in ('L5', 'L8'):
             e = q['estimator']
             mod = f"r = {q['r']['moderate']:.4f}"
             amb = f"r = {q['r']['ambitious']:.4f} (95% CI {e['ci_lo']:.3f}-{e['ci_hi']:.3f}, n = {q['n']})"
             tl = 'r = ' + t3(q['tl'])
-        elif L == 'L3':
+        elif L == 'L1':
             mod = f"S 2050 = {by_year(q['S']['moderate'], 2050):.4f}"
             amb = f"S 2050 = {by_year(q['S']['ambitious'], 2050):.4f} (Reference {by_year(q['S_ref'], 2050):.4f})"
             tl = f"S = {q['tl']:.4f} ({q['tl_year']})"
-        elif L == 'L4':
+        elif L == 'L2':
             mod, amb, tl = pct(q['v']['moderate'], 2), pct(q['v']['ambitious'], 2), 'v = 0'
-        elif L == 'L5':
+        elif L == 'L3':
             mod, amb, tl = f"d = {q['d']['moderate']:.2f}", f"d = {q['d']['ambitious']:.2f}", 'no demolition, no surge'
-        elif L == 'L7':
+        elif L == 'L9':
             mod = f"factor 2050 = {by_year(q['target']['moderate'], 2050):.3f}"
             amb, tl = 'factor 2050 = 0 (linear from 2025)', 'A4-A5 = 0'
-        elif L == 'L8':
+        elif L == 'L7':
             mod, amb = f"x = {q['x']['moderate']:.3f}", f"x = {q['x']['ambitious']:.3f}"
             tl = ', '.join(f'{t} {v:.1f}' for t, v in q['tl'].items()) + ' kg CO2e/m2 (lowest soil order)'
         else:
             mod = f"s = {q['s']['moderate']:.3f} (s_ref {q['s']['reference']:.3f})"
             amb, tl = f"s = {q['s']['ambitious']:.2f}", 's = 1'
-        rows.append(dict(item=f'{L} {LEVER_NAMES[L]}', pathway=f'{LEVER_PATHWAY[L]} {PATHWAY_NAMES[LEVER_PATHWAY[L]]}',
+        rows.append(dict(item=f'{L} {LEVER_NAMES[L]}', strategy=f'{LEVER_STRATEGY[L]} {STRATEGY_NAMES[LEVER_STRATEGY[L]]}',
                          subrule=q['subrule'], anchor=q['anchor'], parameter=LEVER_PARAMETER[L], band=BAND_TARGET[L],
                          moderate=mod, ambitious=amb, tl=tl))
     return rows

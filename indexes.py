@@ -54,12 +54,12 @@ FILES = [
      '(and the population 5th / 95th percentile engine paths)', 'Sensitivity.py'),
     ('data/sensitivity/reference_carbon.csv', 'Grouped one-at-a-time sensitivity of the Reference carbon 2026-2050 '
      '(ED1, ED3)', 'tools/sensitivity_tables.py'),
-    ('data/sensitivity/p5_carbon.csv', 'Grouped one-at-a-time sensitivity of P5 Combined (Moderate): carbon and '
+    ('data/sensitivity/pathway_carbon.csv', 'Grouped one-at-a-time sensitivity of the Moderate Pathway: carbon and '
      'cumulative LoE AR / AtP (ED2)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
      'AR and AtP (ED4)', 'tools/sensitivity_tables.py'),
-    ('data/sensitivity/replacement_variants.csv', 'The Reference, P5 Combined (Moderate) and TL under Low / Reference '
-     '/ High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED10)',
+    ('data/sensitivity/replacement_variants.csv', 'The Reference, the Moderate / Ambitious Pathway and TL under Low / Reference '
+     '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED13)',
      'tools/sensitivity_tables.py'),
     ('data/baseline/annual_by_stage.csv', 'Annual carbon of the Reference 2026-2050 by life-cycle stage (A1-A3, '
      'A4-A5, maintenance B2/B4, soil carbon loss) (Fig3)', 'projection.py'),
@@ -88,18 +88,18 @@ FILES = [
      'pathways.py'),
     ('data/pathways/annual.csv', 'Annual carbon and boundaries of every pathway run', 'pathways.py'),
     ('data/pathways/bands.csv', 'Floor area and carbon by demand band of every pathway run', 'pathways.py'),
-    ('data/pathways/shapley*.csv', 'Exact Shapley values of every game (pathways, levers at Moderate / Ambitious / TL, TL1-TL9 from P5 Moderate) and every subset run',
+    ('data/pathways/shapley*.csv', 'Exact Shapley values of every game (PAS 2080 strategies S1-S3 and levers at Moderate / Ambitious, levers at TL, TL1-TL9 from the Moderate Pathway) and every subset run',
      'pathways.py'),
-    ('data/pathways/montecarlo_draws.csv', 'Pathway Monte Carlo: each saved Reference draw through P5 Combined '
+    ('data/pathways/montecarlo_draws.csv', 'Pathway Monte Carlo: each saved Reference draw through the Moderate / Ambitious Pathway '
      '(Moderate) and TL: inputs, carbon, floor area, budgets and levels of exceedance', 'pathways_mc.py'),
     ('data/pathways/montecarlo_summary.csv', 'Pathway Monte Carlo: percentiles of carbon, floor area and the levels '
-     'of exceedance of the Reference, P5 and TL; P(LoE <= 1)', 'pathways_mc.py'),
-    ('data/pathways/montecarlo_annual.csv', 'Pathway Monte Carlo: percentiles of annual carbon of the Reference, P5 '
+     'of exceedance of the Reference, the Pathways and TL; P(LoE <= 1)', 'pathways_mc.py'),
+    ('data/pathways/montecarlo_annual.csv', 'Pathway Monte Carlo: percentiles of annual carbon of the Reference, the Pathways '
      'and TL', 'pathways_mc.py'),
-    ('data/pathways/montecarlo_draw_rules.json', 'Pathway Monte Carlo: draws where the L2 floor or the TL6 cap binds; '
-     'the L2 target against the Monte Carlo High variant', 'pathways_mc.py'),
+    ('data/pathways/montecarlo_draw_rules.json', 'Pathway Monte Carlo: draws where the L5 floor or the TL8 cap binds; '
+     'the L5 target against the Monte Carlo High variant', 'pathways_mc.py'),
     ('data/pathways/montecarlo_importance.csv', 'Monte Carlo insight: SRC and PRCC of floor area, carbon and LoE AR of '
-     'the Reference, P5 and TL, with bootstrap 95% intervals', 'pathways_mc.py'),
+     'the Reference, the Pathways and TL, with bootstrap 95% intervals', 'pathways_mc.py'),
     ('data/pathways/montecarlo_fits.csv', 'Monte Carlo insight: LOWESS and least-squares curves of every input-output '
      'pair', 'pathways_mc.py'),
     ('data/pathways/montecarlo_conditional_tl.*', 'Monte Carlo insight: P(TL LoE AR <= 1) by the inputs (Firth '
@@ -154,19 +154,22 @@ FILES = [
     ('data/montecarlo/convergence_*.csv', 'Monte Carlo convergence: percentiles over the first n draws', 'MonteCarlo.py'),
     ('data/montecarlo/input_distributions_*.csv', 'Monte Carlo input distributions: quantiles and sample moments',
      'MonteCarlo.py'),
-    ('data/pathways/waterfall.csv', 'Sequential waterfall Reference -> P1 ... P4 (= P5) -> TL1 ... TL9 (= TL) by demand '
+    ('data/pathways/waterfall.csv', 'Sequential waterfall in PAS 2080 order, Reference -> L1 ... L9 (= the Pathway) -> TL1 ... TL9 (= TL) by demand '
      'band, Moderate and Ambitious', 'pathways.py'),
     ('data/pathways/bands_annual.csv', 'In-scope demand bands by year of every Reference-variant run', 'pathways.py'),
     ('data/pathways/lambda_sweep.csv', 'Lambda-sweep of each lever (Reference 0, Moderate 0.5, Ambitious 1) and TL',
      'pathways.py'),
     ('data/pathways/lever_annual.csv', 'Annual carbon of each lever alone at Reference, Moderate, Ambitious and TL',
      'pathways.py'),
-    ('data/pathways/reoccupation_log.csv', 'TL and instant TL by year: need, releases (TL3, TL4), share, re-occupied, '
+    ('data/pathways/reoccupation_log.csv', 'TL and instant TL by year: need, releases (TL1, TL2), share, re-occupied, '
      'binding years, built', 'pathways.py'),
     ('data/pathways/ordering_checks.json', 'Ordering Reference >= Moderate >= Ambitious >= TL per lever, typology and '
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
     ('data/sensitivity/tornado.csv', 'Fig7: the eight inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
+    ('data/pathways/sequential_vs_shapley.csv', 'MODEL v3.3.0: each lever step of the sequential waterfalls (PAS 2080 '
+     'order; Moderate, Ambitious) and each TL step (from the Moderate Pathway) against its order-free Shapley value',
+     'pathways.py'),
     ('data/montecarlo/carbon_factors_REF.csv', 'MODEL v3.2.0 (from v3.1.0): the resulting pooled A1-A3 factor of each Reference '
      'draw by typology (kg CO2e/m2, 2025 technology; D38)', 'pathways_mc.py'),
     ('data/baseline/history_unexplained.json', 'MODEL v3.2.0 (from v3.1.0): the unexplained building of the history 1992-2025 '

@@ -21,7 +21,7 @@ DETERMINISTIC_FILES = (
     'pathways/shapley_subsets.csv', 'pathways/waterfall.csv', 'pathways/lambda_sweep.csv', 'pathways/lever_annual.csv',
     'pathways/reoccupation_log.csv', 'pathways/solution_space.csv', 'pathways/ordering_checks.json',
     'pathways/theoretical_limit.json', 'pathways/backcast.json', 'pathways/levers.json',
-    'sensitivity/reference_carbon.csv', 'sensitivity/p5_carbon.csv', 'sensitivity/replacement_variants.csv',
+    'sensitivity/reference_carbon.csv', 'sensitivity/pathway_carbon.csv', 'sensitivity/replacement_variants.csv',
     'sensitivity/tornado.csv', 'baseline/bands_history.csv', 'baseline/history_unexplained.json')
 MC_FILES = ('montecarlo/draws_REF.csv', 'montecarlo/summary_REF.csv', 'pathways/montecarlo_draws.csv',
             'pathways/montecarlo_summary.csv')

@@ -4,7 +4,8 @@ the names of commit ee37ef1 (pathways v3.1) to the release names.
 * The vocabulary (SCENARIOS, PATHWAYS, SETTINGS, LEVERS, TL, ADOPTION, BANDS,
   COMPONENTS, METRICS) is the only source of reader-facing labels: figures, tables, data
   files and generated documents take their labels from here. Internal code uses the short
-  IDs (REF, LOW, HIGH; P1-P5; L1-L5; TL, TL1-TL6; band and component ids).
+  IDs (REF, LOW, HIGH, VHIGH; S1-S3; pathway-moderate / pathway-ambitious; L1-L9; TL, TL1-TL9; band and
+  component ids).
 * LEGACY maps every identifier of the captured outputs (tests/regression_model_v1.json)
   to its release location: file, CSV column, identifying cell, JSON path. It is used by
   tests/test_regression_model_v1.py, which requires every captured number to be
@@ -25,6 +26,7 @@ SCENARIOS = {
     'REF': 'Reference',
     'LOW': 'Low replacement',
     'HIGH': 'High replacement',
+    'VHIGH': 'Very High replacement (trend continues)',
     'REF_HL5': 'Reference, replacement half-life 5 yr',
     'REF_HL15': 'Reference, replacement half-life 15 yr',
     'LOW_NOUC': 'Low replacement, no census under-construction correction',
@@ -36,14 +38,28 @@ SCENARIO_DEFINITIONS = {
            'rate to the 1991–2023 long-run rate with a 10-year half-life',
     'LOW': 'sensitivity variant of the Reference: the 1991–2023 long-run net replacement rate throughout',
     'HIGH': 'sensitivity variant of the Reference: the 2018–2023 census-interval rate persists',
+    'VHIGH': 'sensitivity variant of the Reference (MODEL v3.3.0): the weighted linear trend of the census-interval '
+             'net replacement rates 1991–2023 continues (OLS weighted by interval length, extrapolated 2026–2050)',
 }
 SCENARIO_LEGACY = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH', 'S3-5': 'REF_HL5', 'S3-15': 'REF_HL15',
                    'S1-noUC': 'LOW_NOUC', 'S3-10-noUC': 'REF_NOUC', 'S2-noUC': 'HIGH_NOUC'}
 FROZEN = 'Frozen technology (2025 carbon factors held; check run)'
 
-# MODEL v3.0.0: four pathway families of nine rule-based levers; P5 = every lever. Ambition levels follow the 2050
+# MODEL v3.3.0: nine rule-based levers grouped by the PAS 2080:2023 carbon reduction hierarchy (BSI 2023, Clause 4.3,
+# Fig. 5: Avoid - Switch - Improve). Avoid = levers that reduce the floor area needed to house the population, system
+# level (number of dwellings) before asset level (floor area per dwelling); Switch = alternative site and materials
+# for the floor area that is built (carbon per m2); Improve = construction efficiencies. Order within a strategy
+# follows the decision sequence (system before asset; site before materials). Ambition levels follow the 2050
 # Pathways Calculator (DECC 2010; DESNZ 2023) and EUCalc (D2.5, 2020): Reference = Level 1, Moderate = Level 2,
-# Ambitious = Level 3, theoretical limit = Level 4.
+# Ambitious = Level 3, theoretical limit = Level 4. Every lever at a setting = the Moderate / Ambitious Pathway.
+STRATEGIES = {'S1': 'Avoid', 'S2': 'Switch', 'S3': 'Improve'}
+STRATEGY_LEVERS = {'S1': ('L1', 'L2', 'L3', 'L4', 'L5'), 'S2': ('L6', 'L7', 'L8'), 'S3': ('L9',)}
+LEVER_STRATEGY = {L: S for S, ls in STRATEGY_LEVERS.items() for L in ls}
+PATHWAY = 'pathway'                                   # run id prefix of the Moderate / Ambitious Pathway (every lever)
+PATHWAY_RUNS = {'pathway-moderate': 'Moderate Pathway', 'pathway-ambitious': 'Ambitious Pathway'}
+PAS2080 = ('BSI (2023) PAS 2080:2023 Carbon management in buildings and infrastructure. British Standards '
+           'Institution, London; Clause 4.3 and Figure 5 (carbon reduction hierarchy: Avoid - Switch - Improve)')
+# MODEL v3.0-v3.2 pathway families (replaced by the strategies; docs/RENAMING.md)
 PATHWAYS = {'P1': 'Space per person', 'P2': 'Existing stock', 'P3': 'Construction', 'P4': 'Land',
             'P5': 'Combined'}
 SETTINGS = {'moderate': 'Moderate', 'ambitious': 'Ambitious'}
@@ -54,9 +70,15 @@ SETTING_LEGACY = {'central': 'moderate', 'stretch': 'ambitious'}
 # Levers: id -> label. LEVER_LEGACY: v3.1 id -> model-v1/v2.0 id (the regression map of the captured
 # v3.1 outputs); LEVER_V2_0: model-v2.0.0 id -> MODEL v2.1.0 id; LEVER_V2_1: MODEL v2.1 id -> MODEL v3.0.0 id
 # (docs/RENAMING.md)
-LEVERS = {'L1': 'Dwelling size', 'L2': 'Design density', 'L3': 'Household size', 'L4': 'Vacancy',
-          'L5': 'Building lifetime', 'L6': 'Material carbon', 'L7': 'Construction-stage carbon',
-          'L8': 'Soil-aware planning', 'L9': 'Brownfield development'}
+LEVERS = {'L1': 'Household size', 'L2': 'Vacancy rate', 'L3': 'Building lifetime', 'L4': 'Extra space',
+          'L5': 'Occupancy density', 'L6': 'Brownfield-first development', 'L7': 'Soil-aware planning',
+          'L8': 'Material carbon efficiency', 'L9': 'Construction-stage carbon'}
+# MODEL v3.0-v3.2 lever id -> MODEL v3.3.0 lever id (and TLn alike; docs/RENAMING.md)
+LEVER_V3_2 = {'L3': 'L1', 'L4': 'L2', 'L5': 'L3', 'L1': 'L4', 'L2': 'L5', 'L9': 'L6', 'L8': 'L7', 'L6': 'L8', 'L7': 'L9'}
+LEVER_NAMES_V3_2 = {'L1': 'Dwelling size', 'L2': 'Design density', 'L3': 'Household size', 'L4': 'Vacancy',
+                    'L5': 'Building lifetime', 'L6': 'Material carbon', 'L7': 'Construction-stage carbon',
+                    'L8': 'Soil-aware planning', 'L9': 'Brownfield development'}
+PATHWAY_LEVERS_V3_2 = {'P1': ('L1', 'L2', 'L3'), 'P2': ('L4', 'L5'), 'P3': ('L6', 'L7'), 'P4': ('L8', 'L9')}
 LEVER_LEGACY = {'L1': 'L1', 'L2a': 'L2', 'L2b': 'L3', 'L3': 'L4', 'L5': 'L5'}
 LEVER_V2_0 = {'L1': 'L1', 'L2': 'L3', 'L3': 'L4', 'L4': 'L5', 'L5': 'L6'}
 LEVER_NAMES_V2_0 = {'L1': 'Dwelling size', 'L2': 'Vacancy rate', 'L3': 'Overbuild absorption',
@@ -69,19 +91,17 @@ LEVER_V2_1 = {'L1 Dwelling size': 'L1 Dwelling size (new rule)', 'L2 Household o
               '(new)': 'L2 Design density'}
 PATHWAYS_V2_0 = {'P1': 'Right-sized dwellings', 'P2': 'Occupied stock', 'P3': 'Retained stock',
                  'P4': 'Low-carbon materials', 'P5': 'Combined'}
-PATHWAY_LEVERS = {'P1': ('L1', 'L2', 'L3'), 'P2': ('L4', 'L5'), 'P3': ('L6', 'L7'), 'P4': ('L8', 'L9')}
-LEVER_PATHWAY = {L: P for P, ls in PATHWAY_LEVERS.items() for L in ls}
 # The rule sub-rule each lever's Ambitious level follows (METHODS_DRAFT.md): A case-study distribution (Harrell-Davis
 # q0.15), B best value ever observed in NZ, C published reference value
-LEVER_SUBRULE = {'L1': 'B', 'L2': 'A', 'L3': 'C', 'L4': 'B', 'L5': 'C', 'L6': 'A', 'L7': 'C', 'L8': 'C', 'L9': 'C'}
+LEVER_SUBRULE = {'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C', 'L7': 'C', 'L8': 'A', 'L9': 'C'}
 # The denser-typology-mix lever of pathways_v2 (numbered L4 in that version) was removed in
 # v3.1; it is never given a lever number in the release.
 DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.1)'
 
 # Theoretical limit (MODEL v3.0.0): TLn is Level 4 of Ln
-TL = {'TL': 'Theoretical limit', 'TL1': 'No extra space', 'TL2': 'Densest design', 'TL3': 'Historical maximum '
-      'household size', 'TL4': 'No vacancy', 'TL5': 'No demolition', 'TL6': 'Best-practice materials',
-      'TL7': 'Zero-emission construction', 'TL8': 'Lowest-carbon soils', 'TL9': 'All brownfield'}
+TL = {'TL': 'Theoretical Limit', 'TL1': 'Historical maximum household size', 'TL2': 'No vacancy',
+      'TL3': 'No demolition', 'TL4': 'No extra space', 'TL5': 'Densest design', 'TL6': 'All brownfield',
+      'TL7': 'Lowest-carbon soils', 'TL8': 'Best-practice materials', 'TL9': 'Zero-emission construction'}
 TL_LIMIT_OF = {f'TL{k}': f'L{k}' for k in range(1, 10)}
 TL_LEGACY = {'T': 'TL', 'T1': 'TL1', 'T2': 'TL2', 'T3': 'TL3', 'T4': 'TL4', 'T5': 'TL5', 'T6': 'TL6'}
 # model-v2.0.0 TL ids -> MODEL v2.1.0 (docs/RENAMING.md)
@@ -148,7 +168,7 @@ NEGATIVE_BANDS_HISTORY = ('retirement_villages',)       # negative by constructi
                                                         # unexplained remainder may be negative in an interval
 BAND_DEFINITIONS = {
     'growth': 'population growth at the occupied area per person, net of consolidation (untargeted)',
-    'smaller_households': 'additional households from falling household size (targeted by L3 Household size, P1)',
+    'smaller_households': 'additional households from falling household size (targeted by L1 Household size, S1 Avoid)',
     'extra_space': 'new-dwelling size above the occupied area (household size x floor area per design occupant)',
     'vacancy': 'the vacancy allowance on new households and the change in the vacancy rate',
     'overbuild_2026': 'observed 2026 building above the requirement, continuing above it in 2027-2050 at the '
@@ -169,7 +189,7 @@ BAND_DEFINITIONS = {
     'surplus_vacant': 'released dwellings still unusable in 2050, kept vacant (booked in 2050 against the release '
                       'bands, so the bands add up to the total every year)',
 }
-UNTARGETED = ('growth',)          # smaller households are targeted by L3 Household size (P1; MODEL v3.0.0 numbering)
+UNTARGETED = ('growth',)          # smaller households are targeted by L1 Household size (S1 Avoid; MODEL v3.3.0 numbering)
 
 COMPONENTS = {'materials_construction': 'Materials and construction (A1–A5)',
               'soil': 'Soil carbon loss',
@@ -261,18 +281,20 @@ def scenario_label(code):
 
 
 def run_label(run, scenario='REF'):
-    """Reader-facing label of a pathway-layer run id (release ids: REF/LOW/HIGH, P1-moderate,
-    L2-ambitious, P5-moderate-by2030, P3-moderate-apartments-held, TL)."""
+    """Reader-facing label of a pathway-layer run id (release ids: REF/LOW/HIGH/VHIGH, S1-moderate,
+    L2-ambitious, pathway-moderate, pathway-moderate-by2030, TL)."""
     if run in SCENARIOS:
         return SCENARIOS[run]
     if run == 'TL':
-        return f"TL {TL['TL']}"
+        return TL['TL']
     if run == 'TL-from2027':
         return TL_INSTANT
     parts = run.split('-')
     head, setting = parts[0], parts[1] if len(parts) > 1 else None
-    name = f'{head} {PATHWAYS.get(head) or LEVERS.get(head)}'
-    out = name + (f', {SETTINGS[setting]}' if setting else '')
+    if head == PATHWAY:
+        out = PATHWAY_RUNS[f'{PATHWAY}-{setting}']
+    else:
+        out = f'{head} {STRATEGIES.get(head) or LEVERS.get(head)}' + (f', {SETTINGS[setting]}' if setting else '')
     rest = '-'.join(parts[2:])
     if rest in ('by2030', 'by2045'):
         out += f', {ADOPTION[rest]}'

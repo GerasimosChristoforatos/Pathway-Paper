@@ -63,6 +63,8 @@ def arrays(E, fi, excess, paid, flows, long_run_residual):
              vacancy_released=-(flows['used_v'] + rem * flows['vac_carry_end']) * D,
              released_tl=-(flows['reocc'] + rem * flows['pool_remainder']) * D,
              surplus_vacant=rem * (flows['vac_carry_end'] + flows['pool_remainder'] + flows['neg_carry_end']) * D)
+    if np.any(g['vacancy'][1:] < -1e-6):               # gross allowance: never negative (A2)
+        raise SystemExit('bands: negative gross vacancy allowance.')
     net = np.asarray(E['demol'], float) + np.asarray(E['unc'], float) + np.asarray(E['join_redev'], float)
     # replacement soil-free where net replacement is positive (engine.forward); none when soil is on all floor area
     free = np.zeros(n) if fi.get('soil_on_replacement') else (net >= 0.0).astype(float)

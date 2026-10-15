@@ -82,6 +82,7 @@ T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a z
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
 SHAPLEY_METRICS = ('carbon_kt', 'LoE_AR', 'LoE_AtP')
 ORDER_RTOL = 1e-12
+TL_REOCCUPATION_FAST = 'TL-reoccupation-fast'   # A4 sensitivity row (reoccupation rule 'fast')
 
 
 # ============================================================
@@ -140,7 +141,10 @@ def base_context(B, scenario, bounds):
 # ============================================================
 # RE-OCCUPATION (TL3 / TL4 releases)
 # ============================================================
-def reoccupation(years, gross, released):
+REOCCUPATION_RULES = ('constant_share', 'fast')   # adopted; 'fast' = as fast as demand allows (A4 sensitivity row)
+
+
+def reoccupation(years, gross, released, rule='constant_share'):
     """Constant-share re-occupation (MODEL v3.0.0). The dwellings released in 2027-2050 by TL3 and TL4 (R in total)
     meet a constant share of each year's need after the overbuild payback:
 
@@ -149,7 +153,10 @@ def reoccupation(years, gross, released):
     The dwellings re-occupied up to year t never exceed those released up to t. Where that binds, the shortfall is
     BUILT (not carried) and the share is recomputed from the remaining pool for the remaining years:
     s = min(R - re-occupied so far, remaining G+) / remaining G+. built_t = max(gross_t, 0) - re-occupied_t >= 0.
-    Where R > G+, s = 1 and the surplus R - G+ stays vacant in 2050. 2025 and 2026 pass through (2026 observed)."""
+    Where R > G+, s = 1 and the surplus R - G+ stays vacant in 2050. 2025 and 2026 pass through (2026 observed).
+
+    rule 'fast' (MODEL v3.1.0, A4 sensitivity row): re-occupation as fast as demand allows,
+    reoccupied_t = min(max(gross_t, 0), cumulative released to t - cumulative re-occupied to t-1)."""
     years = np.asarray(years)
     gross = np.asarray(gross, float)
     released = np.asarray(released, float)
@@ -166,6 +173,16 @@ def reoccupation(years, gross, released):
     tol = REOCCUPATION_TOL * max(R, 1.0)
     cum_rel = cum_re = 0.0
     idx = np.flatnonzero(mask)
+    if rule == 'fast':
+        for i in idx:
+            cum_rel += released[i]
+            reocc[i] = max(0.0, min(gp[i], cum_rel - cum_re))
+            binds[i] = (cum_rel - cum_re) < gp[i] - tol and R > 0.0
+            share_t[i] = reocc[i] / gp[i] if gp[i] > 0 else 0.0
+            cum_re += reocc[i]
+        idx = []
+    elif rule != 'constant_share':
+        raise ValueError(f'reoccupation rule {rule!r}: one of {REOCCUPATION_RULES}.')
     for j, i in enumerate(idx):
         cum_rel += released[i]
         target = gp[i] * share
@@ -223,7 +240,7 @@ def use_in_year(gross, released, mask):
     return used, carry
 
 
-def run(ctx, p, levels, ramp_name=None):
+def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     """One run of the model with the levers at `levels` ({lever: 'moderate' | 'ambitious' | 'tl' | lambda}); see the
     module docstring for the order gross -> payback -> re-occupation -> built.
 
@@ -260,7 +277,7 @@ def run(ctx, p, levels, ramp_name=None):
     gross0 = ab['built']                              # need + excess - payback
     gross, negclip, neg_used, neg_carry = carry_negative(years, gross0, late)
     if tl_family:
-        ro = reoccupation(years, gross, rel3 + rel_v)
+        ro = reoccupation(years, gross, rel3 + rel_v, reocc_rule)
         reocc, used_v, vac_carry = ro['reoccupied'], zeros, 0.0
         pool_rem = ro['surplus_vacant_2050']
     else:
@@ -391,6 +408,8 @@ def metrics(ctx, R, label, setting):
                 households_fall_years=';'.join(str(y) for y in info['households_fall_years']),
                 negative_gross_years=';'.join(str(y) for y in info['negative_gross_years']),
                 reoccupation_binding_years=';'.join(str(int(y)) for y in yy[ro['release_binds']]),
+                zero_building_years=';'.join(str(int(y)) for y, b in zip(yy[2:], engine.requirement(E)[2:])
+                                             if b <= T_ZERO_TOL_DWELLINGS),
                 vacancy_change_dwellings=float(E['change'][f].sum()),
                 size_minus_occupied_min_m2=size_minus_occ,
                 l1_held_typology_years=int(sum(h[f].sum() for h in held.values())) if held else 0,
@@ -687,6 +706,10 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
         bands += band_rows(ctxs[scen], R, name)
         if scen == REFERENCE and rn is None:
             bands_annual += [dict(r, scenario=scen) for r in band_annual_rows(ctxs[scen], R, name)]
+    # MODEL v3.1.0 (A4): TL with re-occupation as fast as demand allows (sensitivity row; not cached: its own rule)
+    R_fast = run(ref, params, TL_ALL, reocc_rule='fast')
+    rows.append(metrics(ref, R_fast, TL_REOCCUPATION_FAST, 'tl'))
+    annual += annual_rows(ref, R_fast, TL_REOCCUPATION_FAST)
     runs_df = pd.DataFrame(rows)
     p0 = runs_df[runs_df['run'] == runs_df['scenario']].set_index('scenario')
     for col in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'gfa_Mm2', 'committed_lower_kt', 'committed_upper_kt'):
@@ -770,7 +793,8 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
                                   gfa_Mm2=R['E']['gfa_t'][:, i].sum() / M6)
                              for i, y in enumerate(ref['years']) if y >= WINDOW[0]]
     reocc_log = []
-    for nm, R in (('TL', get(REFERENCE, TL_ALL)), (LV.TL_INSTANT_LABEL, get(REFERENCE, TL_ALL, LV.TL_FROM2027))):
+    for nm, R in (('TL', get(REFERENCE, TL_ALL)), (LV.TL_INSTANT_LABEL, get(REFERENCE, TL_ALL, LV.TL_FROM2027)),
+                  (TL_REOCCUPATION_FAST, R_fast)):
         ro = R['info']['reoccupation']
         for i, y in enumerate(ref['years']):
             if y >= WINDOW[0]:
@@ -952,6 +976,15 @@ def checks(res):
             stops.append(f'2026 changed: {lab}')
     if excess_diff != 0.0:
         stops.append(f'the overbuild excess differs between runs (max {excess_diff:.3e} dwellings)')
+    # MODEL v3.1.0: the legacy (pre-2026 activity) is identical in every run of a scenario (STOP otherwise)
+    legacy_diff = 0.0
+    for k, R in res['cache'].items():
+        L0 = res['get'](k[0], {})['E']
+        for part in ('legacy_soil', 'legacy_b'):
+            a_, b_ = np.asarray(R['E'][part], float), np.asarray(L0[part], float)
+            legacy_diff = max(legacy_diff, float(np.max(np.abs(a_ - b_)) / max(np.max(np.abs(b_)), 1.0)))
+    if legacy_diff > 1e-9:
+        stops.append(f'the legacy differs between runs (max relative {legacy_diff:.3e})')
     for key, (phi, total) in res['shapley_exact'].items():
         if sum(phi.values()) != total:
             stops.append(f'Shapley efficiency fails {key}')
@@ -967,6 +1000,7 @@ def checks(res):
     if stops:
         raise SystemExit('STOP:\n  ' + '\n  '.join(stops[:30]))
     rep['overbuild_excess_max_abs_diff_between_runs'] = excess_diff
+    rep['legacy_max_rel_diff_between_runs'] = legacy_diff
     return rep
 
 
@@ -1048,7 +1082,7 @@ def main():
     res = compute()
     identity = checks(res)
     print(f'pathways: identity REF (no lever) = the Reference run, max relative difference '
-          f'{max(v for k, v in identity.items() if k != "overbuild_excess_max_abs_diff_between_runs"):.2e}; '
+          f'{max(v for k, v in identity.items() if k not in ("overbuild_excess_max_abs_diff_between_runs", "legacy_max_rel_diff_between_runs")):.2e}; '
           f'overbuild excess identical in every run (max difference {identity["overbuild_excess_max_abs_diff_between_runs"]})')
     write(res, identity)
     r = res['runs']

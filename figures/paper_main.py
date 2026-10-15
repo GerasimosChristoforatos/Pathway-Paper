@@ -93,16 +93,18 @@ def fig2():
     years = band.index.values.astype(float)
     total = stg['carbon_kt'].values
     fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 78), sharey=True)
-    P.stack_series(ax[0], years, [(b, band[b].values) for b in band.columns], net=total)
+    order = [b for b in band.columns if b == 'legacy'] + [b for b in band.columns if b != 'legacy']   # legacy: the base
+    P.stack_series(ax[0], years, [(b, band[b].values) for b in order], net=total)
     P.panel(ax[0], 'a', 'By demand band')
     P.stack_materials(ax[1], years, mat, 1.0)
     P.panel(ax[1], 'b', 'By material')
-    parts = [('a1a3', stg['a1a3_kt']), ('a4a5', stg['a4a5_kt']), ('soil', stg['soil_carbon_loss_kt']),
-             ('maintenance', stg['maintenance_kt'])]
+    parts = [('legacy', stg['legacy_soil_kt'] + stg['legacy_b2b4_kt']), ('a1a3', stg['a1a3_kt']), ('a4a5', stg['a4a5_kt']),
+             ('soil', stg['soil_carbon_loss_kt']), ('maintenance', stg['maintenance_kt'])]
     P.nonnegative('stage', *[v.values for _, v in parts])
     bottom = np.zeros(len(years))
     for k, v in parts:
-        ax[2].fill_between(years, bottom, bottom + v.values, label=N.STAGES[k], **S.fill(*S.STAGE[k][:1]))
+        ax[2].fill_between(years, bottom, bottom + v.values, label=N.STAGES.get(k, N.BANDS.get(k)),
+                           **S.fill(*S.STAGE[k][:1]))
         bottom = bottom + v.values
     if not np.allclose(bottom, total, rtol=1e-9):
         raise SystemExit('STOP: Fig2: the stages do not add up to the annual carbon.')
@@ -112,7 +114,7 @@ def fig2():
         P.thousands(a.yaxis)
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
     ax[2].legend(loc='upper right', fontsize=S.FONT_MIN)
-    mh = [Patch(label=lab, **P.material_patch(code, c)) for code, lab, c in S.MATERIAL][::-1]
+    mh = [Patch(label=lab, **P.material_patch(code, c)) for code, lab, c in S.MATERIAL if code in mat.columns][::-1]
     ax[1].legend(handles=mh, loc='upper right', fontsize=S.FONT_MIN)
     P.band_legend(fig, [b for b in BANDS if b in band.columns], ncol=5, y=-0.01, outline=False,
                   extra=[Line2D([0], [0], color=S.INK, lw=S.LW, label='Net (annual carbon)')])
@@ -130,7 +132,8 @@ def fig3():
     proj = D.js('baseline/projection.json')
     band = _band_frame(D.csv('baseline/bands_annual.csv'), 'carbon_kt').sum()
     mat = D.csv('baseline/annual_by_material.csv').groupby('material')['carbon_kt'].sum()
-    stg = D.csv('baseline/annual_by_stage.csv')[['a1a3_kt', 'a4a5_kt', 'soil_carbon_loss_kt', 'maintenance_kt']].sum()
+    stg = D.csv('baseline/annual_by_stage.csv')[['a1a3_kt', 'a4a5_kt', 'soil_carbon_loss_kt', 'maintenance_kt',
+                                                  'legacy_soil_kt', 'legacy_b2b4_kt']].sum()
     years = a.index.values.astype(float)
     fig = plt.figure(figsize=S.figsize('double', 88))
     gs = fig.add_gridspec(1, 2, width_ratios=[2.3, 1.2], wspace=0.28)
@@ -150,10 +153,18 @@ def fig3():
     b = fig.add_subplot(gs[1])
     c = float(proj['carbon_kt'])
     com = proj['committed']
-    lo, hi = c + com['lower_kt'], c + com['upper_kt']
-    b.bar([0], [c], width=0.6, color=S.REFERENCE, edgecolor=S.REFERENCE, lw=S.LW_SEAM, label='2026-2050')
-    b.bar([0], [hi - c], bottom=[c], width=0.6, facecolor='none', edgecolor=S.REFERENCE, lw=S.LW_THIN,
-          label='Committed after 2050 (range)')
+    leg = float(stg['legacy_soil_kt'] + stg['legacy_b2b4_kt'])
+    sa = float(proj.get('soil_after_2050_kt', 0.0))            # MODEL v3.1.0: soil oxidised after 2050, own segment
+    lo, hi = c + sa + com['lower_kt'], c + sa + com['upper_kt']
+    if leg > 0:
+        b.bar([0], [leg], width=0.6, **S.fill(S.COMPONENT['legacy'][0]), label=N.BANDS['legacy'])
+    b.bar([0], [c - leg], bottom=[leg], width=0.6, color=S.REFERENCE, edgecolor=S.REFERENCE, lw=S.LW_SEAM,
+          label='2026-2050 (new construction)' if leg > 0 else '2026-2050')
+    if sa > 0:
+        b.bar([0], [sa], bottom=[c], width=0.6, facecolor='none', edgecolor=S.COMPONENT['soil_after'][0],
+              lw=S.LW_OUTLINE, hatch=None, label=N.COMPONENTS['soil_after'])
+    b.bar([0], [hi - c - sa], bottom=[c + sa], width=0.6, facecolor='none', edgecolor=S.REFERENCE, lw=S.LW_THIN,
+          label='Committed after 2050, B2/B4 and C1-C4 (range)')
     b.plot([-0.3, 0.3], [lo, lo], color=S.REFERENCE, lw=S.LW_THIN, ls='--')
     bar_, batp = float(a['B_AR_kgCO2e'].sum()) / M, float(a['B_AtP_kgCO2e'].sum()) / M
     for v, key in ((bar_, 'AR'), (batp, 'AtP')):
@@ -163,7 +174,8 @@ def fig3():
     # three thin 100% share bars
     shares = [('Demand band', [(k, band[k]) for k in band.index if band[k] != 0], 'band'),
               ('Material', [(k, mat[k]) for k, _, _ in S.MATERIAL if k in mat.index], 'material'),
-              ('Stage', [('a1a3', stg['a1a3_kt']), ('a4a5', stg['a4a5_kt']), ('soil', stg['soil_carbon_loss_kt']),
+              ('Stage', [('legacy', stg['legacy_soil_kt'] + stg['legacy_b2b4_kt']), ('a1a3', stg['a1a3_kt']),
+                         ('a4a5', stg['a4a5_kt']), ('soil', stg['soil_carbon_loss_kt']),
                          ('maintenance', stg['maintenance_kt'])], 'stage')]
     xs = [0.75, 1.05, 1.35]
     for xpos, (title, parts, kind) in zip(xs, shares):
@@ -190,7 +202,8 @@ def fig3():
     b.legend(loc='upper left', fontsize=S.FONT_MIN, ncol=1)
     P.panel(b, 'b', 'Cumulative 2026-2050')
     _save(fig, 'Fig3_reference_boundaries',
-          note=f'Cumulative 2026-2050 {c:,.0f} kt (LoE AR {c / bar_:.2f}, AtP {c / batp:.1f}); committed after 2050 '
+          note=f'Cumulative 2026-2050 {c:,.0f} kt (LoE AR {c / bar_:.2f}, AtP {c / batp:.1f}), of which legacy '
+               f'(pre-2026 activity) {leg:,.0f} kt; committed after 2050: soil {sa:,.0f} kt, B2/B4 and C1-C4 '
                f'{com["lower_kt"]:,.0f}-{com["upper_kt"]:,.0f} kt. Bands with a negative value are not in the share '
                'bar (they reduce the positive stack).')
 
@@ -205,6 +218,9 @@ def fig4():
     years = ref.index.values.astype(float)
     fig, ax = plt.subplots(figsize=S.figsize('double', 95))
     S.boundary_zones(ax, years, ref['B_AR_kt'].values, ref['B_AtP_kt'].values)
+    leg = (ref['legacy_soil_kt'] + ref['legacy_b2b4_kt']).values           # MODEL v3.1.0: identical in every run
+    if np.any(leg > 0):
+        ax.fill_between(years, 0, leg, **S.fill(S.COMPONENT['legacy'][0]), label=N.BANDS['legacy'], zorder=1.5)
     ax.plot(years, ref['carbon_kt'].values, color=S.REFERENCE, lw=S.LW_BOLD, label=N.SCENARIOS['REF'])
     for P_ in ('P1', 'P2', 'P3', 'P4', 'P5'):
         for s, st in (('moderate', dict(lw=S.LW_BOLD, ls='-')), ('ambitious', dict(lw=S.LW_THIN, ls=':'))):

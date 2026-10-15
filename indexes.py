@@ -30,7 +30,8 @@ FILES = [
     ('data/baseline/bands_annual.csv', 'The in-scope demand bands of the Reference by year: floor area and carbon',
      'projection.py'),
     ('data/baseline/bands_history.csv', 'The demand bands of the history by census interval (interval means, one '
-     'vacancy definition)', 'validation.py'),
+     'vacancy definition; MODEL v3.1.0: census net replacement, retirement villages (negative) and unexplained '
+     'building, adding up to the observed in-scope floor area built)', 'validation.py'),
     ('data/baseline/stock_identity_history.csv', 'Dwellings built by component per census interval (D05c): new '
      'households, vacancy, census-measured net replacement, retirement villages and unexplained building',
      'validation.py'),
@@ -57,9 +58,6 @@ FILES = [
      'cumulative LoE AR / AtP (ED2)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
      'AR and AtP (ED4)', 'tools/sensitivity_tables.py'),
-    ('data/baseline/bands_history_replacement_split.csv', 'The net replacement band of the history (census intervals) '
-     'split into the census-measured net replacement and the unexplained building, in floor area (Fig2a)',
-     'validation.py'),
     ('data/sensitivity/replacement_variants.csv', 'The Reference, P5 Combined (Moderate) and TL under Low / Reference '
      '/ High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED10)',
      'tools/sensitivity_tables.py'),
@@ -169,6 +167,8 @@ FILES = [
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
     ('data/sensitivity/tornado.csv', 'Fig7: the eight inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
+    ('data/baseline/history_unexplained.json', 'MODEL v3.1.0: the unexplained building of the history 1992-2025 '
+     '(dwellings, share of built; floor-area remainder against unexplained dwellings x size)', 'validation.py'),
     ('data/sensitivity/accounting_rules.csv', 'MODEL v3.1.0: the three emissions accounting rules (inventory, instant, '
      'cohort_window): AR base split, AR and AtP budgets, Reference split incl. legacy, soil after 2050, LoE of the '
      'Reference, P5 Moderate / Ambitious and TL, Monte Carlo share of TL within AR', 'tools/accounting_rules.py'),

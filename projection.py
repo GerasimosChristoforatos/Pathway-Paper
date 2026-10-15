@@ -23,6 +23,7 @@ from scipy.interpolate import PchipInterpolator
 
 import engine
 import events as EV
+import bands as BANDS
 import layout
 import naming as N
 import figsource
@@ -1835,31 +1836,25 @@ def main():
     print(f"   {f'(consented equivalent, /{COMPLETION_RATE:.2f})':<58}{tg / COMPLETION_RATE:>12.2f}")
     print("=" * 80 + "\n")
 
-    # Demand bands (annual, 2026-2050; Fig2, Fig4, the band exports, D25/D26): one list, so the figures
-    # and the tests use the same numbers. IN SCOPE: retirement-village (RV) units are a
-    # constant share of every dwelling built (engine.forward), so instead of a negative RV
-    # band every band is scaled by (1 - RV share of the stack) = in-scope total / sum of the
-    # bands before RV; the bands then add up exactly to the typology total. Demolition and the
-    # calibrated residual are shown as one band (only their sum is identified).
-    def _band_list(get, total):
-        keys = (('growth',), ('hs_pos',), ('extra',), ('vac',), ('join',), ('repl',), ('wave',), ('absorbed',),
-                ('unc',), ('bev',))
-        spec = [(N.band_data_label(b), k, b) for b, k in zip(N.BANDS_IN_SCOPE, keys)]   # (label, keys, band id)
-        raw = [(lab, sum(np.asarray(get(k), float) for k in keys), col) for lab, keys, col in spec]
-        f = total / sum(v for _, v, _ in raw)
-        return [(lab, v * f, col) for lab, v, col in raw], total
-    _gfa_cols = dict(growth='Growth', hs_pos='HouseSplit_Pos', extra='Cons_ExtraSpace', vac='Cons_Vacancy',
-                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join',
-                     absorbed='Cons_Absorbed')
-    _carb = dict(growth=carbon_growth_typ, hs_pos=carbon_hs_pos_typ, extra=carbon_extra_typ, vac=carbon_vac_typ,
-                 repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ,
-                 absorbed=carbon_absorbed_typ, bev=carbon_bev_typ)
+    # Demand bands (annual, 2026-2050; Fig1, Fig2, the band exports, D25/D26): bands.in_scope, the same band
+    # accounting as every pathway run (MODEL v3.2.0, release accounting A2 from v3.1.0: gross positive bands, release
+    # bands, retirement villages removed by their exact share, no rescaling, maintenance a carbon-only band);
+    # [(label, values, band id)]; the bands add up to the typology total every year (bands.check, 1e-9).
+    _ji50 = join_info.get('50th')
+    _exc50 = (np.asarray(_ji50['excess'], float) if _ji50 is not None and _ji50.get('mode') == 'surplus'
+              else np.asarray(_E50['join'], float))
+    _paid50 = (-np.asarray(_ji50['payback'], float) if _ji50 is not None and _ji50.get('mode') == 'surplus'
+               else np.zeros(len(forecast_years)))
+    _gross50 = engine.requirement(_E50)
+    if np.any(_gross50[2:] < -1e-9):
+        raise SystemExit('projection: negative gross building in the Reference (no carry-forward rule here).')
+    band_set = BANDS.in_scope(_E50, fwd_inputs, _exc50, _paid50, BANDS.no_flows(len(forecast_years)),
+                              float(unconsented_rate), typ_names)
     fig_bands = {
-        'gfa': _band_list(lambda k: (np.zeros(len(forecast_years) - 1) if k == 'bev' else
-                                     df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:] / 1e6),
-                          evol_typ_total.sum(axis=1).values[1:] / 1e6),
-        'carbon': _band_list(lambda k: _carb[k].sum(axis=1).values[1:] / 1e6,
-                             carbon_total_typ.sum(axis=1).values[1:] / 1e6)}
+        'gfa': ([(N.band_data_label(b), band_set[b][0][1:] / 1e6, b) for b in BANDS.IN_SCOPE],
+                evol_typ_total.sum(axis=1).values[1:] / 1e6),
+        'carbon': ([(N.band_data_label(b), band_set[b][1][1:] / 1e6, b) for b in BANDS.IN_SCOPE],
+                   carbon_total_typ.sum(axis=1).values[1:] / 1e6)}
 
     # ==================================================================
     # MATERIAL FLOW ACCOUNTING  (median variant, 2026-2050)
@@ -2020,6 +2015,8 @@ def export_results(B, path):
         demand_bands=[dict(band=lab, gfa_Mm2=tot(B[g]) / 1e6, carbon_kt=tot(B[c]) / 1e6)
                       for lab, g, c in bands],
         material_kt={m: float(v / 1e6) for m, v in B['flow_annual'].sum().items()},
+        bands_in_scope=[dict(band=lab, gfa_Mm2=float(np.sum(gv)), carbon_kt=float(np.sum(cv)))
+                        for (lab, gv, _), (_, cv, _) in zip(B['fig_bands']['gfa'][0], B['fig_bands']['carbon'][0])],
         accounting=ACCOUNTING, decarb_a45=DECARB_A45, event_timing=EVENT_TIMING,
         **({'b_inwindow_kt': B['COMMITTED']['B_inwindow_kt'], 'committed': B['COMMITTED']}
            if B['COMMITTED'] else {}),

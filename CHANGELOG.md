@@ -4,6 +4,17 @@ Entries below the first use the vocabulary of their own version (S1/S2/S3-10, ce
 L2a/L2b, T, near-term market excess, ...); docs/RENAMING.md maps every one of those names to the
 release vocabulary.
 
+## model-v3.0.0: Reference absorbs the 2026 overbuild, rule-based levers (Levels 1-4), run profiles, compute / draw separation
+
+Every change and decision, with the numbers: [docs/CHANGELOG_v3.md](docs/CHANGELOG_v3.md). In short: the Reference
+absorbs the 2026 overbuild by 2035 on a logistic path (vacancy back to the 2023 census 5.39%; `--reference-legacy`
+reproduces the v2.1 Reference to 1e-12); nine levers renumbered (L1 Dwelling size, L2 Design density, L3 Household
+size, L4 Vacancy, L5 Building lifetime, L6 Material carbon, L7 Construction-stage carbon, L8 Soil-aware planning, L9
+Brownfield development) under one rule (Moderate = exact midpoint, Ambitious by sub-rule A / B / C, TL = Level 4);
+TL1-TL9 adopted by 2035 with re-occupation of the TL3 / TL4 release; light / full run profiles; the `figures/`
+package draws every figure from the data files; new output folders `paper_main/`, `paper_extended/`,
+`diagnostics/<group>/`. Name map: docs/RENAMING.md, section 11.
+
 ## model-v2.1.2: figures only (palette, boundary styling, net-total bands, new paper figure set)
 
 From model-v2.1.1 (main, 1be3ea3). **No number changes**: every file of outputs/data/ is byte-identical to

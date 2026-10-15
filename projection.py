@@ -10,23 +10,22 @@ material (typology is internal: it weights the case-study factors).
 
 All input data are read from DATA_DIR; every output path comes from layout.py.
 Case-study carbon and occupancy factors come from Building_factors.py (run it
-first; it writes them to outputs/data/factors/). figures(B) draws D01-D03, D08, D09
-and D13 from the state main() returns: shown when run on its own, saved through
-style.save_figure when PATHWAY_SAVE_FIGURES=1 (run_all.py).
+first; it writes them to outputs/data/factors/). MODEL v3.0.0 (compute / draw separation): this module draws
+nothing; run as a script it writes, with export_figure_sources(B), the exact arrays of D01-D03, D08, D09, D13 and
+the Extended Data paths (figure_source/projection_paths.json); figures/calibration.py draws them.
 """
 
 import os
 import re
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.interpolate import PchipInterpolator
 
 import engine
 import events as EV
 import layout
 import naming as N
-import style
+import figsource
 import Building_factors as BF
 
 # ============================================================
@@ -42,10 +41,10 @@ DATA_DIR = os.path.join(ROOT_DIR, 'data')          # inputs only
 # (layout.py: every path of the pipeline).
 FROZEN_RUN = layout.frozen_run()
 FACTORS_DIR = layout.FACTORS     # written by Building_factors.py
-SHOW_PLOTS = True   # False: build nothing on screen (used by Diagnostics / Sensitivity)
-# Save every figure (style.save_figure, outputs/diagnostics/). Only when
-# projection.py is run as a script with PATHWAY_SAVE_FIGURES=1 (run_all.py), so re-runs from
-# other scripts never overwrite them.
+# MODEL v3.0.0: projection.py draws nothing (figures/calibration.py draws D01-D03, D08, D09, D13 from the figure
+# source written by export_figure_sources). SHOW_PLOTS and SAVE_FIGURES are kept as inert attributes only, because
+# other scripts and the tests still set them (Diagnostics, Sensitivity, validation, tools, tests/conftest.py).
+SHOW_PLOTS = False
 SAVE_FIGURES = False
 # Monthly building consents: data/derived/consents_monthly.csv, built by
 # data/build_consents.py from the raw Stats NZ release download (provenance in
@@ -236,8 +235,8 @@ COL_CONSENT_COUNTS = {
     'Townhouses': 'Consents - Consents/Townhouses',
     'Apartments': 'Consents - Consents/Apartments',
 }
-# Colours and reader-facing labels of the figures: style.py and naming.py (docs/PALETTE.md,
-# docs/RENAMING.md); the figures are drawn by figures() from the state main() returns.
+# Reader-facing labels: naming.py (docs/RENAMING.md); the figures are drawn by the figures/ package from the
+# figure source written by export_figure_sources(), never from here.
 
 # Typology mix (author's decision, baseline-pb-v2): the typology floor-area shares are held at
 #   their MIX_HELD_WINDOW average (ratio of sums of consented floor area over the window, 2026 =
@@ -350,10 +349,27 @@ RECENT_INTERVAL = (2018, 2023)
 #   = 1 - households / (stock + cumulative excess). Sensitivities: 'redevelopment'
 #   (stock-neutral), payback (OVERBUILD_ABSORPTION 0.20 / 0.10), and
 #   OVERBUILD_GAP_REF = '2026'.
+#   MODEL v3.0.0 (Reference): the surplus is ABSORBED by OVERBUILD_ABSORPTION_END along the
+#   normalised logistic of the levers (engine.logistic_weights, 2026 -> 2035: w(2026) = 0,
+#   w >= 2035 = 1): remaining surplus U(t) = C(t) (1 - w(t)), C the cumulative excess; the
+#   absorbed part is built less (payback, capped at the year's building, shortfall carried;
+#   engine.absorb_overbuild). Implied vacancy 1 - hh / (stock + U) returns to the vacancy
+#   parameter by 2035. Theory (stock-flow models of the housing market: Rosen & Smith 1983;
+#   Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the DIRECTION
+#   (reversion of vacancy to its equilibrium rate), not the speed; 2035 is the common RECC
+#   adoption window of the model; the speed is bracketed by sensitivity rows (never absorbed =
+#   MODEL v2.1; by 2030; by 2045). OVERBUILD_ABSORPTION_END None = never absorbed with
+#   OVERBUILD_ABSORPTION the constant share (MODEL v2.1; run_all.py --reference-legacy).
 OVERBUILD_RULE = 'market_excess'
 OVERBUILD_GAP_REF = '2027'
 OVERBUILD_BOOKING = 'surplus'
 OVERBUILD_ABSORPTION = 0.0
+REFERENCE_LEGACY = os.environ.get('PATHWAY_REFERENCE_LEGACY') == '1'
+# VACANCY_PARAMETER: 'census_2023' (adopted; the published 2023 census value, 5.39%) or 'consistent_mean'
+#   (sensitivity: the mean of the 1986-2023 censuses on one definition)
+VACANCY_PARAMETER = 'census_2023'
+OVERBUILD_ABSORPTION_START = 2026
+OVERBUILD_ABSORPTION_END = None if REFERENCE_LEGACY else 2035
 # NOWCAST_METHOD: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
 #   (August 2025 - July 2026), no seasonal estimation. It is the year to July
 #   2026, not calendar 2026: replace it with calendar 2026 when published.
@@ -1192,6 +1208,15 @@ def main():
     # long-run residual beyond the BRANZ demolition rate (census dwelling counts)
     unconsented_rate = engine.census_window_rate(census_rates, *_nr_window) - demolition_rate
     v_forward = float(stock_cal['knots'][max(stock_cal['knots'])])   # vacancy-rate parameter: its published 2023 census value
+    # MODEL v3.0.0 sensitivity: the long-run mean of the census vacancy on one definition (the pooled 2018/2023 empty
+    # share of unoccupied private dwellings applied to every census, 1986-2023)
+    _cs = float(census.loc[[2018, 2023], 'empty'].sum() / census.loc[[2018, 2023], 'unoccupied'].sum())
+    vacancy_consistent = (census['unoccupied'] * _cs / census['total_private']).dropna()
+    vacancy_consistent_mean = float(vacancy_consistent.mean())
+    if VACANCY_PARAMETER == 'consistent_mean':
+        v_forward = vacancy_consistent_mean
+    elif VACANCY_PARAMETER != 'census_2023':
+        raise ValueError(f"Unknown VACANCY_PARAMETER '{VACANCY_PARAMETER}'.")
 
     # 2025's departure from the calibrated identity, and its persistence. Carried
     # forward fading at rho, booked to the residual (see engine.forward).
@@ -1448,8 +1473,10 @@ def main():
         E = engine.forward(pop_total, hh_arr, pop_growth, **fwd_inputs)
         if _join_mode == 'market_excess':
             _b26 = _completion * ((1.0 - lag_w) * float(nowcast['total']) + lag_w * float(hist_units_all.loc[2025]))
+            _aw = (None if OVERBUILD_ABSORPTION_END is None or OVERBUILD_BOOKING != 'surplus' else
+                   engine.logistic_weights(forecast_years, OVERBUILD_ABSORPTION_START, OVERBUILD_ABSORPTION_END))
             join, ji = engine.market_excess(E, _b26, rho_other, OVERBUILD_GAP_REF, OVERBUILD_BOOKING,
-                                            OVERBUILD_ABSORPTION)
+                                            OVERBUILD_ABSORPTION, absorb_w=_aw)
             E = engine.forward(pop_total, hh_arr, pop_growth, join=join, join_redev=ji['redev'],
                                **fwd_inputs)
             join_info[col] = dict(ji, join=join)
@@ -1475,7 +1502,10 @@ def main():
         wave_gfa = (np.asarray(rate_path, float) - (demolition_rate + unconsented_rate)) * E['prev'] * _D
         unc_gfa = E['unc'] * _D - wave_gfa         # long-run residual, m2
         rv_gfa = E['rv'] * _D                      # housed in RV units, m2 (<0)
-        join_gfa = E['join'] * _D + E['gfa_adj']   # near-term join (A1), m2; 2026 = observed GFA
+        # MODEL v3.0.0: the join = market excess - overbuild absorbed (payback, <= 0); two bands
+        _pay = np.asarray(join_info[col]['payback'], float) if col in join_info else np.zeros(len(_D))
+        join_gfa = (E['join'] - _pay) * _D + E['gfa_adj']   # 2026 overbuild (market excess), m2; 2026 = observed GFA
+        absorbed_gfa = _pay * _D                   # overbuild absorbed (payback), m2 (<= 0)
         growth_check[col] = float(g_demand[1:].min())
 
         g_demand[0] = real_2025_total * anchor['growth']
@@ -1495,6 +1525,7 @@ def main():
         # (the near-term join starts in 2026; it has no 2025 share).
         join_gfa = join_gfa.copy()
         join_gfa[0] = 0.0
+        absorbed_gfa[0] = 0.0
         _t1 = vac_gfa[1] + repl_gfa[1] + unc_gfa[1] + wave_gfa[1] + rv_gfa[1]
         _t1 = _t1 if abs(_t1) > 1e-9 else 1.0
         for _arr in (vac_gfa, repl_gfa, unc_gfa, wave_gfa, rv_gfa):
@@ -1508,7 +1539,7 @@ def main():
         results[col] = dict(total=total, growth=g_demand, growth_gross=g_gross,
                             hs_pos=hs_pos, hs_avoided=hs_avoided, c_gross=c_gross,
                             extra=extra_space, other=other_cons, vac=vac_gfa, repl=repl_gfa, unc=unc_gfa, wave=wave_gfa, rv=rv_gfa,
-                            join=join_gfa,
+                            join=join_gfa, absorbed=absorbed_gfa,
                             structural=structural, occ_per_dw=occ_per_dw_f, d_hh=d_hh_f)
 
         df_forecast[f'Ann_GFA_Total_{col}'] = total
@@ -1524,6 +1555,7 @@ def main():
         df_forecast[f'Ann_GFA_Cons_Wave_{col}'] = wave_gfa
         df_forecast[f'Ann_GFA_Cons_RV_{col}'] = rv_gfa
         df_forecast[f'Ann_GFA_Cons_Join_{col}'] = join_gfa
+        df_forecast[f'Ann_GFA_Cons_Absorbed_{col}'] = absorbed_gfa
 
     # ---- retirement-village floor area: reported, out of scope (A4) ----
     rv_floor_area, rv_size_ref = None, float('nan')
@@ -1578,6 +1610,7 @@ def main():
     evol_typ_wave = split_typ(df_forecast['Ann_GFA_Cons_Wave_50th'].values)
     evol_typ_rv = split_typ(df_forecast['Ann_GFA_Cons_RV_50th'].values)
     evol_typ_join = split_typ(df_forecast['Ann_GFA_Cons_Join_50th'].values)   # 0 in 2025
+    evol_typ_absorbed = split_typ(df_forecast['Ann_GFA_Cons_Absorbed_50th'].values)   # 0 in 2025, 2026
     evol_typ_total = pd.DataFrame(engine_out['50th']['gfa_t'].T, index=forecast_years,
                                   columns=typ_names)
 
@@ -1592,7 +1625,8 @@ def main():
         evol_typ_extra.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor * anchor['consumption'] * anchor_extra_share
         evol_typ_other.loc[2025, n] = hist_typ_gfa_c.loc[2025, n] * built_factor * anchor['consumption'] * (1 - anchor_extra_share)
         _o1 = float(df_forecast['Ann_GFA_Cons_Other_50th'].iloc[1]
-                    - df_forecast['Ann_GFA_Cons_Join_50th'].iloc[1]) or 1.0
+                    - df_forecast['Ann_GFA_Cons_Join_50th'].iloc[1]
+                    - df_forecast['Ann_GFA_Cons_Absorbed_50th'].iloc[1]) or 1.0
         for _ev, _c in ((evol_typ_vac, 'Vacancy'), (evol_typ_repl, 'Replacement'),
                         (evol_typ_unc, 'Unconsented'), (evol_typ_wave, 'Wave'), (evol_typ_rv, 'RV')):
             _ev.loc[2025, n] = (evol_typ_other.loc[2025, n]
@@ -1643,14 +1677,16 @@ def main():
     carbon_wave_typ = band_carbon(evol_typ_wave, f_repl)     # replacement: no soil
     carbon_rv_typ = band_carbon(evol_typ_rv, f_rv)   # in-scope carbon NOT incurred; RV carbon out of scope
     carbon_join_typ = band_carbon(evol_typ_join, f_join)
+    carbon_absorbed_typ = band_carbon(evol_typ_absorbed, f_join)   # building avoided: as soil-bearing as the excess
     carbon_other_typ = (carbon_vac_typ + carbon_repl_typ + carbon_unc_typ + carbon_wave_typ + carbon_rv_typ
-                        + carbon_join_typ)
+                        + carbon_join_typ + carbon_absorbed_typ)
     carbon_cons_typ = carbon_extra_typ + carbon_other_typ
     soil_fracs = {'Growth (net of consolidation)': f_new, 'House-splitting': f_new,
                   'Consumption: extra space': f_new, 'Consumption: vacancy': f_new,
                   'Consumption: demolition': f_repl, 'Calibrated stock residual': f_repl,
                   'Redevelopment wave': f_repl,
-                  'Housed in RV units (out of scope)': f_rv, 'Near-term market excess': f_join}
+                  'Housed in RV units (out of scope)': f_rv, 'Near-term market excess': f_join,
+                  'Overbuild absorbed': f_join}
     # replacements and repaints within the window (time-resolved; zero otherwise)
     carbon_bev_typ = pd.DataFrame(engine_out['50th']['b_t'].T, index=forecast_years, columns=typ_names)
     carbon_total_typ = pd.DataFrame(engine_out['50th']['carbon_t'].T, index=forecast_years,
@@ -1785,7 +1821,7 @@ def main():
                 extra=(evol_typ_extra, carbon_extra_typ), vac=(evol_typ_vac, carbon_vac_typ),
                 repl=(evol_typ_repl, carbon_repl_typ), unc=(evol_typ_unc, carbon_unc_typ),
                 wave=(evol_typ_wave, carbon_wave_typ), join=(evol_typ_join, carbon_join_typ),
-                rv=(evol_typ_rv, carbon_rv_typ))
+                absorbed=(evol_typ_absorbed, carbon_absorbed_typ), rv=(evol_typ_rv, carbon_rv_typ))
     rows = [(N.band_data_label(b), _src[k][0].iloc[1:].sum().sum() / 1e6, _src[k][1].iloc[1:].sum().sum() / 1e6)
             for b, k in zip(N.BANDS_WITH_RETIREMENT_VILLAGES, _src)]
     tg = sum(r[1] for r in rows)
@@ -1806,16 +1842,18 @@ def main():
     # bands before RV; the bands then add up exactly to the typology total. Demolition and the
     # calibrated residual are shown as one band (only their sum is identified).
     def _band_list(get, total):
-        keys = (('growth',), ('hs_pos',), ('extra',), ('vac',), ('repl', 'unc'), ('wave',), ('join',), ('bev',))
-        spec = [(N.band_data_label(b), k, style.BAND[b][0]) for b, k in zip(N.BANDS_IN_SCOPE, keys)]
+        keys = (('growth',), ('hs_pos',), ('extra',), ('vac',), ('join',), ('repl',), ('wave',), ('absorbed',),
+                ('unc',), ('bev',))
+        spec = [(N.band_data_label(b), k, b) for b, k in zip(N.BANDS_IN_SCOPE, keys)]   # (label, keys, band id)
         raw = [(lab, sum(np.asarray(get(k), float) for k in keys), col) for lab, keys, col in spec]
         f = total / sum(v for _, v, _ in raw)
         return [(lab, v * f, col) for lab, v, col in raw], total
     _gfa_cols = dict(growth='Growth', hs_pos='HouseSplit_Pos', extra='Cons_ExtraSpace', vac='Cons_Vacancy',
-                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join')
+                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join',
+                     absorbed='Cons_Absorbed')
     _carb = dict(growth=carbon_growth_typ, hs_pos=carbon_hs_pos_typ, extra=carbon_extra_typ, vac=carbon_vac_typ,
                  repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ,
-                 bev=carbon_bev_typ)
+                 absorbed=carbon_absorbed_typ, bev=carbon_bev_typ)
     fig_bands = {
         'gfa': _band_list(lambda k: (np.zeros(len(forecast_years) - 1) if k == 'bev' else
                                      df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:] / 1e6),
@@ -1853,7 +1891,8 @@ def main():
                     'Calibrated stock residual': evol_typ_unc,
                     'Redevelopment wave': evol_typ_wave,
                     'Housed in RV units (out of scope)': evol_typ_rv,
-                    'Near-term market excess': evol_typ_join}
+                    'Near-term market excess': evol_typ_join,
+                    'Overbuild absorbed': evol_typ_absorbed}
     dem_mat = pd.DataFrame(
         {lab: [sum((df[t].iloc[1:].sum() * MAT_BASE.loc[m, t]) if DECARB is None
                    else wsum(df[t].values, mat_int(m, t)) for t in typ_names)
@@ -1940,142 +1979,10 @@ def main():
     print(dm.to_string())
 
     # Every intermediate result is returned, so Diagnostics.py and
-    # Sensitivity.py read the same run instead of re-deriving anything; the figures
-    # are drawn from it (figures()), never from inside the computation.
+    # Sensitivity.py read the same run instead of re-deriving anything; the figure source is
+    # written from it (export_figure_sources(), script run only), never from inside the computation.
     state = dict(locals())
-    if SAVE_FIGURES or SHOW_PLOTS:
-        figures(state)
     return state
-
-
-def figures(B):
-    """The diagnostics of the projection (outputs/diagnostics/data_calibration/, docs/FIGURE_PLAN.md),
-    drawn from the state main() returns, never from inside the computation: D01 population,
-    D02 households, D03 household size, D08 dwelling space, D09 cumulative floor area, D13 carbon
-    by material. Saved when SAVE_FIGURES (run_all.py), shown when SHOW_PLOTS (Spyder)."""
-    import plotting as P
-    style.apply()
-    S = style
-    yh, fy = np.asarray(B['years_hist']), np.asarray(B['forecast_years'])
-    df = B['df_forecast']
-    M6 = 1e6
-    figs = []
-
-    def done(fig, fid, note=None):
-        figs.append((fig, fid, note))
-
-    def projection_band(ax, lo, hi, label):
-        ax.fill_between(fy, lo, hi, label=label, **S.MC_BAND)
-
-    ref = dict(S.SCENARIO['REF'])
-    ref.pop('label')
-    # D01 population
-    fig, ax = plt.subplots(figsize=S.figsize('double', 62))
-    ax.plot(yh, B['hist_pop'].values / M6, color=S.INK, label='History (estimated resident population, 31 December)')
-    projection_band(ax, df['PopTotal_5th'] / M6, df['PopTotal_95th'] / M6, 'Population 5th–95th percentile')
-    ax.plot(fy, df['PopTotal_50th'] / M6, label='Reference projection (median)', **ref)
-    P.split(ax)
-    ax.set_xlim(yh[0], fy[-1])
-    ax.set_ylabel('Population (million)')
-    ax.legend(loc='upper left')
-    done(fig, 'D01_population')
-    # D02 households
-    hf = B['households_forecast']
-    fig, ax = plt.subplots(figsize=S.figsize('double', 66))
-    dhe = B['hist_hh_dhe'].loc[2018:]
-    ax.plot(dhe.index, dhe.values / M6, color=S.MUTED, lw=S.LW_THIN, label='Stats NZ household estimates as published')
-    P.history_estimated(ax, B['hist_hh'], S_ANCHOR_YEAR, M6, label='History (31 Dec)', k=B['hh_rebase_k'])
-    yb = np.r_[B['S_bridge'].index.values, fy[1:]]
-    projection_band(ax, hf['5th'] / M6, hf['95th'] / M6, '5th–95th population percentile (household size fixed)')
-    ax.plot(yb, np.r_[(B['hist_pop'].loc[B['S_bridge'].index] / B['S_bridge']).values, hf['50th'][1:]] / M6,
-            label='Projection: population / household size, median', **ref)
-    P.split(ax)
-    ax.set_xlim(yh[0], fy[-1])
-    ax.set_ylabel('Households (million)')
-    ax.legend(loc='upper left', fontsize=S.FONT_SMALL)
-    done(fig, 'D02_households', f'Projection from the {S_ANCHOR_YEAR} census point; 2019–23 Stats NZ estimates '
-                                f'scaled to the {S_ANCHOR_YEAR} census (×{B["hh_rebase_k"]:.3f}).')
-    # D03 household size and household formation
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 70))
-    P.history_estimated(a, B['hist_S'], S_ANCHOR_YEAR, 1.0, label='History', k=B['hh_rebase_k'])
-    a.plot(np.r_[B['S_bridge'].index.values, fy[1:]],
-           np.r_[B['S_bridge'].values, (df['PopTotal_50th'].values / hf['50th'])[1:]],
-           label=f'Projection (Stats NZ shape from the {S_ANCHOR_YEAR} census point)', **ref)
-    P.split(a)
-    a.set_xlim(yh[0], fy[-1])
-    a.set_ylabel('Household size (persons per household)')
-    a.legend(loc='upper right', fontsize=S.FONT_MIN)
-    P.panel(a, 'a', 'Household size')
-    pyr = fy[1:]
-    b.plot(yh[1:], B['d_pop'].values[1:] / 1e3, color=S.INK, label='Population growth, history')   # 1991: no flow
-    b.plot(yh[1:], B['d_hh'].values[1:] / 1e3, color=S.ACCENT_ORANGE, label='Household formation, history')
-    b.plot(pyr, df['PopGrowth_50th'].values[1:] / 1e3, color=S.INK, ls='--', label='Population growth, projection')
-    b.plot(pyr, np.diff(hf['50th']) / 1e3, color=S.ACCENT_ORANGE, ls='--', label='Household formation, projection')
-    P.split(b)
-    b.set_xlim(yh[0], fy[-1])
-    b.set_ylabel('Persons or households per year (thousand)')
-    b.legend(loc='upper left', fontsize=S.FONT_MIN)
-    P.panel(b, 'b', 'Population growth and household formation')
-    fig.tight_layout()
-    done(fig, 'D03_household_size')
-    # D08 dwelling space
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 66))
-    a.plot(yh, B['blended_dwelling_size'].values, color=S.INK, label='Realised new-dwelling size (floor area / consents)')
-    a.plot(yh, B['occupied_area_per_dwelling'].values, color=S.MUTED, ls='-.',
-           label='Occupied area per dwelling (household size × occupant load factor)')
-    a.fill_between(yh, B['occupied_area_per_dwelling'].values, B['blended_dwelling_size'].values,
-                   color=S.BAND['extra_space'][0], alpha=0.25, lw=0, label='Space above occupancy (under-utilisation)')
-    a.set_xlim(yh[0], yh[-1])
-    a.set_ylim(0, None)
-    a.set_ylabel('Floor area per dwelling (m²)')
-    a.legend(loc='lower left', fontsize=S.FONT_MIN)
-    P.panel(a, 'a', 'New dwellings: realised and occupied floor area')
-    b.plot(yh, 100 * B['utilisation'].values, color=S.INK)
-    b.axhline(100, color=S.MUTED, lw=S.LW_THIN)
-    b.text(yh[0] + 1, 101, 'design capacity (bedrooms + 1)', fontsize=S.FONT_SMALL, color=S.MUTED, va='bottom')
-    b.set_xlim(yh[0], yh[-1])
-    b.set_ylim(0, 110)
-    b.set_ylabel('Occupancy utilisation: household size / design capacity (%)')
-    P.panel(b, 'b', 'Occupancy utilisation of new dwellings')
-    fig.tight_layout()
-    done(fig, 'D08_dwelling_space')
-    # D09 cumulative floor area
-    fig, ax = plt.subplots(figsize=S.figsize('double', 66))
-    ax.plot(yh, B['hist_cum'].values / M6, color=S.INK,
-            label=f"History (consents timed as completions × {B['built_factor']:.2f}, completion lag weight "
-                  f"{B['lag_w']:.2f})")
-    projection_band(ax, df['Cum_GFA_Total_5th'] / M6, df['Cum_GFA_Total_95th'] / M6,
-                    'Population 5th–95th percentile (other inputs at the Reference)')
-    ax.plot(df['Year'], df['Cum_GFA_Total_50th'] / M6, label='Reference projection', **ref)
-    P.split(ax)
-    ax.set_xlim(yh[0], fy[-1])
-    ax.set_ylim(0, None)
-    ax.set_ylabel('Floor area, cumulative from 1991 (Mm²)')
-    ax.legend(loc='upper left')
-    done(fig, 'D09_cumulative_floor_area')
-    # D13 carbon by material
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 72))
-    py = fy[1:]
-    handles = P.stack_materials(a, py, B['flow_annual'], 1e6)
-    P.stack_materials(b, py, B['flow_cum'], 1e6)
-    for ax_, letter, title, ylab in ((a, 'a', 'Annual', 'Embodied carbon (kt CO₂e per year)'),
-                                    (b, 'b', 'Cumulative from 2026', 'Embodied carbon, cumulative from 2026 (kt CO₂e)')):
-        ax_.set_xlim(py[0], py[-1])
-        ax_.set_ylabel(ylab)
-        P.thousands(ax_.yaxis)
-        P.panel(ax_, letter, title)
-    fig.legend(handles=handles, loc='lower center', ncol=len(handles), bbox_to_anchor=(0.5, -0.01), frameon=False)
-    fig.tight_layout(rect=(0, 0.07, 1, 1))
-    acc = ('construction (A1–A5 and soil) plus maintenance (B2, B4) within 2026–2050' if B['TIME_RESOLVED'] else
-           'whole life booked at construction')
-    done(fig, 'D13_carbon_by_material', f'Reference, {acc}; each material includes its maintenance.')
-    for fig, fid, note in figs:
-        if SAVE_FIGURES:
-            style.save_figure(fig, fid, note=note)
-    if SHOW_PLOTS:
-        plt.show()
-    else:
-        plt.close('all')
 
 
 def wsum(values, k):
@@ -2094,7 +2001,7 @@ def export_results(B, path):
     f = slice(1, None)
     tot = lambda df: float(df.iloc[f].sum().sum())
     # demand bands, definition 'with_retirement_villages' (naming.BANDS_WITH_RETIREMENT_VILLAGES)
-    keys = ('growth', 'hs_pos', 'extra', 'vac', 'repl', 'unc', 'wave', 'join', 'rv')
+    keys = ('growth', 'hs_pos', 'extra', 'vac', 'repl', 'unc', 'wave', 'join', 'absorbed', 'rv')
     bands = [(N.band_data_label(b), f'evol_typ_{k}', f'carbon_{k}_typ')
              for b, k in zip(N.BANDS_WITH_RETIREMENT_VILLAGES, keys)]
     typ = list(B['typ_names'])
@@ -2166,6 +2073,43 @@ def export_annual(B, path_annual, path_bands):
     pd.DataFrame(out).to_csv(path_bands, index=False)
 
 
+def export_absorption_log(B, path):
+    """MODEL v3.0.0: the overbuild absorption of the Reference by year (median population path; engine.absorb_overbuild):
+    market excess, cumulative excess C, absorption weight w, target surplus U* = C (1 - w), target payback, the
+    year's building before the payback (gross), the payback paid (capped at max(gross, 0)), the carried shortfall,
+    the surplus still vacant U, dwellings built, and the implied vacancy 1 - hh / (stock + U) against the vacancy
+    parameter. Written whatever the absorption setting (never absorbed: w = 0, payback 0)."""
+    ji = B['join_info']['50th']
+    E = B['engine_out']['50th']
+    fy = np.asarray(B['forecast_years'])
+    n = len(fy)
+    ab = ji.get('absorption')
+    if ab is None:                                     # MODEL v2.1 rule (constant share; never absorbed by default)
+        C = np.cumsum(ji['excess'])
+        ab = dict(excess=ji['excess'], C=C, w=np.zeros(n), U_target=np.asarray(ji['surplus'], float),
+                  payback_target=-np.asarray(ji['payback'], float), need=engine.requirement(E) - E['join'],
+                  gross=engine.requirement(E) - E['join'] + ji['excess'], paid=-np.asarray(ji['payback'], float),
+                  carry=np.zeros(n), cap_binds=np.zeros(n, bool), U=np.asarray(ji['surplus'], float))
+        ab['built'] = ab['gross'] - ab['paid']
+    stock = np.asarray(E['stock'], float)
+    v_par = np.broadcast_to(np.asarray(E['v'], float), (n,))
+    rows = []
+    for i, y in enumerate(fy):
+        rows.append(dict(year=int(y), excess_dwellings=float(ab['excess'][i]), cumulative_excess=float(ab['C'][i]),
+                         absorption_weight=float(ab['w'][i]), surplus_target=float(ab['U_target'][i]),
+                         payback_target=float(ab['payback_target'][i]), building_before_payback=float(ab['gross'][i]),
+                         payback_paid=float(ab['paid'][i]), payback_carried=float(ab['carry'][i]),
+                         cap_binds=bool(ab['cap_binds'][i]), surplus_vacant=float(ab['U'][i]),
+                         dwellings_built=float(engine.requirement(E)[i]),
+                         implied_vacancy=float(1.0 - E['hh'][i] / (stock[i] + E['stock_join'][i])),
+                         vacancy_parameter=float(v_par[i])))
+    df = pd.DataFrame(rows)
+    if not np.allclose(df['surplus_vacant'].values, np.asarray(E['stock_join'], float), rtol=1e-12, atol=1e-6):
+        raise SystemExit('export_absorption_log: the surplus U differs from the engine stock_join.')
+    df.to_csv(path, index=False)
+    return df
+
+
 def export_stage_material(B, path_stage, path_material):
     """Annual carbon of the Reference 2026-2050 by life-cycle stage and by material (MODEL v2.0.0
     additions, Fig3). No new computation: the stage split is the one main() prints (floor area by
@@ -2206,8 +2150,52 @@ def export_stage_material(B, path_stage, path_material):
                   for y in fa.index for m in fa.columns]).to_csv(path_material, index=False)
 
 
+def export_figure_sources(B):
+    """MODEL v3.0.0 compute / draw separation: write the exact arrays of D01-D03, D08, D09 and D13 (drawn by
+    figures/calibration.py) and of the Extended Data paths (projection_paths, ED3) as figure source JSON
+    (figsource.write, outputs/data/figure_source/<id>.json). Units are the model's (persons, households, m2,
+    kg CO2e); the figures only rescale for display. Called by the script run only (main() writes nothing)."""
+    yh, fy = np.asarray(B['years_hist'], int), np.asarray(B['forecast_years'], int)
+    df = B['df_forecast']
+    hf = {p: np.asarray(B['households_forecast'][p], float) for p in ('5th', '50th', '95th')}
+    pop = {p: df[f'PopTotal_{p}'].to_numpy(float) for p in ('5th', '50th', '95th')}
+    sb = B['S_bridge']
+    yb = np.r_[sb.index.values.astype(int), fy[1:]]               # the projection drawn from the anchor census point
+    common = dict(years_hist=yh, forecast_years=fy, S_ANCHOR_YEAR=int(S_ANCHOR_YEAR),
+                  hh_rebase_k=float(B['hh_rebase_k']))
+    figsource.write('D01_population', years_hist=yh, forecast_years=fy, population_hist=B['hist_pop'],
+                    population_5th=pop['5th'], population_50th=pop['50th'], population_95th=pop['95th'])
+    figsource.write('D02_households', **common, households_hist=B['hist_hh'],
+                    households_dhe_published=B['hist_hh_dhe'].loc[2018:],
+                    households_5th=hf['5th'], households_50th=hf['50th'], households_95th=hf['95th'],
+                    projection_years=yb,
+                    projection_households=np.r_[(B['hist_pop'].loc[sb.index] / sb).values, hf['50th'][1:]])
+    figsource.write('D03_household_size', **common, household_size_hist=B['hist_S'], projection_years=yb,
+                    projection_household_size=np.r_[sb.values, (pop['50th'] / hf['50th'])[1:]],
+                    population_growth_hist=B['d_pop'], household_formation_hist=B['d_hh'],
+                    population_growth_50th=df['PopGrowth_50th'].to_numpy(float),
+                    household_formation_50th=np.r_[np.nan, np.diff(hf['50th'])])
+    figsource.write('D08_dwelling_space', years_hist=yh, realised_dwelling_size=B['blended_dwelling_size'],
+                    occupied_area_per_dwelling=B['occupied_area_per_dwelling'], utilisation=B['utilisation'])
+    figsource.write('D09_cumulative_floor_area', years_hist=yh, forecast_years=fy, cumulative_floor_area_hist=B['hist_cum'],
+                    built_factor=float(B['built_factor']), lag_w=float(B['lag_w']),
+                    cumulative_floor_area_5th=df['Cum_GFA_Total_5th'].to_numpy(float),
+                    cumulative_floor_area_50th=df['Cum_GFA_Total_50th'].to_numpy(float),
+                    cumulative_floor_area_95th=df['Cum_GFA_Total_95th'].to_numpy(float),
+                    projection_years=df['Year'].to_numpy(int))
+    figsource.write('D13_carbon_by_material', years=fy[1:], carbon_annual=B['flow_annual'],
+                    carbon_cumulative=B['flow_cum'], time_resolved=bool(B['TIME_RESOLVED']), unit='kg CO2e')
+    num = {c: df[c].to_numpy() for c in df.columns if pd.api.types.is_numeric_dtype(df[c])}
+    figsource.write('projection_paths', years_hist=yh, forecast_years=fy, S_ANCHOR_YEAR=int(S_ANCHOR_YEAR),
+                    population_hist=B['hist_pop'], households_hist=B['hist_hh'], household_size_hist=B['hist_S'],
+                    floor_area_built_hist=B['hist_built_gfa'], cumulative_floor_area_hist=B['hist_cum'],
+                    households_5th=hf['5th'], households_50th=hf['50th'], households_95th=hf['95th'],
+                    df_forecast=num,
+                    units=dict(population='persons', households='households', household_size='persons per household',
+                               floor_area='m2 (floor area built per year; cumulative from 1991)'))
+
+
 if __name__ == "__main__":
-    SAVE_FIGURES = os.environ.get('PATHWAY_SAVE_FIGURES') == '1'
     _B = main()
     export_results(_B, layout.writing(layout.data('baseline/projection.json')))
     if not FROZEN_RUN:                 # the frozen check run (whole life at construction) is an anchor only
@@ -2215,3 +2203,5 @@ if __name__ == "__main__":
                       layout.writing(layout.data('baseline/bands_annual.csv')))
         export_stage_material(_B, layout.writing(layout.data('baseline/annual_by_stage.csv')),
                               layout.writing(layout.data('baseline/annual_by_material.csv')))
+        export_absorption_log(_B, layout.writing(layout.data('baseline/overbuild_absorption_log.csv')))
+        export_figure_sources(_B)

@@ -1,0 +1,119 @@
+{
+ "figure": "D31_lever_annual",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "L1 Dwelling size",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "L2 Design density",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "L3 Household size",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "L4 Vacancy",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "L5 Building lifetime",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "L6 Material carbon",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "L7 Construction-stage carbon",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "L8 Soil-aware planning",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "L9 Brownfield development",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{1000}$",
+  "$\\mathdefault{1200}$",
+  "$\\mathdefault{1400}$",
+  "$\\mathdefault{1600}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2020}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{2055}$",
+  "$\\mathdefault{400}$",
+  "$\\mathdefault{600}$",
+  "$\\mathdefault{800}$",
+  "Ambitious",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "L1 Dwelling size",
+  "L2 Design density",
+  "L3 Household size",
+  "L4 Vacancy",
+  "L5 Building lifetime",
+  "L6 Material carbon",
+  "L7 Construction-stage carbon",
+  "L8 Soil-aware planning",
+  "L9 Brownfield development",
+  "Moderate",
+  "Reference",
+  "TL (Level 4)"
+ ],
+ "note": null,
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/lever_annual.csv"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

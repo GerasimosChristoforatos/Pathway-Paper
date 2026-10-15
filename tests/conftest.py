@@ -31,3 +31,8 @@ def B():
     if not os.path.exists(projection.FILE_FACTORS_TYPOLOGY):
         pytest.exit('Run Building_factors.py first (outputs/data/factors/ missing).')
     return run_boss()
+
+
+# MODEL v3.0.0: the tests of the v2 lever set, figures and data locks are kept for the record in tests/retired/
+# (their locks describe MODEL v2.1; the legacy Reference is locked by tests/test_reference_legacy.py)
+collect_ignore_glob = ['retired/*']

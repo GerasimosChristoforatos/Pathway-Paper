@@ -1,19 +1,15 @@
 """
-INDEXES (MODEL v1.0.0; layout of MODEL v2.0.0): DIAGNOSTICS.md and the index of every output file
-=================================================================================================
+INDEXES (MODEL v3.0.0): the index of every output file (the figures: FIGURES.md, figures/index.py)
+==================================================================================================
 Writes, from the files the run produced (nothing is computed here):
 
-  outputs/diagnostics/DIAGNOSTICS.md  every diagnostic figure (figure_plan.DIAGNOSTICS, docs/FIGURE_PLAN.md) by
-                                      group, with its content, the run-specific note the drawing
-                                      script recorded (figaudit.py) and the script that draws it
   outputs/INDEX.md                    every file under outputs/ with one line on what it holds and
                                       which script writes it
 
-FILES below is the registry of output files; tests/test_release.py checks that every file in
-outputs/ (except the git-ignored logs) matches exactly one entry and that no entry is stale, so
-a new output cannot be added without being described.
+FILES below is the registry of output files; main() stops the run (run_all.py step 'indexes') if a file under
+outputs/ (except the git-ignored logs) matches no entry, so a new output cannot be added without being described.
 
-    python indexes.py            (run_all.py runs it after paper.py and extended_data.py)
+    python indexes.py            (run_all.py runs it after the figures)
 """
 import fnmatch
 import json
@@ -22,36 +18,11 @@ import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
-import figure_plan as FP  # noqa: E402
 import layout as L  # noqa: E402
-import naming as N  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
     # paper (Fig1-Fig6, Tables 1-2), Extended Data (ED1-ED13) and key figures (K1-K6)
-    ('paper/PAPER.md', 'The headline findings (one sentence each, with numbers and source files), every paper figure '
-     'with its caption, and Tables 1-2', 'paper.py'),
-    ('paper/Fig*.png', 'Paper figure, 300 dpi PNG, 183 mm (Fig6: 89 mm) wide', 'paper.py'),
-    ('paper/Fig*.pdf', 'Paper figure, vector PDF (fonts embedded; run_all.py --export)', 'paper.py'),
-    ('paper/Fig*.csv', 'Source data of the paper figure (run_all.py --export): every plotted value (panel, series, x, value, unit)',
-     'paper.py'),
-    ('paper/Table1_levers.*', 'Table 1: the levers (Moderate, Ambitious) and the theoretical-limit assumptions '
-     'TL1-TL10 (Markdown and CSV)', 'paper.py'),
-    ('paper/Table2_results.*', 'Table 2: results 2026-2050 of the Reference, P1-P5 and TL, with Monte Carlo 5-95% and '
-     'P(LoE <= 1) (Markdown and CSV)', 'paper.py'),
-    ('extended_data/EXTENDED_DATA.md', 'Every Extended Data figure with its caption', 'extended_data.py'),
-    ('extended_data/ED*.png', 'Extended Data figure, 300 dpi PNG, 183 mm wide', 'extended_data.py'),
-    ('extended_data/ED*.pdf', 'Extended Data figure, vector PDF (fonts embedded; run_all.py --export)', 'extended_data.py'),
-    ('extended_data/ED*.csv', 'Source data of the Extended Data figure (run_all.py --export): every plotted value '
-     '(panel, series, x, value, unit)', 'extended_data.py'),
-    ('key_figures/KEY_FIGURES.md', 'The six key figures (K1-K6) with their captions', 'key_figures.py'),
-    ('key_figures/K*.png', 'Key figure, 300 dpi PNG', 'key_figures.py'),
-    ('key_figures/K*.pdf', 'Key figure, vector PDF (run_all.py --export)', 'key_figures.py'),
-    ('key_figures/K*.csv', 'Source data of the key figure (run_all.py --export)', 'key_figures.py'),
-    # diagnostics
-    ('diagnostics/DIAGNOSTICS.md', 'Every diagnostic figure by group, with its content and note', 'indexes.py'),
-    ('diagnostics/*/D*.png', 'Diagnostic figure, 300 dpi PNG (DIAGNOSTICS.md)', 'see DIAGNOSTICS.md'),
-    # data: baseline
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -119,7 +90,7 @@ FILES = [
      'pathways.py'),
     ('data/pathways/annual.csv', 'Annual carbon and boundaries of every pathway run', 'pathways.py'),
     ('data/pathways/bands.csv', 'Floor area and carbon by demand band of every pathway run', 'pathways.py'),
-    ('data/pathways/shapley_*.csv', 'Shapley attribution (pathways, levers, theoretical limit) and its subsets',
+    ('data/pathways/shapley*.csv', 'Exact Shapley values of every game (pathways, levers at Moderate / Ambitious / TL, TL1-TL9 from P5 Moderate) and every subset run',
      'pathways.py'),
     ('data/pathways/montecarlo_draws.csv', 'Pathway Monte Carlo: each saved Reference draw through P5 Combined '
      '(Moderate) and TL: inputs, carbon, floor area, budgets and levels of exceedance', 'pathways_mc.py'),
@@ -135,8 +106,6 @@ FILES = [
      'pair', 'pathways_mc.py'),
     ('data/pathways/montecarlo_conditional_tl.*', 'Monte Carlo insight: P(TL LoE AR <= 1) by the inputs (Firth '
      'logistic regression, quintiles, exceeding draws)', 'pathways_mc.py'),
-    ('data/pathways/waterfall_sequential.csv', 'Sequential waterfall Reference -> P1 -> ... -> P5 -> TL1 ... TL10 by '
-     'demand band (K5)', 'pathways.py'),
     ('data/pathways/backcast.json', 'Back-cast to LoE AR = 1 and the solution-space markers', 'pathways.py'),
     ('data/pathways/solution_space.csv', 'Cumulative LoE over the demand and intensity cuts (5% grid)',
      'pathways.py'),
@@ -168,8 +137,43 @@ FILES = [
      'texts, note, drawing script, whether maintenance and the boundary styling are drawn (figaudit.py; read by the '
      'tests)', 'style.save_figure'),
     ('INDEX.md', 'This index', 'indexes.py'),
+    # MODEL v3.0.0 figures and documents (figures/ package; figure_plan.py)
+    ('FIGURES.md', 'Every figure with its file, data sources, caption and run-specific note', 'figures/index.py'),
+    ('run_meta.json', 'Run metadata: profile, draws, seeds, git hash, input hash, timestamp, step timings', 'run_all.py'),
+    ('paper_main/Fig*.png', 'Main-paper figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_main.py'),
+    ('paper_main/Fig*.pdf', 'Main-paper figure, vector PDF (full profile)', 'figures/paper_main.py'),
+    ('paper_extended/ED*.png', 'Extended Data figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_extended.py'),
+    ('paper_extended/ED*.pdf', 'Extended Data figure, vector PDF (full profile)', 'figures/paper_extended.py'),
+    ('paper_extended/EDT1_levels_by_typology.*', 'Extended Data table: lever levels by typology (Moderate, Ambitious, '
+     'TL)', 'figures/paper_extended.py'),
+    ('diagnostics/*/D*.png', 'Diagnostic figure, PNG (FIGURES.md)', 'figures/ (module named in FIGURES.md)'),
+    ('diagnostics/*/D*.pdf', 'Diagnostic figure, vector PDF (full profile)', 'figures/ (module named in FIGURES.md)'),
+    ('data/figure_source/*.json', 'Figure source data: the exact arrays a diagnostic draws (figsource.py)',
+     'projection.py, Diagnostics.py, boundaries.py, tools/figures_report.py'),
+    ('data/baseline/overbuild_absorption_log.csv', 'The 2026 overbuild in the Reference by year: excess, cumulative '
+     'excess, absorption weight, target surplus and payback, payback paid and carried, surplus vacant, implied vacancy',
+     'projection.py'),
+    ('data/montecarlo/convergence_*.csv', 'Monte Carlo convergence: percentiles over the first n draws', 'MonteCarlo.py'),
+    ('data/montecarlo/input_distributions_*.csv', 'Monte Carlo input distributions: quantiles and sample moments',
+     'MonteCarlo.py'),
+    ('data/pathways/waterfall.csv', 'Sequential waterfall Reference -> P1 ... P4 (= P5) -> TL1 ... TL9 (= TL) by demand '
+     'band, Moderate and Ambitious', 'pathways.py'),
+    ('data/pathways/bands_annual.csv', 'In-scope demand bands by year of every Reference-variant run', 'pathways.py'),
+    ('data/pathways/lambda_sweep.csv', 'Lambda-sweep of each lever (Reference 0, Moderate 0.5, Ambitious 1) and TL',
+     'pathways.py'),
+    ('data/pathways/lever_annual.csv', 'Annual carbon of each lever alone at Reference, Moderate, Ambitious and TL',
+     'pathways.py'),
+    ('data/pathways/reoccupation_log.csv', 'TL and instant TL by year: need, releases (TL3, TL4), share, re-occupied, '
+     'binding years, built', 'pathways.py'),
+    ('data/pathways/ordering_checks.json', 'Ordering Reference >= Moderate >= Ambitious >= TL per lever, typology and '
+     'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
+    ('data/sensitivity/tornado.csv', 'Fig7: the eight inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
+     'tools/sensitivity_tables.py'),
 ]
-EXCLUDED = ('logs',)                    # console logs: git-ignored, not part of the release
+
+# console logs, and the light-profile and legacy-Reference mirrors (outputs/_light/, outputs/_legacy/): git-ignored,
+# not part of the release
+EXCLUDED = ('logs', '_light', '_legacy')
 
 
 def output_files():
@@ -195,29 +199,6 @@ def audit(fid):
         return json.load(f)
 
 
-def diagnostics_md():
-    lines = ['# Diagnostics', '',
-             '_Generated by indexes.py from docs/FIGURE_PLAN.md and the figure audit records (do not edit by hand). '
-             'Every figure: PNG 300 dpi, at most 183 mm wide (D06: single column, 89 mm), release style '
-             '(docs/PALETTE.md) and vocabulary '
-             '(docs/RENAMING.md). The figures of the paper are in ../paper/PAPER.md, the Extended Data in '
-             '../extended_data/EXTENDED_DATA.md; D16, D17, D29, D31 and D33 of the previous release are superseded by Extended '
-             'Data (ED1, ED3, ED7 and ED10, ED9, ED8; their data stay in outputs/data/); the earlier file name of each '
-             'figure is in docs/FIGURE_PLAN.md._', '']
-    for group, rows in FP.DIAGNOSTICS.items():
-        lines += [f'## {group.replace("_", " ").capitalize()}', '']
-        for fid, content, _ in rows:
-            a = audit(fid)
-            lines += [f'### {fid[:3]}. {N.typeset(content)}', '', f'![{fid[:3]}]({group}/{fid}.png)', '']
-            if a.get('note'):
-                lines += [a['note'], '']
-            lines += [f"File: [{group}/{fid}.png]({group}/{fid}.png); drawn by `{a.get('producer') or 'not drawn'}`.", '']
-    path = L.writing(os.path.join(L.DIAGNOSTICS, 'DIAGNOSTICS.md'))
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(lines) + '\n')
-    return path
-
-
 def index_md():
     files = output_files()
     if 'INDEX.md' not in files:
@@ -229,8 +210,8 @@ def index_md():
     lines = ['# Outputs', '',
              '_Generated by indexes.py (do not edit by hand): every file under outputs/ with what it holds and the '
              'script that writes it. Console logs (outputs/logs/) are not versioned. Data files use the release '
-             'names of docs/RENAMING.md; their numbers are locked by tests/test_regression_model_v1.py, '
-             'tests/test_regression_model_v2.py and (the pathway domain) tests/test_regression_model_v2_1.py._', '',
+             'names of docs/RENAMING.md; the deterministic numbers are locked by tests/test_regression_model_v3.py, the '
+             'Monte Carlo by its hash lock._', '',
              '| file | content | written by |', '|---|---|---|']
     lines += [f'| `{r}` | {c} | {w} |' for r, c, w in rows]
     path = L.writing(os.path.join(L.OUT, 'INDEX.md'))
@@ -241,9 +222,8 @@ def index_md():
 
 
 def main():
-    p = diagnostics_md()
     q, missing = index_md()
-    print(f'indexes: {os.path.relpath(p, ROOT)}, {os.path.relpath(q, ROOT)}')
+    print(f'indexes: {os.path.relpath(q, ROOT)}')
     if missing:
         raise SystemExit(f'indexes: files not in indexes.FILES: {missing}')
 

@@ -1,40 +1,54 @@
-"""Output layout of the model (MODEL v2.0.0): where every file the pipeline writes goes.
+"""Output layout of the model (MODEL v3.0.0): where every file the pipeline writes goes.
 
-    outputs/
-      paper/          the figures of the paper (Fig1-Fig6: PNG 300 dpi, vector PDF and source-data
-                      CSV), Tables 1-2 (Markdown and CSV) and PAPER.md (headline findings, every
-                      figure with its caption)
-      extended_data/  the Extended Data figures (ED1-ED10, same formats) and EXTENDED_DATA.md
-      key_figures/    K1-K6 (MODEL v2.1.0): the story in six figures, KEY_FIGURES.md
-      diagnostics/    every other figure, by group (PNG 300 dpi), DIAGNOSTICS.md, and
-                      _audit/: the record of every figure (figaudit.py; read by the tests)
-      data/           every number the model reports, as CSV and JSON, in the release names of
-                      naming.py: baseline/ (the Reference projection and its checks), montecarlo/,
-                      aesa/ (boundaries and levels of exceedance), pathways/, factors/ (case-study
-                      factors), frozen_technology/ (the check run at 2025 factors), metrics.json
-      reports/        generated documents: RESULTS, ASSUMPTIONS, the methods draft, the levers
-                      table, the validation and reality-check reports (frozen-technology run:
-                      frozen_technology_<name>.md)
-      logs/           console output of each run_all.py step (not versioned)
+    outputs/                  full profile (run_all.py --profile full); outputs/_light/ mirrors this tree for the
+                              light profile (the default) and outputs/_legacy/ for --reference-legacy
+      paper_main/             Fig1-Fig8 of the paper (figure_plan.PAPER_MAIN)
+      paper_extended/         Extended Data ED1-ED14 and the table EDT1 (figure_plan.PAPER_EXTENDED)
+      diagnostics/<group>/    calibration, validation, boundaries, pathways, montecarlo, sensitivity; _audit/: the
+                              record of every drawn figure (figures/audit.py; read by the tests)
+      FIGURES.md              the index of every figure (indexes / figures/index.py, from figure_plan.py)
+      run_meta.json           profile, draws, seeds, git hash, input hash, timestamp, step timings
+      data/                   every number the model reports, as CSV and JSON, in the release names of naming.py:
+                              baseline/, montecarlo/, aesa/, pathways/, sensitivity/, factors/, figure_source/
+                              (the arrays the figures draw that are not otherwise exported), metrics.json
+      reports/                generated documents (RESULTS, ASSUMPTIONS, methods draft, levers table, validation)
+      logs/                   console output of each run_all.py step (not versioned)
 
-Every module takes its paths from here, so the layout is defined once. The data file names
-are those of naming._file (docs/RENAMING.md, section 2); tests/test_release.py checks that
-the two agree and that every file in outputs/ is indexed.
+Every module takes its paths from here, so the layout is defined once. The folders of MODEL v2.1.2 (outputs/paper,
+outputs/extended_data, outputs/key_figures) are RETIRED and deleted by run_all.py. The frozen-technology helpers
+below are kept for the data layout of earlier releases; MODEL v3.0.0 does not run the frozen-technology check
+(docs/CHANGELOG_v3.md).
 """
 import os
 
+import runprofile
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(ROOT, 'outputs')
+OUT_FULL = os.path.join(ROOT, 'outputs')
+# MODEL v3.0.0 run profiles (runprofile.py): the light profile writes a mirror of the tree under outputs/_light/,
+# so a light run never overwrites the outputs of a full run
+OUT = os.path.join(OUT_FULL, runprofile.get('out_subdir')) if runprofile.get('out_subdir') else OUT_FULL
+# run_all.py --reference-legacy (PATHWAY_REFERENCE_LEGACY=1): the Reference of MODEL v2.1 (overbuild never absorbed),
+# written under outputs/_legacy/ so it never mixes with the v3 outputs
+LEGACY = os.environ.get('PATHWAY_REFERENCE_LEGACY') == '1'
+if LEGACY:
+    OUT = os.path.join(OUT_FULL, '_legacy')
 DATA = os.path.join(OUT, 'data')
 REPORTS = os.path.join(OUT, 'reports')
-PAPER = os.path.join(OUT, 'paper')
-EXTENDED_DATA = os.path.join(OUT, 'extended_data')
-KEY_FIGURES = os.path.join(OUT, 'key_figures')
+# MODEL v3.0.0 output architecture: paper_main/ (Fig1-Fig8), paper_extended/ (the Extended Data), diagnostics/
+# by group (calibration, validation, boundaries, pathways, montecarlo, sensitivity), FIGURES.md
+PAPER_MAIN = os.path.join(OUT, 'paper_main')
+PAPER_EXTENDED = os.path.join(OUT, 'paper_extended')
 DIAGNOSTICS = os.path.join(OUT, 'diagnostics')
+DIAGNOSTIC_GROUPS = ('calibration', 'validation', 'boundaries', 'pathways', 'montecarlo', 'sensitivity')
+FIGURES_INDEX = os.path.join(OUT, 'FIGURES.md')
+RUN_META = os.path.join(OUT, 'run_meta.json')
 FIGURE_AUDIT = os.path.join(DIAGNOSTICS, '_audit')
 LOGS = os.path.join(OUT, 'logs')
 FACTORS = os.path.join(DATA, 'factors')          # written by Building_factors.py (inputs of every run)
 FROZEN = 'frozen_technology'                     # data/ sub-folder and reports/ file prefix of the check run
+# retired in MODEL v3.0.0 (deleted by run_all.py): outputs/paper, outputs/extended_data, outputs/key_figures
+RETIRED = tuple(os.path.join(OUT, d) for d in ('paper', 'extended_data', 'key_figures'))
 
 
 def frozen_run():
@@ -71,19 +85,13 @@ def writing(path):
 
 
 def figure(name):
-    """outputs/paper/<file>, outputs/extended_data/<file> or outputs/diagnostics/<group>/<file> (no
-    extension) of a figure, from its file id in figure_plan.py (e.g. 'Fig5_boundaries_attribution',
-    'ED1_reference_carbon_tornado', 'D22_boundaries')."""
+    """The folder of a figure (no extension), from its id in figure_plan.py: outputs/paper_main/<file>,
+    outputs/paper_extended/<file> or outputs/diagnostics/<group>/<file>."""
     import figure_plan as FP
-    for base, items in ((PAPER, FP.PAPER), (EXTENDED_DATA, FP.EXTENDED_DATA), (KEY_FIGURES, FP.KEY_FIGURES)):
+    for base, items in ((PAPER_MAIN, FP.PAPER_MAIN), (PAPER_EXTENDED, FP.PAPER_EXTENDED)):
         if name in (h['file'] for h in items):
             return os.path.join(base, name)
     for g, rows in FP.DIAGNOSTICS.items():
-        if name in (f for f, _, _ in rows):
+        if name in (r['file'] for r in rows):
             return os.path.join(DIAGNOSTICS, g, name)
     raise KeyError(f'{name!r} is not a figure of figure_plan.py')
-
-
-def vector(path):
-    """True for a figure of the paper, Extended Data or the key figures (vector PDF with run_all.py --export)."""
-    return any(path.startswith(b + os.sep) for b in (PAPER, EXTENDED_DATA, KEY_FIGURES))

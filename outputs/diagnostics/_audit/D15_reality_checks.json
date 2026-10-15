@@ -1,6 +1,6 @@
 {
  "figure": "D15_reality_checks",
- "producer": "tools/figures_report.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Dwellings completed",
@@ -138,7 +138,7 @@
   "$\\mathdefault{\u221230}$",
   "$\\mathdefault{\u221240}$",
   "1991\u20132025 range",
-  "2026 \u2192 2027 handover (observed \u2192 model): -12.3%",
+  "2026 \u2192 2027 handover (observed \u2192 model): -14.4%",
   "Average new-dwelling size",
   "Change from the previous year (%)",
   "Dwellings (thousand per year)",
@@ -177,10 +177,15 @@
  "boundary_drawn": false,
  "boundary_zones": false,
  "white_segment_edges": 0,
+ "source": [
+  "figure_source/D15_reality_checks.json"
+ ],
  "atp_linestyles": [],
  "negative_band_segments": 0,
  "net_total_ticks": 0,
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
- "retired_colours": []
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
 }

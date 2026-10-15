@@ -1,0 +1,65 @@
+{
+ "figure": "Fig4_pathways_annual",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "0",
+  "1,000",
+  "1,200",
+  "1,400",
+  "1,600",
+  "200",
+  "400",
+  "600",
+  "800",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Ambitious",
+  "Boundary exceeded (above AR)",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "Moderate",
+  "P1 Space per person",
+  "P2 Existing stock",
+  "P3 Construction",
+  "P4 Land",
+  "P5 Combined",
+  "Reference",
+  "Theoretical limit",
+  "Within AR only (between AtP and AR)",
+  "Within both budgets (below AtP)"
+ ],
+ "note": "Cumulative LoE AR: REF 4.63, P5-moderate 3.39, P5-ambitious 2.45, TL 0.98.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_zones": true,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/annual.csv",
+  "aesa/annual.csv"
+ ],
+ "atp_linestyles": [
+  "dotted"
+ ],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

@@ -41,60 +41,76 @@ SCENARIO_LEGACY = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH', 'S3-5': 'REF_HL5',
                    'S1-noUC': 'LOW_NOUC', 'S3-10-noUC': 'REF_NOUC', 'S2-noUC': 'HIGH_NOUC'}
 FROZEN = 'Frozen technology (2025 carbon factors held; check run)'
 
-# MODEL v2.1.0: four pathway families of nine levers (the final lever set); P5 = every lever
+# MODEL v3.0.0: four pathway families of nine rule-based levers; P5 = every lever. Ambition levels follow the 2050
+# Pathways Calculator (DECC 2010; DESNZ 2023) and EUCalc (D2.5, 2020): Reference = Level 1, Moderate = Level 2,
+# Ambitious = Level 3, theoretical limit = Level 4.
 PATHWAYS = {'P1': 'Space per person', 'P2': 'Existing stock', 'P3': 'Construction', 'P4': 'Land',
             'P5': 'Combined'}
 SETTINGS = {'moderate': 'Moderate', 'ambitious': 'Ambitious'}
+LEVELS = {'reference': 'Reference (Level 1)', 'moderate': 'Moderate (Level 2)', 'ambitious': 'Ambitious (Level 3)',
+          'tl': 'Theoretical limit (Level 4)'}
 SETTING_LEGACY = {'central': 'moderate', 'stretch': 'ambitious'}
 
 # Levers: id -> label. LEVER_LEGACY: v3.1 id -> model-v1/v2.0 id (the regression map of the captured
-# v3.1 outputs); LEVER_V2_0: model-v2.0.0 id -> MODEL v2.1.0 id (docs/RENAMING.md)
-LEVERS = {'L1': 'Dwelling size', 'L2': 'Household occupancy', 'L3': 'Vacancy', 'L4': 'Overbuild absorption',
-          'L5': 'Building lifetime extension', 'L6': 'Material carbon', 'L7': 'Construction-stage carbon',
+# v3.1 outputs); LEVER_V2_0: model-v2.0.0 id -> MODEL v2.1.0 id; LEVER_V2_1: MODEL v2.1 id -> MODEL v3.0.0 id
+# (docs/RENAMING.md)
+LEVERS = {'L1': 'Dwelling size', 'L2': 'Design density', 'L3': 'Household size', 'L4': 'Vacancy',
+          'L5': 'Building lifetime', 'L6': 'Material carbon', 'L7': 'Construction-stage carbon',
           'L8': 'Soil-aware planning', 'L9': 'Brownfield development'}
 LEVER_LEGACY = {'L1': 'L1', 'L2a': 'L2', 'L2b': 'L3', 'L3': 'L4', 'L5': 'L5'}
 LEVER_V2_0 = {'L1': 'L1', 'L2': 'L3', 'L3': 'L4', 'L4': 'L5', 'L5': 'L6'}
 LEVER_NAMES_V2_0 = {'L1': 'Dwelling size', 'L2': 'Vacancy rate', 'L3': 'Overbuild absorption',
                     'L4': 'Building retention', 'L5': 'Material carbon'}
+LEVER_V2_1 = {'L1 Dwelling size': 'L1 Dwelling size (new rule)', 'L2 Household occupancy': 'L3 Household size',
+              'L3 Vacancy': 'L4 Vacancy', 'L4 Overbuild absorption': 'removed: Reference behaviour (absorbed by 2035)',
+              'L5 Building lifetime extension': 'L5 Building lifetime', 'L6 Material carbon': 'L6 Material carbon',
+              'L7 Construction-stage carbon': 'L7 Construction-stage carbon', 'L8 Soil-aware planning':
+              'L8 Soil-aware planning', 'L9 Brownfield development': 'L9 Brownfield development',
+              '(new)': 'L2 Design density'}
 PATHWAYS_V2_0 = {'P1': 'Right-sized dwellings', 'P2': 'Occupied stock', 'P3': 'Retained stock',
                  'P4': 'Low-carbon materials', 'P5': 'Combined'}
-PATHWAY_LEVERS = {'P1': ('L1', 'L2'), 'P2': ('L3', 'L4', 'L5'), 'P3': ('L6', 'L7'), 'P4': ('L8', 'L9')}
+PATHWAY_LEVERS = {'P1': ('L1', 'L2', 'L3'), 'P2': ('L4', 'L5'), 'P3': ('L6', 'L7'), 'P4': ('L8', 'L9')}
 LEVER_PATHWAY = {L: P for P, ls in PATHWAY_LEVERS.items() for L in ls}
+# The rule sub-rule each lever's Ambitious level follows (METHODS_DRAFT.md): A case-study distribution (Harrell-Davis
+# q0.15), B best value ever observed in NZ, C published reference value
+LEVER_SUBRULE = {'L1': 'B', 'L2': 'A', 'L3': 'C', 'L4': 'B', 'L5': 'C', 'L6': 'A', 'L7': 'C', 'L8': 'C', 'L9': 'C'}
 # The denser-typology-mix lever of pathways_v2 (numbered L4 in that version) was removed in
 # v3.1; it is never given a lever number in the release.
 DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.1)'
 
-# Theoretical limit (MODEL v2.1.0): TLn is the limit of Ln; TL10 has no lever counterpart
-TL = {'TL': 'Theoretical limit', 'TL1': 'No extra space', 'TL2': 'Historical maximum household size',
-      'TL3': 'No vacancy', 'TL4': 'Overbuild fully absorbed', 'TL5': 'Building lifetime extension at the limit',
-      'TL6': 'Best-practice materials', 'TL7': 'Zero-emission construction', 'TL8': 'Lowest-carbon soils',
-      'TL9': 'Brownfield maximum', 'TL10': 'Minimum space per person'}
-TL_LIMIT_OF = {'TL1': 'L1', 'TL2': 'L2', 'TL3': 'L3', 'TL4': 'L4', 'TL5': 'L5', 'TL6': 'L6', 'TL7': 'L7',
-               'TL8': 'L8', 'TL9': 'L9', 'TL10': None}
+# Theoretical limit (MODEL v3.0.0): TLn is Level 4 of Ln
+TL = {'TL': 'Theoretical limit', 'TL1': 'No extra space', 'TL2': 'Densest design', 'TL3': 'Historical maximum '
+      'household size', 'TL4': 'No vacancy', 'TL5': 'No demolition', 'TL6': 'Best-practice materials',
+      'TL7': 'Zero-emission construction', 'TL8': 'Lowest-carbon soils', 'TL9': 'All brownfield'}
+TL_LIMIT_OF = {f'TL{k}': f'L{k}' for k in range(1, 10)}
 TL_LEGACY = {'T': 'TL', 'T1': 'TL1', 'T2': 'TL2', 'T3': 'TL3', 'T4': 'TL4', 'T5': 'TL5', 'T6': 'TL6'}
 # model-v2.0.0 TL ids -> MODEL v2.1.0 (docs/RENAMING.md)
 TL_V2_0 = {'TL1 No vacancy': 'TL3 (+ TL4)', 'TL2 No extra space': 'TL1', 'TL3 Minimum space per person': 'TL10',
            'TL4 Best-practice materials': 'TL6', 'TL5 Lowest-carbon soils': 'TL8', 'TL6 Urban infill': 'TL9',
            'TL7 Building retention at -40% (ambitious level)': 'TL5'}
+# MODEL v2.1 TL ids -> MODEL v3.0.0
+TL_V2_1 = {'TL1 No extra space': 'TL1', 'TL2 Historical maximum household size': 'TL3', 'TL3 No vacancy': 'TL4',
+           'TL4 Overbuild fully absorbed': 'removed (Reference)', 'TL5 Building lifetime extension at the limit':
+           'TL5 No demolition', 'TL6 Best-practice materials': 'TL6', 'TL7 Zero-emission construction': 'TL7',
+           'TL8 Lowest-carbon soils': 'TL8', 'TL9 Brownfield maximum': 'TL9 All brownfield',
+           'TL10 Minimum space per person': 'TL2 Densest design'}
 TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pathway'
 
 # adoption paths of the levers (v3.1 'ramp' names)
 ADOPTION = {'by2035': 'full roll-out by 2035 (adopted)', 'by2030': 'full roll-out by 2030 (sensitivity)',
             'by2045': 'full roll-out by 2045 (sensitivity)', 'from2027': 'full strength from 2027'}
 ADOPTION_LEGACY = {'ramp2035': 'by2035', 'ramp2030': 'by2030', 'ramp2045': 'by2045', 'instant': 'from2027'}
-# MODEL v2.1.1: TL is adopted by 2030 (the window of the pathways' 2030 sensitivity); its instant variant is one
-# sensitivity row
-TL_ADOPTION_LABEL = 'full roll-out by 2030 (TL adoption)'
-TL_FASTER_ADOPTION = "TL's faster adoption (by 2030 instead of 2035)"
+# MODEL v3.0.0: TL is adopted on the same 2026 -> 2035 logistic as every level; its instant variant (every limit
+# from 1 January 2027) is one sensitivity row
 TL_INSTANT = 'TL, all limits from 1 January 2027 (instant)'
 TL_REOCCUPATION_LINE = 'released dwellings re-occupied at a constant share of each year\'s need'
 
 
 def tl_caption(share):
-    """The TL caption (MODEL v2.1.1, author's wording) with the constant share s of each year's need (share 0-1)."""
-    return ('TL: every lever at its limit, adopted by 2030; dwellings released by zero vacancy, the household-size '
-            'change and the 2026 overbuild are re-occupied gradually, meeting a constant share '
-            f'(~{100 * share:.0f}%) of each year\'s need; 2026 observed.')
+    """The TL caption with the constant share s of each year's need (share 0-1)."""
+    return ('TL: every lever at Level 4, adopted by 2035; dwellings released by TL3 (household size) and TL4 (zero '
+            f'vacancy) are re-occupied gradually, meeting a constant share (~{100 * share:.0f}%) of each year\'s '
+            'need; 2026 observed.')
 
 # Demand bands (why floor area is built), bottom to top. Retirement villages are a
 # bookkeeping row (out of scope), never a band in figures.
@@ -103,9 +119,15 @@ BANDS = {'growth': 'Population growth',
          'extra_space': 'Extra space',
          'vacancy': 'Vacancy',
          'overbuild_2026': '2026 overbuild',
-         'replacement': 'Historical replacement',
+         'overbuild_absorbed': 'Overbuild absorbed',
+         'replacement': 'Demolition replacement',
+         'unconsented': 'Unconsented additions',
          'redevelopment': 'Recent replacement surge',
+         'released_tl': 'Released dwellings (TL)',
          'maintenance': 'Maintenance (B2, B4), 2026–2050'}
+# MODEL v3.0.0: bands whose values are negative by construction (drawn as outlined segments hanging from the
+# top of the positive stack; the data keep the sign)
+NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'released_tl')
 BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BRANZ rate)',
                'replacement_residual': 'Historical replacement: net unconsented additions (calibrated residual)',
                'retirement_villages': 'Retirement villages (out of scope)',
@@ -116,17 +138,23 @@ BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BR
 BANDS_HISTORY = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement_history')
 BAND_DEFINITIONS = {
     'growth': 'population growth at the occupied area per person, net of consolidation (untargeted)',
-    'smaller_households': 'additional households from falling household size (targeted by L2 Household occupancy, P1)',
+    'smaller_households': 'additional households from falling household size (targeted by L3 Household size, P1)',
     'extra_space': 'new-dwelling size above the occupied area (household size x floor area per design occupant)',
     'vacancy': 'the vacancy allowance on new households and the change in the vacancy rate',
-    'overbuild_2026': 'observed 2026 building above the requirement, fading at the persistence rho; never absorbed',
-    'replacement': 'the long-run net replacement rate: demolition net of unconsented additions, 1991–2023 ratio of '
-                   'sums of the census dwelling-count identity (the census identifies only their sum)',
+    'overbuild_2026': 'observed 2026 building above the requirement, continuing above it in 2027-2050 at the '
+                      'persistence rho (the market excess)',
+    'overbuild_absorbed': 'the cumulative overbuild absorbed by building less, logistic 2026 -> 2035 (negative; '
+                          'MODEL v3.0.0 Reference)',
+    'replacement': 'demolition replacement at the fixed BRANZ SR214 rate (0.135% of the stock a year)',
+    'unconsented': 'unconsented additions: the calibrated long-run residual of the census dwelling-count identity '
+                   '(negative: dwellings that appear without a new-dwelling consent)',
+    'released_tl': 'existing dwellings released by TL3 (household size) and TL4 (zero vacancy) and re-occupied '
+                   '(negative; theoretical limit only)',
     'redevelopment': 'the scenario rate above that long-run rate: the 2018–2023 knock-down-and-rebuild wave, fading '
                      'in the Reference',
     'maintenance': 'replacement and repaint events (B2, B4) of the new buildings within 2026–2050 (carbon only)',
 }
-UNTARGETED = ('growth',)          # MODEL v2.1.0: smaller households are targeted by L2 (P1)
+UNTARGETED = ('growth',)          # smaller households are targeted by L3 Household size (P1; MODEL v3.0.0 numbering)
 
 COMPONENTS = {'materials_construction': 'Materials and construction (A1–A5)',
               'soil': 'Soil carbon loss',
@@ -148,7 +176,8 @@ METRICS = {'AR': 'Acquired rights (AR)', 'AtP': 'Ability to pay (AtP)', 'LoE': '
 # definition (pooled 2018/2023 empty share of unoccupied dwellings) 2023 is the series maximum.
 VACANCY_WORDING = ('the vacancy-rate parameter is held at its published 2023 census value ({v0:.2f}%; on the '
                    'consistent definition 2023 is the series maximum, {vmax:.2f}%, minimum {vmin:.2f}% in {ymin}); '
-                   'implied stock vacancy rises to ≈{v2050:.1f}% because the 2026 overbuild is not absorbed')
+                   'the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied '
+                   'vacancy returns to the parameter ({v2050:.2f}% in 2050)')
 
 
 def vacancy_wording(v0, vmax, vmin, ymin, v2050):
@@ -241,11 +270,16 @@ def run_label(run, scenario='REF'):
 # and net unconsented additions, and the retirement-village row (negative: households housed
 # in retirement villages, out of scope). 'in_scope' (bands.csv, the band figures): retirement
 # villages removed from every band in proportion, replacement one band, maintenance a carbon band.
+# MODEL v3.0.0: '2026 overbuild' split into the market excess (positive) and 'Overbuild absorbed' (negative);
+# in scope, 'Historical replacement' split into 'Demolition replacement' and 'Unconsented additions' (negative);
+# the theoretical-limit runs add 'Released dwellings (TL)' (negative; *_TL lists).
 BANDS_WITH_RETIREMENT_VILLAGES = ('growth', 'smaller_households', 'extra_space', 'vacancy',
                                   'replacement_demolition', 'replacement_residual', 'redevelopment',
-                                  'overbuild_2026', 'retirement_villages')
-BANDS_IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement', 'redevelopment',
-                  'overbuild_2026', 'maintenance')
+                                  'overbuild_2026', 'overbuild_absorbed', 'retirement_villages')
+BANDS_IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild_2026', 'replacement',
+                  'redevelopment', 'overbuild_absorbed', 'unconsented', 'maintenance')
+BANDS_WITH_RETIREMENT_VILLAGES_TL = BANDS_WITH_RETIREMENT_VILLAGES[:-1] + ('released_tl', 'retirement_villages')
+BANDS_IN_SCOPE_TL = BANDS_IN_SCOPE[:-1] + ('released_tl', 'maintenance')
 BAND_DEFINITION_IDS = ('with_retirement_villages', 'in_scope')
 
 

@@ -1,6 +1,6 @@
 {
  "figure": "D20_sobol",
- "producer": "MonteCarlo.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Embodied carbon, 2026\u20132050",
@@ -24,13 +24,6 @@
   "$\\mathdefault{0.6}$",
   "$\\mathdefault{0.8}$",
   "$\\mathdefault{1.0}$",
-  "0.01",
-  "0.02",
-  "0.06",
-  "0.22",
-  "0.23",
-  "0.70",
-  "0.75",
   "Built floor area, 2026\u20132050",
   "Carbon factors (case-study bootstrap)",
   "Completion rate",
@@ -43,16 +36,21 @@
   "a",
   "b"
  ],
- "note": "Reference, 5,000 Latin hypercube draws. Within-scenario parametric uncertainty only; the replacement variant, the carbon-factor and soil bounds are reported separately (D16).",
+ "note": "Reference; Saltelli / Jansen estimators (scipy.stats.sobol_indices); full profile only.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
  "boundary_zones": false,
  "white_segment_edges": 0,
+ "source": [
+  "montecarlo/sobol_REF.csv"
+ ],
  "atp_linestyles": [],
  "negative_band_segments": 0,
  "net_total_ticks": 0,
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
- "retired_colours": []
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
 }

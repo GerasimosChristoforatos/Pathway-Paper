@@ -351,11 +351,12 @@ def fig6():
                 markerfacecolor=S.PATHWAY[P_] if st == 'moderate' else 'none', markeredgewidth=1.0, zorder=5,
                 clip_on=False)
     lowest = float(Z.min())
-    if lowest > 1.0:                                   # the AR (and AtP) line lies outside the plane: say so on it
+    if lowest > atp_level:                             # a budget line outside the plane: say so on it
         from figures import audit as figaudit
-        msg = (f'AR line (LoE AR = 1) and AtP line (LoE AR = {atp_level:.2f}) lie below this plane: '
-               f'lowest LoE AR = {lowest:.2f} at a 100% cut')
-        ax.text(98, 2, msg, ha='right', va='bottom', fontsize=S.FONT_MIN + 0.5, color=S.AR,
+        msg = ((f'AR line (LoE AR = 1) and AtP line (LoE AR = {atp_level:.2f}) lie' if lowest > 1.0 else
+                f'AtP line (LoE AR = {atp_level:.2f}) lies') + f' outside this plane: lowest LoE AR = {lowest:.2f} '
+               'at a 100% cut')
+        ax.text(98, 97, msg, ha='right', va='top', fontsize=S.FONT_MIN + 0.5, color=S.BOUNDARY['AtP']['color'],
                 gid=figaudit.BOUNDARY_OUTSIDE)
     ax.set_xlabel('Cut in 2027-2050 floor area vs the Reference (%)')
     ax.set_ylabel('Cut in 2027-2050 carbon per m² (A1-A5, soil, B2/B4) vs the Reference (%)')

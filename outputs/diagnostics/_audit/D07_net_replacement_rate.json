@@ -27,7 +27,7 @@
   "$\\mathdefault{\u22120.1}$",
   "$\\mathdefault{\u22120.2}$",
   "2013 \u2192 2018: census empty / away definition break",
-  "BRANZ demolition rate, 0.135%",
+  "BRANZ demolition (component of the long-run rate), 0.135%",
   "Census intervals (dwelling counts, under-construction corrected)",
   "High replacement",
   "Low replacement",
@@ -38,6 +38,7 @@
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
+ "boundary_outside": false,
  "boundary_zones": false,
  "white_segment_edges": 0,
  "source": [

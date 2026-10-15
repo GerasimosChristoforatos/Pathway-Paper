@@ -84,6 +84,73 @@
     "TIMBER": 3415.7229932712085,
     "SOIL": 2899.3144592978015
   },
+  "bands_in_scope": [
+    {
+      "band": "Population growth",
+      "floor_area_Mm2": 40.470534932553754,
+      "carbon_kt": 9770.334240122445
+    },
+    {
+      "band": "Smaller households",
+      "floor_area_Mm2": 2.1776980380335687,
+      "carbon_kt": 556.4145990549974
+    },
+    {
+      "band": "Extra space",
+      "floor_area_Mm2": 24.081595527629,
+      "carbon_kt": 5828.249320694218
+    },
+    {
+      "band": "Vacancy",
+      "floor_area_Mm2": 3.7997489982508865,
+      "carbon_kt": 919.9025301909487
+    },
+    {
+      "band": "2026 overbuild",
+      "floor_area_Mm2": 3.6453321536079573,
+      "carbon_kt": 980.1342087453016
+    },
+    {
+      "band": "Demolition replacement",
+      "floor_area_Mm2": 10.67597142216876,
+      "carbon_kt": 2125.0852643962185
+    },
+    {
+      "band": "Recent replacement surge",
+      "floor_area_Mm2": 7.438909483738762,
+      "carbon_kt": 1536.5280022319512
+    },
+    {
+      "band": "Overbuild absorbed",
+      "floor_area_Mm2": -3.664447288091192,
+      "carbon_kt": -934.5276484825588
+    },
+    {
+      "band": "Unconsented additions",
+      "floor_area_Mm2": -2.724535962881016,
+      "carbon_kt": -542.3273440966022
+    },
+    {
+      "band": "Vacancy released",
+      "floor_area_Mm2": 0.0,
+      "carbon_kt": 0.0
+    },
+    {
+      "band": "Released dwellings (TL)",
+      "floor_area_Mm2": 0.0,
+      "carbon_kt": 0.0
+    },
+    {
+      "band": "Surplus kept vacant (2050)",
+      "floor_area_Mm2": 0.0,
+      "carbon_kt": 0.0
+    },
+    {
+      "band": "Maintenance (B2, B4), 2026-2050",
+      "floor_area_Mm2": 0.0,
+      "carbon_kt": 375.1027764995913
+    }
+  ],
   "accounting": "time_resolved",
   "decarb_a45": "resch",
   "event_timing": "n+1",

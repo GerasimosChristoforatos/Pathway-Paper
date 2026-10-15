@@ -28,7 +28,9 @@ A bottom-up, demand-driven model of the new residential floor area New Zealand b
   TL1 … TL9, the back-cast to the AR budget, a λ-sweep of each lever, and the pathway Monte Carlo
   with its insight statistics (`pathways_mc.py`, `mcstats.py`).
 
-Release **MODEL v3.0.0** (see [docs/CHANGELOG_v3.md](docs/CHANGELOG_v3.md) and
+Release **MODEL v3.2.0**: the v3.0 model with the release accounting, history split and figure fixes of
+v3.1 (v3.1 is withdrawn); see [docs/CHANGELOG_v3_2.md](docs/CHANGELOG_v3_2.md),
+[docs/CHANGELOG_v3.md](docs/CHANGELOG_v3.md) and
 [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
 
 ## Results

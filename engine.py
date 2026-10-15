@@ -200,6 +200,11 @@ def nowcast_year(consents, year, method, seasonal_years):
 
 
 SOIL_ZERO_TOL_M2 = 1e-3          # floor area treated as zero (theoretical limit, banked zero-building years)
+# MODEL v3.2.0 zero-year guard (every run): built floor area below this is floating-point noise of a year in which
+# nothing is built (e.g. +-2.3e-10 m2); that year's floor area, soil share and soil carbon are set to 0. Without it
+# the soil share 1 - soil_free / total is a ratio of noise (order +-1e15) and the soil carbon of a year with no
+# construction is non-zero (MODEL v3.0 defect, found in Monte Carlo draws; docs/CHANGELOG_v3_2.md).
+BUILT_ZERO_TOL_M2 = 1e-6
 
 
 def requirement(E):
@@ -441,6 +446,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         gfa_adj[i] = float(g) - total[i]
     c_gross, total = c_gross + gfa_adj, total + gfa_adj
 
+    # nothing built (zero-year guard, MODEL v3.2.0). A negative total occurs only in the requirement pass of
+    # pathways.run (join = 0, the floor area unused there); a built path is >= 0 in dwellings (checked in pathways)
+    zero_built = total < BUILT_ZERO_TOL_M2
+    total = np.where(zero_built, 0.0, total)
     gfa_t = shares.values.T * total                  # (typology, years)
     # intensities: one value per typology (constant), or one per typology and
     # year (materials decarbonised, projection.DECARB_MODE); both broadcast to (typ, years)
@@ -462,9 +471,10 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                 0.0, np.asarray(brownfield_share, float) * total - soil_free)
         soil_share = (1.0 - np.divide(soil_free, total, out=np.zeros(len(hh)),
                                                          where=total != 0))
+        # MODEL v3.2.0: the soil-bearing share is a share: clipped to [0, 1] in every run, and 0 in a zero year
+        soil_share = np.where(zero_built, 0.0, np.clip(soil_share, 0.0, 1.0))
         if clip_soil_share:
-            soil_share = np.where(total <= SOIL_ZERO_TOL_M2, 0.0, np.clip(soil_share, 0.0, 1.0))
-            soil_share[0] = 1.0 - (soil_free[0] / total[0] if total[0] != 0 else 0.0)
+            soil_share = np.where(total <= SOIL_ZERO_TOL_M2, 0.0, soil_share)
         carbon_t = (I - sY) * gfa_t + (sY * gfa_t) * soil_share
         upfront_t = (U - sY) * gfa_t + (sY * gfa_t) * soil_share
     b_t = np.zeros_like(gfa_t)

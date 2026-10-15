@@ -1,4 +1,4 @@
-# References (MODEL v3.0.0)
+# References (MODEL v3.2.0)
 
 The references the model's methods rest on, in the form the methods draft cites them. **Verification status**: the
 network policy of this environment blocks the Crossref API, so metadata were checked through a scholarly index
@@ -32,11 +32,27 @@ absorbed, by 2030, by 2045).
 - Wheaton, W. C. (1990). Vacancy, search, and prices in a housing market matching model. *Journal of Political
   Economy*, 98(6), 1270–1292. Verified: title, author, year, journal. doi:10.1086/261734 [verify: DOI and pages].
 - DiPasquale, D., & Wheaton, W. C. (1992). The markets for real estate assets and space: a conceptual framework.
-  *Real Estate Economics* (formerly *AREUEA Journal*), 20(2), 181–198. doi:10.1111/1540-6229.00579 [verify: issue
-  number — one citing paper (Lisi 2020) gives 20(1):181–197 — and the DOI].
+  *Real Estate Economics* (formerly *AREUEA Journal*), 20(2), 181–198. doi:10.1111/1540-6229.00579. Verified (MODEL
+  v3.1.0, scholarly index): title, authors, year, journal. [verify: issue number — one citing paper (Lisi 2020)
+  gives 20(1):181–197 — pages and DOI; Crossref unreachable from this environment].
 - Gabriel, S. A., & Nothaft, F. E. (2001). Rental housing markets, the incidence and duration of vacancy, and the
-  natural vacancy rate. *Journal of Urban Economics*, 49(1), 121–149. Verified: title, authors, journal. The index
-  lists 1999 (online / working-paper date) [verify: volume 49(1), 2001, pages, doi:10.1006/juec.2000.2187].
+  natural vacancy rate. *Journal of Urban Economics*, 49(1), 121–149. Verified: title, authors. The scholarly index
+  (MODEL v3.1.0 check) lists only the 1999 working-paper version (RePEc); [verify: journal publication, volume 49(1),
+  2001, pages, doi:10.1006/juec.2000.2187]. Distinct from their earlier paper: Gabriel, S. A., & Nothaft, F. E.
+  (1988). Rental housing markets and the natural vacancy rate. *AREUEA Journal* (now *Real Estate Economics*),
+  16(4), 419–429, doi:10.1111/1540-6229.00465 (verified in the index: title, journal, year, volume, issue, pages).
+
+## Attribution principle, completion rate (MODEL v3.2.0)
+
+- Davis, S. J., & Socolow, R. H. (2014). Commitment accounting of CO2 emissions. *Environmental Research Letters*,
+  9(8), 084018 (emissions committed by an investment attributed to the decision). [verify: title, issue and DOI
+  10.1088/1748-9326/9/8/084018; Crossref unreachable from this environment]
+- Jones, Greenaway-McGrevy & Crow (2024): the observed range of the completion rate of consented dwellings (bounds
+  0.92 / 0.96 of the Monte Carlo distribution). [verify: full citation (title, outlet, year); not found in the
+  scholarly indexes available here]
+- Wallis, K. F. (2014). The two-piece normal, binormal, or double Gaussian distribution: its origin and
+  rediscoveries. *Statistical Science*, 29(1), 106–112 (median at the join of a two-piece distribution). [verify:
+  pages and DOI]
 
 ## Lever anchors
 

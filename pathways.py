@@ -49,6 +49,7 @@ from scipy.optimize import brentq
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
 import aesa  # noqa: E402
+import bands as BANDS  # noqa: E402
 import engine  # noqa: E402
 import events as EV  # noqa: E402
 import layout  # noqa: E402
@@ -80,6 +81,7 @@ T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a z
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
 SHAPLEY_METRICS = ('carbon_kt', 'LoE_AR', 'LoE_AtP')
 ORDER_RTOL = 1e-12
+TL_REOCCUPATION_FAST = 'TL-reoccupation-fast'   # A4 sensitivity row (reoccupation rule 'fast')
 
 
 # ============================================================
@@ -138,7 +140,10 @@ def base_context(B, scenario, bounds):
 # ============================================================
 # RE-OCCUPATION (TL3 / TL4 releases)
 # ============================================================
-def reoccupation(years, gross, released):
+REOCCUPATION_RULES = ('constant_share', 'fast')   # adopted; 'fast' = as fast as demand allows (A4 sensitivity row)
+
+
+def reoccupation(years, gross, released, rule='constant_share'):
     """Constant-share re-occupation (MODEL v3.0.0). The dwellings released in 2027-2050 by TL3 and TL4 (R in total)
     meet a constant share of each year's need after the overbuild payback:
 
@@ -147,7 +152,10 @@ def reoccupation(years, gross, released):
     The dwellings re-occupied up to year t never exceed those released up to t. Where that binds, the shortfall is
     BUILT (not carried) and the share is recomputed from the remaining pool for the remaining years:
     s = min(R - re-occupied so far, remaining G+) / remaining G+. built_t = max(gross_t, 0) - re-occupied_t >= 0.
-    Where R > G+, s = 1 and the surplus R - G+ stays vacant in 2050. 2025 and 2026 pass through (2026 observed)."""
+    Where R > G+, s = 1 and the surplus R - G+ stays vacant in 2050. 2025 and 2026 pass through (2026 observed).
+
+    rule 'fast' (MODEL v3.2.0, A4 sensitivity row): re-occupation as fast as demand allows,
+    reoccupied_t = min(max(gross_t, 0), cumulative released to t - cumulative re-occupied to t-1)."""
     years = np.asarray(years)
     gross = np.asarray(gross, float)
     released = np.asarray(released, float)
@@ -164,6 +172,16 @@ def reoccupation(years, gross, released):
     tol = REOCCUPATION_TOL * max(R, 1.0)
     cum_rel = cum_re = 0.0
     idx = np.flatnonzero(mask)
+    if rule == 'fast':
+        for i in idx:
+            cum_rel += released[i]
+            reocc[i] = max(0.0, min(gp[i], cum_rel - cum_re))
+            binds[i] = (cum_rel - cum_re) < gp[i] - tol and R > 0.0
+            share_t[i] = reocc[i] / gp[i] if gp[i] > 0 else 0.0
+            cum_re += reocc[i]
+        idx = []
+    elif rule != 'constant_share':
+        raise ValueError(f'reoccupation rule {rule!r}: one of {REOCCUPATION_RULES}.')
     for j, i in enumerate(idx):
         cum_rel += released[i]
         target = gp[i] * share
@@ -187,9 +205,52 @@ def reoccupation(years, gross, released):
 # ============================================================
 # ONE RUN AND ITS METRICS
 # ============================================================
-def run(ctx, p, levels, ramp_name=None):
+def carry_negative(years, gross, mask):
+    """MODEL v3.2.0 (A2): a year whose gross building is negative (releases in the requirement, the unconsented
+    additions, exceed the gross need) builds nothing; the unusable dwellings are carried forward and used, in full,
+    against the next years' gross building. Returns (gross after the carry >= 0 in the masked years, negclip_t
+    (dwellings carried out of year t), neg_used_t, carry at the end)."""
+    g = np.asarray(gross, float).copy()
+    clip, used = np.zeros(len(g)), np.zeros(len(g))
+    carry = 0.0
+    for i in np.flatnonzero(mask):
+        if g[i] < 0.0:
+            clip[i] = -g[i]
+            carry += -g[i]
+            g[i] = 0.0
+        elif carry > 0.0:
+            u = min(carry, g[i])
+            used[i] = u
+            g[i] -= u
+            carry -= u
+    return g, clip, used, carry
+
+
+def use_in_year(gross, released, mask):
+    """MODEL v3.2.0 (A2), runs without any lever at its theoretical limit: dwellings released by a vacancy-rate fall
+    are used in the year they occur, capped at the year's gross need (after the payback); the rest is carried to the
+    next years. Returns (used_t, carry at the end)."""
+    used = np.zeros(len(gross))
+    carry = 0.0
+    for i in np.flatnonzero(mask):
+        pool = carry + released[i]
+        used[i] = min(pool, max(gross[i], 0.0))
+        carry = pool - used[i]
+    return used, carry
+
+
+def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     """One run of the model with the levers at `levels` ({lever: 'moderate' | 'ambitious' | 'tl' | lambda}); see the
-    module docstring for the order gross -> payback -> re-occupation -> built."""
+    module docstring for the order gross -> payback -> re-occupation -> built.
+
+    MODEL v3.2.0 release accounting (A2; bands.py): the payback is taken on the GROSS need (the requirement with
+    the dwellings released by a vacancy-rate fall added back); a negative gross year builds nothing and carries the
+    unusable dwellings forward (carry_negative). In a theoretical-limit-family run (any lever at 'tl') every release
+    present in the run, the vacancy-rate fall at any level and the household-size fall, enters the re-occupation pool
+    (reoccupation(): constant share of each year's need, availability constraint, attribution in proportion to the
+    release of each source). In any other run the vacancy release is used in the year it occurs, capped at the gross
+    need, the rest carried (use_in_year). Whatever is still unusable in 2050 is kept vacant (bands: 'Surplus kept
+    vacant (2050)')."""
     fi, info = LV.inputs(ctx, p, levels, ramp_name)
     years = np.asarray(ctx['years'])
     n = len(years)
@@ -199,29 +260,47 @@ def run(ctx, p, levels, ramp_name=None):
     req = np.asarray(engine.requirement(E1), float)
     late = years >= REOCCUPATION_YEARS[0]
     v = np.broadcast_to(np.asarray(E1['v'], float), (n,))
-    rel4 = np.where(late, -np.minimum(np.asarray(E1['change'], float), 0.0), 0.0) if 'L4' in info['tl'] else zeros
+    tl_family = bool(info['tl'])
+    rel_v = np.where(late, -np.minimum(np.asarray(E1['change'], float), 0.0), 0.0)      # vacancy-rate fall
+    if np.any(np.asarray(E1['change'], float)[~late] < 0.0):
+        raise SystemExit('run: a vacancy-rate fall before 2027 (2026 is observed).')
     rel3 = (np.where(late, -np.minimum(np.asarray(E1['d_hh_raw'], float), 0.0) / (1.0 - v), 0.0)
-            if 'L3' in info['tl'] else zeros)
-    need = req + rel4
+            if tl_family else zeros)                                                      # household-size fall
+    hh_fall_years = [int(y) for y, d in zip(years[late], np.asarray(E1['d_hh_raw'], float)[late]) if d < 0.0]
+    need = req + rel_v                                # gross need: the vacancy release is not netted
     excess = ctx['excess']
     if ctx['absorb_w'] is None:                       # overbuild never absorbed (legacy Reference)
         ab = dict(paid=zeros, carry=zeros, cap_binds=np.zeros(n, bool), built=need + excess, U=np.cumsum(excess))
     else:
         _, ab = engine.absorb_overbuild(excess, ctx['absorb_w'], need)
-    gross = ab['built']                               # need + excess - payback
-    ro = reoccupation(years, gross, rel3 + rel4)
-    reocc = ro['reoccupied']
-    built = ro['built']
-    zero_year = late & (gross < 0.0)                  # nothing built: the join takes the requirement away
-    join = np.where(zero_year, built - req, excess - ab['paid'] + rel4 - reocc)
+    gross0 = ab['built']                              # need + excess - payback
+    gross, negclip, neg_used, neg_carry = carry_negative(years, gross0, late)
+    if tl_family:
+        ro = reoccupation(years, gross, rel3 + rel_v, reocc_rule)
+        reocc, used_v, vac_carry = ro['reoccupied'], zeros, 0.0
+        pool_rem = ro['surplus_vacant_2050']
+    else:
+        ro = reoccupation(years, gross, zeros)
+        used_v, vac_carry = use_in_year(gross, rel_v, late)
+        reocc, pool_rem = zeros, 0.0
+    built = ro['built'] - used_v
+    join = excess - ab['paid'] + (rel_v - used_v) - reocc + (negclip - neg_used)
     E = engine.forward(ctx['pop'], hh, ctx['growth'], join=join, join_redev=zeros, **fi)
     R_tot = ro['R']
     s3 = float(rel3.sum() / R_tot) if R_tot > 0 else 0.0
-    ro.update(released_tl3=rel3, released_tl4=rel4, gross=gross, need=need, requirement_nojoin=req,
-              reoccupied_tl3=reocc * s3, reoccupied_tl4=reocc * (1.0 - s3) if R_tot > 0 else zeros,
-              R3=float(rel3.sum()), R4=float(rel4.sum()))
+    ro.update(released_tl3=rel3, released_tl4=rel_v if tl_family else zeros, gross=gross, need=need,
+              requirement_nojoin=req, reoccupied_tl3=reocc * s3,
+              reoccupied_tl4=reocc * (1.0 - s3) if R_tot > 0 else zeros,
+              R3=float(rel3.sum()), R4=float(rel_v.sum()) if tl_family else 0.0)
+    flows = dict(rel_v=rel_v, used_v=used_v, reocc=reocc, negclip=negclip, neg_used=neg_used,
+                 vac_carry_end=float(vac_carry), pool_remainder=float(pool_rem), neg_carry_end=float(neg_carry))
     info.update(excess=excess, payback=ab['paid'], payback_carry=ab['carry'], payback_cap_binds=ab['cap_binds'],
-                reoccupation=ro, join_clip=np.where(zero_year, join - (excess - ab['paid'] + rel4 - reocc), 0.0))
+                reoccupation=ro, flows=flows, tl_family=tl_family, households_fall_years=hh_fall_years,
+                negative_gross_years=[int(y) for y, c in zip(years, negclip) if c > 0.0],
+                vacancy_released=float(rel_v.sum()) if not tl_family else 0.0,
+                built_check=built)
+    if not np.allclose(engine.requirement(E)[late], built[late], rtol=1e-9, atol=1e-6):
+        raise SystemExit(f'run {LV.label(levels)}: dwellings built differ from the release accounting.')
     return dict(E=E, inputs=fi, info=info, levels=dict(levels), ramp=ramp_name or RAMP_ADOPTED,
                 scenario=ctx['scenario'])
 
@@ -312,8 +391,15 @@ def metrics(ctx, R, label, setting):
                 overbuild_payback_carried_2050=float(info['payback_carry'][-1]),
                 overbuild_cap_binding_years=';'.join(str(int(y)) for y in yy[info['payback_cap_binds']]),
                 released_tl3=ro['R3'], released_tl4=ro['R4'], reoccupied=ro['reoccupied_total'],
-                G_plus=ro['G_plus'], reoccupation_share=ro['share'], surplus_vacant_2050=ro['surplus_vacant_2050'],
+                G_plus=ro['G_plus'], reoccupation_share=ro['share'],
+                surplus_vacant_2050=(info['flows']['pool_remainder'] + info['flows']['vac_carry_end']
+                                     + info['flows']['neg_carry_end']),
+                vacancy_released_dwellings=float(info['flows']['used_v'][f].sum() + info['flows']['vac_carry_end']),
+                households_fall_years=';'.join(str(y) for y in info['households_fall_years']),
+                negative_gross_years=';'.join(str(y) for y in info['negative_gross_years']),
                 reoccupation_binding_years=';'.join(str(int(y)) for y in yy[ro['release_binds']]),
+                zero_building_years=';'.join(str(int(y)) for y, b in zip(yy[2:], engine.requirement(E)[2:])
+                                             if b <= T_ZERO_TOL_DWELLINGS),
                 vacancy_change_dwellings=float(E['change'][f].sum()),
                 size_minus_occupied_min_m2=size_minus_occ,
                 l1_held_typology_years=int(sum(h[f].sum() for h in held.values())) if held else 0,
@@ -343,7 +429,8 @@ def annual_rows(ctx, R, label):
                          dwelling_size_m2=E['D'][i], occupied_area_m2=E['occ'][i], implied_vacancy=v_impl[i],
                          stock_vacancy=float(np.broadcast_to(E['v'], E['hh'].shape)[i]),
                          vacancy_change_dwellings=E['change'][i], overbuild_excess=info['excess'][i],
-                         overbuild_payback=info['payback'][i], released_tl3=ro['released_tl3'][i],
+                         overbuild_payback=info['payback'][i], vacancy_released_used=info['flows']['used_v'][i],
+                         released_tl3=ro['released_tl3'][i],
                          released_tl4=ro['released_tl4'][i], reoccupied=ro['reoccupied'][i],
                          households=E['hh'][i], household_size=E['pop'][i] / E['hh'][i],
                          brownfield_share=(E['soil_free_gfa'][i] / E['total'][i] if E['total'][i] > T_ZERO_TOL_M2 else 0.0),
@@ -355,76 +442,35 @@ def annual_rows(ctx, R, label):
 # ============================================================
 # DEMAND BANDS (projection bookkeeping; naming.BANDS_*_TL)
 # ============================================================
-BAND_KEYS_RV = ('growth', 'hs_pos', 'extra', 'vac', 'repl', 'unc', 'wave', 'join', 'absorbed', 'released', 'rv')
-BAND_ORDER = [N.band_data_label(b) for b in N.BANDS_WITH_RETIREMENT_VILLAGES_TL]
-_IN_SCOPE_KEYS = {'growth': ('growth',), 'smaller_households': ('hs_pos',), 'extra_space': ('extra',),
-                  'vacancy': ('vac',), 'overbuild_2026': ('join',), 'replacement': ('repl',),
-                  'redevelopment': ('wave',), 'overbuild_absorbed': ('absorbed',), 'unconsented': ('unc',),
-                  'released_tl': ('released',), 'maintenance': ('bev',)}
-FIG_BANDS = [(N.band_data_label(b), _IN_SCOPE_KEYS[b]) for b in N.BANDS_IN_SCOPE_TL]
+BAND_ORDER_IN_SCOPE = [N.band_data_label(b) for b in BANDS.IN_SCOPE]
+BAND_ORDER_RV = BAND_ORDER_IN_SCOPE[:-2] + [N.band_data_label('retirement_villages')] + BAND_ORDER_IN_SCOPE[-2:]
 
 
-def band_arrays(ctx, R):
-    """Annual floor area (m2) and carbon (kg) by demand band. The engine's join is split into the 2026 overbuild
-    (the market excess, + the observed-GFA adjustment of 2026), the overbuild absorbed (-payback) and the TL release
-    (+ the TL4 release, booked with the vacancy band whose change term it offsets; - re-occupied dwellings and any
-    zero-building clip, the 'Released dwellings (TL)' band). The redevelopment wave is the run's residual path above
-    the long-run residual."""
-    E, fi, info = R['E'], R['inputs'], R['info']
-    D = E['D']
-    ro = info['reoccupation']
-    wave = (np.asarray(fi['rate_unc'], float) - ctx['long_run_residual']) * E['prev'] * D
-    g = dict(growth=E['growth'], hs_pos=E['hs_pos'], extra=E['extra'],
-             vac=(E['allow'] + E['change'] + ro['released_tl4']) * D,
-             repl=E['demol'] * D, unc=E['unc'] * D - wave, wave=wave,
-             join=info['excess'] * D + E['gfa_adj'], absorbed=-info['payback'] * D,
-             released=(-ro['reoccupied'] + info['join_clip']) * D, rv=E['rv'] * D)
-    one = np.ones(len(ctx['years']))
-    repl_u = np.clip(E['demol'] + E['unc'] + E['join_redev'], 0.0, None)
-    gross_u = np.maximum(E['d_hh'], 0.0) + E['allow'] + E['change'] + E['demol'] + E['unc'] + E['join']
-    frac = dict(growth=one, hs_pos=one, extra=one, vac=one, repl=0.0 * one, unc=0.0 * one, wave=0.0 * one,
-                join=one, absorbed=one, released=one,
-                rv=1.0 - np.divide(repl_u, gross_u, out=np.zeros_like(one), where=gross_u != 0))
-    shares = fi['shares']
-    soil = fi.get('soil', ctx['soil'])
-    mat = {t: np.asarray(fi['intensity'][t], float) - np.asarray(soil[t], float) for t in ctx['typ']}
-    tot = E['total']
-    share_repl = 1.0 - np.divide(E['soil_free_replacement_gfa'], tot, out=np.zeros_like(tot), where=tot != 0)
-    phi = np.divide(E['soil_share'], share_repl, out=np.zeros_like(tot), where=share_repl > 0)
-    if 'brownfield_share' not in fi and not fi.get('clip_soil_share'):
-        phi = one
-    c = {k: sum(v * shares[t].values * mat[t] + v * shares[t].values * frac[k] * phi * np.asarray(soil[t], float)
-                for t in ctx['typ']) for k, v in g.items()}
-    c['bev'] = E['b_t'].sum(axis=0)
-    return g, c
+def band_set(ctx, R):
+    """In-scope bands of a run (bands.in_scope): {band id: (floor area m2, carbon kg)} over the model years."""
+    E, info = R['E'], R['info']
+    return BANDS.in_scope(E, R['inputs'], info['excess'], info['payback'], info['flows'], ctx['long_run_residual'],
+                          ctx['typ'])
 
 
 def band_annual(ctx, R):
-    """In-scope bands by year 2026-2050 (retirement villages removed from every band in proportion; maintenance a
-    carbon band): {band label: (floor area m2 array, carbon kg array)}; the bands add up to the run's floor area
-    and carbon in every year (a zero-building year: every band zero except maintenance)."""
-    g, c = band_arrays(ctx, R)
+    """In-scope bands by year 2026-2050: {band label: (floor area m2 array, carbon kg array)}; the bands add up to the
+    run's floor area and carbon in every year (bands.check, 1e-9; no rescaling)."""
+    bs = band_set(ctx, R)
     f = slice(1, None)
-    E = R['E']
-    tot_g, tot_c = E['total'][f], E['carbon'][f]
-    raw_g = {b: sum((g[k] if k != 'bev' else 0.0 * g['growth']) for k in ks)[f] for b, ks in FIG_BANDS}
-    raw_c = {b: sum(c[k] for k in ks)[f] for b, ks in FIG_BANDS}
-    sg, sc = sum(raw_g.values()), sum(raw_c.values())
-    built = tot_g > T_ZERO_TOL_M2
-    fg = np.divide(tot_g, sg, out=np.zeros_like(tot_g), where=built & (sg != 0))
-    fc = np.divide(tot_c, sc, out=np.zeros_like(tot_c), where=built & (sc != 0))
-    mb = N.band_data_label('maintenance')
-    zero_c = np.where(built, 0.0, raw_c[mb])
-    if np.any(~built) and not np.allclose(zero_c[~built], tot_c[~built], rtol=1e-9, atol=1.0):
-        raise SystemExit('band_annual: the carbon of a zero-building year is not its maintenance')
-    return {b: (raw_g[b] * fg, raw_c[b] * fc + (zero_c if b == mb else 0.0)) for b, _ in FIG_BANDS}
+    return {N.band_data_label(b): (bs[b][0][f], bs[b][1][f]) for b in BANDS.IN_SCOPE}
 
 
 def band_rows(ctx, R, label):
-    g, c = band_arrays(ctx, R)
+    """Cumulative bands 2026-2050 under both definitions: in scope, and with the retirement-village units shown as
+    their own (negative) band (every other band at its gross floor area; bands.with_retirement_villages)."""
     f = slice(1, None)
-    rows = [dict(run=label, scenario=ctx['scenario'], definition='with_retirement_villages', band=b,
-                 gfa_Mm2=g[k][f].sum() / M6, carbon_kt=c[k][f].sum() / M6) for b, k in zip(BAND_ORDER, BAND_KEYS_RV)]
+    rows = []
+    rv = BANDS.with_retirement_villages(R['E'], R['inputs'], R['info']['excess'], R['info']['payback'],
+                                        R['info']['flows'], ctx['long_run_residual'], ctx['typ'])
+    for b, (gv, cv) in rv.items():
+        rows.append(dict(run=label, scenario=ctx['scenario'], definition='with_retirement_villages',
+                         band=N.band_data_label(b), gfa_Mm2=gv[f].sum() / M6, carbon_kt=cv[f].sum() / M6))
     rows += [dict(run=label, scenario=ctx['scenario'], definition='in_scope', band=b, gfa_Mm2=gv.sum() / M6,
                   carbon_kt=cv.sum() / M6) for b, (gv, cv) in band_annual(ctx, R).items()]
     return rows
@@ -473,37 +519,39 @@ def shapley_rows(value, players, game, metric, names):
 # BACK-CAST AND SOLUTION SPACE (carbon linear in floor area and in intensity)
 # ============================================================
 def carbon_parts(ctx, R):
-    """Annual carbon split by cohort: upfront by construction year (soil and non-soil) and in-window events by
-    cohort year i and occurrence year j (ev[i, j]). Sum = E['carbon']."""
+    """Annual carbon split by cohort: materials and construction A1-A5 in the construction year (mat), soil carbon
+    loss in the construction year (soil) and in-window events of cohort i in occurrence year j (ev[i, j]).
+    Sum = E['carbon']."""
     E = R['E']
     soil = np.asarray(E['soil'], float)
-    up = E['upfront']
+    mat = np.asarray(E['upfront'], float) - soil
     ev = np.zeros((len(ctx['years']), len(ctx['years'])))
     for k, t in enumerate(ctx['typ']):
         ev += E['gfa_t'][k][:, None] * ctx['events'][t]
-    if not np.allclose(up + ev.sum(axis=0), E['carbon'], rtol=1e-12, atol=1e-6):
-        raise SystemExit('carbon_parts: upfront + events by cohort does not reproduce the annual carbon.')
-    return dict(up=up, soil=soil, nonsoil=up - soil, ev=ev)
+    if not np.allclose(mat + soil + ev.sum(axis=0), E['carbon'], rtol=1e-12, atol=1e-6):
+        raise SystemExit('carbon_parts: the cohort split does not reproduce the annual carbon.')
+    return dict(mat=mat, soil=soil, ev=ev)
 
 
 def linear_split(ctx, R):
-    """Annual carbon (kg, 2026-2050) = fixed (the 2026 cohort) + later_nonsoil + later_soil (2027-2050 cohorts)."""
+    """Annual carbon (kg, 2026-2050) = fixed + later (MODEL v3.2.0): fixed = the 2026 cohort's emissions in the window
+    (its A1-A5, soil carbon loss and in-window events; identical in every run, 2026 observed); later = every emission
+    in the window of the 2027-2050 cohorts (A1-A5, soil carbon loss, in-window B2/B4), the quantity a cut in
+    2027-2050 floor area (x) and in total carbon per m2 (y) scales by (1 - x)(1 - y) (Fig6)."""
     p = carbon_parts(ctx, R)
     n = len(ctx['years'])
-    first = np.zeros(n)
-    first[1] = p['up'][1]
-    fixed = first + p['ev'][1]
-    later_nonsoil = np.where(np.arange(n) >= 2, p['nonsoil'], 0.0) + p['ev'][2:].sum(axis=0)
-    later_soil = np.where(np.arange(n) >= 2, p['soil'], 0.0)
+    idx = np.arange(n)
+    fixed = np.where(idx == 1, p['mat'] + p['soil'], 0.0) + p['ev'][1]
+    later = np.where(idx >= 2, p['mat'] + p['soil'], 0.0) + p['ev'][2:].sum(axis=0)
+    later_soil = np.where(idx >= 2, p['soil'], 0.0)
     f = slice(1, None)
-    if not np.allclose((fixed + later_nonsoil + later_soil)[f], R['E']['carbon'][f], rtol=1e-12, atol=1e-6):
+    if not np.allclose((fixed + later)[f], R['E']['carbon'][f], rtol=1e-12, atol=1e-6):
         raise SystemExit('linear_split does not reproduce the annual carbon.')
-    return dict(fixed=fixed[f], later_nonsoil=later_nonsoil[f], later_soil=later_soil[f],
-                gfa_later=R['E']['gfa_t'][:, 2:].sum())
+    return dict(fixed=fixed[f], later=later[f], later_soil=later_soil[f], gfa_later=R['E']['gfa_t'][:, 2:].sum())
 
 
 def scaled_carbon(split, k_demand, k_intensity=1.0):
-    return split['fixed'] + k_demand * (k_intensity * split['later_nonsoil'] + split['later_soil'])
+    return split['fixed'] + k_demand * k_intensity * split['later']
 
 
 def backcast(ctx, R, label):
@@ -514,11 +562,11 @@ def backcast(ctx, R, label):
     lo_ar, hi_ar = loe(0.0, bar), loe(1.0, bar)
     out = dict(run=label, LoE_AR_at_k1=hi_ar, LoE_AtP_at_k1=loe(1.0, batp), LoE_AR_min_k0=lo_ar,
                LoE_AtP_min_k0=loe(0.0, batp), carbon_fixed_2026_cohort_kt=s['fixed'].sum() / M6,
-               carbon_2027_2050_cohorts_kt=(s['later_nonsoil'] + s['later_soil']).sum() / M6,
+               carbon_2027_2050_cohorts_kt=s['later'].sum() / M6,
                gfa_2027_2050_Mm2=s['gfa_later'] / M6)
     if lo_ar < 1.0 < hi_ar:
         k = brentq(lambda k: loe(k, bar) - 1.0, 0.0, 1.0, xtol=BRENTQ_XTOL, rtol=4 * np.finfo(float).eps)
-        out.update(k_AR=k, k_AR_closed_form=(bar - s['fixed'].sum()) / (s['later_nonsoil'] + s['later_soil']).sum(),
+        out.update(k_AR=k, k_AR_closed_form=(bar - s['fixed'].sum()) / s['later'].sum(),
                    cut_AR=1.0 - k, LoE_AR_at_k=loe(k, bar), gfa_2027_2050_at_k_Mm2=k * s['gfa_later'] / M6)
     else:
         out.update(k_AR=None, cut_AR=None, note_AR='LoE AR = 1 not bracketed by k in [0, 1]')
@@ -537,10 +585,14 @@ def solution_space(split0, bar, batp):
 
 
 def effective_coordinates(split, split0):
-    """demand = 1 - GFA_P / GFA_0 (2027-2050 cohorts); intensity = 1 - (C_P / GFA_P) / (C_0 / GFA_0), C = non-soil
-    carbon of the 2027-2050 cohorts within the window."""
+    """Fig6 coordinates of a run against the Reference (MODEL v3.2.0): x = cut in 2027-2050 floor area,
+    1 - GFA_P / GFA_0; y = cut in 2027-2050 total carbon per m2 (A1-A5, soil and events of the 2027-2050 cohorts
+    within the window), 1 - (C_P / GFA_P) / (C_0 / GFA_0). With the fixed part identical in every run,
+    LoE_AR(x, y) = [fixed + C_0 (1 - x)(1 - y)] / B_AR reproduces the run's LoE exactly (tests)."""
+    if not np.allclose(split['fixed'], split0['fixed'], rtol=1e-9, atol=1e-3):
+        raise SystemExit('effective_coordinates: the fixed part (the 2026 cohort) differs from the Reference.')
     d = 1.0 - split['gfa_later'] / split0['gfa_later']
-    c, c0 = split['later_nonsoil'].sum(), split0['later_nonsoil'].sum()
+    c, c0 = split['later'].sum(), split0['later'].sum()
     return float(d), float(1.0 - (c / split['gfa_later']) / (c0 / split0['gfa_later']))
 
 
@@ -634,6 +686,10 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
         bands += band_rows(ctxs[scen], R, name)
         if scen == REFERENCE and rn is None:
             bands_annual += [dict(r, scenario=scen) for r in band_annual_rows(ctxs[scen], R, name)]
+    # MODEL v3.2.0 (A4): TL with re-occupation as fast as demand allows (sensitivity row; not cached: its own rule)
+    R_fast = run(ref, params, TL_ALL, reocc_rule='fast')
+    rows.append(metrics(ref, R_fast, TL_REOCCUPATION_FAST, 'tl'))
+    annual += annual_rows(ref, R_fast, TL_REOCCUPATION_FAST)
     runs_df = pd.DataFrame(rows)
     p0 = runs_df[runs_df['run'] == runs_df['scenario']].set_index('scenario')
     for col in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'gfa_Mm2', 'committed_lower_kt', 'committed_upper_kt'):
@@ -717,7 +773,8 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
                                   gfa_Mm2=R['E']['gfa_t'][:, i].sum() / M6)
                              for i, y in enumerate(ref['years']) if y >= WINDOW[0]]
     reocc_log = []
-    for nm, R in (('TL', get(REFERENCE, TL_ALL)), (LV.TL_INSTANT_LABEL, get(REFERENCE, TL_ALL, LV.TL_FROM2027))):
+    for nm, R in (('TL', get(REFERENCE, TL_ALL)), (LV.TL_INSTANT_LABEL, get(REFERENCE, TL_ALL, LV.TL_FROM2027)),
+                  (TL_REOCCUPATION_FAST, R_fast)):
         ro = R['info']['reoccupation']
         for i, y in enumerate(ref['years']):
             if y >= WINDOW[0]:
@@ -849,11 +906,10 @@ def checks(res):
     for k in ('lower_kt', 'upper_kt', 'B_lower_kt', 'B_upper_kt', 'C_kt'):
         rep[f'committed_{k}'] = abs(r0[f'committed_{k}'] / bres['committed'][ident(k)] - 1)
     bd = res['bands']
-    b0 = bd[(bd['run'] == REFERENCE) & (bd['scenario'] == REFERENCE)
-            & (bd['definition'] == 'with_retirement_villages')].set_index('band')
-    for x in bres['demand_bands']:
+    b0 = bd[(bd['run'] == REFERENCE) & (bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope')].set_index('band')
+    for x in bres['bands_in_scope']:                   # the same band accounting (bands.py) in both modules
         for col in ('gfa_Mm2', 'carbon_kt'):
-            rep[f"band {x['band']} {col}"] = abs(b0.loc[x['band'], col] - x[ident(col)]) / max(abs(x[ident(col)]), 1e-12)
+            rep[f"band {x['band']} {col}"] = abs(b0.loc[x['band'], col] - x[ident(col)]) / max(abs(x[ident(col)]), 1e-9)
     pbr = json.load(open(FILE_PB_RESULTS))
     for scen in res['ctxs']:
         rs = res['runs'][(res['runs']['run'] == scen) & (res['runs']['scenario'] == scen)].iloc[0]

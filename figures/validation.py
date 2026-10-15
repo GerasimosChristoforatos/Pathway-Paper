@@ -49,7 +49,7 @@ def d07():
     for k in VARS:
         a.plot(fy, 100 * np.asarray(d['paths'][k]), label=d['labels'][k], **_scen_line(k))
     a.axhline(100 * d['demolition_rate'], color=S.MUTED, ls='--', lw=S.LW,
-              label=f"BRANZ demolition rate, {100 * d['demolition_rate']:.3f}%")
+              label=f"BRANZ demolition (component of the long-run rate), {100 * d['demolition_rate']:.3f}%")
     a.axhline(0, color=S.INK, lw=S.LW_THIN)
     P.split(a)
     a.set_xlim(1986, 2050)

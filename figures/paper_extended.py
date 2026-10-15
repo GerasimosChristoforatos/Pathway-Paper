@@ -115,30 +115,52 @@ def ed4():
 
 
 def ed5():
+    """MODEL v3.1.0 (B3): (a) P(TL within AR) by population-rank quintile Q1-Q5 (Wilson 95%); (b) the 2050 population
+    at which P(TL LoE AR <= 1) = 50% (univariate logistic, bootstrap 95% interval) with the draws as a rug, or, when
+    no draw (or every draw) has TL within AR, the TL LoE against the 2050 population. The Firth models stay in the
+    data (pathways/montecarlo_conditional_tl.csv)."""
     j = D.js('pathways/montecarlo_conditional_tl.json')
-    c = D.csv('pathways/montecarlo_conditional_tl.csv')
+    d = D.csv('pathways/montecarlo_draws.csv')
+    thr = j['population_threshold']['adopted']
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 65))
     q = pd.DataFrame(j['by_population_quintile'])
-    ax[0].errorbar(q['quintile'], q['p_within_AR'], yerr=[(q['p_within_AR'] - q['wilson_lo']).clip(lower=0), (q['wilson_hi'] - q['p_within_AR']).clip(lower=0)],
+    x = np.arange(len(q))
+    ax[0].errorbar(x, q['p_within_AR'], yerr=[(q['p_within_AR'] - q['wilson_lo']).clip(lower=0),
+                                              (q['wilson_hi'] - q['p_within_AR']).clip(lower=0)],
                    fmt='o', color=S.TL, capsize=2)
-    ax[0].set_xlabel('Population-rank quintile')
+    ax[0].set_xticks(x)
+    ax[0].set_xticklabels([f'Q{int(k)}' for k in q['quintile']])
+    ax[0].set_xlabel('Population-rank quintile (Q1 lowest)')
     ax[0].set_ylabel('P(TL cumulative LoE AR <= 1)')
     ax[0].set_ylim(-0.02, 1.02)
     P.panel(ax[0], 'a', 'By population quintile (Wilson 95%)')
-    m = c[(c['model'] == 'multivariable') & (c['term'] != 'intercept')]
-    y = np.arange(len(m))
-    ax[1].errorbar(m['odds_ratio_per_sd'], y, xerr=[(m['odds_ratio_per_sd'] - m['or_lo']).clip(lower=0), (m['or_hi'] - m['odds_ratio_per_sd']).clip(lower=0)],
-                   fmt='o', color=S.TL, capsize=2)
-    ax[1].axvline(1, color=S.INK, lw=S.LW_THIN)
-    ax[1].set_xscale('log')
-    ax[1].set_yticks(y)
-    ax[1].set_yticklabels(m['term'], fontsize=S.FONT_SMALL)
-    ax[1].set_xlabel('Odds ratio per SD (Firth, profile 95%)')
-    P.panel(ax[1], 'b', 'Multivariable model')
+    pop = d['P_NZ_2050'].to_numpy(float) / 1e6
+    if thr['estimable']:
+        cv = thr['curve']
+        ax[1].plot(np.asarray(cv['P_NZ_2050']) / 1e6, cv['probability'], color=S.TL, lw=S.LW_BOLD)
+        within = (d['TL_LoE_AR'].to_numpy(float) <= 1.0)
+        ax[1].plot(pop[within], np.full(within.sum(), 1.02), '|', color=S.TL, ms=5, alpha=0.4)
+        ax[1].plot(pop[~within], np.full((~within).sum(), -0.02), '|', color=S.MUTED, ms=5, alpha=0.4)
+        lo, hi = thr['ci95']
+        ax[1].axvspan(lo / 1e6, hi / 1e6, color=S.TL, alpha=0.12, lw=0)
+        ax[1].axvline(thr['threshold_P_NZ_2050'] / 1e6, color=S.TL, lw=S.LW_THIN, ls='--')
+        ax[1].axhline(0.5, color=S.INK, lw=S.LW_THIN, ls=':')
+        ax[1].set_ylabel('P(TL cumulative LoE AR <= 1)')
+        ax[1].set_ylim(-0.06, 1.06)
+        note_b = (f"threshold {thr['threshold_P_NZ_2050'] / 1e6:.2f} M (95% CI {lo / 1e6:.2f}-{hi / 1e6:.2f} M; "
+                  f"{thr['method']}, {thr['bootstrap_resamples']} resamples)")
+        P.panel(ax[1], 'b', 'Population threshold (P = 50%)')
+    else:
+        ax[1].scatter(pop, d['TL_LoE_AR'], s=3, color=S.TL, alpha=0.35, lw=0)
+        ax[1].axhline(1.0, **{k: val for k, val in S.BOUNDARY['AR'].items() if k != 'label'}, gid='boundary')
+        ax[1].set_ylabel('TL cumulative LoE AR 2026-2050')
+        ax[1].set_ylim(bottom=0)
+        note_b = thr['note']
+        P.panel(ax[1], 'b', 'TL LoE against the 2050 population (no threshold)')
+    ax[1].set_xlabel('New Zealand population 2050 (million), Monte Carlo draws')
     fig.tight_layout()
     _save(fig, 'ED5_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
-                                          f"{j['wilson_95'][1]:.3f}); events per variable "
-                                          f"{j['events_per_variable_multivariable']:.0f}. {j['caveat']}")
+                                          f"{j['wilson_95'][1]:.3f}); (b) {note_b}.")
 
 
 def ed6():
@@ -184,10 +206,14 @@ def ed8():
     ax[2].plot(yrs, [100 * t['implied_vacancy'][str(y)] for y in yrs], color=S.TL)
     ax[2].set_ylabel('Implied vacancy (%)')
     P.panel(ax[2], 'c', 'Implied vacancy')
+    ax[2].text(0.02, 0.02, 'Vacancy parameter -> 0 by 2035; physical vacancy falls\nas released stock is re-occupied over '
+               '2027-2050', transform=ax[2].transAxes, fontsize=S.FONT_MIN, color=S.MUTED, va='bottom')
     fig.tight_layout()
     _save(fig, 'ED8_tl_shapley_indicators', note=f"TL re-occupies {t['reoccupied']:,.0f} released dwellings "
                                                  f"(attributed TL3 {t['reoccupied_attributed']['TL3']:,.0f}, TL4 "
-                                                 f"{t['reoccupied_attributed']['TL4']:,.0f}, in proportion R3:R4).")
+                                                 f"{t['reoccupied_attributed']['TL4']:,.0f}, in proportion R3:R4). (c) The "
+                                                 "vacancy parameter falls to 0 by 2035 (TL4); the physical (implied) "
+                                                 "vacancy falls as the released stock is re-occupied over 2027-2050.")
 
 
 def ed9():
@@ -252,7 +278,13 @@ def ed11():
         a.legend(fontsize=S.FONT_MIN, loc='lower right')
         P.panel(a, letter, f"{L} {N.LEVERS[L]} (n = {q['n']}, B = {e['bootstrap']['B']})")
     fig.tight_layout()
-    _save(fig, 'ED11_hd_estimators')
+    c15 = p['L6'].get('check_with_A_1')
+    _save(fig, 'ED11_hd_estimators',
+          note=('L6 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
+                'its ratio to the apartment pooled value is ~1 by construction'
+                + (f" ({c15['A_1_ratio']:.4f}); with A_1 (n = {c15['n']}) r = {c15['r']:.3f} (95% CI "
+                   f"{c15['ci_lo']:.3f}-{c15['ci_hi']:.3f}) against the adopted r = {c15['adopted_r']:.3f} "
+                   f"(n = {c15['adopted_n']}; check only)" if c15 else '') + '.'))
 
 
 def ed12():

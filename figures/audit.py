@@ -32,6 +32,7 @@ from matplotlib.patches import Rectangle
 
 YEAR_RANGE = (1900, 2200)
 BOUNDARY = 'boundary'
+BOUNDARY_OUTSIDE = 'boundary_outside'      # MODEL v3.1.0: a budget level outside the plotted range, stated
 ZONE = 'boundary_zone'             # style.ZONE_GID: the boundary zones (MODEL v2.1.0 styling)
 AUDIT_DIR = layout.FIGURE_AUDIT
 
@@ -217,6 +218,7 @@ def record(fig, name, note=None, source=None):
         gids = {a.get_gid() for ax in fig.get_axes() for a in ax.get_children()}
         json.dump(dict(figure=os.path.splitext(os.path.basename(name))[0], producer=producer(), axes=axes,
                        texts=texts(fig), note=note, maintenance_drawn=bool(md), maintenance_where=md,
-                       boundary_drawn=BOUNDARY in gids, boundary_zones=ZONE in gids,
+                       boundary_drawn=BOUNDARY in gids, boundary_outside=BOUNDARY_OUTSIDE in gids,
+                       boundary_zones=ZONE in gids,
                        white_segment_edges=white_edges(fig), source=source, **styling(fig), **negatives(fig)),
                   f, indent=1)

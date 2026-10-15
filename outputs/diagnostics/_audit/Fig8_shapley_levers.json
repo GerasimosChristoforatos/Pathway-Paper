@@ -1,6 +1,6 @@
 {
  "figure": "Fig8_shapley_levers",
- "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "",
@@ -33,7 +33,7 @@
   "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e; exact Shapley value)",
   "Theoretical limit (Level 4)"
  ],
- "note": "Sum over levers (= Reference - P5 / TL, exact): moderate 5,542 kt, ambitious 9,694 kt, tl 16,257 kt; 512 subsets per setting.",
+ "note": "Sum over levers (= Reference - P5 / TL, exact): moderate 5,082 kt, ambitious 8,944 kt, tl 15,233 kt; 512 subsets per setting.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

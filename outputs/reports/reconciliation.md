@@ -17,6 +17,16 @@ The Reference, median demographics, kt CO2e. Upfront = materials and constructio
 | less decarbonisation of maintenance within 2026-2050 | - | -45.1 |
 | = sum, committed upper | 32,223.1 | 29,230.7 |
 
+**Adopted accounting (ACCOUNTING inventory), decarbonised:**
+
+| term | kt CO2e |
+|---|---|
+| carbon 2026-2050, instant (above) | 20,614.9 |
+| less soil of 2026-2050 conversions oxidised after 2050 (committed 'Soil, after 2050') | -1,024.4 |
+| plus legacy: soil tails of 2007-2025 conversions | 1,709.0 |
+| plus legacy: B2/B4 of the 1992-2025 cohorts | 4,843.2 |
+| **= carbon 2026-2050, inventory (reported total)** | **26,142.7** |
+
 | identity | holds (relative tolerance 1e-9) |
 |---|---|
 | 2025 factors: split sums to the whole-life total at 2025 factors | yes |
@@ -24,3 +34,4 @@ The Reference, median demographics, kt CO2e. Upfront = materials and constructio
 | decarbonised: committed C1-C4 unchanged (held at 2025) | yes |
 | decarbonised: committed B upper (2025 factors) unchanged | yes |
 | decarbonised: whole life (A4-A5 held) - A4-A5 decarbonisation - maintenance decarbonisation = split (upper) | yes |
+| inventory = instant - soil oxidised after 2050 + legacy | yes |

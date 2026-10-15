@@ -1,6 +1,6 @@
 {
  "figure": "D28_pathways_annual",
- "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Moderate",
@@ -23,6 +23,7 @@
   "$\\mathdefault{1200}$",
   "$\\mathdefault{1400}$",
   "$\\mathdefault{1600}$",
+  "$\\mathdefault{1800}$",
   "$\\mathdefault{200}$",
   "$\\mathdefault{2025}$",
   "$\\mathdefault{2030}$",

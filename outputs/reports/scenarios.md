@@ -6,14 +6,14 @@ Current defaults, 2026 overbuild rule `market_excess`; only the replacement vari
 
 | variant | floor area 2026-2050 (Mm2) | vs Low | carbon (kt) | rate 2026 / 2030 / 2040 / 2050 (%/yr) | net removals /yr, mean 2026-2050 | gross demolitions /yr, mean (if long-run residual persists) | cumulative net removals, % of 2025 stock |
 |---|---|---|---|---|---|---|---|
-| Low replacement | 78.46 | +0.0% | 19,055 | 0.101 / 0.101 / 0.101 / 0.101 | 2,385 | 3,202 | 2.8% |
-| Reference, replacement half-life 5 yr | 82.58 | +5.2% | 19,945 | 0.285 / 0.206 / 0.127 / 0.107 | 3,619 | 4,436 | 4.3% |
-| Reference | 85.90 | +9.5% | 20,615 | 0.298 / 0.250 / 0.175 / 0.138 | 4,615 | 5,432 | 5.5% |
-| Reference, replacement half-life 15 yr | 87.95 | +12.1% | 21,021 | 0.303 / 0.269 / 0.206 / 0.167 | 5,231 | 6,048 | 6.2% |
-| High replacement | 95.20 | +21.3% | 22,431 | 0.312 / 0.312 / 0.312 / 0.312 | 7,405 | 8,222 | 8.8% |
-| Low replacement, no census under-construction correction | 81.12 | +3.4% | 19,591 | 0.134 / 0.134 / 0.134 / 0.134 | 3,181 | 3,202 | 3.8% |
-| Reference, no census under-construction correction | 91.44 | +16.5% | 21,755 | 0.408 / 0.342 / 0.238 / 0.186 | 6,277 | 6,298 | 7.4% |
-| High replacement, no census under-construction correction | 104.35 | +33.0% | 24,276 | 0.428 / 0.428 / 0.428 / 0.428 | 10,149 | 10,170 | 12.0% |
+| Low replacement | 78.46 | +0.0% | 24,585 | 0.101 / 0.101 / 0.101 / 0.101 | 2,385 | 3,202 | 2.8% |
+| Reference, replacement half-life 5 yr | 82.58 | +5.2% | 25,473 | 0.285 / 0.206 / 0.127 / 0.107 | 3,619 | 4,436 | 4.3% |
+| Reference | 85.90 | +9.5% | 26,143 | 0.298 / 0.250 / 0.175 / 0.138 | 4,615 | 5,432 | 5.5% |
+| Reference, replacement half-life 15 yr | 87.95 | +12.1% | 26,549 | 0.303 / 0.269 / 0.206 / 0.167 | 5,231 | 6,048 | 6.2% |
+| High replacement | 95.20 | +21.3% | 27,958 | 0.312 / 0.312 / 0.312 / 0.312 | 7,405 | 8,222 | 8.8% |
+| Low replacement, no census under-construction correction | 81.12 | +3.4% | 25,017 | 0.134 / 0.134 / 0.134 / 0.134 | 3,181 | 3,202 | 3.8% |
+| Reference, no census under-construction correction | 91.44 | +16.5% | 27,179 | 0.408 / 0.342 / 0.238 / 0.186 | 6,277 | 6,298 | 7.4% |
+| High replacement, no census under-construction correction | 104.35 | +33.0% | 29,700 | 0.428 / 0.428 / 0.428 / 0.428 | 10,149 | 10,170 | 12.0% |
 
 ## Against the 2026 overbuild (reported, NOT fitted)
 

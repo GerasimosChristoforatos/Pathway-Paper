@@ -40,8 +40,10 @@ def d37():
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 62))
     for a, o, letter, unit in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab', ['kt CO₂e', 'Mm²']):
         t = c[c['output'] == o]
-        for q, ls in (('p5', ':'), ('p50', '-'), ('p95', ':'), ('mean', '--')):
-            a.plot(t['n'], t[q], color=S.REFERENCE, ls=ls, marker='o', ms=2.5, label=q)
+        # MODEL v3.1.0 (B3): four distinct styles (line style, marker, weight)
+        for q, ls, mk, lw, lab in (('p5', ':', 'v', S.LW, '5th percentile'), ('p50', '-', 'o', S.LW_BOLD, 'Median (50th)'),
+                                   ('p95', '-.', '^', S.LW, '95th percentile'), ('mean', '--', 's', S.LW, 'Mean')):
+            a.plot(t['n'], t[q], color=S.REFERENCE, ls=ls, marker=mk, ms=3, lw=lw, label=lab)
         a.set_xscale('log')
         a.set_xlabel('Number of Latin hypercube draws')
         a.set_ylabel(f'2026–2050 total ({unit})')
@@ -53,20 +55,34 @@ def d37():
 
 
 def d38():
+    """MODEL v3.1.0 (B3): the carbon panel shows the resulting pooled A1-A3 factor of each draw by typology
+    (kg CO2e/m2, 2025 technology; montecarlo/carbon_factors_REF.csv) instead of the uniform parameter behind it."""
     dr = D.csv('montecarlo/draws_REF.csv')
     q = D.csv('montecarlo/input_distributions_REF.csv').set_index('input')
-    cols = [c for c in ('z_pop', 'size', 'complete', 'carbon') if c in dr.columns]
-    fig, ax = plt.subplots(1, len(cols), figsize=S.figsize('double', 55))
+    cf = D.csv('montecarlo/carbon_factors_REF.csv')
+    cols = [c for c in ('z_pop', 'size', 'complete') if c in dr.columns]
+    fig, ax = plt.subplots(1, len(cols) + 1, figsize=S.figsize('double', 55))
     for a, c in zip(ax, cols):
         a.hist(dr[c], bins=30, color=S.REFERENCE, alpha=0.6)
         for k in ('q05', 'q50', 'q95'):
             a.axvline(q.loc[c, k], color=S.INK, lw=S.LW_THIN, ls='-' if k == 'q50' else ':')
         a.set_title(INPUT_LABELS[c], fontsize=S.FONT_SMALL, loc='left')
         a.tick_params(labelsize=S.FONT_MIN)
+    a = ax[-1]
+    tcol = {'Detached': S.LEVER['L1'], 'Townhouses': S.LEVER['L6'], 'Apartments': S.LEVER['L4']}
+    for t, g in cf.groupby('typology', sort=False):
+        v = g['a1a3_kg_per_m2'].to_numpy(float)
+        a.hist(v, bins=30, color=tcol.get(t, S.MUTED), alpha=0.55, label=t)
+        a.axvline(np.median(v), color=tcol.get(t, S.MUTED), lw=S.LW_THIN)
+    a.set_title('A1-A3 factor (kg CO₂e/m², 2025)', fontsize=S.FONT_SMALL, loc='left')
+    a.legend(fontsize=S.FONT_MIN)
+    a.tick_params(labelsize=S.FONT_MIN)
     fig.tight_layout()
     S.save_figure(fig, 'D38_mc_input_distributions',
-                  note=f'{len(dr):,} draws; lines at the 5th, 50th and 95th percentiles of each input distribution.',
-                  source=['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv'])
+                  note=f'{len(dr):,} draws; lines at the 5th, 50th and 95th percentiles of each input distribution; '
+                       'carbon: the resulting pooled A1-A3 factor of each draw by typology (median line).',
+                  source=['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv',
+                          'montecarlo/carbon_factors_REF.csv'])
 
 
 def d39():

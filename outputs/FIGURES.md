@@ -8,9 +8,8 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 **Fig1 Floor area: history and projection by demand band** — Floor area built per year, history (census intervals) and the Reference projection 2026-2050, by demand band: positive bands stacked up from zero, negative bands (overbuild absorbed, unconsented additions) down from zero, the net a black line.
 
-- Files: `paper_main/Fig1_floor_area.pdf`, `paper_main/Fig1_floor_area.png`
+- Files: (not drawn in this profile)
 - Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`
-- This run: Negative bands drawn down from zero: Overbuild absorbed, Unconsented additions; the net (black) is the floor area built. 2026-2050: 85.9 Mm².
 
 ### Fig2_reference_carbon
 
@@ -18,7 +17,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_main/Fig2_reference_carbon.pdf`, `paper_main/Fig2_reference_carbon.png`
 - Data: `data/baseline/bands_annual.csv`, `data/baseline/annual_by_material.csv`, `data/baseline/annual_by_stage.csv`
-- This run: 2026-2050: 20,615 kt CO₂e.
+- This run: 2026-2050: 26,143 kt CO₂e.
 
 ### Fig3_reference_boundaries
 
@@ -26,7 +25,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_main/Fig3_reference_boundaries.pdf`, `paper_main/Fig3_reference_boundaries.png`
 - Data: `data/aesa/annual.csv`, `data/montecarlo/annual_REF.csv`, `data/baseline/projection.json`, `data/baseline/bands_annual.csv`, `data/baseline/annual_by_material.csv`, `data/baseline/annual_by_stage.csv`
-- This run: Cumulative 2026-2050 20,615 kt (LoE AR 4.63, AtP 18.5); committed after 2050 7,884-8,616 kt. Bands with a negative value are not in the share bar (they reduce the positive stack).
+- This run: Cumulative 2026-2050 26,143 kt (LoE AR 5.36, AtP 23.5), of which legacy (pre-2026 activity) 6,552 kt; committed after 2050: soil 1,024 kt, B2/B4 and C1-C4 7,884-8,616 kt. Bands with a negative value are not in the share bar (they reduce the positive stack).
 
 ### Fig4_pathways_annual
 
@@ -34,7 +33,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_main/Fig4_pathways_annual.pdf`, `paper_main/Fig4_pathways_annual.png`
 - Data: `data/pathways/annual.csv`, `data/aesa/annual.csv`
-- This run: Cumulative LoE AR: REF 4.63, P5-moderate 3.39, P5-ambitious 2.45, TL 0.98.
+- This run: Cumulative LoE AR: REF 5.36, P5-moderate 4.32, P5-ambitious 3.53, TL 2.24.
 
 ### Fig5_waterfall
 
@@ -42,7 +41,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_main/Fig5_waterfall.pdf`, `paper_main/Fig5_waterfall.png`
 - Data: `data/pathways/waterfall.csv`
-- This run: Moderate: Reference 20,615 kt -> P5 15,073 kt -> TL 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Sequential steps depend on their order (the order-free values are the Shapley values).
+- This run: Moderate: Reference 26,143 kt -> P5 21,061 kt -> TL 10,910 kt, of which legacy 6,552 kt in every bar; budgets AR 4,874 kt, AtP 1,113 kt. Sequential steps depend on their order (the order-free values are the Shapley values, Fig8).
 
 ### Fig6_solution_space
 
@@ -58,7 +57,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_main/Fig7_tornado.pdf`, `paper_main/Fig7_tornado.png`
 - Data: `data/sensitivity/tornado.csv`
-- This run: Reference 20,615 kt (LoE AR 4.63, AtP 18.5); population rows move the budgets with the path; one-at-a-time ranges are not additive.
+- This run: Reference 26,143 kt (LoE AR 5.36, AtP 23.5); population rows move the budgets with the path; one-at-a-time ranges are not additive.
 
 ### Fig8_shapley_levers
 
@@ -66,7 +65,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_main/Fig8_shapley_levers.pdf`, `paper_main/Fig8_shapley_levers.png`
 - Data: `data/pathways/shapley.csv`
-- This run: Sum over levers (= Reference - P5 / TL, exact): moderate 5,542 kt, ambitious 9,694 kt, tl 16,257 kt; 512 subsets per setting.
+- This run: Sum over levers (= Reference - P5 / TL, exact): moderate 5,082 kt, ambitious 8,944 kt, tl 15,233 kt; 512 subsets per setting.
 
 ## Extended Data (paper_extended/)
 
@@ -106,7 +105,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_extended/ED5_conditional_tl.pdf`, `paper_extended/ED5_conditional_tl.png`
 - Data: `data/pathways/montecarlo_conditional_tl.csv`, `data/pathways/montecarlo_conditional_tl.json`
-- This run: P(within AR) = 0.551 (Wilson 0.537-0.565); events per variable 561. the pathway model is deterministic: given all four inputs the outcome is fixed, and the intervals describe the Monte Carlo design, not a sampling process; with fewer than 10 events per variable (Peduzzi et al. 1996, J Clin Epidemiol 49, 1373) the multivariable odds ratios are indicative only
+- This run: P(within AR) = 0.000 (Wilson 0.000-0.001); (b) no draw has TL within AR: no population threshold exists in the sampled range; the LoE distribution against the 2050 population is shown instead. Instant accounting rule (sensitivity): P(within AR) = 0.551, threshold 6.65 M (95% CI 6.65-6.65 M).
 
 ### ED6_single_levers
 
@@ -121,7 +120,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_extended/ED7_waterfall_ambitious.pdf`, `paper_extended/ED7_waterfall_ambitious.png`
 - Data: `data/pathways/waterfall.csv`
-- This run: Ambitious: Reference 20,615 kt -> P5 10,920 kt -> TL 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Sequential steps depend on their order (the order-free values are the Shapley values).
+- This run: Ambitious: Reference 26,143 kt -> P5 17,199 kt -> TL 10,910 kt, of which legacy 6,552 kt in every bar; budgets AR 4,874 kt, AtP 1,113 kt. Sequential steps depend on their order (the order-free values are the Shapley values, Fig8).
 
 ### ED8_tl_shapley_indicators
 
@@ -319,7 +318,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/boundaries/D21_fan_and_boundaries.pdf`, `diagnostics/boundaries/D21_fan_and_boundaries.png`
 - Data: `data/figure_source/D21_fan_and_boundaries.json`
-- This run: Reference. AR base window 2016–2025 at 2025 factors, soil only on non-replacement floor area (as the projection); the thin history line is joined to the 2026 Monte Carlo median. Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th–95th within 9.9% of the median in every year.
+- This run: Reference. AR base window 2016–2025 at 2025 factors, soil only on non-replacement floor area (as the projection); the thin history line is joined to the 2026 Monte Carlo median. Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th–95th within 10.2% of the median in every year.
 
 ### D22_boundaries
 
@@ -327,7 +326,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/boundaries/D22_boundaries.pdf`, `diagnostics/boundaries/D22_boundaries.png`
 - Data: `data/figure_source/D22_boundaries.json`
-- This run: 2 °C carrying capacity (Bjørn & Hauschild 2015). Log axis: the AtP boundary is 25.0% of the AR boundary in every year: both scale with P_NZ(t) / P_W(t) (static design), so their ratio is constant.
+- This run: 2 °C carrying capacity (Bjørn & Hauschild 2015). Log axis: the AtP boundary is 22.8% of the AR boundary in every year: both scale with P_NZ(t) / P_W(t) (static design), so their ratio is constant.
 
 ### D23_annual_loe
 
@@ -335,7 +334,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/boundaries/D23_annual_loe.pdf`, `diagnostics/boundaries/D23_annual_loe.png`
 - Data: `data/figure_source/D23_annual_loe.json`
-- This run: 2 °C carrying capacity (Bjørn & Hauschild 2015). Log axis: the AtP LoE is 4.0 × the AR LoE in every year. Monte Carlo bands: within-variant uncertainty (population, dwelling size, completion rate, carbon factors). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
+- This run: 2 °C carrying capacity (Bjørn & Hauschild 2015). Log axis: the AtP LoE is 4.4 × the AR LoE in every year. Monte Carlo bands: within-variant uncertainty (population, dwelling size, completion rate, carbon factors). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
 
 ### D24_headroom
 
@@ -351,7 +350,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/boundaries/D25_annual_carbon_by_band.pdf`, `diagnostics/boundaries/D25_annual_carbon_by_band.png`
 - Data: `data/figure_source/D25_annual_carbon_by_band.json`
-- This run: Reference, median population; positive bands stacked up from zero, negative bands (overbuild absorbed, unconsented additions) down from zero; the black line is the net annual carbon. Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 25.0% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
+- This run: Reference, median population; positive bands stacked up from zero, negative bands (overbuild absorbed, unconsented additions) down from zero; the black line is the net annual carbon. Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 22.8% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
 
 ### D26_cumulative_carbon_by_band
 
@@ -359,7 +358,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/boundaries/D26_cumulative_carbon_by_band.pdf`, `diagnostics/boundaries/D26_cumulative_carbon_by_band.png`
 - Data: `data/figure_source/D26_cumulative_carbon_by_band.json`
-- This run: Reference, median population; boundaries cumulated from 2026; positive bands stacked up from zero, negative bands down from zero; the black line is the net cumulative carbon. Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 25.0% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
+- This run: Reference, median population; boundaries cumulated from 2026; positive bands stacked up from zero, negative bands down from zero; the black line is the net cumulative carbon. Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 22.8% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
 
 ### D27_variants_vs_boundaries
 
@@ -367,7 +366,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/boundaries/D27_variants_vs_boundaries.pdf`, `diagnostics/boundaries/D27_variants_vs_boundaries.png`
 - Data: `data/figure_source/D27_variants_vs_boundaries.json`
-- This run: The boundaries are the same in every variant (same population path). Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 25.0% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
+- This run: The boundaries are the same in every variant (same population path). Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 22.8% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
 
 ## Diagnostics: pathways (diagnostics/pathways/)
 
@@ -407,7 +406,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/pathways/D33_ordering_checks.pdf`, `diagnostics/pathways/D33_ordering_checks.png`
 - Data: `data/pathways/ordering_checks.json`, `data/pathways/lever_annual.csv`
-- This run: Native-parameter ordering Reference >= Moderate >= Ambitious >= TL: 0 violations (per lever, typology and year). Cumulative carbon ordering holds for every lever. Annual-carbon reversals (timing only, not a STOP): L3 ambitious>=tl in 2039-2043 (max 64 kt); L4 ambitious>=tl in 2031-2031 (max 15 kt).
+- This run: Native-parameter ordering Reference >= Moderate >= Ambitious >= TL: 0 violations (per lever, typology and year). Cumulative carbon ordering holds for every lever. Annual-carbon reversals (timing only, not a STOP): L3 ambitious>=tl in 2040-2042 (max 29 kt); L4 ambitious>=tl in 2031-2031 (max 10 kt).
 
 ### D34_tl_dwellings
 
@@ -455,7 +454,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/montecarlo/D39_pathway_mc.pdf`, `diagnostics/montecarlo/D39_pathway_mc.png`
 - Data: `data/pathways/montecarlo_summary.csv`, `data/pathways/montecarlo_annual.csv`
-- This run: P(cumulative LoE AR <= 1): REF 0.000, P5 0.000, P5A 0.000, TL 0.551, TL_from2027 0.979.
+- This run: P(cumulative LoE AR <= 1): REF 0.000, P5 0.000, P5A 0.000, TL 0.000, TL_from2027 0.000.
 
 ## Diagnostics: sensitivity (diagnostics/sensitivity/)
 

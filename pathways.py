@@ -581,7 +581,8 @@ def backcast(ctx, R, label):
     loe = lambda k, b: scaled_carbon(s, k).sum() / b
     lo_ar, hi_ar = loe(0.0, bar), loe(1.0, bar)
     out = dict(run=label, LoE_AR_at_k1=hi_ar, LoE_AtP_at_k1=loe(1.0, batp), LoE_AR_min_k0=lo_ar,
-               LoE_AtP_min_k0=loe(0.0, batp), carbon_fixed_2026_cohort_kt=s['fixed'].sum() / M6,
+               LoE_AtP_min_k0=loe(0.0, batp), carbon_fixed_kt=s['fixed'].sum() / M6,
+               carbon_2026_cohort_kt=s['cohort_2026'].sum() / M6,
                carbon_legacy_kt=s['legacy'].sum() / M6, carbon_2027_2050_cohorts_kt=s['later'].sum() / M6,
                gfa_2027_2050_Mm2=s['gfa_later'] / M6)
     if lo_ar < 1.0 < hi_ar:

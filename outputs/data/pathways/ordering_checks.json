@@ -5,13 +5,11 @@
       "lever": "L3",
       "pair": "ambitious>=tl",
       "years": [
-        2039,
         2040,
         2041,
-        2042,
-        2043
+        2042
       ],
-      "max_kt": 64.43092357660758
+      "max_kt": 28.577426407226323
     },
     {
       "lever": "L4",
@@ -19,197 +17,197 @@
       "years": [
         2031
       ],
-      "max_kt": 15.420871857654571
+      "max_kt": 9.84472138607204
     }
   ],
   "cumulative": [
     {
       "lever": "L1",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 20614.89594935651,
-      "carbon_b_kt": 19875.163629592033,
+      "carbon_a_kt": 26142.72573856854,
+      "carbon_b_kt": 25453.015238610413,
       "ok": true
     },
     {
       "lever": "L1",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 19875.163629592033,
-      "carbon_b_kt": 19090.218156229046,
+      "carbon_a_kt": 25453.015238610413,
+      "carbon_b_kt": 24721.365204271995,
       "ok": true
     },
     {
       "lever": "L1",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 19090.218156229046,
-      "carbon_b_kt": 15168.767976755147,
+      "carbon_a_kt": 24721.365204271995,
+      "carbon_b_kt": 21066.302653501007,
       "ok": true
     },
     {
       "lever": "L2",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 20614.89594935651,
-      "carbon_b_kt": 19247.440113982266,
+      "carbon_a_kt": 26142.72573856854,
+      "carbon_b_kt": 24867.492659203384,
       "ok": true
     },
     {
       "lever": "L2",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 19247.440113982266,
-      "carbon_b_kt": 17879.984278608033,
+      "carbon_a_kt": 24867.492659203384,
+      "carbon_b_kt": 23592.25957983823,
       "ok": true
     },
     {
       "lever": "L2",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 17879.984278608033,
-      "carbon_b_kt": 17031.319349762507,
+      "carbon_a_kt": 23592.25957983823,
+      "carbon_b_kt": 22801.119460372505,
       "ok": true
     },
     {
       "lever": "L3",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 20614.89594935651,
-      "carbon_b_kt": 19918.61189855534,
+      "carbon_a_kt": 26142.72573856854,
+      "carbon_b_kt": 25473.108010416614,
       "ok": true
     },
     {
       "lever": "L3",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 19918.61189855534,
-      "carbon_b_kt": 19232.802121740737,
+      "carbon_a_kt": 25473.108010416614,
+      "carbon_b_kt": 24813.400108167705,
       "ok": true
     },
     {
       "lever": "L3",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 19232.802121740737,
-      "carbon_b_kt": 16000.562094535437,
+      "carbon_a_kt": 24813.400108167705,
+      "carbon_b_kt": 21601.939916933214,
       "ok": true
     },
     {
       "lever": "L4",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 20614.89594935651,
-      "carbon_b_kt": 19942.65899633144,
+      "carbon_a_kt": 26142.72573856854,
+      "carbon_b_kt": 25481.392021888812,
       "ok": true
     },
     {
       "lever": "L4",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 19942.65899633144,
-      "carbon_b_kt": 19279.918448964992,
+      "carbon_a_kt": 25481.392021888812,
+      "carbon_b_kt": 24829.3634824071,
       "ok": true
     },
     {
       "lever": "L4",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 19279.918448964992,
-      "carbon_b_kt": 15878.473370630329,
+      "carbon_a_kt": 24829.3634824071,
+      "carbon_b_kt": 21707.06520245405,
       "ok": true
     },
     {
       "lever": "L5",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 20614.89594935651,
-      "carbon_b_kt": 20069.04707800951,
+      "carbon_a_kt": 26142.72573856854,
+      "carbon_b_kt": 25596.876867221537,
       "ok": true
     },
     {
       "lever": "L5",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 20069.04707800951,
-      "carbon_b_kt": 19523.19820666251,
+      "carbon_a_kt": 25596.876867221537,
+      "carbon_b_kt": 25051.027995874538,
       "ok": true
     },
     {
       "lever": "L5",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 19523.19820666251,
-      "carbon_b_kt": 17807.12188075549,
+      "carbon_a_kt": 25051.027995874538,
+      "carbon_b_kt": 23379.056373011503,
       "ok": true
     },
     {
       "lever": "L6",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 20614.89594935651,
-      "carbon_b_kt": 19717.840904759294,
+      "carbon_a_kt": 26142.72573856854,
+      "carbon_b_kt": 25245.670693971322,
       "ok": true
     },
     {
       "lever": "L6",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 19717.840904759294,
-      "carbon_b_kt": 18820.785860162076,
+      "carbon_a_kt": 25245.670693971322,
+      "carbon_b_kt": 24348.6156493741,
       "ok": true
     },
     {
       "lever": "L6",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 18820.785860162076,
-      "carbon_b_kt": 17216.482366091976,
+      "carbon_a_kt": 24348.6156493741,
+      "carbon_b_kt": 22744.312155304004,
       "ok": true
     },
     {
       "lever": "L7",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 20614.89594935651,
-      "carbon_b_kt": 19974.40472701152,
+      "carbon_a_kt": 26142.72573856854,
+      "carbon_b_kt": 25502.234516223543,
       "ok": true
     },
     {
       "lever": "L7",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 19974.40472701152,
-      "carbon_b_kt": 19333.913504666525,
+      "carbon_a_kt": 25502.234516223543,
+      "carbon_b_kt": 24861.743293878557,
       "ok": true
     },
     {
       "lever": "L7",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 19333.913504666525,
-      "carbon_b_kt": 18238.552473741034,
+      "carbon_a_kt": 24861.743293878557,
+      "carbon_b_kt": 23766.38226295307,
       "ok": true
     },
     {
       "lever": "L8",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 20614.89594935651,
-      "carbon_b_kt": 20453.471279518857,
+      "carbon_a_kt": 26142.72573856854,
+      "carbon_b_kt": 26055.84820214604,
       "ok": true
     },
     {
       "lever": "L8",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 20453.471279518857,
-      "carbon_b_kt": 20292.04660968121,
+      "carbon_a_kt": 26055.84820214604,
+      "carbon_b_kt": 25968.97066572354,
       "ok": true
     },
     {
       "lever": "L8",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 20292.04660968121,
-      "carbon_b_kt": 19414.879729241795,
+      "carbon_a_kt": 25968.97066572354,
+      "carbon_b_kt": 25496.886084843634,
       "ok": true
     },
     {
       "lever": "L9",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 20614.89594935651,
-      "carbon_b_kt": 20055.759939341195,
+      "carbon_a_kt": 26142.72573856854,
+      "carbon_b_kt": 25848.94471059774,
       "ok": true
     },
     {
       "lever": "L9",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 20055.759939341195,
-      "carbon_b_kt": 19504.291679645998,
+      "carbon_a_kt": 25848.94471059774,
+      "carbon_b_kt": 25549.76484955455,
       "ok": true
     },
     {
       "lever": "L9",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 19504.291679645998,
-      "carbon_b_kt": 18403.599102265376,
+      "carbon_a_kt": 25549.76484955455,
+      "carbon_b_kt": 24952.62249990416,
       "ok": true
     }
   ]

@@ -87,6 +87,19 @@ def bootstrap_factors(su):
     return ext['a13'][:, :, 0], ext['red13'], ext['a45'][:, :, 0]
 
 
+def write_carbon_factors(su, a13):
+    """MODEL v3.1.0 (D38): the resulting pooled A1-A3 factor of each Reference draw by typology (kg CO2e/m2, 2025
+    technology), from the saved draws' carbon-factor parameter and the saved setup's bootstrap replicates
+    (MonteCarlo.carbon_bootstrap, same seed and indices; nothing is resampled). Writes
+    outputs/data/montecarlo/carbon_factors_REF.csv."""
+    draws = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))
+    u = draws[N.identifier('carbon')].to_numpy(float)
+    kc = np.minimum((u * MC.N_BOOT).astype(int), MC.N_BOOT - 1)
+    rows = [dict(draw=int(j), typology=t, a1a3_kg_per_m2=float(a13[kc[j], i]))
+            for j in range(len(draws)) for i, t in enumerate(su['typ'])]
+    pd.DataFrame(rows).to_csv(layout.writing(layout.data('montecarlo/carbon_factors_REF.csv', frozen=False)), index=False)
+
+
 def validation_rule():
     """The emissions accounting rule of this run (projection.ACCOUNTING)."""
     return PW.validation.projection.ACCOUNTING
@@ -350,6 +363,7 @@ def main():
         su = MC.build_setup(settings)
     central = check_central(su, ctx, params, det)
     a13, red13, a45 = bootstrap_factors(su)
+    write_carbon_factors(su, a13)
     oc = MC.project(su, MC.central(su), full=True)
     gfa_c = np.asarray(oc['gfa_t'], float)
     I_c = np.broadcast_to(np.asarray(oc['I'], float).reshape(len(su['typ']), -1), gfa_c.shape)
@@ -472,8 +486,18 @@ def run_insights():
     print(f'pathways_mc: insight analyses in {time.time() - t1:.0f} s')
 
 
+def carbon_factors_only():
+    """python pathways_mc.py --carbon-factors: write montecarlo/carbon_factors_REF.csv from the saved draws only."""
+    name, settings = MC.MC_SCENARIOS[0]
+    with contextlib.redirect_stdout(io.StringIO()):
+        su = MC.build_setup(settings)
+    write_carbon_factors(su, bootstrap_factors(su)[0])
+
+
 if __name__ == '__main__':
     if '--insights' in sys.argv[1:]:
         run_insights()
+    elif '--carbon-factors' in sys.argv[1:]:
+        carbon_factors_only()
     else:
         main()

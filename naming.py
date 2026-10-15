@@ -182,7 +182,8 @@ COMPONENTS = {'materials_construction': 'Materials and construction (A1–A5)',
               'legacy': 'Legacy (pre-2026 activity)'}
 UPFRONT = 'Upfront (A1–A5 and soil carbon loss)'
 # life-cycle stages of the carbon (MODEL v2.0.0, Fig3a)
-STAGES = {'a1a3': 'Materials (A1–A3)', 'a4a5': 'Construction (A4–A5)', 'maintenance': 'Maintenance (B2, B4)',
+STAGES = {'legacy': 'Legacy (pre-2026 activity)', 'a1a3': 'Materials (A1–A3)', 'a4a5': 'Construction (A4–A5)',
+          'maintenance': 'Maintenance (B2, B4)',
           'soil': 'Soil carbon loss'}
 UNTARGETED_GROUP = 'Untargeted: population growth'
 UNEXPLAINED = 'Unexplained building (history; may be negative)'

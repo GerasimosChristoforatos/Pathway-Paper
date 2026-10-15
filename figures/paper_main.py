@@ -171,7 +171,9 @@ def fig3():
         st = dict(S.BOUNDARY[key])
         lab = st.pop('label')
         b.plot([-0.45, 0.45], [v, v], gid='boundary', label=f'{lab} budget 2026-2050', **st)
-    # three thin 100% share bars
+    # three thin bars ending at the total: material and stage are shares of it (all positive); the band bar keeps the
+    # bands at their size (MODEL v3.1.0, A2: no rescaling): gross positive bands stacked, the releases hanging down as
+    # outlined segments from the gross top to the total (draw.bars_cumulative)
     border = [k for k in band.index if k == 'legacy'] + [k for k in band.index if k != 'legacy']   # legacy the base
     shares = [('Demand band', [(k, band[k]) for k in border if band[k] != 0], 'band'),
               ('Material', [(k, mat[k]) for k, _, _ in S.MATERIAL if k in mat.index], 'material'),
@@ -185,6 +187,9 @@ def fig3():
         if kind != 'band' and neg:
             raise SystemExit(f'STOP: Fig3: negative {kind} value.')
         del title
+        if kind == 'band':
+            P.bars_cumulative(b, [xpos], parts, 0.18, net=c)
+            continue
         bottom = 0.0
         for k, v in parts:
             if v <= 0:
@@ -196,7 +201,7 @@ def fig3():
             bottom += c * v / pos
     b.set_xlim(-0.45, 1.5)
     b.set_xticks([0] + xs)
-    b.set_xticklabels(['Reference', 'Share by\nband', 'by\nmaterial', 'by\nstage'], fontsize=S.FONT_MIN + 0.5)
+    b.set_xticklabels(['Reference', 'By\nband', 'by\nmaterial', 'by\nstage'], fontsize=S.FONT_MIN + 0.5)
     b.set_ylim(0, max(hi, bar_) * 1.42)
     b.set_ylabel('Cumulative carbon (kt CO₂e)')
     P.thousands(b.yaxis)

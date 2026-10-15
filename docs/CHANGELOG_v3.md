@@ -332,8 +332,17 @@ reach LoE AR ≤ 1 (Fig6).
   D37 distinct styles; D38 shows the resulting A1–A3 factors per typology (`montecarlo/carbon_factors_REF.csv`,
   written by `pathways_mc.py --carbon-factors`); D40 readable labels; D07 "BRANZ demolition (component of the
   long-run rate)"; D29 L3 caption; ED11 footnote on A_1 with the A5 value; ED8c caption.
-* Palette: new colours (Vacancy released, Surplus kept vacant (2050), Legacy, Soil after 2050) chosen by a CVD-aware
-  search for a minimum pairwise distance within each figure group (`tools/palette_check.py`; `docs/PALETTE.md`).
+* Palette: the new colours were set by a coordinate-ascent search maximising the minimum CAM02-UCS distance under
+  every simulated deficiency within each figure group (`tools/palette_check.py` groups, plus the waterfall end bars
+  Reference / P5 / TL), each colour constrained to its hue family, then a local refinement of the two colours that
+  limited the minimum: Vacancy released `#481870` (dark mauve, the vacancy family), Surplus kept vacant (2050)
+  `#D1E6C1` (pale), Legacy `#858277` (neutral warm grey, distinct from Maintenance `#9E9E9E`), Soil after 2050
+  `#C9B49A`, Retirement villages (history) `#4E463E`. Every group now meets the distance threshold of 10 except the
+  boundary zones (pale by design, unchanged since v2.1.2; `docs/PALETTE.md`).
+* Fig3b: the band bar no longer normalises the gross positive bands to the total (that was an implicit rescaling,
+  against A2): the bands are drawn at their size and the release bands hang down as outlines to the total
+  (`draw.bars_cumulative`), so legacy has the same height in the band, material and stage bars.
+* `--figures-only` (full and light): every data file byte-identical (100 files full, 99 light).
 
 ## C Documents
 

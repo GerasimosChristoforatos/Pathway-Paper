@@ -56,10 +56,11 @@
   "a",
   "b"
  ],
- "note": null,
+ "note": "L6 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
+ "boundary_outside": false,
  "boundary_zones": false,
  "white_segment_edges": 0,
  "source": [

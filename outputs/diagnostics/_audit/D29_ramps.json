@@ -148,10 +148,11 @@
   "Townhouses",
   "household size"
  ],
- "note": "Native parameter at each level (full strength); every level moves from the Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint.",
+ "note": "Native parameter at each level (full strength); every level moves from the Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint. L3 (and L7): the target paths by year before the adoption weighting w(y) is applied.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
+ "boundary_outside": false,
  "boundary_zones": false,
  "white_segment_edges": 0,
  "source": [

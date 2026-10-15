@@ -79,6 +79,7 @@
   "legend: Maintenance (B2, B4), 2026\u20132050"
  ],
  "boundary_drawn": true,
+ "boundary_outside": false,
  "boundary_zones": true,
  "white_segment_edges": 0,
  "source": [

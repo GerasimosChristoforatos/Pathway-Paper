@@ -8,8 +8,9 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 **Fig1 Floor area: history and projection by demand band** — Floor area built per year, history (census intervals) and the Reference projection 2026-2050, by demand band: positive bands stacked up from zero, negative bands (overbuild absorbed, unconsented additions) down from zero, the net a black line.
 
-- Files: (not drawn in this profile)
+- Files: `paper_main/Fig1_floor_area.pdf`, `paper_main/Fig1_floor_area.png`
 - Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`
+- This run: Negative bands drawn down from zero: Overbuild absorbed, Unconsented additions, Vacancy, Net replacement (census), Retirement villages (out of scope), Unexplained building; the net (black) is the floor area built. 2026-2050: 85.9 Mm².
 
 ### Fig2_reference_carbon
 
@@ -49,7 +50,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_main/Fig6_solution_space.pdf`, `paper_main/Fig6_solution_space.png`
 - Data: `data/pathways/solution_space.csv`, `data/pathways/backcast.json`
-- This run: Markers at each run's effective cuts of 2027-2050 floor area and of non-soil carbon per m²; soil effects (L8, L9) are not on the plane.
+- This run: LoE AR = [7,973 + 18,170 (1 - x)(1 - y)] / 4,874 kt; fixed = the 2026 cohort (1,421 kt) + the legacy (6,552 kt). Lowest LoE AR on the plane (x or y = 100%): 1.64 - the AR line lies outside the plane. The AtP line lies outside the plane.
 
 ### Fig7_tornado
 
@@ -61,11 +62,11 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### Fig8_shapley_levers
 
-**Fig8 What each lever removes** — Exact Shapley value of each lever (512 subsets) on cumulative carbon 2026-2050, from the Reference: hollow bar Moderate, filled bar Ambitious, large deep-green dot TL; sorted by Ambitious.
+**Fig8 What each lever removes** — Shapley values within each combined game (Reference -> P5 Moderate, -> P5 Ambitious, -> TL; exact, 512 subsets) on cumulative carbon 2026-2050: hollow bar Moderate, filled bar Ambitious, large deep-green dot TL; sorted by Ambitious. Standalone effects in ED10.
 
 - Files: `paper_main/Fig8_shapley_levers.pdf`, `paper_main/Fig8_shapley_levers.png`
 - Data: `data/pathways/shapley.csv`
-- This run: Sum over levers (= Reference - P5 / TL, exact): moderate 5,082 kt, ambitious 8,944 kt, tl 15,233 kt; 512 subsets per setting.
+- This run: Shapley values within each combined game (Reference -> P5 Moderate, -> P5 Ambitious, -> TL); standalone effects in ED10. Sum over levers (= Reference - P5 / TL, exact): moderate 5,082 kt, ambitious 8,944 kt, tl 15,233 kt; 512 subsets per game.
 
 ## Extended Data (paper_extended/)
 
@@ -128,7 +129,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_extended/ED8_tl_shapley_indicators.pdf`, `paper_extended/ED8_tl_shapley_indicators.png`
 - Data: `data/pathways/shapley.csv`, `data/pathways/theoretical_limit.json`
-- This run: TL re-occupies 117,044 released dwellings (attributed TL3 0, TL4 117,044, in proportion R3:R4).
+- This run: TL re-occupies 117,044 released dwellings (attributed TL3 0, TL4 117,044, in proportion R3:R4). (c) The vacancy parameter falls to 0 by 2035 (TL4); the physical (implied) vacancy falls as the released stock is re-occupied over 2027-2050.
 
 ### ED9_rollout_timing
 
@@ -151,6 +152,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_extended/ED11_hd_estimators.pdf`, `paper_extended/ED11_hd_estimators.png`
 - Data: `data/pathways/levers.json`
+- This run: L6 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).
 
 ### ED12_consent_sizes
 
@@ -383,7 +385,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/pathways/D29_ramps.pdf`, `diagnostics/pathways/D29_ramps.png`
 - Data: `data/pathways/levers.json`
-- This run: Native parameter at each level (full strength); every level moves from the Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint.
+- This run: Native parameter at each level (full strength); every level moves from the Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint. L3 (and L7): the target paths by year before the adoption weighting w(y) is applied.
 
 ### D31_lever_annual
 
@@ -442,11 +444,11 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### D38_mc_input_distributions
 
-**Monte Carlo input distributions (sample and quantiles)**
+**Monte Carlo input distributions (sample and quantiles; the resulting A1-A3 factors by typology)**
 
 - Files: `diagnostics/montecarlo/D38_mc_input_distributions.pdf`, `diagnostics/montecarlo/D38_mc_input_distributions.png`
-- Data: `data/montecarlo/draws_REF.csv`, `data/montecarlo/input_distributions_REF.csv`
-- This run: 5,000 draws; lines at the 5th, 50th and 95th percentiles of each input distribution.
+- Data: `data/montecarlo/draws_REF.csv`, `data/montecarlo/input_distributions_REF.csv`, `data/montecarlo/carbon_factors_REF.csv`
+- This run: 5,000 draws; lines at the 5th, 50th and 95th percentiles of each input distribution; carbon: the resulting pooled A1-A3 factor of each draw by typology (median line).
 
 ### D39_pathway_mc
 

@@ -19,7 +19,7 @@ from figures import data as D
 from figures import draw as P
 from figures import style as S
 
-VARS = ('LOW', 'REF', 'HIGH')
+VARS = ('LOW', 'REF', 'HIGH', 'VHIGH')            # MODEL v3.3.0: + Very High replacement
 RV_OUTLINE = '#7A7A7A'          # retirement villages (out of scope; not a demand band): grey outline
 
 
@@ -48,11 +48,21 @@ def d07():
                  label='Census intervals (dwelling counts, under-construction corrected)' if i == 0 else None)
     for k in VARS:
         a.plot(fy, 100 * np.asarray(d['paths'][k]), label=d['labels'][k], **_scen_line(k))
+    # MODEL v3.3.0: the Reference continued to 2075 (dotted) towards its asymptote, the long-run rate
+    ext = d['reference_extended']
+    ref_st = _scen_line('REF')
+    a.plot(ext['years'], 100 * np.asarray(ext['rate']), color=ref_st['color'], ls=':', lw=S.LW,
+           label='Reference continued after 2050')
+    r2050 = float(np.asarray(d['paths']['REF'])[list(fy).index(2050)])
+    a.annotate(f"asymptote: long-run rate {100 * d['long_rate']:.2f}%; 2050 value {100 * r2050:.3f}%",
+               xy=(2075, 100 * ext['rate'][-1]), xytext=(2073, 100 * d['long_rate'] + 0.12), ha='right',
+               fontsize=S.FONT_MIN + 0.5, color=S.INK,
+               arrowprops=dict(arrowstyle='-', color=S.MUTED, lw=S.LW_THIN))
     a.axhline(100 * d['demolition_rate'], color=S.MUTED, ls='--', lw=S.LW,
               label=f"BRANZ demolition (component of the long-run rate), {100 * d['demolition_rate']:.3f}%")
     a.axhline(0, color=S.INK, lw=S.LW_THIN)
     P.split(a)
-    a.set_xlim(1986, 2050)
+    a.set_xlim(1986, 2075)
     a.set_ylabel("Net replacement (% of the previous year's stock per year)")
     a.legend(loc='upper left', fontsize=S.FONT_SMALL)
     w = [int(x) for x in d['window']]
@@ -61,7 +71,10 @@ def d07():
                        f"{100 * d['long_rate']:.3f}% per year; 2018–23: {100 * d['rate_recent']:.3f}% per year. Each "
                        f"step is one intercensal interval; the 2018–23 step is a single interval. Negative values "
                        f"mean the stock grew by more than consented new building, i.e. more dwellings appeared "
-                       f"through conversions and unconsented additions than were demolished.",
+                       f"through conversions and unconsented additions than were demolished. Very High: the "
+                       f"interval-length-weighted OLS trend of the census-interval rates {w[0]}–{w[1]}, "
+                       f"rate = {d['trend']['a']:.6f} + {d['trend']['b']:.4e} × year ({100 * np.asarray(d['paths']['VHIGH'])[1]:.3f}% "
+                       f"in 2026, {100 * np.asarray(d['paths']['VHIGH'])[-1]:.3f}% in 2050).",
                   source=_src(fid))
 
 
@@ -87,9 +100,9 @@ def _neg_style(b):
 def _bridge(fid, note, split):
     d = D.src(fid)
     bands = list(d['bands'])
-    fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 96), sharey=True)
+    fig, ax = plt.subplots(1, len(VARS), figsize=S.figsize('double', 96), sharey=True)
     pad = 0.8
-    for a, k, letter in zip(ax, VARS, 'abc'):
+    for a, k, letter in zip(ax, VARS, 'abcd'):
         b = d['bridge'][k]
         cum = 0.0
         for i, bid in enumerate(bands):
@@ -150,7 +163,7 @@ def d12():
              ('Households formed', 'd_hh', dict(color=S.ACCENT_ORANGE)),
              ('Dwellings built', 'built', dict(color=S.MUTED, ls='--', lw=S.LW_BOLD)),
              ('Floor area', 'gfa', dict(color=S.ACCENT_BLUE)),
-             ('Carbon', 'carbon', dict(color=S.PATHWAY['P4']))]
+             ('Carbon', 'carbon', dict(color=S.LEVER['L7']))]
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 70))
     for lab, key, st in chain:
         s_ = d['chain'][key].loc[yrs]

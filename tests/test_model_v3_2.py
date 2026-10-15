@@ -144,5 +144,5 @@ def test_a4_and_a5_rows():
     runs = pd.read_csv(_data('pathways/runs.csv')).query("scenario == 'REF'").set_index('run')
     fast, tl = runs.loc[PW.TL_REOCCUPATION_FAST], runs.loc['TL']
     assert fast['carbon_kt'] <= tl['carbon_kt'] * (1 + 1e-12)        # re-occupation as fast as demand allows
-    a5 = json.load(open(_data('pathways/levers.json')))['L6']['check_with_A_1']
+    a5 = json.load(open(_data('pathways/levers.json')))['L8']['check_with_A_1']
     assert a5['n'] == a5['adopted_n'] + 1 == 15

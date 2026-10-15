@@ -1,18 +1,18 @@
 """
-PATHWAY MONTE CARLO (MODEL v3.0.0): P5 Combined (Moderate, Ambitious) and TL under the joint input uncertainty
+PATHWAY MONTE CARLO (MODEL v3.3.0): the Moderate and Ambitious Pathway and TL under the joint input uncertainty
 ================================================================================================================
 Every saved Monte Carlo draw of the Reference (outputs/data/montecarlo/draws_REF.csv: the Latin hypercube draws of
 population rank, dwelling-size multiplier, completion rate and the case-study carbon-factor bootstrap; 5,000 in
 the full profile, 1,000 in the light one) is re-run through MonteCarlo.project (full=True exposes the draw's
 engine inputs) and then through the pathway layer (pathways.run, the same function as the deterministic runs):
-P5 Moderate, P5 Ambitious, TL and the instant TL (sensitivity; summary only).
+the Moderate Pathway, the Ambitious Pathway, TL and the instant TL (sensitivity; summary only).
 
-  * every lever level is applied to the draw's own inputs as in the deterministic runs: the ratios (L2 design
-    density, L6 material carbon) to the draw's own OLF, dwelling sizes and A1-A3; L3 adds the published Stats NZ
-    High - Medium gap to the draw's own household size; L4 moves the vacancy parameter to the same Ambitious
+  * every lever level is applied to the draw's own inputs as in the deterministic runs: the ratios (L5 design
+    density, L8 material carbon) to the draw's own OLF, dwelling sizes and A1-A3; L1 adds the published Stats NZ
+    High - Medium gap to the draw's own household size; L2 moves the vacancy parameter to the same Ambitious
     value; the overbuild excess is the draw's own Reference excess (MonteCarlo.project), held fixed in the draw's
     lever runs and absorbed on the Reference weights;
-  * TL3 (the historical maximum household size) is taken as max(2.7905, the draw's Ambitious path) so that TL3 is
+  * TL1 (the historical maximum household size) is taken as max(2.7905, the draw's Ambitious path) so that TL1 is
     never weaker than Ambitious in a draw (counted); every other TLn is a ratio or an absolute zero / full.
 
 The level of exceedance of every draw uses that draw's cumulative AR and AtP budgets
@@ -22,9 +22,9 @@ Insight analyses (mcstats.py) on the four sampled inputs (population rank, dwell
 rate, carbon-factor index): SRC and PRCC with percentile bootstrap intervals (runprofile bootstrap replicates),
 LOWESS and least-squares fits, and the conditional TL (Firth logistic regression of 1[TL LoE AR <= 1]).
 
-STOP: the central draw must reproduce the deterministic P5 Moderate, P5 Ambitious, TL and instant TL runs to
+STOP: the central draw must reproduce the deterministic Moderate / Ambitious Pathway, TL and instant TL runs to
 1e-9; every draw's Reference carbon equals the saved draw; the bootstrap is reproduced exactly; in every draw
-TL <= P5 Ambitious <= P5 Moderate (cumulative carbon), dwellings built >= 0, and the cumulative re-occupied
+TL <= Ambitious Pathway <= Moderate Pathway (cumulative carbon), dwellings built >= 0, and the cumulative re-occupied
 never exceeds the cumulative released.
 
 Writes outputs/data/pathways/montecarlo_draws.csv (per draw), montecarlo_summary.csv, montecarlo_annual.csv,
@@ -54,9 +54,10 @@ import runprofile  # noqa: E402
 M6 = 1e6
 PCT = (5, 25, 50, 75, 95)
 CENTRAL_TOL = 1e-9
-RUNS = ('REF', 'P5', 'TL')                       # the insight analyses (P5 = P5 Moderate)
+MP, AP = 'pathway_moderate', 'pathway_ambitious'  # the Moderate / Ambitious Pathway (MODEL v3.0-v3.2: P5, P5A)
+RUNS = ('REF', MP, 'TL')                          # the insight analyses
 INSTANT = 'TL_from2027'                          # the instant TL sensitivity (summary and annual percentiles only)
-SUMMARY_RUNS = ('REF', 'P5', 'P5A', 'TL', INSTANT)     # P5A = P5 Ambitious
+SUMMARY_RUNS = ('REF', MP, AP, 'TL', INSTANT)
 WINDOW = slice(1, None)                          # 2026-2050 (index 0 = 2025)
 
 
@@ -120,13 +121,13 @@ def draw_context(ctx, su, d, a13, red13, a45):
 
 def runs_for_draw(ctx_d, params):
     TL = LV.tl_levels(LV.TL_COMPONENTS)
-    return dict(P5=PW.run(ctx_d, params, LV.pathway_levers('P5', 'moderate')),
-                P5A=PW.run(ctx_d, params, LV.pathway_levers('P5', 'ambitious')),
-                TL=PW.run(ctx_d, params, TL), **{INSTANT: PW.run(ctx_d, params, TL, LV.TL_FROM2027)})
+    return {MP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'moderate')),
+            AP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'ambitious')),
+            'TL': PW.run(ctx_d, params, TL), INSTANT: PW.run(ctx_d, params, TL, LV.TL_FROM2027)}
 
 
 def deterministic():
-    """The deterministic Reference context, lever parameters and the P5 Moderate / Ambitious, TL and instant TL runs."""
+    """The deterministic Reference context, lever parameters and the Moderate / Ambitious Pathway, TL and instant TL runs."""
     B = PW.boss_state(PW.REFERENCE)
     ctx = PW.base_context(B, PW.REFERENCE, PW.boundaries())
     params = PW.resolve_params(B)
@@ -134,7 +135,7 @@ def deterministic():
 
 
 def check_central(su, ctx, params, det):
-    """STOP unless the central draw reproduces the deterministic P5 Moderate / Ambitious, TL and instant TL runs to 1e-9."""
+    """STOP unless the central draw reproduces the deterministic Moderate / Ambitious Pathway, TL and instant TL runs to 1e-9."""
     o = MC.project(su, MC.central(su), full=True)
     cd = draw_context(ctx, su, o['draw'], None, None, None)
     runs = runs_for_draw(cd, params)
@@ -159,9 +160,10 @@ def check_central(su, ctx, params, det):
     return worst
 
 
-INPUTS = ('z_pop', 'size', 'complete', 'carbon_index')
+INPUTS = ('z_pop', 'size', 'complete', 'carbon_index', 'half_life')     # MODEL v3.3.0: + replacement half-life
 INPUT_LABELS = {'z_pop': 'Population rank (z-score)', 'size': 'Dwelling-size multiplier',
-                'complete': 'Completion rate', 'carbon_index': 'Carbon-factor index'}
+                'complete': 'Completion rate', 'carbon_index': 'Carbon-factor index',
+                'half_life': 'Replacement half-life (yr)'}
 OUTPUTS = ('floor_area_Mm2', 'carbon_kt', 'LoE_AR')
 BOOT_B = runprofile.get('bootstrap')
 BOOT_SEED = MC.SEED + 2101                      # the insight bootstrap's own stream (the draws are not touched)
@@ -328,14 +330,14 @@ def reoccupation_counts(df):
     pc = lambda v: {f'p{p}': float(np.percentile(v, p)) for p in (0, 5, 25, 50, 75, 95, 100)}
     out = dict(rule='constant share s = min(R, G+) / G+ of each year\'s need after the overbuild payback; re-occupied '
                     'never ahead of the cumulative release (shortfall built, share recomputed from the remaining pool); '
-                    'R = TL3 + TL4 releases (pathways.reoccupation)')
+                    'R = TL1 + TL2 releases (pathways.reoccupation)')
     for lab_ in ('TL', INSTANT):
         sur = df[f'{lab_}_surplus_vacant_2050']
         exceed = df[f'{lab_}_released_R'] > df[f'{lab_}_need_G_plus']
         npn = df[f'{lab_}_nonpositive_need_years'] > 0
         out[lab_] = dict(
             share_percentiles=pc(df[f'{lab_}_reoccupation_share']),
-            R3_percentiles=pc(df[f'{lab_}_released_R3']), R4_percentiles=pc(df[f'{lab_}_released_R4']),
+            R3_percentiles=pc(df[f'{lab_}_released_R1']), R4_percentiles=pc(df[f'{lab_}_released_R2']),
             draws_R_exceeds_G_plus=int(exceed.sum()),
             surplus_vacant_2050_where_R_exceeds_G_plus=pc(sur[exceed]) if exceed.any() else None,
             draws_with_nonpositive_need_year=int(npn.sum()),
@@ -368,7 +370,7 @@ def main():
         raise SystemExit('pathways_mc: the AESA draw budgets do not match the saved draws (re-run boundaries.py).')
     years = np.asarray(ctx['years'])
     late = years >= LV.OBSERVED_YEAR + 1
-    gap = np.array([LV.by_year(params['L3']['gap'], int(y)) for y in years])
+    gap = np.array([LV.by_year(params['L1']['gap'], int(y)) for y in years])
     n = len(draws)
     annual = {r: np.empty((n, len(years))) for r in SUMMARY_RUNS}
     rows, stops = [], []
@@ -387,11 +389,11 @@ def main():
             built = np.asarray(PW.engine.requirement(runs[lab_]['E']), float)
             if (built[1:] < -PW.T_ZERO_TOL_DWELLINGS).any():
                 stops.append(f'draw {j} {lab_}: built_t < 0')
-            rel = ro['released_tl3'] + ro['released_tl4']
+            rel = ro['released_tl1'] + ro['released_tl2']
             if (np.cumsum(ro['reoccupied']) > np.cumsum(rel) + PW.REOCCUPATION_TOL * max(ro['R'], 1.0)).any():
                 stops.append(f'draw {j} {lab_}: cumulative re-occupied > released')
             reo.update({f'{lab_}_reoccupation_share': ro['share'], f'{lab_}_released_R': ro['R'],
-                        f'{lab_}_released_R3': ro['R3'], f'{lab_}_released_R4': ro['R4'],
+                        f'{lab_}_released_R1': ro['R1'], f'{lab_}_released_R2': ro['R2'],
                         f'{lab_}_need_G_plus': ro['G_plus'], f'{lab_}_surplus_vacant_2050': ro['surplus_vacant_2050'],
                         f'{lab_}_nonpositive_need_years': len(ro['nonpositive_need_years']),
                         f'{lab_}_release_constraint_binding_years': int(ro['release_binds'].sum()),
@@ -400,8 +402,8 @@ def main():
                    P_NZ_2050=float(np.asarray(cd['pop'], float)[-1]),
                    carbon_index=carbon_index(o, I_c, gfa_c),
                    B_AR_kt_2026_2050=float(b['B_AR_kt_2026_2050']), B_AtP_kt_2026_2050=float(b['B_AtP_kt_2026_2050']),
-                   TL3_draw_max_binds=bool(np.any((S_d + gap)[late] > params['L3']['tl'])),
-                   overbuild_cap_binding_years=int(runs['P5']['info']['payback_cap_binds'].sum()),
+                   TL1_draw_max_binds=bool(np.any((S_d + gap)[late] > params['L1']['tl'])),
+                   overbuild_cap_binding_years=int(runs[MP]['info']['payback_cap_binds'].sum()),
                    **reo)
         for r, E in [('REF', o)] + [(k, R['E']) for k, R in runs.items()]:
             carbon = np.asarray(E['carbon'], float)
@@ -410,8 +412,8 @@ def main():
             row.update({f'{r}_carbon_kt': c, f'{r}_floor_area_Mm2': float(np.asarray(E['gfa'] if r == 'REF'
                                                                                     else E['total'])[WINDOW].sum()) / M6,
                         f'{r}_LoE_AR': c / row['B_AR_kt_2026_2050'], f'{r}_LoE_AtP': c / row['B_AtP_kt_2026_2050']})
-        if not row['TL_carbon_kt'] <= row['P5A_carbon_kt'] * (1 + 1e-12) <= row['P5_carbon_kt'] * (1 + 1e-12):
-            stops.append(f'draw {j}: TL <= P5 Ambitious <= P5 Moderate violated')
+        if not row['TL_carbon_kt'] <= row[f'{AP}_carbon_kt'] * (1 + 1e-12) <= row[f'{MP}_carbon_kt'] * (1 + 1e-12):
+            stops.append(f'draw {j}: TL <= Ambitious Pathway <= Moderate Pathway violated')
         rows.append(row)
         if (j + 1) % 1000 == 0:
             print(f'  {j + 1:,} draws ({time.time() - t0:.0f} s)')
@@ -434,10 +436,10 @@ def main():
             ann.append(dict(run=r, year=int(y), **{f'carbon_kt_p{p}': float(np.percentile(annual[r][:, i], p) / M6)
                                                    for p in PCT},
                             carbon_kt_mean=float(annual[r][:, i].mean() / M6)))
-    rules = dict(TL3_draw_max_binds_draws=int(df['TL3_draw_max_binds'].sum()), n_draws=n,
+    rules = dict(TL1_draw_max_binds_draws=int(df['TL1_draw_max_binds'].sum()), n_draws=n,
                  probability_TL_LoE_AR_at_most_1=float(np.mean(df['TL_LoE_AR'] <= 1.0)),
-                 overbuild_cap_binds_draws_P5=int((df['overbuild_cap_binding_years'] > 0).sum()),
-                 tl_le_p5_every_draw=True, reoccupation=reoccupation_counts(df))
+                 overbuild_cap_binds_draws_moderate_pathway=int((df['overbuild_cap_binding_years'] > 0).sum()),
+                 tl_le_pathway_every_draw=True, reoccupation=reoccupation_counts(df))
     import json
     with open(layout.writing(layout.data('pathways/montecarlo_draw_rules.json', frozen=False)), 'w') as f:
         json.dump(rules, f, indent=1)

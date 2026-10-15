@@ -26,7 +26,7 @@ PATHWAYS_OUTPUTS = [layout.data(f'pathways/{f}', frozen=False) for f in (
     'montecarlo_summary.csv', 'montecarlo_annual.csv', 'montecarlo_draw_rules.json', 'montecarlo_importance.csv',
     'montecarlo_fits.csv', 'montecarlo_conditional_tl.csv', 'montecarlo_conditional_tl.json')] + [
     layout.data(f'sensitivity/{f}.csv', frozen=False) for f in (
-        'reference_carbon', 'p5_carbon', 'planetary_boundary', 'replacement_variants', 'tornado')] + [
+        'reference_carbon', 'pathway_carbon', 'planetary_boundary', 'replacement_variants', 'tornado')] + [
     layout.data('baseline/overbuild_absorption_log.csv', frozen=False)] + [
     layout.report(f, frozen=False) for f in ('METHODS_DRAFT.md', 'LEVERS_TABLE.md')]
 

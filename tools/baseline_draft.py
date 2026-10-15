@@ -427,7 +427,10 @@ def lines():
         txt += (f" How fast existing dwellings are replaced is the largest structural uncertainty: "
                 f"{N.SCENARIOS['LOW']} (the long-run rate throughout) gives {rows['LOW']['floor_area_Mm2']:.1f} "
                 f"million m², {N.SCENARIOS['HIGH']} (the 2018-2023 rate persisting) "
-                f"{rows['HIGH']['floor_area_Mm2']:.1f} million m².")
+                f"{rows['HIGH']['floor_area_Mm2']:.1f} million m²"
+                + (f", and {N.SCENARIOS['VHIGH']} (the weighted linear trend of the census-interval rates "
+                   f"1991-2023 continues) {rows['VHIGH']['floor_area_Mm2']:.1f} million m²" if 'VHIGH' in rows else '')
+                + ".")
     ref_mc = layout.montecarlo('summary', 'REF', frozen=False)
     if os.path.exists(ref_mc):
         r = pd.read_csv(ref_mc, index_col=0).loc['floor_area_Mm2']
@@ -461,7 +464,7 @@ def lines():
           + ' (kt CO₂e) | of which soil carbon loss | carbon excl. soil carbon loss | materials and construction '
           '(A1-A5) + soil carbon loss (kt CO₂e) |', '|---|---|---|---|---|---|---|']
     base = rows.get('REF', {}).get('floor_area_Mm2', b['floor_area_Mm2'])
-    for k in ('LOW', 'REF_HL5', 'REF', 'REF_HL15', 'HIGH'):
+    for k in ('LOW', 'REF_HL5', 'REF', 'REF_HL15', 'HIGH', 'VHIGH'):
         lab = N.SCENARIOS[k]
         if k in rows:
             r = rows[k]
@@ -469,7 +472,7 @@ def lines():
             so = r.get('soil_carbon_loss_kt')
             sol = (f"{so:,.0f} | {r['carbon_kt'] - so:,.0f}") if so is not None else 'n/a | n/a'
             L.append(f"| {lab} | {r['floor_area_Mm2']:.2f} | {pct(r['floor_area_Mm2'], base)} | {r['carbon_kt']:,.0f} | {sol} | {up} |")
-    mcs = [layout.montecarlo('summary', k, frozen=False) for k in ('LOW', 'REF', 'HIGH')]
+    mcs = [layout.montecarlo('summary', k, frozen=False) for k in ('LOW', 'REF', 'HIGH', 'VHIGH')]
     mcs = [p for p in mcs if os.path.exists(p)]
     if mcs:
         L += ['', 'Monte Carlo within each variant (joint input uncertainty; mean, median and 90% interval):', '',

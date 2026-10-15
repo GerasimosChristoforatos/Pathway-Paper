@@ -324,9 +324,13 @@ CENSUS_UC_CORRECTION = True    # census years; (2013, 2023) is a sensitivity
 #   'REF':  the Reference: the 2018-2023 rate fades to the long-run rate with
 #           half-life REPLACEMENT_HALF_LIFE years (10; 5 and 15 are sensitivity variants);
 #   'LOW':  Low replacement: the long-run rate (NET_REPLACEMENT_WINDOW) throughout;
-#   'HIGH': High replacement: the 2018-2023 census-interval rate persists.
+#   'HIGH': High replacement: the 2018-2023 census-interval rate persists;
+#   'VHIGH': Very High replacement (trend continues; MODEL v3.3.0): the weighted (by interval length) linear OLS
+#           trend of the census-interval rates 1991-2023 extrapolated 2026-2050 (engine.replacement_trend).
 # Author's decision: Low and High bound the Reference (JUDGEMENT: the half-life is
-# not identifiable from the census record).
+# not identifiable from the census record; it is sampled U(5, 15) yr in the Monte Carlo, MODEL v3.3.0). Very High is
+# a sensitivity variant, not the Reference: six interval rates (seven censuses), one negative, a definition break in
+# 2013-2018 and the unbounded extrapolation of a policy-driven wave.
 REPLACEMENT_VARIANT = 'REF'
 REPLACEMENT_HALF_LIFE = 10.0
 RECENT_INTERVAL = (2018, 2023)
@@ -1223,8 +1227,9 @@ def main():
     # forward fading at rho, booked to the residual (see engine.forward).
     # net replacement path forward (REPLACEMENT_VARIANT); unconsented_rate stays the long-run value
     rate_recent = engine.census_window_rate(census_rates, *RECENT_INTERVAL)
+    replacement_trend = engine.replacement_trend(census_rates, *_nr_window)   # MODEL v3.3.0 (Very High; reported)
     rate_path = engine.replacement_path(_scenario, demolition_rate + unconsented_rate, rate_recent,
-                                        np.arange(2025, 2051), REPLACEMENT_HALF_LIFE)
+                                        np.arange(2025, 2051), REPLACEMENT_HALF_LIFE, trend=replacement_trend)
     unc_path = rate_path - demolition_rate
     _dv = engine.deviation_2025(stock_cal, _completion * hist_units_all_c.loc[2025], d_hh.loc[2025],
                                 float(rate_path[0]), years_hist, _calib_start, calib_end)
@@ -2015,6 +2020,12 @@ def export_results(B, path):
         demand_bands=[dict(band=lab, gfa_Mm2=tot(B[g]) / 1e6, carbon_kt=tot(B[c]) / 1e6)
                       for lab, g, c in bands],
         material_kt={m: float(v / 1e6) for m, v in B['flow_annual'].sum().items()},
+        replacement_trend=dict(B['replacement_trend'], window=list(B['_nr_window']),
+                               rate_2026=float(B['replacement_trend']['a'] + B['replacement_trend']['b'] * 2026),
+                               rate_2050=float(B['replacement_trend']['a'] + B['replacement_trend']['b'] * 2050),
+                               method='weighted least squares of the census-interval net replacement rates on the mean '
+                                      'of each interval\'s model years (y0+1 .. y1), weights = interval length; '
+                                      'Very High replacement = a + b year (MODEL v3.3.0)'),
         bands_in_scope=[dict(band=lab, gfa_Mm2=float(np.sum(gv)), carbon_kt=float(np.sum(cv)))
                         for (lab, gv, _), (_, cv, _) in zip(B['fig_bands']['gfa'][0], B['fig_bands']['carbon'][0])],
         accounting=ACCOUNTING, decarb_a45=DECARB_A45, event_timing=EVENT_TIMING,

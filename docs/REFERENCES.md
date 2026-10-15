@@ -1,4 +1,4 @@
-# References (MODEL v3.2.0)
+# References (MODEL v3.3.0)
 
 The references the model's methods rest on, in the form the methods draft cites them. **Verification status**: the
 network policy of this environment blocks the Crossref API, so metadata were checked through a scholarly index
@@ -41,6 +41,12 @@ absorbed, by 2030, by 2045).
   2001, pages, doi:10.1006/juec.2000.2187]. Distinct from their earlier paper: Gabriel, S. A., & Nothaft, F. E.
   (1988). Rental housing markets and the natural vacancy rate. *AREUEA Journal* (now *Real Estate Economics*),
   16(4), 419–429, doi:10.1111/1540-6229.00465 (verified in the index: title, journal, year, volume, issue, pages).
+
+## Carbon reduction hierarchy (MODEL v3.3.0)
+
+- BSI (2023). *PAS 2080:2023 Carbon management in buildings and infrastructure*. British Standards Institution,
+  London. Clause 4.3 and Figure 5 (carbon reduction hierarchy: Avoid, Switch, Improve), the basis of the strategy
+  grouping S1 Avoid, S2 Switch, S3 Improve. [verify: clause and figure numbers against the published 2023 edition]
 
 ## Attribution principle, completion rate (MODEL v3.2.0)
 

@@ -830,7 +830,7 @@ LIMITATIONS = [
 # ============================================================
 # The AESA diagnostics D18, D21-D27 are drawn by figures/boundaries.py from the arrays written here
 # (outputs/data/figure_source/<figure id>.json, figsource.py); this module draws nothing.
-VARIANTS = ('LOW', 'REF', 'HIGH')
+VARIANTS = ('LOW', 'REF', 'HIGH', 'VHIGH')        # MODEL v3.3.0: + Very High replacement
 
 
 def write_figure_sources(B, hist, runs, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell):

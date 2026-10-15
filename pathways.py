@@ -1,5 +1,5 @@
 """
-PATHWAYS (MODEL v3.0.0): lever, pathway and theoretical-limit runs, attribution, waterfalls, back-cast
+PATHWAYS (MODEL v3.3.0): lever, strategy, pathway and theoretical-limit runs, attribution, waterfalls, back-cast
 ======================================================================================================
 Reads the projection state (validation.run_boss -> projection.main() locals, in memory only) and re-calls
 engine.forward() with copies of `fwd_inputs` modified by levers.inputs(); nothing in the model changes and no
@@ -9,26 +9,29 @@ and writes data only (CSV / JSON); the figures are drawn by the figures/ package
 ONE RUN (run()): every run, the Reference included, follows the same order per year
     gross_t -> overbuild payback -> re-occupation -> built_t
   1. the lever inputs (levers.inputs) and the requirement without any join, E1 (engine.forward, join = 0);
-  2. need_t = requirement_t + the dwellings released by TL4 (zero vacancy: -min(vacancy change, 0)), so that the
+  2. need_t = requirement_t + the dwellings released by TL2 (zero vacancy: -min(vacancy change, 0)), so that the
      release is re-occupied by the rule below instead of netted at once;
   3. the 2026 overbuild: the market excess of the REFERENCE (computed once, held fixed in every run) is absorbed
      along the Reference's logistic weights, the payback capped at max(gross_t, 0) with the shortfall carried
      (engine.absorb_overbuild);
-  4. re-occupation (TL-family runs with TL3 and / or TL4 only): the dwellings released by TL3 (household decline:
-     -min(d households, 0) / (1 - v)) and TL4 to 2050, R = R3 + R4, meet a constant share of each year's need
+  4. re-occupation (TL-family runs with TL1 and / or TL2 only): the dwellings released by TL1 (household decline:
+     -min(d households, 0) / (1 - v)) and TL2 to 2050, R = R1 + R2, meet a constant share of each year's need
      after the payback (reoccupation());
-  5. engine.forward with the stock-adding join = excess - payback + TL4 release - re-occupied, so the stock identity
+  5. engine.forward with the stock-adding join = excess - payback + TL2 release - re-occupied, so the stock identity
      holds and the released dwellings stay vacant until re-occupied.
 
-RUNS (naming.py vocabulary): the Reference (and the Low / High replacement variants); each lever alone at Moderate,
-Ambitious and TL; P1-P5 at Moderate and Ambitious; TL (every lever at Level 4); the lambda-sweep of each lever;
-P5 adopted by 2030 / 2045; the instant TL (sensitivity row).
-ATTRIBUTION: exact Shapley values (rational arithmetic) over every subset: the four pathways (16 subsets) and the
-nine levers (512 subsets) at Moderate and Ambitious, the nine levers at TL from the Reference (512; Fig8), and
-TL1-TL9 from P5 Moderate (512; the TL waterfall's game). Every run is cached by its lever setting (levers.key)
-and reused across pathways, games and variants.
-WATERFALLS: Reference -> +P1 -> +P2 -> +P3 -> +P4 (= P5) -> +TL1 ... +TL9 (= TL), by demand band, at Moderate
-(Fig5) and Ambitious (Extended Data). No timing step: TL is adopted on the same logistic as every level.
+RUNS (naming.py vocabulary): the Reference (and the Low / High / Very High replacement variants); each lever alone at
+Moderate, Ambitious and TL; the PAS 2080 strategies S1 Avoid, S2 Switch, S3 Improve (BSI 2023, Clause 4.3, Fig. 5)
+and the Moderate / Ambitious Pathway (every lever) at Moderate and Ambitious; TL (every lever at Level 4); the
+lambda-sweep of each lever; the Pathways adopted by 2030 / 2045; the instant TL (sensitivity row).
+ATTRIBUTION: exact Shapley values (rational arithmetic) over every subset: the three strategies (8 subsets) and the
+nine levers (512 subsets) at Moderate and Ambitious (Reference -> Moderate / Ambitious Pathway), the nine levers at
+TL from the Reference (512), and TL1-TL9 from the Moderate Pathway (512; the TL waterfall's game). Every run is cached
+by its lever setting (levers.key) and reused across strategies, games and variants.
+WATERFALLS (sequential, PAS 2080 hierarchy order): (a) Reference -> +L1 ... +L9 at a setting (= the Moderate /
+Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL9 (= TL), by demand band, at Moderate (Fig5) and Ambitious (ED7).
+Each step is credited with what remains after the higher-priority measures; sequential_vs_shapley.csv compares the
+steps with the order-free Shapley values. No timing step: TL is adopted on the same logistic as every level.
 
     python pathways.py          (run_all.py runs it)
 """
@@ -69,7 +72,8 @@ WINDOW = (2026, 2050)
 REFERENCE = 'REF'
 SCENARIOS = {'LOW': (N.SCENARIOS['LOW'], dict(REPLACEMENT_VARIANT='LOW')),
              'REF': (N.SCENARIOS['REF'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
-             'HIGH': (N.SCENARIOS['HIGH'], dict(REPLACEMENT_VARIANT='HIGH'))}
+             'HIGH': (N.SCENARIOS['HIGH'], dict(REPLACEMENT_VARIANT='HIGH')),
+             'VHIGH': (N.SCENARIOS['VHIGH'], dict(REPLACEMENT_VARIANT='VHIGH'))}      # MODEL v3.3.0
 IDENTITY_RTOL = 1e-9
 GRID = np.round(np.arange(0.0, 1.0 + 1e-9, 0.05), 2)     # solution space: 0-100% in 5% steps
 LAMBDA_GRID = np.round(np.arange(0.0, 1.0 + 1e-9, 0.1), 1)
@@ -81,6 +85,7 @@ T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a z
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
 SHAPLEY_METRICS = ('carbon_kt', 'LoE_AR', 'LoE_AtP')
 ORDER_RTOL = 1e-12
+TL_GAME = 'tl_from_moderate_pathway'            # TL1-TL9 from the Moderate Pathway (MODEL v3.0-v3.2: tl_from_p5_moderate)
 TL_REOCCUPATION_FAST = 'TL-reoccupation-fast'   # A4 sensitivity row (reoccupation rule 'fast')
 
 
@@ -138,13 +143,13 @@ def base_context(B, scenario, bounds):
 
 
 # ============================================================
-# RE-OCCUPATION (TL3 / TL4 releases)
+# RE-OCCUPATION (TL1 / TL2 releases)
 # ============================================================
 REOCCUPATION_RULES = ('constant_share', 'fast')   # adopted; 'fast' = as fast as demand allows (A4 sensitivity row)
 
 
 def reoccupation(years, gross, released, rule='constant_share'):
-    """Constant-share re-occupation (MODEL v3.0.0). The dwellings released in 2027-2050 by TL3 and TL4 (R in total)
+    """Constant-share re-occupation (MODEL v3.0.0). The dwellings released in 2027-2050 by TL1 and TL2 (R in total)
     meet a constant share of each year's need after the overbuild payback:
 
         target_t = max(gross_t, 0) x s,   s = min(R, G+) / G+,   G+ = sum over 2027-2050 of max(gross_t, 0)
@@ -288,10 +293,10 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     E = engine.forward(ctx['pop'], hh, ctx['growth'], join=join, join_redev=zeros, **fi)
     R_tot = ro['R']
     s3 = float(rel3.sum() / R_tot) if R_tot > 0 else 0.0
-    ro.update(released_tl3=rel3, released_tl4=rel_v if tl_family else zeros, gross=gross, need=need,
-              requirement_nojoin=req, reoccupied_tl3=reocc * s3,
-              reoccupied_tl4=reocc * (1.0 - s3) if R_tot > 0 else zeros,
-              R3=float(rel3.sum()), R4=float(rel_v.sum()) if tl_family else 0.0)
+    ro.update(released_tl1=rel3, released_tl2=rel_v if tl_family else zeros, gross=gross, need=need,
+              requirement_nojoin=req, reoccupied_tl1=reocc * s3,
+              reoccupied_tl2=reocc * (1.0 - s3) if R_tot > 0 else zeros,
+              R1=float(rel3.sum()), R2=float(rel_v.sum()) if tl_family else 0.0)
     flows = dict(rel_v=rel_v, used_v=used_v, reocc=reocc, negclip=negclip, neg_used=neg_used,
                  vac_carry_end=float(vac_carry), pool_remainder=float(pool_rem), neg_carry_end=float(neg_carry))
     info.update(excess=excess, payback=ab['paid'], payback_carry=ab['carry'], payback_cap_binds=ab['cap_binds'],
@@ -319,7 +324,7 @@ def committed(ctx, gfa_t):
 
 def implied_vacancy(E):
     """1 - households / physical stock. The engine's required stock hh / (1 - v) plus the join stock (the overbuild
-    still vacant, the TL4 release not yet re-occupied) plus the dwellings released by a household decline (TL3; d_hh
+    still vacant, the TL2 release not yet re-occupied) plus the dwellings released by a household decline (TL1; d_hh
     is floored at 0 in the engine), release_t = -min(d_hh_raw, 0) / (1 - v_t)."""
     v = np.broadcast_to(np.asarray(E['v'], float), E['hh'].shape)
     rel = np.cumsum(-np.minimum(E['d_hh_raw'], 0.0) / (1.0 - v))
@@ -363,7 +368,7 @@ def metrics(ctx, R, label, setting):
     size = fi['size']
     size_minus_occ = min(float((np.broadcast_to(np.asarray(size[t], float), S.shape)
                                 - S * np.asarray(fi['olf'][t], float))[f].min()) for t in ctx['typ'])
-    held = info.get('l1_held')
+    held = info.get('l4_held')
     ro = info['reoccupation']
     yy = np.asarray(ctx['years'])
     return dict(run=label, scenario=ctx['scenario'], setting=setting, levers=LV.label(R['levels']),
@@ -390,7 +395,7 @@ def metrics(ctx, R, label, setting):
                 overbuild_absorbed_dwellings=float(info['payback'][f].sum()),
                 overbuild_payback_carried_2050=float(info['payback_carry'][-1]),
                 overbuild_cap_binding_years=';'.join(str(int(y)) for y in yy[info['payback_cap_binds']]),
-                released_tl3=ro['R3'], released_tl4=ro['R4'], reoccupied=ro['reoccupied_total'],
+                released_tl1=ro['R1'], released_tl2=ro['R2'], reoccupied=ro['reoccupied_total'],
                 G_plus=ro['G_plus'], reoccupation_share=ro['share'],
                 surplus_vacant_2050=(info['flows']['pool_remainder'] + info['flows']['vac_carry_end']
                                      + info['flows']['neg_carry_end']),
@@ -402,7 +407,7 @@ def metrics(ctx, R, label, setting):
                                              if b <= T_ZERO_TOL_DWELLINGS),
                 vacancy_change_dwellings=float(E['change'][f].sum()),
                 size_minus_occupied_min_m2=size_minus_occ,
-                l1_held_typology_years=int(sum(h[f].sum() for h in held.values())) if held else 0,
+                l4_held_typology_years=int(sum(h[f].sum() for h in held.values())) if held else 0,
                 households_min_change=float(E['d_hh_raw'][f].min()),
                 households_released=float(-np.minimum(E['d_hh_raw'][f], 0.0).sum()),
                 brownfield_share=float(E['soil_free_gfa'][f].sum() / E['total'][f].sum()),
@@ -430,8 +435,8 @@ def annual_rows(ctx, R, label):
                          stock_vacancy=float(np.broadcast_to(E['v'], E['hh'].shape)[i]),
                          vacancy_change_dwellings=E['change'][i], overbuild_excess=info['excess'][i],
                          overbuild_payback=info['payback'][i], vacancy_released_used=info['flows']['used_v'][i],
-                         released_tl3=ro['released_tl3'][i],
-                         released_tl4=ro['released_tl4'][i], reoccupied=ro['reoccupied'][i],
+                         released_tl1=ro['released_tl1'][i],
+                         released_tl2=ro['released_tl2'][i], reoccupied=ro['reoccupied'][i],
                          households=E['hh'][i], household_size=E['pop'][i] / E['hh'][i],
                          brownfield_share=(E['soil_free_gfa'][i] / E['total'][i] if E['total'][i] > T_ZERO_TOL_M2 else 0.0),
                          B_AR_kt=ctx['b_ar'][j] / M6, B_AtP_kt=ctx['b_atp'][j] / M6,
@@ -612,7 +617,7 @@ def household_size_variants(B_ref):
     """{variant: dict(S, pop)} of the Stats NZ household-size variants: the Reference projection with
     projection.HH_SIZE_VARIANT changed (the Reference itself for its own variant)."""
     out = {}
-    for v in LV.L3_VARIANTS:
+    for v in LV.L1_VARIANTS:
         if v == validation.projection.HH_SIZE_VARIANT:
             B = B_ref
         else:
@@ -630,7 +635,7 @@ def resolve_params(B_ref):
 
 
 def run_name(what, setting, ramp_name=None):
-    """'REF' (a variant id), 'P3-moderate', 'L1-tl', 'P5-moderate-by2045', 'L4-lambda0.3'."""
+    """'REF' (a variant id), 'S2-moderate', 'L4-tl', 'pathway-moderate-by2045', 'L2-lambda0.3'."""
     if what in N.SCENARIOS:
         return what
     return f'{what}-{setting}' + (f'-{ramp_name}' if ramp_name else '')
@@ -665,18 +670,19 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
         for L in LV.LEVERS:
             named.append((run_name(L, s), REFERENCE, s, {L: s}, None))
     for s in LV.SETTINGS:
-        for P in ('P1', 'P2', 'P3', 'P4', 'P5'):
+        for P in tuple(LV.STRATEGIES) + (LV.PATHWAY,):
             named.append((run_name(P, s), REFERENCE, s, LV.pathway_levers(P, s), None))
     named.append(('TL', REFERENCE, 'tl', TL_ALL, None))
     named.append((LV.TL_INSTANT_LABEL, REFERENCE, 'tl', TL_ALL, LV.TL_FROM2027))
     for rs in LV.ADOPTION_SENSITIVITIES:
         for s in LV.SETTINGS:
-            named.append((run_name('P5', s, rs['name']), REFERENCE, s, LV.pathway_levers('P5', s), rs['name']))
+            named.append((run_name(LV.PATHWAY, s, rs['name']), REFERENCE, s, LV.pathway_levers(LV.PATHWAY, s),
+                          rs['name']))
     for scen in scenarios:
         if scen != REFERENCE:
             named.append((scen, scen, 'reference', {}, None))
             for s in LV.SETTINGS:
-                named.append((run_name('P5', s), scen, s, LV.pathway_levers('P5', s), None))
+                named.append((run_name(LV.PATHWAY, s), scen, s, LV.pathway_levers(LV.PATHWAY, s), None))
             named.append(('TL', scen, 'tl', TL_ALL, None))
     rows, annual, bands, bands_annual = [], [], [], []
     for name, scen, s, levels, rn in named:
@@ -702,14 +708,14 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
                                                  for _, r in bands_df.iterrows()]
 
     # ---- Shapley games (exact; every subset a cached run) ----
-    games = [('pathways_moderate', tuple(LV.PATHWAYS), dict(LV.PATHWAY_NAMES),
-              lambda S: {L: 'moderate' for P in S for L in LV.PATHWAYS[P]}),
-             ('pathways_ambitious', tuple(LV.PATHWAYS), dict(LV.PATHWAY_NAMES),
-              lambda S: {L: 'ambitious' for P in S for L in LV.PATHWAYS[P]}),
+    games = [('strategies_moderate', tuple(LV.STRATEGIES), dict(LV.STRATEGY_NAMES),
+              lambda S: {L: 'moderate' for P in S for L in LV.STRATEGIES[P]}),
+             ('strategies_ambitious', tuple(LV.STRATEGIES), dict(LV.STRATEGY_NAMES),
+              lambda S: {L: 'ambitious' for P in S for L in LV.STRATEGIES[P]}),
              ('levers_moderate', LV.LEVERS, dict(LV.LEVER_NAMES), lambda S: {L: 'moderate' for L in S}),
              ('levers_ambitious', LV.LEVERS, dict(LV.LEVER_NAMES), lambda S: {L: 'ambitious' for L in S}),
              ('levers_tl', LV.LEVERS, dict(LV.LEVER_NAMES), lambda S: {L: 'tl' for L in S}),
-             ('tl_from_p5_moderate', LV.TL_COMPONENTS, dict(LV.TL_NAMES), lambda S: LV.tl_levels(S, 'moderate'))]
+             (TL_GAME, LV.TL_COMPONENTS, dict(LV.TL_NAMES), lambda S: LV.tl_levels(S, 'moderate'))]
     shap_rows, sub_rows, shap_exact = [], [], {}
     for game, players, names, levels_of in games:
         vals = {m: {} for m in SHAPLEY_METRICS}
@@ -739,17 +745,17 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
                               level='tl' if lam == 'tl' else {0.0: 'reference', 0.5: 'moderate', 1.0: 'ambitious'}.get(
                                   float(lam), ''), **quick(ref, R)))
 
-    # ---- back-cast (P5, TL, Reference) and solution space ----
+    # ---- back-cast (the Pathways, TL, Reference) and solution space ----
     R0 = get(REFERENCE, {})
     bc0, split0 = backcast(ref, R0, REFERENCE)
     bar, batp = ref['b_ar'].sum(), ref['b_atp'].sum()
     bcs = {REFERENCE: bc0}
-    for nm, levels in (('P5-moderate', LV.pathway_levers('P5', 'moderate')),
-                       ('P5-ambitious', LV.pathway_levers('P5', 'ambitious')), ('TL', TL_ALL)):
+    for nm, levels in ((run_name(LV.PATHWAY, 'moderate'), LV.pathway_levers(LV.PATHWAY, 'moderate')),
+                       (run_name(LV.PATHWAY, 'ambitious'), LV.pathway_levers(LV.PATHWAY, 'ambitious')), ('TL', TL_ALL)):
         bcs[nm], _ = backcast(ref, get(REFERENCE, levels), nm)
     space = solution_space(split0, bar, batp)
     markers = []
-    for nm, levels in ([(f'{P}-{s}', LV.pathway_levers(P, s)) for P in ('P1', 'P2', 'P3', 'P4', 'P5')
+    for nm, levels in ([(run_name(P, s), LV.pathway_levers(P, s)) for P in tuple(LV.STRATEGIES) + (LV.PATHWAY,)
                         for s in LV.SETTINGS] + [('TL', TL_ALL)]):
         Rp = get(REFERENCE, levels)
         d, i = effective_coordinates(linear_split(ref, Rp), split0)
@@ -763,6 +769,7 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
 
     # ---- waterfalls ----
     wf = pd.concat([waterfall(ref, get, s) for s in LV.SETTINGS], ignore_index=True)
+    seq_vs_shap = sequential_vs_shapley(wf, pd.DataFrame(shap_rows))
 
     # ---- per-lever annual carbon (single-lever runs) and the re-occupation log of the TL runs ----
     lever_annual = []
@@ -779,16 +786,17 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
         for i, y in enumerate(ref['years']):
             if y >= WINDOW[0]:
                 reocc_log.append(dict(run=nm, year=int(y), need=ro['need'][i], gross_after_payback=ro['gross'][i],
-                                      released_tl3=ro['released_tl3'][i], released_tl4=ro['released_tl4'][i],
+                                      released_tl1=ro['released_tl1'][i], released_tl2=ro['released_tl2'][i],
                                       share=ro['share_by_year'][i], reoccupied=ro['reoccupied'][i],
-                                      reoccupied_tl3=ro['reoccupied_tl3'][i], reoccupied_tl4=ro['reoccupied_tl4'][i],
+                                      reoccupied_tl1=ro['reoccupied_tl1'][i], reoccupied_tl2=ro['reoccupied_tl2'][i],
                                       release_binds=bool(ro['release_binds'][i]), built=ro['built'][i],
-                                      cumulative_released=float(np.sum((ro['released_tl3'] + ro['released_tl4'])[:i + 1])),
+                                      cumulative_released=float(np.sum((ro['released_tl1'] + ro['released_tl2'])[:i + 1])),
                                       cumulative_reoccupied=float(np.sum(ro['reoccupied'][:i + 1]))))
     out = dict(params=params, runs=runs_df, annual=pd.DataFrame(annual), bands=bands_df,
                bands_annual=pd.DataFrame(bands_annual), shapley=pd.DataFrame(shap_rows),
                shapley_subsets=pd.DataFrame(sub_rows), shapley_exact=shap_exact, backcast=backcast_out, space=space,
-               lambda_sweep=pd.DataFrame(sweep), waterfall=wf, lever_annual=pd.DataFrame(lever_annual),
+               lambda_sweep=pd.DataFrame(sweep), waterfall=wf, sequential_vs_shapley=seq_vs_shap,
+               lever_annual=pd.DataFrame(lever_annual),
                reoccupation_log=pd.DataFrame(reocc_log), ctxs=ctxs, states=states, cache=cache, get=get,
                tl_levels=TL_ALL, seconds=time.time() - t0)
     out['ordering'] = ordering(out)
@@ -798,14 +806,17 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
 
 
 def waterfall(ctx, get, setting):
-    """The sequential path Reference -> +P1 -> +P2 -> +P3 -> +P4 (= P5 at `setting`) -> +TL1 ... +TL9 (= TL), every
-    step a cached run, each step's change split exactly into the in-scope demand bands."""
+    """The sequential path in PAS 2080 hierarchy order (MODEL v3.3.0): (a) Reference -> +L1 -> ... -> +L9 at `setting`
+    (= the Moderate / Ambitious Pathway), (b) -> +TL1 ... +TL9 (= TL); every step a cached run, each step's change
+    split exactly into the in-scope demand bands; each step is credited with what remains after the higher-priority
+    measures (order-dependent; the order-free values are the Shapley values)."""
     bar = float(np.sum(ctx['b_ar'])) / M6
     steps = [('REF', N.SCENARIOS['REF'], {})]
     acc = {}
-    for P in ('P1', 'P2', 'P3', 'P4'):
-        acc.update(LV.pathway_levers(P, setting))
-        steps.append((P, f'+ {P} {N.PATHWAYS[P]}' + (' (= P5 Combined)' if P == 'P4' else ''), dict(acc)))
+    for L in LV.LEVERS:
+        acc[L] = setting
+        steps.append((L, f'+ {L} {N.LEVERS[L]}' + (f' (= {N.PATHWAY_RUNS[run_name(LV.PATHWAY, setting)]})'
+                                                     if L == LV.LEVERS[-1] else ''), dict(acc)))
     for k in range(1, len(LV.TL_COMPONENTS) + 1):
         t = LV.TL_COMPONENTS[k - 1]
         steps.append((t, f'+ {t} {N.TL[t]}' + (' (= TL)' if k == len(LV.TL_COMPONENTS) else ''),
@@ -828,13 +839,37 @@ def waterfall(ctx, get, setting):
     return pd.DataFrame(rows)
 
 
+def sequential_vs_shapley(wf, shap):
+    """MODEL v3.3.0 diagnostics: per lever (Moderate, Ambitious; from the Reference) and per TL step (from the Moderate
+    Pathway), the sequential waterfall step (PAS 2080 order; carbon reduction, kt) against the order-free Shapley
+    value of the same player in its game (levers_moderate, levers_ambitious, TL_GAME). The Ambitious waterfall's TL
+    steps start from the Ambitious Pathway, which has no Shapley game; their Shapley column is empty."""
+    sh = shap[shap['metric'] == 'carbon_kt'].set_index(['game', 'player'])['reduction']
+    rows = []
+    for setting in LV.SETTINGS:
+        g = wf[wf['setting'] == setting].groupby(['step', 'step_id'])['total_carbon_kt'].first().reset_index()
+        for i in range(1, len(g)):
+            pid = g.loc[i, 'step_id']
+            seq = float(g.loc[i - 1, 'total_carbon_kt'] - g.loc[i, 'total_carbon_kt'])
+            is_tl = pid in LV.TL_COMPONENTS
+            game = (TL_GAME if setting == 'moderate' else None) if is_tl else f'levers_{setting}'
+            shv = float(sh.loc[(game, pid)]) if game is not None else float('nan')
+            rows.append(dict(setting=setting, part='TL from the Pathway' if is_tl else 'levers from the Reference',
+                             player=pid, name=N.TL[pid] if is_tl else N.LEVERS[pid],
+                             strategy='' if is_tl else LV.LEVER_STRATEGY[pid], game=game or '',
+                             sequential_reduction_kt=seq, shapley_reduction_kt=shv,
+                             sequential_minus_shapley_kt=seq - shv if game else float('nan'),
+                             order=i))
+    return pd.DataFrame(rows)
+
+
 # ============================================================
 # CHECKS (STOP conditions)
 # ============================================================
 def ordering(res):
     """Reference >= Moderate >= Ambitious >= TL per lever, typology and year, on each lever's native quantity as it
-    enters the engine (single-lever runs): L1 dwelling size; L2 OLF; L3 households; L4 vacancy rate; L5 demolition
-    and residual rates; L6 A1-A3 per m2; L7 A4-A5 per m2; L8 soil factor; L9 soil-bearing share. Also reported (not a
+    enters the engine (single-lever runs): L4 dwelling size; L5 OLF; L1 households; L2 vacancy rate; L3 demolition
+    and residual rates; L8 A1-A3 per m2; L9 A4-A5 per m2; L7 soil factor; L6 soil-bearing share. Also reported (not a
     STOP): the annual carbon of the single-lever runs by year, and asserted: their cumulative carbon."""
     ref = res['ctxs'][REFERENCE]
     get = res['get']
@@ -845,23 +880,23 @@ def ordering(res):
     def q(L, R):
         fi, info, E = R['inputs'], R['info'], R['E']
         bt = lambda a: np.broadcast_to(np.asarray(a, float), (len(years),))
-        if L == 'L1':
-            return {t: bt(fi['size'][t]) for t in typ}
-        if L == 'L2':
-            return {t: bt(fi['olf'][t]) for t in typ}
-        if L == 'L3':
-            return {'all': np.asarray(info['hh'], float)}
         if L == 'L4':
-            return {'all': bt(fi['v'])}
+            return {t: bt(fi['size'][t]) for t in typ}
         if L == 'L5':
+            return {t: bt(fi['olf'][t]) for t in typ}
+        if L == 'L1':
+            return {'all': np.asarray(info['hh'], float)}
+        if L == 'L2':
+            return {'all': bt(fi['v'])}
+        if L == 'L3':
             return {'demolition': bt(fi['rate_demol']), 'residual': bt(fi['rate_unc'])}
-        if L == 'L6':
-            return {t: bt(info['a13'][t]) for t in typ}
-        if L == 'L7':
-            return {t: bt(info['a45'][t]) for t in typ}
         if L == 'L8':
-            return {t: bt(fi.get('soil', ref['soil'])[t]) for t in typ}
+            return {t: bt(info['a13'][t]) for t in typ}
         if L == 'L9':
+            return {t: bt(info['a45'][t]) for t in typ}
+        if L == 'L7':
+            return {t: bt(fi.get('soil', ref['soil'])[t]) for t in typ}
+        if L == 'L6':
             return {'all': np.asarray(E['soil_share'], float)}
     out = dict(violations=[], carbon_year_reversals=[], cumulative=[])
     for L in LV.LEVERS:
@@ -871,7 +906,7 @@ def ordering(res):
             for k in Q[a]:
                 x, y = Q[a][k], Q[b][k]
                 bad = (y[1:] > x[1:] * (1 + ORDER_RTOL) + 1e-15)
-                if L == 'L9':
+                if L == 'L6':
                     bad = (y[1:] > x[1:] + 1e-12)
                 if bad.any():
                     out['violations'].append(dict(lever=L, typology=k, pair=f'{a}>={b}',
@@ -935,13 +970,13 @@ def checks(res):
         if any((np.asarray(info['a13'][t]) < 0).any() or (np.asarray(info['a45'][t]) < 0).any() for t in c['typ']):
             stops.append(f'negative material intensity: {lab}')
         ro = info['reoccupation']
-        rel_ = (ro['released_tl3'] + ro['released_tl4'])
+        rel_ = (ro['released_tl1'] + ro['released_tl2'])
         if (np.cumsum(ro['reoccupied']) > np.cumsum(rel_) + REOCCUPATION_TOL * max(ro['R'], 1.0)).any():
             stops.append(f'cumulative re-occupied > released: {lab}')
         if not info['tl']:
             v = implied_vacancy(E)[1:]
-            if (v < LV.L4_VACANCY_FLOOR).any():
-                stops.append(f'implied vacancy below {LV.L4_VACANCY_FLOOR:.1%}: {lab}')
+            if (v < LV.L2_VACANCY_FLOOR).any():
+                stops.append(f'implied vacancy below {LV.L2_VACANCY_FLOOR:.1%}: {lab}')
             if (E['d_hh_raw'][1:] < 0).any():
                 stops.append(f'households decline in a non-TL run: {lab}')
         S = E['pop'] / E['hh']
@@ -964,8 +999,9 @@ def checks(res):
     runs = res['runs']
     for scen in res['ctxs']:
         r = runs[runs['scenario'] == scen].set_index('run')
-        if not r.loc['TL', 'carbon_kt'] <= r.loc['P5-ambitious', 'carbon_kt'] <= r.loc['P5-moderate', 'carbon_kt']:
-            stops.append(f'{scen}: TL <= P5 Ambitious <= P5 Moderate violated')
+        if not (r.loc['TL', 'carbon_kt'] <= r.loc[run_name(LV.PATHWAY, 'ambitious'), 'carbon_kt']
+                <= r.loc[run_name(LV.PATHWAY, 'moderate'), 'carbon_kt']):
+            stops.append(f'{scen}: TL <= Ambitious Pathway <= Moderate Pathway violated')
     if stops:
         raise SystemExit('STOP:\n  ' + '\n  '.join(stops[:30]))
     rep['overbuild_excess_max_abs_diff_between_runs'] = excess_diff
@@ -999,7 +1035,7 @@ def _json(obj, name):
 
 
 def tl_summary(res):
-    """theoretical_limit.json: definition, Level-4 values, re-occupation (R3, R4, G+, binding years), indicators."""
+    """theoretical_limit.json: definition, Level-4 values, re-occupation (R1, R2, G+, binding years), indicators."""
     ref = res['ctxs'][REFERENCE]
     yy = np.asarray(ref['years'])
     out = {}
@@ -1008,12 +1044,12 @@ def tl_summary(res):
         ro, E = R['info']['reoccupation'], R['E']
         S = E['pop'] / E['hh']
         out[nm] = dict(
-            R3=ro['R3'], R4=ro['R4'], R=ro['R'], G_plus=ro['G_plus'], share_of_need=ro['share'],
+            R1=ro['R1'], R2=ro['R2'], R=ro['R'], G_plus=ro['G_plus'], share_of_need=ro['share'],
             reoccupied=ro['reoccupied_total'], surplus_vacant_2050=ro['surplus_vacant_2050'],
             R_exceeds_G_plus=bool(ro['R'] > ro['G_plus']), release_binding_years=[int(y) for y in yy[ro['release_binds']]],
             nonpositive_need_years=ro['nonpositive_need_years'],
-            reoccupied_attributed=dict(TL3=float(ro['reoccupied_tl3'].sum()), TL4=float(ro['reoccupied_tl4'].sum()),
-                                       rule='in proportion R3 : R4'),
+            reoccupied_attributed=dict(TL1=float(ro['reoccupied_tl1'].sum()), TL2=float(ro['reoccupied_tl2'].sum()),
+                                       rule='in proportion R1 : R2'),
             household_size_by_year={int(y): float(S[i]) for i, y in enumerate(yy) if y >= 2026},
             mean_new_dwelling_size_m2={int(y): float(E['D'][i]) for i, y in enumerate(yy) if y >= 2026},
             m2_per_person_new_dwellings={int(y): float(E['D'][i] / S[i]) for i, y in enumerate(yy) if y >= 2026},
@@ -1023,7 +1059,7 @@ def tl_summary(res):
                 definition=dict(levels='every lever at Level 4', adoption='normalised logistic 2026 -> 2035 (as every '
                                 'level)', sensitivity=f'{LV.TL_INSTANT_LABEL}: every limit at full strength from 2027',
                                 components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS},
-                                note='TL9 = 100% brownfield makes TL8 zero within TL'),
+                                note='TL6 = 100% brownfield makes TL7 zero within TL'),
                 strength=res['params']['tl_strength'], runs=out)
 
 
@@ -1037,6 +1073,7 @@ def write(res, identity):
     _csv(res['space'], 'solution_space.csv')
     _csv(res['lambda_sweep'], 'lambda_sweep.csv')
     _csv(res['waterfall'], 'waterfall.csv')
+    _csv(res['sequential_vs_shapley'], 'sequential_vs_shapley.csv')
     _csv(res['lever_annual'], 'lever_annual.csv')
     _csv(res['reoccupation_log'], 'reoccupation_log.csv')
     _json(res['backcast'], 'backcast.json')

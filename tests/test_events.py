@@ -34,7 +34,9 @@ LEGACY = dict(OVERBUILD_ABSORPTION_END=None)
 
 @pytest.fixture(scope='module')
 def tr_frozen():
-    return run_boss(DECARB_MODE='none', DECARB_A45='held')
+    # MODEL v3.1.0: these identities concern the timing of B (life-cycle timing), on the instant emissions accounting
+    # (soil at conversion, no legacy); the inventory rule is checked against it below (soil conserved)
+    return run_boss(DECARB_MODE='none', DECARB_A45='held', ACCOUNTING='instant')
 
 
 def test_event_lines_reproduce_the_item_table():
@@ -113,9 +115,17 @@ def test_within_window_plus_committed_equals_whole_life(tr_frozen):
 
 def test_soil_unchanged(tr_frozen):
     B = run_boss(**WHOLE_LIFE)
-    T = run_boss()
+    T = run_boss(ACCOUNTING='instant')
     assert B['_soil'] == T['_soil'] == tr_frozen['_soil']
     assert np.array_equal(B['flow_annual']['SOIL'].values, T['flow_annual']['SOIL'].values)
+
+
+def test_inventory_soil_conserved(tr_frozen):
+    """MODEL v3.1.0: under ACCOUNTING 'inventory' the soil of the 2026-2050 conversions is the soil emitted in the
+    window + 'Soil, after 2050' (inventory.spread), equal to the instant soil; the upfront A1-A5 is unchanged."""
+    I = run_boss(DECARB_MODE='none', DECARB_A45='held')
+    assert I['_soil'] + I['soil_after_2050'] == pytest.approx(tr_frozen['_soil'], rel=1e-12)
+    assert I['_upfront'] == pytest.approx(tr_frozen['_upfront'], rel=1e-12)
 
 
 def test_a45_generic_path():

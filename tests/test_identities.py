@@ -134,13 +134,18 @@ def test_material_plus_soil_equals_typology_carbon(B):
     assert close(fa.sum(axis=1).values, B['carbon_total_typ'].iloc[1:].sum(axis=1).values)
 
 
+def _legacy_kt(B):
+    """MODEL v3.1.0: the legacy (pre-2026 activity, ACCOUNTING 'inventory') 2026-2050, kt; zero under 'instant'."""
+    return float(B['carbon_legacy'].iloc[1:].sum().sum()) / 1e6
+
+
 def test_stages_plus_soil_equal_total_carbon(B):
     tot = B['tot_carbon_median']
-    assert abs(B['_st_tot'] + B['_soil'] / 1e6 - tot) < 1e-6 * tot
+    assert abs(B['_st_tot'] + B['_soil'] / 1e6 + _legacy_kt(B) - tot) < 1e-6 * tot
 
 
 def test_demand_band_carbon_sums_to_total(B):
-    assert abs(B['dem_mat'].values.sum() / 1e6 - B['tot_carbon_median']) < 1e-6 * B['tot_carbon_median']
+    assert abs(B['dem_mat'].values.sum() / 1e6 + _legacy_kt(B) - B['tot_carbon_median']) < 1e-6 * B['tot_carbon_median']
 
 
 # ---------------------------------------------------------------- hygiene ---
@@ -158,7 +163,8 @@ def test_figure_bands_in_scope_sum_to_total(B):
     (naming.NEGATIVE_BANDS) are negative."""
     import naming as N
     for key, ref in (('gfa', B['evol_typ_total'].sum(axis=1).values[1:] / 1e6),
-                     ('carbon', B['carbon_total_typ'].sum(axis=1).values[1:] / 1e6)):
+                     ('carbon', (B['carbon_total_typ'].sum(axis=1).values[1:]
+                                 + B['carbon_legacy'].sum(axis=1).values[1:]) / 1e6)):   # MODEL v3.1.0: + legacy
         bands, total = B['fig_bands'][key]
         assert close(total, ref, rel=1e-12)
         assert all(np.all(np.asarray(v) >= 0) for _, v, b in bands if b not in N.NEGATIVE_BANDS)

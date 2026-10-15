@@ -22,7 +22,7 @@ RTOL = 1e-12
 def test_legacy_reference_reproduces_v2_1():
     with gzip.open(C.OUT, 'rt') as f:
         lock = json.load(f)
-    B = run_boss(OVERBUILD_ABSORPTION_END=None)
+    B = run_boss(OVERBUILD_ABSORPTION_END=None, ACCOUNTING='instant')   # run_all.py --reference-legacy (MODEL v3.1.0)
     cur = C.state_arrays(B)
     missing = sorted(set(lock['values']) - set(cur))
     assert not missing, missing[:5]

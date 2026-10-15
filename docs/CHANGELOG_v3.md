@@ -364,13 +364,38 @@ reach LoE AR ≤ 1 (Fig6).
 * Timings (full compute, s): total 1316.8; montecarlo 156.8, boundaries 279.2, pathways 15.2, pathways_mc 781.4,
   accounting_rules 9.6.
 
+## Tests (v3.1)
+
+* New `tests/test_model_v3_1.py`: A2 equivalence (every one of the 52 v3.0 runs recomputed in process on ACCOUNTING
+  'instant': floor area, carbon, LoE AR, LoE AtP and B_AR equal to 1e-9; fixture `tests/fixtures/v3_0_totals.json`,
+  captured from `outputs/data/pathways/runs.csv` at the v3.0.0 commit d084e09 by `tests/capture_v3_0_totals.py`);
+  legacy identical in every run; band sums (projection, every pathway run, history) to 1e-9; gross vacancy band >= 0,
+  release bands <= 0, surplus only in 2050; Fig6 analytic LoE at every marker = the run's LoE AR (1e-9); soil
+  kernel conservation; the accounting-rules table.
+* v3.1 lock `tests/regression_model_v3_1.json` (30 deterministic files, adds the history bands and the unexplained
+  sum; Monte Carlo hashes for both profiles); the v3.0 lock file is kept for the record.
+* Updated for the v3.1 accounting (each difference checked first, never loosened):
+  * the legacy v2.1 lock runs with `ACCOUNTING = 'instant'`, as `run_all.py --reference-legacy` does (it passes);
+  * three carbon identities (stages + soil, demand bands by material, in-scope figure bands) add the legacy term: their
+    gap was exactly the legacy, 6,552.19 kt;
+  * the B-timing identities of `test_events.py` (within window + committed = whole life; soil unchanged) run on the
+    instant rule they describe; new `test_inventory_soil_conserved`: inventory soil in the window + soil after 2050 =
+    instant soil (1e-12), upfront unchanged;
+  * `test_aesa.py`: the AR base on the projection's rule (`boundaries.window_base`);
+  * `test_soil.py`: conversions and emitted soil separately (`soil_conv`, `inventory.spread`);
+  * `test_figures_v3.py`: `vacancy_released` among the negative bands; a boundary outside the plotted range may be
+    stated instead of drawn (Fig6, `boundary_outside`).
+* Result: 202 passed, 2 skipped (the local-only AESA workbook), in both profiles. A first pass, run once, showed the
+  six stale tests above; nothing in the model was changed to pass them.
+
 ## Checks (STOP conditions, v3.1)
 
 | condition | result |
 |---|---|
-| legacy v2.1 lock (instant) | passes |
+| legacy v2.1 lock (instant) | passes (1e-12) |
 | A2 equivalence (every L/P/Reference/TL total, instant vs v3.0) | passes (max difference 0.0) |
 | history coverage for the default rule | full (2016 window needs 1997+) |
 | legacy band differs between runs | no |
 | material / stage values negative | none |
 | ordering / Shapley efficiency | holds |
+| built ≥ 0 / band sums | holds (tests) |

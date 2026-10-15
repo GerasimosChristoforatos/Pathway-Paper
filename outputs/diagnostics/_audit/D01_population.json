@@ -1,6 +1,6 @@
 {
  "figure": "D01_population",
- "producer": "figures/__main__.py",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "",

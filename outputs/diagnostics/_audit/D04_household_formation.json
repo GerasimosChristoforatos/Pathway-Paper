@@ -1,6 +1,6 @@
 {
  "figure": "D04_household_formation",
- "producer": "Diagnostics.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Household size vs arrivals",
@@ -54,6 +54,7 @@
   "$\\mathdefault{30}$",
   "$\\mathdefault{40}$",
   "$\\mathdefault{50}$",
+  "$\\mathdefault{60}$",
   "$\\mathdefault{\u22120.01}$",
   "$\\mathdefault{\u22120.02}$",
   "$\\mathdefault{\u22120.03}$",
@@ -63,7 +64,7 @@
   "1992\u20132023 (census-benchmarked)",
   "2019 on: consent-derived",
   "2024",
-  "2024\u201325: consent-derived estimates, no census check",
+  "2024\u201325: consent-derived estimates, no census check (faint)",
   "2024\u201325: consent-derived, no census check",
   "2025",
   "Change in household size (persons per household)",
@@ -73,7 +74,9 @@
   "Household size vs arrivals",
   "Households (thousand per year)",
   "Households per consent",
+  "Negative part: outline in its colour, hanging from the top of the stack",
   "Net new households",
+  "Net total of a bar with a negative part",
   "New households per year, by source",
   "Population growth (thousand per year)",
   "a",
@@ -82,16 +85,21 @@
   "census-benchmarked",
   "r = +0.73, p = 2e-06"
  ],
- "note": "Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885\u20130.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024\u20132025 hatched (consent-derived estimates, no census check); projection annual, faded, from 2026; the line is the net of the two parts. A negative part (household-size change, where households grow larger) is drawn down from the top of the stack, so each column ends at its net total (short tick).",
+ "note": "Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885\u20130.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024\u20132025 faint (consent-derived estimates, no census check); projection annual, faded, from 2026; the line is the net of the two parts. A negative part (household-size change, where households grow larger) is drawn as an outlined segment hanging from the top of the stack, so each column ends at its net total (short tick).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
  "boundary_zones": false,
  "white_segment_edges": 0,
+ "source": [
+  "figure_source/D04_household_formation.json"
+ ],
  "atp_linestyles": [],
- "negative_band_segments": 27,
+ "negative_band_segments": 0,
  "net_total_ticks": 11,
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
- "retired_colours": []
+ "retired_colours": [],
+ "negative_bar_segments": 27,
+ "negative_bar_segments_filled": 0
 }

@@ -1,0 +1,216 @@
+{
+  "violations": [],
+  "carbon_year_reversals": [
+    {
+      "lever": "L3",
+      "pair": "ambitious>=tl",
+      "years": [
+        2039,
+        2040,
+        2041,
+        2042,
+        2043
+      ],
+      "max_kt": 64.43092357660758
+    },
+    {
+      "lever": "L4",
+      "pair": "ambitious>=tl",
+      "years": [
+        2031
+      ],
+      "max_kt": 15.420871857654571
+    }
+  ],
+  "cumulative": [
+    {
+      "lever": "L1",
+      "pair": "reference>=moderate",
+      "carbon_a_kt": 20614.89594935651,
+      "carbon_b_kt": 19875.163629592033,
+      "ok": true
+    },
+    {
+      "lever": "L1",
+      "pair": "moderate>=ambitious",
+      "carbon_a_kt": 19875.163629592033,
+      "carbon_b_kt": 19090.218156229046,
+      "ok": true
+    },
+    {
+      "lever": "L1",
+      "pair": "ambitious>=tl",
+      "carbon_a_kt": 19090.218156229046,
+      "carbon_b_kt": 15168.767976755147,
+      "ok": true
+    },
+    {
+      "lever": "L2",
+      "pair": "reference>=moderate",
+      "carbon_a_kt": 20614.89594935651,
+      "carbon_b_kt": 19247.440113982266,
+      "ok": true
+    },
+    {
+      "lever": "L2",
+      "pair": "moderate>=ambitious",
+      "carbon_a_kt": 19247.440113982266,
+      "carbon_b_kt": 17879.984278608033,
+      "ok": true
+    },
+    {
+      "lever": "L2",
+      "pair": "ambitious>=tl",
+      "carbon_a_kt": 17879.984278608033,
+      "carbon_b_kt": 17031.319349762507,
+      "ok": true
+    },
+    {
+      "lever": "L3",
+      "pair": "reference>=moderate",
+      "carbon_a_kt": 20614.89594935651,
+      "carbon_b_kt": 19918.61189855534,
+      "ok": true
+    },
+    {
+      "lever": "L3",
+      "pair": "moderate>=ambitious",
+      "carbon_a_kt": 19918.61189855534,
+      "carbon_b_kt": 19232.802121740737,
+      "ok": true
+    },
+    {
+      "lever": "L3",
+      "pair": "ambitious>=tl",
+      "carbon_a_kt": 19232.802121740737,
+      "carbon_b_kt": 16000.562094535437,
+      "ok": true
+    },
+    {
+      "lever": "L4",
+      "pair": "reference>=moderate",
+      "carbon_a_kt": 20614.89594935651,
+      "carbon_b_kt": 19942.65899633144,
+      "ok": true
+    },
+    {
+      "lever": "L4",
+      "pair": "moderate>=ambitious",
+      "carbon_a_kt": 19942.65899633144,
+      "carbon_b_kt": 19279.918448964992,
+      "ok": true
+    },
+    {
+      "lever": "L4",
+      "pair": "ambitious>=tl",
+      "carbon_a_kt": 19279.918448964992,
+      "carbon_b_kt": 15878.473370630329,
+      "ok": true
+    },
+    {
+      "lever": "L5",
+      "pair": "reference>=moderate",
+      "carbon_a_kt": 20614.89594935651,
+      "carbon_b_kt": 20069.04707800951,
+      "ok": true
+    },
+    {
+      "lever": "L5",
+      "pair": "moderate>=ambitious",
+      "carbon_a_kt": 20069.04707800951,
+      "carbon_b_kt": 19523.19820666251,
+      "ok": true
+    },
+    {
+      "lever": "L5",
+      "pair": "ambitious>=tl",
+      "carbon_a_kt": 19523.19820666251,
+      "carbon_b_kt": 17807.12188075549,
+      "ok": true
+    },
+    {
+      "lever": "L6",
+      "pair": "reference>=moderate",
+      "carbon_a_kt": 20614.89594935651,
+      "carbon_b_kt": 19717.840904759294,
+      "ok": true
+    },
+    {
+      "lever": "L6",
+      "pair": "moderate>=ambitious",
+      "carbon_a_kt": 19717.840904759294,
+      "carbon_b_kt": 18820.785860162076,
+      "ok": true
+    },
+    {
+      "lever": "L6",
+      "pair": "ambitious>=tl",
+      "carbon_a_kt": 18820.785860162076,
+      "carbon_b_kt": 17216.482366091976,
+      "ok": true
+    },
+    {
+      "lever": "L7",
+      "pair": "reference>=moderate",
+      "carbon_a_kt": 20614.89594935651,
+      "carbon_b_kt": 19974.40472701152,
+      "ok": true
+    },
+    {
+      "lever": "L7",
+      "pair": "moderate>=ambitious",
+      "carbon_a_kt": 19974.40472701152,
+      "carbon_b_kt": 19333.913504666525,
+      "ok": true
+    },
+    {
+      "lever": "L7",
+      "pair": "ambitious>=tl",
+      "carbon_a_kt": 19333.913504666525,
+      "carbon_b_kt": 18238.552473741034,
+      "ok": true
+    },
+    {
+      "lever": "L8",
+      "pair": "reference>=moderate",
+      "carbon_a_kt": 20614.89594935651,
+      "carbon_b_kt": 20453.471279518857,
+      "ok": true
+    },
+    {
+      "lever": "L8",
+      "pair": "moderate>=ambitious",
+      "carbon_a_kt": 20453.471279518857,
+      "carbon_b_kt": 20292.04660968121,
+      "ok": true
+    },
+    {
+      "lever": "L8",
+      "pair": "ambitious>=tl",
+      "carbon_a_kt": 20292.04660968121,
+      "carbon_b_kt": 19414.879729241795,
+      "ok": true
+    },
+    {
+      "lever": "L9",
+      "pair": "reference>=moderate",
+      "carbon_a_kt": 20614.89594935651,
+      "carbon_b_kt": 20055.759939341195,
+      "ok": true
+    },
+    {
+      "lever": "L9",
+      "pair": "moderate>=ambitious",
+      "carbon_a_kt": 20055.759939341195,
+      "carbon_b_kt": 19504.291679645998,
+      "ok": true
+    },
+    {
+      "lever": "L9",
+      "pair": "ambitious>=tl",
+      "carbon_a_kt": 19504.291679645998,
+      "carbon_b_kt": 18403.599102265376,
+      "ok": true
+    }
+  ]
+}

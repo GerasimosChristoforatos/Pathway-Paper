@@ -1,11 +1,18 @@
 {
  "figure": "D28_pathways_annual",
- "producer": "pathways.py",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
-   "title": "",
+   "title": "Moderate",
    "xlabel": "",
    "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Ambitious",
+   "xlabel": "",
+   "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   }
@@ -28,31 +35,39 @@
   "$\\mathdefault{800}$",
   "Ability to pay (AtP)",
   "Acquired rights (AR)",
+  "Ambitious",
+  "Boundary exceeded (above AR)",
   "Embodied carbon (kt CO\u2082e per year)",
-  "P1 Space per person, Ambitious",
-  "P1 Space per person, Moderate",
-  "P2 Existing stock, Ambitious",
-  "P2 Existing stock, Moderate",
-  "P3 Construction, Ambitious",
-  "P3 Construction, Moderate",
-  "P4 Land, Ambitious",
-  "P4 Land, Moderate",
-  "P5 Combined, Ambitious",
-  "P5 Combined, Moderate",
-  "Reference"
+  "Moderate",
+  "P1 Space per person",
+  "P2 Existing stock",
+  "P3 Construction",
+  "P4 Land",
+  "P5 Combined",
+  "Reference",
+  "Theoretical limit",
+  "Within AR only (between AtP and AR)",
+  "Within both budgets (below AtP)",
+  "a",
+  "b"
  ],
- "note": "Reference variant; Moderate solid, Ambitious dashed. Construction (A1\u2013A5 and soil) in the construction year plus maintenance (B2, B4) within 2026\u20132050. 2026 is observed and identical in every run; the levers follow the adopted logistic adoption path (full roll-out by 2035 (adopted)).",
+ "note": null,
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,
  "boundary_zones": true,
  "white_segment_edges": 0,
+ "source": [
+  "pathways/annual.csv"
+ ],
  "atp_linestyles": [
   "dotted"
  ],
  "negative_band_segments": 0,
  "net_total_ticks": 0,
  "band_rectangles_below_zero": 0,
- "tl_colour_used": false,
- "retired_colours": []
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
 }

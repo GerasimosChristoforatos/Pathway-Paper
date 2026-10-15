@@ -1,0 +1,53 @@
+{
+ "figure": "Fig8_shapley_levers",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e; exact Shapley value)",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "0",
+  "1,000",
+  "1,500",
+  "2,000",
+  "2,500",
+  "3,000",
+  "3,500",
+  "500",
+  "Ambitious (Level 3)",
+  "L1 Dwelling size",
+  "L2 Design density",
+  "L3 Household size",
+  "L4 Vacancy",
+  "L5 Building lifetime",
+  "L6 Material carbon",
+  "L7 Construction-stage carbon",
+  "L8 Soil-aware planning",
+  "L9 Brownfield development",
+  "Moderate (Level 2)",
+  "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e; exact Shapley value)",
+  "Theoretical limit (Level 4)"
+ ],
+ "note": "Sum over levers (= Reference - P5 / TL, exact): moderate 5,542 kt, ambitious 9,694 kt, tl 16,257 kt; 512 subsets per setting.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/shapley.csv"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

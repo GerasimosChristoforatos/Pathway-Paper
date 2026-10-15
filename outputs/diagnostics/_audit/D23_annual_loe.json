@@ -1,6 +1,6 @@
 {
  "figure": "D23_annual_loe",
- "producer": "boundaries.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Level of exceedance, Acquired rights (AR)",
@@ -47,6 +47,9 @@
  "boundary_drawn": true,
  "boundary_zones": true,
  "white_segment_edges": 0,
+ "source": [
+  "figure_source/D23_annual_loe.json"
+ ],
  "atp_linestyles": [
   "dotted"
  ],
@@ -54,5 +57,7 @@
  "net_total_ticks": 0,
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
- "retired_colours": []
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
 }

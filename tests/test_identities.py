@@ -86,7 +86,7 @@ def test_forward_bands_sum_to_total(B, pct):
     + RV (negative) == total, every year including the 2025 anchor."""
     R = B['results'][pct]
     parts = (R['growth'] + R['hs_pos'] + R['extra'] + R['vac'] + R['repl'] + R['unc'] + R['rv']
-             + R['join'] + R['wave'])
+             + R['join'] + R['absorbed'] + R['wave'])
     assert close(parts, R['total'])
 
 
@@ -153,32 +153,35 @@ def test_boss_is_deterministic_and_leaks_no_state(B):
 
 
 def test_figure_bands_in_scope_sum_to_total(B):
-    """boss_04-06, diag_4: the in-scope demand bands (each scaled by 1 - RV share) are
-    non-negative and add up exactly to the typology total, every year 2026-2050, for
-    floor area and carbon."""
+    """The in-scope demand bands (each scaled by 1 - RV share) add up exactly to the typology total, every year
+    2026-2050, for floor area and carbon; MODEL v3.0.0: only the bands negative by construction
+    (naming.NEGATIVE_BANDS) are negative."""
+    import naming as N
     for key, ref in (('gfa', B['evol_typ_total'].sum(axis=1).values[1:] / 1e6),
                      ('carbon', B['carbon_total_typ'].sum(axis=1).values[1:] / 1e6)):
         bands, total = B['fig_bands'][key]
         assert close(total, ref, rel=1e-12)
-        assert all(np.all(np.asarray(v) >= 0) for _, v, _ in bands)
+        assert all(np.all(np.asarray(v) >= 0) for _, v, b in bands if b not in N.NEGATIVE_BANDS)
+        assert all(np.all(np.asarray(v) <= 0) for _, v, b in bands if b in N.NEGATIVE_BANDS)
         assert close(sum(v for _, v, _ in bands), ref, rel=1e-12)
 
 
 def test_band_stack_is_the_total(B):
-    """The band figures draw no separate total line (MODEL v1.0.0): the stack is the total. The
-    signed stack of plotting.signed_areas reaches exactly the in-scope total every year (annual
-    floor area, annual and cumulative carbon)."""
+    """MODEL v3.0.0 time-series sign rule (figures.draw.stack_series): positives stacked up from zero, negatives
+    down from zero; up + down equals the in-scope total every year (annual floor area, annual and cumulative carbon)
+    to 1e-12; the net is drawn as one black line."""
     import matplotlib.pyplot as plt
     import naming as N
-    import plotting
+    from figures import draw as plotting
     yrs = np.asarray(B['forecast_years'])[1:]
     cases = [B['fig_bands']['gfa'], B['fig_bands']['carbon'],
              ([(l, np.cumsum(v), c) for l, v, c in B['fig_bands']['carbon'][0]],
               np.cumsum(B['fig_bands']['carbon'][1]))]
     for bands, total in cases:
         fig, ax = plt.subplots()
-        up, dn = plotting.signed_areas(ax, yrs, [(b, v) for b, (_, v, _) in zip(N.BANDS_IN_SCOPE, bands)])
-        assert not ax.get_lines()                                  # no total line
+        up, dn = plotting.stack_series(ax, yrs, [(b, v) for b, (_, v, _) in zip(N.BANDS_IN_SCOPE, bands)],
+                                       net=np.asarray(total, float))
+        assert len([ln for ln in ax.get_lines() if ln.get_gid() == plotting.NET_GID]) == (1 if (dn < 0).any() else 0)
         plt.close(fig)
         assert close(up + dn, np.asarray(total, float), rel=1e-12)
 

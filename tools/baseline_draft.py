@@ -295,8 +295,11 @@ def register():
         ('2026 overbuild rule', f'{B.OVERBUILD_RULE}: 2026 building observed ({B.NOWCAST_METHOD})',
          'DATA (observed consents); method stated'),
         ('2026 overbuild from 2027', f'gap vs the {B.OVERBUILD_GAP_REF} requirement, fading at rho; booked as '
-         f'{B.OVERBUILD_BOOKING}, absorption {B.OVERBUILD_ABSORPTION:g}',
-         'JUDGEMENT (author decision); rho estimated; redevelopment, payback and gap-vs-2026 as sensitivities'),
+         f'{B.OVERBUILD_BOOKING}, absorbed by {B.OVERBUILD_ABSORPTION_END} (normalised logistic from '
+         f'{B.OVERBUILD_ABSORPTION_START})',
+         'THEORY: reversion to the equilibrium vacancy (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton '
+         '1992; Gabriel & Nothaft 2001) fixes the direction, not the speed; 2035 the common RECC window; never / by '
+         '2030 / by 2045, redevelopment booking and gap-vs-2026 as sensitivities'),
         ('Population 2026', 'observed' if B.NOWCAST_POPULATION else 'projected median',
          'DATA: Stats NZ ERP (see README)'),
         ('Household-size shape', f'Stats NZ {B.HH_SIZE_VARIANT}, anchored {B.S_ANCHOR_YEAR}, tail {B.S_TAIL}',
@@ -382,7 +385,7 @@ def _payback():
     if not os.path.exists(p):
         return None
     s = pd.read_csv(p).set_index('case')['floor_area_change_pct']
-    k = 'Temporary surplus with payback, absorption 0.20/yr'
+    k = 'Overbuild never absorbed (MODEL v2.1 Reference)'
     return float(s[k]) if k in s else None
 
 
@@ -502,9 +505,17 @@ def lines():
               f"rho = {nj['rho']:.2f} (the estimated persistence of departures from the calibrated identity). The "
               f"2027 requirement is used because the 2026 requirement is depressed by the one-off 2026 population "
               f"shortfall. The 2026 overbuild is STOCK-ADDING: the extra dwellings join the stock as additional vacant "
-              f"dwellings that are not absorbed (no payback), soil carbon loss applies (new footprints) and removals "
-              f"stay on the path of the replacement variant; {nj['overbuild_2026_dwellings_2026_2050']:+,.0f} "
-              f"dwellings over 2026-2050, on top of whichever replacement variant runs."
+              f"dwellings, soil carbon loss applies (new footprints) and removals stay on the path of the replacement "
+              f"variant. The surplus is absorbed by {nj.get('absorption_end')}: the remaining surplus U(t) = C(t) "
+              f"(1 - w(t)), C the cumulative excess and w the normalised logistic of the levers (w(2026) = 0, "
+              f"w >= 2035 = 1), and the absorbed part is built less (payback, capped at the year's building, any "
+              f"shortfall carried). Market excess {nj.get('excess_2026_2050', 0.0):+,.0f} and absorbed "
+              f"{-nj.get('absorbed_2026_2050', 0.0):+,.0f} dwellings over 2026-2050 "
+              f"(net {nj['overbuild_2026_dwellings_2026_2050']:+,.0f}), on top of whichever replacement variant runs. "
+              f"Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; "
+              f"Gabriel & Nothaft 2001) fixes the direction of the adjustment, the reversion of vacancy to its "
+              f"equilibrium rate, but not its speed: 2035 is the common RECC adoption window of the model and the "
+              f"speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045)."
               + (f" Implied stock vacancy (1 - households / (stock + cumulative 2026 overbuild)) peaks at "
                  f"{100 * nj['vacancy']['peak']:.2f}% "
                  f"in {nj['vacancy']['peak_year']} and is {100 * nj['vacancy']['v_2050']:.2f}% in 2050, against "
@@ -514,16 +525,16 @@ def lines():
               '', ((f"{_cap(vs)}. In 2050 implied stock vacancy is "
                     f"{100 * (nj['vacancy']['v_2050'] - nj['vacancy']['v_forward']):.1f} percentage point above the "
                     f"2023 rate"
-                    + (f"; with payback (absorption 0.20 a year) floor area is "
+                    + (f"; never absorbed (the MODEL v2.1 Reference) floor area would be "
                        f"{_pb:+.1f}%." if (_pb := _payback()) is not None else '.'))
                    if vs else ''),
-              '', 'Caveats: a permanent 2026 overbuild assumes the extra vacant dwellings are never absorbed; over '
+              '', 'Caveats: the absorption speed is not identified by the eight census vacancy observations; over '
                   '2018-2023 part of the excess building went to redevelopment and household formation instead. rho '
                   'is estimated on the calibrated identity, not on market cycles. Sensitivities: booking as '
                   'stock-neutral redevelopment'
                   + (f" (implied net removals then peak at {nj['redevelopment_sensitivity']['peak_removals']:,.0f} in "
                      f"{nj['redevelopment_sensitivity']['peak_year']})" if 'redevelopment_sensitivity' in nj else '')
-                  + ', payback (absorption 0.20 or 0.10 a year), and the gap measured against the 2026 '
+                  + ', absorption never, by 2030 or by 2045, and the gap measured against the 2026 '
                   'requirement.']
 
     # ---- material / stages (no by-typology reporting: typology is internal to the model) ----
@@ -646,8 +657,8 @@ def lines():
               f"({gap['boom_2018_2023']['vacancy_rate_rise_absorbed']:+,.0f}).",
               '', (f"The model takes 2026 building from the observed consents and carries the excess forward as "
                    f"the 2026 overbuild ({nj['e26']:+,.0f} dwellings in 2026, then gap_ref {nj['gap_ref']:+,.0f} "
-                   f"fading at rho = {nj['rho']:.2f}; {nj['overbuild_2026_dwellings_2026_2050']:+,.0f} dwellings over "
-                   f"2026-2050)."),
+                   f"fading at rho = {nj['rho']:.2f}; market excess {nj.get('excess_2026_2050', 0.0):+,.0f} dwellings over "
+                   f"2026-2050, absorbed by {nj.get('absorption_end')}, net {nj['overbuild_2026_dwellings_2026_2050']:+,.0f})."),
               '', f"[^low]: In {r1['scenario']} the requirement is {r1['model']:,.0f} and the gap "
                   f"{r1['gap']:+,.0f} = population {r1['population']:+,.0f} + pipeline {r1['pipeline']:+,.0f} + "
                   f"2026 consents above requirement {r1['residual']:+,.0f}."]
@@ -704,7 +715,8 @@ def lines():
          ('JUDGEMENT', f'Net replacement: in the Reference it fades from the 2018-2023 rate to the long-run '
                        f'rate with half-life {BB.REPLACEMENT_HALF_LIFE:g} yr; Low replacement and High replacement '
                        'bound it'),
-         ('JUDGEMENT', '2026 overbuild: stock-adding (vacant dwellings), never absorbed, fading at rho'),
+         ('JUDGEMENT', '2026 overbuild: stock-adding (vacant dwellings), fading at rho, absorbed by 2035 (logistic; '
+                       'theory fixes the direction, not the speed; never / 2030 / 2045 as sensitivities)'),
          ('DECISION', 'Typology mix held in every variant (Low replacement, Reference, High replacement); internal to '
                       'the model (it weights the case-study factors) and not reported'),
          ('JUDGEMENT', 'Household size: interpolation through all published Stats NZ values (2018-2043), held '

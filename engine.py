@@ -16,6 +16,8 @@ engine, and a change here reaches both scripts at once.
   nowcast_year      calendar-year consents from the observed months (A1)
   requirement       dwellings built (all categories) in a forward() result
   market_excess     the 2026 overbuild from observed 2026 building
+  logistic_weights  normalised logistic weights of a window (adoption; overbuild absorption)
+  absorb_overbuild  logistic absorption of the 2026 overbuild, capped at the year's building
   blend             dwelling-weighted blend of a per-typology quantity
   forward           households -> dwellings built -> floor area -> carbon
 
@@ -207,32 +209,100 @@ def requirement(E):
     return np.maximum(E['d_hh'], 0.0) + E['allow'] + E['change'] + E['demol'] + E['unc'] + E['join']
 
 
-def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', absorption=0.0):
+def logistic_weights(years, start, end):
+    """Normalised logistic of a window start -> end (W = end - start): midpoint start + W/2, speed
+    k = ln(81) / (2W/3) (10% -> 90% within the middle two-thirds of the window), rescaled so that
+    w(start) = 0 and w(end) = 1; 0 up to start, 1 from end. The adoption rule of the levers
+    (levers.adoption_window) and of the overbuild absorption of the Reference (MODEL v3.0.0)."""
+    y = np.asarray(years, float)
+    W = float(end - start)
+    mid, k = start + W / 2.0, np.log(81.0) / (2.0 * W / 3.0)
+    s = lambda t: 1.0 / (1.0 + np.exp(-k * (np.asarray(t, float) - mid)))
+    w = (s(y) - s(start)) / (s(end) - s(start))
+    return np.where(y <= start, 0.0, np.where(y >= end, 1.0, w))
+
+
+def absorb_overbuild(excess, w, need):
+    """Logistic absorption of the 2026 overbuild (MODEL v3.0.0). excess: the market excess by year (index 0 =
+    2025: 0); w: absorption weights (logistic_weights, 0 in 2026, 1 from the absorption year); need: the run's
+    dwellings built WITHOUT any join (requirement of a forward() run with join = 0), all categories.
+
+        C_t = sum of excess up to t          (cumulative overbuild)
+        U*_t = C_t (1 - w_t)                 (surplus still vacant on the target path)
+        payback*_t = (C_t - U*_t) - (C_(t-1) - U*_(t-1)) = C_t w_t - C_(t-1) w_(t-1)
+        gross_t = need_t + excess_t          (dwellings built before the payback)
+        paid_t = min(payback*_t + carry_(t-1), max(gross_t, 0))   where payback*_t + carry_(t-1) > 0
+        carry_t = payback*_t + carry_(t-1) - paid_t
+        join_t = excess_t - paid_t           (built_t = gross_t - paid_t >= 0)
+        U_t = C_t - sum of paid up to t      (surplus vacant: the stock-adding join, engine stock_join)
+
+    A negative payback (C falling: the excess below zero, an under-build made good) is paid in full. Returns
+    (join, info) with the arrays of the absorption log and the years where the cap binds."""
+    excess = np.asarray(excess, float)
+    w = np.asarray(w, float)
+    need = np.asarray(need, float)
+    n = len(excess)
+    C = np.cumsum(excess)
+    U_target = C * (1.0 - w)
+    pay_target = np.diff(np.r_[0.0, C * w])
+    gross = need + excess
+    paid, carry = np.zeros(n), np.zeros(n)
+    binds = np.zeros(n, bool)
+    c = 0.0
+    for i in range(n):
+        want = pay_target[i] + c
+        if want > 0.0:
+            cap = max(gross[i], 0.0)
+            paid[i] = min(want, cap)
+            binds[i] = want > cap
+        else:
+            paid[i] = want
+        c = want - paid[i]
+        carry[i] = c
+    join = excess - paid
+    U = C - np.cumsum(paid)
+    return join, dict(excess=excess, w=w, C=C, U_target=U_target, payback_target=pay_target, need=need,
+                      gross=gross, paid=paid, carry=carry, cap_binds=binds, U=U, built=gross - paid)
+
+
+def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', absorption=0.0, absorb_w=None,
+                  excess=None):
     """Near-term market excess (v1.1 rule). E: forward() result WITHOUT a join
     (index 0 = 2025, 1 = 2026). building_2026: observed dwellings built in 2026
     (all categories).
       excess_2026 = building_2026 - requirement_2026
       gap_ref     = building_2026 - requirement_2027  (gap_ref='2027'; '2026' = sensitivity)
       excess_t    = gap_ref x rho^(t - 2026), t >= 2027
-    mode 'redevelopment' (default): the excess is stock-neutral extra replacement
+    mode 'redevelopment': the excess is stock-neutral extra replacement
       of existing stock (returned as redev = join; no soil, no absorption, no payback);
-    mode 'surplus': the excess adds to the stock; each later year a share
-      `absorption` of the remaining surplus is absorbed by building less
-      (payback); absorption = 0 leaves the surplus permanent.
+    mode 'surplus': the excess adds to the stock;
+      absorb_w None (MODEL v2.1 and the legacy Reference): each later year a share
+        `absorption` of the remaining surplus is absorbed by building less (payback);
+        absorption = 0 leaves the surplus permanent;
+      absorb_w given (MODEL v3.0.0 Reference): logistic absorption (absorb_overbuild),
+        the surplus absorbed along the weights absorb_w, capped at the run's own building.
+    excess: optional fixed excess series (MODEL v3.0.0: the Reference's, held in every run of
+      the levers); None computes it from E.
     Returns (join, info)."""
     R = requirement(E)
     n = len(R)
     k = np.arange(n)
     gap = float(building_2026 - (R[2] if gap_ref == '2027' else R[1]))
-    excess = np.zeros(n)
-    excess[1] = building_2026 - R[1]
-    excess[2:] = gap * rho ** (k[2:] - 1)
+    if excess is None:
+        excess = np.zeros(n)
+        excess[1] = building_2026 - R[1]
+        excess[2:] = gap * rho ** (k[2:] - 1)
+    else:
+        excess = np.asarray(excess, float).copy()
     info = dict(O26=float(building_2026), R26=float(R[1]), R27=float(R[2]), e26=float(excess[1]),
                 e27=gap, gap_ref=gap, rho=float(rho), mode=mode, excess=excess)
     if mode == 'redevelopment':
         return excess.copy(), dict(info, redev=excess.copy(), surplus=np.zeros(n), payback=np.zeros(n))
     if mode != 'surplus':
         raise ValueError(f"Unknown near-term mode '{mode}'.")
+    if absorb_w is not None:
+        join, ab = absorb_overbuild(excess, absorb_w, R)
+        return join, dict(info, redev=np.zeros(n), surplus=ab['U'], payback=-ab['paid'], absorption=ab)
     join, pay, U, left = excess.copy(), np.zeros(n), np.zeros(n), 0.0
     for i in range(1, n):
         pay[i] = absorption * left if i >= 2 else 0.0

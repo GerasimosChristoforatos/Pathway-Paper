@@ -96,41 +96,71 @@ def consistent_share(B):
 
 def history_bands(B):
     """Floor area built by demand band in the census intervals 1991-2023 (and 2023-2025), interval
-    means in Mm2 per year, in scope (MODEL v1.0.0 addition; the bands of the projection's history,
-    as the census-interval bars of the floor-area figures). Vacancy on ONE definition throughout
-    (the pooled 2018/2023 empty share of unoccupied private dwellings applied to every census,
-    consistent_share): the published empty / residents-away split breaks between 2013 and 2018.
-    Between censuses annual detail is not identified, so each band is the mean over the interval's
-    years y0+1..y1. Retirement-village units are removed from every band in proportion (as the
-    projection does), so the bands add up to the in-scope floor area. The history's replacement
-    band is the net replacement in the dwelling counts (long-run rate and any redevelopment; not
-    separable). The last interval (after the latest census) uses consent-derived households."""
-    c = projection.COMPLETION_RATE
+    means in Mm2 per year, in scope (the census-interval bars of the floor-area figures). Vacancy on ONE
+    definition throughout (the pooled 2018/2023 empty share of unoccupied private dwellings applied to
+    every census, consistent_share). Between censuses annual detail is not identified, so each band is the
+    mean over the interval's years y0+1..y1.
+
+    MODEL v3.1.0 (A3): no band is rescaled. The bands are household formation (population growth, smaller
+    households, extra space), vacancy (allowance and change), the census-measured net replacement (the rate
+    of the census dwelling-count identity of the interval x the previous year's stock, as stock_identity_history;
+    may be negative, e.g. 1996-2001), the retirement-village units (negative; out of scope, as in D10) and the
+    unexplained building, the remainder to the observed in-scope floor area built (may be negative, e.g. 2013-2018).
+    Each dwelling component is converted at the year's realised dwelling size. The bands add up to the observed
+    in-scope floor area built in every interval (checked to 1e-9). The last interval (after the latest census)
+    uses consent-derived households and the latest census rate carried."""
     yh = np.arange(1992, 2026)
-    hh_h, d_h = B['hist_hh'], B['blended_dwelling_size']
-    cal = engine.calibrate_stock(B['years_hist'], hh_h,
-                                 engine.vacancy_knots(B['census'], float(B['empty_share_measured']), consistent_share(B)),
-                                 B['hist_units_all_c'], B['hist_rv_units_c'], c, projection.DEMOLITION_RATE,
-                                 projection.DEMOLITION_CALIB_START, B['calib_end'])
-    cy = [int(y) for y in B['census'].index if yh[0] - 1 <= y <= int(B['calib_end'])]
-    intervals = list(zip(cy[:-1], cy[1:])) + [(cy[-1], int(yh[-1]))]
-    D = d_h.loc[yh]
+    D = B['blended_dwelling_size'].loc[yh]
+    cal = _consistent_calibration(B)
+    cy, intervals = _history_intervals(B, yh)
+    _, repl = _census_replacement(B, yh, cal, cy)
+    built = B['hist_built_gfa'].loc[yh]
     parts = [('growth', B['hist_growth'].loc[yh] - B['hist_avoided'].loc[yh]),
              ('smaller_households', B['hist_hs_raw'].loc[yh].clip(lower=0)),
              ('extra_space', B['d_hh'].loc[yh] * (D - B['occupied_area_per_dwelling'].loc[yh])),
              ('vacancy', (cal['allow'] + cal['change']).loc[yh] * D),
-             ('replacement_history', cal['net'].loc[yh] * D)]
-    rv = cal['rv'].loc[yh] * D
+             ('replacement_census', repl * D),
+             ('retirement_villages', cal['rv'].loc[yh] * D)]
+    parts.append(('unexplained', built - sum(v for _, v in parts)))
     rows = []
     for y0, y1 in intervals:
         mean = lambda ser: float(np.mean(np.asarray(ser.loc[y0 + 1:y1], float)))
         m = {k: mean(v) for k, v in parts}
-        f = (sum(m.values()) + mean(rv)) / sum(m.values())          # in scope: every band x (1 - RV share)
-        built = mean(B['hist_built_gfa'])
+        obs = mean(built)
+        if not np.isclose(sum(m.values()), obs, rtol=1e-9, atol=1e-6):
+            raise SystemExit(f'history_bands {y0}-{y1}: the bands do not add up to the observed floor area built.')
         rows += [dict(interval=f'{y0}-{y1}', year_start=y0 + 1, year_end=y1, band=N.band_data_label(k),
-                      floor_area_Mm2_per_year=m[k] * f / 1e6, observed_built_Mm2_per_year=built / 1e6,
+                      floor_area_Mm2_per_year=m[k] / 1e6, observed_built_Mm2_per_year=obs / 1e6,
                       households_from=('census' if y1 <= cy[-1] else 'consents')) for k in N.BANDS_HISTORY]
     return pd.DataFrame(rows)
+
+
+def history_unexplained(B):
+    """A3 check: the unexplained floor area of history_bands against the unexplained dwellings of
+    stock_identity_history x the year's dwelling size, and the 1992-2025 unexplained sum (dwellings and % of
+    the dwellings built)."""
+    yh = np.arange(1992, 2026)
+    D = B['blended_dwelling_size'].loc[yh]
+    cal = _consistent_calibration(B)
+    cy, _ = _history_intervals(B, yh)
+    _, repl = _census_replacement(B, yh, cal, cy)
+    built_u = B['hist_built_units'].loc[yh]
+    unexpl_u = built_u - (B['d_hh'].loc[yh] + (cal['allow'] + cal['change']).loc[yh] + repl + cal['rv'].loc[yh])
+    hb = history_bands(B)
+    lab = N.band_data_label('unexplained')
+    h = hb[hb['band'] == lab]
+    n_years = (h['year_end'] - h['year_start'] + 1)
+    remainder_m2 = float((h['floor_area_Mm2_per_year'] * n_years).sum() * 1e6)
+    units_x_size_m2 = float((unexpl_u * D).sum())
+    return dict(unexplained_dwellings_1992_2025=float(unexpl_u.sum()),
+                dwellings_built_1992_2025=float(built_u.sum()),
+                unexplained_share_of_built=float(unexpl_u.sum() / built_u.sum()),
+                unexplained_floor_area_Mm2_remainder=remainder_m2 / 1e6,
+                unexplained_dwellings_x_size_Mm2=units_x_size_m2 / 1e6,
+                difference_Mm2=(remainder_m2 - units_x_size_m2) / 1e6,
+                note='the floor-area remainder of history_bands and the unexplained dwellings of stock_identity_history '
+                     'x the year\'s dwelling size agree to difference_Mm2 (household formation in floor area, growth + '
+                     'smaller households + extra space, equals new households x the realised dwelling size)')
 
 
 def _consistent_calibration(B):
@@ -156,45 +186,6 @@ def _census_replacement(B, yh, cal, cy):
         rate.loc[(rate.index > y0) & (rate.index <= y1)] = r
     rate.loc[rate.index > cy[-1]] = rates.loc[(cy[-2], cy[-1])]          # 2024-25: the latest rate carried
     return rate, rate * cal['prev'].loc[yh]
-
-
-def history_replacement_split(B):
-    """The history's net replacement band of history_bands (floor area, interval means, in scope)
-    split into the census-measured net replacement and the unexplained building (MODEL v2.0.0
-    addition; Fig2a), in the units of the floor-area bands: each year's dwellings x that year's
-    new-dwelling size, x the interval's in-scope factor of history_bands. In dwellings the
-    household-identity residual cal['net'] is the census-measured replacement plus the unexplained
-    building of stock_identity_history (checked year by year), so the two parts add up to the
-    history's net replacement band exactly (checked)."""
-    yh = np.arange(1992, 2026)
-    D = B['blended_dwelling_size'].loc[yh]
-    cal = engine.calibrate_stock(B['years_hist'], B['hist_hh'],
-                                 engine.vacancy_knots(B['census'], float(B['empty_share_measured']), consistent_share(B)),
-                                 B['hist_units_all_c'], B['hist_rv_units_c'], projection.COMPLETION_RATE,
-                                 projection.DEMOLITION_RATE, projection.DEMOLITION_CALIB_START, B['calib_end'])
-    cy, intervals = _history_intervals(B, yh)
-    _, repl = _census_replacement(B, yh, cal, cy)
-    unexpl = cal['net'].loc[yh] - repl
-    built = B['hist_built_units'].loc[yh]
-    other = B['d_hh'].loc[yh] + (cal['allow'] + cal['change']).loc[yh] + repl + cal['rv'].loc[yh]
-    if not np.allclose(unexpl.values, (built - other).values, rtol=1e-9, atol=1e-6):
-        raise SystemExit('history_replacement_split: net - census replacement differs from the unexplained building.')
-    bands = history_bands(B)
-    band = N.band_data_label('replacement_history')
-    rows = []
-    for y0, y1 in intervals:
-        mean = lambda ser: float(np.mean(np.asarray(ser.loc[y0 + 1:y1], float)))
-        b = bands[(bands['interval'] == f'{y0}-{y1}') & (bands['band'] == band)].iloc[0]
-        net = mean(cal['net'].loc[yh] * D)
-        f = b['floor_area_Mm2_per_year'] * 1e6 / net                    # the in-scope factor of the interval
-        r_, u_ = mean(repl * D) * f / 1e6, mean(unexpl * D) * f / 1e6
-        if not np.isclose(r_ + u_, b['floor_area_Mm2_per_year'], rtol=1e-9, atol=0):
-            raise SystemExit(f'history_replacement_split: the parts do not add up to the band ({y0}-{y1}).')
-        rows.append(dict(interval=f'{y0}-{y1}', year_start=y0 + 1, year_end=y1,
-                         net_replacement_census_Mm2_per_year=r_, unexplained_building_Mm2_per_year=u_,
-                         net_replacement_band_Mm2_per_year=float(b['floor_area_Mm2_per_year']),
-                         households_from=b['households_from']))
-    return pd.DataFrame(rows)
 
 
 def stock_identity_history(B):
@@ -486,10 +477,10 @@ def main():
     history_bands(B).to_csv(layout.writing(layout.data('baseline/bands_history.csv')), index=False)
     N.columns(stock_identity_history(B)).to_csv(layout.writing(layout.data('baseline/stock_identity_history.csv')),
                                                 index=False)
-    history_replacement_split(B).to_csv(layout.writing(layout.data('baseline/bands_history_replacement_split.csv')),
-                                        index=False)
     N.columns(household_formation_history(B)).to_csv(
         layout.writing(layout.data('baseline/household_formation_history.csv')), index=False)
+    with open(layout.writing(layout.data('baseline/history_unexplained.json')), 'w') as f:    # MODEL v3.1.0 (A3)
+        json.dump(N.keys(history_unexplained(B)), f, indent=1)
 
 
 if __name__ == '__main__':

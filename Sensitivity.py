@@ -101,7 +101,7 @@ def run(**settings):
 
 def totals(state):
     gfa = state['results']['50th']['total'][1:].sum() / 1e6
-    carbon = state['carbon_total_typ'].iloc[1:].sum().sum() / 1e6
+    carbon = state['carbon_total'].iloc[1:].sum() / 1e6            # new cohorts + legacy (ACCOUNTING)
     return gfa, carbon
 
 
@@ -110,7 +110,8 @@ def main():
     g0, c0 = totals(base)
     rows = [('Reference', 'Reference (adopted settings)', g0, c0)]
     years = np.asarray(base['forecast_years'])
-    annual = {('Reference', 'Reference (adopted settings)'): base['carbon_total_typ'].sum(axis=1).values}
+    annual = {('Reference', 'Reference (adopted settings)'): base['carbon_total'].values}
+    legacy = base['carbon_legacy'].sum(axis=1).values                      # pre-2026 activity (identical in every row)
 
     # Carbon per m2 of each year's typology mix (identical across percentiles).
     shares = base['evolving_gfa_shares']
@@ -118,16 +119,16 @@ def main():
     for p in ('5th', '95th'):
         tot = base['results'][p]['total']
         rows.append(('Population', f'Population: Stats NZ {p} percentile', tot[1:].sum() / 1e6,
-                     float((tot[1:] * mix_int[1:]).sum()) / 1e6))
+                     float((tot[1:] * mix_int[1:] + legacy[1:]).sum()) / 1e6))
         annual[('Population', f'Population: Stats NZ {p} percentile')] = np.concatenate(
-            [[np.nan], tot[1:] * mix_int[1:]])          # the approximation of this row, by year
+            [[np.nan], tot[1:] * mix_int[1:] + legacy[1:]])   # the approximation of this row, by year
         annual[('Population', POP_ENGINE.format(p=p))] = np.asarray(base['engine_out'][p]['carbon'], float)
 
     for grp, lab, kw in CASES + DECARB_CASES[projection.DECARB_MODE]:
         st = run(**kw)
         g, c = totals(st)
         rows.append((grp, lab, g, c))
-        annual[(grp, lab)] = st['carbon_total_typ'].sum(axis=1).values
+        annual[(grp, lab)] = st['carbon_total'].values
 
     # ---- carbon factors: re-weight the adopted floor area -------------------
     typ = base['typ_names']
@@ -144,10 +145,15 @@ def main():
            {t: (np.asarray(base['T_INT'][t])[1:] - base['SOIL_INTENSITY'][t]) / emb0[t] for t in typ})
 
     # time-resolved run: the run's materials carbon (upfront + in-window replacements and
-    # repaints) scaled by emb_alt / emb_2025 per typology (same stage composition)
-    mat_c = ({t: float(base['carbon_total_typ'][t].iloc[1:].sum())
-              - float((base['evol_typ_total'][t].values * base['soil_frac'])[1:].sum()) * base['SOIL_INTENSITY'][t]
-              for t in typ} if base['TIME_RESOLVED'] else None)
+    # repaints) scaled by emb_alt / emb_2025 per typology (same stage composition); the soil the run emits in the
+    # window (ACCOUNTING: at conversion or oxidised over 20 years) scaled by soc_alt / soc_2025; MODEL v3.1.0: the
+    # legacy (pre-2026 activity) with the same factors: its B2/B4 scaled by emb_alt / emb_2025 per typology, its soil
+    # recomputed on the history with the alternative soil factors (projection.legacy_soil_with)
+    E50 = base['engine_out']['50th']
+    soil_y_t = {t: np.asarray(E50['soil_t'][k], float) for k, t in enumerate(typ)}       # emitted, by typology
+    mat_y_t = {t: base['carbon_total_typ'][t].values - soil_y_t[t] for t in typ}
+    leg_b_t = (base['LEGACY']['b_typ'] if base['LEGACY'] is not None else {t: np.zeros(len(years)) for t in typ})
+    mat_c = ({t: float(mat_y_t[t][1:].sum()) for t in typ} if base['TIME_RESOLVED'] else None)
 
     def carbon_with_annual(emb, soc):
         """carbon_with by year (kg), the same terms year by year (time-resolved accounting)."""
@@ -155,14 +161,12 @@ def main():
             return None
         out = np.zeros(len(years))
         for t in typ:
-            soil_y = (base['evol_typ_total'][t].values * base['soil_frac']) * base['SOIL_INTENSITY'][t]
-            mat_y = base['carbon_total_typ'][t].values - soil_y
-            out += mat_y * emb[t] / emb0[t] + base['evol_typ_total'][t].values * base['soil_frac'] * soc[t]
-        return out
+            out += (mat_y_t[t] + leg_b_t[t]) * emb[t] / emb0[t] + soil_y_t[t] * soc[t] / soc0[t]
+        return out + projection.legacy_soil_with(base, {t: float(soc[t]) for t in typ})
 
     def carbon_with(emb, soc):
         if mat_c is not None:
-            return float(sum(mat_c[t] * emb[t] / emb0[t] + soil_gfa_t[t] * soc[t] for t in typ)) / 1e6
+            return float(np.sum(carbon_with_annual(emb, soc)[1:])) / 1e6
         if rel is None:
             return float(sum(gfa_t[t] * emb[t] + soil_gfa_t[t] * soc[t]
                              for t in typ)) / 1e6

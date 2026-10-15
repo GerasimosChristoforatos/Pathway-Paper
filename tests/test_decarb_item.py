@@ -26,7 +26,7 @@ ITEM_VARIANTS = [BF.decarb_variant('horup_item', item_case=c) for c in BF.ITEM_C
 @pytest.fixture(scope='module')
 def runs():
     # whole life at construction, A4-A5 held: isolates the A1-A3 decarbonisation
-    wl = dict(ACCOUNTING='whole_life_at_construction', DECARB_A45='held')
+    wl = dict(LIFE_CYCLE_TIMING='whole_life_at_construction', ACCOUNTING='instant', DECARB_A45='held')
     return run_boss(DECARB_MODE='none', **wl), run_boss(DECARB_MODE='horup_item', **wl)
 
 

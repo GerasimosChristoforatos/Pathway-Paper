@@ -29,6 +29,8 @@ Notation (all per year, 2025..2050 forward; index 0 is 2025):
 import numpy as np
 import pandas as pd
 
+import inventory as INV
+
 
 # ============================================================
 # HISTORY: STOCK CALIBRATION
@@ -341,7 +343,8 @@ def blend(shares, per_unit, typ_names):
 def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_share,
             shares, size, olf, intensity, intensity_upfront, join=None, join_redev=None,
             soil=None, soil_on_replacement=True, gfa_fixed=None, events=None,
-            brownfield_share=None, brownfield_w=None, clip_soil_share=False):
+            brownfield_share=None, brownfield_w=None, clip_soil_share=False,
+            soil_spread=None, legacy=None):
     """One forward path, 2025..2050 (index 0 = 2025, a model value; callers that
     anchor 2025 on observations overwrite it).
 
@@ -385,6 +388,15 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                              area (already soil-free) is never counted twice.
     clip_soil_share        : True (theoretical limit, banked zero-building years): the soil-bearing
                              share is clipped to [0, 1] and set to 0 where nothing is built.
+    MODEL v3.1.0 (emissions accounting, inventory.py; both None reproduce MODEL v3.0.0 bit for bit):
+    soil_spread            : None (soil at conversion, 'instant') or the oxidation period in years ('inventory',
+                             'cohort_window'): the soil lost on land converted in year i (i >= 1, 2026 on) is emitted
+                             linearly over i .. i + period - 1; what falls after the last year is soil_after (kg by
+                             typology), the committed component 'Soil, after 2050'.
+    legacy                 : None, or dict(soil=array, b=array) over the years (kg): the emissions in the window of
+                             activity before 2026 ('inventory': soil tails of 2007-2025 conversions, replacements and
+                             repaints of the 1992-2025 cohorts); identical in every run, added to carbon (not to
+                             carbon_t, which stays the new cohorts by typology).
 
     Floor area built (in scope) = structural + gross consumption, where
         structural  = d_hh x occupied area per dwelling
@@ -465,12 +477,26 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         if clip_soil_share:
             soil_share = np.where(total <= SOIL_ZERO_TOL_M2, 0.0, np.clip(soil_share, 0.0, 1.0))
             soil_share[0] = 1.0 - (soil_free[0] / total[0] if total[0] != 0 else 0.0)
-        carbon_t = (I - sY) * gfa_t + (sY * gfa_t) * soil_share
-        upfront_t = (U - sY) * gfa_t + (sY * gfa_t) * soil_share
+        soil_conv_t = (sY * gfa_t) * soil_share      # soil lost in the conversion year (typology, years)
+        if soil_spread is None:
+            carbon_t = (I - sY) * gfa_t + (sY * gfa_t) * soil_share
+            upfront_t = (U - sY) * gfa_t + (sY * gfa_t) * soil_share
+            soil_emit_t, soil_after_t = soil_conv_t, np.zeros(len(typ))
+        else:                                        # oxidised over soil_spread years (inventory.spread)
+            soil_emit_t, soil_after_t = INV.spread(soil_conv_t, int(soil_spread))
+            carbon_t = (I - sY) * gfa_t + soil_emit_t
+            upfront_t = (U - sY) * gfa_t + soil_emit_t
+    if soil is None and soil_spread is not None:
+        raise ValueError('soil_spread needs the soil factors (soil=...).')
     b_t = np.zeros_like(gfa_t)
     if events is not None:                           # time-resolved B2/B4 of the new cohorts
         b_t = np.array([gfa_t[k] @ events[t] for k, t in enumerate(typ)])
         carbon_t = carbon_t + b_t
+    n_y = len(hh)
+    leg_soil = np.zeros(n_y) if legacy is None else np.asarray(legacy['soil'], float)
+    leg_b = np.zeros(n_y) if legacy is None else np.asarray(legacy['b'], float)
+    carbon_new = carbon_t.sum(axis=0)
+    carbon = carbon_new if legacy is None else carbon_new + leg_soil + leg_b
     return dict(
         years=shares.index.values, typ=typ, pop=pop, hh=hh, S=S, d_hh=d_hh, d_hh_raw=d_raw,
         D=D, olf=olf_f, occ=occ, structural=structural, growth_gross=g_gross, growth=growth,
@@ -478,7 +504,13 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         c_gross=c_gross, total=total,
         v=np.array(v), stock=stock, prev=prev, allow=allow, change=change, demol=demol,
         unc=unc, dev=dev, join=join, join_redev=join_redev, stock_join=stock_join, rv=rv, dwell_in_scope=total / D, rv_units=-rv,
-        gfa_t=gfa_t, carbon_t=carbon_t, carbon=carbon_t.sum(axis=0), upfront=upfront_t.sum(axis=0), b_t=b_t,
+        gfa_t=gfa_t, carbon_t=carbon_t, carbon=carbon, carbon_new=carbon_new, upfront=upfront_t.sum(axis=0), b_t=b_t,
         soil_share=soil_share, soil_free_gfa=soil_free, gfa_adj=gfa_adj,
         soil_free_replacement_gfa=(soil_free_repl if soil is not None else np.zeros(len(hh))),
-        soil=((sY * gfa_t) * soil_share).sum(axis=0) if soil is not None else None)
+        soil=(((sY * gfa_t) * soil_share).sum(axis=0) if soil_spread is None else soil_emit_t.sum(axis=0))
+        if soil is not None else None,
+        soil_t=soil_emit_t if soil is not None else None,
+        soil_conv=soil_conv_t.sum(axis=0) if soil is not None else None,
+        soil_after_t=soil_after_t if soil is not None else None,
+        soil_after=float(np.sum(soil_after_t)) if soil is not None else 0.0,
+        soil_spread=soil_spread, legacy_soil=leg_soil, legacy_b=leg_b)

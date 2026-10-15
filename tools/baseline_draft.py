@@ -196,13 +196,13 @@ def timing_register():
     a1 = unl[unl['id'] == 'A_1']['A1-A3'].sum() / 1e3
     g = BF.generic_path([2050])[0]
     return [
-        ('Accounting of later life-cycle stages (ACCOUNTING)',
+        ('Accounting of later life-cycle stages (LIFE_CYCLE_TIMING)',
          {'time_resolved': 'time_resolved: materials and construction (A1-A5) and soil carbon loss in the '
                            'construction year; maintenance (B2, B4: replacement and repaint events) in the calendar '
                            'year it occurs, 2026-2050; events after 2050 and all C1-C4 of the 2026-2050 cohorts '
                            'reported as committed after 2050 (range below), not added to the 2026-2050 total',
           'whole_life_at_construction': 'whole_life_at_construction: all stages A1-C4 booked in the construction '
-                                        'year (the static convention of earlier versions of the model)'}[B.ACCOUNTING],
+                                        'year (the static convention of earlier versions of the model)'}[B.LIFE_CYCLE_TIMING],
          'DECISION (author); LITERATURE: Habert et al. 2020, Buildings and Cities 1, 429-452, Section 5.1 (p. '
          '442): embodied emissions "occur mainly in the first year of the building life time and (approximately '
          '30 years later) when deep renovation are done", and spreading them over the building life '
@@ -251,10 +251,22 @@ def timing_register():
         ('Committed after 2050 (later B2/B4 and C1-C4)', 'upper: events after 2050 at 2025 factors; lower: the 2050 '
          'factors held after 2050 (no extrapolation beyond the last source year); C1-C4 at 2025 in both. Expressed '
          'in years of the 2050 AR boundary', 'DECISION (author): the source paths end in 2050'),
-        ('Scope of B events', 'events of the cohorts built in the accounting period only (projection: the 2026-2050 '
-         'cohorts; AR base: the cohorts of the base window); wider scope (events of all cohorts built since '
-         f"{B.B_SCOPE_START}, in the base and the projection alike) is a sensitivity",
-         'DECISION (author): the AESA object is new construction'),
+        ('Emissions accounting rule (ACCOUNTING, MODEL v3.1.0)',
+         f"'{B.ACCOUNTING}': " + {
+             'inventory': ('every window (the AR base 2016-2025 and the projection 2026-2050) counts all emissions '
+                           f'occurring in it from residential construction since {B.B_SCOPE_START}: A1-A5 of its own '
+                           f'construction, soil oxidised linearly over {B.SOIL_OXIDATION_YEARS} years after conversion '
+                           '(incl. the tails of earlier conversions) and B2/B4 of every cohort since '
+                           f'{B.B_SCOPE_START}; the emissions of pre-2026 activity in 2026-2050 are the legacy band '
+                           '(identical in every run); the oxidation after 2050 of 2026-2050 conversions is committed '
+                           "('Soil, after 2050'); pre-1992 stock out of scope on both sides"),
+             'instant': 'soil at conversion; B2/B4 of each window\'s own cohorts (MODEL v3.0.0)',
+             'cohort_window': 'soil oxidised over 20 years, each window\'s own cohorts only (both sides)'}[B.ACCOUNTING]
+         + "; the other two rules are sensitivities ('cohort_window' rejected: the 10-yr base and the 25-yr "
+           'projection windows capture different shares of slow-release emissions)',
+         'DECISION (author); LITERATURE: IPCC (2006) Guidelines Vol. 4 Ch. 2 (default transition period of soil '
+         'carbon stock change after land-use conversion, D = 20 yr); the AR share is taken against global annual '
+         'emissions, so the sector is measured as an annual emissions flow in both the base and the projection'),
     ]
 
 

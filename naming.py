@@ -124,10 +124,13 @@ BANDS = {'growth': 'Population growth',
          'unconsented': 'Unconsented additions',
          'redevelopment': 'Recent replacement surge',
          'released_tl': 'Released dwellings (TL)',
-         'maintenance': 'Maintenance (B2, B4), 2026–2050'}
+         'vacancy_released': 'Vacancy released',
+         'surplus_vacant': 'Surplus kept vacant (2050)',
+         'maintenance': 'Maintenance (B2, B4), 2026–2050',
+         'legacy': 'Legacy (pre-2026 activity)'}
 # MODEL v3.0.0: bands whose values are negative by construction (drawn as outlined segments hanging from the
-# top of the positive stack; the data keep the sign)
-NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'released_tl')
+# top of the positive stack; the data keep the sign). MODEL v3.1.0 adds 'Vacancy released' (bands.py).
+NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl')
 BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BRANZ rate)',
                'replacement_residual': 'Historical replacement: net unconsented additions (calibrated residual)',
                'retirement_villages': 'Retirement villages (out of scope)',
@@ -153,13 +156,22 @@ BAND_DEFINITIONS = {
     'redevelopment': 'the scenario rate above that long-run rate: the 2018–2023 knock-down-and-rebuild wave, fading '
                      'in the Reference',
     'maintenance': 'replacement and repaint events (B2, B4) of the new buildings within 2026–2050 (carbon only)',
+    'vacancy_released': 'existing dwellings released by a fall in the vacancy rate (a run without any lever at its '
+                        'theoretical limit), used in the year they occur up to the gross need, the rest carried '
+                        '(negative; MODEL v3.1.0)',
+    'surplus_vacant': 'released dwellings still unusable in 2050, kept vacant (booked in 2050 against the release '
+                      'bands, so the bands add up to the total every year)',
+    'legacy': 'emissions in 2026-2050 of activity before 2026 (soil oxidation of 2007-2025 conversions; replacements '
+              'and repaints of the 1992-2025 cohorts); identical in every run (ACCOUNTING inventory; carbon only)',
 }
 UNTARGETED = ('growth',)          # smaller households are targeted by L3 Household size (P1; MODEL v3.0.0 numbering)
 
 COMPONENTS = {'materials_construction': 'Materials and construction (A1–A5)',
               'soil': 'Soil carbon loss',
               'maintenance': 'Maintenance (B2, B4), 2026–2050',
-              'committed': 'Committed after 2050 (later B2/B4 and C1–C4)'}
+              'committed': 'Committed after 2050 (later B2/B4 and C1–C4)',
+              'soil_after': 'Soil, after 2050',
+              'legacy': 'Legacy (pre-2026 activity)'}
 UPFRONT = 'Upfront (A1–A5 and soil carbon loss)'
 # life-cycle stages of the carbon (MODEL v2.0.0, Fig3a)
 STAGES = {'a1a3': 'Materials (A1–A3)', 'a4a5': 'Construction (A4–A5)', 'maintenance': 'Maintenance (B2, B4)',
@@ -276,10 +288,12 @@ def run_label(run, scenario='REF'):
 BANDS_WITH_RETIREMENT_VILLAGES = ('growth', 'smaller_households', 'extra_space', 'vacancy',
                                   'replacement_demolition', 'replacement_residual', 'redevelopment',
                                   'overbuild_2026', 'overbuild_absorbed', 'retirement_villages')
+# MODEL v3.1.0: one in-scope band list for every run (bands.IN_SCOPE; release bands zero where a run has no release)
 BANDS_IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild_2026', 'replacement',
-                  'redevelopment', 'overbuild_absorbed', 'unconsented', 'maintenance')
+                  'redevelopment', 'overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl',
+                  'surplus_vacant', 'maintenance', 'legacy')
 BANDS_WITH_RETIREMENT_VILLAGES_TL = BANDS_WITH_RETIREMENT_VILLAGES[:-1] + ('released_tl', 'retirement_villages')
-BANDS_IN_SCOPE_TL = BANDS_IN_SCOPE[:-1] + ('released_tl', 'maintenance')
+BANDS_IN_SCOPE_TL = BANDS_IN_SCOPE
 BAND_DEFINITION_IDS = ('with_retirement_villages', 'in_scope')
 
 

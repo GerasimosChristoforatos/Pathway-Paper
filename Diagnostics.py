@@ -200,7 +200,7 @@ figsource.write('D06_vacancy_definition', calib_end=int(B['calib_end']), unconse
 # ---------------------------------------------------------------------------
 print("=" * 70)
 print(f" Built floor area 2026-2050: {R['total'][1:].sum() / M6:.2f} million m2")
-print(f" Embodied carbon  2026-2050: {B['carbon_total_typ'].iloc[1:].sum().sum() / M6:,.1f} kt CO2e")
+print(f" Embodied carbon  2026-2050: {B['carbon_total'].iloc[1:].sum() / M6:,.1f} kt CO2e")
 print(f" Household size 2050: {S_f[-1]:.3f} | vacancy {100 * B['v_forward']:.2f}% | "
       f"net replacement (long run) {100 * (B['demolition_rate'] + B['unconsented_rate']):.3f}%")
 print(f" History bars: census intervals {', '.join(f'{a}-{b}' for a, b in INTERVALS)}; "

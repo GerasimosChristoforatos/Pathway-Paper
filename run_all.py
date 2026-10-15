@@ -14,7 +14,8 @@ profile (tests/test_profiles.py).
 
 Order (compute, then draw): Building_factors -> projection -> Diagnostics -> Sensitivity -> MonteCarlo -> boundaries
 (AESA; reads the Monte Carlo draws) -> validation -> gap_2026 -> overbuild_2026 -> scenarios -> reconciliation ->
-figures_report -> pathways -> pathways_mc -> sensitivity_tables -> metrics -> results -> assumptions -> methods
+figures_report -> pathways -> pathways_mc -> sensitivity_tables -> accounting_rules -> metrics -> results -> assumptions
+-> methods
 (docs/LEVERS_TABLE.md, docs/METHODS_DRAFT.md) -> run_meta -> figures (python -m figures: every figure and
 FIGURES.md, from the data files only) -> check_outputs -> indexes -> tests. Model scripts write CSV / JSON only.
 Each step runs in its own process; its console output goes to <outputs>/logs/<step>.log.
@@ -140,7 +141,7 @@ def pipeline(profile):
         step(name, [py, tool(t)], env)
     step('pathways', [py, script('pathways')], env)
     step('pathways_mc', [py, script('pathways_mc')], env)
-    for t in ('sensitivity_tables', 'metrics', 'results', 'assumptions', 'methods'):
+    for t in ('sensitivity_tables', 'accounting_rules', 'metrics', 'results', 'assumptions', 'methods'):
         step(t, [py, tool(t)], env)
     TIMINGS['compute_total'] = round(time.time() - t0, 1)
     write_run_meta(env, 'pipeline')

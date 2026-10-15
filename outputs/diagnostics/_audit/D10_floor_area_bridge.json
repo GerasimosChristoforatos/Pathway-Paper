@@ -22,12 +22,20 @@
    "ylabel": "",
    "year_min": null,
    "year_max": null
+  },
+  {
+   "title": "Very High replacement (trend continues)",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
   }
  ],
  "texts": [
   "$\\mathdefault{0}$",
   "$\\mathdefault{100}$",
   "$\\mathdefault{120}$",
+  "$\\mathdefault{140}$",
   "$\\mathdefault{20}$",
   "$\\mathdefault{40}$",
   "$\\mathdefault{60}$",
@@ -37,7 +45,9 @@
   "+17.7",
   "+2.3",
   "+25.5",
+  "+27.8",
   "+3.7",
+  "+3.8",
   "+3.9",
   "+4.0",
   "+42.9",
@@ -49,6 +59,8 @@
   "-4.7",
   "-5.1",
   "-5.7",
+  "-6.3",
+  "104.7",
   "2026 overbuild",
   "78.5",
   "85.9",
@@ -67,9 +79,11 @@
   "Total, in scope",
   "Unconsented additions",
   "Vacancy",
+  "Very High replacement (trend continues)",
   "a",
   "b",
-  "c"
+  "c",
+  "d"
  ],
  "note": "Each bar is one demand band, 2026\u20132050 (median population); the 2026 overbuild (market excess) and the overbuild absorbed are separate bands; negative bands (overbuild absorbed, unconsented additions, retirement villages) are outlined, hanging from the running total. Retirement-village units are out of scope and leave the total as a negative step.",
  "maintenance_drawn": false,
@@ -83,10 +97,10 @@
  ],
  "atp_linestyles": [],
  "negative_band_segments": 0,
- "net_total_ticks": 3,
+ "net_total_ticks": 4,
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
  "retired_colours": [],
- "negative_bar_segments": 9,
+ "negative_bar_segments": 12,
  "negative_bar_segments_filled": 0
 }

@@ -84,6 +84,42 @@
     "TIMBER": 3415.7229932712085,
     "SOIL": 2899.3144592978015
   },
+  "replacement_trend": {
+    "a": -0.22189422272086165,
+    "b": 0.00011097274702558926,
+    "n": 6,
+    "x": [
+      1994.0,
+      1999.0,
+      2004.0,
+      2010.0,
+      2016.0,
+      2021.0
+    ],
+    "rate": [
+      0.0005790733473328589,
+      -0.0010205609605815694,
+      0.00018131472453238867,
+      0.000868467901162683,
+      0.0015770463696612805,
+      0.0031220998286834974
+    ],
+    "weight": [
+      5.0,
+      5.0,
+      5.0,
+      7.0,
+      5.0,
+      5.0
+    ],
+    "window": [
+      1991,
+      2023
+    ],
+    "rate_2026": 0.002936562752982208,
+    "rate_2050": 0.0055999086815963495,
+    "method": "weighted least squares of the census-interval net replacement rates on the mean of each interval's model years (y0+1 .. y1), weights = interval length; Very High replacement = a + b year (MODEL v3.3.0)"
+  },
   "bands_in_scope": [
     {
       "band": "Population growth",

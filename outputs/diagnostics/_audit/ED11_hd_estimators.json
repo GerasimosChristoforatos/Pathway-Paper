@@ -3,14 +3,14 @@
  "producer": "figures/__main__.py",
  "axes": [
   {
-   "title": "L2 Design density (n = 16, B = 2000)",
+   "title": "L5 Occupancy density (n = 16, B = 2000)",
    "xlabel": "Case ratio (scale-free)",
    "ylabel": "",
    "year_min": null,
    "year_max": null
   },
   {
-   "title": "L6 Material carbon (n = 14, B = 2000)",
+   "title": "L8 Material carbon efficiency (n = 14, B = 2000)",
    "xlabel": "Case ratio (scale-free)",
    "ylabel": "",
    "year_min": null,
@@ -39,8 +39,8 @@
   "DD_2",
   "DD_3",
   "DD_4",
-  "L2 Design density (n = 16, B = 2000)",
-  "L6 Material carbon (n = 14, B = 2000)",
+  "L5 Occupancy density (n = 16, B = 2000)",
+  "L8 Material carbon efficiency (n = 14, B = 2000)",
   "Moderate r = 0.910",
   "Moderate r = 0.913",
   "SD_1",
@@ -56,7 +56,7 @@
   "a",
   "b"
  ],
- "note": "L6 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).",
+ "note": "L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

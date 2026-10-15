@@ -30,31 +30,31 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### Fig4_pathways_annual
 
-**Fig4 Pathways against the boundaries** — Annual carbon of the Reference, P1-P5 and TL against AR and AtP: Moderate solid bold, Ambitious the same colour thin dotted.
+**Fig4 Pathways against the boundaries** — Annual carbon of the Reference, the PAS 2080 strategies S1 Avoid, S2 Switch, S3 Improve, the Moderate / Ambitious Pathway and the Theoretical Limit against AR and AtP: Moderate solid bold, Ambitious the same colour thin dotted.
 
 - Files: `paper_main/Fig4_pathways_annual.pdf`, `paper_main/Fig4_pathways_annual.png`
 - Data: `data/pathways/annual.csv`, `data/aesa/annual.csv`
-- This run: Cumulative LoE AR: REF 4.63, P5-moderate 3.39, P5-ambitious 2.45, TL 0.98.
+- This run: Cumulative LoE AR: REF 4.63, pathway-moderate 3.39, pathway-ambitious 2.45, TL 0.98.
 
 ### Fig5_waterfall
 
-**Fig5 From the Reference to the theoretical limit** — Cumulative carbon 2026-2050 by demand band along the sequential path Reference -> P1 ... P4 (= P5 Moderate) -> TL1 ... TL9 (= TL); negative bands outlined, hanging from the top of the positive stack; each bar ends at its net total.
+**Fig5 From the Reference to the theoretical limit** — Two sequential waterfalls of cumulative carbon 2026-2050 by demand band, lever-level steps in the new numbering order, labelled by PAS 2080 strategy: (a) Reference -> L1 ... L9 (Moderate) -> Moderate Pathway; (b) Moderate Pathway -> TL1 ... TL9 -> Theoretical Limit. Steps in PAS 2080 hierarchy order; each step is credited with what remains after higher-priority measures. Order-free Shapley values in Fig8. Outlined segments: reduction in credits from re-used dwellings (vacancy released, overbuild absorbed, re-occupation, unconsented additions), valued at the new-dwelling size they displace.
 
 - Files: `paper_main/Fig5_waterfall.pdf`, `paper_main/Fig5_waterfall.png`
 - Data: `data/pathways/waterfall.csv`
-- This run: Moderate: Reference 20,615 kt -> P5 15,073 kt -> TL 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Sequential steps depend on their order (the order-free values are the Shapley values, Fig8).
+- This run: Moderate: Reference 20,615 kt -> Moderate Pathway 15,073 kt -> TL 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Steps in PAS 2080 hierarchy order; each step is credited with what remains after higher-priority measures. Order-free Shapley values in Fig8. Outlined segments: reduction in credits from re-used dwellings (vacancy released, overbuild absorbed, re-occupation, unconsented additions), valued at the new-dwelling size they displace.
 
 ### Fig6_solution_space
 
-**Fig6 The solution space** — Cumulative level of exceedance of AR and AtP over uniform cuts of 2027-2050 floor area and of carbon per m2 (after Horup et al. 2025), with P1-P5 (Moderate filled, Ambitious hollow) and TL.
+**Fig6 The solution space** — Cumulative level of exceedance of AR and AtP over uniform cuts of 2027-2050 floor area and of carbon per m2 (after Horup et al. 2025), with S1-S3 (Moderate filled, Ambitious hollow), the Moderate / Ambitious Pathway and the Theoretical Limit; exact AR and AtP curves of the analytic plane; above 100% (hatched) carbon per m2 is net negative (carbon-storing construction).
 
 - Files: `paper_main/Fig6_solution_space.pdf`, `paper_main/Fig6_solution_space.png`
 - Data: `data/pathways/solution_space.csv`, `data/pathways/backcast.json`
-- This run: LoE AR = [1,421 + 19,194 (1 - x)(1 - y)] / 4,451 kt; C_2026 = the 2026 cohort's emissions in the window. Lowest LoE AR on the plane (x or y = 100%): 0.32. The AtP line lies outside the plane.
+- This run: LoE AR = [1,421 + 19,194 (1 - x)(1 - y)] / 4,451 kt; C_2026 = the 2026 cohort's emissions in the window. Lowest LoE AR at x or y = 100%: 0.32. AtP curve y = 1 - k / (1 - x), above y = 100% for every x (y = 101.6% at x = 0): the AtP budget needs net-negative carbon per m² of 2027-2050 construction; y-axis to 110%.
 
 ### Fig7_tornado
 
-**Fig7 What moves the Reference** — One-at-a-time ranges of eight inputs, the overbuild absorption timing among them: (a) cumulative carbon 2026-2050, (b) cumulative LoE AR and AtP. Not additive, not a joint interval.
+**Fig7 What moves the Reference** — One-at-a-time ranges of nine inputs (Very High replacement one-sided), the overbuild absorption timing among them: (a) cumulative carbon 2026-2050, (b) cumulative LoE AR and AtP. Not additive, not a joint interval.
 
 - Files: `paper_main/Fig7_tornado.pdf`, `paper_main/Fig7_tornado.png`
 - Data: `data/sensitivity/tornado.csv`
@@ -62,11 +62,11 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### Fig8_shapley_levers
 
-**Fig8 What each lever removes** — Shapley values within each combined game (Reference -> P5 Moderate, -> P5 Ambitious, -> TL; exact, 512 subsets) on cumulative carbon 2026-2050: hollow bar Moderate, filled bar Ambitious, large deep-green dot TL; sorted by Ambitious. Standalone effects in ED10.
+**Fig8 What each lever removes** — Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; exact, 512 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 Switch, S3 Improve) in the lever order and coloured by strategy; hollow bar Moderate, filled bar Ambitious, large deep-green dot TL. Standalone effects in ED10.
 
 - Files: `paper_main/Fig8_shapley_levers.pdf`, `paper_main/Fig8_shapley_levers.png`
 - Data: `data/pathways/shapley.csv`
-- This run: Shapley values within each combined game (Reference -> P5 Moderate, -> P5 Ambitious, -> TL); standalone effects in ED10. Sum over levers (= Reference - P5 / TL, exact): moderate 5,542 kt, ambitious 9,694 kt, tl 16,257 kt; 512 subsets per game.
+- This run: Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL); standalone effects in ED10. Sum over levers (= Reference - Pathway / TL, exact): moderate 5,542 kt, ambitious 9,694 kt, tl 16,257 kt; 512 subsets per game. Strategy-level Shapley values (Moderate / Ambitious; 8 subsets): S1 Avoid 3,531 / 6,152 kt; S2 Switch 1,435 / 2,505 kt; S3 Improve 575 / 1,038 kt.
 
 ## Extended Data (paper_extended/)
 
@@ -106,7 +106,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_extended/ED5_conditional_tl.pdf`, `paper_extended/ED5_conditional_tl.png`
 - Data: `data/pathways/montecarlo_conditional_tl.csv`, `data/pathways/montecarlo_conditional_tl.json`
-- This run: P(within AR) = 0.551 (Wilson 0.537-0.565); (b) threshold 6.65 M (95% CI 6.65-6.65 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
+- This run: P(within AR) = 0.552 (Wilson 0.538-0.566); (b) threshold 6.65 M (95% CI 6.65-6.66 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
 ### ED6_single_levers
 
@@ -117,23 +117,23 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### ED7_waterfall_ambitious
 
-**ED7 Waterfall at Ambitious**
+**ED7 Waterfalls at Ambitious: Reference -> Ambitious Pathway -> Theoretical Limit (PAS 2080 order)**
 
 - Files: `paper_extended/ED7_waterfall_ambitious.pdf`, `paper_extended/ED7_waterfall_ambitious.png`
 - Data: `data/pathways/waterfall.csv`
-- This run: Ambitious: Reference 20,615 kt -> P5 10,920 kt -> TL 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Sequential steps depend on their order (the order-free values are the Shapley values, Fig8).
+- This run: Ambitious: Reference 20,615 kt -> Ambitious Pathway 10,920 kt -> TL 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Steps in PAS 2080 hierarchy order; each step is credited with what remains after higher-priority measures. Order-free Shapley values in Fig8. Outlined segments: reduction in credits from re-used dwellings (vacancy released, overbuild absorbed, re-occupation, unconsented additions), valued at the new-dwelling size they displace.
 
 ### ED8_tl_shapley_indicators
 
-**ED8 TL: Shapley values from P5 Moderate and human-terms indicators**
+**ED8 TL: Shapley values from the Moderate Pathway and human-terms indicators**
 
 - Files: `paper_extended/ED8_tl_shapley_indicators.pdf`, `paper_extended/ED8_tl_shapley_indicators.png`
 - Data: `data/pathways/shapley.csv`, `data/pathways/theoretical_limit.json`
-- This run: TL re-occupies 117,044 released dwellings (attributed TL3 0, TL4 117,044, in proportion R3:R4). (c) The vacancy parameter falls to 0 by 2035 (TL4); the physical (implied) vacancy falls as the released stock is re-occupied over 2027-2050.
+- This run: TL re-occupies 117,044 released dwellings (attributed TL1 0, TL2 117,044, in proportion R1:R2). (c) The vacancy parameter falls to 0 by 2035 (TL2); the physical (implied) vacancy falls as the released stock is re-occupied over 2027-2050.
 
 ### ED9_rollout_timing
 
-**ED9 Roll-out timing (P5 by 2030, 2035, 2045)**
+**ED9 Roll-out timing (the Pathways by 2030, 2035, 2045)**
 
 - Files: `paper_extended/ED9_rollout_timing.pdf`, `paper_extended/ED9_rollout_timing.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
@@ -144,19 +144,19 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `paper_extended/ED10_lambda_sweep.pdf`, `paper_extended/ED10_lambda_sweep.png`
 - Data: `data/pathways/lambda_sweep.csv`
-- This run: L9 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant s_ref against the year-varying replacement share.
+- This run: L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant s_ref against the year-varying replacement share.
 
 ### ED11_hd_estimators
 
-**ED11 Harrell-Davis estimators of L2 and L6 with bootstrap intervals**
+**ED11 Harrell-Davis estimators of L5 and L8 with bootstrap intervals**
 
 - Files: `paper_extended/ED11_hd_estimators.pdf`, `paper_extended/ED11_hd_estimators.png`
 - Data: `data/pathways/levers.json`
-- This run: L6 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).
+- This run: L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).
 
 ### ED12_consent_sizes
 
-**ED12 L1: mean consented new-dwelling size by typology, 1990-2025, with the minima**
+**ED12 L4: mean consented new-dwelling size by typology, 1990-2025, with the minima**
 
 - Files: `paper_extended/ED12_consent_sizes.pdf`, `paper_extended/ED12_consent_sizes.png`
 - Data: `data/pathways/levers.json`
@@ -164,7 +164,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### ED13_replacement_variants
 
-**ED13 Low and High replacement: the Reference, P5 and TL**
+**ED13 Low, High and Very High replacement: the Reference, the Pathways and TL**
 
 - Files: `paper_extended/ED13_replacement_variants.pdf`, `paper_extended/ED13_replacement_variants.png`
 - Data: `data/sensitivity/replacement_variants.csv`, `data/pathways/annual.csv`
@@ -234,11 +234,11 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### D07_net_replacement_rate
 
-**Net replacement rate: census intervals and the three variants**
+**Net replacement rate: census intervals and the four variants (Reference to 2075)**
 
 - Files: `diagnostics/calibration/D07_net_replacement_rate.pdf`, `diagnostics/calibration/D07_net_replacement_rate.png`
 - Data: `data/figure_source/D07_net_replacement_rate.json`
-- This run: Net replacement rate (demolition net of unconsented additions). Long run 1991–2023: 0.101% per year; 2018–23: 0.312% per year. Each step is one intercensal interval; the 2018–23 step is a single interval. Negative values mean the stock grew by more than consented new building, i.e. more dwellings appeared through conversions and unconsented additions than were demolished.
+- This run: Net replacement rate (demolition net of unconsented additions). Long run 1991–2023: 0.101% per year; 2018–23: 0.312% per year. Each step is one intercensal interval; the 2018–23 step is a single interval. Negative values mean the stock grew by more than consented new building, i.e. more dwellings appeared through conversions and unconsented additions than were demolished. Very High: the interval-length-weighted OLS trend of the census-interval rates 1991–2023, rate = -0.221894 + 1.1097e-04 × year (0.294% in 2026, 0.560% in 2050).
 
 ### D08_dwelling_space
 
@@ -266,7 +266,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### D10_floor_area_bridge
 
-**Floor area 2026-2050 by demand band, Low / Reference / High (waterfall)**
+**Floor area 2026-2050 by demand band, Low / Reference / High / Very High (waterfall)**
 
 - Files: `diagnostics/validation/D10_floor_area_bridge.pdf`, `diagnostics/validation/D10_floor_area_bridge.png`
 - Data: `data/figure_source/D10_floor_area_bridge.json`
@@ -320,7 +320,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/boundaries/D21_fan_and_boundaries.pdf`, `diagnostics/boundaries/D21_fan_and_boundaries.png`
 - Data: `data/figure_source/D21_fan_and_boundaries.json`
-- This run: Reference. AR base window 2016–2025 at 2025 factors, soil only on non-replacement floor area (as the projection); the thin history line is joined to the 2026 Monte Carlo median. Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th–95th within 9.9% of the median in every year.
+- This run: Reference. AR base window 2016–2025 at 2025 factors, soil only on non-replacement floor area (as the projection); the thin history line is joined to the 2026 Monte Carlo median. Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th–95th within 10.0% of the median in every year.
 
 ### D22_boundaries
 
@@ -374,7 +374,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### D28_pathways_annual
 
-**Annual carbon of the Reference, P1-P5 and TL against the boundaries**
+**Annual carbon of the Reference, S1-S3, the Pathways and TL against the boundaries**
 
 - Files: `diagnostics/pathways/D28_pathways_annual.pdf`, `diagnostics/pathways/D28_pathways_annual.png`
 - Data: `data/pathways/annual.csv`, `data/aesa/annual.csv`
@@ -385,7 +385,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/pathways/D29_ramps.pdf`, `diagnostics/pathways/D29_ramps.png`
 - Data: `data/pathways/levers.json`
-- This run: Native parameter at each level (full strength); every level moves from the Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint. L3 (and L7): the target paths by year before the adoption weighting w(y) is applied.
+- This run: Native parameter at each level (full strength); every level moves from the Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint. L1 (and L9): the target paths by year before the adoption weighting w(y) is applied.
 
 ### D31_lever_annual
 
@@ -396,11 +396,11 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### D32_tl_staircase
 
-**Reference -> P5 -> TL: cumulative LoE and the human terms**
+**Reference -> Pathways -> TL: cumulative LoE and the human terms**
 
 - Files: `diagnostics/pathways/D32_tl_staircase.pdf`, `diagnostics/pathways/D32_tl_staircase.png`
 - Data: `data/pathways/runs.csv`, `data/pathways/theoretical_limit.json`
-- This run: TL re-occupies R = 117,044 released dwellings (TL3 0, TL4 117,044) at a share s = 0.330 of need (G+ 354,466).
+- This run: TL re-occupies R = 117,044 released dwellings (TL1 0, TL2 117,044) at a share s = 0.330 of need (G+ 354,466).
 
 ### D33_ordering_checks
 
@@ -408,7 +408,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 - Files: `diagnostics/pathways/D33_ordering_checks.pdf`, `diagnostics/pathways/D33_ordering_checks.png`
 - Data: `data/pathways/ordering_checks.json`, `data/pathways/lever_annual.csv`
-- This run: Native-parameter ordering Reference >= Moderate >= Ambitious >= TL: 0 violations (per lever, typology and year). Cumulative carbon ordering holds for every lever. Annual-carbon reversals (timing only, not a STOP): L3 ambitious>=tl in 2039-2043 (max 64 kt); L4 ambitious>=tl in 2031-2031 (max 15 kt).
+- This run: Native-parameter ordering Reference >= Moderate >= Ambitious >= TL: 0 violations (per lever, typology and year). Cumulative carbon ordering holds for every lever. Annual-carbon reversals (timing only, not a STOP): L1 ambitious>=tl in 2039-2043 (max 64 kt); L2 ambitious>=tl in 2031-2031 (max 15 kt).
 
 ### D34_tl_dwellings
 
@@ -452,11 +452,11 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 
 ### D39_pathway_mc
 
-**Pathway Monte Carlo: Reference, P5 Moderate / Ambitious, TL**
+**Pathway Monte Carlo: Reference, Moderate / Ambitious Pathway, TL**
 
 - Files: `diagnostics/montecarlo/D39_pathway_mc.pdf`, `diagnostics/montecarlo/D39_pathway_mc.png`
 - Data: `data/pathways/montecarlo_summary.csv`, `data/pathways/montecarlo_annual.csv`
-- This run: P(cumulative LoE AR <= 1): REF 0.000, P5 0.000, P5A 0.000, TL 0.551, TL_from2027 0.981.
+- This run: P(cumulative LoE AR <= 1): REF 0.000, pathway_moderate 0.000, pathway_ambitious 0.000, TL 0.552, TL_from2027 0.981.
 
 ## Diagnostics: sensitivity (diagnostics/sensitivity/)
 
@@ -490,12 +490,12 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 - Data: `data/pathways/montecarlo_importance.csv`
 - This run: Bootstrap resamples: 2000; SRC and R² in the data file.
 
-### D41_p5_sensitivity
+### D41_pathway_sensitivity
 
-**P5 Moderate: one-at-a-time rows**
+**Moderate Pathway: one-at-a-time rows**
 
-- Files: `diagnostics/sensitivity/D41_p5_sensitivity.pdf`, `diagnostics/sensitivity/D41_p5_sensitivity.png`
-- Data: `data/sensitivity/p5_carbon.csv`
+- Files: `diagnostics/sensitivity/D41_pathway_sensitivity.pdf`, `diagnostics/sensitivity/D41_pathway_sensitivity.png`
+- Data: `data/sensitivity/pathway_carbon.csv`
 
 ### D42_pb_sensitivity
 
@@ -509,6 +509,6 @@ Run profile: **full** (5,000 Monte Carlo draws; formats pdf, png at 600 dpi). Ev
 - outputs/paper/ (Fig1-Fig6 of MODEL v2.1.2): outputs/paper_main/ Fig1-Fig8 (new set)
 - outputs/extended_data/ (ED1-ED13): outputs/paper_extended/ ED1-ED14
 - outputs/key_figures/ (K1-K6): retired: their content is in Fig1-Fig8
-- D30_l6_estimator: ED11 (L2 and L6 estimators)
+- D30_l6_estimator: ED11 (L5 and L8 estimators)
 - D11_floor_area_bridge_split: D10 (MODEL v3.0.0 splits demolition replacement and unconsented additions in every band set, so the appendix bridge equals D10)
 - Fig1_model_schematic: retired (schematic; the levers are in Table 1)

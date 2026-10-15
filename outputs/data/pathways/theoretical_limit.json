@@ -1,75 +1,75 @@
 {
   "run_mode": "full",
   "disclaimer": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at Level 4 (the definitional zero or full, or the best single observation), adopted by 2035, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
-  "bau": "The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 e^(-0.01 (t - 2025)) until TL7 sets A4-A5 to zero).",
+  "bau": "The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 e^(-0.01 (t - 2025)) until TL9 sets A4-A5 to zero).",
   "definition": {
     "levels": "every lever at Level 4",
     "adoption": "normalised logistic 2026 -> 2035 (as every level)",
     "sensitivity": "TL-from2027: every limit at full strength from 2027",
     "components": {
-      "TL1": "No extra space",
-      "TL2": "Densest design",
-      "TL3": "Historical maximum household size",
-      "TL4": "No vacancy",
-      "TL5": "No demolition",
-      "TL6": "Best-practice materials",
-      "TL7": "Zero-emission construction",
-      "TL8": "Lowest-carbon soils",
-      "TL9": "All brownfield"
+      "TL1": "Historical maximum household size",
+      "TL2": "No vacancy",
+      "TL3": "No demolition",
+      "TL4": "No extra space",
+      "TL5": "Densest design",
+      "TL6": "All brownfield",
+      "TL7": "Lowest-carbon soils",
+      "TL8": "Best-practice materials",
+      "TL9": "Zero-emission construction"
     },
-    "note": "TL9 = 100% brownfield makes TL8 zero within TL"
+    "note": "TL6 = 100% brownfield makes TL7 zero within TL"
   },
   "strength": [
     {
-      "item": "TL1",
+      "item": "TL4",
       "tl": "f = 1",
       "ambitious": "{'Detached': 0.3718, 'Townhouses': 0.0973, 'Apartments': 0.162}",
       "ok": true
     },
     {
-      "item": "TL2",
+      "item": "TL5",
       "tl": "{'Detached': 0.7095, 'Townhouses': 0.8194, 'Apartments': 0.8194}",
       "ambitious": "r = 0.8194",
       "ok": true
     },
     {
-      "item": "TL3",
+      "item": "TL1",
       "tl": "S = 2.7905",
       "ambitious": "S_amb max 2.6933",
       "ok": true
     },
     {
-      "item": "TL4",
+      "item": "TL2",
       "tl": "v = 0",
       "ambitious": "v = 0.0401",
       "ok": true
     },
     {
-      "item": "TL5",
+      "item": "TL3",
       "tl": "d = 1 (demolition and surge)",
       "ambitious": "d = 0.4",
       "ok": true
     },
     {
-      "item": "TL6",
+      "item": "TL8",
       "tl": "{'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827}",
       "ambitious": "r = 0.8270",
       "ok": true
     },
     {
-      "item": "TL7",
+      "item": "TL9",
       "tl": "A4-A5 = 0",
       "ambitious": "linear to zero in 2050",
       "ok": true
     },
     {
-      "item": "TL8",
+      "item": "TL7",
       "tl": "{'Detached': 22.93, 'Townhouses': 13.84, 'Apartments': 2.52}",
       "ambitious": "x = 0.146",
       "ok": true
     },
     {
-      "item": "TL9",
+      "item": "TL6",
       "tl": "s = 1",
       "ambitious": "s = 0.59",
       "ok": true
@@ -77,8 +77,8 @@
   ],
   "runs": {
     "TL": {
-      "R3": 0.0,
-      "R4": 117044.06385667666,
+      "R1": 0.0,
+      "R2": 117044.06385667666,
       "R": 117044.06385667666,
       "G_plus": 354466.24709639035,
       "share_of_need": 0.33019805077477166,
@@ -93,9 +93,9 @@
         2032
       ],
       "reoccupied_attributed": {
-        "TL3": 0.0,
-        "TL4": 117044.06385667666,
-        "rule": "in proportion R3 : R4"
+        "TL1": 0.0,
+        "TL2": 117044.06385667666,
+        "rule": "in proportion R1 : R2"
       },
       "household_size_by_year": {
         "2026": 2.6778614674781296,
@@ -234,8 +234,8 @@
       }
     },
     "TL-from2027": {
-      "R3": 62084.811298716115,
-      "R4": 114398.67585300712,
+      "R1": 62084.811298716115,
+      "R2": 114398.67585300712,
       "R": 176483.48715172324,
       "G_plus": 388873.42309367156,
       "share_of_need": 0.4538327298063052,
@@ -245,9 +245,9 @@
       "release_binding_years": [],
       "nonpositive_need_years": [],
       "reoccupied_attributed": {
-        "TL3": 62084.8112987161,
-        "TL4": 114398.67585300712,
-        "rule": "in proportion R3 : R4"
+        "TL1": 62084.8112987161,
+        "TL2": 114398.67585300712,
+        "rule": "in proportion R1 : R2"
       },
       "household_size_by_year": {
         "2026": 2.6778614674781296,

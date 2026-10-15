@@ -1,4 +1,16 @@
-# Project state: MODEL v3.2.0 (update)
+# Project state: MODEL v3.3.0 (update)
+
+Branch `release/model-v3.3.0` (from `release/model-v3.2.0`; not tagged). Decisions:
+[CHANGELOG_v3_3.md](CHANGELOG_v3_3.md). The levers are regrouped and renumbered by PAS 2080 (S1 Avoid L1-L5, S2 Switch
+L6-L8, S3 Improve L9; map in RENAMING.md §12); the strategy runs S1-S3 replace P1-P4 and P5 is the Moderate / Ambitious
+Pathway. Every deterministic total is unchanged from v3.2 under the map (bit-identical). Strategy Shapley shares
+(Moderate): S1 63.7%, S2 25.9%, S3 10.4%. New: the Very High replacement variant (census trend continues; Reference
+variant 24,238 kt, LoE AR 5.45) and the replacement half-life sampled U(5, 15) in the Monte Carlo (least important of
+five inputs; P(TL LoE AR <= 1) 0.552). Sections below describe v3.2 with its run names (P1-P5; old lever numbers).
+
+---
+
+## MODEL v3.2.0 (update)
 
 Branch `release/model-v3.2.0` (from `release/model-v3.0.0`; proposed tag `model-v3.2.0`, not yet tagged). MODEL v3.1.0
 is withdrawn. Decisions: [CHANGELOG_v3_2.md](CHANGELOG_v3_2.md). Every v3.0 headline below still holds: the

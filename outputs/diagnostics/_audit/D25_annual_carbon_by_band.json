@@ -1,6 +1,6 @@
 {
  "figure": "D25_annual_carbon_by_band",
- "producer": "figures/__main__.py",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "",

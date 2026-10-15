@@ -1,6 +1,6 @@
 {
  "figure": "D28_pathways_annual",
- "producer": "figures/__main__.py",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "Moderate",

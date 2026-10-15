@@ -60,7 +60,8 @@
   "Soil carbon loss on all floor area, including replacement",
   "Soil order: lowest (Raw) / highest (Organic) (high)",
   "Soil order: lowest (Raw) / highest (Organic) (low)",
-  "Vacancy parameter: 1986-2023 census mean (one definition)"
+  "Vacancy parameter: 1986-2023 census mean (one definition)",
+  "Very High replacement (trend continues)"
  ],
  "note": "Every one-at-a-time row of the Reference; not additive, not a joint interval.",
  "maintenance_drawn": false,

@@ -5,71 +5,55 @@
   "B_AtP_kt": 1112.9648539994828,
   "solution_space_markers": [
     {
-      "run": "P1-moderate",
-      "demand_reduction": 0.13967039298454154,
-      "intensity_reduction": -0.001451022420046133,
-      "LoE_AR_run": 4.034576872117927,
-      "LoE_AR_on_grid_at_coordinates": 4.034576872117928,
-      "LoE_AtP_run": 16.13529462471107
+      "run": "S1-moderate",
+      "demand_reduction": 0.19842965678254776,
+      "intensity_reduction": -0.004470293108887802,
+      "LoE_AR_run": 3.7912595272514333,
+      "LoE_AR_on_grid_at_coordinates": 3.7912595272514333,
+      "LoE_AtP_run": 15.162206945094649
     },
     {
-      "run": "P1-ambitious",
-      "demand_reduction": 0.26614202967120293,
-      "intensity_reduction": -0.0035282394518041382,
-      "LoE_AR_run": 3.494978684856096,
-      "LoE_AR_on_grid_at_coordinates": 3.494978684856096,
-      "LoE_AtP_run": 13.977304826425433
+      "run": "S1-ambitious",
+      "demand_reduction": 0.36895865865212074,
+      "intensity_reduction": -0.009726107833158748,
+      "LoE_AR_run": 3.0669066391351754,
+      "LoE_AR_on_grid_at_coordinates": 3.066906639135175,
+      "LoE_AtP_run": 12.265336310955304
     },
     {
-      "run": "P2-moderate",
-      "demand_reduction": 0.06620031863224496,
-      "intensity_reduction": -0.0031281119859671858,
-      "LoE_AR_run": 4.358613004305222,
-      "LoE_AR_on_grid_at_coordinates": 4.358613004305223,
-      "LoE_AtP_run": 17.43119717598634
-    },
-    {
-      "run": "P2-ambitious",
-      "demand_reduction": 0.13150186920112106,
-      "intensity_reduction": -0.006675614204770586,
-      "LoE_AR_run": 4.089420051318024,
-      "LoE_AR_on_grid_at_coordinates": 4.089420051318025,
-      "LoE_AtP_run": 16.354626386776335
-    },
-    {
-      "run": "P3-moderate",
+      "run": "S2-moderate",
       "demand_reduction": 0.0,
-      "intensity_reduction": 0.08010533933948571,
-      "LoE_AR_run": 4.286054459176441,
-      "LoE_AR_on_grid_at_coordinates": 4.286054459176441,
-      "LoE_AtP_run": 17.14101717934677
+      "intensity_reduction": 0.08226053067902783,
+      "LoE_AR_run": 4.276760683054088,
+      "LoE_AR_on_grid_at_coordinates": 4.276760683054089,
+      "LoE_AtP_run": 17.103849015084837
     },
     {
-      "run": "P3-ambitious",
+      "run": "S2-ambitious",
       "demand_reduction": 0.0,
-      "intensity_reduction": 0.16021067867897176,
-      "LoE_AR_run": 3.940618266868632,
-      "LoE_AR_on_grid_at_coordinates": 3.940618266868632,
-      "LoE_AtP_run": 15.759530368314968
+      "intensity_reduction": 0.16017810405476618,
+      "LoE_AR_run": 3.940758737581873,
+      "LoE_AR_on_grid_at_coordinates": 3.940758737581873,
+      "LoE_AtP_run": 15.760092146269912
     },
     {
-      "run": "P4-moderate",
+      "run": "S3-moderate",
       "demand_reduction": 0.0,
-      "intensity_reduction": 0.03552444195204163,
-      "LoE_AR_run": 4.478299515126073,
-      "LoE_AR_on_grid_at_coordinates": 4.478299515126074,
-      "LoE_AtP_run": 17.909853842077904
+      "intensity_reduction": 0.03336925061249951,
+      "LoE_AR_run": 4.487593291248426,
+      "LoE_AR_on_grid_at_coordinates": 4.487593291248425,
+      "LoE_AtP_run": 17.947022006339836
     },
     {
-      "run": "P4-ambitious",
+      "run": "S3-ambitious",
       "demand_reduction": 0.0,
-      "intensity_reduction": 0.06670592660079344,
-      "LoE_AR_run": 4.343836401725843,
-      "LoE_AR_on_grid_at_coordinates": 4.343836401725843,
-      "LoE_AtP_run": 17.37210180025605
+      "intensity_reduction": 0.06673850122499914,
+      "LoE_AR_run": 4.343695931012603,
+      "LoE_AR_on_grid_at_coordinates": 4.343695931012602,
+      "LoE_AtP_run": 17.371540022301108
     },
     {
-      "run": "P5-moderate",
+      "run": "pathway-moderate",
       "demand_reduction": 0.19842965678254776,
       "intensity_reduction": 0.11263000686141134,
       "LoE_AR_run": 3.386491666420431,
@@ -77,7 +61,7 @@
       "LoE_AtP_run": 13.543437766532973
     },
     {
-      "run": "P5-ambitious",
+      "run": "pathway-ambitious",
       "demand_reduction": 0.36895865865212074,
       "intensity_reduction": 0.21570515978191018,
       "LoE_AR_run": 2.4534578147389645,
@@ -109,8 +93,8 @@
     "floor_area_2027_2050_at_k_Mm2": 12.74401366728691,
     "AtP_attainable": false
   },
-  "P5-moderate": {
-    "run": "P5-moderate",
+  "pathway-moderate": {
+    "run": "pathway-moderate",
     "LoE_AR_at_k1": 3.386491666420431,
     "LoE_AtP_at_k1": 13.543437766532973,
     "LoE_AR_min_k0": 0.3192163991544315,
@@ -125,8 +109,8 @@
     "floor_area_2027_2050_at_k_Mm2": 14.361555795020621,
     "AtP_attainable": false
   },
-  "P5-ambitious": {
-    "run": "P5-ambitious",
+  "pathway-ambitious": {
+    "run": "pathway-ambitious",
     "LoE_AR_at_k1": 2.4534578147389645,
     "LoE_AtP_at_k1": 9.81199911289133,
     "LoE_AR_min_k0": 0.3192163991544315,

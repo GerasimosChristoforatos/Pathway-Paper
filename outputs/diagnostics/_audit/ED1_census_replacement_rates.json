@@ -16,6 +16,8 @@
   "$\\mathdefault{0.2}$",
   "$\\mathdefault{0.3}$",
   "$\\mathdefault{0.4}$",
+  "$\\mathdefault{0.5}$",
+  "$\\mathdefault{0.6}$",
   "$\\mathdefault{1980}$",
   "$\\mathdefault{1990}$",
   "$\\mathdefault{2000}$",
@@ -32,7 +34,8 @@
   "Long-run net rate 1991-2023",
   "Low replacement",
   "Net replacement (% of stock per year)",
-  "Reference"
+  "Reference",
+  "Very High replacement (trend continues)"
  ],
  "note": "Bars: census-interval rates from dwelling counts (net of unconsented additions); lines: the projection variants.",
  "maintenance_drawn": false,

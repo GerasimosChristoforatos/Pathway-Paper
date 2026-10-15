@@ -7,7 +7,7 @@
    "xlabel": "",
    "ylabel": "Net replacement (% of the previous year's stock per year)",
    "year_min": 2015.5,
-   "year_max": 2050.0
+   "year_max": 2075.0
   }
  ],
  "texts": [
@@ -16,6 +16,8 @@
   "$\\mathdefault{0.2}$",
   "$\\mathdefault{0.3}$",
   "$\\mathdefault{0.4}$",
+  "$\\mathdefault{0.5}$",
+  "$\\mathdefault{0.6}$",
   "$\\mathdefault{1980}$",
   "$\\mathdefault{1990}$",
   "$\\mathdefault{2000}$",
@@ -24,6 +26,9 @@
   "$\\mathdefault{2030}$",
   "$\\mathdefault{2040}$",
   "$\\mathdefault{2050}$",
+  "$\\mathdefault{2060}$",
+  "$\\mathdefault{2070}$",
+  "$\\mathdefault{2080}$",
   "$\\mathdefault{\u22120.1}$",
   "$\\mathdefault{\u22120.2}$",
   "2013 \u2192 2018: census empty / away definition break",
@@ -32,9 +37,12 @@
   "High replacement",
   "Low replacement",
   "Net replacement (% of the previous year's stock per year)",
-  "Reference"
+  "Reference",
+  "Reference continued after 2050",
+  "Very High replacement (trend continues)",
+  "asymptote: long-run rate 0.10%; 2050 value 0.138%"
  ],
- "note": "Net replacement rate (demolition net of unconsented additions). Long run 1991\u20132023: 0.101% per year; 2018\u201323: 0.312% per year. Each step is one intercensal interval; the 2018\u201323 step is a single interval. Negative values mean the stock grew by more than consented new building, i.e. more dwellings appeared through conversions and unconsented additions than were demolished.",
+ "note": "Net replacement rate (demolition net of unconsented additions). Long run 1991\u20132023: 0.101% per year; 2018\u201323: 0.312% per year. Each step is one intercensal interval; the 2018\u201323 step is a single interval. Negative values mean the stock grew by more than consented new building, i.e. more dwellings appeared through conversions and unconsented additions than were demolished. Very High: the interval-length-weighted OLS trend of the census-interval rates 1991\u20132023, rate = -0.221894 + 1.1097e-04 \u00d7 year (0.294% in 2026, 0.560% in 2050).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

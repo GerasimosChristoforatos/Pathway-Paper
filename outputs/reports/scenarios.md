@@ -11,6 +11,7 @@ Current defaults, 2026 overbuild rule `market_excess`; only the replacement vari
 | Reference | 85.90 | +9.5% | 20,615 | 0.298 / 0.250 / 0.175 / 0.138 | 4,615 | 5,432 | 5.5% |
 | Reference, replacement half-life 15 yr | 87.95 | +12.1% | 21,021 | 0.303 / 0.269 / 0.206 / 0.167 | 5,231 | 6,048 | 6.2% |
 | High replacement | 95.20 | +21.3% | 22,431 | 0.312 / 0.312 / 0.312 / 0.312 | 7,405 | 8,222 | 8.8% |
+| Very High replacement (trend continues) | 104.68 | +33.4% | 24,238 | 0.294 / 0.338 / 0.449 / 0.560 | 10,247 | 11,064 | 12.2% |
 | Low replacement, no census under-construction correction | 81.12 | +3.4% | 19,591 | 0.134 / 0.134 / 0.134 / 0.134 | 3,181 | 3,202 | 3.8% |
 | Reference, no census under-construction correction | 91.44 | +16.5% | 21,755 | 0.408 / 0.342 / 0.238 / 0.186 | 6,277 | 6,298 | 7.4% |
 | High replacement, no census under-construction correction | 104.35 | +33.0% | 24,276 | 0.428 / 0.428 / 0.428 / 0.428 | 10,149 | 10,170 | 12.0% |
@@ -26,6 +27,7 @@ O = observed-implied 2026 completions (all categories, nowcast consents); R = th
 | Reference | 38,863 | 22,103 | +16,760 | 20% | +9,974 | +0 |
 | Reference, replacement half-life 15 yr | 38,863 | 22,200 | +16,662 | 20% | +9,789 | +0 |
 | High replacement | 38,863 | 22,402 | +16,461 | 21% | +9,392 | +0 |
+| Very High replacement (trend continues) | 38,863 | 22,011 | +16,852 | 19% | +9,550 | +0 |
 | Low replacement, no census under-construction correction | 38,863 | 18,648 | +20,215 | 3% | +13,174 | +0 |
 | Reference, no census under-construction correction | 38,863 | 24,426 | +14,437 | 31% | +7,742 | +0 |
 | High replacement, no census under-construction correction | 38,863 | 24,841 | +14,022 | 33% | +6,935 | +0 |

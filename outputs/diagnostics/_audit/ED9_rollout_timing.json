@@ -3,14 +3,14 @@
  "producer": "figures/__main__.py",
  "axes": [
   {
-   "title": "P5 Moderate",
+   "title": "Moderate Pathway",
    "xlabel": "",
    "ylabel": "Embodied carbon (kt CO\u2082e per year)",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "P5 Ambitious",
+   "title": "Ambitious Pathway",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
@@ -35,12 +35,12 @@
   "$\\mathdefault{800}$",
   "Ability to pay (AtP)",
   "Acquired rights (AR)",
+  "Ambitious Pathway",
   "Embodied carbon (kt CO\u2082e per year)",
-  "P5 Ambitious",
-  "P5 Moderate",
-  "P5, full roll-out by 2030",
-  "P5, full roll-out by 2035 (adopted)",
-  "P5, full roll-out by 2045",
+  "Moderate Pathway",
+  "Pathway, full roll-out by 2030",
+  "Pathway, full roll-out by 2035 (adopted)",
+  "Pathway, full roll-out by 2045",
   "Reference",
   "a",
   "b"

@@ -3,63 +3,63 @@
  "producer": "figures/__main__.py",
  "axes": [
   {
-   "title": "L1 Dwelling size",
+   "title": "L1 Household size",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "L2 Design density",
+   "title": "L2 Vacancy rate",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "L3 Household size",
+   "title": "L3 Building lifetime",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "L4 Vacancy",
+   "title": "L4 Extra space",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "L5 Building lifetime",
+   "title": "L5 Occupancy density",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "L6 Material carbon",
+   "title": "L6 Brownfield-first development",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "L7 Construction-stage carbon",
+   "title": "L7 Soil-aware planning",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "L8 Soil-aware planning",
+   "title": "L8 Material carbon efficiency",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "L9 Brownfield development",
+   "title": "L9 Construction-stage carbon",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
@@ -86,15 +86,15 @@
   "$\\mathdefault{800}$",
   "Ambitious",
   "Embodied carbon (kt CO\u2082e per year)",
-  "L1 Dwelling size",
-  "L2 Design density",
-  "L3 Household size",
-  "L4 Vacancy",
-  "L5 Building lifetime",
-  "L6 Material carbon",
-  "L7 Construction-stage carbon",
-  "L8 Soil-aware planning",
-  "L9 Brownfield development",
+  "L1 Household size",
+  "L2 Vacancy rate",
+  "L3 Building lifetime",
+  "L4 Extra space",
+  "L5 Occupancy density",
+  "L6 Brownfield-first development",
+  "L7 Soil-aware planning",
+  "L8 Material carbon efficiency",
+  "L9 Construction-stage carbon",
   "Moderate",
   "Reference",
   "TL (Level 4)"

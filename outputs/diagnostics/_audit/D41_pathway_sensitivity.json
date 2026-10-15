@@ -1,5 +1,5 @@
 {
- "figure": "D41_p5_sensitivity",
+ "figure": "D41_pathway_sensitivity",
  "producer": "figures/__main__.py",
  "axes": [
   {
@@ -24,28 +24,29 @@
   "8,000",
   "Ambition of all",
   "Ambition of one lever",
+  "Ambitious Pathway",
   "Cumulative carbon 2026-2050 (kt CO\u2082e)",
   "Demographics",
   "Full roll-out by 2030 / by 2045 (high)",
   "Full roll-out by 2030 / by 2045 (low)",
-  "L1 Dwelling size at Ambitious",
-  "L2 Design density at Ambitious",
-  "L3 Household size at Ambitious",
-  "L4 Vacancy at Ambitious",
-  "L5 Building lifetime at Ambitious",
-  "L6 Material carbon at Ambitious",
-  "L7 Construction-stage carbon at Ambitious",
-  "L8 Soil-aware planning at Ambitious",
-  "L9 Brownfield development at Ambitious",
+  "L1 Household size at Ambitious",
+  "L2 Vacancy rate at Ambitious",
+  "L3 Building lifetime at Ambitious",
+  "L4 Extra space at Ambitious",
+  "L5 Occupancy density at Ambitious",
+  "L6 Brownfield-first development at Ambitious",
+  "L7 Soil-aware planning at Ambitious",
+  "L8 Material carbon efficiency at Ambitious",
+  "L9 Construction-stage carbon at Ambitious",
   "Low / High replacement (high)",
   "Low / High replacement (low)",
-  "P5 Combined, Ambitious",
   "Population: Stats NZ 5th / 95th percentile (high)",
   "Population: Stats NZ 5th / 95th percentile (low)",
   "Replacement scenario",
   "Roll-out timing",
   "TL (every lever at Level 4)",
-  "Theoretical limit"
+  "Theoretical limit",
+  "Very High replacement (trend continues)"
  ],
  "note": null,
  "maintenance_drawn": false,
@@ -55,7 +56,7 @@
  "boundary_zones": false,
  "white_segment_edges": 0,
  "source": [
-  "sensitivity/p5_carbon.csv"
+  "sensitivity/pathway_carbon.csv"
  ],
  "atp_linestyles": [],
  "negative_band_segments": 0,

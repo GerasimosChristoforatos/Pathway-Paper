@@ -5,7 +5,8 @@
     the excess is held fixed in every run;
   * the lever rule: Moderate is the exact midpoint of the native parameter; TLn at least as strong as Ambitious;
     the data STOP conditions (L5 sample, f_t in [0, 1], High >= Medium);
-  * ordering Reference >= Moderate >= Ambitious >= TL; TL <= P5 in every Monte Carlo draw; L4 / L5 interaction;
+  * ordering Reference >= Moderate >= Ambitious >= TL; TL <= Ambitious Pathway <= Moderate Pathway in every Monte
+    Carlo draw; L4 / L5 interaction;
   * built_t >= 0 in every run and year; implied vacancy >= 4.0% in every non-TL run; cumulative re-occupied <=
     cumulative released; Shapley efficiency; waterfall sums; material and stage values never negative.
 """
@@ -112,10 +113,10 @@ def test_ordering():
     assert all(r['ok'] for r in o['cumulative'])
 
 
-def test_tl_le_p5_every_draw():
+def test_tl_le_pathway_every_draw():
     d = pd.read_csv(D('pathways/montecarlo_draws.csv'))
-    assert (d['TL_carbon_kt'] <= d['P5A_carbon_kt'] * (1 + 1e-12)).all()
-    assert (d['P5A_carbon_kt'] <= d['P5_carbon_kt'] * (1 + 1e-12)).all()
+    assert (d['TL_carbon_kt'] <= d['pathway_ambitious_carbon_kt'] * (1 + 1e-12)).all()
+    assert (d['pathway_ambitious_carbon_kt'] <= d['pathway_moderate_carbon_kt'] * (1 + 1e-12)).all()
 
 
 # ------------------------------------------------------------------ runs ----
@@ -196,8 +197,8 @@ def test_waterfall_sums():
         tot = g.groupby('step')['carbon_kt'].sum()
         assert np.allclose(tot.values, g.groupby('step')['total_carbon_kt'].first().values, rtol=1e-9)
         last = g[g['step'] == g['step'].max()]['total_carbon_kt'].iloc[0]
-        p5 = g[g['step_id'] == 'P4']['total_carbon_kt'].iloc[0]
-        assert p5 == pytest.approx(r.loc[f'P5-{s}', 'carbon_kt'], rel=1e-12)
+        pw = g[g['step_id'] == 'L9']['total_carbon_kt'].iloc[0]
+        assert pw == pytest.approx(r.loc[f'pathway-{s}', 'carbon_kt'], rel=1e-12)
         assert last == pytest.approx(r.loc['TL', 'carbon_kt'], rel=1e-12)
 
 

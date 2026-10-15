@@ -1,6 +1,6 @@
-"""MODEL v3.2.0 regression lock (tests/regression_model_v3_2.json; captured by tests/capture_regression_model_v3.py).
-The MODEL v3.0.0 lock (tests/regression_model_v3.json) is kept: its link to v3.2 is tests/test_model_v3_2.py
-(every run total equal; the Reference Monte Carlo hashes unchanged).
+"""MODEL v3.3.0 regression lock (tests/regression_model_v3_3.json; captured by tests/capture_regression_model_v3.py).
+The MODEL v3.0.0 and v3.2.0 locks (tests/regression_model_v3.json, regression_model_v3_2.json) are kept for the record;
+the link of v3.3 to v3.2 is tests/test_model_v3_3.py (every run total equal under the v3.2 -> v3.3 map of run ids).
 
 DETERMINISTIC: the SHA-256 of every deterministic data file (the Reference, every lever / pathway / TL run, the Shapley
 values and subsets, the waterfalls, the lambda-sweep, the logs). These files are identical in the light and the full
@@ -12,7 +12,7 @@ import json
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOCK = os.path.join(ROOT, 'tests', 'regression_model_v3_2.json')
+LOCK = os.path.join(ROOT, 'tests', 'regression_model_v3_3.json')
 DETERMINISTIC_FILES = (
     'baseline/projection.json', 'baseline/annual.csv', 'baseline/bands_annual.csv', 'baseline/annual_by_stage.csv',
     'baseline/annual_by_material.csv', 'baseline/overbuild_absorption_log.csv', 'baseline/sensitivity_one_at_a_time.csv',
@@ -21,6 +21,7 @@ DETERMINISTIC_FILES = (
     'pathways/shapley_subsets.csv', 'pathways/waterfall.csv', 'pathways/lambda_sweep.csv', 'pathways/lever_annual.csv',
     'pathways/reoccupation_log.csv', 'pathways/solution_space.csv', 'pathways/ordering_checks.json',
     'pathways/theoretical_limit.json', 'pathways/backcast.json', 'pathways/levers.json',
+    'pathways/sequential_vs_shapley.csv',
     'sensitivity/reference_carbon.csv', 'sensitivity/pathway_carbon.csv', 'sensitivity/replacement_variants.csv',
     'sensitivity/tornado.csv', 'baseline/bands_history.csv', 'baseline/history_unexplained.json')
 MC_FILES = ('montecarlo/draws_REF.csv', 'montecarlo/summary_REF.csv', 'pathways/montecarlo_draws.csv',

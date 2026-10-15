@@ -20,7 +20,7 @@ band's in-scope floor area is its gross floor area x (1 - RV share), exactly; th
 (gfa_adj) is in-scope floor area of the 2026 overbuild band. Soil: a band bears soil unless it is soil-free
 replacement (demolition, the surge and the residual, and the redevelopment part of the join, in a year whose net
 replacement is positive; engine.forward), scaled by the brownfield factor phi = soil share / soil share of the
-replacement rule (L9); soil carbon loss is attributed to the construction year (MODEL v3.0 accounting). The bands then reproduce the engine's floor area and carbon in every year (checked to 1e-9).
+replacement rule (L6); soil carbon loss is attributed to the construction year (MODEL v3.0 accounting). The bands then reproduce the engine's floor area and carbon in every year (checked to 1e-9).
 """
 import numpy as np
 
@@ -76,7 +76,7 @@ def arrays(E, fi, excess, paid, flows, long_run_residual):
 
 def _factors(E, fi, gi, bear, typ):
     """(materials kg per m2 of the year's mix, soil kg per m2, phi): phi scales the soil of every soil-bearing band so
-    that the bands carry exactly the engine's soil (brownfield share L9, clipped soil share of TL zero years)."""
+    that the bands carry exactly the engine's soil (brownfield share L6, clipped soil share of TL zero years)."""
     total = np.asarray(E['total'], float)
     shares, soil = fi['shares'], fi['soil']
     sY = {t: np.broadcast_to(np.asarray(soil[t], float), total.shape) for t in typ}

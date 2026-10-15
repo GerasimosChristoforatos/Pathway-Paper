@@ -62,17 +62,17 @@
     "ambitious": 1.0
   },
   "subrule": {
-    "L1": "B",
-    "L2": "A",
+    "L1": "C",
+    "L2": "B",
     "L3": "C",
     "L4": "B",
-    "L5": "C",
-    "L6": "A",
+    "L5": "A",
+    "L6": "C",
     "L7": "C",
-    "L8": "C",
+    "L8": "A",
     "L9": "C"
   },
-  "L2": {
+  "L5": {
     "subrule": "A",
     "n": 16,
     "typologies": [
@@ -316,7 +316,7 @@
     },
     "anchor": "HD q0.15 of the 16 case-study design ratios = 0.8194"
   },
-  "L1": {
+  "L4": {
     "subrule": "B",
     "size_ref": {
       "Detached": 179.60009343759657,
@@ -498,7 +498,7 @@
     "anchor": "Detached 148.8 m2 (1990), Townhouses 105.8 m2 (1990), Apartments 91.0 m2 (1998)",
     "note": "1990 is the first year of the consent series and a recession year"
   },
-  "L3": {
+  "L1": {
     "subrule": "C",
     "variants": {
       "Low": {
@@ -734,7 +734,7 @@
     "high_ge_medium_every_year": true,
     "anchor": "Stats NZ High - Medium household size gap (2050: +0.0415)"
   },
-  "L4": {
+  "L2": {
     "subrule": "B",
     "v": {
       "reference": 0.05387454644033866,
@@ -758,7 +758,7 @@
     "anchor": "4.01% (1996 census minimum, one definition)",
     "note": "Reference = the published 2023 census value 5.39%; on the consistent definition 2023 is 5.38%"
   },
-  "L5": {
+  "L3": {
     "subrule": "C",
     "d": {
       "reference": 0.0,
@@ -774,7 +774,7 @@
     "anchor": "-40% demolition (Pellan et al. 2024)",
     "tl_note": "zero demolition, no redevelopment wave; unconsented additions kept at the long-run rate"
   },
-  "L6": {
+  "L8": {
     "subrule": "A",
     "n": 14,
     "sample_typologies": [
@@ -968,7 +968,7 @@
       "note": "report only; the adopted estimate keeps n = 14 (Detached, Townhouses)"
     }
   },
-  "L7": {
+  "L9": {
     "subrule": "C",
     "a45_2025": {
       "Detached": 31.208826649335204,
@@ -1066,7 +1066,7 @@
     "anchor": "A4-A5 linear to zero by 2050 (Zero Carbon Act s. 5Q; Oslo 2025)",
     "assumption": "A5 treated as energy: site waste assumed eliminated (upper bound)"
   },
-  "L8": {
+  "L7": {
     "subrule": "C",
     "x": {
       "reference": 0.0,
@@ -1104,7 +1104,7 @@
     },
     "anchor": "-14.6% soil carbon loss (SOC-aware allocation; Christoforatos, Pickering & Schipper 2026)"
   },
-  "L9": {
+  "L6": {
     "subrule": "C",
     "s": {
       "reference": 0.17916414788023538,
@@ -1125,55 +1125,55 @@
   },
   "tl_strength": [
     {
-      "item": "TL1",
+      "item": "TL4",
       "tl": "f = 1",
       "ambitious": "{'Detached': 0.3718, 'Townhouses': 0.0973, 'Apartments': 0.162}",
       "ok": true
     },
     {
-      "item": "TL2",
+      "item": "TL5",
       "tl": "{'Detached': 0.7095, 'Townhouses': 0.8194, 'Apartments': 0.8194}",
       "ambitious": "r = 0.8194",
       "ok": true
     },
     {
-      "item": "TL3",
+      "item": "TL1",
       "tl": "S = 2.7905",
       "ambitious": "S_amb max 2.6933",
       "ok": true
     },
     {
-      "item": "TL4",
+      "item": "TL2",
       "tl": "v = 0",
       "ambitious": "v = 0.0401",
       "ok": true
     },
     {
-      "item": "TL5",
+      "item": "TL3",
       "tl": "d = 1 (demolition and surge)",
       "ambitious": "d = 0.4",
       "ok": true
     },
     {
-      "item": "TL6",
+      "item": "TL8",
       "tl": "{'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827}",
       "ambitious": "r = 0.8270",
       "ok": true
     },
     {
-      "item": "TL7",
+      "item": "TL9",
       "tl": "A4-A5 = 0",
       "ambitious": "linear to zero in 2050",
       "ok": true
     },
     {
-      "item": "TL8",
+      "item": "TL7",
       "tl": "{'Detached': 22.93, 'Townhouses': 13.84, 'Apartments': 2.52}",
       "ambitious": "x = 0.146",
       "ok": true
     },
     {
-      "item": "TL9",
+      "item": "TL6",
       "tl": "s = 1",
       "ambitious": "s = 0.59",
       "ok": true
@@ -1227,6 +1227,8 @@
     "REF LoE_AtP": 0.0,
     "HIGH LoE_AR": 2.220446049250313e-16,
     "HIGH LoE_AtP": 0.0,
+    "VHIGH LoE_AR": 1.1102230246251565e-16,
+    "VHIGH LoE_AtP": 0.0,
     "overbuild_excess_max_abs_diff_between_runs": 0.0
   },
   "sources": {

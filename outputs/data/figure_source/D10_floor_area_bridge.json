@@ -56,12 +56,28 @@
 "unconsented": -2.8873031330516983,
 "vacancy": 4.0267507336767565
 }
+},
+"VHIGH": {
+"total_in_scope": 104.67680438599452,
+"values": {
+"extra_space": 25.52026002339228,
+"growth": 42.8882950707976,
+"overbuild_2026": 3.813634365528717,
+"overbuild_absorbed": -3.832088759165395,
+"redevelopment": 27.78095891364552,
+"replacement": 11.313767245341518,
+"retirement_villages": -6.255266503991469,
+"smaller_households": 2.307796429820681,
+"unconsented": -2.8873031330517014,
+"vacancy": 4.0267507336767565
+}
 }
 },
 "labels": {
 "HIGH": "High replacement",
 "LOW": "Low replacement",
-"REF": "Reference"
+"REF": "Reference",
+"VHIGH": "Very High replacement (trend continues)"
 },
 "results_keys": {
 "extra_space": "extra",
@@ -79,6 +95,7 @@
 "variants": [
 "LOW",
 "REF",
-"HIGH"
+"HIGH",
+"VHIGH"
 ]
 }

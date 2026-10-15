@@ -157,4 +157,4 @@ def test_mc_percentiles_ordered():
     m = pd.read_csv(layout.data('aesa/montecarlo_annual.csv', frozen=False))
     for k in ('LoE_AR', 'LoE_AtP', 'B_AR_kgCO2e', 'I_sec_kgCO2e'):
         assert (m[f'{k}_p5'] <= m[f'{k}_p50']).all() and (m[f'{k}_p50'] <= m[f'{k}_p95']).all()
-    assert set(m['scenario']) == {'REF', 'LOW', 'HIGH'}
+    assert set(m['scenario']) == {'REF', 'LOW', 'HIGH', 'VHIGH'}           # MODEL v3.3.0: Very High added

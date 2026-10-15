@@ -27,7 +27,7 @@ RUNTIME_ONLY = ('SAVE_FIGURES', 'SHOW_PLOTS', 'FROZEN_RUN', 'QUICK_RUN')
 
 
 PATHWAYS_MARK = '## Pathways (levers.py, pathways.py)'
-PATHWAYS_EXCLUDED = ('SOURCES', 'LEVER_NAMES', 'PATHWAYS', 'PATHWAY_NAMES', 'SETTING_NAMES',
+PATHWAYS_EXCLUDED = ('SOURCES', 'LEVER_NAMES', 'STRATEGIES', 'STRATEGY_NAMES', 'LEVER_STRATEGY', 'SETTING_NAMES',
                      'BAND_TARGET', 'LEVER_PARAMETER', 'TL_NAMES', 'TL_DISCLAIMER', 'DENSER_MIX_V2_NOTE')
 
 
@@ -49,7 +49,7 @@ def pathways_section():
          '',
          '| setting | value | basis |', '|---|---|---|']
     for r in LV.lever_table(lv):
-        L.append(f"| {r['item']} ({r['pathway']}) | sub-rule {r['subrule']}: {r['anchor']}; Moderate {r['moderate']}; "
+        L.append(f"| {r['item']} ({r['strategy']}) | sub-rule {r['subrule']}: {r['anchor']}; Moderate {r['moderate']}; "
                  f"Ambitious {r['ambitious']}; TL {r['tl']} | {LV.SUBRULE_TEXT[r['subrule']]} |")
     for r in lv.get('tl_strength', []):
         L.append(f"| {r['item']} vs Ambitious | {r['tl']} vs {r['ambitious']} | asserted at least as strong: {r['ok']} |")

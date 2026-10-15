@@ -25,3 +25,10 @@ Projection 2026-2050 against the 1991-2025 historical range (min-max).
 | HIGH | household size | 2.66 to 2.79 | 18 | 2033 | 0.0 | 0.3 |
 | HIGH | new-dwelling size | 139.09 to 205.03 | 0 | - | 0.0 | 0.0 |
 | HIGH | vacancy rate (effective, %) | 5.08 to 8.09 | 0 | - | 0.0 | 0.0 |
+| VHIGH | dwellings completed | 12,978.90 to 47,061.10 | 0 | - | 0.0 | 0.0 |
+| VHIGH | net removals | -1,478.28 to 6,041.31 | 25 | 2026 | 142.6 | 0.0 |
+| VHIGH | people per new dwelling | 0.09 to 4.03 | 0 | - | 0.0 | 0.0 |
+| VHIGH | floor area per additional resident | 32.86 to 1,705.32 | 0 | - | 0.0 | 0.0 |
+| VHIGH | household size | 2.66 to 2.79 | 18 | 2033 | 0.0 | 0.3 |
+| VHIGH | new-dwelling size | 139.09 to 205.03 | 0 | - | 0.0 | 0.0 |
+| VHIGH | vacancy rate (effective, %) | 5.08 to 8.09 | 0 | - | 0.0 | 0.0 |

@@ -10,67 +10,67 @@
    "year_max": 2050.0
   },
   {
-   "title": "L1 Dwelling size [B]",
-   "xlabel": "",
-   "ylabel": "",
-   "year_min": null,
-   "year_max": null
-  },
-  {
-   "title": "L2 Design density [A]",
-   "xlabel": "",
-   "ylabel": "",
-   "year_min": null,
-   "year_max": null
-  },
-  {
-   "title": "L3 Household size [C]",
+   "title": "L1 Household size [C]",
    "xlabel": "",
    "ylabel": "household size",
    "year_min": 2025.0,
    "year_max": 2050.0
   },
   {
-   "title": "L4 Vacancy [B]",
+   "title": "L2 Vacancy rate [B]",
    "xlabel": "",
    "ylabel": "",
    "year_min": null,
    "year_max": null
   },
   {
-   "title": "L5 Building lifetime [C]",
+   "title": "L3 Building lifetime [C]",
    "xlabel": "",
    "ylabel": "",
    "year_min": null,
    "year_max": null
   },
   {
-   "title": "L6 Material carbon [A]",
+   "title": "L4 Extra space [B]",
    "xlabel": "",
    "ylabel": "",
    "year_min": null,
    "year_max": null
   },
   {
-   "title": "L7 Construction-stage carbon [C]",
+   "title": "L5 Occupancy density [A]",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "L6 Brownfield-first development [C]",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "L7 Soil-aware planning [C]",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "L8 Material carbon efficiency [A]",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "L9 Construction-stage carbon [C]",
    "xlabel": "",
    "ylabel": "A4-A5 factor",
    "year_min": 2025.0,
    "year_max": 2050.0
-  },
-  {
-   "title": "L8 Soil-aware planning [C]",
-   "xlabel": "",
-   "ylabel": "",
-   "year_min": null,
-   "year_max": null
-  },
-  {
-   "title": "L9 Brownfield development [C]",
-   "xlabel": "",
-   "ylabel": "",
-   "year_min": null,
-   "year_max": null
   }
  ],
  "texts": [
@@ -128,27 +128,24 @@
   "Adoption weight w(y)",
   "Amb",
   "Ambitious",
-  "Apartments",
-  "Detached",
-  "L1 Dwelling size [B]",
-  "L2 Design density [A]",
-  "L3 Household size [C]",
-  "L4 Vacancy [B]",
-  "L5 Building lifetime [C]",
-  "L6 Material carbon [A]",
-  "L7 Construction-stage carbon [C]",
-  "L8 Soil-aware planning [C]",
-  "L9 Brownfield development [C]",
+  "L1 Household size [C]",
+  "L2 Vacancy rate [B]",
+  "L3 Building lifetime [C]",
+  "L4 Extra space [B]",
+  "L5 Occupancy density [A]",
+  "L6 Brownfield-first development [C]",
+  "L7 Soil-aware planning [C]",
+  "L8 Material carbon efficiency [A]",
+  "L9 Construction-stage carbon [C]",
   "Mod",
   "Moderate",
   "Ref",
   "Reference",
   "TL",
   "TL (Level 4)",
-  "Townhouses",
   "household size"
  ],
- "note": "Native parameter at each level (full strength); every level moves from the Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint. L3 (and L7): the target paths by year before the adoption weighting w(y) is applied.",
+ "note": "Native parameter at each level (full strength); every level moves from the Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint. L1 (and L9): the target paths by year before the adoption weighting w(y) is applied.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

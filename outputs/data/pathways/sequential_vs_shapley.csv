@@ -1,0 +1,37 @@
+setting,part,player,name,strategy,game,sequential_reduction_kt,shapley_reduction_kt,sequential_minus_shapley_kt,order
+moderate,levers from the Reference,L1,Household size,S1,levers_moderate,696.2840508011686,608.8368300275396,87.44722077362906,1
+moderate,levers from the Reference,L2,Vacancy rate,S1,levers_moderate,667.2426477410772,611.0622134908774,56.18043425019982,2
+moderate,levers from the Reference,L3,Building lifetime,S1,levers_moderate,539.3442544401078,508.9673883674642,30.376866072643566,3
+moderate,levers from the Reference,L4,Extra space,S1,levers_moderate,660.7862257964662,624.4415484770755,36.34467731939071,4
+moderate,levers from the Reference,L5,Occupancy density,S1,levers_moderate,1176.235331620479,1181.6579500401115,-5.422618419632499,5
+moderate,levers from the Reference,L6,Brownfield-first development,S2,levers_moderate,492.39055065903085,507.7897671549038,-15.399216495872963,6
+moderate,levers from the Reference,L7,Soil-aware planning,S2,levers_moderate,96.25073649916158,127.77509831690108,-31.524361817739504,7
+moderate,levers from the Reference,L8,Material carbon efficiency,S2,levers_moderate,703.2411844398848,797.5707394188188,-94.32955497893397,8
+moderate,levers from the Reference,L9,Construction-stage carbon,S3,levers_moderate,509.75073087867895,573.4241775823632,-63.67344670368425,9
+moderate,TL from the Pathway,TL1,Historical maximum household size,,tl_from_moderate_pathway,3153.7457488501805,2261.7795501878873,891.9661986622932,10
+moderate,TL from the Pathway,TL2,No vacancy,,tl_from_moderate_pathway,2878.2217529474,2044.3525693928611,833.869183554539,11
+moderate,TL from the Pathway,TL3,No demolition,,tl_from_moderate_pathway,1734.4968151476169,1180.2095537763516,554.2872613712652,12
+moderate,TL from the Pathway,TL4,No extra space,,tl_from_moderate_pathway,1275.68631347484,1716.666027436091,-440.97971396125104,13
+moderate,TL from the Pathway,TL5,Densest design,,tl_from_moderate_pathway,524.0826097255076,840.1778609677928,-316.09525124228514,14
+moderate,TL from the Pathway,TL6,All brownfield,,tl_from_moderate_pathway,307.7867153076313,557.5493647014301,-249.76264939379882,15
+moderate,TL from the Pathway,TL7,Lowest-carbon soils,,tl_from_moderate_pathway,6.818314261498017,217.75043642204201,-210.932122160544,16
+moderate,TL from the Pathway,TL8,Best-practice materials,,tl_from_moderate_pathway,500.45172815826663,1126.8387560395104,-626.3870278812437,17
+moderate,TL from the Pathway,TL9,Zero-emission construction,,tl_from_moderate_pathway,334.39657191142123,770.3624508603957,-435.9658789489745,18
+ambitious,levers from the Reference,L1,Household size,S1,levers_ambitious,1382.0938276157722,1069.455642797617,312.6381848181552,1
+ambitious,levers from the Reference,L2,Vacancy rate,S1,levers_ambitious,1315.2926624217143,1113.3934865152655,201.89917590644882,2
+ambitious,levers from the Reference,L3,Building lifetime,S1,levers_ambitious,1065.9356641472841,878.1981321328151,187.73753201446902,3
+ambitious,levers from the Reference,L4,Extra space,S1,levers_ambitious,1205.5411419203083,1086.5074950416015,119.0336468787068,4
+ambitious,levers from the Reference,L5,Occupancy density,S1,levers_ambitious,1995.144416674504,2037.2909547134532,-42.146538038949075,5
+ambitious,levers from the Reference,L6,Brownfield-first development,S2,levers_ambitious,758.0929372371229,867.5916406783751,-109.49870344125225,6
+ambitious,levers from the Reference,L7,Soil-aware planning,S2,levers_ambitious,101.649285516487,202.088468468673,-100.439182952186,7
+ambitious,levers from the Reference,L8,Material carbon efficiency,S2,levers_ambitious,1075.8822284776707,1415.1322713615184,-339.25004288384775,8
+ambitious,levers from the Reference,L9,Construction-stage carbon,S3,levers_ambitious,794.8536252234917,1024.8276975250367,-229.974072301545,9
+ambitious,TL from the Pathway,TL1,Historical maximum household size,,,2064.7830740712507,,,10
+ambitious,TL from the Pathway,TL2,No vacancy,,,1839.0854194587864,,,11
+ambitious,TL from the Pathway,TL3,No demolition,,,967.9462703483568,,,12
+ambitious,TL from the Pathway,TL4,No extra space,,,797.2567286429439,,,13
+ambitious,TL from the Pathway,TL5,Densest design,,,182.95240689162074,,,14
+ambitious,TL from the Pathway,TL6,All brownfield,,,190.21624551545847,,,15
+ambitious,TL from the Pathway,TL7,Lowest-carbon soils,,,5.758567407003284,,,16
+ambitious,TL from the Pathway,TL8,Best-practice materials,,,321.0211516042573,,,17
+ambitious,TL from the Pathway,TL9,Zero-emission construction,,,193.70662948638437,,,18

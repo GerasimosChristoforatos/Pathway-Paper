@@ -15,21 +15,25 @@ A bottom-up, demand-driven model of the new residential floor area New Zealand b
   sustainability assessment for climate change; the carbon 2026–2050 against the sector's
   share of a global carrying capacity under two allocation principles, acquired rights (AR) and
   ability to pay (AtP), reported side by side and never averaged.
-* **Pathways** (`levers.py`, `pathways.py`): nine rule-based levers in four families,
-  P1 Space per person (L1 Dwelling size, L2 Design density, L3 Household size), P2 Existing stock
-  (L4 Vacancy, L5 Building lifetime), P3 Construction (L6 Material carbon, L7 Construction-stage
-  carbon) and P4 Land (L8 Soil-aware planning, L9 Brownfield development), and P5 Combined. Each
+* **Pathways** (`levers.py`, `pathways.py`): nine rule-based levers grouped by the carbon
+  reduction hierarchy of PAS 2080:2023 (BSI 2023): S1 Avoid (L1 Household size, L2 Vacancy rate,
+  L3 Building lifetime, L4 Extra space, L5 Occupancy density), S2 Switch (L6 Brownfield-first
+  development, L7 Soil-aware planning, L8 Material carbon efficiency) and S3 Improve (L9
+  Construction-stage carbon); every lever together is the Moderate / Ambitious Pathway. Each
   lever has four ambition levels after the 2050 Pathways Calculator and EUCalc: Reference
   (Level 1), Moderate (Level 2, the exact midpoint), Ambitious (Level 3, one of three documented
   sub-rules) and the theoretical limit (Level 4, TL1–TL9), all adopted on the same logistic path
   2026 → 2035. The theoretical limit (TL) is a thought experiment, not a pathway: dwellings
-  released by TL3 and TL4 are re-occupied gradually at a constant share of each year's need.
-  Exact Shapley attribution over 2⁹ lever subsets, a sequential waterfall Reference → P1 … P4 →
-  TL1 … TL9, the back-cast to the AR budget, a λ-sweep of each lever, and the pathway Monte Carlo
+  released by TL1 and TL2 are re-occupied gradually at a constant share of each year's need.
+  Exact Shapley attribution over strategies and over 2⁹ lever subsets, two sequential waterfalls
+  (Reference → L1 … L9 = Pathway; Pathway → TL1 … TL9 = TL), the back-cast to the AR budget, a
+  λ-sweep of each lever, and the pathway Monte Carlo
   with its insight statistics (`pathways_mc.py`, `mcstats.py`).
 
-Release **MODEL v3.2.0**: the v3.0 model with the release accounting, history split and figure fixes of
-v3.1 (v3.1 is withdrawn); see [docs/CHANGELOG_v3_2.md](docs/CHANGELOG_v3_2.md),
+Release **MODEL v3.3.0**: the v3.2 model regrouped by PAS 2080 (strategies S1–S3 replace the
+families P1–P4; deterministic totals unchanged), a Very High replacement variant and the
+replacement half-life sampled in the Monte Carlo; see [docs/CHANGELOG_v3_3.md](docs/CHANGELOG_v3_3.md),
+[docs/CHANGELOG_v3_2.md](docs/CHANGELOG_v3_2.md),
 [docs/CHANGELOG_v3.md](docs/CHANGELOG_v3.md) and
 [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
 
@@ -111,14 +115,18 @@ name and the log to read, and the run stops (exit code 1 from the command line).
   profile, captured by `tests/capture_regression_model_v3.py`.
 * **Model rules** (`tests/test_model_v3.py`): overbuild absorption (logistic, payback cap and
   carry, excess identical in every run), Moderate the exact midpoint, TLn at least as strong as
-  Ambitious, ordering Reference ≥ Moderate ≥ Ambitious ≥ TL, TL ≤ P5 in every Monte Carlo draw,
-  the L1 / L2 interaction, dwellings built ≥ 0, implied vacancy ≥ 4% outside TL, cumulative
+  Ambitious, ordering Reference ≥ Moderate ≥ Ambitious ≥ TL, TL ≤ Ambitious Pathway ≤
+  Moderate Pathway in every Monte Carlo draw, the L4 / L5 interaction, dwellings built ≥ 0, implied vacancy ≥ 4% outside TL, cumulative
   re-occupied ≤ cumulative released, Shapley efficiency, waterfall sums, material and stage
   carbon never negative, the data STOP conditions.
 * **Figures** (`tests/test_figures_v3.py`): the model scripts do not plot; the palette registry
   has no duplicates; only the surge band is hatched; AR solid and AtP dotted with zones; the sign
   rules of time series and cumulative bars; every planned figure drawn and audited; drawing
   leaves the data byte-identical.
+* **MODEL v3.3.0** (`tests/test_model_v3_3.py`): every run total equals v3.2 under the v3.2 →
+  v3.3 map of run ids (`tests/fixtures/v3_2_totals.json`), Shapley efficiency of the strategy,
+  lever and TL games, the two sequential waterfalls, band sums, the Fig6 markers and exact AR /
+  AtP curves, the Very High trend fit, the half-life range in the Monte Carlo.
 * **Profiles** (`tests/test_profiles.py`): deterministic outputs identical across profiles;
   `run_meta.json` and the light footer.
 * Model tests: accounting identities, census under-construction correction, soil,

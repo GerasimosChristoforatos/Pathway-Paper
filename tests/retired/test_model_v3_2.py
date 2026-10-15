@@ -1,4 +1,5 @@
-"""MODEL v3.2.0 tests (docs/CHANGELOG_v3_2.md): the v3.0 model with the non-methodological fixes of v3.1.
+"""RETIRED in MODEL v3.3.0 (the run names it uses no longer exist; tests/test_model_v3_3.py tests equality with
+v3.2 under the v3.2 -> v3.3 map and carries the model-rule tests below). MODEL v3.2.0 tests (docs/CHANGELOG_v3_2.md): the v3.0 model with the non-methodological fixes of v3.1.
 
   * equality with MODEL v3.0.0: the Reference, every lever / pathway run and TL (floor area, carbon, LoE AR, LoE AtP,
     the budgets) equal the v3.0 outputs to 1e-9 (fixture tests/fixtures/v3_0_totals.json, captured from the v3.0.0
@@ -144,5 +145,5 @@ def test_a4_and_a5_rows():
     runs = pd.read_csv(_data('pathways/runs.csv')).query("scenario == 'REF'").set_index('run')
     fast, tl = runs.loc[PW.TL_REOCCUPATION_FAST], runs.loc['TL']
     assert fast['carbon_kt'] <= tl['carbon_kt'] * (1 + 1e-12)        # re-occupation as fast as demand allows
-    a5 = json.load(open(_data('pathways/levers.json')))['L6']['check_with_A_1']
+    a5 = json.load(open(_data('pathways/levers.json')))['L8']['check_with_A_1']
     assert a5['n'] == a5['adopted_n'] + 1 == 15

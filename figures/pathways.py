@@ -9,6 +9,7 @@ from figures import data as D
 from figures import draw as P
 from figures import style as S
 
+RUN_GROUPS = tuple(N.STRATEGIES) + (N.PATHWAY,)          # MODEL v3.3.0: S1-S3 and the Moderate / Ambitious Pathway
 LEVEL_STYLE = {'reference': dict(color=S.REFERENCE, lw=S.LW_BOLD, ls='-'),
                'moderate': dict(lw=S.LW_BOLD, ls='-'), 'ambitious': dict(lw=S.LW_THIN, ls=':'),
                'tl': dict(color=S.TL, lw=S.LW, ls='-')}
@@ -29,9 +30,9 @@ def d28():
         b = ax[k]
         S.boundary_zones(b, yrs, ref['B_AR_kt'].values, ref['B_AtP_kt'].values)
         b.plot(yrs, ref['carbon_kt'], color=S.REFERENCE, lw=S.LW_BOLD, label=N.SCENARIOS['REF'])
-        for P_ in ('P1', 'P2', 'P3', 'P4', 'P5'):
+        for P_ in RUN_GROUPS:
             r = a[a['run'] == f'{P_}-{s}'].set_index('year')
-            b.plot(yrs, r['carbon_kt'], color=S.PATHWAY[P_], lw=S.LW, label=f'{P_} {N.PATHWAYS[P_]}')
+            b.plot(yrs, r['carbon_kt'], color=S.PATHWAY[P_], lw=S.LW, label=N.run_label(f'{P_}-{s}'))
         t = a[a['run'] == 'TL'].set_index('year')
         b.plot(yrs, t['carbon_kt'], color=S.TL, lw=S.LW, label=N.TL['TL'])
         b.set_xlim(yrs[0], yrs[-1])
@@ -53,44 +54,44 @@ def d29():
     ax = ax.ravel()
     ax[0].plot(years, w, color=S.INK)
     ax[0].set_title('Adoption weight w(y)', fontsize=S.FONT_SMALL, loc='left')
-    typ = list(p['L1']['size_ref'])
+    typ = list(p['L4']['size_ref'])
 
     def lvl(L, level):                         # native value(s) at full strength
         if level == 'tl':
             return p[L]['tl']
-        return {'L1': p['L1']['f'], 'L2': p['L2']['r'], 'L4': p['L4']['v'], 'L5': p['L5']['d'],
-                'L6': p['L6']['r'], 'L8': p['L8']['x'], 'L9': p['L9']['s']}[L][level]
+        return {'L4': p['L4']['f'], 'L5': p['L5']['r'], 'L2': p['L2']['v'], 'L3': p['L3']['d'],
+                'L8': p['L8']['r'], 'L7': p['L7']['x'], 'L6': p['L6']['s']}[L][level]
     levels = ('reference', 'moderate', 'ambitious', 'tl')
     for k, L in enumerate(LV.LEVERS, start=1):
         b = ax[k]
         col = S.LEVER[L]
-        if L in ('L3', 'L7'):                  # path levers: the target path by year at each level
-            key = 'S' if L == 'L3' else 'target'
+        if L in ('L1', 'L9'):                  # path levers: the target path by year at each level
+            key = 'S' if L == 'L1' else 'target'
             for lev in levels:
                 if lev == 'tl':
-                    yv = np.full(len(years), p['L3']['tl'] if L == 'L3' else 0.0)
+                    yv = np.full(len(years), p['L1']['tl'] if L == 'L1' else 0.0)
                 else:
                     yv = np.array([p[L][key][lev][str(y)] for y in years])
                 st = dict(LEVEL_STYLE[lev])
                 st.setdefault('color', col)
                 b.plot(years, yv, label=LEVEL_LABEL[lev], **st)
-            b.set_ylabel('household size' if L == 'L3' else 'A4-A5 factor', fontsize=S.FONT_MIN)
+            b.set_ylabel('household size' if L == 'L1' else 'A4-A5 factor', fontsize=S.FONT_MIN)
         else:
             x = np.arange(len(levels))
-            if L in ('L1', 'L2', 'L6', 'L8'):
+            if L in ('L4', 'L5', 'L8', 'L7'):
                 for j, t in enumerate(typ):
                     vals = []
                     for lev in levels:
                         v = lvl(L, lev)
-                        if L == 'L8' and lev != 'tl':     # x as the soil factor
-                            v = p['L8']['soil_factor_2025'][t] * (1 - v)
-                        elif L == 'L8':
+                        if L == 'L7' and lev != 'tl':     # x as the soil factor
+                            v = p['L7']['soil_factor_2025'][t] * (1 - v)
+                        elif L == 'L7':
                             v = v[t]
                         else:
                             v = v[t] if isinstance(v, dict) else v
                         vals.append(v)
                     b.plot(x, vals, marker='o', ms=3, color=col, alpha=[1.0, 0.65, 0.35][j], label=t)
-            elif L == 'L5':
+            elif L == 'L3':
                 b.plot(x, [lvl(L, lev) if lev != 'tl' else 1.0 for lev in levels], marker='o', ms=3, color=col)
             else:
                 b.plot(x, [lvl(L, lev) for lev in levels], marker='o', ms=3, color=col)
@@ -102,8 +103,8 @@ def d29():
     ax[1].legend(fontsize=S.FONT_MIN - 0.5, loc='best')
     fig.tight_layout()
     S.save_figure(fig, 'D29_ramps', note='Native parameter at each level (full strength); every level moves from the '
-                                         'Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint. L3 (and '
-                                         'L7): the target paths by year before the adoption weighting w(y) is applied.',
+                                         'Reference along w(y) (2026 -> 2035). Moderate is the exact midpoint. L1 (and '
+                                         'L9): the target paths by year before the adoption weighting w(y) is applied.',
                   source=['pathways/levers.json'])
 
 
@@ -130,9 +131,9 @@ def d32():
     r = D.csv('pathways/runs.csv')
     r = r[r['scenario'] == 'REF'].set_index('run')
     t = D.js('pathways/theoretical_limit.json')['runs']['TL']
-    runs = ['REF', 'P5-moderate', 'P5-ambitious', 'TL']
-    lab = [N.SCENARIOS['REF'], 'P5 Moderate', 'P5 Ambitious', N.TL['TL']]
-    cols = [S.REFERENCE, S.PATHWAY['P5'], S.PATHWAY['P5'], S.TL]
+    runs = ['REF', 'pathway-moderate', 'pathway-ambitious', 'TL']
+    lab = [N.run_label(k) for k in runs]
+    cols = [S.REFERENCE, S.PATHWAY[N.PATHWAY], S.PATHWAY[N.PATHWAY], S.TL]
     fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 70))
     x = np.arange(len(runs))
     ax[0].bar(x, [r.loc[k, 'LoE_AR'] for k in runs], color=cols, edgecolor=cols, lw=S.LW_SEAM)
@@ -151,7 +152,7 @@ def d32():
         b.set_xticklabels(lab, rotation=30, ha='right', fontsize=S.FONT_MIN + 0.5)
     fig.tight_layout()
     S.save_figure(fig, 'D32_tl_staircase',
-                  note=f"TL re-occupies R = {t['R']:,.0f} released dwellings (TL3 {t['R3']:,.0f}, TL4 {t['R4']:,.0f}) "
+                  note=f"TL re-occupies R = {t['R']:,.0f} released dwellings (TL1 {t['R1']:,.0f}, TL2 {t['R2']:,.0f}) "
                        f"at a share s = {t['share_of_need']:.3f} of need (G+ {t['G_plus']:,.0f}).",
                   source=['pathways/runs.csv', 'pathways/theoretical_limit.json'])
 
@@ -196,8 +197,8 @@ def d34():
         b.bar(yr, r['built'] / 1e3, width=0.75, color=S.REFERENCE, alpha=0.5, label='Dwellings built')
         b.bar(yr, r['reoccupied'] / 1e3, bottom=r['built'] / 1e3, width=0.75, facecolor='none',
               edgecolor=S.BAND['released_tl'][0], lw=S.LW_OUTLINE, label='Re-occupied (released dwellings)')
-        b.plot(yr, (r['released_tl3'] + r['released_tl4']) / 1e3, color=S.BAND['released_tl'][0], ls='--',
-               lw=S.LW, label='Released (TL3 + TL4)')
+        b.plot(yr, (r['released_tl1'] + r['released_tl2']) / 1e3, color=S.BAND['released_tl'][0], ls='--',
+               lw=S.LW, label='Released (TL1 + TL2)')
         bind = r[r['release_binds']]
         b.plot(bind['year'], bind['built'] / 1e3, 'v', color=S.AR, ms=4, label='Release constraint binds')
         b.axhline(0, color=S.INK, lw=S.LW_THIN)
@@ -212,7 +213,7 @@ def d34():
 def d36():
     bd = D.csv('pathways/bands.csv')
     bd = bd[(bd['scenario'] == 'REF') & (bd['definition'] == 'in_scope')]
-    runs = ['REF'] + [f'{P_}-{s}' for s in ('moderate', 'ambitious') for P_ in ('P1', 'P2', 'P3', 'P4', 'P5')] + ['TL']
+    runs = ['REF'] + [f'{P_}-{s}' for s in ('moderate', 'ambitious') for P_ in RUN_GROUPS] + ['TL']
     tab = bd.pivot(index='run', columns='band', values='carbon_kt').loc[runs]
     tab.columns = [P.band_id(c) for c in tab.columns]
     tab = tab[[b for b in N.BANDS_IN_SCOPE_TL if b in tab.columns]]
@@ -222,7 +223,7 @@ def d36():
     x = np.arange(len(runs))
     P.bars_cumulative(ax, x, [(b, tab[b].values) for b in tab.columns], width=0.7, net=tot)
     ax.set_xticks(x)
-    ax.set_xticklabels(runs, rotation=45, ha='right', fontsize=S.FONT_MIN + 0.5)
+    ax.set_xticklabels([N.run_label(k) for k in runs], rotation=45, ha='right', fontsize=S.FONT_MIN + 0.5)
     ax.set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
     P.thousands(ax.yaxis)
     P.band_legend(fig, list(tab.columns), ncol=4, y=-0.01,

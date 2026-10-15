@@ -20,7 +20,7 @@ from figures import data as D
 from figures import draw as P
 from figures import style as S
 
-VARS = ('LOW', 'REF', 'HIGH')
+VARS = ('LOW', 'REF', 'HIGH', 'VHIGH')            # MODEL v3.3.0: + Very High replacement
 
 
 def _src(fid):

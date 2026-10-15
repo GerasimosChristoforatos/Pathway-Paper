@@ -31,8 +31,9 @@ import validation  # noqa: E402
 # the Reference and the two replacement variants (typology shares held in all); labels: naming.SCENARIOS
 SCEN = [('LOW', N.SCENARIOS['LOW'], dict(REPLACEMENT_VARIANT='LOW')),
         ('REF', N.SCENARIOS['REF'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
-        ('HIGH', N.SCENARIOS['HIGH'], dict(REPLACEMENT_VARIANT='HIGH'))]
-VARS = ('LOW', 'REF', 'HIGH')
+        ('HIGH', N.SCENARIOS['HIGH'], dict(REPLACEMENT_VARIANT='HIGH')),
+        ('VHIGH', N.SCENARIOS['VHIGH'], dict(REPLACEMENT_VARIANT='VHIGH'))]          # MODEL v3.3.0
+VARS = ('LOW', 'REF', 'HIGH', 'VHIGH')            # MODEL v3.3.0: + Very High replacement
 M6 = 1e6
 
 # MODEL v3.0.0 floor-area bridge (D10; D11 retired): the demand bands of the definition 'with retirement villages'
@@ -168,8 +169,15 @@ def main():
                                              y1=[int(r.y1) for r in cr.itertuples()],
                                              rate=[float(r.rate) for r in cr.itertuples()])),
                     years=fy.astype(int),
-                    paths={k: engine.replacement_path(k, long_rate, float(Bref['rate_recent']), fy, 10.0)
+                    paths={k: engine.replacement_path(k, long_rate, float(Bref['rate_recent']), fy, 10.0,
+                                                      trend=Bref['replacement_trend'])
                            for k in VARS},
+                    # MODEL v3.3.0: the Reference path continued to 2075 (dotted; its asymptote is the long-run rate),
+                    # and the census trend of the Very High variant (coefficients: rate(t) = a + b t)
+                    reference_extended=dict(years=list(range(2050, 2076)),
+                                            rate=engine.replacement_path('REF', long_rate, float(Bref['rate_recent']),
+                                                                         np.arange(2050, 2076), 10.0).tolist()),
+                    trend=Bref['replacement_trend'],
                     labels=labels, long_rate=long_rate, rate_recent=float(Bref['rate_recent']),
                     demolition_rate=float(Bref['demolition_rate']),
                     unconsented_rate=float(Bref['unconsented_rate']),

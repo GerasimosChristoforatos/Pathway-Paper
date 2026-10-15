@@ -46,7 +46,7 @@
   "a",
   "b"
  ],
- "note": "P(within AR) = 0.551 (Wilson 0.537-0.565); (b) threshold 6.65 M (95% CI 6.65-6.65 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).",
+ "note": "P(within AR) = 0.552 (Wilson 0.538-0.566); (b) threshold 6.65 M (95% CI 6.65-6.66 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

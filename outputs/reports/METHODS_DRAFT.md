@@ -14,47 +14,47 @@ Every result below is read from the run outputs (outputs/data/; settings from pr
 
 ### Summary
 
-New Zealand is projected to build 85.9 million m² of new residential floor area in 2026–2050 in the Reference. In 2026–2050 this emits 20.6 Mt CO₂e: 20.2 Mt from materials and construction (A1–A5) and soil carbon loss, counted in the construction year, and 375 kt of maintenance (B2, B4), 2026–2050. A further 7.9–8.6 Mt is committed after 2050 (later B2/B4 and C1–C4; outputs/reports/reconciliation.md). How fast existing dwellings are replaced is the largest structural uncertainty: Low replacement (the long-run rate throughout) gives 78.5 million m², High replacement (the 2018–2023 rate persisting) 95.2 million m². Within the Reference, joint uncertainty in the inputs gives a 90% interval of 63.7–108.9 million m² (median 85.3, mean 85.6). Outside the Monte Carlo, carbon-factor and soil bounds on the Reference carbon (20,615 kt): case-study jackknife 19,862–21,303 kt, single case study 16,279–24,697 kt, soil order 19,042–27,276 kt. Population uncertainty alone (Stats NZ 5th–95th percentiles) spans 60.1–112.3 million m². The joint interval is narrower than the population-only range because each population draw also moves household size along the matching Stats NZ Low/High variant: low-population variants come with smaller households (an older age structure), so the number of households varies less than population, whereas the population-only range holds household size on the Medium shape.
+New Zealand is projected to build 85.9 million m² of new residential floor area in 2026–2050 in the Reference, embodying 26.1 Mt CO₂e over the life cycle, of which 19.2 Mt is materials and construction (A1–A5) and soil carbon loss. How fast existing dwellings are replaced is the largest structural uncertainty: Low replacement (the long-run rate throughout) gives 78.5 million m², High replacement (the 2018–2023 rate persisting) 95.2 million m². Within the Reference, joint uncertainty in the inputs gives a 90% interval of 63.7–108.9 million m² (median 85.3, mean 85.6). Outside the Monte Carlo, carbon-factor and soil bounds on the Reference carbon (26,143 kt): case-study jackknife 25,249–27,000 kt, single case study 20,271–31,474 kt, soil order 24,198–34,376 kt. Population uncertainty alone (Stats NZ 5th–95th percentiles) spans 60.1–112.3 million m². The joint interval is narrower than the population-only range because each population draw also moves household size along the matching Stats NZ Low/High variant: low-population variants come with smaller households (an older age structure), so the number of households varies less than population, whereas the population-only range holds household size on the Medium shape. Materials and construction (A1–A5) and soil carbon loss (19.2 Mt) are the quantity comparable with a 2026–2050 budget; the later life-cycle stages are booked in the construction year but emitted mostly after 2050.
 
 ### Headline, 2026–2050 (median demographics)
 
-| variant | floor area (Mm²) | vs Reference | carbon 2026–2050 (kt CO₂e) | of which soil carbon loss | carbon excl. soil carbon loss | materials and construction (A1–A5) + soil carbon loss (kt CO₂e) |
+| variant | floor area (Mm²) | vs Reference | whole-life carbon (kt CO₂e) | of which soil carbon loss | carbon excl. soil carbon loss | materials and construction (A1–A5) + soil carbon loss (kt CO₂e) |
 |---|---|---|---|---|---|---|
-| Low replacement | 78.46 | -8.7% | 19,055 | 2,900 | 16,156 | 18,719 |
-| Reference, replacement half-life 5 yr | 82.58 | -3.9% | 19,945 | 2,899 | 17,045 | 19,581 |
-| Reference | 85.90 | +0.0% | 20,615 | 2,899 | 17,716 | 20,240 |
-| Reference, replacement half-life 15 yr | 87.95 | +2.4% | 21,021 | 2,899 | 18,121 | 20,640 |
-| High replacement | 95.20 | +10.8% | 22,431 | 2,899 | 19,531 | 22,034 |
+| Low replacement | 78.46 | -8.7% | 24,585 | 1,877 | 22,708 | 17,696 |
+| Reference, replacement half-life 5 yr | 82.58 | -3.9% | 25,473 | 1,875 | 23,597 | 18,557 |
+| Reference | 85.90 | +0.0% | 26,143 | 1,875 | 24,268 | 19,215 |
+| Reference, replacement half-life 15 yr | 87.95 | +2.4% | 26,549 | 1,875 | 24,674 | 19,615 |
+| High replacement | 95.20 | +10.8% | 27,958 | 1,875 | 26,084 | 21,009 |
 
 Monte Carlo within each variant (joint input uncertainty; mean, median and 90% interval):
 
 | variant | output | mean | median | 5th | 95th |
 |---|---|---|---|---|---|
 | Low replacement | floor area (Mm²) | 78.2 | 77.9 | 56.7 | 100.9 |
-| Low replacement | carbon 2026–2050 (kt) | 19,022.8 | 18,901.7 | 13,802.4 | 24,567.1 |
-| Low replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 18,685.0 | 18,564.5 | 13,513.0 | 24,130.8 |
+| Low replacement | whole-life carbon (kt) | 24,539.1 | 24,404.1 | 19,515.1 | 29,871.2 |
+| Low replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 17,666.8 | 17,552.8 | 12,821.0 | 22,787.0 |
 | Reference | floor area (Mm²) | 85.6 | 85.3 | 63.7 | 108.9 |
-| Reference | carbon 2026–2050 (kt) | 20,564.9 | 20,432.4 | 15,219.8 | 26,215.9 |
-| Reference | materials and construction (A1–A5) + soil carbon loss (kt) | 20,189.2 | 20,074.2 | 14,940.1 | 25,767.4 |
+| Reference | whole-life carbon (kt) | 26,079.5 | 25,934.6 | 20,951.6 | 31,605.6 |
+| Reference | materials and construction (A1–A5) + soil carbon loss (kt) | 19,169.3 | 19,069.2 | 14,186.7 | 24,456.1 |
 | High replacement | floor area (Mm²) | 94.8 | 94.4 | 72.0 | 119.0 |
-| High replacement | carbon 2026–2050 (kt) | 22,361.0 | 22,240.6 | 16,827.0 | 28,222.8 |
-| High replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 21,963.5 | 21,853.4 | 16,524.9 | 27,758.6 |
+| High replacement | whole-life carbon (kt) | 27,875.4 | 27,731.0 | 22,577.2 | 33,612.0 |
+| High replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 20,943.4 | 20,835.9 | 15,813.6 | 26,414.9 |
 
 ### Why the floor area is built (Reference, median demographics)
 
 | demand band | floor area (Mm²) | share | carbon (kt CO₂e) |
 |---|---|---|---|
-| Population growth | 42.89 | 49.9% | 10,354 |
-| Smaller households | 2.31 | 2.7% | 590 |
-| Extra space | 25.52 | 29.7% | 6,176 |
-| Vacancy | 4.03 | 4.7% | 975 |
+| Population growth | 42.89 | 49.9% | 9,702 |
+| Smaller households | 2.31 | 2.7% | 583 |
+| Extra space | 25.52 | 29.7% | 5,802 |
+| Vacancy | 4.03 | 4.7% | 916 |
 | Historical replacement: demolition (BRANZ rate) | 11.31 | 13.2% | 2,252 |
 | Historical replacement: net unconsented additions (calibrated residual) | -2.89 | -3.4% | -575 |
 | Recent replacement surge | 7.88 | 9.2% | 1,628 |
 | 2026 overbuild | 3.86 | 4.5% | 1,039 |
-| Overbuild absorbed | -3.88 | -4.5% | -990 |
-| Retirement villages (out of scope) | -5.13 | -6.0% | -1,210 |
-| **Total** | **85.90** | 100% | **20,615** |
+| Overbuild absorbed | -3.88 | -4.5% | -984 |
+| Retirement villages (out of scope) | -5.13 | -6.0% | -1,148 |
+| **Total** | **85.90** | 100% | **26,143** |
 
 #### The 2026 overbuild rule
 
@@ -68,39 +68,27 @@ Caveats: the absorption speed is not identified by the eight census vacancy obse
 
 | material | kt | share |
 |---|---|---|
-| OTHERS | 4,180 | 20.3% |
-| CONCRETE (incl. reinforced) | 4,134 | 20.1% |
-| TIMBER | 3,416 | 16.6% |
-| STEEL | 3,119 | 15.1% |
-| SOIL | 2,899 | 14.1% |
-| PLASTICS & PAINT | 1,927 | 9.3% |
-| PLASTERBOARD | 938 | 4.6% |
+| OTHERS | 4,180 | 21.3% |
+| CONCRETE (incl. reinforced) | 4,134 | 21.1% |
+| TIMBER | 3,416 | 17.4% |
+| STEEL | 3,119 | 15.9% |
+| PLASTICS & PAINT | 1,927 | 9.8% |
+| SOIL | 1,875 | 9.6% |
+| PLASTERBOARD | 938 | 4.8% |
 
-### Carbon 2026–2050 and committed after 2050 (kt CO₂e)
+### Materials and construction, soil carbon loss and whole life (kt CO₂e)
 
-| term | kt |
+| stage | kt |
 |---|---|
 | A1–A3 | 14,122 |
 | A4–A5 | 3,219 |
-| soil carbon loss | 2,899 |
-| **materials and construction (A1–A5) + soil carbon loss** | **20,240** |
-| maintenance (B2, B4), 2026–2050 | 375 |
-| **carbon 2026–2050** | **20,615** |
-| committed B2, B4 after 2050 (lower: 2050 factors held / upper: 2025 factors) | 3,197 / 3,929 |
-| committed C1–C4 (2025 factors) | 4,687 |
-| **committed after 2050 (later B2/B4 and C1–C4)** | **7,884–8,616** |
+| B2,B4 | 0 |
+| C1–C4 | 0 |
+| soil carbon loss | 1,875 |
+| **materials and construction (A1–A5) + soil carbon loss** | **19,215** |
+| **whole-life** | **26,143** |
 
-Time-resolved accounting: materials and construction (A1–A5) and soil carbon loss in the construction year, maintenance (B2, B4) in the year it occurs. Emissions committed after 2050 are reported as a range and are not added to the 2026–2050 total. Reconciliation with whole life at construction (the static convention): outputs/reports/reconciliation.md.
-
-| term (Reference, kt CO₂e) | 2025 factors | decarbonised |
-|---|---|---|
-| materials and construction (A1–A5) + soil carbon loss, 2026–2050 | 23,187 | 20,240 |
-| maintenance (B2, B4), 2026–2050 | 420 | 375 |
-| committed after 2050: B2, B4 (upper) | 3,929 | 3,929 |
-| committed after 2050: C1–C4 | 4,687 | 4,687 |
-| sum | 32,223 | 29,231 |
-| whole life at construction, A4–A5 held (static convention) | 32,223 | 29,684 |
-| difference: A4–A5 of construction + maintenance (B2, B4) 2026–2050, decarbonised | 0 | -453 |
+Later stages (B, C) are booked in the construction year (static LCA convention).
 
 #### Soil method
 
@@ -144,45 +132,45 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 
 | group | case | floor area (Mm²) | change | carbon change |
 |---|---|---|---|---|
-| Population | Population: Stats NZ 95th percentile | 112.25 | +30.7% | +32.2% |
-| Population | Population: Stats NZ 5th percentile | 60.14 | -30.0% | -28.8% |
-| Replacement variant | High replacement: 2018–2023 rate persists | 95.20 | +10.8% | +8.8% |
-| Replacement variant | Low replacement: long-run rate | 78.46 | -8.7% | -7.6% |
-| Household size | Household size: Stats NZ Low variant | 92.11 | +7.2% | +7.5% |
-| Stock | No census under-construction correction | 91.44 | +6.4% | +5.5% |
-| Household size | Household size: Stats NZ High variant | 80.78 | -6.0% | -6.2% |
-| Stock | Completion rate 0.92 | 81.53 | -5.1% | -4.3% |
-| Dwelling size | Dwelling size: 2016–2025 reference | 90.03 | +4.8% | +4.8% |
-| 2026 overbuild: absorption | Overbuild never absorbed (MODEL v2.1 Reference) | 89.57 | +4.3% | +4.7% |
-| 2026 overbuild: how it is booked | Booked as redevelopment, stock-neutral | 89.57 | +4.3% | +3.9% |
-| Replacement variant | Reference, replacement half-life 5 yr | 82.58 | -3.9% | -3.3% |
-| Stock | Completion lag on (Little's law) | 88.14 | +2.6% | +2.3% |
-| Replacement variant | Reference, replacement half-life 15 yr | 87.95 | +2.4% | +2.0% |
-| Stock | Completion rate 0.96 | 87.36 | +1.7% | +1.4% |
-| Household size | Household size after 2043: taper from the PCHIP end slope | 85.27 | -0.7% | -0.7% |
-| Stock | Vacancy parameter: 1986–2023 census mean, one definition | 85.37 | -0.6% | -0.6% |
-| Household size | Household size after 2043: secant-slope taper | 85.64 | -0.3% | -0.3% |
+| Population | Population: Stats NZ 95th percentile | 112.25 | +30.7% | +29.3% |
+| Population | Population: Stats NZ 5th percentile | 60.14 | -30.0% | -18.8% |
+| Replacement variant | High replacement: 2018–2023 rate persists | 95.20 | +10.8% | +6.9% |
+| Replacement variant | Low replacement: long-run rate | 78.46 | -8.7% | -6.0% |
+| Household size | Household size: Stats NZ Low variant | 92.11 | +7.2% | +5.6% |
+| Stock | No census under-construction correction | 91.44 | +6.4% | +4.0% |
+| Household size | Household size: Stats NZ High variant | 80.78 | -6.0% | -4.7% |
+| Stock | Completion rate 0.92 | 81.53 | -5.1% | -4.0% |
+| Dwelling size | Dwelling size: 2016–2025 reference | 90.03 | +4.8% | +3.5% |
+| 2026 overbuild: absorption | Overbuild never absorbed (MODEL v2.1 Reference) | 89.57 | +4.3% | +3.7% |
+| 2026 overbuild: how it is booked | Booked as redevelopment, stock-neutral | 89.57 | +4.3% | +3.1% |
+| Replacement variant | Reference, replacement half-life 5 yr | 82.58 | -3.9% | -2.6% |
+| Stock | Completion lag on (Little's law) | 88.14 | +2.6% | +1.5% |
+| Replacement variant | Reference, replacement half-life 15 yr | 87.95 | +2.4% | +1.6% |
+| Stock | Completion rate 0.96 | 87.36 | +1.7% | +1.3% |
+| Household size | Household size after 2043: taper from the PCHIP end slope | 85.27 | -0.7% | -0.5% |
+| Stock | Vacancy parameter: 1986–2023 census mean, one definition | 85.37 | -0.6% | -0.5% |
+| Household size | Household size after 2043: secant-slope taper | 85.64 | -0.3% | -0.2% |
 | Household size | Household size after 2043: flat (kink at 2043) | 85.90 | +0.0% | +0.0% |
 | 2026 overbuild: absorption | Overbuild absorbed by 2045 | 85.90 | -0.0% | +0.3% |
-| 2026 overbuild: absorption | Overbuild absorbed by 2030 | 85.90 | -0.0% | -0.2% |
+| 2026 overbuild: absorption | Overbuild absorbed by 2030 | 85.90 | -0.0% | -0.1% |
 | 2026 overbuild: rule variant | Gap measured against the 2026 requirement | 85.90 | -0.0% | +0.1% |
-| Carbon factors | Soil on all floor area, incl. replacement | 85.90 | +0.0% | +3.1% |
-| Carbon factors | Frozen technology: 2025 factors held (no decarbonisation) | 85.90 | +0.0% | +14.5% |
-| Carbon factors | Decarbonisation: proxy-mapped items held at 2025 | 85.90 | +0.0% | +0.4% |
-| Carbon factors | Decarbonisation: NZ-made electricity-intensive items held at 2025 | 85.90 | +0.0% | +2.5% |
-| Carbon factors | A4–A5 held at 2025 (no generic 1%/yr) | 85.90 | +0.0% | +2.0% |
-| Carbon factors | A4–A5 on each item's own Horup path | 85.90 | +0.0% | -1.2% |
-| Carbon factors | Event timing: interval L / n | 85.90 | +0.0% | -0.7% |
-| Carbon factors | Materials: jackknife low (all typologies) | 85.90 | +0.0% | -3.7% |
+| Carbon factors | Soil on all floor area, incl. replacement | 85.90 | +0.0% | +1.6% |
+| Carbon factors | Frozen technology: 2025 factors held (no decarbonisation) | 85.90 | +0.0% | +14.3% |
+| Carbon factors | Decarbonisation: proxy-mapped items held at 2025 | 85.90 | +0.0% | +0.5% |
+| Carbon factors | Decarbonisation: NZ-made electricity-intensive items held at 2025 | 85.90 | +0.0% | +1.9% |
+| Carbon factors | A4–A5 held at 2025 (no generic 1%/yr) | 85.90 | +0.0% | +1.7% |
+| Carbon factors | A4–A5 on each item's own Horup path | 85.90 | +0.0% | -0.9% |
+| Carbon factors | Event timing: interval L / n | 85.90 | +0.0% | -10.3% |
+| Carbon factors | Materials: jackknife low (all typologies) | 85.90 | +0.0% | -3.4% |
 | Carbon factors | Materials: jackknife high (all typologies) | 85.90 | +0.0% | +3.3% |
-| Carbon factors | Materials: lowest single case study | 85.90 | +0.0% | -21.0% |
-| Carbon factors | Materials: highest single case study | 85.90 | +0.0% | +19.8% |
-| Carbon factors | Soil carbon: lowest soil order (Raw) | 85.90 | +0.0% | -7.6% |
-| Carbon factors | Soil carbon: highest soil order (Organic) | 85.90 | +0.0% | +32.3% |
+| Carbon factors | Materials: lowest single case study | 85.90 | +0.0% | -22.5% |
+| Carbon factors | Materials: highest single case study | 85.90 | +0.0% | +20.4% |
+| Carbon factors | Soil carbon: lowest soil order (Raw) | 85.90 | +0.0% | -7.4% |
+| Carbon factors | Soil carbon: highest soil order (Organic) | 85.90 | +0.0% | +31.5% |
 
 ### Planetary-boundary layer (AESA): climate change
 
-Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the sector by acquired rights (AR; Horup et al. 2025) and ability to pay (AtP; Hjalsted et al. 2021), the boundary is 173.4 kt CO₂e (AR) and 43.35 kt (AtP) in 2026, and 183.5 / 45.87 kt in 2050 (AtP = 25.0% of AR in every year). Over 2026–2050 the Reference exceeds them 4.63-fold (AR; Monte Carlo p5-p95 3.56–5.67) and 18.5-fold (AtP; 14.2–22.7). The two principles are a range and are not averaged. Methods, constants, sources and limitations: the AESA section of outputs/reports/METHODS_DRAFT.md; settings: outputs/reports/ASSUMPTIONS.md. The emissions committed after 2050 (later B2/B4 and C1–C4) by the 2026–2050 cohorts (7,884–8,616 kt) equal 43–47 years of the 2050 AR boundary; they fall after 2050 and are not part of the cumulative LoE 2026–2050.
+Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the sector by acquired rights (AR; Horup et al. 2025) and ability to pay (AtP; Hjalsted et al. 2021), the boundary is 189.8 kt CO₂e (AR) and 43.35 kt (AtP) in 2026, and 200.9 / 45.87 kt in 2050 (AtP = 22.8% of AR in every year). Over 2026–2050 the Reference exceeds them 5.36-fold (AR; Monte Carlo p5-p95 4.50–6.21) and 23.5-fold (AtP; 19.5–27.4). The two principles are a range and are not averaged. Methods, constants, sources and limitations: the AESA section of outputs/reports/METHODS_DRAFT.md; settings: outputs/reports/ASSUMPTIONS.md. The emissions committed after 2050 (later B2/B4 and C1–C4) by the 2026–2050 cohorts (7,884–8,616 kt) equal 39–43 years of the 2050 AR boundary; they fall after 2050 and are not part of the cumulative LoE 2026–2050.
 
 ### Assumptions
 
@@ -237,7 +225,7 @@ Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the 
 | Coverage of 2025 A1–A3 of the case-study factors (pooled per typology inside the model; direct / Horup p. 6 / proxy / held) | Detached 74.9 / 6.2 / 18.9 / 0.0%; Townhouses 82.2 / 4.9 / 13.0 / 0.0%; Apartments 90.0 / 0.9 / 5.0 / 4.1% | DATA: outputs/data/factors/factors_a13_item_coverage.csv (model input; not a result by typology) |
 | Sensitivity: NZ low-carbon-electricity items held at 2025 | 31 items: the 5 aluminium items, Pink Batts glass wool, Pacific Steel rebar, WPMA Radiata timber, Nelson Pine LVL | DECISION (author); criterion: made in New Zealand AND electricity-intensive production (not fossil process heat). Not included: Allied Concrete, GIB plasterboard, Colorsteel / ZinaCore (fossil process heat, where Horup's reductions reflect process change), CLT (imported, Xlam Australia); NZSIP not needed (EPS path -4.0%) |
 | Sensitivities (item-level) | proxies held at 2025; NZ low-carbon-electricity items held at 2025; frozen technology (no decarbonisation, A4–A5 held); all in the default run (outputs/data/baseline/sensitivity_one_at_a_time.csv, outputs/data/aesa/sensitivity.csv; figures ED1, ED4 and D18). An earlier class-level mapping and its comparison runs were removed (history: CHANGELOG.md) | DECISION (author) |
-| Accounting of later life-cycle stages (ACCOUNTING) | time_resolved: materials and construction (A1–A5) and soil carbon loss in the construction year; maintenance (B2, B4: replacement and repaint events) in the calendar year it occurs, 2026–2050; events after 2050 and all C1–C4 of the 2026–2050 cohorts reported as committed after 2050 (range below), not added to the 2026–2050 total | DECISION (author); LITERATURE: Habert et al. 2020, Buildings and Cities 1, 429–452, Section 5.1 (p. 442): embodied emissions "occur mainly in the first year of the building life time and (approximately 30 years later) when deep renovation are done", and spreading them over the building life "underestimates the peak of emissions which will happen before 2050"; time-explicit inventories of building replacements: Resch, Andresen, Cherubini & Brattebø 2021, Building and Environment 187, 107399, Section 2.2. Whole life at construction is a sensitivity |
+| Accounting of later life-cycle stages (LIFE_CYCLE_TIMING) | time_resolved: materials and construction (A1–A5) and soil carbon loss in the construction year; maintenance (B2, B4: replacement and repaint events) in the calendar year it occurs, 2026–2050; events after 2050 and all C1–C4 of the 2026–2050 cohorts reported as committed after 2050 (range below), not added to the 2026–2050 total | DECISION (author); LITERATURE: Habert et al. 2020, Buildings and Cities 1, 429–452, Section 5.1 (p. 442): embodied emissions "occur mainly in the first year of the building life time and (approximately 30 years later) when deep renovation are done", and spreading them over the building life "underestimates the peak of emissions which will happen before 2050"; time-explicit inventories of building replacements: Resch, Andresen, Cherubini & Brattebø 2021, Building and Environment 187, 107399, Section 2.2. Whole life at construction is a sensitivity |
 | Event table (B2, B4) | 1287 case-study lines matched to the item table (data/derived/lca_events.csv, built by data/build_lca_events.py from data/raw/Analytical_LCA_Results_Database.xlsx, LCAQuick root tables): number of replacement and repaint events (maintenance, B2 and B4) and building lifespan (50 yr) per line; 300 lines carry events (128 replacement, 172 repaint lines). Stage totals stay those of data/building_data.xlsx and the item table (the stage totals of earlier versions of the model are reproduced) | DATA: Christoforatos & Pickering 2025 case studies, LCAQuick root tables |
 | Lines not used from the event workbook | 16 lines, none with B2/B4 (data/derived/lca_excluded_lines.csv): 12 sand / granular-fill lines (site works, outside the case-study scope); 3 unlabelled lines, including the A_1 unlabelled row (408 t A1–A3; excluded, as in earlier versions of the model and the sheet summary); one T_1 aluminium line whose A1–A3 differs from the item table by 10 kg (item table kept). Several sheet summary blocks do not equal their own line sums; line-level data are used | DECISION (author) |
 | Events per line | per-event impact = line B2/B4 / n; split into A1–A3 : A4–A5 : C1–C4 in proportion to the line's initial stages; pooled per typology inside the model with the weights of the carbon factors (outputs/data/factors/factors_events.csv) | DECISION (author) |
@@ -247,7 +235,7 @@ Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the 
 | Event decarbonisation paths | A1–A3: replacements on the item's own S4 path (same item rules and sensitivities as construction); repaints and recoating on the paint path (EPS proxy). A4–A5: the A4–A5 path below. C1–C4: held at 2025 | DECISION (author); no source for end-of-life decarbonisation |
 | A4–A5 decarbonisation (DECARB_A45) | resch: e^(-0.01 (t - 2025)), -22.1% by 2050, for construction A4–A5 and the A4–A5 share of events | LITERATURE: Resch et al. 2021, Table 1 (p. 4): production e^(-0.01 y), "a ~1% yearly improvement", half-life 69 years; the exponential form of the source is used (0.99^25 would give -22.2%). Resch et al. apply 2%/yr to transport; A4–A5 also contains installation and wastage, so the 1% production rate is used for the combined stage (conservative for transport). Resch et al. count y from the construction year for future (B, C) emissions; here y counts calendar years from 2025 (adaptation). Sensitivities: held at 2025; item S4 paths |
 | Committed after 2050 (later B2/B4 and C1–C4) | upper: events after 2050 at 2025 factors; lower: the 2050 factors held after 2050 (no extrapolation beyond the last source year); C1–C4 at 2025 in both. Expressed in years of the 2050 AR boundary | DECISION (author): the source paths end in 2050 |
-| Scope of B events | events of the cohorts built in the accounting period only (projection: the 2026–2050 cohorts; AR base: the cohorts of the base window); wider scope (events of all cohorts built since 1992, in the base and the projection alike) is a sensitivity | DECISION (author): the AESA object is new construction |
+| Emissions accounting rule (ACCOUNTING, MODEL v3.1.0) | 'inventory': every window (the AR base 2016–2025 and the projection 2026–2050) counts all emissions occurring in it from residential construction since 1992: A1–A5 of its own construction, soil oxidised linearly over 20 years after conversion (incl. the tails of earlier conversions) and B2/B4 of every cohort since 1992; the emissions of pre-2026 activity in 2026–2050 are the legacy band (identical in every run); the oxidation after 2050 of 2026–2050 conversions is committed ('Soil, after 2050'); pre-1992 stock out of scope on both sides; the other two rules are sensitivities ('cohort_window' rejected: the 10-yr base and the 25-yr projection windows capture different shares of slow-release emissions) | DECISION (author); LITERATURE: IPCC (2006) Guidelines Vol. 4 Ch. 2 (default transition period of soil carbon stock change after land-use conversion, D = 20 yr); the AR share is taken against global annual emissions, so the sector is measured as an annual emissions flow in both the base and the projection |
 | Carbon-factor sensitivity rows (decarbonised runs) | an alternative materials factor (jackknife, single case study) follows the adopted factor's relative path over time: factor_alt x (materials intensity(t) / 2025 value) | DECISION (author) |
 | History and acquired-rights base | always 2025 factors ("at 2025 factors"); decarbonisation applies to 2026–2050 only; the base follows the projection's accounting rule (materials and construction (A1–A5) and soil carbon loss of the construction in the period, plus the maintenance (B2, B4) events in the period of the cohorts built in it). Historical carbon appears only for the AR base window (figure D21) and the base-window rows | DECISION (author): no historical factor series exists for the case studies (limitation) |
 
@@ -300,11 +288,11 @@ The planetary-boundary layer is an absolute environmental sustainability assessm
     B_AtP(t)     = SoSOS_ind(t) · P_NZ(t) · s_sec
     α            = 1 / Σ_c [(P_c / P_W) (g_W / g_c)]   (SI Eq. S1 with GDP totals, rewritten per capita)
 
-g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c and P_W = Σ P_c over the same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) is constant in this static design: 0.2500.
+g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c and P_W = Σ P_c over the same covered economies. B_AtP / B_AR = (g_W/g_NZ) · α · s_sec · (P_NZ(t0)/P_W(t0)) · (I_glob/Ī_sec,base) is constant in this static design: 0.2284.
 
 **Carbon factors.** A1–A3 of each case-study EPD item decarbonised 2026–2050 after Horup et al. (2025) SI Table S4 (item-level mapping, data/material_item_map.csv: direct, Horup p. 6, proxy or held), for construction and for the A1–A3 share of maintenance (B2, B4; replacement and repaint events); A4–A5 e^(-0.01 (t - 2025)) after Resch et al. (2021) Table 1; C1–C4, held items and soil carbon loss at 2025 (see outputs/reports/ASSUMPTIONS.md).
 
-**Accounting.** Time-resolved: the sector impact I_sec(t) counts the materials and construction (A1–A5) and soil carbon loss of the construction in year t and the maintenance (B2, B4; replacement and repaint events) that occurs in year t in buildings built from 2026. Maintenance events after 2050 and all end-of-life emissions (C1–C4) of the 2026–2050 cohorts are committed after 2050, reported below as a range and in years of the 2050 AR boundary; they are not part of the cumulative LoE.
+**Accounting.** Whole life at construction: all stages A1–C4 booked in the construction year.
 
 **Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over 2026–2050 (ratio of sums).
 
@@ -316,7 +304,7 @@ g = GDP per capita in base year b = 2024, held fixed; g_W = Σ P_c g_c / Σ P_c 
 |---|---|---|
 | SOS | 6.81e+12 kg CO2-eq/yr | 2 °C carrying capacity (Bjørn & Hauschild 2015); ESM2 (see source check) |
 | I_glob | 5.58e+13 kg CO2-eq/yr | Bjørn & Hauschild 2015 ESM2 B30 (Laurent et al. 2013, 2010) |
-| Ī_sec,base 2016–2025 | 1,423.0 kt/yr | this model, history on the projection's soil convention (boundaries.historical_emissions) |
+| Ī_sec,base 2016–2025 | 1,558.0 kt/yr | this model, history on the projection's accounting rule (boundaries.window_base; inventory.py) |
 | base year b | 2024 | latest year with ≥ 98% of WDI-economy population reporting NY.GDP.PCAP.PP.KD |
 | α (b, PPP) | 0.4220 | Hjalsted SI Eq. S1; WDI (release 2026–07–13) |
 | g_W, g_NZ (b, PPP, 2021 int-$) | 21,495, 48,325 (ratio 0.4448) | WDI NY.GDP.PCAP.PP.KD |
@@ -332,18 +320,18 @@ The numerator of s_sec is an investment flow (gross fixed capital formation), wh
 
 | year | kt CO₂e | soil share of floor area | net replacement rate (%/yr) | rate from |
 |---|---|---|---|---|
-| 2016 | 1,303.9 | 0.899 | 0.158 | 2013–2018 |
-| 2017 | 1,311.9 | 0.901 | 0.158 | 2013–2018 |
-| 2018 | 1,340.3 | 0.812 | 0.312 | 2018–2023 |
-| 2019 | 1,441.5 | 0.834 | 0.312 | 2018–2023 |
-| 2020 | 1,509.6 | 0.839 | 0.312 | 2018–2023 |
-| 2021 | 1,833.5 | 0.869 | 0.312 | 2018–2023 |
-| 2022 | 1,771.9 | 0.868 | 0.312 | 2018–2023 |
-| 2023 | 1,280.3 | 0.821 | 0.312 | 2018–2023 |
-| 2024 | 1,149.4 | 0.797 | 0.312 | 2018–2023 carried |
-| 2025 | 1,287.3 | 0.812 | 0.312 | 2018–2023 carried |
+| 2016 | 1,310.7 | 0.899 | 0.158 | 2013–2018 |
+| 2017 | 1,406.5 | 0.901 | 0.158 | 2013–2018 |
+| 2018 | 1,470.8 | 0.812 | 0.312 | 2018–2023 |
+| 2019 | 1,589.8 | 0.834 | 0.312 | 2018–2023 |
+| 2020 | 1,652.5 | 0.839 | 0.312 | 2018–2023 |
+| 2021 | 1,951.3 | 0.869 | 0.312 | 2018–2023 |
+| 2022 | 1,912.4 | 0.868 | 0.312 | 2018–2023 |
+| 2023 | 1,456.3 | 0.821 | 0.312 | 2018–2023 |
+| 2024 | 1,366.2 | 0.797 | 0.312 | 2018–2023 carried |
+| 2025 | 1,463.9 | 0.812 | 0.312 | 2018–2023 carried |
 
-Mean 2016–2025: 1,423.0 kt/yr, of which maintenance (B2, B4) 0.25% (events within 2016–2025 of the buildings built in it); wider maintenance scope (B2, B4 events of all cohorts built since 1992): 1,574.8 kt/yr. With soil on all floor area: 1,457.5 kt/yr. Note: with the long-run net replacement rate for 2024–25: 1,427.9 kt/yr; 2021–2025 (5 yr): 1,457.5 kt/yr.
+Mean 2016–2025: 1,558.0 kt/yr on the accounting rule 'inventory': upfront A1–A5 1,226.8, soil 175.8 and maintenance (B2, B4) 155.4 kt/yr (soil: oxidation within the window of every conversion since 1992, 20 years each; B2, B4: events within the window of every cohort since 1992; the soil tails of a 2016 start need conversions from 1997, inside the history in scope). With soil on all floor area: 1,575.8 kt/yr. Note: with the long-run net replacement rate for 2024–25: 1,558.4 kt/yr; 2021–2025 (5 yr): 1,630.0 kt/yr.
 
 ### α validation (Hjalsted et al. 2021 SI: α = 0.243 for 2017; world GDP per capita 1.07E+04 USD)
 
@@ -378,18 +366,18 @@ Primary pair A: 2 °C carrying capacity (Bjørn & Hauschild 2015); sensitivity C
 
 ### Results
 
-The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 173.4 kt CO₂e in 2026 and 183.5 kt in 2050; by ability to pay 43.35 and 45.87 kt (25.0% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026–2050 the Reference emits 20,615 kt against cumulative boundaries of 4,451 kt (AR) and 1,113 kt (AtP): cumulative LoE 4.63 (AR; Monte Carlo p5-p95 3.56–5.67) and 18.5 (AtP; 14.2–22.7).
+The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 189.8 kt CO₂e in 2026 and 200.9 kt in 2050; by ability to pay 43.35 and 45.87 kt (22.8% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026–2050 the Reference emits 26,143 kt against cumulative boundaries of 4,874 kt (AR) and 1,113 kt (AtP): cumulative LoE 5.36 (AR; Monte Carlo p5-p95 4.50–6.21) and 23.5 (AtP; 19.5–27.4).
 
 | variant | cumulative LoE AR | cumulative LoE AtP |
 |---|---|---|
-| Reference | 4.63 | 18.5 |
-| Low replacement | 4.28 | 17.1 |
-| High replacement | 5.04 | 20.2 |
-| Reference, replacement half-life 5 yr | 4.48 | 17.9 |
-| Reference, replacement half-life 15 yr | 4.72 | 18.9 |
-| Low replacement, no census under-construction correction | 4.40 | 17.6 |
-| Reference, no census under-construction correction | 4.89 | 19.5 |
-| High replacement, no census under-construction correction | 5.45 | 21.8 |
+| Reference | 5.36 | 23.5 |
+| Low replacement | 5.04 | 22.1 |
+| High replacement | 5.74 | 25.1 |
+| Reference, replacement half-life 5 yr | 5.23 | 22.9 |
+| Reference, replacement half-life 15 yr | 5.45 | 23.9 |
+| Low replacement, no census under-construction correction | 5.13 | 22.5 |
+| Reference, no census under-construction correction | 5.58 | 24.4 |
+| High replacement, no census under-construction correction | 6.09 | 26.7 |
 
 #### Committed after 2050 (later B2/B4 and C1–C4; deterministic)
 
@@ -397,43 +385,44 @@ Lower bound: maintenance events (B2, B4) after 2050 with the 2050 factors held; 
 
 | variant | maintenance (B2, B4) 2026–2050 (kt) | share of carbon 2026–2050 | committed after 2050 (kt) | years of B_AR(2050) |
 |---|---|---|---|---|
-| Reference | 375 | 1.8% | 7,884–8,616 | 43.0–47.0 |
-| Low replacement | 337 | 1.8% | 7,207–7,877 | 39.3–42.9 |
-| High replacement | 397 | 1.8% | 8,755–9,570 | 47.7–52.2 |
+| Reference | 375 | 1.4% | 7,884–8,616 | 39.2–42.9 |
+| Low replacement | 337 | 1.4% | 7,207–7,877 | 35.9–39.2 |
+| High replacement | 397 | 1.4% | 8,755–9,570 | 43.6–47.6 |
 
 #### Deterministic sensitivities (the Reference)
 
 | case | cumulative LoE AR | vs the Reference | cumulative LoE AtP | vs the Reference |
 |---|---|---|---|---|
-| Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016–2025, model population, mean of ratios | 4.63 | +0.0% | 18.5 | +0.0% |
-| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 8.74 | +88.6% | 34.9 | +88.6% |
-| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 4.63 | +0.0% | 57.0 | +207.7% |
-| (iii) AR base window 2021–2025 (5 yr, as Horup) | 4.52 | -2.4% | 18.5 | +0.0% |
-| (iii) AR base window 2006–2025 (20 yr) | 5.57 | +20.3% | 18.5 | +0.0% |
-| (iii) AR base window 1992–2025 (full consistent history) | 5.67 | +22.4% | 18.5 | +0.0% |
-| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 4.62 | -0.2% | 18.4 | -0.6% |
-| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 4.92 | +6.2% | 20.0 | +7.7% |
-| (v) s_sec with FCE share as ratio of sums | 4.63 | +0.0% | 18.6 | +0.2% |
-| (vi) Frozen technology: 2025 factors held (A1–A3 and A4–A5 not decarbonised) | 5.30 | +14.5% | 21.2 | +14.5% |
-| (vii) Proxy-mapped items held at 2025 (A1–A3) | 4.65 | +0.4% | 18.6 | +0.4% |
-| (viii) NZ-made, electricity-intensive items held at 2025 (A1–A3) | 4.75 | +2.5% | 19.0 | +2.5% |
-| (ix) A4–A5 held at 2025 (no generic 1%/yr) | 4.72 | +2.0% | 18.9 | +2.0% |
-| (x) A4–A5 on each item's own Horup S4 path | 4.57 | -1.2% | 18.3 | -1.2% |
-| (xi) Event timing: interval L / n (instead of L / (n + 1)) | 4.60 | -0.7% | 18.4 | -0.7% |
-| (xii) Accounting: whole life at construction (base on the same rule) | 4.71 | +1.7% | 26.3 | +42.0% |
-| (xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992 | 5.17 | +11.6% | 22.9 | +23.5% |
-| (xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables | 4.63 | +0.0% | 7.8 | -57.8% |
-| Note (not drawn in D18 or H11): history 2024–25 at the long-run net replacement rate | 4.62 | -0.3% | 18.5 | +0.0% |
+| Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016–2025, model population, mean of ratios | 5.36 | +0.0% | 23.5 | +0.0% |
+| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 10.12 | +88.6% | 44.3 | +88.6% |
+| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 5.36 | +0.0% | 72.3 | +207.7% |
+| (iii) AR base window 2021–2025 (5 yr, as Horup) | 5.13 | -4.4% | 23.5 | +0.0% |
+| (iii) AR base window 2006–2025 (20 yr) | 6.65 | +23.9% | 23.5 | +0.0% |
+| (iii) AR base window 1992–2025 (full consistent history) | 7.51 | +40.0% | 23.5 | +0.0% |
+| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 5.35 | -0.2% | 23.4 | -0.6% |
+| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 5.70 | +6.2% | 25.3 | +7.7% |
+| (v) s_sec with FCE share as ratio of sums | 5.36 | +0.0% | 23.5 | +0.2% |
+| (vi) Frozen technology: 2025 factors held (A1–A3 and A4–A5 not decarbonised) | 6.13 | +14.3% | 26.8 | +14.3% |
+| (vii) Proxy-mapped items held at 2025 (A1–A3) | 5.39 | +0.5% | 23.6 | +0.5% |
+| (viii) NZ-made, electricity-intensive items held at 2025 (A1–A3) | 5.47 | +1.9% | 23.9 | +1.9% |
+| (ix) A4–A5 held at 2025 (no generic 1%/yr) | 5.46 | +1.7% | 23.9 | +1.7% |
+| (x) A4–A5 on each item's own Horup S4 path | 5.32 | -0.9% | 23.3 | -0.9% |
+| (xi) Event timing: interval L / n (instead of L / (n + 1)) | 4.81 | -10.3% | 21.1 | -10.3% |
+| (xii) Whole life at construction, soil at conversion (base on the same rule) | 4.71 | -12.2% | 26.3 | +12.0% |
+| (xiii) Accounting: instant (soil at conversion, B of each window's own cohorts (MODEL v3.0.0)); base on the same rule | 4.63 | -13.7% | 18.5 | -21.1% |
+| (xiii) Accounting: cohort_window (soil oxidised over 20 yr, each window's own cohorts only); base on the same rule | 4.87 | -9.2% | 17.6 | -25.1% |
+| (xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables | 5.36 | +0.0% | 9.9 | -57.8% |
+| Note (not drawn in D18 or H11): history 2024–25 at the long-run net replacement rate | 5.36 | -0.0% | 23.5 | +0.0% |
 
 #### Monte Carlo with a 2006–2025 AR base (20 years; not adopted)
 
-Ī_sec,base 2006–2025 = 1,182.9 kt/yr (adopted 2016–2025: 1,423.0); full consistent history 1992–2025: 1,163.0 kt/yr. Same saved draws, base recomputed per draw (no new random numbers); AtP is unaffected.
+Ī_sec,base 2006–2025 = 1,257.0 kt/yr (adopted 2016–2025: 1,558.0); full consistent history 1992–2025: 1,112.7 kt/yr. Same saved draws, base recomputed per draw (no new random numbers); AtP is unaffected.
 
 | variant | cumulative LoE AR p5 / p50 / p95 (20-yr base) | adopted base |
 |---|---|---|
-| Reference | 4.27 / 5.53 / 6.82 | 3.56 / 4.60 / 5.67 |
-| Low replacement | 3.87 / 5.12 / 6.39 | 3.22 / 4.26 / 5.31 |
-| High replacement | 4.74 / 6.01 / 7.34 | 3.94 / 5.00 / 6.10 |
+| Reference | 5.57 / 6.61 / 7.70 | 4.50 / 5.34 / 6.21 |
+| Low replacement | 5.19 / 6.22 / 7.29 | 4.19 / 5.02 / 5.88 |
+| High replacement | 6.01 / 7.07 / 8.18 | 4.86 / 5.70 / 6.59 |
 
 ### Assumption register
 
@@ -441,8 +430,8 @@ Lower bound: maintenance events (B2, B4) after 2050 with the 2050 factors held; 
 |---|---|---|
 | Impact category | climate change only | DECISION (author) |
 | Carrying capacity over time | static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / Paris-aligned pathways | DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, 140–150 (pp. 143, 148) |
-| Sector impact | materials and construction (A1–A5) and soil carbon loss of each year's construction plus the maintenance (B2, B4) occurring that year from buildings built in 2026–2050 (time-resolved); later maintenance and end of life (C1–C4) are committed after 2050, reported separately | DECISION (author); projection.ACCOUNTING = 'time_resolved' |
-| AR base on the same rule | Ī_sec,base = materials and construction (A1–A5) and soil carbon loss of 2016–2025 construction + the maintenance (B2, B4) within 2016–2025 of the buildings built in it, at 2025 factors; base-window sensitivities on the same rule over their windows; wider scope (all cohorts since 1992) as a sensitivity | DECISION (author) |
+| Sector impact | every emission occurring in the year from residential construction since 1992 (ACCOUNTING inventory): materials and construction (A1–A5) of the year's construction, soil carbon loss oxidised linearly over 20 years after conversion (IPCC 2006 Vol. 4 Ch. 2) incl. the tails of earlier conversions, and the maintenance (B2, B4) of every cohort since 1992; later maintenance, end of life (C1–C4) and the soil of 2026–2050 conversions oxidised after 2050 are committed after 2050, reported separately | DECISION (author); projection.LIFE_CYCLE_TIMING = 'time_resolved', ACCOUNTING = 'inventory' |
+| AR base on the same rule | Ī_sec,base = mean annual emissions 2016–2025 on the projection's accounting rule ('inventory'): materials and construction (A1–A5) of the window's construction + the soil and the maintenance (B2, B4) the rule counts in the window (inventory: oxidation of every conversion since 1992, B of every cohort since 1992), at 2025 factors; base-window sensitivities on the same rule (a window whose soil tails reach before 1992 is flagged); the other rules (instant, cohort_window) as sensitivities | DECISION (author) |
 | Carbon factors over time | projection.DECARB_MODE = 'horup_item' (A1–A3 by case-study EPD item, Horup et al. 2025; data/material_item_map.csv); A4–A5 'resch' (Resch et al. 2021 Table 1: e^(-0.01 (t - 2025))); history and the AR base always at 2025 factors | DECISION (author); LITERATURE; see the projection register |
 | Allocation principles | acquired rights (Horup et al. 2025 Eq. 1) and ability to pay (Hjalsted et al. 2021 Eqs. 5–6, SI S1), reported as a range, never averaged; the egalitarian-economic (EQ) principle of the earlier manuscript is not used | DECISION (author); LITERATURE |
 | SOS / I_glob pair | A: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12, I_glob 5.58e+13 kg CO2-eq/yr; sensitivity C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015), SOS 3.61e+12 | DECISION (author) among LITERATURE values (Bjørn & Hauschild 2015, ESM2); see the source check |
@@ -514,33 +503,33 @@ TL: R3 = 0, R4 = 117,044, G+ = 354,466, s = 0.330; the release constraint binds 
 
 | Run | Floor area 2026–2050 (Mm²) | Carbon (kt CO₂e) | LoE AR | LoE AtP | vs Reference |
 |---|---|---|---|---|---|
-| REF | 85.90 | 20,615 | 4.631 | 18.52 | +0.0% |
-| P1-moderate | 74.63 | 17,958 | 4.035 | 16.14 | -12.9% |
-| P2-moderate | 80.56 | 19,400 | 4.359 | 17.43 | -5.9% |
-| P3-moderate | 85.90 | 19,077 | 4.286 | 17.14 | -7.5% |
-| P4-moderate | 85.90 | 19,933 | 4.478 | 17.91 | -3.3% |
-| P5-moderate | 69.88 | 15,073 | 3.386 | 13.54 | -26.9% |
-| P1-ambitious | 64.42 | 15,556 | 3.495 | 13.98 | -24.5% |
-| P2-ambitious | 75.29 | 18,202 | 4.089 | 16.35 | -11.7% |
-| P3-ambitious | 85.90 | 17,540 | 3.941 | 15.76 | -14.9% |
-| P4-ambitious | 85.90 | 19,335 | 4.344 | 17.37 | -6.2% |
-| P5-ambitious | 56.12 | 10,920 | 2.453 | 9.81 | -47.0% |
-| TL | 24.19 | 4,358 | 0.979 | 3.92 | -78.9% |
-| TL-from2027 | 19.50 | 3,020 | 0.679 | 2.71 | -85.3% |
+| REF | 85.90 | 26,143 | 5.364 | 23.49 | +0.0% |
+| P1-moderate | 74.63 | 23,646 | 4.852 | 21.25 | -9.5% |
+| P2-moderate | 80.56 | 24,939 | 5.117 | 22.41 | -4.6% |
+| P3-moderate | 85.90 | 24,605 | 5.049 | 22.11 | -5.9% |
+| P4-moderate | 85.90 | 25,781 | 5.290 | 23.16 | -1.4% |
+| P5-moderate | 69.88 | 21,061 | 4.321 | 18.92 | -19.4% |
+| P1-ambitious | 64.42 | 21,391 | 4.389 | 19.22 | -18.2% |
+| P2-ambitious | 75.29 | 23,752 | 4.874 | 21.34 | -9.1% |
+| P3-ambitious | 85.90 | 23,068 | 4.733 | 20.73 | -11.8% |
+| P4-ambitious | 85.90 | 25,454 | 5.223 | 22.87 | -2.6% |
+| P5-ambitious | 56.12 | 17,199 | 3.529 | 15.45 | -34.2% |
+| TL | 24.19 | 10,910 | 2.239 | 9.80 | -58.3% |
+| TL-from2027 | 19.50 | 9,573 | 1.964 | 8.60 | -63.4% |
 
 #### Shapley values (exact, 512 subsets per game; reduction of cumulative carbon, kt CO₂e)
 
 | Lever | Moderate | Ambitious | TL (from the Reference) |
 |---|---|---|---|
-| L1 Dwelling size | 624 | 1,087 | 2,606 |
-| L2 Design density | 1,182 | 2,037 | 1,697 |
-| L3 Household size | 609 | 1,069 | 2,944 |
-| L4 Vacancy | 611 | 1,113 | 2,801 |
-| L5 Building lifetime | 509 | 878 | 1,666 |
+| L1 Dwelling size | 585 | 1,023 | 2,484 |
+| L2 Design density | 1,108 | 1,919 | 1,618 |
+| L3 Household size | 589 | 1,039 | 2,917 |
+| L4 Vacancy | 603 | 1,100 | 2,694 |
+| L5 Building lifetime | 496 | 863 | 1,651 |
 | L6 Material carbon | 798 | 1,415 | 1,832 |
 | L7 Construction-stage carbon | 573 | 1,025 | 1,281 |
-| L8 Soil-aware planning | 128 | 202 | 428 |
-| L9 Brownfield development | 508 | 868 | 1,002 |
-| Sum (= Reference - run) | 5,542 | 9,694 | 16,257 |
+| L8 Soil-aware planning | 69 | 108 | 230 |
+| L9 Brownfield development | 261 | 450 | 525 |
+| Sum (= Reference - run) | 5,082 | 8,944 | 15,233 |
 
 Shapley (1953); Albrecht, Francois & Schoors (2002). Efficiency holds exactly (rational arithmetic on the run values).

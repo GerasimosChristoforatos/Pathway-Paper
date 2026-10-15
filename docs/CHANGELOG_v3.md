@@ -222,3 +222,146 @@ Decisions:
 | built_t < 0 | none |
 | TLn weaker than Ambitious | none |
 | excess differs between runs | 0.0 |
+
+---
+
+# MODEL v3.1.0: changes and decisions
+
+Branch `release/model-v3.1.0`, created from `release/model-v3.0.0`. Minimal, targeted changes: inventory emissions
+accounting (A1), one release-accounting convention (A2), the history split (A3), two report-only rows (A4, A5) and the
+figure fixes (B1–B3). Numbers are from the full profile (deterministic numbers are identical in both profiles).
+
+## A1 Emissions accounting (`inventory.py`; `ACCOUNTING`)
+
+* `ACCOUNTING` ∈ {`inventory` (default), `instant`, `cohort_window`} in `projection.py`; environment override
+  `PATHWAY_ACCOUNTING`. The v3.0 constant of the same name (the life-cycle timing: in-window / whole life) is
+  **renamed `LIFE_CYCLE_TIMING`**; the whole-life sensitivity row (xii) now runs `LIFE_CYCLE_TIMING = whole_life`
+  on the instant rule, as in v3.0.
+* Scope: residential construction since `B_SCOPE_START = 1992` on both sides (base and projection). Soil carbon of
+  converted land is emitted linearly over `SOIL_OXIDATION_YEARS = 20` years from the conversion year (IPCC 2006,
+  Vol. 4, Ch. 2, default transition period; NZ GHG Inventory land-use change convention [verify]).
+* **inventory**, AR base 2016–2025: upfront A1–A5 of the window's construction + soil tails of 1997+ conversions
+  emitted in the window + B2/B4 of every cohort since 1992 occurring in the window. Projection 2026–2050: upfront +
+  in-window soil of 2026–2050 conversions + the tails of 2007–2025 conversions over 2026–2044 + the B2/B4 of the
+  1992–2025 cohorts (on each run's decarbonisation paths). The pre-2026 part is the band **Legacy (pre-2026
+  activity)** (soil and B2/B4 kept separately in the data: `carbon_legacy`, `legacy_soil_kt`, `legacy_b2b4_kt`);
+  the soil of 2026–2050 conversions oxidised after 2050 is the committed component **Soil, after 2050**.
+* **instant** reproduces MODEL v3.0.0 (soil at conversion, B2/B4 of each window's own cohorts). It is used by the
+  legacy lock (`PATHWAY_REFERENCE_LEGACY` now also forces `instant`) and the A2 equivalence test.
+* **cohort_window** (20-year oxidation, own cohorts only, on both sides) is deterministic only and **rejected**:
+  a 10-year base window and a 25-year projection capture different shares of slow-release emissions.
+* Base-window sensitivity rows use the same rule as the adopted base, with a `soil_tail_coverage` column (`full` /
+  `partial` where tails reach before 1992). The adopted 2016 window needs conversions from 1997: covered (no STOP).
+* Monte Carlo: AR and AtP are recomputed per draw on the rule (`mc_runs(..., rule)`); the legacy soil is fixed
+  (observed history; soil factors are not drawn); the legacy B2/B4 follows each draw's bootstrap of the case-study
+  event profiles (`INV.legacy_b` per building, `boot_legacy_b`), on the central history, as the per-draw AR base
+  does. The per-draw TL is also evaluated on the instant rule against `B_AR_instant` to report its share.
+* `engine.forward(..., soil_spread=None, legacy=None)` reproduces v3.0 bit for bit with both None (the summation
+  order of the v3.0 carbon total is kept; a 1-ulp difference found during development was fixed this way).
+
+| (full profile) | inventory | instant | cohort_window |
+|---|---|---|---|
+| AR base (kt/yr): total / upfront / soil / B2B4 | 1558.0 / 1226.8 / 175.8 / 155.4 | 1423.0 / 1226.8 / 192.6 / 3.5 | 1285.4 / 1226.8 / 55.1 / 3.5 |
+| AR budget 2026–2050 (kt) | 4873.6 | 4451.0 | 4020.9 |
+| AtP budget 2026–2050 (kt) | 1113.0 | 1113.0 | 1113.0 |
+| Reference carbon (kt) | 26142.7 | 20614.9 | 19590.5 |
+| of which upfront / soil / B2B4 / legacy | 17340.5 / 1875.0 / 375.1 / 6552.2 (soil 1709.0 + B 4843.2) | 17340.5 / 2899.3 / 375.1 / 0 | 17340.5 / 1875.0 / 375.1 / 0 |
+| Soil, after 2050 (kt, committed) | 1024.4 | 0 | 1024.4 |
+| LoE AR: REF / P5 Mod / P5 Amb / TL | 5.364 / 4.321 / 3.529 / 2.239 | 4.631 / 3.386 / 2.453 / 0.979 | 4.872 / 3.608 / 2.648 / 1.084 |
+| LoE AtP: REF / TL | 23.49 / 9.80 | 18.52 / 3.92 | 17.60 / 3.92 |
+| MC share of draws with TL within AR | 0.000 | 0.551 | n/a (deterministic only) |
+
+Written by `tools/accounting_rules.py` to `outputs/data/sensitivity/accounting_rules.csv` (a new `run_all` step after
+`sensitivity_tables`). Under the adopted rule the legacy alone is 1.34 × the AR budget, so no 2026–2050 pathway can
+reach LoE AR ≤ 1 (Fig6).
+
+## A2 One release-accounting convention (`bands.py`; `pathways.run`)
+
+* Positive bands are always gross need; each release is its own negative band (Overbuild absorbed, Unconsented
+  additions, **Vacancy released** (new), Released dwellings (TL)); no netting, no rescaling. Retirement-village units
+  are removed from each band by the exact factor (1 − RV share); the 2026 observed-GFA adjustment sits on the
+  overbuild band. (v3.0 rescaled bands to fit; removed.)
+* An amount that cannot be used in a year (gross need minus releases < 0) is carried forward; whatever remains in 2050
+  is booked against its release band and as **Surplus kept vacant (2050)**, so the bands sum to the floor area and
+  carbon totals every year (checked to 1e-9; `bands.check`). The negative-gross residual (census identity) is carried
+  the same way.
+* TL-family runs (TL, TL waterfall steps, every TL Shapley subset): the re-occupation pool holds every dwelling
+  release in the run. Non-TL runs: vacancy releases are used in-year, capped at the year's gross need, the rest
+  carried. The gross vacancy band is never negative (STOP if it were); years where households fall are logged
+  (`households_fall_years`).
+* Soil-bearing indicator per band follows `soil_on_replacement` (with the sensitivity setting `True`, replacement
+  bands bear soil; a check failure on that row during development was fixed this way); the brownfield factor phi
+  makes the bands carry exactly the engine's soil.
+* **Equivalence** (`PATHWAY_ACCOUNTING=instant` against the v3.0 light snapshot): every Reference, lever (L1–L9),
+  pathway (P1–P5) and TL total identical (52 runs, max difference 0.0). What changes, as intended (TL pool now holds
+  the vacancy release in every TL-family subset):
+  * TL waterfall steps (kt): Moderate TL1 +92.1, TL2 +95.8, TL3 +97.2; Ambitious TL1 +199.9, TL2 +201.5, TL3 +185.9;
+    TL4–TL9 and TL unchanged.
+  * TL1–TL9 Shapley values from P5 Moderate (carbon, kt): TL1 −13.5, TL2 −10.7, TL3 −7.5, TL4 +76.5, TL5 −4.0,
+    TL6 −12.7, TL7 −8.1, TL8 −8.8, TL9 −11.3 (sum 0, efficiency holds). LoE values change proportionally.
+    Moderate/Ambitious P- and L-games unchanged.
+
+## A3 History split (`validation.history_bands`)
+
+* The residual of the history is split into **net replacement (census)** (interval rate of the census identity ×
+  previous stock × dwelling size; may be negative), **retirement villages** (negative, out of scope) and
+  **unexplained building** (the remainder to the observed floor area). Bands sum to the observed floor area in every
+  year (1e-9); no rescaling. `history_replacement_split` (v3.0) is retired and its CSV removed.
+* Unexplained building 1992–2025: **−4,345 dwellings (−0.52 % of 828,537 built)**; floor-area remainder and the
+  stock-identity dwellings × size agree to 1.4e-15 Mm² (`baseline/history_unexplained.json`).
+
+## A4 / A5 report-only rows
+
+* A4 `TL-reoccupation-fast` (re-occupation as fast as demand allows, `reoccupation(rule='fast')`): 10,624.8 kt,
+  LoE AR 2.180 (TL 10,909.8 kt, 2.239); zero-building years 2029–2038.
+* A5 r_L6 with A_1 (n = 15): r = 0.841 (bootstrap CI 0.619–0.955) vs adopted 0.827 (n = 14); check only.
+
+## B Figures (`--figures-only`; data byte-identical)
+
+* Fig5/ED7: true sequential waterfall Reference → P1..P4 → P5 → TL1..TL9 → TL; reductions filled downward,
+  increases outlined upward, Δ kt labels; legacy as the base of the end bars; AR/AtP lines and zones.
+* Fig6: single panel, analytic LoE_AR(x, y) = [C_2026 + C_legacy + C_ref,2027–50 (1−x)(1−y)] / B_AR
+  (`fig6_loe`); AR solid red, AtP dotted; zones; contour labels in LoE AR; markers at the effective coordinates,
+  clip_on=False; marker test at 1e-9. The figure audit records markers outside the plotted boundary
+  (`boundary_outside`) instead of failing.
+* ED5b: population threshold (univariate logistic, bootstrap CI). Under the adopted rule no draw reaches TL within AR
+  (no events), so ED5b shows a note and the LoE-vs-population scatter; the instant-rule threshold, 6.651 M
+  (CI 6.648–6.654 M; Firth, separation), is reported in the note. ED5a uses categorical Q1–Q5.
+* Fig1: A3 split, legend only for bands present. Fig2/Fig3/Fig4/D25: legacy band in neutral grey (registered in
+  `figures/style.py`, distinct from maintenance). Fig3: "Soil, after 2050" segment. Fig8 caption as specified.
+  D37 distinct styles; D38 shows the resulting A1–A3 factors per typology (`montecarlo/carbon_factors_REF.csv`,
+  written by `pathways_mc.py --carbon-factors`); D40 readable labels; D07 "BRANZ demolition (component of the
+  long-run rate)"; D29 L3 caption; ED11 footnote on A_1 with the A5 value; ED8c caption.
+* Palette: new colours (Vacancy released, Surplus kept vacant (2050), Legacy, Soil after 2050) chosen by a CVD-aware
+  search for a minimum pairwise distance within each figure group (`tools/palette_check.py`; `docs/PALETTE.md`).
+
+## C Documents
+
+* `METHODS_DRAFT.md` part 4 (`tools/accounting_methods.py`): A1 (inventory default and why; scope; instant and
+  cohort_window as sensitivities; why cohort_window is rejected), A2, A3, the replacement wording and the
+  completion-rate two-piece uniform rationale.
+* `REFERENCES.md`: emissions-accounting section; DiPasquale & Wheaton (1992), Gabriel & Nothaft (2001, distinct from
+  1988), IPCC 2006 Vol. 4 Ch. 2, NZ GHG Inventory, Jones, Greenaway-McGrevy & Crow (2024), Wallis (2014).
+  Crossref was not reachable from the build environment, so entries not verified against a DOI are marked [verify].
+
+## Other code changes
+
+* `naming.py`: new bands/components/stages (`vacancy_released`, `surplus_vacant`, `legacy`, `soil_after`),
+  `BANDS_IN_SCOPE`, `BANDS_HISTORY`. `export_results` adds `bands_in_scope`, `legacy_kt`, `soil_after_2050_kt`.
+* `pathways.linear_split` / `scaled_carbon`: the fixed part is the 2026 cohort + legacy (Fig6 analytic plane).
+* `pathways` checks: legacy identical across all runs (STOP; `legacy_max_rel_diff_between_runs`).
+* Development fixes: Firth guard for zero events (`population_threshold`, `estimable`), retired-key fixes in
+  `pb_methods` and validation, legacy colour and stage in Fig2/D13.
+* Timings (full compute, s): total 1316.8; montecarlo 156.8, boundaries 279.2, pathways 15.2, pathways_mc 781.4,
+  accounting_rules 9.6.
+
+## Checks (STOP conditions, v3.1)
+
+| condition | result |
+|---|---|
+| legacy v2.1 lock (instant) | passes |
+| A2 equivalence (every L/P/Reference/TL total, instant vs v3.0) | passes (max difference 0.0) |
+| history coverage for the default rule | full (2016 window needs 1997+) |
+| legacy band differs between runs | no |
+| material / stage values negative | none |
+| ordering / Shapley efficiency | holds |

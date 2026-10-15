@@ -28,7 +28,8 @@ A bottom-up, demand-driven model of the new residential floor area New Zealand b
   TL1 … TL9, the back-cast to the AR budget, a λ-sweep of each lever, and the pathway Monte Carlo
   with its insight statistics (`pathways_mc.py`, `mcstats.py`).
 
-Release **MODEL v3.0.0** (see [docs/CHANGELOG_v3.md](docs/CHANGELOG_v3.md) and
+Release **MODEL v3.1.0** (inventory emissions accounting, one release-accounting convention, history split;
+see [docs/CHANGELOG_v3.md](docs/CHANGELOG_v3.md), v3.1 section, and
 [CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
 
 ## Results
@@ -123,7 +124,9 @@ name and the log to read, and the run stops (exit code 1 from the command line).
   validation, decarbonisation, time-resolved events and committed emissions, the AESA equations
   against their sources, the Harrell-Davis estimator, exact Shapley values.
 * The MODEL v1–v2.1 locks are retired to `tests/retired/` (not collected): MODEL v3.0.0 changes
-  the Reference on purpose; the legacy lock keeps the link to v2.1.
+  the Reference on purpose; the legacy lock keeps the link to v2.1. MODEL v3.1.0: the v3.1 lock
+  (`tests/regression_model_v3_1.json`), and the A2 equivalence test (`tests/test_model_v3_1.py`) keeps the link
+  to v3.0 on the instant accounting rule.
 
 ## Layout
 

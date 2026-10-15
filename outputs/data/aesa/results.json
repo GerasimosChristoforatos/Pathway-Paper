@@ -43,20 +43,48 @@
     "SOS_kg": 6810000000000.0,
     "I_glob_kg": 55800000000000.0,
     "pair_label": "2 \u00b0C carrying capacity (Bj\u00f8rn & Hauschild 2015)",
-    "I_sec_base_kg": 1422959048.7163734,
+    "I_sec_base_kg": 1558038153.6494288,
     "I_sec_base_window": [
       2016,
       2025
     ],
-    "I_sec_base_b_share": 0.002455555178475988,
-    "I_sec_base_wider_scope_kg": 1574833476.6480007,
-    "accounting": "time_resolved",
+    "I_sec_base_b_share": 0.09972065320001239,
+    "I_sec_base_split": {
+      "upfront_kg": 1226833715.7330017,
+      "soil_kg": 175835855.5239647,
+      "b2b4_kg": 155368582.3924623,
+      "total_kg": 1558038153.6494288
+    },
+    "soil_tail_coverage": {
+      "2016_2025": {
+        "first_conversion_needed": 1997,
+        "scope_start": 1992,
+        "covered": true
+      },
+      "5yr": {
+        "first_conversion_needed": 2002,
+        "scope_start": 1992,
+        "covered": true
+      },
+      "20yr": {
+        "first_conversion_needed": 1987,
+        "scope_start": 1992,
+        "covered": false
+      },
+      "full": {
+        "first_conversion_needed": 1973,
+        "scope_start": 1992,
+        "covered": false
+      }
+    },
+    "accounting": "inventory",
+    "life_cycle_timing": "time_resolved",
     "decarb_a45": "resch",
     "event_timing": "n+1",
-    "I_sec_base_5yr_kg": 1457497523.1329305,
-    "I_sec_base_long_run_2024_25_kg": 1427859880.996256,
-    "I_sec_base_20yr_kg": 1182883458.5755541,
-    "I_sec_base_full_kg": 1162965824.4387162,
+    "I_sec_base_5yr_kg": 1630019795.3679519,
+    "I_sec_base_long_run_2024_25_kg": 1558404852.1746671,
+    "I_sec_base_20yr_kg": 1257022937.688505,
+    "I_sec_base_full_kg": 1112702416.8807826,
     "I_sec_base_20yr_window": [
       2006,
       2025
@@ -65,7 +93,7 @@
       1992,
       2025
     ],
-    "I_sec_base_soil_on_all_kg": 1457504793.2272365,
+    "I_sec_base_soil_on_all_kg": 1575791747.3688583,
     "LoE_AR_base_identity": 8.193832599118943,
     "base_year_b": 2024,
     "alpha": 0.4219591072190145,
@@ -332,61 +360,61 @@
   },
   "history": {
     "2016": {
-      "I_kt": 1303.8506314435165,
+      "I_kt": 1310.6779957854185,
       "soil_share": 0.8985157569431197,
       "rate_pct": 0.15770463696612805,
       "rate_source": "2013-2018"
     },
     "2017": {
-      "I_kt": 1311.9211566394085,
+      "I_kt": 1406.5464407835113,
       "soil_share": 0.9007139334620818,
       "rate_pct": 0.15770463696612805,
       "rate_source": "2013-2018"
     },
     "2018": {
-      "I_kt": 1340.2517565217775,
+      "I_kt": 1470.8139936675093,
       "soil_share": 0.8123863630397511,
       "rate_pct": 0.3122099828683497,
       "rate_source": "2018-2023"
     },
     "2019": {
-      "I_kt": 1441.5342419459928,
+      "I_kt": 1589.7514756635942,
       "soil_share": 0.8337341078833546,
       "rate_pct": 0.3122099828683497,
       "rate_source": "2018-2023"
     },
     "2020": {
-      "I_kt": 1509.6035403400367,
+      "I_kt": 1652.492653754494,
       "soil_share": 0.8390693225535436,
       "rate_pct": 0.3122099828683497,
       "rate_source": "2018-2023"
     },
     "2021": {
-      "I_kt": 1833.4884066512627,
+      "I_kt": 1951.284303554704,
       "soil_share": 0.8685241802177559,
       "rate_pct": 0.3122099828683497,
       "rate_source": "2018-2023"
     },
     "2022": {
-      "I_kt": 1771.9082294047441,
+      "I_kt": 1912.3670283878307,
       "soil_share": 0.8678271952246656,
       "rate_pct": 0.3122099828683497,
       "rate_source": "2018-2023"
     },
     "2023": {
-      "I_kt": 1280.3176423544303,
+      "I_kt": 1456.3386514876236,
       "soil_share": 0.8207153815099238,
       "rate_pct": 0.3122099828683497,
       "rate_source": "2018-2023"
     },
     "2024": {
-      "I_kt": 1149.3705159213807,
+      "I_kt": 1366.174632732109,
       "soil_share": 0.797425630371813,
       "rate_pct": 0.3122099828683497,
       "rate_source": "2018-2023 carried"
     },
     "2025": {
-      "I_kt": 1287.3443659411832,
+      "I_kt": 1463.9343606774926,
       "soil_share": 0.8115381136183224,
       "rate_pct": 0.3122099828683497,
       "rate_source": "2018-2023 carried"
@@ -394,330 +422,330 @@
   },
   "boundaries": {
     "2025": {
-      "B_AR_kt": 173.6622064831273,
+      "B_AR_kt": 190.14766713893565,
       "B_AtP_kt": 43.4236583920041,
       "P_NZ": 5344500.0,
       "P_W": 8266145733.0
     },
     "2026": {
-      "B_AR_kt": 173.37074312415197,
+      "B_AR_kt": 189.8285356543831,
       "B_AtP_kt": 43.35077894638239,
       "P_NZ": 5379900.0,
       "P_W": 8334886370.0
     },
     "2027": {
-      "B_AR_kt": 173.6625002620953,
+      "B_AR_kt": 190.14798880584613,
       "B_AtP_kt": 43.42373185046007,
       "P_NZ": 5432900.0,
       "P_W": 8402856615.5
     },
     "2028": {
-      "B_AR_kt": 173.99925210597297,
+      "B_AR_kt": 190.51670793486565,
       "B_AtP_kt": 43.50793553143105,
       "P_NZ": 5486900.0,
       "P_W": 8469952105.0
     },
     "2029": {
-      "B_AR_kt": 174.34791616374,
+      "B_AR_kt": 190.89847008416808,
       "B_AtP_kt": 43.59511782195157,
       "P_NZ": 5540900.0,
       "P_W": 8536205117.0
     },
     "2030": {
-      "B_AR_kt": 174.7081882036433,
+      "B_AR_kt": 191.29294214179248,
       "B_AtP_kt": 43.68520264988142,
       "P_NZ": 5594900.0,
       "P_W": 8601622122.0
     },
     "2031": {
-      "B_AR_kt": 175.08048635594122,
+      "B_AR_kt": 191.7005819303982,
       "B_AtP_kt": 43.778294567304044,
       "P_NZ": 5648900.0,
       "P_W": 8666174572.5
     },
     "2032": {
-      "B_AR_kt": 175.4651171809021,
+      "B_AR_kt": 192.12172511150334,
       "B_AtP_kt": 43.87447022859716,
       "P_NZ": 5702900.0,
       "P_W": 8729839446.5
     },
     "2033": {
-      "B_AR_kt": 175.8619242464089,
+      "B_AR_kt": 192.55620040315347,
       "B_AtP_kt": 43.973690518429045,
       "P_NZ": 5756900.0,
       "P_W": 8792616995.0
     },
     "2034": {
-      "B_AR_kt": 176.26659225351887,
+      "B_AR_kt": 192.9992828623482,
       "B_AtP_kt": 44.074876410620426,
       "P_NZ": 5810756.0,
       "P_W": 8854497545.0
     },
     "2035": {
-      "B_AR_kt": 176.67297917098915,
+      "B_AR_kt": 193.4442474051675,
       "B_AtP_kt": 44.17649211064277,
       "P_NZ": 5864244.0,
       "P_W": 8915448398.0
     },
     "2036": {
-      "B_AR_kt": 177.07833094060007,
+      "B_AR_kt": 193.88807853528527,
       "B_AtP_kt": 44.27784897537827,
       "P_NZ": 5917236.0,
       "P_W": 8975419619.5
     },
     "2037": {
-      "B_AR_kt": 177.4828001685753,
+      "B_AR_kt": 194.33094334557688,
       "B_AtP_kt": 44.37898516350668,
       "P_NZ": 5969700.0,
       "P_W": 9034362775.0
     },
     "2038": {
-      "B_AR_kt": 177.88896424660103,
+      "B_AR_kt": 194.77566389517867,
       "B_AtP_kt": 44.48054514326548,
       "P_NZ": 6021700.0,
       "P_W": 9092250653.0
     },
     "2039": {
-      "B_AR_kt": 178.29927742430655,
+      "B_AR_kt": 195.2249274115019,
       "B_AtP_kt": 44.583142591629425,
       "P_NZ": 6073300.0,
       "P_W": 9149059291.5
     },
     "2040": {
-      "B_AR_kt": 178.71483236943394,
+      "B_AR_kt": 195.6799302873965,
       "B_AtP_kt": 44.687050726541166,
       "P_NZ": 6124500.0,
       "P_W": 9204735889.0
     },
     "2041": {
-      "B_AR_kt": 179.13732121366027,
+      "B_AR_kt": 196.1425252857485,
       "B_AtP_kt": 44.79269265991082,
       "P_NZ": 6175300.0,
       "P_W": 9259195973.0
     },
     "2042": {
-      "B_AR_kt": 179.56782337335133,
+      "B_AR_kt": 196.61389429010052,
       "B_AtP_kt": 44.900338296218344,
       "P_NZ": 6225700.0,
       "P_W": 9312385842.5
     },
     "2043": {
-      "B_AR_kt": 180.00710782263963,
+      "B_AR_kt": 197.09487927200385,
       "B_AtP_kt": 45.01017991489355,
       "P_NZ": 6275700.0,
       "P_W": 9364267504.0
     },
     "2044": {
-      "B_AR_kt": 180.45682784243408,
+      "B_AR_kt": 197.5872904555385,
       "B_AtP_kt": 45.122630913340906,
       "P_NZ": 6325300.0,
       "P_W": 9414756681.0
     },
     "2045": {
-      "B_AR_kt": 180.91871130275445,
+      "B_AR_kt": 198.0930197345138,
       "B_AtP_kt": 45.238123339724524,
       "P_NZ": 6374500.0,
       "P_W": 9463764636.0
     },
     "2046": {
-      "B_AR_kt": 181.39418922401796,
+      "B_AR_kt": 198.6136339737042,
       "B_AtP_kt": 45.357015015950545,
       "P_NZ": 6423300.0,
       "P_W": 9511217790.5
     },
     "2047": {
-      "B_AR_kt": 181.88472107758895,
+      "B_AR_kt": 199.15073118963133,
       "B_AtP_kt": 45.47967087799001,
       "P_NZ": 6471700.0,
       "P_W": 9557041010.0
     },
     "2048": {
-      "B_AR_kt": 182.39137188482925,
+      "B_AR_kt": 199.70547750434065,
       "B_AtP_kt": 45.606357230899924,
       "P_NZ": 6519700.0,
       "P_W": 9601180035.5
     },
     "2049": {
-      "B_AR_kt": 182.91482230195382,
+      "B_AR_kt": 200.27861818759467,
       "B_AtP_kt": 45.737244270507894,
       "P_NZ": 6567300.0,
       "P_W": 9643601307.5
     },
     "2050": {
-      "B_AR_kt": 183.45549723846673,
+      "B_AR_kt": 200.87061848484075,
       "B_AtP_kt": 45.87243824402532,
       "P_NZ": 6614500.0,
       "P_W": 9684285445.5
     }
   },
   "B_AtP_over_B_AR": {
-    "min": 0.2500466812635082,
-    "max": 0.2500466812635084
+    "min": 0.22836808384441346,
+    "max": 0.22836808384441362
   },
   "deterministic": {
     "LOW": {
       "label": "Low replacement",
-      "I_kt": 19055.424038730773,
-      "LoE_AR": 4.281128486520673,
-      "LoE_AtP": 17.121316967246862
+      "I_kt": 24585.023234621338,
+      "LoE_AR": 5.044574972143254,
+      "LoE_AtP": 22.089667204021847
     },
     "REF_HL5": {
       "label": "Reference, replacement half-life 5 yr",
-      "I_kt": 19944.57330808465,
-      "LoE_AR": 4.480891150319861,
-      "LoE_AtP": 17.920218447521542
+      "I_kt": 25472.576407320434,
+      "LoE_AR": 5.226691070985866,
+      "LoE_AtP": 22.887134589905273
     },
     "REF": {
       "label": "Reference",
-      "I_kt": 20614.89594935651,
-      "LoE_AR": 4.631490651484248,
-      "LoE_AtP": 18.522503990378556
+      "I_kt": 26142.72573856854,
+      "LoE_AR": 5.364198305034441,
+      "LoE_AtP": 23.489264413537978
     },
     "REF_HL15": {
       "label": "Reference, replacement half-life 15 yr",
-      "I_kt": 21020.76092519218,
-      "LoE_AR": 4.722675193281873,
-      "LoE_AtP": 18.887174064529752
+      "I_kt": 26548.528370377906,
+      "LoE_AR": 5.447464518798787,
+      "LoE_AtP": 23.853878471521117
     },
     "HIGH": {
       "label": "High replacement",
-      "I_kt": 22430.77566010825,
-      "LoE_AR": 5.039459235232018,
-      "LoE_AtP": 20.154073670432968
+      "I_kt": 27958.41096381506,
+      "LoE_AR": 5.73675684025154,
+      "LoE_AtP": 25.12065934817745
     },
     "LOW_NOUC": {
       "label": "Low replacement, no census under-construction correction",
-      "I_kt": 19590.689866900888,
-      "LoE_AR": 4.4013851536083495,
-      "LoE_AtP": 17.60225383263539
+      "I_kt": 25017.042448863947,
+      "LoE_AR": 5.133220538789872,
+      "LoE_AtP": 22.477836886730273
     },
     "REF_NOUC": {
       "label": "Reference, no census under-construction correction",
-      "I_kt": 21755.454018007607,
-      "LoE_AR": 4.8877366226213175,
-      "LoE_AtP": 19.547296520486274
+      "I_kt": 27179.350417130627,
+      "LoE_AR": 5.576902228845107,
+      "LoE_AtP": 24.420672691918856
     },
     "HIGH_NOUC": {
       "label": "High replacement, no census under-construction correction",
-      "I_kt": 24276.14789763005,
-      "LoE_AR": 5.454053821961309,
-      "LoE_AtP": 21.81214241437433
+      "I_kt": 29699.77432379187,
+      "LoE_AR": 6.094065350368211,
+      "LoE_AtP": 26.685276014839612
     }
   },
   "population_paths": {
     "5th": {
-      "I_kt": 14330.018048892001,
-      "B_AR_kt": 4265.520866326651,
+      "I_kt": 20240.67167034349,
+      "B_AR_kt": 4670.439575137309,
       "B_AtP_kt": 1066.579336485224,
-      "LoE_AR": 3.3595001637473216,
-      "LoE_AtP": 13.43549191203605,
+      "LoE_AR": 4.333783007940624,
+      "LoE_AtP": 18.977183391761592,
       "P_NZ_2050": 6140088.442776736
     },
     "50th": {
-      "I_kt": 20614.89594935651,
-      "B_AR_kt": 4451.028297498578,
+      "I_kt": 26142.72573856854,
+      "B_AR_kt": 4873.556914186582,
       "B_AtP_kt": 1112.9648539994828,
-      "LoE_AR": 4.631490651484248,
-      "LoE_AtP": 18.522503990378556,
+      "LoE_AR": 5.364198305034441,
+      "LoE_AtP": 23.489264413537978,
       "P_NZ_2050": 6614500.0
     },
     "95th": {
-      "I_kt": 27095.423185856496,
-      "B_AR_kt": 4653.613478423535,
+      "I_kt": 32272.54025671029,
+      "B_AR_kt": 5095.3731649984275,
       "B_AtP_kt": 1163.620606162936,
-      "LoE_AR": 5.822448149483051,
-      "LoE_AtP": 23.285444622026965,
+      "LoE_AR": 6.333695140995674,
+      "LoE_AtP": 27.734589853242362,
       "P_NZ_2050": 7099034.644995723
     }
   },
   "mc": {
     "REF": {
-      "LoE_AR_p5": 3.5568996722295925,
-      "LoE_AR_p50": 4.601085091508326,
-      "LoE_AR_p95": 5.668935084918643,
-      "LoE_AtP_p5": 14.180280472866793,
-      "LoE_AtP_p50": 18.35209407093914,
-      "LoE_AtP_p95": 22.746034567974153,
+      "LoE_AR_p5": 4.503076947860983,
+      "LoE_AR_p50": 5.33580191419229,
+      "LoE_AR_p95": 6.207544228248327,
+      "LoE_AtP_p5": 19.537304495500514,
+      "LoE_AtP_p50": 23.287277582684155,
+      "LoE_AtP_p95": 27.408244630446454,
       "n_draws": 5000,
-      "I_sec_base_kt_p5": 1339.9580273637375,
-      "I_sec_base_kt_p50": 1420.9575912779178,
-      "I_sec_base_kt_p95": 1510.9880542153899
+      "I_sec_base_kt_p5": 1462.50974736169,
+      "I_sec_base_kt_p50": 1555.4777814224835,
+      "I_sec_base_kt_p95": 1656.963371053435
     },
     "LOW": {
-      "LoE_AR_p5": 3.218731783184125,
-      "LoE_AR_p50": 4.255474052664991,
-      "LoE_AR_p95": 5.3112003204338665,
-      "LoE_AtP_p5": 12.870371829327128,
-      "LoE_AtP_p50": 16.976887703232677,
-      "LoE_AtP_p95": 21.284910260719858,
+      "LoE_AR_p5": 4.19373046122486,
+      "LoE_AR_p50": 5.019782016126704,
+      "LoE_AR_p95": 5.883588563480862,
+      "LoE_AtP_p5": 18.201843652957788,
+      "LoE_AtP_p50": 21.92428702527193,
+      "LoE_AtP_p95": 25.944976902547864,
       "n_draws": 5000,
-      "I_sec_base_kt_p5": 1339.9580273637375,
-      "I_sec_base_kt_p50": 1420.9575912779178,
-      "I_sec_base_kt_p95": 1510.9880542153899
+      "I_sec_base_kt_p5": 1462.50974736169,
+      "I_sec_base_kt_p50": 1555.4777814224835,
+      "I_sec_base_kt_p95": 1656.963371053435
     },
     "HIGH": {
-      "LoE_AR_p5": 3.941143479050098,
-      "LoE_AR_p50": 5.001358839113788,
-      "LoE_AR_p95": 6.097387650766208,
-      "LoE_AtP_p5": 15.700118326899009,
-      "LoE_AtP_p50": 19.959218366946004,
-      "LoE_AtP_p95": 24.506974632119025,
+      "LoE_AR_p5": 4.858902228694997,
+      "LoE_AR_p50": 5.7047933913545865,
+      "LoE_AR_p95": 6.594187394680872,
+      "LoE_AtP_p5": 21.013794903083276,
+      "LoE_AtP_p50": 24.89641957536366,
+      "LoE_AtP_p95": 29.135337401430743,
       "n_draws": 5000,
-      "I_sec_base_kt_p5": 1339.9580273637375,
-      "I_sec_base_kt_p50": 1420.9575912779178,
-      "I_sec_base_kt_p95": 1510.9880542153899
+      "I_sec_base_kt_p5": 1462.50974736169,
+      "I_sec_base_kt_p50": 1555.4777814224835,
+      "I_sec_base_kt_p95": 1656.963371053435
     }
   },
   "mc_base_fixed": {
     "REF": {
-      "LoE_AR_p5": 3.545732071626073,
-      "LoE_AR_p50": 4.588880216674039,
-      "LoE_AR_p95": 5.687570455626974,
-      "LoE_AtP_p5": 14.180280472866793,
-      "LoE_AtP_p50": 18.35209407093914,
-      "LoE_AtP_p95": 22.746034567974153
+      "LoE_AR_p5": 4.461696791122298,
+      "LoE_AR_p50": 5.318070959510547,
+      "LoE_AR_p95": 6.259168307793993,
+      "LoE_AtP_p5": 19.537304495500514,
+      "LoE_AtP_p50": 23.287277582684155,
+      "LoE_AtP_p95": 27.408244630446454
     },
     "LOW": {
-      "LoE_AR_p5": 3.2181937625505963,
-      "LoE_AR_p50": 4.245014428376595,
-      "LoE_AR_p95": 5.322221171684596,
-      "LoE_AtP_p5": 12.870371829327128,
-      "LoE_AtP_p50": 16.976887703232677,
-      "LoE_AtP_p95": 21.284910260719858
+      "LoE_AR_p5": 4.156720157461571,
+      "LoE_AR_p50": 5.00680741761629,
+      "LoE_AR_p95": 5.925004660622423,
+      "LoE_AtP_p5": 18.201843652957788,
+      "LoE_AtP_p50": 21.92428702527193,
+      "LoE_AtP_p95": 25.944976902547864
     },
     "HIGH": {
-      "LoE_AR_p5": 3.925762483085482,
-      "LoE_AR_p50": 4.990736313268508,
-      "LoE_AR_p95": 6.127887674570348,
-      "LoE_AtP_p5": 15.700118326899009,
-      "LoE_AtP_p50": 19.959218366946004,
-      "LoE_AtP_p95": 24.506974632119025
+      "LoE_AR_p5": 4.798880076316632,
+      "LoE_AR_p50": 5.685547633012348,
+      "LoE_AR_p95": 6.6535811745252165,
+      "LoE_AtP_p5": 21.013794903083276,
+      "LoE_AtP_p50": 24.89641957536366,
+      "LoE_AtP_p95": 29.135337401430743
     }
   },
   "mc_base_20yr": {
     "REF": {
-      "LoE_AR_p5": 4.273731209424216,
-      "LoE_AR_p50": 5.5295723272945985,
-      "LoE_AR_p95": 6.8206289397110185,
-      "I_sec_base_kt_p5": 1113.3594920816518,
-      "I_sec_base_kt_p50": 1181.5612633586939,
-      "I_sec_base_kt_p95": 1254.76471766397
+      "LoE_AR_p5": 5.571417646205459,
+      "LoE_AR_p50": 6.609226498808605,
+      "LoE_AR_p95": 7.695253442554831,
+      "I_sec_base_kt_p5": 1181.4421585219854,
+      "I_sec_base_kt_p50": 1255.2291186046862,
+      "I_sec_base_kt_p95": 1334.8115562975077
     },
     "LOW": {
-      "LoE_AR_p5": 3.870201935563531,
-      "LoE_AR_p50": 5.118202040611859,
-      "LoE_AR_p95": 6.386189059852113,
-      "I_sec_base_kt_p5": 1113.3594920816518,
-      "I_sec_base_kt_p50": 1181.5612633586939,
-      "I_sec_base_kt_p95": 1254.76471766397
+      "LoE_AR_p5": 5.193898748843542,
+      "LoE_AR_p50": 6.220086125294413,
+      "LoE_AR_p95": 7.290038349869565,
+      "I_sec_base_kt_p5": 1181.4421585219854,
+      "I_sec_base_kt_p50": 1255.2291186046862,
+      "I_sec_base_kt_p95": 1334.8115562975077
     },
     "HIGH": {
-      "LoE_AR_p5": 4.7411766780577995,
-      "LoE_AR_p50": 6.0142321975651125,
-      "LoE_AR_p95": 7.342149813246653,
-      "I_sec_base_kt_p5": 1113.3594920816518,
-      "I_sec_base_kt_p50": 1181.5612633586939,
-      "I_sec_base_kt_p95": 1254.76471766397
+      "LoE_AR_p5": 6.012921842941903,
+      "LoE_AR_p50": 7.0708258543046,
+      "LoE_AR_p95": 8.181687341007176,
+      "I_sec_base_kt_p5": 1181.4421585219854,
+      "I_sec_base_kt_p50": 1255.2291186046862,
+      "I_sec_base_kt_p95": 1334.8115562975077
     }
   },
   "committed": {
@@ -728,10 +756,11 @@
       "upper_kt": 7876.832802962662,
       "lower_kt": 7206.885225925856,
       "maintenance_kt": 336.75552189750306,
+      "soil_after_2050_kt": 1022.5927975442019,
       "maintenance_kt_sum_of_annual": 336.75552189750306,
-      "maintenance_share": 0.017672423411467332,
-      "years_of_B_AR_2050_upper": 42.93593226440018,
-      "years_of_B_AR_2050_lower": 39.284106142417215
+      "maintenance_share": 0.013697588108164741,
+      "years_of_B_AR_2050_upper": 39.213464180960386,
+      "years_of_B_AR_2050_lower": 35.87824481393601
     },
     "REF_HL5": {
       "B_upper_kt": 3774.4021596138277,
@@ -740,10 +769,11 @@
       "upper_kt": 8279.892095511434,
       "lower_kt": 7576.427031475327,
       "maintenance_kt": 363.1230555313906,
+      "soil_after_2050_kt": 1024.1888941989769,
       "maintenance_kt_sum_of_annual": 363.12305553139055,
-      "maintenance_share": 0.018206609383024326,
-      "years_of_B_AR_2050_upper": 45.13297350119043,
-      "years_of_B_AR_2050_lower": 41.298446465340966
+      "maintenance_share": 0.014255450635414895,
+      "years_of_B_AR_2050_upper": 41.22002589510769,
+      "years_of_B_AR_2050_lower": 37.71794545476098
     },
     "REF": {
       "B_upper_kt": 3929.1748683141327,
@@ -752,10 +782,11 @@
       "upper_kt": 8615.79039288979,
       "lower_kt": 7883.60344460999,
       "maintenance_kt": 375.10277649959124,
+      "soil_after_2050_kt": 1024.3622042227362,
       "maintenance_kt_sum_of_annual": 375.10277649959136,
-      "maintenance_share": 0.01819571524499012,
-      "years_of_B_AR_2050_upper": 46.96392597977293,
-      "years_of_B_AR_2050_lower": 42.97283844464141
+      "maintenance_share": 0.014348265756626887,
+      "years_of_B_AR_2050_upper": 42.89223808777192,
+      "years_of_B_AR_2050_lower": 39.24717066177077
     },
     "REF_HL15": {
       "B_upper_kt": 4026.595110816616,
@@ -764,10 +795,11 @@
       "upper_kt": 8825.124521946687,
       "lower_kt": 8074.941255977865,
       "maintenance_kt": 380.9394335488979,
+      "soil_after_2050_kt": 1024.4245482490321,
       "maintenance_kt_sum_of_annual": 380.9394335488979,
-      "maintenance_share": 0.01812205727968505,
-      "years_of_B_AR_2050_upper": 48.104988156747616,
-      "years_of_B_AR_2050_lower": 44.01580425514074
+      "maintenance_share": 0.014348796597476917,
+      "years_of_B_AR_2050_upper": 43.934372226830675,
+      "years_of_B_AR_2050_lower": 40.199713212847314
     },
     "HIGH": {
       "B_upper_kt": 4375.718491793391,
@@ -776,10 +808,11 @@
       "upper_kt": 9569.63569560821,
       "lower_kt": 8755.224153875017,
       "maintenance_kt": 397.2025934923868,
+      "soil_after_2050_kt": 1024.556689727958,
       "maintenance_kt_sum_of_annual": 397.2025934923868,
-      "maintenance_share": 0.017707929476499875,
-      "years_of_B_AR_2050_upper": 52.16325397526251,
-      "years_of_B_AR_2050_lower": 47.72396731450592
+      "maintenance_share": 0.014206908754809526,
+      "years_of_B_AR_2050_upper": 47.64079369990296,
+      "years_of_B_AR_2050_lower": 43.58638520613583
     },
     "LOW_NOUC": {
       "B_upper_kt": 3719.553424013767,
@@ -788,10 +821,11 @@
       "upper_kt": 8145.278773605236,
       "lower_kt": 7452.4219911350765,
       "maintenance_kt": 346.34126450066606,
+      "soil_after_2050_kt": 1022.9042330608802,
       "maintenance_kt_sum_of_annual": 346.3412645006661,
-      "maintenance_share": 0.017678870262033044,
-      "years_of_B_AR_2050_upper": 44.399207961686216,
-      "years_of_B_AR_2050_lower": 40.62250574834484
+      "maintenance_share": 0.013844213008336399,
+      "years_of_B_AR_2050_upper": 40.54987650779769,
+      "years_of_B_AR_2050_lower": 37.100607581877355
     },
     "REF_NOUC": {
       "B_upper_kt": 4182.203139903498,
@@ -800,10 +834,11 @@
       "upper_kt": 9171.054800068327,
       "lower_kt": 8391.801104171107,
       "maintenance_kt": 399.57259331803095,
+      "soil_after_2050_kt": 1025.360415900931,
       "maintenance_kt_sum_of_annual": 399.57259331803095,
-      "maintenance_share": 0.01836654813028923,
-      "years_of_B_AR_2050_upper": 49.990624092050105,
-      "years_of_B_AR_2050_lower": 45.74297979887148
+      "maintenance_share": 0.014701329766372487,
+      "years_of_B_AR_2050_upper": 45.65652691889554,
+      "years_of_B_AR_2050_lower": 41.77714574421155
     },
     "HIGH_NOUC": {
       "B_upper_kt": 4802.0678655370175,
@@ -812,15 +847,16 @@
       "upper_kt": 10495.124892615147,
       "lower_kt": 9601.732012142409,
       "maintenance_kt": 430.25021645830714,
+      "soil_after_2050_kt": 1025.6303888621273,
       "maintenance_kt_sum_of_annual": 430.2502164583072,
-      "maintenance_share": 0.01772316671790874,
-      "years_of_B_AR_2050_upper": 57.20801529851644,
-      "years_of_B_AR_2050_lower": 52.338208212215555
+      "maintenance_share": 0.01448664935186537,
+      "years_of_B_AR_2050_upper": 52.24818329220801,
+      "years_of_B_AR_2050_lower": 47.80057971926357
     }
   },
   "reference_2026_2050": {
-    "I_kt": 20614.89594935651,
-    "B_AR_kt": 4451.028297498578,
+    "I_kt": 26142.72573856854,
+    "B_AR_kt": 4873.556914186582,
     "B_AtP_kt": 1112.9648539994828,
     "floor_area_Mm2": 85.9008073050105
   },
@@ -828,153 +864,181 @@
     {
       "case": "reference",
       "label": "Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",
-      "cum_LoE_AR": 4.631490651484248,
-      "cum_LoE_AtP": 18.522503990378556,
+      "cum_LoE_AR": 5.364198305034441,
+      "cum_LoE_AtP": 23.489264413537978,
+      "soil_tail_coverage": "full",
       "AR_vs_ref_pct": 0.0,
       "AtP_vs_ref_pct": 0.0
     },
     {
       "case": "i_source_pair",
       "label": "(i) SOS/I_glob pair C: 1 W/m\u00b2 planetary boundary (Bj\u00f8rn & Hauschild 2015)",
-      "cum_LoE_AR": 8.73696712925422,
-      "cum_LoE_AtP": 34.94134409265319,
-      "AR_vs_ref_pct": 88.64265927977841,
-      "AtP_vs_ref_pct": 88.64265927977846
+      "cum_LoE_AR": 10.119166331657768,
+      "cum_LoE_AtP": 44.31077303495669,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": 88.64265927977837,
+      "AtP_vs_ref_pct": 88.64265927977841
     },
     {
       "case": "ii_gdp_measure",
       "label": "(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",
-      "cum_LoE_AR": 4.631490651484248,
-      "cum_LoE_AtP": 56.9886130720821,
+      "cum_LoE_AR": 5.364198305034441,
+      "cum_LoE_AtP": 72.26995884067752,
+      "soil_tail_coverage": "full",
       "AR_vs_ref_pct": 0.0,
       "AtP_vs_ref_pct": 207.67229474851035
     },
     {
       "case": "iii_base_window",
       "label": "(iii) AR base window 2021-2025 (5 yr, as Horup)",
-      "cum_LoE_AR": 4.521737723031263,
-      "cum_LoE_AtP": 18.522503990378556,
-      "AR_vs_ref_pct": -2.3697106765790954,
+      "cum_LoE_AR": 5.127315414656452,
+      "cum_LoE_AtP": 23.489264413537978,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": -4.415998009537958,
       "AtP_vs_ref_pct": 0.0
     },
     {
       "case": "iii_base_window_20",
       "label": "(iii) AR base window 2006-2025 (20 yr)",
-      "cum_LoE_AR": 5.5714884537409,
-      "cum_LoE_AtP": 18.522503990378556,
-      "AR_vs_ref_pct": 20.295794010842116,
+      "cum_LoE_AR": 6.648745518004466,
+      "cum_LoE_AtP": 23.489264413537978,
+      "soil_tail_coverage": "partial: tails need conversions from 1987; history in scope from 1992",
+      "AR_vs_ref_pct": 23.94667646355362,
       "AtP_vs_ref_pct": 0.0
     },
     {
       "case": "iii_base_window_full",
       "label": "(iii) AR base window 1992-2025 (full consistent history)",
-      "cum_LoE_AR": 5.666909029554285,
-      "cum_LoE_AtP": 18.522503990378556,
-      "AR_vs_ref_pct": 22.35605026511751,
+      "cum_LoE_AR": 7.511105841231141,
+      "cum_LoE_AtP": 23.489264413537978,
+      "soil_tail_coverage": "partial: tails need conversions from 1973; history in scope from 1992",
+      "AR_vs_ref_pct": 40.022896509656825,
       "AtP_vs_ref_pct": 0.0
     },
     {
       "case": "iv_pop_statsnz",
       "label": "(iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",
-      "cum_LoE_AR": 4.620487236346054,
-      "cum_LoE_AtP": 18.416472817356947,
-      "AR_vs_ref_pct": -0.23757826510280022,
-      "AtP_vs_ref_pct": -0.5724451352618787
+      "cum_LoE_AR": 5.351454135764665,
+      "cum_LoE_AtP": 23.354801262093876,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": -0.23757826510283353,
+      "AtP_vs_ref_pct": -0.5724451352619009
     },
     {
       "case": "iv_pop_wpp",
       "label": "(iv) NZ population: WPP 2024 probabilistic median, New Zealand",
-      "cum_LoE_AR": 4.919020691620648,
-      "cum_LoE_AtP": 19.9516882730873,
-      "AR_vs_ref_pct": 6.208153309005482,
+      "cum_LoE_AR": 5.697215959610052,
+      "cum_LoE_AtP": 25.301680679160395,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": 6.20815330900546,
       "AtP_vs_ref_pct": 7.715934538068536
     },
     {
       "case": "v_ssec",
       "label": "(v) s_sec with FCE share as ratio of sums",
-      "cum_LoE_AR": 4.631490651484248,
-      "cum_LoE_AtP": 18.565587703653897,
+      "cum_LoE_AR": 5.364198305034441,
+      "cum_LoE_AtP": 23.543900910502273,
+      "soil_tail_coverage": "full",
       "AR_vs_ref_pct": 0.0,
-      "AtP_vs_ref_pct": 0.232601992137349
+      "AtP_vs_ref_pct": 0.2326019921373268
     },
     {
       "case": "vi_frozen",
       "label": "(vi) Frozen technology: 2025 factors held (A1-A3 and A4-A5 not decarbonised)",
-      "cum_LoE_AR": 5.303787081603535,
-      "cum_LoE_AtP": 21.211187666251046,
-      "AR_vs_ref_pct": 14.51576783176356,
-      "AtP_vs_ref_pct": 14.515767831763537
+      "cum_LoE_AR": 6.129874331148422,
+      "cum_LoE_AtP": 26.842079803606378,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": 14.273820291009255,
+      "AtP_vs_ref_pct": 14.273820291009255
     },
     {
       "case": "vii_proxies_held",
       "label": "(vii) Proxy-mapped items held at 2025 (A1-A3)",
-      "cum_LoE_AR": 4.651347982872188,
-      "cum_LoE_AtP": 18.6019184872541,
-      "AR_vs_ref_pct": 0.42874601034932347,
-      "AtP_vs_ref_pct": 0.42874601034932347
+      "cum_LoE_AR": 5.392841111578049,
+      "cum_LoE_AtP": 23.614688273393636,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": 0.5339624845100532,
+      "AtP_vs_ref_pct": 0.533962484510031
     },
     {
       "case": "viii_nz_elec_held",
       "label": "(viii) NZ-made, electricity-intensive items held at 2025 (A1-A3)",
-      "cum_LoE_AR": 4.74502468412968,
-      "cum_LoE_AtP": 18.97655533819783,
-      "AR_vs_ref_pct": 2.451349709818529,
-      "AtP_vs_ref_pct": 2.451349709818551
+      "cum_LoE_AR": 5.4678891413029,
+      "cum_LoE_AtP": 23.94331576135724,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": 1.9330164615864787,
+      "AtP_vs_ref_pct": 1.9330164615864787
     },
     {
       "case": "ix_a45_held",
       "label": "(ix) A4-A5 held at 2025 (no generic 1%/yr)",
-      "cum_LoE_AR": 4.724695496343517,
-      "cum_LoE_AtP": 18.895253768093244,
-      "AR_vs_ref_pct": 2.0124156966483175,
-      "AtP_vs_ref_pct": 2.0124156966483175
+      "cum_LoE_AR": 5.456157591495226,
+      "cum_LoE_AtP": 23.89194452939618,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": 1.7143155646292652,
+      "AtP_vs_ref_pct": 1.7143155646292652
     },
     {
       "case": "x_a45_item",
       "label": "(x) A4-A5 on each item's own Horup S4 path",
-      "cum_LoE_AR": 4.574806474147864,
-      "cum_LoE_AtP": 18.295809610553338,
-      "AR_vs_ref_pct": -1.2238862517884752,
-      "AtP_vs_ref_pct": -1.2238862517884974
+      "cum_LoE_AR": 5.316140077307121,
+      "cum_LoE_AtP": 23.278822451078536,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": -0.8959069928905605,
+      "AtP_vs_ref_pct": -0.8959069928905605
     },
     {
       "case": "xi_event_timing",
       "label": "(xi) Event timing: interval L / n (instead of L / (n + 1))",
-      "cum_LoE_AR": 4.597257787965861,
-      "cum_LoE_AtP": 18.385598100064776,
-      "AR_vs_ref_pct": -0.7391327348877708,
-      "AtP_vs_ref_pct": -0.7391327348877708
+      "cum_LoE_AR": 4.8114865995495375,
+      "cum_LoE_AtP": 21.06899755233567,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": -10.30371500185161,
+      "AtP_vs_ref_pct": -10.303715001851621
     },
     {
       "case": "xii_whole_life",
-      "label": "(xii) Accounting: whole life at construction (base on the same rule)",
+      "label": "(xii) Whole life at construction, soil at conversion (base on the same rule)",
       "cum_LoE_AR": 4.709092771751489,
       "cum_LoE_AtP": 26.304282016241025,
-      "AR_vs_ref_pct": 1.6755322661047067,
-      "AtP_vs_ref_pct": 42.01255958646133
+      "soil_tail_coverage": "n/a (soil at conversion)",
+      "AR_vs_ref_pct": -12.2125524827842,
+      "AtP_vs_ref_pct": 11.984273126410127
     },
     {
-      "case": "xiii_wider_scope",
-      "label": "(xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",
-      "cum_LoE_AR": 5.168017120308798,
-      "cum_LoE_AtP": 22.874156353039133,
-      "AR_vs_ref_pct": 11.584315055296734,
-      "AtP_vs_ref_pct": 23.493866514597727
+      "case": "xiii_accounting_instant",
+      "label": "(xiii) Accounting: instant (soil at conversion, B of each window's own cohorts (MODEL v3.0.0)); base on the same rule",
+      "cum_LoE_AR": 4.631490651484248,
+      "cum_LoE_AtP": 18.522503990378556,
+      "soil_tail_coverage": "n/a (soil at conversion)",
+      "AR_vs_ref_pct": -13.659220108669878,
+      "AtP_vs_ref_pct": -21.144810393878664
+    },
+    {
+      "case": "xiii_accounting_cohort_window",
+      "label": "(xiii) Accounting: cohort_window (soil oxidised over 20 yr, each window's own cohorts only); base on the same rule",
+      "cum_LoE_AR": 4.872235485514539,
+      "cum_LoE_AtP": 17.60211355707633,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": -9.171227302655504,
+      "AtP_vs_ref_pct": -25.063155460366836
     },
     {
       "case": "xiv_alpha_1",
       "label": "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",
-      "cum_LoE_AR": 4.631490651484248,
-      "cum_LoE_AtP": 7.815739247240769,
+      "cum_LoE_AR": 5.364198305034441,
+      "cum_LoE_AtP": 9.911509041167852,
+      "soil_tail_coverage": "full",
       "AR_vs_ref_pct": 0.0,
-      "AtP_vs_ref_pct": -57.804089278098544
+      "AtP_vs_ref_pct": -57.80408927809856
     },
     {
       "case": "note_soil_long_run",
       "label": "Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate",
-      "cum_LoE_AR": 4.615594022416603,
-      "cum_LoE_AtP": 18.522503990378556,
-      "AR_vs_ref_pct": -0.3432292163334183,
+      "cum_LoE_AR": 5.36293608899039,
+      "cum_LoE_AtP": 23.489264413537978,
+      "soil_tail_coverage": "full",
+      "AR_vs_ref_pct": -0.023530376251512664,
       "AtP_vs_ref_pct": 0.0
     }
   ],

@@ -1,6 +1,6 @@
 {
  "figure": "D10_floor_area_bridge",
- "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Low replacement",

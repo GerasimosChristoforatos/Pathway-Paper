@@ -156,9 +156,9 @@ BAND = {'growth': (GROWTH, None),
         # (2050)' (a pale neutral, 2050 only), 'Legacy (pre-2026 activity)' (a dark neutral grey, distinct from
         # maintenance; carbon only)
         'vacancy_released': ('#7B4E6E', None),
-        'surplus_vacant': ('#E6DDC6', None),
+        'surplus_vacant': ('#CFE3E0', None),
         'maintenance': ('#9E9E9E', None),      # neutral; MODEL v3.0.0 slightly darker (CVD distance >= 10)
-        'legacy': ('#5A5A5A', None)}
+        'legacy': ('#BFB6A8', None)}
 BAND_ORDER = list(BAND)
 NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl')
 BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}
@@ -170,7 +170,7 @@ COMPONENT = {'materials_construction': (LEVER['L6'], None),     # A1-A3: P3 dark
              'maintenance': (BAND['maintenance'][0], None),     # B2, B4 within 2026-2050
              'committed': ('#D0D0D0', None),                    # after 2050, a range: drawn hollow (Fig3)
              'soil_after': ('#C9B49A', None),                   # MODEL v3.1.0: soil oxidised after 2050 (Fig3)
-             'legacy': ('#5A5A5A', None)}                       # MODEL v3.1.0: pre-2026 activity (BAND['legacy'])
+             'legacy': ('#BFB6A8', None)}                       # MODEL v3.1.0: pre-2026 activity (BAND['legacy'])
 
 # life-cycle stages (Fig3a; labels in naming.STAGES): A1-A3 the L6 shade, A4-A5 the L7 shade, soil the L8
 # shade, maintenance its band colour; stacked A1-A3, A4-A5, soil, maintenance (A4-A5 and maintenance not adjacent)
@@ -180,6 +180,13 @@ STAGE = {'a1a3': COMPONENT['materials_construction'], 'a4a5': (LEVER['L7'], None
 # unexplained building of the history (Fig2, D05c, K1): a faded reddish face, no hatch (MODEL v2.1.2; face, hatch,
 # hatch colour); may be negative
 UNEXPLAINED = ('#C6A3A4', None, None)
+# MODEL v3.1.0 (A3): the history bands of Fig1 (census intervals): household formation and vacancy as the projection
+# bands, the census-measured net replacement the replacement face, the retirement-village units a neutral outline
+# (negative, out of scope) and the unexplained building its faded reddish face
+HISTORY_BAND = {'growth': BAND['growth'], 'smaller_households': BAND['smaller_households'],
+                'extra_space': BAND['extra_space'], 'vacancy': BAND['vacancy'],
+                'replacement_census': (REPLACEMENT, None), 'retirement_villages': ('#7D7D7D', None),
+                'unexplained': (UNEXPLAINED[0], None)}
 # the untargeted band (Fig4): the population-growth grey, hatched
 UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)      # solid since MODEL v2.1.1
 
@@ -267,6 +274,7 @@ def registry():
                  'TL': (TL.upper(), None), 'LOW': (SCENARIO['LOW']['color'].upper(), None),
                  'HIGH': (SCENARIO['HIGH']['color'].upper(), None)},
         'stages': {k: (c.upper(), h) for k, (c, h) in STAGE.items()},
+        'history_bands': {k: (c.upper(), h) for k, (c, h) in HISTORY_BAND.items()},
         'components': {k: (c.upper(), h) for k, (c, h) in COMPONENT.items()},
         'materials': {code: (c.upper(), None) for code, _, c in MATERIAL},
         'boundaries': {'AR': (AR.upper(), None), 'AtP': (ATP.upper(), None)},

@@ -24,11 +24,19 @@
   "sum_2025_factors_kt": 32223.096777014518,
   "sum_adopted_upper_kt": 29230.686342246307,
   "sum_adopted_lower_kt": 28498.499393966507,
+  "inventory": {
+    "carbon_2026_2050_kt": 26142.72573856854,
+    "soil_after_2050_kt": 1024.3622042227362,
+    "legacy_kt": 6552.191993434766,
+    "legacy_soil_kt": 1708.9558569697335,
+    "legacy_b2b4_kt": 4843.236136465032
+  },
   "checks": {
     "2025 factors: split sums to the whole-life total at 2025 factors": true,
     "2025 factors: committed B upper = lower": true,
     "decarbonised: committed C1-C4 unchanged (held at 2025)": true,
     "decarbonised: committed B upper (2025 factors) unchanged": true,
-    "decarbonised: whole life (A4-A5 held) - A4-A5 decarbonisation - maintenance decarbonisation = split (upper)": true
+    "decarbonised: whole life (A4-A5 held) - A4-A5 decarbonisation - maintenance decarbonisation = split (upper)": true,
+    "inventory = instant - soil oxidised after 2050 + legacy": true
   }
 }

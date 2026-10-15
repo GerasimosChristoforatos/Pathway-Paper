@@ -24,7 +24,6 @@
   "$\\mathdefault{40}$",
   "$\\mathdefault{60}$",
   "$\\mathdefault{80}$",
-  "0.5",
   "12",
   "16",
   "2",
@@ -54,7 +53,7 @@
  "note": "Markers at each run's effective cuts of 2027-2050 floor area and of non-soil carbon per m\u00b2; soil effects (L8, L9) are not on the plane.",
  "maintenance_drawn": false,
  "maintenance_where": [],
- "boundary_drawn": true,
+ "boundary_drawn": false,
  "boundary_zones": true,
  "white_segment_edges": 0,
  "source": [

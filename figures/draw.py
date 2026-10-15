@@ -90,16 +90,18 @@ def boundary_lines(ax, x, ar, atp, label=True, **kw):
 # demand bands
 # ---------------------------------------------------------------------------
 def band_label(bid):
-    if bid == 'unexplained_building':
-        return N.UNEXPLAINED
+    if bid in ('unexplained_building', 'unexplained'):
+        return N.BAND_DETAIL['unexplained']
     return (N.BANDS.get(bid) or N.BAND_DETAIL[bid]) + (' (untargeted)' if bid in N.UNTARGETED else '')
 
 
 def band_style(bid):
-    """Seamless style of one demand band (style.fill: edge = face, hatch in its own colour). History-only ids:
-    'replacement_history' (the census net replacement: the replacement face) and 'unexplained_building'."""
-    if bid == 'unexplained_building':
+    """Seamless style of one demand band (style.fill: edge = face, hatch in its own colour). History-only ids
+    (MODEL v3.1.0, style.HISTORY_BAND): 'replacement_census', 'retirement_villages', 'unexplained'."""
+    if bid in ('unexplained_building', 'unexplained'):
         return S.fill(S.UNEXPLAINED[0])
+    if bid not in S.BAND and bid in S.HISTORY_BAND:
+        return S.fill(*S.HISTORY_BAND[bid])
     key = bid if bid in S.BAND else 'replacement'
     colour, hatch = S.BAND[key]
     return S.fill(colour, hatch, S.BAND_HATCHCOLOR.get(key))
@@ -173,7 +175,8 @@ def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', *
 
 
 def negative_bar_style(bid):
-    colour = S.BAND[bid][0] if bid in S.BAND else S.BAND['replacement'][0]
+    colour = (S.BAND[bid][0] if bid in S.BAND else S.HISTORY_BAND[bid][0] if bid in S.HISTORY_BAND
+              else S.BAND['replacement'][0])
     return dict(facecolor='none', edgecolor=colour, linewidth=S.LW_OUTLINE, hatch=None)
 
 

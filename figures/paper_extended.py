@@ -210,10 +210,14 @@ def ed8():
     ax[2].plot(yrs, [100 * t['implied_vacancy'][str(y)] for y in yrs], color=S.TL)
     ax[2].set_ylabel('Implied vacancy (%)')
     P.panel(ax[2], 'c', 'Implied vacancy')
+    ax[2].text(0.02, 0.02, 'Vacancy parameter -> 0 by 2035; physical vacancy falls\nas released stock is re-occupied over '
+               '2027-2050', transform=ax[2].transAxes, fontsize=S.FONT_MIN, color=S.MUTED, va='bottom')
     fig.tight_layout()
     _save(fig, 'ED8_tl_shapley_indicators', note=f"TL re-occupies {t['reoccupied']:,.0f} released dwellings "
                                                  f"(attributed TL3 {t['reoccupied_attributed']['TL3']:,.0f}, TL4 "
-                                                 f"{t['reoccupied_attributed']['TL4']:,.0f}, in proportion R3:R4).")
+                                                 f"{t['reoccupied_attributed']['TL4']:,.0f}, in proportion R3:R4). (c) The "
+                                                 "vacancy parameter falls to 0 by 2035 (TL4); the physical (implied) "
+                                                 "vacancy falls as the released stock is re-occupied over 2027-2050.")
 
 
 def ed9():
@@ -278,7 +282,13 @@ def ed11():
         a.legend(fontsize=S.FONT_MIN, loc='lower right')
         P.panel(a, letter, f"{L} {N.LEVERS[L]} (n = {q['n']}, B = {e['bootstrap']['B']})")
     fig.tight_layout()
-    _save(fig, 'ED11_hd_estimators')
+    c15 = p['L6'].get('check_with_A_1')
+    _save(fig, 'ED11_hd_estimators',
+          note=('L6 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
+                'its ratio to the apartment pooled value is ~1 by construction'
+                + (f" ({c15['A_1_ratio']:.4f}); with A_1 (n = {c15['n']}) r = {c15['r']:.3f} (95% CI "
+                   f"{c15['ci_lo']:.3f}-{c15['ci_hi']:.3f}) against the adopted r = {c15['adopted_r']:.3f} "
+                   f"(n = {c15['adopted_n']}; check only)" if c15 else '') + '.'))
 
 
 def ed12():

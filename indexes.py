@@ -167,6 +167,8 @@ FILES = [
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
     ('data/sensitivity/tornado.csv', 'Fig7: the eight inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
+    ('data/montecarlo/carbon_factors_REF.csv', 'MODEL v3.1.0: the resulting pooled A1-A3 factor of each Reference '
+     'draw by typology (kg CO2e/m2, 2025 technology; D38)', 'pathways_mc.py'),
     ('data/baseline/history_unexplained.json', 'MODEL v3.1.0: the unexplained building of the history 1992-2025 '
      '(dwellings, share of built; floor-area remainder against unexplained dwellings x size)', 'validation.py'),
     ('data/sensitivity/accounting_rules.csv', 'MODEL v3.1.0: the three emissions accounting rules (inventory, instant, '

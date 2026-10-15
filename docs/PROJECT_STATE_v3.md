@@ -1,3 +1,25 @@
+# Project state: MODEL v3.1.0 (update)
+
+Branch `release/model-v3.1.0` (from `release/model-v3.0.0`; proposed tag `model-v3.1.0`, not yet tagged). Decisions:
+[CHANGELOG_v3.md](CHANGELOG_v3.md), v3.1 section. The v3.0.0 state below is kept; under the adopted v3.1 emissions
+accounting (`ACCOUNTING = 'inventory'`: soil oxidised over 20 years, B2/B4 of every cohort since 1992 on both sides)
+the headline numbers become:
+
+| (2026–2050) | v3.1 inventory (adopted) | v3.0 / instant rule |
+|---|---|---|
+| AR budget | 4,874 kt | 4,451 kt |
+| Reference carbon | 26,143 kt (of which legacy, pre-2026 activity, 6,552 kt) | 20,615 kt |
+| LoE AR: Reference / P5 Moderate / P5 Ambitious / TL | 5.36 / 4.32 / 3.53 / 2.24 | 4.63 / 3.39 / 2.45 / 0.98 |
+| LoE AtP: Reference / TL | 23.49 / 9.80 | 18.52 / 3.92 |
+| Monte Carlo P(TL LoE AR ≤ 1) | 0.000 | 0.551 |
+| Soil after 2050 (committed) | 1,024 kt | — |
+
+The legacy alone is 1.34 × the AR budget: under the adopted rule no 2026–2050 construction pathway reaches the AR
+budget. Release accounting (A2) leaves every v3.0 total unchanged on the instant rule (tested); only the TL waterfall
+steps TL1–TL3 and the TL1–TL9 Shapley values from P5 Moderate change.
+
+---
+
 # Project state: MODEL v3.0.0
 
 Status at the end of the v3.0.0 build (branch `release/model-v3.0.0`; proposed tag `model-v3.0.0`, not yet tagged).

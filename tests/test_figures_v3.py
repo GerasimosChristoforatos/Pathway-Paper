@@ -42,7 +42,7 @@ def test_only_the_surge_is_hatched():
 
 def test_boundary_styles():
     assert S.BOUNDARY['AR']['ls'] == '-' and S.BOUNDARY['AtP']['ls'] == S.ATP_LS and S.ATP_LS[1][0] <= 1.0
-    assert set(S.NEGATIVE_BANDS) == {'overbuild_absorbed', 'unconsented', 'released_tl'}
+    assert set(S.NEGATIVE_BANDS) == {'overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl'}
 
 
 # ------------------------------------------------------------------ sign rules ----
@@ -106,7 +106,8 @@ def test_audit_sign_and_boundary_rules():
     assert not {k: r['white_segment_edges'] for k, r in recs.items() if r.get('white_segment_edges')}
     for fid in FP.PB_FIGURES:
         r = recs[fid]
-        assert r['boundary_drawn'] and r['boundary_zones'], fid
+        # MODEL v3.1.0: a budget level outside the plotted range is stated on the figure instead (audit.BOUNDARY_OUTSIDE)
+        assert (r['boundary_drawn'] and r['boundary_zones']) or r.get('boundary_outside'), fid
         assert set(r['atp_linestyles']) <= {'dotted'}, (fid, r['atp_linestyles'])
     bad = [k for k, r in recs.items() if r['maintenance_drawn'] and k not in FP.MAINTENANCE_ALLOWED
            ]

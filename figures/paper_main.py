@@ -49,8 +49,7 @@ def fig1():
         for lab, v in zip(h['band'], h['floor_area_Mm2_per_year']):
             hb.setdefault(P.band_id(lab), []).append(float(v))
     observed = [float(hist[hist['interval'] == i]['observed_built_Mm2_per_year'].iloc[0]) for i in ivs['interval']]
-    hb['unexplained_building'] = [o - sum(hb[b][k] for b in hb if b != 'unexplained_building')
-                                  for k, o in enumerate(observed)]
+    # MODEL v3.2.0 (from v3.1.0) (A3): the bands of the data add up to the observed floor area built (no derived remainder here)
     hist_parts = []
     for b, v in hb.items():
         x, y = P.steps(edges, v)
@@ -71,15 +70,16 @@ def fig1():
     ax.text(0.62, 0.98, 'Reference projection, annual', transform=ax.transAxes, va='top', fontsize=S.FONT_SMALL,
             color=S.MUTED)
     neg = [b for b in proj.columns if (proj[b] < 0).any()]
-    handles = P.band_handles([b for b in BANDS if b != 'maintenance'], outline=False)
-    handles += [Patch(label=N.BAND_DETAIL['replacement_history'], **P.band_style('replacement_history')),
-                Patch(label=N.UNEXPLAINED, **P.band_style('unexplained_building')),
-                Line2D([0], [0], color=S.INK, lw=S.LW, label='Net: floor area built')]
+    neg += [b for b in hb if b not in neg and any(v < 0 for v in hb[b])]
+    present = [b for b in BANDS if b in proj.columns and (proj[b].abs() > 1e-12).any() and b != 'maintenance']
+    hist_only = [b for b in hb if b not in present and any(abs(v) > 1e-12 for v in hb[b])]
+    handles = P.band_handles(present + hist_only, outline=False)          # only the bands present (B3)
+    handles += [Line2D([0], [0], color=S.INK, lw=S.LW, label='Net: floor area built')]
     fig.legend(handles=handles, loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.02), frameon=False,
                fontsize=S.FONT_MIN + 0.5)
     fig.tight_layout(rect=(0, 0.17, 1, 1))
     _save(fig, 'Fig1_floor_area',
-          note=f'Negative bands drawn down from zero: {", ".join(N.BANDS[b] for b in neg)}; the net (black) is the '
+          note=f'Negative bands drawn down from zero: {", ".join(P.band_label(b) for b in neg)}; the net (black) is the '
                f'floor area built. 2026-2050: {tot.loc[proj.index].sum():.1f} Mm².')
 
 
@@ -160,7 +160,9 @@ def fig3():
         st = dict(S.BOUNDARY[key])
         lab = st.pop('label')
         b.plot([-0.45, 0.45], [v, v], gid='boundary', label=f'{lab} budget 2026-2050', **st)
-    # three thin 100% share bars
+    # three thin bars ending at the total: material and stage are shares of it (all positive); the band bar keeps the
+    # bands at their size (A2: no rescaling): gross positive bands stacked, the releases hanging down as outlined
+    # segments from the gross top to the total (draw.bars_cumulative)
     shares = [('Demand band', [(k, band[k]) for k in band.index if band[k] != 0], 'band'),
               ('Material', [(k, mat[k]) for k, _, _ in S.MATERIAL if k in mat.index], 'material'),
               ('Stage', [('a1a3', stg['a1a3_kt']), ('a4a5', stg['a4a5_kt']), ('soil', stg['soil_carbon_loss_kt']),
@@ -172,6 +174,9 @@ def fig3():
         if kind != 'band' and neg:
             raise SystemExit(f'STOP: Fig3: negative {kind} value.')
         del title
+        if kind == 'band':
+            P.bars_cumulative(b, [xpos], parts, 0.18, net=c)
+            continue
         bottom = 0.0
         for k, v in parts:
             if v <= 0:
@@ -183,7 +188,7 @@ def fig3():
             bottom += c * v / pos
     b.set_xlim(-0.45, 1.5)
     b.set_xticks([0] + xs)
-    b.set_xticklabels(['Reference', 'Share by\nband', 'by\nmaterial', 'by\nstage'], fontsize=S.FONT_MIN + 0.5)
+    b.set_xticklabels(['Reference', 'By\nband', 'by\nmaterial', 'by\nstage'], fontsize=S.FONT_MIN + 0.5)
     b.set_ylim(0, max(hi, bar_) * 1.42)
     b.set_ylabel('Cumulative carbon (kt CO₂e)')
     P.thousands(b.yaxis)
@@ -233,33 +238,71 @@ def fig4():
 # Fig5: waterfall by demand band (Moderate)
 # ---------------------------------------------------------------------------
 def waterfall(name, setting):
+    """MODEL v3.2.0 (B1, from v3.1.0): a true sequential waterfall Reference -> P1 ... P4 -> P5 -> TL1 ... TL9 -> TL
+    (fixed order; the order-free attribution is the Shapley values of Fig8). End bars (Reference, P5, TL): the total.
+    Each step: a floating bar from the previous total to the new one, split
+    by the change of each demand band: reductions filled downward from the previous total, any increase an outlined
+    segment upward, so the bar ends at the new total (net tick; label = the change in kt)."""
     w = D.csv('pathways/waterfall.csv')
     w = w[w['setting'] == setting]
-    steps = w[['step', 'step_id', 'label']].drop_duplicates().sort_values('step')
+    steps = w[['step', 'step_id', 'label']].drop_duplicates().sort_values('step').reset_index(drop=True)
     tab = w.pivot(index='step', columns='band', values='carbon_kt')
     tab.columns = [P.band_id(c) for c in tab.columns]
-    tab = tab[[b for b in BANDS_TL if b in tab.columns]]
-    tot = w.groupby('step')['total_carbon_kt'].first()
-    x = np.arange(len(steps))
+    tot = w.groupby('step')['total_carbon_kt'].first().values
+    delta = tab.diff().iloc[1:]
+    bands = [b for b in BANDS_TL if b in tab.columns]
+    i_p5 = int(steps.index[steps['step_id'] == 'P4'][0])
+    # x layout: Reference | P1 .. P4 | P5 (subtotal) | TL1 .. TL9 | TL (end)
+    seq = [('end', 0, 'Reference')] + [('step', k, steps.loc[k, 'step_id']) for k in range(1, i_p5 + 1)]
+    seq += [('end', i_p5, 'P5')] + [('step', k, steps.loc[k, 'step_id']) for k in range(i_p5 + 1, len(steps))]
+    seq += [('end', len(steps) - 1, 'TL')]
+    x = np.arange(len(seq))
     fig, ax = plt.subplots(figsize=S.figsize('double', 105))
     bar_, batp = float(w['B_AR_kt'].iloc[0]), float(w['B_AtP_kt'].iloc[0])
     S.boundary_hzones(ax, bar_, batp)
-    up, _, _ = P.bars_cumulative(ax, x, [(b, tab[b].values) for b in tab.columns], width=0.72, net=tot.values)
-    for xi, t, u in zip(x, tot.values, up):
-        ax.text(xi, u + 0.012 * tot.max(), f'{t:,.0f}', ha='center', va='bottom', fontsize=S.FONT_MIN)
+    width = 0.72
+    end_col = {'Reference': S.REFERENCE, 'P5': S.PATHWAY['P5'], 'TL': S.TL}
+    for xi, (kind, k, lab) in zip(x, seq):
+        if kind == 'end':
+            ax.bar(xi, tot[k], width=width, gid='band_segment', **S.fill(end_col[lab]))
+            ax.text(xi, tot[k] + 0.012 * tot.max(), f'{tot[k]:,.0f}', ha='center', va='bottom', fontsize=S.FONT_MIN)
+            continue
+        d = delta.loc[k]
+        prev = tot[k - 1]
+        level = prev
+        for b in bands:                                   # reductions: filled, downward from the previous total
+            if d[b] < 0:
+                ax.bar(xi, -d[b], bottom=level + d[b], width=width, gid='band_segment', **P.band_style(b))
+                level += d[b]
+        for b in bands:                                   # increases: outlined, upward
+            if d[b] > 0:
+                ax.bar(xi, d[b], bottom=level, width=width, gid=P.NEG_BAR_GID, **P.negative_bar_style(b))
+                level += d[b]
+        if not np.isclose(level, tot[k], rtol=1e-9, atol=1e-6):
+            raise SystemExit(f'STOP: {name}: step {lab} does not end at its total.')
+        ax.plot([xi - 0.36 * width, xi + 0.36 * width], [tot[k], tot[k]], color=S.INK, lw=S.LW_BOLD,
+                solid_capstyle='butt', zorder=5, gid=P.NET_GID)
+        ax.plot([xi - 1 + width / 2, xi - width / 2], [prev, prev], color=S.MUTED, lw=S.LW_THIN * 0.7, zorder=4)
+        ax.text(xi, max(prev, level) + 0.012 * tot.max(), f'{tot[k] - prev:+,.0f}', ha='center', va='bottom',
+                fontsize=S.FONT_MIN)
+    labels = []
+    for kind, k, lab in seq:
+        labels.append(lab if kind == 'end' else f"+{lab} {N.TL[lab] if lab in N.TL else N.PATHWAYS.get(lab, '')}".strip())
     ax.set_xticks(x)
-    ax.set_xticklabels([lab.replace(' (= ', '\n(= ') for lab in steps['label']], rotation=60, ha='right',
-                       fontsize=S.FONT_MIN)
+    ax.set_xticklabels(labels, rotation=60, ha='right', fontsize=S.FONT_MIN)
     ax.set_xlim(-0.6, len(x) - 0.4)
+    ax.set_ylim(0, max(tot.max(), bar_) * 1.08)
     ax.set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
     P.thousands(ax.yaxis)
-    P.band_legend(fig, list(tab.columns), ncol=4, y=-0.01,
-                  extra=S.boundary_handles() + S.zone_handles())
-    fig.tight_layout(rect=(0, 0.16, 1, 1))
-    S.save_figure(fig, name, note=f'{N.SETTINGS[setting]}: Reference {tot.iloc[0]:,.0f} kt -> P5 '
-                                  f'{tot.iloc[4]:,.0f} kt -> TL {tot.iloc[-1]:,.0f} kt; budgets AR {bar_:,.0f} kt, '
-                                  f'AtP {batp:,.0f} kt. Sequential steps depend on their order (the order-free values '
-                                  'are the Shapley values).',
+    shown = [b for b in bands if (delta[b].abs() > 1e-9).any()]
+    extra = [Patch(label='Increase (outline)', facecolor='none', edgecolor=S.MUTED, lw=S.LW_OUTLINE),
+             Line2D([0], [0], color=S.INK, lw=S.LW_BOLD, label='New total after the step')]
+    P.band_legend(fig, shown, ncol=4, y=-0.01, outline=False, extra=extra + S.boundary_handles() + S.zone_handles())
+    fig.tight_layout(rect=(0, 0.17, 1, 1))
+    S.save_figure(fig, name, note=f'{N.SETTINGS[setting]}: Reference {tot[0]:,.0f} kt -> P5 {tot[i_p5]:,.0f} kt -> TL '
+                                  f'{tot[-1]:,.0f} kt; budgets AR '
+                                  f'{bar_:,.0f} kt, AtP {batp:,.0f} kt. Sequential steps depend on their order (the '
+                                  'order-free values are the Shapley values, Fig8).',
                   source=['pathways/waterfall.csv'])
 
 
@@ -270,46 +313,72 @@ def fig5():
 # ---------------------------------------------------------------------------
 # Fig6: the solution space against AR and AtP
 # ---------------------------------------------------------------------------
+FIG6_GRID = np.linspace(0.0, 1.0, 201)
+
+
+def fig6_loe(bc, x, y):
+    """LoE_AR of the analytic plane (MODEL v3.2.0, B2): [C_2026 + C_ref,2027-2050 (1 - x)(1 - y)] / B_AR, C_2026 = the
+    2026 cohort's emissions in the window (identical in every run), C_ref,2027-2050 = every emission in the window of the
+    Reference's 2027-2050 cohorts (A1-A5, soil carbon loss, in-window B2/B4); x = cut in 2027-2050 floor area, y = cut
+    in total carbon per m2."""
+    r = bc['REF']
+    return (r['carbon_fixed_2026_cohort_kt'] + r['carbon_2027_2050_cohorts_kt'] * (1.0 - x) * (1.0 - y)) / bc['B_AR_kt']
+
+
 def fig6():
-    sp = D.csv('pathways/solution_space.csv')
+    """MODEL v3.2.0 (B2, from v3.1.0): one panel. x = cut in 2027-2050 floor area, y = cut in 2027-2050 total carbon per m2 (A1-A5,
+    soil and maintenance of the new cohorts), both vs the Reference; analytic LoE_AR contours (labelled in LoE AR), the
+    AR line (LoE_AR = 1, solid red) and the AtP line (LoE_AtP = 1, dark-red dotted) with the zones; each run at its
+    effective coordinates (the analytic LoE at the marker equals the run's LoE AR: tests)."""
     bc = D.js('pathways/backcast.json')
-    d = np.sort(sp['demand_reduction'].unique())
-    i = np.sort(sp['intensity_reduction'].unique())
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 92), sharey=True)
-    ratio = bc['B_AR_kt'] / bc['B_AtP_kt']
-    for a_, col, letter, title, ar, atp in ((ax[0], 'LoE_AR', 'a', 'Level of exceedance of AR', 1.0, 1.0 / ratio),
-                                           (ax[1], 'LoE_AtP', 'b', 'Level of exceedance of AtP', ratio, 1.0)):
-        Z = sp.pivot(index='intensity_reduction', columns='demand_reduction', values=col).loc[i, d].values
-        X, Y = np.meshgrid(100 * d, 100 * i)
-        S.boundary_field(a_, X, Y, Z, ar, atp)
-        cs = a_.contour(X, Y, Z, levels=[0.5, 2, 3, 4, 8, 12, 16], colors=S.MUTED, linewidths=S.LW_THIN * 0.7)
-        a_.clabel(cs, fmt='%g', fontsize=S.FONT_MIN)
-        for m in bc['solution_space_markers']:
-            run = m['run']
-            if run == 'TL':
-                a_.plot(100 * m['demand_reduction'], 100 * m['intensity_reduction'], color=S.TL, ls='none',
-                        **S.TL_MARKER, zorder=6)
-                continue
-            P_, s = run.split('-')
-            a_.plot(100 * m['demand_reduction'], 100 * m['intensity_reduction'], marker='o', ms=5, ls='none',
-                    color=S.PATHWAY[P_], markerfacecolor=S.PATHWAY[P_] if s == 'moderate' else 'none',
-                    markeredgewidth=1.0, zorder=5)
-        a_.set_xlabel('Cut in 2027-2050 floor area (%)')
-        a_.set_xlim(0, 100)
-        a_.set_ylim(0, 100)
-        a_.grid(False)
-        P.panel(a_, letter, title)
-    ax[0].set_ylabel('Cut in carbon per m² of 2027-2050 floor area (%)')
+    X, Y = np.meshgrid(FIG6_GRID, FIG6_GRID)
+    Z = fig6_loe(bc, X, Y)
+    atp_level = bc['B_AtP_kt'] / bc['B_AR_kt']                    # LoE_AtP = 1  <=>  LoE_AR = B_AtP / B_AR
+    fig, ax = plt.subplots(figsize=S.figsize('double', 110))
+    S.boundary_field(ax, 100 * X, 100 * Y, Z, 1.0, atp_level)
+    zmin, zmax = float(Z.min()), float(Z.max())
+    levels = [v for v in (1.25, 1.5, 2, 2.5, 3, 4, 5, 6, 8) if zmin < v < zmax]
+    cs = ax.contour(100 * X, 100 * Y, Z, levels=levels, colors=S.MUTED, linewidths=S.LW_THIN * 0.7)
+    ax.clabel(cs, fmt=lambda v: f'LoE AR {v:g}', fontsize=S.FONT_MIN)
+    for m in bc['solution_space_markers']:
+        run = m['run']
+        xm, ym = 100 * m['demand_reduction'], 100 * m['intensity_reduction']
+        if run == 'TL':
+            ax.plot(xm, ym, color=S.TL, ls='none', **S.TL_MARKER, zorder=6, clip_on=False)
+            continue
+        P_, st = run.split('-')
+        ax.plot(xm, ym, marker='o', ms=5, ls='none', color=S.PATHWAY[P_],
+                markerfacecolor=S.PATHWAY[P_] if st == 'moderate' else 'none', markeredgewidth=1.0, zorder=5,
+                clip_on=False)
+    lowest = float(Z.min())
+    if lowest > 1.0:                                   # the AR (and AtP) line lies outside the plane: say so on it
+        from figures import audit as figaudit
+        msg = (f'AR line (LoE AR = 1) and AtP line (LoE AR = {atp_level:.2f}) lie below this plane: '
+               f'lowest LoE AR = {lowest:.2f} at a 100% cut')
+        ax.text(98, 2, msg, ha='right', va='bottom', fontsize=S.FONT_MIN + 0.5, color=S.AR,
+                gid=figaudit.BOUNDARY_OUTSIDE)
+    ax.set_xlabel('Cut in 2027-2050 floor area vs the Reference (%)')
+    ax.set_ylabel('Cut in 2027-2050 carbon per m² (A1-A5, soil, B2/B4) vs the Reference (%)')
+    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 100)
+    ax.grid(False)
     h = [Line2D([0], [0], marker='o', ls='none', color=S.PATHWAY[P_], markerfacecolor=S.PATHWAY[P_], ms=5,
                 label=f'{P_} {N.PATHWAYS[P_]}') for P_ in ('P1', 'P2', 'P3', 'P4', 'P5')]
     h += [Line2D([0], [0], marker='o', ls='none', color=S.MUTED, markerfacecolor=S.MUTED, ms=5, label='Moderate'),
           Line2D([0], [0], marker='o', ls='none', color=S.MUTED, markerfacecolor='none', ms=5, label='Ambitious'),
           Line2D([0], [0], ls='none', color=S.TL, label=N.TL['TL'], **S.TL_MARKER)]
     h += S.boundary_handles() + S.zone_handles()
-    fig.legend(handles=h, loc='lower center', ncol=5, bbox_to_anchor=(0.5, -0.02), frameon=False, fontsize=S.FONT_MIN + 0.5)
-    fig.tight_layout(rect=(0, 0.15, 1, 1))
-    _save(fig, 'Fig6_solution_space', note='Markers at each run\'s effective cuts of 2027-2050 floor area and of non-soil '
-                                           'carbon per m²; soil effects (L8, L9) are not on the plane.')
+    fig.legend(handles=h, loc='lower center', ncol=5, bbox_to_anchor=(0.5, -0.02), frameon=False,
+               fontsize=S.FONT_MIN + 0.5)
+    fig.tight_layout(rect=(0, 0.13, 1, 1))
+    r = bc['REF']
+    floor = r['carbon_fixed_2026_cohort_kt'] / bc['B_AR_kt']
+    note = (f"LoE AR = [{r['carbon_fixed_2026_cohort_kt']:,.0f} + {r['carbon_2027_2050_cohorts_kt']:,.0f} (1 - x)(1 - y)] / "
+            f"{bc['B_AR_kt']:,.0f} kt; C_2026 = the 2026 cohort's emissions in the window. Lowest LoE AR on the plane "
+            f"(x or y = 100%): {floor:.2f}"
+            + (' - the AR line lies outside the plane.' if floor > 1 else '.')
+            + (' The AtP line lies outside the plane.' if floor > atp_level else ''))
+    _save(fig, 'Fig6_solution_space', note=note)
 
 
 # ---------------------------------------------------------------------------
@@ -384,8 +453,10 @@ def fig8():
               loc='lower right')
     fig.tight_layout()
     tot = {k: v.sum() for k, v in g.items()}
-    _save(fig, 'Fig8_shapley_levers', note='Sum over levers (= Reference - P5 / TL, exact): ' + ', '.join(
-        f'{k} {v:,.0f} kt' for k, v in tot.items()) + '; 512 subsets per setting.')
+    _save(fig, 'Fig8_shapley_levers', note='Shapley values within each combined game (Reference -> P5 Moderate, -> P5 '
+                                           'Ambitious, -> TL); standalone effects in ED10. Sum over levers (= Reference '
+                                           '- P5 / TL, exact): ' + ', '.join(f'{k} {v:,.0f} kt' for k, v in tot.items())
+          + '; 512 subsets per game.')
 
 
 FIGURES = {'Fig1_floor_area': fig1, 'Fig2_reference_carbon': fig2, 'Fig3_reference_boundaries': fig3,

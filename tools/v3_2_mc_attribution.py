@@ -10,6 +10,9 @@ plus, per run, the zero-built years 2027-2050 of the v3.2 run, the building year
 The v3.0 draws are read from the v3.0.0 full-profile commit (d084e09). Full profile only.
 
     PATHWAY_PROFILE=full python tools/v3_2_mc_attribution.py      -> docs/v3_2_mc_attribution.csv
+
+A record of the MODEL v3.2.0 release: it runs only on a checkout of release/model-v3.2.0 (b5a8c62), whose pathway
+Monte Carlo columns (P5, P5A) and inputs it reads; MODEL v3.3.0 renamed the runs and added an input, so it stops there.
 """
 import contextlib, io, os, subprocess, sys, types
 import numpy as np, pandas as pd
@@ -19,6 +22,8 @@ import engine
 import pathways_mc as PM, naming as N, layout
 import MonteCarlo as MC
 import runprofile
+if list(MC.PARAMS) != ['z_pop', 'size', 'complete', 'carbon']:
+    raise SystemExit('v3_2_mc_attribution: a record of MODEL v3.2.0; run it on release/model-v3.2.0 (b5a8c62).')
 if runprofile.name() != 'full':
     raise SystemExit('v3_2_mc_attribution: full profile only (the v3.0 draws are those of the full-profile commit).')
 OUT = os.path.join(ROOT, 'docs', 'v3_2_mc_attribution.csv')

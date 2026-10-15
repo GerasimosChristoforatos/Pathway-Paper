@@ -47,6 +47,7 @@ CASES = [   # earlier, longer tables are preserved at the git tags (CHANGELOG)
     ('Replacement variant', N.SCENARIOS['REF_HL5'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=5.0)),
     ('Replacement variant', N.SCENARIOS['REF_HL15'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=15.0)),
     ('Replacement variant', 'High replacement: 2018-2023 rate persists', dict(REPLACEMENT_VARIANT='HIGH')),
+    ('Replacement variant', 'Very High replacement: 1991-2023 census trend continues', dict(REPLACEMENT_VARIANT='VHIGH')),
     ('Household size', 'Household size: Stats NZ Low variant', dict(HH_SIZE_VARIANT='Low')),
     ('Household size', 'Household size: Stats NZ High variant', dict(HH_SIZE_VARIANT='High')),
     ('Household size', 'Household size after 2043: flat (kink at 2043)', dict(S_TAIL='flat')),

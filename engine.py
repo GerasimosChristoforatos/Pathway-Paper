@@ -138,18 +138,40 @@ def census_window_rate(rates, start, end):
     return float((w['built'] - w['d_stock']).sum() / w['stock_years'].sum())
 
 
-def replacement_path(scenario, rate_long, rate_recent, years, half_life=10.0):
+def replacement_trend(rates, start, end):
+    """MODEL v3.3.0 (Very High replacement): the weighted least-squares linear trend of the census-interval net
+    replacement rates with start <= y0 and y1 <= end: rate_i = (built_i - d_stock_i) / stock_years_i, placed at the mean
+    of the interval's model years y0+1 .. y1 (the interval convention of the history bands), weighted by the interval
+    length y1 - y0. Returns dict(a, b, n, x, rate, weight): rate(t) = a + b t."""
+    w = rates[(rates['y0'] >= start) & (rates['y1'] <= end)]
+    if len(w) < 2:
+        raise ValueError(f'replacement_trend: fewer than two census intervals within {start}-{end}.')
+    y = ((w['built'] - w['d_stock']) / w['stock_years']).to_numpy(float)
+    x = ((w['y0'] + 1 + w['y1']) / 2.0).to_numpy(float)
+    wt = (w['y1'] - w['y0']).to_numpy(float)
+    X = np.column_stack([np.ones(len(x)), x])
+    a, b = np.linalg.solve(X.T @ (wt[:, None] * X), X.T @ (wt * y))
+    return dict(a=float(a), b=float(b), n=int(len(w)), x=x.tolist(), rate=y.tolist(), weight=wt.tolist())
+
+
+def replacement_path(scenario, rate_long, rate_recent, years, half_life=10.0, trend=None):
     """Net replacement rate by year (index 0 = 2025), by projection variant:
-      'LOW':  the long-run rate throughout (Low replacement);
-      'HIGH': the recent (2018-2023) rate throughout (High replacement);
-      'REF':  the recent rate fading to the long-run rate with the given
-              half-life: long + (recent - long) x 0.5^((t - 2025) / half_life)
-              (the Reference; half-lives 5 and 15 yr are sensitivity variants)."""
+      'LOW':   the long-run rate throughout (Low replacement);
+      'HIGH':  the recent (2018-2023) rate throughout (High replacement);
+      'VHIGH': the weighted linear trend of the census-interval rates continues (Very High replacement, MODEL v3.3.0;
+               trend = replacement_trend(...)): a + b t;
+      'REF':   the recent rate fading to the long-run rate with the given
+               half-life: long + (recent - long) x 0.5^((t - 2025) / half_life)
+               (the Reference; the half-life is sampled U(5, 15) yr in the Monte Carlo)."""
     years = np.asarray(years)
     if scenario == 'LOW':
         return np.full(len(years), float(rate_long))
     if scenario == 'HIGH':
         return np.full(len(years), float(rate_recent))
+    if scenario == 'VHIGH':
+        if trend is None:
+            raise ValueError("replacement_path: 'VHIGH' needs the census trend (replacement_trend).")
+        return trend['a'] + trend['b'] * years.astype(float)
     if scenario == 'REF':
         return rate_long + (rate_recent - rate_long) * 0.5 ** ((years - 2025) / float(half_life))
     raise ValueError(f"Unknown replacement variant '{scenario}'.")
@@ -382,8 +404,8 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                              occurring in year j (events.kernel); b_t = gfa_t @ K is
                              added to carbon_t (time-resolved accounting).
     MODEL v2.1.0 (pathway levers; every default reproduces the earlier result bit for bit):
-    soil[t] may be an array over the years (L8 soil-aware planning, TL8 lowest-carbon soils).
-    brownfield_share, brownfield_w : optional arrays over the years (L9 brownfield development):
+    soil[t] may be an array over the years (L7 soil-aware planning, TL7 lowest-carbon soils).
+    brownfield_share, brownfield_w : optional arrays over the years (L6 brownfield development):
                              target share s of ALL new floor area on previously developed land
                              and its adoption weight w; the soil-free floor area becomes
                              soil_free + w max(0, s total - soil_free), so the replacement floor

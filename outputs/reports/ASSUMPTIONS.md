@@ -194,7 +194,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `SSEC_VALUE_COLUMNS` | `('Value - Value/Detached', 'Value - Value/Townhouses', 'Value - Value/Apartments')` |
 | `SSEC_WINDOW` | `(2016, 2025)` |
 | `T0` | `2025` |
-| `VARIANTS` | `('LOW', 'REF', 'HIGH')` |
+| `VARIANTS` | `('LOW', 'REF', 'HIGH', 'VHIGH')` |
 | `WDI_COVERAGE_MIN` | `0.98` |
 | `SOURCE_PAIRS` | `{'A': {'label': '2 °C carrying capacity (Bjørn & Hauschild 2015)', 'sos': 6810000000000.0, 'i_glob': 55800000000000.0}, 'C': {'label': '1 W/m² planetary boundary (Bjørn & Hauschild 2015)', 'sos': 3610000000000.0, 'i_glob': 55800000000000.0}}` |
 
@@ -204,24 +204,24 @@ Resolved values from data/pathways/levers.json (MODEL v3.0.0 lever rule: Levels 
 
 | setting | value | basis |
 |---|---|---|
-| L1 Dwelling size (P1 Space per person) | sub-rule B: Detached 148.8 m2 (1990), Townhouses 105.8 m2 (1990), Apartments 91.0 m2 (1998); Moderate f = Detached 0.186, Townhouses 0.049, Apartments 0.081; Ambitious f = Detached 0.372, Townhouses 0.097, Apartments 0.162; TL f = 1 (size = occupied area) | B: best value ever observed in NZ (no structural trend) |
-| L2 Design density (P1 Space per person) | sub-rule A: HD q0.15 of the 16 case-study design ratios = 0.8194; Moderate r = 0.9097; Ambitious r = 0.8194 (95% CI 0.732-0.960, n = 16); TL r = Detached 0.710, Townhouses 0.819, Apartments 0.819 | A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios |
-| L3 Household size (P1 Space per person) | sub-rule C: Stats NZ High - Medium household size gap (2050: +0.0415); Moderate S 2050 = 2.6725; Ambitious S 2050 = 2.6933 (Reference 2.6518); TL S = 2.7905 (1991) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
-| L4 Vacancy (P2 Existing stock) | sub-rule B: 4.01% (1996 census minimum, one definition); Moderate 4.70%; Ambitious 4.01%; TL v = 0 | B: best value ever observed in NZ (no structural trend) |
-| L5 Building lifetime (P2 Existing stock) | sub-rule C: -40% demolition (Pellan et al. 2024); Moderate d = 0.20; Ambitious d = 0.40; TL no demolition, no surge | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
-| L6 Material carbon (P3 Construction) | sub-rule A: HD q0.15 of the 14 case ratios = 0.8270; Moderate r = 0.9135; Ambitious r = 0.8270 (95% CI 0.607-0.950, n = 14); TL r = Detached 0.530, Townhouses 0.827, Apartments 0.827 | A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios |
-| L7 Construction-stage carbon (P3 Construction) | sub-rule C: A4-A5 linear to zero by 2050 (Zero Carbon Act s. 5Q; Oslo 2025); Moderate factor 2050 = 0.389; Ambitious factor 2050 = 0 (linear from 2025); TL A4-A5 = 0 | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
-| L8 Soil-aware planning (P4 Land) | sub-rule C: -14.6% soil carbon loss (SOC-aware allocation; Christoforatos, Pickering & Schipper 2026); Moderate x = 0.073; Ambitious x = 0.146; TL Detached 22.9, Townhouses 13.8, Apartments 2.5 kg CO2e/m2 (lowest soil order) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
-| L9 Brownfield development (P4 Land) | sub-rule C: 59% of new floor area on previously developed land (England 2018-21, DLUHC 2022); Moderate s = 0.385 (s_ref 0.179); Ambitious s = 0.59; TL s = 1 | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
-| TL1 vs Ambitious | f = 1 vs {'Detached': 0.3718, 'Townhouses': 0.0973, 'Apartments': 0.162} | asserted at least as strong: True |
-| TL2 vs Ambitious | {'Detached': 0.7095, 'Townhouses': 0.8194, 'Apartments': 0.8194} vs r = 0.8194 | asserted at least as strong: True |
-| TL3 vs Ambitious | S = 2.7905 vs S_amb max 2.6933 | asserted at least as strong: True |
-| TL4 vs Ambitious | v = 0 vs v = 0.0401 | asserted at least as strong: True |
-| TL5 vs Ambitious | d = 1 (demolition and surge) vs d = 0.4 | asserted at least as strong: True |
-| TL6 vs Ambitious | {'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827} vs r = 0.8270 | asserted at least as strong: True |
-| TL7 vs Ambitious | A4-A5 = 0 vs linear to zero in 2050 | asserted at least as strong: True |
-| TL8 vs Ambitious | {'Detached': 22.93, 'Townhouses': 13.84, 'Apartments': 2.52} vs x = 0.146 | asserted at least as strong: True |
-| TL9 vs Ambitious | s = 1 vs s = 0.59 | asserted at least as strong: True |
+| L1 Household size (S1 Avoid) | sub-rule C: Stats NZ High - Medium household size gap (2050: +0.0415); Moderate S 2050 = 2.6725; Ambitious S 2050 = 2.6933 (Reference 2.6518); TL S = 2.7905 (1991) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| L2 Vacancy rate (S1 Avoid) | sub-rule B: 4.01% (1996 census minimum, one definition); Moderate 4.70%; Ambitious 4.01%; TL v = 0 | B: best value ever observed in NZ (no structural trend) |
+| L3 Building lifetime (S1 Avoid) | sub-rule C: -40% demolition (Pellan et al. 2024); Moderate d = 0.20; Ambitious d = 0.40; TL no demolition, no surge | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| L4 Extra space (S1 Avoid) | sub-rule B: Detached 148.8 m2 (1990), Townhouses 105.8 m2 (1990), Apartments 91.0 m2 (1998); Moderate f = Detached 0.186, Townhouses 0.049, Apartments 0.081; Ambitious f = Detached 0.372, Townhouses 0.097, Apartments 0.162; TL f = 1 (size = occupied area) | B: best value ever observed in NZ (no structural trend) |
+| L5 Occupancy density (S1 Avoid) | sub-rule A: HD q0.15 of the 16 case-study design ratios = 0.8194; Moderate r = 0.9097; Ambitious r = 0.8194 (95% CI 0.732-0.960, n = 16); TL r = Detached 0.710, Townhouses 0.819, Apartments 0.819 | A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios |
+| L6 Brownfield-first development (S2 Switch) | sub-rule C: 59% of new floor area on previously developed land (England 2018-21, DLUHC 2022); Moderate s = 0.385 (s_ref 0.179); Ambitious s = 0.59; TL s = 1 | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| L7 Soil-aware planning (S2 Switch) | sub-rule C: -14.6% soil carbon loss (SOC-aware allocation; Christoforatos, Pickering & Schipper 2026); Moderate x = 0.073; Ambitious x = 0.146; TL Detached 22.9, Townhouses 13.8, Apartments 2.5 kg CO2e/m2 (lowest soil order) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| L8 Material carbon efficiency (S2 Switch) | sub-rule A: HD q0.15 of the 14 case ratios = 0.8270; Moderate r = 0.9135; Ambitious r = 0.8270 (95% CI 0.607-0.950, n = 14); TL r = Detached 0.530, Townhouses 0.827, Apartments 0.827 | A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios |
+| L9 Construction-stage carbon (S3 Improve) | sub-rule C: A4-A5 linear to zero by 2050 (Zero Carbon Act s. 5Q; Oslo 2025); Moderate factor 2050 = 0.389; Ambitious factor 2050 = 0 (linear from 2025); TL A4-A5 = 0 | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| TL4 vs Ambitious | f = 1 vs {'Detached': 0.3718, 'Townhouses': 0.0973, 'Apartments': 0.162} | asserted at least as strong: True |
+| TL5 vs Ambitious | {'Detached': 0.7095, 'Townhouses': 0.8194, 'Apartments': 0.8194} vs r = 0.8194 | asserted at least as strong: True |
+| TL1 vs Ambitious | S = 2.7905 vs S_amb max 2.6933 | asserted at least as strong: True |
+| TL2 vs Ambitious | v = 0 vs v = 0.0401 | asserted at least as strong: True |
+| TL3 vs Ambitious | d = 1 (demolition and surge) vs d = 0.4 | asserted at least as strong: True |
+| TL8 vs Ambitious | {'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827} vs r = 0.8270 | asserted at least as strong: True |
+| TL9 vs Ambitious | A4-A5 = 0 vs linear to zero in 2050 | asserted at least as strong: True |
+| TL7 vs Ambitious | {'Detached': 22.93, 'Townhouses': 13.84, 'Apartments': 2.52} vs x = 0.146 | asserted at least as strong: True |
+| TL6 vs Ambitious | s = 1 vs s = 0.59 | asserted at least as strong: True |
 
 ### All settings in levers.py
 
@@ -235,39 +235,39 @@ Resolved values from data/pathways/levers.json (MODEL v3.0.0 lever rule: Levels 
 | `HD_BOOTSTRAP_SEED` | `20261008` |
 | `HD_CI` | `0.95` |
 | `HD_Q` | `0.15` |
-| `L1_CONSENT_YEARS` | `(1990, 2025)` |
-| `L1_FULL_STRENGTH_YEAR` | `2035` |
-| `L1_REPORT_YEARS` | `(2035, 2050)` |
-| `L2_N_CASES` | `16` |
-| `L2_TYPOLOGIES` | `('Detached', 'Townhouses', 'Apartments')` |
-| `L3_AMBITIOUS_VARIANT` | `'High'` |
-| `L3_GAP_HELD_AFTER` | `2043` |
-| `L3_REFERENCE_VARIANT` | `'Medium'` |
-| `L3_VARIANTS` | `('Low', 'Medium', 'High')` |
-| `L4_VACANCY_FLOOR` | `0.04` |
-| `L5_D_AMBITIOUS` | `0.4` |
-| `L6_MIN_CASES` | `10` |
-| `L6_SAMPLE_TYPOLOGIES` | `('Detached', 'Townhouses')` |
-| `L7_REF_RATE` | `0.01` |
-| `L7_ZERO_YEAR` | `2050` |
-| `L8_X_AMBITIOUS` | `0.146` |
-| `L9_CONTEXT` | `{'us_epa_2014_infill': 0.21, 'england_2020_21': 0.66, 'england_3yr': 0.59, 'north_east': 0.41, 'london': 0.89}` |
-| `L9_S_AMBITIOUS` | `0.59` |
+| `L1_AMBITIOUS_VARIANT` | `'High'` |
+| `L1_GAP_HELD_AFTER` | `2043` |
+| `L1_REFERENCE_VARIANT` | `'Medium'` |
+| `L1_VARIANTS` | `('Low', 'Medium', 'High')` |
+| `L2_VACANCY_FLOOR` | `0.04` |
+| `L3_D_AMBITIOUS` | `0.4` |
+| `L4_CONSENT_YEARS` | `(1990, 2025)` |
+| `L4_FULL_STRENGTH_YEAR` | `2035` |
+| `L4_REPORT_YEARS` | `(2035, 2050)` |
+| `L5_N_CASES` | `16` |
+| `L5_TYPOLOGIES` | `('Detached', 'Townhouses', 'Apartments')` |
+| `L6_CONTEXT` | `{'us_epa_2014_infill': 0.21, 'england_2020_21': 0.66, 'england_3yr': 0.59, 'north_east': 0.41, 'london': 0.89}` |
+| `L6_S_AMBITIOUS` | `0.59` |
+| `L7_X_AMBITIOUS` | `0.146` |
+| `L8_MIN_CASES` | `10` |
+| `L8_SAMPLE_TYPOLOGIES` | `('Detached', 'Townhouses')` |
+| `L9_REF_RATE` | `0.01` |
+| `L9_ZERO_YEAR` | `2050` |
 | `LAMBDA` | `{'reference': 0.0, 'moderate': 0.5, 'ambitious': 1.0}` |
 | `LEVELS` | `('reference', 'moderate', 'ambitious', 'tl')` |
 | `LEVERS` | `('L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9')` |
-| `LEVER_PATHWAY` | `{'L1': 'P1', 'L2': 'P1', 'L3': 'P1', 'L4': 'P2', 'L5': 'P2', 'L6': 'P3', 'L7': 'P3', 'L8': 'P4', 'L9': 'P4'}` |
 | `OBSERVED_YEAR` | `2026` |
+| `PATHWAY` | `'pathway'` |
 | `RAMP_BASIS` | `'full roll-out by 2035 following RECC (Pauliuk et al. 2024, J. Ind. Ecol. 28, 1699: circular-economy strategies fully implemented by 2035)'` |
 | `RAMP_END` | `2035` |
 | `RAMP_K` | `0.7324081924454066` |
 | `RAMP_MID` | `2030.5` |
 | `SETTINGS` | `('moderate', 'ambitious')` |
-| `SUBRULE` | `{'L1': 'B', 'L2': 'A', 'L3': 'C', 'L4': 'B', 'L5': 'C', 'L6': 'A', 'L7': 'C', 'L8': 'C', 'L9': 'C'}` |
+| `SUBRULE` | `{'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C', 'L7': 'C', 'L8': 'A', 'L9': 'C'}` |
 | `SUBRULE_TEXT` | `{'A': 'A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios', 'B': 'B: best value ever observed in NZ (no structural trend)', 'C': 'C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value)'}` |
-| `TL_BAU_NOTE` | `'The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 e^(-0.01 (t - 2025)) until TL7 sets A4-A5 to zero).'` |
+| `TL_BAU_NOTE` | `'The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 e^(-0.01 (t - 2025)) until TL9 sets A4-A5 to zero).'` |
 | `TL_COMPONENTS` | `('TL1', 'TL2', 'TL3', 'TL4', 'TL5', 'TL6', 'TL7', 'TL8', 'TL9')` |
 | `TL_FROM2027` | `'from2027'` |
 | `TL_INSTANT_LABEL` | `'TL-from2027'` |
 | `TL_LEVER` | `{'TL1': 'L1', 'TL2': 'L2', 'TL3': 'L3', 'TL4': 'L4', 'TL5': 'L5', 'TL6': 'L6', 'TL7': 'L7', 'TL8': 'L8', 'TL9': 'L9'}` |
-| `TL_RELEASE_ITEMS` | `('TL3', 'TL4')` |
+| `TL_RELEASE_ITEMS` | `('TL1', 'TL2')` |

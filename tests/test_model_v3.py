@@ -4,8 +4,9 @@
   * the Reference absorbs the 2026 overbuild by 2035 (logistic; payback capped at the year's building with carry);
     the excess is held fixed in every run;
   * the lever rule: Moderate is the exact midpoint of the native parameter; TLn at least as strong as Ambitious;
-    the data STOP conditions (L2 sample, f_t in [0, 1], High >= Medium);
-  * ordering Reference >= Moderate >= Ambitious >= TL; TL <= P5 in every Monte Carlo draw; L1 / L2 interaction;
+    the data STOP conditions (L5 sample, f_t in [0, 1], High >= Medium);
+  * ordering Reference >= Moderate >= Ambitious >= TL; TL <= Ambitious Pathway <= Moderate Pathway in every Monte
+    Carlo draw; L4 / L5 interaction;
   * built_t >= 0 in every run and year; implied vacancy >= 4.0% in every non-TL run; cumulative re-occupied <=
     cumulative released; Shapley efficiency; waterfall sums; material and stage values never negative.
 """
@@ -84,8 +85,8 @@ def test_moderate_is_the_exact_midpoint(params, lever):
     years = np.arange(2025, 2051)
     nat = lambda lev: LV.native(params, lever, lev, years)
     ref, mod, amb = nat('reference'), nat('moderate'), nat('ambitious')
-    if lever == 'L9':
-        ref = params['L9']['s']['reference']
+    if lever == 'L6':
+        ref = params['L6']['s']['reference']
     if isinstance(mod, dict):
         for k in mod:
             assert mod[k] == pytest.approx((ref[k] + amb[k]) / 2, rel=1e-15, abs=1e-15), (lever, k)
@@ -95,15 +96,15 @@ def test_moderate_is_the_exact_midpoint(params, lever):
 
 
 def test_lever_data_stop_conditions(params):
-    assert params['L2']['n'] == 16 and set(params['L2']['typologies']) == {'Detached', 'Townhouses', 'Apartments'}
-    assert all(0.0 <= f <= 1.0 for f in params['L1']['f']['ambitious'].values())
-    assert params['L3']['high_ge_medium_every_year']
-    v = params['L3']['variants']
+    assert params['L5']['n'] == 16 and set(params['L5']['typologies']) == {'Detached', 'Townhouses', 'Apartments'}
+    assert all(0.0 <= f <= 1.0 for f in params['L4']['f']['ambitious'].values())
+    assert params['L1']['high_ge_medium_every_year']
+    v = params['L1']['variants']
     assert all(v['High'][y] >= v['Medium'][y] for y in v['High'] if int(y) <= 2043)
     assert all(r['ok'] for r in params['tl_strength'])
-    assert {k: round(m['size_min'], 1) for k, m in params['L1']['minima'].items()} == \
+    assert {k: round(m['size_min'], 1) for k, m in params['L4']['minima'].items()} == \
         {'Detached': 148.8, 'Townhouses': 105.8, 'Apartments': 91.0}
-    assert params['L6']['estimator']['r'] == pytest.approx(0.827, abs=5e-4)
+    assert params['L8']['estimator']['r'] == pytest.approx(0.827, abs=5e-4)
 
 
 def test_ordering():
@@ -112,10 +113,10 @@ def test_ordering():
     assert all(r['ok'] for r in o['cumulative'])
 
 
-def test_tl_le_p5_every_draw():
+def test_tl_le_pathway_every_draw():
     d = pd.read_csv(D('pathways/montecarlo_draws.csv'))
-    assert (d['TL_carbon_kt'] <= d['P5A_carbon_kt'] * (1 + 1e-12)).all()
-    assert (d['P5A_carbon_kt'] <= d['P5_carbon_kt'] * (1 + 1e-12)).all()
+    assert (d['TL_carbon_kt'] <= d['pathway_ambitious_carbon_kt'] * (1 + 1e-12)).all()
+    assert (d['pathway_ambitious_carbon_kt'] <= d['pathway_moderate_carbon_kt'] * (1 + 1e-12)).all()
 
 
 # ------------------------------------------------------------------ runs ----
@@ -127,25 +128,25 @@ def ctx_params():
 
 
 def test_l1_l2_interaction(ctx_params):
-    """With L2 off, L1 reproduces its standalone run; L2 changes the total floor area; with both on, the dwelling
-    size is the L2-scaled size with the L1 cut applied to the scaled margin."""
+    """With L5 off, L4 reproduces its standalone run; L5 changes the total floor area; with both on, the dwelling
+    size is the L5-scaled size with the L4 cut applied to the scaled margin."""
     import pathways as PW
     ctx, p = ctx_params
     runs = pd.read_csv(D('pathways/runs.csv'))
     r = runs[runs['scenario'] == 'REF'].set_index('run')
-    R1 = PW.run(ctx, p, {'L1': 'ambitious'})
-    assert R1['E']['carbon'][1:].sum() / 1e6 == pytest.approx(r.loc['L1-ambitious', 'carbon_kt'], rel=1e-12)
-    R2 = PW.run(ctx, p, {'L2': 'ambitious'})
+    R1 = PW.run(ctx, p, {'L4': 'ambitious'})
+    assert R1['E']['carbon'][1:].sum() / 1e6 == pytest.approx(r.loc['L4-ambitious', 'carbon_kt'], rel=1e-12)
+    R2 = PW.run(ctx, p, {'L5': 'ambitious'})
     R0 = PW.run(ctx, p, {})
     assert R2['E']['total'][2:].sum() < R0['E']['total'][2:].sum() * (1 - 1e-3)
-    R12 = PW.run(ctx, p, {'L1': 'ambitious', 'L2': 'ambitious'})
+    R12 = PW.run(ctx, p, {'L4': 'ambitious', 'L5': 'ambitious'})
     w = LV.ramp(ctx['years'])
     S = np.asarray(ctx['pop'], float) / np.asarray(ctx['hh'], float)
     for t in ctx['typ']:
-        k2 = 1 - w * (1 - p['L2']['r']['ambitious'])
+        k2 = 1 - w * (1 - p['L5']['r']['ambitious'])
         occ = S * float(ctx['olf'][t]) * k2
         base = float(ctx['size_ref'][t]) * k2
-        f = p['L1']['f']['ambitious'][t]
+        f = p['L4']['f']['ambitious'][t]
         assert np.allclose(R12['inputs']['size'][t], occ + (1 - f * w) * (base - occ), rtol=1e-12)
 
 
@@ -155,7 +156,7 @@ def test_built_nonnegative_and_vacancy_floor():
     s = pd.read_csv(D('pathways/shapley_subsets.csv'))
     assert (s['dwellings_built_min'] >= -1e-6).all()
     non_tl = a[~a['run'].str.contains('tl|TL')]
-    assert (non_tl['implied_vacancy'] >= LV.L4_VACANCY_FLOOR).all()
+    assert (non_tl['implied_vacancy'] >= LV.L2_VACANCY_FLOOR).all()
 
 
 def test_reoccupation_log():
@@ -163,7 +164,7 @@ def test_reoccupation_log():
     for _, g in lg.groupby('run'):
         assert (g['cumulative_reoccupied'] <= g['cumulative_released'] + 1e-6).all()
         assert (g['built'] >= -1e-6).all()
-        assert np.allclose(g['reoccupied'], g['reoccupied_tl3'] + g['reoccupied_tl4'], atol=1e-6)
+        assert np.allclose(g['reoccupied'], g['reoccupied_tl1'] + g['reoccupied_tl2'], atol=1e-6)
 
 
 def test_reoccupation_rule_recomputes_share():
@@ -196,8 +197,8 @@ def test_waterfall_sums():
         tot = g.groupby('step')['carbon_kt'].sum()
         assert np.allclose(tot.values, g.groupby('step')['total_carbon_kt'].first().values, rtol=1e-9)
         last = g[g['step'] == g['step'].max()]['total_carbon_kt'].iloc[0]
-        p5 = g[g['step_id'] == 'P4']['total_carbon_kt'].iloc[0]
-        assert p5 == pytest.approx(r.loc[f'P5-{s}', 'carbon_kt'], rel=1e-12)
+        pw = g[g['step_id'] == 'L9']['total_carbon_kt'].iloc[0]
+        assert pw == pytest.approx(r.loc[f'pathway-{s}', 'carbon_kt'], rel=1e-12)
         assert last == pytest.approx(r.loc['TL', 'carbon_kt'], rel=1e-12)
 
 

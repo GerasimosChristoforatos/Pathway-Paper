@@ -15,16 +15,16 @@ Reference: net replacement fading from the 2018-2023 rate to the long-run rate (
 | 2026 overbuild: 2026 building above requirement (dwellings) | +16,760 |
 | 2026 overbuild: gap_ref (building 2026 - requirement 2027) | +9,974 |
 | 2026 overbuild: net dwellings added 2026-2050 | +0 |
-| MC floor area p5 (Mm2) | 63.66 |
-| MC floor area p50 (Mm2) | 85.26 |
-| MC floor area mean (Mm2) | 85.56 |
-| MC floor area p95 (Mm2) | 108.90 |
-| MC carbon p5 (kt) | 15,220 |
-| MC carbon p50 (kt) | 20,432 |
-| MC carbon mean (kt) | 20,565 |
-| MC carbon p95 (kt) | 26,216 |
-| Reference run percentile in MC, floor area | 51.9 |
-| Reference run percentile in MC, carbon | 52.1 |
+| MC floor area p5 (Mm2) | 63.65 |
+| MC floor area p50 (Mm2) | 84.73 |
+| MC floor area mean (Mm2) | 85.33 |
+| MC floor area p95 (Mm2) | 108.35 |
+| MC carbon p5 (kt) | 15,180 |
+| MC carbon p50 (kt) | 20,368 |
+| MC carbon mean (kt) | 20,515 |
+| MC carbon p95 (kt) | 26,255 |
+| Reference run percentile in MC, floor area | 53.3 |
+| Reference run percentile in MC, carbon | 52.6 |
 | Hindcast error, origin 2006, model method (%) | -7.1 |
 | Hindcast error, origin 2013, model method (%) | -4.4 |
 | Hindcast error, origin 2018, model method (%) | -14.7 |
@@ -43,6 +43,7 @@ Reference: net replacement fading from the 2018-2023 rate to the long-run rate (
 | Reference | 85.90 | 20,615 | 2,899 | 17,716 | 20,240 |
 | Reference, replacement half-life 15 yr | 87.95 | 21,021 | 2,899 | 18,121 | 20,640 |
 | High replacement | 95.20 | 22,431 | 2,899 | 19,531 | 22,034 |
+| Very High replacement (trend continues) | 104.68 | 24,238 | 2,899 | 21,338 | 23,826 |
 | Low replacement, no census under-construction correction | 81.12 | 19,591 | 2,900 | 16,691 | 19,244 |
 | Reference, no census under-construction correction | 91.44 | 21,755 | 2,899 | 18,856 | 21,356 |
 | High replacement, no census under-construction correction | 104.35 | 24,276 | 2,899 | 21,377 | 23,846 |
@@ -65,13 +66,13 @@ Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted 
 | Boundary AtP 2050 (kt CO2e) | 45.87 |
 | B_AtP / B_AR (constant over time) | 0.2500 |
 | Cumulative LoE 2026-2050, AR, Reference | 4.63 |
-| Cumulative LoE AR, MC p5 (Reference) | 3.56 |
-| Cumulative LoE AR, MC p50 (Reference) | 4.60 |
-| Cumulative LoE AR, MC p95 (Reference) | 5.67 |
+| Cumulative LoE AR, MC p5 (Reference) | 3.57 |
+| Cumulative LoE AR, MC p50 (Reference) | 4.58 |
+| Cumulative LoE AR, MC p95 (Reference) | 5.65 |
 | Cumulative LoE 2026-2050, AtP, Reference | 18.5 |
 | Cumulative LoE AtP, MC p5 (Reference) | 14.2 |
-| Cumulative LoE AtP, MC p50 (Reference) | 18.4 |
-| Cumulative LoE AtP, MC p95 (Reference) | 22.7 |
+| Cumulative LoE AtP, MC p50 (Reference) | 18.3 |
+| Cumulative LoE AtP, MC p95 (Reference) | 22.8 |
 
 | variant (deterministic) | cumulative LoE AR | cumulative LoE AtP |
 |---|---|---|
@@ -83,12 +84,14 @@ Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted 
 | Reference, replacement half-life 15 yr | 4.72 | 18.9 |
 | Reference, replacement half-life 5 yr | 4.48 | 17.9 |
 | Reference, no census under-construction correction | 4.89 | 19.5 |
+| Very High replacement (trend continues) | 5.45 | 21.8 |
 
 | variant (Monte Carlo) | cumulative LoE AR p5 / p50 / p95 | cumulative LoE AtP p5 / p50 / p95 |
 |---|---|---|
-| High replacement | 3.94 / 5.00 / 6.10 | 15.7 / 20.0 / 24.5 |
-| Low replacement | 3.22 / 4.26 / 5.31 | 12.9 / 17.0 / 21.3 |
-| Reference | 3.56 / 4.60 / 5.67 | 14.2 / 18.4 / 22.7 |
+| High replacement | 3.97 / 5.00 / 6.08 | 15.7 / 20.0 / 24.5 |
+| Low replacement | 3.26 / 4.25 / 5.29 | 12.9 / 17.0 / 21.3 |
+| Reference | 3.57 / 4.58 / 5.65 | 14.2 / 18.3 / 22.8 |
+| Very High replacement (trend continues) | 4.36 / 5.40 / 6.52 | 17.3 / 21.6 / 26.3 |
 
 ## Maintenance 2026-2050 and committed after 2050 (deterministic, kt CO2e)
 
@@ -99,3 +102,4 @@ Committed after 2050: later maintenance events (B2, B4; lower bound: 2050 factor
 | Low replacement | 337 | 1.8% | 2,926-3,596 | 4,281 | 7,207-7,877 | 39.3-42.9 |
 | Reference | 375 | 1.8% | 3,197-3,929 | 4,687 | 7,884-8,616 | 43.0-47.0 |
 | High replacement | 397 | 1.8% | 3,561-4,376 | 5,194 | 8,755-9,570 | 47.7-52.2 |
+| Very High replacement (trend continues) | 412 | 1.7% | 3,940-4,840 | 5,711 | 9,651-10,551 | 52.6-57.5 |

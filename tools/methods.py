@@ -26,7 +26,8 @@ import naming as N  # noqa: E402
 PARTS = [('1. Baseline projection', 'baseline_draft'),
          ('2. Planetary-boundary layer (AESA)', 'pb_methods'),
          ('3. Pathways and the theoretical limit', 'pathways_methods'),
-         ('4. Attribution principle, release accounting and the history (MODEL v3.2.0)', 'release_methods')]
+         ('4. Attribution principle, release accounting, replacement and the history (MODEL v3.2.0-v3.3.0)',
+          'release_methods')]
 # inline code, URLs and DOIs are never typeset (their hyphens are not ranges)
 VERBATIM = re.compile(r'(`[^`]*`|https?://\S+|\bdoi:\S+|\b10\.\d{4,9}/\S+)')
 

@@ -23,7 +23,7 @@ import layout  # noqa: E402
 import naming as N  # noqa: E402
 
 SCEN_NAME = N.SCENARIOS
-MAIN = ('REF', 'LOW', 'HIGH')            # the variants of the committed table (as in the earlier drafts)
+MAIN = ('REF', 'LOW', 'HIGH', 'VHIGH')   # the variants of the committed table (MODEL v3.3.0: + Very High)
 
 
 def ordered(d):

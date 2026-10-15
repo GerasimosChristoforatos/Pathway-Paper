@@ -40,6 +40,11 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
             has its median at that value; Wallis 2014). The stock calibration
             and the census dwelling-count replacement rates are redone for
             each draw.
+  half_life Uniform(5, 15) years (MODEL v3.3.0): the half-life of the Reference's fade of net replacement from the
+            2018-2023 census-interval rate to the 1991-2023 long-run rate. Not identifiable from the census record
+            (seven censuses, six interval rates), so it is sampled over the range of the former half-life variants;
+            the deterministic 10 yr is its median. It acts in the Reference variant only (Low / High / Very High
+            replacement do not fade).
   carbon    A stratified bootstrap of the case studies (resampled within
             sub-type, duplicate cases removed, re-pooled as in
             Building_factors). A sub-type with one independent case (the
@@ -49,9 +54,9 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
   CENTRING: the deterministic projection run uses the MEDIAN of every sampled input.
   Inputs are independent. Seeds are fixed, so runs are reproducible.
 NOT SAMPLED (held at the projection value in every draw)
-  net replacement: the MC is run separately within each projection variant of
-    MC_SCENARIOS (the Reference, half-life 10 yr; Low and High replacement); the
-    half-life is fixed. Variant differences are reported separately (Sensitivity.py).
+  net replacement level: the MC is run separately within each projection variant of
+    MC_SCENARIOS (the Reference; Low, High and Very High replacement); within the Reference the
+    half-life is sampled (above). Variant differences are reported separately (Sensitivity.py).
   typology mix, the census rebase of households, the pre-2013 empty share,
     future vacancy and the retirement-village share: their total Sobol indices
     were about 0 in a full-input run (v1.0.2), so they are fixed (v1.1 lean MC).
@@ -287,13 +292,15 @@ def carbon_bootstrap(bf, typ, red=None, extras=None):
 # ============================================================
 # ENGINE
 # ============================================================
-PARAMS = ['z_pop', 'size', 'complete', 'carbon']
-# Net replacement is NOT sampled: the MC runs separately within each projection variant
-# (MC_SCENARIOS, naming.SCENARIOS); the Reference half-life is fixed. The first entry is the
+PARAMS = ['z_pop', 'size', 'complete', 'carbon', 'half_life']
+HALF_LIFE_RANGE = (5.0, 15.0)    # MODEL v3.3.0: replacement half-life ~ U(5, 15) yr (Reference variant)
+# The net replacement level is NOT sampled: the MC runs separately within each projection variant
+# (MC_SCENARIOS, naming.SCENARIOS); within the Reference the half-life is sampled. The first entry is the
 # Reference (its files carry the Sobol indices and figures).
 MC_SCENARIOS = [('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
                 ('LOW', dict(REPLACEMENT_VARIANT='LOW')),
-                ('HIGH', dict(REPLACEMENT_VARIANT='HIGH'))]
+                ('HIGH', dict(REPLACEMENT_VARIANT='HIGH')),
+                ('VHIGH', dict(REPLACEMENT_VARIANT='VHIGH'))]
 
 
 class TwoPiece:
@@ -322,7 +329,7 @@ class TwoPiece:
 
 
 def central(su):
-    return dict(z_pop=0.0, size=1.0, complete=su['completion'], carbon=None)
+    return dict(z_pop=0.0, size=1.0, complete=su['completion'], carbon=None, half_life=su['s3_half_life'])
 
 
 def interp_z(z, zs, ys):
@@ -358,7 +365,11 @@ def project(su, p, full=False):
                                          uc=su['census_uc'])
     unc_long = engine.census_window_rate(rates, *su['nr_window']) - su['demol_rate']
     unc_recent = engine.census_window_rate(rates, *su['recent']) - su['demol_rate']
-    unc = engine.replacement_path(su['scenario'], unc_long, unc_recent, fy, su['s3_half_life'])
+    if su['scenario'] == 'VHIGH':                     # the census trend, refitted for this draw's completion rate
+        unc = engine.replacement_path('VHIGH', None, None, fy,
+                                      trend=engine.replacement_trend(rates, *su['nr_window'])) - su['demol_rate']
+    else:
+        unc = engine.replacement_path(su['scenario'], unc_long, unc_recent, fy, p['half_life'])
     dv = engine.deviation_2025(cal, c * su['units_all'].loc[2025],
                                float(su['hist_hh'].loc[2025] - su['hist_hh'].loc[2024]),
                                su['demol_rate'] + float(unc[0]), yh, su['calib_start'], su['calib_end'])
@@ -460,6 +471,7 @@ def distributions(su):
         'complete': TwoPiece(projection.COMPLETION_RATE_BAND[0], su['completion'], projection.COMPLETION_RATE_BAND[1],
                              shape='uniform'),
         'carbon': stats.uniform(0, 1),
+        'half_life': stats.uniform(HALF_LIFE_RANGE[0], HALF_LIFE_RANGE[1] - HALF_LIFE_RANGE[0]),
     }
 
 

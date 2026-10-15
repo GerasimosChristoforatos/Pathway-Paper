@@ -152,9 +152,15 @@ BAND = {'growth': (GROWTH, None),
         'unconsented': ('#BA9AC1', None),             # negative: outline only (replacement lilac family, darker)
         'redevelopment': (LEVER['L5'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
         'released_tl': ('#95C283', None),             # negative: outline only (TL green family)
-        'maintenance': ('#9E9E9E', None)}      # neutral; MODEL v3.0.0 slightly darker (CVD distance >= 10)
+        # MODEL v3.1.0: 'Vacancy released' (negative, outline; the L4 vacancy family, darker), 'Surplus kept vacant
+        # (2050)' (a pale neutral, 2050 only), 'Legacy (pre-2026 activity)' (a dark neutral grey, distinct from
+        # maintenance; carbon only)
+        'vacancy_released': ('#7B4E6E', None),
+        'surplus_vacant': ('#E6DDC6', None),
+        'maintenance': ('#9E9E9E', None),      # neutral; MODEL v3.0.0 slightly darker (CVD distance >= 10)
+        'legacy': ('#5A5A5A', None)}
 BAND_ORDER = list(BAND)
-NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'released_tl')
+NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl')
 BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}
 LW_OUTLINE = 0.9                        # the outline of a negative band segment in a cumulative bar
 
@@ -162,12 +168,14 @@ LW_OUTLINE = 0.9                        # the outline of a negative band segment
 COMPONENT = {'materials_construction': (LEVER['L6'], None),     # A1-A3: P3 dark blue
              'soil': (LEVER['L8'], None),                       # P4 brown
              'maintenance': (BAND['maintenance'][0], None),     # B2, B4 within 2026-2050
-             'committed': ('#D0D0D0', None)}                    # after 2050, a range: drawn hollow (Fig3)
+             'committed': ('#D0D0D0', None),                    # after 2050, a range: drawn hollow (Fig3)
+             'soil_after': ('#C9B49A', None),                   # MODEL v3.1.0: soil oxidised after 2050 (Fig3)
+             'legacy': ('#5A5A5A', None)}                       # MODEL v3.1.0: pre-2026 activity (BAND['legacy'])
 
 # life-cycle stages (Fig3a; labels in naming.STAGES): A1-A3 the L6 shade, A4-A5 the L7 shade, soil the L8
 # shade, maintenance its band colour; stacked A1-A3, A4-A5, soil, maintenance (A4-A5 and maintenance not adjacent)
 STAGE = {'a1a3': COMPONENT['materials_construction'], 'a4a5': (LEVER['L7'], None), 'soil': COMPONENT['soil'],
-         'maintenance': COMPONENT['maintenance']}
+         'maintenance': COMPONENT['maintenance'], 'legacy': COMPONENT['legacy']}
 
 # unexplained building of the history (Fig2, D05c, K1): a faded reddish face, no hatch (MODEL v2.1.2; face, hatch,
 # hatch colour); may be negative
@@ -177,7 +185,8 @@ UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)      # solid since MODE
 
 # materials: the six Pride-flag stripes (author decision, baseline-pb-v2; one order in every
 # figure), soil faded and hatched on top
-MATERIAL = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF'),
+MATERIAL = [('Legacy (pre-2026 activity)', 'Legacy (pre-2026 activity)', COMPONENT['legacy'][0]),
+            ('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF'),
             ('CONCRETE (incl. reinforced)', 'Concrete', '#008026'),
             ('PLASTICS & PAINT', 'Plastics & paint', '#FFED00'),
             ('PLASTERBOARD', 'Plasterboard', '#FF8C00'), ('OTHERS', 'Others', '#E40303'),

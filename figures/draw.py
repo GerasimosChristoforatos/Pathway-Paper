@@ -256,11 +256,12 @@ def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):
         raise ValueError(f'No colour for {sorted(unknown)} in style.MATERIAL.')
     years = np.asarray(years)
     bottom, handles = np.zeros(len(years)), []
-    for code, lab, colour in S.MATERIAL:                    # SOIL is the last entry: the top layer
+    present = [(c, l_, col) for c, l_, col in S.MATERIAL if c in frame.columns]   # the legacy only where it exists
+    for code, lab, colour in present:                      # legacy (if any) the base, SOIL the top layer
         v = np.asarray(frame[code], float) / scale
         handles.append(ax.fill_between(years, bottom, bottom + v, label=lab, **material_patch(code, colour, alpha)))
         bottom = bottom + v
-    zero_floor(ax, *[frame[code] for code, _, _ in S.MATERIAL])
+    zero_floor(ax, *[frame[code] for code, _, _ in present])
     return handles[::-1]
 
 

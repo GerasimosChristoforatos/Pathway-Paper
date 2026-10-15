@@ -138,7 +138,15 @@ BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BR
                # long-run rate and any surge above it; the two are not separable before the projection
                'replacement_history': 'Net replacement (history; historical replacement and recent surge not '
                                       'separable)'}
-BANDS_HISTORY = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement_history')
+BAND_DETAIL['replacement_census'] = 'Net replacement (census)'
+BAND_DETAIL['unexplained'] = 'Unexplained building'
+# MODEL v3.1.0 (A3): the history's residual band split into the census-measured net replacement (may be negative),
+# the retirement-village units (negative, out of scope) and the unexplained remainder (may be negative); the bands add
+# up to the observed in-scope floor area built in every census interval
+BANDS_HISTORY = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement_census', 'retirement_villages',
+                 'unexplained')
+NEGATIVE_BANDS_HISTORY = ('retirement_villages',)       # negative by construction; census replacement and the
+                                                        # unexplained remainder may be negative in an interval
 BAND_DEFINITIONS = {
     'growth': 'population growth at the occupied area per person, net of consolidation (untargeted)',
     'smaller_households': 'additional households from falling household size (targeted by L3 Household size, P1)',

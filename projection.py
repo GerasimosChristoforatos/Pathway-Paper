@@ -572,7 +572,8 @@ EVENT_TIMING = 'n+1'       # event k at k L / (n + 1); 'n': k L / n (sensitivity
 #       (deterministic only; rejected: the 10-yr base and the 25-yr projection windows capture different shares
 #       of slow-release emissions).
 # PATHWAY_ACCOUNTING (environment) runs any step under another rule (the 'instant' Monte Carlo share; tests)
-ACCOUNTING = 'instant' if FROZEN_RUN else os.environ.get('PATHWAY_ACCOUNTING', 'inventory')
+# the MODEL v2.1 Reference (--reference-legacy) is on the v2.1 accounting: 'instant'
+ACCOUNTING = 'instant' if (FROZEN_RUN or REFERENCE_LEGACY) else os.environ.get('PATHWAY_ACCOUNTING', 'inventory')
 SOIL_OXIDATION_YEARS = INV.SOIL_OXIDATION_YEARS
 B_SCOPE_START = INV.B_SCOPE_START
 # history after the last census (2024-2025) at the last census interval's net replacement rate ('recent', adopted)

@@ -115,30 +115,56 @@ def ed4():
 
 
 def ed5():
+    """MODEL v3.1.0 (B3): (a) P(TL within AR) by population-rank quintile Q1-Q5 (Wilson 95%); (b) the 2050 population
+    at which P(TL LoE AR <= 1) = 50% (univariate logistic, bootstrap 95% interval) with the draws as a rug, or, when
+    no draw (or every draw) has TL within AR, the TL LoE against the 2050 population. The Firth models stay in the
+    data (pathways/montecarlo_conditional_tl.csv)."""
     j = D.js('pathways/montecarlo_conditional_tl.json')
-    c = D.csv('pathways/montecarlo_conditional_tl.csv')
+    d = D.csv('pathways/montecarlo_draws.csv')
+    thr = j['population_threshold']['adopted']
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 65))
     q = pd.DataFrame(j['by_population_quintile'])
-    ax[0].errorbar(q['quintile'], q['p_within_AR'], yerr=[(q['p_within_AR'] - q['wilson_lo']).clip(lower=0), (q['wilson_hi'] - q['p_within_AR']).clip(lower=0)],
+    x = np.arange(len(q))
+    ax[0].errorbar(x, q['p_within_AR'], yerr=[(q['p_within_AR'] - q['wilson_lo']).clip(lower=0),
+                                              (q['wilson_hi'] - q['p_within_AR']).clip(lower=0)],
                    fmt='o', color=S.TL, capsize=2)
-    ax[0].set_xlabel('Population-rank quintile')
+    ax[0].set_xticks(x)
+    ax[0].set_xticklabels([f'Q{int(k)}' for k in q['quintile']])
+    ax[0].set_xlabel('Population-rank quintile (Q1 lowest)')
     ax[0].set_ylabel('P(TL cumulative LoE AR <= 1)')
     ax[0].set_ylim(-0.02, 1.02)
     P.panel(ax[0], 'a', 'By population quintile (Wilson 95%)')
-    m = c[(c['model'] == 'multivariable') & (c['term'] != 'intercept')]
-    y = np.arange(len(m))
-    ax[1].errorbar(m['odds_ratio_per_sd'], y, xerr=[(m['odds_ratio_per_sd'] - m['or_lo']).clip(lower=0), (m['or_hi'] - m['odds_ratio_per_sd']).clip(lower=0)],
-                   fmt='o', color=S.TL, capsize=2)
-    ax[1].axvline(1, color=S.INK, lw=S.LW_THIN)
-    ax[1].set_xscale('log')
-    ax[1].set_yticks(y)
-    ax[1].set_yticklabels(m['term'], fontsize=S.FONT_SMALL)
-    ax[1].set_xlabel('Odds ratio per SD (Firth, profile 95%)')
-    P.panel(ax[1], 'b', 'Multivariable model')
+    pop = d['P_NZ_2050'].to_numpy(float) / 1e6
+    if thr['estimable']:
+        cv = thr['curve']
+        ax[1].plot(np.asarray(cv['P_NZ_2050']) / 1e6, cv['probability'], color=S.TL, lw=S.LW_BOLD)
+        within = (d['TL_LoE_AR'].to_numpy(float) <= 1.0)
+        ax[1].plot(pop[within], np.full(within.sum(), 1.02), '|', color=S.TL, ms=5, alpha=0.4)
+        ax[1].plot(pop[~within], np.full((~within).sum(), -0.02), '|', color=S.MUTED, ms=5, alpha=0.4)
+        lo, hi = thr['ci95']
+        ax[1].axvspan(lo / 1e6, hi / 1e6, color=S.TL, alpha=0.12, lw=0)
+        ax[1].axvline(thr['threshold_P_NZ_2050'] / 1e6, color=S.TL, lw=S.LW_THIN, ls='--')
+        ax[1].axhline(0.5, color=S.INK, lw=S.LW_THIN, ls=':')
+        ax[1].set_ylabel('P(TL cumulative LoE AR <= 1)')
+        ax[1].set_ylim(-0.06, 1.06)
+        note_b = (f"threshold {thr['threshold_P_NZ_2050'] / 1e6:.2f} M (95% CI {lo / 1e6:.2f}-{hi / 1e6:.2f} M; "
+                  f"{thr['method']}, {thr['bootstrap_resamples']} resamples)")
+        P.panel(ax[1], 'b', 'Population threshold (P = 50%)')
+    else:
+        ax[1].scatter(pop, d['TL_LoE_AR'], s=3, color=S.TL, alpha=0.35, lw=0)
+        ax[1].axhline(1.0, **{k: val for k, val in S.BOUNDARY['AR'].items() if k != 'label'}, gid='boundary')
+        ax[1].set_ylabel('TL cumulative LoE AR 2026-2050')
+        ax[1].set_ylim(bottom=0)
+        note_b = thr['note']
+        P.panel(ax[1], 'b', 'TL LoE against the 2050 population (no threshold)')
+    ax[1].set_xlabel('New Zealand population 2050 (million), Monte Carlo draws')
     fig.tight_layout()
+    inst = j['population_threshold'].get('instant_rule', {})
+    note_inst = (f" Instant accounting rule (sensitivity): P(within AR) = {inst['p_within_AR']:.3f}"
+                 + (f", threshold {inst['threshold_P_NZ_2050'] / 1e6:.2f} M (95% CI {inst['ci95'][0] / 1e6:.2f}-"
+                    f"{inst['ci95'][1] / 1e6:.2f} M)." if inst.get('estimable') else '.') if inst else '')
     _save(fig, 'ED5_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
-                                          f"{j['wilson_95'][1]:.3f}); events per variable "
-                                          f"{j['events_per_variable_multivariable']:.0f}. {j['caveat']}")
+                                          f"{j['wilson_95'][1]:.3f}); (b) {note_b}.{note_inst}")
 
 
 def ed6():

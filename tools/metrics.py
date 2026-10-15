@@ -126,10 +126,13 @@ def projection_metrics(settings=None):
     S = B['df_forecast']['PopTotal_50th'].values / B['households_forecast']['50th']
     return {
         'floor_area_Mm2': float(R['total'][1:].sum() / 1e6),
-        'carbon_kt': float(B['carbon_total_typ'].iloc[1:].sum().sum() / 1e6),
+        'carbon_kt': float(B['carbon_total'].iloc[1:].sum() / 1e6),
+        'legacy_kt': float(B['carbon_legacy'].iloc[1:].sum().sum() / 1e6),
+        'soil_after_2050_kt': float(B['soil_after_2050'] / 1e6),
         'upfront_kt': float(B['_upfront'] + B['_soil'] / 1e6),
         'soil_carbon_loss_kt': float(B['_soil'] / 1e6),
-        'carbon_excl_soil_kt': float(B['carbon_total_typ'].iloc[1:].sum().sum() / 1e6 - B['_soil'] / 1e6),
+        'carbon_excl_soil_kt': float((B['carbon_total'].iloc[1:].sum() - B['carbon_legacy']['soil'].iloc[1:].sum()
+                                      - B['_soil']) / 1e6),
         'step_2025_2026_pct': float(100 * (R['total'][1] / B['hist_built_gfa'].loc[2025] - 1)),
         'S_2050': float(S[-1]),
         'retirement_village_floor_area_Mm2_out_of_scope': (float(B['rv_floor_area']['projected'][1:].sum() / 1e6)

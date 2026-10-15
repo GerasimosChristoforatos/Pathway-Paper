@@ -181,6 +181,12 @@ def build_setup(settings=None):
     bf = pd.read_csv(projection.FILE_FACTORS_BUILDING)
     su['soc'] = tf['SOC_avg'].values
     su['soil_on_repl'] = projection.SOIL_ON_REPLACEMENT
+    # MODEL v3.1.0 emissions accounting (projection.ACCOUNTING): soil oxidised over SOIL_SPREAD years; the legacy
+    # soil tails are fixed (observed history, soil factors not drawn); the legacy B follows the draw's case-study
+    # event profiles (bootstrap extras below), on the central history, as the AR base of each draw does
+    su['soil_spread'] = B['SOIL_SPREAD']
+    su['legacy_soil'] = None if B['LEGACY'] is None else np.asarray(B['LEGACY']['soil'], float)
+    su['legacy_b_central'] = None if B['LEGACY'] is None else np.asarray(B['LEGACY']['b'], float)
     su['emb_central'] = tf['embodied_materials'].values
     mf = pd.read_csv(projection.FILE_FACTORS_MATERIAL)
     up = (mf[mf['Stage'].isin(['A1-A3', 'A4-A5'])].groupby('Typology')['kgCO2e_per_m2'].sum())
@@ -212,17 +218,22 @@ def build_setup(settings=None):
         ev = pd.read_csv(projection.BF.OUT_EVENTS_BLD)
         ev = ev[ev['Timing'] == projection.EVENT_TIMING]
         n = len(fy)
-        K, A = {}, {}
+        K, A, LB = {}, {}, {}
+        typ_of = bf.set_index('id')['Typology']
+        gh = B['hist_built_typ_gfa']
         for i in bf['id']:
             p = ev[ev['id'] == i].reset_index(drop=True)
             if p.empty:
-                K[i], A[i] = np.zeros(n * n), np.zeros(AGE_MAX + 1)
+                K[i], A[i], LB[i] = np.zeros(n * n), np.zeros(AGE_MAX + 1), np.zeros(n)
                 continue
             f = projection.EV.row_factors(p, fy, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45)
             K[i] = projection.EV.kernel(p, fy, f).ravel()
             A[i] = projection.EV.age_profile(p, AGE_MAX).values
+            LB[i] = (projection.INV.legacy_b(gh[typ_of[i]], p, f, fy, projection.B_SCOPE_START)
+                     if su['legacy_soil'] is not None else np.zeros(n))
         extras = dict(kernel=pd.DataFrame.from_dict(K, orient='index'),
-                      age=pd.DataFrame.from_dict(A, orient='index'))
+                      age=pd.DataFrame.from_dict(A, orient='index'),
+                      legacy_b=pd.DataFrame.from_dict(LB, orient='index'))
         su['K_central'] = B['EVENTS']
         su['age_central'] = np.array([projection.EV.age_profile(B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t],
                                                           AGE_MAX).values for t in typ])
@@ -232,6 +243,7 @@ def build_setup(settings=None):
     if su['tr']:
         su['boot_K'] = ext['kernel'].reshape(N_BOOT, len(typ), len(fy), len(fy))
         su['boot_age'] = ext['age']                                             # (N_BOOT, typ, ages)
+        su['boot_legacy_b'] = ext['legacy_b'].sum(axis=1)                       # (N_BOOT, years), all typologies
     return su
 
 
@@ -374,11 +386,14 @@ def project(su, p, full=False):
         emb, upf = su['emb_central'], su['up_central']
         red = su['red_central'] if su['decarb'] else None
         events = su['K_central'] if su['tr'] else None
+        leg_b = su['legacy_b_central']
     else:
         kc = min(int(p['carbon'] * N_BOOT), N_BOOT - 1)
         emb, upf = su['boot_emb'][kc], su['boot_up'][kc]
         red = su['boot_red'][kc] if su['decarb'] else None
         events = {t: su['boot_K'][kc, j] for j, t in enumerate(typ)} if su['tr'] else None
+        leg_b = su['boot_legacy_b'][kc] if su['legacy_soil'] is not None else None
+    legacy = None if su['legacy_soil'] is None else dict(soil=su['legacy_soil'], b=leg_b)
     base = upf if su['tr'] else emb                   # construction-year materials (projection.ACCOUNTING)
     if red is None:                                   # 2025 factors held
         I = {t: base[j] + su['soc'][j] for j, t in enumerate(typ)}
@@ -392,7 +407,7 @@ def project(su, p, full=False):
         dev, dv['rho'], su['rv_share'], shares, size, su['olf'], I, U,
         join=join, join_redev=redev, soil={t: su['soc'][j] for j, t in enumerate(typ)},
         gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
-        soil_on_replacement=su['soil_on_repl'], events=events)
+        soil_on_replacement=su['soil_on_repl'], events=events, soil_spread=su['soil_spread'], legacy=legacy)
     E = fwd()
     E_nojoin, join, ji = E, None, None
     if su['join_mode'] == 'market_excess':
@@ -412,7 +427,8 @@ def project(su, p, full=False):
                             rv_share=su['rv_share'], shares=shares, size=size, olf=su['olf'], intensity=I,
                             intensity_upfront=U, soil={t: su['soc'][j] for j, t in enumerate(typ)},
                             gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
-                            soil_on_replacement=su['soil_on_repl'], events=events),
+                            soil_on_replacement=su['soil_on_repl'], events=events,
+                            soil_spread=su['soil_spread'], legacy=legacy),
             E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']))
     return out
 
@@ -434,7 +450,7 @@ def validate(su):
     R = B['results']['50th']
     typ = su['typ']
     up_int = {t: B['U_INT'][t] for t in typ}
-    ref = dict(gfa=R['total'], carbon=B['carbon_total_typ'].sum(axis=1).values,
+    ref = dict(gfa=R['total'], carbon=B['carbon_total'].values,
                upfront=(sum(B['evol_typ_total'][t].values * (up_int[t] - B['SOIL_INTENSITY'][t]) for t in typ)
                         + np.insert(B['flow_annual']['SOIL'].values, 0, 0.0)),
                rv_units=-B['stock_fwd']['50th']['rv'], hh=B['households_forecast']['50th'],

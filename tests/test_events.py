@@ -27,7 +27,7 @@ import Building_factors as BF  # noqa: E402
 FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_pb_v2.json')))
 EV = pd.read_csv(BF.FILE_EVENTS).fillna({'event_type': '', 'event_path': ''})
 ITEMS = pd.read_csv(BF.FILE_ITEMS)
-WHOLE_LIFE = dict(ACCOUNTING='whole_life_at_construction', DECARB_A45='held')
+WHOLE_LIFE = dict(LIFE_CYCLE_TIMING='whole_life_at_construction', ACCOUNTING='instant', DECARB_A45='held')
 # the Reference of the captured anchors: the 2026 overbuild never absorbed (MODEL v2.1)
 LEGACY = dict(OVERBUILD_ABSORPTION_END=None)
 

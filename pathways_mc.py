@@ -87,6 +87,11 @@ def bootstrap_factors(su):
     return ext['a13'][:, :, 0], ext['red13'], ext['a45'][:, :, 0]
 
 
+def validation_rule():
+    """The emissions accounting rule of this run (projection.ACCOUNTING)."""
+    return PW.validation.projection.ACCOUNTING
+
+
 def draw_context(ctx, su, d, a13, red13, a45):
     """The pathway context of one draw: the deterministic Reference context with the draw's inputs."""
     typ = su['typ']
@@ -195,6 +200,7 @@ def insights(df):
     Z = (X - mu) / sd
     events = int(min(yy.sum(), len(yy) - yy.sum()))           # the rarer outcome class
     cond = []
+    estimable = 0.0 < yy.sum() < len(yy)                      # MODEL v3.1.0: a single outcome class -> no model
 
     def add_model(model, cols):
         try:
@@ -214,10 +220,16 @@ def insights(df):
                              mcfadden_r2=float(fr['mcfadden_r2'])))
         return fr
 
-    for k, c in enumerate(INPUTS):
-        add_model(f'univariable: {c}', [k])
-    fr_all = add_model('multivariable', list(range(len(INPUTS))))
-    eta = np.column_stack([np.ones(len(yy)), Z]) @ fr_all['beta']
+    if estimable:
+        for k, c in enumerate(INPUTS):
+            add_model(f'univariable: {c}', [k])
+        fr_all = add_model('multivariable', list(range(len(INPUTS))))
+        eta = np.column_stack([np.ones(len(yy)), Z]) @ fr_all['beta']
+    else:
+        eta = None
+        cond.append(dict(model='not estimable', term='', mle_exists=False, events_rarer_class=events,
+                         mle_note=('no draw has TL within AR' if yy.sum() == 0 else 'every draw has TL within AR')
+                         + ': the logistic models are not estimable (single outcome class)'))
     z = df[N.identifier('z_pop')].to_numpy(float)
     edges = np.quantile(z, np.linspace(0, 1, 6))
     quint = []
@@ -236,7 +248,10 @@ def insights(df):
     summary = dict(outcome='TL cumulative LoE AR 2026-2050 <= 1', n=n_all, within_AR=k_all,
                    p_within_AR=k_all / n_all, wilson_95=list(mcstats.wilson(k_all, n_all)),
                    events_rarer_class=events, events_per_variable_multivariable=events / len(INPUTS),
-                   auc_multivariable_firth=mcstats.auc(eta, yy.astype(bool)) if 0 < k_all < n_all else None,
+                   auc_multivariable_firth=mcstats.auc(eta, yy.astype(bool)) if estimable else None,
+                   models_estimable=bool(estimable),
+                   population_threshold={rule: population_threshold(df, col) for rule, col in
+                                         (('adopted', 'TL_LoE_AR'), ('instant_rule', 'TL_instant_rule_LoE_AR'))},
                    by_population_quintile=quint, exceeding_draws=exceed, inputs_standardised=True,
                    method='Firth (1993) penalised-likelihood logistic regression with profile penalised-likelihood '
                           '95% intervals (Heinze & Schemper 2002), odds ratio per standard deviation of each input; '
@@ -247,6 +262,57 @@ def insights(df):
                           'events per variable (Peduzzi et al. 1996, J Clin Epidemiol 49, 1373) the multivariable '
                           'odds ratios are indicative only')
     return pd.DataFrame(imp), pd.DataFrame(fits), pd.DataFrame(cond), summary
+
+
+THRESHOLD_POINTS = 101
+
+
+def population_threshold(df, col):
+    """MODEL v3.1.0 (ED5b): the 2050 New Zealand population at which P(TL LoE AR <= 1) = 50%, from a univariate
+    logistic regression of the outcome on the draw's 2050 population (maximum likelihood; Firth's penalised
+    likelihood where the MLE does not exist), with a percentile bootstrap 95% interval (resampled draws; the
+    insight bootstrap's stream). If no draw (or every draw) has TL within AR the threshold is not estimable and that
+    is reported instead."""
+    x = df['P_NZ_2050'].to_numpy(float)
+    y = (df[col].to_numpy(float) <= 1.0).astype(float)
+    k, n = int(y.sum()), len(y)
+    base = dict(outcome=f'{col} <= 1', n=n, within_AR=k, p_within_AR=k / n)
+    if k == 0 or k == n:
+        return dict(base, estimable=False, note=('no draw has TL within AR' if k == 0 else
+                                                 'every draw has TL within AR') + ': no population threshold exists in '
+                    'the sampled range; the LoE distribution against the 2050 population is shown instead')
+    mu, sd = float(x.mean()), float(x.std(ddof=1))
+
+    def fit(xx, yy):
+        z = ((xx - mu) / sd)[:, None]
+        try:
+            b = mcstats.logistic(z, yy)['beta']
+            how = 'maximum likelihood'
+        except mcstats.Separation:
+            b = mcstats.firth(z, yy)['beta']
+            how = 'Firth penalised likelihood (MLE does not exist)'
+        return b, how
+
+    b, how = fit(x, y)
+    thr = mu + sd * (-b[0] / b[1])
+    rng = np.random.default_rng(BOOT_SEED + 7)
+    boots, skipped = [], 0
+    for _ in range(BOOT_B):
+        i = rng.integers(0, n, n)
+        if y[i].min() == y[i].max():
+            skipped += 1
+            continue
+        bb, _ = fit(x[i], y[i])
+        boots.append(mu + sd * (-bb[0] / bb[1]))
+    lo, hi = (np.percentile(boots, [2.5, 97.5]) if boots else (np.nan, np.nan))
+    grid = np.linspace(x.min(), x.max(), THRESHOLD_POINTS)
+    p = 1.0 / (1.0 + np.exp(-(b[0] + b[1] * (grid - mu) / sd)))
+    return dict(base, estimable=True, method=how, beta_per_sd=[float(v) for v in b], population_mean=mu,
+                population_sd=sd, threshold_P_NZ_2050=float(thr), ci95=[float(lo), float(hi)],
+                bootstrap_resamples=BOOT_B, bootstrap_single_class_skipped=skipped,
+                curve=dict(P_NZ_2050=[float(v) for v in grid], probability=[float(v) for v in p]),
+                direction=('P(within AR) falls as the 2050 population rises' if b[1] < 0 else
+                           'P(within AR) rises with the 2050 population'))
 
 
 def reoccupation_counts(df):
@@ -323,11 +389,19 @@ def main():
                         f'{lab_}_release_constraint_binding_years': int(ro['release_binds'].sum()),
                         f'{lab_}_dwellings_built_min_2027_2050': float(built[2:].min())})
         row = dict(draw=j, **{N.identifier(k): float(X[j, i]) for i, k in enumerate(MC.PARAMS)},
+                   P_NZ_2050=float(np.asarray(cd['pop'], float)[-1]),
                    carbon_index=carbon_index(o, I_c, gfa_c),
                    B_AR_kt_2026_2050=float(b['B_AR_kt_2026_2050']), B_AtP_kt_2026_2050=float(b['B_AtP_kt_2026_2050']),
                    TL3_draw_max_binds=bool(np.any((S_d + gap)[late] > params['L3']['tl'])),
                    overbuild_cap_binding_years=int(runs['P5']['info']['payback_cap_binds'].sum()),
                    **reo)
+        # MODEL v3.1.0: TL under ACCOUNTING 'instant' in the same draw (soil at conversion, no legacy) against the
+        # draw's instant-rule AR budget (boundaries.py), for the A1 comparison of the rules
+        fi_i = dict(cd['fwd_inputs'], soil_spread=None, legacy=None)
+        Ei = PW.run(dict(cd, fwd_inputs=fi_i), params, LV.tl_levels(LV.TL_COMPONENTS))['E']
+        ci = float(np.asarray(Ei['carbon'], float)[WINDOW].sum()) / M6
+        row.update(TL_instant_rule_carbon_kt=ci, B_AR_instant_rule_kt_2026_2050=float(b['B_AR_instant_kt_2026_2050']),
+                   TL_instant_rule_LoE_AR=ci / float(b['B_AR_instant_kt_2026_2050']))
         for r, E in [('REF', o)] + [(k, R['E']) for k, R in runs.items()]:
             carbon = np.asarray(E['carbon'], float)
             annual[r][j] = carbon
@@ -360,6 +434,9 @@ def main():
                                                    for p in PCT},
                             carbon_kt_mean=float(annual[r][:, i].mean() / M6)))
     rules = dict(TL3_draw_max_binds_draws=int(df['TL3_draw_max_binds'].sum()), n_draws=n,
+                 accounting=validation_rule(),
+                 probability_TL_LoE_AR_at_most_1=float(np.mean(df['TL_LoE_AR'] <= 1.0)),
+                 probability_TL_LoE_AR_at_most_1_instant_rule=float(np.mean(df['TL_instant_rule_LoE_AR'] <= 1.0)),
                  overbuild_cap_binds_draws_P5=int((df['overbuild_cap_binding_years'] > 0).sum()),
                  tl_le_p5_every_draw=True, reoccupation=reoccupation_counts(df))
     import json
@@ -389,7 +466,8 @@ def run_insights():
     with open(layout.writing(layout.data('pathways/montecarlo_conditional_tl.json', frozen=False)), 'w') as f:
         json.dump(cond_summary, f, indent=1)
     print(imp[imp['output'] == 'LoE_AR'][['run', 'input', 'src', 'src_r2', 'prcc', 'prcc_lo', 'prcc_hi']].to_string(index=False))
-    print(cond[['model', 'term', 'odds_ratio_per_sd', 'or_lo', 'or_hi', 'mle_exists', 'events_per_variable']].to_string(index=False))
+    print(cond.reindex(columns=['model', 'term', 'odds_ratio_per_sd', 'or_lo', 'or_hi', 'mle_exists',
+                                'events_per_variable']).to_string(index=False))
     print(json.dumps({k: v for k, v in cond_summary.items() if k not in ('method',)}, indent=1))
     print(f'pathways_mc: insight analyses in {time.time() - t1:.0f} s')
 

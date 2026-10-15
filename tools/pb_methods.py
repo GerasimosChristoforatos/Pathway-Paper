@@ -97,7 +97,7 @@ def lines():
          f"| SOS | {c['SOS_kg']:.3g} kg CO2-eq/yr | {c['pair_label']}; ESM2 (see source check) |",
          f"| I_glob | {c['I_glob_kg']:.3g} kg CO2-eq/yr | Bjørn & Hauschild 2015 ESM2 B30 (Laurent et al. 2013, 2010) |",
          f"| Ī_sec,base {w0}-{w1} | {c['I_sec_base_kg'] / 1e6:,.1f} kt/yr | this model, history on the projection's "
-         'soil convention (boundaries.historical_emissions) |',
+         'accounting rule (boundaries.window_base; inventory.py) |',
          f"| base year b | {b} | latest year with ≥ {100 * s['WDI_COVERAGE_MIN']:.0f}% of WDI-economy population "
          f"reporting {s['GDP_MEASURE']} |",
          f"| α (b, PPP) | {c['alpha']:.4f} | Hjalsted SI Eq. S1; WDI (release 2026-07-13) |",
@@ -118,10 +118,18 @@ def lines():
     for y, h in r['history'].items():
         L.append(f"| {y} | {h['I_kt']:,.1f} | {h['soil_share']:.3f} | {h['rate_pct']:.3f} | {h['rate_source']} |")
     L += ['', f"Mean {w0}-{w1}: {c['I_sec_base_kg'] / 1e6:,.1f} kt/yr"
-          + (f", of which maintenance (B2, B4) {100 * c['I_sec_base_b_share']:.2f}% (events within {w0}-{w1} of "
-             f"the buildings built in it); wider maintenance scope (B2, B4 events of all cohorts built since 1992): "
-             f"{c['I_sec_base_wider_scope_kg'] / 1e6:,.1f} kt/yr"
-             if c.get('I_sec_base_b_share') is not None else '') + f". With soil on all floor area: {c['I_sec_base_soil_on_all_kg'] / 1e6:,.1f} kt/yr. Note: with the long-run net replacement "
+          + (f" on the accounting rule '{c['accounting']}': upfront A1-A5 {c['I_sec_base_split']['upfront_kg'] / 1e6:,.1f}, "
+             f"soil {c['I_sec_base_split']['soil_kg'] / 1e6:,.1f} and maintenance (B2, B4) "
+             f"{c['I_sec_base_split']['b2b4_kg'] / 1e6:,.1f} kt/yr ("
+             + ('soil: oxidation within the window of every conversion since 1992, 20 years each; B2, B4: events '
+                f"within the window of every cohort since 1992; the soil tails of a {w0} start need conversions from "
+                f"{c['soil_tail_coverage']['2016_2025']['first_conversion_needed']}, inside the history in scope"
+                if c['accounting'] == 'inventory' else
+                'soil at conversion; B2, B4: events within the window of the buildings built in it'
+                if c['accounting'] == 'instant' else
+                'soil: oxidation within the window of the window\'s conversions; B2, B4: events within the window '
+                'of the buildings built in it') + ')'
+             if c.get('I_sec_base_split') is not None else '') + f". With soil on all floor area: {c['I_sec_base_soil_on_all_kg'] / 1e6:,.1f} kt/yr. Note: with the long-run net replacement "
           f"rate for 2024-25: {c['I_sec_base_long_run_2024_25_kg'] / 1e6:,.1f} kt/yr; {w1 - 4}-{w1} (5 yr): "
           f"{c['I_sec_base_5yr_kg'] / 1e6:,.1f} kt/yr.", '',
           '## α validation (Hjalsted et al. 2021 SI: α = 0.243 for 2017; world GDP per capita 1.07E+04 USD)', '',

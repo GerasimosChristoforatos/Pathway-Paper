@@ -23,6 +23,8 @@ from scipy.interpolate import PchipInterpolator
 
 import engine
 import events as EV
+import inventory as INV
+import bands as BANDS
 import layout
 import naming as N
 import figsource
@@ -548,22 +550,34 @@ DECARB_ITEM_CASE = 'central'        # 'horup_item' only: 'central' or a sensitiv
 # progress e^(-0.01 (t - 2025)), Resch et al. (2021) Table 1 (Building_factors.generic_path);
 # sensitivities 'held' (2025 factors) and 'item' (each item's own S4 path).
 DECARB_A45 = 'held' if FROZEN_RUN else 'resch'
-# ACCOUNTING (author decision, baseline-pb-v3):
+# LIFE_CYCLE_TIMING (author decision, baseline-pb-v3; named ACCOUNTING before MODEL v3.1.0):
 #   'time_resolved' (adopted): each year's construction is booked with its upfront
-#       carbon (A1-A5 + soil); replacements and repaints (B2, B4) are booked in the
-#       calendar year they occur (events.py; EVENT_TIMING), within 2026-2050 for the
-#       buildings built from 2026; later events and all end of life (C1-C4) are
-#       committed emissions after 2050, reported separately as a range.
+#       carbon (A1-A5); replacements and repaints (B2, B4) are booked in the
+#       calendar year they occur (events.py; EVENT_TIMING); later events and all end
+#       of life (C1-C4) are committed emissions after 2050, reported separately as a range.
 #   'whole_life_at_construction': every stage booked in the construction year (v1-v2);
-#       with DECARB_A45 'held' it reproduces baseline-pb-v2 exactly (regression).
-ACCOUNTING = 'whole_life_at_construction' if FROZEN_RUN else 'time_resolved'
+#       with DECARB_A45 'held' it reproduces baseline-pb-v2 exactly (regression; with ACCOUNTING 'instant').
+LIFE_CYCLE_TIMING = 'whole_life_at_construction' if FROZEN_RUN else 'time_resolved'
 EVENT_TIMING = 'n+1'       # event k at k L / (n + 1); 'n': k L / n (sensitivity)
-# Scope of B events (author decision): those of the buildings built in the window
-#   only (projection: from 2026; AR base: from the base window's first year). The
-#   wider scope, which adds the events of every cohort built since B_SCOPE_START
-#   (upkeep of the post-1992 stock) in base and projection alike, is a PB
-#   sensitivity row (boundaries.legacy_events, boundaries.window_base(scope='since_1992')).
-B_SCOPE_START = 1992
+# ACCOUNTING (MODEL v3.1.0; author decision; inventory.py): which emissions a window counts, identically for the
+#   acquired-rights base window (boundaries.py) and the projection 2026-2050 (every run and Monte Carlo draw).
+#   Scope: residential construction since B_SCOPE_START (1992) on both sides; pre-1992 stock out of scope.
+#   'inventory' (adopted): every emission occurring in the window from all cohorts since 1992: upfront A1-A5 of
+#       the window's construction, soil oxidised linearly over SOIL_OXIDATION_YEARS (IPCC 2006, Vol. 4, Ch. 2,
+#       D = 20 yr) incl. the tails of earlier conversions, and B2/B4 of every cohort since 1992. Projection:
+#       the pre-2026 activity is the legacy (soil tails of 2007-2025 conversions; B of the 1992-2025 cohorts),
+#       identical in every run; the oxidation of 2026-2050 conversions after 2050 is committed ('Soil, after 2050').
+#   'instant': soil at conversion, B of each window's own cohorts (MODEL v3.0.0); sensitivity.
+#   'cohort_window': soil oxidised over 20 years but only each window's own cohorts, both sides; sensitivity
+#       (deterministic only; rejected: the 10-yr base and the 25-yr projection windows capture different shares
+#       of slow-release emissions).
+# PATHWAY_ACCOUNTING (environment) runs any step under another rule (the 'instant' Monte Carlo share; tests)
+ACCOUNTING = 'instant' if FROZEN_RUN else os.environ.get('PATHWAY_ACCOUNTING', 'inventory')
+SOIL_OXIDATION_YEARS = INV.SOIL_OXIDATION_YEARS
+B_SCOPE_START = INV.B_SCOPE_START
+# history after the last census (2024-2025) at the last census interval's net replacement rate ('recent', adopted)
+# or the long-run rate ('long_run'): the soil-bearing share of the history (legacy soil tails and the AR base)
+HIST_RATE_AFTER_LAST_CENSUS = 'recent'
 
 
 def load_decarb_a45(mode, a45, typ_names, materials, years):
@@ -1263,9 +1277,12 @@ def main():
     # ---- material decarbonisation of A1-A3 (DECARB_MODE) ----
     # T_INT / U_INT: whole-life and upfront intensity incl. soil, by typology; scalars
     # (2025 factors held) for 'none', arrays over forecast_years otherwise.
-    if ACCOUNTING not in ('time_resolved', 'whole_life_at_construction'):
-        raise ValueError(f"Unknown ACCOUNTING '{ACCOUNTING}'.")
-    TIME_RESOLVED = ACCOUNTING == 'time_resolved'
+    if LIFE_CYCLE_TIMING not in ('time_resolved', 'whole_life_at_construction'):
+        raise ValueError(f"Unknown LIFE_CYCLE_TIMING '{LIFE_CYCLE_TIMING}'.")
+    TIME_RESOLVED = LIFE_CYCLE_TIMING == 'time_resolved'
+    INV.check_rule(ACCOUNTING)
+    if ACCOUNTING != 'instant' and not TIME_RESOLVED:
+        raise ValueError(f"ACCOUNTING '{ACCOUNTING}' needs LIFE_CYCLE_TIMING 'time_resolved' (B in the year it occurs).")
     MAT_STAGE = {stg: (mat_scope[mat_scope['Stage'] == stg]
                        .pivot_table(index='Material', columns='Typology', values='kgCO2e_per_m2', aggfunc='sum')
                        .reindex(index=MATERIALS, columns=typ_names).fillna(0.0)) for stg in STAGES_IN_SCOPE}
@@ -1453,6 +1470,27 @@ def main():
     # 2025 consents are converted with the completion rate.
     real_2025_total = float(hist_gfa_c.loc[2025]) * COMPLETION_RATE
 
+    # ---- MODEL v3.1.0 emissions accounting (ACCOUNTING; inventory.py) ----
+    # the soil lost on land converted in each history year 1992-2025 (built basis), the same series as the AR base
+    # of boundaries.py; under 'inventory' its 20-year tails into 2026-2044 and the replacements / repaints of the
+    # 1992-2025 cohorts in 2026-2050 are the legacy (identical in every run; on this run's decarbonisation paths)
+    hist_soil = INV.history_soil(hist_typ_gfa_c * COMPLETION_RATE, hist_total_units_c * COMPLETION_RATE,
+                                 hist_rv_share, stock_cal['prev'], census_rates,
+                                 float(demolition_rate + unconsented_rate), _nr_window, SOIL_INTENSITY,
+                                 range(B_SCOPE_START, 2026), HIST_RATE_AFTER_LAST_CENSUS)
+    SOIL_SPREAD = SOIL_OXIDATION_YEARS if INV.spreads_soil(ACCOUNTING) else None
+    accounting_rule = ACCOUNTING                       # kept in the returned state (boundaries.rule_of)
+    LEGACY = None
+    if INV.has_legacy(ACCOUNTING):
+        _gh = hist_typ_gfa_c * COMPLETION_RATE
+        _lb_typ = {}
+        for t in typ_names:
+            _p = EV_PROFILE[EV_PROFILE['Typology'] == t].reset_index(drop=True)
+            _f = EV.row_factors(_p, forecast_years, DECARB_MODE, DECARB_ITEM_CASE, DECARB_A45)
+            _lb_typ[t] = INV.legacy_b(_gh[t], _p, _f, forecast_years, B_SCOPE_START)
+        LEGACY = dict(soil=INV.legacy_soil(hist_soil['soil_kg'], forecast_years, SOIL_OXIDATION_YEARS, B_SCOPE_START),
+                      b=sum(_lb_typ[t] for t in typ_names), b_typ=_lb_typ)
+
     # Everything that does not depend on the population path (engine.forward).
     fwd_inputs = dict(v=v_forward, rate_demol=demolition_rate, rate_unc=unc_path,
                       dev_2025=(other_dev_2025 if _join_mode == 'carried_deviation' else 0.0),
@@ -1460,7 +1498,8 @@ def main():
                       shares=evolving_gfa_shares, size=size_ref, olf=OLF_USED,
                       intensity=T_INT, intensity_upfront=U_INT,
                       soil=SOIL_INTENSITY, soil_on_replacement=SOIL_ON_REPLACEMENT,
-                      gfa_fixed=({1: gfa_nowcast['total']} if gfa_nowcast else None), events=EVENTS)
+                      gfa_fixed=({1: gfa_nowcast['total']} if gfa_nowcast else None), events=EVENTS,
+                      soil_spread=SOIL_SPREAD, legacy=LEGACY)
     # NEAR-TERM MARKET EXCESS: 2026 building from observed consents (NOWCAST_METHOD)
     nowcast, join_info = None, {}
     if _join_mode == 'market_excess':
@@ -1664,8 +1703,15 @@ def main():
     for _f in (f_new, f_repl, f_join, f_rv, soil_frac):
         _f[0] = 1.0
 
+    def soil_emitted(df):
+        """Soil by year (DataFrame years x typology, conversion year) -> emitted in the window (ACCOUNTING;
+        oxidised over SOIL_OXIDATION_YEARS from 2026, the 2025 anchor dropped, or unchanged under 'instant')."""
+        if SOIL_SPREAD is None:
+            return df
+        return pd.DataFrame(INV.spread(df.values.T, SOIL_SPREAD)[0].T, index=df.index, columns=df.columns)
+
     def band_carbon(evol, frac):
-        return evol * _mat_df + evol.mul(frac, axis=0) * _soil_df
+        return evol * _mat_df + soil_emitted(evol.mul(frac, axis=0) * _soil_df)
 
     carbon_growth_typ = band_carbon(evol_typ_growth, f_new)
     carbon_hs_pos_typ = band_carbon(evol_typ_hs_pos, f_new)
@@ -1692,8 +1738,16 @@ def main():
     carbon_total_typ = pd.DataFrame(engine_out['50th']['carbon_t'].T, index=forecast_years,
                                     columns=typ_names)
     carbon_total_typ.loc[2025] = evol_typ_total.loc[2025] * intensity.loc[2025]   # observed anchor
+    # MODEL v3.1.0: carbon_total_typ is the new cohorts (2026-2050 construction) by typology; the legacy (pre-2026
+    # activity, ACCOUNTING 'inventory') has no typology; carbon_total = the window's carbon (every run's metric)
+    carbon_legacy = pd.DataFrame(dict(soil=_E50['legacy_soil'], b=_E50['legacy_b']), index=forecast_years)
+    carbon_legacy.loc[2025] = 0.0
+    carbon_total = carbon_total_typ.sum(axis=1) + carbon_legacy.sum(axis=1)
+    soil_after_2050 = float(_E50['soil_after'])                    # committed: 'Soil, after 2050' (kg)
+    if not np.allclose(carbon_total.values[1:], _E50['carbon'][1:], rtol=1e-12, atol=0):
+        raise SystemExit('projection: new cohorts + legacy differ from the engine carbon.')
 
-    tot_carbon_median = float(carbon_total_typ.iloc[1:].sum().sum() / 1e6)
+    tot_carbon_median = float((carbon_total_typ.iloc[1:].sum().sum() + carbon_legacy.iloc[1:].sum().sum()) / 1e6)
 
     # ==================================================================
     # VERIFICATION
@@ -1813,7 +1867,8 @@ def main():
     print("\n" + "=" * 80)
     print(" PROJECTION SUMMARY 2026-2050 (median population)")
     print("=" * 80)
-    print(f"   floor area {tot_built:.2f} Mm2 | carbon {carbon_total_typ.iloc[1:].sum().sum() / 1e6:,.1f} kt CO2e")
+    print(f"   floor area {tot_built:.2f} Mm2 | carbon {tot_carbon_median:,.1f} kt CO2e"
+          f" (of which legacy, pre-2026 activity, {carbon_legacy.iloc[1:].sum().sum() / 1e6:,.1f} kt)")
     print(f"   smaller households avoided by consolidation (not built): {tot_avoided_gfa:.2f} Mm2, "
           f"{tot_avoided_c:,.0f} kt CO2e ({100 * tot_avoided_gfa / tot_built:.1f}% of the floor area built)")
     # ---- by demand band (definition with retirement villages; naming.BANDS_WITH_RETIREMENT_VILLAGES) ----
@@ -1835,31 +1890,24 @@ def main():
     print(f"   {f'(consented equivalent, /{COMPLETION_RATE:.2f})':<58}{tg / COMPLETION_RATE:>12.2f}")
     print("=" * 80 + "\n")
 
-    # Demand bands (annual, 2026-2050; Fig2, Fig4, the band exports, D25/D26): one list, so the figures
-    # and the tests use the same numbers. IN SCOPE: retirement-village (RV) units are a
-    # constant share of every dwelling built (engine.forward), so instead of a negative RV
-    # band every band is scaled by (1 - RV share of the stack) = in-scope total / sum of the
-    # bands before RV; the bands then add up exactly to the typology total. Demolition and the
-    # calibrated residual are shown as one band (only their sum is identified).
-    def _band_list(get, total):
-        keys = (('growth',), ('hs_pos',), ('extra',), ('vac',), ('join',), ('repl',), ('wave',), ('absorbed',),
-                ('unc',), ('bev',))
-        spec = [(N.band_data_label(b), k, b) for b, k in zip(N.BANDS_IN_SCOPE, keys)]   # (label, keys, band id)
-        raw = [(lab, sum(np.asarray(get(k), float) for k in keys), col) for lab, keys, col in spec]
-        f = total / sum(v for _, v, _ in raw)
-        return [(lab, v * f, col) for lab, v, col in raw], total
-    _gfa_cols = dict(growth='Growth', hs_pos='HouseSplit_Pos', extra='Cons_ExtraSpace', vac='Cons_Vacancy',
-                     repl='Cons_Replacement', unc='Cons_Unconsented', wave='Cons_Wave', join='Cons_Join',
-                     absorbed='Cons_Absorbed')
-    _carb = dict(growth=carbon_growth_typ, hs_pos=carbon_hs_pos_typ, extra=carbon_extra_typ, vac=carbon_vac_typ,
-                 repl=carbon_repl_typ, unc=carbon_unc_typ, wave=carbon_wave_typ, join=carbon_join_typ,
-                 absorbed=carbon_absorbed_typ, bev=carbon_bev_typ)
+    # Demand bands (annual, 2026-2050; Fig1, Fig2, the band exports, D25/D26): bands.in_scope, the same band
+    # accounting as every pathway run (MODEL v3.1.0: gross positive bands, release bands, retirement villages removed
+    # by their exact share, soil per ACCOUNTING, maintenance and legacy carbon-only bands); [(label, values, band id)].
+    _ji50 = join_info.get('50th')
+    _exc50 = (np.asarray(_ji50['excess'], float) if _ji50 is not None and _ji50.get('mode') == 'surplus'
+              else np.asarray(_E50['join'], float))
+    _paid50 = (-np.asarray(_ji50['payback'], float) if _ji50 is not None and _ji50.get('mode') == 'surplus'
+               else np.zeros(len(forecast_years)))
+    _gross50 = engine.requirement(_E50)
+    if np.any(_gross50[2:] < -1e-9):
+        raise SystemExit('projection: negative gross building in the Reference (no carry-forward rule here).')
+    band_set = BANDS.in_scope(_E50, fwd_inputs, _exc50, _paid50, BANDS.no_flows(len(forecast_years)),
+                              float(unconsented_rate), typ_names)
     fig_bands = {
-        'gfa': _band_list(lambda k: (np.zeros(len(forecast_years) - 1) if k == 'bev' else
-                                     df_forecast[f'Ann_GFA_{_gfa_cols[k]}_50th'].values[1:] / 1e6),
-                          evol_typ_total.sum(axis=1).values[1:] / 1e6),
-        'carbon': _band_list(lambda k: _carb[k].sum(axis=1).values[1:] / 1e6,
-                             carbon_total_typ.sum(axis=1).values[1:] / 1e6)}
+        'gfa': ([(N.band_data_label(b), band_set[b][0][1:] / 1e6, b) for b in BANDS.IN_SCOPE],
+                evol_typ_total.sum(axis=1).values[1:] / 1e6),
+        'carbon': ([(N.band_data_label(b), band_set[b][1][1:] / 1e6, b) for b in BANDS.IN_SCOPE],
+                   carbon_total.values[1:] / 1e6)}
 
     # ==================================================================
     # MATERIAL FLOW ACCOUNTING  (median variant, 2026-2050)
@@ -1876,8 +1924,8 @@ def main():
         {m: (sum(evol_typ_total[t].values @ EVENTS_MAT[t][m] for t in typ_names if m in EVENTS_MAT[t])
              if EVENTS_MAT else 0.0) for m in MATERIALS}, index=forecast_years).astype(float)
     flow_annual = flow_annual + flow_annual_b
-    flow_annual['SOIL'] = sum(evol_typ_total[t].values * SOIL_INTENSITY[t] * soil_frac
-                              for t in typ_names)
+    flow_annual['SOIL'] = soil_emitted(pd.DataFrame({t: evol_typ_total[t].values * SOIL_INTENSITY[t] * soil_frac
+                                                     for t in typ_names}, index=forecast_years)).sum(axis=1)
     flow_annual = flow_annual.loc[plot_years]              # drop the 2025 anchor
     flow_annual_b = flow_annual_b.loc[plot_years]
     flow_cum = flow_annual.cumsum()
@@ -1896,13 +1944,14 @@ def main():
     dem_mat = pd.DataFrame(
         {lab: [sum((df[t].iloc[1:].sum() * MAT_BASE.loc[m, t]) if DECARB is None
                    else wsum(df[t].values, mat_int(m, t)) for t in typ_names)
-               for m in MATERIALS] + [sum((df[t].values * soil_fracs[lab])[1:].sum() * SOIL_INTENSITY[t]
-                                          for t in typ_names)]
+               for m in MATERIALS] + [float(soil_emitted(pd.DataFrame({t: df[t].values * soil_fracs[lab] * SOIL_INTENSITY[t]
+                                                                      for t in typ_names}, index=forecast_years))
+                                            .iloc[1:].sum().sum())]
          for lab, df in demand_bands.items()}, index=MATERIALS + ['SOIL'])
     if TIME_RESOLVED:
         dem_mat[N.band_data_label('maintenance')] = list(flow_annual_b.sum().reindex(MATERIALS).values) + [0.0]
 
-    check = abs(flow_annual.sum().sum() - carbon_total_typ.iloc[1:].sum().sum())
+    check = abs(flow_annual.sum().sum() - carbon_total_typ.iloc[1:].sum().sum())     # new cohorts (no legacy)
     print("\n" + "=" * 78)
     print(" MATERIAL FLOW ACCOUNTING 2026-2050  (median)")
     print("=" * 78)
@@ -1933,7 +1982,7 @@ def main():
                             stage_int.loc[stg, t] if (DECARB is None or stg not in _red)
                             else stage_int.loc[stg, t] - _red[stg][t]) for t in typ_names}
                   for stg in STAGES_IN_SCOPE}
-    _soil = sum((evol_typ_total[t].values * soil_frac)[1:].sum() * SOIL_INTENSITY[t] for t in typ_names)
+    _soil = float(flow_annual['SOIL'].sum())                     # soil emitted in the window (ACCOUNTING)
     print("\n BY LIFE-CYCLE STAGE  [kt CO2e, 2026-2050]  (soil = land-use change at construction)")
     _st_tot = 0.0
     _b_inwin = float(carbon_bev_typ.iloc[1:].sum().sum())
@@ -1950,7 +1999,8 @@ def main():
                     for t in typ_names) / 1e6)
     print(f"   upfront (A1-A5 + soil) {_upfront + _soil / 1e6:,.0f} kt | "
           f"later stages (B2,B4, C1-C4) {_st_tot - _upfront:,.0f} kt | "
-          f"[check] sum {_st_tot + _soil / 1e6:,.0f} vs {tot_carbon_median:,.0f}")
+          f"[check] sum {_st_tot + _soil / 1e6:,.0f} + legacy {carbon_legacy.iloc[1:].sum().sum() / 1e6:,.0f} "
+          f"vs {tot_carbon_median:,.0f}")
 
     # committed after 2050 (time-resolved): the 2026-2050 cohorts' later replacements and
     # repaints, and all their end of life (C1-C4, held at 2025). Range: upper = 2025
@@ -1967,7 +2017,8 @@ def main():
         _c = sum(evol_typ_total[t].values[1:].sum() * stage_int.loc['C1-C4', t] for t in typ_names)
         COMMITTED = dict(B_upper_kt=_b['upper'] / 1e6, B_lower_kt=_b['lower'] / 1e6, C_kt=_c / 1e6,
                          upper_kt=(_b['upper'] + _c) / 1e6, lower_kt=(_b['lower'] + _c) / 1e6,
-                         B_inwindow_kt=_b_inwin / 1e6)
+                         B_inwindow_kt=_b_inwin / 1e6,
+                         soil_after_2050_kt=soil_after_2050 / 1e6)   # reported separately from the B / C range
         print(f"   in-window replacements & repaints {_b_inwin / 1e6:,.0f} kt | committed after 2050: "
               f"B {_b['lower'] / 1e6:,.0f}-{_b['upper'] / 1e6:,.0f} kt + C1-C4 {_c / 1e6:,.0f} kt (2025 factors)")
 
@@ -1983,6 +2034,18 @@ def main():
     # written from it (export_figure_sources(), script run only), never from inside the computation.
     state = dict(locals())
     return state
+
+
+def legacy_soil_with(B, soil_int):
+    """The legacy soil (kg by forecast year; ACCOUNTING 'inventory') with other soil factors soil_int (kg/m2 by
+    typology), on the run's history (Sensitivity.py soil-order rows); zeros under the other rules."""
+    if B['LEGACY'] is None:
+        return np.zeros(len(B['forecast_years']))
+    hs = INV.history_soil(B['hist_typ_gfa_c'] * COMPLETION_RATE, B['hist_total_units_c'] * COMPLETION_RATE,
+                          B['hist_rv_share'], B['stock_cal']['prev'], B['census_rates'],
+                          float(B['demolition_rate'] + B['unconsented_rate']), B['_nr_window'], soil_int,
+                          range(B_SCOPE_START, 2026), HIST_RATE_AFTER_LAST_CENSUS)
+    return INV.legacy_soil(hs['soil_kg'], B['forecast_years'], SOIL_OXIDATION_YEARS, B_SCOPE_START)
 
 
 def wsum(values, k):
@@ -2005,7 +2068,7 @@ def export_results(B, path):
     bands = [(N.band_data_label(b), f'evol_typ_{k}', f'carbon_{k}_typ')
              for b, k in zip(N.BANDS_WITH_RETIREMENT_VILLAGES, keys)]
     typ = list(B['typ_names'])
-    et, ct = B['evol_typ_total'], B['carbon_total_typ']
+    et = B['evol_typ_total']
     stages = {s: float(sum(wsum(et[t].values, B['stage_path'][s][t]) for t in typ) / 1e6)
               for s in B['stage_int'].index}
     R = B['results']
@@ -2020,12 +2083,17 @@ def export_results(B, path):
         demand_bands=[dict(band=lab, gfa_Mm2=tot(B[g]) / 1e6, carbon_kt=tot(B[c]) / 1e6)
                       for lab, g, c in bands],
         material_kt={m: float(v / 1e6) for m, v in B['flow_annual'].sum().items()},
-        accounting=ACCOUNTING, decarb_a45=DECARB_A45, event_timing=EVENT_TIMING,
+        bands_in_scope=[dict(band=lab, gfa_Mm2=float(np.sum(gv)), carbon_kt=float(np.sum(cv)))
+                        for (lab, gv, _), (_, cv, _) in zip(B['fig_bands']['gfa'][0], B['fig_bands']['carbon'][0])],
+        legacy_kt=dict(soil=float(B['carbon_legacy']['soil'].iloc[f].sum() / 1e6),
+                       b2b4=float(B['carbon_legacy']['b'].iloc[f].sum() / 1e6)),
+        soil_after_2050_kt=float(B['soil_after_2050'] / 1e6),
+        accounting=ACCOUNTING, life_cycle_timing=LIFE_CYCLE_TIMING, decarb_a45=DECARB_A45, event_timing=EVENT_TIMING,
         **({'b_inwindow_kt': B['COMMITTED']['B_inwindow_kt'], 'committed': B['COMMITTED']}
            if B['COMMITTED'] else {}),
         annual=dict(years=[int(y) for y in B['forecast_years']],
                     gfa_Mm2=[float(v / 1e6) for v in R['50th']['total']],
-                    carbon_kt=[float(v / 1e6) for v in ct.sum(axis=1).values]),
+                    carbon_kt=[float(v / 1e6) for v in B['carbon_total'].values]),
         S_2050=float(B['df_forecast']['PopTotal_50th'].values[-1] / B['households_forecast']['50th'][-1]))
     with open(path, 'w') as fh:
         json.dump(N.keys(out), fh, indent=2)
@@ -2047,12 +2115,12 @@ def export_annual(B, path_annual, path_bands):
     the bands of the projection figures (fig_bands) under the labels of naming.BANDS_IN_SCOPE."""
     E = B['engine_out']['50th']
     fy = np.asarray(B['forecast_years'])
-    typ = list(B['typ_names'])
-    soil = (np.array([B['SOIL_INTENSITY'][t] for t in typ])[:, None] * E['gfa_t']).sum(axis=0) * E['soil_share']
+    soil = np.asarray(E['soil'], float)                 # soil emitted in the year (ACCOUNTING)
     maint = E['b_t'].sum(axis=0)
-    if not np.allclose(E['upfront'] + maint, E['carbon'], rtol=1e-12, atol=0):
-        raise SystemExit('export_annual: upfront + maintenance does not reproduce the annual carbon.')
-    if not np.allclose(E['carbon'][1:], B['carbon_total_typ'].sum(axis=1).values[1:], rtol=1e-12, atol=0):
+    leg_s, leg_b = np.asarray(E['legacy_soil'], float), np.asarray(E['legacy_b'], float)
+    if not np.allclose(E['upfront'] + maint + leg_s + leg_b, E['carbon'], rtol=1e-12, atol=0):
+        raise SystemExit('export_annual: upfront + maintenance + legacy does not reproduce the annual carbon.')
+    if not np.allclose(E['carbon'][1:], B['carbon_total'].values[1:], rtol=1e-12, atol=0):
         raise SystemExit('export_annual: engine carbon differs from the reported annual carbon.')
     hist = B['hist_built_gfa']
     rows = [dict(year=int(y), source='history', floor_area_Mm2=float(v) / 1e6) for y, v in hist.items() if y <= fy[0]]
@@ -2062,7 +2130,8 @@ def export_annual(B, path_annual, path_bands):
         rows.append(dict(year=int(y), source='projection', floor_area_Mm2=float(B['results']['50th']['total'][i]) / 1e6,
                          carbon_kt=float(E['carbon'][i]) / 1e6,
                          materials_construction_kt=float(E['upfront'][i] - soil[i]) / 1e6,
-                         soil_carbon_loss_kt=float(soil[i]) / 1e6, maintenance_kt=float(maint[i]) / 1e6))
+                         soil_carbon_loss_kt=float(soil[i]) / 1e6, maintenance_kt=float(maint[i]) / 1e6,
+                         legacy_soil_kt=float(leg_s[i]) / 1e6, legacy_b2b4_kt=float(leg_b[i]) / 1e6))
     N.columns(pd.DataFrame(rows)).to_csv(path_annual, index=False)
     (g_bands, _), (c_bands, _) = B['fig_bands']['gfa'], B['fig_bands']['carbon']
     if len(g_bands) != len(N.BANDS_IN_SCOPE) or len(c_bands) != len(N.BANDS_IN_SCOPE):
@@ -2135,17 +2204,22 @@ def export_stage_material(B, path_stage, path_material):
         return out
 
     a13, a45 = stage('A1-A3'), stage('A4-A5')
-    soil = (np.array([B['SOIL_INTENSITY'][t] for t in typ])[:, None] * E['gfa_t']).sum(axis=0) * E['soil_share']
+    soil = np.asarray(E['soil'], float)                 # soil emitted in the year (ACCOUNTING)
     maint = E['b_t'].sum(axis=0)
+    leg_s, leg_b = np.asarray(E['legacy_soil'], float), np.asarray(E['legacy_b'], float)
     if not np.allclose((a13 + a45 + soil)[1:], E['upfront'][1:], rtol=1e-9, atol=0):
         raise SystemExit('export_stage_material: A1-A3 + A4-A5 + soil does not reproduce the upfront carbon.')
     rows = [dict(year=int(y), a1a3_kt=a13[i] / 1e6, a4a5_kt=a45[i] / 1e6, maintenance_kt=maint[i] / 1e6,
-                 soil_carbon_loss_kt=soil[i] / 1e6, carbon_kt=float(E['carbon'][i]) / 1e6)
+                 soil_carbon_loss_kt=soil[i] / 1e6, legacy_soil_kt=leg_s[i] / 1e6, legacy_b2b4_kt=leg_b[i] / 1e6,
+                 carbon_kt=float(E['carbon'][i]) / 1e6)
             for i, y in enumerate(fy) if i > 0]
     pd.DataFrame(rows).to_csv(path_stage, index=False)
-    fa = B['flow_annual']
+    fa = B['flow_annual'].copy()                       # the new cohorts by material (and soil)
+    if not np.allclose(fa.sum(axis=1).values, np.asarray(E['carbon_new'], float)[1:], rtol=1e-9, atol=0):
+        raise SystemExit('export_stage_material: the materials do not add up to the new cohorts\' carbon.')
+    fa[N.band_data_label('legacy')] = (leg_s + leg_b)[1:]
     if not np.allclose(fa.sum(axis=1).values, np.asarray(E['carbon'], float)[1:], rtol=1e-9, atol=0):
-        raise SystemExit('export_stage_material: the materials do not add up to the annual carbon.')
+        raise SystemExit('export_stage_material: materials + legacy do not add up to the annual carbon.')
     pd.DataFrame([dict(year=int(y), material=m, carbon_kt=float(fa.loc[y, m]) / 1e6)
                   for y in fa.index for m in fa.columns]).to_csv(path_material, index=False)
 

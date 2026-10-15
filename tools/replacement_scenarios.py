@@ -49,7 +49,7 @@ def one(settings):
     ji = B['join_info'].get('50th') if B['join_info'] else None
     out = dict(
         GFA_Mm2=float(B['results']['50th']['total'][f].sum() / 1e6),
-        carbon_kt=float(B['carbon_total_typ'].iloc[1:].sum().sum() / 1e6),
+        carbon_kt=float(B['carbon_total'].iloc[1:].sum() / 1e6),
         upfront_kt=float(B['_upfront'] + B['_soil'] / 1e6),
         size_2050=float(E['D'][-1]),
         soil_kt=float(B['_soil'] / 1e6),
@@ -70,7 +70,7 @@ def annual(key, B):
     """Annual floor area (in scope) and embodied carbon 2026-2050 of one variant (median demographics)."""
     fy = np.asarray(B['forecast_years'])
     g = np.asarray(B['results']['50th']['total'], float)
-    c = B['carbon_total_typ'].sum(axis=1).values
+    c = B['carbon_total'].values
     return [dict(variant=key, year=int(y), floor_area_Mm2=float(g[i]) / 1e6, carbon_kt=float(c[i]) / 1e6)
             for i, y in enumerate(fy) if i > 0]
 

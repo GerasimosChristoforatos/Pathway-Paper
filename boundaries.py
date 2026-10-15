@@ -39,6 +39,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT_DIR)
 sys.path.insert(0, os.path.join(ROOT_DIR, 'tools'))
 import aesa  # noqa: E402
+import inventory as INV  # noqa: E402
 import figsource  # noqa: E402
 import layout  # noqa: E402
 import projection  # noqa: E402
@@ -99,7 +100,7 @@ AR_BASE_WINDOW_FULL = (HIST_START, 2025)   # the full consistent history (34 yea
 # dwelling size, the interval being the one starting at or before y (2016-17:
 # 2013-18; 2018-23: 2018-23). After the last census (2024-25): 'recent' = the
 # 2018-23 rate carried (author decision), 'long_run' = the 1991-2023 rate (note).
-HIST_RATE_AFTER_LAST_CENSUS = 'recent'
+HIST_RATE_AFTER_LAST_CENSUS = projection.HIST_RATE_AFTER_LAST_CENSUS   # one setting (projection.py)
 
 # ---------------------------------------------------------------------------
 # 3. ABILITY TO PAY: GDP PER CAPITA AND SECTOR SHARE
@@ -157,42 +158,22 @@ def nz_population_alt(source, years):
 def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_from=None):
     """Sector emissions in past years (kg CO2e) at 2025 factors (the history is not
     decarbonised; actual past factors were likely higher, so the base is slightly
-    conservative), with the same scope, accounting and soil convention as the
-    projection: built floor area by typology (consents x completion rate) x
-    construction-year intensity, plus soil on the non-replacement share of the floor
-    area (engine.forward with soil_on_replacement=False). Time-resolved accounting
-    (projection.ACCOUNTING): construction-year intensity = upfront (A1-A5), plus the
-    replacement / repaint events of the cohorts built from events_from (default: the
-    first of years) that occur in each year (b_kg), at 2025 factors."""
+    conservative), with the same scope and soil convention as the projection: built floor
+    area by typology (consents x completion rate) x construction-year intensity, and the soil
+    lost on the non-replacement share of the floor area (inventory.history_soil, the series the
+    projection's legacy soil tails use). Time-resolved: construction-year intensity = upfront
+    (A1-A5), plus the replacement / repaint events of the cohorts built from events_from
+    (default: the first of years) that occur in each year (b_kg), at 2025 factors.
+    soil_kg is the soil of the conversion year; the accounting rule's soil is window_base()."""
     typ = list(B['typ_names'])
     tr = bool(B.get('TIME_RESOLVED'))
     g = B['hist_built_typ_gfa'].loc[list(years), typ]
-    gfa = g.sum(axis=1)
-    units = B['hist_built_units'].loc[list(years)]
-    rv = B['hist_rv_share'].loc[list(years)]
-    prev = B['stock_cal']['prev'].loc[list(years)]
-    cr = B['census_rates'].sort_values('y0')
-    long_run = float(B['demolition_rate'] + B['unconsented_rate'])
-    rate, src = [], []
-    for y in years:
-        w = cr[cr['y0'] <= y]
-        if len(w) and y <= int(w['y1'].iloc[-1]):
-            rate.append(float(w['rate'].iloc[-1])); src.append(f"{int(w['y0'].iloc[-1])}-{int(w['y1'].iloc[-1])}")
-        elif y > int(cr['y1'].max()):
-            last = cr.iloc[-1]
-            rate.append(float(last['rate']) if after == 'recent' else long_run)
-            src.append(f"{int(last['y0'])}-{int(last['y1'])} carried" if after == 'recent'
-                       else f"long run {projection.NET_REPLACEMENT_WINDOW[0]}-{projection.NET_REPLACEMENT_WINDOW[1]}")
-        else:
-            raise ValueError(f'No census interval for {y}.')
-    rate = pd.Series(rate, index=list(years))
-    size = gfa / units
-    soil_free = (rate * prev * (1.0 - rv) * size).clip(lower=0.0)
-    soil_share = 1.0 - soil_free / gfa
+    hs = INV.history_soil(B['hist_built_typ_gfa'], B['hist_built_units'], B['hist_rv_share'], B['stock_cal']['prev'],
+                          B['census_rates'], float(B['demolition_rate'] + B['unconsented_rate']),
+                          projection.NET_REPLACEMENT_WINDOW, B['SOIL_INTENSITY'], years, after)
     base_int = B['UPFRONT_2025'] if tr else B['T_BASELINE_2025']
     mat = sum(g[t] * (base_int[t] - B['SOIL_INTENSITY'][t]) for t in typ)
-    soil = sum(g[t] * B['SOIL_INTENSITY'][t] for t in typ) * soil_share
-    soil_all = sum(g[t] * B['SOIL_INTENSITY'][t] for t in typ)
+    soil, soil_all = hs['soil_kg'], hs['soil_all_kg']
     b = pd.Series(0.0, index=list(years))
     if tr:
         ef = int(years[0]) if events_from is None else int(events_from)
@@ -200,9 +181,10 @@ def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_fro
         for t in typ:
             prof = B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t]
             b += hist_events(gh[t], projection.EV.age_profile(prof), list(years), ef)
-    out = pd.DataFrame(dict(I_sec_kg=mat + soil + b, materials_kg=mat, b_kg=b, soil_kg=soil, soil_share=soil_share,
-                            net_replacement_rate=rate, rate_source=src, gfa_m2=gfa,
-                            I_soil_on_all_kg=mat + soil_all + b))
+    out = pd.DataFrame(dict(I_sec_kg=mat + soil + b, materials_kg=mat, b_kg=b, soil_kg=soil,
+                            soil_share=hs['soil_share'], net_replacement_rate=hs['net_replacement_rate'],
+                            rate_source=hs['rate_source'], gfa_m2=hs['gfa_m2'],
+                            I_soil_on_all_kg=mat + soil_all + b, soil_all_kg=soil_all))
     for t in typ:                                  # for the base with other (MC) materials factors
         out[f'gfa_{t}'] = g[t]
     return out
@@ -218,13 +200,14 @@ def hist_events(gfa, age, years, events_from):
     return pd.Series(out, index=years)
 
 
-def base_with_factors(hist, typ, emb, window=AR_BASE_WINDOW, age=None, events_from=None):
+def base_with_factors(hist, typ, emb, window=AR_BASE_WINDOW, age=None, events_from=None, soil_col='soil_rule_kg'):
     """Ī_sec,base with construction-year materials factors emb (kg/m2 by typology,
     2025 technology) and, time-resolved, the event profiles age (kg/m2 by typology
     and age) of the cohorts built from events_from (default: the window's first
-    year), on the observed floor area and soil of the history."""
+    year), on the observed floor area and the soil of the history under the run's
+    accounting rule (soil_col, written by window_base)."""
     h = hist.loc[window[0]:window[1]]
-    tot = sum(h[f'gfa_{t}'] * emb[j] for j, t in enumerate(typ)) + h['soil_kg']
+    tot = sum(h[f'gfa_{t}'] * emb[j] for j, t in enumerate(typ)) + h[soil_col]
     if age is not None:
         ef = window[0] if events_from is None else events_from
         for j, t in enumerate(typ):
@@ -232,31 +215,46 @@ def base_with_factors(hist, typ, emb, window=AR_BASE_WINDOW, age=None, events_fr
     return float(tot.mean())
 
 
-def legacy_events(B):
-    """Replacement / repaint emissions in 2026-2050 (kg by year) of the cohorts built
-    1992-2025 (wider-scope sensitivity), on the run's decarbonisation paths."""
-    fy = np.asarray(B['forecast_years'])
-    gh = B['hist_built_typ_gfa']
-    out = np.zeros(len(fy))
-    for t in B['typ_names']:
-        prof = B['EV_PROFILE'][B['EV_PROFILE']['Typology'] == t].reset_index(drop=True)
-        f = projection.EV.row_factors(prof, fy, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45)
-        age, kg = prof['Age'].to_numpy(int), prof['kg_per_m2'].to_numpy(float)
-        for c in range(projection.B_SCOPE_START, 2026):
-            for j, y in enumerate(fy[1:], start=1):
-                hit = age == y - c
-                if hit.any():
-                    out[j] += gh.loc[c, t] * float((kg[hit] * f[hit, j]).sum())
-    return pd.Series(out, index=fy)
+def rule_of(B):
+    """The emissions accounting rule of a projection state (projection.ACCOUNTING when it ran)."""
+    return B.get('accounting_rule', projection.ACCOUNTING)
 
 
-def window_base(B, window, after=HIST_RATE_AFTER_LAST_CENSUS, col='I_sec_kg', scope=None):
-    """Ī_sec,base over window, same accounting rule as the projection: upfront of the
-    window's construction + the events, within the window, of the buildings built in it
-    (scope 'since_1992': of every cohort since projection.B_SCOPE_START), at 2025 factors."""
-    ef = projection.B_SCOPE_START if scope == 'since_1992' else window[0]
-    h = historical_emissions(B, range(HIST_START, 2026), after, events_from=ef)
+def events_from(rule, window):
+    """First cohort whose replacements / repaints a window counts: every cohort since 1992 ('inventory'), the
+    window's own cohorts otherwise."""
+    return projection.B_SCOPE_START if rule == 'inventory' else int(window[0])
+
+
+def window_base(B, window, after=HIST_RATE_AFTER_LAST_CENSUS, col='I_sec_kg', rule=None):
+    """Ī_sec,base over window under the emissions accounting rule of the projection (inventory.py; MODEL v3.1.0):
+    upfront A1-A5 of the window's construction + the soil and the replacements / repaints the rule counts in the
+    window, at 2025 factors. 'inventory': soil oxidation (20 yr) of every conversion since 1992 and B of every cohort
+    since 1992 occurring in the window; 'instant': soil of the window's conversions, B of the window's cohorts;
+    'cohort_window': oxidation within the window of the window's conversions, B of the window's cohorts.
+    Returns (mean annual base, history frame with soil_rule_kg and I_sec_kg on the rule; I_soil_on_all_kg likewise)."""
+    rule = INV.check_rule(rule or rule_of(B))
+    h = historical_emissions(B, range(HIST_START, 2026), after, events_from=events_from(rule, window)).copy()
+    if rule == 'cohort_window':
+        yrs = list(range(int(window[0]), int(window[1]) + 1))
+        soil_r = INV.window_soil(h['soil_kg'], window, rule).reindex(h.index)
+        soil_all_r = INV.window_soil(h['soil_all_kg'], window, rule).reindex(h.index)
+        h.loc[~h.index.isin(yrs), ['I_sec_kg', 'I_soil_on_all_kg']] = np.nan
+    else:
+        full = (HIST_START, 2025)
+        soil_r = INV.window_soil(h['soil_kg'], full, rule)
+        soil_all_r = INV.window_soil(h['soil_all_kg'], full, rule)
+    h['soil_rule_kg'] = soil_r
+    h['I_sec_kg'] = h['materials_kg'] + soil_r + h['b_kg']
+    h['I_soil_on_all_kg'] = h['materials_kg'] + soil_all_r + h['b_kg']
     return aesa.mean_over(h[col], window), h
+
+
+def base_split(h, window):
+    """Mean annual AR base over a window split into upfront A1-A5, soil and B (kg/yr)."""
+    w = h.loc[window[0]:window[1]]
+    return dict(upfront_kg=float(w['materials_kg'].mean()), soil_kg=float(w['soil_rule_kg'].mean()),
+                b2b4_kg=float(w['b_kg'].mean()), total_kg=float(w['I_sec_kg'].mean()))
 
 
 def wdi_table():
@@ -349,18 +347,20 @@ def scenario_runs():
         fy = np.asarray(B['forecast_years'])
         out[key] = dict(label=label, settings=settings, committed=B.get('COMMITTED'),
                         b_inwindow=pd.Series(B['carbon_bev_typ'].sum(axis=1).values, index=fy),
-                        I=pd.Series(B['carbon_total_typ'].sum(axis=1).values, index=fy),
+                        I=pd.Series(B['carbon_total'].values, index=fy),
                         pop=pd.Series(B['df_forecast']['PopTotal_50th'].values, index=fy))
     return out
 
 
-def mc_runs(fy, hist):
+def mc_runs(fy, hist, rule):
     """Re-run every saved Monte Carlo draw of each MC scenario through
     MonteCarlo.project() from its saved parameters (MonteCarlo.py unchanged);
     each draw must reproduce its saved outputs to MC_REL_TOL. Returns, per
     scenario, the annual carbon (draws x years), NZ population (draws x years)
     and the AR base Ī_sec,base of each draw, recomputed from the draw's
     case-study carbon factors (2025 technology) on the observed history."""
+    if rule == 'cohort_window':
+        raise SystemExit("mc_runs: 'cohort_window' is a deterministic sensitivity (its soil depends on the window).")
     out = {}
     for name, settings in MC.MC_SCENARIOS:
         with contextlib.redirect_stdout(io.StringIO()):
@@ -373,6 +373,7 @@ def mc_runs(fy, hist):
         pop = np.empty((len(d), len(fy)))
         ibase = np.empty(len(d))
         ibase20 = np.empty(len(d))
+        ibase_inst = np.empty(len(d))                 # the same draw's base under ACCOUNTING 'instant' (A1 report)
         kcar = MC.PARAMS.index('carbon')
         worst = 0.0
         for j in range(len(d)):
@@ -385,8 +386,11 @@ def mc_runs(fy, hist):
                 fac, age = su['boot_up'][kc], su['boot_age'][kc]
             else:
                 fac, age = su['boot_emb'][kc], None
-            ibase[j] = base_with_factors(hist, su['typ'], fac, AR_BASE_WINDOW, age)
-            ibase20[j] = base_with_factors(hist, su['typ'], fac, AR_BASE_WINDOW_20, age)
+            ibase[j] = base_with_factors(hist, su['typ'], fac, AR_BASE_WINDOW, age, events_from(rule, AR_BASE_WINDOW))
+            ibase20[j] = base_with_factors(hist, su['typ'], fac, AR_BASE_WINDOW_20, age,
+                                           events_from(rule, AR_BASE_WINDOW_20))
+            ibase_inst[j] = base_with_factors(hist, su['typ'], fac, AR_BASE_WINDOW, age, AR_BASE_WINDOW[0],
+                                              soil_col='soil_kg')
             pop[j] = su['pop50'] + MC.interp_z(X[j, 0], MC.Z_KNOTS, su['spreads'])
             # the population path is the one the draw used: hh x S = pop
             if not np.allclose(o['hh'] * o['S'], pop[j], rtol=1e-12, atol=0):
@@ -395,9 +399,11 @@ def mc_runs(fy, hist):
             raise SystemExit(f'MC {name}: re-run draws differ from {os.path.basename(path)} by {worst:.1e} '
                              f'(> {MC_REL_TOL:g}); MC outputs are stale - rerun MonteCarlo.py.')
         print(f'  MC {name}: {len(d):,} draws re-run, max relative difference vs saved outputs {worst:.1e} (OK)')
-        central = (base_with_factors(hist, su['typ'], su['up_central'], AR_BASE_WINDOW, su['age_central'])
+        central = (base_with_factors(hist, su['typ'], su['up_central'], AR_BASE_WINDOW, su['age_central'],
+                                     events_from(rule, AR_BASE_WINDOW))
                    if su['tr'] else base_with_factors(hist, su['typ'], su['emb_central']))
-        out[name] = dict(carbon=carbon, pop=pop, i_base=ibase, i_base_central=central, i_base_20=ibase20)
+        out[name] = dict(carbon=carbon, pop=pop, i_base=ibase, i_base_central=central, i_base_20=ibase20,
+                         i_base_instant=ibase_inst)
     importlib.reload(projection)
     return out
 
@@ -420,7 +426,16 @@ def main():
     i_base_full, _ = window_base(B, AR_BASE_WINDOW_FULL)
     i_base_long, _ = window_base(B, AR_BASE_WINDOW, after='long_run')
     i_base_soil_all, _ = window_base(B, AR_BASE_WINDOW, col='I_soil_on_all_kg')
-    i_base_wide, hist_wide = window_base(B, AR_BASE_WINDOW, scope='since_1992')
+    # MODEL v3.1.0: every base on the projection's accounting rule (inventory.py); the soil tails of a window reach
+    # back 19 years: a base window whose tails start before 1992 is flagged (pre-1992 conversions out of scope)
+    rule = rule_of(B)
+    coverage = {k: INV.tail_coverage(wnd) for k, wnd in (('2016_2025', AR_BASE_WINDOW), ('5yr', AR_BASE_WINDOW_SENS),
+                                                          ('20yr', AR_BASE_WINDOW_20), ('full', AR_BASE_WINDOW_FULL))}
+    if rule != 'instant' and not coverage['2016_2025']['covered']:
+        raise SystemExit(f"STOP: the adopted AR base window {AR_BASE_WINDOW} needs conversions from "
+                         f"{coverage['2016_2025']['first_conversion_needed']}; the history in scope starts in "
+                         f"{projection.B_SCOPE_START}.")
+    base_split_adopted = base_split(hist, AR_BASE_WINDOW)
     w = slice(*AR_BASE_WINDOW)
     b_share_base = float(hist.loc[w, 'b_kg'].sum() / hist.loc[w, 'I_sec_kg'].sum())
 
@@ -460,7 +475,7 @@ def main():
     annual = pd.DataFrame(rows)
     N.columns(annual).to_csv(layout.writing(layout.data('aesa/annual.csv')), index=False)
     ref_I = runs['REF']['I']
-    if not np.allclose(ref_I.values, B['carbon_total_typ'].sum(axis=1).values, rtol=1e-12):
+    if not np.allclose(ref_I.values, B['carbon_total'].values, rtol=1e-12):
         raise SystemExit('The REF variant run differs from the Reference projection run.')
     cum_det = {k: dict(label=r['label'], I_kt=float(r['I'].loc[slice(*PB_YEARS)].sum() / M6),
                        LoE_AR=cum(r['I'], b_ar), LoE_AtP=cum(r['I'], b_atp)) for k, r in runs.items()}
@@ -485,7 +500,7 @@ def main():
 
     # ---- Monte Carlo ---------------------------------------------------------
     print('PB: Monte Carlo (re-run from saved draws)')
-    mc = mc_runs(fy, hist)
+    mc = mc_runs(fy, hist, rule)
     mc_rows, mc_cum, mc_cum_fixed, mc_cum_20 = [], {}, {}, {}
     sel = (fy >= PB_YEARS[0]) & (fy <= PB_YEARS[1])
     pw_f = p_w.reindex(fy).values
@@ -512,9 +527,14 @@ def main():
         ca = m['carbon'][:, sel].sum(axis=1) / bar[:, sel].sum(axis=1)
         ct = m['carbon'][:, sel].sum(axis=1) / batp[:, sel].sum(axis=1)
         if name == 'REF':      # MODEL v2.0.0: each draw's cumulative budgets, read by the pathway Monte Carlo
+            bar_inst = aesa.boundary_ar(pair['sos'], m['i_base_instant'][:, None], pair['i_glob'], m['pop'], pw_f,
+                                        p_nz.loc[T0], p_w.loc[T0])
             N.columns(pd.DataFrame(dict(
                 draw=np.arange(len(ca)), carbon_kt_2026_2050=m['carbon'][:, sel].sum(axis=1) / M6,
                 B_AR_kt_2026_2050=bar[:, sel].sum(axis=1) / M6, B_AtP_kt_2026_2050=batp[:, sel].sum(axis=1) / M6,
+                # MODEL v3.1.0: the draw's AR budget under ACCOUNTING 'instant' (soil at conversion, B of the base
+                # window's own cohorts), for the instant-rule share of TL within AR (pathways_mc)
+                B_AR_instant_kt_2026_2050=bar_inst[:, sel].sum(axis=1) / M6,
                 LoE_AR=ca, LoE_AtP=ct))).to_csv(layout.writing(layout.data('aesa/montecarlo_draw_budgets.csv')),
                                                 index=False)
         mc_cum[name] = {f'LoE_AR_p{p}': float(np.percentile(ca, p)) for p in MC_PCT}
@@ -566,7 +586,9 @@ def main():
         """Cumulative LoE of a projection run with settings kw. base: its own AR base (a
         different accounting rule); add: emissions added to the run (kg by year)."""
         Bx = validation.run_boss(**kw)
-        I = pd.Series(Bx['carbon_total_typ'].sum(axis=1).values, index=np.asarray(Bx['forecast_years']))
+        I = pd.Series(Bx['carbon_total'].values, index=np.asarray(Bx['forecast_years']))
+        if base == 'own_rule':                         # the run's own accounting rule on both sides
+            base = window_base(Bx, AR_BASE_WINDOW)[0]
         if add is not None:
             I = I + add.reindex(I.index, fill_value=0.0)
         bar = b_ar_ref if base is None else boundaries(SOURCE_PAIR, base, comp, s_sec, p_nz, p_w)[0]
@@ -584,22 +606,34 @@ def main():
              *cum_I(DECARB_ITEM_CASE='nz_elec_held')),
             ('ix_a45_held', '(ix) A4-A5 held at 2025 (no generic 1%/yr)', *cum_I(DECARB_A45='held')),
             ('x_a45_item', "(x) A4-A5 on each item's own Horup S4 path", *cum_I(DECARB_A45='item'))]
-        if projection.ACCOUNTING == 'time_resolved':
-            Bw = validation.run_boss(ACCOUNTING='whole_life_at_construction')
-            base_w, _ = window_base(Bw, AR_BASE_WINDOW)
+        if projection.LIFE_CYCLE_TIMING == 'time_resolved':
             sens += [
                 ('xi_event_timing', '(xi) Event timing: interval L / n (instead of L / (n + 1))',
                  *cum_I(EVENT_TIMING='n')),
-                ('xii_whole_life', '(xii) Accounting: whole life at construction (base on the same rule)',
-                 *cum_I(base=base_w, ACCOUNTING='whole_life_at_construction')),
-                ('xiii_wider_scope', f'(xiii) Wider scope: base and projection include the maintenance (B2, B4) of '
-                 f'every cohort since {projection.B_SCOPE_START}',
-                 *cum_I(base=i_base_wide, add=legacy_events(B)))]
+                ('xii_whole_life', '(xii) Whole life at construction, soil at conversion (base on the same rule)',
+                 *cum_I(base='own_rule', LIFE_CYCLE_TIMING='whole_life_at_construction', ACCOUNTING='instant'))]
+            # MODEL v3.1.0: the other emissions accounting rules, base and projection on the same rule
+            for r_, lab_ in (('instant', 'soil at conversion, B of each window\'s own cohorts (MODEL v3.0.0)'),
+                             ('inventory', 'every emission in the window from all cohorts since 1992 (20-yr soil '
+                                           'oxidation, legacy)'),
+                             ('cohort_window', 'soil oxidised over 20 yr, each window\'s own cohorts only')):
+                if r_ != rule:
+                    sens.append((f'xiii_accounting_{r_}', f'(xiii) Accounting: {r_} ({lab_}); base on the same rule',
+                                 *cum_I(base='own_rule', ACCOUNTING=r_)))
     sens.append(('xiv_alpha_1', "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",
                  *cum_pair(cp=dict(comp, alpha=1.0))))
     sens.append(('note_soil_long_run', 'Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate',
                  *cum_pair(ib=i_base_long)))
     sens_df = pd.DataFrame(sens, columns=['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP'])
+    # soil-tail coverage of the base windows (inventory / cohort_window rows only; flag, never dropped)
+    cov_of = {'iii_base_window': coverage['5yr'], 'iii_base_window_20': coverage['20yr'],
+              'iii_base_window_full': coverage['full']}
+    sens_df['soil_tail_coverage'] = [
+        ('n/a (soil at conversion)' if (rule == 'instant' and not c.startswith('xiii_accounting_')) or
+         c in ('xii_whole_life', 'xiii_accounting_instant') else
+         'full' if cov_of.get(c, coverage['2016_2025'])['covered'] else
+         f"partial: tails need conversions from {cov_of[c]['first_conversion_needed']}; history in scope from "
+         f"{projection.B_SCOPE_START}") for c in sens_df['case']]
     sens_df['AR_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AR'] / ref_ar - 1)
     sens_df['AtP_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AtP'] / ref_atp - 1)
     N.columns(sens_df).to_csv(layout.writing(layout.data('aesa/sensitivity.csv')), index=False)
@@ -617,8 +651,8 @@ def main():
         source_pairs=SOURCE_PAIRS,
         components=dict(SOS_kg=pair['sos'], I_glob_kg=pair['i_glob'], pair_label=pair['label'],
                         I_sec_base_kg=i_base, I_sec_base_window=list(AR_BASE_WINDOW),
-                        I_sec_base_b_share=b_share_base, I_sec_base_wider_scope_kg=i_base_wide,
-                        accounting=projection.ACCOUNTING, decarb_a45=projection.DECARB_A45, event_timing=projection.EVENT_TIMING,
+                        I_sec_base_b_share=b_share_base, I_sec_base_split=base_split_adopted,
+                        soil_tail_coverage=coverage, accounting=rule, life_cycle_timing=projection.LIFE_CYCLE_TIMING, decarb_a45=projection.DECARB_A45, event_timing=projection.EVENT_TIMING,
                         I_sec_base_5yr_kg=i_base_5, I_sec_base_long_run_2024_25_kg=i_base_long,
                         I_sec_base_20yr_kg=i_base_20, I_sec_base_full_kg=i_base_full,
                         I_sec_base_20yr_window=list(AR_BASE_WINDOW_20), I_sec_base_full_window=list(AR_BASE_WINDOW_FULL),
@@ -697,18 +731,28 @@ def assumption_register():
         ('Carrying capacity over time', 'static: SOS, I_glob, GDP per capita and s_sec held fixed; no IAM / '
          'Paris-aligned pathways', 'DECISION (author); limitation, Clausen et al. 2025, Sustain. Prod. Consum. 58, '
          '140-150 (pp. 143, 148)'),
-        ('Sector impact', ('materials and construction (A1-A5) and soil carbon loss of each year\'s construction plus '
+        ('Sector impact', ('every emission occurring in the year from residential construction since '
+                           f'{projection.B_SCOPE_START} (ACCOUNTING inventory): materials and construction (A1-A5) of '
+                           'the year\'s construction, soil carbon loss oxidised linearly over '
+                           f'{projection.SOIL_OXIDATION_YEARS} years after conversion (IPCC 2006 Vol. 4 Ch. 2) incl. the '
+                           'tails of earlier conversions, and the maintenance (B2, B4) of every cohort since '
+                           f'{projection.B_SCOPE_START}; later maintenance, end of life (C1-C4) and the soil of '
+                           '2026-2050 conversions oxidised after 2050 are committed after 2050, reported separately'
+                           if projection.ACCOUNTING == 'inventory' else
+                           'materials and construction (A1-A5) and soil carbon loss of each year\'s construction plus '
                            'the maintenance (B2, B4) occurring that year from buildings built in 2026-2050 '
                            '(time-resolved); later maintenance and end of life (C1-C4) are committed after 2050, '
-                           'reported separately' if projection.ACCOUNTING == 'time_resolved' else
+                           'reported separately' if projection.LIFE_CYCLE_TIMING == 'time_resolved' else
                            'the model\'s embodied carbon (A1-A5, B2, B4, C1-C4 + soil), all booked in the '
                            'construction year'),
-         f"DECISION (author); projection.ACCOUNTING = '{projection.ACCOUNTING}'"),
-        ('AR base on the same rule', f'Ī_sec,base = materials and construction (A1-A5) and soil carbon loss of {AR_BASE_WINDOW[0]}-'
-         f'{AR_BASE_WINDOW[1]} construction + the maintenance (B2, B4) within {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} '
-         'of the buildings built in it, at 2025 factors; '
-         'base-window sensitivities on the same rule over their windows; wider scope (all cohorts since '
-         f'{projection.B_SCOPE_START}) as a sensitivity', 'DECISION (author)'),
+         f"DECISION (author); projection.LIFE_CYCLE_TIMING = '{projection.LIFE_CYCLE_TIMING}', ACCOUNTING = '{projection.ACCOUNTING}'"),
+        ('AR base on the same rule', f'Ī_sec,base = mean annual emissions {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} on the '
+         f"projection's accounting rule ('{projection.ACCOUNTING}'): materials and construction (A1-A5) of the window's "
+         'construction + the soil and the maintenance (B2, B4) the rule counts in the window (inventory: oxidation of '
+         f'every conversion since {projection.B_SCOPE_START}, B of every cohort since {projection.B_SCOPE_START}), at '
+         '2025 factors; base-window sensitivities on the same rule (a window whose soil tails reach before '
+         f'{projection.B_SCOPE_START} is flagged); the other rules (instant, cohort_window) as sensitivities',
+         'DECISION (author)'),
         ('Carbon factors over time', f"projection.DECARB_MODE = '{projection.DECARB_MODE}'"
          + {'none': '', 'horup_item': ' (A1-A3 by case-study EPD item, Horup et al. 2025; data/material_item_map.csv)'}[
              projection.DECARB_MODE]
@@ -787,7 +831,7 @@ LIMITATIONS = [
      '2050 and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed after 2050, outside 2026-2050; '
      'they are reported as a range (outputs/data/aesa/results.json "committed", Fig3c) in years of the 2050 AR boundary and are '
      'not compared with the 2026-2050 boundary. Whole life at construction is a sensitivity.'
-     if projection.ACCOUNTING == 'time_resolved' else
+     if projection.LIFE_CYCLE_TIMING == 'time_resolved' else
      'B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future '
      'maintenance and end-of-life emissions of the buildings built in those years.'),
     'History at 2025 factors: the acquired-rights base (2016-2025) and the base-window sensitivities use the '

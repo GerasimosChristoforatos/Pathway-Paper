@@ -169,6 +169,9 @@ FILES = [
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
     ('data/sensitivity/tornado.csv', 'Fig7: the eight inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
+    ('data/sensitivity/accounting_rules.csv', 'MODEL v3.1.0: the three emissions accounting rules (inventory, instant, '
+     'cohort_window): AR base split, AR and AtP budgets, Reference split incl. legacy, soil after 2050, LoE of the '
+     'Reference, P5 Moderate / Ambitious and TL, Monte Carlo share of TL within AR', 'tools/accounting_rules.py'),
 ]
 
 # console logs, and the light-profile and legacy-Reference mirrors (outputs/_light/, outputs/_legacy/): git-ignored,

@@ -1,5 +1,5 @@
 {
- "figure": "SF1_mc_scatter_population",
+ "figure": "SF2_mc_scatter_population",
  "producer": "figures/__main__.py",
  "axes": [
   {

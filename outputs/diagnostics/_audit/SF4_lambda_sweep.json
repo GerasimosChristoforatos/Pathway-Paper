@@ -1,5 +1,5 @@
 {
- "figure": "SF3_lambda_sweep",
+ "figure": "SF4_lambda_sweep",
  "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {

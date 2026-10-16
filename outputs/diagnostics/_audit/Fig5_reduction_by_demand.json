@@ -1,0 +1,66 @@
+{
+ "figure": "Fig5_reduction_by_demand",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e)",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "0",
+  "10,000",
+  "12,500",
+  "15,000",
+  "16,257",
+  "17,500",
+  "2,500",
+  "20,000",
+  "2026 overbuild",
+  "5,000",
+  "5,542",
+  "7,500",
+  "9,694",
+  "Ambitious Pathway",
+  "Demolition replacement",
+  "Extra space",
+  "Maintenance (B2, B4)",
+  "Moderate Pathway",
+  "Overbuild absorbed (credit shrinks)",
+  "Population growth",
+  "Recent replacement surge",
+  "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e)",
+  "Released dwellings (TL)",
+  "Smaller households",
+  "Theoretical Limit",
+  "Total reduction",
+  "Unconsented additions (credit shrinks)",
+  "Vacancy",
+  "Vacancy released"
+ ],
+ "note": "Reduction vs the Reference (kt): Moderate Pathway 5,542, Ambitious Pathway 9,694, Theoretical Limit 16,257. Negative band reductions (outlined): Overbuild absorbed -132, -249, -481; Unconsented additions -109, -199, -331 kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.",
+ "maintenance_drawn": true,
+ "maintenance_where": [
+  "axes 0: Rectangle in the maintenance colour",
+  "legend: Maintenance (B2, B4)"
+ ],
+ "boundary_drawn": false,
+ "boundary_outside": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/bands.csv",
+  "pathways/runs.csv"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 3,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": [],
+ "negative_bar_segments": 6,
+ "negative_bar_segments_filled": 0
+}

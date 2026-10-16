@@ -218,7 +218,7 @@ def test_fig6_exact_budget_curves():
     y0 = float(PM.fig6_curve(bc, 0.0, atp))
     r = bc['REF']
     assert (y0 > 1.0) == (r['carbon_fixed_2026_cohort_kt'] > bc['B_AtP_kt'])
-    assert PM.FIG6_LIM[1] >= y0                  # MODEL v3.3.1: the axes (to 110%) show the AtP contour
+    assert y0 > PM.FIG6_LIM[1]                   # MODEL v3.3.2: the AtP contour lies above the plotted square
 
 
 # ------------------------------------------------------------------ replacement ----

@@ -126,7 +126,7 @@ def test_figures_leave_the_data_byte_identical():
         return out
     import importlib
     before = hashes()
-    for fid in ('Fig5_waterfall', 'Fig7_shapley_levers', 'SF3_lambda_sweep', 'D28_pathways_annual', 'D10_floor_area_bridge',
+    for fid in ('Fig4_pathways', 'Fig7_shapley_levers', 'SF4_lambda_sweep', 'D28_pathways_annual', 'D10_floor_area_bridge',
                 'D25_annual_carbon_by_band', 'D01_population', 'D37_mc_convergence', 'D16_one_at_a_time'):
         mod = next(m for _, f, m in FP.all_figures() if f == fid)
         importlib.import_module(mod).FIGURES[fid]()

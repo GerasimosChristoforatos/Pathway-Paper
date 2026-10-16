@@ -1,4 +1,6 @@
-"""The Extended Data (outputs/paper_extended/; figure_plan.PAPER_EXTENDED and EXTENDED_TABLES), from the data files."""
+"""The Extended Data (outputs/paper_extended/; figure_plan.PAPER_EXTENDED and EXTENDED_TABLES) and the supplementary
+figures (outputs/supplementary/; figure_plan.SUPPLEMENTARY; MODEL v3.3.1: at most ten Extended Data items), from the
+data files."""
 import os
 
 import numpy as np
@@ -17,7 +19,7 @@ from figures import paper_main as PM
 from figures import style as S
 
 M = 1e6
-SRC = {h['file']: h['source'] for h in FP.PAPER_EXTENDED}
+SRC = {h['file']: h['source'] for h in FP.PAPER_EXTENDED + FP.SUPPLEMENTARY}
 LEVEL_STYLE = {'moderate': dict(ls='-', lw=S.LW_BOLD), 'ambitious': dict(ls=':', lw=S.LW)}
 
 
@@ -25,7 +27,7 @@ def _save(fig, name, note=None):
     S.save_figure(fig, name, note=note, source=SRC[name])
 
 
-def ed1():
+def ed2():
     d = D.src('D07_net_replacement_rate')
     c = d['census']
     fig, ax = plt.subplots(figsize=S.figsize('double', 70))
@@ -42,11 +44,50 @@ def ed1():
     ax.set_ylabel('Net replacement (% of stock per year)')
     ax.legend(fontsize=S.FONT_MIN, ncol=2, loc='upper left')
     fig.tight_layout()
-    _save(fig, 'ED1_census_replacement_rates', note='Bars: census-interval rates from dwelling counts (net of '
+    _save(fig, 'ED2_census_replacement_rates', note='Bars: census-interval rates from dwelling counts (net of '
                                                     'unconsented additions); lines: the projection variants.')
 
 
-def ed2():
+# MODEL v3.3.1: history black, projection dark red (the AtP hex; no boundary is drawn on ED1)
+PROJECTION_LINE = S.ATP
+
+
+def ed1():
+    """MODEL v3.3.1 (from ED3 of v3.3.0; 3 x 1): population, households and cumulative floor area: history (black),
+    the Reference projection (median, dark red) and the band of the Stats NZ population 5th-95th percentile paths (the
+    data of figure_source/projection_paths.json; not a Monte Carlo band: the population percentiles are those of the
+    Stats NZ projection run through the model). The households panel notes the rebasing of the Stats NZ dwelling and
+    household estimates on the 2023 census."""
+    d = D.src('projection_paths')
+    hh = D.src('D02_households')
+    f = d['df_forecast']
+    fy = np.asarray(f['Year'])
+    fig, ax = plt.subplots(3, 1, figsize=S.figsize('double', 150), sharex=True)
+    panels = [('Population (million)', d['population_hist'], 'PopTotal', 1e6),
+              ('Households (million)', d['households_hist'], 'households', 1e6),
+              ('Floor area built, cumulative from 1991 (Mm²)', d['cumulative_floor_area_hist'], 'Cum_GFA_Total', 1e6)]
+    for a, (lab, hist, key, sc), letter in zip(ax, panels, 'abc'):
+        a.plot(hist.index, hist.values / sc, color=S.INK, lw=S.LW, label='History')
+        get = ((lambda p: np.asarray(d[f'households_{p}'])) if key == 'households'
+               else (lambda p, key=key: np.asarray(f[f'{key}_{p}'])))
+        a.fill_between(fy, get('5th') / sc, get('95th') / sc, **S.MC_BAND,
+                       label='Stats NZ population 5th–95th percentile')
+        a.plot(fy, get('50th') / sc, color=PROJECTION_LINE, lw=S.LW_BOLD, label='Reference projection (median)')
+        P.split(a)
+        a.set_ylabel(lab, fontsize=S.FONT_SMALL)
+        P.panel(a, letter)
+    ax[1].text(0.01, 0.97, f"History rebased on the {hh['S_ANCHOR_YEAR']} census (occupied + residents-away private "
+               f"dwellings): Stats NZ household increments after 2018 × {hh['hh_rebase_k']:.3f}",
+               transform=ax[1].transAxes, ha='left', va='top', fontsize=S.FONT_MIN, color=S.MUTED)
+    ax[0].legend(fontsize=S.FONT_MIN, loc='lower right')
+    ax[-1].set_xlabel('Year')
+    fig.tight_layout()
+    _save(fig, 'ED1_population_households_floor_area',
+          note=f"Band: the Stats NZ population 5th-95th percentile paths run through the model (not the Monte Carlo). "
+               f"Households rebased on the {hh['S_ANCHOR_YEAR']} census (k = {hh['hh_rebase_k']:.4f}).")
+
+
+def ed3():
     h = D.csv('baseline/household_formation_history.csv')
     d = D.src('D03_household_size')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 72))
@@ -72,31 +113,10 @@ def ed2():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Household size')
     fig.tight_layout()
-    _save(fig, 'ED2_household_formation_size')
+    _save(fig, 'ED3_household_formation_size')
 
 
-def ed3():
-    d = D.src('projection_paths')
-    f = d['df_forecast']
-    fy = np.asarray(f['Year'])
-    fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 65))
-    panels = [('Population (million)', d['population_hist'], 'PopTotal', 1e6),
-              ('Households (million)', d['households_hist'], 'households', 1e6),
-              ('Floor area built, cumulative from 1991 (Mm²)', d['cumulative_floor_area_hist'], 'Cum_GFA_Total', 1e6)]
-    for a, (lab, hist, key, sc), letter in zip(ax, panels, 'abc'):
-        a.plot(hist.index, hist.values / sc, color=S.INK, label='History')
-        get = (lambda p: np.asarray(d[f'households_{p}'])) if key == 'households' else (lambda p: np.asarray(f[f'{key}_{p}']))
-        a.fill_between(fy, get('5th') / sc, get('95th') / sc, **S.MC_BAND, label='Population 5th-95th')
-        a.plot(fy, get('50th') / sc, color=S.REFERENCE, lw=S.LW_BOLD, label='Reference (median)')
-        P.split(a)
-        a.set_ylabel(lab, fontsize=S.FONT_SMALL)
-        P.panel(a, letter)
-    ax[0].legend(fontsize=S.FONT_MIN)
-    fig.tight_layout()
-    _save(fig, 'ED3_cumulative_households_population_floor_area')
-
-
-def ed4():
+def sf1():
     dr = D.csv('pathways/montecarlo_draws.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 72), sharex=True)
     for a, q, letter in ((ax[0], 'LoE_AR', 'a'), (ax[1], 'LoE_AtP', 'b')):
@@ -113,10 +133,10 @@ def ed4():
         P.panel(a, letter)
     ax[0].legend(fontsize=S.FONT_MIN, markerscale=4)
     fig.tight_layout()
-    _save(fig, 'ED4_mc_scatter_population', note=f'{len(dr):,} Latin hypercube draws.')
+    _save(fig, 'SF1_mc_scatter_population', note=f'{len(dr):,} Latin hypercube draws.')
 
 
-def ed5():
+def sf2():
     """MODEL v3.1.0 (B3): (a) P(TL within AR) by population-rank quintile Q1-Q5 (Wilson 95%); (b) the 2050 population
     at which P(TL LoE AR <= 1) = 50% (univariate logistic, bootstrap 95% interval) with the draws as a rug, or, when
     no draw (or every draw) has TL within AR, the TL LoE against the 2050 population. The Firth models stay in the
@@ -161,11 +181,11 @@ def ed5():
         P.panel(ax[1], 'b', 'TL LoE against the 2050 population (no threshold)')
     ax[1].set_xlabel('New Zealand population 2050 (million), Monte Carlo draws')
     fig.tight_layout()
-    _save(fig, 'ED5_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
+    _save(fig, 'SF2_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
                                           f"{j['wilson_95'][1]:.3f}); (b) {note_b}.")
 
 
-def ed6():
+def ed7():
     r = D.csv('pathways/runs.csv')
     r = r[r['scenario'] == 'REF'].set_index('run')
     fig, ax = plt.subplots(figsize=S.figsize('double', 85))
@@ -183,11 +203,135 @@ def ed6():
     ax.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate'), Patch(color=S.MUTED, label='Ambitious'),
                        Patch(color=S.TL, label='TL (Level 4)')], fontsize=S.FONT_SMALL, loc='lower left')
     fig.tight_layout()
-    _save(fig, 'ED6_single_levers')
+    _save(fig, 'ED7_single_levers')
 
 
-def ed7():
-    PM.waterfall('ED7_waterfall_ambitious', 'ambitious')
+def ed5():
+    """MODEL v3.3.1 (Fig4 until v3.3.0): annual carbon of the Reference, S1-S3, the Moderate / Ambitious Pathway and
+    TL against AR and AtP (Moderate solid bold, Ambitious the same colour thin dotted)."""
+    a = D.csv('pathways/annual.csv')
+    a = a[a['scenario'] == 'REF']
+    ref = a[a['run'] == 'REF'].set_index('year')
+    years = ref.index.values.astype(float)
+    fig, ax = plt.subplots(figsize=S.figsize('double', 95))
+    S.boundary_zones(ax, years, ref['B_AR_kt'].values, ref['B_AtP_kt'].values)
+    ax.plot(years, ref['carbon_kt'].values, color=S.REFERENCE, lw=S.LW_BOLD, label=N.SCENARIOS['REF'])
+    for P_ in PM.RUN_GROUPS:
+        for s, st in (('moderate', dict(lw=S.LW_BOLD, ls='-')), ('ambitious', dict(lw=S.LW_THIN, ls=':'))):
+            r = a[a['run'] == f'{P_}-{s}'].set_index('year')
+            ax.plot(years, r['carbon_kt'].values, color=S.PATHWAY[P_], **st,
+                    label=PM.GROUP_LABEL[P_] if s == 'moderate' else None)
+    t = a[a['run'] == 'TL'].set_index('year')
+    ax.plot(years, t['carbon_kt'].values, color=S.TL, lw=S.LW_BOLD, label=N.TL['TL'])
+    ax.set_xlim(years[0], years[-1])
+    ax.set_ylim(0, None)
+    ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
+    P.thousands(ax.yaxis)
+    h = ax.get_legend_handles_labels()[0]
+    h += [Line2D([0], [0], color=S.MUTED, lw=S.LW_BOLD, ls='-', label='Moderate'),
+          Line2D([0], [0], color=S.MUTED, lw=S.LW_THIN, ls=':', label='Ambitious')] + S.zone_handles()
+    fig.legend(handles=h, loc='lower center', ncol=5, bbox_to_anchor=(0.5, -0.02), frameon=False,
+               fontsize=S.FONT_MIN + 0.5)
+    fig.tight_layout(rect=(0, 0.14, 1, 1))
+    r = D.csv('pathways/runs.csv')
+    r = r[r['scenario'] == 'REF'].set_index('run')
+    _save(fig, 'ED5_pathways_annual',
+          note='Cumulative LoE AR: ' + ', '.join(f"{k} {r.loc[k, 'LoE_AR']:.2f}" for k in
+                                                 ('REF', 'pathway-moderate', 'pathway-ambitious', 'TL')) + '.')
+
+
+WATERFALL_NOTE = ('Steps in PAS 2080 hierarchy order; each step is credited with what remains after higher-priority '
+                  'measures. Order-free Shapley values in Fig7. Outlined segments: reduction in credits from re-used '
+                  'dwellings (vacancy released, overbuild absorbed, re-occupation, unconsented additions), valued at '
+                  'the new-dwelling size they displace.')
+
+
+def _waterfall_panel(ax, name, steps, tot, delta, bands, first, last, start_lab, end_lab, start_col, end_col):
+    """One sequential waterfall by demand band (MODEL v3.2.0 rule, Fig5 until v3.3.0): from the end bar at step
+    `first` through steps first+1 .. last to the end bar at step `last`. Each step: a floating bar from the previous
+    total to the new one, split by the change of each demand band: reductions filled downward from the previous total,
+    any increase an outlined segment upward, so the bar ends at the new total (net tick; label = the change in kt)."""
+    seq = [('end', first, start_lab, start_col)] + [('step', k, steps.loc[k, 'step_id'], None)
+                                                     for k in range(first + 1, last + 1)]
+    seq += [('end', last, end_lab, end_col)]
+    x = np.arange(len(seq))
+    width = 0.72
+    for xi, (kind, k, lab, col) in zip(x, seq):
+        if kind == 'end':
+            ax.bar(xi, tot[k], width=width, gid='band_segment', **S.fill(col))
+            ax.text(xi, tot[k] + 0.012 * tot.max(), f'{tot[k]:,.0f}', ha='center', va='bottom', fontsize=S.FONT_MIN)
+            continue
+        d = delta.loc[k]
+        prev = tot[k - 1]
+        level = prev
+        for b in bands:                                   # reductions: filled, downward from the previous total
+            if d[b] < 0:
+                ax.bar(xi, -d[b], bottom=level + d[b], width=width, gid='band_segment', **P.band_style(b))
+                level += d[b]
+        for b in bands:                                   # increases: outlined, upward
+            if d[b] > 0:
+                ax.bar(xi, d[b], bottom=level, width=width, gid=P.NEG_BAR_GID, **P.negative_bar_style(b))
+                level += d[b]
+        if not np.isclose(level, tot[k], rtol=1e-9, atol=1e-6):
+            raise SystemExit(f'STOP: {name}: step {lab} does not end at its total.')
+        ax.plot([xi - 0.36 * width, xi + 0.36 * width], [tot[k], tot[k]], color=S.INK, lw=S.LW_BOLD,
+                solid_capstyle='butt', zorder=5, gid=P.NET_GID)
+        ax.plot([xi - 1 + width / 2, xi - width / 2], [prev, prev], color=S.MUTED, lw=S.LW_THIN * 0.7, zorder=4)
+        ax.text(xi, max(prev, level) + 0.012 * tot.max(), f'{tot[k] - prev:+,.0f}', ha='center', va='bottom',
+                fontsize=S.FONT_MIN, rotation=90)
+    ax.set_xticks(x)
+    ax.set_xticklabels([lab.replace(' ', '\n', 1) if kind == 'end' else lab for kind, _, lab, _ in seq],
+                       fontsize=S.FONT_MIN, rotation=90)
+    for t, (kind, _, lab, _) in zip(ax.get_xticklabels(), seq):
+        if kind == 'step':
+            t.set_color(S.STRATEGY[PM._step_strategy(lab)])
+    ax.set_xlim(-0.6, len(x) - 0.4)
+    ax.grid(axis='x', visible=False)
+
+
+def ed6():
+    """MODEL v3.3.1: the sequential waterfalls split by demand band (Fig5 / ED7 of v3.3.0) for Moderate (row 1) and
+    Ambitious (row 2): (a, c) Reference -> L1 ... L9 -> the Pathway; (b, d) the Pathway -> TL1 ... TL9 -> TL."""
+    w = D.csv('pathways/waterfall.csv')
+    name = 'ED6_waterfalls_by_demand_band'
+    fig, ax = plt.subplots(2, 2, figsize=S.figsize('double', 200), sharey=True)
+    fig.subplots_adjust(left=0.08, right=0.99, top=0.97, bottom=0.2, wspace=0.08, hspace=0.42)
+    bar_, batp = float(w['B_AR_kt'].iloc[0]), float(w['B_AtP_kt'].iloc[0])
+    shown, notes = set(), []
+    for row, setting in enumerate(('moderate', 'ambitious')):
+        ws = w[w['setting'] == setting]
+        steps = ws[['step', 'step_id', 'label']].drop_duplicates().sort_values('step').reset_index(drop=True)
+        tab = ws.pivot(index='step', columns='band', values='carbon_kt')
+        tab.columns = [P.band_id(c) for c in tab.columns]
+        tot = ws.groupby('step')['total_carbon_kt'].first().values
+        delta = tab.diff().iloc[1:]
+        bands = [b for b in PM.BANDS_TL if b in tab.columns]
+        shown |= {b for b in bands if (delta[b].abs() > 1e-9).any()}
+        i_pw = int(steps.index[steps['step_id'] == list(N.LEVERS)[-1]][0])
+        pw_lab = N.PATHWAY_RUNS[f'{N.PATHWAY}-{setting}']
+        for a in ax[row]:
+            S.boundary_hzones(a, bar_, batp)
+        _waterfall_panel(ax[row, 0], name, steps, tot, delta, bands, 0, i_pw, N.SCENARIOS['REF'], pw_lab,
+                         S.REFERENCE, S.PATHWAY[N.PATHWAY])
+        _waterfall_panel(ax[row, 1], name, steps, tot, delta, bands, i_pw, len(steps) - 1, pw_lab, N.TL['TL'],
+                         S.PATHWAY[N.PATHWAY], S.TL)
+        P.panel(ax[row, 0], 'ac'[row], f'{N.SCENARIOS["REF"]} → {pw_lab}')
+        P.panel(ax[row, 1], 'bd'[row], f'{pw_lab} → {N.TL["TL"]}')
+        ax[row, 0].set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
+        notes.append(f'{N.SETTINGS[setting]}: Reference {tot[0]:,.0f} kt -> {pw_lab} {tot[i_pw]:,.0f} kt -> TL '
+                     f'{tot[-1]:,.0f} kt')
+        ymax = max(tot.max(), bar_) * 1.1
+    ax[0, 0].set_ylim(0, ymax)
+    P.thousands(ax[0, 0].yaxis)
+    order = [b for b in PM.BANDS_TL if b in shown]
+    extra = [Patch(label='Increase (outline)', facecolor='none', edgecolor=S.MUTED, lw=S.LW_OUTLINE),
+             Line2D([0], [0], color=S.INK, lw=S.LW_BOLD, label='New total after the step')]
+    extra += [Patch(label=f'{St} {N.STRATEGIES[St]} (tick-label colour)', **S.fill(S.STRATEGY[St]))
+              for St in N.STRATEGIES]
+    fig.legend(handles=PM.paper_band_handles(order) + extra + S.boundary_handles() + S.zone_handles(),
+               loc='lower center', ncol=4, bbox_to_anchor=(0.5, 0.0), frameon=False, handlelength=1.4,
+               columnspacing=1.2, fontsize=S.FONT_MIN + 0.5)
+    _save(fig, name, note='; '.join(notes) + f'; budgets AR {bar_:,.0f} kt, AtP {batp:,.0f} kt. ' + WATERFALL_NOTE)
 
 
 def ed8():
@@ -218,7 +362,7 @@ def ed8():
                                                  "vacancy falls as the released stock is re-occupied over 2027-2050.")
 
 
-def ed9():
+def ed10():
     a = D.csv('pathways/annual.csv')
     a = a[a['scenario'] == 'REF']
     ref = a[a['run'] == 'REF'].set_index('year')
@@ -236,10 +380,10 @@ def ed9():
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
     ax[0].legend(fontsize=S.FONT_MIN)
     fig.tight_layout()
-    _save(fig, 'ED9_rollout_timing')
+    _save(fig, 'ED10_rollout_timing')
 
 
-def ed10():
+def sf3():
     sw = D.csv('pathways/lambda_sweep.csv')
     fig, ax = plt.subplots(figsize=S.figsize('double', 85))
     for L in LV.LEVERS:
@@ -255,11 +399,11 @@ def ed10():
     P.thousands(ax.yaxis)
     ax.legend(fontsize=S.FONT_MIN, ncol=3, loc='lower left')
     fig.tight_layout()
-    _save(fig, 'ED10_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
+    _save(fig, 'SF3_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
                                          's_ref against the year-varying replacement share.')
 
 
-def ed11():
+def sf4():
     p = D.js('pathways/levers.json')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 70))
     for a, L, key, letter in ((ax[0], 'L5', 'ratio', 'a'), (ax[1], 'L8', 'ratio', 'b')):
@@ -281,7 +425,7 @@ def ed11():
         P.panel(a, letter, f"{L} {N.LEVERS[L]} (n = {q['n']}, B = {e['bootstrap']['B']})")
     fig.tight_layout()
     c15 = p['L8'].get('check_with_A_1')
-    _save(fig, 'ED11_hd_estimators',
+    _save(fig, 'SF4_hd_estimators',
           note=('L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
                 'its ratio to the apartment pooled value is ~1 by construction'
                 + (f" ({c15['A_1_ratio']:.4f}); with A_1 (n = {c15['n']}) r = {c15['r']:.3f} (95% CI "
@@ -289,7 +433,7 @@ def ed11():
                    f"(n = {c15['adopted_n']}; check only)" if c15 else '') + '.'))
 
 
-def ed12():
+def sf5():
     p = D.js('pathways/levers.json')['L4']
     fig, ax = plt.subplots(figsize=S.figsize('double', 70))
     cols = {'Detached': S.LEVER['L4'], 'Townhouses': S.LEVER['L8'], 'Apartments': S.LEVER['L2']}
@@ -304,14 +448,14 @@ def ed12():
     ax.set_ylabel('Mean consented new-dwelling size (m²)')
     ax.legend(fontsize=S.FONT_SMALL)
     fig.tight_layout()
-    _save(fig, 'ED12_consent_sizes', note='Dotted: the Reference size (2023-2025 mean). 1990 is the first year of the '
+    _save(fig, 'SF5_consent_sizes', note='Dotted: the Reference size (2023-2025 mean). 1990 is the first year of the '
                                           'series and a recession year.')
 
 
 VARIANT_LS = (('LOW', '--'), ('REF', '-'), ('HIGH', ':'), ('VHIGH', '-.'))     # MODEL v3.3.0: + Very High
 
 
-def ed13():
+def ed9():
     a = D.csv('pathways/annual.csv')
     v = D.csv('sensitivity/replacement_variants.csv')
     ref = a[(a['scenario'] == 'REF') & (a['run'] == 'REF')].set_index('year')
@@ -347,10 +491,10 @@ def ed13():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Cumulative')
     fig.tight_layout()
-    _save(fig, 'ED13_replacement_variants')
+    _save(fig, 'ED9_replacement_variants')
 
 
-def ed14():
+def ed4():
     lg = D.csv('baseline/overbuild_absorption_log.csv')
     sa = D.csv('baseline/sensitivity_annual_carbon.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 72))
@@ -381,7 +525,7 @@ def ed14():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Absorption timing (2026-2050 totals)')
     fig.tight_layout()
-    _save(fig, 'ED14_overbuild_absorption', note='Theory fixes the direction (reversion to the equilibrium vacancy), '
+    _save(fig, 'ED4_overbuild_absorption', note='Theory fixes the direction (reversion to the equilibrium vacancy), '
                                                  'not the speed; 2035 is the common RECC window; speed bracketed.')
 
 
@@ -432,10 +576,10 @@ def edt1():
         f.write('\n'.join(L_) + '\n')
 
 
-FIGURES = {'ED1_census_replacement_rates': ed1, 'ED2_household_formation_size': ed2,
-           'ED3_cumulative_households_population_floor_area': ed3, 'ED4_mc_scatter_population': ed4,
-           'ED5_conditional_tl': ed5, 'ED6_single_levers': ed6, 'ED7_waterfall_ambitious': ed7,
-           'ED8_tl_shapley_indicators': ed8, 'ED9_rollout_timing': ed9, 'ED10_lambda_sweep': ed10,
-           'ED11_hd_estimators': ed11, 'ED12_consent_sizes': ed12, 'ED13_replacement_variants': ed13,
-           'ED14_overbuild_absorption': ed14}
+FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_census_replacement_rates': ed2,
+           'ED3_household_formation_size': ed3, 'ED4_overbuild_absorption': ed4, 'ED5_pathways_annual': ed5,
+           'ED6_waterfalls_by_demand_band': ed6, 'ED7_single_levers': ed7, 'ED8_tl_shapley_indicators': ed8,
+           'ED9_replacement_variants': ed9, 'ED10_rollout_timing': ed10,
+           'SF1_mc_scatter_population': sf1, 'SF2_conditional_tl': sf2, 'SF3_lambda_sweep': sf3,
+           'SF4_hd_estimators': sf4, 'SF5_consent_sizes': sf5}
 TABLES = {'EDT1_levels_by_typology': edt1}

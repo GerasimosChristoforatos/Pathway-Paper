@@ -18,7 +18,7 @@ def test_profile_settings():
     import runprofile
     L, F = runprofile.PROFILES['light'], runprofile.PROFILES['full']
     assert (L['n_draws'], L['sobol'], L['bootstrap'], L['dpi'], L['formats']) == (1000, False, 500, 200, ('png',))
-    assert (F['n_draws'], F['sobol'], F['bootstrap'], F['dpi'], F['formats']) == (5000, True, 2000, 600, ('pdf', 'png'))
+    assert (F['n_draws'], F['sobol'], F['bootstrap'], F['dpi'], F['formats']) == (5000, True, 2000, 600, ('png',))
     assert F['mc_seed'] == 20260924 and L['mc_seed'] != F['mc_seed'] and L['out_subdir'] == '_light'
 
 

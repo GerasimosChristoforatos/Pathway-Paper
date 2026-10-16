@@ -8,8 +8,8 @@
   * the two sequential waterfalls: steps add up to their totals, end at the Pathway and at TL, the deltas add up to
     Reference - Pathway and Pathway - TL, and sequential_vs_shapley.csv carries the same values;
   * band sums (projection, every pathway run, history); bands not rescaled; zero-year guard; built >= 0;
-  * Fig6: the markers lie on the analytic plane; the exact AR / AtP curves give LoE = the level (1e-9); the y-axis
-    reaches the AtP curve;
+  * Fig6: the markers lie on the analytic plane; the exact AR / AtP curves give LoE = the level (1e-9); the axes
+    reach the AtP curve;
   * Very High replacement: the stored trend is the weighted least-squares fit of the stored census rates; the VHIGH
     runs exist; the Monte Carlo samples the half-life in U(5, 15)."""
 import json
@@ -218,8 +218,7 @@ def test_fig6_exact_budget_curves():
     y0 = float(PM.fig6_curve(bc, 0.0, atp))
     r = bc['REF']
     assert (y0 > 1.0) == (r['carbon_fixed_2026_cohort_kt'] > bc['B_AtP_kt'])
-    ytop = max(1.0, np.ceil(round(y0 / PM.FIG6_Y_STEP, 9)) * PM.FIG6_Y_STEP)
-    assert ytop >= y0 and ytop - PM.FIG6_Y_STEP < y0
+    assert PM.FIG6_LIM[1] >= y0                  # MODEL v3.3.1: the axes (to 110%) show the AtP contour
 
 
 # ------------------------------------------------------------------ replacement ----

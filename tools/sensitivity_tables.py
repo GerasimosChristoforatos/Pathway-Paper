@@ -8,8 +8,8 @@ Writes outputs/data/sensitivity/:
                            Combined) carbon 2026-2050 and its levels of exceedance, pathway design rows (D41)
   planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42)
   replacement_variants.csv the Reference, the Moderate / Ambitious Pathway and TL under Low / Reference / High / Very
-                           High replacement (ED13)
-  tornado.csv              Fig7: the eight inputs of the Reference tornado (low / high), cumulative carbon and the
+                           High replacement (ED9)
+  tornado.csv              Fig8a: the inputs of the Reference tornado (low / high), cumulative carbon and the
                            cumulative LoE AR and AtP (the budgets move only with the population path)
 
 Every row has its group, the row label, its side (low / high / single), the value, the change vs the
@@ -268,7 +268,7 @@ def pb_table():
     return pd.DataFrame(rows)
 
 
-# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED13) --------------------------
+# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED9) --------------------------
 def replacement_variants():
     """The Reference, the Moderate / Ambitious Pathway and TL under the Low, Reference, High and Very High replacement
     variants:
@@ -300,7 +300,7 @@ def replacement_variants():
     return pd.DataFrame(rows)
 
 
-# ---- 5. Fig7 tornado: eight inputs of the Reference ------------------------------------------------
+# ---- 5. Fig8a tornado: inputs of the Reference ------------------------------------------------
 TORNADO = [   # (input, low case, high case) in reference_table() rows
     ('Population (Stats NZ 5th / 95th percentile)', 'Population: Stats NZ 5th / 95th percentile'),
     ('Household size (Stats NZ High / Low variant)', 'Household size: Stats NZ High / Low variant'),
@@ -315,7 +315,7 @@ TORNADO = [   # (input, low case, high case) in reference_table() rows
 
 
 def tornado(ref):
-    """Fig7: for each input its low and high case: cumulative carbon 2026-2050 and the cumulative LoE AR and AtP. The
+    """Fig8a: for each input its low and high case: cumulative carbon 2026-2050 and the cumulative LoE AR and AtP. The
     boundaries depend on the population path only (aesa): the population rows use that path's budgets
     (aesa/results.json population_paths), every other row the Reference budgets."""
     with open(data('aesa/results.json')) as f:

@@ -33,18 +33,18 @@ def groups():
     """Colours that appear together in one figure (name -> {label: hex})."""
     import naming as N
     return {
-        'Runs and boundaries (Fig4, D28)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
+        'Runs and boundaries (ED5, D28)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
                                                 'Reference': S.REFERENCE, N.TL['TL']: S.TL},
                                                **{(f'{p} {N.STRATEGIES[p]}' if p in N.STRATEGIES else
                                                    'Moderate / Ambitious Pathway'): c for p, c in S.PATHWAY.items()}),
-        'Levers (Fig8, ED6, ED10, D29, D31)': {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
+        'Levers (ED7, SF3, D29, D31)': {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
         # MODEL v2.1.2: the Recent replacement surge (L3 face, fine light hatch) and Historical replacement (a darker,
         # slightly bluer lilac) differ in lightness, hue and hatch; the surge face is checked against every other
         # band in the next group, the replacement-surge pair is reported in the text
         # MODEL v3.0.0: every band shown together (Fig1, Fig2, Fig5, D25, D26, D36): the negative bands as filled
         # areas below zero in time series and as outlines in cumulative bars
-        'Demand bands (Fig1, Fig2, Fig5, D25, D26, D36)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
+        'Demand bands (Fig2, Fig3, ED6, D25, D26, D36)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
                                                            if b != 'redevelopment'},
         'Recent replacement surge face against the other bands': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
                                                                    if b != 'replacement'},
@@ -54,14 +54,14 @@ def groups():
                'Reference': S.REFERENCE, 'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
             **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
         'Carbon components (Fig3c, diagnostics)': {N.COMPONENTS[c]: S.COMPONENT[c][0] for c in S.COMPONENT},
-        'Projection variants and boundaries (ED5, ED10)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
+        'Projection variants and boundaries (ED2, ED9)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                              for k in S.SCENARIO},
                                                             **{'Acquired rights (AR)': S.AR,
                                                                'Ability to pay (AtP)': S.ATP}),
         'Materials (Fig3b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
         'Life-cycle stages (Fig3a)': {N.STAGES[k]: S.STAGE[k][0] for k in S.STAGE},
-        'History bands (Fig1)': {(N.BANDS.get(b) or N.BAND_DETAIL[b]): S.HISTORY_BAND[b][0] for b in S.HISTORY_BAND},
-        'Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
+        'History bands (Fig2)': {(N.BANDS.get(b) or N.BAND_DETAIL[b]): S.HISTORY_BAND[b][0] for b in S.HISTORY_BAND},
+        'Categorical groups (diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
 
 
@@ -190,7 +190,7 @@ def main():
          f"({S.ZONE['exceeded']['color']}, alpha {S.ZONE['exceeded']['alpha']}, \"boundary exceeded\"), on annual, "
          'cumulative and level-of-exceedance axes alike. The two principles are never averaged.',
          '* **Settings**: lines: Moderate solid bold, Ambitious the same colour thin dotted; markers: Moderate filled, '
-         'Ambitious hollow; bars (Fig8): Moderate hollow, Ambitious filled, TL a large deep-green dot.',
+         'Ambitious hollow; bars (Fig7): Moderate hollow, Ambitious filled, TL a large deep-green dot.',
          f"* **Typeface**: {S.FONT} only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open "
          'Font License 1.1, registered by figures/style.py, so every machine renders the same glyphs.',
          f"* **Sizes** (Nature Cities): width {S.WIDTH['single'] / S.MM:.0f} mm (single column) or "

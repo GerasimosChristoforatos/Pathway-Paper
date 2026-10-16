@@ -29,7 +29,8 @@ nine levers (512 subsets) at Moderate and Ambitious (Reference -> Moderate / Amb
 TL from the Reference (512), and TL1-TL9 from the Moderate Pathway (512; the TL waterfall's game). Every run is cached
 by its lever setting (levers.key) and reused across strategies, games and variants.
 WATERFALLS (sequential, PAS 2080 hierarchy order): (a) Reference -> +L1 ... +L9 at a setting (= the Moderate /
-Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL9 (= TL), by demand band, at Moderate (Fig5) and Ambitious (ED7).
+Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL9 (= TL), by demand band, at Moderate and Ambitious (ED6); MODEL
+v3.3.1: Reference -> TL1 ... TL9 cumulative (Fig5c; waterfall_tl_from_reference).
 Each step is credited with what remains after the higher-priority measures; sequential_vs_shapley.csv compares the
 steps with the order-free Shapley values. No timing step: TL is adopted on the same logistic as every level.
 
@@ -769,6 +770,7 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
 
     # ---- waterfalls ----
     wf = pd.concat([waterfall(ref, get, s) for s in LV.SETTINGS], ignore_index=True)
+    wf_tl = waterfall_tl_from_reference(ref, get)
     seq_vs_shap = sequential_vs_shapley(wf, pd.DataFrame(shap_rows))
 
     # ---- per-lever annual carbon (single-lever runs) and the re-occupation log of the TL runs ----
@@ -795,7 +797,8 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
     out = dict(params=params, runs=runs_df, annual=pd.DataFrame(annual), bands=bands_df,
                bands_annual=pd.DataFrame(bands_annual), shapley=pd.DataFrame(shap_rows),
                shapley_subsets=pd.DataFrame(sub_rows), shapley_exact=shap_exact, backcast=backcast_out, space=space,
-               lambda_sweep=pd.DataFrame(sweep), waterfall=wf, sequential_vs_shapley=seq_vs_shap,
+               lambda_sweep=pd.DataFrame(sweep), waterfall=wf, waterfall_tl_from_reference=wf_tl,
+               sequential_vs_shapley=seq_vs_shap,
                lever_annual=pd.DataFrame(lever_annual),
                reoccupation_log=pd.DataFrame(reocc_log), ctxs=ctxs, states=states, cache=cache, get=get,
                tl_levels=TL_ALL, seconds=time.time() - t0)
@@ -810,7 +813,6 @@ def waterfall(ctx, get, setting):
     (= the Moderate / Ambitious Pathway), (b) -> +TL1 ... +TL9 (= TL); every step a cached run, each step's change
     split exactly into the in-scope demand bands; each step is credited with what remains after the higher-priority
     measures (order-dependent; the order-free values are the Shapley values)."""
-    bar = float(np.sum(ctx['b_ar'])) / M6
     steps = [('REF', N.SCENARIOS['REF'], {})]
     acc = {}
     for L in LV.LEVERS:
@@ -821,6 +823,26 @@ def waterfall(ctx, get, setting):
         t = LV.TL_COMPONENTS[k - 1]
         steps.append((t, f'+ {t} {N.TL[t]}' + (' (= TL)' if k == len(LV.TL_COMPONENTS) else ''),
                       LV.tl_levels(LV.TL_COMPONENTS[:k], setting)))
+    return waterfall_rows(ctx, get, setting, steps)
+
+
+def waterfall_tl_from_reference(ctx, get):
+    """MODEL v3.3.1 (Fig5c): the sequential path Reference -> +TL1 -> ... -> +TL9 (= TL), every limit added
+    cumulatively from the Reference in PAS 2080 order (the other levers off: levers.tl_levels(.., 'reference')); each
+    step a cached run, split exactly into the in-scope demand bands as in waterfall(). The step runs are the prefix
+    subsets of the levers_tl Shapley game."""
+    steps = [('REF', N.SCENARIOS['REF'], {})]
+    for k in range(1, len(LV.TL_COMPONENTS) + 1):
+        t = LV.TL_COMPONENTS[k - 1]
+        steps.append((t, f'+ {t} {N.TL[t]}' + (' (= TL)' if k == len(LV.TL_COMPONENTS) else ''),
+                      LV.tl_levels(LV.TL_COMPONENTS[:k], 'reference')))
+    return waterfall_rows(ctx, get, 'tl', steps)
+
+
+def waterfall_rows(ctx, get, setting, steps):
+    """Rows of a sequential waterfall: steps [(step id, label, levels)], each a cached run, its in-scope bands
+    checked to add up to its carbon (1e-9)."""
+    bar = float(np.sum(ctx['b_ar'])) / M6
     rows, prev = [], None
     for i, (sid, lab, levels) in enumerate(steps):
         R = get(ctx['scenario'], levels)
@@ -1073,6 +1095,7 @@ def write(res, identity):
     _csv(res['space'], 'solution_space.csv')
     _csv(res['lambda_sweep'], 'lambda_sweep.csv')
     _csv(res['waterfall'], 'waterfall.csv')
+    _csv(res['waterfall_tl_from_reference'], 'waterfall_tl_from_reference.csv')
     _csv(res['sequential_vs_shapley'], 'sequential_vs_shapley.csv')
     _csv(res['lever_annual'], 'lever_annual.csv')
     _csv(res['reoccupation_log'], 'reoccupation_log.csv')

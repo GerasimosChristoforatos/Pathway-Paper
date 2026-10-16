@@ -1,0 +1,78 @@
+{
+ "figure": "ED9_replacement_variants",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "Annual",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Cumulative",
+   "xlabel": "",
+   "ylabel": "Cumulative LoE AR 2026-2050",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{1000}$",
+  "$\\mathdefault{1200}$",
+  "$\\mathdefault{1400}$",
+  "$\\mathdefault{1600}$",
+  "$\\mathdefault{1}$",
+  "$\\mathdefault{200}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{2}$",
+  "$\\mathdefault{3}$",
+  "$\\mathdefault{400}$",
+  "$\\mathdefault{4}$",
+  "$\\mathdefault{5}$",
+  "$\\mathdefault{600}$",
+  "$\\mathdefault{6}$",
+  "$\\mathdefault{800}$",
+  "Ambitious Pathway",
+  "Annual",
+  "Cumulative",
+  "Cumulative LoE AR 2026-2050",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "High replacement",
+  "Low replacement",
+  "Moderate Pathway",
+  "Reference",
+  "Reference / variant",
+  "Theoretical Limit",
+  "Very High replacement (trend continues)",
+  "a",
+  "b"
+ ],
+ "note": null,
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_outside": false,
+ "boundary_zones": true,
+ "white_segment_edges": 0,
+ "source": [
+  "sensitivity/replacement_variants.csv",
+  "pathways/annual.csv"
+ ],
+ "atp_linestyles": [
+  "dotted"
+ ],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

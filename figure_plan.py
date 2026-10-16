@@ -12,15 +12,7 @@ Figures are PNG only (runprofile.py: 600 dpi full, 200 dpi light; MODEL v3.3.1).
 RETIRED with the reason (docs/FIGURE_PLAN_v3.md).
 """
 PAPER_MAIN = [
-    dict(id='Fig1', file='Fig1_model_schematic', width='double', module='figures.paper_main',
-         title='The model',
-         caption='Population -> households -> dwellings -> floor area -> embodied carbon (A1-A5, soil carbon loss, '
-                 'B2/B4), compared with the planetary boundaries (acquired rights AR, ability to pay AtP). The nine '
-                 'levers sit under the step they act on, in the three PAS 2080 strategy bands (S1 Avoid, S2 Switch, '
-                 'S3 Improve); the ambition ladder gives the four levels of every lever. Levers adopt on a logistic '
-                 'path, full by 2035.',
-         source=['pathways/levers.json']),
-    dict(id='Fig2', file='Fig2_floor_area', width='double', module='figures.paper_main',
+    dict(id='Fig1', file='Fig1_floor_area', width='double', module='figures.paper_main',
          title='Floor area: history and projection by demand band',
          caption='Floor area built per year by demand band: history as census-interval means (columns), the Reference '
                  'projection annually from 2026 (2026 observed). Positive bands stacked up from zero, negative bands '
@@ -28,34 +20,46 @@ PAPER_MAIN = [
                  '(in scope). 2026 overbuild: observed 2026 building above need, fading from 2027 and absorbed by 2035.',
          source=['baseline/bands_history.csv', 'baseline/bands_annual.csv', 'baseline/annual.csv',
                  'baseline/overbuild_2026.json']),
-    dict(id='Fig3', file='Fig3_reference_carbon', width='double', module='figures.paper_main',
+    dict(id='Fig2', file='Fig2_reference_carbon', width='double', module='figures.paper_main',
          title='Embodied carbon of the Reference',
          caption='Annual embodied carbon of the Reference 2026-2050 by (a) demand band, (b) material and (c) life-cycle '
-                 'stage; materials and stages are never negative.',
+                 'stage; (d) cumulative 2026-2050 as three attached columns of the same total by demand band, material '
+                 'and stage (negative demand bands outlined, hanging down to the total). Materials and stages are never '
+                 'negative.',
          source=['baseline/bands_annual.csv', 'baseline/annual_by_material.csv', 'baseline/annual_by_stage.csv']),
-    dict(id='Fig4', file='Fig4_reference_boundaries', width='double', module='figures.paper_main',
+    dict(id='Fig3', file='Fig3_reference_boundaries', width='double', module='figures.paper_main',
          title='The Reference against the planetary boundaries',
          caption='(a) Annual carbon, Monte Carlo median with 50% and 90% bands, against the acquired-rights (AR) and '
-                 'ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with the AR and AtP '
-                 'budgets, and the committed emissions after 2050 by stage: B2/B4 after 2050 (range: lower = 2050 '
-                 'factors held, upper = 2025 factors) and C1-C4.',
-         source=['aesa/annual.csv', 'montecarlo/annual_REF.csv', 'baseline/projection.json']),
-    dict(id='Fig5', file='Fig5_waterfall', width='double', module='figures.paper_main',
-         title='From the Reference to the Pathways and the theoretical limit',
-         caption='Three sequential waterfalls of cumulative carbon 2026-2050, all from the Reference, levers added in '
-                 'PAS 2080 order (S1 Avoid, S2 Switch, S3 Improve): (a) L1 ... L9 at Moderate -> Moderate Pathway; (b) '
-                 'at Ambitious -> Ambitious Pathway; (c) TL1 ... TL9 cumulative -> Theoretical Limit. Each step is one '
-                 'bar, coloured by strategy, with its net change; each step is credited with what remains after the '
-                 'higher-priority measures (order-free Shapley values in Fig7). Split by demand band in ED6.',
-         source=['pathways/waterfall.csv', 'pathways/waterfall_tl_from_reference.csv']),
+                 'ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with its Monte Carlo '
+                 '95% interval (2.5th-97.5th percentile of the cumulative carbon) and the AR and AtP budgets, and the '
+                 'committed emissions after 2050: C1-C4 and B2/B4 after 2050, the latter a range (lower = 2050 factors '
+                 'held, upper = 2025 factors).',
+         source=['aesa/annual.csv', 'montecarlo/annual_REF.csv', 'montecarlo/draws_REF.csv', 'baseline/projection.json']),
+    dict(id='Fig4', file='Fig4_pathways', width='double', module='figures.paper_main',
+         title='The Pathways: annual carbon and the sequential waterfalls',
+         caption='(a) Annual carbon 2026-2050 of the Reference, the Moderate and Ambitious Pathway, the Theoretical Limit '
+                 'and the PAS 2080 strategies S1-S3 (thin; Moderate solid, Ambitious dotted) against AR and AtP. (b-d) '
+                 'Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 '
+                 'order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 '
+                 '... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
+                 'order-free Shapley values in Fig7; split by demand band in ED6.',
+         source=['pathways/annual.csv', 'pathways/waterfall.csv', 'pathways/waterfall_tl_from_reference.csv']),
+    dict(id='Fig5', file='Fig5_reduction_by_demand', width='double', module='figures.paper_main',
+         title='What the reduction consists of',
+         caption='Reduction of cumulative carbon 2026-2050 against the Reference for the Moderate Pathway, the Ambitious '
+                 'Pathway and the Theoretical Limit, by demand band (Reference - run, per band); column height = total '
+                 'reduction. Negative band reductions (outlined, hanging down from the top of the positive stack): the '
+                 'credits from re-used dwellings (overbuild absorbed, unconsented additions) shrink when new dwellings '
+                 'are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.',
+         source=['pathways/bands.csv', 'pathways/runs.csv']),
     dict(id='Fig6', file='Fig6_solution_space', width='double', module='figures.paper_main',
          title='The solution space',
-         caption='Cumulative level of exceedance of AR and AtP over uniform cuts of 2027-2050 floor area (x) and of '
-                 'carbon per m2 (y) (after Horup et al. 2025), with S1-S3 (Moderate filled, Ambitious hollow), the '
-                 'Moderate / Ambitious Pathway and the Theoretical Limit; exact AR line and both branches of the AtP '
-                 'contour of the analytic plane. Hatched: y > 100% carbon-negative buildings, x > 100% negative '
-                 'construction; x < 0 or y < 0 (more than the Reference) shaded as exceeded.',
-         source=['pathways/solution_space.csv', 'pathways/backcast.json']),
+         caption='Cumulative level of exceedance of AR over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 '
+                 '(y) (after Horup et al. 2025), axes -5% to 100%, with S1-S3 (Moderate filled, Ambitious hollow), the '
+                 'Moderate / Ambitious Pathway and the Theoretical Limit; analytic LoE AR contours and the exact AR line. '
+                 'Right: the LoE AR ruler (log) with the Reference, the Pathways, TL, AR = 1, the plane floor (the 2026 '
+                 'observed cohort alone) and AtP.',
+         source=['pathways/solution_space.csv', 'pathways/backcast.json', 'pathways/runs.csv']),
     dict(id='Fig7', file='Fig7_shapley_levers', width='double', module='figures.paper_main',
          title='What each lever removes',
          caption='Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; '
@@ -70,10 +74,10 @@ PAPER_MAIN = [
          caption='(a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high '
                  'end per its definition (population rows move the budgets with the path; AR base-window rows move the '
                  'AR budget only); not additive, not a joint interval. (b) Theoretical Limit: cumulative LoE AR against '
-                 'the 2050 New Zealand population across the Monte Carlo draws, with the Firth logistic probability '
-                 'P(LoE AR <= 1) and the population threshold at P = 50% (bootstrap 95% CI).',
+                 'the 2050 New Zealand population across the Monte Carlo draws, LoE = 1, and the population at which '
+                 'P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).',
          source=['sensitivity/tornado.csv', 'sensitivity/planetary_boundary.csv', 'pathways/montecarlo_draws.csv',
-                 'pathways/montecarlo_conditional_tl.json']),
+                 'pathways/montecarlo_conditional_tl.json', 'baseline/scenarios.json', 'aesa/results.json']),
 ]
 
 PAPER_EXTENDED = [
@@ -109,17 +113,20 @@ PAPER_EXTENDED = [
 
 # MODEL v3.3.1: Extended Data beyond the ten allowed (Nature Cities) -> outputs/supplementary/
 SUPPLEMENTARY = [
-    dict(id='SF1', file='SF1_mc_scatter_population', module='figures.paper_extended',
+    dict(id='SF1', file='SF1_model_schematic', module='figures.paper_main',
+         title='The model: conversion chain, levers by PAS 2080 strategy, ambition ladder (Fig1 in MODEL v3.3.1)',
+         source=['pathways/levers.json']),
+    dict(id='SF2', file='SF2_mc_scatter_population', module='figures.paper_extended',
          title='Monte Carlo: LoE against the population rank', source=['pathways/montecarlo_draws.csv']),
-    dict(id='SF2', file='SF2_conditional_tl', module='figures.paper_extended',
+    dict(id='SF3', file='SF3_conditional_tl', module='figures.paper_extended',
          title='When does TL stay within AR? By population quintile and the population threshold',
          source=['pathways/montecarlo_conditional_tl.csv', 'pathways/montecarlo_conditional_tl.json']),
-    dict(id='SF3', file='SF3_lambda_sweep', module='figures.paper_extended',
+    dict(id='SF4', file='SF4_lambda_sweep', module='figures.paper_extended',
          title='Lambda-sweep of each lever (Reference 0, Moderate 0.5, Ambitious 1) and the TL point',
          source=['pathways/lambda_sweep.csv']),
-    dict(id='SF4', file='SF4_hd_estimators', module='figures.paper_extended',
+    dict(id='SF5', file='SF5_hd_estimators', module='figures.paper_extended',
          title='Harrell-Davis estimators of L5 and L8 with bootstrap intervals', source=['pathways/levers.json']),
-    dict(id='SF5', file='SF5_consent_sizes', module='figures.paper_extended',
+    dict(id='SF6', file='SF6_consent_sizes', module='figures.paper_extended',
          title='L4: mean consented new-dwelling size by typology, 1990-2025, with the minima',
          source=['pathways/levers.json']),
 ]
@@ -227,11 +234,12 @@ DIAGNOSTICS = {
 FULL_ONLY = ('D20_sobol',)
 
 # Maintenance (B2, B4) drawn as its own layer: only in the band and stage breakdowns
-MAINTENANCE_ALLOWED = ('Fig3_reference_carbon', 'Fig4_reference_boundaries', 'ED6_waterfalls_by_demand_band',
+MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries', 'Fig5_reduction_by_demand',
+                       'ED6_waterfalls_by_demand_band',
                        'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band', 'D32_tl_staircase',
                        'D36_pathway_bands')
 # every figure with a planetary boundary on its axes (zones required; AtP dotted)
-PB_FIGURES = ('Fig4_reference_boundaries', 'Fig5_waterfall', 'Fig6_solution_space',
+PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways', 'Fig6_solution_space',
               'ED5_pathways_annual', 'ED6_waterfalls_by_demand_band', 'ED9_replacement_variants', 'ED10_rollout_timing',
               'D21_fan_and_boundaries', 'D22_boundaries', 'D23_annual_loe',
               'D24_headroom', 'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band',
@@ -251,6 +259,8 @@ RETIRED = {
                                 'ED4, ED10, ED11, ED12 -> SF1, SF3, SF4, SF5 (outputs/supplementary/)',
     'ED3_cumulative_households_population_floor_area': 'ED1 (population, households, floor area; 3 x 1)',
     'PDF output': 'retired in MODEL v3.3.1: figures are PNG only (600 dpi full, 200 dpi light)',
+    'MODEL v3.3.2 renumbering': 'Fig2-Fig4 -> Fig1-Fig3; Fig5 waterfalls -> Fig4 (b-d) with the annual pathways (a); '
+                                'Fig5 reduction by demand band (new); Fig1 schematic -> SF1 (SF1-SF5 -> SF2-SF6)',
 }
 
 

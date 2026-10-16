@@ -89,7 +89,7 @@ def test_fig5_net_positive_steps_reported():
     from figures import paper_main as PM
     paths, _, _ = PM.waterfall_paths()
     ups = [(k, s) for k, _, _, steps in paths for (s, t), (_, p) in zip(steps[1:], steps[:-1]) if t > p]
-    note = json.load(open(os.path.join(layout.FIGURE_AUDIT, 'Fig5_waterfall.json')))['note']
+    note = json.load(open(os.path.join(layout.FIGURE_AUDIT, 'Fig4_pathways.json')))['note']      # MODEL v3.3.2: Fig4
     if ups:
         assert all(s in note for _, s in ups)
     else:
@@ -105,11 +105,12 @@ def test_fig6_markers_and_both_atp_branches():
         assert np.isclose(z, r.loc[m['run'], 'LoE_AR'], rtol=RTOL, atol=0), m['run']
     atp = bc['B_AtP_kt'] / bc['B_AR_kt']
     k = (bc['B_AtP_kt'] - bc['REF']['carbon_fixed_2026_cohort_kt']) / bc['REF']['carbon_2027_2050_cohorts_kt']
-    br = PM.fig6_branches(bc, atp)
-    assert k < 0 and len(br) == 2
+    ext = (-0.05, 1.10)                         # the v3.3.1 square; MODEL v3.3.2 plots -5% to 100% (no AtP branch)
+    br = PM.fig6_branches(bc, atp, lim=ext)
+    assert k < 0 and len(br) == 2 and not PM.fig6_branches(bc, atp)
     (x1, y1), (x2, y2) = br
     assert (x1 < 1).all() and (y1 > 1).all() and (x2 > 1).all() and (y2 < 1).all()
-    lo, hi = PM.FIG6_LIM
+    lo, hi = ext
     for x, y in br:
         assert np.allclose((1 - x) * (1 - y), k, rtol=RTOL, atol=0)
         assert np.allclose(PM.fig6_loe(bc, x, y), atp, rtol=RTOL, atol=0)

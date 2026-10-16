@@ -33,18 +33,18 @@ def groups():
     """Colours that appear together in one figure (name -> {label: hex})."""
     import naming as N
     return {
-        'Runs and boundaries (ED5, D28)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
+        'Runs and boundaries (Fig4, ED5, D28)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
                                                 'Reference': S.REFERENCE, N.TL['TL']: S.TL},
                                                **{(f'{p} {N.STRATEGIES[p]}' if p in N.STRATEGIES else
                                                    'Moderate / Ambitious Pathway'): c for p, c in S.PATHWAY.items()}),
-        'Levers (ED7, SF3, D29, D31)': {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
+        'Levers (ED7, SF4, D29, D31)': {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
         # MODEL v2.1.2: the Recent replacement surge (L3 face, fine light hatch) and Historical replacement (a darker,
         # slightly bluer lilac) differ in lightness, hue and hatch; the surge face is checked against every other
         # band in the next group, the replacement-surge pair is reported in the text
         # MODEL v3.0.0: every band shown together (Fig1, Fig2, Fig5, D25, D26, D36): the negative bands as filled
         # areas below zero in time series and as outlines in cumulative bars
-        'Demand bands (Fig2, Fig3, ED6, D25, D26, D36)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
+        'Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
                                                            if b != 'redevelopment'},
         'Recent replacement surge face against the other bands': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
                                                                    if b != 'replacement'},
@@ -60,7 +60,7 @@ def groups():
                                                                'Ability to pay (AtP)': S.ATP}),
         'Materials (Fig3b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
         'Life-cycle stages (Fig3a)': {N.STAGES[k]: S.STAGE[k][0] for k in S.STAGE},
-        'History bands (Fig2)': {(N.BANDS.get(b) or N.BAND_DETAIL[b]): S.HISTORY_BAND[b][0] for b in S.HISTORY_BAND},
+        'History bands (Fig1)': {(N.BANDS.get(b) or N.BAND_DETAIL[b]): S.HISTORY_BAND[b][0] for b in S.HISTORY_BAND},
         'Categorical groups (diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
 

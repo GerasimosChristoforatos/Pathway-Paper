@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # MODEL v3.3.1: paper Fig1-Fig8, Extended Data ED1-ED10, supplementary SF1-SF5 (figure_plan.py)
+    # MODEL v3.3.2: paper Fig1-Fig8, Extended Data ED1-ED10, supplementary SF1-SF6 (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -62,7 +62,7 @@ FILES = [
      '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED9)',
      'tools/sensitivity_tables.py'),
     ('data/baseline/annual_by_stage.csv', 'Annual carbon of the Reference 2026-2050 by life-cycle stage (A1-A3, '
-     'A4-A5, maintenance B2/B4, soil carbon loss) (Fig3c)', 'projection.py'),
+     'A4-A5, maintenance B2/B4, soil carbon loss) (Fig2c, d)', 'projection.py'),
     ('data/baseline/annual_by_material.csv', 'Annual carbon of the Reference 2026-2050 by material (each with its '
      'maintenance within 2026-2050) and soil carbon loss (Fig3)', 'projection.py'),
     # data: Monte Carlo
@@ -166,7 +166,7 @@ FILES = [
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
     ('data/sensitivity/tornado.csv', 'Fig8a: the inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
-    ('data/pathways/waterfall_tl_from_reference.csv', 'MODEL v3.3.1 (Fig5c): sequential waterfall Reference -> TL1 ... '
+    ('data/pathways/waterfall_tl_from_reference.csv', 'MODEL v3.3.1 (Fig4d): sequential waterfall Reference -> TL1 ... '
      'TL9 (cumulative from the Reference, PAS 2080 order; = TL) by demand band', 'pathways.py'),
     ('data/pathways/sequential_vs_shapley.csv', 'MODEL v3.3.0: each lever step of the sequential waterfalls (PAS 2080 '
      'order; Moderate, Ambitious) and each TL step (from the Moderate Pathway) against its order-free Shapley value',

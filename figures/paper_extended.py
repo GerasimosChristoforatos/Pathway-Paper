@@ -133,7 +133,7 @@ def sf1():
         P.panel(a, letter)
     ax[0].legend(fontsize=S.FONT_MIN, markerscale=4)
     fig.tight_layout()
-    _save(fig, 'SF1_mc_scatter_population', note=f'{len(dr):,} Latin hypercube draws.')
+    _save(fig, 'SF2_mc_scatter_population', note=f'{len(dr):,} Latin hypercube draws.')
 
 
 def sf2():
@@ -181,7 +181,7 @@ def sf2():
         P.panel(ax[1], 'b', 'TL LoE against the 2050 population (no threshold)')
     ax[1].set_xlabel('New Zealand population 2050 (million), Monte Carlo draws')
     fig.tight_layout()
-    _save(fig, 'SF2_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
+    _save(fig, 'SF3_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
                                           f"{j['wilson_95'][1]:.3f}); (b) {note_b}.")
 
 
@@ -399,7 +399,7 @@ def sf3():
     P.thousands(ax.yaxis)
     ax.legend(fontsize=S.FONT_MIN, ncol=3, loc='lower left')
     fig.tight_layout()
-    _save(fig, 'SF3_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
+    _save(fig, 'SF4_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
                                          's_ref against the year-varying replacement share.')
 
 
@@ -425,7 +425,7 @@ def sf4():
         P.panel(a, letter, f"{L} {N.LEVERS[L]} (n = {q['n']}, B = {e['bootstrap']['B']})")
     fig.tight_layout()
     c15 = p['L8'].get('check_with_A_1')
-    _save(fig, 'SF4_hd_estimators',
+    _save(fig, 'SF5_hd_estimators',
           note=('L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
                 'its ratio to the apartment pooled value is ~1 by construction'
                 + (f" ({c15['A_1_ratio']:.4f}); with A_1 (n = {c15['n']}) r = {c15['r']:.3f} (95% CI "
@@ -448,7 +448,7 @@ def sf5():
     ax.set_ylabel('Mean consented new-dwelling size (m²)')
     ax.legend(fontsize=S.FONT_SMALL)
     fig.tight_layout()
-    _save(fig, 'SF5_consent_sizes', note='Dotted: the Reference size (2023-2025 mean). 1990 is the first year of the '
+    _save(fig, 'SF6_consent_sizes', note='Dotted: the Reference size (2023-2025 mean). 1990 is the first year of the '
                                           'series and a recession year.')
 
 
@@ -580,6 +580,6 @@ FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_census_replacement_
            'ED3_household_formation_size': ed3, 'ED4_overbuild_absorption': ed4, 'ED5_pathways_annual': ed5,
            'ED6_waterfalls_by_demand_band': ed6, 'ED7_single_levers': ed7, 'ED8_tl_shapley_indicators': ed8,
            'ED9_replacement_variants': ed9, 'ED10_rollout_timing': ed10,
-           'SF1_mc_scatter_population': sf1, 'SF2_conditional_tl': sf2, 'SF3_lambda_sweep': sf3,
-           'SF4_hd_estimators': sf4, 'SF5_consent_sizes': sf5}
+           'SF2_mc_scatter_population': sf1, 'SF3_conditional_tl': sf2, 'SF4_lambda_sweep': sf3,
+           'SF5_hd_estimators': sf4, 'SF6_consent_sizes': sf5}
 TABLES = {'EDT1_levels_by_typology': edt1}

@@ -155,7 +155,7 @@ def test_no_historical_carbon_in_figures():
     assert files and files <= set(recs), sorted(files - set(recs))         # every saved figure audited
     # Fig3 (a) (Fig4 in MODEL v2.1.2) shows the same AR base window history as D21 (a thin line joined to the projection)
     allowed = {'D21_fan_and_boundaries': boundaries.AR_BASE_WINDOW[0],
-               'Fig4_reference_boundaries': boundaries.AR_BASE_WINDOW[0],          # MODEL v3.3.1 numbering
+               'Fig3_reference_boundaries': boundaries.AR_BASE_WINDOW[0],          # MODEL v3.3.2 numbering
                # D29 plots each lever's native parameter (dimensionless; the L9 A4-A5 factor path is anchored at
                # 2025 = 1), not carbon: its panel titles name the levers ('Construction-stage carbon')
                'D29_ramps': 2025}

@@ -1,12 +1,12 @@
 {
- "figure": "Fig2_floor_area",
+ "figure": "Fig1_floor_area",
  "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "",
    "xlabel": "",
    "ylabel": "Floor area built (Mm\u00b2 per year)",
-   "year_min": 1991.75,
+   "year_min": 1991.625,
    "year_max": 2050.5
   }
  ],

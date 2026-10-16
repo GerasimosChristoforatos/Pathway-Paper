@@ -4,53 +4,53 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 ## Main paper (paper_main/)
 
-### Fig1_model_schematic
+### Fig1_floor_area
 
-**Fig1 The model** — Population -> households -> dwellings -> floor area -> embodied carbon (A1-A5, soil carbon loss, B2/B4), compared with the planetary boundaries (acquired rights AR, ability to pay AtP). The nine levers sit under the step they act on, in the three PAS 2080 strategy bands (S1 Avoid, S2 Switch, S3 Improve); the ambition ladder gives the four levels of every lever. Levers adopt on a logistic path, full by 2035.
+**Fig1 Floor area: history and projection by demand band** — Floor area built per year by demand band: history as census-interval means (columns), the Reference projection annually from 2026 (2026 observed). Positive bands stacked up from zero, negative bands (overbuild absorbed, unconsented additions) down from zero; the black line is the floor area built (in scope). 2026 overbuild: observed 2026 building above need, fading from 2027 and absorbed by 2035.
 
-- Files: `paper_main/Fig1_model_schematic.png`
-- Data: `data/pathways/levers.json`
-- This run: Adoption: normalised logistic, from 2026 (w = 0) to 2035 (w = 1). Lever names from naming.LEVERS; strategy colours style.STRATEGY.
-
-### Fig2_floor_area
-
-**Fig2 Floor area: history and projection by demand band** — Floor area built per year by demand band: history as census-interval means (columns), the Reference projection annually from 2026 (2026 observed). Positive bands stacked up from zero, negative bands (overbuild absorbed, unconsented additions) down from zero; the black line is the floor area built (in scope). 2026 overbuild: observed 2026 building above need, fading from 2027 and absorbed by 2035.
-
-- Files: `paper_main/Fig2_floor_area.png`
+- Files: `paper_main/Fig1_floor_area.png`
 - Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`, `data/baseline/overbuild_2026.json`
 - This run: 2026 overbuild: observed 2026 building above need, fading from 2027 (ρ = 0.52) and absorbed by 2035. Negative bands drawn down from zero: Overbuild absorbed, Unconsented additions, Vacancy, Net replacement (census), Retirement villages (out of scope), Unexplained building. 2026-2050: 85.9 Mm².
 
-### Fig3_reference_carbon
+### Fig2_reference_carbon
 
-**Fig3 Embodied carbon of the Reference** — Annual embodied carbon of the Reference 2026-2050 by (a) demand band, (b) material and (c) life-cycle stage; materials and stages are never negative.
+**Fig2 Embodied carbon of the Reference** — Annual embodied carbon of the Reference 2026-2050 by (a) demand band, (b) material and (c) life-cycle stage; (d) cumulative 2026-2050 as three attached columns of the same total by demand band, material and stage (negative demand bands outlined, hanging down to the total). Materials and stages are never negative.
 
-- Files: `paper_main/Fig3_reference_carbon.png`
+- Files: `paper_main/Fig2_reference_carbon.png`
 - Data: `data/baseline/bands_annual.csv`, `data/baseline/annual_by_material.csv`, `data/baseline/annual_by_stage.csv`
-- This run: 2026-2050: 20,615 kt CO₂e.
+- This run: 2026-2050: 20,615 kt CO₂e; (d) the demand column: positive bands stacked to 22,092 kt, negative bands outlined, hanging down to the total.
 
-### Fig4_reference_boundaries
+### Fig3_reference_boundaries
 
-**Fig4 The Reference against the planetary boundaries** — (a) Annual carbon, Monte Carlo median with 50% and 90% bands, against the acquired-rights (AR) and ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with the AR and AtP budgets, and the committed emissions after 2050 by stage: B2/B4 after 2050 (range: lower = 2050 factors held, upper = 2025 factors) and C1-C4.
+**Fig3 The Reference against the planetary boundaries** — (a) Annual carbon, Monte Carlo median with 50% and 90% bands, against the acquired-rights (AR) and ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with its Monte Carlo 95% interval (2.5th-97.5th percentile of the cumulative carbon) and the AR and AtP budgets, and the committed emissions after 2050: C1-C4 and B2/B4 after 2050, the latter a range (lower = 2050 factors held, upper = 2025 factors).
 
-- Files: `paper_main/Fig4_reference_boundaries.png`
-- Data: `data/aesa/annual.csv`, `data/montecarlo/annual_REF.csv`, `data/baseline/projection.json`
-- This run: Cumulative 2026-2050 20,615 kt (LoE AR 4.63, AtP 18.5); committed after 2050 7,884-8,616 kt: C1-C4 4,687 kt (2025 factors) and B2/B4 after 2050 3,197 kt (2050 factors held) to 3,929 kt (2025 factors).
+- Files: `paper_main/Fig3_reference_boundaries.png`
+- Data: `data/aesa/annual.csv`, `data/montecarlo/annual_REF.csv`, `data/montecarlo/draws_REF.csv`, `data/baseline/projection.json`
+- This run: Cumulative 2026-2050 20,615 kt (LoE AR 4.63, AtP 18.5); Monte Carlo 95% interval 14,353-27,415 kt (2.5th-97.5th percentile of the cumulative carbon of the draws); committed after 2050 7,884-8,616 kt: C1-C4 4,687 kt (2025 factors) and B2/B4 after 2050 3,197 kt (2050 factors held) to 3,929 kt (2025 factors).
 
-### Fig5_waterfall
+### Fig4_pathways
 
-**Fig5 From the Reference to the Pathways and the theoretical limit** — Three sequential waterfalls of cumulative carbon 2026-2050, all from the Reference, levers added in PAS 2080 order (S1 Avoid, S2 Switch, S3 Improve): (a) L1 ... L9 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) TL1 ... TL9 cumulative -> Theoretical Limit. Each step is one bar, coloured by strategy, with its net change; each step is credited with what remains after the higher-priority measures (order-free Shapley values in Fig7). Split by demand band in ED6.
+**Fig4 The Pathways: annual carbon and the sequential waterfalls** — (a) Annual carbon 2026-2050 of the Reference, the Moderate and Ambitious Pathway, the Theoretical Limit and the PAS 2080 strategies S1-S3 (thin; Moderate solid, Ambitious dotted) against AR and AtP. (b-d) Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 ... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; order-free Shapley values in Fig7; split by demand band in ED6.
 
-- Files: `paper_main/Fig5_waterfall.png`
-- Data: `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
-- This run: Reference 20,615 kt -> Moderate Pathway 15,073 kt, Ambitious Pathway 10,920 kt, Theoretical Limit 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.
+- Files: `paper_main/Fig4_pathways.png`
+- Data: `data/pathways/annual.csv`, `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
+- This run: (a) Cumulative LoE AR: REF 4.63, pathway-moderate 3.39, pathway-ambitious 2.45, TL 0.98. (b-d) Reference 20,615 kt -> Moderate Pathway 15,073 kt, Ambitious Pathway 10,920 kt, Theoretical Limit 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.
+
+### Fig5_reduction_by_demand
+
+**Fig5 What the reduction consists of** — Reduction of cumulative carbon 2026-2050 against the Reference for the Moderate Pathway, the Ambitious Pathway and the Theoretical Limit, by demand band (Reference - run, per band); column height = total reduction. Negative band reductions (outlined, hanging down from the top of the positive stack): the credits from re-used dwellings (overbuild absorbed, unconsented additions) shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.
+
+- Files: `paper_main/Fig5_reduction_by_demand.png`
+- Data: `data/pathways/bands.csv`, `data/pathways/runs.csv`
+- This run: Reduction vs the Reference (kt): Moderate Pathway 5,542, Ambitious Pathway 9,694, Theoretical Limit 16,257. Negative band reductions (outlined): Overbuild absorbed -132, -249, -481; Unconsented additions -109, -199, -331 kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.
 
 ### Fig6_solution_space
 
-**Fig6 The solution space** — Cumulative level of exceedance of AR and AtP over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 (y) (after Horup et al. 2025), with S1-S3 (Moderate filled, Ambitious hollow), the Moderate / Ambitious Pathway and the Theoretical Limit; exact AR line and both branches of the AtP contour of the analytic plane. Hatched: y > 100% carbon-negative buildings, x > 100% negative construction; x < 0 or y < 0 (more than the Reference) shaded as exceeded.
+**Fig6 The solution space** — Cumulative level of exceedance of AR over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 (y) (after Horup et al. 2025), axes -5% to 100%, with S1-S3 (Moderate filled, Ambitious hollow), the Moderate / Ambitious Pathway and the Theoretical Limit; analytic LoE AR contours and the exact AR line. Right: the LoE AR ruler (log) with the Reference, the Pathways, TL, AR = 1, the plane floor (the 2026 observed cohort alone) and AtP.
 
 - Files: `paper_main/Fig6_solution_space.png`
-- Data: `data/pathways/solution_space.csv`, `data/pathways/backcast.json`
-- This run: LoE AR = [1,421 + 19,194 (1 - x)(1 - y)] / 4,451 kt; C_2026 = the 2026 cohort's emissions in the window. AtP contour (1 - x)(1 - y) = -0.01604 < 0 (C_2026 > B_AtP): one branch with y > 100% (y = 101.6% at x = 0), one with x > 100% (x = 101.6% at y = 0). Axes -5% to 110%.
+- Data: `data/pathways/solution_space.csv`, `data/pathways/backcast.json`, `data/pathways/runs.csv`
+- This run: LoE AR = [1,421 + 19,194 (1 - x)(1 - y)] / 4,451 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.319 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.250 lies below the floor, so the AtP contour is outside the plotted square (y = 101.6% at x = 0). Axes -5% to 100%.
 
 ### Fig7_shapley_levers
 
@@ -62,10 +62,10 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 ### Fig8_uncertainty
 
-**Fig8 Uncertainty** — (a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high end per its definition (population rows move the budgets with the path; AR base-window rows move the AR budget only); not additive, not a joint interval. (b) Theoretical Limit: cumulative LoE AR against the 2050 New Zealand population across the Monte Carlo draws, with the Firth logistic probability P(LoE AR <= 1) and the population threshold at P = 50% (bootstrap 95% CI).
+**Fig8 Uncertainty** — (a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high end per its definition (population rows move the budgets with the path; AR base-window rows move the AR budget only); not additive, not a joint interval. (b) Theoretical Limit: cumulative LoE AR against the 2050 New Zealand population across the Monte Carlo draws, LoE = 1, and the population at which P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).
 
 - Files: `paper_main/Fig8_uncertainty.png`
-- Data: `data/sensitivity/tornado.csv`, `data/sensitivity/planetary_boundary.csv`, `data/pathways/montecarlo_draws.csv`, `data/pathways/montecarlo_conditional_tl.json`
+- Data: `data/sensitivity/tornado.csv`, `data/sensitivity/planetary_boundary.csv`, `data/pathways/montecarlo_draws.csv`, `data/pathways/montecarlo_conditional_tl.json`, `data/baseline/scenarios.json`, `data/aesa/results.json`
 - This run: (a) Reference LoE AR 4.631; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = 0.552 (Wilson 0.538-0.566; n = 5,000); threshold 6.652 M (95% CI 6.648-6.655 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
 ## Extended Data (paper_extended/)
@@ -155,43 +155,51 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 ## Supplementary figures (supplementary/)
 
-### SF1_mc_scatter_population
+### SF1_model_schematic
 
-**SF1 Monte Carlo: LoE against the population rank**
+**SF1 The model: conversion chain, levers by PAS 2080 strategy, ambition ladder (Fig1 in MODEL v3.3.1)**
 
-- Files: `supplementary/SF1_mc_scatter_population.png`
+- Files: `supplementary/SF1_model_schematic.png`
+- Data: `data/pathways/levers.json`
+- This run: Adoption: normalised logistic, from 2026 (w = 0) to 2035 (w = 1). Lever names from naming.LEVERS; strategy colours style.STRATEGY.
+
+### SF2_mc_scatter_population
+
+**SF2 Monte Carlo: LoE against the population rank**
+
+- Files: `supplementary/SF2_mc_scatter_population.png`
 - Data: `data/pathways/montecarlo_draws.csv`
 - This run: 5,000 Latin hypercube draws.
 
-### SF2_conditional_tl
+### SF3_conditional_tl
 
-**SF2 When does TL stay within AR? By population quintile and the population threshold**
+**SF3 When does TL stay within AR? By population quintile and the population threshold**
 
-- Files: `supplementary/SF2_conditional_tl.png`
+- Files: `supplementary/SF3_conditional_tl.png`
 - Data: `data/pathways/montecarlo_conditional_tl.csv`, `data/pathways/montecarlo_conditional_tl.json`
 - This run: P(within AR) = 0.552 (Wilson 0.538-0.566); (b) threshold 6.65 M (95% CI 6.65-6.66 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
-### SF3_lambda_sweep
+### SF4_lambda_sweep
 
-**SF3 Lambda-sweep of each lever (Reference 0, Moderate 0.5, Ambitious 1) and the TL point**
+**SF4 Lambda-sweep of each lever (Reference 0, Moderate 0.5, Ambitious 1) and the TL point**
 
-- Files: `supplementary/SF3_lambda_sweep.png`
+- Files: `supplementary/SF4_lambda_sweep.png`
 - Data: `data/pathways/lambda_sweep.csv`
 - This run: L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant s_ref against the year-varying replacement share.
 
-### SF4_hd_estimators
+### SF5_hd_estimators
 
-**SF4 Harrell-Davis estimators of L5 and L8 with bootstrap intervals**
+**SF5 Harrell-Davis estimators of L5 and L8 with bootstrap intervals**
 
-- Files: `supplementary/SF4_hd_estimators.png`
+- Files: `supplementary/SF5_hd_estimators.png`
 - Data: `data/pathways/levers.json`
 - This run: L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).
 
-### SF5_consent_sizes
+### SF6_consent_sizes
 
-**SF5 L4: mean consented new-dwelling size by typology, 1990-2025, with the minima**
+**SF6 L4: mean consented new-dwelling size by typology, 1990-2025, with the minima**
 
-- Files: `supplementary/SF5_consent_sizes.png`
+- Files: `supplementary/SF6_consent_sizes.png`
 - Data: `data/pathways/levers.json`
 - This run: Dotted: the Reference size (2023-2025 mean). 1990 is the first year of the series and a recession year.
 
@@ -525,3 +533,4 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - MODEL v3.3.1 renumbering: Fig1-Fig3 -> Fig2-Fig4 (Fig1 the new model schematic); Fig4 pathways annual -> ED5; Fig7 tornado -> Fig8a; Fig8 Shapley -> Fig7; ED5 conditional TL -> Fig8b and SF2; ED7 Ambitious waterfall -> ED6 (Moderate and Ambitious by demand band); ED1, ED2, ED14, ED6, ED13, ED9 -> ED2, ED3, ED4, ED7, ED9, ED10; ED4, ED10, ED11, ED12 -> SF1, SF3, SF4, SF5 (outputs/supplementary/)
 - ED3_cumulative_households_population_floor_area: ED1 (population, households, floor area; 3 x 1)
 - PDF output: retired in MODEL v3.3.1: figures are PNG only (600 dpi full, 200 dpi light)
+- MODEL v3.3.2 renumbering: Fig2-Fig4 -> Fig1-Fig3; Fig5 waterfalls -> Fig4 (b-d) with the annual pathways (a); Fig5 reduction by demand band (new); Fig1 schematic -> SF1 (SF1-SF5 -> SF2-SF6)

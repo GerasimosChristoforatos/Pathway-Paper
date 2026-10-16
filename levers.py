@@ -771,7 +771,7 @@ def tl_levels(comps, base_setting='moderate'):
     """{lever: level} of a TL-family run: the levers of comps (TL1..TL9) at 'tl', the others at base_setting
     ('moderate': the Moderate Pathway, the base of the TL waterfall and of its Shapley game; 'ambitious': the
     Ambitious Pathway;
-    'reference': the base of the per-lever TL Shapley game of Fig8)."""
+    'reference': the base of the per-lever TL Shapley game of Fig7 and of the Fig5c waterfall)."""
     out = {} if base_setting == 'reference' else {L: base_setting for L in LEVERS}
     out.update({TL_LEVER[c]: 'tl' for c in comps})
     return out

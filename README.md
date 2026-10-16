@@ -44,9 +44,10 @@ Paths are those of the full profile (`outputs/`); the light profile writes the s
 
 | what | where |
 |---|---|
-| Every figure (paper, Extended Data, diagnostics) with its title, data sources and audit | [outputs/FIGURES.md](outputs/FIGURES.md) |
+| Every figure (paper, Extended Data, supplementary, diagnostics; PNG only) with its title, data sources and audit | [outputs/FIGURES.md](outputs/FIGURES.md) |
 | **Paper**: Fig1–Fig8 | [outputs/paper_main/](outputs/paper_main/) |
-| **Extended Data**: ED1–ED14 and the table EDT1 (lever levels by typology) | [outputs/paper_extended/](outputs/paper_extended/) |
+| **Extended Data**: ED1–ED10 and the table EDT1 (lever levels by typology) | [outputs/paper_extended/](outputs/paper_extended/) |
+| **Supplementary figures**: SF1–SF5 (beyond the ten Extended Data items) | [outputs/supplementary/](outputs/supplementary/) |
 | **Diagnostics**: calibration, validation, boundaries, pathways, Monte Carlo, sensitivity | [outputs/diagnostics/](outputs/diagnostics/) |
 | Run profile, draws, seeds, git and input hashes, step timings | [outputs/run_meta.json](outputs/run_meta.json) |
 | Grouped one-at-a-time sensitivity tables | [outputs/data/sensitivity/](outputs/data/sensitivity/) |

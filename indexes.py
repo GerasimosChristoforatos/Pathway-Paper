@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # paper (Fig1-Fig6, Tables 1-2), Extended Data (ED1-ED13) and key figures (K1-K6)
+    # MODEL v3.3.1: paper Fig1-Fig8, Extended Data ED1-ED10, supplementary SF1-SF5 (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -53,16 +53,16 @@ FILES = [
     ('data/baseline/sensitivity_annual_carbon.csv', 'Annual carbon 2026-2050 of every one-at-a-time sensitivity '
      '(and the population 5th / 95th percentile engine paths)', 'Sensitivity.py'),
     ('data/sensitivity/reference_carbon.csv', 'Grouped one-at-a-time sensitivity of the Reference carbon 2026-2050 '
-     '(ED1, ED3)', 'tools/sensitivity_tables.py'),
+     '(D16)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/pathway_carbon.csv', 'Grouped one-at-a-time sensitivity of the Moderate Pathway: carbon and '
-     'cumulative LoE AR / AtP (ED2)', 'tools/sensitivity_tables.py'),
+     'cumulative LoE AR / AtP (D41)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
-     'AR and AtP (ED4)', 'tools/sensitivity_tables.py'),
+     'AR and AtP (D42; the AR base-window rows in Fig8a)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/replacement_variants.csv', 'The Reference, the Moderate / Ambitious Pathway and TL under Low / Reference '
-     '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED13)',
+     '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED9)',
      'tools/sensitivity_tables.py'),
     ('data/baseline/annual_by_stage.csv', 'Annual carbon of the Reference 2026-2050 by life-cycle stage (A1-A3, '
-     'A4-A5, maintenance B2/B4, soil carbon loss) (Fig3)', 'projection.py'),
+     'A4-A5, maintenance B2/B4, soil carbon loss) (Fig3c)', 'projection.py'),
     ('data/baseline/annual_by_material.csv', 'Annual carbon of the Reference 2026-2050 by material (each with its '
      'maintenance within 2026-2050) and soil carbon loss (Fig3)', 'projection.py'),
     # data: Monte Carlo
@@ -139,13 +139,12 @@ FILES = [
     ('FIGURES.md', 'Every figure with its file, data sources, caption and run-specific note', 'figures/index.py'),
     ('run_meta.json', 'Run metadata: profile, draws, seeds, git hash, input hash, timestamp, step timings', 'run_all.py'),
     ('paper_main/Fig*.png', 'Main-paper figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_main.py'),
-    ('paper_main/Fig*.pdf', 'Main-paper figure, vector PDF (full profile)', 'figures/paper_main.py'),
     ('paper_extended/ED*.png', 'Extended Data figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_extended.py'),
-    ('paper_extended/ED*.pdf', 'Extended Data figure, vector PDF (full profile)', 'figures/paper_extended.py'),
+    ('supplementary/SF*.png', 'Supplementary figure (beyond the ten Extended Data items), PNG (FIGURES.md)',
+     'figures/paper_extended.py'),
     ('paper_extended/EDT1_levels_by_typology.*', 'Extended Data table: lever levels by typology (Moderate, Ambitious, '
      'TL)', 'figures/paper_extended.py'),
     ('diagnostics/*/D*.png', 'Diagnostic figure, PNG (FIGURES.md)', 'figures/ (module named in FIGURES.md)'),
-    ('diagnostics/*/D*.pdf', 'Diagnostic figure, vector PDF (full profile)', 'figures/ (module named in FIGURES.md)'),
     ('data/figure_source/*.json', 'Figure source data: the exact arrays a diagnostic draws (figsource.py)',
      'projection.py, Diagnostics.py, boundaries.py, tools/figures_report.py'),
     ('data/baseline/overbuild_absorption_log.csv', 'The 2026 overbuild in the Reference by year: excess, cumulative '
@@ -165,8 +164,10 @@ FILES = [
      'binding years, built', 'pathways.py'),
     ('data/pathways/ordering_checks.json', 'Ordering Reference >= Moderate >= Ambitious >= TL per lever, typology and '
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
-    ('data/sensitivity/tornado.csv', 'Fig7: the eight inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
+    ('data/sensitivity/tornado.csv', 'Fig8a: the inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
+    ('data/pathways/waterfall_tl_from_reference.csv', 'MODEL v3.3.1 (Fig5c): sequential waterfall Reference -> TL1 ... '
+     'TL9 (cumulative from the Reference, PAS 2080 order; = TL) by demand band', 'pathways.py'),
     ('data/pathways/sequential_vs_shapley.csv', 'MODEL v3.3.0: each lever step of the sequential waterfalls (PAS 2080 '
      'order; Moderate, Ambitious) and each TL step (from the Moderate Pathway) against its order-free Shapley value',
      'pathways.py'),

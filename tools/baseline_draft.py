@@ -153,7 +153,7 @@ def item_register():
          f"needed (EPS path {100 * ch['EPS']:+.1f}%)"),
         ('Sensitivities (item-level)', 'proxies held at 2025; NZ low-carbon-electricity items held at 2025; frozen '
          'technology (no decarbonisation, A4-A5 held); all in the default run '
-         '(outputs/data/baseline/sensitivity_one_at_a_time.csv, outputs/data/aesa/sensitivity.csv; figures ED1, ED4 and '
+         '(outputs/data/baseline/sensitivity_one_at_a_time.csv, outputs/data/aesa/sensitivity.csv; figures D16, D42 and '
          'D18). An earlier class-level mapping and its comparison runs were removed (history: CHANGELOG.md)',
          'DECISION (author)'),
     ]

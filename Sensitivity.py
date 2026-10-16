@@ -19,7 +19,7 @@ One-at-a-time ranges show which assumptions matter. They are not a joint
 uncertainty interval and must not be added in quadrature or summed.
 
 This module writes data only (MODEL v3.0.0 compute / draw separation): D16 and D17 are drawn by
-figures/sensitivity.py and the Fig7 tornado by figures/paper_main.py, from the grouped tables of
+figures/sensitivity.py and the Fig8a tornado by figures/paper_main.py, from the grouped tables of
 tools/sensitivity_tables.py. MODEL v3.0.0 adds the overbuild-absorption timing rows (never / by 2030 / by 2045) and
 the vacancy-parameter row (1986-2023 census mean).
 """

@@ -9,7 +9,7 @@
 
 Run profiles (runprofile.py): light = 1,000 Latin hypercube draws with their own seed, no Sobol indices, bootstrap 500,
 PNG at 200 dpi with a "LIGHT RUN" footer, every output under outputs/_light/; full = 5,000 draws with the existing
-seed, Sobol, bootstrap 2,000, PDF + PNG at 600 dpi under outputs/. The deterministic results do not depend on the
+seed, Sobol, bootstrap 2,000, PNG at 600 dpi under outputs/ (MODEL v3.3.1: no PDF). The deterministic results do not depend on the
 profile (tests/test_profiles.py).
 
 Order (compute, then draw): Building_factors -> projection -> Diagnostics -> Sensitivity -> MonteCarlo -> boundaries
@@ -126,7 +126,7 @@ def pipeline(profile):
     L = _layout()
     py = sys.executable
     # a full rebuild: nothing stale survives (data, reports, every figure folder; the retired v2 folders)
-    for d in (L.DATA, L.REPORTS, L.PAPER_MAIN, L.PAPER_EXTENDED, L.DIAGNOSTICS) + L.RETIRED:
+    for d in (L.DATA, L.REPORTS, L.PAPER_MAIN, L.PAPER_EXTENDED, L.SUPPLEMENTARY, L.DIAGNOSTICS) + L.RETIRED:
         shutil.rmtree(d, ignore_errors=True)
     for f in (L.FIGURES_INDEX, os.path.join(L.OUT, 'INDEX.md')):
         if os.path.exists(f):
@@ -158,7 +158,7 @@ def figures_only(profile):
     os.environ.update(PATHWAY_PROFILE=profile, PATHWAY_REFERENCE_LEGACY='0')
     L = _layout()
     before = data_hashes(L.DATA)
-    for d in (L.PAPER_MAIN, L.PAPER_EXTENDED, L.DIAGNOSTICS):
+    for d in (L.PAPER_MAIN, L.PAPER_EXTENDED, L.SUPPLEMENTARY, L.DIAGNOSTICS):
         shutil.rmtree(d, ignore_errors=True)
     step('figures', [sys.executable, '-m', 'figures'], env)
     after = data_hashes(L.DATA)

@@ -5,7 +5,8 @@
                                 "LIGHT RUN — n=1000"; every output under outputs/_light/ (a mirror of the outputs/
                                 tree), so the full outputs are never overwritten.
     full                        Monte Carlo 5,000 Latin-hypercube draws (the existing design and seed), Sobol on,
-                                bootstrap 2,000 replicates; figures PDF + PNG at 600 dpi; outputs under outputs/.
+                                bootstrap 2,000 replicates; figures PNG at 600 dpi (MODEL v3.3.1: no PDF);
+                                outputs under outputs/.
 
 Only the stochastic layer differs. The deterministic results (the Reference, every lever / pathway / TL run, the
 Shapley values, the waterfalls) do not depend on the profile (tests/test_profiles.py). The bootstrap setting
@@ -20,7 +21,7 @@ PROFILES = {
     'light': dict(name='light', n_draws=1000, mc_seed=20261014, sobol=False, bootstrap=500, dpi=200,
                   formats=('png',), out_subdir='_light', footer='LIGHT RUN — n=1000'),
     'full': dict(name='full', n_draws=5000, mc_seed=20260924, sobol=True, bootstrap=2000, dpi=600,
-                 formats=('pdf', 'png'), out_subdir='', footer=None),
+                 formats=('png',), out_subdir='', footer=None),
 }
 
 

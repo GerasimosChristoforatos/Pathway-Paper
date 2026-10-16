@@ -170,4 +170,10 @@ rule in `test_model_v3_3`.
 
 ## Timings
 
-See the run report in the PR / session.
+* `pathways.py` (deterministic, with the new TL steps): light 23 s, full 17 s.
+* `run_all.py --figures-only`:
+  * light (200 dpi): 42 s;
+  * full (600 dpi PNG, the one final export): 99 s.
+  * A first full export was cut off by a worker restart (exit 137) and was re-run once from scratch.
+* Test suite, run once on the full profile: 252 passed, 2 skipped (both need the AESA workbook, kept local only),
+  58 s.

@@ -161,7 +161,9 @@ def build_setup(settings=None):
               completion=projection.COMPLETION_RATE, olf=dict(B['OLF_USED']), rv_share=float(B['rv_share']),
               nr_window=tuple(projection.NET_REPLACEMENT_WINDOW),
               census_stock=B['census']['total_private'], consents_monthly=B['consents_monthly'],
-              lag_w=B['lag_w'], census_uc=B['census_uc'],
+              lag_w=B['lag_w'], lag_census=B['lag_census'], census_uc=B['census_uc'],
+              # MODEL v4.0.0: the observed (pipeline) years' consents (all categories), timed as completions
+              pipeline_consents=([B['pipe']['consents_all'][y] for y in B['pipe']['years']] if B['pipe'] else None),
               # replacement scenario and near-term market excess, as in the projection run
               scenario=B['_scenario'], s3_half_life=projection.REPLACEMENT_HALF_LIFE,
               recent=tuple(projection.RECENT_INTERVAL), join_mode=B['_join_mode'],
@@ -173,8 +175,8 @@ def build_setup(settings=None):
                              or projection.OVERBUILD_BOOKING != 'surplus' else
                              engine.logistic_weights(fy, projection.OVERBUILD_ABSORPTION_START,
                                                      projection.OVERBUILD_ABSORPTION_END)),
-              # observed 2026 floor area (fixed in every draw)
-              gfa_2026=(B['gfa_nowcast']['total'] if B['gfa_nowcast'] else None))
+              # observed floor area (fixed in every draw): the pipeline years (MODEL v4.0.0) or the 2026 nowcast
+              gfa_fixed=B['gfa_fixed'])
 
     # ---- dwelling size ----
     su['size_ref'] = np.array([B['size_ref'][t] for t in typ])
@@ -361,7 +363,7 @@ def project(su, p, full=False):
     cal = engine.calibrate_stock(yh, su['hist_hh'], su['knots'], su['units_all'], su['rv_units'], c,
                                  su['demol_rate'], su['calib_start'], su['calib_end'])
     # census dwelling-count identity, recomputed for this draw's completion rate
-    rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_w'],
+    rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_census'],
                                          uc=su['census_uc'])
     unc_long = engine.census_window_rate(rates, *su['nr_window']) - su['demol_rate']
     unc_recent = engine.census_window_rate(rates, *su['recent']) - su['demol_rate']
@@ -402,13 +404,13 @@ def project(su, p, full=False):
         pop, hh, np.insert(np.diff(pop), 0, 0).clip(min=0), v, su['demol_rate'], unc,
         dev, dv['rho'], su['rv_share'], shares, size, su['olf'], I, U,
         join=join, join_redev=redev, soil={t: su['soc'][j] for j, t in enumerate(typ)},
-        gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
-        soil_on_replacement=su['soil_on_repl'], events=events)
+        gfa_fixed=su['gfa_fixed'], soil_on_replacement=su['soil_on_repl'], events=events)
     E = fwd()
     E_nojoin, join, ji = E, None, None
     if su['join_mode'] == 'market_excess':
-        b26 = c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
-                   + su['lag_w'] * float(su['units_all_raw'].loc[2025]))
+        b26 = (c * np.asarray(su['pipeline_consents'], float) if su['pipeline_consents'] is not None else
+               c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
+                    + su['lag_w'] * float(su['units_all_raw'].loc[2025])))
         join, ji = engine.market_excess(E, b26, dv['rho'], su['near_gap_ref'], su['near_mode'],
                                         su['near_absorption'], absorb_w=su['near_absorb_w'])
         E = fwd(join, ji['redev'])
@@ -422,8 +424,7 @@ def project(su, p, full=False):
             fwd_inputs=dict(v=v, rate_demol=su['demol_rate'], rate_unc=unc, dev_2025=dev, rho_dev=dv['rho'],
                             rv_share=su['rv_share'], shares=shares, size=size, olf=su['olf'], intensity=I,
                             intensity_upfront=U, soil={t: su['soc'][j] for j, t in enumerate(typ)},
-                            gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
-                            soil_on_replacement=su['soil_on_repl'], events=events),
+                            gfa_fixed=su['gfa_fixed'], soil_on_replacement=su['soil_on_repl'], events=events),
             E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']))
     return out
 

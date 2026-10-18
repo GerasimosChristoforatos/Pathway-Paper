@@ -168,7 +168,7 @@ def collect():
         for r in v['hindcast']:
             if r['method'] == mm:
                 val[f"hindcast_{r['origin']}_model"] = r['error_pct']
-        val['model_consents_2026'] = v['check_2026']['model_consent_equivalent_2026']
+        val['model_consents_2026'] = v['check_2026'].get('model_consent_equivalent_2026')
         val['observed_to_model_2026'] = v['check_2026'].get('ratio_observed_to_model')
         m['validation'] = val
     import runprofile

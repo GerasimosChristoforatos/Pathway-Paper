@@ -35,11 +35,13 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
   size      Lognormal multiplier on dwelling size (all typologies together),
             sigma = RMS log deviation of annual typology sizes 2016-2025 from
             the adopted 2023-25 reference.
-  complete  Two-piece uniform(0.92, 0.95, 0.96): completion rate (Jones et al.
-            2024 bounds), median at the adopted 0.95 (a two-piece distribution
-            has its median at that value; Wallis 2014). The stock calibration
-            and the census dwelling-count replacement rates are redone for
-            each draw.
+  complete  Uniform(0.93, 0.96) (MODEL v4.0.0): completion rate between the
+            published completion milestones of Jones, Greenaway-McGrevy & Crow
+            (2025; Auckland consents: 93% final inspection, >95% first
+            inspection; 0.96 a stated edge, see projection.COMPLETION_RATE);
+            median 0.945 = the deterministic central value. The stock
+            calibration and the census dwelling-count replacement rates are
+            redone for each draw. (MODEL v3.3: two-piece uniform(0.92, 0.95, 0.96).)
   half_life Uniform(5, 15) years (MODEL v3.3.0): the half-life of the Reference's fade of net replacement from the
             2018-2023 census-interval rate to the 1991-2023 long-run rate. Not identifiable from the census record
             (seven censuses, six interval rates), so it is sampled over the range of the former half-life variants;
@@ -305,31 +307,6 @@ MC_SCENARIOS = [('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10
                 ('VHIGH', dict(REPLACEMENT_VARIANT='VHIGH'))]
 
 
-class TwoPiece:
-    """Two-piece (split) distribution with its MEDIAN at m: probability 1/2
-    on [lo, m] and 1/2 on [m, hi] (the two-piece family; Wallis 2014, Statistical
-    Science 29(1)). Each half is a triangle peaking at m ('triangular', so the
-    mode is also m) or flat ('uniform'). Used where the deterministic value is
-    not the median of a one-piece distribution over the stated range, so that
-    the deterministic run sits at the input medians (D3)."""
-
-    def __init__(self, lo, m, hi, shape='triangular'):
-        if not lo <= m <= hi:
-            raise ValueError(f'TwoPiece needs lo <= m <= hi, got {lo}, {m}, {hi}.')
-        self.lo, self.m, self.hi, self.shape = float(lo), float(m), float(hi), shape
-
-    def ppf(self, u):
-        u = np.asarray(u, float)
-        lo, m, hi = self.lo, self.m, self.hi
-        if self.shape == 'triangular':
-            left = lo + (m - lo) * np.sqrt(np.clip(2 * u, 0, 1))
-            right = hi - (hi - m) * np.sqrt(np.clip(2 * (1 - u), 0, 1))
-        else:
-            left = lo + (m - lo) * np.clip(2 * u, 0, 1)
-            right = m + (hi - m) * np.clip(2 * u - 1, 0, 1)
-        return np.where(u < 0.5, left, right)
-
-
 def central(su):
     return dict(z_pop=0.0, size=1.0, complete=su['completion'], carbon=None, half_life=su['s3_half_life'])
 
@@ -469,8 +446,8 @@ def distributions(su):
     return {
         'z_pop': stats.norm(0, 1),
         'size': stats.lognorm(s=su['size_sigma'], scale=1.0),
-        'complete': TwoPiece(projection.COMPLETION_RATE_BAND[0], su['completion'], projection.COMPLETION_RATE_BAND[1],
-                             shape='uniform'),
+        'complete': stats.uniform(projection.COMPLETION_RATE_BAND[0],
+                                  projection.COMPLETION_RATE_BAND[1] - projection.COMPLETION_RATE_BAND[0]),
         'carbon': stats.uniform(0, 1),
         'half_life': stats.uniform(HALF_LIFE_RANGE[0], HALF_LIFE_RANGE[1] - HALF_LIFE_RANGE[0]),
     }

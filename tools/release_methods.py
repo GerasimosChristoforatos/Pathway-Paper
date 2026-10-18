@@ -100,12 +100,13 @@ def lines():
          'definition break (empty / residents-away dwellings), and the unbounded extrapolation of a policy-driven '
          'wave.', '',
          '### Completion rate in the Monte Carlo', '',
-         f"Two-piece uniform on [{projection.COMPLETION_RATE_BAND[0]:.2f}, {projection.COMPLETION_RATE:.2f}] and "
-         f"[{projection.COMPLETION_RATE:.2f}, {projection.COMPLETION_RATE_BAND[1]:.2f}], probability 1/2 on each piece: "
-         f"the bounds of the observed completion rate ({projection.COMPLETION_RATE_BAND[0]:.2f}, "
-         f"{projection.COMPLETION_RATE_BAND[1]:.2f}; Jones, Greenaway-McGrevy & Crow 2024 [verify]) and the median at the "
-         f"adopted {projection.COMPLETION_RATE:.2f}, which a two-piece distribution places at its join (Wallis 2014, "
-         'Statistical Science 29(1)); the asymmetric bounds are kept without assuming a shape between them.', '',
+         f"Uniform on [{projection.COMPLETION_RATE_BAND[0]:.2f}, {projection.COMPLETION_RATE_BAND[1]:.2f}] (MODEL v4.0.0). "
+         f"The bounds are published completion milestones for Auckland consents (Jones, Greenaway-McGrevy & Crow 2025, "
+         'Policy Quarterly 21(1), 63-68, footnote 12): 93% of 2018-2019 consents had a final inspection by July 2024 '
+         '(lower bound of eventual completion) and more than 95% of 2018-2021 consents had a first inspection (upper '
+         'bound; the article gives no point value, so the edge 0.96 is a stated judgement). The deterministic central '
+         f"value {projection.COMPLETION_RATE:.3f} is their midpoint, and so the median of the Monte Carlo input. No shape "
+         'inside the band is identified, hence uniform. Limitation: Auckland evidence applied nationally.', '',
          '### Check and sensitivity rows', '',
          f"TL with re-occupation as fast as demand allows (deterministic sensitivity row): {fast['carbon_kt']:,.1f} kt, "
          f"LoE AR {fast['LoE_AR']:.3f} (TL: {tl['carbon_kt']:,.1f} kt, LoE AR {tl['LoE_AR']:.3f}).", '',

@@ -40,17 +40,9 @@ def _js(rel):
 LOCK33 = json.load(open(R.LOCK_V3_3))
 
 
-@pytest.mark.parametrize('rel', sorted(LOCK33['deterministic']))
-def test_deterministic_files_equal_v3_3(rel):
-    assert R.digest(layout.DATA, rel) == LOCK33['deterministic'][rel], rel
-
-
-def test_montecarlo_files_equal_v3_3():
-    prof = runprofile.name()
-    if prof not in LOCK33['montecarlo']:
-        pytest.skip(f'no v3.3.0 Monte Carlo lock for the {prof} profile')
-    bad = [rel for rel, h in LOCK33['montecarlo'][prof].items() if R.digest(layout.DATA, rel) != h]
-    assert not bad, bad
+# MODEL v4.0.0: test_deterministic_files_equal_v3_3 and test_montecarlo_files_equal_v3_3 are retired: v3.3.1 changed
+# figure code only and checked the data against the v3.3.0 lock; MODEL v4.0.0 changes the model (docs/CHANGELOG_v4.md).
+# Equality with v3.3 under the v3.3 settings: tests/test_model_v4.py; the current lock: tests/regression_model_v4.json.
 
 
 @pytest.fixture(scope='module')

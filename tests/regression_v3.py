@@ -1,4 +1,8 @@
-"""MODEL v3.3.1 regression lock (tests/regression_model_v3_3_1.json; captured by tests/capture_regression_model_v3.py).
+"""MODEL v4.0.0 regression lock (tests/regression_model_v4.json; captured by tests/capture_regression_model_v3.py). The
+v3.3.1 lock (tests/regression_model_v3_3_1.json) and the earlier ones are kept for the record; MODEL v4.0.0 changes the
+model, and its link to v3.3 is tests/test_model_v4.py (the v3.3 runs reproduced under the v3.3 settings). MODEL v4.0.0
+adds sensitivity/household_size.csv and baseline/completion_lag_hindcast.csv to the locked files.
+(MODEL v3.3.1:)
 The MODEL v3.0.0, v3.2.0 and v3.3.0 locks (tests/regression_model_v3.json, _v3_2.json, _v3_3.json) are kept: v3.3.1
 changes figure code only and adds one deterministic file (pathways/waterfall_tl_from_reference.csv); every file of the
 v3.3.0 lock still holds (tests/test_figures_v3_3_1.py). The link of v3.3 to v3.2 is tests/test_model_v3_3.py.
@@ -13,7 +17,8 @@ import json
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOCK = os.path.join(ROOT, 'tests', 'regression_model_v3_3_1.json')
+LOCK = os.path.join(ROOT, 'tests', 'regression_model_v4.json')
+LOCK_V3_3_1 = os.path.join(ROOT, 'tests', 'regression_model_v3_3_1.json')
 LOCK_V3_3 = os.path.join(ROOT, 'tests', 'regression_model_v3_3.json')
 DETERMINISTIC_FILES = (
     'baseline/projection.json', 'baseline/annual.csv', 'baseline/bands_annual.csv', 'baseline/annual_by_stage.csv',
@@ -25,7 +30,8 @@ DETERMINISTIC_FILES = (
     'pathways/theoretical_limit.json', 'pathways/backcast.json', 'pathways/levers.json',
     'pathways/sequential_vs_shapley.csv', 'pathways/waterfall_tl_from_reference.csv',
     'sensitivity/reference_carbon.csv', 'sensitivity/pathway_carbon.csv', 'sensitivity/replacement_variants.csv',
-    'sensitivity/tornado.csv', 'baseline/bands_history.csv', 'baseline/history_unexplained.json')
+    'sensitivity/tornado.csv', 'baseline/bands_history.csv', 'baseline/history_unexplained.json',
+    'sensitivity/household_size.csv', 'baseline/completion_lag_hindcast.csv')
 MC_FILES = ('montecarlo/draws_REF.csv', 'montecarlo/summary_REF.csv', 'pathways/montecarlo_draws.csv',
             'pathways/montecarlo_summary.csv')
 PROFILE_KEYS = ('run_mode', 'ci_lo', 'ci_hi', 'bootstrap')

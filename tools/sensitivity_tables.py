@@ -9,6 +9,8 @@ Writes outputs/data/sensitivity/:
   planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42)
   replacement_variants.csv the Reference, the Moderate / Ambitious Pathway and TL under Low / Reference / High / Very
                            High replacement (ED9)
+  household_size.csv       MODEL v4.0.0: the Reference, the Moderate / Ambitious Pathway and TL under the household-size
+                           sensitivities (Stats NZ Low / High variant; 2018-2023 census pace, linear from 2023)
   tornado.csv              Fig8a: the inputs of the Reference tornado (low / high), cumulative carbon and the
                            cumulative LoE AR and AtP (the budgets move only with the population path)
 
@@ -20,6 +22,8 @@ are applied; the AR and AtP budgets move with the path, data/aesa/results.json p
 TL under the replacement variants (every other run of that table reproduces runs.csv to 1e-12).
 One-at-a-time ranges are not additive and are not a joint interval.
 """
+import contextlib
+import io
 import json
 import os
 import sys
@@ -33,6 +37,7 @@ import engine  # noqa: E402
 import layout  # noqa: E402
 import levers as LV  # noqa: E402
 import naming as N  # noqa: E402
+import validation  # noqa: E402
 
 M6 = 1e6
 
@@ -151,6 +156,7 @@ def reference_table():
 
 # ---- 2. Moderate Pathway carbon (pathway design) ---------------------------------------------------
 PARAMS = {}
+HH_TABLE = {}
 
 
 def percentile_context(PW, B, pct, bounds):
@@ -223,6 +229,11 @@ def pathway_table():
             'data/pathways/runs.csv', 'DATA: long-run rate / 2018-2023 rate persists')
     add('Replacement scenario', N.SCENARIOS['VHIGH'], 'single', *run_row('VHIGH', PM_), 'data/pathways/runs.csv',
         'DATA / JUDGEMENT: the 1991-2023 census trend continues (sensitivity, not adopted)')
+    hs = HH_TABLE.get('t')
+    if hs is not None:                                   # MODEL v4.0.0: the household-size rows (household_size.csv)
+        for _, r in hs[hs['run'] == PM_].iterrows():
+            add('Demographics', r['row'], r['side'], r['carbon_kt'], r['LoE_AR'], r['LoE_AtP'],
+                'sensitivity/household_size.csv (new run)', r['basis'])
     for side, pct in (('low', '5th'), ('high', '95th')):
         cp = percentile_context(PW, B, pct, bounds)
         E = PW.run(cp, params, base)['E']
@@ -230,6 +241,50 @@ def pathway_table():
         add('Demographics', 'Population: Stats NZ 5th / 95th percentile', side, c, c / pp[pct]['B_AR_kt'],
             c / pp[pct]['B_AtP_kt'], 'new run (exact engine path; budgets move with the path)',
             'DATA: Stats NZ 2024-base stochastic projection')
+    return pd.DataFrame(rows)
+
+
+# ---- 2b. Household-size sensitivities of the Reference, the Pathways and TL (MODEL v4.0.0) ---------------------
+HH_VARIANTS = [   # (row, side, projection settings)
+    ('Household size: Stats NZ High / Low variant', 'low', dict(HH_SIZE_VARIANT='High')),
+    ('Household size: Stats NZ High / Low variant', 'high', dict(HH_SIZE_VARIANT='Low')),
+    ('Household size: 2018-2023 census pace', 'single', dict(HH_SIZE_PATH='census_pace')),
+]
+HH_BASIS = {'Household size: Stats NZ High / Low variant': 'DATA: Stats NZ 2018-base household projections, rebased on '
+                                                          'the 2023 census (the High variant gives fewer households)',
+            'Household size: 2018-2023 census pace': 'DATA: census-benchmarked households 2018 and 2023; linear '
+                                                     'continuation from 2023 (JUDGEMENT)'}
+
+
+def household_size_table():
+    """The Reference, the Moderate / Ambitious Pathway and TL under the household-size sensitivities (deterministic):
+    each run on the projection state with the household-size setting changed, the lever parameters of the central
+    state (as the Monte Carlo: the run's own Reference household size plus the central gap; TL1 speed limit from the
+    run's own 2026 household size). The population path, and so the AR / AtP budgets, are those of the Reference."""
+    import pathways as PW
+    runs = pd.read_csv(data('pathways/runs.csv'))
+    bounds = PW.boundaries()
+    B_ref = PW.boss_state(PW.REFERENCE)
+    params = PARAMS.setdefault('p', PW.resolve_params(B_ref))
+    plan = (('Reference', 'REF', {}), (f'{LV.PATHWAY}-moderate', None, LV.pathway_levers(LV.PATHWAY, 'moderate')),
+            (f'{LV.PATHWAY}-ambitious', None, LV.pathway_levers(LV.PATHWAY, 'ambitious')),
+            ('TL', None, LV.tl_levels(LV.TL_COMPONENTS)))
+    central = {run: runs[(runs['scenario'] == 'REF') & (runs['run'] == (key or run))].iloc[0] for run, key, _ in plan}
+    rows = []
+    for row, side, settings in HH_VARIANTS:
+        with contextlib.redirect_stdout(io.StringIO()):
+            B = validation.run_boss(**dict(PW.SCENARIOS[PW.REFERENCE][1], **settings))
+        ctx = PW.base_context(B, PW.REFERENCE, bounds)
+        for run, _, levels in plan:
+            m = PW.metrics(ctx, PW.run(ctx, params, levels), run, 'sensitivity')
+            c0 = central[run]
+            rows.append(dict(row=row, side=side, settings=json.dumps(settings), run=run, carbon_kt=float(m['carbon_kt']),
+                             LoE_AR=float(m['LoE_AR']), LoE_AtP=float(m['LoE_AtP']),
+                             central_carbon_kt=float(c0['carbon_kt']), central_LoE_AR=float(c0['LoE_AR']),
+                             central_LoE_AtP=float(c0['LoE_AtP']),
+                             change_pct=100 * (float(m['carbon_kt']) / float(c0['carbon_kt']) - 1),
+                             dwellings_built_min_year=float(m['dwellings_built_min_year']),
+                             mean_household_size_2050=float(m['mean_household_size_2050']), basis=HH_BASIS[row]))
     return pd.DataFrame(rows)
 
 
@@ -362,7 +417,9 @@ def tornado(ref):
 
 def main():
     ref = reference_table()
+    HH_TABLE['t'] = household_size_table()
     out = {'sensitivity/reference_carbon.csv': ref, 'sensitivity/tornado.csv': tornado(ref),
+           'sensitivity/household_size.csv': HH_TABLE['t'],
            'sensitivity/pathway_carbon.csv': pathway_table(),
            'sensitivity/planetary_boundary.csv': pb_table(),
            'sensitivity/replacement_variants.csv': replacement_variants()}

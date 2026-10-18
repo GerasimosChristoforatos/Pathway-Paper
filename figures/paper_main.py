@@ -3,6 +3,7 @@
 MODEL v3.3.1 order (Nature Cities, at most eight display items): Fig1 model schematic, Fig2 floor area by demand band,
 Fig3 Reference carbon, Fig4 Reference against the boundaries, Fig5 three sequential waterfalls, Fig6 solution space,
 Fig7 Shapley value of each lever, Fig8 uncertainty (tornado; TL against the 2050 population)."""
+import calendar
 import re
 import textwrap
 
@@ -156,26 +157,59 @@ def sf1_schematic():
 FIG1_GAP = 0.05                 # MODEL v3.3.2: the gap between columns, as a share of the interval width (v3.3.1: 0.10)
 
 
+OBSERVED_FILL = '#BDBDBD'       # MODEL v4.0.0: observed totals without a band split (the grey of D14)
+PIPELINE_HATCH = '////'         # MODEL v4.0.0: building above modelled need in the pipeline years
+
+
+def _month(iso):
+    """'2026-07-01' -> 'July 2026' (None -> 'the last observed month')."""
+    if not iso:
+        return 'the last observed month'
+    y, m = int(str(iso)[:4]), int(str(iso)[5:7])
+    return f'{calendar.month_name[m]} {y}'
+
+
+def _stack_bar(ax, a, b, parts, net, styles=None):
+    """One stacked column over [a, b] (positive bands up from zero, negative down), with its net line."""
+    x = np.array([a, b], float)
+    up = dn = 0.0
+    for bid, v in parts:
+        st = (styles or {}).get(bid, P.band_style(bid))
+        if v > 0:
+            ax.fill_between(x, up, up + v, gid='band_area', **st)
+            up += v
+        elif v < 0:
+            ax.fill_between(x, dn + v, dn, gid=P.NEG_GID, **st)
+            dn += v
+    if not np.isclose(up + dn, net, rtol=1e-9, atol=1e-12):
+        raise SystemExit(f'Fig1: the pipeline bands ({up + dn}) differ from the total ({net}).')
+    ax.plot(x, [net, net], color=S.INK, lw=S.LW, gid=P.NET_GID)
+
+
 def fig1():
-    """MODEL v3.3.2 (Fig2 of v3.3.1): history as census-interval columns separated by a small gap (FIG1_GAP of each
-    interval, split between its two sides), the same gap between the last history column and the projection (the
-    projection starts at the dotted 2025/26 line); the projection annual from 2026, each year drawn over its own width
-    (2025.5-2050.5)."""
+    """MODEL v4.0.0 (layout of v3.3.2): census-interval columns of the history to 2023 (FIG1_GAP between columns);
+    2024-2025 observed completions (consents lagged) as total columns without a band split (household estimates
+    between censuses are not independent of the consents); the pipeline years (2026-2027 at a 17-month lag) as
+    annual columns split into the need bands plus the building above modelled need (hatched); the projection annual
+    from the first unobserved year (2028), each year drawn over its own width."""
     hist = D.csv('baseline/bands_history.csv')
     proj = _band_frame(D.csv('baseline/bands_annual.csv'), 'floor_area_Mm2')
     ann = D.csv('baseline/annual.csv')
     ob = D.js('baseline/overbuild_2026.json')
+    pipe = [int(y) for y in (ob.get('pipeline_years') or [2026])]
     tot = ann[ann['source'] == 'projection'].set_index('year')['floor_area_Mm2']
+    hist_tot = ann[ann['source'] == 'history'].set_index('year')['floor_area_Mm2']
     fig, ax = plt.subplots(figsize=S.figsize('double', 95))
-    ivs = hist[['interval', 'year_start', 'year_end']].drop_duplicates().sort_values('year_start').reset_index(drop=True)
+    census = hist.groupby('interval')['households_from'].agg(lambda c: set(c) == {'census'})
+    ivs = (hist[hist['interval'].map(census)][['interval', 'year_start', 'year_end']].drop_duplicates()
+           .sort_values('year_start').reset_index(drop=True))
     edges = list(ivs['year_start'] - 0.5) + [float(ivs['year_end'].iloc[-1]) + 0.5]
     hb = {}
     for k, iv in ivs.iterrows():
         h = hist[hist['interval'] == iv['interval']]
         a, b = edges[k], edges[k + 1]
         w = b - a
-        # between columns: half the gap on each side; the last column leaves the whole gap before the projection
-        a, b = a + FIG1_GAP / 2 * w, (b - FIG1_GAP / 2 * w if k < len(ivs) - 1 else b - FIG1_GAP * w)
+        a, b = a + FIG1_GAP / 2 * w, b - FIG1_GAP / 2 * w        # half the gap on each side of every column
         parts = [(P.band_id(lab), np.array([v, v], float)) for lab, v in zip(h['band'], h['floor_area_Mm2_per_year'])]
         for bid, v in parts:
             hb.setdefault(bid, []).append(float(v[0]))
@@ -183,35 +217,67 @@ def fig1():
         # MODEL v3.2.0 (A3): the bands of the data add up to the observed floor area built
         P.stack_series(ax, [a, b], parts, net=[obs, obs], net_line=False)
         ax.plot([a, b], [obs, obs], color=S.INK, lw=S.LW, gid=P.NET_GID)
-    years = proj.index.values.astype(float)
-    xs = np.concatenate([[years[0] - 0.5], years, [years[-1] + 0.5]])
+    y_hist_end = int(ivs['year_end'].iloc[-1])
+    g = FIG1_GAP / 2
+    obs_years = [y for y in hist_tot.index if y_hist_end < y < min(pipe)]
+    for y in obs_years:                                           # observed totals, no band split
+        ax.fill_between([y - 0.5 + g, y + 0.5 - g], 0, float(hist_tot.loc[y]), gid='observed_total',
+                        **S.fill(OBSERVED_FILL))
+        ax.plot([y - 0.5 + g, y + 0.5 - g], [hist_tot.loc[y]] * 2, color=S.INK, lw=S.LW, gid=P.NET_GID)
+    hatched = dict(S.fill(S.BAND['overbuild_2026'][0], hatch=PIPELINE_HATCH, hatchcolor=S.HATCH_LIGHT))
+    cols = [b for b in proj.columns if b != 'maintenance']
+    for y in pipe:                                                # pipeline years: need bands + building above need
+        _stack_bar(ax, y - 0.5 + g, y + 0.5 - g, [(bid, float(proj.loc[y, bid])) for bid in cols],
+                   float(tot.loc[y]), styles={'overbuild_2026': hatched})
+    fut = proj.loc[proj.index > max(pipe)]
+    years = fut.index.values.astype(float)
+    x0 = years[0] - 0.5 + g                                       # the same gap before the annual projection
+    xs = np.concatenate([[x0], years, [years[-1] + 0.5]])
     ext = lambda v: np.concatenate([[v[0]], v, [v[-1]]])
-    net = tot.loc[proj.index].values
-    P.stack_series(ax, xs, [(b, ext(proj[b].values)) for b in proj.columns if b != 'maintenance'], net=ext(net),
-                   net_line=False)
+    net = tot.loc[fut.index].values
+    P.stack_series(ax, xs, [(b, ext(fut[b].values)) for b in cols], net=ext(net), net_line=False)
     ax.plot(xs, ext(net), color=S.INK, lw=S.LW, gid=P.NET_GID)
     P.split(ax)
     ax.set_xlim(edges[0] + FIG1_GAP / 2 * (edges[1] - edges[0]), xs[-1])
     lo_, hi_ = ax.get_ylim()
-    ax.set_ylim(lo_, hi_ + 0.08 * (hi_ - lo_))                         # room for the two labels
+    ax.set_ylim(lo_, hi_ + 0.10 * (hi_ - lo_))                         # room for the labels
     ax.set_ylabel('Floor area built (Mm² per year)')
-    ax.text(P.HISTORY_SPLIT - 0.6, 0.98, 'History (census-interval means)', transform=ax.get_xaxis_transform(),
+    ax.text(y_hist_end + 0.4, 0.98, 'History (census-interval means)', transform=ax.get_xaxis_transform(),
             ha='right', va='top', fontsize=S.FONT_SMALL, color=S.MUTED)
-    ax.text(P.HISTORY_SPLIT + 0.6, 0.98, 'Projection (annual; 2026 observed)', transform=ax.get_xaxis_transform(),
+    lab_y = 0.91
+    if obs_years:
+        ax.text(np.mean(obs_years), lab_y, 'Observed', transform=ax.get_xaxis_transform(), ha='center', va='top',
+                fontsize=S.FONT_MIN, color=S.MUTED)
+    ax.text(np.mean(pipe), lab_y, 'Pipeline', transform=ax.get_xaxis_transform(), ha='center', va='top',
+            fontsize=S.FONT_MIN, color=S.MUTED)
+    ax.text(x0 + 0.4, 0.98, 'Projection (annual)', transform=ax.get_xaxis_transform(),
             ha='left', va='top', fontsize=S.FONT_SMALL, color=S.MUTED)
     neg = [b for b in proj.columns if (proj[b] < 0).any()]
     neg += [b for b in hb if b not in neg and any(v < 0 for v in hb[b])]
     present = [b for b in BANDS if b in proj.columns and (proj[b].abs() > 1e-12).any() and b != 'maintenance']
+    if not (fut.get('overbuild_2026', 0) != 0).any() and 'overbuild_2026' in present:
+        present.remove('overbuild_2026')                          # only the pipeline part is drawn
     hist_only = [b for b in hb if b not in present and any(abs(v) > 1e-12 for v in hb[b])]
     handles = paper_band_handles(present + hist_only)                    # only the bands present
+    handles += [Patch(label='Building above modelled need (pipeline)', **dict(hatched, edgecolor='#555555',
+                                                                              linewidth=S.LW_THIN))]
+    if obs_years:
+        handles += [Patch(label='Observed (consent-based; household estimates not independent)',
+                          **dict(S.fill(OBSERVED_FILL), edgecolor='#555555', linewidth=S.LW_THIN))]
     handles += [Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built (in scope)')]
     fig.legend(handles=handles, loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.02), frameon=False,
                fontsize=S.FONT_MIN + 0.5)
-    fig.tight_layout(rect=(0, 0.17, 1, 1))
+    fig.tight_layout(rect=(0, 0.19, 1, 1))
+    lag, rate = ob.get('completion_lag_months'), ob.get('completion_rate')
     _save(fig, 'Fig1_floor_area',
-          note=f"2026 overbuild: observed 2026 building above need, fading from 2027 (ρ = {ob['rho']:.2f}) and absorbed "
-               f"by {ob['absorption_end']}. Negative bands drawn down from zero: "
-               f"{', '.join(P.band_label(b) for b in neg)}. 2026-2050: {net.sum():.1f} Mm².")
+          note=(f"Completions = {rate:.3f} x consents lagged {lag} months (median consent-to-completion time 1.27-1.53 "
+                f"yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building "
+                f"indicators). " if lag else '')
+               + f"Pipeline years {', '.join(map(str, pipe))}: building observed (consents to "
+               f"{_month(ob.get('consents_observed_to'))}); the part above modelled need fades from "
+               f"{max(pipe) + 1} (ρ = {ob['rho']:.2f}) and is absorbed by {ob['absorption_end']}. 2026 population: "
+               f"Stats NZ ERP nowcast. Negative bands drawn down from zero: "
+               f"{', '.join(P.band_label(b) for b in neg)}. 2026-2050: {tot.loc[2026:2050].sum():.1f} Mm².")
 
 
 # ---------------------------------------------------------------------------

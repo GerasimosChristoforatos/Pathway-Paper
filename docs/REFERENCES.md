@@ -1,4 +1,4 @@
-# References (MODEL v3.3.0)
+# References (MODEL v4.0.0)
 
 The references the model's methods rest on, in the form the methods draft cites them. **Verification status**: the
 network policy of this environment blocks the Crossref API, so metadata were checked through a scholarly index
@@ -48,17 +48,33 @@ absorbed, by 2030, by 2045).
   London. Clause 4.3 and Figure 5 (carbon reduction hierarchy: Avoid, Switch, Improve), the basis of the strategy
   grouping S1 Avoid, S2 Switch, S3 Improve. [verify: clause and figure numbers against the published 2023 edition]
 
-## Attribution principle, completion rate (MODEL v3.2.0)
+## Attribution principle, completion rate and lag (MODEL v3.2.0; completion MODEL v4.0.0)
 
 - Davis, S. J., & Socolow, R. H. (2014). Commitment accounting of CO2 emissions. *Environmental Research Letters*,
   9(8), 084018 (emissions committed by an investment attributed to the decision). [verify: title, issue and DOI
   10.1088/1748-9326/9/8/084018; Crossref unreachable from this environment]
-- Jones, Greenaway-McGrevy & Crow (2024): the observed range of the completion rate of consented dwellings (bounds
-  0.92 / 0.96 of the Monte Carlo distribution). [verify: full citation (title, outlet, year); not found in the
-  scholarly indexes available here]
+- Jones, J. A., Greenaway-McGrevy, R., & Crow, C. (2025). *Policy Quarterly*, 21(1), 63–68 (February 2025;
+  Auckland consents). MODEL v4.0.0: the completion rate (footnote 12: 93% of 2018–2019 consents had a final
+  inspection by July 2024, the lower bound; more than 95% of 2018–2021 consents had a first inspection, the upper
+  bound; central 0.945 = their midpoint, Monte Carlo uniform 0.93–0.96, the edge 0.96 a stated judgement since the
+  article gives '>95%') and the consent-to-completion lag (p. 68: "As of July 2024, the median time to dwelling
+  completion ranges between 1.27 and 1.53 years", citing Greenaway-McGrevy & Jones 2023; adopted 17 months, the
+  midpoint). Replaces the unverified "Jones, Greenaway-McGrevy & Crow (2024)" of MODEL v3.0–v3.3. [verify: the
+  article title against the published issue]
+- Greenaway-McGrevy, R., & Jones, J. A. (2023). *Can zoning reform change urban development patterns? Evidence from
+  Auckland*. Economic Policy Centre, University of Auckland, Working Paper 012 (the source of the 1.27–1.53 yr median
+  completion times quoted by Jones et al. 2025). [verify: series name and number against the working-paper page]
+- Stats NZ (2022). *Experimental building indicators: March 2022 quarter*, Table 1 ("Consented new dwellings, by
+  quarter building consent issued"): dwelling-weighted median time from consent to final inspection 455 days and to
+  code compliance certificate 519 days for consents issued in the December 2020 quarter (checked against the
+  release; coverage about 65% of consented dwellings).
+- Stats NZ (2024). *Experimental building indicators: December 2023 quarter*, Table 1: median 533 days to final
+  inspection (September 2022 quarter consents) and 569 days to code compliance certificate (June 2022 quarter
+  consents). The later vintage revises the December 2020 quarter to 425 / 472 days. Used as a consistency check of
+  the 17-month lag only; no analysis of these releases enters the model.
 - Wallis, K. F. (2014). The two-piece normal, binormal, or double Gaussian distribution: its origin and
-  rediscoveries. *Statistical Science*, 29(1), 106–112 (median at the join of a two-piece distribution). [verify:
-  pages and DOI]
+  rediscoveries. *Statistical Science*, 29(1), 106–112 (median at the join of a two-piece distribution; used for the
+  completion rate in MODEL v3.2–v3.3, no longer used from MODEL v4.0.0). [verify: pages and DOI]
 
 ## Lever anchors
 

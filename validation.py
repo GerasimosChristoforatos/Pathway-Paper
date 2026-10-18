@@ -490,6 +490,32 @@ def write(rows, chk, stock_rows=None, dhe=None, rows_pub=None, vac=None):
     print('\n'.join(lines))
 
 
+def lag_hindcast(B):
+    """MODEL v4.0.0 STOP check: the rolling-origin hindcast of the census dwelling-count identity (hindcast_stock) at
+    the adopted completion lag and at L = 0 (MODEL v3.3 timing, the census under-construction correction on). STOP if
+    the adopted lag is worse than L = 0 by the mean absolute error over the origins in BOTH rate methods (long run,
+    recent interval). Writes baseline/completion_lag_hindcast.csv and .json."""
+    L = int(B.get('lag_months', 0) or 0)
+    if L == 0:
+        return None
+    rows = [dict(lag_months=L, **r) for r in hindcast_stock(B)]
+    rows += [dict(lag_months=0, **r) for r in hindcast_stock(run_boss(COMPLETION_LAG_MONTHS=0))]
+    df = pd.DataFrame(rows)
+    mae = (df.assign(abs_error_pct=df['error_pct'].abs()).groupby(['method', 'lag_months'])['abs_error_pct']
+           .mean().unstack())
+    worse = {m: bool(mae.loc[m, L] > mae.loc[m, 0]) for m in mae.index}
+    out = dict(adopted_lag_months=L, mean_abs_error_pct={m: {int(k): float(v) for k, v in mae.loc[m].items()}
+                                                          for m in mae.index},
+               adopted_worse_by_method=worse, stop=all(worse.values()),
+               rule='STOP if the adopted lag has the larger mean absolute error in every rate method')
+    N.columns(df).to_csv(layout.writing(layout.data('baseline/completion_lag_hindcast.csv')), index=False)
+    with open(layout.writing(layout.data('baseline/completion_lag_hindcast.json')), 'w') as f:
+        json.dump(N.keys(out), f, indent=1)
+    if out['stop']:
+        raise SystemExit(f'STOP (completion lag): the hindcast at L = {L} is worse than at L = 0: {out}')
+    return out
+
+
 def main():
     B = run_boss()
     uses_2026 = B['_join_mode'] == 'market_excess' or B['pop_nowcast'] is not None
@@ -505,6 +531,7 @@ def main():
     rows_c, rows_p = hindcast(B, sh), hindcast(B, None)
     main_rows = rows_c if VALIDATION_VACANCY == 'consistent' else rows_p
     write(main_rows, chk, hindcast_stock(B), dhe_crosscheck(B), rows_pub=rows_p, vac=vac)
+    lag_hindcast(B)
     history_bands(B).to_csv(layout.writing(layout.data('baseline/bands_history.csv')), index=False)
     N.columns(stock_identity_history(B)).to_csv(layout.writing(layout.data('baseline/stock_identity_history.csv')),
                                                 index=False)

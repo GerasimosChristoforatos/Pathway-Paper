@@ -20,7 +20,7 @@ Rules (docs/PALETTE.md, MODEL v2.1.2):
   * print sizes: Nature Cities single column 89 mm, double column 183 mm; text 5-7 pt.
 
 MODEL v3.0.0: save() writes the formats of the run profile (runprofile.py: light PNG at 200 dpi with a small grey
-footer "LIGHT RUN — n=1000"; full PDF + PNG at 600 dpi) with fixed metadata (no software version or creation
+footer "LIGHT RUN — n=1000"; full PNG at 600 dpi; PDF retired in MODEL v3.3.1) with fixed metadata (no software version or creation
 date), so a re-run with the pinned environment reproduces every figure byte for byte. Negative bands keep their
 sign in the data: in time series they are stacked down from zero (positives up from zero, the net a black line);
 in cumulative bars each negative band is an unfilled, unhatched segment outlined in its band colour hanging from the
@@ -93,7 +93,9 @@ BOUNDARY = {'AR': dict(color=AR, ls='-', lw=LW_BOUNDARY, label='Acquired rights 
             'AtP': dict(color=ATP, ls=ATP_LS, lw=LW_BOUNDARY, label='Ability to pay (AtP)')}
 ZONE = {'within_both': dict(color='#41AB5D', alpha=0.30, label='Within both budgets (below AtP)'),
         'within_ar': dict(color='#A1D99B', alpha=0.30, label='Within AR only (between AtP and AR)'),
-        'exceeded': dict(color='#FB6A4A', alpha=0.035, label='Boundary exceeded (above AR)')}
+        'exceeded': dict(color='#FB6A4A', alpha=0.07, label='Boundary exceeded (above AR)')}
+# MODEL v3.3.1: the exceeded zone slightly more red (alpha 0.035 -> 0.07; same hue, still the lightest zone:
+# tools/palette_check.py)
 ZONE_GID = 'boundary_zone'
 # two accent colours for lines that are not boundaries (household formation, floor area in the diagnostics): the
 # boundary pair of model-v2.0.0, kept so those diagnostics are unchanged
@@ -230,7 +232,7 @@ def figsize(width='double', height_mm=100.0):
 
 
 def save(fig, path):
-    """Write the formats of the run profile (light: PNG at 200 dpi; full: PDF + PNG at 600 dpi), no software / date
+    """Write the PNG of the run profile (light: 200 dpi; full: 600 dpi; MODEL v3.3.1: no PDF), no software / date
     metadata, then close the figure. In the light profile every figure carries a small grey footer
     'LIGHT RUN — n=1000'."""
     import matplotlib.pyplot as plt
@@ -239,10 +241,9 @@ def save(fig, path):
     if footer:
         fig.text(0.995, 0.002, footer, ha='right', va='bottom', color='#9A9A9A', fontsize=FONT_MIN)
     for fmt in runprofile.get('formats'):
-        if fmt == 'png':
-            fig.savefig(path + '.png', dpi=DPI, metadata={'Software': None})
-        else:
-            fig.savefig(path + '.pdf', metadata={'Creator': None, 'Producer': None, 'CreationDate': None})
+        if fmt != 'png':                         # MODEL v3.3.1: figures are PNG only
+            raise ValueError(f'save: unsupported figure format {fmt!r} (PNG only)')
+        fig.savefig(path + '.png', dpi=DPI, metadata={'Software': None})
     plt.close(fig)
 
 

@@ -47,6 +47,9 @@ def write():
         L += [f"### {t['file']}", '', f"**{t['id']} {t['title']}** (table)", '',
               f"- Files: `paper_extended/{t['file']}.md`, `paper_extended/{t['file']}.csv`",
               f"- Data: {', '.join(f'`data/{s}`' for s in t['source'])}", '']
+    L += ['## Supplementary figures (supplementary/)', '']
+    for h in FP.SUPPLEMENTARY:
+        L += _entry(h['file'], f"{h['id']} {h['title']}", None, h['source'], os.path.join(layout.SUPPLEMENTARY, h['file']))
     for g, rows in FP.DIAGNOSTICS.items():
         L += [f'## Diagnostics: {g} (diagnostics/{g}/)', '']
         for r in rows:

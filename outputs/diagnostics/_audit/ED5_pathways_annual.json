@@ -1,0 +1,65 @@
+{
+ "figure": "ED5_pathways_annual",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Embodied carbon (kt CO\u2082e per year)",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "0",
+  "1,000",
+  "1,200",
+  "1,400",
+  "1,600",
+  "200",
+  "400",
+  "600",
+  "800",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Ambitious",
+  "Boundary exceeded (above AR)",
+  "Embodied carbon (kt CO\u2082e per year)",
+  "Moderate",
+  "Pathway (every lever)",
+  "Reference",
+  "S1 Avoid",
+  "S2 Switch",
+  "S3 Improve",
+  "Theoretical Limit",
+  "Within AR only (between AtP and AR)",
+  "Within both budgets (below AtP)"
+ ],
+ "note": "Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_outside": false,
+ "boundary_zones": true,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/annual.csv",
+  "pathways/runs.csv"
+ ],
+ "atp_linestyles": [
+  "dotted"
+ ],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

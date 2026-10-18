@@ -319,9 +319,9 @@
   "L4": {
     "subrule": "B",
     "size_ref": {
-      "Detached": 179.60009343759657,
-      "Townhouses": 107.73533895826715,
-      "Apartments": 98.05358867689021
+      "Detached": 187.55546613517788,
+      "Townhouses": 107.99934727173839,
+      "Apartments": 95.76734160256034
     },
     "size_ref_window": [
       2023,
@@ -480,14 +480,14 @@
         "Apartments": 0.0
       },
       "moderate": {
-        "Detached": 0.18592442009604268,
-        "Townhouses": 0.04866780510513975,
-        "Apartments": 0.0809804467914289
+        "Detached": 0.21341538535369878,
+        "Townhouses": 0.0545651752878851,
+        "Apartments": 0.05765294078695147
       },
       "ambitious": {
-        "Detached": 0.37184884019208536,
-        "Townhouses": 0.0973356102102795,
-        "Apartments": 0.1619608935828578
+        "Detached": 0.42683077070739756,
+        "Townhouses": 0.1091303505757702,
+        "Apartments": 0.11530588157390294
       }
     },
     "tl": {
@@ -732,7 +732,101 @@
     "tl": 2.7904761904761903,
     "tl_year": 1991,
     "high_ge_medium_every_year": true,
-    "anchor": "Stats NZ High - Medium household size gap (2050: +0.0415)"
+    "anchor": "Stats NZ High - Medium household size gap (2050: +0.0415)",
+    "tl_speed": {
+      "rate": 0.011757363709404878,
+      "interval": [
+        1996,
+        2001
+      ],
+      "start": 2026,
+      "S_start": 2.6778614674781296,
+      "level": 2.7904761904761903,
+      "level_reached": 2035.5782290810635,
+      "census_years": [
+        1991,
+        1996,
+        2001,
+        2006,
+        2013,
+        2018,
+        2023
+      ],
+      "intervals": [
+        {
+          "y0": 1991,
+          "y1": 1996,
+          "S0": 2.7904761904761903,
+          "S1": 2.7893683274021353,
+          "rate": 0.00022157261481101643
+        },
+        {
+          "y0": 1996,
+          "y1": 2001,
+          "S0": 2.7893683274021353,
+          "S1": 2.730581508855111,
+          "rate": 0.011757363709404878
+        },
+        {
+          "y0": 2001,
+          "y1": 2006,
+          "S0": 2.730581508855111,
+          "S1": 2.695376536885246,
+          "rate": 0.0070409943939729654
+        },
+        {
+          "y0": 2006,
+          "y1": 2013,
+          "S0": 2.695376536885246,
+          "S1": 2.699668375037685,
+          "rate": 0.0006131197360626903
+        },
+        {
+          "y0": 2013,
+          "y1": 2018,
+          "S0": 2.699668375037685,
+          "S1": 2.7319846708440427,
+          "rate": 0.006463259161271573
+        },
+        {
+          "y0": 2018,
+          "y1": 2023,
+          "S0": 2.7319846708440427,
+          "S1": 2.685915231009204,
+          "rate": 0.009213887966967782
+        }
+      ],
+      "on": true,
+      "path": {
+        "2025": 2.6802110787745215,
+        "2026": 2.6778614674781296,
+        "2027": 2.6896188311875346,
+        "2028": 2.7013761948969393,
+        "2029": 2.7131335586063443,
+        "2030": 2.724890922315749,
+        "2031": 2.736648286025154,
+        "2032": 2.748405649734559,
+        "2033": 2.7601630134439636,
+        "2034": 2.7719203771533687,
+        "2035": 2.7836777408627733,
+        "2036": 2.7904761904761903,
+        "2037": 2.7904761904761903,
+        "2038": 2.7904761904761903,
+        "2039": 2.7904761904761903,
+        "2040": 2.7904761904761903,
+        "2041": 2.7904761904761903,
+        "2042": 2.7904761904761903,
+        "2043": 2.7904761904761903,
+        "2044": 2.7904761904761903,
+        "2045": 2.7904761904761903,
+        "2046": 2.7904761904761903,
+        "2047": 2.7904761904761903,
+        "2048": 2.7904761904761903,
+        "2049": 2.7904761904761903,
+        "2050": 2.7904761904761903
+      },
+      "basis": "fastest change of household size between consecutive censuses 1991-2023"
+    }
   },
   "L2": {
     "subrule": "B",
@@ -770,7 +864,7 @@
       "d_surge": 1.0
     },
     "demolition_rate": 0.00135,
-    "long_run_residual": -0.0003445235477355917,
+    "long_run_residual": -0.000760940221397475,
     "anchor": "-40% demolition (Pellan et al. 2024)",
     "tl_note": "zero demolition, no redevelopment wave; unconsented additions kept at the long-run rate"
   },
@@ -1107,8 +1201,8 @@
   "L6": {
     "subrule": "C",
     "s": {
-      "reference": 0.17916414788023538,
-      "moderate": 0.3845820739401177,
+      "reference": 0.1097532998131882,
+      "moderate": 0.34987664990659406,
       "ambitious": 0.59
     },
     "tl": 1.0,
@@ -1127,7 +1221,7 @@
     {
       "item": "TL4",
       "tl": "f = 1",
-      "ambitious": "{'Detached': 0.3718, 'Townhouses': 0.0973, 'Apartments': 0.162}",
+      "ambitious": "{'Detached': 0.4268, 'Townhouses': 0.1091, 'Apartments': 0.1153}",
       "ok": true
     },
     {
@@ -1180,15 +1274,15 @@
     }
   ],
   "run_mode": "full",
-  "identity_max_rel_diff": 2.433033156508858e-16,
+  "identity_max_rel_diff": 3.698053754948208e-16,
   "identity_checks": {
     "annual_carbon": 0.0,
     "floor_area_by_typology": 0.0,
     "join": 0.0,
     "carbon_kt": 2.220446049250313e-16,
     "upfront_kt": 0.0,
-    "soil_carbon_loss_kt": 1.1102230246251565e-16,
-    "maintenance_kt": 2.220446049250313e-16,
+    "soil_carbon_loss_kt": 2.220446049250313e-16,
+    "maintenance_kt": 1.1102230246251565e-16,
     "floor_area_Mm2": 0.0,
     "committed_lower_kt": 0.0,
     "committed_upper_kt": 0.0,
@@ -1196,23 +1290,23 @@
     "committed_b2b4_upper_kt": 0.0,
     "committed_c1c4_kt": 0.0,
     "band Population growth floor_area_Mm2": 0.0,
-    "band Population growth carbon_kt": 1.86174736589468e-16,
+    "band Population growth carbon_kt": 1.8732771205920587e-16,
     "band Smaller households floor_area_Mm2": 0.0,
     "band Smaller households carbon_kt": 0.0,
-    "band Extra space floor_area_Mm2": 0.0,
-    "band Extra space carbon_kt": 1.5604938150871623e-16,
+    "band Extra space floor_area_Mm2": 2.695661877468882e-16,
+    "band Extra space carbon_kt": 1.429110526379731e-16,
     "band Vacancy floor_area_Mm2": 0.0,
-    "band Vacancy carbon_kt": 1.2358574304390431e-16,
-    "band 2026 overbuild floor_area_Mm2": 1.2182407285177747e-16,
-    "band 2026 overbuild carbon_kt": 1.1599109255369208e-16,
-    "band Demolition replacement floor_area_Mm2": 1.663883097056281e-16,
-    "band Demolition replacement carbon_kt": 2.1399016712661995e-16,
-    "band Recent replacement surge floor_area_Mm2": 0.0,
-    "band Recent replacement surge carbon_kt": 1.4797886866555665e-16,
-    "band Overbuild absorbed floor_area_Mm2": 2.423771853906996e-16,
-    "band Overbuild absorbed carbon_kt": 2.433033156508858e-16,
-    "band Unconsented additions floor_area_Mm2": 0.0,
-    "band Unconsented additions carbon_kt": 2.096277072493795e-16,
+    "band Vacancy carbon_kt": 0.0,
+    "band 2026 overbuild floor_area_Mm2": 1.9542603481250085e-16,
+    "band 2026 overbuild carbon_kt": 0.0,
+    "band Demolition replacement floor_area_Mm2": 0.0,
+    "band Demolition replacement carbon_kt": 0.0,
+    "band Recent replacement surge floor_area_Mm2": 2.1436039596638846e-16,
+    "band Recent replacement surge carbon_kt": 0.0,
+    "band Overbuild absorbed floor_area_Mm2": 1.8843608320343647e-16,
+    "band Overbuild absorbed carbon_kt": 1.905852978465531e-16,
+    "band Unconsented additions floor_area_Mm2": 1.4309191986841445e-16,
+    "band Unconsented additions carbon_kt": 3.698053754948208e-16,
     "band Vacancy released floor_area_Mm2": 0.0,
     "band Vacancy released carbon_kt": 0.0,
     "band Released dwellings (TL) floor_area_Mm2": 0.0,
@@ -1220,14 +1314,14 @@
     "band Surplus kept vacant (2050) floor_area_Mm2": 0.0,
     "band Surplus kept vacant (2050) carbon_kt": 0.0,
     "band Maintenance (B2, B4), 2026-2050 floor_area_Mm2": 0.0,
-    "band Maintenance (B2, B4), 2026-2050 carbon_kt": 1.5154091737540085e-16,
-    "LOW LoE_AR": 2.220446049250313e-16,
+    "band Maintenance (B2, B4), 2026-2050 carbon_kt": 1.5839358637086896e-16,
+    "LOW LoE_AR": 0.0,
     "LOW LoE_AtP": 0.0,
-    "REF LoE_AR": 2.220446049250313e-16,
+    "REF LoE_AR": 0.0,
     "REF LoE_AtP": 0.0,
-    "HIGH LoE_AR": 2.220446049250313e-16,
+    "HIGH LoE_AR": 0.0,
     "HIGH LoE_AtP": 0.0,
-    "VHIGH LoE_AR": 1.1102230246251565e-16,
+    "VHIGH LoE_AR": 0.0,
     "VHIGH LoE_AtP": 0.0,
     "overbuild_excess_max_abs_diff_between_runs": 0.0
   },

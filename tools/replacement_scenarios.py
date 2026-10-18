@@ -88,7 +88,7 @@ def main():
     long_pct = 100 * (float(B1['demolition_rate']) + float(B1['unconsented_rate']))
     import engine
     raw = engine.census_interval_rates(B1['census']['total_private'], B1['consents_monthly'],
-                                       float(B1['_completion']), float(B1['lag_w']))      # no UC correction
+                                       float(B1['_completion']), float(B1['lag_census']))      # no UC correction
     hist = [dict(interval=f"{int(r.y0)}-{int(r.y1)}", rate_pct=100 * float(r.rate),
                  rate_uncorrected_pct=100 * float(q.rate), d_uc=float(r.d_uc) if r.uc_corrected else None,
                  net_removals_per_yr=float((r.built - r.d_stock) / (r.y1 - r.y0)))
@@ -123,7 +123,8 @@ def main():
                  f"{100 * r['cumulative_net_removals_share_of_2025_stock']:.1f}% |")
     if s1['R26'] is not None:
         L += ['', '## Against the 2026 overbuild (reported, NOT fitted)', '',
-              'O = observed-implied 2026 completions (all categories, nowcast consents); R = the variant\'s '
+              'O = observed 2026 completions (all categories; consents lagged by the completion lag, or the '
+              'nowcast consents without it); R = the variant\'s '
               '2026 requirement before the overbuild; the excess O - R is the 2026 overbuild. '
               'Share of the Low excess = how much of it the variant\'s own replacement requirement covers.', '',
               '| variant | O 2026 | R 2026 | excess 2026 | share of Low excess covered | gap_ref (2027) | '
@@ -134,7 +135,7 @@ def main():
                      f"{100 * (r['R26'] - s1['R26']) / s1['e26']:.0f}% | {r['e27']:+,.0f} | "
                      f"{r['redevelopment_channel']:+,.0f} |")
     L += ['', '## Census record of net replacement (dwelling-count identity)', '',
-          'Corrected = 0.95 x consents - change in census private dwellings under construction (UC), '
+          f'Corrected = {validation.projection.COMPLETION_RATE:.3f} x consents - change in census private dwellings under construction (UC), '
           'applied when the completion lag is off (CENSUS_UC_CORRECTION).', '',
           '| interval | uncorrected (%/yr) | change in UC | corrected (%/yr) | net removals per year (corrected) |',
           '|---|---|---|---|---|']

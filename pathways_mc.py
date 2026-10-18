@@ -111,7 +111,8 @@ def draw_context(ctx, su, d, a13, red13, a45):
              size_ref={t: float(fi['size'][t]) for t in typ}, olf=dict(fi['olf']), v0=float(fi['v']),
              rate_demol=float(fi['rate_demol']), rate_unc=np.asarray(fi['rate_unc'], float),
              long_run_residual=float(d['unc_long']), excess=np.asarray(ji['excess'], float).copy(),
-             join_reference=np.asarray(d['join'], float), soil=dict(fi['soil']), events=fi['events'])
+             join_reference=np.asarray(d['join'], float), soil=dict(fi['soil']), events=fi['events'],
+             **PW.observed_window(ji))
     if d['kc'] is not None:
         c.update(a13_2025={t: float(a13[d['kc'], j]) for j, t in enumerate(typ)},
                  red13={t: np.asarray(red13[d['kc'], j], float) for j, t in enumerate(typ)},
@@ -389,7 +390,7 @@ def main():
             built = np.asarray(PW.engine.requirement(runs[lab_]['E']), float)
             if (built[1:] < -PW.T_ZERO_TOL_DWELLINGS).any():
                 stops.append(f'draw {j} {lab_}: built_t < 0')
-            rel = ro['released_tl1'] + ro['released_tl2']
+            rel = ro.get('released_pool', ro['released_tl1'] + ro['released_tl2'])    # as it enters the pool
             if (np.cumsum(ro['reoccupied']) > np.cumsum(rel) + PW.REOCCUPATION_TOL * max(ro['R'], 1.0)).any():
                 stops.append(f'draw {j} {lab_}: cumulative re-occupied > released')
             reo.update({f'{lab_}_reoccupation_share': ro['share'], f'{lab_}_released_R': ro['R'],

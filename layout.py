@@ -3,7 +3,8 @@
     outputs/                  full profile (run_all.py --profile full); outputs/_light/ mirrors this tree for the
                               light profile (the default) and outputs/_legacy/ for --reference-legacy
       paper_main/             Fig1-Fig8 of the paper (figure_plan.PAPER_MAIN)
-      paper_extended/         Extended Data ED1-ED14 and the table EDT1 (figure_plan.PAPER_EXTENDED)
+      paper_extended/         Extended Data ED1-ED10 and the table EDT1 (figure_plan.PAPER_EXTENDED)
+      supplementary/          supplementary figures SF1-SF5 (figure_plan.SUPPLEMENTARY; MODEL v3.3.1)
       diagnostics/<group>/    calibration, validation, boundaries, pathways, montecarlo, sensitivity; _audit/: the
                               record of every drawn figure (figures/audit.py; read by the tests)
       FIGURES.md              the index of every figure (indexes / figures/index.py, from figure_plan.py)
@@ -39,6 +40,7 @@ REPORTS = os.path.join(OUT, 'reports')
 # by group (calibration, validation, boundaries, pathways, montecarlo, sensitivity), FIGURES.md
 PAPER_MAIN = os.path.join(OUT, 'paper_main')
 PAPER_EXTENDED = os.path.join(OUT, 'paper_extended')
+SUPPLEMENTARY = os.path.join(OUT, 'supplementary')   # MODEL v3.3.1: beyond the ten Extended Data items
 DIAGNOSTICS = os.path.join(OUT, 'diagnostics')
 DIAGNOSTIC_GROUPS = ('calibration', 'validation', 'boundaries', 'pathways', 'montecarlo', 'sensitivity')
 FIGURES_INDEX = os.path.join(OUT, 'FIGURES.md')
@@ -86,9 +88,10 @@ def writing(path):
 
 def figure(name):
     """The folder of a figure (no extension), from its id in figure_plan.py: outputs/paper_main/<file>,
-    outputs/paper_extended/<file> or outputs/diagnostics/<group>/<file>."""
+    outputs/paper_extended/<file>, outputs/supplementary/<file> or outputs/diagnostics/<group>/<file>."""
     import figure_plan as FP
-    for base, items in ((PAPER_MAIN, FP.PAPER_MAIN), (PAPER_EXTENDED, FP.PAPER_EXTENDED)):
+    for base, items in ((PAPER_MAIN, FP.PAPER_MAIN), (PAPER_EXTENDED, FP.PAPER_EXTENDED),
+                        (SUPPLEMENTARY, FP.SUPPLEMENTARY)):
         if name in (h['file'] for h in items):
             return os.path.join(base, name)
     for g, rows in FP.DIAGNOSTICS.items():

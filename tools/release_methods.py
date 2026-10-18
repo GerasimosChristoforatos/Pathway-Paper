@@ -34,7 +34,11 @@ def lines():
     k = np.arange(1, 26)
     ex_exp = float(np.mean(d0 * 0.5 ** (k / projection.REPLACEMENT_HALF_LIFE)))
     ex_lin = float(np.mean(d0 * (1.0 - k / 25.0)))
+    # the census intervals with a negative net replacement rate (interval y0-y1 from its mid-year x and length w)
+    neg_iv = [f"{int(round(x + (w - 1) / 2 - w))}-{int(round(x + (w - 1) / 2))}"
+              for x, w, r in zip(tr['x'], tr['weight'], tr['rate']) if r < 0]
     hu = _js('baseline/history_unexplained.json')
+    ob = _js('baseline/overbuild_2026.json')
     lv = _js('pathways/levers.json')
     runs = pd.read_csv(layout.data('pathways/runs.csv', frozen=False))
     ref = runs[runs['scenario'] == 'REF'].set_index('run')
@@ -96,16 +100,54 @@ def lines():
          f"{tr['window'][0]}-{tr['window'][1]} fitted by weighted least squares on the mean of each interval's years "
          f"(weights = interval length), rate = {tr['a']:.6f} + {tr['b']:.4e} x year, extrapolated 2026-2050: "
          f"{100 * tr['rate_2026']:.3f}% in 2026 and {100 * tr['rate_2050']:.3f}% in 2050. It is not adopted as the "
-         'Reference: six interval rates (seven censuses), one of them negative (1996-2001), the 2013-2018 census '
+         f"Reference: {tr['n']} interval rates ({tr['n'] + 1} censuses), {len(neg_iv)} of them negative "
+         f"({', '.join(neg_iv)}), the 2013-2018 census "
          'definition break (empty / residents-away dwellings), and the unbounded extrapolation of a policy-driven '
          'wave.', '',
          '### Completion rate in the Monte Carlo', '',
-         f"Two-piece uniform on [{projection.COMPLETION_RATE_BAND[0]:.2f}, {projection.COMPLETION_RATE:.2f}] and "
-         f"[{projection.COMPLETION_RATE:.2f}, {projection.COMPLETION_RATE_BAND[1]:.2f}], probability 1/2 on each piece: "
-         f"the bounds of the observed completion rate ({projection.COMPLETION_RATE_BAND[0]:.2f}, "
-         f"{projection.COMPLETION_RATE_BAND[1]:.2f}; Jones, Greenaway-McGrevy & Crow 2024 [verify]) and the median at the "
-         f"adopted {projection.COMPLETION_RATE:.2f}, which a two-piece distribution places at its join (Wallis 2014, "
-         'Statistical Science 29(1)); the asymmetric bounds are kept without assuming a shape between them.', '',
+         f"Uniform on [{projection.COMPLETION_RATE_BAND[0]:.2f}, {projection.COMPLETION_RATE_BAND[1]:.2f}] (MODEL v4.0.0). "
+         f"The bounds are published completion milestones for Auckland consents (Jones, Greenaway-McGrevy & Crow 2025, "
+         'Policy Quarterly 21(1), 63-68, footnote 12): 93% of 2018-2019 consents had a final inspection by July 2024 '
+         '(lower bound of eventual completion) and more than 95% of 2018-2021 consents had a first inspection (upper '
+         'bound; the article gives no point value, so the edge 0.96 is a stated judgement). The deterministic central '
+         f"value {projection.COMPLETION_RATE:.3f} is their midpoint, and so the median of the Monte Carlo input. No shape "
+         'inside the band is identified, hence uniform. Limitation: Auckland evidence applied nationally.', '',
+         '### Consent-to-completion lag and pipeline years (MODEL v4.0.0)', '',
+         f"Completions in month m = {projection.COMPLETION_RATE:.3f} x consents in month m - L, L = "
+         f"{projection.COMPLETION_LAG_MONTHS} months, aggregated to calendar years. L is the midpoint of the median "
+         'time to dwelling completion of 1.27-1.53 yr for Auckland consents as of July 2024 (Jones, Greenaway-McGrevy '
+         '& Crow 2025, citing Greenaway-McGrevy & Jones 2023), consistent with the Stats NZ Experimental building '
+         'indicators (dwelling-weighted median 455 days from consent to final inspection for December 2020 quarter '
+         'consents, 533 days for September 2022 quarter consents). The same lag applies everywhere consents become '
+         'dwellings: the stock identity, the census-interval net replacement rates (consents lagged L/12 years before '
+         'each census date), the dwelling-size and typology-mix windows, historical floor area and the AR / AtP base, '
+         f"and the projection start. Projection years whose twelve lagged months are all observed ({', '.join(map(str, ob.get('pipeline_years') or []))}) "
+         'are pipeline years: their building is observed in every run (the market excess over the requirement), and '
+         'the excess fades from the next year at the persistence rho re-estimated on the lagged history. Before April '
+         '1990 the typology columns of the consent file are empty; those months are split by the April 1990 - March '
+         '1991 typology ratios of all dwellings (they enter only the 1991 completions, which are used in the cumulative '
+         'floor area from 1991 and nowhere else). Limitations: one fixed lag (no distribution of build times), Auckland '
+         'evidence applied nationally. The rolling-origin hindcast of the census dwelling-count identity is not worse '
+         'at L = 17 than at L = 0 (outputs/data/baseline/completion_lag_hindcast.csv).', '',
+         '### Theoretical limit: constraints at Level 4 (MODEL v4.0.0)', '',
+         f"Level 4 is the definitional limit of each lever, reached along the common adoption window, except household "
+         f"size (TL1): its level ({lv['L1']['tl']:.4f}, the {lv['L1']['tl_year']} census maximum) is approached no "
+         f"faster than the fastest change of household size observed between consecutive censuses 1991-2023 "
+         f"({lv['L1']['tl_speed']['rate']:.5f} per year, {lv['L1']['tl_speed']['interval'][0]}-"
+         f"{lv['L1']['tl_speed']['interval'][1]}; census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - "
+         f"2026), level), never below the Ambitious path. The level is reached in "
+         f"{lv['L1']['tl_speed']['level_reached']:.1f}. Household size is a population-level outcome of age "
+         'structure, partnering and housing costs; the speed limit keeps the theoretical limit within changes the New '
+         'Zealand census record has shown. The instant-TL row keeps its definition (every level from 2027). In every '
+         "theoretical-limit-family run the Reference's overbuild surplus (the positive market excess of the pipeline "
+         'years and of the fading gap) enters the re-occupation pool with the TL1 / TL2 releases (constant share of '
+         "each year's positive need, availability constraint, carry-forward); the re-occupied overbuild is booked in "
+         "'Overbuild absorbed'. Releases of an observed (pipeline) year enter the pool in the first unobserved year.", '',
+         '### Household-size projection (MODEL v4.0.0 note)', '',
+         'Household size follows the Stats NZ 2018-base household projection shape (Medium variant), rebased on the '
+         '2023 census; it is to be replaced by the 2023-base household projections when published. Sensitivities: '
+         'the Stats NZ Low / High variants and the 2018-2023 census pace continued linearly from 2023, for the '
+         'Reference, the Moderate / Ambitious Pathway and TL (sensitivity/household_size.csv).', '',
          '### Check and sensitivity rows', '',
          f"TL with re-occupation as fast as demand allows (deterministic sensitivity row): {fast['carbon_kt']:,.1f} kt, "
          f"LoE AR {fast['LoE_AR']:.3f} (TL: {tl['carbon_kt']:,.1f} kt, LoE AR {tl['LoE_AR']:.3f}).", '',

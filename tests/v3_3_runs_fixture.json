@@ -1,0 +1,506 @@
+{
+ "meta": {
+  "source": "outputs/data/pathways/runs.csv at release/model-v3.3.2 (92aa5a3); deterministic, identical to MODEL v3.3.0 (tests/regression_model_v3_3.json)",
+  "reference_projection": {
+   "carbon_kt": 20614.895949356513,
+   "floor_area_Mm2": 85.9008073050105
+  }
+ },
+ "rows": [
+  {
+   "run": "REF",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 20614.89594935651,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L1-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 83.1016860086526,
+   "carbon_kt": 19918.61189855534,
+   "dwellings_built": 587872.2597206258,
+   "committed_lower_kt": 7628.391335076358,
+   "committed_upper_kt": 8336.967693396356
+  },
+  {
+   "run": "L2-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 83.28803140883052,
+   "carbon_kt": 19942.65899633144,
+   "dwellings_built": 589190.8602387154,
+   "committed_lower_kt": 7650.075947829972,
+   "committed_upper_kt": 8361.31259136958
+  },
+  {
+   "run": "L3-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 83.15176124713157,
+   "carbon_kt": 20069.04707800951,
+   "dwellings_built": 588226.5976078974,
+   "committed_lower_kt": 7627.561675741995,
+   "committed_upper_kt": 8335.659036726123
+  },
+  {
+   "run": "L4-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 82.70877037247928,
+   "carbon_kt": 19875.163629592036,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7585.858978880564,
+   "committed_upper_kt": 8289.988288964047
+  },
+  {
+   "run": "L5-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 80.00167090881222,
+   "carbon_kt": 19247.440113982266,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7333.426973853248,
+   "committed_upper_kt": 8013.777433398257
+  },
+  {
+   "run": "L6-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 20055.759939341195,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L7-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 20453.471279518857,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L8-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 19717.84090475929,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L9-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 19974.40472701152,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L1-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 80.34557627911299,
+   "carbon_kt": 19232.802121740737,
+   "dwellings_built": 568369.7245691636,
+   "committed_lower_kt": 7377.147877399067,
+   "committed_upper_kt": 8062.487305254601
+  },
+  {
+   "run": "L2-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 80.712581669074,
+   "carbon_kt": 19279.918448964992,
+   "dwellings_built": 570966.6950169572,
+   "committed_lower_kt": 7419.90104064535,
+   "committed_upper_kt": 8110.489842208697
+  },
+  {
+   "run": "L3-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 80.40271518925265,
+   "carbon_kt": 19523.19820666251,
+   "dwellings_built": 568774.0457729138,
+   "committed_lower_kt": 7371.519906873997,
+   "committed_upper_kt": 8055.527680562462
+  },
+  {
+   "run": "L4-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 79.32025981454454,
+   "carbon_kt": 19090.21815622905,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7269.722174323197,
+   "committed_upper_kt": 7944.053605393659
+  },
+  {
+   "run": "L5-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 74.10253451261397,
+   "carbon_kt": 17879.984278608033,
+   "dwellings_built": 607679.1494428809,
+   "committed_lower_kt": 6783.25050309651,
+   "committed_upper_kt": 7411.764473906724
+  },
+  {
+   "run": "L6-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 19504.291679646,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L7-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 20292.04660968121,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L8-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 18820.78586016208,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L9-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 19333.913504666525,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L1-tl",
+   "scenario": "REF",
+   "floor_area_Mm2": 67.88736129202533,
+   "carbon_kt": 16000.562094535437,
+   "dwellings_built": 480214.02702705766,
+   "committed_lower_kt": 6272.819233851797,
+   "committed_upper_kt": 6860.307673188186
+  },
+  {
+   "run": "L2-tl",
+   "scenario": "REF",
+   "floor_area_Mm2": 66.37538107626378,
+   "carbon_kt": 15878.473370630329,
+   "dwellings_built": 469515.0889586048,
+   "committed_lower_kt": 6080.096570282501,
+   "committed_upper_kt": 6643.938568762979
+  },
+  {
+   "run": "L3-tl",
+   "scenario": "REF",
+   "floor_area_Mm2": 72.15557701561592,
+   "carbon_kt": 17807.12188075549,
+   "dwellings_built": 510416.3902679631,
+   "committed_lower_kt": 6603.394600270012,
+   "committed_upper_kt": 7215.133612071476
+  },
+  {
+   "run": "L4-tl",
+   "scenario": "REF",
+   "floor_area_Mm2": 62.39110106038469,
+   "carbon_kt": 15168.767976755147,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 5690.246880498217,
+   "committed_upper_kt": 6215.697660806546
+  },
+  {
+   "run": "L5-tl",
+   "scenario": "REF",
+   "floor_area_Mm2": 70.43960347320143,
+   "carbon_kt": 17031.319349762507,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 6441.543223007618,
+   "committed_upper_kt": 7037.852771154698
+  },
+  {
+   "run": "L6-tl",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 18403.599102265376,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L7-tl",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 19414.879729241795,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L8-tl",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 17216.482366091976,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "L9-tl",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 18238.552473741034,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "S1-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 69.88274061581762,
+   "carbon_kt": 16875.00343895721,
+   "dwellings_built": 550310.6131408142,
+   "committed_lower_kt": 6404.97857311598,
+   "committed_upper_kt": 6999.288181806959
+  },
+  {
+   "run": "S2-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 19035.982821903097,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "S3-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 19974.40472701152,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "pathway-moderate",
+   "scenario": "REF",
+   "floor_area_Mm2": 69.88274061581762,
+   "carbon_kt": 15073.370236480454,
+   "dwellings_built": 550310.6131408142,
+   "committed_lower_kt": 6404.97857311598,
+   "committed_upper_kt": 6999.288181806959
+  },
+  {
+   "run": "S1-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 56.11693076320209,
+   "carbon_kt": 13650.888236576926,
+   "dwellings_built": 494251.0931471888,
+   "committed_lower_kt": 5134.24710547974,
+   "committed_upper_kt": 5610.0905852678425
+  },
+  {
+   "run": "S2-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 17540.42865459169,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "S3-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 85.9008073050105,
+   "carbon_kt": 19333.913504666525,
+   "dwellings_built": 607679.149442881,
+   "committed_lower_kt": 7883.60344460999,
+   "committed_upper_kt": 8615.79039288979
+  },
+  {
+   "run": "pathway-ambitious",
+   "scenario": "REF",
+   "floor_area_Mm2": 56.11693076320209,
+   "carbon_kt": 10920.410160122154,
+   "dwellings_built": 494251.0931471888,
+   "committed_lower_kt": 5134.24710547974,
+   "committed_upper_kt": 5610.0905852678425
+  },
+  {
+   "run": "TL",
+   "scenario": "REF",
+   "floor_area_Mm2": 24.194366748643205,
+   "carbon_kt": 4357.683666696092,
+   "dwellings_built": 260504.03262949164,
+   "committed_lower_kt": 2190.9390820233248,
+   "committed_upper_kt": 2392.840771946524
+  },
+  {
+   "run": "TL-from2027",
+   "scenario": "REF",
+   "floor_area_Mm2": 19.504175195545617,
+   "carbon_kt": 3020.474059516867,
+   "dwellings_built": 236882.93887810287,
+   "committed_lower_kt": 1774.5461181734738,
+   "committed_upper_kt": 1938.44115021234
+  },
+  {
+   "run": "pathway-moderate-by2030",
+   "scenario": "REF",
+   "floor_area_Mm2": 68.37013330456284,
+   "carbon_kt": 14470.066468885112,
+   "dwellings_built": 547256.483593108,
+   "committed_lower_kt": 6275.8835655224775,
+   "committed_upper_kt": 6858.958975606929
+  },
+  {
+   "run": "pathway-ambitious-by2030",
+   "scenario": "REF",
+   "floor_area_Mm2": 53.41236598257704,
+   "carbon_kt": 9906.5359430545,
+   "dwellings_built": 488213.91811201774,
+   "committed_lower_kt": 4903.536830618135,
+   "committed_upper_kt": 5359.278616981706
+  },
+  {
+   "run": "pathway-moderate-by2045",
+   "scenario": "REF",
+   "floor_area_Mm2": 72.77053186777805,
+   "carbon_kt": 16230.018169487052,
+   "dwellings_built": 555871.0639837211,
+   "committed_lower_kt": 6656.100220501432,
+   "committed_upper_kt": 7272.160616314589
+  },
+  {
+   "run": "pathway-ambitious-by2045",
+   "scenario": "REF",
+   "floor_area_Mm2": 61.34367661948615,
+   "carbon_kt": 12871.383035902614,
+   "dwellings_built": 505214.14126137074,
+   "committed_lower_kt": 5588.71176011642,
+   "committed_upper_kt": 6103.887871341622
+  },
+  {
+   "run": "LOW",
+   "scenario": "LOW",
+   "floor_area_Mm2": 78.46440013091876,
+   "carbon_kt": 19055.424038730773,
+   "dwellings_built": 555058.315533799,
+   "committed_lower_kt": 7206.885225925856,
+   "committed_upper_kt": 7876.832802962662
+  },
+  {
+   "run": "pathway-moderate",
+   "scenario": "LOW",
+   "floor_area_Mm2": 64.12009343621384,
+   "carbon_kt": 13871.252078550846,
+   "dwellings_built": 505125.491950671,
+   "committed_lower_kt": 5882.741899639403,
+   "committed_upper_kt": 6429.242141290285
+  },
+  {
+   "run": "pathway-ambitious",
+   "scenario": "LOW",
+   "floor_area_Mm2": 51.73228159025074,
+   "carbon_kt": 10088.50642028459,
+   "dwellings_built": 456336.2851145876,
+   "committed_lower_kt": 4739.011584343827,
+   "committed_upper_kt": 5178.887964401859
+  },
+  {
+   "run": "TL",
+   "scenario": "LOW",
+   "floor_area_Mm2": 22.528559801148493,
+   "carbon_kt": 4104.460613263879,
+   "dwellings_built": 243555.61745449848,
+   "committed_lower_kt": 2042.5494189933936,
+   "committed_upper_kt": 2231.0563387237453
+  },
+  {
+   "run": "HIGH",
+   "scenario": "HIGH",
+   "floor_area_Mm2": 95.20024465009922,
+   "carbon_kt": 22430.77566010825,
+   "dwellings_built": 673482.9894596963,
+   "committed_lower_kt": 8755.224153875017,
+   "committed_upper_kt": 9569.63569560821
+  },
+  {
+   "run": "pathway-moderate",
+   "scenario": "HIGH",
+   "floor_area_Mm2": 76.41712097208845,
+   "carbon_kt": 16346.363452836316,
+   "dwellings_built": 603164.8863729793,
+   "committed_lower_kt": 7016.361573947079,
+   "committed_upper_kt": 7668.245508528336
+  },
+  {
+   "run": "pathway-ambitious",
+   "scenario": "HIGH",
+   "floor_area_Mm2": 60.43679941492702,
+   "carbon_kt": 11637.404284288235,
+   "dwellings_built": 534495.2630708778,
+   "committed_lower_kt": 5537.309423249923,
+   "committed_upper_kt": 6051.004473494055
+  },
+  {
+   "run": "TL",
+   "scenario": "HIGH",
+   "floor_area_Mm2": 24.612796635504115,
+   "carbon_kt": 4424.5981303260205,
+   "dwellings_built": 264801.0790986592,
+   "committed_lower_kt": 2228.2083272895466,
+   "committed_upper_kt": 2433.4542755045136
+  },
+  {
+   "run": "VHIGH",
+   "scenario": "VHIGH",
+   "floor_area_Mm2": 104.67680438599452,
+   "carbon_kt": 24237.805077437875,
+   "dwellings_built": 740540.1669673207,
+   "committed_lower_kt": 9651.327666973148,
+   "committed_upper_kt": 10550.761977354725
+  },
+  {
+   "run": "pathway-moderate",
+   "scenario": "VHIGH",
+   "floor_area_Mm2": 82.9275541406545,
+   "carbon_kt": 17579.21664587606,
+   "dwellings_built": 656236.6448540033,
+   "committed_lower_kt": 7631.726168577579,
+   "committed_upper_kt": 8341.970549052814
+  },
+  {
+   "run": "pathway-ambitious",
+   "scenario": "VHIGH",
+   "floor_area_Mm2": 64.58408427560911,
+   "carbon_kt": 12286.142877172551,
+   "dwellings_built": 573962.5198870013,
+   "committed_lower_kt": 5929.051698520956,
+   "committed_upper_kt": 6479.873385046825
+  },
+  {
+   "run": "TL",
+   "scenario": "VHIGH",
+   "floor_area_Mm2": 24.686297630580945,
+   "carbon_kt": 4437.908973845412,
+   "dwellings_built": 265596.70974618616,
+   "committed_lower_kt": 2234.81368238754,
+   "committed_upper_kt": 2440.652393551215
+  },
+  {
+   "run": "TL-reoccupation-fast",
+   "scenario": "REF",
+   "floor_area_Mm2": 23.543026419762665,
+   "carbon_kt": 4072.5815490712034,
+   "dwellings_built": 260504.03262949167,
+   "committed_lower_kt": 2151.052254278693,
+   "committed_upper_kt": 2350.044855204276
+  }
+ ]
+}

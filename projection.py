@@ -115,6 +115,12 @@ HOUSEHOLD_SHEET_PROJ = 'Table 1'
 # series are at 30 June; only the rebased shape is used, so the half-year offset
 # and any level difference do not enter the result.
 HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S only
+# HH_SIZE_PATH (MODEL v4.0.0): 'statsnz' (ADOPTED: the Stats NZ 2018-base household projection shape, rebased on the
+#   2023 census as above; to be replaced by the 2023-base household projections when published) or 'census_pace'
+#   (sensitivity: household size continues LINEARLY from the 2023 anchor at the 2018-2023 census-interval pace,
+#   (S_2023 - S_2018) / 5 per year, census-benchmarked households; HH_SIZE_PACE_WINDOW).
+HH_SIZE_PATH = 'statsnz'
+HH_SIZE_PACE_WINDOW = (2018, 2023)
 
 # S_TAIL: household size between and after the published knots (last knot 2043).
 #   'hermite_clamped' (ADOPTED, v1.2.1): one cubic Hermite through every
@@ -373,7 +379,10 @@ REFERENCE_LEGACY = os.environ.get('PATHWAY_REFERENCE_LEGACY') == '1'
 # VACANCY_PARAMETER: 'census_2023' (adopted; the published 2023 census value, 5.39%) or 'consistent_mean'
 #   (sensitivity: the mean of the 1986-2023 censuses on one definition)
 VACANCY_PARAMETER = 'census_2023'
-OVERBUILD_ABSORPTION_START = 2026
+# OVERBUILD_ABSORPTION_START (MODEL v4.0.0): None = the last OBSERVED year, w = 0 up to and including it: the last
+#   pipeline year with the completion lag (2027 at L = 17, so the observed 2026-2027 building is never paid back
+#   within the observed years), 2026 without it (MODEL v3.3). A year fixes it explicitly.
+OVERBUILD_ABSORPTION_START = None
 OVERBUILD_ABSORPTION_END = None if REFERENCE_LEGACY else 2035
 # NOWCAST_METHOD: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
 #   (August 2025 - July 2026), no seasonal estimation. It is the year to July
@@ -419,13 +428,16 @@ SOIL_ON_REPLACEMENT = False
 # Rearranged for what must be built:
 #     built = new households + vacancy allowance + vacancy change
 #             + demolitions - unconsented additions
-# COMPLETION_RATE: Jones, Greenaway-McGrevy & Crow (2024), after
-#   Greenaway-McGrevy & Jones (2023): 91-96% depending on the completion
-#   milestone. Eventual completion lies between the code-compliance share
-#   (~92%, counted early, so a lower bound) and the first-inspection share
-#   (~96%, construction started, so an upper bound). 95% is their own assumption.
-#   TODO (citation to verify): the Jones et al. (2024) reference is not in refs/
-#   and must be confirmed before submission (ASSUMPTIONS, limitations).
+# COMPLETION_RATE (MODEL v4.0.0): 0.945, the midpoint of the published completion milestones of Jones,
+#   Greenaway-McGrevy & Crow (2025, Policy Quarterly 21(1), 63-68, footnote 12; Auckland consents): 93% of 2018-2019
+#   consents had a final inspection by July 2024 (a lower bound: counted late, some completed dwellings are never
+#   inspected within the window) and more than 95% of 2018-2021 consents had a first inspection (construction
+#   started; an upper bound on eventual completion). The article gives the upper milestone only as '>95%', with no
+#   point value: the band edge 0.96 is a stated judgement (the upper edge of the MODEL v3.3 band), not a published
+#   number. The Monte Carlo draws the rate uniform on COMPLETION_RATE_BAND = (0.93, 0.96); no shape inside the band
+#   is identified, hence uniform. LIMITATION: the evidence is Auckland's, applied nationally. MODEL v3.3 used 0.95 (the
+#   authors' own assumption) with the two-piece band (0.92, 0.95, 0.96). The legacy Reference (REFERENCE_LEGACY,
+#   MODEL v2.1) keeps 0.95.
 # DEMOLITION_RATE: Page (2009), BRANZ Study Report SR214 -- ~2,200 dwellings/yr
 #   in 2001-2006 from the same census-and-consents identity used here, on a 2006
 #   private stock of 1,631,019 = 0.135%/yr (Finland, measured 2000-12: 0.15%).
@@ -463,8 +475,8 @@ RV_SHARE_REF = (2016, 2025)
 # for which no case study exists (any factor would be judgement).
 COL_RV_GFA = 'GFA - GFA/RetirementVillage'
 
-COMPLETION_RATE = 0.95
-COMPLETION_RATE_BAND = (0.92, 0.96)
+COMPLETION_RATE = 0.95 if REFERENCE_LEGACY else 0.945
+COMPLETION_RATE_BAND = (0.93, 0.96)
 
 # COMPLETION_LAG: consents are not built in the calendar year they are issued.
 #   'littles_law' (ADOPTED, item 7): dwellings completed in year t =
@@ -490,6 +502,23 @@ COMPLETION_RATE_BAND = (0.92, 0.96)
 # v1.1 default: 0 (no lag): calibration, history and the 2026 anchor use
 #   same-year consents x COMPLETION_RATE. 'littles_law' is a sensitivity.
 COMPLETION_LAG = 0
+# COMPLETION_LAG_MONTHS (MODEL v4.0.0, adopted 17): consent-to-completion lag in months. Completions(month m) =
+#   COMPLETION_RATE x consents(month m - L), aggregated to calendar years; the SAME lag everywhere consents become
+#   'built': the history (stock identity, census-interval net replacement, the dwelling-size and typology-mix
+#   windows, historical floor area, the AR / AtP base) and the projection start. L = 17 is the midpoint of the median
+#   time to dwelling completion of 1.27-1.53 yr (15.2-18.4 months) in Auckland as of July 2024 (Jones,
+#   Greenaway-McGrevy & Crow 2025, Policy Quarterly 21(1), 63-68, citing Greenaway-McGrevy & Jones 2023); consistent
+#   with the Stats NZ Experimental building indicators (dwelling-weighted median days from consent to final inspection
+#   455 for December 2020 quarter consents, March 2022 quarter release, Table 1; 533 for September 2022 quarter
+#   consents, December 2023 quarter release, Table 1). Projection years whose 12 lagged months are all observed are
+#   PIPELINE years (L = 17, consents to July 2026: 2026 and 2027): their building is observed, not modelled (the
+#   market excess over the requirement, engine.market_excess with n observed years; their floor area fixed in every
+#   run). 0 reproduces MODEL v3.3 (same-calendar-year consents; 2026 from the last-12-months nowcast). Not combined
+#   with COMPLETION_LAG (the two-point W) != 0. The legacy Reference (REFERENCE_LEGACY, MODEL v2.1) keeps 0.
+COMPLETION_LAG_MONTHS = 0 if REFERENCE_LEGACY else 17
+# CONSENT_DATA_END (MODEL v4.0.0): None = every observed month; 'YYYY-MM-01' truncates the monthly consents (the
+#   'No 2026 data' check, validation.NO_2026_DATA, adapted to the lag).
+CONSENT_DATA_END = None
 DEMOLITION_RATE = 0.00135
 
 
@@ -620,10 +649,55 @@ def load_decarb(mode, item_case, typ_names, materials, years):
 # ============================================================
 
 def load_consents():
-    """Monthly consents (data/derived/consents_monthly.csv) with a datetime 'Date' column."""
+    """Monthly consents (data/derived/consents_monthly.csv) with a datetime 'Date' column; truncated at
+    CONSENT_DATA_END when set (MODEL v4.0.0)."""
     df = pd.read_csv(FILE_CONSENTS_DERIVED)
     df['Date'] = pd.to_datetime(df['Date'])
+    if CONSENT_DATA_END is not None:
+        df = df[df['Date'] <= pd.Timestamp(CONSENT_DATA_END)].reset_index(drop=True)
     return df
+
+
+def lagged_consents(df, lag_months, typ_cols, total_col):
+    """MODEL v4.0.0: the monthly consents timed as completions, consents(m - L) booked in month m (the 'Date' shifted
+    forward by L months), with 'Year' the completion year. The typology and retirement-village columns start in
+    April 1990; months before their first observation that a lag reaches (L = 17: August 1989 - March 1990, all in
+    1991 completions) are imputed from the all-category dwelling count (from 1965) x each column's ratio to it over
+    the first 12 observed months (the composition of consents in April 1990 - March 1991, floor area per dwelling
+    included). Returns (frame, info: imputed months and the imputed share of each affected completion year)."""
+    out = df.copy()
+    first = out.loc[out[typ_cols[0]].notna(), 'Date'].min()
+    win = out[(out['Date'] >= first) & (out['Date'] < first + pd.DateOffset(months=12))]
+    ratio = {c: float(win[c].sum() / win[total_col].sum()) for c in typ_cols}
+    gap = out['Date'] < first
+    for c in typ_cols:
+        out.loc[gap, c] = out.loc[gap, total_col] * ratio[c]
+    out['Date'] = out['Date'] + pd.DateOffset(months=int(lag_months))
+    out['Year'] = out['Date'].dt.year
+    out['_imputed'] = gap.values
+    info = dict(lag_months=int(lag_months), first_typology_month=str(first.date()), composition_window=(
+        str(first.date()), str((first + pd.DateOffset(months=11)).date())), ratio=ratio)
+    share = {}
+    model = out['_imputed'] & (out['Year'] >= 1991)                  # model years only (the history starts in 1991)
+    for y, g in out[model].groupby('Year'):
+        tot = out.loc[out['Year'] == y, total_col].sum()
+        share[int(y)] = float(g[total_col].sum() / tot)
+    info['imputed_months_by_completion_year'] = {int(y): [str((d - pd.DateOffset(months=int(lag_months))).date())
+                                                           for d in g['Date']]
+                                                 for y, g in out[model].groupby('Year')}
+    info['imputed_share_of_completions'] = share
+    return out.drop(columns='_imputed'), info
+
+
+def pipeline_years(df, lag_months, first_year=2026):
+    """MODEL v4.0.0: the projection years (from first_year, contiguous) whose 12 lagged months are all observed:
+    December of the year minus L months is at or before the last observed consent month."""
+    last = pd.Timestamp(df['Date'].max())
+    out, y = [], first_year
+    while pd.Timestamp(y, 12, 1) - pd.DateOffset(months=int(lag_months)) <= last and lag_months > 0:
+        out.append(y)
+        y += 1
+    return out
 
 
 def load_historical_population(path=FILE_POP_HIST, sheet=POP_SHEET_HIST,
@@ -1034,20 +1108,32 @@ def main():
     # ------------------------------------------------------------------
     df_consents = load_consents()
     df_consents['Year'] = pd.to_datetime(df_consents['Date']).dt.year
+    # MODEL v4.0.0: consents timed as completions L months later (COMPLETION_LAG_MONTHS); every annual consent
+    # series of the model is taken from this frame (L = 0: the calendar-year consents of MODEL v3.3, unchanged)
+    lag_months = int(COMPLETION_LAG_MONTHS or 0)
+    if lag_months and COMPLETION_LAG not in (0, 0.0):
+        raise ValueError('COMPLETION_LAG_MONTHS and COMPLETION_LAG (two-point W) cannot be combined.')
+    _lag_cols = (list(COL_TYPOLOGIES.values()) + list(COL_CONSENT_COUNTS.values()) + [COL_GFA]
+                 + ([COL_RV_GFA] if COL_RV_GFA in df_consents.columns else []))
+    df_lag, lag_info = lagged_consents(df_consents, lag_months, _lag_cols, COL_DWELLINGS_TOTAL)
+    pipeline = pipeline_years(df_consents, lag_months)
+    lag_info.update(pipeline_years=pipeline, consents_observed_to=str(df_consents['Date'].max().date()))
+    if _join_mode == 'market_excess' and not pipeline and not (df_consents['Date'].dt.year >= 2026).any():
+        _join_mode = 'carried_deviation'     # no observed projection year at all (validation.NO_2026_DATA, L = 0)
 
-    hist_typ_gfa = df_consents.groupby('Year')[list(COL_TYPOLOGIES.values())].sum()
+    hist_typ_gfa = df_lag.groupby('Year')[list(COL_TYPOLOGIES.values())].sum()
     hist_typ_gfa.columns = typ_names
     hist_typ_gfa = hist_typ_gfa.loc[1991:2025]
 
-    hist_typ_units = df_consents.groupby('Year')[list(COL_CONSENT_COUNTS.values())].sum()
+    hist_typ_units = df_lag.groupby('Year')[list(COL_CONSENT_COUNTS.values())].sum()
     hist_typ_units.columns = typ_names
     hist_typ_units = hist_typ_units.loc[1991:2025]
 
-    hist_total_gfa = df_consents.groupby('Year')[COL_GFA].sum().loc[1991:2025]
+    hist_total_gfa = df_lag.groupby('Year')[COL_GFA].sum().loc[1991:2025]
 
     # ---- dwelling-count denominator: the three typologies ----------
     typ_sum = hist_typ_units.sum(axis=1)
-    ext = df_consents.groupby('Year')[COL_DWELLINGS_TOTAL].sum().reindex(typ_sum.index)
+    ext = df_lag.groupby('Year')[COL_DWELLINGS_TOTAL].sum().reindex(typ_sum.index)
     ratio = (ext / typ_sum).loc[2015:2025].mean()
     gap = (ext - typ_sum).loc[2015:2025].mean()
     # The all-category column includes retirement village units, which the floor
@@ -1179,6 +1265,9 @@ def main():
         lag_w = float(COMPLETION_LAG)
     if not 0.0 <= lag_w < 1.0:
         raise ValueError(f'Completion lag W = {lag_w} outside [0, 1).')
+    # MODEL v4.0.0: the lag of the census dwelling-count identity in years (continuous time, monthly resolution):
+    # the two-point W (0 when the monthly lag is on) + L / 12; the annual series are already lagged (df_lag)
+    lag_census = lag_w + lag_months / 12.0
 
     def completed(series):
         """Consents timed as completions: (1 - W) x this year + W x last year.
@@ -1206,8 +1295,8 @@ def main():
     demolition_rate = DEMOLITION_RATE                  # fixed (BRANZ SR214)
     # census dwelling-count identity (always computed; reported, and the default source)
     consents_monthly = df_consents.set_index('Date')[COL_DWELLINGS_TOTAL].astype(float)
-    census_uc = (census['under_construction'] if CENSUS_UC_CORRECTION and lag_w == 0 else None)
-    census_rates = engine.census_interval_rates(census['total_private'], consents_monthly, _completion, lag_w,
+    census_uc = (census['under_construction'] if CENSUS_UC_CORRECTION and lag_census == 0 else None)
+    census_rates = engine.census_interval_rates(census['total_private'], consents_monthly, _completion, lag_census,
                                                 uc=census_uc)
 
     # long-run residual beyond the BRANZ demolition rate (census dwelling counts)
@@ -1371,6 +1460,16 @@ def main():
     # the same shape from the anchor year to 2025 (figures draw the projection from the anchor point)
     S_bridge = (float(hist_S.loc[S_ANCHOR_YEAR]) * _S_ann.loc[S_ANCHOR_YEAR:2025]
                 / float(_S_ann.loc[S_ANCHOR_YEAR]))
+    if HH_SIZE_PATH == 'census_pace':
+        _p0, _p1 = HH_SIZE_PACE_WINDOW
+        if _p1 != S_ANCHOR_YEAR:
+            raise ValueError('HH_SIZE_PATH census_pace: the pace window must end at S_ANCHOR_YEAR.')
+        _pace = float(hist_S.loc[_p1] - hist_S.loc[_p0]) / (_p1 - _p0)
+        S_matched = float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (np.asarray(forecast_years, float) - S_ANCHOR_YEAR)
+        S_bridge = pd.Series(float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (S_bridge.index.values - S_ANCHOR_YEAR),
+                             index=S_bridge.index)
+    elif HH_SIZE_PATH != 'statsnz':
+        raise ValueError(f"Unknown HH_SIZE_PATH '{HH_SIZE_PATH}'.")
     # ---- household size and migration: diagnostic regression (not applied) ----
     # Fitted only where households are census-benchmarked (see above).
     _yr = years_hist[(years_hist >= CALIB_START_YEAR) & (years_hist <= calib_end)]
@@ -1427,14 +1526,29 @@ def main():
     # typology shares: 2025 observed, 2026 the observed consented mix (below), then held at the
     # MIX_HELD_WINDOW average
     _typ_cols = [COL_TYPOLOGIES[n] for n in typ_names]
-    _w = df_consents[(df_consents['Year'] >= MIX_HELD_WINDOW[0]) & (df_consents['Year'] <= MIX_HELD_WINDOW[1])]
+    _w = df_lag[(df_lag['Year'] >= MIX_HELD_WINDOW[0]) & (df_lag['Year'] <= MIX_HELD_WINDOW[1])]
     held_shares = (_w[_typ_cols].sum() / _w[_typ_cols].sum().sum()).set_axis(typ_names)
     evolving_gfa_shares = pd.DataFrame([shares_2025[list(typ_names)].values] * len(forecast_years),
                                        index=forecast_years, columns=list(typ_names))
     evolving_gfa_shares.loc[forecast_years > 2025, :] = held_shares.values
     # 2026 floor area from observed consented GFA by typology
     gfa_nowcast = None
-    if _join_mode == 'market_excess':
+    pipe = None                    # MODEL v4.0.0: observed (pipeline) years, their building and floor area
+    if _join_mode == 'market_excess' and pipeline:
+        _ly = df_lag.groupby('Year')
+        _pa = _ly[COL_DWELLINGS_TOTAL].sum()
+        _pg = _ly[[COL_TYPOLOGIES[n] for n in typ_names]].sum()
+        pipe = dict(years=list(pipeline),
+                    consents_all={y: float(_pa.loc[y]) for y in pipeline},                     # all categories
+                    built_all={y: _completion * float(_pa.loc[y]) for y in pipeline},
+                    gfa_by_typology={y: {n: _completion * float(_pg.loc[y, COL_TYPOLOGIES[n]]) for n in typ_names}
+                                     for y in pipeline})
+        pipe['gfa_total'] = {y: float(sum(pipe['gfa_by_typology'][y].values())) for y in pipeline}
+        for y in pipeline:
+            evolving_gfa_shares.loc[y, :] = [pipe['gfa_by_typology'][y][n] / pipe['gfa_total'][y] for n in typ_names]
+        gfa_nowcast = dict(by_typology=pipe['gfa_by_typology'][pipeline[0]], total=pipe['gfa_total'][pipeline[0]],
+                           consented_2026=None, pipeline=True)
+    elif _join_mode == 'market_excess':
         _gm = df_consents.set_index(pd.to_datetime(df_consents['Date']))
         _g26 = {n: engine.nowcast_year(_gm[COL_TYPOLOGIES[n]].astype(float), 2026, NOWCAST_METHOD,
                                        NOWCAST_SEASONAL_YEARS)['total'] for n in typ_names}
@@ -1442,6 +1556,9 @@ def main():
                   for n in typ_names}
         gfa_nowcast = dict(by_typology=_built, total=float(sum(_built.values())), consented_2026=_g26)
         evolving_gfa_shares.loc[2026, :] = [_built[n] / gfa_nowcast['total'] for n in typ_names]
+    # the observed floor area fixed in every run: the pipeline years (MODEL v4.0.0) or the 2026 nowcast
+    gfa_fixed = ({y - 2025: pipe['gfa_total'][y] for y in pipe['years']} if pipe else
+                 ({1: gfa_nowcast['total']} if gfa_nowcast else None))
     future_blended_olf_bim = blend_per_gfa_share(evolving_gfa_shares, OLF_NET_BIM, typ_names)
 
     # [FIX f] realised dwelling size held at its recent observed level per
@@ -1466,21 +1583,25 @@ def main():
                       shares=evolving_gfa_shares, size=size_ref, olf=OLF_USED,
                       intensity=T_INT, intensity_upfront=U_INT,
                       soil=SOIL_INTENSITY, soil_on_replacement=SOIL_ON_REPLACEMENT,
-                      gfa_fixed=({1: gfa_nowcast['total']} if gfa_nowcast else None), events=EVENTS)
+                      gfa_fixed=gfa_fixed, events=EVENTS)
     # NEAR-TERM MARKET EXCESS: 2026 building from observed consents (NOWCAST_METHOD)
     nowcast, join_info = None, {}
-    if _join_mode == 'market_excess':
+    if _join_mode == 'market_excess' and not pipe:
         nowcast = engine.nowcast_year(consents_monthly, 2026, NOWCAST_METHOD, NOWCAST_SEASONAL_YEARS)
     engine_out = {}
+    # the overbuild absorption window starts at the last observed year (OVERBUILD_ABSORPTION_START)
+    absorption_start = (OVERBUILD_ABSORPTION_START if OVERBUILD_ABSORPTION_START is not None
+                        else (max(pipe['years']) if pipe else 2026))
     for col in ['5th', '50th', '95th']:
         pop_total = df_forecast[f'PopTotal_{col}'].values
         pop_growth = df_forecast[f'PopGrowth_{col}'].clip(lower=0).values
         hh_arr = households_forecast[col]
         E = engine.forward(pop_total, hh_arr, pop_growth, **fwd_inputs)
         if _join_mode == 'market_excess':
-            _b26 = _completion * ((1.0 - lag_w) * float(nowcast['total']) + lag_w * float(hist_units_all.loc[2025]))
+            _b26 = ([pipe['built_all'][y] for y in pipe['years']] if pipe else
+                    _completion * ((1.0 - lag_w) * float(nowcast['total']) + lag_w * float(hist_units_all.loc[2025])))
             _aw = (None if OVERBUILD_ABSORPTION_END is None or OVERBUILD_BOOKING != 'surplus' else
-                   engine.logistic_weights(forecast_years, OVERBUILD_ABSORPTION_START, OVERBUILD_ABSORPTION_END))
+                   engine.logistic_weights(forecast_years, absorption_start, OVERBUILD_ABSORPTION_END))
             join, ji = engine.market_excess(E, _b26, rho_other, OVERBUILD_GAP_REF, OVERBUILD_BOOKING,
                                             OVERBUILD_ABSORPTION, absorb_w=_aw)
             E = engine.forward(pop_total, hh_arr, pop_growth, join=join, join_redev=ji['redev'],
@@ -1566,7 +1687,7 @@ def main():
     # ---- retirement-village floor area: reported, out of scope (A4) ----
     rv_floor_area, rv_size_ref = None, float('nan')
     if COL_RV_GFA in df_consents.columns:
-        _rvg = df_consents.groupby('Year')[COL_RV_GFA].sum().loc[1991:2025]
+        _rvg = df_lag.groupby('Year')[COL_RV_GFA].sum().loc[1991:2025]
         _rw = slice(*DWELLING_SIZE_REF)
         rv_size_ref = float(_rvg.loc[_rw].sum() / hist_rv_units.loc[_rw].sum())
         rv_floor_area = dict(history_built=completed(_rvg) * COMPLETION_RATE,
@@ -1592,8 +1713,10 @@ def main():
           f"{RECENT_INTERVAL[0]}-{RECENT_INTERVAL[1]} {100 * rate_recent:.3f}%)")
     if _join_mode == 'market_excess':
         ji = join_info['50th']
-        print(f"[near-term market excess] 2026 building {ji['O26']:,.0f} (0.95 x consents, {NOWCAST_METHOD}) vs "
-              f"requirement {ji['R26']:,.0f} -> excess {ji['e26']:+,.0f}; gap_ref ({OVERBUILD_GAP_REF}) "
+        _src = (f"pipeline {pipe['years']} (consents lagged {lag_months} months)" if pipe else NOWCAST_METHOD)
+        print(f"[near-term market excess] observed building {[round(x) for x in ji['O_obs']]} ({_completion:g} x "
+              f"consents, {_src}) vs requirement {[round(x) for x in ji['R_obs']]} -> excess "
+              f"{[round(x) for x in ji['e_obs']]}; gap_ref ({OVERBUILD_GAP_REF}) "
               f"{ji['gap_ref']:+,.0f}, rho {ji['rho']:.2f}; {OVERBUILD_BOOKING}: "
               f"{ji['join'][1:].sum():+,.0f} dwellings 2026-2050")
 
@@ -2187,6 +2310,7 @@ def export_figure_sources(B):
                     occupied_area_per_dwelling=B['occupied_area_per_dwelling'], utilisation=B['utilisation'])
     figsource.write('D09_cumulative_floor_area', years_hist=yh, forecast_years=fy, cumulative_floor_area_hist=B['hist_cum'],
                     built_factor=float(B['built_factor']), lag_w=float(B['lag_w']),
+                    lag_months=int(B['lag_months']),
                     cumulative_floor_area_5th=df['Cum_GFA_Total_5th'].to_numpy(float),
                     cumulative_floor_area_50th=df['Cum_GFA_Total_50th'].to_numpy(float),
                     cumulative_floor_area_95th=df['Cum_GFA_Total_95th'].to_numpy(float),

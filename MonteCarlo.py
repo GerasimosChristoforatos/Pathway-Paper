@@ -35,11 +35,13 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
   size      Lognormal multiplier on dwelling size (all typologies together),
             sigma = RMS log deviation of annual typology sizes 2016-2025 from
             the adopted 2023-25 reference.
-  complete  Two-piece uniform(0.92, 0.95, 0.96): completion rate (Jones et al.
-            2024 bounds), median at the adopted 0.95 (a two-piece distribution
-            has its median at that value; Wallis 2014). The stock calibration
-            and the census dwelling-count replacement rates are redone for
-            each draw.
+  complete  Uniform(0.93, 0.96) (MODEL v4.0.0): completion rate between the
+            published completion milestones of Jones, Greenaway-McGrevy & Crow
+            (2025; Auckland consents: 93% final inspection, >95% first
+            inspection; 0.96 a stated edge, see projection.COMPLETION_RATE);
+            median 0.945 = the deterministic central value. The stock
+            calibration and the census dwelling-count replacement rates are
+            redone for each draw. (MODEL v3.3: two-piece uniform(0.92, 0.95, 0.96).)
   half_life Uniform(5, 15) years (MODEL v3.3.0): the half-life of the Reference's fade of net replacement from the
             2018-2023 census-interval rate to the 1991-2023 long-run rate. Not identifiable from the census record
             (seven censuses, six interval rates), so it is sampled over the range of the former half-life variants;
@@ -161,7 +163,9 @@ def build_setup(settings=None):
               completion=projection.COMPLETION_RATE, olf=dict(B['OLF_USED']), rv_share=float(B['rv_share']),
               nr_window=tuple(projection.NET_REPLACEMENT_WINDOW),
               census_stock=B['census']['total_private'], consents_monthly=B['consents_monthly'],
-              lag_w=B['lag_w'], census_uc=B['census_uc'],
+              lag_w=B['lag_w'], lag_census=B['lag_census'], census_uc=B['census_uc'],
+              # MODEL v4.0.0: the observed (pipeline) years' consents (all categories), timed as completions
+              pipeline_consents=([B['pipe']['consents_all'][y] for y in B['pipe']['years']] if B['pipe'] else None),
               # replacement scenario and near-term market excess, as in the projection run
               scenario=B['_scenario'], s3_half_life=projection.REPLACEMENT_HALF_LIFE,
               recent=tuple(projection.RECENT_INTERVAL), join_mode=B['_join_mode'],
@@ -171,10 +175,10 @@ def build_setup(settings=None):
               # MODEL v3.0.0: logistic absorption of the overbuild (None: never absorbed, the legacy Reference)
               near_absorb_w=(None if projection.OVERBUILD_ABSORPTION_END is None
                              or projection.OVERBUILD_BOOKING != 'surplus' else
-                             engine.logistic_weights(fy, projection.OVERBUILD_ABSORPTION_START,
+                             engine.logistic_weights(fy, B['absorption_start'],
                                                      projection.OVERBUILD_ABSORPTION_END)),
-              # observed 2026 floor area (fixed in every draw)
-              gfa_2026=(B['gfa_nowcast']['total'] if B['gfa_nowcast'] else None))
+              # observed floor area (fixed in every draw): the pipeline years (MODEL v4.0.0) or the 2026 nowcast
+              gfa_fixed=B['gfa_fixed'])
 
     # ---- dwelling size ----
     su['size_ref'] = np.array([B['size_ref'][t] for t in typ])
@@ -303,31 +307,6 @@ MC_SCENARIOS = [('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10
                 ('VHIGH', dict(REPLACEMENT_VARIANT='VHIGH'))]
 
 
-class TwoPiece:
-    """Two-piece (split) distribution with its MEDIAN at m: probability 1/2
-    on [lo, m] and 1/2 on [m, hi] (the two-piece family; Wallis 2014, Statistical
-    Science 29(1)). Each half is a triangle peaking at m ('triangular', so the
-    mode is also m) or flat ('uniform'). Used where the deterministic value is
-    not the median of a one-piece distribution over the stated range, so that
-    the deterministic run sits at the input medians (D3)."""
-
-    def __init__(self, lo, m, hi, shape='triangular'):
-        if not lo <= m <= hi:
-            raise ValueError(f'TwoPiece needs lo <= m <= hi, got {lo}, {m}, {hi}.')
-        self.lo, self.m, self.hi, self.shape = float(lo), float(m), float(hi), shape
-
-    def ppf(self, u):
-        u = np.asarray(u, float)
-        lo, m, hi = self.lo, self.m, self.hi
-        if self.shape == 'triangular':
-            left = lo + (m - lo) * np.sqrt(np.clip(2 * u, 0, 1))
-            right = hi - (hi - m) * np.sqrt(np.clip(2 * (1 - u), 0, 1))
-        else:
-            left = lo + (m - lo) * np.clip(2 * u, 0, 1)
-            right = m + (hi - m) * np.clip(2 * u - 1, 0, 1)
-        return np.where(u < 0.5, left, right)
-
-
 def central(su):
     return dict(z_pop=0.0, size=1.0, complete=su['completion'], carbon=None, half_life=su['s3_half_life'])
 
@@ -361,7 +340,7 @@ def project(su, p, full=False):
     cal = engine.calibrate_stock(yh, su['hist_hh'], su['knots'], su['units_all'], su['rv_units'], c,
                                  su['demol_rate'], su['calib_start'], su['calib_end'])
     # census dwelling-count identity, recomputed for this draw's completion rate
-    rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_w'],
+    rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_census'],
                                          uc=su['census_uc'])
     unc_long = engine.census_window_rate(rates, *su['nr_window']) - su['demol_rate']
     unc_recent = engine.census_window_rate(rates, *su['recent']) - su['demol_rate']
@@ -402,13 +381,13 @@ def project(su, p, full=False):
         pop, hh, np.insert(np.diff(pop), 0, 0).clip(min=0), v, su['demol_rate'], unc,
         dev, dv['rho'], su['rv_share'], shares, size, su['olf'], I, U,
         join=join, join_redev=redev, soil={t: su['soc'][j] for j, t in enumerate(typ)},
-        gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
-        soil_on_replacement=su['soil_on_repl'], events=events)
+        gfa_fixed=su['gfa_fixed'], soil_on_replacement=su['soil_on_repl'], events=events)
     E = fwd()
     E_nojoin, join, ji = E, None, None
     if su['join_mode'] == 'market_excess':
-        b26 = c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
-                   + su['lag_w'] * float(su['units_all_raw'].loc[2025]))
+        b26 = (c * np.asarray(su['pipeline_consents'], float) if su['pipeline_consents'] is not None else
+               c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
+                    + su['lag_w'] * float(su['units_all_raw'].loc[2025])))
         join, ji = engine.market_excess(E, b26, dv['rho'], su['near_gap_ref'], su['near_mode'],
                                         su['near_absorption'], absorb_w=su['near_absorb_w'])
         E = fwd(join, ji['redev'])
@@ -422,8 +401,7 @@ def project(su, p, full=False):
             fwd_inputs=dict(v=v, rate_demol=su['demol_rate'], rate_unc=unc, dev_2025=dev, rho_dev=dv['rho'],
                             rv_share=su['rv_share'], shares=shares, size=size, olf=su['olf'], intensity=I,
                             intensity_upfront=U, soil={t: su['soc'][j] for j, t in enumerate(typ)},
-                            gfa_fixed=({1: su['gfa_2026']} if su['gfa_2026'] is not None else None),
-                            soil_on_replacement=su['soil_on_repl'], events=events),
+                            gfa_fixed=su['gfa_fixed'], soil_on_replacement=su['soil_on_repl'], events=events),
             E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']))
     return out
 
@@ -468,8 +446,8 @@ def distributions(su):
     return {
         'z_pop': stats.norm(0, 1),
         'size': stats.lognorm(s=su['size_sigma'], scale=1.0),
-        'complete': TwoPiece(projection.COMPLETION_RATE_BAND[0], su['completion'], projection.COMPLETION_RATE_BAND[1],
-                             shape='uniform'),
+        'complete': stats.uniform(projection.COMPLETION_RATE_BAND[0],
+                                  projection.COMPLETION_RATE_BAND[1] - projection.COMPLETION_RATE_BAND[0]),
         'carbon': stats.uniform(0, 1),
         'half_life': stats.uniform(HALF_LIFE_RANGE[0], HALF_LIFE_RANGE[1] - HALF_LIFE_RANGE[0]),
     }

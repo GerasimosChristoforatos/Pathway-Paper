@@ -18,8 +18,9 @@ Central: the Reference, 21,578 kt CO₂e. Source of the rows: `data/baseline/sen
 | Demographics | Population, Stats NZ 5th / 95th percentile paths | Stats NZ 2024-base stochastic projection (DATA); **new**: carbon from the exact engine path (`data/aesa/results.json` population_paths, carbon 2026–2050). Today's approximate row (Reference carbon per m² × the path's floor area) stays in its data file. |
 | Demographics | Household size, Stats NZ Low / High variant | Stats NZ household projections (DATA) |
 | Demographics | Household size after 2043: flat; secant-slope taper; taper from the PCHIP end slope (three single rows) | JUDGEMENT on the post-2043 tail (the Stats NZ series ends in 2043) |
-| Housing stock & calibration | Completion rate 0.92 / 0.96 | Jones et al. 2024 bounds (LITERATURE; citation to verify, as flagged) |
-| Housing stock & calibration | Completion lag on (Little's law) | DATA (build duration from consents and dwellings under construction) |
+| Housing stock & calibration | Completion rate 0.93 / 0.96 (MODEL v4.0.0; and 0.95, MODEL v3.3) | Jones, Greenaway-McGrevy & Crow 2025 completion milestones (LITERATURE) |
+| Completion lag (MODEL v4.0.0) | 15 / 19 months; 0 months (MODEL v3.3); No 2026 data | median completion time 1.27–1.53 yr, Jones et al. 2025 (LITERATURE); out-of-sample check |
+| Demographics (MODEL v4.0.0) | Household size: 2018–2023 census pace, linear from 2023 (Reference, Pathways and TL: sensitivity/household_size.csv) | census-benchmarked households (DATA); linear continuation (JUDGEMENT) |
 | Housing stock & calibration | No census under-construction correction | DATA (census UC counts) |
 | Housing stock & calibration | Dwelling-size window 2016–2025 (vs 2023–2025) | DATA (consents) |
 | Housing stock & calibration | 2026 overbuild: payback at absorption 0.10 / 0.20 a year; booked as stock-neutral redevelopment; gap vs the 2026 requirement (single rows) | DECISION (author) on the booking of observed 2026 building |

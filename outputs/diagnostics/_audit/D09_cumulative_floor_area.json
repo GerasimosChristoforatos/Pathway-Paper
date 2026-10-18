@@ -26,7 +26,7 @@
   "$\\mathdefault{300}$",
   "$\\mathdefault{50}$",
   "Floor area, cumulative from 1991 (Mm\u00b2)",
-  "History (consents timed as completions \u00d7 0.95, completion lag weight 0.00)",
+  "History (completions = consents lagged 17 months \u00d7 0.945)",
   "Population 5th\u201395th percentile (other inputs at the Reference)",
   "Reference projection"
  ],

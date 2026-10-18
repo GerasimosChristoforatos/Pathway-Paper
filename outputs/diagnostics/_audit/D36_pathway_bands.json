@@ -63,6 +63,6 @@
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
  "retired_colours": [],
- "negative_bar_segments": 50,
+ "negative_bar_segments": 40,
  "negative_bar_segments_filled": 0
 }

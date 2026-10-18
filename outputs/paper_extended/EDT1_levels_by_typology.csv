@@ -8,15 +8,15 @@ L2 Vacancy rate,B,Apartments,vacancy rate (all typologies),0.04700352319218799,0
 L3 Building lifetime,C,Detached,"d, reduction of demolition and surge (all typologies)",0.2,0.4,1.0
 L3 Building lifetime,C,Townhouses,"d, reduction of demolition and surge (all typologies)",0.2,0.4,1.0
 L3 Building lifetime,C,Apartments,"d, reduction of demolition and surge (all typologies)",0.2,0.4,1.0
-L4 Extra space,B,Detached,f (share of the extra-space margin removed),0.18592442009604268,0.37184884019208536,1.0
-L4 Extra space,B,Townhouses,f (share of the extra-space margin removed),0.04866780510513975,0.0973356102102795,1.0
-L4 Extra space,B,Apartments,f (share of the extra-space margin removed),0.0809804467914289,0.1619608935828578,1.0
+L4 Extra space,B,Detached,f (share of the extra-space margin removed),0.21341538535369878,0.42683077070739756,1.0
+L4 Extra space,B,Townhouses,f (share of the extra-space margin removed),0.0545651752878851,0.1091303505757702,1.0
+L4 Extra space,B,Apartments,f (share of the extra-space margin removed),0.05765294078695147,0.11530588157390294,1.0
 L5 Occupancy density,A,Detached,r (ratio to the Reference),0.90969121305884,0.8193824261176801,0.7095046854082998
 L5 Occupancy density,A,Townhouses,r (ratio to the Reference),0.90969121305884,0.8193824261176801,0.8193824261176801
 L5 Occupancy density,A,Apartments,r (ratio to the Reference),0.90969121305884,0.8193824261176801,0.8193824261176801
-L6 Brownfield-first development,C,Detached,"s, brownfield share (all typologies)",0.3845820739401177,0.59,1.0
-L6 Brownfield-first development,C,Townhouses,"s, brownfield share (all typologies)",0.3845820739401177,0.59,1.0
-L6 Brownfield-first development,C,Apartments,"s, brownfield share (all typologies)",0.3845820739401177,0.59,1.0
+L6 Brownfield-first development,C,Detached,"s, brownfield share (all typologies)",0.34987664990659406,0.59,1.0
+L6 Brownfield-first development,C,Townhouses,"s, brownfield share (all typologies)",0.34987664990659406,0.59,1.0
+L6 Brownfield-first development,C,Apartments,"s, brownfield share (all typologies)",0.34987664990659406,0.59,1.0
 L7 Soil-aware planning,C,Detached,soil carbon loss (kg CO2e/m2 floor area),46.47459568767808,42.81478394528272,22.92770192553271
 L7 Soil-aware planning,C,Townhouses,soil carbon loss (kg CO2e/m2 floor area),28.057709194579207,25.84820242952604,13.84194490791772
 L7 Soil-aware planning,C,Apartments,soil carbon loss (kg CO2e/m2 floor area),5.110292042427761,4.707863434987386,2.5211032170909298

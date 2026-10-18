@@ -72,8 +72,10 @@ def d40():
             t = imp[(imp['run'] == run) & (imp['output'] == out)].set_index('input').loc[inputs]
             off = (j - (len(runs) - 1) / 2) * 0.2
             col = {'REF': S.REFERENCE, 'pathway_moderate': S.PATHWAY[N.PATHWAY], 'TL': S.TL}.get(run, S.MUTED)
-            a.errorbar(t['prcc'], y + off, xerr=[t['prcc'] - t['prcc_lo'], t['prcc_hi'] - t['prcc']], fmt='o', ms=3,
-                       color=col, lw=S.LW_THIN, label=D40_RUNS.get(run, run))
+            # the percentile bootstrap interval is drawn as it is (lo to hi): it need not contain the point estimate
+            # when the bootstrap distribution is skewed near |PRCC| = 1 (MODEL v4.0.0: TL, completion rate)
+            a.hlines(y + off, t['prcc_lo'], t['prcc_hi'], color=col, lw=S.LW_THIN)
+            a.plot(t['prcc'], y + off, 'o', ms=3, color=col, label=D40_RUNS.get(run, run))
         a.axvline(0, color=S.INK, lw=S.LW_THIN)
         a.set_xlim(-1, 1)
         a.set_xlabel('PRCC (95% bootstrap interval)', fontsize=S.FONT_SMALL)

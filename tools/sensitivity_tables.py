@@ -8,8 +8,10 @@ Writes outputs/data/sensitivity/:
                            Combined) carbon 2026-2050 and its levels of exceedance, pathway design rows (D41)
   planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42)
   replacement_variants.csv the Reference, the Moderate / Ambitious Pathway and TL under Low / Reference / High / Very
-                           High replacement (ED13)
-  tornado.csv              Fig7: the eight inputs of the Reference tornado (low / high), cumulative carbon and the
+                           High replacement (ED9)
+  household_size.csv       MODEL v4.0.0: the Reference, the Moderate / Ambitious Pathway and TL under the household-size
+                           sensitivities (Stats NZ Low / High variant; 2018-2023 census pace, linear from 2023)
+  tornado.csv              Fig8a: the inputs of the Reference tornado (low / high), cumulative carbon and the
                            cumulative LoE AR and AtP (the budgets move only with the population path)
 
 Every row has its group, the row label, its side (low / high / single), the value, the change vs the
@@ -20,6 +22,8 @@ are applied; the AR and AtP budgets move with the path, data/aesa/results.json p
 TL under the replacement variants (every other run of that table reproduces runs.csv to 1e-12).
 One-at-a-time ranges are not additive and are not a joint interval.
 """
+import contextlib
+import io
 import json
 import os
 import sys
@@ -33,6 +37,7 @@ import engine  # noqa: E402
 import layout  # noqa: E402
 import levers as LV  # noqa: E402
 import naming as N  # noqa: E402
+import validation  # noqa: E402
 
 M6 = 1e6
 
@@ -52,18 +57,30 @@ REF_ROWS = [
      'DATA: Stats NZ household projections (the High household-size variant gives fewer households)'),
     ('Demographics', 'Household size: Stats NZ High / Low variant', 'high', 'Household size: Stats NZ Low variant',
      'DATA: Stats NZ household projections'),
+    ('Demographics', 'Household size: 2018-2023 census pace', 'single',
+     'Household size: 2018-2023 census pace, linear from 2023',
+     'DATA: census-benchmarked households 2018 and 2023; linear continuation (JUDGEMENT)'),
     ('Demographics', 'Household size after 2043: flat', 'single', 'Household size after 2043: flat (kink at 2043)',
      'JUDGEMENT: post-2043 tail (the Stats NZ series ends in 2043)'),
     ('Demographics', 'Household size after 2043: secant-slope taper', 'single',
      'Household size after 2043: secant-slope taper', 'JUDGEMENT: post-2043 tail'),
     ('Demographics', 'Household size after 2043: taper from the PCHIP end slope', 'single',
      'Household size after 2043: taper from the PCHIP end slope', 'JUDGEMENT: post-2043 tail'),
-    ('Housing stock & calibration', 'Completion rate 0.92 / 0.96', 'low', 'Completion rate 0.92',
-     'LITERATURE: Jones et al. 2024 bounds (citation to verify)'),
-    ('Housing stock & calibration', 'Completion rate 0.92 / 0.96', 'high', 'Completion rate 0.96',
-     'LITERATURE: Jones et al. 2024 bounds (citation to verify)'),
-    ('Housing stock & calibration', "Completion lag on (Little's law)", 'single', "Completion lag on (Little's law)",
-     'DATA: build duration from consents and dwellings under construction'),
+    ('Housing stock & calibration', 'Completion rate 0.93 / 0.96', 'low', 'Completion rate 0.93',
+     'LITERATURE: Jones, Greenaway-McGrevy & Crow 2025 (Policy Quarterly 21(1)); 93% final inspection / >95% first inspection'),
+    ('Housing stock & calibration', 'Completion rate 0.93 / 0.96', 'high', 'Completion rate 0.96',
+     'LITERATURE: Jones, Greenaway-McGrevy & Crow 2025 (Policy Quarterly 21(1)); 93% final inspection / >95% first inspection'),
+    ('Housing stock & calibration', 'Completion rate 0.95 (MODEL v3.3)', 'single', 'Completion rate 0.95 (MODEL v3.3)',
+     'DECISION: the MODEL v3.3 central value (the authors\' own assumption)'),
+    ('Completion lag', 'Completion lag 15 / 19 months', 'low', 'Completion lag 15 months',
+     'LITERATURE: median consent-to-completion time 1.27-1.53 yr (Jones, Greenaway-McGrevy & Crow 2025, citing Greenaway-McGrevy & Jones 2023)'),
+    ('Completion lag', 'Completion lag 15 / 19 months', 'high', 'Completion lag 19 months',
+     'LITERATURE: median consent-to-completion time 1.27-1.53 yr (Jones, Greenaway-McGrevy & Crow 2025, citing Greenaway-McGrevy & Jones 2023)'),
+    ('Completion lag', 'Completion lag 0 months (MODEL v3.3)', 'single',
+     'Completion lag 0 months (same calendar year, MODEL v3.3)', 'DECISION: the MODEL v3.3 timing'),
+    ('Completion lag', 'No 2026 data', 'single',
+     'No 2026 data (consents to December 2025, projected 2026 population)',
+     'CHECK: out-of-sample run without 2026 consents or the 2026 population nowcast'),
     ('Housing stock & calibration', 'No census under-construction correction', 'single',
      'No census under-construction correction', 'DATA: census under-construction counts'),
     ('Housing stock & calibration', 'Dwelling-size window 2016-2025', 'single', 'Dwelling size: 2016-2025 reference',
@@ -139,6 +156,7 @@ def reference_table():
 
 # ---- 2. Moderate Pathway carbon (pathway design) ---------------------------------------------------
 PARAMS = {}
+HH_TABLE = {}
 
 
 def percentile_context(PW, B, pct, bounds):
@@ -211,6 +229,11 @@ def pathway_table():
             'data/pathways/runs.csv', 'DATA: long-run rate / 2018-2023 rate persists')
     add('Replacement scenario', N.SCENARIOS['VHIGH'], 'single', *run_row('VHIGH', PM_), 'data/pathways/runs.csv',
         'DATA / JUDGEMENT: the 1991-2023 census trend continues (sensitivity, not adopted)')
+    hs = HH_TABLE.get('t')
+    if hs is not None:                                   # MODEL v4.0.0: the household-size rows (household_size.csv)
+        for _, r in hs[hs['run'] == PM_].iterrows():
+            add('Demographics', r['row'], r['side'], r['carbon_kt'], r['LoE_AR'], r['LoE_AtP'],
+                'sensitivity/household_size.csv (new run)', r['basis'])
     for side, pct in (('low', '5th'), ('high', '95th')):
         cp = percentile_context(PW, B, pct, bounds)
         E = PW.run(cp, params, base)['E']
@@ -218,6 +241,50 @@ def pathway_table():
         add('Demographics', 'Population: Stats NZ 5th / 95th percentile', side, c, c / pp[pct]['B_AR_kt'],
             c / pp[pct]['B_AtP_kt'], 'new run (exact engine path; budgets move with the path)',
             'DATA: Stats NZ 2024-base stochastic projection')
+    return pd.DataFrame(rows)
+
+
+# ---- 2b. Household-size sensitivities of the Reference, the Pathways and TL (MODEL v4.0.0) ---------------------
+HH_VARIANTS = [   # (row, side, projection settings)
+    ('Household size: Stats NZ High / Low variant', 'low', dict(HH_SIZE_VARIANT='High')),
+    ('Household size: Stats NZ High / Low variant', 'high', dict(HH_SIZE_VARIANT='Low')),
+    ('Household size: 2018-2023 census pace', 'single', dict(HH_SIZE_PATH='census_pace')),
+]
+HH_BASIS = {'Household size: Stats NZ High / Low variant': 'DATA: Stats NZ 2018-base household projections, rebased on '
+                                                          'the 2023 census (the High variant gives fewer households)',
+            'Household size: 2018-2023 census pace': 'DATA: census-benchmarked households 2018 and 2023; linear '
+                                                     'continuation from 2023 (JUDGEMENT)'}
+
+
+def household_size_table():
+    """The Reference, the Moderate / Ambitious Pathway and TL under the household-size sensitivities (deterministic):
+    each run on the projection state with the household-size setting changed, the lever parameters of the central
+    state (as the Monte Carlo: the run's own Reference household size plus the central gap; TL1 speed limit from the
+    run's own 2026 household size). The population path, and so the AR / AtP budgets, are those of the Reference."""
+    import pathways as PW
+    runs = pd.read_csv(data('pathways/runs.csv'))
+    bounds = PW.boundaries()
+    B_ref = PW.boss_state(PW.REFERENCE)
+    params = PARAMS.setdefault('p', PW.resolve_params(B_ref))
+    plan = (('Reference', 'REF', {}), (f'{LV.PATHWAY}-moderate', None, LV.pathway_levers(LV.PATHWAY, 'moderate')),
+            (f'{LV.PATHWAY}-ambitious', None, LV.pathway_levers(LV.PATHWAY, 'ambitious')),
+            ('TL', None, LV.tl_levels(LV.TL_COMPONENTS)))
+    central = {run: runs[(runs['scenario'] == 'REF') & (runs['run'] == (key or run))].iloc[0] for run, key, _ in plan}
+    rows = []
+    for row, side, settings in HH_VARIANTS:
+        with contextlib.redirect_stdout(io.StringIO()):
+            B = validation.run_boss(**dict(PW.SCENARIOS[PW.REFERENCE][1], **settings))
+        ctx = PW.base_context(B, PW.REFERENCE, bounds)
+        for run, _, levels in plan:
+            m = PW.metrics(ctx, PW.run(ctx, params, levels), run, 'sensitivity')
+            c0 = central[run]
+            rows.append(dict(row=row, side=side, settings=json.dumps(settings), run=run, carbon_kt=float(m['carbon_kt']),
+                             LoE_AR=float(m['LoE_AR']), LoE_AtP=float(m['LoE_AtP']),
+                             central_carbon_kt=float(c0['carbon_kt']), central_LoE_AR=float(c0['LoE_AR']),
+                             central_LoE_AtP=float(c0['LoE_AtP']),
+                             change_pct=100 * (float(m['carbon_kt']) / float(c0['carbon_kt']) - 1),
+                             dwellings_built_min_year=float(m['dwellings_built_min_year']),
+                             mean_household_size_2050=float(m['mean_household_size_2050']), basis=HH_BASIS[row]))
     return pd.DataFrame(rows)
 
 
@@ -268,7 +335,7 @@ def pb_table():
     return pd.DataFrame(rows)
 
 
-# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED13) --------------------------
+# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED9) --------------------------
 def replacement_variants():
     """The Reference, the Moderate / Ambitious Pathway and TL under the Low, Reference, High and Very High replacement
     variants:
@@ -300,14 +367,18 @@ def replacement_variants():
     return pd.DataFrame(rows)
 
 
-# ---- 5. Fig7 tornado: eight inputs of the Reference ------------------------------------------------
+# ---- 5. Fig8a tornado: inputs of the Reference ------------------------------------------------
 TORNADO = [   # (input, low case, high case) in reference_table() rows
     ('Population (Stats NZ 5th / 95th percentile)', 'Population: Stats NZ 5th / 95th percentile'),
     ('Household size (Stats NZ High / Low variant)', 'Household size: Stats NZ High / Low variant'),
     ('Replacement (Low / High)', 'Low / High replacement'),
     ('Replacement: Very High (trend continues; one-sided)', 'Very High replacement (trend continues)'),
     ('Replacement half-life (5 / 15 yr)', 'Replacement half-life 5 / 15 yr'),
-    ('Completion rate (0.92 / 0.96)', 'Completion rate 0.92 / 0.96'),
+    ('Household size: 2018-2023 census pace (one-sided)', 'Household size: 2018-2023 census pace'),
+    ('Completion rate (0.93 / 0.96)', 'Completion rate 0.93 / 0.96'),
+    ('Completion lag (15 / 19 months)', 'Completion lag 15 / 19 months'),
+    ('Completion lag 0 months (one-sided)', 'Completion lag 0 months (MODEL v3.3)'),
+    ('No 2026 data (one-sided)', 'No 2026 data'),
     ('Case-study carbon factors (jackknife)', 'Case studies: jackknife low / high'),
     ('Soil order (Raw / Organic)', 'Soil order: lowest (Raw) / highest (Organic)'),
     ('Overbuild absorption (by 2030 / by 2045)', '2026 overbuild absorbed by 2030 / by 2045'),
@@ -315,7 +386,7 @@ TORNADO = [   # (input, low case, high case) in reference_table() rows
 
 
 def tornado(ref):
-    """Fig7: for each input its low and high case: cumulative carbon 2026-2050 and the cumulative LoE AR and AtP. The
+    """Fig8a: for each input its low and high case: cumulative carbon 2026-2050 and the cumulative LoE AR and AtP. The
     boundaries depend on the population path only (aesa): the population rows use that path's budgets
     (aesa/results.json population_paths), every other row the Reference budgets."""
     with open(data('aesa/results.json')) as f:
@@ -346,7 +417,9 @@ def tornado(ref):
 
 def main():
     ref = reference_table()
+    HH_TABLE['t'] = household_size_table()
     out = {'sensitivity/reference_carbon.csv': ref, 'sensitivity/tornado.csv': tornado(ref),
+           'sensitivity/household_size.csv': HH_TABLE['t'],
            'sensitivity/pathway_carbon.csv': pathway_table(),
            'sensitivity/planetary_boundary.csv': pb_table(),
            'sensitivity/replacement_variants.csv': replacement_variants()}

@@ -133,13 +133,16 @@ def main():
     removals_pct = {k: float(100 * runs[k]['p']['removals_gross'].loc[2026:].sum() / runs[k]['p']['stock_2025'])
                     for k in VARS}
     _m2 = (hist['gfa'] / hist['dpop']).loc[1991:2025]
-    # the 2026 (observed) -> 2027 (model) handover against historical year-to-year changes
+    # the last observed year -> the first modelled year handover against historical year-to-year changes (MODEL
+    # v4.0.0: the last pipeline year with the completion lag, 2027 -> 2028; MODEL v3.3: 2026 -> 2027)
     Bref = ref['B']
     chg = 100 * Bref['hist_total_gfa'].pct_change().loc[1992:2025].values
     R0 = Bref['results']['50th']['total']
-    step = 100 * (R0[2] / R0[1] - 1)
-    handover = dict(step_2026_2027_pct=float(step), hist_median_pct=float(np.median(chg)),
-                    hist_min_pct=float(chg.min()), hist_max_pct=float(chg.max()))
+    y_obs = int(max(Bref['pipe']['years'])) if Bref.get('pipe') else 2026
+    i_obs = list(Bref['forecast_years']).index(y_obs)
+    step = 100 * (R0[i_obs + 1] / R0[i_obs] - 1)
+    handover = dict(step_pct=float(step), last_observed_year=y_obs, first_model_year=y_obs + 1,
+                    hist_median_pct=float(np.median(chg)), hist_min_pct=float(chg.min()), hist_max_pct=float(chg.max()))
     figsource.write('D15_reality_checks', panels=d15, order=[p[0] for p in panels], variants=list(VARS),
                     labels=labels, removals_pct_of_2025_stock=removals_pct,
                     m2_per_res_max=dict(year=int(_m2.idxmax()), value=float(_m2.max())),

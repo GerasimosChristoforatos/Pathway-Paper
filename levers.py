@@ -127,6 +127,13 @@ L1_VARIANTS = ('Low', 'Medium', 'High')
 L1_REFERENCE_VARIANT = 'Medium'
 L1_AMBITIOUS_VARIANT = 'High'
 L1_GAP_HELD_AFTER = 2043          # the last published Stats NZ knot
+# TL1 speed limit (MODEL v4.0.0): the TL household size cannot rise faster than the fastest change observed between
+# consecutive censuses 1991-2023 (census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - 2026), TL1
+# level), and never below the Ambitious path (S_ref + w gap). The other TL items keep the logistic window; the instant
+# TL row (TL_FROM2027) keeps its definition (the level from 2027). False reproduces MODEL v3.3.
+TL1_SPEED_LIMIT = True
+TL1_SPEED_CENSUS_WINDOW = (1991, 2023)
+TL1_SPEED_START = OBSERVED_YEAR
 L2_VACANCY_FLOOR = 0.040          # implied vacancy must never fall below this in a non-TL run (check)
 L3_D_AMBITIOUS = 0.40             # Pellan et al. 2024: demolition 150,000 -> 90,000 a year
 L8_SAMPLE_TYPOLOGIES = ('Detached', 'Townhouses')
@@ -403,6 +410,19 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                      S={'reference': yy(S), 'moderate': yy(S + gap / 2.0), 'ambitious': yy(S_amb)},
                      tl=S_tl, tl_year=int(hS.idxmax()), high_ge_medium_every_year=True,
                      anchor=f'Stats NZ High - Medium household size gap (2050: +{gap[-1]:.4f})')
+    # TL1 speed limit: the fastest |dS| per year between consecutive censuses (census-benchmarked households)
+    cy = [int(y) for y in B['census'].index
+          if TL1_SPEED_CENSUS_WINDOW[0] <= int(y) <= TL1_SPEED_CENSUS_WINDOW[1] and int(y) in hS.index]
+    intervals = [dict(y0=a, y1=b, S0=float(hS.loc[a]), S1=float(hS.loc[b]),
+                      rate=abs(float(hS.loc[b] - hS.loc[a])) / (b - a)) for a, b in zip(cy[:-1], cy[1:])]
+    fastest = max(intervals, key=lambda r: r['rate'])
+    i0 = int(np.where(years == TL1_SPEED_START)[0][0])
+    reached = TL1_SPEED_START + (S_tl - float(S[i0])) / fastest['rate']
+    out['L1']['tl_speed'] = dict(rate=fastest['rate'], interval=[fastest['y0'], fastest['y1']], start=TL1_SPEED_START,
+                                 S_start=float(S[i0]), level=S_tl, level_reached=float(reached),
+                                 census_years=cy, intervals=intervals, on=TL1_SPEED_LIMIT,
+                                 path=yy(tl1_path(S, gap, w, years, S_tl, fastest['rate'])),
+                                 basis='fastest change of household size between consecutive censuses 1991-2023')
 
     # ---- L2 Vacancy [B] ----
     v0 = float(B['v_forward'])
@@ -591,6 +611,16 @@ def l4_size(size_base, olf_y, S, f, w):
     return size, held
 
 
+def tl1_path(S_ref, gap, w, years, level, rate, start=TL1_SPEED_START):
+    """TL1 under the speed limit: max(min(S_ref(start) + rate (t - start), level), S_ref + w gap) from `start`; the
+    Reference before it. S_ref is the run's own Reference household size (a Monte Carlo draw's)."""
+    years = np.asarray(years, float)
+    S_ref = np.asarray(S_ref, float)
+    i0 = int(np.where(years == start)[0][0])
+    fast = np.minimum(S_ref[i0] + rate * (years - start), level)
+    return np.where(years >= start, np.maximum(fast, S_ref + w * np.asarray(gap, float)), S_ref)
+
+
 def l1_households(hh, S_ref, S_target, w):
     """L1: S(y) = S_ref(y) + w(y) (S_target(y) - S_ref(y)); households = hh x S_ref / S (w = 0 returns hh exactly)."""
     hh = np.asarray(hh, float)
@@ -670,11 +700,16 @@ def inputs(base, p, levels, ramp_name=None):
     # L1 household size (the draw's own Reference S plus the published gap; TL1: the historical maximum)
     if 'L1' in lv:
         gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
-        if lv['L1'] == 'tl':                          # never weaker than Ambitious (a Monte Carlo draw's own S)
-            target = np.maximum(p['L1']['tl'], S + gap)
+        if lv['L1'] == 'tl' and TL1_SPEED_LIMIT and ramp_name != TL_FROM2027:
+            # MODEL v4.0.0: the speed limit replaces the window (the path is the target, at full weight)
+            target = tl1_path(S, gap, w, years, p['L1']['tl'], p['L1']['tl_speed']['rate'])
+            hh, S = l1_households(base['hh'], S, target, np.ones(len(years)))
         else:
-            target = S + lv['L1'] * gap
-        hh, S = l1_households(base['hh'], S, target, w)
+            if lv['L1'] == 'tl':                      # never weaker than Ambitious (a Monte Carlo draw's own S)
+                target = np.maximum(p['L1']['tl'], S + gap)
+            else:
+                target = S + lv['L1'] * gap
+            hh, S = l1_households(base['hh'], S, target, w)
     # L5 design density: OLF and dwelling size x k2(y), k2 = 1 - w (1 - r_t)
     k2 = None
     if 'L5' in lv:

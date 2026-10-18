@@ -80,7 +80,14 @@ GRID = np.round(np.arange(0.0, 1.0 + 1e-9, 0.05), 2)     # solution space: 0-100
 LAMBDA_GRID = np.round(np.arange(0.0, 1.0 + 1e-9, 0.1), 1)
 BRENTQ_XTOL = 1e-15
 M6 = 1e6
-REOCCUPATION_YEARS = (2027, 2050)
+REOCCUPATION_YEARS = (2027, 2050)   # MODEL v4.0.0: the window starts at the first unobserved year (observed_window)
+FIRST_LEVER_YEAR = 2027             # no vacancy-rate fall before it (2026 observed; levers.OBSERVED_YEAR + 1)
+# TL_SURPLUS_POOLING (MODEL v4.0.0): in a theoretical-limit-family run the Reference's overbuild surplus (the positive
+#   market excess: the pipeline years and the fading gap) enters the re-occupation pool with the TL1 / TL2 releases
+#   (constant share of each year's positive need, availability constraint, carry-forward) instead of the logistic
+#   payback; the re-occupied overbuild stays in the band 'Overbuild absorbed'. A negative excess (an under-build) is
+#   made good along the Reference's logistic as before. Non-TL runs are unchanged. False reproduces MODEL v3.3.
+TL_SURPLUS_POOLING = True
 REOCCUPATION_TOL = 1e-9         # relative tolerance of the re-occupation identities
 T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a zero-building year
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
@@ -102,12 +109,20 @@ def boundaries():
     return a['B_AR_kgCO2e'].values, a['B_AtP_kgCO2e'].values, a['P_NZ'].values
 
 
-def absorption_weights(years):
-    """The Reference's overbuild absorption weights (projection settings), None when never absorbed."""
+def absorption_weights(years, start):
+    """The Reference's overbuild absorption weights (projection settings; window start = the state's last observed
+    year, B['absorption_start']), None when never absorbed."""
     P = validation.projection
     if P.OVERBUILD_ABSORPTION_END is None:
         return None
-    return engine.logistic_weights(years, P.OVERBUILD_ABSORPTION_START, P.OVERBUILD_ABSORPTION_END)
+    return engine.logistic_weights(years, start, P.OVERBUILD_ABSORPTION_END)
+
+
+def observed_window(ji):
+    """MODEL v4.0.0: the observed projection years of a Reference join (engine.market_excess): their last year
+    (2027 with the completion lag of 17 months; 2026 without it) and their observed building (all categories)."""
+    m = int(ji.get('n_observed', 1))
+    return dict(observed_end=WINDOW[0] - 1 + m, observed_building=np.asarray(ji.get('O_obs', [ji['O26']]), float))
 
 
 def base_context(B, scenario, bounds):
@@ -137,7 +152,8 @@ def base_context(B, scenario, bounds):
         long_run_residual=float(B['unconsented_rate']),
         a13_2025={t: float(B['MAT_STAGE']['A1-A3'][t].sum()) for t in typ}, red13=B['RED13_TOT'],
         a45_2025={t: float(B['MAT_STAGE']['A4-A5'][t].sum()) for t in typ}, red45=B['RED45_TOT'],
-        excess=np.asarray(ji['excess'], float).copy(), absorb_w=absorption_weights(fy),
+        excess=np.asarray(ji['excess'], float).copy(), absorb_w=absorption_weights(fy, B['absorption_start']),
+        **observed_window(ji),
         join_reference=np.asarray(ji['join'], float), profile=prof, committed_factors=fac,
         c14={t: float(B['stage_int'].loc['C1-C4', t]) for t in typ}, soil=B['SOIL_INTENSITY'],
         events=fi['events'], b_ar=b_ar, b_atp=b_atp)
@@ -149,7 +165,7 @@ def base_context(B, scenario, bounds):
 REOCCUPATION_RULES = ('constant_share', 'fast')   # adopted; 'fast' = as fast as demand allows (A4 sensitivity row)
 
 
-def reoccupation(years, gross, released, rule='constant_share'):
+def reoccupation(years, gross, released, rule='constant_share', start=REOCCUPATION_YEARS[0]):
     """Constant-share re-occupation (MODEL v3.0.0). The dwellings released in 2027-2050 by TL1 and TL2 (R in total)
     meet a constant share of each year's need after the overbuild payback:
 
@@ -165,14 +181,14 @@ def reoccupation(years, gross, released, rule='constant_share'):
     years = np.asarray(years)
     gross = np.asarray(gross, float)
     released = np.asarray(released, float)
-    mask = (years >= REOCCUPATION_YEARS[0]) & (years <= REOCCUPATION_YEARS[1])
+    mask = (years >= start) & (years <= REOCCUPATION_YEARS[1])
     n = len(years)
     gp = np.where(mask, np.maximum(gross, 0.0), 0.0)
     R, Gp = float(released[mask].sum()), float(gp.sum())
     reocc, share_t = np.zeros(n), np.zeros(n)
     binds = np.zeros(n, bool)
     if R > 0.0 and Gp <= 0.0:
-        raise SystemExit('STOP: re-occupation: no positive need in 2027-2050.')
+        raise SystemExit(f'STOP: re-occupation: no positive need in {start}-{REOCCUPATION_YEARS[1]}.')
     share = min(R, Gp) / Gp if R > 0.0 else 0.0
     share0 = share
     tol = REOCCUPATION_TOL * max(R, 1.0)
@@ -264,49 +280,79 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     hh = info['hh']
     E1 = engine.forward(ctx['pop'], hh, ctx['growth'], join=zeros, join_redev=zeros, **fi)
     req = np.asarray(engine.requirement(E1), float)
-    late = years >= REOCCUPATION_YEARS[0]
+    # MODEL v4.0.0: the observed projection years (2026, and 2027 with the completion lag) build what was observed in
+    # every run; releases of an observed year enter the re-occupation / use window at its first year
+    obs_end = int(ctx.get('observed_end', WINDOW[0]))
+    first = obs_end + 1
+    late = years >= first
+    obs = (years >= WINDOW[0]) & (years <= obs_end)
+    i_first = int(np.flatnonzero(late)[0])
     v = np.broadcast_to(np.asarray(E1['v'], float), (n,))
     tl_family = bool(info['tl'])
-    rel_v = np.where(late, -np.minimum(np.asarray(E1['change'], float), 0.0), 0.0)      # vacancy-rate fall
-    if np.any(np.asarray(E1['change'], float)[~late] < 0.0):
-        raise SystemExit('run: a vacancy-rate fall before 2027 (2026 is observed).')
-    rel3 = (np.where(late, -np.minimum(np.asarray(E1['d_hh_raw'], float), 0.0) / (1.0 - v), 0.0)
+    chg = np.asarray(E1['change'], float)
+    if np.any(chg[years < FIRST_LEVER_YEAR] < 0.0):
+        raise SystemExit(f'run: a vacancy-rate fall before {FIRST_LEVER_YEAR} (2026 is observed).')
+    on = years >= FIRST_LEVER_YEAR
+    rel_v = np.where(on, -np.minimum(chg, 0.0), 0.0)                                   # vacancy-rate fall
+    rel3 = (np.where(on, -np.minimum(np.asarray(E1['d_hh_raw'], float), 0.0) / (1.0 - v), 0.0)
             if tl_family else zeros)                                                      # household-size fall
-    hh_fall_years = [int(y) for y, d in zip(years[late], np.asarray(E1['d_hh_raw'], float)[late]) if d < 0.0]
+
+    def pooled(x):                                    # an observed year's release enters at the window's first year
+        x = np.where(obs | late, x, 0.0)
+        out = np.where(late, x, 0.0)
+        out[i_first] += float(x[obs].sum())
+        return out
+
+    hh_fall_years = [int(y) for y, d in zip(years[on], np.asarray(E1['d_hh_raw'], float)[on]) if d < 0.0]
     need = req + rel_v                                # gross need: the vacancy release is not netted
-    excess = ctx['excess']
+    excess = np.asarray(ctx['excess'], float).copy()
+    ob = np.asarray(ctx.get('observed_building', []), float)
+    for k in range(2, len(ob) + 1):                   # observed building in every run (2026: no lever acts)
+        excess[k] = ob[k - 1] - need[k]
+    pool_ob = tl_family and TL_SURPLUS_POOLING and ctx['absorb_w'] is not None
+    exc_pos = np.maximum(excess, 0.0) if pool_ob else zeros
+    exc_abs = excess - exc_pos                        # the part absorbed along the Reference's logistic
     if ctx['absorb_w'] is None:                       # overbuild never absorbed (legacy Reference)
         ab = dict(paid=zeros, carry=zeros, cap_binds=np.zeros(n, bool), built=need + excess, U=np.cumsum(excess))
     else:
-        _, ab = engine.absorb_overbuild(excess, ctx['absorb_w'], need)
+        _, ab = engine.absorb_overbuild(exc_abs, ctx['absorb_w'], need)
+        ab['built'] = ab['built'] + exc_pos
     gross0 = ab['built']                              # need + excess - payback
     gross, negclip, neg_used, neg_carry = carry_negative(years, gross0, late)
+    rel_ob = pooled(exc_pos)
     if tl_family:
-        ro = reoccupation(years, gross, rel3 + rel_v, reocc_rule)
+        ro = reoccupation(years, gross, pooled(rel3) + pooled(rel_v) + rel_ob, reocc_rule, start=first)
         reocc, used_v, vac_carry = ro['reoccupied'], zeros, 0.0
         pool_rem = ro['surplus_vacant_2050']
     else:
-        ro = reoccupation(years, gross, zeros)
-        used_v, vac_carry = use_in_year(gross, rel_v, late)
+        ro = reoccupation(years, gross, zeros, start=first)
+        used_v, vac_carry = use_in_year(gross, pooled(rel_v), late)
         reocc, pool_rem = zeros, 0.0
     built = ro['built'] - used_v
     join = excess - ab['paid'] + (rel_v - used_v) - reocc + (negclip - neg_used)
     E = engine.forward(ctx['pop'], hh, ctx['growth'], join=join, join_redev=zeros, **fi)
     R_tot = ro['R']
     s3 = float(rel3.sum() / R_tot) if R_tot > 0 else 0.0
-    ro.update(released_tl1=rel3, released_tl2=rel_v if tl_family else zeros, gross=gross, need=need,
-              requirement_nojoin=req, reoccupied_tl1=reocc * s3,
-              reoccupied_tl2=reocc * (1.0 - s3) if R_tot > 0 else zeros,
-              R1=float(rel3.sum()), R2=float(rel_v.sum()) if tl_family else 0.0)
-    flows = dict(rel_v=rel_v, used_v=used_v, reocc=reocc, negclip=negclip, neg_used=neg_used,
-                 vac_carry_end=float(vac_carry), pool_remainder=float(pool_rem), neg_carry_end=float(neg_carry))
-    info.update(excess=excess, payback=ab['paid'], payback_carry=ab['carry'], payback_cap_binds=ab['cap_binds'],
+    s_ob = float(rel_ob.sum() / R_tot) if R_tot > 0 else 0.0
+    reocc_ob = reocc * s_ob                           # re-occupied overbuild: booked as payback ('Overbuild absorbed')
+    ro.update(released_tl1=rel3, released_tl2=rel_v if tl_family else zeros, released_overbuild=rel_ob,
+              gross=gross, need=need, requirement_nojoin=req, reoccupied_tl1=reocc * s3,
+              reoccupied_tl2=reocc * (1.0 - s3 - s_ob) if R_tot > 0 else zeros, reoccupied_overbuild=reocc_ob,
+              R1=float(rel3.sum()), R2=float(rel_v.sum()) if tl_family else 0.0, R_overbuild=float(rel_ob.sum()))
+    flows = dict(rel_v=rel_v, used_v=used_v, reocc=reocc - reocc_ob, negclip=negclip, neg_used=neg_used,
+                 vac_carry_end=float(vac_carry), pool_remainder=float(pool_rem) * (1.0 - s_ob),
+                 ob_remainder=float(pool_rem) * s_ob, neg_carry_end=float(neg_carry))
+    info.update(excess=excess, payback=ab['paid'] + reocc_ob, payback_carry=ab['carry'],
+                payback_cap_binds=ab['cap_binds'], surplus_pooled=bool(pool_ob),
                 reoccupation=ro, flows=flows, tl_family=tl_family, households_fall_years=hh_fall_years,
                 negative_gross_years=[int(y) for y, c in zip(years, negclip) if c > 0.0],
                 vacancy_released=float(rel_v.sum()) if not tl_family else 0.0,
-                built_check=built)
-    if not np.allclose(engine.requirement(E)[late], built[late], rtol=1e-9, atol=1e-6):
+                built_check=built, observed_end=obs_end)
+    f = slice(1, None)
+    if not np.allclose(engine.requirement(E)[f], built[f], rtol=1e-9, atol=1e-6):
         raise SystemExit(f'run {LV.label(levels)}: dwellings built differ from the release accounting.')
+    if len(ob) and not np.allclose(built[1:len(ob) + 1], ob, rtol=1e-9, atol=1e-6):
+        raise SystemExit(f'run {LV.label(levels)}: building in the observed years differs from the observation.')
     return dict(E=E, inputs=fi, info=info, levels=dict(levels), ramp=ramp_name or RAMP_ADOPTED,
                 scenario=ctx['scenario'])
 
@@ -398,8 +444,10 @@ def metrics(ctx, R, label, setting):
                 overbuild_cap_binding_years=';'.join(str(int(y)) for y in yy[info['payback_cap_binds']]),
                 released_tl1=ro['R1'], released_tl2=ro['R2'], reoccupied=ro['reoccupied_total'],
                 G_plus=ro['G_plus'], reoccupation_share=ro['share'],
-                surplus_vacant_2050=(info['flows']['pool_remainder'] + info['flows']['vac_carry_end']
-                                     + info['flows']['neg_carry_end']),
+                surplus_vacant_2050=(info['flows']['pool_remainder'] + info['flows'].get('ob_remainder', 0.0)
+                                     + info['flows']['vac_carry_end'] + info['flows']['neg_carry_end']),
+                released_overbuild_pooled=ro.get('R_overbuild', 0.0),
+                reoccupied_overbuild=float(np.sum(ro.get('reoccupied_overbuild', 0.0))),
                 vacancy_released_dwellings=float(info['flows']['used_v'][f].sum() + info['flows']['vac_carry_end']),
                 households_fall_years=';'.join(str(y) for y in info['households_fall_years']),
                 negative_gross_years=';'.join(str(y) for y in info['negative_gross_years']),

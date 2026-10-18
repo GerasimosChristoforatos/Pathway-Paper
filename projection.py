@@ -379,7 +379,10 @@ REFERENCE_LEGACY = os.environ.get('PATHWAY_REFERENCE_LEGACY') == '1'
 # VACANCY_PARAMETER: 'census_2023' (adopted; the published 2023 census value, 5.39%) or 'consistent_mean'
 #   (sensitivity: the mean of the 1986-2023 censuses on one definition)
 VACANCY_PARAMETER = 'census_2023'
-OVERBUILD_ABSORPTION_START = 2026
+# OVERBUILD_ABSORPTION_START (MODEL v4.0.0): None = the last OBSERVED year, w = 0 up to and including it: the last
+#   pipeline year with the completion lag (2027 at L = 17, so the observed 2026-2027 building is never paid back
+#   within the observed years), 2026 without it (MODEL v3.3). A year fixes it explicitly.
+OVERBUILD_ABSORPTION_START = None
 OVERBUILD_ABSORPTION_END = None if REFERENCE_LEGACY else 2035
 # NOWCAST_METHOD: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
 #   (August 2025 - July 2026), no seasonal estimation. It is the year to July
@@ -1586,6 +1589,9 @@ def main():
     if _join_mode == 'market_excess' and not pipe:
         nowcast = engine.nowcast_year(consents_monthly, 2026, NOWCAST_METHOD, NOWCAST_SEASONAL_YEARS)
     engine_out = {}
+    # the overbuild absorption window starts at the last observed year (OVERBUILD_ABSORPTION_START)
+    absorption_start = (OVERBUILD_ABSORPTION_START if OVERBUILD_ABSORPTION_START is not None
+                        else (max(pipe['years']) if pipe else 2026))
     for col in ['5th', '50th', '95th']:
         pop_total = df_forecast[f'PopTotal_{col}'].values
         pop_growth = df_forecast[f'PopGrowth_{col}'].clip(lower=0).values
@@ -1595,7 +1601,7 @@ def main():
             _b26 = ([pipe['built_all'][y] for y in pipe['years']] if pipe else
                     _completion * ((1.0 - lag_w) * float(nowcast['total']) + lag_w * float(hist_units_all.loc[2025])))
             _aw = (None if OVERBUILD_ABSORPTION_END is None or OVERBUILD_BOOKING != 'surplus' else
-                   engine.logistic_weights(forecast_years, OVERBUILD_ABSORPTION_START, OVERBUILD_ABSORPTION_END))
+                   engine.logistic_weights(forecast_years, absorption_start, OVERBUILD_ABSORPTION_END))
             join, ji = engine.market_excess(E, _b26, rho_other, OVERBUILD_GAP_REF, OVERBUILD_BOOKING,
                                             OVERBUILD_ABSORPTION, absorb_w=_aw)
             E = engine.forward(pop_total, hh_arr, pop_growth, join=join, join_redev=ji['redev'],

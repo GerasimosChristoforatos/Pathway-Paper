@@ -14,6 +14,9 @@ Release-accounting convention (A2):
   * an amount still unusable in 2050 is booked in 2050 in its release band and, with the opposite sign, as
     'Surplus kept vacant (2050)', so the bands add up to the total in every year;
   * carbon-only band: 'Maintenance (B2, B4)' of the new cohorts within the window.
+  * MODEL v4.0.0 (TL surplus pooling, pathways.TL_SURPLUS_POOLING): in a theoretical-limit-family run the re-occupied
+    Reference overbuild is booked in 'Overbuild absorbed' (paid), its part of the pool still unused in 2050 in
+    'Overbuild absorbed' and, with the opposite sign, in 'Surplus kept vacant (2050)' (flows['ob_remainder']).
 
 In-scope bands: retirement-village (RV) units are a constant share of every dwelling built (engine.forward), so each
 band's in-scope floor area is its gross floor area x (1 - RV share), exactly; the observed-GFA adjustment of 2026
@@ -37,7 +40,7 @@ def no_flows(n):
     """The release flows of a run without any release (the Reference): every array zero."""
     z = np.zeros(n)
     return dict(rel_v=z, used_v=z, reocc=z, negclip=z, neg_used=z, vac_carry_end=0.0, pool_remainder=0.0,
-                neg_carry_end=0.0)
+                ob_remainder=0.0, neg_carry_end=0.0)
 
 
 def arrays(E, fi, excess, paid, flows, long_run_residual):
@@ -54,11 +57,12 @@ def arrays(E, fi, excess, paid, flows, long_run_residual):
              vacancy=(E['allow'] + E['change'] + flows['rel_v']) * D,
              overbuild_2026=np.asarray(excess, float) * D,
              replacement=E['demol'] * D, redevelopment=wave,
-             overbuild_absorbed=-np.asarray(paid, float) * D,
+             overbuild_absorbed=-(np.asarray(paid, float) + rem * flows.get('ob_remainder', 0.0)) * D,
              unconsented=(E['unc'] + flows['negclip'] - flows['neg_used'] - rem * flows['neg_carry_end']) * D - wave,
              vacancy_released=-(flows['used_v'] + rem * flows['vac_carry_end']) * D,
              released_tl=-(flows['reocc'] + rem * flows['pool_remainder']) * D,
-             surplus_vacant=rem * (flows['vac_carry_end'] + flows['pool_remainder'] + flows['neg_carry_end']) * D)
+             surplus_vacant=rem * (flows['vac_carry_end'] + flows['pool_remainder'] + flows.get('ob_remainder', 0.0)
+                                   + flows['neg_carry_end']) * D)
     if np.any(g['vacancy'][1:] < -1e-6):               # gross allowance: never negative (A2)
         raise SystemExit('bands: negative gross vacancy allowance.')
     net = np.asarray(E['demol'], float) + np.asarray(E['unc'], float) + np.asarray(E['join_redev'], float)

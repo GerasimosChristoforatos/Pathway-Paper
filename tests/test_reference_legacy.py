@@ -22,7 +22,8 @@ RTOL = 1e-12
 def test_legacy_reference_reproduces_v2_1():
     with gzip.open(C.OUT, 'rt') as f:
         lock = json.load(f)
-    B = run_boss(OVERBUILD_ABSORPTION_END=None)
+    # MODEL v4.0.0: the v2.1 completion timing and rate (the settings of run_all.py --reference-legacy)
+    B = run_boss(OVERBUILD_ABSORPTION_END=None, COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95)
     cur = C.state_arrays(B)
     missing = sorted(set(lock['values']) - set(cur))
     assert not missing, missing[:5]
@@ -47,6 +48,7 @@ def test_legacy_switch_is_the_environment_flag():
         import projection
         M = importlib.reload(projection)
         assert M.OVERBUILD_ABSORPTION_END is None and M.REFERENCE_LEGACY
+        assert M.COMPLETION_LAG_MONTHS == 0 and M.COMPLETION_RATE == 0.95
     finally:
         os.environ['PATHWAY_REFERENCE_LEGACY'] = '0'
         importlib.reload(projection)

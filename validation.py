@@ -58,7 +58,11 @@ SEASONAL_YEARS = (2010, 2025)
 # Settings that remove every use of observed 2026 data (A1: consents nowcast,
 # 2026 population growth), so that the 2026 check stays out of sample. The
 # 2025 deviation is then carried as in the pre-A1 model.
-NO_2026_DATA = dict(OVERBUILD_RULE='carried_deviation', NOWCAST_POPULATION=False)
+# MODEL v4.0.0: no consent month after December 2025 and no 2026 population observation. With the completion lag
+# (projection.COMPLETION_LAG_MONTHS = 17) 2026 completions are still observed (consents to July 2025), so the 2026
+# overbuild is observed and 2027 follows the fading rule; with no observed projection year at all (L = 0) projection
+# falls back to the carried 2025 deviation (OVERBUILD_RULE 'carried_deviation', the MODEL v3.3 definition).
+NO_2026_DATA = dict(CONSENT_DATA_END='2025-12-01', NOWCAST_POPULATION=False)
 
 
 def run_boss(**settings):
@@ -336,7 +340,7 @@ def dhe_crosscheck(B):
     years = [int(y) for y in B['census'].index if pd.Timestamp(int(y), 3, 31) in dq.index]
     stock = pd.Series({y: float(dq[pd.Timestamp(y, 3, 31)]) for y in years})
     cm = B['consents_monthly']
-    r_dhe = engine.census_interval_rates(stock, cm, projection.COMPLETION_RATE, B['lag_w'], day_of_year=90)
+    r_dhe = engine.census_interval_rates(stock, cm, projection.COMPLETION_RATE, B['lag_census'], day_of_year=90)
     w0, w1 = projection.NET_REPLACEMENT_WINDOW
     out = dict(dhe_rate_long=engine.census_window_rate(r_dhe, w0, w1),
                census_rate_long=engine.census_window_rate(B['census_rates'], w0, w1),
@@ -349,7 +353,7 @@ def dhe_crosscheck(B):
     idx = cm.index
     tm = idx.year + (idx.dayofyear - 1 + idx.days_in_month / 2.0) / 365.25
     frac = lambda d: d.year + (d.dayofyear) / 365.25
-    m = (tm > frac(t0) - B['lag_w']) & (tm <= frac(t1) - B['lag_w'])
+    m = (tm > frac(t0) - B['lag_census']) & (tm <= frac(t1) - B['lag_census'])
     built = projection.COMPLETION_RATE * float(cm[m].sum())
     d_stock = float(dq[t1] - dq[t0])
     sy = float((dq[t0] + dq[t1]) / 2 * (frac(t1) - frac(t0)))
@@ -361,9 +365,28 @@ def seasonal_shares(consents):
     return engine.seasonal_shares(consents, SEASONAL_YEARS)   # mean share of the year, by month
 
 
-def check_2026(B, consents=None):
+def check_2026(B, consents=None, B_full=None):
     """consents: monthly all-category series (index = month); read from the
-    consent file when not given."""
+    consent file when not given. MODEL v4.0.0, with the completion lag (B['lag_months'] > 0): 2026 completions are
+    observed even without 2026 data, so the out-of-sample check moves to the first year the run without 2026 data
+    MODELS (its first unobserved year, 2027 at L = 17): its building (requirement + the fading excess) against the
+    observed pipeline building of that year in the full-data run B_full (consents to July 2026, lagged)."""
+    if int(B.get('lag_months', 0) or 0) > 0:
+        pipe0 = (B['pipe'] or {}).get('years', [])
+        ty = (max(pipe0) + 1) if pipe0 else 2026
+        fy = list(B['forecast_years'])
+        E = B['engine_out']['50th']
+        i = fy.index(ty)
+        model_all = float(E['dwell_in_scope'][i] + E['rv_units'][i])
+        out = dict(status='pipeline', lag_months=int(B['lag_months']), data_end=B['lag_info']['consents_observed_to'],
+                   pipeline_years_without_2026_data=pipe0, target_year=ty, model_built_all=model_all,
+                   model_consent_equivalent_2026=None)
+        fp = (B_full or {}).get('pipe') if B_full is not None else None
+        if fp and ty in fp['years']:
+            obs = float(fp['built_all'][ty])
+            out.update(observed_pipeline_built_all=obs, ratio_observed_to_model=obs / model_all,
+                       observed_from=f"consents {fp['years']} lagged {int(B_full['lag_months'])} months")
+        return out
     if consents is None:
         c = projection.load_consents()
         consents = c.set_index(pd.to_datetime(c['Date']))[projection.COL_DWELLINGS_TOTAL]
@@ -440,7 +463,15 @@ def write(rows, chk, stock_rows=None, dhe=None, rows_pub=None, vac=None):
     lines += ['', '### 2026 out-of-sample check against observed consents', '',
               'Run on the model WITHOUT any observed 2026 input (settings: '
               f"{chk.get('model_settings')}), so the check stays out of sample.", '']
-    if chk['status'] == 'pending':
+    if chk['status'] == 'pipeline':
+        lines.append(f"Completion lag {chk['lag_months']} months: without 2026 data the pipeline years are "
+                     f"{chk['pipeline_years_without_2026_data']}; the model's {chk['target_year']} building "
+                     f"{chk['model_built_all']:,.0f} (all categories)"
+                     + (f" vs the observed pipeline {chk['observed_pipeline_built_all']:,.0f} "
+                        f"({chk['observed_from']}); observed / model = {chk['ratio_observed_to_model']:.3f}."
+                        if 'observed_pipeline_built_all' in chk else '.')
+                     + ' Descriptive only: not used to set any parameter.')
+    elif chk['status'] == 'pending':
         lines.append(f"PENDING: the consent file ends {chk['data_end']}. Model 2026: "
                      f"{chk['model_built_all_2026']:,.0f} dwellings built (all categories) = "
                      f"{chk['model_consent_equivalent_2026']:,.0f} consent-equivalents.")
@@ -463,7 +494,7 @@ def main():
     B = run_boss()
     uses_2026 = B['_join_mode'] == 'market_excess' or B['pop_nowcast'] is not None
     B0 = run_boss(**NO_2026_DATA) if uses_2026 else B
-    chk = check_2026(B0)
+    chk = check_2026(B0, B_full=B)
     chk['model_settings'] = NO_2026_DATA if uses_2026 else 'as run (no 2026 data used)'
     sh = consistent_share(B)
     cen = B['census']

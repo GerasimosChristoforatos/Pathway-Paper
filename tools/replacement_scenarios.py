@@ -88,7 +88,7 @@ def main():
     long_pct = 100 * (float(B1['demolition_rate']) + float(B1['unconsented_rate']))
     import engine
     raw = engine.census_interval_rates(B1['census']['total_private'], B1['consents_monthly'],
-                                       float(B1['_completion']), float(B1['lag_w']))      # no UC correction
+                                       float(B1['_completion']), float(B1['lag_census']))      # no UC correction
     hist = [dict(interval=f"{int(r.y0)}-{int(r.y1)}", rate_pct=100 * float(r.rate),
                  rate_uncorrected_pct=100 * float(q.rate), d_uc=float(r.d_uc) if r.uc_corrected else None,
                  net_removals_per_yr=float((r.built - r.d_stock) / (r.y1 - r.y0)))

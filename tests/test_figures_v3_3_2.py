@@ -17,7 +17,6 @@ import pytest
 from conftest import ROOT  # noqa: F401
 import figure_plan as FP
 import layout
-import runprofile
 import regression_v3 as R
 
 RTOL = 1e-9
@@ -28,12 +27,8 @@ def _data(rel):
     return layout.data(rel, frozen=False)
 
 
-def test_data_byte_identical_to_v3_3_1():
-    bad = [rel for rel, h in LOCK['deterministic'].items() if R.digest(layout.DATA, rel) != h]
-    prof = runprofile.name()
-    if prof in LOCK['montecarlo']:
-        bad += [rel for rel, h in LOCK['montecarlo'][prof].items() if R.digest(layout.DATA, rel) != h]
-    assert not bad, bad
+# MODEL v4.0.0: test_data_byte_identical_to_v3_3_1 is retired (a figure-only release check; MODEL v4.0.0 changes the
+# model). The current lock: tests/regression_model_v4.json (tests/test_regression_model_v3.py).
 
 
 def test_fig5_column_totals_are_reference_minus_run():

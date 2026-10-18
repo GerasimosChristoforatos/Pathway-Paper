@@ -1,4 +1,4 @@
-"""Capture the MODEL v3.3.1 regression lock (tests/regression_model_v3_3_1.json) from the outputs of a light and (if present) a full run:
+"""Capture the MODEL v4.0.0 regression lock (tests/regression_model_v4.json) from the outputs of a light and (if present) a full run:
     python tests/capture_regression_model_v3.py
 The deterministic hashes are taken from the light outputs and must equal the full ones (else it stops)."""
 import json

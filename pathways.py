@@ -1158,10 +1158,12 @@ def tl_summary(res):
             dwellings_built={int(y): float(x) for y, x in zip(yy, engine.requirement(E)) if y >= 2026})
     return dict(run_mode=RUN_MODE, disclaimer=LV.TL_DISCLAIMER, bau=LV.TL_BAU_NOTE,
                 definition=dict(levels='every lever at Level 4', adoption='normalised logistic 2026 -> 2035 (as every '
-                                'level)', sensitivity=f'{LV.TL_INSTANT_LABEL}: every limit at full strength from 2027',
+                                'level); MODEL v4.0.0: TL1 at the census speed limit (levers.json L1 tl_speed)',
+                                surplus_pooling=TL_SURPLUS_POOLING, tl1_speed=res['params']['L1'].get('tl_speed'),
+                                sensitivity=f'{LV.TL_INSTANT_LABEL}: every limit at full strength from 2027',
                                 components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS},
                                 note='TL6 = 100% brownfield makes TL7 zero within TL'),
-                strength=res['params']['tl_strength'], runs=out)
+                strength=res['params']['tl_strength'], zero_building=out.pop('zero_building'), runs=out)
 
 
 def write(res, identity):

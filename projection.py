@@ -2310,6 +2310,7 @@ def export_figure_sources(B):
                     occupied_area_per_dwelling=B['occupied_area_per_dwelling'], utilisation=B['utilisation'])
     figsource.write('D09_cumulative_floor_area', years_hist=yh, forecast_years=fy, cumulative_floor_area_hist=B['hist_cum'],
                     built_factor=float(B['built_factor']), lag_w=float(B['lag_w']),
+                    lag_months=int(B['lag_months']),
                     cumulative_floor_area_5th=df['Cum_GFA_Total_5th'].to_numpy(float),
                     cumulative_floor_area_50th=df['Cum_GFA_Total_50th'].to_numpy(float),
                     cumulative_floor_area_95th=df['Cum_GFA_Total_95th'].to_numpy(float),

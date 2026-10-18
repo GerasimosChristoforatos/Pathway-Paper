@@ -74,6 +74,7 @@ def main():
                    consents_2026=(pipe['consents_all'][2026] if pipe else nc['total']),
                    completion_lag_months=int(B.get('lag_months', 0) or 0), completion_rate=projection.COMPLETION_RATE,
                    pipeline_years=(list(pipe['years']) if pipe else []),
+                   consents_observed_to=(B['lag_info']['consents_observed_to'] if pipe else None),
                    pipeline_consents=({int(y): pipe['consents_all'][y] for y in pipe['years']} if pipe else {}),
                    O_obs=ji.get('O_obs'), R_obs=ji.get('R_obs'), e_obs=ji.get('e_obs'), R_next=ji.get('R_next'),
                    O26=ji['O26'], R26=ji['R26'],

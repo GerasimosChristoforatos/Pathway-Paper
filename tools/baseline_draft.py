@@ -506,17 +506,28 @@ def lines():
     L.append(f"| **Total** | **{b['floor_area_Mm2']:.2f}** | 100% | **{b['carbon_kt']:,.0f}** |")
     if nj and nj.get('mode') == 'market_excess':
         vs = vacancy_sentence(nj)
+        _py = nj.get('pipeline_years') or []
         L += ['', '### The 2026 overbuild rule', '',
-              f"2026 building is observed, not modelled: {nj['O26']:,.0f} dwellings = 0.95 x consents over the latest "
-              f"12 observed months (the year to July 2026; to be replaced by calendar 2026 when published). It "
-              f"exceeds the 2026 requirement by {nj['e26']:+,.0f}. From 2027 building stays above the requirement by "
-              f"gap_ref x rho^(t-2026), with gap_ref = building 2026 - requirement 2027 = {nj['gap_ref']:+,.0f} and "
-              f"rho = {nj['rho']:.2f} (the estimated persistence of departures from the calibrated identity). The "
-              f"2027 requirement is used because the 2026 requirement is depressed by the one-off 2026 population "
-              f"shortfall. The 2026 overbuild is STOCK-ADDING: the extra dwellings join the stock as additional vacant "
+              (f"Building in the pipeline years {', '.join(map(str, _py))} is observed, not modelled: completions = "
+               f"{nj['completion_rate']:.3f} x consents lagged {nj['completion_lag_months']} months (consents observed "
+               f"to {nj.get('consents_observed_to')}): "
+               + '; '.join(f"{y} {o:,.0f} dwellings, {e:+,.0f} above the requirement" for y, o, e in
+                           zip(_py, nj['O_obs'], nj['e_obs']))
+               + f". From {_py[-1] + 1} building stays above the requirement by gap_ref x rho^(t-{_py[-1]}), with "
+               f"gap_ref = building {_py[-1]} - requirement {_py[-1] + 1} = {nj['gap_ref']:+,.0f} and rho = "
+               f"{nj['rho']:.2f} (the estimated persistence of departures from the calibrated identity). "
+               if _py else
+               f"2026 building is observed, not modelled: {nj['O26']:,.0f} dwellings = {nj.get('completion_rate', 0.95):.3f} "
+               f"x consents over the latest 12 observed months (the year to July 2026; to be replaced by calendar 2026 "
+               f"when published). It exceeds the 2026 requirement by {nj['e26']:+,.0f}. From 2027 building stays above "
+               f"the requirement by gap_ref x rho^(t-2026), with gap_ref = building 2026 - requirement 2027 = "
+               f"{nj['gap_ref']:+,.0f} and rho = {nj['rho']:.2f} (the estimated persistence of departures from the "
+               f"calibrated identity). The 2027 requirement is used because the 2026 requirement is depressed by the "
+               f"one-off 2026 population shortfall. ")
+              + f"The 2026 overbuild is STOCK-ADDING: the extra dwellings join the stock as additional vacant "
               f"dwellings, soil carbon loss applies (new footprints) and removals stay on the path of the replacement "
               f"variant. The surplus is absorbed by {nj.get('absorption_end')}: the remaining surplus U(t) = C(t) "
-              f"(1 - w(t)), C the cumulative excess and w the normalised logistic of the levers (w(2026) = 0, "
+              f"(1 - w(t)), C the cumulative excess and w the normalised logistic (w = 0 up to the last observed year, "
               f"w >= 2035 = 1), and the absorbed part is built less (payback, capped at the year's building, any "
               f"shortfall carried). Market excess {nj.get('excess_2026_2050', 0.0):+,.0f} and absorbed "
               f"{-nj.get('absorbed_2026_2050', 0.0):+,.0f} dwellings over 2026-2050 "

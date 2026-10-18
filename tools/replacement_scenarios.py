@@ -123,7 +123,8 @@ def main():
                  f"{100 * r['cumulative_net_removals_share_of_2025_stock']:.1f}% |")
     if s1['R26'] is not None:
         L += ['', '## Against the 2026 overbuild (reported, NOT fitted)', '',
-              'O = observed-implied 2026 completions (all categories, nowcast consents); R = the variant\'s '
+              'O = observed 2026 completions (all categories; consents lagged by the completion lag, or the '
+              'nowcast consents without it); R = the variant\'s '
               '2026 requirement before the overbuild; the excess O - R is the 2026 overbuild. '
               'Share of the Low excess = how much of it the variant\'s own replacement requirement covers.', '',
               '| variant | O 2026 | R 2026 | excess 2026 | share of Low excess covered | gap_ref (2027) | '
@@ -134,7 +135,7 @@ def main():
                      f"{100 * (r['R26'] - s1['R26']) / s1['e26']:.0f}% | {r['e27']:+,.0f} | "
                      f"{r['redevelopment_channel']:+,.0f} |")
     L += ['', '## Census record of net replacement (dwelling-count identity)', '',
-          'Corrected = 0.95 x consents - change in census private dwellings under construction (UC), '
+          f'Corrected = {validation.projection.COMPLETION_RATE:.3f} x consents - change in census private dwellings under construction (UC), '
           'applied when the completion lag is off (CENSUS_UC_CORRECTION).', '',
           '| interval | uncorrected (%/yr) | change in UC | corrected (%/yr) | net removals per year (corrected) |',
           '|---|---|---|---|---|']

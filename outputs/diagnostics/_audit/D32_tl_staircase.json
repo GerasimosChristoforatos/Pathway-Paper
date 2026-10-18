@@ -43,7 +43,6 @@
   "$\\mathdefault{5}$",
   "$\\mathdefault{600}$",
   "$\\mathdefault{60}$",
-  "$\\mathdefault{700}$",
   "$\\mathdefault{80}$",
   "Ambitious Pathway",
   "Cumulative LoE of AR 2026-2050",
@@ -59,7 +58,7 @@
   "b",
   "c"
  ],
- "note": "TL re-occupies R = 117,044 released dwellings (TL1 0, TL2 117,044) at a share s = 0.330 of need (G+ 354,466).",
+ "note": "TL re-occupies R = 162,612 released dwellings (TL1 0, TL2 116,869) at a share s = 0.482 of need (G+ 337,178).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,

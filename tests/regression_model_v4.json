@@ -1,0 +1,59 @@
+{
+ "meta": {
+  "commit": "d015dc4",
+  "profiles": [
+   "full",
+   "light"
+  ]
+ },
+ "deterministic": {
+  "baseline/projection.json": "a5f71198ff67bb555ea4f47ff9ef73612d758a48568e8f665bb696ee860b16a4",
+  "baseline/annual.csv": "7c1eed73a3b6634f9f75aa3950b3aa155a85a2e8f8dfd4cd8b193e5ffeb77467",
+  "baseline/bands_annual.csv": "8cc1c9d1b0aba67f5033437f283f288b267dcd6e27f0777315613ea3f327d619",
+  "baseline/annual_by_stage.csv": "11e45cd1db243e652469606822728c26a8a72c24373b296456610a4cbde461eb",
+  "baseline/annual_by_material.csv": "1f5fbde3cab85973bb6f4a2c7c9210aa7a9842773675d273e41a6bfe436692da",
+  "baseline/overbuild_absorption_log.csv": "b9f1687aacbe7915998928be8ed3fcfe33b16367f90657b987d459bd80e1ed79",
+  "baseline/sensitivity_one_at_a_time.csv": "dad8cb26c8fdb265ea90d59df819d6355fbae4b60f9ca9280aa5d2df1bfd4605",
+  "baseline/sensitivity_annual_carbon.csv": "ba300bd2f2b8ac490c0409d990496b032cc80f37f6db26b0dbab0d047dc92670",
+  "aesa/annual.csv": "a4f9a0ef84ec7a71de6ee1fd584f3721b4a21df4781e9787b4603dda78353185",
+  "pathways/runs.csv": "433343c0f25785cfae312d7cbe9e201ca7da76218ecc34ab70ea1ac948197d71",
+  "pathways/annual.csv": "7697c17b807fd577115910c57983a3e6cb88f06d31c0c293558c21b4b67ad53f",
+  "pathways/bands.csv": "499fbaa7afb35d08209442c7e8b8fdc7f70c888d7458424dd928844985d8985a",
+  "pathways/bands_annual.csv": "b88e9651d79b9a6a444c284f6ca7e0e2bd68985471b05d2d78b327b0c71d1a28",
+  "pathways/shapley.csv": "696b5afc88e08e943bdc656d58543889e52e4a583a7d9d2873159c350863ed7d",
+  "pathways/shapley_subsets.csv": "361b462aaeeb1734a2d6077ad61bac31521aec5a2a1303175b05fc8ca3844fea",
+  "pathways/waterfall.csv": "cf85b2ef22eb94a105b987c47dfa23bb33d23c36395bf5247c68e07282fbcd83",
+  "pathways/lambda_sweep.csv": "4eb47d554b9e406c1b9e8d9ee77d793645177fd0b7254194c1aa1f14a37196aa",
+  "pathways/lever_annual.csv": "d84cf5921c9be67c644482973ab8b8c713793ca820a7c865dcaa1bca7035b9f8",
+  "pathways/reoccupation_log.csv": "9a26e3e928742c156d71a493cfd6c8cc01bb9677126563e6756329c621e20c72",
+  "pathways/solution_space.csv": "e6e55e4f74a54a41446c23f8ffd2973e7229ce420dd4bdbd502e66e3bff803d4",
+  "pathways/ordering_checks.json": "67c5daf6a2f32cd1a7ef5fb529c1b128a0debc91b93d681c441f135b409a2208",
+  "pathways/theoretical_limit.json": "183797440f8d38736994f6fb9e0c9a274d4955c55f754cdd32b06681b8d9621a",
+  "pathways/backcast.json": "2fc39927658417d5edbfb931bf44eecf0235499a256a82acc1835bd42268a10b",
+  "pathways/levers.json": "9e68c8df40ad40568a5e183b18d014cf3d29c2775f82aea5a4add7f9b6ad961b",
+  "pathways/sequential_vs_shapley.csv": "5ecf0522c396a05c8253cada4c9c825031d59f83cb6533c2684b589c423b525d",
+  "pathways/waterfall_tl_from_reference.csv": "e33800d89f04d19cfadb4f1ea0de344b80e0df5b8eab7895e475cfe8c43dffa8",
+  "sensitivity/reference_carbon.csv": "4b90a3dc49e8d9a5105d65b809448fe4a7e131abf65156af41064db78a30796a",
+  "sensitivity/pathway_carbon.csv": "f6fe639c9eda8f6cf4c1c9af1b3e4203612ea802cc47a2b93c09e5bdb9f53ae7",
+  "sensitivity/replacement_variants.csv": "9085c4368bb7742e72bd8442c718e496bd1cce32df3950687fae3589cfa35a3f",
+  "sensitivity/tornado.csv": "b17b30fc986a639d664e72fb5bc44e82b7612e47f2981fc872af3b55ed536a9c",
+  "baseline/bands_history.csv": "8eb7e35778d7312cce3aa3ce8320ed5269d21a65188cd7624442f5e5ca556336",
+  "baseline/history_unexplained.json": "489a624aec5357b586ffb4dcd4814a29c8500097e669114f37d87d03103e1c4a",
+  "sensitivity/household_size.csv": "e9eae2f9a4637e146cf0fdecea7ec9adadc18f65154fb276bca6cf9e529db299",
+  "baseline/completion_lag_hindcast.csv": "9a91daf6286480f323ac931fd6b1010c4d7f82fd710c166fbea03f7b653a9779"
+ },
+ "montecarlo": {
+  "light": {
+   "montecarlo/draws_REF.csv": "f334b11e6a491995e22284a0096122f60aadd66401c7fda42eadafb4e725d5d4",
+   "montecarlo/summary_REF.csv": "0e3f341284abfa51bfd8c979cfbcf18b755934cda243b70f3a76ff4a9d559faa",
+   "pathways/montecarlo_draws.csv": "3d9054bb9fbe2e5be63c3dfe92b93eed156e870888a7b25473837967d1710d4d",
+   "pathways/montecarlo_summary.csv": "043d3591c51284243afbb1b58398532d57743e95575fa543274d54e48972d64f"
+  },
+  "full": {
+   "montecarlo/draws_REF.csv": "e67abe3e60fc5c116a75b022e8a843aae5bbea6a79d9606655b7a183c21adaac",
+   "montecarlo/summary_REF.csv": "85d369c02fddfe71a24d94891c680b7b45f428462dd2a447ebdc183c9c7cbbb3",
+   "pathways/montecarlo_draws.csv": "9ce365ffdebf071ca2bf31365323a9d12cf24ab5c18ae922c922e9b154b839ce",
+   "pathways/montecarlo_summary.csv": "dc2311623844c29c00858b05f830938cd5fce5e26f94324eef482b8c1e93b6e7"
+  }
+ }
+}

@@ -16,8 +16,6 @@
   "$\\mathdefault{0.2}$",
   "$\\mathdefault{0.3}$",
   "$\\mathdefault{0.4}$",
-  "$\\mathdefault{0.5}$",
-  "$\\mathdefault{0.6}$",
   "$\\mathdefault{1980}$",
   "$\\mathdefault{1990}$",
   "$\\mathdefault{2000}$",
@@ -40,9 +38,9 @@
   "Reference",
   "Reference continued after 2050",
   "Very High replacement (trend continues)",
-  "asymptote: long-run rate 0.10%; 2050 value 0.138%"
+  "asymptote: long-run rate 0.06%; 2050 value 0.079%"
  ],
- "note": "Net replacement rate (demolition net of unconsented additions). Long run 1991\u20132023: 0.101% per year; 2018\u201323: 0.312% per year. Each step is one intercensal interval; the 2018\u201323 step is a single interval. Negative values mean the stock grew by more than consented new building, i.e. more dwellings appeared through conversions and unconsented additions than were demolished. Very High: the interval-length-weighted OLS trend of the census-interval rates 1991\u20132023, rate = -0.221894 + 1.1097e-04 \u00d7 year (0.294% in 2026, 0.560% in 2050).",
+ "note": "Net replacement rate (demolition net of unconsented additions). Long run 1991\u20132023: 0.059% per year; 2018\u201323: 0.173% per year. Each step is one intercensal interval; the 2018\u201323 step is a single interval. Negative values mean the stock grew by more than consented new building, i.e. more dwellings appeared through conversions and unconsented additions than were demolished. Very High: the interval-length-weighted OLS trend of the census-interval rates 1991\u20132023, rate = -0.121385 + 6.0725e-05 \u00d7 year (0.164% in 2026, 0.310% in 2050).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

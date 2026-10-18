@@ -8,41 +8,41 @@ Vacancy definition: consistent -- the pooled 2018/2023 empty share of unoccupied
 
 | origin | test years | method | rate used (%/yr) | predicted | actual | error |
 |---|---|---|---|---|---|---|
-| 2006 | 2007-2023 | constant | +0.092 | 458,783 | 460,544 | -0.4% |
-| 2006 | 2007-2023 | recent | -0.003 | 429,806 | 460,544 | -6.7% |
-| 2006 | 2007-2023 | linked | linked: b = 1.67 on 3 intervals | 513,426 | 460,544 | +11.5% |
-| 2006 | 2007-2023 | dwelling_count | -0.010 | 427,708 | 460,544 | -7.1% |
-| 2006 | 2007-2023 | reference | +0.018 | 432,419 | 460,544 | -6.1% |
-| 2013 | 2014-2023 | constant | +0.090 | 338,113 | 340,888 | -0.8% |
-| 2013 | 2014-2023 | recent | +0.086 | 337,443 | 340,888 | -1.0% |
-| 2013 | 2014-2023 | linked | linked: b = 0.59 on 4 intervals | 372,681 | 340,888 | +9.3% |
-| 2013 | 2014-2023 | dwelling_count | +0.024 | 325,771 | 340,888 | -4.4% |
-| 2013 | 2014-2023 | reference | +0.087 | 333,902 | 340,888 | -2.0% |
-| 2018 | 2019-2023 | constant | +0.035 | 170,792 | 202,189 | -15.5% |
-| 2018 | 2019-2023 | recent | -0.168 | 150,872 | 202,189 | -25.4% |
-| 2018 | 2019-2023 | linked | linked: b = 0.26 on 5 intervals | 185,079 | 202,189 | -8.5% |
-| 2018 | 2019-2023 | dwelling_count | +0.053 | 172,485 | 202,189 | -14.7% |
-| 2018 | 2019-2023 | reference | +0.158 | 180,895 | 202,189 | -10.5% |
+| 2006 | 2007-2023 | constant | +0.039 | 442,676 | 438,386 | +1.0% |
+| 2006 | 2007-2023 | recent | -0.116 | 394,985 | 438,386 | -9.9% |
+| 2006 | 2007-2023 | linked | linked: b = 1.91 on 3 intervals | 459,136 | 438,386 | +4.7% |
+| 2006 | 2007-2023 | dwelling_count | -0.030 | 421,494 | 438,386 | -3.9% |
+| 2006 | 2007-2023 | reference | -0.039 | 419,979 | 438,386 | -4.2% |
+| 2013 | 2014-2023 | constant | +0.077 | 335,678 | 311,633 | +7.7% |
+| 2013 | 2014-2023 | recent | +0.146 | 348,753 | 311,633 | +11.9% |
+| 2013 | 2014-2023 | linked | linked: b = 0.32 on 4 intervals | 344,773 | 311,633 | +10.6% |
+| 2013 | 2014-2023 | dwelling_count | +0.038 | 328,404 | 311,633 | +5.4% |
+| 2013 | 2014-2023 | reference | +0.164 | 344,750 | 311,633 | +10.6% |
+| 2018 | 2019-2023 | constant | -0.016 | 165,729 | 190,590 | -13.0% |
+| 2018 | 2019-2023 | recent | -0.363 | 131,694 | 190,590 | -30.9% |
+| 2018 | 2019-2023 | linked | linked: b = 0.82 on 5 intervals | 196,149 | 190,590 | +2.9% |
+| 2018 | 2019-2023 | dwelling_count | +0.033 | 170,563 | 190,590 | -10.5% |
+| 2018 | 2019-2023 | reference | +0.013 | 168,956 | 190,590 | -11.4% |
 
 ### (A2) Same hindcast with census vacancy as published (2013->2018 break included)
 
 | origin | test years | method | predicted | actual | error |
 |---|---|---|---|---|---|
-| 2006 | 2007-2023 | constant | 397,185 | 460,544 | -13.8% |
-| 2006 | 2007-2023 | recent | 368,553 | 460,544 | -20.0% |
-| 2006 | 2007-2023 | linked | 481,694 | 460,544 | +4.6% |
-| 2006 | 2007-2023 | dwelling_count | 380,933 | 460,544 | -17.3% |
-| 2006 | 2007-2023 | reference | 385,742 | 460,544 | -16.2% |
-| 2013 | 2014-2023 | constant | 273,162 | 340,888 | -19.9% |
-| 2013 | 2014-2023 | recent | 270,314 | 340,888 | -20.7% |
-| 2013 | 2014-2023 | linked | 330,310 | 340,888 | -3.1% |
-| 2013 | 2014-2023 | dwelling_count | 271,249 | 340,888 | -20.4% |
-| 2013 | 2014-2023 | reference | 279,469 | 340,888 | -18.0% |
-| 2018 | 2019-2023 | constant | 179,025 | 202,189 | -11.5% |
-| 2018 | 2019-2023 | recent | 209,681 | 202,189 | +3.7% |
-| 2018 | 2019-2023 | linked | 253,530 | 202,189 | +25.4% |
-| 2018 | 2019-2023 | dwelling_count | 172,638 | 202,189 | -14.6% |
-| 2018 | 2019-2023 | reference | 181,047 | 202,189 | -10.5% |
+| 2006 | 2007-2023 | constant | 381,233 | 438,386 | -13.0% |
+| 2006 | 2007-2023 | recent | 334,129 | 438,386 | -23.8% |
+| 2006 | 2007-2023 | linked | 402,719 | 438,386 | -8.1% |
+| 2006 | 2007-2023 | dwelling_count | 374,614 | 438,386 | -14.5% |
+| 2006 | 2007-2023 | reference | 373,067 | 438,386 | -14.9% |
+| 2013 | 2014-2023 | constant | 270,772 | 311,633 | -13.1% |
+| 2013 | 2014-2023 | recent | 281,395 | 311,633 | -9.7% |
+| 2013 | 2014-2023 | linked | 288,236 | 311,633 | -7.5% |
+| 2013 | 2014-2023 | dwelling_count | 273,906 | 311,633 | -12.1% |
+| 2013 | 2014-2023 | reference | 290,429 | 311,633 | -6.8% |
+| 2018 | 2019-2023 | constant | 174,090 | 190,590 | -8.7% |
+| 2018 | 2019-2023 | recent | 190,849 | 190,590 | +0.1% |
+| 2018 | 2019-2023 | linked | 183,375 | 190,590 | -3.8% |
+| 2018 | 2019-2023 | dwelling_count | 170,715 | 190,590 | -10.4% |
+| 2018 | 2019-2023 | reference | 169,109 | 190,590 | -11.3% |
 
 ### (B) Rolling-origin hindcast of the 2023 census private-dwelling stock (dwelling-count identity; descriptive)
 
@@ -50,21 +50,21 @@ Change in census private dwellings from the origin to 2023, predicted as complet
 
 | origin | interval | rate | rate used (%/yr) | predicted change | actual change | error |
 |---|---|---|---|---|---|---|
-| 2006 | 2006-2023 | long run | -0.010 | 440,630 | 383,046 | +15.0% |
-| 2006 | 2006-2023 | recent interval | +0.018 | 432,197 | 383,046 | +12.8% |
-| 2013 | 2013-2023 | long run | +0.024 | 306,523 | 266,661 | +14.9% |
-| 2013 | 2013-2023 | recent interval | +0.087 | 294,848 | 266,661 | +10.6% |
-| 2018 | 2018-2023 | long run | +0.053 | 183,230 | 158,106 | +15.9% |
-| 2018 | 2018-2023 | recent interval | +0.158 | 173,055 | 158,106 | +9.5% |
+| 2006 | 2006-2023 | long run | -0.030 | 429,436 | 383,046 | +12.1% |
+| 2006 | 2006-2023 | recent interval | -0.039 | 432,150 | 383,046 | +12.8% |
+| 2013 | 2013-2023 | long run | +0.038 | 277,428 | 266,661 | +4.0% |
+| 2013 | 2013-2023 | recent interval | +0.164 | 253,960 | 266,661 | -4.8% |
+| 2018 | 2018-2023 | long run | +0.033 | 171,688 | 158,106 | +8.6% |
+| 2018 | 2018-2023 | recent interval | +0.013 | 173,633 | 158,106 | +9.8% |
 
 ### (C, D) Cross-checks of the net replacement rate
 
-- Census dwelling counts, 1991-2023: +0.101%/yr.
-- Same identity on the Stats NZ DHE private-dwelling series at 31 March (bases = census counts): +0.141%/yr.
-- Stats NZ's intercensal weighting after the 2023 base: DHE dwelling growth = 0.8888 x consents lagged four quarters (sd 0.0047); with this model's completion rate and lag this implies net replacement of -0.001%/yr over 2023-06-30..2026-03-31. This is Stats NZ's assumption, not an observation.
+- Census dwelling counts, 1991-2023: +0.059%/yr.
+- Same identity on the Stats NZ DHE private-dwelling series at 31 March (bases = census counts): +0.064%/yr.
+- Stats NZ's intercensal weighting after the 2023 base: DHE dwelling growth = 0.8888 x consents lagged four quarters (sd 0.0047); with this model's completion rate and lag this implies net replacement of +0.235%/yr over 2023-06-30..2026-03-31. This is Stats NZ's assumption, not an observation.
 
 ### 2026 out-of-sample check against observed consents
 
-Run on the model WITHOUT any observed 2026 input (settings: {'OVERBUILD_RULE': 'carried_deviation', 'NOWCAST_POPULATION': False}), so the check stays out of sample.
+Run on the model WITHOUT any observed 2026 input (settings: {'CONSENT_DATA_END': '2025-12-01', 'NOWCAST_POPULATION': False}), so the check stays out of sample.
 
-Months observed: [1, 2, 3, 4, 5, 6, 7]. Observed 23,916 vs model 17,389 (annual 30,983 x seasonal share 0.561); observed / model = 1.375. Latest 12 months (2025-08-01..2026-07-01): 40,908. Descriptive only: not used to set any parameter.
+Completion lag 17 months: without 2026 data the pipeline years are [2026]; the model's 2027 building 28,386 (all categories) vs the observed pipeline 38,658 (consents [2026, 2027] lagged 17 months); observed / model = 1.362. Descriptive only: not used to set any parameter.

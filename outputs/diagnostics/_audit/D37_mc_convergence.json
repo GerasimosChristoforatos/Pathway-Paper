@@ -1,6 +1,6 @@
 {
  "figure": "D37_mc_convergence",
- "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Embodied carbon",
@@ -25,7 +25,6 @@
   "$\\mathdefault{10^{4}}$",
   "$\\mathdefault{110}$",
   "$\\mathdefault{12000}$",
-  "$\\mathdefault{120}$",
   "$\\mathdefault{14000}$",
   "$\\mathdefault{16000}$",
   "$\\mathdefault{18000}$",
@@ -34,6 +33,7 @@
   "$\\mathdefault{24000}$",
   "$\\mathdefault{26000}$",
   "$\\mathdefault{28000}$",
+  "$\\mathdefault{50}$",
   "$\\mathdefault{60}$",
   "$\\mathdefault{70}$",
   "$\\mathdefault{80}$",

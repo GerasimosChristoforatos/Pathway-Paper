@@ -167,7 +167,7 @@ DIAGNOSTICS = {
            ['figure_source/D13_carbon_by_material.json']),
         _d('D14_hindcast', 'Rolling-origin hindcast of dwellings built and the 2026 out-of-sample check',
            'figures.validation', ['figure_source/D14_hindcast.json', 'baseline/validation.json']),
-        _d('D15_reality_checks', 'Projection vs the 1991-2025 range and the 2026 -> 2027 handover',
+        _d('D15_reality_checks', 'Projection vs the 1991-2025 range and the observed -> model handover',
            'figures.validation', ['figure_source/D15_reality_checks.json']),
     ],
     'boundaries': [

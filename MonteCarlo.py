@@ -175,7 +175,7 @@ def build_setup(settings=None):
               # MODEL v3.0.0: logistic absorption of the overbuild (None: never absorbed, the legacy Reference)
               near_absorb_w=(None if projection.OVERBUILD_ABSORPTION_END is None
                              or projection.OVERBUILD_BOOKING != 'surplus' else
-                             engine.logistic_weights(fy, projection.OVERBUILD_ABSORPTION_START,
+                             engine.logistic_weights(fy, B['absorption_start'],
                                                      projection.OVERBUILD_ABSORPTION_END)),
               # observed floor area (fixed in every draw): the pipeline years (MODEL v4.0.0) or the 2026 nowcast
               gfa_fixed=B['gfa_fixed'])

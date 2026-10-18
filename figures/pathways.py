@@ -197,8 +197,10 @@ def d34():
         b.bar(yr, r['built'] / 1e3, width=0.75, color=S.REFERENCE, alpha=0.5, label='Dwellings built')
         b.bar(yr, r['reoccupied'] / 1e3, bottom=r['built'] / 1e3, width=0.75, facecolor='none',
               edgecolor=S.BAND['released_tl'][0], lw=S.LW_OUTLINE, label='Re-occupied (released dwellings)')
-        b.plot(yr, (r['released_tl1'] + r['released_tl2']) / 1e3, color=S.BAND['released_tl'][0], ls='--',
-               lw=S.LW, label='Released (TL1 + TL2)')
+        pooled = 'released_pool' in r and (r['released_overbuild'] != 0).any()
+        b.plot(yr, (r['released_pool'] if 'released_pool' in r else r['released_tl1'] + r['released_tl2']) / 1e3,
+               color=S.BAND['released_tl'][0], ls='--', lw=S.LW,
+               label='Entering the pool (TL1 + TL2 + overbuild)' if pooled else 'Released (TL1 + TL2)')
         bind = r[r['release_binds']]
         b.plot(bind['year'], bind['built'] / 1e3, 'v', color=S.AR, ms=4, label='Release constraint binds')
         b.axhline(0, color=S.INK, lw=S.LW_THIN)

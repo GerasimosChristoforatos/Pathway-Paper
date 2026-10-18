@@ -34,6 +34,9 @@ def lines():
     k = np.arange(1, 26)
     ex_exp = float(np.mean(d0 * 0.5 ** (k / projection.REPLACEMENT_HALF_LIFE)))
     ex_lin = float(np.mean(d0 * (1.0 - k / 25.0)))
+    # the census intervals with a negative net replacement rate (interval y0-y1 from its mid-year x and length w)
+    neg_iv = [f"{int(round(x + (w - 1) / 2 - w))}-{int(round(x + (w - 1) / 2))}"
+              for x, w, r in zip(tr['x'], tr['weight'], tr['rate']) if r < 0]
     hu = _js('baseline/history_unexplained.json')
     ob = _js('baseline/overbuild_2026.json')
     lv = _js('pathways/levers.json')
@@ -97,7 +100,8 @@ def lines():
          f"{tr['window'][0]}-{tr['window'][1]} fitted by weighted least squares on the mean of each interval's years "
          f"(weights = interval length), rate = {tr['a']:.6f} + {tr['b']:.4e} x year, extrapolated 2026-2050: "
          f"{100 * tr['rate_2026']:.3f}% in 2026 and {100 * tr['rate_2050']:.3f}% in 2050. It is not adopted as the "
-         'Reference: six interval rates (seven censuses), one of them negative (1996-2001), the 2013-2018 census '
+         f"Reference: {tr['n']} interval rates ({tr['n'] + 1} censuses), {len(neg_iv)} of them negative "
+         f"({', '.join(neg_iv)}), the 2013-2018 census "
          'definition break (empty / residents-away dwellings), and the unbounded extrapolation of a policy-driven '
          'wave.', '',
          '### Completion rate in the Monte Carlo', '',

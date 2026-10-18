@@ -244,12 +244,12 @@ def fig1():
     ax.set_ylabel('Floor area built (Mm² per year)')
     ax.text(y_hist_end + 0.4, 0.98, 'History (census-interval means)', transform=ax.get_xaxis_transform(),
             ha='right', va='top', fontsize=S.FONT_SMALL, color=S.MUTED)
-    lab_y = 0.91
+    lab_y = 0.98                                                  # narrow groups: vertical labels
     if obs_years:
         ax.text(np.mean(obs_years), lab_y, 'Observed', transform=ax.get_xaxis_transform(), ha='center', va='top',
-                fontsize=S.FONT_MIN, color=S.MUTED)
+                rotation=90, fontsize=S.FONT_MIN, color=S.MUTED)
     ax.text(np.mean(pipe), lab_y, 'Pipeline', transform=ax.get_xaxis_transform(), ha='center', va='top',
-            fontsize=S.FONT_MIN, color=S.MUTED)
+            rotation=90, fontsize=S.FONT_MIN, color=S.MUTED)
     ax.text(x0 + 0.4, 0.98, 'Projection (annual)', transform=ax.get_xaxis_transform(),
             ha='left', va='top', fontsize=S.FONT_SMALL, color=S.MUTED)
     neg = [b for b in proj.columns if (proj[b] < 0).any()]

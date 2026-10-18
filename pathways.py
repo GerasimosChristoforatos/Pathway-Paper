@@ -321,11 +321,14 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     gross, negclip, neg_used, neg_carry = carry_negative(years, gross0, late)
     rel_ob = pooled(exc_pos)
     if tl_family:
-        ro = reoccupation(years, gross, pooled(rel3) + pooled(rel_v) + rel_ob, reocc_rule, start=first)
+        pool_in = pooled(rel3) + pooled(rel_v) + rel_ob
+        ro = reoccupation(years, gross, pool_in, reocc_rule, start=first)
+        ro['released_pool'] = pool_in
         reocc, used_v, vac_carry = ro['reoccupied'], zeros, 0.0
         pool_rem = ro['surplus_vacant_2050']
     else:
         ro = reoccupation(years, gross, zeros, start=first)
+        ro['released_pool'] = zeros
         used_v, vac_carry = use_in_year(gross, pooled(rel_v), late)
         reocc, pool_rem = zeros, 0.0
     built = ro['built'] - used_v
@@ -837,10 +840,13 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
             if y >= WINDOW[0]:
                 reocc_log.append(dict(run=nm, year=int(y), need=ro['need'][i], gross_after_payback=ro['gross'][i],
                                       released_tl1=ro['released_tl1'][i], released_tl2=ro['released_tl2'][i],
+                                      released_overbuild=ro['released_overbuild'][i],
+                                      released_pool=ro['released_pool'][i],
+                                      reoccupied_overbuild=ro['reoccupied_overbuild'][i],
                                       share=ro['share_by_year'][i], reoccupied=ro['reoccupied'][i],
                                       reoccupied_tl1=ro['reoccupied_tl1'][i], reoccupied_tl2=ro['reoccupied_tl2'][i],
                                       release_binds=bool(ro['release_binds'][i]), built=ro['built'][i],
-                                      cumulative_released=float(np.sum((ro['released_tl1'] + ro['released_tl2'])[:i + 1])),
+                                      cumulative_released=float(np.sum(ro['released_pool'][:i + 1])),
                                       cumulative_reoccupied=float(np.sum(ro['reoccupied'][:i + 1]))))
     out = dict(params=params, runs=runs_df, annual=pd.DataFrame(annual), bands=bands_df,
                bands_annual=pd.DataFrame(bands_annual), shapley=pd.DataFrame(shap_rows),
@@ -1030,7 +1036,10 @@ def checks(res):
         c = res['ctxs'][scen]
         E, info = R['E'], R['info']
         lab = f'{scen} {LV.label(R["levels"])} {R["ramp"]}'
-        excess_diff = max(excess_diff, float(np.max(np.abs(info['excess'] - c['excess']))))
+        # MODEL v4.0.0: the excess of an observed (pipeline) year is the observed building minus the run's own need;
+        # every later year holds the Reference excess
+        fut = np.asarray(c['years']) > int(c.get('observed_end', WINDOW[0]))
+        excess_diff = max(excess_diff, float(np.max(np.abs(info['excess'][fut] - c['excess'][fut]))))
         built = np.asarray(engine.requirement(E), float)[1:]
         if (built < -T_ZERO_TOL_DWELLINGS).any() or (E['dwell_in_scope'][1:] < -T_ZERO_TOL_DWELLINGS).any():
             stops.append(f'built_t < 0: {lab}')
@@ -1040,7 +1049,7 @@ def checks(res):
         if any((np.asarray(info['a13'][t]) < 0).any() or (np.asarray(info['a45'][t]) < 0).any() for t in c['typ']):
             stops.append(f'negative material intensity: {lab}')
         ro = info['reoccupation']
-        rel_ = (ro['released_tl1'] + ro['released_tl2'])
+        rel_ = ro.get('released_pool', ro['released_tl1'] + ro['released_tl2'])   # as it enters the pool
         if (np.cumsum(ro['reoccupied']) > np.cumsum(rel_) + REOCCUPATION_TOL * max(ro['R'], 1.0)).any():
             stops.append(f'cumulative re-occupied > released: {lab}')
         if not info['tl']:
@@ -1104,11 +1113,29 @@ def _json(obj, name):
         json.dump(N.keys(to_json(obj)), f, indent=2)
 
 
+def zero_building(res):
+    """MODEL v4.0.0: the theoretical-limit-family runs (TL, its waterfall steps, every TL Shapley subset, the instant
+    TL; every scenario) with a year 2026-2050 that builds no dwelling (all categories <= T_ZERO_TOL_DWELLINGS), and
+    the minimum annual building over them."""
+    bad, mins = [], []
+    for k, R in res['cache'].items():
+        if not R['info']['tl']:
+            continue
+        b = np.asarray(engine.requirement(R['E']), float)[1:]
+        mins.append(float(b.min()))
+        yrs = [int(y) for y, v in zip(np.asarray(res['ctxs'][k[0]]['years'])[1:], b) if v <= T_ZERO_TOL_DWELLINGS]
+        if yrs:
+            bad.append(dict(run=f"{k[0]} {LV.label(R['levels'])} {R['ramp']}", years=yrs))
+    return dict(adopted_tl_family_runs_with_zero_years=bad, tl_family_runs=len(mins),
+                min_annual_dwellings_tl_family=min(mins) if mins else None,
+                note='the greedy re-occupation row (TL-reoccupation-fast) is a sensitivity outside this check')
+
+
 def tl_summary(res):
     """theoretical_limit.json: definition, Level-4 values, re-occupation (R1, R2, G+, binding years), indicators."""
     ref = res['ctxs'][REFERENCE]
     yy = np.asarray(ref['years'])
-    out = {}
+    out = {'zero_building': zero_building(res)}
     for nm, R in (('TL', res['get'](REFERENCE, res['tl_levels'])),
                   (LV.TL_INSTANT_LABEL, res['get'](REFERENCE, res['tl_levels'], LV.TL_FROM2027))):
         ro, E = R['info']['reoccupation'], R['E']
@@ -1119,7 +1146,11 @@ def tl_summary(res):
             R_exceeds_G_plus=bool(ro['R'] > ro['G_plus']), release_binding_years=[int(y) for y in yy[ro['release_binds']]],
             nonpositive_need_years=ro['nonpositive_need_years'],
             reoccupied_attributed=dict(TL1=float(ro['reoccupied_tl1'].sum()), TL2=float(ro['reoccupied_tl2'].sum()),
-                                       rule='in proportion R1 : R2'),
+                                       overbuild=float(np.sum(ro.get('reoccupied_overbuild', 0.0))),
+                                       rule='in proportion R1 : R2 : R_overbuild'),
+            R_overbuild=ro.get('R_overbuild', 0.0),
+            dwellings_built_min=float(np.asarray(engine.requirement(E), float)[1:].min()),
+            dwellings_built_min_year=int(yy[1:][np.argmin(np.asarray(engine.requirement(E), float)[1:])]),
             household_size_by_year={int(y): float(S[i]) for i, y in enumerate(yy) if y >= 2026},
             mean_new_dwelling_size_m2={int(y): float(E['D'][i]) for i, y in enumerate(yy) if y >= 2026},
             m2_per_person_new_dwellings={int(y): float(E['D'][i] / S[i]) for i, y in enumerate(yy) if y >= 2026},

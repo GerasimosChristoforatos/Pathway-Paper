@@ -1,11 +1,33 @@
-# MODEL v4.0.0 (in progress; STOPPED before the full run)
+# MODEL v4.0.0
 
 Branch `release/model-v4.0.0`, from `release/model-v3.3.2`.
 
-**Status.** The code is complete and the light profile runs end to end. The run then STOPPED on the brief's rule
-"any TL zero-build year remains after §3–4". 48 of the 1,000 light Monte Carlo TL draws have such a year (see
-**STOP** below). Per the brief there is no full run, no 600 dpi export, no new lock and no PR. All numbers below are
-from the light profile (deterministic values are profile-independent).
+**Status.** The STOP on TL zero-building Monte Carlo draws (below) was reported, and the author decided to
+**accept and report** them as the definitional TL outcome. One full run (Monte Carlo + Sobol), one `--figures-only`
+export (600 dpi PNG; the data were byte-identical afterwards) and the test suite, run once (235 passed, 2 skipped:
+both need the local AESA workbook). The lock is `tests/regression_model_v4.json` (light and full).
+
+## Headline (full profile; v3.3 in brackets)
+
+| run | carbon kt | LoE AR | LoE AtP |
+|---|---|---|---|
+| Reference | 19,761 (20,615) | 4.46 (4.63) | 17.76 |
+| Moderate Pathway | 14,302 | 3.23 (3.39) | 12.85 |
+| Ambitious Pathway | 10,267 | 2.32 (2.45) | 9.23 |
+| TL | 4,423 | 0.999 (0.98) | 3.97 |
+
+* Monte Carlo (n = 5,000): TL within AR in 49.9% of draws (v3.3: 55.2%).
+* Population threshold: 6.614 M (95% CI 6.611–6.616 M).
+* TL zero-building draws: 244 of 5,000 (4.9%; v3.3.2: 2,750, 55%). All of them have R > G+ and a 2050 population
+  ≤ 6.161 M.
+
+## Timings
+
+| step | time |
+|---|---|
+| full run | 40.5 min (pathway Monte Carlo 23.7 min) |
+| figures-only, 600 dpi | 1.7 min |
+| tests | 1.3 min |
 
 ## Decisions
 
@@ -115,7 +137,7 @@ from the light profile (deterministic values are profile-independent).
   * D14 (d) and the D15 handover use the last observed year.
   * D34 shows the pool inflow.
 
-## STOP: TL zero-building years in Monte Carlo draws
+## TL zero-building years in Monte Carlo draws (STOP reported; accepted and reported, author's decision)
 
 * **Deterministic runs.** None of the 1,033 TL-family runs (TL, steps, Shapley subsets, instant TL, every scenario)
   has a zero-building year; the minimum is 4,343 dwellings a year. The greedy row TL-reoccupation-fast builds nothing
@@ -149,5 +171,5 @@ from the light profile (deterministic values are profile-independent).
   * `test_figures_v3_3_1::test_deterministic_files_equal_v3_3` and `test_montecarlo_files_equal_v3_3`;
   * `test_figures_v3_3_2::test_data_byte_identical_to_v3_3_1`;
   * `test_model_v3_3::test_equal_to_v3_2_under_the_map` (now covered through the v3.3 equivalence).
-* **Lock.** `tests/regression_v3.py` points to `tests/regression_model_v4.json`. It is not captured, because of the
-  STOP.
+* **Lock.** `tests/regression_model_v4.json`: 34 deterministic files, plus the Monte Carlo files of the light and full
+  profiles.

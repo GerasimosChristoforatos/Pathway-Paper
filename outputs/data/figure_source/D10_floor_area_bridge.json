@@ -13,63 +13,63 @@
 ],
 "bridge": {
 "HIGH": {
-"total_in_scope": 95.20024465009924,
+"total_in_scope": 86.72315873827951,
 "values": {
-"extra_space": 25.52026002339228,
-"growth": 42.8882950707976,
-"overbuild_2026": 3.734074785470675,
-"overbuild_absorbed": -3.7527783119630342,
-"redevelopment": 17.73850683470701,
-"replacement": 11.313767245341518,
-"retirement_villages": -5.689125028092562,
-"smaller_households": 2.307796429820681,
-"unconsented": -2.8873031330517,
-"vacancy": 4.0267507336767565
+"extra_space": 28.039952587259815,
+"growth": 42.87579284249482,
+"overbuild_2026": 4.7219703659563566,
+"overbuild_absorbed": -4.892580466563106,
+"redevelopment": 9.929171039853172,
+"replacement": 11.714420845198893,
+"retirement_villages": -5.5392162028057,
+"smaller_households": 2.3071143783151515,
+"unconsented": -6.602943697399141,
+"vacancy": 4.169477045969259
 }
 },
 "LOW": {
-"total_in_scope": 78.46440013091878,
+"total_in_scope": 77.38063987534943,
 "values": {
-"extra_space": 25.52026002339228,
-"growth": 42.8882950707976,
-"overbuild_2026": 5.05000530964641,
-"overbuild_absorbed": -5.065866706477199,
+"extra_space": 28.039952587259815,
+"growth": 42.87579284249482,
+"overbuild_2026": 5.697505545948493,
+"overbuild_absorbed": -5.877344586826278,
 "redevelopment": 0.0,
-"replacement": 11.313767245341518,
-"retirement_villages": -4.689304842227578,
-"smaller_households": 2.307796429820681,
-"unconsented": -2.8873031330516983,
-"vacancy": 4.0267507336767565
+"replacement": 11.714420845198893,
+"retirement_villages": -4.943335085611567,
+"smaller_households": 2.3071143783151515,
+"unconsented": -6.602943697399141,
+"vacancy": 4.169477045969259
 }
 },
 "REF": {
-"total_in_scope": 85.9008073050105,
+"total_in_scope": 81.53189583478174,
 "values": {
-"extra_space": 25.52026002339228,
-"growth": 42.8882950707976,
-"overbuild_2026": 3.8648527333450873,
-"overbuild_absorbed": -3.8833659309163453,
-"redevelopment": 7.883319196922969,
-"replacement": 11.313767245341518,
-"retirement_villages": -5.133565064318369,
-"smaller_households": 2.307796429820681,
-"unconsented": -2.8873031330516983,
-"vacancy": 4.0267507336767565
+"extra_space": 28.039952587259815,
+"growth": 42.87579284249482,
+"overbuild_2026": 4.842579838905654,
+"overbuild_absorbed": -5.014049721166458,
+"redevelopment": 4.407660688367262,
+"replacement": 11.714420845198893,
+"retirement_villages": -5.208108973163507,
+"smaller_households": 2.3071143783151515,
+"unconsented": -6.602943697399141,
+"vacancy": 4.169477045969259
 }
 },
 "VHIGH": {
-"total_in_scope": 104.67680438599452,
+"total_in_scope": 92.18408878528567,
 "values": {
-"extra_space": 25.52026002339228,
-"growth": 42.8882950707976,
-"overbuild_2026": 3.813634365528717,
-"overbuild_absorbed": -3.832088759165395,
-"redevelopment": 27.78095891364552,
-"replacement": 11.313767245341518,
-"retirement_villages": -6.255266503991469,
-"smaller_households": 2.307796429820681,
-"unconsented": -2.8873031330517014,
-"vacancy": 4.0267507336767565
+"extra_space": 28.039952587259815,
+"growth": 42.87579284249482,
+"overbuild_2026": 4.74950799260003,
+"overbuild_absorbed": -4.920626738257965,
+"redevelopment": 15.73891677255677,
+"replacement": 11.714420845198893,
+"retirement_villages": -5.8875232434519615,
+"smaller_households": 2.3071143783151515,
+"unconsented": -6.602943697399139,
+"vacancy": 4.169477045969259
 }
 }
 },

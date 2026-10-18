@@ -32,7 +32,7 @@
   "Reference (median, 5\u201395%)",
   "Theoretical Limit (median, 5\u201395%)"
  ],
- "note": "P(cumulative LoE AR <= 1): REF 0.000, pathway_moderate 0.000, pathway_ambitious 0.000, TL 0.552, TL_from2027 0.981.",
+ "note": "P(cumulative LoE AR <= 1): REF 0.000, pathway_moderate 0.000, pathway_ambitious 0.000, TL 0.499, TL_from2027 0.978.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

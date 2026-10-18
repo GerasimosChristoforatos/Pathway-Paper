@@ -11,15 +11,15 @@
 | L3 Building lifetime | C | Detached | d, reduction of demolition and surge (all typologies) | 0.2 | 0.4 | 1 |
 | L3 Building lifetime | C | Townhouses | d, reduction of demolition and surge (all typologies) | 0.2 | 0.4 | 1 |
 | L3 Building lifetime | C | Apartments | d, reduction of demolition and surge (all typologies) | 0.2 | 0.4 | 1 |
-| L4 Extra space | B | Detached | f (share of the extra-space margin removed) | 0.1859 | 0.3718 | 1 |
-| L4 Extra space | B | Townhouses | f (share of the extra-space margin removed) | 0.04867 | 0.09734 | 1 |
-| L4 Extra space | B | Apartments | f (share of the extra-space margin removed) | 0.08098 | 0.162 | 1 |
+| L4 Extra space | B | Detached | f (share of the extra-space margin removed) | 0.2134 | 0.4268 | 1 |
+| L4 Extra space | B | Townhouses | f (share of the extra-space margin removed) | 0.05457 | 0.1091 | 1 |
+| L4 Extra space | B | Apartments | f (share of the extra-space margin removed) | 0.05765 | 0.1153 | 1 |
 | L5 Occupancy density | A | Detached | r (ratio to the Reference) | 0.9097 | 0.8194 | 0.7095 |
 | L5 Occupancy density | A | Townhouses | r (ratio to the Reference) | 0.9097 | 0.8194 | 0.8194 |
 | L5 Occupancy density | A | Apartments | r (ratio to the Reference) | 0.9097 | 0.8194 | 0.8194 |
-| L6 Brownfield-first development | C | Detached | s, brownfield share (all typologies) | 0.3846 | 0.59 | 1 |
-| L6 Brownfield-first development | C | Townhouses | s, brownfield share (all typologies) | 0.3846 | 0.59 | 1 |
-| L6 Brownfield-first development | C | Apartments | s, brownfield share (all typologies) | 0.3846 | 0.59 | 1 |
+| L6 Brownfield-first development | C | Detached | s, brownfield share (all typologies) | 0.3499 | 0.59 | 1 |
+| L6 Brownfield-first development | C | Townhouses | s, brownfield share (all typologies) | 0.3499 | 0.59 | 1 |
+| L6 Brownfield-first development | C | Apartments | s, brownfield share (all typologies) | 0.3499 | 0.59 | 1 |
 | L7 Soil-aware planning | C | Detached | soil carbon loss (kg CO2e/m2 floor area) | 46.47 | 42.81 | 22.93 |
 | L7 Soil-aware planning | C | Townhouses | soil carbon loss (kg CO2e/m2 floor area) | 28.06 | 25.85 | 13.84 |
 | L7 Soil-aware planning | C | Apartments | soil carbon loss (kg CO2e/m2 floor area) | 5.11 | 4.708 | 2.521 |

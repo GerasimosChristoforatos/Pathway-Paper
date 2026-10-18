@@ -10,7 +10,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig1_floor_area.png`
 - Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`, `data/baseline/overbuild_2026.json`
-- This run: 2026 overbuild: observed 2026 building above need, fading from 2027 (ρ = 0.52) and absorbed by 2035. Negative bands drawn down from zero: Overbuild absorbed, Unconsented additions, Vacancy, Net replacement (census), Retirement villages (out of scope), Unexplained building. 2026-2050: 85.9 Mm².
+- This run: Completions = 0.945 x consents lagged 17 months (median consent-to-completion time 1.27-1.53 yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building indicators). Pipeline years 2026, 2027: building observed (consents to July 2026); the part above modelled need fades from 2028 (ρ = 0.43) and is absorbed by 2035. 2026 population: Stats NZ ERP nowcast. Negative bands drawn down from zero: Overbuild absorbed, Unconsented additions, Vacancy, Net replacement (census), Retirement villages (out of scope), Unexplained building. 2026-2050: 81.5 Mm².
 
 ### Fig2_reference_carbon
 
@@ -18,7 +18,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig2_reference_carbon.png`
 - Data: `data/baseline/bands_annual.csv`, `data/baseline/annual_by_material.csv`, `data/baseline/annual_by_stage.csv`
-- This run: 2026-2050: 20,615 kt CO₂e; (d) the demand column: positive bands stacked to 22,092 kt, negative bands outlined, hanging down to the total.
+- This run: 2026-2050: 19,761 kt CO₂e; (d) the demand column: positive bands stacked to 22,184 kt, negative bands outlined, hanging down to the total.
 
 ### Fig3_reference_boundaries
 
@@ -26,7 +26,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig3_reference_boundaries.png`
 - Data: `data/aesa/annual.csv`, `data/montecarlo/annual_REF.csv`, `data/montecarlo/draws_REF.csv`, `data/baseline/projection.json`
-- This run: Cumulative 2026-2050 20,615 kt (LoE AR 4.63, AtP 18.5); Monte Carlo 95% interval 14,353-27,415 kt (2.5th-97.5th percentile of the cumulative carbon of the draws); committed after 2050 7,884-8,616 kt: C1-C4 4,687 kt (2025 factors) and B2/B4 after 2050 3,197 kt (2050 factors held) to 3,929 kt (2025 factors).
+- This run: Cumulative 2026-2050 19,761 kt (LoE AR 4.46, AtP 17.8); Monte Carlo 95% interval 13,665-26,584 kt (2.5th-97.5th percentile of the cumulative carbon of the draws); committed after 2050 7,502-8,220 kt: C1-C4 4,410 kt (2025 factors) and B2/B4 after 2050 3,091 kt (2050 factors held) to 3,810 kt (2025 factors).
 
 ### Fig4_pathways
 
@@ -34,7 +34,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig4_pathways.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
-- This run: (a) Cumulative LoE AR: REF 4.63, pathway-moderate 3.39, pathway-ambitious 2.45, TL 0.98. (b-d) Reference 20,615 kt -> Moderate Pathway 15,073 kt, Ambitious Pathway 10,920 kt, Theoretical Limit 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.
+- This run: (a) Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00. (b-d) Reference 19,761 kt -> Moderate Pathway 14,302 kt, Ambitious Pathway 10,267 kt, Theoretical Limit 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.
 
 ### Fig5_reduction_by_demand
 
@@ -42,7 +42,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig5_reduction_by_demand.png`
 - Data: `data/pathways/bands.csv`, `data/pathways/runs.csv`
-- This run: Reduction vs the Reference (kt): Moderate Pathway 5,542, Ambitious Pathway 9,694, Theoretical Limit 16,257. Negative band reductions (outlined): Overbuild absorbed -132, -249, -481; Unconsented additions -109, -199, -331 kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.
+- This run: Reduction vs the Reference (kt): Moderate Pathway 5,460, Ambitious Pathway 9,494, Theoretical Limit 15,339. Negative band reductions (outlined): 2026 overbuild +9, +17, -337; Overbuild absorbed -194, -365, -720; Unconsented additions -255, -465, -764 kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.
 
 ### Fig6_solution_space
 
@@ -50,7 +50,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig6_solution_space.png`
 - Data: `data/pathways/solution_space.csv`, `data/pathways/backcast.json`, `data/pathways/runs.csv`
-- This run: LoE AR = [1,421 + 19,194 (1 - x)(1 - y)] / 4,451 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.319 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.250 lies below the floor, so the AtP contour is outside the plotted square (y = 101.6% at x = 0). Axes -5% to 100%.
+- This run: LoE AR = [1,207 + 18,554 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.5% at x = 0). Axes -5% to 100%.
 
 ### Fig7_shapley_levers
 
@@ -58,7 +58,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig7_shapley_levers.png`
 - Data: `data/pathways/shapley.csv`
-- This run: Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL); standalone effects in ED7. The TL dots are Shapley values within the TL game, so they include interactions at the limit (L5 with L4). Sum over levers (= Reference - Pathway / TL, exact): moderate 5,542 kt, ambitious 9,694 kt, tl 16,257 kt; 512 subsets per game. Strategy-level Shapley values (Moderate / Ambitious; 8 subsets): S1 Avoid 3,531 / 6,152 kt; S2 Switch 1,435 / 2,505 kt; S3 Improve 575 / 1,038 kt.
+- This run: Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL); standalone effects in ED7. The TL dots are Shapley values within the TL game, so they include interactions at the limit (L5 with L4). Sum over levers (= Reference - Pathway / TL, exact): moderate 5,460 kt, ambitious 9,494 kt, tl 15,339 kt; 512 subsets per game. Strategy-level Shapley values (Moderate / Ambitious; 8 subsets): S1 Avoid 3,498 / 6,060 kt; S2 Switch 1,431 / 2,482 kt; S3 Improve 530 / 952 kt.
 
 ### Fig8_uncertainty
 
@@ -66,7 +66,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig8_uncertainty.png`
 - Data: `data/sensitivity/tornado.csv`, `data/sensitivity/planetary_boundary.csv`, `data/pathways/montecarlo_draws.csv`, `data/pathways/montecarlo_conditional_tl.json`, `data/baseline/scenarios.json`, `data/aesa/results.json`
-- This run: (a) Reference LoE AR 4.631; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = 0.552 (Wilson 0.538-0.566; n = 5,000); threshold 6.652 M (95% CI 6.648-6.655 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
+- This run: (a) Reference LoE AR 4.464; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = 0.499 (Wilson 0.485-0.513; n = 5,000); threshold 6.614 M (95% CI 6.611-6.616 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
 ## Extended Data (paper_extended/)
 
@@ -107,7 +107,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_extended/ED5_pathways_annual.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
-- This run: Cumulative LoE AR: REF 4.63, pathway-moderate 3.39, pathway-ambitious 2.45, TL 0.98.
+- This run: Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00.
 
 ### ED6_waterfalls_by_demand_band
 
@@ -115,7 +115,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_extended/ED6_waterfalls_by_demand_band.png`
 - Data: `data/pathways/waterfall.csv`
-- This run: Moderate: Reference 20,615 kt -> Moderate Pathway 15,073 kt -> TL 4,358 kt; Ambitious: Reference 20,615 kt -> Ambitious Pathway 10,920 kt -> TL 4,358 kt; budgets AR 4,451 kt, AtP 1,113 kt. Steps in PAS 2080 hierarchy order; each step is credited with what remains after higher-priority measures. Order-free Shapley values in Fig7. Outlined segments: reduction in credits from re-used dwellings (vacancy released, overbuild absorbed, re-occupation, unconsented additions), valued at the new-dwelling size they displace.
+- This run: Moderate: Reference 19,761 kt -> Moderate Pathway 14,302 kt -> TL 4,423 kt; Ambitious: Reference 19,761 kt -> Ambitious Pathway 10,267 kt -> TL 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 hierarchy order; each step is credited with what remains after higher-priority measures. Order-free Shapley values in Fig7. Outlined segments: reduction in credits from re-used dwellings (vacancy released, overbuild absorbed, re-occupation, unconsented additions), valued at the new-dwelling size they displace.
 
 ### ED7_single_levers
 
@@ -130,7 +130,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_extended/ED8_tl_shapley_indicators.png`
 - Data: `data/pathways/shapley.csv`, `data/pathways/theoretical_limit.json`
-- This run: TL re-occupies 117,044 released dwellings (attributed TL1 0, TL2 117,044, in proportion R1:R2). (c) The vacancy parameter falls to 0 by 2035 (TL2); the physical (implied) vacancy falls as the released stock is re-occupied over 2027-2050.
+- This run: TL re-occupies 162,612 released dwellings (attributed TL1 0, TL2 116,869, in proportion R1:R2). (c) The vacancy parameter falls to 0 by 2035 (TL2); the physical (implied) vacancy falls as the released stock is re-occupied over 2027-2050.
 
 ### ED9_replacement_variants
 
@@ -177,7 +177,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `supplementary/SF3_conditional_tl.png`
 - Data: `data/pathways/montecarlo_conditional_tl.csv`, `data/pathways/montecarlo_conditional_tl.json`
-- This run: P(within AR) = 0.552 (Wilson 0.538-0.566); (b) threshold 6.65 M (95% CI 6.65-6.66 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
+- This run: P(within AR) = 0.499 (Wilson 0.485-0.513); (b) threshold 6.61 M (95% CI 6.61-6.62 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
 ### SF4_lambda_sweep
 
@@ -233,7 +233,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/calibration/D04_household_formation.png`
 - Data: `data/figure_source/D04_household_formation.json`
-- This run: Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.885–0.889 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024–2025 faint (consent-derived estimates, no census check); projection annual, faded, from 2026; the line is the net of the two parts. A negative part (household-size change, where households grow larger) is drawn as an outlined segment hanging from the top of the stack, so each column ends at its net total (short tick).
+- This run: Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing supply meets migration). b: households per previous-year consent vary before 2019 and are 0.654–1.157 from 2019: these years are estimated from consents and are not independent evidence. c: history one column per census interval (interval means; households census-anchored at both ends), stacked from population growth and from household-size change; 2024–2025 faint (consent-derived estimates, no census check); projection annual, faded, from 2026; the line is the net of the two parts. A negative part (household-size change, where households grow larger) is drawn as an outlined segment hanging from the top of the stack, so each column ends at its net total (short tick).
 
 ### D05_stock_and_vacancy
 
@@ -257,7 +257,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/calibration/D07_net_replacement_rate.png`
 - Data: `data/figure_source/D07_net_replacement_rate.json`
-- This run: Net replacement rate (demolition net of unconsented additions). Long run 1991–2023: 0.101% per year; 2018–23: 0.312% per year. Each step is one intercensal interval; the 2018–23 step is a single interval. Negative values mean the stock grew by more than consented new building, i.e. more dwellings appeared through conversions and unconsented additions than were demolished. Very High: the interval-length-weighted OLS trend of the census-interval rates 1991–2023, rate = -0.221894 + 1.1097e-04 × year (0.294% in 2026, 0.560% in 2050).
+- This run: Net replacement rate (demolition net of unconsented additions). Long run 1991–2023: 0.059% per year; 2018–23: 0.173% per year. Each step is one intercensal interval; the 2018–23 step is a single interval. Negative values mean the stock grew by more than consented new building, i.e. more dwellings appeared through conversions and unconsented additions than were demolished. Very High: the interval-length-weighted OLS trend of the census-interval rates 1991–2023, rate = -0.121385 + 6.0725e-05 × year (0.164% in 2026, 0.310% in 2050).
 
 ### D08_dwelling_space
 
@@ -313,11 +313,11 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/validation/D14_hindcast.png`
 - Data: `data/figure_source/D14_hindcast.json`, `data/baseline/validation.json`
-- This run: Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the information available then; errors at the end of each window, vacancy on the consistent definition unless noted. d: consents observed January–July 2026 against the model, which uses no 2026 data.
+- This run: Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the information available then; errors at the end of each window, vacancy on the consistent definition unless noted. d: building of the first year the run without 2026 data models, observed in the pipeline (consents lagged), against that run.
 
 ### D15_reality_checks
 
-**Projection vs the 1991-2025 range and the 2026 -> 2027 handover**
+**Projection vs the 1991-2025 range and the observed -> model handover**
 
 - Files: `diagnostics/validation/D15_reality_checks.png`
 - Data: `data/figure_source/D15_reality_checks.json`
@@ -339,7 +339,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/boundaries/D21_fan_and_boundaries.png`
 - Data: `data/figure_source/D21_fan_and_boundaries.json`
-- This run: Reference. AR base window 2016–2025 at 2025 factors, soil only on non-replacement floor area (as the projection); the thin history line is joined to the 2026 Monte Carlo median. Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th–95th within 10.0% of the median in every year.
+- This run: Reference. AR base window 2016–2025 at 2025 factors, soil only on non-replacement floor area (as the projection); the thin history line is joined to the 2026 Monte Carlo median. Boundary bands: AR varies with the NZ population of each draw and its AR base (recomputed from the draw's 2025 carbon factors), AtP with population only; AR 5th–95th within 9.9% of the median in every year.
 
 ### D22_boundaries
 
@@ -347,7 +347,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/boundaries/D22_boundaries.png`
 - Data: `data/figure_source/D22_boundaries.json`
-- This run: 2 °C carrying capacity (Bjørn & Hauschild 2015). Log axis: the AtP boundary is 25.0% of the AR boundary in every year: both scale with P_NZ(t) / P_W(t) (static design), so their ratio is constant.
+- This run: 2 °C carrying capacity (Bjørn & Hauschild 2015). Log axis: the AtP boundary is 25.1% of the AR boundary in every year: both scale with P_NZ(t) / P_W(t) (static design), so their ratio is constant.
 
 ### D23_annual_loe
 
@@ -371,7 +371,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/boundaries/D25_annual_carbon_by_band.png`
 - Data: `data/figure_source/D25_annual_carbon_by_band.json`
-- This run: Reference, median population; positive bands stacked up from zero, negative bands (overbuild absorbed, unconsented additions) down from zero; the black line is the net annual carbon. Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 25.0% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
+- This run: Reference, median population; positive bands stacked up from zero, negative bands (overbuild absorbed, unconsented additions) down from zero; the black line is the net annual carbon. Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 25.1% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
 
 ### D26_cumulative_carbon_by_band
 
@@ -379,7 +379,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/boundaries/D26_cumulative_carbon_by_band.png`
 - Data: `data/figure_source/D26_cumulative_carbon_by_band.json`
-- This run: Reference, median population; boundaries cumulated from 2026; positive bands stacked up from zero, negative bands down from zero; the black line is the net cumulative carbon. Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 25.0% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
+- This run: Reference, median population; boundaries cumulated from 2026; positive bands stacked up from zero, negative bands down from zero; the black line is the net cumulative carbon. Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 25.1% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
 
 ### D27_variants_vs_boundaries
 
@@ -387,7 +387,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/boundaries/D27_variants_vs_boundaries.png`
 - Data: `data/figure_source/D27_variants_vs_boundaries.json`
-- This run: The boundaries are the same in every variant (same population path). Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 25.0% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
+- This run: The boundaries are the same in every variant (same population path). Boundaries: 2 °C carrying capacity (Bjørn & Hauschild 2015), SOS 6.81e+12 and I_glob 5.58e+13 kg CO₂e per year; AR: Horup et al. 2025 Eq. 1 (base 2016–2025); AtP: Hjalsted et al. 2021 Eqs. 5–6 (GDP per capita, PPP, 2024); AtP is 25.1% of AR in every year (static design). Carbon: construction (A1–A5 and soil) plus maintenance (B2, B4) occurring each year, buildings built from 2026; later events and C1–C4 are committed after 2050; A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025.
 
 ## Diagnostics: pathways (diagnostics/pathways/)
 
@@ -419,7 +419,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/pathways/D32_tl_staircase.png`
 - Data: `data/pathways/runs.csv`, `data/pathways/theoretical_limit.json`
-- This run: TL re-occupies R = 117,044 released dwellings (TL1 0, TL2 117,044) at a share s = 0.330 of need (G+ 354,466).
+- This run: TL re-occupies R = 162,612 released dwellings (TL1 0, TL2 116,869) at a share s = 0.482 of need (G+ 337,178).
 
 ### D33_ordering_checks
 
@@ -427,7 +427,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/pathways/D33_ordering_checks.png`
 - Data: `data/pathways/ordering_checks.json`, `data/pathways/lever_annual.csv`
-- This run: Native-parameter ordering Reference >= Moderate >= Ambitious >= TL: 0 violations (per lever, typology and year). Cumulative carbon ordering holds for every lever. Annual-carbon reversals (timing only, not a STOP): L1 ambitious>=tl in 2039-2043 (max 64 kt); L2 ambitious>=tl in 2031-2031 (max 15 kt).
+- This run: Native-parameter ordering Reference >= Moderate >= Ambitious >= TL: 0 violations (per lever, typology and year). Cumulative carbon ordering holds for every lever. Annual-carbon reversals (timing only, not a STOP): L2 ambitious>=tl in 2030-2033 (max 173 kt); L3 reference>=moderate in 2027-2027 (max 0 kt); L3 moderate>=ambitious in 2027-2027 (max 0 kt); L3 ambitious>=tl in 2027-2033 (max 140 kt); L4 reference>=moderate in 2027-2027 (max 0 kt); L4 moderate>=ambitious in 2027-2027 (max 0 kt); L4 ambitious>=tl in 2027-2032 (max 45 kt); L5 reference>=moderate in 2027-2027 (max 0 kt); L5 moderate>=ambitious in 2027-2027 (max 0 kt); L5 ambitious>=tl in 2027-2033 (max 141 kt); L6 ambitious>=tl in 2029-2033 (max 145 kt); L7 ambitious>=tl in 2029-2034 (max 158 kt); L8 ambitious>=tl in 2029-2033 (max 118 kt); L9 ambitious>=tl in 2029-2033 (max 122 kt).
 
 ### D34_tl_dwellings
 
@@ -475,7 +475,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `diagnostics/montecarlo/D39_pathway_mc.png`
 - Data: `data/pathways/montecarlo_summary.csv`, `data/pathways/montecarlo_annual.csv`
-- This run: P(cumulative LoE AR <= 1): REF 0.000, pathway_moderate 0.000, pathway_ambitious 0.000, TL 0.552, TL_from2027 0.981.
+- This run: P(cumulative LoE AR <= 1): REF 0.000, pathway_moderate 0.000, pathway_ambitious 0.000, TL 0.499, TL_from2027 0.978.
 
 ## Diagnostics: sensitivity (diagnostics/sensitivity/)
 

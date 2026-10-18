@@ -1,0 +1,19 @@
+{
+ "adopted_lag_months": 17,
+ "mean_abs_error_pct": {
+  "long run": {
+   "0": 15.17310597926386,
+   "17": 8.246392882075648
+  },
+  "recent interval": {
+   "0": 10.820455950638392,
+   "17": 9.134175866651729
+  }
+ },
+ "adopted_worse_by_method": {
+  "long run": false,
+  "recent interval": false
+ },
+ "stop": false,
+ "rule": "STOP if the adopted lag has the larger mean absolute error in every rate method"
+}

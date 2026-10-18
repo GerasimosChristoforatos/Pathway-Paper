@@ -419,8 +419,10 @@ def d09():
     yh, fy = d['years_hist'], d['forecast_years']
     fig, ax = plt.subplots(figsize=S.figsize('double', 66))
     ax.plot(yh, d['cumulative_floor_area_hist'].values / M6, color=S.INK,
-            label=f"History (consents timed as completions × {d['built_factor']:.2f}, completion lag weight "
-                  f"{d['lag_w']:.2f})")
+            label=(f"History (completions = consents lagged {int(d['lag_months'])} months × {d['built_factor']:.3f})"
+                   if int(d.get('lag_months', 0) or 0) else
+                   f"History (consents timed as completions × {d['built_factor']:.2f}, completion lag weight "
+                   f"{d['lag_w']:.2f})"))
     _band(ax, fy, d['cumulative_floor_area_5th'] / M6, d['cumulative_floor_area_95th'] / M6,
           'Population 5th–95th percentile (other inputs at the Reference)')
     ax.plot(d['projection_years'], d['cumulative_floor_area_50th'] / M6, label='Reference projection', **_ref())

@@ -8,23 +8,34 @@
    "ylabel": "Cut in 2027-2050 carbon per m\u00b2 (A1-A5, soil, B2/B4) vs the Reference (%)",
    "year_min": null,
    "year_max": null
+  },
+  {
+   "title": "LoE AR",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
   }
  ],
  "texts": [
   "$\\mathdefault{0}$",
   "$\\mathdefault{100}$",
-  "$\\mathdefault{120}$",
   "$\\mathdefault{20}$",
   "$\\mathdefault{40}$",
   "$\\mathdefault{60}$",
   "$\\mathdefault{80}$",
-  "2026 (observed) alone emits 1,421 kt = 1.28 \u00d7 the 2026\u20132050 AtP budget",
+  "$\\mathdefault{\u221220}$",
+  "2026 (observed) alone emits 1,207 kt = 1.08 \u00d7 the 2026\u20132050 AtP budget",
+  "AR = 1",
   "Ability to pay (AtP)",
   "Acquired rights (AR)",
   "Ambitious",
+  "Ambitious Pathway  2.32",
+  "AtP (0.25)",
   "Boundary exceeded (above AR)",
   "Cut in 2027-2050 carbon per m\u00b2 (A1-A5, soil, B2/B4) vs the Reference (%)",
   "Cut in 2027-2050 floor area vs the Reference (%)",
+  "LoE AR",
   "LoE AR 1.25",
   "LoE AR 1.5",
   "LoE AR 2",
@@ -33,16 +44,20 @@
   "LoE AR 4",
   "Moderate",
   "Moderate / Ambitious Pathway",
-  "Net-negative carbon per m\u00b2",
+  "Moderate Pathway  3.23",
+  "Plane floor (2026 observed)  0.27",
+  "Plane floor (ruler)",
+  "Reference  4.46",
+  "Reference (ruler)",
   "S1 Avoid",
   "S2 Switch",
   "S3 Improve",
   "Theoretical Limit",
+  "Theoretical Limit  1.00",
   "Within AR only (between AtP and AR)",
-  "Within both budgets (below AtP)",
-  "net-negative carbon per m\u00b2 (carbon-storing construction)"
+  "Within both budgets (below AtP)"
  ],
- "note": "LoE AR = [1,421 + 19,194 (1 - x)(1 - y)] / 4,451 kt; C_2026 = the 2026 cohort's emissions in the window. Lowest LoE AR at x or y = 100%: 0.32. AtP curve y = 1 - k / (1 - x), above y = 100% for every x (y = 101.6% at x = 0): the AtP budget needs net-negative carbon per m\u00b2 of 2027-2050 construction; y-axis to 110%.",
+ "note": "LoE AR = [1,207 + 18,554 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.5% at x = 0). Axes -5% to 100%.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,
@@ -51,7 +66,8 @@
  "white_segment_edges": 0,
  "source": [
   "pathways/solution_space.csv",
-  "pathways/backcast.json"
+  "pathways/backcast.json",
+  "pathways/runs.csv"
  ],
  "atp_linestyles": [
   "dotted"

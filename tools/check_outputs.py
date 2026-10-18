@@ -21,7 +21,7 @@ STORYLINE = re.compile(r'storyline|S2-held|S3-10-trend|damped mix trend|intensif
 # every pathway and v3 output must exist after a run
 PATHWAYS_OUTPUTS = [layout.data(f'pathways/{f}', frozen=False) for f in (
     'runs.csv', 'annual.csv', 'bands.csv', 'bands_annual.csv', 'shapley.csv', 'shapley_subsets.csv', 'backcast.json',
-    'solution_space.csv', 'levers.json', 'theoretical_limit.json', 'lambda_sweep.csv', 'waterfall.csv',
+    'solution_space.csv', 'levers.json', 'theoretical_limit.json', 'lambda_sweep.csv', 'waterfall.csv', 'waterfall_tl_from_reference.csv',
     'lever_annual.csv', 'reoccupation_log.csv', 'ordering_checks.json', 'montecarlo_draws.csv',
     'montecarlo_summary.csv', 'montecarlo_annual.csv', 'montecarlo_draw_rules.json', 'montecarlo_importance.csv',
     'montecarlo_fits.csv', 'montecarlo_conditional_tl.csv', 'montecarlo_conditional_tl.json')] + [
@@ -53,20 +53,31 @@ def pathways_missing():
 
 
 def unplanned_figures():
-    """Figure files in outputs/paper_main/, paper_extended/ or diagnostics/ that figure_plan.py does not plan."""
+    """Figure files in outputs/paper_main/, paper_extended/, supplementary/ or diagnostics/ that figure_plan.py does not
+    plan."""
     planned = {os.path.relpath(layout.figure(f), layout.OUT) for _, f, _ in FP.all_figures()}
     found = set()
-    for base in (layout.PAPER_MAIN, layout.PAPER_EXTENDED, layout.DIAGNOSTICS):
+    for base in (layout.PAPER_MAIN, layout.PAPER_EXTENDED, layout.SUPPLEMENTARY, layout.DIAGNOSTICS):
         for d, _, fs in os.walk(base):
             found |= {os.path.relpath(os.path.join(d, os.path.splitext(f)[0]), layout.OUT)
-                      for f in fs if f.endswith(('.png', '.pdf'))}
+                      for f in fs if f.endswith('.png')}
     return sorted(found - planned)
+
+
+def pdf_files():
+    """MODEL v3.3.1: figures are PNG only; any PDF under the profile's output tree is an error."""
+    return sorted(os.path.relpath(os.path.join(d, f), layout.OUT) for d, _, fs in os.walk(layout.OUT)
+                  for f in fs if f.lower().endswith('.pdf'))
 
 
 def main():
     missing = pathways_missing()
     if missing:
         print(f'check_outputs: pathways outputs missing: {missing}')
+        sys.exit(1)
+    pdfs = pdf_files()
+    if pdfs:
+        print(f'check_outputs: PDF files present (PNG only since MODEL v3.3.1): {pdfs[:10]}')
         sys.exit(1)
     extra = unplanned_figures()
     if extra:

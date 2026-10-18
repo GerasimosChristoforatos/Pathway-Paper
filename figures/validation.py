@@ -228,21 +228,29 @@ def d14():
                frameon=False)
     c = v['check_2026']
     a = ax[3]
+    pipeline_mode = c.get('status') == 'pipeline'
     if c.get('status') == 'observed':
         a.bar(['Observed', 'Model'], [c['observed_ytd'], c['model_expected_ytd']], color=[S.INK, '#BDBDBD'], width=0.6)
+    elif pipeline_mode and 'observed_pipeline_built_all' in c:      # MODEL v4.0.0: completion lag
+        a.bar(['Observed\n(pipeline)', 'Model'], [c['observed_pipeline_built_all'], c['model_built_all']],
+              color=[S.INK, '#BDBDBD'], width=0.6)
+    if 'ratio_observed_to_model' in c:
         a.set_ylim(0, a.get_ylim()[1] * 1.15)
         a.text(0.5, 0.97, f"ratio {c['ratio_observed_to_model']:.2f}", transform=a.transAxes, ha='center', va='top',
                fontsize=S.FONT_SMALL)
-    a.set_ylabel('Dwellings consented, January–July 2026')
+    a.set_ylabel(f"Dwellings completed, {c['target_year']}" if pipeline_mode else
+                 'Dwellings consented, January–July 2026')
     P.thousands(a.yaxis)
     a.grid(axis='x', visible=False)
-    P.panel(a, 'd', '2026 check')
+    P.panel(a, 'd', f"{c['target_year']} check" if pipeline_mode else '2026 check')
     fig.tight_layout(rect=(0, 0.07, 1, 1))
     S.save_figure(fig, fid,
                   note='Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the '
                        'information available then; errors at the end of each window, vacancy on the consistent '
-                       'definition unless noted. d: consents observed January–July 2026 against the model, which '
-                       'uses no 2026 data.',
+                       'definition unless noted. d: '
+                       + ('building of the first year the run without 2026 data models, observed in the pipeline '
+                          '(consents lagged), against that run.' if pipeline_mode else
+                          'consents observed January–July 2026 against the model, which uses no 2026 data.'),
                   source=_src(fid))
 
 
@@ -285,8 +293,9 @@ def d15():
     counts, _, _ = a.hist(chg, bins=14, **S.fill('#BDBDBD'))
     a.set_ylim(0, a.get_ylim()[1] * 1.45)                 # room for the legend above the bars
     ytop = 1.1 * float(np.max(counts))                    # the two markers stop below the legend
-    a.vlines(h['step_2026_2027_pct'], 0, ytop, color=S.ACCENT_ORANGE, lw=S.LW_BOLD,
-             label=f"2026 → 2027 handover (observed → model): {h['step_2026_2027_pct']:+.1f}%")
+    a.vlines(h['step_pct'], 0, ytop, color=S.ACCENT_ORANGE, lw=S.LW_BOLD,
+             label=f"{h['last_observed_year']} → {h['first_model_year']} handover (observed → model): "
+                   f"{h['step_pct']:+.1f}%")
     a.vlines(h['hist_median_pct'], 0, ytop, color=S.INK, lw=S.LW, linestyles='--',
              label=f"Median year, 1992–2025: {h['hist_median_pct']:+.1f}%")
     a.set_xlabel('Change from the previous year (%)')

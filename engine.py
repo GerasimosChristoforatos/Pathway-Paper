@@ -294,12 +294,15 @@ def absorb_overbuild(excess, w, need):
 
 def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', absorption=0.0, absorb_w=None,
                   excess=None):
-    """Near-term market excess (v1.1 rule). E: forward() result WITHOUT a join
-    (index 0 = 2025, 1 = 2026). building_2026: observed dwellings built in 2026
-    (all categories).
-      excess_2026 = building_2026 - requirement_2026
-      gap_ref     = building_2026 - requirement_2027  (gap_ref='2027'; '2026' = sensitivity)
-      excess_t    = gap_ref x rho^(t - 2026), t >= 2027
+    """Near-term market excess (v1.1 rule; MODEL v4.0.0: n observed years). E: forward() result WITHOUT a join
+    (index 0 = 2025, 1 = 2026). building_2026: observed dwellings built (all categories) in the first projection
+    year, or a sequence over the n observed (pipeline) years 2026 .. 2025 + n (MODEL v4.0.0: completions from consents
+    already issued, projection.COMPLETION_LAG_MONTHS):
+      excess_t    = building_t - requirement_t,          t = 2026 .. 2025 + n (observed)
+      gap_ref     = building_last - requirement_(last+1) (gap_ref='2027': the requirement of the year after the last
+                    observed year; '2026' = sensitivity: of the last observed year)
+      excess_t    = gap_ref x rho^(t - last),             t > last
+    n = 1 is the v1.1-v3.3 rule exactly (gap_ref = building_2026 - requirement_2027, rho^(t - 2026)).
     mode 'redevelopment': the excess is stock-neutral extra replacement
       of existing stock (returned as redev = join; no soil, no absorption, no payback);
     mode 'surplus': the excess adds to the stock;
@@ -314,15 +317,19 @@ def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', a
     R = requirement(E)
     n = len(R)
     k = np.arange(n)
-    gap = float(building_2026 - (R[2] if gap_ref == '2027' else R[1]))
+    b_obs = np.atleast_1d(np.asarray(building_2026, float))
+    m = len(b_obs)
+    gap = float(b_obs[-1] - (R[m + 1] if gap_ref == '2027' else R[m]))
     if excess is None:
         excess = np.zeros(n)
-        excess[1] = building_2026 - R[1]
-        excess[2:] = gap * rho ** (k[2:] - 1)
+        excess[1:m + 1] = b_obs - R[1:m + 1]
+        excess[m + 1:] = gap * rho ** (k[m + 1:] - m)
     else:
         excess = np.asarray(excess, float).copy()
-    info = dict(O26=float(building_2026), R26=float(R[1]), R27=float(R[2]), e26=float(excess[1]),
-                e27=gap, gap_ref=gap, rho=float(rho), mode=mode, excess=excess)
+    info = dict(O26=float(b_obs[0]), R26=float(R[1]), R27=float(R[2]), e26=float(excess[1]),
+                e27=gap, gap_ref=gap, rho=float(rho), mode=mode, excess=excess,
+                n_observed=m, O_obs=[float(x) for x in b_obs], R_obs=[float(x) for x in R[1:m + 1]],
+                e_obs=[float(x) for x in excess[1:m + 1]], R_next=float(R[m + 1]))
     if mode == 'redevelopment':
         return excess.copy(), dict(info, redev=excess.copy(), surplus=np.zeros(n), payback=np.zeros(n))
     if mode != 'surplus':

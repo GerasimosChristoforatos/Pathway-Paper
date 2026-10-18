@@ -153,7 +153,7 @@ def item_register():
          f"needed (EPS path {100 * ch['EPS']:+.1f}%)"),
         ('Sensitivities (item-level)', 'proxies held at 2025; NZ low-carbon-electricity items held at 2025; frozen '
          'technology (no decarbonisation, A4-A5 held); all in the default run '
-         '(outputs/data/baseline/sensitivity_one_at_a_time.csv, outputs/data/aesa/sensitivity.csv; figures ED1, ED4 and '
+         '(outputs/data/baseline/sensitivity_one_at_a_time.csv, outputs/data/aesa/sensitivity.csv; figures D16, D42 and '
          'D18). An earlier class-level mapping and its comparison runs were removed (history: CHANGELOG.md)',
          'DECISION (author)'),
     ]
@@ -270,8 +270,10 @@ TIMING_LIMITATIONS = [
     'the 2050 factors held), not a projection: the source paths end in 2050 and C1-C4 has no decarbonisation source.',
     'The repaint composition differs from the first coat but cannot be separated in the source file; repaints '
     'take the line\'s initial stage split (negligible: the paint path is the EPS proxy).',
-    'Completion rate 0.95: "Jones et al. 2024" is a citation to verify (TODO: confirm the reference before '
-    'submission).',
+    'Completion rate 0.945 and its band 0.93-0.96 rest on Auckland consents (Jones, Greenaway-McGrevy & Crow 2025), '
+    'applied nationally; the upper milestone is published only as ">95%" (0.96 is a stated edge).',
+    'The 17-month consent-to-completion lag is the midpoint of the Auckland median of 1.27-1.53 yr (Jones, '
+    'Greenaway-McGrevy & Crow 2025), applied nationally as one fixed lag (no distribution of build times).',
 ]
 
 
@@ -289,14 +291,19 @@ def register():
         ('Long-run net replacement window', f'{B.NET_REPLACEMENT_WINDOW[0]}-{B.NET_REPLACEMENT_WINDOW[1]}',
          'DATA: census private-dwelling counts and consents'),
         ('Demolition rate (split only)', f'{100 * B.DEMOLITION_RATE:.3f}%/yr', 'LITERATURE: BRANZ SR214'),
-        ('Completion rate', f'{B.COMPLETION_RATE:.2f} (band {B.COMPLETION_RATE_BAND[0]}-{B.COMPLETION_RATE_BAND[1]})',
-         'LITERATURE: bounds from Jones et al. 2024 (citation to verify)'),
-        ('Completion lag', f'{B.COMPLETION_LAG}', "DATA: Little's law W = L / lambda (a lower bound)"),
-        ('2026 overbuild rule', f'{B.OVERBUILD_RULE}: 2026 building observed ({B.NOWCAST_METHOD})',
+        ('Completion rate', f'{B.COMPLETION_RATE:.3f} (Monte Carlo uniform {B.COMPLETION_RATE_BAND[0]}-'
+         f'{B.COMPLETION_RATE_BAND[1]})',
+         'LITERATURE: completion milestones of Auckland consents (Jones, Greenaway-McGrevy & Crow 2025); midpoint'),
+        ('Completion lag', f'{B.COMPLETION_LAG_MONTHS} months (monthly; the same lag in history and projection)',
+         'LITERATURE: median consent-to-completion time 1.27-1.53 yr (Jones, Greenaway-McGrevy & Crow 2025); Stats NZ '
+         'Experimental building indicators consistent'),
+        ('2026 overbuild rule', f'{B.OVERBUILD_RULE}: building observed in the pipeline years (consents lagged '
+         f'{B.COMPLETION_LAG_MONTHS} months)' if B.COMPLETION_LAG_MONTHS else
+         f'{B.OVERBUILD_RULE}: 2026 building observed ({B.NOWCAST_METHOD})',
          'DATA (observed consents); method stated'),
-        ('2026 overbuild from 2027', f'gap vs the {B.OVERBUILD_GAP_REF} requirement, fading at rho; booked as '
-         f'{B.OVERBUILD_BOOKING}, absorbed by {B.OVERBUILD_ABSORPTION_END} (normalised logistic from '
-         f'{B.OVERBUILD_ABSORPTION_START})',
+        ('Overbuild after the observed years', f'gap vs the next year\'s requirement, fading at rho; booked as '
+         f'{B.OVERBUILD_BOOKING}, absorbed by {B.OVERBUILD_ABSORPTION_END} (normalised logistic from the last '
+         'observed year)',
          'THEORY: reversion to the equilibrium vacancy (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton '
          '1992; Gabriel & Nothaft 2001) fixes the direction, not the speed; 2035 the common RECC window; never / by '
          '2030 / by 2045, redevelopment booking and gap-vs-2026 as sensitivities'),
@@ -375,7 +382,6 @@ LIMITATIONS = [
     'The 2018 census empty-dwelling count has no quality rating (DataInfo+); the vacancy terms rely on it.',
     'The 2026 overbuild fades at the persistence estimated on the calibrated stock identity (rho), not on '
     'market cycles (an assumption).',
-    'W from Little\'s law is a lower bound on the completion lag.',
     'Retirement-village floor area is reported but out of carbon scope.',
 ]
 
@@ -500,17 +506,28 @@ def lines():
     L.append(f"| **Total** | **{b['floor_area_Mm2']:.2f}** | 100% | **{b['carbon_kt']:,.0f}** |")
     if nj and nj.get('mode') == 'market_excess':
         vs = vacancy_sentence(nj)
+        _py = nj.get('pipeline_years') or []
         L += ['', '### The 2026 overbuild rule', '',
-              f"2026 building is observed, not modelled: {nj['O26']:,.0f} dwellings = 0.95 x consents over the latest "
-              f"12 observed months (the year to July 2026; to be replaced by calendar 2026 when published). It "
-              f"exceeds the 2026 requirement by {nj['e26']:+,.0f}. From 2027 building stays above the requirement by "
-              f"gap_ref x rho^(t-2026), with gap_ref = building 2026 - requirement 2027 = {nj['gap_ref']:+,.0f} and "
-              f"rho = {nj['rho']:.2f} (the estimated persistence of departures from the calibrated identity). The "
-              f"2027 requirement is used because the 2026 requirement is depressed by the one-off 2026 population "
-              f"shortfall. The 2026 overbuild is STOCK-ADDING: the extra dwellings join the stock as additional vacant "
+              (f"Building in the pipeline years {', '.join(map(str, _py))} is observed, not modelled: completions = "
+               f"{nj['completion_rate']:.3f} x consents lagged {nj['completion_lag_months']} months (consents observed "
+               f"to {nj.get('consents_observed_to')}): "
+               + '; '.join(f"{y} {o:,.0f} dwellings, {e:+,.0f} above the requirement" for y, o, e in
+                           zip(_py, nj['O_obs'], nj['e_obs']))
+               + f". From {_py[-1] + 1} building stays above the requirement by gap_ref x rho^(t-{_py[-1]}), with "
+               f"gap_ref = building {_py[-1]} - requirement {_py[-1] + 1} = {nj['gap_ref']:+,.0f} and rho = "
+               f"{nj['rho']:.2f} (the estimated persistence of departures from the calibrated identity). "
+               if _py else
+               f"2026 building is observed, not modelled: {nj['O26']:,.0f} dwellings = {nj.get('completion_rate', 0.95):.3f} "
+               f"x consents over the latest 12 observed months (the year to July 2026; to be replaced by calendar 2026 "
+               f"when published). It exceeds the 2026 requirement by {nj['e26']:+,.0f}. From 2027 building stays above "
+               f"the requirement by gap_ref x rho^(t-2026), with gap_ref = building 2026 - requirement 2027 = "
+               f"{nj['gap_ref']:+,.0f} and rho = {nj['rho']:.2f} (the estimated persistence of departures from the "
+               f"calibrated identity). The 2027 requirement is used because the 2026 requirement is depressed by the "
+               f"one-off 2026 population shortfall. ")
+              + f"The 2026 overbuild is STOCK-ADDING: the extra dwellings join the stock as additional vacant "
               f"dwellings, soil carbon loss applies (new footprints) and removals stay on the path of the replacement "
               f"variant. The surplus is absorbed by {nj.get('absorption_end')}: the remaining surplus U(t) = C(t) "
-              f"(1 - w(t)), C the cumulative excess and w the normalised logistic of the levers (w(2026) = 0, "
+              f"(1 - w(t)), C the cumulative excess and w the normalised logistic (w = 0 up to the last observed year, "
               f"w >= 2035 = 1), and the absorbed part is built less (payback, capped at the year's building, any "
               f"shortfall carried). Market excess {nj.get('excess_2026_2050', 0.0):+,.0f} and absorbed "
               f"{-nj.get('absorbed_2026_2050', 0.0):+,.0f} dwellings over 2026-2050 "
@@ -633,6 +650,10 @@ def lines():
             L += ['', f"2026 check (model run without any observed-2026 input): observed consents Jan-Jul "
                       f"{c['observed_ytd']:,.0f} vs model {c['model_expected_ytd']:,.0f}; ratio "
                       f"{c['ratio_observed_to_model']:.2f}."]
+        elif c.get('status') == 'pipeline' and 'observed_pipeline_built_all' in c:
+            L += ['', f"Out-of-sample check (model run without 2026 data; completion lag {c['lag_months']} months): "
+                      f"{c['target_year']} building observed in the pipeline {c['observed_pipeline_built_all']:,.0f} "
+                      f"dwellings vs model {c['model_built_all']:,.0f}; ratio {c['ratio_observed_to_model']:.2f}."]
         if gap:
             r3 = [r for r in gap['rows'] if r['scenario'].startswith(N.SCENARIOS['REF'])][0]
             L += [f"Decomposition of the 2026 gap in the Reference ({r3['C26_estimate']}): "
@@ -648,11 +669,16 @@ def lines():
         req3 = r3['model'] + r3['scenario_adds']
         c = v['check_2026']
         L += ['', '## Finding: 2026 building runs well above the model\'s requirement', '',
-              f"Consents for January-July 2026 ({c['observed_ytd']:,.0f}) are {c['ratio_observed_to_model']:.2f} "
+              (f"With the {c['lag_months']}-month completion lag, 2026 completions come from consents issued before "
+               f"2026: observed 2026 building (consents lagged) is {r3['observed_implied']:,.0f} dwellings against a "
+               f"Reference requirement of {req3:,.0f} (gap {r3['observed_implied'] - req3:+,.0f})[^low], all of it "
+               f"pipeline; {c['target_year']} pipeline building is {c.get('ratio_observed_to_model', float('nan')):.2f} "
+               f"times what the Reference run without 2026 data implies. " if c.get('status') == 'pipeline' else
+               f"Consents for January-July 2026 ({c['observed_ytd']:,.0f}) are {c['ratio_observed_to_model']:.2f} "
               f"times what the Reference, run without any 2026 data, implies for those months. In "
               f"completions, observed-implied 2026 building is {r3['observed_implied']:,.0f} dwellings against a "
-              f"Reference requirement of {req3:,.0f} (gap {r3['observed_implied'] - req3:+,.0f})[^low]. "
-              f"Population does not explain it: population growth over the year to June 2026 fell short of the "
+              f"Reference requirement of {req3:,.0f} (gap {r3['observed_implied'] - req3:+,.0f})[^low]. ")
+              + f"Population does not explain it: population growth over the year to June 2026 fell short of the "
               f"projection, which lowers the requirement by {-r3['population']:,.0f}. The gap is building already "
               f"in the pipeline from 2025 ({r3['pipeline']:+,.0f}) plus 2026 consents above requirement "
               f"({r3['residual']:+,.0f}). Over 2018-2023 most building above household formation went to "
@@ -682,7 +708,8 @@ def lines():
                      f"below).")
         if 'handover' in rcj:
             h = rcj['handover']
-            L.append(f"- Handover 2026 -> 2027 (observed -> model, Reference): {h['step_2026_2027_pct']:+.1f}% in floor "
+            L.append(f"- Handover {h['last_observed_year']} -> {h['first_model_year']} (observed -> model, Reference): "
+                     f"{h['step_pct']:+.1f}% in floor "
                      f"area, against annual changes of {h['hist_min_pct']:+.1f}% to {h['hist_max_pct']:+.1f}% in "
                      f"1992-2025 (median {h['hist_median_pct']:+.1f}%).")
         L += ['', 'Notes: household size below the historical minimum is expected from Stats NZ\'s ageing projection '
@@ -705,12 +732,15 @@ def lines():
     A = [('DATA', 'Population: Stats NZ 2024-base projection percentiles; observed 2026 growth (DPE ERP)'),
          ('DATA', 'Household-size shape: Stats NZ 2018-base household projections, rebased on observed households'),
          ('DATA', 'Long-run net replacement: census private-dwelling counts and consents, 1991-2023'),
-         ('DATA', '2026 building: 0.95 x consents over the latest 12 observed months (dwellings and floor area; the '
-                  'observed 2026 typology mix weights the case-study factors inside the model)'),
+         ('DATA', (f'2026-2027 building: {BB.COMPLETION_RATE:.3f} x consents lagged {BB.COMPLETION_LAG_MONTHS} months '
+                   '(dwellings and floor area; the observed typology mix weights the case-study factors inside the '
+                   'model)') if BB.COMPLETION_LAG_MONTHS else
+                  f'2026 building: {BB.COMPLETION_RATE:.3f} x consents over the latest 12 observed months'),
          ('DATA', f'Typology mix (internal to the model): the {BB.MIX_HELD_WINDOW[0]}-{BB.MIX_HELD_WINDOW[1]} '
                   'consented average'),
          ('DATA', 'Dwelling size: consents 2023-2025; vacancy-rate parameter: the published 2023 census value'),
-         ('LITERATURE', f'Completion rate {BB.COMPLETION_RATE:.2f} (Jones et al. 2024; citation to verify)'),
+         ('LITERATURE', f'Completion rate {BB.COMPLETION_RATE:.3f} and lag {BB.COMPLETION_LAG_MONTHS} months (Jones, '
+                        'Greenaway-McGrevy & Crow 2025)'),
          ('LITERATURE', 'Demolition split 0.135%/yr (BRANZ SR214); total net replacement from census counts'),
          ('LITERATURE', 'Material carbon factors: 16 NZ case studies (Christoforatos & Pickering 2025)'),
          ('LITERATURE', f"Soil carbon loss 58.77 kg CO2e/m2 footprint, zero on the {N.BANDS['replacement']} and {N.BANDS['redevelopment']} bands "

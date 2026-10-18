@@ -1,0 +1,57 @@
+{
+ "figure": "ED2_census_replacement_rates",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "Net replacement (% of stock per year)",
+   "year_min": 1988.5,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0.0}$",
+  "$\\mathdefault{0.1}$",
+  "$\\mathdefault{0.2}$",
+  "$\\mathdefault{0.3}$",
+  "$\\mathdefault{0.4}$",
+  "$\\mathdefault{1980}$",
+  "$\\mathdefault{1990}$",
+  "$\\mathdefault{2000}$",
+  "$\\mathdefault{2010}$",
+  "$\\mathdefault{2020}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{2060}$",
+  "$\\mathdefault{\u22120.1}$",
+  "$\\mathdefault{\u22120.2}$",
+  "Demolition (BRANZ SR214)",
+  "High replacement",
+  "Long-run net rate 1991-2023",
+  "Low replacement",
+  "Net replacement (% of stock per year)",
+  "Reference",
+  "Very High replacement (trend continues)"
+ ],
+ "note": "Bars: census-interval rates from dwelling counts (net of unconsented additions); lines: the projection variants.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_outside": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "baseline/stock_identity_history.csv",
+  "figure_source/D07_net_replacement_rate.json"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

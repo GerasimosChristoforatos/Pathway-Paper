@@ -2,10 +2,10 @@
   "mode": "market_excess",
   "near_mode": "surplus",
   "gap_ref_basis": "2027",
-  "surplus_2026_2028": 21889.461527882646,
-  "limitation": "The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). The 2026 overbuild (market excess \u224827,500 dwellings over 2026-2050, of which \u224824,600 in 2026-2028) is absorbed by 2035 along the normalised logistic of the levers (\u224827,500 dwellings built less; implied vacancy peaks at 6.33% in 2028). Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, reversion of vacancy to its equilibrium rate, not the speed; 2035 is the common RECC adoption window of the model and the speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). The persistence rho = 0.52 describes how the flow deviation fades, not the payback of the stock.",
+  "surplus_2026_2028": 28917.845751336085,
+  "limitation": "The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). The 2026 overbuild (market excess \u224834,200 dwellings over 2026-2050, of which \u224830,300 in 2026-2028) is absorbed by 2035 along the normalised logistic of the levers (\u224834,200 dwellings built less; implied vacancy peaks at 6.63% in 2028). Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, reversion of vacancy to its equilibrium rate, not the speed; 2035 is the common RECC adoption window of the model and the speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). The persistence rho = 0.43 describes how the flow deviation fades, not the payback of the stock.",
   "vacancy": {
-    "peak": 0.06332387645560078,
+    "peak": 0.06631801358907308,
     "peak_year": 2028,
     "v_2050": 0.05387454644033862,
     "v_forward": 0.05387454644033866,
@@ -28,21 +28,45 @@
     "consistent_years": "1986-2023"
   },
   "redevelopment_sensitivity": {
-    "peak_removals": 23041.090364617223,
+    "peak_removals": 16194.145364617227,
     "peak_year": 2026,
-    "default_peak_removals": 6281.41495965741
+    "default_peak_removals": 3491.6600025366633
   },
-  "nowcast_method": "last_12_months",
-  "consents_2026": 40908.0,
-  "O26": 38862.6,
-  "R26": 22102.924595040186,
-  "R27": 28888.88873676696,
-  "e26": 16759.675404959813,
-  "gap_ref": 9973.711263233039,
-  "rho": 0.5180189643073912,
-  "overbuild_2026_dwellings_2026_2050": 1.1005853563575418e-11,
-  "excess_2026_2050": 27479.123839651176,
-  "absorbed_2026_2050": 27479.12383965116,
+  "nowcast_method": null,
+  "consents_2026": 33879.0,
+  "completion_lag_months": 17,
+  "completion_rate": 0.945,
+  "pipeline_years": [
+    2026,
+    2027
+  ],
+  "consents_observed_to": "2026-07-01",
+  "pipeline_consents": {
+    "2026": 33879.0,
+    "2027": 40908.0
+  },
+  "O_obs": [
+    32015.655,
+    38658.06
+  ],
+  "R_obs": [
+    19313.169637919436,
+    26207.201185599828
+  ],
+  "e_obs": [
+    12702.485362080562,
+    12450.85881440017
+  ],
+  "R_next": 26809.78503434405,
+  "O26": 32015.655,
+  "R26": 19313.169637919436,
+  "R27": 26207.201185599828,
+  "e26": 12702.485362080562,
+  "gap_ref": 11848.274965655946,
+  "rho": 0.4337502498590629,
+  "overbuild_2026_dwellings_2026_2050": -1.300889647740111e-11,
+  "excess_2026_2050": 34229.18430209701,
+  "absorbed_2026_2050": 34229.18430209702,
   "absorption_end": 2035,
   "scenario": "REF"
 }

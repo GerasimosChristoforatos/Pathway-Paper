@@ -36,7 +36,7 @@
   "Reference",
   "TL (Level 4)"
  ],
- "note": "Native-parameter ordering Reference >= Moderate >= Ambitious >= TL: 0 violations (per lever, typology and year). Cumulative carbon ordering holds for every lever. Annual-carbon reversals (timing only, not a STOP): L1 ambitious>=tl in 2039-2043 (max 64 kt); L2 ambitious>=tl in 2031-2031 (max 15 kt).",
+ "note": "Native-parameter ordering Reference >= Moderate >= Ambitious >= TL: 0 violations (per lever, typology and year). Cumulative carbon ordering holds for every lever. Annual-carbon reversals (timing only, not a STOP): L2 ambitious>=tl in 2030-2033 (max 173 kt); L3 reference>=moderate in 2027-2027 (max 0 kt); L3 moderate>=ambitious in 2027-2027 (max 0 kt); L3 ambitious>=tl in 2027-2033 (max 140 kt); L4 reference>=moderate in 2027-2027 (max 0 kt); L4 moderate>=ambitious in 2027-2027 (max 0 kt); L4 ambitious>=tl in 2027-2032 (max 45 kt); L5 reference>=moderate in 2027-2027 (max 0 kt); L5 moderate>=ambitious in 2027-2027 (max 0 kt); L5 ambitious>=tl in 2027-2033 (max 141 kt); L6 ambitious>=tl in 2029-2033 (max 145 kt); L7 ambitious>=tl in 2029-2034 (max 158 kt); L8 ambitious>=tl in 2029-2033 (max 118 kt); L9 ambitious>=tl in 2029-2033 (max 122 kt).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

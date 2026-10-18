@@ -154,9 +154,12 @@ of all dwellings built (ratio of sums 2016–2025, 5.6%). RV floor area is
 reported separately, out of scope. Realised dwelling size = floor area /
 dwellings, held per typology at its 2023–2025 average.
 
-Dwellings built = 0.95 × consents (completion rate; Jones et al. 2024 bounds
-0.92–0.96). No completion lag in the adopted run (Little's-law lag is a
-sensitivity).
+Dwellings built (MODEL v4.0.0) = 0.945 × consents lagged 17 months, monthly,
+aggregated to calendar years (Jones, Greenaway-McGrevy & Crow 2025: completion
+milestones 93% / >95%, median completion time 1.27–1.53 yr). The same lag is used
+in the history and the projection; projection years whose lagged months are all
+observed (2026–2027) are pipeline years, observed in every run. Sensitivities:
+lag 0 / 15 / 19 months, completion rate 0.93 / 0.96.
 
 ### 4.2 Population and households (history)
 

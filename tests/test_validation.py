@@ -7,6 +7,7 @@ import validation
 
 
 def test_check_2026_pending_and_seasonal(B):
+    B = dict(B, lag_months=0)                       # MODEL v4.0.0: the seasonal check of the run without the lag
     idx = pd.date_range('2010-01-01', '2025-12-01', freq='MS')
     season = np.tile(np.arange(1, 13), len(idx) // 12)            # month m has weight m
     s = pd.Series(season * 100.0, index=idx)

@@ -76,7 +76,7 @@ def d18():
                        'Reference. Rows that do not enter a principle (e.g. the GDP measure for AR) show no change. '
                        'Percentages are relative to carbon 2026–2050 (time-resolved accounting); fixed absolute terms '
                        'such as soil carbon loss therefore show larger percentage effects than under whole-life '
-                       'accounting. The largest effects on the AR and AtP LoE, grouped: Extended Data ED4 (carbon: ED1).',
+                       'accounting. The largest effects on the AR and AtP LoE, grouped: D42 (carbon: D16).',
                   source=src)
 
 

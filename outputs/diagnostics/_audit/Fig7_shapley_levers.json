@@ -1,0 +1,57 @@
+{
+ "figure": "Fig7_shapley_levers",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e; exact Shapley value)",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "0",
+  "1,000",
+  "1,500",
+  "2,000",
+  "2,500",
+  "3,000",
+  "3,500",
+  "500",
+  "Ambitious (Level 3)",
+  "L1 Household size",
+  "L2 Vacancy rate",
+  "L3 Building lifetime",
+  "L4 Extra space",
+  "L5 Occupancy density",
+  "L6 Brownfield-first development",
+  "L7 Soil-aware planning",
+  "L8 Material carbon efficiency",
+  "L9 Construction-stage carbon",
+  "Moderate (Level 2)",
+  "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e; exact Shapley value)",
+  "S1 Avoid",
+  "S2 Switch",
+  "S3 Improve",
+  "Theoretical limit (Level 4)"
+ ],
+ "note": "Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL); standalone effects in ED7. The TL dots are Shapley values within the TL game, so they include interactions at the limit (L5 with L4). Sum over levers (= Reference - Pathway / TL, exact): moderate 5,460 kt, ambitious 9,494 kt, tl 15,339 kt; 512 subsets per game. Strategy-level Shapley values (Moderate / Ambitious; 8 subsets): S1 Avoid 3,498 / 6,060 kt; S2 Switch 1,431 / 2,482 kt; S3 Improve 530 / 952 kt.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_outside": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/shapley.csv"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

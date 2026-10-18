@@ -99,7 +99,8 @@ def test_lag_zero_is_the_calendar_year_sums():
     cols = list(projection.COL_TYPOLOGIES.values()) + [projection.COL_DWELLINGS_TOTAL]
     lagged, info = projection.lagged_consents(df, 0, cols, projection.COL_DWELLINGS_TOTAL)
     a = lagged.groupby('Year')[cols].sum()
-    b = df.groupby('Year')[cols].sum()
+    b = df.groupby(df['Date'].dt.year)[cols].sum()
+    b.index.name = 'Year'
     pd.testing.assert_frame_equal(a.loc[1991:2025], b.loc[1991:2025], check_exact=True)
 
 
@@ -112,8 +113,8 @@ def test_pipeline_years_and_observed_building(B):
     assert projection.pipeline_years(df, 19) == [2026, 2027]
     assert B['lag_months'] == projection.COMPLETION_LAG_MONTHS == 17
     assert B['pipe']['years'] == [2026, 2027] and B['absorption_start'] == 2027
-    E = B['engine_out']['50th']
-    built = np.asarray(E['dwell_in_scope'] + E['rv_units'], float)
+    import engine
+    built = np.asarray(engine.requirement(B['engine_out']['50th']), float)
     for k, y in enumerate(B['pipe']['years'], start=1):
         assert np.isclose(built[k], B['pipe']['built_all'][y], rtol=1e-9), (y, built[k])
         assert np.isclose(B['pipe']['built_all'][y], projection.COMPLETION_RATE * B['pipe']['consents_all'][y],
@@ -140,19 +141,29 @@ def test_tl1_speed_limit():
     rates = [r['rate'] for r in sp['intervals']]
     assert sp['rate'] == max(rates) and sp['census_years'][0] == 1991 and sp['census_years'][-1] == 2023
     path = {int(y): v for y, v in sp['path'].items()}
-    amb = {int(y): v for y, v in lv['L1']['S']['ambitious'].items()}
+    S = {int(y): v for y, v in lv['L1']['S_ref'].items()}
+    gap = {int(y): v for y, v in lv['L1']['gap'].items()}
+    w = {int(y): v for y, v in lv['adoption']['w'].items()}
+    amb = {y: S[y] + w[y] * gap[y] for y in S}                    # the Ambitious path on the adoption window
     years = sorted(y for y in path if y >= 2026)
     for y in years:
         cap = min(sp['S_start'] + sp['rate'] * (y - 2026), sp['level'])
-        assert path[y] <= max(cap, amb[y]) + 1e-12 and path[y] >= amb[y] - 1e-12
+        assert path[y] == pytest.approx(max(cap, amb[y]), rel=1e-12)
+    assert path[2026] == pytest.approx(sp['S_start'], rel=1e-15) and max(path.values()) <= sp['level'] + 1e-12
     assert np.isclose(sp['level_reached'], 2026 + (sp['level'] - sp['S_start']) / sp['rate'], rtol=1e-12)
 
 
 def test_building_nonnegative_and_positive_in_tl_years():
     runs = pd.read_csv(_data('pathways/runs.csv'))
     assert (runs['dwellings_built_min_year'] >= -1e-6).all(), runs.loc[runs['dwellings_built_min_year'] < -1e-6, 'run']
-    tl = runs[runs['run'].str.startswith('TL') | runs['run'].str.endswith('-tl')]
+    # the greedy re-occupation row (TL-reoccupation-fast: the pool meets each year's need as far as it can) builds
+    # nothing in years the pool covers, by definition; it is reported (pathways/theoretical_limit.json), not a TL run
+    tl = runs[(runs['run'].str.startswith('TL') | runs['run'].str.endswith('-tl'))
+              & (runs['run'] != 'TL-reoccupation-fast')]
     assert len(tl) and (tl['dwellings_built_min_year'] > 0).all(), tl.loc[tl['dwellings_built_min_year'] <= 0, 'run']
+    with open(_data('pathways/theoretical_limit.json')) as f:
+        zb = json.load(f)['zero_building']
+    assert zb['adopted_tl_family_runs_with_zero_years'] == [], zb
 
 
 def test_household_size_sensitivity_table():

@@ -164,7 +164,9 @@ def test_reoccupation_log():
     for _, g in lg.groupby('run'):
         assert (g['cumulative_reoccupied'] <= g['cumulative_released'] + 1e-6).all()
         assert (g['built'] >= -1e-6).all()
-        assert np.allclose(g['reoccupied'], g['reoccupied_tl1'] + g['reoccupied_tl2'], atol=1e-6)
+        # MODEL v4.0.0: plus the re-occupied Reference overbuild (TL surplus pooling)
+        assert np.allclose(g['reoccupied'], g['reoccupied_tl1'] + g['reoccupied_tl2']
+                           + g.get('reoccupied_overbuild', 0.0), atol=1e-6)
 
 
 def test_reoccupation_rule_recomputes_share():

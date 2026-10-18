@@ -390,7 +390,7 @@ def main():
             built = np.asarray(PW.engine.requirement(runs[lab_]['E']), float)
             if (built[1:] < -PW.T_ZERO_TOL_DWELLINGS).any():
                 stops.append(f'draw {j} {lab_}: built_t < 0')
-            rel = ro['released_tl1'] + ro['released_tl2']
+            rel = ro.get('released_pool', ro['released_tl1'] + ro['released_tl2'])    # as it enters the pool
             if (np.cumsum(ro['reoccupied']) > np.cumsum(rel) + PW.REOCCUPATION_TOL * max(ro['R'], 1.0)).any():
                 stops.append(f'draw {j} {lab_}: cumulative re-occupied > released')
             reo.update({f'{lab_}_reoccupation_share': ro['share'], f'{lab_}_released_R': ro['R'],

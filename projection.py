@@ -115,6 +115,12 @@ HOUSEHOLD_SHEET_PROJ = 'Table 1'
 # series are at 30 June; only the rebased shape is used, so the half-year offset
 # and any level difference do not enter the result.
 HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S only
+# HH_SIZE_PATH (MODEL v4.0.0): 'statsnz' (ADOPTED: the Stats NZ 2018-base household projection shape, rebased on the
+#   2023 census as above; to be replaced by the 2023-base household projections when published) or 'census_pace'
+#   (sensitivity: household size continues LINEARLY from the 2023 anchor at the 2018-2023 census-interval pace,
+#   (S_2023 - S_2018) / 5 per year, census-benchmarked households; HH_SIZE_PACE_WINDOW).
+HH_SIZE_PATH = 'statsnz'
+HH_SIZE_PACE_WINDOW = (2018, 2023)
 
 # S_TAIL: household size between and after the published knots (last knot 2043).
 #   'hermite_clamped' (ADOPTED, v1.2.1): one cubic Hermite through every
@@ -419,13 +425,16 @@ SOIL_ON_REPLACEMENT = False
 # Rearranged for what must be built:
 #     built = new households + vacancy allowance + vacancy change
 #             + demolitions - unconsented additions
-# COMPLETION_RATE: Jones, Greenaway-McGrevy & Crow (2024), after
-#   Greenaway-McGrevy & Jones (2023): 91-96% depending on the completion
-#   milestone. Eventual completion lies between the code-compliance share
-#   (~92%, counted early, so a lower bound) and the first-inspection share
-#   (~96%, construction started, so an upper bound). 95% is their own assumption.
-#   TODO (citation to verify): the Jones et al. (2024) reference is not in refs/
-#   and must be confirmed before submission (ASSUMPTIONS, limitations).
+# COMPLETION_RATE (MODEL v4.0.0): 0.945, the midpoint of the published completion milestones of Jones,
+#   Greenaway-McGrevy & Crow (2025, Policy Quarterly 21(1), 63-68, footnote 12; Auckland consents): 93% of 2018-2019
+#   consents had a final inspection by July 2024 (a lower bound: counted late, some completed dwellings are never
+#   inspected within the window) and more than 95% of 2018-2021 consents had a first inspection (construction
+#   started; an upper bound on eventual completion). The article gives the upper milestone only as '>95%', with no
+#   point value: the band edge 0.96 is a stated judgement (the upper edge of the MODEL v3.3 band), not a published
+#   number. The Monte Carlo draws the rate uniform on COMPLETION_RATE_BAND = (0.93, 0.96); no shape inside the band
+#   is identified, hence uniform. LIMITATION: the evidence is Auckland's, applied nationally. MODEL v3.3 used 0.95 (the
+#   authors' own assumption) with the two-piece band (0.92, 0.95, 0.96). The legacy Reference (REFERENCE_LEGACY,
+#   MODEL v2.1) keeps 0.95.
 # DEMOLITION_RATE: Page (2009), BRANZ Study Report SR214 -- ~2,200 dwellings/yr
 #   in 2001-2006 from the same census-and-consents identity used here, on a 2006
 #   private stock of 1,631,019 = 0.135%/yr (Finland, measured 2000-12: 0.15%).
@@ -463,8 +472,8 @@ RV_SHARE_REF = (2016, 2025)
 # for which no case study exists (any factor would be judgement).
 COL_RV_GFA = 'GFA - GFA/RetirementVillage'
 
-COMPLETION_RATE = 0.95
-COMPLETION_RATE_BAND = (0.92, 0.96)
+COMPLETION_RATE = 0.95 if REFERENCE_LEGACY else 0.945
+COMPLETION_RATE_BAND = (0.93, 0.96)
 
 # COMPLETION_LAG: consents are not built in the calendar year they are issued.
 #   'littles_law' (ADOPTED, item 7): dwellings completed in year t =
@@ -502,8 +511,8 @@ COMPLETION_LAG = 0
 #   PIPELINE years (L = 17, consents to July 2026: 2026 and 2027): their building is observed, not modelled (the
 #   market excess over the requirement, engine.market_excess with n observed years; their floor area fixed in every
 #   run). 0 reproduces MODEL v3.3 (same-calendar-year consents; 2026 from the last-12-months nowcast). Not combined
-#   with COMPLETION_LAG (the two-point W) != 0.
-COMPLETION_LAG_MONTHS = 17
+#   with COMPLETION_LAG (the two-point W) != 0. The legacy Reference (REFERENCE_LEGACY, MODEL v2.1) keeps 0.
+COMPLETION_LAG_MONTHS = 0 if REFERENCE_LEGACY else 17
 # CONSENT_DATA_END (MODEL v4.0.0): None = every observed month; 'YYYY-MM-01' truncates the monthly consents (the
 #   'No 2026 data' check, validation.NO_2026_DATA, adapted to the lag).
 CONSENT_DATA_END = None
@@ -1448,6 +1457,16 @@ def main():
     # the same shape from the anchor year to 2025 (figures draw the projection from the anchor point)
     S_bridge = (float(hist_S.loc[S_ANCHOR_YEAR]) * _S_ann.loc[S_ANCHOR_YEAR:2025]
                 / float(_S_ann.loc[S_ANCHOR_YEAR]))
+    if HH_SIZE_PATH == 'census_pace':
+        _p0, _p1 = HH_SIZE_PACE_WINDOW
+        if _p1 != S_ANCHOR_YEAR:
+            raise ValueError('HH_SIZE_PATH census_pace: the pace window must end at S_ANCHOR_YEAR.')
+        _pace = float(hist_S.loc[_p1] - hist_S.loc[_p0]) / (_p1 - _p0)
+        S_matched = float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (np.asarray(forecast_years, float) - S_ANCHOR_YEAR)
+        S_bridge = pd.Series(float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (S_bridge.index.values - S_ANCHOR_YEAR),
+                             index=S_bridge.index)
+    elif HH_SIZE_PATH != 'statsnz':
+        raise ValueError(f"Unknown HH_SIZE_PATH '{HH_SIZE_PATH}'.")
     # ---- household size and migration: diagnostic regression (not applied) ----
     # Fitted only where households are census-benchmarked (see above).
     _yr = years_hist[(years_hist >= CALIB_START_YEAR) & (years_hist <= calib_end)]

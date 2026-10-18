@@ -795,6 +795,7 @@ def fig7():
 # Fig8: uncertainty: (a) tornado of the Reference LoE AR; (b) TL against the 2050 population (Monte Carlo)
 # ---------------------------------------------------------------------------
 LOW_END, HIGH_END = S.LEVER['L8'], S.PATHWAY[N.PATHWAY]     # input at its low / high end (the colours of MODEL v3.0)
+SINGLE_CASE = S.MUTED                                         # MODEL v4.0.0: a row with one alternative case
 
 
 def _yrs(text):
@@ -805,8 +806,10 @@ def _yrs(text):
 def tornado_rows():
     """MODEL v3.3.1: the rows of the Fig8a tornado on the cumulative LoE AR 2026-2050, each input at its low and high
     end as defined by its row (sensitivity/tornado.csv; the AR base window from sensitivity/planetary_boundary.csv):
-    [(label, LoE at the input's low end, LoE at its high end, {label: LoE} of intermediate cases)]. The colour follows
-    the input, not the outcome (the Stats NZ Low household-size variant, the input's low end, gives the higher LoE)."""
+    [(label, LoE at the input's low end, LoE at its high end, {label: LoE} of intermediate cases[, LoE of a single
+    alternative case])]. The colour follows the input, not the outcome (the Stats NZ Low household-size variant, the
+    input's low end, gives the higher LoE). MODEL v4.0.0: rows with one alternative case and no low / high end (the
+    household-size census pace, No 2026 data) carry it as a fifth element and are drawn in the muted grey."""
     t = D.csv('sensitivity/tornado.csv').set_index(['input', 'side'])
     pb = D.csv('sensitivity/planetary_boundary.csv')
     sc = D.js('baseline/scenarios.json')['meta']
@@ -823,8 +826,14 @@ def tornado_rows():
              {'High': v('Replacement (Low / High)', 'high')}),
             ('Replacement half-life (5–15 yr)', v('Replacement half-life (5 / 15 yr)', 'low'),
              v('Replacement half-life (5 / 15 yr)', 'high'), {}),
-            ('Completion rate (0.92–0.96)', v('Completion rate (0.92 / 0.96)', 'low'),
-             v('Completion rate (0.92 / 0.96)', 'high'), {}),
+            ('Completion rate (0.93–0.96)', v('Completion rate (0.93 / 0.96)', 'low'),
+             v('Completion rate (0.93 / 0.96)', 'high'), {}),
+            ('Completion lag (15–19 months; central 17)', v('Completion lag (15 / 19 months)', 'low'),
+             v('Completion lag (15 / 19 months)', 'high'),
+             {'0 mo': v('Completion lag 0 months (one-sided)', 'high')}),
+            ('Household size: 2018–2023 census pace (linear)', None, None, {},
+             v('Household size: 2018-2023 census pace (one-sided)', 'high')),
+            ('No 2026 data (consents to Dec 2025)', None, None, {}, v('No 2026 data (one-sided)', 'high')),
             ('Carbon factors (case-study jackknife low–high)', v('Case-study carbon factors (jackknife)', 'low'),
              v('Case-study carbon factors (jackknife)', 'high'), {}),
             ('Soil order (lowest, Raw – highest, Organic)', v('Soil order (Raw / Organic)', 'low'),
@@ -851,11 +860,15 @@ def fig8():
     Firth logistic P(LoE AR <= 1) = 50% (line, labelled with its bootstrap 95% CI; MODEL v3.3.2: no secondary axis, no
     curve)."""
     rows, c0 = tornado_rows()
-    rows = sorted(rows, key=lambda r: abs(r[2] - r[1]))
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 88), gridspec_kw={'width_ratios': [1.25, 1]})
+    rows = [r if len(r) == 5 else r + (None,) for r in rows]
+    span = lambda r: abs(r[4] - c0) if r[4] is not None else abs(r[2] - r[1])
+    rows = sorted(rows, key=span)
+    has_single = any(r[4] is not None for r in rows)
+    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 96), gridspec_kw={'width_ratios': [1.25, 1]})
     a = ax[0]
-    for k, (lab, lo, hi, mid) in enumerate(rows):
-        for val, col in ((lo, LOW_END), (hi, HIGH_END)):
+    for k, (lab, lo, hi, mid, one) in enumerate(rows):
+        bars = ((one, SINGLE_CASE),) if one is not None else ((lo, LOW_END), (hi, HIGH_END))
+        for val, col in bars:
             a.barh(k, val - c0, left=c0, height=0.62, **S.fill(col))
         for name, val in mid.items():
             a.plot([val, val], [k - 0.31, k + 0.31], color=S.INK, lw=S.LW_THIN)
@@ -866,7 +879,9 @@ def fig8():
     a.set_xlabel('Reference cumulative LoE AR 2026-2050')
     a.grid(axis='y', visible=False)
     a.legend(handles=[Patch(label='Input at low end', **S.fill(LOW_END)),
-                      Patch(label='Input at high end', **S.fill(HIGH_END))], loc='lower right', fontsize=S.FONT_MIN)
+                      Patch(label='Input at high end', **S.fill(HIGH_END))]
+             + ([Patch(label='Single alternative case', **S.fill(SINGLE_CASE))] if has_single else []),
+             loc='lower right', fontsize=S.FONT_MIN)
     P.panel(a, 'a', f'One at a time (Reference LoE AR {c0:.2f})')
     # (b) TL against the 2050 population
     j = D.js('pathways/montecarlo_conditional_tl.json')

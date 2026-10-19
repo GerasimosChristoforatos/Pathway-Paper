@@ -169,6 +169,10 @@ DIAGNOSTICS = {
            'figures.validation', ['figure_source/D14_hindcast.json', 'baseline/validation.json']),
         _d('D15_reality_checks', 'Projection vs the 1991-2025 range and the observed -> model handover',
            'figures.validation', ['figure_source/D15_reality_checks.json']),
+        _d('D43_historical_market_balance', 'Historical and projected floor area: demand, net replacement and unallocated balance',
+           'figures.market_balance', ['diagnostics/market_balance_history_projection.csv']),
+        _d('D44_completion_lag_comparison', 'Annual floor area by broad demand group: zero- and 17-month completion lag',
+           'figures.market_balance', ['diagnostics/lag_comparison_annual.csv']),
     ],
     'boundaries': [
         _d('D18_aesa_sensitivity', 'All AESA sensitivity rows: cumulative LoE AR and AtP', 'figures.boundaries',

@@ -124,15 +124,15 @@ Rolling-origin hindcast of dwellings built (actual households and vacancy fed in
 Under a consistent vacancy definition the Reference rule reproduces building from the 2006 and 2013 origins to 2023 within 4–11%; the residual miss (-11.4% from 2018) is the 2018–23 surge.
 
 Out-of-sample check (model run without 2026 data; completion lag 17 months): 2027 building observed in the pipeline 38,658 dwellings vs model 28,386; ratio 1.36.
-Decomposition of the 2026 gap in the Reference (consents lagged 17 months): +51 dwellings = population -6,157 + pipeline from 2025 +6,209 + 2026 consents above requirement +0.
+Decomposition of the 2026 gap in the Reference (consents lagged 17 months): +6,545 dwellings = population -6,157 + pipeline from 2025 +12,702 + 2026 consents above requirement +0.
 
 ### Finding: 2026 building runs well above the model's requirement
 
-With the 17-month completion lag, 2026 completions come from consents issued before 2026: observed 2026 building (consents lagged) is 32,016 dwellings against a Reference requirement of 31,964 (gap +51)[^low], all of it pipeline; 2027 pipeline building is 1.36 times what the Reference run without 2026 data implies. Population does not explain it: population growth over the year to June 2026 fell short of the projection, which lowers the requirement by 6,157. The gap is building already in the pipeline from 2025 (+6,209) plus 2026 consents above requirement (+0). Over 2018–2023 most building above household formation went to redevelopment (net removals 16,770) rather than vacancy (+6,286).
+With the 17-month completion lag, 2026 completions come from consents issued before 2026: observed 2026 building (consents lagged) is 32,016 dwellings against a Reference requirement of 25,470 (gap +6,545)[^low], all of it pipeline; 2027 pipeline building is 1.36 times what the Reference run without 2026 data implies. Population does not explain it: population growth over the year to June 2026 fell short of the projection, which lowers the requirement by 6,157. The gap is building already in the pipeline from 2025 (+12,702) plus 2026 consents above requirement (+0). Over 2018–2023 most building above household formation went to redevelopment (net removals 16,770) rather than vacancy (+6,286).
 
 The model takes 2026 building from the observed consents and carries the excess forward as the 2026 overbuild (+12,702 dwellings in 2026, then gap_ref +11,848 fading at rho = 0.43; market excess +34,229 dwellings over 2026–2050, absorbed by 2035, net -0).
 
-[^low]: In Low replacement (long-run rate) the requirement is 31,964 and the gap +51 = population -6,157 + pipeline +6,209 + 2026 consents above requirement +0.
+[^low]: In Low replacement (long-run rate) the requirement is 23,220 and the gap +8,795 = population -6,157 + pipeline +14,953 + 2026 consents above requirement +0.
 
 ### Reality checks (projection vs the 1991–2025 range; outputs/reports/reality_checks.md)
 

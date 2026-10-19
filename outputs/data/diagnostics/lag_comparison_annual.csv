@@ -1,0 +1,451 @@
+lag_months,timing,year,category,floor_area_Mm2
+0,consent-timed proxy,2026,population_growth,1.142446658794669
+0,consent-timed proxy,2027,population_growth,1.7005246629387099
+0,consent-timed proxy,2028,population_growth,1.7326100339375534
+0,consent-timed proxy,2029,population_growth,1.7326100339375534
+0,consent-timed proxy,2030,population_growth,1.7326100339375534
+0,consent-timed proxy,2031,population_growth,1.7326100339375534
+0,consent-timed proxy,2032,population_growth,1.7326100339375534
+0,consent-timed proxy,2033,population_growth,1.7326100339375534
+0,consent-timed proxy,2034,population_growth,1.7279897405137201
+0,consent-timed proxy,2035,population_growth,1.7161823239861453
+0,consent-timed proxy,2036,population_growth,1.7002679799707192
+0,consent-timed proxy,2037,population_growth,1.6833269040833296
+0,consent-timed proxy,2038,population_growth,1.6684392919398663
+0,consent-timed proxy,2039,population_growth,1.6264951298459176
+0,consent-timed proxy,2040,population_growth,1.5727705274430483
+0,consent-timed proxy,2041,population_growth,1.545713810388305
+0,consent-timed proxy,2042,population_growth,1.545982626506737
+0,consent-timed proxy,2043,population_growth,1.5742113781090963
+0,consent-timed proxy,2044,population_growth,1.59143440154264
+0,consent-timed proxy,2045,population_growth,1.5786002531431043
+0,consent-timed proxy,2046,population_growth,1.5657661047435416
+0,consent-timed proxy,2047,population_growth,1.5529319563440294
+0,consent-timed proxy,2048,population_growth,1.540097807944483
+0,consent-timed proxy,2049,population_growth,1.5272636595449534
+0,consent-timed proxy,2050,population_growth,1.5144295111454171
+0,consent-timed proxy,2026,household_size_change,0.15120521662707875
+0,consent-timed proxy,2027,household_size_change,0.15459817144490445
+0,consent-timed proxy,2028,household_size_change,0.1781861745631654
+0,consent-timed proxy,2029,household_size_change,0.2235238500583699
+0,consent-timed proxy,2030,household_size_change,0.25862903131054876
+0,consent-timed proxy,2031,household_size_change,0.26429629396383847
+0,consent-timed proxy,2032,household_size_change,0.23948311701940408
+0,consent-timed proxy,2033,household_size_change,0.1831448446286954
+0,consent-timed proxy,2034,household_size_change,0.14650415941329126
+0,consent-timed proxy,2035,household_size_change,0.14126061331872825
+0,consent-timed proxy,2036,household_size_change,0.12069502486090736
+0,consent-timed proxy,2037,household_size_change,0.08435470635170779
+0,consent-timed proxy,2038,household_size_change,0.031816834472893386
+0,consent-timed proxy,2039,household_size_change,0.0
+0,consent-timed proxy,2040,household_size_change,0.0
+0,consent-timed proxy,2041,household_size_change,0.0
+0,consent-timed proxy,2042,household_size_change,0.0
+0,consent-timed proxy,2043,household_size_change,0.0
+0,consent-timed proxy,2044,household_size_change,0.0
+0,consent-timed proxy,2045,household_size_change,6.371450293662662e-15
+0,consent-timed proxy,2046,household_size_change,0.0
+0,consent-timed proxy,2047,household_size_change,2.2409928619089364e-14
+0,consent-timed proxy,2048,household_size_change,0.0
+0,consent-timed proxy,2049,household_size_change,0.0
+0,consent-timed proxy,2050,household_size_change,6.8108606587428455e-15
+0,consent-timed proxy,2026,net_replacement,0.811347467690071
+0,consent-timed proxy,2027,net_replacement,0.776845249298788
+0,consent-timed proxy,2028,net_replacement,0.7503794504426262
+0,consent-timed proxy,2029,net_replacement,0.7257665617993219
+0,consent-timed proxy,2030,net_replacement,0.7028530041272077
+0,consent-timed proxy,2031,net_replacement,0.6814996065403652
+0,consent-timed proxy,2032,net_replacement,0.6615086172626774
+0,consent-timed proxy,2033,net_replacement,0.6426994527035867
+0,consent-timed proxy,2034,net_replacement,0.6249065898798438
+0,consent-timed proxy,2035,net_replacement,0.6081349371330321
+0,consent-timed proxy,2036,net_replacement,0.5924129336280528
+0,consent-timed proxy,2037,net_replacement,0.5776267426992272
+0,consent-timed proxy,2038,net_replacement,0.5636800046912485
+0,consent-timed proxy,2039,net_replacement,0.5504914895676815
+0,consent-timed proxy,2040,net_replacement,0.5380074691809635
+0,consent-timed proxy,2041,net_replacement,0.526248133743261
+0,consent-timed proxy,2042,net_replacement,0.5152457714034464
+0,consent-timed proxy,2043,net_replacement,0.5050282559562363
+0,consent-timed proxy,2044,net_replacement,0.49562003039282765
+0,consent-timed proxy,2045,net_replacement,0.4869473394142637
+0,consent-timed proxy,2046,net_replacement,0.478896864878714
+0,consent-timed proxy,2047,net_replacement,0.4714331741642678
+0,consent-timed proxy,2048,net_replacement,0.4645226551376751
+0,consent-timed proxy,2049,net_replacement,0.458133434337661
+0,consent-timed proxy,2050,net_replacement,0.45223529774400095
+0,consent-timed proxy,2026,other,0.8257192562378286
+0,consent-timed proxy,2027,other,1.1908323364571216
+0,consent-timed proxy,2028,other,1.2297802377276381
+0,consent-timed proxy,2029,other,1.2630466576772355
+0,consent-timed proxy,2030,other,1.2904876617011822
+0,consent-timed proxy,2031,other,1.299013047121068
+0,consent-timed proxy,2032,other,1.2871782591529854
+0,consent-timed proxy,2033,other,1.253578661649635
+0,consent-timed proxy,2034,other,1.2290410066235407
+0,consent-timed proxy,2035,other,1.2201931178921728
+0,consent-timed proxy,2036,other,1.198165340344992
+0,consent-timed proxy,2037,other,1.1644097607223667
+0,consent-timed proxy,2038,other,1.1204637008893412
+0,consent-timed proxy,2039,other,1.0714489354630512
+0,consent-timed proxy,2040,other,1.0351211844259194
+0,consent-timed proxy,2041,other,1.01621572160179
+0,consent-timed proxy,2042,other,1.0154730324477483
+0,consent-timed proxy,2043,other,1.033622581235711
+0,consent-timed proxy,2044,other,1.0449311679894455
+0,consent-timed proxy,2045,other,1.0365043037314714
+0,consent-timed proxy,2046,other,1.0280774394734713
+0,consent-timed proxy,2047,other,1.0196505752155232
+0,consent-timed proxy,2048,other,1.0112237109575228
+0,consent-timed proxy,2049,other,1.0027968466995487
+0,consent-timed proxy,2050,other,0.9943699824415746
+0,consent-timed proxy,2026,market_excess,2.2186865706503527
+0,consent-timed proxy,2027,market_excess,0.6869810737110512
+0,consent-timed proxy,2028,market_excess,0.3542048772384635
+0,consent-timed proxy,2029,market_excess,0.18262671252612225
+0,consent-timed proxy,2030,market_excess,0.09416165126841208
+0,consent-timed proxy,2031,market_excess,0.0485493959068328
+0,consent-timed proxy,2032,market_excess,0.025031887304095078
+0,consent-timed proxy,2033,market_excess,0.012906347654816649
+0,consent-timed proxy,2034,market_excess,0.006654464673933739
+0,consent-timed proxy,2035,market_excess,0.00343101714605573
+0,consent-timed proxy,2036,market_excess,0.0017690196331855413
+0,consent-timed proxy,2037,market_excess,0.0009120999194636714
+0,consent-timed proxy,2038,market_excess,0.00047027531378357533
+0,consent-timed proxy,2039,market_excess,0.00024247219634038018
+0,consent-timed proxy,2040,market_excess,0.00012501775933147275
+0,consent-timed proxy,2041,market_excess,6.445869004428693e-05
+0,consent-timed proxy,2042,market_excess,3.3234659975060585e-05
+0,consent-timed proxy,2043,market_excess,1.7135666624608844e-05
+0,consent-timed proxy,2044,market_excess,8.835085747532106e-06
+0,consent-timed proxy,2045,market_excess,4.5553372317679975e-06
+0,consent-timed proxy,2046,market_excess,2.3487148725102203e-06
+0,consent-timed proxy,2047,market_excess,1.2109886209697087e-06
+0,consent-timed proxy,2048,market_excess,6.243812125866018e-07
+0,consent-timed proxy,2049,market_excess,3.2192862251582364e-07
+0,consent-timed proxy,2050,market_excess,1.6598519607212087e-07
+0,consent-timed proxy,2026,overbuild_absorbed,0.0
+0,consent-timed proxy,2027,overbuild_absorbed,-0.11280315337456624
+0,consent-timed proxy,2028,overbuild_absorbed,-0.24878394738569123
+0,consent-timed proxy,2029,overbuild_absorbed,-0.4372087535063847
+0,consent-timed proxy,2030,overbuild_absorbed,-0.6323154006118883
+0,consent-timed proxy,2031,overbuild_absorbed,-0.7223964065842612
+0,consent-timed proxy,2032,overbuild_absorbed,-0.6381782126152516
+0,consent-timed proxy,2033,overbuild_absorbed,-0.44876308623413336
+0,consent-timed proxy,2034,overbuild_absorbed,-0.267570268782467
+0,consent-timed proxy,2035,overbuild_absorbed,-0.14416423668161885
+0,consent-timed proxy,2036,overbuild_absorbed,-0.00176901963318552
+0,consent-timed proxy,2037,overbuild_absorbed,-0.000912099919463765
+0,consent-timed proxy,2038,overbuild_absorbed,-0.00047027531378338554
+0,consent-timed proxy,2039,overbuild_absorbed,-0.0002424721963401533
+0,consent-timed proxy,2040,overbuild_absorbed,-0.00012501775933168265
+0,consent-timed proxy,2041,overbuild_absorbed,-6.445869004430318e-05
+0,consent-timed proxy,2042,overbuild_absorbed,-3.323465997506006e-05
+0,consent-timed proxy,2043,overbuild_absorbed,-1.7135666624642224e-05
+0,consent-timed proxy,2044,overbuild_absorbed,-8.83508574746221e-06
+0,consent-timed proxy,2045,overbuild_absorbed,-4.555337231699317e-06
+0,consent-timed proxy,2046,overbuild_absorbed,-2.3487148727457848e-06
+0,consent-timed proxy,2047,overbuild_absorbed,-1.2109886208453695e-06
+0,consent-timed proxy,2048,overbuild_absorbed,-6.243812125788348e-07
+0,consent-timed proxy,2049,overbuild_absorbed,-3.219286223209334e-07
+0,consent-timed proxy,2050,overbuild_absorbed,-1.6598519603604973e-07
+0,consent-timed proxy,2026,underlying_requirement,2.9307185993496474
+0,consent-timed proxy,2027,underlying_requirement,3.822800420139524
+0,consent-timed proxy,2028,underlying_requirement,3.8909558966709836
+0,consent-timed proxy,2029,underlying_requirement,3.9449471034724803
+0,consent-timed proxy,2030,underlying_requirement,3.984579731076492
+0,consent-timed proxy,2031,underlying_requirement,3.977418981562825
+0,consent-timed proxy,2032,underlying_requirement,3.9207800273726203
+0,consent-timed proxy,2033,underlying_requirement,3.8120329929194705
+0,consent-timed proxy,2034,underlying_requirement,3.7284414964303956
+0,consent-timed proxy,2035,underlying_requirement,3.6857709923300783
+0,consent-timed proxy,2036,underlying_requirement,3.611541278804671
+0,consent-timed proxy,2037,underlying_requirement,3.509718113856631
+0,consent-timed proxy,2038,underlying_requirement,3.384399831993349
+0,consent-timed proxy,2039,underlying_requirement,3.24843555487665
+0,consent-timed proxy,2040,underlying_requirement,3.1458991810499315
+0,consent-timed proxy,2041,underlying_requirement,3.0881776657333555
+0,consent-timed proxy,2042,underlying_requirement,3.0767014303579314
+0,consent-timed proxy,2043,underlying_requirement,3.1128622153010435
+0,consent-timed proxy,2044,underlying_requirement,3.131985599924913
+0,consent-timed proxy,2045,underlying_requirement,3.1020518962888457
+0,consent-timed proxy,2046,underlying_requirement,3.0727404090957267
+0,consent-timed proxy,2047,underlying_requirement,3.044015705723843
+0,consent-timed proxy,2048,underlying_requirement,3.015844174039681
+0,consent-timed proxy,2049,underlying_requirement,2.988193940582163
+0,consent-timed proxy,2050,underlying_requirement,2.9610347913309996
+0,consent-timed proxy,2026,net_market_effect,2.2186865706503527
+0,consent-timed proxy,2027,net_market_effect,0.574177920336485
+0,consent-timed proxy,2028,net_market_effect,0.10542092985277227
+0,consent-timed proxy,2029,net_market_effect,-0.2545820409802625
+0,consent-timed proxy,2030,net_market_effect,-0.5381537493434763
+0,consent-timed proxy,2031,net_market_effect,-0.6738470106774284
+0,consent-timed proxy,2032,net_market_effect,-0.6131463253111565
+0,consent-timed proxy,2033,net_market_effect,-0.4358567385793167
+0,consent-timed proxy,2034,net_market_effect,-0.26091580410853327
+0,consent-timed proxy,2035,net_market_effect,-0.14073321953556311
+0,consent-timed proxy,2036,net_market_effect,2.1250362580715887e-17
+0,consent-timed proxy,2037,net_market_effect,-9.356664748549903e-17
+0,consent-timed proxy,2038,net_market_effect,1.8978959029358755e-16
+0,consent-timed proxy,2039,net_market_effect,2.2689640964690394e-16
+0,consent-timed proxy,2040,net_market_effect,-2.0990154059319366e-16
+0,consent-timed proxy,2041,net_market_effect,-1.6249480060126498e-17
+0,consent-timed proxy,2042,net_market_effect,5.21772295508649e-19
+0,consent-timed proxy,2043,net_market_effect,-3.337987438539747e-17
+0,consent-timed proxy,2044,net_market_effect,6.989546474153036e-17
+0,consent-timed proxy,2045,net_market_effect,6.868081949516769e-17
+0,consent-timed proxy,2046,net_market_effect,-2.355645213126308e-16
+0,consent-timed proxy,2047,net_market_effect,1.2433914270101095e-16
+0,consent-timed proxy,2048,net_market_effect,7.766974488966714e-18
+0,consent-timed proxy,2049,net_market_effect,1.9489026388327534e-16
+0,consent-timed proxy,2050,net_market_effect,3.6071136286840795e-17
+0,consent-timed proxy,2026,total_built,5.14940517
+0,consent-timed proxy,2027,total_built,4.396978340476009
+0,consent-timed proxy,2028,total_built,3.996376826523756
+0,consent-timed proxy,2029,total_built,3.6903650624922184
+0,consent-timed proxy,2030,total_built,3.4464259817330163
+0,consent-timed proxy,2031,total_built,3.3035719708853963
+0,consent-timed proxy,2032,total_built,3.307633702061464
+0,consent-timed proxy,2033,total_built,3.3761762543401543
+0,consent-timed proxy,2034,total_built,3.4675256923218623
+0,consent-timed proxy,2035,total_built,3.5450377727945157
+0,consent-timed proxy,2036,total_built,3.6115412788046712
+0,consent-timed proxy,2037,total_built,3.509718113856631
+0,consent-timed proxy,2038,total_built,3.38439983199335
+0,consent-timed proxy,2039,total_built,3.2484355548766506
+0,consent-timed proxy,2040,total_built,3.145899181049931
+0,consent-timed proxy,2041,total_built,3.088177665733356
+0,consent-timed proxy,2042,total_built,3.0767014303579323
+0,consent-timed proxy,2043,total_built,3.1128622153010435
+0,consent-timed proxy,2044,total_built,3.1319855999249135
+0,consent-timed proxy,2045,total_built,3.1020518962888457
+0,consent-timed proxy,2046,total_built,3.072740409095727
+0,consent-timed proxy,2047,total_built,3.0440157057238424
+0,consent-timed proxy,2048,total_built,3.0158441740396804
+0,consent-timed proxy,2049,total_built,2.9881939405821636
+0,consent-timed proxy,2050,total_built,2.9610347913309996
+17,completion-timed,2026,population_growth,1.132499949823877
+17,completion-timed,2027,population_growth,1.7039462409952315
+17,completion-timed,2028,population_growth,1.7252914281707703
+17,completion-timed,2029,population_growth,1.7252914281707703
+17,completion-timed,2030,population_growth,1.7252914281707703
+17,completion-timed,2031,population_growth,1.7252914281707703
+17,completion-timed,2032,population_growth,1.7252914281707703
+17,completion-timed,2033,population_growth,1.7252914281707703
+17,completion-timed,2034,population_growth,1.7206906510289819
+17,completion-timed,2035,population_growth,1.7089331094444105
+17,completion-timed,2036,population_growth,1.6930859881782494
+17,completion-timed,2037,population_growth,1.6762164719916908
+17,completion-timed,2038,population_growth,1.6613917456459273
+17,completion-timed,2039,population_growth,1.6196247571689903
+17,completion-timed,2040,population_growth,1.566127089377639
+17,completion-timed,2041,population_growth,1.5391846608480617
+17,completion-timed,2042,population_growth,1.539452341477748
+17,completion-timed,2043,population_growth,1.5675618538397593
+17,completion-timed,2044,population_growth,1.5847121266161135
+17,completion-timed,2045,population_growth,1.5719321901111463
+17,completion-timed,2046,population_growth,1.5591522536061526
+17,completion-timed,2047,population_growth,1.5463723171012091
+17,completion-timed,2048,population_growth,1.5335923805962313
+17,completion-timed,2049,population_growth,1.5208124440912707
+17,completion-timed,2050,population_growth,1.508032507586303
+17,completion-timed,2026,household_size_change,0.14988874878757213
+17,completion-timed,2027,household_size_change,0.15490923409663931
+17,completion-timed,2028,household_size_change,0.1774335098901141
+17,completion-timed,2029,household_size_change,0.2225796774482569
+17,completion-timed,2030,household_size_change,0.25753657317921436
+17,completion-timed,2031,household_size_change,0.26317989711558337
+17,completion-timed,2032,household_size_change,0.2384715319039225
+17,completion-timed,2033,household_size_change,0.18237123435875488
+17,completion-timed,2034,household_size_change,0.1458853206873586
+17,completion-timed,2035,household_size_change,0.14066392351605894
+17,completion-timed,2036,household_size_change,0.12018520482773921
+17,completion-timed,2037,household_size_change,0.08399838910300866
+17,completion-timed,2038,household_size_change,0.03168243904420859
+17,completion-timed,2039,household_size_change,0.0
+17,completion-timed,2040,household_size_change,0.0
+17,completion-timed,2041,household_size_change,0.0
+17,completion-timed,2042,household_size_change,0.0
+17,completion-timed,2043,household_size_change,0.0
+17,completion-timed,2044,household_size_change,0.0
+17,completion-timed,2045,household_size_change,6.347250649207622e-15
+17,completion-timed,2046,household_size_change,0.0
+17,completion-timed,2047,household_size_change,2.23248126282475e-14
+17,completion-timed,2048,household_size_change,0.0
+17,completion-timed,2049,household_size_change,0.0
+17,completion-timed,2050,household_size_change,6.784992073290906e-15
+17,completion-timed,2026,net_replacement,0.47351292340854867
+17,completion-timed,2027,net_replacement,0.4584731072105086
+17,completion-timed,2028,net_replacement,0.44878221894226755
+17,completion-timed,2029,net_replacement,0.43510972567962514
+17,completion-timed,2030,net_replacement,0.4224059220438301
+17,completion-timed,2031,net_replacement,0.4105906702092162
+17,completion-timed,2032,net_replacement,0.39954796436848883
+17,completion-timed,2033,net_replacement,0.3891713108724507
+17,completion-timed,2034,net_replacement,0.3793625381358706
+17,completion-timed,2035,net_replacement,0.3701264440227383
+17,completion-timed,2036,net_replacement,0.3614824670554845
+17,completion-timed,2037,net_replacement,0.3533634287194729
+17,completion-timed,2038,net_replacement,0.3457123867120871
+17,completion-timed,2039,net_replacement,0.33848131553910227
+17,completion-timed,2040,net_replacement,0.33163884197115756
+17,completion-timed,2041,net_replacement,0.32519913399688954
+17,completion-timed,2042,net_replacement,0.31918415979479
+17,completion-timed,2043,net_replacement,0.3136135051879361
+17,completion-timed,2044,net_replacement,0.30850492763803544
+17,completion-timed,2045,net_replacement,0.30381517626234716
+17,completion-timed,2046,net_replacement,0.29947592895083114
+17,completion-timed,2047,net_replacement,0.29546712470476455
+17,completion-timed,2048,net_replacement,0.29176973323720157
+17,completion-timed,2049,net_replacement,0.28836570865056416
+17,completion-timed,2050,net_replacement,0.2852379445782202
+17,completion-timed,2026,other,0.86320659839455
+17,completion-timed,2027,other,1.2522209437887608
+17,completion-timed,2028,other,1.340248340167733
+17,completion-timed,2029,other,1.3762691129631544
+17,completion-timed,2030,other,1.4058976877591776
+17,completion-timed,2031,other,1.4149097556709782
+17,completion-timed,2032,other,1.4017752684803417
+17,completion-timed,2033,other,1.3650053195083427
+17,completion-timed,2034,other,1.3381480470478786
+17,completion-timed,2035,other,1.3283837161160787
+17,completion-timed,2036,other,1.3042942331464946
+17,completion-timed,2037,other,1.26747579658935
+17,completion-timed,2038,other,1.2196137189257665
+17,completion-timed,2039,other,1.1662843457474266
+17,completion-timed,2040,other,1.1267935508002755
+17,completion-timed,2041,other,1.106275226914376
+17,completion-timed,2042,other,1.1055182228696845
+17,completion-timed,2043,other,1.1252991508235264
+17,completion-timed,2044,other,1.137610746276267
+17,completion-timed,2045,other,1.1284364660643673
+17,completion-timed,2046,other,1.1192621858524394
+17,completion-timed,2047,other,1.1100879056405681
+17,completion-timed,2048,other,1.1009136254286402
+17,completion-timed,2049,other,1.0917393452167405
+17,completion-timed,2050,other,1.0825650650048408
+17,completion-timed,2026,market_excess,1.7152164945854522
+17,completion-timed,2027,market_excess,1.5798556439088591
+17,completion-timed,2028,market_excess,0.7076759895622311
+17,completion-timed,2029,market_excess,0.30695463729187733
+17,completion-timed,2030,market_excess,0.13314165062074984
+17,completion-timed,2031,market_excess,0.05775022422339829
+17,completion-timed,2032,market_excess,0.025049174186315915
+17,completion-timed,2033,market_excess,0.010865085562077718
+17,completion-timed,2034,market_excess,0.004712733577291307
+17,completion-timed,2035,market_excess,0.0020441493666693
+17,completion-timed,2036,market_excess,0.000886650298542054
+17,completion-timed,2037,market_excess,0.0003845847885302286
+17,completion-timed,2038,market_excess,0.00016681374811698153
+17,completion-timed,2039,market_excess,7.235550492566753e-05
+17,completion-timed,2040,market_excess,3.138421834018695e-05
+17,completion-timed,2041,market_excess,1.3612912546687472e-05
+17,completion-timed,2042,market_excess,5.904604218435265e-06
+17,completion-timed,2043,market_excess,2.5611235550651728e-06
+17,completion-timed,2044,market_excess,1.1108879819294498e-06
+17,completion-timed,2045,market_excess,4.818479397273291e-07
+17,completion-timed,2046,market_excess,2.0900166425080368e-07
+17,completion-timed,2047,market_excess,9.065452408974609e-08
+17,completion-timed,2048,market_excess,3.93214224747818e-08
+17,completion-timed,2049,market_excess,1.7055676823250376e-08
+17,completion-timed,2050,market_excess,7.3979040836002795e-09
+17,completion-timed,2026,overbuild_absorbed,0.0
+17,completion-timed,2027,overbuild_absorbed,0.0
+17,completion-timed,2028,overbuild_absorbed,-0.18929736902210068
+17,completion-timed,2029,overbuild_absorbed,-0.4168106518967521
+17,completion-timed,2030,overbuild_absorbed,-0.7308294704907623
+17,completion-timed,2031,overbuild_absorbed,-0.997654069096937
+17,completion-timed,2032,overbuild_absorbed,-0.9986982056999946
+17,completion-timed,2033,overbuild_absorbed,-0.7350028368122227
+17,completion-timed,2034,overbuild_absorbed,-0.42778394176327755
+17,completion-timed,2035,overbuild_absorbed,-0.2157777189234112
+17,completion-timed,2036,overbuild_absorbed,-0.0008866502985423951
+17,completion-timed,2037,overbuild_absorbed,-0.0003845847885300643
+17,completion-timed,2038,overbuild_absorbed,-0.0001668137481171468
+17,completion-timed,2039,overbuild_absorbed,-7.235550492532637e-05
+17,completion-timed,2040,overbuild_absorbed,-3.138421833978406e-05
+17,completion-timed,2041,overbuild_absorbed,-1.3612912546517939e-05
+17,completion-timed,2042,overbuild_absorbed,-5.90460421876398e-06
+17,completion-timed,2043,overbuild_absorbed,-2.5611235548592497e-06
+17,completion-timed,2044,overbuild_absorbed,-1.1108879817715265e-06
+17,completion-timed,2045,overbuild_absorbed,-4.818479402092578e-07
+17,completion-timed,2046,overbuild_absorbed,-2.09001664376661e-07
+17,completion-timed,2047,overbuild_absorbed,-9.065452431963894e-08
+17,completion-timed,2048,overbuild_absorbed,-3.932142241407237e-08
+17,completion-timed,2049,overbuild_absorbed,-1.7055677305578078e-08
+17,completion-timed,2050,overbuild_absorbed,-7.397903871123828e-09
+17,completion-timed,2026,underlying_requirement,2.6191082204145477
+17,completion-timed,2027,underlying_requirement,3.5695495260911403
+17,completion-timed,2028,underlying_requirement,3.691755497170885
+17,completion-timed,2029,underlying_requirement,3.759249944261807
+17,completion-timed,2030,underlying_requirement,3.8111316111529923
+17,completion-timed,2031,underlying_requirement,3.813971751166548
+17,completion-timed,2032,underlying_requirement,3.7650861929235235
+17,completion-timed,2033,underlying_requirement,3.6618392929103187
+17,completion-timed,2034,underlying_requirement,3.5840865569000897
+17,completion-timed,2035,underlying_requirement,3.5481071930992867
+17,completion-timed,2036,underlying_requirement,3.4790478932079676
+17,completion-timed,2037,underlying_requirement,3.3810540864035223
+17,completion-timed,2038,underlying_requirement,3.258400290327989
+17,completion-timed,2039,underlying_requirement,3.124390418455519
+17,completion-timed,2040,underlying_requirement,3.0245594821490718
+17,completion-timed,2041,underlying_requirement,2.970659021759327
+17,completion-timed,2042,underlying_requirement,2.9641547241422224
+17,completion-timed,2043,underlying_requirement,3.0064745098512216
+17,completion-timed,2044,underlying_requirement,3.0308278005304157
+17,completion-timed,2045,underlying_requirement,3.0041838324378674
+17,completion-timed,2046,underlying_requirement,2.9778903684094233
+17,completion-timed,2047,underlying_requirement,2.9519273474465644
+17,completion-timed,2048,underlying_requirement,2.9262757392620733
+17,completion-timed,2049,underlying_requirement,2.9009174979585755
+17,completion-timed,2050,underlying_requirement,2.875835517169371
+17,completion-timed,2026,net_market_effect,1.7152164945854522
+17,completion-timed,2027,net_market_effect,1.5798556439088591
+17,completion-timed,2028,net_market_effect,0.5183786205401304
+17,completion-timed,2029,net_market_effect,-0.10985601460487476
+17,completion-timed,2030,net_market_effect,-0.5976878198700124
+17,completion-timed,2031,net_market_effect,-0.9399038448735387
+17,completion-timed,2032,net_market_effect,-0.9736490315136787
+17,completion-timed,2033,net_market_effect,-0.7241377512501449
+17,completion-timed,2034,net_market_effect,-0.42307120818598626
+17,completion-timed,2035,net_market_effect,-0.2137335695567419
+17,completion-timed,2036,net_market_effect,-3.410900034639397e-16
+17,completion-timed,2037,net_market_effect,1.643108392401782e-16
+17,completion-timed,2038,net_market_effect,-1.6525951614110301e-16
+17,completion-timed,2039,net_market_effect,3.4115776609972004e-16
+17,completion-timed,2040,net_market_effect,4.0288952729561345e-16
+17,completion-timed,2041,net_market_effect,1.6953364439294821e-16
+17,completion-timed,2042,net_market_effect,-3.2871485210455437e-16
+17,completion-timed,2043,net_market_effect,2.059230268399402e-16
+17,completion-timed,2044,net_market_effect,1.5792336378493352e-16
+17,completion-timed,2045,net_market_effect,-4.81928712702754e-16
+17,completion-timed,2046,net_market_effect,-1.2585731691006628e-16
+17,completion-timed,2047,net_market_effect,-2.2989285487226503e-16
+17,completion-timed,2048,net_market_effect,6.070943213322687e-17
+17,completion-timed,2049,net_market_effect,-4.823277016168577e-16
+17,completion-timed,2050,net_market_effect,2.1247645126967528e-16
+17,completion-timed,2026,total_built,4.334324715
+17,completion-timed,2027,total_built,5.14940517
+17,completion-timed,2028,total_built,4.210134117711016
+17,completion-timed,2029,total_built,3.649393929656932
+17,completion-timed,2030,total_built,3.21344379128298
+17,completion-timed,2031,total_built,2.8740679062930092
+17,completion-timed,2032,total_built,2.7914371614098448
+17,completion-timed,2033,total_built,2.9377015416601737
+17,completion-timed,2034,total_built,3.161015348714103
+17,completion-timed,2035,total_built,3.3343736235425445
+17,completion-timed,2036,total_built,3.479047893207967
+17,completion-timed,2037,total_built,3.381054086403523
+17,completion-timed,2038,total_built,3.258400290327989
+17,completion-timed,2039,total_built,3.1243904184555196
+17,completion-timed,2040,total_built,3.0245594821490727
+17,completion-timed,2041,total_built,2.9706590217593276
+17,completion-timed,2042,total_built,2.9641547241422224
+17,completion-timed,2043,total_built,3.006474509851222
+17,completion-timed,2044,total_built,3.0308278005304166
+17,completion-timed,2045,total_built,3.0041838324378674
+17,completion-timed,2046,total_built,2.9778903684094233
+17,completion-timed,2047,total_built,2.9519273474465635
+17,completion-timed,2048,total_built,2.9262757392620733
+17,completion-timed,2049,total_built,2.900917497958575
+17,completion-timed,2050,total_built,2.8758355171693712

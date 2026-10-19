@@ -323,6 +323,22 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/figure_source/D15_reality_checks.json`
 - This run: Projection 2026–2050 against the 1991–2025 range (grey band); a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. h: the 2026 → 2027 step of the Reference (2026 observed, 2027 the first model year) against the year-to-year changes in consented floor area, 1992–2025.
 
+### D43_historical_market_balance
+
+**Historical and projected floor area: demand, net replacement and unallocated balance**
+
+- Files: `diagnostics/validation/D43_historical_market_balance.png`
+- Data: `data/diagnostics/market_balance_history_projection.csv`
+- This run: History separates population growth, household-size change and census-measured net replacement. Other / unallocated combines extra space, vacancy, retirement-village adjustment and unexplained building; it may contain historical excess supply but is not a measured overbuild series. The 2023–2025 household bridge is consent-derived. From 2026, gross market excess and its payback are shown separately on the 17-month completion-timed Reference.
+
+### D44_completion_lag_comparison
+
+**Annual floor area by broad demand group: zero- and 17-month completion lag**
+
+- Files: `diagnostics/validation/D44_completion_lag_comparison.png`
+- Data: `data/diagnostics/lag_comparison_annual.csv`
+- This run: Both runs use identical source files and demographic paths; only the monthly consent-to-completion lag changes. Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; it is not a count of completed calendar-2026 homes. The 17-month run uses complete observed consent cohorts for 2026 and 2027. Lag-specific historical completion timing and replacement calibration are recomputed consistently.
+
 ## Diagnostics: boundaries (diagnostics/boundaries/)
 
 ### D18_aesa_sensitivity

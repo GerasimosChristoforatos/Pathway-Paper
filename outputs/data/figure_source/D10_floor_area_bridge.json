@@ -58,17 +58,17 @@
 }
 },
 "VHIGH": {
-"total_in_scope": 92.18408878528567,
+"total_in_scope": 92.18408878528507,
 "values": {
 "extra_space": 28.039952587259815,
 "growth": 42.87579284249482,
-"overbuild_2026": 4.74950799260003,
-"overbuild_absorbed": -4.920626738257965,
-"redevelopment": 15.73891677255677,
+"overbuild_2026": 4.749507992600078,
+"overbuild_absorbed": -4.92062673825801,
+"redevelopment": 15.738916772556138,
 "replacement": 11.714420845198893,
-"retirement_villages": -5.8875232434519615,
+"retirement_villages": -5.887523243451923,
 "smaller_households": 2.3071143783151515,
-"unconsented": -6.602943697399139,
+"unconsented": -6.602943697399141,
 "vacancy": 4.169477045969259
 }
 }

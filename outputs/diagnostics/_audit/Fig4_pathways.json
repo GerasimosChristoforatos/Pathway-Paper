@@ -1,6 +1,6 @@
 {
  "figure": "Fig4_pathways",
- "producer": "figures/__main__.py",
+ "producer": "../../../../.conda/envs/spyder-py312/Lib/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "Annual carbon against AR and AtP",

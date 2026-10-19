@@ -8,14 +8,23 @@ Run after validation.py has written baseline/bands_history.csv:
     python tools/demand_balance.py
 """
 import json
+import os
+import sys
 
 import numpy as np
 import pandas as pd
 
-import layout
-import naming as N
-import projection
-import validation
+# Scripts in tools/ are launched as separate processes by run_all.py. Add the
+# repository root explicitly so root-level modules (layout, projection, etc.)
+# resolve the same way they do in sibling tools.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+import layout  # noqa: E402
+import naming as N  # noqa: E402
+import projection  # noqa: E402
+import validation  # noqa: E402
 
 
 BROAD_GROUPS = {

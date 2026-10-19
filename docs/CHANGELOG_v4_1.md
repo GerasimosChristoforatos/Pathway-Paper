@@ -40,3 +40,43 @@ These are diagnostic values; the full model run regenerates them from source inp
 Added a regression test that checks the 2026 gap diagnostic returns the stored pre-pipeline `R26` and that subtracting the pipeline join from the final requirement recovers the same value.
 
 The GitHub-side change is not a substitute for running the repository's full light/full pipeline and test suite locally. Regenerate outputs and the regression lock only after those runs pass.
+
+
+## Controlled completion-lag and market-balance analysis
+
+Added a separate diagnostic run after the baseline overbuild report. It runs the Reference twice, with a zero-month and a 17-month consent-to-completion lag. The same source files, population path, household-size path, completion rate, and remaining model defaults are retained; the diagnostic checks that the population and household paths are identical. Historical completion timing and the stock / replacement calibration are recalculated under each lag, because those are consequences of the timing assumption rather than independent settings.
+
+The comparison is reported in floor area by a broad, secondary classification:
+
+- Population growth.
+- Household-size change.
+- Net replacement (demolition replacement + recent replacement wave + unconsented additions).
+- Other demand / balance (extra space + vacancy and related release terms).
+- Gross market excess.
+- Overbuild absorbed.
+
+These are aggregates of the existing detailed bands. No original band, pathway lever, carbon calculation, or pathway assumption is changed.
+
+### Interpretation of zero lag
+
+Zero lag is labelled a consent-timed proxy, not observed completed construction. At the current data cut it uses the latest rolling 12 months of consent data as its 2026 consent estimate. The 17-month run instead has complete observed 12-month consent cohorts shifted into completion years 2026 and 2027. The two methods are therefore not interchangeable observations; the comparison is a timing-method sensitivity.
+
+### Historical classification
+
+Historical intervals retain population growth, household-size change, and census-measured net replacement as separate components. The remainder groups extra space, vacancy, retirement-village adjustment and unexplained building. The historical residual can contain excess supply, but it also includes omitted or mismeasured components. There is no independent historical overbuild measure in the available annual data, so the historical market-excess and absorption entries are missing rather than set to zero or inferred from the residual.
+
+The 2023–2025 household-estimate interval is flagged as consent-derived, not independent evidence of household formation. The current household-size projection remains unchanged pending the Stats NZ 2023-base family and household projection release. Once published, the projection, census anchor and consent-derived household-estimate bridge should be reconciled together before changing this input.
+
+### Time resolution
+
+Consents continue to be handled monthly and shifted month by month by the completion lag. Demographic demand remains annual. Quarterly population and dwelling / household estimates are not interpolated into pseudo-monthly observations: that would impose an unobserved within-quarter pattern. A quarterly demand engine is a separate methodological development requiring stock-flow calibration and validation; it is not part of this release.
+
+### New outputs
+
+- D43: historical and projected market-balance classification.
+- D44: annual GFA comparison by broad demand group under zero and 17-month lag.
+- outputs/data/diagnostics/lag_comparison_annual.csv
+- outputs/data/diagnostics/market_balance_history_projection.csv
+- outputs/data/diagnostics/lag_comparison_summary.json
+- outputs/reports/market_balance.md
+

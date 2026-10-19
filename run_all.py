@@ -135,8 +135,9 @@ def pipeline(profile):
     for name in ('Building_factors', 'projection', 'Diagnostics', 'Sensitivity', 'MonteCarlo', 'boundaries',
                  'validation', 'gap_2026'):
         step(name.lower(), [py, script(name)], env)
-    for name, t in (('overbuild_2026', 'overbuild_2026'), ('scenarios', 'replacement_scenarios'),
-                    ('reconciliation', 'reconciliation'), ('figures_report', 'figures_report')):
+    for name, t in (('overbuild_2026', 'overbuild_2026'), ('demand_balance', 'demand_balance'),
+                    ('scenarios', 'replacement_scenarios'), ('reconciliation', 'reconciliation'),
+                    ('figures_report', 'figures_report')):
         step(name, [py, tool(t)], env)
     step('pathways', [py, script('pathways')], env)
     step('pathways_mc', [py, script('pathways_mc')], env)

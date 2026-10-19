@@ -116,7 +116,7 @@ def write_run_meta(env, mode):
 
 
 def base_env(profile, legacy=False):
-    return dict(os.environ, MPLBACKEND='Agg', PYTHONWARNINGS='ignore', PATHWAY_PROFILE=profile,
+    return dict(os.environ, MPLBACKEND='Agg', PYTHONWARNINGS='ignore', PYTHONUTF8='1', PATHWAY_PROFILE=profile,
                 PATHWAY_SAVE_FIGURES='0', PATHWAY_REFERENCE_LEGACY='1' if legacy else '0')
 
 

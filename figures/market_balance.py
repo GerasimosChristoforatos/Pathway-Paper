@@ -32,6 +32,10 @@ def d43():
                               columns="category", values="floor_area_Mm2_per_year").reset_index()
     projection_wide = proj.pivot(index=["period", "year_mid", "year_start", "year_end"],
                                  columns="category", values="floor_area_Mm2_per_year").reset_index()
+    for frame in (history_wide, projection_wide):
+        if "total_built" not in frame:
+            raise ValueError("Market-balance data are missing the total_built category.")
+        frame["total_built_Mm2_per_year"] = frame["total_built"]
     history_wide = history_wide.sort_values("year_mid")
     projection_wide = projection_wide.sort_values("year_mid")
 

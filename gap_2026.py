@@ -171,7 +171,7 @@ def main():
          f"\"{g_text}\") vs 2024-base projection median {g_proj['50th']:,.0f} "
          f"(5th {g_proj['5th']:,.0f}, 95th {g_proj['95th']:,.0f}) -> {d_pop_persons:+,.0f} persons = "
          f"{d_pop:+,.0f} dwellings at S = {S26:.3f}, v = {100 * v26:.2f}%.", '',
-         'Population growth is a June-to-June 12-month observation used as a proxy for the calendar-2026 change; it is not an observed Dec-to-Dec figure. ',
+         'Population growth is a June-to-June 12-month observation used as a proxy for the calendar-2026 change; it is not an observed Dec-to-Dec figure.',
          '| 2026 consents estimate | variant | observed-implied completions | model (pre-pipeline) | gap | (ii) variant adds (vs Low) | '
          '(iii) population | (i) pipeline from 2025 | (iv) residual | residual as vacancy rise | '
          'or as fall in household size |', '|---|---|---|---|---|---|---|---|---|---|---|']

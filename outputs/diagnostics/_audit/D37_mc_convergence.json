@@ -1,6 +1,6 @@
 {
  "figure": "D37_mc_convergence",
- "producer": "figures/__main__.py",
+ "producer": "../../../../.conda/envs/spyder-py312/Lib/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "Embodied carbon",

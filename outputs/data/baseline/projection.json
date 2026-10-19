@@ -62,7 +62,7 @@
     {
       "band": "2026 overbuild",
       "floor_area_Mm2": 4.842579838905654,
-      "carbon_kt": 1297.1365656827538
+      "carbon_kt": 1297.136565682754
     },
     {
       "band": "Overbuild absorbed",
@@ -85,8 +85,8 @@
     "SOIL": 3014.3425172358425
   },
   "replacement_trend": {
-    "a": -0.12138497857833094,
-    "b": 6.0725458346389e-05,
+    "a": -0.12138497857832611,
+    "b": 6.0725458346386594e-05,
     "n": 6,
     "x": [
       1994.0,
@@ -116,8 +116,8 @@
       1991,
       2023
     ],
-    "rate_2026": 0.0016448000314531752,
-    "rate_2050": 0.0031022110317664997,
+    "rate_2026": 0.0016448000314531197,
+    "rate_2050": 0.0031022110317664026,
     "method": "weighted least squares of the census-interval net replacement rates on the mean of each interval's model years (y0+1 .. y1), weights = interval length; Very High replacement = a + b year (MODEL v3.3.0)"
   },
   "bands_in_scope": [
@@ -258,7 +258,7 @@
     ],
     "carbon_kt": [
       1177.1284841178137,
-      1163.7035893304035,
+      1163.7035893304037,
       1357.4648261189488,
       1094.6306329162028,
       931.8108651215559,

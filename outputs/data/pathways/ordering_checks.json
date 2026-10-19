@@ -152,13 +152,13 @@
       "lever": "L1",
       "pair": "reference>=moderate",
       "carbon_a_kt": 19761.390653157705,
-      "carbon_b_kt": 19049.799392499488,
+      "carbon_b_kt": 19049.79939249949,
       "ok": true
     },
     {
       "lever": "L1",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 19049.799392499488,
+      "carbon_a_kt": 19049.79939249949,
       "carbon_b_kt": 18348.929152665965,
       "ok": true
     },
@@ -166,7 +166,7 @@
       "lever": "L1",
       "pair": "ambitious>=tl",
       "carbon_a_kt": 18348.929152665965,
-      "carbon_b_kt": 15182.35133324907,
+      "carbon_b_kt": 15182.351333249071,
       "ok": true
     },
     {
@@ -180,13 +180,13 @@
       "lever": "L2",
       "pair": "moderate>=ambitious",
       "carbon_a_kt": 19075.588608885973,
-      "carbon_b_kt": 18399.485535656102,
+      "carbon_b_kt": 18399.485535656106,
       "ok": true
     },
     {
       "lever": "L2",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 18399.485535656102,
+      "carbon_a_kt": 18399.485535656106,
       "carbon_b_kt": 15017.077088509644,
       "ok": true
     },
@@ -201,13 +201,13 @@
       "lever": "L3",
       "pair": "moderate>=ambitious",
       "carbon_a_kt": 19296.22242871209,
-      "carbon_b_kt": 18831.054204266486,
+      "carbon_b_kt": 18831.05420426649,
       "ok": true
     },
     {
       "lever": "L3",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 18831.054204266486,
+      "carbon_a_kt": 18831.05420426649,
       "carbon_b_kt": 17319.54591387331,
       "ok": true
     },

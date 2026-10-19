@@ -51,6 +51,30 @@ def _layout():
 TIMINGS = {}
 
 
+def git_executable():
+    """Find Git on PATH or in a standard GitHub Desktop installation on Windows."""
+    found = shutil.which('git')
+    if found:
+        return found
+    desktop = os.path.join(os.environ.get('LOCALAPPDATA', ''), 'GitHubDesktop')
+    try:
+        candidates = [os.path.join(desktop, version, 'resources', 'app', 'git', 'cmd', 'git.exe')
+                      for version in os.listdir(desktop)]
+    except OSError:
+        candidates = []
+    candidates = [path for path in candidates if os.path.isfile(path)]
+    return max(candidates, key=os.path.getmtime) if candidates else None
+
+
+def git_value(*args):
+    """Return a Git value when Git is available; keep the pipeline usable without it."""
+    executable = git_executable()
+    if not executable:
+        return ''
+    result = subprocess.run([executable, *args], cwd=ROOT, capture_output=True, text=True)
+    return result.stdout.strip() if result.returncode == 0 else ''
+
+
 def step(name, cmd, env):
     L = _layout()
     os.makedirs(L.LOGS, exist_ok=True)
@@ -98,9 +122,8 @@ def input_hash():
 def write_run_meta(env, mode):
     import runprofile
     L = _layout()
-    git = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True, text=True).stdout.strip()
-    dirty = bool(subprocess.run(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=ROOT,
-                                capture_output=True, text=True).stdout.strip())
+    git = git_value('rev-parse', 'HEAD')
+    dirty = bool(git_value('status', '--porcelain', '--untracked-files=no'))
     p = runprofile.PROFILES[env['PATHWAY_PROFILE']]
     import levers
     meta = dict(profile=p['name'], mode=mode, n_draws=p['n_draws'], sobol=p['sobol'], bootstrap=p['bootstrap'],

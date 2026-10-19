@@ -1,5 +1,5 @@
 group,case,year,carbon_kt
-Reference,Reference (adopted settings),2026,1163.7035893304035
+Reference,Reference (adopted settings),2026,1163.7035893304037
 Reference,Reference (adopted settings),2027,1357.4648261189488
 Reference,Reference (adopted settings),2028,1094.6306329162028
 Reference,Reference (adopted settings),2029,931.8108651215559
@@ -24,7 +24,7 @@ Reference,Reference (adopted settings),2047,675.2821222166308
 Reference,Reference (adopted settings),2048,670.0664240976878
 Reference,Reference (adopted settings),2049,659.8482997753716
 Reference,Reference (adopted settings),2050,649.0339295348083
-Population,Population: Stats NZ 5th percentile,2026,1183.1879140578164
+Population,Population: Stats NZ 5th percentile,2026,1183.1879140578167
 Population,Population: Stats NZ 5th percentile,2027,1376.4611641618692
 Population,Population: Stats NZ 5th percentile,2028,866.5992573125459
 Population,Population: Stats NZ 5th percentile,2029,629.1657052138969
@@ -49,7 +49,7 @@ Population,Population: Stats NZ 5th percentile,2047,424.9607254295518
 Population,Population: Stats NZ 5th percentile,2048,410.72350329344465
 Population,Population: Stats NZ 5th percentile,2049,393.9755479715267
 Population,Population: Stats NZ 5th percentile,2050,377.57577836349355
-Population,Population: Stats NZ 5th percentile (engine path),2026,1163.7035893304035
+Population,Population: Stats NZ 5th percentile (engine path),2026,1163.7035893304037
 Population,Population: Stats NZ 5th percentile (engine path),2027,1357.5389767721026
 Population,Population: Stats NZ 5th percentile (engine path),2028,848.1301490514023
 Population,Population: Stats NZ 5th percentile (engine path),2029,611.3399272963932
@@ -74,7 +74,7 @@ Population,Population: Stats NZ 5th percentile (engine path),2047,431.6012243496
 Population,Population: Stats NZ 5th percentile (engine path),2048,422.6799957032191
 Population,Population: Stats NZ 5th percentile (engine path),2049,405.33430503115363
 Population,Population: Stats NZ 5th percentile (engine path),2050,387.82974505911255
-Population,Population: Stats NZ 95th percentile,2026,1183.1879140578164
+Population,Population: Stats NZ 95th percentile,2026,1183.1879140578167
 Population,Population: Stats NZ 95th percentile,2027,1376.4611641618692
 Population,Population: Stats NZ 95th percentile,2028,1376.4989650759894
 Population,Population: Stats NZ 95th percentile,2029,1336.5341486317955
@@ -99,7 +99,7 @@ Population,Population: Stats NZ 95th percentile,2047,838.6461312858427
 Population,Population: Stats NZ 95th percentile,2048,842.1322360257776
 Population,Population: Stats NZ 95th percentile,2049,850.1350215780748
 Population,Population: Stats NZ 95th percentile,2050,852.30563276527
-Population,Population: Stats NZ 95th percentile (engine path),2026,1163.7035893304035
+Population,Population: Stats NZ 95th percentile (engine path),2026,1163.7035893304037
 Population,Population: Stats NZ 95th percentile (engine path),2027,1357.365958581411
 Population,Population: Stats NZ 95th percentile (engine path),2028,1357.6247647546186
 Population,Population: Stats NZ 95th percentile (engine path),2029,1318.1514078441962
@@ -124,7 +124,7 @@ Population,Population: Stats NZ 95th percentile (engine path),2047,867.308751470
 Population,Population: Stats NZ 95th percentile (engine path),2048,875.4117010368129
 Population,Population: Stats NZ 95th percentile (engine path),2049,883.3498643811593
 Population,Population: Stats NZ 95th percentile (engine path),2050,884.4641028854444
-Replacement variant,Low replacement: long-run rate,2026,1176.2600056447066
+Replacement variant,Low replacement: long-run rate,2026,1176.2600056447068
 Replacement variant,Low replacement: long-run rate,2027,1369.4021259484268
 Replacement variant,Low replacement: long-run rate,2028,1056.2734276184453
 Replacement variant,Low replacement: long-run rate,2029,869.9019865830335
@@ -149,7 +149,7 @@ Replacement variant,Low replacement: long-run rate,2047,657.1538765232
 Replacement variant,Low replacement: long-run rate,2048,653.1250503832348
 Replacement variant,Low replacement: long-run rate,2049,643.8883112333615
 Replacement variant,Low replacement: long-run rate,2050,634.0112112918122
-Replacement variant,"Reference, replacement half-life 5 yr",2026,1164.544454967991
+Replacement variant,"Reference, replacement half-life 5 yr",2026,1164.5444549679912
 Replacement variant,"Reference, replacement half-life 5 yr",2027,1359.0101028576403
 Replacement variant,"Reference, replacement half-life 5 yr",2028,1088.0820088169176
 Replacement variant,"Reference, replacement half-life 5 yr",2029,918.3788473781527
@@ -224,31 +224,31 @@ Replacement variant,High replacement: 2018-2023 rate persists,2047,733.922085691
 Replacement variant,High replacement: 2018-2023 rate persists,2048,729.813907693723
 Replacement variant,High replacement: 2018-2023 rate persists,2049,720.647566405494
 Replacement variant,High replacement: 2018-2023 rate persists,2050,710.8274678632368
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2026,1163.843486905073
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2027,1356.022882609092
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2028,1103.3134864911938
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2029,954.4254515413414
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2030,839.2810493318942
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2031,756.1248320010026
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2032,737.0525431830675
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2033,782.7281445946307
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2034,840.4803041020814
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2035,880.432372375086
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2036,912.6835832797526
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2037,887.0092359150998
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2038,856.1918858999712
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2039,823.6039993384569
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2040,806.8912412955619
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2041,800.128961704451
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2042,802.9401844474522
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2043,820.569482095344
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2044,826.2723692018351
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2045,818.8530797317204
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2046,811.4563679421702
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2047,810.8469941282232
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2048,810.6841931112647
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2049,805.4487867086202
-Replacement variant,Very High replacement: 1991-2023 census trend continues,2050,799.5619863439491
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2026,1163.8434869050734
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2027,1356.0228826090927
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2028,1103.3134864911915
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2029,954.4254515413376
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2030,839.281049331889
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2031,756.1248320009965
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2032,737.0525431830617
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2033,782.7281445946255
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2034,840.4803041020767
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2035,880.4323723750819
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2036,912.6835832797481
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2037,887.0092359150952
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2038,856.1918858999666
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2039,823.6039993384525
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2040,806.8912412955573
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2041,800.1289617044454
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2042,802.9401844474471
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2043,820.5694820953386
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2044,826.2723692018294
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2045,818.853079731715
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2046,811.4563679421639
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2047,810.846994128217
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2048,810.6841931112584
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2049,805.4487867086139
+Replacement variant,Very High replacement: 1991-2023 census trend continues,2050,799.5619863439427
 Household size,Household size: Stats NZ Low variant,2026,1163.6694406321799
 Household size,Household size: Stats NZ Low variant,2027,1357.415362129564
 Household size,Household size: Stats NZ Low variant,2028,1144.0798119751003
@@ -299,7 +299,7 @@ Household size,Household size: Stats NZ High variant,2047,662.5451339571562
 Household size,Household size: Stats NZ High variant,2048,657.4183540302935
 Household size,Household size: Stats NZ High variant,2049,647.3066121781079
 Household size,Household size: Stats NZ High variant,2050,636.7601508767203
-Household size,Household size after 2043: flat (kink at 2043),2026,1163.7035893304035
+Household size,Household size after 2043: flat (kink at 2043),2026,1163.7035893304037
 Household size,Household size after 2043: flat (kink at 2043),2027,1357.4648261189488
 Household size,Household size after 2043: flat (kink at 2043),2028,1094.6306329162028
 Household size,Household size after 2043: flat (kink at 2043),2029,931.8108651215559
@@ -324,7 +324,7 @@ Household size,Household size after 2043: flat (kink at 2043),2047,675.450175443
 Household size,Household size after 2043: flat (kink at 2043),2048,670.2108543448538
 Household size,Household size after 2043: flat (kink at 2043),2049,659.8318483758102
 Household size,Household size after 2043: flat (kink at 2043),2050,648.7160402847095
-Household size,Household size after 2043: secant-slope taper,2026,1163.7035893304035
+Household size,Household size after 2043: secant-slope taper,2026,1163.7035893304037
 Household size,Household size after 2043: secant-slope taper,2027,1357.4648261189488
 Household size,Household size after 2043: secant-slope taper,2028,1094.6306329162028
 Household size,Household size after 2043: secant-slope taper,2029,931.8108651215559
@@ -345,11 +345,11 @@ Household size,Household size after 2043: secant-slope taper,2043,695.6140970170
 Household size,Household size after 2043: secant-slope taper,2044,686.1195002667628
 Household size,Household size after 2043: secant-slope taper,2045,677.632486116313
 Household size,Household size after 2043: secant-slope taper,2046,669.2385129826827
-Household size,Household size after 2043: secant-slope taper,2047,668.0500432314824
+Household size,Household size after 2043: secant-slope taper,2047,668.0500432314825
 Household size,Household size after 2043: secant-slope taper,2048,667.4362103010768
 Household size,Household size after 2043: secant-slope taper,2049,659.459255368635
 Household size,Household size after 2043: secant-slope taper,2050,648.5017851251358
-Household size,Household size after 2043: taper from the PCHIP end slope,2026,1163.7035893304035
+Household size,Household size after 2043: taper from the PCHIP end slope,2026,1163.7035893304037
 Household size,Household size after 2043: taper from the PCHIP end slope,2027,1357.4648261189488
 Household size,Household size after 2043: taper from the PCHIP end slope,2028,1094.6306329162028
 Household size,Household size after 2043: taper from the PCHIP end slope,2029,931.8108651215559
@@ -519,12 +519,12 @@ Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2042,7
 Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2043,725.659737055618
 Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2044,723.449881753212
 Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2045,710.2159335344488
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2046,697.7353212326575
+Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2046,697.7353212326577
 Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2047,692.8565615788315
 Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2048,685.9200928639796
 Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2049,674.1154750745244
 Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2050,663.1754751478182
-Completion lag,Completion lag 15 months,2026,1214.7459085176986
+Completion lag,Completion lag 15 months,2026,1214.7459085176988
 Completion lag,Completion lag 15 months,2027,1059.486564689293
 Completion lag,Completion lag 15 months,2028,982.5001040229411
 Completion lag,Completion lag 15 months,2029,918.7656257196771
@@ -574,7 +574,7 @@ Completion lag,Completion lag 19 months,2047,668.7179568882106
 Completion lag,Completion lag 19 months,2048,663.6571244453585
 Completion lag,Completion lag 19 months,2049,653.4537284988457
 Completion lag,Completion lag 19 months,2050,642.736963227228
-Completion lag,"No 2026 data (consents to December 2025, projected 2026 population)",2026,1163.7035893304035
+Completion lag,"No 2026 data (consents to December 2025, projected 2026 population)",2026,1163.7035893304037
 Completion lag,"No 2026 data (consents to December 2025, projected 2026 population)",2027,1030.4801747058693
 Completion lag,"No 2026 data (consents to December 2025, projected 2026 population)",2028,969.7317105468933
 Completion lag,"No 2026 data (consents to December 2025, projected 2026 population)",2029,930.1660742140981
@@ -599,7 +599,7 @@ Completion lag,"No 2026 data (consents to December 2025, projected 2026 populati
 Completion lag,"No 2026 data (consents to December 2025, projected 2026 population)",2048,671.326707348037
 Completion lag,"No 2026 data (consents to December 2025, projected 2026 population)",2049,660.4059068499938
 Completion lag,"No 2026 data (consents to December 2025, projected 2026 population)",2050,650.0791655451657
-Stock,No census under-construction correction,2026,1163.7035893304035
+Stock,No census under-construction correction,2026,1163.7035893304037
 Stock,No census under-construction correction,2027,1357.4648261189488
 Stock,No census under-construction correction,2028,1094.6306329162028
 Stock,No census under-construction correction,2029,931.8108651215559
@@ -624,7 +624,7 @@ Stock,No census under-construction correction,2047,675.2821222166308
 Stock,No census under-construction correction,2048,670.0664240976878
 Stock,No census under-construction correction,2049,659.8482997753716
 Stock,No census under-construction correction,2050,649.0339295348083
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2026,1163.7035893304035
+2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2026,1163.7035893304037
 2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2027,1357.4648261189488
 2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2028,1144.6863529654963
 2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2029,1040.3017052826328
@@ -649,7 +649,7 @@ Stock,No census under-construction correction,2050,649.0339295348083
 2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2048,674.0914738692087
 2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2049,663.2861248831862
 2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2050,651.6729476444434
-2026 overbuild: absorption,Overbuild absorbed by 2030,2026,1163.7035893304035
+2026 overbuild: absorption,Overbuild absorbed by 2030,2026,1163.7035893304037
 2026 overbuild: absorption,Overbuild absorbed by 2030,2027,1357.4648261189488
 2026 overbuild: absorption,Overbuild absorbed by 2030,2028,890.1426987497879
 2026 overbuild: absorption,Overbuild absorbed by 2030,2029,394.20859838177637
@@ -674,7 +674,7 @@ Stock,No census under-construction correction,2050,649.0339295348083
 2026 overbuild: absorption,Overbuild absorbed by 2030,2048,673.9443806305503
 2026 overbuild: absorption,Overbuild absorbed by 2030,2049,661.9391506055546
 2026 overbuild: absorption,Overbuild absorbed by 2030,2050,647.3804715906382
-2026 overbuild: absorption,Overbuild absorbed by 2045,2026,1163.7035893304035
+2026 overbuild: absorption,Overbuild absorbed by 2045,2026,1163.7035893304037
 2026 overbuild: absorption,Overbuild absorbed by 2045,2027,1357.4648261189488
 2026 overbuild: absorption,Overbuild absorbed by 2045,2028,1126.8757646572835
 2026 overbuild: absorption,Overbuild absorbed by 2045,2029,1012.8741540241728
@@ -726,7 +726,7 @@ Stock,No census under-construction correction,2050,649.0339295348083
 2026 overbuild: how it is booked,"Booked as redevelopment, stock-neutral",2050,651.6729473369921
 Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2026,1163.8244618564586
 Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2027,1357.5826713815982
-Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2028,1090.7313123795577
+Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2028,1090.7313123795582
 Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2029,925.6794832536132
 Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2030,797.8613473357161
 Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2031,704.0607805889999
@@ -749,7 +749,7 @@ Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2047,671.058440
 Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2048,665.9091597991255
 Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2049,655.7448157981372
 Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2050,644.9827873203172
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2026,1163.7035893304035
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2026,1163.7035893304037
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2027,1357.4648261189488
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2028,1103.7158698335566
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2029,934.4815377342401
@@ -759,7 +759,7 @@ Stock,"Vacancy parameter: 1986-2023 census mean, one definition",2050,644.982787
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2033,723.5023939052788
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2034,776.850197092133
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2035,811.876922516656
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2036,839.2686615719537
+2026 overbuild: rule variant,Gap measured against the 2026 requirement,2036,839.2686615719538
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2037,807.2783052085774
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2038,770.3863348765871
 2026 overbuild: rule variant,Gap measured against the 2026 requirement,2039,731.968963118341
@@ -807,7 +807,7 @@ Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2030,87
 Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2031,778.6967449578104
 Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2032,756.2771968136396
 Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2033,806.4457221367812
-Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2034,871.9579824347412
+Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2034,871.9579824347411
 Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2035,918.6054779730458
 Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2036,957.4921149471262
 Carbon factors,Frozen technology: 2025 factors held (no decarbonisation),2037,929.5719278214042
@@ -855,7 +855,7 @@ Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025
 Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2029,943.841041486901
 Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2030,818.8135123774874
 Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2031,725.6006549525455
-Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2032,699.4990114689723
+Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2032,699.4990114689724
 Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2033,740.956737226596
 Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2034,795.5155208000153
 Carbon factors,Decarbonisation: NZ-made electricity-intensive items held at 2025,2035,831.8387250609682
@@ -924,7 +924,7 @@ Carbon factors,A4-A5 on each item's own Horup path,2047,665.6067120301525
 Carbon factors,A4-A5 on each item's own Horup path,2048,660.5840977317722
 Carbon factors,A4-A5 on each item's own Horup path,2049,650.4382116838422
 Carbon factors,A4-A5 on each item's own Horup path,2050,639.6631644709088
-Carbon factors,Event timing: interval L / n,2026,1163.7035893304035
+Carbon factors,Event timing: interval L / n,2026,1163.7035893304037
 Carbon factors,Event timing: interval L / n,2027,1357.4648261189488
 Carbon factors,Event timing: interval L / n,2028,1094.6306329162028
 Carbon factors,Event timing: interval L / n,2029,931.8108651215559
@@ -949,7 +949,7 @@ Carbon factors,Event timing: interval L / n,2047,661.4427018355065
 Carbon factors,Event timing: interval L / n,2048,650.3421563310604
 Carbon factors,Event timing: interval L / n,2049,640.0938378791852
 Carbon factors,Event timing: interval L / n,2050,630.5309738478184
-Carbon factors,Materials: jackknife low (all typologies),2026,1121.0186066978258
+Carbon factors,Materials: jackknife low (all typologies),2026,1121.018606697826
 Carbon factors,Materials: jackknife low (all typologies),2027,1307.3236518208912
 Carbon factors,Materials: jackknife low (all typologies),2028,1056.663811999139
 Carbon factors,Materials: jackknife low (all typologies),2029,899.4867210440378

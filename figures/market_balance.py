@@ -102,9 +102,9 @@ def d43():
               label=labels["overbuild_absorbed"]),
         Line2D([0], [0], color=S.INK, lw=S.LW_BOLD, label="Total floor area built"),
     ]
-    ax.legend(handles=handles, ncol=4, loc="upper center", bbox_to_anchor=(0.5, -0.20),
-              frameon=False, fontsize=S.FONT_MIN)
-    fig.tight_layout(rect=(0, 0.12, 1, 1))
+    fig.legend(handles=handles, ncol=4, loc="lower center", bbox_to_anchor=(0.5, 0.005),
+               frameon=False, fontsize=S.FONT_MIN)
+    fig.tight_layout(rect=(0, 0.15, 1, 1))
     S.save_figure(
         fig, fid,
         note=(

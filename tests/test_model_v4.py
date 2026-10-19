@@ -175,3 +175,16 @@ def test_household_size_sensitivity_table():
     for _, r in t.iterrows():
         key = 'REF' if r['run'] == 'Reference' else r['run']
         assert np.isclose(r['central_carbon_kt'], ref.loc[key, 'carbon_kt'], rtol=1e-12)
+
+def test_gap_2026_reports_pre_pipeline_dwelling_requirement(B):
+    """The gap diagnostic uses the exact unjoined dwelling requirement, not final pipeline building."""
+    import engine
+    import gap_2026
+
+    i26 = list(B['forecast_years']).index(2026)
+    E = B['engine_out']['50th']
+    expected = float(B['join_info']['50th']['R26'])
+
+    assert gap_2026.requirement_2026(B) == pytest.approx(expected, rel=1e-12)
+    # The final path includes the pipeline join; removing it recovers R26.
+    assert float(engine.requirement(E)[i26] - E['join'][i26]) == pytest.approx(expected, rel=1e-12)

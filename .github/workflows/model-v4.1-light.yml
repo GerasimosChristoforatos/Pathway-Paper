@@ -1,0 +1,43 @@
+name: MODEL v4.1.0 light-profile validation
+
+on:
+  push:
+    branches:
+      - release/model-v4.1.0
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  light-profile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install pinned dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run light-profile pipeline and tests
+        env:
+          PATHWAY_PROFILE: light
+          MPLBACKEND: Agg
+        run: python run_all.py
+
+      - name: Upload light-profile outputs and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-v4.1.0-light-outputs
+          path: outputs/_light/
+          if-no-files-found: warn
+          retention-days: 14

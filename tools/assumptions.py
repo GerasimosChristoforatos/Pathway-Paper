@@ -68,7 +68,7 @@ def update_pathways_section():
     txt = open(path).read()
     head = txt[:txt.index(PATHWAYS_MARK)].rstrip('\n') + '\n' if PATHWAYS_MARK in txt else txt
     body = pathways_section()
-    with open(path, 'w') as f:
+    with open(path, 'w', encoding='utf-8') as f:
         f.write(head + ('\n'.join(body[1:]) + '\n' if body else '').replace(PATHWAYS_MARK, '\n' + PATHWAYS_MARK, 1)
                 if body else head)
     print(f'outputs/reports/ASSUMPTIONS.md: Pathways section {len(body)} lines')
@@ -107,7 +107,7 @@ def main():
             L.append(f'| `{k}` | `{v!r}` |')
     L.append(f"| `SOURCE_PAIRS` | `{boundaries.SOURCE_PAIRS!r}` |")
     L += pathways_section()
-    with open(layout.writing(OUT_MD), 'w') as f:
+    with open(layout.writing(OUT_MD), 'w', encoding='utf-8') as f:
         f.write('\n'.join(L) + '\n')
     print(f'outputs/reports/ASSUMPTIONS.md: {len(L)} lines')
 

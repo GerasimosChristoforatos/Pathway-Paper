@@ -111,9 +111,9 @@ def main():
              f"Sensitivity, booked as redevelopment: implied net removals peak at {redev['peak_removals']:,.0f} in "
              f"{redev['peak_year']} (default: {redev['default_peak_removals']:,.0f}).", '',
              f"Limitation: {limitation}"]
-        with open(layout.writing(OUT_MD), 'w') as f:
+        with open(layout.writing(OUT_MD), 'w', encoding='utf-8') as f:
             f.write('\n'.join(L) + '\n')
-        print('\n'.join(L))
+        print(f"overbuild_2026: wrote {OUT_MD} and {OUT_JSON}")
         return
     raise SystemExit("OVERBUILD_RULE is not 'market_excess': nothing to report.")
 

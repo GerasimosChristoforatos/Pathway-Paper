@@ -49,6 +49,7 @@ Paths are those of the full profile (`outputs/`); the light profile writes the s
 | **Extended Data**: ED1–ED10 and the table EDT1 (lever levels by typology) | [outputs/paper_extended/](outputs/paper_extended/) |
 | **Supplementary figures**: SF1–SF6 (the model schematic; items beyond the ten Extended Data) | [outputs/supplementary/](outputs/supplementary/) |
 | **Diagnostics**: calibration, validation, boundaries, pathways, Monte Carlo, sensitivity | [outputs/diagnostics/](outputs/diagnostics/) |
+| **Market-balance diagnostics**: controlled zero- vs 17-month lag comparison; historical / forecast coarse demand classification | [outputs/reports/market_balance.md](outputs/reports/market_balance.md), [outputs/data/diagnostics/](outputs/data/diagnostics/) |
 | Run profile, draws, seeds, git and input hashes, step timings | [outputs/run_meta.json](outputs/run_meta.json) |
 | Grouped one-at-a-time sensitivity tables | [outputs/data/sensitivity/](outputs/data/sensitivity/) |
 | Results summary; every assumption with its basis; validation and reconciliation reports | [outputs/reports/](outputs/reports/) |

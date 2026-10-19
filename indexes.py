@@ -45,6 +45,9 @@ FILES = [
     ('data/baseline/gap_2026.json', 'The 2026 gap between observed building and the requirement',
      'gap_2026.py'),
     ('data/baseline/overbuild_2026.json', 'The 2026 overbuild and how it is absorbed', 'tools/overbuild_2026.py'),
+    ('data/diagnostics/lag_comparison_annual.csv', 'Annual floor area by broad demand group under zero- and 17-month completion timing', 'tools/demand_balance.py'),
+    ('data/diagnostics/market_balance_history_projection.csv', 'Historical and projected floor area in the separate coarse market-balance classification; historical overbuild is not identified', 'tools/demand_balance.py'),
+    ('data/diagnostics/lag_comparison_summary.json', 'Controlled zero- versus 17-month consent-to-completion comparison, demographic-path checks and observed consent cohorts', 'tools/demand_balance.py'),
     ('data/baseline/scenarios.json', 'Totals of the projection variants (Low, Reference, High replacement and their '
      'sensitivities)', 'tools/replacement_scenarios.py'),
     ('data/baseline/variants_annual.csv', 'Annual floor area and carbon of every projection variant',
@@ -131,6 +134,7 @@ FILES = [
     ('reports/validation.md', 'Validation report', 'validation.py'),
     ('reports/gap_2026.md', 'The 2026 gap', 'gap_2026.py'),
     ('reports/overbuild_2026.md', 'The 2026 overbuild', 'tools/overbuild_2026.py'),
+    ('reports/market_balance.md', 'Historical / projected market-balance classification and controlled completion-lag comparison', 'tools/demand_balance.py'),
     ('reports/scenarios.md', 'The projection variants', 'tools/replacement_scenarios.py'),
     ('reports/reality_checks.md', 'Reality checks: the projection against the 1991-2025 range',
      'tools/figures_report.py'),

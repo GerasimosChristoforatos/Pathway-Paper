@@ -336,20 +336,20 @@ def fig2():
         plt.setp(a.get_yticklabels(), visible=False)
     lo_, hi_ = ax[0].get_ylim()
     ticks = [t for t in ax[0].get_yticks() if lo_ <= t <= hi_]
-    ax[0].set_ylim(lo_, hi_ * 1.55)                                   # room above the data for the legends
+    ax[0].set_ylim(lo_, hi_ * 1.25)                                   # room above the data for the legends (tight)
     ax[0].set_yticks(ticks)                                           # ticks only over the data range
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
-    ax[2].legend(loc='upper right', fontsize=S.FONT_MIN)
+    LEG = dict(loc='upper right', fontsize=S.FONT_MIN, frameon=False, borderaxespad=0.2, labelspacing=0.3)
+    ax[2].legend(**LEG)
     mh = [Patch(label=lab, **P.material_patch(code, c)) for code, lab, c in S.MATERIAL][::-1]
-    ax[1].legend(handles=mh, loc='upper right', fontsize=S.FONT_MIN, ncol=2, columnspacing=0.8)
+    ax[1].legend(handles=mh, ncol=2, columnspacing=0.8, **LEG)
     shown = [b for b in BANDS_MOD.DISPLAY_ORDER if b in band.columns and (band[b].abs() > 1e-12).any()]
     hb2 = paper_band_handles(shown, six=True) + [Line2D([0], [0], color=S.INK, lw=S.LW, label='Carbon (in scope)')]
     for h in hb2:                                                     # MODEL v4.2.1: compact labels inside panel a
         h.set_label({'Market balance (excess, residual and scope adjustments)': 'Market balance',
                      'Household-size change': 'Household size', 'Maintenance (B2, B4)': 'Maintenance'}
                     .get(h.get_label(), h.get_label()))
-    ax[0].legend(handles=hb2, loc='upper left', ncol=2, fontsize=S.FONT_MIN - 0.5, handlelength=0.9,
-                 handletextpad=0.3, columnspacing=0.6, labelspacing=0.25, borderaxespad=0.3)
+    ax[0].legend(handles=hb2, ncol=2, columnspacing=0.8, **LEG)
     # (d) cumulative 2026-2050: three attached columns of the same total
     d = fig.add_subplot(gs[3])
     c = float(total.sum())
@@ -429,9 +429,9 @@ def fig3():
     # MODEL v4.2.1: the Moderate / Ambitious Pathway and the Theoretical Limit (deterministic, pathways/annual.csv)
     pa = D.csv('pathways/annual.csv')
     pa = pa[(pa['scenario'] == 'REF') & (pa['year'] >= 2026)]
-    for run, kw in ((f'{N.PATHWAY}-moderate', dict(color=S.PATHWAY_SETTING['moderate'], lw=S.LW)),
-                    (f'{N.PATHWAY}-ambitious', dict(color=S.PATHWAY_SETTING['ambitious'], lw=S.LW)),
-                    ('TL', dict(color=S.TL, lw=S.LW_THIN + 0.25, ls=':'))):
+    for run, kw in ((f'{N.PATHWAY}-moderate', dict(color=S.PATHWAY_SETTING['moderate'], lw=S.LW, alpha=0.8)),
+                    (f'{N.PATHWAY}-ambitious', dict(color=S.PATHWAY_SETTING['ambitious'], lw=S.LW, alpha=0.8)),
+                    ('TL', dict(color=S.TL, lw=S.LW * 0.7, alpha=0.8))):
         r = pa[pa['run'] == run].set_index('year').loc[years.astype(int), 'carbon_kt']
         ax.plot(years, r.values, label=N.run_label(run), **kw)
     ax.set_xlim(years[0], years[-1])
@@ -546,7 +546,7 @@ def fig4():
     the Ambitious Pathway and (TL1 ... TL9 cumulative) the Theoretical Limit; the annual panel of v3.3.2 is removed
     (the pathway lines are in Fig3a)."""
     paths, bar_, batp = waterfall_paths()
-    fig = plt.figure(figsize=S.figsize('double', 105))
+    fig = plt.figure(figsize=S.figsize('double', 79))
     gs = fig.add_gridspec(1, 3, wspace=0.08)
     ax = [fig.add_subplot(gs[0, 0])]
     ax += [fig.add_subplot(gs[0, k], sharey=ax[0]) for k in (1, 2)]
@@ -562,7 +562,7 @@ def fig4():
     P.thousands(ax[0].yaxis)
     hs = [Patch(label=f'{St} {N.STRATEGIES[St]}', **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
     ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_MIN, title='Waterfall steps', title_fontsize=S.FONT_MIN)
-    fig.subplots_adjust(left=0.08, right=0.99, top=0.93, bottom=0.2)
+    fig.subplots_adjust(left=0.08, right=0.99, top=0.92, bottom=0.26)
     up_txt = '; '.join(f'{k}: ' + ', '.join(f'{s} {d:+,.1f} kt' for s, d in v) for k, v in ups.items() if v)
     r = D.csv('pathways/runs.csv')
     r = r[r['scenario'] == 'REF'].set_index('run')
@@ -610,14 +610,21 @@ def fig5():
     x = np.arange(len(FIG5_RUNS), dtype=float)
     bands = [b for b in red[FIG5_RUNS[0]] if any(abs(red[r][b]) > 1e-9 for r in FIG5_RUNS)]
     parts = [(b, np.array([red[r][b] for r in FIG5_RUNS])) for b in bands]
-    up, dn, end = P.bars_cumulative(ax, x, parts, 0.56, net=np.array([tot[r] for r in FIG5_RUNS]))
+    # MODEL v4.2.1: positive band reductions stacked up from zero, negative ones stacked below zero; the net marker
+    up, dn = P.stack_bars(ax, x, parts, 0.56, net=np.array([tot[r] for r in FIG5_RUNS]))
+    for xi, r in zip(x, FIG5_RUNS):
+        ax.plot([xi - 0.34, xi + 0.34], [tot[r], tot[r]], color=S.INK, lw=S.LW_BOLD * 1.6, solid_capstyle='butt',
+                zorder=6)
+    ax.annotate('Net reduction', xy=(x[-1] + 0.34, tot[FIG5_RUNS[-1]]), xytext=(x[-1] + 0.40, tot[FIG5_RUNS[-1]]),
+                va='center', ha='left', fontsize=S.FONT_SMALL, color=S.INK)
     for xi, r, u in zip(x, FIG5_RUNS, up):
         ax.text(xi, u + 0.012 * max(up), f'{tot[r]:,.0f}', ha='center', va='bottom', fontsize=S.FONT_SMALL,
                 fontweight='bold')
     ax.set_xticks(x)
     ax.set_xticklabels([N.PATHWAY_RUNS.get(r, N.TL['TL']) for r in FIG5_RUNS])
-    ax.set_xlim(-0.6, len(x) - 0.4)
-    ax.set_ylim(0, max(up) * 1.08)
+    ax.set_xlim(-0.6, len(x) - 0.4 + 0.5)                               # room for the net-marker label
+    ax.set_ylim(min(0.0, float(min(dn)) * 1.15), max(up) * 1.08)
+    ax.axhline(0, color=S.INK, lw=S.LW_THIN)
     ax.set_ylabel('Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO₂e)')
     P.thousands(ax.yaxis)
     ax.grid(axis='x', visible=False)
@@ -625,17 +632,13 @@ def fig5():
     hb = []
     for b in bands[::-1]:                                                # top of the stack first
         lab = BANDS_MOD.DISPLAY_LABEL.get(b, P.band_label(b))
-        if b in negb and not any(red[r][b] > 1e-9 for r in FIG5_RUNS):
-            hb.append(Patch(label=f'{lab} (negative)', **P.negative_bar_style(b)))
-        else:
-            hb.append(Patch(label=lab, **dict(P.band_style(b), edgecolor='#555555', linewidth=S.LW_THIN)))
-    hb.append(Line2D([0], [0], color=S.INK, lw=S.LW_BOLD, label='Total reduction'))
+        hb.append(Patch(label=lab, **dict(P.band_style(b), edgecolor='#555555', linewidth=S.LW_THIN)))
     fig.legend(handles=hb[::-1], loc='lower center', ncol=4, fontsize=S.FONT_MIN + 0.5, frameon=False,
                bbox_to_anchor=(0.5, 0.0))
     fig.tight_layout(rect=(0, 0.12, 1, 1))
     _save(fig, 'Fig5_reduction_by_demand',
           note='Reduction vs the Reference (kt): ' + ', '.join(f'{N.run_label(r)} {tot[r]:,.0f}' for r in FIG5_RUNS)
-               + '. Negative band reductions (outlined): ' + '; '.join(
+               + '. Negative band reductions (stacked below zero): ' + '; '.join(
                    f"{P.band_label(b)} " + ', '.join(f'{red[r][b]:+,.0f}' for r in FIG5_RUNS) for b in bands if b in negb)
                + ' kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are '
                'smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.')
@@ -732,8 +735,8 @@ def fig6():
     g = np.linspace(lo, hi, FIG6_N)
     X, Y = np.meshgrid(g, g)
     Z = fig6_loe(bc, X, Y)
-    fig = plt.figure(figsize=S.figsize('double', 118))
-    ax = fig.add_axes([0.08, 0.12, 0.52, 0.82])
+    fig = plt.figure(figsize=S.figsize('double', 126))
+    ax = fig.add_axes([0.08, 0.21, 0.52, 0.755])
     S.boundary_field(ax, 100 * X, 100 * Y, Z, 1.0, atp_level, lines=False)
     st = {k: v for k, v in S.BOUNDARY['AR'].items() if k != 'label'}
     for xb, yb in fig6_branches(bc, 1.0):                          # the AR line, exact
@@ -764,7 +767,7 @@ def fig6():
     ax.set_ylim(100 * lo, 100 * hi)
     ax.grid(False)
     # the LoE AR ruler (log): zones, AR and AtP, the plane floor and the runs
-    ru = fig.add_axes([0.625, 0.12, 0.018, 0.82])
+    ru = fig.add_axes([0.625, 0.21, 0.018, 0.755])
     marks = [(N.SCENARIOS['REF'], float(runs['REF']), dict(color=S.REFERENCE, marker='s', ms=4)),
              (N.PATHWAY_RUNS['pathway-moderate'], float(runs['pathway-moderate']),
               dict(color=S.PATHWAY[N.PATHWAY], marker='o', ms=5)),
@@ -803,7 +806,9 @@ def fig6():
           Line2D([0], [0], ls='none', color=S.TL, label=N.TL['TL'], **S.TL_MARKER),
           Line2D([0], [0], ls='none', color=S.REFERENCE, marker='s', ms=4, label=f"{N.SCENARIOS['REF']} (ruler)")]
     h += S.boundary_handles() + S.zone_handles()
-    fig.legend(handles=h, loc='center left', bbox_to_anchor=(0.80, 0.5), frameon=False, fontsize=S.FONT_MIN + 0.5)
+    h = [x for x in h if x.get_label() != S.ZONE['within_both']['label']]
+    fig.legend(handles=h, loc='lower center', bbox_to_anchor=(0.45, 0.0), ncol=3, frameon=False,
+               fontsize=S.FONT_MIN + 0.5)
     note = (f"LoE AR = [{c26:,.0f} + {r['carbon_2027_2050_cohorts_kt']:,.0f} (1 - x)(1 - y)] / {bc['B_AR_kt']:,.0f} kt; "
             f"C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = {floor:.3f} (the lowest "
             f"LoE AR at x or y = 100%); AtP = B_AtP / B_AR = {atp_level:.3f} lies below the floor, so the AtP contour is "
@@ -830,7 +835,7 @@ def fig7():
     alone = {k: {L: float(r['REF'] - r[f'{L}-{k}']) for L in N.LEVERS} for k in ('moderate', 'ambitious', 'tl')}
     order = list(N.LEVERS)                                     # top to bottom: L1 .. L9
     y = np.arange(len(order))[::-1]
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 95), sharey=True)
+    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 72), sharey=True)
     for a, val, xlab, letter, title in (
             (ax[0], alone, 'Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO₂e)', 'a',
              'Each lever alone'),
@@ -856,11 +861,11 @@ def fig7():
     ax[0].set_yticks(y)
     ax[0].set_yticklabels([f'{L} {N.LEVERS[L]}' for L in order])
     ax[0].set_ylim(-0.6, len(order) - 0.4)
-    ax[1].legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate (Level 2)'),
-                          Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious (Level 3)'),
-                          Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit (Level 4)', **S.TL_MARKER)],
-                 loc='lower right', fontsize=S.FONT_MIN)
-    fig.tight_layout(rect=(0, 0, 0.92, 1))
+    fig.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate (Level 2)'),
+                        Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious (Level 3)'),
+                        Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit (Level 4)', **S.TL_MARKER)],
+               loc='lower center', ncol=3, fontsize=S.FONT_MIN + 0.5, frameon=False, bbox_to_anchor=(0.5, 0.0))
+    fig.tight_layout(rect=(0, 0.07, 0.95, 1))
     tot = {k: v.sum() for k, v in g.items()}
     _save(fig, 'Fig7_shapley_levers',
           note='(a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each '
@@ -941,8 +946,10 @@ def fig8():
     rows = [r if len(r) == 5 else r + (None,) for r in rows]
     span = lambda r: abs(r[4] - c0) if r[4] is not None else abs(r[2] - r[1])
     rows = sorted(rows, key=span)
+    k_cr = [r[0] for r in rows].index('Completion rate (0.93–0.96)')    # MODEL v4.2.1: Completion rate and below only
+    rows = rows[:k_cr + 1]
     has_single = any(r[4] is not None for r in rows)
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 96), gridspec_kw={'width_ratios': [1.25, 1]})
+    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 77), gridspec_kw={'width_ratios': [1.25, 1]})
     a = ax[0]
     for k, (lab, lo, hi, mid, one) in enumerate(rows):
         bars = ((one, SINGLE_CASE),) if one is not None else ((lo, LOW_END), (hi, HIGH_END))

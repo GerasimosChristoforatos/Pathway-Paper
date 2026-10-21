@@ -188,6 +188,23 @@ def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', *
     return up, dn
 
 
+def stack_bars(ax, x, parts, width, net=None):
+    """MODEL v4.2.1: bars by band, positive values stacked up from zero and negative values stacked down from zero
+    (fixed order), each segment filled in its band style; net: the totals to check against (1e-9). Returns (up, down)."""
+    x = np.atleast_1d(np.asarray(x, float))
+    up, dn = np.zeros(len(x)), np.zeros(len(x))
+    for bid, v in parts:
+        v = np.broadcast_to(np.asarray(v, float), x.shape)
+        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
+        if np.any(pos > 0):
+            ax.bar(x, pos, bottom=up, width=width, gid='band_segment', **band_style(bid))
+        if np.any(neg < 0):
+            ax.bar(x, neg, bottom=dn, width=width, gid=NEG_GID, **band_style(bid))
+        up, dn = up + pos, dn + neg
+    _check_net(up, dn, net, 'stack_bars')
+    return up, dn
+
+
 def negative_bar_style(bid):
     colour = (S.BAND[bid][0] if bid in S.BAND else S.HISTORY_BAND[bid][0] if bid in S.HISTORY_BAND
               else S.BAND['replacement'][0])

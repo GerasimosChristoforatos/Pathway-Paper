@@ -8,8 +8,8 @@ Controlled comparison: same source files, population path, household-size path, 
 
 | Cumulative floor area, 2026–2050 (Mm2) | Zero lag | 17-month lag |
 |---|---:|---:|
-| Population growth | 40.47 | 40.31 |
-| Household-size change | 2.18 | 2.17 |
+| Population growth | 40.76 | 40.59 |
+| Household-size change | 1.89 | 1.89 |
 | Net replacement | 14.66 | 8.95 |
 | Other demand / balance | 27.88 | 30.28 |
 | Gross market excess | 3.64 | 4.54 |

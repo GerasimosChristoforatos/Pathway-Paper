@@ -1,5 +1,5 @@
 {
- "figure": "ED11_detailed_demand_bands",
+ "figure": "ED10_detailed_demand_bands",
  "producer": "figures/__main__.py",
  "axes": [
   {
@@ -35,6 +35,7 @@
   "$\\mathdefault{6}$",
   "$\\mathdefault{8}$",
   "$\\mathdefault{\u22122}$",
+  "$\\mathdefault{\u22124}$",
   "-250",
   "-500",
   "0",
@@ -89,7 +90,7 @@
   "bands_display_map.csv"
  ],
  "atp_linestyles": [],
- "negative_band_segments": 19,
+ "negative_band_segments": 23,
  "net_total_ticks": 11,
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,

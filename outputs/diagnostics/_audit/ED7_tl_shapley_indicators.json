@@ -1,5 +1,5 @@
 {
- "figure": "ED8_tl_shapley_indicators",
+ "figure": "ED7_tl_shapley_indicators",
  "producer": "figures/__main__.py",
  "axes": [
   {

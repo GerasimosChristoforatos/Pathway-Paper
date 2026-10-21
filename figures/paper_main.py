@@ -343,9 +343,13 @@ def fig2():
     mh = [Patch(label=lab, **P.material_patch(code, c)) for code, lab, c in S.MATERIAL][::-1]
     ax[1].legend(handles=mh, loc='upper right', fontsize=S.FONT_MIN, ncol=2, columnspacing=0.8)
     shown = [b for b in BANDS_MOD.DISPLAY_ORDER if b in band.columns and (band[b].abs() > 1e-12).any()]
-    ax[0].legend(handles=paper_band_handles(shown, six=True) + [Line2D([0], [0], color=S.INK, lw=S.LW, label='Carbon (in scope)')],
-                 loc='upper right', ncol=2, fontsize=S.FONT_MIN, handlelength=1.2, columnspacing=0.8,
-                 labelspacing=0.3)
+    hb2 = paper_band_handles(shown, six=True) + [Line2D([0], [0], color=S.INK, lw=S.LW, label='Carbon (in scope)')]
+    for h in hb2:                                                     # MODEL v4.2.1: compact labels inside panel a
+        h.set_label({'Market balance (excess, residual and scope adjustments)': 'Market balance',
+                     'Household-size change': 'Household size', 'Maintenance (B2, B4)': 'Maintenance'}
+                    .get(h.get_label(), h.get_label()))
+    ax[0].legend(handles=hb2, loc='upper left', ncol=2, fontsize=S.FONT_MIN - 0.5, handlelength=0.9,
+                 handletextpad=0.3, columnspacing=0.6, labelspacing=0.25, borderaxespad=0.3)
     # (d) cumulative 2026-2050: three attached columns of the same total
     d = fig.add_subplot(gs[3])
     c = float(total.sum())
@@ -398,6 +402,12 @@ def mc_cumulative_interval():
     return tuple(float(v) for v in np.percentile(d, FIG3_INTERVAL))
 
 
+def mc_cumulative_interval50():
+    """MODEL v4.2.1: the 50% interval (25th-75th percentile) of the same per-draw totals."""
+    d = D.csv('montecarlo/draws_REF.csv')['carbon_kt'].to_numpy(float)
+    return tuple(float(v) for v in np.percentile(d, (25.0, 75.0)))
+
+
 def fig3():
     """MODEL v3.3.2 (Fig4 of v3.3.1): (a) unchanged; (b) the cumulative 2026-2050 column with its Monte Carlo 95%
     interval (whisker) and the AR / AtP budgets; the committed column: C1-C4 and B2/B4 after 2050 at the lower bound
@@ -416,6 +426,14 @@ def fig3():
     ax.fill_between(years, q[5], q[95], color=S.REFERENCE, alpha=0.12, lw=0, label='Monte Carlo 90% band')
     ax.fill_between(years, q[25], q[75], color=S.REFERENCE, alpha=0.25, lw=0, label='Monte Carlo 50% band')
     ax.plot(years, q[50], color=S.REFERENCE, lw=S.LW_BOLD, label='Monte Carlo median')
+    # MODEL v4.2.1: the Moderate / Ambitious Pathway and the Theoretical Limit (deterministic, pathways/annual.csv)
+    pa = D.csv('pathways/annual.csv')
+    pa = pa[(pa['scenario'] == 'REF') & (pa['year'] >= 2026)]
+    for run, kw in ((f'{N.PATHWAY}-moderate', dict(color=S.PATHWAY_SETTING['moderate'], lw=S.LW)),
+                    (f'{N.PATHWAY}-ambitious', dict(color=S.PATHWAY_SETTING['ambitious'], lw=S.LW)),
+                    ('TL', dict(color=S.TL, lw=S.LW_THIN + 0.25, ls=':'))):
+        r = pa[pa['run'] == run].set_index('year').loc[years.astype(int), 'carbon_kt']
+        ax.plot(years, r.values, label=N.run_label(run), **kw)
     ax.set_xlim(years[0], years[-1])
     ax.set_ylim(0, None)
     ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
@@ -425,11 +443,14 @@ def fig3():
     b = fig.add_subplot(gs[1])
     c = float(proj['carbon_kt'])
     lo95, hi95 = mc_cumulative_interval()
+    lo50, hi50 = mc_cumulative_interval50()
     com = proj['committed']
     wd = 0.55
     whisk = dict(color=S.INK, lw=S.LW, capsize=3.0, capthick=S.LW, zorder=6)
     b.bar([0], [c], width=wd, **S.fill(S.REFERENCE))
     b.errorbar([0], [c], yerr=[[c - lo95], [hi95 - c]], fmt='none', **whisk)
+    b.bar([0], [hi50 - lo50], bottom=[lo50], width=wd * 0.35, facecolor='white', alpha=0.55, edgecolor=S.INK,
+          lw=S.LW_THIN, zorder=7)                                   # MODEL v4.2.1: the 50% interval, lighter, narrower
     bar_, batp = float(a['B_AR_kgCO2e'].sum()) / M, float(a['B_AtP_kgCO2e'].sum()) / M
     for v, key in ((bar_, 'AR'), (batp, 'AtP')):
         st = {k: val for k, val in S.BOUNDARY[key].items() if k != 'label'}
@@ -438,31 +459,26 @@ def fig3():
     cc, bl, bu = float(com['C_kt']), float(com['B_lower_kt']), float(com['B_upper_kt'])
     b.bar([1], [cc], width=wd, **S.fill(S.COMPONENT['committed'][0]))
     b.bar([1], [bl], bottom=[cc], width=wd, **S.fill(S.COMPONENT['maintenance'][0]))
-    top = cc + bl
-    b.errorbar([1], [top], yerr=[[0.0], [bu - bl]], fmt='none', **dict(whisk, color=S.COMPONENT['maintenance'][0]))
     b.set_xlim(-1.3, 1.6)
     b.set_xticks([0, 1])
     b.set_xticklabels(['2026–2050', 'Committed\nafter 2050'], fontsize=S.FONT_MIN + 0.5)
-    b.set_ylim(0, max(hi95, bar_, cc + bu) * 1.32)
+    b.set_ylim(0, max(hi95, bar_, cc + bl) * 1.32)
     b.set_ylabel('Cumulative carbon (kt CO₂e)')
     P.thousands(b.yaxis)
     b.grid(axis='x', visible=False)
-    hb = [Line2D([0], [0], color=S.REFERENCE, lw=5, label='Cumulative carbon 2026–2050 (95% interval)'),
-          Line2D([0], [0], color=S.COMPONENT['maintenance'][0], lw=5, label='Committed after 2050: B2/B4 (range)'),
+    hb = [Patch(label='Cumulative carbon 2026–2050', **S.fill(S.REFERENCE)),
+          Line2D([0], [0], color=S.INK, lw=S.LW, marker='_', markersize=8, label='95% interval'),
+          Patch(label='50% interval', facecolor='#E6E6E6', edgecolor=S.INK, lw=S.LW_THIN),
+          Patch(label='Committed after 2050: B2/B4', **S.fill(S.COMPONENT['maintenance'][0])),
           Patch(label='Committed after 2050: C1–C4', **S.fill(S.COMPONENT['committed'][0]))]
-    hb[0].set_marker('|')
-    hb[0].set_markersize(9)
-    hb[0].set_markeredgecolor(S.INK)
-    hb[1].set_marker('|')
-    hb[1].set_markersize(9)
     b.legend(handles=hb, loc='upper right', fontsize=S.FONT_MIN, handlelength=1.6)
     P.panel(b, 'b', 'Cumulative')
     _save(fig, 'Fig3_reference_boundaries',
           note=f'Cumulative 2026-2050 {c:,.0f} kt (LoE AR {c / bar_:.2f}, AtP {c / batp:.1f}); Monte Carlo 95% interval '
                f'{lo95:,.0f}-{hi95:,.0f} kt ({FIG3_INTERVAL[0]:g}th-{FIG3_INTERVAL[1]:g}th percentile of the cumulative '
-               f'carbon of the draws); committed after 2050 {com["lower_kt"]:,.0f}-{com["upper_kt"]:,.0f} kt: C1-C4 '
-               f'{cc:,.0f} kt (2025 factors) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held) to {bu:,.0f} kt '
-               '(2025 factors).')
+               f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt; committed after 2050 (drawn at the lower '
+               f'bound): C1-C4 {cc:,.0f} kt (2025 factors) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held; '
+               f'{bu:,.0f} kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs.')
 
 
 # ---------------------------------------------------------------------------
@@ -484,7 +500,7 @@ def waterfall_paths():
     for s in ('moderate', 'ambitious'):
         g = w[w['setting'] == s].groupby(['step', 'step_id'])['total_carbon_kt'].first().reset_index()
         k = int(g.index[g['step_id'] == last][0])
-        out.append((s, N.PATHWAY_RUNS[f'{N.PATHWAY}-{s}'], S.PATHWAY[N.PATHWAY],
+        out.append((s, N.PATHWAY_RUNS[f'{N.PATHWAY}-{s}'], S.PATHWAY_SETTING[s],
                     list(zip(g['step_id'][:k + 1], g['total_carbon_kt'][:k + 1]))))
     g = wt.groupby(['step', 'step_id'])['total_carbon_kt'].first().reset_index()
     out.append(('tl', N.TL['TL'], S.TL, list(zip(g['step_id'], g['total_carbon_kt']))))
@@ -526,44 +542,16 @@ def _net_waterfall_panel(ax, steps, end_lab, end_col):
 
 
 def fig4():
-    """MODEL v3.3.2: (a) full-width annual carbon 2026-2050: the Reference (black), the Moderate and Ambitious Pathway
-    (bold; Moderate solid, Ambitious dotted), the Theoretical Limit (deep green, bold) and S1-S3 (thin, strategy
-    colours; Moderate solid, Ambitious dotted) against AR / AtP and the zones, legend inside; (b-d) the three net
-    waterfalls of MODEL v3.3.1 (Fig5): from the Reference in PAS 2080 lever order to the Moderate Pathway, the
-    Ambitious Pathway and (TL1 ... TL9 cumulative) the Theoretical Limit."""
-    an = D.csv('pathways/annual.csv')
-    an = an[an['scenario'] == 'REF']
-    ref = an[an['run'] == 'REF'].set_index('year')
-    years = ref.index.values.astype(float)
+    """MODEL v4.2.1: the three net waterfalls (a-c) from the Reference in PAS 2080 lever order to the Moderate Pathway,
+    the Ambitious Pathway and (TL1 ... TL9 cumulative) the Theoretical Limit; the annual panel of v3.3.2 is removed
+    (the pathway lines are in Fig3a)."""
     paths, bar_, batp = waterfall_paths()
-    fig = plt.figure(figsize=S.figsize('double', 175))
-    gs = fig.add_gridspec(2, 3, height_ratios=[1.0, 1.15], hspace=0.32, wspace=0.08)
-    a = fig.add_subplot(gs[0, :])
-    S.boundary_zones(a, years, ref['B_AR_kt'].values, ref['B_AtP_kt'].values)
-    run = lambda r: an[an['run'] == r].set_index('year')['carbon_kt'].values
-    for St in N.STRATEGIES:                                              # strategies first (thin, beneath)
-        for s, ls in (('moderate', '-'), ('ambitious', ':')):
-            a.plot(years, run(f'{St}-{s}'), color=S.STRATEGY[St], lw=S.LW_THIN * 1.4, ls=ls, zorder=4,
-                   label=f'{St} {N.STRATEGIES[St]}' if s == 'moderate' else None)
-    a.plot(years, ref['carbon_kt'].values, color=S.INK, lw=S.LW_BOLD, zorder=5, label=N.SCENARIOS['REF'])
-    for s, ls in (('moderate', '-'), ('ambitious', ':')):
-        a.plot(years, run(f'{N.PATHWAY}-{s}'), color=S.PATHWAY[N.PATHWAY], lw=S.LW_BOLD * 1.2, ls=ls, zorder=5,
-               label=N.PATHWAY_RUNS[f'{N.PATHWAY}-{s}'])
-    a.plot(years, run('TL'), color=S.TL, lw=S.LW_BOLD * 1.2, zorder=5, label=N.TL['TL'])
-    a.set_xlim(years[0], years[-1])
-    a.set_ylim(0, None)
-    a.set_ylabel('Embodied carbon (kt CO₂e per year)')
-    P.thousands(a.yaxis)
-    h = a.get_legend_handles_labels()[0]
-    h += [Line2D([0], [0], color=S.MUTED, lw=S.LW_THIN * 1.4, ls='-', label='Strategy at Moderate'),
-          Line2D([0], [0], color=S.MUTED, lw=S.LW_THIN * 1.4, ls=':', label='Strategy at Ambitious')]
-    h += S.zone_handles()
-    a.legend(handles=h, loc='upper right', ncol=3, fontsize=S.FONT_MIN, handlelength=2.0, columnspacing=1.0)
-    P.panel(a, 'a', 'Annual carbon against AR and AtP')
-    ax = [fig.add_subplot(gs[1, 0])]
-    ax += [fig.add_subplot(gs[1, k], sharey=ax[0]) for k in (1, 2)]
+    fig = plt.figure(figsize=S.figsize('double', 105))
+    gs = fig.add_gridspec(1, 3, wspace=0.08)
+    ax = [fig.add_subplot(gs[0, 0])]
+    ax += [fig.add_subplot(gs[0, k], sharey=ax[0]) for k in (1, 2)]
     ups = {}
-    for b, (key, lab, col, steps), letter in zip(ax, paths, 'bcd'):
+    for b, (key, lab, col, steps), letter in zip(ax, paths, 'abc'):
         S.boundary_hzones(b, bar_, batp)
         ups[key] = _net_waterfall_panel(b, steps, lab, col)
         P.panel(b, letter, f'{N.SCENARIOS["REF"]} → {lab}')
@@ -574,14 +562,14 @@ def fig4():
     P.thousands(ax[0].yaxis)
     hs = [Patch(label=f'{St} {N.STRATEGIES[St]}', **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
     ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_MIN, title='Waterfall steps', title_fontsize=S.FONT_MIN)
-    fig.subplots_adjust(left=0.08, right=0.99, top=0.97, bottom=0.08)
+    fig.subplots_adjust(left=0.08, right=0.99, top=0.93, bottom=0.2)
     up_txt = '; '.join(f'{k}: ' + ', '.join(f'{s} {d:+,.1f} kt' for s, d in v) for k, v in ups.items() if v)
     r = D.csv('pathways/runs.csv')
     r = r[r['scenario'] == 'REF'].set_index('run')
     _save(fig, 'Fig4_pathways',
-          note='(a) Cumulative LoE AR: ' + ', '.join(f"{k} {r.loc[k, 'LoE_AR']:.2f}" for k in
-                                                     ('REF', 'pathway-moderate', 'pathway-ambitious', 'TL'))
-               + '. (b-d) Reference ' + f'{paths[0][3][0][1]:,.0f} kt -> '
+          note='Cumulative LoE AR: ' + ', '.join(f"{k} {r.loc[k, 'LoE_AR']:.2f}" for k in
+                                                 ('REF', 'pathway-moderate', 'pathway-ambitious', 'TL'))
+               + '. (a-c) Reference ' + f'{paths[0][3][0][1]:,.0f} kt -> '
                + ', '.join(f'{lab} {steps[-1][1]:,.0f} kt' for _, lab, _, steps in paths)
                + f'; budgets AR {bar_:,.0f} kt, AtP {batp:,.0f} kt. Steps in PAS 2080 order; each step is credited with '
                'what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: '
@@ -628,7 +616,7 @@ def fig5():
                 fontweight='bold')
     ax.set_xticks(x)
     ax.set_xticklabels([N.PATHWAY_RUNS.get(r, N.TL['TL']) for r in FIG5_RUNS])
-    ax.set_xlim(-0.6, len(x) - 0.4 + 1.25)                               # room on the right for the legend
+    ax.set_xlim(-0.6, len(x) - 0.4)
     ax.set_ylim(0, max(up) * 1.08)
     ax.set_ylabel('Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO₂e)')
     P.thousands(ax.yaxis)
@@ -638,12 +626,13 @@ def fig5():
     for b in bands[::-1]:                                                # top of the stack first
         lab = BANDS_MOD.DISPLAY_LABEL.get(b, P.band_label(b))
         if b in negb and not any(red[r][b] > 1e-9 for r in FIG5_RUNS):
-            hb.append(Patch(label=f'{lab} (credit shrinks)', **P.negative_bar_style(b)))
+            hb.append(Patch(label=f'{lab} (negative)', **P.negative_bar_style(b)))
         else:
             hb.append(Patch(label=lab, **dict(P.band_style(b), edgecolor='#555555', linewidth=S.LW_THIN)))
     hb.append(Line2D([0], [0], color=S.INK, lw=S.LW_BOLD, label='Total reduction'))
-    ax.legend(handles=hb, loc='center right', fontsize=S.FONT_MIN + 0.5)
-    fig.tight_layout()
+    fig.legend(handles=hb[::-1], loc='lower center', ncol=4, fontsize=S.FONT_MIN + 0.5, frameon=False,
+               bbox_to_anchor=(0.5, 0.0))
+    fig.tight_layout(rect=(0, 0.12, 1, 1))
     _save(fig, 'Fig5_reduction_by_demand',
           note='Reduction vs the Reference (kt): ' + ', '.join(f'{N.run_label(r)} {tot[r]:,.0f}' for r in FIG5_RUNS)
                + '. Negative band reductions (outlined): ' + '; '.join(
@@ -769,8 +758,6 @@ def fig6():
         P_, s_ = run.split('-')
         ax.plot(xm, ym, marker='o', ms=5 if P_ != N.PATHWAY else 6.5, ls='none', color=S.PATHWAY[P_],
                 markerfacecolor=S.PATHWAY[P_] if s_ == 'moderate' else 'none', markeredgewidth=1.0, zorder=5)
-    ax.text(2, 97, f'2026 (observed) alone emits {c26:,.0f} kt = {c26 / bc["B_AtP_kt"]:.2f} × the 2026–2050 AtP '
-            'budget', ha='left', va='top', fontsize=S.FONT_MIN + 0.5, color=S.BOUNDARY['AtP']['color'], zorder=4)
     ax.set_xlabel('Cut in 2027-2050 floor area vs the Reference (%)')
     ax.set_ylabel('Cut in 2027-2050 carbon per m² (A1-A5, soil, B2/B4) vs the Reference (%)')
     ax.set_xlim(100 * lo, 100 * hi)
@@ -784,13 +771,11 @@ def fig6():
              (N.PATHWAY_RUNS['pathway-ambitious'], float(runs['pathway-ambitious']),
               dict(color=S.PATHWAY[N.PATHWAY], marker='o', ms=5, markerfacecolor='white')),
              (N.TL['TL'], float(runs['TL']), dict(color=S.TL, marker='o', ms=6)),
-             ('AR = 1', 1.0, None), ('Plane floor (2026 observed)', floor, None),
-             (f'AtP ({atp_level:.2f})', atp_level, None)]
+             ('AR', 1.0, None), ('AtP', atp_level, None)]           # MODEL v4.2.1: no values, no plane floor
     vmin, vmax = 0.8 * min(v for _, v, _ in marks), 1.25 * max(v for _, v, _ in marks)
     ru.set_yscale('log')
     ru.set_ylim(vmin, vmax)
     S.boundary_hzones(ru, 1.0, atp_level)
-    ru.axhline(floor, color=S.INK, lw=S.LW_THIN, ls='--', zorder=4)
     for lab, v, mk in marks:
         if mk:
             ru.plot([0.5], [v], ls='none', zorder=6, clip_on=False, **mk)
@@ -805,8 +790,7 @@ def fig6():
     span = np.log10(vmax) - np.log10(vmin)
     pos = _spread(lv, 0.055 * span)
     for (lab, v, mk), yl, yv in zip(order, pos, lv):
-        txt = f'{lab}  {v:.2f}' if mk else f'{lab}' + ('' if lab.startswith('AtP') or lab.startswith('AR') else
-                                                       f'  {v:.2f}')
+        txt = lab
         ru.annotate(txt, xy=(1.0, 10 ** yv), xytext=(1.6, 10 ** yl), textcoords=('axes fraction', 'data'),
                     xycoords=('axes fraction', 'data'), ha='left', va='center', fontsize=S.FONT_MIN + 0.5,
                     color=mk['color'] if mk else S.INK,
@@ -817,8 +801,7 @@ def fig6():
     h += [Line2D([0], [0], marker='o', ls='none', color=S.MUTED, markerfacecolor=S.MUTED, ms=5, label='Moderate'),
           Line2D([0], [0], marker='o', ls='none', color=S.MUTED, markerfacecolor='none', ms=5, label='Ambitious'),
           Line2D([0], [0], ls='none', color=S.TL, label=N.TL['TL'], **S.TL_MARKER),
-          Line2D([0], [0], ls='none', color=S.REFERENCE, marker='s', ms=4, label=f"{N.SCENARIOS['REF']} (ruler)"),
-          Line2D([0], [0], color=S.INK, lw=S.LW_THIN, ls='--', label='Plane floor (ruler)')]
+          Line2D([0], [0], ls='none', color=S.REFERENCE, marker='s', ms=4, label=f"{N.SCENARIOS['REF']} (ruler)")]
     h += S.boundary_handles() + S.zone_handles()
     fig.legend(handles=h, loc='center left', bbox_to_anchor=(0.80, 0.5), frameon=False, fontsize=S.FONT_MIN + 0.5)
     note = (f"LoE AR = [{c26:,.0f} + {r['carbon_2027_2050_cohorts_kt']:,.0f} (1 - x)(1 - y)] / {bc['B_AR_kt']:,.0f} kt; "
@@ -833,47 +816,57 @@ def fig6():
 # Fig7: Shapley value of each lever (Moderate hollow, Ambitious filled, TL dot)
 # ---------------------------------------------------------------------------
 def fig7():
-    """MODEL v3.3.0 (Fig8 until v3.3.1): rows grouped by PAS 2080 strategy (S1 Avoid, S2 Switch, S3 Improve) in the
-    lever order, each bar in its strategy's colour; Moderate hollow, Ambitious filled, TL dot (games from the
-    Reference)."""
+    """MODEL v4.2.1: two panels, levers grouped by PAS 2080 strategy, bars in the strategy colours (Moderate hollow,
+    Ambitious filled, TL dot): (a) standalone reduction of cumulative carbon 2026-2050 vs the Reference, each lever
+    alone (pathways/runs.csv: Reference - Ln run); (b) the Shapley share (%) of the pathway reduction per lever within
+    each game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; pathways/shapley.csv share_of_total)."""
     s = D.csv('pathways/shapley.csv')
     s = s[s['metric'] == 'carbon_kt']
+    sh = {k: 100 * s[s['game'] == f'levers_{k}'].set_index('player')['share_of_total']
+          for k in ('moderate', 'ambitious', 'tl')}
     g = {k: s[s['game'] == f'levers_{k}'].set_index('player')['reduction'] for k in ('moderate', 'ambitious', 'tl')}
-    gs = {k: s[s['game'] == f'strategies_{k}'].set_index('player')['reduction'] for k in ('moderate', 'ambitious')}
+    r = D.csv('pathways/runs.csv')
+    r = r[r['scenario'] == 'REF'].set_index('run')['carbon_kt']
+    alone = {k: {L: float(r['REF'] - r[f'{L}-{k}']) for L in N.LEVERS} for k in ('moderate', 'ambitious', 'tl')}
     order = list(N.LEVERS)                                     # top to bottom: L1 .. L9
     y = np.arange(len(order))[::-1]
-    fig, ax = plt.subplots(figsize=S.figsize('double', 95))
-    for k, L in zip(y, order):
-        col = S.STRATEGY[N.LEVER_STRATEGY[L]]
-        ax.barh(k + 0.18, g['ambitious'][L], height=0.34, color=col, edgecolor=col, lw=S.LW_SEAM)
-        ax.barh(k - 0.18, g['moderate'][L], height=0.34, facecolor='none', edgecolor=col, lw=S.LW_OUTLINE * 1.2)
-        ax.plot(g['tl'][L], k, ls='none', color=S.TL, zorder=5, **S.TL_MARKER)
-    for St, ls in N.STRATEGY_LEVERS.items():                  # strategy separators and labels
+    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 95), sharey=True)
+    for a, val, xlab, letter, title in (
+            (ax[0], alone, 'Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO₂e)', 'a',
+             'Each lever alone'),
+            (ax[1], sh, 'Share of the pathway reduction (%, exact Shapley value)', 'b', 'Shapley share within each game')):
+        for k, L in zip(y, order):
+            col = S.STRATEGY[N.LEVER_STRATEGY[L]]
+            a.barh(k + 0.18, val['ambitious'][L], height=0.34, color=col, edgecolor=col, lw=S.LW_SEAM)
+            a.barh(k - 0.18, val['moderate'][L], height=0.34, facecolor='none', edgecolor=col, lw=S.LW_OUTLINE * 1.2)
+            a.plot(val['tl'][L], k, ls='none', color=S.TL, zorder=5, **S.TL_MARKER)
+        for St, ls in N.STRATEGY_LEVERS.items():              # strategy separators
+            ks = [k for k, L in zip(y, order) if L in ls]
+            if min(ks) > 0:
+                a.axhline(min(ks) - 0.5, color=S.MUTED, lw=S.LW_THIN * 0.7)
+        a.axvline(0, color=S.INK, lw=S.LW_THIN)
+        a.set_xlabel(xlab, fontsize=S.FONT_SMALL)
+        a.grid(axis='y', visible=False)
+        P.panel(a, letter, title)
+    for St, ls in N.STRATEGY_LEVERS.items():
         ks = [k for k, L in zip(y, order) if L in ls]
-        if min(ks) > 0:
-            ax.axhline(min(ks) - 0.5, color=S.MUTED, lw=S.LW_THIN * 0.7)
-        ax.text(1.005, (min(ks) + max(ks)) / 2, f'{St} {N.STRATEGIES[St]}', transform=ax.get_yaxis_transform(),
-                ha='left', va='center', fontsize=S.FONT_MIN + 0.5, color=S.STRATEGY[St], fontweight='bold')
-    ax.set_yticks(y)
-    ax.set_yticklabels([f'{L} {N.LEVERS[L]}' for L in order])
-    ax.set_ylim(-0.6, len(order) - 0.4)
-    ax.axvline(0, color=S.INK, lw=S.LW_THIN)
-    ax.set_xlabel('Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO₂e; exact Shapley value)')
-    P.thousands(ax.xaxis)
-    ax.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate (Level 2)'),
-                       Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious (Level 3)'),
-                       Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit (Level 4)', **S.TL_MARKER)],
-              loc='lower right')
-    fig.tight_layout(rect=(0, 0, 0.9, 1))
+        ax[1].text(1.01, (min(ks) + max(ks)) / 2, f'{St} {N.STRATEGIES[St]}', transform=ax[1].get_yaxis_transform(),
+                   ha='left', va='center', fontsize=S.FONT_MIN + 0.5, color=S.STRATEGY[St], fontweight='bold')
+    P.thousands(ax[0].xaxis)
+    ax[0].set_yticks(y)
+    ax[0].set_yticklabels([f'{L} {N.LEVERS[L]}' for L in order])
+    ax[0].set_ylim(-0.6, len(order) - 0.4)
+    ax[1].legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate (Level 2)'),
+                          Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious (Level 3)'),
+                          Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit (Level 4)', **S.TL_MARKER)],
+                 loc='lower right', fontsize=S.FONT_MIN)
+    fig.tight_layout(rect=(0, 0, 0.92, 1))
     tot = {k: v.sum() for k, v in g.items()}
-    strat = '; '.join(f"{St} {N.STRATEGIES[St]} {gs['moderate'][St]:,.0f} / {gs['ambitious'][St]:,.0f} kt"
-                      for St in N.STRATEGIES)
-    _save(fig, 'Fig7_shapley_levers', note='Shapley values within each combined game (Reference -> Moderate Pathway, '
-                                           '-> Ambitious Pathway, -> TL); standalone effects in ED7. The TL dots are '
-                                           'Shapley values within the TL game, so they include interactions at the limit '
-                                           '(L5 with L4). Sum over levers (= Reference - Pathway / TL, exact): '
-          + ', '.join(f'{k} {v:,.0f} kt' for k, v in tot.items()) + '; 512 subsets per game. Strategy-level Shapley '
-          f'values (Moderate / Ambitious; 8 subsets): {strat}.')
+    _save(fig, 'Fig7_shapley_levers',
+          note='(a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each '
+               'combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 512 subsets per game); the '
+               'TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): '
+               + ', '.join(f'{k} {v:,.0f} kt' for k, v in tot.items()) + '.')
 
 
 # ---------------------------------------------------------------------------
@@ -993,7 +986,8 @@ def fig8():
     P.panel(b, 'b', 'Theoretical Limit against the 2050 population')
     fig.tight_layout()
     _save(fig, 'Fig8_uncertainty',
-          note=f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "
+          note='(b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build '
+               'years); its carbon floor is the 2026-27 pipeline plus maintenance. ' + f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "
                f"moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = "
                f"{j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-{j['wilson_95'][1]:.3f}; n = {j['n']:,}); "
                + (f"threshold {thr['threshold_P_NZ_2050'] / 1e6:.3f} M (95% CI {thr['ci95'][0] / 1e6:.3f}-"

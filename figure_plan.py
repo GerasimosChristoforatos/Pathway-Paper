@@ -99,19 +99,17 @@ PAPER_EXTENDED = [
     dict(id='ED6', file='ED6_waterfalls_by_demand_band', module='figures.paper_extended',
          title='Sequential waterfalls by demand band, Moderate and Ambitious (PAS 2080 order)',
          source=['pathways/waterfall.csv']),
-    dict(id='ED7', file='ED7_single_levers', module='figures.paper_extended',
-         title='Single-lever runs at Moderate, Ambitious and TL', source=['pathways/runs.csv']),
-    dict(id='ED8', file='ED8_tl_shapley_indicators', module='figures.paper_extended',
+    dict(id='ED7', file='ED7_tl_shapley_indicators', module='figures.paper_extended',
          title='TL: Shapley values from the Moderate Pathway and human-terms indicators',
          source=['pathways/shapley.csv', 'pathways/theoretical_limit.json']),
-    dict(id='ED9', file='ED9_replacement_variants', module='figures.paper_extended',
+    dict(id='ED8', file='ED8_replacement_variants', module='figures.paper_extended',
          title='Low, High and Very High replacement: the Reference, the Pathways and TL',
          source=['sensitivity/replacement_variants.csv', 'pathways/annual.csv']),
-    dict(id='ED10', file='ED10_rollout_timing', module='figures.paper_extended',
+    dict(id='ED9', file='ED9_rollout_timing', module='figures.paper_extended',
          title='Roll-out timing (the Pathways by 2030, 2035, 2045)', source=['pathways/annual.csv', 'pathways/runs.csv']),
-    # MODEL v4.2: the detailed demand bands behind the six display bands (eleven ED items: one over the Nature Cities
-    # cap of ten; the author chooses which to move to the supplementary set)
-    dict(id='ED11', file='ED11_detailed_demand_bands', module='figures.paper_extended',
+    # MODEL v4.2: the detailed demand bands behind the six display bands (MODEL v4.2.1: the single-lever ED figure is
+    # replaced by Fig7a, so ED8-ED11 became ED7-ED10)
+    dict(id='ED10', file='ED10_detailed_demand_bands', module='figures.paper_extended',
          title='Detailed demand bands: floor area (Fig1) and Reference carbon (Fig2a)',
          source=['baseline/bands_history.csv', 'baseline/bands_annual.csv', 'baseline/annual.csv',
                  'baseline/annual_by_stage.csv', 'baseline/overbuild_2026.json', 'bands_display_map.csv']),
@@ -250,7 +248,7 @@ MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries', 'Fi
                        'D36_pathway_bands')
 # every figure with a planetary boundary on its axes (zones required; AtP dotted)
 PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways', 'Fig6_solution_space',
-              'ED5_pathways_annual', 'ED6_waterfalls_by_demand_band', 'ED9_replacement_variants', 'ED10_rollout_timing',
+              'ED5_pathways_annual', 'ED6_waterfalls_by_demand_band', 'ED8_replacement_variants', 'ED9_rollout_timing',
               'D21_fan_and_boundaries', 'D22_boundaries', 'D23_annual_loe',
               'D24_headroom', 'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band',
               'D27_variants_vs_boundaries', 'D28_pathways_annual')

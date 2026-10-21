@@ -185,27 +185,6 @@ def sf2():
                                           f"{j['wilson_95'][1]:.3f}); (b) {note_b}.")
 
 
-def ed7():
-    r = D.csv('pathways/runs.csv')
-    r = r[r['scenario'] == 'REF'].set_index('run')
-    fig, ax = plt.subplots(figsize=S.figsize('double', 85))
-    y = np.arange(len(LV.LEVERS))[::-1]
-    for k, L in enumerate(LV.LEVERS):
-        col = S.LEVER[L]
-        for lev, off, st in (('moderate', 0.25, dict(facecolor='none', edgecolor=col, lw=S.LW_OUTLINE)),
-                             ('ambitious', 0.0, dict(color=col, edgecolor=col, lw=S.LW_SEAM)),
-                             ('tl', -0.25, dict(color=S.TL, edgecolor=S.TL, lw=S.LW_SEAM))):
-            ax.barh(y[k] + off, r.loc[f'{L}-{lev}', 'delta_carbon_kt_vs_reference_pct'], height=0.24, **st)
-    ax.set_yticks(y)
-    ax.set_yticklabels([f'{L} {N.LEVERS[L]}' for L in LV.LEVERS])
-    ax.axvline(0, color=S.INK, lw=S.LW_THIN)
-    ax.set_xlabel('Change of cumulative carbon 2026-2050 vs the Reference (%), lever alone')
-    ax.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate'), Patch(color=S.MUTED, label='Ambitious'),
-                       Patch(color=S.TL, label='TL (Level 4)')], fontsize=S.FONT_SMALL, loc='lower left')
-    fig.tight_layout()
-    _save(fig, 'ED7_single_levers')
-
-
 def ed5():
     """MODEL v3.3.1 (Fig4 until v3.3.0): annual carbon of the Reference, S1-S3, the Moderate / Ambitious Pathway and
     TL against AR and AtP (Moderate solid bold, Ambitious the same colour thin dotted)."""
@@ -355,7 +334,7 @@ def ed8():
     ax[2].text(0.02, 0.02, 'Vacancy parameter -> 0 by 2035; physical vacancy falls\nas released stock is re-occupied over '
                '2027-2050', transform=ax[2].transAxes, fontsize=S.FONT_MIN, color=S.MUTED, va='bottom')
     fig.tight_layout()
-    _save(fig, 'ED8_tl_shapley_indicators', note=f"TL re-occupies {t['reoccupied']:,.0f} released dwellings "
+    _save(fig, 'ED7_tl_shapley_indicators', note=f"TL re-occupies {t['reoccupied']:,.0f} released dwellings "
                                                  f"(attributed TL1 {t['reoccupied_attributed']['TL1']:,.0f}, TL2 "
                                                  f"{t['reoccupied_attributed']['TL2']:,.0f}, in proportion R1:R2). (c) The "
                                                  "vacancy parameter falls to 0 by 2035 (TL2); the physical (implied) "
@@ -380,7 +359,7 @@ def ed10():
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
     ax[0].legend(fontsize=S.FONT_MIN)
     fig.tight_layout()
-    _save(fig, 'ED10_rollout_timing')
+    _save(fig, 'ED9_rollout_timing')
 
 
 def sf3():
@@ -491,7 +470,7 @@ def ed9():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Cumulative')
     fig.tight_layout()
-    _save(fig, 'ED9_replacement_variants')
+    _save(fig, 'ED8_replacement_variants')
 
 
 def ed4():
@@ -597,15 +576,15 @@ def ed11():
                  loc='upper right', ncol=2, fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Reference carbon by detailed demand band (Fig2a)')
     fig.tight_layout()
-    _save(fig, 'ED11_detailed_demand_bands',
+    _save(fig, 'ED10_detailed_demand_bands',
           note='Detailed demand bands behind the six display bands of Fig1 and Fig2 (data/bands_display_map.csv).')
 
 
 FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_census_replacement_rates': ed2,
            'ED3_household_formation_size': ed3, 'ED4_overbuild_absorption': ed4, 'ED5_pathways_annual': ed5,
-           'ED6_waterfalls_by_demand_band': ed6, 'ED7_single_levers': ed7, 'ED8_tl_shapley_indicators': ed8,
-           'ED9_replacement_variants': ed9, 'ED10_rollout_timing': ed10,
-           'ED11_detailed_demand_bands': ed11,
+           'ED6_waterfalls_by_demand_band': ed6, 'ED7_tl_shapley_indicators': ed8,
+           'ED8_replacement_variants': ed9, 'ED9_rollout_timing': ed10,
+           'ED10_detailed_demand_bands': ed11,
            'SF2_mc_scatter_population': sf1, 'SF3_conditional_tl': sf2, 'SF4_lambda_sweep': sf3,
            'SF5_hd_estimators': sf4, 'SF6_consent_sizes': sf5}
 TABLES = {'EDT1_levels_by_typology': edt1}

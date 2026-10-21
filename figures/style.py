@@ -130,7 +130,9 @@ LEVER = {'L4': '#DFA538', 'L5': '#944E02', 'L1': '#F4D168', 'L2': '#AA7C9D', 'L3
          'L8': '#4A6192', 'L9': '#ABD3FA', 'L7': '#8D6545', 'L6': '#C7B395'}
 P2_ANCHOR = '#683861'
 STRATEGY = {'S1': LEVER['L4'], 'S2': LEVER['L7'], 'S3': LEVER['L8']}
-PATHWAY = dict(STRATEGY, pathway='#EB6123')       # strategies and the Moderate / Ambitious Pathway (every lever)
+PATHWAY = dict(STRATEGY, pathway='#EB6123')
+# MODEL v4.2.1: the Moderate / Ambitious Pathway lines of Fig3a and the Fig4 waterfalls (orange, darker orange)
+PATHWAY_SETTING = {'moderate': '#EB6123', 'ambitious': '#A8400C'}       # strategies and the Moderate / Ambitious Pathway (every lever)
 # MODEL v2.1.2: Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
 SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
            'ambitious': dict(ls='--', marker_fill='none', label='Ambitious')}

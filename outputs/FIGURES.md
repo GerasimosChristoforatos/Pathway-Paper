@@ -10,7 +10,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig1_floor_area.png`
 - Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`, `data/baseline/overbuild_2026.json`
-- This run: Completions = 0.945 x consents lagged 17 months (median consent-to-completion time 1.27-1.53 yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building indicators). Households after the 2023 census = ERP / household-size path (Stats NZ DHE not used). Pipeline years 2026, 2027: building observed (consents to July 2026); the part above modelled need fades from 2028 (ρ = 0.43) and is absorbed by 2035. 2026 population: Stats NZ ERP nowcast. Six display bands (data/bands_display_map.csv); market balance = unexplained building + retirement villages (out of scope) + overbuild / pipeline excess + overbuild absorbed + surplus kept vacant. Negative bands drawn down from zero: Market balance (excess, residual and scope adjustments), Vacancy, Net replacement. 2026-2050: 81.5 Mm².
+- This run: Completions = 0.945 x consents lagged 17 months (median consent-to-completion time 1.27-1.53 yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building indicators). Households after the 2023 census = ERP / household-size path (Stats NZ DHE not used). Pipeline years 2026, 2027: building observed (consents to July 2026); the part above modelled need fades from 2028 (ρ = 0.43) and is absorbed by 2035. 2026 population: Stats NZ ERP nowcast. Six display bands (data/bands_display_map.csv); market balance = unexplained building + retirement villages (out of scope) + overbuild / pipeline excess + overbuild absorbed + surplus kept vacant. Negative bands drawn down from zero: Smaller households, Market balance (excess, residual and scope adjustments), Vacancy, Net replacement. 2026-2050: 81.5 Mm².
 
 ### Fig2_reference_carbon
 
@@ -26,7 +26,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig3_reference_boundaries.png`
 - Data: `data/aesa/annual.csv`, `data/montecarlo/annual_REF.csv`, `data/montecarlo/draws_REF.csv`, `data/baseline/projection.json`
-- This run: Cumulative 2026-2050 19,761 kt (LoE AR 4.46, AtP 17.8); Monte Carlo 95% interval 13,665-26,584 kt (2.5th-97.5th percentile of the cumulative carbon of the draws); committed after 2050 7,502-8,220 kt: C1-C4 4,410 kt (2025 factors) and B2/B4 after 2050 3,091 kt (2050 factors held) to 3,810 kt (2025 factors).
+- This run: Cumulative 2026-2050 19,761 kt (LoE AR 4.46, AtP 17.8); Monte Carlo 95% interval 13,665-26,584 kt (2.5th-97.5th percentile of the cumulative carbon of the draws), 50% interval 17,558-21,986 kt; committed after 2050 (drawn at the lower bound): C1-C4 4,410 kt (2025 factors) and B2/B4 after 2050 3,091 kt (2050 factors held; 3,810 kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs.
 
 ### Fig4_pathways
 
@@ -34,7 +34,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig4_pathways.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
-- This run: (a) Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00. (b-d) Reference 19,761 kt -> Moderate Pathway 14,302 kt, Ambitious Pathway 10,267 kt, Theoretical Limit 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.
+- This run: Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00. (a-c) Reference 19,761 kt -> Moderate Pathway 14,302 kt, Ambitious Pathway 10,267 kt, Theoretical Limit 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.
 
 ### Fig5_reduction_by_demand
 
@@ -58,7 +58,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig7_shapley_levers.png`
 - Data: `data/pathways/shapley.csv`
-- This run: Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL); standalone effects in ED7. The TL dots are Shapley values within the TL game, so they include interactions at the limit (L5 with L4). Sum over levers (= Reference - Pathway / TL, exact): moderate 5,460 kt, ambitious 9,494 kt, tl 15,339 kt; 512 subsets per game. Strategy-level Shapley values (Moderate / Ambitious; 8 subsets): S1 Avoid 3,498 / 6,060 kt; S2 Switch 1,431 / 2,482 kt; S3 Improve 530 / 952 kt.
+- This run: (a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 512 subsets per game); the TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): moderate 5,460 kt, ambitious 9,494 kt, tl 15,339 kt.
 
 ### Fig8_uncertainty
 
@@ -66,7 +66,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig8_uncertainty.png`
 - Data: `data/sensitivity/tornado.csv`, `data/sensitivity/planetary_boundary.csv`, `data/pathways/montecarlo_draws.csv`, `data/pathways/montecarlo_conditional_tl.json`, `data/baseline/scenarios.json`, `data/aesa/results.json`
-- This run: (a) Reference LoE AR 4.464; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = 0.499 (Wilson 0.485-0.513; n = 5,000); threshold 6.614 M (95% CI 6.611-6.616 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
+- This run: (b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build years); its carbon floor is the 2026-27 pipeline plus maintenance. (a) Reference LoE AR 4.464; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = 0.499 (Wilson 0.485-0.513; n = 5,000); threshold 6.614 M (95% CI 6.611-6.616 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
 ## Extended Data (paper_extended/)
 
@@ -117,40 +117,33 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/pathways/waterfall.csv`
 - This run: Moderate: Reference 19,761 kt -> Moderate Pathway 14,302 kt -> TL 4,423 kt; Ambitious: Reference 19,761 kt -> Ambitious Pathway 10,267 kt -> TL 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 hierarchy order; each step is credited with what remains after higher-priority measures. Order-free Shapley values in Fig7. Outlined segments: reduction in credits from re-used dwellings (vacancy released, overbuild absorbed, re-occupation, unconsented additions), valued at the new-dwelling size they displace.
 
-### ED7_single_levers
+### ED7_tl_shapley_indicators
 
-**ED7 Single-lever runs at Moderate, Ambitious and TL**
+**ED7 TL: Shapley values from the Moderate Pathway and human-terms indicators**
 
-- Files: `paper_extended/ED7_single_levers.png`
-- Data: `data/pathways/runs.csv`
-
-### ED8_tl_shapley_indicators
-
-**ED8 TL: Shapley values from the Moderate Pathway and human-terms indicators**
-
-- Files: `paper_extended/ED8_tl_shapley_indicators.png`
+- Files: `paper_extended/ED7_tl_shapley_indicators.png`
 - Data: `data/pathways/shapley.csv`, `data/pathways/theoretical_limit.json`
 - This run: TL re-occupies 162,612 released dwellings (attributed TL1 0, TL2 116,869, in proportion R1:R2). (c) The vacancy parameter falls to 0 by 2035 (TL2); the physical (implied) vacancy falls as the released stock is re-occupied over 2027-2050.
 
-### ED9_replacement_variants
+### ED8_replacement_variants
 
-**ED9 Low, High and Very High replacement: the Reference, the Pathways and TL**
+**ED8 Low, High and Very High replacement: the Reference, the Pathways and TL**
 
-- Files: `paper_extended/ED9_replacement_variants.png`
+- Files: `paper_extended/ED8_replacement_variants.png`
 - Data: `data/sensitivity/replacement_variants.csv`, `data/pathways/annual.csv`
 
-### ED10_rollout_timing
+### ED9_rollout_timing
 
-**ED10 Roll-out timing (the Pathways by 2030, 2035, 2045)**
+**ED9 Roll-out timing (the Pathways by 2030, 2035, 2045)**
 
-- Files: `paper_extended/ED10_rollout_timing.png`
+- Files: `paper_extended/ED9_rollout_timing.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
 
-### ED11_detailed_demand_bands
+### ED10_detailed_demand_bands
 
-**ED11 Detailed demand bands: floor area (Fig1) and Reference carbon (Fig2a)**
+**ED10 Detailed demand bands: floor area (Fig1) and Reference carbon (Fig2a)**
 
-- Files: `paper_extended/ED11_detailed_demand_bands.png`
+- Files: `paper_extended/ED10_detailed_demand_bands.png`
 - Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`, `data/baseline/annual_by_stage.csv`, `data/baseline/overbuild_2026.json`, `data/bands_display_map.csv`
 - This run: Detailed demand bands behind the six display bands of Fig1 and Fig2 (data/bands_display_map.csv).
 

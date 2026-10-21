@@ -19,6 +19,7 @@ import numpy as np
 import matplotlib
 from matplotlib.patches import Patch
 
+import bands as BANDS_MOD
 import naming as N
 from figures import style as S
 
@@ -89,7 +90,18 @@ def boundary_lines(ax, x, ar, atp, label=True, **kw):
 # ---------------------------------------------------------------------------
 # demand bands
 # ---------------------------------------------------------------------------
+DISPLAY_STYLE_OF = {'net_replacement': 'replacement', 'market_balance': 'overbuild_2026'}
+
+
+def display_frame(t):
+    """MODEL v4.2: a year x detailed-band frame summed into the six display bands (bands.DISPLAY), in display order."""
+    g = t.T.groupby(lambda b: BANDS_MOD.DISPLAY[b]).sum().T
+    return g[[d for d in BANDS_MOD.DISPLAY_ORDER if d in g.columns]]
+
+
 def band_label(bid):
+    if bid in ('net_replacement', 'market_balance'):              # MODEL v4.2 display bands
+        return BANDS_MOD.DISPLAY_LABEL[bid]
     if bid in ('unexplained_building', 'unexplained'):
         return N.BAND_DETAIL['unexplained']
     return (N.BANDS.get(bid) or N.BAND_DETAIL[bid]) + (' (untargeted)' if bid in N.UNTARGETED else '')
@@ -100,6 +112,8 @@ def band_style(bid):
     (MODEL v3.1.0, style.HISTORY_BAND): 'replacement_census', 'retirement_villages', 'unexplained'."""
     if bid in ('unexplained_building', 'unexplained'):
         return S.fill(S.UNEXPLAINED[0])
+    if bid in DISPLAY_STYLE_OF:                                   # MODEL v4.2 display bands: an existing band colour
+        bid = DISPLAY_STYLE_OF[bid]
     if bid not in S.BAND and bid in S.HISTORY_BAND:
         return S.fill(*S.HISTORY_BAND[bid])
     key = bid if bid in S.BAND else 'replacement'

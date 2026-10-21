@@ -9,7 +9,8 @@ from conftest import run_boss
 
 def test_defaults_unchanged(B):
     import projection
-    assert (projection.HH_BRIDGE, projection.START_MODE, projection.HH_SIZE_PATH) == ('dhe', 'observed', 'statsnz')
+    # Part B: the ERP / S bridge is adopted; the start mode and household-size path stay as in MODEL v4.0.0
+    assert (projection.HH_BRIDGE, projection.START_MODE, projection.HH_SIZE_PATH) == ('erp_S', 'observed', 'statsnz')
     B18 = run_boss(HH_SIZE_PATH='statsnz_2018')
     assert np.array_equal(B18['engine_out']['50th']['carbon'], B['engine_out']['50th']['carbon'])
 
@@ -47,3 +48,30 @@ def test_statsnz_2023_loader_stub(tmp_path):
     S = B['df_forecast']['PopTotal_50th'].values / B['households_forecast']['50th']
     anchor = B['hist_S'].loc[2023]
     assert S[-1] == pytest.approx(anchor * sh.loc[2050] / sh.loc[2023], rel=1e-12)
+
+
+def test_bridge_leaves_2026_2050_unchanged(B):
+    Bd = run_boss(HH_BRIDGE='dhe')
+    for k in ('carbon', 'total'):
+        assert np.array_equal(np.asarray(B['engine_out']['50th'][k])[1:], np.asarray(Bd['engine_out']['50th'][k])[1:])
+
+
+def test_six_display_bands_sum_to_the_detailed_bands():
+    import bands as BANDS
+    import layout
+    from figures import draw as P
+    data = lambda rel: pd.read_csv(layout.data(rel, frozen=False))
+    m = data('bands_display_map.csv')
+    assert dict(zip(m['band_id'], m['display_id'])) == BANDS.DISPLAY
+    assert len(set(BANDS.DISPLAY.values()) - {'released_tl', 'maintenance'}) == 6
+    for rel, val, keys in (('baseline/bands_annual.csv', 'floor_area_Mm2', ['year']),
+                           ('baseline/bands_annual.csv', 'carbon_kt', ['year']),
+                           ('baseline/bands_history.csv', 'floor_area_Mm2_per_year', ['interval']),
+                           ('pathways/bands_annual.csv', 'carbon_kt', ['scenario', 'run', 'year'])):
+        d = data(rel)
+        if 'definition' in d:
+            d = d[d['definition'] == 'in_scope']
+        d['display'] = [BANDS.DISPLAY[P.band_id(b)] for b in d['band']]
+        detailed = d.groupby(keys)[val].sum()
+        six = d.groupby(keys + ['display'])[val].sum().groupby(level=list(range(len(keys)))).sum()
+        assert np.allclose(six.values, detailed.loc[six.index].values, rtol=1e-9, atol=1e-12), rel

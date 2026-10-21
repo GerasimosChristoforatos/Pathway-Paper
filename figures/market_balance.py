@@ -79,7 +79,7 @@ def d43():
             positive_bottom += pos
             negative_bottom += neg
 
-        total = frame["total_built_Mm2_per_year"].to_numpy(float)
+        total = frame["total_built"].to_numpy(float)     # the 'total_built' category (the pivot drops the column)
         ax.plot(x, total, color=S.INK, lw=S.LW_BOLD, marker="o" if is_history else None,
                 ms=3 if is_history else 0, zorder=5)
 

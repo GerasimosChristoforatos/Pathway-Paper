@@ -4,6 +4,10 @@
   "profiles": [
    "full",
    "light"
+  ],
+  "v4_2_updated": [
+   "baseline/bands_history.csv",
+   "baseline/history_unexplained.json"
   ]
  },
  "deterministic": {
@@ -37,8 +41,8 @@
   "sensitivity/pathway_carbon.csv": "f6fe639c9eda8f6cf4c1c9af1b3e4203612ea802cc47a2b93c09e5bdb9f53ae7",
   "sensitivity/replacement_variants.csv": "9085c4368bb7742e72bd8442c718e496bd1cce32df3950687fae3589cfa35a3f",
   "sensitivity/tornado.csv": "b17b30fc986a639d664e72fb5bc44e82b7612e47f2981fc872af3b55ed536a9c",
-  "baseline/bands_history.csv": "8eb7e35778d7312cce3aa3ce8320ed5269d21a65188cd7624442f5e5ca556336",
-  "baseline/history_unexplained.json": "489a624aec5357b586ffb4dcd4814a29c8500097e669114f37d87d03103e1c4a",
+  "baseline/bands_history.csv": "2e1bd5163338ff8f7a147f1f2a0b83487fb2c35326b392af4b5f4044d7f42796",
+  "baseline/history_unexplained.json": "845c4227d04df3ebd7a53e112f3bec082ef5121638bb72d12887c8bfbf0002bb",
   "sensitivity/household_size.csv": "e9eae2f9a4637e146cf0fdecea7ec9adadc18f65154fb276bca6cf9e529db299",
   "baseline/completion_lag_hindcast.csv": "9a91daf6286480f323ac931fd6b1010c4d7f82fd710c166fbea03f7b653a9779"
  },

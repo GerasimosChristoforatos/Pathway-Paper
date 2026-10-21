@@ -1,0 +1,96 @@
+{
+  "comparison_basis": "Controlled comparison: same source files, population path, household-size path, completion rate and remaining defaults; only completion lag differs. Historical completion timing and stock/replacement calibration are recalculated consistently.",
+  "same_population_path": true,
+  "same_household_size_path": true,
+  "same_household_path": true,
+  "lag_0": {
+    "lag_months": 0,
+    "timing": "Consent-timed proxy (zero lag)",
+    "completion_rate": 0.945,
+    "observed_to": "2026-07-01",
+    "pipeline_years": [],
+    "observed_cohorts": [
+      {
+        "completion_or_proxy_year": 2026,
+        "consent_period": "Aug 2025\u2013Jul 2026",
+        "all_category_consents": 40908.0,
+        "building_equivalent_dwellings": 38658.06,
+        "pre_pipeline_requirement_dwellings": 21878.373195494612,
+        "gross_excess_dwellings": 16779.686804505385
+      }
+    ],
+    "gross_market_excess_dwellings_2026_2050": 27414.54343735739,
+    "payback_dwellings_2026_2050": 27414.54343735739,
+    "cumulative_categories_Mm2_2026_2050": {
+      "population_growth": 40.470534932553754,
+      "household_size_change": 2.1776980380335687,
+      "net_replacement": 14.662470533817046,
+      "other": 27.88134452587989,
+      "market_excess": 3.6368857743403886,
+      "overbuild_absorbed": -3.655835242036515,
+      "underlying_requirement": 85.19204803028427,
+      "net_market_effect": -0.018949467696126376,
+      "total_built": 85.17309856258814
+    }
+  },
+  "lag_17": {
+    "lag_months": 17,
+    "timing": "Completion-timed pipeline (17-month lag)",
+    "completion_rate": 0.945,
+    "observed_to": "2026-07-01",
+    "pipeline_years": [
+      2026,
+      2027
+    ],
+    "observed_cohorts": [
+      {
+        "completion_or_proxy_year": 2026,
+        "consent_period": "Aug 2024\u2013Jul 2025",
+        "all_category_consents": 33879.0,
+        "building_equivalent_dwellings": 32015.655,
+        "pre_pipeline_requirement_dwellings": 19313.169637919436,
+        "gross_excess_dwellings": 12702.485362080562
+      },
+      {
+        "completion_or_proxy_year": 2027,
+        "consent_period": "Aug 2025\u2013Jul 2026",
+        "all_category_consents": 40908.0,
+        "building_equivalent_dwellings": 38658.06,
+        "pre_pipeline_requirement_dwellings": 26207.201185599828,
+        "gross_excess_dwellings": 12450.85881440017
+      }
+    ],
+    "gross_market_excess_dwellings_2026_2050": 34229.18430209701,
+    "payback_dwellings_2026_2050": 34229.18430209702,
+    "cumulative_categories_Mm2_2026_2050": {
+      "population_growth": 40.30506964855361,
+      "household_size_change": 2.168785683958467,
+      "net_replacement": 8.948394607892428,
+      "other": 30.27823437519776,
+      "market_excess": 4.544831606250812,
+      "overbuild_absorbed": -4.713420087071348,
+      "underlying_requirement": 81.70048431560227,
+      "net_market_effect": -0.168588480820536,
+      "total_built": 81.53189583478174
+    }
+  },
+  "historical_classification": {
+    "population_growth": "Population growth",
+    "household_size_change": "Smaller households",
+    "net_replacement": "Census-measured net replacement",
+    "other": "Extra space + vacancy + retirement-village adjustment + unexplained building",
+    "market_excess": "Not separately identified in historical data",
+    "overbuild_absorbed": "Not separately identified in historical data",
+    "warning": "Historical other/unallocated may contain excess supply, but it also includes unexplained residual and omitted or mismeasured components; it is not a measured historical overbuild series."
+  },
+  "forecast_classification": {
+    "population_growth": "Population growth",
+    "household_size_change": "Smaller households",
+    "net_replacement": "Demolition replacement + recent replacement wave + unconsented additions",
+    "other": "Extra space + vacancy and any released-vacancy terms",
+    "market_excess": "Gross market excess before payback",
+    "overbuild_absorbed": "Negative floor area corresponding to the modelled payback"
+  },
+  "population_household_note": "Household-size settings are unchanged. The next Stats NZ 2023-base family and household projection release should be assessed as a separate input update.",
+  "time_resolution_note": "Monthly consents are shifted month by month for completion timing. Demographic demand remains annual; quarterly population and stock series are not interpolated into pseudo-monthly observations."
+}

@@ -1,9 +1,9 @@
 {
- "unexplained_dwellings_1992_2025": -3709.3816522298657,
+ "unexplained_dwellings_1992_2025": 14605.91863488689,
  "dwellings_built_1992_2025": 803533.5000000001,
- "unexplained_share_of_built": -0.004616337280561253,
- "unexplained_floor_area_Mm2_remainder": -2.0850852833541227,
- "unexplained_dwellings_x_size_Mm2": -2.0850852833541262,
- "difference_Mm2": 3.4924596548080445e-15,
+ "unexplained_share_of_built": 0.018177112260891286,
+ "unexplained_floor_area_Mm2_remainder": 0.5069786686179452,
+ "unexplained_dwellings_x_size_Mm2": 0.5069786686179396,
+ "difference_Mm2": 5.587935447692871e-15,
  "note": "the floor-area remainder of history_bands and the unexplained dwellings of stock_identity_history x the year's dwelling size agree to difference_Mm2 (household formation in floor area, growth + smaller households + extra space, equals new households x the realised dwelling size)"
 }

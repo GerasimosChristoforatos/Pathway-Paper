@@ -109,6 +109,12 @@ PAPER_EXTENDED = [
          source=['sensitivity/replacement_variants.csv', 'pathways/annual.csv']),
     dict(id='ED10', file='ED10_rollout_timing', module='figures.paper_extended',
          title='Roll-out timing (the Pathways by 2030, 2035, 2045)', source=['pathways/annual.csv', 'pathways/runs.csv']),
+    # MODEL v4.2: the detailed demand bands behind the six display bands (eleven ED items: one over the Nature Cities
+    # cap of ten; the author chooses which to move to the supplementary set)
+    dict(id='ED11', file='ED11_detailed_demand_bands', module='figures.paper_extended',
+         title='Detailed demand bands: floor area (Fig1) and Reference carbon (Fig2a)',
+         source=['baseline/bands_history.csv', 'baseline/bands_annual.csv', 'baseline/annual.csv',
+                 'baseline/annual_by_stage.csv', 'baseline/overbuild_2026.json', 'bands_display_map.csv']),
 ]
 
 # MODEL v3.3.1: Extended Data beyond the ten allowed (Nature Cities) -> outputs/supplementary/

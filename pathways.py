@@ -1183,6 +1183,8 @@ def write(res, identity):
     _json(res['backcast'], 'backcast.json')
     _json(res['ordering'], 'ordering_checks.json')
     _json(tl_summary(res), 'theoretical_limit.json')
+    pd.DataFrame(BANDS.display_map()).to_csv(layout.writing(layout.data('bands_display_map.csv', frozen=False)),
+                                            index=False)         # MODEL v4.2: the six display bands
     _json(dict(res['params'], run_mode=RUN_MODE, identity_max_rel_diff=max(identity.values()),
                identity_checks=identity, sources=LV.SOURCES), 'levers.json')
 

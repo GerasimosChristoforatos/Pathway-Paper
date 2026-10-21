@@ -41,3 +41,31 @@ Each new switch defaults to the MODEL v4.0.0 behaviour, so the Reference is unch
 ## Tests
 
 `tests/test_model_v4_2.py`: 4 passed. `tests/test_demand_balance.py`: 2 passed, 1 skipped.
+
+# MODEL v4.2 — Part B (adopted)
+
+## Changes
+
+* **B1. Bridge adopted.** `HH_BRIDGE = 'erp_S'`: households from 2024 are ERP / S(t), so Stats NZ DHE is not used
+  after the 2023 census. `START_MODE` stays `'observed'`; `HH_SIZE_PATH` stays `'statsnz'` (= `'statsnz_2018'`).
+* **2026–2050 unchanged.**
+  * Reference, Moderate / Ambitious Pathway and TL totals equal v4.0 to ≤ 2.2e-16; `pathways/runs.csv` is identical
+    to v4.0 (relative difference 0).
+  * Only history files changed: bands_history, history_unexplained, stock_identity, household_formation, gap_2026,
+    reality_checks and the D02 / D03 / D08 / D15 / projection_paths figure sources.
+  * Lock: the hashes of bands_history.csv and history_unexplained.json are updated in
+    `tests/regression_model_v4.json`.
+* **Monte Carlo.** Not rerun: the v4.0 full-profile outputs are reused unchanged.
+* **B2. Six display bands.** Defined in `bands.DISPLAY`, written to `outputs/data/bands_display_map.csv`; for figures
+  only. Tested: the six-band sums equal the detailed-band sums every year (1e-9).
+* **B3. Figures.**
+  * Fig1: six bands; 2024–25 decomposed with the ERP / S households (the 2023–2025 interval column).
+  * Fig2: panels a and d by the six bands.
+  * Fig5: the six bands, plus Re-used dwellings (TL).
+  * New ED11: the detailed-band Fig1 and Fig2a. This makes 11 ED items, one over the Nature Cities cap of 10, so
+    `test_figures_v3_3_1::test_display_item_limits` will fail until one item moves to the supplementary set.
+
+## Fixes carried from v4.1
+
+* D43 read a column its own pivot drops; it now reads the `total_built` category.
+* `test_demand_balance` now expects the ERP / S basis for 2023–2025.

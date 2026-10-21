@@ -150,7 +150,8 @@ def historical_market_balance(history):
         basis = (
             "Census-benchmarked household counts"
             if households_from == "census"
-            else "Consent-derived household estimates; not independent of consents"
+            else ("ERP / household-size path after the 2023 census (MODEL v4.2)" if households_from == "erp_S"
+                  else "Consent-derived household estimates; not independent of consents")
         )
         common = dict(
             period_type="history", period=str(interval), year_start=int(year_start),

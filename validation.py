@@ -135,7 +135,7 @@ def history_bands(B):
             raise SystemExit(f'history_bands {y0}-{y1}: the bands do not add up to the observed floor area built.')
         rows += [dict(interval=f'{y0}-{y1}', year_start=y0 + 1, year_end=y1, band=N.band_data_label(k),
                       floor_area_Mm2_per_year=m[k] / 1e6, observed_built_Mm2_per_year=obs / 1e6,
-                      households_from=('census' if y1 <= cy[-1] else 'consents')) for k in N.BANDS_HISTORY]
+                      households_from=('census' if y1 <= cy[-1] else _bridge_label())) for k in N.BANDS_HISTORY]
     return pd.DataFrame(rows)
 
 
@@ -224,7 +224,7 @@ def stock_identity_history(B):
                          **{f'{k}_per_year': mean(v) for k, v in parts.items()},
                          dwellings_built_per_year=mean(built), net_replacement_rate=float(rate.loc[y1]),
                          household_identity_residual_per_year=mean(cal['net'].loc[yh]),
-                         households_from=('census' if y1 <= cy[-1] else 'consents')))
+                         households_from=('census' if y1 <= cy[-1] else _bridge_label())))
     return pd.DataFrame(rows)
 
 
@@ -248,7 +248,7 @@ def household_formation_history(B):
                          from_household_size_change_per_year=mean(d_hh - pop_part),
                          net_new_households_per_year=mean(d_hh),
                          households_start=float(hh.loc[y0]), households_end=float(hh.loc[y1]),
-                         households_from=('census' if y1 <= cy[-1] else 'consents')))
+                         households_from=('census' if y1 <= cy[-1] else _bridge_label())))
     return pd.DataFrame(rows)
 
 
@@ -363,6 +363,11 @@ def dhe_crosscheck(B):
 
 def seasonal_shares(consents):
     return engine.seasonal_shares(consents, SEASONAL_YEARS)   # mean share of the year, by month
+
+
+def _bridge_label():
+    """MODEL v4.2: the household source after the last census (projection.HH_BRIDGE)."""
+    return 'erp_S' if projection.HH_BRIDGE == 'erp_S' else 'consents'
 
 
 def check_2026(B, consents=None, B_full=None):

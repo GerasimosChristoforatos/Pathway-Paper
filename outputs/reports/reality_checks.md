@@ -8,27 +8,27 @@ Projection 2026-2050 against the 1991-2025 historical range (min-max).
 | LOW | net removals | -1,521.11 to 3,354.01 | 0 | - | 0.0 | 0.0 |
 | LOW | people per new dwelling | 0.11 to 4.80 | 0 | - | 0.0 | 0.0 |
 | LOW | floor area per additional resident | 39.25 to 1,334.93 | 0 | - | 0.0 | 0.0 |
-| LOW | household size | 2.66 to 2.79 | 18 | 2033 | 0.0 | 0.3 |
+| LOW | household size | 2.66 to 2.79 | 20 | 2031 | 0.0 | 0.5 |
 | LOW | new-dwelling size | 135.61 to 204.06 | 0 | - | 0.0 | 0.0 |
 | LOW | vacancy rate (effective, %) | 5.08 to 8.09 | 0 | - | 0.0 | 0.0 |
 | REF | dwellings completed | 12,508.02 to 47,830.23 | 0 | - | 0.0 | 0.0 |
 | REF | net removals | -1,521.11 to 3,354.01 | 2 | 2026 | 4.1 | 0.0 |
 | REF | people per new dwelling | 0.11 to 4.80 | 0 | - | 0.0 | 0.0 |
 | REF | floor area per additional resident | 39.25 to 1,334.93 | 0 | - | 0.0 | 0.0 |
-| REF | household size | 2.66 to 2.79 | 18 | 2033 | 0.0 | 0.3 |
+| REF | household size | 2.66 to 2.79 | 20 | 2031 | 0.0 | 0.5 |
 | REF | new-dwelling size | 135.61 to 204.06 | 0 | - | 0.0 | 0.0 |
 | REF | vacancy rate (effective, %) | 5.08 to 8.09 | 0 | - | 0.0 | 0.0 |
 | HIGH | dwellings completed | 12,508.02 to 47,830.23 | 0 | - | 0.0 | 0.0 |
 | HIGH | net removals | -1,521.11 to 3,354.01 | 25 | 2026 | 35.3 | 0.0 |
 | HIGH | people per new dwelling | 0.11 to 4.80 | 0 | - | 0.0 | 0.0 |
 | HIGH | floor area per additional resident | 39.25 to 1,334.93 | 0 | - | 0.0 | 0.0 |
-| HIGH | household size | 2.66 to 2.79 | 18 | 2033 | 0.0 | 0.3 |
+| HIGH | household size | 2.66 to 2.79 | 20 | 2031 | 0.0 | 0.5 |
 | HIGH | new-dwelling size | 135.61 to 204.06 | 0 | - | 0.0 | 0.0 |
 | HIGH | vacancy rate (effective, %) | 5.08 to 8.09 | 0 | - | 0.0 | 0.0 |
 | VHIGH | dwellings completed | 12,508.02 to 47,830.23 | 0 | - | 0.0 | 0.0 |
 | VHIGH | net removals | -1,521.11 to 3,354.01 | 25 | 2026 | 142.1 | 0.0 |
 | VHIGH | people per new dwelling | 0.11 to 4.80 | 0 | - | 0.0 | 0.0 |
 | VHIGH | floor area per additional resident | 39.25 to 1,334.93 | 0 | - | 0.0 | 0.0 |
-| VHIGH | household size | 2.66 to 2.79 | 18 | 2033 | 0.0 | 0.3 |
+| VHIGH | household size | 2.66 to 2.79 | 20 | 2031 | 0.0 | 0.5 |
 | VHIGH | new-dwelling size | 135.61 to 204.06 | 0 | - | 0.0 | 0.0 |
 | VHIGH | vacancy rate (effective, %) | 5.08 to 8.09 | 0 | - | 0.0 | 0.0 |

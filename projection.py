@@ -1280,8 +1280,9 @@ def main():
     hist_growth = d_pop * blended_olf                    # floor area for extra people
     hist_structural = d_hh * occupied_area_per_dwelling  # floor area for extra households
     hist_hs_raw = hist_structural - hist_growth
-    hist_hs_pos = hist_hs_raw.clip(lower=0)              # dilution
-    hist_avoided = (-hist_hs_raw).clip(lower=0)          # consolidation
+    # MODEL v4.2.1: signed household-size band (dilution > 0, consolidation < 0); growth gross (hist_avoided = 0)
+    hist_hs_pos = hist_hs_raw.copy()
+    hist_avoided = hist_hs_raw * 0.0
 
     # [FIX c] Consumption is the part of observed consenting not explained by
     # household formation. v2 computed  Total - Growth - HS_pos, which equals

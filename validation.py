@@ -120,7 +120,7 @@ def history_bands(B):
     _, repl = _census_replacement(B, yh, cal, cy)
     built = B['hist_built_gfa'].loc[yh]
     parts = [('growth', B['hist_growth'].loc[yh] - B['hist_avoided'].loc[yh]),
-             ('smaller_households', B['hist_hs_raw'].loc[yh].clip(lower=0)),
+             ('smaller_households', B['hist_hs_raw'].loc[yh]),
              ('extra_space', B['d_hh'].loc[yh] * (D - B['occupied_area_per_dwelling'].loc[yh])),
              ('vacancy', (cal['allow'] + cal['change']).loc[yh] * D),
              ('replacement_census', repl * D),

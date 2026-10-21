@@ -12,17 +12,17 @@ lag_months,timing,year,category,floor_area_Mm2
 0,consent-timed proxy,2036,population_growth,1.7002679799707192
 0,consent-timed proxy,2037,population_growth,1.6833269040833296
 0,consent-timed proxy,2038,population_growth,1.6684392919398663
-0,consent-timed proxy,2039,population_growth,1.6264951298459176
-0,consent-timed proxy,2040,population_growth,1.5727705274430483
-0,consent-timed proxy,2041,population_growth,1.545713810388305
-0,consent-timed proxy,2042,population_growth,1.545982626506737
-0,consent-timed proxy,2043,population_growth,1.5742113781090963
-0,consent-timed proxy,2044,population_growth,1.59143440154264
+0,consent-timed proxy,2039,population_growth,1.6556051435403292
+0,consent-timed proxy,2040,population_growth,1.6427709951407914
+0,consent-timed proxy,2041,population_growth,1.629936846741254
+0,consent-timed proxy,2042,population_growth,1.6171026983417165
+0,consent-timed proxy,2043,population_growth,1.6042685499421792
+0,consent-timed proxy,2044,population_growth,1.5914344015426416
 0,consent-timed proxy,2045,population_growth,1.5786002531431043
-0,consent-timed proxy,2046,population_growth,1.5657661047435416
+0,consent-timed proxy,2046,population_growth,1.565766104743567
 0,consent-timed proxy,2047,population_growth,1.5529319563440294
-0,consent-timed proxy,2048,population_growth,1.540097807944483
-0,consent-timed proxy,2049,population_growth,1.5272636595449534
+0,consent-timed proxy,2048,population_growth,1.540097807944492
+0,consent-timed proxy,2049,population_growth,1.5272636595449545
 0,consent-timed proxy,2050,population_growth,1.5144295111454171
 0,consent-timed proxy,2026,household_size_change,0.15120521662707875
 0,consent-timed proxy,2027,household_size_change,0.15459817144490445
@@ -37,17 +37,17 @@ lag_months,timing,year,category,floor_area_Mm2
 0,consent-timed proxy,2036,household_size_change,0.12069502486090736
 0,consent-timed proxy,2037,household_size_change,0.08435470635170779
 0,consent-timed proxy,2038,household_size_change,0.031816834472893386
-0,consent-timed proxy,2039,household_size_change,0.0
-0,consent-timed proxy,2040,household_size_change,0.0
-0,consent-timed proxy,2041,household_size_change,0.0
-0,consent-timed proxy,2042,household_size_change,0.0
-0,consent-timed proxy,2043,household_size_change,0.0
-0,consent-timed proxy,2044,household_size_change,0.0
+0,consent-timed proxy,2039,household_size_change,-0.02911001369441132
+0,consent-timed proxy,2040,household_size_change,-0.07000046769774322
+0,consent-timed proxy,2041,household_size_change,-0.08422303635294913
+0,consent-timed proxy,2042,household_size_change,-0.07112007183497959
+0,consent-timed proxy,2043,household_size_change,-0.030057171833082926
+0,consent-timed proxy,2044,household_size_change,-1.5379362777806426e-15
 0,consent-timed proxy,2045,household_size_change,6.371450293662662e-15
-0,consent-timed proxy,2046,household_size_change,0.0
+0,consent-timed proxy,2046,household_size_change,-2.5046390809570465e-14
 0,consent-timed proxy,2047,household_size_change,2.2409928619089364e-14
-0,consent-timed proxy,2048,household_size_change,0.0
-0,consent-timed proxy,2049,household_size_change,0.0
+0,consent-timed proxy,2048,household_size_change,-9.007912484143764e-15
+0,consent-timed proxy,2049,household_size_change,-1.3182310952405506e-15
 0,consent-timed proxy,2050,household_size_change,6.8108606587428455e-15
 0,consent-timed proxy,2026,net_replacement,0.811347467690071
 0,consent-timed proxy,2027,net_replacement,0.776845249298788
@@ -162,8 +162,8 @@ lag_months,timing,year,category,floor_area_Mm2
 0,consent-timed proxy,2036,underlying_requirement,3.611541278804671
 0,consent-timed proxy,2037,underlying_requirement,3.509718113856631
 0,consent-timed proxy,2038,underlying_requirement,3.384399831993349
-0,consent-timed proxy,2039,underlying_requirement,3.24843555487665
-0,consent-timed proxy,2040,underlying_requirement,3.1458991810499315
+0,consent-timed proxy,2039,underlying_requirement,3.2484355548766506
+0,consent-timed proxy,2040,underlying_requirement,3.1458991810499306
 0,consent-timed proxy,2041,underlying_requirement,3.0881776657333555
 0,consent-timed proxy,2042,underlying_requirement,3.0767014303579314
 0,consent-timed proxy,2043,underlying_requirement,3.1128622153010435
@@ -237,17 +237,17 @@ lag_months,timing,year,category,floor_area_Mm2
 17,completion-timed,2036,population_growth,1.6930859881782494
 17,completion-timed,2037,population_growth,1.6762164719916908
 17,completion-timed,2038,population_growth,1.6613917456459273
-17,completion-timed,2039,population_growth,1.6196247571689903
-17,completion-timed,2040,population_growth,1.566127089377639
-17,completion-timed,2041,population_growth,1.5391846608480617
-17,completion-timed,2042,population_growth,1.539452341477748
-17,completion-timed,2043,population_growth,1.5675618538397593
-17,completion-timed,2044,population_growth,1.5847121266161135
+17,completion-timed,2039,population_growth,1.6486118091409585
+17,completion-timed,2040,population_growth,1.63583187263599
+17,completion-timed,2041,population_growth,1.623051936131021
+17,completion-timed,2042,population_growth,1.6102719996260526
+17,completion-timed,2043,population_growth,1.5974920631210838
+17,completion-timed,2044,population_growth,1.5847121266161153
 17,completion-timed,2045,population_growth,1.5719321901111463
-17,completion-timed,2046,population_growth,1.5591522536061526
+17,completion-timed,2046,population_growth,1.559152253606178
 17,completion-timed,2047,population_growth,1.5463723171012091
-17,completion-timed,2048,population_growth,1.5335923805962313
-17,completion-timed,2049,population_growth,1.5208124440912707
+17,completion-timed,2048,population_growth,1.5335923805962406
+17,completion-timed,2049,population_growth,1.5208124440912718
 17,completion-timed,2050,population_growth,1.508032507586303
 17,completion-timed,2026,household_size_change,0.14988874878757213
 17,completion-timed,2027,household_size_change,0.15490923409663931
@@ -262,17 +262,17 @@ lag_months,timing,year,category,floor_area_Mm2
 17,completion-timed,2036,household_size_change,0.12018520482773921
 17,completion-timed,2037,household_size_change,0.08399838910300866
 17,completion-timed,2038,household_size_change,0.03168243904420859
-17,completion-timed,2039,household_size_change,0.0
-17,completion-timed,2040,household_size_change,0.0
-17,completion-timed,2041,household_size_change,0.0
-17,completion-timed,2042,household_size_change,0.0
-17,completion-timed,2043,household_size_change,0.0
-17,completion-timed,2044,household_size_change,0.0
+17,completion-timed,2039,household_size_change,-0.028987051971968308
+17,completion-timed,2040,household_size_change,-0.06970478325835086
+17,completion-timed,2041,household_size_change,-0.08386727528295924
+17,completion-timed,2042,household_size_change,-0.07081965814830453
+17,completion-timed,2043,household_size_change,-0.029930209281324713
+17,completion-timed,2044,household_size_change,-1.532094984291495e-15
 17,completion-timed,2045,household_size_change,6.347250649207622e-15
-17,completion-timed,2046,household_size_change,0.0
+17,completion-timed,2046,household_size_change,-2.5170131884788846e-14
 17,completion-timed,2047,household_size_change,2.23248126282475e-14
-17,completion-timed,2048,household_size_change,0.0
-17,completion-timed,2049,household_size_change,0.0
+17,completion-timed,2048,household_size_change,-9.19256990574897e-15
+17,completion-timed,2049,household_size_change,-1.0943535602082106e-15
 17,completion-timed,2050,household_size_change,6.784992073290906e-15
 17,completion-timed,2026,net_replacement,0.47351292340854867
 17,completion-timed,2027,net_replacement,0.4584731072105086
@@ -388,11 +388,11 @@ lag_months,timing,year,category,floor_area_Mm2
 17,completion-timed,2037,underlying_requirement,3.3810540864035223
 17,completion-timed,2038,underlying_requirement,3.258400290327989
 17,completion-timed,2039,underlying_requirement,3.124390418455519
-17,completion-timed,2040,underlying_requirement,3.0245594821490718
+17,completion-timed,2040,underlying_requirement,3.024559482149072
 17,completion-timed,2041,underlying_requirement,2.970659021759327
 17,completion-timed,2042,underlying_requirement,2.9641547241422224
 17,completion-timed,2043,underlying_requirement,3.0064745098512216
-17,completion-timed,2044,underlying_requirement,3.0308278005304157
+17,completion-timed,2044,underlying_requirement,3.030827800530416
 17,completion-timed,2045,underlying_requirement,3.0041838324378674
 17,completion-timed,2046,underlying_requirement,2.9778903684094233
 17,completion-timed,2047,underlying_requirement,2.9519273474465644

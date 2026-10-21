@@ -133,7 +133,7 @@ HH_SIZE_PACE_WINDOW = (2018, 2023)
 #     projection median from 2026, no nowcast; building modelled in every projection year: no pipeline, no market
 #     excess, no carried deviation; the completion lag kept in the history).
 FILE_HOUSEHOLDS_PROJ_2023 = None
-HH_BRIDGE = 'dhe'
+HH_BRIDGE = 'erp_S'                # MODEL v4.2: adopted (Part B)
 START_MODE = 'observed'
 
 # S_TAIL: household size between and after the published knots (last knot 2043).

@@ -1,0 +1,17 @@
+band_id,display_id,display_label
+growth,growth,Population growth
+smaller_households,smaller_households,Household-size change
+extra_space,extra_space,Extra space
+vacancy,vacancy,Vacancy
+vacancy_released,vacancy,Vacancy
+replacement,net_replacement,Net replacement
+redevelopment,net_replacement,Net replacement
+unconsented,net_replacement,Net replacement
+replacement_census,net_replacement,Net replacement
+unexplained,market_balance,"Market balance (excess, residual and scope adjustments)"
+retirement_villages,market_balance,"Market balance (excess, residual and scope adjustments)"
+overbuild_2026,market_balance,"Market balance (excess, residual and scope adjustments)"
+overbuild_absorbed,market_balance,"Market balance (excess, residual and scope adjustments)"
+surplus_vacant,market_balance,"Market balance (excess, residual and scope adjustments)"
+released_tl,released_tl,Re-used dwellings (TL)
+maintenance,maintenance,"Maintenance (B2, B4)"

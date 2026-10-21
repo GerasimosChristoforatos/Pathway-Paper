@@ -10,7 +10,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig1_floor_area.png`
 - Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`, `data/baseline/overbuild_2026.json`
-- This run: Completions = 0.945 x consents lagged 17 months (median consent-to-completion time 1.27-1.53 yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building indicators). Pipeline years 2026, 2027: building observed (consents to July 2026); the part above modelled need fades from 2028 (ρ = 0.43) and is absorbed by 2035. 2026 population: Stats NZ ERP nowcast. Negative bands drawn down from zero: Overbuild absorbed, Unconsented additions, Vacancy, Net replacement (census), Retirement villages (out of scope), Unexplained building. 2026-2050: 81.5 Mm².
+- This run: Completions = 0.945 x consents lagged 17 months (median consent-to-completion time 1.27-1.53 yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building indicators). Households after the 2023 census = ERP / household-size path (Stats NZ DHE not used). Pipeline years 2026, 2027: building observed (consents to July 2026); the part above modelled need fades from 2028 (ρ = 0.43) and is absorbed by 2035. 2026 population: Stats NZ ERP nowcast. Six display bands (data/bands_display_map.csv); market balance = unexplained building + retirement villages (out of scope) + overbuild / pipeline excess + overbuild absorbed + surplus kept vacant. Negative bands drawn down from zero: Market balance (excess, residual and scope adjustments), Vacancy, Net replacement. 2026-2050: 81.5 Mm².
 
 ### Fig2_reference_carbon
 
@@ -18,7 +18,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig2_reference_carbon.png`
 - Data: `data/baseline/bands_annual.csv`, `data/baseline/annual_by_material.csv`, `data/baseline/annual_by_stage.csv`
-- This run: 2026-2050: 19,761 kt CO₂e; (d) the demand column: positive bands stacked to 22,184 kt, negative bands outlined, hanging down to the total.
+- This run: 2026-2050: 19,761 kt CO₂e; (d) the demand column: positive bands stacked to 19,761 kt, negative bands outlined, hanging down to the total.
 
 ### Fig3_reference_boundaries
 
@@ -42,7 +42,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig5_reduction_by_demand.png`
 - Data: `data/pathways/bands.csv`, `data/pathways/runs.csv`
-- This run: Reduction vs the Reference (kt): Moderate Pathway 5,460, Ambitious Pathway 9,494, Theoretical Limit 15,339. Negative band reductions (outlined): 2026 overbuild +9, +17, -337; Overbuild absorbed -194, -365, -720; Unconsented additions -255, -465, -764 kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.
+- This run: Reduction vs the Reference (kt): Moderate Pathway 5,460, Ambitious Pathway 9,494, Theoretical Limit 15,339. Negative band reductions (outlined): Market balance (excess, residual and scope adjustments) -185, -348, -1,056 kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.
 
 ### Fig6_solution_space
 
@@ -145,6 +145,14 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_extended/ED10_rollout_timing.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
+
+### ED11_detailed_demand_bands
+
+**ED11 Detailed demand bands: floor area (Fig1) and Reference carbon (Fig2a)**
+
+- Files: `paper_extended/ED11_detailed_demand_bands.png`
+- Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`, `data/baseline/annual_by_stage.csv`, `data/baseline/overbuild_2026.json`, `data/bands_display_map.csv`
+- This run: Detailed demand bands behind the six display bands of Fig1 and Fig2 (data/bands_display_map.csv).
 
 ### EDT1_levels_by_typology
 
@@ -322,6 +330,22 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Files: `diagnostics/validation/D15_reality_checks.png`
 - Data: `data/figure_source/D15_reality_checks.json`
 - This run: Projection 2026–2050 against the 1991–2025 range (grey band); a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. h: the 2026 → 2027 step of the Reference (2026 observed, 2027 the first model year) against the year-to-year changes in consented floor area, 1992–2025.
+
+### D43_historical_market_balance
+
+**Historical and projected floor area: demand, net replacement and unallocated balance**
+
+- Files: `diagnostics/validation/D43_historical_market_balance.png`
+- Data: `data/diagnostics/market_balance_history_projection.csv`
+- This run: History separates population growth, household-size change and census-measured net replacement. Other / unallocated combines extra space, vacancy, retirement-village adjustment and unexplained building; it may contain historical excess supply but is not a measured overbuild series. The 2023–2025 household bridge is consent-derived. From 2026, gross market excess and its payback are shown separately on the 17-month completion-timed Reference.
+
+### D44_completion_lag_comparison
+
+**Annual floor area by broad demand group: zero- and 17-month completion lag**
+
+- Files: `diagnostics/validation/D44_completion_lag_comparison.png`
+- Data: `data/diagnostics/lag_comparison_annual.csv`
+- This run: Both runs use identical source files and demographic paths; only the monthly consent-to-completion lag changes. Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; it is not a count of completed calendar-2026 homes. The 17-month run uses complete observed consent cohorts for 2026 and 2027. Lag-specific historical completion timing and replacement calibration are recomputed consistently.
 
 ## Diagnostics: boundaries (diagnostics/boundaries/)
 

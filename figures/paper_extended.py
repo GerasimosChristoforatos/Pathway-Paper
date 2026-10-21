@@ -576,10 +576,36 @@ def edt1():
         f.write('\n'.join(L_) + '\n')
 
 
+def ed11():
+    """MODEL v4.2: the detailed-band versions of Fig1 (floor area, history and projection) and Fig2a (Reference carbon
+    by demand band), as before the six display bands."""
+    fig, ax = plt.subplots(2, 1, figsize=S.figsize('double', 190), gridspec_kw={'height_ratios': [1.15, 1]})
+    handles, neg, pipe, total, ob = PM._fig1_draw(ax[0], six=False)
+    P.panel(ax[0], 'a', 'Floor area by detailed demand band (Fig1)')
+    ax[0].legend(handles=handles, loc='upper right', ncol=3, fontsize=S.FONT_MIN, bbox_to_anchor=(1.0, -0.06),
+                 frameon=False)
+    band = PM._band_frame(D.csv('baseline/bands_annual.csv'), 'carbon_kt')
+    total_c = D.csv('baseline/annual_by_stage.csv').set_index('year')['carbon_kt'].values
+    years = band.index.values.astype(float)
+    P.stack_series(ax[1], years, [(b, band[b].values) for b in band.columns], net=total_c)
+    ax[1].set_xlim(years[0], years[-1])
+    ax[1].set_ylabel('Embodied carbon (kt CO₂e per year)')
+    P.thousands(ax[1].yaxis)
+    shown = [b for b in PM.BANDS if b in band.columns and (band[b].abs() > 1e-12).any()]
+    ax[1].legend(handles=PM.paper_band_handles(shown) + [Line2D([0], [0], color=S.INK, lw=S.LW,
+                                                                label='Carbon (in scope)')],
+                 loc='upper right', ncol=2, fontsize=S.FONT_MIN)
+    P.panel(ax[1], 'b', 'Reference carbon by detailed demand band (Fig2a)')
+    fig.tight_layout()
+    _save(fig, 'ED11_detailed_demand_bands',
+          note='Detailed demand bands behind the six display bands of Fig1 and Fig2 (data/bands_display_map.csv).')
+
+
 FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_census_replacement_rates': ed2,
            'ED3_household_formation_size': ed3, 'ED4_overbuild_absorption': ed4, 'ED5_pathways_annual': ed5,
            'ED6_waterfalls_by_demand_band': ed6, 'ED7_single_levers': ed7, 'ED8_tl_shapley_indicators': ed8,
            'ED9_replacement_variants': ed9, 'ED10_rollout_timing': ed10,
+           'ED11_detailed_demand_bands': ed11,
            'SF2_mc_scatter_population': sf1, 'SF3_conditional_tl': sf2, 'SF4_lambda_sweep': sf3,
            'SF5_hd_estimators': sf4, 'SF6_consent_sizes': sf5}
 TABLES = {'EDT1_levels_by_typology': edt1}

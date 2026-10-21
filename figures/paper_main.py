@@ -17,6 +17,7 @@ import naming as N
 from figures import data as D
 from figures import draw as P
 from figures import style as S
+import bands as BANDS_MOD
 
 M = 1e6
 SRC = {h['file']: h['source'] for h in FP.PAPER_MAIN + FP.SUPPLEMENTARY}
@@ -43,11 +44,14 @@ def _band_frame(df, value):
     return t[order]
 
 
-def paper_band_handles(bids):
-    """Legend handles of the bands drawn (time-series figures: every band filled), with the paper labels."""
+def paper_band_handles(bids, six=False):
+    """Legend handles of the bands drawn (time-series figures: every band filled), with the paper labels (six: the
+    labels of the MODEL v4.2 display bands, bands.DISPLAY_LABEL)."""
     out = P.band_handles(bids, outline=False)
     for h, b in zip(out, bids):
-        if b in PAPER_BAND_LABEL:
+        if six and b in BANDS_MOD.DISPLAY_LABEL:
+            h.set_label(BANDS_MOD.DISPLAY_LABEL[b])
+        elif b in PAPER_BAND_LABEL:
             h.set_label(PAPER_BAND_LABEL[b])
     return out
 
@@ -186,23 +190,23 @@ def _stack_bar(ax, a, b, parts, net, styles=None):
     ax.plot(x, [net, net], color=S.INK, lw=S.LW, gid=P.NET_GID)
 
 
-def fig1():
-    """MODEL v4.0.0 (layout of v3.3.2): census-interval columns of the history to 2023 (FIG1_GAP between columns);
-    2024-2025 observed completions (consents lagged) as total columns without a band split (household estimates
-    between censuses are not independent of the consents); the pipeline years (2026-2027 at a 17-month lag) as
-    annual columns split into the need bands plus the building above modelled need (hatched); the projection annual
-    from the first unobserved year (2028), each year drawn over its own width."""
+def _fig1_draw(ax, six=True):
+    """MODEL v4.2 (layout of v4.0.0): the history as census-interval columns (FIG1_GAP between columns), 2024-2025
+    included (households = ERP / S after the 2023 census, projection.HH_BRIDGE); the pipeline years (2026-2027 at a
+    17-month lag) as annual columns, the building above modelled need hatched; the projection annual from the first
+    unobserved year, each year over its own width. six: the six display bands (bands.DISPLAY; the market balance
+    carries the residual in history and projection alike), else the detailed bands. Returns (legend handles, the
+    negative bands, the pipeline years, the 2026-2050 floor area)."""
     hist = D.csv('baseline/bands_history.csv')
     proj = _band_frame(D.csv('baseline/bands_annual.csv'), 'floor_area_Mm2')
+    if six:
+        proj = P.display_frame(proj)
     ann = D.csv('baseline/annual.csv')
     ob = D.js('baseline/overbuild_2026.json')
     pipe = [int(y) for y in (ob.get('pipeline_years') or [2026])]
     tot = ann[ann['source'] == 'projection'].set_index('year')['floor_area_Mm2']
     hist_tot = ann[ann['source'] == 'history'].set_index('year')['floor_area_Mm2']
-    fig, ax = plt.subplots(figsize=S.figsize('double', 95))
-    census = hist.groupby('interval')['households_from'].agg(lambda c: set(c) == {'census'})
-    ivs = (hist[hist['interval'].map(census)][['interval', 'year_start', 'year_end']].drop_duplicates()
-           .sort_values('year_start').reset_index(drop=True))
+    ivs = hist[['interval', 'year_start', 'year_end']].drop_duplicates().sort_values('year_start').reset_index(drop=True)
     edges = list(ivs['year_start'] - 0.5) + [float(ivs['year_end'].iloc[-1]) + 0.5]
     hb = {}
     for k, iv in ivs.iterrows():
@@ -210,7 +214,12 @@ def fig1():
         a, b = edges[k], edges[k + 1]
         w = b - a
         a, b = a + FIG1_GAP / 2 * w, b - FIG1_GAP / 2 * w        # half the gap on each side of every column
-        parts = [(P.band_id(lab), np.array([v, v], float)) for lab, v in zip(h['band'], h['floor_area_Mm2_per_year'])]
+        vals = {}
+        for lab, v in zip(h['band'], h['floor_area_Mm2_per_year']):
+            bid = P.band_id(lab)
+            bid = BANDS_MOD.DISPLAY[bid] if six else bid
+            vals[bid] = vals.get(bid, 0.0) + float(v)
+        parts = [(bid, np.array([v, v], float)) for bid, v in vals.items()]
         for bid, v in parts:
             hb.setdefault(bid, []).append(float(v[0]))
         obs = float(h['observed_built_Mm2_per_year'].iloc[0])
@@ -220,15 +229,16 @@ def fig1():
     y_hist_end = int(ivs['year_end'].iloc[-1])
     g = FIG1_GAP / 2
     obs_years = [y for y in hist_tot.index if y_hist_end < y < min(pipe)]
-    for y in obs_years:                                           # observed totals, no band split
+    for y in obs_years:                                           # observed totals, no band split (none since v4.2)
         ax.fill_between([y - 0.5 + g, y + 0.5 - g], 0, float(hist_tot.loc[y]), gid='observed_total',
                         **S.fill(OBSERVED_FILL))
         ax.plot([y - 0.5 + g, y + 0.5 - g], [hist_tot.loc[y]] * 2, color=S.INK, lw=S.LW, gid=P.NET_GID)
+    hb_id = 'market_balance' if six else 'overbuild_2026'
     hatched = dict(S.fill(S.BAND['overbuild_2026'][0], hatch=PIPELINE_HATCH, hatchcolor=S.HATCH_LIGHT))
     cols = [b for b in proj.columns if b != 'maintenance']
     for y in pipe:                                                # pipeline years: need bands + building above need
         _stack_bar(ax, y - 0.5 + g, y + 0.5 - g, [(bid, float(proj.loc[y, bid])) for bid in cols],
-                   float(tot.loc[y]), styles={'overbuild_2026': hatched})
+                   float(tot.loc[y]), styles={hb_id: hatched})
     fut = proj.loc[proj.index > max(pipe)]
     years = fut.index.values.astype(float)
     x0 = years[0] - 0.5 + g                                       # the same gap before the annual projection
@@ -244,40 +254,48 @@ def fig1():
     ax.set_ylabel('Floor area built (Mm² per year)')
     ax.text(y_hist_end + 0.4, 0.98, 'History (census-interval means)', transform=ax.get_xaxis_transform(),
             ha='right', va='top', fontsize=S.FONT_SMALL, color=S.MUTED)
-    lab_y = 0.98                                                  # narrow groups: vertical labels
-    if obs_years:
-        ax.text(np.mean(obs_years), lab_y, 'Observed', transform=ax.get_xaxis_transform(), ha='center', va='top',
-                rotation=90, fontsize=S.FONT_MIN, color=S.MUTED)
-    ax.text(np.mean(pipe), lab_y, 'Pipeline', transform=ax.get_xaxis_transform(), ha='center', va='top',
+    ax.text(np.mean(pipe), 0.98, 'Pipeline', transform=ax.get_xaxis_transform(), ha='center', va='top',
             rotation=90, fontsize=S.FONT_MIN, color=S.MUTED)
     ax.text(x0 + 0.4, 0.98, 'Projection (annual)', transform=ax.get_xaxis_transform(),
             ha='left', va='top', fontsize=S.FONT_SMALL, color=S.MUTED)
     neg = [b for b in proj.columns if (proj[b] < 0).any()]
     neg += [b for b in hb if b not in neg and any(v < 0 for v in hb[b])]
-    present = [b for b in BANDS if b in proj.columns and (proj[b].abs() > 1e-12).any() and b != 'maintenance']
-    if not (fut.get('overbuild_2026', 0) != 0).any() and 'overbuild_2026' in present:
+    order = list(BANDS_MOD.DISPLAY_ORDER) if six else BANDS
+    present = [b for b in order if b in proj.columns and (proj[b].abs() > 1e-12).any() and b != 'maintenance']
+    if not six and not (fut.get('overbuild_2026', 0) != 0).any() and 'overbuild_2026' in present:
         present.remove('overbuild_2026')                          # only the pipeline part is drawn
     hist_only = [b for b in hb if b not in present and any(abs(v) > 1e-12 for v in hb[b])]
-    handles = paper_band_handles(present + hist_only)                    # only the bands present
-    handles += [Patch(label='Building above modelled need (pipeline)', **dict(hatched, edgecolor='#555555',
-                                                                              linewidth=S.LW_THIN))]
+    handles = paper_band_handles(present + hist_only, six=six)           # only the bands present
+    handles += [Patch(label=('Market balance: building above modelled need (pipeline)' if six
+                             else 'Building above modelled need (pipeline)'),
+                      **dict(hatched, edgecolor='#555555', linewidth=S.LW_THIN))]
     if obs_years:
         handles += [Patch(label='Observed (consent-based; household estimates not independent)',
                           **dict(S.fill(OBSERVED_FILL), edgecolor='#555555', linewidth=S.LW_THIN))]
     handles += [Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built (in scope)')]
+    return handles, neg, pipe, float(tot.loc[2026:2050].sum()), ob
+
+
+def fig1():
+    """MODEL v4.2: Fig1 with the six display bands (_fig1_draw)."""
+    fig, ax = plt.subplots(figsize=S.figsize('double', 95))
+    handles, neg, pipe, total, ob = _fig1_draw(ax, six=True)
     fig.legend(handles=handles, loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.02), frameon=False,
                fontsize=S.FONT_MIN + 0.5)
-    fig.tight_layout(rect=(0, 0.19, 1, 1))
+    fig.tight_layout(rect=(0, 0.15, 1, 1))
     lag, rate = ob.get('completion_lag_months'), ob.get('completion_rate')
     _save(fig, 'Fig1_floor_area',
           note=(f"Completions = {rate:.3f} x consents lagged {lag} months (median consent-to-completion time 1.27-1.53 "
                 f"yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building "
                 f"indicators). " if lag else '')
-               + f"Pipeline years {', '.join(map(str, pipe))}: building observed (consents to "
+               + f"Households after the 2023 census = ERP / household-size path (Stats NZ DHE not used). "
+               f"Pipeline years {', '.join(map(str, pipe))}: building observed (consents to "
                f"{_month(ob.get('consents_observed_to'))}); the part above modelled need fades from "
                f"{max(pipe) + 1} (ρ = {ob['rho']:.2f}) and is absorbed by {ob['absorption_end']}. 2026 population: "
-               f"Stats NZ ERP nowcast. Negative bands drawn down from zero: "
-               f"{', '.join(P.band_label(b) for b in neg)}. 2026-2050: {tot.loc[2026:2050].sum():.1f} Mm².")
+               f"Stats NZ ERP nowcast. Six display bands (data/bands_display_map.csv); market balance = unexplained "
+               f"building + retirement villages (out of scope) + overbuild / pipeline excess + overbuild absorbed + "
+               f"surplus kept vacant. Negative bands drawn down from zero: "
+               f"{', '.join(P.band_label(b) for b in neg)}. 2026-2050: {total:.1f} Mm².")
 
 
 # ---------------------------------------------------------------------------
@@ -288,7 +306,7 @@ def fig2():
     inside panel a, two columns); (d) cumulative 2026-2050 as three attached columns of the same total (by demand band:
     positive bands stacked, negative bands outlined hanging down to the total, draw.bars_cumulative; by material; by
     stage), its own axis in kt, thin separators."""
-    band = _band_frame(D.csv('baseline/bands_annual.csv'), 'carbon_kt')
+    band = P.display_frame(_band_frame(D.csv('baseline/bands_annual.csv'), 'carbon_kt'))    # MODEL v4.2: six bands
     mat = D.csv('baseline/annual_by_material.csv').pivot(index='year', columns='material', values='carbon_kt')
     stg = D.csv('baseline/annual_by_stage.csv').set_index('year')
     years = band.index.values.astype(float)
@@ -324,8 +342,8 @@ def fig2():
     ax[2].legend(loc='upper right', fontsize=S.FONT_MIN)
     mh = [Patch(label=lab, **P.material_patch(code, c)) for code, lab, c in S.MATERIAL][::-1]
     ax[1].legend(handles=mh, loc='upper right', fontsize=S.FONT_MIN, ncol=2, columnspacing=0.8)
-    shown = [b for b in BANDS if b in band.columns and (band[b].abs() > 1e-12).any()]      # only the bands present
-    ax[0].legend(handles=paper_band_handles(shown) + [Line2D([0], [0], color=S.INK, lw=S.LW, label='Carbon (in scope)')],
+    shown = [b for b in BANDS_MOD.DISPLAY_ORDER if b in band.columns and (band[b].abs() > 1e-12).any()]
+    ax[0].legend(handles=paper_band_handles(shown, six=True) + [Line2D([0], [0], color=S.INK, lw=S.LW, label='Carbon (in scope)')],
                  loc='upper right', ncol=2, fontsize=S.FONT_MIN, handlelength=1.2, columnspacing=0.8,
                  labelspacing=0.3)
     # (d) cumulative 2026-2050: three attached columns of the same total
@@ -586,7 +604,8 @@ def reduction_by_band():
     piv.index = [P.band_id(b) for b in piv.index]
     r = D.csv('pathways/runs.csv')
     r = r[r['scenario'] == 'REF'].set_index('run')['carbon_kt']
-    order = [b for b in BANDS_TL if b in piv.index]
+    piv = piv.groupby(lambda b: BANDS_MOD.DISPLAY[b]).sum()             # MODEL v4.2: the six display bands (+ TL)
+    order = [b for b in BANDS_MOD.DISPLAY_ORDER if b in piv.index]
     red = {run: {b: float(piv.loc[b, 'REF'] - piv.loc[b, run]) for b in order} for run in FIG5_RUNS}
     tot = {run: float(r['REF'] - r[run]) for run in FIG5_RUNS}
     return red, tot
@@ -617,7 +636,7 @@ def fig5():
     negb = {b for b, v in parts if (v < -1e-9).any()}
     hb = []
     for b in bands[::-1]:                                                # top of the stack first
-        lab = PAPER_BAND_LABEL.get(b, P.band_label(b))
+        lab = BANDS_MOD.DISPLAY_LABEL.get(b, P.band_label(b))
         if b in negb and not any(red[r][b] > 1e-9 for r in FIG5_RUNS):
             hb.append(Patch(label=f'{lab} (credit shrinks)', **P.negative_bar_style(b)))
         else:

@@ -45,6 +45,8 @@ FILES = [
     ('data/baseline/gap_2026.json', 'The 2026 gap between observed building and the requirement',
      'gap_2026.py'),
     ('data/baseline/overbuild_2026.json', 'The 2026 overbuild and how it is absorbed', 'tools/overbuild_2026.py'),
+    ('data/bands_display_map.csv', 'MODEL v4.2: detailed demand band -> the six display bands of the figures',
+     'pathways.py'),
     ('data/diagnostics/lag_comparison_annual.csv', 'Annual floor area by broad demand group under zero- and 17-month completion timing', 'tools/demand_balance.py'),
     ('data/diagnostics/market_balance_history_projection.csv', 'Historical and projected floor area in the separate coarse market-balance classification; historical overbuild is not identified', 'tools/demand_balance.py'),
     ('data/diagnostics/lag_comparison_summary.json', 'Controlled zero- versus 17-month consent-to-completion comparison, demographic-path checks and observed consent cohorts', 'tools/demand_balance.py'),

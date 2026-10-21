@@ -121,6 +121,20 @@ HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S onl
 #   (S_2023 - S_2018) / 5 per year, census-benchmarked households; HH_SIZE_PACE_WINDOW).
 HH_SIZE_PATH = 'statsnz'
 HH_SIZE_PACE_WINDOW = (2018, 2023)
+# MODEL v4.2 (diagnostic switches; defaults = MODEL v4.0.0):
+#   HH_SIZE_PATH also takes 'statsnz_2018' (= 'statsnz') and 'statsnz_2023': the Stats NZ 2023-base national family and
+#     household projections (FILE_HOUSEHOLDS_PROJ_2023: CSV Year, Variant, Population, Households; Medium / Low / High =
+#     HH_SIZE_VARIANT), S = Population / Households PCHIP-interpolated, anchored on the 2023 census, no DHE rebase
+#     factor. The file is not yet in data/ (loader stub; tested with a synthetic file).
+#   HH_BRIDGE: 'dhe' (Stats NZ DHE households, rebased on the 2023 census) | 'erp_S' (from 2024: households =
+#     observed ERP at 31 December / S(t), S(t) the model's household-size path anchored on the 2023 census; DHE not
+#     used after the 2023 census).
+#   START_MODE: 'observed' (pipeline years, market excess, 2026 population nowcast) | 'projection' (the population
+#     projection median from 2026, no nowcast; building modelled in every projection year: no pipeline, no market
+#     excess, no carried deviation; the completion lag kept in the history).
+FILE_HOUSEHOLDS_PROJ_2023 = None
+HH_BRIDGE = 'dhe'
+START_MODE = 'observed'
 
 # S_TAIL: household size between and after the published knots (last knot 2043).
 #   'hermite_clamped' (ADOPTED, v1.2.1): one cubic Hermite through every
@@ -985,6 +999,37 @@ def statsnz_size_shape(variant, forecast_years, tail):
     return S_knots, S_ann, pop_ref
 
 
+def statsnz_2023_shape(path, variant):
+    """MODEL v4.2 loader stub: S = Population / Households of the Stats NZ 2023-base family and household projections
+    (CSV with Year, Variant, Population, Households), PCHIP-interpolated to annual values and held after the last
+    knot. Returns the annual S series."""
+    if path is None:
+        raise ValueError("HH_SIZE_PATH 'statsnz_2023': FILE_HOUSEHOLDS_PROJ_2023 is not set (file not yet available).")
+    d = pd.read_csv(path)
+    d = d[d['Variant'] == variant].sort_values('Year')
+    knots = pd.DataFrame({'Year': d['Year'].astype(int).values,
+                          'S': (d['Population'] / d['Households']).astype(float).values})
+    S_ann = smooth_interpolate_and_extend(knots, 'S', np.arange(int(knots['Year'].min()), 2051)).set_index('Year')['S']
+    return extend_tail(knots, S_ann, 'flat')
+
+
+def household_size_path(hist_S, years):
+    """MODEL v4.2: the model's household-size path over `years` (>= S_ANCHOR_YEAR), anchored on the observed
+    S_ANCHOR_YEAR value, for the current HH_SIZE_PATH."""
+    y = np.asarray(years, float)
+    S0 = float(hist_S.loc[S_ANCHOR_YEAR])
+    if HH_SIZE_PATH == 'census_pace':
+        p0, p1 = HH_SIZE_PACE_WINDOW
+        return S0 + float(hist_S.loc[p1] - hist_S.loc[p0]) / (p1 - p0) * (y - S_ANCHOR_YEAR)
+    if HH_SIZE_PATH == 'statsnz_2023':
+        sh = statsnz_2023_shape(FILE_HOUSEHOLDS_PROJ_2023, HH_SIZE_VARIANT)
+    elif HH_SIZE_PATH in ('statsnz', 'statsnz_2018'):
+        sh = statsnz_size_shape(HH_SIZE_VARIANT, None, tail=S_TAIL)[1]
+    else:
+        raise ValueError(f"Unknown HH_SIZE_PATH '{HH_SIZE_PATH}'.")
+    return S0 * sh.reindex(np.asarray(years, int)).values / float(sh.loc[S_ANCHOR_YEAR])
+
+
 def household_size(S_ann, pop_ref, hist_S, hist_pop, forecast_years, b, anchor_year):
     """Household size rebased on the observed value in anchor_year (S_matched):
         S(t) = S_obs(anchor) x S_StatsNZ(t) / S_StatsNZ(anchor).
@@ -1079,6 +1124,10 @@ def main():
     _scenario, _join_mode = REPLACEMENT_VARIANT, OVERBUILD_RULE
     if _join_mode not in ('market_excess', 'carried_deviation'):
         raise ValueError(f"Unknown OVERBUILD_RULE '{_join_mode}'.")
+    if START_MODE == 'projection':           # MODEL v4.2: modelled from 2026, no observed projection year, no join
+        _join_mode = 'none'
+    elif START_MODE != 'observed':
+        raise ValueError(f"Unknown START_MODE '{START_MODE}'.")
 
     # ------------------------------------------------------------------
     # 0. CASE-STUDY FACTORS
@@ -1180,6 +1229,12 @@ def main():
         raise ValueError("Household series has gaps over 1991-2025.")
 
     hist_S = hist_pop / hist_hh
+    if HH_BRIDGE == 'erp_S':                 # MODEL v4.2: households after the 2023 census = ERP / the model's S path
+        _yb = [int(y) for y in years_hist if y > S_ANCHOR_YEAR]
+        hist_hh.loc[_yb] = hist_pop.loc[_yb].values / household_size_path(hist_S, _yb)
+        hist_S = hist_pop / hist_hh
+    elif HH_BRIDGE != 'dhe':
+        raise ValueError(f"Unknown HH_BRIDGE '{HH_BRIDGE}'.")
     print(f"[check] households: DHE series rebased on the 2023 census (occupied + away); "
           f"post-2018 increments x {hh_rebase_k:.3f} -> 2025 households "
           f"{hist_hh.loc[2025]:,.0f} (published {hist_hh_dhe.loc[2025]:,.0f}), "
@@ -1430,7 +1485,7 @@ def main():
         df_forecast[f'PopTotal_{pct}'] = levels
         df_forecast.loc[1:, f'PopGrowth_{pct}'] = np.diff(levels)
     pop_nowcast = None
-    if NOWCAST_POPULATION:
+    if NOWCAST_POPULATION and START_MODE == 'observed':
         _q = pd.read_csv(FILE_POP_QUARTERLY).set_index(['year', 'quarter'])['total']
         if (2026, 2) not in _q.index:
             raise ValueError(f'{FILE_POP_QUARTERLY} has no June quarter 2026.')
@@ -1468,7 +1523,10 @@ def main():
         S_matched = float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (np.asarray(forecast_years, float) - S_ANCHOR_YEAR)
         S_bridge = pd.Series(float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (S_bridge.index.values - S_ANCHOR_YEAR),
                              index=S_bridge.index)
-    elif HH_SIZE_PATH != 'statsnz':
+    elif HH_SIZE_PATH == 'statsnz_2023':     # MODEL v4.2 (loader stub)
+        S_matched = household_size_path(hist_S, forecast_years)
+        S_bridge = pd.Series(household_size_path(hist_S, S_bridge.index.values), index=S_bridge.index)
+    elif HH_SIZE_PATH not in ('statsnz', 'statsnz_2018'):
         raise ValueError(f"Unknown HH_SIZE_PATH '{HH_SIZE_PATH}'.")
     # ---- household size and migration: diagnostic regression (not applied) ----
     # Fitted only where households are census-benchmarked (see above).

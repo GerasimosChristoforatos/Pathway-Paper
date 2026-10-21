@@ -440,9 +440,11 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
     g_gross = np.asarray(pop_growth, float) * olf_f
     structural = d_hh * occ
     hs_raw = structural - g_gross
-    hs_pos = np.maximum(0, hs_raw)
-    hs_avoided = np.abs(np.minimum(0, hs_raw))
-    growth = g_gross - hs_avoided
+    # MODEL v4.2.1: the household-size band is SIGNED (negative = households consolidating) and population growth is
+    # gross; their sum, and so every total, is unchanged (v4.2: hs_pos = max(0, hs_raw), growth net of consolidation)
+    hs_pos = hs_raw
+    hs_avoided = np.abs(np.minimum(0, hs_raw))      # diagnostic only: the consolidating part
+    growth = g_gross
     extra = np.clip(d_hh * (D - occ), 0, None)
     # > 0 only where the realised dwelling size falls below the occupied area:
     # there floor area exceeds dwellings built x D by this amount.

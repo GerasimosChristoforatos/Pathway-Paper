@@ -29,3 +29,4 @@ Branch `release/model-v4.2.1`, from `release/model-v4.2.0`. `HH_SIZE_PATH` stays
   * (b) Shapley share (%) within each game.
   * The single-lever ED figure is deleted; the old ED8–ED11 become ED7–ED10, so there are 10 ED items again.
 * **Fig8** — caption note on the flat left tail.
+* Figure tweaks (one 600 dpi export, data byte-identical): Fig2 legends unframed and tight; Fig3 lines at alpha 0.8, TL solid and thinner; Fig4 25% lower; Fig5 negatives stacked below zero with a labelled net marker and a 4 × 2 legend; Fig6 legend below the plot (3 columns, without the 'Within both budgets' entry); Fig7 shorter, legend below (3 columns); Fig8a rows from Completion rate down only, figure 20% lower.

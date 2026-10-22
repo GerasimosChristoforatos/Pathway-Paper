@@ -114,3 +114,23 @@ deterministic model and the Monte Carlo were not rerun. The data were byte-ident
 * **Fig8.** Unchanged.
 * **Tests.** 27 of 28 figure tests pass. The remaining failure is the pre-existing ED10 maintenance rule recorded above,
   unchanged.
+
+## Follow-up figure tweaks
+
+Figures only. The figures were redrawn from the existing outputs with one `--figures-only` export (600 dpi PNG); the
+model and the Monte Carlo were not rerun. The data were byte-identical afterwards (changed = []). Each changed PNG was
+checked visually: no overlaps.
+
+* **Fig2.** The panel a legend entries are now single-line, as in panels b and c: the two-line splitting is removed.
+  It keeps two columns, the same font as the other legends, and the same entries, order and colours. All entries fit
+  the panel width.
+* **Fig3.** The panel a y-axis maximum is 1,540 (was 1,580).
+* **Fig6.**
+  * The legend font is one step larger: base 6 pt (was 5.5 pt), then ×1.45 like every Fig6 text.
+  * Every marker is ×1.25 (`FIG6_MS`) on the plane, on the ruler and in the legend, so the relative sizes of TL,
+    Ambitious and Moderate are unchanged.
+* **Fig7.** Every line of the panel a lever labels is centred on one shared vertical axis at the centre of the widest
+  label (L9 Construction-stage carbon). This is done with `ha='center'` and a tick pad raised by half the widest
+  label's width (`_centre_ticklabels`), which keeps the original gap between that label and the axis. No overlaps, so
+  no revert was needed.
+* **Tests.** 27 of 28 figure tests pass. The remaining failure is the pre-existing ED10 maintenance rule.

@@ -27,7 +27,9 @@ BANDS_TL = list(N.BANDS_IN_SCOPE_TL)
 RUN_COLOUR = dict(S.PATHWAY, REF=S.REFERENCE, TL=S.TL)
 # MODEL v3.3.0: the PAS 2080 strategies S1-S3 and the Moderate / Ambitious Pathway (id prefix N.PATHWAY)
 RUN_GROUPS = tuple(N.STRATEGIES) + (N.PATHWAY,)
-GROUP_LABEL = {**{St: N.STRATEGIES[St] for St in N.STRATEGIES}, N.PATHWAY: 'Pathway (every lever)'}
+# MODEL v4.2.2: figure legends name S3 in the singular (one lever); naming.STRATEGIES (the data labels) is unchanged
+STRATEGY_LABEL = {**N.STRATEGIES, 'S3': 'Improve Strategy'}
+GROUP_LABEL = {**{St: STRATEGY_LABEL[St] for St in N.STRATEGIES}, N.PATHWAY: 'Pathway (every lever)'}
 PATHWAY_LABEL = {'REF': N.SCENARIOS['REF'], **GROUP_LABEL, 'TL': N.TL['TL']}
 # MODEL v3.3.1: band labels of the paper legends (the data labels of naming.BANDS are unchanged)
 PAPER_BAND_LABEL = {'growth': 'Population growth', 'maintenance': 'Maintenance (B2, B4)'}
@@ -313,6 +315,9 @@ def fig1():
 # ---------------------------------------------------------------------------
 # Fig2: Reference carbon by demand band, material and stage (annual) and cumulative (three attached columns)
 # ---------------------------------------------------------------------------
+FIG2_H, FIG2_BOTTOM, FIG2_LEG_Y = 108, 0.36, -0.10    # MODEL v4.2.2: height (mm), axes bottom, legend top (axes)
+
+
 def fig2():
     """MODEL v3.3.2 (Fig3 of v3.3.1): (a-c) annual by demand band, material and stage (shared axis; the demand legend
     inside panel a, two columns); (d) cumulative 2026-2050 as three attached columns of the same total (by demand band:
@@ -323,7 +328,7 @@ def fig2():
     stg = D.csv('baseline/annual_by_stage.csv').set_index('year')
     years = band.index.values.astype(float)
     total = stg['carbon_kt'].values
-    fig = plt.figure(figsize=S.figsize('double', 82))
+    fig = plt.figure(figsize=S.figsize('double', FIG2_H))
     gs = fig.add_gridspec(1, 5, width_ratios=[1, 1, 1, 0.30, 0.62], wspace=0.12)   # MODEL v4.2.2: d axis on the left
     ax = [fig.add_subplot(gs[0])]
     ax += [fig.add_subplot(gs[k], sharey=ax[0]) for k in (1, 2)]
@@ -348,13 +353,16 @@ def fig2():
         plt.setp(a.get_yticklabels(), visible=False)
     lo_, hi_ = ax[0].get_ylim()
     ticks = [t for t in ax[0].get_yticks() if lo_ <= t <= hi_]
-    ax[0].set_ylim(lo_, hi_ * 1.16)                                   # room above the data for the legends (tight)
+    ax[0].set_ylim(lo_, hi_ * 1.04)                                   # MODEL v4.2.2: legends below the panels
     ax[0].set_yticks(ticks)                                           # ticks only over the data range
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
-    LEG = dict(loc='upper right', fontsize=S.FONT_MIN + 0.75, frameon=False, borderaxespad=0.2, labelspacing=0.3)
-    ax[2].legend(**LEG)
+    # MODEL v4.2.2: no legend inside the panels; one legend row below a-d, each block under its own panel
+    LEG = dict(loc='upper center', bbox_to_anchor=(0.5, FIG2_LEG_Y), fontsize=S.FONT_MIN + 0.75, frameon=False,
+               borderaxespad=0.0, labelspacing=0.3, columnspacing=0.8, handlelength=1.4)
+    hs_ = ax[2].get_legend_handles_labels()
+    ax[2].legend(*hs_, ncol=1, **LEG)
     mh = [Patch(label=lab, **P.material_patch(code, c)) for code, lab, c in S.MATERIAL][::-1]
-    ax[1].legend(handles=mh, ncol=2, columnspacing=0.8, **LEG)
+    ax[1].legend(handles=mh, ncol=2, **LEG)
     shown = [b for b in BANDS_MOD.DISPLAY_ORDER if b in band.columns and (band[b].abs() > 1e-12).any()]
     hb2 = paper_band_handles(shown, six=True) + [Line2D([0], [0], color=S.INK, lw=S.LW, label='Carbon (in scope)')]
     for h in hb2:                                                     # MODEL v4.2.1: compact labels inside panel a
@@ -364,7 +372,7 @@ def fig2():
                      'Household-size change': 'Household size', 'Maintenance (B2, B4)': 'Maintenance'}
                     .get(h.get_label(), h.get_label()))
         h.set_label(h.get_label().replace(' ', '\n', 1))           # MODEL v4.2.2: two lines per entry
-    ax[0].legend(handles=hb2, ncol=2, columnspacing=0.8, **LEG)
+    ax[0].legend(handles=hb2, ncol=2, **LEG)
     # (d) cumulative 2026-2050: three attached columns of the same total
     d = fig.add_subplot(gs[4])
     c = float(total.sum())
@@ -394,7 +402,7 @@ def fig2():
     P.thousands(d.yaxis)
     d.grid(axis='x', visible=False)
     P.panel(d, 'd', 'Cumulative')
-    fig.subplots_adjust(left=0.07, right=0.99, bottom=0.12, top=0.92)
+    fig.subplots_adjust(left=0.07, right=0.99, bottom=FIG2_BOTTOM, top=0.94)
     _save(fig, 'Fig2_reference_carbon', note=f'2026-2050: {c:,.0f} kt CO₂e; (d) the demand column: positive bands '
                                               f'stacked to {sum(v for v in bsum if v > 0):,.0f} kt, negative bands '
                                               'outlined, hanging down to the total.')
@@ -452,7 +460,7 @@ def fig3():
     zones = [h for h in S.zone_handles() if h.get_label() != S.ZONE['exceeded']['label']]
     ax.legend(handles=ax.get_legend_handles_labels()[0] + zones, loc='upper right', fontsize=S.FONT_MIN, ncol=2,
               columnspacing=1.0, frameon=False)
-    ax.set_ylim(0, 1650)                                              # MODEL v4.2.2
+    ax.set_ylim(0, 1580)                                              # MODEL v4.2.2
     b = fig.add_subplot(gs[1])
     c = float(proj['carbon_kt'])
     lo95, hi95 = mc_cumulative_interval()
@@ -568,15 +576,14 @@ def fig4():
     for b, (key, lab, col, steps), letter in zip(ax, paths, 'abc'):
         S.boundary_hzones(b, bar_, batp)
         ups[key] = _net_waterfall_panel(b, steps, lab, col)
-        P.panel(b, letter, f'{N.SCENARIOS["REF"]} → {lab}')
+        P.panel(b, letter, lab)                                       # MODEL v4.2.2: the pathway name only
     for b in ax[1:]:
         plt.setp(b.get_yticklabels(), visible=False)
     ax[0].set_ylim(0, max(paths[0][3][0][1], bar_) * 1.17)           # MODEL v4.2.2: room for the TL1 label
     ax[0].set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
     P.thousands(ax[0].yaxis)
-    hs = [Patch(label=N.STRATEGIES[St], **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
-    ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_SMALL, title='Waterfall steps',
-                 title_fontsize=S.FONT_SMALL)
+    hs = [Patch(label=STRATEGY_LABEL[St], **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
+    ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_SMALL)
     for b in ax:                                                      # MODEL v4.2.2: larger lever / TL names
         plt.setp(b.get_xticklabels(), fontsize=S.FONT_SMALL)
     fig.subplots_adjust(left=0.08, right=0.99, top=0.92, bottom=0.30)
@@ -733,6 +740,9 @@ def _spread(vals, min_gap):
     return pos
 
 
+FIG6_FONT = 1.45                     # MODEL v4.2.2: every Fig6 text scaled by this factor (was 1.25)
+
+
 def fig6():
     """MODEL v3.3.2: x = cut in 2027-2050 floor area, y = cut in 2027-2050 total carbon per m2 (A1-A5, soil and
     maintenance of the new cohorts), both vs the Reference, from -5% to 100%; the zones from the analytic LoE_AR field;
@@ -779,8 +789,8 @@ def fig6():
         P_, s_ = run.split('-')
         ax.plot(xm, ym, marker='o', ms=5 if P_ != N.PATHWAY else 6.5, ls='none', color=S.PATHWAY[P_],
                 markerfacecolor=S.PATHWAY[P_] if s_ == 'moderate' else 'none', markeredgewidth=1.0, zorder=5)
-    ax.set_xlabel('Cut in 2027-2050 floor area vs the Reference (%)')
-    ax.set_ylabel('Cut in 2027-2050 carbon per m² (A1-A5, soil, B2/B4) vs the Reference (%)')
+    ax.set_xlabel('Sufficiency: Floor area reduction (%)')               # MODEL v4.2.2 axis titles
+    ax.set_ylabel('Efficiency: Carbon reduction per m² (%)')
     ax.set_xlim(100 * lo, 100 * hi)
     ax.set_ylim(100 * lo, 100 * hi)
     ax.grid(False)
@@ -809,16 +819,17 @@ def fig6():
     order = sorted(marks, key=lambda m: m[1])
     lv = np.log10([m[1] for m in order])
     span = np.log10(vmax) - np.log10(vmin)
-    pos = _spread(lv, 0.055 * span)
+    pos = _spread(lv, 0.10 * span)                                  # MODEL v4.2.2: room for two-line labels
     for (lab, v, mk), yl, yv in zip(order, pos, lv):
-        txt = lab
+        txt = lab.replace(' ', '\n', 1)                              # MODEL v4.2.2: two lines, centred
         ru.annotate(txt, xy=(1.0, 10 ** yv), xytext=(1.6, 10 ** yl), textcoords=('axes fraction', 'data'),
-                    xycoords=('axes fraction', 'data'), ha='left', va='center', fontsize=S.FONT_MIN + 0.5,
+                    xycoords=('axes fraction', 'data'), ha='left', va='center', multialignment='center',
+                    fontsize=S.FONT_MIN + 0.5, linespacing=1.0,
                     color=mk['color'] if mk else S.INK,
                     arrowprops=dict(arrowstyle='-', color=S.MUTED, lw=0.4, shrinkA=0, shrinkB=0))
     ru.set_title('LoE AR', fontsize=S.FONT_MIN + 0.5, pad=3)
     h = [Line2D([0], [0], marker='o', ls='none', color=S.PATHWAY[P_], markerfacecolor=S.PATHWAY[P_], ms=5,
-                label=GROUP_LABEL[P_] if P_ != N.PATHWAY else 'Moderate / Ambitious Pathway') for P_ in RUN_GROUPS]
+                label=GROUP_LABEL[P_] if P_ != N.PATHWAY else 'Pathways') for P_ in RUN_GROUPS]
     h += [Line2D([0], [0], marker='o', ls='none', color=S.MUTED, markerfacecolor=S.MUTED, ms=5, label='Moderate'),
           Line2D([0], [0], marker='o', ls='none', color=S.MUTED, markerfacecolor='none', ms=5, label='Ambitious'),
           Line2D([0], [0], ls='none', color=S.TL, label=N.TL['TL'], **S.TL_MARKER),
@@ -828,11 +839,11 @@ def fig6():
     h = [x for x in h if x.get_label() not in drop]
     fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=3,
                frameon=False, fontsize=S.FONT_MIN + 0.5)
-    for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: every font +25%
+    for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: every font x FIG6_FONT
         if t.get_text():
-            t.set_fontsize(t.get_fontsize() * 1.25)
+            t.set_fontsize(t.get_fontsize() * FIG6_FONT)
     for a_ in (ax, ru):                                             # tick labels (created lazily)
-        a_.tick_params(labelsize=S.FONT_SIZE * 1.25)
+        a_.tick_params(labelsize=S.FONT_SIZE * FIG6_FONT)
     note = (f"LoE AR = [{c26:,.0f} + {r['carbon_2027_2050_cohorts_kt']:,.0f} (1 - x)(1 - y)] / {bc['B_AR_kt']:,.0f} kt; "
             f"C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = {floor:.3f} (the lowest "
             f"LoE AR at x or y = 100%); AtP = B_AtP / B_AR = {atp_level:.3f} lies below the floor, so the AtP contour is "
@@ -844,6 +855,15 @@ def fig6():
 # ---------------------------------------------------------------------------
 # Fig7: Shapley value of each lever (Moderate hollow, Ambitious filled, TL dot)
 # ---------------------------------------------------------------------------
+def _two_lines(text):
+    """MODEL v4.2.2: a label split at the space nearest its middle (one line if it has no space)."""
+    sp = [i for i, ch in enumerate(text) if ch == ' ']
+    if not sp:
+        return text
+    i = min(sp, key=lambda k: abs(k - len(text) / 2))
+    return text[:i] + '\n' + text[i + 1:]
+
+
 def fig7():
     """MODEL v4.2.1: two panels, levers grouped by PAS 2080 strategy, bars in the strategy colours (Moderate hollow,
     Ambitious filled, TL dot): (a) standalone reduction of cumulative carbon 2026-2050 vs the Reference, each lever
@@ -879,17 +899,20 @@ def fig7():
         P.panel(a, letter, title)
     for St, ls in N.STRATEGY_LEVERS.items():
         ks = [k for k, L in zip(y, order) if L in ls]
-        ax[1].text(1.01, (min(ks) + max(ks)) / 2, N.STRATEGIES[St].replace(' ', '\n'), transform=ax[1].get_yaxis_transform(),
-                   ha='left', va='center', fontsize=S.FONT_MIN + 0.5, color=S.STRATEGY[St], fontweight='bold')
+        ax[1].text(1.01, (min(ks) + max(ks)) / 2, STRATEGY_LABEL[St].replace(' ', '\n'),
+                   transform=ax[1].get_yaxis_transform(), ha='left', va='center', multialignment='center',
+                   fontsize=S.FONT_MIN + 0.5, color=S.STRATEGY[St], fontweight='bold')
     P.thousands(ax[0].xaxis)
     ax[0].set_yticks(y)
-    ax[0].set_yticklabels([f'{L} {N.LEVERS[L]}' for L in order])
+    ax[0].set_yticklabels([_two_lines(f'{L} {N.LEVERS[L]}') for L in order])   # MODEL v4.2.2: two lines, centred
+    for t in ax[0].get_yticklabels():
+        t.set_multialignment('center')
     ax[0].set_ylim(-0.6, len(order) - 0.4)
     fig.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate'),
                         Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious'),
                         Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit', marker='o',
                                ms=5)],
-               loc='lower center', ncol=3, fontsize=S.FONT_MIN + 0.5, frameon=False, bbox_to_anchor=(0.5, 0.0))
+               loc='lower center', ncol=3, fontsize=S.FONT_SMALL, frameon=False, bbox_to_anchor=(0.5, 0.0))
     fig.tight_layout(rect=(0, 0.07, 0.95, 1))
     tot = {k: v.sum() for k, v in g.items()}
     _save(fig, 'Fig7_shapley_levers',

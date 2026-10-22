@@ -336,7 +336,7 @@ def fig2():
         plt.setp(a.get_yticklabels(), visible=False)
     lo_, hi_ = ax[0].get_ylim()
     ticks = [t for t in ax[0].get_yticks() if lo_ <= t <= hi_]
-    ax[0].set_ylim(lo_, hi_ * 1.25)                                   # room above the data for the legends (tight)
+    ax[0].set_ylim(lo_, hi_ * 1.16)                                   # room above the data for the legends (tight)
     ax[0].set_yticks(ticks)                                           # ticks only over the data range
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
     LEG = dict(loc='upper right', fontsize=S.FONT_MIN, frameon=False, borderaxespad=0.2, labelspacing=0.3)
@@ -647,7 +647,7 @@ def fig5():
 # ---------------------------------------------------------------------------
 # Fig6: the solution space against AR and AtP
 # ---------------------------------------------------------------------------
-FIG6_LIM = (-0.05, 1.0)        # MODEL v3.3.2: both axes from -5% to 100% (v3.3.1: to 110%)
+FIG6_LIM = (-0.05, 0.90)        # MODEL v3.3.2: both axes from -5% to 100% (v3.3.1: to 110%)
 FIG6_N = 421                   # grid points per axis (0.25% steps)
 
 
@@ -735,8 +735,8 @@ def fig6():
     g = np.linspace(lo, hi, FIG6_N)
     X, Y = np.meshgrid(g, g)
     Z = fig6_loe(bc, X, Y)
-    fig = plt.figure(figsize=S.figsize('double', 126))
-    ax = fig.add_axes([0.08, 0.21, 0.52, 0.755])
+    fig = plt.figure(figsize=S.figsize('double', 122))
+    ax = fig.add_axes([0.08, 0.215, 0.52, 0.765])
     S.boundary_field(ax, 100 * X, 100 * Y, Z, 1.0, atp_level, lines=False)
     st = {k: v for k, v in S.BOUNDARY['AR'].items() if k != 'label'}
     for xb, yb in fig6_branches(bc, 1.0):                          # the AR line, exact
@@ -767,7 +767,7 @@ def fig6():
     ax.set_ylim(100 * lo, 100 * hi)
     ax.grid(False)
     # the LoE AR ruler (log): zones, AR and AtP, the plane floor and the runs
-    ru = fig.add_axes([0.625, 0.21, 0.018, 0.755])
+    ru = fig.add_axes([0.625, 0.215, 0.018, 0.765])
     marks = [(N.SCENARIOS['REF'], float(runs['REF']), dict(color=S.REFERENCE, marker='s', ms=4)),
              (N.PATHWAY_RUNS['pathway-moderate'], float(runs['pathway-moderate']),
               dict(color=S.PATHWAY[N.PATHWAY], marker='o', ms=5)),
@@ -946,8 +946,8 @@ def fig8():
     rows = [r if len(r) == 5 else r + (None,) for r in rows]
     span = lambda r: abs(r[4] - c0) if r[4] is not None else abs(r[2] - r[1])
     rows = sorted(rows, key=span)
-    k_cr = [r[0] for r in rows].index('Completion rate (0.93–0.96)')    # MODEL v4.2.1: Completion rate and below only
-    rows = rows[:k_cr + 1]
+    k_cr = [r[0] for r in rows].index('Completion rate (0.93–0.96)')    # MODEL v4.2.2: Completion rate and above
+    rows = rows[k_cr:]                                                  # Completion rate and every larger row
     has_single = any(r[4] is not None for r in rows)
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 77), gridspec_kw={'width_ratios': [1.25, 1]})
     a = ax[0]

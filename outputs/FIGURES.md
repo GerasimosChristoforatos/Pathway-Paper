@@ -50,7 +50,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig6_solution_space.png`
 - Data: `data/pathways/solution_space.csv`, `data/pathways/backcast.json`, `data/pathways/runs.csv`
-- This run: LoE AR = [1,207 + 18,554 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.5% at x = 0). Axes -5% to 100%.
+- This run: LoE AR = [1,207 + 18,554 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.5% at x = 0). Axes -5% to 90%.
 
 ### Fig7_shapley_levers
 

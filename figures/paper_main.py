@@ -594,7 +594,7 @@ def fig4():
 
 
 # ---------------------------------------------------------------------------
-# Fig5: the reduction against the Reference by demand band (Moderate Pathway, Ambitious Pathway, TL)
+# SF7 (Fig5 until MODEL v4.2.2): the reduction against the Reference by demand band (Moderate Pathway, Ambitious Pathway, TL)
 # ---------------------------------------------------------------------------
 FIG5_RUNS = ('pathway-moderate', 'pathway-ambitious', 'TL')
 
@@ -653,7 +653,7 @@ def fig5():
     fig.legend(handles=hb[::-1], loc='lower center', ncol=4, fontsize=S.FONT_MIN + 0.5, frameon=False,
                bbox_to_anchor=(0.5, 0.0))
     fig.tight_layout(rect=(0, 0.12, 1, 1))
-    _save(fig, 'Fig5_reduction_by_demand',
+    _save(fig, 'SF7_reduction_by_demand',
           note='Reduction vs the Reference (kt): ' + ', '.join(f'{N.run_label(r)} {tot[r]:,.0f}' for r in FIG5_RUNS)
                + '. Segments (Moderate, Ambitious, TL; kt): ' + '; '.join(
                    f"{BANDS_MOD.DISPLAY_LABEL.get(b, b)} " + ', '.join(f'{red[r][b]:+,.0f}' for r in FIG5_RUNS)
@@ -1053,5 +1053,5 @@ def fig8():
 
 
 FIGURES = {'Fig1_floor_area': fig1, 'Fig2_reference_carbon': fig2, 'Fig3_reference_boundaries': fig3,
-           'Fig4_pathways': fig4, 'Fig5_reduction_by_demand': fig5, 'Fig6_solution_space': fig6,
+           'Fig4_pathways': fig4, 'SF7_reduction_by_demand': fig5, 'Fig6_solution_space': fig6,
            'Fig7_shapley_levers': fig7, 'Fig8_uncertainty': fig8, 'SF1_model_schematic': sf1_schematic}

@@ -6,7 +6,7 @@
   * Fig5: each column total equals Reference - run (pathways/runs.csv) and the band reductions add up to it (1e-9);
   * Fig3b: the 95% interval comes from the per-draw cumulative carbon with the percentile method of MonteCarlo.py, which
     reproduces the stored 5th / 95th percentiles (montecarlo/summary_REF.csv) exactly;
-  * Fig6: the markers lie on the analytic plane (1e-9); the plotted square is -5% to 100%; the AR line is exact.
+  * Fig6: the markers lie on the analytic plane (1e-9); the plotted square is -5% to 90% (MODEL v4.2.2); the AR line is exact.
   * the schematic is a supplementary figure (SF1), not a main figure."""
 import json
 
@@ -59,10 +59,10 @@ def test_fig6_markers_square_and_ar_line():
     for m in bc['solution_space_markers']:
         z = PM.fig6_loe(bc, m['demand_reduction'], m['intensity_reduction'])
         assert np.isclose(z, r.loc[m['run'], 'LoE_AR'], rtol=RTOL, atol=0), m['run']
-    assert PM.FIG6_LIM == (-0.05, 1.0)
+    assert PM.FIG6_LIM == (-0.05, 0.90)                        # MODEL v4.2.2: clipped at 90%
     for x, y in PM.fig6_branches(bc, 1.0):
         assert np.allclose(PM.fig6_loe(bc, x, y), 1.0, rtol=RTOL, atol=0)
-        assert x.min() >= -0.05 and y.max() <= 1.0
+        assert x.min() >= -0.05 and y.max() <= 0.90
 
 
 def test_schematic_is_supplementary():

@@ -305,7 +305,7 @@ def ed6():
     order = [b for b in PM.BANDS_TL if b in shown]
     extra = [Patch(label='Increase (outline)', facecolor='none', edgecolor=S.MUTED, lw=S.LW_OUTLINE),
              Line2D([0], [0], color=S.INK, lw=S.LW_BOLD, label='New total after the step')]
-    extra += [Patch(label=f'{St} {N.STRATEGIES[St]} (tick-label colour)', **S.fill(S.STRATEGY[St]))
+    extra += [Patch(label=f'{N.STRATEGIES[St]} (tick-label colour)', **S.fill(S.STRATEGY[St]))
               for St in N.STRATEGIES]
     fig.legend(handles=PM.paper_band_handles(order) + extra + S.boundary_handles() + S.zone_handles(),
                loc='lower center', ncol=4, bbox_to_anchor=(0.5, 0.0), frameon=False, handlelength=1.4,

@@ -324,7 +324,7 @@ def fig2():
     years = band.index.values.astype(float)
     total = stg['carbon_kt'].values
     fig = plt.figure(figsize=S.figsize('double', 82))
-    gs = fig.add_gridspec(1, 4, width_ratios=[1, 1, 1, 0.62], wspace=0.12)
+    gs = fig.add_gridspec(1, 5, width_ratios=[1, 1, 1, 0.30, 0.62], wspace=0.12)   # MODEL v4.2.2: d axis on the left
     ax = [fig.add_subplot(gs[0])]
     ax += [fig.add_subplot(gs[k], sharey=ax[0]) for k in (1, 2)]
     P.stack_series(ax[0], years, [(b, band[b].values) for b in band.columns], net=total)
@@ -363,9 +363,10 @@ def fig2():
         h.set_label({'Market balance (excess, residual and scope adjustments)': 'Market balance',
                      'Household-size change': 'Household size', 'Maintenance (B2, B4)': 'Maintenance'}
                     .get(h.get_label(), h.get_label()))
+        h.set_label(h.get_label().replace(' ', '\n', 1))           # MODEL v4.2.2: two lines per entry
     ax[0].legend(handles=hb2, ncol=2, columnspacing=0.8, **LEG)
     # (d) cumulative 2026-2050: three attached columns of the same total
-    d = fig.add_subplot(gs[3])
+    d = fig.add_subplot(gs[4])
     c = float(total.sum())
     bsum = band.sum()
     msum = mat.sum()
@@ -389,15 +390,11 @@ def fig2():
     d.set_xlim(-0.5, 2.5)
     d.set_xticks([0, 1, 2])
     d.set_xticklabels(['By\ndemand', 'By\nmaterial', 'By\nstage'], fontsize=S.FONT_MIN + 0.5)
-    d.yaxis.tick_right()
-    d.yaxis.set_label_position('right')
-    d.spines['right'].set_visible(True)
-    d.spines['left'].set_visible(False)
     d.set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
     P.thousands(d.yaxis)
     d.grid(axis='x', visible=False)
     P.panel(d, 'd', 'Cumulative')
-    fig.subplots_adjust(left=0.07, right=0.93, bottom=0.12, top=0.92)
+    fig.subplots_adjust(left=0.07, right=0.99, bottom=0.12, top=0.92)
     _save(fig, 'Fig2_reference_carbon', note=f'2026-2050: {c:,.0f} kt CO₂e; (d) the demand column: positive bands '
                                               f'stacked to {sum(v for v in bsum if v > 0):,.0f} kt, negative bands '
                                               'outlined, hanging down to the total.')
@@ -432,7 +429,7 @@ def fig3():
     proj = D.js('baseline/projection.json')
     years = a.index.values.astype(float)
     fig = plt.figure(figsize=S.figsize('double', 66))                # MODEL v4.2.2: lower
-    gs = fig.add_gridspec(1, 2, width_ratios=[2.3, 1.2], wspace=0.28)
+    gs = fig.add_gridspec(1, 2, width_ratios=[2.3, 0.95], wspace=0.26)
     ax = fig.add_subplot(gs[0])
     ar, atp = a['B_AR_kgCO2e'].values / M, a['B_AtP_kgCO2e'].values / M
     S.boundary_zones(ax, years, ar, atp)
@@ -455,7 +452,7 @@ def fig3():
     zones = [h for h in S.zone_handles() if h.get_label() != S.ZONE['exceeded']['label']]
     ax.legend(handles=ax.get_legend_handles_labels()[0] + zones, loc='upper right', fontsize=S.FONT_MIN, ncol=2,
               columnspacing=1.0, frameon=False)
-    ax.set_ylim(0, ax.get_ylim()[1] * 1.22)                         # room for the two-column legend
+    ax.set_ylim(0, 1650)                                              # MODEL v4.2.2
     b = fig.add_subplot(gs[1])
     c = float(proj['carbon_kt'])
     lo95, hi95 = mc_cumulative_interval()
@@ -470,12 +467,12 @@ def fig3():
     bar_, batp = float(a['B_AR_kgCO2e'].sum()) / M, float(a['B_AtP_kgCO2e'].sum()) / M
     for v, key in ((bar_, 'AR'), (batp, 'AtP')):
         st = {k: val for k, val in S.BOUNDARY[key].items() if k != 'label'}
-        b.plot([-0.42, 0.42], [v, v], gid='boundary', **st)
-        b.text(-0.44, v, f'{key} budget', ha='right', va='center', fontsize=S.FONT_MIN, color=st['color'])
+        b.plot([-0.36, 0.36], [v, v], gid='boundary', **st)
+        b.text(-0.38, v, f'{key} budget', ha='right', va='center', fontsize=S.FONT_MIN, color=st['color'])
     cc, bl, bu = float(com['C_kt']), float(com['B_lower_kt']), float(com['B_upper_kt'])
     b.bar([1], [cc], width=wd, **S.fill(S.COMPONENT['committed'][0]))
     b.bar([1], [bl], bottom=[cc], width=wd, **S.fill(S.COMPONENT['maintenance'][0]))
-    b.set_xlim(-1.3, 1.6)
+    b.set_xlim(-1.04, 1.36)                                           # MODEL v4.2.2: tight
     b.set_xticks([0, 1])
     b.set_xticklabels(['2026–2050', 'Committed\nafter 2050'], fontsize=S.FONT_MIN + 0.5)
     b.set_ylim(0, max(hi95, bar_, cc + bl) * 1.48)
@@ -487,7 +484,8 @@ def fig3():
           Patch(label='50% interval', facecolor='#E6E6E6', edgecolor=S.INK, lw=S.LW_THIN),
           Patch(label='Committed after 2050: B2/B4', **S.fill(S.COMPONENT['maintenance'][0])),
           Patch(label='Committed after 2050: C1–C4', **S.fill(S.COMPONENT['committed'][0]))]
-    b.legend(handles=hb, loc='upper right', fontsize=S.FONT_MIN, handlelength=1.6)
+    b.legend(handles=hb, loc='upper left', fontsize=S.FONT_MIN, handlelength=1.6, frameon=False,
+             borderaxespad=0.2)
     P.panel(b, 'b', 'Cumulative')
     _save(fig, 'Fig3_reference_boundaries',
           note=f'Cumulative 2026-2050 {c:,.0f} kt (LoE AR {c / bar_:.2f}, AtP {c / batp:.1f}); Monte Carlo 95% interval '
@@ -573,7 +571,7 @@ def fig4():
         P.panel(b, letter, f'{N.SCENARIOS["REF"]} → {lab}')
     for b in ax[1:]:
         plt.setp(b.get_yticklabels(), visible=False)
-    ax[0].set_ylim(0, max(paths[0][3][0][1], bar_) * 1.1)
+    ax[0].set_ylim(0, max(paths[0][3][0][1], bar_) * 1.17)           # MODEL v4.2.2: room for the TL1 label
     ax[0].set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
     P.thousands(ax[0].yaxis)
     hs = [Patch(label=N.STRATEGIES[St], **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
@@ -755,8 +753,8 @@ def fig6():
     g = np.linspace(lo, hi, FIG6_N)
     X, Y = np.meshgrid(g, g)
     Z = fig6_loe(bc, X, Y)
-    fig = plt.figure(figsize=S.figsize('double', 122))
-    ax = fig.add_axes([0.08, 0.215, 0.52, 0.765])
+    fig = plt.figure(figsize=(146 * S.MM, 122 * S.MM))              # MODEL v4.2.2: cropped at the ruler labels
+    ax = fig.add_axes([0.10, 0.215, 0.652, 0.765])
     S.boundary_field(ax, 100 * X, 100 * Y, Z, 1.0, atp_level, lines=False)
     st = {k: v for k, v in S.BOUNDARY['AR'].items() if k != 'label'}
     for xb, yb in fig6_branches(bc, 1.0):                          # the AR line, exact
@@ -787,7 +785,7 @@ def fig6():
     ax.set_ylim(100 * lo, 100 * hi)
     ax.grid(False)
     # the LoE AR ruler (log): zones, AR and AtP, the plane floor and the runs
-    ru = fig.add_axes([0.625, 0.215, 0.018, 0.765])
+    ru = fig.add_axes([0.783, 0.215, 0.0226, 0.765])
     marks = [(N.SCENARIOS['REF'], float(runs['REF']), dict(color=S.REFERENCE, marker='s', ms=4)),
              (N.PATHWAY_RUNS['pathway-moderate'], float(runs['pathway-moderate']),
               dict(color=S.PATHWAY[N.PATHWAY], marker='o', ms=5)),
@@ -826,8 +824,9 @@ def fig6():
           Line2D([0], [0], ls='none', color=S.TL, label=N.TL['TL'], **S.TL_MARKER),
           Line2D([0], [0], ls='none', color=S.REFERENCE, marker='s', ms=4, label=f"{N.SCENARIOS['REF']} (ruler)")]
     h += S.boundary_handles() + S.zone_handles()
-    h = [x for x in h if x.get_label() != S.ZONE['within_both']['label']]
-    fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=4,
+    drop = {S.ZONE[k]['label'] for k in S.ZONE} | {f"{N.SCENARIOS['REF']} (ruler)"}
+    h = [x for x in h if x.get_label() not in drop]
+    fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=3,
                frameon=False, fontsize=S.FONT_MIN + 0.5)
     for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: every font +25%
         if t.get_text():
@@ -886,9 +885,9 @@ def fig7():
     ax[0].set_yticks(y)
     ax[0].set_yticklabels([f'{L} {N.LEVERS[L]}' for L in order])
     ax[0].set_ylim(-0.6, len(order) - 0.4)
-    fig.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate (Level 2)'),
-                        Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious (Level 3)'),
-                        Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit (Level 4)', marker='o',
+    fig.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate'),
+                        Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious'),
+                        Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit', marker='o',
                                ms=5)],
                loc='lower center', ncol=3, fontsize=S.FONT_MIN + 0.5, frameon=False, bbox_to_anchor=(0.5, 0.0))
     fig.tight_layout(rect=(0, 0.07, 0.95, 1))
@@ -1007,6 +1006,8 @@ def fig8():
     a.axvline(c0, color=S.INK, lw=S.LW_THIN)
     a.set_yticks(np.arange(len(rows)))
     a.set_yticklabels([_fig8_short(r[0]) for r in rows], fontsize=S.FONT_SMALL)
+    for t in a.get_yticklabels():                                     # MODEL v4.2.2: both lines centred
+        t.set_multialignment('center')
     a.set_xlabel('Reference cumulative LoE AR 2026-2050')
     a.grid(axis='y', visible=False)
     a.legend(handles=[Patch(label='Input at low end', **S.fill(LOW_END)),

@@ -10,7 +10,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig1_floor_area.png`
 - Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`, `data/baseline/overbuild_2026.json`
-- This run: Completions = 0.945 x consents lagged 17 months (median consent-to-completion time 1.27-1.53 yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building indicators). Households after the 2023 census = ERP / household-size path (Stats NZ DHE not used). Pipeline years 2026, 2027: building observed (consents to July 2026); the part above modelled need fades from 2028 (ρ = 0.43) and is absorbed by 2035. 2026 population: Stats NZ ERP nowcast. Six display bands (data/bands_display_map.csv); market balance = unexplained building + retirement villages (out of scope) + overbuild / pipeline excess + overbuild absorbed + surplus kept vacant. Negative bands drawn down from zero: Smaller households, Market balance (excess, residual and scope adjustments), Vacancy, Net replacement. 2026-2050: 81.5 Mm².
+- This run: Completions = 0.945 x consents lagged 17 months (median consent-to-completion time 1.27-1.53 yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building indicators). Households after the 2023 census = ERP / household-size path (Stats NZ DHE not used). Pipeline years 2026, 2027: building observed (consents to July 2026); the part above modelled need fades from 2028 (ρ = 0.43) and is absorbed by 2035. 2026 population: Stats NZ ERP nowcast. Six display bands (data/bands_display_map.csv); market balance = unexplained building + retirement villages (out of scope) + overbuild / pipeline excess + overbuild absorbed + surplus kept vacant. Negative bands drawn down from zero: Smaller households, Market balance, Vacancy, Net replacement. 2026-2050: 81.5 Mm².
 
 ### Fig2_reference_carbon
 
@@ -42,7 +42,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig5_reduction_by_demand.png`
 - Data: `data/pathways/bands.csv`, `data/pathways/runs.csv`
-- This run: Reduction vs the Reference (kt): Moderate Pathway 5,460, Ambitious Pathway 9,494, Theoretical Limit 15,339. Negative band reductions (stacked below zero): Market balance (excess, residual and scope adjustments) -185, -348, -1,056 kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.
+- This run: Reduction vs the Reference (kt): Moderate Pathway 5,460, Ambitious Pathway 9,494, Theoretical Limit 15,339. Segments (Moderate, Ambitious, TL; kt): Population growth +1,812, +3,356, +5,200; Household-size change +339, +562, +1,566; Extra space +1,969, +3,375, +5,686; Vacancy +780, +1,310, +850; Net replacement +684, +1,128, +1,670; Market balance -185, -348, -1,056; Re-used dwellings (TL) +0, +0, +1,210; Maintenance (B2, B4) +60, +112, +212. The 2026–27 pipeline is identical in all runs and cancels; the negative segment is the smaller carbon saved per absorbed dwelling when new dwellings are smaller and lower-carbon.
 
 ### Fig6_solution_space
 
@@ -50,7 +50,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig6_solution_space.png`
 - Data: `data/pathways/solution_space.csv`, `data/pathways/backcast.json`, `data/pathways/runs.csv`
-- This run: LoE AR = [1,207 + 18,554 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.5% at x = 0). Axes -5% to 90%.
+- This run: LoE AR = [1,207 + 18,554 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.5% at x = 0). Axes -5% to 85%.
 
 ### Fig7_shapley_levers
 

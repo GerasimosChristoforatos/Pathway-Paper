@@ -5,7 +5,7 @@
   {
    "title": "",
    "xlabel": "",
-   "ylabel": "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e)",
+   "ylabel": "Reduction of cumulative carbon 2026\u20132050 (kt CO\u2082e)",
    "year_min": null,
    "year_max": null
   }
@@ -28,17 +28,17 @@
   "Extra space",
   "Household-size change",
   "Maintenance (B2, B4)",
-  "Market balance (excess, residual and scope adjustments)",
+  "Market balance",
   "Moderate Pathway",
   "Net reduction",
   "Net replacement",
   "Population growth",
   "Re-used dwellings (TL)",
-  "Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO\u2082e)",
+  "Reduction of cumulative carbon 2026\u20132050 (kt CO\u2082e)",
   "Theoretical Limit",
   "Vacancy"
  ],
- "note": "Reduction vs the Reference (kt): Moderate Pathway 5,460, Ambitious Pathway 9,494, Theoretical Limit 15,339. Negative band reductions (stacked below zero): Market balance (excess, residual and scope adjustments) -185, -348, -1,056 kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.",
+ "note": "Reduction vs the Reference (kt): Moderate Pathway 5,460, Ambitious Pathway 9,494, Theoretical Limit 15,339. Segments (Moderate, Ambitious, TL; kt): Population growth +1,812, +3,356, +5,200; Household-size change +339, +562, +1,566; Extra space +1,969, +3,375, +5,686; Vacancy +780, +1,310, +850; Net replacement +684, +1,128, +1,670; Market balance -185, -348, -1,056; Re-used dwellings (TL) +0, +0, +1,210; Maintenance (B2, B4) +60, +112, +212. The 2026\u201327 pipeline is identical in all runs and cancels; the negative segment is the smaller carbon saved per absorbed dwelling when new dwellings are smaller and lower-carbon.",
  "maintenance_drawn": true,
  "maintenance_where": [
   "axes 0: Rectangle in the maintenance colour",

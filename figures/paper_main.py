@@ -8,6 +8,7 @@ import re
 import textwrap
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Patch, Rectangle
@@ -26,7 +27,7 @@ BANDS_TL = list(N.BANDS_IN_SCOPE_TL)
 RUN_COLOUR = dict(S.PATHWAY, REF=S.REFERENCE, TL=S.TL)
 # MODEL v3.3.0: the PAS 2080 strategies S1-S3 and the Moderate / Ambitious Pathway (id prefix N.PATHWAY)
 RUN_GROUPS = tuple(N.STRATEGIES) + (N.PATHWAY,)
-GROUP_LABEL = {**{St: f'{St} {N.STRATEGIES[St]}' for St in N.STRATEGIES}, N.PATHWAY: 'Pathway (every lever)'}
+GROUP_LABEL = {**{St: N.STRATEGIES[St] for St in N.STRATEGIES}, N.PATHWAY: 'Pathway (every lever)'}
 PATHWAY_LABEL = {'REF': N.SCENARIOS['REF'], **GROUP_LABEL, 'TL': N.TL['TL']}
 # MODEL v3.3.1: band labels of the paper legends (the data labels of naming.BANDS are unchanged)
 PAPER_BAND_LABEL = {'growth': 'Population growth', 'maintenance': 'Maintenance (B2, B4)'}
@@ -111,7 +112,7 @@ def sf1_schematic():
     for St, (y0, y1) in FIG1_BAND_Y.items():
         ax.add_patch(Rectangle((band_x0, y0), band_x1 - band_x0, y1 - y0, facecolor=S.STRATEGY[St], alpha=0.16,
                                edgecolor='none', zorder=1))
-        ax.text(band_x0 + 1.0, (y0 + y1) / 2, f'{St}\n{N.STRATEGIES[St]}', ha='left', va='center',
+        ax.text(band_x0 + 1.0, (y0 + y1) / 2, N.STRATEGIES[St].replace(' ', '\n'), ha='left', va='center',
                 fontsize=S.FONT_SIZE, fontweight='bold', color=S.STRATEGY[St], zorder=4, linespacing=1.0)
     # levers: stacked within their strategy band under their step; the carbon column split into sub-positions
     cw = (col['carbon'][1] - 3.0) / 2
@@ -214,11 +215,13 @@ def _fig1_draw(ax, six=True):
         a, b = edges[k], edges[k + 1]
         w = b - a
         a, b = a + FIG1_GAP / 2 * w, b - FIG1_GAP / 2 * w        # half the gap on each side of every column
+        det = {P.band_id(lab): float(v) for lab, v in zip(h['band'], h['floor_area_Mm2_per_year'])}
+        if six:                                                   # MODEL v4.2.2: RV exclusion pro rata (in scope)
+            det = BANDS_MOD.allocate_rv(det)
         vals = {}
-        for lab, v in zip(h['band'], h['floor_area_Mm2_per_year']):
-            bid = P.band_id(lab)
+        for bid, v in det.items():
             bid = BANDS_MOD.DISPLAY[bid] if six else bid
-            vals[bid] = vals.get(bid, 0.0) + float(v)
+            vals[bid] = vals.get(bid, 0.0) + v
         parts = [(bid, np.array([v, v], float)) for bid, v in vals.items()]
         for bid, v in parts:
             hb.setdefault(bid, []).append(float(v[0]))
@@ -238,7 +241,7 @@ def _fig1_draw(ax, six=True):
     cols = [b for b in proj.columns if b != 'maintenance']
     for y in pipe:                                                # pipeline years: need bands + building above need
         _stack_bar(ax, y - 0.5 + g, y + 0.5 - g, [(bid, float(proj.loc[y, bid])) for bid in cols],
-                   float(tot.loc[y]), styles={hb_id: hatched})
+                   float(tot.loc[y]), styles=None if six else {hb_id: hatched})
     fut = proj.loc[proj.index > max(pipe)]
     years = fut.index.values.astype(float)
     x0 = years[0] - 0.5 + g                                       # the same gap before the annual projection
@@ -266,22 +269,31 @@ def _fig1_draw(ax, six=True):
         present.remove('overbuild_2026')                          # only the pipeline part is drawn
     hist_only = [b for b in hb if b not in present and any(abs(v) > 1e-12 for v in hb[b])]
     handles = paper_band_handles(present + hist_only, six=six)           # only the bands present
-    handles += [Patch(label=('Market balance: building above modelled need (pipeline)' if six
-                             else 'Building above modelled need (pipeline)'),
-                      **dict(hatched, edgecolor='#555555', linewidth=S.LW_THIN))]
+    if not six:
+        handles += [Patch(label='Building above modelled need (pipeline)',
+                          **dict(hatched, edgecolor='#555555', linewidth=S.LW_THIN))]
     if obs_years:
         handles += [Patch(label='Observed (consent-based; household estimates not independent)',
                           **dict(S.fill(OBSERVED_FILL), edgecolor='#555555', linewidth=S.LW_THIN))]
-    handles += [Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built (in scope)')]
+    if not six:
+        handles += [Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built (in scope)')]
     return handles, neg, pipe, float(tot.loc[2026:2050].sum()), ob
 
 
 def fig1():
     """MODEL v4.2: Fig1 with the six display bands (_fig1_draw)."""
-    fig, ax = plt.subplots(figsize=S.figsize('double', 95))
+    fig, ax = plt.subplots(figsize=(170 * S.MM, 72 * S.MM))      # MODEL v4.2.2: lower, slightly narrower
     handles, neg, pipe, total, ob = _fig1_draw(ax, six=True)
-    fig.legend(handles=handles, loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.02), frameon=False,
-               fontsize=S.FONT_MIN + 0.5)
+    for h in handles:                                             # filled patches, no outline
+        h.set_edgecolor(h.get_facecolor())
+    ax.legend(handles=[Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built (in scope)')],
+              loc='upper right', bbox_to_anchor=(1.0, 0.93), frameon=False, fontsize=S.FONT_SIZE)
+    ax.tick_params(labelsize=S.FONT_SIZE + 0.5)
+    ax.yaxis.label.set_size(S.FONT_SIZE + 0.5)
+    for t in ax.texts:
+        t.set_fontsize(t.get_fontsize() + 1.0)
+    fig.legend(handles=handles, loc='lower center', ncol=3, bbox_to_anchor=(0.5, 0.0), frameon=False,
+               fontsize=S.FONT_SIZE, columnspacing=1.5, handlelength=1.4)
     fig.tight_layout(rect=(0, 0.15, 1, 1))
     lag, rate = ob.get('completion_lag_months'), ob.get('completion_rate')
     _save(fig, 'Fig1_floor_area',
@@ -339,13 +351,15 @@ def fig2():
     ax[0].set_ylim(lo_, hi_ * 1.16)                                   # room above the data for the legends (tight)
     ax[0].set_yticks(ticks)                                           # ticks only over the data range
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
-    LEG = dict(loc='upper right', fontsize=S.FONT_MIN, frameon=False, borderaxespad=0.2, labelspacing=0.3)
+    LEG = dict(loc='upper right', fontsize=S.FONT_MIN + 0.75, frameon=False, borderaxespad=0.2, labelspacing=0.3)
     ax[2].legend(**LEG)
     mh = [Patch(label=lab, **P.material_patch(code, c)) for code, lab, c in S.MATERIAL][::-1]
     ax[1].legend(handles=mh, ncol=2, columnspacing=0.8, **LEG)
     shown = [b for b in BANDS_MOD.DISPLAY_ORDER if b in band.columns and (band[b].abs() > 1e-12).any()]
     hb2 = paper_band_handles(shown, six=True) + [Line2D([0], [0], color=S.INK, lw=S.LW, label='Carbon (in scope)')]
     for h in hb2:                                                     # MODEL v4.2.1: compact labels inside panel a
+        if isinstance(h, Patch):                                      # MODEL v4.2.2: no outline (as panels b, c)
+            h.set_edgecolor(h.get_facecolor())
         h.set_label({'Market balance (excess, residual and scope adjustments)': 'Market balance',
                      'Household-size change': 'Household size', 'Maintenance (B2, B4)': 'Maintenance'}
                     .get(h.get_label(), h.get_label()))
@@ -417,7 +431,7 @@ def fig3():
     a = a[(a['scenario'] == 'REF') & (a['year'] >= 2026)].set_index('year')
     proj = D.js('baseline/projection.json')
     years = a.index.values.astype(float)
-    fig = plt.figure(figsize=S.figsize('double', 88))
+    fig = plt.figure(figsize=S.figsize('double', 66))                # MODEL v4.2.2: lower
     gs = fig.add_gridspec(1, 2, width_ratios=[2.3, 1.2], wspace=0.28)
     ax = fig.add_subplot(gs[0])
     ar, atp = a['B_AR_kgCO2e'].values / M, a['B_AtP_kgCO2e'].values / M
@@ -439,7 +453,9 @@ def fig3():
     ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
     P.panel(ax, 'a', 'Annual: the Reference against AR and AtP')
     zones = [h for h in S.zone_handles() if h.get_label() != S.ZONE['exceeded']['label']]
-    ax.legend(handles=ax.get_legend_handles_labels()[0] + zones, loc='upper right', fontsize=S.FONT_MIN)
+    ax.legend(handles=ax.get_legend_handles_labels()[0] + zones, loc='upper right', fontsize=S.FONT_MIN, ncol=2,
+              columnspacing=1.0, frameon=False)
+    ax.set_ylim(0, ax.get_ylim()[1] * 1.22)                         # room for the two-column legend
     b = fig.add_subplot(gs[1])
     c = float(proj['carbon_kt'])
     lo95, hi95 = mc_cumulative_interval()
@@ -462,7 +478,7 @@ def fig3():
     b.set_xlim(-1.3, 1.6)
     b.set_xticks([0, 1])
     b.set_xticklabels(['2026–2050', 'Committed\nafter 2050'], fontsize=S.FONT_MIN + 0.5)
-    b.set_ylim(0, max(hi95, bar_, cc + bl) * 1.32)
+    b.set_ylim(0, max(hi95, bar_, cc + bl) * 1.48)
     b.set_ylabel('Cumulative carbon (kt CO₂e)')
     P.thousands(b.yaxis)
     b.grid(axis='x', visible=False)
@@ -560,9 +576,12 @@ def fig4():
     ax[0].set_ylim(0, max(paths[0][3][0][1], bar_) * 1.1)
     ax[0].set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
     P.thousands(ax[0].yaxis)
-    hs = [Patch(label=f'{St} {N.STRATEGIES[St]}', **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
-    ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_MIN, title='Waterfall steps', title_fontsize=S.FONT_MIN)
-    fig.subplots_adjust(left=0.08, right=0.99, top=0.92, bottom=0.26)
+    hs = [Patch(label=N.STRATEGIES[St], **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
+    ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_SMALL, title='Waterfall steps',
+                 title_fontsize=S.FONT_SMALL)
+    for b in ax:                                                      # MODEL v4.2.2: larger lever / TL names
+        plt.setp(b.get_xticklabels(), fontsize=S.FONT_SMALL)
+    fig.subplots_adjust(left=0.08, right=0.99, top=0.92, bottom=0.30)
     up_txt = '; '.join(f'{k}: ' + ', '.join(f'{s} {d:+,.1f} kt' for s, d in v) for k, v in ups.items() if v)
     r = D.csv('pathways/runs.csv')
     r = r[r['scenario'] == 'REF'].set_index('run')
@@ -611,24 +630,24 @@ def fig5():
     bands = [b for b in red[FIG5_RUNS[0]] if any(abs(red[r][b]) > 1e-9 for r in FIG5_RUNS)]
     parts = [(b, np.array([red[r][b] for r in FIG5_RUNS])) for b in bands]
     # MODEL v4.2.1: positive band reductions stacked up from zero, negative ones stacked below zero; the net marker
-    up, dn = P.stack_bars(ax, x, parts, 0.56, net=np.array([tot[r] for r in FIG5_RUNS]))
+    up, dn = P.stack_bars(ax, x, parts, 0.72, net=np.array([tot[r] for r in FIG5_RUNS]))
     for xi, r in zip(x, FIG5_RUNS):
-        ax.plot([xi - 0.34, xi + 0.34], [tot[r], tot[r]], color=S.INK, lw=S.LW_BOLD * 1.6, solid_capstyle='butt',
+        ax.plot([xi - 0.42, xi + 0.42], [tot[r], tot[r]], color=S.INK, lw=S.LW_BOLD * 1.6, solid_capstyle='butt',
                 zorder=6)
-    ax.annotate('Net reduction', xy=(x[-1] + 0.34, tot[FIG5_RUNS[-1]]), xytext=(x[-1] + 0.40, tot[FIG5_RUNS[-1]]),
-                va='center', ha='left', fontsize=S.FONT_SMALL, color=S.INK)
+    ax.text(x[-1] - 0.46, tot[FIG5_RUNS[-1]], 'Net reduction', va='center', ha='right', fontsize=S.FONT_SIZE,
+            color=S.INK)
     for xi, r, u in zip(x, FIG5_RUNS, up):
         ax.text(xi, u + 0.012 * max(up), f'{tot[r]:,.0f}', ha='center', va='bottom', fontsize=S.FONT_SMALL,
                 fontweight='bold')
     ax.set_xticks(x)
     ax.set_xticklabels([N.PATHWAY_RUNS.get(r, N.TL['TL']) for r in FIG5_RUNS])
-    ax.set_xlim(-0.6, len(x) - 0.4 + 0.5)                               # room for the net-marker label
+    ax.set_xlim(-0.5, len(x) - 0.5)
+    ax.tick_params(labelsize=S.FONT_SIZE + 0.5)
     ax.set_ylim(min(0.0, float(min(dn)) * 1.15), max(up) * 1.08)
     ax.axhline(0, color=S.INK, lw=S.LW_THIN)
-    ax.set_ylabel('Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO₂e)')
+    ax.set_ylabel('Reduction of cumulative carbon 2026–2050 (kt CO₂e)', fontsize=S.FONT_SIZE + 0.5)
     P.thousands(ax.yaxis)
     ax.grid(axis='x', visible=False)
-    negb = {b for b, v in parts if (v < -1e-9).any()}
     hb = []
     for b in bands[::-1]:                                                # top of the stack first
         lab = BANDS_MOD.DISPLAY_LABEL.get(b, P.band_label(b))
@@ -638,16 +657,17 @@ def fig5():
     fig.tight_layout(rect=(0, 0.12, 1, 1))
     _save(fig, 'Fig5_reduction_by_demand',
           note='Reduction vs the Reference (kt): ' + ', '.join(f'{N.run_label(r)} {tot[r]:,.0f}' for r in FIG5_RUNS)
-               + '. Negative band reductions (stacked below zero): ' + '; '.join(
-                   f"{P.band_label(b)} " + ', '.join(f'{red[r][b]:+,.0f}' for r in FIG5_RUNS) for b in bands if b in negb)
-               + ' kt (Moderate, Ambitious, TL): the credits from re-used dwellings shrink when new dwellings are '
-               'smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.')
+               + '. Segments (Moderate, Ambitious, TL; kt): ' + '; '.join(
+                   f"{BANDS_MOD.DISPLAY_LABEL.get(b, b)} " + ', '.join(f'{red[r][b]:+,.0f}' for r in FIG5_RUNS)
+                   for b in bands)
+               + '. The 2026–27 pipeline is identical in all runs and cancels; the negative segment is the smaller '
+               'carbon saved per absorbed dwelling when new dwellings are smaller and lower-carbon.')
 
 
 # ---------------------------------------------------------------------------
 # Fig6: the solution space against AR and AtP
 # ---------------------------------------------------------------------------
-FIG6_LIM = (-0.05, 0.90)        # MODEL v3.3.2: both axes from -5% to 100% (v3.3.1: to 110%)
+FIG6_LIM = (-0.05, 0.85)        # MODEL v3.3.2: both axes from -5% to 100% (v3.3.1: to 110%)
 FIG6_N = 421                   # grid points per axis (0.25% steps)
 
 
@@ -807,8 +827,13 @@ def fig6():
           Line2D([0], [0], ls='none', color=S.REFERENCE, marker='s', ms=4, label=f"{N.SCENARIOS['REF']} (ruler)")]
     h += S.boundary_handles() + S.zone_handles()
     h = [x for x in h if x.get_label() != S.ZONE['within_both']['label']]
-    fig.legend(handles=h, loc='lower center', bbox_to_anchor=(0.45, 0.0), ncol=3, frameon=False,
-               fontsize=S.FONT_MIN + 0.5)
+    fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=4,
+               frameon=False, fontsize=S.FONT_MIN + 0.5)
+    for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: every font +25%
+        if t.get_text():
+            t.set_fontsize(t.get_fontsize() * 1.25)
+    for a_ in (ax, ru):                                             # tick labels (created lazily)
+        a_.tick_params(labelsize=S.FONT_SIZE * 1.25)
     note = (f"LoE AR = [{c26:,.0f} + {r['carbon_2027_2050_cohorts_kt']:,.0f} (1 - x)(1 - y)] / {bc['B_AR_kt']:,.0f} kt; "
             f"C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = {floor:.3f} (the lowest "
             f"LoE AR at x or y = 100%); AtP = B_AtP / B_AR = {atp_level:.3f} lies below the floor, so the AtP contour is "
@@ -844,7 +869,7 @@ def fig7():
             col = S.STRATEGY[N.LEVER_STRATEGY[L]]
             a.barh(k + 0.18, val['ambitious'][L], height=0.34, color=col, edgecolor=col, lw=S.LW_SEAM)
             a.barh(k - 0.18, val['moderate'][L], height=0.34, facecolor='none', edgecolor=col, lw=S.LW_OUTLINE * 1.2)
-            a.plot(val['tl'][L], k, ls='none', color=S.TL, zorder=5, **S.TL_MARKER)
+            a.plot(val['tl'][L], k, ls='none', color=S.TL, zorder=5, marker='o', ms=5)
         for St, ls in N.STRATEGY_LEVERS.items():              # strategy separators
             ks = [k for k, L in zip(y, order) if L in ls]
             if min(ks) > 0:
@@ -855,7 +880,7 @@ def fig7():
         P.panel(a, letter, title)
     for St, ls in N.STRATEGY_LEVERS.items():
         ks = [k for k, L in zip(y, order) if L in ls]
-        ax[1].text(1.01, (min(ks) + max(ks)) / 2, f'{St} {N.STRATEGIES[St]}', transform=ax[1].get_yaxis_transform(),
+        ax[1].text(1.01, (min(ks) + max(ks)) / 2, N.STRATEGIES[St].replace(' ', '\n'), transform=ax[1].get_yaxis_transform(),
                    ha='left', va='center', fontsize=S.FONT_MIN + 0.5, color=S.STRATEGY[St], fontweight='bold')
     P.thousands(ax[0].xaxis)
     ax[0].set_yticks(y)
@@ -863,7 +888,8 @@ def fig7():
     ax[0].set_ylim(-0.6, len(order) - 0.4)
     fig.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate (Level 2)'),
                         Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious (Level 3)'),
-                        Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit (Level 4)', **S.TL_MARKER)],
+                        Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit (Level 4)', marker='o',
+                               ms=5)],
                loc='lower center', ncol=3, fontsize=S.FONT_MIN + 0.5, frameon=False, bbox_to_anchor=(0.5, 0.0))
     fig.tight_layout(rect=(0, 0.07, 0.95, 1))
     tot = {k: v.sum() for k, v in g.items()}
@@ -936,6 +962,26 @@ def tornado_rows():
     return rows, float(t['central_LoE_AR'].iloc[0])
 
 
+FIG8_SHORT = {'Population (Stats NZ 5th–95th percentile)': 'Population\n(5th–95th pct.)',
+              'Soil order (lowest, Raw – highest, Organic)': 'Soil order\n(Raw–Organic)',
+              'Household size: 2018–2023 census pace (linear)': 'Household size\n(2018–23 pace)',
+              'Household size (Stats NZ low–high variant)': 'Household size\n(low–high variant)',
+              'Carbon factors (case-study jackknife low–high)': 'Carbon factors\n(jackknife)',
+              'Completion rate (0.93–0.96)': 'Completion rate\n(0.93–0.96)'}
+
+
+def _fig8_short(label):
+    """MODEL v4.2.2: a tornado row label in two short lines."""
+    if label in FIG8_SHORT:
+        return FIG8_SHORT[label]
+    if label.startswith('Replacement:'):
+        return 'Replacement\n(Low–Very High)'
+    m = re.match(r'AR base window \((\d+)–(\d+) yr', label)
+    if m:
+        return f'AR base window\n({m.group(1)}–{m.group(2)} yr)'
+    return label.replace(' (', '\n(', 1)
+
+
 def fig8():
     """MODEL v3.3.1: (a) tornado (Fig7 until v3.3.1) on the cumulative LoE AR: each input at its low end (blue) and high
     end (vermilion) as defined in its label, sorted by range, intermediate cases as ticks; (b) TL cumulative LoE AR
@@ -960,7 +1006,7 @@ def fig8():
             a.text(val, k + 0.33, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
     a.axvline(c0, color=S.INK, lw=S.LW_THIN)
     a.set_yticks(np.arange(len(rows)))
-    a.set_yticklabels([r[0] for r in rows], fontsize=S.FONT_MIN + 0.5)
+    a.set_yticklabels([_fig8_short(r[0]) for r in rows], fontsize=S.FONT_SMALL)
     a.set_xlabel('Reference cumulative LoE AR 2026-2050')
     a.grid(axis='y', visible=False)
     a.legend(handles=[Patch(label='Input at low end', **S.fill(LOW_END)),
@@ -992,6 +1038,9 @@ def fig8():
     b.legend(handles=hb, loc='upper left', bbox_to_anchor=(0.0, 0.90), fontsize=S.FONT_MIN, markerscale=4)
     P.panel(b, 'b', 'Theoretical Limit against the 2050 population')
     fig.tight_layout()
+    for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: slightly larger fonts
+        if t.get_text():
+            t.set_fontsize(t.get_fontsize() * 1.1)
     _save(fig, 'Fig8_uncertainty',
           note='(b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build '
                'years); its carbon floor is the 2026-27 pipeline plus maintenance. ' + f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "

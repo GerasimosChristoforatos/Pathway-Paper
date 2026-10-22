@@ -38,7 +38,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_DIR = os.path.join(ROOT, 'fonts')
 for _f in ('LiberationSans-Regular.ttf', 'LiberationSans-Bold.ttf', 'LiberationSans-Italic.ttf'):
     font_manager.fontManager.addfont(os.path.join(FONT_DIR, _f))
-FONT = 'Liberation Sans'
+# MODEL v4.2.2: Arial where installed; otherwise the bundled metric-compatible Liberation Sans
+FONT = 'Arial' if any(f.name == 'Arial' for f in font_manager.fontManager.ttflist) else 'Liberation Sans'
 
 # ---------------------------------------------------------------------------
 # Sizes (Nature Cities: 89 mm single column, 183 mm double column; text 5-7 pt)

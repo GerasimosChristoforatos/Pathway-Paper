@@ -18,3 +18,4 @@ Each column is the reduction vs the Reference, band by band: Reference band − 
 * **Market balance.** It sits below zero because the TL run books less overbuild-absorption credit than the
   Reference. Its re-used dwellings are valued at the smaller TL new-dwelling size, and the pooled overbuild is
   re-occupied rather than paid back.
+* v4.2.2 styling: the history's RV exclusion is now spread pro rata across the display bands (bands.allocate_rv), so no RV segment appears in Fig1, Fig2 or Fig5 (the detailed RV band is kept in data and ED10). Fig5 caption added, and Market balance is its only negative segment. Arial font where installed (Liberation Sans fallback). Strategies renamed 'Avoid / Switch / Improve Strategies'. Fig1-Fig8 sizes, fonts and legends restyled; Fig6 axes now end at 85%.

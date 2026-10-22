@@ -75,3 +75,16 @@ def test_six_display_bands_sum_to_the_detailed_bands():
         detailed = d.groupby(keys)[val].sum()
         six = d.groupby(keys + ['display'])[val].sum().groupby(level=list(range(len(keys)))).sum()
         assert np.allclose(six.values, detailed.loc[six.index].values, rtol=1e-9, atol=1e-12), rel
+
+
+def test_history_rv_allocated_pro_rata_in_scope():
+    """MODEL v4.2.2: the history's RV exclusion spread pro rata: no RV band, the same total in every interval."""
+    import bands as BANDS
+    import layout
+    from figures import draw as P
+    h = pd.read_csv(layout.data('baseline/bands_history.csv', frozen=False))
+    for iv, g in h.groupby('interval'):
+        det = {P.band_id(b): v for b, v in zip(g['band'], g['floor_area_Mm2_per_year'])}
+        al = BANDS.allocate_rv(det)
+        assert 'retirement_villages' not in al
+        assert np.isclose(sum(al.values()), g['observed_built_Mm2_per_year'].iloc[0], rtol=1e-9, atol=1e-12), iv

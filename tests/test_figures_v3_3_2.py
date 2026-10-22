@@ -59,10 +59,10 @@ def test_fig6_markers_square_and_ar_line():
     for m in bc['solution_space_markers']:
         z = PM.fig6_loe(bc, m['demand_reduction'], m['intensity_reduction'])
         assert np.isclose(z, r.loc[m['run'], 'LoE_AR'], rtol=RTOL, atol=0), m['run']
-    assert PM.FIG6_LIM == (-0.05, 0.90)                        # MODEL v4.2.2: clipped at 90%
+    assert PM.FIG6_LIM == (-0.05, 0.85)                        # MODEL v4.2.2: clipped at 85%
     for x, y in PM.fig6_branches(bc, 1.0):
         assert np.allclose(PM.fig6_loe(bc, x, y), 1.0, rtol=RTOL, atol=0)
-        assert x.min() >= -0.05 and y.max() <= 0.90
+        assert x.min() >= -0.05 and y.max() <= 0.85
 
 
 def test_schematic_is_supplementary():

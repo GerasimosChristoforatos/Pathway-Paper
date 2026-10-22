@@ -52,7 +52,7 @@ FROZEN = 'Frozen technology (2025 carbon factors held; check run)'
 # follows the decision sequence (system before asset; site before materials). Ambition levels follow the 2050
 # Pathways Calculator (DECC 2010; DESNZ 2023) and EUCalc (D2.5, 2020): Reference = Level 1, Moderate = Level 2,
 # Ambitious = Level 3, theoretical limit = Level 4. Every lever at a setting = the Moderate / Ambitious Pathway.
-STRATEGIES = {'S1': 'Avoid', 'S2': 'Switch', 'S3': 'Improve'}
+STRATEGIES = {'S1': 'Avoid Strategies', 'S2': 'Switch Strategies', 'S3': 'Improve Strategies'}   # MODEL v4.2.2 names
 STRATEGY_LEVERS = {'S1': ('L1', 'L2', 'L3', 'L4', 'L5'), 'S2': ('L6', 'L7', 'L8'), 'S3': ('L9',)}
 LEVER_STRATEGY = {L: S for S, ls in STRATEGY_LEVERS.items() for L in ls}
 PATHWAY = 'pathway'                                   # run id prefix of the Moderate / Ambitious Pathway (every lever)

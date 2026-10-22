@@ -44,14 +44,19 @@ PAPER_MAIN = [
                  '... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
                  'order-free Shapley values in Fig7; split by demand band in ED6.',
          source=['pathways/annual.csv', 'pathways/waterfall.csv', 'pathways/waterfall_tl_from_reference.csv']),
-    dict(id='Fig5', file='Fig5_reduction_by_demand', width='double', module='figures.paper_main',
-         title='What the reduction consists of',
-         caption='Reduction of cumulative carbon 2026-2050 against the Reference for the Moderate Pathway, the Ambitious '
-                 'Pathway and the Theoretical Limit, by demand band (Reference - run, per band); column height = total '
-                 'reduction. Negative band reductions (outlined, hanging down from the top of the positive stack): the '
-                 'credits from re-used dwellings (overbuild absorbed, unconsented additions) shrink when new dwellings '
-                 'are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.',
-         source=['pathways/bands.csv', 'pathways/runs.csv']),
+    # MODEL v4.2.2: the model schematic is the main Fig5; the reduction by demand band moved to SF7 (Extended Data is
+    # full at ten items)
+    dict(id='Fig5', file='Fig5_model_schematic', width='double', module='figures.fig5_schematic',
+         title='The model: chain, demand bands, levers and ambition levels',
+         caption='(a) The Reference chain from population to the share of the 2 °C budget (level of exceedance = '
+                 'carbon / budget, AR and AtP). (b) The six demand bands of floor area, widths proportional to the '
+                 'Reference cumulative floor area 2026-2050 (in scope); the market balance nets to about zero and is '
+                 'drawn at a fixed width, not to scale. (c) Each lever under the band whose floor area it reduces '
+                 'most in its single-lever Ambitious run (solid line); a dashed line marks a further band with at '
+                 'least 20% of that lever\'s floor-area reduction; L6-L9 act on the carbon per m2. (d) The four '
+                 'ambition levels of the same nine levers, all phased in by 2035.',
+         source=['baseline/bands_annual.csv', 'bands_display_map.csv', 'pathways/bands.csv',
+                 'pathways/levers.json']),
     dict(id='Fig6', file='Fig6_solution_space', width='double', module='figures.paper_main',
          title='The solution space',
          caption='Cumulative level of exceedance of AR over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 '
@@ -133,6 +138,15 @@ SUPPLEMENTARY = [
     dict(id='SF6', file='SF6_consent_sizes', module='figures.paper_extended',
          title='L4: mean consented new-dwelling size by typology, 1990-2025, with the minima',
          source=['pathways/levers.json']),
+    # MODEL v4.2.2: the main Fig5 of v3.3.2-v4.2.2 (Extended Data full at ten items)
+    dict(id='SF7', file='SF7_reduction_by_demand', width='double', module='figures.paper_main',
+         title='What the reduction consists of',
+         caption='Reduction of cumulative carbon 2026-2050 against the Reference for the Moderate Pathway, the Ambitious '
+                 'Pathway and the Theoretical Limit, by demand band (Reference - run, per band); column height = total '
+                 'reduction. Negative band reductions (outlined, hanging down from the top of the positive stack): the '
+                 'credits from re-used dwellings (overbuild absorbed, unconsented additions) shrink when new dwellings '
+                 'are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.',
+         source=['pathways/bands.csv', 'pathways/runs.csv']),
 ]
 # tables of the Extended Data (Markdown + CSV, outputs/paper_extended/)
 EXTENDED_TABLES = [dict(id='EDT1', file='EDT1_levels_by_typology', title='Lever levels by typology: Moderate, '
@@ -242,7 +256,7 @@ DIAGNOSTICS = {
 FULL_ONLY = ('D20_sobol',)
 
 # Maintenance (B2, B4) drawn as its own layer: only in the band and stage breakdowns
-MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries', 'Fig5_reduction_by_demand',
+MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries', 'SF7_reduction_by_demand',
                        'ED6_waterfalls_by_demand_band',
                        'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band', 'D32_tl_staircase',
                        'D36_pathway_bands')
@@ -269,6 +283,8 @@ RETIRED = {
     'PDF output': 'retired in MODEL v3.3.1: figures are PNG only (600 dpi full, 200 dpi light)',
     'MODEL v3.3.2 renumbering': 'Fig2-Fig4 -> Fig1-Fig3; Fig5 waterfalls -> Fig4 (b-d) with the annual pathways (a); '
                                 'Fig5 reduction by demand band (new); Fig1 schematic -> SF1 (SF1-SF5 -> SF2-SF6)',
+    'MODEL v4.2.2 Fig5': 'Fig5 reduction by demand band -> SF7 (Extended Data full at ten items); Fig5 is the new '
+                         'model schematic (figures/fig5_schematic.py)',
 }
 
 

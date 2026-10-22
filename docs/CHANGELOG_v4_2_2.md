@@ -20,3 +20,58 @@ Each column is the reduction vs the Reference, band by band: Reference band − 
   re-occupied rather than paid back.
 * v4.2.2 styling: the history's RV exclusion is now spread pro rata across the display bands (bands.allocate_rv), so no RV segment appears in Fig1, Fig2 or Fig5 (the detailed RV band is kept in data and ED10). Fig5 caption added, and Market balance is its only negative segment. Arial font where installed (Liberation Sans fallback). Strategies renamed 'Avoid / Switch / Improve Strategies'. Fig1-Fig8 sizes, fonts and legends restyled; Fig6 axes now end at 85%.
 * Final figure tweaks: Fig2 two-line legend inside panel a, panel d y-axis on the left; Fig3 panel a y max 1,650, panel b legend upper left and tighter; Fig4 panel c headroom for the TL1 label; Fig6 legend 3×3 without the zone and ruler entries, cropped at the ruler labels; Fig7 legend Moderate / Ambitious / Theoretical limit; Fig8 panel a two-line tick labels centred. Figures-only export (600 dpi); data byte-identical.
+
+## Fig5 replaced by the model schematic
+
+Figures only: no model or Monte Carlo rerun. One `--figures-only` export (600 dpi PNG); the data were byte-identical
+afterwards (`outputs/logs/figures_only_check.json`: changed = []).
+
+* **Placement.** Extended Data already holds ten items (ED1–ED10), so the former Fig5 (reduction by demand band) moved
+  to **Supplementary as SF7** (`SF7_reduction_by_demand`, same drawing code and data). The rest of the Extended Data
+  is unchanged. SF1 (the older schematic) is kept as it was.
+* **Files.**
+  * new `figures/fig5_schematic.py`, drawing `Fig5_model_schematic`;
+  * `figure_plan.py`: Fig5 entry, SF7 entry, `MAINTENANCE_ALLOWED` and `RETIRED` updated;
+  * `figures/paper_main.py`: the old fig5 now saves as SF7;
+  * `tests/test_figures_v3_3_2.py`: main-figure list;
+  * outputs: the new Fig5 and SF7 PNGs and their audits; the old Fig5 PNG and audit removed; FIGURES.md and INDEX.md
+    regenerated (INDEX.md was out of date and now also lists the files added since v4.2).
+* **Design.** It follows the author's layout script (schem3). Colours come only from `style.py`: display-band
+  colours, strategy colours for the chip edges, Reference / Pathway / TL colours for the ladder, and AR for the
+  budget box. Fonts are 5–8 pt. The PNG was checked visually: no text overlaps.
+* **Band widths (b).** Reference cumulative floor area 2026–2050, in scope (`baseline/bands_annual.csv` summed through
+  `bands_display_map.csv`), in Mm²:
+
+  | band | Mm² |
+  |---|---|
+  | Population growth | 40.588 |
+  | Household-size change | 1.885 |
+  | Extra space | 26.359 |
+  | Vacancy | 3.919 |
+  | Net replacement | 8.948 |
+  | Market balance | −0.169 |
+
+  * Market balance nets to about zero (2026 overbuild +4.545, overbuild absorbed −4.713). It is drawn at a fixed
+    5 mm width and labelled "net −0.2 Mm² (not to scale)".
+  * The other five bands share the remaining width in proportion. Each band's value is printed on the figure.
+* **Lever → band mapping (c).** This comes from the model output, not from the draft layout. Each lever goes under the
+  display band whose in-scope floor area its single-lever Ambitious run reduces most (`pathways/bands.csv`,
+  Reference − run). A dashed connector marks a further band with ≥ 20% of that lever's floor-area reduction. The
+  script asserts that this mapping matches the chip layout and fails otherwise. Floor-area reductions, Mm²:
+
+  | lever | primary band | further band |
+  |---|---|---|
+  | L1 | Household-size change 2.87 | Extra space 2.43 |
+  | L2 | Vacancy 5.20 | — |
+  | L3 | Net replacement 4.73 | — |
+  | L4 | Extra space 6.75 | — |
+  | L5 | Population growth 5.88 | Extra space 3.78 |
+
+  * **L5 differs from the draft**, which placed it under Extra space. L5 scales the occupied floor area per person
+    (OLF), and the population-growth band is population growth × OLF (`engine.forward`). L5 therefore reduces that
+    band most. The population itself stays exogenous ("driver (exogenous)").
+  * L6–L9 change no floor area; the script asserts a zero floor-area change in their runs. They sit under the
+    separate carbon-intensity bar.
+* **Tests.** 34 of 35 figure tests pass. `test_figures_v3::test_audit_sign_and_boundary_rules` fails on
+  `ED10_detailed_demand_bands` (maintenance is drawn but ED10 is not in `MAINTENANCE_ALLOWED`). It fails identically
+  on the previous commit, so it predates this change, and it is left for the author to decide.

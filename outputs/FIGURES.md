@@ -36,13 +36,13 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/pathways/annual.csv`, `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
 - This run: Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00. (a-c) Reference 19,761 kt -> Moderate Pathway 14,302 kt, Ambitious Pathway 10,267 kt, Theoretical Limit 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.
 
-### Fig5_reduction_by_demand
+### Fig5_model_schematic
 
-**Fig5 What the reduction consists of** — Reduction of cumulative carbon 2026-2050 against the Reference for the Moderate Pathway, the Ambitious Pathway and the Theoretical Limit, by demand band (Reference - run, per band); column height = total reduction. Negative band reductions (outlined, hanging down from the top of the positive stack): the credits from re-used dwellings (overbuild absorbed, unconsented additions) shrink when new dwellings are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.
+**Fig5 The model: chain, demand bands, levers and ambition levels** — (a) The Reference chain from population to the share of the 2 °C budget (level of exceedance = carbon / budget, AR and AtP). (b) The six demand bands of floor area, widths proportional to the Reference cumulative floor area 2026-2050 (in scope); the market balance nets to about zero and is drawn at a fixed width, not to scale. (c) Each lever under the band whose floor area it reduces most in its single-lever Ambitious run (solid line); a dashed line marks a further band with at least 20% of that lever's floor-area reduction; L6-L9 act on the carbon per m2. (d) The four ambition levels of the same nine levers, all phased in by 2035.
 
-- Files: `paper_main/Fig5_reduction_by_demand.png`
-- Data: `data/pathways/bands.csv`, `data/pathways/runs.csv`
-- This run: Reduction vs the Reference (kt): Moderate Pathway 5,460, Ambitious Pathway 9,494, Theoretical Limit 15,339. Segments (Moderate, Ambitious, TL; kt): Population growth +1,812, +3,356, +5,200; Household-size change +339, +562, +1,566; Extra space +1,969, +3,375, +5,686; Vacancy +780, +1,310, +850; Net replacement +684, +1,128, +1,670; Market balance -185, -348, -1,056; Re-used dwellings (TL) +0, +0, +1,210; Maintenance (B2, B4) +60, +112, +212. The 2026–27 pipeline is identical in all runs and cancels; the negative segment is the smaller carbon saved per absorbed dwelling when new dwellings are smaller and lower-carbon.
+- Files: `paper_main/Fig5_model_schematic.png`
+- Data: `data/baseline/bands_annual.csv`, `data/bands_display_map.csv`, `data/pathways/bands.csv`, `data/pathways/levers.json`
+- This run: Band widths (Reference cumulative floor area 2026–2050, in scope, Mm²): Population growth 40.588, Household-size change 1.885, Extra space 26.359, Vacancy 3.919, Net replacement 8.948, Market balance -0.169; market balance drawn at a fixed width. Lever → band (single-lever Ambitious runs, floor-area reduction Mm²): L1 → smaller_households (2.87) + extra_space (2.43); L2 → vacancy (5.20); L3 → net_replacement (4.73); L4 → extra_space (6.75); L5 → growth (5.88) + extra_space (3.78); L6–L9: carbon per m² (no floor-area change).
 
 ### Fig6_solution_space
 
@@ -203,6 +203,14 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Files: `supplementary/SF6_consent_sizes.png`
 - Data: `data/pathways/levers.json`
 - This run: Dotted: the Reference size (2023-2025 mean). 1990 is the first year of the series and a recession year.
+
+### SF7_reduction_by_demand
+
+**SF7 What the reduction consists of**
+
+- Files: `supplementary/SF7_reduction_by_demand.png`
+- Data: `data/pathways/bands.csv`, `data/pathways/runs.csv`
+- This run: Reduction vs the Reference (kt): Moderate Pathway 5,460, Ambitious Pathway 9,494, Theoretical Limit 15,339. Segments (Moderate, Ambitious, TL; kt): Population growth +1,812, +3,356, +5,200; Household-size change +339, +562, +1,566; Extra space +1,969, +3,375, +5,686; Vacancy +780, +1,310, +850; Net replacement +684, +1,128, +1,670; Market balance -185, -348, -1,056; Re-used dwellings (TL) +0, +0, +1,210; Maintenance (B2, B4) +60, +112, +212. The 2026–27 pipeline is identical in all runs and cancels; the negative segment is the smaller carbon saved per absorbed dwelling when new dwellings are smaller and lower-carbon.
 
 ## Diagnostics: calibration (diagnostics/calibration/)
 
@@ -551,3 +559,4 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - ED3_cumulative_households_population_floor_area: ED1 (population, households, floor area; 3 x 1)
 - PDF output: retired in MODEL v3.3.1: figures are PNG only (600 dpi full, 200 dpi light)
 - MODEL v3.3.2 renumbering: Fig2-Fig4 -> Fig1-Fig3; Fig5 waterfalls -> Fig4 (b-d) with the annual pathways (a); Fig5 reduction by demand band (new); Fig1 schematic -> SF1 (SF1-SF5 -> SF2-SF6)
+- MODEL v4.2.2 Fig5: Fig5 reduction by demand band -> SF7 (Extended Data full at ten items); Fig5 is the new model schematic (figures/fig5_schematic.py)

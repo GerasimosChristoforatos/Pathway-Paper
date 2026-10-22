@@ -371,7 +371,6 @@ def fig2():
         h.set_label({'Market balance (excess, residual and scope adjustments)': 'Market balance',
                      'Household-size change': 'Household size', 'Maintenance (B2, B4)': 'Maintenance'}
                     .get(h.get_label(), h.get_label()))
-        h.set_label(h.get_label().replace(' ', '\n', 1))           # MODEL v4.2.2: two lines per entry
     ax[0].legend(handles=hb2, ncol=2, **LEG)
     # (d) cumulative 2026-2050: three attached columns of the same total
     d = fig.add_subplot(gs[4])
@@ -460,7 +459,7 @@ def fig3():
     zones = [h for h in S.zone_handles() if h.get_label() != S.ZONE['exceeded']['label']]
     ax.legend(handles=ax.get_legend_handles_labels()[0] + zones, loc='upper right', fontsize=S.FONT_MIN, ncol=2,
               columnspacing=1.0, frameon=False)
-    ax.set_ylim(0, 1580)                                              # MODEL v4.2.2
+    ax.set_ylim(0, 1540)                                              # MODEL v4.2.2
     b = fig.add_subplot(gs[1])
     c = float(proj['carbon_kt'])
     lo95, hi95 = mc_cumulative_interval()
@@ -740,6 +739,7 @@ def _spread(vals, min_gap):
     return pos
 
 
+FIG6_MS = 1.25                       # MODEL v4.2.2: every Fig6 marker scaled by this factor
 FIG6_FONT = 1.45                     # MODEL v4.2.2: every Fig6 text scaled by this factor (was 1.25)
 
 
@@ -838,7 +838,10 @@ def fig6():
     drop = {S.ZONE[k]['label'] for k in S.ZONE} | {f"{N.SCENARIOS['REF']} (ruler)"}
     h = [x for x in h if x.get_label() not in drop]
     fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=3,
-               frameon=False, fontsize=S.FONT_MIN + 0.5)
+               frameon=False, fontsize=S.FONT_MIN + 1.0)                # MODEL v4.2.2: legend a bit larger
+    for ln in fig.findobj(Line2D):                                  # MODEL v4.2.2: every marker x FIG6_MS (plane,
+        if ln.get_marker() not in (None, 'None', '', ' '):            # ruler, legend; relative sizes kept)
+            ln.set_markersize(ln.get_markersize() * FIG6_MS)
     for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: every font x FIG6_FONT
         if t.get_text():
             t.set_fontsize(t.get_fontsize() * FIG6_FONT)
@@ -862,6 +865,20 @@ def _two_lines(text):
         return text
     i = min(sp, key=lambda k: abs(k - len(text) / 2))
     return text[:i] + '\n' + text[i + 1:]
+
+
+def _centre_ticklabels(fig, ax):
+    """MODEL v4.2.2: y tick labels centred (every line) on one vertical axis at the centre of the widest label, with
+    the existing gap between the widest label and the axis: ha = 'center' and the tick pad raised by half the widest
+    label's width (points)."""
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    w = max(t.get_window_extent(r).width for t in ax.get_yticklabels()) * 72.0 / fig.dpi
+    pad = ax.yaxis.get_major_ticks()[0].get_pad()
+    ax.tick_params(axis='y', pad=pad + w / 2)
+    for t in ax.get_yticklabels():
+        t.set_horizontalalignment('center')
+        t.set_multialignment('center')
 
 
 def fig7():
@@ -905,14 +922,13 @@ def fig7():
     P.thousands(ax[0].xaxis)
     ax[0].set_yticks(y)
     ax[0].set_yticklabels([_two_lines(f'{L} {N.LEVERS[L]}') for L in order])   # MODEL v4.2.2: two lines, centred
-    for t in ax[0].get_yticklabels():
-        t.set_multialignment('center')
     ax[0].set_ylim(-0.6, len(order) - 0.4)
     fig.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate'),
                         Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious'),
                         Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit', marker='o',
                                ms=5)],
                loc='lower center', ncol=3, fontsize=S.FONT_SMALL, frameon=False, bbox_to_anchor=(0.5, 0.0))
+    _centre_ticklabels(fig, ax[0])
     fig.tight_layout(rect=(0, 0.07, 0.95, 1))
     tot = {k: v.sum() for k, v in g.items()}
     _save(fig, 'Fig7_shapley_levers',

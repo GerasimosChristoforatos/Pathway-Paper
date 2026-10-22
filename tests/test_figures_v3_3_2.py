@@ -70,4 +70,4 @@ def test_schematic_is_supplementary():
     assert FP.SUPPLEMENTARY[0]['file'] == 'SF1_model_schematic'
     assert [h['file'] for h in FP.PAPER_MAIN] == [
         'Fig1_floor_area', 'Fig2_reference_carbon', 'Fig3_reference_boundaries', 'Fig4_pathways',
-        'Fig5_model_schematic', 'Fig6_solution_space', 'Fig7_shapley_levers', 'Fig8_uncertainty']
+        'Fig6_solution_space', 'Fig7_shapley_levers', 'Fig8_uncertainty']

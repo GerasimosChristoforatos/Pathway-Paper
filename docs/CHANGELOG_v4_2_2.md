@@ -75,3 +75,42 @@ afterwards (`outputs/logs/figures_only_check.json`: changed = []).
 * **Tests.** 34 of 35 figure tests pass. `test_figures_v3::test_audit_sign_and_boundary_rules` fails on
   `ED10_detailed_demand_bands` (maintenance is drawn but ED10 is not in `MAINTENANCE_ALLOWED`). It fails identically
   on the previous commit, so it predates this change, and it is left for the author to decide.
+
+## Figure revisions (figures only; Fig5 schematic dropped)
+
+Figures only. The figures were redrawn from the existing outputs with one `--figures-only` export (600 dpi PNG); the
+deterministic model and the Monte Carlo were not rerun. The data were byte-identical afterwards
+(`outputs/logs/figures_only_check.json`: changed = []). Each changed PNG was checked visually: no overlaps.
+
+* **Fig5 schematic dropped.**
+  * `figures/fig5_schematic.py`, its PNG and its audit record are deleted, and its `figure_plan` entry is removed.
+  * Fig5 is vacant; no other figure or reference is renumbered.
+  * The reduction by demand band stays in Supplementary (SF7).
+  * `tests/test_figures_v3_3_1::test_display_item_limits` now expects Fig1–Fig4 and Fig6–Fig8;
+    `tests/test_figures_v3_3_2` expects the same main list.
+* **Fig2.**
+  * The in-panel legends are removed. One legend row now sits below panels a–d, each block under its own panel:
+    demand bands and the carbon line under a (2 columns), materials under b (2 columns), life-cycle stages under c
+    (1 column).
+  * Entries, order and colours are unchanged.
+  * The figure is now 108 mm high (was 82 mm), and panel a's top headroom drops from ×1.16 to ×1.04.
+* **Fig3.** The panel a y-axis maximum is 1,580 (was 1,650).
+* **Fig4.**
+  * Panel titles are the pathway name only (Moderate Pathway, Ambitious Pathway, Theoretical Limit).
+  * The legend title "Waterfall steps" is removed.
+  * "Improve Strategies" becomes "Improve Strategy".
+* **Fig6.**
+  * Every text is scaled ×1.45 (was ×1.25): ticks, axis labels, legend, contour labels and ruler annotations.
+  * The ruler annotations are on two lines, centre-aligned, with label spacing raised to fit them.
+  * Axis titles: x "Sufficiency: Floor area reduction (%)", y "Efficiency: Carbon reduction per m² (%)". The
+    definitions (2027–2050, vs the Reference, A1–A5 + soil + B2/B4) remain in the figure_plan caption.
+  * Legend: "Moderate / Ambitious Pathway" becomes "Pathways", and "Improve Strategy" is singular.
+* **Fig7.**
+  * Lever labels are on two lines (split at the space nearest the middle), centre-aligned.
+  * The strategy annotations are centre-aligned and read "Improve Strategy".
+  * The legend font is 6 pt (was 5.5 pt).
+* **Label scope.** The singular label is a figure-level map (`paper_main.STRATEGY_LABEL`); `naming.STRATEGIES` and the
+  data labels are unchanged. ED5 shares the same legend map, so its legend now also reads "Improve Strategy".
+* **Fig8.** Unchanged.
+* **Tests.** 27 of 28 figure tests pass. The remaining failure is the pre-existing ED10 maintenance rule recorded above,
+  unchanged.

@@ -36,14 +36,6 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/pathways/annual.csv`, `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
 - This run: Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00. (a-c) Reference 19,761 kt -> Moderate Pathway 14,302 kt, Ambitious Pathway 10,267 kt, Theoretical Limit 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.
 
-### Fig5_model_schematic
-
-**Fig5 The model: chain, demand bands, levers and ambition levels** — (a) The Reference chain from population to the share of the 2 °C budget (level of exceedance = carbon / budget, AR and AtP). (b) The six demand bands of floor area, widths proportional to the Reference cumulative floor area 2026-2050 (in scope); the market balance nets to about zero and is drawn at a fixed width, not to scale. (c) Each lever under the band whose floor area it reduces most in its single-lever Ambitious run (solid line); a dashed line marks a further band with at least 20% of that lever's floor-area reduction; L6-L9 act on the carbon per m2. (d) The four ambition levels of the same nine levers, all phased in by 2035.
-
-- Files: `paper_main/Fig5_model_schematic.png`
-- Data: `data/baseline/bands_annual.csv`, `data/bands_display_map.csv`, `data/pathways/bands.csv`, `data/pathways/levers.json`
-- This run: Band widths (Reference cumulative floor area 2026–2050, in scope, Mm²): Population growth 40.588, Household-size change 1.885, Extra space 26.359, Vacancy 3.919, Net replacement 8.948, Market balance -0.169; market balance drawn at a fixed width. Lever → band (single-lever Ambitious runs, floor-area reduction Mm²): L1 → smaller_households (2.87) + extra_space (2.43); L2 → vacancy (5.20); L3 → net_replacement (4.73); L4 → extra_space (6.75); L5 → growth (5.88) + extra_space (3.78); L6–L9: carbon per m² (no floor-area change).
-
 ### Fig6_solution_space
 
 **Fig6 The solution space** — Cumulative level of exceedance of AR over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 (y) (after Horup et al. 2025), axes -5% to 100%, with S1-S3 (Moderate filled, Ambitious hollow), the Moderate / Ambitious Pathway and the Theoretical Limit; analytic LoE AR contours and the exact AR line. Right: the LoE AR ruler (log) with the Reference, the Pathways, TL, AR = 1, the plane floor (the 2026 observed cohort alone) and AtP.
@@ -559,4 +551,4 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - ED3_cumulative_households_population_floor_area: ED1 (population, households, floor area; 3 x 1)
 - PDF output: retired in MODEL v3.3.1: figures are PNG only (600 dpi full, 200 dpi light)
 - MODEL v3.3.2 renumbering: Fig2-Fig4 -> Fig1-Fig3; Fig5 waterfalls -> Fig4 (b-d) with the annual pathways (a); Fig5 reduction by demand band (new); Fig1 schematic -> SF1 (SF1-SF5 -> SF2-SF6)
-- MODEL v4.2.2 Fig5: Fig5 reduction by demand band -> SF7 (Extended Data full at ten items); Fig5 is the new model schematic (figures/fig5_schematic.py)
+- MODEL v4.2.2 Fig5: Fig5 reduction by demand band -> SF7 (Extended Data full at ten items); the Fig5 model schematic was added and then dropped; Fig5 is vacant, no other figure renumbered

@@ -121,5 +121,6 @@ def test_no_pdf_written_png_only():
 
 def test_display_item_limits():
     assert len(FP.PAPER_MAIN) <= 8 and len(FP.PAPER_EXTENDED) <= 10
-    assert [h['id'] for h in FP.PAPER_MAIN] == [f'Fig{i}' for i in range(1, 9)]
+    # MODEL v4.2.2: Fig5 is vacant for now (author's decision: no renumbering; the reduction by demand band is SF7)
+    assert [h['id'] for h in FP.PAPER_MAIN] == [f'Fig{i}' for i in range(1, 9) if i != 5]
     assert [h['id'] for h in FP.PAPER_EXTENDED] == [f'ED{i}' for i in range(1, len(FP.PAPER_EXTENDED) + 1)]

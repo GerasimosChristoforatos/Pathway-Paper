@@ -36,7 +36,6 @@
   "Ambitious Pathway",
   "AtP",
   "Avoid Strategies",
-  "Boundary exceeded (above AR)",
   "Cut in 2027-2050 carbon per m\u00b2 (A1-A5, soil, B2/B4) vs the Reference (%)",
   "Cut in 2027-2050 floor area vs the Reference (%)",
   "Improve Strategies",
@@ -51,10 +50,8 @@
   "Moderate / Ambitious Pathway",
   "Moderate Pathway",
   "Reference",
-  "Reference (ruler)",
   "Switch Strategies",
-  "Theoretical Limit",
-  "Within AR only (between AtP and AR)"
+  "Theoretical Limit"
  ],
  "note": "LoE AR = [1,207 + 18,554 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.5% at x = 0). Axes -5% to 85%.",
  "maintenance_drawn": false,

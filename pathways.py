@@ -595,7 +595,7 @@ def linear_split(ctx, R):
     """Annual carbon (kg, 2026-2050) = fixed + later (MODEL v3.2.0): fixed = the 2026 cohort's emissions in the window
     (its A1-A5, soil carbon loss and in-window events; identical in every run, 2026 observed); later = every emission
     in the window of the 2027-2050 cohorts (A1-A5, soil carbon loss, in-window B2/B4), the quantity a cut in
-    2027-2050 floor area (x) and in total carbon per m2 (y) scales by (1 - x)(1 - y) (Fig6)."""
+    2027-2050 floor area (x) and in total carbon per m2 (y) scales by (1 - x)(1 - y) (Fig5)."""
     p = carbon_parts(ctx, R)
     n = len(ctx['years'])
     idx = np.arange(n)

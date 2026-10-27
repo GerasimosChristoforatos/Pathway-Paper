@@ -71,7 +71,7 @@ FILES = [
      'under the household-size sensitivities (Stats NZ Low / High variant; 2018-2023 census pace)',
      'tools/sensitivity_tables.py'),
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
-     'AR and AtP (D42; the AR base-window rows in Fig8a)', 'tools/sensitivity_tables.py'),
+     'AR and AtP (D42; the AR base-window rows in Fig7a)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/replacement_variants.csv', 'The Reference, the Moderate / Ambitious Pathway and TL under Low / Reference '
      '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED9)',
      'tools/sensitivity_tables.py'),
@@ -179,7 +179,7 @@ FILES = [
      'binding years, built', 'pathways.py'),
     ('data/pathways/ordering_checks.json', 'Ordering Reference >= Moderate >= Ambitious >= TL per lever, typology and '
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
-    ('data/sensitivity/tornado.csv', 'Fig8a: the inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
+    ('data/sensitivity/tornado.csv', 'Fig7a: the inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
     ('data/pathways/waterfall_tl_from_reference.csv', 'MODEL v3.3.1 (Fig4d): sequential waterfall Reference -> TL1 ... '
      'TL9 (cumulative from the Reference, PAS 2080 order; = TL) by demand band', 'pathways.py'),

@@ -76,6 +76,13 @@ def pchip(x, y, breaks=()):
     return xf, yf
 
 
+def pipeline_breaks():
+    """The break between the observed pipeline years (consents already issued; baseline/overbuild_2026.json) and the
+    modelled years: annual projection lines are not interpolated across it."""
+    from figures import data as D
+    return [float(max(D.js('baseline/overbuild_2026.json')['pipeline_years']))]
+
+
 def pchip_band(x, lo, mid, hi, breaks=(), name='band'):
     """(xf, lo_f, hi_f, method): the band's lower and upper edges interpolated separately; on the fine grid
     lo <= mid <= hi is checked (mid interpolated the same way). If it fails anywhere the band falls back to linear
@@ -88,6 +95,37 @@ def pchip_band(x, lo, mid, hi, breaks=(), name='band'):
         return xf, lof, hif, 'pchip'
     print(f'pchip_band: {name}: lower <= central <= upper fails on the fine grid; linear interpolation used')
     return xf, np.interp(xf, x, lo), np.interp(xf, x, hi), 'linear'
+
+
+# ---------------------------------------------------------------------------
+# MODEL v4.3.0: tick labels of horizontal bars (shared by every bar / tornado figure)
+# ---------------------------------------------------------------------------
+def two_lines(text):
+    """A label split at the space nearest its middle (one line if it has no space or is already split)."""
+    if '\n' in text:
+        return text
+    sp = [i for i, ch in enumerate(text) if ch == ' ']
+    if not sp:
+        return text
+    i = min(sp, key=lambda k: abs(k - len(text) / 2))
+    return text[:i] + '\n' + text[i + 1:]
+
+
+def centre_ticklabels(fig, ax):
+    """y tick labels centred (every line) on one vertical axis at the centre of the widest label, keeping the
+    existing gap between the widest label and the axis: ha = 'center' and the tick pad raised by half the widest
+    label's width (points). Call after the labels and fonts are final and before the layout is fixed."""
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    labels = [t for t in ax.get_yticklabels() if t.get_text()]
+    if not labels:
+        return
+    w = max(t.get_window_extent(r).width for t in labels) * 72.0 / fig.dpi
+    pad = ax.yaxis.get_major_ticks()[0].get_pad()
+    ax.tick_params(axis='y', pad=pad + w / 2)
+    for t in ax.get_yticklabels():
+        t.set_horizontalalignment('center')
+        t.set_multialignment('center')
 
 
 # ---------------------------------------------------------------------------
@@ -385,3 +423,73 @@ def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History
     if anchor in s.index:
         ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=3, label=f'{anchor} census')
     ax.ticklabel_format(axis='y', style='plain', useOffset=False)
+
+
+# ---------------------------------------------------------------------------
+# MODEL v4.3.0: paired tornado grouped by category (ED4, ED5; the Fig7a colour rule)
+# ---------------------------------------------------------------------------
+TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = S.LEVER['L8'], S.PATHWAY['pathway'], S.MUTED   # as Fig7a
+NO_EFFECT_RTOL = 1e-4             # |change| below 0.01% of the central value: marked 'no effect'
+
+
+def tornado_rows(groups, rows, central):
+    """Display order: groups in the given order, rows sorted by their span within a group (largest first).
+    rows: [dict(id, group, low=None, high=None, single=None, ticks={})]. Returns [(kind, item)] top to bottom,
+    kind 'header' (item = group name) or 'row'."""
+    out = []
+    span = lambda r: max(abs(v - central) for v in (r.get('low'), r.get('high'), r.get('single')) if v is not None)
+    for g in groups:
+        rs = sorted([r for r in rows if r['group'] == g], key=span, reverse=True)
+        if rs:
+            out.append(('header', g))
+            out += [('row', r) for r in rs]
+    return out
+
+
+def tornado(ax, order, central, label, height=0.62, header_fs=None, headers=True):
+    """Draw a paired tornado on ax from tornado_rows() output: one row per input, its low end (blue) and high end
+    (orange) on the same row, a single alternative case grey, intermediate cases as ticks with their name; a row
+    whose every case is within NO_EFFECT_RTOL of the central value is marked 'no effect'; bold group headers with a
+    separator line above each group. y tick labels: label(row id). Returns the row y positions."""
+    n = len(order)
+    ys, labels = [], []
+    for k, (kind, item) in enumerate(order):
+        y = n - 1 - k
+        if kind == 'header':
+            if headers:                               # a panel sharing the rows of another shows none
+                ax.text(0.005, y, item, transform=ax.get_yaxis_transform(), ha='left', va='center', zorder=6,
+                        fontsize=header_fs or S.FONT_SMALL, fontweight='bold', color=S.INK,
+                        bbox=dict(facecolor='white', edgecolor='none', pad=0.6))
+            if k:
+                ax.axhline(y + 0.5, color=S.MUTED, lw=S.LW_THIN * 0.7)
+            continue
+        r = item
+        vals = [v for v in (r.get('low'), r.get('high'), r.get('single')) if v is not None]
+        if all(abs(v - central) <= NO_EFFECT_RTOL * abs(central) for v in vals):
+            ax.text(central, y, '  no effect', ha='left', va='center', fontsize=S.FONT_MIN, color=S.MUTED,
+                    style='italic')
+        else:
+            if r.get('single') is not None:
+                ax.barh(y, r['single'] - central, left=central, height=height, **S.fill(TORNADO_SINGLE))
+            for key, col in (('low', TORNADO_LOW), ('high', TORNADO_HIGH)):
+                if r.get(key) is not None:
+                    ax.barh(y, r[key] - central, left=central, height=height, **S.fill(col))
+            for name, v in r.get('ticks', {}).items():
+                ax.plot([v, v], [y - height / 2, y + height / 2], color=S.INK, lw=S.LW_THIN)
+                ax.text(v, y + height / 2 + 0.02, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
+        ys.append(y)
+        labels.append(label(r['id']))
+    ax.axvline(central, color=S.INK, lw=S.LW_THIN)
+    ax.set_yticks(ys)
+    ax.set_yticklabels(labels)
+    ax.set_ylim(-0.7, n - 0.3)
+    ax.grid(axis='y', visible=False)
+    return ys
+
+
+def tornado_legend(single=True):
+    """The Fig7a legend handles: input at its low end, at its high end, single alternative case."""
+    h = [Patch(label='Input at low end', **S.fill(TORNADO_LOW)), Patch(label='Input at high end', **S.fill(TORNADO_HIGH))]
+    if single:
+        h.append(Patch(label='Single alternative case', **S.fill(TORNADO_SINGLE)))
+    return h

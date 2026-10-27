@@ -52,7 +52,7 @@ FROZEN = 'Frozen technology (2025 carbon factors held; check run)'
 # follows the decision sequence (system before asset; site before materials). Ambition levels follow the 2050
 # Pathways Calculator (DECC 2010; DESNZ 2023) and EUCalc (D2.5, 2020): Reference = Level 1, Moderate = Level 2,
 # Ambitious = Level 3, theoretical limit = Level 4. Every lever at a setting = the Moderate / Ambitious Pathway.
-STRATEGIES = {'S1': 'Avoid Strategies', 'S2': 'Switch Strategies', 'S3': 'Improve Strategies'}   # MODEL v4.2.2 names
+STRATEGIES = {'S1': 'Avoid Strategies', 'S2': 'Switch Strategies', 'S3': 'Improve Strategy'}   # MODEL v4.3.0: S3 has one lever
 STRATEGY_LEVERS = {'S1': ('L1', 'L2', 'L3', 'L4', 'L5'), 'S2': ('L6', 'L7', 'L8'), 'S3': ('L9',)}
 LEVER_STRATEGY = {L: S for S, ls in STRATEGY_LEVERS.items() for L in ls}
 PATHWAY = 'pathway'                                   # run id prefix of the Moderate / Ambitious Pathway (every lever)
@@ -229,6 +229,54 @@ def vacancy_wording(v0, vmax, vmin, ymin, v2050):
 # (only the setting names "-central" / "central/stretch" are matched), "the recent redevelopment
 # wave" and "vacancy allowance" of the release band definitions, and the typology words, which stay
 # in the descriptions of model inputs (case studies, consents; by-typology results are removed).
+# MODEL v4.3.0: display names of the sensitivity inputs, one source for the Fig7a tornado, ED4 (one at a time, carbon),
+# ED5 (boundary definitions, LoE), ED6 (Monte Carlo inputs) and ED7 (Sobol). Two lines where long (centred on one
+# axis by figures.draw.centre_ticklabels). The same input carries the same label everywhere.
+INPUT_LABEL = {
+    'population': 'Population\n(5th–95th pct.)',
+    'hh_variant': 'Household size\n(low–high variant)',
+    'hh_pace': 'Household size\n(2018–23 pace)',
+    'hh_after2043_flat': 'Household size after\n2043: held flat',
+    'hh_after2043_secant': 'Household size after\n2043: secant-slope taper',
+    'hh_after2043_endslope': 'Household size after\n2043: end-slope taper',
+    'completion_rate': 'Completion rate\n(0.93–0.96)',
+    'uc_correction': 'Census under-construction\ncorrection removed',
+    'size_window': 'Dwelling-size reference\nwindow 2016–2025',
+    'overbuild_timing': 'Overbuild absorbed\n(by 2030–by 2045)',
+    'vacancy_mean': 'Vacancy rate: 1986–2023\ncensus mean',
+    'overbuild_redev': '2026 overbuild booked as\nstock-neutral redevelopment',
+    'overbuild_gap': '2026 overbuild measured\nagainst the 2026 need',
+    'completion_lag': 'Completion lag\n(15–19 months)',
+    'no_2026': 'No 2026 data\n(consents to Dec 2025)',
+    'replacement': 'Replacement\n(Low–Very High)',
+    'half_life': 'Replacement half-life\n(5–15 yr)',
+    'single_case': 'Single case study\n(lowest–highest)',
+    'jackknife': 'Carbon factors\n(jackknife)',
+    'frozen': 'Frozen technology\n(2025 factors held)',
+    'proxy_held': 'Proxy-mapped items\nheld at 2025 factors',
+    'nz_made_held': 'NZ-made electricity-intensive\nitems held at 2025 factors',
+    'soil_order': 'Soil order\n(Raw–Organic)',
+    'a4a5': 'A4–A5 decarbonisation\n(own path–held at 2025)',
+    'soil_all': 'Soil carbon loss on all\nfloor area, incl. replacement',
+    'event_timing': 'B2/B4 event spacing\n(L/n, not L/(n+1))',
+    'carrying_capacity': 'Carrying capacity:\n1 W/m² boundary (not 2 °C)',
+    'gdp_current': 'Economic allocation measure:\nGDP per capita, current US$',
+    'alpha_1': 'Allocation exponent\nα = 1',
+    'sector_share': 'Sector share: ratio of sums\n(not mean of ratios)',
+    'pop_source_raw': 'Population source: Stats NZ\n2024-base median, unadjusted',
+    'pop_source_wpp': 'Population source:\nUN WPP 2024 median',
+}
+AR_WINDOW_LABEL = 'AR base window\n({short}–{long} yr)'
+# ED4 / ED5 group headers (in this order)
+SENSITIVITY_GROUPS = ('Demographics', 'Housing stock & calibration', 'Completion lag', 'Replacement',
+                      'Carbon factors & technology', 'Accounting')
+BOUNDARY_SENSITIVITY_GROUPS = ('Carrying capacity', 'AR base window', 'Economic allocation', 'Population', 'Replacement')
+# Monte Carlo inputs (ED6 panel titles, ED7 rows): the same input names as the tornado rows, without their ranges
+MC_INPUT = {'z_pop': 'Population', 'size': 'Dwelling size', 'complete': 'Completion rate', 'carbon': 'Carbon factors',
+            'half_life': 'Replacement half-life'}
+LOE_AR = 'Cumulative LoE of AR'
+LOE_ATP = 'Cumulative LoE of AtP'
+
 OLD_TERMS = [
     (r'\bS3(?:-(?:10|5|15))?(?:-noUC)?\b', 'Reference (REF, REF_HL5, REF_HL15)'),
     (r'(?<!Eq\. )(?<!Table )(?<!SI )(?<!Fig\. )\bS[12](?:-noUC)?\b', 'Low / High replacement (LOW, HIGH)'),

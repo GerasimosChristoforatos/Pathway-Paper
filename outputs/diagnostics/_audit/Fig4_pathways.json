@@ -1,6 +1,6 @@
 {
  "figure": "Fig4_pathways",
- "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Moderate Pathway",
@@ -95,7 +95,7 @@
   "\u221296",
   "\u2212981"
  ],
- "note": "Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00. (a-c) Reference 19,761 kt -> Moderate Pathway 14,302 kt, Ambitious Pathway 10,267 kt, Theoretical Limit 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.",
+ "note": "Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00. (a-c) Reference 19,761 kt -> Moderate Pathway 14,302 kt, Ambitious Pathway 10,267 kt, Theoretical Limit 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig6. Net-positive steps: none.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,

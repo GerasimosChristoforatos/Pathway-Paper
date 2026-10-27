@@ -127,6 +127,45 @@ def d31():
     S.save_figure(fig, 'D31_lever_annual', source=['pathways/lever_annual.csv'])
 
 
+ED9_RUNS = (('reference', N.SCENARIOS['REF'], dict(color=S.REFERENCE, lw=S.LW_BOLD)),
+            ('moderate', 'Moderate', dict(color=S.PATHWAY_SETTING['moderate'], lw=S.LW)),
+            ('ambitious', 'Ambitious', dict(color=S.PATHWAY_SETTING['ambitious'], lw=S.LW)),
+            ('tl', N.TL['TL'], dict(color=S.TL, lw=S.LW)))
+
+
+def ed9_lever_annual():
+    """MODEL v4.3.0 (ED9, from D31): annual embodied carbon of each lever alone (3 x 3, shared y), the Reference and
+    the lever at Moderate, at Ambitious and at its Theoretical Limit, in the run colours of Fig3 / Fig4; panel titles
+    the lever names with a marker in the strategy colour; PCHIP display interpolation through every annual value, not
+    across the observed pipeline years -> modelled join (pathways/lever_annual.csv)."""
+    from matplotlib.patches import Rectangle
+    la = D.csv('pathways/lever_annual.csv')
+    brk = P.pipeline_breaks()
+    fig, ax = plt.subplots(3, 3, figsize=S.figsize('double', 130), sharex=True, sharey=True)
+    for k, L in enumerate(LV.LEVERS):
+        b = ax.ravel()[k]
+        for lev, lab, st in ED9_RUNS:
+            r = la[(la['lever'] == L) & (la['level'] == lev)].sort_values('year')
+            b.plot(*P.pchip(r['year'].to_numpy(float), r['carbon_kt'].to_numpy(float), brk),
+                   label=lab, zorder=3 if lev != 'reference' else 2, **st)
+        b.add_patch(Rectangle((0.0, 1.035), 0.035, 0.07, transform=b.transAxes, clip_on=False,
+                              color=S.STRATEGY[N.LEVER_STRATEGY[L]]))
+        b.text(0.05, 1.07, f'{L} {N.LEVERS[L]}', transform=b.transAxes, ha='left', va='center',
+               fontsize=S.FONT_SIZE, color=S.INK)
+        b.set_xlim(2026, 2050)
+        b.set_ylim(0, None)
+        P.thousands(b.yaxis)
+    for b in ax[:, 0]:
+        b.set_ylabel('kt CO₂e per year')
+    h, l_ = ax[0, 0].get_legend_handles_labels()
+    fig.legend(h, l_, loc='lower center', ncol=4, frameon=False, fontsize=S.FONT_SMALL, bbox_to_anchor=(0.5, 0.0),
+               title='Embodied carbon per year: the Reference and each lever alone at', title_fontsize=S.FONT_SMALL)
+    fig.tight_layout(rect=(0, 0.08, 1, 1), h_pad=1.6)
+    S.save_figure(fig, 'ED9_lever_annual', note='Each panel: one lever alone; the other levers at the Reference. '
+                                                'Lines: PCHIP display interpolation through the annual values.',
+                  source=['pathways/lever_annual.csv', 'baseline/overbuild_2026.json'])
+
+
 def d32():
     r = D.csv('pathways/runs.csv')
     r = r[r['scenario'] == 'REF'].set_index('run')
@@ -234,5 +273,5 @@ def d36():
     S.save_figure(fig, 'D36_pathway_bands', source=['pathways/bands.csv', 'pathways/runs.csv'])
 
 
-FIGURES = {'D28_pathways_annual': d28, 'D29_ramps': d29, 'D31_lever_annual': d31, 'D32_tl_staircase': d32,
+FIGURES = {'ED9_lever_annual': ed9_lever_annual, 'D28_pathways_annual': d28, 'D29_ramps': d29, 'D31_lever_annual': d31, 'D32_tl_staircase': d32,
            'D33_ordering_checks': d33, 'D34_tl_dwellings': d34, 'D36_pathway_bands': d36}

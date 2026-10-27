@@ -33,12 +33,12 @@
       "first_outside": null
     },
     "S": {
-      "hist_min": 2.6571388012813415,
+      "hist_min": 2.662418571666122,
       "hist_max": 2.7904761904761903,
-      "years_outside": 18,
+      "years_outside": 20,
       "max_above_pct": 0.0,
-      "max_below_pct": 0.3470954166008178,
-      "first_outside": 2033
+      "max_below_pct": 0.5447144010746086,
+      "first_outside": 2031
     },
     "size": {
       "hist_min": 135.61293022282666,
@@ -91,12 +91,12 @@
       "first_outside": null
     },
     "S": {
-      "hist_min": 2.6571388012813415,
+      "hist_min": 2.662418571666122,
       "hist_max": 2.7904761904761903,
-      "years_outside": 18,
+      "years_outside": 20,
       "max_above_pct": 0.0,
-      "max_below_pct": 0.3470954166008178,
-      "first_outside": 2033
+      "max_below_pct": 0.5447144010746086,
+      "first_outside": 2031
     },
     "size": {
       "hist_min": 135.61293022282666,
@@ -149,12 +149,12 @@
       "first_outside": null
     },
     "S": {
-      "hist_min": 2.6571388012813415,
+      "hist_min": 2.662418571666122,
       "hist_max": 2.7904761904761903,
-      "years_outside": 18,
+      "years_outside": 20,
       "max_above_pct": 0.0,
-      "max_below_pct": 0.3470954166008178,
-      "first_outside": 2033
+      "max_below_pct": 0.5447144010746086,
+      "first_outside": 2031
     },
     "size": {
       "hist_min": 135.61293022282666,
@@ -207,12 +207,12 @@
       "first_outside": null
     },
     "S": {
-      "hist_min": 2.6571388012813415,
+      "hist_min": 2.662418571666122,
       "hist_max": 2.7904761904761903,
-      "years_outside": 18,
+      "years_outside": 20,
       "max_above_pct": 0.0,
-      "max_below_pct": 0.3470954166008178,
-      "first_outside": 2033
+      "max_below_pct": 0.5447144010746086,
+      "first_outside": 2031
     },
     "size": {
       "hist_min": 135.61293022282666,

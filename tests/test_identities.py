@@ -56,12 +56,14 @@ def test_historical_stock_identity(B):
 
 def test_history_reconstructed_by_demand_bands(B):
     """Sum of the historical demand bands == dwellings built x realised dwelling size, 1992-2025
-    (== built floor area exactly when there is no completion lag)."""
+    (== built floor area exactly when there is no completion lag). MODEL v4.3.0: the household-size band is the one the
+    model draws, hist_hs_pos (signed since MODEL v4.2.1, with hist_avoided = 0; before, clipped at 0 with the
+    consolidation credited in hist_avoided), so the identity holds under either definition."""
     YH = np.arange(1992, 2026)
     D = B['blended_dwelling_size'].loc[YH]
     sc = B['stock_cal']
     parts = [B['hist_growth'].loc[YH] - B['hist_avoided'].loc[YH],
-             B['hist_hs_raw'].loc[YH].clip(lower=0),
+             B['hist_hs_pos'].loc[YH],
              B['d_hh'].loc[YH] * (D - B['occupied_area_per_dwelling'].loc[YH])]
     parts += [sc[k].loc[YH] * D for k in ('allow', 'change', 'demol', 'uncons', 'rv')]
     assert close(sum(parts), B['hist_built_units'].loc[YH] * D, rel=1e-12)
@@ -155,13 +157,15 @@ def test_boss_is_deterministic_and_leaks_no_state(B):
 def test_figure_bands_in_scope_sum_to_total(B):
     """The in-scope demand bands (each scaled by 1 - RV share) add up exactly to the typology total, every year
     2026-2050, for floor area and carbon; MODEL v3.0.0: only the bands negative by construction
-    (naming.NEGATIVE_BANDS) are negative."""
+    (naming.NEGATIVE_BANDS) are negative; MODEL v4.3.0: the signed bands (naming.SIGNED_BANDS, MODEL v4.2.1) may take
+    either sign."""
     import naming as N
     for key, ref in (('gfa', B['evol_typ_total'].sum(axis=1).values[1:] / 1e6),
                      ('carbon', B['carbon_total_typ'].sum(axis=1).values[1:] / 1e6)):
         bands, total = B['fig_bands'][key]
         assert close(total, ref, rel=1e-12)
-        assert all(np.all(np.asarray(v) >= 0) for _, v, b in bands if b not in N.NEGATIVE_BANDS)
+        assert all(np.all(np.asarray(v) >= 0) for _, v, b in bands
+                   if b not in N.NEGATIVE_BANDS + N.SIGNED_BANDS)
         assert all(np.all(np.asarray(v) <= 0) for _, v, b in bands if b in N.NEGATIVE_BANDS)
         assert close(sum(v for _, v, _ in bands), ref, rel=1e-12)
 

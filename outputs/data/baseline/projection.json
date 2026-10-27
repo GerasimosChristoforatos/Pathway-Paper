@@ -26,13 +26,13 @@
   "demand_bands": [
     {
       "band": "Population growth",
-      "floor_area_Mm2": 42.87579284249482,
-      "carbon_kt": 10329.531591233646
+      "floor_area_Mm2": 43.17717172993054,
+      "carbon_kt": 10399.666136185147
     },
     {
       "band": "Smaller households",
-      "floor_area_Mm2": 2.3071143783151515,
-      "carbon_kt": 588.3610540484757
+      "floor_area_Mm2": 2.0057354908794234,
+      "carbon_kt": 518.2265090969746
     },
     {
       "band": "Extra space",
@@ -123,13 +123,13 @@
   "bands_in_scope": [
     {
       "band": "Population growth",
-      "floor_area_Mm2": 40.30506964855361,
-      "carbon_kt": 9710.19922012903
+      "floor_area_Mm2": 40.58837862649656,
+      "carbon_kt": 9776.12867662734
     },
     {
       "band": "Smaller households",
-      "floor_area_Mm2": 2.168785683958467,
-      "carbon_kt": 553.0844257279136
+      "floor_area_Mm2": 1.8854767060155224,
+      "carbon_kt": 487.1549692296024
     },
     {
       "band": "Extra space",

@@ -59,8 +59,14 @@ def run(**settings):
 
 
 def requirement_2026(B):
-    E = B['engine_out']['50th']
-    return float(E['dwell_in_scope'][1] + E['rv_units'][1])
+    """Return the exact 2026 dwelling requirement before the observed pipeline.
+
+    market_excess records R26 from the first, unjoined forward pass. The final
+    engine output includes the pipeline join and has its floor area fixed to
+    observed consented GFA, so it must not be used to recover the underlying
+    requirement via floor area / dwelling size.
+    """
+    return float(B['join_info']['50th']['R26'])
 
 
 def projected_growth_ye_june_2026():
@@ -139,7 +145,12 @@ def main():
                              residual_vacancy_pp=100 * resid / stock25,
                              residual_S_fall=S26 - S26 * float(E['hh'][1]) / (float(E['hh'][1]) + resid * (1 - v26))))
     boom = boom_2018_2023(B)
-    res = dict(completion_rate=c, lag_w=W, completion_lag_months=lag, consents_2025=C25, model_requirement_2026=M,
+    res = dict(completion_rate=c, lag_w=W, completion_lag_months=lag,
+               completion_period_2026=('Jan-Dec 2026; consents Aug 2024-Jul 2025 shifted 17 months' if lag > 0
+                                       else 'calendar 2026 consent estimate with lag W'),
+               population_period_2026='year ended June 2026 (June-quarter mean ERP, 12 months)',
+               model_requirement_2026_basis='unjoined engine.market_excess R26, before observed pipeline',
+               consents_2025=C25, model_requirement_2026=M,
                carried_2025_deviation_in_2026=dev_in_M, HIGH_rate_effect=s2_rate, HIGH_deviation_effect=s2_dev,
                model_requirement_2026_HIGH=M_S2, model_requirement_2026_REF=M_S3, S_2026=S26, v_2026=v26,
                stock_2025=stock25,
@@ -152,15 +163,16 @@ def main():
          f"Dwellings completed in 2026, all categories. Completion rate {c:.3f}, "
          + (f"completion lag {lag} months (2026 completions = consents lagged {lag} months, all observed; "
             f"(i) is O - M' and (iv) is zero); " if lag > 0 else f"lag W = {W:.3f} yr; ") +
-         f"2025 consents {C25:,.0f}; model 2026 requirement {M:,.0f} (High replacement: {M_S2:,.0f}). The requirement "
+         f"2025 consents {C25:,.0f}; model 2026 requirement {M:,.0f} (pre-pipeline; High replacement: {M_S2:,.0f}). The requirement "
          f"already includes {dev_in_M:+,.0f} of the carried 2025 deviation (other_dev_2025 x rho). "
          f"High replacement adds {d_S2:+,.0f}: {s2_rate:+,.0f} from the higher replacement rate and {s2_dev:+,.0f} because "
          f"a higher rate leaves less of 2025's building to be carried as a deviation.", '',
-         f"Population, year ended June 2026: actual {g_act:,.0f} (Stats NZ: "
+         f"Population, year ended June 2026 (a 12-month June-to-June measure, not six months): actual {g_act:,.0f} (Stats NZ: "
          f"\"{g_text}\") vs 2024-base projection median {g_proj['50th']:,.0f} "
          f"(5th {g_proj['5th']:,.0f}, 95th {g_proj['95th']:,.0f}) -> {d_pop_persons:+,.0f} persons = "
          f"{d_pop:+,.0f} dwellings at S = {S26:.3f}, v = {100 * v26:.2f}%.", '',
-         '| 2026 consents estimate | variant | observed-implied completions | model | gap | (ii) variant adds (vs Low) | '
+         'Population growth is a June-to-June 12-month observation used as a proxy for the calendar-2026 change; it is not an observed Dec-to-Dec figure. ',
+         '| 2026 consents estimate | variant | observed-implied completions | model (pre-pipeline) | gap | (ii) variant adds (vs Low) | '
          '(iii) population | (i) pipeline from 2025 | (iv) residual | residual as vacancy rise | '
          'or as fall in household size |', '|---|---|---|---|---|---|---|---|---|---|---|']
     for r in rows:

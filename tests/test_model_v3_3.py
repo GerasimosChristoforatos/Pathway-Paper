@@ -193,7 +193,7 @@ def test_fig6_markers_on_the_analytic_plane(runs):
     want = [f'{st}-{s}' for st in N.STRATEGIES for s in SETTINGS] + ['pathway-moderate', 'pathway-ambitious', 'TL']
     assert sorted(m['run'] for m in bc['solution_space_markers']) == sorted(want)
     for m in bc['solution_space_markers']:
-        z = PM.fig6_loe(bc, m['demand_reduction'], m['intensity_reduction'])
+        z = PM.fig5_loe(bc, m['demand_reduction'], m['intensity_reduction'])
         assert np.isclose(z, ref.loc[m['run'], 'LoE_AR'], rtol=RTOL, atol=0), m['run']
 
 
@@ -203,12 +203,12 @@ def test_fig6_exact_budget_curves():
     x = np.linspace(0.0, 0.95, 96)
     atp = bc['B_AtP_kt'] / bc['B_AR_kt']
     for level in (1.0, atp):
-        y = PM.fig6_curve(bc, x, level)
-        assert np.allclose(PM.fig6_loe(bc, x, y), level, rtol=RTOL, atol=0)
-    y0 = float(PM.fig6_curve(bc, 0.0, atp))
+        y = PM.fig5_curve(bc, x, level)
+        assert np.allclose(PM.fig5_loe(bc, x, y), level, rtol=RTOL, atol=0)
+    y0 = float(PM.fig5_curve(bc, 0.0, atp))
     r = bc['REF']
     assert (y0 > 1.0) == (r['carbon_fixed_2026_cohort_kt'] > bc['B_AtP_kt'])
-    assert y0 > PM.FIG6_LIM[1]                   # MODEL v3.3.2: the AtP contour lies above the plotted square
+    assert y0 > PM.FIG5_LIM[1]                   # MODEL v3.3.2: the AtP contour lies above the plotted square
 
 
 # ------------------------------------------------------------------ replacement ----

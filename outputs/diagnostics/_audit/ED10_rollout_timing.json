@@ -1,6 +1,6 @@
 {
  "figure": "ED10_rollout_timing",
- "producer": "figures/__main__.py",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "Moderate Pathway",
@@ -13,6 +13,13 @@
    "title": "Ambitious Pathway",
    "xlabel": "",
    "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Cumulative",
+   "xlabel": "",
+   "ylabel": "Cumulative carbon 2026-2050 (kt CO\u2082e)",
    "year_min": 2026.0,
    "year_max": 2050.0
   }
@@ -33,19 +40,34 @@
   "$\\mathdefault{400}$",
   "$\\mathdefault{600}$",
   "$\\mathdefault{800}$",
+  "0",
+  "10,000",
+  "12,500",
+  "15,000",
+  "17,500",
+  "2,500",
+  "20,000",
+  "22,500",
+  "5,000",
+  "7,500",
   "Ability to pay (AtP)",
   "Acquired rights (AR)",
+  "Ambitious\nPathway",
   "Ambitious Pathway",
+  "Cumulative",
+  "Cumulative carbon 2026-2050 (kt CO\u2082e)",
   "Embodied carbon (kt CO\u2082e per year)",
+  "Moderate\nPathway",
   "Moderate Pathway",
   "Pathway, full roll-out by 2030",
   "Pathway, full roll-out by 2035 (adopted)",
   "Pathway, full roll-out by 2045",
   "Reference",
   "a",
-  "b"
+  "b",
+  "c"
  ],
- "note": null,
+ "note": "(c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 13,737, Moderate Pathway 14,302, Moderate Pathway, full roll-out by 2045 (sensitivity) 15,395, Ambitious Pathway, full roll-out by 2030 (sensitivity) 9,350, Ambitious Pathway 10,267, Ambitious Pathway, full roll-out by 2045 (sensitivity) 12,091; Reference 19,761.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,

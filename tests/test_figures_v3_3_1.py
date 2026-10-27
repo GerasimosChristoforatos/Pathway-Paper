@@ -93,22 +93,22 @@ def test_fig6_markers_and_both_atp_branches():
     bc = _js('pathways/backcast.json')
     r = pd.read_csv(_data('pathways/runs.csv')).query("scenario == 'REF'").set_index('run')
     for m in bc['solution_space_markers']:
-        z = PM.fig6_loe(bc, m['demand_reduction'], m['intensity_reduction'])
+        z = PM.fig5_loe(bc, m['demand_reduction'], m['intensity_reduction'])
         assert np.isclose(z, r.loc[m['run'], 'LoE_AR'], rtol=RTOL, atol=0), m['run']
     atp = bc['B_AtP_kt'] / bc['B_AR_kt']
     k = (bc['B_AtP_kt'] - bc['REF']['carbon_fixed_2026_cohort_kt']) / bc['REF']['carbon_2027_2050_cohorts_kt']
     ext = (-0.05, 1.10)                         # the v3.3.1 square; MODEL v3.3.2 plots -5% to 100% (no AtP branch)
-    br = PM.fig6_branches(bc, atp, lim=ext)
-    assert k < 0 and len(br) == 2 and not PM.fig6_branches(bc, atp)
+    br = PM.fig5_branches(bc, atp, lim=ext)
+    assert k < 0 and len(br) == 2 and not PM.fig5_branches(bc, atp)
     (x1, y1), (x2, y2) = br
     assert (x1 < 1).all() and (y1 > 1).all() and (x2 > 1).all() and (y2 < 1).all()
     lo, hi = ext
     for x, y in br:
         assert np.allclose((1 - x) * (1 - y), k, rtol=RTOL, atol=0)
-        assert np.allclose(PM.fig6_loe(bc, x, y), atp, rtol=RTOL, atol=0)
+        assert np.allclose(PM.fig5_loe(bc, x, y), atp, rtol=RTOL, atol=0)
         assert x.min() >= lo and x.max() <= hi and y.min() >= lo and y.max() <= hi
-    for x, y in PM.fig6_branches(bc, 1.0):                                    # the AR line, exact
-        assert np.allclose(PM.fig6_loe(bc, x, y), 1.0, rtol=RTOL, atol=0)
+    for x, y in PM.fig5_branches(bc, 1.0):                                    # the AR line, exact
+        assert np.allclose(PM.fig5_loe(bc, x, y), 1.0, rtol=RTOL, atol=0)
 
 
 def test_no_pdf_written_png_only():
@@ -121,5 +121,5 @@ def test_no_pdf_written_png_only():
 
 def test_display_item_limits():
     assert len(FP.PAPER_MAIN) <= 8 and len(FP.PAPER_EXTENDED) <= 10
-    assert [h['id'] for h in FP.PAPER_MAIN] == [f'Fig{i}' for i in range(1, 9)]
+    assert [h['id'] for h in FP.PAPER_MAIN] == [f'Fig{i}' for i in range(1, 8)]   # MODEL v4.3.0: Fig1-Fig7
     assert [h['id'] for h in FP.PAPER_EXTENDED] == [f'ED{i}' for i in range(1, len(FP.PAPER_EXTENDED) + 1)]

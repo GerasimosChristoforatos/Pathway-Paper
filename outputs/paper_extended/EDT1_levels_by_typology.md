@@ -1,4 +1,4 @@
-# EDT1 Lever levels by typology: Moderate (Level 2), Ambitious (Level 3), TL (Level 4)
+# EDT1 Lever levels by typology: Moderate, Ambitious and Theoretical Limit
 
 | Lever | Sub-rule | Typology | Parameter | Moderate | Ambitious | TL |
 |---|---|---|---|---|---|---|

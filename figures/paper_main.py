@@ -78,7 +78,7 @@ def _stack_bar(ax, a, b, parts, net, styles=None):
     x = np.array([a, b], float)
     up = dn = 0.0
     for bid, v in parts:
-        st = (styles or {}).get(bid, P.band_style(bid))
+        st = styles[bid] if styles and bid in styles else P.band_style(bid)
         if v > 0:
             ax.fill_between(x, up, up + v, gid='band_area', **st)
             up += v
@@ -136,7 +136,7 @@ def _fig1_draw(ax, six=True):
                         **S.fill(OBSERVED_FILL))
         ax.plot([y - 0.5 + g, y + 0.5 - g], [hist_tot.loc[y]] * 2, color=S.INK, lw=S.LW, gid=P.NET_GID)
     hb_id = 'market_balance' if six else 'overbuild_2026'
-    hatched = dict(S.fill(S.BAND['overbuild_2026'][0], hatch=PIPELINE_HATCH, hatchcolor=S.HATCH_LIGHT))
+    hatched = dict(S.fill(S.band_colour(hb_id), hatch=PIPELINE_HATCH, hatchcolor=S.HATCH_LIGHT))  # MODEL v4.3.1
     cols = [b for b in proj.columns if b != 'maintenance']
     for y in pipe:                                                # pipeline years: need bands + building above need
         _stack_bar(ax, y - 0.5 + g, y + 0.5 - g, [(bid, float(proj.loc[y, bid])) for bid in cols],

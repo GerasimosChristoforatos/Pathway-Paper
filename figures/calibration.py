@@ -49,8 +49,8 @@ COMP = {'new_households': ('New households', '#B0B0B0', None),
         'overbuild_2026': (N.BANDS['overbuild_2026'],) + S.BAND['overbuild_2026'],
         'overbuild_absorbed': (N.BANDS['overbuild_absorbed'],) + S.BAND['overbuild_absorbed'],
         # history only (D05c): census-measured net replacement, and what the components leave unexplained
-        'net_replacement_census': ('Net replacement, history (census dwelling counts; parts not separable)',)
-        + S.BAND['replacement'],
+        'net_replacement_census': ('Net replacement, history (census dwelling counts; parts not separable)',
+                                   S.DISPLAY_BAND['net_replacement'], None),      # MODEL v4.3.1: palette key
         'unexplained_building': ('Unexplained building', UNEXPLAINED[0], UNEXPLAINED[1]),
         'growth': ('From population growth',) + S.BAND['growth'],
         'smaller_households': ('From household-size change',) + S.BAND['smaller_households']}

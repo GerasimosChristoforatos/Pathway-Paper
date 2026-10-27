@@ -38,10 +38,13 @@ DATA = os.path.join(OUT, 'data')
 REPORTS = os.path.join(OUT, 'reports')
 # MODEL v3.0.0 output architecture: paper_main/ (Fig1-Fig8), paper_extended/ (the Extended Data), diagnostics/
 # by group (calibration, validation, boundaries, pathways, montecarlo, sensitivity), FIGURES.md
-PAPER_MAIN = os.path.join(OUT, 'paper_main')
-PAPER_EXTENDED = os.path.join(OUT, 'paper_extended')
-SUPPLEMENTARY = os.path.join(OUT, 'supplementary')   # MODEL v3.3.1: beyond the ten Extended Data items
-DIAGNOSTICS = os.path.join(OUT, 'diagnostics')
+# MODEL v4.3.1: PATHWAY_FIG_OUT (set by redraw.py for palette previews) moves the figure folders and the figure audit
+# elsewhere; the data are still read from DATA. Unset (the pipeline), the figures go to OUT as before.
+FIG_OUT = os.environ.get('PATHWAY_FIG_OUT') or OUT
+PAPER_MAIN = os.path.join(FIG_OUT, 'paper_main')
+PAPER_EXTENDED = os.path.join(FIG_OUT, 'paper_extended')
+SUPPLEMENTARY = os.path.join(FIG_OUT, 'supplementary')   # MODEL v3.3.1: beyond the ten Extended Data items
+DIAGNOSTICS = os.path.join(FIG_OUT, 'diagnostics')
 DIAGNOSTIC_GROUPS = ('calibration', 'validation', 'boundaries', 'pathways', 'montecarlo', 'sensitivity')
 FIGURES_INDEX = os.path.join(OUT, 'FIGURES.md')
 RUN_META = os.path.join(OUT, 'run_meta.json')

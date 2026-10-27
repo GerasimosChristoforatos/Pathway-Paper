@@ -31,7 +31,7 @@ def ed2():
     fig, ax = plt.subplots(figsize=S.figsize('double', 70))
     for _, r in c.iterrows():
         ax.bar((r['y0'] + r['y1']) / 2, 100 * r['rate'], width=r['y1'] - r['y0'] - 0.3,
-               color=S.BAND['replacement'][0], edgecolor=S.BAND['replacement'][0], lw=S.LW_SEAM)
+               color=S.DISPLAY_BAND['net_replacement'], edgecolor=S.DISPLAY_BAND['net_replacement'], lw=S.LW_SEAM)
     for k, st in S.SCENARIO.items():
         st = dict(st)
         lab = st.pop('label')

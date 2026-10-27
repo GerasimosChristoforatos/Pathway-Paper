@@ -1,0 +1,81 @@
+{
+ "figure": "Fig5_solution_space",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "Sufficiency: Floor area reduction (%)",
+   "ylabel": "Efficiency: Carbon reduction per m\u00b2 (%)",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "LoE AR",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{100}$",
+  "$\\mathdefault{10}$",
+  "$\\mathdefault{20}$",
+  "$\\mathdefault{30}$",
+  "$\\mathdefault{40}$",
+  "$\\mathdefault{50}$",
+  "$\\mathdefault{60}$",
+  "$\\mathdefault{70}$",
+  "$\\mathdefault{80}$",
+  "$\\mathdefault{90}$",
+  "$\\mathdefault{\u221210}$",
+  "$\\mathdefault{\u221220}$",
+  "AR",
+  "Ability to pay (AtP)",
+  "Acquired rights (AR)",
+  "Ambitious",
+  "Ambitious\nPathway",
+  "AtP",
+  "Avoid Strategies",
+  "Efficiency: Carbon reduction per m\u00b2 (%)",
+  "Improve Strategy",
+  "LoE AR",
+  "LoE AR 1.25",
+  "LoE AR 1.5",
+  "LoE AR 2",
+  "LoE AR 2.5",
+  "LoE AR 3",
+  "LoE AR 4",
+  "Moderate",
+  "Moderate\nPathway",
+  "Pathways",
+  "Reference",
+  "Sufficiency: Floor area reduction (%)",
+  "Switch Strategies",
+  "Theoretical\nLimit",
+  "Theoretical Limit"
+ ],
+ "note": "LoE AR = [1,207 + 18,554 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.5% at x = 0). Axes -5% to 85%.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": true,
+ "boundary_outside": false,
+ "boundary_zones": true,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/solution_space.csv",
+  "pathways/backcast.json",
+  "pathways/runs.csv"
+ ],
+ "atp_linestyles": [
+  "dotted"
+ ],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

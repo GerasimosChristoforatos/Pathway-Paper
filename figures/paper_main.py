@@ -1,8 +1,8 @@
-"""The figures of the paper, Fig1-Fig8 (outputs/paper_main/; figure_plan.PAPER_MAIN), drawn from the data files only.
+"""The figures of the paper, Fig1-Fig7 (outputs/paper_main/; figure_plan.PAPER_MAIN), drawn from the data files only.
 
-MODEL v3.3.1 order (Nature Cities, at most eight display items): Fig1 model schematic, Fig2 floor area by demand band,
-Fig3 Reference carbon, Fig4 Reference against the boundaries, Fig5 three sequential waterfalls, Fig6 solution space,
-Fig7 Shapley value of each lever, Fig8 uncertainty (tornado; TL against the 2050 population)."""
+MODEL v4.3.0 order (Nature Cities, at most eight display items): Fig1 floor area by demand band, Fig2 Reference carbon,
+Fig3 Reference against the boundaries, Fig4 the sequential waterfalls, Fig5 solution space, Fig6 Shapley value of each
+lever, Fig7 uncertainty (tornado; Reference, Ambitious Pathway and TL against the 2050 population)."""
 import calendar
 import re
 import textwrap
@@ -28,9 +28,7 @@ BANDS_TL = list(N.BANDS_IN_SCOPE_TL)
 RUN_COLOUR = dict(S.PATHWAY, REF=S.REFERENCE, TL=S.TL)
 # MODEL v3.3.0: the PAS 2080 strategies S1-S3 and the Moderate / Ambitious Pathway (id prefix N.PATHWAY)
 RUN_GROUPS = tuple(N.STRATEGIES) + (N.PATHWAY,)
-# MODEL v4.2.2: figure legends name S3 in the singular (one lever); naming.STRATEGIES (the data labels) is unchanged
-STRATEGY_LABEL = {**N.STRATEGIES, 'S3': 'Improve Strategy'}
-GROUP_LABEL = {**{St: STRATEGY_LABEL[St] for St in N.STRATEGIES}, N.PATHWAY: 'Pathway (every lever)'}
+GROUP_LABEL = {**{St: N.STRATEGIES[St] for St in N.STRATEGIES}, N.PATHWAY: 'Pathway (every lever)'}
 PATHWAY_LABEL = {'REF': N.SCENARIOS['REF'], **GROUP_LABEL, 'TL': N.TL['TL']}
 # MODEL v3.3.1: band labels of the paper legends (the data labels of naming.BANDS are unchanged)
 PAPER_BAND_LABEL = {'growth': 'Population growth', 'maintenance': 'Maintenance (B2, B4)'}
@@ -443,7 +441,7 @@ def fig3():
     # MODEL v4.3.0: every annual series drawn as PCHIP through its annual values (display only), each segment
     # separately: the observed pipeline years (consents already issued) and the modelled years from the next year
     # share one knot, so the observed -> modelled join is not smoothed; the budget lines are one segment
-    brk = [float(max(D.js('baseline/overbuild_2026.json')['pipeline_years']))]
+    brk = P.pipeline_breaks()
     xf, arf = P.pchip(years, ar)
     _, atpf = P.pchip(years, atp)
     S.boundary_zones(ax, xf, arf, atpf)
@@ -595,7 +593,7 @@ def fig4():
     ax[0].set_ylim(0, max(paths[0][3][0][1], bar_) * 1.17)           # MODEL v4.2.2: room for the TL1 label
     ax[0].set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
     P.thousands(ax[0].yaxis)
-    hs = [Patch(label=STRATEGY_LABEL[St], **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
+    hs = [Patch(label=N.STRATEGIES[St], **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
     ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_SMALL)
     for b in ax:                                                      # MODEL v4.2.2: larger lever / TL names
         plt.setp(b.get_xticklabels(), fontsize=S.FONT_SMALL)
@@ -609,7 +607,7 @@ def fig4():
                + '. (a-c) Reference ' + f'{paths[0][3][0][1]:,.0f} kt -> '
                + ', '.join(f'{lab} {steps[-1][1]:,.0f} kt' for _, lab, _, steps in paths)
                + f'; budgets AR {bar_:,.0f} kt, AtP {batp:,.0f} kt. Steps in PAS 2080 order; each step is credited with '
-               'what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: '
+               'what remains after the higher-priority measures; order-free Shapley values in Fig6. Net-positive steps: '
                + (up_txt if up_txt else 'none') + '.')
 
 
@@ -636,7 +634,7 @@ def reduction_by_band():
     return red, tot
 
 
-def fig5():
+def sf7_reduction():
     """MODEL v3.3.2: three columns (Moderate Pathway, Ambitious Pathway, Theoretical Limit), height = the total
     reduction of cumulative carbon 2026-2050 against the Reference (value on top), stacked by demand band (Reference -
     run per band): positive band reductions stacked from zero, negative band reductions (credits from re-used dwellings
@@ -683,13 +681,13 @@ def fig5():
 
 
 # ---------------------------------------------------------------------------
-# Fig6: the solution space against AR and AtP
+# Fig5 (Fig6 until MODEL v4.3.0): the solution space against AR and AtP
 # ---------------------------------------------------------------------------
-FIG6_LIM = (-0.05, 0.85)        # MODEL v3.3.2: both axes from -5% to 100% (v3.3.1: to 110%)
-FIG6_N = 421                   # grid points per axis (0.25% steps)
+FIG5_LIM = (-0.05, 0.85)        # MODEL v3.3.2: both axes from -5% to 100% (v3.3.1: to 110%)
+FIG5_N = 421                   # grid points per axis (0.25% steps)
 
 
-def fig6_loe(bc, x, y):
+def fig5_loe(bc, x, y):
     """LoE_AR of the analytic plane (MODEL v3.2.0, B2): [C_2026 + C_ref,2027-2050 (1 - x)(1 - y)] / B_AR, C_2026 = the
     2026 cohort's emissions in the window (identical in every run), C_ref,2027-2050 = every emission in the window of the
     Reference's 2027-2050 cohorts (A1-A5, soil carbon loss, in-window B2/B4); x = cut in 2027-2050 floor area, y = cut
@@ -698,39 +696,39 @@ def fig6_loe(bc, x, y):
     return (r['carbon_fixed_2026_cohort_kt'] + r['carbon_2027_2050_cohorts_kt'] * (1.0 - x) * (1.0 - y)) / bc['B_AR_kt']
 
 
-def fig6_k(bc, level):
+def fig5_k(bc, level):
     """The constant of the iso-line LoE_AR = level: (1 - x)(1 - y) = k = (level B_AR - C_2026) / C_ref,2027-2050."""
     r = bc['REF']
     return (level * bc['B_AR_kt'] - r['carbon_fixed_2026_cohort_kt']) / r['carbon_2027_2050_cohorts_kt']
 
 
-def fig6_curve(bc, x, level):
+def fig5_curve(bc, x, level):
     """The iso-line LoE_AR(x, y) = level as y(x) = 1 - k / (1 - x) (x != 1). level = 1: the AR line; level =
     B_AtP / B_AR: the AtP contour (k < 0 when C_2026 > B_AtP: its branch with x < 1 has y > 1)."""
-    return 1.0 - fig6_k(bc, level) / (1.0 - np.asarray(x, float))
+    return 1.0 - fig5_k(bc, level) / (1.0 - np.asarray(x, float))
 
 
-def fig6_curve_x(bc, y, level):
+def fig5_curve_x(bc, y, level):
     """MODEL v3.3.1: the same iso-line as x(y) = 1 - k / (1 - y) (y != 1); for the AtP contour with k < 0 the branch
     with y < 1 has x > 1 (negative construction)."""
-    return 1.0 - fig6_k(bc, level) / (1.0 - np.asarray(y, float))
+    return 1.0 - fig5_k(bc, level) / (1.0 - np.asarray(y, float))
 
 
-def fig6_branches(bc, level, lim=FIG6_LIM, n=4000):
+def fig5_branches(bc, level, lim=FIG5_LIM, n=4000):
     """The branches of the iso-line LoE_AR = level inside the square lim x lim, [(x, y)] arrays: for k < 0 the branch
     x < 1, y > 1 and the branch y < 1, x > 1; for k > 0 the branch x < 1, y < 1 (the other branch, x, y > 1, lies
     outside the square when k > (lim[1] - 1)^2)."""
     lo, hi = lim
-    k = fig6_k(bc, level)
+    k = fig5_k(bc, level)
     out = []
     t = np.linspace(lo, 1.0 - 1e-9, n)
     for which in ('y_of_x', 'x_of_y'):
         if which == 'x_of_y' and k >= 0:
             continue
         if which == 'y_of_x':
-            x, y = t, fig6_curve(bc, t, level)
+            x, y = t, fig5_curve(bc, t, level)
         else:
-            y, x = t, fig6_curve_x(bc, t, level)
+            y, x = t, fig5_curve_x(bc, t, level)
         ok = (x >= lo) & (x <= hi) & (y >= lo) & (y <= hi)
         if ok.any():
             out.append((x[ok], y[ok]))
@@ -753,11 +751,11 @@ def _spread(vals, min_gap):
     return pos
 
 
-FIG6_MS = 1.25                       # MODEL v4.2.2: every Fig6 marker scaled by this factor
-FIG6_FONT = 1.45                     # MODEL v4.2.2: every Fig6 text scaled by this factor (was 1.25)
+FIG5_MS = 1.25                       # MODEL v4.2.2: every Fig6 marker scaled by this factor
+FIG5_FONT = 1.45                     # MODEL v4.2.2: every Fig6 text scaled by this factor (was 1.25)
 
 
-def fig6():
+def fig5():
     """MODEL v3.3.2: x = cut in 2027-2050 floor area, y = cut in 2027-2050 total carbon per m2 (A1-A5, soil and
     maintenance of the new cohorts), both vs the Reference, from -5% to 100%; the zones from the analytic LoE_AR field;
     analytic LoE_AR contours and the exact AR line; markers: S1-S3 (Moderate filled, Ambitious hollow), the Moderate /
@@ -770,18 +768,18 @@ def fig6():
     r = bc['REF']
     runs = D.csv('pathways/runs.csv')
     runs = runs[runs['scenario'] == 'REF'].set_index('run')['LoE_AR']
-    lo, hi = FIG6_LIM
+    lo, hi = FIG5_LIM
     atp_level = bc['B_AtP_kt'] / bc['B_AR_kt']                    # LoE_AtP = 1  <=>  LoE_AR = B_AtP / B_AR
     c26 = r['carbon_fixed_2026_cohort_kt']
     floor = c26 / bc['B_AR_kt']
-    g = np.linspace(lo, hi, FIG6_N)
+    g = np.linspace(lo, hi, FIG5_N)
     X, Y = np.meshgrid(g, g)
-    Z = fig6_loe(bc, X, Y)
+    Z = fig5_loe(bc, X, Y)
     fig = plt.figure(figsize=(146 * S.MM, 122 * S.MM))              # MODEL v4.2.2: cropped at the ruler labels
     ax = fig.add_axes([0.10, 0.215, 0.652, 0.765])
     S.boundary_field(ax, 100 * X, 100 * Y, Z, 1.0, atp_level, lines=False)
     st = {k: v for k, v in S.BOUNDARY['AR'].items() if k != 'label'}
-    for xb, yb in fig6_branches(bc, 1.0):                          # the AR line, exact
+    for xb, yb in fig5_branches(bc, 1.0):                          # the AR line, exact
         ln, = ax.plot(100 * xb, 100 * yb, zorder=3, **st)
         ln.set_gid(figaudit.BOUNDARY)
     ax.axhline(0, color=S.INK, lw=S.LW_THIN * 0.7, zorder=2)
@@ -790,7 +788,7 @@ def fig6():
     levels = [v for v in (1.25, 1.5, 2, 2.5, 3, 4, 5, 6, 8) if zmin < v < zmax]
     cs = ax.contour(100 * X, 100 * Y, Z, levels=levels, colors=S.MUTED, linewidths=S.LW_THIN * 0.7)
     # labels where each contour crosses the diagonal x = y: (1 - x)^2 = k
-    diag = {v: 1.0 - np.sqrt(fig6_k(bc, v)) for v in levels if fig6_k(bc, v) > 0}
+    diag = {v: 1.0 - np.sqrt(fig5_k(bc, v)) for v in levels if fig5_k(bc, v) > 0}
     lab_levels = [v for v, d in diag.items() if 0.02 <= d <= 0.98]      # crossings inside the square only
     ax.clabel(cs, levels=lab_levels, fmt=lambda v: f'LoE AR {v:g}', fontsize=S.FONT_MIN,
               manual=[(100 * diag[v], 100 * diag[v]) for v in lab_levels])
@@ -853,49 +851,26 @@ def fig6():
     h = [x for x in h if x.get_label() not in drop]
     fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=3,
                frameon=False, fontsize=S.FONT_MIN + 1.0)                # MODEL v4.2.2: legend a bit larger
-    for ln in fig.findobj(Line2D):                                  # MODEL v4.2.2: every marker x FIG6_MS (plane,
+    for ln in fig.findobj(Line2D):                                  # MODEL v4.2.2: every marker x FIG5_MS (plane,
         if ln.get_marker() not in (None, 'None', '', ' '):            # ruler, legend; relative sizes kept)
-            ln.set_markersize(ln.get_markersize() * FIG6_MS)
-    for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: every font x FIG6_FONT
+            ln.set_markersize(ln.get_markersize() * FIG5_MS)
+    for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: every font x FIG5_FONT
         if t.get_text():
-            t.set_fontsize(t.get_fontsize() * FIG6_FONT)
+            t.set_fontsize(t.get_fontsize() * FIG5_FONT)
     for a_ in (ax, ru):                                             # tick labels (created lazily)
-        a_.tick_params(labelsize=S.FONT_SIZE * FIG6_FONT)
+        a_.tick_params(labelsize=S.FONT_SIZE * FIG5_FONT)
     note = (f"LoE AR = [{c26:,.0f} + {r['carbon_2027_2050_cohorts_kt']:,.0f} (1 - x)(1 - y)] / {bc['B_AR_kt']:,.0f} kt; "
             f"C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = {floor:.3f} (the lowest "
             f"LoE AR at x or y = 100%); AtP = B_AtP / B_AR = {atp_level:.3f} lies below the floor, so the AtP contour is "
-            f"outside the plotted square (y = {100 * float(fig6_curve(bc, 0.0, atp_level)):.1f}% at x = 0). Axes "
+            f"outside the plotted square (y = {100 * float(fig5_curve(bc, 0.0, atp_level)):.1f}% at x = 0). Axes "
             f"{100 * lo:.0f}% to {100 * hi:.0f}%.")
-    _save(fig, 'Fig6_solution_space', note=note)
+    _save(fig, 'Fig5_solution_space', note=note)
 
 
 # ---------------------------------------------------------------------------
-# Fig7: Shapley value of each lever (Moderate hollow, Ambitious filled, TL dot)
+# Fig6 (Fig7 until MODEL v4.3.0): Shapley value of each lever (Moderate hollow, Ambitious filled, TL dot)
 # ---------------------------------------------------------------------------
-def _two_lines(text):
-    """MODEL v4.2.2: a label split at the space nearest its middle (one line if it has no space)."""
-    sp = [i for i, ch in enumerate(text) if ch == ' ']
-    if not sp:
-        return text
-    i = min(sp, key=lambda k: abs(k - len(text) / 2))
-    return text[:i] + '\n' + text[i + 1:]
-
-
-def _centre_ticklabels(fig, ax):
-    """MODEL v4.2.2: y tick labels centred (every line) on one vertical axis at the centre of the widest label, with
-    the existing gap between the widest label and the axis: ha = 'center' and the tick pad raised by half the widest
-    label's width (points)."""
-    fig.canvas.draw()
-    r = fig.canvas.get_renderer()
-    w = max(t.get_window_extent(r).width for t in ax.get_yticklabels()) * 72.0 / fig.dpi
-    pad = ax.yaxis.get_major_ticks()[0].get_pad()
-    ax.tick_params(axis='y', pad=pad + w / 2)
-    for t in ax.get_yticklabels():
-        t.set_horizontalalignment('center')
-        t.set_multialignment('center')
-
-
-def fig7():
+def fig6():
     """MODEL v4.2.1: two panels, levers grouped by PAS 2080 strategy, bars in the strategy colours (Moderate hollow,
     Ambitious filled, TL dot): (a) standalone reduction of cumulative carbon 2026-2050 vs the Reference, each lever
     alone (pathways/runs.csv: Reference - Ln run); (b) the Shapley share (%) of the pathway reduction per lever within
@@ -930,22 +905,22 @@ def fig7():
         P.panel(a, letter, title)
     for St, ls in N.STRATEGY_LEVERS.items():
         ks = [k for k, L in zip(y, order) if L in ls]
-        ax[1].text(1.01, (min(ks) + max(ks)) / 2, STRATEGY_LABEL[St].replace(' ', '\n'),
+        ax[1].text(1.01, (min(ks) + max(ks)) / 2, N.STRATEGIES[St].replace(' ', '\n'),
                    transform=ax[1].get_yaxis_transform(), ha='left', va='center', multialignment='center',
                    fontsize=S.FONT_MIN + 0.5, color=S.STRATEGY[St], fontweight='bold')
     P.thousands(ax[0].xaxis)
     ax[0].set_yticks(y)
-    ax[0].set_yticklabels([_two_lines(f'{L} {N.LEVERS[L]}') for L in order])   # MODEL v4.2.2: two lines, centred
+    ax[0].set_yticklabels([P.two_lines(f'{L} {N.LEVERS[L]}') for L in order])   # MODEL v4.2.2: two lines, centred
     ax[0].set_ylim(-0.6, len(order) - 0.4)
     fig.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate'),
                         Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious'),
                         Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit', marker='o',
                                ms=5)],
                loc='lower center', ncol=3, fontsize=S.FONT_SMALL, frameon=False, bbox_to_anchor=(0.5, 0.0))
-    _centre_ticklabels(fig, ax[0])
+    P.centre_ticklabels(fig, ax[0])
     fig.tight_layout(rect=(0, 0.07, 0.95, 1))
     tot = {k: v.sum() for k, v in g.items()}
-    _save(fig, 'Fig7_shapley_levers',
+    _save(fig, 'Fig6_shapley_levers',
           note='(a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each '
                'combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 512 subsets per game); the '
                'TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): '
@@ -953,10 +928,10 @@ def fig7():
 
 
 # ---------------------------------------------------------------------------
-# Fig8: uncertainty: (a) tornado of the Reference LoE AR; (b) TL against the 2050 population (Monte Carlo)
+# Fig7 (Fig8 until MODEL v4.3.0): uncertainty: (a) tornado of the Reference LoE AR; (b) TL against the 2050 population (Monte Carlo)
 # ---------------------------------------------------------------------------
-LOW_END, HIGH_END = S.LEVER['L8'], S.PATHWAY[N.PATHWAY]     # input at its low / high end (the colours of MODEL v3.0)
-SINGLE_CASE = S.MUTED                                         # MODEL v4.0.0: a row with one alternative case
+LOW_END, HIGH_END = P.TORNADO_LOW, P.TORNADO_HIGH            # input at its low / high end (draw.py: one source)
+SINGLE_CASE = P.TORNADO_SINGLE                                # MODEL v4.0.0: a row with one alternative case
 
 
 def _yrs(text):
@@ -973,33 +948,32 @@ def tornado_rows():
     household-size census pace, No 2026 data) carry it as a fifth element and are drawn in the muted grey."""
     t = D.csv('sensitivity/tornado.csv').set_index(['input', 'side'])
     pb = D.csv('sensitivity/planetary_boundary.csv')
-    sc = D.js('baseline/scenarios.json')['meta']
     st = D.js('aesa/results.json')['settings']
     v = lambda inp, side: float(t.loc[(inp, side), 'LoE_AR'])
-    rows = [('Population (Stats NZ 5th–95th percentile)',
+    rows = [('population',
              v('Population (Stats NZ 5th / 95th percentile)', 'low'),
              v('Population (Stats NZ 5th / 95th percentile)', 'high'), {}),
-            ('Household size (Stats NZ low–high variant)',            # low variant: smaller households, more of them
+            ('hh_variant',                                            # low variant: smaller households, more of them
              v('Household size (Stats NZ High / Low variant)', 'high'),
              v('Household size (Stats NZ High / Low variant)', 'low'), {}),
-            (f"Replacement: Low ({sc['long_run_pct']:.2f}%) – Very High (trend)",
+            ('replacement',
              v('Replacement (Low / High)', 'low'), v('Replacement: Very High (trend continues; one-sided)', 'high'),
              {'High': v('Replacement (Low / High)', 'high')}),
-            ('Replacement half-life (5–15 yr)', v('Replacement half-life (5 / 15 yr)', 'low'),
+            ('half_life', v('Replacement half-life (5 / 15 yr)', 'low'),
              v('Replacement half-life (5 / 15 yr)', 'high'), {}),
-            ('Completion rate (0.93–0.96)', v('Completion rate (0.93 / 0.96)', 'low'),
+            ('completion_rate', v('Completion rate (0.93 / 0.96)', 'low'),
              v('Completion rate (0.93 / 0.96)', 'high'), {}),
-            ('Completion lag (15–19 months; central 17)', v('Completion lag (15 / 19 months)', 'low'),
+            ('completion_lag', v('Completion lag (15 / 19 months)', 'low'),
              v('Completion lag (15 / 19 months)', 'high'),
              {'0 mo': v('Completion lag 0 months (one-sided)', 'high')}),
-            ('Household size: 2018–2023 census pace (linear)', None, None, {},
+            ('hh_pace', None, None, {},
              v('Household size: 2018-2023 census pace (one-sided)', 'high')),
-            ('No 2026 data (consents to Dec 2025)', None, None, {}, v('No 2026 data (one-sided)', 'high')),
-            ('Carbon factors (case-study jackknife low–high)', v('Case-study carbon factors (jackknife)', 'low'),
+            ('no_2026', None, None, {}, v('No 2026 data (one-sided)', 'high')),
+            ('jackknife', v('Case-study carbon factors (jackknife)', 'low'),
              v('Case-study carbon factors (jackknife)', 'high'), {}),
-            ('Soil order (lowest, Raw – highest, Organic)', v('Soil order (Raw / Organic)', 'low'),
+            ('soil_order', v('Soil order (Raw / Organic)', 'low'),
              v('Soil order (Raw / Organic)', 'high'), {}),
-            ('Overbuild absorption (by 2030 – by 2045)', v('Overbuild absorption (by 2030 / by 2045)', 'low'),
+            ('overbuild_timing', v('Overbuild absorption (by 2030 / by 2045)', 'low'),
              v('Overbuild absorption (by 2030 / by 2045)', 'high'), {})]
     bw = pb[pb['group'] == 'Base window'].copy()
     if len(bw):
@@ -1008,33 +982,13 @@ def tornado_rows():
         bw = bw.sort_values('n')
         c0 = st['AR_BASE_WINDOW']
         short, long_ = bw.iloc[0], bw.iloc[-1]
-        rows.append((f"AR base window ({short['n']}–{long_['n']} yr; central {c0[0]}–{c0[1]})",
+        rows.append((N.AR_WINDOW_LABEL.format(short=short['n'], long=long_['n']),
                      float(short['LoE_AR']), float(long_['LoE_AR']),
                      {f"{r['n']} yr": float(r['LoE_AR']) for _, r in bw.iloc[1:-1].iterrows()}))
     return rows, float(t['central_LoE_AR'].iloc[0])
 
 
-FIG8_SHORT = {'Population (Stats NZ 5th–95th percentile)': 'Population\n(5th–95th pct.)',
-              'Soil order (lowest, Raw – highest, Organic)': 'Soil order\n(Raw–Organic)',
-              'Household size: 2018–2023 census pace (linear)': 'Household size\n(2018–23 pace)',
-              'Household size (Stats NZ low–high variant)': 'Household size\n(low–high variant)',
-              'Carbon factors (case-study jackknife low–high)': 'Carbon factors\n(jackknife)',
-              'Completion rate (0.93–0.96)': 'Completion rate\n(0.93–0.96)'}
-
-
-def _fig8_short(label):
-    """MODEL v4.2.2: a tornado row label in two short lines."""
-    if label in FIG8_SHORT:
-        return FIG8_SHORT[label]
-    if label.startswith('Replacement:'):
-        return 'Replacement\n(Low–Very High)'
-    m = re.match(r'AR base window \((\d+)–(\d+) yr', label)
-    if m:
-        return f'AR base window\n({m.group(1)}–{m.group(2)} yr)'
-    return label.replace(' (', '\n(', 1)
-
-
-def fig8():
+def fig7():
     """MODEL v3.3.1: (a) tornado (Fig7 until v3.3.1) on the cumulative LoE AR: each input at its low end (blue) and high
     end (vermilion) as defined in its label, sorted by range, intermediate cases as ticks; (b) TL cumulative LoE AR
     against the 2050 population over the Monte Carlo draws (light points), LoE = 1 and the population at which the
@@ -1044,7 +998,7 @@ def fig8():
     rows = [r if len(r) == 5 else r + (None,) for r in rows]
     span = lambda r: abs(r[4] - c0) if r[4] is not None else abs(r[2] - r[1])
     rows = sorted(rows, key=span)
-    k_cr = [r[0] for r in rows].index('Completion rate (0.93–0.96)')    # MODEL v4.2.2: Completion rate and above
+    k_cr = [r[0] for r in rows].index('completion_rate')               # MODEL v4.2.2: Completion rate and above
     rows = rows[k_cr:]                                                  # Completion rate and every larger row
     has_single = any(r[4] is not None for r in rows)
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 77), gridspec_kw={'width_ratios': [1.25, 1]})
@@ -1058,9 +1012,7 @@ def fig8():
             a.text(val, k + 0.33, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
     a.axvline(c0, color=S.INK, lw=S.LW_THIN)
     a.set_yticks(np.arange(len(rows)))
-    a.set_yticklabels([_fig8_short(r[0]) for r in rows], fontsize=S.FONT_SMALL)
-    for t in a.get_yticklabels():                                     # MODEL v4.2.2: both lines centred
-        t.set_multialignment('center')
+    a.set_yticklabels([N.INPUT_LABEL.get(r[0], r[0]) for r in rows], fontsize=S.FONT_SMALL)   # naming.INPUT_LABEL
     a.set_xlabel('Reference cumulative LoE AR 2026-2050')
     a.grid(axis='y', visible=False)
     a.legend(handles=[Patch(label='Input at low end', **S.fill(LOW_END)),
@@ -1111,11 +1063,13 @@ def fig8():
         if hasattr(h, 'set_alpha'):
             h.set_alpha(0.9)
     P.panel(b, 'b', 'Reference, Ambitious Pathway and TL vs the 2050 population')
-    fig.tight_layout()
     for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: slightly larger fonts
         if t.get_text():
             t.set_fontsize(t.get_fontsize() * 1.1)
-    _save(fig, 'Fig8_uncertainty',
+    a.tick_params(axis='y', labelsize=S.FONT_SMALL * 1.1)
+    P.centre_ticklabels(fig, a)                                       # MODEL v4.3.0: one centre axis
+    fig.tight_layout()
+    _save(fig, 'Fig7_uncertainty',
           note='(b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build '
                'years); its carbon floor is the 2026-27 pipeline plus maintenance. ' + f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "
                f"moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = "
@@ -1128,5 +1082,5 @@ def fig8():
 
 
 FIGURES = {'Fig1_floor_area': fig1, 'Fig2_reference_carbon': fig2, 'Fig3_reference_boundaries': fig3,
-           'Fig4_pathways': fig4, 'SF7_reduction_by_demand': fig5, 'Fig6_solution_space': fig6,
-           'Fig7_shapley_levers': fig7, 'Fig8_uncertainty': fig8, 'SF1_model_schematic': sf1_schematic}
+           'Fig4_pathways': fig4, 'SF7_reduction_by_demand': sf7_reduction, 'Fig5_solution_space': fig5,
+           'Fig6_shapley_levers': fig6, 'Fig7_uncertainty': fig7, 'SF1_model_schematic': sf1_schematic}

@@ -130,6 +130,9 @@ MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% b
 LEVER = {'L4': '#DFA538', 'L5': '#944E02', 'L1': '#F4D168', 'L2': '#AA7C9D', 'L3': '#E1D2DD',
          'L8': '#4A6192', 'L9': '#ABD3FA', 'L7': '#8D6545', 'L6': '#C7B395'}
 P2_ANCHOR = '#683861'
+# MODEL v4.3.0: the typology colours (already used for the typologies in the consent-size, estimator and Monte Carlo
+# figures; named here so every figure takes them from one place)
+TYPOLOGY = {'Detached': LEVER['L4'], 'Townhouses': LEVER['L8'], 'Apartments': LEVER['L2']}
 STRATEGY = {'S1': LEVER['L4'], 'S2': LEVER['L7'], 'S3': LEVER['L8']}
 PATHWAY = dict(STRATEGY, pathway='#EB6123')
 # MODEL v4.2.1: the Moderate / Ambitious Pathway lines of Fig3a and the Fig4 waterfalls (orange, darker orange)

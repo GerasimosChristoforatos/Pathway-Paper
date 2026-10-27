@@ -1,7 +1,7 @@
 """The figures of MODEL v3.0.0: one registry, read by layout.figure (where a figure is written), the figures/ package
 (what draws it), indexes.py (outputs/FIGURES.md) and the tests.
 
-    outputs/paper_main/       Fig1-Fig8 (PAPER_MAIN)
+    outputs/paper_main/       Fig1-Fig7 (PAPER_MAIN; MODEL v4.3.0)
     outputs/paper_extended/   the Extended Data ED1-ED7 (PAPER_EXTENDED; MODEL v4.3.0) and the per-typology level table
     outputs/supplementary/    further figures (SUPPLEMENTARY; MODEL v3.3.1: at most ten Extended Data items)
     outputs/diagnostics/<group>/  calibration, validation, boundaries, pathways, montecarlo, sensitivity (DIAGNOSTICS)
@@ -42,11 +42,10 @@ PAPER_MAIN = [
                  'Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 '
                  'order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 '
                  '... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
-                 'order-free Shapley values in Fig7 and, per lever and pathway, in ED5.',
+                 'order-free Shapley values in Fig6 and, per lever and pathway, in ED8.',
          source=['pathways/annual.csv', 'pathways/waterfall.csv', 'pathways/waterfall_tl_from_reference.csv']),
-    # MODEL v4.2.2: no Fig5 for now (the schematic was dropped; the reduction by demand band is SF7); the other
-    # figures keep their numbers
-    dict(id='Fig6', file='Fig6_solution_space', width='double', module='figures.paper_main',
+    # MODEL v4.3.0: Fig6, Fig7, Fig8 renumbered Fig5, Fig6, Fig7 (Fig5 was vacant since MODEL v4.2.2)
+    dict(id='Fig5', file='Fig5_solution_space', width='double', module='figures.paper_main',
          title='The solution space',
          caption='Cumulative level of exceedance of AR over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 '
                  '(y) (after Horup et al. 2025), axes -5% to 100%, with S1-S3 (Moderate filled, Ambitious hollow), the '
@@ -54,7 +53,7 @@ PAPER_MAIN = [
                  'Right: the LoE AR ruler (log) with the Reference, the Pathways, TL, AR = 1, the plane floor (the 2026 '
                  'observed cohort alone) and AtP.',
          source=['pathways/solution_space.csv', 'pathways/backcast.json', 'pathways/runs.csv']),
-    dict(id='Fig7', file='Fig7_shapley_levers', width='double', module='figures.paper_main',
+    dict(id='Fig6', file='Fig6_shapley_levers', width='double', module='figures.paper_main',
          title='What each lever removes',
          caption='Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; '
                  'exact, 512 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 '
@@ -63,7 +62,7 @@ PAPER_MAIN = [
                  'levers at their limit), so they include each lever\'s interactions at the limit; L5 (occupancy '
                  'density) interacts with L4 (extra space): both act on the floor area per dwelling.',
          source=['pathways/shapley.csv']),
-    dict(id='Fig8', file='Fig8_uncertainty', width='double', module='figures.paper_main',
+    dict(id='Fig7', file='Fig7_uncertainty', width='double', module='figures.paper_main',
          title='Uncertainty',
          caption='(a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high '
                  'end per its definition (population rows move the budgets with the path; AR base-window rows move the '
@@ -75,45 +74,60 @@ PAPER_MAIN = [
 ]
 
 PAPER_EXTENDED = [
+    # MODEL v4.3.0: exactly ten items in this order (outputs/data/ed_number_map.csv, ED_NUMBER_MAP below)
     dict(id='ED1', file='ED1_population_households_floor_area', module='figures.paper_extended',
          title='Population, households and floor area: history and projection (Monte Carlo 5th-95th)',
          source=['figure_source/projection_paths.json', 'figure_source/D02_households.json']),
-    dict(id='ED2', file='ED2_census_replacement_rates', module='figures.paper_extended',
-         title='Net replacement rates from census dwelling counts and the four variants',
-         source=['baseline/stock_identity_history.csv', 'figure_source/D07_net_replacement_rate.json']),
-    dict(id='ED3', file='ED3_household_formation_size', module='figures.paper_extended',
+    dict(id='ED2', file='ED2_household_formation_size', module='figures.paper_extended',
          title='Household formation and household size', source=['baseline/household_formation_history.csv',
                                                                  'figure_source/D03_household_size.json']),
-    dict(id='ED4', file='ED4_overbuild_absorption', module='figures.paper_extended',
-         title='Overbuild absorption: the Reference path and its timing sensitivity',
-         source=['baseline/overbuild_absorption_log.csv', 'baseline/sensitivity_annual_carbon.csv']),
-    # MODEL v4.3.0: ED5 (pathways annual), ED6 (waterfalls by demand band), ED7 (TL Shapley and indicators) and ED10
-    # (detailed demand bands) are no longer rendered (their code is kept in figures/paper_extended.py); the new ED5
-    # takes ED7's place and ED8, ED9 become ED6, ED7 (outputs/data/ed_number_map.csv, ED_NUMBER_MAP below)
-    dict(id='ED5', file='ED5_shapley_attribution', module='figures.paper_extended',
+    dict(id='ED3', file='ED3_replacement_variants', module='figures.paper_extended',
+         title='Low, High and Very High replacement: the Reference, the Pathways and TL',
+         source=['sensitivity/replacement_variants.csv', 'pathways/annual.csv']),
+    dict(id='ED4', file='ED4_one_at_a_time', module='figures.sensitivity',
+         title='One at a time: cumulative embodied carbon 2026-2050 of the Reference', 
+         source=['sensitivity/reference_carbon.csv']),
+    dict(id='ED5', file='ED5_boundary_sensitivity', module='figures.sensitivity',
+         title='Boundary definitions and allocation: cumulative LoE of AR and of AtP',
+         source=['sensitivity/planetary_boundary.csv', 'aesa/results.json']),
+    dict(id='ED6', file='ED6_mc_input_distributions', module='figures.montecarlo',
+         title='Monte Carlo input distributions',
+         source=['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv',
+                 'montecarlo/carbon_factors_REF.csv', 'pathways/montecarlo_draws.csv']),
+    dict(id='ED7', file='ED7_sobol', module='figures.montecarlo',
+         title='Sobol indices of the Reference: embodied carbon and floor area 2026-2050',
+         source=['montecarlo/sobol_REF.csv']),
+    dict(id='ED8', file='ED8_shapley_attribution', module='figures.paper_extended',
          title='Shapley attribution (order-independent): reduction of cumulative embodied carbon 2026-2050 by lever, '
                'Moderate and Ambitious Pathway and TL',
          source=['pathways/shapley.csv', 'pathways/runs.csv']),
-    dict(id='ED6', file='ED6_replacement_variants', module='figures.paper_extended',
-         title='Low, High and Very High replacement: the Reference, the Pathways and TL',
-         source=['sensitivity/replacement_variants.csv', 'pathways/annual.csv']),
-    dict(id='ED7', file='ED7_rollout_timing', module='figures.paper_extended',
+    dict(id='ED9', file='ED9_lever_annual', module='figures.pathways',
+         title='Each lever alone: annual embodied carbon at Moderate, Ambitious and the Theoretical Limit',
+         source=['pathways/lever_annual.csv', 'pathways/annual.csv']),
+    dict(id='ED10', file='ED10_rollout_timing', module='figures.paper_extended',
          title='Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon',
          source=['pathways/annual.csv', 'pathways/runs.csv']),
 ]
 
-# MODEL v4.3.0: Extended Data numbering old -> new (None: no longer rendered; 'new' marks an added item)
+# MODEL v4.3.0: Extended Data numbering, MODEL v4.2.2 (the last release) -> MODEL v4.3.0 (old id, old file, new id, new
+# file); new id None: no longer rendered; 'Supplementary': moved to the Supplementary Figures; old id 'new' or a
+# diagnostic id (Dxx): added to the Extended Data. Supersedes the interim v4.3.0 numbering of commit 402dc33.
 ED_NUMBER_MAP = [('ED1', 'ED1_population_households_floor_area', 'ED1', 'ED1_population_households_floor_area'),
-                 ('ED2', 'ED2_census_replacement_rates', 'ED2', 'ED2_census_replacement_rates'),
-                 ('ED3', 'ED3_household_formation_size', 'ED3', 'ED3_household_formation_size'),
-                 ('ED4', 'ED4_overbuild_absorption', 'ED4', 'ED4_overbuild_absorption'),
+                 ('ED2', 'ED2_census_replacement_rates', 'Supplementary', None),
+                 ('ED3', 'ED3_household_formation_size', 'ED2', 'ED2_household_formation_size'),
+                 ('ED4', 'ED4_overbuild_absorption', 'Supplementary', None),
                  ('ED5', 'ED5_pathways_annual', None, None),
                  ('ED6', 'ED6_waterfalls_by_demand_band', None, None),
                  ('ED7', 'ED7_tl_shapley_indicators', None, None),
-                 ('ED8', 'ED8_replacement_variants', 'ED6', 'ED6_replacement_variants'),
-                 ('ED9', 'ED9_rollout_timing', 'ED7', 'ED7_rollout_timing'),
+                 ('ED8', 'ED8_replacement_variants', 'ED3', 'ED3_replacement_variants'),
+                 ('ED9', 'ED9_rollout_timing', 'ED10', 'ED10_rollout_timing'),
                  ('ED10', 'ED10_detailed_demand_bands', None, None),
-                 ('new', None, 'ED5', 'ED5_shapley_attribution')]
+                 ('D16', 'D16_one_at_a_time', 'ED4', 'ED4_one_at_a_time'),
+                 ('D42', 'D42_pb_sensitivity', 'ED5', 'ED5_boundary_sensitivity'),
+                 ('D38', 'D38_mc_input_distributions', 'ED6', 'ED6_mc_input_distributions'),
+                 ('D20', 'D20_sobol', 'ED7', 'ED7_sobol'),
+                 ('new', None, 'ED8', 'ED8_shapley_attribution'),
+                 ('D31', 'D31_lever_annual', 'ED9', 'ED9_lever_annual')]
 
 
 def write_ed_number_map():
@@ -126,8 +140,9 @@ def write_ed_number_map():
         w = csv.writer(f)
         w.writerow(['old_id', 'old_file', 'new_id', 'new_file', 'status'])
         for oid, ofile, nid, nfile in ED_NUMBER_MAP:
-            st = 'added' if oid == 'new' else ('not rendered' if nid is None else
-                                                ('unchanged' if oid == nid else 'renumbered'))
+            st = ('added' if oid == 'new' else 'from the diagnostics' if oid.startswith('D') else
+                  'no longer rendered' if nid is None else 'moved to Supplementary' if nid == 'Supplementary' else
+                  'unchanged' if oid == nid else 'renumbered')
             w.writerow(['' if oid == 'new' else oid, ofile or '', nid or '', nfile or '', st])
     return path
 
@@ -271,8 +286,8 @@ MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries', 'SF
                        'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band', 'D32_tl_staircase',
                        'D36_pathway_bands')
 # every figure with a planetary boundary on its axes (zones required; AtP dotted)
-PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways', 'Fig6_solution_space',
-              'ED6_replacement_variants', 'ED7_rollout_timing',
+PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways', 'Fig5_solution_space',
+              'ED3_replacement_variants', 'ED10_rollout_timing',
               'D21_fan_and_boundaries', 'D22_boundaries', 'D23_annual_loe',
               'D24_headroom', 'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band',
               'D27_variants_vs_boundaries', 'D28_pathways_annual')

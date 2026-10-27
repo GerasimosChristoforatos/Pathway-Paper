@@ -113,7 +113,7 @@ def ed3():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Household size')
     fig.tight_layout()
-    _save(fig, 'ED3_household_formation_size')
+    _save(fig, 'ED2_household_formation_size')
 
 
 def sf1():
@@ -220,7 +220,7 @@ def ed5():
 
 
 WATERFALL_NOTE = ('Steps in PAS 2080 hierarchy order; each step is credited with what remains after higher-priority '
-                  'measures. Order-free Shapley values in Fig7. Outlined segments: reduction in credits from re-used '
+                  'measures. Order-free Shapley values in Fig6. Outlined segments: reduction in credits from re-used '
                   'dwellings (vacancy released, overbuild absorbed, re-occupation, unconsented additions), valued at '
                   'the new-dwelling size they displace.')
 
@@ -342,7 +342,7 @@ def ed8():
 
 
 def ed10():
-    """Roll-out timing (ED7 since MODEL v4.3.0; ED9 before): (a, b) annual carbon of the Moderate / Ambitious Pathway
+    """Roll-out timing (ED10 since MODEL v4.3.0; ED9 before): (a, b) annual carbon of the Moderate / Ambitious Pathway
     with full roll-out by 2030, 2035 (adopted) and 2045; (c, MODEL v4.3.0) their cumulative carbon 2026-2050 as the
     running sum (same colours and line styles), the Reference cumulative a grey line (pathways/annual.csv; the 2050
     end values equal runs.csv carbon_kt, checked)."""
@@ -395,7 +395,7 @@ def ed10():
     P.thousands(c.yaxis)
     P.panel(c, 'c', 'Cumulative')
     fig.subplots_adjust(left=0.07, right=0.91, bottom=0.11, top=0.92)
-    _save(fig, 'ED7_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
+    _save(fig, 'ED10_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
         f'{N.run_label(r_)} {v:,.0f}' for r_, v in ends) + f'; Reference {cref[-1]:,.0f}.')
 
 
@@ -415,17 +415,17 @@ def shapley_attribution():
     for g, run in SHAPLEY_GAMES:
         t = s[s['game'] == f'levers_{g}'].set_index('player')['reduction']
         if set(t.index) != set(N.LEVERS):
-            raise SystemExit(f'STOP: ED5: Shapley values of game levers_{g} not stored for every lever.')
+            raise SystemExit(f'STOP: ED8: Shapley values of game levers_{g} not stored for every lever.')
         val[g] = {L: float(t[L]) for L in N.LEVERS}
         tot, d = sum(val[g].values()), float(r['REF'] - r[run])
         chk[g] = (tot, d, (tot - d) / d)
         if abs(chk[g][2]) > SHAPLEY_SUM_RTOL:
-            raise SystemExit(f'STOP: ED5: Shapley lever sum {tot:,.1f} kt vs Reference - {run} {d:,.1f} kt.')
+            raise SystemExit(f'STOP: ED8: Shapley lever sum {tot:,.1f} kt vs Reference - {run} {d:,.1f} kt.')
     return val, chk, float(r['REF'])
 
 
 def ed_shapley():
-    """MODEL v4.3.0 (ED5): Shapley attribution (order-independent) of the reduction of cumulative carbon 2026-2050 vs
+    """MODEL v4.3.0 (ED8): Shapley attribution (order-independent) of the reduction of cumulative carbon 2026-2050 vs
     the Reference, one row per lever L1-L9 in PAS 2080 order grouped by strategy, three bars per row (Moderate hollow,
     Ambitious filled in the strategy colour, TL in the TL colour), a total row (= Reference - pathway); Mt CO2e, top
     axis % of the Reference cumulative carbon. The sequential waterfalls (order-dependent) are Fig4."""
@@ -448,7 +448,7 @@ def ed_shapley():
     for St, ls in N.STRATEGY_LEVERS.items():
         ks = [y[L] for L in ls]
         ax.axhline(min(ks) - 0.5, color=S.MUTED, lw=S.LW_THIN * 0.7)
-        ax.text(1.005, (min(ks) + max(ks)) / 2, PM.STRATEGY_LABEL[St].replace(' ', '\n'), transform=ax.get_yaxis_transform(),
+        ax.text(1.005, (min(ks) + max(ks)) / 2, N.STRATEGIES[St].replace(' ', '\n'), transform=ax.get_yaxis_transform(),
                 ha='left', va='center', multialignment='center', fontsize=S.FONT_MIN + 0.5, color=S.STRATEGY[St],
                 fontweight='bold')
     ax.axvline(0, color=S.INK, lw=S.LW_THIN)
@@ -469,7 +469,7 @@ def ed_shapley():
                        Patch(facecolor=S.TL, edgecolor=S.TL, label=N.TL['TL'])],
               loc='lower right', bbox_to_anchor=(1.0, 0.08), fontsize=S.FONT_SMALL, frameon=False)
     fig.subplots_adjust(left=0.24, right=0.90, bottom=0.10, top=0.86)
-    _save(fig, 'ED5_shapley_attribution',
+    _save(fig, 'ED8_shapley_attribution',
           note='Exact Shapley values (2^9 coalitions per game, pathways/shapley.csv), Reference cumulative '
                f'{ref:,.0f} kt. Lever sum vs Reference - pathway: ' + '; '.join(
                    f'{g} {t:,.3f} vs {d:,.3f} kt (relative difference {rel:.1e})' for g, (t, d, rel) in chk.items())
@@ -584,7 +584,7 @@ def ed9():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Cumulative')
     fig.tight_layout()
-    _save(fig, 'ED6_replacement_variants')                          # MODEL v4.3.0: ED8 -> ED6
+    _save(fig, 'ED3_replacement_variants')                          # MODEL v4.3.0: ED8 -> ED3
 
 
 def ed4():
@@ -695,12 +695,12 @@ def ed11():
 
 
 FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_census_replacement_rates': ed2,
-           'ED3_household_formation_size': ed3, 'ED4_overbuild_absorption': ed4, 'ED5_pathways_annual': ed5,
+           'ED2_household_formation_size': ed3, 'ED4_overbuild_absorption': ed4, 'ED5_pathways_annual': ed5,
            'ED6_waterfalls_by_demand_band': ed6, 'ED7_tl_shapley_indicators': ed8,
            'ED10_detailed_demand_bands': ed11,
            # MODEL v4.3.0: ED5, ED6, ED7 and ED10 above are no longer rendered (not in figure_plan.PAPER_EXTENDED; code
            # kept); the new ED5 and the renumbered ED6 / ED7 (outputs/data/ed_number_map.csv)
-           'ED5_shapley_attribution': ed_shapley, 'ED6_replacement_variants': ed9, 'ED7_rollout_timing': ed10,
+           'ED8_shapley_attribution': ed_shapley, 'ED3_replacement_variants': ed9, 'ED10_rollout_timing': ed10,
            'SF2_mc_scatter_population': sf1, 'SF3_conditional_tl': sf2, 'SF4_lambda_sweep': sf3,
            'SF5_hd_estimators': sf4, 'SF6_consent_sizes': sf5}
 TABLES = {'EDT1_levels_by_typology': edt1}

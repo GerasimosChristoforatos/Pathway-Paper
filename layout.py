@@ -2,7 +2,7 @@
 
     outputs/                  full profile (run_all.py --profile full); outputs/_light/ mirrors this tree for the
                               light profile (the default) and outputs/_legacy/ for --reference-legacy
-      paper_main/             Fig1-Fig8 of the paper (figure_plan.PAPER_MAIN)
+      paper_main/             Fig1-Fig7 of the paper (figure_plan.PAPER_MAIN)
       paper_extended/         Extended Data ED1-ED10 and the table EDT1 (figure_plan.PAPER_EXTENDED)
       supplementary/          supplementary figures SF1-SF5 (figure_plan.SUPPLEMENTARY; MODEL v3.3.1)
       diagnostics/<group>/    calibration, validation, boundaries, pathways, montecarlo, sensitivity; _audit/: the

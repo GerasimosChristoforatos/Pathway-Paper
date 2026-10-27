@@ -83,6 +83,37 @@ def pipeline_breaks():
     return [float(max(D.js('baseline/overbuild_2026.json')['pipeline_years']))]
 
 
+HISTORY_END = 2025.0               # last history year: annual lines are not interpolated across it
+
+
+def series_breaks():
+    """MODEL v4.3.0: the segment ends of every annual line: the last history year and the last observed pipeline
+    year (consents already issued)."""
+    return [HISTORY_END] + pipeline_breaks()
+
+
+def line(ax, x, y, breaks=None, **kw):
+    """MODEL v4.3.0 (suite rule): an annual time-series line drawn as PCHIP display interpolation through every annual
+    value (pchip), segments split at series_breaks() unless breaks are given; NaNs dropped. A marker in kw is drawn at
+    the annual values only. Not for census-interval steps, bars, histograms, scatter or step functions."""
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    ok = np.isfinite(x) & np.isfinite(y)
+    x, y = x[ok], y[ok]
+    o = np.argsort(x)
+    x, y = x[o], y[o]
+    mk = {k: kw.pop(k) for k in ('marker', 'ms', 'markersize', 'markerfacecolor', 'markeredgecolor') if k in kw}
+    if len(x) >= 3 and np.all(np.diff(x) > 0):
+        b = series_breaks() if breaks is None else breaks
+        xf, yf = pchip(x, y, [v for v in b if x[0] < v < x[-1]])
+    else:
+        xf, yf = x, y
+    out = ax.plot(xf, yf, **kw)
+    if mk:
+        mkw = {k: v for k, v in kw.items() if k in ('color', 'alpha', 'zorder')}
+        ax.plot(x, y, ls='none', **mkw, **mk)
+    return out
+
+
 def pchip_band(x, lo, mid, hi, breaks=(), name='band'):
     """(xf, lo_f, hi_f, method): the band's lower and upper edges interpolated separately; on the fine grid
     lo <= mid <= hi is checked (mid interpolated the same way). If it fails anywhere the band falls back to linear
@@ -264,11 +295,31 @@ def _check_net(up, dn, net, what):
         raise SignError(f'STOP: {what}: the drawn stack does not end at the net total (max rel. diff {err:.2e}).')
 
 
-def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', **kw):
+def smooth_parts(x, parts):
+    """MODEL v4.3.0: each component interpolated separately by PCHIP (series_breaks), on one fine grid; the stack of
+    the interpolated components therefore equals the stack of the data at every annual value."""
+    xf = None
+    out = []
+    for key, v in parts:
+        xg, vf = pchip(x, np.asarray(v, float), [b for b in series_breaks() if x[0] < b < x[-1]])
+        xf = xg if xf is None else xf
+        out.append((key, vf))
+    return xf, out
+
+
+def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', smooth=False, **kw):
     """Time series by band: positive values stacked up from zero, negative values stacked down from zero (fixed
     order), the net a black line. parts: [(band id, values)]; net: the run's total to check against (1e-9).
-    Returns (up, down) with down <= 0."""
+    smooth (MODEL v4.3.0, annual series only): each band PCHIP-interpolated separately, then stacked (the net check
+    runs on the annual values). Returns (up, down) at the annual values, with down <= 0."""
     x = np.asarray(x, float)
+    if smooth:
+        a_up = np.sum([np.clip(np.asarray(v, float), 0, None) for _, v in parts], axis=0)
+        a_dn = np.sum([np.clip(np.asarray(v, float), None, 0) for _, v in parts], axis=0)
+        _check_net(a_up, a_dn, net, 'stack_series')
+        xf, sp = smooth_parts(x, parts)
+        stack_series(ax, xf, sp, net=None, net_line=net_line, net_label=net_label, **kw)
+        return a_up, a_dn
     up, dn = np.zeros(len(x)), np.zeros(len(x))
     for bid, v in parts:
         v = np.asarray(v, float)
@@ -382,18 +433,22 @@ def material_patch(code, colour, alpha=1.0):
     return S.fill(colour, alpha=alpha)
 
 
-def stack_materials(ax, years, frame, scale=1.0, alpha=1.0):
+def stack_materials(ax, years, frame, scale=1.0, alpha=1.0, smooth=False):
     """Areas of carbon by material in style.MATERIAL order (bottom to top), soil on top.
     Each material includes its maintenance within 2026-2050. Returns legend handles,
     top first."""
     unknown = set(frame.columns) - {c for c, _, _ in S.MATERIAL}
     if unknown:
         raise ValueError(f'No colour for {sorted(unknown)} in style.MATERIAL.')
-    years = np.asarray(years)
-    bottom, handles = np.zeros(len(years)), []
+    years = np.asarray(years, float)
     present = [(c, l_, col) for c, l_, col in S.MATERIAL if c in frame.columns]   # only the materials present
+    vals = {code: np.asarray(frame[code], float) / scale for code, _, _ in present}
+    if smooth:                                             # MODEL v4.3.0: each material by PCHIP, then stacked
+        years, sp = smooth_parts(years, list(vals.items()))
+        vals = dict(sp)
+    bottom, handles = np.zeros(len(years)), []
     for code, lab, colour in present:                      # SOIL the top layer
-        v = np.asarray(frame[code], float) / scale
+        v = vals[code]
         handles.append(ax.fill_between(years, bottom, bottom + v, label=lab, **material_patch(code, colour, alpha)))
         bottom = bottom + v
     zero_floor(ax, *[frame[code] for code, _, _ in present])
@@ -411,15 +466,15 @@ def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History
     point marked."""
     s = series.dropna() / scale
     last = int(s.index.max())
-    ax.plot(s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw,
-            label=f'{label}: census-benchmarked to {census_last}')
+    line(ax, s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw,
+         label=f'{label}: census-benchmarked to {census_last}')
     mid = s.loc[census_last:anchor]
-    ax.plot(mid.index, mid.values, color=color, lw=lw, ls=':',
-            label=f'{census_last + 1}–{anchor % 100:02d}: Stats NZ estimates scaled to the {anchor} census'
+    line(ax, mid.index, mid.values, color=color, lw=lw, ls=':',
+         label=f'{census_last + 1}–{anchor % 100:02d}: Stats NZ estimates scaled to the {anchor} census'
                   + (f' (×{k:.3f})' if k is not None else ''))
     tail = s.loc[anchor:]
-    ax.plot(tail.index, tail.values, color=color, lw=lw * 0.7, ls='--', alpha=0.35,
-            label=f'{anchor + 1}–{last % 100:02d}: consent-derived estimates, not used')
+    line(ax, tail.index, tail.values, color=color, lw=lw * 0.7, ls='--', alpha=0.35,
+         label=f'{anchor + 1}–{last % 100:02d}: consent-derived estimates, not used')
     if anchor in s.index:
         ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=3, label=f'{anchor} census')
     ax.ticklabel_format(axis='y', style='plain', useOffset=False)

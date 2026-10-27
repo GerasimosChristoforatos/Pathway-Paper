@@ -4,7 +4,7 @@
                               light profile (the default) and outputs/_legacy/ for --reference-legacy
       paper_main/             Fig1-Fig7 of the paper (figure_plan.PAPER_MAIN)
       paper_extended/         Extended Data ED1-ED10 and the table EDT1 (figure_plan.PAPER_EXTENDED)
-      supplementary/          supplementary figures SF1-SF5 (figure_plan.SUPPLEMENTARY; MODEL v3.3.1)
+      supplementary/<folder>/ Supplementary Figures SF1-SF17 (figure_plan.SUPPLEMENTARY; MODEL v4.3.0)
       diagnostics/<group>/    calibration, validation, boundaries, pathways, montecarlo, sensitivity; _audit/: the
                               record of every drawn figure (figures/audit.py; read by the tests)
       FIGURES.md              the index of every figure (indexes / figures/index.py, from figure_plan.py)
@@ -92,8 +92,9 @@ def figure(name):
     import figure_plan as FP
     for base, items in ((PAPER_MAIN, FP.PAPER_MAIN), (PAPER_EXTENDED, FP.PAPER_EXTENDED),
                         (SUPPLEMENTARY, FP.SUPPLEMENTARY)):
-        if name in (h['file'] for h in items):
-            return os.path.join(base, name)
+        for h in items:
+            if h['file'] == name:                     # MODEL v4.3.0: supplementary figures in their folder
+                return os.path.join(base, h.get('folder', ''), name)
     for g, rows in FP.DIAGNOSTICS.items():
         if name in (r['file'] for r in rows):
             return os.path.join(DIAGNOSTICS, g, name)

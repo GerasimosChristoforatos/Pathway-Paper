@@ -1,4 +1,4 @@
-"""Calibration diagnostics (outputs/diagnostics/calibration/; figure_plan.DIAGNOSTICS['calibration'] and D13).
+"""Calibration figures (MODEL v4.3.0: Supplementary SF1, SF2, SF4; outputs/supplementary/calibration/).
 
 Drawn from data files only (compute / draw separation, MODEL v3.0.0): the figure source written by projection.py
 (D01-D03, D08, D09, D13; export_figure_sources) and Diagnostics.py (D04-D06), and baseline/overbuild_absorption_log.csv
@@ -31,74 +31,6 @@ def _ref():
 
 def _band(ax, x, lo, hi, label):
     ax.fill_between(x, lo, hi, label=label, **S.MC_BAND)
-
-
-# ---------------------------------------------------------------------------
-# D01-D03: population and households
-# ---------------------------------------------------------------------------
-def d01():
-    fid = 'D01_population'
-    d = D.src(fid)
-    yh, fy = d['years_hist'], d['forecast_years']
-    fig, ax = plt.subplots(figsize=S.figsize('double', 62))
-    ax.plot(yh, d['population_hist'].values / M6, color=S.INK,
-            label='History (estimated resident population, 31 December)')
-    _band(ax, fy, d['population_5th'] / M6, d['population_95th'] / M6, 'Population 5th–95th percentile')
-    ax.plot(fy, d['population_50th'] / M6, label='Reference projection (median)', **_ref())
-    P.split(ax)
-    ax.set_xlim(yh[0], fy[-1])
-    ax.set_ylabel('Population (million)')
-    ax.legend(loc='upper left')
-    S.save_figure(fig, fid, source=_src(fid))
-
-
-def d02():
-    fid = 'D02_households'
-    d = D.src(fid)
-    yh, fy, anchor, k = d['years_hist'], d['forecast_years'], int(d['S_ANCHOR_YEAR']), d['hh_rebase_k']
-    fig, ax = plt.subplots(figsize=S.figsize('double', 66))
-    dhe = d['households_dhe_published']
-    ax.plot(dhe.index, dhe.values / M6, color=S.MUTED, lw=S.LW_THIN, label='Stats NZ household estimates as published')
-    P.history_estimated(ax, d['households_hist'], anchor, M6, label='History (31 Dec)', k=k)
-    _band(ax, fy, d['households_5th'] / M6, d['households_95th'] / M6,
-          '5th–95th population percentile (household size fixed)')
-    ax.plot(d['projection_years'], d['projection_households'] / M6,
-            label='Projection: population / household size, median', **_ref())
-    P.split(ax)
-    ax.set_xlim(yh[0], fy[-1])
-    ax.set_ylabel('Households (million)')
-    ax.legend(loc='upper left', fontsize=S.FONT_SMALL)
-    S.save_figure(fig, fid, note=f'Projection from the {anchor} census point; 2019–23 Stats NZ estimates scaled to the '
-                                 f'{anchor} census (×{k:.3f}).', source=_src(fid))
-
-
-def d03():
-    fid = 'D03_household_size'
-    d = D.src(fid)
-    yh, fy, anchor = d['years_hist'], d['forecast_years'], int(d['S_ANCHOR_YEAR'])
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 70))
-    P.history_estimated(a, d['household_size_hist'], anchor, 1.0, label='History', k=d['hh_rebase_k'])
-    a.plot(d['projection_years'], d['projection_household_size'],
-           label=f'Projection (Stats NZ shape from the {anchor} census point)', **_ref())
-    P.split(a)
-    a.set_xlim(yh[0], fy[-1])
-    a.set_ylabel('Household size (persons per household)')
-    a.legend(loc='upper right', fontsize=S.FONT_MIN)
-    P.panel(a, 'a', 'Household size')
-    pyr = fy[1:]
-    dp, dh = d['population_growth_hist'], d['household_formation_hist']
-    b.plot(yh[1:], dp.values[1:] / 1e3, color=S.INK, label='Population growth, history')   # 1991: no flow
-    b.plot(yh[1:], dh.values[1:] / 1e3, color=S.ACCENT_ORANGE, label='Household formation, history')
-    b.plot(pyr, d['population_growth_50th'][1:] / 1e3, color=S.INK, ls='--', label='Population growth, projection')
-    b.plot(pyr, d['household_formation_50th'][1:] / 1e3, color=S.ACCENT_ORANGE, ls='--',
-           label='Household formation, projection')
-    P.split(b)
-    b.set_xlim(yh[0], fy[-1])
-    b.set_ylabel('Persons or households per year (thousand)')
-    b.legend(loc='upper left', fontsize=S.FONT_MIN)
-    P.panel(b, 'b', 'Population growth and household formation')
-    fig.tight_layout()
-    S.save_figure(fig, fid, source=_src(fid))
 
 
 # ---------------------------------------------------------------------------
@@ -164,20 +96,39 @@ def sign_handles():
 
 
 # ---------------------------------------------------------------------------
-# D04 household formation
+# SF1 (MODEL v4.3.0; D02 + D04 a, b): households
 # ---------------------------------------------------------------------------
-def d04():
-    fid = 'D04_household_formation'
-    d = D.src(fid)
-    fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 78), gridspec_kw={'width_ratios': [1, 1, 1.5]})
+def sf1_households():
+    """(a) households: Stats NZ estimates as published, the census-benchmarked history, the 2019-23 estimates scaled to
+    the 2023 census, the projection (population / household size) with the 5th-95th population percentile; (b) change
+    in household size against population growth (census-benchmarked years, the consent-derived 2024-25 marked);
+    (c) households per consent by year (census-benchmarked; consent-derived from 2019)."""
+    d2 = D.src('D02_households')
+    d4 = D.src('D04_household_formation')
+    yh, fy, anchor, k = d2['years_hist'], d2['forecast_years'], int(d2['S_ANCHOR_YEAR']), d2['hh_rebase_k']
+    fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 100), gridspec_kw={'width_ratios': [1.3, 1, 1]})
     a = ax[0]
-    dP, dS, yf, fit = d['dP_fit'], d['dS_fit'], d['years_fit'], d['fit']
+    dhe = d2['households_dhe_published']
+    P.line(a, dhe.index, dhe.values / M6, color=S.MUTED, lw=S.LW_THIN, label='Stats NZ household estimates as published')
+    P.history_estimated(a, d2['households_hist'], anchor, M6, label='History (31 Dec)', k=k)
+    lo, hi = d2['households_5th'] / M6, d2['households_95th'] / M6
+    xf, lof, hif, _ = P.pchip_band(fy, lo, (lo + hi) / 2, hi, P.series_breaks(), name='SF1a households 5-95')
+    a.fill_between(xf, lof, hif, label='5th–95th population percentile (household size fixed)', **S.MC_BAND)
+    P.line(a, d2['projection_years'], d2['projection_households'] / M6,
+           label='Projection: population / household size, median', **_ref())
+    P.split(a)
+    a.set_xlim(yh[0], fy[-1])
+    a.set_ylabel('Households (million)')
+    a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fontsize=S.FONT_MIN, ncol=1, frameon=False)
+    P.panel(a, 'a', 'Households')
+    a = ax[1]
+    dP, dS, yf, fit = d4['dP_fit'], d4['dS_fit'], d4['years_fit'], d4['fit']
     a.scatter(dP / 1e3, dS, color=S.MUTED, s=10, zorder=3, label=f'{int(yf[0])}–{int(yf[-1])} (census-benchmarked)')
     xx = np.linspace(dP.min(), dP.max(), 50)
     a.plot(xx / 1e3, fit['intercept'] + fit['slope'] * xx, color=S.INK, lw=S.LW,
            label=f"r = {fit['r']:+.2f}, p = {fit['p']:.0e}")
-    dP_l, dS_l = d['dP_late'], d['dS_late']
-    late = [int(y) for y in d['late_years']]
+    dP_l, dS_l = d4['dP_late'], d4['dS_late']
+    late = [int(y) for y in d4['late_years']]
     a.scatter(dP_l.values / 1e3, dS_l.values, facecolor='none', edgecolor=S.ACCENT_ORANGE, s=22, zorder=4,
               lw=S.LW_THIN, label=f'{late[0]}–{late[-1] % 100:02d}: consent-derived, no census check')
     for y in (2024, 2025):                          # label the left point to the left, the right one to the right
@@ -187,81 +138,50 @@ def d04():
     a.axhline(0, color=S.INK, lw=S.LW_THIN)
     a.set_xlabel('Population growth (thousand per year)')
     a.set_ylabel('Change in household size (persons per household)')
-    a.legend(loc='upper left', fontsize=S.FONT_MIN)
-    P.panel(a, 'a', 'Household size vs arrivals')
+    a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.14), fontsize=S.FONT_MIN, frameon=False)
+    P.panel(a, 'b', 'Household size vs population growth')
 
-    a = ax[1]
-    yh, ratio = d['ratio_years'], d['households_per_consent']
+    a = ax[2]
+    yh, ratio = d4['ratio_years'], d4['households_per_consent']
     a.bar(yh, ratio.values, color=[S.ACCENT_ORANGE if y > 2018 else S.MUTED for y in yh], width=0.8)
-    for y in d['census_bases']:
+    for y in d4['census_bases']:
         a.axvline(y + 0.5, color=S.INK, lw=S.LW_THIN, ls=':')
     a.set_ylabel('Households per consent')
     a.set_xlim(1991, 2026)
     a.set_ylim(0, 1.45)
-    P.panel(a, 'b', 'Household growth per consent')
+    a.set_ylim(0, 1.75)                                                # room for the legend
+    P.panel(a, 'c', 'Households per consent')
     a.legend(handles=[Patch(color=S.MUTED, label='census-benchmarked'),
                       Patch(color=S.ACCENT_ORANGE, label='2019 on: consent-derived')], loc='upper left', ncol=2,
              fontsize=S.FONT_MIN)
 
-    a = ax[2]
-    # history: one column per census interval (interval means; households census-anchored at both ends), the
-    # consent-derived interval faint (v3: no hatch); projection annual, a gentle fade
-    H = d['formation_history']
-    gap = 0.5
-    first = int(str(H['interval'].iloc[0])[:4])
-    for r in H.itertuples():
-        y0, y1 = int(str(r.interval)[:4]), int(r.year_end)
-        est = r.households_from != 'census'
-        comp_bars(a, [(y0 + y1) / 2 + 0.5], [('growth', r.from_population_growth_per_year / 1e3),
-                                             ('smaller_households', r.from_household_size_change_per_year / 1e3)],
-                  width=(y1 - y0) - gap, alpha=0.5 if est else 1.0)
-        a.hlines(r.net_new_households_per_year / 1e3, y0 + 0.5 + gap / 2, y1 + 0.5 - gap / 2, color=S.INK, lw=S.LW,
-                 ls=':' if est else '-', label='Net new households' if y0 == first else None)
-    PF = d['projection_years']
-    comp_bars(a, PF, [('growth', d['from_population_growth'] / 1e3),
-                      ('smaller_households', d['from_household_size_change'] / 1e3)], width=0.82, alpha=0.75)
-    a.axhline(0, color=S.INK, lw=S.LW_THIN)
-    a.plot(PF, d['net_new_households'] / 1e3, color=S.INK, lw=S.LW, ls='--')
-    P.split(a)
-    a.set_xlim(1991, 2050)
-    a.set_ylabel('Households (thousand per year)')
-    ys, ye = int(H['year_start'].iloc[-1]), int(H['year_end'].iloc[-1])
-    a.legend(handles=comp_handles(['growth', 'smaller_households'])
-             + [Patch(label=f'{ys}–{ye % 100:02d}: consent-derived estimates, no census check (faint)',
-                      **dict(_fill('growth', 0.5), edgecolor='#555555', linewidth=S.LW_THIN))]
-             + a.get_legend_handles_labels()[0] + sign_handles(), loc='upper left', fontsize=S.FONT_MIN)
-    _y0, _y1 = a.get_ylim()
-    a.set_ylim(_y0, _y1 + 0.62 * (_y1 - _y0))            # room for the legend above the columns
-    P.panel(a, 'c', 'New households per year, by source')
     fig.tight_layout()
-    S.save_figure(fig, fid, source=_src(fid), note=(
-        'Between censuses households are consent-derived, so the relationship in a is partly mechanical (housing '
-        f"supply meets migration). b: households per previous-year consent vary before 2019 and are {d['R19']} from "
-        '2019: these years are estimated from consents and are not independent evidence. c: history one column per '
-        'census interval (interval means; households census-anchored at both ends), stacked from population growth '
-        f'and from household-size change; {ys}–{ye} faint (consent-derived estimates, no census check); projection '
-        'annual, faded, from 2026; the line is the net of the two parts. A negative part (household-size change, '
-        'where households grow larger) is drawn as an outlined segment hanging from the top of the stack, so each '
-        'column ends at its net total (short tick).'))
+    S.save_figure(fig, 'SF1_households', source=['figure_source/D02_households.json',
+                                                 'figure_source/D04_household_formation.json'], note=(
+        f'a: projection from the {anchor} census point; 2019–23 Stats NZ estimates scaled to the {anchor} census '
+        f'(×{k:.3f}). b, c: between censuses households are consent-derived, so the relationship in b is partly '
+        'mechanical (housing supply meets migration) and the 2019 on ratios in c are estimated from consents, not '
+        'independent evidence.'))
 
 
 # ---------------------------------------------------------------------------
-# D05 stock and vacancy
+# SF2 (MODEL v4.3.0; D05 + D06 as panel d): stock and vacancy
 # ---------------------------------------------------------------------------
 HIST_IDS = ('new_households', 'vacancy', 'net_replacement_census', 'retirement_villages', 'unexplained_building')
 FUT_IDS = ('new_households', 'vacancy', 'replacement', 'unconsented', 'redevelopment', 'retirement_villages',
            'overbuild_2026', 'overbuild_absorbed')
 
 
-def d05():
-    fid = 'D05_stock_and_vacancy'
-    d = D.src(fid)
+def sf2_stock_vacancy():
+    fid = 'SF2_stock_vacancy'
+    d = D.src('D05_stock_and_vacancy')
+    d6 = D.src('D06_vacancy_definition')
     FY, PF, YH = d['forecast_years'], d['projection_years'], d['years_hist_flows']
     census_y = [int(y) for y in d['census_years']]
     fig = plt.figure(figsize=S.figsize('double', 185))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1.1], hspace=0.66, wspace=0.22)
+    gs = fig.add_gridspec(2, 4, height_ratios=[1, 1.1], width_ratios=[1, 1, 1, 0.85], hspace=0.66, wspace=0.75)
 
-    a = fig.add_subplot(gs[0, 0])
+    a = fig.add_subplot(gs[0, :2])
     vc = d['vacancy_consistent_knots']
     lo, hi = float(vc.min()), float(vc.max())
     a.axhspan(100 * lo, 100 * hi, color=S.BAND['vacancy'][0], alpha=0.12, lw=0,
@@ -269,13 +189,13 @@ def d05():
                     f'({100 * lo:.1f}–{100 * hi:.1f}%)')
     a.axvspan(2013, 2018, color=S.MUTED, alpha=0.10, lw=0, label='2013 → 2018 empty / away definition break')
     vp, vcm = d['vacancy_published_model'], d['vacancy_consistent_model']
-    a.plot(vp.index, 100 * vp.values, color=S.INK, lw=S.LW, label='Published empty share (model)')
-    a.plot(vcm.index, 100 * vcm.values, color=S.BAND['vacancy'][0], lw=S.LW, ls='-.',
+    P.line(a, vp.index, 100 * vp.values, color=S.INK, lw=S.LW, label='Published empty share (model)')
+    P.line(a, vcm.index, 100 * vcm.values, color=S.BAND['vacancy'][0], lw=S.LW, ls='-.',
            label='One definition: pooled 2018/2023 empty share')
     vf = d['vacancy_forward']
     a.plot(FY, np.full(len(FY), 100 * vf), color=S.INK, lw=S.LW_THIN, ls=':',
            label=f'Held at its published 2023 census value ({100 * vf:.2f}%)')
-    a.plot(FY, 100 * d['vacancy_implied'], color=S.INK, lw=S.LW, ls='--',
+    P.line(a, FY, 100 * d['vacancy_implied'], color=S.INK, lw=S.LW, ls='--',
            label='Implied: held rate + unabsorbed 2026 overbuild / stock')
     K = d['census_knots']
     for y, r in K.iterrows():
@@ -293,14 +213,14 @@ def d05():
     a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09), fontsize=S.FONT_MIN, ncol=2)
     P.panel(a, 'a', 'Vacancy: empty homes only')
 
-    a = fig.add_subplot(gs[0, 1])
+    a = fig.add_subplot(gs[0, 2:])
     st = d['stock_hist']
-    a.plot(st.index, st.values / M6, color=S.INK, lw=S.LW, label='Dwelling stock')
+    P.line(a, st.index, st.values / M6, color=S.INK, lw=S.LW, label='Dwelling stock')
     P.history_estimated(a, d['households_hist'], int(d['S_ANCHOR_YEAR']), M6, color=S.ACCENT_ORANGE,
                         label='Households', k=d['hh_rebase_k'])
-    a.plot(FY, d['stock_projection'] / M6, color=S.INK, lw=S.LW, ls='--',
+    P.line(a, FY, d['stock_projection'] / M6, color=S.INK, lw=S.LW, ls='--',
            label='Stock, projection (incl. the unabsorbed 2026 overbuild)')
-    a.plot(FY, d['households_projection'] / M6, color=S.ACCENT_ORANGE, lw=S.LW, ls='--',
+    P.line(a, FY, d['households_projection'] / M6, color=S.ACCENT_ORANGE, lw=S.LW, ls='--',
            label='Households, projection')
     P.split(a)
     a.set_xlim(1991, 2050)
@@ -308,7 +228,24 @@ def d05():
     a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09), fontsize=S.FONT_MIN, ncol=1)
     P.panel(a, 'b', 'Stock = households / (1 − vacancy) + 2026 overbuild')
 
-    a = fig.add_subplot(gs[1, :])
+    # (d) MODEL v4.3.0 (D06): the unconsented additions each vacancy definition requires
+    a = fig.add_subplot(gs[1, 3])
+    vals = [d6['unconsented_empty_only'], d6['unconsented_including_away']]
+    nb = d6['mean_dwellings_built']
+    bb_ = a.bar([0, 1], vals, color=[S.BAND['vacancy'][0], S.MUTED], width=0.6)
+    a.set_ylim(min(vals) * 1.25, 0)
+    for bb, v in zip(bb_, vals):
+        a.text(bb.get_x() + bb.get_width() / 2, v, f'{v:,.0f}\n({100 * v / nb:+.0f}%)', ha='center', va='top',
+               fontsize=S.FONT_MIN, color=S.INK)
+    a.set_xticks([0, 1])
+    a.set_xticklabels(['Empty\nonly\n(used)', "With 'away'\n(rejected)"], fontsize=S.FONT_MIN)
+    a.axhline(0, color=S.INK, lw=S.LW_THIN)
+    a.set_ylabel(f"Unconsented additions required\n1992–{int(d6['calib_end'])} (per year)", fontsize=S.FONT_SMALL)
+    P.thousands(a.yaxis)
+    a.grid(axis='x', visible=False)
+    P.panel(a, 'd', 'Vacancy definition')
+
+    a = fig.add_subplot(gs[1, :3])
     SIH = d['stock_identity_history']
     for r in SIH.itertuples():                      # one bar per census interval; the latest (consents) faint
         y0, y1 = int(str(r.interval)[:4]), int(r.year_end)
@@ -317,25 +254,24 @@ def d05():
     fut = d['projection_components']
     comp_bars(a, PF, [(c, fut[c] / 1e3) for c in FUT_IDS], width=0.82, alpha=0.55)
     a.axhline(0, color=S.INK, lw=S.LW_THIN)
-    for r in SIH.itertuples():                      # the unexplained building of each interval, labelled at
-        m = r.unexplained_building_per_year / 1e3   # the end of the stack it extends (top if positive)
-        vals = [getattr(r, f'{c}_per_year') / 1e3 for c in HIST_IDS]
-        y = sum(v for v in vals if v > 0) if m >= 0 else sum(vals)        # negative: at the net total
-        a.annotate(f'unexpl. {m:+.1f}k', ((int(str(r.interval)[:4]) + int(r.year_end)) / 2 + 0.5, y),
-                   xytext=(0, 2 if m >= 0 else -2), textcoords='offset points', ha='center',
-                   va='bottom' if m >= 0 else 'top', fontsize=S.FONT_MIN, color='#595959', zorder=7)
+    # MODEL v4.3.0: the unexplained building of each interval as one row of values at the top of the panel (thousand
+    # dwellings per year), above every bar, so no label sits on a bar
+    for r in SIH.itertuples():
+        m = r.unexplained_building_per_year / 1e3
+        a.text((int(str(r.interval)[:4]) + int(r.year_end)) / 2 + 0.5, 0.965, f'{m:+.1f}',
+               transform=a.get_xaxis_transform(), ha='center', va='top', fontsize=S.FONT_MIN, color='#595959')
     a.text(1991.6, 0.02, '1986–91 not covered (calibration starts 1991)', transform=a.get_xaxis_transform(),
            fontsize=S.FONT_MIN, color=S.MUTED)
-    a.plot(YH, d['dwellings_built_hist'].values / 1e3, color=S.INK, lw=S.LW,
+    P.line(a, YH, d['dwellings_built_hist'].values / 1e3, color=S.INK, lw=S.LW,
            label='Dwellings built, in scope (observed, annual)')
-    a.plot(PF, d['dwellings_built_projection'] / 1e3, color=S.INK, lw=S.LW, ls='--',
+    P.line(a, PF, d['dwellings_built_projection'] / 1e3, color=S.INK, lw=S.LW, ls='--',
            label='Dwellings built, in scope (projection)')
     P.split(a)
     a.set_xlim(1991, 2050)
     a.set_ylabel('Dwellings (thousand per year)')
     _y0, _y1 = a.get_ylim()
-    a.set_ylim(_y0 - 0.06 * (_y1 - _y0), _y1)          # room for the labels of the negative interval means
-    P.panel(a, 'c', 'Dwellings per year by component')
+    a.set_ylim(_y0 - 0.06 * (_y1 - _y0), _y1 + 0.08 * (_y1 - _y0))   # room for the row of unexplained values
+    P.panel(a, 'c', 'Dwellings per year by component (top row: unexplained building, thousand per year)')
     a.legend(handles=comp_handles(['new_households', 'vacancy', 'net_replacement_census', 'replacement',
                                    'redevelopment', 'overbuild_2026', 'unexplained_building'])
              + comp_handles(['unconsented', 'retirement_villages', 'overbuild_absorbed'],
@@ -347,184 +283,67 @@ def d05():
                  f"2018/2023 empty share, {100 * d['pooled_share']:.1f}% of unoccupied dwellings); between censuses "
                  f'annual detail is not identified. Faint bar: {census_y[-1] + 1}–{int(YH[-1])}, households '
                  'consent-derived. Projection annual, lighter.')
-    S.save_figure(fig, fid, source=_src(fid), note=(
-        f'a: {V[0].upper() + V[1:]}. c: {hist_note} History: net replacement is census-measured, the '
-        'rate of the census dwelling-count identity of each interval (D07; under-construction corrected) x the '
+    S.save_figure(fig, fid, source=['figure_source/D05_stock_and_vacancy.json',
+                                    'figure_source/D06_vacancy_definition.json'], note=(
+        f'a: {V[0].upper() + V[1:]}. d: the unconsented additions each vacancy definition requires to close the stock '
+        'identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. '
+        f'c: {hist_note} History: net replacement is census-measured, the '
+        'rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the '
         f"previous year's stock, the quantity the model uses ({census_y[-1] + 1}–{int(YH[-1])}: the latest rate "
         'carried). Projection: demolition replacement, unconsented additions (negative), the recent replacement '
         'surge, retirement villages (negative), the 2026 overbuild and the overbuild absorbed '
         '(negative payback). Negative parts are outlined, hanging from the top of the positive stack; each bar ends '
-        'at its net total (tick). Unexplained building (faded red, labelled per interval in thousand dwellings per '
-        'year): building not explained by household formation, vacancy and census-measured replacement: '
+        'at its net total (tick). Unexplained building (faded red; its value per interval in the row at the top, '
+        'thousand dwellings per year): building not explained by household formation, vacancy and census-measured replacement: '
         'redevelopment not captured by the census counts, error in the household estimates, or residual; it may be '
         'negative.'))
 
 
 # ---------------------------------------------------------------------------
-# D06 vacancy definition
+# SF4 (MODEL v4.3.0; D08 + the consent sizes of the former SF6): new-dwelling size
 # ---------------------------------------------------------------------------
-def d06():
-    fid = 'D06_vacancy_definition'
-    d = D.src(fid)
-    fig, a = plt.subplots(figsize=S.figsize('single', 66))
-    vals = [d['unconsented_empty_only'], d['unconsented_including_away']]
-    nb = d['mean_dwellings_built']
-    bb_ = a.bar(['Empty homes only\n(used)', "Including 'residents away'\n(rejected)"], vals,
-                color=[S.BAND['vacancy'][0], S.MUTED], width=0.6)
-    for bb, v in zip(bb_, vals):
-        a.text(bb.get_x() + bb.get_width() / 2, v / 2, f'{v:,.0f} per year\n({100 * v / nb:+.0f}% of building)',
-               ha='center', va='center', fontsize=S.FONT_SMALL, color='white', fontweight='bold')
-    a.axhline(0, color=S.INK, lw=S.LW_THIN)
-    a.set_ylabel(f"Unconsented additions required, 1992–{int(d['calib_end'])}\n(dwellings per year)")
-    P.thousands(a.yaxis)
-    a.grid(axis='x', visible=False)
-    fig.tight_layout()
-    S.save_figure(fig, fid, source=_src(fid), note=(
-        'The unconsented additions each vacancy definition requires to close the stock identity, assuming the BRANZ '
-        'demolition rate; counting residents-away dwellings as vacant requires implausibly many.'))
-
-
-# ---------------------------------------------------------------------------
-# D08, D09: dwelling space, cumulative floor area
-# ---------------------------------------------------------------------------
-def d08():
-    fid = 'D08_dwelling_space'
-    d = D.src(fid)
+def sf4_dwelling_size():
+    """(a) realised and occupied floor area per new dwelling; (b) occupancy utilisation of new dwellings; (c) mean
+    consented new-dwelling size by typology 1990-2025 with the minima (L4) and the Reference size."""
+    d = D.src('D08_dwelling_space')
+    p = D.js('pathways/levers.json')['L4']
     yh = d['years_hist']
     real, occ, util = (d[k].values for k in ('realised_dwelling_size', 'occupied_area_per_dwelling', 'utilisation'))
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 66))
-    a.plot(yh, real, color=S.INK, label='Realised new-dwelling size (floor area / consents)')
-    a.plot(yh, occ, color=S.MUTED, ls='-.', label='Occupied area per dwelling (household size × occupant load factor)')
-    a.fill_between(yh, occ, real, color=S.BAND['extra_space'][0], alpha=0.25, lw=0,
+    fig, (a, b, c) = plt.subplots(1, 3, figsize=S.figsize('double', 72))
+    P.line(a, yh, real, color=S.INK, label='Realised new-dwelling size (floor area / consents)')
+    P.line(a, yh, occ, color=S.MUTED, ls='-.', label='Occupied area per dwelling (household size × occupant load factor)')
+    xf, rf = P.pchip(np.asarray(yh, float), np.asarray(real, float))
+    _, of = P.pchip(np.asarray(yh, float), np.asarray(occ, float))
+    a.fill_between(xf, of, rf, color=S.BAND['extra_space'][0], alpha=0.25, lw=0,
                    label='Space above occupancy (under-utilisation)')
     a.set_xlim(yh[0], yh[-1])
     a.set_ylim(0, None)
     a.set_ylabel('Floor area per dwelling (m²)')
     a.legend(loc='lower left', fontsize=S.FONT_MIN)
-    P.panel(a, 'a', 'New dwellings: realised and occupied floor area')
-    b.plot(yh, 100 * util, color=S.INK)
+    P.panel(a, 'a', 'Realised and occupied floor area')
+    P.line(b, yh, 100 * util, color=S.INK)
     b.axhline(100, color=S.MUTED, lw=S.LW_THIN)
-    b.text(yh[0] + 1, 101, 'design capacity (bedrooms + 1)', fontsize=S.FONT_SMALL, color=S.MUTED, va='bottom')
+    b.text(yh[0] + 1, 101, 'design capacity (bedrooms + 1)', fontsize=S.FONT_MIN, color=S.MUTED, va='bottom')
     b.set_xlim(yh[0], yh[-1])
     b.set_ylim(0, 110)
-    b.set_ylabel('Occupancy utilisation: household size / design capacity (%)')
-    P.panel(b, 'b', 'Occupancy utilisation of new dwellings')
+    b.set_ylabel('Household size / design capacity (%)')
+    P.panel(b, 'b', 'Occupancy utilisation')
+    for t, ser in p['consent_size_series'].items():
+        yrs = sorted(int(y) for y in ser)
+        m = p['minima'][t]
+        P.line(c, yrs, [ser[str(y)] for y in yrs], color=S.TYPOLOGY[t],
+               label=f"{t} (min {m['size_min']:.0f} m², {m['year']})")
+        c.plot([m['year']], [m['size_min']], 'o', color=S.TYPOLOGY[t], ms=4)
+        c.axhline(p['size_ref'][t], color=S.TYPOLOGY[t], lw=S.LW_THIN, ls=':')
+    c.set_ylabel('Mean consented new-dwelling size (m²)')
+    c.legend(fontsize=S.FONT_MIN, loc='upper center', ncol=1, frameon=False)
+    c.set_ylim(78, 275)
+    P.panel(c, 'c', 'Consented size by typology')
     fig.tight_layout()
-    S.save_figure(fig, fid, source=_src(fid))
+    S.save_figure(fig, 'SF4_dwelling_size', source=['figure_source/D08_dwelling_space.json', 'pathways/levers.json'],
+                  note='c: dotted, the Reference size (2023-2025 mean); dots, the smallest annual mean (the L4 minima). '
+                       '1990 is the first year of the series and a recession year.')
 
 
-def d09():
-    fid = 'D09_cumulative_floor_area'
-    d = D.src(fid)
-    yh, fy = d['years_hist'], d['forecast_years']
-    fig, ax = plt.subplots(figsize=S.figsize('double', 66))
-    ax.plot(yh, d['cumulative_floor_area_hist'].values / M6, color=S.INK,
-            label=(f"History (completions = consents lagged {int(d['lag_months'])} months × {d['built_factor']:.3f})"
-                   if int(d.get('lag_months', 0) or 0) else
-                   f"History (consents timed as completions × {d['built_factor']:.2f}, completion lag weight "
-                   f"{d['lag_w']:.2f})"))
-    _band(ax, fy, d['cumulative_floor_area_5th'] / M6, d['cumulative_floor_area_95th'] / M6,
-          'Population 5th–95th percentile (other inputs at the Reference)')
-    ax.plot(d['projection_years'], d['cumulative_floor_area_50th'] / M6, label='Reference projection', **_ref())
-    P.split(ax)
-    ax.set_xlim(yh[0], fy[-1])
-    ax.set_ylim(0, None)
-    ax.set_ylabel('Floor area, cumulative from 1991 (Mm²)')
-    ax.legend(loc='upper left')
-    S.save_figure(fig, fid, source=_src(fid))
-
-
-# ---------------------------------------------------------------------------
-# D13 carbon by material
-# ---------------------------------------------------------------------------
-def d13():
-    fid = 'D13_carbon_by_material'
-    d = D.src(fid)
-    py = d['years']
-    fa, fc = d['carbon_annual'], d['carbon_cumulative']
-    P.nonnegative('material carbon', fa.values, fc.values)
-    fig, (a, b) = plt.subplots(1, 2, figsize=S.figsize('double', 72))
-    handles = P.stack_materials(a, py, fa, 1e6)
-    P.stack_materials(b, py, fc, 1e6)
-    for ax_, letter, title, ylab in ((a, 'a', 'Annual', 'Embodied carbon (kt CO₂e per year)'),
-                                    (b, 'b', 'Cumulative from 2026', 'Embodied carbon, cumulative from 2026 (kt CO₂e)')):
-        ax_.set_xlim(py[0], py[-1])
-        ax_.set_ylabel(ylab)
-        P.thousands(ax_.yaxis)
-        P.panel(ax_, letter, title)
-    fig.legend(handles=handles, loc='lower center', ncol=len(handles), bbox_to_anchor=(0.5, -0.01), frameon=False)
-    fig.tight_layout(rect=(0, 0.07, 1, 1))
-    acc = ('construction (A1–A5 and soil) plus maintenance (B2, B4) within 2026–2050' if d['time_resolved'] else
-           'whole life booked at construction')
-    S.save_figure(fig, fid, note=f'Reference, {acc}; each material includes its maintenance.', source=_src(fid))
-
-
-# ---------------------------------------------------------------------------
-# D35 overbuild absorption (new in MODEL v3.0.0)
-# ---------------------------------------------------------------------------
-def d35():
-    fid = 'D35_overbuild_absorption'
-    rel = 'baseline/overbuild_absorption_log.csv'
-    L = D.csv(rel)
-    y = L['year'].to_numpy(int)
-    exc, paid = L['excess_dwellings'].to_numpy(float), L['payback_paid'].to_numpy(float)
-    w, U = L['absorption_weight'].to_numpy(float), L['surplus_vacant'].to_numpy(float)
-    fig = plt.figure(figsize=S.figsize('double', 92))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.6, 1], hspace=0.12, wspace=0.28)
-    a = fig.add_subplot(gs[0, 0])
-    a2 = fig.add_subplot(gs[1, 0], sharex=a)
-    b = fig.add_subplot(gs[:, 1])
-    # a: dwellings per year: market 2026 overbuild up, payback paid (negative) outlined hanging from the top of the overbuild
-    P.bars_cumulative(a, y, [('overbuild_2026', exc / 1e3), ('overbuild_absorbed', -paid / 1e3)], width=0.8,
-                      net=(exc - paid) / 1e3)
-    a.axhline(0, color=S.INK, lw=S.LW_THIN)
-    _lo, _hi = min(0.0, float(np.min(exc - paid)) / 1e3), float(np.max(exc)) / 1e3
-    a.set_ylim(_lo - 0.08 * (_hi - _lo), _hi + 0.08 * (_hi - _lo))
-    a.set_ylabel('Dwellings per year (thousand)')
-    a.tick_params(labelbottom=False)
-    a.legend(handles=[Patch(label='2026 overbuild (building above the requirement)',
-                            **dict(P.band_style('overbuild_2026'), edgecolor='#555555', linewidth=S.LW_THIN)),
-                      Patch(label='Payback paid (overbuild absorbed, negative)', **P.negative_bar_style('overbuild_absorbed')),
-                      Line2D([0], [0], color=S.INK, lw=S.LW_BOLD, label='Net (2026 overbuild − payback)')],
-             loc='upper right', fontsize=S.FONT_MIN)
-    P.panel(a, 'a', 'The 2026 overbuild, its payback and the surplus still vacant')
-    # a (lower): surplus still vacant U and the absorption weight w
-    a2.plot(y, U / 1e3, color=S.BAND['overbuild_2026'][0], lw=S.LW, label='Surplus still vacant U (thousand dwellings)')
-    a2.set_ylabel('U (thousand dwellings)')
-    a2.set_ylim(0, None)
-    w_ax = a2.twinx()
-    w_ax.plot(y, w, color=S.INK, lw=S.LW_THIN, ls='--', label='Absorption weight w (right axis)')
-    w_ax.set_ylim(0, 1.05)
-    w_ax.set_ylabel('w')
-    w_ax.grid(False)
-    w_ax.spines['right'].set_visible(True)
-    a2.legend(handles=a2.get_legend_handles_labels()[0] + w_ax.get_legend_handles_labels()[0], loc='center right',
-              fontsize=S.FONT_MIN)
-    a2.set_xlim(y[0] - 0.6, y[-1] + 0.6)
-    # b: implied vacancy against the vacancy parameter
-    vp = L['vacancy_parameter'].to_numpy(float)
-    b.plot(y, 100 * L['implied_vacancy'].to_numpy(float), color=S.INK, lw=S.LW, ls='--',
-           label='Implied vacancy 1 − households / (stock + U)')
-    b.plot(y, 100 * vp, color=S.BAND['vacancy'][0], lw=S.LW,
-           label=f'Vacancy parameter ({100 * vp[-1]:.2f}%, the published 2023 census value)')
-    b.set_xlim(2025, 2050)
-    b.set_ylabel('Vacancy rate (% of private dwellings)')
-    b.legend(loc='upper right', fontsize=S.FONT_MIN)
-    P.panel(b, 'b', 'Implied vacancy and the vacancy parameter')
-    done = y[np.argmax(w >= 1 - 1e-9)] if np.any(w >= 1 - 1e-9) else None
-    S.save_figure(fig, fid, source=[rel], note=(
-        'Reference, median population path (engine.absorb_overbuild). a: the 2026 overbuild, building above the '
-        'requirement (positive), and the payback paid by building less (negative, outlined, hanging from the '
-        'top of the overbuild; tick = net); below, the surplus still vacant U and the absorption weight w. '
-        + (f'The overbuild is absorbed by {done} along the logistic (w = 1); ' if done is not None else
-           'The absorption weight does not reach 1 within 2050; ')
-        + 'once absorbed, the remaining 2026 overbuild is paid back in the same year (net 0, the ticks on the zero '
-        'line). b: the unabsorbed surplus raises implied vacancy temporarily, which returns to the vacancy parameter once '
-        'it is absorbed. The speed of absorption is bracketed by sensitivity (never absorbed, absorbed by 2030, '
-        'by 2045).'))
-
-
-FIGURES = {'D01_population': d01, 'D02_households': d02, 'D03_household_size': d03,
-           'D04_household_formation': d04, 'D05_stock_and_vacancy': d05, 'D06_vacancy_definition': d06,
-           'D08_dwelling_space': d08, 'D09_cumulative_floor_area': d09, 'D13_carbon_by_material': d13,
-           'D35_overbuild_absorption': d35}
+FIGURES = {'SF1_households': sf1_households, 'SF2_stock_vacancy': sf2_stock_vacancy,
+           'SF4_dwelling_size': sf4_dwelling_size}

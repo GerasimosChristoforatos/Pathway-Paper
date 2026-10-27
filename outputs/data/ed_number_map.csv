@@ -1,12 +1,17 @@
 old_id,old_file,new_id,new_file,status
 ED1,ED1_population_households_floor_area,ED1,ED1_population_households_floor_area,unchanged
-ED2,ED2_census_replacement_rates,ED2,ED2_census_replacement_rates,unchanged
-ED3,ED3_household_formation_size,ED3,ED3_household_formation_size,unchanged
-ED4,ED4_overbuild_absorption,ED4,ED4_overbuild_absorption,unchanged
-ED5,ED5_pathways_annual,,,not rendered
-ED6,ED6_waterfalls_by_demand_band,,,not rendered
-ED7,ED7_tl_shapley_indicators,,,not rendered
-ED8,ED8_replacement_variants,ED6,ED6_replacement_variants,renumbered
-ED9,ED9_rollout_timing,ED7,ED7_rollout_timing,renumbered
-ED10,ED10_detailed_demand_bands,,,not rendered
-,,ED5,ED5_shapley_attribution,added
+ED2,ED2_census_replacement_rates,SF3,SF3_census_replacement_rates,moved to Supplementary
+ED3,ED3_household_formation_size,ED2,ED2_household_formation_size,renumbered
+ED4,ED4_overbuild_absorption,SF5,SF5_overbuild_absorption,moved to Supplementary
+ED5,ED5_pathways_annual,,,no longer rendered
+ED6,ED6_waterfalls_by_demand_band,,,no longer rendered
+ED7,ED7_tl_shapley_indicators,,,no longer rendered
+ED8,ED8_replacement_variants,ED3,ED3_replacement_variants,renumbered
+ED9,ED9_rollout_timing,ED10,ED10_rollout_timing,renumbered
+ED10,ED10_detailed_demand_bands,,,no longer rendered
+D16,D16_one_at_a_time,ED4,ED4_one_at_a_time,from the diagnostics
+D42,D42_pb_sensitivity,ED5,ED5_boundary_sensitivity,from the diagnostics
+D38,D38_mc_input_distributions,ED6,ED6_mc_input_distributions,from the diagnostics
+D20,D20_sobol,ED7,ED7_sobol,from the diagnostics
+,,ED8,ED8_shapley_attribution,added
+D31,D31_lever_annual,ED9,ED9_lever_annual,from the diagnostics

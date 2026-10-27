@@ -3,8 +3,8 @@
  "producer": "figures/__main__.py",
  "axes": [
   {
-   "title": "One at a time (Reference LoE AR 4.46)",
-   "xlabel": "Reference cumulative LoE AR 2026-2050",
+   "title": "One at a time (Reference 4.46)",
+   "xlabel": "Cumulative LoE of AR 2026\u20132050, Reference",
    "ylabel": "",
    "year_min": null,
    "year_max": null
@@ -12,7 +12,7 @@
   {
    "title": "Reference, Ambitious Pathway and TL vs the 2050 population",
    "xlabel": "New Zealand population 2050 (million)",
-   "ylabel": "Cumulative LoE AR 2026-2050 (log scale)",
+   "ylabel": "Cumulative LoE of AR 2026\u20132050 (log scale)",
    "year_min": null,
    "year_max": null
   }
@@ -45,26 +45,26 @@
   "8",
   "AR (LoE = 1)",
   "AR base window\n(5\u201334 yr)",
-  "Ambitious Pathway: P(LoE AR \u2264 1) = 0.02% (1 of 5,000)",
+  "Ambitious Pathway: P(LoE of AR \u2264 1) = 0.02% (1 of 5,000)",
   "Carbon factors\n(jackknife)",
   "Completion rate\n(0.93\u20130.96)",
-  "Cumulative LoE AR 2026-2050 (log scale)",
+  "Cumulative LoE of AR 2026\u20132050 (log scale)",
+  "Cumulative LoE of AR 2026\u20132050, Reference",
   "High",
   "Household size\n(2018\u201323 pace)",
   "Household size\n(low\u2013high variant)",
   "Input at high end",
   "Input at low end",
   "New Zealand population 2050 (million)",
-  "One at a time (Reference LoE AR 4.46)",
+  "One at a time (Reference 4.46)",
   "Population\n(5th\u201395th pct.)",
-  "Reference cumulative LoE AR 2026-2050",
   "Reference, Ambitious Pathway and TL vs the 2050 population",
-  "Reference: P(LoE AR \u2264 1) = 0.0% (0 of 5,000)",
+  "Reference: P(LoE of AR \u2264 1) = 0.0% (0 of 5,000)",
   "Replacement\n(Low\u2013Very High)",
   "Single alternative case",
   "Soil order\n(Raw\u2013Organic)",
-  "TL: P(LoE AR \u2264 1) = 50%",
-  "Theoretical Limit: P(LoE AR \u2264 1) = 49.9% (2,494 of 5,000)",
+  "Theoretical Limit: P(LoE of AR \u2264 1) = 49.9% (2,494 of 5,000)",
+  "Theoretical Limit: P(LoE of AR \u2264 1) = 50%",
   "a",
   "b"
  ],

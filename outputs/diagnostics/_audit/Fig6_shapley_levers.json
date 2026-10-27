@@ -1,6 +1,6 @@
 {
  "figure": "Fig6_shapley_levers",
- "producer": "figures/__main__.py",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "Each lever alone",
@@ -53,7 +53,7 @@
   "Shapley share within each game",
   "Share of the pathway reduction (%, exact Shapley value)",
   "Switch\nStrategies",
-  "Theoretical limit",
+  "Theoretical Limit",
   "a",
   "b"
  ],

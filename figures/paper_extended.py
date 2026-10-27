@@ -342,24 +342,138 @@ def ed8():
 
 
 def ed10():
+    """Roll-out timing (ED7 since MODEL v4.3.0; ED9 before): (a, b) annual carbon of the Moderate / Ambitious Pathway
+    with full roll-out by 2030, 2035 (adopted) and 2045; (c, MODEL v4.3.0) their cumulative carbon 2026-2050 as the
+    running sum (same colours and line styles), the Reference cumulative a grey line (pathways/annual.csv; the 2050
+    end values equal runs.csv carbon_kt, checked)."""
     a = D.csv('pathways/annual.csv')
     a = a[a['scenario'] == 'REF']
     ref = a[a['run'] == 'REF'].set_index('year')
     yrs = ref.index.values.astype(float)
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 75), sharey=True)
+    runs = D.csv('pathways/runs.csv')
+    runs = runs[runs['scenario'] == 'REF'].set_index('run')['carbon_kt']
+    VARIANTS = (('-by2030', ':', 'by 2030'), ('', '-', 'by 2035 (adopted)'), ('-by2045', '--', 'by 2045'))
+    fig = plt.figure(figsize=S.figsize('double', 75))
+    outer = fig.add_gridspec(1, 2, width_ratios=[2.1, 0.95], wspace=0.26)    # (c) has its own axis: more space
+    gs = outer[0].subgridspec(1, 2, wspace=0.08)
+    ax = [fig.add_subplot(gs[0])]
+    ax.append(fig.add_subplot(gs[1], sharey=ax[0]))
     for b, s, letter in ((ax[0], 'moderate', 'a'), (ax[1], 'ambitious', 'b')):
         S.boundary_zones(b, yrs, ref['B_AR_kt'].values, ref['B_AtP_kt'].values)
         b.plot(yrs, ref['carbon_kt'], color=S.REFERENCE, lw=S.LW_BOLD, label=N.SCENARIOS['REF'])
-        for suffix, ls, lab in (('-by2030', ':', 'by 2030'), ('', '-', 'by 2035 (adopted)'), ('-by2045', '--', 'by 2045')):
+        for suffix, ls, lab in VARIANTS:
             r = a[a['run'] == f'{N.PATHWAY}-{s}{suffix}'].set_index('year')
             b.plot(yrs, r['carbon_kt'], color=S.PATHWAY[N.PATHWAY], ls=ls, lw=S.LW, label=f'Pathway, full roll-out {lab}')
         b.set_xlim(yrs[0], yrs[-1])
         b.set_ylim(0, None)
         P.panel(b, letter, N.PATHWAY_RUNS[f'{N.PATHWAY}-{s}'])
+    plt.setp(ax[1].get_yticklabels(), visible=False)
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
     ax[0].legend(fontsize=S.FONT_MIN)
-    fig.tight_layout()
-    _save(fig, 'ED9_rollout_timing')
+    # (c) cumulative 2026-2050 (running sum from 2026)
+    c = fig.add_subplot(outer[1])
+    m = yrs >= 2026
+    cref = np.cumsum(ref['carbon_kt'].values[m])
+    assert np.isclose(cref[-1], runs['REF'], rtol=1e-9)
+    c.plot(yrs[m], cref, color=S.REFERENCE, lw=S.LW_BOLD, alpha=0.55, label=N.SCENARIOS['REF'])
+    ends = []
+    for s in ('moderate', 'ambitious'):
+        for suffix, ls, lab in VARIANTS:
+            run = f'{N.PATHWAY}-{s}{suffix}'
+            cum = np.cumsum(a[a['run'] == run].set_index('year').loc[yrs[m].astype(int), 'carbon_kt'].values)
+            assert np.isclose(cum[-1], runs[run], rtol=1e-9), run
+            c.plot(yrs[m], cum, color=S.PATHWAY[N.PATHWAY], ls=ls, lw=S.LW)
+            ends.append((run, float(cum[-1])))
+        lo_, hi_ = min(v for r_, v in ends[-3:]), max(v for r_, v in ends[-3:])
+        c.text(yrs[m][-1] + 0.4, (lo_ + hi_) / 2, N.PATHWAY_RUNS[f'{N.PATHWAY}-{s}'].replace(' ', '\n'), ha='left',
+               va='center', fontsize=S.FONT_MIN, color=S.INK, linespacing=1.0)
+    c.text(yrs[m][-1] + 0.4, cref[-1], N.SCENARIOS['REF'], ha='left', va='center', fontsize=S.FONT_MIN,
+           color=S.REFERENCE)
+    c.set_xlim(yrs[m][0], yrs[m][-1])
+    c.set_ylim(0, None)
+    c.set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
+    P.thousands(c.yaxis)
+    P.panel(c, 'c', 'Cumulative')
+    fig.subplots_adjust(left=0.07, right=0.91, bottom=0.11, top=0.92)
+    _save(fig, 'ED7_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
+        f'{N.run_label(r_)} {v:,.0f}' for r_, v in ends) + f'; Reference {cref[-1]:,.0f}.')
+
+
+SHAPLEY_GAMES = (('moderate', 'pathway-moderate'), ('ambitious', 'pathway-ambitious'), ('tl', 'TL'))
+SHAPLEY_SUM_RTOL = 1e-3                     # MODEL v4.3.0: lever sum vs Reference - pathway (0.1%)
+
+
+def shapley_attribution():
+    """{game: {lever: Shapley value, kt}}, {game: (lever sum, Reference - run, relative difference)} from the stored
+    exact Shapley values (pathways/shapley.csv, games levers_moderate / levers_ambitious / levers_tl, 2^9 coalitions,
+    metric carbon_kt) and pathways/runs.csv. STOP if a lever sum differs from Reference - run by more than 0.1%."""
+    s = D.csv('pathways/shapley.csv')
+    s = s[s['metric'] == 'carbon_kt']
+    r = D.csv('pathways/runs.csv')
+    r = r[r['scenario'] == 'REF'].set_index('run')['carbon_kt']
+    val, chk = {}, {}
+    for g, run in SHAPLEY_GAMES:
+        t = s[s['game'] == f'levers_{g}'].set_index('player')['reduction']
+        if set(t.index) != set(N.LEVERS):
+            raise SystemExit(f'STOP: ED5: Shapley values of game levers_{g} not stored for every lever.')
+        val[g] = {L: float(t[L]) for L in N.LEVERS}
+        tot, d = sum(val[g].values()), float(r['REF'] - r[run])
+        chk[g] = (tot, d, (tot - d) / d)
+        if abs(chk[g][2]) > SHAPLEY_SUM_RTOL:
+            raise SystemExit(f'STOP: ED5: Shapley lever sum {tot:,.1f} kt vs Reference - {run} {d:,.1f} kt.')
+    return val, chk, float(r['REF'])
+
+
+def ed_shapley():
+    """MODEL v4.3.0 (ED5): Shapley attribution (order-independent) of the reduction of cumulative carbon 2026-2050 vs
+    the Reference, one row per lever L1-L9 in PAS 2080 order grouped by strategy, three bars per row (Moderate hollow,
+    Ambitious filled in the strategy colour, TL in the TL colour), a total row (= Reference - pathway); Mt CO2e, top
+    axis % of the Reference cumulative carbon. The sequential waterfalls (order-dependent) are Fig4."""
+    val, chk, ref = shapley_attribution()
+    order = list(N.LEVERS)
+    rows = order + ['total']
+    y = {L: len(rows) - 1 - k + (0 if L != 'total' else -0.4) for k, L in enumerate(rows)}
+    fig, ax = plt.subplots(figsize=S.figsize('double', 105))
+    h = 0.26
+    for L in rows:
+        col = S.STRATEGY[N.LEVER_STRATEGY[L]] if L != 'total' else S.INK
+        v = {g: (val[g][L] if L != 'total' else chk[g][0]) / 1e3 for g, _ in SHAPLEY_GAMES}
+        ax.barh(y[L] + h, v['moderate'], height=h, facecolor='white', edgecolor=col, lw=S.LW_OUTLINE * 1.2)
+        ax.barh(y[L], v['ambitious'], height=h, color=col, edgecolor=col, lw=S.LW_SEAM)
+        ax.barh(y[L] - h, v['tl'], height=h, color=S.TL, edgecolor=S.TL, lw=S.LW_SEAM)
+        if L == 'total':
+            for dy, g in ((h, 'moderate'), (0, 'ambitious'), (-h, 'tl')):
+                ax.text(v[g] + 0.08, y[L] + dy, f'{v[g]:.1f} Mt ({100 * v[g] * 1e3 / ref:.0f}%)', va='center',
+                        ha='left', fontsize=S.FONT_MIN + 0.5)
+    for St, ls in N.STRATEGY_LEVERS.items():
+        ks = [y[L] for L in ls]
+        ax.axhline(min(ks) - 0.5, color=S.MUTED, lw=S.LW_THIN * 0.7)
+        ax.text(1.005, (min(ks) + max(ks)) / 2, PM.STRATEGY_LABEL[St].replace(' ', '\n'), transform=ax.get_yaxis_transform(),
+                ha='left', va='center', multialignment='center', fontsize=S.FONT_MIN + 0.5, color=S.STRATEGY[St],
+                fontweight='bold')
+    ax.axvline(0, color=S.INK, lw=S.LW_THIN)
+    ax.set_yticks([y[L] for L in rows])
+    ax.set_yticklabels([f'{L} {N.LEVERS[L]}' for L in order] + ['Total (= Reference − pathway)'])
+    ax.set_ylim(y['total'] - 0.6, len(rows) - 0.5)
+    xmax = max(chk[g][0] for g, _ in SHAPLEY_GAMES) / 1e3
+    ax.set_xlim(min(0.0, min(min(v.values()) for v in val.values()) / 1e3 * 1.1), xmax * 1.28)
+    ax.set_xlabel('Reduction of cumulative embodied carbon 2026–2050 vs the Reference (Mt CO₂e)')
+    top = ax.secondary_xaxis('top', functions=(lambda x: 100 * x * 1e3 / ref, lambda p_: p_ * ref / 1e3 / 100))
+    top.set_xlabel('% of the Reference cumulative carbon 2026–2050', fontsize=S.FONT_SMALL)
+    top.tick_params(labelsize=S.FONT_SMALL)
+    ax.grid(axis='y', visible=False)
+    ax.set_title('Shapley attribution (order-independent) of each lever, per pathway', loc='left',
+                 fontsize=S.FONT_SIZE, pad=22)
+    ax.legend(handles=[Patch(facecolor='white', edgecolor=S.MUTED, lw=S.LW_OUTLINE * 1.2, label='Moderate Pathway'),
+                       Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious Pathway'),
+                       Patch(facecolor=S.TL, edgecolor=S.TL, label=N.TL['TL'])],
+              loc='lower right', bbox_to_anchor=(1.0, 0.08), fontsize=S.FONT_SMALL, frameon=False)
+    fig.subplots_adjust(left=0.24, right=0.90, bottom=0.10, top=0.86)
+    _save(fig, 'ED5_shapley_attribution',
+          note='Exact Shapley values (2^9 coalitions per game, pathways/shapley.csv), Reference cumulative '
+               f'{ref:,.0f} kt. Lever sum vs Reference - pathway: ' + '; '.join(
+                   f'{g} {t:,.3f} vs {d:,.3f} kt (relative difference {rel:.1e})' for g, (t, d, rel) in chk.items())
+               + '. Order-independent, unlike the sequential PAS 2080 waterfalls of Fig4.')
 
 
 def sf3():
@@ -470,7 +584,7 @@ def ed9():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Cumulative')
     fig.tight_layout()
-    _save(fig, 'ED8_replacement_variants')
+    _save(fig, 'ED6_replacement_variants')                          # MODEL v4.3.0: ED8 -> ED6
 
 
 def ed4():
@@ -583,8 +697,10 @@ def ed11():
 FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_census_replacement_rates': ed2,
            'ED3_household_formation_size': ed3, 'ED4_overbuild_absorption': ed4, 'ED5_pathways_annual': ed5,
            'ED6_waterfalls_by_demand_band': ed6, 'ED7_tl_shapley_indicators': ed8,
-           'ED8_replacement_variants': ed9, 'ED9_rollout_timing': ed10,
            'ED10_detailed_demand_bands': ed11,
+           # MODEL v4.3.0: ED5, ED6, ED7 and ED10 above are no longer rendered (not in figure_plan.PAPER_EXTENDED; code
+           # kept); the new ED5 and the renumbered ED6 / ED7 (outputs/data/ed_number_map.csv)
+           'ED5_shapley_attribution': ed_shapley, 'ED6_replacement_variants': ed9, 'ED7_rollout_timing': ed10,
            'SF2_mc_scatter_population': sf1, 'SF3_conditional_tl': sf2, 'SF4_lambda_sweep': sf3,
            'SF5_hd_estimators': sf4, 'SF6_consent_sizes': sf5}
 TABLES = {'EDT1_levels_by_typology': edt1}

@@ -26,11 +26,11 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig3_reference_boundaries.png`
 - Data: `data/aesa/annual.csv`, `data/montecarlo/annual_REF.csv`, `data/montecarlo/draws_REF.csv`, `data/baseline/projection.json`
-- This run: Cumulative 2026-2050 19,761 kt (LoE AR 4.46, AtP 17.8); Monte Carlo 95% interval 13,665-26,584 kt (2.5th-97.5th percentile of the cumulative carbon of the draws), 50% interval 17,558-21,986 kt; committed after 2050 (drawn at the lower bound): C1-C4 4,410 kt (2025 factors) and B2/B4 after 2050 3,091 kt (2050 factors held; 3,810 kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs.
+- This run: Cumulative 2026-2050 19,761 kt (LoE AR 4.46, AtP 17.8); Monte Carlo 95% interval 13,665-26,584 kt (2.5th-97.5th percentile of the cumulative carbon of the draws), 50% interval 17,558-21,986 kt; committed after 2050 (drawn at the lower bound): C1-C4 4,410 kt (2025 factors) and B2/B4 after 2050 3,091 kt (2050 factors held; 3,810 kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are shape-preserving (PCHIP) interpolation between annual values (dots), not smoothed across the observed -> modelled join after 2027; bands: Monte Carlo 90% band pchip, Monte Carlo 50% band pchip.
 
 ### Fig4_pathways
 
-**Fig4 The Pathways: annual carbon and the sequential waterfalls** — (a) Annual carbon 2026-2050 of the Reference, the Moderate and Ambitious Pathway, the Theoretical Limit and the PAS 2080 strategies S1-S3 (thin; Moderate solid, Ambitious dotted) against AR and AtP. (b-d) Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 ... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; order-free Shapley values in Fig7; split by demand band in ED6.
+**Fig4 The Pathways: annual carbon and the sequential waterfalls** — (a) Annual carbon 2026-2050 of the Reference, the Moderate and Ambitious Pathway, the Theoretical Limit and the PAS 2080 strategies S1-S3 (thin; Moderate solid, Ambitious dotted) against AR and AtP. (b-d) Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 ... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; order-free Shapley values in Fig7 and, per lever and pathway, in ED5.
 
 - Files: `paper_main/Fig4_pathways.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
@@ -58,7 +58,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig8_uncertainty.png`
 - Data: `data/sensitivity/tornado.csv`, `data/sensitivity/planetary_boundary.csv`, `data/pathways/montecarlo_draws.csv`, `data/pathways/montecarlo_conditional_tl.json`, `data/baseline/scenarios.json`, `data/aesa/results.json`
-- This run: (b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build years); its carbon floor is the 2026-27 pipeline plus maintenance. (a) Reference LoE AR 4.464; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = 0.499 (Wilson 0.485-0.513; n = 5,000); threshold 6.614 M (95% CI 6.611-6.616 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
+- This run: (b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build years); its carbon floor is the 2026-27 pipeline plus maintenance. (a) Reference LoE AR 4.464; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = 0.499 (Wilson 0.485-0.513; n = 5,000); P(LoE AR <= 1) on the same paired draws: REF 0.0000 (Wilson 0.0000-0.0008), pathway_ambitious 0.0002 (Wilson 0.0000-0.0011), TL 0.4988 (Wilson 0.4849-0.5127); threshold 6.614 M (95% CI 6.611-6.616 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
 ## Extended Data (paper_extended/)
 
@@ -93,51 +93,28 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/baseline/overbuild_absorption_log.csv`, `data/baseline/sensitivity_annual_carbon.csv`
 - This run: Theory fixes the direction (reversion to the equilibrium vacancy), not the speed; 2035 is the common RECC window; speed bracketed.
 
-### ED5_pathways_annual
+### ED5_shapley_attribution
 
-**ED5 Pathways against the boundaries (annual)**
+**ED5 Shapley attribution (order-independent): reduction of cumulative embodied carbon 2026-2050 by lever, Moderate and Ambitious Pathway and TL**
 
-- Files: `paper_extended/ED5_pathways_annual.png`
-- Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
-- This run: Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00.
+- Files: `paper_extended/ED5_shapley_attribution.png`
+- Data: `data/pathways/shapley.csv`, `data/pathways/runs.csv`
+- This run: Exact Shapley values (2^9 coalitions per game, pathways/shapley.csv), Reference cumulative 19,761 kt. Lever sum vs Reference - pathway: moderate 5,459.650 vs 5,459.650 kt (relative difference 1.7e-16); ambitious 9,494.443 vs 9,494.443 kt (relative difference 0.0e+00); tl 15,338.501 vs 15,338.501 kt (relative difference 0.0e+00). Order-independent, unlike the sequential PAS 2080 waterfalls of Fig4.
 
-### ED6_waterfalls_by_demand_band
+### ED6_replacement_variants
 
-**ED6 Sequential waterfalls by demand band, Moderate and Ambitious (PAS 2080 order)**
+**ED6 Low, High and Very High replacement: the Reference, the Pathways and TL**
 
-- Files: `paper_extended/ED6_waterfalls_by_demand_band.png`
-- Data: `data/pathways/waterfall.csv`
-- This run: Moderate: Reference 19,761 kt -> Moderate Pathway 14,302 kt -> TL 4,423 kt; Ambitious: Reference 19,761 kt -> Ambitious Pathway 10,267 kt -> TL 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 hierarchy order; each step is credited with what remains after higher-priority measures. Order-free Shapley values in Fig7. Outlined segments: reduction in credits from re-used dwellings (vacancy released, overbuild absorbed, re-occupation, unconsented additions), valued at the new-dwelling size they displace.
-
-### ED7_tl_shapley_indicators
-
-**ED7 TL: Shapley values from the Moderate Pathway and human-terms indicators**
-
-- Files: `paper_extended/ED7_tl_shapley_indicators.png`
-- Data: `data/pathways/shapley.csv`, `data/pathways/theoretical_limit.json`
-- This run: TL re-occupies 162,612 released dwellings (attributed TL1 0, TL2 116,869, in proportion R1:R2). (c) The vacancy parameter falls to 0 by 2035 (TL2); the physical (implied) vacancy falls as the released stock is re-occupied over 2027-2050.
-
-### ED8_replacement_variants
-
-**ED8 Low, High and Very High replacement: the Reference, the Pathways and TL**
-
-- Files: `paper_extended/ED8_replacement_variants.png`
+- Files: `paper_extended/ED6_replacement_variants.png`
 - Data: `data/sensitivity/replacement_variants.csv`, `data/pathways/annual.csv`
 
-### ED9_rollout_timing
+### ED7_rollout_timing
 
-**ED9 Roll-out timing (the Pathways by 2030, 2035, 2045)**
+**ED7 Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon**
 
-- Files: `paper_extended/ED9_rollout_timing.png`
+- Files: `paper_extended/ED7_rollout_timing.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
-
-### ED10_detailed_demand_bands
-
-**ED10 Detailed demand bands: floor area (Fig1) and Reference carbon (Fig2a)**
-
-- Files: `paper_extended/ED10_detailed_demand_bands.png`
-- Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`, `data/baseline/annual_by_stage.csv`, `data/baseline/overbuild_2026.json`, `data/bands_display_map.csv`
-- This run: Detailed demand bands behind the six display bands of Fig1 and Fig2 (data/bands_display_map.csv).
+- This run: (c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 13,737, Moderate Pathway 14,302, Moderate Pathway, full roll-out by 2045 (sensitivity) 15,395, Ambitious Pathway, full roll-out by 2030 (sensitivity) 9,350, Ambitious Pathway 10,267, Ambitious Pathway, full roll-out by 2045 (sensitivity) 12,091; Reference 19,761.
 
 ### EDT1_levels_by_typology
 
@@ -552,3 +529,4 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - PDF output: retired in MODEL v3.3.1: figures are PNG only (600 dpi full, 200 dpi light)
 - MODEL v3.3.2 renumbering: Fig2-Fig4 -> Fig1-Fig3; Fig5 waterfalls -> Fig4 (b-d) with the annual pathways (a); Fig5 reduction by demand band (new); Fig1 schematic -> SF1 (SF1-SF5 -> SF2-SF6)
 - MODEL v4.2.2 Fig5: Fig5 reduction by demand band -> SF7 (Extended Data full at ten items); the Fig5 model schematic was added and then dropped; Fig5 is vacant, no other figure renumbered
+- MODEL v4.3.0 Extended Data: ED5 pathways annual, ED6 waterfalls by demand band, ED7 TL Shapley and indicators, ED10 detailed demand bands no longer rendered (code kept); new ED5 Shapley attribution; ED8, ED9 -> ED6, ED7 (outputs/data/ed_number_map.csv)

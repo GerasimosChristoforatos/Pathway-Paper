@@ -29,7 +29,8 @@ nine levers (512 subsets) at Moderate and Ambitious (Reference -> Moderate / Amb
 TL from the Reference (512), and TL1-TL9 from the Moderate Pathway (512; the TL waterfall's game). Every run is cached
 by its lever setting (levers.key) and reused across strategies, games and variants.
 WATERFALLS (sequential, PAS 2080 hierarchy order): (a) Reference -> +L1 ... +L9 at a setting (= the Moderate /
-Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL9 (= TL), by demand band, at Moderate and Ambitious (ED6); MODEL
+Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL9 (= TL), by demand band, at Moderate and Ambitious
+(ED6 until MODEL v4.3.0, no longer rendered); MODEL
 v3.3.1: Reference -> TL1 ... TL9 cumulative (Fig5c; waterfall_tl_from_reference).
 Each step is credited with what remains after the higher-priority measures; sequential_vs_shapley.csv compares the
 steps with the order-free Shapley values. No timing step: TL is adopted on the same logistic as every level.
@@ -1185,6 +1186,7 @@ def write(res, identity):
     _json(tl_summary(res), 'theoretical_limit.json')
     pd.DataFrame(BANDS.display_map()).to_csv(layout.writing(layout.data('bands_display_map.csv', frozen=False)),
                                             index=False)         # MODEL v4.2: the six display bands
+    FP.write_ed_number_map()                                      # MODEL v4.3.0: Extended Data numbering old -> new
     _json(dict(res['params'], run_mode=RUN_MODE, identity_max_rel_diff=max(identity.values()),
                identity_checks=identity, sources=LV.SOURCES), 'levers.json')
 

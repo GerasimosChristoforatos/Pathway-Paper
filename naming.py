@@ -150,6 +150,9 @@ BANDS = {'growth': 'Population growth',
 # MODEL v3.0.0: bands whose values are negative by construction (drawn as outlined segments hanging from the
 # top of the positive stack; the data keep the sign). MODEL v3.1.0/v3.2.0 adds 'Vacancy released' (bands.py).
 NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl')
+# MODEL v4.2.1 (docs/CHANGELOG_v4_2_1.md): the household-size band is signed, d_hh x occupied area - population growth
+# x OLF: positive when households dilute, negative when they consolidate (recorded here in MODEL v4.3.0)
+SIGNED_BANDS = ('smaller_households',)
 BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BRANZ rate)',
                'replacement_residual': 'Historical replacement: net unconsented additions (calibrated residual)',
                'retirement_villages': 'Retirement villages (out of scope)',

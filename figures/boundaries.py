@@ -1,12 +1,12 @@
-"""The diagnostics of the planetary-boundary layer (AESA; figure_plan.DIAGNOSTICS['boundaries']): D18 every AESA
-sensitivity row, D21 the Monte Carlo fan with the AR base window, D22 the boundaries, D23 the annual level of
-exceedance, D24 the headroom, D25 / D26 annual and cumulative carbon by demand band, D27 the variants.
+"""Supplementary SF9 (MODEL v4.3.0; the D22 diagnostic before): how the planetary-boundary budgets AR and AtP are
+built: the two boundaries, the population modifier and the components.
 
-Drawn from the figure source data written by boundaries.py (outputs/data/figure_source/<figure id>.json) only; the
-model is never run here. Every boundary is drawn with its zones and AtP dotted (style.boundary_zones /
-boundary_hzones). Sign rules (figures/draw.py): D25 and D26 stack the positive bands up from zero and the negative
-bands (overbuild absorbed, unconsented additions) down from zero, the net a black line.
+Drawn from the figure source data written by boundaries.py (outputs/data/figure_source/D22_boundaries.json) only; the
+model is never run here. The other AESA diagnostics (D18, D21, D23-D27) are no longer drawn (MODEL v4.3.0); their data
+files are still written.
 """
+
+import re
 
 import matplotlib.pyplot as plt
 
@@ -14,18 +14,32 @@ from figures import data as D
 from figures import draw as P
 from figures import style as S
 
-VARS = ('LOW', 'REF', 'HIGH', 'VHIGH')            # MODEL v3.3.0: + Very High replacement
-
 
 def _src(fid):
     return D.src(fid), [f'figure_source/{fid}.json']
 
 
-def scen_line(k, **kw):
-    st = dict(S.SCENARIO[k])
-    st.pop('label')
-    st.update(kw)
-    return st
+# MODEL v4.3.0 (suite rule: plain English, no internal symbols in a figure): the D22 component rows are stored with the
+# aesa.py notation; each is shown under a plain-English label (definitions: aesa.py module docstring, Horup et al. 2025
+# Eq. 1, Hjalsted et al. 2021 Eqs. 5-6 and S1). The symbol a row must start with is asserted, so a reordered table stops.
+PLAIN_COMPONENTS = (('SOS', 'Global safe operating space,\nclimate (kg CO₂e per year)'),
+                    ('I_glob', 'Global annual emissions, same\nsource (kg CO₂e per year)'),
+                    ('Ī_sec,base', 'Sector emissions, mean\n{window} (kt CO₂e per year)'),
+                    ('α', 'Ability-to-pay scaling factor\n(base year {b}, PPP)'),
+                    ('g_W / g_NZ', 'World / New Zealand\nGDP per person'),
+                    ('s_sec', 'Sector share of New Zealand\nfinal consumption expenditure'),
+                    ('B_AtP / B_AR', 'AtP / AR boundary ratio\n(every year)'))
+
+
+def _plain_table(rows):
+    assert len(rows) == len(PLAIN_COMPONENTS), rows
+    out = []
+    for (label, value), (sym, plain) in zip(rows, PLAIN_COMPONENTS):
+        assert label.startswith(sym), (label, sym)
+        w = re.search(r'(\d{4}–\d{4})', label)
+        b = re.search(r'b = (\d{4})', label)
+        out.append([plain.format(window=w.group(1) if w else '', b=b.group(1) if b else ''), value])
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -57,14 +71,13 @@ def sf9_budget_construction():
     a.axhline(1, color=S.MUTED, lw=S.LW_THIN, ls=':')
     a.set_xlim(t0, t1)
     a.set_ylabel(f'Index ({t0} = 1)')
-    P.panel(a, 'b', f'Population modifier\n[P_NZ(t) / P_NZ({t0})] · [P_W({t0}) / P_W(t)]')
+    P.panel(a, 'b', f'Population modifier: New Zealand share of\nworld population, relative to {t0}')
     a = fig.add_subplot(gs[2])
     a.axis('off')
-    t = a.table(cellText=d['table'], colLabels=['Component', 'Value'], loc='center', cellLoc='left',
-                colWidths=[0.74, 0.30])
+    t = a.table(cellText=_plain_table(d['table']), colLabels=['Component', 'Value'], cellLoc='left',
+                colWidths=[0.72, 0.28], bbox=[0, 0, 1, 1])     # MODEL v4.3.0: the table fills the panel, below its title
     t.auto_set_font_size(False)
     t.set_fontsize(S.FONT_MIN)
-    t.scale(1, 1.5)
     for cell in t.get_celld().values():
         cell.set_linewidth(S.LW_THIN)
         cell.set_edgecolor('#BDBDBD')

@@ -129,12 +129,11 @@ def sf1_households():
            label=f"r = {fit['r']:+.2f}, p = {fit['p']:.0e}")
     dP_l, dS_l = d4['dP_late'], d4['dS_late']
     late = [int(y) for y in d4['late_years']]
-    a.scatter(dP_l.values / 1e3, dS_l.values, facecolor='none', edgecolor=S.ACCENT_ORANGE, s=22, zorder=4,
-              lw=S.LW_THIN, label=f'{late[0]}–{late[-1] % 100:02d}: consent-derived, no census check')
-    for y in (2024, 2025):                          # label the left point to the left, the right one to the right
-        left = dP_l[y] <= dP_l[[2024, 2025]].min()
-        a.annotate(str(y), (dP_l[y] / 1e3, dS_l[y]), xytext=(-4 if left else 4, 4), textcoords='offset points',
-                   ha='right' if left else 'left', fontsize=S.FONT_MIN, color=S.ACCENT_ORANGE)
+    marks = ('o', 's', 'D', '^')
+    assert len(late) <= len(marks), late
+    for y, mk in zip(late, marks):        # MODEL v4.3.0: one hollow marker per year, named in the legend (no in-plot text)
+        a.scatter([dP_l[y] / 1e3], [dS_l[y]], facecolor='none', edgecolor=S.ACCENT_ORANGE, s=22, zorder=4,
+                  marker=mk, lw=S.LW_THIN, label=f'{y}: consent-derived, no census check')
     a.axhline(0, color=S.INK, lw=S.LW_THIN)
     a.set_xlabel('Population growth (thousand per year)')
     a.set_ylabel('Change in household size (persons per household)')
@@ -148,12 +147,11 @@ def sf1_households():
         a.axvline(y + 0.5, color=S.INK, lw=S.LW_THIN, ls=':')
     a.set_ylabel('Households per consent')
     a.set_xlim(1991, 2026)
-    a.set_ylim(0, 1.45)
     a.set_ylim(0, 1.75)                                                # room for the legend
     P.panel(a, 'c', 'Households per consent')
     a.legend(handles=[Patch(color=S.MUTED, label='census-benchmarked'),
                       Patch(color=S.ACCENT_ORANGE, label='2019 on: consent-derived')], loc='upper left', ncol=2,
-             fontsize=S.FONT_MIN)
+             fontsize=S.FONT_MIN, framealpha=1, facecolor='white', edgecolor='none')   # over the census lines
 
     fig.tight_layout()
     S.save_figure(fig, 'SF1_households', source=['figure_source/D02_households.json',

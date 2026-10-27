@@ -29,6 +29,8 @@ registry() lists every colour of every group; tests/test_figures_v3.py requires 
 group.
 """
 import os
+import re
+import tomllib
 
 import matplotlib
 import numpy as np
@@ -55,7 +57,7 @@ LW_THIN = 0.5                                   # grid, edges, reference lines
 LW_BOLD = 1.5                                   # the Reference / emphasised line
 import runprofile  # noqa: E402
 
-DPI = runprofile.get('dpi')                    # light 200, full 600
+DPI = int(os.environ.get('PATHWAY_DPI') or runprofile.get('dpi'))   # light 200, full 600; MODEL v4.3.1: redraw.py --dpi
 
 RC = {
     'font.family': 'sans-serif', 'font.sans-serif': [FONT], 'font.size': FONT_SIZE,
@@ -70,6 +72,56 @@ RC = {
     'pdf.fonttype': 42, 'ps.fonttype': 42, 'svg.fonttype': 'none',
     'axes.formatter.use_mathtext': True, 'mathtext.default': 'regular',
 }
+
+# ---------------------------------------------------------------------------
+# MODEL v4.3.1: the user palette (palette.toml at the repository root; another file through the environment variable
+# PATHWAY_PALETTE, as redraw.py --palette sets it). Five groups of meanings; this module is the only reader, and every
+# figure takes these colours from the constants below. Each key colours one meaning only: nothing else is derived
+# from it (the lever shades, typologies, tornado, variants, boundaries, sub-bands and neutrals are fixed literals).
+# ---------------------------------------------------------------------------
+PALETTE_KEYS = {
+    'demand_bands': ('population_growth', 'household_size_change', 'extra_space', 'vacancy', 'net_replacement',
+                     'market_balance', 'maintenance'),
+    'materials': ('timber', 'steel', 'concrete', 'plastics_paint', 'plasterboard', 'others', 'soil_carbon_loss'),
+    'life_cycle_stages': ('a1_a3', 'a4_a5', 'soil_carbon_loss', 'maintenance', 'committed_b2_b4', 'committed_c1_c4'),
+    'runs': ('reference', 'moderate', 'ambitious', 'theoretical_limit'),
+    'strategies': ('avoid', 'switch', 'improve')}
+PALETTE_DEFAULT = os.path.join(ROOT, 'palette.toml')
+_HEX = re.compile(r'^#[0-9A-Fa-f]{6}$')
+
+
+class PaletteError(ValueError):
+    pass
+
+
+def load_palette(path):
+    """{group: {key: '#RRGGBB'}} from a palette file. Every group and key of PALETTE_KEYS must be present, with a
+    six-digit hex value; unknown groups or keys are an error too (a misspelt key would otherwise be ignored)."""
+    with open(path, 'rb') as f:
+        raw = tomllib.load(f)
+    errors = [f'unknown group [{g}]' for g in raw if g not in PALETTE_KEYS]
+    out = {}
+    for g, keys in PALETTE_KEYS.items():
+        sec = raw.get(g)
+        if not isinstance(sec, dict):
+            errors.append(f'missing group [{g}]')
+            continue
+        errors += [f'[{g}] unknown key {k!r}' for k in sec if k not in keys]
+        for k in keys:
+            v = sec.get(k)
+            if v is None:
+                errors.append(f'[{g}] missing key {k!r}')
+            elif not isinstance(v, str) or not _HEX.match(v):
+                errors.append(f'[{g}] {k} = {v!r} is not a "#RRGGBB" hex colour')
+        out[g] = {k: sec[k].upper() for k in keys if isinstance(sec.get(k), str) and _HEX.match(sec[k])}
+    if errors:
+        raise PaletteError(f'{path}: ' + '; '.join(errors))
+    return out
+
+
+PALETTE_PATH = os.environ.get('PATHWAY_PALETTE') or PALETTE_DEFAULT
+PALETTE = load_palette(PALETTE_PATH)
+_DB, _MAT, _ST, _RUN, _SG = (PALETTE[g] for g in PALETTE_KEYS)
 
 # ---------------------------------------------------------------------------
 # Colours (hex; checked by tools/palette_check.py)
@@ -103,14 +155,15 @@ ZONE_GID = 'boundary_zone'
 ACCENT_ORANGE = '#C2571A'
 ACCENT_BLUE = '#1F5FA8'
 
-# runs
-REFERENCE = '#4D4D4D'
+# runs (palette.toml [runs])
+REFERENCE = _RUN['reference']
+NEUTRAL_DARK = '#4D4D4D'          # MODEL v4.3.1: a dark neutral grey (not the Reference): ED6 histograms, SF17 bars
 # MODEL v2.1.2: TL a deep forest green, far darker than the zones; at CAM02-UCS J' 25 it is >= 10 from AR, AtP,
 # the Reference, the Pathways, every lever, Population growth and the zones under every simulated deficiency (a mid green
 # at the lightness of AR merges with it under deuteranomaly / protanomaly)
-TL = '#13412B'
+TL = _RUN['theoretical_limit']
 TL_MARKER = dict(marker='o', ms=8)             # TL on point plots: a larger circle (no star)
-SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),
+SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),    # the Reference run itself
             'LOW': dict(color='#B5B5B5', ls='--', lw=LW, label='Low replacement'),
             'HIGH': dict(color='#6E6E6E', ls=':', lw=LW, label='High replacement'),
             # MODEL v3.3.0: Very High replacement (trend continues), the darkest grey, dash-dot
@@ -128,15 +181,15 @@ MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% b
 # space-per-person family, S2 Switch the land brown, S3 Improve the construction blue; the deep mauve P2_ANCHOR stays
 # the 2026 overbuild band.
 LEVER = {'L4': '#DFA538', 'L5': '#944E02', 'L1': '#F4D168', 'L2': '#AA7C9D', 'L3': '#E1D2DD',
-         'L8': '#4A6192', 'L9': '#ABD3FA', 'L7': '#8D6545', 'L6': '#C7B395'}
-P2_ANCHOR = '#683861'
-# MODEL v4.3.0: the typology colours (already used for the typologies in the consent-size, estimator and Monte Carlo
-# figures; named here so every figure takes them from one place)
-TYPOLOGY = {'Detached': LEVER['L4'], 'Townhouses': LEVER['L8'], 'Apartments': LEVER['L2']}
-STRATEGY = {'S1': LEVER['L4'], 'S2': LEVER['L7'], 'S3': LEVER['L8']}
-PATHWAY = dict(STRATEGY, pathway='#EB6123')
-# MODEL v4.2.1: the Moderate / Ambitious Pathway lines of Fig3a and the Fig4 waterfalls (orange, darker orange)
-PATHWAY_SETTING = {'moderate': '#EB6123', 'ambitious': '#A8400C'}       # strategies and the Moderate / Ambitious Pathway (every lever)
+         'L8': '#4A6192', 'L9': '#ABD3FA', 'L7': '#8D6545', 'L6': '#C7B395'}      # fixed (not in palette.toml)
+P2_ANCHOR = '#683861'                   # the detailed band '2026 overbuild' (SF2c, SF5): fixed
+# MODEL v4.3.0: the typology colours; MODEL v4.3.1: fixed literals (were aliases of the L4 / L8 / L2 lever shades)
+TYPOLOGY = {'Detached': '#DFA538', 'Townhouses': '#4A6192', 'Apartments': '#AA7C9D'}
+# MODEL v4.3.1: palette.toml [strategies] (were aliases of the L4 / L7 / L8 lever shades)
+STRATEGY = {'S1': _SG['avoid'], 'S2': _SG['switch'], 'S3': _SG['improve']}
+# MODEL v4.2.1: the Moderate / Ambitious Pathway (orange, darker orange); MODEL v4.3.1: palette.toml [runs]
+PATHWAY_SETTING = {'moderate': _RUN['moderate'], 'ambitious': _RUN['ambitious']}
+PATHWAY = dict(STRATEGY, pathway=PATHWAY_SETTING['moderate'])     # 'pathway': the Moderate Pathway (Fig5, ED3)
 # MODEL v2.1.2: Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
 SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
            'ambitious': dict(ls='--', marker_fill='none', label='Ambitious')}
@@ -145,40 +198,57 @@ SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
 # Population growth (untargeted) the deep green-blue hue, solid, clearly lighter since MODEL v2.1.2 (J' 47, was 11);
 # Historical replacement a darker lilac with a slightly bluer hue (MODEL v2.1.2) than the Recent replacement surge,
 # which keeps the L3 face with a fine, light hatch (both replacement bands are targeted by L3)
+# MODEL v4.3.1: the seven display bands of the figures (bands.DISPLAY) take palette.toml [demand_bands]; the detailed
+# sub-bands drawn on their own in SF2c / SF5 (2026 overbuild, overbuild absorbed, demolition replacement, unconsented
+# additions, surge, ...) keep fixed literals. growth, household size, extra space, vacancy and maintenance are both a
+# detailed and a display band and follow the palette.
 UNTARGETED_HATCH = None
-GROWTH = '#586E71'
-REPLACEMENT = '#D0BBDC'
+GROWTH = _DB['population_growth']
+REPLACEMENT = '#D0BBDC'                 # the detailed band 'replacement' (demolition replacement, SF2c): fixed
 HATCH_LIGHT = '#FFFFFF'                 # the fine hatch of the surge band: drawn in a light colour on its light face
+DISPLAY_BAND = {'growth': _DB['population_growth'], 'smaller_households': _DB['household_size_change'],
+                'extra_space': _DB['extra_space'], 'vacancy': _DB['vacancy'],
+                'net_replacement': _DB['net_replacement'], 'market_balance': _DB['market_balance'],
+                'maintenance': _DB['maintenance']}
 BAND = {'growth': (GROWTH, None),
-        'smaller_households': (LEVER['L1'], None),
-        'extra_space': (LEVER['L4'], None),
-        'vacancy': (LEVER['L2'], None),
+        'smaller_households': (DISPLAY_BAND['smaller_households'], None),
+        'extra_space': (DISPLAY_BAND['extra_space'], None),
+        'vacancy': (DISPLAY_BAND['vacancy'], None),
         'overbuild_2026': (P2_ANCHOR, None),
         'overbuild_absorbed': ('#8D5D93', None),      # negative: outline only (P2 mauve family)
         'replacement': (REPLACEMENT, None),
         'unconsented': ('#BA9AC1', None),             # negative: outline only (replacement lilac family, darker)
         'redevelopment': (LEVER['L3'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
-        'released_tl': ('#95C283', None),             # negative: outline only (TL green family)
-        # MODEL v3.2.0 (A2, from v3.1.0): 'Vacancy released' (negative, outline; the L2 vacancy family, darker),
-        # 'Surplus kept vacant (2050)' (a pale neutral, 2050 only)
+        'released_tl': ('#95C283', None),             # negative: outline only (TL green family); SF17 re-occupation
+        # MODEL v3.2.0 (A2, from v3.1.0): 'Vacancy released' (negative, outline; the L2 vacancy family, darker).
+        # MODEL v4.3.1: 'Surplus kept vacant (2050)' removed (TL only, never drawn in a final figure)
         'vacancy_released': ('#481870', None),
-        'surplus_vacant': ('#D1E6C1', None),
-        'maintenance': ('#9E9E9E', None)}      # neutral; MODEL v3.0.0 slightly darker (CVD distance >= 10)
+        'maintenance': (DISPLAY_BAND['maintenance'], None)}
 BAND_ORDER = list(BAND)
 NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl')
 BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}
+
+
+def band_colour(bid):
+    """MODEL v4.3.1: the colour of a band id (display band, detailed band or history band), one rule for faces,
+    outlines of negative parts and legend swatches."""
+    if bid in DISPLAY_BAND:
+        return DISPLAY_BAND[bid]
+    if bid in BAND:
+        return BAND[bid][0]
+    if bid in HISTORY_BAND:
+        return HISTORY_BAND[bid][0]
+    raise KeyError(f'band_colour: unknown band {bid!r}')
 LW_OUTLINE = 0.9                        # the outline of a negative band segment in a cumulative bar
 
-# carbon components (labels in naming.COMPONENTS)
-COMPONENT = {'materials_construction': (LEVER['L8'], None),     # A1-A3: P3 dark blue
-             'soil': (LEVER['L7'], None),                       # P4 brown
-             'maintenance': (BAND['maintenance'][0], None),     # B2, B4 within 2026-2050
-             'committed': ('#D0D0D0', None)}                    # after 2050, a range: drawn hollow (Fig3)
-
-# life-cycle stages (Fig3a; labels in naming.STAGES): A1-A3 the L8 shade, A4-A5 the L9 shade, soil the L7
-# shade, maintenance its band colour; stacked A1-A3, A4-A5, soil, maintenance (A4-A5 and maintenance not adjacent)
-STAGE = {'a1a3': COMPONENT['materials_construction'], 'a4a5': (LEVER['L9'], None), 'soil': COMPONENT['soil'],
-         'maintenance': COMPONENT['maintenance']}
+# life-cycle stages (Fig2c, Fig2d; labels in naming.STAGES), stacked A1-A3, A4-A5, soil, maintenance; MODEL v4.3.1:
+# palette.toml [life_cycle_stages] (were aliases of the L8 / L9 / L7 lever shades and the maintenance band)
+STAGE = {'a1a3': (_ST['a1_a3'], None), 'a4a5': (_ST['a4_a5'], None), 'soil': (_ST['soil_carbon_loss'], None),
+         'maintenance': (_ST['maintenance'], None)}
+# carbon components of Fig3b (committed after 2050): B2/B4 and C1-C4, palette.toml [life_cycle_stages]
+COMPONENT = {'materials_construction': STAGE['a1a3'], 'soil': STAGE['soil'],
+             'maintenance': (_ST['committed_b2_b4'], None),     # committed after 2050: B2, B4
+             'committed': (_ST['committed_c1_c4'], None)}       # committed after 2050: C1-C4
 
 # unexplained building of the history (Fig2, D05c, K1): a faded reddish face, no hatch (MODEL v2.1.2; face, hatch,
 # hatch colour); may be negative
@@ -188,18 +258,19 @@ UNEXPLAINED = ('#C6A3A4', None, None)
 # (negative, out of scope) and the unexplained building its faded reddish face
 HISTORY_BAND = {'growth': BAND['growth'], 'smaller_households': BAND['smaller_households'],
                 'extra_space': BAND['extra_space'], 'vacancy': BAND['vacancy'],
-                'replacement_census': (REPLACEMENT, None), 'retirement_villages': ('#4E463E', None),
+                'replacement_census': (DISPLAY_BAND['net_replacement'], None),   # the census net replacement
+                'retirement_villages': ('#4E463E', None),
                 'unexplained': (UNEXPLAINED[0], None)}
 # the untargeted band (Fig4): the population-growth grey, hatched
 UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)      # solid since MODEL v2.1.1
 
 # materials: the six Pride-flag stripes (author decision, baseline-pb-v2; one order in every
 # figure), soil faded and hatched on top
-MATERIAL = [('TIMBER', 'Timber', '#750787'), ('STEEL', 'Steel', '#004DFF'),
-            ('CONCRETE (incl. reinforced)', 'Concrete', '#008026'),
-            ('PLASTICS & PAINT', 'Plastics & paint', '#FFED00'),
-            ('PLASTERBOARD', 'Plasterboard', '#FF8C00'), ('OTHERS', 'Others', '#E40303'),
-            ('SOIL', 'Soil carbon loss', '#B5A48B')]
+MATERIAL = [('TIMBER', 'Timber', _MAT['timber']), ('STEEL', 'Steel', _MAT['steel']),
+            ('CONCRETE (incl. reinforced)', 'Concrete', _MAT['concrete']),
+            ('PLASTICS & PAINT', 'Plastics & paint', _MAT['plastics_paint']),
+            ('PLASTERBOARD', 'Plasterboard', _MAT['plasterboard']), ('OTHERS', 'Others', _MAT['others']),
+            ('SOIL', 'Soil carbon loss', _MAT['soil_carbon_loss'])]     # MODEL v4.3.1: palette.toml [materials]
 SOIL = dict(alpha=0.5, hatch=None, hatchcolor=None)          # MODEL v3.0.0: only the surge band is hatched
 
 # stacked bars and areas (MODEL v2.1.1): no white borders between segments. Every segment's edge is its own face
@@ -219,6 +290,8 @@ def fill(face, hatch=None, hatchcolor=None, alpha=1.0):
 # categorical groups in the diagnostics (sensitivity groups, the cases of D17): the Okabe-Ito
 # palette (Okabe & Ito 2008, Color Universal Design), distinguishable under the common colour-vision
 # deficiencies; one colour per group, always with a label
+# MODEL v4.3.1: the tornado colours, fixed literals (were aliases of the Improve blue and the Moderate orange)
+TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = '#4A6192', '#EB6123', MUTED
 QUALITATIVE = ['#000000', '#E69F00', '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7']
 
 # sequential ramp for continuous fields (the solution-space LoE, H10): light to dark blue, lightness

@@ -52,7 +52,7 @@ def ed6_mc_input_distributions():
               ('half_life', dr['half_life'], [q.loc['half_life', k] for k in ('q05', 'q50', 'q95')], 'Years')]
     fig, ax = plt.subplots(1, 5, figsize=S.figsize('double', 62))
     for a, (c, v, qs, xl) in zip(ax, panels):
-        a.hist(v, bins=30, color=S.REFERENCE, alpha=0.6, lw=0)
+        a.hist(v, bins=30, color=S.NEUTRAL_DARK, alpha=0.6, lw=0)
         for k, x in enumerate(qs):
             a.axvline(x, color=S.INK, lw=S.LW_THIN, ls='-' if k == 1 else ':')
         a.set_title(N.MC_INPUT[c], fontsize=S.FONT_SMALL, loc='left')

@@ -57,6 +57,7 @@ import aesa  # noqa: E402
 import bands as BANDS  # noqa: E402
 import engine  # noqa: E402
 import events as EV  # noqa: E402
+import figure_plan as FP  # noqa: E402
 import layout  # noqa: E402
 import levers as LV  # noqa: E402
 import naming as N  # noqa: E402

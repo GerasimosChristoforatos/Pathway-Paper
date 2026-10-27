@@ -126,8 +126,9 @@ def test_figures_leave_the_data_byte_identical():
         return out
     import importlib
     before = hashes()
-    for fid in ('Fig4_pathways', 'Fig7_shapley_levers', 'SF4_lambda_sweep', 'D28_pathways_annual', 'D10_floor_area_bridge',
-                'D25_annual_carbon_by_band', 'D01_population', 'D37_mc_convergence', 'D16_one_at_a_time'):
+    # MODEL v4.3.0: one figure of every drawing module (main, Extended Data, Supplementary)
+    for fid in ('Fig4_pathways', 'Fig6_shapley_levers', 'ED4_one_at_a_time', 'ED9_lever_annual', 'ED10_rollout_timing',
+                'SF1_households', 'SF6_hindcast', 'SF7_completion_lag', 'SF9_budget_construction', 'SF14_mc_convergence'):
         mod = next(m for _, f, m in FP.all_figures() if f == fid)
         importlib.import_module(mod).FIGURES[fid]()
     assert hashes() == before

@@ -1,0 +1,118 @@
+{
+ "figure": "ED9_lever_annual",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "axes": [
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "kt CO\u2082e per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "kt CO\u2082e per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "kt CO\u2082e per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "0",
+  "1,000",
+  "1,250",
+  "1,500",
+  "250",
+  "500",
+  "750",
+  "Ambitious",
+  "Embodied carbon per year: the Reference and each lever alone at",
+  "L1 Household size",
+  "L2 Vacancy rate",
+  "L3 Building lifetime",
+  "L4 Extra space",
+  "L5 Occupancy density",
+  "L6 Brownfield-first development",
+  "L7 Soil-aware planning",
+  "L8 Material carbon efficiency",
+  "L9 Construction-stage carbon",
+  "Moderate",
+  "Reference",
+  "Theoretical Limit",
+  "kt CO\u2082e per year"
+ ],
+ "note": "Each panel: one lever alone; the other levers at the Reference. Lines: PCHIP display interpolation through the annual values.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_outside": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "pathways/lever_annual.csv",
+  "baseline/overbuild_2026.json"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": true,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

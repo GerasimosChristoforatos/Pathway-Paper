@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # MODEL v3.3.2: paper Fig1-Fig8, Extended Data ED1-ED10, supplementary SF1-SF6 (figure_plan.py)
+    # MODEL v4.3.0: paper Fig1-Fig7, Extended Data ED1-ED10, supplementary SF1-SF17 in folders (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -45,6 +45,13 @@ FILES = [
     ('data/baseline/gap_2026.json', 'The 2026 gap between observed building and the requirement',
      'gap_2026.py'),
     ('data/baseline/overbuild_2026.json', 'The 2026 overbuild and how it is absorbed', 'tools/overbuild_2026.py'),
+    ('data/ed_number_map.csv', 'MODEL v4.3.0: Extended Data numbering, old -> new (figure_plan.ED_NUMBER_MAP)',
+     'figure_plan.py'),
+    ('data/bands_display_map.csv', 'MODEL v4.2: detailed demand band -> the six display bands of the figures',
+     'pathways.py'),
+    ('data/diagnostics/lag_comparison_annual.csv', 'Annual floor area by broad demand group under zero- and 17-month completion timing', 'tools/demand_balance.py'),
+    ('data/diagnostics/market_balance_history_projection.csv', 'Historical and projected floor area in the separate coarse market-balance classification; historical overbuild is not identified', 'tools/demand_balance.py'),
+    ('data/diagnostics/lag_comparison_summary.json', 'Controlled zero- versus 17-month consent-to-completion comparison, demographic-path checks and observed consent cohorts', 'tools/demand_balance.py'),
     ('data/baseline/scenarios.json', 'Totals of the projection variants (Low, Reference, High replacement and their '
      'sensitivities)', 'tools/replacement_scenarios.py'),
     ('data/baseline/variants_annual.csv', 'Annual floor area and carbon of every projection variant',
@@ -64,7 +71,7 @@ FILES = [
      'under the household-size sensitivities (Stats NZ Low / High variant; 2018-2023 census pace)',
      'tools/sensitivity_tables.py'),
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
-     'AR and AtP (D42; the AR base-window rows in Fig8a)', 'tools/sensitivity_tables.py'),
+     'AR and AtP (D42; the AR base-window rows in Fig7a)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/replacement_variants.csv', 'The Reference, the Moderate / Ambitious Pathway and TL under Low / Reference '
      '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED9)',
      'tools/sensitivity_tables.py'),
@@ -131,6 +138,7 @@ FILES = [
     ('reports/validation.md', 'Validation report', 'validation.py'),
     ('reports/gap_2026.md', 'The 2026 gap', 'gap_2026.py'),
     ('reports/overbuild_2026.md', 'The 2026 overbuild', 'tools/overbuild_2026.py'),
+    ('reports/market_balance.md', 'Historical / projected market-balance classification and controlled completion-lag comparison', 'tools/demand_balance.py'),
     ('reports/scenarios.md', 'The projection variants', 'tools/replacement_scenarios.py'),
     ('reports/reality_checks.md', 'Reality checks: the projection against the 1991-2025 range',
      'tools/figures_report.py'),
@@ -142,13 +150,16 @@ FILES = [
      'texts, note, drawing script, whether maintenance and the boundary styling are drawn (figaudit.py; read by the '
      'tests)', 'style.save_figure'),
     ('INDEX.md', 'This index', 'indexes.py'),
+    ('figure_manifest.csv', 'MODEL v4.3.0: every figure (main, Extended Data, Supplementary): id, file, section, '
+     'source script, source data, caption stub', 'tools/figure_manifest.py'),
     # MODEL v3.0.0 figures and documents (figures/ package; figure_plan.py)
     ('FIGURES.md', 'Every figure with its file, data sources, caption and run-specific note', 'figures/index.py'),
     ('run_meta.json', 'Run metadata: profile, draws, seeds, git hash, input hash, timestamp, step timings', 'run_all.py'),
     ('paper_main/Fig*.png', 'Main-paper figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_main.py'),
-    ('paper_extended/ED*.png', 'Extended Data figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_extended.py'),
-    ('supplementary/SF*.png', 'Supplementary figure (beyond the ten Extended Data items), PNG (FIGURES.md)',
-     'figures/paper_extended.py'),
+    ('paper_extended/ED*.png', 'Extended Data figure, PNG (profile dpi; FIGURES.md)',
+     'figures/ (module named in figure_manifest.csv)'),
+    ('supplementary/*/SF*.png', 'Supplementary figure (MODEL v4.3.0: in its folder), PNG (FIGURES.md)',
+     'figures/ (module named in figure_manifest.csv)'),
     ('paper_extended/EDT1_levels_by_typology.*', 'Extended Data table: lever levels by typology (Moderate, Ambitious, '
      'TL)', 'figures/paper_extended.py'),
     ('diagnostics/*/D*.png', 'Diagnostic figure, PNG (FIGURES.md)', 'figures/ (module named in FIGURES.md)'),
@@ -171,7 +182,7 @@ FILES = [
      'binding years, built', 'pathways.py'),
     ('data/pathways/ordering_checks.json', 'Ordering Reference >= Moderate >= Ambitious >= TL per lever, typology and '
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
-    ('data/sensitivity/tornado.csv', 'Fig8a: the inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
+    ('data/sensitivity/tornado.csv', 'Fig7a: the inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
     ('data/pathways/waterfall_tl_from_reference.csv', 'MODEL v3.3.1 (Fig4d): sequential waterfall Reference -> TL1 ... '
      'TL9 (cumulative from the Reference, PAS 2080 order; = TL) by demand band', 'pathways.py'),

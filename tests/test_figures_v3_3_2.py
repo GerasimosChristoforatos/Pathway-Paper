@@ -6,8 +6,8 @@
   * Fig5: each column total equals Reference - run (pathways/runs.csv) and the band reductions add up to it (1e-9);
   * Fig3b: the 95% interval comes from the per-draw cumulative carbon with the percentile method of MonteCarlo.py, which
     reproduces the stored 5th / 95th percentiles (montecarlo/summary_REF.csv) exactly;
-  * Fig6: the markers lie on the analytic plane (1e-9); the plotted square is -5% to 100%; the AR line is exact.
-  * the schematic is a supplementary figure (SF1), not a main figure."""
+  * Fig6: the markers lie on the analytic plane (1e-9); the plotted square is -5% to 90% (MODEL v4.2.2); the AR line is exact.
+  * the figure set of MODEL v4.3.0 (main, Extended Data, Supplementary)."""
 import json
 
 import numpy as np
@@ -35,8 +35,8 @@ def test_fig5_column_totals_are_reference_minus_run():
     from figures import paper_main as PM
     red, tot = PM.reduction_by_band()
     r = pd.read_csv(_data('pathways/runs.csv')).query("scenario == 'REF'").set_index('run')['carbon_kt']
-    assert set(tot) == set(PM.FIG5_RUNS) == {'pathway-moderate', 'pathway-ambitious', 'TL'}
-    for run in PM.FIG5_RUNS:
+    assert set(tot) == set(PM.REDUCTION_RUNS) == {'pathway-moderate', 'pathway-ambitious', 'TL'}
+    for run in PM.REDUCTION_RUNS:
         assert tot[run] == pytest.approx(r['REF'] - r[run], rel=RTOL, abs=1e-9), run
         assert sum(red[run].values()) == pytest.approx(tot[run], rel=RTOL, abs=1e-9), run
 
@@ -57,17 +57,26 @@ def test_fig6_markers_square_and_ar_line():
         bc = json.load(f)
     r = pd.read_csv(_data('pathways/runs.csv')).query("scenario == 'REF'").set_index('run')
     for m in bc['solution_space_markers']:
-        z = PM.fig6_loe(bc, m['demand_reduction'], m['intensity_reduction'])
+        z = PM.fig5_loe(bc, m['demand_reduction'], m['intensity_reduction'])
         assert np.isclose(z, r.loc[m['run'], 'LoE_AR'], rtol=RTOL, atol=0), m['run']
-    assert PM.FIG6_LIM == (-0.05, 1.0)
-    for x, y in PM.fig6_branches(bc, 1.0):
-        assert np.allclose(PM.fig6_loe(bc, x, y), 1.0, rtol=RTOL, atol=0)
-        assert x.min() >= -0.05 and y.max() <= 1.0
+    assert PM.FIG5_LIM == (-0.05, 0.85)                        # MODEL v4.2.2: clipped at 85%
+    for x, y in PM.fig5_branches(bc, 1.0):
+        assert np.allclose(PM.fig5_loe(bc, x, y), 1.0, rtol=RTOL, atol=0)
+        assert x.min() >= -0.05 and y.max() <= 0.85
 
 
-def test_schematic_is_supplementary():
-    assert 'Fig1_model_schematic' not in {h['file'] for h in FP.PAPER_MAIN}
-    assert FP.SUPPLEMENTARY[0]['file'] == 'SF1_model_schematic'
+def test_figure_set_v4_3_0():
+    """MODEL v4.3.0: main Fig1-Fig7, exactly ten Extended Data items and SF1-SF17 in the approved order; no schematic
+    and no diagnostic figures."""
     assert [h['file'] for h in FP.PAPER_MAIN] == [
         'Fig1_floor_area', 'Fig2_reference_carbon', 'Fig3_reference_boundaries', 'Fig4_pathways',
-        'Fig5_reduction_by_demand', 'Fig6_solution_space', 'Fig7_shapley_levers', 'Fig8_uncertainty']
+        'Fig5_solution_space', 'Fig6_shapley_levers', 'Fig7_uncertainty']
+    assert [h['file'] for h in FP.PAPER_EXTENDED] == [
+        'ED1_population_households_floor_area', 'ED2_household_formation_size', 'ED3_replacement_variants',
+        'ED4_one_at_a_time', 'ED5_boundary_sensitivity', 'ED6_mc_input_distributions', 'ED7_sobol',
+        'ED8_shapley_attribution', 'ED9_lever_annual', 'ED10_rollout_timing']
+    assert [h['id'] for h in FP.SUPPLEMENTARY] == [f'SF{i}' for i in range(1, 18)]
+    assert FP.SUPPLEMENTARY[8]['file'] == 'SF9_budget_construction'
+    assert FP.SUPPLEMENTARY[-1]['file'] == 'SF17_tl_dwellings'
+    assert not any('schematic' in h['file'] for h in FP.PAPER_MAIN + FP.SUPPLEMENTARY)
+    assert FP.DIAGNOSTICS == {}

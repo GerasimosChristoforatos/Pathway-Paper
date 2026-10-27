@@ -16,7 +16,7 @@ Order (compute, then draw): Building_factors -> projection -> Diagnostics -> Sen
 (AESA; reads the Monte Carlo draws) -> validation -> gap_2026 -> overbuild_2026 -> scenarios -> reconciliation ->
 figures_report -> pathways -> pathways_mc -> sensitivity_tables -> metrics -> results -> assumptions -> methods
 (docs/LEVERS_TABLE.md, docs/METHODS_DRAFT.md) -> run_meta -> figures (python -m figures: every figure and
-FIGURES.md, from the data files only) -> check_outputs -> indexes -> tests. Model scripts write CSV / JSON only.
+FIGURES.md, from the data files only) -> check_outputs -> figure_manifest -> indexes -> tests. Model scripts write CSV / JSON only.
 Each step runs in its own process; its console output goes to <outputs>/logs/<step>.log.
 """
 import hashlib
@@ -135,8 +135,9 @@ def pipeline(profile):
     for name in ('Building_factors', 'projection', 'Diagnostics', 'Sensitivity', 'MonteCarlo', 'boundaries',
                  'validation', 'gap_2026'):
         step(name.lower(), [py, script(name)], env)
-    for name, t in (('overbuild_2026', 'overbuild_2026'), ('scenarios', 'replacement_scenarios'),
-                    ('reconciliation', 'reconciliation'), ('figures_report', 'figures_report')):
+    for name, t in (('overbuild_2026', 'overbuild_2026'), ('demand_balance', 'demand_balance'),
+                    ('scenarios', 'replacement_scenarios'), ('reconciliation', 'reconciliation'),
+                    ('figures_report', 'figures_report')):
         step(name, [py, tool(t)], env)
     step('pathways', [py, script('pathways')], env)
     step('pathways_mc', [py, script('pathways_mc')], env)
@@ -146,6 +147,7 @@ def pipeline(profile):
     write_run_meta(env, 'pipeline')
     step('figures', [py, '-m', 'figures'], env)
     step('check_outputs', [py, tool('check_outputs')], env)
+    step('figure_manifest', [py, tool('figure_manifest')], env)          # MODEL v4.3.0
     step('indexes', [py, script('indexes')], env)
     TIMINGS['total_before_tests'] = round(time.time() - t0, 1)
     write_run_meta(env, 'pipeline')

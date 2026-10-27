@@ -61,7 +61,7 @@ Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted 
 | g_W / g_NZ, year b, PPP | 0.4448 |
 | s_sec (consented value / FCE, 2016-2025) | 0.0525462 |
 | Boundary AR 2026 (kt CO2e) | 172.4 |
-| Boundary AR 2050 (kt CO2e) | 182.4 |
+| Boundary AR 2050 (kt CO2e) | 182.5 |
 | Boundary AtP 2026 (kt CO2e) | 43.35 |
 | Boundary AtP 2050 (kt CO2e) | 45.87 |
 | B_AtP / B_AR (constant over time) | 0.2514 |

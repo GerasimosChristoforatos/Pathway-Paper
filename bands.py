@@ -33,6 +33,41 @@ IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild
             'surplus_vacant', 'maintenance')
 FLOOR_AREA_BANDS = IN_SCOPE[:-1]                     # maintenance carries carbon only
 IDENTITY_RTOL = 1e-9
+# MODEL v4.2: six display bands (aggregation for figures only; the detailed bands are unchanged in data and pathways):
+# detailed band id (projection and history) -> display id. 'released_tl' (Re-used dwellings (TL)) and the carbon-only
+# 'maintenance' stay separate.
+DISPLAY = {'growth': 'growth', 'smaller_households': 'smaller_households', 'extra_space': 'extra_space',
+           'vacancy': 'vacancy', 'vacancy_released': 'vacancy',
+           'replacement': 'net_replacement', 'redevelopment': 'net_replacement', 'unconsented': 'net_replacement',
+           'replacement_census': 'net_replacement',
+           'unexplained': 'market_balance', 'retirement_villages': 'market_balance', 'overbuild_2026': 'market_balance',
+           'overbuild_absorbed': 'market_balance', 'surplus_vacant': 'market_balance',
+           'released_tl': 'released_tl', 'maintenance': 'maintenance'}
+DISPLAY_ORDER = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'net_replacement', 'market_balance',
+                 'released_tl', 'maintenance')
+DISPLAY_LABEL = {'growth': 'Population growth', 'smaller_households': 'Household-size change',
+                 'extra_space': 'Extra space', 'vacancy': 'Vacancy', 'net_replacement': 'Net replacement',
+                 'market_balance': 'Market balance',
+                 'released_tl': 'Re-used dwellings (TL)', 'maintenance': 'Maintenance (B2, B4)'}
+
+
+def allocate_rv(values):
+    """MODEL v4.2.2 (figures): the history's retirement-village exclusion (band 'retirement_villages', negative)
+    allocated pro rata to the bands it is computed from, so that every display band is in scope. RV units are a share
+    of all dwellings built (households via the change in households, the other dwellings via vacancy, replacement and
+    the residual), so the exclusion is spread in proportion to each band: band_b x (1 + RV / sum of the other bands).
+    values: {detailed band id: floor area}; returns the same without the RV band, with the same total."""
+    v = dict(values)
+    rv = float(v.pop('retirement_villages', 0.0))
+    base = sum(v.values())
+    if rv == 0.0 or base == 0.0:
+        return v
+    return {b: x * (1.0 + rv / base) for b, x in v.items()}
+
+
+def display_map():
+    """The detailed -> display band map as rows (outputs/data/bands_display_map.csv)."""
+    return [dict(band_id=b, display_id=d, display_label=DISPLAY_LABEL[d]) for b, d in DISPLAY.items()]
 _TOL_M2 = 1e-6
 
 

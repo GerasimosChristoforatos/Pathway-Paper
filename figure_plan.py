@@ -235,9 +235,21 @@ RETIRED = {
                                 'Fig5 reduction by demand band (new); Fig1 schematic -> SF1 (SF1-SF5 -> SF2-SF6)',
     'MODEL v4.2.2 Fig5': 'Fig5 reduction by demand band -> SF7 (Extended Data full at ten items); the Fig5 model '
                          'schematic was added and then dropped; Fig5 is vacant, no other figure renumbered',
-    'MODEL v4.3.0 Extended Data': 'ED5 pathways annual, ED6 waterfalls by demand band, ED7 TL Shapley and indicators, '
-                                  'ED10 detailed demand bands no longer rendered (code kept); new ED5 Shapley '
-                                  'attribution; ED8, ED9 -> ED6, ED7 (outputs/data/ed_number_map.csv)',
+    'MODEL v4.3.0 Extended Data': 'v4.2.2 ED5 pathways annual, ED6 waterfalls by demand band, ED7 TL Shapley and '
+                                  'indicators, ED10 detailed demand bands no longer rendered (their plotting code was '
+                                  'deleted in the clean release); the full old -> new map is '
+                                  'outputs/data/ed_number_map.csv',
+    'MODEL v4.3.0 clean release': 'main Fig6-Fig8 -> Fig5-Fig7; Extended Data ED1-ED10 as ed_number_map.csv; '
+                                  'Supplementary SF1-SF17 in topic folders (calibration, validation, boundaries, '
+                                  'sensitivity, montecarlo, pathways); the diagnostics set D01-D44 is no longer drawn '
+                                  '(its data files are still written): D02+D04 -> SF1, D05+D06 -> SF2, D07 -> SF3 (with '
+                                  'v4.2.2 ED2), D08 + v4.2.2 SF6 -> SF4, D35 (a duplicate of v4.2.2 ED4) -> SF5, D14 -> SF6, '
+                                  'D44 -> SF7, D15 -> SF8, D22 -> SF9, D40 -> SF10, D41 -> SF11, D37 -> SF14, '
+                                  'D39 -> SF15, D34 -> SF17, D16 -> ED4, D42 -> ED5, D38 -> ED6, D20 -> ED7, '
+                                  'D31 -> ED9; v4.2.2 SF3, SF4, SF5 -> SF16, SF12, SF13; v4.2.2 SF1 model schematic, '
+                                  'SF2 Monte Carlo scatter (in Fig7b) and SF7 reduction by demand band, and D01, D03, '
+                                  'D09, D10, D12, D13, D17, D18, D19, D21, D23-D29, D32, D33, D36, D43 deleted '
+                                  '(docs/CHANGELOG_v4_3_0.md)',
 }
 
 

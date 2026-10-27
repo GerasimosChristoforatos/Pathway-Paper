@@ -20,9 +20,11 @@ def sf14_mc_convergence():
         a.set_xscale('log')
         a.set_xlabel('Number of Latin hypercube draws')
         a.set_ylabel(f'2026–2050 total ({unit})')
+        P.thousands(a.yaxis)
         P.panel(a, letter, 'Embodied carbon' if o == 'carbon_kt' else 'Floor area')
-    ax[0].legend(fontsize=S.FONT_MIN, frameon=False, loc='center right')
-    fig.tight_layout()
+    h, lab = ax[0].get_legend_handles_labels()                 # MODEL v4.3.0: one legend below, clear of the lines
+    fig.legend(h, lab, loc='lower center', ncol=4, fontsize=S.FONT_SMALL, frameon=False)
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     S.save_figure(fig, 'SF14_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
                   source=['montecarlo/convergence_REF.csv'])
 

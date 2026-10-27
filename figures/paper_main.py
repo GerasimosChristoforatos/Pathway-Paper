@@ -768,7 +768,7 @@ def fig6():
     ax[0].set_ylim(-0.6, len(order) - 0.4)
     fig.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate'),
                         Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious'),
-                        Line2D([0], [0], ls='none', color=S.TL, label='Theoretical limit', marker='o',
+                        Line2D([0], [0], ls='none', color=S.TL, label=N.TL['TL'], marker='o',
                                ms=5)],
                loc='lower center', ncol=3, fontsize=S.FONT_SMALL, frameon=False, bbox_to_anchor=(0.5, 0.0))
     P.centre_ticklabels(fig, ax[0])

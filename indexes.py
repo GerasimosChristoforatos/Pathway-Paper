@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # MODEL v3.3.2: paper Fig1-Fig8, Extended Data ED1-ED10, supplementary SF1-SF6 (figure_plan.py)
+    # MODEL v4.3.0: paper Fig1-Fig7, Extended Data ED1-ED10, supplementary SF1-SF17 in folders (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -156,9 +156,10 @@ FILES = [
     ('FIGURES.md', 'Every figure with its file, data sources, caption and run-specific note', 'figures/index.py'),
     ('run_meta.json', 'Run metadata: profile, draws, seeds, git hash, input hash, timestamp, step timings', 'run_all.py'),
     ('paper_main/Fig*.png', 'Main-paper figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_main.py'),
-    ('paper_extended/ED*.png', 'Extended Data figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_extended.py'),
-    ('supplementary/SF*.png', 'Supplementary figure (beyond the ten Extended Data items), PNG (FIGURES.md)',
-     'figures/paper_extended.py'),
+    ('paper_extended/ED*.png', 'Extended Data figure, PNG (profile dpi; FIGURES.md)',
+     'figures/ (module named in figure_manifest.csv)'),
+    ('supplementary/*/SF*.png', 'Supplementary figure (MODEL v4.3.0: in its folder), PNG (FIGURES.md)',
+     'figures/ (module named in figure_manifest.csv)'),
     ('paper_extended/EDT1_levels_by_typology.*', 'Extended Data table: lever levels by typology (Moderate, Ambitious, '
      'TL)', 'figures/paper_extended.py'),
     ('diagnostics/*/D*.png', 'Diagnostic figure, PNG (FIGURES.md)', 'figures/ (module named in FIGURES.md)'),

@@ -1,0 +1,12 @@
+old_id,old_file,new_id,new_file,status
+ED1,ED1_population_households_floor_area,ED1,ED1_population_households_floor_area,unchanged
+ED2,ED2_census_replacement_rates,ED2,ED2_census_replacement_rates,unchanged
+ED3,ED3_household_formation_size,ED3,ED3_household_formation_size,unchanged
+ED4,ED4_overbuild_absorption,ED4,ED4_overbuild_absorption,unchanged
+ED5,ED5_pathways_annual,,,not rendered
+ED6,ED6_waterfalls_by_demand_band,,,not rendered
+ED7,ED7_tl_shapley_indicators,,,not rendered
+ED8,ED8_replacement_variants,ED6,ED6_replacement_variants,renumbered
+ED9,ED9_rollout_timing,ED7,ED7_rollout_timing,renumbered
+ED10,ED10_detailed_demand_bands,,,not rendered
+,,ED5,ED5_shapley_attribution,added

@@ -45,6 +45,8 @@ FILES = [
     ('data/baseline/gap_2026.json', 'The 2026 gap between observed building and the requirement',
      'gap_2026.py'),
     ('data/baseline/overbuild_2026.json', 'The 2026 overbuild and how it is absorbed', 'tools/overbuild_2026.py'),
+    ('data/ed_number_map.csv', 'MODEL v4.3.0: Extended Data numbering, old -> new (figure_plan.ED_NUMBER_MAP)',
+     'figure_plan.py'),
     ('data/bands_display_map.csv', 'MODEL v4.2: detailed demand band -> the six display bands of the figures',
      'pathways.py'),
     ('data/diagnostics/lag_comparison_annual.csv', 'Annual floor area by broad demand group under zero- and 17-month completion timing', 'tools/demand_balance.py'),

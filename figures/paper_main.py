@@ -19,6 +19,7 @@ from figures import data as D
 from figures import draw as P
 from figures import style as S
 import bands as BANDS_MOD
+import mcstats
 
 M = 1e6
 SRC = {h['file']: h['source'] for h in FP.PAPER_MAIN + FP.SUPPLEMENTARY}
@@ -439,11 +440,21 @@ def fig3():
     gs = fig.add_gridspec(1, 2, width_ratios=[2.3, 0.95], wspace=0.26)
     ax = fig.add_subplot(gs[0])
     ar, atp = a['B_AR_kgCO2e'].values / M, a['B_AtP_kgCO2e'].values / M
-    S.boundary_zones(ax, years, ar, atp)
+    # MODEL v4.3.0: every annual series drawn as PCHIP through its annual values (display only), each segment
+    # separately: the observed pipeline years (consents already issued) and the modelled years from the next year
+    # share one knot, so the observed -> modelled join is not smoothed; the budget lines are one segment
+    brk = [float(max(D.js('baseline/overbuild_2026.json')['pipeline_years']))]
+    xf, arf = P.pchip(years, ar)
+    _, atpf = P.pchip(years, atp)
+    S.boundary_zones(ax, xf, arf, atpf)
     q = {p: mc.loc[years.astype(int), f'carbon_{p}'].values / M for p in (5, 25, 50, 75, 95)}
-    ax.fill_between(years, q[5], q[95], color=S.REFERENCE, alpha=0.12, lw=0, label='Monte Carlo 90% band')
-    ax.fill_between(years, q[25], q[75], color=S.REFERENCE, alpha=0.25, lw=0, label='Monte Carlo 50% band')
-    ax.plot(years, q[50], color=S.REFERENCE, lw=S.LW_BOLD, label='Monte Carlo median')
+    methods = {}
+    for (lo_, hi_), alpha, lab in (((5, 95), 0.12, 'Monte Carlo 90% band'), ((25, 75), 0.25, 'Monte Carlo 50% band')):
+        xf, lof, hif, methods[lab] = P.pchip_band(years, q[lo_], q[50], q[hi_], brk, name=f'Fig3a {lab}')
+        ax.fill_between(xf, lof, hif, color=S.REFERENCE, alpha=alpha, lw=0, label=lab)
+    MK = dict(marker='o', ms=1.4, ls='none')                          # the annual values, small
+    ax.plot(*P.pchip(years, q[50], brk), color=S.REFERENCE, lw=S.LW_BOLD, label='Monte Carlo median')
+    ax.plot(years, q[50], color=S.REFERENCE, **MK)
     # MODEL v4.2.1: the Moderate / Ambitious Pathway and the Theoretical Limit (deterministic, pathways/annual.csv)
     pa = D.csv('pathways/annual.csv')
     pa = pa[(pa['scenario'] == 'REF') & (pa['year'] >= 2026)]
@@ -451,7 +462,8 @@ def fig3():
                     (f'{N.PATHWAY}-ambitious', dict(color=S.PATHWAY_SETTING['ambitious'], lw=S.LW, alpha=0.8)),
                     ('TL', dict(color=S.TL, lw=S.LW * 0.7, alpha=0.8))):
         r = pa[pa['run'] == run].set_index('year').loc[years.astype(int), 'carbon_kt']
-        ax.plot(years, r.values, label=N.run_label(run), **kw)
+        ax.plot(*P.pchip(years, r.values, brk), label=N.run_label(run), **kw)
+        ax.plot(years, r.values, color=kw['color'], alpha=kw['alpha'], **MK)
     ax.set_xlim(years[0], years[-1])
     ax.set_ylim(0, None)
     ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
@@ -499,7 +511,9 @@ def fig3():
                f'{lo95:,.0f}-{hi95:,.0f} kt ({FIG3_INTERVAL[0]:g}th-{FIG3_INTERVAL[1]:g}th percentile of the cumulative '
                f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt; committed after 2050 (drawn at the lower '
                f'bound): C1-C4 {cc:,.0f} kt (2025 factors) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held; '
-               f'{bu:,.0f} kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs.')
+               f'{bu:,.0f} kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are '
+               f'shape-preserving (PCHIP) interpolation between annual values (dots), not smoothed across the observed '
+               f'-> modelled join after {int(brk[0])}; bands: ' + ', '.join(f'{k} {v}' for k, v in methods.items()) + '.')
 
 
 # ---------------------------------------------------------------------------
@@ -1060,23 +1074,43 @@ def fig8():
     thr = j['population_threshold']['adopted']
     b = ax[1]
     pop = d['P_NZ_2050'].to_numpy(float) / 1e6
-    b.scatter(pop, d['TL_LoE_AR'], s=2, color=S.TL, alpha=0.25, lw=0, zorder=2, label='Draws (TL)')
-    b.axhline(1.0, gid='boundary', zorder=3, **{k: v for k, v in S.BOUNDARY['AR'].items() if k != 'label'})
+    # MODEL v4.3.0: the Reference and the Ambitious Pathway on the same paired draws (same draw index, so the same
+    # 2050 population; pathways/montecarlo_draws.csv), TL most prominent (drawn last, darker); y on a log scale
+    pin = {}
+    for run, col, mk, sz, al, z in (('REF', S.REFERENCE, 's', 1.6, 0.18, 2),
+                                    ('pathway_ambitious', S.PATHWAY_SETTING['ambitious'], '^', 1.8, 0.20, 2),
+                                    ('TL', S.TL, 'o', 2.4, 0.30, 3)):
+        v = d[f'{run}_LoE_AR'].to_numpy(float)
+        k, n = int((v <= 1.0).sum()), len(v)
+        pin[run] = (k / n, tuple(mcstats.wilson(k, n)))            # as pathways_mc.py
+        lab = {'REF': N.SCENARIOS['REF'], 'pathway_ambitious': N.PATHWAY_RUNS['pathway-ambitious'], 'TL': N.TL['TL']}[run]
+        pct = f'{100 * k / n:.1f}%' if k / n >= 0.01 or k == 0 else f'{100 * k / n:.2f}%'
+        b.scatter(pop, v, s=sz, marker=mk, color=col, alpha=al, lw=0, zorder=z,
+                  label=f'{lab}: P(LoE AR ≤ 1) = {pct} ({k:,} of {n:,})')
+    assert abs(pin['TL'][0] - j['p_within_AR']) < 1e-12, (pin['TL'][0], j['p_within_AR'])
+    b.axhline(1.0, gid='boundary', zorder=4, **{k: v for k, v in S.BOUNDARY['AR'].items() if k != 'label'})
+    b.set_yscale('log')
+    vmax = max(float(d[f'{r}_LoE_AR'].max()) for r in ('REF', 'pathway_ambitious', 'TL'))
+    vmin = min(float(d[f'{r}_LoE_AR'].min()) for r in ('REF', 'pathway_ambitious', 'TL'))
+    b.set_ylim(vmin * 0.9, vmax * 2.6)                                # headroom above the data for the legend
+    P.log_ticks(b.yaxis, [t for t in (0.5, 0.6, 0.8, 1, 1.5, 2, 3, 4, 6, 8, 10, 15) if vmin * 0.9 <= t <= vmax * 2.6])
     b.set_xlabel('New Zealand population 2050 (million)')
-    b.set_ylabel('TL cumulative LoE AR 2026-2050')
-    b.set_ylim(bottom=0)
+    b.set_ylabel('Cumulative LoE AR 2026-2050 (log scale)')
     if thr['estimable']:
         lo, hi = thr['ci95']
         x50 = thr['threshold_P_NZ_2050'] / 1e6
-        b.axvline(x50, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3, label='P(LoE AR ≤ 1) = 50%')
-        b.text(x50, 0.04, f' {x50:.2f} M (95% CI {lo / 1e6:.2f}–{hi / 1e6:.2f} M)', transform=b.get_xaxis_transform(),
+        y0_, y1_ = b.get_ylim()                                     # the line stops above the data (legend clear)
+        top = (np.log(vmax * 1.15) - np.log(y0_)) / (np.log(y1_) - np.log(y0_))
+        b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3, label='TL: P(LoE AR ≤ 1) = 50%')
+        b.text(x50, 0.03, f' {x50:.2f} M (95% CI {lo / 1e6:.2f}–{hi / 1e6:.2f} M)', transform=b.get_xaxis_transform(),
                ha='left', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
-    b.text(0.03, 0.97, f"TL within AR in {100 * j['p_within_AR']:.0f}% of draws", transform=b.transAxes, ha='left',
-           va='top', fontsize=S.FONT_SMALL, color=S.TL)
     hb = b.get_legend_handles_labels()[0]
     hb.append(Line2D([0], [0], **dict(S.BOUNDARY['AR'], label='AR (LoE = 1)')))
-    b.legend(handles=hb, loc='upper left', bbox_to_anchor=(0.0, 0.90), fontsize=S.FONT_MIN, markerscale=4)
-    P.panel(b, 'b', 'Theoretical Limit against the 2050 population')
+    lg = b.legend(handles=hb, loc='upper left', fontsize=S.FONT_MIN, markerscale=3, frameon=False)
+    for h in lg.legend_handles:
+        if hasattr(h, 'set_alpha'):
+            h.set_alpha(0.9)
+    P.panel(b, 'b', 'Reference, Ambitious Pathway and TL vs the 2050 population')
     fig.tight_layout()
     for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: slightly larger fonts
         if t.get_text():
@@ -1086,6 +1120,8 @@ def fig8():
                'years); its carbon floor is the 2026-27 pipeline plus maintenance. ' + f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "
                f"moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = "
                f"{j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-{j['wilson_95'][1]:.3f}; n = {j['n']:,}); "
+               + 'P(LoE AR <= 1) on the same paired draws: ' + ', '.join(
+                   f'{k} {p_:.4f} (Wilson {w[0]:.4f}-{w[1]:.4f})' for k, (p_, w) in pin.items()) + '; '
                + (f"threshold {thr['threshold_P_NZ_2050'] / 1e6:.3f} M (95% CI {thr['ci95'][0] / 1e6:.3f}-"
                   f"{thr['ci95'][1] / 1e6:.3f} M; {thr['method']}, {thr['bootstrap_resamples']} resamples)."
                   if thr['estimable'] else thr.get('note', 'no threshold')))

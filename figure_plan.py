@@ -2,7 +2,7 @@
 (what draws it), indexes.py (outputs/FIGURES.md) and the tests.
 
     outputs/paper_main/       Fig1-Fig8 (PAPER_MAIN)
-    outputs/paper_extended/   the Extended Data ED1-ED10 (PAPER_EXTENDED) and the per-typology level table
+    outputs/paper_extended/   the Extended Data ED1-ED7 (PAPER_EXTENDED; MODEL v4.3.0) and the per-typology level table
     outputs/supplementary/    further figures (SUPPLEMENTARY; MODEL v3.3.1: at most ten Extended Data items)
     outputs/diagnostics/<group>/  calibration, validation, boundaries, pathways, montecarlo, sensitivity (DIAGNOSTICS)
 
@@ -42,7 +42,7 @@ PAPER_MAIN = [
                  'Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 '
                  'order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 '
                  '... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
-                 'order-free Shapley values in Fig7; split by demand band in ED6.',
+                 'order-free Shapley values in Fig7 and, per lever and pathway, in ED5.',
          source=['pathways/annual.csv', 'pathways/waterfall.csv', 'pathways/waterfall_tl_from_reference.csv']),
     # MODEL v4.2.2: no Fig5 for now (the schematic was dropped; the reduction by demand band is SF7); the other
     # figures keep their numbers
@@ -87,27 +87,49 @@ PAPER_EXTENDED = [
     dict(id='ED4', file='ED4_overbuild_absorption', module='figures.paper_extended',
          title='Overbuild absorption: the Reference path and its timing sensitivity',
          source=['baseline/overbuild_absorption_log.csv', 'baseline/sensitivity_annual_carbon.csv']),
-    dict(id='ED5', file='ED5_pathways_annual', module='figures.paper_extended',
-         title='Pathways against the boundaries (annual)',
-         source=['pathways/annual.csv', 'pathways/runs.csv']),
-    dict(id='ED6', file='ED6_waterfalls_by_demand_band', module='figures.paper_extended',
-         title='Sequential waterfalls by demand band, Moderate and Ambitious (PAS 2080 order)',
-         source=['pathways/waterfall.csv']),
-    dict(id='ED7', file='ED7_tl_shapley_indicators', module='figures.paper_extended',
-         title='TL: Shapley values from the Moderate Pathway and human-terms indicators',
-         source=['pathways/shapley.csv', 'pathways/theoretical_limit.json']),
-    dict(id='ED8', file='ED8_replacement_variants', module='figures.paper_extended',
+    # MODEL v4.3.0: ED5 (pathways annual), ED6 (waterfalls by demand band), ED7 (TL Shapley and indicators) and ED10
+    # (detailed demand bands) are no longer rendered (their code is kept in figures/paper_extended.py); the new ED5
+    # takes ED7's place and ED8, ED9 become ED6, ED7 (outputs/data/ed_number_map.csv, ED_NUMBER_MAP below)
+    dict(id='ED5', file='ED5_shapley_attribution', module='figures.paper_extended',
+         title='Shapley attribution (order-independent): reduction of cumulative embodied carbon 2026-2050 by lever, '
+               'Moderate and Ambitious Pathway and TL',
+         source=['pathways/shapley.csv', 'pathways/runs.csv']),
+    dict(id='ED6', file='ED6_replacement_variants', module='figures.paper_extended',
          title='Low, High and Very High replacement: the Reference, the Pathways and TL',
          source=['sensitivity/replacement_variants.csv', 'pathways/annual.csv']),
-    dict(id='ED9', file='ED9_rollout_timing', module='figures.paper_extended',
-         title='Roll-out timing (the Pathways by 2030, 2035, 2045)', source=['pathways/annual.csv', 'pathways/runs.csv']),
-    # MODEL v4.2: the detailed demand bands behind the six display bands (MODEL v4.2.1: the single-lever ED figure is
-    # replaced by Fig7a, so ED8-ED11 became ED7-ED10)
-    dict(id='ED10', file='ED10_detailed_demand_bands', module='figures.paper_extended',
-         title='Detailed demand bands: floor area (Fig1) and Reference carbon (Fig2a)',
-         source=['baseline/bands_history.csv', 'baseline/bands_annual.csv', 'baseline/annual.csv',
-                 'baseline/annual_by_stage.csv', 'baseline/overbuild_2026.json', 'bands_display_map.csv']),
+    dict(id='ED7', file='ED7_rollout_timing', module='figures.paper_extended',
+         title='Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon',
+         source=['pathways/annual.csv', 'pathways/runs.csv']),
 ]
+
+# MODEL v4.3.0: Extended Data numbering old -> new (None: no longer rendered; 'new' marks an added item)
+ED_NUMBER_MAP = [('ED1', 'ED1_population_households_floor_area', 'ED1', 'ED1_population_households_floor_area'),
+                 ('ED2', 'ED2_census_replacement_rates', 'ED2', 'ED2_census_replacement_rates'),
+                 ('ED3', 'ED3_household_formation_size', 'ED3', 'ED3_household_formation_size'),
+                 ('ED4', 'ED4_overbuild_absorption', 'ED4', 'ED4_overbuild_absorption'),
+                 ('ED5', 'ED5_pathways_annual', None, None),
+                 ('ED6', 'ED6_waterfalls_by_demand_band', None, None),
+                 ('ED7', 'ED7_tl_shapley_indicators', None, None),
+                 ('ED8', 'ED8_replacement_variants', 'ED6', 'ED6_replacement_variants'),
+                 ('ED9', 'ED9_rollout_timing', 'ED7', 'ED7_rollout_timing'),
+                 ('ED10', 'ED10_detailed_demand_bands', None, None),
+                 ('new', None, 'ED5', 'ED5_shapley_attribution')]
+
+
+def write_ed_number_map():
+    """MODEL v4.3.0: outputs/data/ed_number_map.csv from ED_NUMBER_MAP (old id, old file, new id, new file; empty =
+    not rendered / newly added). Written by pathways.py with the deterministic outputs and by tools/ed_number_map.py."""
+    import csv
+    import layout
+    path = layout.writing(layout.data('ed_number_map.csv', frozen=False))
+    with open(path, 'w', newline='') as f:
+        w = csv.writer(f)
+        w.writerow(['old_id', 'old_file', 'new_id', 'new_file', 'status'])
+        for oid, ofile, nid, nfile in ED_NUMBER_MAP:
+            st = 'added' if oid == 'new' else ('not rendered' if nid is None else
+                                                ('unchanged' if oid == nid else 'renumbered'))
+            w.writerow(['' if oid == 'new' else oid, ofile or '', nid or '', nfile or '', st])
+    return path
 
 # MODEL v3.3.1: Extended Data beyond the ten allowed (Nature Cities) -> outputs/supplementary/
 SUPPLEMENTARY = [
@@ -246,12 +268,11 @@ FULL_ONLY = ('D20_sobol',)
 
 # Maintenance (B2, B4) drawn as its own layer: only in the band and stage breakdowns
 MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries', 'SF7_reduction_by_demand',
-                       'ED6_waterfalls_by_demand_band',
                        'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band', 'D32_tl_staircase',
                        'D36_pathway_bands')
 # every figure with a planetary boundary on its axes (zones required; AtP dotted)
 PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways', 'Fig6_solution_space',
-              'ED5_pathways_annual', 'ED6_waterfalls_by_demand_band', 'ED8_replacement_variants', 'ED9_rollout_timing',
+              'ED6_replacement_variants', 'ED7_rollout_timing',
               'D21_fan_and_boundaries', 'D22_boundaries', 'D23_annual_loe',
               'D24_headroom', 'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band',
               'D27_variants_vs_boundaries', 'D28_pathways_annual')
@@ -274,6 +295,9 @@ RETIRED = {
                                 'Fig5 reduction by demand band (new); Fig1 schematic -> SF1 (SF1-SF5 -> SF2-SF6)',
     'MODEL v4.2.2 Fig5': 'Fig5 reduction by demand band -> SF7 (Extended Data full at ten items); the Fig5 model '
                          'schematic was added and then dropped; Fig5 is vacant, no other figure renumbered',
+    'MODEL v4.3.0 Extended Data': 'ED5 pathways annual, ED6 waterfalls by demand band, ED7 TL Shapley and indicators, '
+                                  'ED10 detailed demand bands no longer rendered (code kept); new ED5 Shapley '
+                                  'attribution; ED8, ED9 -> ED6, ED7 (outputs/data/ed_number_map.csv)',
 }
 
 

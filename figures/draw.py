@@ -28,6 +28,69 @@ NET_RTOL = 1e-9
 
 
 # ---------------------------------------------------------------------------
+# MODEL v4.3.0: shape-preserving interpolation of annual series (display only; the data are unchanged)
+# ---------------------------------------------------------------------------
+PCHIP_PER_YEAR = 12                # points per year on the fine grid
+
+
+def pchip_grid(x, breaks=()):
+    """The fine grid: PCHIP_PER_YEAR points per year within each segment, the segment ends shared. breaks: x values
+    at which a segment ends and the next starts (no interpolation across them)."""
+    x = np.asarray(x, float)
+    segs = _segments(x, breaks)
+    out = []
+    for lo, hi in segs:
+        n = int(round((x[hi - 1] - x[lo]) * PCHIP_PER_YEAR)) + 1
+        out.append(np.linspace(x[lo], x[hi - 1], max(n, 2)))
+    return out
+
+
+def _segments(x, breaks):
+    """[(start, stop)] index ranges; a break b ends one segment at the last x <= b and starts the next there (the
+    shared knot keeps the line continuous; the derivative is not carried across)."""
+    cuts = [0]
+    for b in sorted(breaks):
+        k = int(np.searchsorted(x, b, side='right'))
+        if 0 < k < len(x):
+            cuts.append(k - 1)
+    cuts.append(len(x) - 1)
+    return [(cuts[i], cuts[i + 1] + 1) for i in range(len(cuts) - 1) if cuts[i + 1] > cuts[i]]
+
+
+def pchip(x, y, breaks=()):
+    """(xf, yf): monotone shape-preserving piecewise cubic Hermite interpolation (scipy PchipInterpolator) through
+    every annual value, interpolated separately within each segment (breaks). Two-point segments are linear (PCHIP
+    with two knots). The curve passes through every (x, y) and does not overshoot between neighbouring values."""
+    from scipy.interpolate import PchipInterpolator
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    xs, ys = [], []
+    for (lo, hi), xf in zip(_segments(x, breaks), pchip_grid(x, breaks)):
+        yf = PchipInterpolator(x[lo:hi], y[lo:hi])(xf)
+        if xs:                                        # the shared knot once
+            xf, yf = xf[1:], yf[1:]
+        xs.append(xf)
+        ys.append(yf)
+    xf, yf = np.concatenate(xs), np.concatenate(ys)
+    on = np.isin(xf, x)
+    assert np.allclose(yf[on], y[np.searchsorted(x, xf[on])], rtol=1e-12, atol=1e-12)   # through every value
+    return xf, yf
+
+
+def pchip_band(x, lo, mid, hi, breaks=(), name='band'):
+    """(xf, lo_f, hi_f, method): the band's lower and upper edges interpolated separately; on the fine grid
+    lo <= mid <= hi is checked (mid interpolated the same way). If it fails anywhere the band falls back to linear
+    interpolation (which keeps the ordering, since it holds at every annual value) and the fallback is logged."""
+    xf, lof = pchip(x, lo, breaks)
+    _, hif = pchip(x, hi, breaks)
+    _, midf = pchip(x, mid, breaks)
+    tol = 1e-9 * max(1.0, float(np.nanmax(np.abs(hi))))
+    if np.all(lof <= midf + tol) and np.all(midf <= hif + tol):
+        return xf, lof, hif, 'pchip'
+    print(f'pchip_band: {name}: lower <= central <= upper fails on the fine grid; linear interpolation used')
+    return xf, np.interp(xf, x, lo), np.interp(xf, x, hi), 'linear'
+
+
+# ---------------------------------------------------------------------------
 # panels and axes
 # ---------------------------------------------------------------------------
 def panel_label(ax, letter, x=-0.02, y=1.02):

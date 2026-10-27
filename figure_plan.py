@@ -110,12 +110,12 @@ PAPER_EXTENDED = [
 ]
 
 # MODEL v4.3.0: Extended Data numbering, MODEL v4.2.2 (the last release) -> MODEL v4.3.0 (old id, old file, new id, new
-# file); new id None: no longer rendered; 'Supplementary': moved to the Supplementary Figures; old id 'new' or a
+# file); new id None: no longer rendered; a new id SFn: moved to the Supplementary Figures; old id 'new' or a
 # diagnostic id (Dxx): added to the Extended Data. Supersedes the interim v4.3.0 numbering of commit 402dc33.
 ED_NUMBER_MAP = [('ED1', 'ED1_population_households_floor_area', 'ED1', 'ED1_population_households_floor_area'),
-                 ('ED2', 'ED2_census_replacement_rates', 'Supplementary', None),
+                 ('ED2', 'ED2_census_replacement_rates', 'SF3', 'SF3_census_replacement_rates'),
                  ('ED3', 'ED3_household_formation_size', 'ED2', 'ED2_household_formation_size'),
-                 ('ED4', 'ED4_overbuild_absorption', 'Supplementary', None),
+                 ('ED4', 'ED4_overbuild_absorption', 'SF5', 'SF5_overbuild_absorption'),
                  ('ED5', 'ED5_pathways_annual', None, None),
                  ('ED6', 'ED6_waterfalls_by_demand_band', None, None),
                  ('ED7', 'ED7_tl_shapley_indicators', None, None),
@@ -141,7 +141,7 @@ def write_ed_number_map():
         w.writerow(['old_id', 'old_file', 'new_id', 'new_file', 'status'])
         for oid, ofile, nid, nfile in ED_NUMBER_MAP:
             st = ('added' if oid == 'new' else 'from the diagnostics' if oid.startswith('D') else
-                  'no longer rendered' if nid is None else 'moved to Supplementary' if nid == 'Supplementary' else
+                  'no longer rendered' if nid is None else 'moved to Supplementary' if nid.startswith('SF') else
                   'unchanged' if oid == nid else 'renumbered')
             w.writerow(['' if oid == 'new' else oid, ofile or '', nid or '', nfile or '', st])
     return path

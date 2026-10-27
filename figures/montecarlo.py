@@ -7,36 +7,8 @@ from figures import data as D
 from figures import draw as P
 from figures import style as S
 
-INPUT_LABELS = {'z_pop': 'Population (with household size)', 'size': 'Future dwelling size',
-                'complete': 'Completion rate', 'carbon': 'Carbon factors (case-study bootstrap)',
-                'half_life': 'Replacement half-life (yr)'}
 
-
-def d20():
-    """Sobol indices of the Reference (full profile only: the light profile does not compute them)."""
-    sob = D.csv('montecarlo/sobol_REF.csv')
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 66))
-    for a, o, letter, title in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab',
-                                   ['Embodied carbon, 2026–2050', 'Built floor area, 2026–2050']):
-        t = sob[(sob.output == o) & np.isfinite(sob.ST_lo)].sort_values('ST')
-        y = np.arange(len(t))
-        a.barh(y + 0.2, t.ST, 0.4, color=S.QUALITATIVE[5], xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor=S.INK,
-               capsize=1.5, error_kw=dict(lw=S.LW_THIN), label='Total effect (incl. interactions), 95% CI')
-        a.barh(y - 0.2, t.S1.clip(lower=0), 0.4, color=S.QUALITATIVE[2], label='First-order effect (on its own)')
-        a.set_yticks(y)
-        a.set_yticklabels([INPUT_LABELS.get(i, i) for i in t.input], fontsize=S.FONT_SMALL)
-        a.set_xlim(0, max(0.7, t.ST_hi.max() + 0.08))
-        a.set_xlabel('Share of output variance')
-        a.grid(axis='y', visible=False)
-        P.panel(a, letter, title)
-    fig.legend(*ax[0].get_legend_handles_labels(), loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.01),
-               frameon=False)
-    fig.tight_layout(rect=(0, 0.09, 1, 1))
-    S.save_figure(fig, 'D20_sobol', note='Reference; Saltelli / Jansen estimators (scipy.stats.sobol_indices); full '
-                                         'profile only.', source=['montecarlo/sobol_REF.csv'])
-
-
-def d37():
+def sf14_mc_convergence():
     c = D.csv('montecarlo/convergence_REF.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 62))
     for a, o, letter, unit in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab', ['kt CO₂e', 'Mm²']):
@@ -49,41 +21,10 @@ def d37():
         a.set_xlabel('Number of Latin hypercube draws')
         a.set_ylabel(f'2026–2050 total ({unit})')
         P.panel(a, letter, 'Embodied carbon' if o == 'carbon_kt' else 'Floor area')
-    ax[0].legend(fontsize=S.FONT_MIN)
+    ax[0].legend(fontsize=S.FONT_MIN, frameon=False, loc='center right')
     fig.tight_layout()
-    S.save_figure(fig, 'D37_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
+    S.save_figure(fig, 'SF14_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
                   source=['montecarlo/convergence_REF.csv'])
-
-
-def d38():
-    """MODEL v3.1.0 (B3): the carbon panel shows the resulting pooled A1-A3 factor of each draw by typology
-    (kg CO2e/m2, 2025 technology; montecarlo/carbon_factors_REF.csv) instead of the uniform parameter behind it."""
-    dr = D.csv('montecarlo/draws_REF.csv')
-    q = D.csv('montecarlo/input_distributions_REF.csv').set_index('input')
-    cf = D.csv('montecarlo/carbon_factors_REF.csv')
-    cols = [c for c in ('z_pop', 'size', 'complete', 'half_life') if c in dr.columns]
-    fig, ax = plt.subplots(1, len(cols) + 1, figsize=S.figsize('double', 55))
-    for a, c in zip(ax, cols):
-        a.hist(dr[c], bins=30, color=S.REFERENCE, alpha=0.6)
-        for k in ('q05', 'q50', 'q95'):
-            a.axvline(q.loc[c, k], color=S.INK, lw=S.LW_THIN, ls='-' if k == 'q50' else ':')
-        a.set_title(INPUT_LABELS[c], fontsize=S.FONT_SMALL, loc='left')
-        a.tick_params(labelsize=S.FONT_MIN)
-    a = ax[-1]
-    tcol = {'Detached': S.LEVER['L4'], 'Townhouses': S.LEVER['L8'], 'Apartments': S.LEVER['L2']}
-    for t, g in cf.groupby('typology', sort=False):
-        v = g['a1a3_kg_per_m2'].to_numpy(float)
-        a.hist(v, bins=30, color=tcol.get(t, S.MUTED), alpha=0.55, label=t)
-        a.axvline(np.median(v), color=tcol.get(t, S.MUTED), lw=S.LW_THIN)
-    a.set_title('A1-A3 factor (kg CO₂e/m², 2025)', fontsize=S.FONT_SMALL, loc='left')
-    a.legend(fontsize=S.FONT_MIN)
-    a.tick_params(labelsize=S.FONT_MIN)
-    fig.tight_layout()
-    S.save_figure(fig, 'D38_mc_input_distributions',
-                  note=f'{len(dr):,} draws; lines at the 5th, 50th and 95th percentiles of each input distribution; '
-                       'carbon: the resulting pooled A1-A3 factor of each draw by typology (median line).',
-                  source=['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv',
-                          'montecarlo/carbon_factors_REF.csv'])
 
 
 def ed6_mc_input_distributions():
@@ -167,26 +108,31 @@ def ed7_sobol():
                   source=['montecarlo/sobol_REF.csv'])
 
 
-def d39():
+def sf15_pathway_mc():
     a = D.csv('pathways/montecarlo_annual.csv')
     s = D.csv('pathways/montecarlo_summary.csv')
-    runs = [('REF', N.SCENARIOS['REF'], S.REFERENCE),
-            ('pathway_moderate', N.PATHWAY_RUNS['pathway-moderate'], S.PATHWAY[N.PATHWAY]),
-            ('pathway_ambitious', N.PATHWAY_RUNS['pathway-ambitious'], S.LEVER['L5']), ('TL', N.TL['TL'], S.TL)]
+    runs = [('REF', N.SCENARIOS['REF'], S.REFERENCE),                      # the run colours of Fig3 / Fig4
+            ('pathway_moderate', N.PATHWAY_RUNS['pathway-moderate'], S.PATHWAY_SETTING['moderate']),
+            ('pathway_ambitious', N.PATHWAY_RUNS['pathway-ambitious'], S.PATHWAY_SETTING['ambitious']),
+            ('TL', N.TL['TL'], S.TL)]
     fig, ax = plt.subplots(figsize=S.figsize('double', 75))
     for r, lab, col in runs:
         t = a[a['run'] == r]
-        ax.fill_between(t['year'], t['carbon_kt_p5'], t['carbon_kt_p95'], color=col, alpha=0.15, lw=0)
-        ax.plot(t['year'], t['carbon_kt_p50'], color=col, lw=S.LW_BOLD, label=f'{lab} (median, 5–95%)')
+        yr = t['year'].to_numpy(float)
+        xf, lo, hi, _ = P.pchip_band(yr, t['carbon_kt_p5'].to_numpy(float), t['carbon_kt_p50'].to_numpy(float),
+                                     t['carbon_kt_p95'].to_numpy(float), P.series_breaks(), name=f'SF15 {r}')
+        ax.fill_between(xf, lo, hi, color=col, alpha=0.15, lw=0)
+        P.line(ax, yr, t['carbon_kt_p50'], color=col, lw=S.LW_BOLD, label=f'{lab} (median, 5th–95th percentile)')
     ax.set_xlim(2026, 2050)
     ax.set_ylim(0, None)
     ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
-    ax.legend(fontsize=S.FONT_SMALL)
+    ax.legend(fontsize=S.FONT_SMALL, frameon=False)
     fig.tight_layout()
     p = s[(s['quantity'] == 'LoE_AR')].set_index('run')['probability_LoE_at_most_1']
-    S.save_figure(fig, 'D39_pathway_mc', note='P(cumulative LoE AR <= 1): ' + ', '.join(
+    S.save_figure(fig, 'SF15_pathway_mc', note='P(cumulative LoE of AR <= 1): ' + ', '.join(
         f'{k} {v:.3f}' for k, v in p.items()) + '.', source=['pathways/montecarlo_annual.csv',
                                                             'pathways/montecarlo_summary.csv'])
 
 
-FIGURES = {'ED6_mc_input_distributions': ed6_mc_input_distributions, 'ED7_sobol': ed7_sobol, 'D20_sobol': d20, 'D37_mc_convergence': d37, 'D38_mc_input_distributions': d38, 'D39_pathway_mc': d39}
+FIGURES = {'ED6_mc_input_distributions': ed6_mc_input_distributions, 'ED7_sobol': ed7_sobol,
+           'SF14_mc_convergence': sf14_mc_convergence, 'SF15_pathway_mc': sf15_pathway_mc}

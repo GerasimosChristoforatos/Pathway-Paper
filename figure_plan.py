@@ -147,150 +147,75 @@ def write_ed_number_map():
     return path
 
 # MODEL v3.3.1: Extended Data beyond the ten allowed (Nature Cities) -> outputs/supplementary/
+# MODEL v4.3.0: the Supplementary Figures, one continuous series in reading order (calibration -> validation -> the
+# boundary method -> sensitivity -> Monte Carlo -> the TL dwellings); 'folder' only organises outputs/supplementary/
 SUPPLEMENTARY = [
-    dict(id='SF1', file='SF1_model_schematic', module='figures.paper_main',
-         title='The model: conversion chain, levers by PAS 2080 strategy, ambition ladder (Fig1 in MODEL v3.3.1)',
-         source=['pathways/levers.json']),
-    dict(id='SF2', file='SF2_mc_scatter_population', module='figures.paper_extended',
-         title='Monte Carlo: LoE against the population rank', source=['pathways/montecarlo_draws.csv']),
-    dict(id='SF3', file='SF3_conditional_tl', module='figures.paper_extended',
+    dict(id='SF1', file='SF1_households', folder='calibration', module='figures.calibration',
+         title='Households: the published and census-benchmarked series, household size against arrivals and '
+               'households per consent', source=['figure_source/D02_households.json',
+                                                 'figure_source/D04_household_formation.json']),
+    dict(id='SF2', file='SF2_stock_vacancy', folder='calibration', module='figures.calibration',
+         title='Vacancy, the stock identity, dwellings per year by component and the vacancy definition',
+         source=['figure_source/D05_stock_and_vacancy.json', 'figure_source/D06_vacancy_definition.json']),
+    dict(id='SF3', file='SF3_census_replacement_rates', folder='calibration', module='figures.paper_extended',
+         title='Net replacement rates from census dwelling counts and the four variants',
+         source=['baseline/stock_identity_history.csv', 'figure_source/D07_net_replacement_rate.json']),
+    dict(id='SF4', file='SF4_dwelling_size', folder='calibration', module='figures.calibration',
+         title='New-dwelling size: realised and occupied floor area, occupancy utilisation and consented size by '
+               'typology', source=['figure_source/D08_dwelling_space.json', 'pathways/levers.json']),
+    dict(id='SF5', file='SF5_overbuild_absorption', folder='calibration', module='figures.paper_extended',
+         title='The 2026 overbuild: absorption in the Reference and its timing sensitivity',
+         source=['baseline/overbuild_absorption_log.csv', 'baseline/sensitivity_annual_carbon.csv']),
+    dict(id='SF6', file='SF6_hindcast', folder='validation', module='figures.validation',
+         title='Rolling-origin hindcast of dwellings built and the 2027 out-of-sample check',
+         source=['figure_source/D14_hindcast.json', 'baseline/validation.json']),
+    dict(id='SF7', file='SF7_completion_lag', folder='validation', module='figures.market_balance',
+         title='Annual floor area by demand group: zero- and 17-month completion lag',
+         source=['diagnostics/lag_comparison_annual.csv']),
+    dict(id='SF8', file='SF8_reality_checks', folder='validation', module='figures.validation',
+         title='The projection against the 1991-2025 range and the observed -> model handover',
+         source=['figure_source/D15_reality_checks.json']),
+    dict(id='SF9', file='SF9_budget_construction', folder='boundaries', module='figures.boundaries',
+         title='The AR and AtP budgets 2026-2050: population modifier and components',
+         source=['figure_source/D22_boundaries.json']),
+    dict(id='SF10', file='SF10_prcc', folder='sensitivity', module='figures.sensitivity',
+         title='Monte Carlo sensitivity: partial rank correlation of each input, Reference, Moderate Pathway and TL',
+         source=['pathways/montecarlo_importance.csv']),
+    dict(id='SF11', file='SF11_pathway_sensitivity', folder='sensitivity', module='figures.sensitivity',
+         title='One at a time: cumulative embodied carbon 2026-2050 of the Moderate Pathway',
+         source=['sensitivity/pathway_carbon.csv']),
+    dict(id='SF12', file='SF12_lambda_sweep', folder='sensitivity', module='figures.paper_extended',
+         title='Each lever from the Reference to Ambitious (lambda sweep) and its Theoretical Limit',
+         source=['pathways/lambda_sweep.csv']),
+    dict(id='SF13', file='SF13_hd_estimators', folder='sensitivity', module='figures.paper_extended',
+         title='Harrell-Davis estimators of L5 and L8 with bootstrap intervals', source=['pathways/levers.json']),
+    dict(id='SF14', file='SF14_mc_convergence', folder='montecarlo', module='figures.montecarlo',
+         title='Monte Carlo convergence of the 2026-2050 percentiles', source=['montecarlo/convergence_REF.csv']),
+    dict(id='SF15', file='SF15_pathway_mc', folder='montecarlo', module='figures.montecarlo',
+         title='Monte Carlo: annual carbon of the Reference, the Pathways and TL (median, 5th-95th)',
+         source=['pathways/montecarlo_annual.csv', 'pathways/montecarlo_summary.csv']),
+    dict(id='SF16', file='SF16_conditional_tl', folder='montecarlo', module='figures.paper_extended',
          title='When does TL stay within AR? By population quintile and the population threshold',
          source=['pathways/montecarlo_conditional_tl.csv', 'pathways/montecarlo_conditional_tl.json']),
-    dict(id='SF4', file='SF4_lambda_sweep', module='figures.paper_extended',
-         title='Lambda-sweep of each lever (Reference 0, Moderate 0.5, Ambitious 1) and the TL point',
-         source=['pathways/lambda_sweep.csv']),
-    dict(id='SF5', file='SF5_hd_estimators', module='figures.paper_extended',
-         title='Harrell-Davis estimators of L5 and L8 with bootstrap intervals', source=['pathways/levers.json']),
-    dict(id='SF6', file='SF6_consent_sizes', module='figures.paper_extended',
-         title='L4: mean consented new-dwelling size by typology, 1990-2025, with the minima',
-         source=['pathways/levers.json']),
-    # MODEL v4.2.2: the main Fig5 of v3.3.2-v4.2.2 (Extended Data full at ten items)
-    dict(id='SF7', file='SF7_reduction_by_demand', width='double', module='figures.paper_main',
-         title='What the reduction consists of',
-         caption='Reduction of cumulative carbon 2026-2050 against the Reference for the Moderate Pathway, the Ambitious '
-                 'Pathway and the Theoretical Limit, by demand band (Reference - run, per band); column height = total '
-                 'reduction. Negative band reductions (outlined, hanging down from the top of the positive stack): the '
-                 'credits from re-used dwellings (overbuild absorbed, unconsented additions) shrink when new dwellings '
-                 'are smaller, because each re-used dwelling is valued at the new-dwelling size it displaces.',
-         source=['pathways/bands.csv', 'pathways/runs.csv']),
+    dict(id='SF17', file='SF17_tl_dwellings', folder='pathways', module='figures.pathways',
+         title='The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year',
+         source=['pathways/reoccupation_log.csv']),
 ]
 # tables of the Extended Data (Markdown + CSV, outputs/paper_extended/)
 EXTENDED_TABLES = [dict(id='EDT1', file='EDT1_levels_by_typology', title='Lever levels by typology: Moderate, '
                         'Ambitious and TL', source=['pathways/levers.json'])]
 
 _d = lambda file, title, module, source: dict(file=file, title=title, module=module, source=source)
-DIAGNOSTICS = {
-    'calibration': [
-        _d('D01_population', 'Population, history and projection (median, 5th-95th)', 'figures.calibration',
-           ['figure_source/D01_population.json']),
-        _d('D02_households', 'Households: census-benchmarked history and projection', 'figures.calibration',
-           ['figure_source/D02_households.json']),
-        _d('D03_household_size', 'Household size and population vs household growth', 'figures.calibration',
-           ['figure_source/D03_household_size.json']),
-        _d('D04_household_formation', 'Household size vs arrivals; households per consent; new households by source',
-           'figures.calibration', ['figure_source/D04_household_formation.json']),
-        _d('D05_stock_and_vacancy', 'Vacancy, stock and dwellings per year by component', 'figures.calibration',
-           ['figure_source/D05_stock_and_vacancy.json']),
-        _d('D06_vacancy_definition', 'Why empty-only vacancy is used (appendix)', 'figures.calibration',
-           ['figure_source/D06_vacancy_definition.json']),
-        _d('D07_net_replacement_rate', 'Net replacement rate: census intervals and the four variants (Reference to 2075)',
-           'figures.validation', ['figure_source/D07_net_replacement_rate.json']),
-        _d('D08_dwelling_space', 'Realised vs occupied floor area per new dwelling; occupancy utilisation',
-           'figures.calibration', ['figure_source/D08_dwelling_space.json']),
-        _d('D09_cumulative_floor_area', 'Cumulative floor area 1991-2050 with the population 5th-95th band',
-           'figures.calibration', ['figure_source/D09_cumulative_floor_area.json']),
-        _d('D35_overbuild_absorption', 'The 2026 overbuild in the Reference: excess, surplus, payback, implied vacancy',
-           'figures.calibration', ['baseline/overbuild_absorption_log.csv']),
-    ],
-    'validation': [
-        _d('D10_floor_area_bridge', 'Floor area 2026-2050 by demand band, Low / Reference / High / Very High (waterfall)',
-           'figures.validation', ['figure_source/D10_floor_area_bridge.json']),
-        _d('D12_conversion_chain', 'Population -> households -> dwellings -> floor area -> carbon (indices)',
-           'figures.validation', ['figure_source/D12_conversion_chain.json']),
-        _d('D13_carbon_by_material', 'Embodied carbon by material, annual and cumulative', 'figures.calibration',
-           ['figure_source/D13_carbon_by_material.json']),
-        _d('D14_hindcast', 'Rolling-origin hindcast of dwellings built and the 2026 out-of-sample check',
-           'figures.validation', ['figure_source/D14_hindcast.json', 'baseline/validation.json']),
-        _d('D15_reality_checks', 'Projection vs the 1991-2025 range and the observed -> model handover',
-           'figures.validation', ['figure_source/D15_reality_checks.json']),
-        _d('D43_historical_market_balance', 'Historical and projected floor area: demand, net replacement and unallocated balance',
-           'figures.market_balance', ['diagnostics/market_balance_history_projection.csv']),
-        _d('D44_completion_lag_comparison', 'Annual floor area by broad demand group: zero- and 17-month completion lag',
-           'figures.market_balance', ['diagnostics/lag_comparison_annual.csv']),
-    ],
-    'boundaries': [
-        _d('D18_aesa_sensitivity', 'All AESA sensitivity rows: cumulative LoE AR and AtP', 'figures.boundaries',
-           ['figure_source/D18_aesa_sensitivity.json']),
-        _d('D21_fan_and_boundaries', 'Monte Carlo fan of carbon, the AR base window and the boundary bands',
-           'figures.boundaries', ['figure_source/D21_fan_and_boundaries.json']),
-        _d('D22_boundaries', 'Boundaries AR and AtP 2025-2050, population modifier, components', 'figures.boundaries',
-           ['figure_source/D22_boundaries.json']),
-        _d('D23_annual_loe', 'Annual level of exceedance by variant with Monte Carlo bands', 'figures.boundaries',
-           ['figure_source/D23_annual_loe.json']),
-        _d('D24_headroom', 'Intensity, floor area and carbon per dwelling that would fit each boundary',
-           'figures.boundaries', ['figure_source/D24_headroom.json']),
-        _d('D25_annual_carbon_by_band', 'Annual carbon by demand band against the boundaries', 'figures.boundaries',
-           ['figure_source/D25_annual_carbon_by_band.json']),
-        _d('D26_cumulative_carbon_by_band', 'Cumulative carbon by demand band against the cumulative boundaries',
-           'figures.boundaries', ['figure_source/D26_cumulative_carbon_by_band.json']),
-        _d('D27_variants_vs_boundaries', 'Annual and cumulative carbon by variant against the boundaries',
-           'figures.boundaries', ['figure_source/D27_variants_vs_boundaries.json']),
-    ],
-    'pathways': [
-        _d('D28_pathways_annual', 'Annual carbon of the Reference, S1-S3, the Pathways and TL against the boundaries',
-           'figures.pathways', ['pathways/annual.csv', 'aesa/annual.csv']),
-        _d('D29_ramps', 'The adoption path and each lever\'s native parameter at Moderate, Ambitious and TL',
-           'figures.pathways', ['pathways/levers.json']),
-        _d('D31_lever_annual', 'Annual carbon of each lever alone at Moderate, Ambitious and TL', 'figures.pathways',
-           ['pathways/lever_annual.csv']),
-        _d('D32_tl_staircase', 'Reference -> Pathways -> TL: cumulative LoE and the human terms', 'figures.pathways',
-           ['pathways/runs.csv', 'pathways/theoretical_limit.json']),
-        _d('D33_ordering_checks', 'Ordering Reference >= Moderate >= Ambitious >= TL: carbon of each single-lever run',
-           'figures.pathways', ['pathways/ordering_checks.json', 'pathways/lever_annual.csv']),
-        _d('D34_tl_dwellings', 'TL: need, release, re-occupation and dwellings built per year (log)', 'figures.pathways',
-           ['pathways/reoccupation_log.csv']),
-        _d('D36_pathway_bands', 'Cumulative carbon by demand band of every pathway and TL', 'figures.pathways',
-           ['pathways/bands.csv']),
-    ],
-    'montecarlo': [
-        _d('D20_sobol', 'Sobol indices of the Reference (full profile only)', 'figures.montecarlo',
-           ['montecarlo/sobol_REF.csv']),
-        _d('D37_mc_convergence', 'Monte Carlo convergence of the 2026-2050 percentiles', 'figures.montecarlo',
-           ['montecarlo/convergence_REF.csv']),
-        _d('D38_mc_input_distributions', 'Monte Carlo input distributions (sample and quantiles; the resulting A1-A3 '
-           'factors by typology)', 'figures.montecarlo',
-           ['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv', 'montecarlo/carbon_factors_REF.csv']),
-        _d('D39_pathway_mc', 'Pathway Monte Carlo: Reference, Moderate / Ambitious Pathway, TL', 'figures.montecarlo',
-           ['pathways/montecarlo_summary.csv', 'pathways/montecarlo_annual.csv']),
-    ],
-    'sensitivity': [
-        _d('D16_one_at_a_time', 'Every one-at-a-time row of the Reference carbon', 'figures.sensitivity',
-           ['sensitivity/reference_carbon.csv']),
-        _d('D17_sensitivity_paths', 'Annual carbon of every sensitivity row', 'figures.sensitivity',
-           ['baseline/sensitivity_annual_carbon.csv']),
-        _d('D19_variants', 'Annual and cumulative floor area and carbon by projection variant', 'figures.validation',
-           ['figure_source/D19_variants.json', 'montecarlo/annual_REF.csv']),
-        _d('D40_src_prcc', 'Monte Carlo SRC and PRCC with bootstrap intervals', 'figures.sensitivity',
-           ['pathways/montecarlo_importance.csv']),
-        _d('D41_pathway_sensitivity', 'Moderate Pathway: one-at-a-time rows', 'figures.sensitivity',
-           ['sensitivity/pathway_carbon.csv']),
-        _d('D42_pb_sensitivity', 'Planetary-boundary rows: cumulative LoE AR and AtP', 'figures.sensitivity',
-           ['sensitivity/planetary_boundary.csv']),
-    ],
-}
+# MODEL v4.3.0: no separate diagnostic figures; every figure is a main, Extended Data or Supplementary figure
+DIAGNOSTICS = {}
 # figures drawn only in the full profile (their data exist only there)
-FULL_ONLY = ('D20_sobol',)
+FULL_ONLY = ('ED7_sobol',)
 
 # Maintenance (B2, B4) drawn as its own layer: only in the band and stage breakdowns
-MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries', 'SF7_reduction_by_demand',
-                       'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band', 'D32_tl_staircase',
-                       'D36_pathway_bands')
+MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries')
 # every figure with a planetary boundary on its axes (zones required; AtP dotted)
 PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways', 'Fig5_solution_space',
-              'ED3_replacement_variants', 'ED10_rollout_timing',
-              'D21_fan_and_boundaries', 'D22_boundaries', 'D23_annual_loe',
-              'D24_headroom', 'D25_annual_carbon_by_band', 'D26_cumulative_carbon_by_band',
-              'D27_variants_vs_boundaries', 'D28_pathways_annual')
+              'ED3_replacement_variants', 'ED10_rollout_timing', 'SF9_budget_construction')
 
 RETIRED = {
     'outputs/paper/ (Fig1-Fig6 of MODEL v2.1.2)': 'outputs/paper_main/ Fig1-Fig8 (new set)',
@@ -317,10 +242,12 @@ RETIRED = {
 
 
 def all_figures(profile_full=True):
-    """[(group, file id, module)] of every figure (diagnostics of FULL_ONLY only in the full profile)."""
-    out = [('paper_main', h['file'], h['module']) for h in PAPER_MAIN]
-    out += [('paper_extended', h['file'], h['module']) for h in PAPER_EXTENDED]
-    out += [('supplementary', h['file'], h['module']) for h in SUPPLEMENTARY]
+    """[(group, file id, module)] of every figure (FULL_ONLY figures only in the full profile: their data exist only
+    there)."""
+    keep = lambda f: profile_full or f not in FULL_ONLY
+    out = [('paper_main', h['file'], h['module']) for h in PAPER_MAIN if keep(h['file'])]
+    out += [('paper_extended', h['file'], h['module']) for h in PAPER_EXTENDED if keep(h['file'])]
+    out += [('supplementary', h['file'], h['module']) for h in SUPPLEMENTARY if keep(h['file'])]
     for g, rows in DIAGNOSTICS.items():
         out += [(g, r['file'], r['module']) for r in rows if profile_full or r['file'] not in FULL_ONLY]
     return out

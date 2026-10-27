@@ -5,13 +5,12 @@ Fig3 Reference against the boundaries, Fig4 the sequential waterfalls, Fig5 solu
 lever, Fig7 uncertainty (tornado; Reference, Ambitious Pathway and TL against the 2050 population)."""
 import calendar
 import re
-import textwrap
 
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Patch, Rectangle
+from matplotlib.patches import Patch
 
 import figure_plan as FP
 import naming as N
@@ -25,11 +24,9 @@ M = 1e6
 SRC = {h['file']: h['source'] for h in FP.PAPER_MAIN + FP.SUPPLEMENTARY}
 BANDS = list(N.BANDS_IN_SCOPE)
 BANDS_TL = list(N.BANDS_IN_SCOPE_TL)
-RUN_COLOUR = dict(S.PATHWAY, REF=S.REFERENCE, TL=S.TL)
 # MODEL v3.3.0: the PAS 2080 strategies S1-S3 and the Moderate / Ambitious Pathway (id prefix N.PATHWAY)
 RUN_GROUPS = tuple(N.STRATEGIES) + (N.PATHWAY,)
 GROUP_LABEL = {**{St: N.STRATEGIES[St] for St in N.STRATEGIES}, N.PATHWAY: 'Pathway (every lever)'}
-PATHWAY_LABEL = {'REF': N.SCENARIOS['REF'], **GROUP_LABEL, 'TL': N.TL['TL']}
 # MODEL v3.3.1: band labels of the paper legends (the data labels of naming.BANDS are unchanged)
 PAPER_BAND_LABEL = {'growth': 'Population growth', 'maintenance': 'Maintenance (B2, B4)'}
 
@@ -56,105 +53,6 @@ def paper_band_handles(bids, six=False):
         elif b in PAPER_BAND_LABEL:
             h.set_label(PAPER_BAND_LABEL[b])
     return out
-
-
-# ---------------------------------------------------------------------------
-# SF1 (Fig1 in MODEL v3.3.1): model schematic (boxes and arrows; no data drawn)
-# ---------------------------------------------------------------------------
-FIG1_W, FIG1_H = 183.0, 96.0                  # drawing units = mm on the page
-# top row: (key, label, x0, width); the levers sit under the step they act on (column key, sub-position)
-FIG1_STEPS = [('population', 'Population', 1.0, 16.0), ('households', 'Households', 19.5, 19.0),
-              ('dwellings', 'Dwellings', 41.0, 19.0), ('floor_area', 'Floor area', 62.5, 19.0),
-              ('carbon', 'Embodied carbon\nA1–A5, soil, B2/B4', 84.0, 38.0),
-              ('boundaries', 'compared with\nplanetary\nboundaries\n(AR, AtP)', 124.5, 21.0)]
-FIG1_LEVER_PLACE = {'L1': ('households', None), 'L2': ('dwellings', None), 'L3': ('dwellings', None),
-                    'L4': ('floor_area', None), 'L5': ('floor_area', None), 'L6': ('carbon', 'site / soil'),
-                    'L7': ('carbon', 'site / soil'), 'L8': ('carbon', 'materials'), 'L9': ('carbon', 'A4–A5')}
-FIG1_BAND_Y = {'S1': (56.0, 74.0), 'S2': (33.0, 53.0), 'S3': (18.0, 30.0)}   # strategy bands (bottom, top)
-FIG1_PAD = {'S1': 1.5, 'S2': 4.0, 'S3': 4.0}      # space above the first lever box (room for the carbon sub-labels)
-
-
-def _box(ax, x0, y0, w, h, text, edge, face='white', fontsize=S.FONT_SMALL, weight='normal', color=S.INK, lw=0.8,
-         ls='-'):
-    ax.add_patch(FancyBboxPatch((x0, y0), w, h, boxstyle='round,pad=0,rounding_size=1.2', facecolor=face,
-                                edgecolor=edge, lw=lw, ls=ls, zorder=3))
-    ax.text(x0 + w / 2, y0 + h / 2, text, ha='center', va='center', fontsize=fontsize, fontweight=weight,
-            color=color, zorder=4, linespacing=1.1)
-
-
-def _arrow(ax, x0, y0, x1, y1, color=S.INK, ls='-', lw=0.8):
-    ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle='-|>', mutation_scale=6, color=color, lw=lw, ls=ls,
-                                 zorder=4, shrinkA=0, shrinkB=0))
-
-
-def sf1_schematic():
-    """MODEL v3.3.1 (SF1 since v3.3.2): the model as boxes and arrows. Top row: the conversion chain to embodied carbon, compared with the
-    planetary boundaries; below, the three PAS 2080 strategy bands with each lever under the step it acts on; right,
-    the ambition ladder of every lever (Levels 1-4). The adoption window is read from pathways/levers.json."""
-    ad = D.js('pathways/levers.json')['adoption']
-    fig = plt.figure(figsize=(FIG1_W * S.MM, FIG1_H * S.MM))
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.set_xlim(0, FIG1_W)
-    ax.set_ylim(0, FIG1_H)
-    ax.axis('off')
-    top_y, top_h = 79.0, 15.0
-    col = {}
-    for i, (key, lab, x0, w) in enumerate(FIG1_STEPS):
-        col[key] = (x0, w)
-        is_pb = key == 'boundaries'
-        _box(ax, x0, top_y, w, top_h, lab, edge=S.AR if is_pb else S.INK,
-             fontsize=S.FONT_MIN + 0.5 if is_pb else S.FONT_SMALL,
-             weight='normal' if is_pb else 'bold', ls='--' if is_pb else '-')
-        if i:
-            px0, pw = FIG1_STEPS[i - 1][2], FIG1_STEPS[i - 1][3]
-            _arrow(ax, px0 + pw, top_y + top_h / 2, x0, top_y + top_h / 2, ls='--' if is_pb else '-')
-    # strategy bands: a pale band in the strategy colour, the strategy named in the Population column
-    band_x0, band_x1 = col['population'][0], col['carbon'][0] + col['carbon'][1]
-    for St, (y0, y1) in FIG1_BAND_Y.items():
-        ax.add_patch(Rectangle((band_x0, y0), band_x1 - band_x0, y1 - y0, facecolor=S.STRATEGY[St], alpha=0.16,
-                               edgecolor='none', zorder=1))
-        ax.text(band_x0 + 1.0, (y0 + y1) / 2, N.STRATEGIES[St].replace(' ', '\n'), ha='left', va='center',
-                fontsize=S.FONT_SIZE, fontweight='bold', color=S.STRATEGY[St], zorder=4, linespacing=1.0)
-    # levers: stacked within their strategy band under their step; the carbon column split into sub-positions
-    cw = (col['carbon'][1] - 3.0) / 2
-    sub_x = {'site / soil': (col['carbon'][0] + 1.0, cw), 'materials': (col['carbon'][0] + 2.0 + cw, cw),
-             'A4–A5': (col['carbon'][0] + (col['carbon'][1] - cw) / 2, cw)}
-    slots = {}
-    lever_h = 7.0
-    for L, (key, sub) in FIG1_LEVER_PLACE.items():
-        St = N.LEVER_STRATEGY[L]
-        x0, w = sub_x[sub] if sub else (col[key][0] + 1.0, col[key][1] - 2.0)
-        y0, y1 = FIG1_BAND_Y[St]
-        k = slots.get((St, key, sub), 0)
-        slots[(St, key, sub)] = k + 1
-        yb = y1 - FIG1_PAD[St] - (k + 1) * lever_h - k * 1.5
-        text = '\n'.join(textwrap.wrap(f'{L} {N.LEVERS[L]}', 17))
-        _box(ax, x0, yb, w, lever_h, text, edge=S.STRATEGY[St], fontsize=S.FONT_MIN, lw=0.9)
-    for sub, (x0, w) in sub_x.items():                       # what the carbon levers act on
-        St = 'S3' if sub == 'A4–A5' else 'S2'
-        ax.text(x0 + w / 2, FIG1_BAND_Y[St][1] - 0.5, sub, ha='center', va='top', fontsize=S.FONT_MIN,
-                color=S.MUTED, style='italic', zorder=4)
-    # ambition ladder: two rails, four rungs (Level 1 at the bottom), an arrow of increasing ambition
-    lx0, lx1 = 151.0, 155.0
-    rungs = [('Reference', 'Level 1: observed trends', S.REFERENCE),
-             ('Moderate Pathway', 'Level 2: midpoint', S.PATHWAY[N.PATHWAY]),
-             ('Ambitious Pathway', 'Level 3: documented frontier', S.PATHWAY[N.PATHWAY]),
-             ('Theoretical Limit', 'Level 4: physical or\nbest-observed limit', S.TL)]
-    ry = np.linspace(24.0, 86.0, len(rungs))
-    for x in (lx0, lx1):
-        ax.plot([x, x], [ry[0] - 5, ry[-1] + 5], color=S.INK, lw=0.9, zorder=3)
-    for y, (name, desc, c) in zip(ry, rungs):
-        ax.plot([lx0, lx1], [y, y], color=c, lw=2.2, solid_capstyle='butt', zorder=4)
-        ax.text(lx1 + 2.0, y + 1.2, name, ha='left', va='bottom', fontsize=S.FONT_SMALL, fontweight='bold', color=c)
-        ax.text(lx1 + 2.0, y + 0.6, desc, ha='left', va='top', fontsize=S.FONT_MIN, color=S.INK, linespacing=1.05)
-    _arrow(ax, lx0 - 3.0, ry[0], lx0 - 3.0, ry[-1], color=S.MUTED, lw=0.7)
-    ax.text(lx0 - 4.2, (ry[0] + ry[-1]) / 2, 'ambition (every lever)', rotation=90, ha='right', va='center',
-            fontsize=S.FONT_MIN, color=S.MUTED)
-    ax.text(FIG1_W / 2, 10.0, f"Levers adopt on a logistic path, full by {ad['end']}", ha='center', va='center',
-            fontsize=S.FONT_MIN + 0.5, style='italic', color=S.MUTED)
-    _save(fig, 'SF1_model_schematic',
-          note=f"Adoption: {ad['form']}, from {ad['start']} (w = 0) to {ad['end']} (w = 1). Lever names from "
-               'naming.LEVERS; strategy colours style.STRATEGY.')
 
 
 # ---------------------------------------------------------------------------
@@ -331,19 +229,20 @@ def fig2():
     gs = fig.add_gridspec(1, 5, width_ratios=[1, 1, 1, 0.30, 0.62], wspace=0.12)   # MODEL v4.2.2: d axis on the left
     ax = [fig.add_subplot(gs[0])]
     ax += [fig.add_subplot(gs[k], sharey=ax[0]) for k in (1, 2)]
-    P.stack_series(ax[0], years, [(b, band[b].values) for b in band.columns], net=total)
+    P.stack_series(ax[0], years, [(b, band[b].values) for b in band.columns], net=total, smooth=True)
     P.panel(ax[0], 'a', 'By demand band')
-    P.stack_materials(ax[1], years, mat, 1.0)
+    P.stack_materials(ax[1], years, mat, 1.0, smooth=True)
     P.panel(ax[1], 'b', 'By material')
     stages = [('a1a3', stg['a1a3_kt']), ('a4a5', stg['a4a5_kt']), ('soil', stg['soil_carbon_loss_kt']),
               ('maintenance', stg['maintenance_kt'])]
     P.nonnegative('stage', *[v.values for _, v in stages])
-    bottom = np.zeros(len(years))
-    for k, v in stages:
-        ax[2].fill_between(years, bottom, bottom + v.values, label=N.STAGES[k], **S.fill(*S.STAGE[k][:1]))
-        bottom = bottom + v.values
-    if not np.allclose(bottom, total, rtol=1e-9):
+    if not np.allclose(np.sum([v.values for _, v in stages], axis=0), total, rtol=1e-9):
         raise SystemExit('STOP: Fig2: the stages do not add up to the annual carbon.')
+    xf, sp = P.smooth_parts(years, [(k, v.values) for k, v in stages])    # MODEL v4.3.0: each stage by PCHIP
+    bottom = np.zeros(len(xf))
+    for k, v in sp:
+        ax[2].fill_between(xf, bottom, bottom + v, label=N.STAGES[k], **S.fill(*S.STAGE[k][:1]))
+        bottom = bottom + v
     P.panel(ax[2], 'c', 'By life-cycle stage')
     for a in ax:
         a.set_xlim(years[0], years[-1])
@@ -612,13 +511,14 @@ def fig4():
 
 
 # ---------------------------------------------------------------------------
-# SF7 (Fig5 until MODEL v4.2.2): the reduction against the Reference by demand band (Moderate Pathway, Ambitious Pathway, TL)
+# the reduction against the Reference by demand band (Fig5 until MODEL v4.2.2; the figure was removed in MODEL v4.3.0,
+# the computation is kept: tests/test_figures_v3_3_2.py checks it against pathways/runs.csv)
 # ---------------------------------------------------------------------------
-FIG5_RUNS = ('pathway-moderate', 'pathway-ambitious', 'TL')
+REDUCTION_RUNS = ('pathway-moderate', 'pathway-ambitious', 'TL')
 
 
 def reduction_by_band():
-    """MODEL v3.3.2 (Fig5): {run: {band id: Reference - run (kt, cumulative 2026-2050, in scope)}} for FIG5_RUNS, from
+    """MODEL v3.3.2: {run: {band id: Reference - run (kt, cumulative 2026-2050, in scope)}} for REDUCTION_RUNS, from
     pathways/bands.csv (the in-scope bands add up to each run's carbon, pathways.py), and the column totals
     {run: Reference - run} from pathways/runs.csv."""
     bd = D.csv('pathways/bands.csv')
@@ -629,55 +529,9 @@ def reduction_by_band():
     r = r[r['scenario'] == 'REF'].set_index('run')['carbon_kt']
     piv = piv.groupby(lambda b: BANDS_MOD.DISPLAY[b]).sum()             # MODEL v4.2: the six display bands (+ TL)
     order = [b for b in BANDS_MOD.DISPLAY_ORDER if b in piv.index]
-    red = {run: {b: float(piv.loc[b, 'REF'] - piv.loc[b, run]) for b in order} for run in FIG5_RUNS}
-    tot = {run: float(r['REF'] - r[run]) for run in FIG5_RUNS}
+    red = {run: {b: float(piv.loc[b, 'REF'] - piv.loc[b, run]) for b in order} for run in REDUCTION_RUNS}
+    tot = {run: float(r['REF'] - r[run]) for run in REDUCTION_RUNS}
     return red, tot
-
-
-def sf7_reduction():
-    """MODEL v3.3.2: three columns (Moderate Pathway, Ambitious Pathway, Theoretical Limit), height = the total
-    reduction of cumulative carbon 2026-2050 against the Reference (value on top), stacked by demand band (Reference -
-    run per band): positive band reductions stacked from zero, negative band reductions (credits from re-used dwellings
-    that shrink with smaller new dwellings) outlined, hanging down from the top of the positive stack to the total
-    (draw.bars_cumulative, net tick)."""
-    red, tot = reduction_by_band()
-    fig, ax = plt.subplots(figsize=S.figsize('double', 105))
-    x = np.arange(len(FIG5_RUNS), dtype=float)
-    bands = [b for b in red[FIG5_RUNS[0]] if any(abs(red[r][b]) > 1e-9 for r in FIG5_RUNS)]
-    parts = [(b, np.array([red[r][b] for r in FIG5_RUNS])) for b in bands]
-    # MODEL v4.2.1: positive band reductions stacked up from zero, negative ones stacked below zero; the net marker
-    up, dn = P.stack_bars(ax, x, parts, 0.72, net=np.array([tot[r] for r in FIG5_RUNS]))
-    for xi, r in zip(x, FIG5_RUNS):
-        ax.plot([xi - 0.42, xi + 0.42], [tot[r], tot[r]], color=S.INK, lw=S.LW_BOLD * 1.6, solid_capstyle='butt',
-                zorder=6)
-    ax.text(x[-1] - 0.46, tot[FIG5_RUNS[-1]], 'Net reduction', va='center', ha='right', fontsize=S.FONT_SIZE,
-            color=S.INK)
-    for xi, r, u in zip(x, FIG5_RUNS, up):
-        ax.text(xi, u + 0.012 * max(up), f'{tot[r]:,.0f}', ha='center', va='bottom', fontsize=S.FONT_SMALL,
-                fontweight='bold')
-    ax.set_xticks(x)
-    ax.set_xticklabels([N.PATHWAY_RUNS.get(r, N.TL['TL']) for r in FIG5_RUNS])
-    ax.set_xlim(-0.5, len(x) - 0.5)
-    ax.tick_params(labelsize=S.FONT_SIZE + 0.5)
-    ax.set_ylim(min(0.0, float(min(dn)) * 1.15), max(up) * 1.08)
-    ax.axhline(0, color=S.INK, lw=S.LW_THIN)
-    ax.set_ylabel('Reduction of cumulative carbon 2026–2050 (kt CO₂e)', fontsize=S.FONT_SIZE + 0.5)
-    P.thousands(ax.yaxis)
-    ax.grid(axis='x', visible=False)
-    hb = []
-    for b in bands[::-1]:                                                # top of the stack first
-        lab = BANDS_MOD.DISPLAY_LABEL.get(b, P.band_label(b))
-        hb.append(Patch(label=lab, **dict(P.band_style(b), edgecolor='#555555', linewidth=S.LW_THIN)))
-    fig.legend(handles=hb[::-1], loc='lower center', ncol=4, fontsize=S.FONT_MIN + 0.5, frameon=False,
-               bbox_to_anchor=(0.5, 0.0))
-    fig.tight_layout(rect=(0, 0.12, 1, 1))
-    _save(fig, 'SF7_reduction_by_demand',
-          note='Reduction vs the Reference (kt): ' + ', '.join(f'{N.run_label(r)} {tot[r]:,.0f}' for r in FIG5_RUNS)
-               + '. Segments (Moderate, Ambitious, TL; kt): ' + '; '.join(
-                   f"{BANDS_MOD.DISPLAY_LABEL.get(b, b)} " + ', '.join(f'{red[r][b]:+,.0f}' for r in FIG5_RUNS)
-                   for b in bands)
-               + '. The 2026–27 pipeline is identical in all runs and cancels; the negative segment is the smaller '
-               'carbon saved per absorbed dwelling when new dwellings are smaller and lower-carbon.')
 
 
 # ---------------------------------------------------------------------------
@@ -751,8 +605,8 @@ def _spread(vals, min_gap):
     return pos
 
 
-FIG5_MS = 1.25                       # MODEL v4.2.2: every Fig6 marker scaled by this factor
-FIG5_FONT = 1.45                     # MODEL v4.2.2: every Fig6 text scaled by this factor (was 1.25)
+FIG5_MS = 1.25                       # MODEL v4.2.2: every solution-space marker scaled by this factor
+FIG5_FONT = 1.45                     # MODEL v4.2.2: every solution-space text scaled by this factor (was 1.25)
 
 
 def fig5():
@@ -790,7 +644,7 @@ def fig5():
     # labels where each contour crosses the diagonal x = y: (1 - x)^2 = k
     diag = {v: 1.0 - np.sqrt(fig5_k(bc, v)) for v in levels if fig5_k(bc, v) > 0}
     lab_levels = [v for v, d in diag.items() if 0.02 <= d <= 0.98]      # crossings inside the square only
-    ax.clabel(cs, levels=lab_levels, fmt=lambda v: f'LoE AR {v:g}', fontsize=S.FONT_MIN,
+    ax.clabel(cs, levels=lab_levels, fmt=lambda v: f'LoE of AR {v:g}', fontsize=S.FONT_MIN,
               manual=[(100 * diag[v], 100 * diag[v]) for v in lab_levels])
     for m in bc['solution_space_markers']:
         run = m['run']
@@ -839,7 +693,7 @@ def fig5():
                     fontsize=S.FONT_MIN + 0.5, linespacing=1.0,
                     color=mk['color'] if mk else S.INK,
                     arrowprops=dict(arrowstyle='-', color=S.MUTED, lw=0.4, shrinkA=0, shrinkB=0))
-    ru.set_title('LoE AR', fontsize=S.FONT_MIN + 0.5, pad=3)
+    ru.set_title('Cumulative\nLoE of AR', fontsize=S.FONT_MIN + 0.5, pad=3)
     h = [Line2D([0], [0], marker='o', ls='none', color=S.PATHWAY[P_], markerfacecolor=S.PATHWAY[P_], ms=5,
                 label=GROUP_LABEL[P_] if P_ != N.PATHWAY else 'Pathways') for P_ in RUN_GROUPS]
     h += [Line2D([0], [0], marker='o', ls='none', color=S.MUTED, markerfacecolor=S.MUTED, ms=5, label='Moderate'),
@@ -948,7 +802,6 @@ def tornado_rows():
     household-size census pace, No 2026 data) carry it as a fifth element and are drawn in the muted grey."""
     t = D.csv('sensitivity/tornado.csv').set_index(['input', 'side'])
     pb = D.csv('sensitivity/planetary_boundary.csv')
-    st = D.js('aesa/results.json')['settings']
     v = lambda inp, side: float(t.loc[(inp, side), 'LoE_AR'])
     rows = [('population',
              v('Population (Stats NZ 5th / 95th percentile)', 'low'),
@@ -980,7 +833,6 @@ def tornado_rows():
         bw['years'] = bw['row'].map(_yrs)
         bw['n'] = bw['years'].map(lambda y: y[1] - y[0] + 1)
         bw = bw.sort_values('n')
-        c0 = st['AR_BASE_WINDOW']
         short, long_ = bw.iloc[0], bw.iloc[-1]
         rows.append((N.AR_WINDOW_LABEL.format(short=short['n'], long=long_['n']),
                      float(short['LoE_AR']), float(long_['LoE_AR']),
@@ -1013,13 +865,13 @@ def fig7():
     a.axvline(c0, color=S.INK, lw=S.LW_THIN)
     a.set_yticks(np.arange(len(rows)))
     a.set_yticklabels([N.INPUT_LABEL.get(r[0], r[0]) for r in rows], fontsize=S.FONT_SMALL)   # naming.INPUT_LABEL
-    a.set_xlabel('Reference cumulative LoE AR 2026-2050')
+    a.set_xlabel(f'{N.LOE_AR} 2026–2050, Reference')
     a.grid(axis='y', visible=False)
     a.legend(handles=[Patch(label='Input at low end', **S.fill(LOW_END)),
                       Patch(label='Input at high end', **S.fill(HIGH_END))]
              + ([Patch(label='Single alternative case', **S.fill(SINGLE_CASE))] if has_single else []),
              loc='lower right', fontsize=S.FONT_MIN)
-    P.panel(a, 'a', f'One at a time (Reference LoE AR {c0:.2f})')
+    P.panel(a, 'a', f'One at a time (Reference {c0:.2f})')
     # (b) TL against the 2050 population
     j = D.js('pathways/montecarlo_conditional_tl.json')
     d = D.csv('pathways/montecarlo_draws.csv')
@@ -1038,7 +890,7 @@ def fig7():
         lab = {'REF': N.SCENARIOS['REF'], 'pathway_ambitious': N.PATHWAY_RUNS['pathway-ambitious'], 'TL': N.TL['TL']}[run]
         pct = f'{100 * k / n:.1f}%' if k / n >= 0.01 or k == 0 else f'{100 * k / n:.2f}%'
         b.scatter(pop, v, s=sz, marker=mk, color=col, alpha=al, lw=0, zorder=z,
-                  label=f'{lab}: P(LoE AR ≤ 1) = {pct} ({k:,} of {n:,})')
+                  label=f'{lab}: P(LoE of AR ≤ 1) = {pct} ({k:,} of {n:,})')
     assert abs(pin['TL'][0] - j['p_within_AR']) < 1e-12, (pin['TL'][0], j['p_within_AR'])
     b.axhline(1.0, gid='boundary', zorder=4, **{k: v for k, v in S.BOUNDARY['AR'].items() if k != 'label'})
     b.set_yscale('log')
@@ -1047,13 +899,13 @@ def fig7():
     b.set_ylim(vmin * 0.9, vmax * 2.6)                                # headroom above the data for the legend
     P.log_ticks(b.yaxis, [t for t in (0.5, 0.6, 0.8, 1, 1.5, 2, 3, 4, 6, 8, 10, 15) if vmin * 0.9 <= t <= vmax * 2.6])
     b.set_xlabel('New Zealand population 2050 (million)')
-    b.set_ylabel('Cumulative LoE AR 2026-2050 (log scale)')
+    b.set_ylabel(f'{N.LOE_AR} 2026–2050 (log scale)')
     if thr['estimable']:
         lo, hi = thr['ci95']
         x50 = thr['threshold_P_NZ_2050'] / 1e6
         y0_, y1_ = b.get_ylim()                                     # the line stops above the data (legend clear)
         top = (np.log(vmax * 1.15) - np.log(y0_)) / (np.log(y1_) - np.log(y0_))
-        b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3, label='TL: P(LoE AR ≤ 1) = 50%')
+        b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3, label=f"{N.TL['TL']}: P(LoE of AR ≤ 1) = 50%")
         b.text(x50, 0.03, f' {x50:.2f} M (95% CI {lo / 1e6:.2f}–{hi / 1e6:.2f} M)', transform=b.get_xaxis_transform(),
                ha='left', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
     hb = b.get_legend_handles_labels()[0]
@@ -1082,5 +934,4 @@ def fig7():
 
 
 FIGURES = {'Fig1_floor_area': fig1, 'Fig2_reference_carbon': fig2, 'Fig3_reference_boundaries': fig3,
-           'Fig4_pathways': fig4, 'SF7_reduction_by_demand': sf7_reduction, 'Fig5_solution_space': fig5,
-           'Fig6_shapley_levers': fig6, 'Fig7_uncertainty': fig7, 'SF1_model_schematic': sf1_schematic}
+           'Fig4_pathways': fig4, 'Fig5_solution_space': fig5, 'Fig6_shapley_levers': fig6, 'Fig7_uncertainty': fig7}

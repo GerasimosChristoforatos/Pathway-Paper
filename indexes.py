@@ -150,6 +150,8 @@ FILES = [
      'texts, note, drawing script, whether maintenance and the boundary styling are drawn (figaudit.py; read by the '
      'tests)', 'style.save_figure'),
     ('INDEX.md', 'This index', 'indexes.py'),
+    ('figure_manifest.csv', 'MODEL v4.3.0: every figure (main, Extended Data, Supplementary): id, file, section, '
+     'source script, source data, caption stub', 'tools/figure_manifest.py'),
     # MODEL v3.0.0 figures and documents (figures/ package; figure_plan.py)
     ('FIGURES.md', 'Every figure with its file, data sources, caption and run-specific note', 'figures/index.py'),
     ('run_meta.json', 'Run metadata: profile, draws, seeds, git hash, input hash, timestamp, step timings', 'run_all.py'),

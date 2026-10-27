@@ -1,4 +1,4 @@
-"""Sensitivity diagnostics (outputs/diagnostics/sensitivity/), from the data files only."""
+"""Sensitivity figures (MODEL v4.3.0: ED4, ED5, SF10, SF11), from the data files only."""
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8,105 +8,110 @@ from figures import draw as P
 from figures import style as S
 
 
-def _rows(ax, df, value, central, unit, log=False):
-    df = df.reset_index(drop=True)
-    groups = list(dict.fromkeys(df['group']))
-    y = np.arange(len(df))[::-1]
-    for k, r in df.iterrows():
-        col = S.QUALITATIVE[groups.index(r['group']) % len(S.QUALITATIVE)]
-        ax.barh(y[k], r[value] - central, left=central, height=0.7, color=col, edgecolor=col, lw=S.LW_SEAM)
-    ax.axvline(central, color=S.INK, lw=S.LW_THIN)
-    ax.set_yticks(y)
-    ax.set_yticklabels([f"{r['row']}" + (f" ({r['side']})" if r['side'] != 'single' else '') for _, r in df.iterrows()],
-                       fontsize=S.FONT_MIN)
-    ax.set_xlabel(unit)
-    if log:
-        ax.set_xscale('log')
-    handles = [plt.Rectangle((0, 0), 1, 1, color=S.QUALITATIVE[i % len(S.QUALITATIVE)], label=g)
-               for i, g in enumerate(groups)]
-    ax.legend(handles=handles, fontsize=S.FONT_MIN, loc='lower right')
+# ---------------------------------------------------------------------------
+# SF10 (D40): partial rank correlation of each Monte Carlo input
+# ---------------------------------------------------------------------------
+MC_IMPORTANCE_INPUT = {'carbon_index': 'carbon'}          # importance-table input id -> naming.MC_INPUT id
+MC_RUNS = (('REF', N.SCENARIOS['REF'], S.REFERENCE), ('pathway_moderate', N.PATHWAY_RUNS['pathway-moderate'],
+                                                      S.PATHWAY_SETTING['moderate']), ('TL', N.TL['TL'], S.TL))
 
 
-def d16():
-    r = D.csv('sensitivity/reference_carbon.csv')
-    fig, ax = plt.subplots(figsize=S.figsize('double', 150))
-    _rows(ax, r, 'carbon_kt', float(r['central_carbon_kt'].iloc[0]), 'Cumulative carbon 2026-2050 (kt CO₂e)')
-    P.thousands(ax.xaxis)
-    fig.tight_layout()
-    S.save_figure(fig, 'D16_one_at_a_time', note='Every one-at-a-time row of the Reference; not additive, not a joint '
-                                                 'interval.', source=['sensitivity/reference_carbon.csv'])
-
-
-def d17():
-    a = D.csv('baseline/sensitivity_annual_carbon.csv')
-    fig, ax = plt.subplots(figsize=S.figsize('double', 95))
-    groups = list(dict.fromkeys(a['group']))
-    for case, t in a.groupby('case', sort=False):
-        g = t['group'].iloc[0]
-        ref = g == 'Reference'
-        ax.plot(t['year'], t['carbon_kt'], color=S.INK if ref else S.QUALITATIVE[groups.index(g) % 8],
-                lw=S.LW_BOLD if ref else S.LW_THIN, alpha=1.0 if ref else 0.8, label=g if t.index[0] == a[a['group'] == g].index[0] else None)
-    ax.set_xlim(2026, 2050)
-    ax.set_ylim(0, None)
-    ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
-    ax.legend(fontsize=S.FONT_MIN, ncol=2)
-    fig.tight_layout()
-    S.save_figure(fig, 'D17_sensitivity_paths', source=['baseline/sensitivity_annual_carbon.csv'])
-
-
-D40_LABELS = {'z_pop': 'Population path\n(rank, z-score)', 'size': 'Dwelling size\n(multiplier)',
-              'complete': 'Completion rate', 'carbon_index': 'Carbon factors\n(index)',
-              'half_life': 'Replacement\nhalf-life (yr)'}
-D40_RUNS = {'REF': 'Reference', 'pathway_moderate': 'Moderate Pathway', 'pathway_ambitious': 'Ambitious Pathway',
-            'TL': 'Theoretical Limit'}
-
-
-def d40():
+def sf10_prcc():
+    """PRCC of each Monte Carlo input (naming.MC_INPUT) with its 95% bootstrap interval, for the Reference, the
+    Moderate Pathway and TL, on cumulative floor area, carbon and LoE of AR 2026-2050 (pathways/montecarlo_importance
+    .csv). The percentile interval is drawn as it is (lo to hi): it need not contain the point estimate when the
+    bootstrap distribution is skewed near |PRCC| = 1."""
     imp = D.csv('pathways/montecarlo_importance.csv')
-    fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 70), sharey=True)
+    fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 72), sharey=True)
     inputs = list(dict.fromkeys(imp['input']))
     y = np.arange(len(inputs))
-    runs = list(dict.fromkeys(imp['run']))
-    for a, out, letter in zip(ax, ('floor_area_Mm2', 'carbon_kt', 'LoE_AR'), 'abc'):
-        for j, run in enumerate(runs):
+    have = [r for r in MC_RUNS if r[0] in set(imp['run'])]
+    for a, out, letter, title in zip(ax, ('floor_area_Mm2', 'carbon_kt', 'LoE_AR'), 'abc',
+                                     ('Floor area, cumulative', 'Embodied carbon, cumulative', N.LOE_AR)):
+        for j, (run, lab, col) in enumerate(have):
             t = imp[(imp['run'] == run) & (imp['output'] == out)].set_index('input').loc[inputs]
-            off = (j - (len(runs) - 1) / 2) * 0.2
-            col = {'REF': S.REFERENCE, 'pathway_moderate': S.PATHWAY[N.PATHWAY], 'TL': S.TL}.get(run, S.MUTED)
-            # the percentile bootstrap interval is drawn as it is (lo to hi): it need not contain the point estimate
-            # when the bootstrap distribution is skewed near |PRCC| = 1 (MODEL v4.0.0: TL, completion rate)
+            off = (j - (len(have) - 1) / 2) * 0.22
             a.hlines(y + off, t['prcc_lo'], t['prcc_hi'], color=col, lw=S.LW_THIN)
-            a.plot(t['prcc'], y + off, 'o', ms=3, color=col, label=D40_RUNS.get(run, run))
+            a.plot(t['prcc'], y + off, 'o', ms=3, color=col, label=lab)
         a.axvline(0, color=S.INK, lw=S.LW_THIN)
         a.set_xlim(-1, 1)
         a.set_xlabel('PRCC (95% bootstrap interval)', fontsize=S.FONT_SMALL)
-        a.tick_params(labelsize=S.FONT_SMALL)
-        P.panel(a, letter, {'floor_area_Mm2': 'Floor area', 'carbon_kt': 'Carbon', 'LoE_AR': 'LoE AR'}[out])
+        a.grid(axis='y', visible=False)
+        P.panel(a, letter, title)
     ax[0].set_yticks(y)
-    ax[0].set_yticklabels([D40_LABELS.get(i, i) for i in inputs], fontsize=S.FONT_SMALL)   # B3: readable labels
-    h, l_ = ax[0].get_legend_handles_labels()
-    ax[0].legend(h, [D40_RUNS.get(k, k) for k in l_], fontsize=S.FONT_SMALL, loc='lower left')
-    fig.tight_layout()
-    S.save_figure(fig, 'D40_src_prcc', note=f"Bootstrap resamples: {int(imp['bootstrap_resamples'].iloc[0])}; SRC and "
-                                            "R² in the data file.", source=['pathways/montecarlo_importance.csv'])
+    ax[0].set_yticklabels([N.MC_INPUT[MC_IMPORTANCE_INPUT.get(i, i)] for i in inputs], fontsize=S.FONT_SMALL)
+    fig.legend(*ax[0].get_legend_handles_labels(), loc='lower center', ncol=len(have), frameon=False,
+               fontsize=S.FONT_SMALL, bbox_to_anchor=(0.5, 0.0))
+    P.centre_ticklabels(fig, ax[0])
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
+    S.save_figure(fig, 'SF10_prcc', note=f"Bootstrap resamples: {int(imp['bootstrap_resamples'].iloc[0])}; SRC and R² "
+                                         'in the data file.', source=['pathways/montecarlo_importance.csv'])
 
 
-def d41():
+# ---------------------------------------------------------------------------
+# SF11 (D41): one at a time on the Moderate Pathway, paired tornado
+# ---------------------------------------------------------------------------
+def _lever_row(row):
+    L = row.split()[0]
+    return f'lever_{L}'
+
+
+PATHWAY_ROWS = {
+    ('Ambitious Pathway', 'single'): ('all_ambitious', 'single', 'Lever ambition'),
+    ('Full roll-out by 2030 / by 2045', 'low'): ('rollout', 'low', 'Roll-out timing'),
+    ('Full roll-out by 2030 / by 2045', 'high'): ('rollout', 'high', 'Roll-out timing'),
+    ('TL (every lever at Level 4)', 'single'): ('all_tl', 'single', 'Lever ambition'),
+    ('Low / High replacement', 'low'): ('replacement', 'low', 'Replacement'),
+    ('Low / High replacement', 'high'): ('replacement', ('tick', 'High'), 'Replacement'),
+    ('Very High replacement (trend continues)', 'single'): ('replacement', 'high', 'Replacement'),
+    ('Household size: Stats NZ High / Low variant', 'high'): ('hh_variant', 'low', 'Demographics'),
+    ('Household size: Stats NZ High / Low variant', 'low'): ('hh_variant', 'high', 'Demographics'),
+    ('Household size: 2018-2023 census pace', 'single'): ('hh_pace', 'single', 'Demographics'),
+    ('Population: Stats NZ 5th / 95th percentile', 'low'): ('population', 'low', 'Demographics'),
+    ('Population: Stats NZ 5th / 95th percentile', 'high'): ('population', 'high', 'Demographics'),
+}
+
+
+def _pathway_label(rid):
+    if rid.startswith('lever_'):
+        L = rid.split('_')[1]
+        return P.two_lines(f'{L} {N.LEVERS[L]}') + ' at Ambitious'
+    return N.INPUT_LABEL.get(rid, rid)
+
+
+def sf11_pathway_sensitivity():
+    """One at a time on the cumulative embodied carbon 2026-2050 of the Moderate Pathway (sensitivity/pathway_carbon
+    .csv), paired tornado grouped by category: each lever alone at Ambitious, every lever at Ambitious / at its limit,
+    the roll-out timing, replacement and demographics (labels as ED4 and Fig7a)."""
     r = D.csv('sensitivity/pathway_carbon.csv')
-    fig, ax = plt.subplots(figsize=S.figsize('double', 90))
-    _rows(ax, r, 'carbon_kt', float(r['central_carbon_kt'].iloc[0]), 'Cumulative carbon 2026-2050 (kt CO₂e)')
+    c0 = float(r['central_carbon_kt'].iloc[0])
+    items, unmapped = [], []
+    for _, x in r.iterrows():
+        key = (x['row'], x['side'])
+        if x['group'] == 'Ambition of one lever':
+            items.append((_lever_row(x['row']), 'single', 'Lever ambition', float(x['carbon_kt'])))
+        elif key in PATHWAY_ROWS:
+            rid, role, g = PATHWAY_ROWS[key]
+            items.append((rid, role, g, float(x['carbon_kt'])))
+        else:
+            unmapped.append(key)
+    if unmapped:
+        raise SystemExit(f'STOP: SF11: rows without a display name: {unmapped}')
+    rows = _collect(items)
+    order = P.tornado_rows(('Lever ambition', 'Roll-out timing', 'Replacement', 'Demographics'), rows, c0)
+    fig, ax = plt.subplots(figsize=S.figsize('double', 130))
+    P.tornado(ax, order, c0, _pathway_label)
+    ax.tick_params(axis='y', labelsize=S.FONT_MIN + 0.5)
+    ax.text(c0, 1.0, f' {N.PATHWAY_RUNS["pathway-moderate"]} {c0:,.0f} kt', transform=ax.get_xaxis_transform(),
+            ha='left', va='bottom', fontsize=S.FONT_SMALL, color=S.INK)
+    ax.set_xlabel('Cumulative embodied carbon 2026–2050 of the Moderate Pathway (kt CO₂e)')
     P.thousands(ax.xaxis)
+    ax.legend(handles=P.tornado_legend(), loc='upper right', bbox_to_anchor=(1.0, 0.97), fontsize=S.FONT_SMALL,
+              frameon=False)
+    P.centre_ticklabels(fig, ax)
     fig.tight_layout()
-    S.save_figure(fig, 'D41_pathway_sensitivity', source=['sensitivity/pathway_carbon.csv'])
-
-
-def d42():
-    r = D.csv('sensitivity/planetary_boundary.csv')
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 85), sharey=True)
-    _rows(ax[0], r, 'LoE_AR', float(r['central_LoE_AR'].iloc[0]), 'Cumulative LoE of AR')
-    _rows(ax[1], r, 'LoE_AtP', float(r['central_LoE_AtP'].iloc[0]), 'Cumulative LoE of AtP')
-    ax[1].get_legend().remove()
-    fig.tight_layout()
-    S.save_figure(fig, 'D42_pb_sensitivity', source=['sensitivity/planetary_boundary.csv'])
+    S.save_figure(fig, 'SF11_pathway_sensitivity', note=f'Moderate Pathway {c0:,.0f} kt. One at a time: not additive.',
+                  source=['sensitivity/pathway_carbon.csv'])
 
 
 # ---------------------------------------------------------------------------
@@ -278,6 +283,5 @@ def ed5_boundary_sensitivity():
                                                                      'aesa/results.json'])
 
 
-FIGURES = {'D16_one_at_a_time': d16, 'D17_sensitivity_paths': d17, 'D40_src_prcc': d40, 'D41_pathway_sensitivity': d41,
-           'D42_pb_sensitivity': d42, 'ED4_one_at_a_time': ed4_one_at_a_time,
-           'ED5_boundary_sensitivity': ed5_boundary_sensitivity}
+FIGURES = {'ED4_one_at_a_time': ed4_one_at_a_time, 'ED5_boundary_sensitivity': ed5_boundary_sensitivity,
+           'SF10_prcc': sf10_prcc, 'SF11_pathway_sensitivity': sf11_pathway_sensitivity}

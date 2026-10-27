@@ -265,6 +265,9 @@ INPUT_LABEL = {
     'sector_share': 'Sector share: ratio of sums\n(not mean of ratios)',
     'pop_source_raw': 'Population source: Stats NZ\n2024-base median, unadjusted',
     'pop_source_wpp': 'Population source:\nUN WPP 2024 median',
+    'rollout': 'Full roll-out\n(by 2030–by 2045)',
+    'all_ambitious': 'Every lever at Ambitious\n(Ambitious Pathway)',
+    'all_tl': 'Every lever at its limit\n(Theoretical Limit)',
 }
 AR_WINDOW_LABEL = 'AR base window\n({short}–{long} yr)'
 # ED4 / ED5 group headers (in this order)

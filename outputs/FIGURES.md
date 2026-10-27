@@ -30,33 +30,33 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 ### Fig4_pathways
 
-**Fig4 The Pathways: annual carbon and the sequential waterfalls** — (a) Annual carbon 2026-2050 of the Reference, the Moderate and Ambitious Pathway, the Theoretical Limit and the PAS 2080 strategies S1-S3 (thin; Moderate solid, Ambitious dotted) against AR and AtP. (b-d) Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 ... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; order-free Shapley values in Fig7 and, per lever and pathway, in ED5.
+**Fig4 The Pathways: annual carbon and the sequential waterfalls** — (a) Annual carbon 2026-2050 of the Reference, the Moderate and Ambitious Pathway, the Theoretical Limit and the PAS 2080 strategies S1-S3 (thin; Moderate solid, Ambitious dotted) against AR and AtP. (b-d) Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 ... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; order-free Shapley values in Fig6 and, per lever and pathway, in ED8.
 
 - Files: `paper_main/Fig4_pathways.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
-- This run: Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00. (a-c) Reference 19,761 kt -> Moderate Pathway 14,302 kt, Ambitious Pathway 10,267 kt, Theoretical Limit 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig7. Net-positive steps: none.
+- This run: Cumulative LoE AR: REF 4.46, pathway-moderate 3.23, pathway-ambitious 2.32, TL 1.00. (a-c) Reference 19,761 kt -> Moderate Pathway 14,302 kt, Ambitious Pathway 10,267 kt, Theoretical Limit 4,423 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig6. Net-positive steps: none.
 
-### Fig6_solution_space
+### Fig5_solution_space
 
-**Fig6 The solution space** — Cumulative level of exceedance of AR over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 (y) (after Horup et al. 2025), axes -5% to 100%, with S1-S3 (Moderate filled, Ambitious hollow), the Moderate / Ambitious Pathway and the Theoretical Limit; analytic LoE AR contours and the exact AR line. Right: the LoE AR ruler (log) with the Reference, the Pathways, TL, AR = 1, the plane floor (the 2026 observed cohort alone) and AtP.
+**Fig5 The solution space** — Cumulative level of exceedance of AR over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 (y) (after Horup et al. 2025), axes -5% to 100%, with S1-S3 (Moderate filled, Ambitious hollow), the Moderate / Ambitious Pathway and the Theoretical Limit; analytic LoE AR contours and the exact AR line. Right: the LoE AR ruler (log) with the Reference, the Pathways, TL, AR = 1, the plane floor (the 2026 observed cohort alone) and AtP.
 
-- Files: `paper_main/Fig6_solution_space.png`
+- Files: `paper_main/Fig5_solution_space.png`
 - Data: `data/pathways/solution_space.csv`, `data/pathways/backcast.json`, `data/pathways/runs.csv`
 - This run: LoE AR = [1,207 + 18,554 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.5% at x = 0). Axes -5% to 85%.
 
-### Fig7_shapley_levers
+### Fig6_shapley_levers
 
-**Fig7 What each lever removes** — Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; exact, 512 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 Switch, S3 Improve) in the lever order and coloured by strategy; hollow bar Moderate, filled bar Ambitious, large deep-green dot TL. The TL dots are Shapley values within the TL game (all nine levers at their limit), so they include each lever's interactions at the limit; L5 (occupancy density) interacts with L4 (extra space): both act on the floor area per dwelling.
+**Fig6 What each lever removes** — Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; exact, 512 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 Switch, S3 Improve) in the lever order and coloured by strategy; hollow bar Moderate, filled bar Ambitious, large deep-green dot TL. The TL dots are Shapley values within the TL game (all nine levers at their limit), so they include each lever's interactions at the limit; L5 (occupancy density) interacts with L4 (extra space): both act on the floor area per dwelling.
 
-- Files: `paper_main/Fig7_shapley_levers.png`
+- Files: `paper_main/Fig6_shapley_levers.png`
 - Data: `data/pathways/shapley.csv`
 - This run: (a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 512 subsets per game); the TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): moderate 5,460 kt, ambitious 9,494 kt, tl 15,339 kt.
 
-### Fig8_uncertainty
+### Fig7_uncertainty
 
-**Fig8 Uncertainty** — (a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high end per its definition (population rows move the budgets with the path; AR base-window rows move the AR budget only); not additive, not a joint interval. (b) Theoretical Limit: cumulative LoE AR against the 2050 New Zealand population across the Monte Carlo draws, LoE = 1, and the population at which P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).
+**Fig7 Uncertainty** — (a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high end per its definition (population rows move the budgets with the path; AR base-window rows move the AR budget only); not additive, not a joint interval. (b) Theoretical Limit: cumulative LoE AR against the 2050 New Zealand population across the Monte Carlo draws, LoE = 1, and the population at which P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).
 
-- Files: `paper_main/Fig8_uncertainty.png`
+- Files: `paper_main/Fig7_uncertainty.png`
 - Data: `data/sensitivity/tornado.csv`, `data/sensitivity/planetary_boundary.csv`, `data/pathways/montecarlo_draws.csv`, `data/pathways/montecarlo_conditional_tl.json`, `data/baseline/scenarios.json`, `data/aesa/results.json`
 - This run: (b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build years); its carbon floor is the 2026-27 pipeline plus maintenance. (a) Reference LoE AR 4.464; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = 0.499 (Wilson 0.485-0.513; n = 5,000); P(LoE AR <= 1) on the same paired draws: REF 0.0000 (Wilson 0.0000-0.0008), pathway_ambitious 0.0002 (Wilson 0.0000-0.0011), TL 0.4988 (Wilson 0.4849-0.5127); threshold 6.614 M (95% CI 6.611-6.616 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
@@ -70,51 +70,73 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/figure_source/projection_paths.json`, `data/figure_source/D02_households.json`
 - This run: Band: the Stats NZ population 5th-95th percentile paths run through the model (not the Monte Carlo). Households rebased on the 2023 census (k = 0.8244).
 
-### ED2_census_replacement_rates
+### ED2_household_formation_size
 
-**ED2 Net replacement rates from census dwelling counts and the four variants**
+**ED2 Household formation and household size**
 
-- Files: `paper_extended/ED2_census_replacement_rates.png`
-- Data: `data/baseline/stock_identity_history.csv`, `data/figure_source/D07_net_replacement_rate.json`
-- This run: Bars: census-interval rates from dwelling counts (net of unconsented additions); lines: the projection variants.
-
-### ED3_household_formation_size
-
-**ED3 Household formation and household size**
-
-- Files: `paper_extended/ED3_household_formation_size.png`
+- Files: (not drawn in this profile)
 - Data: `data/baseline/household_formation_history.csv`, `data/figure_source/D03_household_size.json`
 
-### ED4_overbuild_absorption
+### ED3_replacement_variants
 
-**ED4 Overbuild absorption: the Reference path and its timing sensitivity**
+**ED3 Low, High and Very High replacement: the Reference, the Pathways and TL**
 
-- Files: `paper_extended/ED4_overbuild_absorption.png`
-- Data: `data/baseline/overbuild_absorption_log.csv`, `data/baseline/sensitivity_annual_carbon.csv`
-- This run: Theory fixes the direction (reversion to the equilibrium vacancy), not the speed; 2035 is the common RECC window; speed bracketed.
-
-### ED5_shapley_attribution
-
-**ED5 Shapley attribution (order-independent): reduction of cumulative embodied carbon 2026-2050 by lever, Moderate and Ambitious Pathway and TL**
-
-- Files: `paper_extended/ED5_shapley_attribution.png`
-- Data: `data/pathways/shapley.csv`, `data/pathways/runs.csv`
-- This run: Exact Shapley values (2^9 coalitions per game, pathways/shapley.csv), Reference cumulative 19,761 kt. Lever sum vs Reference - pathway: moderate 5,459.650 vs 5,459.650 kt (relative difference 1.7e-16); ambitious 9,494.443 vs 9,494.443 kt (relative difference 0.0e+00); tl 15,338.501 vs 15,338.501 kt (relative difference 0.0e+00). Order-independent, unlike the sequential PAS 2080 waterfalls of Fig4.
-
-### ED6_replacement_variants
-
-**ED6 Low, High and Very High replacement: the Reference, the Pathways and TL**
-
-- Files: `paper_extended/ED6_replacement_variants.png`
+- Files: (not drawn in this profile)
 - Data: `data/sensitivity/replacement_variants.csv`, `data/pathways/annual.csv`
 
-### ED7_rollout_timing
+### ED4_one_at_a_time
 
-**ED7 Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon**
+**ED4 One at a time: cumulative embodied carbon 2026-2050 of the Reference**
 
-- Files: `paper_extended/ED7_rollout_timing.png`
+- Files: `paper_extended/ED4_one_at_a_time.png`
+- Data: `data/sensitivity/reference_carbon.csv`
+- This run: Reference 19,761 kt. One at a time: not additive, not a joint interval. "No effect": every case within 0.01% of the Reference. Version-history rows (completion rate 0.95 and lag 0 months of MODEL v3.3; the never-absorbed overbuild of MODEL v2.1) are not shown.
+
+### ED5_boundary_sensitivity
+
+**ED5 Boundary definitions and allocation: cumulative LoE of AR and of AtP**
+
+- Files: `paper_extended/ED5_boundary_sensitivity.png`
+- Data: `data/sensitivity/planetary_boundary.csv`, `data/aesa/results.json`
+- This run: Reference cumulative LoE of AR 4.46, of AtP 17.76; AR base window central 2016-2025. 'No effect': within 0.01% of the Reference (the economic-allocation rows move AtP only, the AR base window moves AR only).
+
+### ED6_mc_input_distributions
+
+**ED6 Monte Carlo input distributions**
+
+- Files: `paper_extended/ED6_mc_input_distributions.png`
+- Data: `data/montecarlo/draws_REF.csv`, `data/montecarlo/input_distributions_REF.csv`, `data/montecarlo/carbon_factors_REF.csv`, `data/pathways/montecarlo_draws.csv`
+- This run: 5,000 Latin hypercube draws. Population: the 2050 New Zealand population of each draw (the sampled standard-normal score mapped through the Stats NZ percentiles); carbon factors: the pooled A1-A3 factor of each draw by typology.
+
+### ED7_sobol
+
+**ED7 Sobol indices of the Reference: embodied carbon and floor area 2026-2050**
+
+- Files: `paper_extended/ED7_sobol.png`
+- Data: `data/montecarlo/sobol_REF.csv`
+- This run: Reference; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% intervals by bootstrap of the Sobol samples; full profile only.
+
+### ED8_shapley_attribution
+
+**ED8 Shapley attribution (order-independent): reduction of cumulative embodied carbon 2026-2050 by lever, Moderate and Ambitious Pathway and TL**
+
+- Files: (not drawn in this profile)
+- Data: `data/pathways/shapley.csv`, `data/pathways/runs.csv`
+
+### ED9_lever_annual
+
+**ED9 Each lever alone: annual embodied carbon at Moderate, Ambitious and the Theoretical Limit**
+
+- Files: `paper_extended/ED9_lever_annual.png`
+- Data: `data/pathways/lever_annual.csv`, `data/pathways/annual.csv`
+- This run: Each panel: one lever alone; the other levers at the Reference. Lines: PCHIP display interpolation through the annual values.
+
+### ED10_rollout_timing
+
+**ED10 Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon**
+
+- Files: (not drawn in this profile)
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
-- This run: (c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 13,737, Moderate Pathway 14,302, Moderate Pathway, full roll-out by 2045 (sensitivity) 15,395, Ambitious Pathway, full roll-out by 2030 (sensitivity) 9,350, Ambitious Pathway 10,267, Ambitious Pathway, full roll-out by 2045 (sensitivity) 12,091; Reference 19,761.
 
 ### EDT1_levels_by_typology
 

@@ -52,7 +52,7 @@ def ed6_mc_input_distributions():
               ('half_life', dr['half_life'], [q.loc['half_life', k] for k in ('q05', 'q50', 'q95')], 'Years')]
     fig, ax = plt.subplots(1, 5, figsize=S.figsize('double', 62))
     for a, (c, v, qs, xl) in zip(ax, panels):
-        a.hist(v, bins=30, color=S.NEUTRAL_DARK, alpha=0.6, lw=0)
+        a.hist(v, bins=30, color=S.NEUTRAL_DARK, alpha=S.FIXED_FADES['neutral_histogram'], lw=0)
         for k, x in enumerate(qs):
             a.axvline(x, color=S.INK, lw=S.LW_THIN, ls='-' if k == 1 else ':')
         a.set_title(N.MC_INPUT[c], fontsize=S.FONT_SMALL, loc='left')
@@ -60,7 +60,7 @@ def ed6_mc_input_distributions():
     a = ax[-1]
     for t, g in cf.groupby('typology', sort=False):
         v = g['a1a3_kg_per_m2'].to_numpy(float)
-        a.hist(v, bins=30, color=S.TYPOLOGY[t], alpha=0.55, lw=0, label=t)
+        a.hist(v, bins=30, color=S.TYPOLOGY[t], alpha=S.OPACITY['typology_histograms'], lw=0, label=t)
         for k, x in enumerate(np.percentile(v, [5, 50, 95])):
             a.axvline(x, color=S.TYPOLOGY[t], lw=S.LW_THIN, ls='-' if k == 1 else ':')
     a.set_title(N.MC_INPUT['carbon'], fontsize=S.FONT_SMALL, loc='left')
@@ -91,9 +91,9 @@ def ed7_sobol():
                                    ['Embodied carbon, cumulative 2026–2050', 'Floor area built, cumulative 2026–2050']):
         t = sob[(sob.output == o) & np.isfinite(sob.ST_lo)].sort_values('ST')
         y = np.arange(len(t))
-        a.barh(y + 0.2, t.ST, 0.4, color=S.QUALITATIVE[5], xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor=S.INK,
+        a.barh(y + 0.2, t.ST, 0.4, color=S.SOBOL['total'], xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor=S.INK,
                capsize=1.5, error_kw=dict(lw=S.LW_THIN), label='Total effect (incl. interactions), 95% interval')
-        a.barh(y - 0.2, t.S1.clip(lower=0), 0.4, color=S.QUALITATIVE[2], label='First-order effect (on its own)')
+        a.barh(y - 0.2, t.S1.clip(lower=0), 0.4, color=S.SOBOL['first_order'], label='First-order effect (on its own)')
         a.set_yticks(y)
         a.set_yticklabels([N.MC_INPUT[i] for i in t.input], fontsize=S.FONT_SMALL)
         a.set_xlim(0, 1)
@@ -123,7 +123,7 @@ def sf13_pathway_mc():
         yr = t['year'].to_numpy(float)
         xf, lo, hi, _ = P.pchip_band(yr, t['carbon_kt_p5'].to_numpy(float), t['carbon_kt_p50'].to_numpy(float),
                                      t['carbon_kt_p95'].to_numpy(float), P.series_breaks(), name=f'SF15 {r}')
-        ax.fill_between(xf, lo, hi, color=col, alpha=0.15, lw=0)
+        ax.fill_between(xf, lo, hi, color=col, alpha=S.OPACITY['mc_band'], lw=0)
         P.line(ax, yr, t['carbon_kt_p50'], color=col, lw=S.LW_BOLD, label=f'{lab} (median, 5th–95th percentile)')
     ax.set_xlim(2026, 2050)
     ax.set_ylim(0, None)

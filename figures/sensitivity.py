@@ -373,8 +373,24 @@ def row_notes_ed5(r):
     return n
 
 
+SUPERSCRIPT = str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹')
+
+
+def sup(n):
+    """MODEL v4.3.3: a row number as Unicode superscript digits (captions, FIGURES.md, the audit note)."""
+    return str(n).translate(SUPERSCRIPT)
+
+
+def sup_math(n):
+    """The same number as a mathtext superscript, for the figures: the bundled Liberation Sans has the superscript
+    digits one to nine but no superscript zero (U+2070), so ¹⁰ and ²⁰ would not render; mathtext draws the digits of
+    the same font at superscript size."""
+    return f'$^{{{n}}}$'
+
+
 def note_lines(order, notes, label, fig):
-    """'<row label>: <note>.' for every shown row of a tornado order, in display order (top to bottom)."""
+    """MODEL v4.3.3: [(number, row id, note)] for every shown row of a tornado order, numbered 1, 2, ... top to bottom
+    (display order); every shown row has a note."""
     out = []
     for kind, item in order:
         if kind != 'row':
@@ -382,14 +398,30 @@ def note_lines(order, notes, label, fig):
         rid = item['id']
         if rid not in notes:
             _stop(fig, f'no row note for {rid!r}')
-        out.append(f"{' '.join(label(rid).split())}: {notes[rid]}.")
+        out.append((len(out) + 1, rid, notes[rid]))
     return out
 
 
-def draw_notes(fig, lines, title, top_frac, ncol=2):
-    """The row notes as a compact block below the axes: FONT_MIN, ncol columns filled top to bottom; returns the
-    height used (mm)."""
-    wrapped = [textwrap.wrap(t.replace('$', r'\$'), NOTE_WIDTH, subsequent_indent='   ') for t in lines]
+def caption_lines(numbered):
+    """'¹ <note>.' per numbered row (the text of the captions, FIGURES.md and the audit note)."""
+    return [f'{sup(n)} {t}.' for n, _, t in numbered]
+
+
+def numbered_label(numbered):
+    """The y tick label of a row with its number appended to the last line (mathtext superscript)."""
+    num = {rid: n for n, rid, _ in numbered}
+    return lambda rid: _input_label(rid).replace('$', r'\$') + (sup_math(num[rid]) if rid in num else '')
+
+
+def draw_notes(fig, numbered, title, top_frac, ncol=2):
+    """The row notes as a compact numbered list below the axes ('¹ <note>', the numbers of the y labels): FONT_MIN,
+    ncol columns filled top to bottom; returns the height used (mm)."""
+    wrapped = []
+    for n, _, t in numbered:
+        w = textwrap.wrap(f'{n:>2} {t}.', NOTE_WIDTH, subsequent_indent='    ')
+        w = [x.replace('$', r'\$') for x in w]                   # a literal dollar, not mathtext
+        w[0] = sup_math(n) + ' ' + w[0].lstrip()[len(str(n)):].lstrip()
+        wrapped.append(w)
     if ncol != 2:
         raise ValueError('draw_notes: two columns')
     n_ = [len(w) for w in wrapped]                        # the split (rows kept whole) with the shortest longer column
@@ -449,13 +481,15 @@ def ed4_rows():
     return r, c0, order, note_lines(order, row_notes_ed4(r), _input_label, 'ED4')
 
 
+
 def ed4_one_at_a_time():
     """MODEL v4.3.0 (ED4, from D16): every one-at-a-time row of the Reference on the cumulative embodied carbon
     2026-2050 (kt CO2e) as a paired tornado grouped by category (sensitivity/reference_carbon.csv). MODEL v4.3.2: the
     rows of REF_NOT_SHOWN dropped from the display; the row notes below the axes."""
-    r, c0, order, lines = ed4_rows()
+    r, c0, order, numbered = ed4_rows()
+    lines = caption_lines(numbered)
     fig, ax = plt.subplots(figsize=S.figsize('double', ED4_H))
-    P.tornado(ax, order, c0, _input_label)
+    P.tornado(ax, order, c0, numbered_label(numbered))
     ax.tick_params(axis='y', labelsize=S.FONT_MIN + 0.5)
     ax.text(c0, 1.0, f' Reference {c0:,.0f} kt', transform=ax.get_xaxis_transform(), ha='left', va='bottom',
             fontsize=S.FONT_SMALL, color=S.INK)
@@ -463,7 +497,7 @@ def ed4_one_at_a_time():
     P.thousands(ax.xaxis)
     ax.legend(handles=P.tornado_legend(), loc='lower right', fontsize=S.FONT_SMALL, frameon=False)
     P.centre_ticklabels(fig, ax)
-    notes_mm = draw_notes(fig, lines, 'What each row changes compared with the Reference', NOTES_TOP)
+    notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP)
     fig.tight_layout(rect=(0, NOTES_TOP + 0.01, 1, 1))
     if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP:
         raise SystemExit(f'STOP: ED4: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED4_H')
@@ -507,6 +541,9 @@ def ed5_rows():
             role = 'low' if k == 0 else ('high' if k == len(bw) - 1 else ('tick', f"{int(x['n'])} yr"))
             items.append((ar_id, role, 'AR base window', float(x[q])))
         orders[q] = P.tornado_rows(N.BOUNDARY_SENSITIVITY_GROUPS, _collect(items), c[q])
+    shared = [[(k, i if k == 'header' else i['id']) for k, i in orders[q]] for q in orders]
+    if shared[0] != shared[1]:                        # MODEL v4.3.3: the panels share their y labels and numbers
+        raise SystemExit('STOP: ED5: panels a and b order their rows differently; the shared y labels would be wrong.')
     return r, st, c, orders, note_lines(orders['LoE_AR'], row_notes_ed5(r), _input_label, 'ED5')
 
 
@@ -514,10 +551,11 @@ def ed5_boundary_sensitivity():
     """MODEL v4.3.0 (ED5, from D42): the boundary-definition and AESA rows on the cumulative LoE of AR (a) and of AtP
     (b), paired tornados with shared y labels (sensitivity/planetary_boundary.csv). MODEL v4.3.2: the rows of
     PB_DROPPED dropped from the display; the row notes below the axes."""
-    r, st, c, orders, lines = ed5_rows()
+    r, st, c, orders, numbered = ed5_rows()
+    lines = caption_lines(numbered)
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', ED5_H), sharey=True)
     for a, q, xl, letter in ((ax[0], 'LoE_AR', N.LOE_AR, 'a'), (ax[1], 'LoE_AtP', N.LOE_ATP, 'b')):
-        P.tornado(a, orders[q], c[q], _input_label, headers=(q == 'LoE_AR'))
+        P.tornado(a, orders[q], c[q], numbered_label(numbered), headers=(q == 'LoE_AR'))
         a.text(c[q], 1.0, f' Reference {c[q]:.2f}', transform=a.get_xaxis_transform(), ha='left', va='bottom',
                fontsize=S.FONT_SMALL, color=S.INK)
         a.set_xlabel(f'{xl} 2026–2050')
@@ -525,7 +563,7 @@ def ed5_boundary_sensitivity():
     ax[0].tick_params(axis='y', labelsize=S.FONT_MIN + 0.5)
     ax[1].legend(handles=P.tornado_legend(), loc='lower right', fontsize=S.FONT_SMALL, frameon=False)
     P.centre_ticklabels(fig, ax[0])
-    notes_mm = draw_notes(fig, lines, 'What each row changes compared with the Reference', NOTES_TOP_ED5)
+    notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP_ED5)
     fig.tight_layout(rect=(0, NOTES_TOP_ED5 + 0.01, 1, 1))
     if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP_ED5:
         raise SystemExit(f'STOP: ED5: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED5_H')

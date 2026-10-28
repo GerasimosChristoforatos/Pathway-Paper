@@ -51,7 +51,7 @@ def sf15_tl_dwellings():
         r = lg[lg['run'] == run]
         yr = r['year'].values
         P.line(b, yr, r['gross_after_payback'] / 1e3, color=S.INK, lw=S.LW, label='Need after the overbuild payback')
-        b.bar(yr, r['built'] / 1e3, width=0.75, color=S.NEUTRAL_DARK, alpha=0.5, label='Dwellings built')
+        b.bar(yr, r['built'] / 1e3, width=0.75, color=S.NEUTRAL_DARK, alpha=S.FIXED_FADES['neutral_bars'], label='Dwellings built')
         b.bar(yr, r['reoccupied'] / 1e3, bottom=r['built'] / 1e3, width=0.75, facecolor='none',
               edgecolor=S.BAND['released_tl'][0], lw=S.LW_OUTLINE, label='Re-occupied (released dwellings)')
         pooled = 'released_pool' in r and (r['released_overbuild'] != 0).any()

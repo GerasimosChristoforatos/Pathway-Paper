@@ -1,6 +1,6 @@
 {
  "figure": "ED3_replacement_variants",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Annual",
@@ -40,6 +40,7 @@
   "$\\mathdefault{6}$",
   "$\\mathdefault{800}$",
   "Ambitious\nPathway",
+  "Ambitious Pathway",
   "Annual",
   "Cumulative",
   "Cumulative LoE of AR 2026\u20132050",

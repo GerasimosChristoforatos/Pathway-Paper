@@ -5,7 +5,7 @@
   {
    "title": "Moderate Pathway",
    "xlabel": "",
-   "ylabel": "Cumulative carbon 2026-2050 (kt CO\u2082e)",
+   "ylabel": "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
    "year_min": null,
    "year_max": null
   },
@@ -38,7 +38,7 @@
   "Ambitious\nPathway",
   "Ambitious Pathway",
   "Avoid Strategies",
-  "Cumulative carbon 2026-2050 (kt CO\u2082e)",
+  "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
   "Improve Strategy",
   "L1",
   "L2",

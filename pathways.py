@@ -1188,6 +1188,7 @@ def write(res, identity):
     pd.DataFrame(BANDS.display_map()).to_csv(layout.writing(layout.data('bands_display_map.csv', frozen=False)),
                                             index=False)         # MODEL v4.2: the six display bands
     FP.write_ed_number_map()                                      # MODEL v4.3.0: Extended Data numbering old -> new
+    FP.write_sf_number_map()                                      # MODEL v4.3.1: Supplementary numbering old -> new
     _json(dict(res['params'], run_mode=RUN_MODE, identity_max_rel_diff=max(identity.values()),
                identity_checks=identity, sources=LV.SOURCES), 'levers.json')
 

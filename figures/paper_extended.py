@@ -231,18 +231,35 @@ def ed10():
 def sf3():
     sw = D.csv('pathways/lambda_sweep.csv')
     fig, ax = plt.subplots(figsize=S.figsize('double', 85))
+    # MODEL v4.3.2: each lever in its strategy colour (palette.toml [strategies]; the lever shades are retired), told
+    # apart by marker within its strategy (S.LEVER_MARKER); the legend has one column per strategy, headed by its name
+    handles = {}
     for L in LV.LEVERS:
+        sid = N.LEVER_STRATEGY[L]
+        col, mk = S.STRATEGY[sid], S.LEVER_MARKER[N.STRATEGY_LEVERS[sid].index(L)]
         t = sw[(sw['lever'] == L) & sw['lam'].notna()].sort_values('lam')
-        ax.plot(t['lam'], t['carbon_kt'], color=S.LEVER[L], lw=S.LW, marker='o', ms=2, label=f'{L} {N.LEVERS[L]}')
+        handles[L], = ax.plot(t['lam'], t['carbon_kt'], color=col, lw=S.LW, marker=mk, ms=2.6,
+                              markerfacecolor=col, markeredgewidth=0, label=f'{L} {N.LEVERS[L]}')
         tl = sw[(sw['lever'] == L) & sw['lam'].isna()]
-        ax.plot([1.15], tl['carbon_kt'], marker='o', color=S.LEVER[L], markeredgecolor=S.TL, ms=6)
+        ax.plot([1.15], tl['carbon_kt'], marker=mk, color=col, markeredgecolor=S.TL, markeredgewidth=0.9, ms=6, ls='none')
+    rows = max(len(v) for v in N.STRATEGY_LEVERS.values()) + 1
+    blank = Line2D([], [], ls='none', marker='none')
+    leg_h, leg_l = [], []
+    for sid, ls_ in N.STRATEGY_LEVERS.items():
+        col_h = [(blank, N.STRATEGIES[sid])] + [(handles[L], f'{L} {N.LEVERS[L]}') for L in ls_]
+        col_h += [(blank, '')] * (rows - len(col_h))
+        leg_h += [h for h, _ in col_h]
+        leg_l += [lab for _, lab in col_h]
     for x, lab in ((0, N.SCENARIOS['REF']), (0.5, 'Moderate'), (1.0, 'Ambitious'), (1.15, N.TL['TL'])):
         ax.axvline(x, color=S.MUTED, lw=S.LW_THIN, ls=':')
         ax.text(x, 1.0, lab, transform=ax.get_xaxis_transform(), ha='center', va='bottom', fontsize=S.FONT_MIN)
     ax.set_xlabel('λ: each lever from the Reference (0) to Ambitious (1); its Theoretical Limit at the right')
     ax.set_ylabel('Cumulative carbon 2026–2050 (kt CO₂e), lever alone')
     P.thousands(ax.yaxis)
-    ax.legend(fontsize=S.FONT_MIN, ncol=3, loc='lower left')
+    leg = ax.legend(leg_h, leg_l, fontsize=S.FONT_MIN, ncol=len(N.STRATEGY_LEVERS), loc='lower left', handlelength=2.2)
+    for t_ in leg.get_texts():
+        if t_.get_text() in N.STRATEGIES.values():
+            t_.set_fontweight('bold')
     fig.tight_layout()
     _save(fig, 'SF10_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
                                          's_ref against the year-varying replacement share.')

@@ -5,14 +5,15 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 ## Rules
 
 * **Source** (MODEL v2.1.1): the palette is inspired by Francis Bacon, *Head VI* (1949): golds, mauves, deep blues and browns on a near-black ground. The hue families are fixed by that choice; lightness and chroma were set by maximising the minimum CAM02-UCS distance of every group below under every simulated deficiency (MODEL v3.0.0: the new lever L5, the three negative bands and the maintenance grey re-tuned).
-* **Lever shades in hue families** (each lever keeps its MODEL v3.0 colour; MODEL v3.3.0 numbering): golds / ochres (L4 Extra space #DFA538, L5 Occupancy density a deep amber #944E02, L1 Household size a light gold #F4D168), mauves (L2 Vacancy rate #AA7C9D, L3 Building lifetime #E1D2DD; the deep mauve anchor #683861), blues (L8 Material carbon efficiency #4A6192, L9 Construction-stage carbon #ABD3FA), browns (L7 Soil-aware planning #8D6545, L6 Brownfield-first development #C7B395). PAS 2080 strategies (MODEL v3.3.0, the former pathway colours): S1 Avoid #DFA538, S2 Switch #8D6545, S3 Improve #4A6192; the Moderate / Ambitious Pathway vermilion (#EB6123) and TL a deep forest green (#13412B; a larger circle on point plots).
-* **Demand bands** are coloured by the lever family that targets them (Smaller households L1, Extra space L4, Vacancy L2, 2026 overbuild the deep mauve anchor, Overbuild absorbed a lighter mauve (#8D5D93), Demolition replacement a lilac (#D0BBDC), Unconsented additions a darker lilac (#BA9AC1), the Recent replacement surge the L3 face (#E1D2DD) with a fine light hatch (the only hatched band), Released dwellings (TL) a light green (#95C283)). The only untargeted band, Population growth, is a solid deep green-blue (#586E71). Unexplained building of the history: a faded reddish face (#C6A3A4).
+* **Strategies** (palette.toml [strategies]): S1 Avoid #DFA538, S2 Switch #8D6545, S3 Improve #4A6192. MODEL v4.3.2: the lever shades L1-L9 are retired; a lever is drawn in its strategy colour and told apart by marker (o, s, ^, D, v within a strategy; SF10). The Moderate / Ambitious Pathway vermilion (#EB6123) and TL a deep forest green (#13412B; a larger circle on point plots).
+* **Demand bands** (palette.toml [demand_bands]) keep the hue families of the former lever shades (2026 overbuild the deep mauve anchor, Overbuild absorbed a lighter mauve (#8D5D93), Demolition replacement a lilac (#D0BBDC), Unconsented additions a darker lilac (#BA9AC1), the Recent replacement surge a pale mauve (#E1D2DD) with a fine light hatch (the only hatched band), Released dwellings (TL) a light green (#95C283)). The only untargeted band, Population growth, is a solid deep green-blue (#586E71). Unexplained building of the history: a faded reddish face (#C6A3A4).
 * **Signs** (MODEL v3.0.0): the data keep the sign of every band and the figures never flip it. Time series: positive bands stacked up from zero, negative bands down from zero (fixed order), the net a black line. Cumulative bars: positives stacked; each negative band an unfilled, unhatched segment outlined in its band colour, hanging from the top of the positive stack, so the bar ends at its net total, marked by a net tick; one legend entry per band. Materials and stages are never negative (a STOP if they were).
-* **Maintenance** (B2, B4) neutral grey (#9E9E9E); committed emissions after 2050 a lighter grey drawn hollow (#D0D0D0). Carbon stages: A1-A3 the L8 dark blue, A4-A5 the L9 light blue, soil carbon loss the L7 brown.
-* **Reference** dark grey (#4D4D4D); Low and High replacement mid greys with dashed and dotted lines.
+* **Maintenance** (B2, B4) neutral grey (#9E9E9E); committed emissions after 2050 a lighter grey drawn hollow (#D0D0D0). Carbon stages (palette.toml [life_cycle_stages]): A1-A3 #4A6192, A4-A5 #ABD3FA, soil carbon loss #8D6545.
+* **Reference** dark grey (#4D4D4D); Low and High replacement mid greys with dashed and dotted lines. The Fig3b 2026-2050 column (palette.toml [cumulative]): #4D4D4D.
+* **One at a time** (palette.toml [one_at_a_time]; Fig7a, ED4, ED5): input at its low end #4A6192, at its high end #EB6123, a single alternative case #6E6E6E.
 * **Stacked bars and areas** are drawn seamless: each segment's edge is its own face colour at 0.3 pt (no white borders, no anti-aliasing gaps); a hatch is drawn in a thin hatch colour only (default #6E6E6E; the surge band #FFFFFF). Legend handles keep a thin grey outline.
-* **Boundaries** (every planetary-boundary figure, one implementation in style.py): acquired rights (AR) thin red line (#D7191C), ability to pay (AtP) thin dark-red dotted line (#67000D); zones (MODEL v2.1.2: much lighter) below AtP faded green (#41AB5D, alpha 0.3), between AtP and AR light green (#A1D99B, alpha 0.3) and above AR light red (#FB6A4A, alpha 0.07, "boundary exceeded"), on annual, cumulative and level-of-exceedance axes alike. The two principles are never averaged.
-* **Settings**: lines: Moderate solid bold, Ambitious the same colour thin dotted; markers: Moderate filled, Ambitious hollow; bars (Fig8): Moderate hollow, Ambitious filled, TL a large deep-green dot.
+* **Boundaries** (every planetary-boundary figure, one implementation in style.py; MODEL v4.3.2: colours from palette.toml [boundaries] and [boundary_zones], the zone opacities fixed in style.ZONE_ALPHA): acquired rights (AR) thin red line (#D7191C), ability to pay (AtP) thin dark-red dotted line (#67000D); zones (MODEL v2.1.2: much lighter) below AtP faded green (#41AB5D, alpha 0.3), between AtP and AR light green (#A1D99B, alpha 0.3) and above AR light red (#FB6A4A, alpha 0.07, "boundary exceeded"), on annual, cumulative and level-of-exceedance axes alike. The two principles are never averaged.
+* **Settings**: lines: Moderate solid bold, Ambitious the same colour thin dotted; markers: Moderate filled, Ambitious hollow; bars (Fig7): Moderate hollow, Ambitious filled, TL a large deep-green dot.
 * **Typeface**: Liberation Sans only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open Font License 1.1, registered by figures/style.py, so every machine renders the same glyphs.
 * **Sizes** (Nature Cities): width 89 mm (single column) or 183 mm (double column), page depth at most 247 mm; text 7 pt, legends and ticks 6 pt, never below 5 pt; data lines 1 pt, emphasised lines 1.5 pt, grid and edges 0.5 pt.
 * **Files** (run profiles, runprofile.py): light PNG at 200 dpi with a small grey footer "LIGHT RUN — n=1000"; full PDF (TrueType fonts embedded) + PNG at 600 dpi; no software or date metadata, so re-runs are byte-identical.
@@ -22,38 +23,31 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 
 | group | element | colour | lightness J' |
 |---|---|---|---|
-| Runs and boundaries (Fig4, D28) | Acquired rights (AR) | `#D7191C` | 52 |
-| Runs and boundaries (Fig4, D28) | Ability to pay (AtP) | `#67000D` | 24 |
-| Runs and boundaries (Fig4, D28) | Reference | `#4D4D4D` | 35 |
-| Runs and boundaries (Fig4, D28) | Theoretical Limit | `#13412B` | 25 |
-| Runs and boundaries (Fig4, D28) | S1 Avoid | `#DFA538` | 75 |
-| Runs and boundaries (Fig4, D28) | S2 Switch | `#8D6545` | 49 |
-| Runs and boundaries (Fig4, D28) | S3 Improve | `#4A6192` | 43 |
-| Runs and boundaries (Fig4, D28) | Moderate / Ambitious Pathway | `#EB6123` | 64 |
-| Levers (Fig8, ED6, ED10, D29, D31) | L4 Extra space | `#DFA538` | 75 |
-| Levers (Fig8, ED6, ED10, D29, D31) | L5 Occupancy density | `#944E02` | 45 |
-| Levers (Fig8, ED6, ED10, D29, D31) | L1 Household size | `#F4D168` | 87 |
-| Levers (Fig8, ED6, ED10, D29, D31) | L2 Vacancy rate | `#AA7C9D` | 61 |
-| Levers (Fig8, ED6, ED10, D29, D31) | L3 Building lifetime | `#E1D2DD` | 88 |
-| Levers (Fig8, ED6, ED10, D29, D31) | L8 Material carbon efficiency | `#4A6192` | 43 |
-| Levers (Fig8, ED6, ED10, D29, D31) | L9 Construction-stage carbon | `#ABD3FA` | 84 |
-| Levers (Fig8, ED6, ED10, D29, D31) | L7 Soil-aware planning | `#8D6545` | 49 |
-| Levers (Fig8, ED6, ED10, D29, D31) | L6 Brownfield-first development | `#C7B395` | 77 |
+| Runs and boundaries (Fig4, ED5, D28) | Acquired rights (AR) | `#D7191C` | 52 |
+| Runs and boundaries (Fig4, ED5, D28) | Ability to pay (AtP) | `#67000D` | 24 |
+| Runs and boundaries (Fig4, ED5, D28) | Reference | `#4D4D4D` | 35 |
+| Runs and boundaries (Fig4, ED5, D28) | Theoretical Limit | `#13412B` | 25 |
+| Runs and boundaries (Fig4, ED5, D28) | S1 Avoid Strategies | `#DFA538` | 75 |
+| Runs and boundaries (Fig4, ED5, D28) | S2 Switch Strategies | `#8D6545` | 49 |
+| Runs and boundaries (Fig4, ED5, D28) | S3 Improve Strategy | `#4A6192` | 43 |
+| Runs and boundaries (Fig4, ED5, D28) | Moderate / Ambitious Pathway | `#EB6123` | 64 |
+| Strategies (Fig4-Fig6, SF10) | Avoid Strategies | `#DFA538` | 75 |
+| Strategies (Fig4-Fig6, SF10) | Switch Strategies | `#8D6545` | 49 |
+| Strategies (Fig4-Fig6, SF10) | Improve Strategy | `#4A6192` | 43 |
 | Boundary zones on white (every boundary figure) | Within both budgets (below AtP) | `#C6E6CE` | 90 |
 | Boundary zones on white (every boundary figure) | Within AR only (between AtP and AR) | `#E3F4E1` | 95 |
 | Boundary zones on white (every boundary figure) | Boundary exceeded (above AR) | `#FFF5F2` | 98 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Population growth | `#586E71` | 47 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Smaller households | `#F4D168` | 87 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Extra space | `#DFA538` | 75 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Vacancy | `#AA7C9D` | 61 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | 2026 overbuild | `#683861` | 34 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Overbuild absorbed | `#8D5D93` | 50 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Demolition replacement | `#D0BBDC` | 81 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Unconsented additions | `#BA9AC1` | 71 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Released dwellings (TL) | `#95C283` | 76 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Vacancy released | `#481870` | 24 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Surplus kept vacant (2050) | `#D1E6C1` | 90 |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | Maintenance (B2, B4), 2026–2050 | `#9E9E9E` | 68 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Population growth | `#586E71` | 47 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Smaller households | `#F4D168` | 87 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Extra space | `#DFA538` | 75 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Vacancy | `#AA7C9D` | 61 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | 2026 overbuild | `#683861` | 34 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Overbuild absorbed | `#8D5D93` | 50 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Demolition replacement | `#D0BBDC` | 81 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Unconsented additions | `#BA9AC1` | 71 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Released dwellings (TL) | `#95C283` | 76 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Vacancy released | `#481870` | 24 |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | Maintenance (B2, B4), 2026–2050 | `#9E9E9E` | 68 |
 | Recent replacement surge face against the other bands | Population growth | `#586E71` | 47 |
 | Recent replacement surge face against the other bands | Smaller households | `#F4D168` | 87 |
 | Recent replacement surge face against the other bands | Extra space | `#DFA538` | 75 |
@@ -64,36 +58,29 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 | Recent replacement surge face against the other bands | Recent replacement surge | `#E1D2DD` | 88 |
 | Recent replacement surge face against the other bands | Released dwellings (TL) | `#95C283` | 76 |
 | Recent replacement surge face against the other bands | Vacancy released | `#481870` | 24 |
-| Recent replacement surge face against the other bands | Surplus kept vacant (2050) | `#D1E6C1` | 90 |
 | Recent replacement surge face against the other bands | Maintenance (B2, B4), 2026–2050 | `#9E9E9E` | 68 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | L4 Extra space | `#DFA538` | 75 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | L5 Occupancy density | `#944E02` | 45 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | L1 Household size | `#F4D168` | 87 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | L2 Vacancy rate | `#AA7C9D` | 61 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | L3 Building lifetime | `#E1D2DD` | 88 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | L8 Material carbon efficiency | `#4A6192` | 43 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | L9 Construction-stage carbon | `#ABD3FA` | 84 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | L7 Soil-aware planning | `#8D6545` | 49 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | L6 Brownfield-first development | `#C7B395` | 77 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | Moderate / Ambitious Pathway | `#EB6123` | 64 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | Theoretical Limit | `#13412B` | 25 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | Population growth | `#586E71` | 47 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | Reference | `#4D4D4D` | 35 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | Acquired rights (AR) | `#D7191C` | 52 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | Ability to pay (AtP) | `#67000D` | 24 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | Within both budgets (below AtP) | `#C6E6CE` | 90 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | Within AR only (between AtP and AR) | `#E3F4E1` | 95 |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | Boundary exceeded (above AR) | `#FFF5F2` | 98 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Avoid Strategies | `#DFA538` | 75 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Switch Strategies | `#8D6545` | 49 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Improve Strategy | `#4A6192` | 43 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Moderate / Ambitious Pathway | `#EB6123` | 64 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Theoretical Limit | `#13412B` | 25 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Population growth | `#586E71` | 47 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Reference | `#4D4D4D` | 35 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Acquired rights (AR) | `#D7191C` | 52 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Ability to pay (AtP) | `#67000D` | 24 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Within both budgets (below AtP) | `#C6E6CE` | 90 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Within AR only (between AtP and AR) | `#E3F4E1` | 95 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Boundary exceeded (above AR) | `#FFF5F2` | 98 |
 | Carbon components (Fig3c, diagnostics) | Materials and construction (A1–A5) | `#4A6192` | 43 |
 | Carbon components (Fig3c, diagnostics) | Soil carbon loss | `#8D6545` | 49 |
 | Carbon components (Fig3c, diagnostics) | Maintenance (B2, B4), 2026–2050 | `#9E9E9E` | 68 |
 | Carbon components (Fig3c, diagnostics) | Committed after 2050 (later B2/B4 and C1–C4) | `#D0D0D0` | 86 |
-| Projection variants and boundaries (ED5, ED10) | Reference | `#4D4D4D` | 35 |
-| Projection variants and boundaries (ED5, ED10) | Low replacement | `#B5B5B5` | 76 |
-| Projection variants and boundaries (ED5, ED10) | High replacement | `#6E6E6E` | 49 |
-| Projection variants and boundaries (ED5, ED10) | Very High replacement (trend continues) | `#1F1F1F` | 15 |
-| Projection variants and boundaries (ED5, ED10) | Acquired rights (AR) | `#D7191C` | 52 |
-| Projection variants and boundaries (ED5, ED10) | Ability to pay (AtP) | `#67000D` | 24 |
+| Projection variants and boundaries (ED2, ED9) | Reference | `#4D4D4D` | 35 |
+| Projection variants and boundaries (ED2, ED9) | Low replacement | `#B5B5B5` | 76 |
+| Projection variants and boundaries (ED2, ED9) | High replacement | `#6E6E6E` | 49 |
+| Projection variants and boundaries (ED2, ED9) | Very High replacement (trend continues) | `#1F1F1F` | 15 |
+| Projection variants and boundaries (ED2, ED9) | Acquired rights (AR) | `#D7191C` | 52 |
+| Projection variants and boundaries (ED2, ED9) | Ability to pay (AtP) | `#67000D` | 24 |
 | Materials (Fig3b, diagnostics) | Timber | `#750787` | 32 |
 | Materials (Fig3b, diagnostics) | Steel | `#004DFF` | 42 |
 | Materials (Fig3b, diagnostics) | Concrete | `#008026` | 47 |
@@ -112,14 +99,26 @@ One palette for every figure (MODEL v3.0.0); `figures/style.py` is the only plac
 | History bands (Fig1) | Net replacement (census) | `#D0BBDC` | 81 |
 | History bands (Fig1) | Retirement villages (out of scope) | `#4E463E` | 32 |
 | History bands (Fig1) | Unexplained building | `#C6A3A4` | 74 |
-| Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 1 | `#000000` | 0 |
-| Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 2 | `#E69F00` | 75 |
-| Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 3 | `#56B4E9` | 71 |
-| Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 4 | `#009E73` | 59 |
-| Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 5 | `#F0E442` | 91 |
-| Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 6 | `#0072B2` | 47 |
-| Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 7 | `#D55E00` | 59 |
-| Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | group 8 | `#CC79A7` | 66 |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | Reference | `#4D4D4D` | 35 |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | Moderate Pathway | `#EB6123` | 64 |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | Ambitious Pathway | `#A8400C` | 46 |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | Theoretical Limit | `#13412B` | 25 |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | Acquired rights (AR) | `#D7191C` | 52 |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | Ability to pay (AtP) | `#67000D` | 24 |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | Within both budgets (below AtP) | `#C6E6CE` | 90 |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | Within AR only (between AtP and AR) | `#E3F4E1` | 95 |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | Boundary exceeded (above AR) | `#FFF5F2` | 98 |
+| One at a time (Fig7a, ED4, ED5) | Input at low end | `#4A6192` | 43 |
+| One at a time (Fig7a, ED4, ED5) | Input at high end | `#EB6123` | 64 |
+| One at a time (Fig7a, ED4, ED5) | Single alternative case | `#6E6E6E` | 49 |
+| Categorical groups (diagnostics; Okabe-Ito) | group 1 | `#000000` | 0 |
+| Categorical groups (diagnostics; Okabe-Ito) | group 2 | `#E69F00` | 75 |
+| Categorical groups (diagnostics; Okabe-Ito) | group 3 | `#56B4E9` | 71 |
+| Categorical groups (diagnostics; Okabe-Ito) | group 4 | `#009E73` | 59 |
+| Categorical groups (diagnostics; Okabe-Ito) | group 5 | `#F0E442` | 91 |
+| Categorical groups (diagnostics; Okabe-Ito) | group 6 | `#0072B2` | 47 |
+| Categorical groups (diagnostics; Okabe-Ito) | group 7 | `#D55E00` | 59 |
+| Categorical groups (diagnostics; Okabe-Ito) | group 8 | `#CC79A7` | 66 |
 
 ## Colour-vision-deficiency check
 
@@ -127,26 +126,28 @@ Minimum pairwise distance within each group (CAM02-UCS, Luo, Cui & Li 2006) afte
 
 | group | normal | deuteranomaly | protanomaly | tritanomaly | passes |
 |---|---|---|---|---|---|
-| Runs and boundaries (Fig4, D28) | 16.3 (Acquired rights (AR) / Moderate / Ambitious Pathway) | 10.7 (S1 Avoid / Moderate / Ambitious Pathway) | 10.8 (Acquired rights (AR) / S2 Switch) | 10.6 (Acquired rights (AR) / Moderate / Ambitious Pathway) | yes |
-| Levers (Fig8, ED6, ED10, D29, D31) | 12.4 (L5 Occupancy density / L7 Soil-aware planning) | 11.3 (L5 Occupancy density / L7 Soil-aware planning) | 11.2 (L3 Building lifetime / L9 Construction-stage carbon) | 10.8 (L1 Household size / L3 Building lifetime) | yes |
+| Runs and boundaries (Fig4, ED5, D28) | 16.3 (Acquired rights (AR) / Moderate / Ambitious Pathway) | 10.7 (S1 Avoid Strategies / Moderate / Ambitious Pathway) | 10.8 (Acquired rights (AR) / S2 Switch Strategies) | 10.6 (Acquired rights (AR) / Moderate / Ambitious Pathway) | yes |
+| Strategies (Fig4-Fig6, SF10) | 29.2 (Avoid Strategies / Switch Strategies) | 29.3 (Avoid Strategies / Switch Strategies) | 29.2 (Avoid Strategies / Switch Strategies) | 26.4 (Avoid Strategies / Switch Strategies) | yes |
 | Boundary zones on white (every boundary figure) | 6.7 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | 3.5 (Within AR only (between AtP and AR) / Boundary exceeded (above AR)) | 4.2 (Within AR only (between AtP and AR) / Boundary exceeded (above AR)) | 7.3 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | no |
-| Demand bands (Fig1, Fig2, Fig5, D25, D26, D36) | 10.9 (Demolition replacement / Unconsented additions) | 10.3 (Vacancy / Maintenance (B2, B4), 2026–2050) | 11.1 (Demolition replacement / Unconsented additions) | 10.3 (Unconsented additions / Maintenance (B2, B4), 2026–2050) | yes |
-| Recent replacement surge face against the other bands | 17.9 (Recent replacement surge / Surplus kept vacant (2050)) | 12.5 (Recent replacement surge / Surplus kept vacant (2050)) | 15.4 (Recent replacement surge / Surplus kept vacant (2050)) | 10.8 (Smaller households / Recent replacement surge) | yes |
-| The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones | 16.3 (Moderate / Ambitious Pathway / Acquired rights (AR)) | 10.7 (L4 Extra space / Moderate / Ambitious Pathway) | 10.9 (Theoretical Limit / Reference) | 10.6 (Moderate / Ambitious Pathway / Acquired rights (AR)) | yes |
+| Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36) | 10.9 (Demolition replacement / Unconsented additions) | 10.3 (Vacancy / Maintenance (B2, B4), 2026–2050) | 11.1 (Demolition replacement / Unconsented additions) | 10.3 (Unconsented additions / Maintenance (B2, B4), 2026–2050) | yes |
+| Recent replacement surge face against the other bands | 19.3 (Unconsented additions / Recent replacement surge) | 19.0 (Unconsented additions / Recent replacement surge) | 19.7 (Recent replacement surge / Maintenance (B2, B4), 2026–2050) | 10.8 (Smaller households / Recent replacement surge) | yes |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | 16.3 (Moderate / Ambitious Pathway / Acquired rights (AR)) | 10.7 (Avoid Strategies / Moderate / Ambitious Pathway) | 10.9 (Theoretical Limit / Reference) | 10.6 (Moderate / Ambitious Pathway / Acquired rights (AR)) | yes |
 | Carbon components (Fig3c, diagnostics) | 17.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 17.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 17.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | 17.6 (Maintenance (B2, B4), 2026–2050 / Committed after 2050 (later B2/B4 and C1–C4)) | yes |
-| Projection variants and boundaries (ED5, ED10) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 10.0 (Very High replacement (trend continues) / Ability to pay (AtP)) | 14.1 (Reference / High replacement) | no |
+| Projection variants and boundaries (ED2, ED9) | 14.1 (Reference / High replacement) | 14.1 (Reference / High replacement) | 10.0 (Very High replacement (trend continues) / Ability to pay (AtP)) | 14.1 (Reference / High replacement) | no |
 | Materials (Fig3b, diagnostics) | 25.9 (Plasterboard / Soil carbon loss) | 12.8 (Concrete / Others) | 13.0 (Concrete / Others) | 16.5 (Steel / Concrete) | yes |
 | Life-cycle stages (Fig3a) | 24.4 (Construction (A4–A5) / Maintenance (B2, B4)) | 23.1 (Soil carbon loss / Maintenance (B2, B4)) | 24.3 (Construction (A4–A5) / Maintenance (B2, B4)) | 24.0 (Construction (A4–A5) / Maintenance (B2, B4)) | yes |
 | History bands (Fig1) | 13.3 (Smaller households / Extra space) | 12.3 (Smaller households / Extra space) | 13.4 (Population growth / Vacancy) | 10.6 (Extra space / Unexplained building) | yes |
-| Categorical groups (ED1-ED4 groups, diagnostics; Okabe-Ito) | 20.8 (group 2 / group 5) | 14.8 (group 4 / group 8) | 14.0 (group 6 / group 8) | 11.0 (group 2 / group 8) | yes |
+| Fig3 (runs, boundaries, zones on white, cumulative column) | 6.7 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | 3.5 (Within AR only (between AtP and AR) / Boundary exceeded (above AR)) | 3.7 (Ambitious Pathway / Acquired rights (AR)) | 7.3 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | no |
+| One at a time (Fig7a, ED4, ED5) | 20.8 (Input at low end / Single alternative case) | 21.5 (Input at low end / Single alternative case) | 19.9 (Input at low end / Single alternative case) | 17.4 (Input at low end / Single alternative case) | yes |
+| Categorical groups (diagnostics; Okabe-Ito) | 20.8 (group 2 / group 5) | 14.8 (group 4 / group 8) | 14.0 (group 6 / group 8) | 11.0 (group 2 / group 8) | yes |
 
-Groups below the threshold: Boundary zones on white (every boundary figure); Projection variants and boundaries (ED5, ED10). Why each still reads: the boundary zones are pale by design (data drawn over them), always bounded by the AR and AtP lines and ordered strictly in lightness (darker green < light green < palest red under every simulated deficiency), so their order survives without hue; any other group below the threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so the reading never depends on colour alone.
+Groups below the threshold: Boundary zones on white (every boundary figure); Projection variants and boundaries (ED2, ED9); Fig3 (runs, boundaries, zones on white, cumulative column). Why each still reads: the boundary zones are pale by design (data drawn over them), always bounded by the AR and AtP lines and ordered strictly in lightness (darker green < light green < palest red under every simulated deficiency), so their order survives without hue; any other group below the threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so the reading never depends on colour alone.
 
 Historical replacement against the Recent replacement surge face: normal 9.9, deuteranomaly 10.0, protanomaly 10.2, tritanomaly 6.7 (below the threshold by design: told apart by lightness, a slightly different hue and the surge's fine light hatch, and labelled in every figure).
 
 ## Boundary zones: lightness order
 
-J' of each zone on white (normal, deuteranomaly, protanomaly, tritanomaly): Within both budgets (below AtP) 89.6 / 89.6 / 90.9 / 89.4; Within AR only (between AtP and AR) 95.1 / 95.2 / 95.8 / 95.0; Boundary exceeded (above AR) 97.8 / 97.9 / 97.4 / 97.6. Strictly increasing under every vision type: yes.
+J' of each zone on white (normal, deuteranomaly, protanomaly, tritanomaly): Within both budgets (below AtP) 89.6 / 89.6 / 90.9 / 89.4; Within AR only (between AtP and AR) 95.1 / 95.2 / 95.8 / 95.0; Boundary exceeded (above AR) 97.8 / 97.9 / 97.4 / 97.6. Strictly increasing under every vision type: yes. redraw.py warns when a palette breaks this order (MODEL v4.3.2).
 
 ## Sequential ramp
 

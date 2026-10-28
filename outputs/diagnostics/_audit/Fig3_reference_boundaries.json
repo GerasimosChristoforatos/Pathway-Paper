@@ -68,7 +68,7 @@
   "a",
   "b"
  ],
- "note": "Cumulative 2026-2050 19,761 kt (LoE AR 4.46, AtP 17.8); Monte Carlo 90% interval 14,575-25,503 kt (5th-95th percentile of the cumulative carbon of the draws), 50% interval 17,558-21,986 kt; committed after 2050 (drawn at the lower bound): C1-C4 4,410 kt (2025 factors) and B2/B4 after 2050 3,091 kt (2050 factors held; 3,810 kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are shape-preserving (PCHIP) interpolation between annual values (dots), not smoothed across the observed -> modelled join after 2027; bands: Monte Carlo 90% band pchip, Monte Carlo 50% band pchip.",
+ "note": "Cumulative 2026-2050 19,761 kt (LoE AR 4.46, AtP 17.8); Monte Carlo 90% interval 14,575-25,503 kt (5th-95th percentile of the cumulative carbon of the draws), 50% interval 17,558-21,986 kt; committed after 2050 (drawn at the lower bound): C1-C4 4,410 kt (2025 factors) and B2/B4 after 2050 3,091 kt (2050 factors held; 3,810 kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are shape-preserving (PCHIP) interpolation through the annual values, not smoothed across the observed -> modelled join after 2027; bands: Monte Carlo 90% band pchip, Monte Carlo 50% band pchip.",
  "maintenance_drawn": true,
  "maintenance_where": [
   "axes 1: Rectangle in the maintenance colour"

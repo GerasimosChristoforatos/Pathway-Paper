@@ -1,5 +1,5 @@
-"""MODEL v4.2 Part A diagnostic switches (projection.HH_BRIDGE, START_MODE, HH_SIZE_PATH 'statsnz_2018' /
-'statsnz_2023'); the defaults stay MODEL v4.0.0."""
+"""The diagnostic switches (projection.HH_BRIDGE, START_MODE, HH_SIZE_PATH 'statsnz_2018' / 'statsnz_2023') and
+their adopted defaults."""
 import numpy as np
 import pandas as pd
 import pytest
@@ -9,7 +9,7 @@ from conftest import run_boss
 
 def test_defaults_unchanged(B):
     import projection
-    # Part B: the ERP / S bridge is adopted; the start mode and household-size path stay as in MODEL v4.0.0
+    # adopted: the ERP / S bridge, the observed start, the Stats NZ household-size path
     assert (projection.HH_BRIDGE, projection.START_MODE, projection.HH_SIZE_PATH) == ('erp_S', 'observed', 'statsnz')
     B18 = run_boss(HH_SIZE_PATH='statsnz_2018')
     assert np.array_equal(B18['engine_out']['50th']['carbon'], B['engine_out']['50th']['carbon'])
@@ -78,7 +78,7 @@ def test_six_display_bands_sum_to_the_detailed_bands():
 
 
 def test_history_rv_allocated_pro_rata_in_scope():
-    """MODEL v4.2.2: the history's RV exclusion spread pro rata: no RV band, the same total in every interval."""
+    """The history's RV exclusion spread pro rata: no RV band, the same total in every interval."""
     import bands as BANDS
     import layout
     from figures import draw as P

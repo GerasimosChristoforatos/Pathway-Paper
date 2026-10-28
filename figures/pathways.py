@@ -15,9 +15,9 @@ ED8_RUNS = (('reference', N.SCENARIOS['REF'], dict(color=S.REFERENCE, lw=S.LW_BO
 
 
 def ed8_lever_annual():
-    """MODEL v4.3.0 (ED9, from D31): annual embodied carbon of each lever alone (3 x 3, shared y), the Reference and
+    """ED8 (data D31): annual embodied carbon of each lever alone (3 x 3, shared y), the Reference and
     the lever at Moderate, at Ambitious and at its Theoretical Limit, in the run colours of Fig3 / Fig4 (palette.toml
-    [runs]); panel titles the lever names (MODEL v4.3.2: no strategy-colour square, no lever-specific colour); PCHIP display interpolation through every annual value, not
+    [runs]); panel titles the lever names (no strategy-colour square, no lever-specific colour); PCHIP display interpolation through every annual value, not
     across the observed pipeline years -> modelled join (pathways/lever_annual.csv)."""
     la = D.csv('pathways/lever_annual.csv')
     brk = P.pipeline_breaks()
@@ -69,4 +69,4 @@ def sf15_tl_dwellings():
     S.save_figure(fig, 'SF15_tl_dwellings', source=['pathways/reoccupation_log.csv'])
 
 
-FIGURES = {'ED8_lever_annual': ed8_lever_annual, 'SF15_tl_dwellings': sf15_tl_dwellings}   # MODEL v4.3.1 numbers
+FIGURES = {'ED8_lever_annual': ed8_lever_annual, 'SF15_tl_dwellings': sf15_tl_dwellings}

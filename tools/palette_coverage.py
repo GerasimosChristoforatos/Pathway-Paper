@@ -1,4 +1,4 @@
-"""Palette coverage of the final figures (MODEL v4.3.3): does every meaning colour and every meaningful fade come from
+"""Palette coverage of the final figures: does every meaning colour and every meaningful fade come from
 palette.toml?
 
 Every final figure (main, Extended Data, Supplementary; not the diagnostics) is drawn in process from the committed
@@ -139,7 +139,7 @@ def main(argv=None):
     probe = os.path.join(tmp, 'probe.toml')
     hexes, alphas = probe_palette(os.path.join(ROOT, 'palette.toml'), probe)
     os.environ.update(PATHWAY_PROFILE='full', PATHWAY_PALETTE=probe, PATHWAY_DPI='50', MPLBACKEND='Agg',
-                      PATHWAY_FIG_OUT=tmp, PATHWAY_REFERENCE_LEGACY='0')
+                      PATHWAY_FIG_OUT=tmp)
     import matplotlib.pyplot as plt
     from figures import style as S
     import figure_plan as FP

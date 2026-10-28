@@ -1,5 +1,5 @@
 """outputs/FIGURES.md: every figure of figure_plan.py with its file, data sources, caption and the run-specific note of
-its audit record (auto-generated after the figures; MODEL v3.0.0)."""
+its audit record (auto-generated after the figures)."""
 import json
 import os
 
@@ -50,7 +50,7 @@ def write():
     L += ['## Supplementary figures (supplementary/)', '']
     for h in FP.SUPPLEMENTARY:
         L += _entry(h['file'], f"{h['id']} {h['title']}", h.get('caption'), h['source'], layout.figure(h['file']))
-    for t in FP.SUPPLEMENTARY_TABLES:                 # MODEL v4.3.1
+    for t in FP.SUPPLEMENTARY_TABLES:
         rel = f"supplementary/{t['folder']}/{t['file']}"
         L += [f"### {t['file']}", '', f"**{t['id']} {t['title']}** (table)", '',
               f"- Files: `{rel}.md`, `{rel}.csv`",

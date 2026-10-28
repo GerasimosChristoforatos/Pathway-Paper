@@ -1,4 +1,4 @@
-"""Figure source data (MODEL v3.0.0 compute / draw separation): the model scripts write, for every diagnostic that
+"""Figure source data (compute / draw separation): the model scripts write, for every figure that
 needs more than the published data tables, the exact arrays the figure draws, as JSON under
 outputs/data/figure_source/<figure id>.json; the figures/ package reads them (read()) and never recomputes the model.
 

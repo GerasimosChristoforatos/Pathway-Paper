@@ -97,13 +97,12 @@ OUT_A45_ITEM = os.path.join(OUT_DIR, 'factors_a45_item.csv')        # A4-A5 on i
 # the A1-A3 share of replacement / repaint events; A4-A5 follows the generic
 # path below; C1-C4 and soil are never changed (author decision). Between Horup's years the
 # path is interpolated linearly (author decision; Horup state 'interpolated'
-# without naming the method, p. 3). (The class-level mapping of baseline-pb-v1.1
-# was removed in baseline-pb-v3; it is preserved at tags baseline-PB_v1.2 / baseline-PB_v2.)
+# without naming the method, p. 3).
 FILE_HORUP = os.path.join(DATA_DIR, 'derived', 'horup2025_table_s4.csv')
 DECARB_YEARS = list(range(2025, 2051))
 DECARB_KNOTS = (2025, 2030, 2040, 2050)
 #
-# 'horup_item' (adopted from baseline-pb-v1.2): each EPD item of the case studies
+# 'horup_item' (adopted): each EPD item of the case studies
 # (data/derived/material_items.csv, built by data/build_material_items.py) ->
 # one S4 row, or HELD, by data/material_item_map.csv (author decisions; the
 # basis of each row is in the table): label 'direct' (S4 has the material),

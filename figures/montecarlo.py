@@ -13,7 +13,7 @@ def sf12_mc_convergence():
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 62))
     for a, o, letter, unit in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab', ['kt CO₂e', 'Mm²']):
         t = c[c['output'] == o]
-        # MODEL v3.1.0 (B3): four distinct styles (line style, marker, weight)
+        # four distinct styles (line style, marker, weight)
         for q, ls, mk, lw, lab in (('p5', ':', 'v', S.LW, '5th percentile'), ('p50', '-', 'o', S.LW_BOLD, 'Median (50th)'),
                                    ('p95', '-.', '^', S.LW, '95th percentile'), ('mean', '--', 's', S.LW, 'Mean')):
             a.plot(t['n'], t[q], color=S.REFERENCE, ls=ls, marker=mk, ms=3, lw=lw, label=lab)
@@ -22,7 +22,7 @@ def sf12_mc_convergence():
         a.set_ylabel(f'2026–2050 total ({unit})')
         P.thousands(a.yaxis)
         P.panel(a, letter, 'Embodied carbon' if o == 'carbon_kt' else 'Floor area')
-    h, lab = ax[0].get_legend_handles_labels()                 # MODEL v4.3.0: one legend below, clear of the lines
+    h, lab = ax[0].get_legend_handles_labels()                 # one legend below, clear of the lines
     fig.legend(h, lab, loc='lower center', ncol=4, fontsize=S.FONT_SMALL, frameon=False)
     fig.tight_layout(rect=(0, 0.08, 1, 1))
     S.save_figure(fig, 'SF12_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
@@ -30,7 +30,7 @@ def sf12_mc_convergence():
 
 
 def ed6_mc_input_distributions():
-    """MODEL v4.3.0 (ED6, from D38): the Monte Carlo input distributions, y = number of draws, panel titles the input
+    """ED6 (data D38): the Monte Carlo input distributions, y = number of draws, panel titles the input
     names of naming.MC_INPUT (as ED7 and ED4). Population in physical units: the 2050 New Zealand population of each
     draw (pathways/montecarlo_draws.csv P_NZ_2050; the same draws as the Reference Monte Carlo, checked on every
     input column); dwelling size as the multiplier on the central future size; carbon factors: the resulting pooled
@@ -83,7 +83,7 @@ def ed6_mc_input_distributions():
 
 
 def ed7_sobol():
-    """MODEL v4.3.0 (ED7, from D20): Sobol indices of the Reference (full profile only), input names of naming.MC_INPUT
+    """ED7 (data D20): Sobol indices of the Reference (full profile only), input names of naming.MC_INPUT
     (as ED6), both panels x 0-1, y labels centred; total effect with its 95% interval and first-order effect."""
     sob = D.csv('montecarlo/sobol_REF.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 66))

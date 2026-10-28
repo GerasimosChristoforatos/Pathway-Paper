@@ -1,8 +1,8 @@
 """
-LEVERS: pure functions, lever level -> modified engine.forward inputs (MODEL v3.0.0: nine rule-based levers)
+LEVERS: pure functions, lever level -> modified engine.forward inputs (nine rule-based levers)
 =============================================================================================================
 Each lever changes one or two inputs of engine.forward (the `fwd_inputs` dict built in projection.main(), and the
-households path; docs/HOOKS.md) and nothing else. No function reads module globals of projection, no file is
+households path; LEVER_PARAMETER) and nothing else. No function reads module globals of projection, no file is
 written and no argument is modified: every function returns new objects (or, for a lever that is off, the input
 object itself, so that the identity run is the reference call of projection.main()).
 
@@ -27,8 +27,8 @@ ADOPTION. Every level, TL included, moves from the Reference along the normalise
 Sensitivities: by 2030, by 2045 (the Pathways) and the instant TL (full strength from 2027). Years: model index 0 = 2025,
 1 = 2026 (observed; no lever touches it).
 
-LEVERS (MODEL v3.3.0: grouped by the PAS 2080:2023 hierarchy, naming.STRATEGY_LEVERS; sub-rule naming.LEVER_SUBRULE;
-settings unchanged from MODEL v3.0.0, only grouping, numbering, names and order changed: naming.LEVER_V3_2)
+LEVERS (grouped by the PAS 2080:2023 hierarchy, naming.STRATEGY_LEVERS; sub-rule naming.LEVER_SUBRULE;
+naming.LEVER_V3_2 maps the earlier lever numbers)
   S1 Avoid    L1 Household size [C]    S = S_ref + gap, gap = Stats NZ High - Medium household size (held at its 2043
                                        value after 2043)
               L2 Vacancy rate [B]      vacancy parameter -> the 1996 census minimum (one definition)
@@ -117,7 +117,7 @@ RAMP_BASIS = ('full roll-out by 2035 following RECC (Pauliuk et al. 2024, J. Ind
 # ---------------------------------------------------------------------------
 HD_Q = 0.15                       # sub-rule A: top 15% (EU Taxonomy 2021/2139, Annex I s. 7.7)
 HD_CI = 0.95
-HD_BOOTSTRAP_SEED = 20261008      # L8 (as MODEL v2.1); L5 uses seed + 1
+HD_BOOTSTRAP_SEED = 20261008      # L8; L5 uses seed + 1
 L4_CONSENT_YEARS = (1990, 2025)
 L4_FULL_STRENGTH_YEAR = 2035      # occ_ref = S_ref(2035) x OLF_t: the size at full strength equals size_min
 L4_REPORT_YEARS = (2035, 2050)
@@ -127,10 +127,11 @@ L1_VARIANTS = ('Low', 'Medium', 'High')
 L1_REFERENCE_VARIANT = 'Medium'
 L1_AMBITIOUS_VARIANT = 'High'
 L1_GAP_HELD_AFTER = 2043          # the last published Stats NZ knot
-# TL1 speed limit (MODEL v4.0.0): the TL household size cannot rise faster than the fastest change observed between
+# TL1 speed limit: the TL household size cannot rise faster than the fastest change observed between
 # consecutive censuses 1991-2023 (census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - 2026), TL1
 # level), and never below the Ambitious path (S_ref + w gap). The other TL items keep the logistic window; the instant
-# TL row (TL_FROM2027) keeps its definition (the level from 2027). False reproduces MODEL v3.3.
+# TL row (TL_FROM2027) keeps its definition (the level from 2027). False switches the limit off (tests/test_model_v4.py
+# checks that this reproduces the MODEL v3.3 runs).
 TL1_SPEED_LIMIT = True
 TL1_SPEED_CENSUS_WINDOW = (1991, 2023)
 TL1_SPEED_START = OBSERVED_YEAR
@@ -467,7 +468,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                      estimator=est6, r={'reference': 1.0, 'moderate': (1.0 + r6) / 2.0, 'ambitious': r6},
                      tl={t: v['r'] for t, v in tl6.items()}, tl_detail=tl6,
                      anchor=f'HD q0.15 of the {len(cases6)} case ratios = {r6:.4f}')
-    # MODEL v3.1.0 (A5): check row, report only: the estimator with the apartment case A_1 included (n = 15). A_1 is the
+    # check row, report only: the estimator with the apartment case A_1 included (n = 15). A_1 is the
     # one independent apartment case (A_2 is its duplicate_of), so its ratio to the apartment pooled value is ~1 by
     # construction and carries no information on the spread; the adopted sample (n = 14) stays.
     cases15, _ = case_ratios(factors_building, L8_SAMPLE_TYPOLOGIES + ('Apartments',))
@@ -701,7 +702,7 @@ def inputs(base, p, levels, ramp_name=None):
     if 'L1' in lv:
         gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
         if lv['L1'] == 'tl' and TL1_SPEED_LIMIT and ramp_name != TL_FROM2027:
-            # MODEL v4.0.0: the speed limit replaces the window (the path is the target, at full weight)
+            # the speed limit replaces the window (the path is the target, at full weight)
             target = tl1_path(S, gap, w, years, p['L1']['tl'], p['L1']['tl_speed']['rate'])
             hh, S = l1_households(base['hh'], S, target, np.ones(len(years)))
         else:
@@ -786,7 +787,7 @@ def key(levels, ramp_name=None):
 
 
 # ============================================================
-# THEORETICAL LIMIT TL (MODEL v3.0.0): Level 4 of every lever -- a thought experiment, not a pathway
+# THEORETICAL LIMIT TL: Level 4 of every lever -- a thought experiment, not a pathway
 # ============================================================
 TL_COMPONENTS = tuple(f'TL{k}' for k in range(1, 10))
 TL_NAMES = {k: N.TL[k] for k in TL_COMPONENTS}
@@ -810,12 +811,6 @@ def tl_levels(comps, base_setting='moderate'):
     out = {} if base_setting == 'reference' else {L: base_setting for L in LEVERS}
     out.update({TL_LEVER[c]: 'tl' for c in comps})
     return out
-
-
-def tl_label(comps, base_setting='moderate'):
-    c = [x for x in TL_COMPONENTS if x in comps]
-    base = {'moderate': f'{PATHWAY}-moderate', 'ambitious': f'{PATHWAY}-ambitious', 'reference': 'REF'}[base_setting]
-    return 'TL' if len(c) == len(TL_COMPONENTS) else (base if not c else f"{base}+{'+'.join(c)}")
 
 
 OMITTED = [

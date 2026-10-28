@@ -12,7 +12,7 @@ Source (provenance in data/raw/MANIFEST.csv):
 What is taken from it (author decision): ONLY the event counts and the building
 lifespan. Stage totals stay those of data/building_data.xlsx and of the item table
 data/raw/epd-level_materials.xlsx (data/derived/material_items.csv), so the
-factors of baseline-pb-v2 are unchanged. Each workbook line is matched one-to-one
+case-study factors do not depend on the event workbook. Each workbook line is matched one-to-one
 to a row of the item table by building, item, B2/B4 and A1-A3 (to 1e-3 kg); the
 item table gives its material class.
 

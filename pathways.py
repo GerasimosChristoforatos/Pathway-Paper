@@ -1,5 +1,5 @@
 """
-PATHWAYS (MODEL v3.3.0): lever, strategy, pathway and theoretical-limit runs, attribution, waterfalls, back-cast
+PATHWAYS: lever, strategy, pathway and theoretical-limit runs, attribution, waterfalls, back-cast
 ======================================================================================================
 Reads the projection state (validation.run_boss -> projection.main() locals, in memory only) and re-calls
 engine.forward() with copies of `fwd_inputs` modified by levers.inputs(); nothing in the model changes and no
@@ -29,9 +29,9 @@ nine levers (512 subsets) at Moderate and Ambitious (Reference -> Moderate / Amb
 TL from the Reference (512), and TL1-TL9 from the Moderate Pathway (512; the TL waterfall's game). Every run is cached
 by its lever setting (levers.key) and reused across strategies, games and variants.
 WATERFALLS (sequential, PAS 2080 hierarchy order): (a) Reference -> +L1 ... +L9 at a setting (= the Moderate /
-Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL9 (= TL), by demand band, at Moderate and Ambitious
-(ED6 until MODEL v4.3.0, no longer rendered); MODEL
-v3.3.1: Reference -> TL1 ... TL9 cumulative (Fig5c; waterfall_tl_from_reference).
+Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL9 (= TL), by demand band, at Moderate and Ambitious; and
+Reference -> TL1 ... TL9 cumulative (waterfall_tl_from_reference). Fig4 draws the net waterfalls (a) and
+Reference -> TL; (b) is written as data only.
 Each step is credited with what remains after the higher-priority measures; sequential_vs_shapley.csv compares the
 steps with the order-free Shapley values. No timing step: TL is adopted on the same logistic as every level.
 
@@ -76,26 +76,27 @@ REFERENCE = 'REF'
 SCENARIOS = {'LOW': (N.SCENARIOS['LOW'], dict(REPLACEMENT_VARIANT='LOW')),
              'REF': (N.SCENARIOS['REF'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
              'HIGH': (N.SCENARIOS['HIGH'], dict(REPLACEMENT_VARIANT='HIGH')),
-             'VHIGH': (N.SCENARIOS['VHIGH'], dict(REPLACEMENT_VARIANT='VHIGH'))}      # MODEL v3.3.0
+             'VHIGH': (N.SCENARIOS['VHIGH'], dict(REPLACEMENT_VARIANT='VHIGH'))}
 IDENTITY_RTOL = 1e-9
 GRID = np.round(np.arange(0.0, 1.0 + 1e-9, 0.05), 2)     # solution space: 0-100% in 5% steps
 LAMBDA_GRID = np.round(np.arange(0.0, 1.0 + 1e-9, 0.1), 1)
 BRENTQ_XTOL = 1e-15
 M6 = 1e6
-REOCCUPATION_YEARS = (2027, 2050)   # MODEL v4.0.0: the window starts at the first unobserved year (observed_window)
+REOCCUPATION_YEARS = (2027, 2050)   # the window starts at the first unobserved year (observed_window)
 FIRST_LEVER_YEAR = 2027             # no vacancy-rate fall before it (2026 observed; levers.OBSERVED_YEAR + 1)
-# TL_SURPLUS_POOLING (MODEL v4.0.0): in a theoretical-limit-family run the Reference's overbuild surplus (the positive
+# TL_SURPLUS_POOLING: in a theoretical-limit-family run the Reference's overbuild surplus (the positive
 #   market excess: the pipeline years and the fading gap) enters the re-occupation pool with the TL1 / TL2 releases
 #   (constant share of each year's positive need, availability constraint, carry-forward) instead of the logistic
 #   payback; the re-occupied overbuild stays in the band 'Overbuild absorbed'. A negative excess (an under-build) is
-#   made good along the Reference's logistic as before. Non-TL runs are unchanged. False reproduces MODEL v3.3.
+#   made good along the Reference's logistic. Non-TL runs are unaffected. False switches the pooling off
+#   (tests/test_model_v4.py checks that this reproduces the MODEL v3.3 runs).
 TL_SURPLUS_POOLING = True
 REOCCUPATION_TOL = 1e-9         # relative tolerance of the re-occupation identities
 T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a zero-building year
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
 SHAPLEY_METRICS = ('carbon_kt', 'LoE_AR', 'LoE_AtP')
 ORDER_RTOL = 1e-12
-TL_GAME = 'tl_from_moderate_pathway'            # TL1-TL9 from the Moderate Pathway (MODEL v3.0-v3.2: tl_from_p5_moderate)
+TL_GAME = 'tl_from_moderate_pathway'            # TL1-TL9 from the Moderate Pathway (tl_from_p5_moderate)
 TL_REOCCUPATION_FAST = 'TL-reoccupation-fast'   # A4 sensitivity row (reoccupation rule 'fast')
 
 
@@ -121,7 +122,7 @@ def absorption_weights(years, start):
 
 
 def observed_window(ji):
-    """MODEL v4.0.0: the observed projection years of a Reference join (engine.market_excess): their last year
+    """The observed projection years of a Reference join (engine.market_excess): their last year
     (2027 with the completion lag of 17 months; 2026 without it) and their observed building (all categories)."""
     m = int(ji.get('n_observed', 1))
     return dict(observed_end=WINDOW[0] - 1 + m, observed_building=np.asarray(ji.get('O_obs', [ji['O26']]), float))
@@ -168,7 +169,7 @@ REOCCUPATION_RULES = ('constant_share', 'fast')   # adopted; 'fast' = as fast as
 
 
 def reoccupation(years, gross, released, rule='constant_share', start=REOCCUPATION_YEARS[0]):
-    """Constant-share re-occupation (MODEL v3.0.0). The dwellings released in 2027-2050 by TL1 and TL2 (R in total)
+    """Constant-share re-occupation. The dwellings released in 2027-2050 by TL1 and TL2 (R in total)
     meet a constant share of each year's need after the overbuild payback:
 
         target_t = max(gross_t, 0) x s,   s = min(R, G+) / G+,   G+ = sum over 2027-2050 of max(gross_t, 0)
@@ -178,7 +179,7 @@ def reoccupation(years, gross, released, rule='constant_share', start=REOCCUPATI
     s = min(R - re-occupied so far, remaining G+) / remaining G+. built_t = max(gross_t, 0) - re-occupied_t >= 0.
     Where R > G+, s = 1 and the surplus R - G+ stays vacant in 2050. 2025 and 2026 pass through (2026 observed).
 
-    rule 'fast' (MODEL v3.2.0, A4 sensitivity row): re-occupation as fast as demand allows,
+    rule 'fast' (A4 sensitivity row): re-occupation as fast as demand allows,
     reoccupied_t = min(max(gross_t, 0), cumulative released to t - cumulative re-occupied to t-1)."""
     years = np.asarray(years)
     gross = np.asarray(gross, float)
@@ -230,7 +231,7 @@ def reoccupation(years, gross, released, rule='constant_share', start=REOCCUPATI
 # ONE RUN AND ITS METRICS
 # ============================================================
 def carry_negative(years, gross, mask):
-    """MODEL v3.2.0 (A2): a year whose gross building is negative (releases in the requirement, the unconsented
+    """A year whose gross building is negative (releases in the requirement, the unconsented
     additions, exceed the gross need) builds nothing; the unusable dwellings are carried forward and used, in full,
     against the next years' gross building. Returns (gross after the carry >= 0 in the masked years, negclip_t
     (dwellings carried out of year t), neg_used_t, carry at the end)."""
@@ -251,7 +252,7 @@ def carry_negative(years, gross, mask):
 
 
 def use_in_year(gross, released, mask):
-    """MODEL v3.2.0 (A2), runs without any lever at its theoretical limit: dwellings released by a vacancy-rate fall
+    """Runs without any lever at its theoretical limit: dwellings released by a vacancy-rate fall
     are used in the year they occur, capped at the year's gross need (after the payback); the rest is carried to the
     next years. Returns (used_t, carry at the end)."""
     used = np.zeros(len(gross))
@@ -267,7 +268,7 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     """One run of the model with the levers at `levels` ({lever: 'moderate' | 'ambitious' | 'tl' | lambda}); see the
     module docstring for the order gross -> payback -> re-occupation -> built.
 
-    MODEL v3.2.0 release accounting (A2; bands.py): the payback is taken on the GROSS need (the requirement with
+    Release accounting (bands.py): the payback is taken on the GROSS need (the requirement with
     the dwellings released by a vacancy-rate fall added back); a negative gross year builds nothing and carries the
     unusable dwellings forward (carry_negative). In a theoretical-limit-family run (any lever at 'tl') every release
     present in the run, the vacancy-rate fall at any level and the household-size fall, enters the re-occupation pool
@@ -282,7 +283,7 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     hh = info['hh']
     E1 = engine.forward(ctx['pop'], hh, ctx['growth'], join=zeros, join_redev=zeros, **fi)
     req = np.asarray(engine.requirement(E1), float)
-    # MODEL v4.0.0: the observed projection years (2026, and 2027 with the completion lag) build what was observed in
+    # the observed projection years (2026, and 2027 with the completion lag) build what was observed in
     # every run; releases of an observed year enter the re-occupation / use window at its first year
     obs_end = int(ctx.get('observed_end', WINDOW[0]))
     first = obs_end + 1
@@ -593,7 +594,7 @@ def carbon_parts(ctx, R):
 
 
 def linear_split(ctx, R):
-    """Annual carbon (kg, 2026-2050) = fixed + later (MODEL v3.2.0): fixed = the 2026 cohort's emissions in the window
+    """Annual carbon (kg, 2026-2050) = fixed + later: fixed = the 2026 cohort's emissions in the window
     (its A1-A5, soil carbon loss and in-window events; identical in every run, 2026 observed); later = every emission
     in the window of the 2027-2050 cohorts (A1-A5, soil carbon loss, in-window B2/B4), the quantity a cut in
     2027-2050 floor area (x) and in total carbon per m2 (y) scales by (1 - x)(1 - y) (Fig5)."""
@@ -644,7 +645,7 @@ def solution_space(split0, bar, batp):
 
 
 def effective_coordinates(split, split0):
-    """Fig6 coordinates of a run against the Reference (MODEL v3.2.0): x = cut in 2027-2050 floor area,
+    """Fig6 coordinates of a run against the Reference: x = cut in 2027-2050 floor area,
     1 - GFA_P / GFA_0; y = cut in 2027-2050 total carbon per m2 (A1-A5, soil and events of the 2027-2050 cohorts
     within the window), 1 - (C_P / GFA_P) / (C_0 / GFA_0). With the fixed part identical in every run,
     LoE_AR(x, y) = [fixed + C_0 (1 - x)(1 - y)] / B_AR reproduces the run's LoE exactly (tests)."""
@@ -746,7 +747,7 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
         bands += band_rows(ctxs[scen], R, name)
         if scen == REFERENCE and rn is None:
             bands_annual += [dict(r, scenario=scen) for r in band_annual_rows(ctxs[scen], R, name)]
-    # MODEL v3.2.0 (A4): TL with re-occupation as fast as demand allows (sensitivity row; not cached: its own rule)
+    # TL with re-occupation as fast as demand allows (sensitivity row; not cached: its own rule)
     R_fast = run(ref, params, TL_ALL, reocc_rule='fast')
     rows.append(metrics(ref, R_fast, TL_REOCCUPATION_FAST, 'tl'))
     annual += annual_rows(ref, R_fast, TL_REOCCUPATION_FAST)
@@ -865,7 +866,7 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
 
 
 def waterfall(ctx, get, setting):
-    """The sequential path in PAS 2080 hierarchy order (MODEL v3.3.0): (a) Reference -> +L1 -> ... -> +L9 at `setting`
+    """The sequential path in PAS 2080 hierarchy order: (a) Reference -> +L1 -> ... -> +L9 at `setting`
     (= the Moderate / Ambitious Pathway), (b) -> +TL1 ... +TL9 (= TL); every step a cached run, each step's change
     split exactly into the in-scope demand bands; each step is credited with what remains after the higher-priority
     measures (order-dependent; the order-free values are the Shapley values)."""
@@ -883,7 +884,7 @@ def waterfall(ctx, get, setting):
 
 
 def waterfall_tl_from_reference(ctx, get):
-    """MODEL v3.3.1 (Fig5c): the sequential path Reference -> +TL1 -> ... -> +TL9 (= TL), every limit added
+    """The sequential path Reference -> +TL1 -> ... -> +TL9 (= TL), every limit added
     cumulatively from the Reference in PAS 2080 order (the other levers off: levers.tl_levels(.., 'reference')); each
     step a cached run, split exactly into the in-scope demand bands as in waterfall(). The step runs are the prefix
     subsets of the levers_tl Shapley game."""
@@ -918,7 +919,7 @@ def waterfall_rows(ctx, get, setting, steps):
 
 
 def sequential_vs_shapley(wf, shap):
-    """MODEL v3.3.0 diagnostics: per lever (Moderate, Ambitious; from the Reference) and per TL step (from the Moderate
+    """Diagnostics: per lever (Moderate, Ambitious; from the Reference) and per TL step (from the Moderate
     Pathway), the sequential waterfall step (PAS 2080 order; carbon reduction, kt) against the order-free Shapley
     value of the same player in its game (levers_moderate, levers_ambitious, TL_GAME). The Ambitious waterfall's TL
     steps start from the Ambitious Pathway, which has no Shapley game; their Shapley column is empty."""
@@ -1001,7 +1002,7 @@ def ordering(res):
 
 
 def checks(res):
-    """Identity of the no-lever run with the published Reference run, and the STOP conditions of MODEL v3.0.0."""
+    """Identity of the no-lever run with the published Reference run, and the STOP conditions of the pathway layer."""
     ctx = res['ctxs'][REFERENCE]
     B = ctx['B']
     R0 = res['get'](REFERENCE, {})
@@ -1038,7 +1039,7 @@ def checks(res):
         c = res['ctxs'][scen]
         E, info = R['E'], R['info']
         lab = f'{scen} {LV.label(R["levels"])} {R["ramp"]}'
-        # MODEL v4.0.0: the excess of an observed (pipeline) year is the observed building minus the run's own need;
+        # the excess of an observed (pipeline) year is the observed building minus the run's own need;
         # every later year holds the Reference excess
         fut = np.asarray(c['years']) > int(c.get('observed_end', WINDOW[0]))
         excess_diff = max(excess_diff, float(np.max(np.abs(info['excess'][fut] - c['excess'][fut]))))
@@ -1116,7 +1117,7 @@ def _json(obj, name):
 
 
 def zero_building(res):
-    """MODEL v4.0.0: the theoretical-limit-family runs (TL, its waterfall steps, every TL Shapley subset, the instant
+    """The theoretical-limit-family runs (TL, its waterfall steps, every TL Shapley subset, the instant
     TL; every scenario) with a year 2026-2050 that builds no dwelling (all categories <= T_ZERO_TOL_DWELLINGS), and
     the minimum annual building over them."""
     bad, mins = [], []
@@ -1186,9 +1187,9 @@ def write(res, identity):
     _json(res['ordering'], 'ordering_checks.json')
     _json(tl_summary(res), 'theoretical_limit.json')
     pd.DataFrame(BANDS.display_map()).to_csv(layout.writing(layout.data('bands_display_map.csv', frozen=False)),
-                                            index=False)         # MODEL v4.2: the six display bands
-    FP.write_ed_number_map()                                      # MODEL v4.3.0: Extended Data numbering old -> new
-    FP.write_sf_number_map()                                      # MODEL v4.3.1: Supplementary numbering old -> new
+                                            index=False)         # the six display bands
+    FP.write_ed_number_map()                                      # Extended Data numbering old -> new
+    FP.write_sf_number_map()                                      # Supplementary numbering old -> new
     _json(dict(res['params'], run_mode=RUN_MODE, identity_max_rel_diff=max(identity.values()),
                identity_checks=identity, sources=LV.SOURCES), 'levers.json')
 

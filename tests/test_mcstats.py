@@ -1,4 +1,4 @@
-"""The statistics of the Monte Carlo insight analyses (mcstats.py, MODEL v2.1.0).
+"""The statistics of the Monte Carlo insight analyses (mcstats.py).
 
 1. LOWESS and logistic regression reproduce statsmodels (tests/fixtures/mcstats_reference.json, written by
    tests/make_mcstats_reference.py with statsmodels on fixed synthetic data; statsmodels is not a dependency).

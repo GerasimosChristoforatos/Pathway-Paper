@@ -1,4 +1,4 @@
-"""Separate market-balance and completion-lag diagnostics for MODEL v4.1.0.
+"""Separate market-balance and completion-lag diagnostics (SF7).
 
 This module does not alter the demand bands used by the pathway model. It
 creates a second, coarser interpretation layer and a controlled comparison

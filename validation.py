@@ -58,10 +58,10 @@ SEASONAL_YEARS = (2010, 2025)
 # Settings that remove every use of observed 2026 data (A1: consents nowcast,
 # 2026 population growth), so that the 2026 check stays out of sample. The
 # 2025 deviation is then carried as in the pre-A1 model.
-# MODEL v4.0.0: no consent month after December 2025 and no 2026 population observation. With the completion lag
+# no consent month after December 2025 and no 2026 population observation. With the completion lag
 # (projection.COMPLETION_LAG_MONTHS = 17) 2026 completions are still observed (consents to July 2025), so the 2026
 # overbuild is observed and 2027 follows the fading rule; with no observed projection year at all (L = 0) projection
-# falls back to the carried 2025 deviation (OVERBUILD_RULE 'carried_deviation', the MODEL v3.3 definition).
+# falls back to the carried 2025 deviation (OVERBUILD_RULE 'carried_deviation').
 NO_2026_DATA = dict(CONSENT_DATA_END='2025-12-01', NOWCAST_POPULATION=False)
 
 
@@ -85,7 +85,7 @@ def census_intervals(B, last):
     return [(a + 1, b) for a, b in zip(cy[:-1], cy[1:])]      # calendar years a+1..b
 
 
-# VALIDATION_VACANCY (v1.2): the hindcast feeds census vacancy into the identity.
+# VALIDATION_VACANCY: the hindcast feeds census vacancy into the identity.
 #   'consistent' (default): one empty/unoccupied share (pooled 2018 and 2023
 #   private dwellings) applied to every census, removing the 2013->2018
 #   empty/away definitional break; 'as_published': the published empty series
@@ -105,7 +105,7 @@ def history_bands(B):
     every census, consistent_share). Between censuses annual detail is not identified, so each band is the
     mean over the interval's years y0+1..y1.
 
-    MODEL v3.1.0 (A3): no band is rescaled. The bands are household formation (population growth, smaller
+    No band is rescaled. The bands are household formation (population growth, smaller
     households, extra space), vacancy (allowance and change), the census-measured net replacement (the rate
     of the census dwelling-count identity of the interval x the previous year's stock, as stock_identity_history;
     may be negative, e.g. 1996-2001), the retirement-village units (negative; out of scope, as in D10) and the
@@ -194,7 +194,7 @@ def _census_replacement(B, yh, cal, cy):
 
 def stock_identity_history(B):
     """Dwellings built per year in the census intervals 1991-2023 (and 2023-2025) by component
-    (MODEL v1.1.0; D05c), interval means over the years y0+1..y1, in scope:
+    (D05c), interval means over the years y0+1..y1, in scope:
 
         dwellings built = new households + vacancy (allowance and change, ONE definition)
                           + net replacement (census-measured) + retirement villages (negative)
@@ -229,8 +229,8 @@ def stock_identity_history(B):
 
 
 def household_formation_history(B):
-    """New households per year in the census intervals 1991-2023 (and 2023-2025) by source (MODEL
-    v1.1.0; D04c), interval means over the years y0+1..y1: from population growth (dP / S) and from
+    """New households per year in the census intervals 1991-2023 (and 2023-2025) by source
+    (data D04), interval means over the years y0+1..y1: from population growth (dP / S) and from
     the change in household size (the rest of the change in households). Households are census-
     benchmarked at the census years, so each interval's total is the census-anchored change
     divided by its length; 2024-2025 are consent-derived estimates with no census check."""
@@ -295,7 +295,7 @@ def hindcast(B, const_share=None):
         r_last = float(crates[crates['y1'] <= O].iloc[-1]['rate'])
         path = pd.Series(engine.replacement_path('REF', r_dc, r_last, yh - O + 2025, 10.0), index=yh)
         preds['reference'] = (r_last, (need + path * prev)[test])
-        # MODEL v4.3.1 (B8): the High and Very High variants with no look-ahead: High holds the last intercensal rate
+        # the High and Very High variants with no look-ahead: High holds the last intercensal rate
         # before O; Very High continues the weighted linear trend of the census-interval rates with y1 <= O
         # (engine.replacement_trend over NET_REPLACEMENT_WINDOW[0] .. O, the model's Very High rule), in calendar years
         preds['high'] = (r_last, (need + r_last * prev)[test])
@@ -373,13 +373,13 @@ def seasonal_shares(consents):
 
 
 def _bridge_label():
-    """MODEL v4.2: the household source after the last census (projection.HH_BRIDGE)."""
+    """The household source after the last census (projection.HH_BRIDGE)."""
     return 'erp_S' if projection.HH_BRIDGE == 'erp_S' else 'consents'
 
 
 def check_2026(B, consents=None, B_full=None):
     """consents: monthly all-category series (index = month); read from the
-    consent file when not given. MODEL v4.0.0, with the completion lag (B['lag_months'] > 0): 2026 completions are
+    consent file when not given. With the completion lag (B['lag_months'] > 0): 2026 completions are
     observed even without 2026 data, so the out-of-sample check moves to the first year the run without 2026 data
     MODELS (its first unobserved year, 2027 at L = 17): its building (requirement + the fading excess) against the
     observed pipeline building of that year in the full-data run B_full (consents to July 2026, lagged)."""
@@ -504,8 +504,8 @@ def write(rows, chk, stock_rows=None, dhe=None, rows_pub=None, vac=None):
 
 
 def lag_hindcast(B):
-    """MODEL v4.0.0 STOP check: the rolling-origin hindcast of the census dwelling-count identity (hindcast_stock) at
-    the adopted completion lag and at L = 0 (MODEL v3.3 timing, the census under-construction correction on). STOP if
+    """STOP check: the rolling-origin hindcast of the census dwelling-count identity (hindcast_stock) at
+    the adopted completion lag and at L = 0 (same-calendar-year consents, the census under-construction correction on). STOP if
     the adopted lag is worse than L = 0 by the mean absolute error over the origins in BOTH rate methods (long run,
     recent interval). Writes baseline/completion_lag_hindcast.csv and .json."""
     L = int(B.get('lag_months', 0) or 0)
@@ -550,7 +550,7 @@ def main():
                                                 index=False)
     N.columns(household_formation_history(B)).to_csv(
         layout.writing(layout.data('baseline/household_formation_history.csv')), index=False)
-    with open(layout.writing(layout.data('baseline/history_unexplained.json')), 'w') as f:    # MODEL v3.1.0 (A3)
+    with open(layout.writing(layout.data('baseline/history_unexplained.json')), 'w') as f:
         json.dump(N.keys(history_unexplained(B)), f, indent=1)
 
 

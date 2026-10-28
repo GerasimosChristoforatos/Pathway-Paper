@@ -1,20 +1,21 @@
-"""The figures of MODEL v3.0.0: one registry, read by layout.figure (where a figure is written), the figures/ package
+"""The figures of one registry, read by layout.figure (where a figure is written), the figures/ package
 (what draws it), indexes.py (outputs/FIGURES.md) and the tests.
 
-    outputs/paper_main/       Fig1-Fig7 (PAPER_MAIN; MODEL v4.3.0)
-    outputs/paper_extended/   the Extended Data ED1-ED7 (PAPER_EXTENDED; MODEL v4.3.0) and the per-typology level table
-    outputs/supplementary/    further figures (SUPPLEMENTARY; MODEL v3.3.1: at most ten Extended Data items)
-    outputs/diagnostics/<group>/  calibration, validation, boundaries, pathways, montecarlo, sensitivity (DIAGNOSTICS)
+    outputs/paper_main/       Fig1-Fig7 (PAPER_MAIN)
+    outputs/paper_extended/   the Extended Data ED1-ED9 (PAPER_EXTENDED) and the per-typology level table EDT1
+    outputs/supplementary/    the Supplementary figures SF1-SF15 and table ST1 (SUPPLEMENTARY; at most ten Extended
+                              Data items)
+    outputs/diagnostics/      the figure audit records (DIAGNOSTICS is empty)
 
 Every figure is drawn by a module of figures/ from the data files of outputs/data/ only (compute / draw
 separation); `module` names it, `source` lists the data files it reads (relative to outputs/data/).
-Figures are PNG only (runprofile.py: 600 dpi full, 200 dpi light; MODEL v3.3.1). Figure ids of MODEL v2.1 that are not carried forward are listed in
-RETIRED with the reason (docs/FIGURE_PLAN_v3.md).
+Figures are PNG only (runprofile.py: 600 dpi full, 200 dpi light). Figure ids of earlier releases that are not
+carried forward are listed in RETIRED with the reason (written to FIGURES.md).
 """
-# MODEL v4.3.2: the row notes of ED4 and ED5 as figures/sensitivity.py writes them under the axes (MODEL v4.3.3: a
+# the row notes of ED4 and ED5 as figures/sensitivity.py writes them under the axes (a
 # numbered list, the numbers as superscripts on the row labels) (read from the model
-# code and the committed outputs); copied here so they reach the captions and FIGURES.md, and checked equal to the
-# generated text by tests/test_figures_v4_3_2.py
+# code and the committed outputs); copied here so they reach the captions and FIGURES.md. No kept test checks this
+# copy against the generated text (that test is at the tag model-v4.3.3).
 ED4_ROW_NOTES = (
     '¹ household size continues linearly from 2023 at the 2018–2023 census-interval pace instead of the '
     'Stats NZ household-size path rebased on 2023.',
@@ -101,13 +102,12 @@ PAPER_MAIN = [
          source=['aesa/annual.csv', 'montecarlo/annual_REF.csv', 'montecarlo/draws_REF.csv', 'baseline/projection.json']),
     dict(id='Fig4', file='Fig4_pathways', width='double', module='figures.paper_main',
          title='The Pathways: the sequential waterfalls',
-         # MODEL v4.3.1: the caption follows the figure (a-c since MODEL v4.2.1; the annual pathways are in Fig3a)
+         # the caption follows the figure (a-c; the annual pathways are in Fig3a)
          caption='Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 '
                  'order: (a) L1 ... L9 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) TL1 '
                  '... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
                  'AR (solid) and AtP (dotted) budgets with their zones; order-free Shapley values in Fig6.',
          source=['pathways/annual.csv', 'pathways/waterfall.csv', 'pathways/waterfall_tl_from_reference.csv']),
-    # MODEL v4.3.0: Fig6, Fig7, Fig8 renumbered Fig5, Fig6, Fig7 (Fig5 was vacant since MODEL v4.2.2)
     dict(id='Fig5', file='Fig5_solution_space', width='double', module='figures.paper_main',
          title='The solution space',
          caption='Cumulative level of exceedance of AR over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 '
@@ -138,7 +138,7 @@ PAPER_MAIN = [
 ]
 
 PAPER_EXTENDED = [
-    # MODEL v4.3.1: nine items in this order (outputs/data/ed_number_map.csv, ED_NUMBER_MAP below)
+    # nine items in this order (outputs/data/ed_number_map.csv, ED_NUMBER_MAP below)
     dict(id='ED1', file='ED1_population_households_floor_area', module='figures.paper_extended',
          title='Population, households and floor area: history and projection (Monte Carlo 5th-95th)',
          source=['figure_source/projection_paths.json', 'figure_source/D02_households.json']),
@@ -174,7 +174,7 @@ PAPER_EXTENDED = [
     dict(id='ED7', file='ED7_sobol', module='figures.montecarlo',
          title='Sobol indices of the Reference: embodied carbon and floor area 2026-2050',
          source=['montecarlo/sobol_REF.csv']),
-    # MODEL v4.3.1: ED8 Shapley attribution dropped (it duplicated Fig6a / Fig6b); ED9, ED10 -> ED8, ED9
+    # ED8 Shapley attribution dropped (it duplicated Fig6a / Fig6b); ED9, ED10 -> ED8, ED9
     dict(id='ED8', file='ED8_lever_annual', module='figures.pathways',
          title='Each lever alone: annual embodied carbon at Moderate, Ambitious and the Theoretical Limit',
          source=['pathways/lever_annual.csv', 'pathways/annual.csv']),
@@ -183,8 +183,8 @@ PAPER_EXTENDED = [
          source=['pathways/annual.csv', 'pathways/runs.csv']),
 ]
 
-# MODEL v4.3.1: Extended Data numbering, MODEL v4.3.0 (the last release) -> MODEL v4.3.1 (old id, old file, new id, new
-# file); new id None: no longer rendered. The v4.2.2 -> v4.3.0 map is in docs/CHANGELOG_v4_3_0.md.
+# Extended Data numbering, MODEL v4.3.0 -> the current numbering (old id, old file, new id, new file); new id None:
+# not rendered. Written to outputs/data/ed_number_map.csv.
 ED_NUMBER_MAP = [('ED1', 'ED1_population_households_floor_area', 'ED1', 'ED1_population_households_floor_area'),
                  ('ED2', 'ED2_household_formation_size', 'ED2', 'ED2_household_formation_size'),
                  ('ED3', 'ED3_replacement_variants', 'ED3', 'ED3_replacement_variants'),
@@ -199,13 +199,12 @@ ED_NUMBER_MAP = [('ED1', 'ED1_population_households_floor_area', 'ED1', 'ED1_pop
 
 def write_ed_number_map():
     """outputs/data/ed_number_map.csv from ED_NUMBER_MAP (old id, old file, new id, new file, status). Written by
-    pathways.py with the deterministic outputs and by tools/ed_number_map.py (MODEL v4.3.0; v4.3.1: with the
-    Supplementary map, write_sf_number_map)."""
+    pathways.py with the deterministic outputs (with the Supplementary map, write_sf_number_map)."""
     return _write_number_map('ed_number_map.csv', ED_NUMBER_MAP)
 
 
 def write_sf_number_map():
-    """MODEL v4.3.1: outputs/data/sf_number_map.csv from SF_NUMBER_MAP (Supplementary Figures and Tables)."""
+    """outputs/data/sf_number_map.csv from SF_NUMBER_MAP (Supplementary Figures and Tables)."""
     return _write_number_map('sf_number_map.csv', SF_NUMBER_MAP)
 
 
@@ -224,8 +223,8 @@ def _write_number_map(name, rows):
             w.writerow(['' if oid == 'new' else oid, ofile or '', nid or '', nfile or '', st])
     return path
 
-# MODEL v3.3.1: Extended Data beyond the ten allowed (Nature Cities) -> outputs/supplementary/
-# MODEL v4.3.0: the Supplementary Figures, one continuous series in reading order (calibration -> validation -> the
+# Extended Data beyond the ten allowed (Nature Cities) -> outputs/supplementary/
+# the Supplementary Figures, one continuous series in reading order (calibration -> validation -> the
 # boundary method -> sensitivity -> Monte Carlo -> the TL dwellings); 'folder' only organises outputs/supplementary/
 SUPPLEMENTARY = [
     dict(id='SF1', file='SF1_households', folder='calibration', module='figures.calibration',
@@ -273,12 +272,12 @@ SUPPLEMENTARY = [
          title='The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year',
          source=['pathways/reoccupation_log.csv']),
 ]
-# MODEL v4.3.1: Supplementary Tables (Markdown + CSV, outputs/supplementary/<folder>/)
+# Supplementary Tables (Markdown + CSV, outputs/supplementary/<folder>/)
 SUPPLEMENTARY_TABLES = [dict(id='ST1', file='ST1_budget_construction', folder='boundaries', module='figures.boundaries',
                              title='The AR and AtP budgets: components, the budgets in 2025 and 2050 and the 2050 '
                                    'population modifier', source=['aesa/results.json',
                                                                            'figure_source/D22_boundaries.json'])]
-# MODEL v4.3.1: Supplementary numbering, MODEL v4.3.0 -> MODEL v4.3.1 (old id, old file, new id, new file)
+# Supplementary numbering, MODEL v4.3.0 -> the current numbering (old id, old file, new id, new file)
 SF_NUMBER_MAP = ([(f'SF{i}', h, f'SF{i}', h) for i, h in enumerate(
     ['SF1_households', 'SF2_stock_vacancy', 'SF3_census_replacement_rates', 'SF4_dwelling_size',
      'SF5_overbuild_absorption', 'SF6_hindcast', 'SF7_completion_lag', 'SF8_reality_checks'], start=1)]
@@ -297,7 +296,7 @@ EXTENDED_TABLES = [dict(id='EDT1', file='EDT1_levels_by_typology', title='Lever 
                         'Ambitious and TL', source=['pathways/levers.json'])]
 
 _d = lambda file, title, module, source: dict(file=file, title=title, module=module, source=source)
-# MODEL v4.3.0: no separate diagnostic figures; every figure is a main, Extended Data or Supplementary figure
+# no separate diagnostic figures; every figure is a main, Extended Data or Supplementary figure
 DIAGNOSTICS = {}
 # figures drawn only in the full profile (their data exist only there)
 FULL_ONLY = ('ED7_sobol',)
@@ -305,7 +304,7 @@ FULL_ONLY = ('ED7_sobol',)
 # Maintenance (B2, B4) drawn as its own layer: only in the band and stage breakdowns
 MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries')
 # every figure with a planetary boundary on its axes (zones required; AtP dotted)
-# (MODEL v4.3.1: ED10 -> ED9; SF9 budget construction is the Supplementary Table ST1, no axes)
+# (ED10 -> ED9; SF9 budget construction is the Supplementary Table ST1, no axes)
 PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways', 'Fig5_solution_space',
               'ED3_replacement_variants', 'ED9_rollout_timing')
 

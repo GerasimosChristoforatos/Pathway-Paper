@@ -37,14 +37,14 @@ def groups():
                                                 'Reference': S.REFERENCE, N.TL['TL']: S.TL},
                                                **{(f'{p} {N.STRATEGIES[p]}' if p in N.STRATEGIES else
                                                    'Moderate / Ambitious Pathway'): c for p, c in S.PATHWAY.items()}),
-        # MODEL v4.3.2: the lever shades are retired; a lever is drawn in its strategy colour (SF10, told apart by
+        # a lever is drawn in its strategy colour (SF10, told apart by
         # marker), so the strategies are the lever group
         'Strategies (Fig4-Fig6, SF10)': {N.STRATEGIES[k]: c for k, c in S.STRATEGY.items()},
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
-        # MODEL v2.1.2: the Recent replacement surge (L3 face, fine light hatch) and Historical replacement (a darker,
+        # the Recent replacement surge (L3 face, fine light hatch) and Historical replacement (a darker,
         # slightly bluer lilac) differ in lightness, hue and hatch; the surge face is checked against every other
         # band in the next group, the replacement-surge pair is reported in the text
-        # MODEL v3.0.0: every band shown together (Fig1, Fig2, Fig5, D25, D26, D36): the negative bands as filled
+        # every band shown together (Fig1, Fig2, Fig5, D25, D26, D36): the negative bands as filled
         # areas below zero in time series and as outlines in cumulative bars
         'Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
                                                            if b != 'redevelopment'},
@@ -63,7 +63,7 @@ def groups():
         'Materials (Fig3b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
         'Life-cycle stages (Fig3a)': {N.STAGES[k]: S.STAGE[k][0] for k in S.STAGE},
         'History bands (Fig1)': {(N.BANDS.get(b) or N.BAND_DETAIL[b]): S.HISTORY_BAND[b][0] for b in S.HISTORY_BAND},
-        # MODEL v4.3.2: the new palette groups
+        # the new palette groups
         'Fig3 (runs, boundaries, zones on white, cumulative column)': dict(
             {'Reference': S.REFERENCE, N.PATHWAY_RUNS['pathway-moderate']: S.PATHWAY_SETTING['moderate'],
              N.PATHWAY_RUNS['pathway-ambitious']: S.PATHWAY_SETTING['ambitious'], N.TL['TL']: S.TL,
@@ -71,7 +71,7 @@ def groups():
             **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
         'One at a time (Fig7a, ED4, ED5)': {'Input at low end': S.TORNADO_LOW, 'Input at high end': S.TORNADO_HIGH,
                                             'Single alternative case': S.TORNADO_SINGLE},
-        # MODEL v4.3.3: the palette-coverage groups
+        # the palette-coverage groups
         'SF2b (components and the demand-band parts)': dict(
             {lab: col for c, (lab, col) in _sf2b().items()}),
         'Replacement variants and the Reference (ED3, SF3, SF6, SF8)': {S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
@@ -104,7 +104,7 @@ ZONE_ORDER = ('within_both', 'within_ar', 'exceeded')
 
 
 def zone_lightness_order(style=S):
-    """MODEL v4.3.2: the property documented in figures/style.py: the three zones, composited on white at their fixed
+    """The property documented in figures/style.py: the three zones, composited on white at their fixed
     opacities, fall strictly in CAM02-UCS lightness J' within both < within AR only < exceeded under normal vision and
     every simulated deficiency (each zone's maximum J' over the vision types below the next zone's minimum).
     Returns (holds, {zone: [J' normal, deuteranomaly, protanomaly, tritanomaly]})."""
@@ -113,10 +113,10 @@ def zone_lightness_order(style=S):
 
 
 def palette_as_shown(style=S):
-    """MODEL v4.3.2: the palette groups of style.PALETTE with the boundary zones as they show on white (alpha
+    """The palette groups of style.PALETTE with the boundary zones as they show on white (alpha
     compositing at the fixed opacities of style.ZONE_ALPHA); every other key as in the file."""
     zkey = {'within_both': 'within_both', 'within_ar_only': 'within_ar', 'exceeded': 'exceeded'}
-    out = {g: dict(style.PALETTE[g]) for g in style.COLOUR_GROUPS}      # MODEL v4.3.3: [opacity] holds numbers
+    out = {g: dict(style.PALETTE[g]) for g in style.COLOUR_GROUPS}      # [opacity] holds numbers
     out['boundary_zones'] = {k: zone_on_white(dict(color=c, alpha=style.ZONE_ALPHA[zkey[k]]))
                              for k, c in style.PALETTE['boundary_zones'].items()}
     return out

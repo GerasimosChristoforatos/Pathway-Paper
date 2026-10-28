@@ -18,12 +18,11 @@ decarbonisation rows of DECARB_CASES for the adopted mode are added.
 One-at-a-time ranges show which assumptions matter. They are not a joint
 uncertainty interval and must not be added in quadrature or summed.
 
-This module writes data only (MODEL v3.0.0 compute / draw separation): D16 and D17 are drawn by
-figures/sensitivity.py and the Fig7a tornado by figures/paper_main.py, from the grouped tables of
-tools/sensitivity_tables.py. MODEL v3.0.0 adds the overbuild-absorption timing rows (never / by 2030 / by 2045) and
-the vacancy-parameter row (1986-2023 census mean). MODEL v4.0.0 adds the completion-lag rows (0 / 15 / 19 months, No
-2026 data), the household-size census-pace row and the completion-rate rows 0.93 / 0.96 (and 0.95, MODEL v3.3); the
-Little's-law row (the two-point W) is retired: it cannot be combined with the monthly lag.
+This module writes data only (compute / draw separation): ED4 is drawn by figures/sensitivity.py and the Fig7a
+tornado by figures/paper_main.py, from the grouped tables of tools/sensitivity_tables.py. The rows include the
+overbuild-absorption timing (never / by 2030 / by 2045), the vacancy parameter (1986-2023 census mean), the completion
+lag (0 / 15 / 19 months, No 2026 data), the household-size census pace and the completion rate 0.93 / 0.96 (and 0.95).
+There is no Little's-law row (the two-point W): it cannot be combined with the monthly lag.
 """
 
 import contextlib
@@ -38,13 +37,13 @@ import layout
 import naming as N
 
 OUT_CSV = layout.data('baseline/sensitivity_one_at_a_time.csv')
-# MODEL v2.0.0: annual carbon 2026-2050 of every row (Extended Data sensitivity paths), with the population
+# annual carbon 2026-2050 of every row (Extended Data sensitivity paths), with the population
 # rows also from the exact engine paths of the projection (carbon and floor area of the 5th / 95th paths)
 OUT_ANNUAL = layout.data('baseline/sensitivity_annual_carbon.csv')
 POP_ENGINE = 'Population: Stats NZ {p} percentile (engine path)'
 
 # (group, label, {projection setting: value})
-CASES = [   # earlier, longer tables are preserved at the git tags (CHANGELOG)
+CASES = [
     ('Replacement variant', 'Low replacement: long-run rate', dict(REPLACEMENT_VARIANT='LOW')),
     ('Replacement variant', N.SCENARIOS['REF_HL5'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=5.0)),
     ('Replacement variant', N.SCENARIOS['REF_HL15'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=15.0)),
@@ -60,14 +59,14 @@ CASES = [   # earlier, longer tables are preserved at the git tags (CHANGELOG)
     ('Stock', 'Completion rate 0.93', dict(COMPLETION_RATE=0.93)),
     ('Stock', 'Completion rate 0.96', dict(COMPLETION_RATE=0.96)),
     ('Stock', 'Completion rate 0.95 (MODEL v3.3)', dict(COMPLETION_RATE=0.95)),
-    # MODEL v4.0.0: the consent-to-completion lag (adopted 17 months) and the out-of-sample 'No 2026 data' run
+    # the consent-to-completion lag (adopted 17 months) and the out-of-sample 'No 2026 data' run
     ('Completion lag', 'Completion lag 0 months (same calendar year, MODEL v3.3)', dict(COMPLETION_LAG_MONTHS=0)),
     ('Completion lag', 'Completion lag 15 months', dict(COMPLETION_LAG_MONTHS=15)),
     ('Completion lag', 'Completion lag 19 months', dict(COMPLETION_LAG_MONTHS=19)),
     ('Completion lag', 'No 2026 data (consents to December 2025, projected 2026 population)',
      dict(CONSENT_DATA_END='2025-12-01', NOWCAST_POPULATION=False)),
     ('Stock', 'No census under-construction correction', dict(CENSUS_UC_CORRECTION=False)),
-    # MODEL v3.0.0: the Reference absorbs the overbuild by 2035 (logistic); the speed is bracketed here
+    # the Reference absorbs the overbuild by 2035 (logistic); the speed is bracketed here
     ('2026 overbuild: absorption', 'Overbuild never absorbed (MODEL v2.1 Reference)',
      dict(OVERBUILD_ABSORPTION_END=None)),
     ('2026 overbuild: absorption', 'Overbuild absorbed by 2030', dict(OVERBUILD_ABSORPTION_END=2030)),

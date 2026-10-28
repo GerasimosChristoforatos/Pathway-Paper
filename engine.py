@@ -139,7 +139,7 @@ def census_window_rate(rates, start, end):
 
 
 def replacement_trend(rates, start, end):
-    """MODEL v3.3.0 (Very High replacement): the weighted least-squares linear trend of the census-interval net
+    """Very High replacement: the weighted least-squares linear trend of the census-interval net
     replacement rates with start <= y0 and y1 <= end: rate_i = (built_i - d_stock_i) / stock_years_i, placed at the mean
     of the interval's model years y0+1 .. y1 (the interval convention of the history bands), weighted by the interval
     length y1 - y0. Returns dict(a, b, n, x, rate, weight): rate(t) = a + b t."""
@@ -158,7 +158,7 @@ def replacement_path(scenario, rate_long, rate_recent, years, half_life=10.0, tr
     """Net replacement rate by year (index 0 = 2025), by projection variant:
       'LOW':   the long-run rate throughout (Low replacement);
       'HIGH':  the recent (2018-2023) rate throughout (High replacement);
-      'VHIGH': the weighted linear trend of the census-interval rates continues (Very High replacement, MODEL v3.3.0;
+      'VHIGH': the weighted linear trend of the census-interval rates continues (Very High replacement;
                trend = replacement_trend(...)): a + b t;
       'REF':   the recent rate fading to the long-run rate with the given
                half-life: long + (recent - long) x 0.5^((t - 2025) / half_life)
@@ -222,10 +222,10 @@ def nowcast_year(consents, year, method, seasonal_years):
 
 
 SOIL_ZERO_TOL_M2 = 1e-3          # floor area treated as zero (theoretical limit, banked zero-building years)
-# MODEL v3.2.0 zero-year guard (every run): built floor area below this is floating-point noise of a year in which
+# zero-year guard (every run): built floor area below this is floating-point noise of a year in which
 # nothing is built (e.g. +-2.3e-10 m2); that year's floor area, soil share and soil carbon are set to 0. Without it
 # the soil share 1 - soil_free / total is a ratio of noise (order +-1e15) and the soil carbon of a year with no
-# construction is non-zero (MODEL v3.0 defect, found in Monte Carlo draws; docs/CHANGELOG_v3_2.md).
+# construction is non-zero (seen in Monte Carlo draws).
 BUILT_ZERO_TOL_M2 = 1e-6
 
 
@@ -240,7 +240,7 @@ def logistic_weights(years, start, end):
     """Normalised logistic of a window start -> end (W = end - start): midpoint start + W/2, speed
     k = ln(81) / (2W/3) (10% -> 90% within the middle two-thirds of the window), rescaled so that
     w(start) = 0 and w(end) = 1; 0 up to start, 1 from end. The adoption rule of the levers
-    (levers.adoption_window) and of the overbuild absorption of the Reference (MODEL v3.0.0)."""
+    (levers.adoption_window) and of the overbuild absorption of the Reference."""
     y = np.asarray(years, float)
     W = float(end - start)
     mid, k = start + W / 2.0, np.log(81.0) / (2.0 * W / 3.0)
@@ -250,7 +250,7 @@ def logistic_weights(years, start, end):
 
 
 def absorb_overbuild(excess, w, need):
-    """Logistic absorption of the 2026 overbuild (MODEL v3.0.0). excess: the market excess by year (index 0 =
+    """Logistic absorption of the 2026 overbuild. excess: the market excess by year (index 0 =
     2025: 0); w: absorption weights (logistic_weights, 0 in 2026, 1 from the absorption year); need: the run's
     dwellings built WITHOUT any join (requirement of a forward() run with join = 0), all categories.
 
@@ -294,24 +294,24 @@ def absorb_overbuild(excess, w, need):
 
 def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', absorption=0.0, absorb_w=None,
                   excess=None):
-    """Near-term market excess (v1.1 rule; MODEL v4.0.0: n observed years). E: forward() result WITHOUT a join
+    """Near-term market excess (n observed years). E: forward() result WITHOUT a join
     (index 0 = 2025, 1 = 2026). building_2026: observed dwellings built (all categories) in the first projection
-    year, or a sequence over the n observed (pipeline) years 2026 .. 2025 + n (MODEL v4.0.0: completions from consents
+    year, or a sequence over the n observed (pipeline) years 2026 .. 2025 + n (completions from consents
     already issued, projection.COMPLETION_LAG_MONTHS):
       excess_t    = building_t - requirement_t,          t = 2026 .. 2025 + n (observed)
       gap_ref     = building_last - requirement_(last+1) (gap_ref='2027': the requirement of the year after the last
                     observed year; '2026' = sensitivity: of the last observed year)
       excess_t    = gap_ref x rho^(t - last),             t > last
-    n = 1 is the v1.1-v3.3 rule exactly (gap_ref = building_2026 - requirement_2027, rho^(t - 2026)).
+    n = 1: one observed year (gap_ref = building_2026 - requirement_2027, rho^(t - 2026)).
     mode 'redevelopment': the excess is stock-neutral extra replacement
       of existing stock (returned as redev = join; no soil, no absorption, no payback);
     mode 'surplus': the excess adds to the stock;
-      absorb_w None (MODEL v2.1 and the legacy Reference): each later year a share
+      absorb_w None (no absorption end): each later year a share
         `absorption` of the remaining surplus is absorbed by building less (payback);
         absorption = 0 leaves the surplus permanent;
-      absorb_w given (MODEL v3.0.0 Reference): logistic absorption (absorb_overbuild),
+      absorb_w given (the Reference): logistic absorption (absorb_overbuild),
         the surplus absorbed along the weights absorb_w, capped at the run's own building.
-    excess: optional fixed excess series (MODEL v3.0.0: the Reference's, held in every run of
+    excess: optional fixed excess series (the Reference's, held in every run of
       the levers); None computes it from E.
     Returns (join, info)."""
     R = requirement(E)
@@ -410,7 +410,7 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                              repaint emissions, kg/m2 of the cohort built in year i
                              occurring in year j (events.kernel); b_t = gfa_t @ K is
                              added to carbon_t (time-resolved accounting).
-    MODEL v2.1.0 (pathway levers; every default reproduces the earlier result bit for bit):
+    Pathway levers (every default leaves the result unchanged bit for bit):
     soil[t] may be an array over the years (L7 soil-aware planning, TL7 lowest-carbon soils).
     brownfield_share, brownfield_w : optional arrays over the years (L6 brownfield development):
                              target share s of ALL new floor area on previously developed land
@@ -440,8 +440,8 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
     g_gross = np.asarray(pop_growth, float) * olf_f
     structural = d_hh * occ
     hs_raw = structural - g_gross
-    # MODEL v4.2.1: the household-size band is SIGNED (negative = households consolidating) and population growth is
-    # gross; their sum, and so every total, is unchanged (v4.2: hs_pos = max(0, hs_raw), growth net of consolidation)
+    # the household-size band is SIGNED (negative = households consolidating) and population growth is
+    # gross; their sum, and so every total, is unchanged (hs_pos = max(0, hs_raw), growth net of consolidation)
     hs_pos = hs_raw
     hs_avoided = np.abs(np.minimum(0, hs_raw))      # diagnostic only: the consolidating part
     growth = g_gross
@@ -477,7 +477,7 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         gfa_adj[i] = float(g) - total[i]
     c_gross, total = c_gross + gfa_adj, total + gfa_adj
 
-    # nothing built (zero-year guard, MODEL v3.2.0). A negative total occurs only in the requirement pass of
+    # nothing built (zero-year guard). A negative total occurs only in the requirement pass of
     # pathways.run (join = 0, the floor area unused there); a built path is >= 0 in dwellings (checked in pathways)
     zero_built = total < BUILT_ZERO_TOL_M2
     total = np.where(zero_built, 0.0, total)
@@ -490,7 +490,7 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
         soil_share, soil_free = np.ones(len(hh)), np.zeros(len(hh))
         carbon_t, upfront_t = I * gfa_t, U * gfa_t
     else:
-        if any(np.ndim(soil[t]) for t in typ):        # soil factor by year (MODEL v2.1.0 levers)
+        if any(np.ndim(soil[t]) for t in typ):        # soil factor by year (levers)
             sY = np.array([np.broadcast_to(np.asarray(soil[t], float), (len(hh),)) for t in typ])
         else:
             sY = np.array([soil[t] for t in typ])[:, None]
@@ -502,7 +502,7 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                 0.0, np.asarray(brownfield_share, float) * total - soil_free)
         soil_share = (1.0 - np.divide(soil_free, total, out=np.zeros(len(hh)),
                                                          where=total != 0))
-        # MODEL v3.2.0: the soil-bearing share is a share: clipped to [0, 1] in every run, and 0 in a zero year
+        # the soil-bearing share is a share: clipped to [0, 1] in every run, and 0 in a zero year
         soil_share = np.where(zero_built, 0.0, np.clip(soil_share, 0.0, 1.0))
         if clip_soil_share:
             soil_share = np.where(total <= SOIL_ZERO_TOL_M2, 0.0, soil_share)

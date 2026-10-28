@@ -1,17 +1,14 @@
-"""One vocabulary for the model (MODEL v1.0.0): every name a reader sees, and the map from
-the names of commit ee37ef1 (pathways v3.1) to the release names.
+"""One vocabulary for the model: every name a reader sees, and the map from
+the identifiers of earlier model versions (commit ee37ef1 and the MODEL v1-v3.2 numbering) to the release names.
 
 * The vocabulary (SCENARIOS, PATHWAYS, SETTINGS, LEVERS, TL, ADOPTION, BANDS,
   COMPONENTS, METRICS) is the only source of reader-facing labels: figures, tables, data
   files and generated documents take their labels from here. Internal code uses the short
   IDs (REF, LOW, HIGH, VHIGH; S1-S3; pathway-moderate / pathway-ambitious; L1-L9; TL, TL1-TL9; band and
   component ids).
-* LEGACY maps every identifier of the captured outputs (tests/regression_model_v1.json)
-  to its release location: file, CSV column, identifying cell, JSON path. It is used by
-  tests/test_regression_model_v1.py, which requires every captured number to be
-  reproduced at its mapped location, and by tools/design_docs.py, which writes the
-  complete old -> new table, docs/RENAMING.md. One map serves both, so the documented
-  renaming is exactly the one the test enforces.
+* LEGACY maps every identifier of the outputs of commit ee37ef1 to its release location:
+  file, CSV column, identifying cell, JSON path. The regression test and the old -> new table
+  that read it are in the git history (tag model-v4.3.3); no kept code reads it.
 """
 import re
 
@@ -45,21 +42,21 @@ SCENARIO_LEGACY = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH', 'S3-5': 'REF_HL5',
                    'S1-noUC': 'LOW_NOUC', 'S3-10-noUC': 'REF_NOUC', 'S2-noUC': 'HIGH_NOUC'}
 FROZEN = 'Frozen technology (2025 carbon factors held; check run)'
 
-# MODEL v3.3.0: nine rule-based levers grouped by the PAS 2080:2023 carbon reduction hierarchy (BSI 2023, Clause 4.3,
+# nine rule-based levers grouped by the PAS 2080:2023 carbon reduction hierarchy (BSI 2023, Clause 4.3,
 # Fig. 5: Avoid - Switch - Improve). Avoid = levers that reduce the floor area needed to house the population, system
 # level (number of dwellings) before asset level (floor area per dwelling); Switch = alternative site and materials
 # for the floor area that is built (carbon per m2); Improve = construction efficiencies. Order within a strategy
 # follows the decision sequence (system before asset; site before materials). Ambition levels follow the 2050
 # Pathways Calculator (DECC 2010; DESNZ 2023) and EUCalc (D2.5, 2020): Reference = Level 1, Moderate = Level 2,
 # Ambitious = Level 3, theoretical limit = Level 4. Every lever at a setting = the Moderate / Ambitious Pathway.
-STRATEGIES = {'S1': 'Avoid Strategies', 'S2': 'Switch Strategies', 'S3': 'Improve Strategy'}   # MODEL v4.3.0: S3 has one lever
+STRATEGIES = {'S1': 'Avoid Strategies', 'S2': 'Switch Strategies', 'S3': 'Improve Strategy'}   # S3 has one lever
 STRATEGY_LEVERS = {'S1': ('L1', 'L2', 'L3', 'L4', 'L5'), 'S2': ('L6', 'L7', 'L8'), 'S3': ('L9',)}
 LEVER_STRATEGY = {L: S for S, ls in STRATEGY_LEVERS.items() for L in ls}
 PATHWAY = 'pathway'                                   # run id prefix of the Moderate / Ambitious Pathway (every lever)
 PATHWAY_RUNS = {'pathway-moderate': 'Moderate Pathway', 'pathway-ambitious': 'Ambitious Pathway'}
 PAS2080 = ('BSI (2023) PAS 2080:2023 Carbon management in buildings and infrastructure. British Standards '
            'Institution, London; Clause 4.3 and Figure 5 (carbon reduction hierarchy: Avoid - Switch - Improve)')
-# MODEL v3.0-v3.2 pathway families (replaced by the strategies; docs/RENAMING.md)
+# the pathway families of MODEL v3.0-v3.2 (the strategies S1-S3 replace them; identifier maps only)
 PATHWAYS = {'P1': 'Space per person', 'P2': 'Existing stock', 'P3': 'Construction', 'P4': 'Land',
             'P5': 'Combined'}
 SETTINGS = {'moderate': 'Moderate', 'ambitious': 'Ambitious'}
@@ -67,13 +64,12 @@ LEVELS = {'reference': 'Reference (Level 1)', 'moderate': 'Moderate (Level 2)', 
           'tl': 'Theoretical limit (Level 4)'}
 SETTING_LEGACY = {'central': 'moderate', 'stretch': 'ambitious'}
 
-# Levers: id -> label. LEVER_LEGACY: v3.1 id -> model-v1/v2.0 id (the regression map of the captured
-# v3.1 outputs); LEVER_V2_0: model-v2.0.0 id -> MODEL v2.1.0 id; LEVER_V2_1: MODEL v2.1 id -> MODEL v3.0.0 id
-# (docs/RENAMING.md)
+# Levers: id -> label. Identifier maps of earlier versions: LEVER_LEGACY: v3.1 id -> model-v1/v2.0 id;
+# LEVER_V2_0: model-v2.0.0 id -> MODEL v2.1.0 id; LEVER_V2_1: MODEL v2.1 id -> MODEL v3.0.0 id
 LEVERS = {'L1': 'Household size', 'L2': 'Vacancy rate', 'L3': 'Building lifetime', 'L4': 'Extra space',
           'L5': 'Occupancy density', 'L6': 'Brownfield-first development', 'L7': 'Soil-aware planning',
           'L8': 'Material carbon efficiency', 'L9': 'Construction-stage carbon'}
-# MODEL v3.0-v3.2 lever id -> MODEL v3.3.0 lever id (and TLn alike; docs/RENAMING.md)
+# MODEL v3.0-v3.2 lever id -> MODEL v3.3.0 lever id (and TLn alike)
 LEVER_V3_2 = {'L3': 'L1', 'L4': 'L2', 'L5': 'L3', 'L1': 'L4', 'L2': 'L5', 'L9': 'L6', 'L8': 'L7', 'L6': 'L8', 'L7': 'L9'}
 LEVER_NAMES_V3_2 = {'L1': 'Dwelling size', 'L2': 'Design density', 'L3': 'Household size', 'L4': 'Vacancy',
                     'L5': 'Building lifetime', 'L6': 'Material carbon', 'L7': 'Construction-stage carbon',
@@ -98,13 +94,13 @@ LEVER_SUBRULE = {'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C
 # v3.1; it is never given a lever number in the release.
 DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.1)'
 
-# Theoretical limit (MODEL v3.0.0): TLn is Level 4 of Ln
+# Theoretical limit: TLn is Level 4 of Ln
 TL = {'TL': 'Theoretical Limit', 'TL1': 'Historical maximum household size', 'TL2': 'No vacancy',
       'TL3': 'No demolition', 'TL4': 'No extra space', 'TL5': 'Densest design', 'TL6': 'All brownfield',
       'TL7': 'Lowest-carbon soils', 'TL8': 'Best-practice materials', 'TL9': 'Zero-emission construction'}
 TL_LIMIT_OF = {f'TL{k}': f'L{k}' for k in range(1, 10)}
 TL_LEGACY = {'T': 'TL', 'T1': 'TL1', 'T2': 'TL2', 'T3': 'TL3', 'T4': 'TL4', 'T5': 'TL5', 'T6': 'TL6'}
-# model-v2.0.0 TL ids -> MODEL v2.1.0 (docs/RENAMING.md)
+# model-v2.0.0 TL ids -> MODEL v2.1.0
 TL_V2_0 = {'TL1 No vacancy': 'TL3 (+ TL4)', 'TL2 No extra space': 'TL1', 'TL3 Minimum space per person': 'TL10',
            'TL4 Best-practice materials': 'TL6', 'TL5 Lowest-carbon soils': 'TL8', 'TL6 Urban infill': 'TL9',
            'TL7 Building retention at -40% (ambitious level)': 'TL5'}
@@ -116,11 +112,11 @@ TL_V2_1 = {'TL1 No extra space': 'TL1', 'TL2 Historical maximum household size':
            'TL10 Minimum space per person': 'TL2 Densest design'}
 TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pathway'
 
-# adoption paths of the levers (v3.1 'ramp' names)
+# adoption paths of the levers (ADOPTION_LEGACY: the earlier 'ramp' names)
 ADOPTION = {'by2035': 'full roll-out by 2035 (adopted)', 'by2030': 'full roll-out by 2030 (sensitivity)',
             'by2045': 'full roll-out by 2045 (sensitivity)', 'from2027': 'full strength from 2027'}
 ADOPTION_LEGACY = {'ramp2035': 'by2035', 'ramp2030': 'by2030', 'ramp2045': 'by2045', 'instant': 'from2027'}
-# MODEL v3.0.0: TL is adopted on the same 2026 -> 2035 logistic as every level; its instant variant (every limit
+# TL is adopted on the same 2026 -> 2035 logistic as every level; its instant variant (every limit
 # from 1 January 2027) is one sensitivity row
 TL_INSTANT = 'TL, all limits from 1 January 2027 (instant)'
 TL_REOCCUPATION_LINE = 'released dwellings re-occupied at a constant share of each year\'s need'
@@ -147,11 +143,11 @@ BANDS = {'growth': 'Population growth',
          'vacancy_released': 'Vacancy released',
          'surplus_vacant': 'Surplus kept vacant (2050)',
          'maintenance': 'Maintenance (B2, B4), 2026–2050'}
-# MODEL v3.0.0: bands whose values are negative by construction (drawn as outlined segments hanging from the
-# top of the positive stack; the data keep the sign). MODEL v3.1.0/v3.2.0 adds 'Vacancy released' (bands.py).
+# bands whose values are negative by construction (drawn as outlined segments hanging from the
+# top of the positive stack; the data keep the sign); 'Vacancy released': bands.py
 NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl')
-# MODEL v4.2.1 (docs/CHANGELOG_v4_2_1.md): the household-size band is signed, d_hh x occupied area - population growth
-# x OLF: positive when households dilute, negative when they consolidate (recorded here in MODEL v4.3.0)
+# the household-size band is signed, d_hh x occupied area - population growth x OLF: positive when households
+# dilute, negative when they consolidate
 SIGNED_BANDS = ('smaller_households',)
 BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BRANZ rate)',
                'replacement_residual': 'Historical replacement: net unconsented additions (calibrated residual)',
@@ -162,7 +158,7 @@ BAND_DETAIL = {'replacement_demolition': 'Historical replacement: demolition (BR
                                       'separable)'}
 BAND_DETAIL['replacement_census'] = 'Net replacement (census)'
 BAND_DETAIL['unexplained'] = 'Unexplained building'
-# MODEL v3.1.0/v3.2.0 (A3): the history's residual band split into the census-measured net replacement (may be negative),
+# the history's residual band is split into the census-measured net replacement (may be negative),
 # the retirement-village units (negative, out of scope) and the unexplained remainder (may be negative); the bands add
 # up to the observed in-scope floor area built in every census interval
 BANDS_HISTORY = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement_census', 'retirement_villages',
@@ -192,14 +188,14 @@ BAND_DEFINITIONS = {
     'surplus_vacant': 'released dwellings still unusable in 2050, kept vacant (booked in 2050 against the release '
                       'bands, so the bands add up to the total every year)',
 }
-UNTARGETED = ('growth',)          # smaller households are targeted by L1 Household size (S1 Avoid; MODEL v3.3.0 numbering)
+UNTARGETED = ('growth',)          # smaller households are targeted by L1 Household size (S1 Avoid)
 
 COMPONENTS = {'materials_construction': 'Materials and construction (A1–A5)',
               'soil': 'Soil carbon loss',
               'maintenance': 'Maintenance (B2, B4), 2026–2050',
               'committed': 'Committed after 2050 (later B2/B4 and C1–C4)'}
 UPFRONT = 'Upfront (A1–A5 and soil carbon loss)'
-# life-cycle stages of the carbon (MODEL v2.0.0, Fig3a)
+# life-cycle stages of the carbon (Fig3a)
 STAGES = {'a1a3': 'Materials (A1–A3)', 'a4a5': 'Construction (A4–A5)',
           'maintenance': 'Maintenance (B2, B4)',
           'soil': 'Soil carbon loss'}
@@ -210,7 +206,7 @@ REPLACEMENT_CENSUS = 'Net replacement, census-measured (history)'
 METRICS = {'AR': 'Acquired rights (AR)', 'AtP': 'Ability to pay (AtP)', 'LoE': 'Level of exceedance (LoE)',
            'cumulative_LoE': 'Cumulative level of exceedance, 2026–2050'}
 
-# The one wording of the vacancy assumption (author decision, MODEL v1.0.0), filled from the data by
+# The one wording of the vacancy assumption (author decision), filled from the data by
 # vacancy_wording(): the parameter is the published 2023 census value; on the consistent 1986-2023
 # definition (pooled 2018/2023 empty share of unoccupied dwellings) 2023 is the series maximum.
 VACANCY_WORDING = ('the vacancy-rate parameter is held at its published 2023 census value ({v0:.2f}%; on the '
@@ -224,20 +220,20 @@ def vacancy_wording(v0, vmax, vmin, ymin, v2050):
     return VACANCY_WORDING.format(v0=100 * v0, vmax=100 * vmax, vmin=100 * vmin, ymin=ymin, v2050=100 * v2050)
 
 
-# Terms of the earlier versions that no reader-facing text of the release may use (docs/RENAMING.md
-# §1 Terms, §7 and §8): (pattern, release term). tests/test_release.py greps every generated report,
-# PAPER.md, EXTENDED_DATA.md, DIAGNOSTICS.md, INDEX.md and the texts of every figure for them. The patterns
+# Terms of the earlier versions that no reader-facing text of the release may use: (pattern, release term). The
+# test that grepped the generated reports and figure texts for them is in the git history (tag model-v4.3.3); no
+# kept code reads this list. The patterns
 # are narrowed where a release text legitimately uses the same letters: Hjalsted et al.'s
 # Supplementary Information numbering ("SI Eq. S1", "Table S1"), "central" as an ordinary word
 # (only the setting names "-central" / "central/stretch" are matched), "the recent redevelopment
 # wave" and "vacancy allowance" of the release band definitions, and the typology words, which stay
 # in the descriptions of model inputs (case studies, consents; by-typology results are removed).
-# MODEL v4.3.0: display names of the sensitivity inputs, one source for the Fig7a tornado, ED4 (one at a time, carbon),
+# display names of the sensitivity inputs, one source for the Fig7a tornado, ED4 (one at a time, carbon),
 # ED5 (boundary definitions, LoE), ED6 (Monte Carlo inputs) and ED7 (Sobol). Two lines where long (centred on one
 # axis by figures.draw.centre_ticklabels). The same input carries the same label everywhere.
 INPUT_LABEL = {
     'population': 'Population\n(5th–95th pct.)',
-    'hh_variant': 'Household size\n(smaller–larger households)',     # MODEL v4.3.1: Stats NZ Low variant = smaller households
+    'hh_variant': 'Household size\n(smaller–larger households)',     # Stats NZ Low variant = smaller households
     'hh_pace': 'Household size\n(2018–23 pace)',
     'hh_after2043_flat': 'Household size after\n2043: held flat',
     'hh_after2043_secant': 'Household size after\n2043: secant-slope taper',
@@ -312,9 +308,9 @@ OLD_TERMS = [
     (r'Projected Median|Projected Total|Uncertainty \(5th', 'legend entries of docs/RENAMING.md §7'),
     (r'(?i)held at the 2023 census|vacancy (?:rate )?(?:is |stays |remains )?(?:held|constant|fixed) at',
      'the vacancy wording (VACANCY_WORDING)'),
-    # MODEL v1.1.0: the demand bands "Replacement" and "Redevelopment" (lower-case "redevelopment" stays
+    # the demand bands "Replacement" and "Redevelopment" (lower-case "redevelopment" stays
     # where it names the 2026-overbuild booking setting or the knock-down-and-rebuild process in prose)
-    # MODEL v2.1.0: the final lever set (old pathway, lever and TL labels and numbers; docs/RENAMING.md)
+    # the final lever set (old pathway, lever and TL labels and numbers)
     (r'Right-sized dwellings|Occupied stock|Retained stock|Low-carbon materials',
      'pathway labels of MODEL v2.1.0 (P1 Space per person, P2 Existing stock, P3 Construction, P4 Land)'),
     (r'Building retention|Urban infill|\bL2 Vacancy|\bL3 Overbuild|\bL4 Building|\bL5 Material',
@@ -329,10 +325,6 @@ OLD_TERMS = [
     (r'(?<!Historical )(?<!historical )\bReplacement(?= bands?\b|\s*\(net of unconsented|\s*\||\s*:\s*(?:demolition|net '
      r'unconsented|long-run))', 'Historical replacement (MODEL v1.1.0)'),
 ]
-
-
-def scenario_label(code):
-    return SCENARIOS[code]
 
 
 def run_label(run, scenario='REF'):
@@ -363,13 +355,13 @@ def run_label(run, scenario='REF'):
 # and net unconsented additions, and the retirement-village row (negative: households housed
 # in retirement villages, out of scope). 'in_scope' (bands.csv, the band figures): retirement
 # villages removed from every band in proportion, replacement one band, maintenance a carbon band.
-# MODEL v3.0.0: '2026 overbuild' split into the market excess (positive) and 'Overbuild absorbed' (negative);
+# '2026 overbuild' split into the market excess (positive) and 'Overbuild absorbed' (negative);
 # in scope, 'Historical replacement' split into 'Demolition replacement' and 'Unconsented additions' (negative);
 # the theoretical-limit runs add 'Released dwellings (TL)' (negative; *_TL lists).
 BANDS_WITH_RETIREMENT_VILLAGES = ('growth', 'smaller_households', 'extra_space', 'vacancy',
                                   'replacement_demolition', 'replacement_residual', 'redevelopment',
                                   'overbuild_2026', 'overbuild_absorbed', 'retirement_villages')
-# MODEL v3.1.0/v3.2.0: one in-scope band list for every run (bands.IN_SCOPE; release bands zero where a run has no release)
+# one in-scope band list for every run (bands.IN_SCOPE; release bands zero where a run has no release)
 BANDS_IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild_2026', 'replacement',
                   'redevelopment', 'overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl',
                   'surplus_vacant', 'maintenance')
@@ -393,8 +385,8 @@ def _ascii(s):
 # ============================================================
 # The model code names quantities with short tokens (gfa, soil_kt, b_inwindow, ...); the
 # files carry the release names. Every CSV and JSON file of the model is written through
-# columns() or keys(), which apply identifier() (the generic rules of docs/RENAMING.md), so
-# one function names every output and the regression test checks the same map. Vocabulary
+# columns() or keys(), which apply identifier() (the generic rules _ID_RULES), so one function
+# names every output. Vocabulary
 # identifiers (scenario, pathway, lever, setting, band and TL ids) are the release ids in
 # the code itself.
 def columns(df):
@@ -422,7 +414,7 @@ def keys(obj):
 
 
 # ============================================================
-# LEGACY MAP (ee37ef1 -> release)
+# LEGACY MAP (ee37ef1 -> release; read by no kept code, see the module docstring)
 # ============================================================
 _SCEN_FILE = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH'}
 
@@ -592,9 +584,8 @@ _BAND_LEGACY = {
     'Replacements & repaints, within 2026-2050': BANDS['maintenance'],
 }
 BAND_DEFINITION_LEGACY = {'boss_results': 'with_retirement_villages', 'in_scope_figure': 'in_scope'}
-# MODEL v1.1.0 renaming of two demand bands (labels only): model-v1.0.0 data label -> v1.1.0 data label.
-# Used by tests/test_regression_model_v1.py for the model-v1.0.0 additions, which were captured with
-# the v1.0.0 labels (the ee37ef1 capture maps through _BAND_LEGACY and BANDS directly).
+# MODEL v1.1.0 renaming of two demand bands (labels only): model-v1.0.0 data label -> v1.1.0 data label (the
+# ee37ef1 identifiers map through _BAND_LEGACY and BANDS directly).
 BAND_RELABEL_V1_1 = {'Replacement': BANDS['replacement'], 'Redevelopment': BANDS['redevelopment'],
                      'Replacement: demolition (BRANZ rate)': BAND_DETAIL['replacement_demolition'],
                      'Replacement: net unconsented additions (calibrated residual)': BAND_DETAIL['replacement_residual'],
@@ -787,12 +778,10 @@ def _removed(old_file, row=None, col=None, path=None):
     return False
 
 
-# Stages of the refurbish already applied to the outputs. Each commit of the release states
-# what it has applied, so the regression test holds at every commit:
-#   'labels'   vocabulary, columns, identifying cells and JSON keys renamed (commit 3)
-#   'layout'   outputs/data/, outputs/headline/, outputs/diagnostics/, outputs/reports/ (commit 4)
-#   'removals' by-typology reporting removed, with the setting of the removed typology-mix trend
-#              (settings/phi) (commit 7)
+# Stages of the renaming that LEGACY applies:
+#   'labels'   vocabulary, columns, identifying cells and JSON keys renamed
+#   'layout'   the output folders
+#   'removals' by-typology reporting removed, with the setting of the removed typology-mix trend (settings/phi)
 APPLIED = {'labels', 'layout', 'removals'}
 
 
@@ -820,7 +809,7 @@ class _Legacy:
 
 
 class _Release(_Legacy):
-    """The full release map (all stages), for docs/RENAMING.md."""
+    """The full release map (all stages)."""
     file = staticmethod(_file)
     column = staticmethod(_column)
     cell = staticmethod(_cell)
@@ -835,7 +824,7 @@ RELEASE = _Release()
 def typeset(text):
     """Print typography for reader-facing text built from ASCII sources (figure_plan.py, data labels):
     ranges with an en dash (1991-2050, 8,208-8,969, A1-A5, C1-C4), m² and CO₂e. Data files keep
-    ASCII hyphens (section 1 of docs/RENAMING.md)."""
+    ASCII hyphens."""
     import re
     text = re.sub(r'(?<=\d)-(?=\d)', '–', text)
     text = re.sub(r'\b(\d+(?:st|nd|rd|th))-(\d+(?:st|nd|rd|th))\b', r'\1–\2', text)      # 5th-95th

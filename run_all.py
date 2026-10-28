@@ -1,16 +1,13 @@
-"""Run the whole pipeline headless (MODEL v3.0.0).
+"""Run the whole pipeline headless.
 
     python run_all.py                       # light profile (DEFAULT, temporary): outputs/_light/
     python run_all.py --profile full        # full profile: outputs/ (5,000 draws, Sobol, PDF + PNG 600 dpi)
     python run_all.py --figures-only        # redraw every figure from the data files; outputs/data must stay
                                             # byte-identical (checked: SHA-256 of every file before and after)
-    python run_all.py --reference-legacy    # the MODEL v2.1 Reference (overbuild never absorbed) in outputs/_legacy/
-                                            # (MODEL v4.3.3: its 1e-12 lock against the v2.1 fixture is retired to
-                                            # tests/retired/test_reference_legacy.py; run it there by hand)
 
 Run profiles (runprofile.py): light = 1,000 Latin hypercube draws with their own seed, no Sobol indices, bootstrap 500,
 PNG at 200 dpi with a "LIGHT RUN" footer, every output under outputs/_light/; full = 5,000 draws with the existing
-seed, Sobol, bootstrap 2,000, PNG at 600 dpi under outputs/ (MODEL v3.3.1: no PDF). The deterministic results do not depend on the
+seed, Sobol, bootstrap 2,000, PNG at 600 dpi under outputs/ (no PDF). The deterministic results do not depend on the
 profile (tests/test_profiles.py).
 
 Order (compute, then draw): Building_factors -> projection -> Diagnostics -> Sensitivity -> MonteCarlo -> boundaries
@@ -110,23 +107,22 @@ def write_run_meta(env, mode):
                            sobol=p['mc_seed'] + 2 if p['sobol'] else None),
                 figures=dict(formats=list(p['formats']), dpi=p['dpi'], footer=p['footer']),
                 git_hash=git, git_dirty=dirty, input_hash=input_hash(),
-                timestamp=time.strftime('%Y-%m-%dT%H:%M:%S%z'), step_seconds=dict(TIMINGS),
-                reference_legacy=env.get('PATHWAY_REFERENCE_LEGACY') == '1')
+                timestamp=time.strftime('%Y-%m-%dT%H:%M:%S%z'), step_seconds=dict(TIMINGS))
     with open(L.writing(L.RUN_META), 'w') as f:
         json.dump(meta, f, indent=1)
 
 
-def base_env(profile, legacy=False):
+def base_env(profile):
     return dict(os.environ, MPLBACKEND='Agg', PYTHONWARNINGS='ignore', PATHWAY_PROFILE=profile,
-                PATHWAY_SAVE_FIGURES='0', PATHWAY_REFERENCE_LEGACY='1' if legacy else '0')
+                PATHWAY_SAVE_FIGURES='0')
 
 
 def pipeline(profile):
     env = base_env(profile)
-    os.environ.update(PATHWAY_PROFILE=profile, PATHWAY_REFERENCE_LEGACY='0')
+    os.environ.update(PATHWAY_PROFILE=profile)
     L = _layout()
     py = sys.executable
-    # a full rebuild: nothing stale survives (data, reports, every figure folder; the retired v2 folders)
+    # a full rebuild: nothing stale survives (data, reports, every figure folder; layout.RETIRED)
     for d in (L.DATA, L.REPORTS, L.PAPER_MAIN, L.PAPER_EXTENDED, L.SUPPLEMENTARY, L.DIAGNOSTICS) + L.RETIRED:
         shutil.rmtree(d, ignore_errors=True)
     for f in (L.FIGURES_INDEX, os.path.join(L.OUT, 'INDEX.md')):
@@ -148,7 +144,7 @@ def pipeline(profile):
     write_run_meta(env, 'pipeline')
     step('figures', [py, '-m', 'figures'], env)
     step('check_outputs', [py, tool('check_outputs')], env)
-    step('figure_manifest', [py, tool('figure_manifest')], env)          # MODEL v4.3.0
+    step('figure_manifest', [py, tool('figure_manifest')], env)
     step('indexes', [py, script('indexes')], env)
     TIMINGS['total_before_tests'] = round(time.time() - t0, 1)
     write_run_meta(env, 'pipeline')
@@ -158,7 +154,7 @@ def pipeline(profile):
 def figures_only(profile):
     """Redraw every figure from the data files; STOP unless every file of outputs/data is byte-identical after."""
     env = base_env(profile)
-    os.environ.update(PATHWAY_PROFILE=profile, PATHWAY_REFERENCE_LEGACY='0')
+    os.environ.update(PATHWAY_PROFILE=profile)
     L = _layout()
     before = data_hashes(L.DATA)
     for d in (L.PAPER_MAIN, L.PAPER_EXTENDED, L.SUPPLEMENTARY, L.DIAGNOSTICS):
@@ -173,18 +169,6 @@ def figures_only(profile):
     print(f'  figures-only: {len(before)} data files byte-identical')
 
 
-def reference_legacy(profile):
-    """The MODEL v2.1 Reference (overbuild never absorbed): projection, Monte Carlo and AESA in outputs/_legacy/.
-    MODEL v4.3.3: the legacy lock (1e-12 against the v2.1 fixture) is retired to tests/retired/ (the v4 regression lock
-    covers the current model) and is no longer a step of this mode."""
-    env = base_env(profile, legacy=True)
-    os.environ.update(PATHWAY_PROFILE=profile, PATHWAY_REFERENCE_LEGACY='1')
-    py = sys.executable
-    for name in ('Building_factors', 'projection', 'MonteCarlo', 'boundaries'):
-        step(name.lower(), [py, script(name)], env)
-    write_run_meta(env, 'reference_legacy')
-
-
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     profile = 'light'
@@ -196,8 +180,6 @@ def main(argv=None):
     try:
         if '--figures-only' in argv:
             figures_only(profile)
-        elif '--reference-legacy' in argv:
-            reference_legacy(profile)
         else:
             pipeline(profile)
     except StepFailed as e:

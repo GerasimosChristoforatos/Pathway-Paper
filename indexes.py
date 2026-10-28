@@ -1,5 +1,5 @@
 """
-INDEXES (MODEL v3.0.0): the index of every output file (the figures: FIGURES.md, figures/index.py)
+INDEXES: the index of every output file (the figures: FIGURES.md, figures/index.py)
 ==================================================================================================
 Writes, from the files the run produced (nothing is computed here):
 
@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # MODEL v4.3.1: paper Fig1-Fig7, Extended Data ED1-ED9 (+ EDT1), supplementary SF1-SF15 (+ ST1) in folders (figure_plan.py)
+    # paper Fig1-Fig7, Extended Data ED1-ED9 (+ EDT1), supplementary SF1-SF15 (+ ST1) in folders (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -154,7 +154,7 @@ FILES = [
     ('INDEX.md', 'This index', 'indexes.py'),
     ('figure_manifest.csv', 'MODEL v4.3.0: every figure (main, Extended Data, Supplementary): id, file, section, '
      'source script, source data, caption stub', 'tools/figure_manifest.py'),
-    # MODEL v3.0.0 figures and documents (figures/ package; figure_plan.py)
+    # figures and documents (figures/ package; figure_plan.py)
     ('FIGURES.md', 'Every figure with its file, data sources, caption and run-specific note', 'figures/index.py'),
     ('run_meta.json', 'Run metadata: profile, draws, seeds, git hash, input hash, timestamp, step timings', 'run_all.py'),
     ('paper_main/Fig*.png', 'Main-paper figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_main.py'),
@@ -200,9 +200,9 @@ FILES = [
      '(dwellings, share of built; floor-area remainder against unexplained dwellings x size)', 'validation.py'),
 ]
 
-# console logs, and the light-profile and legacy-Reference mirrors (outputs/_light/, outputs/_legacy/): git-ignored,
+# console logs, and the light-profile mirror (outputs/_light/): git-ignored,
 # not part of the release
-EXCLUDED = ('logs', '_light', '_legacy')
+EXCLUDED = ('logs', '_light')
 
 
 def output_files():

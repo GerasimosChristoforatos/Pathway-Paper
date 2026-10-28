@@ -1,7 +1,6 @@
-"""Secondary market-balance figures for MODEL v4.1.0.
+"""Secondary market-balance figures (SF7).
 
-The existing demand-band figures remain unchanged. These figures show a
-coarser classification for interpretation and the controlled lag comparison.
+They show a coarser classification than the demand bands, for interpretation, and the controlled lag comparison.
 """
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -23,7 +22,7 @@ def sf7_completion_lag():
     fid = "SF7_completion_lag"
     d = D.csv("diagnostics/lag_comparison_annual.csv")
     labels = {0: "Zero lag (consent-timed proxy)", 17: "17-month lag (completion-timed)"}
-    colours = dict(S.LAG_VARIANT)          # MODEL v4.3.3: palette.toml [lag_variants]
+    colours = dict(S.LAG_VARIANT)          # palette.toml [lag_variants]
     panels = [
         ("population_growth", "Population growth"),
         ("household_size_change", "Household-size change"),

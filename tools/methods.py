@@ -1,4 +1,4 @@
-"""The methods draft of the model (MODEL v3.2.0): outputs/reports/METHODS_DRAFT.md and LEVERS_TABLE.md (Table 1), copied
+"""The methods draft of the model: outputs/reports/METHODS_DRAFT.md and LEVERS_TABLE.md (Table 1), copied
 to docs/METHODS_DRAFT.md and docs/LEVERS_TABLE.md with the run profile named in their header.
 
     python tools/methods.py          (run_all.py runs it after the data)

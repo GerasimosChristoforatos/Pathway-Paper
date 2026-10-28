@@ -1,4 +1,4 @@
-"""Supplementary Table ST1 (MODEL v4.3.1; Supplementary Figure SF9 in v4.3.0, the D22 diagnostic before): how the
+"""Supplementary Table ST1 (data D22): how the
 planetary-boundary budgets AR and AtP are built. The components with their units, the two budgets in 2025 and 2050 and
 the 2050 population modifier, as Markdown and CSV in outputs/supplementary/boundaries/.
 

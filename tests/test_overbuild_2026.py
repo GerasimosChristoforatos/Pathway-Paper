@@ -60,7 +60,7 @@ def _toy_forward(join=None, join_redev=None):
                           {'Detached': 400.0}, {'Detached': 300.0}, join=join, join_redev=join_redev)
 
 
-# ------------------------------------------------ market excess (v1.1) ----
+# ------------------------------------------------ market excess ----
 @pytest.mark.parametrize('mode,absorption', [('redevelopment', 0.0), ('surplus', 0.2), ('surplus', 0.0)])
 def test_market_excess_rule(mode, absorption):
     E0 = _toy_forward()

@@ -1,5 +1,5 @@
-"""MODEL v4.0.0: the completion lag (monthly, L = 17), the completion rate 0.945, the TL1 speed limit, TL surplus pooling
-and the household-size sensitivities (docs/CHANGELOG_v4.md).
+"""The completion lag (monthly, L = 17), the completion rate 0.945, the TL1 speed limit, TL surplus pooling
+and the household-size sensitivities.
 
   * equivalence: L = 0, completion rate 0.95, the TL1 speed limit and TL surplus pooling off reproduce every MODEL
     v3.3 run (the Reference projection and the 55 deterministic pathway runs of runs.csv: floor area, carbon,
@@ -7,8 +7,8 @@ and the household-size sensitivities (docs/CHANGELOG_v4.md).
   * the lag: L = 0 equals the calendar-year sums, the pipeline years, the observed building in every run;
   * TL1: the speed-limited path, its rate and the year its level is reached;
   * building >= 0 in every run and > 0 in every TL-family year of the deterministic runs (runs.csv).
-The legacy MODEL v2.1 Reference lock is tests/test_reference_legacy.py; band sums, waterfall sums, Shapley efficiency,
-ordering and the Fig6 markers are tested by the existing tests on the regenerated data."""
+Band sums, waterfall sums, Shapley efficiency, ordering and the solution-space markers are tested by the other test
+files."""
 import json
 import os
 

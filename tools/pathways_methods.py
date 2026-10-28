@@ -1,4 +1,4 @@
-"""Pathways part of the methods draft and Table 1 (MODEL v3.3.0), generated from the data files only.
+"""Pathways part of the methods draft and Table 1, generated from the data files only.
 
     lines()          the Markdown lines of part 3 (tools/methods.py assembles METHODS_DRAFT.md)
     levers_table()   LEVERS_TABLE.md: one row per lever with its sub-rule, anchor and the native parameter at

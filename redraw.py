@@ -1,4 +1,4 @@
-"""Redraw the figures from the committed outputs only, with a palette file (MODEL v4.3.1; v4.3.3: every meaning colour and fade).
+"""Redraw the figures from the committed outputs only, with a palette file (every meaning colour and fade).
 
 No model, no Monte Carlo: every figure reads outputs/data/ (the full-profile results in the repository) and is drawn
 by the figures/ package exactly as in the pipeline. Only the colours of palette.toml change.
@@ -21,7 +21,7 @@ On loading, the palette is validated (every group and key present, "#RRGGBB" val
     on white, at their fixed opacities, with every other key of the figure; they are pale by design (data are drawn
     over them), so zone against zone is checked by their lightness order instead (next item);
   * a warning if the three zones, composited on white, lose the lightness order within both < within AR only <
-    exceeded (CAM02-UCS J') in normal vision or under any simulated deficiency (MODEL v4.3.2);
+    exceeded (CAM02-UCS J') in normal vision or under any simulated deficiency;
   * the colour-vision report of tools/palette_check.py for every group of two or more keys: per group and vision
     type (normal,
     simulated deuteranomaly, protanomaly and tritanomaly at full severity; Machado et al. 2009, colorspacious), the
@@ -43,11 +43,10 @@ SHARED = {'Fig2 (demand bands, materials, life-cycle stages)': {
               'demand_bands': None, 'materials': None,
               'life_cycle_stages': ('a1_a3', 'a4_a5', 'soil_carbon_loss', 'maintenance')},   # committed_*: Fig3b only
           'Fig4-Fig6 (runs, strategies)': {'runs': None, 'strategies': None},
-          # MODEL v4.3.2
           'Fig3 (runs, boundaries, zones, cumulative)': {'runs': None, 'boundaries': None, 'boundary_zones': None,
                                                          'cumulative': None},
           'Fig7a/ED4/ED5 (one at a time)': {'one_at_a_time': None},
-          # MODEL v4.3.3: the groups added with the palette coverage
+          # the groups added with the palette coverage
           'SF2b (components and the demand-band parts)': {
               'components': ('new_households', 'replacement_surge', 'unconsented_additions', 'retirement_villages',
                              'overbuild_absorbed', 'unexplained_building'),
@@ -58,12 +57,12 @@ SHARED = {'Fig2 (demand bands, materials, life-cycle stages)': {
           'SF7 (lag variants)': {'lag_variants': None},
           'SF15 (released dwellings, release binds)': {'components': ('released_tl',), 'highlights': ('release_binds',)}}
 # pairs of keys that denote the same quantity (identical by design, not a clash): maintenance B2/B4 as a demand band
-# and as a stage, and before / after 2050; MODEL v4.3.2: the Fig3b column is the Reference's cumulative carbon
+# and as a stage, and before / after 2050; the Fig3b column is the Reference's cumulative carbon
 _MAINT = (('demand_bands', 'maintenance'), ('life_cycle_stages', 'maintenance'), ('life_cycle_stages', 'committed_b2_b4'))
 SAME_QUANTITY = {frozenset(p) for p in itertools.combinations(_MAINT, 2)} | {
     frozenset({('runs', 'reference'), ('cumulative', 'fig3b_cumulative_carbon')})}
 CLOSE = 10.0                     # CAM02-UCS distance (tools/palette_check.THRESHOLD)
-# MODEL v4.3.3: the colour-vision report compares the keys of a group that are drawn together; these groups' keys are
+# the colour-vision report compares the keys of a group that are drawn together; these groups' keys are
 # each in a different figure (no pair is ever seen together), and released_tl (SF15) never shares SF2b with the other
 # components (the SF15 pairing is in SHARED)
 REPORT_NOT_TOGETHER = {'census_markers', 'validation', 'highlights'}
@@ -94,7 +93,7 @@ def check_palette(S):
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     import palette_check as PC
     pal = S.PALETTE
-    shown = PC.palette_as_shown(S)                  # MODEL v4.3.2: the zones as they show on white
+    shown = PC.palette_as_shown(S)                  # the zones as they show on white
     nwarn = 0
     for fig, groups in SHARED.items():
         keys = [(g, k) for g, ks in groups.items() for k in (ks or pal[g])]
@@ -131,7 +130,7 @@ def check_palette(S):
 def swatches(S, path):
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle
-    groups = [(g, S.PALETTE[g]) for g in S.COLOUR_GROUPS]           # MODEL v4.3.3: the [opacity] numbers as text below
+    groups = [(g, S.PALETTE[g]) for g in S.COLOUR_GROUPS]           # the [opacity] numbers as text below
     opac = S.PALETTE.get(S.OPACITY_GROUP, {})
     rows = max(len(v) for _, v in groups)
     fig, ax = plt.subplots(figsize=(2.3 * len(groups), 0.32 * rows + 0.7))
@@ -153,8 +152,7 @@ def swatches(S, path):
 
 def main(argv=None):
     a = parse(sys.argv[1:] if argv is None else argv)
-    os.environ.update(PATHWAY_PROFILE='full', PATHWAY_PALETTE=a.palette, PATHWAY_DPI=str(a.dpi), MPLBACKEND='Agg',
-                      PATHWAY_REFERENCE_LEGACY='0')
+    os.environ.update(PATHWAY_PROFILE='full', PATHWAY_PALETTE=a.palette, PATHWAY_DPI=str(a.dpi), MPLBACKEND='Agg')
     if a.out:
         os.environ['PATHWAY_FIG_OUT'] = a.out
     else:

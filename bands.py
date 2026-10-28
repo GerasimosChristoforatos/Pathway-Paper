@@ -1,5 +1,5 @@
 """
-DEMAND BANDS (MODEL v3.2.0; release accounting from v3.1.0, A2): one band accounting for the projection (Reference and its variants) and every lever,
+DEMAND BANDS (release accounting): one band accounting for the projection (Reference and its variants) and every lever,
 pathway and theoretical-limit run (pathways.py), so that the figures and tables of both read the same numbers.
 
 Release-accounting convention (A2):
@@ -14,7 +14,7 @@ Release-accounting convention (A2):
   * an amount still unusable in 2050 is booked in 2050 in its release band and, with the opposite sign, as
     'Surplus kept vacant (2050)', so the bands add up to the total in every year;
   * carbon-only band: 'Maintenance (B2, B4)' of the new cohorts within the window.
-  * MODEL v4.0.0 (TL surplus pooling, pathways.TL_SURPLUS_POOLING): in a theoretical-limit-family run the re-occupied
+  * TL surplus pooling (pathways.TL_SURPLUS_POOLING): in a theoretical-limit-family run the re-occupied
     Reference overbuild is booked in 'Overbuild absorbed' (paid), its part of the pool still unused in 2050 in
     'Overbuild absorbed' and, with the opposite sign, in 'Surplus kept vacant (2050)' (flows['ob_remainder']).
 
@@ -23,7 +23,7 @@ band's in-scope floor area is its gross floor area x (1 - RV share), exactly; th
 (gfa_adj) is in-scope floor area of the 2026 overbuild band. Soil: a band bears soil unless it is soil-free
 replacement (demolition, the surge and the residual, and the redevelopment part of the join, in a year whose net
 replacement is positive; engine.forward), scaled by the brownfield factor phi = soil share / soil share of the
-replacement rule (L6); soil carbon loss is attributed to the construction year (MODEL v3.0 accounting). The bands then reproduce the engine's floor area and carbon in every year (checked to 1e-9).
+replacement rule (L6); soil carbon loss is attributed to the construction year. The bands then reproduce the engine's floor area and carbon in every year (checked to 1e-9).
 """
 import numpy as np
 
@@ -33,7 +33,7 @@ IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild
             'surplus_vacant', 'maintenance')
 FLOOR_AREA_BANDS = IN_SCOPE[:-1]                     # maintenance carries carbon only
 IDENTITY_RTOL = 1e-9
-# MODEL v4.2: six display bands (aggregation for figures only; the detailed bands are unchanged in data and pathways):
+# six display bands (aggregation for figures only; the detailed bands are unchanged in data and pathways):
 # detailed band id (projection and history) -> display id. 'released_tl' (Re-used dwellings (TL)) and the carbon-only
 # 'maintenance' stay separate.
 DISPLAY = {'growth': 'growth', 'smaller_households': 'smaller_households', 'extra_space': 'extra_space',
@@ -52,7 +52,7 @@ DISPLAY_LABEL = {'growth': 'Population growth', 'smaller_households': 'Household
 
 
 def allocate_rv(values):
-    """MODEL v4.2.2 (figures): the history's retirement-village exclusion (band 'retirement_villages', negative)
+    """Figures: the history's retirement-village exclusion (band 'retirement_villages', negative)
     allocated pro rata to the bands it is computed from, so that every display band is in scope. RV units are a share
     of all dwellings built (households via the change in households, the other dwellings via vacancy, replacement and
     the residual), so the exclusion is spread in proportion to each band: band_b x (1 + RV / sum of the other bands).

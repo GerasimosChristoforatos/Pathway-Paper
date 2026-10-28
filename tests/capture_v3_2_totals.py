@@ -1,4 +1,4 @@
-"""Capture the MODEL v3.2.0 run totals for the v3.3 equality test (tests/test_model_v3_3.py):
+"""Capture the MODEL v3.2.0 run totals (tests/fixtures/v3_2_totals.json; read by no current test):
     python tests/capture_v3_2_totals.py
 Source: outputs/data/pathways/runs.csv at the v3.2.0 commit (b5a8c62; deterministic, identical in both profiles), read
 with git show so that the fixture is reproducible from the repository history. Each run is stored under its v3.2 id and

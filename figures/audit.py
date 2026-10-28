@@ -1,24 +1,22 @@
 """Figure audit: when a figure is saved, record for every axes its labels and the
 range of calendar years its data cover, every text of the figure and its note
-(outputs/diagnostics/_audit/<name>.json). The tests read these records to check that no
-figure shows carbon outside the projection, except the AR base window
-(tests/test_v3.py), and that no figure uses an old name (tests/test_release.py);
-DIAGNOSTICS.md takes the notes from them.
+(outputs/diagnostics/_audit/<name>.json). tests/test_events.py reads these records to check that no
+figure shows carbon outside the projection, except the AR base window; tests/test_figure_integrity.py that every
+planned figure is audited; FIGURES.md takes the notes from them.
 
 Data covered: lines, filled areas (fill_between, stackplot) and bars (at their
 centre). Not data: vertical marker lines (axvline) and artists tagged
 gid=BOUNDARY (the AR / AtP boundaries, defined from t0 = 2025, not emissions). An x
 value counts as a calendar year when it lies in YEAR_RANGE.
 
-Boundaries (MODEL v2.1.0): every record says whether the figure draws a planetary boundary (an artist tagged
-BOUNDARY) and the boundary zones of style.py (tagged ZONE); tests/test_release.py requires the zones wherever a
-boundary is drawn.
+Boundaries: every record says whether the figure draws a planetary boundary (an artist tagged
+BOUNDARY) and the boundary zones of style.py (tagged ZONE); the zones are required wherever a boundary is drawn
+(figure_plan.PB_FIGURES).
 
-Maintenance (MODEL v2.0.0): every record says whether the figure draws maintenance (B2, B4) as
+Maintenance: every record says whether the figure draws maintenance (B2, B4) as
 its own layer or line ('maintenance_drawn'): a data artist (bar, filled area, line) on a data axes
 in the maintenance colour of style.py, or a legend entry naming maintenance. The schematic (axes
-switched off) carries no data. tests/test_release.py allows it only in the figures of
-figure_plan.MAINTENANCE_ALLOWED.
+switched off) carries no data. It is allowed only in the figures of figure_plan.MAINTENANCE_ALLOWED.
 """
 import json
 import os
@@ -32,8 +30,8 @@ from matplotlib.patches import Rectangle
 
 YEAR_RANGE = (1900, 2200)
 BOUNDARY = 'boundary'
-BOUNDARY_OUTSIDE = 'boundary_outside'      # MODEL v3.1.0: a budget level outside the plotted range, stated
-ZONE = 'boundary_zone'             # style.ZONE_GID: the boundary zones (MODEL v2.1.0 styling)
+BOUNDARY_OUTSIDE = 'boundary_outside'      # a budget level outside the plotted range, stated
+ZONE = 'boundary_zone'             # style.ZONE_GID: the boundary zones
 AUDIT_DIR = layout.FIGURE_AUDIT
 
 
@@ -105,7 +103,7 @@ def maintenance_drawn(fig):
 
 def texts(fig):
     """Every visible text of a figure: titles, labels, tick labels, legend entries, annotations
-    (tests/test_release.py checks them against the old names of docs/RENAMING.md)."""
+    (stored in the figure's audit record)."""
     from matplotlib.text import Text
     fig.canvas.draw_idle()
     out = []
@@ -125,7 +123,7 @@ def producer():
 
 def white_edges(fig):
     """Filled segments (bars, stacked areas) drawn with a white edge on a non-white face: a white border between
-    stacked segments (MODEL v2.1.1: none allowed; style.fill draws the edge in the face colour)."""
+    stacked segments (none allowed; style.fill draws the edge in the face colour)."""
     from matplotlib.colors import to_rgba_array
     n = 0
     for ax in fig.get_axes():
@@ -155,7 +153,7 @@ def _dash_kind(line):
 
 
 def styling(fig):
-    """MODEL v2.1.2 styling facts: the line style of every AtP boundary line (dotted required), the negative band
+    """Styling facts: the line style of every AtP boundary line (dotted required), the negative band
     segments and net-total ticks (net-total convention: plotting.signed_stack / signed_areas), negative-height
     band rectangles (the old convention, drawn down from zero; none allowed) and whether the TL colour is used."""
     from figures import style as S
@@ -190,7 +188,7 @@ def styling(fig):
 
 
 def negatives(fig):
-    """MODEL v3.0.0 sign rules: the negative band segments of cumulative bars (gid NEG_BAR) must be unfilled and
+    """Sign rules: the negative band segments of cumulative bars (gid NEG_BAR) must be unfilled and
     unhatched; returns (count, count filled or hatched) and the net-total ticks / lines drawn."""
     n, bad = 0, 0
     for ax in fig.get_axes():
@@ -206,7 +204,7 @@ def negatives(fig):
 def record(fig, name, note=None, source=None):
     """Write the audit record of a figure about to be saved under name (no extension): per
     axes its title, labels and the year range of its data; the figure's texts; the note
-    (run-specific caption text, used by DIAGNOSTICS.md)."""
+    (run-specific caption text, used by FIGURES.md)."""
     os.makedirs(AUDIT_DIR, exist_ok=True)
     axes = []
     for ax in fig.get_axes():

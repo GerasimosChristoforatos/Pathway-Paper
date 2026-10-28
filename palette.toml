@@ -1,8 +1,8 @@
-# Figure palette (MODEL v4.3.3). Edit any value and run `python redraw.py` to preview every figure.
+# Figure palette. Edit any value and run `python redraw.py` to preview every figure.
 #
 # Read by figures/style.py only. Each colour key colours exactly one meaning, in every final figure and every element
 # that shows it (lines, bars, stacked areas, markers, coloured labels and legend swatches); changing one key changes
-# nothing else. Since MODEL v4.3.3 every meaning colour of the final figures (main, Extended Data, Supplementary) is in
+# nothing else. Every meaning colour of the final figures (main, Extended Data, Supplementary) is in
 # this file, and every meaningful fade is in [opacity]; tools/palette_coverage.py redraws every final figure with a
 # probe palette and reports any colour or fade that does not come from here (it reports none).
 #
@@ -16,9 +16,9 @@
 #     and SF14 (0.12), the SF14 rugs (0.4), the dashed 2024-25 "estimates not used" line of SF1 (0.35), neutral
 #     histograms (0.6) and bars (0.5), the white Fig3b 50% interval box (0.55), white label boxes (0.85), legend
 #     markers of Fig7b (0.9).
-# Not in this file because no final figure draws them: the lever shades (retired in MODEL v4.3.2), the categorical
-# Okabe-Ito set and the accent pair of the retired diagnostics, the 'vacancy released' band.
-# Format: colours "#RRGGBB"; [opacity] numbers from 0 to 1. The defaults are the colours of the v4.3.2 figures.
+# Not in this file because no final figure draws them: the categorical Okabe-Ito set, the accent pair
+# (style.ACCENT_*), the 'vacancy released' band.
+# Format: colours "#RRGGBB"; [opacity] numbers from 0 to 1.
 
 [demand_bands]                      # Fig1, Fig2a and Fig2d (by demand); ED2a; SF2; SF3; SF4
 population_growth     = "#586E71"   # Population growth (untargeted)
@@ -62,7 +62,7 @@ acquired_rights       = "#D7191C"   # Acquired rights (AR)
 ability_to_pay        = "#67000D"   # Ability to pay (AtP)
 
 [boundary_zones]                    # the three zones behind every boundary figure (fills, legend swatches)
-# The opacity of each zone is [opacity] zone_* (MODEL v4.3.3; fixed in style.py before). redraw.py warns if,
+# The opacity of each zone is [opacity] zone_*. redraw.py warns if,
 # composited on white at those opacities, the zones lose the lightness order within_both < within_ar_only < exceeded
 # (CAM02-UCS J') in normal vision or any simulated deficiency.
 within_both           = "#41AB5D"   # Within both budgets (below AtP)
@@ -77,15 +77,15 @@ low_end               = "#4A6192"   # Input at its low end
 high_end              = "#EB6123"   # Input at its high end
 single_alternative    = "#6E6E6E"   # A row with a single alternative case
 
-# ---- MODEL v4.3.3: the rest of the meaning colours of the final figures ----
-# Parts of SF2b / SF5 / SF15 that are not demand bands. MODEL v4.3.3 defaults: the requested colours, each newer colour's
-# CAM02-UCS lightness adjusted (hue and chroma kept) so that every SF2b pair is >= 10 apart in normal vision and the
-# three simulated deficiencies (docs/CHANGELOG_v4_3_3.md). Parts that ARE a demand band take its [demand_bands] key:
+# ---- the rest of the meaning colours of the final figures ----
+# Parts of SF2b / SF5 / SF15 that are not demand bands. Defaults: the author's colours, the CAM02-UCS lightness of some
+# adjusted (hue and chroma kept) so that every SF2b pair is >= 10 apart in normal vision and the three simulated
+# deficiencies. Parts that ARE a demand band take its [demand_bands] key:
 # vacancy -> vacancy; net replacement (census history) and demolition replacement -> net_replacement; the 2026
 # overbuild (SF2b, SF5 lines) -> market_balance.
 [components]
 new_households        = "#97AEB1"   # New households (SF2b)
-replacement_surge     = "#8A66AB"   # Recent replacement surge (SF2b; solid since MODEL v4.3.3)
+replacement_surge     = "#8A66AB"   # Recent replacement surge (SF2b; solid)
 unconsented_additions = "#5C9CC5"   # Unconsented additions (SF2b, negative)
 retirement_villages   = "#DCDCDC"   # Retirement villages, out of scope (SF2b, negative)
 overbuild_absorbed    = "#9E5B7F"   # Overbuild absorbed (SF2b, SF5; negative payback)

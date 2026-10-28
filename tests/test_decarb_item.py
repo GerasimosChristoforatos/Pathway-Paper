@@ -131,7 +131,7 @@ def test_settings_that_do_not_apply_are_refused():
     with pytest.raises(ValueError):
         BF.decarb_variant('none', item_case='proxies_held')
     with pytest.raises(ValueError):
-        BF.decarb_variant('class_level')               # removed in baseline-pb-v3
+        BF.decarb_variant('class_level')               # the removed class-level mapping
 
 
 def test_mc_bootstrap_stream_unchanged():

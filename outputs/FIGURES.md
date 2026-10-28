@@ -22,15 +22,15 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 ### Fig3_reference_boundaries
 
-**Fig3 The Reference against the planetary boundaries** — (a) Annual carbon, Monte Carlo median with 50% and 90% bands, against the acquired-rights (AR) and ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with its Monte Carlo 95% interval (2.5th-97.5th percentile of the cumulative carbon) and the AR and AtP budgets, and the committed emissions after 2050: C1-C4 and B2/B4 after 2050, the latter a range (lower = 2050 factors held, upper = 2025 factors).
+**Fig3 The Reference against the planetary boundaries** — (a) Annual carbon, Monte Carlo median with 50% and 90% bands, against the acquired-rights (AR) and ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with its Monte Carlo 90% interval (5th-95th percentile of the cumulative carbon) and 50% interval (25th-75th), the AR and AtP budgets, and the committed emissions after 2050: C1-C4 and B2/B4 after 2050, the latter a range (lower = 2050 factors held, upper = 2025 factors).
 
 - Files: `paper_main/Fig3_reference_boundaries.png`
 - Data: `data/aesa/annual.csv`, `data/montecarlo/annual_REF.csv`, `data/montecarlo/draws_REF.csv`, `data/baseline/projection.json`
-- This run: Cumulative 2026-2050 19,761 kt (LoE AR 4.46, AtP 17.8); Monte Carlo 95% interval 13,665-26,584 kt (2.5th-97.5th percentile of the cumulative carbon of the draws), 50% interval 17,558-21,986 kt; committed after 2050 (drawn at the lower bound): C1-C4 4,410 kt (2025 factors) and B2/B4 after 2050 3,091 kt (2050 factors held; 3,810 kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are shape-preserving (PCHIP) interpolation between annual values (dots), not smoothed across the observed -> modelled join after 2027; bands: Monte Carlo 90% band pchip, Monte Carlo 50% band pchip.
+- This run: Cumulative 2026-2050 19,761 kt (LoE AR 4.46, AtP 17.8); Monte Carlo 90% interval 14,575-25,503 kt (5th-95th percentile of the cumulative carbon of the draws), 50% interval 17,558-21,986 kt; committed after 2050 (drawn at the lower bound): C1-C4 4,410 kt (2025 factors) and B2/B4 after 2050 3,091 kt (2050 factors held; 3,810 kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are shape-preserving (PCHIP) interpolation between annual values (dots), not smoothed across the observed -> modelled join after 2027; bands: Monte Carlo 90% band pchip, Monte Carlo 50% band pchip.
 
 ### Fig4_pathways
 
-**Fig4 The Pathways: annual carbon and the sequential waterfalls** — (a) Annual carbon 2026-2050 of the Reference, the Moderate and Ambitious Pathway, the Theoretical Limit and the PAS 2080 strategies S1-S3 (thin; Moderate solid, Ambitious dotted) against AR and AtP. (b-d) Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 ... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; order-free Shapley values in Fig6 and, per lever and pathway, in ED8.
+**Fig4 The Pathways: the sequential waterfalls** — Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 order: (a) L1 ... L9 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) TL1 ... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; AR (solid) and AtP (dotted) budgets with their zones; order-free Shapley values in Fig6.
 
 - Files: `paper_main/Fig4_pathways.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
@@ -46,7 +46,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 ### Fig6_shapley_levers
 
-**Fig6 What each lever removes** — Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; exact, 512 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 Switch, S3 Improve) in the lever order and coloured by strategy; hollow bar Moderate, filled bar Ambitious, large deep-green dot TL. The TL dots are Shapley values within the TL game (all nine levers at their limit), so they include each lever's interactions at the limit; L5 (occupancy density) interacts with L4 (extra space): both act on the floor area per dwelling.
+**Fig6 What each lever removes** — Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; exact, 512 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 Switch, S3 Improve) in the lever order and coloured by strategy; filled bar Moderate, hollow bar Ambitious, large deep-green dot TL. The TL dots are Shapley values within the TL game (all nine levers at their limit), so they include each lever's interactions at the limit; L5 (occupancy density) interacts with L4 (extra space): both act on the floor area per dwelling.
 
 - Files: `paper_main/Fig6_shapley_levers.png`
 - Data: `data/pathways/shapley.csv`
@@ -116,27 +116,19 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/montecarlo/sobol_REF.csv`
 - This run: Reference; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% intervals by bootstrap of the Sobol samples; full profile only.
 
-### ED8_shapley_attribution
+### ED8_lever_annual
 
-**ED8 Shapley attribution (order-independent): reduction of cumulative embodied carbon 2026-2050 by lever, Moderate and Ambitious Pathway and TL**
+**ED8 Each lever alone: annual embodied carbon at Moderate, Ambitious and the Theoretical Limit**
 
-- Files: `paper_extended/ED8_shapley_attribution.png`
-- Data: `data/pathways/shapley.csv`, `data/pathways/runs.csv`
-- This run: Exact Shapley values (2^9 coalitions per game, pathways/shapley.csv), Reference cumulative 19,761 kt. Lever sum vs Reference - pathway: moderate 5,459.650 vs 5,459.650 kt (relative difference 1.7e-16); ambitious 9,494.443 vs 9,494.443 kt (relative difference 0.0e+00); tl 15,338.501 vs 15,338.501 kt (relative difference 0.0e+00). Order-independent, unlike the sequential PAS 2080 waterfalls of Fig4.
-
-### ED9_lever_annual
-
-**ED9 Each lever alone: annual embodied carbon at Moderate, Ambitious and the Theoretical Limit**
-
-- Files: `paper_extended/ED9_lever_annual.png`
+- Files: `paper_extended/ED8_lever_annual.png`
 - Data: `data/pathways/lever_annual.csv`, `data/pathways/annual.csv`
 - This run: Each panel: one lever alone; the other levers at the Reference. Lines: PCHIP display interpolation through the annual values.
 
-### ED10_rollout_timing
+### ED9_rollout_timing
 
-**ED10 Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon**
+**ED9 Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon**
 
-- Files: `paper_extended/ED10_rollout_timing.png`
+- Files: `paper_extended/ED9_rollout_timing.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
 - This run: (c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 13,737, Moderate Pathway 14,302, Moderate Pathway, full roll-out by 2045 (sensitivity) 15,395, Ambitious Pathway, full roll-out by 2030 (sensitivity) 9,350, Ambitious Pathway 10,267, Ambitious Pathway, full roll-out by 2045 (sensitivity) 12,091; Reference 19,761.
 
@@ -151,19 +143,19 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 ### SF1_households
 
-**SF1 Households: the published and census-benchmarked series, household size against arrivals and households per consent**
+**SF1 Households: the published and census-benchmarked series, and household size against arrivals**
 
 - Files: `supplementary/calibration/SF1_households.png`
 - Data: `data/figure_source/D02_households.json`, `data/figure_source/D04_household_formation.json`
-- This run: a: projection from the 2023 census point; 2019–23 Stats NZ estimates scaled to the 2023 census (×0.824). b, c: between censuses households are consent-derived, so the relationship in b is partly mechanical (housing supply meets migration) and the 2019 on ratios in c are estimated from consents, not independent evidence.
+- This run: a: projection from the 2023 census point; 2019–23 Stats NZ estimates scaled to the 2023 census (×0.824). b: between censuses households are consent-derived, so the relationship is partly mechanical (housing supply meets migration); 2024-25 are the model household-size path (ERP / S), not observations.
 
 ### SF2_stock_vacancy
 
-**SF2 Vacancy, the stock identity, dwellings per year by component and the vacancy definition**
+**SF2 Vacancy, dwellings per year by component and the vacancy definition**
 
 - Files: `supplementary/calibration/SF2_stock_vacancy.png`
 - Data: `data/figure_source/D05_stock_and_vacancy.json`, `data/figure_source/D06_vacancy_definition.json`
-- This run: a: The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). d: the unconsented additions each vacancy definition requires to close the stock identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. c: History: one bar per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. Faint bar: 2024–2025, households consent-derived. Projection annual, lighter. History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the previous year's stock, the quantity the model uses (2024–2025: the latest rate carried). Projection: demolition replacement, unconsented additions (negative), the recent replacement surge, retirement villages (negative), the 2026 overbuild and the overbuild absorbed (negative payback). Negative parts are outlined, hanging from the top of the positive stack; each bar ends at its net total (tick). Unexplained building (faded red; its value per interval in the row at the top, thousand dwellings per year): building not explained by household formation, vacancy and census-measured replacement: redevelopment not captured by the census counts, error in the household estimates, or residual; it may be negative.
+- This run: a: The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). c: the unconsented additions each vacancy definition requires to close the stock identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. b: History: one bar per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. Faint bar: 2024–2025, households consent-derived. Projection annual, lighter. History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the previous year's stock, the quantity the model uses (2024–2025: the latest rate carried). Projection: demolition replacement, unconsented additions (negative), the recent replacement surge, retirement villages (negative), the 2026 overbuild and the overbuild absorbed (negative payback). Negative parts are outlined, hanging from the top of the positive stack; each bar ends at its net total (tick). Unexplained building (faded red; its value per interval in the row at the top, thousand dwellings per year): building not explained by household formation, vacancy and census-measured replacement: redevelopment not captured by the census counts, error in the household estimates, or residual; it may be negative.
 
 ### SF3_census_replacement_rates
 
@@ -175,11 +167,11 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 ### SF4_dwelling_size
 
-**SF4 New-dwelling size: realised and occupied floor area, occupancy utilisation and consented size by typology**
+**SF4 New-dwelling size: realised and occupied floor area, and consented size by typology**
 
 - Files: `supplementary/calibration/SF4_dwelling_size.png`
 - Data: `data/figure_source/D08_dwelling_space.json`, `data/pathways/levers.json`
-- This run: c: dotted, the Reference size (2023-2025 mean); dots, the smallest annual mean (the L4 minima). 1990 is the first year of the series and a recession year.
+- This run: b: dotted, the Reference size (2023-2025 mean); dots, the smallest annual mean (the L4 minima). 1990 is the first year of the series and a recession year.
 
 ### SF5_overbuild_absorption
 
@@ -195,7 +187,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `supplementary/validation/SF6_hindcast.png`
 - Data: `data/figure_source/D14_hindcast.json`, `data/baseline/validation.json`
-- This run: Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the information available then; errors at the end of each window, vacancy on the consistent definition unless noted. d: building of the first year the run without 2026 data models, observed in the pipeline (consents lagged), against that run.
+- This run: Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the information available then; errors at the end of each window, vacancy on the consistent definition. The four replacement variants use only the census intervals ending at or before the origin: Low the long-run dwelling-count rate, Reference the last intercensal rate fading to it (10-year half-life), High the last rate held, Very High the weighted linear trend of the interval rates (3, 4 and 5 intervals at the 2006, 2013 and 2018 origins). d: building of the first year the run without 2026 data models, observed in the pipeline (consents lagged), against that run.
 
 ### SF7_completion_lag
 
@@ -203,7 +195,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `supplementary/validation/SF7_completion_lag.png`
 - Data: `data/diagnostics/lag_comparison_annual.csv`
-- This run: Both runs use identical source files and demographic paths; only the monthly consent-to-completion lag changes. Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; it is not a count of completed calendar-2026 homes. The 17-month run uses complete observed consent cohorts for 2026 and 2027. Lag-specific historical completion timing and replacement calibration are recomputed consistently.
+- This run: Both runs use identical source files and demographic paths; only the monthly consent-to-completion lag changes. Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; it is not a count of completed calendar-2026 homes. The 17-month run uses complete observed consent cohorts for 2026 and 2027. Lag-specific historical completion timing and replacement calibration are recomputed consistently, so panel c is not like-for-like in replacement: the net replacement rate is re-estimated from the census dwelling counts with each run's completion timing (2018-2023 interval: 0.301%/yr at zero lag, with the census under-construction correction, against 0.173%/yr at 17 months), and the difference in c is that recalibration, not the timing of building itself (MODEL v4.3.1, investigation B3).
 
 ### SF8_reality_checks
 
@@ -213,76 +205,67 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/figure_source/D15_reality_checks.json`
 - This run: Projection 2026–2050 against the 1991–2025 range (grey band); a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. h: the 2026 → 2027 step of the Reference (2026 observed, 2027 the first model year) against the year-to-year changes in consented floor area, 1992–2025.
 
-### SF9_budget_construction
+### SF9_prcc
 
-**SF9 The AR and AtP budgets 2026-2050: population modifier and components**
+**SF9 Monte Carlo sensitivity: partial rank correlation of each input, Reference, Moderate Pathway and TL**
 
-- Files: `supplementary/boundaries/SF9_budget_construction.png`
-- Data: `data/figure_source/D22_boundaries.json`
-- This run: 2 °C carrying capacity (Bjørn & Hauschild 2015). Log axis: the AtP boundary is 25.1% of the AR boundary in every year: both scale with P_NZ(t) / P_W(t) (static design), so their ratio is constant.
-
-### SF10_prcc
-
-**SF10 Monte Carlo sensitivity: partial rank correlation of each input, Reference, Moderate Pathway and TL**
-
-- Files: `supplementary/sensitivity/SF10_prcc.png`
+- Files: `supplementary/sensitivity/SF9_prcc.png`
 - Data: `data/pathways/montecarlo_importance.csv`
 - This run: Bootstrap resamples: 2000; SRC and R² in the data file.
 
-### SF11_pathway_sensitivity
+### SF10_lambda_sweep
 
-**SF11 One at a time: cumulative embodied carbon 2026-2050 of the Moderate Pathway**
+**SF10 Each lever from the Reference to Ambitious (lambda sweep) and its Theoretical Limit**
 
-- Files: `supplementary/sensitivity/SF11_pathway_sensitivity.png`
-- Data: `data/sensitivity/pathway_carbon.csv`
-- This run: Moderate Pathway 14,302 kt. One at a time: not additive.
-
-### SF12_lambda_sweep
-
-**SF12 Each lever from the Reference to Ambitious (lambda sweep) and its Theoretical Limit**
-
-- Files: `supplementary/sensitivity/SF12_lambda_sweep.png`
+- Files: `supplementary/sensitivity/SF10_lambda_sweep.png`
 - Data: `data/pathways/lambda_sweep.csv`
 - This run: L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant s_ref against the year-varying replacement share.
 
-### SF13_hd_estimators
+### SF11_hd_estimators
 
-**SF13 Harrell-Davis estimators of L5 and L8 with bootstrap intervals**
+**SF11 Harrell-Davis estimators of L5 and L8 with bootstrap intervals**
 
-- Files: `supplementary/sensitivity/SF13_hd_estimators.png`
+- Files: `supplementary/sensitivity/SF11_hd_estimators.png`
 - Data: `data/pathways/levers.json`
 - This run: L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).
 
-### SF14_mc_convergence
+### SF12_mc_convergence
 
-**SF14 Monte Carlo convergence of the 2026-2050 percentiles**
+**SF12 Monte Carlo convergence of the 2026-2050 percentiles**
 
-- Files: `supplementary/montecarlo/SF14_mc_convergence.png`
+- Files: `supplementary/montecarlo/SF12_mc_convergence.png`
 - Data: `data/montecarlo/convergence_REF.csv`
 - This run: Percentiles over the first n draws (largest n = 5,000).
 
-### SF15_pathway_mc
+### SF13_pathway_mc
 
-**SF15 Monte Carlo: annual carbon of the Reference, the Pathways and TL (median, 5th-95th)**
+**SF13 Monte Carlo: annual carbon of the Reference, the Pathways and TL (median, 5th-95th)**
 
-- Files: `supplementary/montecarlo/SF15_pathway_mc.png`
+- Files: `supplementary/montecarlo/SF13_pathway_mc.png`
 - Data: `data/pathways/montecarlo_annual.csv`, `data/pathways/montecarlo_summary.csv`
 - This run: P(cumulative LoE of AR <= 1): REF 0.000, pathway_moderate 0.000, pathway_ambitious 0.000, TL 0.499, TL_from2027 0.978.
 
-### SF16_conditional_tl
+### SF14_conditional_tl
 
-**SF16 When does TL stay within AR? By population quintile and the population threshold**
+**SF14 When does TL stay within AR? By population quintile and the population threshold**
 
-- Files: `supplementary/montecarlo/SF16_conditional_tl.png`
+- Files: `supplementary/montecarlo/SF14_conditional_tl.png`
 - Data: `data/pathways/montecarlo_conditional_tl.csv`, `data/pathways/montecarlo_conditional_tl.json`
 - This run: P(within AR) = 0.499 (Wilson 0.485-0.513); (b) threshold 6.61 M (95% CI 6.61-6.62 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
-### SF17_tl_dwellings
+### SF15_tl_dwellings
 
-**SF17 The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year**
+**SF15 The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year**
 
-- Files: `supplementary/pathways/SF17_tl_dwellings.png`
+- Files: `supplementary/pathways/SF15_tl_dwellings.png`
 - Data: `data/pathways/reoccupation_log.csv`
+
+### ST1_budget_construction
+
+**ST1 The AR and AtP budgets: components, the budgets in 2025 and 2050 and the 2050 population modifier** (table)
+
+- Files: `supplementary/boundaries/ST1_budget_construction.md`, `supplementary/boundaries/ST1_budget_construction.csv`
+- Data: `data/aesa/results.json`, `data/figure_source/D22_boundaries.json`
 
 ## Retired figures
 
@@ -298,3 +281,4 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - MODEL v4.2.2 Fig5: Fig5 reduction by demand band -> SF7 (Extended Data full at ten items); the Fig5 model schematic was added and then dropped; Fig5 is vacant, no other figure renumbered
 - MODEL v4.3.0 Extended Data: v4.2.2 ED5 pathways annual, ED6 waterfalls by demand band, ED7 TL Shapley and indicators, ED10 detailed demand bands no longer rendered (their plotting code was deleted in the clean release); the full old -> new map is outputs/data/ed_number_map.csv
 - MODEL v4.3.0 clean release: main Fig6-Fig8 -> Fig5-Fig7; Extended Data ED1-ED10 as ed_number_map.csv; Supplementary SF1-SF17 in topic folders (calibration, validation, boundaries, sensitivity, montecarlo, pathways); the diagnostics set D01-D44 is no longer drawn (its data files are still written): D02+D04 -> SF1, D05+D06 -> SF2, D07 -> SF3 (with v4.2.2 ED2), D08 + v4.2.2 SF6 -> SF4, D35 (a duplicate of v4.2.2 ED4) -> SF5, D14 -> SF6, D44 -> SF7, D15 -> SF8, D22 -> SF9, D40 -> SF10, D41 -> SF11, D37 -> SF14, D39 -> SF15, D34 -> SF17, D16 -> ED4, D42 -> ED5, D38 -> ED6, D20 -> ED7, D31 -> ED9; v4.2.2 SF3, SF4, SF5 -> SF16, SF12, SF13; v4.2.2 SF1 model schematic, SF2 Monte Carlo scatter (in Fig7b) and SF7 reduction by demand band, and D01, D03, D09, D10, D12, D13, D17, D18, D19, D21, D23-D29, D32, D33, D36, D43 deleted (docs/CHANGELOG_v4_3_0.md)
+- MODEL v4.3.1 renumbering: ED8 Shapley attribution no longer rendered (the Shapley values are in Fig6); ED9, ED10 -> ED8, ED9 (ed_number_map.csv). SF9 budget construction -> Supplementary Table ST1; SF11 pathway sensitivity no longer rendered; SF10, SF12-SF17 -> SF9-SF15 (sf_number_map.csv); panels dropped: SF1c, SF2b, SF4b (docs/CHANGELOG_v4_3_1.md)

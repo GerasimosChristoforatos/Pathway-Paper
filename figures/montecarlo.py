@@ -8,7 +8,7 @@ from figures import draw as P
 from figures import style as S
 
 
-def sf14_mc_convergence():
+def sf12_mc_convergence():
     c = D.csv('montecarlo/convergence_REF.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 62))
     for a, o, letter, unit in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab', ['kt CO₂e', 'Mm²']):
@@ -25,7 +25,7 @@ def sf14_mc_convergence():
     h, lab = ax[0].get_legend_handles_labels()                 # MODEL v4.3.0: one legend below, clear of the lines
     fig.legend(h, lab, loc='lower center', ncol=4, fontsize=S.FONT_SMALL, frameon=False)
     fig.tight_layout(rect=(0, 0.08, 1, 1))
-    S.save_figure(fig, 'SF14_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
+    S.save_figure(fig, 'SF12_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
                   source=['montecarlo/convergence_REF.csv'])
 
 
@@ -52,7 +52,7 @@ def ed6_mc_input_distributions():
               ('half_life', dr['half_life'], [q.loc['half_life', k] for k in ('q05', 'q50', 'q95')], 'Years')]
     fig, ax = plt.subplots(1, 5, figsize=S.figsize('double', 62))
     for a, (c, v, qs, xl) in zip(ax, panels):
-        a.hist(v, bins=30, color=S.REFERENCE, alpha=0.6, lw=0)
+        a.hist(v, bins=30, color=S.NEUTRAL_DARK, alpha=0.6, lw=0)
         for k, x in enumerate(qs):
             a.axvline(x, color=S.INK, lw=S.LW_THIN, ls='-' if k == 1 else ':')
         a.set_title(N.MC_INPUT[c], fontsize=S.FONT_SMALL, loc='left')
@@ -110,7 +110,7 @@ def ed7_sobol():
                   source=['montecarlo/sobol_REF.csv'])
 
 
-def sf15_pathway_mc():
+def sf13_pathway_mc():
     a = D.csv('pathways/montecarlo_annual.csv')
     s = D.csv('pathways/montecarlo_summary.csv')
     runs = [('REF', N.SCENARIOS['REF'], S.REFERENCE),                      # the run colours of Fig3 / Fig4
@@ -131,10 +131,10 @@ def sf15_pathway_mc():
     ax.legend(fontsize=S.FONT_SMALL, frameon=False)
     fig.tight_layout()
     p = s[(s['quantity'] == 'LoE_AR')].set_index('run')['probability_LoE_at_most_1']
-    S.save_figure(fig, 'SF15_pathway_mc', note='P(cumulative LoE of AR <= 1): ' + ', '.join(
+    S.save_figure(fig, 'SF13_pathway_mc', note='P(cumulative LoE of AR <= 1): ' + ', '.join(
         f'{k} {v:.3f}' for k, v in p.items()) + '.', source=['pathways/montecarlo_annual.csv',
                                                             'pathways/montecarlo_summary.csv'])
 
 
 FIGURES = {'ED6_mc_input_distributions': ed6_mc_input_distributions, 'ED7_sobol': ed7_sobol,
-           'SF14_mc_convergence': sf14_mc_convergence, 'SF15_pathway_mc': sf15_pathway_mc}
+           'SF12_mc_convergence': sf12_mc_convergence, 'SF13_pathway_mc': sf13_pathway_mc}

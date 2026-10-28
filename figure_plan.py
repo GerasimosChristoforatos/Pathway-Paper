@@ -31,18 +31,18 @@ PAPER_MAIN = [
          title='The Reference against the planetary boundaries',
          caption='(a) Annual carbon, Monte Carlo median with 50% and 90% bands, against the acquired-rights (AR) and '
                  'ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with its Monte Carlo '
-                 '95% interval (2.5th-97.5th percentile of the cumulative carbon) and the AR and AtP budgets, and the '
+                 '90% interval (5th-95th percentile of the cumulative carbon) and 50% interval (25th-75th), the AR and '
+                 'AtP budgets, and the '
                  'committed emissions after 2050: C1-C4 and B2/B4 after 2050, the latter a range (lower = 2050 factors '
                  'held, upper = 2025 factors).',
          source=['aesa/annual.csv', 'montecarlo/annual_REF.csv', 'montecarlo/draws_REF.csv', 'baseline/projection.json']),
     dict(id='Fig4', file='Fig4_pathways', width='double', module='figures.paper_main',
-         title='The Pathways: annual carbon and the sequential waterfalls',
-         caption='(a) Annual carbon 2026-2050 of the Reference, the Moderate and Ambitious Pathway, the Theoretical Limit '
-                 'and the PAS 2080 strategies S1-S3 (thin; Moderate solid, Ambitious dotted) against AR and AtP. (b-d) '
-                 'Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 '
-                 'order: (b) L1 ... L9 at Moderate -> Moderate Pathway; (c) at Ambitious -> Ambitious Pathway; (d) TL1 '
+         title='The Pathways: the sequential waterfalls',
+         # MODEL v4.3.1: the caption follows the figure (a-c since MODEL v4.2.1; the annual pathways are in Fig3a)
+         caption='Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 '
+                 'order: (a) L1 ... L9 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) TL1 '
                  '... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
-                 'order-free Shapley values in Fig6 and, per lever and pathway, in ED8.',
+                 'AR (solid) and AtP (dotted) budgets with their zones; order-free Shapley values in Fig6.',
          source=['pathways/annual.csv', 'pathways/waterfall.csv', 'pathways/waterfall_tl_from_reference.csv']),
     # MODEL v4.3.0: Fig6, Fig7, Fig8 renumbered Fig5, Fig6, Fig7 (Fig5 was vacant since MODEL v4.2.2)
     dict(id='Fig5', file='Fig5_solution_space', width='double', module='figures.paper_main',
@@ -57,7 +57,7 @@ PAPER_MAIN = [
          title='What each lever removes',
          caption='Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; '
                  'exact, 512 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 '
-                 'Switch, S3 Improve) in the lever order and coloured by strategy; hollow bar Moderate, filled bar '
+                 'Switch, S3 Improve) in the lever order and coloured by strategy; filled bar Moderate, hollow bar '
                  'Ambitious, large deep-green dot TL. The TL dots are Shapley values within the TL game (all nine '
                  'levers at their limit), so they include each lever\'s interactions at the limit; L5 (occupancy '
                  'density) interacts with L4 (extra space): both act on the floor area per dwelling.',
@@ -74,7 +74,7 @@ PAPER_MAIN = [
 ]
 
 PAPER_EXTENDED = [
-    # MODEL v4.3.0: exactly ten items in this order (outputs/data/ed_number_map.csv, ED_NUMBER_MAP below)
+    # MODEL v4.3.1: nine items in this order (outputs/data/ed_number_map.csv, ED_NUMBER_MAP below)
     dict(id='ED1', file='ED1_population_households_floor_area', module='figures.paper_extended',
          title='Population, households and floor area: history and projection (Monte Carlo 5th-95th)',
          source=['figure_source/projection_paths.json', 'figure_source/D02_households.json']),
@@ -97,52 +97,53 @@ PAPER_EXTENDED = [
     dict(id='ED7', file='ED7_sobol', module='figures.montecarlo',
          title='Sobol indices of the Reference: embodied carbon and floor area 2026-2050',
          source=['montecarlo/sobol_REF.csv']),
-    dict(id='ED8', file='ED8_shapley_attribution', module='figures.paper_extended',
-         title='Shapley attribution (order-independent): reduction of cumulative embodied carbon 2026-2050 by lever, '
-               'Moderate and Ambitious Pathway and TL',
-         source=['pathways/shapley.csv', 'pathways/runs.csv']),
-    dict(id='ED9', file='ED9_lever_annual', module='figures.pathways',
+    # MODEL v4.3.1: ED8 Shapley attribution dropped (it duplicated Fig6a / Fig6b); ED9, ED10 -> ED8, ED9
+    dict(id='ED8', file='ED8_lever_annual', module='figures.pathways',
          title='Each lever alone: annual embodied carbon at Moderate, Ambitious and the Theoretical Limit',
          source=['pathways/lever_annual.csv', 'pathways/annual.csv']),
-    dict(id='ED10', file='ED10_rollout_timing', module='figures.paper_extended',
+    dict(id='ED9', file='ED9_rollout_timing', module='figures.paper_extended',
          title='Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon',
          source=['pathways/annual.csv', 'pathways/runs.csv']),
 ]
 
-# MODEL v4.3.0: Extended Data numbering, MODEL v4.2.2 (the last release) -> MODEL v4.3.0 (old id, old file, new id, new
-# file); new id None: no longer rendered; a new id SFn: moved to the Supplementary Figures; old id 'new' or a
-# diagnostic id (Dxx): added to the Extended Data. Supersedes the interim v4.3.0 numbering of commit 402dc33.
+# MODEL v4.3.1: Extended Data numbering, MODEL v4.3.0 (the last release) -> MODEL v4.3.1 (old id, old file, new id, new
+# file); new id None: no longer rendered. The v4.2.2 -> v4.3.0 map is in docs/CHANGELOG_v4_3_0.md.
 ED_NUMBER_MAP = [('ED1', 'ED1_population_households_floor_area', 'ED1', 'ED1_population_households_floor_area'),
-                 ('ED2', 'ED2_census_replacement_rates', 'SF3', 'SF3_census_replacement_rates'),
-                 ('ED3', 'ED3_household_formation_size', 'ED2', 'ED2_household_formation_size'),
-                 ('ED4', 'ED4_overbuild_absorption', 'SF5', 'SF5_overbuild_absorption'),
-                 ('ED5', 'ED5_pathways_annual', None, None),
-                 ('ED6', 'ED6_waterfalls_by_demand_band', None, None),
-                 ('ED7', 'ED7_tl_shapley_indicators', None, None),
-                 ('ED8', 'ED8_replacement_variants', 'ED3', 'ED3_replacement_variants'),
-                 ('ED9', 'ED9_rollout_timing', 'ED10', 'ED10_rollout_timing'),
-                 ('ED10', 'ED10_detailed_demand_bands', None, None),
-                 ('D16', 'D16_one_at_a_time', 'ED4', 'ED4_one_at_a_time'),
-                 ('D42', 'D42_pb_sensitivity', 'ED5', 'ED5_boundary_sensitivity'),
-                 ('D38', 'D38_mc_input_distributions', 'ED6', 'ED6_mc_input_distributions'),
-                 ('D20', 'D20_sobol', 'ED7', 'ED7_sobol'),
-                 ('new', None, 'ED8', 'ED8_shapley_attribution'),
-                 ('D31', 'D31_lever_annual', 'ED9', 'ED9_lever_annual')]
+                 ('ED2', 'ED2_household_formation_size', 'ED2', 'ED2_household_formation_size'),
+                 ('ED3', 'ED3_replacement_variants', 'ED3', 'ED3_replacement_variants'),
+                 ('ED4', 'ED4_one_at_a_time', 'ED4', 'ED4_one_at_a_time'),
+                 ('ED5', 'ED5_boundary_sensitivity', 'ED5', 'ED5_boundary_sensitivity'),
+                 ('ED6', 'ED6_mc_input_distributions', 'ED6', 'ED6_mc_input_distributions'),
+                 ('ED7', 'ED7_sobol', 'ED7', 'ED7_sobol'),
+                 ('ED8', 'ED8_shapley_attribution', None, None),
+                 ('ED9', 'ED9_lever_annual', 'ED8', 'ED8_lever_annual'),
+                 ('ED10', 'ED10_rollout_timing', 'ED9', 'ED9_rollout_timing')]
 
 
 def write_ed_number_map():
-    """MODEL v4.3.0: outputs/data/ed_number_map.csv from ED_NUMBER_MAP (old id, old file, new id, new file; empty =
-    not rendered / newly added). Written by pathways.py with the deterministic outputs and by tools/ed_number_map.py."""
+    """outputs/data/ed_number_map.csv from ED_NUMBER_MAP (old id, old file, new id, new file, status). Written by
+    pathways.py with the deterministic outputs and by tools/ed_number_map.py (MODEL v4.3.0; v4.3.1: with the
+    Supplementary map, write_sf_number_map)."""
+    return _write_number_map('ed_number_map.csv', ED_NUMBER_MAP)
+
+
+def write_sf_number_map():
+    """MODEL v4.3.1: outputs/data/sf_number_map.csv from SF_NUMBER_MAP (Supplementary Figures and Tables)."""
+    return _write_number_map('sf_number_map.csv', SF_NUMBER_MAP)
+
+
+def _write_number_map(name, rows):
     import csv
     import layout
-    path = layout.writing(layout.data('ed_number_map.csv', frozen=False))
+    path = layout.writing(layout.data(name, frozen=False))
     with open(path, 'w', newline='') as f:
         w = csv.writer(f)
         w.writerow(['old_id', 'old_file', 'new_id', 'new_file', 'status'])
-        for oid, ofile, nid, nfile in ED_NUMBER_MAP:
+        for oid, ofile, nid, nfile in rows:
             st = ('added' if oid == 'new' else 'from the diagnostics' if oid.startswith('D') else
-                  'no longer rendered' if nid is None else 'moved to Supplementary' if nid.startswith('SF') else
-                  'unchanged' if oid == nid else 'renumbered')
+                  'no longer rendered' if nid is None else 'moved to Supplementary' if nid.startswith('SF') and
+                  oid.startswith('ED') else 'figure -> table' if nid.startswith('ST') else
+                  'same number' if (oid, ofile) == (nid, nfile) else 'renumbered')
             w.writerow(['' if oid == 'new' else oid, ofile or '', nid or '', nfile or '', st])
     return path
 
@@ -151,18 +152,18 @@ def write_ed_number_map():
 # boundary method -> sensitivity -> Monte Carlo -> the TL dwellings); 'folder' only organises outputs/supplementary/
 SUPPLEMENTARY = [
     dict(id='SF1', file='SF1_households', folder='calibration', module='figures.calibration',
-         title='Households: the published and census-benchmarked series, household size against arrivals and '
-               'households per consent', source=['figure_source/D02_households.json',
+         title='Households: the published and census-benchmarked series, and household size against arrivals',
+         source=['figure_source/D02_households.json',
                                                  'figure_source/D04_household_formation.json']),
     dict(id='SF2', file='SF2_stock_vacancy', folder='calibration', module='figures.calibration',
-         title='Vacancy, the stock identity, dwellings per year by component and the vacancy definition',
+         title='Vacancy, dwellings per year by component and the vacancy definition',
          source=['figure_source/D05_stock_and_vacancy.json', 'figure_source/D06_vacancy_definition.json']),
     dict(id='SF3', file='SF3_census_replacement_rates', folder='calibration', module='figures.paper_extended',
          title='Net replacement rates from census dwelling counts and the four variants',
          source=['baseline/stock_identity_history.csv', 'figure_source/D07_net_replacement_rate.json']),
     dict(id='SF4', file='SF4_dwelling_size', folder='calibration', module='figures.calibration',
-         title='New-dwelling size: realised and occupied floor area, occupancy utilisation and consented size by '
-               'typology', source=['figure_source/D08_dwelling_space.json', 'pathways/levers.json']),
+         title='New-dwelling size: realised and occupied floor area, and consented size by typology',
+         source=['figure_source/D08_dwelling_space.json', 'pathways/levers.json']),
     dict(id='SF5', file='SF5_overbuild_absorption', folder='calibration', module='figures.paper_extended',
          title='The 2026 overbuild: absorption in the Reference and its timing sensitivity',
          source=['baseline/overbuild_absorption_log.csv', 'baseline/sensitivity_annual_carbon.csv']),
@@ -175,32 +176,45 @@ SUPPLEMENTARY = [
     dict(id='SF8', file='SF8_reality_checks', folder='validation', module='figures.validation',
          title='The projection against the 1991-2025 range and the observed -> model handover',
          source=['figure_source/D15_reality_checks.json']),
-    dict(id='SF9', file='SF9_budget_construction', folder='boundaries', module='figures.boundaries',
-         title='The AR and AtP budgets 2026-2050: population modifier and components',
-         source=['figure_source/D22_boundaries.json']),
-    dict(id='SF10', file='SF10_prcc', folder='sensitivity', module='figures.sensitivity',
+    dict(id='SF9', file='SF9_prcc', folder='sensitivity', module='figures.sensitivity',
          title='Monte Carlo sensitivity: partial rank correlation of each input, Reference, Moderate Pathway and TL',
          source=['pathways/montecarlo_importance.csv']),
-    dict(id='SF11', file='SF11_pathway_sensitivity', folder='sensitivity', module='figures.sensitivity',
-         title='One at a time: cumulative embodied carbon 2026-2050 of the Moderate Pathway',
-         source=['sensitivity/pathway_carbon.csv']),
-    dict(id='SF12', file='SF12_lambda_sweep', folder='sensitivity', module='figures.paper_extended',
+    dict(id='SF10', file='SF10_lambda_sweep', folder='sensitivity', module='figures.paper_extended',
          title='Each lever from the Reference to Ambitious (lambda sweep) and its Theoretical Limit',
          source=['pathways/lambda_sweep.csv']),
-    dict(id='SF13', file='SF13_hd_estimators', folder='sensitivity', module='figures.paper_extended',
+    dict(id='SF11', file='SF11_hd_estimators', folder='sensitivity', module='figures.paper_extended',
          title='Harrell-Davis estimators of L5 and L8 with bootstrap intervals', source=['pathways/levers.json']),
-    dict(id='SF14', file='SF14_mc_convergence', folder='montecarlo', module='figures.montecarlo',
+    dict(id='SF12', file='SF12_mc_convergence', folder='montecarlo', module='figures.montecarlo',
          title='Monte Carlo convergence of the 2026-2050 percentiles', source=['montecarlo/convergence_REF.csv']),
-    dict(id='SF15', file='SF15_pathway_mc', folder='montecarlo', module='figures.montecarlo',
+    dict(id='SF13', file='SF13_pathway_mc', folder='montecarlo', module='figures.montecarlo',
          title='Monte Carlo: annual carbon of the Reference, the Pathways and TL (median, 5th-95th)',
          source=['pathways/montecarlo_annual.csv', 'pathways/montecarlo_summary.csv']),
-    dict(id='SF16', file='SF16_conditional_tl', folder='montecarlo', module='figures.paper_extended',
+    dict(id='SF14', file='SF14_conditional_tl', folder='montecarlo', module='figures.paper_extended',
          title='When does TL stay within AR? By population quintile and the population threshold',
          source=['pathways/montecarlo_conditional_tl.csv', 'pathways/montecarlo_conditional_tl.json']),
-    dict(id='SF17', file='SF17_tl_dwellings', folder='pathways', module='figures.pathways',
+    dict(id='SF15', file='SF15_tl_dwellings', folder='pathways', module='figures.pathways',
          title='The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year',
          source=['pathways/reoccupation_log.csv']),
 ]
+# MODEL v4.3.1: Supplementary Tables (Markdown + CSV, outputs/supplementary/<folder>/)
+SUPPLEMENTARY_TABLES = [dict(id='ST1', file='ST1_budget_construction', folder='boundaries', module='figures.boundaries',
+                             title='The AR and AtP budgets: components, the budgets in 2025 and 2050 and the 2050 '
+                                   'population modifier', source=['aesa/results.json',
+                                                                           'figure_source/D22_boundaries.json'])]
+# MODEL v4.3.1: Supplementary numbering, MODEL v4.3.0 -> MODEL v4.3.1 (old id, old file, new id, new file)
+SF_NUMBER_MAP = ([(f'SF{i}', h, f'SF{i}', h) for i, h in enumerate(
+    ['SF1_households', 'SF2_stock_vacancy', 'SF3_census_replacement_rates', 'SF4_dwelling_size',
+     'SF5_overbuild_absorption', 'SF6_hindcast', 'SF7_completion_lag', 'SF8_reality_checks'], start=1)]
+                 + [('SF9', 'SF9_budget_construction', 'ST1', 'ST1_budget_construction'),
+                    ('SF10', 'SF10_prcc', 'SF9', 'SF9_prcc'),
+                    ('SF11', 'SF11_pathway_sensitivity', None, None),
+                    ('SF12', 'SF12_lambda_sweep', 'SF10', 'SF10_lambda_sweep'),
+                    ('SF13', 'SF13_hd_estimators', 'SF11', 'SF11_hd_estimators'),
+                    ('SF14', 'SF14_mc_convergence', 'SF12', 'SF12_mc_convergence'),
+                    ('SF15', 'SF15_pathway_mc', 'SF13', 'SF13_pathway_mc'),
+                    ('SF16', 'SF16_conditional_tl', 'SF14', 'SF14_conditional_tl'),
+                    ('SF17', 'SF17_tl_dwellings', 'SF15', 'SF15_tl_dwellings')])
+TABLE_MODULES = ('figures.paper_extended', 'figures.boundaries')      # the modules that write tables (TABLES)
 # tables of the Extended Data (Markdown + CSV, outputs/paper_extended/)
 EXTENDED_TABLES = [dict(id='EDT1', file='EDT1_levels_by_typology', title='Lever levels by typology: Moderate, '
                         'Ambitious and TL', source=['pathways/levers.json'])]
@@ -214,8 +228,9 @@ FULL_ONLY = ('ED7_sobol',)
 # Maintenance (B2, B4) drawn as its own layer: only in the band and stage breakdowns
 MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries')
 # every figure with a planetary boundary on its axes (zones required; AtP dotted)
+# (MODEL v4.3.1: ED10 -> ED9; SF9 budget construction is the Supplementary Table ST1, no axes)
 PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways', 'Fig5_solution_space',
-              'ED3_replacement_variants', 'ED10_rollout_timing', 'SF9_budget_construction')
+              'ED3_replacement_variants', 'ED9_rollout_timing')
 
 RETIRED = {
     'outputs/paper/ (Fig1-Fig6 of MODEL v2.1.2)': 'outputs/paper_main/ Fig1-Fig8 (new set)',
@@ -250,6 +265,10 @@ RETIRED = {
                                   'SF2 Monte Carlo scatter (in Fig7b) and SF7 reduction by demand band, and D01, D03, '
                                   'D09, D10, D12, D13, D17, D18, D19, D21, D23-D29, D32, D33, D36, D43 deleted '
                                   '(docs/CHANGELOG_v4_3_0.md)',
+    'MODEL v4.3.1 renumbering': 'ED8 Shapley attribution no longer rendered (the Shapley values are in Fig6); ED9, ED10 '
+                                '-> ED8, ED9 (ed_number_map.csv). SF9 budget construction -> Supplementary Table ST1; '
+                                'SF11 pathway sensitivity no longer rendered; SF10, SF12-SF17 -> SF9-SF15 '
+                                '(sf_number_map.csv); panels dropped: SF1c, SF2b, SF4b (docs/CHANGELOG_v4_3_1.md)',
 }
 
 

@@ -239,3 +239,6 @@ data/raw/Absolute_Analysis.xlsm
 # committed outputs are those of the full profile
 outputs/_light/
 outputs/_legacy/
+
+# MODEL v4.3.1: redraw.py palette previews (never versioned)
+outputs/_palette_preview/

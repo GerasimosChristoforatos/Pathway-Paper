@@ -1,0 +1,46 @@
+# Figure palette (MODEL v4.3.1). Edit any hex value and run `python redraw.py` to preview every figure.
+#
+# Read by figures/style.py only. Each key colours exactly one meaning, in every figure and every element that shows
+# it (lines, bars, stacked areas, negative-part outlines, Monte Carlo bands at their fixed transparency, markers,
+# coloured labels and legend swatches). Changing one key changes nothing else.
+# Colours that are not listed here (the lever shades L1-L9, building typologies, tornado low / high, Sobol bars,
+# replacement and roll-out variants, the planetary boundaries and their zones, census markers, detailed sub-bands
+# and neutral greys) are fixed in figures/style.py.
+# Format: "#RRGGBB". The defaults are the colours of the v4.3.0 figures.
+
+[demand_bands]                      # Fig1, Fig2a and Fig2d (by demand); ED2a; SF2; SF3; SF4
+population_growth     = "#586E71"   # Population growth (untargeted)
+household_size_change = "#F4D168"   # Household-size change (signed: drawn below zero when households consolidate)
+extra_space           = "#DFA538"   # Extra space (new-dwelling size above the occupied area)
+vacancy               = "#AA7C9D"   # Vacancy (allowance on new households and change in the rate)
+net_replacement       = "#D0BBDC"   # Net replacement (demolition replacement, surge, unconsented additions)
+market_balance        = "#683861"   # Market balance (2026 overbuild and its absorption, unexplained building)
+maintenance           = "#9E9E9E"   # Maintenance (B2, B4), carbon only
+
+[materials]                         # Fig2b and Fig2d (by material)
+timber                = "#750787"   # Timber
+steel                 = "#004DFF"   # Steel
+concrete              = "#008026"   # Concrete (incl. reinforced)
+plastics_paint        = "#FFED00"   # Plastics & paint
+plasterboard          = "#FF8C00"   # Plasterboard
+others                = "#E40303"   # Others
+soil_carbon_loss      = "#B5A48B"   # Soil carbon loss (drawn at 50% opacity)
+
+[life_cycle_stages]                 # Fig2c and Fig2d (by stage); Fig3b committed carbon after 2050
+a1_a3                 = "#4A6192"   # Materials (A1-A3)
+a4_a5                 = "#ABD3FA"   # Construction (A4-A5)
+soil_carbon_loss      = "#8D6545"   # Soil carbon loss
+maintenance           = "#9E9E9E"   # Maintenance (B2, B4), 2026-2050
+committed_b2_b4       = "#9E9E9E"   # Fig3b: committed after 2050, B2/B4
+committed_c1_c4       = "#D0D0D0"   # Fig3b: committed after 2050, C1-C4
+
+[runs]                              # every figure showing a run (lines, bars, Monte Carlo bands, markers)
+reference             = "#4D4D4D"   # Reference
+moderate              = "#EB6123"   # Moderate Pathway
+ambitious             = "#A8400C"   # Ambitious Pathway
+theoretical_limit     = "#13412B"   # Theoretical Limit
+
+[strategies]                        # PAS 2080 strategies: Fig4 waterfall steps, Fig5, Fig6, ED (lever figures)
+avoid                 = "#DFA538"   # Avoid Strategies (L1-L5)
+switch                = "#8D6545"   # Switch Strategies (L6-L8)
+improve               = "#4A6192"   # Improve Strategy (L9)

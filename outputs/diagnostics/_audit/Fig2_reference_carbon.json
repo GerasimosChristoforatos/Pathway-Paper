@@ -1,6 +1,6 @@
 {
  "figure": "Fig2_reference_carbon",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "By demand band",
@@ -26,7 +26,7 @@
   {
    "title": "Cumulative",
    "xlabel": "",
-   "ylabel": "Cumulative carbon 2026-2050 (kt CO\u2082e)",
+   "ylabel": "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
    "year_min": null,
    "year_max": null
   }
@@ -38,7 +38,6 @@
   "$\\mathdefault{2040}$",
   "$\\mathdefault{2045}$",
   "$\\mathdefault{2050}$",
-  "-200",
   "0",
   "1,000",
   "1,200",
@@ -66,10 +65,10 @@
   "Concrete",
   "Construction (A4\u2013A5)",
   "Cumulative",
-  "Cumulative carbon 2026-2050 (kt CO\u2082e)",
+  "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
   "Embodied carbon (kt CO\u2082e per year)",
   "Extra space",
-  "Household size",
+  "Household-size change",
   "Maintenance",
   "Maintenance (B2, B4)",
   "Market balance",
@@ -86,7 +85,8 @@
   "a",
   "b",
   "c",
-  "d"
+  "d",
+  "\u2212200"
  ],
  "note": "2026-2050: 19,761 kt CO\u2082e; (d) the demand column: positive bands stacked to 19,761 kt, negative bands outlined, hanging down to the total.",
  "maintenance_drawn": true,

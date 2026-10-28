@@ -1,0 +1,18 @@
+old_id,old_file,new_id,new_file,status
+SF1,SF1_households,SF1,SF1_households,same number
+SF2,SF2_stock_vacancy,SF2,SF2_stock_vacancy,same number
+SF3,SF3_census_replacement_rates,SF3,SF3_census_replacement_rates,same number
+SF4,SF4_dwelling_size,SF4,SF4_dwelling_size,same number
+SF5,SF5_overbuild_absorption,SF5,SF5_overbuild_absorption,same number
+SF6,SF6_hindcast,SF6,SF6_hindcast,same number
+SF7,SF7_completion_lag,SF7,SF7_completion_lag,same number
+SF8,SF8_reality_checks,SF8,SF8_reality_checks,same number
+SF9,SF9_budget_construction,ST1,ST1_budget_construction,figure -> table
+SF10,SF10_prcc,SF9,SF9_prcc,renumbered
+SF11,SF11_pathway_sensitivity,,,no longer rendered
+SF12,SF12_lambda_sweep,SF10,SF10_lambda_sweep,renumbered
+SF13,SF13_hd_estimators,SF11,SF11_hd_estimators,renumbered
+SF14,SF14_mc_convergence,SF12,SF12_mc_convergence,renumbered
+SF15,SF15_pathway_mc,SF13,SF13_pathway_mc,renumbered
+SF16,SF16_conditional_tl,SF14,SF14_conditional_tl,renumbered
+SF17,SF17_tl_dwellings,SF15,SF15_tl_dwellings,renumbered

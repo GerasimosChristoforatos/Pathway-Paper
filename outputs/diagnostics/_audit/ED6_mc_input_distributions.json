@@ -1,9 +1,9 @@
 {
  "figure": "ED6_mc_input_distributions",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "Population",
+   "title": "Population and household size",
    "xlabel": "2050 population (million)",
    "ylabel": "Number of draws",
    "year_min": null,
@@ -92,7 +92,7 @@
   "Dwelling size",
   "Multiplier on the central future size",
   "Number of draws",
-  "Population",
+  "Population and household size",
   "Replacement half-life",
   "Townhouses",
   "Years"

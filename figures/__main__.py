@@ -32,10 +32,10 @@ def main(ids=None):
             import traceback
             traceback.print_exc()
             failed.append((f, repr(e)))
-    if not ids:                                       # the tables of the Extended Data
-        from figures import paper_extended
-        for f in paper_extended.TABLES.values():
-            f()
+    if not ids:                                       # the tables (Extended Data; MODEL v4.3.1: Supplementary)
+        for m in FP.TABLE_MODULES:
+            for f in importlib.import_module(m).TABLES.values():
+                f()
     from figures import index
     index.write()
     print(f'figures: {len(todo) - len(failed)} of {len(todo)} drawn in {time.time() - t0:.0f} s')

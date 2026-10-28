@@ -1,5 +1,5 @@
 """MODEL v4.3.0: outputs/figure_manifest.csv, one row per figure of figure_plan.py (main, Extended Data,
-Supplementary): final id, file (relative to the profile's output folder), section, source script, source data files
+Supplementary; MODEL v4.3.1: and per table): final id, file (relative to the profile's output folder), section, source script, source data files
 and a one-line caption stub (the figure_plan title). Run after the figures are drawn (run_all.py)."""
 import csv
 import os
@@ -26,6 +26,17 @@ def rows():
             out.append(dict(id=h['id'], file=os.path.relpath(path, layout.OUT).replace(os.sep, '/'),
                             section=section, source_script=h['module'].replace('.', '/') + '.py',
                             source_data='; '.join(f'data/{s}' for s in h['source']), caption_stub=h['title']))
+    # MODEL v4.3.1: the tables (Extended Data EDT1, Supplementary ST1), Markdown + CSV
+    for section, base, items in (('ED table', layout.PAPER_EXTENDED, FP.EXTENDED_TABLES),
+                                 ('Supp table', layout.SUPPLEMENTARY, FP.SUPPLEMENTARY_TABLES)):
+        mods = {'ED table': 'figures.paper_extended', 'Supp table': None}
+        for t in items:
+            path = os.path.join(base, t.get('folder', ''), t['file']) + '.csv'
+            if not os.path.exists(path):
+                raise SystemExit(f'figure_manifest: table {t["file"]} is planned but not written ({path})')
+            out.append(dict(id=t['id'], file=os.path.relpath(path, layout.OUT).replace(os.sep, '/'), section=section,
+                            source_script=(t.get('module') or mods[section]).replace('.', '/') + '.py',
+                            source_data='; '.join(f'data/{s}' for s in t['source']), caption_stub=t['title']))
     return out
 
 
@@ -36,7 +47,7 @@ def main():
         w = csv.DictWriter(f, fieldnames=list(rs[0]))
         w.writeheader()
         w.writerows(rs)
-    print(f'figure_manifest: {len(rs)} figures -> {os.path.relpath(path, layout.OUT)}')
+    print(f'figure_manifest: {len(rs)} rows (figures and tables) -> {os.path.relpath(path, layout.OUT)}')
 
 
 if __name__ == '__main__':

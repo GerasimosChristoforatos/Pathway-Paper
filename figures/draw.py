@@ -184,8 +184,14 @@ def fmt_kt(v):
     return f'{v:,.0f}'
 
 
+def minus(s):
+    """MODEL v4.3.1: s with the typographic minus for the hyphen-minus (number labels drawn as text)."""
+    return s.replace('-', '\u2212')
+
+
 def thousands(axis):
-    axis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:,.0f}'))
+    # MODEL v4.3.1: the typographic minus, as matplotlib's default formatter and style.thousands_ticks
+    axis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:,.0f}'.replace('-', '\u2212')))
 
 
 def log_ticks(axis, ticks):

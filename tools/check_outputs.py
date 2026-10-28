@@ -1,9 +1,8 @@
-"""Final check of the generated outputs (run_all.py, last step): stale terms of
-earlier versions must not appear in any generated output or document of the run
-(MODEL v3.0.0: the frozen-technology check run is no longer part of the pipeline): the storyline scenario of v1.0.2-v1.2 (S2 + damped mix
-trend), the retired decarbonisation names (horup_material, horup_class_v1_1, "mix
-effect only") and the comparison runs removed in baseline-pb-v3 (--compare-modes,
-DECARB_MODES, decarb_modes). CHANGELOG.md records them and is not checked.
+"""Final check of the generated outputs (run_all.py): stale terms of earlier versions must not appear in any
+generated output or document of the run: the storyline scenario of v1.0.2-v1.2 (S2 + damped mix trend), the removed
+decarbonisation names (horup_material, horup_class_v1_1, "mix effect only") and the removed comparison runs
+(--compare-modes, DECARB_MODES, decarb_modes). CHANGELOG.md is not checked. Also: every expected output exists and no
+figure is a PDF.
 
     python tools/check_outputs.py
 """
@@ -65,7 +64,7 @@ def unplanned_figures():
 
 
 def pdf_files():
-    """MODEL v3.3.1: figures are PNG only; any PDF under the profile's output tree is an error."""
+    """Figures are PNG only; any PDF under the profile's output tree is an error."""
     return sorted(os.path.relpath(os.path.join(d, f), layout.OUT) for d, _, fs in os.walk(layout.OUT)
                   for f in fs if f.lower().endswith('.pdf'))
 

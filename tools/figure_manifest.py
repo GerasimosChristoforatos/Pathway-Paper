@@ -1,5 +1,5 @@
-"""MODEL v4.3.0: outputs/figure_manifest.csv, one row per figure of figure_plan.py (main, Extended Data,
-Supplementary; MODEL v4.3.1: and per table): final id, file (relative to the profile's output folder), section, source script, source data files
+"""outputs/figure_manifest.csv, one row per figure of figure_plan.py (main, Extended Data,
+Supplementary; and per table): final id, file (relative to the profile's output folder), section, source script, source data files
 and a one-line caption stub (the figure_plan title). Run after the figures are drawn (run_all.py)."""
 import csv
 import os
@@ -26,7 +26,7 @@ def rows():
             out.append(dict(id=h['id'], file=os.path.relpath(path, layout.OUT).replace(os.sep, '/'),
                             section=section, source_script=h['module'].replace('.', '/') + '.py',
                             source_data='; '.join(f'data/{s}' for s in h['source']), caption_stub=h['title']))
-    # MODEL v4.3.1: the tables (Extended Data EDT1, Supplementary ST1), Markdown + CSV
+    # the tables (Extended Data EDT1, Supplementary ST1), Markdown + CSV
     for section, base, items in (('ED table', layout.PAPER_EXTENDED, FP.EXTENDED_TABLES),
                                  ('Supp table', layout.SUPPLEMENTARY, FP.SUPPLEMENTARY_TABLES)):
         mods = {'ED table': 'figures.paper_extended', 'Supp table': None}

@@ -1,4 +1,4 @@
-"""v1.1.1: census interval rates net of the change in dwellings under construction."""
+"""Census interval rates net of the change in dwellings under construction."""
 import numpy as np
 
 import engine

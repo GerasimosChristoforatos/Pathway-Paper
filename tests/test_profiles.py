@@ -1,4 +1,4 @@
-"""Run profiles (MODEL v3.0.0): the deterministic results are identical in the light and full profiles.
+"""Run profiles: the deterministic results are identical in the light and full profiles.
 
   * in process: the lever parameters resolved under both profiles agree in every field except the bootstrap
     intervals (whose replicate count is the profile's);

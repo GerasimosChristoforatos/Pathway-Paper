@@ -1,5 +1,5 @@
 """
-PATHWAY MONTE CARLO (MODEL v3.3.0): the Moderate and Ambitious Pathway and TL under the joint input uncertainty
+PATHWAY MONTE CARLO: the Moderate and Ambitious Pathway and TL under the joint input uncertainty
 ================================================================================================================
 Every saved Monte Carlo draw of the Reference (outputs/data/montecarlo/draws_REF.csv: the Latin hypercube draws of
 population rank, dwelling-size multiplier, completion rate and the case-study carbon-factor bootstrap; 5,000 in
@@ -54,7 +54,7 @@ import runprofile  # noqa: E402
 M6 = 1e6
 PCT = (5, 25, 50, 75, 95)
 CENTRAL_TOL = 1e-9
-MP, AP = 'pathway_moderate', 'pathway_ambitious'  # the Moderate / Ambitious Pathway (MODEL v3.0-v3.2: P5, P5A)
+MP, AP = 'pathway_moderate', 'pathway_ambitious'  # the Moderate / Ambitious Pathway (P5, P5A)
 RUNS = ('REF', MP, 'TL')                          # the insight analyses
 INSTANT = 'TL_from2027'                          # the instant TL sensitivity (summary and annual percentiles only)
 SUMMARY_RUNS = ('REF', MP, AP, 'TL', INSTANT)
@@ -89,7 +89,7 @@ def bootstrap_factors(su):
 
 
 def write_carbon_factors(su, a13):
-    """MODEL v3.2.0 (from v3.1.0) (D38): the resulting pooled A1-A3 factor of each Reference draw by typology (kg CO2e/m2, 2025
+    """(Data D38) The resulting pooled A1-A3 factor of each Reference draw by typology (kg CO2e/m2, 2025
     technology), from the saved draws' carbon-factor parameter and the saved setup's bootstrap replicates
     (MonteCarlo.carbon_bootstrap, same seed and indices; nothing is resampled). Writes
     outputs/data/montecarlo/carbon_factors_REF.csv."""
@@ -161,7 +161,7 @@ def check_central(su, ctx, params, det):
     return worst
 
 
-INPUTS = ('z_pop', 'size', 'complete', 'carbon_index', 'half_life')     # MODEL v3.3.0: + replacement half-life
+INPUTS = ('z_pop', 'size', 'complete', 'carbon_index', 'half_life')     # + replacement half-life
 INPUT_LABELS = {'z_pop': 'Population rank (z-score)', 'size': 'Dwelling-size multiplier',
                 'complete': 'Completion rate', 'carbon_index': 'Carbon-factor index',
                 'half_life': 'Replacement half-life (yr)'}
@@ -211,7 +211,7 @@ def insights(df):
     Z = (X - mu) / sd
     events = int(min(yy.sum(), len(yy) - yy.sum()))           # the rarer outcome class
     cond = []
-    estimable = 0.0 < yy.sum() < len(yy)                      # MODEL v3.2.0 (from v3.1.0): a single outcome class -> no model
+    estimable = 0.0 < yy.sum() < len(yy)                      # a single outcome class -> no model
 
     def add_model(model, cols):
         try:
@@ -278,7 +278,7 @@ THRESHOLD_POINTS = 101
 
 
 def population_threshold(df, col):
-    """MODEL v3.2.0 (from v3.1.0) (ED5b): the 2050 New Zealand population at which P(TL LoE AR <= 1) = 50%, from a univariate
+    """(Fig7b, SF14) The 2050 New Zealand population at which P(TL LoE AR <= 1) = 50%, from a univariate
     logistic regression of the outcome on the draw's 2050 population (maximum likelihood; Firth's penalised
     likelihood where the MLE does not exist), with a percentile bootstrap 95% interval (resampled draws; the
     insight bootstrap's stream). If no draw (or every draw) has TL within AR the threshold is not estimable and that

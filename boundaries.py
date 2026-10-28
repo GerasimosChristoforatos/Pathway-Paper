@@ -18,7 +18,7 @@ called. Equations: aesa.py. Every constant below carries its source.
 
 Writes outputs/data/aesa/ (annual.csv, montecarlo_annual.csv, montecarlo_draw_budgets.csv, sensitivity.csv,
 results.json; layout.py) and the source data of the AESA diagnostics D18, D21-D27
-(outputs/data/figure_source/<figure id>.json; figsource.py). MODEL v3.0.0: this module draws nothing; every figure
+(outputs/data/figure_source/<figure id>.json; figsource.py). this module draws nothing; every figure
 is drawn from the data files by the figures/ package (D18, D21-D27: figures/boundaries.py).
 
     python boundaries.py
@@ -465,7 +465,7 @@ def main():
     cum_det = {k: dict(label=r['label'], I_kt=float(r['I'].loc[slice(*PB_YEARS)].sum() / M6),
                        LoE_AR=cum(r['I'], b_ar), LoE_AtP=cum(r['I'], b_atp)) for k, r in runs.items()}
 
-    # ---- population paths (MODEL v1.0.0 addition; the population rows of ED1, ED2 and ED4) ------------
+    # ---- population paths (the population rows of ED1, ED4 and ED5) ------------
     # The Stats NZ 5th / 95th percentile paths move both the embodied carbon (the projection's own
     # engine run of that path, every other input at the Reference) and the boundaries (population
     # modifier of AR, Horup et al. 2025 Eq. 1; per-capita AtP), with I_sec,base unchanged. The
@@ -511,7 +511,7 @@ def main():
             mc_rows.append(row)
         ca = m['carbon'][:, sel].sum(axis=1) / bar[:, sel].sum(axis=1)
         ct = m['carbon'][:, sel].sum(axis=1) / batp[:, sel].sum(axis=1)
-        if name == 'REF':      # MODEL v2.0.0: each draw's cumulative budgets, read by the pathway Monte Carlo
+        if name == 'REF':      # each draw's cumulative budgets, read by the pathway Monte Carlo
             N.columns(pd.DataFrame(dict(
                 draw=np.arange(len(ca)), carbon_kt_2026_2050=m['carbon'][:, sel].sum(axis=1) / M6,
                 B_AR_kt_2026_2050=bar[:, sel].sum(axis=1) / M6, B_AtP_kt_2026_2050=batp[:, sel].sum(axis=1) / M6,
@@ -676,7 +676,7 @@ def main():
           f"AtP {cum_det['REF']['LoE_AtP']:.1f} "
           f"(MC {mc_cum['REF']['LoE_AtP_p5']:.1f}-{mc_cum['REF']['LoE_AtP_p95']:.1f})")
 
-    # MODEL v3.0.0: the arrays of the AESA diagnostics (drawn by figures/boundaries.py)
+    # the arrays of the AESA diagnostics (drawn by figures/boundaries.py)
     write_figure_sources(B, hist, runs, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell)
     print(f'PB done ({time.time() - t_start:,.0f} s)')
     return res
@@ -826,11 +826,11 @@ LIMITATIONS = [
 
 
 # ============================================================
-# FIGURE SOURCE DATA (MODEL v3.0.0: compute / draw separation)
+# FIGURE SOURCE DATA (compute / draw separation)
 # ============================================================
 # The AESA diagnostics D18, D21-D27 are drawn by figures/boundaries.py from the arrays written here
 # (outputs/data/figure_source/<figure id>.json, figsource.py); this module draws nothing.
-VARIANTS = ('LOW', 'REF', 'HIGH', 'VHIGH')        # MODEL v3.3.0: + Very High replacement
+VARIANTS = ('LOW', 'REF', 'HIGH', 'VHIGH')        # + Very High replacement
 
 
 def write_figure_sources(B, hist, runs, mc_annual, b_ar, b_atp, res, sens_df, gfa, dwell):

@@ -1,4 +1,4 @@
-"""MODEL v4.0.0 regression lock: every deterministic data file reproduced byte for byte (JSON without its profile
+"""The v4 regression lock: every deterministic data file reproduced byte for byte (JSON without its profile
 fields), and the Monte Carlo draw files of the active profile (tests/regression_v3.py)."""
 import json
 import os

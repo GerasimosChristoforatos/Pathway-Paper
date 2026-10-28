@@ -1,11 +1,11 @@
-"""Report figures of the projection: the computations (MODEL v3.0.0, compute only).
+"""Report figures of the projection: the computations (compute only).
 
     python tools/figures_report.py
 
 Runs the projection variants (Low replacement, Reference, High replacement; validation.run_boss) and writes the
 exact arrays of the report diagnostics as figure source data (figsource.write ->
 outputs/data/figure_source/<file id>.json): D07_net_replacement_rate, D10_floor_area_bridge
-(D11 is retired: with demolition replacement and unconsented additions split in every band set it equals D10),
+(there is no D11: with demolition replacement and unconsented additions split in every band set it would equal D10),
 D12_conversion_chain, D14_hindcast, D15_reality_checks, D19_variants. The figures are
 drawn from those files by figures/validation.py (python -m figures <file ids>); nothing is drawn here.
 
@@ -32,11 +32,11 @@ import validation  # noqa: E402
 SCEN = [('LOW', N.SCENARIOS['LOW'], dict(REPLACEMENT_VARIANT='LOW')),
         ('REF', N.SCENARIOS['REF'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
         ('HIGH', N.SCENARIOS['HIGH'], dict(REPLACEMENT_VARIANT='HIGH')),
-        ('VHIGH', N.SCENARIOS['VHIGH'], dict(REPLACEMENT_VARIANT='VHIGH'))]          # MODEL v3.3.0
-VARS = ('LOW', 'REF', 'HIGH', 'VHIGH')            # MODEL v3.3.0: + Very High replacement
+        ('VHIGH', N.SCENARIOS['VHIGH'], dict(REPLACEMENT_VARIANT='VHIGH'))]
+VARS = ('LOW', 'REF', 'HIGH', 'VHIGH')            # + Very High replacement
 M6 = 1e6
 
-# MODEL v3.0.0 floor-area bridge (D10; D11 retired): the demand bands of the definition 'with retirement villages'
+# floor-area bridge (D10): the demand bands of the definition 'with retirement villages'
 # (naming.BANDS_WITH_RETIREMENT_VILLAGES), in the in-scope band order (positive bands, then the bands negative by
 # construction), each with its key in projection results[...]; retirement villages (out of scope, negative) last.
 # The 2026 overbuild is the market excess ('join', >= 0) and 'Overbuild absorbed' the payback ('absorbed', <= 0);
@@ -134,7 +134,7 @@ def main():
                     for k in VARS}
     _m2 = (hist['gfa'] / hist['dpop']).loc[1991:2025]
     # the last observed year -> the first modelled year handover against historical year-to-year changes (MODEL
-    # v4.0.0: the last pipeline year with the completion lag, 2027 -> 2028; MODEL v3.3: 2026 -> 2027)
+    # the last pipeline year with the completion lag, 2027 -> 2028; 2026 -> 2027)
     Bref = ref['B']
     chg = 100 * Bref['hist_total_gfa'].pct_change().loc[1992:2025].values
     R0 = Bref['results']['50th']['total']
@@ -175,7 +175,7 @@ def main():
                     paths={k: engine.replacement_path(k, long_rate, float(Bref['rate_recent']), fy, 10.0,
                                                       trend=Bref['replacement_trend'])
                            for k in VARS},
-                    # MODEL v3.3.0: the Reference path continued to 2075 (dotted; its asymptote is the long-run rate),
+                    # the Reference path continued to 2075 (dotted; its asymptote is the long-run rate),
                     # and the census trend of the Very High variant (coefficients: rate(t) = a + b t)
                     reference_extended=dict(years=list(range(2050, 2076)),
                                             rate=engine.replacement_path('REF', long_rate, float(Bref['rate_recent']),

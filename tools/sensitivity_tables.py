@@ -1,17 +1,17 @@
-"""Grouped one-at-a-time sensitivity tables (MODEL v3.3.0; docs/SENSITIVITY_PLAN.md).
+"""Grouped one-at-a-time sensitivity tables.
 
     python tools/sensitivity_tables.py         (run_all.py runs it after the pathway Monte Carlo)
 
 Writes outputs/data/sensitivity/:
-  reference_carbon.csv     Reference carbon 2026-2050, rows grouped by type of change (D16)
-  pathway_carbon.csv       the Moderate Pathway (every lever at Moderate; MODEL v3.0-v3.2: p5_carbon.csv, P5
-                           Combined) carbon 2026-2050 and its levels of exceedance, pathway design rows (D41)
-  planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42)
+  reference_carbon.csv     Reference carbon 2026-2050, rows grouped by type of change (D16; ED4)
+  pathway_carbon.csv       the Moderate Pathway (every lever at Moderate)
+                           carbon 2026-2050 and its levels of exceedance, pathway design rows (D41)
+  planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42; ED5)
   replacement_variants.csv the Reference, the Moderate / Ambitious Pathway and TL under Low / Reference / High / Very
-                           High replacement (ED9)
-  household_size.csv       MODEL v4.0.0: the Reference, the Moderate / Ambitious Pathway and TL under the household-size
+                           High replacement (ED3)
+  household_size.csv       the Reference, the Moderate / Ambitious Pathway and TL under the household-size
                            sensitivities (Stats NZ Low / High variant; 2018-2023 census pace, linear from 2023)
-  tornado.csv              Fig8a: the inputs of the Reference tornado (low / high), cumulative carbon and the
+  tornado.csv              Fig7a: the inputs of the Reference tornado (low / high), cumulative carbon and the
                            cumulative LoE AR and AtP (the budgets move only with the population path)
 
 Every row has its group, the row label, its side (low / high / single), the value, the change vs the
@@ -230,7 +230,7 @@ def pathway_table():
     add('Replacement scenario', N.SCENARIOS['VHIGH'], 'single', *run_row('VHIGH', PM_), 'data/pathways/runs.csv',
         'DATA / JUDGEMENT: the 1991-2023 census trend continues (sensitivity, not adopted)')
     hs = HH_TABLE.get('t')
-    if hs is not None:                                   # MODEL v4.0.0: the household-size rows (household_size.csv)
+    if hs is not None:                                   # the household-size rows (household_size.csv)
         for _, r in hs[hs['run'] == PM_].iterrows():
             add('Demographics', r['row'], r['side'], r['carbon_kt'], r['LoE_AR'], r['LoE_AtP'],
                 'sensitivity/household_size.csv (new run)', r['basis'])
@@ -244,7 +244,7 @@ def pathway_table():
     return pd.DataFrame(rows)
 
 
-# ---- 2b. Household-size sensitivities of the Reference, the Pathways and TL (MODEL v4.0.0) ---------------------
+# ---- 2b. Household-size sensitivities of the Reference, the Pathways and TL ---------------------
 HH_VARIANTS = [   # (row, side, projection settings)
     ('Household size: Stats NZ High / Low variant', 'low', dict(HH_SIZE_VARIANT='High')),
     ('Household size: Stats NZ High / Low variant', 'high', dict(HH_SIZE_VARIANT='Low')),
@@ -399,7 +399,7 @@ def tornado(ref):
     rows = []
     for name, row in TORNADO:
         t = ref[ref['row'] == row].set_index('side')
-        if 'single' in t.index:                       # MODEL v3.3.0: a one-sided row (low = the central case)
+        if 'single' in t.index:                       # a one-sided row (low = the central case)
             t = pd.DataFrame({'case': ['central', t.loc['single', 'case']],
                               'carbon_kt': [c0, t.loc['single', 'carbon_kt']]}, index=['low', 'high'])
         for side in ('low', 'high'):

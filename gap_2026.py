@@ -31,7 +31,7 @@ Sequential decomposition of O - M (the order is a choice and is stated):
         size, it would imply if built and not offset.
 Also reported: where the 2018-23 excess building went, from census counts.
 
-MODEL v4.0.0, with the monthly completion lag (projection.COMPLETION_LAG_MONTHS = L > 0): 2026
+With the monthly completion lag (projection.COMPLETION_LAG_MONTHS = L > 0): 2026
 completions = c x consents issued Aug 2024 - Jul 2025 (L = 17), all observed, so
   O = c x lagged consents (the 2026 pipeline building of the run, B['pipe']),
   (i) pipeline = O - M' (every 2026 completion comes from a consent issued before 2026),

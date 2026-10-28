@@ -23,7 +23,7 @@ import validation  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_MD = layout.report('scenarios.md')                    # frozen_technology/ in the frozen check run
 OUT_JSON = layout.data('baseline/scenarios.json')
-OUT_ANNUAL = layout.data('baseline/variants_annual.csv')        # MODEL v1.0.0 addition
+OUT_ANNUAL = layout.data('baseline/variants_annual.csv')
 # the Reference and its variants (typology shares held in every run); REF_HL5 and REF_HL15 are
 # half-life sensitivities; the _NOUC rows drop the census under-construction correction
 SCENARIOS = [(k, N.SCENARIOS[k], s) for k, s in (
@@ -32,7 +32,7 @@ SCENARIOS = [(k, N.SCENARIOS[k], s) for k, s in (
     ('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
     ('REF_HL15', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=15.0)),
     ('HIGH', dict(REPLACEMENT_VARIANT='HIGH')),
-    ('VHIGH', dict(REPLACEMENT_VARIANT='VHIGH')),                 # MODEL v3.3.0: Very High (trend continues)
+    ('VHIGH', dict(REPLACEMENT_VARIANT='VHIGH')),                 # Very High (trend continues)
     ('LOW_NOUC', dict(REPLACEMENT_VARIANT='LOW', CENSUS_UC_CORRECTION=False)),
     ('REF_NOUC', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0, CENSUS_UC_CORRECTION=False)),
     ('HIGH_NOUC', dict(REPLACEMENT_VARIANT='HIGH', CENSUS_UC_CORRECTION=False)))]

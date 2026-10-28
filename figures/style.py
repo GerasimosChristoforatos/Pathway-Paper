@@ -1,4 +1,4 @@
-"""One style for every figure of the model (MODEL v3.0.0: moved into the figures/ package).
+"""One style for every figure of the model (moved into the figures/ package).
 
 Every module of figures/ imports this file and nothing else for colours, line styles,
 typeface, sizes and saving, so a figure cannot drift from the palette of
@@ -7,10 +7,10 @@ tools/palette_check.py (CAM02-UCS distances under simulated deuteranomaly,
 protanomaly and tritanomaly, colorspacious; Machado et al. 2009), which also writes
 docs/PALETTE.md and docs/palette_preview.png.
 
-Rules (docs/PALETTE.md, MODEL v2.1.2):
+Rules (docs/PALETTE.md):
   * demand bands are coloured by the lever that targets them (hue families after Francis Bacon, Head VI);
     the only untargeted band, Population growth, a solid deep green-blue; negative bands drawn down from the top of
-    the positive stack (net-total convention; MODEL v3.0.0: figures/draw.py, see below);
+    the positive stack (net-total convention; figures/draw.py, see below);
   * Reference dark grey, the Moderate / Ambitious Pathway vermilion, TL a deep forest green (a larger circle on point plots);
   * boundaries: acquired rights (AR) a thin red line, ability to pay (AtP) a thin dark-red dotted line, light zones
     below AtP, between AtP and AR and above AR;
@@ -19,14 +19,13 @@ Rules (docs/PALETTE.md, MODEL v2.1.2):
     the SIL Open Font License, so figures render identically on every machine);
   * print sizes: Nature Cities single column 89 mm, double column 183 mm; text 5-7 pt.
 
-MODEL v3.0.0: save() writes the formats of the run profile (runprofile.py: light PNG at 200 dpi with a small grey
-footer "LIGHT RUN — n=1000"; full PNG at 600 dpi; PDF retired in MODEL v3.3.1) with fixed metadata (no software version or creation
+save() writes the formats of the run profile (runprofile.py: light PNG at 200 dpi with a small grey
+footer "LIGHT RUN — n=1000"; full PNG at 600 dpi) with fixed metadata (no software version or creation
 date), so a re-run with the pinned environment reproduces every figure byte for byte. Negative bands keep their
 sign in the data: in time series they are stacked down from zero (positives up from zero, the net a black line);
 in cumulative bars each negative band is an unfilled, unhatched segment outlined in its band colour hanging from the
 top of the positive stack, so the bar ends at the net total (figures/draw.py). Only the surge band is hatched.
-registry() lists every colour of every group; tests/test_figures_v3.py requires no duplicate (colour, hatch) within a
-group.
+registry() lists every colour of every group.
 """
 import os
 import re
@@ -40,7 +39,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_DIR = os.path.join(ROOT, 'fonts')
 for _f in ('LiberationSans-Regular.ttf', 'LiberationSans-Bold.ttf', 'LiberationSans-Italic.ttf'):
     font_manager.fontManager.addfont(os.path.join(FONT_DIR, _f))
-# MODEL v4.2.2: Arial where installed; otherwise the bundled metric-compatible Liberation Sans
+# Arial where installed; otherwise the bundled metric-compatible Liberation Sans
 FONT = 'Arial' if any(f.name == 'Arial' for f in font_manager.fontManager.ttflist) else 'Liberation Sans'
 
 # ---------------------------------------------------------------------------
@@ -57,7 +56,7 @@ LW_THIN = 0.5                                   # grid, edges, reference lines
 LW_BOLD = 1.5                                   # the Reference / emphasised line
 import runprofile  # noqa: E402
 
-DPI = int(os.environ.get('PATHWAY_DPI') or runprofile.get('dpi'))   # light 200, full 600; MODEL v4.3.1: redraw.py --dpi
+DPI = int(os.environ.get('PATHWAY_DPI') or runprofile.get('dpi'))   # light 200, full 600; redraw.py --dpi
 
 RC = {
     'font.family': 'sans-serif', 'font.sans-serif': [FONT], 'font.size': FONT_SIZE,
@@ -74,12 +73,11 @@ RC = {
 }
 
 # ---------------------------------------------------------------------------
-# MODEL v4.3.1: the user palette (palette.toml at the repository root; another file through the environment variable
+# the user palette (palette.toml at the repository root; another file through the environment variable
 # PATHWAY_PALETTE, as redraw.py --palette sets it). This module is the only reader, and every figure takes these
 # colours from the constants below. Each key colours one meaning only: nothing else is derived from it (the
-# typologies, variants, sub-bands and neutrals are fixed literals). MODEL v4.3.2: nine groups; the planetary
-# boundaries, their zones (alpha fixed here), the Fig3b cumulative column and the one-at-a-time (tornado) colours
-# moved from fixed literals into the file; the lever shades L1-L9 retired.
+# typologies, variants, sub-bands and neutrals are fixed literals). The planetary boundaries, their zones, the Fig3b
+# cumulative column and the one-at-a-time (tornado) colours are palette groups too.
 # ---------------------------------------------------------------------------
 PALETTE_KEYS = {
     'demand_bands': ('population_growth', 'household_size_change', 'extra_space', 'vacancy', 'net_replacement',
@@ -92,7 +90,7 @@ PALETTE_KEYS = {
     'boundary_zones': ('within_both', 'within_ar_only', 'exceeded'),
     'cumulative': ('fig3b_cumulative_carbon',),
     'one_at_a_time': ('low_end', 'high_end', 'single_alternative'),
-    # MODEL v4.3.3: every meaning colour of the final figures (tools/palette_coverage.py) and the meaningful fades
+    # every meaning colour of the final figures (tools/palette_coverage.py) and the meaningful fades
     'components': ('new_households', 'replacement_surge', 'unconsented_additions', 'retirement_villages',
                    'overbuild_absorbed', 'unexplained_building', 'released_tl'),
     'typologies': ('detached', 'townhouses', 'apartments'),
@@ -105,7 +103,7 @@ PALETTE_KEYS = {
     'opacity': ('zone_within_both', 'zone_within_ar_only', 'zone_exceeded', 'mc_band_90', 'mc_band_50', 'mc_band',
                 'pathway_lines', 'soil_carbon_loss', 'scatter_reference', 'scatter_moderate', 'scatter_ambitious',
                 'scatter_tl', 'typology_histograms', 'space_above_occupancy', 'rollout_reference_cumulative')}
-OPACITY_GROUP = 'opacity'                       # MODEL v4.3.3: the only group of numbers (0-1), not colours
+OPACITY_GROUP = 'opacity'                       # the only group of numbers (0-1), not colours
 PALETTE_DEFAULT = os.path.join(ROOT, 'palette.toml')
 _HEX = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
@@ -117,7 +115,7 @@ class PaletteError(ValueError):
 def load_palette(path):
     """{group: {key: '#RRGGBB'}} from a palette file. Every group and key of PALETTE_KEYS must be present, with a
     six-digit hex value; unknown groups or keys are an error too (a misspelt key would otherwise be ignored).
-    MODEL v4.3.3: the [opacity] group holds numbers in [0, 1] (an int or a float; not a boolean, not a string)."""
+    the [opacity] group holds numbers in [0, 1] (an int or a float; not a boolean, not a string)."""
     with open(path, 'rb') as f:
         raw = tomllib.load(f)
     errors = [f'unknown group [{g}]' for g in raw if g not in PALETTE_KEYS]
@@ -153,12 +151,12 @@ PALETTE = load_palette(PALETTE_PATH)
  OPACITY) = (PALETTE[g] for g in PALETTE_KEYS)
 COLOUR_GROUPS = tuple(g for g in PALETTE_KEYS if g != OPACITY_GROUP)
 
-# MODEL v4.3.3: the colours that stay fixed by design (tools/palette_coverage.py accepts these and nothing else outside
+# the colours that stay fixed by design (tools/palette_coverage.py accepts these and nothing else outside
 # the palette): text, axes, grid, white and black, legend outlines, neutral greys that carry no meaning of their own
 NEUTRALS = {'ink': '#1A1A1A', 'muted': '#6E6E6E', 'grid': '#E0E0E0', 'white': '#FFFFFF', 'black': '#000000',
             'legend_outline': '#555555', 'note_text': '#595959', 'neutral_dark': '#4D4D4D',
             'interval_box_legend': '#E6E6E6', 'footer': '#9A9A9A'}
-# MODEL v4.3.3: fixed fades (context shading, not a meaning colour): every alpha a figure uses comes from OPACITY
+# fixed fades (context shading, not a meaning colour): every alpha a figure uses comes from OPACITY
 # (palette.toml [opacity]) or from here (tools/palette_coverage.py probes both)
 FIXED_FADES = {'definition_break_span': 0.10, 'census_range_span': 0.12, 'history_range_span': 0.12,
                'ci_span': 0.15, 'threshold_ci_span': 0.12, 'rug': 0.4, 'estimate_not_used_line': 0.35,
@@ -171,39 +169,37 @@ FIXED_FADES = {'definition_break_span': 0.10, 'census_range_span': 0.12, 'histor
 INK = NEUTRALS['ink']                           # text, axes
 MUTED = NEUTRALS['muted']                       # secondary text, leader lines
 
-# boundaries (MODEL v2.1.0 styling, implemented once here: boundary_zones / boundary_hzones): AR a thin red line,
+# boundaries (implemented once here: boundary_zones / boundary_hzones): AR a thin red line,
 # AtP a thin dark-red line (dashed, so the two principles stay apart under colour-vision deficiency); the area
 # below AtP darker green (within both budgets), between AtP and AR light green (within AR only), above AR light
 # red at low opacity (boundary exceeded); the same on annual and cumulative axes. The three zones (as seen on
 # white) fall strictly in lightness under every simulated deficiency (darker green < light green < palest red;
 # CAM02-UCS J' 77 / 90 / 97 at least / at most), so they never depend on hue alone; AR '#D7191C' keeps >= 10 from
 # every run colour under every deficiency (tools/palette_check.py; docs/PALETTE.md)
-# MODEL v4.3.2: the colours from palette.toml [boundaries] and [boundary_zones]; line styles, widths and the zone
+# the colours from palette.toml [boundaries] and [boundary_zones]; line styles, widths and the zone
 # opacities (ZONE_ALPHA) stay fixed here. redraw.py and tools/palette_check.py warn when the zones, composited on white
 # at these opacities, lose the lightness order within both < within AR only < exceeded (CAM02-UCS J').
 AR = _BD['acquired_rights']
 ATP = _BD['ability_to_pay']
 LW_BOUNDARY = 0.9
-# MODEL v2.1.2: AtP dotted; the zones much lighter (on white: within both J' 90, within AR only 95, exceeded 99;
+# AtP dotted; the zones much lighter (on white: within both J' 90, within AR only 95, exceeded 99;
 # the lightness order still holds under every simulated deficiency; tools/palette_check.py)
 ATP_LS = (0, (1, 1.3))                          # dotted ·····
 BOUNDARY = {'AR': dict(color=AR, ls='-', lw=LW_BOUNDARY, label='Acquired rights (AR)'),
             'AtP': dict(color=ATP, ls=ATP_LS, lw=LW_BOUNDARY, label='Ability to pay (AtP)')}
 ZONE_ALPHA = {'within_both': OPACITY['zone_within_both'], 'within_ar': OPACITY['zone_within_ar_only'],
-              'exceeded': OPACITY['zone_exceeded']}          # MODEL v4.3.3: palette.toml [opacity] (was fixed)
+              'exceeded': OPACITY['zone_exceeded']}          # palette.toml [opacity]
 ZONE = {'within_both': dict(color=_ZN['within_both'], alpha=ZONE_ALPHA['within_both'],
                             label='Within both budgets (below AtP)'),
         'within_ar': dict(color=_ZN['within_ar_only'], alpha=ZONE_ALPHA['within_ar'],
                           label='Within AR only (between AtP and AR)'),
         'exceeded': dict(color=_ZN['exceeded'], alpha=ZONE_ALPHA['exceeded'], label='Boundary exceeded (above AR)')}
-# MODEL v3.3.1: the exceeded zone slightly more red (alpha 0.035 -> 0.07; same hue, still the lightest zone:
-# tools/palette_check.py)
+# the exceeded zone stays the lightest zone (tools/palette_check.py)
 ZONE_GID = 'boundary_zone'
-# two accent colours for lines that are not boundaries (household formation, floor area in the diagnostics): the
-# boundary pair of model-v2.0.0, kept so those diagnostics are unchanged
-ACCENT_ORANGE = '#C2571A'      # MODEL v4.3.3: no longer drawn in a final figure (each meaning has its palette key below)
+# two accent colours for lines that are not boundaries (household formation, floor area)
+ACCENT_ORANGE = '#C2571A'      # not drawn in a final figure (each meaning has its palette key below)
 ACCENT_BLUE = '#1F5FA8'
-# MODEL v4.3.3: the meanings the accent colours carried, each its own palette key
+# the meanings the accent colours carried, each its own palette key
 CENSUS_EMPTY = _CEN['census_empty']             # SF2a census empty points
 OBSERVED_TOTAL = _CEN['observed_total']         # Fig1 observed totals without a band split (drawn when such years exist)
 MODEL_PATH_YEARS = _HL['model_path_years']      # SF1b 2024-25: the model's household-size path, not observed
@@ -215,57 +211,55 @@ RETIREMENT_VILLAGES = _CMP['retirement_villages']   # SF2b (out of scope)
 
 # runs (palette.toml [runs])
 REFERENCE = _RUN['reference']
-NEUTRAL_DARK = NEUTRALS['neutral_dark']   # MODEL v4.3.1: a dark neutral grey (not the Reference): ED6 histograms, SF15 bars
-# MODEL v4.3.2: the Fig3b 2026-2050 cumulative column and its legend patch, palette.toml [cumulative] (was REFERENCE)
+NEUTRAL_DARK = NEUTRALS['neutral_dark']   # a dark neutral grey (not the Reference): ED6 histograms, SF15 bars
+# the Fig3b 2026-2050 cumulative column and its legend patch, palette.toml [cumulative]
 CUMULATIVE_FIG3B = _CUM['fig3b_cumulative_carbon']
-# MODEL v4.3.2: the 'release constraint binds' markers of SF15 (not a boundary; were S.AR): a fixed literal
-RELEASE_BINDS = _HL['release_binds']     # MODEL v4.3.3: palette.toml [highlights]
-# MODEL v2.1.2: TL a deep forest green, far darker than the zones; at CAM02-UCS J' 25 it is >= 10 from AR, AtP,
+# the 'release constraint binds' markers of SF15 (not a boundary; were S.AR): a fixed literal
+RELEASE_BINDS = _HL['release_binds']     # palette.toml [highlights]
+# TL a deep forest green, far darker than the zones; at CAM02-UCS J' 25 it is >= 10 from AR, AtP,
 # the Reference, the Pathways, every lever, Population growth and the zones under every simulated deficiency (a mid green
 # at the lightness of AR merges with it under deuteranomaly / protanomaly)
 TL = _RUN['theoretical_limit']
 TL_MARKER = dict(marker='o', ms=8)             # TL on point plots: a larger circle (no star)
-# MODEL v4.3.3: the replacement variants from palette.toml [replacement_variants] (the Reference: [runs])
+# the replacement variants from palette.toml [replacement_variants] (the Reference: [runs])
 SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),    # the Reference run itself
             'LOW': dict(color=_RV['low'], ls='--', lw=LW, label='Low replacement'),
             'HIGH': dict(color=_RV['high'], ls=':', lw=LW, label='High replacement'),
-            # MODEL v3.3.0: Very High replacement (trend continues), the darkest grey, dash-dot
+            # Very High replacement (trend continues), the darkest grey, dash-dot
             'VHIGH': dict(color=_RV['very_high'], ls='-.', lw=LW, label='Very High replacement (trend continues)')}
 MC_BAND = dict(color=REFERENCE, alpha=OPACITY['mc_band'], lw=0)          # Monte Carlo 5-95% band
 
-# MODEL v2.1.1 palette, inspired by Francis Bacon, Head VI (1949): hue families (golds / ochres, mauves, blues,
+# The palette is inspired by Francis Bacon, Head VI (1949): hue families (golds / ochres, mauves, blues,
 # browns); the Pathways vermilion and TL a deep forest green, outside every family; Reference grey. Lightness and
 # chroma chosen by maximising the minimum CAM02-UCS distance of every group shown together under every simulated
-# deficiency (tools/palette_check.py; docs/PALETTE.md). The strategies reuse the former pathway colours: S1 Avoid the
-# ochre of the space-per-person family, S2 Switch the land brown, S3 Improve the construction blue; the deep mauve
-# P2_ANCHOR stays the 2026 overbuild band. MODEL v4.3.2: the lever shades L1-L9 (style.LEVER) are retired; a lever is
-# drawn in its strategy colour (palette.toml [strategies]) and told apart by marker (LEVER_MARKER).
+# deficiency (tools/palette_check.py; docs/PALETTE.md). The strategies: S1 Avoid ochre, S2 Switch brown, S3 Improve
+# blue; the deep mauve P2_ANCHOR is the 2026 overbuild band. A lever is drawn in its strategy colour (palette.toml [strategies]) and told apart by marker (LEVER_MARKER).
 LEVER_MARKER = ('o', 's', '^', 'D', 'v')          # the k-th lever within its strategy (SF10 lambda sweep)
-SURGE_FACE = _CMP['replacement_surge']  # the Recent replacement surge face (MODEL v4.3.3: palette.toml [components])
-P2_ANCHOR = _DB['market_balance']       # the detailed band '2026 overbuild' (SF2b, SF5); MODEL v4.3.3: the market-balance key
-# MODEL v4.3.0: the typology colours; MODEL v4.3.1: fixed literals (were aliases of the L4 / L8 / L2 lever shades)
+SURGE_FACE = _CMP['replacement_surge']  # the Recent replacement surge face (palette.toml [components])
+P2_ANCHOR = _DB['market_balance']       # the detailed band '2026 overbuild' (SF2b, SF5); the market-balance key
+# the typology colours
 TYPOLOGY = {'Detached': _TYP['detached'], 'Townhouses': _TYP['townhouses'],
-            'Apartments': _TYP['apartments']}                     # MODEL v4.3.3: palette.toml [typologies]
-# MODEL v4.3.1: palette.toml [strategies] (were aliases of the L4 / L7 / L8 lever shades)
+            'Apartments': _TYP['apartments']}                     # palette.toml [typologies]
+# palette.toml [strategies]
 STRATEGY = {'S1': _SG['avoid'], 'S2': _SG['switch'], 'S3': _SG['improve']}
-# MODEL v4.2.1: the Moderate / Ambitious Pathway (orange, darker orange); MODEL v4.3.1: palette.toml [runs]
+# the Moderate / Ambitious Pathway (orange, darker orange); palette.toml [runs]
 PATHWAY_SETTING = {'moderate': _RUN['moderate'], 'ambitious': _RUN['ambitious']}
 PATHWAY = dict(STRATEGY, pathway=PATHWAY_SETTING['moderate'])     # 'pathway': the Moderate Pathway (Fig5, ED3)
-# MODEL v2.1.2: Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
+# Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
 SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
            'ambitious': dict(ls='--', marker_fill='none', label='Ambitious')}
 
 # demand bands, bottom to top: (colour, hatch), coloured by the lever that targets them; labels in naming.BANDS.
-# Population growth (untargeted) the deep green-blue hue, solid, clearly lighter since MODEL v2.1.2 (J' 47, was 11);
-# Historical replacement a darker lilac with a slightly bluer hue (MODEL v2.1.2) than the Recent replacement surge,
+# Population growth (untargeted) the deep green-blue hue, solid, clearly lighter (J' 47);
+# Historical replacement a darker lilac with a slightly bluer hue than the Recent replacement surge,
 # which keeps the L3 face with a fine, light hatch (both replacement bands are targeted by L3)
-# MODEL v4.3.1: the seven display bands of the figures (bands.DISPLAY) take palette.toml [demand_bands]; the detailed
+# the seven display bands of the figures (bands.DISPLAY) take palette.toml [demand_bands]; the detailed
 # sub-bands drawn on their own in SF2c / SF5 (2026 overbuild, overbuild absorbed, demolition replacement, unconsented
 # additions, surge, ...) keep fixed literals. growth, household size, extra space, vacancy and maintenance are both a
 # detailed and a display band and follow the palette.
 UNTARGETED_HATCH = None
 GROWTH = _DB['population_growth']
-REPLACEMENT = _DB['net_replacement']    # demolition replacement (SF2b); MODEL v4.3.3: the net-replacement key
+REPLACEMENT = _DB['net_replacement']    # demolition replacement (SF2b); the net-replacement key
 HATCH_LIGHT = '#FFFFFF'                 # the fine hatch of the surge band: drawn in a light colour on its light face
 DISPLAY_BAND = {'growth': _DB['population_growth'], 'smaller_households': _DB['household_size_change'],
                 'extra_space': _DB['extra_space'], 'vacancy': _DB['vacancy'],
@@ -276,13 +270,13 @@ BAND = {'growth': (GROWTH, None),
         'extra_space': (DISPLAY_BAND['extra_space'], None),
         'vacancy': (DISPLAY_BAND['vacancy'], None),
         'overbuild_2026': (P2_ANCHOR, None),
-        'overbuild_absorbed': (_CMP['overbuild_absorbed'], None),      # MODEL v4.3.3: palette.toml [components]
+        'overbuild_absorbed': (_CMP['overbuild_absorbed'], None),      # palette.toml [components]
         'replacement': (REPLACEMENT, None),
-        'unconsented': (_CMP['unconsented_additions'], None),          # MODEL v4.3.3: palette.toml [components]
+        'unconsented': (_CMP['unconsented_additions'], None),          # palette.toml [components]
         'redevelopment': (SURGE_FACE, '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
-        'released_tl': (_CMP['released_tl'], None),   # MODEL v4.3.3: palette.toml [components]; SF15 re-occupation
-        # MODEL v3.2.0 (A2, from v3.1.0): 'Vacancy released' (negative, outline; the L2 vacancy family, darker).
-        # MODEL v4.3.1: 'Surplus kept vacant (2050)' removed (TL only, never drawn in a final figure)
+        'released_tl': (_CMP['released_tl'], None),   # palette.toml [components]; SF15 re-occupation
+        # 'Vacancy released' (negative, outline; the L2 vacancy family, darker). 'Surplus kept vacant (2050)' has no
+        # colour here (TL only, never drawn in a final figure)
         'vacancy_released': ('#481870', None),
         'maintenance': (DISPLAY_BAND['maintenance'], None)}
 BAND_ORDER = list(BAND)
@@ -291,7 +285,7 @@ BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}
 
 
 def band_colour(bid):
-    """MODEL v4.3.1: the colour of a band id (display band, detailed band or history band), one rule for faces,
+    """The colour of a band id (display band, detailed band or history band), one rule for faces,
     outlines of negative parts and legend swatches."""
     if bid in DISPLAY_BAND:
         return DISPLAY_BAND[bid]
@@ -302,8 +296,8 @@ def band_colour(bid):
     raise KeyError(f'band_colour: unknown band {bid!r}')
 LW_OUTLINE = 0.9                        # the outline of a negative band segment in a cumulative bar
 
-# life-cycle stages (Fig2c, Fig2d; labels in naming.STAGES), stacked A1-A3, A4-A5, soil, maintenance; MODEL v4.3.1:
-# palette.toml [life_cycle_stages] (were aliases of the L8 / L9 / L7 lever shades and the maintenance band)
+# life-cycle stages (Fig2c, Fig2d; labels in naming.STAGES), stacked A1-A3, A4-A5, soil, maintenance;
+# palette.toml [life_cycle_stages]
 STAGE = {'a1a3': (_ST['a1_a3'], None), 'a4a5': (_ST['a4_a5'], None), 'soil': (_ST['soil_carbon_loss'], None),
          'maintenance': (_ST['maintenance'], None)}
 # carbon components of Fig3b (committed after 2050): B2/B4 and C1-C4, palette.toml [life_cycle_stages]
@@ -311,30 +305,30 @@ COMPONENT = {'materials_construction': STAGE['a1a3'], 'soil': STAGE['soil'],
              'maintenance': (_ST['committed_b2_b4'], None),     # committed after 2050: B2, B4
              'committed': (_ST['committed_c1_c4'], None)}       # committed after 2050: C1-C4
 
-# unexplained building of the history (Fig2, D05c, K1): a faded reddish face, no hatch (MODEL v2.1.2; face, hatch,
+# unexplained building of the history (Fig1, SF2): a faded reddish face, no hatch (face, hatch,
 # hatch colour); may be negative
-UNEXPLAINED = (_CMP['unexplained_building'], None, None)        # MODEL v4.3.3: palette.toml [components]
-# MODEL v3.2.0 (A3, from v3.1.0): the history bands of Fig1 (census intervals): household formation and vacancy as the projection
+UNEXPLAINED = (_CMP['unexplained_building'], None, None)        # palette.toml [components]
+# the history bands of Fig1 (census intervals): household formation and vacancy as the projection
 # bands, the census-measured net replacement the replacement face, the retirement-village units a neutral outline
 # (negative, out of scope) and the unexplained building its faded reddish face
 HISTORY_BAND = {'growth': BAND['growth'], 'smaller_households': BAND['smaller_households'],
                 'extra_space': BAND['extra_space'], 'vacancy': BAND['vacancy'],
                 'replacement_census': (DISPLAY_BAND['net_replacement'], None),   # the census net replacement
-                'retirement_villages': (_CMP['retirement_villages'], None),    # MODEL v4.3.3 (was #4E463E, not drawn)
+                'retirement_villages': (_CMP['retirement_villages'], None),    # palette.toml [components]
                 'unexplained': (UNEXPLAINED[0], None)}
-# the untargeted band (Fig4): the population-growth grey, hatched
-UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)      # solid since MODEL v2.1.1
+# the untargeted band: the population-growth colour, solid (UNTARGETED_HATCH None)
+UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)
 
-# materials: the six Pride-flag stripes (author decision, baseline-pb-v2; one order in every
+# materials: the six Pride-flag stripes (author decision; one order in every
 # figure), soil faded and hatched on top
 MATERIAL = [('TIMBER', 'Timber', _MAT['timber']), ('STEEL', 'Steel', _MAT['steel']),
             ('CONCRETE (incl. reinforced)', 'Concrete', _MAT['concrete']),
             ('PLASTICS & PAINT', 'Plastics & paint', _MAT['plastics_paint']),
             ('PLASTERBOARD', 'Plasterboard', _MAT['plasterboard']), ('OTHERS', 'Others', _MAT['others']),
-            ('SOIL', 'Soil carbon loss', _MAT['soil_carbon_loss'])]     # MODEL v4.3.1: palette.toml [materials]
-SOIL = dict(alpha=OPACITY['soil_carbon_loss'], hatch=None, hatchcolor=None)   # MODEL v4.3.3: [opacity]          # MODEL v3.0.0: only the surge band is hatched
+            ('SOIL', 'Soil carbon loss', _MAT['soil_carbon_loss'])]     # palette.toml [materials]
+SOIL = dict(alpha=OPACITY['soil_carbon_loss'], hatch=None, hatchcolor=None)   # [opacity]          # only the surge band is hatched
 
-# stacked bars and areas (MODEL v2.1.1): no white borders between segments. Every segment's edge is its own face
+# stacked bars and areas: no white borders between segments. Every segment's edge is its own face
 # colour at LW_SEAM (it covers the antialiasing seam between adjacent segments without drawing a line); hatches are
 # drawn in an explicit thin hatch colour (matplotlib hatchcolor), never in the edge colour
 LW_SEAM = 0.3
@@ -351,10 +345,9 @@ def fill(face, hatch=None, hatchcolor=None, alpha=1.0):
 # categorical groups in the diagnostics (sensitivity groups, the cases of D17): the Okabe-Ito
 # palette (Okabe & Ito 2008, Color Universal Design), distinguishable under the common colour-vision
 # deficiencies; one colour per group, always with a label
-# MODEL v4.3.1: the tornado colours, fixed literals (were aliases of the Improve blue and the Moderate orange);
-# MODEL v4.3.2: palette.toml [one_at_a_time] (Fig7a, ED4, ED5: every draw.tornado)
+# the tornado colours: palette.toml [one_at_a_time] (Fig7a, ED4, ED5: every draw.tornado)
 TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = _OAT['low_end'], _OAT['high_end'], _OAT['single_alternative']
-# MODEL v4.3.3: the Sobol bars (ED7) take palette.toml [sensitivity_indices]; QUALITATIVE is no longer drawn in a final
+# the Sobol bars (ED7) take palette.toml [sensitivity_indices]; QUALITATIVE is not drawn in a final
 # figure
 SOBOL = {'total': _SI['total_effect'], 'first_order': _SI['first_order_effect']}
 QUALITATIVE = ['#000000', '#E69F00', '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7']
@@ -381,7 +374,7 @@ def _thousands_label(v, _pos=None):
 
 
 def thousands_ticks(fig):
-    """MODEL v4.3.1 (suite rule): thousands separators on every linear axis whose ticks reach 1,000, on every figure at
+    """Suite rule: thousands separators on every linear axis whose ticks reach 1,000, on every figure at
     save time. Left alone: log axes and axes with their own formatter (only matplotlib's default ScalarFormatter is
     replaced), year axes (every tick between 1800 and 2100) and axes whose ticks all stay below 1,000."""
     from matplotlib.ticker import FuncFormatter, ScalarFormatter
@@ -399,17 +392,17 @@ def thousands_ticks(fig):
 
 
 def save(fig, path):
-    """Write the PNG of the run profile (light: 200 dpi; full: 600 dpi; MODEL v3.3.1: no PDF), no software / date
+    """Write the PNG of the run profile (light: 200 dpi; full: 600 dpi; no PDF), no software / date
     metadata, then close the figure. In the light profile every figure carries a small grey footer
     'LIGHT RUN — n=1000'."""
     import matplotlib.pyplot as plt
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    thousands_ticks(fig)                                # MODEL v4.3.1: suite rule (thousands separators)
+    thousands_ticks(fig)                                # suite rule (thousands separators)
     footer = runprofile.get('footer')
     if footer:
         fig.text(0.995, 0.002, footer, ha='right', va='bottom', color='#9A9A9A', fontsize=FONT_MIN)
     for fmt in runprofile.get('formats'):
-        if fmt != 'png':                         # MODEL v3.3.1: figures are PNG only
+        if fmt != 'png':                         # figures are PNG only
             raise ValueError(f'save: unsupported figure format {fmt!r} (PNG only)')
         fig.savefig(path + '.png', dpi=DPI, metadata={'Software': None})
     plt.close(fig)
@@ -428,8 +421,7 @@ def save_figure(fig, name, note=None, source=None):
 
 
 def registry():
-    """Every colour group of the palette: {group: {element: (colour, hatch)}} (tests/test_palette.py: no duplicate
-    (colour, hatch) within a group)."""
+    """Every colour group of the palette: {group: {element: (colour, hatch)}}."""
     return {
         'bands': {b: (c.upper(), h) for b, (c, h) in BAND.items()},
         'runs': {'REF': (REFERENCE.upper(), None), **{k: (v.upper(), None) for k, v in PATHWAY.items()},
@@ -518,24 +510,6 @@ def boundary_handles():
     """Legend handles of the two boundary lines."""
     from matplotlib.lines import Line2D
     return [Line2D([0], [0], **{k: v for k, v in BOUNDARY[b].items()}) for b in ('AR', 'AtP')]
-
-
-def boundary_vzones(ax, ar, atp, lines=True, label=True):
-    """Budgets on an x axis (e.g. a cumulative level of exceedance: AR at 1, AtP at its AR equivalent): vertical
-    zones and lines."""
-    from figures import audit as figaudit
-
-    def draw():
-        for lo, hi, key in ((1e-6 * atp, atp, 'within_both'), (atp, ar, 'within_ar'), (ar, _ZONE_TOP, 'exceeded')):
-            z = dict(ZONE[key])
-            z.pop('label')
-            ax.axvspan(lo, hi, lw=0, zorder=0, gid=ZONE_GID, **z)
-    _keep_limits(ax, draw)
-    if lines:
-        for key, v in (('AR', ar), ('AtP', atp)):
-            st = dict(BOUNDARY[key])
-            lab = st.pop('label')
-            ax.axvline(v, gid=figaudit.BOUNDARY, label=lab if label else None, zorder=3, **st)
 
 
 def boundary_field(ax, X, Y, Z, ar, atp, lines=True):

@@ -1,8 +1,6 @@
-"""Methods draft, part 4 (MODEL v3.2.0): the attribution principle and system boundary of the (unchanged) v3.0
-emissions accounting, the release accounting (A2), the zero-year soil guard, the history split (A3), the Reference
+"""Methods draft, part 4: the attribution principle and system boundary of the emissions accounting, the release accounting (A2), the zero-year soil guard, the history split (A3), the Reference
 replacement wording, the completion-rate distribution and the check rows (A4, A5). Every number is read from the data
 files (outputs/data/; settings from projection.py and engine.py); tools/methods.py assembles it.
-Adapted from the v3.1.0 tools/accounting_methods.py with the emissions-accounting change (withdrawn) removed.
 """
 import json
 import os

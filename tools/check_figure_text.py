@@ -1,4 +1,4 @@
-"""MODEL v4.3.1: the text rules of the figure suite, checked on the drawn figures. Every final figure is drawn (into a
+"""The text rules of the figure suite, checked on the drawn figures. Every final figure is drawn (into a
 scratch folder, at low resolution, from the committed data) and, just before it is saved, every visible text is read:
 titles, axis labels, legends, annotations and tick labels (after style.thousands_ticks). Exit 1 on a finding:
 

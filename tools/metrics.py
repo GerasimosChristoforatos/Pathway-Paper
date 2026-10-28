@@ -2,7 +2,7 @@
 
 Everything is read from what the pipeline itself produced: one silent
 projection.main() (the Reference run) and the Monte Carlo CSVs in outputs/.
-Keys carry the release names (naming.py; docs/RENAMING.md).
+Keys carry the release names (naming.py).
 outputs/reports/RESULTS.md is generated from this file only, so no headline number is
 ever copied by hand.
 
@@ -172,7 +172,7 @@ def collect():
         val['observed_to_model_2026'] = v['check_2026'].get('ratio_observed_to_model')
         m['validation'] = val
     import runprofile
-    # MODEL v3.0.0: the run profile (light results are a development check, never reported)
+    # the run profile (light results are a development check, never reported)
     m['run_mode'] = ('light profile, not for reporting' if runprofile.name() == 'light' else 'full')
     with open(layout.writing(METRICS), 'w') as f:
         json.dump(N.keys(m), f, indent=2, sort_keys=True)

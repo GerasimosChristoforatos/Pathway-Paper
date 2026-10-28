@@ -56,9 +56,9 @@ def test_historical_stock_identity(B):
 
 def test_history_reconstructed_by_demand_bands(B):
     """Sum of the historical demand bands == dwellings built x realised dwelling size, 1992-2025
-    (== built floor area exactly when there is no completion lag). MODEL v4.3.0: the household-size band is the one the
-    model draws, hist_hs_pos (signed since MODEL v4.2.1, with hist_avoided = 0; before, clipped at 0 with the
-    consolidation credited in hist_avoided), so the identity holds under either definition."""
+    (== built floor area exactly when there is no completion lag). the household-size band is the one the
+    model draws, hist_hs_pos (signed, with hist_avoided = 0; the identity also holds with it clipped at 0 and the
+    consolidation credited in hist_avoided)."""
     YH = np.arange(1992, 2026)
     D = B['blended_dwelling_size'].loc[YH]
     sc = B['stock_cal']
@@ -156,8 +156,8 @@ def test_boss_is_deterministic_and_leaks_no_state(B):
 
 def test_figure_bands_in_scope_sum_to_total(B):
     """The in-scope demand bands (each scaled by 1 - RV share) add up exactly to the typology total, every year
-    2026-2050, for floor area and carbon; MODEL v3.0.0: only the bands negative by construction
-    (naming.NEGATIVE_BANDS) are negative; MODEL v4.3.0: the signed bands (naming.SIGNED_BANDS, MODEL v4.2.1) may take
+    2026-2050, for floor area and carbon; only the bands negative by construction
+    (naming.NEGATIVE_BANDS) are negative; the signed bands (naming.SIGNED_BANDS) may take
     either sign."""
     import naming as N
     for key, ref in (('gfa', B['evol_typ_total'].sum(axis=1).values[1:] / 1e6),
@@ -171,7 +171,7 @@ def test_figure_bands_in_scope_sum_to_total(B):
 
 
 def test_band_stack_is_the_total(B):
-    """MODEL v3.0.0 time-series sign rule (figures.draw.stack_series): positives stacked up from zero, negatives
+    """Time-series sign rule (figures.draw.stack_series): positives stacked up from zero, negatives
     down from zero; up + down equals the in-scope total every year (annual floor area, annual and cumulative carbon)
     to 1e-12; the net is drawn as one black line."""
     import matplotlib.pyplot as plt
@@ -202,7 +202,7 @@ def test_household_size_shape_passes_through_published_knots():
 
 
 def test_d05_history_bands_sum_to_dwellings_built(B):
-    """D05c history (validation.stock_identity_history, MODEL v1.1.0): per census interval, new
+    """D05c history (validation.stock_identity_history): per census interval, new
     households + vacancy + census-measured net replacement + retirement villages + unexplained
     building = dwellings built (in scope); the census-measured replacement is the interval's rate
     of the census dwelling-count identity (D07) x the previous year's stock; the unexplained band
@@ -229,7 +229,7 @@ def test_d05_history_bands_sum_to_dwellings_built(B):
 
 
 def test_d04_interval_sums_equal_annual_sums(B):
-    """D04c history (validation.household_formation_history, MODEL v1.1.0): per census interval,
+    """D04c history (validation.household_formation_history): per census interval,
     interval mean x length = the sum of the annual values within the interval, for both parts; the
     two parts add up to the census-anchored change in households."""
     import validation

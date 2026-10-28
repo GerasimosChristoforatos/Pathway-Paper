@@ -1,15 +1,13 @@
-"""MODEL v4.3.3: the figure tests that check drawn values against the data (tests/README.md).
+"""The figure tests that check drawn values against the data (tests/README.md):
 
-Collected unchanged from the retired figure test files (tests/retired/: test_figures_v3.py, test_figures_v3_3_1.py,
-test_figures_v3_3_2.py, test_figures_v4_3_2.py, test_palette_file.py), plus the SF2b checks of MODEL v4.3.3:
   * the model scripts do not plot; drawing leaves outputs/data byte-identical; every planned figure is drawn and
     audited (smoke);
   * the sign rules of the drawing helpers: cumulative bars end at their net, stacked series up + down = net, materials
     and stages never negative;
-  * Fig4 waterfalls (the Fig5 of v3.3.1) and Fig5 reductions add up to the run totals; the TL steps from the Reference;
+  * the Fig4 waterfalls and the band reductions of the Pathways and TL add up to the run totals; the TL steps from the Reference;
     the net-positive steps reported; Fig3b's interval from the draws; Fig1's annual line against the census-interval
     means; the ED4 / ED5 notes stop when the code and the outputs disagree;
-  * the palette file: a missing key, an unknown key, a value that is not "#RRGGBB" (and, MODEL v4.3.3, an opacity
+  * the palette file: a missing key, an unknown key, a value that is not "#RRGGBB" (and an opacity
     outside [0, 1]) are rejected;
   * SF2b: up + down = net for every column and year; the census-interval means of the annual line = the column nets.
 """
@@ -37,7 +35,7 @@ def _data(rel):
 
 
 # ---------------------------------------------------------------------------
-# from tests/test_figures_v3.py
+# model scripts, smoke, sign rules
 # ---------------------------------------------------------------------------
 MODEL_SCRIPTS = ('projection.py', 'Diagnostics.py', 'boundaries.py', 'MonteCarlo.py', 'pathways.py', 'pathways_mc.py',
                  'tools/figures_report.py', 'engine.py', 'levers.py')
@@ -114,7 +112,7 @@ def test_figures_leave_the_data_byte_identical():
         return out
     import importlib
     before = hashes()
-    # MODEL v4.3.0: one figure of every drawing module (main, Extended Data, Supplementary)
+    # one figure of every drawing module (main, Extended Data, Supplementary)
     for fid in ('Fig4_pathways', 'Fig6_shapley_levers', 'ED4_one_at_a_time', 'ED8_lever_annual', 'ED9_rollout_timing',
                 'SF1_households', 'SF6_hindcast', 'SF7_completion_lag', 'SF9_prcc', 'SF12_mc_convergence'):
         mod = next(m for _, f, m in FP.all_figures() if f == fid)
@@ -123,7 +121,7 @@ def test_figures_leave_the_data_byte_identical():
 
 
 # ---------------------------------------------------------------------------
-# from tests/test_figures_v3_3_1.py
+# waterfalls and TL steps
 # ---------------------------------------------------------------------------
 @pytest.fixture(scope='module')
 def ref_runs():
@@ -161,7 +159,7 @@ def test_fig5_net_positive_steps_reported():
     from figures import paper_main as PM
     paths, _, _ = PM.waterfall_paths()
     ups = [(k, s) for k, _, _, steps in paths for (s, t), (_, p) in zip(steps[1:], steps[:-1]) if t > p]
-    note = json.load(open(os.path.join(layout.FIGURE_AUDIT, 'Fig4_pathways.json')))['note']      # MODEL v3.3.2: Fig4
+    note = json.load(open(os.path.join(layout.FIGURE_AUDIT, 'Fig4_pathways.json')))['note']      # Fig4
     if ups:
         assert all(s in note for _, s in ups)
     else:
@@ -169,7 +167,7 @@ def test_fig5_net_positive_steps_reported():
 
 
 # ---------------------------------------------------------------------------
-# from tests/test_figures_v3_3_2.py
+# band reductions, Fig3b interval, Fig1 line
 # ---------------------------------------------------------------------------
 def test_fig5_column_totals_are_reference_minus_run():
     from figures import paper_main as PM
@@ -188,13 +186,13 @@ def test_fig3_interval_from_the_draws():
     assert np.percentile(d, 5) == pytest.approx(s['p5'], rel=1e-12)
     assert np.percentile(d, 95) == pytest.approx(s['p95'], rel=1e-12)
     lo, hi = PM.mc_cumulative_interval()
-    # MODEL v4.3.1: the 90% interval, 5th-95th percentile of the draws (was 2.5-97.5), equal to the stored summary
+    # the 90% interval, 5th-95th percentile of the draws, equal to the stored summary
     assert PM.FIG3_INTERVAL == (5.0, 95.0)
     assert lo == pytest.approx(s['p5'], rel=1e-12) and hi == pytest.approx(s['p95'], rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
-# from tests/test_figures_v4_3_2.py
+# ED4 / ED5 notes
 # ---------------------------------------------------------------------------
 def test_fig1_annual_line_matches_census_interval_means():
     a = pd.read_csv(_data('baseline/annual.csv'))
@@ -219,7 +217,7 @@ def test_notes_stop_when_code_and_outputs_disagree(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# from tests/test_palette_file.py
+# the palette file
 # ---------------------------------------------------------------------------
 @pytest.mark.parametrize('bad, msg', [('extra_space     = "#DFA538"', 'missing key'),
                                       ('extra_space = "#DFA5"', 'not a "#RRGGBB"'),
@@ -235,7 +233,7 @@ def test_load_palette_rejects(tmp_path, bad, msg):
 
 
 # ---------------------------------------------------------------------------
-# MODEL v4.3.3 (new)
+# palette file and SF2b
 # ---------------------------------------------------------------------------
 @pytest.mark.parametrize('value', ['1.2', '-0.1', 'true', '"0.5"'])
 def test_load_palette_rejects_opacity(tmp_path, value):

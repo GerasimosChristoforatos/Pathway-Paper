@@ -1,7 +1,7 @@
 """
 DIAGNOSTICS -- sanity checks of projection.py, past and future together
 ======================================================================
-Three diagnostics (outputs/diagnostics/calibration/, docs/FIGURE_PLAN_v3.md), read
+Three diagnostics (figure source D04-D06; Supplementary figures SF1, SF2), read
 from ONE run of projection.py, so the two scripts can never disagree:
 
   D04  household formation      people arriving vs household size changing
@@ -11,7 +11,7 @@ from ONE run of projection.py, so the two scripts can never disagree:
 Projections are annual; the history of the stock identity (D05c) is one bar per census
 interval, because between censuses households and vacancy are interpolated and annual
 detail is not identified. The accounting identities are checked in
-tests/test_identities.py. MODEL v3.0.0 (compute / draw separation): this script computes only and writes the
+tests/test_identities.py. Compute / draw separation: this script computes only and writes the
 exact arrays of D04-D06 as figure source (figsource.write, outputs/data/figure_source/<id>.json);
 figures/calibration.py draws them (python -m figures D04_household_formation ...).
 """
@@ -139,7 +139,7 @@ KNOTS = pd.DataFrame({'vacancy': [float(v) for v in knots.values()],
 # history: census-measured net replacement (the rate of D07 x the previous year's stock) and the
 # building the components leave unexplained (validation.stock_identity_history; it may be negative)
 SIH = validation.stock_identity_history(B)
-# projection by component (MODEL v3.0.0 bands): the long-run net replacement split into demolition replacement
+# projection by component: the long-run net replacement split into demolition replacement
 # (demolition rate x stock) and unconsented additions (calibrated rate x stock, negative); the surge above the
 # long-run rate (redevelopment); the 2026 overbuild split into the market excess and the payback of its absorption
 # (negative): join = excess - payback paid (engine.absorb_overbuild)

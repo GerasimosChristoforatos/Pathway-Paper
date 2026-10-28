@@ -5,7 +5,7 @@ from outputs/data/aesa/results.json, outputs/data/aesa/sensitivity.csv and
 outputs/data/metrics.json, or from the settings in boundaries.py; nothing is typed by hand.
 
 lines() returns the Markdown of this part without its title (section headings at '##');
-tools/methods_draft.py merges it, one heading level down, into outputs/reports/METHODS_DRAFT.md,
+tools/methods.py merges it, one heading level down, into outputs/reports/METHODS_DRAFT.md,
 the one methods document of the release.
 
     python tools/pb_methods.py          # writes outputs/reports/METHODS_DRAFT.md (all three parts)
@@ -23,7 +23,7 @@ import layout  # noqa: E402
 import naming as N  # noqa: E402
 
 SCEN_NAME = N.SCENARIOS
-MAIN = ('REF', 'LOW', 'HIGH', 'VHIGH')   # the variants of the committed table (MODEL v3.3.0: + Very High)
+MAIN = ('REF', 'LOW', 'HIGH', 'VHIGH')   # the variants of the committed table (+ Very High)
 
 
 def ordered(d):
@@ -198,7 +198,8 @@ def lines():
 
 
 def main():
-    """The methods draft is one document: tools/methods_draft.py writes it with this part."""
+    """The methods draft is one document, written by tools/methods.py (this entry point imports a module
+    methods_draft that does not exist)."""
     import methods_draft
     methods_draft.main()
 

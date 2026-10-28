@@ -1,4 +1,4 @@
-"""Validation and report diagnostics (MODEL v3.0.0, draw only): D07_net_replacement_rate, D10_floor_area_bridge,
+"""Validation and report diagnostics (draw only): D07_net_replacement_rate, D10_floor_area_bridge,
 D11_floor_area_bridge_split, D12_conversion_chain, D14_hindcast, D15_reality_checks, D19_variants.
 
 Each figure reads its figure source data (outputs/data/figure_source/<file id>.json, written by
@@ -19,7 +19,7 @@ from figures import data as D
 from figures import draw as P
 from figures import style as S
 
-VARS = ('LOW', 'REF', 'HIGH', 'VHIGH')            # MODEL v3.3.0: + Very High replacement
+VARS = ('LOW', 'REF', 'HIGH', 'VHIGH')            # + Very High replacement
 
 
 def _src(fid):
@@ -35,7 +35,7 @@ def _scen_line(k):
 # ---------------------------------------------------------------------------
 # D14 hindcast
 # ---------------------------------------------------------------------------
-# MODEL v4.3.1: the replacement variant (style.SCENARIO key) of each hindcast method (validation.hindcast)
+# the replacement variant (style.SCENARIO key) of each hindcast method (validation.hindcast)
 HINDCAST_VARIANTS = (('LOW', 'dwelling_count'), ('REF', 'reference'), ('HIGH', 'high'), ('VHIGH', 'very_high'))
 # the short names of the in-panel error box; the legend carries the full names (naming.SCENARIOS)
 HINDCAST_SHORT = {'LOW': 'Low', 'REF': 'Reference', 'HIGH': 'High', 'VHIGH': 'Very High'}
@@ -45,8 +45,8 @@ def sf6_hindcast():
     fid = 'SF6_hindcast'
     v = D.src('D14_hindcast')
     fig, ax = plt.subplots(1, 4, figsize=S.figsize('double', 74), gridspec_kw=dict(width_ratios=[1, 1, 1, 0.75]))
-    # MODEL v4.3.1 (B8): Actual and the four replacement variants (ED3 styles), each defined from the census intervals
-    # before the origin only (validation.hindcast); the as-published vacancy line is no longer drawn
+    # Actual and the four replacement variants (ED3 styles), each defined from the census intervals
+    # before the origin only (validation.hindcast)
     for a, o, letter in zip(ax[:3], (2006, 2013, 2018), 'abc'):
         rows = {r['method']: r for r in v['hindcast'] if r['origin'] == o and 'years' in r}
         if not rows:
@@ -59,7 +59,7 @@ def sf6_hindcast():
             r = rows[m]
             P.line(a, yy, np.cumsum(r['predicted_path']) / 1e3, label=N.SCENARIOS[k], **dict(_scen_line(k), lw=S.LW))
             err.append(f"{HINDCAST_SHORT[k]} {P.minus(format(r['error_pct'], '+.1f'))}%")
-        # MODEL v4.3.1: top left, the empty corner of a cumulative path (bottom right overlapped the curves)
+        # top left, the empty corner of a cumulative path (bottom right overlapped the curves)
         a.text(0.03, 0.97, 'Error at the end:\n' + '\n'.join(err), transform=a.transAxes, ha='left', va='top',
                fontsize=S.FONT_MIN)
         a.set_ylabel('Dwellings, cumulative (thousand)')
@@ -72,7 +72,7 @@ def sf6_hindcast():
     pipeline_mode = c.get('status') == 'pipeline'
     if c.get('status') == 'observed':
         a.bar(['Observed', 'Model'], [c['observed_ytd'], c['model_expected_ytd']], color=[S.INK, S.VALIDATION['model_check']], width=0.6)
-    elif pipeline_mode and 'observed_pipeline_built_all' in c:      # MODEL v4.0.0: completion lag
+    elif pipeline_mode and 'observed_pipeline_built_all' in c:      # completion lag
         a.bar(['Observed\n(pipeline)', 'Model'], [c['observed_pipeline_built_all'], c['model_built_all']],
               color=[S.INK, S.VALIDATION['model_check']], width=0.6)
     if 'ratio_observed_to_model' in c:

@@ -486,7 +486,7 @@ def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History
 # ---------------------------------------------------------------------------
 # MODEL v4.3.0: paired tornado grouped by category (ED4, ED5; the Fig7a colour rule)
 # ---------------------------------------------------------------------------
-TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = S.TORNADO_LOW, S.TORNADO_HIGH, S.TORNADO_SINGLE   # MODEL v4.3.1: fixed
+TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = S.TORNADO_LOW, S.TORNADO_HIGH, S.TORNADO_SINGLE   # MODEL v4.3.2: palette [one_at_a_time]
 NO_EFFECT_RTOL = 1e-4             # |change| below 0.01% of the central value: marked 'no effect'
 
 

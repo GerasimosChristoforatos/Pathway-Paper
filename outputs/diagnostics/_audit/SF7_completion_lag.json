@@ -1,6 +1,6 @@
 {
  "figure": "SF7_completion_lag",
- "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Population growth",

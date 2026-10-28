@@ -37,7 +37,9 @@ def groups():
                                                 'Reference': S.REFERENCE, N.TL['TL']: S.TL},
                                                **{(f'{p} {N.STRATEGIES[p]}' if p in N.STRATEGIES else
                                                    'Moderate / Ambitious Pathway'): c for p, c in S.PATHWAY.items()}),
-        'Levers (ED7, SF4, D29, D31)': {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
+        # MODEL v4.3.2: the lever shades are retired; a lever is drawn in its strategy colour (SF10, told apart by
+        # marker), so the strategies are the lever group
+        'Strategies (Fig4-Fig6, SF10)': {N.STRATEGIES[k]: c for k, c in S.STRATEGY.items()},
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
         # MODEL v2.1.2: the Recent replacement surge (L3 face, fine light hatch) and Historical replacement (a darker,
         # slightly bluer lilac) differ in lightness, hue and hatch; the surge face is checked against every other
@@ -48,8 +50,8 @@ def groups():
                                                            if b != 'redevelopment'},
         'Recent replacement surge face against the other bands': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
                                                                    if b != 'replacement'},
-        'The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones': dict(
-            {f'{k} {N.LEVERS[k]}': c for k, c in S.LEVER.items()},
+        'The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones': dict(
+            {N.STRATEGIES[k]: c for k, c in S.STRATEGY.items()},
             **{'Moderate / Ambitious Pathway': S.PATHWAY[N.PATHWAY], N.TL['TL']: S.TL, N.BANDS['growth']: S.GROWTH,
                'Reference': S.REFERENCE, 'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
             **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
@@ -61,6 +63,14 @@ def groups():
         'Materials (Fig3b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
         'Life-cycle stages (Fig3a)': {N.STAGES[k]: S.STAGE[k][0] for k in S.STAGE},
         'History bands (Fig1)': {(N.BANDS.get(b) or N.BAND_DETAIL[b]): S.HISTORY_BAND[b][0] for b in S.HISTORY_BAND},
+        # MODEL v4.3.2: the new palette groups
+        'Fig3 (runs, boundaries, zones on white, cumulative column)': dict(
+            {'Reference': S.REFERENCE, N.PATHWAY_RUNS['pathway-moderate']: S.PATHWAY_SETTING['moderate'],
+             N.PATHWAY_RUNS['pathway-ambitious']: S.PATHWAY_SETTING['ambitious'], N.TL['TL']: S.TL,
+             'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
+            **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
+        'One at a time (Fig7a, ED4, ED5)': {'Input at low end': S.TORNADO_LOW, 'Input at high end': S.TORNADO_HIGH,
+                                            'Single alternative case': S.TORNADO_SINGLE},
         'Categorical groups (diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
 
@@ -70,8 +80,30 @@ def focus():
     adjacent fills; their own groups check them)."""
     import naming as N
     return {'Recent replacement surge face against the other bands': [N.BANDS['redevelopment']],
-            'The Pathways and TL against every lever, growth, the Reference, the boundaries and the zones':
+            'The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones':
                 ['Moderate / Ambitious Pathway', N.TL['TL']]}
+
+
+ZONE_ORDER = ('within_both', 'within_ar', 'exceeded')
+
+
+def zone_lightness_order(style=S):
+    """MODEL v4.3.2: the property documented in figures/style.py: the three zones, composited on white at their fixed
+    opacities, fall strictly in CAM02-UCS lightness J' within both < within AR only < exceeded under normal vision and
+    every simulated deficiency (each zone's maximum J' over the vision types below the next zone's minimum).
+    Returns (holds, {zone: [J' normal, deuteranomaly, protanomaly, tritanomaly]})."""
+    J = {k: [float(jab(zone_on_white(style.ZONE[k]), v)[0]) for v in VISION] for k in ZONE_ORDER}
+    return all(max(J[a]) < min(J[b]) for a, b in zip(ZONE_ORDER, ZONE_ORDER[1:])), J
+
+
+def palette_as_shown(style=S):
+    """MODEL v4.3.2: the palette groups of style.PALETTE with the boundary zones as they show on white (alpha
+    compositing at the fixed opacities of style.ZONE_ALPHA); every other key as in the file."""
+    zkey = {'within_both': 'within_both', 'within_ar_only': 'within_ar', 'exceeded': 'exceeded'}
+    out = {g: dict(c) for g, c in style.PALETTE.items()}
+    out['boundary_zones'] = {k: zone_on_white(dict(color=c, alpha=style.ZONE_ALPHA[zkey[k]]))
+                             for k, c in style.PALETTE['boundary_zones'].items()}
+    return out
 
 
 def zone_on_white(z):
@@ -155,19 +187,15 @@ def main():
          'deep blues and browns on a near-black ground. The hue families are fixed by that choice; lightness and '
          'chroma were set by maximising the minimum CAM02-UCS distance of every group below under every simulated '
          'deficiency (MODEL v3.0.0: the new lever L5, the three negative bands and the maintenance grey re-tuned).',
-         '* **Lever shades in hue families** (each lever keeps its MODEL v3.0 colour; MODEL v3.3.0 numbering): golds / '
-         f"ochres (L4 Extra space {S.LEVER['L4']}, L5 Occupancy density a deep amber {S.LEVER['L5']}, L1 Household "
-         f"size a light gold {S.LEVER['L1']}), mauves (L2 Vacancy rate {S.LEVER['L2']}, L3 Building lifetime "
-         f"{S.LEVER['L3']}; the deep mauve anchor {S.P2_ANCHOR}), blues (L8 Material carbon efficiency "
-         f"{S.LEVER['L8']}, L9 Construction-stage carbon {S.LEVER['L9']}), browns (L7 Soil-aware planning "
-         f"{S.LEVER['L7']}, L6 Brownfield-first development {S.LEVER['L6']}). PAS 2080 strategies (MODEL v3.3.0, the "
-         f"former pathway colours): S1 Avoid {S.STRATEGY['S1']}, S2 Switch {S.STRATEGY['S2']}, S3 Improve "
-         f"{S.STRATEGY['S3']}; the Moderate / Ambitious Pathway vermilion ({S.PATHWAY[N.PATHWAY]}) and TL a deep forest "
-         f"green ({S.TL}; a larger circle on point plots).",
-         '* **Demand bands** are coloured by the lever family that targets them (Smaller households L1, Extra space L4, '
-         f"Vacancy L2, 2026 overbuild the deep mauve anchor, Overbuild absorbed a lighter mauve ({S.BAND['overbuild_absorbed'][0]}), "
+         f"* **Strategies** (palette.toml [strategies]): S1 Avoid {S.STRATEGY['S1']}, S2 Switch {S.STRATEGY['S2']}, "
+         f"S3 Improve {S.STRATEGY['S3']}. MODEL v4.3.2: the lever shades L1-L9 are retired; a lever is drawn in its "
+         f"strategy colour and told apart by marker ({', '.join(S.LEVER_MARKER)} within a strategy; SF10). The "
+         f"Moderate / Ambitious Pathway vermilion ({S.PATHWAY[N.PATHWAY]}) and TL a deep forest green ({S.TL}; a larger "
+         'circle on point plots).',
+         '* **Demand bands** (palette.toml [demand_bands]) keep the hue families of the former lever shades '
+         f"(2026 overbuild the deep mauve anchor, Overbuild absorbed a lighter mauve ({S.BAND['overbuild_absorbed'][0]}), "
          f"Demolition replacement a lilac ({S.REPLACEMENT}), Unconsented additions a darker lilac "
-         f"({S.BAND['unconsented'][0]}), the Recent replacement surge the L3 face ({S.LEVER['L3']}) with a fine light "
+         f"({S.BAND['unconsented'][0]}), the Recent replacement surge a pale mauve ({S.SURGE_FACE}) with a fine light "
          f"hatch (the only hatched band), Released dwellings (TL) a light green ({S.BAND['released_tl'][0]})). The only "
          f"untargeted band, Population growth, is a solid deep green-blue ({S.GROWTH}). Unexplained building of the "
          f"history: a faded reddish face ({S.UNEXPLAINED[0]}).",
@@ -177,13 +205,17 @@ def main():
          'colour, hanging from the top of the positive stack, so the bar ends at its net total, marked by a net tick; '
          'one legend entry per band. Materials and stages are never negative (a STOP if they were).',
          f"* **Maintenance** (B2, B4) neutral grey ({S.BAND['maintenance'][0]}); committed emissions after 2050 a "
-         f"lighter grey drawn hollow ({S.COMPONENT['committed'][0]}). Carbon stages: A1-A3 the L8 dark blue, A4-A5 the "
-         'L9 light blue, soil carbon loss the L7 brown.',
-        f"* **Reference** dark grey ({S.REFERENCE}); Low and High replacement mid greys with dashed and dotted lines.",
+         f"lighter grey drawn hollow ({S.COMPONENT['committed'][0]}). Carbon stages (palette.toml [life_cycle_stages]): "
+         f"A1-A3 {S.STAGE['a1a3'][0]}, A4-A5 {S.STAGE['a4a5'][0]}, soil carbon loss {S.STAGE['soil'][0]}.",
+        f"* **Reference** dark grey ({S.REFERENCE}); Low and High replacement mid greys with dashed and dotted lines. "
+        f"The Fig3b 2026-2050 column (palette.toml [cumulative]): {S.CUMULATIVE_FIG3B}.",
+         f"* **One at a time** (palette.toml [one_at_a_time]; Fig7a, ED4, ED5): input at its low end {S.TORNADO_LOW}, "
+         f"at its high end {S.TORNADO_HIGH}, a single alternative case {S.TORNADO_SINGLE}.",
          f"* **Stacked bars and areas** are drawn seamless: each segment's edge is its own face colour at "
          f"{S.LW_SEAM:g} pt (no white borders, no anti-aliasing gaps); a hatch is drawn in a thin hatch colour only "
          f"(default {S.HATCH_COLOUR}; the surge band {S.HATCH_LIGHT}). Legend handles keep a thin grey outline.",
-         f"* **Boundaries** (every planetary-boundary figure, one implementation in style.py): acquired rights (AR) "
+         f"* **Boundaries** (every planetary-boundary figure, one implementation in style.py; MODEL v4.3.2: colours "
+         f"from palette.toml [boundaries] and [boundary_zones], the zone opacities fixed in style.ZONE_ALPHA): acquired rights (AR) "
          f"thin red line ({S.AR}), ability to pay (AtP) thin dark-red dotted line ({S.ATP}); zones (MODEL v2.1.2: much lighter) below AtP "
          f"faded green ({S.ZONE['within_both']['color']}, alpha {S.ZONE['within_both']['alpha']}), between AtP and AR light "
          f"green ({S.ZONE['within_ar']['color']}, alpha {S.ZONE['within_ar']['alpha']}) and above AR light red "
@@ -227,21 +259,20 @@ def main():
               'red under every simulated deficiency), so their order survives without hue; any other group below the '
               'threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so '
               'the reading never depends on colour alone.']
-    rs = min_distance({'Historical replacement': S.REPLACEMENT, 'Recent replacement surge': S.LEVER['L3']})
+    rs = min_distance({'Historical replacement': S.REPLACEMENT, 'Recent replacement surge': S.SURGE_FACE})
     L += ['', 'Historical replacement against the Recent replacement surge face: '
           + ', '.join(f'{v} {rs[v][0]:.1f}' for v in VISION)
           + ' (below the threshold by design: told apart by lightness, a slightly different hue and the surge\'s '
           'fine light hatch, and labelled in every figure).']
-    Jz = {k: [lightness(zone_on_white(z))] + [float(jab(zone_on_white(z), v)[0]) for v in VISION[1:]]
-          for k, z in S.ZONE.items()}
-    order = ('within_both', 'within_ar', 'exceeded')
-    zmono = all(max(Jz[a]) < min(Jz[b]) for a, b in zip(order, order[1:]))
+    zmono, Jz = zone_lightness_order(S)
+    order = ZONE_ORDER
     if not zmono:
         fails.append('boundary zones lightness order')
     L += ['', '## Boundary zones: lightness order', '',
           'J\' of each zone on white (normal, deuteranomaly, protanomaly, tritanomaly): '
           + '; '.join(f"{S.ZONE[k]['label']} " + ' / '.join(f'{x:.1f}' for x in Jz[k]) for k in order)
-          + f". Strictly increasing under every vision type: {'yes' if zmono else 'NO'}."]
+          + f". Strictly increasing under every vision type: {'yes' if zmono else 'NO'}. redraw.py warns when a "
+          'palette breaks this order (MODEL v4.3.2).']
     seq = [lightness(h) for h in S.SEQUENTIAL]
     mono = all(a > b for a, b in zip(seq, seq[1:]))
     if not mono:

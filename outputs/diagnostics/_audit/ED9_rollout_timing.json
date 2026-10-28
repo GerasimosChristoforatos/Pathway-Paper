@@ -1,6 +1,6 @@
 {
  "figure": "ED9_rollout_timing",
- "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Moderate Pathway",

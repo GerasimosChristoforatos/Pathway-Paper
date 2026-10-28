@@ -16,10 +16,9 @@ ED8_RUNS = (('reference', N.SCENARIOS['REF'], dict(color=S.REFERENCE, lw=S.LW_BO
 
 def ed8_lever_annual():
     """MODEL v4.3.0 (ED9, from D31): annual embodied carbon of each lever alone (3 x 3, shared y), the Reference and
-    the lever at Moderate, at Ambitious and at its Theoretical Limit, in the run colours of Fig3 / Fig4; panel titles
-    the lever names with a marker in the strategy colour; PCHIP display interpolation through every annual value, not
+    the lever at Moderate, at Ambitious and at its Theoretical Limit, in the run colours of Fig3 / Fig4 (palette.toml
+    [runs]); panel titles the lever names (MODEL v4.3.2: no strategy-colour square, no lever-specific colour); PCHIP display interpolation through every annual value, not
     across the observed pipeline years -> modelled join (pathways/lever_annual.csv)."""
-    from matplotlib.patches import Rectangle
     la = D.csv('pathways/lever_annual.csv')
     brk = P.pipeline_breaks()
     fig, ax = plt.subplots(3, 3, figsize=S.figsize('double', 130), sharex=True, sharey=True)
@@ -29,9 +28,7 @@ def ed8_lever_annual():
             r = la[(la['lever'] == L) & (la['level'] == lev)].sort_values('year')
             b.plot(*P.pchip(r['year'].to_numpy(float), r['carbon_kt'].to_numpy(float), brk),
                    label=lab, zorder=3 if lev != 'reference' else 2, **st)
-        b.add_patch(Rectangle((0.0, 1.035), 0.035, 0.07, transform=b.transAxes, clip_on=False,
-                              color=S.STRATEGY[N.LEVER_STRATEGY[L]]))
-        b.text(0.05, 1.07, f'{L} {N.LEVERS[L]}', transform=b.transAxes, ha='left', va='center',
+        b.text(0.0, 1.07, f'{L} {N.LEVERS[L]}', transform=b.transAxes, ha='left', va='center',
                fontsize=S.FONT_SIZE, color=S.INK)
         b.set_xlim(2026, 2050)
         b.set_ylim(0, None)
@@ -62,7 +59,7 @@ def sf15_tl_dwellings():
                color=S.BAND['released_tl'][0], ls='--', lw=S.LW,
                label='Entering the pool (TL1 + TL2 + overbuild)' if pooled else 'Released (TL1 + TL2)')
         bind = r[r['release_binds']]
-        b.plot(bind['year'], bind['built'] / 1e3, 'v', color=S.AR, ms=4, label='Release constraint binds')
+        b.plot(bind['year'], bind['built'] / 1e3, 'v', color=S.RELEASE_BINDS, ms=4, label='Release constraint binds')
         b.axhline(0, color=S.INK, lw=S.LW_THIN)
         b.set_xlim(2025.5, 2050.5)
         P.panel(b, letter, N.TL['TL'] if run == 'TL' else f"{N.TL['TL']} from 2027 (instant; sensitivity)")

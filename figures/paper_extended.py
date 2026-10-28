@@ -1,5 +1,5 @@
 """The Extended Data (outputs/paper_extended/; figure_plan.PAPER_EXTENDED and EXTENDED_TABLES) and the supplementary
-figures (outputs/supplementary/; figure_plan.SUPPLEMENTARY; MODEL v3.3.1: at most ten Extended Data items), from the
+figures (outputs/supplementary/; figure_plan.SUPPLEMENTARY; at most ten Extended Data items), from the
 data files."""
 import os
 
@@ -46,12 +46,12 @@ def ed2():
                                                     'unconsented additions); lines: the projection variants.')
 
 
-# MODEL v4.3.0: the projection in the Reference colour (was the AtP hex: a boundary colour used for a run)
+# the projection in the Reference colour (a boundary colour is never used for a run)
 PROJECTION_LINE = S.REFERENCE
 
 
 def ed1():
-    """MODEL v3.3.1 (from ED3 of v3.3.0; 3 x 1): population, households and cumulative floor area: history (black),
+    """3 x 1: population, households and cumulative floor area: history (black),
     the Reference projection (median, dark red) and the band of the Stats NZ population 5th-95th percentile paths (the
     data of figure_source/projection_paths.json; not a Monte Carlo band: the population percentiles are those of the
     Stats NZ projection run through the model). The households panel notes the rebasing of the Stats NZ dwelling and
@@ -102,7 +102,7 @@ def ed3():
     P.line(ax[0], d['forecast_years'][1:], np.asarray(d['household_formation_50th'])[1:] / 1e3, color=S.INK,
                label='Projection (median)')
     ax[0].set_ylabel('New households per year (thousand)')
-    h0, _ = ax[0].get_legend_handles_labels()         # MODEL v4.3.1: the negative part in the legend (as v4.2.2 D04c)
+    h0, _ = ax[0].get_legend_handles_labels()         # the negative part in the legend
     h0.append(Patch(facecolor='none', edgecolor=S.BAND['smaller_households'][0], lw=S.LW_OUTLINE,
                     label='From household-size change, negative (households consolidating; outline)'))
     ax[0].legend(handles=h0, fontsize=S.FONT_MIN, loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2,
@@ -120,7 +120,7 @@ def ed3():
 
 
 def sf2():
-    """MODEL v3.1.0 (B3): (a) P(TL within AR) by population-rank quintile Q1-Q5 (Wilson 95%); (b) the 2050 population
+    """(a) P(TL within AR) by population-rank quintile Q1-Q5 (Wilson 95%); (b) the 2050 population
     at which P(TL LoE AR <= 1) = 50% (univariate logistic, bootstrap 95% interval) with the draws as a rug, or, when
     no draw (or every draw) has TL within AR, the TL LoE against the 2050 population. The Firth models stay in the
     data (pathways/montecarlo_conditional_tl.csv)."""
@@ -169,8 +169,8 @@ def sf2():
 
 
 def ed10():
-    """Roll-out timing (ED10 since MODEL v4.3.0; ED9 before): (a, b) annual carbon of the Moderate / Ambitious Pathway
-    with full roll-out by 2030, 2035 (adopted) and 2045; (c, MODEL v4.3.0) their cumulative carbon 2026-2050 as the
+    """Roll-out timing (ED9): (a, b) annual carbon of the Moderate / Ambitious Pathway
+    with full roll-out by 2030, 2035 (adopted) and 2045; (c) their cumulative carbon 2026-2050 as the
     running sum (same colours and line styles), the Reference cumulative a grey line (pathways/annual.csv; the 2050
     end values equal runs.csv carbon_kt, checked)."""
     a = D.csv('pathways/annual.csv')
@@ -190,7 +190,7 @@ def ed10():
         P.line(b, yrs, ref['carbon_kt'], color=S.REFERENCE, lw=S.LW_BOLD, label=N.SCENARIOS['REF'])
         for suffix, ls, lab in VARIANTS:
             r = a[a['run'] == f'{N.PATHWAY}-{s}{suffix}'].set_index('year')
-            P.line(b, yrs, r['carbon_kt'], color=S.PATHWAY_SETTING[s], ls=ls, lw=S.LW)   # MODEL v4.3.0: run colour
+            P.line(b, yrs, r['carbon_kt'], color=S.PATHWAY_SETTING[s], ls=ls, lw=S.LW)   # run colour
         b.set_xlim(yrs[0], yrs[-1])
         b.set_ylim(0, None)
         P.panel(b, letter, N.PATHWAY_RUNS[f'{N.PATHWAY}-{s}'])
@@ -231,7 +231,7 @@ def ed10():
 def sf3():
     sw = D.csv('pathways/lambda_sweep.csv')
     fig, ax = plt.subplots(figsize=S.figsize('double', 85))
-    # MODEL v4.3.2: each lever in its strategy colour (palette.toml [strategies]; the lever shades are retired), told
+    # each lever in its strategy colour (palette.toml [strategies]), told
     # apart by marker within its strategy (S.LEVER_MARKER); the legend has one column per strategy, headed by its name
     handles = {}
     for L in LV.LEVERS:
@@ -282,7 +282,7 @@ def sf4():
         a.set_yticks(y)
         a.set_yticklabels(cases['id'], fontsize=S.FONT_MIN)
         a.set_xlabel('Case ratio (scale-free)')
-        h_ = a.get_legend_handles_labels()[0] + [                  # MODEL v4.3.0: the typology colours explained
+        h_ = a.get_legend_handles_labels()[0] + [                  # the typology colours explained
             Line2D([0], [0], ls='none', marker='o', ms=4, color=S.TYPOLOGY[t], label=t) for t in S.TYPOLOGY]
         a.legend(handles=h_, fontsize=S.FONT_MIN, loc='lower right')
         P.panel(a, letter, f"{L} {N.LEVERS[L]} (n = {q['n']}, B = {e['bootstrap']['B']})")
@@ -296,11 +296,11 @@ def sf4():
                    f"(n = {c15['adopted_n']}; check only)" if c15 else '') + '.'))
 
 
-VARIANT_LS = (('LOW', '--'), ('REF', '-'), ('HIGH', ':'), ('VHIGH', '-.'))     # MODEL v3.3.0: + Very High
+VARIANT_LS = (('LOW', '--'), ('REF', '-'), ('HIGH', ':'), ('VHIGH', '-.'))     # + Very High
 
 
 def _variant_label(k):
-    # MODEL v4.3.0: the Reference replacement variant is named apart from the Reference run (legend of ED3a)
+    # the Reference replacement variant is named apart from the Reference run (legend of ED3a)
     return 'Reference replacement' if k == 'REF' else N.SCENARIOS[k]
 
 
@@ -313,7 +313,7 @@ def ed9():
     S.boundary_zones(ax[0], yrs, ref['B_AR_kt'].values, ref['B_AtP_kt'].values)
     for scen, ls in VARIANT_LS:
         for run, col in ((scen, S.REFERENCE), ('pathway-moderate', S.PATHWAY_SETTING['moderate']),
-                         ('pathway-ambitious', S.PATHWAY_SETTING['ambitious']), ('TL', S.TL)):   # MODEL v4.3.1: + Ambitious
+                         ('pathway-ambitious', S.PATHWAY_SETTING['ambitious']), ('TL', S.TL)):   # + Ambitious
             r = a[(a['scenario'] == scen) & (a['run'] == run)].set_index('year')
             P.line(ax[0], yrs, r['carbon_kt'], color=col, ls=ls, lw=S.LW)
     ax[0].set_xlim(yrs[0], yrs[-1])
@@ -338,12 +338,12 @@ def ed9():
     S.boundary_hzones(ax[1], 1.0, float(ref['B_AtP_kt'].sum() / ref['B_AR_kt'].sum()), lines=False)
     ax[1].set_xticks(x)
     ax[1].set_xticklabels([P.two_lines(r if r == 'Reference' else N.run_label(r)) for r in piv.index],
-                          fontsize=S.FONT_MIN + 0.5, multialignment='center')     # MODEL v4.3.0: two lines, centred
+                          fontsize=S.FONT_MIN + 0.5, multialignment='center')     # two lines, centred
     ax[1].set_ylabel(f'{N.LOE_AR} 2026–2050')
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Cumulative')
     fig.tight_layout()
-    _save(fig, 'ED3_replacement_variants')                          # MODEL v4.3.0: ED8 -> ED3
+    _save(fig, 'ED3_replacement_variants')                          # ED8 -> ED3
 
 
 def ed4():
@@ -368,7 +368,7 @@ def ed4():
     cases = [('Reference (adopted settings)', S.REFERENCE, '-', 'by 2035 (adopted)'),
              ('Overbuild absorbed by 2030', S.P2_ANCHOR, ':', 'by 2030'),
              ('Overbuild absorbed by 2045', S.P2_ANCHOR, '--', 'by 2045'),
-             ('Overbuild never absorbed (MODEL v2.1 Reference)', S.MUTED, '-.', 'never absorbed')]   # MODEL v4.3.1: dash-dot
+             ('Overbuild never absorbed (MODEL v2.1 Reference)', S.MUTED, '-.', 'never absorbed')]   # dash-dot
     for case, col, ls, lab in cases:
         t = sa[sa['case'] == case]
         P.line(ax[1], t['year'], t['carbon_kt'], color=col, ls=ls, lw=S.LW, label=f'{lab}: {t["carbon_kt"].sum():,.0f} kt')
@@ -429,7 +429,7 @@ def edt1():
 
 
 FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_household_formation_size': ed3,
-           'ED3_replacement_variants': ed9, 'ED9_rollout_timing': ed10,      # MODEL v4.3.1: ED8 dropped, ED10 -> ED9
+           'ED3_replacement_variants': ed9, 'ED9_rollout_timing': ed10,      # ED8 dropped, ED10 -> ED9
            'SF3_census_replacement_rates': ed2, 'SF5_overbuild_absorption': ed4, 'SF10_lambda_sweep': sf3,
            'SF11_hd_estimators': sf4, 'SF14_conditional_tl': sf2}
 TABLES = {'EDT1_levels_by_typology': edt1}

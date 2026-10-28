@@ -35,14 +35,14 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
   size      Lognormal multiplier on dwelling size (all typologies together),
             sigma = RMS log deviation of annual typology sizes 2016-2025 from
             the adopted 2023-25 reference.
-  complete  Uniform(0.93, 0.96) (MODEL v4.0.0): completion rate between the
+  complete  Uniform(0.93, 0.96): completion rate between the
             published completion milestones of Jones, Greenaway-McGrevy & Crow
             (2025; Auckland consents: 93% final inspection, >95% first
             inspection; 0.96 a stated edge, see projection.COMPLETION_RATE);
             median 0.945 = the deterministic central value. The stock
             calibration and the census dwelling-count replacement rates are
-            redone for each draw. (MODEL v3.3: two-piece uniform(0.92, 0.95, 0.96).)
-  half_life Uniform(5, 15) years (MODEL v3.3.0): the half-life of the Reference's fade of net replacement from the
+            redone for each draw. (two-piece uniform(0.92, 0.95, 0.96).)
+  half_life Uniform(5, 15) years: the half-life of the Reference's fade of net replacement from the
             2018-2023 census-interval rate to the 1991-2023 long-run rate. Not identifiable from the census record
             (seven censuses, six interval rates), so it is sampled over the range of the former half-life variants;
             the deterministic 10 yr is its median. It acts in the Reference variant only (Low / High / Very High
@@ -61,7 +61,7 @@ NOT SAMPLED (held at the projection value in every draw)
     half-life is sampled (above). Variant differences are reported separately (Sensitivity.py).
   typology mix, the census rebase of households, the pre-2013 empty share,
     future vacancy and the retirement-village share: their total Sobol indices
-    were about 0 in a full-input run (v1.0.2), so they are fixed (v1.1 lean MC).
+    were about 0 in a full-input run, so they are fixed.
   demolition rate: it trades one-for-one with the calibrated residual and
     cannot move the total.
   near-term market excess: recomputed in every draw with that draw's completion
@@ -89,14 +89,14 @@ import layout
 import naming as N
 import runprofile
 
-# MODEL v3.0.0 run profiles (runprofile.py): full = 5,000 Latin hypercube draws with the existing seed and the Sobol
+# run profiles (runprofile.py): full = 5,000 Latin hypercube draws with the existing seed and the Sobol
 # indices; light = 1,000 draws with their own fixed seed, Sobol off. N_BOOT (the carbon-factor bootstrap that defines
 # the carbon input distribution) is part of the design and the same in both profiles.
 N_UNCERTAINTY = runprofile.get('n_draws')          # Latin hypercube draws per scenario
 N_SOBOL = 1024                   # base sample; evaluations = N_SOBOL * (d + 2)
 RUN_SOBOL = runprofile.get('sobol')
 N_BOOT = 4000                    # carbon-factor bootstrap replicates
-SEED = runprofile.get('mc_seed')   # full: 20260924 (MODEL v1.1 onwards); light: 20261014
+SEED = runprofile.get('mc_seed')   # full: 20260924; light: 20261014
 CONVERGENCE_STEPS = (100, 200, 500, 1000, 2000, 3000, 4000, 5000)
 Z_KNOTS = stats.norm.ppf([0.05, 0.25, 0.50, 0.75, 0.95])
 PCT_COLS = {5: 2, 25: 3, 50: 4, 75: 5, 95: 6}   # popdata.xlsx Table 1 (skiprows=5)
@@ -164,7 +164,7 @@ def build_setup(settings=None):
               nr_window=tuple(projection.NET_REPLACEMENT_WINDOW),
               census_stock=B['census']['total_private'], consents_monthly=B['consents_monthly'],
               lag_w=B['lag_w'], lag_census=B['lag_census'], census_uc=B['census_uc'],
-              # MODEL v4.0.0: the observed (pipeline) years' consents (all categories), timed as completions
+              # the observed (pipeline) years' consents (all categories), timed as completions
               pipeline_consents=([B['pipe']['consents_all'][y] for y in B['pipe']['years']] if B['pipe'] else None),
               # replacement scenario and near-term market excess, as in the projection run
               scenario=B['_scenario'], s3_half_life=projection.REPLACEMENT_HALF_LIFE,
@@ -172,12 +172,12 @@ def build_setup(settings=None):
               nowcast=B['nowcast'], units_all_raw=B['hist_units_all'],
               near_gap_ref=projection.OVERBUILD_GAP_REF, near_mode=projection.OVERBUILD_BOOKING,
               near_absorption=projection.OVERBUILD_ABSORPTION,
-              # MODEL v3.0.0: logistic absorption of the overbuild (None: never absorbed, the legacy Reference)
+              # logistic absorption of the overbuild (None: never absorbed, the legacy Reference)
               near_absorb_w=(None if projection.OVERBUILD_ABSORPTION_END is None
                              or projection.OVERBUILD_BOOKING != 'surplus' else
                              engine.logistic_weights(fy, B['absorption_start'],
                                                      projection.OVERBUILD_ABSORPTION_END)),
-              # observed floor area (fixed in every draw): the pipeline years (MODEL v4.0.0) or the 2026 nowcast
+              # observed floor area (fixed in every draw): the pipeline years or the 2026 nowcast
               gfa_fixed=B['gfa_fixed'])
 
     # ---- dwelling size ----
@@ -297,7 +297,7 @@ def carbon_bootstrap(bf, typ, red=None, extras=None):
 # ENGINE
 # ============================================================
 PARAMS = ['z_pop', 'size', 'complete', 'carbon', 'half_life']
-HALF_LIFE_RANGE = (5.0, 15.0)    # MODEL v3.3.0: replacement half-life ~ U(5, 15) yr (Reference variant)
+HALF_LIFE_RANGE = (5.0, 15.0)    # replacement half-life ~ U(5, 15) yr (Reference variant)
 # The net replacement level is NOT sampled: the MC runs separately within each projection variant
 # (MC_SCENARIOS, naming.SCENARIOS); within the Reference the half-life is sampled. The first entry is the
 # Reference (its files carry the Sobol indices and figures).

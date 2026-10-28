@@ -10,7 +10,7 @@ material (typology is internal: it weights the case-study factors).
 
 All input data are read from DATA_DIR; every output path comes from layout.py.
 Case-study carbon and occupancy factors come from Building_factors.py (run it
-first; it writes them to outputs/data/factors/). MODEL v3.0.0 (compute / draw separation): this module draws
+first; it writes them to outputs/data/factors/). Compute and draw are separate: this module draws
 nothing; run as a script it writes, with export_figure_sources(B), the exact arrays of D01-D03, D08, D09, D13 and
 the Extended Data paths (figure_source/projection_paths.json); figures/calibration.py draws them.
 """
@@ -36,13 +36,11 @@ import Building_factors as BF
 # script and test works from any working directory (e.g. Spyder).
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(ROOT_DIR, 'data')          # inputs only
-# Frozen-technology check run (run_all.py steps 'frozen_*', env PATHWAY_FROZEN=1):
-# DECARB_MODE 'none', A4-A5 held, whole life at construction (the regression anchor:
-# it reproduces v1.2.1 / baseline v2); its data go to outputs/data/frozen_technology/
-# (layout.py: every path of the pipeline).
+# Frozen-technology setting (env PATHWAY_FROZEN=1; not a step of run_all.py): DECARB_MODE 'none', A4-A5 held,
+# whole life at construction; its data go to outputs/data/frozen_technology/ (layout.py: every path of the pipeline).
 FROZEN_RUN = layout.frozen_run()
 FACTORS_DIR = layout.FACTORS     # written by Building_factors.py
-# MODEL v3.0.0: projection.py draws nothing (figures/calibration.py draws D01-D03, D08, D09, D13 from the figure
+# projection.py draws nothing (figures/calibration.py draws D01-D03, D08, D09, D13 from the figure
 # source written by export_figure_sources). SHOW_PLOTS and SAVE_FIGURES are kept as inert attributes only, because
 # other scripts and the tests still set them (Diagnostics, Sensitivity, validation, tools, tests/conftest.py).
 SHOW_PLOTS = False
@@ -115,13 +113,13 @@ HOUSEHOLD_SHEET_PROJ = 'Table 1'
 # series are at 30 June; only the rebased shape is used, so the half-year offset
 # and any level difference do not enter the result.
 HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S only
-# HH_SIZE_PATH (MODEL v4.0.0): 'statsnz' (ADOPTED: the Stats NZ 2018-base household projection shape, rebased on the
+# HH_SIZE_PATH: 'statsnz' (ADOPTED: the Stats NZ 2018-base household projection shape, rebased on the
 #   2023 census as above; to be replaced by the 2023-base household projections when published) or 'census_pace'
 #   (sensitivity: household size continues LINEARLY from the 2023 anchor at the 2018-2023 census-interval pace,
 #   (S_2023 - S_2018) / 5 per year, census-benchmarked households; HH_SIZE_PACE_WINDOW).
 HH_SIZE_PATH = 'statsnz'
 HH_SIZE_PACE_WINDOW = (2018, 2023)
-# MODEL v4.2 (diagnostic switches; defaults = MODEL v4.0.0):
+# Diagnostic switches (the defaults are the adopted model):
 #   HH_SIZE_PATH also takes 'statsnz_2018' (= 'statsnz') and 'statsnz_2023': the Stats NZ 2023-base national family and
 #     household projections (FILE_HOUSEHOLDS_PROJ_2023: CSV Year, Variant, Population, Households; Medium / Low / High =
 #     HH_SIZE_VARIANT), S = Population / Households PCHIP-interpolated, anchored on the 2023 census, no DHE rebase
@@ -133,16 +131,16 @@ HH_SIZE_PACE_WINDOW = (2018, 2023)
 #     projection median from 2026, no nowcast; building modelled in every projection year: no pipeline, no market
 #     excess, no carried deviation; the completion lag kept in the history).
 FILE_HOUSEHOLDS_PROJ_2023 = None
-HH_BRIDGE = 'erp_S'                # MODEL v4.2: adopted (Part B)
+HH_BRIDGE = 'erp_S'                # adopted (Part B)
 START_MODE = 'observed'
 
 # S_TAIL: household size between and after the published knots (last knot 2043).
-#   'hermite_clamped' (ADOPTED, v1.2.1): one cubic Hermite through every
+#   'hermite_clamped' (ADOPTED): one cubic Hermite through every
 #       published knot (PCHIP derivatives at the interior knots, zero slope
 #       imposed at 2043), held constant after 2043.
 #   Sensitivities (Sensitivity.py): 'flat' (PCHIP, held after 2043; a kink at
 #       2043), 'taper' (PCHIP; the slope tapers linearly to zero over
-#       S_TAPER_YEARS from the PCHIP end derivative), 'taper_secant' (v1.2: the
+#       S_TAPER_YEARS from the PCHIP end derivative), 'taper_secant' (the
 #       2038-43 interval linear at its secant slope, then tapering from it).
 # N4 (the Low/High variants pair stochastic population percentiles with
 # deterministic household variants) and the total vs private-household
@@ -256,14 +254,13 @@ COL_CONSENT_COUNTS = {
     'Townhouses': 'Consents - Consents/Townhouses',
     'Apartments': 'Consents - Consents/Apartments',
 }
-# Reader-facing labels: naming.py (docs/RENAMING.md); the figures are drawn by the figures/ package from the
+# Reader-facing labels: naming.py; the figures are drawn by the figures/ package from the
 # figure source written by export_figure_sources(), never from here.
 
-# Typology mix (author's decision, baseline-pb-v2): the typology floor-area shares are held at
+# Typology mix (author's decision): the typology floor-area shares are held at
 #   their MIX_HELD_WINDOW average (ratio of sums of consented floor area over the window, 2026 =
 #   the observed months, January-July) in every variant. The typology mix is internal to the model
-#   (it weights the case-study factors) and is not reported. The damped log-ratio trend of v1.0.2-
-#   v1.2 was never run in a reported result and is removed (MODEL v1.0.0; tag baseline-PB_v1.2).
+#   (it weights the case-study factors) and is not reported.
 MIX_HELD_WINDOW = (2022, 2026)
 # 2026 in-scope floor area (market-excess rule): the observed consented GFA by
 #   typology, c x [(1 - W) GFA_2026 + W GFA_2025], with the observed 2026 mix;
@@ -330,7 +327,7 @@ DEMOLITION_CALIB_START = 1992      # calibration window for the unconsented-addi
 #   weights the denominator). The household identity (stock_cal) is still
 #   calibrated and printed for comparison.
 NET_REPLACEMENT_WINDOW = (1991, 2023)
-# CENSUS_UC_CORRECTION (v1.1.1, default True): in the dwelling-count identity,
+# CENSUS_UC_CORRECTION (default True): in the dwelling-count identity,
 #   dwellings completed over a census interval = 0.95 x consents - the change in
 #   census private dwellings UNDER CONSTRUCTION (census stock excludes them; with
 #   no completion lag, consents still in progress at census night would else be
@@ -345,10 +342,10 @@ CENSUS_UC_CORRECTION = True    # census years; (2013, 2023) is a sensitivity
 #           half-life REPLACEMENT_HALF_LIFE years (10; 5 and 15 are sensitivity variants);
 #   'LOW':  Low replacement: the long-run rate (NET_REPLACEMENT_WINDOW) throughout;
 #   'HIGH': High replacement: the 2018-2023 census-interval rate persists;
-#   'VHIGH': Very High replacement (trend continues; MODEL v3.3.0): the weighted (by interval length) linear OLS
+#   'VHIGH': Very High replacement (trend continues): the weighted (by interval length) linear OLS
 #           trend of the census-interval rates 1991-2023 extrapolated 2026-2050 (engine.replacement_trend).
 # Author's decision: Low and High bound the Reference (JUDGEMENT: the half-life is
-# not identifiable from the census record; it is sampled U(5, 15) yr in the Monte Carlo, MODEL v3.3.0). Very High is
+# not identifiable from the census record; it is sampled U(5, 15) yr in the Monte Carlo). Very High is
 # a sensitivity variant, not the Reference: six interval rates (seven censuses), one negative, a definition break in
 # 2013-2018 and the unbounded extrapolation of a policy-driven wave.
 REPLACEMENT_VARIANT = 'REF'
@@ -361,20 +358,20 @@ RECENT_INTERVAL = (2018, 2023)
 # OVERBUILD_RULE:
 #   'carried_deviation': no observed 2026 data; 2025's deviation fades at rho
 #       (used only by the 2026 out-of-sample check, validation.NO_2026_DATA).
-# v1.1 default: 'market_excess' -- ONE rule on top of any replacement scenario:
+# 'market_excess' (default) -- ONE rule on top of any replacement scenario:
 #   2026 building = observed (NOWCAST_METHOD). Its excess over the 2026
 #   requirement is the 'near-term market excess'. From 2027 the building
 #   continues above the requirement by gap_ref x rho^(t-2026), with gap_ref =
 #   building_2026 - requirement_2027 (the 2027 requirement, because the 2026 one
 #   is depressed by the one-off 2026 population shortfall) and rho = rho_other
 #   (the estimated persistence of departures from the calibrated identity).
-#   OVERBUILD_BOOKING 'surplus' with absorption 0 (default): the excess is
+#   OVERBUILD_BOOKING 'surplus' with absorption 0 and no absorption end: the excess is
 #   STOCK-ADDING -- extra dwellings join the stock as vacancy that is never
 #   absorbed; soil applies; removals stay on the scenario path. Implied vacancy
 #   = 1 - households / (stock + cumulative excess). Sensitivities: 'redevelopment'
 #   (stock-neutral), payback (OVERBUILD_ABSORPTION 0.20 / 0.10), and
 #   OVERBUILD_GAP_REF = '2026'.
-#   MODEL v3.0.0 (Reference): the surplus is ABSORBED by OVERBUILD_ABSORPTION_END along the
+#   Reference: the surplus is ABSORBED by OVERBUILD_ABSORPTION_END along the
 #   normalised logistic of the levers (engine.logistic_weights, 2026 -> 2035: w(2026) = 0,
 #   w >= 2035 = 1): remaining surplus U(t) = C(t) (1 - w(t)), C the cumulative excess; the
 #   absorbed part is built less (payback, capped at the year's building, shortfall carried;
@@ -382,22 +379,21 @@ RECENT_INTERVAL = (2018, 2023)
 #   parameter by 2035. Theory (stock-flow models of the housing market: Rosen & Smith 1983;
 #   Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the DIRECTION
 #   (reversion of vacancy to its equilibrium rate), not the speed; 2035 is the common RECC
-#   adoption window of the model; the speed is bracketed by sensitivity rows (never absorbed =
-#   MODEL v2.1; by 2030; by 2045). OVERBUILD_ABSORPTION_END None = never absorbed with
-#   OVERBUILD_ABSORPTION the constant share (MODEL v2.1; run_all.py --reference-legacy).
+#   adoption window of the model; the speed is bracketed by sensitivity rows (never absorbed;
+#   by 2030; by 2045). OVERBUILD_ABSORPTION_END None = never absorbed, with
+#   OVERBUILD_ABSORPTION the constant share (the 'never absorbed' sensitivity row of Sensitivity.py).
 OVERBUILD_RULE = 'market_excess'
 OVERBUILD_GAP_REF = '2027'
 OVERBUILD_BOOKING = 'surplus'
 OVERBUILD_ABSORPTION = 0.0
-REFERENCE_LEGACY = os.environ.get('PATHWAY_REFERENCE_LEGACY') == '1'
 # VACANCY_PARAMETER: 'census_2023' (adopted; the published 2023 census value, 5.39%) or 'consistent_mean'
 #   (sensitivity: the mean of the 1986-2023 censuses on one definition)
 VACANCY_PARAMETER = 'census_2023'
-# OVERBUILD_ABSORPTION_START (MODEL v4.0.0): None = the last OBSERVED year, w = 0 up to and including it: the last
+# OVERBUILD_ABSORPTION_START: None = the last OBSERVED year, w = 0 up to and including it: the last
 #   pipeline year with the completion lag (2027 at L = 17, so the observed 2026-2027 building is never paid back
-#   within the observed years), 2026 without it (MODEL v3.3). A year fixes it explicitly.
+#   within the observed years), 2026 without it. A year fixes it explicitly.
 OVERBUILD_ABSORPTION_START = None
-OVERBUILD_ABSORPTION_END = None if REFERENCE_LEGACY else 2035
+OVERBUILD_ABSORPTION_END = 2035
 # NOWCAST_METHOD: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
 #   (August 2025 - July 2026), no seasonal estimation. It is the year to July
 #   2026, not calendar 2026: replace it with calendar 2026 when published.
@@ -442,16 +438,14 @@ SOIL_ON_REPLACEMENT = False
 # Rearranged for what must be built:
 #     built = new households + vacancy allowance + vacancy change
 #             + demolitions - unconsented additions
-# COMPLETION_RATE (MODEL v4.0.0): 0.945, the midpoint of the published completion milestones of Jones,
+# COMPLETION_RATE: 0.945, the midpoint of the published completion milestones of Jones,
 #   Greenaway-McGrevy & Crow (2025, Policy Quarterly 21(1), 63-68, footnote 12; Auckland consents): 93% of 2018-2019
 #   consents had a final inspection by July 2024 (a lower bound: counted late, some completed dwellings are never
 #   inspected within the window) and more than 95% of 2018-2021 consents had a first inspection (construction
 #   started; an upper bound on eventual completion). The article gives the upper milestone only as '>95%', with no
-#   point value: the band edge 0.96 is a stated judgement (the upper edge of the MODEL v3.3 band), not a published
+#   point value: the band edge 0.96 is a stated judgement, not a published
 #   number. The Monte Carlo draws the rate uniform on COMPLETION_RATE_BAND = (0.93, 0.96); no shape inside the band
-#   is identified, hence uniform. LIMITATION: the evidence is Auckland's, applied nationally. MODEL v3.3 used 0.95 (the
-#   authors' own assumption) with the two-piece band (0.92, 0.95, 0.96). The legacy Reference (REFERENCE_LEGACY,
-#   MODEL v2.1) keeps 0.95.
+#   is identified, hence uniform. LIMITATION: the evidence is Auckland's, applied nationally.
 # DEMOLITION_RATE: Page (2009), BRANZ Study Report SR214 -- ~2,200 dwellings/yr
 #   in 2001-2006 from the same census-and-consents identity used here, on a 2006
 #   private stock of 1,631,019 = 0.135%/yr (Finland, measured 2000-12: 0.15%).
@@ -489,7 +483,7 @@ RV_SHARE_REF = (2016, 2025)
 # for which no case study exists (any factor would be judgement).
 COL_RV_GFA = 'GFA - GFA/RetirementVillage'
 
-COMPLETION_RATE = 0.95 if REFERENCE_LEGACY else 0.945
+COMPLETION_RATE = 0.945
 COMPLETION_RATE_BAND = (0.93, 0.96)
 
 # COMPLETION_LAG: consents are not built in the calendar year they are issued.
@@ -513,10 +507,10 @@ COMPLETION_RATE_BAND = (0.93, 0.96)
 # The same completions series is used everywhere consents become 'built':
 # stock calibration, the 2025 deviation, the 2025 observed anchor (and so the
 # 2025 -> 2026 step), history plots and the Monte Carlo.
-# v1.1 default: 0 (no lag): calibration, history and the 2026 anchor use
-#   same-year consents x COMPLETION_RATE. 'littles_law' is a sensitivity.
+# 0 (default, no W lag): calibration, history and the 2026 anchor use
+#   same-year consents x COMPLETION_RATE (lagged by COMPLETION_LAG_MONTHS below). 'littles_law' is a sensitivity.
 COMPLETION_LAG = 0
-# COMPLETION_LAG_MONTHS (MODEL v4.0.0, adopted 17): consent-to-completion lag in months. Completions(month m) =
+# COMPLETION_LAG_MONTHS (adopted 17): consent-to-completion lag in months. Completions(month m) =
 #   COMPLETION_RATE x consents(month m - L), aggregated to calendar years; the SAME lag everywhere consents become
 #   'built': the history (stock identity, census-interval net replacement, the dwelling-size and typology-mix
 #   windows, historical floor area, the AR / AtP base) and the projection start. L = 17 is the midpoint of the median
@@ -527,10 +521,10 @@ COMPLETION_LAG = 0
 #   consents, December 2023 quarter release, Table 1). Projection years whose 12 lagged months are all observed are
 #   PIPELINE years (L = 17, consents to July 2026: 2026 and 2027): their building is observed, not modelled (the
 #   market excess over the requirement, engine.market_excess with n observed years; their floor area fixed in every
-#   run). 0 reproduces MODEL v3.3 (same-calendar-year consents; 2026 from the last-12-months nowcast). Not combined
-#   with COMPLETION_LAG (the two-point W) != 0. The legacy Reference (REFERENCE_LEGACY, MODEL v2.1) keeps 0.
-COMPLETION_LAG_MONTHS = 0 if REFERENCE_LEGACY else 17
-# CONSENT_DATA_END (MODEL v4.0.0): None = every observed month; 'YYYY-MM-01' truncates the monthly consents (the
+#   run). 0: same-calendar-year consents, 2026 from the last-12-months nowcast. Not combined
+#   with COMPLETION_LAG (the two-point W) != 0.
+COMPLETION_LAG_MONTHS = 17
+# CONSENT_DATA_END: None = every observed month; 'YYYY-MM-01' truncates the monthly consents (the
 #   'No 2026 data' check, validation.NO_2026_DATA, adapted to the lag).
 CONSENT_DATA_END = None
 DEMOLITION_RATE = 0.00135
@@ -539,12 +533,10 @@ DEMOLITION_RATE = 0.00135
 # ---------------------------------------------------------------------------
 # HOUSEHOLD DECLINE
 # ---------------------------------------------------------------------------
-# When households shrink, the model previously booked NEGATIVE structural
-# demand -- freed dwellings offsetting new construction nationally. That
-# assumes an empty house in a shrinking town can meet demand elsewhere, which
-# Napiontek et al. (2025) show it cannot (hibernating stock). Population growth
-# was already floored at zero; household formation is now floored the same way.
-# Freed dwellings become vacancy, not negative construction. Never binds in
+# Household formation is floored at zero, as population growth is: freed dwellings
+# become vacancy, not negative construction. Booking negative structural demand
+# would assume that an empty house in a shrinking town can meet demand elsewhere,
+# which Napiontek et al. (2025) show it cannot (hibernating stock). Never binds in
 # history (minimum 9,900 new households/yr) or in the median projection; it
 # binds only in low-population scenarios.
 
@@ -588,15 +580,14 @@ FILE_FACTORS_DECARB_BLD = os.path.join(FACTORS_DIR, 'factors_building_a13_reduct
 # the case studies, mapped one-to-one to an S4 row (direct, Horup p. 6, or proxy) or
 # held, by data/material_item_map.csv. Mapping and values: Building_factors.py and
 # outputs/data/factors/factors_a13_decarb.csv. The history (and so the acquired-rights
-# base of boundaries.py) always uses 2025 factors. (The class-level mapping of v1.1 is
-# preserved at tags baseline-PB_v1.2 / baseline-PB_v2.)
+# base of boundaries.py) always uses 2025 factors.
 DECARB_MODE = 'none' if FROZEN_RUN else 'horup_item'   # see Building_factors.DECARB_MODES
 DECARB_ITEM_CASE = 'central'        # 'horup_item' only: 'central' or a sensitivity in Building_factors.ITEM_CASES
 # A4-A5 (not separable by material process): 'resch' (adopted) = generic technological
 # progress e^(-0.01 (t - 2025)), Resch et al. (2021) Table 1 (Building_factors.generic_path);
 # sensitivities 'held' (2025 factors) and 'item' (each item's own S4 path).
 DECARB_A45 = 'held' if FROZEN_RUN else 'resch'
-# ACCOUNTING (author decision, baseline-pb-v3):
+# ACCOUNTING (author decision):
 #   'time_resolved' (adopted): each year's construction is booked with its upfront
 #       carbon (A1-A5 + soil); replacements and repaints (B2, B4) are booked in the
 #       calendar year they occur (events.py; EVENT_TIMING), within 2026-2050 for the
@@ -664,7 +655,7 @@ def load_decarb(mode, item_case, typ_names, materials, years):
 
 def load_consents():
     """Monthly consents (data/derived/consents_monthly.csv) with a datetime 'Date' column; truncated at
-    CONSENT_DATA_END when set (MODEL v4.0.0)."""
+    CONSENT_DATA_END when set."""
     df = pd.read_csv(FILE_CONSENTS_DERIVED)
     df['Date'] = pd.to_datetime(df['Date'])
     if CONSENT_DATA_END is not None:
@@ -673,7 +664,7 @@ def load_consents():
 
 
 def lagged_consents(df, lag_months, typ_cols, total_col):
-    """MODEL v4.0.0: the monthly consents timed as completions, consents(m - L) booked in month m (the 'Date' shifted
+    """The monthly consents timed as completions, consents(m - L) booked in month m (the 'Date' shifted
     forward by L months), with 'Year' the completion year. The typology and retirement-village columns start in
     April 1990; months before their first observation that a lag reaches (L = 17: August 1989 - March 1990, all in
     1991 completions) are imputed from the all-category dwelling count (from 1965) x each column's ratio to it over
@@ -704,7 +695,7 @@ def lagged_consents(df, lag_months, typ_cols, total_col):
 
 
 def pipeline_years(df, lag_months, first_year=2026):
-    """MODEL v4.0.0: the projection years (from first_year, contiguous) whose 12 lagged months are all observed:
+    """The projection years (from first_year, contiguous) whose 12 lagged months are all observed:
     December of the year minus L months is at or before the last observed consent month."""
     last = pd.Timestamp(df['Date'].max())
     out, y = [], first_year
@@ -942,7 +933,7 @@ def extend_tail(S_knots, S_ann, mode):
     yrs_k, s_k = S_knots['Year'].values, S_knots['S'].values
     last = int(yrs_k[-1])
     if mode == 'hermite_clamped':
-        # v1.2.1: ONE cubic Hermite through every published knot, PCHIP derivatives at the
+        # ONE cubic Hermite through every published knot, PCHIP derivatives at the
         # interior knots, zero derivative clamped at the last knot; held constant after it.
         from scipy.interpolate import CubicHermiteSpline
         x = yrs_k.astype(float)
@@ -963,7 +954,7 @@ def extend_tail(S_knots, S_ann, mode):
         T = float(S_TAPER_YEARS)
         out = S_ann.copy()
         if mode == 'taper_secant':
-            # v1.2: the last published interval (2038->2043) is linear at its secant slope, so the
+            # the last published interval (2038->2043) is linear at its secant slope, so the
             # taper after 2043 continues it smoothly (no kink at 2043; the PCHIP segment meets the
             # line at 2038 instead)
             k0 = int(yrs_k[-2])
@@ -1000,7 +991,7 @@ def statsnz_size_shape(variant, forecast_years, tail):
 
 
 def statsnz_2023_shape(path, variant):
-    """MODEL v4.2 loader stub: S = Population / Households of the Stats NZ 2023-base family and household projections
+    """Loader stub: S = Population / Households of the Stats NZ 2023-base family and household projections
     (CSV with Year, Variant, Population, Households), PCHIP-interpolated to annual values and held after the last
     knot. Returns the annual S series."""
     if path is None:
@@ -1014,7 +1005,7 @@ def statsnz_2023_shape(path, variant):
 
 
 def household_size_path(hist_S, years):
-    """MODEL v4.2: the model's household-size path over `years` (>= S_ANCHOR_YEAR), anchored on the observed
+    """The model's household-size path over `years` (>= S_ANCHOR_YEAR), anchored on the observed
     S_ANCHOR_YEAR value, for the current HH_SIZE_PATH."""
     y = np.asarray(years, float)
     S0 = float(hist_S.loc[S_ANCHOR_YEAR])
@@ -1124,7 +1115,7 @@ def main():
     _scenario, _join_mode = REPLACEMENT_VARIANT, OVERBUILD_RULE
     if _join_mode not in ('market_excess', 'carried_deviation'):
         raise ValueError(f"Unknown OVERBUILD_RULE '{_join_mode}'.")
-    if START_MODE == 'projection':           # MODEL v4.2: modelled from 2026, no observed projection year, no join
+    if START_MODE == 'projection':           # modelled from 2026, no observed projection year, no join
         _join_mode = 'none'
     elif START_MODE != 'observed':
         raise ValueError(f"Unknown START_MODE '{START_MODE}'.")
@@ -1157,8 +1148,8 @@ def main():
     # ------------------------------------------------------------------
     df_consents = load_consents()
     df_consents['Year'] = pd.to_datetime(df_consents['Date']).dt.year
-    # MODEL v4.0.0: consents timed as completions L months later (COMPLETION_LAG_MONTHS); every annual consent
-    # series of the model is taken from this frame (L = 0: the calendar-year consents of MODEL v3.3, unchanged)
+    # consents timed as completions L months later (COMPLETION_LAG_MONTHS); every annual consent
+    # series of the model is taken from this frame (L = 0: the calendar-year consents)
     lag_months = int(COMPLETION_LAG_MONTHS or 0)
     if lag_months and COMPLETION_LAG not in (0, 0.0):
         raise ValueError('COMPLETION_LAG_MONTHS and COMPLETION_LAG (two-point W) cannot be combined.')
@@ -1229,7 +1220,7 @@ def main():
         raise ValueError("Household series has gaps over 1991-2025.")
 
     hist_S = hist_pop / hist_hh
-    if HH_BRIDGE == 'erp_S':                 # MODEL v4.2: households after the 2023 census = ERP / the model's S path
+    if HH_BRIDGE == 'erp_S':                 # households after the 2023 census = ERP / the model's S path
         _yb = [int(y) for y in years_hist if y > S_ANCHOR_YEAR]
         hist_hh.loc[_yb] = hist_pop.loc[_yb].values / household_size_path(hist_S, _yb)
         hist_S = hist_pop / hist_hh
@@ -1247,9 +1238,8 @@ def main():
     # ------------------------------------------------------------------
     # OLF is floor area per DESIGN occupant, where design capacity = bedrooms+1.
     # Multiplying it by the ACTUAL household size S does NOT give a dwelling
-    # size -- the denominators differ. v2 called S*OLF "avg_dwelling_size",
-    # which was a mislabel. It is the floor area associated with the occupants
-    # a dwelling actually houses, so it is renamed occupied_area_per_dwelling.
+    # size -- the denominators differ. S*OLF is the floor area associated with
+    # the occupants a dwelling actually houses: occupied_area_per_dwelling.
     # Realised dwelling size is measured directly instead: GFA / dwelling count.
     hist_dwelling_size = hist_typ_gfa / hist_typ_units          # m2 per dwelling, per typology
 
@@ -1280,7 +1270,7 @@ def main():
     hist_growth = d_pop * blended_olf                    # floor area for extra people
     hist_structural = d_hh * occupied_area_per_dwelling  # floor area for extra households
     hist_hs_raw = hist_structural - hist_growth
-    # MODEL v4.2.1: signed household-size band (dilution > 0, consolidation < 0); growth gross (hist_avoided = 0)
+    # signed household-size band (dilution > 0, consolidation < 0); growth gross (hist_avoided = 0)
     hist_hs_pos = hist_hs_raw.copy()
     hist_avoided = hist_hs_raw * 0.0
 
@@ -1321,7 +1311,7 @@ def main():
         lag_w = float(COMPLETION_LAG)
     if not 0.0 <= lag_w < 1.0:
         raise ValueError(f'Completion lag W = {lag_w} outside [0, 1).')
-    # MODEL v4.0.0: the lag of the census dwelling-count identity in years (continuous time, monthly resolution):
+    # the lag of the census dwelling-count identity in years (continuous time, monthly resolution):
     # the two-point W (0 when the monthly lag is on) + L / 12; the annual series are already lagged (df_lag)
     lag_census = lag_w + lag_months / 12.0
 
@@ -1358,7 +1348,7 @@ def main():
     # long-run residual beyond the BRANZ demolition rate (census dwelling counts)
     unconsented_rate = engine.census_window_rate(census_rates, *_nr_window) - demolition_rate
     v_forward = float(stock_cal['knots'][max(stock_cal['knots'])])   # vacancy-rate parameter: its published 2023 census value
-    # MODEL v3.0.0 sensitivity: the long-run mean of the census vacancy on one definition (the pooled 2018/2023 empty
+    # sensitivity: the long-run mean of the census vacancy on one definition (the pooled 2018/2023 empty
     # share of unoccupied private dwellings applied to every census, 1986-2023)
     _cs = float(census.loc[[2018, 2023], 'empty'].sum() / census.loc[[2018, 2023], 'unoccupied'].sum())
     vacancy_consistent = (census['unoccupied'] * _cs / census['total_private']).dropna()
@@ -1372,7 +1362,7 @@ def main():
     # forward fading at rho, booked to the residual (see engine.forward).
     # net replacement path forward (REPLACEMENT_VARIANT); unconsented_rate stays the long-run value
     rate_recent = engine.census_window_rate(census_rates, *RECENT_INTERVAL)
-    replacement_trend = engine.replacement_trend(census_rates, *_nr_window)   # MODEL v3.3.0 (Very High; reported)
+    replacement_trend = engine.replacement_trend(census_rates, *_nr_window)   # Very High replacement (reported)
     rate_path = engine.replacement_path(_scenario, demolition_rate + unconsented_rate, rate_recent,
                                         np.arange(2025, 2051), REPLACEMENT_HALF_LIFE, trend=replacement_trend)
     unc_path = rate_path - demolition_rate
@@ -1524,7 +1514,7 @@ def main():
         S_matched = float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (np.asarray(forecast_years, float) - S_ANCHOR_YEAR)
         S_bridge = pd.Series(float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (S_bridge.index.values - S_ANCHOR_YEAR),
                              index=S_bridge.index)
-    elif HH_SIZE_PATH == 'statsnz_2023':     # MODEL v4.2 (loader stub)
+    elif HH_SIZE_PATH == 'statsnz_2023':     # loader stub
         S_matched = household_size_path(hist_S, forecast_years)
         S_bridge = pd.Series(household_size_path(hist_S, S_bridge.index.values), index=S_bridge.index)
     elif HH_SIZE_PATH not in ('statsnz', 'statsnz_2018'):
@@ -1592,7 +1582,7 @@ def main():
     evolving_gfa_shares.loc[forecast_years > 2025, :] = held_shares.values
     # 2026 floor area from observed consented GFA by typology
     gfa_nowcast = None
-    pipe = None                    # MODEL v4.0.0: observed (pipeline) years, their building and floor area
+    pipe = None                    # observed (pipeline) years, their building and floor area
     if _join_mode == 'market_excess' and pipeline:
         _ly = df_lag.groupby('Year')
         _pa = _ly[COL_DWELLINGS_TOTAL].sum()
@@ -1615,7 +1605,7 @@ def main():
                   for n in typ_names}
         gfa_nowcast = dict(by_typology=_built, total=float(sum(_built.values())), consented_2026=_g26)
         evolving_gfa_shares.loc[2026, :] = [_built[n] / gfa_nowcast['total'] for n in typ_names]
-    # the observed floor area fixed in every run: the pipeline years (MODEL v4.0.0) or the 2026 nowcast
+    # the observed floor area fixed in every run: the pipeline years or the 2026 nowcast
     gfa_fixed = ({y - 2025: pipe['gfa_total'][y] for y in pipe['years']} if pipe else
                  ({1: gfa_nowcast['total']} if gfa_nowcast else None))
     future_blended_olf_bim = blend_per_gfa_share(evolving_gfa_shares, OLF_NET_BIM, typ_names)
@@ -1688,7 +1678,7 @@ def main():
         wave_gfa = (np.asarray(rate_path, float) - (demolition_rate + unconsented_rate)) * E['prev'] * _D
         unc_gfa = E['unc'] * _D - wave_gfa         # long-run residual, m2
         rv_gfa = E['rv'] * _D                      # housed in RV units, m2 (<0)
-        # MODEL v3.0.0: the join = market excess - overbuild absorbed (payback, <= 0); two bands
+        # the join = market excess - overbuild absorbed (payback, <= 0); two bands
         _pay = np.asarray(join_info[col]['payback'], float) if col in join_info else np.zeros(len(_D))
         join_gfa = (E['join'] - _pay) * _D + E['gfa_adj']   # 2026 overbuild (market excess), m2; 2026 = observed GFA
         absorbed_gfa = _pay * _D                   # overbuild absorbed (payback), m2 (<= 0)
@@ -2024,7 +2014,7 @@ def main():
     print("=" * 80 + "\n")
 
     # Demand bands (annual, 2026-2050; Fig1, Fig2, the band exports, D25/D26): bands.in_scope, the same band
-    # accounting as every pathway run (MODEL v3.2.0, release accounting A2 from v3.1.0: gross positive bands, release
+    # accounting as every pathway run (gross positive bands, release
     # bands, retirement villages removed by their exact share, no rescaling, maintenance a carbon-only band);
     # [(label, values, band id)]; the bands add up to the typology total every year (bands.check, 1e-9).
     _ji50 = join_info.get('50th')
@@ -2222,7 +2212,7 @@ def export_results(B, path):
 
 
 def export_annual(B, path_annual, path_bands):
-    """Annual series of the Reference (MODEL v1.0.0 additions; release names of naming.py).
+    """Annual series of the Reference (release names of naming.py).
 
     path_annual: one row per year, history (in-scope floor area built, 1991-2025) and the
     Reference (2026-2050; 2025 is the observed anchor): floor area and embodied carbon, the
@@ -2264,7 +2254,7 @@ def export_annual(B, path_annual, path_bands):
 
 
 def export_absorption_log(B, path):
-    """MODEL v3.0.0: the overbuild absorption of the Reference by year (median population path; engine.absorb_overbuild):
+    """The overbuild absorption of the Reference by year (median population path; engine.absorb_overbuild):
     market excess, cumulative excess C, absorption weight w, target surplus U* = C (1 - w), target payback, the
     year's building before the payback (gross), the payback paid (capped at max(gross, 0)), the carried shortfall,
     the surplus still vacant U, dwellings built, and the implied vacancy 1 - hh / (stock + U) against the vacancy
@@ -2274,7 +2264,7 @@ def export_absorption_log(B, path):
     fy = np.asarray(B['forecast_years'])
     n = len(fy)
     ab = ji.get('absorption')
-    if ab is None:                                     # MODEL v2.1 rule (constant share; never absorbed by default)
+    if ab is None:                                     # no absorption end: the constant share (never absorbed by default)
         C = np.cumsum(ji['excess'])
         ab = dict(excess=ji['excess'], C=C, w=np.zeros(n), U_target=np.asarray(ji['surplus'], float),
                   payback_target=-np.asarray(ji['payback'], float), need=engine.requirement(E) - E['join'],
@@ -2301,8 +2291,7 @@ def export_absorption_log(B, path):
 
 
 def export_stage_material(B, path_stage, path_material):
-    """Annual carbon of the Reference 2026-2050 by life-cycle stage and by material (MODEL v2.0.0
-    additions, Fig3). No new computation: the stage split is the one main() prints (floor area by
+    """Annual carbon of the Reference 2026-2050 by life-cycle stage and by material (Fig2). No new computation: the stage split is the one main() prints (floor area by
     typology x the stage factor path of each typology), the material split is flow_annual (D13);
     both are checked against the engine's annual carbon (export_annual), so the parts add up to
     the totals of data/baseline/annual.csv.
@@ -2341,7 +2330,7 @@ def export_stage_material(B, path_stage, path_material):
 
 
 def export_figure_sources(B):
-    """MODEL v3.0.0 compute / draw separation: write the exact arrays of D01-D03, D08, D09 and D13 (drawn by
+    """Compute / draw separation: write the exact arrays of D01-D03, D08, D09 and D13 (drawn by
     figures/calibration.py) and of the Extended Data paths (projection_paths, ED3) as figure source JSON
     (figsource.write, outputs/data/figure_source/<id>.json). Units are the model's (persons, households, m2,
     kg CO2e); the figures only rescale for display. Called by the script run only (main() writes nothing)."""

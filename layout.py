@@ -1,12 +1,11 @@
-"""Output layout of the model (MODEL v3.0.0): where every file the pipeline writes goes.
+"""Output layout of the model: where every file the pipeline writes goes.
 
     outputs/                  full profile (run_all.py --profile full); outputs/_light/ mirrors this tree for the
-                              light profile (the default) and outputs/_legacy/ for --reference-legacy
+                              light profile (the default)
       paper_main/             Fig1-Fig7 of the paper (figure_plan.PAPER_MAIN)
-      paper_extended/         Extended Data ED1-ED10 and the table EDT1 (figure_plan.PAPER_EXTENDED)
-      supplementary/<folder>/ Supplementary Figures SF1-SF17 (figure_plan.SUPPLEMENTARY; MODEL v4.3.0)
-      diagnostics/<group>/    calibration, validation, boundaries, pathways, montecarlo, sensitivity; _audit/: the
-                              record of every drawn figure (figures/audit.py; read by the tests)
+      paper_extended/         Extended Data ED1-ED9 and the table EDT1 (figure_plan.PAPER_EXTENDED)
+      supplementary/<folder>/ Supplementary Figures SF1-SF15 and the table ST1 (figure_plan.SUPPLEMENTARY)
+      diagnostics/_audit/     the record of every drawn figure (figures/audit.py; read by the tests)
       FIGURES.md              the index of every figure (indexes / figures/index.py, from figure_plan.py)
       run_meta.json           profile, draws, seeds, git hash, input hash, timestamp, step timings
       data/                   every number the model reports, as CSV and JSON, in the release names of naming.py:
@@ -15,10 +14,9 @@
       reports/                generated documents (RESULTS, ASSUMPTIONS, methods draft, levers table, validation)
       logs/                   console output of each run_all.py step (not versioned)
 
-Every module takes its paths from here, so the layout is defined once. The folders of MODEL v2.1.2 (outputs/paper,
-outputs/extended_data, outputs/key_figures) are RETIRED and deleted by run_all.py. The frozen-technology helpers
-below are kept for the data layout of earlier releases; MODEL v3.0.0 does not run the frozen-technology check
-(docs/CHANGELOG_v3.md).
+Every module takes its paths from here, so the layout is defined once. RETIRED lists output folders of earlier
+releases that run_all.py deletes. The frozen-technology helpers serve the PATHWAY_FROZEN=1 setting, which the
+pipeline does not run.
 """
 import os
 
@@ -26,24 +24,19 @@ import runprofile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT_FULL = os.path.join(ROOT, 'outputs')
-# MODEL v3.0.0 run profiles (runprofile.py): the light profile writes a mirror of the tree under outputs/_light/,
+# run profiles (runprofile.py): the light profile writes a mirror of the tree under outputs/_light/,
 # so a light run never overwrites the outputs of a full run
 OUT = os.path.join(OUT_FULL, runprofile.get('out_subdir')) if runprofile.get('out_subdir') else OUT_FULL
-# run_all.py --reference-legacy (PATHWAY_REFERENCE_LEGACY=1): the Reference of MODEL v2.1 (overbuild never absorbed),
-# written under outputs/_legacy/ so it never mixes with the v3 outputs
-LEGACY = os.environ.get('PATHWAY_REFERENCE_LEGACY') == '1'
-if LEGACY:
-    OUT = os.path.join(OUT_FULL, '_legacy')
 DATA = os.path.join(OUT, 'data')
 REPORTS = os.path.join(OUT, 'reports')
-# MODEL v3.0.0 output architecture: paper_main/ (Fig1-Fig8), paper_extended/ (the Extended Data), diagnostics/
-# by group (calibration, validation, boundaries, pathways, montecarlo, sensitivity), FIGURES.md
-# MODEL v4.3.1: PATHWAY_FIG_OUT (set by redraw.py for palette previews) moves the figure folders and the figure audit
+# figure folders: paper_main/ (Fig1-Fig7), paper_extended/ (the Extended Data), supplementary/ by group, diagnostics/
+# (the audit records), FIGURES.md
+# PATHWAY_FIG_OUT (set by redraw.py for palette previews) moves the figure folders and the figure audit
 # elsewhere; the data are still read from DATA. Unset (the pipeline), the figures go to OUT as before.
 FIG_OUT = os.environ.get('PATHWAY_FIG_OUT') or OUT
 PAPER_MAIN = os.path.join(FIG_OUT, 'paper_main')
 PAPER_EXTENDED = os.path.join(FIG_OUT, 'paper_extended')
-SUPPLEMENTARY = os.path.join(FIG_OUT, 'supplementary')   # MODEL v3.3.1: beyond the ten Extended Data items
+SUPPLEMENTARY = os.path.join(FIG_OUT, 'supplementary')   # the Supplementary figures and tables
 DIAGNOSTICS = os.path.join(FIG_OUT, 'diagnostics')
 DIAGNOSTIC_GROUPS = ('calibration', 'validation', 'boundaries', 'pathways', 'montecarlo', 'sensitivity')
 FIGURES_INDEX = os.path.join(OUT, 'FIGURES.md')
@@ -52,12 +45,12 @@ FIGURE_AUDIT = os.path.join(DIAGNOSTICS, '_audit')
 LOGS = os.path.join(OUT, 'logs')
 FACTORS = os.path.join(DATA, 'factors')          # written by Building_factors.py (inputs of every run)
 FROZEN = 'frozen_technology'                     # data/ sub-folder and reports/ file prefix of the check run
-# retired in MODEL v3.0.0 (deleted by run_all.py): outputs/paper, outputs/extended_data, outputs/key_figures
+# output folders of earlier releases (deleted by run_all.py): outputs/paper, outputs/extended_data, outputs/key_figures
 RETIRED = tuple(os.path.join(OUT, d) for d in ('paper', 'extended_data', 'key_figures'))
 
 
 def frozen_run():
-    """True in the frozen-technology check run (run_all.py steps 'frozen_*', PATHWAY_FROZEN=1)."""
+    """True in the frozen-technology setting (PATHWAY_FROZEN=1)."""
     return os.environ.get('PATHWAY_FROZEN') == '1'
 
 
@@ -72,8 +65,7 @@ def data(rel, frozen=None):
 
 
 def report(rel, frozen=None):
-    """outputs/reports/<rel>; outputs/reports/frozen_technology_<rel> in the frozen-technology run
-    (docs/RENAMING.md section 2)."""
+    """outputs/reports/<rel>; outputs/reports/frozen_technology_<rel> in the frozen-technology run."""
     frozen = frozen_run() if frozen is None else frozen
     return os.path.join(REPORTS, f'{FROZEN}_{rel}' if frozen else rel)
 
@@ -96,7 +88,7 @@ def figure(name):
     for base, items in ((PAPER_MAIN, FP.PAPER_MAIN), (PAPER_EXTENDED, FP.PAPER_EXTENDED),
                         (SUPPLEMENTARY, FP.SUPPLEMENTARY)):
         for h in items:
-            if h['file'] == name:                     # MODEL v4.3.0: supplementary figures in their folder
+            if h['file'] == name:                     # supplementary figures in their folder
                 return os.path.join(base, h.get('folder', ''), name)
     for g, rows in FP.DIAGNOSTICS.items():
         if name in (r['file'] for r in rows):

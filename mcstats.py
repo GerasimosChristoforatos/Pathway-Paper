@@ -1,5 +1,5 @@
 """
-Statistics of the Monte Carlo insight analyses (MODEL v2.1.0), in numpy / scipy only
+Statistics of the Monte Carlo insight analyses, in numpy / scipy only
 ====================================================================================
 The environment has no statsmodels; each method is implemented from its published definition and
 checked in tests/test_mcstats.py against closed-form cases and against an independent optimiser.

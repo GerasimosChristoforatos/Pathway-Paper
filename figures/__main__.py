@@ -32,7 +32,7 @@ def main(ids=None):
             import traceback
             traceback.print_exc()
             failed.append((f, repr(e)))
-    if not ids:                                       # the tables (Extended Data; MODEL v4.3.1: Supplementary)
+    if not ids:                                       # the tables (Extended Data; Supplementary)
         for m in FP.TABLE_MODULES:
             for f in importlib.import_module(m).TABLES.values():
                 f()

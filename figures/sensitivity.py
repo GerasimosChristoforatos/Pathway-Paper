@@ -1,6 +1,6 @@
-"""Sensitivity figures (MODEL v4.3.1: ED4, ED5, SF9; SF11 of v4.3.0 dropped), from the data files only.
+"""Sensitivity figures (ED4, ED5, SF9), from the data files only.
 
-MODEL v4.3.2: ED4 and ED5 carry row notes under the axes (row_notes_ed4 / row_notes_ed5): one line per shown row,
+ED4 and ED5 carry row notes under the axes (row_notes_ed4 / row_notes_ed5): one line per shown row,
 saying only what changes compared with the Reference. Every value is read from the model code (projection.py,
 Building_factors.py, boundaries.py, Sensitivity.py: the settings each row changes) and the committed outputs
 (baseline/projection.json and overbuild_2026.json settings, aesa/results.json settings, the case and basis columns);
@@ -19,7 +19,7 @@ from figures import style as S
 
 
 # ---------------------------------------------------------------------------
-# SF9 (SF10 of v4.3.0, D40): partial rank correlation of each Monte Carlo input
+# SF9 (data D40): partial rank correlation of each Monte Carlo input
 # ---------------------------------------------------------------------------
 MC_IMPORTANCE_INPUT = {'carbon_index': 'carbon'}          # importance-table input id -> naming.MC_INPUT id
 MC_RUNS = (('REF', N.SCENARIOS['REF'], S.REFERENCE), ('pathway_moderate', N.PATHWAY_RUNS['pathway-moderate'],
@@ -44,7 +44,7 @@ def sf9_prcc():
             a.hlines(y + off, t['prcc_lo'], t['prcc_hi'], color=col, lw=S.LW_THIN)
             a.plot(t['prcc'], y + off, 'o', ms=3, color=col, label=lab)
         a.axvline(0, color=S.INK, lw=S.LW_THIN)
-        a.set_xlim(-1.05, 1.05)                     # MODEL v4.3.1: room for the markers at ±1 (were clipped)
+        a.set_xlim(-1.05, 1.05)                     # room for the markers at ±1 (were clipped)
         a.set_xticks([-1, -0.5, 0, 0.5, 1])
         a.set_xlabel('PRCC (95% bootstrap interval)', fontsize=S.FONT_SMALL)
         a.grid(axis='y', visible=False)
@@ -60,12 +60,13 @@ def sf9_prcc():
 
 
 # ---------------------------------------------------------------------------
-# MODEL v4.3.0: ED4 (one at a time, carbon) and ED5 (boundary definitions, LoE): paired tornados
+# ED4 (one at a time, carbon) and ED5 (boundary definitions, LoE): paired tornados
 # ---------------------------------------------------------------------------
 # data row (sensitivity/reference_carbon.csv: row, side) -> (input id of naming.INPUT_LABEL, role); role 'low' / 'high'
 # = the input at its low / high end (the Fig7a rule: the Stats NZ Low household-size variant is the input's low end),
-# 'single' = one alternative case, ('tick', name) = an intermediate case. Version-history rows (MODEL v3.3 completion
-# rate and lag, MODEL v2.1 never-absorbed overbuild) are dropped.
+# 'single' = one alternative case, ('tick', name) = an intermediate case. The rows that only compare with superseded
+# model settings (REF_DROPPED: the MODEL v3.3 completion rate and lag, the MODEL v2.1 never-absorbed overbuild) are
+# not shown; the note under ED4 names them with their values.
 REF_ROWS = {
     ('Population: Stats NZ 5th / 95th percentile', 'low'): ('population', 'low'),
     ('Population: Stats NZ 5th / 95th percentile', 'high'): ('population', 'high'),
@@ -108,7 +109,7 @@ REF_ROWS = {
 }
 REF_DROPPED = ('Completion rate 0.95 (MODEL v3.3)', 'Completion lag 0 months (MODEL v3.3)',
                '2026 overbuild never absorbed (MODEL v2.1 Reference)')
-# MODEL v4.3.2: rows kept in the data file but not shown in ED4 (display only), with the reason given in the note.
+# rows kept in the data file but not shown in ED4 (display only), with the reason given in the note.
 # The Reference also holds household size constant after 2043 (with a zero slope imposed at 2043), so 'flat' differs
 # from it only by that slope; the change of each row (data: change_pct) is quoted in the figure note.
 REF_NOT_SHOWN = {'Household size after 2043: flat': 'household size held flat after 2043 (the Reference is also '
@@ -119,7 +120,7 @@ REF_NOT_SHOWN = {'Household size after 2043: flat': 'household size held flat af
                  'No census under-construction correction': 'no census under-construction correction',
                  'Event timing L / n': 'maintenance event timing L / n'}
 GROUP_RENAME = {'Replacement scenario': 'Replacement'}
-# MODEL v4.3.2: rows kept in the data file but not shown in ED5 (display only); any other unmapped row still stops
+# rows kept in the data file but not shown in ED5 (display only); any other unmapped row still stops
 PB_DROPPED = {'α = 1 (Hjalsted et al. SI tables)': 'α = 1 (Hjalsted et al. SI tables)',
               'NZ population: raw Stats NZ 2024-base median': 'the raw Stats NZ 2024-base median population'}
 # sensitivity/planetary_boundary.csv rows -> (input id, role, group); the AR base-window rows are one row (shortest
@@ -142,7 +143,7 @@ PB_ROWS = {
 
 
 # ---------------------------------------------------------------------------
-# MODEL v4.3.2: row notes of ED4 and ED5 (what each shown row changes compared with the Reference)
+# row notes of ED4 and ED5 (what each shown row changes compared with the Reference)
 # ---------------------------------------------------------------------------
 NOTE_WIDTH = 104                  # characters per note column at FONT_MIN (two columns over the double width)
 NOTE_LINE_MM = 2.15               # line pitch of the notes at FONT_MIN (5 pt x 1.2), mm
@@ -377,19 +378,20 @@ SUPERSCRIPT = str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹')
 
 
 def sup(n):
-    """MODEL v4.3.3: a row number as Unicode superscript digits (captions, FIGURES.md, the audit note)."""
+    """A row number as Unicode superscript digits (captions, FIGURES.md, the audit note)."""
     return str(n).translate(SUPERSCRIPT)
 
 
-def sup_math(n):
-    """The same number as a mathtext superscript, for the figures: the bundled Liberation Sans has the superscript
-    digits one to nine but no superscript zero (U+2070), so ¹⁰ and ²⁰ would not render; mathtext draws the digits of
-    the same font at superscript size."""
-    return f'$^{{{n}}}$'
+# The figures draw each row number as its own text at style.FONT_MIN (5 pt), raised to the top of the line it marks:
+# a Unicode superscript digit is smaller than its font size (and Liberation Sans has no superscript zero, which 10 and
+# 20 need), and a mathtext superscript is set at 0.7 x the font size.
+SUP_RAISE_MM = 0.6                # the note text sits this far below the top of its number (the number reads raised)
+SUP_GAP = '\u2009'                # thin space between a row label and its number
+SUP_DIGIT = '\u2007'              # figure space: room for one digit of the number at the end of the label
 
 
 def note_lines(order, notes, label, fig):
-    """MODEL v4.3.3: [(number, row id, note)] for every shown row of a tornado order, numbered 1, 2, ... top to bottom
+    """[(number, row id, note)] for every shown row of a tornado order, numbered 1, 2, ... top to bottom
     (display order); every shown row has a note."""
     out = []
     for kind, item in order:
@@ -408,30 +410,60 @@ def caption_lines(numbered):
 
 
 def numbered_label(numbered):
-    """The y tick label of a row with its number appended to the last line (mathtext superscript)."""
+    """The y tick label of a row with room for its number at the end of the last line (a thin space and one figure
+    space per digit; label_numbers draws the number there)."""
     num = {rid: n for n, rid, _ in numbered}
-    return lambda rid: _input_label(rid).replace('$', r'\$') + (sup_math(num[rid]) if rid in num else '')
+    return lambda rid: _input_label(rid).replace('$', r'\$') + (
+        SUP_GAP + SUP_DIGIT * len(str(num[rid])) if rid in num else '')
+
+
+def label_numbers(fig, ax, numbered, ys):
+    """Draw each row number at style.FONT_MIN at the right end of the last line of its y tick label, its top at the
+    top of that line (call after the layout is final). ys: the tick positions of the numbered rows (draw.tornado), in
+    the order of numbered."""
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    to_fig = fig.transFigure.inverted()
+    labels = {round(float(t.get_position()[1]), 9): t for t in ax.get_yticklabels() if t.get_text()}
+    for (n, _, _), y in zip(numbered, ys):
+        t = labels[round(float(y), 9)]
+        bb = t.get_window_extent(r)
+        lines = t.get_text().split('\n')
+        tmp = fig.text(0, 0, lines[-1], fontsize=t.get_fontsize(), fontfamily=t.get_fontfamily())
+        w_last = tmp.get_window_extent(r).width
+        tmp.remove()
+        x_right = bb.x0 + bb.width / 2 + w_last / 2           # every line is centred (draw.centre_ticklabels)
+        y_top = bb.y0 + bb.height / len(lines)
+        fx, fy = to_fig.transform((x_right, y_top))
+        fig.text(fx, fy, str(n), ha='right', va='top', fontsize=S.FONT_MIN, color=S.INK)
+
+
+NOTE_INDENT_MM = 2.4             # the note text starts this far right of its number (room for two digits)
 
 
 def draw_notes(fig, numbered, title, top_frac, ncol=2):
-    """The row notes as a compact numbered list below the axes ('¹ <note>', the numbers of the y labels): FONT_MIN,
-    ncol columns filled top to bottom; returns the height used (mm)."""
+    """The row notes as a compact numbered list below the axes, the numbers those of the y labels: each number its own
+    text at FONT_MIN, the note (FONT_MIN) beside it and SUP_RAISE_MM lower, so the number reads raised; ncol columns
+    filled top to bottom, a note never split. Returns the height used (mm)."""
     wrapped = []
     for n, _, t in numbered:
-        w = textwrap.wrap(f'{n:>2} {t}.', NOTE_WIDTH, subsequent_indent='    ')
-        w = [x.replace('$', r'\$') for x in w]                   # a literal dollar, not mathtext
-        w[0] = sup_math(n) + ' ' + w[0].lstrip()[len(str(n)):].lstrip()
-        wrapped.append(w)
+        w = textwrap.wrap(f'{t}.', NOTE_WIDTH - 3)
+        wrapped.append([x.replace('$', r'\$') for x in w])     # a literal dollar, not mathtext
     if ncol != 2:
         raise ValueError('draw_notes: two columns')
     n_ = [len(w) for w in wrapped]                        # the split (rows kept whole) with the shortest longer column
     k = min(range(len(n_) + 1), key=lambda j: (max(sum(n_[:j]), sum(n_[j:])), j))
-    cols = [sum(wrapped[:k], []), sum(wrapped[k:], [])]
-    rows = max(len(c) for c in cols)
+    H = fig.get_figheight()
+    rows = max(sum(n_[:k]) + k * SUP_RAISE_MM / NOTE_LINE_MM, sum(n_[k:]) + (len(n_) - k) * SUP_RAISE_MM / NOTE_LINE_MM)
+    line = NOTE_LINE_MM * S.MM / H
     fig.text(0.01, top_frac, title, ha='left', va='top', fontsize=S.FONT_MIN, fontweight='bold', color=S.INK)
-    for k, c in enumerate(cols):
-        fig.text(0.01 + k / ncol, top_frac - NOTE_LINE_MM * S.MM / fig.get_figheight(), '\n'.join(c), ha='left',
-                 va='top', fontsize=S.FONT_MIN, color=S.INK, linespacing=1.2)
+    for c, items in enumerate((list(zip(numbered, wrapped))[:k], list(zip(numbered, wrapped))[k:])):
+        x0, y = 0.01 + c / ncol, top_frac - line
+        for (n, _, _), w in items:
+            fig.text(x0, y, str(n), ha='left', va='top', fontsize=S.FONT_MIN, color=S.INK)
+            fig.text(x0 + NOTE_INDENT_MM * S.MM / fig.get_figwidth(), y - SUP_RAISE_MM * S.MM / H, '\n'.join(w),
+                     ha='left', va='top', fontsize=S.FONT_MIN, color=S.INK, linespacing=1.2)
+            y -= len(w) * line + SUP_RAISE_MM * S.MM / H
     return (rows + 1) * NOTE_LINE_MM
 
 
@@ -451,14 +483,14 @@ def _input_label(rid):
     return N.INPUT_LABEL.get(rid, rid)
 
 
-ED4_H = 240                       # MODEL v4.3.2: mm (was 175), the row notes below the axes; at most style.MAX_HEIGHT
-ED5_H = 152                       # MODEL v4.3.2: mm (was 110)
+ED4_H = 240                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
+ED5_H = 152                       # mm
 NOTES_TOP = 0.23                  # the notes block occupies the figure below this fraction of its height (ED4)
 NOTES_TOP_ED5 = 0.21
 
 
 def ed4_rows():
-    """(data, Reference carbon, display order, row-note lines) of ED4 (MODEL v4.3.2: shared with the caption test)."""
+    """(data, Reference carbon, display order, row-note lines) of ED4 (shared with the caption test)."""
     r = D.csv('sensitivity/reference_carbon.csv')
     c0 = float(r['central_carbon_kt'].iloc[0])
     items, unmapped = [], []
@@ -483,13 +515,13 @@ def ed4_rows():
 
 
 def ed4_one_at_a_time():
-    """MODEL v4.3.0 (ED4, from D16): every one-at-a-time row of the Reference on the cumulative embodied carbon
-    2026-2050 (kt CO2e) as a paired tornado grouped by category (sensitivity/reference_carbon.csv). MODEL v4.3.2: the
+    """ED4 (data D16): every one-at-a-time row of the Reference on the cumulative embodied carbon
+    2026-2050 (kt CO2e) as a paired tornado grouped by category (sensitivity/reference_carbon.csv). the
     rows of REF_NOT_SHOWN dropped from the display; the row notes below the axes."""
     r, c0, order, numbered = ed4_rows()
     lines = caption_lines(numbered)
     fig, ax = plt.subplots(figsize=S.figsize('double', ED4_H))
-    P.tornado(ax, order, c0, numbered_label(numbered))
+    ys = P.tornado(ax, order, c0, numbered_label(numbered))
     ax.tick_params(axis='y', labelsize=S.FONT_MIN + 0.5)
     ax.text(c0, 1.0, f' Reference {c0:,.0f} kt', transform=ax.get_xaxis_transform(), ha='left', va='bottom',
             fontsize=S.FONT_SMALL, color=S.INK)
@@ -499,6 +531,7 @@ def ed4_one_at_a_time():
     P.centre_ticklabels(fig, ax)
     notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP)
     fig.tight_layout(rect=(0, NOTES_TOP + 0.01, 1, 1))
+    label_numbers(fig, ax, numbered, ys)
     if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP:
         raise SystemExit(f'STOP: ED4: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED4_H')
     S.save_figure(fig, 'ED4_one_at_a_time',
@@ -511,8 +544,7 @@ def ed4_one_at_a_time():
 
 
 def ed5_rows():
-    """(data, settings, {quantity: Reference value}, {quantity: display order}, row-note lines) of ED5 (MODEL v4.3.2:
-    shared with the caption test). The row notes follow the order of panel a (the rows are shared)."""
+    """(data, settings, {quantity: Reference value}, {quantity: display order}, row-note lines) of ED5 (shared with the caption test). The row notes follow the order of panel a (the rows are shared)."""
     r = D.csv('sensitivity/planetary_boundary.csv')
     st = D.js('aesa/results.json')['settings']
     c = {'LoE_AR': float(r['central_LoE_AR'].iloc[0]), 'LoE_AtP': float(r['central_LoE_AtP'].iloc[0])}
@@ -542,20 +574,22 @@ def ed5_rows():
             items.append((ar_id, role, 'AR base window', float(x[q])))
         orders[q] = P.tornado_rows(N.BOUNDARY_SENSITIVITY_GROUPS, _collect(items), c[q])
     shared = [[(k, i if k == 'header' else i['id']) for k, i in orders[q]] for q in orders]
-    if shared[0] != shared[1]:                        # MODEL v4.3.3: the panels share their y labels and numbers
+    if shared[0] != shared[1]:                        # the panels share their y labels and numbers
         raise SystemExit('STOP: ED5: panels a and b order their rows differently; the shared y labels would be wrong.')
     return r, st, c, orders, note_lines(orders['LoE_AR'], row_notes_ed5(r), _input_label, 'ED5')
 
 
 def ed5_boundary_sensitivity():
-    """MODEL v4.3.0 (ED5, from D42): the boundary-definition and AESA rows on the cumulative LoE of AR (a) and of AtP
-    (b), paired tornados with shared y labels (sensitivity/planetary_boundary.csv). MODEL v4.3.2: the rows of
+    """ED5 (data D42): the boundary-definition and AESA rows on the cumulative LoE of AR (a) and of AtP
+    (b), paired tornados with shared y labels (sensitivity/planetary_boundary.csv). the rows of
     PB_DROPPED dropped from the display; the row notes below the axes."""
     r, st, c, orders, numbered = ed5_rows()
     lines = caption_lines(numbered)
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', ED5_H), sharey=True)
     for a, q, xl, letter in ((ax[0], 'LoE_AR', N.LOE_AR, 'a'), (ax[1], 'LoE_AtP', N.LOE_ATP, 'b')):
-        P.tornado(a, orders[q], c[q], numbered_label(numbered), headers=(q == 'LoE_AR'))
+        ys_q = P.tornado(a, orders[q], c[q], numbered_label(numbered), headers=(q == 'LoE_AR'))
+        if q == 'LoE_AR':
+            ys = ys_q
         a.text(c[q], 1.0, f' Reference {c[q]:.2f}', transform=a.get_xaxis_transform(), ha='left', va='bottom',
                fontsize=S.FONT_SMALL, color=S.INK)
         a.set_xlabel(f'{xl} 2026–2050')
@@ -565,6 +599,7 @@ def ed5_boundary_sensitivity():
     P.centre_ticklabels(fig, ax[0])
     notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP_ED5)
     fig.tight_layout(rect=(0, NOTES_TOP_ED5 + 0.01, 1, 1))
+    label_numbers(fig, ax[0], numbered, ys)
     if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP_ED5:
         raise SystemExit(f'STOP: ED5: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED5_H')
     S.save_figure(fig, 'ED5_boundary_sensitivity',
@@ -577,4 +612,4 @@ def ed5_boundary_sensitivity():
 
 
 FIGURES = {'ED4_one_at_a_time': ed4_one_at_a_time, 'ED5_boundary_sensitivity': ed5_boundary_sensitivity,
-           'SF9_prcc': sf9_prcc}   # MODEL v4.3.1: SF11 dropped
+           'SF9_prcc': sf9_prcc}   # SF11 dropped

@@ -1,11 +1,6 @@
-"""MODEL v4.0.0 regression lock (tests/regression_model_v4.json; captured by tests/capture_regression_model_v3.py). The
-v3.3.1 lock (tests/regression_model_v3_3_1.json) and the earlier ones are kept for the record; MODEL v4.0.0 changes the
-model, and its link to v3.3 is tests/test_model_v4.py (the v3.3 runs reproduced under the v3.3 settings). MODEL v4.0.0
-adds sensitivity/household_size.csv and baseline/completion_lag_hindcast.csv to the locked files.
-(MODEL v3.3.1:)
-The MODEL v3.0.0, v3.2.0 and v3.3.0 locks (tests/regression_model_v3.json, _v3_2.json, _v3_3.json) are kept: v3.3.1
-changes figure code only and adds one deterministic file (pathways/waterfall_tl_from_reference.csv); every file of the
-v3.3.0 lock still holds (tests/test_figures_v3_3_1.py). The link of v3.3 to v3.2 is tests/test_model_v3_3.py.
+"""The v4 regression lock (tests/regression_model_v4.json; captured by tests/capture_regression_model_v3.py). Its link
+to MODEL v3.3 is tests/test_model_v4.py (the v3.3 runs reproduced under the v3.3 settings). LOCK_V3_3_1 and LOCK_V3_3
+name the earlier lock files, which are in the git history (tag model-v4.3.3); nothing reads them.
 
 DETERMINISTIC: the SHA-256 of every deterministic data file (the Reference, every lever / pathway / TL run, the Shapley
 values and subsets, the waterfalls, the lambda-sweep, the logs). These files are identical in the light and the full

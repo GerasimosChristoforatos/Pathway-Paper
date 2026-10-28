@@ -1,10 +1,10 @@
 """
-DRAW: drawing helpers shared by every figure (MODEL v3.0.0, figures/ package)
+DRAW: drawing helpers shared by every figure (figures/ package)
 =============================================================================
 figures/style.py holds the colours, sizes and saving, naming.py the labels; this module draws with them, so every
 figure stacks bands, materials and boundaries the same way. The figures read data files only (outputs/data/).
 
-Sign rules (MODEL v3.0.0; the data keep the sign of every band, the figures never flip it):
+Sign rules (the data keep the sign of every band, the figures never flip it):
   * time series (stack_series): positive bands stacked up from zero, negative bands stacked down from zero, in the
     fixed band order; the net is a black line (up - |down| = net, checked to 1e-9);
   * cumulative bars (bars_cumulative): positive bands stacked; each negative band (Overbuild absorbed, Released
@@ -28,7 +28,7 @@ NET_RTOL = 1e-9
 
 
 # ---------------------------------------------------------------------------
-# MODEL v4.3.0: shape-preserving interpolation of annual series (display only; the data are unchanged)
+# shape-preserving interpolation of annual series (display only; the data are unchanged)
 # ---------------------------------------------------------------------------
 PCHIP_PER_YEAR = 12                # points per year on the fine grid
 
@@ -87,13 +87,13 @@ HISTORY_END = 2025.0               # last history year: annual lines are not int
 
 
 def series_breaks():
-    """MODEL v4.3.0: the segment ends of every annual line: the last history year and the last observed pipeline
+    """The segment ends of every annual line: the last history year and the last observed pipeline
     year (consents already issued)."""
     return [HISTORY_END] + pipeline_breaks()
 
 
 def line(ax, x, y, breaks=None, **kw):
-    """MODEL v4.3.0 (suite rule): an annual time-series line drawn as PCHIP display interpolation through every annual
+    """Suite rule: an annual time-series line drawn as PCHIP display interpolation through every annual
     value (pchip), segments split at series_breaks() unless breaks are given; NaNs dropped. A marker in kw is drawn at
     the annual values only. Not for census-interval steps, bars, histograms, scatter or step functions."""
     x, y = np.asarray(x, float), np.asarray(y, float)
@@ -129,7 +129,7 @@ def pchip_band(x, lo, mid, hi, breaks=(), name='band'):
 
 
 # ---------------------------------------------------------------------------
-# MODEL v4.3.0: tick labels of horizontal bars (shared by every bar / tornado figure)
+# tick labels of horizontal bars (shared by every bar / tornado figure)
 # ---------------------------------------------------------------------------
 def two_lines(text):
     """A label split at the space nearest its middle (one line if it has no space or is already split)."""
@@ -180,17 +180,13 @@ def split(ax, x=HISTORY_SPLIT):
     ax.axvline(x, color=S.MUTED, lw=S.LW_THIN, ls=':')
 
 
-def fmt_kt(v):
-    return f'{v:,.0f}'
-
-
 def minus(s):
-    """MODEL v4.3.1: s with the typographic minus for the hyphen-minus (number labels drawn as text)."""
+    """s with the typographic minus for the hyphen-minus (number labels drawn as text)."""
     return s.replace('-', '\u2212')
 
 
 def thousands(axis):
-    # MODEL v4.3.1: the typographic minus, as matplotlib's default formatter and style.thousands_ticks
+    # the typographic minus, as matplotlib's default formatter and style.thousands_ticks
     axis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:,.0f}'.replace('-', '\u2212')))
 
 
@@ -203,41 +199,26 @@ def log_ticks(axis, ticks):
 
 
 def note(fig, text, y=0.0):
-    """A short italic note under the figure (the full caption is in DIAGNOSTICS.md / PAPER.md / EXTENDED_DATA.md)."""
+    """A short italic note under the figure (the full caption is in FIGURES.md)."""
     fig.text(0.5, y, text, ha='center', va='top', fontsize=S.FONT_SMALL, style='italic', color=S.MUTED, wrap=True)
 
 
 # ---------------------------------------------------------------------------
 # boundaries
 # ---------------------------------------------------------------------------
-def boundary_lines(ax, x, ar, atp, label=True, **kw):
-    """The two allocation principles as thin lines (never averaged) with the boundary zones of style.py
-    (below AtP darker green, between AtP and AR light green, above AR light red: style.boundary_zones)."""
-    if ar is not None and atp is not None:
-        S.boundary_zones(ax, x, ar, atp, lines=False)
-    from figures import audit as figaudit
-    for key, y in (('AR', ar), ('AtP', atp)):
-        if y is None:
-            continue
-        st = dict(S.BOUNDARY[key])
-        lab = st.pop('label')
-        st.update(kw)
-        ax.plot(x, y, gid=figaudit.BOUNDARY, label=lab if label else None, zorder=3, **st)
-
-
 # ---------------------------------------------------------------------------
 # demand bands
 # ---------------------------------------------------------------------------
 
 
 def display_frame(t):
-    """MODEL v4.2: a year x detailed-band frame summed into the six display bands (bands.DISPLAY), in display order."""
+    """A year x detailed-band frame summed into the six display bands (bands.DISPLAY), in display order."""
     g = t.T.groupby(lambda b: BANDS_MOD.DISPLAY[b]).sum().T
     return g[[d for d in BANDS_MOD.DISPLAY_ORDER if d in g.columns]]
 
 
 def band_label(bid):
-    if bid in ('net_replacement', 'market_balance'):              # MODEL v4.2 display bands
+    if bid in ('net_replacement', 'market_balance'):              # display bands
         return BANDS_MOD.DISPLAY_LABEL[bid]
     if bid in ('unexplained_building', 'unexplained'):
         return N.BAND_DETAIL['unexplained']
@@ -246,11 +227,11 @@ def band_label(bid):
 
 def band_style(bid):
     """Seamless style of one demand band (style.fill: edge = face, hatch in its own colour). History-only ids
-    (MODEL v3.1.0, style.HISTORY_BAND): 'replacement_census', 'retirement_villages', 'unexplained'."""
+    (style.HISTORY_BAND): 'replacement_census', 'retirement_villages', 'unexplained'."""
     if bid in ('unexplained_building', 'unexplained'):
         return S.fill(S.UNEXPLAINED[0])
     hatch = S.BAND[bid][1] if bid in S.BAND else S.HISTORY_BAND[bid][1] if bid in S.HISTORY_BAND else None
-    return S.fill(S.band_colour(bid), hatch, S.BAND_HATCHCOLOR.get(bid))     # MODEL v4.3.1: style.band_colour
+    return S.fill(S.band_colour(bid), hatch, S.BAND_HATCHCOLOR.get(bid))     # style.band_colour
 
 
 def band_id(label):
@@ -278,7 +259,7 @@ class SignError(SystemExit):
 
 
 def nonnegative(name, *series):
-    """STOP if a material or stage series is negative (MODEL v3.0.0: never drawn, never clipped)."""
+    """STOP if a material or stage series is negative (never drawn, never clipped)."""
     lo = min(float(np.nanmin(np.asarray(v, float))) for v in series)
     if lo < -1e-9:
         raise SignError(f'STOP: negative {name} value ({lo:g}); material and stage values are never negative.')
@@ -296,7 +277,7 @@ def _check_net(up, dn, net, what):
 
 
 def smooth_parts(x, parts):
-    """MODEL v4.3.0: each component interpolated separately by PCHIP (series_breaks), on one fine grid; the stack of
+    """Each component interpolated separately by PCHIP (series_breaks), on one fine grid; the stack of
     the interpolated components therefore equals the stack of the data at every annual value."""
     xf = None
     out = []
@@ -310,8 +291,8 @@ def smooth_parts(x, parts):
 def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', smooth=False, styles=None, **kw):
     """Time series by band: positive values stacked up from zero, negative values stacked down from zero (fixed
     order), the net a black line. parts: [(band id, values)]; net: the run's total to check against (1e-9).
-    smooth (MODEL v4.3.0, annual series only): each band PCHIP-interpolated separately, then stacked (the net check
-    runs on the annual values). styles (MODEL v4.3.3): {part id: patch style} for parts that are not demand bands (the
+    smooth (annual series only): each band PCHIP-interpolated separately, then stacked (the net check
+    runs on the annual values). styles: {part id: patch style} for parts that are not demand bands (the
     SF2b components); the others take band_style. Returns (up, down) at the annual values, with down <= 0."""
     x = np.asarray(x, float)
     if smooth:
@@ -342,25 +323,8 @@ def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', s
     return up, dn
 
 
-def stack_bars(ax, x, parts, width, net=None):
-    """MODEL v4.2.1: bars by band, positive values stacked up from zero and negative values stacked down from zero
-    (fixed order), each segment filled in its band style; net: the totals to check against (1e-9). Returns (up, down)."""
-    x = np.atleast_1d(np.asarray(x, float))
-    up, dn = np.zeros(len(x)), np.zeros(len(x))
-    for bid, v in parts:
-        v = np.broadcast_to(np.asarray(v, float), x.shape)
-        pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
-        if np.any(pos > 0):
-            ax.bar(x, pos, bottom=up, width=width, gid='band_segment', **band_style(bid))
-        if np.any(neg < 0):
-            ax.bar(x, neg, bottom=dn, width=width, gid=NEG_GID, **band_style(bid))
-        up, dn = up + pos, dn + neg
-    _check_net(up, dn, net, 'stack_bars')
-    return up, dn
-
-
 def negative_bar_style(bid):
-    # MODEL v4.3.1: style.band_colour (a display band such as Market balance had fallen back to the replacement colour)
+    # style.band_colour (a display band such as Market balance had fallen back to the replacement colour)
     return dict(facecolor='none', edgecolor=S.band_colour(bid), linewidth=S.LW_OUTLINE, hatch=None)
 
 
@@ -381,7 +345,7 @@ def bars_cumulative(ax, x, parts, width, net=None, tick=True, styles=None):
     for bid, v in parts:
         neg = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), None, 0)
         if np.any(neg < 0):
-            # MODEL v4.3.1: the outline in the caller's own face colour when it gives one (SF2c components that are not
+            # the outline in the caller's own face colour when it gives one (SF2c components that are not
             # demand bands had fallen back to the replacement colour)
             nst = (dict(facecolor='none', edgecolor=styles[bid]['facecolor'], linewidth=S.LW_OUTLINE, hatch=None)
                    if styles and bid in styles else negative_bar_style(bid))
@@ -409,11 +373,6 @@ def band_handles(bids, negative=None, outline=True):
         else:
             out.append(Patch(label=band_label(b), **dict(band_style(b), edgecolor=S.NEUTRALS['legend_outline'], linewidth=S.LW_THIN)))
     return out
-
-
-def band_legend(fig, bids, loc='lower center', ncol=4, y=-0.02, extra=(), negative=None, outline=True):
-    fig.legend(handles=band_handles(bids, negative, outline) + list(extra), loc=loc, ncol=ncol, bbox_to_anchor=(0.5, y),
-               frameon=False, handlelength=1.4, columnspacing=1.2)
 
 
 # ---------------------------------------------------------------------------
@@ -448,7 +407,7 @@ def stack_materials(ax, years, frame, scale=1.0, alpha=1.0, smooth=False):
     years = np.asarray(years, float)
     present = [(c, l_, col) for c, l_, col in S.MATERIAL if c in frame.columns]   # only the materials present
     vals = {code: np.asarray(frame[code], float) / scale for code, _, _ in present}
-    if smooth:                                             # MODEL v4.3.0: each material by PCHIP, then stacked
+    if smooth:                                             # each material by PCHIP, then stacked
         years, sp = smooth_parts(years, list(vals.items()))
         vals = dict(sp)
     bottom, handles = np.zeros(len(years)), []
@@ -486,9 +445,9 @@ def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History
 
 
 # ---------------------------------------------------------------------------
-# MODEL v4.3.0: paired tornado grouped by category (ED4, ED5; the Fig7a colour rule)
+# paired tornado grouped by category (ED4, ED5; the Fig7a colour rule)
 # ---------------------------------------------------------------------------
-TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = S.TORNADO_LOW, S.TORNADO_HIGH, S.TORNADO_SINGLE   # MODEL v4.3.2: palette [one_at_a_time]
+TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = S.TORNADO_LOW, S.TORNADO_HIGH, S.TORNADO_SINGLE   # palette [one_at_a_time]
 NO_EFFECT_RTOL = 1e-4             # |change| below 0.01% of the central value: marked 'no effect'
 
 

@@ -1,11 +1,11 @@
-"""Run profiles (MODEL v3.0.0): run_all.py --profile {light,full}; environment PATHWAY_PROFILE.
+"""Run profiles: run_all.py --profile {light,full}; environment PATHWAY_PROFILE.
 
     light (DEFAULT, temporary)  Monte Carlo 1,000 Latin-hypercube draws (its own fixed seed), Sobol indices off,
                                 bootstrap 500 replicates; figures PNG at 200 dpi with a grey footer
                                 "LIGHT RUN — n=1000"; every output under outputs/_light/ (a mirror of the outputs/
                                 tree), so the full outputs are never overwritten.
     full                        Monte Carlo 5,000 Latin-hypercube draws (the existing design and seed), Sobol on,
-                                bootstrap 2,000 replicates; figures PNG at 600 dpi (MODEL v3.3.1: no PDF);
+                                bootstrap 2,000 replicates; figures PNG at 600 dpi (no PDF);
                                 outputs under outputs/.
 
 Only the stochastic layer differs. The deterministic results (the Reference, every lever / pathway / TL run, the

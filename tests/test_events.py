@@ -1,8 +1,8 @@
-"""Time-resolved B2/B4 (MODEL v3.0.0: restored from tests/retired/test_v3.py, the baseline-pb-v3 tests; the two
-anchors of baseline-PB_v2 are checked on the MODEL v2.1 Reference, OVERBUILD_ABSORPTION_END = None, which
-tests/test_reference_legacy.py locks to v2.1; the identity and the other checks run on the v3 Reference).
+"""Time-resolved B2/B4. The two anchors of baseline-PB_v2 are checked on the Reference settings they were captured
+with (LEGACY below: the overbuild never absorbed, no completion lag, completion rate 0.95); the identity and the other
+checks run on the current Reference.
 
-baseline-pb-v3: time-resolved B2/B4 (replacement and repaint events), committed
+Time-resolved B2/B4 (replacement and repaint events), committed
 post-2050 emissions, A4-A5 decarbonisation. Checks: the event table reproduces the
 supplied tables; events per line equal the counts and add up to the line B2/B4;
 within-window + committed (2025 factors) = whole-life total; the
@@ -28,8 +28,8 @@ FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_pb_v2.json')))
 EV = pd.read_csv(BF.FILE_EVENTS).fillna({'event_type': '', 'event_path': ''})
 ITEMS = pd.read_csv(BF.FILE_ITEMS)
 WHOLE_LIFE = dict(ACCOUNTING='whole_life_at_construction', DECARB_A45='held')
-# the Reference of the captured anchors: the 2026 overbuild never absorbed (MODEL v2.1)
-LEGACY = dict(OVERBUILD_ABSORPTION_END=None, COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95)   # MODEL v4.0.0: v2.1 timing
+# the Reference of the captured anchors: the 2026 overbuild never absorbed
+LEGACY = dict(OVERBUILD_ABSORPTION_END=None, COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95)   # v2.1 timing
 
 
 @pytest.fixture(scope='module')
@@ -143,7 +143,7 @@ CARBON_AXIS = re.compile(r'CO₂|CO2|carbon|LoE|exceedance|\bkt\b|\bMt\b', re.I)
 
 def test_no_historical_carbon_in_figures():
     """No figure shows carbon before the projection (from 2026), except the Monte Carlo fan
-    with the boundaries (D21) and Fig3 (a) (MODEL v3.0.0 numbering), which show the AR base window at 2025 factors (figaudit records,
+    with the boundaries and Fig3 (a), which show the AR base window at 2025 factors (figaudit records,
     written when each figure is saved)."""
     import boundaries
     import layout
@@ -153,8 +153,7 @@ def test_no_historical_carbon_in_figures():
              for _, _, fs in os.walk(base) for f in fs if f.endswith('.png')}
     recs = {f[:-5]: json.load(open(os.path.join(audit, f))) for f in os.listdir(audit) if f.endswith('.json')}
     assert files and files <= set(recs), sorted(files - set(recs))         # every saved figure audited
-    # Fig3 (a) may show the AR base window history (a thin line joined to the projection); MODEL v4.3.0: the diagnostic
-    # figures D21 and D29 that had their own exceptions are no longer drawn
+    # Fig3 (a) may show the AR base window history (a thin line joined to the projection)
     allowed = {'Fig3_reference_boundaries': boundaries.AR_BASE_WINDOW[0]}
     bad = []
     for name in files:

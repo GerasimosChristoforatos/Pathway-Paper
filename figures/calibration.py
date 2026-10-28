@@ -1,8 +1,8 @@
-"""Calibration figures (MODEL v4.3.0: Supplementary SF1, SF2, SF4; outputs/supplementary/calibration/).
+"""Calibration figures (Supplementary SF1, SF2, SF4; outputs/supplementary/calibration/).
 
-Drawn from data files only (compute / draw separation, MODEL v3.0.0): the figure source written by projection.py
+Drawn from data files only (compute / draw separation): the figure source written by projection.py
 (D01-D03, D08, D09, D13; export_figure_sources) and Diagnostics.py (D04-D06), and baseline/overbuild_absorption_log.csv
-(D35). MODEL v4.3.3: SF2b in the Fig1 layout: positive components stacked up from zero and negative components
+(D35). SF2b in the Fig1 layout: positive components stacked up from zero and negative components
 stacked down from zero, every part a solid fill (no outlines, hatching or fades), checked against its net.
 """
 import matplotlib.pyplot as plt
@@ -36,7 +36,7 @@ def _band(ax, x, lo, hi, label):
 # ---------------------------------------------------------------------------
 # components of SF2b (D05)
 # ---------------------------------------------------------------------------
-# MODEL v4.3.3: component id -> (label, colour). A component that IS a demand band takes the [demand_bands] key
+# component id -> (label, colour). A component that IS a demand band takes the [demand_bands] key
 # (vacancy; net replacement in the history and demolition replacement in the projection; the 2026 overbuild = market
 # balance); the others palette.toml [components]. Every part is a solid fill: no hatch (the surge too), no fade.
 COMP = {'new_households': ('New households', S.NEW_HOUSEHOLDS),
@@ -55,14 +55,14 @@ COMP_STYLE = {c: S.fill(col) for c, (_, col) in COMP.items()}           # solid,
 
 
 # ---------------------------------------------------------------------------
-# SF1 (MODEL v4.3.0; D02 + D04 a, b): households
+# SF1 (D02 + D04 a, b): households
 # ---------------------------------------------------------------------------
 def sf1_households():
     """(a) households: Stats NZ estimates as published, the census-benchmarked history, the 2019-23 estimates scaled to
     the 2023 census, the projection (population / household size) with the 5th-95th population percentile; (b) change
-    in household size against population growth (census-benchmarked years; 2024-25 marked: since MODEL v4.2 Part B
-    households there are ERP / the model's household-size path, so their change in household size is the model's path,
-    not an observation). MODEL v4.3.1: panel (c), households per consent, dropped (tests/test_households_per_consent.py:
+    in household size against population growth (census-benchmarked years; 2024-25 marked: households
+    there are ERP / the model's household-size path, so their change in household size is the model's path,
+    not an observation). panel (c), households per consent, dropped (tests/test_households_per_consent.py:
     the Stats NZ estimates grow by 0.888 x the previous year's consents in 2019-2025)."""
     d2 = D.src('D02_households')
     d4 = D.src('D04_household_formation')
@@ -92,7 +92,7 @@ def sf1_households():
     late = [int(y) for y in d4['late_years']]
     marks = ('o', 's', 'D', '^')
     assert len(late) <= len(marks), late
-    for y, mk in zip(late, marks):        # MODEL v4.3.0: one hollow marker per year, named in the legend (no in-plot text)
+    for y, mk in zip(late, marks):        # one hollow marker per year, named in the legend (no in-plot text)
         a.scatter([dP_l[y] / 1e3], [dS_l[y]], facecolor='none', edgecolor=S.MODEL_PATH_YEARS, s=22, zorder=4,
                   marker=mk, lw=S.LW_THIN, label=f"{y}: the model's household-size path (households = ERP / S), "
                                                    'not observed')
@@ -111,7 +111,7 @@ def sf1_households():
 
 
 # ---------------------------------------------------------------------------
-# SF2 (MODEL v4.3.0; D05 + D06 as panel d): stock and vacancy
+# SF2 (D05 + D06 as panel d): stock and vacancy
 # ---------------------------------------------------------------------------
 HIST_IDS = ('new_households', 'vacancy', 'net_replacement_census', 'retirement_villages', 'unexplained_building')
 FUT_IDS = ('new_households', 'vacancy', 'replacement', 'unconsented', 'redevelopment', 'retirement_villages',
@@ -122,13 +122,13 @@ SF2B_RTOL = 1e-9
 
 
 def sf2b_columns():
-    """MODEL v4.3.3: the SF2b columns and line from the committed figure source (D05), in the Fig1 layout (the same gap
+    """The SF2b columns and line from the committed figure source (D05), in the Fig1 layout (the same gap
     rule, paper_main.FIG1_GAP): one column per census interval, the pipeline years as annual columns, the projection
     from the year after as annual areas. Each column / year carries its signed parts, its net (the sum of the parts),
     and up / down (the positive and negative sums). The line is the annual dwellings built (in scope), observed
     1992-2025 then the projection. Checks (STOP): the interval mean of the annual line equals the column net of every
     census interval (rtol 1e-9); the line equals the net of every projection year after the pipeline (rtol 1e-9).
-    The pipeline years (author decision, MODEL v4.3.3): the line is the sum of the components, the stock-identity
+    The pipeline years (author decision): the line is the sum of the components, the stock-identity
     count (observed all-category building less the modelled retirement-village share), the dwellings that join the
     stock. D05's dwellings_built_projection there is the in-scope floor area / the dwelling size held at its
     2023-2025 mean, which differs because the pipeline floor area is observed while the size is held; the difference
@@ -218,7 +218,7 @@ def sf2_stock_vacancy():
     fig = plt.figure(figsize=S.figsize('double', 185))
     gs = fig.add_gridspec(2, 4, height_ratios=[1, 1.1], width_ratios=[1, 1, 1, 0.85], hspace=0.66, wspace=0.75)
 
-    a = fig.add_subplot(gs[0, :])                   # MODEL v4.3.1: the stock panel (b) dropped; vacancy the full width
+    a = fig.add_subplot(gs[0, :])                   # the stock panel (b) dropped; vacancy the full width
     vc = d['vacancy_consistent_knots']
     lo, hi = float(vc.min()), float(vc.max())
     a.axhspan(100 * lo, 100 * hi, color=S.BAND['vacancy'][0], alpha=S.FIXED_FADES['census_range_span'], lw=0,
@@ -226,7 +226,7 @@ def sf2_stock_vacancy():
                     f'({100 * lo:.1f}–{100 * hi:.1f}%)')
     a.axvspan(2013, 2018, color=S.MUTED, alpha=S.FIXED_FADES['definition_break_span'], lw=0, label='2013 → 2018 empty / away definition break')
     vp, vcm = d['vacancy_published_model'], d['vacancy_consistent_model']
-    # MODEL v4.3.1 (B10): the labels say which series the Reference uses (engine.vacancy_knots; projection.v_forward)
+    # the labels say which series the Reference uses (engine.vacancy_knots; projection.v_forward)
     P.line(a, vp.index, 100 * vp.values, color=S.INK, lw=S.LW,
            label='Reference, history: census empty / private dwellings (before 2013: unoccupied × the 2013 empty '
                  'share), linear between censuses')
@@ -253,7 +253,7 @@ def sf2_stock_vacancy():
     a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09), fontsize=S.FONT_MIN, ncol=2)
     P.panel(a, 'a', 'Vacancy: empty homes only')
 
-    # (c; d before MODEL v4.3.1) MODEL v4.3.0 (D06): the unconsented additions each vacancy definition requires
+    # (c; data D06): the unconsented additions each vacancy definition requires
     a = fig.add_subplot(gs[1, 3])
     vals = [d6['unconsented_empty_only'], d6['unconsented_including_away']]
     nb = d6['mean_dwellings_built']
@@ -268,19 +268,19 @@ def sf2_stock_vacancy():
     a.set_ylabel(f"Unconsented additions required\n1992–{int(d6['calib_end'])} (per year)", fontsize=S.FONT_SMALL)
     P.thousands(a.yaxis)
     a.grid(axis='x', visible=False)
-    P.panel(a, 'c', 'Vacancy definition')                # MODEL v4.3.1: d -> c
+    P.panel(a, 'c', 'Vacancy definition')                # d -> c
 
     a = fig.add_subplot(gs[1, :3])
     b = sf2b_columns()
     sf2b_draw(a, b)
     a.axhline(0, color=S.INK, lw=S.LW_THIN)
-    # MODEL v4.3.0: the unexplained building of each interval as one row of values at the top of the panel (thousand
+    # the unexplained building of each interval as one row of values at the top of the panel (thousand
     # dwellings per year), above every column, so no label sits on a column
     for c in b['history']:
         m = c['parts']['unexplained_building'] / 1e3
         a.text(c['centre'], 0.965, P.minus(f'{m:+.1f}'), transform=a.get_xaxis_transform(), ha='center', va='top',
                fontsize=S.FONT_MIN, color=S.NEUTRALS['note_text'])
-    # MODEL v4.3.3: the latest interval (households consent-derived, not census-benchmarked) labelled, not faded
+    # the latest interval (households consent-derived, not census-benchmarked) labelled, not faded
     last = b['history'][-1]
     a.text(last['centre'], last['up'] / 1e3, '†', ha='center', va='bottom', fontsize=S.FONT_SMALL, color=S.INK)
     a.text(1991.6, 0.02, f"1986–91 not covered (calibration starts 1991)\n† {_yrs(*last['years'])}: households "
@@ -333,11 +333,11 @@ def sf2_stock_vacancy():
 
 
 # ---------------------------------------------------------------------------
-# SF4 (MODEL v4.3.0; D08 + the consent sizes of the former SF6): new-dwelling size
+# SF4 (D08 + the consent sizes of the former SF6): new-dwelling size
 # ---------------------------------------------------------------------------
 def sf4_dwelling_size():
     """(a) realised and occupied floor area per new dwelling; (b) mean consented new-dwelling size by typology 1990-2025
-    with the minima (L4) and the Reference size. MODEL v4.3.1: the occupancy-utilisation panel (b before) dropped."""
+    with the minima (L4) and the Reference size. the occupancy-utilisation panel (b before) dropped."""
     d = D.src('D08_dwelling_space')
     p = D.js('pathways/levers.json')['L4']
     yh = d['years_hist']

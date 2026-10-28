@@ -218,9 +218,9 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Console logs of run_all.py steps (every other output, figures included, is versioned so that
-# the release is byte-reproducible: tests/output_manifest_model_v1_1.json)
+# the release is byte-reproducible: tests/regression_model_v4.json)
 outputs/logs/
-# figure folders of the v3.1 layout (no longer written)
+# figure folder of an earlier layout (not written)
 outputs/figures/
 
 # Raw downloads are large and re-fetchable (data/fetch_sources.py); provenance is in data/raw/MANIFEST.csv
@@ -229,7 +229,7 @@ data/raw/*.zip
 # Reference papers (copyrighted; never committed: the repository is public). See refs listing in README.
 refs/
 # The author's earlier-manuscript AESA workbook (under review): kept local only;
-# tests/test_pb.py skips its reproduction test when the file is absent. Provenance in MANIFEST.csv.
+# tests/test_aesa.py skips its reproduction test when the file is absent. Provenance in MANIFEST.csv.
 data/raw/Absolute_Analysis.xlsm
 # World Bank WDI bulk CSV archives are small and were supplied (not re-fetchable as the same
 # release), so they are versioned despite the *.zip rule above.
@@ -238,7 +238,6 @@ data/raw/Absolute_Analysis.xlsm
 # MODEL v3.0.0: light-profile and legacy-Reference outputs are reproducible working copies (run_all.py); the
 # committed outputs are those of the full profile
 outputs/_light/
-outputs/_legacy/
 
 # MODEL v4.3.1: redraw.py palette previews (never versioned)
 outputs/_palette_preview/

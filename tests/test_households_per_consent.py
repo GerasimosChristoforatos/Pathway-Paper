@@ -1,11 +1,8 @@
-"""MODEL v4.3.1 (investigation B7): Stats NZ's Dwelling and Household Estimates (DHE) derive households between census
+"""Stats NZ's Dwelling and Household Estimates (DHE) derive households between census
 bases from weighted, lagged building consents. Checked against the raw inputs (no model run): in 2019-2025 the growth of
 the DHE households as published (31 December) over the previous calendar year's consents, all dwellings (retirement
 villages included; data/derived/consents_monthly.csv column 'Dwellings'), is a near-constant 0.888, as documented in
-projection.py (HOUSEHOLD ESTIMATES). The ratio moves away from it before 2019, where households are census-benchmarked.
-
-The Supplementary panel that showed this ratio from v4.0.0 on (households per consent) used the completion-lagged unit
-series as its denominator, which is why its 2019-2025 values were not flat; the panel is dropped in MODEL v4.3.1."""
+projection.py (HOUSEHOLD ESTIMATES). The ratio moves away from it before 2019, where households are census-benchmarked."""
 import os
 import sys
 

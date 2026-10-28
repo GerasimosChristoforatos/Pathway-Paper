@@ -1,4 +1,4 @@
-"""MODEL v3.0.0: the model rules and the STOP conditions, on the functions and on the outputs of the active run profile
+"""The model rules and the STOP conditions, on the functions and on the outputs of the active run profile
 (outputs/_light/ by default; PATHWAY_PROFILE=full for outputs/).
 
   * the Reference absorbs the 2026 overbuild by 2035 (logistic; payback capped at the year's building with carry);
@@ -164,7 +164,7 @@ def test_reoccupation_log():
     for _, g in lg.groupby('run'):
         assert (g['cumulative_reoccupied'] <= g['cumulative_released'] + 1e-6).all()
         assert (g['built'] >= -1e-6).all()
-        # MODEL v4.0.0: plus the re-occupied Reference overbuild (TL surplus pooling)
+        # plus the re-occupied Reference overbuild (TL surplus pooling)
         assert np.allclose(g['reoccupied'], g['reoccupied_tl1'] + g['reoccupied_tl2']
                            + g.get('reoccupied_overbuild', 0.0), atol=1e-6)
 

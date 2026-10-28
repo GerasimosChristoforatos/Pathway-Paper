@@ -1,200 +1,155 @@
 # New Zealand new residential floor area and embodied carbon, 2026–2050
 
-A bottom-up, demand-driven model of the new residential floor area New Zealand builds in
-2026–2050 and the embodied carbon it carries, in three layers:
+How much new residential floor area will New Zealand build in 2026–2050, how much embodied carbon will it carry, how
+does that compare with the sector's share of a global climate boundary, and how far can demand-side and supply-side
+levers reduce it? The model answers in three layers.
 
-* **Reference projection** (`projection.py`, `engine.py`): people → households → dwellings
-  required → floor area by reason for building (demand bands) → carbon by life-cycle stage
-  (materials A1–A3, construction A4–A5, maintenance B2/B4, soil carbon loss) and the emissions
-  committed after 2050. The 2026 overbuild (building above the requirement) is absorbed by 2035
-  on a logistic path: the market builds less until the surplus is re-occupied, and the vacancy
-  rate returns to the 2023 census value (5.39%). Replacement variants, one-at-a-time
-  sensitivities, Monte Carlo (Latin hypercube; Sobol indices in the full profile) and validation
-  against the census record.
-* **Planetary-boundary layer (AESA)** (`boundaries.py`, `aesa.py`): an absolute environmental
-  sustainability assessment for climate change; the carbon 2026–2050 against the sector's
-  share of a global carrying capacity under two allocation principles, acquired rights (AR) and
-  ability to pay (AtP), reported side by side and never averaged.
-* **Pathways** (`levers.py`, `pathways.py`): nine rule-based levers grouped by the carbon
-  reduction hierarchy of PAS 2080:2023 (BSI 2023): S1 Avoid (L1 Household size, L2 Vacancy rate,
-  L3 Building lifetime, L4 Extra space, L5 Occupancy density), S2 Switch (L6 Brownfield-first
-  development, L7 Soil-aware planning, L8 Material carbon efficiency) and S3 Improve (L9
-  Construction-stage carbon); every lever together is the Moderate / Ambitious Pathway. Each
-  lever has four ambition levels after the 2050 Pathways Calculator and EUCalc: Reference
-  (Level 1), Moderate (Level 2, the exact midpoint), Ambitious (Level 3, one of three documented
-  sub-rules) and the theoretical limit (Level 4, TL1–TL9), all adopted on the same logistic path
-  2026 → 2035. The theoretical limit (TL) is a thought experiment, not a pathway: dwellings
-  released by TL1 and TL2 are re-occupied gradually at a constant share of each year's need.
-  Exact Shapley attribution over strategies and over 2⁹ lever subsets, two sequential waterfalls
-  (Reference → L1 … L9 = Pathway; Pathway → TL1 … TL9 = TL), the back-cast to the AR budget, a
-  λ-sweep of each lever, and the pathway Monte Carlo
-  with its insight statistics (`pathways_mc.py`, `mcstats.py`).
+* **Reference projection** (`projection.py`, `engine.py`). It runs from people to households, to dwellings required,
+  to floor area by reason for building (the demand bands), to carbon by life-cycle stage: materials A1–A3,
+  construction A4–A5, maintenance B2/B4, soil carbon loss, and the emissions committed after 2050.
+  * The observed 2026 overbuild is absorbed by 2035 on a logistic path.
+  * Uncertainty and checks: replacement variants, one-at-a-time sensitivities, Monte Carlo (Latin hypercube; Sobol
+    indices in the full profile) and validation against the census record.
+* **Planetary-boundary layer** (`boundaries.py`, `aesa.py`). An absolute environmental sustainability assessment
+  (AESA) for climate change. It compares the carbon of 2026–2050 with the sector's share of a global carrying
+  capacity under two allocation principles, acquired rights (AR) and ability to pay (AtP). The two are reported side
+  by side and never averaged.
+* **Pathways** (`levers.py`, `pathways.py`). Nine rule-based levers, grouped by the carbon reduction hierarchy of
+  PAS 2080:2023:
+  * S1 Avoid: L1 Household size, L2 Vacancy rate, L3 Building lifetime, L4 Extra space, L5 Occupancy density;
+  * S2 Switch: L6 Brownfield-first development, L7 Soil-aware planning, L8 Material carbon efficiency;
+  * S3 Improve: L9 Construction-stage carbon.
 
-Release **MODEL v3.3.0**: the v3.2 model regrouped by PAS 2080 (strategies S1–S3 replace the
-families P1–P4; deterministic totals unchanged), a Very High replacement variant and the
-replacement half-life sampled in the Monte Carlo; see [docs/CHANGELOG_v3_3.md](docs/CHANGELOG_v3_3.md),
-[docs/CHANGELOG_v3_2.md](docs/CHANGELOG_v3_2.md),
-[docs/CHANGELOG_v3.md](docs/CHANGELOG_v3.md) and
-[CHANGELOG.md](CHANGELOG.md); cite with [CITATION.cff](CITATION.cff)).
+  Each lever has four levels: Reference, Moderate (the exact midpoint), Ambitious (one of three documented sub-rules)
+  and the theoretical limit (TL1–TL9). All are adopted on the same logistic path, 2026 → 2035, and every lever
+  together forms the Moderate and the Ambitious Pathway. The theoretical limit is a thought experiment, not a pathway.
+  * Attribution: exact Shapley values over the strategies and over 2⁹ lever subsets.
+  * Two sequential waterfalls, the back-cast to the AR budget and a λ-sweep of each lever.
+  * The pathway Monte Carlo (`pathways_mc.py`, `mcstats.py`).
+
+How the model works, script by script and equation by equation: [ARCHITECTURE.md](ARCHITECTURE.md). Release history:
+[CHANGELOG.md](CHANGELOG.md). Cite with [CITATION.cff](CITATION.cff).
 
 ## Results
 
-Paths are those of the full profile (`outputs/`); the light profile writes the same tree under
-`outputs/_light/`.
+**Headline results.** Every headline number is generated, not typed:
+* [outputs/reports/RESULTS.md](outputs/reports/RESULTS.md) is written from `outputs/data/metrics.json` by
+  `tools/results.py`;
+* the runs (Reference, Pathways, TL: carbon, floor area, cumulative LoE of AR and of AtP) are in
+  [outputs/data/pathways/runs.csv](outputs/data/pathways/runs.csv).
+
+To print the headline figures from the committed full-profile outputs:
+
+```
+python -c "import json,pandas as p; m=json.load(open('outputs/data/metrics.json')); print(m['projection']['carbon_kt'], m['mc']['carbon_p5'], m['mc']['carbon_p95']); r=p.read_csv('outputs/data/pathways/runs.csv'); print(r[(r.scenario=='REF')&r.run.isin(['REF','pathway-moderate','pathway-ambitious','TL'])][['run','carbon_kt','LoE_AR','LoE_AtP']].to_string(index=False))"
+```
+
+Paths below are those of the full profile (`outputs/`, the basis for reported results). The light profile writes the
+same tree under `outputs/_light/`.
 
 | what | where |
 |---|---|
-| Every figure (paper, Extended Data, Supplementary; PNG only) with its title, data sources and audit; one row per figure and table in the manifest | [outputs/FIGURES.md](outputs/FIGURES.md), [outputs/figure_manifest.csv](outputs/figure_manifest.csv) |
-| **Paper**: Fig1–Fig7 | [outputs/paper_main/](outputs/paper_main/) |
-| **Extended Data**: ED1–ED9 and the table EDT1 (lever levels by typology); renumbering in [ed_number_map.csv](outputs/data/ed_number_map.csv) | [outputs/paper_extended/](outputs/paper_extended/) |
-| **Supplementary**: SF1–SF15 in topic folders and the table ST1 (how the AR and AtP budgets are built); renumbering in [sf_number_map.csv](outputs/data/sf_number_map.csv) | [outputs/supplementary/](outputs/supplementary/) |
-| Figure audit records (one JSON per figure; no diagnostic figures are drawn since MODEL v4.3.0) | [outputs/diagnostics/_audit/](outputs/diagnostics/_audit/) |
-| **Market-balance diagnostics**: controlled zero- vs 17-month lag comparison; historical / forecast coarse demand classification | [outputs/reports/market_balance.md](outputs/reports/market_balance.md), [outputs/data/diagnostics/](outputs/data/diagnostics/) |
-| Run profile, draws, seeds, git and input hashes, step timings | [outputs/run_meta.json](outputs/run_meta.json) |
-| Grouped one-at-a-time sensitivity tables | [outputs/data/sensitivity/](outputs/data/sensitivity/) |
-| Results summary; every assumption with its basis; validation and reconciliation reports | [outputs/reports/](outputs/reports/) |
+| Every figure and table, with its title, caption, data sources and run note; one row per item in the manifest | [outputs/FIGURES.md](outputs/FIGURES.md), [outputs/figure_manifest.csv](outputs/figure_manifest.csv) |
+| **Main figures**: Fig1–Fig7 | [outputs/paper_main/](outputs/paper_main/) |
+| **Extended Data**: ED1–ED9 and the table EDT1 | [outputs/paper_extended/](outputs/paper_extended/) |
+| **Supplementary**: SF1–SF15 in topic folders and the table ST1 | [outputs/supplementary/](outputs/supplementary/) |
+| Figure audit records (one JSON per figure) | [outputs/diagnostics/_audit/](outputs/diagnostics/_audit/) |
+| Results summary; every assumption with its basis; validation, reconciliation and market-balance reports | [outputs/reports/](outputs/reports/) |
 | Methods draft and the levers table (Table 1) | [docs/METHODS_DRAFT.md](docs/METHODS_DRAFT.md), [docs/LEVERS_TABLE.md](docs/LEVERS_TABLE.md) |
 | References, with their verification status | [docs/REFERENCES.md](docs/REFERENCES.md) |
+| The palette and its colour-vision check | [docs/PALETTE.md](docs/PALETTE.md) |
 | Every number (CSV, JSON) | [outputs/data/](outputs/data/) |
-| Every data file, what it holds and the script that writes it | [outputs/INDEX.md](outputs/INDEX.md) |
-| How the model works, script by script | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| Vocabulary and the renaming map; figure plan; palette; sensitivity plan | [docs/RENAMING.md](docs/RENAMING.md) (section 11 for v3), [docs/FIGURE_PLAN_v3.md](docs/FIGURE_PLAN_v3.md), [docs/PALETTE.md](docs/PALETTE.md), [docs/SENSITIVITY_PLAN.md](docs/SENSITIVITY_PLAN.md) |
+| Every output file, what it holds and the script that writes it | [outputs/INDEX.md](outputs/INDEX.md) |
+| Run profile, draws, seeds, git and input hashes, step timings | [outputs/run_meta.json](outputs/run_meta.json) |
 
-Every number in the documents and figures is read from `outputs/data/`, which the pipeline
-writes; nothing is typed by hand. Results for reporting come from the full profile only.
+Every number in the documents and figures is read from `outputs/data/`, which the pipeline writes. Nothing is typed by
+hand.
 
 ## Running
 
 ```
 python -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt               # pinned; Python 3.11
-python run_all.py                             # light profile (default): outputs/_light/
 python run_all.py --profile full              # full profile: outputs/ (the basis for reported results)
+python run_all.py                             # light profile (default): outputs/_light/
 python run_all.py --figures-only              # redraw every figure from the data; the data must stay byte-identical
-python run_all.py --reference-legacy          # the MODEL v2.1 Reference (overbuild never absorbed): outputs/_legacy/
-python tests/capture_regression_model_v3.py   # (re)capture the v3 regression lock after both profiles have run
+python tests/capture_regression_model_v3.py   # (re)capture the regression lock after both profiles have run
 ```
 
 | profile | Monte Carlo | Sobol | bootstrap | figures | outputs |
 |---|---|---|---|---|---|
 | light (default) | 1,000 draws, seed 20261014 | off | 500 | PNG 200 dpi, footer "LIGHT RUN — n=1000" | `outputs/_light/` |
-| full | 5,000 draws, seed 20260924 | on | 2,000 | PDF + PNG 600 dpi | `outputs/` |
+| full | 5,000 draws, seed 20260924 | on | 2,000 | PNG 600 dpi | `outputs/` |
 
-The deterministic results (the Reference, every lever, pathway and TL run) do not depend on the
-profile; `tests/test_profiles.py` checks this. Step timings are recorded in `run_meta.json`.
+* **Profiles.** The deterministic results (the Reference, every lever, pathway and TL run) do not depend on the
+  profile; `tests/test_profiles.py` checks this.
+* **Pipeline.** It computes first and draws last, each step in its own process; ARCHITECTURE.md, section "Run modes",
+  gives the order.
+* **Failures.** A failed step prints its name and the log to read (`<outputs>/logs/<step>.log`), and the run stops
+  (exit code 1).
+* **Spyder.** Open `run_all.py` and Run, or type `runfile('run_all.py', args='--profile full')`. To draw one figure
+  interactively, call `FIGURES['<file id>']()` of its module in `figures/` (`figure_plan.py` lists the module of each
+  figure).
 
-The pipeline computes first and draws last, each script in its own process with its console
-output in `<outputs>/logs/<step>.log`:
-`Building_factors.py` → `projection.py` → `Diagnostics.py` → `Sensitivity.py` →
-`MonteCarlo.py` → `boundaries.py` (reads the Monte Carlo draws) → `validation.py` →
-`gap_2026.py` → `tools/overbuild_2026.py` → `tools/replacement_scenarios.py` →
-`tools/reconciliation.py` → `tools/figures_report.py` → `pathways.py` → `pathways_mc.py` →
-`tools/sensitivity_tables.py` → `tools/metrics.py` → `tools/results.py` →
-`tools/assumptions.py` → `tools/methods.py` → `run_meta.json` → `python -m figures` (every
-figure and FIGURES.md, from the data files only) → `tools/check_outputs.py` → `indexes.py` →
-the tests. The model scripts write CSV and JSON only; the `figures/` package draws. A run first
-clears its data, reports and figure folders (and the retired MODEL v2.1.2 folders
-`paper/`, `extended_data/`, `key_figures/`), so nothing stale survives. A failed step prints its
-name and the log to read, and the run stops (exit code 1 from the command line).
+## Recolour the figures
 
-### Running in Spyder
+Every meaning colour and every meaningful fade of the final figures is set in `palette.toml` at the repository root:
+the demand bands, materials, life-cycle stages, runs, strategies (a lever is drawn in its strategy colour),
+boundaries and their zones, the Fig3b column, the one-at-a-time colours, the components, typologies, replacement
+variants, Sobol indices, census markers, lag variants, validation and highlight marks, and `[opacity]` (numbers from 0
+to 1).
 
-1. Open `run_all.py` and press Run (F5), or type `runfile('run_all.py', args='--profile full')`
-   in the IPython console. Every path is resolved from the repository folder.
-2. Each step runs in its own process; the console prints one line per step. If a step fails,
-   the console names the step and the log file to open; no `SystemExit` traceback is raised.
-3. To look at one figure interactively, import its module of `figures/` and call
-   `FIGURES['<file id>']()` (`figure_plan.py` lists the module of every figure).
-4. To run the tests on their own: `!python -m pytest -q tests` (light profile outputs; set
-   `PATHWAY_PROFILE=full` for the full ones).
+* **One key, one meaning.** Each colour key colours exactly one meaning in every figure that shows it.
+* **What stays fixed.** Only neutrals (ink, greys, grid, white) and context fades (definition-break and interval spans,
+  rugs, label boxes) are fixed in `figures/style.py`; the header of `palette.toml` lists them.
+* **Coverage check.** `tools/palette_coverage.py` confirms that nothing else is drawn.
 
-## Recolour the figures locally
-
-Every meaning colour and every meaningful fade of the final figures is set in `palette.toml` at the repository root
-(MODEL v4.3.3; `tools/palette_coverage.py` checks it). Its groups include:
-* demand bands;
-* materials;
-* life-cycle stages;
-* runs (Reference, Moderate Pathway, Ambitious Pathway, Theoretical Limit);
-* strategies (Avoid, Switch, Improve; a lever is drawn in its strategy colour);
-* the planetary boundaries (AR, AtP);
-* the boundary zones;
-* the Fig3b cumulative column;
-* the one-at-a-time colours (input at its low end, at its high end, a single alternative case; Fig7a, ED4, ED5);
-* the SF2b / SF5 / SF15 components that are not demand bands, the building typologies, the replacement variants, the
-  Sobol indices, the census markers, the SF7 lag variants, the validation and highlight marks;
-* `[opacity]`: the boundary zones, the Monte Carlo bands, the Fig3a pathway lines, soil carbon loss, the Fig7b points
-  and three other meaningful fades (numbers from 0 to 1).
-
-Each colour key colours exactly one meaning in every figure that shows it. The defaults are the colours of the
-published figures. Only neutrals (ink, greys, grid, white) and context fades (definition-break and interval spans,
-rugs, label boxes) stay fixed in `figures/style.py`; the header of `palette.toml` lists them.
-
-`redraw.py` redraws the figures from the committed results in `outputs/data/`. It runs no model and no Monte Carlo,
-and needs nothing beyond a clone of the repository and the Python environment.
+`redraw.py` redraws the figures from the committed results in `outputs/data/`. It runs no model and no Monte Carlo:
 
 ```
-python -m venv .venv && . .venv/bin/activate
-pip install -r requirements.txt               # Python 3.11 or later
-# edit palette.toml: one "#RRGGBB" value per key (or copy it and pass --palette my_colours.toml)
-python redraw.py                              # every figure, 200 dpi preview, about 30 s
+# edit palette.toml: one "#RRGGBB" value per colour key (or copy it and pass --palette my_colours.toml)
+python redraw.py                              # every figure, 200 dpi preview
 python redraw.py --only main                  # main | extended | supplementary | figure ids (e.g. Fig2 ED4)
 python redraw.py --palette my_colours.toml --dpi 600
 python redraw.py --final                      # write the release figures (outputs/, 600 dpi, FIGURES.md)
 ```
 
-* **Where the previews go.** `outputs/_palette_preview/<palette file name>/`, with `paper_main/`,
-  `paper_extended/` and `supplementary/<topic>/` inside, plus `palette_swatches.png`, a sheet of the palette groups.
-  Previews never overwrite the release figures. `--out DIR` chooses another folder.
-* **Final figures.** `--final` writes the release PNGs at 600 dpi into `outputs/paper_main/`,
-  `outputs/paper_extended/` and `outputs/supplementary/`, and refreshes `outputs/FIGURES.md`. With the default
-  `palette.toml` the result is pixel-identical to the committed figures.
-* **Checks on loading.**
-  * **Errors.** A missing or misspelt key, or a value that is not `#RRGGBB`, stops the run.
-  * **Warnings, without stopping.** Two keys that appear in the same figure and are identical or very close (CAM02-UCS
-    distance below 10): the demand bands, materials and stages of Fig2; the runs and strategies of Fig4–Fig6; the
-    runs, boundaries, zones (as they show on white) and cumulative column of Fig3; the one-at-a-time colours.
-  * **Zone order (warning).** The three zones, composited on white at their fixed opacities, must stay ordered in
-    lightness (within both < within AR only < exceeded, CAM02-UCS J') under normal vision and every simulated
-    deficiency.
-  * **Colour-vision report.** For each group, the closest pair under normal vision and under simulated
-    deuteranomaly, protanomaly and tritanomaly (the method of `tools/palette_check.py`).
+* **Previews.** They go to `outputs/_palette_preview/<palette file name>/` (or `--out DIR`), with a swatch sheet, and
+  never overwrite the release figures.
+* **Validation.** On loading, the palette is validated: a missing or misspelt key, a colour that is not `#RRGGBB` or an
+  opacity outside [0, 1] stops the run.
+* **Warnings.** These do not stop the run:
+  * keys drawn in the same figure that are identical or very close (CAM02-UCS distance below 10);
+  * boundary zones that lose their lightness order on white.
+* **Colour-vision report.** It lists the closest pair of each group under normal vision and simulated deficiencies.
 
-## Tests and reproducibility
+## Tests
 
-`tests/README.md` lists what each test file protects (MODEL v4.3.3: a leaner suite, no Monte Carlo or Sobol run).
+`python -m pytest tests` (`PATHWAY_PROFILE=full` for the full outputs) runs the suite on the committed outputs. No Monte
+Carlo or Sobol run is needed. The suite covers:
+* the regression lock (`tests/regression_model_v4.json`, every deterministic data file and the Monte Carlo files);
+* the model rules and accounting identities;
+* the figure integrity checks.
 
-* **v4 regression lock** (`tests/test_regression_model_v3.py`, `tests/regression_model_v4.json`): the SHA-256 of every
-  deterministic data file (identical in both profiles) and of the Monte Carlo files of each profile, captured by
-  `tests/capture_regression_model_v3.py`.
-* **Model rules and identities** (`tests/test_model_v3.py`, `test_model_v3_3.py`, `test_model_v4.py`,
-  `test_model_v4_2.py`, `test_identities.py` and the module tests): overbuild absorption, the lever rule, the ordering
-  Reference ≥ Moderate ≥ Ambitious ≥ TL, Shapley efficiency, waterfall sums, the accounting identities, census
-  under-construction correction, soil, validation, decarbonisation, time-resolved events, the AESA equations.
-* **Figure integrity** (`tests/test_figure_integrity.py`): the figure tests that check drawn values against the data
-  (sign rules, sums to the run totals, Fig1 and SF2b lines against the census-interval means, data left
-  byte-identical); styling is checked by hand with `tools/check_figure_text.py`, `tools/palette_check.py` and
-  `tools/palette_coverage.py`.
-* **Profiles** (`tests/test_profiles.py`): deterministic outputs identical across profiles.
-* Retired to `tests/retired/` (not collected): the MODEL v1–v2.1 locks, the MODEL v2.1 legacy Reference lock
-  (`test_reference_legacy.py`, MODEL v4.3.3) and the styling tests of the figures (MODEL v4.3.3).
+[tests/README.md](tests/README.md) says what each file protects and which checks are run by hand
+(`tools/check_figure_text.py`, `tools/palette_check.py`, `tools/palette_coverage.py`).
 
 ## Layout
 
 | path | what |
 |---|---|
-| `projection.py`, `engine.py` | the Reference projection (data, calibration, projection, overbuild absorption) and the forward model (pure functions shared by the projection, Monte Carlo and pathways) |
+| `projection.py`, `engine.py` | the Reference projection and the forward model (pure functions shared by the projection, Monte Carlo and pathways) |
 | `Building_factors.py`, `events.py` | case-study carbon factors; time-resolved maintenance (B2, B4) and committed emissions |
 | `Diagnostics.py`, `Sensitivity.py`, `MonteCarlo.py`, `validation.py`, `gap_2026.py` | diagnostics data, one-at-a-time sensitivities, Monte Carlo and Sobol indices, rolling-origin hindcast, 2026 gap |
-| `aesa.py`, `boundaries.py` | planetary-boundary layer (AESA): boundaries, levels of exceedance |
-| `levers.py`, `pathways.py`, `pathways_mc.py`, `mcstats.py` | the lever rule and the nine levers; pathways, TL and re-occupation, Shapley, waterfall, λ-sweep, back-cast; the pathway Monte Carlo and its insight statistics |
-| `figures/` | every figure, from the data files only: `style.py` (palette registry, sizes, saving), `draw.py` (sign rules), `audit.py`, `index.py` (FIGURES.md) and one module per figure group |
-| `figure_plan.py`, `layout.py`, `runprofile.py`, `figsource.py`, `naming.py` | figure registry; output layout; run profiles; figure source data; vocabulary |
-| `run_all.py`, `indexes.py` | the pipeline; outputs/INDEX.md |
-| `tools/` | reports (overbuild, variants, reconciliation, reality checks, metrics, results, assumptions, methods), sensitivity tables, output checks, design documents, palette check |
-| `tests/` | the tests above |
+| `aesa.py`, `boundaries.py` | planetary-boundary layer (AESA) |
+| `levers.py`, `pathways.py`, `pathways_mc.py`, `mcstats.py` | the levers, pathways, theoretical limit, attribution and the pathway Monte Carlo |
+| `figures/` | every figure, from the data files only (`style.py` reads `palette.toml`) |
+| `figure_plan.py`, `layout.py`, `runprofile.py`, `figsource.py`, `naming.py`, `bands.py` | figure registry; output layout; run profiles; figure source data; vocabulary; display bands |
+| `run_all.py`, `redraw.py`, `indexes.py` | the pipeline; redraw from the committed outputs; outputs/INDEX.md |
+| `tools/` | pipeline reports (overbuild, variants, reconciliation, reality checks, metrics, results, assumptions, methods), sensitivity tables, output and figure checks, palette tools, `ast_equivalence.py` |
+| `tests/` | the tests (tests/README.md) |
 | `data/` | inputs only, and the scripts that build `data/derived/` from `data/raw/` |
-| `docs/` | CHANGELOG_v3, methods draft, levers table, references, renaming map, figure plan, palette, sensitivity plan, the hooks of the levers into the model |
+| `docs/` | methods draft, levers table, references, palette |
 
 ## Data provenance
 
@@ -257,4 +212,4 @@ Note: `data/raw/national_population_estimates_june_2026.html` is the release tex
 interim 2026 population figure used before the quarterly ERP series; it is kept with its
 MANIFEST entry but no longer read.
 
-Earlier versions and their outputs are preserved at their git tags (CHANGELOG.md).
+Earlier versions and their outputs are preserved in the git history and at the tag `model-v4.3.3` (CHANGELOG.md).

@@ -1,14 +1,12 @@
-"""MODEL v3.3.0 tests (docs/CHANGELOG_v3_3.md): PAS 2080 restructure, Very High replacement, half-life in the MC.
+"""PAS 2080 restructure, Very High replacement, half-life in the MC.
 
-  * equality with MODEL v3.2.0: the Reference, every lever / pathway run and TL (floor area, carbon, LoE AR, LoE AtP,
-    the budgets) equal the v3.2 outputs to 1e-9 under the v3.2 -> v3.3 map of run ids (fixture
-    tests/fixtures/v3_2_totals.json, captured from the v3.2.0 outputs by tests/capture_v3_2_totals.py);
+  * the v3.2 -> v3.3 map of lever ids is a permutation of L1-L9;
   * strategies: S1-S3 partition L1-L9 in PAS 2080 order; the strategy runs exist, P1-P4 do not;
   * Shapley efficiency of the strategy, lever and TL games against the run totals (1e-9);
   * the two sequential waterfalls: steps add up to their totals, end at the Pathway and at TL, the deltas add up to
     Reference - Pathway and Pathway - TL, and sequential_vs_shapley.csv carries the same values;
   * band sums (projection, every pathway run, history); bands not rescaled; zero-year guard; built >= 0;
-  * Fig6: the markers lie on the analytic plane; the exact AR / AtP curves give LoE = the level (1e-9); the axes
+  * the solution space (Fig5): the markers lie on the analytic plane; the exact AR / AtP curves give LoE = the level (1e-9); the axes
     reach the AtP curve;
   * Very High replacement: the stored trend is the weighted least-squares fit of the stored census rates; the VHIGH
     runs exist; the Monte Carlo samples the half-life in U(5, 15)."""
@@ -47,9 +45,9 @@ def _close(a, b, atol):
     return np.allclose(a, b, rtol=RTOL, atol=atol)
 
 
-# ------------------------------------------------------------------ equality with v3.2 ----
-# MODEL v4.0.0: test_equal_to_v3_2_under_the_map is retired: the current data are MODEL v4.0.0; equality with v3.3 (and
-# so with v3.2 under the map, tested up to MODEL v3.3.2) under the v3.3 settings is tests/test_model_v4.py.
+# ------------------------------------------------------------------ lever map ----
+# equality with MODEL v3.3 under the v3.3 settings is tests/test_model_v4.py; FIXTURE (the v3.2 totals) is read by
+# no test.
 
 
 def test_map_is_a_permutation_of_the_levers():
@@ -185,7 +183,7 @@ def test_zero_year_guard():
     assert E['total'][3] == 0.0 and E['soil'][3] == 0.0
 
 
-# ------------------------------------------------------------------ Fig6 ----
+# ------------------------------------------------------------------ solution space (Fig5) ----
 def test_fig6_markers_on_the_analytic_plane(runs):
     from figures import paper_main as PM
     bc = _js('pathways/backcast.json')
@@ -208,7 +206,7 @@ def test_fig6_exact_budget_curves():
     y0 = float(PM.fig5_curve(bc, 0.0, atp))
     r = bc['REF']
     assert (y0 > 1.0) == (r['carbon_fixed_2026_cohort_kt'] > bc['B_AtP_kt'])
-    assert y0 > PM.FIG5_LIM[1]                   # MODEL v3.3.2: the AtP contour lies above the plotted square
+    assert y0 > PM.FIG5_LIM[1]                   # the AtP contour lies above the plotted square
 
 
 # ------------------------------------------------------------------ replacement ----
@@ -220,8 +218,7 @@ def test_very_high_trend_is_the_weighted_ls_fit():
     assert tr['a'] == pytest.approx(a, rel=1e-9) and tr['b'] == pytest.approx(b, rel=1e-9)
     assert tr['rate_2026'] == pytest.approx(a + b * 2026, rel=1e-12)
     assert tr['rate_2050'] == pytest.approx(a + b * 2050, rel=1e-12)
-    # MODEL v4.0.0: with the 17-month completion lag two interval rates are negative (1996-2001, 2001-2006; MODEL v3.3:
-    # one, 1996-2001)
+    # with the 17-month completion lag two interval rates are negative (1996-2001, 2001-2006)
     assert tr['n'] == len(x) == 6 and tr['window'] == [1991, 2023] and (r < 0).sum() == 2
 
 

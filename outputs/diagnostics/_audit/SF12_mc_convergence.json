@@ -1,5 +1,5 @@
 {
- "figure": "SF14_mc_convergence",
+ "figure": "SF12_mc_convergence",
  "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {

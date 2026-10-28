@@ -1,11 +1,11 @@
 {
- "figure": "SF12_lambda_sweep",
- "producer": "figures/__main__.py",
+ "figure": "SF10_lambda_sweep",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "",
    "xlabel": "\u03bb: each lever from the Reference (0) to Ambitious (1); its Theoretical Limit at the right",
-   "ylabel": "Cumulative carbon 2026-2050 (kt CO\u2082e), lever alone",
+   "ylabel": "Cumulative carbon 2026\u20132050 (kt CO\u2082e), lever alone",
    "year_min": null,
    "year_max": null
   }
@@ -29,7 +29,7 @@
   "20,000",
   "21,000",
   "Ambitious",
-  "Cumulative carbon 2026-2050 (kt CO\u2082e), lever alone",
+  "Cumulative carbon 2026\u20132050 (kt CO\u2082e), lever alone",
   "L1 Household size",
   "L2 Vacancy rate",
   "L3 Building lifetime",

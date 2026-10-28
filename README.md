@@ -110,19 +110,25 @@ name and the log to read, and the run stops (exit code 1 from the command line).
 
 ## Recolour the figures locally
 
-The figure colours of nine groups of meanings are set in `palette.toml` at the repository root:
+Every meaning colour and every meaningful fade of the final figures is set in `palette.toml` at the repository root
+(MODEL v4.3.3; `tools/palette_coverage.py` checks it). Its groups include:
 * demand bands;
 * materials;
 * life-cycle stages;
 * runs (Reference, Moderate Pathway, Ambitious Pathway, Theoretical Limit);
 * strategies (Avoid, Switch, Improve; a lever is drawn in its strategy colour);
 * the planetary boundaries (AR, AtP);
-* the boundary zones (their opacities are fixed);
+* the boundary zones;
 * the Fig3b cumulative column;
-* the one-at-a-time colours (input at its low end, at its high end, a single alternative case; Fig7a, ED4, ED5).
+* the one-at-a-time colours (input at its low end, at its high end, a single alternative case; Fig7a, ED4, ED5);
+* the SF2b / SF5 / SF15 components that are not demand bands, the building typologies, the replacement variants, the
+  Sobol indices, the census markers, the SF7 lag variants, the validation and highlight marks;
+* `[opacity]`: the boundary zones, the Monte Carlo bands, the Fig3a pathway lines, soil carbon loss, the Fig7b points
+  and three other meaningful fades (numbers from 0 to 1).
 
-Each key colours exactly one meaning in every figure that shows it. The defaults are the colours of the published
-figures. All other colours (typologies, variants, sub-bands and neutrals) are fixed in `figures/style.py`.
+Each colour key colours exactly one meaning in every figure that shows it. The defaults are the colours of the
+published figures. Only neutrals (ink, greys, grid, white) and context fades (definition-break and interval spans,
+rugs, label boxes) stay fixed in `figures/style.py`; the header of `palette.toml` lists them.
 
 `redraw.py` redraws the figures from the committed results in `outputs/data/`. It runs no model and no Monte Carlo,
 and needs nothing beyond a clone of the repository and the Python environment.
@@ -156,32 +162,22 @@ python redraw.py --final                      # write the release figures (outpu
 
 ## Tests and reproducibility
 
-* **Legacy lock** (`tests/test_reference_legacy.py`): with `--reference-legacy` the MODEL v2.1
-  Reference is reproduced to 1e-12 relative (`tests/reference_legacy_v2_1.json.gz`).
-* **v3 regression lock** (`tests/test_regression_model_v3.py`): the SHA-256 of every
-  deterministic data file (identical in both profiles) and of the Monte Carlo files of each
-  profile, captured by `tests/capture_regression_model_v3.py`.
-* **Model rules** (`tests/test_model_v3.py`): overbuild absorption (logistic, payback cap and
-  carry, excess identical in every run), Moderate the exact midpoint, TLn at least as strong as
-  Ambitious, ordering Reference ≥ Moderate ≥ Ambitious ≥ TL, TL ≤ Ambitious Pathway ≤
-  Moderate Pathway in every Monte Carlo draw, the L4 / L5 interaction, dwellings built ≥ 0, implied vacancy ≥ 4% outside TL, cumulative
-  re-occupied ≤ cumulative released, Shapley efficiency, waterfall sums, material and stage
-  carbon never negative, the data STOP conditions.
-* **Figures** (`tests/test_figures_v3.py`): the model scripts do not plot; the palette registry
-  has no duplicates; only the surge band is hatched; AR solid and AtP dotted with zones; the sign
-  rules of time series and cumulative bars; every planned figure drawn and audited; drawing
-  leaves the data byte-identical.
-* **MODEL v3.3.0** (`tests/test_model_v3_3.py`): every run total equals v3.2 under the v3.2 →
-  v3.3 map of run ids (`tests/fixtures/v3_2_totals.json`), Shapley efficiency of the strategy,
-  lever and TL games, the two sequential waterfalls, band sums, the Fig6 markers and exact AR /
-  AtP curves, the Very High trend fit, the half-life range in the Monte Carlo.
-* **Profiles** (`tests/test_profiles.py`): deterministic outputs identical across profiles;
-  `run_meta.json` and the light footer.
-* Model tests: accounting identities, census under-construction correction, soil,
-  validation, decarbonisation, time-resolved events and committed emissions, the AESA equations
-  against their sources, the Harrell-Davis estimator, exact Shapley values.
-* The MODEL v1–v2.1 locks are retired to `tests/retired/` (not collected): MODEL v3.0.0 changes
-  the Reference on purpose; the legacy lock keeps the link to v2.1.
+`tests/README.md` lists what each test file protects (MODEL v4.3.3: a leaner suite, no Monte Carlo or Sobol run).
+
+* **v4 regression lock** (`tests/test_regression_model_v3.py`, `tests/regression_model_v4.json`): the SHA-256 of every
+  deterministic data file (identical in both profiles) and of the Monte Carlo files of each profile, captured by
+  `tests/capture_regression_model_v3.py`.
+* **Model rules and identities** (`tests/test_model_v3.py`, `test_model_v3_3.py`, `test_model_v4.py`,
+  `test_model_v4_2.py`, `test_identities.py` and the module tests): overbuild absorption, the lever rule, the ordering
+  Reference ≥ Moderate ≥ Ambitious ≥ TL, Shapley efficiency, waterfall sums, the accounting identities, census
+  under-construction correction, soil, validation, decarbonisation, time-resolved events, the AESA equations.
+* **Figure integrity** (`tests/test_figure_integrity.py`): the figure tests that check drawn values against the data
+  (sign rules, sums to the run totals, Fig1 and SF2b lines against the census-interval means, data left
+  byte-identical); styling is checked by hand with `tools/check_figure_text.py`, `tools/palette_check.py` and
+  `tools/palette_coverage.py`.
+* **Profiles** (`tests/test_profiles.py`): deterministic outputs identical across profiles.
+* Retired to `tests/retired/` (not collected): the MODEL v1–v2.1 locks, the MODEL v2.1 legacy Reference lock
+  (`test_reference_legacy.py`, MODEL v4.3.3) and the styling tests of the figures (MODEL v4.3.3).
 
 ## Layout
 

@@ -61,7 +61,7 @@ def paper_band_handles(bids, six=False):
 FIG1_GAP = 0.05                 # MODEL v3.3.2: the gap between columns, as a share of the interval width (v3.3.1: 0.10)
 
 
-OBSERVED_FILL = '#BDBDBD'       # MODEL v4.0.0: observed totals without a band split (the grey of D14)
+OBSERVED_FILL = S.OBSERVED_TOTAL  # MODEL v4.0.0: observed totals without a band split; v4.3.3: palette.toml [census_markers]
 PIPELINE_HATCH = '////'         # MODEL v4.0.0: building above modelled need in the pipeline years
 
 
@@ -187,10 +187,10 @@ def _fig1_draw(ax, six=True):
     handles = paper_band_handles(present + hist_only, six=six)           # only the bands present
     if not six:
         handles += [Patch(label='Building above modelled need (pipeline)',
-                          **dict(hatched, edgecolor='#555555', linewidth=S.LW_THIN))]
+                          **dict(hatched, edgecolor=S.NEUTRALS['legend_outline'], linewidth=S.LW_THIN))]
     if obs_years:
         handles += [Patch(label='Observed (consent-based; household estimates not independent)',
-                          **dict(S.fill(OBSERVED_FILL), edgecolor='#555555', linewidth=S.LW_THIN))]
+                          **dict(S.fill(OBSERVED_FILL), edgecolor=S.NEUTRALS['legend_outline'], linewidth=S.LW_THIN))]
     if not six:
         handles += [Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built (in scope)')]
     return handles, neg, pipe, float(tot.loc[2026:2050].sum()), ob
@@ -368,7 +368,8 @@ def fig3():
     S.boundary_zones(ax, xf, arf, atpf)
     q = {p: mc.loc[years.astype(int), f'carbon_{p}'].values / M for p in (5, 25, 50, 75, 95)}
     methods = {}
-    for (lo_, hi_), alpha, lab in (((5, 95), 0.12, 'Monte Carlo 90% band'), ((25, 75), 0.25, 'Monte Carlo 50% band')):
+    for (lo_, hi_), alpha, lab in (((5, 95), S.OPACITY['mc_band_90'], 'Monte Carlo 90% band'),
+                                   ((25, 75), S.OPACITY['mc_band_50'], 'Monte Carlo 50% band')):
         xf, lof, hif, methods[lab] = P.pchip_band(years, q[lo_], q[50], q[hi_], brk, name=f'Fig3a {lab}')
         ax.fill_between(xf, lof, hif, color=S.REFERENCE, alpha=alpha, lw=0, label=lab)
     # MODEL v4.3.2: no markers on the annual values (the PCHIP curves pass through them)
@@ -376,9 +377,9 @@ def fig3():
     # MODEL v4.2.1: the Moderate / Ambitious Pathway and the Theoretical Limit (deterministic, pathways/annual.csv)
     pa = D.csv('pathways/annual.csv')
     pa = pa[(pa['scenario'] == 'REF') & (pa['year'] >= 2026)]
-    for run, kw in ((f'{N.PATHWAY}-moderate', dict(color=S.PATHWAY_SETTING['moderate'], lw=S.LW, alpha=0.8)),
-                    (f'{N.PATHWAY}-ambitious', dict(color=S.PATHWAY_SETTING['ambitious'], lw=S.LW, alpha=0.8)),
-                    ('TL', dict(color=S.TL, lw=S.LW * 0.7, alpha=0.8))):
+    for run, kw in ((f'{N.PATHWAY}-moderate', dict(color=S.PATHWAY_SETTING['moderate'], lw=S.LW, alpha=S.OPACITY['pathway_lines'])),
+                    (f'{N.PATHWAY}-ambitious', dict(color=S.PATHWAY_SETTING['ambitious'], lw=S.LW, alpha=S.OPACITY['pathway_lines'])),
+                    ('TL', dict(color=S.TL, lw=S.LW * 0.7, alpha=S.OPACITY['pathway_lines']))):
         r = pa[pa['run'] == run].set_index('year').loc[years.astype(int), 'carbon_kt']
         ax.plot(*P.pchip(years, r.values, brk), label=N.run_label(run), **kw)
     ax.set_xlim(years[0], years[-1])
@@ -398,7 +399,7 @@ def fig3():
     whisk = dict(color=S.INK, lw=S.LW, capsize=3.0, capthick=S.LW, zorder=6)
     b.bar([0], [c], width=wd, **S.fill(S.CUMULATIVE_FIG3B))     # MODEL v4.3.2: palette.toml [cumulative]
     b.errorbar([0], [c], yerr=[[c - lo90], [hi90 - c]], fmt='none', **whisk)
-    b.bar([0], [hi50 - lo50], bottom=[lo50], width=wd * 0.35, facecolor='white', alpha=0.55, edgecolor=S.INK,
+    b.bar([0], [hi50 - lo50], bottom=[lo50], width=wd * 0.35, facecolor='white', alpha=S.FIXED_FADES['interval_box'], edgecolor=S.INK,
           lw=S.LW_THIN, zorder=7)                                   # MODEL v4.2.1: the 50% interval, lighter, narrower
     bar_, batp = float(a['B_AR_kgCO2e'].sum()) / M, float(a['B_AtP_kgCO2e'].sum()) / M
     for v, key in ((bar_, 'AR'), (batp, 'AtP')):
@@ -417,7 +418,7 @@ def fig3():
     b.grid(axis='x', visible=False)
     hb = [Patch(label='Cumulative carbon 2026–2050', **S.fill(S.CUMULATIVE_FIG3B)),
           Line2D([0], [0], color=S.INK, lw=S.LW, marker='_', markersize=8, label='90% interval (5th–95th percentile)'),
-          Patch(label='50% interval (25th–75th percentile)', facecolor='#E6E6E6', edgecolor=S.INK, lw=S.LW_THIN),
+          Patch(label='50% interval (25th–75th percentile)', facecolor=S.NEUTRALS['interval_box_legend'], edgecolor=S.INK, lw=S.LW_THIN),
           Patch(label='Committed after 2050: B2/B4', **S.fill(S.COMPONENT['maintenance'][0])),
           Patch(label='Committed after 2050: C1–C4', **S.fill(S.COMPONENT['committed'][0]))]
     b.legend(handles=hb, loc='upper left', fontsize=S.FONT_MIN, handlelength=1.6, frameon=False,
@@ -909,10 +910,13 @@ def fig7():
     # 2050 population; pathways/montecarlo_draws.csv), TL most prominent (drawn last, darker); y on a log scale
     pin = {}
     # MODEL v4.3.2: the Moderate Pathway added (diamonds, drawn below the Ambitious Pathway and TL)
-    for run, col, mk, sz, al, z in (('REF', S.REFERENCE, 's', 1.6, 0.18, 2),
-                                    ('pathway_moderate', S.PATHWAY_SETTING['moderate'], 'D', 1.5, 0.18, 1.5),
-                                    ('pathway_ambitious', S.PATHWAY_SETTING['ambitious'], '^', 1.8, 0.20, 2),
-                                    ('TL', S.TL, 'o', 2.4, 0.30, 3)):
+    O = S.OPACITY                                                     # MODEL v4.3.3: palette.toml [opacity]
+    for run, col, mk, sz, al, z in (('REF', S.REFERENCE, 's', 1.6, O['scatter_reference'], 2),
+                                    ('pathway_moderate', S.PATHWAY_SETTING['moderate'], 'D', 1.5,
+                                     O['scatter_moderate'], 1.5),
+                                    ('pathway_ambitious', S.PATHWAY_SETTING['ambitious'], '^', 1.8,
+                                     O['scatter_ambitious'], 2),
+                                    ('TL', S.TL, 'o', 2.4, O['scatter_tl'], 3)):
         v = d[f'{run}_LoE_AR'].to_numpy(float)
         k, n = int((v <= 1.0).sum()), len(v)
         pin[run] = (k / n, tuple(mcstats.wilson(k, n)))            # as pathways_mc.py
@@ -943,7 +947,7 @@ def fig7():
     lg = b.legend(handles=hb, loc='upper left', fontsize=S.FONT_MIN, markerscale=3, frameon=False)
     for h in lg.legend_handles:
         if hasattr(h, 'set_alpha'):
-            h.set_alpha(0.9)
+            h.set_alpha(S.FIXED_FADES['legend_markers'])
     P.panel(b, 'b', f"Reference, the Pathways and the {N.TL['TL']} vs the 2050 population")
     for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: slightly larger fonts
         if t.get_text():

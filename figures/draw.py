@@ -307,27 +307,29 @@ def smooth_parts(x, parts):
     return xf, out
 
 
-def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', smooth=False, **kw):
+def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', smooth=False, styles=None, **kw):
     """Time series by band: positive values stacked up from zero, negative values stacked down from zero (fixed
     order), the net a black line. parts: [(band id, values)]; net: the run's total to check against (1e-9).
     smooth (MODEL v4.3.0, annual series only): each band PCHIP-interpolated separately, then stacked (the net check
-    runs on the annual values). Returns (up, down) at the annual values, with down <= 0."""
+    runs on the annual values). styles (MODEL v4.3.3): {part id: patch style} for parts that are not demand bands (the
+    SF2b components); the others take band_style. Returns (up, down) at the annual values, with down <= 0."""
     x = np.asarray(x, float)
     if smooth:
         a_up = np.sum([np.clip(np.asarray(v, float), 0, None) for _, v in parts], axis=0)
         a_dn = np.sum([np.clip(np.asarray(v, float), None, 0) for _, v in parts], axis=0)
         _check_net(a_up, a_dn, net, 'stack_series')
         xf, sp = smooth_parts(x, parts)
-        stack_series(ax, xf, sp, net=None, net_line=net_line, net_label=net_label, **kw)
+        stack_series(ax, xf, sp, net=None, net_line=net_line, net_label=net_label, styles=styles, **kw)
         return a_up, a_dn
     up, dn = np.zeros(len(x)), np.zeros(len(x))
     for bid, v in parts:
         v = np.asarray(v, float)
         pos, neg = np.clip(v, 0, None), np.clip(v, None, 0)
+        st = (lambda: styles[bid]) if styles and bid in styles else (lambda: band_style(bid))   # only if drawn
         if np.any(pos > 0):
-            ax.fill_between(x, up, up + pos, gid='band_area', **dict(band_style(bid), **kw))
+            ax.fill_between(x, up, up + pos, gid='band_area', **dict(st(), **kw))
         if np.any(neg < 0):
-            ax.fill_between(x, dn + neg, dn, gid=NEG_GID, **dict(band_style(bid), **kw))
+            ax.fill_between(x, dn + neg, dn, gid=NEG_GID, **dict(st(), **kw))
         up, dn = up + pos, dn + neg
     _check_net(up, dn, net, 'stack_series')
     if net_line and np.any(dn < 0):
@@ -405,7 +407,7 @@ def band_handles(bids, negative=None, outline=True):
         if b in neg:
             out.append(Patch(label=band_label(b), **negative_bar_style(b)))
         else:
-            out.append(Patch(label=band_label(b), **dict(band_style(b), edgecolor='#555555', linewidth=S.LW_THIN)))
+            out.append(Patch(label=band_label(b), **dict(band_style(b), edgecolor=S.NEUTRALS['legend_outline'], linewidth=S.LW_THIN)))
     return out
 
 
@@ -476,7 +478,7 @@ def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History
          label=f'{census_last + 1}–{anchor % 100:02d}: Stats NZ estimates scaled to the {anchor} census'
                   + (f' (×{k:.3f})' if k is not None else ''))
     tail = s.loc[anchor:]
-    line(ax, tail.index, tail.values, color=color, lw=lw * 0.7, ls='--', alpha=0.35,
+    line(ax, tail.index, tail.values, color=color, lw=lw * 0.7, ls='--', alpha=S.FIXED_FADES['estimate_not_used_line'],
          label=f'{anchor + 1}–{last % 100:02d}: consent-derived estimates, not used')
     if anchor in s.index:
         ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=3, label=f'{anchor} census')

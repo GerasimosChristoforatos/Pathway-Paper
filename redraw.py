@@ -1,4 +1,4 @@
-"""Redraw the figures from the committed outputs only, with a palette file (MODEL v4.3.1; v4.3.2: nine groups).
+"""Redraw the figures from the committed outputs only, with a palette file (MODEL v4.3.1; v4.3.3: every meaning colour and fade).
 
 No model, no Monte Carlo: every figure reads outputs/data/ (the full-profile results in the repository) and is drawn
 by the figures/ package exactly as in the pipeline. Only the colours of palette.toml change.
@@ -46,13 +46,28 @@ SHARED = {'Fig2 (demand bands, materials, life-cycle stages)': {
           # MODEL v4.3.2
           'Fig3 (runs, boundaries, zones, cumulative)': {'runs': None, 'boundaries': None, 'boundary_zones': None,
                                                          'cumulative': None},
-          'Fig7a/ED4/ED5 (one at a time)': {'one_at_a_time': None}}
+          'Fig7a/ED4/ED5 (one at a time)': {'one_at_a_time': None},
+          # MODEL v4.3.3: the groups added with the palette coverage
+          'SF2b (components and the demand-band parts)': {
+              'components': ('new_households', 'replacement_surge', 'unconsented_additions', 'retirement_villages',
+                             'overbuild_absorbed', 'unexplained_building'),
+              'demand_bands': ('vacancy', 'net_replacement', 'market_balance')},
+          'ED3/SF3/SF6/SF8 (replacement variants, Reference)': {'replacement_variants': None, 'runs': ('reference',)},
+          'ED6/SF4/SF11 (typologies)': {'typologies': None},
+          'ED7 (Sobol indices)': {'sensitivity_indices': None},
+          'SF7 (lag variants)': {'lag_variants': None},
+          'SF15 (released dwellings, release binds)': {'components': ('released_tl',), 'highlights': ('release_binds',)}}
 # pairs of keys that denote the same quantity (identical by design, not a clash): maintenance B2/B4 as a demand band
 # and as a stage, and before / after 2050; MODEL v4.3.2: the Fig3b column is the Reference's cumulative carbon
 _MAINT = (('demand_bands', 'maintenance'), ('life_cycle_stages', 'maintenance'), ('life_cycle_stages', 'committed_b2_b4'))
 SAME_QUANTITY = {frozenset(p) for p in itertools.combinations(_MAINT, 2)} | {
     frozenset({('runs', 'reference'), ('cumulative', 'fig3b_cumulative_carbon')})}
 CLOSE = 10.0                     # CAM02-UCS distance (tools/palette_check.THRESHOLD)
+# MODEL v4.3.3: the colour-vision report compares the keys of a group that are drawn together; these groups' keys are
+# each in a different figure (no pair is ever seen together), and released_tl (SF15) never shares SF2b with the other
+# components (the SF15 pairing is in SHARED)
+REPORT_NOT_TOGETHER = {'census_markers', 'validation', 'highlights'}
+REPORT_ALONE = {('components', 'released_tl')}
 
 
 def parse(argv):
@@ -101,7 +116,8 @@ def check_palette(S):
     print('\nColour-vision report (tools/palette_check.py method): closest pair per group, CAM02-UCS distance '
           '(same-quantity pairs excluded; the zones as shown on white)')
     for g, cols in shown.items():
-        if len(cols) < 2:
+        cols = {k: v for k, v in cols.items() if (g, k) not in REPORT_ALONE}
+        if len(cols) < 2 or g in REPORT_NOT_TOGETHER:
             continue
         pairs = [(x, y) for x, y in itertools.combinations(cols, 2) if frozenset({(g, x), (g, y)}) not in SAME_QUANTITY]
         cells = []
@@ -115,7 +131,8 @@ def check_palette(S):
 def swatches(S, path):
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle
-    groups = list(S.PALETTE.items())
+    groups = [(g, S.PALETTE[g]) for g in S.COLOUR_GROUPS]           # MODEL v4.3.3: the [opacity] numbers as text below
+    opac = S.PALETTE.get(S.OPACITY_GROUP, {})
     rows = max(len(v) for _, v in groups)
     fig, ax = plt.subplots(figsize=(2.3 * len(groups), 0.32 * rows + 0.7))
     for i, (g, cols) in enumerate(groups):
@@ -124,8 +141,11 @@ def swatches(S, path):
             y = rows - 1 - j
             ax.add_patch(Rectangle((i * 2.3, y), 0.45, 0.8, facecolor=c, edgecolor='#555555', lw=0.4))
             ax.text(i * 2.3 + 0.55, y + 0.4, f'{k}\n{c}', fontsize=6, va='center', linespacing=1.0)
+    if opac:
+        ax.text(0, -0.5, 'opacity: ' + ', '.join(f'{k} {v:g}' for k, v in opac.items()), fontsize=6, va='top',
+                wrap=True)
     ax.set_xlim(-0.1, 2.3 * len(groups))
-    ax.set_ylim(-0.2, rows + 0.9)
+    ax.set_ylim(-1.2 if opac else -0.2, rows + 0.9)
     ax.axis('off')
     fig.savefig(path, dpi=200, bbox_inches='tight', metadata={'Software': None})
     plt.close(fig)

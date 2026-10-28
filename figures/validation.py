@@ -71,10 +71,10 @@ def sf6_hindcast():
     a = ax[3]
     pipeline_mode = c.get('status') == 'pipeline'
     if c.get('status') == 'observed':
-        a.bar(['Observed', 'Model'], [c['observed_ytd'], c['model_expected_ytd']], color=[S.INK, '#BDBDBD'], width=0.6)
+        a.bar(['Observed', 'Model'], [c['observed_ytd'], c['model_expected_ytd']], color=[S.INK, S.VALIDATION['model_check']], width=0.6)
     elif pipeline_mode and 'observed_pipeline_built_all' in c:      # MODEL v4.0.0: completion lag
         a.bar(['Observed\n(pipeline)', 'Model'], [c['observed_pipeline_built_all'], c['model_built_all']],
-              color=[S.INK, '#BDBDBD'], width=0.6)
+              color=[S.INK, S.VALIDATION['model_check']], width=0.6)
     if 'ratio_observed_to_model' in c:
         a.set_ylim(0, a.get_ylim()[1] * 1.15)
         a.text(0.5, 0.97, f"ratio {c['ratio_observed_to_model']:.2f}", transform=a.transAxes, ha='center', va='top',
@@ -111,7 +111,7 @@ def sf8_reality_checks():
         p = d['panels'][key]
         a = ax[i]
         lo, hi = p['range_1991_2025']
-        a.axhspan(lo, hi, color=S.MUTED, alpha=0.12, lw=0, label='1991–2025 range')
+        a.axhspan(lo, hi, color=S.MUTED, alpha=S.FIXED_FADES['history_range_span'], lw=0, label='1991–2025 range')
         hs = p['history']
         if key == 'removals_net':                     # census-interval rates: a step function, not interpolated
             a.plot(hs.index, hs, color=S.INK, lw=S.LW, label='History')
@@ -128,19 +128,19 @@ def sf8_reality_checks():
     rem = d['removals_pct_of_2025_stock']
     txt = '\n'.join(f"{labels[k]}: {rem[k]:.1f}%" for k in VARS)
     ax[1].text(0.02, 0.97, 'Removals 2026–2050,\n% of the 2025 stock:\n' + txt, transform=ax[1].transAxes,
-               va='top', fontsize=S.FONT_MIN, bbox=dict(facecolor='white', alpha=0.85, edgecolor='none', pad=1))
+               va='top', fontsize=S.FONT_MIN, bbox=dict(facecolor='white', alpha=S.FIXED_FADES['label_box'], edgecolor='none', pad=1))
     m = d['m2_per_res_max']
     ax[3].set_ylim(0, 300)
     ax[3].text(0.02, 0.97, f"Off scale: {int(m['year'])}, {m['value']:,.0f} m² per person\n(near-zero population "
                "growth)", transform=ax[3].transAxes, va='top', fontsize=S.FONT_MIN,
-               bbox=dict(facecolor='white', alpha=0.85, edgecolor='none', pad=1))
+               bbox=dict(facecolor='white', alpha=S.FIXED_FADES['label_box'], edgecolor='none', pad=1))
     a = ax[7]
     chg = np.asarray(d['handover_changes_pct'], float)
     h = d['handover']
-    counts, _, _ = a.hist(chg, bins=14, **S.fill('#BDBDBD'))
+    counts, _, _ = a.hist(chg, bins=14, **S.fill(S.VALIDATION['handover_history']))
     a.set_ylim(0, a.get_ylim()[1] * 1.45)                 # room for the legend above the bars
     ytop = 1.1 * float(np.max(counts))                    # the two markers stop below the legend
-    a.vlines(h['step_pct'], 0, ytop, color=S.ACCENT_ORANGE, lw=S.LW_BOLD,
+    a.vlines(h['step_pct'], 0, ytop, color=S.VALIDATION['handover_step'], lw=S.LW_BOLD,
              label=f"{h['last_observed_year']} → {h['first_model_year']} handover (observed → model): "
                    + P.minus(f"{h['step_pct']:+.1f}%"))
     a.vlines(h['hist_median_pct'], 0, ytop, color=S.INK, lw=S.LW, linestyles='--',

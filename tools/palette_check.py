@@ -71,8 +71,24 @@ def groups():
             **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
         'One at a time (Fig7a, ED4, ED5)': {'Input at low end': S.TORNADO_LOW, 'Input at high end': S.TORNADO_HIGH,
                                             'Single alternative case': S.TORNADO_SINGLE},
+        # MODEL v4.3.3: the palette-coverage groups
+        'SF2b (components and the demand-band parts)': dict(
+            {lab: col for c, (lab, col) in _sf2b().items()}),
+        'Replacement variants and the Reference (ED3, SF3, SF6, SF8)': {S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
+                                                                        for k in S.SCENARIO},
+        'Typologies (ED6, SF4, SF11)': dict(S.TYPOLOGY),
+        'Sobol indices (ED7)': {'Total effect': S.SOBOL['total'], 'First-order effect': S.SOBOL['first_order']},
+        'Lag variants (SF7)': {'Zero lag': S.LAG_VARIANT[0], '17-month lag': S.LAG_VARIANT[17]},
+        'Re-occupation (SF15)': {'Released dwellings (TL)': S.BAND['released_tl'][0],
+                                 'Release constraint binds': S.RELEASE_BINDS, 'Dwellings built': S.NEUTRAL_DARK},
         'Categorical groups (diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
+
+
+def _sf2b():
+    """The SF2b parts as drawn (figures/calibration.COMP; the net-replacement pair shares one colour and one label)."""
+    from figures import calibration as C
+    return {c: v for c, v in C.COMP.items() if c != 'replacement'}
 
 
 def focus():
@@ -100,7 +116,7 @@ def palette_as_shown(style=S):
     """MODEL v4.3.2: the palette groups of style.PALETTE with the boundary zones as they show on white (alpha
     compositing at the fixed opacities of style.ZONE_ALPHA); every other key as in the file."""
     zkey = {'within_both': 'within_both', 'within_ar_only': 'within_ar', 'exceeded': 'exceeded'}
-    out = {g: dict(c) for g, c in style.PALETTE.items()}
+    out = {g: dict(style.PALETTE[g]) for g in style.COLOUR_GROUPS}      # MODEL v4.3.3: [opacity] holds numbers
     out['boundary_zones'] = {k: zone_on_white(dict(color=c, alpha=style.ZONE_ALPHA[zkey[k]]))
                              for k, c in style.PALETTE['boundary_zones'].items()}
     return out

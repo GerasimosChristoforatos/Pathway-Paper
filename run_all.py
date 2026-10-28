@@ -4,8 +4,9 @@
     python run_all.py --profile full        # full profile: outputs/ (5,000 draws, Sobol, PDF + PNG 600 dpi)
     python run_all.py --figures-only        # redraw every figure from the data files; outputs/data must stay
                                             # byte-identical (checked: SHA-256 of every file before and after)
-    python run_all.py --reference-legacy    # the MODEL v2.1 Reference (overbuild never absorbed) in outputs/_legacy/,
-                                            # checked against the v2.1 fixture to 1e-12 (tests/test_reference_legacy.py)
+    python run_all.py --reference-legacy    # the MODEL v2.1 Reference (overbuild never absorbed) in outputs/_legacy/
+                                            # (MODEL v4.3.3: its 1e-12 lock against the v2.1 fixture is retired to
+                                            # tests/retired/test_reference_legacy.py; run it there by hand)
 
 Run profiles (runprofile.py): light = 1,000 Latin hypercube draws with their own seed, no Sobol indices, bootstrap 500,
 PNG at 200 dpi with a "LIGHT RUN" footer, every output under outputs/_light/; full = 5,000 draws with the existing
@@ -173,14 +174,14 @@ def figures_only(profile):
 
 
 def reference_legacy(profile):
-    """The MODEL v2.1 Reference (overbuild never absorbed): projection, Monte Carlo and AESA in outputs/_legacy/, and
-    the legacy lock (tests/test_reference_legacy.py, 1e-12)."""
+    """The MODEL v2.1 Reference (overbuild never absorbed): projection, Monte Carlo and AESA in outputs/_legacy/.
+    MODEL v4.3.3: the legacy lock (1e-12 against the v2.1 fixture) is retired to tests/retired/ (the v4 regression lock
+    covers the current model) and is no longer a step of this mode."""
     env = base_env(profile, legacy=True)
     os.environ.update(PATHWAY_PROFILE=profile, PATHWAY_REFERENCE_LEGACY='1')
     py = sys.executable
     for name in ('Building_factors', 'projection', 'MonteCarlo', 'boundaries'):
         step(name.lower(), [py, script(name)], env)
-    step('legacy_lock', [py, '-m', 'pytest', '-q', os.path.join(ROOT, 'tests', 'test_reference_legacy.py')], env)
     write_run_meta(env, 'reference_legacy')
 
 

@@ -75,9 +75,11 @@ RC = {
 
 # ---------------------------------------------------------------------------
 # MODEL v4.3.1: the user palette (palette.toml at the repository root; another file through the environment variable
-# PATHWAY_PALETTE, as redraw.py --palette sets it). Five groups of meanings; this module is the only reader, and every
-# figure takes these colours from the constants below. Each key colours one meaning only: nothing else is derived
-# from it (the lever shades, typologies, tornado, variants, boundaries, sub-bands and neutrals are fixed literals).
+# PATHWAY_PALETTE, as redraw.py --palette sets it). This module is the only reader, and every figure takes these
+# colours from the constants below. Each key colours one meaning only: nothing else is derived from it (the
+# typologies, variants, sub-bands and neutrals are fixed literals). MODEL v4.3.2: nine groups; the planetary
+# boundaries, their zones (alpha fixed here), the Fig3b cumulative column and the one-at-a-time (tornado) colours
+# moved from fixed literals into the file; the lever shades L1-L9 retired.
 # ---------------------------------------------------------------------------
 PALETTE_KEYS = {
     'demand_bands': ('population_growth', 'household_size_change', 'extra_space', 'vacancy', 'net_replacement',
@@ -85,7 +87,11 @@ PALETTE_KEYS = {
     'materials': ('timber', 'steel', 'concrete', 'plastics_paint', 'plasterboard', 'others', 'soil_carbon_loss'),
     'life_cycle_stages': ('a1_a3', 'a4_a5', 'soil_carbon_loss', 'maintenance', 'committed_b2_b4', 'committed_c1_c4'),
     'runs': ('reference', 'moderate', 'ambitious', 'theoretical_limit'),
-    'strategies': ('avoid', 'switch', 'improve')}
+    'strategies': ('avoid', 'switch', 'improve'),
+    'boundaries': ('acquired_rights', 'ability_to_pay'),
+    'boundary_zones': ('within_both', 'within_ar_only', 'exceeded'),
+    'cumulative': ('fig3b_cumulative_carbon',),
+    'one_at_a_time': ('low_end', 'high_end', 'single_alternative')}
 PALETTE_DEFAULT = os.path.join(ROOT, 'palette.toml')
 _HEX = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
@@ -121,7 +127,7 @@ def load_palette(path):
 
 PALETTE_PATH = os.environ.get('PATHWAY_PALETTE') or PALETTE_DEFAULT
 PALETTE = load_palette(PALETTE_PATH)
-_DB, _MAT, _ST, _RUN, _SG = (PALETTE[g] for g in PALETTE_KEYS)
+_DB, _MAT, _ST, _RUN, _SG, _BD, _ZN, _CUM, _OAT = (PALETTE[g] for g in PALETTE_KEYS)
 
 # ---------------------------------------------------------------------------
 # Colours (hex; checked by tools/palette_check.py)
@@ -136,17 +142,23 @@ MUTED = '#6E6E6E'                               # secondary text, leader lines
 # white) fall strictly in lightness under every simulated deficiency (darker green < light green < palest red;
 # CAM02-UCS J' 77 / 90 / 97 at least / at most), so they never depend on hue alone; AR '#D7191C' keeps >= 10 from
 # every run colour under every deficiency (tools/palette_check.py; docs/PALETTE.md)
-AR = '#D7191C'
-ATP = '#67000D'
+# MODEL v4.3.2: the colours from palette.toml [boundaries] and [boundary_zones]; line styles, widths and the zone
+# opacities (ZONE_ALPHA) stay fixed here. redraw.py and tools/palette_check.py warn when the zones, composited on white
+# at these opacities, lose the lightness order within both < within AR only < exceeded (CAM02-UCS J').
+AR = _BD['acquired_rights']
+ATP = _BD['ability_to_pay']
 LW_BOUNDARY = 0.9
 # MODEL v2.1.2: AtP dotted; the zones much lighter (on white: within both J' 90, within AR only 95, exceeded 99;
 # the lightness order still holds under every simulated deficiency; tools/palette_check.py)
 ATP_LS = (0, (1, 1.3))                          # dotted ·····
 BOUNDARY = {'AR': dict(color=AR, ls='-', lw=LW_BOUNDARY, label='Acquired rights (AR)'),
             'AtP': dict(color=ATP, ls=ATP_LS, lw=LW_BOUNDARY, label='Ability to pay (AtP)')}
-ZONE = {'within_both': dict(color='#41AB5D', alpha=0.30, label='Within both budgets (below AtP)'),
-        'within_ar': dict(color='#A1D99B', alpha=0.30, label='Within AR only (between AtP and AR)'),
-        'exceeded': dict(color='#FB6A4A', alpha=0.07, label='Boundary exceeded (above AR)')}
+ZONE_ALPHA = {'within_both': 0.30, 'within_ar': 0.30, 'exceeded': 0.07}      # fixed (not in palette.toml)
+ZONE = {'within_both': dict(color=_ZN['within_both'], alpha=ZONE_ALPHA['within_both'],
+                            label='Within both budgets (below AtP)'),
+        'within_ar': dict(color=_ZN['within_ar_only'], alpha=ZONE_ALPHA['within_ar'],
+                          label='Within AR only (between AtP and AR)'),
+        'exceeded': dict(color=_ZN['exceeded'], alpha=ZONE_ALPHA['exceeded'], label='Boundary exceeded (above AR)')}
 # MODEL v3.3.1: the exceeded zone slightly more red (alpha 0.035 -> 0.07; same hue, still the lightest zone:
 # tools/palette_check.py)
 ZONE_GID = 'boundary_zone'
@@ -157,7 +169,11 @@ ACCENT_BLUE = '#1F5FA8'
 
 # runs (palette.toml [runs])
 REFERENCE = _RUN['reference']
-NEUTRAL_DARK = '#4D4D4D'          # MODEL v4.3.1: a dark neutral grey (not the Reference): ED6 histograms, SF17 bars
+NEUTRAL_DARK = '#4D4D4D'          # MODEL v4.3.1: a dark neutral grey (not the Reference): ED6 histograms, SF15 bars
+# MODEL v4.3.2: the Fig3b 2026-2050 cumulative column and its legend patch, palette.toml [cumulative] (was REFERENCE)
+CUMULATIVE_FIG3B = _CUM['fig3b_cumulative_carbon']
+# MODEL v4.3.2: the 'release constraint binds' markers of SF15 (not a boundary; were S.AR): a fixed literal
+RELEASE_BINDS = '#D7191C'
 # MODEL v2.1.2: TL a deep forest green, far darker than the zones; at CAM02-UCS J' 25 it is >= 10 from AR, AtP,
 # the Reference, the Pathways, every lever, Population growth and the zones under every simulated deficiency (a mid green
 # at the lightness of AR merges with it under deuteranomaly / protanomaly)
@@ -170,18 +186,15 @@ SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),
             'VHIGH': dict(color='#1F1F1F', ls='-.', lw=LW, label='Very High replacement (trend continues)')}
 MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% band
 
-# MODEL v2.1.1 palette, inspired by Francis Bacon, Head VI (1949): each lever a shade within a hue family (golds /
-# ochres, mauves, blues, browns); the Pathways vermilion and TL a deep forest green, outside every family; Reference
-# grey. Lightness and chroma chosen by maximising the minimum CAM02-UCS distance of every group shown together under
-# every simulated deficiency (tools/palette_check.py; docs/PALETTE.md). MODEL v3.3.0: the levers are renumbered by the
-# PAS 2080 strategies (naming.LEVER_V3_2) and each lever keeps its MODEL v3.0 colour: L1 Household size light gold,
-# L2 Vacancy rate rose-lilac, L3 Building lifetime pale mauve, L4 Extra space deep ochre, L5 Occupancy density deep
-# amber, L6 Brownfield-first light tan, L7 Soil-aware planning dark brown, L8 Material carbon efficiency dark blue,
-# L9 Construction-stage carbon light blue. The strategies reuse the former pathway colours: S1 Avoid the ochre of the
-# space-per-person family, S2 Switch the land brown, S3 Improve the construction blue; the deep mauve P2_ANCHOR stays
-# the 2026 overbuild band.
-LEVER = {'L4': '#DFA538', 'L5': '#944E02', 'L1': '#F4D168', 'L2': '#AA7C9D', 'L3': '#E1D2DD',
-         'L8': '#4A6192', 'L9': '#ABD3FA', 'L7': '#8D6545', 'L6': '#C7B395'}      # fixed (not in palette.toml)
+# MODEL v2.1.1 palette, inspired by Francis Bacon, Head VI (1949): hue families (golds / ochres, mauves, blues,
+# browns); the Pathways vermilion and TL a deep forest green, outside every family; Reference grey. Lightness and
+# chroma chosen by maximising the minimum CAM02-UCS distance of every group shown together under every simulated
+# deficiency (tools/palette_check.py; docs/PALETTE.md). The strategies reuse the former pathway colours: S1 Avoid the
+# ochre of the space-per-person family, S2 Switch the land brown, S3 Improve the construction blue; the deep mauve
+# P2_ANCHOR stays the 2026 overbuild band. MODEL v4.3.2: the lever shades L1-L9 (style.LEVER) are retired; a lever is
+# drawn in its strategy colour (palette.toml [strategies]) and told apart by marker (LEVER_MARKER).
+LEVER_MARKER = ('o', 's', '^', 'D', 'v')          # the k-th lever within its strategy (SF10 lambda sweep)
+SURGE_FACE = '#E1D2DD'                  # the Recent replacement surge face (the former L3 shade): fixed
 P2_ANCHOR = '#683861'                   # the detailed band '2026 overbuild' (SF2c, SF5): fixed
 # MODEL v4.3.0: the typology colours; MODEL v4.3.1: fixed literals (were aliases of the L4 / L8 / L2 lever shades)
 TYPOLOGY = {'Detached': '#DFA538', 'Townhouses': '#4A6192', 'Apartments': '#AA7C9D'}
@@ -218,7 +231,7 @@ BAND = {'growth': (GROWTH, None),
         'overbuild_absorbed': ('#8D5D93', None),      # negative: outline only (P2 mauve family)
         'replacement': (REPLACEMENT, None),
         'unconsented': ('#BA9AC1', None),             # negative: outline only (replacement lilac family, darker)
-        'redevelopment': (LEVER['L3'], '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
+        'redevelopment': (SURGE_FACE, '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
         'released_tl': ('#95C283', None),             # negative: outline only (TL green family); SF17 re-occupation
         # MODEL v3.2.0 (A2, from v3.1.0): 'Vacancy released' (negative, outline; the L2 vacancy family, darker).
         # MODEL v4.3.1: 'Surplus kept vacant (2050)' removed (TL only, never drawn in a final figure)
@@ -290,8 +303,9 @@ def fill(face, hatch=None, hatchcolor=None, alpha=1.0):
 # categorical groups in the diagnostics (sensitivity groups, the cases of D17): the Okabe-Ito
 # palette (Okabe & Ito 2008, Color Universal Design), distinguishable under the common colour-vision
 # deficiencies; one colour per group, always with a label
-# MODEL v4.3.1: the tornado colours, fixed literals (were aliases of the Improve blue and the Moderate orange)
-TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = '#4A6192', '#EB6123', MUTED
+# MODEL v4.3.1: the tornado colours, fixed literals (were aliases of the Improve blue and the Moderate orange);
+# MODEL v4.3.2: palette.toml [one_at_a_time] (Fig7a, ED4, ED5: every draw.tornado)
+TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = _OAT['low_end'], _OAT['high_end'], _OAT['single_alternative']
 QUALITATIVE = ['#000000', '#E69F00', '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7']
 
 # sequential ramp for continuous fields (the solution-space LoE, H10): light to dark blue, lightness
@@ -367,7 +381,6 @@ def registry():
     (colour, hatch) within a group)."""
     return {
         'bands': {b: (c.upper(), h) for b, (c, h) in BAND.items()},
-        'levers': {k: (v.upper(), None) for k, v in LEVER.items()},
         'runs': {'REF': (REFERENCE.upper(), None), **{k: (v.upper(), None) for k, v in PATHWAY.items()},
                  'TL': (TL.upper(), None), 'LOW': (SCENARIO['LOW']['color'].upper(), None),
                  'HIGH': (SCENARIO['HIGH']['color'].upper(), None),

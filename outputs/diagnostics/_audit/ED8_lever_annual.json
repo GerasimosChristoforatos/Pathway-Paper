@@ -1,6 +1,6 @@
 {
  "figure": "ED8_lever_annual",
- "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "",

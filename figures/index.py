@@ -42,14 +42,14 @@ def write():
         L += _entry(h['file'], f"{h['id']} {h['title']}", h['caption'], h['source'], os.path.join(layout.PAPER_MAIN, h['file']))
     L += ['## Extended Data (paper_extended/)', '']
     for h in FP.PAPER_EXTENDED:
-        L += _entry(h['file'], f"{h['id']} {h['title']}", None, h['source'], layout.figure(h['file']))
+        L += _entry(h['file'], f"{h['id']} {h['title']}", h.get('caption'), h['source'], layout.figure(h['file']))
     for t in FP.EXTENDED_TABLES:
         L += [f"### {t['file']}", '', f"**{t['id']} {t['title']}** (table)", '',
               f"- Files: `paper_extended/{t['file']}.md`, `paper_extended/{t['file']}.csv`",
               f"- Data: {', '.join(f'`data/{s}`' for s in t['source'])}", '']
     L += ['## Supplementary figures (supplementary/)', '']
     for h in FP.SUPPLEMENTARY:
-        L += _entry(h['file'], f"{h['id']} {h['title']}", None, h['source'], layout.figure(h['file']))
+        L += _entry(h['file'], f"{h['id']} {h['title']}", h.get('caption'), h['source'], layout.figure(h['file']))
     for t in FP.SUPPLEMENTARY_TABLES:                 # MODEL v4.3.1
         rel = f"supplementary/{t['folder']}/{t['file']}"
         L += [f"### {t['file']}", '', f"**{t['id']} {t['title']}** (table)", '',

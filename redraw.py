@@ -1,4 +1,4 @@
-"""Redraw the figures from the committed outputs only, with a palette file (MODEL v4.3.1).
+"""Redraw the figures from the committed outputs only, with a palette file (MODEL v4.3.1; v4.3.2: nine groups).
 
 No model, no Monte Carlo: every figure reads outputs/data/ (the full-profile results in the repository) and is drawn
 by the figures/ package exactly as in the pipeline. Only the colours of palette.toml change.
@@ -11,13 +11,19 @@ by the figures/ package exactly as in the pipeline. Only the colours of palette.
 
 Previews go to outputs/_palette_preview/<palette file stem>/ (paper_main/, paper_extended/, supplementary/<topic>/),
 so the release PNGs are never overwritten unless --final is given. Each run also writes palette_swatches.png (the
-five palette groups) to the same folder.
+palette groups) to the same folder.
 
 On loading, the palette is validated (every group and key present, "#RRGGBB" values; style.load_palette). Then:
   * a warning (not an error) for two keys that share a figure and are identical or very close: the demand bands,
-    materials and life-cycle stages (all in Fig2), and the runs and strategies (Fig4-Fig6). "Very close" is a
-    CAM02-UCS distance below 10 in normal vision, the convention of tools/palette_check.py;
-  * the colour-vision report of tools/palette_check.py for the five groups: per group and vision type (normal,
+    materials and life-cycle stages (all in Fig2), the runs and strategies (Fig4-Fig6), the runs, boundaries, zones
+    and cumulative column of Fig3, and the one-at-a-time colours (Fig7a, ED4, ED5). "Very close" is a CAM02-UCS
+    distance below 10 in normal vision, the convention of tools/palette_check.py. The zones are compared as they show
+    on white, at their fixed opacities, with every other key of the figure; they are pale by design (data are drawn
+    over them), so zone against zone is checked by their lightness order instead (next item);
+  * a warning if the three zones, composited on white, lose the lightness order within both < within AR only <
+    exceeded (CAM02-UCS J') in normal vision or under any simulated deficiency (MODEL v4.3.2);
+  * the colour-vision report of tools/palette_check.py for every group of two or more keys: per group and vision
+    type (normal,
     simulated deuteranomaly, protanomaly and tritanomaly at full severity; Machado et al. 2009, colorspacious), the
     closest pair and its CAM02-UCS distance, flagged below 10.
 """
@@ -36,11 +42,16 @@ GROUP_OF_SECTION = {'main': 'paper_main', 'extended': 'paper_extended', 'supplem
 SHARED = {'Fig2 (demand bands, materials, life-cycle stages)': {
               'demand_bands': None, 'materials': None,
               'life_cycle_stages': ('a1_a3', 'a4_a5', 'soil_carbon_loss', 'maintenance')},   # committed_*: Fig3b only
-          'Fig4-Fig6 (runs, strategies)': {'runs': None, 'strategies': None}}
+          'Fig4-Fig6 (runs, strategies)': {'runs': None, 'strategies': None},
+          # MODEL v4.3.2
+          'Fig3 (runs, boundaries, zones, cumulative)': {'runs': None, 'boundaries': None, 'boundary_zones': None,
+                                                         'cumulative': None},
+          'Fig7a/ED4/ED5 (one at a time)': {'one_at_a_time': None}}
 # pairs of keys that denote the same quantity (identical by design, not a clash): maintenance B2/B4 as a demand band
-# and as a stage, and before / after 2050
+# and as a stage, and before / after 2050; MODEL v4.3.2: the Fig3b column is the Reference's cumulative carbon
 _MAINT = (('demand_bands', 'maintenance'), ('life_cycle_stages', 'maintenance'), ('life_cycle_stages', 'committed_b2_b4'))
-SAME_QUANTITY = {frozenset(p) for p in itertools.combinations(_MAINT, 2)}
+SAME_QUANTITY = {frozenset(p) for p in itertools.combinations(_MAINT, 2)} | {
+    frozenset({('runs', 'reference'), ('cumulative', 'fig3b_cumulative_carbon')})}
 CLOSE = 10.0                     # CAM02-UCS distance (tools/palette_check.THRESHOLD)
 
 
@@ -68,21 +79,30 @@ def check_palette(S):
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     import palette_check as PC
     pal = S.PALETTE
+    shown = PC.palette_as_shown(S)                  # MODEL v4.3.2: the zones as they show on white
     nwarn = 0
     for fig, groups in SHARED.items():
         keys = [(g, k) for g, ks in groups.items() for k in (ks or pal[g])]
         for a, b in itertools.combinations(keys, 2):
-            if frozenset({a, b}) in SAME_QUANTITY:
-                continue
-            ca, cb = pal[a[0]][a[1]], pal[b[0]][b[1]]
+            if frozenset({a, b}) in SAME_QUANTITY or a[0] == b[0] == 'boundary_zones':
+                continue                            # zone against zone: the lightness-order check below
+            ca, cb = shown[a[0]][a[1]], shown[b[0]][b[1]]
             d = float(((PC.jab(ca, 'normal') - PC.jab(cb, 'normal')) ** 2).sum() ** 0.5)
             if ca == cb or d < CLOSE:
                 nwarn += 1
                 what = 'identical' if ca == cb else f'very close (CAM02-UCS {d:.1f} < {CLOSE:g})'
                 print(f'  WARNING {fig}: {a[0]}.{a[1]} {ca} and {b[0]}.{b[1]} {cb} are {what}')
+    ok, J = PC.zone_lightness_order(S)
+    if not ok:
+        nwarn += 1
+        print('  WARNING boundary zones: on white they no longer fall in lightness within both < within AR only < '
+              "exceeded under every vision type (CAM02-UCS J' normal / deuteranomaly / protanomaly / tritanomaly: "
+              + '; '.join(f"{k} " + ' / '.join(f'{x:.1f}' for x in v) for k, v in J.items()) + ')')
     print('\nColour-vision report (tools/palette_check.py method): closest pair per group, CAM02-UCS distance '
-          '(same-quantity pairs excluded)')
-    for g, cols in pal.items():
+          '(same-quantity pairs excluded; the zones as shown on white)')
+    for g, cols in shown.items():
+        if len(cols) < 2:
+            continue
         pairs = [(x, y) for x, y in itertools.combinations(cols, 2) if frozenset({(g, x), (g, y)}) not in SAME_QUANTITY]
         cells = []
         for v in PC.VISION:

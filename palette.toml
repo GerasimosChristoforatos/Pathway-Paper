@@ -1,13 +1,24 @@
-# Figure palette (MODEL v4.3.2). Edit any hex value and run `python redraw.py` to preview every figure.
+# Figure palette (MODEL v4.3.3). Edit any value and run `python redraw.py` to preview every figure.
 #
-# Read by figures/style.py only. Each key colours exactly one meaning, in every figure and every element that shows
-# it (lines, bars, stacked areas, negative-part outlines, Monte Carlo bands at their fixed transparency, markers,
-# coloured labels and legend swatches). Changing one key changes nothing else.
-# Colours that are not listed here (building typologies, Sobol bars, replacement and roll-out variants, census
-# markers, detailed sub-bands and neutral greys) are fixed in figures/style.py. MODEL v4.3.2: the planetary
-# boundaries, their zones, the Fig3b cumulative column and the one-at-a-time colours moved into this file; the lever
-# shades L1-L9 are retired (a lever is drawn in its strategy colour).
-# Format: "#RRGGBB". The defaults are the colours of the v4.3.0 / v4.3.1 figures.
+# Read by figures/style.py only. Each colour key colours exactly one meaning, in every final figure and every element
+# that shows it (lines, bars, stacked areas, markers, coloured labels and legend swatches); changing one key changes
+# nothing else. Since MODEL v4.3.3 every meaning colour of the final figures (main, Extended Data, Supplementary) is in
+# this file, and every meaningful fade is in [opacity]; tools/palette_coverage.py redraws every final figure with a
+# probe palette and reports any colour or fade that does not come from here (it reports none).
+#
+# Fixed in figures/style.py, by design (no meaning of their own):
+#   * neutrals (style.NEUTRALS): text and axes ink #1A1A1A, muted grey #6E6E6E (secondary text, leader lines,
+#     legend swatches of line styles, hatch lines), grid #E0E0E0, white, black, legend outlines #555555, note text
+#     #595959, the dark neutral grey #4D4D4D of histograms and bars that are not a run (ED6, SF15), the legend swatch
+#     #E6E6E6 of the Fig3b 50% interval box;
+#   * context fades (style.FIXED_FADES): the 2013 -> 2018 definition-break span (0.10) and the census range span
+#     (0.12) of SF2a, the 1991-2025 range spans of SF8 (0.12), bootstrap / confidence-interval spans of SF11 (0.15)
+#     and SF14 (0.12), the SF14 rugs (0.4), the dashed 2024-25 "estimates not used" line of SF1 (0.35), neutral
+#     histograms (0.6) and bars (0.5), the white Fig3b 50% interval box (0.55), white label boxes (0.85), legend
+#     markers of Fig7b (0.9).
+# Not in this file because no final figure draws them: the lever shades (retired in MODEL v4.3.2), the categorical
+# Okabe-Ito set and the accent pair of the retired diagnostics, the 'vacancy released' band.
+# Format: colours "#RRGGBB"; [opacity] numbers from 0 to 1. The defaults are the colours of the v4.3.2 figures.
 
 [demand_bands]                      # Fig1, Fig2a and Fig2d (by demand); ED2a; SF2; SF3; SF4
 population_growth     = "#586E71"   # Population growth (untargeted)
@@ -51,9 +62,9 @@ acquired_rights       = "#D7191C"   # Acquired rights (AR)
 ability_to_pay        = "#67000D"   # Ability to pay (AtP)
 
 [boundary_zones]                    # the three zones behind every boundary figure (fills, legend swatches)
-# The opacity of each zone is fixed in figures/style.py (ZONE_ALPHA): within_both 0.30, within_ar_only 0.30,
-# exceeded 0.07. redraw.py warns if, composited on white at these opacities, the zones lose the lightness order
-# within_both < within_ar_only < exceeded (CAM02-UCS J') in normal vision or any simulated deficiency.
+# The opacity of each zone is [opacity] zone_* (MODEL v4.3.3; fixed in style.py before). redraw.py warns if,
+# composited on white at those opacities, the zones lose the lightness order within_both < within_ar_only < exceeded
+# (CAM02-UCS J') in normal vision or any simulated deficiency.
 within_both           = "#41AB5D"   # Within both budgets (below AtP)
 within_ar_only        = "#A1D99B"   # Within AR only (between AtP and AR)
 exceeded              = "#FB6A4A"   # Boundary exceeded (above AR)
@@ -65,3 +76,66 @@ fig3b_cumulative_carbon = "#4D4D4D" # the 2026-2050 cumulative carbon column and
 low_end               = "#4A6192"   # Input at its low end
 high_end              = "#EB6123"   # Input at its high end
 single_alternative    = "#6E6E6E"   # A row with a single alternative case
+
+# ---- MODEL v4.3.3: the rest of the meaning colours of the final figures ----
+# Parts of SF2b / SF5 / SF15 that are not demand bands. MODEL v4.3.3 defaults: the requested colours, each newer colour's
+# CAM02-UCS lightness adjusted (hue and chroma kept) so that every SF2b pair is >= 10 apart in normal vision and the
+# three simulated deficiencies (docs/CHANGELOG_v4_3_3.md). Parts that ARE a demand band take its [demand_bands] key:
+# vacancy -> vacancy; net replacement (census history) and demolition replacement -> net_replacement; the 2026
+# overbuild (SF2b, SF5 lines) -> market_balance.
+[components]
+new_households        = "#97AEB1"   # New households (SF2b)
+replacement_surge     = "#8A66AB"   # Recent replacement surge (SF2b; solid since MODEL v4.3.3)
+unconsented_additions = "#5C9CC5"   # Unconsented additions (SF2b, negative)
+retirement_villages   = "#DCDCDC"   # Retirement villages, out of scope (SF2b, negative)
+overbuild_absorbed    = "#9E5B7F"   # Overbuild absorbed (SF2b, SF5; negative payback)
+unexplained_building  = "#D98B5F"   # Unexplained building of the history (SF2b)
+released_tl           = "#95C283"   # Released dwellings re-occupied, and the pool line (SF15)
+
+[typologies]                        # ED6 (carbon-factor histograms), SF4b, SF11
+detached              = "#DFA538"
+townhouses            = "#4A6192"
+apartments            = "#AA7C9D"
+
+[replacement_variants]              # ED3, SF3, SF6, SF8 (the Reference itself: [runs] reference)
+low                   = "#B5B5B5"   # Low replacement
+high                  = "#6E6E6E"   # High replacement
+very_high             = "#1F1F1F"   # Very High replacement (trend continues)
+
+[sensitivity_indices]               # ED7 Sobol bars
+total_effect          = "#0072B2"   # Total effect (with interactions)
+first_order_effect    = "#56B4E9"   # First-order effect
+
+[census_markers]
+census_empty          = "#C2571A"   # SF2a census empty points (published / 2013 split applied)
+observed_total        = "#BDBDBD"   # Fig1 observed totals without a band split (drawn only when such years exist)
+
+[lag_variants]                      # SF7
+zero_lag              = "#C2571A"   # Zero lag (consent-timed proxy)
+lag_17_months         = "#1F5FA8"   # 17-month lag (completion-timed)
+
+[validation]
+model_check           = "#BDBDBD"   # SF6 2027 check: the model bar (observed in ink)
+handover_history      = "#BDBDBD"   # SF8h: year-to-year changes 1992-2025 (histogram)
+handover_step         = "#C2571A"   # SF8h: the observed -> model handover step
+
+[highlights]
+model_path_years      = "#C2571A"   # SF1b: 2024-25, the model's household-size path (not observed)
+release_binds         = "#D7191C"   # SF15: years where the release constraint binds
+
+[opacity]                           # meaningful fades, 0-1 (context fades are fixed: see the header)
+zone_within_both      = 0.30        # boundary zone below AtP
+zone_within_ar_only   = 0.30        # boundary zone between AtP and AR
+zone_exceeded         = 0.07        # boundary zone above AR
+mc_band_90            = 0.12        # Fig3a Monte Carlo 90% band
+mc_band_50            = 0.25        # Fig3a Monte Carlo 50% band
+mc_band               = 0.15        # single 5th-95th bands (ED1, SF1a, SF13)
+pathway_lines         = 0.8         # Fig3a Moderate / Ambitious Pathway and TL lines
+soil_carbon_loss      = 0.5         # soil carbon loss over the materials (Fig2b, Fig2d)
+scatter_reference     = 0.18        # Fig7b points: Reference
+scatter_moderate      = 0.18        # Fig7b points: Moderate Pathway
+scatter_ambitious     = 0.20        # Fig7b points: Ambitious Pathway
+scatter_tl            = 0.30        # Fig7b points: Theoretical Limit (also SF14b when no threshold is estimable)
+typology_histograms   = 0.55        # ED6 overlapping carbon-factor histograms by typology
+space_above_occupancy = 0.25        # SF4a space above occupancy (extra-space colour)
+rollout_reference_cumulative = 0.55 # ED9c Reference cumulative line

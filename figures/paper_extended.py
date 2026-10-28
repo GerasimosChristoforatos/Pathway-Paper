@@ -144,10 +144,10 @@ def sf2():
         cv = thr['curve']
         ax[1].plot(np.asarray(cv['P_NZ_2050']) / 1e6, cv['probability'], color=S.TL, lw=S.LW_BOLD)
         within = (d['TL_LoE_AR'].to_numpy(float) <= 1.0)
-        ax[1].plot(pop[within], np.full(within.sum(), 1.02), '|', color=S.TL, ms=5, alpha=0.4)
-        ax[1].plot(pop[~within], np.full((~within).sum(), -0.02), '|', color=S.MUTED, ms=5, alpha=0.4)
+        ax[1].plot(pop[within], np.full(within.sum(), 1.02), '|', color=S.TL, ms=5, alpha=S.FIXED_FADES['rug'])
+        ax[1].plot(pop[~within], np.full((~within).sum(), -0.02), '|', color=S.MUTED, ms=5, alpha=S.FIXED_FADES['rug'])
         lo, hi = thr['ci95']
-        ax[1].axvspan(lo / 1e6, hi / 1e6, color=S.TL, alpha=0.12, lw=0)
+        ax[1].axvspan(lo / 1e6, hi / 1e6, color=S.TL, alpha=S.FIXED_FADES['threshold_ci_span'], lw=0)
         ax[1].axvline(thr['threshold_P_NZ_2050'] / 1e6, color=S.TL, lw=S.LW_THIN, ls='--')
         ax[1].axhline(0.5, color=S.INK, lw=S.LW_THIN, ls=':')
         ax[1].set_ylabel('P(cumulative LoE of AR ≤ 1), Theoretical Limit')
@@ -156,7 +156,7 @@ def sf2():
                   f"{thr['method']}, {thr['bootstrap_resamples']} resamples)")
         P.panel(ax[1], 'b', 'Population threshold (P = 50%)')
     else:
-        ax[1].scatter(pop, d['TL_LoE_AR'], s=3, color=S.TL, alpha=0.35, lw=0)
+        ax[1].scatter(pop, d['TL_LoE_AR'], s=3, color=S.TL, alpha=S.OPACITY['scatter_tl'], lw=0)
         ax[1].axhline(1.0, **{k: val for k, val in S.BOUNDARY['AR'].items() if k != 'label'}, gid='boundary')
         ax[1].set_ylabel(f'{N.LOE_AR} 2026–2050, Theoretical Limit')
         ax[1].set_ylim(bottom=0)
@@ -204,7 +204,7 @@ def ed10():
     m = yrs >= 2026
     cref = np.cumsum(ref['carbon_kt'].values[m])
     assert np.isclose(cref[-1], runs['REF'], rtol=1e-9)
-    P.line(c, yrs[m], cref, color=S.REFERENCE, lw=S.LW_BOLD, alpha=0.55, label=N.SCENARIOS['REF'])
+    P.line(c, yrs[m], cref, color=S.REFERENCE, lw=S.LW_BOLD, alpha=S.OPACITY['rollout_reference_cumulative'], label=N.SCENARIOS['REF'])
     ends = []
     for s in ('moderate', 'ambitious'):
         for suffix, ls, lab in VARIANTS:
@@ -275,7 +275,7 @@ def sf4():
         y = np.arange(len(cases))
         a.scatter(cases[key], y, c=[S.TYPOLOGY[t] for t in typ], s=14, zorder=3)
         e = q['estimator']
-        a.axvspan(e['ci_lo'], e['ci_hi'], color=S.MUTED, alpha=0.15, lw=0, label='95% bootstrap interval')
+        a.axvspan(e['ci_lo'], e['ci_hi'], color=S.MUTED, alpha=S.FIXED_FADES['ci_span'], lw=0, label='95% bootstrap interval')
         a.axvline(e['r'], color=S.INK, lw=S.LW, label=f"Ambitious r = {e['r']:.3f} (HD q0.15)")
         a.axvline(q['r']['moderate'], color=S.INK, lw=S.LW_THIN, ls='--', label=f"Moderate r = {q['r']['moderate']:.3f}")
         a.axvline(1.0, color=S.MUTED, lw=S.LW_THIN, ls=':')

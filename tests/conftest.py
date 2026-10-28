@@ -37,4 +37,7 @@ def B():
 # (their locks describe MODEL v2.1; the legacy Reference is locked by tests/test_reference_legacy.py)
 # MODEL v3.3.0: tests/test_model_v3_2.py (equality with v3.0 under the v3.0-v3.2 run names) is retired there too;
 # its model-rule tests continue in tests/test_model_v3_3.py
+# MODEL v4.3.3: the figure tests are reduced to tests/test_figure_integrity.py; test_palette_file.py,
+# test_figure_text_rules.py, test_figures_v3*.py, test_figures_v4_3_2.py and test_reference_legacy.py (the superseded
+# v2.1 Reference lock) are retired there (tests/README.md)
 collect_ignore_glob = ['retired/*']

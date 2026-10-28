@@ -91,7 +91,21 @@ PALETTE_KEYS = {
     'boundaries': ('acquired_rights', 'ability_to_pay'),
     'boundary_zones': ('within_both', 'within_ar_only', 'exceeded'),
     'cumulative': ('fig3b_cumulative_carbon',),
-    'one_at_a_time': ('low_end', 'high_end', 'single_alternative')}
+    'one_at_a_time': ('low_end', 'high_end', 'single_alternative'),
+    # MODEL v4.3.3: every meaning colour of the final figures (tools/palette_coverage.py) and the meaningful fades
+    'components': ('new_households', 'replacement_surge', 'unconsented_additions', 'retirement_villages',
+                   'overbuild_absorbed', 'unexplained_building', 'released_tl'),
+    'typologies': ('detached', 'townhouses', 'apartments'),
+    'replacement_variants': ('low', 'high', 'very_high'),
+    'sensitivity_indices': ('total_effect', 'first_order_effect'),
+    'census_markers': ('census_empty', 'observed_total'),
+    'lag_variants': ('zero_lag', 'lag_17_months'),
+    'validation': ('model_check', 'handover_history', 'handover_step'),
+    'highlights': ('model_path_years', 'release_binds'),
+    'opacity': ('zone_within_both', 'zone_within_ar_only', 'zone_exceeded', 'mc_band_90', 'mc_band_50', 'mc_band',
+                'pathway_lines', 'soil_carbon_loss', 'scatter_reference', 'scatter_moderate', 'scatter_ambitious',
+                'scatter_tl', 'typology_histograms', 'space_above_occupancy', 'rollout_reference_cumulative')}
+OPACITY_GROUP = 'opacity'                       # MODEL v4.3.3: the only group of numbers (0-1), not colours
 PALETTE_DEFAULT = os.path.join(ROOT, 'palette.toml')
 _HEX = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
@@ -102,7 +116,8 @@ class PaletteError(ValueError):
 
 def load_palette(path):
     """{group: {key: '#RRGGBB'}} from a palette file. Every group and key of PALETTE_KEYS must be present, with a
-    six-digit hex value; unknown groups or keys are an error too (a misspelt key would otherwise be ignored)."""
+    six-digit hex value; unknown groups or keys are an error too (a misspelt key would otherwise be ignored).
+    MODEL v4.3.3: the [opacity] group holds numbers in [0, 1] (an int or a float; not a boolean, not a string)."""
     with open(path, 'rb') as f:
         raw = tomllib.load(f)
     errors = [f'unknown group [{g}]' for g in raw if g not in PALETTE_KEYS]
@@ -117,9 +132,16 @@ def load_palette(path):
             v = sec.get(k)
             if v is None:
                 errors.append(f'[{g}] missing key {k!r}')
+            elif g == OPACITY_GROUP:
+                if isinstance(v, bool) or not isinstance(v, (int, float)) or not 0.0 <= v <= 1.0:
+                    errors.append(f'[{g}] {k} = {v!r} is not a number in [0, 1]')
             elif not isinstance(v, str) or not _HEX.match(v):
                 errors.append(f'[{g}] {k} = {v!r} is not a "#RRGGBB" hex colour')
-        out[g] = {k: sec[k].upper() for k in keys if isinstance(sec.get(k), str) and _HEX.match(sec[k])}
+        if g == OPACITY_GROUP:
+            out[g] = {k: float(sec[k]) for k in keys if k in sec and not isinstance(sec[k], bool)
+                      and isinstance(sec[k], (int, float))}
+        else:
+            out[g] = {k: sec[k].upper() for k in keys if isinstance(sec.get(k), str) and _HEX.match(sec[k])}
     if errors:
         raise PaletteError(f'{path}: ' + '; '.join(errors))
     return out
@@ -127,13 +149,27 @@ def load_palette(path):
 
 PALETTE_PATH = os.environ.get('PATHWAY_PALETTE') or PALETTE_DEFAULT
 PALETTE = load_palette(PALETTE_PATH)
-_DB, _MAT, _ST, _RUN, _SG, _BD, _ZN, _CUM, _OAT = (PALETTE[g] for g in PALETTE_KEYS)
+(_DB, _MAT, _ST, _RUN, _SG, _BD, _ZN, _CUM, _OAT, _CMP, _TYP, _RV, _SI, _CEN, _LAG, _VAL, _HL,
+ OPACITY) = (PALETTE[g] for g in PALETTE_KEYS)
+COLOUR_GROUPS = tuple(g for g in PALETTE_KEYS if g != OPACITY_GROUP)
+
+# MODEL v4.3.3: the colours that stay fixed by design (tools/palette_coverage.py accepts these and nothing else outside
+# the palette): text, axes, grid, white and black, legend outlines, neutral greys that carry no meaning of their own
+NEUTRALS = {'ink': '#1A1A1A', 'muted': '#6E6E6E', 'grid': '#E0E0E0', 'white': '#FFFFFF', 'black': '#000000',
+            'legend_outline': '#555555', 'note_text': '#595959', 'neutral_dark': '#4D4D4D',
+            'interval_box_legend': '#E6E6E6', 'footer': '#9A9A9A'}
+# MODEL v4.3.3: fixed fades (context shading, not a meaning colour): every alpha a figure uses comes from OPACITY
+# (palette.toml [opacity]) or from here (tools/palette_coverage.py probes both)
+FIXED_FADES = {'definition_break_span': 0.10, 'census_range_span': 0.12, 'history_range_span': 0.12,
+               'ci_span': 0.15, 'threshold_ci_span': 0.12, 'rug': 0.4, 'estimate_not_used_line': 0.35,
+               'neutral_histogram': 0.6, 'neutral_bars': 0.5, 'interval_box': 0.55, 'label_box': 0.85,
+               'legend_markers': 0.9}
 
 # ---------------------------------------------------------------------------
 # Colours (hex; checked by tools/palette_check.py)
 # ---------------------------------------------------------------------------
-INK = '#1A1A1A'                                 # text, axes
-MUTED = '#6E6E6E'                               # secondary text, leader lines
+INK = NEUTRALS['ink']                           # text, axes
+MUTED = NEUTRALS['muted']                       # secondary text, leader lines
 
 # boundaries (MODEL v2.1.0 styling, implemented once here: boundary_zones / boundary_hzones): AR a thin red line,
 # AtP a thin dark-red line (dashed, so the two principles stay apart under colour-vision deficiency); the area
@@ -153,7 +189,8 @@ LW_BOUNDARY = 0.9
 ATP_LS = (0, (1, 1.3))                          # dotted ·····
 BOUNDARY = {'AR': dict(color=AR, ls='-', lw=LW_BOUNDARY, label='Acquired rights (AR)'),
             'AtP': dict(color=ATP, ls=ATP_LS, lw=LW_BOUNDARY, label='Ability to pay (AtP)')}
-ZONE_ALPHA = {'within_both': 0.30, 'within_ar': 0.30, 'exceeded': 0.07}      # fixed (not in palette.toml)
+ZONE_ALPHA = {'within_both': OPACITY['zone_within_both'], 'within_ar': OPACITY['zone_within_ar_only'],
+              'exceeded': OPACITY['zone_exceeded']}          # MODEL v4.3.3: palette.toml [opacity] (was fixed)
 ZONE = {'within_both': dict(color=_ZN['within_both'], alpha=ZONE_ALPHA['within_both'],
                             label='Within both budgets (below AtP)'),
         'within_ar': dict(color=_ZN['within_ar_only'], alpha=ZONE_ALPHA['within_ar'],
@@ -164,27 +201,37 @@ ZONE = {'within_both': dict(color=_ZN['within_both'], alpha=ZONE_ALPHA['within_b
 ZONE_GID = 'boundary_zone'
 # two accent colours for lines that are not boundaries (household formation, floor area in the diagnostics): the
 # boundary pair of model-v2.0.0, kept so those diagnostics are unchanged
-ACCENT_ORANGE = '#C2571A'
+ACCENT_ORANGE = '#C2571A'      # MODEL v4.3.3: no longer drawn in a final figure (each meaning has its palette key below)
 ACCENT_BLUE = '#1F5FA8'
+# MODEL v4.3.3: the meanings the accent colours carried, each its own palette key
+CENSUS_EMPTY = _CEN['census_empty']             # SF2a census empty points
+OBSERVED_TOTAL = _CEN['observed_total']         # Fig1 observed totals without a band split (drawn when such years exist)
+MODEL_PATH_YEARS = _HL['model_path_years']      # SF1b 2024-25: the model's household-size path, not observed
+LAG_VARIANT = {0: _LAG['zero_lag'], 17: _LAG['lag_17_months']}           # SF7
+VALIDATION = {'model_check': _VAL['model_check'], 'handover_history': _VAL['handover_history'],
+              'handover_step': _VAL['handover_step']}                    # SF6 2027 check, SF8 handover
+NEW_HOUSEHOLDS = _CMP['new_households']         # SF2b
+RETIREMENT_VILLAGES = _CMP['retirement_villages']   # SF2b (out of scope)
 
 # runs (palette.toml [runs])
 REFERENCE = _RUN['reference']
-NEUTRAL_DARK = '#4D4D4D'          # MODEL v4.3.1: a dark neutral grey (not the Reference): ED6 histograms, SF15 bars
+NEUTRAL_DARK = NEUTRALS['neutral_dark']   # MODEL v4.3.1: a dark neutral grey (not the Reference): ED6 histograms, SF15 bars
 # MODEL v4.3.2: the Fig3b 2026-2050 cumulative column and its legend patch, palette.toml [cumulative] (was REFERENCE)
 CUMULATIVE_FIG3B = _CUM['fig3b_cumulative_carbon']
 # MODEL v4.3.2: the 'release constraint binds' markers of SF15 (not a boundary; were S.AR): a fixed literal
-RELEASE_BINDS = '#D7191C'
+RELEASE_BINDS = _HL['release_binds']     # MODEL v4.3.3: palette.toml [highlights]
 # MODEL v2.1.2: TL a deep forest green, far darker than the zones; at CAM02-UCS J' 25 it is >= 10 from AR, AtP,
 # the Reference, the Pathways, every lever, Population growth and the zones under every simulated deficiency (a mid green
 # at the lightness of AR merges with it under deuteranomaly / protanomaly)
 TL = _RUN['theoretical_limit']
 TL_MARKER = dict(marker='o', ms=8)             # TL on point plots: a larger circle (no star)
+# MODEL v4.3.3: the replacement variants from palette.toml [replacement_variants] (the Reference: [runs])
 SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),    # the Reference run itself
-            'LOW': dict(color='#B5B5B5', ls='--', lw=LW, label='Low replacement'),
-            'HIGH': dict(color='#6E6E6E', ls=':', lw=LW, label='High replacement'),
+            'LOW': dict(color=_RV['low'], ls='--', lw=LW, label='Low replacement'),
+            'HIGH': dict(color=_RV['high'], ls=':', lw=LW, label='High replacement'),
             # MODEL v3.3.0: Very High replacement (trend continues), the darkest grey, dash-dot
-            'VHIGH': dict(color='#1F1F1F', ls='-.', lw=LW, label='Very High replacement (trend continues)')}
-MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% band
+            'VHIGH': dict(color=_RV['very_high'], ls='-.', lw=LW, label='Very High replacement (trend continues)')}
+MC_BAND = dict(color=REFERENCE, alpha=OPACITY['mc_band'], lw=0)          # Monte Carlo 5-95% band
 
 # MODEL v2.1.1 palette, inspired by Francis Bacon, Head VI (1949): hue families (golds / ochres, mauves, blues,
 # browns); the Pathways vermilion and TL a deep forest green, outside every family; Reference grey. Lightness and
@@ -194,10 +241,11 @@ MC_BAND = dict(color=REFERENCE, alpha=0.15, lw=0)          # Monte Carlo 5-95% b
 # P2_ANCHOR stays the 2026 overbuild band. MODEL v4.3.2: the lever shades L1-L9 (style.LEVER) are retired; a lever is
 # drawn in its strategy colour (palette.toml [strategies]) and told apart by marker (LEVER_MARKER).
 LEVER_MARKER = ('o', 's', '^', 'D', 'v')          # the k-th lever within its strategy (SF10 lambda sweep)
-SURGE_FACE = '#E1D2DD'                  # the Recent replacement surge face (the former L3 shade): fixed
-P2_ANCHOR = '#683861'                   # the detailed band '2026 overbuild' (SF2c, SF5): fixed
+SURGE_FACE = _CMP['replacement_surge']  # the Recent replacement surge face (MODEL v4.3.3: palette.toml [components])
+P2_ANCHOR = _DB['market_balance']       # the detailed band '2026 overbuild' (SF2b, SF5); MODEL v4.3.3: the market-balance key
 # MODEL v4.3.0: the typology colours; MODEL v4.3.1: fixed literals (were aliases of the L4 / L8 / L2 lever shades)
-TYPOLOGY = {'Detached': '#DFA538', 'Townhouses': '#4A6192', 'Apartments': '#AA7C9D'}
+TYPOLOGY = {'Detached': _TYP['detached'], 'Townhouses': _TYP['townhouses'],
+            'Apartments': _TYP['apartments']}                     # MODEL v4.3.3: palette.toml [typologies]
 # MODEL v4.3.1: palette.toml [strategies] (were aliases of the L4 / L7 / L8 lever shades)
 STRATEGY = {'S1': _SG['avoid'], 'S2': _SG['switch'], 'S3': _SG['improve']}
 # MODEL v4.2.1: the Moderate / Ambitious Pathway (orange, darker orange); MODEL v4.3.1: palette.toml [runs]
@@ -217,7 +265,7 @@ SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
 # detailed and a display band and follow the palette.
 UNTARGETED_HATCH = None
 GROWTH = _DB['population_growth']
-REPLACEMENT = '#D0BBDC'                 # the detailed band 'replacement' (demolition replacement, SF2c): fixed
+REPLACEMENT = _DB['net_replacement']    # demolition replacement (SF2b); MODEL v4.3.3: the net-replacement key
 HATCH_LIGHT = '#FFFFFF'                 # the fine hatch of the surge band: drawn in a light colour on its light face
 DISPLAY_BAND = {'growth': _DB['population_growth'], 'smaller_households': _DB['household_size_change'],
                 'extra_space': _DB['extra_space'], 'vacancy': _DB['vacancy'],
@@ -228,11 +276,11 @@ BAND = {'growth': (GROWTH, None),
         'extra_space': (DISPLAY_BAND['extra_space'], None),
         'vacancy': (DISPLAY_BAND['vacancy'], None),
         'overbuild_2026': (P2_ANCHOR, None),
-        'overbuild_absorbed': ('#8D5D93', None),      # negative: outline only (P2 mauve family)
+        'overbuild_absorbed': (_CMP['overbuild_absorbed'], None),      # MODEL v4.3.3: palette.toml [components]
         'replacement': (REPLACEMENT, None),
-        'unconsented': ('#BA9AC1', None),             # negative: outline only (replacement lilac family, darker)
+        'unconsented': (_CMP['unconsented_additions'], None),          # MODEL v4.3.3: palette.toml [components]
         'redevelopment': (SURGE_FACE, '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
-        'released_tl': ('#95C283', None),             # negative: outline only (TL green family); SF17 re-occupation
+        'released_tl': (_CMP['released_tl'], None),   # MODEL v4.3.3: palette.toml [components]; SF15 re-occupation
         # MODEL v3.2.0 (A2, from v3.1.0): 'Vacancy released' (negative, outline; the L2 vacancy family, darker).
         # MODEL v4.3.1: 'Surplus kept vacant (2050)' removed (TL only, never drawn in a final figure)
         'vacancy_released': ('#481870', None),
@@ -265,14 +313,14 @@ COMPONENT = {'materials_construction': STAGE['a1a3'], 'soil': STAGE['soil'],
 
 # unexplained building of the history (Fig2, D05c, K1): a faded reddish face, no hatch (MODEL v2.1.2; face, hatch,
 # hatch colour); may be negative
-UNEXPLAINED = ('#C6A3A4', None, None)
+UNEXPLAINED = (_CMP['unexplained_building'], None, None)        # MODEL v4.3.3: palette.toml [components]
 # MODEL v3.2.0 (A3, from v3.1.0): the history bands of Fig1 (census intervals): household formation and vacancy as the projection
 # bands, the census-measured net replacement the replacement face, the retirement-village units a neutral outline
 # (negative, out of scope) and the unexplained building its faded reddish face
 HISTORY_BAND = {'growth': BAND['growth'], 'smaller_households': BAND['smaller_households'],
                 'extra_space': BAND['extra_space'], 'vacancy': BAND['vacancy'],
                 'replacement_census': (DISPLAY_BAND['net_replacement'], None),   # the census net replacement
-                'retirement_villages': ('#4E463E', None),
+                'retirement_villages': (_CMP['retirement_villages'], None),    # MODEL v4.3.3 (was #4E463E, not drawn)
                 'unexplained': (UNEXPLAINED[0], None)}
 # the untargeted band (Fig4): the population-growth grey, hatched
 UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)      # solid since MODEL v2.1.1
@@ -284,13 +332,13 @@ MATERIAL = [('TIMBER', 'Timber', _MAT['timber']), ('STEEL', 'Steel', _MAT['steel
             ('PLASTICS & PAINT', 'Plastics & paint', _MAT['plastics_paint']),
             ('PLASTERBOARD', 'Plasterboard', _MAT['plasterboard']), ('OTHERS', 'Others', _MAT['others']),
             ('SOIL', 'Soil carbon loss', _MAT['soil_carbon_loss'])]     # MODEL v4.3.1: palette.toml [materials]
-SOIL = dict(alpha=0.5, hatch=None, hatchcolor=None)          # MODEL v3.0.0: only the surge band is hatched
+SOIL = dict(alpha=OPACITY['soil_carbon_loss'], hatch=None, hatchcolor=None)   # MODEL v4.3.3: [opacity]          # MODEL v3.0.0: only the surge band is hatched
 
 # stacked bars and areas (MODEL v2.1.1): no white borders between segments. Every segment's edge is its own face
 # colour at LW_SEAM (it covers the antialiasing seam between adjacent segments without drawing a line); hatches are
 # drawn in an explicit thin hatch colour (matplotlib hatchcolor), never in the edge colour
 LW_SEAM = 0.3
-HATCH_COLOUR = '#6E6E6E'
+HATCH_COLOUR = NEUTRALS['muted']
 
 
 def fill(face, hatch=None, hatchcolor=None, alpha=1.0):
@@ -306,6 +354,9 @@ def fill(face, hatch=None, hatchcolor=None, alpha=1.0):
 # MODEL v4.3.1: the tornado colours, fixed literals (were aliases of the Improve blue and the Moderate orange);
 # MODEL v4.3.2: palette.toml [one_at_a_time] (Fig7a, ED4, ED5: every draw.tornado)
 TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = _OAT['low_end'], _OAT['high_end'], _OAT['single_alternative']
+# MODEL v4.3.3: the Sobol bars (ED7) take palette.toml [sensitivity_indices]; QUALITATIVE is no longer drawn in a final
+# figure
+SOBOL = {'total': _SI['total_effect'], 'first_order': _SI['first_order_effect']}
 QUALITATIVE = ['#000000', '#E69F00', '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7']
 
 # sequential ramp for continuous fields (the solution-space LoE, H10): light to dark blue, lightness

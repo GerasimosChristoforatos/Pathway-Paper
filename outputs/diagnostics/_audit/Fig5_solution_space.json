@@ -1,6 +1,6 @@
 {
  "figure": "Fig5_solution_space",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "",
@@ -36,6 +36,7 @@
   "Acquired rights (AR)",
   "Ambitious",
   "Ambitious\nPathway",
+  "Ambitious Pathway",
   "AtP",
   "Avoid Strategies",
   "Cumulative\nLoE of AR",
@@ -49,7 +50,7 @@
   "LoE of AR 4",
   "Moderate",
   "Moderate\nPathway",
-  "Pathways",
+  "Moderate Pathway",
   "Reference",
   "Sufficiency: Floor area reduction (%)",
   "Switch Strategies",

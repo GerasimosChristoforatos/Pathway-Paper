@@ -44,11 +44,11 @@ Paths are those of the full profile (`outputs/`); the light profile writes the s
 
 | what | where |
 |---|---|
-| Every figure (paper, Extended Data, supplementary, diagnostics; PNG only) with its title, data sources and audit | [outputs/FIGURES.md](outputs/FIGURES.md) |
-| **Paper**: Fig1–Fig8 | [outputs/paper_main/](outputs/paper_main/) |
-| **Extended Data**: ED1–ED10 and the table EDT1 (lever levels by typology) | [outputs/paper_extended/](outputs/paper_extended/) |
-| **Supplementary figures**: SF1–SF6 (the model schematic; items beyond the ten Extended Data) | [outputs/supplementary/](outputs/supplementary/) |
-| **Diagnostics**: calibration, validation, boundaries, pathways, Monte Carlo, sensitivity | [outputs/diagnostics/](outputs/diagnostics/) |
+| Every figure (paper, Extended Data, Supplementary; PNG only) with its title, data sources and audit; one row per figure and table in the manifest | [outputs/FIGURES.md](outputs/FIGURES.md), [outputs/figure_manifest.csv](outputs/figure_manifest.csv) |
+| **Paper**: Fig1–Fig7 | [outputs/paper_main/](outputs/paper_main/) |
+| **Extended Data**: ED1–ED9 and the table EDT1 (lever levels by typology); renumbering in [ed_number_map.csv](outputs/data/ed_number_map.csv) | [outputs/paper_extended/](outputs/paper_extended/) |
+| **Supplementary**: SF1–SF15 in topic folders and the table ST1 (how the AR and AtP budgets are built); renumbering in [sf_number_map.csv](outputs/data/sf_number_map.csv) | [outputs/supplementary/](outputs/supplementary/) |
+| Figure audit records (one JSON per figure; no diagnostic figures are drawn since MODEL v4.3.0) | [outputs/diagnostics/_audit/](outputs/diagnostics/_audit/) |
 | **Market-balance diagnostics**: controlled zero- vs 17-month lag comparison; historical / forecast coarse demand classification | [outputs/reports/market_balance.md](outputs/reports/market_balance.md), [outputs/data/diagnostics/](outputs/data/diagnostics/) |
 | Run profile, draws, seeds, git and input hashes, step timings | [outputs/run_meta.json](outputs/run_meta.json) |
 | Grouped one-at-a-time sensitivity tables | [outputs/data/sensitivity/](outputs/data/sensitivity/) |
@@ -107,6 +107,40 @@ name and the log to read, and the run stops (exit code 1 from the command line).
    `FIGURES['<file id>']()` (`figure_plan.py` lists the module of every figure).
 4. To run the tests on their own: `!python -m pytest -q tests` (light profile outputs; set
    `PATHWAY_PROFILE=full` for the full ones).
+
+## Recolour the figures locally
+
+The figure colours of five groups of meanings are set in `palette.toml` at the repository root: demand bands,
+materials, life-cycle stages, runs (Reference, Moderate Pathway, Ambitious Pathway, Theoretical Limit) and
+strategies (Avoid, Switch, Improve). Each key colours exactly one meaning in every figure that shows it. The
+defaults are the colours of the published figures. All other colours (lever shades, typologies, tornado, variants,
+boundaries, sub-bands and neutrals) are fixed in `figures/style.py`.
+
+`redraw.py` redraws the figures from the committed results in `outputs/data/`. It runs no model and no Monte Carlo,
+and needs nothing beyond a clone of the repository and the Python environment.
+
+```
+python -m venv .venv && . .venv/bin/activate
+pip install -r requirements.txt               # Python 3.11 or later
+# edit palette.toml: one "#RRGGBB" value per key (or copy it and pass --palette my_colours.toml)
+python redraw.py                              # every figure, 200 dpi preview, about 30 s
+python redraw.py --only main                  # main | extended | supplementary | figure ids (e.g. Fig2 ED4)
+python redraw.py --palette my_colours.toml --dpi 600
+python redraw.py --final                      # write the release figures (outputs/, 600 dpi, FIGURES.md)
+```
+
+* **Where the previews go.** `outputs/_palette_preview/<palette file name>/`, with `paper_main/`,
+  `paper_extended/` and `supplementary/<topic>/` inside, plus `palette_swatches.png`, a sheet of the five groups.
+  Previews never overwrite the release figures. `--out DIR` chooses another folder.
+* **Final figures.** `--final` writes the release PNGs at 600 dpi into `outputs/paper_main/`,
+  `outputs/paper_extended/` and `outputs/supplementary/`, and refreshes `outputs/FIGURES.md`. With the default
+  `palette.toml` the result is pixel-identical to the committed figures.
+* **Checks on loading.**
+  * **Errors.** A missing or misspelt key, or a value that is not `#RRGGBB`, stops the run.
+  * **Warnings, without stopping.** Two keys that appear in the same figure and are identical or very close (CAM02-UCS
+    distance below 10): the demand bands, materials and stages of Fig2, and the runs and strategies of Fig4–Fig6.
+  * **Colour-vision report.** For each group, the closest pair under normal vision and under simulated
+    deuteranomaly, protanomaly and tritanomaly (the method of `tools/palette_check.py`).
 
 ## Tests and reproducibility
 

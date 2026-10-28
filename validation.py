@@ -295,11 +295,18 @@ def hindcast(B, const_share=None):
         r_last = float(crates[crates['y1'] <= O].iloc[-1]['rate'])
         path = pd.Series(engine.replacement_path('REF', r_dc, r_last, yh - O + 2025, 10.0), index=yh)
         preds['reference'] = (r_last, (need + path * prev)[test])
+        # MODEL v4.3.1 (B8): the High and Very High variants with no look-ahead: High holds the last intercensal rate
+        # before O; Very High continues the weighted linear trend of the census-interval rates with y1 <= O
+        # (engine.replacement_trend over NET_REPLACEMENT_WINDOW[0] .. O, the model's Very High rule), in calendar years
+        preds['high'] = (r_last, (need + r_last * prev)[test])
+        tr = engine.replacement_trend(crates, projection.NET_REPLACEMENT_WINDOW[0], O)
+        vh = pd.Series(engine.replacement_path('VHIGH', r_dc, r_last, yh, trend=tr), index=yh)
+        preds['very_high'] = (None, (need + vh * prev)[test])
         for m, (r, ser) in preds.items():
             p = float(ser.sum())
             rows.append(dict(origin=O, test=f'{O + 1}-{end}', method=m,
                              rate_pct=None if r is None else 100 * r,
-                             n_intervals=len(before) if m == 'linked' else None,
+                             n_intervals=(len(before) if m == 'linked' else tr['n'] if m == 'very_high' else None),
                              linked_b=float(coef[1]) if m == 'linked' else None,
                              predicted=p, actual=actual, error_pct=100 * (p / actual - 1),
                              years=[int(y) for y in yh[test]], predicted_path=[float(x) for x in ser.values],
@@ -435,6 +442,7 @@ def write(rows, chk, stock_rows=None, dhe=None, rows_pub=None, vac=None):
              '|---|---|---|---|---|---|---|']
     for r in rows:
         rate = (f"{r['rate_pct']:+.3f}" if r['rate_pct'] is not None
+                else f"trend of {r['n_intervals']} census intervals" if r['method'] == 'very_high'
                 else f"linked: b = {r['linked_b']:.2f} on {r['n_intervals']} intervals")
         lines.append(f"| {r['origin']} | {r['test']} | {r['method']} | {rate} | {r['predicted']:,.0f} | "
                      f"{r['actual']:,.0f} | {r['error_pct']:+.1f}% |")

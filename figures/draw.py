@@ -184,8 +184,14 @@ def fmt_kt(v):
     return f'{v:,.0f}'
 
 
+def minus(s):
+    """MODEL v4.3.1: s with the typographic minus for the hyphen-minus (number labels drawn as text)."""
+    return s.replace('-', '\u2212')
+
+
 def thousands(axis):
-    axis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:,.0f}'))
+    # MODEL v4.3.1: the typographic minus, as matplotlib's default formatter and style.thousands_ticks
+    axis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f'{v:,.0f}'.replace('-', '\u2212')))
 
 
 def log_ticks(axis, ticks):
@@ -222,7 +228,6 @@ def boundary_lines(ax, x, ar, atp, label=True, **kw):
 # ---------------------------------------------------------------------------
 # demand bands
 # ---------------------------------------------------------------------------
-DISPLAY_STYLE_OF = {'net_replacement': 'replacement', 'market_balance': 'overbuild_2026'}
 
 
 def display_frame(t):
@@ -244,13 +249,8 @@ def band_style(bid):
     (MODEL v3.1.0, style.HISTORY_BAND): 'replacement_census', 'retirement_villages', 'unexplained'."""
     if bid in ('unexplained_building', 'unexplained'):
         return S.fill(S.UNEXPLAINED[0])
-    if bid in DISPLAY_STYLE_OF:                                   # MODEL v4.2 display bands: an existing band colour
-        bid = DISPLAY_STYLE_OF[bid]
-    if bid not in S.BAND and bid in S.HISTORY_BAND:
-        return S.fill(*S.HISTORY_BAND[bid])
-    key = bid if bid in S.BAND else 'replacement'
-    colour, hatch = S.BAND[key]
-    return S.fill(colour, hatch, S.BAND_HATCHCOLOR.get(key))
+    hatch = S.BAND[bid][1] if bid in S.BAND else S.HISTORY_BAND[bid][1] if bid in S.HISTORY_BAND else None
+    return S.fill(S.band_colour(bid), hatch, S.BAND_HATCHCOLOR.get(bid))     # MODEL v4.3.1: style.band_colour
 
 
 def band_id(label):
@@ -358,9 +358,8 @@ def stack_bars(ax, x, parts, width, net=None):
 
 
 def negative_bar_style(bid):
-    colour = (S.BAND[bid][0] if bid in S.BAND else S.HISTORY_BAND[bid][0] if bid in S.HISTORY_BAND
-              else S.BAND['replacement'][0])
-    return dict(facecolor='none', edgecolor=colour, linewidth=S.LW_OUTLINE, hatch=None)
+    # MODEL v4.3.1: style.band_colour (a display band such as Market balance had fallen back to the replacement colour)
+    return dict(facecolor='none', edgecolor=S.band_colour(bid), linewidth=S.LW_OUTLINE, hatch=None)
 
 
 def bars_cumulative(ax, x, parts, width, net=None, tick=True, styles=None):
@@ -372,7 +371,7 @@ def bars_cumulative(ax, x, parts, width, net=None, tick=True, styles=None):
     up, dn = np.zeros(len(x)), np.zeros(len(x))
     for bid, v in parts:
         pos = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), 0, None)
-        st = (styles or {}).get(bid, band_style(bid))
+        st = styles[bid] if styles and bid in styles else band_style(bid)
         if np.any(pos > 0):
             ax.bar(x, pos, bottom=up, width=width, gid='band_segment', **st)
         up = up + pos
@@ -380,7 +379,11 @@ def bars_cumulative(ax, x, parts, width, net=None, tick=True, styles=None):
     for bid, v in parts:
         neg = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), None, 0)
         if np.any(neg < 0):
-            ax.bar(x, -neg, bottom=top + neg, width=width, gid=NEG_BAR_GID, **negative_bar_style(bid))
+            # MODEL v4.3.1: the outline in the caller's own face colour when it gives one (SF2c components that are not
+            # demand bands had fallen back to the replacement colour)
+            nst = (dict(facecolor='none', edgecolor=styles[bid]['facecolor'], linewidth=S.LW_OUTLINE, hatch=None)
+                   if styles and bid in styles else negative_bar_style(bid))
+            ax.bar(x, -neg, bottom=top + neg, width=width, gid=NEG_BAR_GID, **nst)
         top, dn = top + neg, dn + neg
     _check_net(up, dn, net, 'bars_cumulative')
     if tick:
@@ -483,7 +486,7 @@ def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History
 # ---------------------------------------------------------------------------
 # MODEL v4.3.0: paired tornado grouped by category (ED4, ED5; the Fig7a colour rule)
 # ---------------------------------------------------------------------------
-TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = S.LEVER['L8'], S.PATHWAY['pathway'], S.MUTED   # as Fig7a
+TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = S.TORNADO_LOW, S.TORNADO_HIGH, S.TORNADO_SINGLE   # MODEL v4.3.1: fixed
 NO_EFFECT_RTOL = 1e-4             # |change| below 0.01% of the central value: marked 'no effect'
 
 

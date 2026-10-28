@@ -1,6 +1,6 @@
 {
  "figure": "SF3_census_replacement_rates",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "",
@@ -29,7 +29,7 @@
   "$\\mathdefault{\u22120.2}$",
   "Demolition (BRANZ SR214)",
   "High replacement",
-  "Long-run net rate 1991-2023",
+  "Long-run net rate 1991\u20132023",
   "Low replacement",
   "Net replacement (% of stock per year)",
   "Reference",

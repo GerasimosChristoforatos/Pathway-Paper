@@ -237,7 +237,7 @@ def vacancy_wording(v0, vmax, vmin, ymin, v2050):
 # axis by figures.draw.centre_ticklabels). The same input carries the same label everywhere.
 INPUT_LABEL = {
     'population': 'Population\n(5th–95th pct.)',
-    'hh_variant': 'Household size\n(low–high variant)',
+    'hh_variant': 'Household size\n(smaller–larger households)',     # MODEL v4.3.1: Stats NZ Low variant = smaller households
     'hh_pace': 'Household size\n(2018–23 pace)',
     'hh_after2043_flat': 'Household size after\n2043: held flat',
     'hh_after2043_secant': 'Household size after\n2043: secant-slope taper',
@@ -278,7 +278,8 @@ SENSITIVITY_GROUPS = ('Demographics', 'Housing stock & calibration', 'Completion
                       'Carbon factors & technology', 'Accounting')
 BOUNDARY_SENSITIVITY_GROUPS = ('Carrying capacity', 'AR base window', 'Economic allocation', 'Population', 'Replacement')
 # Monte Carlo inputs (ED6 panel titles, ED7 rows): the same input names as the tornado rows, without their ranges
-MC_INPUT = {'z_pop': 'Population', 'size': 'Dwelling size', 'complete': 'Completion rate', 'carbon': 'Carbon factors',
+MC_INPUT = {'z_pop': 'Population and household size',     # MODEL v4.3.1 (B4): one z draws both (Stats NZ variants)
+            'size': 'Dwelling size', 'complete': 'Completion rate', 'carbon': 'Carbon factors',
             'half_life': 'Replacement half-life'}
 LOE_AR = 'Cumulative LoE of AR'
 LOE_ATP = 'Cumulative LoE of AtP'

@@ -1,6 +1,6 @@
 {
- "figure": "SF10_prcc",
- "producer": "figures/__main__.py",
+ "figure": "SF9_prcc",
+ "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "Floor area, cumulative",
@@ -38,7 +38,7 @@
   "Floor area, cumulative",
   "Moderate Pathway",
   "PRCC (95% bootstrap interval)",
-  "Population",
+  "Population and household size",
   "Reference",
   "Replacement half-life",
   "Theoretical Limit",

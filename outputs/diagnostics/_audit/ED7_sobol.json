@@ -1,6 +1,6 @@
 {
  "figure": "ED7_sobol",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Embodied carbon, cumulative 2026\u20132050",
@@ -30,7 +30,7 @@
   "Embodied carbon, cumulative 2026\u20132050",
   "First-order effect (on its own)",
   "Floor area built, cumulative 2026\u20132050",
-  "Population",
+  "Population and household size",
   "Replacement half-life",
   "Share of output variance",
   "Total effect (incl. interactions), 95% interval",

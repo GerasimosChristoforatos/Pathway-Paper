@@ -1,6 +1,6 @@
 {
  "figure": "SF8_reality_checks",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Dwellings completed",
@@ -130,7 +130,7 @@
   "$\\mathdefault{\u22124}$",
   "$\\mathdefault{\u221260}$",
   "1991\u20132025 range",
-  "2027 \u2192 2028 handover (observed \u2192 model): -18.2%",
+  "2027 \u2192 2028 handover (observed \u2192 model): \u221218.2%",
   "Average new-dwelling size",
   "Change from the previous year (%)",
   "Dwellings (thousand per year)",

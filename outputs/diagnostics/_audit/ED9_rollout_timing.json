@@ -1,5 +1,5 @@
 {
- "figure": "ED10_rollout_timing",
+ "figure": "ED9_rollout_timing",
  "producer": ".venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
@@ -19,7 +19,7 @@
   {
    "title": "Cumulative",
    "xlabel": "",
-   "ylabel": "Cumulative carbon 2026-2050 (kt CO\u2082e)",
+   "ylabel": "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
    "year_min": 2026.0,
    "year_max": 2050.0
   }
@@ -55,7 +55,7 @@
   "Ambitious\nPathway",
   "Ambitious Pathway",
   "Cumulative",
-  "Cumulative carbon 2026-2050 (kt CO\u2082e)",
+  "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
   "Embodied carbon (kt CO\u2082e per year)",
   "Moderate\nPathway",
   "Moderate Pathway",

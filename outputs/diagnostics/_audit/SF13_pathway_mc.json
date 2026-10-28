@@ -1,6 +1,6 @@
 {
- "figure": "SF15_pathway_mc",
- "producer": "figures/__main__.py",
+ "figure": "SF13_pathway_mc",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "",

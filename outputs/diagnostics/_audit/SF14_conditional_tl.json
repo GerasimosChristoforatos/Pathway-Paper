@@ -1,6 +1,6 @@
 {
- "figure": "SF16_conditional_tl",
- "producer": "figures/__main__.py",
+ "figure": "SF14_conditional_tl",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "By population quintile (Wilson 95%)",

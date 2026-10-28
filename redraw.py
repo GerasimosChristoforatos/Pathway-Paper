@@ -151,10 +151,10 @@ def main(argv=None):
             import traceback
             traceback.print_exc()
             failed.append((f, repr(e)))
-    if not a.only:
-        from figures import paper_extended
-        for t in paper_extended.TABLES.values():
-            t()
+    if not a.only:                                   # the tables (Extended Data, Supplementary)
+        for m in FP.TABLE_MODULES:
+            for t in importlib.import_module(m).TABLES.values():
+                t()
     if a.final and not a.only:
         from figures import index
         index.write()

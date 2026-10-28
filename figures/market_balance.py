@@ -71,7 +71,11 @@ def sf7_completion_lag():
             "lag changes. Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; it is not "
             "a count of completed calendar-2026 homes. The 17-month run uses complete observed consent cohorts "
             "for 2026 and 2027. Lag-specific historical completion timing and replacement calibration are "
-            "recomputed consistently."
+            "recomputed consistently, so panel c is not like-for-like in replacement: the net replacement rate is "
+            "re-estimated from the census dwelling counts with each run's completion timing (2018-2023 interval: "
+            "0.301%/yr at zero lag, with the census under-construction correction, against 0.173%/yr at 17 months), "
+            "and the difference in c is that recalibration, not the timing of building itself (MODEL v4.3.1, "
+            "investigation B3)."
         ),
         source=["diagnostics/lag_comparison_annual.csv"],
     )

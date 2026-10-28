@@ -1,6 +1,6 @@
 {
  "figure": "SF5_overbuild_absorption",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Reference: absorbed by 2035",
@@ -10,7 +10,7 @@
    "year_max": 2050.0
   },
   {
-   "title": "Absorption timing (2026-2050 totals)",
+   "title": "Absorption timing (2026\u20132050 totals)",
    "xlabel": "",
    "ylabel": "Embodied carbon (kt CO\u2082e per year)",
    "year_min": 2026.0,
@@ -56,7 +56,7 @@
   "$\\mathdefault{600}$",
   "$\\mathdefault{800}$",
   "$\\mathdefault{\u221210}$",
-  "Absorption timing (2026-2050 totals)",
+  "Absorption timing (2026\u20132050 totals)",
   "Cumulative excess C(t)",
   "Dwellings (thousand)",
   "Embodied carbon (kt CO\u2082e per year)",

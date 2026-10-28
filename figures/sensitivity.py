@@ -1,4 +1,4 @@
-"""Sensitivity figures (MODEL v4.3.0: ED4, ED5, SF10, SF11), from the data files only."""
+"""Sensitivity figures (MODEL v4.3.1: ED4, ED5, SF9; SF11 of v4.3.0 dropped), from the data files only."""
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,14 +9,14 @@ from figures import style as S
 
 
 # ---------------------------------------------------------------------------
-# SF10 (D40): partial rank correlation of each Monte Carlo input
+# SF9 (SF10 of v4.3.0, D40): partial rank correlation of each Monte Carlo input
 # ---------------------------------------------------------------------------
 MC_IMPORTANCE_INPUT = {'carbon_index': 'carbon'}          # importance-table input id -> naming.MC_INPUT id
 MC_RUNS = (('REF', N.SCENARIOS['REF'], S.REFERENCE), ('pathway_moderate', N.PATHWAY_RUNS['pathway-moderate'],
                                                       S.PATHWAY_SETTING['moderate']), ('TL', N.TL['TL'], S.TL))
 
 
-def sf10_prcc():
+def sf9_prcc():
     """PRCC of each Monte Carlo input (naming.MC_INPUT) with its 95% bootstrap interval, for the Reference, the
     Moderate Pathway and TL, on cumulative floor area, carbon and LoE of AR 2026-2050 (pathways/montecarlo_importance
     .csv). The percentile interval is drawn as it is (lo to hi): it need not contain the point estimate when the
@@ -34,7 +34,8 @@ def sf10_prcc():
             a.hlines(y + off, t['prcc_lo'], t['prcc_hi'], color=col, lw=S.LW_THIN)
             a.plot(t['prcc'], y + off, 'o', ms=3, color=col, label=lab)
         a.axvline(0, color=S.INK, lw=S.LW_THIN)
-        a.set_xlim(-1, 1)
+        a.set_xlim(-1.05, 1.05)                     # MODEL v4.3.1: room for the markers at ±1 (were clipped)
+        a.set_xticks([-1, -0.5, 0, 0.5, 1])
         a.set_xlabel('PRCC (95% bootstrap interval)', fontsize=S.FONT_SMALL)
         a.grid(axis='y', visible=False)
         P.panel(a, letter, title)
@@ -44,74 +45,8 @@ def sf10_prcc():
                fontsize=S.FONT_SMALL, bbox_to_anchor=(0.5, 0.0))
     P.centre_ticklabels(fig, ax[0])
     fig.tight_layout(rect=(0, 0.08, 1, 1))
-    S.save_figure(fig, 'SF10_prcc', note=f"Bootstrap resamples: {int(imp['bootstrap_resamples'].iloc[0])}; SRC and R² "
+    S.save_figure(fig, 'SF9_prcc', note=f"Bootstrap resamples: {int(imp['bootstrap_resamples'].iloc[0])}; SRC and R² "
                                          'in the data file.', source=['pathways/montecarlo_importance.csv'])
-
-
-# ---------------------------------------------------------------------------
-# SF11 (D41): one at a time on the Moderate Pathway, paired tornado
-# ---------------------------------------------------------------------------
-def _lever_row(row):
-    L = row.split()[0]
-    return f'lever_{L}'
-
-
-PATHWAY_ROWS = {
-    ('Ambitious Pathway', 'single'): ('all_ambitious', 'single', 'Lever ambition'),
-    ('Full roll-out by 2030 / by 2045', 'low'): ('rollout', 'low', 'Roll-out timing'),
-    ('Full roll-out by 2030 / by 2045', 'high'): ('rollout', 'high', 'Roll-out timing'),
-    ('TL (every lever at Level 4)', 'single'): ('all_tl', 'single', 'Lever ambition'),
-    ('Low / High replacement', 'low'): ('replacement', 'low', 'Replacement'),
-    ('Low / High replacement', 'high'): ('replacement', ('tick', 'High'), 'Replacement'),
-    ('Very High replacement (trend continues)', 'single'): ('replacement', 'high', 'Replacement'),
-    ('Household size: Stats NZ High / Low variant', 'high'): ('hh_variant', 'low', 'Demographics'),
-    ('Household size: Stats NZ High / Low variant', 'low'): ('hh_variant', 'high', 'Demographics'),
-    ('Household size: 2018-2023 census pace', 'single'): ('hh_pace', 'single', 'Demographics'),
-    ('Population: Stats NZ 5th / 95th percentile', 'low'): ('population', 'low', 'Demographics'),
-    ('Population: Stats NZ 5th / 95th percentile', 'high'): ('population', 'high', 'Demographics'),
-}
-
-
-def _pathway_label(rid):
-    if rid.startswith('lever_'):
-        L = rid.split('_')[1]
-        return P.two_lines(f'{L} {N.LEVERS[L]}') + ' at Ambitious'
-    return N.INPUT_LABEL.get(rid, rid)
-
-
-def sf11_pathway_sensitivity():
-    """One at a time on the cumulative embodied carbon 2026-2050 of the Moderate Pathway (sensitivity/pathway_carbon
-    .csv), paired tornado grouped by category: each lever alone at Ambitious, every lever at Ambitious / at its limit,
-    the roll-out timing, replacement and demographics (labels as ED4 and Fig7a)."""
-    r = D.csv('sensitivity/pathway_carbon.csv')
-    c0 = float(r['central_carbon_kt'].iloc[0])
-    items, unmapped = [], []
-    for _, x in r.iterrows():
-        key = (x['row'], x['side'])
-        if x['group'] == 'Ambition of one lever':
-            items.append((_lever_row(x['row']), 'single', 'Lever ambition', float(x['carbon_kt'])))
-        elif key in PATHWAY_ROWS:
-            rid, role, g = PATHWAY_ROWS[key]
-            items.append((rid, role, g, float(x['carbon_kt'])))
-        else:
-            unmapped.append(key)
-    if unmapped:
-        raise SystemExit(f'STOP: SF11: rows without a display name: {unmapped}')
-    rows = _collect(items)
-    order = P.tornado_rows(('Lever ambition', 'Roll-out timing', 'Replacement', 'Demographics'), rows, c0)
-    fig, ax = plt.subplots(figsize=S.figsize('double', 130))
-    P.tornado(ax, order, c0, _pathway_label)
-    ax.tick_params(axis='y', labelsize=S.FONT_MIN + 0.5)
-    ax.text(c0, 1.0, f' {N.PATHWAY_RUNS["pathway-moderate"]} {c0:,.0f} kt', transform=ax.get_xaxis_transform(),
-            ha='left', va='bottom', fontsize=S.FONT_SMALL, color=S.INK)
-    ax.set_xlabel('Cumulative embodied carbon 2026–2050 of the Moderate Pathway (kt CO₂e)')
-    P.thousands(ax.xaxis)
-    ax.legend(handles=P.tornado_legend(), loc='upper right', bbox_to_anchor=(1.0, 0.97), fontsize=S.FONT_SMALL,
-              frameon=False)
-    P.centre_ticklabels(fig, ax)
-    fig.tight_layout()
-    S.save_figure(fig, 'SF11_pathway_sensitivity', note=f'Moderate Pathway {c0:,.0f} kt. One at a time: not additive.',
-                  source=['sensitivity/pathway_carbon.csv'])
 
 
 # ---------------------------------------------------------------------------
@@ -284,4 +219,4 @@ def ed5_boundary_sensitivity():
 
 
 FIGURES = {'ED4_one_at_a_time': ed4_one_at_a_time, 'ED5_boundary_sensitivity': ed5_boundary_sensitivity,
-           'SF10_prcc': sf10_prcc, 'SF11_pathway_sensitivity': sf11_pathway_sensitivity}
+           'SF9_prcc': sf9_prcc}   # MODEL v4.3.1: SF11 dropped

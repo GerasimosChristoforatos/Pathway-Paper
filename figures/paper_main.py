@@ -267,7 +267,7 @@ def fig2():
         if isinstance(h, Patch):                                      # MODEL v4.2.2: no outline (as panels b, c)
             h.set_edgecolor(h.get_facecolor())
         h.set_label({'Market balance (excess, residual and scope adjustments)': 'Market balance',
-                     'Household-size change': 'Household size', 'Maintenance (B2, B4)': 'Maintenance'}
+                     'Maintenance (B2, B4)': 'Maintenance'}    # MODEL v4.3.1: 'Household-size change' kept
                     .get(h.get_label(), h.get_label()))
     ax[0].legend(handles=hb2, ncol=2, **LEG)
     # (d) cumulative 2026-2050: three attached columns of the same total
@@ -295,7 +295,7 @@ def fig2():
     d.set_xlim(-0.5, 2.5)
     d.set_xticks([0, 1, 2])
     d.set_xticklabels(['By\ndemand', 'By\nmaterial', 'By\nstage'], fontsize=S.FONT_MIN + 0.5)
-    d.set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
+    d.set_ylabel('Cumulative carbon 2026–2050 (kt CO₂e)')
     P.thousands(d.yaxis)
     d.grid(axis='x', visible=False)
     P.panel(d, 'd', 'Cumulative')
@@ -308,11 +308,12 @@ def fig2():
 # ---------------------------------------------------------------------------
 # Fig3: the Reference against the boundaries (Monte Carlo); cumulative column and the committed emissions
 # ---------------------------------------------------------------------------
-FIG3_INTERVAL = (2.5, 97.5)        # MODEL v3.3.2: the 95% interval of the cumulative carbon (percentiles of the draws)
+# MODEL v4.3.1: the 90% interval (5th-95th percentile of the draws), as every spread of draws in the suite (was 2.5-97.5)
+FIG3_INTERVAL = (5.0, 95.0)
 
 
 def mc_cumulative_interval():
-    """The Monte Carlo 95% interval (FIG3_INTERVAL percentiles) of the Reference cumulative carbon 2026-2050, from the
+    """The Monte Carlo 90% interval (FIG3_INTERVAL percentiles) of the Reference cumulative carbon 2026-2050, from the
     per-draw totals (montecarlo/draws_REF.csv) with the percentile method of MonteCarlo.py (numpy.percentile, linear)."""
     d = D.csv('montecarlo/draws_REF.csv')['carbon_kt'].to_numpy(float)
     return tuple(float(v) for v in np.percentile(d, FIG3_INTERVAL))
@@ -325,8 +326,8 @@ def mc_cumulative_interval50():
 
 
 def fig3():
-    """MODEL v3.3.2 (Fig4 of v3.3.1): (a) unchanged; (b) the cumulative 2026-2050 column with its Monte Carlo 95%
-    interval (whisker) and the AR / AtP budgets; the committed column: C1-C4 and B2/B4 after 2050 at the lower bound
+    """MODEL v3.3.2 (Fig4 of v3.3.1): (a) unchanged; (b) the cumulative 2026-2050 column with its Monte Carlo 90%
+    interval (whisker; MODEL v4.3.1, was 95%) and the AR / AtP budgets; the committed column: C1-C4 and B2/B4 after 2050 at the lower bound
     (2050 factors held) stacked, its range to the upper bound (2025 factors) a whisker; no numbers; a legend inside."""
     mc = D.csv('montecarlo/annual_REF.csv').set_index('year')
     a = D.csv('aesa/annual.csv')
@@ -371,13 +372,13 @@ def fig3():
     ax.set_ylim(0, 1540)                                              # MODEL v4.2.2
     b = fig.add_subplot(gs[1])
     c = float(proj['carbon_kt'])
-    lo95, hi95 = mc_cumulative_interval()
+    lo90, hi90 = mc_cumulative_interval()
     lo50, hi50 = mc_cumulative_interval50()
     com = proj['committed']
     wd = 0.55
     whisk = dict(color=S.INK, lw=S.LW, capsize=3.0, capthick=S.LW, zorder=6)
     b.bar([0], [c], width=wd, **S.fill(S.REFERENCE))
-    b.errorbar([0], [c], yerr=[[c - lo95], [hi95 - c]], fmt='none', **whisk)
+    b.errorbar([0], [c], yerr=[[c - lo90], [hi90 - c]], fmt='none', **whisk)
     b.bar([0], [hi50 - lo50], bottom=[lo50], width=wd * 0.35, facecolor='white', alpha=0.55, edgecolor=S.INK,
           lw=S.LW_THIN, zorder=7)                                   # MODEL v4.2.1: the 50% interval, lighter, narrower
     bar_, batp = float(a['B_AR_kgCO2e'].sum()) / M, float(a['B_AtP_kgCO2e'].sum()) / M
@@ -391,21 +392,21 @@ def fig3():
     b.set_xlim(-1.04, 1.36)                                           # MODEL v4.2.2: tight
     b.set_xticks([0, 1])
     b.set_xticklabels(['2026–2050', 'Committed\nafter 2050'], fontsize=S.FONT_MIN + 0.5)
-    b.set_ylim(0, max(hi95, bar_, cc + bl) * 1.48)
+    b.set_ylim(0, max(hi90, bar_, cc + bl) * 1.48)
     b.set_ylabel('Cumulative carbon (kt CO₂e)')
     P.thousands(b.yaxis)
     b.grid(axis='x', visible=False)
     hb = [Patch(label='Cumulative carbon 2026–2050', **S.fill(S.REFERENCE)),
-          Line2D([0], [0], color=S.INK, lw=S.LW, marker='_', markersize=8, label='95% interval'),
-          Patch(label='50% interval', facecolor='#E6E6E6', edgecolor=S.INK, lw=S.LW_THIN),
+          Line2D([0], [0], color=S.INK, lw=S.LW, marker='_', markersize=8, label='90% interval (5th–95th percentile)'),
+          Patch(label='50% interval (25th–75th percentile)', facecolor='#E6E6E6', edgecolor=S.INK, lw=S.LW_THIN),
           Patch(label='Committed after 2050: B2/B4', **S.fill(S.COMPONENT['maintenance'][0])),
           Patch(label='Committed after 2050: C1–C4', **S.fill(S.COMPONENT['committed'][0]))]
     b.legend(handles=hb, loc='upper left', fontsize=S.FONT_MIN, handlelength=1.6, frameon=False,
              borderaxespad=0.2)
     P.panel(b, 'b', 'Cumulative')
     _save(fig, 'Fig3_reference_boundaries',
-          note=f'Cumulative 2026-2050 {c:,.0f} kt (LoE AR {c / bar_:.2f}, AtP {c / batp:.1f}); Monte Carlo 95% interval '
-               f'{lo95:,.0f}-{hi95:,.0f} kt ({FIG3_INTERVAL[0]:g}th-{FIG3_INTERVAL[1]:g}th percentile of the cumulative '
+          note=f'Cumulative 2026-2050 {c:,.0f} kt (LoE AR {c / bar_:.2f}, AtP {c / batp:.1f}); Monte Carlo 90% interval '
+               f'{lo90:,.0f}-{hi90:,.0f} kt ({FIG3_INTERVAL[0]:g}th-{FIG3_INTERVAL[1]:g}th percentile of the cumulative '
                f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt; committed after 2050 (drawn at the lower '
                f'bound): C1-C4 {cc:,.0f} kt (2025 factors) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held; '
                f'{bu:,.0f} kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are '
@@ -490,7 +491,7 @@ def fig4():
     for b in ax[1:]:
         plt.setp(b.get_yticklabels(), visible=False)
     ax[0].set_ylim(0, max(paths[0][3][0][1], bar_) * 1.17)           # MODEL v4.2.2: room for the TL1 label
-    ax[0].set_ylabel('Cumulative carbon 2026-2050 (kt CO₂e)')
+    ax[0].set_ylabel('Cumulative carbon 2026–2050 (kt CO₂e)')
     P.thousands(ax[0].yaxis)
     hs = [Patch(label=N.STRATEGIES[St], **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
     ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_SMALL)
@@ -653,8 +654,9 @@ def fig5():
             ax.plot(xm, ym, color=S.TL, ls='none', **S.TL_MARKER, zorder=6)
             continue
         P_, s_ = run.split('-')
-        ax.plot(xm, ym, marker='o', ms=5 if P_ != N.PATHWAY else 6.5, ls='none', color=S.PATHWAY[P_],
-                markerfacecolor=S.PATHWAY[P_] if s_ == 'moderate' else 'none', markeredgewidth=1.0, zorder=5)
+        col = S.PATHWAY_SETTING[s_] if P_ == N.PATHWAY else S.PATHWAY[P_]   # MODEL v4.3.1: Ambitious in its run colour
+        ax.plot(xm, ym, marker='o', ms=5 if P_ != N.PATHWAY else 6.5, ls='none', color=col,
+                markerfacecolor=col if s_ == 'moderate' else 'none', markeredgewidth=1.0, zorder=5)
     ax.set_xlabel('Sufficiency: Floor area reduction (%)')               # MODEL v4.2.2 axis titles
     ax.set_ylabel('Efficiency: Carbon reduction per m² (%)')
     ax.set_xlim(100 * lo, 100 * hi)
@@ -664,9 +666,9 @@ def fig5():
     ru = fig.add_axes([0.783, 0.215, 0.0226, 0.765])
     marks = [(N.SCENARIOS['REF'], float(runs['REF']), dict(color=S.REFERENCE, marker='s', ms=4)),
              (N.PATHWAY_RUNS['pathway-moderate'], float(runs['pathway-moderate']),
-              dict(color=S.PATHWAY[N.PATHWAY], marker='o', ms=5)),
+              dict(color=S.PATHWAY_SETTING['moderate'], marker='o', ms=5)),
              (N.PATHWAY_RUNS['pathway-ambitious'], float(runs['pathway-ambitious']),
-              dict(color=S.PATHWAY[N.PATHWAY], marker='o', ms=5, markerfacecolor='white')),
+              dict(color=S.PATHWAY_SETTING['ambitious'], marker='o', ms=5, markerfacecolor='white')),
              (N.TL['TL'], float(runs['TL']), dict(color=S.TL, marker='o', ms=6)),
              ('AR', 1.0, None), ('AtP', atp_level, None)]           # MODEL v4.2.1: no values, no plane floor
     vmin, vmax = 0.8 * min(v for _, v, _ in marks), 1.25 * max(v for _, v, _ in marks)
@@ -695,7 +697,12 @@ def fig5():
                     arrowprops=dict(arrowstyle='-', color=S.MUTED, lw=0.4, shrinkA=0, shrinkB=0))
     ru.set_title('Cumulative\nLoE of AR', fontsize=S.FONT_MIN + 0.5, pad=3)
     h = [Line2D([0], [0], marker='o', ls='none', color=S.PATHWAY[P_], markerfacecolor=S.PATHWAY[P_], ms=5,
-                label=GROUP_LABEL[P_] if P_ != N.PATHWAY else 'Pathways') for P_ in RUN_GROUPS]
+                label=GROUP_LABEL[P_]) for P_ in RUN_GROUPS if P_ != N.PATHWAY]
+    # MODEL v4.3.1: the two pathways in their run colours (Moderate filled, Ambitious hollow)
+    h += [Line2D([0], [0], marker='o', ls='none', color=S.PATHWAY_SETTING['moderate'], ms=5,
+                 label=N.PATHWAY_RUNS['pathway-moderate']),
+          Line2D([0], [0], marker='o', ls='none', color=S.PATHWAY_SETTING['ambitious'], markerfacecolor='none', ms=5,
+                 label=N.PATHWAY_RUNS['pathway-ambitious'])]
     h += [Line2D([0], [0], marker='o', ls='none', color=S.MUTED, markerfacecolor=S.MUTED, ms=5, label='Moderate'),
           Line2D([0], [0], marker='o', ls='none', color=S.MUTED, markerfacecolor='none', ms=5, label='Ambitious'),
           Line2D([0], [0], ls='none', color=S.TL, label=N.TL['TL'], **S.TL_MARKER),
@@ -703,7 +710,7 @@ def fig5():
     h += S.boundary_handles() + S.zone_handles()
     drop = {S.ZONE[k]['label'] for k in S.ZONE} | {f"{N.SCENARIOS['REF']} (ruler)"}
     h = [x for x in h if x.get_label() not in drop]
-    fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=3,
+    fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=4,   # v4.3.1
                frameon=False, fontsize=S.FONT_MIN + 1.0)                # MODEL v4.2.2: legend a bit larger
     for ln in fig.findobj(Line2D):                                  # MODEL v4.2.2: every marker x FIG5_MS (plane,
         if ln.get_marker() not in (None, 'None', '', ' '):            # ruler, legend; relative sizes kept)
@@ -725,8 +732,8 @@ def fig5():
 # Fig6 (Fig7 until MODEL v4.3.0): Shapley value of each lever (Moderate hollow, Ambitious filled, TL dot)
 # ---------------------------------------------------------------------------
 def fig6():
-    """MODEL v4.2.1: two panels, levers grouped by PAS 2080 strategy, bars in the strategy colours (Moderate hollow,
-    Ambitious filled, TL dot): (a) standalone reduction of cumulative carbon 2026-2050 vs the Reference, each lever
+    """MODEL v4.2.1: two panels, levers grouped by PAS 2080 strategy, bars in the strategy colours (MODEL v4.3.1: Moderate
+    filled, Ambitious hollow, as style.SETTING everywhere; TL dot): (a) standalone reduction of cumulative carbon 2026-2050 vs the Reference, each lever
     alone (pathways/runs.csv: Reference - Ln run); (b) the Shapley share (%) of the pathway reduction per lever within
     each game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; pathways/shapley.csv share_of_total)."""
     s = D.csv('pathways/shapley.csv')
@@ -741,13 +748,13 @@ def fig6():
     y = np.arange(len(order))[::-1]
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 72), sharey=True)
     for a, val, xlab, letter, title in (
-            (ax[0], alone, 'Reduction of cumulative carbon 2026-2050 vs the Reference (kt CO₂e)', 'a',
+            (ax[0], alone, 'Reduction of cumulative carbon 2026–2050 vs the Reference (kt CO₂e)', 'a',
              'Each lever alone'),
             (ax[1], sh, 'Share of the pathway reduction (%, exact Shapley value)', 'b', 'Shapley share within each game')):
         for k, L in zip(y, order):
             col = S.STRATEGY[N.LEVER_STRATEGY[L]]
-            a.barh(k + 0.18, val['ambitious'][L], height=0.34, color=col, edgecolor=col, lw=S.LW_SEAM)
-            a.barh(k - 0.18, val['moderate'][L], height=0.34, facecolor='none', edgecolor=col, lw=S.LW_OUTLINE * 1.2)
+            a.barh(k + 0.18, val['moderate'][L], height=0.34, color=col, edgecolor=col, lw=S.LW_SEAM)
+            a.barh(k - 0.18, val['ambitious'][L], height=0.34, facecolor='none', edgecolor=col, lw=S.LW_OUTLINE * 1.2)
             a.plot(val['tl'][L], k, ls='none', color=S.TL, zorder=5, marker='o', ms=5)
         for St, ls in N.STRATEGY_LEVERS.items():              # strategy separators
             ks = [k for k, L in zip(y, order) if L in ls]
@@ -766,8 +773,9 @@ def fig6():
     ax[0].set_yticks(y)
     ax[0].set_yticklabels([P.two_lines(f'{L} {N.LEVERS[L]}') for L in order])   # MODEL v4.2.2: two lines, centred
     ax[0].set_ylim(-0.6, len(order) - 0.4)
-    fig.legend(handles=[Patch(facecolor='none', edgecolor=S.MUTED, label='Moderate'),
-                        Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label='Ambitious'),
+    fig.legend(handles=[Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label=S.SETTING['moderate']['label']),
+                        Patch(facecolor='none', edgecolor=S.MUTED, lw=S.LW_OUTLINE * 1.2,
+                              label=S.SETTING['ambitious']['label']),
                         Line2D([0], [0], ls='none', color=S.TL, label=N.TL['TL'], marker='o',
                                ms=5)],
                loc='lower center', ncol=3, fontsize=S.FONT_SMALL, frameon=False, bbox_to_anchor=(0.5, 0.0))
@@ -914,7 +922,7 @@ def fig7():
     for h in lg.legend_handles:
         if hasattr(h, 'set_alpha'):
             h.set_alpha(0.9)
-    P.panel(b, 'b', 'Reference, Ambitious Pathway and TL vs the 2050 population')
+    P.panel(b, 'b', f"Reference, Ambitious Pathway and {N.TL['TL']} vs the 2050 population")
     for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: slightly larger fonts
         if t.get_text():
             t.set_fontsize(t.get_fontsize() * 1.1)

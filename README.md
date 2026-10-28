@@ -44,11 +44,11 @@ Paths are those of the full profile (`outputs/`); the light profile writes the s
 
 | what | where |
 |---|---|
-| Every figure (paper, Extended Data, supplementary, diagnostics; PNG only) with its title, data sources and audit | [outputs/FIGURES.md](outputs/FIGURES.md) |
-| **Paper**: Fig1–Fig8 | [outputs/paper_main/](outputs/paper_main/) |
-| **Extended Data**: ED1–ED10 and the table EDT1 (lever levels by typology) | [outputs/paper_extended/](outputs/paper_extended/) |
-| **Supplementary figures**: SF1–SF6 (the model schematic; items beyond the ten Extended Data) | [outputs/supplementary/](outputs/supplementary/) |
-| **Diagnostics**: calibration, validation, boundaries, pathways, Monte Carlo, sensitivity | [outputs/diagnostics/](outputs/diagnostics/) |
+| Every figure (paper, Extended Data, Supplementary; PNG only) with its title, data sources and audit; one row per figure and table in the manifest | [outputs/FIGURES.md](outputs/FIGURES.md), [outputs/figure_manifest.csv](outputs/figure_manifest.csv) |
+| **Paper**: Fig1–Fig7 | [outputs/paper_main/](outputs/paper_main/) |
+| **Extended Data**: ED1–ED9 and the table EDT1 (lever levels by typology); renumbering in [ed_number_map.csv](outputs/data/ed_number_map.csv) | [outputs/paper_extended/](outputs/paper_extended/) |
+| **Supplementary**: SF1–SF15 in topic folders and the table ST1 (how the AR and AtP budgets are built); renumbering in [sf_number_map.csv](outputs/data/sf_number_map.csv) | [outputs/supplementary/](outputs/supplementary/) |
+| Figure audit records (one JSON per figure; no diagnostic figures are drawn since MODEL v4.3.0) | [outputs/diagnostics/_audit/](outputs/diagnostics/_audit/) |
 | **Market-balance diagnostics**: controlled zero- vs 17-month lag comparison; historical / forecast coarse demand classification | [outputs/reports/market_balance.md](outputs/reports/market_balance.md), [outputs/data/diagnostics/](outputs/data/diagnostics/) |
 | Run profile, draws, seeds, git and input hashes, step timings | [outputs/run_meta.json](outputs/run_meta.json) |
 | Grouped one-at-a-time sensitivity tables | [outputs/data/sensitivity/](outputs/data/sensitivity/) |

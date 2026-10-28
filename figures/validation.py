@@ -35,36 +35,37 @@ def _scen_line(k):
 # ---------------------------------------------------------------------------
 # D14 hindcast
 # ---------------------------------------------------------------------------
+# MODEL v4.3.1: the replacement variant (style.SCENARIO key) of each hindcast method (validation.hindcast)
+HINDCAST_VARIANTS = (('LOW', 'dwelling_count'), ('REF', 'reference'), ('HIGH', 'high'), ('VHIGH', 'very_high'))
+# the short names of the in-panel error box; the legend carries the full names (naming.SCENARIOS)
+HINDCAST_SHORT = {'LOW': 'Low', 'REF': 'Reference', 'HIGH': 'High', 'VHIGH': 'Very High'}
+
+
 def sf6_hindcast():
     fid = 'SF6_hindcast'
     v = D.src('D14_hindcast')
-    pub = v.get('hindcast_as_published') or []
     fig, ax = plt.subplots(1, 4, figsize=S.figsize('double', 74), gridspec_kw=dict(width_ratios=[1, 1, 1, 0.75]))
-    lab_low = f"{N.SCENARIOS['LOW']} (census dwelling-count rate)"
+    # MODEL v4.3.1 (B8): Actual and the four replacement variants (ED3 styles), each defined from the census intervals
+    # before the origin only (validation.hindcast); the as-published vacancy line is no longer drawn
     for a, o, letter in zip(ax[:3], (2006, 2013, 2018), 'abc'):
-        rows = [r for r in v['hindcast'] if r['origin'] == o and 'years' in r]
+        rows = {r['method']: r for r in v['hindcast'] if r['origin'] == o and 'years' in r}
         if not rows:
             continue
-        yy = rows[0]['years']
-        P.line(a, yy, np.cumsum(rows[0]['actual_path']) / 1e3, color=S.INK, lw=S.LW_BOLD, label='Actual')
+        yy = rows[v['model_method']]['years']
+        P.line(a, yy, np.cumsum(rows[v['model_method']]['actual_path']) / 1e3, color=S.INK, lw=S.LW_BOLD,
+               label='Actual')
         err = []
-        for r in rows:
-            if r['method'] in ('reference', v['model_method']):
-                k = 'REF' if r['method'] == 'reference' else 'LOW'
-                P.line(a, yy, np.cumsum(r['predicted_path']) / 1e3, label=N.SCENARIOS[k] if k == 'REF' else lab_low,
-                       **dict(_scen_line(k), lw=S.LW))
-                err.append(f"{'Low replacement' if k == 'LOW' else 'Reference'} {r['error_pct']:+.1f}%")
-        for r in pub:
-            if r['origin'] == o and r['method'] == 'reference' and 'years' in r:
-                P.line(a, r['years'], np.cumsum(r['predicted_path']) / 1e3, lw=S.LW, ls=':', color=S.ACCENT_ORANGE,
-                       label='Reference, vacancy as published')
-                err.append(f"Vacancy as published {r['error_pct']:+.1f}%")
-        a.text(0.97, 0.03, 'Error at the end:\n' + '\n'.join(err), transform=a.transAxes, ha='right', va='bottom',
+        for k, m in HINDCAST_VARIANTS:
+            r = rows[m]
+            P.line(a, yy, np.cumsum(r['predicted_path']) / 1e3, label=N.SCENARIOS[k], **dict(_scen_line(k), lw=S.LW))
+            err.append(f"{HINDCAST_SHORT[k]} {P.minus(format(r['error_pct'], '+.1f'))}%")
+        # MODEL v4.3.1: top left, the empty corner of a cumulative path (bottom right overlapped the curves)
+        a.text(0.03, 0.97, 'Error at the end:\n' + '\n'.join(err), transform=a.transAxes, ha='left', va='top',
                fontsize=S.FONT_MIN)
         a.set_ylabel('Dwellings, cumulative (thousand)')
         a.xaxis.set_major_locator(MaxNLocator(integer=True, nbins=4))
         P.panel(a, letter, f'Hindcast from {o}')
-    fig.legend(*ax[0].get_legend_handles_labels(), loc='lower center', ncol=4, bbox_to_anchor=(0.5, -0.01),
+    fig.legend(*ax[0].get_legend_handles_labels(), loc='lower center', ncol=5, bbox_to_anchor=(0.5, -0.01),
                frameon=False)
     c = v['check_2026']
     a = ax[3]
@@ -87,7 +88,10 @@ def sf6_hindcast():
     S.save_figure(fig, fid,
                   note='Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the '
                        'information available then; errors at the end of each window, vacancy on the consistent '
-                       'definition unless noted. d: '
+                       'definition. The four replacement variants use only the census intervals ending at or before '
+                       'the origin: Low the long-run dwelling-count rate, Reference the last intercensal rate fading '
+                       'to it (10-year half-life), High the last rate held, Very High the weighted linear trend of the '
+                       'interval rates (3, 4 and 5 intervals at the 2006, 2013 and 2018 origins). d: '
                        + ('building of the first year the run without 2026 data models, observed in the pipeline '
                           '(consents lagged), against that run.' if pipeline_mode else
                           'consents observed January–July 2026 against the model, which uses no 2026 data.'),
@@ -138,9 +142,9 @@ def sf8_reality_checks():
     ytop = 1.1 * float(np.max(counts))                    # the two markers stop below the legend
     a.vlines(h['step_pct'], 0, ytop, color=S.ACCENT_ORANGE, lw=S.LW_BOLD,
              label=f"{h['last_observed_year']} → {h['first_model_year']} handover (observed → model): "
-                   f"{h['step_pct']:+.1f}%")
+                   + P.minus(f"{h['step_pct']:+.1f}%"))
     a.vlines(h['hist_median_pct'], 0, ytop, color=S.INK, lw=S.LW, linestyles='--',
-             label=f"Median year, 1992–2025: {h['hist_median_pct']:+.1f}%")
+             label="Median year, 1992–2025: " + P.minus(f"{h['hist_median_pct']:+.1f}%"))
     a.set_xlabel('Change from the previous year (%)')
     a.set_ylabel('Number of years')
     a.legend(loc='upper left', fontsize=S.FONT_MIN)

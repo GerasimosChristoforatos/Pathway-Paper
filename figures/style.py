@@ -310,12 +310,36 @@ def figsize(width='double', height_mm=100.0):
     return WIDTH[width], height_mm * MM
 
 
+def _thousands_label(v, _pos=None):
+    s = f'{v:,.0f}' if float(v).is_integer() else f'{v:,g}'
+    return s.replace('-', '\u2212')                    # the typographic minus, as matplotlib's default formatter
+
+
+def thousands_ticks(fig):
+    """MODEL v4.3.1 (suite rule): thousands separators on every linear axis whose ticks reach 1,000, on every figure at
+    save time. Left alone: log axes and axes with their own formatter (only matplotlib's default ScalarFormatter is
+    replaced), year axes (every tick between 1800 and 2100) and axes whose ticks all stay below 1,000."""
+    from matplotlib.ticker import FuncFormatter, ScalarFormatter
+    for ax in fig.axes:
+        for axis, lim in ((ax.xaxis, ax.get_xlim()), (ax.yaxis, ax.get_ylim())):
+            if axis.get_scale() != 'linear' or type(axis.get_major_formatter()) is not ScalarFormatter:
+                continue
+            lo, hi = min(lim), max(lim)
+            locs = [v for v in axis.get_majorticklocs() if lo - 1e-9 <= v <= hi + 1e-9]
+            if not locs or max(abs(v) for v in locs) < 1000:
+                continue
+            if all(1800 <= v <= 2100 and float(v).is_integer() for v in locs):
+                continue
+            axis.set_major_formatter(FuncFormatter(_thousands_label))
+
+
 def save(fig, path):
     """Write the PNG of the run profile (light: 200 dpi; full: 600 dpi; MODEL v3.3.1: no PDF), no software / date
     metadata, then close the figure. In the light profile every figure carries a small grey footer
     'LIGHT RUN — n=1000'."""
     import matplotlib.pyplot as plt
     os.makedirs(os.path.dirname(path), exist_ok=True)
+    thousands_ticks(fig)                                # MODEL v4.3.1: suite rule (thousands separators)
     footer = runprofile.get('footer')
     if footer:
         fig.text(0.995, 0.002, footer, ha='right', va='bottom', color='#9A9A9A', fontsize=FONT_MIN)

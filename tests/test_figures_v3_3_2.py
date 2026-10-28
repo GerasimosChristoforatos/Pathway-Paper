@@ -4,10 +4,10 @@
     the deterministic files and, for the active profile, the Monte Carlo files) keeps its hash
     (tests/test_regression_model_v3.py checks the same lock file by file);
   * Fig5: each column total equals Reference - run (pathways/runs.csv) and the band reductions add up to it (1e-9);
-  * Fig3b: the 95% interval comes from the per-draw cumulative carbon with the percentile method of MonteCarlo.py, which
+  * Fig3b: the 90% interval (MODEL v4.3.1; 95% before) comes from the per-draw cumulative carbon with the percentile method of MonteCarlo.py, which
     reproduces the stored 5th / 95th percentiles (montecarlo/summary_REF.csv) exactly;
   * Fig6: the markers lie on the analytic plane (1e-9); the plotted square is -5% to 90% (MODEL v4.2.2); the AR line is exact.
-  * the figure set of MODEL v4.3.0 (main, Extended Data, Supplementary)."""
+  * the figure set of MODEL v4.3.1 (main, Extended Data, Supplementary, tables) and the number maps."""
 import json
 
 import numpy as np
@@ -48,7 +48,9 @@ def test_fig3_interval_from_the_draws():
     assert np.percentile(d, 5) == pytest.approx(s['p5'], rel=1e-12)
     assert np.percentile(d, 95) == pytest.approx(s['p95'], rel=1e-12)
     lo, hi = PM.mc_cumulative_interval()
-    assert PM.FIG3_INTERVAL == (2.5, 97.5) and lo < s['p5'] < s['p95'] < hi
+    # MODEL v4.3.1: the 90% interval, 5th-95th percentile of the draws (was 2.5-97.5), equal to the stored summary
+    assert PM.FIG3_INTERVAL == (5.0, 95.0)
+    assert lo == pytest.approx(s['p5'], rel=1e-12) and hi == pytest.approx(s['p95'], rel=1e-12)
 
 
 def test_fig6_markers_square_and_ar_line():
@@ -65,8 +67,9 @@ def test_fig6_markers_square_and_ar_line():
         assert x.min() >= -0.05 and y.max() <= 0.85
 
 
-def test_figure_set_v4_3_0():
-    """MODEL v4.3.0: main Fig1-Fig7, exactly ten Extended Data items and SF1-SF17 in the approved order; no schematic
+def test_figure_set_v4_3_1():
+    """MODEL v4.3.1: main Fig1-Fig7, nine Extended Data items (ED8 Shapley attribution dropped), SF1-SF15 numbered
+    continuously and the Supplementary Table ST1 (SF9 of v4.3.0); the number maps cover every v4.3.0 item; no schematic
     and no diagnostic figures."""
     assert [h['file'] for h in FP.PAPER_MAIN] == [
         'Fig1_floor_area', 'Fig2_reference_carbon', 'Fig3_reference_boundaries', 'Fig4_pathways',
@@ -74,9 +77,14 @@ def test_figure_set_v4_3_0():
     assert [h['file'] for h in FP.PAPER_EXTENDED] == [
         'ED1_population_households_floor_area', 'ED2_household_formation_size', 'ED3_replacement_variants',
         'ED4_one_at_a_time', 'ED5_boundary_sensitivity', 'ED6_mc_input_distributions', 'ED7_sobol',
-        'ED8_shapley_attribution', 'ED9_lever_annual', 'ED10_rollout_timing']
-    assert [h['id'] for h in FP.SUPPLEMENTARY] == [f'SF{i}' for i in range(1, 18)]
-    assert FP.SUPPLEMENTARY[8]['file'] == 'SF9_budget_construction'
-    assert FP.SUPPLEMENTARY[-1]['file'] == 'SF17_tl_dwellings'
+        'ED8_lever_annual', 'ED9_rollout_timing']
+    assert [h['id'] for h in FP.SUPPLEMENTARY] == [f'SF{i}' for i in range(1, 16)]
+    assert all(h['file'].startswith(h['id'] + '_') for h in FP.PAPER_EXTENDED + FP.SUPPLEMENTARY)
+    assert FP.SUPPLEMENTARY[-1]['file'] == 'SF15_tl_dwellings'
+    assert [t['id'] for t in FP.SUPPLEMENTARY_TABLES] == ['ST1']
+    assert [o for o, *_ in FP.ED_NUMBER_MAP] == [f'ED{i}' for i in range(1, 11)]
+    assert [o for o, *_ in FP.SF_NUMBER_MAP] == [f'SF{i}' for i in range(1, 18)]
+    new = {n for *_, n in FP.ED_NUMBER_MAP + FP.SF_NUMBER_MAP if n}
+    assert new == {h['file'] for h in FP.PAPER_EXTENDED + FP.SUPPLEMENTARY + FP.SUPPLEMENTARY_TABLES}
     assert not any('schematic' in h['file'] for h in FP.PAPER_MAIN + FP.SUPPLEMENTARY)
     assert FP.DIAGNOSTICS == {}

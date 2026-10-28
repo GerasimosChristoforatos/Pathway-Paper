@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # MODEL v4.3.0: paper Fig1-Fig7, Extended Data ED1-ED10, supplementary SF1-SF17 in folders (figure_plan.py)
+    # MODEL v4.3.1: paper Fig1-Fig7, Extended Data ED1-ED9 (+ EDT1), supplementary SF1-SF15 (+ ST1) in folders (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -46,6 +46,8 @@ FILES = [
      'gap_2026.py'),
     ('data/baseline/overbuild_2026.json', 'The 2026 overbuild and how it is absorbed', 'tools/overbuild_2026.py'),
     ('data/ed_number_map.csv', 'MODEL v4.3.0: Extended Data numbering, old -> new (figure_plan.ED_NUMBER_MAP)',
+     'figure_plan.py'),
+    ('data/sf_number_map.csv', 'MODEL v4.3.1: Supplementary numbering, v4.3.0 -> v4.3.1 (figure_plan.SF_NUMBER_MAP)',
      'figure_plan.py'),
     ('data/bands_display_map.csv', 'MODEL v4.2: detailed demand band -> the six display bands of the figures',
      'pathways.py'),
@@ -162,6 +164,9 @@ FILES = [
      'figures/ (module named in figure_manifest.csv)'),
     ('paper_extended/EDT1_levels_by_typology.*', 'Extended Data table: lever levels by typology (Moderate, Ambitious, '
      'TL)', 'figures/paper_extended.py'),
+    ('supplementary/boundaries/ST1_budget_construction.*', 'MODEL v4.3.1: Supplementary Table ST1, how the AR and '
+     'AtP budgets are built (Markdown and CSV; SF9 of v4.3.0)', 'figures/boundaries.py'),
+    ('palette_swatches.png', 'MODEL v4.3.1: the colours of palette.toml by group (redraw.py --final)', 'redraw.py'),
     ('diagnostics/*/D*.png', 'Diagnostic figure, PNG (FIGURES.md)', 'figures/ (module named in FIGURES.md)'),
     ('data/figure_source/*.json', 'Figure source data: the exact arrays a diagnostic draws (figsource.py)',
      'projection.py, Diagnostics.py, boundaries.py, tools/figures_report.py'),

@@ -1,6 +1,6 @@
 {
- "figure": "SF13_hd_estimators",
- "producer": "figures/__main__.py",
+ "figure": "SF11_hd_estimators",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "L5 Occupancy density (n = 16, B = 2000)",

@@ -23,7 +23,7 @@ def sf7_completion_lag():
     fid = "SF7_completion_lag"
     d = D.csv("diagnostics/lag_comparison_annual.csv")
     labels = {0: "Zero lag (consent-timed proxy)", 17: "17-month lag (completion-timed)"}
-    colours = {0: S.ACCENT_ORANGE, 17: S.ACCENT_BLUE}
+    colours = dict(S.LAG_VARIANT)          # MODEL v4.3.3: palette.toml [lag_variants]
     panels = [
         ("population_growth", "Population growth"),
         ("household_size_change", "Household-size change"),

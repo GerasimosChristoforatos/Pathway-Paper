@@ -4,6 +4,39 @@ Entries below the first use the vocabulary of their own version (S1/S2/S3-10, ce
 L2a/L2b, T, near-term market excess, ...); docs/RENAMING.md maps every one of those names to the
 release vocabulary.
 
+## model-v4.3.3: palette coverage and opacity, leaner tests, ED4/ED5 row numbers, SF2b redrawn (no model run)
+
+Every change, with the checks: [docs/CHANGELOG_v4_3_3.md](docs/CHANGELOG_v4_3_3.md). In short:
+
+* **Palette.** Every meaning colour and meaningful fade of the final figures is now in `palette.toml`: 18 groups,
+  including `[components]`, `[typologies]`, `[replacement_variants]`, `[sensitivity_indices]`, `[census_markers]`,
+  `[lag_variants]`, `[validation]`, `[highlights]` and `[opacity]`. `tools/palette_coverage.py` (new) finds 0 colours
+  or fades outside it. With the default palette every figure redrew pixel-identical before the figure changes.
+* **SF2b.** Redrawn in the Fig1 layout: solid parts, negatives below zero, one straight annual line, census-interval
+  caps, checks that STOP. In 2026–27 the line is the component sum (author decision): the D05 floor-area-based count
+  differs by −51 and −801. The component colours were lightness-adjusted for colour vision.
+* **ED4 / ED5.** The row notes are numbered, and the numbers are superscripts on the row labels.
+* **Tests.** Reduced to the number-protecting files plus `tests/test_figure_integrity.py`: 250 collected, 214 passed,
+  36 skipped. The styling tests and the v2.1 legacy lock are retired; see `tests/README.md`.
+* **Data.** `outputs/data/` is unchanged.
+
+## model-v4.3.2: figure and palette changes only (no model run)
+
+Every change, with the checks: [docs/CHANGELOG_v4_3_2.md](docs/CHANGELOG_v4_3_2.md) (this entry added in MODEL
+v4.3.3; it was missing from the v4.3.2 release).
+
+* **Palette.** The boundaries, zones, Fig3b column and one-at-a-time colours moved into `palette.toml`, and the lever
+  shades were retired.
+* **Figures.**
+  * Fig1: one annual line of the floor area built.
+  * Fig3: no annual markers.
+  * Fig7b: adds the Moderate Pathway.
+  * ED4 / ED5: fewer rows shown, with row notes read from the code and outputs.
+  * ED8: no strategy squares.
+* **Data.** `outputs/data/` is unchanged.
+
+Releases v4.0.0–v4.3.1: `docs/CHANGELOG_v4*.md`.
+
 ## model-v3.0.0: Reference absorbs the 2026 overbuild, rule-based levers (Levels 1-4), run profiles, compute / draw separation
 
 Every change and decision, with the numbers: [docs/CHANGELOG_v3.md](docs/CHANGELOG_v3.md). In short: the Reference

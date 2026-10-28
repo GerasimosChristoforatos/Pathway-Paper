@@ -11,13 +11,84 @@ separation); `module` names it, `source` lists the data files it reads (relative
 Figures are PNG only (runprofile.py: 600 dpi full, 200 dpi light; MODEL v3.3.1). Figure ids of MODEL v2.1 that are not carried forward are listed in
 RETIRED with the reason (docs/FIGURE_PLAN_v3.md).
 """
+# MODEL v4.3.2: the row notes of ED4 and ED5 as figures/sensitivity.py writes them under the axes (read from the model
+# code and the committed outputs); copied here so they reach the captions and FIGURES.md, and checked equal to the
+# generated text by tests/test_figures_v4_3_2.py
+ED4_ROW_NOTES = (
+    'Household size (2018–23 pace): household size continues linearly from 2023 at the 2018–2023 '
+    'census-interval pace instead of the Stats NZ household-size path rebased on 2023.',
+    'Population (5th–95th pct.): Stats NZ 2024-base stochastic projection, 5th / 95th percentile path '
+    'instead of the median.',
+    'Household size (smaller–larger households): Stats NZ Low / High household-size variant (smaller / '
+    'larger households) instead of the Medium variant.',
+    'Household size after 2043: end-slope taper: from the shape-preserving (PCHIP) end slope at 2043 the '
+    'slope tapers to zero over 5 years, instead of a zero slope imposed at 2043 and household size held '
+    'constant after 2043.',
+    'Household size after 2043: secant-slope taper: the last published interval (2038–2043) linear at its'
+    ' secant slope, the slope then tapering to zero over 5 years, instead of a zero slope imposed at 2043'
+    ' and household size held constant after 2043.',
+    '2026 overbuild booked as stock-neutral redevelopment: the 2026 overbuild (building above need in '
+    '2026–2027 and its continuation, fading at ρ = 0.43) replaces existing dwellings instead of adding to'
+    ' the stock: no surplus, so no absorption payback and no soil carbon loss on it.',
+    'Dwelling-size reference window 2016–2025: new-dwelling size held at its 2016–2025 mean per typology '
+    'instead of the 2023–2025 mean.',
+    'Completion rate (0.93–0.96): 0.93 / 0.96 of consented dwellings completed instead of 0.945.',
+    'Vacancy rate: 1986–2023 census mean: the mean of the 1986–2023 censuses on one definition instead of'
+    ' the 2023 census value (5.39%).',
+    'Overbuild absorbed (by 2030–by 2045): the 2026 overbuild absorbed by 2030 / 2045 instead of 2035.',
+    'Completion lag (15–19 months): consents lagged 15 / 19 months instead of 17.',
+    'No 2026 data (consents to Dec 2025): consents to December 2025 and the projected 2026 population '
+    'instead of consents to July 2026 and the observed 2026 population growth.',
+    'Replacement (Low–Very High): Low: the 1991–2023 long-run net rate throughout; High (tick): the '
+    '2018–2023 rate persists; Very High: the 1991–2023 census-interval trend continues; instead of the '
+    '2018–2023 rate fading to the long-run rate with a 10-year half-life.',
+    'Replacement half-life (5–15 yr): 5 / 15 years instead of 10.',
+    'Soil order (Raw–Organic): the soil carbon loss of the lowest (Raw) / highest (Organic) soil order on'
+    ' every new footprint instead of the area-weighted mean over the soil orders of the Auckland land '
+    'zoned for urbanisation.',
+    'Single case study (lowest–highest): the materials factor of the lowest / highest single case study '
+    'of each typology instead of the pooled typology factor.',
+    'Frozen technology (2025 factors held): every factor held at 2025 instead of A1–A3 on the item paths '
+    'of Horup et al. (2025) and A4–A5 falling 1% per year.',
+    'Carbon factors (jackknife): the lowest / highest pooled materials factor when each case study is '
+    'left out in turn, instead of the pooled factor (a spread, not a confidence interval).',
+    'NZ-made electricity-intensive items held at 2025 factors: items made in New Zealand with '
+    'electricity-intensive production held at 2025 instead of following their Horup et al. (2025) path.',
+    "A4–A5 decarbonisation (own path–held at 2025): A4–A5 on each item's own Horup et al. (2025) path / "
+    'held at 2025 instead of the generic 1% per year decline (Resch et al. 2021).',
+    'Soil carbon loss on all floor area, incl. replacement: soil carbon loss also on replacement floor '
+    'area instead of none on rebuilt footprints.',
+    'Proxy-mapped items held at 2025 factors: items mapped to a proxy material held at 2025 instead of '
+    "following the proxy's path.",
+)
+ED5_ROW_NOTES = (
+    'Carrying capacity: 1 W/m² boundary (not 2 °C): 1 W/m² planetary boundary (Bjørn & Hauschild 2015), '
+    'safe operating space 3.61 × 10¹² kg CO₂e per year, instead of the 2 °C carrying capacity (Bjørn & '
+    'Hauschild 2015), 6.81 × 10¹² (the same global impact); both budgets move.',
+    'AR base window (5–34 yr): mean sector emissions over 5 / 20 / 34 years (2021–2025, 2006–2025, '
+    '1992–2025) instead of 10 years (2016–2025); AR only.',
+    'Economic allocation measure: GDP per capita, current US$: GDP per capita in current US$ instead of '
+    'GDP per capita at purchasing-power parity, constant 2021 international $ (World Bank WDI); AtP only.',
+    'Sector share: ratio of sums (not mean of ratios): FCE share of GDP in the sector share: the ratio of'
+    ' the summed FCE to the summed GDP of the 40 quarters 2016–2025 instead of the mean of the 40 '
+    'quarterly FCE/GDP ratios 2016–2025; AtP only.',
+    'Population (5th–95th pct.): Stats NZ 2024-base 5th / 95th percentile path instead of the median; '
+    'carbon and both budgets move together.',
+    "Population source: UN WPP 2024 median: UN WPP 2024 median for New Zealand instead of the model's "
+    'population path (the Stats NZ 2024-base median from the observed 2025 level, with the observed 2026 '
+    'growth); budgets only.',
+    'Replacement (Low–Very High): as in Extended Data Fig. 4 (carbon only; the budgets are unchanged).',
+    'Replacement half-life (5–15 yr): as in Extended Data Fig. 4 (carbon only).',
+)
+
 PAPER_MAIN = [
     dict(id='Fig1', file='Fig1_floor_area', width='double', module='figures.paper_main',
          title='Floor area: history and projection by demand band',
          caption='Floor area built per year by demand band: history as census-interval means (columns), the Reference '
                  'projection annually from 2026 (2026 observed). Positive bands stacked up from zero, negative bands '
-                 '(overbuild absorbed, unconsented additions) down from zero; the black line is the floor area built '
-                 '(in scope). 2026 overbuild: observed 2026 building above need, fading from 2027 and absorbed by 2035.',
+                 '(overbuild absorbed, unconsented additions) down from zero. The black line is the floor area built '
+                 '(in scope), annual 1992-2050 (history from consents, projection from 2026); the grey caps on the '
+                 'history columns are the census-interval means. 2026 overbuild: observed 2026 building above need, fading from 2027 and absorbed by 2035.',
          source=['baseline/bands_history.csv', 'baseline/bands_annual.csv', 'baseline/annual.csv',
                  'baseline/overbuild_2026.json']),
     dict(id='Fig2', file='Fig2_reference_carbon', width='double', module='figures.paper_main',
@@ -66,9 +137,10 @@ PAPER_MAIN = [
          title='Uncertainty',
          caption='(a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high '
                  'end per its definition (population rows move the budgets with the path; AR base-window rows move the '
-                 'AR budget only); not additive, not a joint interval. (b) Theoretical Limit: cumulative LoE AR against '
-                 'the 2050 New Zealand population across the Monte Carlo draws, LoE = 1, and the population at which '
-                 'P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).',
+                 'AR budget only); not additive, not a joint interval. (b) The Reference, the Moderate and Ambitious '
+                 'Pathways and the Theoretical Limit: cumulative LoE AR against the 2050 New Zealand population on the '
+                 'same paired Monte Carlo draws, P(LoE AR <= 1) of each with its Wilson 95% interval, LoE = 1, and the '
+                 'population at which the Theoretical Limit has P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).',
          source=['sensitivity/tornado.csv', 'sensitivity/planetary_boundary.csv', 'pathways/montecarlo_draws.csv',
                  'pathways/montecarlo_conditional_tl.json', 'baseline/scenarios.json', 'aesa/results.json']),
 ]
@@ -85,10 +157,22 @@ PAPER_EXTENDED = [
          title='Low, High and Very High replacement: the Reference, the Pathways and TL',
          source=['sensitivity/replacement_variants.csv', 'pathways/annual.csv']),
     dict(id='ED4', file='ED4_one_at_a_time', module='figures.sensitivity',
-         title='One at a time: cumulative embodied carbon 2026-2050 of the Reference', 
+         title='One at a time: cumulative embodied carbon 2026-2050 of the Reference',
+         caption='One-at-a-time ranges of the Reference cumulative embodied carbon 2026-2050, grouped by category; each '
+                 'input at its low (blue) and high (orange) end, a single alternative case grey, intermediate cases as '
+                 'ticks; not additive, not a joint interval. Not shown (kept in the data file): household size held '
+                 'flat after 2043 (the Reference is also held constant after 2043, with a zero slope imposed at 2043), '
+                 'the overbuild gap against the 2026 requirement, no census under-construction correction, the '
+                 'maintenance event timing L / n, and the version-history rows (their changes are in the note). '
+                 'What each row changes compared with the Reference: ' + ' '.join(ED4_ROW_NOTES),
          source=['sensitivity/reference_carbon.csv']),
     dict(id='ED5', file='ED5_boundary_sensitivity', module='figures.sensitivity',
          title='Boundary definitions and allocation: cumulative LoE of AR and of AtP',
+         caption='One-at-a-time ranges of the Reference cumulative level of exceedance 2026-2050 of (a) acquired '
+                 'rights (AR) and (b) ability to pay (AtP): boundary definitions, allocation, population and '
+                 'replacement. Not shown (kept in the data file): α = 1 (Hjalsted et al. SI tables) and the raw Stats '
+                 'NZ 2024-base median population. What each row changes compared with the Reference: '
+                 + ' '.join(ED5_ROW_NOTES),
          source=['sensitivity/planetary_boundary.csv', 'aesa/results.json']),
     dict(id='ED6', file='ED6_mc_input_distributions', module='figures.montecarlo',
          title='Monte Carlo input distributions',

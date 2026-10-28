@@ -29,7 +29,9 @@
   "20,000",
   "21,000",
   "Ambitious",
+  "Avoid Strategies",
   "Cumulative carbon 2026\u20132050 (kt CO\u2082e), lever alone",
+  "Improve Strategy",
   "L1 Household size",
   "L2 Vacancy rate",
   "L3 Building lifetime",
@@ -41,6 +43,7 @@
   "L9 Construction-stage carbon",
   "Moderate",
   "Reference",
+  "Switch Strategies",
   "Theoretical Limit",
   "\u03bb: each lever from the Reference (0) to Ambitious (1); its Theoretical Limit at the right"
  ],

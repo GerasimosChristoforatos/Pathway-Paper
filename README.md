@@ -110,11 +110,19 @@ name and the log to read, and the run stops (exit code 1 from the command line).
 
 ## Recolour the figures locally
 
-The figure colours of five groups of meanings are set in `palette.toml` at the repository root: demand bands,
-materials, life-cycle stages, runs (Reference, Moderate Pathway, Ambitious Pathway, Theoretical Limit) and
-strategies (Avoid, Switch, Improve). Each key colours exactly one meaning in every figure that shows it. The
-defaults are the colours of the published figures. All other colours (lever shades, typologies, tornado, variants,
-boundaries, sub-bands and neutrals) are fixed in `figures/style.py`.
+The figure colours of nine groups of meanings are set in `palette.toml` at the repository root:
+* demand bands;
+* materials;
+* life-cycle stages;
+* runs (Reference, Moderate Pathway, Ambitious Pathway, Theoretical Limit);
+* strategies (Avoid, Switch, Improve; a lever is drawn in its strategy colour);
+* the planetary boundaries (AR, AtP);
+* the boundary zones (their opacities are fixed);
+* the Fig3b cumulative column;
+* the one-at-a-time colours (input at its low end, at its high end, a single alternative case; Fig7a, ED4, ED5).
+
+Each key colours exactly one meaning in every figure that shows it. The defaults are the colours of the published
+figures. All other colours (typologies, variants, sub-bands and neutrals) are fixed in `figures/style.py`.
 
 `redraw.py` redraws the figures from the committed results in `outputs/data/`. It runs no model and no Monte Carlo,
 and needs nothing beyond a clone of the repository and the Python environment.
@@ -130,7 +138,7 @@ python redraw.py --final                      # write the release figures (outpu
 ```
 
 * **Where the previews go.** `outputs/_palette_preview/<palette file name>/`, with `paper_main/`,
-  `paper_extended/` and `supplementary/<topic>/` inside, plus `palette_swatches.png`, a sheet of the five groups.
+  `paper_extended/` and `supplementary/<topic>/` inside, plus `palette_swatches.png`, a sheet of the palette groups.
   Previews never overwrite the release figures. `--out DIR` chooses another folder.
 * **Final figures.** `--final` writes the release PNGs at 600 dpi into `outputs/paper_main/`,
   `outputs/paper_extended/` and `outputs/supplementary/`, and refreshes `outputs/FIGURES.md`. With the default
@@ -138,7 +146,11 @@ python redraw.py --final                      # write the release figures (outpu
 * **Checks on loading.**
   * **Errors.** A missing or misspelt key, or a value that is not `#RRGGBB`, stops the run.
   * **Warnings, without stopping.** Two keys that appear in the same figure and are identical or very close (CAM02-UCS
-    distance below 10): the demand bands, materials and stages of Fig2, and the runs and strategies of Fig4–Fig6.
+    distance below 10): the demand bands, materials and stages of Fig2; the runs and strategies of Fig4–Fig6; the
+    runs, boundaries, zones (as they show on white) and cumulative column of Fig3; the one-at-a-time colours.
+  * **Zone order (warning).** The three zones, composited on white at their fixed opacities, must stay ordered in
+    lightness (within both < within AR only < exceeded, CAM02-UCS J') under normal vision and every simulated
+    deficiency.
   * **Colour-vision report.** For each group, the closest pair under normal vision and under simulated
     deuteranomaly, protanomaly and tritanomaly (the method of `tools/palette_check.py`).
 

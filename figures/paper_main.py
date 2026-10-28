@@ -73,8 +73,9 @@ def _month(iso):
     return f'{calendar.month_name[m]} {y}'
 
 
-def _stack_bar(ax, a, b, parts, net, styles=None):
-    """One stacked column over [a, b] (positive bands up from zero, negative down), with its net line."""
+def _stack_bar(ax, a, b, parts, net, styles=None, net_line=True):
+    """One stacked column over [a, b] (positive bands up from zero, negative down), with its net line (MODEL v4.3.2:
+    optional; Fig1 draws the annual floor area built as one continuous line instead)."""
     x = np.array([a, b], float)
     up = dn = 0.0
     for bid, v in parts:
@@ -87,7 +88,8 @@ def _stack_bar(ax, a, b, parts, net, styles=None):
             dn += v
     if not np.isclose(up + dn, net, rtol=1e-9, atol=1e-12):
         raise SystemExit(f'Fig1: the pipeline bands ({up + dn}) differ from the total ({net}).')
-    ax.plot(x, [net, net], color=S.INK, lw=S.LW, gid=P.NET_GID)
+    if net_line:
+        ax.plot(x, [net, net], color=S.INK, lw=S.LW, gid=P.NET_GID)
 
 
 def _fig1_draw(ax, six=True):
@@ -96,7 +98,12 @@ def _fig1_draw(ax, six=True):
     17-month lag) as annual columns, the building above modelled need hatched; the projection annual from the first
     unobserved year, each year over its own width. six: the six display bands (bands.DISPLAY; the market balance
     carries the residual in history and projection alike), else the detailed bands. Returns (legend handles, the
-    negative bands, the pipeline years, the 2026-2050 floor area)."""
+    negative bands, the pipeline years, the 2026-2050 floor area).
+    MODEL v4.3.2: one continuous line of the floor area built (in scope), annual 1992-2050 at year centres
+    (baseline/annual.csv: history 1992-2025, projection 2026-2050, pipeline years included), straight segments, in INK;
+    it replaces the net lines of the projection and the pipeline columns. The census-interval means stay as short caps
+    on the history columns (MUTED, thinner); the mean of the annual history over each interval must equal the
+    interval's observed floor area built (rtol 1e-9), or the figure stops."""
     hist = D.csv('baseline/bands_history.csv')
     proj = _band_frame(D.csv('baseline/bands_annual.csv'), 'floor_area_Mm2')
     if six:
@@ -127,7 +134,11 @@ def _fig1_draw(ax, six=True):
         obs = float(h['observed_built_Mm2_per_year'].iloc[0])
         # MODEL v3.2.0 (A3): the bands of the data add up to the observed floor area built
         P.stack_series(ax, [a, b], parts, net=[obs, obs], net_line=False)
-        ax.plot([a, b], [obs, obs], color=S.INK, lw=S.LW, gid=P.NET_GID)
+        ann_mean = float(hist_tot.loc[int(iv['year_start']):int(iv['year_end'])].mean())
+        if not np.isclose(ann_mean, obs, rtol=1e-9, atol=0.0):
+            raise SystemExit(f"STOP: Fig1: the mean of the annual floor area built {iv['year_start']}-{iv['year_end']} "
+                             f'({ann_mean!r}) differs from the census-interval mean ({obs!r}).')
+        ax.plot([a, b], [obs, obs], color=S.MUTED, lw=S.LW_THIN, gid='census_interval_mean', zorder=6)
     y_hist_end = int(ivs['year_end'].iloc[-1])
     g = FIG1_GAP / 2
     obs_years = [y for y in hist_tot.index if y_hist_end < y < min(pipe)]
@@ -140,7 +151,7 @@ def _fig1_draw(ax, six=True):
     cols = [b for b in proj.columns if b != 'maintenance']
     for y in pipe:                                                # pipeline years: need bands + building above need
         _stack_bar(ax, y - 0.5 + g, y + 0.5 - g, [(bid, float(proj.loc[y, bid])) for bid in cols],
-                   float(tot.loc[y]), styles=None if six else {hb_id: hatched})
+                   float(tot.loc[y]), styles=None if six else {hb_id: hatched}, net_line=False)
     fut = proj.loc[proj.index > max(pipe)]
     years = fut.index.values.astype(float)
     x0 = years[0] - 0.5 + g                                       # the same gap before the annual projection
@@ -148,13 +159,19 @@ def _fig1_draw(ax, six=True):
     ext = lambda v: np.concatenate([[v[0]], v, [v[-1]]])
     net = tot.loc[fut.index].values
     P.stack_series(ax, xs, [(b, ext(fut[b].values)) for b in cols], net=ext(net), net_line=False)
-    ax.plot(xs, ext(net), color=S.INK, lw=S.LW, gid=P.NET_GID)
+    # MODEL v4.3.2: the floor area built (in scope), one continuous annual line from the first census-interval year
+    y0 = int(ivs['year_start'].iloc[0])
+    ly = np.concatenate([hist_tot.loc[y0:].index.values, tot.index.values]).astype(float)
+    lv = np.concatenate([hist_tot.loc[y0:].values, tot.values]).astype(float)
+    if not np.array_equal(ly, np.arange(y0, ly[-1] + 1)):
+        raise SystemExit('STOP: Fig1: the annual floor area built is not one continuous series of years.')
+    ax.plot(ly, lv, color=S.INK, lw=S.LW, gid=P.NET_GID, zorder=7)
     P.split(ax)
     ax.set_xlim(edges[0] + FIG1_GAP / 2 * (edges[1] - edges[0]), xs[-1])
     lo_, hi_ = ax.get_ylim()
     ax.set_ylim(lo_, hi_ + 0.10 * (hi_ - lo_))                         # room for the labels
     ax.set_ylabel('Floor area built (Mm² per year)')
-    ax.text(y_hist_end + 0.4, 0.98, 'History (census-interval means)', transform=ax.get_xaxis_transform(),
+    ax.text(y_hist_end + 0.4, 0.98, 'History (columns: census-interval means)', transform=ax.get_xaxis_transform(),
             ha='right', va='top', fontsize=S.FONT_SMALL, color=S.MUTED)
     ax.text(np.mean(pipe), 0.98, 'Pipeline', transform=ax.get_xaxis_transform(), ha='center', va='top',
             rotation=90, fontsize=S.FONT_MIN, color=S.MUTED)
@@ -185,7 +202,8 @@ def fig1():
     handles, neg, pipe, total, ob = _fig1_draw(ax, six=True)
     for h in handles:                                             # filled patches, no outline
         h.set_edgecolor(h.get_facecolor())
-    ax.legend(handles=[Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built (in scope)')],
+    ax.legend(handles=[Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built, annual (in scope)'),
+                       Line2D([0], [0], color=S.MUTED, lw=S.LW_THIN, label='Census-interval mean')],
               loc='upper right', bbox_to_anchor=(1.0, 0.93), frameon=False, fontsize=S.FONT_SIZE)
     ax.tick_params(labelsize=S.FONT_SIZE + 0.5)
     ax.yaxis.label.set_size(S.FONT_SIZE + 0.5)
@@ -206,7 +224,10 @@ def fig1():
                f"Stats NZ ERP nowcast. Six display bands (data/bands_display_map.csv); market balance = unexplained "
                f"building + retirement villages (out of scope) + overbuild / pipeline excess + overbuild absorbed + "
                f"surplus kept vacant. Negative bands drawn down from zero: "
-               f"{', '.join(P.band_label(b) for b in neg)}. 2026-2050: {total:.1f} Mm².")
+               f"{', '.join(P.band_label(b) for b in neg)}. Black line: floor area built (in scope), annual "
+               f"1992-2050 (straight segments between year centres; history 1992-2025 from consents, projection from "
+               f"2026); grey caps: census-interval means of the history columns (the mean of the annual values over "
+               f"each interval, checked). 2026-2050: {total:.1f} Mm².")
 
 
 # ---------------------------------------------------------------------------
@@ -350,9 +371,8 @@ def fig3():
     for (lo_, hi_), alpha, lab in (((5, 95), 0.12, 'Monte Carlo 90% band'), ((25, 75), 0.25, 'Monte Carlo 50% band')):
         xf, lof, hif, methods[lab] = P.pchip_band(years, q[lo_], q[50], q[hi_], brk, name=f'Fig3a {lab}')
         ax.fill_between(xf, lof, hif, color=S.REFERENCE, alpha=alpha, lw=0, label=lab)
-    MK = dict(marker='o', ms=1.4, ls='none')                          # the annual values, small
+    # MODEL v4.3.2: no markers on the annual values (the PCHIP curves pass through them)
     ax.plot(*P.pchip(years, q[50], brk), color=S.REFERENCE, lw=S.LW_BOLD, label='Monte Carlo median')
-    ax.plot(years, q[50], color=S.REFERENCE, **MK)
     # MODEL v4.2.1: the Moderate / Ambitious Pathway and the Theoretical Limit (deterministic, pathways/annual.csv)
     pa = D.csv('pathways/annual.csv')
     pa = pa[(pa['scenario'] == 'REF') & (pa['year'] >= 2026)]
@@ -361,7 +381,6 @@ def fig3():
                     ('TL', dict(color=S.TL, lw=S.LW * 0.7, alpha=0.8))):
         r = pa[pa['run'] == run].set_index('year').loc[years.astype(int), 'carbon_kt']
         ax.plot(*P.pchip(years, r.values, brk), label=N.run_label(run), **kw)
-        ax.plot(years, r.values, color=kw['color'], alpha=kw['alpha'], **MK)
     ax.set_xlim(years[0], years[-1])
     ax.set_ylim(0, None)
     ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
@@ -377,7 +396,7 @@ def fig3():
     com = proj['committed']
     wd = 0.55
     whisk = dict(color=S.INK, lw=S.LW, capsize=3.0, capthick=S.LW, zorder=6)
-    b.bar([0], [c], width=wd, **S.fill(S.REFERENCE))
+    b.bar([0], [c], width=wd, **S.fill(S.CUMULATIVE_FIG3B))     # MODEL v4.3.2: palette.toml [cumulative]
     b.errorbar([0], [c], yerr=[[c - lo90], [hi90 - c]], fmt='none', **whisk)
     b.bar([0], [hi50 - lo50], bottom=[lo50], width=wd * 0.35, facecolor='white', alpha=0.55, edgecolor=S.INK,
           lw=S.LW_THIN, zorder=7)                                   # MODEL v4.2.1: the 50% interval, lighter, narrower
@@ -396,7 +415,7 @@ def fig3():
     b.set_ylabel('Cumulative carbon (kt CO₂e)')
     P.thousands(b.yaxis)
     b.grid(axis='x', visible=False)
-    hb = [Patch(label='Cumulative carbon 2026–2050', **S.fill(S.REFERENCE)),
+    hb = [Patch(label='Cumulative carbon 2026–2050', **S.fill(S.CUMULATIVE_FIG3B)),
           Line2D([0], [0], color=S.INK, lw=S.LW, marker='_', markersize=8, label='90% interval (5th–95th percentile)'),
           Patch(label='50% interval (25th–75th percentile)', facecolor='#E6E6E6', edgecolor=S.INK, lw=S.LW_THIN),
           Patch(label='Committed after 2050: B2/B4', **S.fill(S.COMPONENT['maintenance'][0])),
@@ -410,7 +429,7 @@ def fig3():
                f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt; committed after 2050 (drawn at the lower '
                f'bound): C1-C4 {cc:,.0f} kt (2025 factors) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held; '
                f'{bu:,.0f} kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are '
-               f'shape-preserving (PCHIP) interpolation between annual values (dots), not smoothed across the observed '
+               f'shape-preserving (PCHIP) interpolation through the annual values, not smoothed across the observed '
                f'-> modelled join after {int(brk[0])}; bands: ' + ', '.join(f'{k} {v}' for k, v in methods.items()) + '.')
 
 
@@ -889,21 +908,24 @@ def fig7():
     # MODEL v4.3.0: the Reference and the Ambitious Pathway on the same paired draws (same draw index, so the same
     # 2050 population; pathways/montecarlo_draws.csv), TL most prominent (drawn last, darker); y on a log scale
     pin = {}
+    # MODEL v4.3.2: the Moderate Pathway added (diamonds, drawn below the Ambitious Pathway and TL)
     for run, col, mk, sz, al, z in (('REF', S.REFERENCE, 's', 1.6, 0.18, 2),
+                                    ('pathway_moderate', S.PATHWAY_SETTING['moderate'], 'D', 1.5, 0.18, 1.5),
                                     ('pathway_ambitious', S.PATHWAY_SETTING['ambitious'], '^', 1.8, 0.20, 2),
                                     ('TL', S.TL, 'o', 2.4, 0.30, 3)):
         v = d[f'{run}_LoE_AR'].to_numpy(float)
         k, n = int((v <= 1.0).sum()), len(v)
         pin[run] = (k / n, tuple(mcstats.wilson(k, n)))            # as pathways_mc.py
-        lab = {'REF': N.SCENARIOS['REF'], 'pathway_ambitious': N.PATHWAY_RUNS['pathway-ambitious'], 'TL': N.TL['TL']}[run]
+        lab = {'REF': N.SCENARIOS['REF'], 'pathway_moderate': N.PATHWAY_RUNS['pathway-moderate'],
+               'pathway_ambitious': N.PATHWAY_RUNS['pathway-ambitious'], 'TL': N.TL['TL']}[run]
         pct = f'{100 * k / n:.1f}%' if k / n >= 0.01 or k == 0 else f'{100 * k / n:.2f}%'
         b.scatter(pop, v, s=sz, marker=mk, color=col, alpha=al, lw=0, zorder=z,
                   label=f'{lab}: P(LoE of AR ≤ 1) = {pct} ({k:,} of {n:,})')
     assert abs(pin['TL'][0] - j['p_within_AR']) < 1e-12, (pin['TL'][0], j['p_within_AR'])
     b.axhline(1.0, gid='boundary', zorder=4, **{k: v for k, v in S.BOUNDARY['AR'].items() if k != 'label'})
     b.set_yscale('log')
-    vmax = max(float(d[f'{r}_LoE_AR'].max()) for r in ('REF', 'pathway_ambitious', 'TL'))
-    vmin = min(float(d[f'{r}_LoE_AR'].min()) for r in ('REF', 'pathway_ambitious', 'TL'))
+    vmax = max(float(d[f'{r}_LoE_AR'].max()) for r in pin)
+    vmin = min(float(d[f'{r}_LoE_AR'].min()) for r in pin)
     b.set_ylim(vmin * 0.9, vmax * 2.6)                                # headroom above the data for the legend
     P.log_ticks(b.yaxis, [t for t in (0.5, 0.6, 0.8, 1, 1.5, 2, 3, 4, 6, 8, 10, 15) if vmin * 0.9 <= t <= vmax * 2.6])
     b.set_xlabel('New Zealand population 2050 (million)')
@@ -922,7 +944,7 @@ def fig7():
     for h in lg.legend_handles:
         if hasattr(h, 'set_alpha'):
             h.set_alpha(0.9)
-    P.panel(b, 'b', f"Reference, Ambitious Pathway and {N.TL['TL']} vs the 2050 population")
+    P.panel(b, 'b', f"Reference, the Pathways and the {N.TL['TL']} vs the 2050 population")
     for t in fig.findobj(matplotlib.text.Text):                     # MODEL v4.2.2: slightly larger fonts
         if t.get_text():
             t.set_fontsize(t.get_fontsize() * 1.1)

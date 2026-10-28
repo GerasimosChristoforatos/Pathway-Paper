@@ -1,12 +1,13 @@
-# Figure palette (MODEL v4.3.1). Edit any hex value and run `python redraw.py` to preview every figure.
+# Figure palette (MODEL v4.3.2). Edit any hex value and run `python redraw.py` to preview every figure.
 #
 # Read by figures/style.py only. Each key colours exactly one meaning, in every figure and every element that shows
 # it (lines, bars, stacked areas, negative-part outlines, Monte Carlo bands at their fixed transparency, markers,
 # coloured labels and legend swatches). Changing one key changes nothing else.
-# Colours that are not listed here (the lever shades L1-L9, building typologies, tornado low / high, Sobol bars,
-# replacement and roll-out variants, the planetary boundaries and their zones, census markers, detailed sub-bands
-# and neutral greys) are fixed in figures/style.py.
-# Format: "#RRGGBB". The defaults are the colours of the v4.3.0 figures.
+# Colours that are not listed here (building typologies, Sobol bars, replacement and roll-out variants, census
+# markers, detailed sub-bands and neutral greys) are fixed in figures/style.py. MODEL v4.3.2: the planetary
+# boundaries, their zones, the Fig3b cumulative column and the one-at-a-time colours moved into this file; the lever
+# shades L1-L9 are retired (a lever is drawn in its strategy colour).
+# Format: "#RRGGBB". The defaults are the colours of the v4.3.0 / v4.3.1 figures.
 
 [demand_bands]                      # Fig1, Fig2a and Fig2d (by demand); ED2a; SF2; SF3; SF4
 population_growth     = "#586E71"   # Population growth (untargeted)
@@ -44,3 +45,23 @@ theoretical_limit     = "#13412B"   # Theoretical Limit
 avoid                 = "#DFA538"   # Avoid Strategies (L1-L5)
 switch                = "#8D6545"   # Switch Strategies (L6-L8)
 improve               = "#4A6192"   # Improve Strategy (L9)
+
+[boundaries]                        # every planetary-boundary figure (lines; AR solid, AtP dotted: styles fixed)
+acquired_rights       = "#D7191C"   # Acquired rights (AR)
+ability_to_pay        = "#67000D"   # Ability to pay (AtP)
+
+[boundary_zones]                    # the three zones behind every boundary figure (fills, legend swatches)
+# The opacity of each zone is fixed in figures/style.py (ZONE_ALPHA): within_both 0.30, within_ar_only 0.30,
+# exceeded 0.07. redraw.py warns if, composited on white at these opacities, the zones lose the lightness order
+# within_both < within_ar_only < exceeded (CAM02-UCS J') in normal vision or any simulated deficiency.
+within_both           = "#41AB5D"   # Within both budgets (below AtP)
+within_ar_only        = "#A1D99B"   # Within AR only (between AtP and AR)
+exceeded              = "#FB6A4A"   # Boundary exceeded (above AR)
+
+[cumulative]                        # Fig3b
+fig3b_cumulative_carbon = "#4D4D4D" # the 2026-2050 cumulative carbon column and its legend patch
+
+[one_at_a_time]                     # one-at-a-time sensitivity (tornado): Fig7a, ED4, ED5
+low_end               = "#4A6192"   # Input at its low end
+high_end              = "#EB6123"   # Input at its high end
+single_alternative    = "#6E6E6E"   # A row with a single alternative case

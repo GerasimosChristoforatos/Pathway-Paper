@@ -215,9 +215,9 @@ def ed10():
             ends.append((run, float(cum[-1])))
         lo_, hi_ = min(v for r_, v in ends[-3:]), max(v for r_, v in ends[-3:])
         c.text(yrs[m][-1] + 0.4, (lo_ + hi_) / 2, N.PATHWAY_RUNS[f'{N.PATHWAY}-{s}'].replace(' ', '\n'), ha='left',
-               va='center', fontsize=S.FONT_MIN, color=S.PATHWAY_SETTING[s], linespacing=1.0, multialignment='center')
+               va='center', fontsize=S.FONT_MIN, color=S.INK, linespacing=1.0, multialignment='center')
     c.text(yrs[m][-1] + 0.4, cref[-1], N.SCENARIOS['REF'], ha='left', va='center', fontsize=S.FONT_MIN,
-           color=S.REFERENCE)
+           color=S.INK)
     c.set_xlim(yrs[m][0], yrs[m][-1])
     c.set_ylim(0, None)
     c.set_ylabel('Cumulative carbon 2026–2050 (kt CO₂e)')

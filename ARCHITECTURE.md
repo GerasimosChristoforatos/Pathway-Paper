@@ -429,7 +429,10 @@ life at construction an AESA sensitivity row (section 9).
 run without any 2026 data vs observed consents); it also writes the demand bands
 of the history by census interval. `gap_2026.py`: decomposition of the 2026 gap.
 `tools/`: the 2026 overbuild report, with the absorbed total and the absorption
-year (`overbuild_2026.py`), the variant table
+year (`overbuild_2026.py`), the completion-lag comparison of SF7 (`demand_balance.py`: the
+17-month lag against a like-for-like zero-lag run whose forward net replacement is held at the
+17-month calibration, `projection.NET_REPLACEMENT_HELD`, so only the timing of building differs,
+with the recalibrated zero-lag run as context), the variant table
 (`replacement_scenarios.py`: Low replacement, the Reference with half-lives 5, 10
 and 15 years, High replacement, and the three main variants without the census
 under-construction correction), the reconciliation of the accounting
@@ -437,7 +440,8 @@ under-construction correction), the reconciliation of the accounting
 validation figures (`figures_report.py`, compute only), `metrics.json`
 (`metrics.py`), and the documents: `RESULTS.md` (`results.py`), `ASSUMPTIONS.md`
 (`assumptions.py`), `METHODS_DRAFT.md` and `LEVERS_TABLE.md` (`methods.py`, merging
-`baseline_draft.py`, `pb_methods.py` and `pathways_methods.py`; both copied to
+`baseline_draft.py`, `pb_methods.py`, `pathways_methods.py`, `release_methods.py` and
+`uncertainty_methods.py`; both copied to
 `docs/`), all in `outputs/reports/`. `tools/check_outputs.py` checks that terms of
 retired code paths appear in no generated output. Run by hand, not part of the
 pipeline: `tools/palette_check.py` (`docs/PALETTE.md`), `tools/palette_coverage.py`,
@@ -467,7 +471,8 @@ flowchart LR
 ```
 
 1. **History (at 2025 factors).** Sector emissions 1992–2025 = built floor
-   area by typology × the 2025 case-study factors, with soil carbon loss only on
+   area by typology × the case-study factors (2025 technology; roughly contemporaneous
+   with the base window, not back-cast), with soil carbon loss only on
    the non-replacement floor area, as in `engine.forward`: net replacement in
    year y = census-interval rate × last year's stock × (1 − RV share) × dwelling
    size (2024–25: the 2018–23 rate carried). The base follows the projection's
@@ -494,7 +499,8 @@ flowchart LR
    draw's NZ population path, and the AR base Ī_sec,base from the draw's
    case-study carbon factors (2025 technology) on the observed history, so
    factor uncertainty enters base and projection alike.
-6. **Sensitivities** of cumulative LoE (Reference): source pair, GDP measure,
+6. **Sensitivities** of cumulative LoE (Reference): source pair, the global impact
+   (I_glob from the EF 3.1 normalisation factor, acquired rights only), GDP measure,
    AR base window (5 years, 20 years, the full consistent history from 1992),
    NZ population source, s_sec definition, the decarbonisation and accounting
    rows (including whole life at construction), the wider maintenance scope
@@ -503,6 +509,16 @@ flowchart LR
    together, are evaluated with the same boundary functions
    (`results.json` "population_paths"; used by `tools/sensitivity_tables.py`
    for the population rows and the tornado Fig7).
+   **Shared-parameter rule** (`boundaries.AR_BASE_RULE`, one place for the computation
+   and the methods text): every one-at-a-time row that reports a LoE is classified
+   `recompute` (it changes the level of the present-day carbon factors, or an
+   accounting convention that applies to past and future alike: single case study,
+   jackknife, soil carbon loss on all floor area, event timing L / n, and the
+   base-window, whole-life and wider-scope rows) or `reference_base` (it changes only
+   future technology, siting or demand; the population rows move both budgets with
+   their path). A `recompute` row's Ī_sec,base comes from the Monte Carlo base
+   function `base_with_factors` at the row's factors (`one_at_a_time_bases`, recorded
+   in `results.json` "one_at_a_time_ar_base"); an unclassified row stops the run.
 7. **Committed after 2050** per variant, in years of the 2050 AR boundary
    (`outputs/data/aesa/results.json` "committed"; Fig3 b draws the committed
    range itself from `baseline/projection.json`). For the pathway Monte Carlo the
@@ -794,8 +810,7 @@ figures` draws every figure, `python -m figures <file id> …` the ones named).
   `FULL_ONLY` (figures drawn only in the full profile: ED7, the Sobol indices);
   `PB_FIGURES` (figures with a planetary boundary, which must show the zones);
   `MAINTENANCE_ALLOWED` (the figures allowed to draw maintenance as its own layer);
-  `RETIRED` (figure ids not carried forward, listed in `FIGURES.md`); and the
-  Extended Data and Supplementary number maps.
+  and the Extended Data and Supplementary number maps (old -> current numbering).
 * **`figsource.py`** writes and reads the figure source data
   (`outputs/data/figure_source/<figure id>.json`, lossless for float64): the
   exact arrays a figure draws when they are not in a published data table.
@@ -830,8 +845,8 @@ figures` draws every figure, `python -m figures <file id> …` the ones named).
 * **`naming.py`** supplies every reader-facing label (variants, strategies,
   Pathways, levels, levers `LEVERS`, `STRATEGY_LEVERS`, the sub-rules, TL, adoption
   paths, bands `BANDS` and `NEGATIVE_BANDS`, components, metrics), the vacancy
-  wording (`VACANCY_WORDING`) and the terms that no reader-facing text may use
-  (`OLD_TERMS`).
+  wording (`VACANCY_WORDING`) and the release names of every data column and JSON key
+  (`identifier`, `columns`, `keys`).
 * **`indexes.py`** writes `outputs/INDEX.md`.
 
 ---

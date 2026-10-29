@@ -16,6 +16,7 @@
 "data": {
 "AR_vs_ref_pct": [
 88.64265927977839,
+-6.695408448207896,
 0.0,
 -7.972940242888948,
 19.37793536373946,
@@ -28,13 +29,14 @@
 2.4643521331539464,
 1.946862419659845,
 -1.161854106832927,
--0.7559555005963614,
+-0.6563892699913754,
 1.5489984720428174,
 12.579296512674244,
 0.0
 ],
 "AtP_vs_ref_pct": [
 88.64265927977843,
+0.0,
 207.67229474851035,
 0.0,
 0.0,
@@ -54,6 +56,7 @@
 ],
 "case": [
 "i_source_pair",
+"i_glob_ef31",
 "ii_gdp_measure",
 "iii_base_window",
 "iii_base_window_20",
@@ -73,6 +76,7 @@
 ],
 "cum_LoE_AR": [
 8.421361111217509,
+4.165291465844622,
 4.464187020777564,
 4.108260057280164,
 5.329254296180286,
@@ -85,13 +89,14 @@
 4.574200308852077,
 4.551098600228414,
 4.412319680539957,
-4.430439753437087,
+4.434884576180832,
 4.533337209518542,
 5.025750343001492,
 4.464187020777564
 ],
 "cum_LoE_AtP": [
 33.49469006574721,
+17.75562865452972,
 54.62915012841564,
 17.75562865452972,
 17.75562865452972,
@@ -111,6 +116,7 @@
 ],
 "label": [
 "(i) SOS/I_glob pair C: 1 W/m\u00b2 planetary boundary (Bj\u00f8rn & Hauschild 2015)",
+"(i) Global impact: EF 3.1 normalisation factor (Andreasi Bassi et al. 2023)",
 "(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",
 "(iii) AR base window 2021-2025 (5 yr, as Horup)",
 "(iii) AR base window 2006-2025 (20 yr)",
@@ -123,7 +129,7 @@
 "(viii) NZ-made, electricity-intensive items held at 2025 (A1-A3)",
 "(ix) A4-A5 held at 2025 (no generic 1%/yr)",
 "(x) A4-A5 on each item's own Horup S4 path",
-"(xi) Event timing: interval L / n (instead of L / (n + 1))",
+"(xi) Event timing: interval L / n (instead of L / (n + 1); base on the same rule)",
 "(xii) Accounting: whole life at construction (base on the same rule)",
 "(xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",
 "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables"
@@ -146,7 +152,8 @@
 13,
 14,
 15,
-16
+16,
+17
 ]
 }
 }

@@ -351,6 +351,12 @@ CENSUS_UC_CORRECTION = True    # census years; (2013, 2023) is a sensitivity
 REPLACEMENT_VARIANT = 'REF'
 REPLACEMENT_HALF_LIFE = 10.0
 RECENT_INTERVAL = (2018, 2023)
+# NET_REPLACEMENT_HELD (diagnostic only; None in every reported run): the census-interval net replacement rates
+#   (another run's B['census_rates']) on which the FORWARD net replacement is calibrated (the long-run and recent rates
+#   and the Very High trend); the history keeps the run's own rates. Used by tools/demand_balance.py for the
+#   like-for-like zero-lag run of SF7, whose replacement is held at the adopted 17-month calibration so that the
+#   comparison isolates the timing of building.
+NET_REPLACEMENT_HELD = None
 
 # ---------------------------------------------------------------------------
 # NEAR-TERM MARKET EXCESS
@@ -438,8 +444,9 @@ SOIL_ON_REPLACEMENT = False
 # Rearranged for what must be built:
 #     built = new households + vacancy allowance + vacancy change
 #             + demolitions - unconsented additions
-# COMPLETION_RATE: 0.945, the midpoint of the published completion milestones of Jones,
-#   Greenaway-McGrevy & Crow (2025, Policy Quarterly 21(1), 63-68, footnote 12; Auckland consents): 93% of 2018-2019
+# COMPLETION_RATE: 0.945, the midpoint of the published completion milestones of Greenaway-McGrevy & Jones (2023,
+#   Working Paper 012), quoted by Jones, Greenaway-McGrevy & Crow (2025, Policy Quarterly 21(1), 63-68, p. 68 and
+#   footnote 12; Auckland consents): 93% of 2018-2019
 #   consents had a final inspection by July 2024 (a lower bound: counted late, some completed dwellings are never
 #   inspected within the window) and more than 95% of 2018-2021 consents had a first inspection (construction
 #   started; an upper bound on eventual completion). The article gives the upper milestone only as '>95%', with no
@@ -1346,7 +1353,8 @@ def main():
                                                 uc=census_uc)
 
     # long-run residual beyond the BRANZ demolition rate (census dwelling counts)
-    unconsented_rate = engine.census_window_rate(census_rates, *_nr_window) - demolition_rate
+    _nr_rates = census_rates if NET_REPLACEMENT_HELD is None else NET_REPLACEMENT_HELD
+    unconsented_rate = engine.census_window_rate(_nr_rates, *_nr_window) - demolition_rate
     v_forward = float(stock_cal['knots'][max(stock_cal['knots'])])   # vacancy-rate parameter: its published 2023 census value
     # sensitivity: the long-run mean of the census vacancy on one definition (the pooled 2018/2023 empty
     # share of unoccupied private dwellings applied to every census, 1986-2023)
@@ -1361,8 +1369,8 @@ def main():
     # 2025's departure from the calibrated identity, and its persistence. Carried
     # forward fading at rho, booked to the residual (see engine.forward).
     # net replacement path forward (REPLACEMENT_VARIANT); unconsented_rate stays the long-run value
-    rate_recent = engine.census_window_rate(census_rates, *RECENT_INTERVAL)
-    replacement_trend = engine.replacement_trend(census_rates, *_nr_window)   # Very High replacement (reported)
+    rate_recent = engine.census_window_rate(_nr_rates, *RECENT_INTERVAL)
+    replacement_trend = engine.replacement_trend(_nr_rates, *_nr_window)   # Very High replacement (reported)
     rate_path = engine.replacement_path(_scenario, demolition_rate + unconsented_rate, rate_recent,
                                         np.arange(2025, 2051), REPLACEMENT_HALF_LIFE, trend=replacement_trend)
     unc_path = rate_path - demolition_rate

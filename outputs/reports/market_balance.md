@@ -4,17 +4,17 @@ This is a separate diagnostic. It does not change the detailed demand bands, pat
 
 ## Controlled zero- versus 17-month lag comparison
 
-Controlled comparison: same source files, population path, household-size path, completion rate and remaining defaults; only completion lag differs. Historical completion timing and stock/replacement calibration are recalculated consistently.
+Controlled comparison: same source files, population path, household-size path, completion rate and remaining defaults; only completion lag differs. lag_0 recalculates the historical completion timing and the stock and replacement calibration with zero lag; lag_0_held is the like-for-like run: zero lag with the forward net replacement held at the 17-month calibration (projection.NET_REPLACEMENT_HELD), so only the timing of building differs from lag_17.
 
-| Cumulative floor area, 2026–2050 (Mm2) | Zero lag | 17-month lag |
-|---|---:|---:|
-| Population growth | 40.76 | 40.59 |
-| Household-size change | 1.89 | 1.89 |
-| Net replacement | 14.66 | 8.95 |
-| Other demand / balance | 27.88 | 30.28 |
-| Gross market excess | 3.64 | 4.54 |
-| Overbuild absorbed | -3.66 | -4.71 |
-| **Total built** | **85.17** | **81.53** |
+| Cumulative floor area, 2026–2050 (Mm2) | Zero lag, net replacement held at the 17-month calibration | Zero lag, recalibrated | 17-month lag |
+|---|---:|---:|---:|
+| Population growth | 40.76 | 40.76 | 40.59 |
+| Household-size change | 1.89 | 1.89 | 1.89 |
+| Net replacement | 8.68 | 14.66 | 8.95 |
+| Other demand / balance | 27.88 | 27.88 | 30.28 |
+| Gross market excess | 4.33 | 3.64 | 4.54 |
+| Overbuild absorbed | -4.35 | -3.66 | -4.71 |
+| **Total built** | 79.19 | 85.17 | 81.53 |
 
 ### Observed consent periods
 
@@ -24,7 +24,7 @@ Controlled comparison: same source files, population path, household-size path, 
 
 The lagged run therefore has two complete observed completion cohorts (2026 and 2027). The zero-lag run has one rolling 12-month estimate assigned to 2026. These are not equivalent observations of actual completed dwellings.
 
-The lag also changes the historical timing of building and therefore the calibrated replacement rate, stock residual and near-term excess. Those dependent quantities are recomputed consistently rather than frozen. The comparison isolates the lag setting, not only the timing of the same fixed excess series.
+The lag also changes the historical timing of building and therefore the calibrated replacement rate, stock residual and near-term excess. In the recalibrated zero-lag run those dependent quantities are recomputed consistently; in the like-for-like zero-lag run the forward net replacement is held at the 17-month calibration (the 2018-2023 rate 0.173%/yr instead of the zero-lag 0.301%/yr), so the difference to the 17-month run is the timing of building alone.
 
 ## Separate historical and projected classification
 

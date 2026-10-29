@@ -1,6 +1,7 @@
 case,label,cum_LoE_AR,cum_LoE_AtP,AR_vs_ref_pct,AtP_vs_ref_pct
 reference,"Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",4.464187020777564,17.75562865452972,0.0,0.0
 i_source_pair,(i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015),8.421361111217509,33.49469006574721,88.64265927977839,88.64265927977843
+i_glob_ef31,(i) Global impact: EF 3.1 normalisation factor (Andreasi Bassi et al. 2023),4.165291465844622,17.75562865452972,-6.695408448207896,0.0
 ii_gdp_measure,"(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",4.464187020777564,54.62915012841564,0.0,207.67229474851035
 iii_base_window,"(iii) AR base window 2021-2025 (5 yr, as Horup)",4.108260057280164,17.75562865452972,-7.972940242888948,0.0
 iii_base_window_20,(iii) AR base window 2006-2025 (20 yr),5.329254296180286,17.75562865452972,19.37793536373946,0.0
@@ -13,7 +14,7 @@ vii_proxies_held,(vii) Proxy-mapped items held at 2025 (A1-A3),4.483117506868839
 viii_nz_elec_held,"(viii) NZ-made, electricity-intensive items held at 2025 (A1-A3)",4.574200308852077,18.193189868032515,2.4643521331539464,2.4643521331539464
 ix_a45_held,(ix) A4-A5 held at 2025 (no generic 1%/yr),4.551098600228414,18.101306316179112,1.946862419659845,1.946862419659845
 x_a45_item,(x) A4-A5 on each item's own Horup S4 path,4.412319680539957,17.549334153813064,-1.161854106832927,-1.1618541068329158
-xi_event_timing,(xi) Event timing: interval L / n (instead of L / (n + 1)),4.430439753437087,17.621404003050337,-0.7559555005963614,-0.7559555005963725
+xi_event_timing,(xi) Event timing: interval L / n (instead of L / (n + 1); base on the same rule),4.434884576180832,17.621404003050337,-0.6563892699913754,-0.7559555005963725
 xii_whole_life,(xii) Accounting: whole life at construction (base on the same rule),4.533337209518542,25.180433180709286,1.5489984720428174,41.816624297813256
 xiii_wider_scope,"(xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",5.025750343001492,22.026709071243047,12.579296512674244,24.054796931246436
 xiv_alpha_1,"(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",4.464187020777564,7.492149215177711,0.0,-57.80408927809856

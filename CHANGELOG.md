@@ -2,6 +2,70 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.3.5: methods sharpening before the Stats NZ 2023-base data
+
+Deterministic runs only (projection, boundaries, the sensitivity tables, the SF7 diagnostic, the reports, the figures).
+The numbers below were printed from the outputs, not typed; old values are from model-v4.3.4.
+
+* **Shared-parameter rule for the one-at-a-time AR base.**
+  * Every one-at-a-time row that reports a LoE is classified in `boundaries.AR_BASE_RULE`. A row that changes the
+    level of the present-day carbon factors or an accounting convention recomputes I_sec,base with the Monte Carlo's
+    base function. Those rows are the single case study, the jackknife, soil carbon loss on all floor area and event
+    timing L / n. A row that changes only future technology, siting or demand keeps the Reference base.
+  * An unclassified row stops the run. The completion-rate and completion-lag rows keep the Reference base, as in the
+    Monte Carlo.
+  * Changed numbers:
+    * Jackknife cumulative LoE of AR: 4.310 / 4.608 -> 4.442 / 4.472 (central 4.464). The row now falls below Fig7a's
+      filter ("completion rate and above") and is no longer drawn there.
+    * Event timing L / n: 4.4304 -> 4.4349.
+  * Recomputed bases, against the Reference 1415.2 kt/yr:
+    * jackknife −2.98% / +3.04%;
+    * single case study −22.77% / +19.91%;
+    * soil on all floor area +1.28%;
+    * event timing −0.10%.
+* **ED5: global impact, EF 3.1.** I_glob = 7.55E+03 kg CO2e per person x 6,895,889,018 = 5.206E+13 instead of 5.58E+13
+  (Andreasi Bassi et al. 2023, Table 10). Cumulative LoE of AR 4.165 (−6.70%); AtP unchanged. The "LULUC not verified"
+  limitation is replaced: 5.58E+13 equals the EF 3.0 factor, whose total includes land-use change.
+* **SF7: like-for-like zero lag.**
+  * A zero-lag run with the forward net replacement held at the 17-month calibration
+    (`projection.NET_REPLACEMENT_HELD`, diagnostic only; `None` in every reported run). The recalibrated zero-lag run
+    stays as a grey context line.
+  * Cumulative net replacement 2026–2050: 8.68 Mm² (zero lag, held), 8.95 Mm² (17 months), 14.66 Mm² (zero lag,
+    recalibrated).
+* **Assumptions and methods text.**
+  * Carbon factors and the AR base (no back-casting), the ability-to-pay sector share (Södersten, Wood & Hertwich
+    2018), timber end of life (31% of C1–C4; no timber maintenance events), the GWP basis and households 2019–2023.
+    Every number in these texts is computed from the data.
+  * The completion-lag line of the methods draft now states the 17-month lag and 0.945.
+  * A new part 5, Uncertainty analysis (`tools/uncertainty_methods.py`).
+  * Version narration removed from the generated documents (METHODS_DRAFT, FIGURES.md, INDEX.md, PALETTE.md).
+  * The completion rate and lag cite Greenaway-McGrevy & Jones (2023) with Jones, Greenaway-McGrevy & Crow (2025).
+* **References.** `docs/REFERENCES.md` is one alphabetical list of every cited source, with the lever numbers of
+  Table 1. Wallis 2014, Peduzzi 1996, Napiontek 2025, Efron & Tibshirani 1993 and Gabriel & Nothaft 1988 are
+  dropped (no longer cited).
+* **Leftovers.**
+  * The ED4 / ED5 row notes have one source (FIGURES.md takes them from the figure code), and the numbers sit on the
+    first line of each note.
+  * Removed as unused:
+    * the naming.py identifier maps of earlier versions (LEGACY, OLD_TERMS, *_V2_*, *_V3_2);
+    * `LOCK_V3_3` / `LOCK_V3_3_1`;
+    * `collect_ignore_glob`;
+    * `tests/capture_v3_2_totals.py` and its two fixtures;
+    * the test of the removed lever map.
+  * The methods-part `main()` entry points call `tools/methods.py`.
+  * `docs/LEVERS_TABLE.md` was a stale copy of `outputs/reports/LEVERS_TABLE.md` (the L5 bootstrap interval of a
+    light run); it is refreshed from the outputs.
+* **Data files changed:**
+  * aesa/results.json, aesa/sensitivity.csv, figure_source/D18 (the AR-base rule and the EF 3.1 row);
+  * sensitivity/tornado.csv, sensitivity/planetary_boundary.csv;
+  * sensitivity/reference_carbon.csv (citation of the completion rate only);
+  * diagnostics/lag_comparison_annual.csv and _summary.json (SF7);
+  * metrics.json (the High / Very High hindcast keys of validation.json, missing from the committed copy).
+* **Unchanged:** every other data file is byte-identical, including every Monte Carlo and Sobol file. The v4 lock is
+  re-captured for tornado.csv and reference_carbon.csv only.
+* **Figures:** Fig7, ED5 and SF7 change, and ED4 changes in its note layout only. Every other figure is
+  pixel-identical.
+
 ## model-v4.3.4: cleanup towards publication; ED4/ED5 row numbers at 5 pt
 
 * **Figures.** In ED4 and ED5 the row numbers are drawn at 5 pt (`style.FONT_MIN`), in the row labels and in the notes.

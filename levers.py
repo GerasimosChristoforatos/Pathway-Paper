@@ -28,7 +28,7 @@ Sensitivities: by 2030, by 2045 (the Pathways) and the instant TL (full strength
 1 = 2026 (observed; no lever touches it).
 
 LEVERS (grouped by the PAS 2080:2023 hierarchy, naming.STRATEGY_LEVERS; sub-rule naming.LEVER_SUBRULE;
-naming.LEVER_V3_2 maps the earlier lever numbers)
+the earlier lever numbers are in the git history, tag model-v4.3.3)
   S1 Avoid    L1 Household size [C]    S = S_ref + gap, gap = Stats NZ High - Medium household size (held at its 2043
                                        value after 2043)
               L2 Vacancy rate [B]      vacancy parameter -> the 1996 census minimum (one definition)

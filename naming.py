@@ -1,14 +1,11 @@
-"""One vocabulary for the model: every name a reader sees, and the map from
-the identifiers of earlier model versions (commit ee37ef1 and the MODEL v1-v3.2 numbering) to the release names.
+"""One vocabulary for the model: every name a reader sees, and the release identifiers of the data files.
 
-* The vocabulary (SCENARIOS, PATHWAYS, SETTINGS, LEVERS, TL, ADOPTION, BANDS,
+* The vocabulary (SCENARIOS, STRATEGIES, SETTINGS, LEVERS, TL, ADOPTION, BANDS,
   COMPONENTS, METRICS) is the only source of reader-facing labels: figures, tables, data
   files and generated documents take their labels from here. Internal code uses the short
   IDs (REF, LOW, HIGH, VHIGH; S1-S3; pathway-moderate / pathway-ambitious; L1-L9; TL, TL1-TL9; band and
   component ids).
-* LEGACY maps every identifier of the outputs of commit ee37ef1 to its release location:
-  file, CSV column, identifying cell, JSON path. The regression test and the old -> new table
-  that read it are in the git history (tag model-v4.3.3); no kept code reads it.
+* identifier() gives every CSV column and JSON key its release name (columns(), keys()).
 """
 import re
 
@@ -56,37 +53,13 @@ PATHWAY = 'pathway'                                   # run id prefix of the Mod
 PATHWAY_RUNS = {'pathway-moderate': 'Moderate Pathway', 'pathway-ambitious': 'Ambitious Pathway'}
 PAS2080 = ('BSI (2023) PAS 2080:2023 Carbon management in buildings and infrastructure. British Standards '
            'Institution, London; Clause 4.3 and Figure 5 (carbon reduction hierarchy: Avoid - Switch - Improve)')
-# the pathway families of MODEL v3.0-v3.2 (the strategies S1-S3 replace them; identifier maps only)
-PATHWAYS = {'P1': 'Space per person', 'P2': 'Existing stock', 'P3': 'Construction', 'P4': 'Land',
-            'P5': 'Combined'}
 SETTINGS = {'moderate': 'Moderate', 'ambitious': 'Ambitious'}
 LEVELS = {'reference': 'Reference (Level 1)', 'moderate': 'Moderate (Level 2)', 'ambitious': 'Ambitious (Level 3)',
           'tl': 'Theoretical limit (Level 4)'}
-SETTING_LEGACY = {'central': 'moderate', 'stretch': 'ambitious'}
 
-# Levers: id -> label. Identifier maps of earlier versions: LEVER_LEGACY: v3.1 id -> model-v1/v2.0 id;
-# LEVER_V2_0: model-v2.0.0 id -> MODEL v2.1.0 id; LEVER_V2_1: MODEL v2.1 id -> MODEL v3.0.0 id
 LEVERS = {'L1': 'Household size', 'L2': 'Vacancy rate', 'L3': 'Building lifetime', 'L4': 'Extra space',
           'L5': 'Occupancy density', 'L6': 'Brownfield-first development', 'L7': 'Soil-aware planning',
           'L8': 'Material carbon efficiency', 'L9': 'Construction-stage carbon'}
-# MODEL v3.0-v3.2 lever id -> MODEL v3.3.0 lever id (and TLn alike)
-LEVER_V3_2 = {'L3': 'L1', 'L4': 'L2', 'L5': 'L3', 'L1': 'L4', 'L2': 'L5', 'L9': 'L6', 'L8': 'L7', 'L6': 'L8', 'L7': 'L9'}
-LEVER_NAMES_V3_2 = {'L1': 'Dwelling size', 'L2': 'Design density', 'L3': 'Household size', 'L4': 'Vacancy',
-                    'L5': 'Building lifetime', 'L6': 'Material carbon', 'L7': 'Construction-stage carbon',
-                    'L8': 'Soil-aware planning', 'L9': 'Brownfield development'}
-PATHWAY_LEVERS_V3_2 = {'P1': ('L1', 'L2', 'L3'), 'P2': ('L4', 'L5'), 'P3': ('L6', 'L7'), 'P4': ('L8', 'L9')}
-LEVER_LEGACY = {'L1': 'L1', 'L2a': 'L2', 'L2b': 'L3', 'L3': 'L4', 'L5': 'L5'}
-LEVER_V2_0 = {'L1': 'L1', 'L2': 'L3', 'L3': 'L4', 'L4': 'L5', 'L5': 'L6'}
-LEVER_NAMES_V2_0 = {'L1': 'Dwelling size', 'L2': 'Vacancy rate', 'L3': 'Overbuild absorption',
-                    'L4': 'Building retention', 'L5': 'Material carbon'}
-LEVER_V2_1 = {'L1 Dwelling size': 'L1 Dwelling size (new rule)', 'L2 Household occupancy': 'L3 Household size',
-              'L3 Vacancy': 'L4 Vacancy', 'L4 Overbuild absorption': 'removed: Reference behaviour (absorbed by 2035)',
-              'L5 Building lifetime extension': 'L5 Building lifetime', 'L6 Material carbon': 'L6 Material carbon',
-              'L7 Construction-stage carbon': 'L7 Construction-stage carbon', 'L8 Soil-aware planning':
-              'L8 Soil-aware planning', 'L9 Brownfield development': 'L9 Brownfield development',
-              '(new)': 'L2 Design density'}
-PATHWAYS_V2_0 = {'P1': 'Right-sized dwellings', 'P2': 'Occupied stock', 'P3': 'Retained stock',
-                 'P4': 'Low-carbon materials', 'P5': 'Combined'}
 # The rule sub-rule each lever's Ambitious level follows (METHODS_DRAFT.md): A case-study distribution (Harrell-Davis
 # q0.15), B best value ever observed in NZ, C published reference value
 LEVER_SUBRULE = {'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C', 'L7': 'C', 'L8': 'A', 'L9': 'C'}
@@ -99,23 +72,11 @@ TL = {'TL': 'Theoretical Limit', 'TL1': 'Historical maximum household size', 'TL
       'TL3': 'No demolition', 'TL4': 'No extra space', 'TL5': 'Densest design', 'TL6': 'All brownfield',
       'TL7': 'Lowest-carbon soils', 'TL8': 'Best-practice materials', 'TL9': 'Zero-emission construction'}
 TL_LIMIT_OF = {f'TL{k}': f'L{k}' for k in range(1, 10)}
-TL_LEGACY = {'T': 'TL', 'T1': 'TL1', 'T2': 'TL2', 'T3': 'TL3', 'T4': 'TL4', 'T5': 'TL5', 'T6': 'TL6'}
-# model-v2.0.0 TL ids -> MODEL v2.1.0
-TL_V2_0 = {'TL1 No vacancy': 'TL3 (+ TL4)', 'TL2 No extra space': 'TL1', 'TL3 Minimum space per person': 'TL10',
-           'TL4 Best-practice materials': 'TL6', 'TL5 Lowest-carbon soils': 'TL8', 'TL6 Urban infill': 'TL9',
-           'TL7 Building retention at -40% (ambitious level)': 'TL5'}
-# MODEL v2.1 TL ids -> MODEL v3.0.0
-TL_V2_1 = {'TL1 No extra space': 'TL1', 'TL2 Historical maximum household size': 'TL3', 'TL3 No vacancy': 'TL4',
-           'TL4 Overbuild fully absorbed': 'removed (Reference)', 'TL5 Building lifetime extension at the limit':
-           'TL5 No demolition', 'TL6 Best-practice materials': 'TL6', 'TL7 Zero-emission construction': 'TL7',
-           'TL8 Lowest-carbon soils': 'TL8', 'TL9 Brownfield maximum': 'TL9 All brownfield',
-           'TL10 Minimum space per person': 'TL2 Densest design'}
 TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pathway'
 
 # adoption paths of the levers (ADOPTION_LEGACY: the earlier 'ramp' names)
 ADOPTION = {'by2035': 'full roll-out by 2035 (adopted)', 'by2030': 'full roll-out by 2030 (sensitivity)',
             'by2045': 'full roll-out by 2045 (sensitivity)', 'from2027': 'full strength from 2027'}
-ADOPTION_LEGACY = {'ramp2035': 'by2035', 'ramp2030': 'by2030', 'ramp2045': 'by2045', 'instant': 'from2027'}
 # TL is adopted on the same 2026 -> 2035 logistic as every level; its instant variant (every limit
 # from 1 January 2027) is one sensitivity row
 TL_INSTANT = 'TL, all limits from 1 January 2027 (instant)'
@@ -220,14 +181,6 @@ def vacancy_wording(v0, vmax, vmin, ymin, v2050):
     return VACANCY_WORDING.format(v0=100 * v0, vmax=100 * vmax, vmin=100 * vmin, ymin=ymin, v2050=100 * v2050)
 
 
-# Terms of the earlier versions that no reader-facing text of the release may use: (pattern, release term). The
-# test that grepped the generated reports and figure texts for them is in the git history (tag model-v4.3.3); no
-# kept code reads this list. The patterns
-# are narrowed where a release text legitimately uses the same letters: Hjalsted et al.'s
-# Supplementary Information numbering ("SI Eq. S1", "Table S1"), "central" as an ordinary word
-# (only the setting names "-central" / "central/stretch" are matched), "the recent redevelopment
-# wave" and "vacancy allowance" of the release band definitions, and the typology words, which stay
-# in the descriptions of model inputs (case studies, consents; by-typology results are removed).
 # display names of the sensitivity inputs, one source for the Fig7a tornado, ED4 (one at a time, carbon),
 # ED5 (boundary definitions, LoE), ED6 (Monte Carlo inputs) and ED7 (Sobol). Two lines where long (centred on one
 # axis by figures.draw.centre_ticklabels). The same input carries the same label everywhere.
@@ -259,6 +212,7 @@ INPUT_LABEL = {
     'soil_all': 'Soil carbon loss on all\nfloor area, incl. replacement',
     'event_timing': 'B2/B4 event spacing\n(L/n, not L/(n+1))',
     'carrying_capacity': 'Carrying capacity:\n1 W/m² boundary (not 2 °C)',
+    'global_impact_ef31': 'Global impact:\nEF 3.1',
     'gdp_current': 'Economic allocation measure:\nGDP per capita, current US$',
     'alpha_1': 'Allocation exponent\nα = 1',
     'sector_share': 'Sector share: ratio of sums\n(not mean of ratios)',
@@ -272,60 +226,13 @@ AR_WINDOW_LABEL = 'AR base window\n({short}–{long} yr)'
 # ED4 / ED5 group headers (in this order)
 SENSITIVITY_GROUPS = ('Demographics', 'Housing stock & calibration', 'Completion lag', 'Replacement',
                       'Carbon factors & technology', 'Accounting')
-BOUNDARY_SENSITIVITY_GROUPS = ('Carrying capacity', 'AR base window', 'Economic allocation', 'Population', 'Replacement')
+BOUNDARY_SENSITIVITY_GROUPS = ('Carrying capacity', 'Global impact', 'AR base window', 'Economic allocation', 'Population', 'Replacement')
 # Monte Carlo inputs (ED6 panel titles, ED7 rows): the same input names as the tornado rows, without their ranges
 MC_INPUT = {'z_pop': 'Population and household size',     # MODEL v4.3.1 (B4): one z draws both (Stats NZ variants)
             'size': 'Dwelling size', 'complete': 'Completion rate', 'carbon': 'Carbon factors',
             'half_life': 'Replacement half-life'}
 LOE_AR = 'Cumulative LoE of AR'
 LOE_ATP = 'Cumulative LoE of AtP'
-
-OLD_TERMS = [
-    (r'\bS3(?:-(?:10|5|15))?(?:-noUC)?\b', 'Reference (REF, REF_HL5, REF_HL15)'),
-    (r'(?<!Eq\. )(?<!Table )(?<!SI )(?<!Fig\. )\bS[12](?:-noUC)?\b', 'Low / High replacement (LOW, HIGH)'),
-    (r'noUC', ', no census under-construction correction'),
-    (r'\bcentral run\b|\bP0\b', 'Reference'),
-    (r'\bstretch\b|[-_]central\b|central/stretch', 'Moderate / Ambitious'),
-    (r'ramp20\d\d|logistic ramp|instant start|T-ramp', 'adoption path; full roll-out by ...; full strength from 2027'),
-    (r'(?i)near[- _]term', '2026 overbuild'),
-    (r'(?i)market excess', '2026 overbuild'),
-    (r'(?i)house-splitting', 'smaller households'),
-    (r'(?i)growth \(net of consolidation\)|growth demand', 'population growth'),
-    (r'(?i)extra space per dwelling|consumption: (?:extra space|vacancy)', 'extra space; vacancy'),
-    (r'(?i)replacements? (?:&|and) repaints', 'maintenance (B2, B4)'),
-    (r'(?i)within-window|within the window|in-window', '2026–2050'),
-    (r'(?i)committed post-2050', 'committed after 2050'),
-    (r'\bPB\b|\bBoss\b|boss_results', 'planetary-boundary layer (AESA); projection.py; boundaries.py'),
-    (r'theoretical limit T\b|(?<![-_.])\bT[1-6]?\b(?![-_.])', 'TL, TL1-TL6'),
-    (r'\bL2[ab]\b', 'L2, L3'),
-    (r'\bGFA\b', 'floor area'),
-    (r'\bv\d+(?:\.\d+)+\b|baseline-pb-v\d|PATHWAYS v\d', 'no version tags (CHANGELOG, git tags)'),
-    (r'(?i)total built', 'removed: the demand bands sum to the total'),
-    (r'(?i)soil \(land-use change\)', 'soil carbon loss'),
-    (r'Keep and reuse|Build better|Right-size space|Occupy the existing stock', 'pathway labels (PATHWAYS)'),
-    (r'No idle stock|Best soil\b|Urban densification|Best materials\b', 'theoretical-limit labels (TL)'),
-    (r'Lower vacancy|surplus absorbed|Fewer removals|Right-sized new dwellings', 'lever labels (LEVERS)'),
-    (r'Projected Median|Projected Total|Uncertainty \(5th', 'legend entries of docs/RENAMING.md §7'),
-    (r'(?i)held at the 2023 census|vacancy (?:rate )?(?:is |stays |remains )?(?:held|constant|fixed) at',
-     'the vacancy wording (VACANCY_WORDING)'),
-    # the demand bands "Replacement" and "Redevelopment" (lower-case "redevelopment" stays
-    # where it names the 2026-overbuild booking setting or the knock-down-and-rebuild process in prose)
-    # the final lever set (old pathway, lever and TL labels and numbers)
-    (r'Right-sized dwellings|Occupied stock|Retained stock|Low-carbon materials',
-     'pathway labels of MODEL v2.1.0 (P1 Space per person, P2 Existing stock, P3 Construction, P4 Land)'),
-    (r'Building retention|Urban infill|\bL2 Vacancy|\bL3 Overbuild|\bL4 Building|\bL5 Material',
-     'lever and TL labels of MODEL v2.1.0 (L3 Vacancy, L4 Overbuild absorption, L5 Building lifetime extension, '
-     'L6 Material carbon)'),
-    (r'(?i)smaller households(?:\)|,)? (?:are |is )?untargeted|growth and smaller households|smaller households \(untargeted',
-     'only population growth is untargeted (MODEL v2.1.0)'),
-    (r'(?i)gradual adoption', 'TL adopted by 2030 (MODEL v2.1.1; the v2.0 term is not used)'),
-    (r'(?i)banking rule|banked|zero-building years? \(released', 'constant-share re-occupation (MODEL v2.1.1)'),
-    (r'\bRedevelopment\b|(?i:redevelopment (?:wave|band|component|channel)|replacement and redevelopment)',
-     'Recent replacement surge (MODEL v1.1.0)'),
-    (r'(?<!Historical )(?<!historical )\bReplacement(?= bands?\b|\s*\(net of unconsented|\s*\||\s*:\s*(?:demolition|net '
-     r'unconsented|long-run))', 'Historical replacement (MODEL v1.1.0)'),
-]
-
 
 def run_label(run, scenario='REF'):
     """Reader-facing label of a pathway-layer run id (release ids: REF/LOW/HIGH/VHIGH, S1-moderate,
@@ -414,46 +321,8 @@ def keys(obj):
 
 
 # ============================================================
-# LEGACY MAP (ee37ef1 -> release; read by no kept code, see the module docstring)
+# RELEASE IDENTIFIERS
 # ============================================================
-_SCEN_FILE = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH'}
-
-
-def _file(old):
-    """outputs/<old> -> outputs/<new> (paths relative to outputs/)."""
-    frozen = old.startswith('frozen/')
-    o = old[len('frozen/'):] if frozen else old
-    base = 'data/frozen_technology/' if frozen else 'data/'
-    m = re.fullmatch(r'montecarlo_(summary|draws|annual|sobol)(?:_(S3-10|S1|S2))?\.csv', o)
-    if m:
-        return f"{base}montecarlo/{m.group(1)}_{_SCEN_FILE.get(m.group(2), 'REF')}.csv"
-    simple = {'boss_results.json': 'baseline/projection.json', 'metrics.json': 'metrics.json',
-              'replacement_scenarios.json': 'baseline/scenarios.json', 'validation.json': 'baseline/validation.json',
-              'gap_2026.json': 'baseline/gap_2026.json', 'near_term_join.json': 'baseline/overbuild_2026.json',
-              'reality_checks.json': 'baseline/reality_checks.json',
-              'reconciliation.json': 'baseline/reconciliation.json',
-              'sensitivity_oat.csv': 'baseline/sensitivity_one_at_a_time.csv',
-              'pb_annual.csv': 'aesa/annual.csv', 'pb_mc_annual.csv': 'aesa/montecarlo_annual.csv',
-              'pb_sensitivity.csv': 'aesa/sensitivity.csv', 'pb_results.json': 'aesa/results.json',
-              'pathways/pathways_runs.csv': 'pathways/runs.csv',
-              'pathways/pathways_annual.csv': 'pathways/annual.csv',
-              'pathways/pathways_bands.csv': 'pathways/bands.csv',
-              'pathways/shapley_pathways.csv': 'pathways/shapley_pathways.csv',
-              'pathways/shapley_levers.csv': 'pathways/shapley_levers.csv',
-              'pathways/shapley_subsets.csv': 'pathways/shapley_subsets.csv',
-              'pathways/shapley_T.csv': 'pathways/shapley_theoretical_limit.csv',
-              'pathways/shapley_T_subsets.csv': 'pathways/shapley_theoretical_limit_subsets.csv',
-              'pathways/backcast.json': 'pathways/backcast.json',
-              'pathways/solution_space.csv': 'pathways/solution_space.csv',
-              'pathways/levers.json': 'pathways/levers.json',
-              'pathways/t_limit.json': 'pathways/theoretical_limit.json'}
-    if o in simple:
-        return base + simple[o]
-    if o.startswith('factors/'):
-        return base + o
-    raise KeyError(f'No release location for outputs/{old}')
-
-
 # --- identifiers inside files -------------------------------------------------
 # Whole-identifier substitutions for column names and JSON keys (applied in order; each a
 # regular expression on '_'-separated tokens). Equation symbols of the AESA (I_sec, B_AR,
@@ -499,326 +368,6 @@ def identifier(name):
     for pat, rep in _ID_RULES:
         out = re.sub(pat, rep, out)
     return out
-
-
-def _lever_token(t):
-    m = re.fullmatch(r'(L1|L2a|L2b|L3|L5)', t)
-    return LEVER_LEGACY[t] if m else t
-
-
-def run_id(old, scenario=None):
-    """v3.1 pathway-layer run id -> release run id. P0 is the projection without
-    interventions of its scenario (REF / LOW / HIGH)."""
-    if old == 'P0':
-        return _SCEN_FILE.get(scenario, 'REF') if scenario else 'REF'
-    if old == 'T':
-        return 'TL'
-    if old == 'T-ramp':
-        return 'TL-gradual'
-    if old == 'none':
-        return 'none'
-    m = re.fullmatch(r'(P[1-5]|L1|L2a|L2b|L3|L5)-(central|stretch)(?:-(ramp2030|ramp2045|aptheld|instant))?', old)
-    if not m:
-        raise KeyError(f'Unknown run id {old!r}')
-    head = _lever_token(m.group(1))
-    out = f'{head}-{SETTING_LEGACY[m.group(2)]}'
-    tail = m.group(3)
-    if tail in ('ramp2030', 'ramp2045'):
-        out += '-' + ADOPTION_LEGACY[tail]
-    elif tail == 'aptheld':
-        out += '-apartments-held'
-    elif tail == 'instant':
-        out += '-from2027'
-    return out
-
-
-def lever_set(old):
-    """v3.1 'levers' cell (e.g. 'L2a:central+L2b:central', 'P5-stretch+T1+...+T6', 'P0')."""
-    if old == 'P0':
-        return 'none'
-    out = []
-    for part in old.split('+'):
-        if ':' in part:
-            lev, s = part.split(':')
-            out.append(f'{LEVER_LEGACY[lev]}:{SETTING_LEGACY[s]}')
-        elif part in TL_LEGACY:
-            out.append(TL_LEGACY[part])
-        else:
-            out.append(run_id(part))
-    return '+'.join(out)
-
-
-def subset_label(old):
-    """Shapley subset labels: 'P1+P3', 'L2a', 'T[T1+T3]', 'P5-stretch-instant', 'none'."""
-    if old == 'none':
-        return 'none'
-    if old == 'P5-stretch-instant':
-        return 'P5-ambitious-from2027'
-    if old == 'T':
-        return 'TL'
-    m = re.fullmatch(r'T\[(.*)\]', old)
-    if m:
-        return 'TL[' + '+'.join(TL_LEGACY[t] for t in m.group(1).split('+')) + ']'
-    return '+'.join(_lever_token(t) for t in old.split('+'))
-
-
-_BAND_LEGACY = {
-    # boss_results definition (with the retirement-village row) and Boss reporting labels
-    'Growth (net of consolidation)': BANDS['growth'],
-    'House-splitting': BANDS['smaller_households'],
-    'Extra space per dwelling': BANDS['extra_space'],
-    'Vacancy allowance': BANDS['vacancy'],
-    'Demolition replacement': BAND_DETAIL['replacement_demolition'],
-    'Calibrated stock residual (long run)': BAND_DETAIL['replacement_residual'],
-    'Redevelopment wave (scenario - long run)': BANDS['redevelopment'],
-    'Near-term market excess': BANDS['overbuild_2026'],
-    'Housed in RV units (out of scope)': BAND_DETAIL['retirement_villages'],
-    # in-scope figure definition
-    'Growth demand (net of consolidation)': BANDS['growth'],
-    'House-splitting demand': BANDS['smaller_households'],
-    'Consumption: extra space per dwelling': BANDS['extra_space'],
-    'Consumption: vacancy allowance': BANDS['vacancy'],
-    'Replacement: long-run background (net of unconsented additions)': BANDS['replacement'],
-    'Replacement: recent redevelopment wave (fading)': BANDS['redevelopment'],
-    'Near-term market excess (2026 observed building above requirement, fading at rho)': BANDS['overbuild_2026'],
-    'Replacements & repaints, within 2026-2050': BANDS['maintenance'],
-}
-BAND_DEFINITION_LEGACY = {'boss_results': 'with_retirement_villages', 'in_scope_figure': 'in_scope'}
-# MODEL v1.1.0 renaming of two demand bands (labels only): model-v1.0.0 data label -> v1.1.0 data label (the
-# ee37ef1 identifiers map through _BAND_LEGACY and BANDS directly).
-BAND_RELABEL_V1_1 = {'Replacement': BANDS['replacement'], 'Redevelopment': BANDS['redevelopment'],
-                     'Replacement: demolition (BRANZ rate)': BAND_DETAIL['replacement_demolition'],
-                     'Replacement: net unconsented additions (calibrated residual)': BAND_DETAIL['replacement_residual'],
-                     'Replacement and redevelopment (history; not separable)': BAND_DETAIL['replacement_history']}
-
-
-def band_label(old):
-    return _BAND_LEGACY[old]
-
-
-# Cell maps for identifying CSV columns, per v3.1 file (paths relative to outputs/; the
-# frozen-technology copies use the same maps). A value is mapped with the row's other
-# identifying cells available (P0 needs its scenario).
-def _cell(old_file, col, value, row):
-    f = old_file[len('frozen/'):] if old_file.startswith('frozen/') else old_file
-    if value is None:
-        return None
-    if col == 'scenario' and f in ('pb_annual.csv', 'pb_mc_annual.csv', 'pathways/pathways_runs.csv',
-                                    'pathways/pathways_annual.csv', 'pathways/pathways_bands.csv'):
-        return SCENARIO_LEGACY.get(value, value)                    # 'history' stays
-    if f.startswith('pathways/'):
-        if col == 'run':
-            return run_id(value, row.get('scenario'))
-        if col == 'setting':
-            return {'central': 'moderate', 'stretch': 'ambitious', 'T': 'TL'}[value]
-        if col == 'ramp':
-            return ADOPTION_LEGACY[value]
-        if col == 'levers':
-            return lever_set(value)
-        if col == 'band':
-            return _ascii(band_label(value))
-        if col == 'definition':
-            return BAND_DEFINITION_LEGACY[value]
-        if col == 'level':
-            return {'T': 'TL'}.get(value, value)
-        if col == 'player':
-            return {'instant start': 'from2027'}.get(value, TL_LEGACY.get(value, _lever_token(value)))
-        if col == 'name':
-            return _ascii(_player_name(value))
-        if col == 'subset':
-            return subset_label(value)
-    if (f.startswith('montecarlo_summary') and col == 'Unnamed: 0') or (f.startswith('montecarlo_sobol')
-                                                                        and col == 'output'):
-        return identifier(value)                    # output names, as the draws columns
-    if f == 'sensitivity_oat.csv' and col in ('group', 'case'):
-        return _ascii(_sens_label(value))
-    if f == 'pb_sensitivity.csv' and col == 'label':
-        return _ascii(_pb_sens_label(value))
-    return value
-
-
-_PLAYER_NAMES = {
-    # pathways (v3.1 names) and levers
-    'Right-size space': PATHWAYS['P1'], 'Occupy the existing stock': PATHWAYS['P2'], 'Keep and reuse': PATHWAYS['P3'],
-    'Build better': PATHWAYS['P4'], 'Right-sized new dwellings': LEVERS['L1'], 'Lower vacancy': LEVERS['L2'],
-    'Near-term surplus absorbed': LEVERS['L3'], 'Fewer removals': LEVERS['L4'],
-    'Best-practice materials': LEVERS['L5'],
-    # theoretical limit
-    'No idle stock': TL['TL1'], 'No extra space': TL['TL2'], 'Minimum space per person': TL['TL3'],
-    'Best materials': TL['TL4'], 'Best soil': TL['TL5'], 'Urban densification': TL['TL6'],
-    'P5-stretch: ramp -> instant start': 'P5 Ambitious: adoption path -> full strength from 2027',
-    'instant start': ADOPTION['from2027'],
-    'P5-stretch ramped -> P5-stretch instant (separate line, not a Shapley player)':
-        'P5 Ambitious: adoption path -> full strength from 2027 (separate line, not a Shapley player)',
-}
-
-
-def _player_name(old):
-    return _PLAYER_NAMES.get(old, old)
-
-
-def _sens_label(old):
-    """sensitivity_oat.csv group / case labels (only the scenario names change)."""
-    rep = [('Low (S1): long-run rate, shares held', 'Low replacement: long-run rate'),
-           ('High (S2): 2018-2023 rate persists, shares held', 'High replacement: 2018-2023 rate persists'),
-           ('S3: half-life 5 yr', 'Reference, replacement half-life 5 yr'),
-           ('S3: half-life 15 yr', 'Reference, replacement half-life 15 yr'),
-           ('Replacement scenario', 'Replacement variant'),
-           ('Near-term: how the excess is booked', '2026 overbuild: how it is booked'),
-           ('Near-term: rule variant', '2026 overbuild: rule variant'),
-           ('Adopted settings', 'Reference (adopted settings)'), ('Adopted', 'Reference')]
-    for a, b in rep:
-        if old == a:
-            return b
-    return old
-
-
-def _pb_sens_label(old):
-    return (old.replace('Reference: pair A', 'Reference: carrying-capacity pair A')
-            .replace('include the replacements and repaints of', 'include the maintenance (B2, B4) of')
-            .replace('Note (not in tornado):', 'Note (not drawn in D18 or H11):'))
-
-
-# JSON: per-file key maps (exact keys), then the generic identifier rules.
-_JSON_KEY_MAPS = {
-    '*': {},
-    # committed/<variant> holds the in-window maintenance twice: Boss's B_inwindow_kt and the
-    # layer's own sum of the annual series (equal to rounding); both kept, named apart
-    'pb_results.json': dict(SCENARIO_LEGACY, b_inwindow_kt='maintenance_kt_sum_of_annual'),
-    'metrics.json': dict(SCENARIO_LEGACY, boss='projection', pb='aesa'),
-    'gap_2026.json': {'S2_rate_effect': 'HIGH_rate_effect', 'S2_deviation_effect': 'HIGH_deviation_effect',
-                      'model_requirement_2026_S2': 'model_requirement_2026_HIGH'},
-    'replacement_scenarios.json': dict(SCENARIO_LEGACY),
-    'reality_checks.json': dict(SCENARIO_LEGACY),
-    # version tags of the reconciliation (the whole-life accounting of baseline-pb-v2) dropped
-    'reconciliation.json': {
-        'v2_frozen_whole_life_kt': 'whole_life_2025_factors_kt',
-        'v2_adopted_whole_life_kt': 'whole_life_a45_held_kt',
-        '2025 factors: split sums to the v2 frozen whole-life total':
-            '2025 factors: split sums to the whole-life total at 2025 factors',
-        'decarbonised: v2 adopted - A4-A5 - in-window B decarbonisation = split (upper)':
-            'decarbonised: whole life (A4-A5 held) - A4-A5 decarbonisation - maintenance decarbonisation = split '
-            '(upper)'},
-    'pathways/backcast.json': {'P0': 'REF', 'P5-central': 'P5-moderate', 'P5-stretch': 'P5-ambitious'},
-    'pathways/t_limit.json': {'T': 'TL', 'T-ramp': 'TL-gradual', 't6': 'tl6',
-                              **{k: v for k, v in TL_LEGACY.items() if k != 'T'}},
-    'pathways/levers.json': {'L2a': 'L2', 'L2b': 'L3', 'L3': 'L4', 'L4': 'denser_mix_pathways_v2',
-                             'central': 'moderate', 'stretch': 'ambitious', 'P0': 'REF', 'ramp': 'adoption',
-                             'end_of_ramp_step_P2-central': 'end_of_ramp_step_P2-moderate',
-                             'end_of_ramp_step_P2-stretch': 'end_of_ramp_step_P2-ambitious',
-                             'S3-10 LoE_AR': 'REF LoE_AR', 'S3-10 LoE_AtP': 'REF LoE_AtP',
-                             'S1 LoE_AR': 'LOW LoE_AR', 'S1 LoE_AtP': 'LOW LoE_AtP',
-                             'S2 LoE_AR': 'HIGH LoE_AR', 'S2 LoE_AtP': 'HIGH LoE_AtP',
-                             'S3-10 carbon vs pb_results': 'REF carbon vs aesa results',
-                             'S1 carbon vs pb_results': 'LOW carbon vs aesa results',
-                             'S2 carbon vs pb_results': 'HIGH carbon vs aesa results'},
-}
-
-
-def _json_key(old_file, key):
-    f = old_file[len('frozen/'):] if old_file.startswith('frozen/') else old_file
-    m = _JSON_KEY_MAPS.get(f, {})
-    if key in m:
-        return m[key]
-    if f == 'pathways/levers.json' and key.startswith('band '):     # 'band <label> <quantity>'
-        for lab in sorted(_BAND_LEGACY, key=len, reverse=True):
-            if key.startswith(f'band {lab} '):
-                return f'band {_ascii(band_label(lab))} {identifier(key[len(lab) + 6:])}'
-    return identifier(key)
-
-
-def _json_path(old_file, path):
-    return '/'.join(_json_key(old_file, k) for k in path.split('/'))
-
-
-def _column(old_file, col):
-    f = old_file[len('frozen/'):] if old_file.startswith('frozen/') else old_file
-    if f.startswith('montecarlo_sobol') or f.startswith('factors/'):
-        return col                                  # Sobol S1 / ST; model input tables keep their names
-    if f.startswith('montecarlo_summary') and col == 'Unnamed: 0':
-        return 'output'                             # the index column (one row per output)
-    if f.startswith('montecarlo_annual') and col == 'Unnamed: 0':
-        return 'year'                               # the index column
-    if f.startswith('pathways/') and col == 'ramp':
-        return 'adoption'                           # the adoption path of the levers (by2035, ...)
-    if f.startswith('montecarlo_summary') and col == 'central':
-        return 'reference'                          # the deterministic Reference run
-    return identifier(col)
-
-
-# By-typology reporting removed in the release (typology stays internal to the model);
-# each identifier is listed in the CHANGELOG.
-_TYP = ('Detached', 'Townhouses', 'Apartments')
-
-
-def _removed(old_file, row=None, col=None, path=None):
-    f = old_file[len('frozen/'):] if old_file.startswith('frozen/') else old_file
-    if row is None and col is None and path is None:
-        return False                                # no whole file is removed
-    if col is not None and re.fullmatch(r'gfa_(Detached|Townhouses|Apartments)_Mm2', col):
-        return True
-    if col in ('attached_share_2050', 'townhouse_share_2050'):
-        return True
-    if path is not None:
-        parts = path.split('/')
-        if f == 'boss_results.json' and parts[0] == 'typology':
-            return True
-        if f == 'boss_results.json' and path == 'settings/phi':     # damping of the removed typology-mix trend
-            return True
-        if f == 'replacement_scenarios.json' and 'shares_2050' in parts:
-            return True
-        if any(re.fullmatch(r'gfa_(Detached|Townhouses|Apartments)_Mm2', p) for p in parts):
-            return True
-        if parts[-1] in ('attached_share_2050',):
-            return True
-    if row is not None and f.startswith('montecarlo_summary') and row and row[0] == 'townhouse_share_2050':
-        return True
-    if row is not None and f == 'montecarlo_sobol.csv' and row and row[0] == 'townhouse_share_2050':
-        return True
-    return False
-
-
-# Stages of the renaming that LEGACY applies:
-#   'labels'   vocabulary, columns, identifying cells and JSON keys renamed
-#   'layout'   the output folders
-#   'removals' by-typology reporting removed, with the setting of the removed typology-mix trend (settings/phi)
-APPLIED = {'labels', 'layout', 'removals'}
-
-
-class _Legacy:
-    """naming.LEGACY: v3.1 identifier -> release identifier, for the stages in APPLIED."""
-    @staticmethod
-    def file(old):
-        return _file(old) if 'layout' in APPLIED else old
-
-    @staticmethod
-    def column(old_file, col):
-        return _column(old_file, col) if 'labels' in APPLIED else col
-
-    @staticmethod
-    def cell(old_file, col, value, row):
-        return _cell(old_file, col, value, row) if 'labels' in APPLIED else value
-
-    @staticmethod
-    def json_path(old_file, path):
-        return _json_path(old_file, path) if 'labels' in APPLIED else path
-
-    @staticmethod
-    def removed(old_file, row=None, col=None, path=None):
-        return _removed(old_file, row, col, path) if 'removals' in APPLIED else False
-
-
-class _Release(_Legacy):
-    """The full release map (all stages)."""
-    file = staticmethod(_file)
-    column = staticmethod(_column)
-    cell = staticmethod(_cell)
-    json_path = staticmethod(_json_path)
-    removed = staticmethod(_removed)
-
-
-LEGACY = _Legacy()
-RELEASE = _Release()
 
 
 def typeset(text):

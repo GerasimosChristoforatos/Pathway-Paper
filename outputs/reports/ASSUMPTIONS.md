@@ -9,8 +9,8 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Net replacement variant | Reference, replacement half-life 10 yr | DECISION (author): Low replacement and High replacement bound the Reference; the half-life is JUDGEMENT (not identifiable) |
 | Long-run net replacement window | 1991-2023 | DATA: census private-dwelling counts and consents |
 | Demolition rate (split only) | 0.135%/yr | LITERATURE: BRANZ SR214 |
-| Completion rate | 0.945 (Monte Carlo uniform 0.93-0.96) | LITERATURE: completion milestones of Auckland consents (Jones, Greenaway-McGrevy & Crow 2025); midpoint |
-| Completion lag | 17 months (monthly; the same lag in history and projection) | LITERATURE: median consent-to-completion time 1.27-1.53 yr (Jones, Greenaway-McGrevy & Crow 2025); Stats NZ Experimental building indicators consistent |
+| Completion rate | 0.945 (Monte Carlo uniform 0.93-0.96) | LITERATURE: completion milestones of Auckland consents (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025); midpoint |
+| Completion lag | 17 months (monthly; the same lag in history and projection) | LITERATURE: median consent-to-completion time 1.27-1.53 yr (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025); Stats NZ Experimental building indicators consistent |
 | 2026 overbuild rule | market_excess: building observed in the pipeline years (consents lagged 17 months) | DATA (observed consents); method stated |
 | Overbuild after the observed years | gap vs the next year's requirement, fading at rho; booked as surplus, absorbed by 2035 (normalised logistic from the last observed year) | THEORY: reversion to the equilibrium vacancy (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, not the speed; 2035 the common RECC window; never / by 2030 / by 2045, redevelopment booking and gap-vs-2026 as sensitivities |
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
@@ -47,7 +47,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | Committed after 2050 (later B2/B4 and C1-C4) | upper: events after 2050 at 2025 factors; lower: the 2050 factors held after 2050 (no extrapolation beyond the last source year); C1-C4 at 2025 in both. Expressed in years of the 2050 AR boundary | DECISION (author): the source paths end in 2050 |
 | Scope of B events | events of the cohorts built in the accounting period only (projection: the 2026-2050 cohorts; AR base: the cohorts of the base window); wider scope (events of all cohorts built since 1992, in the base and the projection alike) is a sensitivity | DECISION (author): the AESA object is new construction |
 | Carbon-factor sensitivity rows (decarbonised runs) | an alternative materials factor (jackknife, single case study) follows the adopted factor's relative path over time: factor_alt x (materials intensity(t) / 2025 value) | DECISION (author) |
-| History and acquired-rights base | always 2025 factors ("at 2025 factors"); decarbonisation applies to 2026-2050 only; the base follows the projection's accounting rule (materials and construction (A1-A5) and soil carbon loss of the construction in the period, plus the maintenance (B2, B4) events in the period of the cohorts built in it). Historical carbon appears only for the AR base window (figure D21) and the base-window rows | DECISION (author): no historical factor series exists for the case studies (limitation) |
+| History and acquired-rights base | the case-study factors (2025 technology) without back-casting; decarbonisation applies to 2026-2050 only; the base follows the projection's accounting rule (materials and construction (A1-A5) and soil carbon loss of the construction in the period, plus the maintenance (B2, B4) events in the period of the cohorts built in it). Historical carbon appears only for the AR base window and the base-window rows | DATA: the case-study factors (BRANZ LCAQuick 3.6, built from EPD and BRANZ data) are roughly contemporaneous with the base window; the vintages of the underlying EPDs are not tabulated |
 
 ### Limitation of the 2026 overbuild rule
 
@@ -68,14 +68,15 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 - A4-A5 follows a generic technological-progress factor (Resch et al. 2021, Table 1) because it cannot be separated by material process; Horup et al. (2025, Fig. 2A, pp. 5-6) show that generic factors oversimplify material-specific trends, and Resch et al. state that "the decay functions should not be interpreted as predictions" (p. 4). Sensitivities: held at 2025 and the item S4 paths.
 - Emissions committed after 2050 (later B2/B4 and C1-C4) are a range bounded by two conventions (2025 factors; the 2050 factors held), not a projection: the source paths end in 2050 and C1-C4 has no decarbonisation source.
 - The repaint composition differs from the first coat but cannot be separated in the source file; repaints take the line's initial stage split (negligible: the paint path is the EPS proxy).
-- Completion rate 0.945 and its band 0.93-0.96 rest on Auckland consents (Jones, Greenaway-McGrevy & Crow 2025), applied nationally; the upper milestone is published only as ">95%" (0.96 is a stated edge).
-- The 17-month consent-to-completion lag is the midpoint of the Auckland median of 1.27-1.53 yr (Jones, Greenaway-McGrevy & Crow 2025), applied nationally as one fixed lag (no distribution of build times).
+- Completion rate 0.945 and its band 0.93-0.96 rest on Auckland consents (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025), applied nationally; the upper milestone is published only as ">95%" (0.96 is a stated edge).
+- The 17-month consent-to-completion lag is the midpoint of the Auckland median of 1.27-1.53 yr (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025), applied nationally as one fixed lag (no distribution of build times).
 
 ### Other limitations of the projection
 
 - No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so the implied replacement rates cannot be tested against a count.
 - N4 (open): the Low/High household-size variants (deterministic) are paired with stochastic population percentiles through one draw z, and the total vs private-household population question is unresolved until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ's 2023-base release (late 2026) to be adopted in a later version.
-- Timber end of life (C1-C4) excludes biogenic CO2 (confirmed by the author). Whether it includes landfill methane is TO CONFIRM from Christoforatos & Pickering 2025 (author check).
+- Timber C1-C4 includes landfill methane (biogenic CO2 excluded), with decay as in the underlying EPD data: the 247 sawn-timber lines of the LCAQuick results carry C1-C4 of 1.1-4.5 times their A1-A3 (median 4.3), each with a module D credit for landfill-gas recovery. Timber is 31% of the case studies' C1-C4. No timber line carries a replacement or repaint event, so it affects the committed emissions after 2050, not the 2026-2050 total.
+- Households 2019-2023: the Stats NZ household estimates between the 2018 and 2023 censuses are consent-derived increments, rescaled by one factor (k = 0.824) so that June 2023 matches the 2023 census, as Stats NZ benchmarks each base; the consent-driven shape is kept. Stats NZ's 2023-rebased estimates will replace them when published.
 - With the typology mix held in every variant (internal to the model: it weights the case-study factors), neither the variants nor the Monte Carlo carry typology-mix uncertainty; a change of mix is a pathway question for later work, not a baseline uncertainty.
 - The soil factor was derived for Auckland's future urban zones and is applied nationally.
 - The case-study carbon factor for apartments rests on one independent case study (A_1 and A_2 are one design at two scales).
@@ -115,6 +116,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `HOUSEHOLD_SHEET_HIST` | `'Table 2'` |
 | `HOUSEHOLD_SHEET_PROJ` | `'Table 1'` |
 | `MIX_HELD_WINDOW` | `(2022, 2026)` |
+| `NET_REPLACEMENT_HELD` | `None` |
 | `NET_REPLACEMENT_WINDOW` | `(1991, 2023)` |
 | `NOWCAST_METHOD` | `'last_12_months'` |
 | `NOWCAST_POPULATION` | `True` |
@@ -129,7 +131,6 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `POP_SHEET_PROJ` | `'Table 1'` |
 | `POP_SIZE_PAIR_SHEET` | `'Table 1'` |
 | `RECENT_INTERVAL` | `(2018, 2023)` |
-| `REFERENCE_LEGACY` | `False` |
 | `REPLACEMENT_HALF_LIFE` | `10.0` |
 | `REPLACEMENT_VARIANT` | `'REF'` |
 | `RV_SHARE_REF` | `(2016, 2025)` |
@@ -167,11 +168,11 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 
 - Static carrying capacity: the carrying capacities are constant yearly values modelled at steady state and their timespan may not match the assessment period (Clausen et al. 2025, pp. 143 and 148).
 - Accounting (time-resolved): the sector impact of 2026-2050 counts materials and construction (A1-A5) and soil carbon loss in the construction year and maintenance (B2, B4) in the year it occurs. Maintenance after 2050 and all end-of-life emissions (C1-C4) of the 2026-2050 cohorts are committed after 2050, outside 2026-2050; they are reported as a range (outputs/data/aesa/results.json "committed", Fig3c) in years of the 2050 AR boundary and are not compared with the 2026-2050 boundary. Whole life at construction is a sensitivity.
-- History at 2025 factors: the acquired-rights base (2016-2025) and the base-window sensitivities use the 2025 case-study factors because no historical factor series exists for the case studies. If past production was more carbon-intensive than in 2025 (as the ~1%/yr technological progress assumed by Resch et al. 2021 implies), the base and hence the AR boundary are understated and the AR exceedance overstated (conservative); the size of this effect is not quantified. The base follows the projection's accounting rule (materials and construction and soil carbon loss of the base window's construction plus the maintenance within the base window of the cohorts built in it).
+- Carbon factors and the AR base: the case-study factors (BRANZ LCAQuick 3.6, built from EPD and BRANZ data) are roughly contemporaneous with the 2016-2025 base window, so the base uses them without back-casting; the vintages of the underlying EPDs are not tabulated. The base follows the projection's accounting rule (materials and construction and soil carbon loss of the base window's construction plus the maintenance within the base window of the cohorts built in it).
 - The primary SOS (6.81E12) is the 2 °C carrying capacity of Bjørn & Hauschild (2015), not the 1 W/m² planetary boundary (3.61E12, sensitivity C). Sala et al. (2020, Table 3) label 6.81E12 as radiative forcing after Rockström et al. (2009), which does not match its derivation in Bjørn & Hauschild (2015).
-- GWP basis: Bjørn & Hauschild (2015) ESM2 uses AR5 GWP100 factors (CH4 28, N2O 265; column "CFs (GWP100, IPCC5)") while their Table 1 cites Forster et al. (2007), i.e. AR4. The GWP basis of the case-study LCA factors used by the model is not documented in this repository (building_data.xlsx gives "GWP" columns only; source Christoforatos & Pickering 2025): to be confirmed by the author.
-- I_glob = 5.58E13 (Bjørn & Hauschild 2015 ESM2, from Laurent et al. 2013, year 2010): Laurent et al. (2013) is not in hand, so whether it includes land-use-change CO2 (the sector impact includes soil carbon loss) and its GWP basis are NOT VERIFIED. The per-gas indicator scores in ESM2 sum to 54.0 Gt CO2-eq with 39.5 Gt CO2; a CO2 total of that size is consistent with inclusion of land-use-change CO2 (inference, not a sourced statement). The EC-JRC table "Normalization factors for testing" (Benini, Sala & Pant, version 0.1.1, 15 Dec 2015; sheet 1.3) gives the PROSUITE global value as 5.589E13 kg CO2-eq, 8,100 kg/person, "2010 or 2000".
-- Final-consumption-expenditure upscaling: the numerator (consented residential value) is an investment flow (gross fixed capital formation), while Hjalsted et al. (2021) define the upscaling on final consumption and leave intermediate sectors as open (p. 16).
+- GWP basis: Bjørn & Hauschild (2015) ESM2 uses AR5 GWP100 factors (CH4 28, N2O 265; column "CFs (GWP100, IPCC5)") while their Table 1 cites Forster et al. (2007), i.e. AR4. The case-study factors use the EN 15804+A1 indicator set reported by LCAQuick 3.6 (CML characterisation); the underlying EPDs differ in IPCC GWP100 version (AR4 / AR5). The difference matters mainly for methane; A1-A5 is CO2-dominated, and the global side is bracketed by the EF 3.1 sensitivity.
+- I_glob 5.58E+13 equals the EF 3.0 global factor (8.10E+03 kg CO2e per person, 2010; Andreasi Bassi et al. 2023, Table 10), whose climate-change total sums the fossil, biogenic and land-use-change sub-indicators; the EF 3.1 value is a sensitivity (7.55E+03 kg CO2e per person x 6,895,889,018 persons = 5.206E+13, 6.7% lower, mainly through the lower characterisation factor of methane in EF 3.1; acquired rights only).
+- Ability-to-pay sector share: s_sec uses the consented value of new residential building over national final consumption expenditure, following the FCE upscaling of Hjalsted et al. (2021) as a proxy of the priority households give to housing. In the national accounts residential construction is gross fixed capital formation, not final consumption; treating it as consumed follows the endogenisation of capital in consumption-based accounting (Södersten, Wood & Hertwich 2018).
 - Ability to pay: Hjalsted et al. (2021) state GDP as "USD/cap (2017)", World Bank (2019), without naming the series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in outputs/data/aesa/results.json).
 - Monte Carlo: I_sec,base is recomputed in every draw with that draw's case-study carbon factors (2025 technology), so the factor uncertainty is treated alike in the base and the projection; it does not co-vary with the draw's completion rate or dwelling size (historical floor area is observed).
 - The numerical results in Hjalsted et al.'s SI (Tables S4-S9) are reproduced only with α = 1; we apply α as specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS. The authors have been contacted.
@@ -190,11 +191,16 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `GDP_MEASURE_SENS` | `'NY.GDP.PCAP.CD'` |
 | `HIST_RATE_AFTER_LAST_CENSUS` | `'recent'` |
 | `HIST_START` | `1992` |
+| `I_GLOB_EF30_PER_PERSON` | `8100.0` |
+| `I_GLOB_EF31_PER_PERSON` | `7550.0` |
+| `I_GLOB_EF31_POPULATION` | `6895889018` |
 | `M6` | `1000000.0` |
 | `MC_PCT` | `(5, 50, 95)` |
 | `MC_REL_TOL` | `1e-09` |
 | `PB_YEARS` | `(2026, 2050)` |
 | `POP_NZ_SOURCE` | `'model'` |
+| `RECOMPUTE` | `'recompute'` |
+| `REFERENCE_BASE` | `'reference_base'` |
 | `SOURCE_PAIR` | `'A'` |
 | `SSEC_FCE_SHARE` | `'mean_of_ratios'` |
 | `SSEC_VALUE_COLUMNS` | `('Value - Value/Detached', 'Value - Value/Townhouses', 'Value - Value/Apartments')` |
@@ -202,11 +208,11 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `T0` | `2025` |
 | `VARIANTS` | `('LOW', 'REF', 'HIGH', 'VHIGH')` |
 | `WDI_COVERAGE_MIN` | `0.98` |
-| `SOURCE_PAIRS` | `{'A': {'label': '2 °C carrying capacity (Bjørn & Hauschild 2015)', 'sos': 6810000000000.0, 'i_glob': 55800000000000.0}, 'C': {'label': '1 W/m² planetary boundary (Bjørn & Hauschild 2015)', 'sos': 3610000000000.0, 'i_glob': 55800000000000.0}}` |
+| `SOURCE_PAIRS` | `{'A': {'label': '2 °C carrying capacity (Bjørn & Hauschild 2015)', 'sos': 6810000000000.0, 'i_glob': 55800000000000.0}, 'C': {'label': '1 W/m² planetary boundary (Bjørn & Hauschild 2015)', 'sos': 3610000000000.0, 'i_glob': 55800000000000.0}, 'EF31': {'label': 'EF 3.1 normalisation factor (Andreasi Bassi et al. 2023)', 'sos': 6810000000000.0, 'i_glob': 52063962085900.0}}` |
 
 ## Pathways (levers.py, pathways.py)
 
-Resolved values from data/pathways/levers.json (MODEL v3.0.0 lever rule: Levels 1-4); Table 1 of the paper: docs/LEVERS_TABLE.md; methods as implemented: docs/METHODS_DRAFT.md (3. Pathways and the theoretical limit).
+Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Table 1 of the paper: docs/LEVERS_TABLE.md; methods as implemented: docs/METHODS_DRAFT.md (3. Pathways and the theoretical limit).
 
 | setting | value | basis |
 |---|---|---|

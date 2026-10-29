@@ -42,7 +42,11 @@ def write():
         L += _entry(h['file'], f"{h['id']} {h['title']}", h['caption'], h['source'], os.path.join(layout.PAPER_MAIN, h['file']))
     L += ['## Extended Data (paper_extended/)', '']
     for h in FP.PAPER_EXTENDED:
-        L += _entry(h['file'], f"{h['id']} {h['title']}", h.get('caption'), h['source'], layout.figure(h['file']))
+        cap = h.get('caption')
+        if h.get('row_notes'):                     # ED4 / ED5: the row notes the figure draws (one source)
+            from figures import sensitivity
+            cap += sensitivity.row_note_caption(h['row_notes'])
+        L += _entry(h['file'], f"{h['id']} {h['title']}", cap, h['source'], layout.figure(h['file']))
     for t in FP.EXTENDED_TABLES:
         L += [f"### {t['file']}", '', f"**{t['id']} {t['title']}** (table)", '',
               f"- Files: `paper_extended/{t['file']}.md`, `paper_extended/{t['file']}.csv`",
@@ -62,6 +66,5 @@ def write():
                 L += [f"### {r['file']}", '', f"**{r['title']}** — full profile only.", '']
                 continue
             L += _entry(r['file'], r['title'], None, r['source'], os.path.join(layout.DIAGNOSTICS, g, r['file']))
-    L += ['## Retired figures', ''] + [f'- {k}: {v}' for k, v in FP.RETIRED.items()] + ['']
     with open(layout.writing(layout.FIGURES_INDEX), 'w') as f:
         f.write('\n'.join(L))

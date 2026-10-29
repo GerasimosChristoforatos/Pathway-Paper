@@ -21,6 +21,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
+import engine  # noqa: E402
 import layout  # noqa: E402
 import naming as N  # noqa: E402
 import projection  # noqa: E402
@@ -48,7 +49,7 @@ GROUP_LABELS = {
 }
 
 
-def projection_components(B, lag_months):
+def projection_components(B, lag_months, run=None):
     """Aggregate the annual floor-area bands without changing their accounting.
 
     The six broad components must reproduce the Reference floor area exactly:
@@ -81,11 +82,12 @@ def projection_components(B, lag_months):
             f"maximum difference {error:.6g} Mm2"
         )
 
+    run = run or f"lag_{int(lag_months)}"
     annual_rows = []
     for category, values in grouped.items():
         for year, value in zip(years, values):
             annual_rows.append(dict(
-                lag_months=int(lag_months),
+                run=run, lag_months=int(lag_months),
                 timing="consent-timed proxy" if lag_months == 0 else "completion-timed",
                 year=int(year), category=category, floor_area_Mm2=float(value)
             ))
@@ -97,7 +99,7 @@ def projection_components(B, lag_months):
     for category, values in derived.items():
         for year, value in zip(years, values):
             annual_rows.append(dict(
-                lag_months=int(lag_months),
+                run=run, lag_months=int(lag_months),
                 timing="consent-timed proxy" if lag_months == 0 else "completion-timed",
                 year=int(year), category=category, floor_area_Mm2=float(value)
             ))
@@ -208,7 +210,7 @@ def _lagged_consent_period(year, lag_months):
     return f"{first:%b %Y}–{last:%b %Y}"
 
 
-def run_summary(B, lag_months, grouped):
+def run_summary(B, lag_months, grouped, held=None):
     join = B["join_info"]["50th"]
     pipe = B.get("pipe") or {}
     cohort_rows = []
@@ -243,8 +245,14 @@ def run_summary(B, lag_months, grouped):
         cumulative["underlying_requirement"] + cumulative["net_market_effect"]
     )
 
+    rate_recent = engine.census_window_rate(B["census_rates"], *projection.RECENT_INTERVAL)
     return dict(
         lag_months=int(lag_months),
+        net_replacement_held=held is not None,
+        recent_interval=list(projection.RECENT_INTERVAL),
+        recent_net_replacement_rate_own_calibration=float(rate_recent),
+        recent_net_replacement_rate_used=float(rate_recent if held is None
+                                               else engine.census_window_rate(held, *projection.RECENT_INTERVAL)),
         timing=("Consent-timed proxy (zero lag)" if int(lag_months) == 0
                 else "Completion-timed pipeline (17-month lag)"),
         completion_rate=float(B["_completion"]),
@@ -263,6 +271,9 @@ def main():
     # must be identical for this to be a controlled timing comparison.
     B0 = validation.run_boss(COMPLETION_LAG_MONTHS=0)
     B17 = validation.run_boss(COMPLETION_LAG_MONTHS=17)
+    # like-for-like: zero lag with the forward net replacement held at the 17-month calibration (only the timing of
+    # building differs from the 17-month run)
+    B0h = validation.run_boss(COMPLETION_LAG_MONTHS=0, NET_REPLACEMENT_HELD=B17["census_rates"])
 
     for key, atol in (("PopTotal_50th", 1e-8),):
         a = np.asarray(B0["df_forecast"][key], dtype=float)
@@ -278,8 +289,9 @@ def main():
             raise RuntimeError(f"Controlled lag comparison failed: {name} differs.")
 
     d0, groups0, _ = projection_components(B0, 0)
+    d0h, groups0h, _ = projection_components(B0h, 0, "lag_0_held")
     d17, groups17, _ = projection_components(B17, 17)
-    comparison = pd.concat([d0, d17], ignore_index=True)
+    comparison = pd.concat([d0, d0h, d17], ignore_index=True)
 
     hist_raw = pd.read_csv(layout.data("baseline/bands_history.csv"))
     historical = historical_market_balance(hist_raw)
@@ -289,13 +301,16 @@ def main():
     summaries = {
         "comparison_basis": (
             "Controlled comparison: same source files, population path, household-size path, "
-            "completion rate and remaining defaults; only completion lag differs. "
-            "Historical completion timing and stock/replacement calibration are recalculated consistently."
+            "completion rate and remaining defaults; only completion lag differs. lag_0 recalculates the "
+            "historical completion timing and the stock and replacement calibration with zero lag; lag_0_held "
+            "is the like-for-like run: zero lag with the forward net replacement held at the 17-month "
+            "calibration (projection.NET_REPLACEMENT_HELD), so only the timing of building differs from lag_17."
         ),
         "same_population_path": True,
         "same_household_size_path": True,
         "same_household_path": True,
         "lag_0": run_summary(B0, 0, groups0),
+        "lag_0_held": run_summary(B0h, 0, groups0h, held=B17["census_rates"]),
         "lag_17": run_summary(B17, 17, groups17),
         "historical_classification": {
             "population_growth": "Population growth",
@@ -360,17 +375,14 @@ def main():
         "",
         summaries["comparison_basis"],
         "",
-        "| Cumulative floor area, 2026–2050 (Mm2) | Zero lag | 17-month lag |",
-        "|---|---:|---:|",
+        "| Cumulative floor area, 2026–2050 (Mm2) | Zero lag, net replacement held at the 17-month calibration "
+        "| Zero lag, recalibrated | 17-month lag |",
+        "|---|---:|---:|---:|",
     ]
-    for category, label in labels:
-        a = summaries["lag_0"]["cumulative_categories_Mm2_2026_2050"][category]
-        b = summaries["lag_17"]["cumulative_categories_Mm2_2026_2050"][category]
-        lines.append(f"| {label} | {a:.2f} | {b:.2f} |")
-    lines.append(
-        f"| **Total built** | **{summaries['lag_0']['cumulative_categories_Mm2_2026_2050']['total_built']:.2f}** "
-        f"| **{summaries['lag_17']['cumulative_categories_Mm2_2026_2050']['total_built']:.2f}** |"
-    )
+    runs_ = ("lag_0_held", "lag_0", "lag_17")
+    for category, label in labels + [("total_built", "**Total built**")]:
+        lines.append(f"| {label} | " + " | ".join(
+            f"{summaries[k]['cumulative_categories_Mm2_2026_2050'][category]:.2f}" for k in runs_) + " |")
     lines += ["", "### Observed consent periods", ""]
     z = summaries["lag_0"]["observed_cohorts"][0]
     lines.append(
@@ -389,9 +401,13 @@ def main():
         "equivalent observations of actual completed dwellings.",
         "",
         "The lag also changes the historical timing of building and therefore the calibrated "
-        "replacement rate, stock residual and near-term excess. Those dependent quantities are "
-        "recomputed consistently rather than frozen. The comparison isolates the lag setting, "
-        "not only the timing of the same fixed excess series.",
+        "replacement rate, stock residual and near-term excess. In the recalibrated zero-lag run those "
+        "dependent quantities are recomputed consistently; in the like-for-like zero-lag run the forward net "
+        "replacement is held at the 17-month calibration (the "
+        f"{summaries['lag_17']['recent_interval'][0]}-{summaries['lag_17']['recent_interval'][1]} rate "
+        f"{100 * summaries['lag_17']['recent_net_replacement_rate_used']:.3f}%/yr instead of the zero-lag "
+        f"{100 * summaries['lag_0']['recent_net_replacement_rate_used']:.3f}%/yr), so the difference to the "
+        "17-month run is the timing of building alone.",
         "",
         "## Separate historical and projected classification",
         "",

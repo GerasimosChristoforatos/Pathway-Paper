@@ -1,451 +1,676 @@
-lag_months,timing,year,category,floor_area_Mm2
-0,consent-timed proxy,2026,population_growth,1.142446658794669
-0,consent-timed proxy,2027,population_growth,1.7005246629387099
-0,consent-timed proxy,2028,population_growth,1.7326100339375534
-0,consent-timed proxy,2029,population_growth,1.7326100339375534
-0,consent-timed proxy,2030,population_growth,1.7326100339375534
-0,consent-timed proxy,2031,population_growth,1.7326100339375534
-0,consent-timed proxy,2032,population_growth,1.7326100339375534
-0,consent-timed proxy,2033,population_growth,1.7326100339375534
-0,consent-timed proxy,2034,population_growth,1.7279897405137201
-0,consent-timed proxy,2035,population_growth,1.7161823239861453
-0,consent-timed proxy,2036,population_growth,1.7002679799707192
-0,consent-timed proxy,2037,population_growth,1.6833269040833296
-0,consent-timed proxy,2038,population_growth,1.6684392919398663
-0,consent-timed proxy,2039,population_growth,1.6556051435403292
-0,consent-timed proxy,2040,population_growth,1.6427709951407914
-0,consent-timed proxy,2041,population_growth,1.629936846741254
-0,consent-timed proxy,2042,population_growth,1.6171026983417165
-0,consent-timed proxy,2043,population_growth,1.6042685499421792
-0,consent-timed proxy,2044,population_growth,1.5914344015426416
-0,consent-timed proxy,2045,population_growth,1.5786002531431043
-0,consent-timed proxy,2046,population_growth,1.565766104743567
-0,consent-timed proxy,2047,population_growth,1.5529319563440294
-0,consent-timed proxy,2048,population_growth,1.540097807944492
-0,consent-timed proxy,2049,population_growth,1.5272636595449545
-0,consent-timed proxy,2050,population_growth,1.5144295111454171
-0,consent-timed proxy,2026,household_size_change,0.15120521662707875
-0,consent-timed proxy,2027,household_size_change,0.15459817144490445
-0,consent-timed proxy,2028,household_size_change,0.1781861745631654
-0,consent-timed proxy,2029,household_size_change,0.2235238500583699
-0,consent-timed proxy,2030,household_size_change,0.25862903131054876
-0,consent-timed proxy,2031,household_size_change,0.26429629396383847
-0,consent-timed proxy,2032,household_size_change,0.23948311701940408
-0,consent-timed proxy,2033,household_size_change,0.1831448446286954
-0,consent-timed proxy,2034,household_size_change,0.14650415941329126
-0,consent-timed proxy,2035,household_size_change,0.14126061331872825
-0,consent-timed proxy,2036,household_size_change,0.12069502486090736
-0,consent-timed proxy,2037,household_size_change,0.08435470635170779
-0,consent-timed proxy,2038,household_size_change,0.031816834472893386
-0,consent-timed proxy,2039,household_size_change,-0.02911001369441132
-0,consent-timed proxy,2040,household_size_change,-0.07000046769774322
-0,consent-timed proxy,2041,household_size_change,-0.08422303635294913
-0,consent-timed proxy,2042,household_size_change,-0.07112007183497959
-0,consent-timed proxy,2043,household_size_change,-0.030057171833082926
-0,consent-timed proxy,2044,household_size_change,-1.5379362777806426e-15
-0,consent-timed proxy,2045,household_size_change,6.371450293662662e-15
-0,consent-timed proxy,2046,household_size_change,-2.5046390809570465e-14
-0,consent-timed proxy,2047,household_size_change,2.2409928619089364e-14
-0,consent-timed proxy,2048,household_size_change,-9.007912484143764e-15
-0,consent-timed proxy,2049,household_size_change,-1.3182310952405506e-15
-0,consent-timed proxy,2050,household_size_change,6.8108606587428455e-15
-0,consent-timed proxy,2026,net_replacement,0.811347467690071
-0,consent-timed proxy,2027,net_replacement,0.776845249298788
-0,consent-timed proxy,2028,net_replacement,0.750379450442626
-0,consent-timed proxy,2029,net_replacement,0.7257665617993219
-0,consent-timed proxy,2030,net_replacement,0.7028530041272077
-0,consent-timed proxy,2031,net_replacement,0.6814996065403652
-0,consent-timed proxy,2032,net_replacement,0.6615086172626774
-0,consent-timed proxy,2033,net_replacement,0.6426994527035867
-0,consent-timed proxy,2034,net_replacement,0.6249065898798438
-0,consent-timed proxy,2035,net_replacement,0.6081349371330321
-0,consent-timed proxy,2036,net_replacement,0.5924129336280528
-0,consent-timed proxy,2037,net_replacement,0.5776267426992272
-0,consent-timed proxy,2038,net_replacement,0.5636800046912485
-0,consent-timed proxy,2039,net_replacement,0.5504914895676815
-0,consent-timed proxy,2040,net_replacement,0.5380074691809635
-0,consent-timed proxy,2041,net_replacement,0.526248133743261
-0,consent-timed proxy,2042,net_replacement,0.5152457714034464
-0,consent-timed proxy,2043,net_replacement,0.5050282559562363
-0,consent-timed proxy,2044,net_replacement,0.49562003039282765
-0,consent-timed proxy,2045,net_replacement,0.4869473394142637
-0,consent-timed proxy,2046,net_replacement,0.4788968648787139
-0,consent-timed proxy,2047,net_replacement,0.4714331741642678
-0,consent-timed proxy,2048,net_replacement,0.4645226551376751
-0,consent-timed proxy,2049,net_replacement,0.458133434337661
-0,consent-timed proxy,2050,net_replacement,0.45223529774400095
-0,consent-timed proxy,2026,other,0.8257192562378286
-0,consent-timed proxy,2027,other,1.1908323364571216
-0,consent-timed proxy,2028,other,1.2297802377276381
-0,consent-timed proxy,2029,other,1.2630466576772355
-0,consent-timed proxy,2030,other,1.2904876617011822
-0,consent-timed proxy,2031,other,1.299013047121068
-0,consent-timed proxy,2032,other,1.2871782591529854
-0,consent-timed proxy,2033,other,1.253578661649635
-0,consent-timed proxy,2034,other,1.2290410066235407
-0,consent-timed proxy,2035,other,1.2201931178921728
-0,consent-timed proxy,2036,other,1.198165340344992
-0,consent-timed proxy,2037,other,1.1644097607223667
-0,consent-timed proxy,2038,other,1.1204637008893412
-0,consent-timed proxy,2039,other,1.0714489354630512
-0,consent-timed proxy,2040,other,1.0351211844259194
-0,consent-timed proxy,2041,other,1.01621572160179
-0,consent-timed proxy,2042,other,1.0154730324477483
-0,consent-timed proxy,2043,other,1.033622581235711
-0,consent-timed proxy,2044,other,1.0449311679894455
-0,consent-timed proxy,2045,other,1.0365043037314714
-0,consent-timed proxy,2046,other,1.0280774394734713
-0,consent-timed proxy,2047,other,1.0196505752155232
-0,consent-timed proxy,2048,other,1.0112237109575228
-0,consent-timed proxy,2049,other,1.0027968466995487
-0,consent-timed proxy,2050,other,0.9943699824415746
-0,consent-timed proxy,2026,market_excess,2.2186865706503527
-0,consent-timed proxy,2027,market_excess,0.6869810737110512
-0,consent-timed proxy,2028,market_excess,0.3542048772384635
-0,consent-timed proxy,2029,market_excess,0.18262671252612225
-0,consent-timed proxy,2030,market_excess,0.09416165126841208
-0,consent-timed proxy,2031,market_excess,0.04854939590683279
-0,consent-timed proxy,2032,market_excess,0.025031887304095078
-0,consent-timed proxy,2033,market_excess,0.012906347654816647
-0,consent-timed proxy,2034,market_excess,0.006654464673933739
-0,consent-timed proxy,2035,market_excess,0.00343101714605573
-0,consent-timed proxy,2036,market_excess,0.0017690196331855413
-0,consent-timed proxy,2037,market_excess,0.0009120999194636714
-0,consent-timed proxy,2038,market_excess,0.00047027531378357533
-0,consent-timed proxy,2039,market_excess,0.00024247219634038018
-0,consent-timed proxy,2040,market_excess,0.00012501775933147275
-0,consent-timed proxy,2041,market_excess,6.445869004428693e-05
-0,consent-timed proxy,2042,market_excess,3.3234659975060585e-05
-0,consent-timed proxy,2043,market_excess,1.7135666624608844e-05
-0,consent-timed proxy,2044,market_excess,8.835085747532106e-06
-0,consent-timed proxy,2045,market_excess,4.5553372317679975e-06
-0,consent-timed proxy,2046,market_excess,2.3487148725102203e-06
-0,consent-timed proxy,2047,market_excess,1.2109886209697087e-06
-0,consent-timed proxy,2048,market_excess,6.243812125866018e-07
-0,consent-timed proxy,2049,market_excess,3.2192862251582364e-07
-0,consent-timed proxy,2050,market_excess,1.6598519607212087e-07
-0,consent-timed proxy,2026,overbuild_absorbed,0.0
-0,consent-timed proxy,2027,overbuild_absorbed,-0.11280315337456624
-0,consent-timed proxy,2028,overbuild_absorbed,-0.24878394738569123
-0,consent-timed proxy,2029,overbuild_absorbed,-0.4372087535063847
-0,consent-timed proxy,2030,overbuild_absorbed,-0.6323154006118883
-0,consent-timed proxy,2031,overbuild_absorbed,-0.7223964065842612
-0,consent-timed proxy,2032,overbuild_absorbed,-0.6381782126152516
-0,consent-timed proxy,2033,overbuild_absorbed,-0.44876308623413336
-0,consent-timed proxy,2034,overbuild_absorbed,-0.267570268782467
-0,consent-timed proxy,2035,overbuild_absorbed,-0.14416423668161885
-0,consent-timed proxy,2036,overbuild_absorbed,-0.00176901963318552
-0,consent-timed proxy,2037,overbuild_absorbed,-0.000912099919463765
-0,consent-timed proxy,2038,overbuild_absorbed,-0.00047027531378338554
-0,consent-timed proxy,2039,overbuild_absorbed,-0.0002424721963401533
-0,consent-timed proxy,2040,overbuild_absorbed,-0.00012501775933168265
-0,consent-timed proxy,2041,overbuild_absorbed,-6.445869004430318e-05
-0,consent-timed proxy,2042,overbuild_absorbed,-3.323465997506006e-05
-0,consent-timed proxy,2043,overbuild_absorbed,-1.7135666624642224e-05
-0,consent-timed proxy,2044,overbuild_absorbed,-8.83508574746221e-06
-0,consent-timed proxy,2045,overbuild_absorbed,-4.555337231699317e-06
-0,consent-timed proxy,2046,overbuild_absorbed,-2.3487148727457848e-06
-0,consent-timed proxy,2047,overbuild_absorbed,-1.2109886208453695e-06
-0,consent-timed proxy,2048,overbuild_absorbed,-6.243812125788348e-07
-0,consent-timed proxy,2049,overbuild_absorbed,-3.219286223209334e-07
-0,consent-timed proxy,2050,overbuild_absorbed,-1.6598519603604973e-07
-0,consent-timed proxy,2026,underlying_requirement,2.9307185993496474
-0,consent-timed proxy,2027,underlying_requirement,3.822800420139524
-0,consent-timed proxy,2028,underlying_requirement,3.8909558966709827
-0,consent-timed proxy,2029,underlying_requirement,3.9449471034724803
-0,consent-timed proxy,2030,underlying_requirement,3.984579731076492
-0,consent-timed proxy,2031,underlying_requirement,3.977418981562825
-0,consent-timed proxy,2032,underlying_requirement,3.9207800273726203
-0,consent-timed proxy,2033,underlying_requirement,3.8120329929194705
-0,consent-timed proxy,2034,underlying_requirement,3.7284414964303956
-0,consent-timed proxy,2035,underlying_requirement,3.6857709923300783
-0,consent-timed proxy,2036,underlying_requirement,3.611541278804671
-0,consent-timed proxy,2037,underlying_requirement,3.509718113856631
-0,consent-timed proxy,2038,underlying_requirement,3.384399831993349
-0,consent-timed proxy,2039,underlying_requirement,3.2484355548766506
-0,consent-timed proxy,2040,underlying_requirement,3.1458991810499306
-0,consent-timed proxy,2041,underlying_requirement,3.0881776657333555
-0,consent-timed proxy,2042,underlying_requirement,3.0767014303579314
-0,consent-timed proxy,2043,underlying_requirement,3.1128622153010435
-0,consent-timed proxy,2044,underlying_requirement,3.131985599924913
-0,consent-timed proxy,2045,underlying_requirement,3.1020518962888457
-0,consent-timed proxy,2046,underlying_requirement,3.0727404090957267
-0,consent-timed proxy,2047,underlying_requirement,3.044015705723843
-0,consent-timed proxy,2048,underlying_requirement,3.015844174039681
-0,consent-timed proxy,2049,underlying_requirement,2.988193940582163
-0,consent-timed proxy,2050,underlying_requirement,2.9610347913309996
-0,consent-timed proxy,2026,net_market_effect,2.2186865706503527
-0,consent-timed proxy,2027,net_market_effect,0.574177920336485
-0,consent-timed proxy,2028,net_market_effect,0.10542092985277227
-0,consent-timed proxy,2029,net_market_effect,-0.2545820409802625
-0,consent-timed proxy,2030,net_market_effect,-0.5381537493434763
-0,consent-timed proxy,2031,net_market_effect,-0.6738470106774284
-0,consent-timed proxy,2032,net_market_effect,-0.6131463253111565
-0,consent-timed proxy,2033,net_market_effect,-0.4358567385793167
-0,consent-timed proxy,2034,net_market_effect,-0.26091580410853327
-0,consent-timed proxy,2035,net_market_effect,-0.14073321953556311
-0,consent-timed proxy,2036,net_market_effect,2.1250362580715887e-17
-0,consent-timed proxy,2037,net_market_effect,-9.356664748549903e-17
-0,consent-timed proxy,2038,net_market_effect,1.8978959029358755e-16
-0,consent-timed proxy,2039,net_market_effect,2.2689640964690394e-16
-0,consent-timed proxy,2040,net_market_effect,-2.0990154059319366e-16
-0,consent-timed proxy,2041,net_market_effect,-1.6249480060126498e-17
-0,consent-timed proxy,2042,net_market_effect,5.21772295508649e-19
-0,consent-timed proxy,2043,net_market_effect,-3.337987438539747e-17
-0,consent-timed proxy,2044,net_market_effect,6.989546474153036e-17
-0,consent-timed proxy,2045,net_market_effect,6.868081949516769e-17
-0,consent-timed proxy,2046,net_market_effect,-2.355645213126308e-16
-0,consent-timed proxy,2047,net_market_effect,1.2433914270101095e-16
-0,consent-timed proxy,2048,net_market_effect,7.766974488966714e-18
-0,consent-timed proxy,2049,net_market_effect,1.9489026388327534e-16
-0,consent-timed proxy,2050,net_market_effect,3.6071136286840795e-17
-0,consent-timed proxy,2026,total_built,5.14940517
-0,consent-timed proxy,2027,total_built,4.396978340476009
-0,consent-timed proxy,2028,total_built,3.996376826523756
-0,consent-timed proxy,2029,total_built,3.6903650624922184
-0,consent-timed proxy,2030,total_built,3.4464259817330163
-0,consent-timed proxy,2031,total_built,3.3035719708853963
-0,consent-timed proxy,2032,total_built,3.307633702061464
-0,consent-timed proxy,2033,total_built,3.3761762543401543
-0,consent-timed proxy,2034,total_built,3.4675256923218623
-0,consent-timed proxy,2035,total_built,3.5450377727945157
-0,consent-timed proxy,2036,total_built,3.6115412788046712
-0,consent-timed proxy,2037,total_built,3.509718113856631
-0,consent-timed proxy,2038,total_built,3.38439983199335
-0,consent-timed proxy,2039,total_built,3.2484355548766506
-0,consent-timed proxy,2040,total_built,3.145899181049931
-0,consent-timed proxy,2041,total_built,3.088177665733356
-0,consent-timed proxy,2042,total_built,3.0767014303579323
-0,consent-timed proxy,2043,total_built,3.1128622153010435
-0,consent-timed proxy,2044,total_built,3.1319855999249135
-0,consent-timed proxy,2045,total_built,3.1020518962888457
-0,consent-timed proxy,2046,total_built,3.0727404090957267
-0,consent-timed proxy,2047,total_built,3.0440157057238424
-0,consent-timed proxy,2048,total_built,3.0158441740396804
-0,consent-timed proxy,2049,total_built,2.9881939405821636
-0,consent-timed proxy,2050,total_built,2.9610347913309996
-17,completion-timed,2026,population_growth,1.132499949823877
-17,completion-timed,2027,population_growth,1.7039462409952315
-17,completion-timed,2028,population_growth,1.7252914281707703
-17,completion-timed,2029,population_growth,1.7252914281707703
-17,completion-timed,2030,population_growth,1.7252914281707703
-17,completion-timed,2031,population_growth,1.7252914281707703
-17,completion-timed,2032,population_growth,1.7252914281707703
-17,completion-timed,2033,population_growth,1.7252914281707703
-17,completion-timed,2034,population_growth,1.7206906510289819
-17,completion-timed,2035,population_growth,1.7089331094444105
-17,completion-timed,2036,population_growth,1.6930859881782494
-17,completion-timed,2037,population_growth,1.6762164719916908
-17,completion-timed,2038,population_growth,1.6613917456459273
-17,completion-timed,2039,population_growth,1.6486118091409585
-17,completion-timed,2040,population_growth,1.63583187263599
-17,completion-timed,2041,population_growth,1.623051936131021
-17,completion-timed,2042,population_growth,1.6102719996260526
-17,completion-timed,2043,population_growth,1.5974920631210838
-17,completion-timed,2044,population_growth,1.5847121266161153
-17,completion-timed,2045,population_growth,1.5719321901111463
-17,completion-timed,2046,population_growth,1.559152253606178
-17,completion-timed,2047,population_growth,1.5463723171012091
-17,completion-timed,2048,population_growth,1.5335923805962406
-17,completion-timed,2049,population_growth,1.5208124440912718
-17,completion-timed,2050,population_growth,1.508032507586303
-17,completion-timed,2026,household_size_change,0.14988874878757213
-17,completion-timed,2027,household_size_change,0.15490923409663931
-17,completion-timed,2028,household_size_change,0.1774335098901141
-17,completion-timed,2029,household_size_change,0.2225796774482569
-17,completion-timed,2030,household_size_change,0.25753657317921436
-17,completion-timed,2031,household_size_change,0.26317989711558337
-17,completion-timed,2032,household_size_change,0.2384715319039225
-17,completion-timed,2033,household_size_change,0.18237123435875488
-17,completion-timed,2034,household_size_change,0.1458853206873586
-17,completion-timed,2035,household_size_change,0.14066392351605894
-17,completion-timed,2036,household_size_change,0.12018520482773921
-17,completion-timed,2037,household_size_change,0.08399838910300866
-17,completion-timed,2038,household_size_change,0.03168243904420859
-17,completion-timed,2039,household_size_change,-0.028987051971968308
-17,completion-timed,2040,household_size_change,-0.06970478325835086
-17,completion-timed,2041,household_size_change,-0.08386727528295924
-17,completion-timed,2042,household_size_change,-0.07081965814830453
-17,completion-timed,2043,household_size_change,-0.029930209281324713
-17,completion-timed,2044,household_size_change,-1.532094984291495e-15
-17,completion-timed,2045,household_size_change,6.347250649207622e-15
-17,completion-timed,2046,household_size_change,-2.5170131884788846e-14
-17,completion-timed,2047,household_size_change,2.23248126282475e-14
-17,completion-timed,2048,household_size_change,-9.19256990574897e-15
-17,completion-timed,2049,household_size_change,-1.0943535602082106e-15
-17,completion-timed,2050,household_size_change,6.784992073290906e-15
-17,completion-timed,2026,net_replacement,0.47351292340854867
-17,completion-timed,2027,net_replacement,0.4584731072105086
-17,completion-timed,2028,net_replacement,0.44878221894226744
-17,completion-timed,2029,net_replacement,0.43510972567962514
-17,completion-timed,2030,net_replacement,0.4224059220438301
-17,completion-timed,2031,net_replacement,0.4105906702092162
-17,completion-timed,2032,net_replacement,0.39954796436848883
-17,completion-timed,2033,net_replacement,0.3891713108724507
-17,completion-timed,2034,net_replacement,0.3793625381358706
-17,completion-timed,2035,net_replacement,0.3701264440227383
-17,completion-timed,2036,net_replacement,0.3614824670554845
-17,completion-timed,2037,net_replacement,0.3533634287194729
-17,completion-timed,2038,net_replacement,0.3457123867120871
-17,completion-timed,2039,net_replacement,0.33848131553910227
-17,completion-timed,2040,net_replacement,0.33163884197115756
-17,completion-timed,2041,net_replacement,0.32519913399688954
-17,completion-timed,2042,net_replacement,0.31918415979479
-17,completion-timed,2043,net_replacement,0.3136135051879361
-17,completion-timed,2044,net_replacement,0.30850492763803544
-17,completion-timed,2045,net_replacement,0.30381517626234716
-17,completion-timed,2046,net_replacement,0.29947592895083114
-17,completion-timed,2047,net_replacement,0.29546712470476455
-17,completion-timed,2048,net_replacement,0.29176973323720157
-17,completion-timed,2049,net_replacement,0.28836570865056416
-17,completion-timed,2050,net_replacement,0.2852379445782202
-17,completion-timed,2026,other,0.86320659839455
-17,completion-timed,2027,other,1.2522209437887608
-17,completion-timed,2028,other,1.340248340167733
-17,completion-timed,2029,other,1.3762691129631544
-17,completion-timed,2030,other,1.4058976877591776
-17,completion-timed,2031,other,1.4149097556709782
-17,completion-timed,2032,other,1.4017752684803417
-17,completion-timed,2033,other,1.3650053195083427
-17,completion-timed,2034,other,1.3381480470478786
-17,completion-timed,2035,other,1.3283837161160787
-17,completion-timed,2036,other,1.3042942331464946
-17,completion-timed,2037,other,1.26747579658935
-17,completion-timed,2038,other,1.2196137189257665
-17,completion-timed,2039,other,1.1662843457474266
-17,completion-timed,2040,other,1.1267935508002755
-17,completion-timed,2041,other,1.106275226914376
-17,completion-timed,2042,other,1.1055182228696845
-17,completion-timed,2043,other,1.1252991508235264
-17,completion-timed,2044,other,1.137610746276267
-17,completion-timed,2045,other,1.1284364660643673
-17,completion-timed,2046,other,1.1192621858524394
-17,completion-timed,2047,other,1.1100879056405681
-17,completion-timed,2048,other,1.1009136254286402
-17,completion-timed,2049,other,1.0917393452167405
-17,completion-timed,2050,other,1.0825650650048408
-17,completion-timed,2026,market_excess,1.7152164945854522
-17,completion-timed,2027,market_excess,1.5798556439088591
-17,completion-timed,2028,market_excess,0.7076759895622311
-17,completion-timed,2029,market_excess,0.30695463729187733
-17,completion-timed,2030,market_excess,0.13314165062074984
-17,completion-timed,2031,market_excess,0.05775022422339829
-17,completion-timed,2032,market_excess,0.025049174186315915
-17,completion-timed,2033,market_excess,0.010865085562077718
-17,completion-timed,2034,market_excess,0.004712733577291307
-17,completion-timed,2035,market_excess,0.0020441493666693
-17,completion-timed,2036,market_excess,0.000886650298542054
-17,completion-timed,2037,market_excess,0.0003845847885302286
-17,completion-timed,2038,market_excess,0.00016681374811698153
-17,completion-timed,2039,market_excess,7.235550492566753e-05
-17,completion-timed,2040,market_excess,3.138421834018695e-05
-17,completion-timed,2041,market_excess,1.3612912546687472e-05
-17,completion-timed,2042,market_excess,5.904604218435265e-06
-17,completion-timed,2043,market_excess,2.5611235550651728e-06
-17,completion-timed,2044,market_excess,1.1108879819294498e-06
-17,completion-timed,2045,market_excess,4.818479397273291e-07
-17,completion-timed,2046,market_excess,2.0900166425080368e-07
-17,completion-timed,2047,market_excess,9.065452408974607e-08
-17,completion-timed,2048,market_excess,3.93214224747818e-08
-17,completion-timed,2049,market_excess,1.7055676823250376e-08
-17,completion-timed,2050,market_excess,7.3979040836002795e-09
-17,completion-timed,2026,overbuild_absorbed,0.0
-17,completion-timed,2027,overbuild_absorbed,0.0
-17,completion-timed,2028,overbuild_absorbed,-0.18929736902210068
-17,completion-timed,2029,overbuild_absorbed,-0.4168106518967521
-17,completion-timed,2030,overbuild_absorbed,-0.7308294704907623
-17,completion-timed,2031,overbuild_absorbed,-0.997654069096937
-17,completion-timed,2032,overbuild_absorbed,-0.9986982056999946
-17,completion-timed,2033,overbuild_absorbed,-0.7350028368122227
-17,completion-timed,2034,overbuild_absorbed,-0.42778394176327755
-17,completion-timed,2035,overbuild_absorbed,-0.2157777189234112
-17,completion-timed,2036,overbuild_absorbed,-0.0008866502985423951
-17,completion-timed,2037,overbuild_absorbed,-0.0003845847885300643
-17,completion-timed,2038,overbuild_absorbed,-0.0001668137481171468
-17,completion-timed,2039,overbuild_absorbed,-7.235550492532637e-05
-17,completion-timed,2040,overbuild_absorbed,-3.138421833978406e-05
-17,completion-timed,2041,overbuild_absorbed,-1.3612912546517939e-05
-17,completion-timed,2042,overbuild_absorbed,-5.90460421876398e-06
-17,completion-timed,2043,overbuild_absorbed,-2.5611235548592497e-06
-17,completion-timed,2044,overbuild_absorbed,-1.1108879817715265e-06
-17,completion-timed,2045,overbuild_absorbed,-4.818479402092578e-07
-17,completion-timed,2046,overbuild_absorbed,-2.09001664376661e-07
-17,completion-timed,2047,overbuild_absorbed,-9.065452431963894e-08
-17,completion-timed,2048,overbuild_absorbed,-3.932142241407237e-08
-17,completion-timed,2049,overbuild_absorbed,-1.7055677305578078e-08
-17,completion-timed,2050,overbuild_absorbed,-7.397903871123828e-09
-17,completion-timed,2026,underlying_requirement,2.6191082204145477
-17,completion-timed,2027,underlying_requirement,3.5695495260911403
-17,completion-timed,2028,underlying_requirement,3.6917554971708846
-17,completion-timed,2029,underlying_requirement,3.759249944261807
-17,completion-timed,2030,underlying_requirement,3.8111316111529923
-17,completion-timed,2031,underlying_requirement,3.813971751166548
-17,completion-timed,2032,underlying_requirement,3.7650861929235235
-17,completion-timed,2033,underlying_requirement,3.6618392929103187
-17,completion-timed,2034,underlying_requirement,3.5840865569000897
-17,completion-timed,2035,underlying_requirement,3.5481071930992867
-17,completion-timed,2036,underlying_requirement,3.4790478932079676
-17,completion-timed,2037,underlying_requirement,3.3810540864035223
-17,completion-timed,2038,underlying_requirement,3.258400290327989
-17,completion-timed,2039,underlying_requirement,3.124390418455519
-17,completion-timed,2040,underlying_requirement,3.024559482149072
-17,completion-timed,2041,underlying_requirement,2.970659021759327
-17,completion-timed,2042,underlying_requirement,2.9641547241422224
-17,completion-timed,2043,underlying_requirement,3.0064745098512216
-17,completion-timed,2044,underlying_requirement,3.030827800530416
-17,completion-timed,2045,underlying_requirement,3.0041838324378674
-17,completion-timed,2046,underlying_requirement,2.9778903684094233
-17,completion-timed,2047,underlying_requirement,2.9519273474465644
-17,completion-timed,2048,underlying_requirement,2.9262757392620733
-17,completion-timed,2049,underlying_requirement,2.9009174979585755
-17,completion-timed,2050,underlying_requirement,2.875835517169371
-17,completion-timed,2026,net_market_effect,1.7152164945854522
-17,completion-timed,2027,net_market_effect,1.5798556439088591
-17,completion-timed,2028,net_market_effect,0.5183786205401304
-17,completion-timed,2029,net_market_effect,-0.10985601460487476
-17,completion-timed,2030,net_market_effect,-0.5976878198700124
-17,completion-timed,2031,net_market_effect,-0.9399038448735387
-17,completion-timed,2032,net_market_effect,-0.9736490315136787
-17,completion-timed,2033,net_market_effect,-0.7241377512501449
-17,completion-timed,2034,net_market_effect,-0.42307120818598626
-17,completion-timed,2035,net_market_effect,-0.2137335695567419
-17,completion-timed,2036,net_market_effect,-3.410900034639397e-16
-17,completion-timed,2037,net_market_effect,1.643108392401782e-16
-17,completion-timed,2038,net_market_effect,-1.6525951614110301e-16
-17,completion-timed,2039,net_market_effect,3.4115776609972004e-16
-17,completion-timed,2040,net_market_effect,4.0288952729561345e-16
-17,completion-timed,2041,net_market_effect,1.6953364439294821e-16
-17,completion-timed,2042,net_market_effect,-3.2871485210455437e-16
-17,completion-timed,2043,net_market_effect,2.059230268399402e-16
-17,completion-timed,2044,net_market_effect,1.5792336378493352e-16
-17,completion-timed,2045,net_market_effect,-4.81928712702754e-16
-17,completion-timed,2046,net_market_effect,-1.2585731691006628e-16
-17,completion-timed,2047,net_market_effect,-2.2989286810715483e-16
-17,completion-timed,2048,net_market_effect,6.070943213322687e-17
-17,completion-timed,2049,net_market_effect,-4.823277016168577e-16
-17,completion-timed,2050,net_market_effect,2.1247645126967528e-16
-17,completion-timed,2026,total_built,4.334324715
-17,completion-timed,2027,total_built,5.14940517
-17,completion-timed,2028,total_built,4.210134117711016
-17,completion-timed,2029,total_built,3.649393929656932
-17,completion-timed,2030,total_built,3.21344379128298
-17,completion-timed,2031,total_built,2.8740679062930092
-17,completion-timed,2032,total_built,2.7914371614098448
-17,completion-timed,2033,total_built,2.9377015416601737
-17,completion-timed,2034,total_built,3.161015348714103
-17,completion-timed,2035,total_built,3.3343736235425445
-17,completion-timed,2036,total_built,3.479047893207967
-17,completion-timed,2037,total_built,3.381054086403523
-17,completion-timed,2038,total_built,3.258400290327989
-17,completion-timed,2039,total_built,3.1243904184555196
-17,completion-timed,2040,total_built,3.0245594821490727
-17,completion-timed,2041,total_built,2.9706590217593276
-17,completion-timed,2042,total_built,2.9641547241422224
-17,completion-timed,2043,total_built,3.006474509851222
-17,completion-timed,2044,total_built,3.0308278005304166
-17,completion-timed,2045,total_built,3.0041838324378674
-17,completion-timed,2046,total_built,2.9778903684094233
-17,completion-timed,2047,total_built,2.9519273474465635
-17,completion-timed,2048,total_built,2.9262757392620733
-17,completion-timed,2049,total_built,2.900917497958575
-17,completion-timed,2050,total_built,2.8758355171693712
+run,lag_months,timing,year,category,floor_area_Mm2
+lag_0,0,consent-timed proxy,2026,population_growth,1.142446658794669
+lag_0,0,consent-timed proxy,2027,population_growth,1.7005246629387099
+lag_0,0,consent-timed proxy,2028,population_growth,1.7326100339375534
+lag_0,0,consent-timed proxy,2029,population_growth,1.7326100339375534
+lag_0,0,consent-timed proxy,2030,population_growth,1.7326100339375534
+lag_0,0,consent-timed proxy,2031,population_growth,1.7326100339375534
+lag_0,0,consent-timed proxy,2032,population_growth,1.7326100339375534
+lag_0,0,consent-timed proxy,2033,population_growth,1.7326100339375534
+lag_0,0,consent-timed proxy,2034,population_growth,1.7279897405137201
+lag_0,0,consent-timed proxy,2035,population_growth,1.7161823239861453
+lag_0,0,consent-timed proxy,2036,population_growth,1.7002679799707192
+lag_0,0,consent-timed proxy,2037,population_growth,1.6833269040833296
+lag_0,0,consent-timed proxy,2038,population_growth,1.6684392919398663
+lag_0,0,consent-timed proxy,2039,population_growth,1.6556051435403292
+lag_0,0,consent-timed proxy,2040,population_growth,1.6427709951407914
+lag_0,0,consent-timed proxy,2041,population_growth,1.629936846741254
+lag_0,0,consent-timed proxy,2042,population_growth,1.6171026983417165
+lag_0,0,consent-timed proxy,2043,population_growth,1.6042685499421792
+lag_0,0,consent-timed proxy,2044,population_growth,1.5914344015426416
+lag_0,0,consent-timed proxy,2045,population_growth,1.5786002531431043
+lag_0,0,consent-timed proxy,2046,population_growth,1.565766104743567
+lag_0,0,consent-timed proxy,2047,population_growth,1.5529319563440294
+lag_0,0,consent-timed proxy,2048,population_growth,1.540097807944492
+lag_0,0,consent-timed proxy,2049,population_growth,1.5272636595449545
+lag_0,0,consent-timed proxy,2050,population_growth,1.5144295111454171
+lag_0,0,consent-timed proxy,2026,household_size_change,0.15120521662707875
+lag_0,0,consent-timed proxy,2027,household_size_change,0.15459817144490445
+lag_0,0,consent-timed proxy,2028,household_size_change,0.1781861745631654
+lag_0,0,consent-timed proxy,2029,household_size_change,0.2235238500583699
+lag_0,0,consent-timed proxy,2030,household_size_change,0.25862903131054876
+lag_0,0,consent-timed proxy,2031,household_size_change,0.26429629396383847
+lag_0,0,consent-timed proxy,2032,household_size_change,0.23948311701940408
+lag_0,0,consent-timed proxy,2033,household_size_change,0.1831448446286954
+lag_0,0,consent-timed proxy,2034,household_size_change,0.14650415941329126
+lag_0,0,consent-timed proxy,2035,household_size_change,0.14126061331872825
+lag_0,0,consent-timed proxy,2036,household_size_change,0.12069502486090736
+lag_0,0,consent-timed proxy,2037,household_size_change,0.08435470635170779
+lag_0,0,consent-timed proxy,2038,household_size_change,0.031816834472893386
+lag_0,0,consent-timed proxy,2039,household_size_change,-0.02911001369441132
+lag_0,0,consent-timed proxy,2040,household_size_change,-0.07000046769774322
+lag_0,0,consent-timed proxy,2041,household_size_change,-0.08422303635294913
+lag_0,0,consent-timed proxy,2042,household_size_change,-0.07112007183497959
+lag_0,0,consent-timed proxy,2043,household_size_change,-0.030057171833082926
+lag_0,0,consent-timed proxy,2044,household_size_change,-1.5379362777806426e-15
+lag_0,0,consent-timed proxy,2045,household_size_change,6.371450293662662e-15
+lag_0,0,consent-timed proxy,2046,household_size_change,-2.5046390809570465e-14
+lag_0,0,consent-timed proxy,2047,household_size_change,2.2409928619089364e-14
+lag_0,0,consent-timed proxy,2048,household_size_change,-9.007912484143764e-15
+lag_0,0,consent-timed proxy,2049,household_size_change,-1.3182310952405506e-15
+lag_0,0,consent-timed proxy,2050,household_size_change,6.8108606587428455e-15
+lag_0,0,consent-timed proxy,2026,net_replacement,0.811347467690071
+lag_0,0,consent-timed proxy,2027,net_replacement,0.776845249298788
+lag_0,0,consent-timed proxy,2028,net_replacement,0.750379450442626
+lag_0,0,consent-timed proxy,2029,net_replacement,0.7257665617993219
+lag_0,0,consent-timed proxy,2030,net_replacement,0.7028530041272077
+lag_0,0,consent-timed proxy,2031,net_replacement,0.6814996065403652
+lag_0,0,consent-timed proxy,2032,net_replacement,0.6615086172626774
+lag_0,0,consent-timed proxy,2033,net_replacement,0.6426994527035867
+lag_0,0,consent-timed proxy,2034,net_replacement,0.6249065898798438
+lag_0,0,consent-timed proxy,2035,net_replacement,0.6081349371330321
+lag_0,0,consent-timed proxy,2036,net_replacement,0.5924129336280528
+lag_0,0,consent-timed proxy,2037,net_replacement,0.5776267426992272
+lag_0,0,consent-timed proxy,2038,net_replacement,0.5636800046912485
+lag_0,0,consent-timed proxy,2039,net_replacement,0.5504914895676815
+lag_0,0,consent-timed proxy,2040,net_replacement,0.5380074691809635
+lag_0,0,consent-timed proxy,2041,net_replacement,0.526248133743261
+lag_0,0,consent-timed proxy,2042,net_replacement,0.5152457714034464
+lag_0,0,consent-timed proxy,2043,net_replacement,0.5050282559562363
+lag_0,0,consent-timed proxy,2044,net_replacement,0.49562003039282765
+lag_0,0,consent-timed proxy,2045,net_replacement,0.4869473394142637
+lag_0,0,consent-timed proxy,2046,net_replacement,0.4788968648787139
+lag_0,0,consent-timed proxy,2047,net_replacement,0.4714331741642678
+lag_0,0,consent-timed proxy,2048,net_replacement,0.4645226551376751
+lag_0,0,consent-timed proxy,2049,net_replacement,0.458133434337661
+lag_0,0,consent-timed proxy,2050,net_replacement,0.45223529774400095
+lag_0,0,consent-timed proxy,2026,other,0.8257192562378286
+lag_0,0,consent-timed proxy,2027,other,1.1908323364571216
+lag_0,0,consent-timed proxy,2028,other,1.2297802377276381
+lag_0,0,consent-timed proxy,2029,other,1.2630466576772355
+lag_0,0,consent-timed proxy,2030,other,1.2904876617011822
+lag_0,0,consent-timed proxy,2031,other,1.299013047121068
+lag_0,0,consent-timed proxy,2032,other,1.2871782591529854
+lag_0,0,consent-timed proxy,2033,other,1.253578661649635
+lag_0,0,consent-timed proxy,2034,other,1.2290410066235407
+lag_0,0,consent-timed proxy,2035,other,1.2201931178921728
+lag_0,0,consent-timed proxy,2036,other,1.198165340344992
+lag_0,0,consent-timed proxy,2037,other,1.1644097607223667
+lag_0,0,consent-timed proxy,2038,other,1.1204637008893412
+lag_0,0,consent-timed proxy,2039,other,1.0714489354630512
+lag_0,0,consent-timed proxy,2040,other,1.0351211844259194
+lag_0,0,consent-timed proxy,2041,other,1.01621572160179
+lag_0,0,consent-timed proxy,2042,other,1.0154730324477483
+lag_0,0,consent-timed proxy,2043,other,1.033622581235711
+lag_0,0,consent-timed proxy,2044,other,1.0449311679894455
+lag_0,0,consent-timed proxy,2045,other,1.0365043037314714
+lag_0,0,consent-timed proxy,2046,other,1.0280774394734713
+lag_0,0,consent-timed proxy,2047,other,1.0196505752155232
+lag_0,0,consent-timed proxy,2048,other,1.0112237109575228
+lag_0,0,consent-timed proxy,2049,other,1.0027968466995487
+lag_0,0,consent-timed proxy,2050,other,0.9943699824415746
+lag_0,0,consent-timed proxy,2026,market_excess,2.2186865706503527
+lag_0,0,consent-timed proxy,2027,market_excess,0.6869810737110512
+lag_0,0,consent-timed proxy,2028,market_excess,0.3542048772384635
+lag_0,0,consent-timed proxy,2029,market_excess,0.18262671252612225
+lag_0,0,consent-timed proxy,2030,market_excess,0.09416165126841208
+lag_0,0,consent-timed proxy,2031,market_excess,0.04854939590683279
+lag_0,0,consent-timed proxy,2032,market_excess,0.025031887304095078
+lag_0,0,consent-timed proxy,2033,market_excess,0.012906347654816647
+lag_0,0,consent-timed proxy,2034,market_excess,0.006654464673933739
+lag_0,0,consent-timed proxy,2035,market_excess,0.00343101714605573
+lag_0,0,consent-timed proxy,2036,market_excess,0.0017690196331855413
+lag_0,0,consent-timed proxy,2037,market_excess,0.0009120999194636714
+lag_0,0,consent-timed proxy,2038,market_excess,0.00047027531378357533
+lag_0,0,consent-timed proxy,2039,market_excess,0.00024247219634038018
+lag_0,0,consent-timed proxy,2040,market_excess,0.00012501775933147275
+lag_0,0,consent-timed proxy,2041,market_excess,6.445869004428693e-05
+lag_0,0,consent-timed proxy,2042,market_excess,3.3234659975060585e-05
+lag_0,0,consent-timed proxy,2043,market_excess,1.7135666624608844e-05
+lag_0,0,consent-timed proxy,2044,market_excess,8.835085747532106e-06
+lag_0,0,consent-timed proxy,2045,market_excess,4.5553372317679975e-06
+lag_0,0,consent-timed proxy,2046,market_excess,2.3487148725102203e-06
+lag_0,0,consent-timed proxy,2047,market_excess,1.2109886209697087e-06
+lag_0,0,consent-timed proxy,2048,market_excess,6.243812125866018e-07
+lag_0,0,consent-timed proxy,2049,market_excess,3.2192862251582364e-07
+lag_0,0,consent-timed proxy,2050,market_excess,1.6598519607212087e-07
+lag_0,0,consent-timed proxy,2026,overbuild_absorbed,0.0
+lag_0,0,consent-timed proxy,2027,overbuild_absorbed,-0.11280315337456624
+lag_0,0,consent-timed proxy,2028,overbuild_absorbed,-0.24878394738569123
+lag_0,0,consent-timed proxy,2029,overbuild_absorbed,-0.4372087535063847
+lag_0,0,consent-timed proxy,2030,overbuild_absorbed,-0.6323154006118883
+lag_0,0,consent-timed proxy,2031,overbuild_absorbed,-0.7223964065842612
+lag_0,0,consent-timed proxy,2032,overbuild_absorbed,-0.6381782126152516
+lag_0,0,consent-timed proxy,2033,overbuild_absorbed,-0.44876308623413336
+lag_0,0,consent-timed proxy,2034,overbuild_absorbed,-0.267570268782467
+lag_0,0,consent-timed proxy,2035,overbuild_absorbed,-0.14416423668161885
+lag_0,0,consent-timed proxy,2036,overbuild_absorbed,-0.00176901963318552
+lag_0,0,consent-timed proxy,2037,overbuild_absorbed,-0.000912099919463765
+lag_0,0,consent-timed proxy,2038,overbuild_absorbed,-0.00047027531378338554
+lag_0,0,consent-timed proxy,2039,overbuild_absorbed,-0.0002424721963401533
+lag_0,0,consent-timed proxy,2040,overbuild_absorbed,-0.00012501775933168265
+lag_0,0,consent-timed proxy,2041,overbuild_absorbed,-6.445869004430318e-05
+lag_0,0,consent-timed proxy,2042,overbuild_absorbed,-3.323465997506006e-05
+lag_0,0,consent-timed proxy,2043,overbuild_absorbed,-1.7135666624642224e-05
+lag_0,0,consent-timed proxy,2044,overbuild_absorbed,-8.83508574746221e-06
+lag_0,0,consent-timed proxy,2045,overbuild_absorbed,-4.555337231699317e-06
+lag_0,0,consent-timed proxy,2046,overbuild_absorbed,-2.3487148727457848e-06
+lag_0,0,consent-timed proxy,2047,overbuild_absorbed,-1.2109886208453695e-06
+lag_0,0,consent-timed proxy,2048,overbuild_absorbed,-6.243812125788348e-07
+lag_0,0,consent-timed proxy,2049,overbuild_absorbed,-3.219286223209334e-07
+lag_0,0,consent-timed proxy,2050,overbuild_absorbed,-1.6598519603604973e-07
+lag_0,0,consent-timed proxy,2026,underlying_requirement,2.9307185993496474
+lag_0,0,consent-timed proxy,2027,underlying_requirement,3.822800420139524
+lag_0,0,consent-timed proxy,2028,underlying_requirement,3.8909558966709827
+lag_0,0,consent-timed proxy,2029,underlying_requirement,3.9449471034724803
+lag_0,0,consent-timed proxy,2030,underlying_requirement,3.984579731076492
+lag_0,0,consent-timed proxy,2031,underlying_requirement,3.977418981562825
+lag_0,0,consent-timed proxy,2032,underlying_requirement,3.9207800273726203
+lag_0,0,consent-timed proxy,2033,underlying_requirement,3.8120329929194705
+lag_0,0,consent-timed proxy,2034,underlying_requirement,3.7284414964303956
+lag_0,0,consent-timed proxy,2035,underlying_requirement,3.6857709923300783
+lag_0,0,consent-timed proxy,2036,underlying_requirement,3.611541278804671
+lag_0,0,consent-timed proxy,2037,underlying_requirement,3.509718113856631
+lag_0,0,consent-timed proxy,2038,underlying_requirement,3.384399831993349
+lag_0,0,consent-timed proxy,2039,underlying_requirement,3.2484355548766506
+lag_0,0,consent-timed proxy,2040,underlying_requirement,3.1458991810499306
+lag_0,0,consent-timed proxy,2041,underlying_requirement,3.0881776657333555
+lag_0,0,consent-timed proxy,2042,underlying_requirement,3.0767014303579314
+lag_0,0,consent-timed proxy,2043,underlying_requirement,3.1128622153010435
+lag_0,0,consent-timed proxy,2044,underlying_requirement,3.131985599924913
+lag_0,0,consent-timed proxy,2045,underlying_requirement,3.1020518962888457
+lag_0,0,consent-timed proxy,2046,underlying_requirement,3.0727404090957267
+lag_0,0,consent-timed proxy,2047,underlying_requirement,3.044015705723843
+lag_0,0,consent-timed proxy,2048,underlying_requirement,3.015844174039681
+lag_0,0,consent-timed proxy,2049,underlying_requirement,2.988193940582163
+lag_0,0,consent-timed proxy,2050,underlying_requirement,2.9610347913309996
+lag_0,0,consent-timed proxy,2026,net_market_effect,2.2186865706503527
+lag_0,0,consent-timed proxy,2027,net_market_effect,0.574177920336485
+lag_0,0,consent-timed proxy,2028,net_market_effect,0.10542092985277227
+lag_0,0,consent-timed proxy,2029,net_market_effect,-0.2545820409802625
+lag_0,0,consent-timed proxy,2030,net_market_effect,-0.5381537493434763
+lag_0,0,consent-timed proxy,2031,net_market_effect,-0.6738470106774284
+lag_0,0,consent-timed proxy,2032,net_market_effect,-0.6131463253111565
+lag_0,0,consent-timed proxy,2033,net_market_effect,-0.4358567385793167
+lag_0,0,consent-timed proxy,2034,net_market_effect,-0.26091580410853327
+lag_0,0,consent-timed proxy,2035,net_market_effect,-0.14073321953556311
+lag_0,0,consent-timed proxy,2036,net_market_effect,2.1250362580715887e-17
+lag_0,0,consent-timed proxy,2037,net_market_effect,-9.356664748549903e-17
+lag_0,0,consent-timed proxy,2038,net_market_effect,1.8978959029358755e-16
+lag_0,0,consent-timed proxy,2039,net_market_effect,2.2689640964690394e-16
+lag_0,0,consent-timed proxy,2040,net_market_effect,-2.0990154059319366e-16
+lag_0,0,consent-timed proxy,2041,net_market_effect,-1.6249480060126498e-17
+lag_0,0,consent-timed proxy,2042,net_market_effect,5.21772295508649e-19
+lag_0,0,consent-timed proxy,2043,net_market_effect,-3.337987438539747e-17
+lag_0,0,consent-timed proxy,2044,net_market_effect,6.989546474153036e-17
+lag_0,0,consent-timed proxy,2045,net_market_effect,6.868081949516769e-17
+lag_0,0,consent-timed proxy,2046,net_market_effect,-2.355645213126308e-16
+lag_0,0,consent-timed proxy,2047,net_market_effect,1.2433914270101095e-16
+lag_0,0,consent-timed proxy,2048,net_market_effect,7.766974488966714e-18
+lag_0,0,consent-timed proxy,2049,net_market_effect,1.9489026388327534e-16
+lag_0,0,consent-timed proxy,2050,net_market_effect,3.6071136286840795e-17
+lag_0,0,consent-timed proxy,2026,total_built,5.14940517
+lag_0,0,consent-timed proxy,2027,total_built,4.396978340476009
+lag_0,0,consent-timed proxy,2028,total_built,3.996376826523756
+lag_0,0,consent-timed proxy,2029,total_built,3.6903650624922184
+lag_0,0,consent-timed proxy,2030,total_built,3.4464259817330163
+lag_0,0,consent-timed proxy,2031,total_built,3.3035719708853963
+lag_0,0,consent-timed proxy,2032,total_built,3.307633702061464
+lag_0,0,consent-timed proxy,2033,total_built,3.3761762543401543
+lag_0,0,consent-timed proxy,2034,total_built,3.4675256923218623
+lag_0,0,consent-timed proxy,2035,total_built,3.5450377727945157
+lag_0,0,consent-timed proxy,2036,total_built,3.6115412788046712
+lag_0,0,consent-timed proxy,2037,total_built,3.509718113856631
+lag_0,0,consent-timed proxy,2038,total_built,3.38439983199335
+lag_0,0,consent-timed proxy,2039,total_built,3.2484355548766506
+lag_0,0,consent-timed proxy,2040,total_built,3.145899181049931
+lag_0,0,consent-timed proxy,2041,total_built,3.088177665733356
+lag_0,0,consent-timed proxy,2042,total_built,3.0767014303579323
+lag_0,0,consent-timed proxy,2043,total_built,3.1128622153010435
+lag_0,0,consent-timed proxy,2044,total_built,3.1319855999249135
+lag_0,0,consent-timed proxy,2045,total_built,3.1020518962888457
+lag_0,0,consent-timed proxy,2046,total_built,3.0727404090957267
+lag_0,0,consent-timed proxy,2047,total_built,3.0440157057238424
+lag_0,0,consent-timed proxy,2048,total_built,3.0158441740396804
+lag_0,0,consent-timed proxy,2049,total_built,2.9881939405821636
+lag_0,0,consent-timed proxy,2050,total_built,2.9610347913309996
+lag_0_held,0,consent-timed proxy,2026,population_growth,1.142446658794669
+lag_0_held,0,consent-timed proxy,2027,population_growth,1.7005246629387099
+lag_0_held,0,consent-timed proxy,2028,population_growth,1.7326100339375534
+lag_0_held,0,consent-timed proxy,2029,population_growth,1.7326100339375534
+lag_0_held,0,consent-timed proxy,2030,population_growth,1.7326100339375534
+lag_0_held,0,consent-timed proxy,2031,population_growth,1.7326100339375534
+lag_0_held,0,consent-timed proxy,2032,population_growth,1.7326100339375534
+lag_0_held,0,consent-timed proxy,2033,population_growth,1.7326100339375534
+lag_0_held,0,consent-timed proxy,2034,population_growth,1.7279897405137201
+lag_0_held,0,consent-timed proxy,2035,population_growth,1.7161823239861453
+lag_0_held,0,consent-timed proxy,2036,population_growth,1.7002679799707192
+lag_0_held,0,consent-timed proxy,2037,population_growth,1.6833269040833296
+lag_0_held,0,consent-timed proxy,2038,population_growth,1.6684392919398663
+lag_0_held,0,consent-timed proxy,2039,population_growth,1.6556051435403292
+lag_0_held,0,consent-timed proxy,2040,population_growth,1.6427709951407914
+lag_0_held,0,consent-timed proxy,2041,population_growth,1.629936846741254
+lag_0_held,0,consent-timed proxy,2042,population_growth,1.6171026983417165
+lag_0_held,0,consent-timed proxy,2043,population_growth,1.6042685499421792
+lag_0_held,0,consent-timed proxy,2044,population_growth,1.5914344015426416
+lag_0_held,0,consent-timed proxy,2045,population_growth,1.5786002531431043
+lag_0_held,0,consent-timed proxy,2046,population_growth,1.565766104743567
+lag_0_held,0,consent-timed proxy,2047,population_growth,1.5529319563440294
+lag_0_held,0,consent-timed proxy,2048,population_growth,1.540097807944492
+lag_0_held,0,consent-timed proxy,2049,population_growth,1.5272636595449545
+lag_0_held,0,consent-timed proxy,2050,population_growth,1.5144295111454171
+lag_0_held,0,consent-timed proxy,2026,household_size_change,0.15120521662707875
+lag_0_held,0,consent-timed proxy,2027,household_size_change,0.15459817144490445
+lag_0_held,0,consent-timed proxy,2028,household_size_change,0.1781861745631654
+lag_0_held,0,consent-timed proxy,2029,household_size_change,0.2235238500583699
+lag_0_held,0,consent-timed proxy,2030,household_size_change,0.25862903131054876
+lag_0_held,0,consent-timed proxy,2031,household_size_change,0.26429629396383847
+lag_0_held,0,consent-timed proxy,2032,household_size_change,0.23948311701940408
+lag_0_held,0,consent-timed proxy,2033,household_size_change,0.1831448446286954
+lag_0_held,0,consent-timed proxy,2034,household_size_change,0.14650415941329126
+lag_0_held,0,consent-timed proxy,2035,household_size_change,0.14126061331872825
+lag_0_held,0,consent-timed proxy,2036,household_size_change,0.12069502486090736
+lag_0_held,0,consent-timed proxy,2037,household_size_change,0.08435470635170779
+lag_0_held,0,consent-timed proxy,2038,household_size_change,0.031816834472893386
+lag_0_held,0,consent-timed proxy,2039,household_size_change,-0.02911001369441132
+lag_0_held,0,consent-timed proxy,2040,household_size_change,-0.07000046769774322
+lag_0_held,0,consent-timed proxy,2041,household_size_change,-0.08422303635294913
+lag_0_held,0,consent-timed proxy,2042,household_size_change,-0.07112007183497959
+lag_0_held,0,consent-timed proxy,2043,household_size_change,-0.030057171833082926
+lag_0_held,0,consent-timed proxy,2044,household_size_change,-1.5379362777806426e-15
+lag_0_held,0,consent-timed proxy,2045,household_size_change,6.371450293662662e-15
+lag_0_held,0,consent-timed proxy,2046,household_size_change,-2.5046390809570465e-14
+lag_0_held,0,consent-timed proxy,2047,household_size_change,2.2409928619089364e-14
+lag_0_held,0,consent-timed proxy,2048,household_size_change,-9.007912484143764e-15
+lag_0_held,0,consent-timed proxy,2049,household_size_change,-1.3182310952405506e-15
+lag_0_held,0,consent-timed proxy,2050,household_size_change,6.8108606587428455e-15
+lag_0_held,0,consent-timed proxy,2026,net_replacement,0.46772549405760766
+lag_0_held,0,consent-timed proxy,2027,net_replacement,0.44887631918142545
+lag_0_held,0,consent-timed proxy,2028,net_replacement,0.4346119271960351
+lag_0_held,0,consent-timed proxy,2029,net_replacement,0.4213711427004795
+lag_0_held,0,consent-timed proxy,2030,net_replacement,0.40906846147151754
+lag_0_held,0,consent-timed proxy,2031,net_replacement,0.39762627603411144
+lag_0_held,0,consent-timed proxy,2032,net_replacement,0.38693224346256966
+lag_0_held,0,consent-timed proxy,2033,net_replacement,0.37688323264305046
+lag_0_held,0,consent-timed proxy,2034,net_replacement,0.36738417175663574
+lag_0_held,0,consent-timed proxy,2035,net_replacement,0.35843970717483187
+lag_0_held,0,consent-timed proxy,2036,net_replacement,0.35006866364901956
+lag_0_held,0,consent-timed proxy,2037,net_replacement,0.34220598382514195
+lag_0_held,0,consent-timed proxy,2038,net_replacement,0.33479652335292204
+lag_0_held,0,consent-timed proxy,2039,net_replacement,0.32779377314238656
+lag_0_held,0,consent-timed proxy,2040,net_replacement,0.3211673505734145
+lag_0_held,0,consent-timed proxy,2041,net_replacement,0.31493097628061656
+lag_0_held,0,consent-timed proxy,2042,net_replacement,0.3091059247975828
+lag_0_held,0,consent-timed proxy,2043,net_replacement,0.3037111635253238
+lag_0_held,0,consent-timed proxy,2044,net_replacement,0.29876388923396335
+lag_0_held,0,consent-timed proxy,2045,net_replacement,0.29422221668672666
+lag_0_held,0,consent-timed proxy,2046,net_replacement,0.29001998104315974
+lag_0_held,0,consent-timed proxy,2047,net_replacement,0.2861377547302701
+lag_0_held,0,consent-timed proxy,2048,net_replacement,0.2825571083421332
+lag_0_held,0,consent-timed proxy,2049,net_replacement,0.27926056578011266
+lag_0_held,0,consent-timed proxy,2050,net_replacement,0.27623156081084327
+lag_0_held,0,consent-timed proxy,2026,other,0.8257192562378286
+lag_0_held,0,consent-timed proxy,2027,other,1.1908323364571216
+lag_0_held,0,consent-timed proxy,2028,other,1.2297802377276381
+lag_0_held,0,consent-timed proxy,2029,other,1.2630466576772355
+lag_0_held,0,consent-timed proxy,2030,other,1.2904876617011822
+lag_0_held,0,consent-timed proxy,2031,other,1.299013047121068
+lag_0_held,0,consent-timed proxy,2032,other,1.2871782591529854
+lag_0_held,0,consent-timed proxy,2033,other,1.253578661649635
+lag_0_held,0,consent-timed proxy,2034,other,1.2290410066235407
+lag_0_held,0,consent-timed proxy,2035,other,1.2201931178921728
+lag_0_held,0,consent-timed proxy,2036,other,1.198165340344992
+lag_0_held,0,consent-timed proxy,2037,other,1.1644097607223667
+lag_0_held,0,consent-timed proxy,2038,other,1.1204637008893412
+lag_0_held,0,consent-timed proxy,2039,other,1.0714489354630512
+lag_0_held,0,consent-timed proxy,2040,other,1.0351211844259194
+lag_0_held,0,consent-timed proxy,2041,other,1.01621572160179
+lag_0_held,0,consent-timed proxy,2042,other,1.0154730324477483
+lag_0_held,0,consent-timed proxy,2043,other,1.033622581235711
+lag_0_held,0,consent-timed proxy,2044,other,1.0449311679894455
+lag_0_held,0,consent-timed proxy,2045,other,1.0365043037314714
+lag_0_held,0,consent-timed proxy,2046,other,1.0280774394734713
+lag_0_held,0,consent-timed proxy,2047,other,1.0196505752155232
+lag_0_held,0,consent-timed proxy,2048,other,1.0112237109575228
+lag_0_held,0,consent-timed proxy,2049,other,1.0027968466995487
+lag_0_held,0,consent-timed proxy,2050,other,0.9943699824415746
+lag_0_held,0,consent-timed proxy,2026,market_excess,2.5623085442828164
+lag_0_held,0,consent-timed proxy,2027,market_excess,0.8560806298352303
+lag_0_held,0,consent-timed proxy,2028,market_excess,0.44139197716028183
+lag_0_held,0,consent-timed proxy,2029,market_excess,0.22758005579329726
+lag_0_held,0,consent-timed proxy,2030,market_excess,0.11733942725486585
+lag_0_held,0,consent-timed proxy,2031,market_excess,0.06049977068731109
+lag_0_held,0,consent-timed proxy,2032,market_excess,0.031193455932481087
+lag_0_held,0,consent-timed proxy,2033,market_excess,0.016083229439673198
+lag_0_held,0,consent-timed proxy,2034,market_excess,0.00829245306352294
+lag_0_held,0,consent-timed proxy,2035,market_excess,0.004275557845435319
+lag_0_held,0,consent-timed proxy,2036,market_excess,0.0022044616652792137
+lag_0_held,0,consent-timed proxy,2037,market_excess,0.0011366122057906143
+lag_0_held,0,consent-timed proxy,2038,market_excess,0.0005860330105529765
+lag_0_held,0,consent-timed proxy,2039,market_excess,0.00030215643269367856
+lag_0_held,0,consent-timed proxy,2040,market_excess,0.00015579072880556822
+lag_0_held,0,consent-timed proxy,2041,market_excess,8.032511823561078e-05
+lag_0_held,0,consent-timed proxy,2042,market_excess,4.1415331124211576e-05
+lag_0_held,0,consent-timed proxy,2043,market_excess,2.1353590132254167e-05
+lag_0_held,0,consent-timed proxy,2044,market_excess,1.1009831363384587e-05
+lag_0_held,0,consent-timed proxy,2045,market_excess,5.676627953398431e-06
+lag_0_held,0,consent-timed proxy,2046,market_excess,2.9268481830223325e-06
+lag_0_held,0,consent-timed proxy,2047,market_excess,1.509071997810364e-06
+lag_0_held,0,consent-timed proxy,2048,market_excess,7.780718889982781e-07
+lag_0_held,0,consent-timed proxy,2049,market_excess,4.0117096157623157e-07
+lag_0_held,0,consent-timed proxy,2050,market_excess,2.0684225029540226e-07
+lag_0_held,0,consent-timed proxy,2026,overbuild_absorbed,0.0
+lag_0_held,0,consent-timed proxy,2027,overbuild_absorbed,-0.13251945853032662
+lag_0_held,0,consent-timed proxy,2028,overbuild_absorbed,-0.2950552417918099
+lag_0_held,0,consent-timed proxy,2029,overbuild_absorbed,-0.5196795694453633
+lag_0_held,0,consent-timed proxy,2030,overbuild_absorbed,-0.7521181522086228
+lag_0_held,0,consent-timed proxy,2031,overbuild_absorbed,-0.8595120714574281
+lag_0_held,0,consent-timed proxy,2032,overbuild_absorbed,-0.7594240882591341
+lag_0_held,0,consent-timed proxy,2033,overbuild_absorbed,-0.5340779871273295
+lag_0_held,0,consent-timed proxy,2034,overbuild_absorbed,-0.31846579336168135
+lag_0_held,0,consent-timed proxy,2035,overbuild_absorbed,-0.1716000343674259
+lag_0_held,0,consent-timed proxy,2036,overbuild_absorbed,-0.0022044616652791144
+lag_0_held,0,consent-timed proxy,2037,overbuild_absorbed,-0.0011366122057906015
+lag_0_held,0,consent-timed proxy,2038,overbuild_absorbed,-0.0005860330105529565
+lag_0_held,0,consent-timed proxy,2039,overbuild_absorbed,-0.00030215643269365536
+lag_0_held,0,consent-timed proxy,2040,overbuild_absorbed,-0.0001557907288054834
+lag_0_held,0,consent-timed proxy,2041,overbuild_absorbed,-8.032511823546705e-05
+lag_0_held,0,consent-timed proxy,2042,overbuild_absorbed,-4.141533112425229e-05
+lag_0_held,0,consent-timed proxy,2043,overbuild_absorbed,-2.1353590132410695e-05
+lag_0_held,0,consent-timed proxy,2044,overbuild_absorbed,-1.1009831363162507e-05
+lag_0_held,0,consent-timed proxy,2045,overbuild_absorbed,-5.67662795341472e-06
+lag_0_held,0,consent-timed proxy,2046,overbuild_absorbed,-2.9268481830354454e-06
+lag_0_held,0,consent-timed proxy,2047,overbuild_absorbed,-1.50907199776736e-06
+lag_0_held,0,consent-timed proxy,2048,overbuild_absorbed,-7.78071888911008e-07
+lag_0_held,0,consent-timed proxy,2049,overbuild_absorbed,-4.0117096152838516e-07
+lag_0_held,0,consent-timed proxy,2050,overbuild_absorbed,-2.0684225020739136e-07
+lag_0_held,0,consent-timed proxy,2026,underlying_requirement,2.5870966257171837
+lag_0_held,0,consent-timed proxy,2027,underlying_requirement,3.4948314900221615
+lag_0_held,0,consent-timed proxy,2028,underlying_requirement,3.5751883734243917
+lag_0_held,0,consent-timed proxy,2029,underlying_requirement,3.640551684373638
+lag_0_held,0,consent-timed proxy,2030,underlying_requirement,3.690795188420802
+lag_0_held,0,consent-timed proxy,2031,underlying_requirement,3.693545651056571
+lag_0_held,0,consent-timed proxy,2032,underlying_requirement,3.6462036535725124
+lag_0_held,0,consent-timed proxy,2033,underlying_requirement,3.5462167728589344
+lag_0_held,0,consent-timed proxy,2034,underlying_requirement,3.4709190783071877
+lag_0_held,0,consent-timed proxy,2035,underlying_requirement,3.4360757623718783
+lag_0_held,0,consent-timed proxy,2036,underlying_requirement,3.3691970088256378
+lag_0_held,0,consent-timed proxy,2037,underlying_requirement,3.2742973549825463
+lag_0_held,0,consent-timed proxy,2038,underlying_requirement,3.155516350655023
+lag_0_held,0,consent-timed proxy,2039,underlying_requirement,3.025737838451356
+lag_0_held,0,consent-timed proxy,2040,underlying_requirement,2.929059062442382
+lag_0_held,0,consent-timed proxy,2041,underlying_requirement,2.8768605082707115
+lag_0_held,0,consent-timed proxy,2042,underlying_requirement,2.8705615837520684
+lag_0_held,0,consent-timed proxy,2043,underlying_requirement,2.9115451228701312
+lag_0_held,0,consent-timed proxy,2044,underlying_requirement,2.935129458766049
+lag_0_held,0,consent-timed proxy,2045,underlying_requirement,2.909326773561309
+lag_0_held,0,consent-timed proxy,2046,underlying_requirement,2.883863525260173
+lag_0_held,0,consent-timed proxy,2047,underlying_requirement,2.858720286289845
+lag_0_held,0,consent-timed proxy,2048,underlying_requirement,2.8338786272441387
+lag_0_held,0,consent-timed proxy,2049,underlying_requirement,2.8093210720246145
+lag_0_held,0,consent-timed proxy,2050,underlying_requirement,2.785031054397842
+lag_0_held,0,consent-timed proxy,2026,net_market_effect,2.5623085442828164
+lag_0_held,0,consent-timed proxy,2027,net_market_effect,0.7235611713049036
+lag_0_held,0,consent-timed proxy,2028,net_market_effect,0.14633673536847192
+lag_0_held,0,consent-timed proxy,2029,net_market_effect,-0.29209951365206605
+lag_0_held,0,consent-timed proxy,2030,net_market_effect,-0.6347787249537569
+lag_0_held,0,consent-timed proxy,2031,net_market_effect,-0.7990123007701171
+lag_0_held,0,consent-timed proxy,2032,net_market_effect,-0.728230632326653
+lag_0_held,0,consent-timed proxy,2033,net_market_effect,-0.5179947576876562
+lag_0_held,0,consent-timed proxy,2034,net_market_effect,-0.3101733402981584
+lag_0_held,0,consent-timed proxy,2035,net_market_effect,-0.1673244765219906
+lag_0_held,0,consent-timed proxy,2036,net_market_effect,9.93129189996722e-17
+lag_0_held,0,consent-timed proxy,2037,net_market_effect,1.2793585635328952e-17
+lag_0_held,0,consent-timed proxy,2038,net_market_effect,1.9949319973733282e-17
+lag_0_held,0,consent-timed proxy,2039,net_market_effect,2.3201926491189795e-17
+lag_0_held,0,consent-timed proxy,2040,net_market_effect,8.481171494267858e-17
+lag_0_held,0,consent-timed proxy,2041,net_market_effect,1.4373810301726575e-16
+lag_0_held,0,consent-timed proxy,2042,net_market_effect,-4.071179157683069e-17
+lag_0_held,0,consent-timed proxy,2043,net_market_effect,-1.5652830052080569e-16
+lag_0_held,0,consent-timed proxy,2044,net_market_effect,2.22080180308816e-16
+lag_0_held,0,consent-timed proxy,2045,net_market_effect,-1.628929060864745e-17
+lag_0_held,0,consent-timed proxy,2046,net_market_effect,-1.3112917056443824e-17
+lag_0_held,0,consent-timed proxy,2047,net_market_effect,4.300407449033764e-17
+lag_0_held,0,consent-timed proxy,2048,net_market_effect,8.727012219296578e-17
+lag_0_held,0,consent-timed proxy,2049,net_market_effect,4.7846403031112867e-17
+lag_0_held,0,consent-timed proxy,2050,net_market_effect,8.801090544489887e-17
+lag_0_held,0,consent-timed proxy,2026,total_built,5.14940517
+lag_0_held,0,consent-timed proxy,2027,total_built,4.218392661327065
+lag_0_held,0,consent-timed proxy,2028,total_built,3.7215251087928647
+lag_0_held,0,consent-timed proxy,2029,total_built,3.3484521707215724
+lag_0_held,0,consent-timed proxy,2030,total_built,3.056016463467045
+lag_0_held,0,consent-timed proxy,2031,total_built,2.894533350286454
+lag_0_held,0,consent-timed proxy,2032,total_built,2.9179730212458597
+lag_0_held,0,consent-timed proxy,2033,total_built,3.0282220151712784
+lag_0_held,0,consent-timed proxy,2034,total_built,3.160745738009029
+lag_0_held,0,consent-timed proxy,2035,total_built,3.2687512858498877
+lag_0_held,0,consent-timed proxy,2036,total_built,3.369197008825638
+lag_0_held,0,consent-timed proxy,2037,total_built,3.2742973549825467
+lag_0_held,0,consent-timed proxy,2038,total_built,3.1555163506550232
+lag_0_held,0,consent-timed proxy,2039,total_built,3.025737838451356
+lag_0_held,0,consent-timed proxy,2040,total_built,2.929059062442382
+lag_0_held,0,consent-timed proxy,2041,total_built,2.8768605082707115
+lag_0_held,0,consent-timed proxy,2042,total_built,2.8705615837520684
+lag_0_held,0,consent-timed proxy,2043,total_built,2.9115451228701303
+lag_0_held,0,consent-timed proxy,2044,total_built,2.93512945876605
+lag_0_held,0,consent-timed proxy,2045,total_built,2.9093267735613084
+lag_0_held,0,consent-timed proxy,2046,total_built,2.883863525260173
+lag_0_held,0,consent-timed proxy,2047,total_built,2.858720286289845
+lag_0_held,0,consent-timed proxy,2048,total_built,2.833878627244139
+lag_0_held,0,consent-timed proxy,2049,total_built,2.8093210720246145
+lag_0_held,0,consent-timed proxy,2050,total_built,2.785031054397842
+lag_17,17,completion-timed,2026,population_growth,1.132499949823877
+lag_17,17,completion-timed,2027,population_growth,1.7039462409952315
+lag_17,17,completion-timed,2028,population_growth,1.7252914281707703
+lag_17,17,completion-timed,2029,population_growth,1.7252914281707703
+lag_17,17,completion-timed,2030,population_growth,1.7252914281707703
+lag_17,17,completion-timed,2031,population_growth,1.7252914281707703
+lag_17,17,completion-timed,2032,population_growth,1.7252914281707703
+lag_17,17,completion-timed,2033,population_growth,1.7252914281707703
+lag_17,17,completion-timed,2034,population_growth,1.7206906510289819
+lag_17,17,completion-timed,2035,population_growth,1.7089331094444105
+lag_17,17,completion-timed,2036,population_growth,1.6930859881782494
+lag_17,17,completion-timed,2037,population_growth,1.6762164719916908
+lag_17,17,completion-timed,2038,population_growth,1.6613917456459273
+lag_17,17,completion-timed,2039,population_growth,1.6486118091409585
+lag_17,17,completion-timed,2040,population_growth,1.63583187263599
+lag_17,17,completion-timed,2041,population_growth,1.623051936131021
+lag_17,17,completion-timed,2042,population_growth,1.6102719996260526
+lag_17,17,completion-timed,2043,population_growth,1.5974920631210838
+lag_17,17,completion-timed,2044,population_growth,1.5847121266161153
+lag_17,17,completion-timed,2045,population_growth,1.5719321901111463
+lag_17,17,completion-timed,2046,population_growth,1.559152253606178
+lag_17,17,completion-timed,2047,population_growth,1.5463723171012091
+lag_17,17,completion-timed,2048,population_growth,1.5335923805962406
+lag_17,17,completion-timed,2049,population_growth,1.5208124440912718
+lag_17,17,completion-timed,2050,population_growth,1.508032507586303
+lag_17,17,completion-timed,2026,household_size_change,0.14988874878757213
+lag_17,17,completion-timed,2027,household_size_change,0.15490923409663931
+lag_17,17,completion-timed,2028,household_size_change,0.1774335098901141
+lag_17,17,completion-timed,2029,household_size_change,0.2225796774482569
+lag_17,17,completion-timed,2030,household_size_change,0.25753657317921436
+lag_17,17,completion-timed,2031,household_size_change,0.26317989711558337
+lag_17,17,completion-timed,2032,household_size_change,0.2384715319039225
+lag_17,17,completion-timed,2033,household_size_change,0.18237123435875488
+lag_17,17,completion-timed,2034,household_size_change,0.1458853206873586
+lag_17,17,completion-timed,2035,household_size_change,0.14066392351605894
+lag_17,17,completion-timed,2036,household_size_change,0.12018520482773921
+lag_17,17,completion-timed,2037,household_size_change,0.08399838910300866
+lag_17,17,completion-timed,2038,household_size_change,0.03168243904420859
+lag_17,17,completion-timed,2039,household_size_change,-0.028987051971968308
+lag_17,17,completion-timed,2040,household_size_change,-0.06970478325835086
+lag_17,17,completion-timed,2041,household_size_change,-0.08386727528295924
+lag_17,17,completion-timed,2042,household_size_change,-0.07081965814830453
+lag_17,17,completion-timed,2043,household_size_change,-0.029930209281324713
+lag_17,17,completion-timed,2044,household_size_change,-1.532094984291495e-15
+lag_17,17,completion-timed,2045,household_size_change,6.347250649207622e-15
+lag_17,17,completion-timed,2046,household_size_change,-2.5170131884788846e-14
+lag_17,17,completion-timed,2047,household_size_change,2.23248126282475e-14
+lag_17,17,completion-timed,2048,household_size_change,-9.19256990574897e-15
+lag_17,17,completion-timed,2049,household_size_change,-1.0943535602082106e-15
+lag_17,17,completion-timed,2050,household_size_change,6.784992073290906e-15
+lag_17,17,completion-timed,2026,net_replacement,0.47351292340854867
+lag_17,17,completion-timed,2027,net_replacement,0.4584731072105086
+lag_17,17,completion-timed,2028,net_replacement,0.44878221894226744
+lag_17,17,completion-timed,2029,net_replacement,0.43510972567962514
+lag_17,17,completion-timed,2030,net_replacement,0.4224059220438301
+lag_17,17,completion-timed,2031,net_replacement,0.4105906702092162
+lag_17,17,completion-timed,2032,net_replacement,0.39954796436848883
+lag_17,17,completion-timed,2033,net_replacement,0.3891713108724507
+lag_17,17,completion-timed,2034,net_replacement,0.3793625381358706
+lag_17,17,completion-timed,2035,net_replacement,0.3701264440227383
+lag_17,17,completion-timed,2036,net_replacement,0.3614824670554845
+lag_17,17,completion-timed,2037,net_replacement,0.3533634287194729
+lag_17,17,completion-timed,2038,net_replacement,0.3457123867120871
+lag_17,17,completion-timed,2039,net_replacement,0.33848131553910227
+lag_17,17,completion-timed,2040,net_replacement,0.33163884197115756
+lag_17,17,completion-timed,2041,net_replacement,0.32519913399688954
+lag_17,17,completion-timed,2042,net_replacement,0.31918415979479
+lag_17,17,completion-timed,2043,net_replacement,0.3136135051879361
+lag_17,17,completion-timed,2044,net_replacement,0.30850492763803544
+lag_17,17,completion-timed,2045,net_replacement,0.30381517626234716
+lag_17,17,completion-timed,2046,net_replacement,0.29947592895083114
+lag_17,17,completion-timed,2047,net_replacement,0.29546712470476455
+lag_17,17,completion-timed,2048,net_replacement,0.29176973323720157
+lag_17,17,completion-timed,2049,net_replacement,0.28836570865056416
+lag_17,17,completion-timed,2050,net_replacement,0.2852379445782202
+lag_17,17,completion-timed,2026,other,0.86320659839455
+lag_17,17,completion-timed,2027,other,1.2522209437887608
+lag_17,17,completion-timed,2028,other,1.340248340167733
+lag_17,17,completion-timed,2029,other,1.3762691129631544
+lag_17,17,completion-timed,2030,other,1.4058976877591776
+lag_17,17,completion-timed,2031,other,1.4149097556709782
+lag_17,17,completion-timed,2032,other,1.4017752684803417
+lag_17,17,completion-timed,2033,other,1.3650053195083427
+lag_17,17,completion-timed,2034,other,1.3381480470478786
+lag_17,17,completion-timed,2035,other,1.3283837161160787
+lag_17,17,completion-timed,2036,other,1.3042942331464946
+lag_17,17,completion-timed,2037,other,1.26747579658935
+lag_17,17,completion-timed,2038,other,1.2196137189257665
+lag_17,17,completion-timed,2039,other,1.1662843457474266
+lag_17,17,completion-timed,2040,other,1.1267935508002755
+lag_17,17,completion-timed,2041,other,1.106275226914376
+lag_17,17,completion-timed,2042,other,1.1055182228696845
+lag_17,17,completion-timed,2043,other,1.1252991508235264
+lag_17,17,completion-timed,2044,other,1.137610746276267
+lag_17,17,completion-timed,2045,other,1.1284364660643673
+lag_17,17,completion-timed,2046,other,1.1192621858524394
+lag_17,17,completion-timed,2047,other,1.1100879056405681
+lag_17,17,completion-timed,2048,other,1.1009136254286402
+lag_17,17,completion-timed,2049,other,1.0917393452167405
+lag_17,17,completion-timed,2050,other,1.0825650650048408
+lag_17,17,completion-timed,2026,market_excess,1.7152164945854522
+lag_17,17,completion-timed,2027,market_excess,1.5798556439088591
+lag_17,17,completion-timed,2028,market_excess,0.7076759895622311
+lag_17,17,completion-timed,2029,market_excess,0.30695463729187733
+lag_17,17,completion-timed,2030,market_excess,0.13314165062074984
+lag_17,17,completion-timed,2031,market_excess,0.05775022422339829
+lag_17,17,completion-timed,2032,market_excess,0.025049174186315915
+lag_17,17,completion-timed,2033,market_excess,0.010865085562077718
+lag_17,17,completion-timed,2034,market_excess,0.004712733577291307
+lag_17,17,completion-timed,2035,market_excess,0.0020441493666693
+lag_17,17,completion-timed,2036,market_excess,0.000886650298542054
+lag_17,17,completion-timed,2037,market_excess,0.0003845847885302286
+lag_17,17,completion-timed,2038,market_excess,0.00016681374811698153
+lag_17,17,completion-timed,2039,market_excess,7.235550492566753e-05
+lag_17,17,completion-timed,2040,market_excess,3.138421834018695e-05
+lag_17,17,completion-timed,2041,market_excess,1.3612912546687472e-05
+lag_17,17,completion-timed,2042,market_excess,5.904604218435265e-06
+lag_17,17,completion-timed,2043,market_excess,2.5611235550651728e-06
+lag_17,17,completion-timed,2044,market_excess,1.1108879819294498e-06
+lag_17,17,completion-timed,2045,market_excess,4.818479397273291e-07
+lag_17,17,completion-timed,2046,market_excess,2.0900166425080368e-07
+lag_17,17,completion-timed,2047,market_excess,9.065452408974607e-08
+lag_17,17,completion-timed,2048,market_excess,3.93214224747818e-08
+lag_17,17,completion-timed,2049,market_excess,1.7055676823250376e-08
+lag_17,17,completion-timed,2050,market_excess,7.3979040836002795e-09
+lag_17,17,completion-timed,2026,overbuild_absorbed,0.0
+lag_17,17,completion-timed,2027,overbuild_absorbed,0.0
+lag_17,17,completion-timed,2028,overbuild_absorbed,-0.18929736902210068
+lag_17,17,completion-timed,2029,overbuild_absorbed,-0.4168106518967521
+lag_17,17,completion-timed,2030,overbuild_absorbed,-0.7308294704907623
+lag_17,17,completion-timed,2031,overbuild_absorbed,-0.997654069096937
+lag_17,17,completion-timed,2032,overbuild_absorbed,-0.9986982056999946
+lag_17,17,completion-timed,2033,overbuild_absorbed,-0.7350028368122227
+lag_17,17,completion-timed,2034,overbuild_absorbed,-0.42778394176327755
+lag_17,17,completion-timed,2035,overbuild_absorbed,-0.2157777189234112
+lag_17,17,completion-timed,2036,overbuild_absorbed,-0.0008866502985423951
+lag_17,17,completion-timed,2037,overbuild_absorbed,-0.0003845847885300643
+lag_17,17,completion-timed,2038,overbuild_absorbed,-0.0001668137481171468
+lag_17,17,completion-timed,2039,overbuild_absorbed,-7.235550492532637e-05
+lag_17,17,completion-timed,2040,overbuild_absorbed,-3.138421833978406e-05
+lag_17,17,completion-timed,2041,overbuild_absorbed,-1.3612912546517939e-05
+lag_17,17,completion-timed,2042,overbuild_absorbed,-5.90460421876398e-06
+lag_17,17,completion-timed,2043,overbuild_absorbed,-2.5611235548592497e-06
+lag_17,17,completion-timed,2044,overbuild_absorbed,-1.1108879817715265e-06
+lag_17,17,completion-timed,2045,overbuild_absorbed,-4.818479402092578e-07
+lag_17,17,completion-timed,2046,overbuild_absorbed,-2.09001664376661e-07
+lag_17,17,completion-timed,2047,overbuild_absorbed,-9.065452431963894e-08
+lag_17,17,completion-timed,2048,overbuild_absorbed,-3.932142241407237e-08
+lag_17,17,completion-timed,2049,overbuild_absorbed,-1.7055677305578078e-08
+lag_17,17,completion-timed,2050,overbuild_absorbed,-7.397903871123828e-09
+lag_17,17,completion-timed,2026,underlying_requirement,2.6191082204145477
+lag_17,17,completion-timed,2027,underlying_requirement,3.5695495260911403
+lag_17,17,completion-timed,2028,underlying_requirement,3.6917554971708846
+lag_17,17,completion-timed,2029,underlying_requirement,3.759249944261807
+lag_17,17,completion-timed,2030,underlying_requirement,3.8111316111529923
+lag_17,17,completion-timed,2031,underlying_requirement,3.813971751166548
+lag_17,17,completion-timed,2032,underlying_requirement,3.7650861929235235
+lag_17,17,completion-timed,2033,underlying_requirement,3.6618392929103187
+lag_17,17,completion-timed,2034,underlying_requirement,3.5840865569000897
+lag_17,17,completion-timed,2035,underlying_requirement,3.5481071930992867
+lag_17,17,completion-timed,2036,underlying_requirement,3.4790478932079676
+lag_17,17,completion-timed,2037,underlying_requirement,3.3810540864035223
+lag_17,17,completion-timed,2038,underlying_requirement,3.258400290327989
+lag_17,17,completion-timed,2039,underlying_requirement,3.124390418455519
+lag_17,17,completion-timed,2040,underlying_requirement,3.024559482149072
+lag_17,17,completion-timed,2041,underlying_requirement,2.970659021759327
+lag_17,17,completion-timed,2042,underlying_requirement,2.9641547241422224
+lag_17,17,completion-timed,2043,underlying_requirement,3.0064745098512216
+lag_17,17,completion-timed,2044,underlying_requirement,3.030827800530416
+lag_17,17,completion-timed,2045,underlying_requirement,3.0041838324378674
+lag_17,17,completion-timed,2046,underlying_requirement,2.9778903684094233
+lag_17,17,completion-timed,2047,underlying_requirement,2.9519273474465644
+lag_17,17,completion-timed,2048,underlying_requirement,2.9262757392620733
+lag_17,17,completion-timed,2049,underlying_requirement,2.9009174979585755
+lag_17,17,completion-timed,2050,underlying_requirement,2.875835517169371
+lag_17,17,completion-timed,2026,net_market_effect,1.7152164945854522
+lag_17,17,completion-timed,2027,net_market_effect,1.5798556439088591
+lag_17,17,completion-timed,2028,net_market_effect,0.5183786205401304
+lag_17,17,completion-timed,2029,net_market_effect,-0.10985601460487476
+lag_17,17,completion-timed,2030,net_market_effect,-0.5976878198700124
+lag_17,17,completion-timed,2031,net_market_effect,-0.9399038448735387
+lag_17,17,completion-timed,2032,net_market_effect,-0.9736490315136787
+lag_17,17,completion-timed,2033,net_market_effect,-0.7241377512501449
+lag_17,17,completion-timed,2034,net_market_effect,-0.42307120818598626
+lag_17,17,completion-timed,2035,net_market_effect,-0.2137335695567419
+lag_17,17,completion-timed,2036,net_market_effect,-3.410900034639397e-16
+lag_17,17,completion-timed,2037,net_market_effect,1.643108392401782e-16
+lag_17,17,completion-timed,2038,net_market_effect,-1.6525951614110301e-16
+lag_17,17,completion-timed,2039,net_market_effect,3.4115776609972004e-16
+lag_17,17,completion-timed,2040,net_market_effect,4.0288952729561345e-16
+lag_17,17,completion-timed,2041,net_market_effect,1.6953364439294821e-16
+lag_17,17,completion-timed,2042,net_market_effect,-3.2871485210455437e-16
+lag_17,17,completion-timed,2043,net_market_effect,2.059230268399402e-16
+lag_17,17,completion-timed,2044,net_market_effect,1.5792336378493352e-16
+lag_17,17,completion-timed,2045,net_market_effect,-4.81928712702754e-16
+lag_17,17,completion-timed,2046,net_market_effect,-1.2585731691006628e-16
+lag_17,17,completion-timed,2047,net_market_effect,-2.2989286810715483e-16
+lag_17,17,completion-timed,2048,net_market_effect,6.070943213322687e-17
+lag_17,17,completion-timed,2049,net_market_effect,-4.823277016168577e-16
+lag_17,17,completion-timed,2050,net_market_effect,2.1247645126967528e-16
+lag_17,17,completion-timed,2026,total_built,4.334324715
+lag_17,17,completion-timed,2027,total_built,5.14940517
+lag_17,17,completion-timed,2028,total_built,4.210134117711016
+lag_17,17,completion-timed,2029,total_built,3.649393929656932
+lag_17,17,completion-timed,2030,total_built,3.21344379128298
+lag_17,17,completion-timed,2031,total_built,2.8740679062930092
+lag_17,17,completion-timed,2032,total_built,2.7914371614098448
+lag_17,17,completion-timed,2033,total_built,2.9377015416601737
+lag_17,17,completion-timed,2034,total_built,3.161015348714103
+lag_17,17,completion-timed,2035,total_built,3.3343736235425445
+lag_17,17,completion-timed,2036,total_built,3.479047893207967
+lag_17,17,completion-timed,2037,total_built,3.381054086403523
+lag_17,17,completion-timed,2038,total_built,3.258400290327989
+lag_17,17,completion-timed,2039,total_built,3.1243904184555196
+lag_17,17,completion-timed,2040,total_built,3.0245594821490727
+lag_17,17,completion-timed,2041,total_built,2.9706590217593276
+lag_17,17,completion-timed,2042,total_built,2.9641547241422224
+lag_17,17,completion-timed,2043,total_built,3.006474509851222
+lag_17,17,completion-timed,2044,total_built,3.0308278005304166
+lag_17,17,completion-timed,2045,total_built,3.0041838324378674
+lag_17,17,completion-timed,2046,total_built,2.9778903684094233
+lag_17,17,completion-timed,2047,total_built,2.9519273474465635
+lag_17,17,completion-timed,2048,total_built,2.9262757392620733
+lag_17,17,completion-timed,2049,total_built,2.900917497958575
+lag_17,17,completion-timed,2050,total_built,2.8758355171693712

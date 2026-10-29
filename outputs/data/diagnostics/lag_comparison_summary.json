@@ -1,10 +1,17 @@
 {
-  "comparison_basis": "Controlled comparison: same source files, population path, household-size path, completion rate and remaining defaults; only completion lag differs. Historical completion timing and stock/replacement calibration are recalculated consistently.",
+  "comparison_basis": "Controlled comparison: same source files, population path, household-size path, completion rate and remaining defaults; only completion lag differs. lag_0 recalculates the historical completion timing and the stock and replacement calibration with zero lag; lag_0_held is the like-for-like run: zero lag with the forward net replacement held at the 17-month calibration (projection.NET_REPLACEMENT_HELD), so only the timing of building differs from lag_17.",
   "same_population_path": true,
   "same_household_size_path": true,
   "same_household_path": true,
   "lag_0": {
     "lag_months": 0,
+    "net_replacement_held": false,
+    "recent_interval": [
+      2018,
+      2023
+    ],
+    "recent_net_replacement_rate_own_calibration": 0.0030135688870628883,
+    "recent_net_replacement_rate_used": 0.0030135688870628883,
     "timing": "Consent-timed proxy (zero lag)",
     "completion_rate": 0.945,
     "observed_to": "2026-07-01",
@@ -33,8 +40,52 @@
       "total_built": 85.17309856258814
     }
   },
+  "lag_0_held": {
+    "lag_months": 0,
+    "net_replacement_held": true,
+    "recent_interval": [
+      2018,
+      2023
+    ],
+    "recent_net_replacement_rate_own_calibration": 0.0030135688870628883,
+    "recent_net_replacement_rate_used": 0.0017333229974961432,
+    "timing": "Consent-timed proxy (zero lag)",
+    "completion_rate": 0.945,
+    "observed_to": "2026-07-01",
+    "pipeline_years": [],
+    "observed_cohorts": [
+      {
+        "completion_or_proxy_year": 2026,
+        "consent_period": "Aug 2025\u2013Jul 2026",
+        "all_category_consents": 40908.0,
+        "building_equivalent_dwellings": 38658.06,
+        "pre_pipeline_requirement_dwellings": 19313.169637919436,
+        "gross_excess_dwellings": 19344.89036208056
+      }
+    ],
+    "gross_market_excess_dwellings_2026_2050": 32597.50402620699,
+    "payback_dwellings_2026_2050": 32597.504026206974,
+    "cumulative_categories_Mm2_2026_2050": {
+      "population_growth": 40.755045693966956,
+      "household_size_change": 1.893187276620366,
+      "net_replacement": 8.679892411451881,
+      "other": 27.88134452587989,
+      "market_excess": 4.329595757842127,
+      "overbuild_absorbed": -4.3470030530963335,
+      "underlying_requirement": 79.2094699079191,
+      "net_market_effect": -0.017407295254206367,
+      "total_built": 79.1920626126649
+    }
+  },
   "lag_17": {
     "lag_months": 17,
+    "net_replacement_held": false,
+    "recent_interval": [
+      2018,
+      2023
+    ],
+    "recent_net_replacement_rate_own_calibration": 0.0017333229974961432,
+    "recent_net_replacement_rate_used": 0.0017333229974961432,
     "timing": "Completion-timed pipeline (17-month lag)",
     "completion_rate": 0.945,
     "observed_to": "2026-07-01",

@@ -270,9 +270,9 @@ TIMING_LIMITATIONS = [
     'the 2050 factors held), not a projection: the source paths end in 2050 and C1-C4 has no decarbonisation source.',
     'The repaint composition differs from the first coat but cannot be separated in the source file; repaints '
     'take the line\'s initial stage split (negligible: the paint path is the EPS proxy).',
-    'Completion rate 0.945 and its band 0.93-0.96 rest on Auckland consents (Jones, Greenaway-McGrevy & Crow 2025), '
+    'Completion rate 0.945 and its band 0.93-0.96 rest on Auckland consents (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025), '
     'applied nationally; the upper milestone is published only as ">95%" (0.96 is a stated edge).',
-    'The 17-month consent-to-completion lag is the midpoint of the Auckland median of 1.27-1.53 yr (Jones, '
+    'The 17-month consent-to-completion lag is the midpoint of the Auckland median of 1.27-1.53 yr (Greenaway-McGrevy & Jones 2023; Jones, '
     'Greenaway-McGrevy & Crow 2025), applied nationally as one fixed lag (no distribution of build times).',
 ]
 
@@ -293,9 +293,9 @@ def register():
         ('Demolition rate (split only)', f'{100 * B.DEMOLITION_RATE:.3f}%/yr', 'LITERATURE: BRANZ SR214'),
         ('Completion rate', f'{B.COMPLETION_RATE:.3f} (Monte Carlo uniform {B.COMPLETION_RATE_BAND[0]}-'
          f'{B.COMPLETION_RATE_BAND[1]})',
-         'LITERATURE: completion milestones of Auckland consents (Jones, Greenaway-McGrevy & Crow 2025); midpoint'),
+         'LITERATURE: completion milestones of Auckland consents (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025); midpoint'),
         ('Completion lag', f'{B.COMPLETION_LAG_MONTHS} months (monthly; the same lag in history and projection)',
-         'LITERATURE: median consent-to-completion time 1.27-1.53 yr (Jones, Greenaway-McGrevy & Crow 2025); Stats NZ '
+         'LITERATURE: median consent-to-completion time 1.27-1.53 yr (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025); Stats NZ '
          'Experimental building indicators consistent'),
         ('2026 overbuild rule', f'{B.OVERBUILD_RULE}: building observed in the pipeline years (consents lagged '
          f'{B.COMPLETION_LAG_MONTHS} months)' if B.COMPLETION_LAG_MONTHS else
@@ -338,12 +338,13 @@ def register():
         ('Carbon-factor sensitivity rows (decarbonised runs)', 'an alternative materials factor (jackknife, '
          'single case study) follows the adopted factor\'s relative path over time: factor_alt x (materials '
          'intensity(t) / 2025 value)', 'DECISION (author)'),
-        ('History and acquired-rights base', 'always 2025 factors ("at 2025 factors"); decarbonisation applies '
-         'to 2026-2050 only; the base follows the projection\'s accounting rule (materials and construction '
-         '(A1-A5) and soil carbon loss of the construction in the period, plus the maintenance (B2, B4) events in '
-         'the period of the cohorts built in it). Historical carbon appears only for the AR base window (figure '
-         'D21) and the base-window rows',
-         'DECISION (author): no historical factor series exists for the case studies (limitation)'),
+        ('History and acquired-rights base', 'the case-study factors (2025 technology) without back-casting; '
+         'decarbonisation applies to 2026-2050 only; the base follows the projection\'s accounting rule (materials '
+         'and construction (A1-A5) and soil carbon loss of the construction in the period, plus the maintenance '
+         '(B2, B4) events in the period of the cohorts built in it). Historical carbon appears only for the AR base '
+         'window and the base-window rows',
+         'DATA: the case-study factors (BRANZ LCAQuick 3.6, built from EPD and BRANZ data) are roughly '
+         'contemporaneous with the base window; the vintages of the underlying EPDs are not tabulated'),
     ]
 
 
@@ -361,6 +362,36 @@ DECARB_LIMITATIONS = [
 ]
 
 
+def timber_end_of_life():
+    """The timber end-of-life limitation, with its numbers read from the LCAQuick line data (data/derived/lca_events.csv,
+    built by data/build_lca_events.py from data/raw/Analytical_LCA_Results_Database.xlsx) and the item table
+    (data/derived/material_items.csv): the timber share of C1-C4, the C1-C4 / A1-A3 range of the solid-wood (sawn)
+    lines, their module D sign and whether any timber line carries a replacement or repaint event."""
+    d = pd.read_csv(os.path.join(ROOT, 'data', 'derived', 'lca_events.csv'))
+    t = d[d['class'] == 'TIMBER']
+    sawn = t[t['item'].str.match(r'(Softwood|Hardwood)')]
+    r = sawn['C1-C4'] / sawn['A1-A3']
+    it = pd.read_csv(os.path.join(ROOT, 'data', 'derived', 'material_items.csv'))
+    it = it[(it['class'] == 'TIMBER') & it['item'].str.match(r'(Softwood|Hardwood)')]
+    if (it['D'] >= 0).any() or (t['n_events'] > 0).any():
+        raise SystemExit('baseline_draft: the timber end-of-life text no longer matches the data (module D or events).')
+    return ('Timber C1-C4 includes landfill methane (biogenic CO2 excluded), with decay as in the underlying EPD data: '
+            f'the {len(sawn)} sawn-timber lines of the LCAQuick results carry C1-C4 of {r.min():.1f}-{r.max():.1f} times '
+            f'their A1-A3 (median {r.median():.1f}), each with a module D credit for landfill-gas recovery. Timber is '
+            f'{100 * t["C1-C4"].sum() / d["C1-C4"].sum():.0f}% of the case studies\' C1-C4. No timber line carries a '
+            'replacement or repaint event, so it affects the committed emissions after 2050, not the 2026-2050 total.')
+
+
+def households_2019_2023():
+    """The 2019-2023 household estimates: the rebase factor k read from the figure source (D02)."""
+    d = load('figure_source/D02_households.json')
+    k = f"k = {d['hh_rebase_k']:.3f}" if d else 'one factor k'
+    return ('Households 2019-2023: the Stats NZ household estimates between the 2018 and 2023 censuses are '
+            f'consent-derived increments, rescaled by one factor ({k}) so that June 2023 matches the 2023 census, as '
+            'Stats NZ benchmarks each base; the consent-driven shape is kept. Stats NZ\'s 2023-rebased estimates will '
+            'replace them when published.')
+
+
 LIMITATIONS = [
     'No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so '
     'the implied replacement rates cannot be tested against a count.',
@@ -368,8 +399,8 @@ LIMITATIONS = [
     'percentiles through one draw z, and the total vs private-household population question is unresolved '
     'until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ\'s '
     '2023-base release (late 2026) to be adopted in a later version.',
-    'Timber end of life (C1-C4) excludes biogenic CO2 (confirmed by the author). Whether it includes landfill '
-    'methane is TO CONFIRM from Christoforatos & Pickering 2025 (author check).',
+    timber_end_of_life(),
+    households_2019_2023(),
     'With the typology mix held in every variant (internal to the model: it weights the case-study factors), '
     'neither the variants nor the Monte Carlo carry typology-mix uncertainty; a change of mix is a pathway '
     'question for later work, not a baseline uncertainty.',
@@ -545,7 +576,7 @@ def lines():
               '', ((f"{_cap(vs)}. In 2050 implied stock vacancy is "
                     f"{100 * (nj['vacancy']['v_2050'] - nj['vacancy']['v_forward']):.1f} percentage point above the "
                     f"2023 rate"
-                    + (f"; never absorbed (the MODEL v2.1 Reference) floor area would be "
+                    + (f"; never absorbed, floor area would be "
                        f"{_pb:+.1f}%." if (_pb := _payback()) is not None else '.'))
                    if vs else ''),
               '', 'Caveats: the absorption speed is not identified by the eight census vacancy observations; over '
@@ -739,8 +770,8 @@ def lines():
          ('DATA', f'Typology mix (internal to the model): the {BB.MIX_HELD_WINDOW[0]}-{BB.MIX_HELD_WINDOW[1]} '
                   'consented average'),
          ('DATA', 'Dwelling size: consents 2023-2025; vacancy-rate parameter: the published 2023 census value'),
-         ('LITERATURE', f'Completion rate {BB.COMPLETION_RATE:.3f} and lag {BB.COMPLETION_LAG_MONTHS} months (Jones, '
-                        'Greenaway-McGrevy & Crow 2025)'),
+         ('LITERATURE', f'Completion rate {BB.COMPLETION_RATE:.3f} and lag {BB.COMPLETION_LAG_MONTHS} months '
+                        '(Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025)'),
          ('LITERATURE', 'Demolition split 0.135%/yr (BRANZ SR214); total net replacement from census counts'),
          ('LITERATURE', 'Material carbon factors: 16 NZ case studies (Christoforatos & Pickering 2025)'),
          ('LITERATURE', f"Soil carbon loss 58.77 kg CO2e/m2 footprint, zero on the {N.BANDS['replacement']} and {N.BANDS['redevelopment']} bands "
@@ -754,7 +785,8 @@ def lines():
                       'the model (it weights the case-study factors) and not reported'),
          ('JUDGEMENT', 'Household size: interpolation through all published Stats NZ values (2018-2043), held '
                        'constant beyond 2043 with zero slope imposed at 2043'),
-         ('JUDGEMENT', 'No completion lag (same-year consents x 0.95)')]
+         ('JUDGEMENT', f'Completion lag: consents become completions {BB.COMPLETION_LAG_MONTHS} months later (monthly), '
+                       f'at a completion rate of {BB.COMPLETION_RATE:.3f}')]
     pb = (m or {}).get('aesa')
     if pb:
         L += ['', '## Planetary-boundary layer (AESA): climate change', '',
@@ -794,10 +826,9 @@ def lines():
 
 
 def main():
-    """The methods draft is one document, written by tools/methods.py (this entry point imports a module
-    methods_draft that does not exist)."""
-    import methods_draft
-    methods_draft.main()
+    """The methods draft is one document: run directly, this part writes it through tools/methods.py."""
+    import methods
+    methods.main()
 
 
 if __name__ == '__main__':

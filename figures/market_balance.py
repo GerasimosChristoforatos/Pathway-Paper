@@ -18,11 +18,16 @@ def _src(fid):
 
 
 def sf7_completion_lag():
-    """Annual GFA by broad category under a controlled zero- versus 17-month lag comparison."""
+    """Annual GFA by broad category: the 17-month lag against the like-for-like zero-lag run (forward net replacement
+    held at the 17-month calibration, so only the timing of building differs); the recalibrated zero-lag run as a thin
+    grey context line."""
     fid = "SF7_completion_lag"
     d = D.csv("diagnostics/lag_comparison_annual.csv")
-    labels = {0: "Zero lag (consent-timed proxy)", 17: "17-month lag (completion-timed)"}
+    sm = D.js("diagnostics/lag_comparison_summary.json")
     colours = dict(S.LAG_VARIANT)          # palette.toml [lag_variants]
+    runs = [("lag_0_held", "Zero lag, net replacement held at the 17-month calibration", colours[0], "-", S.LW_BOLD),
+            ("lag_17", "17-month lag (completion-timed)", colours[17], "--", S.LW_BOLD),
+            ("lag_0", "Zero lag, recalibrated (context)", S.MUTED, ":", S.LW)]
     panels = [
         ("population_growth", "Population growth"),
         ("household_size_change", "Household-size change"),
@@ -35,17 +40,16 @@ def sf7_completion_lag():
     axes = axes.ravel()
     for i, (category, title) in enumerate(panels):
         ax = axes[i]
-        for lag in (0, 17):
-            g = d[(d["lag_months"] == lag) & (d["category"] == category)].sort_values("year")
+        for run, label, col, ls, lw in runs:
+            g = d[(d["run"] == run) & (d["category"] == category)].sort_values("year")
             if not g.empty:
-                P.line(ax, g["year"], g["floor_area_Mm2"], color=colours[lag], lw=S.LW_BOLD,
-                        ls="-" if lag == 0 else "--", label=labels[lag])
+                P.line(ax, g["year"], g["floor_area_Mm2"], color=col, lw=lw, ls=ls, label=label)
         if category == "market_excess":
-            for lag in (0, 17):
-                g = d[(d["lag_months"] == lag) & (d["category"] == "overbuild_absorbed")].sort_values("year")
+            for run, ls in (("lag_0_held", ":"), ("lag_17", "-.")):
+                g = d[(d["run"] == run) & (d["category"] == "overbuild_absorbed")].sort_values("year")
                 if not g.empty:
-                    P.line(ax, g["year"], g["floor_area_Mm2"], color=colours[lag], lw=S.LW,
-                            ls=":" if lag == 0 else "-.", label=labels[lag] + " – absorbed")
+                    P.line(ax, g["year"], g["floor_area_Mm2"], color=dict((r[0], r[2]) for r in runs)[run], lw=S.LW,
+                           ls=ls)
         ax.axhline(0, color=S.INK, lw=S.LW_THIN)
         ax.set_xlim(2026, 2050)
         ax.set_ylabel("Mm² per year")
@@ -54,29 +58,30 @@ def sf7_completion_lag():
 
     for ax in axes[-2:]:
         ax.set_xlabel("Year")
-    handles = [
-        Line2D([0], [0], color=colours[0], lw=S.LW_BOLD, label=labels[0]),
-        Line2D([0], [0], color=colours[17], lw=S.LW_BOLD, ls="--", label=labels[17]),
-        Line2D([0], [0], color=colours[0], lw=S.LW, ls=":", label="Zero lag – absorbed"),
+    handles = [Line2D([0], [0], color=col, lw=lw, ls=ls, label=label) for _, label, col, ls, lw in runs] + [
+        Line2D([0], [0], color=colours[0], lw=S.LW, ls=":", label="Zero lag (held) – absorbed"),
         Line2D([0], [0], color=colours[17], lw=S.LW, ls="-.", label="17-month lag – absorbed"),
     ]
     fig.legend(handles=handles, loc="lower center", ncol=2, bbox_to_anchor=(0.5, -0.02),
                frameon=False, fontsize=S.FONT_MIN)
-    fig.tight_layout(rect=(0, 0.08, 1, 1))
+    fig.tight_layout(rect=(0, 0.10, 1, 1))
+    cum = {k: sm[k]["cumulative_categories_Mm2_2026_2050"]["net_replacement"] for k in ("lag_0_held", "lag_17", "lag_0")}
+    rate = {k: 100 * sm[k]["recent_net_replacement_rate_used"] for k in ("lag_17", "lag_0")}
+    a, b = sm["lag_17"]["recent_interval"]
     S.save_figure(
         fig, fid,
         note=(
-            "Both runs use identical source files and demographic paths; only the monthly consent-to-completion "
-            "lag changes. Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; it is not "
-            "a count of completed calendar-2026 homes. The 17-month run uses complete observed consent cohorts "
-            "for 2026 and 2027. Lag-specific historical completion timing and replacement calibration are "
-            "recomputed consistently, so panel c is not like-for-like in replacement: the net replacement rate is "
-            "re-estimated from the census dwelling counts with each run's completion timing (2018-2023 interval: "
-            "0.301%/yr at zero lag, with the census under-construction correction, against 0.173%/yr at 17 months), "
-            "and the difference in c is that recalibration, not the timing of building itself (MODEL v4.3.1, "
-            "investigation B3)."
+            "All runs use identical source files and demographic paths. The like-for-like zero-lag run holds the "
+            f"forward net replacement at the 17-month calibration ({a}-{b} rate {rate['lag_17']:.3f}%/yr), so it "
+            "differs from the 17-month run only in the timing of building. The recalibrated zero-lag run (grey, "
+            f"context) re-estimates net replacement from the census counts with zero-lag timing ({rate['lag_0']:.3f}%/yr "
+            "with the census under-construction correction); its higher net replacement in panel c is that "
+            "recalibration, not the timing of building. Cumulative net replacement 2026-2050: "
+            f"{cum['lag_0_held']:.2f} Mm² (zero lag, held), {cum['lag_17']:.2f} Mm² (17 months), {cum['lag_0']:.2f} Mm² "
+            "(zero lag, recalibrated). Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; "
+            "the 17-month run uses complete observed consent cohorts for 2026 and 2027."
         ),
-        source=["diagnostics/lag_comparison_annual.csv"],
+        source=["diagnostics/lag_comparison_annual.csv", "diagnostics/lag_comparison_summary.json"],
     )
 
 

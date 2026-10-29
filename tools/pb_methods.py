@@ -31,6 +31,31 @@ def ordered(d):
     return [(k, d[k]) for k in SCEN_NAME if k in d] + [(k, v) for k, v in d.items() if k not in SCEN_NAME]
 
 
+def ar_base_rule_lines(r):
+    """The shared-parameter rule of the one-at-a-time rows (boundaries.AR_BASE_RULE, results.json
+    one_at_a_time_ar_base): the statement, the recomputed bases and the rows that keep the Reference base."""
+    import boundaries
+    o = r['one_at_a_time_ar_base']
+    ref = r['components']['I_sec_base_kg']
+    L = ['## One-at-a-time rows and the AR base (shared-parameter rule)', '',
+         'A shared uncertain parameter is sampled once and used wherever it applies (Groen & Heijungs 2017; Kim, '
+         'Mutel & Hellweg 2025): the present-day carbon factors enter both the acquired-rights base and the '
+         'projection, so rows that change their level, or an accounting convention, recompute the base; rows that '
+         'change only future technology or siting do not. The recomputed base uses the function of the Monte Carlo '
+         '(boundaries.base_with_factors) at the row\'s own factors; the classification is boundaries.AR_BASE_RULE.',
+         '', '| row (recompute) | reason | case | Ī_sec,base (kt/yr) | vs the Reference |', '|---|---|---|---|---|']
+    for k, v in o.items():
+        for side, x in v.get('sides', {}).items():
+            L.append(f"| {k} | {v['reason']} | {side} | {x['I_sec_base_kg'] / 1e6:,.1f} | "
+                     f"{100 * (x['I_sec_base_kg'] / ref - 1):+.2f}% |")
+    rec = [k for k, v in o.items() if v['rule'] == boundaries.RECOMPUTE and 'sides' not in v]
+    keep = [k for k, v in o.items() if v['rule'] == boundaries.REFERENCE_BASE]
+    L += ['', 'Also recomputed (by their definition, in aesa/sensitivity.csv): ' + ', '.join(rec) + '. Reference base '
+          '(Ī_sec,base unchanged; the population rows move both budgets with the population path): '
+          + '; '.join(f"{k} ({o[k]['reason']})" for k in keep) + '.']
+    return L
+
+
 def lines():
     """The AESA part as Markdown lines, without the title line (section headings at '##')."""
     import boundaries
@@ -60,7 +85,8 @@ def lines():
          '    B_AR(t) = SOS · (Ī_sec,base / I_glob) · [P_NZ(t) / P_NZ(t0)] · [P_W(t0) / P_W(t)],   '
          f"t0 = {s['T0']}", '',
          f'Ī_sec,base is the mean annual sector impact {w0}-{w1} from this model\'s own history (same scope, '
-         'accounting rule and soil convention as the projection; at 2025 case-study factors'
+         'accounting rule and soil convention as the projection; at the case-study factors, roughly contemporaneous with '
+         'the base window and not back-cast'
          + ('' if s.get('DECARB_MODE', 'none') == 'none' else ': past construction used past technology, so the '
             'decarbonisation of A1-A3 applies only to 2026-2050') + '). Over the base window LoE_AR = I_glob / SOS = '
          f"{c['LoE_AR_base_identity']:.4f} by construction (the sector impact cancels); the information is in the "
@@ -85,7 +111,8 @@ def lines():
                                'replacement and repaint events) that occurs in year t in buildings built from 2026. '
                                'Maintenance events after 2050 and all end-of-life emissions (C1-C4) of the 2026-2050 '
                                'cohorts are committed after 2050, reported below as a range and in years of the 2050 '
-                               'AR boundary; they are not part of the cumulative LoE.'
+                               'AR boundary; they are not part of the cumulative LoE. On time-differentiated climate '
+                               'accounting of New Zealand building elements see McLaren et al. (2025).'
                                if c.get('accounting') == 'time_resolved' else
                                'Whole life at construction: all stages A1-C4 booked in the construction year.'), '',
          '**Level of exceedance**: LoE_k(t) = I_sec(t) / B_k(t); cumulative LoE = Σ I_sec / Σ B_k over '
@@ -95,7 +122,9 @@ def lines():
          'and t+1.', '',
          '## Constants and sources', '', '| quantity | value | source |', '|---|---|---|',
          f"| SOS | {c['SOS_kg']:.3g} kg CO2-eq/yr | {c['pair_label']}; ESM2 (see source check) |",
-         f"| I_glob | {c['I_glob_kg']:.3g} kg CO2-eq/yr | Bjørn & Hauschild 2015 ESM2 B30 (Laurent et al. 2013, 2010) |",
+         f"| I_glob | {c['I_glob_kg']:.3g} kg CO2-eq/yr | Bjørn & Hauschild 2015 ESM2 B30 (Laurent et al. 2013, 2010); "
+         f"equal to the EF 3.0 global factor ({boundaries.I_GLOB_EF30_PER_PERSON:.2E} kg CO2e per person, 2010; "
+         'Andreasi Bassi et al. 2023, Table 10) |',
          f"| Ī_sec,base {w0}-{w1} | {c['I_sec_base_kg'] / 1e6:,.1f} kt/yr | this model, history on the projection's "
          'soil convention (boundaries.historical_emissions) |',
          f"| base year b | {b} | latest year with ≥ {100 * s['WDI_COVERAGE_MIN']:.0f}% of WDI-economy population "
@@ -111,9 +140,12 @@ def lines():
          f"{100 * (ss['s_sec_ratio_of_sums'] / ss['s_sec_mean_of_ratios'] - 1):+.2f}%) | Hjalsted Eq. 6; manuscript "
          'definition kept for continuity |',
          f"| P_NZ(t0), P_W(t0) | {c['P_NZ_t0']:,.0f}, {c['P_W_t0']:,.0f} | model (observed 2025 ERP); WPP 2024 median |",
-         '', 'The numerator of s_sec is an investment flow (gross fixed capital formation), while Hjalsted et al. '
-         'define the upscaling on final consumption and leave intermediate sectors open (p. 16).', '',
-         '## Historical sector emissions (base window, at 2025 factors)', '',
+         '', 's_sec uses the consented value of new residential building over national final consumption '
+         'expenditure, following the FCE upscaling of Hjalsted et al. (2021) as a proxy of the priority households '
+         'give to housing. In the national accounts residential construction is gross fixed capital formation, not '
+         'final consumption; treating it as consumed follows the endogenisation of capital in consumption-based '
+         'accounting (Södersten, Wood & Hertwich 2018).', '',
+         '## Historical sector emissions (base window, case-study factors)', '',
          '| year | kt CO2e | soil share of floor area | net replacement rate (%/yr) | rate from |', '|---|---|---|---|---|']
     for y, h in r['history'].items():
         L.append(f"| {y} | {h['I_kt']:,.1f} | {h['soil_share']:.3f} | {h['rate_pct']:.3f} | {h['rate_source']} |")
@@ -145,7 +177,12 @@ def lines():
           '| value (kg CO2-eq/yr) | what | where | reference year | GWP basis | land-use-change CO2 |',
           '|---|---|---|---|---|---|'] + [f'| {" | ".join(row)} |' for row in boundaries.SOURCE_CHECK]
     L += ['', f"Primary pair {s['SOURCE_PAIR']}: {boundaries.SOURCE_PAIRS[s['SOURCE_PAIR']]['label']}; sensitivity C: "
-          f"{boundaries.SOURCE_PAIRS['C']['label']}. Pair B (6.81E12 with 5.21E13) mixes sources and is not implemented.", '',
+          f"{boundaries.SOURCE_PAIRS['C']['label']}. Global-impact sensitivity (acquired rights only): I_glob = "
+          f"{boundaries.I_GLOB_EF31_PER_PERSON:.2E} kg CO2e per person x {boundaries.I_GLOB_EF31_POPULATION:,} persons "
+          f"(2010) = {boundaries.SOURCE_PAIRS['EF31']['i_glob']:.3E} kg CO2e/yr, the EF 3.1 normalisation factor "
+          f"(Andreasi Bassi et al. 2023, Table 10), with the SOS of pair {s['SOURCE_PAIR']}; AtP does not depend on "
+          'I_glob.', '',
+          *ar_base_rule_lines(r), '',
           '## Results', '']
     if m:
         L += [f"The {m['source_pair_label']} allocated by acquired rights gives {m['B_AR_2026_kt']:,.1f} kt CO2e in "
@@ -198,10 +235,9 @@ def lines():
 
 
 def main():
-    """The methods draft is one document, written by tools/methods.py (this entry point imports a module
-    methods_draft that does not exist)."""
-    import methods_draft
-    methods_draft.main()
+    """The methods draft is one document: run directly, this part writes it through tools/methods.py."""
+    import methods
+    methods.main()
 
 
 if __name__ == '__main__':

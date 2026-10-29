@@ -9,71 +9,8 @@
 
 Every figure is drawn by a module of figures/ from the data files of outputs/data/ only (compute / draw
 separation); `module` names it, `source` lists the data files it reads (relative to outputs/data/).
-Figures are PNG only (runprofile.py: 600 dpi full, 200 dpi light). Figure ids of earlier releases that are not
-carried forward are listed in RETIRED with the reason (written to FIGURES.md).
+Figures are PNG only (runprofile.py: 600 dpi full, 200 dpi light).
 """
-# the row notes of ED4 and ED5 as figures/sensitivity.py writes them under the axes (a
-# numbered list, the numbers as superscripts on the row labels) (read from the model
-# code and the committed outputs); copied here so they reach the captions and FIGURES.md. No kept test checks this
-# copy against the generated text (that test is at the tag model-v4.3.3).
-ED4_ROW_NOTES = (
-    '¹ household size continues linearly from 2023 at the 2018–2023 census-interval pace instead of the '
-    'Stats NZ household-size path rebased on 2023.',
-    '² Stats NZ 2024-base stochastic projection, 5th / 95th percentile path instead of the median.',
-    '³ Stats NZ Low / High household-size variant (smaller / larger households) instead of the Medium '
-    'variant.',
-    '⁴ from the shape-preserving (PCHIP) end slope at 2043 the slope tapers to zero over 5 years, instead'
-    ' of a zero slope imposed at 2043 and household size held constant after 2043.',
-    '⁵ the last published interval (2038–2043) linear at its secant slope, the slope then tapering to '
-    'zero over 5 years, instead of a zero slope imposed at 2043 and household size held constant after '
-    '2043.',
-    '⁶ the 2026 overbuild (building above need in 2026–2027 and its continuation, fading at ρ = 0.43) '
-    'replaces existing dwellings instead of adding to the stock: no surplus, so no absorption payback and'
-    ' no soil carbon loss on it.',
-    '⁷ new-dwelling size held at its 2016–2025 mean per typology instead of the 2023–2025 mean.',
-    '⁸ 0.93 / 0.96 of consented dwellings completed instead of 0.945.',
-    '⁹ the mean of the 1986–2023 censuses on one definition instead of the 2023 census value (5.39%).',
-    '¹⁰ the 2026 overbuild absorbed by 2030 / 2045 instead of 2035.',
-    '¹¹ consents lagged 15 / 19 months instead of 17.',
-    '¹² consents to December 2025 and the projected 2026 population instead of consents to July 2026 and '
-    'the observed 2026 population growth.',
-    '¹³ Low: the 1991–2023 long-run net rate throughout; High (tick): the 2018–2023 rate persists; Very '
-    'High: the 1991–2023 census-interval trend continues; instead of the 2018–2023 rate fading to the '
-    'long-run rate with a 10-year half-life.',
-    '¹⁴ 5 / 15 years instead of 10.',
-    '¹⁵ the soil carbon loss of the lowest (Raw) / highest (Organic) soil order on every new footprint '
-    'instead of the area-weighted mean over the soil orders of the Auckland land zoned for urbanisation.',
-    '¹⁶ the materials factor of the lowest / highest single case study of each typology instead of the '
-    'pooled typology factor.',
-    '¹⁷ every factor held at 2025 instead of A1–A3 on the item paths of Horup et al. (2025) and A4–A5 '
-    'falling 1% per year.',
-    '¹⁸ the lowest / highest pooled materials factor when each case study is left out in turn, instead of'
-    ' the pooled factor (a spread, not a confidence interval).',
-    '¹⁹ items made in New Zealand with electricity-intensive production held at 2025 instead of following'
-    ' their Horup et al. (2025) path.',
-    "²⁰ A4–A5 on each item's own Horup et al. (2025) path / held at 2025 instead of the generic 1% per "
-    'year decline (Resch et al. 2021).',
-    '²¹ soil carbon loss also on replacement floor area instead of none on rebuilt footprints.',
-    "²² items mapped to a proxy material held at 2025 instead of following the proxy's path.",
-)
-ED5_ROW_NOTES = (
-    '¹ 1 W/m² planetary boundary (Bjørn & Hauschild 2015), safe operating space 3.61 × 10¹² kg CO₂e per '
-    'year, instead of the 2 °C carrying capacity (Bjørn & Hauschild 2015), 6.81 × 10¹² (the same global '
-    'impact); both budgets move.',
-    '² mean sector emissions over 5 / 20 / 34 years (2021–2025, 2006–2025, 1992–2025) instead of 10 years'
-    ' (2016–2025); AR only.',
-    '³ GDP per capita in current US$ instead of GDP per capita at purchasing-power parity, constant 2021 '
-    'international $ (World Bank WDI); AtP only.',
-    '⁴ FCE share of GDP in the sector share: the ratio of the summed FCE to the summed GDP of the 40 '
-    'quarters 2016–2025 instead of the mean of the 40 quarterly FCE/GDP ratios 2016–2025; AtP only.',
-    '⁵ Stats NZ 2024-base 5th / 95th percentile path instead of the median; carbon and both budgets move '
-    'together.',
-    "⁶ UN WPP 2024 median for New Zealand instead of the model's population path (the Stats NZ 2024-base "
-    'median from the observed 2025 level, with the observed 2026 growth); budgets only.',
-    '⁷ as in Extended Data Fig. 4 (carbon only; the budgets are unchanged).',
-    '⁸ as in Extended Data Fig. 4 (carbon only).',
-)
-
 PAPER_MAIN = [
     dict(id='Fig1', file='Fig1_floor_area', width='double', module='figures.paper_main',
          title='Floor area: history and projection by demand band',
@@ -155,17 +92,17 @@ PAPER_EXTENDED = [
                  'ticks; not additive, not a joint interval. Not shown (kept in the data file): household size held '
                  'flat after 2043 (the Reference is also held constant after 2043, with a zero slope imposed at 2043), '
                  'the overbuild gap against the 2026 requirement, no census under-construction correction, the '
-                 'maintenance event timing L / n, and the version-history rows (their changes are in the note). '
-                 'What each row changes compared with the Reference (numbered as the superscripts of the row labels): '
-                 + ' '.join(ED4_ROW_NOTES),
+                 'maintenance event timing L / n, and the rows that compare with superseded settings (their changes are in the note). '
+                 'What each row changes compared with the Reference (numbered as the row labels): ',
+         row_notes='ED4',
          source=['sensitivity/reference_carbon.csv']),
     dict(id='ED5', file='ED5_boundary_sensitivity', module='figures.sensitivity',
          title='Boundary definitions and allocation: cumulative LoE of AR and of AtP',
          caption='One-at-a-time ranges of the Reference cumulative level of exceedance 2026-2050 of (a) acquired '
-                 'rights (AR) and (b) ability to pay (AtP): boundary definitions, allocation, population and '
-                 'replacement. Not shown (kept in the data file): α = 1 (Hjalsted et al. SI tables) and the raw Stats '
-                 'NZ 2024-base median population. What each row changes compared with the Reference (numbered as the superscripts of the row labels): '
-                 + ' '.join(ED5_ROW_NOTES),
+                 'rights (AR) and (b) ability to pay (AtP): boundary definitions (carrying capacity, global impact, AR '
+                 'base window), allocation, population and replacement. Not shown (kept in the data file): α = 1 (Hjalsted et al. SI tables) and the raw Stats '
+                 'NZ 2024-base median population. What each row changes compared with the Reference (numbered as the row labels): ',
+         row_notes='ED5',
          source=['sensitivity/planetary_boundary.csv', 'aesa/results.json']),
     dict(id='ED6', file='ED6_mc_input_distributions', module='figures.montecarlo',
          title='Monte Carlo input distributions',
@@ -247,8 +184,8 @@ SUPPLEMENTARY = [
          title='Rolling-origin hindcast of dwellings built and the 2027 out-of-sample check',
          source=['figure_source/D14_hindcast.json', 'baseline/validation.json']),
     dict(id='SF7', file='SF7_completion_lag', folder='validation', module='figures.market_balance',
-         title='Annual floor area by demand group: zero- and 17-month completion lag',
-         source=['diagnostics/lag_comparison_annual.csv']),
+         title='Annual floor area by demand group: 17-month and like-for-like zero completion lag',
+         source=['diagnostics/lag_comparison_annual.csv', 'diagnostics/lag_comparison_summary.json']),
     dict(id='SF8', file='SF8_reality_checks', folder='validation', module='figures.validation',
          title='The projection against the 1991-2025 range and the observed -> model handover',
          source=['figure_source/D15_reality_checks.json']),
@@ -307,46 +244,6 @@ MAINTENANCE_ALLOWED = ('Fig2_reference_carbon', 'Fig3_reference_boundaries')
 # (ED10 -> ED9; SF9 budget construction is the Supplementary Table ST1, no axes)
 PB_FIGURES = ('Fig3_reference_boundaries', 'Fig4_pathways', 'Fig5_solution_space',
               'ED3_replacement_variants', 'ED9_rollout_timing')
-
-RETIRED = {
-    'outputs/paper/ (Fig1-Fig6 of MODEL v2.1.2)': 'outputs/paper_main/ Fig1-Fig8 (new set)',
-    'outputs/extended_data/ (ED1-ED13)': 'outputs/paper_extended/ ED1-ED14',
-    'outputs/key_figures/ (K1-K6)': 'retired: their content is in Fig1-Fig8',
-    'D30_l6_estimator': 'ED11 (L5 and L8 estimators)',
-    'D11_floor_area_bridge_split': 'D10 (MODEL v3.0.0 splits demolition replacement and unconsented additions in '
-                                   'every band set, so the appendix bridge equals D10)',
-    'MODEL v3.3.1 renumbering': 'Fig1-Fig3 -> Fig2-Fig4 (Fig1 the new model schematic); Fig4 pathways annual -> ED5; '
-                                'Fig7 tornado -> Fig8a; Fig8 Shapley -> Fig7; ED5 conditional TL -> Fig8b and SF2; '
-                                'ED7 Ambitious waterfall -> ED6 (Moderate and Ambitious by demand band); '
-                                'ED1, ED2, ED14, ED6, ED13, ED9 -> ED2, ED3, ED4, ED7, ED9, ED10; '
-                                'ED4, ED10, ED11, ED12 -> SF1, SF3, SF4, SF5 (outputs/supplementary/)',
-    'ED3_cumulative_households_population_floor_area': 'ED1 (population, households, floor area; 3 x 1)',
-    'PDF output': 'retired in MODEL v3.3.1: figures are PNG only (600 dpi full, 200 dpi light)',
-    'MODEL v3.3.2 renumbering': 'Fig2-Fig4 -> Fig1-Fig3; Fig5 waterfalls -> Fig4 (b-d) with the annual pathways (a); '
-                                'Fig5 reduction by demand band (new); Fig1 schematic -> SF1 (SF1-SF5 -> SF2-SF6)',
-    'MODEL v4.2.2 Fig5': 'Fig5 reduction by demand band -> SF7 (Extended Data full at ten items); the Fig5 model '
-                         'schematic was added and then dropped; Fig5 is vacant, no other figure renumbered',
-    'MODEL v4.3.0 Extended Data': 'v4.2.2 ED5 pathways annual, ED6 waterfalls by demand band, ED7 TL Shapley and '
-                                  'indicators, ED10 detailed demand bands no longer rendered (their plotting code was '
-                                  'deleted in the clean release); the full old -> new map is '
-                                  'outputs/data/ed_number_map.csv',
-    'MODEL v4.3.0 clean release': 'main Fig6-Fig8 -> Fig5-Fig7; Extended Data ED1-ED10 as ed_number_map.csv; '
-                                  'Supplementary SF1-SF17 in topic folders (calibration, validation, boundaries, '
-                                  'sensitivity, montecarlo, pathways); the diagnostics set D01-D44 is no longer drawn '
-                                  '(its data files are still written): D02+D04 -> SF1, D05+D06 -> SF2, D07 -> SF3 (with '
-                                  'v4.2.2 ED2), D08 + v4.2.2 SF6 -> SF4, D35 (a duplicate of v4.2.2 ED4) -> SF5, D14 -> SF6, '
-                                  'D44 -> SF7, D15 -> SF8, D22 -> SF9, D40 -> SF10, D41 -> SF11, D37 -> SF14, '
-                                  'D39 -> SF15, D34 -> SF17, D16 -> ED4, D42 -> ED5, D38 -> ED6, D20 -> ED7, '
-                                  'D31 -> ED9; v4.2.2 SF3, SF4, SF5 -> SF16, SF12, SF13; v4.2.2 SF1 model schematic, '
-                                  'SF2 Monte Carlo scatter (in Fig7b) and SF7 reduction by demand band, and D01, D03, '
-                                  'D09, D10, D12, D13, D17, D18, D19, D21, D23-D29, D32, D33, D36, D43 deleted '
-                                  '(docs/CHANGELOG_v4_3_0.md)',
-    'MODEL v4.3.1 renumbering': 'ED8 Shapley attribution no longer rendered (the Shapley values are in Fig6); ED9, ED10 '
-                                '-> ED8, ED9 (ed_number_map.csv). SF9 budget construction -> Supplementary Table ST1; '
-                                'SF11 pathway sensitivity no longer rendered; SF10, SF12-SF17 -> SF9-SF15 '
-                                '(sf_number_map.csv); panels dropped: SF1c, SF2b, SF4b (docs/CHANGELOG_v4_3_1.md)',
-}
-
 
 def all_figures(profile_full=True):
     """[(group, file id, module)] of every figure (FULL_ONLY figures only in the full profile: their data exist only

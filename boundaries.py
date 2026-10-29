@@ -67,14 +67,24 @@ FILE_GDP = os.path.join(DATA_DIR, 'derived', 'nz_gdp_quarterly.csv')            
 #     to three figures as 6.81E12 is; '3.6 Gt' in ESM1 and Hjalsted et al. p. 10.
 #   5.58E13 kg CO2-eq/yr: ESM2 'Climate change2degree' B30 ('Background
 #     interventions_Global', typed input), global impact 2010 from Laurent et
-#     al. (2013) PROSUITE D5.2 (8.1 t/person, ESM1). Laurent et al. (2013) is
-#     not in hand: its land-use-change coverage and GWP basis are NOT VERIFIED.
-# Pair B of the source check (6.81E12 with the EF3.1 normalisation factor
-# 5.21E13) mixes sources and is not implemented (author decision).
+#     al. (2013) PROSUITE D5.2 (8.1 t/person, ESM1); it equals the EF 3.0 global
+#     normalisation factor for climate change (8.10E+03 kg CO2e per person, 2010;
+#     Andreasi Bassi et al. 2023, Table 10), whose total sums the fossil, biogenic
+#     and land-use-change sub-indicators.
+#   EF 3.1 (sensitivity, 'EF31'): the EF 3.1 global normalisation factor for
+#     climate change, I_GLOB_EF31_PER_PERSON kg CO2e per person (Andreasi Bassi
+#     et al. 2023, Table 10) x I_GLOB_EF31_POPULATION persons (reference year
+#     2010) instead of 5.58E13; SOS unchanged (acquired rights only). The
+#     difference is mainly the lower characterisation factor of methane in EF 3.1.
 SOURCE_PAIRS = {
     'A': dict(label='2 °C carrying capacity (Bjørn & Hauschild 2015)', sos=6.81e12, i_glob=5.58e13),
     'C': dict(label='1 W/m² planetary boundary (Bjørn & Hauschild 2015)', sos=3.61e12, i_glob=5.58e13),
 }
+I_GLOB_EF30_PER_PERSON = 8.10e3          # kg CO2e per person, EF 3.0 (Andreasi Bassi et al. 2023, Table 10)
+I_GLOB_EF31_PER_PERSON = 7.55e3          # kg CO2e per person, EF 3.1 (Andreasi Bassi et al. 2023, Table 10)
+I_GLOB_EF31_POPULATION = 6_895_889_018   # persons, reference year 2010 (Andreasi Bassi et al. 2023)
+SOURCE_PAIRS['EF31'] = dict(label='EF 3.1 normalisation factor (Andreasi Bassi et al. 2023)', sos=SOURCE_PAIRS['A']['sos'],
+                            i_glob=I_GLOB_EF31_PER_PERSON * I_GLOB_EF31_POPULATION)
 SOURCE_PAIR = 'A'                  # primary (author decision); 'C' is the sensitivity
 
 # ---------------------------------------------------------------------------
@@ -100,6 +110,85 @@ AR_BASE_WINDOW_FULL = (HIST_START, 2025)   # the full consistent history (34 yea
 # 2013-18; 2018-23: 2018-23). After the last census (2024-25): 'recent' = the
 # 2018-23 rate carried (author decision), 'long_run' = the 1991-2023 rate (note).
 HIST_RATE_AFTER_LAST_CENSUS = 'recent'
+
+# One-at-a-time rows and the AR base (shared-parameter rule). A shared uncertain parameter is sampled once and used
+# wherever it applies (Groen & Heijungs 2017; Kim, Mutel & Hellweg 2025): the present-day carbon factors enter both
+# the acquired-rights base and the projection, so a row that changes their level, or an accounting convention that
+# applies to past and future alike, recomputes I_sec,base with the function the Monte Carlo uses (base_with_factors);
+# a row that changes only future technology, siting or demand keeps the Reference base. Every row that reports a
+# level of exceedance is classified here (row label of sensitivity/reference_carbon.csv, case of aesa/sensitivity.csv
+# or group of sensitivity/pathway_carbon.csv); ar_base_rule() stops on an unclassified row.
+RECOMPUTE, REFERENCE_BASE = 'recompute', 'reference_base'
+AR_BASE_RULE = {
+    # one-at-a-time rows of the Reference (sensitivity/reference_carbon.csv; Fig7a, ED4)
+    'Population: Stats NZ 5th / 95th percentile': (
+        REFERENCE_BASE, 'the base history is observed; both budgets move with the population path (Horup Eq. 1)'),
+    'Household size: Stats NZ High / Low variant': (REFERENCE_BASE, 'future household size only'),
+    'Household size: 2018-2023 census pace': (REFERENCE_BASE, 'future household size only'),
+    'Household size after 2043: flat': (REFERENCE_BASE, 'future household size only'),
+    'Household size after 2043: secant-slope taper': (REFERENCE_BASE, 'future household size only'),
+    'Household size after 2043: taper from the PCHIP end slope': (REFERENCE_BASE, 'future household size only'),
+    'Completion rate 0.93 / 0.96': (
+        REFERENCE_BASE, 'the base keeps the observed floor area of the Reference, as in the Monte Carlo, which samples '
+                        'the completion rate with a fixed base'),
+    'Completion rate 0.95 (MODEL v3.3)': (REFERENCE_BASE, 'as the completion-rate row'),
+    'Completion lag 15 / 19 months': (
+        REFERENCE_BASE, 'the base keeps the observed floor area of the Reference, as in the Monte Carlo'),
+    'Completion lag 0 months (MODEL v3.3)': (REFERENCE_BASE, 'as the completion-lag row'),
+    'No 2026 data': (REFERENCE_BASE, 'the 2026 data only'),
+    'No census under-construction correction': (REFERENCE_BASE, 'calibration of future net replacement only'),
+    'Dwelling-size window 2016-2025': (REFERENCE_BASE, 'future dwelling size only'),
+    '2026 overbuild absorbed by 2030 / by 2045': (REFERENCE_BASE, 'future building only'),
+    '2026 overbuild never absorbed (MODEL v2.1 Reference)': (REFERENCE_BASE, 'future building only'),
+    'Vacancy parameter: 1986-2023 census mean (one definition)': (REFERENCE_BASE, 'future vacancy only'),
+    '2026 overbuild booked as stock-neutral redevelopment': (REFERENCE_BASE, 'future building only'),
+    '2026 overbuild gap vs the 2026 requirement': (REFERENCE_BASE, 'future building only'),
+    'Low / High replacement': (REFERENCE_BASE, 'future net replacement only; the base uses the census rates'),
+    'Very High replacement (trend continues)': (REFERENCE_BASE, 'future net replacement only'),
+    'Replacement half-life 5 / 15 yr': (REFERENCE_BASE, 'future net replacement only'),
+    'Single case study: lowest / highest': (RECOMPUTE, 'the level of the present-day carbon factors'),
+    'Case studies: jackknife low / high': (RECOMPUTE, 'the level of the present-day carbon factors'),
+    'Frozen technology (2025 factors held)': (REFERENCE_BASE, 'future technology only (the base is at 2025 factors)'),
+    'Decarbonisation: proxy-mapped items held': (REFERENCE_BASE, 'future technology only'),
+    'Decarbonisation: NZ-made electricity-intensive items held': (REFERENCE_BASE, 'future technology only'),
+    'Soil order: lowest (Raw) / highest (Organic)': (REFERENCE_BASE, 'where future building happens (siting)'),
+    "A4-A5 on each item's own path / held at 2025": (REFERENCE_BASE, 'future technology only'),
+    'Soil carbon loss on all floor area, including replacement': (
+        RECOMPUTE, 'an accounting convention that applies to past and future building alike'),
+    'Event timing L / n': (RECOMPUTE, 'an accounting convention that applies to past and future cohorts alike'),
+    # boundary-definition and accounting rows of the AESA layer (aesa/sensitivity.csv; ED5)
+    'i_source_pair': (REFERENCE_BASE, 'the carrying capacity only'),
+    'i_glob_ef31': (REFERENCE_BASE, 'the global impact only'),
+    'ii_gdp_measure': (REFERENCE_BASE, 'ability to pay only'),
+    'iii_base_window': (RECOMPUTE, 'the base window itself'),
+    'iii_base_window_20': (RECOMPUTE, 'the base window itself'),
+    'iii_base_window_full': (RECOMPUTE, 'the base window itself'),
+    'iv_pop_statsnz': (REFERENCE_BASE, 'the population source of the boundaries only'),
+    'iv_pop_wpp': (REFERENCE_BASE, 'the population source of the boundaries only'),
+    'v_ssec': (REFERENCE_BASE, 'ability to pay only'),
+    'vi_frozen': (REFERENCE_BASE, 'future technology only'),
+    'vii_proxies_held': (REFERENCE_BASE, 'future technology only'),
+    'viii_nz_elec_held': (REFERENCE_BASE, 'future technology only'),
+    'ix_a45_held': (REFERENCE_BASE, 'future technology only'),
+    'x_a45_item': (REFERENCE_BASE, 'future technology only'),
+    'xi_event_timing': (RECOMPUTE, 'an accounting convention that applies to past and future cohorts alike'),
+    'xii_whole_life': (RECOMPUTE, 'an accounting convention (whole life at construction)'),
+    'xiii_wider_scope': (RECOMPUTE, 'a scope convention (maintenance of every cohort since 1992)'),
+    'xiv_alpha_1': (REFERENCE_BASE, 'ability to pay only'),
+    'note_soil_long_run': (RECOMPUTE, 'the history convention after the last census'),
+    # pathway design rows (sensitivity/pathway_carbon.csv; the replacement and demographic rows use the labels above)
+    'Ambition of one lever': (REFERENCE_BASE, 'a lever changes future building only'),
+    'Ambition of all': (REFERENCE_BASE, 'the levers change future building only'),
+    'Roll-out timing': (REFERENCE_BASE, 'future roll-out only'),
+    'Theoretical limit': (REFERENCE_BASE, 'the limits change future building only'),
+}
+
+
+def ar_base_rule(key):
+    """(rule, reason) of a one-at-a-time row that reports a level of exceedance; STOP if it is not classified."""
+    if key not in AR_BASE_RULE:
+        raise SystemExit(f'AR base rule: the one-at-a-time row {key!r} is not classified (boundaries.AR_BASE_RULE).')
+    return AR_BASE_RULE[key]
 
 # ---------------------------------------------------------------------------
 # 3. ABILITY TO PAY: GDP PER CAPITA AND SECTOR SHARE
@@ -155,9 +244,8 @@ def nz_population_alt(source, years):
 
 
 def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_from=None):
-    """Sector emissions in past years (kg CO2e) at 2025 factors (the history is not
-    decarbonised; actual past factors were likely higher, so the base is slightly
-    conservative), with the same scope, accounting and soil convention as the
+    """Sector emissions in past years (kg CO2e) at the case-study factors (2025
+    technology; roughly contemporaneous with the base window, not back-cast), with the same scope, accounting and soil convention as the
     projection: built floor area by typology (consents x completion rate) x
     construction-year intensity, plus soil on the non-replacement share of the floor
     area (engine.forward with soil_on_replacement=False). Time-resolved accounting
@@ -230,6 +318,57 @@ def base_with_factors(hist, typ, emb, window=AR_BASE_WINDOW, age=None, events_fr
         for j, t in enumerate(typ):
             tot = tot + hist_events(hist[f'gfa_{t}'], pd.Series(age[j]), list(h.index), ef).values
     return float(tot.mean())
+
+
+def reference_factors(B, typ):
+    """The central factors of the Monte Carlo (MonteCarlo.build_setup): construction-year materials by typology
+    (time-resolved: upfront A1-A5 per m2, 2025 technology; else the in-scope total) and, time-resolved, the event profile
+    by age (kg/m2, typology x age)."""
+    if B.get('TIME_RESOLVED'):
+        mf = pd.read_csv(projection.FILE_FACTORS_MATERIAL)
+        up = mf[mf['Stage'].isin(['A1-A3', 'A4-A5'])].groupby('Typology')['kgCO2e_per_m2'].sum().reindex(typ).values
+        ev = B['EV_PROFILE']
+        age = np.array([projection.EV.age_profile(ev[ev['Typology'] == t], MC.AGE_MAX).values for t in typ])
+        return up, age
+    tf = pd.read_csv(projection.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
+    return tf['embodied_materials'].values, None
+
+
+def one_at_a_time_bases(B, hist, i_base, window=AR_BASE_WINDOW):
+    """I_sec,base of every one-at-a-time row classified RECOMPUTE in AR_BASE_RULE that changes the carbon factors or
+    an accounting convention: {row: {side: kg CO2e/yr}}, each from base_with_factors (the Monte Carlo's base function)
+    at the row's own factors. The case-study rows scale each typology's factors by the row's ratio of in-scope
+    materials factors to the adopted one (factors_typology.csv), exactly as Sensitivity.py scales that typology's
+    materials carbon; the soil row puts soil carbon loss on all floor area of the history; the event-timing row takes
+    the event profiles of a run with EVENT_TIMING 'n'. STOP if the central factors do not reproduce i_base or a
+    convention row does not reproduce window_base of its own run (1e-12)."""
+    typ = list(B['typ_names'])
+    up, age = reference_factors(B, typ)
+    if not np.isclose(base_with_factors(hist, typ, up, window, age), i_base, rtol=1e-12, atol=0):
+        raise SystemExit('one_at_a_time_bases: the central factors do not reproduce I_sec,base.')
+    tf = pd.read_csv(projection.FILE_FACTORS_TYPOLOGY).set_index('Typology').loc[typ]
+    emb0 = tf['embodied_materials'].values
+
+    def scaled(col):
+        k = tf[col].values / emb0
+        return base_with_factors(hist, typ, up * k, window, None if age is None else age * k[:, None])
+    out = {'Single case study: lowest / highest': dict(low=scaled('emb_building_min'), high=scaled('emb_building_max')),
+           'Case studies: jackknife low / high': dict(low=scaled('emb_jackknife_min'), high=scaled('emb_jackknife_max'))}
+    soil_all = hist['I_soil_on_all_kg'] - hist['I_sec_kg'] + hist['soil_kg']
+    v = base_with_factors(hist.assign(soil_kg=soil_all), typ, up, window, age)
+    if not np.isclose(v, window_base(B, window, col='I_soil_on_all_kg')[0], rtol=1e-12, atol=0):
+        raise SystemExit('one_at_a_time_bases: the soil row does not reproduce window_base.')
+    out['Soil carbon loss on all floor area, including replacement'] = dict(single=v)
+    if B.get('TIME_RESOLVED'):
+        Bn = validation.run_boss(EVENT_TIMING='n')
+        v = base_with_factors(hist, typ, up, window, reference_factors(Bn, typ)[1])
+        if not np.isclose(v, window_base(Bn, window)[0], rtol=1e-12, atol=0):
+            raise SystemExit('one_at_a_time_bases: the event-timing row does not reproduce window_base.')
+        out['Event timing L / n'] = dict(single=v)
+    for k in out:
+        if ar_base_rule(k)[0] != RECOMPUTE:
+            raise SystemExit(f'one_at_a_time_bases: {k!r} is not classified {RECOMPUTE!r}.')
+    return out
 
 
 def legacy_events(B):
@@ -440,6 +579,13 @@ def main():
     b_ar, b_atp = boundaries(SOURCE_PAIR, i_base, comp, s_sec, p_nz, p_w)
     ratio = (b_atp / b_ar)
 
+    # ---- one-at-a-time rows: the AR base by the shared-parameter rule (AR_BASE_RULE) -------------
+    oat_bases = one_at_a_time_bases(B, hist, i_base)
+    b_ar_kt = lambda ib: float(boundaries(SOURCE_PAIR, ib, comp, s_sec, p_nz, p_w)[0].loc[slice(*PB_YEARS)].sum() / M6)
+    oat_rule = {k: dict(rule=r, reason=why) for k, (r, why) in AR_BASE_RULE.items()}
+    for k, sides in oat_bases.items():
+        oat_rule[k]['sides'] = {s: dict(I_sec_base_kg=v, B_AR_kt_2026_2050=b_ar_kt(v)) for s, v in sides.items()}
+
     # ---- deterministic scenarios -------------------------------------------
     print('PB: deterministic scenarios')
     runs = scenario_runs()
@@ -542,6 +688,7 @@ def main():
                           'mean of ratios',
              ref_ar, ref_atp),
             ('i_source_pair', f"(i) SOS/I_glob pair C: {SOURCE_PAIRS['C']['label']}", *cum_pair(pair_key='C')),
+            ('i_glob_ef31', f"(i) Global impact: {SOURCE_PAIRS['EF31']['label']}", *cum_pair(pair_key='EF31')),
             ('ii_gdp_measure', f'(ii) GDP per capita, current US$ ({GDP_MEASURE_SENS}), b = {b_year}',
              *cum_pair(cp=comp_sens)),
             ('iii_base_window', f'(iii) AR base window {AR_BASE_WINDOW_SENS[0]}-{AR_BASE_WINDOW_SENS[1]} (5 yr, as Horup)',
@@ -588,8 +735,8 @@ def main():
             Bw = validation.run_boss(ACCOUNTING='whole_life_at_construction')
             base_w, _ = window_base(Bw, AR_BASE_WINDOW)
             sens += [
-                ('xi_event_timing', '(xi) Event timing: interval L / n (instead of L / (n + 1))',
-                 *cum_I(EVENT_TIMING='n')),
+                ('xi_event_timing', '(xi) Event timing: interval L / n (instead of L / (n + 1); base on the same rule)',
+                 *cum_I(base=oat_bases['Event timing L / n']['single'], EVENT_TIMING='n')),
                 ('xii_whole_life', '(xii) Accounting: whole life at construction (base on the same rule)',
                  *cum_I(base=base_w, ACCOUNTING='whole_life_at_construction')),
                 ('xiii_wider_scope', f'(xiii) Wider scope: base and projection include the maintenance (B2, B4) of '
@@ -599,6 +746,8 @@ def main():
                  *cum_pair(cp=dict(comp, alpha=1.0))))
     sens.append(('note_soil_long_run', 'Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate',
                  *cum_pair(ib=i_base_long)))
+    for case, *_ in sens[1:]:
+        ar_base_rule(case)                      # STOP on a row that is not classified
     sens_df = pd.DataFrame(sens, columns=['case', 'label', 'cum_LoE_AR', 'cum_LoE_AtP'])
     sens_df['AR_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AR'] / ref_ar - 1)
     sens_df['AtP_vs_ref_pct'] = 100 * (sens_df['cum_LoE_AtP'] / ref_atp - 1)
@@ -637,7 +786,7 @@ def main():
         boundaries={int(y): dict(B_AR_kt=float(b_ar.loc[y] / M6), B_AtP_kt=float(b_atp.loc[y] / M6),
                                  P_NZ=float(p_nz.loc[y]), P_W=float(p_w.loc[y])) for y in years_b},
         B_AtP_over_B_AR=dict(min=float(ratio.min()), max=float(ratio.max())),
-        deterministic=cum_det, population_paths=pop_paths, mc=mc_cum, mc_base_fixed=mc_cum_fixed,
+        deterministic=cum_det, population_paths=pop_paths, one_at_a_time_ar_base=oat_rule, mc=mc_cum, mc_base_fixed=mc_cum_fixed,
         mc_base_20yr=mc_cum_20,
         # maintenance within 2026-2050 twice: the projection's own total (committed['B_inwindow_kt'] ->
         # maintenance_kt) and this layer's sum of the annual series (equal to rounding)
@@ -769,13 +918,12 @@ SOURCE_CHECK = [
      'Bjørn & Hauschild 2015 ESM2 sheet "Climate change2degree" B30 (typed input); ESM1: 8.1 t/person from '
      'Laurent et al. 2013 (PROSUITE D5.2). EC-JRC "Normalization factors for testing" sheet 1.3: 5.589E13, '
      '8,100/person, "2010 or 2000"', '2010 (ESM1)', 'not stated; Laurent et al. 2013 not in hand',
-     'NOT VERIFIED (Laurent et al. 2013 not in hand); 39.5 Gt CO2 in the ESM2 per-gas weights is consistent with '
-     'inclusion (inference)'),
+     f'equals the EF 3.0 global factor ({I_GLOB_EF30_PER_PERSON:.2E} kg CO2e per person, 2010; Andreasi Bassi et '
+     'al. 2023, Table 10), whose climate-change total sums the fossil, biogenic and land-use-change sub-indicators'),
     ('5.21E13', 'EF 3.1 normalisation factor x population (7.55E3 kg/person x 6,895,889,018)',
      'Horup et al. 2025 Table 1 p. 5; Andreasi Bassi et al. 2023 (JRC EUR 31414 EN) Table 10', '2010 (Table 10)',
-     'IPCC AR6 (EF 3.1, section 3.1)', 'EF 3.1 characterises CO2 (land use change) with CF 1 (Table 3); whether '
-     'the global inventory behind the NF contains it is not stated there (inventory: Crenna et al. 2019, not in '
-     'hand). Not used (pair B not implemented)'),
+     'IPCC AR6 (EF 3.1, section 3.1)', 'EF 3.1 characterises CO2 (land use change) with CF 1 (Table 3). Used as the '
+     'global-impact sensitivity (EF31: the SOS of pair A, acquired rights only)'),
 ]
 
 
@@ -790,29 +938,31 @@ LIMITATIONS = [
      if projection.ACCOUNTING == 'time_resolved' else
      'B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future '
      'maintenance and end-of-life emissions of the buildings built in those years.'),
-    'History at 2025 factors: the acquired-rights base (2016-2025) and the base-window sensitivities use the '
-    '2025 case-study factors because no historical factor series exists for the case studies. If past production '
-    'was more carbon-intensive than in 2025 (as the ~1%/yr technological progress assumed by Resch et al. 2021 '
-    'implies), the base and hence the AR boundary are understated and the AR exceedance overstated '
-    '(conservative); the size of this effect is not quantified. The base follows the '
+    f'Carbon factors and the AR base: the case-study factors (BRANZ LCAQuick 3.6, built from EPD and BRANZ data) '
+    f'are roughly contemporaneous with the {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} base window, so the base uses them '
+    'without back-casting; the vintages of the underlying EPDs are not tabulated. The base follows the '
     'projection\'s accounting rule (materials and construction and soil carbon loss of the base window\'s '
     'construction plus the maintenance within the base window of the cohorts built in it).',
     'The primary SOS (6.81E12) is the 2 °C carrying capacity of Bjørn & Hauschild (2015), not the 1 W/m² '
     'planetary boundary (3.61E12, sensitivity C). Sala et al. (2020, Table 3) label 6.81E12 as radiative forcing '
     'after Rockström et al. (2009), which does not match its derivation in Bjørn & Hauschild (2015).',
     'GWP basis: Bjørn & Hauschild (2015) ESM2 uses AR5 GWP100 factors (CH4 28, N2O 265; column "CFs (GWP100, '
-    'IPCC5)") while their Table 1 cites Forster et al. (2007), i.e. AR4. The GWP basis of the case-study LCA '
-    'factors used by the model is not documented in this repository (building_data.xlsx gives "GWP" columns '
-    'only; source Christoforatos & Pickering 2025): to be confirmed by the author.',
-    'I_glob = 5.58E13 (Bjørn & Hauschild 2015 ESM2, from Laurent et al. 2013, year 2010): Laurent et al. (2013) is '
-    'not in hand, so whether it includes land-use-change CO2 (the sector impact includes soil carbon loss) and '
-    'its GWP basis are NOT VERIFIED. The per-gas indicator scores in ESM2 sum to 54.0 Gt CO2-eq with 39.5 Gt CO2; '
-    'a CO2 total of that size is consistent with inclusion of land-use-change CO2 (inference, not a sourced '
-    'statement). The EC-JRC table "Normalization factors for testing" (Benini, Sala & Pant, version 0.1.1, 15 Dec 2015; sheet 1.3) gives the PROSUITE '
-    'global value as 5.589E13 kg CO2-eq, 8,100 kg/person, "2010 or 2000".',
-    'Final-consumption-expenditure upscaling: the numerator (consented residential value) is an investment flow '
-    '(gross fixed capital formation), while Hjalsted et al. (2021) define the upscaling on final consumption and '
-    'leave intermediate sectors as open (p. 16).',
+    'IPCC5)") while their Table 1 cites Forster et al. (2007), i.e. AR4. The case-study factors use the EN 15804+A1 '
+    'indicator set reported by LCAQuick 3.6 (CML characterisation); the underlying EPDs differ in IPCC GWP100 '
+    'version (AR4 / AR5). The difference matters mainly for methane; A1-A5 is CO2-dominated, and the global side '
+    'is bracketed by the EF 3.1 sensitivity.',
+    f"I_glob {SOURCE_PAIRS['A']['i_glob']:.2E} equals the EF 3.0 global factor ({I_GLOB_EF30_PER_PERSON:.2E} kg CO2e "
+    'per person, 2010; Andreasi Bassi et al. 2023, Table 10), whose climate-change total sums the fossil, biogenic '
+    'and land-use-change sub-indicators; the EF 3.1 value is a sensitivity '
+    f"({I_GLOB_EF31_PER_PERSON:.2E} kg CO2e per person x {I_GLOB_EF31_POPULATION:,} persons = "
+    f"{SOURCE_PAIRS['EF31']['i_glob']:.3E}, "
+    f"{100 * (1 - SOURCE_PAIRS['EF31']['i_glob'] / SOURCE_PAIRS['A']['i_glob']):.1f}% lower, mainly through the lower "
+    'characterisation factor of methane in EF 3.1; acquired rights only).',
+    'Ability-to-pay sector share: s_sec uses the consented value of new residential building over national final '
+    'consumption expenditure, following the FCE upscaling of Hjalsted et al. (2021) as a proxy of the priority '
+    'households give to housing. In the national accounts residential construction is gross fixed capital '
+    'formation, not final consumption; treating it as consumed follows the endogenisation of capital in '
+    'consumption-based accounting (Södersten, Wood & Hertwich 2018).',
     'Ability to pay: Hjalsted et al. (2021) state GDP as "USD/cap (2017)", World Bank (2019), without naming the '
     'series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in '
     'outputs/data/aesa/results.json).',

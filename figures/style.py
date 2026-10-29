@@ -8,12 +8,13 @@ protanomaly and tritanomaly, colorspacious; Machado et al. 2009), which also wri
 docs/PALETTE.md and docs/palette_preview.png.
 
 Rules (docs/PALETTE.md):
-  * demand bands are coloured by the lever that targets them (hue families after Francis Bacon, Head VI);
-    the only untargeted band, Population growth, a solid deep green-blue; negative bands drawn down from the top of
+  * demand bands are coloured by the lever that targets them; the only untargeted band, Population growth, a solid
+    deep violet; negative bands drawn down from the top of
     the positive stack (net-total convention; figures/draw.py, see below);
-  * Reference dark grey, the Moderate / Ambitious Pathway vermilion, TL a deep forest green (a larger circle on point plots);
-  * boundaries: acquired rights (AR) a thin red line, ability to pay (AtP) a thin dark-red dotted line, light zones
-    below AtP, between AtP and AR and above AR;
+  * Reference mid grey, the Moderate Pathway pale yellow, the Ambitious Pathway orange, TL a pale sage green (a larger
+    circle on point plots); every text is black ink (style.INK), the colour is carried by lines, markers and fills;
+  * boundaries: acquired rights (AR) a thin brick-red line, ability to pay (AtP) a thin dark-maroon dotted line, very
+    pale zones below AtP, between AtP and AR and above AR;
   * settings: Moderate solid line / filled marker, Ambitious dashed line / hollow marker;
   * one typeface (Liberation Sans, metric-compatible with Arial; bundled in fonts/ under
     the SIL Open Font License, so figures render identically on every machine);
@@ -169,21 +170,20 @@ FIXED_FADES = {'definition_break_span': 0.10, 'census_range_span': 0.12, 'histor
 INK = NEUTRALS['ink']                           # text, axes
 MUTED = NEUTRALS['muted']                       # secondary text, leader lines
 
-# boundaries (implemented once here: boundary_zones / boundary_hzones): AR a thin red line,
-# AtP a thin dark-red line (dashed, so the two principles stay apart under colour-vision deficiency); the area
-# below AtP darker green (within both budgets), between AtP and AR light green (within AR only), above AR light
-# red at low opacity (boundary exceeded); the same on annual and cumulative axes. The three zones (as seen on
-# white) fall strictly in lightness under every simulated deficiency (darker green < light green < palest red;
-# CAM02-UCS J' 77 / 90 / 97 at least / at most), so they never depend on hue alone; AR '#D7191C' keeps >= 10 from
-# every run colour under every deficiency (tools/palette_check.py; docs/PALETTE.md)
+# boundaries (implemented once here: boundary_zones / boundary_hzones): AR a thin brick-red line,
+# AtP a thin dark-maroon line (dotted, so the two principles stay apart under colour-vision deficiency); the area
+# below AtP a pale blue (within both budgets), between AtP and AR a paler blue (within AR only), above AR the
+# palest pink (boundary exceeded), all at half opacity; the same on annual and cumulative axes. The zones are
+# intentionally pale and are told apart by the boundary lines and the legend; as seen on white they still fall
+# strictly in lightness (within both < within AR only < exceeded) under every simulated deficiency
+# (tools/palette_check.py; docs/PALETTE.md)
 # the colours from palette.toml [boundaries] and [boundary_zones]; line styles, widths and the zone
 # opacities (ZONE_ALPHA) stay fixed here. redraw.py and tools/palette_check.py warn when the zones, composited on white
 # at these opacities, lose the lightness order within both < within AR only < exceeded (CAM02-UCS J').
 AR = _BD['acquired_rights']
 ATP = _BD['ability_to_pay']
 LW_BOUNDARY = 0.9
-# AtP dotted; the zones much lighter (on white: within both J' 90, within AR only 95, exceeded 99;
-# the lightness order still holds under every simulated deficiency; tools/palette_check.py)
+# AtP dotted
 ATP_LS = (0, (1, 1.3))                          # dotted ·····
 BOUNDARY = {'AR': dict(color=AR, ls='-', lw=LW_BOUNDARY, label='Acquired rights (AR)'),
             'AtP': dict(color=ATP, ls=ATP_LS, lw=LW_BOUNDARY, label='Ability to pay (AtP)')}
@@ -216,9 +216,7 @@ NEUTRAL_DARK = NEUTRALS['neutral_dark']   # a dark neutral grey (not the Referen
 CUMULATIVE_FIG3B = _CUM['fig3b_cumulative_carbon']
 # the 'release constraint binds' markers of SF15 (not a boundary; were S.AR): a fixed literal
 RELEASE_BINDS = _HL['release_binds']     # palette.toml [highlights]
-# TL a deep forest green, far darker than the zones; at CAM02-UCS J' 25 it is >= 10 from AR, AtP,
-# the Reference, the Pathways, every lever, Population growth and the zones under every simulated deficiency (a mid green
-# at the lightness of AR merges with it under deuteranomaly / protanomaly)
+# TL a pale sage green, >= 10 (CAM02-UCS) from the other runs under every simulated deficiency (tools/palette_check.py)
 TL = _RUN['theoretical_limit']
 TL_MARKER = dict(marker='o', ms=8)             # TL on point plots: a larger circle (no star)
 # the replacement variants from palette.toml [replacement_variants] (the Reference: [runs])
@@ -229,11 +227,9 @@ SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),
             'VHIGH': dict(color=_RV['very_high'], ls='-.', lw=LW, label='Very High replacement (trend continues)')}
 MC_BAND = dict(color=REFERENCE, alpha=OPACITY['mc_band'], lw=0)          # Monte Carlo 5-95% band
 
-# The palette is inspired by Francis Bacon, Head VI (1949): hue families (golds / ochres, mauves, blues,
-# browns); the Pathways vermilion and TL a deep forest green, outside every family; Reference grey. Lightness and
-# chroma chosen by maximising the minimum CAM02-UCS distance of every group shown together under every simulated
-# deficiency (tools/palette_check.py; docs/PALETTE.md). The strategies: S1 Avoid ochre, S2 Switch brown, S3 Improve
-# blue; the deep mauve P2_ANCHOR is the 2026 overbuild band. A lever is drawn in its strategy colour (palette.toml [strategies]) and told apart by marker (LEVER_MARKER).
+# Every group shown together keeps a minimum CAM02-UCS distance of 10 under every simulated deficiency, the boundary
+# zones excepted (tools/palette_check.py; docs/PALETTE.md). The strategies: S1 Avoid burnt orange, S2 Switch plum,
+# S3 Improve steel blue; the deep magenta P2_ANCHOR is the 2026 overbuild band. A lever is drawn in its strategy colour (palette.toml [strategies]) and told apart by marker (LEVER_MARKER).
 LEVER_MARKER = ('o', 's', '^', 'D', 'v')          # the k-th lever within its strategy (SF10 lambda sweep)
 SURGE_FACE = _CMP['replacement_surge']  # the Recent replacement surge face (palette.toml [components])
 P2_ANCHOR = _DB['market_balance']       # the detailed band '2026 overbuild' (SF2b, SF5); the market-balance key
@@ -242,7 +238,7 @@ TYPOLOGY = {'Detached': _TYP['detached'], 'Townhouses': _TYP['townhouses'],
             'Apartments': _TYP['apartments']}                     # palette.toml [typologies]
 # palette.toml [strategies]
 STRATEGY = {'S1': _SG['avoid'], 'S2': _SG['switch'], 'S3': _SG['improve']}
-# the Moderate / Ambitious Pathway (orange, darker orange); palette.toml [runs]
+# the Moderate / Ambitious Pathway (pale yellow, orange); palette.toml [runs]
 PATHWAY_SETTING = {'moderate': _RUN['moderate'], 'ambitious': _RUN['ambitious']}
 PATHWAY = dict(STRATEGY, pathway=PATHWAY_SETTING['moderate'])     # 'pathway': the Moderate Pathway (Fig5, ED3)
 # Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
@@ -250,9 +246,8 @@ SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
            'ambitious': dict(ls='--', marker_fill='none', label='Ambitious')}
 
 # demand bands, bottom to top: (colour, hatch), coloured by the lever that targets them; labels in naming.BANDS.
-# Population growth (untargeted) the deep green-blue hue, solid, clearly lighter (J' 47);
-# Historical replacement a darker lilac with a slightly bluer hue than the Recent replacement surge,
-# which keeps the L3 face with a fine, light hatch (both replacement bands are targeted by L3)
+# Population growth (untargeted) a deep violet, solid;
+# the Recent replacement surge keeps a fine, light hatch (both replacement bands are targeted by L3)
 # the seven display bands of the figures (bands.DISPLAY) take palette.toml [demand_bands]; the detailed
 # sub-bands drawn on their own in SF2c / SF5 (2026 overbuild, overbuild absorbed, demolition replacement, unconsented
 # additions, surge, ...) keep fixed literals. growth, household size, extra space, vacancy and maintenance are both a
@@ -319,8 +314,8 @@ HISTORY_BAND = {'growth': BAND['growth'], 'smaller_households': BAND['smaller_ho
 # the untargeted band: the population-growth colour, solid (UNTARGETED_HATCH None)
 UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)
 
-# materials: the six Pride-flag stripes (author decision; one order in every
-# figure), soil faded and hatched on top
+# materials: six colours in one order in every figure (author decision); soil carbon loss solid on top, in the same
+# colour as in the stage panels (the same quantity)
 MATERIAL = [('TIMBER', 'Timber', _MAT['timber']), ('STEEL', 'Steel', _MAT['steel']),
             ('CONCRETE (incl. reinforced)', 'Concrete', _MAT['concrete']),
             ('PLASTICS & PAINT', 'Plastics & paint', _MAT['plastics_paint']),
@@ -453,8 +448,8 @@ def _keep_limits(ax, draw):
 
 
 def boundary_zones(ax, x, ar, atp, lines=True, label=True):
-    """Annual (or cumulative-by-year) boundaries: the zones below AtP (darker green), between AtP and AR (light
-    green) and above AR (light red, low opacity), and the two thin boundary lines. Zones start just above zero
+    """Annual (or cumulative-by-year) boundaries: the pale zones below AtP, between AtP and AR and above AR (the
+    lightest), and the two thin boundary lines. Zones start just above zero
     (a positive floor, so log axes work) and are tagged ZONE_GID for the figure audit; lines are tagged as
     boundaries (figaudit.BOUNDARY)."""
     from figures import audit as figaudit

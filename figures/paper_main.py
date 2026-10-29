@@ -397,14 +397,19 @@ def fig3():
     wd = 0.55
     whisk = dict(color=S.INK, lw=S.LW, capsize=3.0, capthick=S.LW, zorder=6)
     b.bar([0], [c], width=wd, **S.fill(S.CUMULATIVE_FIG3B))     # palette.toml [cumulative]
-    b.errorbar([0], [c], yerr=[[c - lo90], [hi90 - c]], fmt='none', **whisk)
+    # a thin white halo keeps the whisker and the budget lines visible where they cross the near-black column
+    import matplotlib.patheffects as pe
+    halo = [pe.withStroke(linewidth=S.LW + 1.2, foreground='white')]
+    eb = b.errorbar([0], [c], yerr=[[c - lo90], [hi90 - c]], fmt='none', **whisk)
+    for art in list(eb.lines[1]) + list(eb.lines[2]):
+        art.set_path_effects(halo)
     b.bar([0], [hi50 - lo50], bottom=[lo50], width=wd * 0.35, facecolor='white', alpha=S.FIXED_FADES['interval_box'], edgecolor=S.INK,
           lw=S.LW_THIN, zorder=7)                                   # the 50% interval, lighter, narrower
     bar_, batp = float(a['B_AR_kgCO2e'].sum()) / M, float(a['B_AtP_kgCO2e'].sum()) / M
     for v, key in ((bar_, 'AR'), (batp, 'AtP')):
         st = {k: val for k, val in S.BOUNDARY[key].items() if k != 'label'}
-        b.plot([-0.36, 0.36], [v, v], gid='boundary', **st)
-        b.text(-0.38, v, f'{key} budget', ha='right', va='center', fontsize=S.FONT_MIN, color=st['color'])
+        b.plot([-0.36, 0.36], [v, v], gid='boundary', path_effects=halo, **st)
+        b.text(-0.38, v, f'{key} budget', ha='right', va='center', fontsize=S.FONT_MIN, color=S.INK)
     cc, bl, bu = float(com['C_kt']), float(com['B_lower_kt']), float(com['B_upper_kt'])
     b.bar([1], [cc], width=wd, **S.fill(S.COMPONENT['committed'][0]))
     b.bar([1], [bl], bottom=[cc], width=wd, **S.fill(S.COMPONENT['maintenance'][0]))
@@ -486,8 +491,8 @@ def _net_waterfall_panel(ax, steps, end_lab, end_col):
     labels = [N.SCENARIOS['REF']] + [sid for sid, _ in steps[1:]] + [end_lab.replace(' ', '\n', 1)]
     ax.set_xticks(x)
     ax.set_xticklabels(labels, fontsize=S.FONT_MIN, rotation=90)
-    for t, sid in zip(ax.get_xticklabels()[1:-1], [s for s, _ in steps[1:]]):
-        t.set_color(S.STRATEGY[_step_strategy(sid)])
+    for t in ax.get_xticklabels():                                   # black type (the bars carry the strategy colour)
+        t.set_color(S.INK)
     ax.set_xlim(-0.6, len(x) - 0.4)
     ax.grid(axis='x', visible=False)
     return ups
@@ -711,7 +716,7 @@ def fig5():
         ru.annotate(txt, xy=(1.0, 10 ** yv), xytext=(1.6, 10 ** yl), textcoords=('axes fraction', 'data'),
                     xycoords=('axes fraction', 'data'), ha='left', va='center', multialignment='center',
                     fontsize=S.FONT_MIN + 0.5, linespacing=1.0,
-                    color=mk['color'] if mk else S.INK,
+                    color=S.INK,                               # black type; the marker carries the colour
                     arrowprops=dict(arrowstyle='-', color=S.MUTED, lw=0.4, shrinkA=0, shrinkB=0))
     ru.set_title('Cumulative\nLoE of AR', fontsize=S.FONT_MIN + 0.5, pad=3)
     h = [Line2D([0], [0], marker='o', ls='none', color=S.PATHWAY[P_], markerfacecolor=S.PATHWAY[P_], ms=5,
@@ -786,7 +791,7 @@ def fig6():
         ks = [k for k, L in zip(y, order) if L in ls]
         ax[1].text(1.01, (min(ks) + max(ks)) / 2, N.STRATEGIES[St].replace(' ', '\n'),
                    transform=ax[1].get_yaxis_transform(), ha='left', va='center', multialignment='center',
-                   fontsize=S.FONT_MIN + 0.5, color=S.STRATEGY[St], fontweight='bold')
+                   fontsize=S.FONT_MIN + 0.5, color=S.INK, fontweight='bold')
     P.thousands(ax[0].xaxis)
     ax[0].set_yticks(y)
     ax[0].set_yticklabels([P.two_lines(f'{L} {N.LEVERS[L]}') for L in order])   # two lines, centred
@@ -867,8 +872,8 @@ def tornado_rows():
 
 
 def fig7():
-    """(a) tornado on the cumulative LoE AR: each input at its low end (blue) and high
-    end (vermilion) as defined in its label, sorted by range, intermediate cases as ticks; (b) TL cumulative LoE AR
+    """(a) tornado on the cumulative LoE AR: each input at its low end (pale blue) and high
+    end (dark blue) as defined in its label, sorted by range, intermediate cases as ticks; (b) TL cumulative LoE AR
     against the 2050 population over the Monte Carlo draws (light points), LoE = 1 and the population at which the
     Firth logistic P(LoE AR <= 1) = 50% (line, labelled with its bootstrap 95% CI; no secondary axis, no
     curve)."""
@@ -886,7 +891,7 @@ def fig7():
         for val, col in bars:
             a.barh(k, val - c0, left=c0, height=0.62, **S.fill(col))
         for name, val in mid.items():
-            a.plot([val, val], [k - 0.31, k + 0.31], color=S.INK, lw=S.LW_THIN)
+            a.plot([val, val], [k - 0.31, k + 0.31], color=S.INK, lw=S.LW_THIN, path_effects=P.TICK_HALO)
             a.text(val, k + 0.33, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
     a.axvline(c0, color=S.INK, lw=S.LW_THIN)
     a.set_yticks(np.arange(len(rows)))

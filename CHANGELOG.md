@@ -2,6 +2,34 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.3.6: final colours
+
+Figures only: no model, Monte Carlo or Sobol run; `outputs/data/` is byte-identical.
+
+* **Palette** (`palette.toml`): new values for the demand bands, materials, life-cycle stages, runs, strategies,
+  boundaries and zones, the Fig3b cumulative column, the one-at-a-time colours and Overbuild absorbed.
+  * The zones are drawn at 0.5 opacity. Soil carbon loss is now one solid colour in the material and the stage panels
+    (the same quantity).
+  * redraw.py treats that pair as the same quantity (SAME_QUANTITY).
+* **Black type.** Every label that was drawn in a run, strategy or boundary colour is now black ink (`style.INK`):
+  * the Fig4 step tick labels;
+  * the Fig5 ruler annotations;
+  * the Fig6 strategy group labels;
+  * the ED9 run end-labels;
+  * the Fig3b "AR / AtP budget" labels.
+
+  Lines, markers, fills and legend swatches keep their colours.
+* **Visibility.** A thin white halo is added in two places:
+  * Fig3b: under the 90% whisker and the AR / AtP budget lines, which cross the near-black cumulative column;
+  * Fig7a, ED4, ED5: under the intermediate-case ticks on the dark high-end bars.
+* **Checks.**
+  * redraw.py: no warning.
+  * Every palette group is at least 10 (CAM02-UCS) in all vision types, except the boundary zones, which are pale by
+    design; their lightness order holds.
+  * tools/palette_coverage.py: 0 colours outside the palette.
+  * Captions, style.py comments and docs/PALETTE.md describe the new colours.
+* **Numbers:** unchanged.
+
 ## model-v4.3.5: methods sharpening before the Stats NZ 2023-base data
 
 Deterministic runs only (projection, boundaries, the sensitivity tables, the SF7 diagnostic, the reports, the figures).

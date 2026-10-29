@@ -30,7 +30,7 @@ FILES = [
     ('data/baseline/bands_annual.csv', 'The in-scope demand bands of the Reference by year: floor area and carbon',
      'projection.py'),
     ('data/baseline/bands_history.csv', 'The demand bands of the history by census interval (interval means, one '
-     'vacancy definition; MODEL v3.1.0: census net replacement, retirement villages (negative) and unexplained '
+     'vacancy definition; census net replacement, retirement villages (negative) and unexplained '
      'building, adding up to the observed in-scope floor area built)', 'validation.py'),
     ('data/baseline/stock_identity_history.csv', 'Dwellings built by component per census interval (D05c): new '
      'households, vacancy, census-measured net replacement, retirement villages and unexplained building',
@@ -38,22 +38,22 @@ FILES = [
     ('data/baseline/household_formation_history.csv', 'New households per census interval by source (D04c): from '
      'population growth and from household-size change', 'validation.py'),
     ('data/baseline/validation.json', 'Rolling-origin hindcast and the 2026 out-of-sample check', 'validation.py'),
-    ('data/baseline/completion_lag_hindcast.csv', 'MODEL v4.0.0: rolling-origin hindcast of the census dwelling-count '
+    ('data/baseline/completion_lag_hindcast.csv', 'Rolling-origin hindcast of the census dwelling-count '
      'identity at the adopted completion lag and at L = 0', 'validation.py'),
-    ('data/baseline/completion_lag_hindcast.json', 'MODEL v4.0.0: mean absolute hindcast errors by lag and the STOP '
+    ('data/baseline/completion_lag_hindcast.json', 'Mean absolute hindcast errors by lag and the STOP '
      'check of the completion lag', 'validation.py'),
     ('data/baseline/gap_2026.json', 'The 2026 gap between observed building and the requirement',
      'gap_2026.py'),
     ('data/baseline/overbuild_2026.json', 'The 2026 overbuild and how it is absorbed', 'tools/overbuild_2026.py'),
-    ('data/ed_number_map.csv', 'MODEL v4.3.0: Extended Data numbering, old -> new (figure_plan.ED_NUMBER_MAP)',
+    ('data/ed_number_map.csv', 'Extended Data numbering, MODEL v4.3.0 -> current (figure_plan.ED_NUMBER_MAP)',
      'figure_plan.py'),
-    ('data/sf_number_map.csv', 'MODEL v4.3.1: Supplementary numbering, v4.3.0 -> v4.3.1 (figure_plan.SF_NUMBER_MAP)',
+    ('data/sf_number_map.csv', 'Supplementary numbering, MODEL v4.3.0 -> current (figure_plan.SF_NUMBER_MAP)',
      'figure_plan.py'),
-    ('data/bands_display_map.csv', 'MODEL v4.2: detailed demand band -> the six display bands of the figures',
+    ('data/bands_display_map.csv', 'Detailed demand band -> the six display bands of the figures',
      'pathways.py'),
-    ('data/diagnostics/lag_comparison_annual.csv', 'Annual floor area by broad demand group under zero- and 17-month completion timing', 'tools/demand_balance.py'),
+    ('data/diagnostics/lag_comparison_annual.csv', 'Annual floor area by broad demand group: the 17-month lag, the like-for-like zero lag (net replacement held at the 17-month calibration) and the recalibrated zero lag (run column)', 'tools/demand_balance.py'),
     ('data/diagnostics/market_balance_history_projection.csv', 'Historical and projected floor area in the separate coarse market-balance classification; historical overbuild is not identified', 'tools/demand_balance.py'),
-    ('data/diagnostics/lag_comparison_summary.json', 'Controlled zero- versus 17-month consent-to-completion comparison, demographic-path checks and observed consent cohorts', 'tools/demand_balance.py'),
+    ('data/diagnostics/lag_comparison_summary.json', 'Controlled zero- versus 17-month consent-to-completion comparison (recalibrated and like-for-like zero lag), demographic-path checks, observed consent cohorts and the net replacement rates used', 'tools/demand_balance.py'),
     ('data/baseline/scenarios.json', 'Totals of the projection variants (Low, Reference, High replacement and their '
      'sensitivities)', 'tools/replacement_scenarios.py'),
     ('data/baseline/variants_annual.csv', 'Annual floor area and carbon of every projection variant',
@@ -69,7 +69,7 @@ FILES = [
      '(D16)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/pathway_carbon.csv', 'Grouped one-at-a-time sensitivity of the Moderate Pathway: carbon and '
      'cumulative LoE AR / AtP (D41)', 'tools/sensitivity_tables.py'),
-    ('data/sensitivity/household_size.csv', 'MODEL v4.0.0: the Reference, the Moderate / Ambitious Pathway and TL '
+    ('data/sensitivity/household_size.csv', 'The Reference, the Moderate / Ambitious Pathway and TL '
      'under the household-size sensitivities (Stats NZ Low / High variant; 2018-2023 census pace)',
      'tools/sensitivity_tables.py'),
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
@@ -152,7 +152,7 @@ FILES = [
      'texts, note, drawing script, whether maintenance and the boundary styling are drawn (figaudit.py; read by the '
      'tests)', 'style.save_figure'),
     ('INDEX.md', 'This index', 'indexes.py'),
-    ('figure_manifest.csv', 'MODEL v4.3.0: every figure (main, Extended Data, Supplementary): id, file, section, '
+    ('figure_manifest.csv', 'Every figure (main, Extended Data, Supplementary): id, file, section, '
      'source script, source data, caption stub', 'tools/figure_manifest.py'),
     # figures and documents (figures/ package; figure_plan.py)
     ('FIGURES.md', 'Every figure with its file, data sources, caption and run-specific note', 'figures/index.py'),
@@ -160,13 +160,13 @@ FILES = [
     ('paper_main/Fig*.png', 'Main-paper figure, PNG (profile dpi; FIGURES.md)', 'figures/paper_main.py'),
     ('paper_extended/ED*.png', 'Extended Data figure, PNG (profile dpi; FIGURES.md)',
      'figures/ (module named in figure_manifest.csv)'),
-    ('supplementary/*/SF*.png', 'Supplementary figure (MODEL v4.3.0: in its folder), PNG (FIGURES.md)',
+    ('supplementary/*/SF*.png', 'Supplementary figure (in its folder), PNG (FIGURES.md)',
      'figures/ (module named in figure_manifest.csv)'),
     ('paper_extended/EDT1_levels_by_typology.*', 'Extended Data table: lever levels by typology (Moderate, Ambitious, '
      'TL)', 'figures/paper_extended.py'),
-    ('supplementary/boundaries/ST1_budget_construction.*', 'MODEL v4.3.1: Supplementary Table ST1, how the AR and '
-     'AtP budgets are built (Markdown and CSV; SF9 of v4.3.0)', 'figures/boundaries.py'),
-    ('palette_swatches.png', 'MODEL v4.3.1: the colours of palette.toml by group (redraw.py --final)', 'redraw.py'),
+    ('supplementary/boundaries/ST1_budget_construction.*', 'Supplementary Table ST1, how the AR and '
+     'AtP budgets are built (Markdown and CSV)', 'figures/boundaries.py'),
+    ('palette_swatches.png', 'The colours of palette.toml by group (redraw.py --final)', 'redraw.py'),
     ('diagnostics/*/D*.png', 'Diagnostic figure, PNG (FIGURES.md)', 'figures/ (module named in FIGURES.md)'),
     ('data/figure_source/*.json', 'Figure source data: the exact arrays a diagnostic draws (figsource.py)',
      'projection.py, Diagnostics.py, boundaries.py, tools/figures_report.py'),
@@ -189,14 +189,14 @@ FILES = [
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
     ('data/sensitivity/tornado.csv', 'Fig7a: the inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
-    ('data/pathways/waterfall_tl_from_reference.csv', 'MODEL v3.3.1 (Fig4d): sequential waterfall Reference -> TL1 ... '
+    ('data/pathways/waterfall_tl_from_reference.csv', 'Sequential waterfall Reference -> TL1 ... '
      'TL9 (cumulative from the Reference, PAS 2080 order; = TL) by demand band', 'pathways.py'),
-    ('data/pathways/sequential_vs_shapley.csv', 'MODEL v3.3.0: each lever step of the sequential waterfalls (PAS 2080 '
+    ('data/pathways/sequential_vs_shapley.csv', 'Each lever step of the sequential waterfalls (PAS 2080 '
      'order; Moderate, Ambitious) and each TL step (from the Moderate Pathway) against its order-free Shapley value',
      'pathways.py'),
-    ('data/montecarlo/carbon_factors_REF.csv', 'MODEL v3.2.0 (from v3.1.0): the resulting pooled A1-A3 factor of each Reference '
+    ('data/montecarlo/carbon_factors_REF.csv', 'The resulting pooled A1-A3 factor of each Reference '
      'draw by typology (kg CO2e/m2, 2025 technology; D38)', 'pathways_mc.py'),
-    ('data/baseline/history_unexplained.json', 'MODEL v3.2.0 (from v3.1.0): the unexplained building of the history 1992-2025 '
+    ('data/baseline/history_unexplained.json', 'The unexplained building of the history 1992-2025 '
      '(dwellings, share of built; floor-area remainder against unexplained dwellings x size)', 'validation.py'),
 ]
 
@@ -239,8 +239,8 @@ def index_md():
     lines = ['# Outputs', '',
              '_Generated by indexes.py (do not edit by hand): every file under outputs/ with what it holds and the '
              'script that writes it. Console logs (outputs/logs/) are not versioned. Data files use the release '
-             'names of docs/RENAMING.md; the deterministic numbers are locked by tests/test_regression_model_v3.py, the '
-             'Monte Carlo by its hash lock._', '',
+             'names of naming.py; the deterministic numbers and the Monte Carlo draw files are locked by '
+             'tests/test_regression_model_v3.py (tests/regression_model_v4.json)._', '',
              '| file | content | written by |', '|---|---|---|']
     lines += [f'| `{r}` | {c} | {w} |' for r, c, w in rows]
     path = L.writing(os.path.join(L.OUT, 'INDEX.md'))

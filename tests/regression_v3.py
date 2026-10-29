@@ -1,6 +1,6 @@
 """The v4 regression lock (tests/regression_model_v4.json; captured by tests/capture_regression_model_v3.py). Its link
-to MODEL v3.3 is tests/test_model_v4.py (the v3.3 runs reproduced under the v3.3 settings). LOCK_V3_3_1 and LOCK_V3_3
-name the earlier lock files, which are in the git history (tag model-v4.3.3); nothing reads them.
+to MODEL v3.3 is tests/test_model_v4.py (the v3.3 runs reproduced under the v3.3 settings); the earlier locks are in the
+git history (tag model-v4.3.3).
 
 DETERMINISTIC: the SHA-256 of every deterministic data file (the Reference, every lever / pathway / TL run, the Shapley
 values and subsets, the waterfalls, the lambda-sweep, the logs). These files are identical in the light and the full
@@ -13,8 +13,6 @@ import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOCK = os.path.join(ROOT, 'tests', 'regression_model_v4.json')
-LOCK_V3_3_1 = os.path.join(ROOT, 'tests', 'regression_model_v3_3_1.json')
-LOCK_V3_3 = os.path.join(ROOT, 'tests', 'regression_model_v3_3.json')
 DETERMINISTIC_FILES = (
     'baseline/projection.json', 'baseline/annual.csv', 'baseline/bands_annual.csv', 'baseline/annual_by_stage.csv',
     'baseline/annual_by_material.csv', 'baseline/overbuild_absorption_log.csv', 'baseline/sensitivity_one_at_a_time.csv',

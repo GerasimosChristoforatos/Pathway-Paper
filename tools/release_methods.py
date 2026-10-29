@@ -41,14 +41,14 @@ def lines():
     runs = pd.read_csv(layout.data('pathways/runs.csv', frozen=False))
     ref = runs[runs['scenario'] == 'REF'].set_index('run')
     tl, fast = ref.loc['TL'], ref.loc[PW.TL_REOCCUPATION_FAST]
-    L = ['### Attribution principle and system boundary (unchanged from MODEL v3.0.0)', '',
+    L = ['### Attribution principle and system boundary', '',
          'Emissions fully determined at construction (A1-A5, soil carbon loss) are attributed to the construction '
          'year; emissions depending on later decisions or technology (B, C1-C4) are time-resolved (in-window counted, '
          'remainder committed). System boundary: new residential construction, identical for the AR/AtP base '
          '(2016-2025) and the projection (2026-2050). Demand uses the existing stock (vacancy, overbuild absorption, '
          're-occupation, replacement); emissions of the existing stock are outside scope on both sides. The committed '
          'emissions of an investment decision are attributed to the decision (Davis & Socolow 2014, Environ. Res. Lett. '
-         '9, 084018 [verify]).', '',
+         '9, 084018).', '',
          '### Release accounting (bands.py; pathways.run)', '',
          'Positive demand bands are always gross need: population growth, smaller households, extra space, vacancy '
          '(the gross allowance: on new households and any vacancy-rate rise), the 2026 overbuild, demolition '
@@ -65,16 +65,13 @@ def lines():
          'add up to the total in every year (checked to 1e-9). In every theoretical-limit-family run (TL, the TL steps '
          'of both waterfalls, every TL Shapley subset) the re-occupation pool holds every dwelling release present in '
          'the run (a vacancy-rate fall at any level, a household-size fall), with the constant-share rule, the '
-         'availability constraint and attribution in proportion to the release of each source. The Reference, every '
-         'lever and pathway run and TL are unchanged from MODEL v3.0.0 (tested to 1e-9); the TL waterfall steps and the '
-         'TL1-TL9 Shapley values from the Moderate Pathway change (MODEL v3.2.0), and in the pathway Monte Carlo the draws with a '
-         'negative-gross year (docs/CHANGELOG_v3_2.md).', '',
+         'availability constraint and attribution in proportion to the release of each source.', '',
          '### Zero-year guard (engine.forward)', '',
          f'A year whose built floor area is below {engine.BUILT_ZERO_TOL_M2:g} m2 is a year in which nothing is built: '
          'its floor area, soil-bearing share and soil carbon are set to 0. The soil-bearing share is clipped to [0, 1] '
          'in every run. Without the guard the share 1 - soil-free / total is a ratio of floating-point noise and the '
-         'soil carbon of a year without construction is non-zero (a MODEL v3.0.0 defect, found in pathway Monte Carlo '
-         'draws; no deterministic run is affected).', '',
+         'soil carbon of a year without construction is non-zero (seen in pathway Monte Carlo draws; no deterministic run '
+         'is affected).', '',
          '### History by census interval (validation.history_bands)', '',
          'The residual band of the history is split into the census-measured net replacement (the interval rate of the '
          'census dwelling-count identity x the previous year\'s stock x the year\'s dwelling size; it may be negative, '
@@ -85,7 +82,7 @@ def lines():
          f"({100 * hu['unexplained_share_of_built']:+.2f}% of the {hu['dwellings_built_1992_2025']:,.0f} built); the "
          'floor-area remainder equals the unexplained dwellings of the stock identity x the dwelling size '
          f"(difference {hu['difference_Mm2']:.1e} Mm²).", '',
-         '### Replacement in the Reference and its variants (MODEL v3.3.0)', '',
+         '### Replacement in the Reference and its variants', '',
          f"Net replacement fades from the 2018-23 census rate ({sc['recent_pct']:.2f}%) to the long-run 1991-2023 rate "
          f"({sc['long_run_pct']:.2f}%), half-life {projection.REPLACEMENT_HALF_LIFE:g} yr; BRANZ demolition "
          f"({sc['demolition_rate_pct']:.3f}%) only splits the net rate into the demolition, surge and "
@@ -103,18 +100,18 @@ def lines():
          'definition break (empty / residents-away dwellings), and the unbounded extrapolation of a policy-driven '
          'wave.', '',
          '### Completion rate in the Monte Carlo', '',
-         f"Uniform on [{projection.COMPLETION_RATE_BAND[0]:.2f}, {projection.COMPLETION_RATE_BAND[1]:.2f}] (MODEL v4.0.0). "
-         f"The bounds are published completion milestones for Auckland consents (Jones, Greenaway-McGrevy & Crow 2025, "
-         'Policy Quarterly 21(1), 63-68, footnote 12): 93% of 2018-2019 consents had a final inspection by July 2024 '
+         f"Uniform on [{projection.COMPLETION_RATE_BAND[0]:.2f}, {projection.COMPLETION_RATE_BAND[1]:.2f}]. "
+         f"The bounds are published completion milestones for Auckland consents (Greenaway-McGrevy & Jones 2023; Jones, "
+         'Greenaway-McGrevy & Crow 2025, Policy Quarterly 21(1), 63-68, p. 68 and footnote 12): 93% of 2018-2019 consents had a final inspection by July 2024 '
          '(lower bound of eventual completion) and more than 95% of 2018-2021 consents had a first inspection (upper '
          'bound; the article gives no point value, so the edge 0.96 is a stated judgement). The deterministic central '
          f"value {projection.COMPLETION_RATE:.3f} is their midpoint, and so the median of the Monte Carlo input. No shape "
          'inside the band is identified, hence uniform. Limitation: Auckland evidence applied nationally.', '',
-         '### Consent-to-completion lag and pipeline years (MODEL v4.0.0)', '',
+         '### Consent-to-completion lag and pipeline years', '',
          f"Completions in month m = {projection.COMPLETION_RATE:.3f} x consents in month m - L, L = "
          f"{projection.COMPLETION_LAG_MONTHS} months, aggregated to calendar years. L is the midpoint of the median "
-         'time to dwelling completion of 1.27-1.53 yr for Auckland consents as of July 2024 (Jones, Greenaway-McGrevy '
-         '& Crow 2025, citing Greenaway-McGrevy & Jones 2023), consistent with the Stats NZ Experimental building '
+         'time to dwelling completion of 1.27-1.53 yr for Auckland consents as of July 2024 (Greenaway-McGrevy & Jones '
+         '2023; Jones, Greenaway-McGrevy & Crow 2025), consistent with the Stats NZ Experimental building '
          'indicators (dwelling-weighted median 455 days from consent to final inspection for December 2020 quarter '
          'consents, 533 days for September 2022 quarter consents). The same lag applies everywhere consents become '
          'dwellings: the stock identity, the census-interval net replacement rates (consents lagged L/12 years before '
@@ -127,7 +124,7 @@ def lines():
          'floor area from 1991 and nowhere else). Limitations: one fixed lag (no distribution of build times), Auckland '
          'evidence applied nationally. The rolling-origin hindcast of the census dwelling-count identity is not worse '
          'at L = 17 than at L = 0 (outputs/data/baseline/completion_lag_hindcast.csv).', '',
-         '### Theoretical limit: constraints at Level 4 (MODEL v4.0.0)', '',
+         '### Theoretical limit: constraints at Level 4', '',
          f"Level 4 is the definitional limit of each lever, reached along the common adoption window, except household "
          f"size (TL1): its level ({lv['L1']['tl']:.4f}, the {lv['L1']['tl_year']} census maximum) is approached no "
          f"faster than the fastest change of household size observed between consecutive censuses 1991-2023 "
@@ -141,7 +138,7 @@ def lines():
          'years and of the fading gap) enters the re-occupation pool with the TL1 / TL2 releases (constant share of '
          "each year's positive need, availability constraint, carry-forward); the re-occupied overbuild is booked in "
          "'Overbuild absorbed'. Releases of an observed (pipeline) year enter the pool in the first unobserved year.", '',
-         '### Household-size projection (MODEL v4.0.0 note)', '',
+         '### Household-size projection', '',
          'Household size follows the Stats NZ 2018-base household projection shape (Medium variant), rebased on the '
          '2023 census; it is to be replaced by the 2023-base household projections when published. Sensitivities: '
          'the Stats NZ Low / High variants and the 2018-2023 census pace continued linearly from 2023, for the '

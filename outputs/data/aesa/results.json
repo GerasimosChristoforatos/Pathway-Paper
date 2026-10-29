@@ -37,6 +37,11 @@
       "label": "1 W/m\u00b2 planetary boundary (Bj\u00f8rn & Hauschild 2015)",
       "sos": 3610000000000.0,
       "i_glob": 55800000000000.0
+    },
+    "EF31": {
+      "label": "EF 3.1 normalisation factor (Andreasi Bassi et al. 2023)",
+      "sos": 6810000000000.0,
+      "i_glob": 52063962085900.0
     }
   },
   "components": {
@@ -636,6 +641,252 @@
       "P_NZ_2050": 7099034.644995723
     }
   },
+  "one_at_a_time_ar_base": {
+    "Population: Stats NZ 5th / 95th percentile": {
+      "rule": "reference_base",
+      "reason": "the base history is observed; both budgets move with the population path (Horup Eq. 1)"
+    },
+    "Household size: Stats NZ High / Low variant": {
+      "rule": "reference_base",
+      "reason": "future household size only"
+    },
+    "Household size: 2018-2023 census pace": {
+      "rule": "reference_base",
+      "reason": "future household size only"
+    },
+    "Household size after 2043: flat": {
+      "rule": "reference_base",
+      "reason": "future household size only"
+    },
+    "Household size after 2043: secant-slope taper": {
+      "rule": "reference_base",
+      "reason": "future household size only"
+    },
+    "Household size after 2043: taper from the PCHIP end slope": {
+      "rule": "reference_base",
+      "reason": "future household size only"
+    },
+    "Completion rate 0.93 / 0.96": {
+      "rule": "reference_base",
+      "reason": "the base keeps the observed floor area of the Reference, as in the Monte Carlo, which samples the completion rate with a fixed base"
+    },
+    "Completion rate 0.95 (MODEL v3.3)": {
+      "rule": "reference_base",
+      "reason": "as the completion-rate row"
+    },
+    "Completion lag 15 / 19 months": {
+      "rule": "reference_base",
+      "reason": "the base keeps the observed floor area of the Reference, as in the Monte Carlo"
+    },
+    "Completion lag 0 months (MODEL v3.3)": {
+      "rule": "reference_base",
+      "reason": "as the completion-lag row"
+    },
+    "No 2026 data": {
+      "rule": "reference_base",
+      "reason": "the 2026 data only"
+    },
+    "No census under-construction correction": {
+      "rule": "reference_base",
+      "reason": "calibration of future net replacement only"
+    },
+    "Dwelling-size window 2016-2025": {
+      "rule": "reference_base",
+      "reason": "future dwelling size only"
+    },
+    "2026 overbuild absorbed by 2030 / by 2045": {
+      "rule": "reference_base",
+      "reason": "future building only"
+    },
+    "2026 overbuild never absorbed (MODEL v2.1 Reference)": {
+      "rule": "reference_base",
+      "reason": "future building only"
+    },
+    "Vacancy parameter: 1986-2023 census mean (one definition)": {
+      "rule": "reference_base",
+      "reason": "future vacancy only"
+    },
+    "2026 overbuild booked as stock-neutral redevelopment": {
+      "rule": "reference_base",
+      "reason": "future building only"
+    },
+    "2026 overbuild gap vs the 2026 requirement": {
+      "rule": "reference_base",
+      "reason": "future building only"
+    },
+    "Low / High replacement": {
+      "rule": "reference_base",
+      "reason": "future net replacement only; the base uses the census rates"
+    },
+    "Very High replacement (trend continues)": {
+      "rule": "reference_base",
+      "reason": "future net replacement only"
+    },
+    "Replacement half-life 5 / 15 yr": {
+      "rule": "reference_base",
+      "reason": "future net replacement only"
+    },
+    "Single case study: lowest / highest": {
+      "rule": "recompute",
+      "reason": "the level of the present-day carbon factors",
+      "sides": {
+        "low": {
+          "I_sec_base_kg": 1092920472.8216348,
+          "B_AR_kt_2026_2050": 3418.6647576632017
+        },
+        "high": {
+          "I_sec_base_kg": 1696939067.512414,
+          "B_AR_kt_2026_2050": 5308.040182493055
+        }
+      }
+    },
+    "Case studies: jackknife low / high": {
+      "rule": "recompute",
+      "reason": "the level of the present-day carbon factors",
+      "sides": {
+        "low": {
+          "I_sec_base_kg": 1373026978.1895683,
+          "B_AR_kt_2026_2050": 4294.840346012558
+        },
+        "high": {
+          "I_sec_base_kg": 1458119917.5884802,
+          "B_AR_kt_2026_2050": 4561.011801560456
+        }
+      }
+    },
+    "Frozen technology (2025 factors held)": {
+      "rule": "reference_base",
+      "reason": "future technology only (the base is at 2025 factors)"
+    },
+    "Decarbonisation: proxy-mapped items held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "Decarbonisation: NZ-made electricity-intensive items held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "Soil order: lowest (Raw) / highest (Organic)": {
+      "rule": "reference_base",
+      "reason": "where future building happens (siting)"
+    },
+    "A4-A5 on each item's own path / held at 2025": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "Soil carbon loss on all floor area, including replacement": {
+      "rule": "recompute",
+      "reason": "an accounting convention that applies to past and future building alike",
+      "sides": {
+        "single": {
+          "I_sec_base_kg": 1433232431.3944054,
+          "B_AR_kt_2026_2050": 4483.163527990418
+        }
+      }
+    },
+    "Event timing L / n": {
+      "rule": "recompute",
+      "reason": "an accounting convention that applies to past and future cohorts alike",
+      "sides": {
+        "single": {
+          "I_sec_base_kg": 1413746958.3800292,
+          "B_AR_kt_2026_2050": 4422.212798694751
+        }
+      }
+    },
+    "i_source_pair": {
+      "rule": "reference_base",
+      "reason": "the carrying capacity only"
+    },
+    "i_glob_ef31": {
+      "rule": "reference_base",
+      "reason": "the global impact only"
+    },
+    "ii_gdp_measure": {
+      "rule": "reference_base",
+      "reason": "ability to pay only"
+    },
+    "iii_base_window": {
+      "rule": "recompute",
+      "reason": "the base window itself"
+    },
+    "iii_base_window_20": {
+      "rule": "recompute",
+      "reason": "the base window itself"
+    },
+    "iii_base_window_full": {
+      "rule": "recompute",
+      "reason": "the base window itself"
+    },
+    "iv_pop_statsnz": {
+      "rule": "reference_base",
+      "reason": "the population source of the boundaries only"
+    },
+    "iv_pop_wpp": {
+      "rule": "reference_base",
+      "reason": "the population source of the boundaries only"
+    },
+    "v_ssec": {
+      "rule": "reference_base",
+      "reason": "ability to pay only"
+    },
+    "vi_frozen": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "vii_proxies_held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "viii_nz_elec_held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "ix_a45_held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "x_a45_item": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "xi_event_timing": {
+      "rule": "recompute",
+      "reason": "an accounting convention that applies to past and future cohorts alike"
+    },
+    "xii_whole_life": {
+      "rule": "recompute",
+      "reason": "an accounting convention (whole life at construction)"
+    },
+    "xiii_wider_scope": {
+      "rule": "recompute",
+      "reason": "a scope convention (maintenance of every cohort since 1992)"
+    },
+    "xiv_alpha_1": {
+      "rule": "reference_base",
+      "reason": "ability to pay only"
+    },
+    "note_soil_long_run": {
+      "rule": "recompute",
+      "reason": "the history convention after the last census"
+    },
+    "Ambition of one lever": {
+      "rule": "reference_base",
+      "reason": "a lever changes future building only"
+    },
+    "Ambition of all": {
+      "rule": "reference_base",
+      "reason": "the levers change future building only"
+    },
+    "Roll-out timing": {
+      "rule": "reference_base",
+      "reason": "future roll-out only"
+    },
+    "Theoretical limit": {
+      "rule": "reference_base",
+      "reason": "the limits change future building only"
+    }
+  },
   "mc": {
     "REF": {
       "LoE_AR_p5": 3.4477163971868134,
@@ -888,6 +1139,14 @@
       "AtP_vs_ref_pct": 88.64265927977843
     },
     {
+      "case": "i_glob_ef31",
+      "label": "(i) Global impact: EF 3.1 normalisation factor (Andreasi Bassi et al. 2023)",
+      "cum_LoE_AR": 4.165291465844622,
+      "cum_LoE_AtP": 17.75562865452972,
+      "AR_vs_ref_pct": -6.695408448207896,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
       "case": "ii_gdp_measure",
       "label": "(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",
       "cum_LoE_AR": 4.464187020777564,
@@ -985,10 +1244,10 @@
     },
     {
       "case": "xi_event_timing",
-      "label": "(xi) Event timing: interval L / n (instead of L / (n + 1))",
-      "cum_LoE_AR": 4.430439753437087,
+      "label": "(xi) Event timing: interval L / n (instead of L / (n + 1); base on the same rule)",
+      "cum_LoE_AR": 4.434884576180832,
       "cum_LoE_AtP": 17.621404003050337,
-      "AR_vs_ref_pct": -0.7559555005963614,
+      "AR_vs_ref_pct": -0.6563892699913754,
       "AtP_vs_ref_pct": -0.7559555005963725
     },
     {

@@ -25,6 +25,7 @@ projection in process (`conftest.run_boss`).
 | `test_households_per_consent.py` | the Stats NZ household estimates grow by 0.888 × the previous year's consents (2019–2025), from the raw inputs. |
 | `test_mcstats.py` | the Monte Carlo insight statistics against statsmodels fixtures and closed-form cases. |
 | `test_profiles.py` | the deterministic results are identical in the light and full profiles (the file comparisons skip unless both `outputs/_light/` and `outputs/` exist). |
+| `test_sensitivity_rules.py` | the shared-parameter rule: every one-at-a-time row that reports a LoE is classified (`boundaries.AR_BASE_RULE`); a `reference_base` row of the tornado uses the Reference AR budget; a `recompute` row's I_sec,base is the Monte Carlo base function at the row's factors, and the central factors are the Monte Carlo's; the EF 3.1 global-impact row scales LoE AR by the I_glob ratio and leaves AtP; the like-for-like zero-lag run of SF7 uses the 17-month net replacement calibration. |
 | `test_figure_integrity.py` | the figure tests that check drawn values against the data: the model scripts do not plot; drawing leaves `outputs/data/` byte-identical; every planned figure is drawn and audited; the sign rules (cumulative bars end at their net, stacked series up + down = net, materials and stages never negative); the Fig4 waterfalls and the band reductions of the Pathways and TL add up to the run totals; the TL steps; Fig3b's interval from the draws; Fig1's annual line against the census-interval means; the ED4 / ED5 notes stop when the code and the outputs disagree; the palette file rejects a missing or unknown key, a bad hex and an opacity outside [0, 1]; SF2b: up + down = net for every column and year, and the census-interval means of the annual line = the column nets. |
 
 ## Fixtures and capture scripts
@@ -34,7 +35,7 @@ projection in process (`conftest.run_boss`).
 | `regression_model_v4.json`, `regression_v3.py` | the v4 regression lock (`regression_v3.py` reads and compares it); written by `capture_regression_model_v3.py` |
 | `regression_pb_v2.json` | `test_events.py`: the frozen anchor of the time-resolved maintenance |
 | `v3_3_runs_fixture.json` | `test_model_v4.py`: equivalence with MODEL v3.3 when the v4 switches are off |
-| `fixtures/` | `v3_2_totals.json` (written by `capture_v3_2_totals.py`) and `v3_0_totals.json`: read by no kept test, kept with the folder; `mcstats_reference.json`: `test_mcstats.py` (written by `make_mcstats_reference.py`) |
+| `fixtures/` | `mcstats_reference.json`: `test_mcstats.py` (written by `make_mcstats_reference.py`) |
 | `mcstats_data.py` | `test_mcstats.py` and `make_mcstats_reference.py`: the fixed synthetic data |
 
 The tests, locks and fixtures of earlier model versions are in the git history and at the tag `model-v4.3.3`.

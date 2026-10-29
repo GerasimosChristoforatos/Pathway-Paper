@@ -44,7 +44,7 @@ def pathways_section():
     with open(lv_path) as f:
         lv = json.load(f)
     L = ['', PATHWAYS_MARK, '',
-         'Resolved values from data/pathways/levers.json (MODEL v3.0.0 lever rule: Levels 1-4); Table 1 of the paper: '
+         'Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Table 1 of the paper: '
          'docs/LEVERS_TABLE.md; methods as implemented: docs/METHODS_DRAFT.md (3. Pathways and the theoretical limit).',
          '',
          '| setting | value | basis |', '|---|---|---|']

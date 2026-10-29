@@ -214,7 +214,7 @@ def fig1():
     lag, rate = ob.get('completion_lag_months'), ob.get('completion_rate')
     _save(fig, 'Fig1_floor_area',
           note=(f"Completions = {rate:.3f} x consents lagged {lag} months (median consent-to-completion time 1.27-1.53 "
-                f"yr, Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building "
+                f"yr; Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025; consistent with the Stats NZ Experimental building "
                 f"indicators). " if lag else '')
                + f"Households after the 2023 census = ERP / household-size path (Stats NZ DHE not used). "
                f"Pipeline years {', '.join(map(str, pipe))}: building observed (consents to "

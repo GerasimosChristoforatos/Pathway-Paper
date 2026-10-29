@@ -1,5 +1,6 @@
 group,row,side,LoE_AR,LoE_AtP,central_LoE_AR,central_LoE_AtP,change_AR_pct,change_AtP_pct,source,basis
 Carrying capacity,SOS / I_glob pair C: 1 W/m² planetary boundary,single,8.421361111217509,33.49469006574721,4.464187020777564,17.75562865452972,88.64265927977839,88.64265927977843,data/aesa/sensitivity.csv (i_source_pair),LITERATURE: Bjørn & Hauschild 2015
+Global impact,Global impact: EF 3.1,single,4.165291465844622,17.75562865452972,4.464187020777564,17.75562865452972,-6.695408448207896,0.0,data/aesa/sensitivity.csv (i_glob_ef31),LITERATURE: Andreasi Bassi et al. 2023
 Base window,"AR base window 2021-2025 (5 yr, as Horup)",single,4.108260057280164,17.75562865452972,4.464187020777564,17.75562865452972,-7.972940242888948,0.0,data/aesa/sensitivity.csv (iii_base_window),LITERATURE: Horup et al. 2025
 Base window,AR base window 2006-2025 (20 yr),single,5.329254296180286,17.75562865452972,4.464187020777564,17.75562865452972,19.37793536373946,0.0,data/aesa/sensitivity.csv (iii_base_window_20),DECISION (author)
 Base window,AR base window 1992-2025 (full consistent history),single,5.572545960790499,17.75562865452972,4.464187020777564,17.75562865452972,24.827789132810185,0.0,data/aesa/sensitivity.csv (iii_base_window_full),DECISION (author)

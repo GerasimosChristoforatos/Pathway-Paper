@@ -79,9 +79,7 @@ def lines():
           'to house the population, system level (number of dwellings) before asset level (floor area per dwelling); '
           'Switch = alternative site and materials for the floor area that is built (carbon per m²); Improve = '
           'construction efficiencies. Within a strategy the order follows the decision sequence (system before asset; '
-          'site before materials). Avoid acts on floor area, Switch and Improve on carbon per m², the two axes of Fig6. '
-          'The lever settings (Moderate, Ambitious and TL values, sub-rules and anchors) are those of MODEL v3.0.0; only '
-          'the grouping, numbering, names and order changed (MODEL v3.3.0; docs/RENAMING.md).', '']
+          'site before materials). Avoid acts on floor area, Switch and Improve on carbon per m², the two axes of the solution space (Fig5).', '']
     B = {}
     q = p['L4']
     B['L4'] = [f"**L4 Extra space (sub-rule B).** The Ambitious size is the smallest annual mean new-dwelling size ever "

@@ -1,6 +1,5 @@
 """PAS 2080 restructure, Very High replacement, half-life in the MC.
 
-  * the v3.2 -> v3.3 map of lever ids is a permutation of L1-L9;
   * strategies: S1-S3 partition L1-L9 in PAS 2080 order; the strategy runs exist, P1-P4 do not;
   * Shapley efficiency of the strategy, lever and TL games against the run totals (1e-9);
   * the two sequential waterfalls: steps add up to their totals, end at the Pathway and at TL, the deltas add up to
@@ -22,8 +21,6 @@ import naming as N  # noqa: E402
 from conftest import ROOT  # noqa: F401,E402
 
 RTOL = 1e-9
-FIXTURE = 'tests/fixtures/v3_2_totals.json'
-QUANTITIES = ('floor_area_Mm2', 'carbon_kt', 'LoE_AR', 'LoE_AtP', 'B_AR_kt', 'B_AtP_kt')
 SETTINGS = ('moderate', 'ambitious')
 
 
@@ -45,13 +42,7 @@ def _close(a, b, atol):
     return np.allclose(a, b, rtol=RTOL, atol=atol)
 
 
-# ------------------------------------------------------------------ lever map ----
-# equality with MODEL v3.3 under the v3.3 settings is tests/test_model_v4.py; FIXTURE (the v3.2 totals) is read by
-# no test.
-
-
-def test_map_is_a_permutation_of_the_levers():
-    assert sorted(N.LEVER_V3_2) == sorted(N.LEVER_V3_2.values()) == [f'L{i}' for i in range(1, 10)]
+# equality with MODEL v3.3 under the v3.3 settings is tests/test_model_v4.py
 
 
 # ------------------------------------------------------------------ strategies ----

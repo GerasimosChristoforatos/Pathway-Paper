@@ -87,8 +87,9 @@
   "Population growth",
   "Total floor area built",
   "Year",
-  "Zero lag (consent-timed proxy)",
-  "Zero lag \u2013 absorbed",
+  "Zero lag (held) \u2013 absorbed",
+  "Zero lag, net replacement held at the 17-month calibration",
+  "Zero lag, recalibrated (context)",
   "a",
   "b",
   "c",
@@ -96,7 +97,7 @@
   "e",
   "f"
  ],
- "note": "Both runs use identical source files and demographic paths; only the monthly consent-to-completion lag changes. Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; it is not a count of completed calendar-2026 homes. The 17-month run uses complete observed consent cohorts for 2026 and 2027. Lag-specific historical completion timing and replacement calibration are recomputed consistently, so panel c is not like-for-like in replacement: the net replacement rate is re-estimated from the census dwelling counts with each run's completion timing (2018-2023 interval: 0.301%/yr at zero lag, with the census under-construction correction, against 0.173%/yr at 17 months), and the difference in c is that recalibration, not the timing of building itself (MODEL v4.3.1, investigation B3).",
+ "note": "All runs use identical source files and demographic paths. The like-for-like zero-lag run holds the forward net replacement at the 17-month calibration (2018-2023 rate 0.173%/yr), so it differs from the 17-month run only in the timing of building. The recalibrated zero-lag run (grey, context) re-estimates net replacement from the census counts with zero-lag timing (0.301%/yr with the census under-construction correction); its higher net replacement in panel c is that recalibration, not the timing of building. Cumulative net replacement 2026-2050: 8.68 Mm\u00b2 (zero lag, held), 8.95 Mm\u00b2 (17 months), 14.66 Mm\u00b2 (zero lag, recalibrated). Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; the 17-month run uses complete observed consent cohorts for 2026 and 2027.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
@@ -104,7 +105,8 @@
  "boundary_zones": false,
  "white_segment_edges": 0,
  "source": [
-  "diagnostics/lag_comparison_annual.csv"
+  "diagnostics/lag_comparison_annual.csv",
+  "diagnostics/lag_comparison_summary.json"
  ],
  "atp_linestyles": [],
  "negative_band_segments": 0,

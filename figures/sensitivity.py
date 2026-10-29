@@ -127,6 +127,7 @@ PB_DROPPED = {'α = 1 (Hjalsted et al. SI tables)': 'α = 1 (Hjalsted et al. SI 
 # window = low end, longest = high end, the others ticks), as in Fig7a
 PB_ROWS = {
     ('SOS / I_glob pair C: 1 W/m² planetary boundary', 'single'): ('carrying_capacity', 'single', 'Carrying capacity'),
+    ('Global impact: EF 3.1', 'single'): ('global_impact_ef31', 'single', 'Global impact'),
     ('GDP per capita in current US$', 'single'): ('gdp_current', 'single', 'Economic allocation'),
     ('s_sec with the FCE share as a ratio of sums', 'single'): ('sector_share', 'single', 'Economic allocation'),
     ('NZ population: WPP 2024 median', 'single'): ('pop_source_wpp', 'single', 'Population'),
@@ -329,11 +330,13 @@ def row_notes_ed5(r):
     if BD.SSEC_FCE_SHARE not in FCE_SHARE or len(alt_fce) != 1:
         _stop(F, f'no text for the FCE-share convention {BD.SSEC_FCE_SHARE!r}')
     rows = set(r['row'])
-    alt = [p for p in BD.SOURCE_PAIRS if p != BD.SOURCE_PAIR]
-    pa, pc = BD.SOURCE_PAIRS[BD.SOURCE_PAIR], BD.SOURCE_PAIRS[alt[0]] if len(alt) == 1 else None
+    pa, pc = BD.SOURCE_PAIRS[BD.SOURCE_PAIR], BD.SOURCE_PAIRS['C']
     row_cc = [x for x in rows if x.startswith('SOS / I_glob pair')]
-    if pc is None or len(row_cc) != 1 or f'pair {alt[0]}' not in row_cc[0] or pc['label'].split(' (')[0] not in row_cc[0]:
+    if len(row_cc) != 1 or 'pair C' not in row_cc[0] or pc['label'].split(' (')[0] not in row_cc[0]:
         _stop(F, f'the carrying-capacity row {row_cc} does not match boundaries.SOURCE_PAIRS')
+    pe = BD.SOURCE_PAIRS['EF31']
+    if pe['sos'] != pa['sos'] or pe['i_glob'] != BD.I_GLOB_EF31_PER_PERSON * BD.I_GLOB_EF31_POPULATION:
+        _stop(F, 'the EF 3.1 row is not the Reference SOS with the EF 3.1 global impact')
     if pc['i_glob'] != pa['i_glob']:
         _stop(F, 'the two source pairs differ in I_glob; the note says only the SOS changes')
 
@@ -343,6 +346,12 @@ def row_notes_ed5(r):
     n = {}
     n['carrying_capacity'] = (f"{pc['label']}, safe operating space {sci(pc['sos'])} kg CO₂e per year, instead of the "
                               f"{pa['label']}, {sci(pa['sos'])} (the same global impact); both budgets move")
+    n['global_impact_ef31'] = (f'global impact (I_glob) from the EF 3.1 normalisation factor (Andreasi Bassi et al. '
+                               f'2023, Table 10; {sci(BD.I_GLOB_EF31_PER_PERSON)} kg CO₂e per person, 2010) instead of '
+                               f"{sci(pa['i_glob'])} (Bjørn & Hauschild 2015; equal to the EF 3.0 factor, "
+                               f'{sci(BD.I_GLOB_EF30_PER_PERSON)} per person). The '
+                               f"{100 * (1 - pe['i_glob'] / pa['i_glob']):.1f}% difference is mainly the lower "
+                               'characterisation factor of methane in EF 3.1. Acquired rights only')
     bw = sorted((int(a), int(b)) for a, b in r.loc[r['group'] == 'Base window', 'row'].str.extract(
         r'(\d{4})-(\d{4})').values)
     want = sorted([tuple(BD.AR_BASE_WINDOW_SENS), tuple(BD.AR_BASE_WINDOW_20), tuple(BD.AR_BASE_WINDOW_FULL)])
@@ -382,10 +391,9 @@ def sup(n):
     return str(n).translate(SUPERSCRIPT)
 
 
-# The figures draw each row number as its own text at style.FONT_MIN (5 pt), raised to the top of the line it marks:
-# a Unicode superscript digit is smaller than its font size (and Liberation Sans has no superscript zero, which 10 and
+# The figures draw each row number as its own text at style.FONT_MIN (5 pt), at the top of the line it marks: a
+# Unicode superscript digit is smaller than its font size (and Liberation Sans has no superscript zero, which 10 and
 # 20 need), and a mathtext superscript is set at 0.7 x the font size.
-SUP_RAISE_MM = 0.6                # the note text sits this far below the top of its number (the number reads raised)
 SUP_GAP = '\u2009'                # thin space between a row label and its number
 SUP_DIGIT = '\u2007'              # figure space: room for one digit of the number at the end of the label
 
@@ -443,8 +451,8 @@ NOTE_INDENT_MM = 2.4             # the note text starts this far right of its nu
 
 def draw_notes(fig, numbered, title, top_frac, ncol=2):
     """The row notes as a compact numbered list below the axes, the numbers those of the y labels: each number its own
-    text at FONT_MIN, the note (FONT_MIN) beside it and SUP_RAISE_MM lower, so the number reads raised; ncol columns
-    filled top to bottom, a note never split. Returns the height used (mm)."""
+    text at FONT_MIN, aligned with the first line of its note (FONT_MIN) beside it; ncol columns filled top to bottom,
+    a note never split. Returns the height used (mm)."""
     wrapped = []
     for n, _, t in numbered:
         w = textwrap.wrap(f'{t}.', NOTE_WIDTH - 3)
@@ -454,16 +462,16 @@ def draw_notes(fig, numbered, title, top_frac, ncol=2):
     n_ = [len(w) for w in wrapped]                        # the split (rows kept whole) with the shortest longer column
     k = min(range(len(n_) + 1), key=lambda j: (max(sum(n_[:j]), sum(n_[j:])), j))
     H = fig.get_figheight()
-    rows = max(sum(n_[:k]) + k * SUP_RAISE_MM / NOTE_LINE_MM, sum(n_[k:]) + (len(n_) - k) * SUP_RAISE_MM / NOTE_LINE_MM)
+    rows = max(sum(n_[:k]), sum(n_[k:]))
     line = NOTE_LINE_MM * S.MM / H
     fig.text(0.01, top_frac, title, ha='left', va='top', fontsize=S.FONT_MIN, fontweight='bold', color=S.INK)
     for c, items in enumerate((list(zip(numbered, wrapped))[:k], list(zip(numbered, wrapped))[k:])):
         x0, y = 0.01 + c / ncol, top_frac - line
         for (n, _, _), w in items:
             fig.text(x0, y, str(n), ha='left', va='top', fontsize=S.FONT_MIN, color=S.INK)
-            fig.text(x0 + NOTE_INDENT_MM * S.MM / fig.get_figwidth(), y - SUP_RAISE_MM * S.MM / H, '\n'.join(w),
+            fig.text(x0 + NOTE_INDENT_MM * S.MM / fig.get_figwidth(), y, '\n'.join(w),
                      ha='left', va='top', fontsize=S.FONT_MIN, color=S.INK, linespacing=1.2)
-            y -= len(w) * line + SUP_RAISE_MM * S.MM / H
+            y -= len(w) * line
     return (rows + 1) * NOTE_LINE_MM
 
 
@@ -536,7 +544,7 @@ def ed4_one_at_a_time():
         raise SystemExit(f'STOP: ED4: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED4_H')
     S.save_figure(fig, 'ED4_one_at_a_time',
                   note=f'Reference {c0:,.0f} kt. One at a time: not additive, not a joint interval. "No effect": every '
-                       f'case within {100 * P.NO_EFFECT_RTOL:.2f}% of the Reference. Not shown: the version-history '
+                       f'case within {100 * P.NO_EFFECT_RTOL:.2f}% of the Reference. Not shown: the superseded-setting '
                        'rows (completion rate 0.95 and lag 0 months of MODEL v3.3; the never-absorbed overbuild of '
                        'MODEL v2.1) and ' + '; '.join(f"{t} ({float(r.loc[r['row'] == k, 'change_pct'].iloc[0]):+.4f}%)"
                                                      for k, t in REF_NOT_SHOWN.items()) + ' (in the data file). Row notes: '
@@ -609,6 +617,13 @@ def ed5_boundary_sensitivity():
                        'the AR base window moves AR only). Not shown: ' + '; '.join(PB_DROPPED.values())
                        + ' (in the data file). Row notes: ' + ' '.join(lines),
                   source=['sensitivity/planetary_boundary.csv', 'aesa/results.json'])
+
+
+def row_note_caption(fid):
+    """The row notes of ED4 or ED5 as caption text ('¹ <note>. ² ...'), from the same list the figure draws (the
+    captions of FIGURES.md take them from here)."""
+    numbered = {'ED4': lambda: ed4_rows()[3], 'ED5': lambda: ed5_rows()[4]}[fid]()
+    return ' '.join(caption_lines(numbered))
 
 
 FIGURES = {'ED4_one_at_a_time': ed4_one_at_a_time, 'ED5_boundary_sensitivity': ed5_boundary_sensitivity,

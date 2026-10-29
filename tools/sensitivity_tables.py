@@ -37,6 +37,7 @@ import engine  # noqa: E402
 import layout  # noqa: E402
 import levers as LV  # noqa: E402
 import naming as N  # noqa: E402
+import boundaries as BD  # noqa: E402
 import validation  # noqa: E402
 
 M6 = 1e6
@@ -67,9 +68,9 @@ REF_ROWS = [
     ('Demographics', 'Household size after 2043: taper from the PCHIP end slope', 'single',
      'Household size after 2043: taper from the PCHIP end slope', 'JUDGEMENT: post-2043 tail'),
     ('Housing stock & calibration', 'Completion rate 0.93 / 0.96', 'low', 'Completion rate 0.93',
-     'LITERATURE: Jones, Greenaway-McGrevy & Crow 2025 (Policy Quarterly 21(1)); 93% final inspection / >95% first inspection'),
+     'LITERATURE: Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025 (Policy Quarterly 21(1)); 93% final inspection / >95% first inspection'),
     ('Housing stock & calibration', 'Completion rate 0.93 / 0.96', 'high', 'Completion rate 0.96',
-     'LITERATURE: Jones, Greenaway-McGrevy & Crow 2025 (Policy Quarterly 21(1)); 93% final inspection / >95% first inspection'),
+     'LITERATURE: Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025 (Policy Quarterly 21(1)); 93% final inspection / >95% first inspection'),
     ('Housing stock & calibration', 'Completion rate 0.95 (MODEL v3.3)', 'single', 'Completion rate 0.95 (MODEL v3.3)',
      'DECISION: the MODEL v3.3 central value (the authors\' own assumption)'),
     ('Completion lag', 'Completion lag 15 / 19 months', 'low', 'Completion lag 15 months',
@@ -203,6 +204,9 @@ def pathway_table():
     rows = []
 
     def add(group, label, side, carbon, loe_ar, loe_atp, source, basis):
+        key = group if group in BD.AR_BASE_RULE else label
+        if BD.ar_base_rule(key)[0] != BD.REFERENCE_BASE:           # these rows use the Reference (or path) budgets
+            raise SystemExit(f'sensitivity_tables: pathway row {key!r} is classified {BD.ar_base_rule(key)[0]!r}.')
         rows.append(dict(group=group, row=label, side=side, carbon_kt=carbon, LoE_AR=loe_ar, LoE_AtP=loe_atp,
                          central_carbon_kt=c0, central_LoE_AR=a0, central_LoE_AtP=t0,
                          change_pct=100 * (carbon / c0 - 1), source=source, basis=basis))
@@ -272,6 +276,8 @@ def household_size_table():
     central = {run: runs[(runs['scenario'] == 'REF') & (runs['run'] == (key or run))].iloc[0] for run, key, _ in plan}
     rows = []
     for row, side, settings in HH_VARIANTS:
+        if BD.ar_base_rule(row)[0] != BD.REFERENCE_BASE:           # the Reference budgets are used below
+            raise SystemExit(f'sensitivity_tables: {row!r} is not classified {BD.REFERENCE_BASE!r}.')
         with contextlib.redirect_stdout(io.StringIO()):
             B = validation.run_boss(**dict(PW.SCENARIOS[PW.REFERENCE][1], **settings))
         ctx = PW.base_context(B, PW.REFERENCE, bounds)
@@ -292,6 +298,7 @@ def household_size_table():
 PB_ROWS = [
     ('Carrying capacity', 'SOS / I_glob pair C: 1 W/m² planetary boundary', 'single', 'i_source_pair',
      'LITERATURE: Bjørn & Hauschild 2015'),
+    ('Global impact', 'Global impact: EF 3.1', 'single', 'i_glob_ef31', 'LITERATURE: Andreasi Bassi et al. 2023'),
     ('Base window', 'AR base window 2021-2025 (5 yr, as Horup)', 'single', 'iii_base_window', 'LITERATURE: Horup et al. 2025'),
     ('Base window', 'AR base window 2006-2025 (20 yr)', 'single', 'iii_base_window_20', 'DECISION (author)'),
     ('Base window', 'AR base window 1992-2025 (full consistent history)', 'single', 'iii_base_window_full',
@@ -312,18 +319,20 @@ def pb_table():
     a0, t0 = float(ref['cum_LoE_AR']), float(ref['cum_LoE_AtP'])
     rows = []
 
-    def add(group, label, side, ar, atp, source, basis):
+    def add(group, label, side, ar, atp, source, basis, key=None):
+        BD.ar_base_rule(key or label)                                # STOP on a row that is not classified
         rows.append(dict(group=group, row=label, side=side, LoE_AR=ar, LoE_AtP=atp, central_LoE_AR=a0,
                          central_LoE_AtP=t0, change_AR_pct=100 * (ar / a0 - 1), change_AtP_pct=100 * (atp / t0 - 1),
                          source=source, basis=basis))
 
     for g, lab, side, case, basis in PB_ROWS:
         add(g, lab, side, float(s.loc[case, 'cum_LoE_AR']), float(s.loc[case, 'cum_LoE_AtP']),
-            f'data/aesa/sensitivity.csv ({case})', basis)
+            f'data/aesa/sensitivity.csv ({case})', basis, key=case)
     for side, pct in (('low', '5th'), ('high', '95th')):
         p = r['population_paths'][pct]
         add('Population source', 'Population: Stats NZ 5th / 95th percentile (carbon and boundaries together)', side,
-            p['LoE_AR'], p['LoE_AtP'], 'data/aesa/results.json population_paths', 'DATA: Stats NZ stochastic projection')
+            p['LoE_AR'], p['LoE_AtP'], 'data/aesa/results.json population_paths', 'DATA: Stats NZ stochastic projection',
+            key='Population: Stats NZ 5th / 95th percentile')
     for lab, pair in (('Low / High replacement', ('LOW', 'HIGH')), ('Replacement half-life 5 / 15 yr', ('REF_HL5', 'REF_HL15'))):
         for side, k in zip(('low', 'high'), pair):
             d = r['deterministic'][k]
@@ -350,6 +359,10 @@ def replacement_variants():
     cols = ('gfa_Mm2', 'carbon_kt', 'committed_lower_kt', 'committed_upper_kt', 'LoE_AR', 'LoE_AtP')
     rows = []
     for scen in ('LOW', 'REF', 'HIGH', 'VHIGH'):
+        if scen != PW.REFERENCE:                                     # the Reference budgets are used below
+            key = N.SCENARIOS['VHIGH'] if scen == 'VHIGH' else 'Low / High replacement'
+            if BD.ar_base_rule(key)[0] != BD.REFERENCE_BASE:
+                raise SystemExit(f'sensitivity_tables: {key!r} is not classified {BD.REFERENCE_BASE!r}.')
         B = B_ref if scen == PW.REFERENCE else PW.boss_state(scen)
         ctx = PW.base_context(B, scen, bounds)
         for run, levels, setting in ((scen, {}, 'reference'),
@@ -386,20 +399,28 @@ TORNADO = [   # (input, low case, high case) in reference_table() rows
 
 
 def tornado(ref):
-    """Fig8a: for each input its low and high case: cumulative carbon 2026-2050 and the cumulative LoE AR and AtP. The
-    boundaries depend on the population path only (aesa): the population rows use that path's budgets
-    (aesa/results.json population_paths), every other row the Reference budgets."""
+    """Fig7a: for each input its low and high case: cumulative carbon 2026-2050 and the cumulative LoE AR and AtP. The
+    AR base follows the shared-parameter rule (boundaries.AR_BASE_RULE, recorded in aesa/results.json
+    one_at_a_time_ar_base): a 'recompute' row uses the AR budget of its own I_sec,base, a 'reference_base' row the
+    Reference budget; the population rows use that path's budgets (population_paths). AtP does not depend on the base."""
     with open(data('aesa/results.json')) as f:
         r = json.load(f)
     a = pd.read_csv(data('aesa/annual.csv'))
     a = a[(a['scenario'] == 'REF') & (a['year'] >= 2026)]
     bar, batp = a['B_AR_kgCO2e'].sum() / M6, a['B_AtP_kgCO2e'].sum() / M6
     pp = r['population_paths']
+    oat = r['one_at_a_time_ar_base']
     c0 = float(ref['central_carbon_kt'].iloc[0])
     rows = []
     for name, row in TORNADO:
+        rule = BD.ar_base_rule(row)[0]
+        if oat[row]['rule'] != rule:
+            raise SystemExit(f'sensitivity_tables: aesa/results.json is stale for {row!r} (rule {oat[row]["rule"]!r}).')
+        if rule == BD.RECOMPUTE and 'sides' not in oat[row]:
+            raise SystemExit(f'sensitivity_tables: no recomputed AR base for {row!r}.')
         t = ref[ref['row'] == row].set_index('side')
-        if 'single' in t.index:                       # a one-sided row (low = the central case)
+        one_sided = 'single' in t.index
+        if one_sided:                                 # a one-sided row (low = the central case)
             t = pd.DataFrame({'case': ['central', t.loc['single', 'case']],
                               'carbon_kt': [c0, t.loc['single', 'carbon_kt']]}, index=['low', 'high'])
         for side in ('low', 'high'):
@@ -407,6 +428,8 @@ def tornado(ref):
             if name.startswith('Population'):
                 pct = '5th' if side == 'low' else '95th'
                 b1, b2 = pp[pct]['B_AR_kt'], pp[pct]['B_AtP_kt']
+            elif rule == BD.RECOMPUTE and not (one_sided and side == 'low'):
+                b1, b2 = oat[row]['sides']['single' if one_sided else side]['B_AR_kt_2026_2050'], batp
             else:
                 b1, b2 = bar, batp
             rows.append(dict(input=name, side=side, case=t.loc[side, 'case'], carbon_kt=c, LoE_AR=c / b1,

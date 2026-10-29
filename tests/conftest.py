@@ -32,5 +32,3 @@ def B():
         pytest.exit('Run Building_factors.py first (outputs/data/factors/ missing).')
     return run_boss()
 
-
-collect_ignore_glob = ['retired/*']

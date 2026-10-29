@@ -58,7 +58,7 @@ PAPER_MAIN = [
          caption='Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; '
                  'exact, 512 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 '
                  'Switch, S3 Improve) in the lever order and coloured by strategy; filled bar Moderate, hollow bar '
-                 'Ambitious, large deep-green dot TL. The TL dots are Shapley values within the TL game (all nine '
+                 'Ambitious, large dot TL. The TL dots are Shapley values within the TL game (all nine '
                  'levers at their limit), so they include each lever\'s interactions at the limit; L5 (occupancy '
                  'density) interacts with L4 (extra space): both act on the floor area per dwelling.',
          source=['pathways/shapley.csv']),
@@ -88,7 +88,7 @@ PAPER_EXTENDED = [
     dict(id='ED4', file='ED4_one_at_a_time', module='figures.sensitivity',
          title='One at a time: cumulative embodied carbon 2026-2050 of the Reference',
          caption='One-at-a-time ranges of the Reference cumulative embodied carbon 2026-2050, grouped by category; each '
-                 'input at its low (blue) and high (orange) end, a single alternative case grey, intermediate cases as '
+                 'input at its low (pale blue) and high (dark blue) end, a single alternative case grey, intermediate cases as '
                  'ticks; not additive, not a joint interval. Not shown (kept in the data file): household size held '
                  'flat after 2043 (the Reference is also held constant after 2043, with a zero slope imposed at 2043), '
                  'the overbuild gap against the 2026 requirement, no census under-construction correction, the '

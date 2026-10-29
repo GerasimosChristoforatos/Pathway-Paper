@@ -21,61 +21,62 @@
 # Format: colours "#RRGGBB"; [opacity] numbers from 0 to 1.
 
 [demand_bands]                      # Fig1, Fig2a and Fig2d (by demand); ED2a; SF2; SF3; SF4
-population_growth     = "#586E71"   # Population growth (untargeted)
-household_size_change = "#F4D168"   # Household-size change (signed: drawn below zero when households consolidate)
-extra_space           = "#DFA538"   # Extra space (new-dwelling size above the occupied area)
-vacancy               = "#AA7C9D"   # Vacancy (allowance on new households and change in the rate)
-net_replacement       = "#D0BBDC"   # Net replacement (demolition replacement, surge, unconsented additions)
-market_balance        = "#683861"   # Market balance (2026 overbuild and its absorption, unexplained building)
-maintenance           = "#9E9E9E"   # Maintenance (B2, B4), carbon only
+population_growth     = "#3D2B56"   # Population growth (untargeted)
+household_size_change = "#F5D25C"   # Household-size change (signed: drawn below zero when households consolidate)
+extra_space           = "#E8873A"   # Extra space (new-dwelling size above the occupied area)
+vacancy               = "#C06B96"   # Vacancy (allowance on new households and change in the rate)
+net_replacement       = "#D3ADD7"   # Net replacement (demolition replacement, surge, unconsented additions)
+market_balance        = "#8C3363"   # Market balance (2026 overbuild and its absorption, unexplained building)
+maintenance           = "#A6A6A6"   # Maintenance (B2, B4), carbon only
 
 [materials]                         # Fig2b and Fig2d (by material)
-timber                = "#750787"   # Timber
-steel                 = "#004DFF"   # Steel
-concrete              = "#008026"   # Concrete (incl. reinforced)
-plastics_paint        = "#FFED00"   # Plastics & paint
-plasterboard          = "#FF8C00"   # Plasterboard
-others                = "#E40303"   # Others
-soil_carbon_loss      = "#B5A48B"   # Soil carbon loss (drawn at 50% opacity)
+timber                = "#82A63F"   # Timber
+steel                 = "#2F6B66"   # Steel
+concrete              = "#B0CBAA"   # Concrete (incl. reinforced)
+plastics_paint        = "#45B5AA"   # Plastics & paint
+plasterboard          = "#E1EAB3"   # Plasterboard
+others                = "#474747"   # Others
+soil_carbon_loss      = "#8C6A4A"   # Soil carbon loss (solid; the same colour as in [life_cycle_stages])
 
 [life_cycle_stages]                 # Fig2c and Fig2d (by stage); Fig3b committed carbon after 2050
-a1_a3                 = "#4A6192"   # Materials (A1-A3)
-a4_a5                 = "#ABD3FA"   # Construction (A4-A5)
-soil_carbon_loss      = "#8D6545"   # Soil carbon loss
-maintenance           = "#9E9E9E"   # Maintenance (B2, B4), 2026-2050
-committed_b2_b4       = "#9E9E9E"   # Fig3b: committed after 2050, B2/B4
+a1_a3                 = "#2E4A7D"   # Materials (A1-A3)
+a4_a5                 = "#9DBFE3"   # Construction (A4-A5)
+soil_carbon_loss      = "#8C6A4A"   # Soil carbon loss
+maintenance           = "#A6A6A6"   # Maintenance (B2, B4), 2026-2050
+committed_b2_b4       = "#A6A6A6"   # Fig3b: committed after 2050, B2/B4
 committed_c1_c4       = "#D0D0D0"   # Fig3b: committed after 2050, C1-C4
 
 [runs]                              # every figure showing a run (lines, bars, Monte Carlo bands, markers)
-reference             = "#4D4D4D"   # Reference
-moderate              = "#EB6123"   # Moderate Pathway
-ambitious             = "#A8400C"   # Ambitious Pathway
-theoretical_limit     = "#13412B"   # Theoretical Limit
+reference             = "#969696"   # Reference
+moderate              = "#F2D883"   # Moderate Pathway
+ambitious             = "#ECA75A"   # Ambitious Pathway
+theoretical_limit     = "#A7BB95"   # Theoretical Limit
 
 [strategies]                        # PAS 2080 strategies: Fig4 waterfall steps, Fig5, Fig6, ED (lever figures)
-avoid                 = "#DFA538"   # Avoid Strategies (L1-L5)
-switch                = "#8D6545"   # Switch Strategies (L6-L8)
-improve               = "#4A6192"   # Improve Strategy (L9)
+avoid                 = "#C16131"   # Avoid Strategies (L1-L5)
+switch                = "#8E5B7E"   # Switch Strategies (L6-L8)
+improve               = "#8197BC"   # Improve Strategy (L9)
 
 [boundaries]                        # every planetary-boundary figure (lines; AR solid, AtP dotted: styles fixed)
-acquired_rights       = "#D7191C"   # Acquired rights (AR)
-ability_to_pay        = "#67000D"   # Ability to pay (AtP)
+acquired_rights       = "#C9483F"   # Acquired rights (AR)
+ability_to_pay        = "#6E2323"   # Ability to pay (AtP)
 
 [boundary_zones]                    # the three zones behind every boundary figure (fills, legend swatches)
-# The opacity of each zone is [opacity] zone_*. redraw.py warns if,
+# The opacity of each zone is [opacity] zone_* (0.5: on white the zones appear as #DCEAF1 / #EEF5F8 / #FDF7F5; they
+# are intentionally pale and are told apart by the boundary lines and the legend). redraw.py warns if,
 # composited on white at those opacities, the zones lose the lightness order within_both < within_ar_only < exceeded
 # (CAM02-UCS J') in normal vision or any simulated deficiency.
-within_both           = "#41AB5D"   # Within both budgets (below AtP)
-within_ar_only        = "#A1D99B"   # Within AR only (between AtP and AR)
-exceeded              = "#FB6A4A"   # Boundary exceeded (above AR)
+within_both           = "#B9D5E3"   # Within both budgets (below AtP)
+within_ar_only        = "#DDEBF1"   # Within AR only (between AtP and AR)
+exceeded              = "#FBEFEB"   # Boundary exceeded (above AR)
 
 [cumulative]                        # Fig3b
-fig3b_cumulative_carbon = "#4D4D4D" # the 2026-2050 cumulative carbon column and its legend patch
+fig3b_cumulative_carbon = "#1E1E1E" # the 2026-2050 cumulative carbon column and its legend patch
 
 [one_at_a_time]                     # one-at-a-time sensitivity (tornado): Fig7a, ED4, ED5
-low_end               = "#4A6192"   # Input at its low end
-high_end              = "#EB6123"   # Input at its high end
-single_alternative    = "#6E6E6E"   # A row with a single alternative case
+low_end               = "#9CC3E6"   # Input at its low end
+high_end              = "#1F3A68"   # Input at its high end
+single_alternative    = "#707070"   # A row with a single alternative case
 
 # ---- the rest of the meaning colours of the final figures ----
 # Parts of SF2b / SF5 / SF15 that are not demand bands. Defaults: the author's colours, the CAM02-UCS lightness of some
@@ -88,7 +89,7 @@ new_households        = "#97AEB1"   # New households (SF2b)
 replacement_surge     = "#8A66AB"   # Recent replacement surge (SF2b; solid)
 unconsented_additions = "#5C9CC5"   # Unconsented additions (SF2b, negative)
 retirement_villages   = "#DCDCDC"   # Retirement villages, out of scope (SF2b, negative)
-overbuild_absorbed    = "#9E5B7F"   # Overbuild absorbed (SF2b, SF5; negative payback)
+overbuild_absorbed    = "#431E25"   # Overbuild absorbed (SF2b, SF5; negative payback)
 unexplained_building  = "#D98B5F"   # Unexplained building of the history (SF2b)
 released_tl           = "#95C283"   # Released dwellings re-occupied, and the pool line (SF15)
 
@@ -124,14 +125,14 @@ model_path_years      = "#C2571A"   # SF1b: 2024-25, the model's household-size 
 release_binds         = "#D7191C"   # SF15: years where the release constraint binds
 
 [opacity]                           # meaningful fades, 0-1 (context fades are fixed: see the header)
-zone_within_both      = 0.30        # boundary zone below AtP
-zone_within_ar_only   = 0.30        # boundary zone between AtP and AR
-zone_exceeded         = 0.07        # boundary zone above AR
+zone_within_both      = 0.5        # boundary zone below AtP
+zone_within_ar_only   = 0.5        # boundary zone between AtP and AR
+zone_exceeded         = 0.5        # boundary zone above AR
 mc_band_90            = 0.12        # Fig3a Monte Carlo 90% band
 mc_band_50            = 0.25        # Fig3a Monte Carlo 50% band
 mc_band               = 0.15        # single 5th-95th bands (ED1, SF1a, SF13)
 pathway_lines         = 0.8         # Fig3a Moderate / Ambitious Pathway and TL lines
-soil_carbon_loss      = 0.5         # soil carbon loss over the materials (Fig2b, Fig2d)
+soil_carbon_loss      = 1.0         # soil carbon loss over the materials (Fig2b, Fig2d): solid, as in the stage panels
 scatter_reference     = 0.18        # Fig7b points: Reference
 scatter_moderate      = 0.18        # Fig7b points: Moderate Pathway
 scatter_ambitious     = 0.20        # Fig7b points: Ambitious Pathway

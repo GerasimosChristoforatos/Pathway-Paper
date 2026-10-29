@@ -199,31 +199,30 @@ def main():
          'every module of the figures/ package imports it. Preview with simulated colour-vision deficiency: '
          '[palette_preview.png](palette_preview.png).', '',
          '## Rules', '',
-         '* **Source**: the palette is inspired by Francis Bacon, *Head VI* (1949): golds, mauves, '
-         'deep blues and browns on a near-black ground. The hue families are fixed by that choice; lightness and '
-         'chroma were set by maximising the minimum CAM02-UCS distance of every group below under every simulated '
-         'deficiency.',
+         '* **Source**: the colours are the author\'s (palette.toml); every group drawn together keeps a minimum '
+         'CAM02-UCS distance of 10 under every simulated deficiency, the boundary zones excepted (see the check '
+         'below). Text is black ink (Nature: primarily black type); the colours are carried by lines, markers and '
+         'fills, never by text.',
          f"* **Strategies** (palette.toml [strategies]): S1 Avoid {S.STRATEGY['S1']}, S2 Switch {S.STRATEGY['S2']}, "
          f"S3 Improve {S.STRATEGY['S3']}. A lever is drawn in its "
          f"strategy colour and told apart by marker ({', '.join(S.LEVER_MARKER)} within a strategy; SF10). The "
-         f"Moderate / Ambitious Pathway vermilion ({S.PATHWAY[N.PATHWAY]}) and TL a deep forest green ({S.TL}; a larger "
-         'circle on point plots).',
-         '* **Demand bands** (palette.toml [demand_bands]) keep the hue families of the former lever shades '
-         f"(2026 overbuild the deep mauve anchor, Overbuild absorbed a lighter mauve ({S.BAND['overbuild_absorbed'][0]}), "
-         f"Demolition replacement a lilac ({S.REPLACEMENT}), Unconsented additions a darker lilac "
-         f"({S.BAND['unconsented'][0]}), the Recent replacement surge a pale mauve ({S.SURGE_FACE}) with a fine light "
-         f"hatch (the only hatched band), Released dwellings (TL) a light green ({S.BAND['released_tl'][0]})). The only "
-         f"untargeted band, Population growth, is a solid deep green-blue ({S.GROWTH}). Unexplained building of the "
-         f"history: a faded reddish face ({S.UNEXPLAINED[0]}).",
+         f"Moderate Pathway pale yellow ({S.PATHWAY_SETTING['moderate']}), Ambitious Pathway orange "
+         f"({S.PATHWAY_SETTING['ambitious']}) and TL a pale sage green ({S.TL}; a larger circle on point plots).",
+         '* **Demand bands** (palette.toml [demand_bands]; detailed parts in [components]): '
+         f"2026 overbuild {S.P2_ANCHOR}, Overbuild absorbed {S.BAND['overbuild_absorbed'][0]}, "
+         f"Demolition replacement {S.REPLACEMENT}, Unconsented additions {S.BAND['unconsented'][0]}, the Recent "
+         f"replacement surge {S.SURGE_FACE} with a fine light hatch (the only hatched band), Released dwellings (TL) "
+         f"{S.BAND['released_tl'][0]}. The only untargeted band, Population growth, is a solid deep violet ({S.GROWTH}). "
+         f"Unexplained building of the history: {S.UNEXPLAINED[0]}.",
          '* **Signs**: the data keep the sign of every band and the figures never flip it. Time series: '
          'positive bands stacked up from zero, negative bands down from zero (fixed order), the net a black line. '
          'Cumulative bars: positives stacked; each negative band an unfilled, unhatched segment outlined in its band '
          'colour, hanging from the top of the positive stack, so the bar ends at its net total, marked by a net tick; '
          'one legend entry per band. Materials and stages are never negative (a STOP if they were).',
-         f"* **Maintenance** (B2, B4) neutral grey ({S.BAND['maintenance'][0]}); committed emissions after 2050 a "
-         f"lighter grey drawn hollow ({S.COMPONENT['committed'][0]}). Carbon stages (palette.toml [life_cycle_stages]): "
+         f"* **Maintenance** (B2, B4) neutral grey ({S.BAND['maintenance'][0]}); committed C1-C4 after 2050 "
+         f"({S.COMPONENT['committed'][0]}). Carbon stages (palette.toml [life_cycle_stages]): "
          f"A1-A3 {S.STAGE['a1a3'][0]}, A4-A5 {S.STAGE['a4a5'][0]}, soil carbon loss {S.STAGE['soil'][0]}.",
-        f"* **Reference** dark grey ({S.REFERENCE}); Low and High replacement mid greys with dashed and dotted lines. "
+        f"* **Reference** mid grey ({S.REFERENCE}); Low and High replacement greys with dashed and dotted lines. "
         f"The Fig3b 2026-2050 column (palette.toml [cumulative]): {S.CUMULATIVE_FIG3B}.",
          f"* **One at a time** (palette.toml [one_at_a_time]; Fig7a, ED4, ED5): input at its low end {S.TORNADO_LOW}, "
          f"at its high end {S.TORNADO_HIGH}, a single alternative case {S.TORNADO_SINGLE}.",
@@ -232,13 +231,14 @@ def main():
          f"(default {S.HATCH_COLOUR}; the surge band {S.HATCH_LIGHT}). Legend handles keep a thin grey outline.",
          f"* **Boundaries** (every planetary-boundary figure, one implementation in style.py; colours "
          f"from palette.toml [boundaries] and [boundary_zones], the zone opacities fixed in style.ZONE_ALPHA): acquired rights (AR) "
-         f"thin red line ({S.AR}), ability to pay (AtP) thin dark-red dotted line ({S.ATP}); zones below AtP "
-         f"faded green ({S.ZONE['within_both']['color']}, alpha {S.ZONE['within_both']['alpha']}), between AtP and AR light "
-         f"green ({S.ZONE['within_ar']['color']}, alpha {S.ZONE['within_ar']['alpha']}) and above AR light red "
+         f"thin brick-red line ({S.AR}), ability to pay (AtP) thin dark-maroon dotted line ({S.ATP}); very pale zones (told "
+         'apart by the boundary lines and the legend) below AtP '
+         f"({S.ZONE['within_both']['color']}, alpha {S.ZONE['within_both']['alpha']}), between AtP and AR "
+         f"({S.ZONE['within_ar']['color']}, alpha {S.ZONE['within_ar']['alpha']}) and above AR "
          f"({S.ZONE['exceeded']['color']}, alpha {S.ZONE['exceeded']['alpha']}, \"boundary exceeded\"), on annual, "
          'cumulative and level-of-exceedance axes alike. The two principles are never averaged.',
          '* **Settings**: lines: Moderate solid bold, Ambitious the same colour thin dotted; markers: Moderate filled, '
-         'Ambitious hollow; bars (Fig7): Moderate hollow, Ambitious filled, TL a large deep-green dot.',
+         'Ambitious hollow; bars (Fig6): Moderate filled, Ambitious hollow, TL a large dot.',
          f"* **Typeface**: {S.FONT} only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open "
          'Font License 1.1, registered by figures/style.py, so every machine renders the same glyphs.',
          f"* **Sizes** (Nature Cities): width {S.WIDTH['single'] / S.MM:.0f} mm (single column) or "
@@ -246,11 +246,10 @@ def main():
          f"text {S.FONT_SIZE:g} pt, legends and ticks {S.FONT_SMALL:g} pt, never below {S.FONT_MIN:g} pt; data "
          f"lines {S.LW:g} pt, emphasised lines {S.LW_BOLD:g} pt, grid and edges {S.LW_THIN:g} pt.",
          '* **Files** (run profiles, runprofile.py): light PNG at 200 dpi with a small grey footer "LIGHT RUN — '
-         'n=1000"; full PDF (TrueType fonts embedded) + PNG at 600 dpi; no software or date metadata, so re-runs are '
+         'n=1000"; full PNG at 600 dpi; no software or date metadata, so re-runs are '
          'byte-identical.',
-         '* **Materials** (Fig3b and the diagnostics): the six stripes of the Pride flag in one order in every figure '
-         '(author decision), soil carbon loss faded on top (no hatch); kept because the '
-         'material figures label every layer directly (see the check below).', '',
+         '* **Materials** (Fig2b, Fig2d): six colours in one order in every figure (author decision); soil carbon '
+         'loss solid on top, in the same colour as in the stage panels (the same quantity).', '',
          '## Colour table', '', '| group | element | colour | lightness J\' |', '|---|---|---|---|']
     for gname, g in G.items():
         for lab, h in g.items():
@@ -271,8 +270,8 @@ def main():
                  + f" | {'yes' if ok else 'no'} |")
     if fails:
         L += ['', 'Groups below the threshold: ' + '; '.join(fails) + '. Why each still reads: the boundary zones are pale by design (data drawn over them), always '
-              'bounded by the AR and AtP lines and ordered strictly in lightness (darker green < light green < palest '
-              'red under every simulated deficiency), so their order survives without hue; any other group below the '
+              'bounded by the AR and AtP lines and ordered strictly in lightness (within both < within AR only < exceeded '
+              'under every simulated deficiency), so their order survives without hue; any other group below the '
               'threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so '
               'the reading never depends on colour alone.']
     rs = min_distance({'Historical replacement': S.REPLACEMENT, 'Recent replacement surge': S.SURGE_FACE})

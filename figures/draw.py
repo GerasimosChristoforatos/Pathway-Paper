@@ -17,6 +17,7 @@ Sign rules (the data keep the sign of every band, the figures never flip it):
 """
 import numpy as np
 import matplotlib
+import matplotlib.patheffects
 from matplotlib.patches import Patch
 
 import bands as BANDS_MOD
@@ -465,9 +466,13 @@ def tornado_rows(groups, rows, central):
     return out
 
 
+# a thin white halo under an intermediate-case tick, so it stays visible on the dark high-end bars
+TICK_HALO = [matplotlib.patheffects.withStroke(linewidth=S.LW_THIN + 1.0, foreground='white')]
+
+
 def tornado(ax, order, central, label, height=0.62, header_fs=None, headers=True):
-    """Draw a paired tornado on ax from tornado_rows() output: one row per input, its low end (blue) and high end
-    (orange) on the same row, a single alternative case grey, intermediate cases as ticks with their name; a row
+    """Draw a paired tornado on ax from tornado_rows() output: one row per input, its low end (pale blue) and high end
+    (dark blue) on the same row, a single alternative case grey, intermediate cases as ticks with their name; a row
     whose every case is within NO_EFFECT_RTOL of the central value is marked 'no effect'; bold group headers with a
     separator line above each group. y tick labels: label(row id). Returns the row y positions."""
     n = len(order)
@@ -494,7 +499,7 @@ def tornado(ax, order, central, label, height=0.62, header_fs=None, headers=True
                 if r.get(key) is not None:
                     ax.barh(y, r[key] - central, left=central, height=height, **S.fill(col))
             for name, v in r.get('ticks', {}).items():
-                ax.plot([v, v], [y - height / 2, y + height / 2], color=S.INK, lw=S.LW_THIN)
+                ax.plot([v, v], [y - height / 2, y + height / 2], color=S.INK, lw=S.LW_THIN, path_effects=TICK_HALO)
                 ax.text(v, y + height / 2 + 0.02, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
         ys.append(y)
         labels.append(label(r['id']))

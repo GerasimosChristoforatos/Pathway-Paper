@@ -57,10 +57,12 @@ SHARED = {'Fig2 (demand bands, materials, life-cycle stages)': {
           'SF7 (lag variants)': {'lag_variants': None},
           'SF15 (released dwellings, release binds)': {'components': ('released_tl',), 'highlights': ('release_binds',)}}
 # pairs of keys that denote the same quantity (identical by design, not a clash): maintenance B2/B4 as a demand band
-# and as a stage, and before / after 2050; the Fig3b column is the Reference's cumulative carbon
+# and as a stage, and before / after 2050; the Fig3b column is the Reference's cumulative carbon; soil carbon loss in
+# the material and in the stage panels (the same quantity, the same solid colour)
 _MAINT = (('demand_bands', 'maintenance'), ('life_cycle_stages', 'maintenance'), ('life_cycle_stages', 'committed_b2_b4'))
 SAME_QUANTITY = {frozenset(p) for p in itertools.combinations(_MAINT, 2)} | {
-    frozenset({('runs', 'reference'), ('cumulative', 'fig3b_cumulative_carbon')})}
+    frozenset({('runs', 'reference'), ('cumulative', 'fig3b_cumulative_carbon')}),
+    frozenset({('materials', 'soil_carbon_loss'), ('life_cycle_stages', 'soil_carbon_loss')})}
 CLOSE = 10.0                     # CAM02-UCS distance (tools/palette_check.THRESHOLD)
 # the colour-vision report compares the keys of a group that are drawn together; these groups' keys are
 # each in a different figure (no pair is ever seen together), and released_tl (SF15) never shares SF2b with the other

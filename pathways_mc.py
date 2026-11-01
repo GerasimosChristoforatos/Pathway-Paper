@@ -278,7 +278,7 @@ THRESHOLD_POINTS = 101
 
 
 def population_threshold(df, col):
-    """(Fig7b, SF14) The 2050 New Zealand population at which P(TL LoE AR <= 1) = 50%, from a univariate
+    """(Fig7b, SF13) The 2050 New Zealand population at which P(TL LoE AR <= 1) = 50%, from a univariate
     logistic regression of the outcome on the draw's 2050 population (maximum likelihood; Firth's penalised
     likelihood where the MLE does not exist), with a percentile bootstrap 95% interval (resampled draws; the
     insight bootstrap's stream). If no draw (or every draw) has TL within AR the threshold is not estimable and that

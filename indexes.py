@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # paper Fig1-Fig7, Extended Data ED1-ED9 (+ EDT1), supplementary SF1-SF15 (+ ST1) in folders (figure_plan.py)
+    # paper Fig1-Fig7, Extended Data ED1-ED10 (+ EDT1), supplementary SF1-SF14 (+ ST1) in folders (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '

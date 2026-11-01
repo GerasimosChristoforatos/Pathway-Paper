@@ -2,13 +2,14 @@
 D11_floor_area_bridge_split, D12_conversion_chain, D14_hindcast, D15_reality_checks, D19_variants.
 
 Each figure reads its figure source data (outputs/data/figure_source/<file id>.json, written by
-tools/figures_report.py) and nothing else; nothing is recomputed here.
+tools/figures_report.py); ED10 panel h also reads baseline/annual.csv and baseline/variants_annual.csv. Nothing is
+recomputed here.
 
 Sign rules (figures/draw.py): the floor-area bridges (D10, D11) are waterfalls of cumulative values: a positive band
 a filled step up from the running total, a negative band (Overbuild absorbed, Unconsented additions, retirement
 villages, or any band negative in a run) an unfilled, unhatched segment outlined in its band colour hanging down
 from the running total (the top of the positive stack), so the last step ends at the net total, drawn as the
-black 'Total, in scope' bar. Only the surge band (Recent replacement surge) is hatched.
+black 'Total, in scope' bar. No band is hatched.
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -99,24 +100,43 @@ def sf6_hindcast():
 
 
 # ---------------------------------------------------------------------------
-# SF8 (D15) reality checks
+# ED10 (D15) reality checks
 # ---------------------------------------------------------------------------
-def sf8_reality_checks():
-    fid = 'SF8_reality_checks'
+HISTORY_ATOL = 1e-12          # every drawn history vertex equals its source value (observed data are not smoothed)
+
+
+def _history_line(a, x, y):
+    """Observed history: straight segments between annual values (no PCHIP), checked against the source."""
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    ok = np.isfinite(y)
+    ln, = a.plot(x[ok], y[ok], color=S.INK, lw=S.LW, label='History')
+    dx, dy = (np.asarray(v, float) for v in ln.get_data())
+    err = float(np.max(np.abs(dy - y[ok]))) if len(dy) else 0.0
+    if len(dx) != int(ok.sum()) or err > HISTORY_ATOL:
+        raise SystemExit(f'STOP: ED10: a drawn history line differs from its source data ({err:.3g}).')
+    return err
+
+
+def ed10_reality_checks():
+    """ED10 (data D15, baseline/annual.csv, baseline/variants_annual.csv): the projection of each replacement variant
+    against the 1991-2025 range (grey band) for eight quantities. History: straight segments between annual values
+    (observed data are not smoothed); census-interval rates (b) are constant within each interval. Projections: PCHIP
+    display interpolation as every projection line. The largest difference between a drawn history and its source is
+    returned in the note (it must be 0)."""
+    fid = 'ED10_reality_checks'
     d = D.src('D15_reality_checks')
     labels = d['labels']
     fig, ax = plt.subplots(3, 3, figsize=S.figsize('double', 165))
     ax = ax.ravel()
+    titles = {'removals_net': 'Implied net removals\n(net replacement rate × stock)'}
+    errs = {}
     for i, key in enumerate(d['order']):
         p = d['panels'][key]
         a = ax[i]
         lo, hi = p['range_1991_2025']
         a.axhspan(lo, hi, color=S.MUTED, alpha=S.FIXED_FADES['history_range_span'], lw=0, label='1991–2025 range')
         hs = p['history']
-        if key == 'removals_net':                     # census-interval rates: a step function, not interpolated
-            a.plot(hs.index, hs, color=S.INK, lw=S.LW, label='History')
-        else:
-            P.line(a, hs.index, hs, color=S.INK, lw=S.LW, label='History')
+        errs[key] = _history_line(a, hs.index, hs.values)
         for k in VARS:
             y = p['projection'][k]
             P.line(a, y.index, y, label=labels[k], **_scen_line(k))
@@ -124,41 +144,61 @@ def sf8_reality_checks():
         a.set_xlim(1991, 2050)
         a.set_ylabel(p['ylabel'])
         a.ticklabel_format(axis='y', style='plain', useOffset=False)
-        P.panel(a, 'abcdefg'[i], p['title'])
+        P.panel(a, 'abcdefg'[i], titles.get(key, p['title']))
     rem = d['removals_pct_of_2025_stock']
-    txt = '\n'.join(f"{labels[k]}: {rem[k]:.1f}%" for k in VARS)
-    ax[1].text(0.02, 0.97, 'Removals 2026–2050,\n% of the 2025 stock:\n' + txt, transform=ax[1].transAxes,
-               va='top', fontsize=S.FONT_MIN, bbox=dict(facecolor='white', alpha=S.FIXED_FADES['label_box'], edgecolor='none', pad=1))
+    txt = '\n'.join(f"{HINDCAST_SHORT[k]}: {rem[k]:.1f}%" for k in VARS)   # short names; the legend has the full ones
+    tb = ax[1].text(0.02, 0.97, 'Removals 2026–2050,\n% of the 2025 stock:\n' + txt, transform=ax[1].transAxes,
+                    va='top', fontsize=S.FONT_MIN,
+                    bbox=dict(facecolor='white', alpha=S.FIXED_FADES['label_box'], edgecolor='none', pad=1))
     m = d['m2_per_res_max']
     ax[3].set_ylim(0, 300)
     ax[3].text(0.02, 0.97, f"Off scale: {int(m['year'])}, {m['value']:,.0f} m² per person\n(near-zero population "
                "growth)", transform=ax[3].transAxes, va='top', fontsize=S.FONT_MIN,
                bbox=dict(facecolor='white', alpha=S.FIXED_FADES['label_box'], edgecolor='none', pad=1))
+    # h: floor area built (consented, in scope): history baseline/annual.csv, projection baseline/variants_annual.csv
     a = ax[7]
-    chg = np.asarray(d['handover_changes_pct'], float)
-    h = d['handover']
-    counts, _, _ = a.hist(chg, bins=14, **S.fill(S.VALIDATION['handover_history']))
-    a.set_ylim(0, a.get_ylim()[1] * 1.45)                 # room for the legend above the bars
-    ytop = 1.1 * float(np.max(counts))                    # the two markers stop below the legend
-    a.vlines(h['step_pct'], 0, ytop, color=S.VALIDATION['handover_step'], lw=S.LW_BOLD,
-             label=f"{h['last_observed_year']} → {h['first_model_year']} handover (observed → model): "
-                   + P.minus(f"{h['step_pct']:+.1f}%"))
-    a.vlines(h['hist_median_pct'], 0, ytop, color=S.INK, lw=S.LW, linestyles='--',
-             label="Median year, 1992–2025: " + P.minus(f"{h['hist_median_pct']:+.1f}%"))
-    a.set_xlabel('Change from the previous year (%)')
-    a.set_ylabel('Number of years')
-    a.legend(loc='upper left', fontsize=S.FONT_MIN)
-    P.panel(a, 'h', 'Handover vs annual changes in floor area')
+    an = D.csv('baseline/annual.csv')
+    fh = an[an['source'] == 'history'].set_index('year')['floor_area_Mm2'].loc[1991:2025]
+    va = D.csv('baseline/variants_annual.csv')
+    a.axhspan(float(fh.min()), float(fh.max()), color=S.MUTED, alpha=S.FIXED_FADES['history_range_span'], lw=0)
+    errs['floor_area'] = _history_line(a, fh.index, fh.values)
+    ref = an[an['source'] != 'history'].set_index('year')['floor_area_Mm2']
+    for k in VARS:
+        y = va[va['variant'] == k].set_index('year')['floor_area_Mm2']
+        if k == 'REF' and not np.allclose(y.values, ref.reindex(y.index).values, rtol=1e-12, atol=0):
+            raise SystemExit('STOP: ED10: the Reference of variants_annual.csv differs from annual.csv.')
+        P.line(a, y.index, y, label=labels[k], **_scen_line(k))
+    P.split(a)
+    a.set_xlim(1991, 2050)
+    a.set_ylim(0, None)
+    a.set_ylabel('Floor area (Mm² per year)')
+    P.panel(a, 'h', 'Floor area built (consented, in scope)')
     ax[8].axis('off')
     h_, l_ = ax[0].get_legend_handles_labels()
     ax[8].legend(h_, l_, loc='center', frameon=False)
     fig.tight_layout()
+    fig.canvas.draw()                                     # the panel b text box must cover no drawn line
+    bb = tb.get_bbox_patch().get_window_extent().transformed(ax[1].transData.inverted())
+    hb = d['panels'][d['order'][1]]['history']
+    if not (bb.x1 < P.HISTORY_SPLIT and bb.y0 > float(np.nanmax(hb.values))):
+        raise SystemExit(f'STOP: ED10 b: the removals text box (x {bb.x0:.1f}-{bb.x1:.1f}, y {bb.y0:.2f}-{bb.y1:.2f}) '
+                         'covers drawn data')
+    h = d['handover']
     S.save_figure(fig, fid,
                   note='Projection 2026–2050 against the 1991–2025 range (grey band); a: in scope and retirement '
-                       'villages; the exceedances are tabulated in outputs/reports/reality_checks.md. h: the 2026 → '
-                       '2027 step of the Reference (2026 observed, 2027 the first model year) against the '
-                       'year-to-year changes in consented floor area, 1992–2025.',
-                  source=['figure_source/D15_reality_checks.json'])
+                       'villages; the exceedances are tabulated in outputs/reports/reality_checks.md. b: Low and High '
+                       'hold a constant rate (Low: the 1991–2023 long-run rate; High: the 2018–2023 rate); removals '
+                       'rise because the stock grows. The Reference rate fades from the 2018–2023 rate to the long-run '
+                       'rate (half-life 10 yr); Very High continues the census trend. History lines: straight segments '
+                       'between annual values (not smoothed; largest difference from the source data '
+                       f'{max(errs.values()):.1g}); b: census-interval rates, constant within each interval. Handover: '
+                       f"the {h['last_observed_year']} → {h['first_model_year']} step of the Reference floor area "
+                       f"({h['last_observed_year']} observed, {h['first_model_year']} the first model year) is "
+                       + P.minus(f"{h['step_pct']:+.1f}%") + ', against year-to-year changes of '
+                       + P.minus(f"{h['hist_min_pct']:+.1f}%") + ' to ' + P.minus(f"{h['hist_max_pct']:+.1f}%")
+                       + ' (median ' + P.minus(f"{h['hist_median_pct']:+.1f}%") + ') in consented floor area, '
+                       '1992–2025.',
+                  source=['figure_source/D15_reality_checks.json', 'baseline/annual.csv', 'baseline/variants_annual.csv'])
 
 
-FIGURES = {'SF6_hindcast': sf6_hindcast, 'SF8_reality_checks': sf8_reality_checks}
+FIGURES = {'SF6_hindcast': sf6_hindcast, 'ED10_reality_checks': ed10_reality_checks}

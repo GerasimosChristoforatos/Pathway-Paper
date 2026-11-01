@@ -9,3 +9,4 @@ ED7,ED7_sobol,ED7,ED7_sobol,same number
 ED8,ED8_shapley_attribution,,,no longer rendered
 ED9,ED9_lever_annual,ED8,ED8_lever_annual,renumbered
 ED10,ED10_rollout_timing,ED9,ED9_rollout_timing,renumbered
+SF8,SF8_reality_checks,ED10,ED10_reality_checks,moved to Extended Data

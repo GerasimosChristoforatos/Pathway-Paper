@@ -20,8 +20,8 @@ On loading, the palette is validated (every group and key present, "#RRGGBB" val
     distance below 10 in normal vision, the convention of tools/palette_check.py. The zones are compared as they show
     on white, at their fixed opacities, with every other key of the figure; they are pale by design (data are drawn
     over them), so zone against zone is checked by their lightness order instead (next item);
-  * a warning if the three zones, composited on white, lose the lightness order within both < within AR only <
-    exceeded (CAM02-UCS J') in normal vision or under any simulated deficiency;
+  * a warning if the two zones, composited on white, lose the lightness order within both < within AR only
+    (CAM02-UCS J') in normal vision or under any simulated deficiency;
   * the colour-vision report of tools/palette_check.py for every group of two or more keys: per group and vision
     type (normal,
     simulated deuteranomaly, protanomaly and tritanomaly at full severity; Machado et al. 2009, colorspacious), the
@@ -48,14 +48,14 @@ SHARED = {'Fig2 (demand bands, materials, life-cycle stages)': {
           'Fig7a/ED4/ED5 (one at a time)': {'one_at_a_time': None},
           # the groups added with the palette coverage
           'SF2b (components and the demand-band parts)': {
-              'components': ('new_households', 'replacement_surge', 'unconsented_additions', 'retirement_villages',
+              'components': ('new_households', 'retirement_villages',
                              'overbuild_absorbed', 'unexplained_building'),
               'demand_bands': ('vacancy', 'net_replacement', 'market_balance')},
-          'ED3/SF3/SF6/SF8 (replacement variants, Reference)': {'replacement_variants': None, 'runs': ('reference',)},
-          'ED6/SF4/SF11 (typologies)': {'typologies': None},
+          'ED3/SF3/SF6/ED10 (replacement variants, Reference)': {'replacement_variants': None, 'runs': ('reference',)},
+          'ED6/SF4/SF10 (typologies)': {'typologies': None},
           'ED7 (Sobol indices)': {'sensitivity_indices': None},
           'SF7 (lag variants)': {'lag_variants': None},
-          'SF15 (released dwellings, release binds)': {'components': ('released_tl',), 'highlights': ('release_binds',)}}
+          'SF14 (released dwellings, release binds)': {'components': ('released_tl',), 'highlights': ('release_binds',)}}
 # pairs of keys that denote the same quantity (identical by design, not a clash): maintenance B2/B4 as a demand band
 # and as a stage, and before / after 2050; the Fig3b column is the Reference's cumulative carbon; soil carbon loss in
 # the material and in the stage panels (the same quantity, the same solid colour)
@@ -65,8 +65,8 @@ SAME_QUANTITY = {frozenset(p) for p in itertools.combinations(_MAINT, 2)} | {
     frozenset({('materials', 'soil_carbon_loss'), ('life_cycle_stages', 'soil_carbon_loss')})}
 CLOSE = 10.0                     # CAM02-UCS distance (tools/palette_check.THRESHOLD)
 # the colour-vision report compares the keys of a group that are drawn together; these groups' keys are
-# each in a different figure (no pair is ever seen together), and released_tl (SF15) never shares SF2b with the other
-# components (the SF15 pairing is in SHARED)
+# each in a different figure (no pair is ever seen together), and released_tl (SF14) never shares SF2b with the other
+# components (the SF14 pairing is in SHARED)
 REPORT_NOT_TOGETHER = {'census_markers', 'validation', 'highlights'}
 REPORT_ALONE = {('components', 'released_tl')}
 
@@ -111,8 +111,8 @@ def check_palette(S):
     ok, J = PC.zone_lightness_order(S)
     if not ok:
         nwarn += 1
-        print('  WARNING boundary zones: on white they no longer fall in lightness within both < within AR only < '
-              "exceeded under every vision type (CAM02-UCS J' normal / deuteranomaly / protanomaly / tritanomaly: "
+        print('  WARNING boundary zones: on white they no longer fall in lightness within both < within AR only '
+              "under every vision type (CAM02-UCS J' normal / deuteranomaly / protanomaly / tritanomaly: "
               + '; '.join(f"{k} " + ' / '.join(f'{x:.1f}' for x in v) for k, v in J.items()) + ')')
     print('\nColour-vision report (tools/palette_check.py method): closest pair per group, CAM02-UCS distance '
           '(same-quantity pairs excluded; the zones as shown on white)')

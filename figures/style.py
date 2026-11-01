@@ -14,10 +14,10 @@ Rules (docs/PALETTE.md):
   * Reference mid grey, the Moderate Pathway pale yellow, the Ambitious Pathway orange, TL a pale sage green (a larger
     circle on point plots); every text is black ink (style.INK), the colour is carried by lines, markers and fills;
   * boundaries: acquired rights (AR) a thin brick-red line, ability to pay (AtP) a thin dark-maroon dotted line, very
-    pale zones below AtP, between AtP and AR and above AR;
+    pale zones below AtP and between AtP and AR, no fill above AR;
   * settings: Moderate solid line / filled marker, Ambitious dashed line / hollow marker;
-  * one typeface (Liberation Sans, metric-compatible with Arial; bundled in fonts/ under
-    the SIL Open Font License, so figures render identically on every machine);
+  * one typeface (Inter, bundled in fonts/ under the SIL Open Font License, so figures render identically on every
+    machine; Liberation Sans, also bundled, is the fallback if the Inter files are missing);
   * print sizes: Nature Cities single column 89 mm, double column 183 mm; text 5-7 pt.
 
 save() writes the formats of the run profile (runprofile.py: light PNG at 200 dpi with a small grey
@@ -25,7 +25,7 @@ footer "LIGHT RUN — n=1000"; full PNG at 600 dpi) with fixed metadata (no soft
 date), so a re-run with the pinned environment reproduces every figure byte for byte. Negative bands keep their
 sign in the data: in time series they are stacked down from zero (positives up from zero, the net a black line);
 in cumulative bars each negative band is an unfilled, unhatched segment outlined in its band colour hanging from the
-top of the positive stack, so the bar ends at the net total (figures/draw.py). Only the surge band is hatched.
+top of the positive stack, so the bar ends at the net total (figures/draw.py). No band is hatched.
 registry() lists every colour of every group.
 """
 import os
@@ -38,10 +38,21 @@ from matplotlib import font_manager
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_DIR = os.path.join(ROOT, 'fonts')
+FONT_FALLBACK = 'Liberation Sans'
 for _f in ('LiberationSans-Regular.ttf', 'LiberationSans-Bold.ttf', 'LiberationSans-Italic.ttf'):
     font_manager.fontManager.addfont(os.path.join(FONT_DIR, _f))
-# Arial where installed; otherwise the bundled metric-compatible Liberation Sans
-FONT = 'Arial' if any(f.name == 'Arial' for f in font_manager.fontManager.ttflist) else 'Liberation Sans'
+# Inter (rsms/inter 4.1, static TTF: Regular, Italic, Bold, Bold Italic; fonts/README.txt); Liberation Sans if missing
+INTER_FILES = ('Inter-Regular.ttf', 'Inter-Italic.ttf', 'Inter-Bold.ttf', 'Inter-BoldItalic.ttf')
+if all(os.path.exists(os.path.join(FONT_DIR, _f)) for _f in INTER_FILES):
+    for _f in INTER_FILES:
+        font_manager.fontManager.addfont(os.path.join(FONT_DIR, _f))
+    # only the bundled files: a system-installed Inter (another version) must not be picked instead
+    font_manager.fontManager.ttflist = [f for f in font_manager.fontManager.ttflist
+                                        if f.name != 'Inter' or os.path.dirname(f.fname) == FONT_DIR]
+    font_manager.fontManager._findfont_cached.cache_clear()
+    FONT = 'Inter'
+else:
+    FONT = FONT_FALLBACK
 
 # ---------------------------------------------------------------------------
 # Sizes (Nature Cities: 89 mm single column, 183 mm double column; text 5-7 pt)
@@ -60,7 +71,7 @@ import runprofile  # noqa: E402
 DPI = int(os.environ.get('PATHWAY_DPI') or runprofile.get('dpi'))   # light 200, full 600; redraw.py --dpi
 
 RC = {
-    'font.family': 'sans-serif', 'font.sans-serif': [FONT], 'font.size': FONT_SIZE,
+    'font.family': 'sans-serif', 'font.sans-serif': [FONT, FONT_FALLBACK], 'font.size': FONT_SIZE,
     'axes.titlesize': FONT_SIZE, 'axes.labelsize': FONT_SIZE, 'axes.titleweight': 'bold',
     'axes.linewidth': LW_THIN, 'axes.spines.top': False, 'axes.spines.right': False,
     'axes.grid': True, 'grid.linewidth': LW_THIN * 0.6, 'grid.color': '#E0E0E0', 'axes.axisbelow': True,
@@ -88,11 +99,11 @@ PALETTE_KEYS = {
     'runs': ('reference', 'moderate', 'ambitious', 'theoretical_limit'),
     'strategies': ('avoid', 'switch', 'improve'),
     'boundaries': ('acquired_rights', 'ability_to_pay'),
-    'boundary_zones': ('within_both', 'within_ar_only', 'exceeded'),
+    'boundary_zones': ('within_both', 'within_ar_only'),
     'cumulative': ('fig3b_cumulative_carbon',),
     'one_at_a_time': ('low_end', 'high_end', 'single_alternative'),
     # every meaning colour of the final figures (tools/palette_coverage.py) and the meaningful fades
-    'components': ('new_households', 'replacement_surge', 'unconsented_additions', 'retirement_villages',
+    'components': ('new_households', 'retirement_villages',
                    'overbuild_absorbed', 'unexplained_building', 'released_tl'),
     'typologies': ('detached', 'townhouses', 'apartments'),
     'replacement_variants': ('low', 'high', 'very_high'),
@@ -101,7 +112,7 @@ PALETTE_KEYS = {
     'lag_variants': ('zero_lag', 'lag_17_months'),
     'validation': ('model_check', 'handover_history', 'handover_step'),
     'highlights': ('model_path_years', 'release_binds'),
-    'opacity': ('zone_within_both', 'zone_within_ar_only', 'zone_exceeded', 'mc_band_90', 'mc_band_50', 'mc_band',
+    'opacity': ('zone_within_both', 'zone_within_ar_only', 'mc_band_90', 'mc_band_50', 'mc_band',
                 'pathway_lines', 'soil_carbon_loss', 'scatter_reference', 'scatter_moderate', 'scatter_ambitious',
                 'scatter_tl', 'typology_histograms', 'space_above_occupancy', 'rollout_reference_cumulative')}
 OPACITY_GROUP = 'opacity'                       # the only group of numbers (0-1), not colours
@@ -172,14 +183,14 @@ MUTED = NEUTRALS['muted']                       # secondary text, leader lines
 
 # boundaries (implemented once here: boundary_zones / boundary_hzones): AR a thin brick-red line,
 # AtP a thin dark-maroon line (dotted, so the two principles stay apart under colour-vision deficiency); the area
-# below AtP a pale blue (within both budgets), between AtP and AR a paler blue (within AR only), above AR the
-# palest pink (boundary exceeded), all at half opacity; the same on annual and cumulative axes. The zones are
+# below AtP a pale blue (within both budgets), between AtP and AR a paler blue (within AR only), nothing above AR
+# (the exceedance is read against the AR line), at half opacity; the same on annual and cumulative axes. The zones are
 # intentionally pale and are told apart by the boundary lines and the legend; as seen on white they still fall
-# strictly in lightness (within both < within AR only < exceeded) under every simulated deficiency
+# strictly in lightness (within both < within AR only) under every simulated deficiency
 # (tools/palette_check.py; docs/PALETTE.md)
 # the colours from palette.toml [boundaries] and [boundary_zones]; line styles, widths and the zone
 # opacities (ZONE_ALPHA) stay fixed here. redraw.py and tools/palette_check.py warn when the zones, composited on white
-# at these opacities, lose the lightness order within both < within AR only < exceeded (CAM02-UCS J').
+# at these opacities, lose the lightness order within both < within AR only (CAM02-UCS J').
 AR = _BD['acquired_rights']
 ATP = _BD['ability_to_pay']
 LW_BOUNDARY = 0.9
@@ -187,14 +198,12 @@ LW_BOUNDARY = 0.9
 ATP_LS = (0, (1, 1.3))                          # dotted ·····
 BOUNDARY = {'AR': dict(color=AR, ls='-', lw=LW_BOUNDARY, label='Acquired rights (AR)'),
             'AtP': dict(color=ATP, ls=ATP_LS, lw=LW_BOUNDARY, label='Ability to pay (AtP)')}
-ZONE_ALPHA = {'within_both': OPACITY['zone_within_both'], 'within_ar': OPACITY['zone_within_ar_only'],
-              'exceeded': OPACITY['zone_exceeded']}          # palette.toml [opacity]
+ZONE_ALPHA = {'within_both': OPACITY['zone_within_both'], 'within_ar': OPACITY['zone_within_ar_only']}   # [opacity]
 ZONE = {'within_both': dict(color=_ZN['within_both'], alpha=ZONE_ALPHA['within_both'],
                             label='Within both budgets (below AtP)'),
         'within_ar': dict(color=_ZN['within_ar_only'], alpha=ZONE_ALPHA['within_ar'],
-                          label='Within AR only (between AtP and AR)'),
-        'exceeded': dict(color=_ZN['exceeded'], alpha=ZONE_ALPHA['exceeded'], label='Boundary exceeded (above AR)')}
-# the exceeded zone stays the lightest zone (tools/palette_check.py)
+                          label='Within AR only (between AtP and AR)')}
+# above AR no fill is drawn (the area beyond the AR line is the exceedance; the AR line marks it)
 ZONE_GID = 'boundary_zone'
 # two accent colours for lines that are not boundaries (household formation, floor area)
 ACCENT_ORANGE = '#C2571A'      # not drawn in a final figure (each meaning has its palette key below)
@@ -205,16 +214,16 @@ OBSERVED_TOTAL = _CEN['observed_total']         # Fig1 observed totals without a
 MODEL_PATH_YEARS = _HL['model_path_years']      # SF1b 2024-25: the model's household-size path, not observed
 LAG_VARIANT = {0: _LAG['zero_lag'], 17: _LAG['lag_17_months']}           # SF7
 VALIDATION = {'model_check': _VAL['model_check'], 'handover_history': _VAL['handover_history'],
-              'handover_step': _VAL['handover_step']}                    # SF6 2027 check, SF8 handover
+              'handover_step': _VAL['handover_step']}                    # SF6 2027 check, ED10 handover
 NEW_HOUSEHOLDS = _CMP['new_households']         # SF2b
 RETIREMENT_VILLAGES = _CMP['retirement_villages']   # SF2b (out of scope)
 
 # runs (palette.toml [runs])
 REFERENCE = _RUN['reference']
-NEUTRAL_DARK = NEUTRALS['neutral_dark']   # a dark neutral grey (not the Reference): ED6 histograms, SF15 bars
+NEUTRAL_DARK = NEUTRALS['neutral_dark']   # a dark neutral grey (not the Reference): ED6 histograms, SF14 bars
 # the Fig3b 2026-2050 cumulative column and its legend patch, palette.toml [cumulative]
 CUMULATIVE_FIG3B = _CUM['fig3b_cumulative_carbon']
-# the 'release constraint binds' markers of SF15 (not a boundary; were S.AR): a fixed literal
+# the 'release constraint binds' markers of SF14 (not a boundary; were S.AR): a fixed literal
 RELEASE_BINDS = _HL['release_binds']     # palette.toml [highlights]
 # TL a pale sage green, >= 10 (CAM02-UCS) from the other runs under every simulated deficiency (tools/palette_check.py)
 TL = _RUN['theoretical_limit']
@@ -230,8 +239,7 @@ MC_BAND = dict(color=REFERENCE, alpha=OPACITY['mc_band'], lw=0)          # Monte
 # Every group shown together keeps a minimum CAM02-UCS distance of 10 under every simulated deficiency, the boundary
 # zones excepted (tools/palette_check.py; docs/PALETTE.md). The strategies: S1 Avoid burnt orange, S2 Switch plum,
 # S3 Improve steel blue; the deep magenta P2_ANCHOR is the 2026 overbuild band. A lever is drawn in its strategy colour (palette.toml [strategies]) and told apart by marker (LEVER_MARKER).
-LEVER_MARKER = ('o', 's', '^', 'D', 'v')          # the k-th lever within its strategy (SF10 lambda sweep)
-SURGE_FACE = _CMP['replacement_surge']  # the Recent replacement surge face (palette.toml [components])
+LEVER_MARKER = ('o', 's', '^', 'D', 'v')          # the k-th lever within its strategy (SF9 lambda sweep)
 P2_ANCHOR = _DB['market_balance']       # the detailed band '2026 overbuild' (SF2b, SF5); the market-balance key
 # the typology colours
 TYPOLOGY = {'Detached': _TYP['detached'], 'Townhouses': _TYP['townhouses'],
@@ -247,7 +255,8 @@ SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
 
 # demand bands, bottom to top: (colour, hatch), coloured by the lever that targets them; labels in naming.BANDS.
 # Population growth (untargeted) a deep violet, solid;
-# the Recent replacement surge keeps a fine, light hatch (both replacement bands are targeted by L3)
+# demolition replacement, the recent replacement surge and unconsented additions are drawn as one band, Net replacement
+# (the census measures only the net; the projection's split is not identified from data): they take its colour
 # the seven display bands of the figures (bands.DISPLAY) take palette.toml [demand_bands]; the detailed
 # sub-bands drawn on their own in SF2c / SF5 (2026 overbuild, overbuild absorbed, demolition replacement, unconsented
 # additions, surge, ...) keep fixed literals. growth, household size, extra space, vacancy and maintenance are both a
@@ -255,7 +264,7 @@ SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
 UNTARGETED_HATCH = None
 GROWTH = _DB['population_growth']
 REPLACEMENT = _DB['net_replacement']    # demolition replacement (SF2b); the net-replacement key
-HATCH_LIGHT = '#FFFFFF'                 # the fine hatch of the surge band: drawn in a light colour on its light face
+HATCH_LIGHT = '#FFFFFF'                 # a light hatch colour (Fig1 pipeline years)
 DISPLAY_BAND = {'growth': _DB['population_growth'], 'smaller_households': _DB['household_size_change'],
                 'extra_space': _DB['extra_space'], 'vacancy': _DB['vacancy'],
                 'net_replacement': _DB['net_replacement'], 'market_balance': _DB['market_balance'],
@@ -267,16 +276,16 @@ BAND = {'growth': (GROWTH, None),
         'overbuild_2026': (P2_ANCHOR, None),
         'overbuild_absorbed': (_CMP['overbuild_absorbed'], None),      # palette.toml [components]
         'replacement': (REPLACEMENT, None),
-        'unconsented': (_CMP['unconsented_additions'], None),          # palette.toml [components]
-        'redevelopment': (SURGE_FACE, '\\\\\\\\'),     # fine hatch, drawn light (BAND_HATCHCOLOR); the only hatch
-        'released_tl': (_CMP['released_tl'], None),   # palette.toml [components]; SF15 re-occupation
+        'unconsented': (REPLACEMENT, None),          # a part of Net replacement (not drawn on its own)
+        'redevelopment': (REPLACEMENT, None),        # a part of Net replacement (not drawn on its own)
+        'released_tl': (_CMP['released_tl'], None),   # palette.toml [components]; SF14 re-occupation
         # 'Vacancy released' (negative, outline; the L2 vacancy family, darker). 'Surplus kept vacant (2050)' has no
         # colour here (TL only, never drawn in a final figure)
         'vacancy_released': ('#481870', None),
         'maintenance': (DISPLAY_BAND['maintenance'], None)}
 BAND_ORDER = list(BAND)
 NEGATIVE_BANDS = ('overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl')
-BAND_HATCHCOLOR = {'redevelopment': HATCH_LIGHT}
+BAND_HATCHCOLOR = {}                    # no band is hatched
 
 
 def band_colour(bid):
@@ -321,7 +330,7 @@ MATERIAL = [('TIMBER', 'Timber', _MAT['timber']), ('STEEL', 'Steel', _MAT['steel
             ('PLASTICS & PAINT', 'Plastics & paint', _MAT['plastics_paint']),
             ('PLASTERBOARD', 'Plasterboard', _MAT['plasterboard']), ('OTHERS', 'Others', _MAT['others']),
             ('SOIL', 'Soil carbon loss', _MAT['soil_carbon_loss'])]     # palette.toml [materials]
-SOIL = dict(alpha=OPACITY['soil_carbon_loss'], hatch=None, hatchcolor=None)   # [opacity]          # only the surge band is hatched
+SOIL = dict(alpha=OPACITY['soil_carbon_loss'], hatch=None, hatchcolor=None)   # [opacity]
 
 # stacked bars and areas: no white borders between segments. Every segment's edge is its own face
 # colour at LW_SEAM (it covers the antialiasing seam between adjacent segments without drawing a line); hatches are
@@ -435,8 +444,6 @@ def registry():
 # ---------------------------------------------------------------------------
 # Planetary-boundary styling (every figure with boundaries: paper, Extended Data, diagnostics, key figures)
 # ---------------------------------------------------------------------------
-_ZONE_TOP = 1e15                   # the 'exceeded' zone extends far above any axis (clipped by the axes)
-
 
 def _keep_limits(ax, draw):
     """Draw the zones without changing the data limits (autoscaling follows the data, not the zones)."""
@@ -448,8 +455,8 @@ def _keep_limits(ax, draw):
 
 
 def boundary_zones(ax, x, ar, atp, lines=True, label=True):
-    """Annual (or cumulative-by-year) boundaries: the pale zones below AtP, between AtP and AR and above AR (the
-    lightest), and the two thin boundary lines. Zones start just above zero
+    """Annual (or cumulative-by-year) boundaries: the pale zones below AtP and between AtP and AR (nothing is
+    filled above AR), and the two thin boundary lines. Zones start just above zero
     (a positive floor, so log axes work) and are tagged ZONE_GID for the figure audit; lines are tagged as
     boundaries (figaudit.BOUNDARY)."""
     from figures import audit as figaudit
@@ -458,8 +465,7 @@ def boundary_zones(ax, x, ar, atp, lines=True, label=True):
     floor = 1e-6 * float(np.nanmin(atp))
 
     def draw():
-        for lo, hi, key in ((np.full(len(x), floor), atp, 'within_both'), (atp, ar, 'within_ar'),
-                            (ar, np.full(len(x), _ZONE_TOP), 'exceeded')):
+        for lo, hi, key in ((np.full(len(x), floor), atp, 'within_both'), (atp, ar, 'within_ar')):
             z = dict(ZONE[key])
             z.pop('label')
             ax.fill_between(x, lo, hi, lw=0, zorder=0, gid=ZONE_GID, **z)
@@ -477,7 +483,7 @@ def boundary_hzones(ax, ar, atp, lines=True, label=True, xspan=None):
     from figures import audit as figaudit
 
     def draw():
-        for lo, hi, key in ((1e-6 * atp, atp, 'within_both'), (atp, ar, 'within_ar'), (ar, _ZONE_TOP, 'exceeded')):
+        for lo, hi, key in ((1e-6 * atp, atp, 'within_both'), (atp, ar, 'within_ar')):
             z = dict(ZONE[key])
             z.pop('label')
             if xspan is None:
@@ -496,7 +502,7 @@ def boundary_hzones(ax, ar, atp, lines=True, label=True, xspan=None):
 
 
 def zone_handles():
-    """Legend handles of the three boundary zones."""
+    """Legend handles of the two boundary zones."""
     from matplotlib.patches import Patch
     return [Patch(facecolor=z['color'], alpha=z['alpha'], edgecolor='none', label=z['label']) for z in ZONE.values()]
 
@@ -509,12 +515,12 @@ def boundary_handles():
 
 def boundary_field(ax, X, Y, Z, ar, atp, lines=True):
     """A field of cumulative carbon (Z, in any unit where the budgets are ar and atp, e.g. LoE AR: ar = 1,
-    atp = B_AtP / B_AR) on a plane: the three zones as filled regions and the two budgets as contour lines
+    atp = B_AtP / B_AR) on a plane: the two zones below AR as filled regions (none above AR) and the two budgets as contour lines
     (the solution space). Only the levels inside the range of Z are drawn."""
     from figures import audit as figaudit
     zmin, zmax = float(np.nanmin(Z)), float(np.nanmax(Z))
-    edges = [min(zmin, atp) - 1.0, atp, ar, max(zmax, ar) + 1.0]
-    keys = ('within_both', 'within_ar', 'exceeded')
+    edges = [min(zmin, atp) - 1.0, atp, ar]
+    keys = ('within_both', 'within_ar')
     for (lo, hi), key in zip(zip(edges[:-1], edges[1:]), keys):
         if hi <= zmin or lo >= zmax:
             continue

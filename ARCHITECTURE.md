@@ -5,7 +5,7 @@ code or New Zealand housing data. It describes what each script reads, what it
 calculates and in what order, and what it writes. Headline numbers are not
 repeated here: they are generated into `outputs/reports/RESULTS.md` and
 `outputs/data/metrics.json`. Every figure and table (the main figures Fig1–Fig7, the
-Extended Data ED1–ED9 and the table EDT1, the Supplementary SF1–SF15 and the table ST1)
+Extended Data ED1–ED10 and the table EDT1, the Supplementary SF1–SF14 and the table ST1)
 is listed with its caption, data sources and run note in `outputs/FIGURES.md`. Every
 setting, with its basis (data, literature, author decision, judgement), is in
 `outputs/reports/ASSUMPTIONS.md`; the methods as implemented are in
@@ -86,7 +86,7 @@ flowchart LR
     SENS & BND & PW --> ST[tools/sensitivity_tables.py]
     PROJ & DIAG & SENS & MC & VAL & BND & PW & PMC & ST --> DATA[("outputs/data/<br/>CSV, JSON, figure_source/")]
     DATA --> REP[tools/ reports, methods, run_meta.json]
-    DATA --> FIG["python -m figures<br/>Fig1-Fig7, ED1-ED9, EDT1, SF1-SF15, ST1;<br/>FIGURES.md"]
+    DATA --> FIG["python -m figures<br/>Fig1-Fig7, ED1-ED10, EDT1, SF1-SF14, ST1;<br/>FIGURES.md"]
     FIG --> IDX[tools/check_outputs.py, indexes.py, tests]
 ```
 
@@ -417,7 +417,7 @@ the carbon-factor and soil-order bounds are reported separately (one-at-a-time r
 ED4; variants, ED3). Writes `outputs/data/montecarlo/` (`draws_<variant>.csv`,
 `summary_<variant>.csv`, `annual_<variant>.csv`, the convergence of the percentiles
 and the input distributions of the Reference, and `sobol_REF.csv` in the full
-profile); no figure (ED6, ED7, SF12: `figures/montecarlo.py`).
+profile); no figure (ED6, ED7, SF11: `figures/montecarlo.py`).
 
 ## 8. Validation and reports
 
@@ -687,7 +687,7 @@ multiplier, completion rate, carbon-factor index, replacement half-life): SRC an
 bootstrap intervals (500 replicates in the light profile, 2,000 in the full),
 LOWESS and least-squares fits, and the conditional TL (Firth penalised-likelihood
 logistic regression of P(TL LoE AR ≤ 1), profile intervals; the maximum-likelihood
-estimate does not exist under separation) (Fig7b, SF9, SF13, SF14).
+estimate does not exist under separation) (Fig7b, SF8, SF12, SF13).
 
 **Grouped sensitivity tables (`tools/sensitivity_tables.py`).** The one-at-a-time
 rows grouped by type of change, from the existing data files; the new runs (the Pathway
@@ -771,8 +771,8 @@ writes the same tree under `outputs/_light/`.
 | folder | content |
 |---|---|
 | `outputs/paper_main/` | the main figures Fig1–Fig7 (`figure_plan.PAPER_MAIN`) |
-| `outputs/paper_extended/` | the Extended Data ED1–ED9 and the table EDT1, lever levels by typology (`figure_plan.PAPER_EXTENDED`, `EXTENDED_TABLES`) |
-| `outputs/supplementary/<group>/` | the Supplementary figures SF1–SF15 and the table ST1 (`figure_plan.SUPPLEMENTARY`, `SUPPLEMENTARY_TABLES`) |
+| `outputs/paper_extended/` | the Extended Data ED1–ED10 and the table EDT1, lever levels by typology (`figure_plan.PAPER_EXTENDED`, `EXTENDED_TABLES`) |
+| `outputs/supplementary/<group>/` | the Supplementary figures SF1–SF14 and the table ST1 (`figure_plan.SUPPLEMENTARY`, `SUPPLEMENTARY_TABLES`) |
 | `outputs/diagnostics/_audit/` | the figure audit records |
 | `outputs/FIGURES.md` | every figure with its file, data sources, caption and audit note (`figures/index.py`) |
 | `outputs/figure_manifest.csv` | every figure file with its source data (`tools/figure_manifest.py`) |
@@ -805,7 +805,7 @@ figures` draws every figure, `python -m figures <file id> …` the ones named).
   material and stage; Fig3 the Reference against the boundaries; Fig4 the pathways
   against the boundaries and the waterfalls; Fig5 the solution space; Fig6 the
   Shapley values; Fig7 uncertainty: the tornado and the Monte Carlo), `PAPER_EXTENDED`
-  (ED1–ED9), `SUPPLEMENTARY` (SF1–SF15), `EXTENDED_TABLES` (EDT1) and
+  (ED1–ED10), `SUPPLEMENTARY` (SF1–SF14), `EXTENDED_TABLES` (EDT1) and
   `SUPPLEMENTARY_TABLES` (ST1), each with its title, drawing module and data sources;
   `FULL_ONLY` (figures drawn only in the full profile: ED7, the Sobol indices);
   `PB_FIGURES` (figures with a planetary boundary, which must show the zones);

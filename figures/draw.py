@@ -468,6 +468,8 @@ def tornado_rows(groups, rows, central):
 
 # a thin white halo under an intermediate-case tick, so it stays visible on the dark high-end bars
 TICK_HALO = [matplotlib.patheffects.withStroke(linewidth=S.LW_THIN + 1.0, foreground='white')]
+# the intermediate-case name (e.g. 'High') can sit over the central line: a white halo keeps it legible
+LABEL_HALO = [matplotlib.patheffects.withStroke(linewidth=1.5, foreground='white')]
 
 
 def tornado(ax, order, central, label, height=0.62, header_fs=None, headers=True):
@@ -500,7 +502,8 @@ def tornado(ax, order, central, label, height=0.62, header_fs=None, headers=True
                     ax.barh(y, r[key] - central, left=central, height=height, **S.fill(col))
             for name, v in r.get('ticks', {}).items():
                 ax.plot([v, v], [y - height / 2, y + height / 2], color=S.INK, lw=S.LW_THIN, path_effects=TICK_HALO)
-                ax.text(v, y + height / 2 + 0.02, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
+                ax.text(v, y + height / 2 + 0.06, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK,
+                        path_effects=LABEL_HALO, zorder=5)
         ys.append(y)
         labels.append(label(r['id']))
     ax.axvline(central, color=S.INK, lw=S.LW_THIN)

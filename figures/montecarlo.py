@@ -8,7 +8,7 @@ from figures import draw as P
 from figures import style as S
 
 
-def sf12_mc_convergence():
+def sf11_mc_convergence():
     c = D.csv('montecarlo/convergence_REF.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 62))
     for a, o, letter, unit in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab', ['kt CO₂e', 'Mm²']):
@@ -25,7 +25,7 @@ def sf12_mc_convergence():
     h, lab = ax[0].get_legend_handles_labels()                 # one legend below, clear of the lines
     fig.legend(h, lab, loc='lower center', ncol=4, fontsize=S.FONT_SMALL, frameon=False)
     fig.tight_layout(rect=(0, 0.08, 1, 1))
-    S.save_figure(fig, 'SF12_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
+    S.save_figure(fig, 'SF11_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
                   source=['montecarlo/convergence_REF.csv'])
 
 
@@ -64,7 +64,7 @@ def ed6_mc_input_distributions():
         for k, x in enumerate(np.percentile(v, [5, 50, 95])):
             a.axvline(x, color=S.TYPOLOGY[t], lw=S.LW_THIN, ls='-' if k == 1 else ':')
     a.set_title(N.MC_INPUT['carbon'], fontsize=S.FONT_SMALL, loc='left')
-    a.set_xlabel('A1–A3 factor (kg CO₂e per m², 2025)', fontsize=S.FONT_MIN + 0.5)
+    a.set_xlabel('A1–A3 materials factor (kg CO₂e per m², 2025)', fontsize=S.FONT_MIN + 0.5)
     a.legend(fontsize=S.FONT_MIN, frameon=False, loc='upper right')
     for a in ax:
         a.tick_params(labelsize=S.FONT_MIN)
@@ -74,12 +74,26 @@ def ed6_mc_input_distributions():
                         Line2D([0], [0], color=S.INK, lw=S.LW_THIN, ls=':', label='5th / 95th percentile')],
                loc='lower center', ncol=2, frameon=False, fontsize=S.FONT_SMALL, bbox_to_anchor=(0.5, 0.0))
     fig.tight_layout(rect=(0, 0.1, 1, 1))
+    # the apartments: whole embodied factor and the one independent case (factors_typology.csv, factors_building.csv)
+    tf = D.csv('factors/factors_typology.csv').set_index('Typology')
+    bf = D.csv('factors/factors_building.csv')
+    ap = bf[(bf['Typology'] == 'Apartments') & bf['duplicate_of'].isna()]
+    if len(ap) != 1 or int(tf.loc['Apartments', 'n_independent']) != 1:
+        raise SystemExit('STOP: ED6: the apartments no longer rest on one independent case study; rewrite the note.')
+    ap_case = float(ap['A1-A3'].iloc[0])
+    ap_med = float(np.median(cf.loc[cf['typology'] == 'Apartments', 'a1a3_kg_per_m2']))
+    if not ap_med < ap_case:
+        raise SystemExit('STOP: ED6: the apartments median is not below the case value; rewrite the note.')
     S.save_figure(fig, 'ED6_mc_input_distributions',
                   note=f'{len(dr):,} Latin hypercube draws. Population: the 2050 New Zealand population of each draw '
                        '(the sampled standard-normal score mapped through the Stats NZ percentiles); carbon factors: the '
-                       'pooled A1-A3 factor of each draw by typology.',
+                       'pooled A1-A3 factor of each draw by typology. A1–A3 only (whole embodied A1–C4 is higher: '
+                       f"apartments {tf.loc['Apartments', 'embodied_materials']:.0f} kg/m²). Apartments rest on one "
+                       f'independent case study ({ap_case:.0f} kg/m² A1–A3) with a mean-preserving lognormal spread, so '
+                       f'their median ({ap_med:.0f} kg/m²) lies slightly below the case value.',
                   source=['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv',
-                          'montecarlo/carbon_factors_REF.csv', 'pathways/montecarlo_draws.csv'])
+                          'montecarlo/carbon_factors_REF.csv', 'pathways/montecarlo_draws.csv',
+                          'factors/factors_typology.csv', 'factors/factors_building.csv'])
 
 
 def ed7_sobol():
@@ -110,7 +124,7 @@ def ed7_sobol():
                   source=['montecarlo/sobol_REF.csv'])
 
 
-def sf13_pathway_mc():
+def sf12_pathway_mc():
     a = D.csv('pathways/montecarlo_annual.csv')
     s = D.csv('pathways/montecarlo_summary.csv')
     runs = [('REF', N.SCENARIOS['REF'], S.REFERENCE),                      # the run colours of Fig3 / Fig4
@@ -122,7 +136,7 @@ def sf13_pathway_mc():
         t = a[a['run'] == r]
         yr = t['year'].to_numpy(float)
         xf, lo, hi, _ = P.pchip_band(yr, t['carbon_kt_p5'].to_numpy(float), t['carbon_kt_p50'].to_numpy(float),
-                                     t['carbon_kt_p95'].to_numpy(float), P.series_breaks(), name=f'SF15 {r}')
+                                     t['carbon_kt_p95'].to_numpy(float), P.series_breaks(), name=f'SF14 {r}')
         ax.fill_between(xf, lo, hi, color=col, alpha=S.OPACITY['mc_band'], lw=0)
         P.line(ax, yr, t['carbon_kt_p50'], color=col, lw=S.LW_BOLD, label=f'{lab} (median, 5th–95th percentile)')
     ax.set_xlim(2026, 2050)
@@ -131,10 +145,10 @@ def sf13_pathway_mc():
     ax.legend(fontsize=S.FONT_SMALL, frameon=False)
     fig.tight_layout()
     p = s[(s['quantity'] == 'LoE_AR')].set_index('run')['probability_LoE_at_most_1']
-    S.save_figure(fig, 'SF13_pathway_mc', note='P(cumulative LoE of AR <= 1): ' + ', '.join(
+    S.save_figure(fig, 'SF12_pathway_mc', note='P(cumulative LoE of AR <= 1): ' + ', '.join(
         f'{k} {v:.3f}' for k, v in p.items()) + '.', source=['pathways/montecarlo_annual.csv',
                                                             'pathways/montecarlo_summary.csv'])
 
 
 FIGURES = {'ED6_mc_input_distributions': ed6_mc_input_distributions, 'ED7_sobol': ed7_sobol,
-           'SF12_mc_convergence': sf12_mc_convergence, 'SF13_pathway_mc': sf13_pathway_mc}
+           'SF11_mc_convergence': sf11_mc_convergence, 'SF12_pathway_mc': sf12_pathway_mc}

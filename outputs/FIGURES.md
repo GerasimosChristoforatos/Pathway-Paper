@@ -105,8 +105,8 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 **ED6 Monte Carlo input distributions**
 
 - Files: `paper_extended/ED6_mc_input_distributions.png`
-- Data: `data/montecarlo/draws_REF.csv`, `data/montecarlo/input_distributions_REF.csv`, `data/montecarlo/carbon_factors_REF.csv`, `data/pathways/montecarlo_draws.csv`
-- This run: 5,000 Latin hypercube draws. Population: the 2050 New Zealand population of each draw (the sampled standard-normal score mapped through the Stats NZ percentiles); carbon factors: the pooled A1-A3 factor of each draw by typology.
+- Data: `data/montecarlo/draws_REF.csv`, `data/montecarlo/input_distributions_REF.csv`, `data/montecarlo/carbon_factors_REF.csv`, `data/pathways/montecarlo_draws.csv`, `data/factors/factors_typology.csv`, `data/factors/factors_building.csv`
+- This run: 5,000 Latin hypercube draws. Population: the 2050 New Zealand population of each draw (the sampled standard-normal score mapped through the Stats NZ percentiles); carbon factors: the pooled A1-A3 factor of each draw by typology. A1–A3 only (whole embodied A1–C4 is higher: apartments 610 kg/m²). Apartments rest on one independent case study (444 kg/m² A1–A3) with a mean-preserving lognormal spread, so their median (434 kg/m²) lies slightly below the case value.
 
 ### ED7_sobol
 
@@ -132,6 +132,14 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
 - This run: (c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 13,737, Moderate Pathway 14,302, Moderate Pathway, full roll-out by 2045 (sensitivity) 15,395, Ambitious Pathway, full roll-out by 2030 (sensitivity) 9,350, Ambitious Pathway 10,267, Ambitious Pathway, full roll-out by 2045 (sensitivity) 12,091; Reference 19,761.
 
+### ED10_reality_checks
+
+**ED10 Reality checks: the projection against the 1991-2025 range**
+
+- Files: `paper_extended/ED10_reality_checks.png`
+- Data: `data/figure_source/D15_reality_checks.json`, `data/baseline/annual.csv`, `data/baseline/variants_annual.csv`
+- This run: Projection 2026–2050 against the 1991–2025 range (grey band); a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. b: Low and High hold a constant rate (Low: the 1991–2023 long-run rate; High: the 2018–2023 rate); removals rise because the stock grows. The Reference rate fades from the 2018–2023 rate to the long-run rate (half-life 10 yr); Very High continues the census trend. History lines: straight segments between annual values (not smoothed; largest difference from the source data 0); b: census-interval rates, constant within each interval. Handover: the 2027 → 2028 step of the Reference floor area (2027 observed, 2028 the first model year) is −18.2%, against year-to-year changes of −39.8% to +27.8% (median +3.0%) in consented floor area, 1992–2025.
+
 ### EDT1_levels_by_typology
 
 **EDT1 Lever levels by typology: Moderate, Ambitious and TL** (table)
@@ -154,8 +162,8 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 **SF2 Vacancy, dwellings per year by component and the vacancy definition**
 
 - Files: `supplementary/calibration/SF2_stock_vacancy.png`
-- Data: `data/figure_source/D05_stock_and_vacancy.json`, `data/figure_source/D06_vacancy_definition.json`
-- This run: a: The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). c: the unconsented additions each vacancy definition requires to close the stock identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. b: History: one column per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. The 2024–2025 column (marked †): households consent-derived. Pipeline years 2026, 2027: annual columns; projection from 2028: annual stacked areas. In the pipeline years the line is the sum of the components (the stock-identity count: observed building less the modelled retirement-village share); the in-scope floor area divided by the dwelling size held at its 2023–2025 mean gives 2026: 30,045 (−51); 2027: 35,540 (−801) (the pipeline floor area is observed, the dwelling size held). History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the previous year's stock, the quantity the model uses (2024–2025: the latest rate carried). Projection: demolition replacement, unconsented additions (negative), the recent replacement surge, retirement villages (negative), the 2026 overbuild and the overbuild absorbed (negative payback). Positive parts are stacked up from zero and negative parts down from zero, all solid (no outlines, hatching or fades); up + down = the net of every column and year (checked). The line is the annual dwellings built (in scope), straight between annual values; the grey caps are its census-interval means (equal to the column nets, checked). Unexplained building (its value per interval in the row at the top, thousand dwellings per year): building not explained by household formation, vacancy and census-measured replacement: redevelopment not captured by the census counts, error in the household estimates, or residual; it may be negative.
+- Data: `data/figure_source/D05_stock_and_vacancy.json`, `data/figure_source/D06_vacancy_definition.json`, `data/baseline/scenarios.json`
+- This run: a: The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). c: the unconsented additions each vacancy definition requires to close the stock identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. b: History: one column per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. The 2024–2025 column (marked †): households consent-derived. Pipeline years 2026, 2027: annual columns; projection from 2028: annual stacked areas. In the pipeline years the line is the sum of the components (the stock-identity count: observed building less the modelled retirement-village share); the in-scope floor area divided by the dwelling size held at its 2023–2025 mean gives 2026: 30,045 (−51); 2027: 35,540 (−801) (the pipeline floor area is observed, the dwelling size held). History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the previous year's stock, the quantity the model uses (2024–2025: the latest rate carried). Projection: net replacement, retirement villages (negative), the 2026 overbuild and the overbuild absorbed (negative payback). Net replacement = demolition − unconsented additions (+ the recent surge in the Reference); the census measures only the net. The projection's split (demolition at the BRANZ rate, 0.135%/yr; the calibrated residual as unconsented additions, −0.076%/yr; the surge) is not identified from data and is not drawn. Positive parts are stacked up from zero and negative parts down from zero, all solid (no outlines, hatching or fades); up + down = the net of every column and year (checked). The line is the annual dwellings built (in scope), straight between annual values; the grey caps are its census-interval means (equal to the column nets, checked). Unexplained building (its value per interval in the row at the top, thousand dwellings per year): building not explained by household formation, vacancy and census-measured replacement: redevelopment not captured by the census counts, error in the household estimates, or residual; it may be negative.
 
 ### SF3_census_replacement_rates
 
@@ -197,67 +205,59 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 - Data: `data/diagnostics/lag_comparison_annual.csv`, `data/diagnostics/lag_comparison_summary.json`
 - This run: All runs use identical source files and demographic paths. The like-for-like zero-lag run holds the forward net replacement at the 17-month calibration (2018-2023 rate 0.173%/yr), so it differs from the 17-month run only in the timing of building. The recalibrated zero-lag run (grey, context) re-estimates net replacement from the census counts with zero-lag timing (0.301%/yr with the census under-construction correction); its higher net replacement in panel c is that recalibration, not the timing of building. Cumulative net replacement 2026-2050: 8.68 Mm² (zero lag, held), 8.95 Mm² (17 months), 14.66 Mm² (zero lag, recalibrated). Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; the 17-month run uses complete observed consent cohorts for 2026 and 2027.
 
-### SF8_reality_checks
+### SF8_prcc
 
-**SF8 The projection against the 1991-2025 range and the observed -> model handover**
+**SF8 Monte Carlo sensitivity: partial rank correlation of each input, Reference, Moderate Pathway and TL**
 
-- Files: `supplementary/validation/SF8_reality_checks.png`
-- Data: `data/figure_source/D15_reality_checks.json`
-- This run: Projection 2026–2050 against the 1991–2025 range (grey band); a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. h: the 2026 → 2027 step of the Reference (2026 observed, 2027 the first model year) against the year-to-year changes in consented floor area, 1992–2025.
-
-### SF9_prcc
-
-**SF9 Monte Carlo sensitivity: partial rank correlation of each input, Reference, Moderate Pathway and TL**
-
-- Files: `supplementary/sensitivity/SF9_prcc.png`
+- Files: `supplementary/sensitivity/SF8_prcc.png`
 - Data: `data/pathways/montecarlo_importance.csv`
 - This run: Bootstrap resamples: 2000; SRC and R² in the data file.
 
-### SF10_lambda_sweep
+### SF9_lambda_sweep
 
-**SF10 Each lever from the Reference to Ambitious (lambda sweep) and its Theoretical Limit**
+**SF9 Each lever from the Reference to Ambitious (lambda sweep) and its Theoretical Limit**
 
-- Files: `supplementary/sensitivity/SF10_lambda_sweep.png`
+- Files: `supplementary/sensitivity/SF9_lambda_sweep.png`
 - Data: `data/pathways/lambda_sweep.csv`
 - This run: L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant s_ref against the year-varying replacement share.
 
-### SF11_hd_estimators
+### SF10_hd_estimators
 
-**SF11 Harrell-Davis estimators of L5 and L8 with bootstrap intervals**
+**SF10 Harrell-Davis estimators of L5 and L8 with bootstrap intervals**
 
-- Files: `supplementary/sensitivity/SF11_hd_estimators.png`
+- Files: `supplementary/sensitivity/SF10_hd_estimators.png`
 - Data: `data/pathways/levers.json`
 - This run: L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).
 
-### SF12_mc_convergence
+### SF11_mc_convergence
 
-**SF12 Monte Carlo convergence of the 2026-2050 percentiles**
+**SF11 Monte Carlo convergence of the 2026-2050 percentiles**
 
-- Files: `supplementary/montecarlo/SF12_mc_convergence.png`
+- Files: `supplementary/montecarlo/SF11_mc_convergence.png`
 - Data: `data/montecarlo/convergence_REF.csv`
 - This run: Percentiles over the first n draws (largest n = 5,000).
 
-### SF13_pathway_mc
+### SF12_pathway_mc
 
-**SF13 Monte Carlo: annual carbon of the Reference, the Pathways and TL (median, 5th-95th)**
+**SF12 Monte Carlo: annual carbon of the Reference, the Pathways and TL (median, 5th-95th)**
 
-- Files: `supplementary/montecarlo/SF13_pathway_mc.png`
+- Files: `supplementary/montecarlo/SF12_pathway_mc.png`
 - Data: `data/pathways/montecarlo_annual.csv`, `data/pathways/montecarlo_summary.csv`
 - This run: P(cumulative LoE of AR <= 1): REF 0.000, pathway_moderate 0.000, pathway_ambitious 0.000, TL 0.499, TL_from2027 0.978.
 
-### SF14_conditional_tl
+### SF13_conditional_tl
 
-**SF14 When does TL stay within AR? By population quintile and the population threshold**
+**SF13 When does TL stay within AR? By population quintile and the population threshold**
 
-- Files: `supplementary/montecarlo/SF14_conditional_tl.png`
+- Files: `supplementary/montecarlo/SF13_conditional_tl.png`
 - Data: `data/pathways/montecarlo_conditional_tl.csv`, `data/pathways/montecarlo_conditional_tl.json`
 - This run: P(within AR) = 0.499 (Wilson 0.485-0.513); (b) threshold 6.61 M (95% CI 6.61-6.62 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
-### SF15_tl_dwellings
+### SF14_tl_dwellings
 
-**SF15 The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year**
+**SF14 The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year**
 
-- Files: `supplementary/pathways/SF15_tl_dwellings.png`
+- Files: `supplementary/pathways/SF14_tl_dwellings.png`
 - Data: `data/pathways/reoccupation_log.csv`
 
 ### ST1_budget_construction

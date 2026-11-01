@@ -37,19 +37,16 @@ def groups():
                                                 'Reference': S.REFERENCE, N.TL['TL']: S.TL},
                                                **{(f'{p} {N.STRATEGIES[p]}' if p in N.STRATEGIES else
                                                    'Moderate / Ambitious Pathway'): c for p, c in S.PATHWAY.items()}),
-        # a lever is drawn in its strategy colour (SF10, told apart by
+        # a lever is drawn in its strategy colour (SF9, told apart by
         # marker), so the strategies are the lever group
-        'Strategies (Fig4-Fig6, SF10)': {N.STRATEGIES[k]: c for k, c in S.STRATEGY.items()},
+        'Strategies (Fig4-Fig6, SF9)': {N.STRATEGIES[k]: c for k, c in S.STRATEGY.items()},
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
-        # the Recent replacement surge (L3 face, fine light hatch) and Historical replacement (a darker,
-        # slightly bluer lilac) differ in lightness, hue and hatch; the surge face is checked against every other
-        # band in the next group, the replacement-surge pair is reported in the text
+        # demolition replacement, the recent surge and unconsented additions are parts of Net replacement and share
+        # its colour (one band in every figure), so only 'replacement' stands for them
         # every band shown together (Fig1, Fig2, Fig5, D25, D26, D36): the negative bands as filled
         # areas below zero in time series and as outlines in cumulative bars
         'Demand bands (Fig1, Fig2, Fig5, ED6, D25, D26, D36)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
-                                                           if b != 'redevelopment'},
-        'Recent replacement surge face against the other bands': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
-                                                                   if b != 'replacement'},
+                                                           if b not in ('redevelopment', 'unconsented')},
         'The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones': dict(
             {N.STRATEGIES[k]: c for k, c in S.STRATEGY.items()},
             **{'Moderate / Ambitious Pathway': S.PATHWAY[N.PATHWAY], N.TL['TL']: S.TL, N.BANDS['growth']: S.GROWTH,
@@ -74,12 +71,12 @@ def groups():
         # the palette-coverage groups
         'SF2b (components and the demand-band parts)': dict(
             {lab: col for c, (lab, col) in _sf2b().items()}),
-        'Replacement variants and the Reference (ED3, SF3, SF6, SF8)': {S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
+        'Replacement variants and the Reference (ED3, SF3, SF6, ED10)': {S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                                         for k in S.SCENARIO},
-        'Typologies (ED6, SF4, SF11)': dict(S.TYPOLOGY),
+        'Typologies (ED6, SF4, SF10)': dict(S.TYPOLOGY),
         'Sobol indices (ED7)': {'Total effect': S.SOBOL['total'], 'First-order effect': S.SOBOL['first_order']},
         'Lag variants (SF7)': {'Zero lag': S.LAG_VARIANT[0], '17-month lag': S.LAG_VARIANT[17]},
-        'Re-occupation (SF15)': {'Released dwellings (TL)': S.BAND['released_tl'][0],
+        'Re-occupation (SF14)': {'Released dwellings (TL)': S.BAND['released_tl'][0],
                                  'Release constraint binds': S.RELEASE_BINDS, 'Dwellings built': S.NEUTRAL_DARK},
         'Categorical groups (diagnostics; Okabe-Ito)': {f'group {i + 1}': c for i, c in enumerate(S.QUALITATIVE)},
     }
@@ -88,24 +85,23 @@ def groups():
 def _sf2b():
     """The SF2b parts as drawn (figures/calibration.COMP; the net-replacement pair shares one colour and one label)."""
     from figures import calibration as C
-    return {c: v for c, v in C.COMP.items() if c != 'replacement'}
+    return {c: v for c, v in C.COMP.items() if c != 'net_replacement'}
 
 
 def focus():
     """Groups checked only for the pairs that involve the listed colours (the others never share a figure as
     adjacent fills; their own groups check them)."""
     import naming as N
-    return {'Recent replacement surge face against the other bands': [N.BANDS['redevelopment']],
-            'The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones':
+    return {'The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones':
                 ['Moderate / Ambitious Pathway', N.TL['TL']]}
 
 
-ZONE_ORDER = ('within_both', 'within_ar', 'exceeded')
+ZONE_ORDER = ('within_both', 'within_ar')
 
 
 def zone_lightness_order(style=S):
-    """The property documented in figures/style.py: the three zones, composited on white at their fixed
-    opacities, fall strictly in CAM02-UCS lightness J' within both < within AR only < exceeded under normal vision and
+    """The property documented in figures/style.py: the two zones, composited on white at their fixed
+    opacities, fall strictly in CAM02-UCS lightness J' within both < within AR only under normal vision and
     every simulated deficiency (each zone's maximum J' over the vision types below the next zone's minimum).
     Returns (holds, {zone: [J' normal, deuteranomaly, protanomaly, tritanomaly]})."""
     J = {k: [float(jab(zone_on_white(style.ZONE[k]), v)[0]) for v in VISION] for k in ZONE_ORDER}
@@ -115,7 +111,7 @@ def zone_lightness_order(style=S):
 def palette_as_shown(style=S):
     """The palette groups of style.PALETTE with the boundary zones as they show on white (alpha
     compositing at the fixed opacities of style.ZONE_ALPHA); every other key as in the file."""
-    zkey = {'within_both': 'within_both', 'within_ar_only': 'within_ar', 'exceeded': 'exceeded'}
+    zkey = {'within_both': 'within_both', 'within_ar_only': 'within_ar'}
     out = {g: dict(style.PALETTE[g]) for g in style.COLOUR_GROUPS}      # [opacity] holds numbers
     out['boundary_zones'] = {k: zone_on_white(dict(color=c, alpha=style.ZONE_ALPHA[zkey[k]]))
                              for k, c in style.PALETTE['boundary_zones'].items()}
@@ -205,13 +201,13 @@ def main():
          'fills, never by text.',
          f"* **Strategies** (palette.toml [strategies]): S1 Avoid {S.STRATEGY['S1']}, S2 Switch {S.STRATEGY['S2']}, "
          f"S3 Improve {S.STRATEGY['S3']}. A lever is drawn in its "
-         f"strategy colour and told apart by marker ({', '.join(S.LEVER_MARKER)} within a strategy; SF10). The "
+         f"strategy colour and told apart by marker ({', '.join(S.LEVER_MARKER)} within a strategy; SF9). The "
          f"Moderate Pathway pale yellow ({S.PATHWAY_SETTING['moderate']}), Ambitious Pathway orange "
          f"({S.PATHWAY_SETTING['ambitious']}) and TL a pale sage green ({S.TL}; a larger circle on point plots).",
          '* **Demand bands** (palette.toml [demand_bands]; detailed parts in [components]): '
          f"2026 overbuild {S.P2_ANCHOR}, Overbuild absorbed {S.BAND['overbuild_absorbed'][0]}, "
-         f"Demolition replacement {S.REPLACEMENT}, Unconsented additions {S.BAND['unconsented'][0]}, the Recent "
-         f"replacement surge {S.SURGE_FACE} with a fine light hatch (the only hatched band), Released dwellings (TL) "
+         f"Net replacement {S.REPLACEMENT} (demolition replacement, the recent surge and unconsented additions drawn "
+         f"as one band: the census measures only the net), Released dwellings (TL) "
          f"{S.BAND['released_tl'][0]}. The only untargeted band, Population growth, is a solid deep violet ({S.GROWTH}). "
          f"Unexplained building of the history: {S.UNEXPLAINED[0]}.",
          '* **Signs**: the data keep the sign of every band and the figures never flip it. Time series: '
@@ -228,18 +224,18 @@ def main():
          f"at its high end {S.TORNADO_HIGH}, a single alternative case {S.TORNADO_SINGLE}.",
          f"* **Stacked bars and areas** are drawn seamless: each segment's edge is its own face colour at "
          f"{S.LW_SEAM:g} pt (no white borders, no anti-aliasing gaps); a hatch is drawn in a thin hatch colour only "
-         f"(default {S.HATCH_COLOUR}; the surge band {S.HATCH_LIGHT}). Legend handles keep a thin grey outline.",
+         f"(default {S.HATCH_COLOUR}; no demand band is hatched). Legend handles keep a thin grey outline.",
          f"* **Boundaries** (every planetary-boundary figure, one implementation in style.py; colours "
          f"from palette.toml [boundaries] and [boundary_zones], the zone opacities fixed in style.ZONE_ALPHA): acquired rights (AR) "
          f"thin brick-red line ({S.AR}), ability to pay (AtP) thin dark-maroon dotted line ({S.ATP}); very pale zones (told "
          'apart by the boundary lines and the legend) below AtP '
          f"({S.ZONE['within_both']['color']}, alpha {S.ZONE['within_both']['alpha']}), between AtP and AR "
-         f"({S.ZONE['within_ar']['color']}, alpha {S.ZONE['within_ar']['alpha']}) and above AR "
-         f"({S.ZONE['exceeded']['color']}, alpha {S.ZONE['exceeded']['alpha']}, \"boundary exceeded\"), on annual, "
+         f"({S.ZONE['within_ar']['color']}, alpha {S.ZONE['within_ar']['alpha']}); nothing is filled above AR (the "
+         'exceedance is read against the AR line), on annual, '
          'cumulative and level-of-exceedance axes alike. The two principles are never averaged.',
          '* **Settings**: lines: Moderate solid bold, Ambitious the same colour thin dotted; markers: Moderate filled, '
          'Ambitious hollow; bars (Fig6): Moderate filled, Ambitious hollow, TL a large dot.',
-         f"* **Typeface**: {S.FONT} only (metric-compatible with Arial), bundled in `fonts/` under the SIL Open "
+         f"* **Typeface**: {S.FONT} (fallback {S.FONT_FALLBACK}), bundled in `fonts/` under the SIL Open "
          'Font License 1.1, registered by figures/style.py, so every machine renders the same glyphs.',
          f"* **Sizes** (Nature Cities): width {S.WIDTH['single'] / S.MM:.0f} mm (single column) or "
          f"{S.WIDTH['double'] / S.MM:.0f} mm (double column), page depth at most {S.MAX_HEIGHT / S.MM:.0f} mm; "
@@ -270,15 +266,10 @@ def main():
                  + f" | {'yes' if ok else 'no'} |")
     if fails:
         L += ['', 'Groups below the threshold: ' + '; '.join(fails) + '. Why each still reads: the boundary zones are pale by design (data drawn over them), always '
-              'bounded by the AR and AtP lines and ordered strictly in lightness (within both < within AR only < exceeded '
+              'bounded by the AR and AtP lines and ordered strictly in lightness (within both < within AR only '
               'under every simulated deficiency), so their order survives without hue; any other group below the '
               'threshold is labelled directly in every figure (text on or beside each layer) or carries a hatch, so '
               'the reading never depends on colour alone.']
-    rs = min_distance({'Historical replacement': S.REPLACEMENT, 'Recent replacement surge': S.SURGE_FACE})
-    L += ['', 'Historical replacement against the Recent replacement surge face: '
-          + ', '.join(f'{v} {rs[v][0]:.1f}' for v in VISION)
-          + ' (below the threshold by design: told apart by lightness, a slightly different hue and the surge\'s '
-          'fine light hatch, and labelled in every figure).']
     zmono, Jz = zone_lightness_order(S)
     order = ZONE_ORDER
     if not zmono:

@@ -9,7 +9,9 @@
     means; the ED4 / ED5 notes stop when the code and the outputs disagree;
   * the palette file: a missing key, an unknown key, a value that is not "#RRGGBB" (and an opacity
     outside [0, 1]) are rejected;
-  * SF2b: up + down = net for every column and year; the census-interval means of the annual line = the column nets.
+  * SF2b: up + down = net for every column and year; the census-interval means of the annual line = the column nets;
+    the projection's net replacement is one band, equal to the sum of its three parts;
+  * ED10: an Extended Data item; every drawn history line equals its source data (not smoothed).
 """
 import hashlib
 import json
@@ -114,7 +116,7 @@ def test_figures_leave_the_data_byte_identical():
     before = hashes()
     # one figure of every drawing module (main, Extended Data, Supplementary)
     for fid in ('Fig4_pathways', 'Fig6_shapley_levers', 'ED4_one_at_a_time', 'ED8_lever_annual', 'ED9_rollout_timing',
-                'SF1_households', 'SF6_hindcast', 'SF7_completion_lag', 'SF9_prcc', 'SF12_mc_convergence'):
+                'ED10_reality_checks', 'SF1_households', 'SF6_hindcast', 'SF7_completion_lag', 'SF8_prcc', 'SF11_mc_convergence'):
         mod = next(m for _, f, m in FP.all_figures() if f == fid)
         importlib.import_module(mod).FIGURES[fid]()
     assert hashes() == before
@@ -275,6 +277,44 @@ def test_sf2b_up_plus_down_is_net(sf2b):
     bad = dict(sf2b, history=[dict(sf2b['history'][0], net=sf2b['history'][0]['net'] + 1.0)] + sf2b['history'][1:])
     with pytest.raises(SystemExit):
         C.sf2b_draw(ax, bad)
+    plt.close(fig)
+
+
+def test_sf2b_net_replacement_is_one_band(sf2b):
+    """The projection's demolition replacement, recent surge and unconsented additions are one band, Net replacement,
+    in every year equal to the sum of the three D05 parts; the history's census-measured net replacement has the same
+    label and colour."""
+    from figures import calibration as C
+    from figures import data as D
+    pc = D.src('D05_stock_and_vacancy')['projection_components']
+    for k, c in enumerate(sf2b['annual']):
+        assert set(c['parts']) == set(C.FUT_IDS)
+        assert c['parts']['net_replacement'] == pytest.approx(sum(float(pc[p][k]) for p in C.NET_REPLACEMENT_PARTS),
+                                                              rel=1e-12, abs=1e-9)
+    assert C.COMP['net_replacement'] == C.COMP['net_replacement_census'] == ('Net replacement',
+                                                                              C.S.DISPLAY_BAND['net_replacement'])
+    assert not set(C.NET_REPLACEMENT_PARTS) & set(C.SF2B_LEGEND)
+
+
+def test_ed10_history_lines_equal_their_source():
+    """ED10 is an Extended Data item (at most ten); every drawn history line is the source data, unsmoothed."""
+    import matplotlib.pyplot as plt
+    from figures import data as D
+    from figures import validation as V
+    ids = [h['id'] for h in FP.PAPER_EXTENDED]
+    assert ids[-1] == 'ED10' and len(ids) <= 10
+    assert not any(h['file'].endswith('reality_checks') for h in FP.SUPPLEMENTARY)
+    fig, ax = plt.subplots()
+    d = D.src('D15_reality_checks')
+    for key in d['order']:
+        hs = d['panels'][key]['history']
+        assert V._history_line(ax, hs.index, hs.values) == 0.0
+    with pytest.raises(SystemExit):                        # a line that is not its source stops the figure
+        V.HISTORY_ATOL, old = -1.0, V.HISTORY_ATOL
+        try:
+            V._history_line(ax, [1, 2], [1.0, 2.0])
+        finally:
+            V.HISTORY_ATOL = old
     plt.close(fig)
 
 

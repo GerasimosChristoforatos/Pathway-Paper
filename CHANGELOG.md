@@ -2,6 +2,60 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.3.7: Inter, ED10 reality checks, one net-replacement band
+
+Figures only: no model, Monte Carlo or Sobol run. Every figure is redrawn from the committed outputs (`redraw.py`).
+In `outputs/data/` only the two number maps change (`ed_number_map.csv`, `sf_number_map.csv`); the other 111 files are
+byte-identical.
+
+* **Typeface: Inter** (SIL OFL 1.1). Regular, Italic, Bold and Bold Italic are taken from the rsms/inter 4.1 release
+  into `fonts/`, with the licence and a note in `fonts/README.txt`. `style.FONT = 'Inter'`, with Liberation Sans as
+  the fallback. Sizes are unchanged, and every character drawn in the figures is in Inter.
+  * Layout fixes, each placed from measured text extents:
+    * Fig1: the History label sits 3 pt clear of the divider.
+    * Fig2: the panel a and b legends no longer touch.
+    * Fig4c: the legend has a white box, so the gridline no longer crosses it.
+    * Fig5: the legend sits at least 4 pt below the x-label.
+    * Fig7b: the 50% line stops 3 pt below the legend.
+    * SF2b: the bottom note sits 3 pt off the spine and clear of the divider.
+  * ED4 / ED5 row notes: wrapped by rendered width and stacked at the measured line pitch. The numbers are
+    right-aligned in the width of the widest number. Inter's taller lines had made the fixed 2.15 mm pitch overlap.
+  * One-at-a-time intermediate tick names (e.g. "High") get a white halo and sit clear of the bar.
+* **Boundary zones.** The "Boundary exceeded" fill is no longer drawn anywhere; nothing is filled above AR. Removed:
+  the key in `palette.toml` (`[boundary_zones]`, `[opacity]`), in `style.ZONE` and in the palette checks. The zone
+  lightness check now compares the two zones (within both < within AR only), and it holds.
+* **Colours.**
+  * Fig2 stages: A1–A3 `#672327`, A4–A5 `#EFBF9F`.
+  * ED7: total effect `#4D4D4D`, first-order `#B3B3B3`.
+* **ED6.**
+  * New x-label "A1–A3 materials factor (kg CO₂e per m², 2025)".
+  * New note on A1–A3 against whole embodied carbon and on the single apartment case study. Its numbers are read
+    from `factors_typology.csv` / `factors_building.csv`: 610, 444 and the median 434 kg/m².
+* **SF2b: one Net replacement band.**
+  * The projection's demolition replacement, recent surge and unconsented additions are drawn as one band, Net
+    replacement, in the history's colour and with one legend entry.
+  * The band is checked per year against the sum of its three parts; a mismatch STOPs.
+  * The note states that the projection's split is not identified from data. Its rates are read from the outputs:
+    demolition 0.135%/yr; residual −0.076%/yr.
+  * `[components] replacement_surge` and `unconsented_additions` are removed; no figure used them.
+* **SF8 moved to Extended Data as ED10, "Reality checks".**
+  * Panel b is titled "Implied net removals (net replacement rate × stock)". Its note explains Low / High /
+    Reference / Very High, and its removals box uses the short names so it covers no data (checked; STOP otherwise).
+  * Panel h (the handover step) is replaced by "Floor area built (consented, in scope)":
+    * history: `annual.csv`, 1991–2025;
+    * projection: `variants_annual.csv`;
+    * the handover statistic moves into the note (from D15): 2027 → 2028, −18.2%, against −39.8% to +27.8%.
+  * Every history line is straight segments between annual values (no PCHIP), and a drawn line that is not its
+    source data STOPs (maximum difference 0).
+* **Renumbering.** SF9–SF15 become SF8–SF14. Both number maps record the change: SF8 → ED10 in `ed_number_map.csv`;
+  SF10 → SF8, SF12–SF17 → SF9–SF14 (v4.3.0 numbers) in `sf_number_map.csv`. Extended Data: ED1–ED10 (at most 10).
+* **Checks.**
+  * `redraw.py`: 0 palette warnings.
+  * `tools/palette_coverage.py`: 0 colours outside the palette.
+  * `tests/test_figure_integrity.py`: 32 passed, including new tests for the merged band and the ED10 history lines.
+  * Full suite: 221 passed, 36 skipped.
+* **Numbers:** unchanged.
+
 ## model-v4.3.6: final colours
 
 Figures only: no model, Monte Carlo or Sobol run; `outputs/data/` is byte-identical.

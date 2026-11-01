@@ -44,7 +44,7 @@ def ed8_lever_annual():
                   source=['pathways/lever_annual.csv', 'baseline/overbuild_2026.json'])
 
 
-def sf15_tl_dwellings():
+def sf14_tl_dwellings():
     lg = D.csv('pathways/reoccupation_log.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 75))
     for b, run, letter in ((ax[0], 'TL', 'a'), (ax[1], LV.TL_INSTANT_LABEL, 'b')):
@@ -66,7 +66,7 @@ def sf15_tl_dwellings():
     ax[0].set_ylabel('Dwellings per year (thousand)')
     ax[0].legend(fontsize=S.FONT_MIN)
     fig.tight_layout()
-    S.save_figure(fig, 'SF15_tl_dwellings', source=['pathways/reoccupation_log.csv'])
+    S.save_figure(fig, 'SF14_tl_dwellings', source=['pathways/reoccupation_log.csv'])
 
 
-FIGURES = {'ED8_lever_annual': ed8_lever_annual, 'SF15_tl_dwellings': sf15_tl_dwellings}
+FIGURES = {'ED8_lever_annual': ed8_lever_annual, 'SF14_tl_dwellings': sf14_tl_dwellings}

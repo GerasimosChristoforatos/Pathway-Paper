@@ -1,4 +1,4 @@
-"""Sensitivity figures (ED4, ED5, SF9), from the data files only.
+"""Sensitivity figures (ED4, ED5, SF8), from the data files only.
 
 ED4 and ED5 carry row notes under the axes (row_notes_ed4 / row_notes_ed5): one line per shown row,
 saying only what changes compared with the Reference. Every value is read from the model code (projection.py,
@@ -7,7 +7,6 @@ Building_factors.py, boundaries.py, Sensitivity.py: the settings each row change
 where a setting is recorded in the outputs it must equal the code, and a row label must agree with the setting it
 names, or the figure stops."""
 import re
-import textwrap
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,14 +18,14 @@ from figures import style as S
 
 
 # ---------------------------------------------------------------------------
-# SF9 (data D40): partial rank correlation of each Monte Carlo input
+# SF8 (data D40): partial rank correlation of each Monte Carlo input
 # ---------------------------------------------------------------------------
 MC_IMPORTANCE_INPUT = {'carbon_index': 'carbon'}          # importance-table input id -> naming.MC_INPUT id
 MC_RUNS = (('REF', N.SCENARIOS['REF'], S.REFERENCE), ('pathway_moderate', N.PATHWAY_RUNS['pathway-moderate'],
                                                       S.PATHWAY_SETTING['moderate']), ('TL', N.TL['TL'], S.TL))
 
 
-def sf9_prcc():
+def sf8_prcc():
     """PRCC of each Monte Carlo input (naming.MC_INPUT) with its 95% bootstrap interval, for the Reference, the
     Moderate Pathway and TL, on cumulative floor area, carbon and LoE of AR 2026-2050 (pathways/montecarlo_importance
     .csv). The percentile interval is drawn as it is (lo to hi): it need not contain the point estimate when the
@@ -55,7 +54,7 @@ def sf9_prcc():
                fontsize=S.FONT_SMALL, bbox_to_anchor=(0.5, 0.0))
     P.centre_ticklabels(fig, ax[0])
     fig.tight_layout(rect=(0, 0.08, 1, 1))
-    S.save_figure(fig, 'SF9_prcc', note=f"Bootstrap resamples: {int(imp['bootstrap_resamples'].iloc[0])}; SRC and R² "
+    S.save_figure(fig, 'SF8_prcc', note=f"Bootstrap resamples: {int(imp['bootstrap_resamples'].iloc[0])}; SRC and R² "
                                          'in the data file.', source=['pathways/montecarlo_importance.csv'])
 
 
@@ -146,8 +145,8 @@ PB_ROWS = {
 # ---------------------------------------------------------------------------
 # row notes of ED4 and ED5 (what each shown row changes compared with the Reference)
 # ---------------------------------------------------------------------------
-NOTE_WIDTH = 104                  # characters per note column at FONT_MIN (two columns over the double width)
-NOTE_LINE_MM = 2.15               # line pitch of the notes at FONT_MIN (5 pt x 1.2), mm
+NOTE_LINESPACING = 1.2           # line spacing of the notes (matplotlib linespacing; the pitch is measured, not assumed)
+NOTE_GUTTER_MM = 3.0              # clear space between the right end of a note column and the next column
 # WDI series and s_sec conventions as named in boundaries.py (a code the text does not know stops the figure)
 WDI_MEASURE = {'NY.GDP.PCAP.PP.KD': 'GDP per capita at purchasing-power parity, constant 2021 international $',
                'NY.GDP.PCAP.CD': 'GDP per capita in current US$'}
@@ -392,7 +391,7 @@ def sup(n):
 
 
 # The figures draw each row number as its own text at style.FONT_MIN (5 pt), at the top of the line it marks: a
-# Unicode superscript digit is smaller than its font size (and Liberation Sans has no superscript zero, which 10 and
+# Unicode superscript digit is smaller than its font size (and the fallback Liberation Sans has no superscript zero, which 10 and
 # 20 need), and a mathtext superscript is set at 0.7 x the font size.
 SUP_GAP = '\u2009'                # thin space between a row label and its number
 SUP_DIGIT = '\u2007'              # figure space: room for one digit of the number at the end of the label
@@ -446,33 +445,76 @@ def label_numbers(fig, ax, numbered, ys):
         fig.text(fx, fy, str(n), ha='right', va='top', fontsize=S.FONT_MIN, color=S.INK)
 
 
-NOTE_INDENT_MM = 2.4             # the note text starts this far right of its number (room for two digits)
+NOTE_NUMBER_GAP_MM = 1.0         # the note text starts this far right of the widest note number (measured)
+
+
+def note_metrics(fig):
+    """(line pitch in inches, a function giving the rendered width of a string in inches) of the note text (FONT_MIN,
+    the figure font) as matplotlib lays it out: the pitch is the height a second line adds to a one-line text, so the
+    notes are spaced exactly as the lines inside a note, whatever the typeface."""
+    r = fig.canvas.get_renderer()
+    probe = dict(fontsize=S.FONT_MIN, linespacing=NOTE_LINESPACING)
+    h = []
+    for s in ('Ag', 'Ag\nAg'):
+        t = fig.text(0, 0, s, **probe)
+        h.append(t.get_window_extent(r).height)
+        t.remove()
+    tw = fig.text(0, 0, '', **probe)
+
+    def width_in(s):
+        tw.set_text(s.replace('$', r'\$'))                  # measured as drawn (a literal dollar, not mathtext)
+        return tw.get_window_extent(r).width / fig.dpi
+    return (h[1] - h[0]) / fig.dpi, width_in, tw
+
+
+def wrap_measured(text, width_in, avail_in):
+    """Greedy word wrap of text so that every line's rendered width is at most avail_in (inches); a single word wider
+    than the column stops the figure (it would be clipped)."""
+    lines, cur = [], ''
+    for word in text.split():
+        cand = f'{cur} {word}' if cur else word
+        if width_in(cand) <= avail_in:
+            cur = cand
+            continue
+        if not cur:
+            raise SystemExit(f'STOP: a row-note word is wider than its column: {word!r}')
+        lines.append(cur)
+        cur = word
+        if width_in(cur) > avail_in:
+            raise SystemExit(f'STOP: a row-note word is wider than its column: {word!r}')
+    if cur:
+        lines.append(cur)
+    return lines
 
 
 def draw_notes(fig, numbered, title, top_frac, ncol=2):
     """The row notes as a compact numbered list below the axes, the numbers those of the y labels: each number its own
     text at FONT_MIN, aligned with the first line of its note (FONT_MIN) beside it; ncol columns filled top to bottom,
-    a note never split. Returns the height used (mm)."""
-    wrapped = []
-    for n, _, t in numbered:
-        w = textwrap.wrap(f'{t}.', NOTE_WIDTH - 3)
-        wrapped.append([x.replace('$', r'\$') for x in w])     # a literal dollar, not mathtext
+    a note never split. Each note is wrapped by its rendered width (the column width less the indent and a gutter) and
+    the notes are stacked at the measured line pitch, so no note overlaps the next. Returns the height used (mm)."""
     if ncol != 2:
         raise ValueError('draw_notes: two columns')
+    pitch_in, width_in, tw = note_metrics(fig)
+    W = fig.get_figwidth()
+    num_in = max(width_in(str(n)) for n, _, _ in numbered)          # the numbers are right-aligned in this width
+    indent_in = num_in + NOTE_NUMBER_GAP_MM * S.MM
+    avail = (0.5 - 0.01) * W - indent_in - NOTE_GUTTER_MM * S.MM
+    wrapped = [[x.replace('$', r'\$') for x in wrap_measured(f'{t}.', width_in, avail)]   # a literal dollar
+               for _, _, t in numbered]
+    tw.remove()
     n_ = [len(w) for w in wrapped]                        # the split (rows kept whole) with the shortest longer column
     k = min(range(len(n_) + 1), key=lambda j: (max(sum(n_[:j]), sum(n_[j:])), j))
-    H = fig.get_figheight()
     rows = max(sum(n_[:k]), sum(n_[k:]))
-    line = NOTE_LINE_MM * S.MM / H
+    line = pitch_in / fig.get_figheight()
     fig.text(0.01, top_frac, title, ha='left', va='top', fontsize=S.FONT_MIN, fontweight='bold', color=S.INK)
     for c, items in enumerate((list(zip(numbered, wrapped))[:k], list(zip(numbered, wrapped))[k:])):
         x0, y = 0.01 + c / ncol, top_frac - line
         for (n, _, _), w in items:
-            fig.text(x0, y, str(n), ha='left', va='top', fontsize=S.FONT_MIN, color=S.INK)
-            fig.text(x0 + NOTE_INDENT_MM * S.MM / fig.get_figwidth(), y, '\n'.join(w),
-                     ha='left', va='top', fontsize=S.FONT_MIN, color=S.INK, linespacing=1.2)
+            fig.text(x0 + num_in / W, y, str(n), ha='right', va='top', fontsize=S.FONT_MIN, color=S.INK)
+            fig.text(x0 + indent_in / W, y, '\n'.join(w),
+                     ha='left', va='top', fontsize=S.FONT_MIN, color=S.INK, linespacing=NOTE_LINESPACING)
             y -= len(w) * line
-    return (rows + 1) * NOTE_LINE_MM
+    return (rows + 1) * pitch_in / S.MM
 
 
 def _collect(items):
@@ -627,4 +669,4 @@ def row_note_caption(fid):
 
 
 FIGURES = {'ED4_one_at_a_time': ed4_one_at_a_time, 'ED5_boundary_sensitivity': ed5_boundary_sensitivity,
-           'SF9_prcc': sf9_prcc}   # SF11 dropped
+           'SF8_prcc': sf8_prcc}

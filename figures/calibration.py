@@ -41,12 +41,10 @@ def _band(ax, x, lo, hi, label):
 # balance); the others palette.toml [components]. Every part is a solid fill: no hatch (the surge too), no fade.
 COMP = {'new_households': ('New households', S.NEW_HOUSEHOLDS),
         'vacancy': ('Vacancy (allowance and change)', S.BAND['vacancy'][0]),
-        'net_replacement_census': ('Net replacement (history: census-measured; projection: demolition replacement)',
-                                   S.DISPLAY_BAND['net_replacement']),
-        'replacement': ('Net replacement (history: census-measured; projection: demolition replacement)',
-                        S.BAND['replacement'][0]),
-        'redevelopment': (N.BANDS['redevelopment'], S.SURGE_FACE),
-        'unconsented': (N.BANDS['unconsented'], S.BAND['unconsented'][0]),
+        # net replacement: one band, the same quantity and colour in the history (census-measured) and the
+        # projection (demolition replacement + recent surge + unconsented additions, merged; Fig1)
+        'net_replacement_census': ('Net replacement', S.DISPLAY_BAND['net_replacement']),
+        'net_replacement': ('Net replacement', S.DISPLAY_BAND['net_replacement']),
         'retirement_villages': (N.BAND_DETAIL['retirement_villages'], S.RETIREMENT_VILLAGES),
         'overbuild_2026': (N.BANDS['overbuild_2026'], S.BAND['overbuild_2026'][0]),
         'overbuild_absorbed': (N.BANDS['overbuild_absorbed'], S.BAND['overbuild_absorbed'][0]),
@@ -114,10 +112,10 @@ def sf1_households():
 # SF2 (D05 + D06 as panel d): stock and vacancy
 # ---------------------------------------------------------------------------
 HIST_IDS = ('new_households', 'vacancy', 'net_replacement_census', 'retirement_villages', 'unexplained_building')
-FUT_IDS = ('new_households', 'vacancy', 'replacement', 'unconsented', 'redevelopment', 'retirement_villages',
-           'overbuild_2026', 'overbuild_absorbed')
-SF2B_LEGEND = ('new_households', 'vacancy', 'net_replacement_census', 'replacement', 'redevelopment',
-               'overbuild_2026', 'unexplained_building', 'unconsented', 'retirement_villages', 'overbuild_absorbed')
+FUT_IDS = ('new_households', 'vacancy', 'net_replacement', 'retirement_villages', 'overbuild_2026', 'overbuild_absorbed')
+NET_REPLACEMENT_PARTS = ('replacement', 'redevelopment', 'unconsented')   # merged into 'net_replacement' (D05 parts)
+SF2B_LEGEND = ('new_households', 'vacancy', 'net_replacement_census', 'net_replacement', 'overbuild_2026',
+               'unexplained_building', 'retirement_villages', 'overbuild_absorbed')
 SF2B_RTOL = 1e-9
 
 
@@ -139,7 +137,19 @@ def sf2b_columns():
     SIH = d['stock_identity_history']
     line_h = d['dwellings_built_hist']
     PF = np.asarray(d['projection_years'], int)
-    fut = {c: np.asarray(d['projection_components'][c], float) for c in FUT_IDS}
+    pc = d['projection_components']
+    fut = {c: np.asarray(pc[c], float) for c in FUT_IDS if c != 'net_replacement'}
+    # the projection's net replacement as one band: demolition replacement + recent surge + unconsented additions
+    parts = np.vstack([np.asarray(pc[c], float) for c in NET_REPLACEMENT_PARTS])
+    fut['net_replacement'] = parts.sum(axis=0)
+    for k in range(parts.shape[1]):                   # per year: the merged band is the sum of its three parts
+        s = sum(float(pc[c][k]) for c in NET_REPLACEMENT_PARTS)
+        if not np.isclose(fut['net_replacement'][k], s, rtol=1e-12, atol=1e-9):
+            raise SystemExit(f'STOP: SF2b: the merged net replacement of {int(PF[k])} ({fut["net_replacement"][k]!r}) '
+                             f'differs from the sum of its parts ({s!r}).')
+    known = set(FUT_IDS) | set(NET_REPLACEMENT_PARTS)
+    if set(pc) - known:
+        raise SystemExit(f'STOP: SF2b: projection components not drawn: {sorted(set(pc) - known)}')
     line_f = pd.Series(np.asarray(d['dwellings_built_projection'], float), index=PF)
     hist = []
     for r in SIH.itertuples():
@@ -283,9 +293,9 @@ def sf2_stock_vacancy():
     # the latest interval (households consent-derived, not census-benchmarked) labelled, not faded
     last = b['history'][-1]
     a.text(last['centre'], last['up'] / 1e3, '†', ha='center', va='bottom', fontsize=S.FONT_SMALL, color=S.INK)
-    a.text(1991.6, 0.02, f"1986–91 not covered (calibration starts 1991)\n† {_yrs(*last['years'])}: households "
-           'consent-derived (not census-benchmarked)', transform=a.get_xaxis_transform(), fontsize=S.FONT_MIN,
-           color=S.MUTED)
+    a.annotate(f"1986–91 not covered (calibration starts 1991)\n† {_yrs(*last['years'])}: households "
+               'consent-derived\n(not census-benchmarked)', (0, 0.02), xycoords='axes fraction', xytext=(3, 0),
+               textcoords='offset points', fontsize=S.FONT_MIN, color=S.MUTED)      # 3 pt clear of the spine
     P.split(a)
     a.set_xlim(b['xlim'])
     a.set_ylabel('Dwellings (thousand per year)')
@@ -303,6 +313,7 @@ def sf2_stock_vacancy():
                 Line2D([0], [0], color=S.MUTED, lw=S.LW_THIN, label='Census-interval mean')]
     a.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, -0.07), ncol=3, fontsize=S.FONT_MIN)
     V = d['vacancy_wording']
+    sm = D.js('baseline/scenarios.json')['meta']              # the projection's replacement rates (%/yr)
     hist_note = (f'History: one column per census interval (interval means; vacancy on one definition, the pooled '
                  f"2018/2023 empty share, {100 * d['pooled_share']:.1f}% of unoccupied dwellings); between censuses "
                  f'annual detail is not identified. The {census_y[-1] + 1}–{int(YH[-1])} column (marked †): households '
@@ -315,15 +326,18 @@ def sf2_stock_vacancy():
                      b['pipeline_floor_count'].items() for c in b['annual'] if c['year'] == y)
                  + ' (the pipeline floor area is observed, the dwelling size held).')
     S.save_figure(fig, fid, source=['figure_source/D05_stock_and_vacancy.json',
-                                    'figure_source/D06_vacancy_definition.json'], note=(
+                                    'figure_source/D06_vacancy_definition.json', 'baseline/scenarios.json'], note=(
         f'a: {V[0].upper() + V[1:]}. c: the unconsented additions each vacancy definition requires to close the stock '
         'identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. '
         f'b: {hist_note} History: net replacement is census-measured, the '
         'rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the '
         f"previous year's stock, the quantity the model uses ({census_y[-1] + 1}–{int(YH[-1])}: the latest rate "
-        'carried). Projection: demolition replacement, unconsented additions (negative), the recent replacement '
-        'surge, retirement villages (negative), the 2026 overbuild and the overbuild absorbed '
-        '(negative payback). Positive parts are stacked up from zero and negative parts down from zero, all solid (no '
+        'carried). Projection: net replacement, retirement villages (negative), the 2026 overbuild and the overbuild '
+        'absorbed (negative payback). Net replacement = demolition − unconsented additions (+ the recent surge in the '
+        'Reference); the census measures only the net. The projection\'s split (demolition at the BRANZ rate, '
+        f"{sm['demolition_rate_pct']:.3f}%/yr; the calibrated residual as unconsented additions, "
+        f"{P.minus(format(sm['residual_long_pct'], '.3f'))}%/yr; the surge) is not identified from data and is not "
+        'drawn. Positive parts are stacked up from zero and negative parts down from zero, all solid (no '
         'outlines, hatching or fades); up + down = the net of every column and year (checked). The line is the '
         'annual dwellings built (in scope), straight between annual values; the grey caps are its census-interval '
         'means (equal to the column nets, checked). Unexplained building (its value per interval in the row at the top, '

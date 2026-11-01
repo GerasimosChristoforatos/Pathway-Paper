@@ -2,8 +2,8 @@
 (what draws it), indexes.py (outputs/FIGURES.md) and the tests.
 
     outputs/paper_main/       Fig1-Fig7 (PAPER_MAIN)
-    outputs/paper_extended/   the Extended Data ED1-ED9 (PAPER_EXTENDED) and the per-typology level table EDT1
-    outputs/supplementary/    the Supplementary figures SF1-SF15 and table ST1 (SUPPLEMENTARY; at most ten Extended
+    outputs/paper_extended/   the Extended Data ED1-ED10 (PAPER_EXTENDED) and the per-typology level table EDT1
+    outputs/supplementary/    the Supplementary figures SF1-SF14 and table ST1 (SUPPLEMENTARY; at most ten Extended
                               Data items)
     outputs/diagnostics/      the figure audit records (DIAGNOSTICS is empty)
 
@@ -107,7 +107,8 @@ PAPER_EXTENDED = [
     dict(id='ED6', file='ED6_mc_input_distributions', module='figures.montecarlo',
          title='Monte Carlo input distributions',
          source=['montecarlo/draws_REF.csv', 'montecarlo/input_distributions_REF.csv',
-                 'montecarlo/carbon_factors_REF.csv', 'pathways/montecarlo_draws.csv']),
+                 'montecarlo/carbon_factors_REF.csv', 'pathways/montecarlo_draws.csv', 'factors/factors_typology.csv',
+                 'factors/factors_building.csv']),
     dict(id='ED7', file='ED7_sobol', module='figures.montecarlo',
          title='Sobol indices of the Reference: embodied carbon and floor area 2026-2050',
          source=['montecarlo/sobol_REF.csv']),
@@ -118,6 +119,9 @@ PAPER_EXTENDED = [
     dict(id='ED9', file='ED9_rollout_timing', module='figures.paper_extended',
          title='Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon',
          source=['pathways/annual.csv', 'pathways/runs.csv']),
+    dict(id='ED10', file='ED10_reality_checks', module='figures.validation',
+         title='Reality checks: the projection against the 1991-2025 range',
+         source=['figure_source/D15_reality_checks.json', 'baseline/annual.csv', 'baseline/variants_annual.csv']),
 ]
 
 # Extended Data numbering, MODEL v4.3.0 -> the current numbering (old id, old file, new id, new file); new id None:
@@ -131,7 +135,8 @@ ED_NUMBER_MAP = [('ED1', 'ED1_population_households_floor_area', 'ED1', 'ED1_pop
                  ('ED7', 'ED7_sobol', 'ED7', 'ED7_sobol'),
                  ('ED8', 'ED8_shapley_attribution', None, None),
                  ('ED9', 'ED9_lever_annual', 'ED8', 'ED8_lever_annual'),
-                 ('ED10', 'ED10_rollout_timing', 'ED9', 'ED9_rollout_timing')]
+                 ('ED10', 'ED10_rollout_timing', 'ED9', 'ED9_rollout_timing'),
+                 ('SF8', 'SF8_reality_checks', 'ED10', 'ED10_reality_checks')]
 
 
 def write_ed_number_map():
@@ -154,7 +159,8 @@ def _write_number_map(name, rows):
         w.writerow(['old_id', 'old_file', 'new_id', 'new_file', 'status'])
         for oid, ofile, nid, nfile in rows:
             st = ('added' if oid == 'new' else 'from the diagnostics' if oid.startswith('D') else
-                  'no longer rendered' if nid is None else 'moved to Supplementary' if nid.startswith('SF') and
+                  'no longer rendered' if nid is None else 'moved to Extended Data' if nid.startswith('ED') and oid.startswith('SF') else
+                  'moved to Supplementary' if nid.startswith('SF') and
                   oid.startswith('ED') else 'figure -> table' if nid.startswith('ST') else
                   'same number' if (oid, ofile) == (nid, nfile) else 'renumbered')
             w.writerow(['' if oid == 'new' else oid, ofile or '', nid or '', nfile or '', st])
@@ -170,7 +176,8 @@ SUPPLEMENTARY = [
                                                  'figure_source/D04_household_formation.json']),
     dict(id='SF2', file='SF2_stock_vacancy', folder='calibration', module='figures.calibration',
          title='Vacancy, dwellings per year by component and the vacancy definition',
-         source=['figure_source/D05_stock_and_vacancy.json', 'figure_source/D06_vacancy_definition.json']),
+         source=['figure_source/D05_stock_and_vacancy.json', 'figure_source/D06_vacancy_definition.json',
+                 'baseline/scenarios.json']),
     dict(id='SF3', file='SF3_census_replacement_rates', folder='calibration', module='figures.paper_extended',
          title='Net replacement rates from census dwelling counts and the four variants',
          source=['baseline/stock_identity_history.csv', 'figure_source/D07_net_replacement_rate.json']),
@@ -186,26 +193,23 @@ SUPPLEMENTARY = [
     dict(id='SF7', file='SF7_completion_lag', folder='validation', module='figures.market_balance',
          title='Annual floor area by demand group: 17-month and like-for-like zero completion lag',
          source=['diagnostics/lag_comparison_annual.csv', 'diagnostics/lag_comparison_summary.json']),
-    dict(id='SF8', file='SF8_reality_checks', folder='validation', module='figures.validation',
-         title='The projection against the 1991-2025 range and the observed -> model handover',
-         source=['figure_source/D15_reality_checks.json']),
-    dict(id='SF9', file='SF9_prcc', folder='sensitivity', module='figures.sensitivity',
+    dict(id='SF8', file='SF8_prcc', folder='sensitivity', module='figures.sensitivity',
          title='Monte Carlo sensitivity: partial rank correlation of each input, Reference, Moderate Pathway and TL',
          source=['pathways/montecarlo_importance.csv']),
-    dict(id='SF10', file='SF10_lambda_sweep', folder='sensitivity', module='figures.paper_extended',
+    dict(id='SF9', file='SF9_lambda_sweep', folder='sensitivity', module='figures.paper_extended',
          title='Each lever from the Reference to Ambitious (lambda sweep) and its Theoretical Limit',
          source=['pathways/lambda_sweep.csv']),
-    dict(id='SF11', file='SF11_hd_estimators', folder='sensitivity', module='figures.paper_extended',
+    dict(id='SF10', file='SF10_hd_estimators', folder='sensitivity', module='figures.paper_extended',
          title='Harrell-Davis estimators of L5 and L8 with bootstrap intervals', source=['pathways/levers.json']),
-    dict(id='SF12', file='SF12_mc_convergence', folder='montecarlo', module='figures.montecarlo',
+    dict(id='SF11', file='SF11_mc_convergence', folder='montecarlo', module='figures.montecarlo',
          title='Monte Carlo convergence of the 2026-2050 percentiles', source=['montecarlo/convergence_REF.csv']),
-    dict(id='SF13', file='SF13_pathway_mc', folder='montecarlo', module='figures.montecarlo',
+    dict(id='SF12', file='SF12_pathway_mc', folder='montecarlo', module='figures.montecarlo',
          title='Monte Carlo: annual carbon of the Reference, the Pathways and TL (median, 5th-95th)',
          source=['pathways/montecarlo_annual.csv', 'pathways/montecarlo_summary.csv']),
-    dict(id='SF14', file='SF14_conditional_tl', folder='montecarlo', module='figures.paper_extended',
+    dict(id='SF13', file='SF13_conditional_tl', folder='montecarlo', module='figures.paper_extended',
          title='When does TL stay within AR? By population quintile and the population threshold',
          source=['pathways/montecarlo_conditional_tl.csv', 'pathways/montecarlo_conditional_tl.json']),
-    dict(id='SF15', file='SF15_tl_dwellings', folder='pathways', module='figures.pathways',
+    dict(id='SF14', file='SF14_tl_dwellings', folder='pathways', module='figures.pathways',
          title='The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year',
          source=['pathways/reoccupation_log.csv']),
 ]
@@ -217,16 +221,17 @@ SUPPLEMENTARY_TABLES = [dict(id='ST1', file='ST1_budget_construction', folder='b
 # Supplementary numbering, MODEL v4.3.0 -> the current numbering (old id, old file, new id, new file)
 SF_NUMBER_MAP = ([(f'SF{i}', h, f'SF{i}', h) for i, h in enumerate(
     ['SF1_households', 'SF2_stock_vacancy', 'SF3_census_replacement_rates', 'SF4_dwelling_size',
-     'SF5_overbuild_absorption', 'SF6_hindcast', 'SF7_completion_lag', 'SF8_reality_checks'], start=1)]
-                 + [('SF9', 'SF9_budget_construction', 'ST1', 'ST1_budget_construction'),
-                    ('SF10', 'SF10_prcc', 'SF9', 'SF9_prcc'),
+     'SF5_overbuild_absorption', 'SF6_hindcast', 'SF7_completion_lag'], start=1)]
+                 + [('SF8', 'SF8_reality_checks', 'ED10', 'ED10_reality_checks'),
+                    ('SF9', 'SF9_budget_construction', 'ST1', 'ST1_budget_construction'),
+                    ('SF10', 'SF10_prcc', 'SF8', 'SF8_prcc'),
                     ('SF11', 'SF11_pathway_sensitivity', None, None),
-                    ('SF12', 'SF12_lambda_sweep', 'SF10', 'SF10_lambda_sweep'),
-                    ('SF13', 'SF13_hd_estimators', 'SF11', 'SF11_hd_estimators'),
-                    ('SF14', 'SF14_mc_convergence', 'SF12', 'SF12_mc_convergence'),
-                    ('SF15', 'SF15_pathway_mc', 'SF13', 'SF13_pathway_mc'),
-                    ('SF16', 'SF16_conditional_tl', 'SF14', 'SF14_conditional_tl'),
-                    ('SF17', 'SF17_tl_dwellings', 'SF15', 'SF15_tl_dwellings')])
+                    ('SF12', 'SF12_lambda_sweep', 'SF9', 'SF9_lambda_sweep'),
+                    ('SF13', 'SF13_hd_estimators', 'SF10', 'SF10_hd_estimators'),
+                    ('SF14', 'SF14_mc_convergence', 'SF11', 'SF11_mc_convergence'),
+                    ('SF15', 'SF15_pathway_mc', 'SF12', 'SF12_pathway_mc'),
+                    ('SF16', 'SF16_conditional_tl', 'SF13', 'SF13_conditional_tl'),
+                    ('SF17', 'SF17_tl_dwellings', 'SF14', 'SF14_tl_dwellings')])
 TABLE_MODULES = ('figures.paper_extended', 'figures.boundaries')      # the modules that write tables (TABLES)
 # tables of the Extended Data (Markdown + CSV, outputs/paper_extended/)
 EXTENDED_TABLES = [dict(id='EDT1', file='EDT1_levels_by_typology', title='Lever levels by typology: Moderate, '

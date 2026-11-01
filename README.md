@@ -51,8 +51,8 @@ same tree under `outputs/_light/`.
 |---|---|
 | Every figure and table, with its title, caption, data sources and run note; one row per item in the manifest | [outputs/FIGURES.md](outputs/FIGURES.md), [outputs/figure_manifest.csv](outputs/figure_manifest.csv) |
 | **Main figures**: Fig1–Fig7 | [outputs/paper_main/](outputs/paper_main/) |
-| **Extended Data**: ED1–ED9 and the table EDT1 | [outputs/paper_extended/](outputs/paper_extended/) |
-| **Supplementary**: SF1–SF15 in topic folders and the table ST1 | [outputs/supplementary/](outputs/supplementary/) |
+| **Extended Data**: ED1–ED10 and the table EDT1 | [outputs/paper_extended/](outputs/paper_extended/) |
+| **Supplementary**: SF1–SF14 in topic folders and the table ST1 | [outputs/supplementary/](outputs/supplementary/) |
 | Figure audit records (one JSON per figure) | [outputs/diagnostics/_audit/](outputs/diagnostics/_audit/) |
 | Results summary; every assumption with its basis; validation, reconciliation and market-balance reports | [outputs/reports/](outputs/reports/) |
 | Methods draft and the levers table (Table 1) | [docs/METHODS_DRAFT.md](docs/METHODS_DRAFT.md), [docs/LEVERS_TABLE.md](docs/LEVERS_TABLE.md) |

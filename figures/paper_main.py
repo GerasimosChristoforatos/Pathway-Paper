@@ -170,8 +170,9 @@ def _fig1_draw(ax, six=True):
     lo_, hi_ = ax.get_ylim()
     ax.set_ylim(lo_, hi_ + 0.10 * (hi_ - lo_))                         # room for the labels
     ax.set_ylabel('Floor area built (Mm² per year)')
-    ax.text(y_hist_end + 0.4, 0.98, 'History (columns: census-interval means)', transform=ax.get_xaxis_transform(),
-            ha='right', va='top', fontsize=S.FONT_SMALL, color=S.MUTED)
+    ax.annotate('History (columns: census-interval means)', (y_hist_end + 0.5, 0.98), xycoords=ax.get_xaxis_transform(),
+                xytext=(-3, 0), textcoords='offset points',          # 3 pt clear of the history | pipeline divider
+                ha='right', va='top', fontsize=S.FONT_SMALL, color=S.MUTED)
     ax.text(np.mean(pipe), 0.98, 'Pipeline', transform=ax.get_xaxis_transform(), ha='center', va='top',
             rotation=90, fontsize=S.FONT_MIN, color=S.MUTED)
     ax.text(x0 + 0.4, 0.98, 'Projection (annual)', transform=ax.get_xaxis_transform(),
@@ -290,6 +291,13 @@ def fig2():
                      'Maintenance (B2, B4)': 'Maintenance'}    # 'Household-size change' kept
                     .get(h.get_label(), h.get_label()))
     ax[0].legend(handles=hb2, ncol=2, **LEG)
+    fig.canvas.draw()                                                 # panel a's legend is wider than its panel:
+    r = fig.dpi_scale_trans.inverted()                                # keep it at least 4 pt clear of panel b's
+    ea, eb = (ax[i].get_legend().get_window_extent().transformed(r) for i in (0, 1))
+    gap_pt = (eb.x0 - ea.x1) * 72
+    if gap_pt < 4:
+        shift = (4 - gap_pt) / 72 / ax[0].get_window_extent().transformed(r).width
+        ax[0].get_legend().set_bbox_to_anchor((0.5 - shift, FIG2_LEG_Y), transform=ax[0].transAxes)
     # (d) cumulative 2026-2050: three attached columns of the same total
     d = fig.add_subplot(gs[4])
     c = float(total.sum())
@@ -385,7 +393,7 @@ def fig3():
     ax.set_ylim(0, None)
     ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
     P.panel(ax, 'a', 'Annual: the Reference against AR and AtP')
-    zones = [h for h in S.zone_handles() if h.get_label() != S.ZONE['exceeded']['label']]
+    zones = S.zone_handles()
     ax.legend(handles=ax.get_legend_handles_labels()[0] + zones, loc='upper right', fontsize=S.FONT_MIN, ncol=2,
               columnspacing=1.0, frameon=False)
     ax.set_ylim(0, 1540)
@@ -517,7 +525,8 @@ def fig4():
     ax[0].set_ylabel('Cumulative carbon 2026–2050 (kt CO₂e)')
     P.thousands(ax[0].yaxis)
     hs = [Patch(label=N.STRATEGIES[St], **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
-    ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_SMALL)
+    ax[2].legend(handles=hs, loc='upper right', fontsize=S.FONT_SMALL,   # an opaque white box without edge, so the
+                 frameon=True, facecolor='white', edgecolor='none', framealpha=1.0)   # gridlines do not cross the labels
     for b in ax:                                                      # larger lever / TL names
         plt.setp(b.get_xticklabels(), fontsize=S.FONT_SMALL)
     fig.subplots_adjust(left=0.08, right=0.99, top=0.92, bottom=0.30)
@@ -733,8 +742,8 @@ def fig5():
     h += S.boundary_handles() + S.zone_handles()
     drop = {S.ZONE[k]['label'] for k in S.ZONE} | {f"{N.SCENARIOS['REF']} (ruler)"}
     h = [x for x in h if x.get_label() not in drop]
-    fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=4,
-               frameon=False, fontsize=S.FONT_MIN + 1.0)                # legend a bit larger
+    leg5 = fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=4,
+                      frameon=False, fontsize=S.FONT_MIN + 1.0)         # legend a bit larger
     for ln in fig.findobj(Line2D):                                  # every marker x FIG5_MS (plane,
         if ln.get_marker() not in (None, 'None', '', ' '):            # ruler, legend; relative sizes kept)
             ln.set_markersize(ln.get_markersize() * FIG5_MS)
@@ -743,6 +752,11 @@ def fig5():
             t.set_fontsize(t.get_fontsize() * FIG5_FONT)
     for a_ in (ax, ru):                                             # tick labels (created lazily)
         a_.tick_params(labelsize=S.FONT_SIZE * FIG5_FONT)
+    fig.canvas.draw()                                               # the legend at least 4 pt below the x-label
+    gap_pt = (ax.xaxis.label.get_window_extent().y0 - leg5.get_window_extent().y1) * 72 / fig.dpi
+    if gap_pt < 4:
+        dy = (4 - gap_pt) / 72 * fig.dpi / fig.bbox.height
+        leg5.set_bbox_to_anchor((0.02, -dy, 0.96, 0.1), transform=fig.transFigure)
     note = (f"LoE AR = [{c26:,.0f} + {r['carbon_2027_2050_cohorts_kt']:,.0f} (1 - x)(1 - y)] / {bc['B_AR_kt']:,.0f} kt; "
             f"C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = {floor:.3f} (the lowest "
             f"LoE AR at x or y = 100%); AtP = B_AtP / B_AR = {atp_level:.3f} lies below the floor, so the AtP contour is "
@@ -942,7 +956,8 @@ def fig7():
         x50 = thr['threshold_P_NZ_2050'] / 1e6
         y0_, y1_ = b.get_ylim()                                     # the line stops above the data (legend clear)
         top = (np.log(vmax * 1.15) - np.log(y0_)) / (np.log(y1_) - np.log(y0_))
-        b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3, label=f"{N.TL['TL']}: P(LoE of AR ≤ 1) = 50%")
+        vl = b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3,
+                       label=f"{N.TL['TL']}: P(LoE of AR ≤ 1) = 50%")
         b.text(x50, 0.03, f' {x50:.2f} M (95% CI {lo / 1e6:.2f}–{hi / 1e6:.2f} M)', transform=b.get_xaxis_transform(),
                ha='left', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
     hb = b.get_legend_handles_labels()[0]
@@ -958,6 +973,11 @@ def fig7():
     a.tick_params(axis='y', labelsize=S.FONT_SMALL * 1.1)
     P.centre_ticklabels(fig, a)                                       # one centre axis
     fig.tight_layout()
+    if thr['estimable']:                                              # the 50% line stops 3 pt below the legend
+        fig.canvas.draw()
+        lb = lg.get_window_extent().transformed(b.transAxes.inverted()).y0
+        gap = 3 / 72 * fig.dpi / b.get_window_extent().height
+        vl.set_ydata([0, min(top, lb - gap)])
     _save(fig, 'Fig7_uncertainty',
           note='(b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build '
                'years); its carbon floor is the 2026-27 pipeline plus maintenance. ' + f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "

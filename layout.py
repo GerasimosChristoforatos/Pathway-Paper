@@ -3,8 +3,8 @@
     outputs/                  full profile (run_all.py --profile full); outputs/_light/ mirrors this tree for the
                               light profile (the default)
       paper_main/             Fig1-Fig7 of the paper (figure_plan.PAPER_MAIN)
-      paper_extended/         Extended Data ED1-ED9 and the table EDT1 (figure_plan.PAPER_EXTENDED)
-      supplementary/<folder>/ Supplementary Figures SF1-SF15 and the table ST1 (figure_plan.SUPPLEMENTARY)
+      paper_extended/         Extended Data ED1-ED10 and the table EDT1 (figure_plan.PAPER_EXTENDED)
+      supplementary/<folder>/ Supplementary Figures SF1-SF14 and the table ST1 (figure_plan.SUPPLEMENTARY)
       diagnostics/_audit/     the record of every drawn figure (figures/audit.py; read by the tests)
       FIGURES.md              the index of every figure (indexes / figures/index.py, from figure_plan.py)
       run_meta.json           profile, draws, seeds, git hash, input hash, timestamp, step timings

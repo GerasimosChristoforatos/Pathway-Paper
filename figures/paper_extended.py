@@ -164,7 +164,7 @@ def sf2():
         P.panel(ax[1], 'b', 'TL LoE against the 2050 population (no threshold)')
     ax[1].set_xlabel('New Zealand population 2050 (million), Monte Carlo draws')
     fig.tight_layout()
-    _save(fig, 'SF14_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
+    _save(fig, 'SF13_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
                                           f"{j['wilson_95'][1]:.3f}); (b) {note_b}.")
 
 
@@ -261,7 +261,7 @@ def sf3():
         if t_.get_text() in N.STRATEGIES.values():
             t_.set_fontweight('bold')
     fig.tight_layout()
-    _save(fig, 'SF10_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
+    _save(fig, 'SF9_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
                                          's_ref against the year-varying replacement share.')
 
 
@@ -288,7 +288,7 @@ def sf4():
         P.panel(a, letter, f"{L} {N.LEVERS[L]} (n = {q['n']}, B = {e['bootstrap']['B']})")
     fig.tight_layout()
     c15 = p['L8'].get('check_with_A_1')
-    _save(fig, 'SF11_hd_estimators',
+    _save(fig, 'SF10_hd_estimators',
           note=('L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
                 'its ratio to the apartment pooled value is ~1 by construction'
                 + (f" ({c15['A_1_ratio']:.4f}); with A_1 (n = {c15['n']}) r = {c15['r']:.3f} (95% CI "
@@ -430,6 +430,6 @@ def edt1():
 
 FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_household_formation_size': ed3,
            'ED3_replacement_variants': ed9, 'ED9_rollout_timing': ed10,      # ED8 dropped, ED10 -> ED9
-           'SF3_census_replacement_rates': ed2, 'SF5_overbuild_absorption': ed4, 'SF10_lambda_sweep': sf3,
-           'SF11_hd_estimators': sf4, 'SF14_conditional_tl': sf2}
+           'SF3_census_replacement_rates': ed2, 'SF5_overbuild_absorption': ed4, 'SF9_lambda_sweep': sf3,
+           'SF10_hd_estimators': sf4, 'SF13_conditional_tl': sf2}
 TABLES = {'EDT1_levels_by_typology': edt1}

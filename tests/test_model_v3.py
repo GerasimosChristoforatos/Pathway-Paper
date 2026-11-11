@@ -102,7 +102,9 @@ def test_lever_data_stop_conditions(params):
     assert params['L1']['high_ge_medium_every_year']
     v = params['L1']['variants']
     import levers as LV
-    assert all(v['High'][y] >= v['Medium'][y] for y in v['High'] if int(y) <= LV.L1_GAP_HELD_AFTER)
+    assert all(v['High'][y] >= v['Medium'][y] for y in v['High'])
+    import projection
+    assert params['L1']['tail'] == projection.S_TAIL
     assert all(r['ok'] for r in params['tl_strength'])
     assert {k: round(m['size_min'], 1) for k, m in params['L4']['minima'].items()} == \
         {'Detached': 148.8, 'Townhouses': 105.8, 'Apartments': 91.0}

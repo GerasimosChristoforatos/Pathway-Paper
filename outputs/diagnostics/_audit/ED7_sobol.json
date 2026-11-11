@@ -1,6 +1,6 @@
 {
  "figure": "ED7_sobol",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Embodied carbon, cumulative 2026\u20132050",
@@ -37,7 +37,7 @@
   "a",
   "b"
  ],
- "note": "Reference; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% intervals by bootstrap of the Sobol samples; full profile only.",
+ "note": "Reference; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% intervals by bootstrap of the Sobol samples; full profile only. Population and household size are one grouped input: both are drawn from one standard-normal score z (perfectly dependent), so their indices are grouped Sobol indices (Jacques, Lavergne & Devictor 2006).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

@@ -424,22 +424,24 @@ def stack_materials(ax, years, frame, scale=1.0, alpha=1.0, smooth=False):
 # history with its census benchmarks
 # ---------------------------------------------------------------------------
 def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History', lw=S.LW, k=None,
-                      census_last=2018):
+                      census_last=2018, straight=False, tail=True):
     """Households / household size history: census-benchmarked to census_last (solid);
     census_last+1..anchor Stats NZ estimates scaled to the anchor census by k (dotted);
-    after the anchor consent-derived estimates, not used (faint dashed); the anchor census
-    point marked."""
+    after the anchor (tail=True) consent-derived estimates, not used (faint dashed); the anchor census
+    point marked. straight=True draws straight segments between the annual values (observed data, not smoothed)."""
     s = series.dropna() / scale
     last = int(s.index.max())
-    line(ax, s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw,
+    draw = (lambda x, y, **kw: ax.plot(x, y, **kw)) if straight else (lambda x, y, **kw: line(ax, x, y, **kw))
+    draw(s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw,
          label=f'{label}: census-benchmarked to {census_last}')
     mid = s.loc[census_last:anchor]
-    line(ax, mid.index, mid.values, color=color, lw=lw, ls=':',
+    draw(mid.index, mid.values, color=color, lw=lw, ls=':',
          label=f'{census_last + 1}–{anchor % 100:02d}: Stats NZ estimates scaled to the {anchor} census'
-                  + (f' (×{k:.3f})' if k is not None else ''))
-    tail = s.loc[anchor:]
-    line(ax, tail.index, tail.values, color=color, lw=lw * 0.7, ls='--', alpha=S.FIXED_FADES['estimate_not_used_line'],
-         label=f'{anchor + 1}–{last % 100:02d}: consent-derived estimates, not used')
+               + (f' (×{k:.3f})' if k is not None else ''))
+    if tail:
+        t_ = s.loc[anchor:]
+        draw(t_.index, t_.values, color=color, lw=lw * 0.7, ls='--', alpha=S.FIXED_FADES['estimate_not_used_line'],
+             label=f'{anchor + 1}–{last % 100:02d}: consent-derived estimates, not used')
     if anchor in s.index:
         ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=3, label=f'{anchor} census')
     ax.ticklabel_format(axis='y', style='plain', useOffset=False)

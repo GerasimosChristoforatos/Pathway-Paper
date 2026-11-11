@@ -126,7 +126,8 @@ L5_TYPOLOGIES = ('Detached', 'Townhouses', 'Apartments')
 L1_VARIANTS = ('Low', 'Medium', 'High')
 L1_REFERENCE_VARIANT = 'Medium'
 L1_AMBITIOUS_VARIANT = 'High'
-L1_GAP_HELD_AFTER = 2048          # the last published Stats NZ knot (2023-base family and household projections)
+# L1: after the last Stats NZ knot (2048) each variant follows its own tail (projection.S_TAIL, the same rule for
+# every variant), so the High - Medium gap is taken in every year (MODEL v4.5.0; MODEL v4.4 held it at 2048)
 # TL1 speed limit: the TL household size cannot rise faster than the fastest change observed between
 # consecutive censuses 1991-2023 (census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - 2026), TL1
 # level), and never below the Ambitious path (S_ref + w gap). The other TL items keep the logistic window; the instant
@@ -396,12 +397,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     S_high = np.asarray(S_variants[L1_AMBITIOUS_VARIANT]['S'], float)
     if not np.allclose(S_med, S, rtol=1e-12, atol=0):
         raise SystemExit('STOP (L1): the Reference household size is not the Medium variant.')
-    held = years > L1_GAP_HELD_AFTER
-    gap_raw = S_high - S_med
-    if np.any(gap_raw[~held] < 0):
-        bad = [int(y) for y, g in zip(years[~held], gap_raw[~held]) if g < 0]
-        raise SystemExit(f'STOP (L1): High household size below Medium in {bad}.')
-    gap = np.where(held, gap_raw[int(np.where(years == L1_GAP_HELD_AFTER)[0][0])], gap_raw)
+    gap = S_high - S_med                     # every year: each variant on its own post-2048 tail (projection.S_TAIL)
     if np.any(S_high < S_med):
         bad = [int(y) for y, h, m in zip(years, S_high, S_med) if h < m]
         raise SystemExit(f'STOP (L1): High household size below Medium in {bad}.')
@@ -409,7 +405,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     S_tl = float(hS.max())
     S_amb = S + gap
     out['L1'] = dict(subrule='C', variants={v: yy(S_variants[v]['S']) for v in S_variants}, gap=yy(gap),
-                     gap_held_after=L1_GAP_HELD_AFTER, S_ref=yy(S),
+                     tail=settings.S_TAIL, S_ref=yy(S),
                      S={'reference': yy(S), 'moderate': yy(S + gap / 2.0), 'ambitious': yy(S_amb)},
                      tl=S_tl, tl_year=int(hS.idxmax()), high_ge_medium_every_year=True,
                      anchor=f'Stats NZ High - Medium household size gap (2050: +{gap[-1]:.4f})')

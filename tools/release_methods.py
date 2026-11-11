@@ -148,7 +148,9 @@ def lines():
          'one propensity the projections differ only through their population projections; the Monte Carlo pairs '
          'them through one z). Sensitivities: Medium B (propensities change, modelled on the 2001-2023 censuses) '
          'and the 2018-2023 census pace continued linearly from 2023, for the Reference, the Moderate / Ambitious '
-         'Pathway and TL (sensitivity/household_size.csv).', '',
+         'Pathway and TL (sensitivity/household_size.csv). Extra space grows with smaller households: its floor area '
+         'is new households x (dwelling size - occupied area per dwelling), and a smaller household size means more '
+         'new households for the same population and a smaller occupied area per dwelling.', '',
          '### Check and sensitivity rows', '',
          f"TL with re-occupation as fast as demand allows (deterministic sensitivity row): {fast['carbon_kt']:,.1f} kt, "
          f"LoE AR {fast['LoE_AR']:.3f} (TL: {tl['carbon_kt']:,.1f} kt, LoE AR {tl['LoE_AR']:.3f}).", '',

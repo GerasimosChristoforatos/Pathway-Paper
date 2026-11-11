@@ -16,9 +16,10 @@ PAPER_MAIN = [
          title='Floor area: history and projection by demand band',
          caption='Floor area built per year by demand band: history as census-interval means (columns), the Reference '
                  'projection annually from 2026 (2026 observed). Positive bands stacked up from zero, negative bands '
-                 '(overbuild absorbed, unconsented additions) down from zero. The black line is the floor area built '
+                 '(the starting surplus and the overbuild absorbed, unconsented additions) down from zero. The black line is the floor area built '
                  '(in scope), annual 1992-2050 (history from consents, projection from 2026); the grey caps on the '
-                 'history columns are the census-interval means. 2026 overbuild: observed 2026 building above need, fading from 2027 and absorbed by 2035.',
+                 'history columns are the census-interval means. 2026 overbuild: observed 2026 building above need, fading from 2027; '
+                 'it is absorbed by 2035 together with the starting surplus (the 2024-25 building beyond the stock identity, carried into 2026).',
          source=['baseline/bands_history.csv', 'baseline/bands_annual.csv', 'baseline/annual.csv',
                  'baseline/overbuild_2026.json']),
     dict(id='Fig2', file='Fig2_reference_carbon', width='double', module='figures.paper_main',
@@ -90,9 +91,7 @@ PAPER_EXTENDED = [
          title='One at a time: cumulative embodied carbon 2026-2050 of the Reference',
          caption='One-at-a-time ranges of the Reference cumulative embodied carbon 2026-2050, grouped by category; each '
                  'input at its low (pale blue) and high (dark blue) end, a single alternative case grey, intermediate cases as '
-                 'ticks; not additive, not a joint interval. Not shown (kept in the data file): household size held '
-                 'flat after 2048 (the Reference is also held constant after 2048, with a zero slope imposed at 2048), '
-                 'the post-2048 taper rows whose effect is at most 0.1% of the Reference, '
+                 'ticks; not additive, not a joint interval. Not shown (kept in the data file): '
                  'the overbuild gap against the 2026 requirement, no census under-construction correction, the '
                  'maintenance event timing L / n, and the rows that compare with superseded settings (their changes are in the note). '
                  'What each row changes compared with the Reference (numbered as the row labels): ',
@@ -187,7 +186,7 @@ SUPPLEMENTARY = [
          title='New-dwelling size: realised and occupied floor area, and consented size by typology',
          source=['figure_source/D08_dwelling_space.json', 'pathways/levers.json']),
     dict(id='SF5', file='SF5_overbuild_absorption', folder='calibration', module='figures.paper_extended',
-         title='The 2026 overbuild: absorption in the Reference and its timing sensitivity',
+         title='The starting surplus and the 2026 overbuild: absorption in the Reference and its timing sensitivity',
          source=['baseline/overbuild_absorption_log.csv', 'baseline/sensitivity_annual_carbon.csv']),
     dict(id='SF6', file='SF6_hindcast', folder='validation', module='figures.validation',
          title='Rolling-origin hindcast of dwellings built and the 2027 out-of-sample check',

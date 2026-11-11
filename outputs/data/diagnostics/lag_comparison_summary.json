@@ -30,14 +30,14 @@
     "payback_dwellings_2026_2050": 19793.042917385304,
     "cumulative_categories_Mm2_2026_2050": {
       "population_growth": 40.755045693966956,
-      "household_size_change": 14.002038483468422,
-      "net_replacement": 15.221248227461656,
-      "other": 39.66781828482961,
+      "household_size_change": 14.81674500657988,
+      "net_replacement": 15.220247445538634,
+      "other": 40.30897047033676,
       "market_excess": 1.8010009296410436,
       "overbuild_absorbed": -2.6394787135471454,
-      "underlying_requirement": 109.64615068972664,
+      "underlying_requirement": 111.10100861642223,
       "net_market_effect": -0.8384777839061017,
-      "total_built": 108.80767290582054
+      "total_built": 110.26253083251613
     }
   },
   "lag_0_held": {
@@ -67,14 +67,14 @@
     "payback_dwellings_2026_2050": 25011.850007028544,
     "cumulative_categories_Mm2_2026_2050": {
       "population_growth": 40.755045693966956,
-      "household_size_change": 14.002038483468422,
-      "net_replacement": 9.01405597529994,
-      "other": 39.66781828482961,
+      "household_size_change": 14.81674500657988,
+      "net_replacement": 9.013452415945553,
+      "other": 40.30897047033676,
       "market_excess": 2.4984995105675547,
       "overbuild_absorbed": -3.3354267939265902,
-      "underlying_requirement": 103.43895843756492,
+      "underlying_requirement": 104.89421358682915,
       "net_market_effect": -0.8369272833590355,
-      "total_built": 102.60203115420589
+      "total_built": 104.05728630347012
     }
   },
   "lag_17": {
@@ -115,14 +115,14 @@
     "payback_dwellings_2026_2050": 34694.2114214337,
     "cumulative_categories_Mm2_2026_2050": {
       "population_growth": 40.58837862649656,
-      "household_size_change": 13.944133810762457,
-      "net_replacement": 9.293359964905619,
-      "other": 42.86637559142598,
+      "household_size_change": 14.755398984844712,
+      "net_replacement": 9.292736726818084,
+      "other": 43.55843662823619,
       "market_excess": 2.0209211514993064,
       "overbuild_absorbed": -4.777455155683255,
-      "underlying_requirement": 106.69224799359061,
+      "underlying_requirement": 108.19495096639554,
       "net_market_effect": -2.756534004183949,
-      "total_built": 103.93571398940666
+      "total_built": 105.43841696221159
     }
   },
   "historical_classification": {

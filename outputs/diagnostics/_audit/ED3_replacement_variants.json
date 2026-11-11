@@ -1,6 +1,6 @@
 {
  "figure": "ED3_replacement_variants",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Annual",

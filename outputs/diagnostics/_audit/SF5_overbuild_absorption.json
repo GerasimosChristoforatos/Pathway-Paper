@@ -1,6 +1,6 @@
 {
  "figure": "SF5_overbuild_absorption",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Reference: absorbed by 2035",
@@ -59,22 +59,22 @@
   "$\\mathdefault{900}$",
   "$\\mathdefault{\u221210}$",
   "Absorption timing (2026\u20132050 totals)",
-  "Cumulative excess C(t)",
   "Dwellings (thousand)",
   "Embodied carbon (kt CO\u2082e per year)",
   "Implied vacancy (%)",
   "Implied vacancy (right)",
   "Payback (built less), per year",
   "Reference: absorbed by 2035",
+  "Starting surplus + cumulative excess C(t)",
   "Surplus still vacant U(t)",
   "a",
   "b",
-  "by 2030: 25,136 kt",
-  "by 2035 (adopted): 25,176 kt",
-  "by 2045: 25,244 kt",
-  "never absorbed: 26,421 kt"
+  "by 2030: 25,463 kt",
+  "by 2035 (adopted): 25,503 kt",
+  "by 2045: 25,571 kt",
+  "never absorbed: 26,749 kt"
  ],
- "note": "Theory fixes the direction (reversion to the equilibrium vacancy), not the speed; 2035 is the common RECC window; speed bracketed.",
+ "note": "The surplus still vacant U(t) starts with the starting surplus of 18,966 dwellings (the 2024\u20132025 building beyond the stock identity, carried into 2026), to which the 2026 overbuild adds; both are paid back along the same logistic by 2035. Theory fixes the direction (reversion to the equilibrium vacancy), not the speed; 2035 is the common RECC window; speed bracketed.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
@@ -91,6 +91,6 @@
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
  "retired_colours": [],
- "negative_bar_segments": 26,
+ "negative_bar_segments": 0,
  "negative_bar_segments_filled": 0
 }

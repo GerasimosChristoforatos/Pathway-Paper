@@ -1,6 +1,6 @@
 {
  "figure": "ED2_household_formation_size",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Household formation by source",
@@ -23,6 +23,7 @@
   "$\\mathdefault{15}$",
   "$\\mathdefault{1980}$",
   "$\\mathdefault{1990}$",
+  "$\\mathdefault{2.40}$",
   "$\\mathdefault{2.45}$",
   "$\\mathdefault{2.50}$",
   "$\\mathdefault{2.55}$",

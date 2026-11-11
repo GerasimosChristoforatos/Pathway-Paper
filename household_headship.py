@@ -19,7 +19,7 @@ Method (headship rates by age group a: 0-14, 15-39, 40-64, 65+):
 Check (tests/test_household_headship.py): S_2023 reproduces the Stats NZ Medium A household size (people in
 households / households, data/derived/households_proj_2023base.csv) to within 0.025 at every knot. The largest
 deviations are 0.022 (Medium, 0.85%, 2033), 0.024 (Low) and 0.021 (High); they come from the four broad age groups the table provides (sex-specific rates give
-the same deviation). The v4.7 audit (docs/AUDIT_v4_7.md) stated "within 0.02", which was rounded down. The scaling of
+the same deviation). The v4.7 audit (draft PR 29, not merged) stated "within 0.02", which was rounded down. The scaling of
 the model path uses the ratio to S_2023, the method's own propensity-A equivalent, so this aggregation bias cancels.
 """
 import os

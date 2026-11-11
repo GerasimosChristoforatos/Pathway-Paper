@@ -2,6 +2,105 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.7.0: publication cleanup, one rule for the pathway levels, TL1 age-standardised sensitivity
+
+The cleanup implements the decisions in the v4.7 audit (draft PR 29, closed without merging; README does not link to it).
+After the cleanup, one full run (`run_all.py --profile full`) and then the light run. Every number below is read from
+the v4.6.0 outputs (main after PR 28) and from this run.
+
+### v4.6.0 -> v4.7.0
+
+| quantity | v4.6.0 | v4.7.0 |
+|---|---|---|
+| Reference: carbon 2026-2050 (kt CO2e) / LoE AR / LoE AtP | 25,502.8 / 5.761 / 22.91 | 25,502.8 / 5.761 / 22.91 (unchanged) |
+| Moderate Pathway | 17,971.4 / 4.060 / 16.15 | 17,236.1 / 3.894 / 15.49 |
+| Ambitious Pathway | 12,542.0 / 2.833 / 11.27 | 11,459.2 / 2.589 / 10.30 |
+| Theoretical Limit | 4,079.1 / 0.921 / 3.67 | 4,079.1 / 0.921 / 3.67 (unchanged) |
+| TL, TL1 age-standardised (new sensitivity) | - | 5,946.4 / 1.343 / 5.34 |
+| P(LoE AR <= 1), pathway Monte Carlo (5,000 draws): Reference / Moderate / Ambitious / TL / TL from 2027 | 0.0% / 0.0% / 0.0% / 64.0% / 98.9% | 0.0% / 0.0% / 0.0% / 64.0% / 98.9% |
+| P(LoE AR <= 1), TL1 age-standardised | - | 0.06% (3 of 5,000) |
+| TL threshold population 2050 (P = 50%) | 6.715 M (95% CI 6.713-6.718) | 6.715 M (95% CI 6.713-6.718) |
+| Shapley top 3, Ambitious (kt) | L5 2,531; L1 2,193; L8 1,749 | L1 3,611; L5 2,434; L8 1,682 |
+| Shapley top 3, TL (kt) | L1 6,639; L4 3,346; L2 2,883 | unchanged |
+| L1 alone, Moderate / Ambitious (kt) | 24,010.9 / 22,563.4 | 23,058.5 / 20,731.1 |
+| L9 alone, Moderate / Ambitious / TL (kt) | 24,701.3 / 23,899.8 / 22,668.6 | 24,689.4 / 23,876.0 / 22,668.6 |
+| Committed after 2050 (lower bound), central and Monte Carlo 90% interval (kt) | 9,728 (8,160-11,519) | 9,728 (8,160-11,519) (unchanged) |
+
+The Reference, the Theoretical Limit, the Reference Monte Carlo and Sobol indices are unchanged to the last digit; the
+Moderate and Ambitious Pathways change through L1 and L9 only.
+
+### Stage 1: cleanup (outputs identical)
+
+Proof: the deterministic steps re-run after the cleanup; every file of `outputs/data` byte-identical except the nine
+removed replacement-variant Monte Carlo files and four files that differ only by the dropped variant entries
+(`aesa/montecarlo_annual.csv`, `aesa/results.json`, `metrics.json`, `figure_source/D23_annual_loe.json`; every REF
+entry identical). The regression lock (`tests/regression_model_v4.json`) unchanged and passing. Tests 265 -> 252
+collected, all passed, 0 skipped. Code and docs outside `outputs/`: 59 files, +658 / -2,789 lines.
+
+* Removed code paths: the 'dhe' household bridge and the 'projection' start mode (households after 2023 = population /
+  household size always); the two-point completion lag (Little's law; `lag_census` = lag in years); `PATHWAY_FROZEN`
+  (its settings are now plain settings); every QUICK_RUN / `--quick` reference; the 2018-base household path (loaders,
+  settings, branches); the L1 `on` and TL surplus-pooling switches (always on). `projection.py` 2,431 -> 2,274 lines.
+  The four month-name helpers merged into `naming.month_year`.
+* Removed data (sizes in bytes): `data/Householddata.xlsx` (123,198), `data/subnational-population-projections-2018base-
+  2048.xlsx` (150,914), `data/consentdata.xlsx` (54,725), `data/raw/building-consents-issued-july-2026.xlsx` (184,881),
+  with their MANIFEST rows and the NZ_pop.xlsx row (the July 2026 zip row kept for provenance).
+* Removed tests and fixtures: the two duplicated tests; the MODEL v2 / v3.3 reproduction tests with
+  `tests/regression_pb_v2.json` (2,186 B) and `tests/v3_3_runs_fixture.json` (14,509 B); the ten tests classified (c)
+  (including `test_households_per_consent.py`, `test_validation.py`). One extra: `test_model_v4_2
+  bridge_reaches_2026_2050` compared the 'erp_S' and 'dhe' bridges and cannot exist without the second.
+* Replacement Monte Carlo (Low / High / Very High variants) dropped: variants, nine output files (~3.1 MB), run steps,
+  the Methods table and tests. Replacement uncertainty is reported by ED3 (the four variants through every run) and the
+  one-at-a-time rows (Replacement Low-Very High; half-life 5-15 yr).
+* Docs: `docs/METHODS_DRAFT.md` and `docs/LEVERS_TABLE.md` deleted (generated copies are in `outputs/reports/`; links
+  fixed); ARCHITECTURE rewritten (918 -> 498 lines); `docs/palette_preview.png` 2,617,166 -> 325,556 B; README in its
+  final form (question, headline results generated from `outputs/data/metrics.json`, how to run: full / light /
+  figures-only / redraw, tests, provenance, data freeze, citation); `tests/README.md` updated.
+
+### Stage 2: pathway method consistency
+
+* One rule for the levels (Methods Table 1 header, `outputs/reports/LEVERS_TABLE.md` "Rule" column, `levers.LEVEL_RULE`):
+  Reference = current practice held; Moderate = the midpoint; Ambitious = the documented frontier; TL = the logical
+  bound (zero vacancy, zero space beyond the occupied area, no demolition, 100% brownfield, zero A4-A5), otherwise the
+  best observed (TL1 household size; the lowest-carbon NZ case study). TL A4-A5 = 0 is labelled a theoretical bound
+  (construction waste cannot reach zero; LCAQuick does not split A4-A5). Exceptions stated: TL1 reaches its level in
+  2037.5 (rate limit); L9 phased once (below).
+* L1 Ambitious = the Stats NZ Medium B household projection (living-arrangement propensities change; DataInfo+
+  POPPR_FHH, propensity B), rebased on the observed 2023 household size with the same 2048 secant tail; in the pathway
+  Monte Carlo the draw's own Low / Medium / High B path. Replaces the High - Medium gap. Moderate = the midpoint. 2050:
+  Reference 2.4635, Moderate 2.5275, Ambitious 2.5916 (v4.6.0 Ambitious 2.5420). B >= A in every year (checked; STOP
+  otherwise). The ED4 row "Living arrangements: propensities change" asks "what if B happens anyway"; L1 Ambitious asks
+  "what if policy delivers it" (same path, both stated).
+* TL1 unchanged (2.79, 1991; the same rate limit). Methods and the SF13 note: held regardless of age structure; with the
+  2050 population this requires about 11.7% fewer households per person than in 2023 at every age.
+* New sensitivity "TL1 age-standardised" (`household_headship.py`, `tests/test_household_headship.py`): headship rates by
+  age group (0-14, 15-39, 40-64, 65+) from POPPR_FHH_008 / POPPR_FHH_010, calibrated on 2023; TL1 at the lower of the 2023
+  and Medium B rates by age group, scaling the Reference household size. Above L1 Ambitious in 2026-2039 and floored at
+  it (TL never weaker than Ambitious) in 2040-2050. Row TL-TL1-age-standardised in runs, theoretical_limit.json, metrics
+  and README; the SF13 note; the Methods; P(LoE AR <= 1) from the pathway Monte Carlo.
+* L9 Ambitious phased once: anchored on the Reference 2026 factor, linear to zero in 2050 (v4.6.0 applied the roll-out
+  twice). Effective A4-A5 factor, Reference / Ambitious v4.6.0 / v4.7.0: 2027 0.980 / 0.978 / 0.949; 2030 0.951 / 0.890 /
+  0.825; 2035 0.905 / 0.600 / 0.619; 2040 0.861 / 0.400 / 0.413; 2050 0.779 / 0 / 0. TL unchanged.
+* Re-checked: Reference = lever off in every TL and Shapley run; midpoints; phase exceptions (`ordering_checks.json`).
+
+### Stage 3: run, lock, tests
+
+* Full run, then light run; lock re-captured (18 of 34 deterministic files changed, all under `pathways/` plus
+  `baseline/projection.json` settings keys, `baseline/gap_2026.json`, D09; the Reference baseline annual / bands,
+  sensitivity Reference and tornado, AESA annual files unchanged). Tests: 258 passed, 0 skipped (the two AESA-workbook
+  skips of earlier releases were removed with their tests in Stage 1).
+* Every main, Extended Data and Supplementary figure inspected.
+
+### Deviations and audit items not implemented
+
+* The audit's "the 2023-rate path reproduces Stats NZ Medium A within 0.02" does not hold: max |difference| 0.0225
+  (Medium, 2033), 0.024 (Low), 0.021 (High), from the four broad age groups (sex-specific rates give the same). The test
+  uses 0.025 (documented); the model uses the ratio to the 2023-rate path, so this aggregation bias cancels.
+* README provenance rows for histpopdata, popdata, oldhouseholddata and occ-unocc: MANIFEST holds no rows for them; the
+  README states what the files themselves record ("not recorded in MANIFEST").
+* Not implemented (not in the v4.7.0 brief): the 20-year AR-base Monte Carlo table; renaming `regression_model_v3` ->
+  `v4`; moving two figure tests out of `test_events.py`; renaming `test_fig6_*`.
+
 ## model-v4.6.0: data freeze (consents to September 2026), committed emissions in the Monte Carlo, figure simplifications
 
 One full run (`run_all.py --profile full`), then the light profile. Every number below is read from the outputs of

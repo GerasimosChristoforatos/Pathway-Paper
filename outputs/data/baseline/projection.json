@@ -6,7 +6,7 @@
     "nowcast_method": "last_12_months",
     "overbuild_booking": "surplus",
     "completion_rate": 0.945,
-    "lag_w": 0.0
+    "completion_lag_months": 17
   },
   "floor_area_Mm2": 105.43841696221159,
   "carbon_kt": 25502.820795312804,

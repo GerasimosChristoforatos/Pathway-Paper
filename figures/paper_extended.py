@@ -183,11 +183,13 @@ def sf2():
     s = D.csv('pathways/montecarlo_summary.csv')
     m = s[(s['run'] == 'TL_TL1_age_standardised') & (s['quantity'] == 'LoE_AR')]
     tl1 = D.js('pathways/levers.json')['L1']
+    floored = [int(y) for y, v in a['level_by_year'].items() if float(v) < float(tl1['S']['ambitious'][str(y)])]
+    floor_txt = f'; never below L1 Ambitious, which binds from {floored[0]}' if floored else ''
     age_note = (f" TL1 holds household size at {tl1['tl']:.2f} ({tl1['tl_year']}, the highest observed) regardless of "
                 f"age structure: with the 2050 population this requires about "
                 f"{100 * a['tl1_households_per_person_fall_at_every_age']:.1f}% fewer households per person than in "
                 f"2023 at every age. With an age-standardised TL1 (the lower of the 2023 and Stats NZ Medium B "
-                f"living-arrangement rates by age group) TL is {a['carbon_kt']:,.0f} kt, LoE AR {a['LoE_AR']:.2f}"
+                f"living-arrangement rates by age group{floor_txt}) TL is {a['carbon_kt']:,.0f} kt, LoE AR {a['LoE_AR']:.2f}"
                 + (f", P(LoE AR \u2264 1) = {100 * float(m['probability_LoE_at_most_1'].iloc[0]):.1f}% over the draws"
                    if len(m) else '') + ' (the sensitivity row TL-TL1-age-standardised).')
     _save(fig, 'SF13_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"

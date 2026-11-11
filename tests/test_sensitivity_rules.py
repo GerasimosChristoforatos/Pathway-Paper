@@ -19,7 +19,7 @@ from conftest import ROOT, run_boss  # noqa: F401
 
 
 def _data(rel):
-    return layout.data(rel, frozen=False)
+    return layout.data(rel)
 
 
 def _js(rel):

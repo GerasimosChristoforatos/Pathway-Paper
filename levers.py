@@ -131,9 +131,7 @@ L1_AMBITIOUS_VARIANT = 'High'
 # TL1 speed limit: the TL household size cannot rise faster than the fastest change observed between
 # consecutive censuses 1991-2023 (census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - 2026), TL1
 # level), and never below the Ambitious path (S_ref + w gap). The other TL items keep the logistic window; the instant
-# TL row (TL_FROM2027) keeps its definition (the level from 2027). False switches the limit off (tests/test_model_v4.py
-# checks that this reproduces the MODEL v3.3 runs).
-TL1_SPEED_LIMIT = True
+# TL row (TL_FROM2027) keeps its definition (the level from 2027).
 TL1_SPEED_CENSUS_WINDOW = (1991, 2023)
 TL1_SPEED_START = OBSERVED_YEAR
 L2_VACANCY_FLOOR = 0.040          # implied vacancy must never fall below this in a non-TL run (check)
@@ -419,7 +417,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     reached = TL1_SPEED_START + (S_tl - float(S[i0])) / fastest['rate']
     out['L1']['tl_speed'] = dict(rate=fastest['rate'], interval=[fastest['y0'], fastest['y1']], start=TL1_SPEED_START,
                                  S_start=float(S[i0]), level=S_tl, level_reached=float(reached),
-                                 census_years=cy, intervals=intervals, on=TL1_SPEED_LIMIT,
+                                 census_years=cy, intervals=intervals, on=True,
                                  path=yy(tl1_path(S, gap, w, years, S_tl, fastest['rate'])),
                                  basis='fastest change of household size between consecutive censuses 1991-2023')
 
@@ -699,7 +697,7 @@ def inputs(base, p, levels, ramp_name=None):
     # L1 household size (the draw's own Reference S plus the published gap; TL1: the historical maximum)
     if 'L1' in lv:
         gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
-        if lv['L1'] == 'tl' and TL1_SPEED_LIMIT and ramp_name != TL_FROM2027:
+        if lv['L1'] == 'tl' and ramp_name != TL_FROM2027:
             # the speed limit replaces the window (the path is the target, at full weight)
             target = tl1_path(S, gap, w, years, p['L1']['tl'], p['L1']['tl_speed']['rate'])
             hh, S = l1_households(base['hh'], S, target, np.ones(len(years)))

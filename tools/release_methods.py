@@ -19,7 +19,7 @@ import projection  # noqa: E402
 
 
 def _js(rel):
-    with open(layout.data(rel, frozen=False)) as f:
+    with open(layout.data(rel)) as f:
         return json.load(f)
 
 
@@ -38,7 +38,7 @@ def lines():
     hu = _js('baseline/history_unexplained.json')
     ob = _js('baseline/overbuild_2026.json')
     lv = _js('pathways/levers.json')
-    runs = pd.read_csv(layout.data('pathways/runs.csv', frozen=False))
+    runs = pd.read_csv(layout.data('pathways/runs.csv'))
     ref = runs[runs['scenario'] == 'REF'].set_index('run')
     tl, fast = ref.loc['TL'], ref.loc[PW.TL_REOCCUPATION_FAST]
     L = ['### Attribution principle and system boundary', '',

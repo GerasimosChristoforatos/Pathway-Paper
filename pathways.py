@@ -65,10 +65,10 @@ import runprofile  # noqa: E402
 import validation  # noqa: E402
 
 RAMP_ADOPTED = LV.ADOPTION_ADOPTED
-OUT = layout.data('pathways', frozen=False)
-FILE_PB_ANNUAL = layout.data('aesa/annual.csv', frozen=False)
-FILE_PB_RESULTS = layout.data('aesa/results.json', frozen=False)
-FILE_BOSS_RESULTS = layout.data('baseline/projection.json', frozen=False)
+OUT = layout.data('pathways')
+FILE_PB_ANNUAL = layout.data('aesa/annual.csv')
+FILE_PB_RESULTS = layout.data('aesa/results.json')
+FILE_BOSS_RESULTS = layout.data('baseline/projection.json')
 RUN_MODE = runprofile.name()
 
 WINDOW = (2026, 2050)
@@ -84,13 +84,11 @@ BRENTQ_XTOL = 1e-15
 M6 = 1e6
 REOCCUPATION_YEARS = (2027, 2050)   # the window starts at the first unobserved year (observed_window)
 FIRST_LEVER_YEAR = 2027             # no vacancy-rate fall before it (2026 observed; levers.OBSERVED_YEAR + 1)
-# TL_SURPLUS_POOLING: in a theoretical-limit-family run the Reference's overbuild surplus (the positive
+# TL surplus pooling: in a theoretical-limit-family run the Reference's overbuild surplus (the positive
 #   market excess: the pipeline years and the fading gap) enters the re-occupation pool with the TL1 / TL2 releases
 #   (constant share of each year's positive need, availability constraint, carry-forward) instead of the logistic
 #   payback; the re-occupied overbuild stays in the band 'Overbuild absorbed'. A negative excess (an under-build) is
-#   made good along the Reference's logistic. Non-TL runs are unaffected. False switches the pooling off
-#   (tests/test_model_v4.py checks that this reproduces the MODEL v3.3 runs).
-TL_SURPLUS_POOLING = True
+#   made good along the Reference's logistic. Non-TL runs are unaffected.
 REOCCUPATION_TOL = 1e-9         # relative tolerance of the re-occupation identities
 T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a zero-building year
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
@@ -313,7 +311,7 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     ob = np.asarray(ctx.get('observed_building', []), float)
     for k in range(2, len(ob) + 1):                   # observed building in every run (2026: no lever acts)
         excess[k] = ob[k - 1] - need[k]
-    pool_ob = tl_family and TL_SURPLUS_POOLING and ctx['absorb_w'] is not None
+    pool_ob = tl_family and ctx['absorb_w'] is not None
     s0 = float(ctx.get('start_surplus', 0.0))         # F1 starting surplus (vacant at the start; never built)
     exc_pos = np.maximum(excess, 0.0) if pool_ob else zeros
     exc_abs = excess - exc_pos                        # the part absorbed along the Reference's logistic
@@ -1168,7 +1166,7 @@ def tl_summary(res):
     return dict(run_mode=RUN_MODE, disclaimer=LV.TL_DISCLAIMER, bau=LV.TL_BAU_NOTE,
                 definition=dict(levels='every lever at Level 4', adoption='normalised logistic 2026 -> 2035 (as every '
                                 'level); MODEL v4.0.0: TL1 at the census speed limit (levers.json L1 tl_speed)',
-                                surplus_pooling=TL_SURPLUS_POOLING, tl1_speed=res['params']['L1'].get('tl_speed'),
+                                surplus_pooling=True, tl1_speed=res['params']['L1'].get('tl_speed'),
                                 sensitivity=f'{LV.TL_INSTANT_LABEL}: every limit at full strength from 2027',
                                 components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS},
                                 note='TL6 = 100% brownfield makes TL7 zero within TL'),
@@ -1192,7 +1190,7 @@ def write(res, identity):
     _json(res['backcast'], 'backcast.json')
     _json(res['ordering'], 'ordering_checks.json')
     _json(tl_summary(res), 'theoretical_limit.json')
-    pd.DataFrame(BANDS.display_map()).to_csv(layout.writing(layout.data('bands_display_map.csv', frozen=False)),
+    pd.DataFrame(BANDS.display_map()).to_csv(layout.writing(layout.data('bands_display_map.csv')),
                                             index=False)         # the six display bands
     FP.write_ed_number_map()                                      # Extended Data numbering old -> new
     FP.write_sf_number_map()                                      # Supplementary numbering old -> new

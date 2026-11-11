@@ -102,12 +102,12 @@ def write_carbon_factors(su, a13):
     technology), from the saved draws' carbon-factor parameter and the saved setup's bootstrap replicates
     (MonteCarlo.carbon_bootstrap, same seed and indices; nothing is resampled). Writes
     outputs/data/montecarlo/carbon_factors_REF.csv."""
-    draws = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))
+    draws = pd.read_csv(layout.montecarlo('draws', 'REF'))
     u = draws[N.identifier('carbon')].to_numpy(float)
     kc = np.minimum((u * MC.N_BOOT).astype(int), MC.N_BOOT - 1)
     rows = [dict(draw=int(j), typology=t, a1a3_kg_per_m2=float(a13[kc[j], i]))
             for j in range(len(draws)) for i, t in enumerate(su['typ'])]
-    pd.DataFrame(rows).to_csv(layout.writing(layout.data('montecarlo/carbon_factors_REF.csv', frozen=False)), index=False)
+    pd.DataFrame(rows).to_csv(layout.writing(layout.data('montecarlo/carbon_factors_REF.csv')), index=False)
 
 
 def draw_context(ctx, su, d, a13, red13, a45):
@@ -376,16 +376,16 @@ def main():
     if list(su['typ']) != list(ctx['typ']) or list(su['fy']) != [int(y) for y in ctx['years']]:
         raise SystemExit('pathways_mc: the Monte Carlo typologies / years differ from the pathway context.')
     com_c = PW.committed(ctx, gfa_c)
-    with open(layout.data('baseline/projection.json', frozen=False)) as f:
+    with open(layout.data('baseline/projection.json')) as f:
         com_det = __import__('json').load(f)['committed']
     w_com = max(abs(com_c[k] / com_det[k] - 1.0) for k in COMMITTED_COLUMNS)
     print(f'[check] committed after 2050, central draw vs baseline/projection.json: max relative difference '
           f'{w_com:.1e} ({"OK" if w_com < CENTRAL_TOL else "FAIL"})')
     if w_com >= CENTRAL_TOL:
         raise SystemExit(f'STOP: the central draw does not reproduce the committed emissions: {com_c} vs {com_det}.')
-    draws = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))
+    draws = pd.read_csv(layout.montecarlo('draws', 'REF'))
     X = draws[[N.identifier(c) for c in MC.PARAMS]].to_numpy(float)
-    budgets = pd.read_csv(layout.data('aesa/montecarlo_draw_budgets.csv', frozen=False))
+    budgets = pd.read_csv(layout.data('aesa/montecarlo_draw_budgets.csv'))
     if len(budgets) != len(draws):
         raise SystemExit('pathways_mc: the AESA draw budgets do not match the saved draws (re-run boundaries.py).')
     years = np.asarray(ctx['years'])
@@ -467,13 +467,13 @@ def main():
                  overbuild_cap_binds_draws_moderate_pathway=int((df['overbuild_cap_binding_years'] > 0).sum()),
                  tl_le_pathway_every_draw=True, reoccupation=reoccupation_counts(df))
     import json
-    with open(layout.writing(layout.data('pathways/montecarlo_draw_rules.json', frozen=False)), 'w') as f:
+    with open(layout.writing(layout.data('pathways/montecarlo_draw_rules.json')), 'w') as f:
         json.dump(rules, f, indent=1)
-    N.columns(df).to_csv(layout.writing(layout.data('pathways/montecarlo_draws.csv', frozen=False)), index=False)
+    N.columns(df).to_csv(layout.writing(layout.data('pathways/montecarlo_draws.csv')), index=False)
     summary = pd.DataFrame(summ)
     summary['central_draw_max_rel_diff'] = max(central.values())
-    N.columns(summary).to_csv(layout.writing(layout.data('pathways/montecarlo_summary.csv', frozen=False)), index=False)
-    N.columns(pd.DataFrame(ann)).to_csv(layout.writing(layout.data('pathways/montecarlo_annual.csv', frozen=False)),
+    N.columns(summary).to_csv(layout.writing(layout.data('pathways/montecarlo_summary.csv')), index=False)
+    N.columns(pd.DataFrame(ann)).to_csv(layout.writing(layout.data('pathways/montecarlo_annual.csv')),
                                         index=False)
     print(summary[['run', 'quantity', 'p5', 'p50', 'p95', 'probability_LoE_at_most_1']].to_string(index=False))
     print(rules)
@@ -485,12 +485,12 @@ def run_insights():
     """The insight analyses from the saved per-draw file (also: python pathways_mc.py --insights)."""
     import json
     t1 = time.time()
-    df = pd.read_csv(layout.data('pathways/montecarlo_draws.csv', frozen=False))
+    df = pd.read_csv(layout.data('pathways/montecarlo_draws.csv'))
     imp, fits, cond, cond_summary = insights(df)
-    imp.to_csv(layout.writing(layout.data('pathways/montecarlo_importance.csv', frozen=False)), index=False)
-    fits.to_csv(layout.writing(layout.data('pathways/montecarlo_fits.csv', frozen=False)), index=False)
-    cond.to_csv(layout.writing(layout.data('pathways/montecarlo_conditional_tl.csv', frozen=False)), index=False)
-    with open(layout.writing(layout.data('pathways/montecarlo_conditional_tl.json', frozen=False)), 'w') as f:
+    imp.to_csv(layout.writing(layout.data('pathways/montecarlo_importance.csv')), index=False)
+    fits.to_csv(layout.writing(layout.data('pathways/montecarlo_fits.csv')), index=False)
+    cond.to_csv(layout.writing(layout.data('pathways/montecarlo_conditional_tl.csv')), index=False)
+    with open(layout.writing(layout.data('pathways/montecarlo_conditional_tl.json')), 'w') as f:
         json.dump(cond_summary, f, indent=1)
     print(imp[imp['output'] == 'LoE_AR'][['run', 'input', 'src', 'src_r2', 'prcc', 'prcc_lo', 'prcc_hi']].to_string(index=False))
     print(cond.reindex(columns=['model', 'term', 'odds_ratio_per_sd', 'or_lo', 'or_hi', 'mle_exists',

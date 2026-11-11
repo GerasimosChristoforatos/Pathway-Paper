@@ -155,7 +155,7 @@ def write_sf_number_map():
 def _write_number_map(name, rows):
     import csv
     import layout
-    path = layout.writing(layout.data(name, frozen=False))
+    path = layout.writing(layout.data(name))
     with open(path, 'w', newline='') as f:
         w = csv.writer(f)
         w.writerow(['old_id', 'old_file', 'new_id', 'new_file', 'status'])

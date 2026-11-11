@@ -3,7 +3,6 @@
 Order (Nature Cities, at most eight display items): Fig1 floor area by demand band, Fig2 Reference carbon,
 Fig3 Reference against the boundaries, Fig4 the sequential waterfalls, Fig5 solution space, Fig6 Shapley value of each
 lever, Fig7 uncertainty (tornado; Reference, Ambitious Pathway and TL against the 2050 population)."""
-import calendar
 import re
 
 import numpy as np
@@ -66,14 +65,6 @@ OBSERVED_FILL = S.OBSERVED_TOTAL  # observed totals without a band split; palett
 PIPELINE_HATCH = '////'         # building above modelled need in the pipeline years
 
 
-def _month(iso):
-    """'2026-07-01' -> 'July 2026' (None -> 'the last observed month')."""
-    if not iso:
-        return 'the last observed month'
-    y, m = int(str(iso)[:4]), int(str(iso)[5:7])
-    return f'{calendar.month_name[m]} {y}'
-
-
 def _stack_bar(ax, a, b, parts, net, styles=None, net_line=True):
     """One stacked column over [a, b] (positive bands up from zero, negative down), with its net line (optional; Fig1 draws the annual floor area built as one continuous line instead)."""
     x = np.array([a, b], float)
@@ -94,7 +85,7 @@ def _stack_bar(ax, a, b, parts, net, styles=None, net_line=True):
 
 def _fig1_draw(ax, six=True):
     """The history as census-interval columns (FIG1_GAP between columns), 2024-2025
-    included (households = ERP / S after the 2023 census, projection.HH_BRIDGE); the pipeline years (2026-2027 at a
+    included (households = ERP / S after the 2023 census); the pipeline years (2026-2027 at a
     17-month lag) as annual columns, the building above modelled need hatched; the projection annual from the first
     unobserved year, each year over its own width. six: the six display bands (bands.DISPLAY; the market balance
     carries the residual in history and projection alike), else the detailed bands. Returns (legend handles, the
@@ -220,7 +211,7 @@ def fig1():
                 f"indicators). " if lag else '')
                + f"Households after the 2023 census = ERP / household-size path (Stats NZ DHE not used). "
                f"Pipeline years {', '.join(map(str, pipe))}: building observed (consents to "
-               f"{_month(ob.get('consents_observed_to'))}); the part above modelled need fades from "
+               f"{N.month_year(ob.get('consents_observed_to'), 'the last observed month')}); the part above modelled need fades from "
                f"{max(pipe) + 1} (ρ = {ob['rho']:.2f}) and is absorbed by {ob['absorption_end']}. 2026 population: "
                f"Stats NZ ERP nowcast. Six display bands (data/bands_display_map.csv); market balance = unexplained "
                f"building + retirement villages (out of scope) + overbuild / pipeline excess + surplus absorbed (the "

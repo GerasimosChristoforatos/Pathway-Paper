@@ -97,7 +97,6 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `B_SCOPE_START` | `1992` |
 | `CALIB_START_YEAR` | `1992` |
 | `CENSUS_UC_CORRECTION` | `True` |
-| `COMPLETION_LAG` | `0` |
 | `COMPLETION_LAG_MONTHS` | `17` |
 | `COMPLETION_RATE` | `0.945` |
 | `COMPLETION_RATE_BAND` | `(0.93, 0.96)` |
@@ -110,7 +109,6 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `DWELLING_SIZE_REF` | `(2023, 2025)` |
 | `EVENT_TIMING` | `'n+1'` |
 | `F1_SD_MULTIPLE` | `2.0` |
-| `HH_BRIDGE` | `'erp_S'` |
 | `HH_PROPENSITY` | `'A'` |
 | `HH_REBASE_BASE` | `'2018-06-30'` |
 | `HH_REBASE_CENSUS` | `'2023-06-30'` |
@@ -118,7 +116,6 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `HH_SIZE_PATH` | `'statsnz_2023'` |
 | `HH_SIZE_VARIANT` | `'Medium'` |
 | `HOUSEHOLD_SHEET_HIST` | `'Table 2'` |
-| `HOUSEHOLD_SHEET_PROJ_2018` | `'Table 1'` |
 | `MIX_HELD_WINDOW` | `(2022, 2026)` |
 | `NET_REPLACEMENT_HELD` | `None` |
 | `NET_REPLACEMENT_WINDOW` | `(1991, 2023)` |
@@ -133,14 +130,12 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `OVERBUILD_RULE` | `'market_excess'` |
 | `POP_SHEET_HIST` | `'Table 1'` |
 | `POP_SHEET_PROJ` | `'Table 1'` |
-| `POP_SIZE_PAIR_SHEET_2018` | `'Table 1'` |
 | `RECENT_INTERVAL` | `(2018, 2023)` |
 | `REPLACEMENT_HALF_LIFE` | `10.0` |
 | `REPLACEMENT_VARIANT` | `'REF'` |
 | `RV_SHARE_REF` | `(2016, 2025)` |
 | `SOIL_ON_REPLACEMENT` | `False` |
 | `STARTING_SURPLUS` | `'carry'` |
-| `START_MODE` | `'observed'` |
 | `S_ANCHOR_YEAR` | `2023` |
 | `S_TAIL` | `'pchip_secant'` |
 | `S_TAIL_MODES` | `('pchip_secant', 'pchip_endslope', 'hermite_clamped')` |
@@ -217,7 +212,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 
 ## Pathways (levers.py, pathways.py)
 
-Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Table 1 of the paper: docs/LEVERS_TABLE.md; methods as implemented: docs/METHODS_DRAFT.md (3. Pathways and the theoretical limit).
+Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Table 1 of the paper: outputs/reports/LEVERS_TABLE.md; methods as implemented: outputs/reports/METHODS_DRAFT.md (3. Pathways and the theoretical limit).
 
 | setting | value | basis |
 |---|---|---|
@@ -282,7 +277,6 @@ Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Tab
 | `SUBRULE` | `{'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C', 'L7': 'C', 'L8': 'A', 'L9': 'C'}` |
 | `SUBRULE_TEXT` | `{'A': 'A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios', 'B': 'B: best value ever observed in NZ (no structural trend)', 'C': 'C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value)'}` |
 | `TL1_SPEED_CENSUS_WINDOW` | `(1991, 2023)` |
-| `TL1_SPEED_LIMIT` | `True` |
 | `TL1_SPEED_START` | `2026` |
 | `TL_BAU_NOTE` | `'The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 e^(-0.01 (t - 2025)) until TL9 sets A4-A5 to zero).'` |
 | `TL_COMPONENTS` | `('TL1', 'TL2', 'TL3', 'TL4', 'TL5', 'TL6', 'TL7', 'TL8', 'TL9')` |

@@ -11,8 +11,6 @@ villages, or any band negative in a run) an unfilled, unhatched segment outlined
 from the running total (the top of the positive stack), so the last step ends at the net total, drawn as the
 black 'Total, in scope' bar. No band is hatched.
 """
-import calendar
-
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MaxNLocator
@@ -82,8 +80,7 @@ def sf6_hindcast():
         a.set_ylim(0, a.get_ylim()[1] * 1.15)
         a.text(0.5, 0.97, f"ratio {c['ratio_observed_to_model']:.2f}", transform=a.transAxes, ha='center', va='top',
                fontsize=S.FONT_SMALL)
-    ytd_months = (f"January–{calendar.month_name[int(str(c['data_end'])[5:7])]} {str(c['data_end'])[:4]}"
-                  if c.get('data_end') else 'the observed 2026 months')
+    ytd_months = (f"January–{N.month_year(c['data_end'])}" if c.get('data_end') else 'the observed 2026 months')
     a.set_ylabel(f"Dwellings completed, {c['target_year']}" if pipeline_mode else
                  f'Dwellings consented, {ytd_months}')
     P.thousands(a.yaxis)

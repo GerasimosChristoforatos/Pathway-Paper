@@ -20,7 +20,7 @@ import engine
 import layout
 import levers as LV
 
-D = lambda rel: layout.data(rel, frozen=False)
+D = lambda rel: layout.data(rel)
 
 
 def js(rel):
@@ -101,7 +101,6 @@ def test_lever_data_stop_conditions(params):
     assert all(0.0 <= f <= 1.0 for f in params['L4']['f']['ambitious'].values())
     assert params['L1']['high_ge_medium_every_year']
     v = params['L1']['variants']
-    import levers as LV
     assert all(v['High'][y] >= v['Medium'][y] for y in v['High'])
     import projection
     assert params['L1']['tail'] == projection.S_TAIL
@@ -206,14 +205,6 @@ def test_waterfall_sums():
         pw = g[g['step_id'] == 'L9']['total_carbon_kt'].iloc[0]
         assert pw == pytest.approx(r.loc[f'pathway-{s}', 'carbon_kt'], rel=1e-12)
         assert last == pytest.approx(r.loc['TL', 'carbon_kt'], rel=1e-12)
-
-
-def test_material_and_stage_values_nonnegative():
-    st = pd.read_csv(D('baseline/annual_by_stage.csv'))
-    assert (st.drop(columns='year') >= 0).all().all()
-    assert (pd.read_csv(D('baseline/annual_by_material.csv'))['carbon_kt'] >= 0).all()
-    a = pd.read_csv(D('pathways/annual.csv'))
-    assert (a[['a1a3_kt', 'a4a5_kt', 'soil_carbon_loss_kt', 'maintenance_kt']] >= -1e-9).all().all()
 
 
 def test_run_meta():

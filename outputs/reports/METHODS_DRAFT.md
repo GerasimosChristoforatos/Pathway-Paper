@@ -35,22 +35,13 @@ New Zealand is projected to build 105.4 million m² of new residential floor are
 | High replacement | 110.90 | +5.2% | 26,562 | 3,994 | 22,568 | 26,111 |
 | Very High replacement (trend continues) | 116.67 | +10.7% | 27,658 | 3,994 | 23,664 | 27,198 |
 
-Monte Carlo within each variant (joint input uncertainty; mean, median and 90% interval):
+Monte Carlo of the Reference (joint input uncertainty; mean, median and 90% interval). The replacement variants are not run through the Monte Carlo: their uncertainty is the deterministic variant table above (ED3) and the one-at-a-time rows.
 
-| variant | output | mean | median | 5th | 95th |
+| run | output | mean | median | 5th | 95th |
 |---|---|---|---|---|---|
-| Low replacement | floor area (Mm²) | 101.8 | 101.3 | 84.7 | 120.4 |
-| Low replacement | carbon 2026–2050 (kt) | 24,775.5 | 24,654.1 | 20,392.4 | 29,610.6 |
-| Low replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 24,355.2 | 24,243.1 | 20,043.4 | 29,107.7 |
 | Reference | floor area (Mm²) | 106.0 | 105.4 | 88.5 | 124.9 |
 | Reference | carbon 2026–2050 (kt) | 25,642.5 | 25,521.0 | 21,196.9 | 30,568.7 |
 | Reference | materials and construction (A1–A5) + soil carbon loss (kt) | 25,201.2 | 25,083.2 | 20,830.0 | 30,045.6 |
-| High replacement | floor area (Mm²) | 111.6 | 111.1 | 93.8 | 131.0 |
-| High replacement | carbon 2026–2050 (kt) | 26,730.0 | 26,615.0 | 22,169.4 | 31,774.9 |
-| High replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 26,275.4 | 26,167.7 | 21,800.9 | 31,219.9 |
-| Very High replacement (trend continues) | floor area (Mm²) | 117.4 | 116.9 | 99.1 | 137.2 |
-| Very High replacement (trend continues) | carbon 2026–2050 (kt) | 27,829.2 | 27,716.6 | 23,170.9 | 32,990.5 |
-| Very High replacement (trend continues) | materials and construction (A1–A5) + soil carbon loss (kt) | 27,365.5 | 27,249.9 | 22,787.2 | 32,451.8 |
 
 ### Why the floor area is built (Reference, median demographics)
 
@@ -480,9 +471,6 @@ Lower bound: maintenance events (B2, B4) after 2050 with the 2050 factors held; 
 | variant | cumulative LoE AR p5 / p50 / p95 (20-yr base) | adopted base |
 |---|---|---|
 | Reference | 5.97 / 6.89 / 7.90 | 5.00 / 5.77 / 6.62 |
-| Low replacement | 5.75 / 6.66 / 7.65 | 4.81 / 5.57 / 6.41 |
-| High replacement | 6.25 / 7.18 / 8.21 | 5.24 / 6.02 / 6.87 |
-| Very High replacement (trend continues) | 6.52 / 7.48 / 8.52 | 5.47 / 6.26 / 7.13 |
 
 ### Assumption register
 
@@ -657,7 +645,7 @@ L8 with the apartment case A_1 (n = 15): r = 0.841 against the adopted 0.827 (n 
 
 ## 5. Uncertainty analysis
 
-Joint uncertainty is propagated by Latin hypercube sampling (McKay, Beckman & Conover 1979): 5,000 draws in the full profile (seed 20260924) and 1,000 in the light profile (seed 20261014) of the 5 inputs below, within each replacement variant (Reference, Low replacement, High replacement, Very High replacement (trend continues)) with the same seed (common random numbers). The reported results are those of the full profile (5,000 draws in montecarlo/draws_REF.csv). Each draw runs the same forward functions as the deterministic projection (engine.py), which uses the median of every sampled input; the central draw is checked against the projection to 1e-9.
+Joint uncertainty is propagated by Latin hypercube sampling (McKay, Beckman & Conover 1979): 5,000 draws in the full profile (seed 20260924) and 1,000 in the light profile (seed 20261014) of the 5 inputs below, for the Reference only (replacement-level uncertainty is reported by the variants of ED3 and the one-at-a-time rows). The reported results are those of the full profile (5,000 draws in montecarlo/draws_REF.csv). Each draw runs the same forward functions as the deterministic projection (engine.py), which uses the median of every sampled input; the central draw is checked against the projection to 1e-9.
 
 | input | distribution | basis | 5th / 50th / 95th percentile of the draws |
 |---|---|---|---|
@@ -667,7 +655,7 @@ Joint uncertainty is propagated by Latin hypercube sampling (McKay, Beckman & Co
 | carbon (case-study carbon factors) | uniform index into 4,000 bootstrap replicates | stratified bootstrap of the case studies within sub-type (duplicates removed, re-pooled as Building_factors); the apartments (one independent case) take a mean-preserving lognormal multiplier with the pooled between-building log-SD of the other sub-types | 0.05 / 0.50 / 0.95 |
 | half_life (replacement half-life) | uniform(5, 15) yr | not identifiable from the census record; the Reference variant only | 5.5 / 10.0 / 14.5 |
 
-Population and household size share one draw because, within one living-arrangement propensity, the Stats NZ 2023-base Low / Medium / High household projections differ only through their population projections (the 5th / 50th / 95th percentiles of the stochastic population projection), so the household size moves with the population percentile (N4, resolved). Not sampled: the living-arrangement propensity (A, held at 2023; B, the change modelled on the 2001–2023 censuses, is a one-at-a-time row), the net replacement level (the variants are run separately; within the Reference the half-life is sampled), the typology mix, the census rebase of households, the pre-2013 empty share, the future vacancy and the retirement-village share (total Sobol indices about zero in a full-input run), the demolition rate (it trades one-for-one with the calibrated residual), the observed consents and population (data) and the soil order (a bounding scenario, not a probability).
+Population and household size share one draw because, within one living-arrangement propensity, the Stats NZ 2023-base Low / Medium / High household projections differ only through their population projections (the 5th / 50th / 95th percentiles of the stochastic population projection), so the household size moves with the population percentile (N4, resolved). Not sampled: the living-arrangement propensity (A, held at 2023; B, the change modelled on the 2001–2023 censuses, is a one-at-a-time row), the net replacement level (the Reference only; its half-life is sampled; the variants are reported deterministically in ED3 and the one-at-a-time rows), the typology mix, the census rebase of households, the pre-2013 empty share, the future vacancy and the retirement-village share (total Sobol indices about zero in a full-input run), the demolition rate (it trades one-for-one with the calibrated residual), the observed consents and population (data) and the soil order (a bounding scenario, not a probability).
 
 In every draw the acquired-rights base Ī_sec,base is recomputed from that draw's carbon-factor replicate on the 2016–2025 built floor area at that draw's completion rate (boundaries.mc_runs, boundaries.history_at_completion, boundaries.base_with_factors): the carbon factors and the completion rate are shared parameters of the base and the projection and are sampled once (the shared-parameter rule of Part 2). Each draw also recomputes the 2024–2025 stock-identity residual and its starting surplus at its own completion rate. Ī_sec,base over the draws: 1,330.9 / 1,413.4 / 1,501.3 kt/yr (5th / 50th / 95th percentile).
 

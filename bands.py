@@ -14,7 +14,7 @@ Release-accounting convention (A2):
   * an amount still unusable in 2050 is booked in 2050 in its release band and, with the opposite sign, as
     'Surplus kept vacant (2050)', so the bands add up to the total in every year;
   * carbon-only band: 'Maintenance (B2, B4)' of the new cohorts within the window.
-  * TL surplus pooling (pathways.TL_SURPLUS_POOLING): in a theoretical-limit-family run the re-occupied
+  * TL surplus pooling (pathways.run): in a theoretical-limit-family run the re-occupied
     Reference overbuild is booked in 'Overbuild absorbed' (paid), its part of the pool still unused in 2050 in
     'Overbuild absorbed' and, with the opposite sign, in 'Surplus kept vacant (2050)' (flows['ob_remainder']).
 

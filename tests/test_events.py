@@ -1,13 +1,7 @@
-"""Time-resolved B2/B4. The two anchors of baseline-PB_v2 are checked on the Reference settings they were captured
-with (LEGACY below: the overbuild never absorbed, no completion lag, completion rate 0.95); the identity and the other
-checks run on the current Reference.
-
-Time-resolved B2/B4 (replacement and repaint events), committed
+"""Time-resolved B2/B4 (replacement and repaint events), committed
 post-2050 emissions, A4-A5 decarbonisation. Checks: the event table reproduces the
 supplied tables; events per line equal the counts and add up to the line B2/B4;
-within-window + committed (2025 factors) = whole-life total; the
-whole-life-at-construction accounting with A4-A5 held reproduces baseline-pb-v2
-and 'none' the frozen anchor (tests/regression_pb_v2.json, tag baseline-PB_v2);
+within-window + committed (2025 factors) = whole-life total;
 soil unchanged; the A4-A5 path is Resch et al.'s e^(-0.01 (t - 2025)); every figure
 file is planned (figure_plan.py); no figure shows carbon before 2026 except the AR base
 window of D21 (at 2025 factors)."""
@@ -24,15 +18,9 @@ from conftest import ROOT, run_boss
 
 import Building_factors as BF  # noqa: E402
 
-FX = json.load(open(os.path.join(ROOT, 'tests', 'regression_pb_v2.json')))
 EV = pd.read_csv(BF.FILE_EVENTS).fillna({'event_type': '', 'event_path': ''})
 ITEMS = pd.read_csv(BF.FILE_ITEMS)
 WHOLE_LIFE = dict(ACCOUNTING='whole_life_at_construction', DECARB_A45='held')
-# the Reference of the captured anchors: the 2026 overbuild never absorbed
-LEGACY = dict(OVERBUILD_ABSORPTION_END=None, COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95,   # v2.1 timing
-              HH_SIZE_PATH='statsnz_2018', STARTING_SURPLUS='none',   # the household size of v2.1 - v4.3.7, no F1
-              S_TAIL='hermite_clamped',
-              CONSENT_DATA_END='2026-07-01')     # the consent data of those versions (to July 2026; no revisions since)
 
 
 @pytest.fixture(scope='module')
@@ -88,21 +76,6 @@ def test_event_timing_first_event():
     paint = EV[EV['class'] == 'PAINT'].iloc[0]
     rp = r[(r['id'] == paint['id']) & (r['Material'] == 'PLASTICS & PAINT')]
     assert {7, 8} <= set(rp['Age'])                          # 50 / 7 = 7.14: split 0.86 / 0.14
-
-
-def test_whole_life_with_a45_held_reproduces_v2():
-    B = run_boss(**WHOLE_LIFE, **LEGACY)
-    a = FX['adopted']
-    assert B['tot_carbon_median'] == a['carbon_kt']
-    assert B['_upfront'] + B['_soil'] / 1e6 == a['upfront_kt']
-    assert [float(v / 1e6) for v in B['carbon_total_typ'].sum(axis=1).values] == a['annual_carbon_kt']
-
-
-def test_none_reproduces_the_frozen_anchor():
-    B = run_boss(DECARB_MODE='none', **WHOLE_LIFE, **LEGACY)
-    f = FX['frozen']
-    assert B['tot_carbon_median'] == f['carbon_kt']
-    assert [float(v / 1e6) for v in B['carbon_total_typ'].sum(axis=1).values] == f['annual_carbon_kt']
 
 
 def test_within_window_plus_committed_equals_whole_life(tr_frozen):

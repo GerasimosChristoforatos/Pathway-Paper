@@ -91,7 +91,7 @@
   "e",
   "f"
  ],
- "note": "All runs use identical source files and demographic paths. The like-for-like zero-lag run holds the forward net replacement at the 17-month calibration (2018-2023 rate 0.173%/yr), so it differs from the 17-month run only in the timing of building. The recalibrated zero-lag run (grey, context) re-estimates net replacement from the census counts with zero-lag timing (0.301%/yr with the census under-construction correction); its higher net replacement in panel c is that recalibration, not the timing of building. Cumulative net replacement 2026-2050: 9.01 Mm\u00b2 (zero lag, held), 9.29 Mm\u00b2 (17 months), 15.22 Mm\u00b2 (zero lag, recalibrated). Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; the 17-month run uses complete observed consent cohorts for 2026 and 2027.",
+ "note": "All runs use identical source files and demographic paths. The like-for-like zero-lag run holds the forward net replacement at the 17-month calibration (2018-2023 rate 0.173%/yr), so it differs from the 17-month run only in the timing of building. The recalibrated zero-lag run (grey, context) re-estimates net replacement from the census counts with zero-lag timing (0.301%/yr with the census under-construction correction); its higher net replacement in panel c is that recalibration, not the timing of building. Cumulative net replacement 2026-2050: 9.02 Mm\u00b2 (zero lag, held), 9.29 Mm\u00b2 (17 months), 15.24 Mm\u00b2 (zero lag, recalibrated). Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; the 17-month run uses complete observed consent cohorts for 2026 and 2027.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

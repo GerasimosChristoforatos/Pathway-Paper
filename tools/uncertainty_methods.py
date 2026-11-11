@@ -127,6 +127,19 @@ def lines():
           'of each input for floor area, carbon and the cumulative LoE of AR is given by standardised regression '
           f'coefficients and partial rank correlation coefficients (Marino et al. 2008) with percentile bootstrap '
           f'intervals ({B:,} resamples).', '']
+    ps = pd.read_csv(data('pathways/montecarlo_summary.csv'))
+    cq = ps[(ps['run'] == 'REF') & (ps['quantity'] == 'committed_lower_kt')]
+    com = js('baseline/projection.json')['committed']
+    if len(cq) != 1:
+        raise SystemExit('uncertainty_methods: no committed_lower_kt row in pathways/montecarlo_summary.csv.')
+    cq = cq.iloc[0]
+    L += [f"**Committed after 2050.** For every Reference draw the committed emissions (the later B2/B4 events of the "
+          f"2026-2050 cohorts and their C1-C4) are computed with pathways.committed on that draw's floor area by "
+          f"typology; the repair and end-of-life factors are held at their central values, so the range comes from "
+          f"the floor-area uncertainty (population, household size, dwelling size, completion rate). At the lower "
+          f"decarbonisation bound (2050 factors held for the later events): central {com['lower_kt']:,.0f} kt, median "
+          f"{cq['p50']:,.0f} kt, 50% interval {cq['p25']:,.0f}-{cq['p75']:,.0f}, 90% interval {cq['p5']:,.0f}-"
+          f"{cq['p95']:,.0f} kt (pathways/montecarlo_summary.csv; per draw in pathways/montecarlo_draws.csv).", '']
     th = ct['population_threshold']['adopted']
     L += [f"The share of draws in which TL stays within the AR budget is {100 * ct['p_within_AR']:.1f}% "
           f"({ct['within_AR']:,} of {ct['n']:,}; Wilson 95% interval {100 * ct['wilson_95'][0]:.1f}-"

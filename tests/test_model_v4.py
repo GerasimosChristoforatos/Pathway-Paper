@@ -21,7 +21,8 @@ from conftest import ROOT
 FIXTURE = os.path.join(ROOT, 'tests', 'v3_3_runs_fixture.json')
 V33 = dict(COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95,        # projection settings of MODEL v3.3
            HH_SIZE_PATH='statsnz_2018', STARTING_SURPLUS='none',   # its household size (2018-base); no F1
-           S_TAIL='hermite_clamped')
+           S_TAIL='hermite_clamped',
+           CONSENT_DATA_END='2026-07-01')     # its consent data (to July 2026; no Stats NZ revisions since)
 RTOL = 1e-9
 
 
@@ -111,7 +112,10 @@ def test_pipeline_years_and_observed_building(B):
     df = projection.load_consents()
     assert projection.pipeline_years(df, 0) == []
     assert projection.pipeline_years(df, 17) == [2026, 2027]
-    assert projection.pipeline_years(df, 15) == [2026]
+    # consents to September 2026 (MODEL v4.6.0): at L = 15, 2027 is observed too (October 2025 - September 2026);
+    # with the data of MODEL v4.0-v4.5 (to July 2026) it was not
+    assert projection.pipeline_years(df, 15) == [2026, 2027]
+    assert projection.pipeline_years(df[df['Date'] <= '2026-07-01'], 15) == [2026]
     assert projection.pipeline_years(df, 19) == [2026, 2027]
     assert B['lag_months'] == projection.COMPLETION_LAG_MONTHS == 17
     assert B['pipe']['years'] == [2026, 2027] and B['absorption_start'] == 2027

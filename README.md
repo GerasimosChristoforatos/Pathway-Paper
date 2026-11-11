@@ -151,6 +151,10 @@ Carlo or Sobol run is needed. The suite covers:
 | `data/` | inputs only, and the scripts that build `data/derived/` from `data/raw/` |
 | `docs/` | methods draft, levers table, references, palette |
 
+## Data freeze (MODEL v4.6.0)
+
+The reported results use: building consents to **September 2026** (Stats NZ BLD468601, released 3 November 2026); population estimates to the **June 2026** quarter (Stats NZ, *National population estimates: At 30 June 2026*); household projections **2023-base** (Stats NZ, *National family and household projections: 2023(base)–2048*, released 11 November 2026). Later releases are not used.
+
 ## Data provenance
 
 `data/raw/MANIFEST.csv` records the URL, SHA-256 and download date (UTC) of every file
@@ -164,7 +168,7 @@ the file itself states, and it has not yet been rebuilt from a recorded download
 
 | model input | source | table / series | download date | status |
 |---|---|---|---|---|
-| `data/derived/consents_monthly.csv` (monthly new dwellings, floor area and value by type) | Stats NZ, *Building consents issued: July 2026*, "Download data" CSV zip, <https://www.stats.govt.nz/assets/Uploads/Building-consents-issued/Building-consents-issued-July-2026/Download-data/building-consents-issued-july-2026.zip> | file "Building consents by region (Monthly).csv"; New Zealand / New / Actual; series `BLDM.*` (Infoshare group Building consents – BLD) | 2026-09-29 | Raw → script (`data/build_consents.py`). Identical to `consentdata.xlsx` in every month 1990-04..2025-12, and to the published annual totals for years ended June and July 2026 |
+| `data/derived/consents_monthly.csv` (monthly new dwellings, floor area and value by type) | Stats NZ Infoshare, Building consents – BLD, "Building consents by region (Monthly)" (BLD468601), CSV export `data/raw/BLD468601_20261111_075751_49.csv` (unmodified; "Last updated: 03 November 2026", the September 2026 release) | New Zealand / New / Actual: Dwelling units (Number, Value, Floor area; from 1965M04) and Houses / Apartments / Retirement village units / Townhouses, flats, units, and other dwellings (Number, Value, Floor area; from 1990M04), 1965M04–2026M09 | 2026-11-11 (supplied) | Raw → script (`data/build_consents.py`, `read_infoshare`). Every month 1965-04..2026-07 equals the MODEL v4.0–v4.5 file (built from *Building consents issued: July 2026*, CSV zip, downloaded 2026-09-29) exactly: no Stats NZ revisions (`data/derived/consents_revisions.csv`, empty) |
 | `data/consentdata.xlsx` | Stats NZ building consents (Infoshare, BLD) | [placeholder: Infoshare series IDs] | [placeholder] | Supplied; superseded by `consents_monthly.csv` and not read by the model (kept as the originally supplied record) |
 | `data/histpopdata.xlsx` | Stats NZ, "Population summary figures" (estimated resident population at 31 December) | [placeholder: table ID] | [placeholder] | Supplied |
 | `data/popdata.xlsx` | Stats NZ, *National population projections: 2024(base)–2078*, published 4 June 2025 (stated in the file), Table 1 | Table 1 | [placeholder] | Supplied |

@@ -160,6 +160,48 @@ def centre_ticklabels(fig, ax):
         t.set_multialignment('center')
 
 
+def split_paren(line):
+    """One label line -> (text before the parenthesised part, the parenthesised part or None):
+    'change (Stats NZ B)' -> ('change ', '(Stats NZ B)'); '(5th–95th pct.)' -> ('', '(5th–95th pct.)')."""
+    i = line.find('(')
+    return (line, None) if i < 0 else (line[:i], line[i:])
+
+
+def stacked_ticklabels(fig, ax, labels, size, small):
+    """y tick labels with the parenthesised part one font step smaller: every line of a label keeps its place; on a
+    line with a parenthesised part that part is set at `small` after the rest at `size`, on one baseline. Every label
+    is centred (line by line) on one vertical axis at the centre of the widest, with the tick pad as the gap to the
+    axis (as centre_ticklabels). Replaces the tick labels; call after the fonts are final and before the layout is
+    fixed."""
+    from matplotlib.offsetbox import AnnotationBbox, HPacker, TextArea, VPacker
+    if small < S.FONT_MIN:
+        raise SystemExit(f'stacked_ticklabels: {small} pt is below the {S.FONT_MIN} pt minimum.')
+    ax.set_yticklabels([])
+    t0 = ax.yaxis.get_major_ticks()[0]
+    pad = t0.get_pad() + t0.tick1line.get_markersize()          # points: the gap plus the tick length
+    tp = dict(color=S.INK, ha='center', multialignment='center')
+    boxes = []
+    for y, lab in zip(ax.get_yticks(), labels):
+        rows_ = []
+        for line in lab.split('\n'):
+            pre, par = split_paren(line)
+            parts = ([TextArea(pre.rstrip(), textprops=dict(fontsize=size, **tp))] if pre.strip() else []) + \
+                    ([TextArea(par, textprops=dict(fontsize=small, **tp))] if par else [])
+            rows_.append(parts[0] if len(parts) == 1 else
+                         HPacker(children=parts, align='baseline', pad=0, sep=size * 0.28))   # a word space
+        ab = AnnotationBbox(VPacker(children=rows_, align='center', pad=0, sep=0.6), (0, y),
+                            xycoords=('axes fraction', 'data'), xybox=(-pad, 0), boxcoords='offset points',
+                            box_alignment=(0.5, 0.5), frameon=False, annotation_clip=False)
+        ax.add_artist(ab)
+        boxes.append(ab)
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    w = max(b.get_window_extent(r).width for b in boxes) * 72.0 / fig.dpi
+    for b in boxes:
+        b.xybox = (-(pad + w / 2), 0)
+    return boxes
+
+
 # ---------------------------------------------------------------------------
 # panels and axes
 # ---------------------------------------------------------------------------
@@ -228,9 +270,7 @@ def band_label(bid):
 
 def band_style(bid):
     """Seamless style of one demand band (style.fill: edge = face, hatch in its own colour). History-only ids
-    (style.HISTORY_BAND): 'replacement_census', 'retirement_villages', 'unexplained'."""
-    if bid in ('unexplained_building', 'unexplained'):
-        return S.fill(S.UNEXPLAINED[0])
+    (style.HISTORY_BAND): 'replacement_census', 'retirement_villages'."""
     hatch = S.BAND[bid][1] if bid in S.BAND else S.HISTORY_BAND[bid][1] if bid in S.HISTORY_BAND else None
     return S.fill(S.band_colour(bid), hatch, S.BAND_HATCHCOLOR.get(bid))     # style.band_colour
 
@@ -424,24 +464,19 @@ def stack_materials(ax, years, frame, scale=1.0, alpha=1.0, smooth=False):
 # history with its census benchmarks
 # ---------------------------------------------------------------------------
 def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History', lw=S.LW, k=None,
-                      census_last=2018, straight=False, tail=True):
+                      census_last=2018, straight=False):
     """Households / household size history: census-benchmarked to census_last (solid);
-    census_last+1..anchor Stats NZ estimates scaled to the anchor census by k (dotted);
-    after the anchor (tail=True) consent-derived estimates, not used (faint dashed); the anchor census
-    point marked. straight=True draws straight segments between the annual values (observed data, not smoothed)."""
+    census_last+1..anchor Stats NZ estimates scaled to the anchor census by k (dotted); the anchor census
+    point marked (the years after the anchor are not drawn here). straight=True draws straight segments between the
+    annual values (observed data, not smoothed)."""
     s = series.dropna() / scale
-    last = int(s.index.max())
-    draw = (lambda x, y, **kw: ax.plot(x, y, **kw)) if straight else (lambda x, y, **kw: line(ax, x, y, **kw))
+    draw =(lambda x, y, **kw: ax.plot(x, y, **kw)) if straight else (lambda x, y, **kw: line(ax, x, y, **kw))
     draw(s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw,
          label=f'{label}: census-benchmarked to {census_last}')
     mid = s.loc[census_last:anchor]
     draw(mid.index, mid.values, color=color, lw=lw, ls=':',
          label=f'{census_last + 1}–{anchor % 100:02d}: Stats NZ estimates scaled to the {anchor} census'
                + (f' (×{k:.3f})' if k is not None else ''))
-    if tail:
-        t_ = s.loc[anchor:]
-        draw(t_.index, t_.values, color=color, lw=lw * 0.7, ls='--', alpha=S.FIXED_FADES['estimate_not_used_line'],
-             label=f'{anchor + 1}–{last % 100:02d}: consent-derived estimates, not used')
     if anchor in s.index:
         ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=3, label=f'{anchor} census')
     ax.ticklabel_format(axis='y', style='plain', useOffset=False)

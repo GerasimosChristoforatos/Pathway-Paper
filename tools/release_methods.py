@@ -30,6 +30,11 @@ def tl1_age_standardised_lines(ref, tl):
     r = ref.loc[PW.TL_AGE_STANDARDISED]
     s = pd.read_csv(layout.data('pathways/montecarlo_summary.csv'))
     m = s[(s['run'] == 'TL_TL1_age_standardised') & (s['quantity'] == 'LoE_AR')]
+    amb = _js('pathways/levers.json')['L1']['S']['ambitious']
+    floored = [int(y) for y, v in a['level_by_year'].items() if float(v) < float(amb[str(y)])]
+    floor_txt = (f'; below the L1 Ambitious path in {floored[0]}-{floored[-1]}, where the TL rule (never weaker than '
+                 f'Ambitious) holds TL1 at Ambitious (the age-standardised level itself in {int(min(a["level_by_year"], key=int))}-'
+                 f'{floored[0] - 1})' if floored else '')
     mc = (f" In the pathway Monte Carlo (each draw's own household size and population variant) P(LoE AR <= 1) = "
           f"{100 * float(m['probability_LoE_at_most_1'].iloc[0]):.1f}% (TL: "
           f"{100 * float(s[(s['run'] == 'TL') & (s['quantity'] == 'LoE_AR')]['probability_LoE_at_most_1'].iloc[0]):.1f}%)."
@@ -40,8 +45,7 @@ def tl1_age_standardised_lines(ref, tl):
             "rates are the only observed ones by age in the repository, so the highest observed propensity of living "
             "with others is the 2023 one; the 2023-rate path reproduces the Stats NZ Medium A household size to within "
             f"{a['statsnz_check_max_abs']:.3f}). Its 2050 level is {a['level_2050']:.4f} against the L1 Ambitious "
-            f"{a['ambitious_2050']:.4f}" + ('; below it, so the TL rule (never weaker than Ambitious) holds TL1 at the '
-                                           'Ambitious path' if a['floored_at_ambitious_2050'] else '') +
+            f"{a['ambitious_2050']:.4f}" + floor_txt +
             f": TL {r['carbon_kt']:,.1f} kt, LoE AR {r['LoE_AR']:.3f}, LoE AtP {r['LoE_AtP']:.2f} (TL: "
             f"{tl['carbon_kt']:,.1f} kt, LoE AR {tl['LoE_AR']:.3f}).{mc}", '']
 

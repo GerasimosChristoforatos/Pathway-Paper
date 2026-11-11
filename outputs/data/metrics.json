@@ -91,6 +91,42 @@
     "reference_percentile_carbon": 49.8,
     "reference_percentile_floor_area": 50.019999999999996
   },
+  "pathways": {
+    "ambitious": {
+      "LoE_AR": 2.5887042714640174,
+      "LoE_AtP": 10.29614236949216,
+      "P_LoE_AR_at_most_1": 0.0,
+      "carbon_kt": 11459.244589019734
+    },
+    "committed_lower_kt": 9727.760438095811,
+    "committed_lower_kt_mc_p5": 8159.770380556567,
+    "committed_lower_kt_mc_p95": 11518.948982671194,
+    "moderate": {
+      "LoE_AR": 3.8937296220803934,
+      "LoE_AtP": 15.486664498210876,
+      "P_LoE_AR_at_most_1": 0.0,
+      "carbon_kt": 17236.113292190243
+    },
+    "reference": {
+      "LoE_AR": 5.761222793906274,
+      "LoE_AtP": 22.91430920182917,
+      "P_LoE_AR_at_most_1": 0.0,
+      "carbon_kt": 25502.820795312804
+    },
+    "tl": {
+      "LoE_AR": 0.9214957325044502,
+      "LoE_AtP": 3.6650966119739583,
+      "P_LoE_AR_at_most_1": 0.64,
+      "carbon_kt": 4079.123715639596
+    },
+    "tl_threshold_P_NZ_2050": 6715454.33249061,
+    "tl_tl1_age_standardised": {
+      "LoE_AR": 1.3433123020706788,
+      "LoE_AtP": 5.342802135134583,
+      "P_LoE_AR_at_most_1": 0.0006,
+      "carbon_kt": 5946.350998278187
+    }
+  },
   "projection": {
     "S_2050": 2.4635080754245133,
     "carbon_excl_soil_kt": 21509.250049083184,

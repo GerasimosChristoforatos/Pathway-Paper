@@ -1,6 +1,5 @@
 {
   "completion_rate": 0.945,
-  "lag_w": 0.0,
   "completion_lag_months": 17,
   "completion_period_2026": "Jan-Dec 2026; consents Aug 2024-Jul 2025 shifted 17 months",
   "population_period_2026": "year ended June 2026 (June-quarter mean ERP, 12 months)",

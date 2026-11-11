@@ -13,7 +13,7 @@ profile (tests/test_profiles.py).
 Order (compute, then draw): Building_factors -> projection -> Diagnostics -> Sensitivity -> MonteCarlo -> boundaries
 (AESA; reads the Monte Carlo draws) -> validation -> gap_2026 -> overbuild_2026 -> scenarios -> reconciliation ->
 figures_report -> pathways -> pathways_mc -> sensitivity_tables -> metrics -> results -> assumptions -> methods
-(docs/LEVERS_TABLE.md, docs/METHODS_DRAFT.md) -> run_meta -> figures (python -m figures: every figure and
+(outputs/reports/LEVERS_TABLE.md, METHODS_DRAFT.md) -> run_meta -> figures (python -m figures: every figure and
 FIGURES.md, from the data files only) -> check_outputs -> figure_manifest -> indexes -> tests. Model scripts write CSV / JSON only.
 Each step runs in its own process; its console output goes to <outputs>/logs/<step>.log.
 """

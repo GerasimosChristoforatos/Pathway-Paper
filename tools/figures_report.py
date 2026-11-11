@@ -192,7 +192,7 @@ def main():
     if os.path.exists(mc):
         m = pd.read_csv(mc, index_col=0).loc[2026:]
         mc_band = dict(lo=_f(m['floor_area_5'] / M6), hi=_f(m['floor_area_95'] / M6),
-                       file=os.path.relpath(mc, layout.data('', frozen=False)))
+                       file=os.path.relpath(mc, layout.data('')))
     figsource.write('D19_variants', variants=list(VARS), labels=labels, history_gfa=_f(hist['gfa'] / M6),
                     gfa={k: _f(runs[k]['p']['gfa'].loc[2026:] / M6) for k in VARS},
                     gfa_cumulative={k: float(runs[k]['p']['gfa'].loc[2026:].sum() / M6) for k in VARS},

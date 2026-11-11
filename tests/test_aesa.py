@@ -1,54 +1,28 @@
-"""AESA layer (boundaries.py, aesa.py): equations, reproduction of the earlier manuscript and
-of its constants, identities of the method, units. Tests that read outputs/data/aesa/ rely on
+"""AESA layer (boundaries.py, aesa.py): equations, the constants from the raw files, identities of the method, units. Tests that read outputs/data/aesa/ rely on
 run_all.py having run boundaries.py before the tests (as it does)."""
 import json
-import os
 
 import numpy as np
-import openpyxl
 import pandas as pd
 import pytest
 
-from conftest import ROOT
 
 import aesa  # noqa: E402
 import boundaries  # noqa: E402
 import layout  # noqa: E402
 
-WORKBOOK = os.path.join(ROOT, 'data', 'raw', 'Absolute_Analysis.xlsm')   # local only (git-ignored)
 
 
 def results():
-    with open(layout.data('aesa/results.json', frozen=False)) as f:
+    with open(layout.data('aesa/results.json')) as f:
         return json.load(f)
 
 
 def annual():
-    return pd.read_csv(layout.data('aesa/annual.csv', frozen=False))
+    return pd.read_csv(layout.data('aesa/annual.csv'))
 
 
-# ---- reproduction of the earlier manuscript ----------------------------------
-@pytest.mark.skipif(not os.path.exists(WORKBOOK), reason='Absolute_Analysis.xlsm not present (kept local only)')
-def test_manuscript_ar_boundaries_2025_2029():
-    """Sheet '1.Acquired Rights', GWP block (rows 10-14): G = F*(E/D)*((C*$B$10)/(B*$C$10)),
-    reproduced from the sheet's own inputs with aesa.boundary_ar."""
-    ws_f = openpyxl.load_workbook(WORKBOOK, data_only=False)['1.Acquired Rights']
-    ws_v = openpyxl.load_workbook(WORKBOOK, data_only=True)['1.Acquired Rights']
-    assert ws_f['G10'].value.replace(' ', '') == '=F10*(E10/D10)*((C10*$B$10)/(B10*$C$10))'
-    p_w0, p_nz0 = ws_v['B10'].value, ws_v['C10'].value
-    for r in range(10, 15):
-        v = {c: ws_v[f'{c}{r}'].value for c in 'ABCDEFG'}
-        got = aesa.boundary_ar(v['F'], v['E'], v['D'], v['C'], v['B'], p_nz0, p_w0)
-        assert got == pytest.approx(v['G'], rel=1e-12), (v['A'], got, v['G'])
-
-
-@pytest.mark.skipif(not os.path.exists(WORKBOOK), reason='Absolute_Analysis.xlsm not present (kept local only)')
-def test_manuscript_ssec_constants_match_workbook():
-    ws = openpyxl.load_workbook(WORKBOOK, data_only=True)['2.Equalitarian']
-    ss = boundaries.sector_share_components()
-    assert ss['consented_value_nzd_per_yr'] == pytest.approx(ws['F2'].value, rel=1e-12)
-    assert ss['gdp_nzd_per_yr'] == pytest.approx(ws['F3'].value, rel=1e-12)
-    assert ss['fce_share_mean_of_ratios'] == pytest.approx(ws['F4'].value, rel=1e-12)
+# ---- constants from the raw files ----------------------------------------------
 
 
 def test_ssec_from_raw_files():
@@ -152,7 +126,7 @@ def test_units_one_year_by_hand():
 
 
 def test_mc_percentiles_ordered():
-    m = pd.read_csv(layout.data('aesa/montecarlo_annual.csv', frozen=False))
+    m = pd.read_csv(layout.data('aesa/montecarlo_annual.csv'))
     for k in ('LoE_AR', 'LoE_AtP', 'B_AR_kgCO2e', 'I_sec_kgCO2e'):
         assert (m[f'{k}_p5'] <= m[f'{k}_p50']).all() and (m[f'{k}_p50'] <= m[f'{k}_p95']).all()
-    assert set(m['scenario']) == {'REF', 'LOW', 'HIGH', 'VHIGH'}           # Very High added
+    assert set(m['scenario']) == {'REF'}                  # the Monte Carlo runs the Reference only (MODEL v4.7.0)

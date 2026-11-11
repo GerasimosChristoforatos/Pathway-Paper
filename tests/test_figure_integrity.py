@@ -33,7 +33,7 @@ RTOL = 1e-9
 
 
 def _data(rel):
-    return layout.data(rel, frozen=False)
+    return layout.data(rel)
 
 
 # ---------------------------------------------------------------------------
@@ -183,8 +183,8 @@ def test_fig5_column_totals_are_reference_minus_run():
 
 def test_fig3_interval_from_the_draws():
     from figures import paper_main as PM
-    d = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))['carbon_kt'].to_numpy(float)
-    s = pd.read_csv(layout.montecarlo('summary', 'REF', frozen=False)).set_index('output').loc['carbon_kt']
+    d = pd.read_csv(layout.montecarlo('draws', 'REF'))['carbon_kt'].to_numpy(float)
+    s = pd.read_csv(layout.montecarlo('summary', 'REF')).set_index('output').loc['carbon_kt']
     assert np.percentile(d, 5) == pytest.approx(s['p5'], rel=1e-12)
     assert np.percentile(d, 95) == pytest.approx(s['p95'], rel=1e-12)
     lo, hi = PM.mc_cumulative_interval()

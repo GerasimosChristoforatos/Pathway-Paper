@@ -86,12 +86,11 @@ Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted 
 | Reference, no census under-construction correction | 5.76 | 22.9 |
 | Very High replacement (trend continues) | 6.25 | 24.9 |
 
-| variant (Monte Carlo) | cumulative LoE AR p5 / p50 / p95 | cumulative LoE AtP p5 / p50 / p95 |
+Monte Carlo (the Reference only; replacement uncertainty: the deterministic variants above, ED3 and the one-at-a-time rows):
+
+| run (Monte Carlo) | cumulative LoE AR p5 / p50 / p95 | cumulative LoE AtP p5 / p50 / p95 |
 |---|---|---|
-| High replacement | 5.24 / 6.02 / 6.87 | 20.5 / 23.9 / 27.6 |
-| Low replacement | 4.81 / 5.57 / 6.41 | 18.9 / 22.2 / 25.7 |
 | Reference | 5.00 / 5.77 / 6.62 | 19.6 / 22.9 / 26.6 |
-| Very High replacement (trend continues) | 5.47 / 6.26 / 7.13 | 21.4 / 24.9 / 28.7 |
 
 ## Maintenance 2026-2050 and committed after 2050 (deterministic, kt CO2e)
 

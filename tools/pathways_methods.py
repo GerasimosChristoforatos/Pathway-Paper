@@ -14,7 +14,7 @@ import layout  # noqa: E402
 import levers as LV  # noqa: E402
 import naming as N  # noqa: E402
 
-DATA = layout.data('pathways', frozen=False)
+DATA = layout.data('pathways')
 
 
 def _js(name):
@@ -183,7 +183,7 @@ def lines():
 
 
 def main():
-    path = layout.writing(layout.report('LEVERS_TABLE.md', frozen=False))
+    path = layout.writing(layout.report('LEVERS_TABLE.md'))
     with open(path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(levers_table()) + '\n')
     print(f'pathways_methods: {os.path.relpath(path, ROOT)}')

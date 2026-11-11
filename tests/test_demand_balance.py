@@ -45,7 +45,7 @@ def test_historical_balance_is_not_mislabelled_as_overbuild():
                          "floor_area_Mm2_per_year"].isna().all()
 
     bridge = classified[classified["period"] == "2023-2025"]
-    # households after the 2023 census = ERP / S (projection.HH_BRIDGE 'erp_S'), not consent-derived
+    # households after the 2023 census = ERP / S, not consent-derived
     assert bridge["data_basis"].str.contains("ERP / household-size path").all()
 
 

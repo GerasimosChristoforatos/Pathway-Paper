@@ -1,5 +1,5 @@
-"""The methods draft of the model: outputs/reports/METHODS_DRAFT.md and LEVERS_TABLE.md (Table 1), copied
-to docs/METHODS_DRAFT.md and docs/LEVERS_TABLE.md with the run profile named in their header.
+"""The methods draft of the model: outputs/reports/METHODS_DRAFT.md and LEVERS_TABLE.md (Table 1), with the run
+profile named in their header (outputs/reports/ is their only home).
 
     python tools/methods.py          (run_all.py runs it after the data)
 
@@ -61,16 +61,13 @@ def lines():
 
 
 def main():
-    import shutil
     import pathways_methods
-    path = layout.writing(layout.report('METHODS_DRAFT.md', frozen=False))
+    path = layout.writing(layout.report('METHODS_DRAFT.md'))
     L = lines()
     with open(path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(L).rstrip('\n') + '\n')
     pathways_methods.main()
-    for name in ('METHODS_DRAFT.md', 'LEVERS_TABLE.md'):
-        shutil.copyfile(layout.report(name, frozen=False), os.path.join(ROOT, 'docs', name))
-    print(f'methods: {os.path.relpath(path, ROOT)} ({len(L)} lines); copied with LEVERS_TABLE.md to docs/')
+    print(f'methods: {os.path.relpath(path, ROOT)} ({len(L)} lines) and LEVERS_TABLE.md')
 
 
 if __name__ == '__main__':

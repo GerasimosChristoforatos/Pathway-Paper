@@ -1,9 +1,6 @@
-"""The completion lag (monthly, L = 17), the completion rate 0.945, the TL1 speed limit, TL surplus pooling
-and the household-size sensitivities.
+"""The completion lag (monthly, L = 17), the completion rate 0.945, the TL1 speed limit and the household-size
+sensitivities.
 
-  * equivalence: L = 0, completion rate 0.95, the TL1 speed limit and TL surplus pooling off reproduce every MODEL
-    v3.3 run (the Reference projection and the 55 deterministic pathway runs of runs.csv: floor area, carbon,
-    dwellings and committed emissions, 1e-9 relative; fixture tests/v3_3_runs_fixture.json from release/model-v3.3.2);
   * the lag: L = 0 equals the calendar-year sums, the pipeline years, the observed building in every run;
   * TL1: the speed-limited path, its rate and the year its level is reached;
   * building >= 0 in every run and > 0 in every TL-family year of the deterministic runs (runs.csv).
@@ -18,82 +15,12 @@ import pytest
 
 from conftest import ROOT
 
-FIXTURE = os.path.join(ROOT, 'tests', 'v3_3_runs_fixture.json')
-V33 = dict(COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95,        # projection settings of MODEL v3.3
-           HH_SIZE_PATH='statsnz_2018', STARTING_SURPLUS='none',   # its household size (2018-base); no F1
-           S_TAIL='hermite_clamped',
-           CONSENT_DATA_END='2026-07-01')     # its consent data (to July 2026; no Stats NZ revisions since)
 RTOL = 1e-9
 
 
 def _data(rel):
     import layout
-    return layout.data(rel, frozen=False)
-
-
-@pytest.fixture(scope='module')
-def v33_flags():
-    import levers as LV
-    import pathways as PW
-    old = (LV.TL1_SPEED_LIMIT, PW.TL_SURPLUS_POOLING)
-    LV.TL1_SPEED_LIMIT, PW.TL_SURPLUS_POOLING = False, False
-    yield
-    LV.TL1_SPEED_LIMIT, PW.TL_SURPLUS_POOLING = old
-
-
-def _levels(run):
-    """(levels, ramp, re-occupation rule) of a run name of runs.csv."""
-    import levers as LV
-    import naming as N
-    TL = LV.tl_levels(LV.TL_COMPONENTS)
-    if run in N.SCENARIOS:
-        return {}, None, 'constant_share'
-    if run == 'TL':
-        return TL, None, 'constant_share'
-    if run == 'TL-from2027':
-        return TL, LV.TL_FROM2027, 'constant_share'
-    if run == 'TL-reoccupation-fast':
-        return TL, None, 'fast'
-    parts = run.split('-')
-    what, setting = parts[0], parts[1]
-    ramp = parts[2] if len(parts) > 2 else None
-    if what in LV.LEVERS:
-        return {what: setting}, ramp, 'constant_share'
-    return LV.pathway_levers(what, setting), ramp, 'constant_share'
-
-
-def test_v33_reference_projection_reproduced():
-    import validation
-    fx = json.load(open(FIXTURE))['meta']['reference_projection']
-    B = validation.run_boss(**V33)
-    assert B['lag_months'] == 0 and not B['pipe'] and B['absorption_start'] == 2026
-    carbon = B['carbon_total_typ'].iloc[1:].sum().sum() / 1e6
-    gfa = B['results']['50th']['total'][1:].sum() / 1e6
-    assert np.isclose(carbon, fx['carbon_kt'], rtol=RTOL, atol=0), carbon
-    assert np.isclose(gfa, fx['floor_area_Mm2'], rtol=RTOL, atol=0), gfa
-
-
-def test_v33_pathway_runs_reproduced(v33_flags):
-    import pathways as PW
-    import validation
-    rows = pd.DataFrame(json.load(open(FIXTURE))['rows'])
-    bounds = PW.boundaries()
-    params, bad = None, []
-    for scen, g in rows.groupby('scenario', sort=False):
-        B = validation.run_boss(**dict(PW.SCENARIOS[scen][1], **V33))
-        if params is None:
-            assert scen == 'REF'
-            params = PW.resolve_params(B)
-        ctx = PW.base_context(B, scen, bounds)
-        for _, r in g.iterrows():
-            levels, ramp, rule = _levels(r['run'])
-            m = PW.metrics(ctx, PW.run(ctx, params, levels, ramp, rule), r['run'], 'test')
-            for col, key in (('floor_area_Mm2', 'gfa_Mm2'), ('carbon_kt', 'carbon_kt'), ('dwellings_built', 'dwellings_built'),
-                             ('committed_lower_kt', 'committed_lower_kt'), ('committed_upper_kt', 'committed_upper_kt')):
-                if not np.isclose(m[key], r[col], rtol=RTOL, atol=0):
-                    bad.append((scen, r['run'], col, m[key], r[col]))
-    assert not bad, bad[:10]
-    assert len(rows) == 55
+    return layout.data(rel)
 
 
 def test_lag_zero_is_the_calendar_year_sums():

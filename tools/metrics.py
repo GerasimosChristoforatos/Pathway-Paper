@@ -21,7 +21,7 @@ sys.path.insert(0, ROOT)
 import layout  # noqa: E402
 import naming as N  # noqa: E402
 
-METRICS = layout.data('metrics.json', frozen=False)
+METRICS = layout.data('metrics.json')
 
 # (key, label, format) in the order they appear in tables
 FIELDS = [
@@ -82,7 +82,7 @@ PB_FIELDS = [
 
 
 def aesa_metrics():
-    with open(layout.data('aesa/results.json', frozen=False)) as f:
+    with open(layout.data('aesa/results.json')) as f:
         r = json.load(f)
     c, b, mc = r['components'], r['boundaries'], r['mc']['REF']
     m = dict(I_sec_base_kt=c['I_sec_base_kg'] / 1e6, base_year_b=int(c['base_year_b']), alpha=c['alpha'],
@@ -141,8 +141,8 @@ def projection_metrics(settings=None):
 
 
 def mc_metrics():
-    s = pd.read_csv(layout.montecarlo('summary', 'REF', frozen=False), index_col=0)
-    d = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))
+    s = pd.read_csv(layout.montecarlo('summary', 'REF'), index_col=0)
+    d = pd.read_csv(layout.montecarlo('draws', 'REF'))
     m = {}
     for key, row in (('floor_area', 'floor_area_Mm2'), ('carbon', 'carbon_kt')):
         for p in (5, 50, 95):
@@ -155,11 +155,11 @@ def mc_metrics():
 
 def collect():
     m = {'projection': projection_metrics()}
-    if os.path.exists(layout.montecarlo('summary', 'REF', frozen=False)):
+    if os.path.exists(layout.montecarlo('summary', 'REF')):
         m['mc'] = mc_metrics()
-    if os.path.exists(layout.data('aesa/results.json', frozen=False)):
+    if os.path.exists(layout.data('aesa/results.json')):
         m['aesa'] = aesa_metrics()
-    vfile = layout.data('baseline/validation.json', frozen=False)
+    vfile = layout.data('baseline/validation.json')
     if os.path.exists(vfile):
         with open(vfile) as f:
             v = json.load(f)

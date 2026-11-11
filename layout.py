@@ -15,8 +15,7 @@
       logs/                   console output of each run_all.py step (not versioned)
 
 Every module takes its paths from here, so the layout is defined once. RETIRED lists output folders of earlier
-releases that run_all.py deletes. The frozen-technology helpers serve the PATHWAY_FROZEN=1 setting, which the
-pipeline does not run.
+releases that run_all.py deletes.
 """
 import os
 
@@ -44,35 +43,23 @@ RUN_META = os.path.join(OUT, 'run_meta.json')
 FIGURE_AUDIT = os.path.join(DIAGNOSTICS, '_audit')
 LOGS = os.path.join(OUT, 'logs')
 FACTORS = os.path.join(DATA, 'factors')          # written by Building_factors.py (inputs of every run)
-FROZEN = 'frozen_technology'                     # data/ sub-folder and reports/ file prefix of the check run
 # output folders of earlier releases (deleted by run_all.py): outputs/paper, outputs/extended_data, outputs/key_figures
 RETIRED = tuple(os.path.join(OUT, d) for d in ('paper', 'extended_data', 'key_figures'))
 
 
-def frozen_run():
-    """True in the frozen-technology setting (PATHWAY_FROZEN=1)."""
-    return os.environ.get('PATHWAY_FROZEN') == '1'
+def data(rel):
+    """outputs/data/<rel>."""
+    return os.path.join(DATA, rel)
 
 
-def _under(base, rel, frozen):
-    frozen = frozen_run() if frozen is None else frozen
-    return os.path.join(base, FROZEN, rel) if frozen else os.path.join(base, rel)
+def report(rel):
+    """outputs/reports/<rel>."""
+    return os.path.join(REPORTS, rel)
 
 
-def data(rel, frozen=None):
-    """outputs/data/<rel>; outputs/data/frozen_technology/<rel> in the frozen-technology run."""
-    return _under(DATA, rel, frozen)
-
-
-def report(rel, frozen=None):
-    """outputs/reports/<rel>; outputs/reports/frozen_technology_<rel> in the frozen-technology run."""
-    frozen = frozen_run() if frozen is None else frozen
-    return os.path.join(REPORTS, f'{FROZEN}_{rel}' if frozen else rel)
-
-
-def montecarlo(kind, variant, frozen=None):
+def montecarlo(kind, variant):
     """outputs/data/montecarlo/<kind>_<variant>.csv; kind: summary, draws, annual, sobol."""
-    return data(f'montecarlo/{kind}_{variant}.csv', frozen)
+    return data(f'montecarlo/{kind}_{variant}.csv')
 
 
 def writing(path):

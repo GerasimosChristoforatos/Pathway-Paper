@@ -23,7 +23,7 @@ import naming as N  # noqa: E402
 
 
 def data(rel):
-    return layout.data(rel, frozen=False)
+    return layout.data(rel)
 
 
 def js(rel):
@@ -57,7 +57,6 @@ def lines():
     size_sigma = float(np.log(q.loc['size', 'q95']) / z95)
     band = projection.COMPLETION_RATE_BAND
     hl = MC.HALF_LIFE_RANGE
-    variants = ', '.join(N.SCENARIOS[k] for k, _ in MC.MC_SCENARIOS)
 
     def pct(k, fmt):
         return ' / '.join(format(q.loc[k, c], fmt) for c in ('q05', 'q50', 'q95'))
@@ -83,8 +82,9 @@ def lines():
     ]
     L = [f'Joint uncertainty is propagated by Latin hypercube sampling (McKay, Beckman & Conover 1979): '
          f"{full['n_draws']:,} draws in the full profile (seed {full['mc_seed']}) and {light['n_draws']:,} in the light "
-         f"profile (seed {light['mc_seed']}) of the {d} inputs below, within each replacement variant ({variants}) with "
-         f'the same seed (common random numbers). The reported results are those of the full profile '
+         f"profile (seed {light['mc_seed']}) of the {d} inputs below, for the Reference "
+         'only (replacement-level uncertainty is reported by the variants of ED3 and the one-at-a-time rows). '
+         'The reported results are those of the full profile '
          f'({len(draws):,} draws in montecarlo/draws_REF.csv). Each draw runs the same forward functions as the '
          'deterministic projection (engine.py), which uses the median of every sampled input; the central draw is '
          'checked against the projection to 1e-9.', '',
@@ -94,8 +94,8 @@ def lines():
           'Stats NZ 2023-base Low / Medium / High household projections differ only through their population '
           'projections (the 5th / 50th / 95th percentiles of the stochastic population projection), so the household '
           'size moves with the population percentile (N4, resolved). Not sampled: the living-arrangement propensity '
-          '(A, held at 2023; B, the change modelled on the 2001-2023 censuses, is a one-at-a-time row), the net replacement level (the variants are run separately; within the '
-          'Reference the half-life is sampled), the typology mix, the census rebase of households, the pre-2013 empty '
+          '(A, held at 2023; B, the change modelled on the 2001-2023 censuses, is a one-at-a-time row), the net replacement level (the Reference only; its half-life is sampled; '
+          'the variants are reported deterministically in ED3 and the one-at-a-time rows), the typology mix, the census rebase of households, the pre-2013 empty '
           'share, the future vacancy and the retirement-village share (total Sobol indices about zero in a '
           'full-input run), the demolition rate (it trades one-for-one with the calibrated residual), the observed '
           'consents and population (data) and the soil order (a bounding scenario, not a probability).', '']

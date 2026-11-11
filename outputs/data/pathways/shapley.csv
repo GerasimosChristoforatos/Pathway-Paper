@@ -1,127 +1,127 @@
 game,metric,player,name,reduction,share_of_total
-strategies_moderate,carbon_kt,S1,Avoid Strategies,4747.606270543071,0.6452670165976386
-strategies_moderate,carbon_kt,S2,Switch Strategies,1922.4301935385386,0.26128552472822
-strategies_moderate,carbon_kt,S3,Improve Strategy,687.5475258396958,0.09344745867414142
-strategies_moderate,LoE_AR,S1,Avoid Strategies,1.0725094953955905,0.6452670165976387
-strategies_moderate,LoE_AR,S2,Switch Strategies,0.4342872006042353,0.26128552472821986
-strategies_moderate,LoE_AR,S3,Improve Strategy,0.15532064117744726,0.09344745867414145
-strategies_moderate,LoE_AtP,S1,Avoid Strategies,4.265728835445578,0.6452670165976386
-strategies_moderate,LoE_AtP,S2,Switch Strategies,1.7273053921066868,0.2612855247282199
-strategies_moderate,LoE_AtP,S3,Improve Strategy,0.6177621183355134,0.09344745867414146
-strategies_ambitious,carbon_kt,S1,Avoid Strategies,8150.292371336453,0.6422708989142819
-strategies_ambitious,carbon_kt,S2,Switch Strategies,3313.740753317527,0.26113409868425913
-strategies_ambitious,carbon_kt,S3,Improve Strategy,1225.7717304531154,0.09659500240145896
-strategies_ambitious,LoE_AR,S1,Avoid Strategies,1.8411943746777228,0.6422708989142818
-strategies_ambitious,LoE_AR,S2,Switch Strategies,0.7485916524425363,0.26113409868425924
-strategies_ambitious,LoE_AR,S3,Improve Strategy,0.276908350268075,0.09659500240145895
-strategies_ambitious,LoE_AtP,S1,Avoid Strategies,7.323045594879351,0.6422708989142819
-strategies_ambitious,LoE_AtP,S2,Switch Strategies,2.977399278521213,0.2611340986842592
-strategies_ambitious,LoE_AtP,S3,Improve Strategy,1.101357087825601,0.09659500240145896
-levers_moderate,carbon_kt,L1,Household size,1200.5735270093112,0.16317496730637418
-levers_moderate,carbon_kt,L2,Vacancy rate,661.3894949853409,0.08989221134156769
-levers_moderate,carbon_kt,L3,Building lifetime,452.8100022578463,0.06154330047446585
-levers_moderate,carbon_kt,L4,Extra space,969.367469038578,0.13175078536194135
-levers_moderate,carbon_kt,L5,Occupancy density,1470.3491176259536,0.1998412956807687
-levers_moderate,carbon_kt,L6,Brownfield-first development,758.97916133229,0.10315603088893964
-levers_moderate,carbon_kt,L7,Soil-aware planning,174.64177349380194,0.023736293562266197
-levers_moderate,carbon_kt,L8,Material carbon efficiency,984.6372352365405,0.1338261631243807
-levers_moderate,carbon_kt,L9,Construction-stage carbon,684.8362089416437,0.0930789522592957
-levers_moderate,LoE_AR,L1,Household size,0.2712159421532592,0.16317496730637418
-levers_moderate,LoE_AR,L2,Vacancy rate,0.14941140294802316,0.08989221134156769
-levers_moderate,LoE_AR,L3,Building lifetime,0.10229218670572003,0.06154330047446588
-levers_moderate,LoE_AR,L4,Extra space,0.21898526453680425,0.13175078536194126
-levers_moderate,LoE_AR,L5,Occupancy density,0.3321596822349754,0.19984129568076872
-levers_moderate,LoE_AR,L6,Brownfield-first development,0.1714574273749009,0.10315603088893967
-levers_moderate,LoE_AR,L7,Soil-aware planning,0.03945250505017195,0.0237362935622662
-levers_moderate,LoE_AR,L8,Material carbon efficiency,0.22243478589694696,0.13382616312438064
-levers_moderate,LoE_AR,L9,Construction-stage carbon,0.15470814027647117,0.09307895225929574
-levers_moderate,LoE_AtP,L1,Household size,1.078716477609336,0.16317496730637418
-levers_moderate,LoE_AtP,L2,Vacancy rate,0.5942591022606074,0.08989221134156768
-levers_moderate,LoE_AtP,L3,Building lifetime,0.40685022589047226,0.06154330047446584
-levers_moderate,LoE_AtP,L4,Extra space,0.8709776104385666,0.13175078536194132
-levers_moderate,LoE_AtP,L5,Occupancy density,1.3211101072439044,0.19984129568076867
-levers_moderate,LoE_AtP,L6,Brownfield-first development,0.6819435120568889,0.10315603088893964
-levers_moderate,LoE_AtP,L7,Soil-aware planning,0.15691580274634898,0.0237362935622662
-levers_moderate,LoE_AtP,L8,Material carbon efficiency,0.8846975101668377,0.13382616312438073
-levers_moderate,LoE_AtP,L9,Construction-stage carbon,0.6153259974748153,0.09307895225929576
-levers_ambitious,carbon_kt,L1,Household size,2057.748057657543,0.16215758092051266
-levers_ambitious,carbon_kt,L2,Vacancy rate,1193.6064492171054,0.09406026828984139
-levers_ambitious,carbon_kt,L3,Building lifetime,770.6768437782426,0.06073196968573387
-levers_ambitious,carbon_kt,L4,Extra space,1685.2132601612077,0.13280056544628285
-levers_ambitious,carbon_kt,L5,Occupancy density,2498.954375293284,0.19692614692081442
-levers_ambitious,carbon_kt,L6,Brownfield-first development,1282.9398995224108,0.10110004954143036
-levers_ambitious,carbon_kt,L7,Soil-aware planning,269.13334016226884,0.021208627180263877
-levers_ambitious,carbon_kt,L8,Material carbon efficiency,1726.5223318650503,0.136055861502882
-levers_ambitious,carbon_kt,L9,Construction-stage carbon,1205.010297449982,0.09495893051223857
-levers_ambitious,LoE_AR,L1,Household size,0.4648562254757275,0.1621575809205127
-levers_ambitious,LoE_AR,L2,Vacancy rate,0.26964204224212657,0.09406026828984139
-levers_ambitious,LoE_AR,L3,Building lifetime,0.17409999602581192,0.06073196968573383
-levers_ambitious,LoE_AR,L4,Extra space,0.3806986342788506,0.13280056544628288
-levers_ambitious,LoE_AR,L5,Occupancy density,0.5645270781386478,0.19692614692081445
-levers_ambitious,LoE_AR,L6,Brownfield-first development,0.28982294357410043,0.10110004954143034
-levers_ambitious,LoE_AR,L7,Soil-aware planning,0.060798652289787876,0.021208627180263884
-levers_ambitious,LoE_AR,L8,Material carbon efficiency,0.39003057318103773,0.136055861502882
-levers_ambitious,LoE_AR,L9,Construction-stage carbon,0.27221823218224384,0.09495893051223857
-levers_ambitious,LoE_AtP,L1,Household size,1.8488886241671918,0.1621575809205127
-levers_ambitious,LoE_AtP,L2,Vacancy rate,1.0724565514605726,0.09406026828984139
-levers_ambitious,LoE_AtP,L3,Building lifetime,0.6924538910719278,0.06073196968573382
-levers_ambitious,LoE_AtP,L4,Extra space,1.5141657475573715,0.13280056544628285
-levers_ambitious,LoE_AtP,L5,Occupancy density,2.245312928178454,0.19692614692081445
-levers_ambitious,LoE_AtP,L6,Brownfield-first development,1.1527227431415432,0.10110004954143037
-levers_ambitious,LoE_AtP,L7,Soil-aware planning,0.24181656697884726,0.02120862718026388
-levers_ambitious,LoE_AtP,L8,Material carbon efficiency,1.5512819885198752,0.136055861502882
-levers_ambitious,LoE_AtP,L9,Construction-stage carbon,1.0827029201503808,0.09495893051223857
-levers_tl,carbon_kt,L1,Household size,6465.404886099029,0.3064666973321767
-levers_tl,carbon_kt,L2,Vacancy rate,2881.3840208439337,0.13658050194386895
-levers_tl,carbon_kt,L3,Building lifetime,1477.8131193756954,0.07004982888898292
-levers_tl,carbon_kt,L4,Extra space,3294.9137927600104,0.15618222924174188
-levers_tl,carbon_kt,L5,Occupancy density,1877.7818045531355,0.08900874702977418
-levers_tl,carbon_kt,L6,Brownfield-first development,1199.0264270787493,0.05683505914855956
-levers_tl,carbon_kt,L7,Soil-aware planning,528.8104669383529,0.02506614824165568
-levers_tl,carbon_kt,L8,Material carbon efficiency,2024.40241842548,0.0959587116624432
-levers_tl,carbon_kt,L9,Construction-stage carbon,1347.0616254692534,0.06385207651079695
-levers_tl,LoE_AR,L1,Household size,1.4605693346860162,0.30646669733217674
-levers_tl,LoE_AR,L2,Vacancy rate,0.6509199681132672,0.13658050194386892
-levers_tl,LoE_AR,L3,Building lifetime,0.3338458399098263,0.07004982888898291
-levers_tl,LoE_AR,L4,Extra space,0.7443385419660717,0.15618222924174188
-levers_tl,LoE_AR,L5,Occupancy density,0.42420089217590756,0.08900874702977418
-levers_tl,LoE_AR,L6,Brownfield-first development,0.2708664440543649,0.05683505914855957
-levers_tl,LoE_AR,L7,Soil-aware planning,0.11946109570520118,0.025066148241655675
-levers_tl,LoE_AR,L8,Material carbon efficiency,0.45732326830353703,0.0959587116624432
-levers_tl,LoE_AR,L9,Construction-stage carbon,0.3043083823447581,0.06385207651079694
-levers_tl,LoE_AtP,L1,Household size,5.809172556406739,0.3064666973321767
-levers_tl,LoE_AtP,L2,Vacancy rate,2.5889263353551257,0.13658050194386892
-levers_tl,LoE_AtP,L3,Building lifetime,1.3278165200501308,0.07004982888898292
-levers_tl,LoE_AtP,L4,Extra space,2.9604832362132627,0.15618222924174188
-levers_tl,LoE_AtP,L5,Occupancy density,1.6871887713302478,0.0890087470297742
-levers_tl,LoE_AtP,L6,Brownfield-first development,1.077326406822283,0.056835059148559575
-levers_tl,LoE_AtP,L7,Soil-aware planning,0.47513671706528,0.025066148241655685
-levers_tl,LoE_AtP,L8,Material carbon efficiency,1.8189275349987115,0.0959587116624432
-levers_tl,LoE_AtP,L9,Construction-stage carbon,1.210336176051323,0.06385207651079694
-tl_from_moderate_pathway,carbon_kt,TL1,Historical maximum household size,4831.868872838228,0.3516896242921496
-tl_from_moderate_pathway,carbon_kt,TL2,No vacancy,2062.9460415730973,0.15015240218422013
-tl_from_moderate_pathway,carbon_kt,TL3,No demolition,1005.9977341138648,0.07322197155185595
-tl_from_moderate_pathway,carbon_kt,TL4,No extra space,2062.885510441868,0.15014799640017254
-tl_from_moderate_pathway,carbon_kt,TL5,Densest design,892.969078204054,0.06499513291502465
-tl_from_moderate_pathway,carbon_kt,TL6,All brownfield,636.3535971964769,0.04631726634243863
-tl_from_moderate_pathway,carbon_kt,TL7,Lowest-carbon soils,252.96510574138665,0.018412172461326388
-tl_from_moderate_pathway,carbon_kt,TL8,Best-practice materials,1204.4078667186907,0.08766333716585262
-tl_from_moderate_pathway,carbon_kt,TL9,Zero-emission construction,788.6207647946669,0.057400096686959466
-tl_from_moderate_pathway,LoE_AR,TL1,Historical maximum household size,1.091544865204797,0.35168962429214967
-tl_from_moderate_pathway,LoE_AR,TL2,No vacancy,0.46603047767539596,0.15015240218422013
-tl_from_moderate_pathway,LoE_AR,TL3,No demolition,0.22726023614846844,0.07322197155185593
-tl_from_moderate_pathway,LoE_AR,TL4,No extra space,0.46601680337106,0.15014799640017254
-tl_from_moderate_pathway,LoE_AR,TL5,Densest design,0.20172646190370438,0.06499513291502464
-tl_from_moderate_pathway,LoE_AR,TL6,All brownfield,0.14375566054349584,0.04631726634243862
-tl_from_moderate_pathway,LoE_AR,TL7,Lowest-carbon soils,0.05714616218171611,0.018412172461326388
-tl_from_moderate_pathway,LoE_AR,TL8,Best-practice materials,0.2720821398774465,0.08766333716585262
-tl_from_moderate_pathway,LoE_AR,TL9,Zero-emission construction,0.17815362317559297,0.05740009668695947
-tl_from_moderate_pathway,LoE_AtP,TL1,Historical maximum household size,4.341438865274781,0.3516896242921496
-tl_from_moderate_pathway,LoE_AtP,TL2,No vacancy,1.8535590177531842,0.15015240218422013
-tl_from_moderate_pathway,LoE_AtP,TL3,No demolition,0.9038899391106311,0.07322197155185595
-tl_from_moderate_pathway,LoE_AtP,TL4,No extra space,1.8535046304731078,0.1501479964001725
-tl_from_moderate_pathway,LoE_AtP,TL5,Densest design,0.8023335822287062,0.06499513291502465
-tl_from_moderate_pathway,LoE_AtP,TL6,All brownfield,0.5717643238326132,0.04631726634243866
-tl_from_moderate_pathway,LoE_AtP,TL7,Lowest-carbon soils,0.22728939268149123,0.018412172461326412
-tl_from_moderate_pathway,LoE_AtP,TL8,Best-practice materials,1.082161635554442,0.08766333716585263
-tl_from_moderate_pathway,LoE_AtP,TL9,Zero-emission construction,0.7085765214963684,0.05740009668695948
+strategies_moderate,carbon_kt,S1,Avoid Strategies,4869.690184353881,0.6465872107092225
+strategies_moderate,carbon_kt,S2,Switch Strategies,1954.6812125791578,0.25953845629195227
+strategies_moderate,carbon_kt,S3,Improve Strategy,707.002721977325,0.09387433299882517
+strategies_moderate,LoE_AR,S1,Avoid Strategies,1.1000889005390948,0.6465872107092225
+strategies_moderate,LoE_AR,S2,Switch Strategies,0.44157287725603833,0.25953845629195227
+strategies_moderate,LoE_AR,S3,Improve Strategy,0.1597156734112395,0.0938743329988252
+strategies_moderate,LoE_AtP,S1,Avoid Strategies,4.375421350327874,0.6465872107092224
+strategies_moderate,LoE_AtP,S2,Switch Strategies,1.7562829639722548,0.2595384562919524
+strategies_moderate,LoE_AtP,S3,Improve Strategy,0.6352426309210782,0.09387433299882515
+strategies_ambitious,carbon_kt,S1,Avoid Strategies,8339.858329667077,0.6434668943820498
+strategies_ambitious,carbon_kt,S2,Switch Strategies,3363.7454869994945,0.2595318501168838
+strategies_ambitious,carbon_kt,S3,Improve Strategy,1257.2157724689614,0.09700125550106634
+strategies_ambitious,LoE_AR,S1,Avoid Strategies,1.8840183324214013,0.6434668943820498
+strategies_ambitious,LoE_AR,S2,Switch Strategies,0.7598879876128286,0.2595318501168838
+strategies_ambitious,LoE_AR,S3,Improve Strategy,0.28401172651998885,0.09700125550106635
+strategies_ambitious,LoE_AtP,S1,Avoid Strategies,7.493370792166049,0.6434668943820498
+strategies_ambitious,LoE_AtP,S2,Switch Strategies,3.0223285801988657,0.25953185011688384
+strategies_ambitious,LoE_AtP,S3,Improve Strategy,1.1296095900522891,0.09700125550106635
+levers_moderate,carbon_kt,L1,Household size,1284.6483678384845,0.1705729057613655
+levers_moderate,carbon_kt,L2,Vacancy rate,663.0885999431517,0.08804350832582025
+levers_moderate,carbon_kt,L3,Building lifetime,452.8016217844749,0.06012204607490486
+levers_moderate,carbon_kt,L4,Extra space,984.2850378454739,0.13069129514812627
+levers_moderate,carbon_kt,L5,Occupancy density,1492.2484698659816,0.19813761025615861
+levers_moderate,carbon_kt,L6,Brownfield-first development,773.1854778102002,0.10266193998633337
+levers_moderate,carbon_kt,L7,Soil-aware planning,177.72453804154836,0.023597890004601375
+levers_moderate,carbon_kt,L8,Material carbon efficiency,999.321273860573,0.13268777491100847
+levers_moderate,carbon_kt,L9,Construction-stage carbon,704.0707319204755,0.0934850295316813
+levers_moderate,LoE_AR,L1,Household size,0.29020889564913677,0.17057290576136547
+levers_moderate,LoE_AR,L2,Vacancy rate,0.14979523979065107,0.08804350832582022
+levers_moderate,LoE_AR,L3,Building lifetime,0.10229029351223372,0.06012204607490485
+levers_moderate,LoE_AR,L4,Extra space,0.22235522263397892,0.1306912951481263
+levers_moderate,LoE_AR,L5,Occupancy density,0.3371068623257448,0.19813761025615864
+levers_moderate,LoE_AR,L6,Brownfield-first development,0.17466670978984944,0.10266193998633336
+levers_moderate,LoE_AR,L7,Soil-aware planning,0.040148917949876975,0.023597890004601347
+levers_moderate,LoE_AR,L8,Material carbon efficiency,0.2257519882843364,0.13268777491100844
+levers_moderate,LoE_AR,L9,Construction-stage carbon,0.1590533212705645,0.09348502953168136
+levers_moderate,LoE_AtP,L1,Household size,1.1542578035793765,0.1705729057613654
+levers_moderate,LoE_AtP,L2,Vacancy rate,0.5957857497119672,0.08804350832582024
+levers_moderate,LoE_AtP,L3,Building lifetime,0.4068426960270264,0.0601220460749049
+levers_moderate,LoE_AtP,L4,Extra space,0.8843810604696161,0.13069129514812625
+levers_moderate,LoE_AtP,L5,Occupancy density,1.3407866964563424,0.1981376102561586
+levers_moderate,LoE_AtP,L6,Brownfield-first development,0.6947079011810019,0.10266193998633343
+levers_moderate,LoE_AtP,L7,Soil-aware planning,0.15968566968030326,0.023597890004601368
+levers_moderate,LoE_AtP,L8,Material carbon efficiency,0.8978911331022479,0.13268777491100847
+levers_moderate,LoE_AtP,L9,Construction-stage carbon,0.6326082350133254,0.09348502953168135
+levers_ambitious,carbon_kt,L1,Household size,2193.405613413878,0.16923355798058565
+levers_ambitious,carbon_kt,L2,Vacancy rate,1196.009947661261,0.09227888247621487
+levers_ambitious,carbon_kt,L3,Building lifetime,770.625829217349,0.05945810941333754
+levers_ambitious,carbon_kt,L4,Extra space,1707.9786706691693,0.13178014391164664
+levers_ambitious,carbon_kt,L5,Occupancy density,2531.3432372063417,0.19530734301156788
+levers_ambitious,carbon_kt,L6,Brownfield-first development,1304.0040435191772,0.10061123330597586
+levers_ambitious,carbon_kt,L7,Soil-aware planning,273.3577872158121,0.021091088054721135
+levers_ambitious,carbon_kt,L8,Material carbon efficiency,1749.2779224052817,0.13496661305829935
+levers_ambitious,carbon_kt,L9,Construction-stage carbon,1234.8165378272615,0.09527302878765107
+levers_ambitious,LoE_AR,L1,Household size,0.49550198849393645,0.16923355798058565
+levers_ambitious,LoE_AR,L2,Vacancy rate,0.2701850053179653,0.09227888247621485
+levers_ambitious,LoE_AR,L3,Building lifetime,0.17408847156530632,0.05945810941333756
+levers_ambitious,LoE_AR,L4,Extra space,0.38584146153642224,0.13178014391164664
+levers_ambitious,LoE_AR,L5,Occupancy density,0.5718438942281245,0.19530734301156788
+levers_ambitious,LoE_AR,L6,Brownfield-first development,0.29458144568264355,0.10061123330597585
+levers_ambitious,LoE_AR,L7,Soil-aware planning,0.06175297733688208,0.02109108805472112
+levers_ambitious,LoE_AR,L8,Material carbon efficiency,0.395171182055695,0.13496661305829938
+levers_ambitious,LoE_AR,L9,Construction-stage carbon,0.2789516203372432,0.09527302878765108
+levers_ambitious,LoE_AtP,L1,Household size,1.9707770694930653,0.16923355798058562
+levers_ambitious,LoE_AtP,L2,Vacancy rate,1.0746160971421088,0.09227888247621485
+levers_ambitious,LoE_AtP,L3,Building lifetime,0.6924080544395224,0.05945810941333754
+levers_ambitious,LoE_AtP,L4,Extra space,1.5346204909629277,0.13178014391164666
+levers_ambitious,LoE_AtP,L5,Occupancy density,2.2744143519985025,0.19530734301156788
+levers_ambitious,LoE_AtP,L6,Brownfield-first development,1.171648896937929,0.10061123330597588
+levers_ambitious,LoE_AtP,L7,Soil-aware planning,0.2456122367507745,0.02109108805472114
+levers_ambitious,LoE_AtP,L8,Material carbon efficiency,1.5717279086749085,0.13496661305829938
+levers_ambitious,LoE_AtP,L9,Construction-stage carbon,1.1094838560174651,0.09527302878765107
+levers_tl,carbon_kt,L1,Household size,6638.5868402175265,0.3098712054940421
+levers_tl,carbon_kt,L2,Vacancy rate,2882.655015801898,0.13455450779954126
+levers_tl,carbon_kt,L3,Building lifetime,1476.9926822935427,0.06894200738559325
+levers_tl,carbon_kt,L4,Extra space,3345.75852761365,0.15617092209486588
+levers_tl,carbon_kt,L5,Occupancy density,1904.5647305869988,0.08889990945559292
+levers_tl,carbon_kt,L6,Brownfield-first development,1219.157816463148,0.05690697604289244
+levers_tl,carbon_kt,L7,Soil-aware planning,537.9362013902863,0.02510940102400346
+levers_tl,carbon_kt,L8,Material carbon efficiency,2052.5169111875302,0.09580591545681241
+levers_tl,carbon_kt,L9,Construction-stage carbon,1365.528354118627,0.06373915524665627
+levers_tl,LoE_AR,L1,Household size,1.4996920587787212,0.3098712054940421
+levers_tl,LoE_AR,L2,Vacancy rate,0.6512070926310426,0.13455450779954126
+levers_tl,LoE_AR,L3,Building lifetime,0.33366049881142,0.06894200738559324
+levers_tl,LoE_AR,L4,Extra space,0.7558246378665984,0.15617092209486585
+levers_tl,LoE_AR,L5,Occupancy density,0.430251297548405,0.08889990945559294
+levers_tl,LoE_AR,L6,Brownfield-first development,0.2754142319373317,0.056906976042892424
+levers_tl,LoE_AR,L7,Soil-aware planning,0.12152264763146027,0.02510940102400347
+levers_tl,LoE_AR,L8,Material carbon efficiency,0.4636744816787103,0.0958059154568124
+levers_tl,LoE_AR,L9,Construction-stage carbon,0.3084801145181344,0.06373915524665627
+levers_tl,LoE_AtP,L1,Household size,5.9647767100295255,0.3098712054940421
+levers_tl,LoE_AtP,L2,Vacancy rate,2.5900683255567003,0.13455450779954126
+levers_tl,LoE_AtP,L3,Building lifetime,1.3270793565366523,0.06894200738559325
+levers_tl,LoE_AtP,L4,Extra space,3.006167279757789,0.15617092209486585
+levers_tl,LoE_AtP,L5,Occupancy density,1.7112532563295875,0.08889990945559292
+levers_tl,LoE_AtP,L6,Brownfield-first development,1.0954144796954337,0.05690697604289244
+levers_tl,LoE_AtP,L7,Soil-aware planning,0.48333619831497104,0.02510940102400348
+levers_tl,LoE_AtP,L8,Material carbon efficiency,1.8441884339938772,0.09580591545681241
+levers_tl,LoE_AtP,L9,Construction-stage carbon,1.2269285496406712,0.06373915524665626
+tl_from_moderate_pathway,carbon_kt,TL1,Historical maximum household size,4926.00729328263,0.35458485288569314
+tl_from_moderate_pathway,carbon_kt,TL2,No vacancy,2061.942107771935,0.14842313366854748
+tl_from_moderate_pathway,carbon_kt,TL3,No demolition,1005.2374208202505,0.07235920325631788
+tl_from_moderate_pathway,carbon_kt,TL4,No extra space,2085.535295265361,0.1501214232605806
+tl_from_moderate_pathway,carbon_kt,TL5,Densest design,902.082281109948,0.06493386913461258
+tl_from_moderate_pathway,carbon_kt,TL6,All brownfield,644.3020418161319,0.04637827983382504
+tl_from_moderate_pathway,carbon_kt,TL7,Lowest-carbon soils,256.09545254147525,0.018434314640163877
+tl_from_moderate_pathway,carbon_kt,TL8,Best-practice materials,1216.898433359738,0.0875950290528602
+tl_from_moderate_pathway,carbon_kt,TL9,Zero-emission construction,794.2226347953746,0.05716989426739924
+tl_from_moderate_pathway,LoE_AR,TL1,Historical maximum household size,1.1128112348350265,0.35458485288569314
+tl_from_moderate_pathway,LoE_AR,TL2,No vacancy,0.4658036836926734,0.1484231336685475
+tl_from_moderate_pathway,LoE_AR,TL3,No demolition,0.2270884773335187,0.0723592032563179
+tl_from_moderate_pathway,LoE_AR,TL4,No extra space,0.4711335101718295,0.1501214232605806
+tl_from_moderate_pathway,LoE_AR,TL5,Densest design,0.20378518288709377,0.06493386913461256
+tl_from_moderate_pathway,LoE_AR,TL6,All brownfield,0.1455512564380204,0.04637827983382504
+tl_from_moderate_pathway,LoE_AR,TL7,Lowest-carbon soils,0.05785332416517854,0.018434314640163856
+tl_from_moderate_pathway,LoE_AR,TL8,Best-practice materials,0.27490382528310303,0.0875950290528602
+tl_from_moderate_pathway,LoE_AR,TL9,Zero-emission construction,0.17941911538900754,0.05716989426739923
+tl_from_moderate_pathway,LoE_AtP,TL1,Historical maximum household size,4.4260223272826895,0.3545848528856932
+tl_from_moderate_pathway,LoE_AtP,TL2,No vacancy,1.8526569822598307,0.1484231336685475
+tl_from_moderate_pathway,LoE_AtP,TL3,No demolition,0.9032067968794254,0.07235920325631788
+tl_from_moderate_pathway,LoE_AtP,TL4,No extra space,1.8738554840891046,0.1501214232605806
+tl_from_moderate_pathway,LoE_AtP,TL5,Densest design,0.8105218038721346,0.06493386913461256
+tl_from_moderate_pathway,LoE_AtP,TL6,All brownfield,0.5789060090269761,0.04637827983382503
+tl_from_moderate_pathway,LoE_AtP,TL7,Lowest-carbon soils,0.23010201231529076,0.018434314640163846
+tl_from_moderate_pathway,LoE_AtP,TL8,Best-practice materials,1.0933844217872337,0.08759502905286018
+tl_from_moderate_pathway,LoE_AtP,TL9,Zero-emission construction,0.7136098071213156,0.05716989426739923

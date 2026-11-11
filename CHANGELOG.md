@@ -2,6 +2,121 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.5.0: household-size tail, F2 limitation, figure revisions
+
+One full run (`run_all.py --profile full`), then the light profile. Every number below is read from the outputs of
+v4.4.0 (main after PR 26) and of this run. How the run went, in order:
+the compute steps of the full run completed; its figures step stopped (ED4: the row notes, 73 mm, did not fit), so the
+ED4 notes block was enlarged (30% of the figure height) and the figures redrawn from the data (`--figures-only`, 113
+data files byte-identical). Looking at the figures then showed a 2049 step in the L1 Moderate / Ambitious paths (below);
+after that fix the steps from `pathways` onward (pathways, pathways_mc, sensitivity_tables, metrics, results,
+assumptions, methods) were re-run on the same code, and the figures, check_outputs, figure_manifest and indexes after
+them. No step before `pathways` imports `levers.py`, so the earlier outputs are unaffected by the fix.
+
+* **Household-size tail (all variants and runs).**
+  * Rule: Hermite interpolation through the five-yearly Stats NZ knots with PCHIP (Fritsch-Carlson) derivatives at the
+    interior knots; the end derivative at 2048 is the 2043-2048 secant slope; S is continued linearly at that slope in
+    2049-2050 (`projection.S_TAIL = 'pchip_secant'`). The same rule for A / B, Low / Medium / High, the Reference, the
+    pathways, TL and every Monte Carlo draw. MODEL v4.4 imposed a zero slope at 2048 and held S flat after it.
+  * Medium A and the Reference annual carbon, 2043-2050:
+
+    | year | S v4.4.0 | S v4.5.0 | carbon kt v4.4.0 | carbon kt v4.5.0 |
+    |---|---|---|---|---|
+    | 2043 | 2.4968 | 2.4968 | 965.5 | 965.5 |
+    | 2044 | 2.4907 | 2.4915 | 960.4 | 934.7 |
+    | 2045 | 2.4843 | 2.4866 | 959.4 | 907.4 |
+    | 2046 | 2.4787 | 2.4821 | 926.7 | 886.7 |
+    | 2047 | 2.4746 | 2.4776 | 868.4 | 880.1 |
+    | 2048 | 2.4730 | 2.4730 | 777.9 | 881.4 |
+    | 2049 | 2.4730 | 2.4683 | 714.4 | 878.3 |
+    | 2050 | 2.4730 | 2.4635 | 703.7 | 869.4 |
+
+    The zero end slope bent the 2043-2048 decline forward (faster in 2044-2046, then flat), so 2044-2046 carbon falls
+    and 2047-2050 carbon rises; net +327 kt over 2026-2050.
+  * ED4 rows (both shown, above the 0.1% rule): "After 2048: held flat (zero slope)" 25,176 kt (-1.28%; equal to the
+    v4.4.0 Reference to 1e-9, which confirms the change is confined to the tail); "After 2048: PCHIP end slope"
+    25,423 kt (-0.31%). The secant / end-slope "taper" rows of v4.4 are removed (`S_TAPER_YEARS` removed).
+  * L1 (found on figure review): v4.4 held the High - Medium gap at its 2048 value (`L1_GAP_HELD_AFTER`), so in
+    2049-2050 S_Ambitious = S_Medium + gap fell at the Medium slope (-0.0047 a year) instead of the High variant's own
+    tail (-0.0020), a step of +0.40 Mm2 in the Ambitious L1 floor area in 2049. Under the flat tail the hold changed
+    nothing. The gap is now taken in every year (each variant on its own tail; High >= Medium asserted in every year);
+    `L1_GAP_HELD_AFTER` removed. TL is unaffected (TL1 holds S at the 1991 maximum).
+* **F2 limitation (text).** The 2019-2023 household estimates remain on the 2018 Census base; Stats NZ has not rebased
+  them. k is kept; with the census endpoints fixed, only the timing of household growth within 2019-2023 depends on it
+  (`tools/baseline_draft.py`).
+* **Extra space (text).** One sentence in the release methods: extra space grows with smaller households, because it is
+  new households x (dwelling size - occupied area) (`tools/release_methods.py`). Extra-space carbon +133 kt (+1.5%).
+* **ED7 / methods (text).** Population and household size are one grouped input (one z, perfectly dependent); their
+  Sobol indices are grouped Sobol indices (Jacques, Lavergne & Devictor 2006, Reliab. Eng. Syst. Saf. 91,
+  doi:10.1016/j.ress.2005.11.047; added to docs/REFERENCES.md).
+* **Monte Carlo committed emissions: not added.** No existing function computes them per draw: `pathways.committed`
+  uses the central event profiles and the C1-C4 factors, so per-draw committed emissions would need new modelling
+  (bootstrapped event profiles and C1-C4 factors per draw). Fig3b states that the committed column has no Monte Carlo
+  interval.
+* **Old -> new** (v4.4.0 -> v4.5.0):
+
+  | quantity | v4.4.0 | v4.5.0 | change |
+  |---|---|---|---|
+  | Reference cumulative carbon 2026-2050 (kt CO2e) | 25,176 | 25,503 | +1.3% |
+  | Reference floor area 2026-2050 (Mm2) | 103.94 | 105.44 | +1.4% |
+  | Household size 2050 | 2.473 | 2.464 | -0.4% |
+  | Demand band carbon (kt): population growth | 9,776 | 9,776 | 0.0% |
+  | household-size change | 3,421 | 3,597 | +5.2% |
+  | extra space | 9,070 | 9,203 | +1.5% |
+  | vacancy | 1,268 | 1,286 | +1.4% |
+  | net replacement | 1,870 | 1,870 | -0.0% |
+  | market balance (incl. the starting-surplus payback) | -668 | -668 | 0.0% |
+  | (maintenance) | 438 | 438 | 0.0% |
+  | Reference LoE AR / AtP | 5.687 / 22.62 | 5.761 / 22.91 | +1.3% |
+  | Moderate Pathway carbon (kt) / LoE AR / AtP | 17,818 / 4.025 / 16.01 | 17,971 / 4.060 / 16.15 | +0.9% |
+  | Ambitious Pathway carbon (kt) / LoE AR / AtP | 12,486 / 2.821 / 11.22 | 12,542 / 2.833 / 11.27 | +0.4% |
+  | Theoretical Limit carbon (kt) / LoE AR / AtP | 4,079 / 0.921 / 3.67 | 4,079 / 0.921 / 3.67 | 0.0% |
+  | P(LoE AR <= 1): Reference / Moderate / Ambitious / TL | 0 / 0 / 0 / 0.640 | 0 / 0 / 0 / 0.640 | |
+  | TL threshold 2050 population, P = 50% (M) | 6.715 | 6.715 | 0.0% |
+  | Sobol total indices, carbon (top 3) | z_pop 0.670, size 0.234, carbon 0.089 | z_pop 0.639, size 0.256, carbon 0.097 | |
+
+  * TL, its Monte Carlo probability and the population threshold are unchanged to every digit: TL1 holds household size
+    at the 1991 maximum (2.79), independent of the Reference path.
+  * Sobol: the z_pop 95% interval (0.588-0.691) contains the v4.4.0 value.
+* **Figures.**
+  * Fig2d: no outline boxes; the negative market balance is a solid segment below zero; the net total is a black
+    marker.
+  * Fig3a: y top set from the data: 1,700 kt raised in 100 kt steps until the legend clears the 50% band and the
+    pathway lines in its x-range; the result is 1,800 kt (at 1,700 the legend overlapped the 50% band).
+  * Fig3b: the 2026-2050 column has a white fill and a faint hatch; the 90% / 50% intervals are the greys of the fans;
+    the committed column is two hatched segments (B2/B4 cross-hatch, C1-C4 dots), no grey fills; the note says the
+    committed column has no Monte Carlo interval. In both panels the 50% legend swatch overlays the 90% and 50% fills
+    at their palette opacities, as drawn (Fig3a's swatch showed the 50% opacity alone; Fig3b's used a composite alpha
+    not in the palette, flagged by tools/palette_coverage.py; now 0 findings).
+  * Fig5: contours only at LoE 1-5; the AR line carries the label "LoE of AR 1"; the 1.25 / 1.5 / 2.5 contours removed.
+  * Fig7a: bar height 0.6; the completion-lag row runs from 0 months (MODEL v3.3 case, the low end) to 19 months, with
+    15 months as a tick and "0 mo" labelled at the bar end; tick labels have a white halo so the Reference line does not
+    cross them. Fig7b title "Monte Carlo draws vs 2050 population".
+  * ED3: legend one font step larger, extended under panel b.
+  * ED4 / ED5: row-number superscripts at FONT_MIN (>= 5 pt), bold, smaller than the row labels (FONT_MIN + 1); the same
+    numbers in the notes, whose text is FONT_MIN + 0.5. ED4 notes block 30% of the figure height; ED5 at 165 mm.
+  * SF1: legend "Stats NZ household estimates as published (2018 Census base)"; the band is Low A - High A (checked
+    against `HH_SIZE_PAIRED` and relabelled); 2024-2025 households are the model path (population / household size),
+    drawn as the start of the projection line and named in the note, so their separate legend entry is dropped;
+    history lines as straight segments.
+  * SF2: the 2024-25 unexplained building is labelled "2024-25 surplus (carried into 2026)" (hatched; a STOP checks it
+    equals the F1 residual, 9,020 a year, the +9.0 above the column); "Surplus absorbed (2024-25 surplus + 2026
+    overbuild)"; the dagger note reads "2024-2025: households = population / household size (model), not
+    census-benchmarked".
+  * SF5: payback bars solid; the note says "Surplus still vacant" starts with the 18,966 starting surplus (a STOP checks
+    U(2025) equals it).
+  * SF14: "Need after the surplus payback"; the "Release constraint binds" entry is drawn only when a marker is.
+* **Label audit** (2018-base wording, overbuild-only wording, consent-derived 2024-25, "held after 2043/2048"):
+  Fig1 caption and note (starting surplus absorbed); SF5 title, curve label and note; `naming.VACANCY_WORDING` and the
+  `overbuild_absorbed` band description; the ED4 / Fig7a row "Surplus absorbed (by 2030-by 2045)" and its note; SF1
+  labels and note; SF2 labels, note and dagger; SF14 labels; the L1 text of the methods (gap in every year). ED10 and
+  the other SFs: no hits, no change.
+* **Checks.**
+  * Full test suite (full profile): 259 passed, 2 skipped (the local AESA workbook).
+  * Regression lock re-captured: 31 of 34 deterministic files changed (unchanged: the three history-only files,
+    bands_history, history_unexplained, completion_lag_hindcast) and all 4 Monte Carlo files in both profiles; the light
+    and full deterministic files are identical.
+
 ## model-v4.4.0: Stats NZ 2023-base household projections, starting surplus, AR base with completion
 
 One full run (`run_all.py --profile full`), then the light profile. Every number below is read from the outputs of

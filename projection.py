@@ -127,16 +127,14 @@ HH_SIZE_PACE_WINDOW = (2018, 2023)
 HH_BRIDGE = 'erp_S'                # adopted (Part B)
 START_MODE = 'observed'
 
-# S_TAIL: household size between and after the published knots (last knot 2048).
-#   'hermite_clamped' (ADOPTED): one cubic Hermite through every
-#       published knot (PCHIP derivatives at the interior knots, zero slope
-#       imposed at the last knot, 2048), held constant after it (2049-2050).
-#   Sensitivities (Sensitivity.py): 'flat' (PCHIP, held after 2048; a kink at
-#       2048), 'taper' (PCHIP; the slope tapers linearly to zero over
-#       S_TAPER_YEARS from the PCHIP end derivative), 'taper_secant' (the
-#       2043-48 interval linear at its secant slope, then tapering from it).
-S_TAIL = 'hermite_clamped'
-S_TAPER_YEARS = 5
+# S_TAIL: household size between and after the published knots (last knot 2048; extend_tail).
+#   'pchip_secant' (ADOPTED, MODEL v4.5): PCHIP through the five-yearly knots with the end slope at 2048 set to the
+#       2043-2048 secant slope; S continued linearly at that slope in 2049-2050. Applied to every projection (A / B,
+#       Low / Medium / High) and every run (Reference, pathways, TL, Monte Carlo).
+#   Sensitivities (Sensitivity.py): 'hermite_clamped' (zero slope imposed at 2048, S held flat after it: the rule of
+#       MODEL v4.4 and earlier) and 'pchip_endslope' (the PCHIP end derivative at 2048, continued linearly).
+S_TAIL = 'pchip_secant'
+S_TAIL_MODES = ('pchip_secant', 'pchip_endslope', 'hermite_clamped')
 
 # S_ANCHOR_YEAR: the observed household size the Stats NZ shape is rebased on.
 #   2023 (ADOPTED, item 6): the last year in which households are benchmarked
@@ -937,45 +935,29 @@ def smooth_interpolate_and_extend(block_df, value_col, full_year_range):
 # ============================================================
 
 def extend_tail(S_knots, S_ann, mode):
-    """Replace the values after the last knot according to S_TAIL (see there)."""
-    yrs_k, s_k = S_knots['Year'].values, S_knots['S'].values
-    last = int(yrs_k[-1])
-    if mode == 'hermite_clamped':
-        # ONE cubic Hermite through every published knot, PCHIP derivatives at the
-        # interior knots, zero derivative clamped at the last knot; held constant after it.
-        from scipy.interpolate import CubicHermiteSpline
-        x = yrs_k.astype(float)
-        d = PchipInterpolator(x, s_k).derivative()(x)
-        d[-1] = 0.0
-        h = CubicHermiteSpline(x, s_k, d)
-        out = S_ann.copy()
-        inside = (out.index >= x[0]) & (out.index <= last)
-        out[inside] = h(out.index[inside].astype(float))
-        out[out.index > last] = float(s_k[-1])
-        return out
-    if mode in ('taper', 'taper_secant'):
-        # slope tapers linearly to zero over S_TAPER_YEARS: S(K+t) = S(K) + s0 (t - t^2 / (2T)),
-        # constant after K+T. With s0 = the PCHIP end derivative this is C1-continuous at K
-        # ('taper'); 'taper_secant' starts from the secant slope of the last published interval instead (not C1).
-        s0 = (float(PchipInterpolator(yrs_k.astype(float), s_k).derivative()(last)) if mode == 'taper'
-              else (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]))
-        T = float(S_TAPER_YEARS)
-        out = S_ann.copy()
-        if mode == 'taper_secant':
-            # the last published interval (2043->2048) is linear at its secant slope, so the
-            # taper after the last knot continues it smoothly (no kink there; the PCHIP segment meets the
-            # line at the second-last knot instead)
-            k0 = int(yrs_k[-2])
-            seg = (out.index >= k0) & (out.index <= last)
-            out[seg] = s_k[-2] + s0 * (out.index[seg] - k0)
-        t = np.clip(out.index.values - last, 0.0, T)
-        after = out.index > last
-        out[after] = float(S_ann.loc[last]) + s0 * (t[after] - t[after] ** 2 / (2 * T))
-        return out
-    if mode != 'flat':
+    """Household size between and after the published knots, by S_TAIL (see there). Every mode is one cubic Hermite
+    through every published knot with the PCHIP derivatives at the knots (Fritsch & Carlson 1980, as
+    scipy.interpolate.PchipInterpolator) except at the last knot K, where the end slope s_K is set by the mode, and is
+    continued LINEARLY at s_K after K:
+        'pchip_secant'    s_K = (S(K) - S(K-1)) / (K - (K-1)), the secant slope of the last published interval
+        'pchip_endslope'  s_K = the PCHIP end derivative (the plain PCHIP through the knots)
+        'hermite_clamped' s_K = 0: S held constant after K."""
+    from scipy.interpolate import CubicHermiteSpline
+    yrs_k, s_k = S_knots['Year'].values.astype(float), S_knots['S'].values.astype(float)
+    if mode not in S_TAIL_MODES:
         raise ValueError(f"Unknown S_TAIL '{mode}'.")
+    d = PchipInterpolator(yrs_k, s_k).derivative()(yrs_k)
+    if mode == 'pchip_secant':
+        d[-1] = (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2])
+    elif mode == 'hermite_clamped':
+        d[-1] = 0.0
+    h = CubicHermiteSpline(yrs_k, s_k, d)
+    last = yrs_k[-1]
     out = S_ann.copy()
-    out[out.index > last] = float(S_ann.loc[last])
+    t = out.index.values.astype(float)
+    inside = (t >= yrs_k[0]) & (t <= last)
+    out[inside] = h(t[inside])
+    out[t > last] = float(s_k[-1]) + float(d[-1]) * (t[t > last] - last)
     return out
 
 

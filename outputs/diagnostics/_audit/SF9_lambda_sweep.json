@@ -1,6 +1,6 @@
 {
  "figure": "SF9_lambda_sweep",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "",
@@ -28,6 +28,7 @@
   "22,000",
   "24,000",
   "26,000",
+  "28,000",
   "Ambitious",
   "Avoid Strategies",
   "Cumulative carbon 2026\u20132050 (kt CO\u2082e), lever alone",

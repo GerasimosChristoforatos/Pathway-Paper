@@ -47,9 +47,14 @@ COMP = {'new_households': ('New households', S.NEW_HOUSEHOLDS),
         'net_replacement': ('Net replacement', S.DISPLAY_BAND['net_replacement']),
         'retirement_villages': (N.BAND_DETAIL['retirement_villages'], S.RETIREMENT_VILLAGES),
         'overbuild_2026': (N.BANDS['overbuild_2026'], S.BAND['overbuild_2026'][0]),
-        'overbuild_absorbed': (N.BANDS['overbuild_absorbed'], S.BAND['overbuild_absorbed'][0]),
-        'unexplained_building': ('Unexplained building', S.UNEXPLAINED[0])}
+        # the absorption pays back the F1 starting surplus (2024-2025) and the 2026 overbuild
+        'overbuild_absorbed': ('Surplus absorbed (2024–25 surplus + 2026 overbuild)', S.BAND['overbuild_absorbed'][0]),
+        'unexplained_building': ('Unexplained building', S.UNEXPLAINED[0]),
+        # the unexplained building of the years after the last census is the F1 starting surplus carried into 2026:
+        # the same face, a light hatch
+        'surplus_2425': ('2024–25 surplus (carried into 2026)', S.UNEXPLAINED[0])}
 COMP_STYLE = {c: S.fill(col) for c, (_, col) in COMP.items()}           # solid, edge = face at LW_SEAM
+COMP_STYLE['surplus_2425'] = S.fill(S.UNEXPLAINED[0], '////', S.HATCH_COLOUR)
 
 
 # ---------------------------------------------------------------------------
@@ -68,11 +73,16 @@ def sf1_households():
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 100), gridspec_kw={'width_ratios': [1.3, 1]})
     a = ax[0]
     dhe = d2['households_dhe_published']
-    P.line(a, dhe.index, dhe.values / M6, color=S.MUTED, lw=S.LW_THIN, label='Stats NZ household estimates as published')
-    P.history_estimated(a, d2['households_hist'], anchor, M6, label='History (31 Dec)', k=k)
+    # history: straight segments between the annual values (observed data, not smoothed); after the 2023 census the
+    # households are population / the model's household size, drawn as the projection line from the census point
+    a.plot(dhe.index, dhe.values / M6, color=S.MUTED, lw=S.LW_THIN,
+           label='Stats NZ household estimates as published (2018 Census base)')
+    P.history_estimated(a, d2['households_hist'], anchor, M6, label='History (31 Dec)', k=k, straight=True,
+                        tail=False)
     lo, hi = d2['households_5th'] / M6, d2['households_95th'] / M6
     xf, lof, hif, _ = P.pchip_band(fy, lo, (lo + hi) / 2, hi, P.series_breaks(), name='SF1a households 5-95')
-    a.fill_between(xf, lof, hif, label='5th–95th population percentile (household size fixed)', **S.MC_BAND)
+    a.fill_between(xf, lof, hif, label='5th–95th population percentile with Low A – High A household size '
+                                       '(household size moves with population)', **S.MC_BAND)
     P.line(a, d2['projection_years'], d2['projection_households'] / M6,
            label='Projection: population / household size, median', **_ref())
     P.split(a)
@@ -104,8 +114,11 @@ def sf1_households():
     S.save_figure(fig, 'SF1_households', source=['figure_source/D02_households.json',
                                                  'figure_source/D04_household_formation.json'], note=(
         f'a: projection from the {anchor} census point; 2019–23 Stats NZ estimates scaled to the {anchor} census '
-        f'(×{k:.3f}). b: between censuses households are consent-derived, so the relationship is partly mechanical '
-        '(housing supply meets migration); 2024-25 are the model household-size path (ERP / S), not observations.'))
+        f'(×{k:.3f}); 2024–2025: households = population / household size (model), on the projection line. The band: '
+        'the 5th / 95th population percentile paths with the Stats NZ Low A / High A household size (households '
+        'computed per path). b: between censuses households are consent-derived, so the relationship is partly '
+        'mechanical (housing supply meets migration); 2024-25 are the model household-size path (ERP / S), not '
+        'observations.'))
 
 
 # ---------------------------------------------------------------------------
@@ -197,10 +210,12 @@ def _yrs(a_, b_):
 def sf2b_draw(a, b):
     """Draw the SF2b columns, areas, caps and line (values in thousand dwellings per year)."""
     k = 1e3
-    for c in b['history']:                          # census intervals: one column each
+    for j, c in enumerate(b['history']):            # census intervals: one column each
         x = list(c['x'])
+        st = (dict(COMP_STYLE, unexplained_building=COMP_STYLE['surplus_2425']) if j == len(b['history']) - 1
+              else COMP_STYLE)                       # after the last census: the carried surplus, hatched
         P.stack_series(a, x, [(cid, np.full(2, c['parts'][cid] / k)) for cid in HIST_IDS], net=np.full(2, c['net'] / k),
-                       net_line=False, styles=COMP_STYLE)
+                       net_line=False, styles=st)
         a.plot(x, [c['net'] / k] * 2, color=S.MUTED, lw=S.LW_THIN, gid='census_interval_mean', zorder=6)
     g = b['gap']
     pipe = set(b['pipeline'])
@@ -291,11 +306,15 @@ def sf2_stock_vacancy():
         m = c['parts']['unexplained_building'] / 1e3
         a.text(c['centre'], 0.965, P.minus(f'{m:+.1f}'), transform=a.get_xaxis_transform(), ha='center', va='top',
                fontsize=S.FONT_MIN, color=S.NEUTRALS['note_text'])
-    # the latest interval (households consent-derived, not census-benchmarked) labelled, not faded
+    # the latest interval (households from the model, not census-benchmarked) labelled, not faded
     last = b['history'][-1]
+    ss = D.js('baseline/projection.json')['starting_surplus']    # F1 starting surplus
+    if not np.isclose(last['parts']['unexplained_building'], ss['r_after'], rtol=1e-9):
+        raise SystemExit(f"STOP: SF2b: the {_yrs(*last['years'])} unexplained building "
+                         f"({last['parts']['unexplained_building']:,.1f}) is not the F1 residual ({ss['r_after']:,.1f}).")
     a.text(last['centre'], last['up'] / 1e3, '†', ha='center', va='bottom', fontsize=S.FONT_SMALL, color=S.INK)
-    a.annotate(f"1986–91 not covered (calibration starts 1991)\n† {_yrs(*last['years'])}: households "
-               'consent-derived\n(not census-benchmarked)', (0, 0.02), xycoords='axes fraction', xytext=(3, 0),
+    a.annotate(f"1986–91 not covered (calibration starts 1991)\n† {_yrs(*last['years'])}: households = population /\n"
+               'household size (model), not census-benchmarked', (0, 0.02), xycoords='axes fraction', xytext=(3, 0),
                textcoords='offset points', fontsize=S.FONT_MIN, color=S.MUTED)      # 3 pt clear of the spine
     P.split(a)
     a.set_xlim(b['xlim'])
@@ -304,22 +323,24 @@ def sf2_stock_vacancy():
     a.set_ylim(_y0 - 0.06 * (_y1 - _y0), _y1 + 0.10 * (_y1 - _y0))   # room for the row of unexplained values
     P.panel(a, 'b', 'Dwellings per year by component (top row: unexplained building, thousand per year)')
     shown = [c for c in SF2B_LEGEND if c in b['present']]
+    shown.insert(shown.index('unexplained_building') + 1, 'surplus_2425')
     seen, handles = set(), []
     for c in shown:                                   # one entry per label (net replacement: history and projection)
         if COMP[c][0] in seen:
             continue
         seen.add(COMP[c][0])
-        handles.append(Patch(label=COMP[c][0], facecolor=COMP[c][1], edgecolor=COMP[c][1], linewidth=S.LW_SEAM))
+        handles.append(Patch(label=COMP[c][0], **dict(COMP_STYLE[c], linewidth=S.LW_SEAM)))
     handles += [Line2D([0], [0], color=S.INK, lw=S.LW, label='Dwellings built, in scope (annual)'),
                 Line2D([0], [0], color=S.MUTED, lw=S.LW_THIN, label='Census-interval mean')]
     a.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, -0.07), ncol=3, fontsize=S.FONT_MIN)
     V = d['vacancy_wording']
     sm = D.js('baseline/scenarios.json')['meta']              # the projection's replacement rates (%/yr)
-    ss = D.js('baseline/projection.json')['starting_surplus']    # F1 starting surplus
     hist_note = (f'History: one column per census interval (interval means; vacancy on one definition, the pooled '
                  f"2018/2023 empty share, {100 * d['pooled_share']:.1f}% of unoccupied dwellings); between censuses "
                  f'annual detail is not identified. The {census_y[-1] + 1}–{int(YH[-1])} column (marked †): households '
-                 f"consent-derived. Pipeline years {', '.join(str(y) for y in b['pipeline'])}: annual columns; "
+                 'are population / household size (model), not census-benchmarked; its unexplained building '
+                 f"({ss['r_after']:,.0f} dwellings a year) is the F1 residual, carried into 2026 as the starting surplus "
+                 f"({ss['dwellings']:,.0f} dwellings, hatched). Pipeline years {', '.join(str(y) for y in b['pipeline'])}: annual columns; "
                  f"projection from {b['pipeline'][-1] + 1}: annual stacked areas. In the pipeline years the line is the "
                  'sum of the components (the stock-identity count: observed building less the modelled '
                  'retirement-village share); the in-scope floor area divided by the dwelling size held at its '

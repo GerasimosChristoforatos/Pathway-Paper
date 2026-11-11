@@ -79,6 +79,9 @@ record and must be checked before submission; no DOI or page number has been add
   doi:10.1111/jiec.13050. (Ability to pay: Eqs. 5–6 and SI Eq. S1; the FCE upscaling.) [verify: full title]
 - Horup, L. H., et al. (2025). *Science of the Total Environment*, 966, 178780. (Acquired rights, Eq. 1; the A1–A3
   item paths, SI Table S4; the solution space, Fig. 6.) [verify: authors and title]
+- Jacques, J., Lavergne, C., & Devictor, N. (2006). Sensitivity analysis in presence of model uncertainty and
+  correlated inputs. *Reliability Engineering & System Safety*, 91. doi:10.1016/j.ress.2005.11.047. (Grouped Sobol
+  indices of dependent inputs: population and household size, ED7.)
 - Jansen, M. J. W. (1999). Analysis of variance designs for model output. *Computer Physics Communications*, 117,
   35–43. doi:10.1016/S0010-4655(98)00154-4. (Sobol total-index estimator.)
 - Jones, J. A., Greenaway-McGrevy, R., & Crow, C. (2025). Using council valuation records to estimate Auckland's

@@ -133,8 +133,9 @@ BAND_DEFINITIONS = {
     'vacancy': 'the vacancy allowance on new households and the change in the vacancy rate',
     'overbuild_2026': 'observed 2026 building above the requirement, continuing above it in 2027-2050 at the '
                       'persistence rho (the market excess)',
-    'overbuild_absorbed': 'the cumulative overbuild absorbed by building less, logistic 2026 -> 2035 (negative; '
-                          'MODEL v3.0.0 Reference)',
+    'overbuild_absorbed': 'the starting surplus (2024-2025, carried into 2026) and the cumulative overbuild absorbed '
+                          'by building less, logistic 2026 -> 2035 (negative; MODEL v3.0.0 Reference, the starting '
+                          'surplus from MODEL v4.4)',
     'replacement': 'demolition replacement at the fixed BRANZ SR214 rate (0.135% of the stock a year)',
     'unconsented': 'unconsented additions: the calibrated long-run residual of the census dwelling-count identity '
                    '(negative: dwellings that appear without a new-dwelling consent)',
@@ -172,7 +173,8 @@ METRICS = {'AR': 'Acquired rights (AR)', 'AtP': 'Ability to pay (AtP)', 'LoE': '
 # definition (pooled 2018/2023 empty share of unoccupied dwellings) 2023 is the series maximum.
 VACANCY_WORDING = ('the vacancy-rate parameter is held at its published 2023 census value ({v0:.2f}%; on the '
                    'consistent definition 2023 is the series maximum, {vmax:.2f}%, minimum {vmin:.2f}% in {ymin}); '
-                   'the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied '
+                   'the starting surplus and the 2026 overbuild raise implied stock vacancy temporarily and are '
+                   'absorbed by 2035, so implied '
                    'vacancy returns to the parameter ({v2050:.2f}% in 2050)')
 
 
@@ -188,19 +190,19 @@ INPUT_LABEL = {
     'population': 'Population\n(5th–95th pct.)',
     'hh_propensity': 'Living arrangements: propensities\nchange (Stats NZ B)',
     'hh_pace': 'Household size\n(2018–23 pace)',
-    'hh_after2048_flat': 'Household size after\n2048: held flat',
-    'hh_after2048_secant': 'Household size after\n2048: secant-slope taper',
-    'hh_after2048_endslope': 'Household size after\n2048: end-slope taper',
+    'hh_after2048_flat': 'After 2048: held flat\n(zero slope)',
+    'hh_after2048_endslope': 'After 2048:\nPCHIP end slope',
     'completion_rate': 'Completion rate\n(0.93–0.96)',
     'uc_correction': 'Census under-construction\ncorrection removed',
     'size_window': 'Dwelling-size reference\nwindow 2016–2025',
     'start_surplus_none': 'No starting surplus\n(2024–25 excess not carried)',
     'start_surplus_m2sd': 'Starting surplus\nminus 2 SD',
-    'overbuild_timing': 'Overbuild absorbed\n(by 2030–by 2045)',
+    'overbuild_timing': 'Surplus absorbed\n(by 2030–by 2045)',
     'vacancy_mean': 'Vacancy rate: 1986–2023\ncensus mean',
     'overbuild_redev': '2026 overbuild booked as\nstock-neutral redevelopment',
     'overbuild_gap': '2026 overbuild measured\nagainst the 2026 need',
     'completion_lag': 'Completion lag\n(15–19 months)',
+    'completion_lag_0_19': 'Completion lag\n(0–19 months)',          # Fig7a: 0 months (MODEL v3.3) the low end
     'no_2026': 'No 2026 data\n(consents to Dec 2025)',
     'replacement': 'Replacement\n(Low–Very High)',
     'half_life': 'Replacement half-life\n(5–15 yr)',

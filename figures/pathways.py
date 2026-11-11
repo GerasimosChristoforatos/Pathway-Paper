@@ -50,16 +50,18 @@ def sf14_tl_dwellings():
     for b, run, letter in ((ax[0], 'TL', 'a'), (ax[1], LV.TL_INSTANT_LABEL, 'b')):
         r = lg[lg['run'] == run]
         yr = r['year'].values
-        P.line(b, yr, r['gross_after_payback'] / 1e3, color=S.INK, lw=S.LW, label='Need after the overbuild payback')
+        P.line(b, yr, r['gross_after_payback'] / 1e3, color=S.INK, lw=S.LW, label='Need after the surplus payback')
         b.bar(yr, r['built'] / 1e3, width=0.75, color=S.NEUTRAL_DARK, alpha=S.FIXED_FADES['neutral_bars'], label='Dwellings built')
         b.bar(yr, r['reoccupied'] / 1e3, bottom=r['built'] / 1e3, width=0.75, facecolor='none',
               edgecolor=S.BAND['released_tl'][0], lw=S.LW_OUTLINE, label='Re-occupied (released dwellings)')
         pooled = 'released_pool' in r and (r['released_overbuild'] != 0).any()
         P.line(b, yr, (r['released_pool'] if 'released_pool' in r else r['released_tl1'] + r['released_tl2']) / 1e3,
                color=S.BAND['released_tl'][0], ls='--', lw=S.LW,
-               label='Entering the pool (TL1 + TL2 + overbuild)' if pooled else 'Released (TL1 + TL2)')
+               label='Entering the pool (TL1 + TL2 + starting surplus + overbuild)' if pooled
+               else 'Released (TL1 + TL2)')
         bind = r[r['release_binds']]
-        b.plot(bind['year'], bind['built'] / 1e3, 'v', color=S.RELEASE_BINDS, ms=4, label='Release constraint binds')
+        if len(bind):                                  # a legend entry only where a marker is drawn
+            b.plot(bind['year'], bind['built'] / 1e3, 'v', color=S.RELEASE_BINDS, ms=4, label='Release constraint binds')
         b.axhline(0, color=S.INK, lw=S.LW_THIN)
         b.set_xlim(2025.5, 2050.5)
         P.panel(b, letter, N.TL['TL'] if run == 'TL' else f"{N.TL['TL']} from 2027 (instant; sensitivity)")

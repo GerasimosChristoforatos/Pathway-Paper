@@ -270,9 +270,7 @@ def band_label(bid):
 
 def band_style(bid):
     """Seamless style of one demand band (style.fill: edge = face, hatch in its own colour). History-only ids
-    (style.HISTORY_BAND): 'replacement_census', 'retirement_villages', 'unexplained'."""
-    if bid in ('unexplained_building', 'unexplained'):
-        return S.fill(S.UNEXPLAINED[0])
+    (style.HISTORY_BAND): 'replacement_census', 'retirement_villages'."""
     hatch = S.BAND[bid][1] if bid in S.BAND else S.HISTORY_BAND[bid][1] if bid in S.HISTORY_BAND else None
     return S.fill(S.band_colour(bid), hatch, S.BAND_HATCHCOLOR.get(bid))     # style.band_colour
 
@@ -466,24 +464,19 @@ def stack_materials(ax, years, frame, scale=1.0, alpha=1.0, smooth=False):
 # history with its census benchmarks
 # ---------------------------------------------------------------------------
 def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History', lw=S.LW, k=None,
-                      census_last=2018, straight=False, tail=True):
+                      census_last=2018, straight=False):
     """Households / household size history: census-benchmarked to census_last (solid);
-    census_last+1..anchor Stats NZ estimates scaled to the anchor census by k (dotted);
-    after the anchor (tail=True) consent-derived estimates, not used (faint dashed); the anchor census
-    point marked. straight=True draws straight segments between the annual values (observed data, not smoothed)."""
+    census_last+1..anchor Stats NZ estimates scaled to the anchor census by k (dotted); the anchor census
+    point marked (the years after the anchor are not drawn here). straight=True draws straight segments between the
+    annual values (observed data, not smoothed)."""
     s = series.dropna() / scale
-    last = int(s.index.max())
-    draw = (lambda x, y, **kw: ax.plot(x, y, **kw)) if straight else (lambda x, y, **kw: line(ax, x, y, **kw))
+    draw =(lambda x, y, **kw: ax.plot(x, y, **kw)) if straight else (lambda x, y, **kw: line(ax, x, y, **kw))
     draw(s.loc[:census_last].index, s.loc[:census_last].values, color=color, lw=lw,
          label=f'{label}: census-benchmarked to {census_last}')
     mid = s.loc[census_last:anchor]
     draw(mid.index, mid.values, color=color, lw=lw, ls=':',
          label=f'{census_last + 1}–{anchor % 100:02d}: Stats NZ estimates scaled to the {anchor} census'
                + (f' (×{k:.3f})' if k is not None else ''))
-    if tail:
-        t_ = s.loc[anchor:]
-        draw(t_.index, t_.values, color=color, lw=lw * 0.7, ls='--', alpha=S.FIXED_FADES['estimate_not_used_line'],
-             label=f'{anchor + 1}–{last % 100:02d}: consent-derived estimates, not used')
     if anchor in s.index:
         ax.plot([anchor], [s.loc[anchor]], 'o', color=color, ms=3, label=f'{anchor} census')
     ax.ticklabel_format(axis='y', style='plain', useOffset=False)

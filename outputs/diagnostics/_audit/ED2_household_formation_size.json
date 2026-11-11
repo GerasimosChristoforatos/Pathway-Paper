@@ -44,16 +44,18 @@
   "$\\mathdefault{25}$",
   "$\\mathdefault{30}$",
   "$\\mathdefault{35}$",
+  "$\\mathdefault{40}$",
   "$\\mathdefault{5}$",
+  "$\\mathdefault{\u221210}$",
+  "$\\mathdefault{\u22125}$",
   "From household-size change",
-  "From household-size change, negative (households consolidating; outline)",
   "From population growth",
   "History",
   "Household formation by source",
   "Household size",
   "Household size (persons per household)",
   "New households per year (thousand)",
-  "Projection (median)",
+  "Projection (median), net new households",
   "Reference projection",
   "a",
   "b"
@@ -67,7 +69,8 @@
  "white_segment_edges": 0,
  "source": [
   "baseline/household_formation_history.csv",
-  "figure_source/D03_household_size.json"
+  "figure_source/D03_household_size.json",
+  "figure_source/D04_household_formation.json"
  ],
  "atp_linestyles": [],
  "negative_band_segments": 0,
@@ -75,6 +78,6 @@
  "band_rectangles_below_zero": 0,
  "tl_colour_used": false,
  "retired_colours": [],
- "negative_bar_segments": 7,
+ "negative_bar_segments": 0,
  "negative_bar_segments_filled": 0
 }

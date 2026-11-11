@@ -100,21 +100,21 @@ PALETTE_KEYS = {
     'strategies': ('avoid', 'switch', 'improve'),
     'boundaries': ('acquired_rights', 'ability_to_pay'),
     'boundary_zones': ('within_both', 'within_ar_only'),
-    'cumulative': ('fig3b_cumulative_carbon',),
     'one_at_a_time': ('low_end', 'high_end', 'single_alternative'),
     # every meaning colour of the final figures (tools/palette_coverage.py) and the meaningful fades
     'components': ('new_households', 'retirement_villages',
-                   'overbuild_absorbed', 'unexplained_building', 'released_tl'),
+                   'overbuild_absorbed', 'released_tl'),
     'typologies': ('detached', 'townhouses', 'apartments'),
     'replacement_variants': ('low', 'high', 'very_high'),
     'sensitivity_indices': ('total_effect', 'first_order_effect'),
     'census_markers': ('census_empty', 'observed_total'),
     'lag_variants': ('zero_lag', 'lag_17_months'),
-    'validation': ('model_check', 'handover_history', 'handover_step'),
+    'validation': ('model_check',),
     'highlights': ('model_path_years', 'release_binds'),
     'opacity': ('zone_within_both', 'zone_within_ar_only', 'mc_band_90', 'mc_band_50', 'mc_band',
                 'pathway_lines', 'soil_carbon_loss', 'scatter_reference', 'scatter_moderate', 'scatter_ambitious',
-                'scatter_tl', 'typology_histograms', 'space_above_occupancy', 'rollout_reference_cumulative')}
+                'scatter_tl', 'typology_histograms', 'space_above_occupancy', 'rollout_reference_cumulative',
+                'fig3b_interval_bars')}
 OPACITY_GROUP = 'opacity'                       # the only group of numbers (0-1), not colours
 PALETTE_DEFAULT = os.path.join(ROOT, 'palette.toml')
 _HEX = re.compile(r'^#[0-9A-Fa-f]{6}$')
@@ -159,7 +159,7 @@ def load_palette(path):
 
 PALETTE_PATH = os.environ.get('PATHWAY_PALETTE') or PALETTE_DEFAULT
 PALETTE = load_palette(PALETTE_PATH)
-(_DB, _MAT, _ST, _RUN, _SG, _BD, _ZN, _CUM, _OAT, _CMP, _TYP, _RV, _SI, _CEN, _LAG, _VAL, _HL,
+(_DB, _MAT, _ST, _RUN, _SG, _BD, _ZN, _OAT, _CMP, _TYP, _RV, _SI, _CEN, _LAG, _VAL, _HL,
  OPACITY) = (PALETTE[g] for g in PALETTE_KEYS)
 COLOUR_GROUPS = tuple(g for g in PALETTE_KEYS if g != OPACITY_GROUP)
 
@@ -171,8 +171,8 @@ NEUTRALS = {'ink': '#1A1A1A', 'muted': '#6E6E6E', 'grid': '#E0E0E0', 'white': '#
 # fixed fades (context shading, not a meaning colour): every alpha a figure uses comes from OPACITY
 # (palette.toml [opacity]) or from here (tools/palette_coverage.py probes both)
 FIXED_FADES = {'definition_break_span': 0.10, 'census_range_span': 0.12, 'history_range_span': 0.12,
-               'ci_span': 0.15, 'threshold_ci_span': 0.12, 'rug': 0.4, 'estimate_not_used_line': 0.35,
-               'neutral_histogram': 0.6, 'neutral_bars': 0.5, 'interval_box': 0.55, 'label_box': 0.85,
+               'ci_span': 0.15, 'threshold_ci_span': 0.12, 'rug': 0.4,
+               'neutral_histogram': 0.6, 'neutral_bars': 0.5, 'label_box': 0.85,
                'legend_markers': 0.9}
 
 # ---------------------------------------------------------------------------
@@ -213,16 +213,13 @@ CENSUS_EMPTY = _CEN['census_empty']             # SF2a census empty points
 OBSERVED_TOTAL = _CEN['observed_total']         # Fig1 observed totals without a band split (drawn when such years exist)
 MODEL_PATH_YEARS = _HL['model_path_years']      # SF1b 2024-25: the model's household-size path, not observed
 LAG_VARIANT = {0: _LAG['zero_lag'], 17: _LAG['lag_17_months']}           # SF7
-VALIDATION = {'model_check': _VAL['model_check'], 'handover_history': _VAL['handover_history'],
-              'handover_step': _VAL['handover_step']}                    # SF6 2027 check, ED10 handover
+VALIDATION = {'model_check': _VAL['model_check']}                    # SF6 2027 check
 NEW_HOUSEHOLDS = _CMP['new_households']         # SF2b
 RETIREMENT_VILLAGES = _CMP['retirement_villages']   # SF2b (out of scope)
 
 # runs (palette.toml [runs])
 REFERENCE = _RUN['reference']
 NEUTRAL_DARK = NEUTRALS['neutral_dark']   # a dark neutral grey (not the Reference): ED6 histograms, SF14 bars
-# the Fig3b 2026-2050 cumulative column and its legend patch, palette.toml [cumulative]
-CUMULATIVE_FIG3B = _CUM['fig3b_cumulative_carbon']
 # the 'release constraint binds' markers of SF14 (not a boundary; were S.AR): a fixed literal
 RELEASE_BINDS = _HL['release_binds']     # palette.toml [highlights]
 # TL a pale sage green, >= 10 (CAM02-UCS) from the other runs under every simulated deficiency (tools/palette_check.py)
@@ -311,15 +308,13 @@ COMPONENT = {'materials_construction': STAGE['a1a3'], 'soil': STAGE['soil'],
 
 # unexplained building of the history (Fig1, SF2): a faded reddish face, no hatch (face, hatch,
 # hatch colour); may be negative
-UNEXPLAINED = (_CMP['unexplained_building'], None, None)        # palette.toml [components]
 # the history bands of Fig1 (census intervals): household formation and vacancy as the projection
 # bands, the census-measured net replacement the replacement face, the retirement-village units a neutral outline
 # (negative, out of scope) and the unexplained building its faded reddish face
 HISTORY_BAND = {'growth': BAND['growth'], 'smaller_households': BAND['smaller_households'],
                 'extra_space': BAND['extra_space'], 'vacancy': BAND['vacancy'],
                 'replacement_census': (DISPLAY_BAND['net_replacement'], None),   # the census net replacement
-                'retirement_villages': (_CMP['retirement_villages'], None),    # palette.toml [components]
-                'unexplained': (UNEXPLAINED[0], None)}
+                'retirement_villages': (_CMP['retirement_villages'], None)}    # palette.toml [components]
 # the untargeted band: the population-growth colour, solid (UNTARGETED_HATCH None)
 UNTARGETED_GROUP = (BAND['growth'][0], UNTARGETED_HATCH)
 

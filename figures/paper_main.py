@@ -367,7 +367,7 @@ FIG3B_HATCH_LW = 0.6                # hatch lines (pt), the column and its legen
 # both at FIG3B_EB_ALPHA so both stay visible where they overlap; the Monte Carlo median a short ink tick
 FIG3B_EB = {'50': dict(color='ink', lw=1.6, capsize=3.0, capthick=1.6),
             '90': dict(color='muted', lw=0.8, capsize=6.0, capthick=0.8)}
-FIG3B_EB_ALPHA = 0.7
+FIG3B_EB_ALPHA = S.OPACITY['fig3b_interval_bars']      # palette.toml [opacity]
 FIG3B_MEDIAN_HALF = 0.07            # half-width of the median tick (x units; the column is 0.55 wide)
 
 

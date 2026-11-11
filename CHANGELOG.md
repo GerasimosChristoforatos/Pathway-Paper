@@ -2,6 +2,111 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.6.0: data freeze (consents to September 2026), committed emissions in the Monte Carlo, figure simplifications
+
+One full run (`run_all.py --profile full`), then the light profile. Every number below is read from the outputs of
+v4.5.0 (main after PR 27) and of this run.
+
+* **Data freeze: consents to September 2026.**
+  * `data/raw/BLD468601_20261111_075751_49.csv` (Stats NZ Infoshare, "Building consents by region (Monthly)", New
+    Zealand, New, Actual; 1965M04-2026M09; "Last updated 03 November 2026") copied unmodified; MANIFEST row (sha256
+    fefc9a63..., 2026-11-11).
+  * `data/build_consents.py`: new reader `read_infoshare` for the wide Infoshare layout (six header rows, ".." =
+    missing; the July 2026 zip reader `extract` kept for provenance); docstring names the new source. Same columns as
+    before (Dwellings = Dwelling units, New, Number; Detached = Houses).
+  * Revisions: every cell 1965-04..2026-07 equals the v4.5.0 file exactly (0 revised cells;
+    `data/derived/consents_revisions.csv`, empty; the STOP at >1% before 2024 did not fire). The derived file gains
+    two rows (2026-08, 2026-09). `tests/test_consents_freeze.py` rebuilds the derived file from the raw export and
+    checks the MANIFEST checksum.
+  * Pipeline unchanged (2026-2027 observed completions, 17-month lag). Where August-September 2026 enter:
+    * Reference, pathways, Monte Carlo: nowhere. At L = 17 the 2027 completions are consents August 2025 - July 2026,
+      already observed; the typology-mix window (2022-2026, lagged) and the 2026 nowcast (used only at L = 0) do not
+      reach the new months; 2028 is modelled. Every Reference, pathway, TL and Monte Carlo number is unchanged to the
+      last digit.
+    * "No 2026 data" row: unchanged (it truncates the consents at December 2025); its note now reads "instead of
+      consents to September 2026" (read from the data).
+    * Completion lag 15 months: 2027 becomes a pipeline year (October 2025 - September 2026 all observed), 25,883 ->
+      25,850 kt (+1.49% -> +1.36% vs the Reference).
+    * Completion lag 0 months (MODEL v3.3, not shown): the 2026 nowcast is now the year to September 2026, 26,541.1 ->
+      26,540.7 kt.
+    * The MODEL v2.1-v3.3 reproduction tests pin `CONSENT_DATA_END = '2026-07-01'` (the data of those versions; no
+      revisions since).
+  * Freeze recorded in README ("Data freeze") and the Methods ("Data freeze and scope", read from the data files):
+    consents to September 2026, population estimates to the June 2026 quarter, household projections 2023-base
+    (released 11 November 2026).
+  * Scope sentence (Methods): new dwellings only; alterations (no floor area published) outside scope, "about 12% of
+    residential consent value in 2025 (Stats NZ BLD468601, 2025)" (stated, not computed: the supplied export holds the
+    New series only); both budgets use the same new-build scope.
+  * Hard-coded "July 2026" texts made data-driven (SF6d label at L = 0, the baseline draft) or corrected (comments in
+    projection.py, validation.py, ARCHITECTURE.md).
+* **Committed after-2050 emissions in the Monte Carlo.** For every Reference draw (5,000), `pathways.committed(ctx,
+  gfa_t)` on that draw's floor area by typology, central repair and end-of-life factors; written per draw to
+  `pathways/montecarlo_draws.csv` (REF_committed_*), summarised in `pathways/montecarlo_summary.csv`. STOP unless the
+  central draw reproduces `baseline/projection.json` (max relative difference 0). Lower bound (the Fig3b column):
+  central 9,728 kt; median 9,726; 50% interval 9,069-10,456; 90% interval 8,160-11,519 kt. Upper bound: central
+  10,662, median 10,660, 90% 8,944-12,624 kt. C1-C4: central 5,702, 90% 4,785-6,753 kt. Fig3b note and the
+  uncertainty Methods say the range comes from the floor-area uncertainty only. `tests/test_committed_mc.py`.
+* **Old -> new** (v4.5.0 -> v4.6.0):
+
+  | quantity | v4.5.0 | v4.6.0 | change |
+  |---|---|---|---|
+  | Reference cumulative carbon 2026-2050 (kt CO2e) | 25,503 | 25,503 | 0.0% |
+  | Reference floor area 2026-2050 (Mm2) | 105.44 | 105.44 | 0.0% |
+  | Household size 2050 | 2.464 | 2.464 | 0.0% |
+  | Demand band carbon (kt): population growth | 9,776 | 9,776 | 0.0% |
+  | household-size change | 3,597 | 3,597 | 0.0% |
+  | extra space | 9,203 | 9,203 | 0.0% |
+  | vacancy | 1,286 | 1,286 | 0.0% |
+  | net replacement | 1,870 | 1,870 | 0.0% |
+  | market balance (incl. the starting-surplus payback) | -668 | -668 | 0.0% |
+  | (maintenance) | 438 | 438 | 0.0% |
+  | Reference LoE AR / AtP | 5.761 / 22.91 | 5.761 / 22.91 | 0.0% |
+  | Moderate Pathway carbon (kt) / LoE AR / AtP | 17,971 / 4.060 / 16.15 | 17,971 / 4.060 / 16.15 | 0.0% |
+  | Ambitious Pathway carbon (kt) / LoE AR / AtP | 12,542 / 2.833 / 11.27 | 12,542 / 2.833 / 11.27 | 0.0% |
+  | Theoretical Limit carbon (kt) / LoE AR / AtP | 4,079 / 0.921 / 3.67 | 4,079 / 0.921 / 3.67 | 0.0% |
+  | P(LoE AR <= 1): Reference / Moderate / Ambitious / TL | 0 / 0 / 0 / 0.640 | 0 / 0 / 0 / 0.640 | |
+  | TL threshold 2050 population, P = 50% (M) | 6.715 | 6.715 | 0.0% |
+  | Sobol total indices, carbon (top 3) | z_pop 0.639, size 0.256, carbon 0.097 | unchanged | |
+  | Committed after 2050, lower bound (kt), central | 9,728 | 9,728 | 0.0% |
+  | Committed after 2050, lower bound, Monte Carlo 90% interval (kt) | not computed | 8,160-11,519 | new |
+
+* **Figures.**
+  * Fig3b: the 2026-2050 column filled in the Reference colour, no hatch; the Monte Carlo intervals as capped error
+    bars (50% bold ink, thicker line and caps; 90% muted grey, thinner, longer caps; both at opacity 0.7, the new
+    palette key `[opacity] fig3b_interval_bars`), the median a short tick; the committed column keeps its two hatches,
+    denser (x and dots, 0.6 pt, legend swatches the same), with the same capped bars from the per-draw committed
+    emissions; legend updated; the y top raised until the legend clears the bars (data-driven).
+  * Fig7a: the parenthesised part of every y label one font step smaller (5.5 pt vs 6.6 pt after the panel's 1.1
+    scaling; >= 5 pt checked) on the same baseline (`draw.stacked_ticklabels`); the completion-lag row back to 15-19
+    months (no 0-month case; zero lag stays the SF7 counterfactual).
+  * ED2a: the projection drawn like the history: stacked "From population growth" and "From household-size change"
+    (annual areas from the D04 figure source, STOP unless they sum to the projected formation), negative parts solid
+    below zero (no outlines, also in the history columns), the median line kept. ED2b: history as straight segments.
+  * ED4 / ED5: the superscript machinery removed; each explained row label ends with "[n]", the notes are a list
+    "[1] ...", "[2] ..." (same text). In figures/sensitivity.py 60 lines removed and 18 added (net -42):
+    `SUPERSCRIPT`, `sup`, `SUP_GAP`, `SUP_DIGIT`, `label_numbers`, `ROW_LABEL_SIZE` and the bold 5-pt numbers gone;
+    `tag(n)` added.
+  * SF2: one "Market balance" band (palette `demand_bands.market_balance`) for the history stock-identity residual
+    (was "Unexplained building"), the 2024-25 surplus, the 2026-27 overbuild and the absorption; the requested note;
+    the top-row values kept (now labelled market balance). STOP check against Fig1's market-balance band
+    (`bands_display_map.csv`, retirement villages excluded as SF2 draws them separately): the same sign in all 32
+    intervals and years, and Fig1 = SF2 dwellings x in-scope floor area per dwelling in every projection year after
+    the pipeline (rtol 1e-9). Passed.
+  * Palette keys no longer drawn removed (palette_coverage): `[cumulative] fig3b_cumulative_carbon` (the group),
+    `[components] unexplained_building`, `[validation] handover_history / handover_step`, and the fixed fades
+    `interval_box`, `estimate_not_used_line` (with the unused `tail` path of `draw.history_estimated`). Kept, drawn
+    only when their condition occurs: `census_markers.observed_total`, `highlights.release_binds`. palette_coverage: 0
+    findings outside the palette; docs/PALETTE.md regenerated.
+  * Also corrected (stale since v4.5.0): the Fig2 caption and the palette rules text still described negative
+    cumulative bands as outlined.
+* **Checks.**
+  * Full test suite (full profile): 263 passed, 2 skipped (the local AESA workbook).
+  * Regression lock re-captured: 4 deterministic files changed (baseline/sensitivity_one_at_a_time.csv,
+    baseline/sensitivity_annual_carbon.csv, sensitivity/reference_carbon.csv, sensitivity/tornado.csv: the lag rows
+    above) and 2 Monte Carlo files per profile (pathways/montecarlo_draws.csv, montecarlo_summary.csv: the committed
+    columns); the light and full deterministic files are identical.
+  * Every main figure, ED1-ED10 and SF1-SF14 looked at.
+
 ## model-v4.5.0: household-size tail, F2 limitation, figure revisions
 
 One full run (`run_all.py --profile full`), then the light profile. Every number below is read from the outputs of

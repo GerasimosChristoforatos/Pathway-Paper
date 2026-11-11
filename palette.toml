@@ -69,9 +69,6 @@ ability_to_pay        = "#6E2323"   # Ability to pay (AtP)
 within_both           = "#B9D5E3"   # Within both budgets (below AtP)
 within_ar_only        = "#DDEBF1"   # Within AR only (between AtP and AR)
 
-[cumulative]                        # Fig3b
-fig3b_cumulative_carbon = "#1E1E1E" # the 2026-2050 cumulative carbon column and its legend patch
-
 [one_at_a_time]                     # one-at-a-time sensitivity (tornado): Fig7a, ED4, ED5
 low_end               = "#9CC3E6"   # Input at its low end
 high_end              = "#1F3A68"   # Input at its high end
@@ -87,7 +84,6 @@ single_alternative    = "#707070"   # A row with a single alternative case
 new_households        = "#97AEB1"   # New households (SF2b)
 retirement_villages   = "#DCDCDC"   # Retirement villages, out of scope (SF2b, negative)
 overbuild_absorbed    = "#431E25"   # Overbuild absorbed (SF2b, SF5; negative payback)
-unexplained_building  = "#D98B5F"   # Unexplained building of the history (SF2b)
 released_tl           = "#95C283"   # Released dwellings re-occupied, and the pool line (SF14)
 
 [typologies]                        # ED6 (carbon-factor histograms), SF4b, SF10
@@ -114,8 +110,6 @@ lag_17_months         = "#1F5FA8"   # 17-month lag (completion-timed)
 
 [validation]
 model_check           = "#BDBDBD"   # SF6 2027 check: the model bar (observed in ink)
-handover_history      = "#BDBDBD"   # SF8h: year-to-year changes 1992-2025 (histogram)
-handover_step         = "#C2571A"   # SF8h: the observed -> model handover step
 
 [highlights]
 model_path_years      = "#C2571A"   # SF1b: 2024-25, the model's household-size path (not observed)
@@ -136,3 +130,4 @@ scatter_tl            = 0.30        # Fig7b points: Theoretical Limit (also SF14
 typology_histograms   = 0.55        # ED6 overlapping carbon-factor histograms by typology
 space_above_occupancy = 0.25        # SF4a space above occupancy (extra-space colour)
 rollout_reference_cumulative = 0.55 # ED9c Reference cumulative line
+fig3b_interval_bars   = 0.7         # Fig3b Monte Carlo 50% / 90% capped error bars (both visible where they overlap)

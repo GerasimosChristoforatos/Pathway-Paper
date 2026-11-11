@@ -66,7 +66,8 @@ PAPER_MAIN = [
          title='Uncertainty',
          caption='(a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high '
                  'end per its definition (population rows move the budgets with the path; AR base-window rows move the '
-                 'AR budget only); not additive, not a joint interval. (b) The Reference, the Moderate and Ambitious '
+                 'AR budget only); rows are shown from the completion-rate row up (the rows with a smaller range are '
+                 'named, with their ranges, in the note); not additive, not a joint interval. (b) The Reference, the Moderate and Ambitious '
                  'Pathways and the Theoretical Limit: cumulative LoE AR against the 2050 New Zealand population on the '
                  'same paired Monte Carlo draws, P(LoE AR <= 1) of each with its Wilson 95% interval, LoE = 1, and the '
                  'population at which the Theoretical Limit has P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).',
@@ -90,7 +91,8 @@ PAPER_EXTENDED = [
          caption='One-at-a-time ranges of the Reference cumulative embodied carbon 2026-2050, grouped by category; each '
                  'input at its low (pale blue) and high (dark blue) end, a single alternative case grey, intermediate cases as '
                  'ticks; not additive, not a joint interval. Not shown (kept in the data file): household size held '
-                 'flat after 2043 (the Reference is also held constant after 2043, with a zero slope imposed at 2043), '
+                 'flat after 2048 (the Reference is also held constant after 2048, with a zero slope imposed at 2048), '
+                 'the post-2048 taper rows whose effect is at most 0.1% of the Reference, '
                  'the overbuild gap against the 2026 requirement, no census under-construction correction, the '
                  'maintenance event timing L / n, and the rows that compare with superseded settings (their changes are in the note). '
                  'What each row changes compared with the Reference (numbered as the row labels): ',
@@ -177,7 +179,7 @@ SUPPLEMENTARY = [
     dict(id='SF2', file='SF2_stock_vacancy', folder='calibration', module='figures.calibration',
          title='Vacancy, dwellings per year by component and the vacancy definition',
          source=['figure_source/D05_stock_and_vacancy.json', 'figure_source/D06_vacancy_definition.json',
-                 'baseline/scenarios.json']),
+                 'baseline/scenarios.json', 'baseline/projection.json']),
     dict(id='SF3', file='SF3_census_replacement_rates', folder='calibration', module='figures.paper_extended',
          title='Net replacement rates from census dwelling counts and the four variants',
          source=['baseline/stock_identity_history.csv', 'figure_source/D07_net_replacement_rate.json']),

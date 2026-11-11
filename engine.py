@@ -78,6 +78,54 @@ def calibrate_stock(years, hh, knots, units_all, rv_units, completion, demol_rat
                 prev=prev, completion=completion, demol_rate=demol_rate)
 
 
+def identity_residuals(cal, rates, census_years, first_year, last_year):
+    """The stock-identity residual ('unexplained building', dwellings per year) of the history (F1):
+
+        residual_y = net_y - r(y) x prev_y
+
+    net_y (built beyond household formation, vacancy allowance and vacancy change; cal from calibrate_stock on ONE
+    vacancy definition) minus the census-measured net replacement: r(y) the rate of the census dwelling-count identity
+    of y's census interval (census_interval_rates), the latest interval's rate carried after the last census, times
+    the previous year's stock. census_years: the census years from first_year - 1 to the last census-benchmarked year.
+    Returns the annual residual, the census-interval means over the years y0+1..y1, their time-weighted mean m and
+    time-weighted standard deviation s (weights = interval lengths in years; s = sqrt(sum n_i (r_i - m)^2 / sum n_i)),
+    and the mean residual of the years after the last census (r_after over n_after years)."""
+    yh = np.arange(int(first_year), int(last_year) + 1)
+    cy = [int(y) for y in census_years]
+    r = rates.set_index(['y0', 'y1'])['rate']
+    rate = pd.Series(np.nan, index=yh)
+    for (y0, y1), v in r.items():
+        rate.loc[(rate.index > y0) & (rate.index <= y1)] = v
+    rate.loc[rate.index > cy[-1]] = float(r.loc[(cy[-2], cy[-1])])
+    if rate.isna().any():
+        raise ValueError(f'identity_residuals: no census rate for {[int(y) for y in rate.index[rate.isna()]]}.')
+    resid = cal['net'].loc[yh] - rate * cal['prev'].loc[yh]
+    iv = list(zip(cy[:-1], cy[1:]))
+    n = np.array([y1 - y0 for y0, y1 in iv], float)
+    means = np.array([float(resid.loc[y0 + 1:y1].mean()) for y0, y1 in iv])
+    m = float((n * means).sum() / n.sum())
+    s = float(np.sqrt((n * (means - m) ** 2).sum() / n.sum()))
+    after = resid.loc[cy[-1] + 1:]
+    return dict(residual=resid, rate=rate, intervals=[f'{a}-{b}' for a, b in iv], interval_years=n.tolist(),
+                interval_means=means.tolist(), m=m, s=s, r_after=float(after.mean()), n_after=int(len(after)),
+                after_years=[int(y) for y in after.index])
+
+
+STARTING_SURPLUS_MODES = ('carry', 'none', 'carry_minus_2sd')
+
+
+def starting_surplus(res, mode):
+    """F1: the surplus dwellings at the start of the projection (1 January of its first year) from the residuals of
+    identity_residuals: 'carry' = (r_after - m) x n_after, 'carry_minus_2sd' = (r_after - m - 2 s) x n_after, 'none'
+    = 0; never negative (a residual below the reference level is not a surplus)."""
+    if mode not in STARTING_SURPLUS_MODES:
+        raise ValueError(f"Unknown starting-surplus mode '{mode}'.")
+    if mode == 'none':
+        return 0.0
+    ref = res['m'] + (2.0 * res['s'] if mode == 'carry_minus_2sd' else 0.0)
+    return max(0.0, (res['r_after'] - ref) * res['n_after'])
+
+
 def window_rate(cal, start, end):
     """Net replacement (demolition + residual) as a share of stock, ratio of
     sums over the calendar years start..end."""
@@ -249,12 +297,13 @@ def logistic_weights(years, start, end):
     return np.where(y <= start, 0.0, np.where(y >= end, 1.0, w))
 
 
-def absorb_overbuild(excess, w, need):
+def absorb_overbuild(excess, w, need, start=0.0):
     """Logistic absorption of the 2026 overbuild. excess: the market excess by year (index 0 =
     2025: 0); w: absorption weights (logistic_weights, 0 in 2026, 1 from the absorption year); need: the run's
-    dwellings built WITHOUT any join (requirement of a forward() run with join = 0), all categories.
+    dwellings built WITHOUT any join (requirement of a forward() run with join = 0), all categories; start: the
+    starting surplus (F1: surplus dwellings at the end of index 0), in the pool from index 0 but never built.
 
-        C_t = sum of excess up to t          (cumulative overbuild)
+        C_t = start + sum of excess up to t  (cumulative overbuild)
         U*_t = C_t (1 - w_t)                 (surplus still vacant on the target path)
         payback*_t = (C_t - U*_t) - (C_(t-1) - U*_(t-1)) = C_t w_t - C_(t-1) w_(t-1)
         gross_t = need_t + excess_t          (dwellings built before the payback)
@@ -269,7 +318,7 @@ def absorb_overbuild(excess, w, need):
     w = np.asarray(w, float)
     need = np.asarray(need, float)
     n = len(excess)
-    C = np.cumsum(excess)
+    C = float(start) + np.cumsum(excess)
     U_target = C * (1.0 - w)
     pay_target = np.diff(np.r_[0.0, C * w])
     gross = need + excess
@@ -293,7 +342,7 @@ def absorb_overbuild(excess, w, need):
 
 
 def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', absorption=0.0, absorb_w=None,
-                  excess=None):
+                  excess=None, start_surplus=0.0):
     """Near-term market excess (n observed years). E: forward() result WITHOUT a join
     (index 0 = 2025, 1 = 2026). building_2026: observed dwellings built (all categories) in the first projection
     year, or a sequence over the n observed (pipeline) years 2026 .. 2025 + n (completions from consents
@@ -313,6 +362,11 @@ def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', a
         the surplus absorbed along the weights absorb_w, capped at the run's own building.
     excess: optional fixed excess series (the Reference's, held in every run of
       the levers); None computes it from E.
+    start_surplus: the starting surplus (F1: dwellings built before the projection, vacant at its start). It enters
+      the absorption pool, never the excess (it is not built in the projection), and is absorbed along absorb_w in
+      either mode (with mode 'redevelopment' only the starting surplus is absorbed; the overbuild stays
+      stock-neutral); absorb_w None with mode 'surplus' absorbs it at the share `absorption`, with the overbuild
+      (0: permanent). The forward run's stock_join then starts at it (forward(stock_start=...)).
     Returns (join, info)."""
     R = requirement(E)
     n = len(R)
@@ -330,14 +384,21 @@ def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', a
                 e27=gap, gap_ref=gap, rho=float(rho), mode=mode, excess=excess,
                 n_observed=m, O_obs=[float(x) for x in b_obs], R_obs=[float(x) for x in R[1:m + 1]],
                 e_obs=[float(x) for x in excess[1:m + 1]], R_next=float(R[m + 1]))
+    s0 = float(start_surplus)
+    info['start_surplus'] = s0
     if mode == 'redevelopment':
-        return excess.copy(), dict(info, redev=excess.copy(), surplus=np.zeros(n), payback=np.zeros(n))
+        if s0 == 0.0 or absorb_w is None:
+            return excess.copy(), dict(info, redev=excess.copy(), surplus=np.full(n, s0), payback=np.zeros(n))
+        _, ab = absorb_overbuild(np.zeros(n), absorb_w, R + excess, start=s0)
+        return excess - ab['paid'], dict(info, redev=excess.copy(), surplus=ab['U'], payback=-ab['paid'],
+                                         absorption=ab)
     if mode != 'surplus':
         raise ValueError(f"Unknown near-term mode '{mode}'.")
     if absorb_w is not None:
-        join, ab = absorb_overbuild(excess, absorb_w, R)
+        join, ab = absorb_overbuild(excess, absorb_w, R, start=s0)
         return join, dict(info, redev=np.zeros(n), surplus=ab['U'], payback=-ab['paid'], absorption=ab)
-    join, pay, U, left = excess.copy(), np.zeros(n), np.zeros(n), 0.0
+    join, pay, U, left = excess.copy(), np.zeros(n), np.zeros(n), s0
+    U[0] = s0
     for i in range(1, n):
         pay[i] = absorption * left if i >= 2 else 0.0
         join[i] = excess[i] - pay[i]
@@ -375,7 +436,7 @@ def blend(shares, per_unit, typ_names):
 def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_share,
             shares, size, olf, intensity, intensity_upfront, join=None, join_redev=None,
             soil=None, soil_on_replacement=True, gfa_fixed=None, events=None,
-            brownfield_share=None, brownfield_w=None, clip_soil_share=False):
+            brownfield_share=None, brownfield_w=None, clip_soil_share=False, stock_start=0.0):
     """One forward path, 2025..2050 (index 0 = 2025, a model value; callers that
     anchor 2025 on observations overwrite it).
 
@@ -388,6 +449,8 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
                              (redevelopment); the rest adds to the stock
                              (stock_join). The extra stock does not enter the
                              demolition / residual base (a second-order effect).
+    stock_start            : surplus dwellings already in the stock at the end of index 0 (the F1 starting
+                             surplus): stock_join starts at it.
     dev_2025, rho_dev      : 2025 deviation, fading as rho^(t-2025), booked to the residual
     rv_share               : retirement-village share of ALL dwellings built (out of scope)
     shares                 : DataFrame years x typology (floor-area shares)
@@ -466,7 +529,7 @@ def forward(pop, hh, pop_growth, v, rate_demol, rate_unc, dev_2025, rho_dev, rv_
     join = np.zeros(len(hh)) if join is None else np.asarray(join, float)
     join_redev = np.zeros(len(hh)) if join_redev is None else np.asarray(join_redev, float)
     units = units + join
-    stock_join = np.cumsum(join - join_redev)        # dwellings added to the stock by the join
+    stock_join = float(stock_start) + np.cumsum(join - join_redev)   # surplus dwellings above hh / (1 - v)
     rv = -rv_share * (np.maximum(d_hh, 0.0) + units)
     units_in_scope = units + rv
 

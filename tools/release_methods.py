@@ -139,10 +139,16 @@ def lines():
          "each year's positive need, availability constraint, carry-forward); the re-occupied overbuild is booked in "
          "'Overbuild absorbed'. Releases of an observed (pipeline) year enter the pool in the first unobserved year.", '',
          '### Household-size projection', '',
-         'Household size follows the Stats NZ 2018-base household projection shape (Medium variant), rebased on the '
-         '2023 census; it is to be replaced by the 2023-base household projections when published. Sensitivities: '
-         'the Stats NZ Low / High variants and the 2018-2023 census pace continued linearly from 2023, for the '
-         'Reference, the Moderate / Ambitious Pathway and TL (sensitivity/household_size.csv).', '',
+         'Household size follows the Stats NZ 2023-base national family and household projections (POPPR_FHH_008 '
+         'people in households over POPPR_FHH_010 households, five-yearly 2023-2048; DataInfo+ '
+         'https://datainfoplus.stats.govt.nz/item/nz.govt.stats/e7475c01-9e55-491d-a8fe-74efa8fba757), Medium A '
+         '(living-arrangement propensities held at 2023), as a shape rebased on the observed 2023 household size of '
+         'the census households and the total population; this holds the share of the population outside private '
+         'dwellings at its 2023 level. The 5th / 95th population paths take the Low A / High A projections (within '
+         'one propensity the projections differ only through their population projections; the Monte Carlo pairs '
+         'them through one z). Sensitivities: Medium B (propensities change, modelled on the 2001-2023 censuses) '
+         'and the 2018-2023 census pace continued linearly from 2023, for the Reference, the Moderate / Ambitious '
+         'Pathway and TL (sensitivity/household_size.csv).', '',
          '### Check and sensitivity rows', '',
          f"TL with re-occupation as fast as demand allows (deterministic sensitivity row): {fast['carbon_kt']:,.1f} kt, "
          f"LoE AR {fast['LoE_AR']:.3f} (TL: {tl['carbon_kt']:,.1f} kt, LoE AR {tl['LoE_AR']:.3f}).", '',

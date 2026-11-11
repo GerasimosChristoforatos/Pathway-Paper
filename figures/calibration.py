@@ -74,8 +74,7 @@ def sf1_households():
     # households are population / the model's household size, drawn as the projection line from the census point
     a.plot(dhe.index, dhe.values / M6, color=S.MUTED, lw=S.LW_THIN,
            label='Stats NZ household estimates as published (2018 Census base)')
-    P.history_estimated(a, d2['households_hist'], anchor, M6, label='History (31 Dec)', k=k, straight=True,
-                        tail=False)
+    P.history_estimated(a, d2['households_hist'], anchor, M6, label='History (31 Dec)', k=k, straight=True)
     lo, hi = d2['households_5th'] / M6, d2['households_95th'] / M6
     xf, lof, hif, _ = P.pchip_band(fy, lo, (lo + hi) / 2, hi, P.series_breaks(), name='SF1a households 5-95')
     a.fill_between(xf, lof, hif, label='5th–95th population percentile with Low A – High A household size '

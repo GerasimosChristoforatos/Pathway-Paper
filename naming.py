@@ -186,14 +186,16 @@ def vacancy_wording(v0, vmax, vmin, ymin, v2050):
 # axis by figures.draw.centre_ticklabels). The same input carries the same label everywhere.
 INPUT_LABEL = {
     'population': 'Population\n(5th–95th pct.)',
-    'hh_variant': 'Household size\n(smaller–larger households)',     # Stats NZ Low variant = smaller households
+    'hh_propensity': 'Living arrangements: propensities\nchange (Stats NZ B)',
     'hh_pace': 'Household size\n(2018–23 pace)',
-    'hh_after2043_flat': 'Household size after\n2043: held flat',
-    'hh_after2043_secant': 'Household size after\n2043: secant-slope taper',
-    'hh_after2043_endslope': 'Household size after\n2043: end-slope taper',
+    'hh_after2048_flat': 'Household size after\n2048: held flat',
+    'hh_after2048_secant': 'Household size after\n2048: secant-slope taper',
+    'hh_after2048_endslope': 'Household size after\n2048: end-slope taper',
     'completion_rate': 'Completion rate\n(0.93–0.96)',
     'uc_correction': 'Census under-construction\ncorrection removed',
     'size_window': 'Dwelling-size reference\nwindow 2016–2025',
+    'start_surplus_none': 'No starting surplus\n(2024–25 excess not carried)',
+    'start_surplus_m2sd': 'Starting surplus\nminus 2 SD',
     'overbuild_timing': 'Overbuild absorbed\n(by 2030–by 2045)',
     'vacancy_mean': 'Vacancy rate: 1986–2023\ncensus mean',
     'overbuild_redev': '2026 overbuild booked as\nstock-neutral redevelopment',

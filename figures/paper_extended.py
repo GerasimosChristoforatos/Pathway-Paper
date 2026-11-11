@@ -197,8 +197,10 @@ def ed10():
     plt.setp(ax[1].get_yticklabels(), visible=False)
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
     h0, _ = ax[0].get_legend_handles_labels()                       # AR, AtP, Reference; the roll-out styles in grey
-    ax[0].legend(handles=h0 + [Line2D([0], [0], color=S.MUTED, ls=ls, lw=S.LW, label=f'Pathway, full roll-out {lab}')
-                               for _, ls, lab in VARIANTS], fontsize=S.FONT_MIN)
+    # the legend below the panels (the AR / AtP lines and the zones fill the lower part of panel a)
+    fig.legend(handles=h0 + [Line2D([0], [0], color=S.MUTED, ls=ls, lw=S.LW, label=f'Pathway, full roll-out {lab}')
+                             for _, ls, lab in VARIANTS], fontsize=S.FONT_MIN, loc='lower center',
+               bbox_to_anchor=(0.5, 0.0), ncol=3, frameon=False)
     # (c) cumulative 2026-2050 (running sum from 2026)
     c = fig.add_subplot(outer[1])
     m = yrs >= 2026
@@ -223,7 +225,7 @@ def ed10():
     c.set_ylabel('Cumulative carbon 2026–2050 (kt CO₂e)')
     P.thousands(c.yaxis)
     P.panel(c, 'c', 'Cumulative')
-    fig.subplots_adjust(left=0.07, right=0.91, bottom=0.11, top=0.92)
+    fig.subplots_adjust(left=0.07, right=0.91, bottom=0.25, top=0.92)
     _save(fig, 'ED9_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
         f'{N.run_label(r_)} {v:,.0f}' for r_, v in ends) + f'; Reference {cref[-1]:,.0f}.')
 
@@ -319,13 +321,14 @@ def ed9():
     ax[0].set_xlim(yrs[0], yrs[-1])
     ax[0].set_ylim(0, None)
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
-    ax[0].legend(handles=[Line2D([0], [0], color=S.REFERENCE, label=N.SCENARIOS['REF']),
+    # the legend of panel a below the panels (the variants' lines fill the upper part of panel a)
+    fig.legend(handles=[Line2D([0], [0], color=S.REFERENCE, label=N.SCENARIOS['REF']),
                           Line2D([0], [0], color=S.PATHWAY_SETTING['moderate'], label=N.PATHWAY_RUNS['pathway-moderate']),
                           Line2D([0], [0], color=S.PATHWAY_SETTING['ambitious'],
                                  label=N.PATHWAY_RUNS['pathway-ambitious']),
                           Line2D([0], [0], color=S.TL, label=N.TL['TL'])] +
                  [Line2D([0], [0], color=S.MUTED, ls=ls, label=_variant_label(k)) for k, ls in VARIANT_LS],
-                 fontsize=S.FONT_MIN)
+               fontsize=S.FONT_MIN, loc='lower left', bbox_to_anchor=(0.06, 0.0), ncol=4, frameon=False)
     P.panel(ax[0], 'a', 'Annual')
     piv = v.pivot(index='run', columns='scenario', values='LoE_AR').loc[['Reference', 'pathway-moderate',
                                                                         'pathway-ambitious', 'TL']]
@@ -342,7 +345,7 @@ def ed9():
     ax[1].set_ylabel(f'{N.LOE_AR} 2026–2050')
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Cumulative')
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0.12, 1, 1))
     _save(fig, 'ED3_replacement_variants')                          # ED8 -> ED3
 
 

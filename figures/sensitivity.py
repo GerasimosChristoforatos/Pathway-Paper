@@ -62,19 +62,17 @@ def sf8_prcc():
 # ED4 (one at a time, carbon) and ED5 (boundary definitions, LoE): paired tornados
 # ---------------------------------------------------------------------------
 # data row (sensitivity/reference_carbon.csv: row, side) -> (input id of naming.INPUT_LABEL, role); role 'low' / 'high'
-# = the input at its low / high end (the Fig7a rule: the Stats NZ Low household-size variant is the input's low end),
-# 'single' = one alternative case, ('tick', name) = an intermediate case. The rows that only compare with superseded
+# = the input at its low / high end, 'single' = one alternative case, ('tick', name) = an intermediate case. The rows that only compare with superseded
 # model settings (REF_DROPPED: the MODEL v3.3 completion rate and lag, the MODEL v2.1 never-absorbed overbuild) are
 # not shown; the note under ED4 names them with their values.
 REF_ROWS = {
     ('Population: Stats NZ 5th / 95th percentile', 'low'): ('population', 'low'),
     ('Population: Stats NZ 5th / 95th percentile', 'high'): ('population', 'high'),
-    ('Household size: Stats NZ High / Low variant', 'high'): ('hh_variant', 'low'),
-    ('Household size: Stats NZ High / Low variant', 'low'): ('hh_variant', 'high'),
+    ('Living arrangements: propensities change (Stats NZ B)', 'single'): ('hh_propensity', 'single'),
     ('Household size: 2018-2023 census pace', 'single'): ('hh_pace', 'single'),
-    ('Household size after 2043: flat', 'single'): ('hh_after2043_flat', 'single'),
-    ('Household size after 2043: secant-slope taper', 'single'): ('hh_after2043_secant', 'single'),
-    ('Household size after 2043: taper from the PCHIP end slope', 'single'): ('hh_after2043_endslope', 'single'),
+    ('Household size after 2048: flat', 'single'): ('hh_after2048_flat', 'single'),
+    ('Household size after 2048: secant-slope taper', 'single'): ('hh_after2048_secant', 'single'),
+    ('Household size after 2048: taper from the PCHIP end slope', 'single'): ('hh_after2048_endslope', 'single'),
     ('Completion rate 0.93 / 0.96', 'low'): ('completion_rate', 'low'),
     ('Completion rate 0.93 / 0.96', 'high'): ('completion_rate', 'high'),
     ('Completion lag 15 / 19 months', 'low'): ('completion_lag', 'low'),
@@ -82,6 +80,8 @@ REF_ROWS = {
     ('No 2026 data', 'single'): ('no_2026', 'single'),
     ('No census under-construction correction', 'single'): ('uc_correction', 'single'),
     ('Dwelling-size window 2016-2025', 'single'): ('size_window', 'single'),
+    ('No starting surplus', 'single'): ('start_surplus_none', 'single'),
+    ('Starting surplus minus 2 SD', 'single'): ('start_surplus_m2sd', 'single'),
     ('2026 overbuild absorbed by 2030 / by 2045', 'low'): ('overbuild_timing', 'low'),
     ('2026 overbuild absorbed by 2030 / by 2045', 'high'): ('overbuild_timing', 'high'),
     ('Vacancy parameter: 1986-2023 census mean (one definition)', 'single'): ('vacancy_mean', 'single'),
@@ -109,16 +109,35 @@ REF_ROWS = {
 REF_DROPPED = ('Completion rate 0.95 (MODEL v3.3)', 'Completion lag 0 months (MODEL v3.3)',
                '2026 overbuild never absorbed (MODEL v2.1 Reference)')
 # rows kept in the data file but not shown in ED4 (display only), with the reason given in the note.
-# The Reference also holds household size constant after 2043 (with a zero slope imposed at 2043), so 'flat' differs
+# The Reference also holds household size constant after 2048 (with a zero slope imposed at 2048), so 'flat' differs
 # from it only by that slope; the change of each row (data: change_pct) is quoted in the figure note.
-REF_NOT_SHOWN = {'Household size after 2043: flat': 'household size held flat after 2043 (the Reference is also '
-                                                    'held constant after 2043 and differs only by the zero slope '
-                                                    'imposed at 2043)',
+REF_NOT_SHOWN = {'Household size after 2048: flat': 'household size held flat after 2048 (the Reference is also '
+                                                    'held constant after 2048 and differs only by the zero slope '
+                                                    'imposed at 2048)',
                  '2026 overbuild gap vs the 2026 requirement': 'the overbuild gap measured against the 2026 '
                                                                'requirement',
                  'No census under-construction correction': 'no census under-construction correction',
                  'Event timing L / n': 'maintenance event timing L / n'}
+# the household-size tail rows after the last Stats NZ knot are shown only if their effect exceeds TAIL_SHOW_MIN_PCT of
+# the Reference carbon (|change_pct|, rule fixed in advance); otherwise they join the rows not shown, with this reason
+TAIL_SHOW_MIN_PCT = 0.1
+TAIL_ROWS = {'Household size after 2048: secant-slope taper': 'the secant-slope taper of household size after 2048',
+             'Household size after 2048: taper from the PCHIP end slope': 'the end-slope taper of household size '
+                                                                          'after 2048'}
 GROUP_RENAME = {'Replacement scenario': 'Replacement'}
+
+
+def ref_not_shown(r):
+    """{row: reason} of the ED4 rows kept in the data file but not shown: REF_NOT_SHOWN and every tail row whose
+    |change_pct| is at most TAIL_SHOW_MIN_PCT."""
+    out = dict(REF_NOT_SHOWN)
+    for row, why in TAIL_ROWS.items():
+        ch = r.loc[r['row'] == row, 'change_pct']
+        if ch.empty:
+            raise SystemExit(f'STOP: ED4: the tail row {row!r} is not in the data')
+        if abs(float(ch.iloc[0])) <= TAIL_SHOW_MIN_PCT:
+            out[row] = f'{why} (|effect| at most {TAIL_SHOW_MIN_PCT:g}% of the Reference)'
+    return out
 # rows kept in the data file but not shown in ED5 (display only); any other unmapped row still stops
 PB_DROPPED = {'α = 1 (Hjalsted et al. SI tables)': 'α = 1 (Hjalsted et al. SI tables)',
               'NZ population: raw Stats NZ 2024-base median': 'the raw Stats NZ 2024-base median population'}
@@ -205,7 +224,7 @@ def row_notes_ed4(r):
     _same(F, 'A4-A5 path', PR.DECARB_A45, pj['decarb_a45'])
     _same(F, 'event timing', PR.EVENT_TIMING, pj['event_timing'])
     if (PR.HH_SIZE_PATH, PR.S_TAIL, PR.VACANCY_PARAMETER, PR.DECARB_MODE, PR.DECARB_ITEM_CASE, PR.SOIL_ON_REPLACEMENT,
-            PR.NOWCAST_POPULATION, PR.CENSUS_UC_CORRECTION) != ('statsnz', 'hermite_clamped', 'census_2023',
+            PR.NOWCAST_POPULATION, PR.CENSUS_UC_CORRECTION) != ('statsnz_2023', 'hermite_clamped', 'census_2023',
                                                                 'horup_item', 'central', False, True, True):
         _stop(F, 'a Reference setting the notes describe has changed in projection.py; rewrite the notes')
     case = {(x['row'], x['side']): x['case'] for _, x in r.iterrows()}
@@ -214,24 +233,31 @@ def row_notes_ed4(r):
     def kw(row, side):
         return _case(cases, case[(row, side)], F)
     n = {}
-    lo, hi = (kw('Household size: Stats NZ High / Low variant', s)['HH_SIZE_VARIANT'] for s in ('high', 'low'))
-    n['hh_variant'] = (f'Stats NZ {lo} / {hi} household-size variant (smaller / larger households) instead of the '
-                       f'{PR.HH_SIZE_VARIANT} variant')
+    if PR.HH_PROPENSITY != 'A' or PR.HH_SIZE_VARIANT != 'Medium':
+        _stop(F, 'the Reference household projection is not Medium A; rewrite the notes')
+    _same(F, 'propensity row', kw('Living arrangements: propensities change (Stats NZ B)', 'single'),
+          dict(HH_PROPENSITY='B'))
+    n['hh_propensity'] = ('Stats NZ Medium B household projection (living-arrangement propensities change, modelled on '
+                          'the 2001–2023 censuses) instead of Medium A (propensities held at 2023)')
     k = kw('Household size: 2018-2023 census pace', 'single')
     _same(F, 'census-pace path', k, dict(HH_SIZE_PATH='census_pace'))
     a, b = PR.HH_SIZE_PACE_WINDOW
     _mentions(F, 'Household size: 2018-2023 census pace', f'{a}-{b}')
     n['hh_pace'] = (f'household size continues linearly from {PR.S_ANCHOR_YEAR} at the {_yrs(a, b)} census-interval '
                     f'pace instead of the Stats NZ household-size path rebased on {PR.S_ANCHOR_YEAR}')
-    ref_tail = 'instead of a zero slope imposed at 2043 and household size held constant after 2043'
-    _same(F, 'secant taper', kw('Household size after 2043: secant-slope taper', 'single'), dict(S_TAIL='taper_secant'))
-    _same(F, 'end-slope taper', kw('Household size after 2043: taper from the PCHIP end slope', 'single'),
+    ref_tail = 'instead of a zero slope imposed at 2048 and household size held constant after 2048'
+    _same(F, 'secant taper', kw('Household size after 2048: secant-slope taper', 'single'), dict(S_TAIL='taper_secant'))
+    _same(F, 'end-slope taper', kw('Household size after 2048: taper from the PCHIP end slope', 'single'),
           dict(S_TAIL='taper'))
-    n['hh_after2043_secant'] = (f'the last published interval (2038–2043) linear at its secant slope, the slope then '
+    n['hh_after2048_secant'] = (f'the last published interval (2043–2048) linear at its secant slope, the slope then '
                                 f'tapering to zero over {PR.S_TAPER_YEARS} years, {ref_tail}')
-    n['hh_after2043_endslope'] = (f'from the shape-preserving (PCHIP) end slope at 2043 the slope tapers to zero over '
+    n['hh_after2048_endslope'] = (f'from the shape-preserving (PCHIP) end slope at 2048 the slope tapers to zero over '
                                   f'{PR.S_TAPER_YEARS} years, {ref_tail}')
-    n['population'] = ('Stats NZ 2024-base stochastic projection, 5th / 95th percentile path instead of the median')
+    if PR.HH_SIZE_PAIRED != {'5th': 'Low', '50th': None, '95th': 'High'}:
+        _stop(F, 'the population / household-size pairing has changed; rewrite the population note')
+    n['population'] = (f'Stats NZ 2024-base stochastic projection, 5th / 95th percentile path instead of the median, '
+                       f'with the household size of the Stats NZ Low / High {PR.HH_PROPENSITY} household projection '
+                       f'(the same percentiles)')
     v = [kw('Completion rate 0.93 / 0.96', s)['COMPLETION_RATE'] for s in ('low', 'high')]
     _mentions(F, 'Completion rate 0.93 / 0.96', *(f'{x:g}' for x in v))
     n['completion_rate'] = (f'{v[0]:g} / {v[1]:g} of consented dwellings completed instead of '
@@ -243,6 +269,23 @@ def row_notes_ed4(r):
     e = [kw('2026 overbuild absorbed by 2030 / by 2045', s)['OVERBUILD_ABSORPTION_END'] for s in ('low', 'high')]
     _mentions(F, '2026 overbuild absorbed by 2030 / by 2045', *e)
     n['overbuild_timing'] = f'the 2026 overbuild absorbed by {e[0]} / {e[1]} instead of {PR.OVERBUILD_ABSORPTION_END}'
+    ss = pj['starting_surplus']
+    _same(F, 'starting surplus', PR.STARTING_SURPLUS, ss['mode'])
+    if ss['mode'] != 'carry' or not ss['rule_carry']:
+        _stop(F, 'the starting-surplus rule or setting has changed; rewrite the notes')
+    _same(F, 'no-surplus row', kw('No starting surplus', 'single'), dict(STARTING_SURPLUS='none'))
+    _same(F, 'minus-2-SD row', kw('Starting surplus minus 2 SD', 'single'), dict(STARTING_SURPLUS='carry_minus_2sd'))
+    ya = ss['after_years']
+    k_iv = list(ss['intervals'])
+    y0, y1 = int(k_iv[0].split('-')[0]) + 1, int(k_iv[-1].split('-')[1])       # the residual years of the intervals
+    n['start_surplus_none'] = (f"no starting surplus instead of {ss['dwellings_carry']:,.0f} vacant dwellings at the "
+                               f"start of 2026, absorbed by {ss['absorbed_by']}: (the {_yrs(ya[0], ya[-1])} building "
+                               f"beyond the stock identity, {ss['r_after']:,.0f} dwellings a year, minus the {_yrs(y0, y1)} "
+                               f"census-interval mean, {P.minus(format(ss['m'], ',.0f'))}) × {len(ya)} years; carried "
+                               f"because it exceeds the mean + {ss['sd_multiple']:g} SD (SD {ss['s']:,.0f})")
+    n['start_surplus_m2sd'] = (f"a starting surplus of {ss['dwellings_carry_minus_2sd']:,.0f} dwellings (only the "
+                               f"excess above the mean + {ss['sd_multiple']:g} SD) instead of "
+                               f"{ss['dwellings_carry']:,.0f}")
     _same(F, 'vacancy parameter', kw('Vacancy parameter: 1986-2023 census mean (one definition)', 'single'),
           dict(VACANCY_PARAMETER='consistent_mean'))
     vy = ob['vacancy']['consistent_years']
@@ -533,9 +576,9 @@ def _input_label(rid):
     return N.INPUT_LABEL.get(rid, rid)
 
 
-ED4_H = 240                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
+ED4_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
 ED5_H = 152                       # mm
-NOTES_TOP = 0.23                  # the notes block occupies the figure below this fraction of its height (ED4)
+NOTES_TOP = 0.245                 # the notes block occupies the figure below this fraction of its height (ED4)
 NOTES_TOP_ED5 = 0.21
 
 
@@ -544,8 +587,9 @@ def ed4_rows():
     r = D.csv('sensitivity/reference_carbon.csv')
     c0 = float(r['central_carbon_kt'].iloc[0])
     items, unmapped = [], []
+    hidden = ref_not_shown(r)
     for _, x in r.iterrows():
-        if x['row'] in REF_DROPPED or x['row'] in REF_NOT_SHOWN:
+        if x['row'] in REF_DROPPED or x['row'] in hidden:
             continue
         key = (x['row'], x['side'])
         if key not in REF_ROWS:
@@ -589,7 +633,7 @@ def ed4_one_at_a_time():
                        f'case within {100 * P.NO_EFFECT_RTOL:.2f}% of the Reference. Not shown: the superseded-setting '
                        'rows (completion rate 0.95 and lag 0 months of MODEL v3.3; the never-absorbed overbuild of '
                        'MODEL v2.1) and ' + '; '.join(f"{t} ({float(r.loc[r['row'] == k, 'change_pct'].iloc[0]):+.4f}%)"
-                                                     for k, t in REF_NOT_SHOWN.items()) + ' (in the data file). Row notes: '
+                                                     for k, t in ref_not_shown(r).items()) + ' (in the data file). Row notes: '
                        + ' '.join(lines), source=['sensitivity/reference_carbon.csv'])
 
 

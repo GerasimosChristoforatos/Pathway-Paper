@@ -65,7 +65,7 @@ flowchart LR
         HP[histpopdata.xlsx / derived/population_quarterly.csv<br/>population]
         OH[oldhouseholddata.xlsx<br/>household estimates]
         PP[popdata.xlsx<br/>population projection 2024-base]
-        HH[Householddata.xlsx + subnational 2018-base<br/>household size shape]
+        HH[derived/households_proj_2023base.csv<br/>household size shape, Stats NZ 2023-base]
         CE[occ-unocc-2013.xlsx + derived/census_dwellings.csv<br/>census occupancy]
     end
     BF[Building_factors.py] --> F[("outputs/data/factors/*.csv")]
@@ -207,12 +207,27 @@ published spread of the *level* about the median, shifted to zero in 2025.
 
 ### 4.6 Household size
 
-`S_StatsNZ = population / households` at the shared knots of the 2018-base
-subnational population and household projections (2018–2043). Interpolation:
-one cubic Hermite through every knot (PCHIP derivatives at interior knots, zero
-slope at 2043), held constant after 2043. Applied as a shape rebased on the
-observed 2023 value; households = population / S for every population path.
+`S_StatsNZ = people in households / households` at the five-yearly knots
+(2023–2048) of the Stats NZ 2023-base national family and household
+projections (`data/derived/households_proj_2023base.csv`), Medium A (living-
+arrangement propensities held at 2023; `HH_PROPENSITY`). Interpolation: one
+cubic Hermite through every knot (PCHIP derivatives at interior knots, zero
+slope at 2048), held constant after 2048. Applied as a shape rebased on the
+observed 2023 value (census households, total population: the share of the
+population outside private dwellings is held at its 2023 level); households =
+population / S. The 5th / 95th population paths take the Low A / High A
+projection (`HH_SIZE_PAIRED`; the Monte Carlo pairs them through one z).
 Household decline is floored at zero (it becomes vacancy).
+
+### 4.6a Starting surplus (F1)
+
+The stock-identity residual of 2024–2025 (dwellings built beyond household
+formation, vacancy on one definition and census-measured net replacement;
+`engine.identity_residuals`) is compared with the 1992–2023 census-interval
+residuals (time-weighted mean m and SD s). Rule fixed in advance: if it exceeds
+m + 2s, (residual − m) × 2 years is a surplus of vacant dwellings at 1 January
+2026, added to the absorption pool of the market excess (logistic absorption
+by 2035) in every run and Monte Carlo draw (`STARTING_SURPLUS`).
 
 ### 4.7 Typology mix
 

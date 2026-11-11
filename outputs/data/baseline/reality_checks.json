@@ -35,10 +35,10 @@
     "S": {
       "hist_min": 2.662418571666122,
       "hist_max": 2.7904761904761903,
-      "years_outside": 20,
+      "years_outside": 25,
       "max_above_pct": 0.0,
-      "max_below_pct": 0.5447144010746086,
-      "first_outside": 2031
+      "max_below_pct": 7.113714060924958,
+      "first_outside": 2026
     },
     "size": {
       "hist_min": 135.61293022282666,
@@ -70,7 +70,7 @@
       "hist_min": -1521.1050000000018,
       "hist_max": 3354.006,
       "years_outside": 2,
-      "max_above_pct": 4.10416685410413,
+      "max_above_pct": 4.666354599287992,
       "max_below_pct": 0.0,
       "first_outside": 2026
     },
@@ -93,10 +93,10 @@
     "S": {
       "hist_min": 2.662418571666122,
       "hist_max": 2.7904761904761903,
-      "years_outside": 20,
+      "years_outside": 25,
       "max_above_pct": 0.0,
-      "max_below_pct": 0.5447144010746086,
-      "first_outside": 2031
+      "max_below_pct": 7.113714060924958,
+      "first_outside": 2026
     },
     "size": {
       "hist_min": 135.61293022282666,
@@ -128,7 +128,7 @@
       "hist_min": -1521.1050000000018,
       "hist_max": 3354.006,
       "years_outside": 25,
-      "max_above_pct": 35.276038564168346,
+      "max_above_pct": 45.052714750179426,
       "max_below_pct": 0.0,
       "first_outside": 2026
     },
@@ -151,10 +151,10 @@
     "S": {
       "hist_min": 2.662418571666122,
       "hist_max": 2.7904761904761903,
-      "years_outside": 20,
+      "years_outside": 25,
       "max_above_pct": 0.0,
-      "max_below_pct": 0.5447144010746086,
-      "first_outside": 2031
+      "max_below_pct": 7.113714060924958,
+      "first_outside": 2026
     },
     "size": {
       "hist_min": 135.61293022282666,
@@ -186,7 +186,7 @@
       "hist_min": -1521.1050000000018,
       "hist_max": 3354.006,
       "years_outside": 25,
-      "max_above_pct": 142.10999321744544,
+      "max_above_pct": 159.6077779708148,
       "max_below_pct": 0.0,
       "first_outside": 2026
     },
@@ -209,10 +209,10 @@
     "S": {
       "hist_min": 2.662418571666122,
       "hist_max": 2.7904761904761903,
-      "years_outside": 20,
+      "years_outside": 25,
       "max_above_pct": 0.0,
-      "max_below_pct": 0.5447144010746086,
-      "first_outside": 2031
+      "max_below_pct": 7.113714060924958,
+      "first_outside": 2026
     },
     "size": {
       "hist_min": 135.61293022282666,
@@ -232,7 +232,7 @@
     }
   },
   "handover": {
-    "step_pct": -18.240379641537974,
+    "step_pct": -8.221964136080906,
     "last_observed_year": 2027,
     "first_model_year": 2028,
     "hist_median_pct": 3.0006510703208145,

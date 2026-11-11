@@ -58,7 +58,8 @@ def test_reference_absorbs_by_2035(B):
     assert np.allclose(E['stock_join'][i35:], 0.0, atol=1e-6)
     v_impl = 1 - E['hh'] / (E['stock'] + E['stock_join'])
     assert np.allclose(v_impl[i35:], B['v_forward'], rtol=1e-9)
-    assert np.isclose(-ji['payback'][1:].sum(), ji['excess'][1:].sum(), rtol=1e-9)
+    # the whole pool is paid back: the market excess and the F1 starting surplus (never built)
+    assert np.isclose(-ji['payback'][1:].sum(), ji['excess'][1:].sum() + ji['start_surplus'], rtol=1e-9)
     assert B['v_forward'] == pytest.approx(0.0539, abs=5e-5)          # frozen at the 2023 census value
 
 
@@ -100,7 +101,8 @@ def test_lever_data_stop_conditions(params):
     assert all(0.0 <= f <= 1.0 for f in params['L4']['f']['ambitious'].values())
     assert params['L1']['high_ge_medium_every_year']
     v = params['L1']['variants']
-    assert all(v['High'][y] >= v['Medium'][y] for y in v['High'] if int(y) <= 2043)
+    import levers as LV
+    assert all(v['High'][y] >= v['Medium'][y] for y in v['High'] if int(y) <= LV.L1_GAP_HELD_AFTER)
     assert all(r['ok'] for r in params['tl_strength'])
     assert {k: round(m['size_min'], 1) for k, m in params['L4']['minima'].items()} == \
         {'Detached': 148.8, 'Townhouses': 105.8, 'Apartments': 91.0}

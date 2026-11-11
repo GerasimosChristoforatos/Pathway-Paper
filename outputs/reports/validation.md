@@ -79,4 +79,4 @@ Change in census private dwellings from the origin to 2023, predicted as complet
 
 Run on the model WITHOUT any observed 2026 input (settings: {'CONSENT_DATA_END': '2025-12-01', 'NOWCAST_POPULATION': False}), so the check stays out of sample.
 
-Completion lag 17 months: without 2026 data the pipeline years are [2026]; the model's 2027 building 28,386 (all categories) vs the observed pipeline 38,658 (consents [2026, 2027] lagged 17 months); observed / model = 1.362. Descriptive only: not used to set any parameter.
+Completion lag 17 months: without 2026 data the pipeline years are [2026]; the model's 2027 building 31,874 (all categories) vs the observed pipeline 38,658 (consents [2026, 2027] lagged 17 months); observed / model = 1.213. Descriptive only: not used to set any parameter.

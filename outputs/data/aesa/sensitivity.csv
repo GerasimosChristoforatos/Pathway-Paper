@@ -1,21 +1,21 @@
 case,label,cum_LoE_AR,cum_LoE_AtP,AR_vs_ref_pct,AtP_vs_ref_pct
-reference,"Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",4.464187020777564,17.75562865452972,0.0,0.0
-i_source_pair,(i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015),8.421361111217509,33.49469006574721,88.64265927977839,88.64265927977843
-i_glob_ef31,(i) Global impact: EF 3.1 normalisation factor (Andreasi Bassi et al. 2023),4.165291465844622,17.75562865452972,-6.695408448207896,0.0
-ii_gdp_measure,"(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",4.464187020777564,54.62915012841564,0.0,207.67229474851035
-iii_base_window,"(iii) AR base window 2021-2025 (5 yr, as Horup)",4.108260057280164,17.75562865452972,-7.972940242888948,0.0
-iii_base_window_20,(iii) AR base window 2006-2025 (20 yr),5.329254296180286,17.75562865452972,19.37793536373946,0.0
-iii_base_window_full,(iii) AR base window 1992-2025 (full consistent history),5.572545960790499,17.75562865452972,24.827789132810185,0.0
-iv_pop_statsnz,"(iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",4.453581082702657,17.6539874220617,-0.23757826510277802,-0.5724451352618787
-iv_pop_wpp,"(iv) NZ population: WPP 2024 probabilistic median, New Zealand",4.74133059502816,19.12564133833577,6.208153309005504,7.715934538068536
-v_ssec,(v) s_sec with FCE share as ratio of sums,4.464187020777564,17.796928600496663,0.0,0.232601992137349
-vi_frozen,(vi) Frozen technology: 2025 factors held (A1-A3 and A4-A5 not decarbonised),5.105228203004001,20.30527299758657,14.359639935398171,14.359639935398171
-vii_proxies_held,(vii) Proxy-mapped items held at 2025 (A1-A3),4.483117506868839,17.830921799669476,0.42405226311461597,0.42405226311459376
-viii_nz_elec_held,"(viii) NZ-made, electricity-intensive items held at 2025 (A1-A3)",4.574200308852077,18.193189868032515,2.4643521331539464,2.4643521331539464
-ix_a45_held,(ix) A4-A5 held at 2025 (no generic 1%/yr),4.551098600228414,18.101306316179112,1.946862419659845,1.946862419659845
-x_a45_item,(x) A4-A5 on each item's own Horup S4 path,4.412319680539957,17.549334153813064,-1.161854106832927,-1.1618541068329158
-xi_event_timing,(xi) Event timing: interval L / n (instead of L / (n + 1); base on the same rule),4.434884576180832,17.621404003050337,-0.6563892699913754,-0.7559555005963725
-xii_whole_life,(xii) Accounting: whole life at construction (base on the same rule),4.533337209518542,25.180433180709286,1.5489984720428174,41.816624297813256
-xiii_wider_scope,"(xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",5.025750343001492,22.026709071243047,12.579296512674244,24.054796931246436
-xiv_alpha_1,"(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",4.464187020777564,7.492149215177711,0.0,-57.80408927809856
-note_soil_long_run,Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate,4.456046740590941,17.75562865452972,-0.18234630737321567,0.0
+reference,"Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",5.6873294997634005,22.62041086626706,0.0,0.0
+i_source_pair,(i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015),10.728729610356993,42.67174459813815,88.64265927977833,88.64265927977841
+i_glob_ef31,(i) Global impact: EF 3.1 normalisation factor (Andreasi Bassi et al. 2023),5.306539559958823,22.62041086626706,-6.695408448207873,0.0
+ii_gdp_measure,"(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",5.6873294997634005,69.59673719378526,0.0,207.67229474851035
+iii_base_window,"(iii) AR base window 2021-2025 (5 yr, as Horup)",5.2338980639945305,22.62041086626706,-7.972659853587405,0.0
+iii_base_window_20,(iii) AR base window 2006-2025 (20 yr),6.789406613473554,22.62041086626706,19.377760929026564,0.0
+iii_base_window_full,(iii) AR base window 1992-2025 (full consistent history),7.099351389362529,22.62041086626706,24.827502778903,0.0
+iv_pop_statsnz,"(iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",5.673817641007182,22.490921424686864,-0.23757826510281133,-0.5724451352618898
+iv_pop_wpp,"(iv) NZ population: WPP 2024 probabilistic median, New Zealand",6.040407634297007,24.36578696095037,6.208153309005482,7.715934538068536
+v_ssec,(v) s_sec with FCE share as ratio of sums,5.6873294997634005,22.67302639257165,0.0,0.232601992137349
+vi_frozen,(vi) Frozen technology: 2025 factors held (A1-A3 and A4-A5 not decarbonised),6.523252586196321,25.945156455299202,14.697989389707345,14.697989389707345
+vii_proxies_held,(vii) Proxy-mapped items held at 2025 (A1-A3),5.711910150794368,22.718176333469888,0.43220022740004804,0.43220022740002584
+viii_nz_elec_held,"(viii) NZ-made, electricity-intensive items held at 2025 (A1-A3)",5.831089646621559,23.192193033673,2.527726710121847,2.527726710121847
+ix_a45_held,(ix) A4-A5 held at 2025 (no generic 1%/yr),5.800538570249735,23.070681188796396,1.9905488242072833,1.9905488242072833
+x_a45_item,(x) A4-A5 on each item's own Horup S4 path,5.619528246451638,22.350742613843188,-1.1921456865578772,-1.1921456865578772
+xi_event_timing,(xi) Event timing: interval L / n (instead of L / (n + 1); base on the same rule),5.652890632217242,22.460902075119694,-0.6055367030799008,-0.7051542613013995
+xii_whole_life,(xii) Accounting: whole life at construction (base on the same rule),5.779962660051108,32.104734119201964,1.6287637333402438,41.92816527076661
+xiii_wider_scope,"(xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",6.13574936130074,26.891491282980386,7.88454162108938,18.881533328303156
+xiv_alpha_1,"(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",5.6873294997634005,9.544888374057342,0.0,-57.80408927809856
+note_soil_long_run,Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate,5.67694526708495,22.62041086626706,-0.18258538878190844,0.0

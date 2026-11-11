@@ -52,21 +52,18 @@ FILE_CONSENTS_DERIVED = os.path.join(DATA_DIR, 'derived', 'consents_monthly.csv'
 FILE_POP_PROJ = os.path.join(DATA_DIR, 'popdata.xlsx')
 FILE_POP_HIST = os.path.join(DATA_DIR, 'histpopdata.xlsx')          # [FIX e] authoritative annual ERP
 FILE_HOUSEHOLDS_HIST = os.path.join(DATA_DIR, 'oldhouseholddata.xlsx')
-FILE_HOUSEHOLDS_PROJ = os.path.join(DATA_DIR, 'Householddata.xlsx')
-# [Route A] Population paired with the 2018-base household projection to derive
-# household size. ADOPTED: the ORIGINAL 2018-base subnational release (national
-# totals aligned to the 2020-base national projection), the regional set in
-# place when the household projection was produced. Its implied household size
-# falls smoothly (2.730 -> 2.705 -> 2.691 -> 2.674 -> 2.666 -> 2.670), as
-# living-arrangement change would. The later UPDATE (national totals aligned to
-# the 2022-base projection) revised population down for COVID migration without
-# a matching household revision, giving an artificially steep early fall
-# (2.730 -> 2.667). After rebasing on observed 2025 the two give near-identical
-# shapes: S(2050) 2.582 vs 2.564; total GFA 2026-2050 80.31 vs 82.69 Mm2 (-2.9%).
-# The update is kept as a sensitivity.
-FILE_POP_SIZE_PAIR = os.path.join(DATA_DIR, 'subnational-population-projections-2018base-2048.xlsx')
-# FILE_POP_SIZE_PAIR = os.path.join(DATA_DIR, 'subnational-population-projections-2018base-2048-update.xlsx')
-POP_SIZE_PAIR_SHEET = 'Table 1'
+# Stats NZ 2023-base national family and household projections (POPPR_FHH_008 people in households, POPPR_FHH_010
+# households; data/build_households_2023.py): Year, Variant, Propensity, Population, Households, S at the five-yearly
+# knots 2023-2048.
+FILE_HOUSEHOLDS_PROJ_2023 = os.path.join(DATA_DIR, 'derived', 'households_proj_2023base.csv')
+# The Stats NZ 2018-base family and household projections (2018-2043) paired with the original 2018-base subnational
+# population projections: the household-size shape of MODEL v4.3.7 and earlier. NOT used by any reported run: kept
+# only for HH_SIZE_PATH 'statsnz_2018', with which tests/test_events.py and tests/test_model_v4.py reproduce the
+# anchors of earlier model versions.
+FILE_HOUSEHOLDS_PROJ_2018 = os.path.join(DATA_DIR, 'Householddata.xlsx')
+FILE_POP_SIZE_PAIR_2018 = os.path.join(DATA_DIR, 'subnational-population-projections-2018base-2048.xlsx')
+POP_SIZE_PAIR_SHEET_2018 = 'Table 1'
+HOUSEHOLD_SHEET_PROJ_2018 = 'Table 1'
 
 POP_SHEET_PROJ = 'Table 1'
 POP_SHEET_HIST = 'Table 1'
@@ -91,61 +88,53 @@ POP_SHEET_HIST = 'Table 1'
 #     removing the 2025 spread only approximates conditioning on observed 2025.
 
 HOUSEHOLD_SHEET_HIST = 'Table 2'
-HOUSEHOLD_SHEET_PROJ = 'Table 1'
 
 # ---------------------------------------------------------------------------
 # HOUSEHOLD SIZE -- how future households are obtained
 # ---------------------------------------------------------------------------
-# All three Stats NZ household variants (Low B / Medium B / High B) use the SAME
-# 'B' living-arrangement assumption and differ only in fertility, mortality and
-# migration. Pairing the 5th-percentile population with the Low B households
-# would count low population on BOTH sides of S = Pop / HH, so household size
-# is taken from ONE living-arrangement assumption and applied to every
-# population percentile:
-#     S_StatsNZ(knot) = Pop(knot) / HH_MediumB(knot)
-# from a population projection of (near-)matching vintage and the 2018-base
-# household projection, at their shared published knots (see S_TAIL for the
-# interpolation), applied as a SHAPE rebased on observed household size in
-# S_ANCHOR_YEAR:
+# Source: Stats NZ, National family and household projections, 2023(base)-2048 (POPPR_FHH_008, POPPR_FHH_010;
+# DataInfo+ https://datainfoplus.stats.govt.nz/item/nz.govt.stats/e7475c01-9e55-491d-a8fe-74efa8fba757). Six
+# projections: Low / Medium / High (the 5th / 50th / 95th percentile population projections) x living-arrangement
+# propensity A (held constant at 2023) / B (change modelled on the 2001-2023 censuses). Household size at each knot
+# is people in households / households of ONE projection:
+#     S_StatsNZ(knot) = Population(knot) / Households(knot)      (not the published AHS, rounded to 0.1)
+# interpolated between the knots (S_TAIL) and applied as a SHAPE rebased on observed household size in S_ANCHOR_YEAR
+# (census households, total population):
 #     S(t)            = S_observed(anchor) x S_StatsNZ(t) / S_StatsNZ(anchor)
 #     Households_p(t) = Pop_2024base_p(t) / S(t)
-# VINTAGE: see FILE_POP_SIZE_PAIR for which release is paired and why. Both
-# series are at 30 June; only the rebased shape is used, so the half-year offset
-# and any level difference do not enter the result.
-HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High' -- sensitivity on S only
-# HH_SIZE_PATH: 'statsnz' (ADOPTED: the Stats NZ 2018-base household projection shape, rebased on the
-#   2023 census as above; to be replaced by the 2023-base household projections when published) or 'census_pace'
-#   (sensitivity: household size continues LINEARLY from the 2023 anchor at the 2018-2023 census-interval pace,
-#   (S_2023 - S_2018) / 5 per year, census-benchmarked households; HH_SIZE_PACE_WINDOW).
-HH_SIZE_PATH = 'statsnz'
+# Rebasing a people-in-households ratio on a total-population ratio holds the share of the population outside private
+# dwellings at its 2023 level.
+HH_SIZE_VARIANT = 'Medium'   # 'Low' | 'Medium' | 'High': the Stats NZ projection of the median population path
+HH_PROPENSITY = 'A'          # ADOPTED 'A' (propensities held at 2023); 'B' (propensities change) is a sensitivity
+# Population percentiles and household size (N4, resolved): within one propensity the Low / Medium / High projections
+# differ only through their population projections (the 5th / 50th / 95th percentiles of the Stats NZ stochastic
+# population projection). The 5th / 95th population paths therefore take the Low / High household size of the same
+# propensity (HH_SIZE_PAIRED): comonotone through one standard-normal score, as the Monte Carlo (MonteCarlo.VARIANT_Z).
+HH_SIZE_PAIRED = {'5th': 'Low', '50th': None, '95th': 'High'}    # None: HH_SIZE_VARIANT
+# HH_SIZE_PATH: 'statsnz_2023' (ADOPTED, above) or 'census_pace' (sensitivity: household size continues LINEARLY from
+#   the 2023 anchor at the 2018-2023 census-interval pace, (S_2023 - S_2018) / 5 per year, census-benchmarked
+#   households; HH_SIZE_PACE_WINDOW). 'statsnz_2018' (reproduction of earlier model versions only, never reported):
+#   the 2018-base shape of MODEL v4.3.7 and earlier (FILE_HOUSEHOLDS_PROJ_2018, last knot 2043).
+HH_SIZE_PATH = 'statsnz_2023'
 HH_SIZE_PACE_WINDOW = (2018, 2023)
 # Diagnostic switches (the defaults are the adopted model):
-#   HH_SIZE_PATH also takes 'statsnz_2018' (= 'statsnz') and 'statsnz_2023': the Stats NZ 2023-base national family and
-#     household projections (FILE_HOUSEHOLDS_PROJ_2023: CSV Year, Variant, Population, Households; Medium / Low / High =
-#     HH_SIZE_VARIANT), S = Population / Households PCHIP-interpolated, anchored on the 2023 census, no DHE rebase
-#     factor. The file is not yet in data/ (loader stub; tested with a synthetic file).
 #   HH_BRIDGE: 'dhe' (Stats NZ DHE households, rebased on the 2023 census) | 'erp_S' (from 2024: households =
 #     observed ERP at 31 December / S(t), S(t) the model's household-size path anchored on the 2023 census; DHE not
 #     used after the 2023 census).
 #   START_MODE: 'observed' (pipeline years, market excess, 2026 population nowcast) | 'projection' (the population
 #     projection median from 2026, no nowcast; building modelled in every projection year: no pipeline, no market
 #     excess, no carried deviation; the completion lag kept in the history).
-FILE_HOUSEHOLDS_PROJ_2023 = None
 HH_BRIDGE = 'erp_S'                # adopted (Part B)
 START_MODE = 'observed'
 
-# S_TAIL: household size between and after the published knots (last knot 2043).
+# S_TAIL: household size between and after the published knots (last knot 2048).
 #   'hermite_clamped' (ADOPTED): one cubic Hermite through every
 #       published knot (PCHIP derivatives at the interior knots, zero slope
-#       imposed at 2043), held constant after 2043.
-#   Sensitivities (Sensitivity.py): 'flat' (PCHIP, held after 2043; a kink at
-#       2043), 'taper' (PCHIP; the slope tapers linearly to zero over
+#       imposed at the last knot, 2048), held constant after it (2049-2050).
+#   Sensitivities (Sensitivity.py): 'flat' (PCHIP, held after 2048; a kink at
+#       2048), 'taper' (PCHIP; the slope tapers linearly to zero over
 #       S_TAPER_YEARS from the PCHIP end derivative), 'taper_secant' (the
-#       2038-43 interval linear at its secant slope, then tapering from it).
-# N4 (the Low/High variants pair stochastic population percentiles with
-# deterministic household variants) and the total vs private-household
-# population question remain OPEN until the living-arrangement table (E2) is
-# obtained; see ASSUMPTIONS.md.
+#       2043-48 interval linear at its secant slope, then tapering from it).
 S_TAIL = 'hermite_clamped'
 S_TAPER_YEARS = 5
 
@@ -400,6 +389,18 @@ VACANCY_PARAMETER = 'census_2023'
 #   within the observed years), 2026 without it. A year fixes it explicitly.
 OVERBUILD_ABSORPTION_START = None
 OVERBUILD_ABSORPTION_END = 2035
+# STARTING_SURPLUS (F1; rule fixed in advance of the 2023-base household data, applied, not tuned): the stock-identity
+#   residual ('unexplained building', engine.identity_residuals: dwellings built beyond household formation, vacancy
+#   on one definition and census-measured net replacement) of the years after the last census (2024-2025), r, against
+#   the census-interval residuals 1992-2023 (time-weighted mean m, time-weighted SD s). If r > m + 2 s, the excess
+#   (r - m) x 2 years is a surplus of vacant dwellings at 1 January 2026: it enters the absorption pool of the market
+#   excess (the same logistic absorption by OVERBUILD_ABSORPTION_END, engine.market_excess start_surplus) and the
+#   surplus stock (engine.forward stock_start). It is recomputed in every run from that run's own history (the
+#   completion rate and lag change the 2024-2025 completions), and every Monte Carlo draw.
+#   'carry' (ADOPTED: the rule holds on the Reference; checked in tests/test_model_v4_2.py), 'none' and
+#   'carry_minus_2sd' ((r - m - 2 s) x 2 years: only the excess above the 2 SD band) are the sensitivity rows.
+STARTING_SURPLUS = 'carry'
+F1_SD_MULTIPLE = 2.0
 # NOWCAST_METHOD: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
 #   (August 2025 - July 2026), no seasonal estimation. It is the year to July
 #   2026, not calendar 2026: replace it with calendar 2026 when published.
@@ -787,12 +788,12 @@ def locate_projection_block(df_raw, section_label='Annual population growth (000
 
 def load_national_pop_projection(path=None, sheet=None, variant='Medium',
                                   area_label='New Zealand'):
-    """[Route A] National population from the subnational projection table
+    """[statsnz_2018, reproduction only] National population from the subnational projection table
     (knots across columns, regions down rows, High/Medium/Low per region).
     The base-year value is published only on the Medium row; it is shared by
     all three variants."""
-    path = path or FILE_POP_SIZE_PAIR
-    sheet = sheet or POP_SIZE_PAIR_SHEET
+    path = path or FILE_POP_SIZE_PAIR_2018
+    sheet = sheet or POP_SIZE_PAIR_SHEET_2018
     raw = pd.read_excel(path, sheet_name=sheet, header=None)
     col0 = [str(x) for x in raw.iloc[:, 0].tolist()]
     col1 = [str(x).strip() for x in raw.iloc[:, 1].tolist()]
@@ -874,7 +875,7 @@ def _extract_leading_year(cell, min_year, max_year):
     return yr if min_year <= yr <= max_year else None
 
 
-def extract_household_projection_block(path, sheet=HOUSEHOLD_SHEET_PROJ, variant_label='Medium',
+def extract_household_projection_block(path, sheet=HOUSEHOLD_SHEET_PROJ_2018, variant_label='Medium',
                                        total_col_idx=4, min_year=2000, max_year=2050,
                                        search_window=15):
     raw = pd.read_excel(path, sheet_name=sheet, header=None)
@@ -955,15 +956,15 @@ def extend_tail(S_knots, S_ann, mode):
     if mode in ('taper', 'taper_secant'):
         # slope tapers linearly to zero over S_TAPER_YEARS: S(K+t) = S(K) + s0 (t - t^2 / (2T)),
         # constant after K+T. With s0 = the PCHIP end derivative this is C1-continuous at K
-        # ('taper'); 'taper_secant' starts from the 2038-43 secant slope instead (not C1).
+        # ('taper'); 'taper_secant' starts from the secant slope of the last published interval instead (not C1).
         s0 = (float(PchipInterpolator(yrs_k.astype(float), s_k).derivative()(last)) if mode == 'taper'
               else (s_k[-1] - s_k[-2]) / (yrs_k[-1] - yrs_k[-2]))
         T = float(S_TAPER_YEARS)
         out = S_ann.copy()
         if mode == 'taper_secant':
-            # the last published interval (2038->2043) is linear at its secant slope, so the
-            # taper after 2043 continues it smoothly (no kink at 2043; the PCHIP segment meets the
-            # line at 2038 instead)
+            # the last published interval (2043->2048) is linear at its secant slope, so the
+            # taper after the last knot continues it smoothly (no kink there; the PCHIP segment meets the
+            # line at the second-last knot instead)
             k0 = int(yrs_k[-2])
             seg = (out.index >= k0) & (out.index <= last)
             out[seg] = s_k[-2] + s0 * (out.index[seg] - k0)
@@ -978,37 +979,46 @@ def extend_tail(S_knots, S_ann, mode):
     return out
 
 
-def statsnz_size_shape(variant, forecast_years, tail):
-    """[Route A] Stats NZ household size S = Pop / HH at the shared knots of the
-    matched-vintage population and household projections for one variant,
-    PCHIP-interpolated to annual values; after the last knot, see S_TAIL.
-    Returns (S_knots, S_ann, pop_ref), where pop_ref is that variant's annual
-    population (to read the growth it assumed)."""
-    pop_k = load_national_pop_projection(variant=variant).set_index('Year')['Population']
-    hh_k = extract_household_projection_block(FILE_HOUSEHOLDS_PROJ,
-                                              variant_label=variant).set_index('Year')['Households']
-    common = sorted(set(pop_k.index) & set(hh_k.index))
-    S_knots = pd.DataFrame({'Year': common, 'S': [pop_k[y] / hh_k[y] for y in common]})
-    S_ann = smooth_interpolate_and_extend(S_knots, 'S', np.arange(min(common), 2051)).set_index('Year')['S']
-    S_ann = extend_tail(S_knots, S_ann, tail)
-    pk = pop_k.reset_index().rename(columns={'index': 'Year'})
-    pop_ref = smooth_interpolate_and_extend(pk, 'Population',
-                                            np.arange(int(pk['Year'].min()), 2051)).set_index('Year')['Population']
+def statsnz_2023_knots(variant, propensity, path=None):
+    """The household-size knots of one Stats NZ 2023-base projection (FILE_HOUSEHOLDS_PROJ_2023): DataFrame Year,
+    Population, Households, S (S = people in households / households) at 2023, 2028, ..., 2048."""
+    d = pd.read_csv(path or FILE_HOUSEHOLDS_PROJ_2023)
+    d = d[(d['Variant'] == variant) & (d['Propensity'] == propensity)].sort_values('Year')
+    if d.empty:
+        raise ValueError(f"No Stats NZ 2023-base household projection '{variant} {propensity}' in "
+                         f"{path or FILE_HOUSEHOLDS_PROJ_2023}.")
+    if d['Year'].duplicated().any():
+        raise ValueError(f"Duplicate years in the household projection '{variant} {propensity}'.")
+    k = d[['Year', 'Population', 'Households']].reset_index(drop=True).astype({'Year': int})
+    k['S'] = k['Population'] / k['Households']
+    return k
+
+
+def statsnz_size_shape(variant, forecast_years=None, tail=None, propensity=None):
+    """Stats NZ 2023-base household size S = Population / Households at the published knots of one projection
+    (variant x propensity, HH_PROPENSITY by default), PCHIP-interpolated to annual values; between and after the knots,
+    see S_TAIL. Returns (S_knots, S_ann, pop_ref): pop_ref is that projection's annual population in households (to
+    read the growth it assumed; diagnostic only)."""
+    if HH_SIZE_PATH == 'statsnz_2018':                    # reproduction of earlier model versions only
+        pop_k = load_national_pop_projection(variant=variant).set_index('Year')['Population']
+        hh_k = extract_household_projection_block(FILE_HOUSEHOLDS_PROJ_2018,
+                                                  variant_label=variant).set_index('Year')['Households']
+        common = sorted(set(pop_k.index) & set(hh_k.index))
+        k = pd.DataFrame({'Year': common, 'Population': [pop_k[y] for y in common]})
+        k['S'] = [pop_k[y] / hh_k[y] for y in common]
+    else:
+        k = statsnz_2023_knots(variant, propensity or HH_PROPENSITY)
+    S_knots = k[['Year', 'S']]
+    yrs = np.arange(int(k['Year'].min()), 2051)
+    S_ann = smooth_interpolate_and_extend(S_knots, 'S', yrs).set_index('Year')['S']
+    S_ann = extend_tail(S_knots, S_ann, tail or S_TAIL)
+    if HH_SIZE_PATH == 'statsnz_2018':                    # the annual population of that release (as MODEL v4.3.7)
+        pk = load_national_pop_projection(variant=variant)
+        pop_ref = smooth_interpolate_and_extend(pk, 'Population', np.arange(int(pk['Year'].min()), 2051)
+                                                ).set_index('Year')['Population']
+        return S_knots, S_ann, pop_ref
+    pop_ref = smooth_interpolate_and_extend(k[['Year', 'Population']], 'Population', yrs).set_index('Year')['Population']
     return S_knots, S_ann, pop_ref
-
-
-def statsnz_2023_shape(path, variant):
-    """Loader stub: S = Population / Households of the Stats NZ 2023-base family and household projections
-    (CSV with Year, Variant, Population, Households), PCHIP-interpolated to annual values and held after the last
-    knot. Returns the annual S series."""
-    if path is None:
-        raise ValueError("HH_SIZE_PATH 'statsnz_2023': FILE_HOUSEHOLDS_PROJ_2023 is not set (file not yet available).")
-    d = pd.read_csv(path)
-    d = d[d['Variant'] == variant].sort_values('Year')
-    knots = pd.DataFrame({'Year': d['Year'].astype(int).values,
-                          'S': (d['Population'] / d['Households']).astype(float).values})
-    S_ann = smooth_interpolate_and_extend(knots, 'S', np.arange(int(knots['Year'].min()), 2051)).set_index('Year')['S']
-    return extend_tail(knots, S_ann, 'flat')
 
 
 def household_size_path(hist_S, years):
@@ -1019,12 +1029,9 @@ def household_size_path(hist_S, years):
     if HH_SIZE_PATH == 'census_pace':
         p0, p1 = HH_SIZE_PACE_WINDOW
         return S0 + float(hist_S.loc[p1] - hist_S.loc[p0]) / (p1 - p0) * (y - S_ANCHOR_YEAR)
-    if HH_SIZE_PATH == 'statsnz_2023':
-        sh = statsnz_2023_shape(FILE_HOUSEHOLDS_PROJ_2023, HH_SIZE_VARIANT)
-    elif HH_SIZE_PATH in ('statsnz', 'statsnz_2018'):
-        sh = statsnz_size_shape(HH_SIZE_VARIANT, None, tail=S_TAIL)[1]
-    else:
+    if HH_SIZE_PATH not in ('statsnz_2023', 'statsnz_2018'):
         raise ValueError(f"Unknown HH_SIZE_PATH '{HH_SIZE_PATH}'.")
+    sh = statsnz_size_shape(HH_SIZE_VARIANT, tail=S_TAIL)[1]
     return S0 * sh.reindex(np.asarray(years, int)).values / float(sh.loc[S_ANCHOR_YEAR])
 
 
@@ -1366,6 +1373,23 @@ def main():
     elif VACANCY_PARAMETER != 'census_2023':
         raise ValueError(f"Unknown VACANCY_PARAMETER '{VACANCY_PARAMETER}'.")
 
+    # F1: the stock-identity residual of the history on ONE vacancy definition (the pooled 2018/2023 empty share,
+    # as the D05 history), with this run's completion rate and lag, and the starting surplus (STARTING_SURPLUS)
+    f1_census_years = [int(y) for y in census.index if years_hist.min() <= y <= calib_end]
+    f1_residuals = engine.identity_residuals(
+        engine.calibrate_stock(years_hist, hist_hh, engine.vacancy_knots(census, empty_share_measured, _cs),
+                               hist_units_all_c, hist_rv_units_c, _completion, _demol_rate, _calib_start, calib_end),
+        census_rates, f1_census_years, int(years_hist.min()) + 1, int(years_hist.max()))
+    f1_residuals['rule_carry'] = bool(f1_residuals['r_after']
+                                      > f1_residuals['m'] + F1_SD_MULTIPLE * f1_residuals['s'])
+    start_surplus = (engine.starting_surplus(f1_residuals, STARTING_SURPLUS) if _join_mode == 'market_excess'
+                     else 0.0)
+    print(f"[F1] stock-identity residual {f1_census_years[0] + 1}-{f1_census_years[-1]}: m {f1_residuals['m']:,.0f}, "
+          f"s {f1_residuals['s']:,.0f} dwellings/yr; {f1_residuals['after_years'][0]}-"
+          f"{f1_residuals['after_years'][-1]}: {f1_residuals['r_after']:,.0f}/yr "
+          f"({'>' if f1_residuals['rule_carry'] else '<='} m + {F1_SD_MULTIPLE:g} s); "
+          f"starting surplus ({STARTING_SURPLUS}) {start_surplus:,.0f} dwellings")
+
     # 2025's departure from the calibrated identity, and its persistence. Carried
     # forward fading at rho, booked to the residual (see engine.forward).
     # net replacement path forward (REPLACEMENT_VARIANT); unconsented_rate stays the long-run value
@@ -1508,9 +1532,18 @@ def main():
     # 7. HOUSEHOLD PROJECTION
     # ------------------------------------------------------------------
     # household size: the Stats NZ shape, rebased on the census anchor year
+    if HH_SIZE_PATH not in ('statsnz_2023', 'census_pace', 'statsnz_2018'):
+        raise ValueError(f"Unknown HH_SIZE_PATH '{HH_SIZE_PATH}'.")
+    # the household-size settings of this run (the L1 lever's variant runs inherit them: pathways.household_size_variants)
+    hh_settings = dict(HH_SIZE_PATH=HH_SIZE_PATH, HH_PROPENSITY=HH_PROPENSITY, S_TAIL=S_TAIL)
     S_knots, _S_ann, _pref = statsnz_size_shape(HH_SIZE_VARIANT, forecast_years, tail=S_TAIL)
     S_matched = household_size(_S_ann, _pref, hist_S, hist_pop, forecast_years, 0.0,
                                anchor_year=S_ANCHOR_YEAR)['S_matched']
+    # the 5th / 95th population paths: the Low / High projection of the same propensity (HH_SIZE_PAIRED, N4)
+    S_by_pct = {pct: (S_matched if v is None else
+                      household_size(*statsnz_size_shape(v, forecast_years, tail=S_TAIL)[1:], hist_S, hist_pop,
+                                     forecast_years, 0.0, anchor_year=S_ANCHOR_YEAR)['S_matched'])
+                for pct, v in HH_SIZE_PAIRED.items()}
     # the same shape from the anchor year to 2025 (figures draw the projection from the anchor point)
     S_bridge = (float(hist_S.loc[S_ANCHOR_YEAR]) * _S_ann.loc[S_ANCHOR_YEAR:2025]
                 / float(_S_ann.loc[S_ANCHOR_YEAR]))
@@ -1522,11 +1555,7 @@ def main():
         S_matched = float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (np.asarray(forecast_years, float) - S_ANCHOR_YEAR)
         S_bridge = pd.Series(float(hist_S.loc[S_ANCHOR_YEAR]) + _pace * (S_bridge.index.values - S_ANCHOR_YEAR),
                              index=S_bridge.index)
-    elif HH_SIZE_PATH == 'statsnz_2023':     # loader stub
-        S_matched = household_size_path(hist_S, forecast_years)
-        S_bridge = pd.Series(household_size_path(hist_S, S_bridge.index.values), index=S_bridge.index)
-    elif HH_SIZE_PATH not in ('statsnz', 'statsnz_2018'):
-        raise ValueError(f"Unknown HH_SIZE_PATH '{HH_SIZE_PATH}'.")
+        S_by_pct = {pct: S_matched for pct in HH_SIZE_PAIRED}          # one path, no population pairing
     # ---- household size and migration: diagnostic regression (not applied) ----
     # Fitted only where households are census-benchmarked (see above).
     _yr = years_hist[(years_hist >= CALIB_START_YEAR) & (years_hist <= calib_end)]
@@ -1551,11 +1580,11 @@ def main():
                        e_2025=_hr['e_2025'], dS_obs_2025=_hr['dS_obs_2025'], dS_snz_2025=_hr['dS_snz_2025'],
                        dP_obs_2025=_hr['dP_obs_2025'], dP_ref=_hr['dP_ref'], dS_hist=_dS, dP_hist=_dP,
                        years_fit=_yr, n_fit=_n)
-    households_forecast = {pct: df_forecast[f'PopTotal_{pct}'].values / S_matched
+    households_forecast = {pct: df_forecast[f'PopTotal_{pct}'].values / S_by_pct[pct]
                            for pct in ['5th', '50th', '95th']}
 
-    print(f"\n[Route A] household size from {FILE_POP_SIZE_PAIR} / {FILE_HOUSEHOLDS_PROJ} "
-          f"({HH_SIZE_VARIANT})")
+    print(f"\n[household size] Stats NZ 2023-base family and household projections ({FILE_HOUSEHOLDS_PROJ_2023}), "
+          f"{HH_SIZE_VARIANT} {HH_PROPENSITY}; path {HH_SIZE_PATH}, tail {S_TAIL}")
     print("   knot   " + "  ".join(f"{int(y)}" for y in S_knots['Year']))
     print("   S      " + "  ".join(f"{v:.3f}" for v in S_knots['S']))
     h = hh_response
@@ -1657,12 +1686,14 @@ def main():
         if _join_mode == 'market_excess':
             _b26 = ([pipe['built_all'][y] for y in pipe['years']] if pipe else
                     _completion * ((1.0 - lag_w) * float(nowcast['total']) + lag_w * float(hist_units_all.loc[2025])))
-            _aw = (None if OVERBUILD_ABSORPTION_END is None or OVERBUILD_BOOKING != 'surplus' else
+            # the logistic absorption weights: the overbuild (booking 'surplus') and the starting surplus (any booking)
+            _aw = (None if OVERBUILD_ABSORPTION_END is None
+                   or (OVERBUILD_BOOKING != 'surplus' and STARTING_SURPLUS == 'none') else
                    engine.logistic_weights(forecast_years, absorption_start, OVERBUILD_ABSORPTION_END))
             join, ji = engine.market_excess(E, _b26, rho_other, OVERBUILD_GAP_REF, OVERBUILD_BOOKING,
-                                            OVERBUILD_ABSORPTION, absorb_w=_aw)
+                                            OVERBUILD_ABSORPTION, absorb_w=_aw, start_surplus=start_surplus)
             E = engine.forward(pop_total, hh_arr, pop_growth, join=join, join_redev=ji['redev'],
-                               **fwd_inputs)
+                               stock_start=start_surplus, **fwd_inputs)
             join_info[col] = dict(ji, join=join)
         engine_out[col] = E
 
@@ -2214,7 +2245,28 @@ def export_results(B, path):
         annual=dict(years=[int(y) for y in B['forecast_years']],
                     gfa_Mm2=[float(v / 1e6) for v in R['50th']['total']],
                     carbon_kt=[float(v / 1e6) for v in ct.sum(axis=1).values]),
-        S_2050=float(B['df_forecast']['PopTotal_50th'].values[-1] / B['households_forecast']['50th'][-1]))
+        S_2050=float(B['df_forecast']['PopTotal_50th'].values[-1] / B['households_forecast']['50th'][-1]),
+        household_size=dict(source=os.path.relpath(FILE_HOUSEHOLDS_PROJ_2023, os.path.dirname(DATA_DIR)),
+                            path=HH_SIZE_PATH, variant=HH_SIZE_VARIANT, propensity=HH_PROPENSITY, tail=S_TAIL,
+                            anchor_year=S_ANCHOR_YEAR, S_anchor=float(B['hist_S'].loc[S_ANCHOR_YEAR]),
+                            paired={p: (v or HH_SIZE_VARIANT) for p, v in HH_SIZE_PAIRED.items()},
+                            knots={int(y): float(s) for y, s in zip(B['S_knots']['Year'], B['S_knots']['S'])},
+                            S={p: {int(y): float(s) for y, s in zip(B['forecast_years'], B['S_by_pct'][p])}
+                               for p in ('5th', '50th', '95th')}),
+        starting_surplus=dict(mode=STARTING_SURPLUS, sd_multiple=F1_SD_MULTIPLE,
+                              rule_carry=B['f1_residuals']['rule_carry'], m=B['f1_residuals']['m'],
+                              s=B['f1_residuals']['s'], r_after=B['f1_residuals']['r_after'],
+                              after_years=B['f1_residuals']['after_years'],
+                              intervals=dict(zip(B['f1_residuals']['intervals'], B['f1_residuals']['interval_means'])),
+                              interval_years=B['f1_residuals']['interval_years'],
+                              dwellings=float(B['start_surplus']),
+                              dwellings_carry=engine.starting_surplus(B['f1_residuals'], 'carry'),
+                              dwellings_carry_minus_2sd=engine.starting_surplus(B['f1_residuals'], 'carry_minus_2sd'),
+                              absorbed_by=OVERBUILD_ABSORPTION_END,
+                              method='residual = dwellings built beyond household formation, vacancy (one definition) '
+                                     'and census-measured net replacement (engine.identity_residuals); m, s: '
+                                     'time-weighted mean and SD of the 1992-2023 census-interval means (weights = '
+                                     'interval length); carried if r_after > m + 2 s, as (r_after - m) x n_after'))
     with open(path, 'w') as fh:
         json.dump(N.keys(out), fh, indent=2)
 

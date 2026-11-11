@@ -246,7 +246,8 @@ def sf2_stock_vacancy():
     a.plot(FY, np.full(len(FY), 100 * vf), color=S.INK, lw=S.LW_THIN, ls=':',
            label=f'Reference, projection: held at the 2023 census value ({100 * vf:.2f}%)')
     P.line(a, FY, 100 * d['vacancy_implied'], color=S.INK, lw=S.LW, ls='--',
-           label='Reference, projection: implied by the held rate + the unabsorbed 2026 overbuild / stock')
+           label='Reference, projection: implied by the held rate + the unabsorbed starting surplus and 2026 '
+                 'overbuild / stock')
     K = d['census_knots']
     for y, r in K.iterrows():
         filled = bool(r['measured'])
@@ -314,6 +315,7 @@ def sf2_stock_vacancy():
     a.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, -0.07), ncol=3, fontsize=S.FONT_MIN)
     V = d['vacancy_wording']
     sm = D.js('baseline/scenarios.json')['meta']              # the projection's replacement rates (%/yr)
+    ss = D.js('baseline/projection.json')['starting_surplus']    # F1 starting surplus
     hist_note = (f'History: one column per census interval (interval means; vacancy on one definition, the pooled '
                  f"2018/2023 empty share, {100 * d['pooled_share']:.1f}% of unoccupied dwellings); between censuses "
                  f'annual detail is not identified. The {census_y[-1] + 1}–{int(YH[-1])} column (marked †): households '
@@ -326,14 +328,17 @@ def sf2_stock_vacancy():
                      b['pipeline_floor_count'].items() for c in b['annual'] if c['year'] == y)
                  + ' (the pipeline floor area is observed, the dwelling size held).')
     S.save_figure(fig, fid, source=['figure_source/D05_stock_and_vacancy.json',
-                                    'figure_source/D06_vacancy_definition.json', 'baseline/scenarios.json'], note=(
+                                    'figure_source/D06_vacancy_definition.json', 'baseline/scenarios.json', 'baseline/projection.json'], note=(
         f'a: {V[0].upper() + V[1:]}. c: the unconsented additions each vacancy definition requires to close the stock '
         'identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. '
         f'b: {hist_note} History: net replacement is census-measured, the '
         'rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the '
         f"previous year's stock, the quantity the model uses ({census_y[-1] + 1}–{int(YH[-1])}: the latest rate "
         'carried). Projection: net replacement, retirement villages (negative), the 2026 overbuild and the overbuild '
-        'absorbed (negative payback). Net replacement = demolition − unconsented additions (+ the recent surge in the '
+        f"absorbed (negative payback of the 2026 overbuild and of the starting surplus: {ss['dwellings']:,.0f} vacant "
+        f"dwellings at the start of 2026, the {ss['after_years'][0]}–{ss['after_years'][-1]} unexplained building "
+        f"above the census-interval mean x {len(ss['after_years'])} years, absorbed by {ss['absorbed_by']}). "
+        'Net replacement = demolition − unconsented additions (+ the recent surge in the '
         'Reference); the census measures only the net. The projection\'s split (demolition at the BRANZ rate, '
         f"{sm['demolition_rate_pct']:.3f}%/yr; the calibrated residual as unconsented additions, "
         f"{P.minus(format(sm['residual_long_pct'], '.3f'))}%/yr; the surge) is not identified from data and is not "

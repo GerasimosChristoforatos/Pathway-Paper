@@ -29,7 +29,8 @@ EV = pd.read_csv(BF.FILE_EVENTS).fillna({'event_type': '', 'event_path': ''})
 ITEMS = pd.read_csv(BF.FILE_ITEMS)
 WHOLE_LIFE = dict(ACCOUNTING='whole_life_at_construction', DECARB_A45='held')
 # the Reference of the captured anchors: the 2026 overbuild never absorbed
-LEGACY = dict(OVERBUILD_ABSORPTION_END=None, COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95)   # v2.1 timing
+LEGACY = dict(OVERBUILD_ABSORPTION_END=None, COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95,   # v2.1 timing
+              HH_SIZE_PATH='statsnz_2018', STARTING_SURPLUS='none')   # the household size of v2.1 - v4.3.7, no F1
 
 
 @pytest.fixture(scope='module')

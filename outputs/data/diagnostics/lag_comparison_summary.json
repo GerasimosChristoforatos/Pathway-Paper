@@ -22,22 +22,22 @@
         "consent_period": "Aug 2025\u2013Jul 2026",
         "all_category_consents": 40908.0,
         "building_equivalent_dwellings": 38658.06,
-        "pre_pipeline_requirement_dwellings": 21878.373195494612,
-        "gross_excess_dwellings": 16779.686804505385
+        "pre_pipeline_requirement_dwellings": 28370.03629226481,
+        "gross_excess_dwellings": 10288.023707735189
       }
     ],
-    "gross_market_excess_dwellings_2026_2050": 27414.54343735739,
-    "payback_dwellings_2026_2050": 27414.54343735739,
+    "gross_market_excess_dwellings_2026_2050": 13676.792612445666,
+    "payback_dwellings_2026_2050": 19793.042917385304,
     "cumulative_categories_Mm2_2026_2050": {
       "population_growth": 40.755045693966956,
-      "household_size_change": 1.893187276620366,
-      "net_replacement": 14.662470533817046,
-      "other": 27.88134452587989,
-      "market_excess": 3.6368857743403886,
-      "overbuild_absorbed": -3.655835242036515,
-      "underlying_requirement": 85.19204803028427,
-      "net_market_effect": -0.018949467696126376,
-      "total_built": 85.17309856258814
+      "household_size_change": 14.002038483468422,
+      "net_replacement": 15.221248227461656,
+      "other": 39.66781828482961,
+      "market_excess": 1.8010009296410436,
+      "overbuild_absorbed": -2.6394787135471454,
+      "underlying_requirement": 109.64615068972664,
+      "net_market_effect": -0.8384777839061017,
+      "total_built": 108.80767290582054
     }
   },
   "lag_0_held": {
@@ -59,22 +59,22 @@
         "consent_period": "Aug 2025\u2013Jul 2026",
         "all_category_consents": 40908.0,
         "building_equivalent_dwellings": 38658.06,
-        "pre_pipeline_requirement_dwellings": 19313.169637919436,
-        "gross_excess_dwellings": 19344.89036208056
+        "pre_pipeline_requirement_dwellings": 25790.980013443695,
+        "gross_excess_dwellings": 12867.079986556302
       }
     ],
-    "gross_market_excess_dwellings_2026_2050": 32597.50402620699,
-    "payback_dwellings_2026_2050": 32597.504026206974,
+    "gross_market_excess_dwellings_2026_2050": 18895.599702088908,
+    "payback_dwellings_2026_2050": 25011.850007028544,
     "cumulative_categories_Mm2_2026_2050": {
       "population_growth": 40.755045693966956,
-      "household_size_change": 1.893187276620366,
-      "net_replacement": 8.679892411451881,
-      "other": 27.88134452587989,
-      "market_excess": 4.329595757842127,
-      "overbuild_absorbed": -4.3470030530963335,
-      "underlying_requirement": 79.2094699079191,
-      "net_market_effect": -0.017407295254206367,
-      "total_built": 79.1920626126649
+      "household_size_change": 14.002038483468422,
+      "net_replacement": 9.01405597529994,
+      "other": 39.66781828482961,
+      "market_excess": 2.4984995105675547,
+      "overbuild_absorbed": -3.3354267939265902,
+      "underlying_requirement": 103.43895843756492,
+      "net_market_effect": -0.8369272833590355,
+      "total_built": 102.60203115420589
     }
   },
   "lag_17": {
@@ -99,30 +99,30 @@
         "consent_period": "Aug 2024\u2013Jul 2025",
         "all_category_consents": 33879.0,
         "building_equivalent_dwellings": 32015.655,
-        "pre_pipeline_requirement_dwellings": 19313.169637919436,
-        "gross_excess_dwellings": 12702.485362080562
+        "pre_pipeline_requirement_dwellings": 25790.980013443695,
+        "gross_excess_dwellings": 6224.674986556303
       },
       {
         "completion_or_proxy_year": 2027,
         "consent_period": "Aug 2025\u2013Jul 2026",
         "all_category_consents": 40908.0,
         "building_equivalent_dwellings": 38658.06,
-        "pre_pipeline_requirement_dwellings": 26207.201185599828,
-        "gross_excess_dwellings": 12450.85881440017
+        "pre_pipeline_requirement_dwellings": 32994.25286427209,
+        "gross_excess_dwellings": 5663.807135727904
       }
     ],
-    "gross_market_excess_dwellings_2026_2050": 34229.18430209701,
-    "payback_dwellings_2026_2050": 34229.18430209702,
+    "gross_market_excess_dwellings_2026_2050": 15728.30997566356,
+    "payback_dwellings_2026_2050": 34694.2114214337,
     "cumulative_categories_Mm2_2026_2050": {
       "population_growth": 40.58837862649656,
-      "household_size_change": 1.8854767060155224,
-      "net_replacement": 8.948394607892428,
-      "other": 30.27823437519776,
-      "market_excess": 4.544831606250812,
-      "overbuild_absorbed": -4.713420087071348,
-      "underlying_requirement": 81.70048431560227,
-      "net_market_effect": -0.168588480820536,
-      "total_built": 81.53189583478174
+      "household_size_change": 13.944133810762457,
+      "net_replacement": 9.293359964905619,
+      "other": 42.86637559142598,
+      "market_excess": 2.0209211514993064,
+      "overbuild_absorbed": -4.777455155683255,
+      "underlying_requirement": 106.69224799359061,
+      "net_market_effect": -2.756534004183949,
+      "total_built": 103.93571398940666
     }
   },
   "historical_classification": {

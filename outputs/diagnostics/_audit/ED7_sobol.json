@@ -1,6 +1,6 @@
 {
  "figure": "ED7_sobol",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Embodied carbon, cumulative 2026\u20132050",

@@ -1,6 +1,6 @@
 {
  "figure": "SF13_conditional_tl",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "By population quintile (Wilson 95%)",
@@ -46,7 +46,7 @@
   "a",
   "b"
  ],
- "note": "P(within AR) = 0.499 (Wilson 0.485-0.513); (b) threshold 6.61 M (95% CI 6.61-6.62 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).",
+ "note": "P(within AR) = 0.640 (Wilson 0.627-0.653); (b) threshold 6.72 M (95% CI 6.71-6.72 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

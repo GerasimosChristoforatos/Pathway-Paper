@@ -1,6 +1,6 @@
 {
  "figure": "SF12_pathway_mc",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "",
@@ -32,7 +32,7 @@
   "Reference (median, 5th\u201395th percentile)",
   "Theoretical Limit (median, 5th\u201395th percentile)"
  ],
- "note": "P(cumulative LoE of AR <= 1): REF 0.000, pathway_moderate 0.000, pathway_ambitious 0.000, TL 0.499, TL_from2027 0.978.",
+ "note": "P(cumulative LoE of AR <= 1): REF 0.000, pathway_moderate 0.000, pathway_ambitious 0.000, TL 0.640, TL_from2027 0.989.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

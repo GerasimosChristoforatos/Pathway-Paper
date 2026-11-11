@@ -16,97 +16,97 @@ Every result below is read from the run outputs (outputs/data/; settings from pr
 
 ### Summary
 
-New Zealand is projected to build 81.5 million m² of new residential floor area in 2026–2050 in the Reference. In 2026–2050 this emits 19.8 Mt CO₂e: 19.4 Mt from materials and construction (A1–A5) and soil carbon loss, counted in the construction year, and 359 kt of maintenance (B2, B4), 2026–2050. A further 7.5–8.2 Mt is committed after 2050 (later B2/B4 and C1–C4; outputs/reports/reconciliation.md). How fast existing dwellings are replaced is the largest structural uncertainty: Low replacement (the long-run rate throughout) gives 77.4 million m², High replacement (the 2018–2023 rate persisting) 86.7 million m², and Very High replacement (trend continues) (the weighted linear trend of the census-interval rates 1991–2023 continues) 92.2 million m². Within the Reference, joint uncertainty in the inputs gives a 90% interval of 60.3–104.7 million m² (median 81.3, mean 81.7). Outside the Monte Carlo, carbon-factor and soil bounds on the Reference carbon (19,761 kt): case-study jackknife 19,078–20,398 kt, single case study 15,602–23,616 kt, soil order 18,126–26,686 kt. Population uncertainty alone (Stats NZ 5th–95th percentiles) spans 55.2–108.5 million m². The joint interval is narrower than the population-only range because each population draw also moves household size along the matching Stats NZ Low/High variant: low-population variants come with smaller households (an older age structure), so the number of households varies less than population, whereas the population-only range holds household size on the Medium shape.
+New Zealand is projected to build 103.9 million m² of new residential floor area in 2026–2050 in the Reference. In 2026–2050 this emits 25.2 Mt CO₂e: 24.7 Mt from materials and construction (A1–A5) and soil carbon loss, counted in the construction year, and 438 kt of maintenance (B2, B4), 2026–2050. A further 9.6–10.5 Mt is committed after 2050 (later B2/B4 and C1–C4; outputs/reports/reconciliation.md). How fast existing dwellings are replaced is the largest structural uncertainty: Low replacement (the long-run rate throughout) gives 99.6 million m², High replacement (the 2018–2023 rate persisting) 109.4 million m², and Very High replacement (trend continues) (the weighted linear trend of the census-interval rates 1991–2023 continues) 115.2 million m². Within the Reference, joint uncertainty in the inputs gives a 90% interval of 86.3–123.9 million m² (median 103.9, mean 104.4). Outside the Monte Carlo, carbon-factor and soil bounds on the Reference carbon (25,176 kt): case-study jackknife 24,310–25,983 kt, single case study 19,899–30,065 kt, soil order 23,042–34,207 kt. Population uncertainty alone (Stats NZ 5th–95th percentiles) spans 88.5–121.4 million m². The joint interval is narrower than the population-only range because each population draw also moves household size along the matching Stats NZ Low/High variant: low-population variants come with smaller households (an older age structure), so the number of households varies less than population, whereas the population-only range holds household size on the Medium shape.
 
 ### Headline, 2026–2050 (median demographics)
 
 | variant | floor area (Mm²) | vs Reference | carbon 2026–2050 (kt CO₂e) | of which soil carbon loss | carbon excl. soil carbon loss | materials and construction (A1–A5) + soil carbon loss (kt CO₂e) |
 |---|---|---|---|---|---|---|
-| Low replacement | 77.38 | -5.1% | 18,898 | 3,014 | 15,884 | 18,560 |
-| Reference, replacement half-life 5 yr | 79.68 | -2.3% | 19,389 | 3,014 | 16,375 | 19,037 |
-| Reference | 81.53 | +0.0% | 19,761 | 3,014 | 16,747 | 19,403 |
-| Reference, replacement half-life 15 yr | 82.68 | +1.4% | 19,987 | 3,014 | 16,972 | 19,625 |
-| High replacement | 86.72 | +6.4% | 20,770 | 3,014 | 17,755 | 20,398 |
-| Very High replacement (trend continues) | 92.18 | +13.1% | 21,807 | 3,014 | 18,792 | 21,427 |
+| Low replacement | 99.65 | -4.1% | 24,285 | 3,931 | 20,355 | 23,869 |
+| Reference, replacement half-life 5 yr | 102.00 | -1.9% | 24,788 | 3,931 | 20,857 | 24,357 |
+| Reference | 103.94 | +0.0% | 25,176 | 3,931 | 21,245 | 24,738 |
+| Reference, replacement half-life 15 yr | 105.14 | +1.2% | 25,412 | 3,931 | 21,481 | 24,970 |
+| High replacement | 109.40 | +5.3% | 26,235 | 3,931 | 22,304 | 25,784 |
+| Very High replacement (trend continues) | 115.17 | +10.8% | 27,331 | 3,931 | 23,400 | 26,871 |
 
 Monte Carlo within each variant (joint input uncertainty; mean, median and 90% interval):
 
 | variant | output | mean | median | 5th | 95th |
 |---|---|---|---|---|---|
-| Low replacement | floor area (Mm²) | 77.7 | 77.3 | 56.6 | 100.0 |
-| Low replacement | carbon 2026–2050 (kt) | 18,968.5 | 18,888.1 | 13,758.7 | 24,579.6 |
-| Low replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 18,627.7 | 18,547.4 | 13,510.1 | 24,148.4 |
-| Reference | floor area (Mm²) | 81.7 | 81.3 | 60.3 | 104.7 |
-| Reference | carbon 2026–2050 (kt) | 19,809.0 | 19,708.8 | 14,575.0 | 25,502.8 |
-| Reference | materials and construction (A1–A5) + soil carbon loss (kt) | 19,447.7 | 19,354.1 | 14,296.5 | 25,053.8 |
-| High replacement | floor area (Mm²) | 87.0 | 86.6 | 65.5 | 110.0 |
-| High replacement | carbon 2026–2050 (kt) | 20,844.2 | 20,746.8 | 15,502.4 | 26,601.6 |
-| High replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 20,470.0 | 20,379.6 | 15,214.0 | 26,140.4 |
-| Very High replacement (trend continues) | floor area (Mm²) | 92.5 | 92.0 | 70.5 | 115.8 |
-| Very High replacement (trend continues) | carbon 2026–2050 (kt) | 21,884.1 | 21,789.4 | 16,480.9 | 27,733.4 |
-| Very High replacement (trend continues) | materials and construction (A1–A5) + soil carbon loss (kt) | 21,501.3 | 21,414.3 | 16,182.8 | 27,257.2 |
+| Low replacement | floor area (Mm²) | 100.3 | 99.7 | 82.5 | 119.4 |
+| Low replacement | carbon 2026–2050 (kt) | 24,435.6 | 24,320.4 | 19,923.5 | 29,434.3 |
+| Low replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 24,015.2 | 23,900.3 | 19,574.0 | 28,923.1 |
+| Reference | floor area (Mm²) | 104.4 | 103.9 | 86.3 | 123.9 |
+| Reference | carbon 2026–2050 (kt) | 25,302.7 | 25,175.4 | 20,725.5 | 30,377.0 |
+| Reference | materials and construction (A1–A5) + soil carbon loss (kt) | 24,861.3 | 24,743.1 | 20,360.6 | 29,833.6 |
+| High replacement | floor area (Mm²) | 110.0 | 109.5 | 91.4 | 130.1 |
+| High replacement | carbon 2026–2050 (kt) | 26,390.3 | 26,268.0 | 21,690.6 | 31,569.7 |
+| High replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 25,935.6 | 25,815.2 | 21,310.4 | 31,027.5 |
+| Very High replacement (trend continues) | floor area (Mm²) | 115.8 | 115.3 | 96.9 | 136.4 |
+| Very High replacement (trend continues) | carbon 2026–2050 (kt) | 27,489.5 | 27,375.5 | 22,698.5 | 32,801.4 |
+| Very High replacement (trend continues) | materials and construction (A1–A5) + soil carbon loss (kt) | 27,025.9 | 26,911.6 | 22,305.5 | 32,229.1 |
 
 ### Why the floor area is built (Reference, median demographics)
 
 | demand band | floor area (Mm²) | share | carbon (kt CO₂e) |
 |---|---|---|---|
-| Population growth | 43.18 | 53.0% | 10,400 |
-| Smaller households | 2.01 | 2.5% | 518 |
-| Extra space | 28.04 | 34.4% | 6,770 |
-| Vacancy | 4.17 | 5.1% | 1,007 |
-| Historical replacement: demolition (BRANZ rate) | 11.71 | 14.4% | 2,321 |
-| Historical replacement: net unconsented additions (calibrated residual) | -6.60 | -8.1% | -1,308 |
-| Recent replacement surge | 4.41 | 5.4% | 906 |
-| 2026 overbuild | 4.84 | 5.9% | 1,297 |
-| Overbuild absorbed | -5.01 | -6.1% | -1,269 |
-| Retirement villages (out of scope) | -5.21 | -6.4% | -1,240 |
-| **Total** | **81.53** | 100% | **19,761** |
+| Population growth | 43.18 | 41.5% | 10,400 |
+| Smaller households | 14.83 | 14.3% | 3,639 |
+| Extra space | 40.02 | 38.5% | 9,649 |
+| Vacancy | 5.58 | 5.4% | 1,349 |
+| Historical replacement: demolition (BRANZ rate) | 12.22 | 11.8% | 2,418 |
+| Historical replacement: net unconsented additions (calibrated residual) | -6.89 | -6.6% | -1,363 |
+| Recent replacement surge | 4.55 | 4.4% | 935 |
+| 2026 overbuild | 2.16 | 2.1% | 579 |
+| Overbuild absorbed | -5.08 | -4.9% | -1,287 |
+| Retirement villages (out of scope) | -6.64 | -6.4% | -1,580 |
+| **Total** | **103.94** | 100% | **25,176** |
 
 #### The 2026 overbuild rule
 
-Building in the pipeline years 2026, 2027 is observed, not modelled: completions = 0.945 x consents lagged 17 months (consents observed to 2026–07–01): 2026 32,016 dwellings, +12,702 above the requirement; 2027 38,658 dwellings, +12,451 above the requirement. From 2028 building stays above the requirement by gap_ref x rho^(t-2027), with gap_ref = building 2027 - requirement 2028 = +11,848 and rho = 0.43 (the estimated persistence of departures from the calibrated identity). The 2026 overbuild is STOCK-ADDING: the extra dwellings join the stock as additional vacant dwellings, soil carbon loss applies (new footprints) and removals stay on the path of the replacement variant. The surplus is absorbed by 2035: the remaining surplus U(t) = C(t) (1 - w(t)), C the cumulative excess and w the normalised logistic (w = 0 up to the last observed year, w >= 2035 = 1), and the absorbed part is built less (payback, capped at the year's building, any shortfall carried). Market excess +34,229 and absorbed -34,229 dwellings over 2026–2050 (net -0), on top of whichever replacement variant runs. Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction of the adjustment, the reversion of vacancy to its equilibrium rate, but not its speed: 2035 is the common RECC adoption window of the model and the speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). Implied stock vacancy (1 - households / (stock + cumulative 2026 overbuild)) peaks at 6.63% in 2028 and is 5.39% in 2050, against 5.08–8.09% at the censuses 1986–2023 (pre-2013 values on the earlier empty definition).
+Building in the pipeline years 2026, 2027 is observed, not modelled: completions = 0.945 x consents lagged 17 months (consents observed to 2026–07–01): 2026 32,016 dwellings, +6,225 above the requirement; 2027 38,658 dwellings, +5,664 above the requirement. From 2028 building stays above the requirement by gap_ref x rho^(t-2027), with gap_ref = building 2027 - requirement 2028 = +5,013 and rho = 0.43 (the estimated persistence of departures from the calibrated identity). The 2026 overbuild is STOCK-ADDING: the extra dwellings join the stock as additional vacant dwellings, soil carbon loss applies (new footprints) and removals stay on the path of the replacement variant. The surplus is absorbed by 2035: the remaining surplus U(t) = C(t) (1 - w(t)), C the cumulative excess and w the normalised logistic (w = 0 up to the last observed year, w >= 2035 = 1), and the absorbed part is built less (payback, capped at the year's building, any shortfall carried). Market excess +15,728 and absorbed -34,694 dwellings over 2026–2050 (net -18,966), on top of whichever replacement variant runs. Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction of the adjustment, the reversion of vacancy to its equilibrium rate, but not its speed: 2035 is the common RECC adoption window of the model and the speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). Implied stock vacancy (1 - households / (stock + cumulative 2026 overbuild)) peaks at 6.72% in 2028 and is 5.39% in 2050, against 5.08–8.09% at the censuses 1986–2023 (pre-2013 values on the earlier empty definition).
 
-The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). In 2050 implied stock vacancy is -0.0 percentage point above the 2023 rate; never absorbed, floor area would be +5.8%.
+The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). In 2050 implied stock vacancy is -0.0 percentage point above the 2023 rate; never absorbed, floor area would be +4.6%.
 
-Caveats: the absorption speed is not identified by the eight census vacancy observations; over 2018–2023 part of the excess building went to redevelopment and household formation instead. rho is estimated on the calibrated identity, not on market cycles. Sensitivities: booking as stock-neutral redevelopment (implied net removals then peak at 16,194 in 2026), absorption never, by 2030 or by 2045, and the gap measured against the 2026 requirement.
+Caveats: the absorption speed is not identified by the eight census vacancy observations; over 2018–2023 part of the excess building went to redevelopment and household formation instead. rho is estimated on the calibrated identity, not on market cycles. Sensitivities: booking as stock-neutral redevelopment (implied net removals then peak at 9,735 in 2026), absorption never, by 2030 or by 2045, and the gap measured against the 2026 requirement.
 
 ### By material (kt CO₂e, 2026–2050)
 
 | material | kt | share |
 |---|---|---|
-| OTHERS | 3,930 | 19.9% |
-| CONCRETE (incl. reinforced) | 3,894 | 19.7% |
-| TIMBER | 3,175 | 16.1% |
-| STEEL | 3,036 | 15.4% |
-| SOIL | 3,014 | 15.3% |
-| PLASTICS & PAINT | 1,834 | 9.3% |
-| PLASTERBOARD | 878 | 4.4% |
+| OTHERS | 4,993 | 19.8% |
+| CONCRETE (incl. reinforced) | 4,945 | 19.6% |
+| TIMBER | 4,024 | 16.0% |
+| SOIL | 3,931 | 15.6% |
+| STEEL | 3,842 | 15.3% |
+| PLASTICS & PAINT | 2,324 | 9.2% |
+| PLASTERBOARD | 1,117 | 4.4% |
 
 ### Carbon 2026–2050 and committed after 2050 (kt CO₂e)
 
 | term | kt |
 |---|---|
-| A1–A3 | 13,399 |
-| A4–A5 | 2,989 |
-| soil carbon loss | 3,014 |
-| **materials and construction (A1–A5) + soil carbon loss** | **19,403** |
-| maintenance (B2, B4), 2026–2050 | 359 |
-| **carbon 2026–2050** | **19,761** |
-| committed B2, B4 after 2050 (lower: 2050 factors held / upper: 2025 factors) | 3,091 / 3,810 |
-| committed C1–C4 (2025 factors) | 4,410 |
-| **committed after 2050 (later B2/B4 and C1–C4)** | **7,502–8,220** |
+| A1–A3 | 17,010 |
+| A4–A5 | 3,797 |
+| soil carbon loss | 3,931 |
+| **materials and construction (A1–A5) + soil carbon loss** | **24,738** |
+| maintenance (B2, B4), 2026–2050 | 438 |
+| **carbon 2026–2050** | **25,176** |
+| committed B2, B4 after 2050 (lower: 2050 factors held / upper: 2025 factors) | 3,962 / 4,882 |
+| committed C1–C4 (2025 factors) | 5,621 |
+| **committed after 2050 (later B2/B4 and C1–C4)** | **9,583–10,503** |
 
 Time-resolved accounting: materials and construction (A1–A5) and soil carbon loss in the construction year, maintenance (B2, B4) in the year it occurs. Emissions committed after 2050 are reported as a range and are not added to the 2026–2050 total. Reconciliation with whole life at construction (the static convention): outputs/reports/reconciliation.md.
 
 | term (Reference, kt CO₂e) | 2025 factors | decarbonised |
 |---|---|---|
-| materials and construction (A1–A5) + soil carbon loss, 2026–2050 | 22,197 | 19,403 |
-| maintenance (B2, B4), 2026–2050 | 402 | 359 |
-| committed after 2050: B2, B4 (upper) | 3,810 | 3,810 |
-| committed after 2050: C1–C4 | 4,410 | 4,410 |
-| sum | 30,819 | 27,981 |
-| whole life at construction, A4–A5 held (static convention) | 30,819 | 28,403 |
-| difference: A4–A5 of construction + maintenance (B2, B4) 2026–2050, decarbonised | 0 | -422 |
+| materials and construction (A1–A5) + soil carbon loss, 2026–2050 | 28,385 | 24,738 |
+| maintenance (B2, B4), 2026–2050 | 491 | 438 |
+| committed after 2050: B2, B4 (upper) | 4,882 | 4,882 |
+| committed after 2050: C1–C4 | 5,621 | 5,621 |
+| sum | 39,379 | 35,679 |
+| whole life at construction, A4–A5 held (static convention) | 39,379 | 36,225 |
+| difference: A4–A5 of construction + maintenance (B2, B4) 2026–2050, decarbonised | 0 | -546 |
 
 #### Soil method
 
@@ -124,27 +124,27 @@ Rolling-origin hindcast of dwellings built (actual households and vacancy fed in
 
 Under a consistent vacancy definition the Reference rule reproduces building from the 2006 and 2013 origins to 2023 within 4–11%; the residual miss (-11.4% from 2018) is the 2018–23 surge.
 
-Out-of-sample check (model run without 2026 data; completion lag 17 months): 2027 building observed in the pipeline 38,658 dwellings vs model 28,386; ratio 1.36.
-Decomposition of the 2026 gap in the Reference (consents lagged 17 months): +6,545 dwellings = population -6,157 + pipeline from 2025 +12,702 + 2026 consents above requirement +0.
+Out-of-sample check (model run without 2026 data; completion lag 17 months): 2027 building observed in the pipeline 38,658 dwellings vs model 31,874; ratio 1.21.
+Decomposition of the 2026 gap in the Reference (consents lagged 17 months): +16 dwellings = population -6,209 + pipeline from 2025 +6,225 + 2026 consents above requirement +0.
 
 ### Finding: 2026 building runs well above the model's requirement
 
-With the 17-month completion lag, 2026 completions come from consents issued before 2026: observed 2026 building (consents lagged) is 32,016 dwellings against a Reference requirement of 25,470 (gap +6,545)[^low], all of it pipeline; 2027 pipeline building is 1.36 times what the Reference run without 2026 data implies. Population does not explain it: population growth over the year to June 2026 fell short of the projection, which lowers the requirement by 6,157. The gap is building already in the pipeline from 2025 (+12,702) plus 2026 consents above requirement (+0). Over 2018–2023 most building above household formation went to redevelopment (net removals 16,770) rather than vacancy (+6,286).
+With the 17-month completion lag, 2026 completions come from consents issued before 2026: observed 2026 building (consents lagged) is 32,016 dwellings against a Reference requirement of 32,000 (gap +16)[^low], all of it pipeline; 2027 pipeline building is 1.21 times what the Reference run without 2026 data implies. Population does not explain it: population growth over the year to June 2026 fell short of the projection, which lowers the requirement by 6,209. The gap is building already in the pipeline from 2025 (+6,225) plus 2026 consents above requirement (+0). Over 2018–2023 most building above household formation went to redevelopment (net removals 16,770) rather than vacancy (+6,286).
 
-The model takes 2026 building from the observed consents and carries the excess forward as the 2026 overbuild (+12,702 dwellings in 2026, then gap_ref +11,848 fading at rho = 0.43; market excess +34,229 dwellings over 2026–2050, absorbed by 2035, net -0).
+The model takes 2026 building from the observed consents and carries the excess forward as the 2026 overbuild (+6,225 dwellings in 2026, then gap_ref +5,013 fading at rho = 0.43; market excess +15,728 dwellings over 2026–2050, absorbed by 2035, net -18,966).
 
-[^low]: In Low replacement (long-run rate) the requirement is 23,220 and the gap +8,795 = population -6,157 + pipeline +14,953 + 2026 consents above requirement +0.
+[^low]: In Low replacement (long-run rate) the requirement is 29,738 and the gap +2,278 = population -6,209 + pipeline +8,487 + 2026 consents above requirement +0.
 
 ### Reality checks (projection vs the 1991–2025 range; outputs/reports/reality_checks.md)
 
-- Low replacement: household size outside the range in 20 years from 2031 (max 0.0% above / 0.5% below).
-- Reference: net removals outside the range in 2 years from 2026 (max 4.1% above / 0.0% below).
-- Reference: household size outside the range in 20 years from 2031 (max 0.0% above / 0.5% below).
-- High replacement: net removals outside the range in 25 years from 2026 (max 35.3% above / 0.0% below).
-- High replacement: household size outside the range in 20 years from 2031 (max 0.0% above / 0.5% below).
-- Very High replacement (trend continues): net removals outside the range in 25 years from 2026 (max 142.1% above / 0.0% below).
-- Very High replacement (trend continues): household size outside the range in 20 years from 2031 (max 0.0% above / 0.5% below).
-- Handover 2027 -> 2028 (observed -> model, Reference): -18.2% in floor area, against annual changes of -39.8% to +27.8% in 1992–2025 (median +3.0%).
+- Low replacement: household size outside the range in 25 years from 2026 (max 0.0% above / 7.1% below).
+- Reference: net removals outside the range in 2 years from 2026 (max 4.7% above / 0.0% below).
+- Reference: household size outside the range in 25 years from 2026 (max 0.0% above / 7.1% below).
+- High replacement: net removals outside the range in 25 years from 2026 (max 45.1% above / 0.0% below).
+- High replacement: household size outside the range in 25 years from 2026 (max 0.0% above / 7.1% below).
+- Very High replacement (trend continues): net removals outside the range in 25 years from 2026 (max 159.6% above / 0.0% below).
+- Very High replacement (trend continues): household size outside the range in 25 years from 2026 (max 0.0% above / 7.1% below).
+- Handover 2027 -> 2028 (observed -> model, Reference): -8.2% in floor area, against annual changes of -39.8% to +27.8% in 1992–2025 (median +3.0%).
 
 Notes: household size below the historical minimum is expected from Stats NZ's ageing projection (the household-size shape keeps falling as the population ages).
 
@@ -152,58 +152,59 @@ Notes: household size below the historical minimum is expected from Stats NZ's a
 
 | group | case | floor area (Mm²) | change | carbon change |
 |---|---|---|---|---|
-| Household size | Household size: 2018–2023 census pace, linear from 2023 | 112.44 | +37.9% | +37.2% |
-| Population | Population: Stats NZ 95th percentile | 108.48 | +33.0% | +33.0% |
-| Population | Population: Stats NZ 5th percentile | 55.18 | -32.3% | -31.9% |
-| Replacement variant | Very High replacement: 1991–2023 census trend continues | 92.18 | +13.1% | +10.4% |
-| Household size | Household size: Stats NZ Low variant | 87.87 | +7.8% | +7.9% |
-| Household size | Household size: Stats NZ High variant | 76.32 | -6.4% | -6.6% |
-| Replacement variant | High replacement: 2018–2023 rate persists | 86.72 | +6.4% | +5.1% |
-| 2026 overbuild: absorption | Overbuild never absorbed (MODEL v2.1 Reference) | 86.25 | +5.8% | +6.2% |
-| 2026 overbuild: how it is booked | Booked as redevelopment, stock-neutral | 86.25 | +5.8% | +5.2% |
-| Replacement variant | Low replacement: long-run rate | 77.38 | -5.1% | -4.4% |
-| Completion lag | Completion lag 0 months (same calendar year, MODEL v3.3) | 85.17 | +4.5% | +3.6% |
-| Dwelling size | Dwelling size: 2016–2025 reference | 84.82 | +4.0% | +4.0% |
-| Stock | Completion rate 0.93 | 79.47 | -2.5% | -2.1% |
-| Stock | Completion rate 0.96 | 83.59 | +2.5% | +2.1% |
-| Replacement variant | Reference, replacement half-life 5 yr | 79.68 | -2.3% | -1.9% |
-| Completion lag | Completion lag 19 months | 80.23 | -1.6% | -1.4% |
-| Replacement variant | Reference, replacement half-life 15 yr | 82.68 | +1.4% | +1.1% |
-| Completion lag | Completion lag 15 months | 82.66 | +1.4% | +1.2% |
-| Completion lag | No 2026 data (consents to December 2025, projected 2026 population) | 82.58 | +1.3% | +1.3% |
-| Stock | Completion rate 0.95 (MODEL v3.3) | 82.22 | +0.8% | +0.7% |
-| Household size | Household size after 2043: taper from the PCHIP end slope | 80.88 | -0.8% | -0.7% |
-| Stock | Vacancy parameter: 1986–2023 census mean, one definition | 81.02 | -0.6% | -0.6% |
-| Household size | Household size after 2043: secant-slope taper | 81.27 | -0.3% | -0.3% |
-| Household size | Household size after 2043: flat (kink at 2043) | 81.53 | +0.0% | +0.0% |
-| Stock | No census under-construction correction | 81.53 | +0.0% | +0.0% |
-| 2026 overbuild: absorption | Overbuild absorbed by 2045 | 81.53 | +0.0% | +0.3% |
-| 2026 overbuild: absorption | Overbuild absorbed by 2030 | 81.53 | +0.0% | -0.2% |
-| 2026 overbuild: rule variant | Gap measured against the 2026 requirement | 81.53 | +0.0% | +0.0% |
-| Carbon factors | Soil on all floor area, incl. replacement | 81.53 | +0.0% | +1.9% |
-| Carbon factors | Frozen technology: 2025 factors held (no decarbonisation) | 81.53 | +0.0% | +14.4% |
-| Carbon factors | Decarbonisation: proxy-mapped items held at 2025 | 81.53 | +0.0% | +0.4% |
-| Carbon factors | Decarbonisation: NZ-made electricity-intensive items held at 2025 | 81.53 | +0.0% | +2.5% |
-| Carbon factors | A4–A5 held at 2025 (no generic 1%/yr) | 81.53 | +0.0% | +1.9% |
-| Carbon factors | A4–A5 on each item's own Horup path | 81.53 | +0.0% | -1.2% |
-| Carbon factors | Event timing: interval L / n | 81.53 | +0.0% | -0.8% |
-| Carbon factors | Materials: jackknife low (all typologies) | 81.53 | +0.0% | -3.5% |
-| Carbon factors | Materials: jackknife high (all typologies) | 81.53 | +0.0% | +3.2% |
-| Carbon factors | Materials: lowest single case study | 81.53 | +0.0% | -21.0% |
-| Carbon factors | Materials: highest single case study | 81.53 | +0.0% | +19.5% |
-| Carbon factors | Soil carbon: lowest soil order (Raw) | 81.53 | +0.0% | -8.3% |
-| Carbon factors | Soil carbon: highest soil order (Organic) | 81.53 | +0.0% | +35.0% |
+| Household size | Living arrangements: propensities change (Stats NZ Medium B) | 85.46 | -17.8% | -18.1% |
+| Population | Population: Stats NZ 95th percentile | 121.35 | +16.8% | +16.5% |
+| Population | Population: Stats NZ 5th percentile | 88.49 | -14.9% | -14.9% |
+| Replacement variant | Very High replacement: 1991–2023 census trend continues | 115.17 | +10.8% | +8.6% |
+| Household size | Household size: 2018–2023 census pace, linear from 2023 | 109.65 | +5.5% | +4.8% |
+| Replacement variant | High replacement: 2018–2023 rate persists | 109.40 | +5.3% | +4.2% |
+| Completion lag | Completion lag 0 months (same calendar year, MODEL v3.3) | 108.81 | +4.7% | +4.2% |
+| 2026 overbuild: absorption | Overbuild never absorbed (MODEL v2.1 Reference) | 108.71 | +4.6% | +4.9% |
+| Dwelling size | Dwelling size: 2016–2025 reference | 108.25 | +4.1% | +4.1% |
+| Replacement variant | Low replacement: long-run rate | 99.65 | -4.1% | -3.5% |
+| Starting surplus | No starting surplus | 106.55 | +2.5% | +2.7% |
+| 2026 overbuild: how it is booked | Booked as redevelopment, stock-neutral | 106.10 | +2.1% | +1.9% |
+| Stock | Completion rate 0.93 | 101.78 | -2.1% | -1.7% |
+| Stock | Completion rate 0.96 | 106.09 | +2.1% | +1.7% |
+| Replacement variant | Reference, replacement half-life 5 yr | 102.00 | -1.9% | -1.5% |
+| Completion lag | Completion lag 19 months | 102.16 | -1.7% | -1.6% |
+| Starting surplus | Starting surplus minus 2 SD | 105.61 | +1.6% | +1.7% |
+| Completion lag | Completion lag 15 months | 105.57 | +1.6% | +1.5% |
+| Household size | Household size after 2048: secant-slope taper | 105.14 | +1.2% | +1.0% |
+| Replacement variant | Reference, replacement half-life 15 yr | 105.14 | +1.2% | +0.9% |
+| Completion lag | No 2026 data (consents to December 2025, projected 2026 population) | 105.05 | +1.1% | +1.1% |
+| Household size | Household size after 2048: taper from the PCHIP end slope | 104.84 | +0.9% | +0.8% |
+| Stock | Completion rate 0.95 (MODEL v3.3) | 104.65 | +0.7% | +0.6% |
+| Stock | Vacancy parameter: 1986–2023 census mean, one definition | 103.27 | -0.6% | -0.6% |
+| Household size | Household size after 2048: flat (kink at 2048) | 103.93 | -0.0% | -0.0% |
+| 2026 overbuild: absorption | Overbuild absorbed by 2045 | 103.94 | -0.0% | +0.3% |
+| 2026 overbuild: absorption | Overbuild absorbed by 2030 | 103.94 | +0.0% | -0.2% |
+| Stock | No census under-construction correction | 103.94 | +0.0% | +0.0% |
+| 2026 overbuild: rule variant | Gap measured against the 2026 requirement | 103.94 | +0.0% | +0.0% |
+| Carbon factors | Soil on all floor area, incl. replacement | 103.94 | +0.0% | +1.5% |
+| Carbon factors | Frozen technology: 2025 factors held (no decarbonisation) | 103.94 | +0.0% | +14.7% |
+| Carbon factors | Decarbonisation: proxy-mapped items held at 2025 | 103.94 | +0.0% | +0.4% |
+| Carbon factors | Decarbonisation: NZ-made electricity-intensive items held at 2025 | 103.94 | +0.0% | +2.5% |
+| Carbon factors | A4–A5 held at 2025 (no generic 1%/yr) | 103.94 | +0.0% | +2.0% |
+| Carbon factors | A4–A5 on each item's own Horup path | 103.94 | +0.0% | -1.2% |
+| Carbon factors | Event timing: interval L / n | 103.94 | +0.0% | -0.7% |
+| Carbon factors | Materials: jackknife low (all typologies) | 103.94 | +0.0% | -3.4% |
+| Carbon factors | Materials: jackknife high (all typologies) | 103.94 | +0.0% | +3.2% |
+| Carbon factors | Materials: lowest single case study | 103.94 | +0.0% | -21.0% |
+| Carbon factors | Materials: highest single case study | 103.94 | +0.0% | +19.4% |
+| Carbon factors | Soil carbon: lowest soil order (Raw) | 103.94 | +0.0% | -8.5% |
+| Carbon factors | Soil carbon: highest soil order (Organic) | 103.94 | +0.0% | +35.9% |
 
 ### Planetary-boundary layer (AESA): climate change
 
-Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the sector by acquired rights (AR; Horup et al. 2025) and ability to pay (AtP; Hjalsted et al. 2021), the boundary is 172.4 kt CO₂e (AR) and 43.35 kt (AtP) in 2026, and 182.5 / 45.87 kt in 2050 (AtP = 25.1% of AR in every year). Over 2026–2050 the Reference exceeds them 4.46-fold (AR; Monte Carlo p5-p95 3.45–5.49) and 17.8-fold (AtP; 13.6–22.0). The two principles are a range and are not averaged. Methods, constants, sources and limitations: the AESA section of outputs/reports/METHODS_DRAFT.md; settings: outputs/reports/ASSUMPTIONS.md. The emissions committed after 2050 (later B2/B4 and C1–C4) by the 2026–2050 cohorts (7,502–8,220 kt) equal 41–45 years of the 2050 AR boundary; they fall after 2050 and are not part of the cumulative LoE 2026–2050.
+Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the sector by acquired rights (AR; Horup et al. 2025) and ability to pay (AtP; Hjalsted et al. 2021), the boundary is 172.4 kt CO₂e (AR) and 43.35 kt (AtP) in 2026, and 182.5 / 45.87 kt in 2050 (AtP = 25.1% of AR in every year). Over 2026–2050 the Reference exceeds them 5.69-fold (AR; Monte Carlo p5-p95 4.88–6.57) and 22.6-fold (AtP; 19.2–26.4). The two principles are a range and are not averaged. Methods, constants, sources and limitations: the AESA section of outputs/reports/METHODS_DRAFT.md; settings: outputs/reports/ASSUMPTIONS.md. The emissions committed after 2050 (later B2/B4 and C1–C4) by the 2026–2050 cohorts (9,583–10,503 kt) equal 53–58 years of the 2050 AR boundary; they fall after 2050 and are not part of the cumulative LoE 2026–2050.
 
 ### Assumptions
 
 | basis | assumption |
 |---|---|
 | DATA | Population: Stats NZ 2024-base projection percentiles; observed 2026 growth (DPE ERP) |
-| DATA | Household-size shape: Stats NZ 2018-base household projections, rebased on observed households |
+| DATA | Household-size shape: Stats NZ 2023-base family and household projections (Medium A), rebased on observed households |
 | DATA | Long-run net replacement: census private-dwelling counts and consents, 1991–2023 |
 | DATA | 2026–2027 building: 0.945 x consents lagged 17 months (dwellings and floor area; the observed typology mix weights the case-study factors inside the model) |
 | DATA | Typology mix (internal to the model): the 2022–2026 consented average |
@@ -215,7 +216,8 @@ Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the 
 | JUDGEMENT | Net replacement: in the Reference it fades from the 2018–2023 rate to the long-run rate with half-life 10 yr; Low replacement and High replacement bound it |
 | JUDGEMENT | 2026 overbuild: stock-adding (vacant dwellings), fading at rho, absorbed by 2035 (logistic; theory fixes the direction, not the speed; never / 2030 / 2045 as sensitivities) |
 | DECISION | Typology mix held in every variant (Low replacement, Reference, High replacement); internal to the model (it weights the case-study factors) and not reported |
-| JUDGEMENT | Household size: interpolation through all published Stats NZ values (2018–2043), held constant beyond 2043 with zero slope imposed at 2043 |
+| JUDGEMENT | Household size: interpolation through all published Stats NZ values (2023–2048), held constant beyond 2048 with zero slope imposed at 2048 |
+| RULE | Starting surplus: the 2024–2025 building beyond the stock identity, if above the 1992–2023 census-interval mean + 2 SD, carried as vacant dwellings at the start of 2026 and absorbed with the overbuild by 2035 |
 | JUDGEMENT | Completion lag: consents become completions 17 months later (monthly), at a completion rate of 0.945 |
 
 ### Assumption register (values read from projection.py)
@@ -230,7 +232,8 @@ Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the 
 | 2026 overbuild rule | market_excess: building observed in the pipeline years (consents lagged 17 months) | DATA (observed consents); method stated |
 | Overbuild after the observed years | gap vs the next year's requirement, fading at rho; booked as surplus, absorbed by 2035 (normalised logistic from the last observed year) | THEORY: reversion to the equilibrium vacancy (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, not the speed; 2035 the common RECC window; never / by 2030 / by 2045, redevelopment booking and gap-vs-2026 as sensitivities |
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
-| Household-size shape | Stats NZ Medium, anchored 2023, tail hermite_clamped | DATA (2018-base projections; N4 open) |
+| Household-size shape | Stats NZ Medium A, anchored 2023, tail hermite_clamped; the 5th / 95th population paths take Low / High A | DATA: Stats NZ 2023-base national family and household projections (POPPR_FHH_008, POPPR_FHH_010); propensity A (living arrangements held at 2023) adopted, B as a sensitivity; N4 resolved |
+| Starting surplus (F1) | 18,966 vacant dwellings at the start of 2026 (carry): the 2024–2025 stock-identity residual 9,020 dwellings a year against the 1992–2023 census-interval mean -463 and SD 3,038 (time-weighted), (residual - mean) x 2 years, absorbed with the overbuild by 2035 | RULE fixed in advance of the data (applied, not tuned): carried if the 2024–2025 residual exceeds the 1992–2023 census-interval mean + 2 SD; none / minus 2 SD as sensitivities |
 | Vacancy-rate parameter | The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050) | DATA: census 2023 (2018 empty count unrated, F1) |
 | Typology mix | shares held at the 2022–2026 consented average in every variant (2026: the observed consented mix) | DECISION (author): internal to the model (it weights the case-study factors) and not reported; a change of mix is a pathway question for later work |
 | Dwelling size reference | 2023–2025 | DATA: consents |
@@ -268,9 +271,10 @@ Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the 
 ### Open limitations and data needs
 
 - No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so the implied replacement rates cannot be tested against a count.
-- N4 (open): the Low/High household-size variants (deterministic) are paired with stochastic population percentiles through one draw z, and the total vs private-household population question is unresolved until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ's 2023-base release (late 2026) to be adopted in a later version.
+- Household size is the Stats NZ 2023-base ratio of people in households to households, applied as a shape rebased on the observed 2023 household size of the total population: the share of the population outside private dwellings is held at its 2023 level.
+- The living-arrangement propensities are held at 2023 (Stats NZ projection A); their change modelled on the 2001–2023 censuses (B) is a one-at-a-time row, not sampled in the Monte Carlo.
 - Timber C1–C4 includes landfill methane (biogenic CO2 excluded), with decay as in the underlying EPD data: the 247 sawn-timber lines of the LCAQuick results carry C1–C4 of 1.1–4.5 times their A1–A3 (median 4.3), each with a module D credit for landfill-gas recovery. Timber is 31% of the case studies' C1–C4. No timber line carries a replacement or repaint event, so it affects the committed emissions after 2050, not the 2026–2050 total.
-- Households 2019–2023: the Stats NZ household estimates between the 2018 and 2023 censuses are consent-derived increments, rescaled by one factor (k = 0.824) so that June 2023 matches the 2023 census, as Stats NZ benchmarks each base; the consent-driven shape is kept. Stats NZ's 2023-rebased estimates will replace them when published.
+- Households 2019–2023: the Stats NZ household estimates between the 2018 and 2023 censuses are consent-derived increments, rescaled by one factor (k = 0.824) so that June 2023 matches the 2023 census, as Stats NZ benchmarks each base; the consent-driven shape is kept. The household estimates in hand (Dwelling and household estimates, March 2026 quarter) still have their last base at 2018; Stats NZ's 2023-rebased household estimates will replace the rescaling when published.
 - With the typology mix held in every variant (internal to the model: it weights the case-study factors), neither the variants nor the Monte Carlo carry typology-mix uncertainty; a change of mix is a pathway question for later work, not a baseline uncertainty.
 - The soil factor was derived for Auckland's future urban zones and is applied nationally.
 - The case-study carbon factor for apartments rests on one independent case study (A_1 and A_2 are one design at two scales).
@@ -279,7 +283,7 @@ Against the 2 °C carrying capacity (Bjørn & Hauschild 2015), allocated to the 
 - The 2018 census empty-dwelling count has no quality rating (DataInfo+); the vacancy terms rely on it.
 - The 2026 overbuild fades at the persistence estimated on the calibrated stock identity (rho), not on market cycles (an assumption).
 - Retirement-village floor area is reported but out of carbon scope.
-- The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). The 2026 overbuild (market excess ≈34,200 dwellings over 2026–2050, of which ≈30,300 in 2026–2028) is absorbed by 2035 along the normalised logistic of the levers (≈34,200 dwellings built less; implied vacancy peaks at 6.63% in 2028). Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, reversion of vacancy to its equilibrium rate, not the speed; 2035 is the common RECC adoption window of the model and the speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). The persistence rho = 0.43 describes how the flow deviation fades, not the payback of the stock.
+- The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). The 2026 overbuild (market excess ≈15,700 dwellings over 2026–2050, of which ≈14,100 in 2026–2028) is absorbed by 2035 along the normalised logistic of the levers (≈34,700 dwellings built less; implied vacancy peaks at 6.72% in 2028). Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, reversion of vacancy to its equilibrium rate, not the speed; 2035 is the common RECC adoption window of the model and the speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). The persistence rho = 0.43 describes how the flow deviation fades, not the payback of the stock.
 - Decarbonisation paths are relative changes for European and global market processes modelled with premise on ecoinvent 3.9.1 (Horup et al. 2025); they are applied as relative changes to New Zealand case-study factors. This assumes NZ material supply decarbonises at the same relative rate as those markets, which is not tested.
 - Items without a counterpart in Horup et al. follow a labelled proxy path (polymers, paint and SIP at EPS, the smallest reduction in the set; gypsum plasterboard at clay brick) or are held at 2025 (the lift); the proxies are a judgement, bracketed by holding them at 2025 (sensitivity).
 - C1–C4 (end of life) is held at 2025 factors (no source for end-of-life decarbonisation); future end-of-life technology would lower the committed emissions (conservative).
@@ -358,7 +362,7 @@ s_sec uses the consented value of new residential building over national final c
 | 2024 | 1,529.5 | 0.913 | 0.173 | 2018–2023 carried |
 | 2025 | 1,169.1 | 0.887 | 0.173 | 2018–2023 carried |
 
-Mean 2016–2025: 1,415.2 kt/yr, of which maintenance (B2, B4) 0.23% (events within 2016–2025 of the buildings built in it); wider maintenance scope (B2, B4 events of all cohorts built since 1992): 1,559.4 kt/yr. With soil on all floor area: 1,433.2 kt/yr. Note: with the long-run net replacement rate for 2024–25: 1,417.8 kt/yr; 2021–2025 (5 yr): 1,537.8 kt/yr.
+Mean 2016–2025: 1,415.2 kt/yr, of which maintenance (B2, B4) 0.23% (events within 2016–2025 of the buildings built in it); wider maintenance scope (B2, B4 events of all cohorts built since 1992): 1,559.4 kt/yr. With soil on all floor area: 1,433.2 kt/yr. Note: with the long-run net replacement rate for 2024–25: 1,417.7 kt/yr; 2021–2025 (5 yr): 1,537.8 kt/yr.
 
 ### α validation (Hjalsted et al. 2021 SI: α = 0.243 for 2017; world GDP per capita 1.07E+04 USD)
 
@@ -397,6 +401,12 @@ A shared uncertain parameter is sampled once and used wherever it applies (Groen
 
 | row (recompute) | reason | case | Ī_sec,base (kt/yr) | vs the Reference |
 |---|---|---|---|---|
+| Completion rate 0.93 / 0.96 | the completion rate turns the 2016–2025 consents into the built floor area behind the base, as in the Monte Carlo (F5) | low | 1,395.7 | -1.37% |
+| Completion rate 0.93 / 0.96 | the completion rate turns the 2016–2025 consents into the built floor area behind the base, as in the Monte Carlo (F5) | high | 1,434.4 | +1.36% |
+| Completion rate 0.95 (MODEL v3.3) | as the completion-rate row | single | 1,421.6 | +0.45% |
+| Completion lag 15 / 19 months | the completion lag times the 2016–2025 completions behind the base (F5) | low | 1,413.3 | -0.13% |
+| Completion lag 15 / 19 months | the completion lag times the 2016–2025 completions behind the base (F5) | high | 1,419.0 | +0.27% |
+| Completion lag 0 months (MODEL v3.3) | as the completion-lag row | single | 1,416.6 | +0.10% |
 | Single case study: lowest / highest | the level of the present-day carbon factors | low | 1,092.9 | -22.77% |
 | Single case study: lowest / highest | the level of the present-day carbon factors | high | 1,696.9 | +19.91% |
 | Case studies: jackknife low / high | the level of the present-day carbon factors | low | 1,373.0 | -2.98% |
@@ -404,23 +414,23 @@ A shared uncertain parameter is sampled once and used wherever it applies (Groen
 | Soil carbon loss on all floor area, including replacement | an accounting convention that applies to past and future building alike | single | 1,433.2 | +1.28% |
 | Event timing L / n | an accounting convention that applies to past and future cohorts alike | single | 1,413.7 | -0.10% |
 
-Also recomputed (by their definition, in aesa/sensitivity.csv): iii_base_window, iii_base_window_20, iii_base_window_full, xi_event_timing, xii_whole_life, xiii_wider_scope, note_soil_long_run. Reference base (Ī_sec,base unchanged; the population rows move both budgets with the population path): Population: Stats NZ 5th / 95th percentile (the base history is observed; both budgets move with the population path (Horup Eq. 1)); Household size: Stats NZ High / Low variant (future household size only); Household size: 2018–2023 census pace (future household size only); Household size after 2043: flat (future household size only); Household size after 2043: secant-slope taper (future household size only); Household size after 2043: taper from the PCHIP end slope (future household size only); Completion rate 0.93 / 0.96 (the base keeps the observed floor area of the Reference, as in the Monte Carlo, which samples the completion rate with a fixed base); Completion rate 0.95 (MODEL v3.3) (as the completion-rate row); Completion lag 15 / 19 months (the base keeps the observed floor area of the Reference, as in the Monte Carlo); Completion lag 0 months (MODEL v3.3) (as the completion-lag row); No 2026 data (the 2026 data only); No census under-construction correction (calibration of future net replacement only); Dwelling-size window 2016–2025 (future dwelling size only); 2026 overbuild absorbed by 2030 / by 2045 (future building only); 2026 overbuild never absorbed (MODEL v2.1 Reference) (future building only); Vacancy parameter: 1986–2023 census mean (one definition) (future vacancy only); 2026 overbuild booked as stock-neutral redevelopment (future building only); 2026 overbuild gap vs the 2026 requirement (future building only); Low / High replacement (future net replacement only; the base uses the census rates); Very High replacement (trend continues) (future net replacement only); Replacement half-life 5 / 15 yr (future net replacement only); Frozen technology (2025 factors held) (future technology only (the base is at 2025 factors)); Decarbonisation: proxy-mapped items held (future technology only); Decarbonisation: NZ-made electricity-intensive items held (future technology only); Soil order: lowest (Raw) / highest (Organic) (where future building happens (siting)); A4–A5 on each item's own path / held at 2025 (future technology only); i_source_pair (the carrying capacity only); i_glob_ef31 (the global impact only); ii_gdp_measure (ability to pay only); iv_pop_statsnz (the population source of the boundaries only); iv_pop_wpp (the population source of the boundaries only); v_ssec (ability to pay only); vi_frozen (future technology only); vii_proxies_held (future technology only); viii_nz_elec_held (future technology only); ix_a45_held (future technology only); x_a45_item (future technology only); xiv_alpha_1 (ability to pay only); Ambition of one lever (a lever changes future building only); Ambition of all (the levers change future building only); Roll-out timing (future roll-out only); Theoretical limit (the limits change future building only).
+Also recomputed (by their definition, in aesa/sensitivity.csv): iii_base_window, iii_base_window_20, iii_base_window_full, xi_event_timing, xii_whole_life, xiii_wider_scope, note_soil_long_run. Reference base (Ī_sec,base unchanged; the population rows move both budgets with the population path): Population: Stats NZ 5th / 95th percentile (the base history is observed; both budgets move with the population path (Horup Eq. 1)); Living arrangements: propensities change (Stats NZ B) (future household size only); Household size: 2018–2023 census pace (future household size only); Household size after 2048: flat (future household size only); Household size after 2048: secant-slope taper (future household size only); Household size after 2048: taper from the PCHIP end slope (future household size only); No 2026 data (the 2026 data only); No census under-construction correction (calibration of future net replacement only); Dwelling-size window 2016–2025 (future dwelling size only); 2026 overbuild absorbed by 2030 / by 2045 (future building only); No starting surplus (future building only (the surplus is absorbed from 2026)); Starting surplus minus 2 SD (future building only (the surplus is absorbed from 2026)); 2026 overbuild never absorbed (MODEL v2.1 Reference) (future building only); Vacancy parameter: 1986–2023 census mean (one definition) (future vacancy only); 2026 overbuild booked as stock-neutral redevelopment (future building only); 2026 overbuild gap vs the 2026 requirement (future building only); Low / High replacement (future net replacement only; the base uses the census rates); Very High replacement (trend continues) (future net replacement only); Replacement half-life 5 / 15 yr (future net replacement only); Frozen technology (2025 factors held) (future technology only (the base is at 2025 factors)); Decarbonisation: proxy-mapped items held (future technology only); Decarbonisation: NZ-made electricity-intensive items held (future technology only); Soil order: lowest (Raw) / highest (Organic) (where future building happens (siting)); A4–A5 on each item's own path / held at 2025 (future technology only); i_source_pair (the carrying capacity only); i_glob_ef31 (the global impact only); ii_gdp_measure (ability to pay only); iv_pop_statsnz (the population source of the boundaries only); iv_pop_wpp (the population source of the boundaries only); v_ssec (ability to pay only); vi_frozen (future technology only); vii_proxies_held (future technology only); viii_nz_elec_held (future technology only); ix_a45_held (future technology only); x_a45_item (future technology only); xiv_alpha_1 (ability to pay only); Ambition of one lever (a lever changes future building only); Ambition of all (the levers change future building only); Roll-out timing (future roll-out only); Theoretical limit (the limits change future building only).
 
 ### Results
 
-The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 172.4 kt CO₂e in 2026 and 182.5 kt in 2050; by ability to pay 43.35 and 45.87 kt (25.1% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026–2050 the Reference emits 19,761 kt against cumulative boundaries of 4,427 kt (AR) and 1,113 kt (AtP): cumulative LoE 4.46 (AR; Monte Carlo p5-p95 3.45–5.49) and 17.8 (AtP; 13.6–22.0).
+The 2 °C carrying capacity (Bjørn & Hauschild 2015) allocated by acquired rights gives 172.4 kt CO₂e in 2026 and 182.5 kt in 2050; by ability to pay 43.35 and 45.87 kt (25.1% of AR in every year). Both rise: New Zealand's share of world population grows between 2026 and 2050. Over 2026–2050 the Reference emits 25,176 kt against cumulative boundaries of 4,427 kt (AR) and 1,113 kt (AtP): cumulative LoE 5.69 (AR; Monte Carlo p5-p95 4.88–6.57) and 22.6 (AtP; 19.2–26.4).
 
 | variant | cumulative LoE AR | cumulative LoE AtP |
 |---|---|---|
-| Reference | 4.46 | 17.8 |
-| Low replacement | 4.27 | 17.0 |
-| High replacement | 4.69 | 18.7 |
-| Very High replacement (trend continues) | 4.93 | 19.6 |
-| Reference, replacement half-life 5 yr | 4.38 | 17.4 |
-| Reference, replacement half-life 15 yr | 4.52 | 18.0 |
-| Low replacement, no census under-construction correction | 4.27 | 17.0 |
-| Reference, no census under-construction correction | 4.46 | 17.8 |
-| High replacement, no census under-construction correction | 4.69 | 18.7 |
+| Reference | 5.69 | 22.6 |
+| Low replacement | 5.49 | 21.8 |
+| High replacement | 5.93 | 23.6 |
+| Very High replacement (trend continues) | 6.17 | 24.6 |
+| Reference, replacement half-life 5 yr | 5.60 | 22.3 |
+| Reference, replacement half-life 15 yr | 5.74 | 22.8 |
+| Low replacement, no census under-construction correction | 5.49 | 21.8 |
+| Reference, no census under-construction correction | 5.69 | 22.6 |
+| High replacement, no census under-construction correction | 5.93 | 23.6 |
 
 #### Committed after 2050 (later B2/B4 and C1–C4; deterministic)
 
@@ -428,35 +438,35 @@ Lower bound: maintenance events (B2, B4) after 2050 with the 2050 factors held; 
 
 | variant | maintenance (B2, B4) 2026–2050 (kt) | share of carbon 2026–2050 | committed after 2050 (kt) | years of B_AR(2050) |
 |---|---|---|---|---|
-| Reference | 359 | 1.8% | 7,502–8,220 | 41.1–45.1 |
-| Low replacement | 338 | 1.8% | 7,122–7,805 | 39.0–42.8 |
-| High replacement | 371 | 1.8% | 7,990–8,756 | 43.8–48.0 |
-| Very High replacement (trend continues) | 380 | 1.7% | 8,508–9,324 | 46.6–51.1 |
+| Reference | 438 | 1.7% | 9,583–10,503 | 52.5–57.6 |
+| Low replacement | 416 | 1.7% | 9,191–10,074 | 50.4–55.2 |
+| High replacement | 451 | 1.7% | 10,097–11,067 | 55.3–60.7 |
+| Very High replacement (trend continues) | 460 | 1.7% | 10,644–11,668 | 58.3–64.0 |
 
 #### Deterministic sensitivities (the Reference)
 
 | case | cumulative LoE AR | vs the Reference | cumulative LoE AtP | vs the Reference |
 |---|---|---|---|---|
-| Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016–2025, model population, mean of ratios | 4.46 | +0.0% | 17.8 | +0.0% |
-| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 8.42 | +88.6% | 33.5 | +88.6% |
-| (i) Global impact: EF 3.1 normalisation factor (Andreasi Bassi et al. 2023) | 4.17 | -6.7% | 17.8 | +0.0% |
-| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 4.46 | +0.0% | 54.6 | +207.7% |
-| (iii) AR base window 2021–2025 (5 yr, as Horup) | 4.11 | -8.0% | 17.8 | +0.0% |
-| (iii) AR base window 2006–2025 (20 yr) | 5.33 | +19.4% | 17.8 | +0.0% |
-| (iii) AR base window 1992–2025 (full consistent history) | 5.57 | +24.8% | 17.8 | +0.0% |
-| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 4.45 | -0.2% | 17.7 | -0.6% |
-| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 4.74 | +6.2% | 19.1 | +7.7% |
-| (v) s_sec with FCE share as ratio of sums | 4.46 | +0.0% | 17.8 | +0.2% |
-| (vi) Frozen technology: 2025 factors held (A1–A3 and A4–A5 not decarbonised) | 5.11 | +14.4% | 20.3 | +14.4% |
-| (vii) Proxy-mapped items held at 2025 (A1–A3) | 4.48 | +0.4% | 17.8 | +0.4% |
-| (viii) NZ-made, electricity-intensive items held at 2025 (A1–A3) | 4.57 | +2.5% | 18.2 | +2.5% |
-| (ix) A4–A5 held at 2025 (no generic 1%/yr) | 4.55 | +1.9% | 18.1 | +1.9% |
-| (x) A4–A5 on each item's own Horup S4 path | 4.41 | -1.2% | 17.5 | -1.2% |
-| (xi) Event timing: interval L / n (instead of L / (n + 1); base on the same rule) | 4.43 | -0.7% | 17.6 | -0.8% |
-| (xii) Accounting: whole life at construction (base on the same rule) | 4.53 | +1.5% | 25.2 | +41.8% |
-| (xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992 | 5.03 | +12.6% | 22.0 | +24.1% |
-| (xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables | 4.46 | +0.0% | 7.5 | -57.8% |
-| Note (not drawn in D18 or H11): history 2024–25 at the long-run net replacement rate | 4.46 | -0.2% | 17.8 | +0.0% |
+| Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016–2025, model population, mean of ratios | 5.69 | +0.0% | 22.6 | +0.0% |
+| (i) SOS/I_glob pair C: 1 W/m² planetary boundary (Bjørn & Hauschild 2015) | 10.73 | +88.6% | 42.7 | +88.6% |
+| (i) Global impact: EF 3.1 normalisation factor (Andreasi Bassi et al. 2023) | 5.31 | -6.7% | 22.6 | +0.0% |
+| (ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024 | 5.69 | +0.0% | 69.6 | +207.7% |
+| (iii) AR base window 2021–2025 (5 yr, as Horup) | 5.23 | -8.0% | 22.6 | +0.0% |
+| (iii) AR base window 2006–2025 (20 yr) | 6.79 | +19.4% | 22.6 | +0.0% |
+| (iii) AR base window 1992–2025 (full consistent history) | 7.10 | +24.8% | 22.6 | +0.0% |
+| (iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast) | 5.67 | -0.2% | 22.5 | -0.6% |
+| (iv) NZ population: WPP 2024 probabilistic median, New Zealand | 6.04 | +6.2% | 24.4 | +7.7% |
+| (v) s_sec with FCE share as ratio of sums | 5.69 | +0.0% | 22.7 | +0.2% |
+| (vi) Frozen technology: 2025 factors held (A1–A3 and A4–A5 not decarbonised) | 6.52 | +14.7% | 25.9 | +14.7% |
+| (vii) Proxy-mapped items held at 2025 (A1–A3) | 5.71 | +0.4% | 22.7 | +0.4% |
+| (viii) NZ-made, electricity-intensive items held at 2025 (A1–A3) | 5.83 | +2.5% | 23.2 | +2.5% |
+| (ix) A4–A5 held at 2025 (no generic 1%/yr) | 5.80 | +2.0% | 23.1 | +2.0% |
+| (x) A4–A5 on each item's own Horup S4 path | 5.62 | -1.2% | 22.4 | -1.2% |
+| (xi) Event timing: interval L / n (instead of L / (n + 1); base on the same rule) | 5.65 | -0.6% | 22.5 | -0.7% |
+| (xii) Accounting: whole life at construction (base on the same rule) | 5.78 | +1.6% | 32.1 | +41.9% |
+| (xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992 | 6.14 | +7.9% | 26.9 | +18.9% |
+| (xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables | 5.69 | +0.0% | 9.5 | -57.8% |
+| Note (not drawn in D18 or H11): history 2024–25 at the long-run net replacement rate | 5.68 | -0.2% | 22.6 | +0.0% |
 
 #### Monte Carlo with a 2006–2025 AR base (20 years; not adopted)
 
@@ -464,10 +474,10 @@ Lower bound: maintenance events (B2, B4) after 2050 with the 2050 factors held; 
 
 | variant | cumulative LoE AR p5 / p50 / p95 (20-yr base) | adopted base |
 |---|---|---|
-| Reference | 4.12 / 5.32 / 6.57 | 3.45 / 4.45 / 5.49 |
-| Low replacement | 3.89 / 5.09 / 6.32 | 3.27 / 4.26 / 5.30 |
-| High replacement | 4.38 / 5.59 / 6.84 | 3.68 / 4.69 / 5.73 |
-| Very High replacement (trend continues) | 4.65 / 5.87 / 7.14 | 3.90 / 4.92 / 5.97 |
+| Reference | 5.82 / 6.80 / 7.85 | 4.88 / 5.70 / 6.57 |
+| Low replacement | 5.61 / 6.56 / 7.61 | 4.71 / 5.49 / 6.36 |
+| High replacement | 6.11 / 7.09 / 8.16 | 5.12 / 5.94 / 6.82 |
+| Very High replacement (trend continues) | 6.40 / 7.39 / 8.46 | 5.36 / 6.19 / 7.09 |
 
 ### Assumption register
 
@@ -502,7 +512,7 @@ Lower bound: maintenance events (B2, B4) after 2050 with the 2050 factors held; 
 - I_glob 5.58E+13 equals the EF 3.0 global factor (8.10E+03 kg CO₂e per person, 2010; Andreasi Bassi et al. 2023, Table 10), whose climate-change total sums the fossil, biogenic and land-use-change sub-indicators; the EF 3.1 value is a sensitivity (7.55E+03 kg CO₂e per person x 6,895,889,018 persons = 5.206E+13, 6.7% lower, mainly through the lower characterisation factor of methane in EF 3.1; acquired rights only).
 - Ability-to-pay sector share: s_sec uses the consented value of new residential building over national final consumption expenditure, following the FCE upscaling of Hjalsted et al. (2021) as a proxy of the priority households give to housing. In the national accounts residential construction is gross fixed capital formation, not final consumption; treating it as consumed follows the endogenisation of capital in consumption-based accounting (Södersten, Wood & Hertwich 2018).
 - Ability to pay: Hjalsted et al. (2021) state GDP as "USD/cap (2017)", World Bank (2019), without naming the series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in outputs/data/aesa/results.json).
-- Monte Carlo: I_sec,base is recomputed in every draw with that draw's case-study carbon factors (2025 technology), so the factor uncertainty is treated alike in the base and the projection; it does not co-vary with the draw's completion rate or dwelling size (historical floor area is observed).
+- Monte Carlo: I_sec,base is recomputed in every draw with that draw's case-study carbon factors (2025 technology) and on the 2016–2025 built floor area at that draw's completion rate (consents x completion rate; the census-measured net replacement behind the soil convention recomputed at that rate), so the factor and completion uncertainty are treated alike in the base and the projection (shared-parameter rule); the completion-rate and completion-lag one-at-a-time rows recompute the base from their own runs. It does not co-vary with the draw's dwelling size (the historical floor area is observed consents).
 - The numerical results in Hjalsted et al.'s SI (Tables S4-S9) are reproduced only with α = 1; we apply α as specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS. The authors have been contacted.
 
 ### Notes
@@ -524,19 +534,19 @@ The nine levers are grouped by the carbon reduction hierarchy of PAS 2080:2023 (
 
 #### S1 Avoid Strategies
 
-**L1 Household size (sub-rule C).** S_Ambitious(t) = S_Ref(t) + [S_High(t) - S_Medium(t)], the gap between the Stats NZ High and Medium household-size variants (same living-arrangement assumption; projection runs rebased on the 2023 census), held at its 2043 value after 2043; High >= Medium in every year (asserted). 2050: Reference 2.6518, Moderate 2.6725, Ambitious 2.6933; TL1 S = 2.7905 (the 1991 maximum of the model history).
+**L1 Household size (sub-rule C).** S_Ambitious(t) = S_Ref(t) + [S_High(t) - S_Medium(t)], the gap between the Stats NZ High and Medium household-size variants (same living-arrangement assumption; projection runs rebased on the 2023 census), held at its 2048 value after 2048; High >= Medium in every year (asserted). 2050: Reference 2.4730, Moderate 2.5095, Ambitious 2.5460; TL1 S = 2.7905 (the 1991 maximum of the model history).
 
 **L2 Vacancy rate (sub-rule B).** Ambitious 4.01%, the 1996 census minimum on one definition (the pooled 2018/2023 empty share of unoccupied private dwellings applied to every census); Moderate (v_ref + v_min)/2 = 4.70%; TL2 v = 0. Reference = the published 2023 census value 5.39%; on the consistent definition 2023 is 5.38%.
 
 **L3 Building lifetime (sub-rule C).** Demolition and the recent-surge component of net replacement x (1 - d), d = 0.40 (Pellan et al. 2024: 150,000 -> 90,000 demolitions a year), Moderate 0.20; TL3: zero demolition, no redevelopment wave; unconsented additions kept at the long-run rate. The census net replacement rates are context only.
 
-**L4 Extra space (sub-rule B).** The Ambitious size is the smallest annual mean new-dwelling size ever consented, by typology, 1990–2025 (consented floor area / consents): Detached 148.8 m² (1990), Townhouses 105.8 m² (1990), Apartments 91.0 m² (1998). The Reference size is the 2023–2025 mean (Detached 187.6 m²), (Townhouses 108.0 m²), (Apartments 95.8 m²). The lever removes a share f of the extra-space margin (size - occupied area, occupied area = household size x OLF), f_t = (size_ref - size_min) / (size_ref - occ_ref), occ_ref = S_ref(2035) x OLF_t, so that the size at full strength equals the minimum; f_Ambitious = Detached 0.4268, Townhouses 0.1091, Apartments 0.1153; Moderate f/2; TL f = 1 (size = occupied area). It acts on the margin after L5. 1990 is the first year of the consent series and a recession year.
+**L4 Extra space (sub-rule B).** The Ambitious size is the smallest annual mean new-dwelling size ever consented, by typology, 1990–2025 (consented floor area / consents): Detached 148.8 m² (1990), Townhouses 105.8 m² (1990), Apartments 91.0 m² (1998). The Reference size is the 2023–2025 mean (Detached 187.6 m²), (Townhouses 108.0 m²), (Apartments 95.8 m²). The lever removes a share f of the extra-space margin (size - occupied area, occupied area = household size x OLF), f_t = (size_ref - size_min) / (size_ref - occ_ref), occ_ref = S_ref(2035) x OLF_t, so that the size at full strength equals the minimum; f_Ambitious = Detached 0.4117, Townhouses 0.0949, Apartments 0.1102; Moderate f/2; TL f = 1 (size = occupied area). It acts on the margin after L5. 1990 is the first year of the consent series and a recession year.
 
 **L5 Occupancy density (sub-rule A).** For each of the 16 case studies (10 detached, 4 townhouses, 2 apartments; A_2 included as a distinct design) the design floor area per occupant (OLF) is divided by the median of its typology; r_Ambitious = HD q0.15 = 0.8194 (95% bootstrap interval 0.732–0.960, B = 2000); r_Moderate = (1 + r)/2 = 0.9097. The ratio scales every typology's OLF and dwelling size; TL5 per typology = min(own densest design ratio, r_Ambitious): Detached 0.7095, Townhouses 0.8194, Apartments 0.8194.
 
 #### S2 Switch Strategies
 
-**L6 Brownfield-first development (sub-rule C).** Share of new floor area on previously developed land: Ambitious 0.59 (England 2018–21, DLUHC 2022); Moderate (s_ref + 0.59)/2 = 0.350 with s_ref = 0.110 (the v3 Reference: replacement (soil-free) floor area / total, ratio of sums 2026–2050); TL6 s = 1. Context: US EPA (2014) infill share 21%. lambda = 0 is the lever off (the Reference); a constant s = s_ref would act in the years whose own replacement share is below s_ref. TL6 = 100% brownfield makes TL7 zero within TL.
+**L6 Brownfield-first development (sub-rule C).** Share of new floor area on previously developed land: Ambitious 0.59 (England 2018–21, DLUHC 2022); Moderate (s_ref + 0.59)/2 = 0.340 with s_ref = 0.089 (the v3 Reference: replacement (soil-free) floor area / total, ratio of sums 2026–2050); TL6 s = 1. Context: US EPA (2014) infill share 21%. lambda = 0 is the lever off (the Reference); a constant s = s_ref would act in the years whose own replacement share is below s_ref. TL6 = 100% brownfield makes TL7 zero within TL.
 
 **L7 Soil-aware planning (sub-rule C).** Soil carbon loss per m² x (1 - x), x = 0.146 (Christoforatos, Pickering & Schipper 2026), Moderate 0.073; TL7 the lowest soil order (Detached 22.9, Townhouses 13.8, Apartments 2.5 kg CO₂e/m²).
 
@@ -550,46 +560,46 @@ The nine levers are grouped by the carbon reduction hierarchy of PAS 2080:2023 (
 
 Every run follows the same order per year: gross_t -> overbuild payback -> re-occupation -> built_t. The 2026 overbuild of the Reference (the market excess) is computed once and held fixed in every run (the largest difference between runs is 0.0 dwellings); its absorption follows the Reference weights, the payback capped at max(gross_t, 0) with any shortfall carried. In the TL-family runs the dwellings released by TL1 (household decline) and TL2 (zero vacancy) to 2050, R = R1 + R2 (the overbuild is not in R), meet a constant share of each year's need after the payback, s = min(R, G+)/G+, G+ = sum over 2027–2050 of max(gross_t, 0); the cumulative re-occupied never exceeds the cumulative released: where that binds the shortfall is built and s is recomputed from the remaining pool; R > G+ leaves a surplus vacant in 2050. Re-occupied dwellings are attributed to TL1 and TL2 in proportion R1 : R2.
 
-TL: R1 = 0, R2 = 116,869, G+ = 337,178, s = 0.482; the release constraint binds in no year; need is non-positive (nothing built) in no year; surplus vacant 2050 0. Instant TL (sensitivity): R1 = 62,085, R2 = 114,399, s = 0.604.
+TL: R1 = 0, R2 = 117,834, G+ = 315,033, s = 0.542; the release constraint binds in no year; need is non-positive (nothing built) in no year; surplus vacant 2050 0. Instant TL (sensitivity): R1 = 78,964, R2 = 115,360, s = 0.677.
 
 ### Results
 
 | Run | Floor area 2026–2050 (Mm²) | Carbon (kt CO₂e) | LoE AR | LoE AtP | vs Reference |
 |---|---|---|---|---|---|
-| Reference | 81.53 | 19,761 | 4.464 | 17.76 | +0.0% |
-| S1 Avoid Strategies, Moderate | 65.74 | 16,049 | 3.626 | 14.42 | -18.8% |
-| S2 Switch Strategies, Moderate | 81.53 | 18,179 | 4.107 | 16.33 | -8.0% |
-| S3 Improve Strategy, Moderate | 81.53 | 19,168 | 4.330 | 17.22 | -3.0% |
-| Moderate Pathway | 65.74 | 14,302 | 3.231 | 12.85 | -27.6% |
-| S1 Avoid Strategies, Ambitious | 52.27 | 12,870 | 2.907 | 11.56 | -34.9% |
-| S2 Switch Strategies, Ambitious | 81.53 | 16,682 | 3.769 | 14.99 | -15.6% |
-| S3 Improve Strategy, Ambitious | 81.53 | 18,575 | 4.196 | 16.69 | -6.0% |
-| Ambitious Pathway | 52.27 | 10,267 | 2.319 | 9.22 | -48.0% |
-| Theoretical Limit | 22.79 | 4,423 | 0.999 | 3.97 | -77.6% |
-| TL, all limits from 1 January 2027 (instant) | 19.94 | 3,056 | 0.690 | 2.75 | -84.5% |
+| Reference | 103.94 | 25,176 | 5.687 | 22.62 | +0.0% |
+| S1 Avoid Strategies, Moderate | 82.47 | 20,115 | 4.544 | 18.07 | -20.1% |
+| S2 Switch Strategies, Moderate | 103.94 | 23,029 | 5.202 | 20.69 | -8.5% |
+| S3 Improve Strategy, Moderate | 103.94 | 24,399 | 5.512 | 21.92 | -3.1% |
+| Moderate Pathway | 82.47 | 17,818 | 4.025 | 16.01 | -29.2% |
+| S1 Avoid Strategies, Ambitious | 64.42 | 15,845 | 3.580 | 14.24 | -37.1% |
+| S2 Switch Strategies, Ambitious | 103.94 | 21,010 | 4.746 | 18.88 | -16.5% |
+| S3 Improve Strategy, Ambitious | 103.94 | 23,622 | 5.336 | 21.22 | -6.2% |
+| Ambitious Pathway | 64.42 | 12,486 | 2.821 | 11.22 | -50.4% |
+| Theoretical Limit | 20.43 | 4,079 | 0.921 | 3.67 | -83.8% |
+| TL, all limits from 1 January 2027 (instant) | 17.91 | 2,828 | 0.639 | 2.54 | -88.8% |
 
 #### Shapley values by PAS 2080 strategy (exact, 8 subsets per game; reduction of cumulative carbon, kt CO₂e, and share of the Reference - Pathway difference)
 
 | Strategy | Levers | Moderate | Ambitious |
 |---|---|---|---|
-| S1 Avoid Strategies | L1, L2, L3, L4, L5 | 3,498 (64.1%) | 6,060 (63.8%) |
-| S2 Switch Strategies | L6, L7, L8 | 1,431 (26.2%) | 2,482 (26.1%) |
-| S3 Improve Strategy | L9 | 530 (9.7%) | 952 (10.0%) |
+| S1 Avoid Strategies | L1, L2, L3, L4, L5 | 4,748 (64.5%) | 8,150 (64.2%) |
+| S2 Switch Strategies | L6, L7, L8 | 1,922 (26.1%) | 3,314 (26.1%) |
+| S3 Improve Strategy | L9 | 688 (9.3%) | 1,226 (9.7%) |
 
 #### Shapley values (exact, 512 subsets per game; reduction of cumulative carbon, kt CO₂e)
 
 | Lever | Moderate | Ambitious | TL (from the Reference) |
 |---|---|---|---|
-| L1 Household size | 620 | 1,082 | 2,866 |
-| L2 Vacancy rate | 622 | 1,129 | 2,797 |
-| L3 Building lifetime | 433 | 739 | 1,447 |
-| L4 Extra space | 719 | 1,256 | 2,516 |
-| L5 Occupancy density | 1,108 | 1,890 | 1,538 |
-| L6 Brownfield-first development | 554 | 946 | 964 |
-| L7 Soil-aware planning | 130 | 202 | 415 |
-| L8 Material carbon efficiency | 745 | 1,313 | 1,679 |
-| L9 Construction-stage carbon | 528 | 939 | 1,117 |
-| Sum (= Reference - run) | 5,460 | 9,494 | 15,339 |
+| L1 Household size | 1,201 | 2,058 | 6,465 |
+| L2 Vacancy rate | 661 | 1,194 | 2,881 |
+| L3 Building lifetime | 453 | 771 | 1,478 |
+| L4 Extra space | 969 | 1,685 | 3,295 |
+| L5 Occupancy density | 1,470 | 2,499 | 1,878 |
+| L6 Brownfield-first development | 759 | 1,283 | 1,199 |
+| L7 Soil-aware planning | 175 | 269 | 529 |
+| L8 Material carbon efficiency | 985 | 1,727 | 2,024 |
+| L9 Construction-stage carbon | 685 | 1,205 | 1,347 |
+| Sum (= Reference - run) | 7,358 | 12,690 | 21,097 |
 
 Shapley (1953); Albrecht, Francois & Schoors (2002). Efficiency holds exactly (rational arithmetic on the run values).
 
@@ -610,7 +620,7 @@ A year whose built floor area is below 1e-06 m² is a year in which nothing is b
 
 #### History by census interval (validation.history_bands)
 
-The residual band of the history is split into the census-measured net replacement (the interval rate of the census dwelling-count identity x the previous year's stock x the year's dwelling size; it may be negative, e.g. 1996–2001), the retirement-village units (negative, out of scope) and the unexplained building (the remainder to the observed in-scope floor area built; it may be negative, e.g. 2013–2018). The bands add up to the observed floor area built in every interval (checked to 1e-9). Over 1992–2025 the unexplained building sums to 14,606 dwellings (+1.82% of the 803,534 built); the floor-area remainder equals the unexplained dwellings of the stock identity x the dwelling size (difference 5.6e-15 Mm²).
+The residual band of the history is split into the census-measured net replacement (the interval rate of the census dwelling-count identity x the previous year's stock x the year's dwelling size; it may be negative, e.g. 1996–2001), the retirement-village units (negative, out of scope) and the unexplained building (the remainder to the observed in-scope floor area built; it may be negative, e.g. 2013–2018). The bands add up to the observed floor area built in every interval (checked to 1e-9). Over 1992–2025 the unexplained building sums to 3,215 dwellings (+0.40% of the 803,534 built); the floor-area remainder equals the unexplained dwellings of the stock identity x the dwelling size (difference 5.1e-15 Mm²).
 
 #### Replacement in the Reference and its variants
 
@@ -628,15 +638,15 @@ Completions in month m = 0.945 x consents in month m - L, L = 17 months, aggrega
 
 #### Theoretical limit: constraints at Level 4
 
-Level 4 is the definitional limit of each lever, reached along the common adoption window, except household size (TL1): its level (2.7905, the 1991 census maximum) is approached no faster than the fastest change of household size observed between consecutive censuses 1991–2023 (0.01176 per year, 1996–2001; census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - 2026), level), never below the Ambitious path. The level is reached in 2035.6. Household size is a population-level outcome of age structure, partnering and housing costs; the speed limit keeps the theoretical limit within changes the New Zealand census record has shown. The instant-TL row keeps its definition (every level from 2027). In every theoretical-limit-family run the Reference's overbuild surplus (the positive market excess of the pipeline years and of the fading gap) enters the re-occupation pool with the TL1 / TL2 releases (constant share of each year's positive need, availability constraint, carry-forward); the re-occupied overbuild is booked in 'Overbuild absorbed'. Releases of an observed (pipeline) year enter the pool in the first unobserved year.
+Level 4 is the definitional limit of each lever, reached along the common adoption window, except household size (TL1): its level (2.7905, the 1991 census maximum) is approached no faster than the fastest change of household size observed between consecutive censuses 1991–2023 (0.01176 per year, 1996–2001; census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - 2026), level), never below the Ambitious path. The level is reached in 2037.5. Household size is a population-level outcome of age structure, partnering and housing costs; the speed limit keeps the theoretical limit within changes the New Zealand census record has shown. The instant-TL row keeps its definition (every level from 2027). In every theoretical-limit-family run the Reference's overbuild surplus (the positive market excess of the pipeline years and of the fading gap) enters the re-occupation pool with the TL1 / TL2 releases (constant share of each year's positive need, availability constraint, carry-forward); the re-occupied overbuild is booked in 'Overbuild absorbed'. Releases of an observed (pipeline) year enter the pool in the first unobserved year.
 
 #### Household-size projection
 
-Household size follows the Stats NZ 2018-base household projection shape (Medium variant), rebased on the 2023 census; it is to be replaced by the 2023-base household projections when published. Sensitivities: the Stats NZ Low / High variants and the 2018–2023 census pace continued linearly from 2023, for the Reference, the Moderate / Ambitious Pathway and TL (sensitivity/household_size.csv).
+Household size follows the Stats NZ 2023-base national family and household projections (POPPR_FHH_008 people in households over POPPR_FHH_010 households, five-yearly 2023–2048; DataInfo+ https://datainfoplus.stats.govt.nz/item/nz.govt.stats/e7475c01-9e55-491d-a8fe-74efa8fba757), Medium A (living-arrangement propensities held at 2023), as a shape rebased on the observed 2023 household size of the census households and the total population; this holds the share of the population outside private dwellings at its 2023 level. The 5th / 95th population paths take the Low A / High A projections (within one propensity the projections differ only through their population projections; the Monte Carlo pairs them through one z). Sensitivities: Medium B (propensities change, modelled on the 2001–2023 censuses) and the 2018–2023 census pace continued linearly from 2023, for the Reference, the Moderate / Ambitious Pathway and TL (sensitivity/household_size.csv).
 
 #### Check and sensitivity rows
 
-TL with re-occupation as fast as demand allows (deterministic sensitivity row): 3,766.9 kt, LoE AR 0.851 (TL: 4,422.9 kt, LoE AR 0.999).
+TL with re-occupation as fast as demand allows (deterministic sensitivity row): 3,550.7 kt, LoE AR 0.802 (TL: 4,079.1 kt, LoE AR 0.921).
 
 L8 with the apartment case A_1 (n = 15): r = 0.841 against the adopted 0.827 (n = 14); report only (A_1's ratio to its pooled value is 1.0000 by construction).
 
@@ -646,18 +656,18 @@ Joint uncertainty is propagated by Latin hypercube sampling (McKay, Beckman & Co
 
 | input | distribution | basis | 5th / 50th / 95th percentile of the draws |
 |---|---|---|---|
-| z_pop (population and household size) | standard normal; one rank in every year (comonotone) | Stats NZ 2024-base stochastic population projection: the published level spread at the 5th, 25th, 50th, 75th, 95th percentiles, linear in z; household size by the same z through the Stats NZ Low / Medium / High household-size variants placed at z = -1.645 / 0 / 1.645 | -1.64 / 0.00 / 1.64 |
+| z_pop (population and household size) | standard normal; one rank in every year (comonotone) | Stats NZ 2024-base stochastic population projection: the published level spread at the 5th, 25th, 50th, 75th, 95th percentiles, linear in z; household size by the same z through the Stats NZ 2023-base Low / Medium / High A household projections placed at z = -1.645 / 0 / 1.645 | -1.64 / 0.00 / 1.64 |
 | size (dwelling size) | lognormal multiplier, σ = 0.0634 | RMS log deviation of annual typology dwelling sizes 2016–2025 from the adopted reference | 0.901 / 1.000 / 1.110 |
-| complete (completion rate) | uniform(0.93, 0.96) | completion milestones of Auckland consents (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025); the stock calibration and the census replacement rates are redone in each draw | 0.931 / 0.945 / 0.959 |
+| complete (completion rate) | uniform(0.93, 0.96) | completion milestones of Auckland consents (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025); the stock calibration, the census replacement rates, the 2024–2025 starting surplus and the acquired-rights base are redone in each draw | 0.931 / 0.945 / 0.959 |
 | carbon (case-study carbon factors) | uniform index into 4,000 bootstrap replicates | stratified bootstrap of the case studies within sub-type (duplicates removed, re-pooled as Building_factors); the apartments (one independent case) take a mean-preserving lognormal multiplier with the pooled between-building log-SD of the other sub-types | 0.05 / 0.50 / 0.95 |
 | half_life (replacement half-life) | uniform(5, 15) yr | not identifiable from the census record; the Reference variant only | 5.5 / 10.0 / 14.5 |
 
-Population and household size share one draw because the Stats NZ household-size variants differ only in their fertility, mortality and migration assumptions, so low population and small households come together (an older age structure); this pairing is to be confirmed with the documentation of the 2023-base projections. Not sampled: the net replacement level (the variants are run separately; within the Reference the half-life is sampled), the typology mix, the census rebase of households, the pre-2013 empty share, the future vacancy and the retirement-village share (total Sobol indices about zero in a full-input run), the demolition rate (it trades one-for-one with the calibrated residual), the observed consents and population (data) and the soil order (a bounding scenario, not a probability).
+Population and household size share one draw because, within one living-arrangement propensity, the Stats NZ 2023-base Low / Medium / High household projections differ only through their population projections (the 5th / 50th / 95th percentiles of the stochastic population projection), so the household size moves with the population percentile (N4, resolved). Not sampled: the living-arrangement propensity (A, held at 2023; B, the change modelled on the 2001–2023 censuses, is a one-at-a-time row), the net replacement level (the variants are run separately; within the Reference the half-life is sampled), the typology mix, the census rebase of households, the pre-2013 empty share, the future vacancy and the retirement-village share (total Sobol indices about zero in a full-input run), the demolition rate (it trades one-for-one with the calibrated residual), the observed consents and population (data) and the soil order (a bounding scenario, not a probability).
 
-In every draw the acquired-rights base Ī_sec,base is recomputed from that draw's carbon-factor replicate on the observed history (boundaries.mc_runs, boundaries.base_with_factors): the carbon factors are a shared parameter of the base and the projection and are sampled once (the shared-parameter rule of Part 2). Ī_sec,base over the draws: 1,332.5 / 1,413.8 / 1,501.0 kt/yr (5th / 50th / 95th percentile).
+In every draw the acquired-rights base Ī_sec,base is recomputed from that draw's carbon-factor replicate on the 2016–2025 built floor area at that draw's completion rate (boundaries.mc_runs, boundaries.history_at_completion, boundaries.base_with_factors): the carbon factors and the completion rate are shared parameters of the base and the projection and are sampled once (the shared-parameter rule of Part 2). Each draw also recomputes the 2024–2025 stock-identity residual and its starting surplus at its own completion rate. Ī_sec,base over the draws: 1,330.9 / 1,413.4 / 1,501.3 kt/yr (5th / 50th / 95th percentile).
 
-**Variance-based sensitivity.** First-order and total Sobol indices of the Reference (full profile): base sample N = 1,024 (7,168 model evaluations), the estimators of Saltelli et al. (2010) and Jansen (1999) as implemented in scipy.stats.sobol_indices (scipy 1.17.1), with BCa 95% intervals from 999 bootstrap resamples (Efron 1987). Total indices of cumulative carbon 2026–2050: Population and household size 0.85 (0.79–0.91), Dwelling size 0.11 (0.10–0.12), Carbon factors 0.04 (0.04–0.05).
+**Variance-based sensitivity.** First-order and total Sobol indices of the Reference (full profile): base sample N = 1,024 (7,168 model evaluations), the estimators of Saltelli et al. (2010) and Jansen (1999) as implemented in scipy.stats.sobol_indices (scipy 1.17.1), with BCa 95% intervals from 999 bootstrap resamples (Efron 1987). Total indices of cumulative carbon 2026–2050: Population and household size 0.67 (0.62–0.72), Dwelling size 0.23 (0.21–0.26), Carbon factors 0.09 (0.08–0.10).
 
 **Pathway Monte Carlo** (pathways_mc.py). The Reference, the Moderate and Ambitious Pathways and the Theoretical Limit are run on the same draws (paired), so their differences are draw by draw. The importance of each input for floor area, carbon and the cumulative LoE of AR is given by standardised regression coefficients and partial rank correlation coefficients (Marino et al. 2008) with percentile bootstrap intervals (2,000 resamples).
 
-The share of draws in which TL stays within the AR budget is 49.9% (2,494 of 5,000; Wilson 95% interval 48.5–51.3%, Wilson 1927). The 2050 population at which P(TL LoE AR ≤ 1) = 50% is 6.61 million (95% interval 6.61–6.62), from a univariate logistic regression on the draw's 2050 population fitted by Firth's penalised likelihood where the maximum-likelihood estimate does not exist (Firth 1993; Heinze & Schemper 2002), with a percentile bootstrap of 2,000 resamples (seed 20263025 in the full profile).
+The share of draws in which TL stays within the AR budget is 64.0% (3,200 of 5,000; Wilson 95% interval 62.7–65.3%, Wilson 1927). The 2050 population at which P(TL LoE AR ≤ 1) = 50% is 6.72 million (95% interval 6.71–6.72), from a univariate logistic regression on the draw's 2050 population fitted by Firth's penalised likelihood where the maximum-likelihood estimate does not exist (Firth 1993; Heinze & Schemper 2002), with a percentile bootstrap of 2,000 resamples (seed 20263025 in the full profile).

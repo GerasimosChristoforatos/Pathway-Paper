@@ -126,9 +126,8 @@ AR_BASE_RULE = {
         REFERENCE_BASE, 'the base history is observed; both budgets move with the population path (Horup Eq. 1)'),
     'Living arrangements: propensities change (Stats NZ B)': (REFERENCE_BASE, 'future household size only'),
     'Household size: 2018-2023 census pace': (REFERENCE_BASE, 'future household size only'),
-    'Household size after 2048: flat': (REFERENCE_BASE, 'future household size only'),
-    'Household size after 2048: secant-slope taper': (REFERENCE_BASE, 'future household size only'),
-    'Household size after 2048: taper from the PCHIP end slope': (REFERENCE_BASE, 'future household size only'),
+    'After 2048: held flat (zero slope)': (REFERENCE_BASE, 'future household size only'),
+    'After 2048: PCHIP end slope': (REFERENCE_BASE, 'future household size only'),
     'Completion rate 0.93 / 0.96': (
         RECOMPUTE, 'the completion rate turns the 2016-2025 consents into the built floor area behind the base, as '
                    'in the Monte Carlo (F5)'),

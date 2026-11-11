@@ -52,9 +52,8 @@ CASES = [
     # the Stats NZ Low / High household projections move with the population percentile (projection.HH_SIZE_PAIRED):
     # they are part of the population rows, not a row of their own
     ('Household size', 'Living arrangements: propensities change (Stats NZ Medium B)', dict(HH_PROPENSITY='B')),
-    ('Household size', 'Household size after 2048: flat (kink at 2048)', dict(S_TAIL='flat')),
-    ('Household size', 'Household size after 2048: secant-slope taper', dict(S_TAIL='taper_secant')),
-    ('Household size', 'Household size after 2048: taper from the PCHIP end slope', dict(S_TAIL='taper')),
+    ('Household size', 'Household size after 2048: held flat (zero slope)', dict(S_TAIL='hermite_clamped')),
+    ('Household size', 'Household size after 2048: PCHIP end slope', dict(S_TAIL='pchip_endslope')),
     ('Dwelling size', 'Dwelling size: 2016-2025 reference', dict(DWELLING_SIZE_REF=(2016, 2025))),
     ('Household size', 'Household size: 2018-2023 census pace, linear from 2023', dict(HH_SIZE_PATH='census_pace')),
     ('Stock', 'Completion rate 0.93', dict(COMPLETION_RATE=0.93)),

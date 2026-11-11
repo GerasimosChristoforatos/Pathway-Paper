@@ -20,7 +20,8 @@ from conftest import ROOT
 
 FIXTURE = os.path.join(ROOT, 'tests', 'v3_3_runs_fixture.json')
 V33 = dict(COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95,        # projection settings of MODEL v3.3
-           HH_SIZE_PATH='statsnz_2018', STARTING_SURPLUS='none')   # its household size (2018-base); no F1
+           HH_SIZE_PATH='statsnz_2018', STARTING_SURPLUS='none',   # its household size (2018-base); no F1
+           S_TAIL='hermite_clamped')
 RTOL = 1e-9
 
 

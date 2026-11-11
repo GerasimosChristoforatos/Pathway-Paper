@@ -120,7 +120,10 @@ def ed7_sobol():
         P.centre_ticklabels(fig, a)
     fig.tight_layout(rect=(0, 0.09, 1, 1))
     S.save_figure(fig, 'ED7_sobol', note='Reference; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% '
-                                         'intervals by bootstrap of the Sobol samples; full profile only.',
+                                         'intervals by bootstrap of the Sobol samples; full profile only. Population '
+                                         'and household size are one grouped input: both are drawn from one '
+                                         'standard-normal score z (perfectly dependent), so their indices are grouped '
+                                         'Sobol indices (Jacques, Lavergne & Devictor 2006).',
                   source=['montecarlo/sobol_REF.csv'])
 
 

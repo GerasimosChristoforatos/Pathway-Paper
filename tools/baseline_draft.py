@@ -403,11 +403,12 @@ def households_2019_2023():
     """The 2019-2023 household estimates: the rebase factor k read from the figure source (D02)."""
     d = load('figure_source/D02_households.json')
     k = f"k = {d['hh_rebase_k']:.3f}" if d else 'one factor k'
-    return ('Households 2019-2023: the Stats NZ household estimates between the 2018 and 2023 censuses are '
-            f'consent-derived increments, rescaled by one factor ({k}) so that June 2023 matches the 2023 census, as '
-            'Stats NZ benchmarks each base; the consent-driven shape is kept. The household estimates in hand (Dwelling '
-            'and household estimates, March 2026 quarter) still have their last base at 2018; Stats NZ\'s '
-            '2023-rebased household estimates will replace the rescaling when published.')
+    return ('Households 2019-2023: the Stats NZ Dwelling and household estimates remain on the 2018 Census base; '
+            'Stats NZ has not yet rebased them on the 2023 Census. Their increments after the 2018 base are therefore '
+            f'rescaled by one factor ({k}) so that June 2023 matches the 2023 census, as Stats NZ benchmarks each '
+            'base; the consent-driven shape is kept. Both census endpoints are fixed, so only the timing of household '
+            'growth within 2019-2023 depends on the rescaling. Stats NZ\'s 2023-rebased household estimates will '
+            'replace it when published.')
 
 
 LIMITATIONS = [

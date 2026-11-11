@@ -70,9 +70,8 @@ REF_ROWS = {
     ('Population: Stats NZ 5th / 95th percentile', 'high'): ('population', 'high'),
     ('Living arrangements: propensities change (Stats NZ B)', 'single'): ('hh_propensity', 'single'),
     ('Household size: 2018-2023 census pace', 'single'): ('hh_pace', 'single'),
-    ('Household size after 2048: flat', 'single'): ('hh_after2048_flat', 'single'),
-    ('Household size after 2048: secant-slope taper', 'single'): ('hh_after2048_secant', 'single'),
-    ('Household size after 2048: taper from the PCHIP end slope', 'single'): ('hh_after2048_endslope', 'single'),
+    ('After 2048: held flat (zero slope)', 'single'): ('hh_after2048_flat', 'single'),
+    ('After 2048: PCHIP end slope', 'single'): ('hh_after2048_endslope', 'single'),
     ('Completion rate 0.93 / 0.96', 'low'): ('completion_rate', 'low'),
     ('Completion rate 0.93 / 0.96', 'high'): ('completion_rate', 'high'),
     ('Completion lag 15 / 19 months', 'low'): ('completion_lag', 'low'),
@@ -108,36 +107,18 @@ REF_ROWS = {
 }
 REF_DROPPED = ('Completion rate 0.95 (MODEL v3.3)', 'Completion lag 0 months (MODEL v3.3)',
                '2026 overbuild never absorbed (MODEL v2.1 Reference)')
-# rows kept in the data file but not shown in ED4 (display only), with the reason given in the note.
-# The Reference also holds household size constant after 2048 (with a zero slope imposed at 2048), so 'flat' differs
-# from it only by that slope; the change of each row (data: change_pct) is quoted in the figure note.
-REF_NOT_SHOWN = {'Household size after 2048: flat': 'household size held flat after 2048 (the Reference is also '
-                                                    'held constant after 2048 and differs only by the zero slope '
-                                                    'imposed at 2048)',
-                 '2026 overbuild gap vs the 2026 requirement': 'the overbuild gap measured against the 2026 '
+# rows kept in the data file but not shown in ED4 (display only), with the reason given in the note; the change of
+# each row (data: change_pct) is quoted in the figure note.
+REF_NOT_SHOWN = {'2026 overbuild gap vs the 2026 requirement': 'the overbuild gap measured against the 2026 '
                                                                'requirement',
                  'No census under-construction correction': 'no census under-construction correction',
                  'Event timing L / n': 'maintenance event timing L / n'}
-# the household-size tail rows after the last Stats NZ knot are shown only if their effect exceeds TAIL_SHOW_MIN_PCT of
-# the Reference carbon (|change_pct|, rule fixed in advance); otherwise they join the rows not shown, with this reason
-TAIL_SHOW_MIN_PCT = 0.1
-TAIL_ROWS = {'Household size after 2048: secant-slope taper': 'the secant-slope taper of household size after 2048',
-             'Household size after 2048: taper from the PCHIP end slope': 'the end-slope taper of household size '
-                                                                          'after 2048'}
 GROUP_RENAME = {'Replacement scenario': 'Replacement'}
 
 
 def ref_not_shown(r):
-    """{row: reason} of the ED4 rows kept in the data file but not shown: REF_NOT_SHOWN and every tail row whose
-    |change_pct| is at most TAIL_SHOW_MIN_PCT."""
-    out = dict(REF_NOT_SHOWN)
-    for row, why in TAIL_ROWS.items():
-        ch = r.loc[r['row'] == row, 'change_pct']
-        if ch.empty:
-            raise SystemExit(f'STOP: ED4: the tail row {row!r} is not in the data')
-        if abs(float(ch.iloc[0])) <= TAIL_SHOW_MIN_PCT:
-            out[row] = f'{why} (|effect| at most {TAIL_SHOW_MIN_PCT:g}% of the Reference)'
-    return out
+    """{row: reason} of the ED4 rows kept in the data file but not shown (REF_NOT_SHOWN)."""
+    return dict(REF_NOT_SHOWN)
 # rows kept in the data file but not shown in ED5 (display only); any other unmapped row still stops
 PB_DROPPED = {'α = 1 (Hjalsted et al. SI tables)': 'α = 1 (Hjalsted et al. SI tables)',
               'NZ population: raw Stats NZ 2024-base median': 'the raw Stats NZ 2024-base median population'}
@@ -224,7 +205,7 @@ def row_notes_ed4(r):
     _same(F, 'A4-A5 path', PR.DECARB_A45, pj['decarb_a45'])
     _same(F, 'event timing', PR.EVENT_TIMING, pj['event_timing'])
     if (PR.HH_SIZE_PATH, PR.S_TAIL, PR.VACANCY_PARAMETER, PR.DECARB_MODE, PR.DECARB_ITEM_CASE, PR.SOIL_ON_REPLACEMENT,
-            PR.NOWCAST_POPULATION, PR.CENSUS_UC_CORRECTION) != ('statsnz_2023', 'hermite_clamped', 'census_2023',
+            PR.NOWCAST_POPULATION, PR.CENSUS_UC_CORRECTION) != ('statsnz_2023', 'pchip_secant', 'census_2023',
                                                                 'horup_item', 'central', False, True, True):
         _stop(F, 'a Reference setting the notes describe has changed in projection.py; rewrite the notes')
     case = {(x['row'], x['side']): x['case'] for _, x in r.iterrows()}
@@ -245,14 +226,14 @@ def row_notes_ed4(r):
     _mentions(F, 'Household size: 2018-2023 census pace', f'{a}-{b}')
     n['hh_pace'] = (f'household size continues linearly from {PR.S_ANCHOR_YEAR} at the {_yrs(a, b)} census-interval '
                     f'pace instead of the Stats NZ household-size path rebased on {PR.S_ANCHOR_YEAR}')
-    ref_tail = 'instead of a zero slope imposed at 2048 and household size held constant after 2048'
-    _same(F, 'secant taper', kw('Household size after 2048: secant-slope taper', 'single'), dict(S_TAIL='taper_secant'))
-    _same(F, 'end-slope taper', kw('Household size after 2048: taper from the PCHIP end slope', 'single'),
-          dict(S_TAIL='taper'))
-    n['hh_after2048_secant'] = (f'the last published interval (2043–2048) linear at its secant slope, the slope then '
-                                f'tapering to zero over {PR.S_TAPER_YEARS} years, {ref_tail}')
-    n['hh_after2048_endslope'] = (f'from the shape-preserving (PCHIP) end slope at 2048 the slope tapers to zero over '
-                                  f'{PR.S_TAPER_YEARS} years, {ref_tail}')
+    if PR.S_TAIL != 'pchip_secant':
+        _stop(F, 'the household-size tail of the Reference has changed; rewrite the tail notes')
+    ref_tail = ('instead of the 2043–2048 secant slope at 2048, continued linearly in 2049–2050')
+    _same(F, 'flat tail', kw('After 2048: held flat (zero slope)', 'single'), dict(S_TAIL='hermite_clamped'))
+    _same(F, 'PCHIP end slope', kw('After 2048: PCHIP end slope', 'single'), dict(S_TAIL='pchip_endslope'))
+    n['hh_after2048_flat'] = f'a zero slope imposed at 2048 and household size held constant after it {ref_tail}'
+    n['hh_after2048_endslope'] = (f'the shape-preserving (PCHIP) end derivative at 2048, continued linearly, '
+                                  f'{ref_tail}')
     if PR.HH_SIZE_PAIRED != {'5th': 'Low', '50th': None, '95th': 'High'}:
         _stop(F, 'the population / household-size pairing has changed; rewrite the population note')
     n['population'] = (f'Stats NZ 2024-base stochastic projection, 5th / 95th percentile path instead of the median, '
@@ -268,7 +249,8 @@ def row_notes_ed4(r):
                         f'{_yrs(*PR.DWELLING_SIZE_REF)} mean')
     e = [kw('2026 overbuild absorbed by 2030 / by 2045', s)['OVERBUILD_ABSORPTION_END'] for s in ('low', 'high')]
     _mentions(F, '2026 overbuild absorbed by 2030 / by 2045', *e)
-    n['overbuild_timing'] = f'the 2026 overbuild absorbed by {e[0]} / {e[1]} instead of {PR.OVERBUILD_ABSORPTION_END}'
+    n['overbuild_timing'] = (f'the starting surplus and the 2026 overbuild absorbed by {e[0]} / {e[1]} instead of '
+                             f'{PR.OVERBUILD_ABSORPTION_END}')
     ss = pj['starting_surplus']
     _same(F, 'starting surplus', PR.STARTING_SURPLUS, ss['mode'])
     if ss['mode'] != 'carry' or not ss['rule_carry']:
@@ -485,9 +467,13 @@ def label_numbers(fig, ax, numbered, ys):
         x_right = bb.x0 + bb.width / 2 + w_last / 2           # every line is centred (draw.centre_ticklabels)
         y_top = bb.y0 + bb.height / len(lines)
         fx, fy = to_fig.transform((x_right, y_top))
-        fig.text(fx, fy, str(n), ha='right', va='top', fontsize=S.FONT_MIN, color=S.INK)
+        fig.text(fx, fy, str(n), ha='right', va='top', fontsize=S.FONT_MIN, fontweight='bold', color=S.INK)
 
 
+# the row numbers (labels and notes) at style.FONT_MIN, bold, their top at the top of the line: smaller than the text
+# they mark, which is half a point (notes) or one point (row labels) larger, so they read as superscripts
+ROW_LABEL_SIZE = S.FONT_MIN + 1.0
+NOTE_TEXT_SIZE = S.FONT_MIN + 0.5
 NOTE_NUMBER_GAP_MM = 1.0         # the note text starts this far right of the widest note number (measured)
 
 
@@ -496,7 +482,7 @@ def note_metrics(fig):
     the figure font) as matplotlib lays it out: the pitch is the height a second line adds to a one-line text, so the
     notes are spaced exactly as the lines inside a note, whatever the typeface."""
     r = fig.canvas.get_renderer()
-    probe = dict(fontsize=S.FONT_MIN, linespacing=NOTE_LINESPACING)
+    probe = dict(fontsize=NOTE_TEXT_SIZE, linespacing=NOTE_LINESPACING)
     h = []
     for s in ('Ag', 'Ag\nAg'):
         t = fig.text(0, 0, s, **probe)
@@ -549,13 +535,14 @@ def draw_notes(fig, numbered, title, top_frac, ncol=2):
     k = min(range(len(n_) + 1), key=lambda j: (max(sum(n_[:j]), sum(n_[j:])), j))
     rows = max(sum(n_[:k]), sum(n_[k:]))
     line = pitch_in / fig.get_figheight()
-    fig.text(0.01, top_frac, title, ha='left', va='top', fontsize=S.FONT_MIN, fontweight='bold', color=S.INK)
+    fig.text(0.01, top_frac, title, ha='left', va='top', fontsize=NOTE_TEXT_SIZE, fontweight='bold', color=S.INK)
     for c, items in enumerate((list(zip(numbered, wrapped))[:k], list(zip(numbered, wrapped))[k:])):
         x0, y = 0.01 + c / ncol, top_frac - line
         for (n, _, _), w in items:
-            fig.text(x0 + num_in / W, y, str(n), ha='right', va='top', fontsize=S.FONT_MIN, color=S.INK)
+            fig.text(x0 + num_in / W, y, str(n), ha='right', va='top', fontsize=S.FONT_MIN, fontweight='bold',
+                     color=S.INK)
             fig.text(x0 + indent_in / W, y, '\n'.join(w),
-                     ha='left', va='top', fontsize=S.FONT_MIN, color=S.INK, linespacing=NOTE_LINESPACING)
+                     ha='left', va='top', fontsize=NOTE_TEXT_SIZE, color=S.INK, linespacing=NOTE_LINESPACING)
             y -= len(w) * line
     return (rows + 1) * pitch_in / S.MM
 
@@ -577,9 +564,9 @@ def _input_label(rid):
 
 
 ED4_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
-ED5_H = 152                       # mm
-NOTES_TOP = 0.245                 # the notes block occupies the figure below this fraction of its height (ED4)
-NOTES_TOP_ED5 = 0.21
+ED5_H = 165                       # mm
+NOTES_TOP = 0.265                 # the notes block occupies the figure below this fraction of its height (ED4)
+NOTES_TOP_ED5 = 0.22
 
 
 def ed4_rows():
@@ -616,7 +603,7 @@ def ed4_one_at_a_time():
     lines = caption_lines(numbered)
     fig, ax = plt.subplots(figsize=S.figsize('double', ED4_H))
     ys = P.tornado(ax, order, c0, numbered_label(numbered))
-    ax.tick_params(axis='y', labelsize=S.FONT_MIN + 0.5)
+    ax.tick_params(axis='y', labelsize=ROW_LABEL_SIZE)
     ax.text(c0, 1.0, f' Reference {c0:,.0f} kt', transform=ax.get_xaxis_transform(), ha='left', va='bottom',
             fontsize=S.FONT_SMALL, color=S.INK)
     ax.set_xlabel('Cumulative embodied carbon 2026–2050 (kt CO₂e)')
@@ -688,7 +675,7 @@ def ed5_boundary_sensitivity():
                fontsize=S.FONT_SMALL, color=S.INK)
         a.set_xlabel(f'{xl} 2026–2050')
         P.panel(a, letter, '')
-    ax[0].tick_params(axis='y', labelsize=S.FONT_MIN + 0.5)
+    ax[0].tick_params(axis='y', labelsize=ROW_LABEL_SIZE)
     ax[1].legend(handles=P.tornado_legend(), loc='lower right', fontsize=S.FONT_SMALL, frameon=False)
     P.centre_ticklabels(fig, ax[0])
     notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP_ED5)

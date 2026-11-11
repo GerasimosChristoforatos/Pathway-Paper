@@ -59,7 +59,8 @@ def test_household_projection_2023base_from_the_raw_tables():
 
 def test_household_size_paths_rebased_and_paired(B):
     """S(t) = S_obs(2023) x S_StatsNZ(t) / S_StatsNZ(2023) for the median (Medium A) and the 5th / 95th population
-    paths (Low A / High A: the same percentiles); through every knot, held constant after 2048."""
+    paths (Low A / High A: the same percentiles); through every knot; after 2048 linear at the rebased 2043-2048
+    secant slope (S_TAIL 'pchip_secant')."""
     import projection
     fy = np.asarray(B['forecast_years'])
     S0 = float(B['hist_S'].loc[projection.S_ANCHOR_YEAR])
@@ -69,7 +70,9 @@ def test_household_size_paths_rebased_and_paired(B):
         want = S0 * sh.reindex(fy).values / float(sh.loc[projection.S_ANCHOR_YEAR])
         got = B['df_forecast'][f'PopTotal_{pct}'].values / B['households_forecast'][pct]
         assert np.allclose(got, want, rtol=1e-12), pct
-        assert got[fy == 2050][0] == pytest.approx(got[fy == 2048][0], rel=1e-15)
+        s = k['S'].values
+        slope = S0 * (s[-1] - s[-2]) / 5.0 / float(sh.loc[projection.S_ANCHOR_YEAR])
+        assert got[fy == 2050][0] == pytest.approx(got[fy == 2048][0] + 2 * slope, rel=1e-12)
 
 
 def test_bridge_reaches_2026_2050_only_through_the_starting_surplus():

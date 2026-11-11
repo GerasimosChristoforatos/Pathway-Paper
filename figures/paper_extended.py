@@ -328,7 +328,8 @@ def ed9():
                                  label=N.PATHWAY_RUNS['pathway-ambitious']),
                           Line2D([0], [0], color=S.TL, label=N.TL['TL'])] +
                  [Line2D([0], [0], color=S.MUTED, ls=ls, label=_variant_label(k)) for k, ls in VARIANT_LS],
-               fontsize=S.FONT_MIN, loc='lower left', bbox_to_anchor=(0.06, 0.0), ncol=4, frameon=False)
+               fontsize=S.FONT_SMALL, loc='lower left', bbox_to_anchor=(0.06, 0.0, 0.93, 0.1), mode='expand', ncol=4,
+               frameon=False)                  # one step above the minimum, across the width under both panels
     P.panel(ax[0], 'a', 'Annual')
     piv = v.pivot(index='run', columns='scenario', values='LoE_AR').loc[['Reference', 'pathway-moderate',
                                                                         'pathway-ambitious', 'TL']]
@@ -356,9 +357,10 @@ def ed4():
     yr = lg['year']
     P.line(ax[0], yr, lg['surplus_vacant'] / 1e3, color=S.BAND['overbuild_2026'][0], lw=S.LW_BOLD,
            label='Surplus still vacant U(t)')
-    P.line(ax[0], yr, lg['cumulative_excess'] / 1e3, color=S.BAND['overbuild_2026'][0], ls=':', label='Cumulative excess C(t)')
-    ax[0].bar(yr, -lg['payback_paid'] / 1e3, color='none', edgecolor=S.BAND['overbuild_absorbed'][0], lw=S.LW_OUTLINE,
-              gid=P.NEG_BAR_GID, label='Payback (built less), per year')
+    P.line(ax[0], yr, lg['cumulative_excess'] / 1e3, color=S.BAND['overbuild_2026'][0], ls=':',
+           label='Starting surplus + cumulative excess C(t)')
+    ax[0].bar(yr, -lg['payback_paid'] / 1e3, **S.fill(S.BAND['overbuild_absorbed'][0]),
+              label='Payback (built less), per year')                          # solid, below zero
     b2 = ax[0].twinx()
     P.line(b2, yr, 100 * lg['implied_vacancy'], color=S.INK, lw=S.LW_THIN, ls='--', label='Implied vacancy (right)')
     b2.set_ylabel('Implied vacancy (%)')
@@ -380,8 +382,18 @@ def ed4():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Absorption timing (2026–2050 totals)')
     fig.tight_layout()
-    _save(fig, 'SF5_overbuild_absorption', note='Theory fixes the direction (reversion to the equilibrium vacancy), '
-                                                 'not the speed; 2035 is the common RECC window; speed bracketed.')
+    ss = D.js('baseline/projection.json')['starting_surplus']
+    u0 = float(lg.loc[lg['year'] == lg['year'].min(), 'surplus_vacant'].iloc[0])
+    if not np.isclose(u0, ss['dwellings'], rtol=1e-9):
+        raise SystemExit(f'STOP: SF5: the surplus still vacant at {int(lg["year"].min())} ({u0:,.1f}) is not the '
+                         f"starting surplus ({ss['dwellings']:,.1f}).")
+    _save(fig, 'SF5_overbuild_absorption', note=f"The surplus still vacant U(t) starts with the starting surplus of "
+                                                 f"{ss['dwellings']:,.0f} dwellings (the {ss['after_years'][0]}–"
+                                                 f"{ss['after_years'][-1]} building beyond the stock identity, carried "
+                                                 f'into 2026), to which the 2026 overbuild adds; both are paid back '
+                                                 f"along the same logistic by {ss['absorbed_by']}. Theory fixes the "
+                                                 'direction (reversion to the equilibrium vacancy), not the speed; '
+                                                 '2035 is the common RECC window; speed bracketed.')
 
 
 def edt1():

@@ -1,6 +1,6 @@
 {
  "figure": "Fig2_reference_carbon",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "By demand band",
@@ -83,9 +83,10 @@
   "b",
   "c",
   "d",
-  "\u2212200"
+  "\u2212200",
+  "\u22125,000"
  ],
- "note": "2026-2050: 25,176 kt CO\u2082e; (d) the demand column: positive bands stacked to 25,843 kt, negative bands outlined, hanging down to the total.",
+ "note": "2026-2050: 25,503 kt CO\u2082e; (d) the demand column: positive bands stacked up from zero to 26,170 kt, negative bands (-668 kt: the absorption of the starting surplus and the 2026 overbuild in Market balance) solid below zero, as in panels a-c; the black marker is the net total.",
  "maintenance_drawn": true,
  "maintenance_where": [
   "axes 0: FillBetweenPolyCollection in the maintenance colour",
@@ -104,11 +105,11 @@
   "baseline/annual_by_stage.csv"
  ],
  "atp_linestyles": [],
- "negative_band_segments": 2,
+ "negative_band_segments": 1,
  "net_total_ticks": 2,
- "band_rectangles_below_zero": 0,
+ "band_rectangles_below_zero": 1,
  "tl_colour_used": false,
  "retired_colours": [],
- "negative_bar_segments": 1,
+ "negative_bar_segments": 0,
  "negative_bar_segments_filled": 0
 }

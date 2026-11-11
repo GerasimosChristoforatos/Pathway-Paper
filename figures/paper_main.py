@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib.legend_handler import HandlerTuple
 from matplotlib.patches import Patch
 
 import figure_plan as FP
@@ -418,8 +419,11 @@ def fig3():
     ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
     P.panel(ax, 'a', 'Annual: the Reference against AR and AtP')
     zones = S.zone_handles()
-    ax.legend(handles=ax.get_legend_handles_labels()[0] + zones, loc='upper right', fontsize=S.FONT_MIN, ncol=2,
-              columnspacing=1.0, frameon=False)
+    hs, ls = ax.get_legend_handles_labels()
+    # the 50% band is drawn over the 90% band: its swatch overlays the two palette opacities (what the plot shows)
+    hs = [mc50_handle() if lab_ == 'Monte Carlo 50% band' else h_ for h_, lab_ in zip(hs, ls)]
+    ax.legend(handles=hs + zones, labels=ls + [z.get_label() for z in zones], loc='upper right', fontsize=S.FONT_MIN,
+              ncol=2, columnspacing=1.0, frameon=False, handler_map={tuple: HandlerTuple(ndivide=1, pad=0)})
     # the y-axis top: the smallest of FIG3A_YTOP, +100 kt, ... at which the legend lies above the 50% band and every
     # line in the years it spans (it may overlap the 90% band only)
     lg3 = ax.get_legend()
@@ -474,12 +478,12 @@ def fig3():
     b.grid(axis='x', visible=False)
     hb = [Patch(label='Cumulative carbon 2026–2050', **col_st),
           Patch(label='Monte Carlo 90% interval', facecolor=S.REFERENCE, alpha=S.OPACITY['mc_band_90'], lw=0),
-          Patch(label='Monte Carlo 50% interval', facecolor=S.REFERENCE,
-                alpha=1 - (1 - S.OPACITY['mc_band_90']) * (1 - S.OPACITY['mc_band_50']), lw=0),
+          mc50_handle(),
           Patch(label='Committed after 2050: B2/B4', **com_st['b2b4']),
           Patch(label='Committed after 2050: C1–C4', **com_st['c1c4'])]
-    b.legend(handles=hb, loc='upper left', fontsize=S.FONT_MIN, handlelength=1.6, frameon=False,
-             borderaxespad=0.2)
+    lb_ = [h_.get_label() if not isinstance(h_, tuple) else 'Monte Carlo 50% interval' for h_ in hb]
+    b.legend(handles=hb, labels=lb_, loc='upper left', fontsize=S.FONT_MIN, handlelength=1.6, frameon=False,
+             borderaxespad=0.2, handler_map={tuple: HandlerTuple(ndivide=1, pad=0)})
     P.panel(b, 'b', 'Cumulative')
     _save(fig, 'Fig3_reference_boundaries',
           note=f'Cumulative 2026-2050 {c:,.0f} kt (LoE AR {c / bar_:.2f}, AtP {c / batp:.1f}); Monte Carlo 90% interval '
@@ -936,7 +940,8 @@ def tornado_rows():
             # the lag from its shortest case (0 months, MODEL v3.3; the low end) to 19 months, 15 months a tick
             ('completion_lag_0_19', v('Completion lag 0 months (one-sided)', 'high'),
              v('Completion lag (15 / 19 months)', 'high'),
-             {'15 mo': v('Completion lag (15 / 19 months)', 'low')}),
+             {'0 mo': v('Completion lag 0 months (one-sided)', 'high'),        # labels the bar end (no tick)
+              '15 mo': v('Completion lag (15 / 19 months)', 'low')}),
             ('hh_pace', None, None, {},
              v('Household size: 2018-2023 census pace (one-sided)', 'high')),
             ('hh_propensity', None, None, {}, v('Living arrangements: Stats NZ B (one-sided)', 'high')),
@@ -957,6 +962,13 @@ def tornado_rows():
                      float(short['LoE_AR']), float(long_['LoE_AR']),
                      {f"{r['n']} yr": float(r['LoE_AR']) for _, r in bw.iloc[1:-1].iterrows()}))
     return rows, float(t['central_LoE_AR'].iloc[0])
+
+
+def mc50_handle():
+    """Fig3 legend swatch of the Monte Carlo 50% band / interval: the 90% and 50% fills overlaid (the 50% band is drawn
+    on top of the 90% band), each at its palette opacity."""
+    return (Patch(facecolor=S.REFERENCE, alpha=S.OPACITY['mc_band_90'], lw=0),
+            Patch(facecolor=S.REFERENCE, alpha=S.OPACITY['mc_band_50'], lw=0))
 
 
 FIG7A_BAR = 0.6                     # bar height (rows 1 apart): a visible gap between rows
@@ -1001,9 +1013,15 @@ def fig7():
         for val, col in bars:
             a.barh(k, val - c0, left=c0, height=FIG7A_BAR, **S.fill(col))
         for name, val in mid.items():
+            if val in (lo, hi):                       # a named bar end: the label beside the end, no tick
+                right = val > c0
+                a.annotate(name, (val, k), xytext=(2 if right else -2, 0), textcoords='offset points',
+                           ha='left' if right else 'right', va='center', fontsize=S.FONT_MIN, color=S.INK)
+                continue
             a.plot([val, val], [k - FIG7A_BAR / 2, k + FIG7A_BAR / 2], color=S.INK, lw=S.LW_THIN,
                    path_effects=P.TICK_HALO)
-            a.text(val, k + FIG7A_BAR / 2 + 0.02, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
+            a.text(val, k + FIG7A_BAR / 2 + 0.02, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK,
+                   path_effects=P.LABEL_HALO)
     a.axvline(c0, color=S.INK, lw=S.LW_THIN)
     a.set_yticks(np.arange(len(rows)))
     a.set_yticklabels([N.INPUT_LABEL.get(r[0], r[0]) for r in rows], fontsize=S.FONT_SMALL)   # naming.INPUT_LABEL

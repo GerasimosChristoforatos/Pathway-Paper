@@ -4,18 +4,18 @@ The Reference, median demographics, kt CO2e. Upfront = materials and constructio
 
 | term | 2025 factors (none, A4-A5 held) | decarbonised (adopted) |
 |---|---|---|
-| upfront (A1-A5 and soil carbon loss), 2026-2050 | 28,385.3 | 24,737.7 |
+| upfront (A1-A5 and soil carbon loss), 2026-2050 | 28,801.4 | 25,064.8 |
 | maintenance (B2, B4), 2026-2050 | 490.7 | 438.0 |
-| **carbon 2026-2050 (reported total)** | **28,876.0** | **25,175.7** |
-| committed B2/B4 after 2050 (upper: 2025 factors) | 4,882.3 | 4,882.3 |
-| committed B2/B4 after 2050 (lower: 2050 factors held) | 4,882.3 | 3,962.2 |
-| committed C1-C4 (2025 factors) | 5,620.7 | 5,620.7 |
-| sum, committed upper | 39,379.0 | 35,678.7 |
-| sum, committed lower | 39,379.0 | 34,758.6 |
-| whole life at construction (A4-A5 held) | 39,379.0 | 36,224.6 |
-| less A4-A5 decarbonisation of construction (Resch et al. 2021) | - | -493.1 |
+| **carbon 2026-2050 (reported total)** | **29,292.1** | **25,502.8** |
+| committed B2/B4 after 2050 (upper: 2025 factors) | 4,960.2 | 4,960.2 |
+| committed B2/B4 after 2050 (lower: 2050 factors held) | 4,960.2 | 4,025.9 |
+| committed C1-C4 (2025 factors) | 5,701.9 | 5,701.9 |
+| sum, committed upper | 39,954.2 | 36,164.8 |
+| sum, committed lower | 39,954.2 | 35,230.6 |
+| whole life at construction (A4-A5 held) | 39,954.2 | 36,724.7 |
+| less A4-A5 decarbonisation of construction (Resch et al. 2021) | - | -507.1 |
 | less decarbonisation of maintenance within 2026-2050 | - | -52.7 |
-| = sum, committed upper | 39,379.0 | 35,678.7 |
+| = sum, committed upper | 39,954.2 | 36,164.8 |
 
 | identity | holds (relative tolerance 1e-9) |
 |---|---|

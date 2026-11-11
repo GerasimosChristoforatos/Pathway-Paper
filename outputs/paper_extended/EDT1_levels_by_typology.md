@@ -2,9 +2,9 @@
 
 | Lever | Sub-rule | Typology | Parameter | Moderate | Ambitious | TL |
 |---|---|---|---|---|---|---|
-| L1 Household size | C | Detached | household size 2050 (all typologies) | 2.51 | 2.546 | 2.79 |
-| L1 Household size | C | Townhouses | household size 2050 (all typologies) | 2.51 | 2.546 | 2.79 |
-| L1 Household size | C | Apartments | household size 2050 (all typologies) | 2.51 | 2.546 | 2.79 |
+| L1 Household size | C | Detached | household size 2050 (all typologies) | 2.503 | 2.542 | 2.79 |
+| L1 Household size | C | Townhouses | household size 2050 (all typologies) | 2.503 | 2.542 | 2.79 |
+| L1 Household size | C | Apartments | household size 2050 (all typologies) | 2.503 | 2.542 | 2.79 |
 | L2 Vacancy rate | B | Detached | vacancy rate (all typologies) | 0.047 | 0.04013 | 0 |
 | L2 Vacancy rate | B | Townhouses | vacancy rate (all typologies) | 0.047 | 0.04013 | 0 |
 | L2 Vacancy rate | B | Apartments | vacancy rate (all typologies) | 0.047 | 0.04013 | 0 |
@@ -17,9 +17,9 @@
 | L5 Occupancy density | A | Detached | r (ratio to the Reference) | 0.9097 | 0.8194 | 0.7095 |
 | L5 Occupancy density | A | Townhouses | r (ratio to the Reference) | 0.9097 | 0.8194 | 0.8194 |
 | L5 Occupancy density | A | Apartments | r (ratio to the Reference) | 0.9097 | 0.8194 | 0.8194 |
-| L6 Brownfield-first development | C | Detached | s, brownfield share (all typologies) | 0.3397 | 0.59 | 1 |
-| L6 Brownfield-first development | C | Townhouses | s, brownfield share (all typologies) | 0.3397 | 0.59 | 1 |
-| L6 Brownfield-first development | C | Apartments | s, brownfield share (all typologies) | 0.3397 | 0.59 | 1 |
+| L6 Brownfield-first development | C | Detached | s, brownfield share (all typologies) | 0.3391 | 0.59 | 1 |
+| L6 Brownfield-first development | C | Townhouses | s, brownfield share (all typologies) | 0.3391 | 0.59 | 1 |
+| L6 Brownfield-first development | C | Apartments | s, brownfield share (all typologies) | 0.3391 | 0.59 | 1 |
 | L7 Soil-aware planning | C | Detached | soil carbon loss (kg CO2e/m2 floor area) | 46.47 | 42.81 | 22.93 |
 | L7 Soil-aware planning | C | Townhouses | soil carbon loss (kg CO2e/m2 floor area) | 28.06 | 25.85 | 13.84 |
 | L7 Soil-aware planning | C | Apartments | soil carbon loss (kg CO2e/m2 floor area) | 5.11 | 4.708 | 2.521 |

@@ -1,6 +1,6 @@
 {
  "figure": "SF6_hindcast",
- "producer": "redraw.py",
+ "producer": "../../../tmp/claude-0/venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "Hindcast from 2006",
@@ -86,7 +86,7 @@
   "b",
   "c",
   "d",
-  "ratio 1.36"
+  "ratio 1.21"
  ],
  "note": "Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the information available then; errors at the end of each window, vacancy on the consistent definition. The four replacement variants use only the census intervals ending at or before the origin: Low the long-run dwelling-count rate, Reference the last intercensal rate fading to it (10-year half-life), High the last rate held, Very High the weighted linear trend of the interval rates (3, 4 and 5 intervals at the 2006, 2013 and 2018 origins). d: building of the first year the run without 2026 data models, observed in the pipeline (consents lagged), against that run.",
  "maintenance_drawn": false,

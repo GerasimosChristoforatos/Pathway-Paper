@@ -2173,10 +2173,10 @@
       2026
     ],
     "target_year": 2027,
-    "model_built_all": 28385.902164146803,
+    "model_built_all": 31874.009127949073,
     "model_consent_equivalent_2026": null,
     "observed_pipeline_built_all": 38658.06,
-    "ratio_observed_to_model": 1.3618753343280237,
+    "ratio_observed_to_model": 1.212839584905002,
     "observed_from": "consents [2026, 2027] lagged 17 months",
     "model_settings": {
       "CONSENT_DATA_END": "2025-12-01",

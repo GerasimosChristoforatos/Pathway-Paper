@@ -4,27 +4,27 @@ Reference: net replacement fading from the 2018-2023 rate to the long-run rate (
 
 | metric | value |
 |---|---|
-| Built floor area 2026-2050, Reference (Mm2) | 81.53 |
-| Embodied carbon 2026-2050, Reference (kt CO2e) | 19,761 |
-| Upfront carbon (A1-A5 and soil carbon loss), Reference (kt CO2e) | 19,403 |
-| Soil carbon loss, Reference (kt CO2e) | 3,014 |
-| Embodied carbon excluding soil carbon loss, Reference (kt CO2e) | 16,747 |
+| Built floor area 2026-2050, Reference (Mm2) | 103.94 |
+| Embodied carbon 2026-2050, Reference (kt CO2e) | 25,176 |
+| Upfront carbon (A1-A5 and soil carbon loss), Reference (kt CO2e) | 24,738 |
+| Soil carbon loss, Reference (kt CO2e) | 3,931 |
+| Embodied carbon excluding soil carbon loss, Reference (kt CO2e) | 21,245 |
 | 2025 -> 2026 step in built floor area (%) | +1.4 |
-| Household size 2050, Reference | 2.652 |
-| Retirement-village floor area 2026-2050, out of scope (Mm2) | 4.43 |
-| 2026 overbuild: 2026 building above requirement (dwellings) | +12,702 |
-| 2026 overbuild: gap_ref (building 2026 - requirement 2027) | +11,848 |
-| 2026 overbuild: net dwellings added 2026-2050 | -0 |
-| MC floor area p5 (Mm2) | 60.30 |
-| MC floor area p50 (Mm2) | 81.26 |
-| MC floor area mean (Mm2) | 81.70 |
-| MC floor area p95 (Mm2) | 104.68 |
-| MC carbon p5 (kt) | 14,575 |
-| MC carbon p50 (kt) | 19,709 |
-| MC carbon mean (kt) | 19,809 |
-| MC carbon p95 (kt) | 25,503 |
-| Reference run percentile in MC, floor area | 50.6 |
-| Reference run percentile in MC, carbon | 50.9 |
+| Household size 2050, Reference | 2.473 |
+| Retirement-village floor area 2026-2050, out of scope (Mm2) | 5.65 |
+| 2026 overbuild: 2026 building above requirement (dwellings) | +6,225 |
+| 2026 overbuild: gap_ref (building 2026 - requirement 2027) | +5,013 |
+| 2026 overbuild: net dwellings added 2026-2050 | -18,966 |
+| MC floor area p5 (Mm2) | 86.27 |
+| MC floor area p50 (Mm2) | 103.85 |
+| MC floor area mean (Mm2) | 104.44 |
+| MC floor area p95 (Mm2) | 123.92 |
+| MC carbon p5 (kt) | 20,726 |
+| MC carbon p50 (kt) | 25,175 |
+| MC carbon mean (kt) | 25,303 |
+| MC carbon p95 (kt) | 30,377 |
+| Reference run percentile in MC, floor area | 50.2 |
+| Reference run percentile in MC, carbon | 50.0 |
 | Hindcast error, origin 2006, model method (%) | -3.9 |
 | Hindcast error, origin 2013, model method (%) | +5.4 |
 | Hindcast error, origin 2018, model method (%) | -10.5 |
@@ -32,21 +32,21 @@ Reference: net replacement fading from the 2018-2023 rate to the long-run rate (
 | Hindcast error, origin 2013, Reference rule (%) | +10.6 |
 | Hindcast error, origin 2018, Reference rule (%) | -11.4 |
 | 2026 model consent-equivalents (all categories) | n/a |
-| 2026 observed / model consents, year to date | 1.362 |
+| 2026 observed / model consents, year to date | 1.213 |
 
 ## The Reference and its replacement variants (deterministic)
 
 | variant | floor area 2026-2050 (Mm2) | carbon 2026-2050 (kt) | of which soil carbon loss (kt) | carbon excl. soil carbon loss (kt) | materials and construction (A1-A5) and soil carbon loss (kt) |
 |---|---|---|---|---|---|
-| Low replacement | 77.38 | 18,898 | 3,014 | 15,884 | 18,560 |
-| Reference, replacement half-life 5 yr | 79.68 | 19,389 | 3,014 | 16,375 | 19,037 |
-| Reference | 81.53 | 19,761 | 3,014 | 16,747 | 19,403 |
-| Reference, replacement half-life 15 yr | 82.68 | 19,987 | 3,014 | 16,972 | 19,625 |
-| High replacement | 86.72 | 20,770 | 3,014 | 17,755 | 20,398 |
-| Very High replacement (trend continues) | 92.18 | 21,807 | 3,014 | 18,792 | 21,427 |
-| Low replacement, no census under-construction correction | 77.38 | 18,898 | 3,014 | 15,884 | 18,560 |
-| Reference, no census under-construction correction | 81.53 | 19,761 | 3,014 | 16,747 | 19,403 |
-| High replacement, no census under-construction correction | 86.72 | 20,770 | 3,014 | 17,755 | 20,398 |
+| Low replacement | 99.65 | 24,285 | 3,931 | 20,355 | 23,869 |
+| Reference, replacement half-life 5 yr | 102.00 | 24,788 | 3,931 | 20,857 | 24,357 |
+| Reference | 103.94 | 25,176 | 3,931 | 21,245 | 24,738 |
+| Reference, replacement half-life 15 yr | 105.14 | 25,412 | 3,931 | 21,481 | 24,970 |
+| High replacement | 109.40 | 26,235 | 3,931 | 22,304 | 25,784 |
+| Very High replacement (trend continues) | 115.17 | 27,331 | 3,931 | 23,400 | 26,871 |
+| Low replacement, no census under-construction correction | 99.65 | 24,285 | 3,931 | 20,355 | 23,869 |
+| Reference, no census under-construction correction | 103.94 | 25,176 | 3,931 | 21,245 | 24,738 |
+| High replacement, no census under-construction correction | 109.40 | 26,235 | 3,931 | 22,304 | 25,784 |
 
 ## Planetary-boundary layer (AESA): climate change, 2 °C carrying capacity (Bjørn & Hauschild 2015)
 
@@ -65,33 +65,33 @@ Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted 
 | Boundary AtP 2026 (kt CO2e) | 43.35 |
 | Boundary AtP 2050 (kt CO2e) | 45.87 |
 | B_AtP / B_AR (constant over time) | 0.2514 |
-| Cumulative LoE 2026-2050, AR, Reference | 4.46 |
-| Cumulative LoE AR, MC p5 (Reference) | 3.45 |
-| Cumulative LoE AR, MC p50 (Reference) | 4.45 |
-| Cumulative LoE AR, MC p95 (Reference) | 5.49 |
-| Cumulative LoE 2026-2050, AtP, Reference | 17.8 |
-| Cumulative LoE AtP, MC p5 (Reference) | 13.6 |
-| Cumulative LoE AtP, MC p50 (Reference) | 17.7 |
-| Cumulative LoE AtP, MC p95 (Reference) | 22.0 |
+| Cumulative LoE 2026-2050, AR, Reference | 5.69 |
+| Cumulative LoE AR, MC p5 (Reference) | 4.88 |
+| Cumulative LoE AR, MC p50 (Reference) | 5.70 |
+| Cumulative LoE AR, MC p95 (Reference) | 6.57 |
+| Cumulative LoE 2026-2050, AtP, Reference | 22.6 |
+| Cumulative LoE AtP, MC p5 (Reference) | 19.2 |
+| Cumulative LoE AtP, MC p50 (Reference) | 22.6 |
+| Cumulative LoE AtP, MC p95 (Reference) | 26.4 |
 
 | variant (deterministic) | cumulative LoE AR | cumulative LoE AtP |
 |---|---|---|
-| High replacement | 4.69 | 18.7 |
-| High replacement, no census under-construction correction | 4.69 | 18.7 |
-| Low replacement | 4.27 | 17.0 |
-| Low replacement, no census under-construction correction | 4.27 | 17.0 |
-| Reference | 4.46 | 17.8 |
-| Reference, replacement half-life 15 yr | 4.52 | 18.0 |
-| Reference, replacement half-life 5 yr | 4.38 | 17.4 |
-| Reference, no census under-construction correction | 4.46 | 17.8 |
-| Very High replacement (trend continues) | 4.93 | 19.6 |
+| High replacement | 5.93 | 23.6 |
+| High replacement, no census under-construction correction | 5.93 | 23.6 |
+| Low replacement | 5.49 | 21.8 |
+| Low replacement, no census under-construction correction | 5.49 | 21.8 |
+| Reference | 5.69 | 22.6 |
+| Reference, replacement half-life 15 yr | 5.74 | 22.8 |
+| Reference, replacement half-life 5 yr | 5.60 | 22.3 |
+| Reference, no census under-construction correction | 5.69 | 22.6 |
+| Very High replacement (trend continues) | 6.17 | 24.6 |
 
 | variant (Monte Carlo) | cumulative LoE AR p5 / p50 / p95 | cumulative LoE AtP p5 / p50 / p95 |
 |---|---|---|
-| High replacement | 3.68 / 4.69 / 5.73 | 14.5 / 18.6 / 23.0 |
-| Low replacement | 3.27 / 4.26 / 5.30 | 12.9 / 17.0 / 21.2 |
-| Reference | 3.45 / 4.45 / 5.49 | 13.6 / 17.7 / 22.0 |
-| Very High replacement (trend continues) | 3.90 / 4.92 / 5.97 | 15.4 / 19.6 / 24.0 |
+| High replacement | 5.12 / 5.94 / 6.82 | 20.1 / 23.6 / 27.4 |
+| Low replacement | 4.71 / 5.49 / 6.36 | 18.5 / 21.9 / 25.6 |
+| Reference | 4.88 / 5.70 / 6.57 | 19.2 / 22.6 / 26.4 |
+| Very High replacement (trend continues) | 5.36 / 6.19 / 7.09 | 21.0 / 24.6 / 28.5 |
 
 ## Maintenance 2026-2050 and committed after 2050 (deterministic, kt CO2e)
 
@@ -99,7 +99,7 @@ Committed after 2050: later maintenance events (B2, B4; lower bound: 2050 factor
 
 | variant | maintenance (B2, B4) 2026-2050 | share of carbon 2026-2050 | committed B2/B4 | committed C1-C4 | committed total | years of the 2050 AR boundary |
 |---|---|---|---|---|---|---|
-| Low replacement | 338 | 1.8% | 2,936-3,618 | 4,186 | 7,122-7,805 | 39.0-42.8 |
-| Reference | 359 | 1.8% | 3,091-3,810 | 4,410 | 7,502-8,220 | 41.1-45.1 |
-| High replacement | 371 | 1.8% | 3,299-4,065 | 4,691 | 7,990-8,756 | 43.8-48.0 |
-| Very High replacement (trend continues) | 380 | 1.7% | 3,522-4,339 | 4,986 | 8,508-9,324 | 46.6-51.1 |
+| Low replacement | 416 | 1.7% | 3,802-4,685 | 5,389 | 9,191-10,074 | 50.4-55.2 |
+| Reference | 438 | 1.7% | 3,962-4,882 | 5,621 | 9,583-10,503 | 52.5-57.6 |
+| High replacement | 451 | 1.7% | 4,181-5,151 | 5,916 | 10,097-11,067 | 55.3-60.7 |
+| Very High replacement (trend continues) | 460 | 1.7% | 4,417-5,441 | 6,228 | 10,644-11,668 | 58.3-64.0 |

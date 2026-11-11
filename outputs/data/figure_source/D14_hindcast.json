@@ -2,7 +2,7 @@
 "check_2026": {
 "data_end": "2025-12-01",
 "lag_months": 17,
-"model_built_all": 28385.902164146803,
+"model_built_all": 31874.009127949073,
 "model_consent_equivalent_2026": null,
 "model_settings": {
 "CONSENT_DATA_END": "2025-12-01",
@@ -13,7 +13,7 @@
 "pipeline_years_without_2026_data": [
 2026
 ],
-"ratio_observed_to_model": 1.3618753343280237,
+"ratio_observed_to_model": 1.212839584905002,
 "status": "pipeline",
 "target_year": 2027
 },

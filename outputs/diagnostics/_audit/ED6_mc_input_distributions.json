@@ -1,6 +1,6 @@
 {
  "figure": "ED6_mc_input_distributions",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Population and household size",

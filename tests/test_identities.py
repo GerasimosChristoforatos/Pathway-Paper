@@ -191,14 +191,21 @@ def test_band_stack_is_the_total(B):
 
 
 def test_household_size_shape_passes_through_published_knots():
-    """S_TAIL interpolation reproduces every published Stats NZ value exactly and is
-    flat after the last knot."""
+    """S_TAIL interpolation reproduces every published Stats NZ value exactly; after the last knot S is linear at
+    the end slope of the mode (pchip_secant: the secant slope of the last published interval)."""
     import projection
     S_k, S_ann, _ = projection.statsnz_size_shape(projection.HH_SIZE_VARIANT, np.arange(2025, 2051), tail=projection.S_TAIL)
     yrs = S_k['Year'].astype(int).values
     assert close(S_ann.loc[yrs].values, S_k['S'].values, rel=1e-12)
-    if projection.S_TAIL == 'hermite_clamped':
-        assert close(S_ann.loc[yrs[-1]:].values, np.full(len(S_ann.loc[yrs[-1]:]), S_k['S'].values[-1]), rel=1e-12)
+    if projection.S_TAIL == 'pchip_secant':
+        s = S_k['S'].values
+        slope = (s[-1] - s[-2]) / (yrs[-1] - yrs[-2])
+        after = S_ann.loc[yrs[-1]:]
+        assert close(after.values, s[-1] + slope * (after.index.values - yrs[-1]), rel=1e-12)
+        assert abs((S_ann.loc[yrs[-1]] - S_ann.loc[yrs[-1] - 1]) - slope) < abs(slope)   # sanity, annual grid
+    for mode in projection.S_TAIL_MODES:                 # every mode passes through every knot
+        _, Sm, _ = projection.statsnz_size_shape(projection.HH_SIZE_VARIANT, np.arange(2025, 2051), tail=mode)
+        assert close(Sm.loc[yrs].values, S_k['S'].values, rel=1e-12)
 
 
 def test_d05_history_bands_sum_to_dwellings_built(B):

@@ -118,7 +118,9 @@ def lines():
           f'sample N = {MC.N_SOBOL:,} ({MC.N_SOBOL * (d + 2):,} model evaluations), the estimators of Saltelli et al. '
           f"(2010) and Jansen (1999) as implemented in scipy.stats.sobol_indices (scipy "
           f"{importlib.metadata.version('scipy')}), with BCa {100 * cl:g}% intervals from {n_res:,} bootstrap resamples "
-          f'(Efron 1987). Total indices of cumulative carbon 2026-2050: {top}.', '']
+          f'(Efron 1987). Total indices of cumulative carbon 2026-2050: {top}. Population and household size are '
+          'one grouped input (one z, perfectly dependent): their indices are grouped Sobol indices (Jacques, Lavergne '
+          '& Devictor 2006).', '']
     B = int(imp['bootstrap_resamples'].iloc[0])
     L += [f'**Pathway Monte Carlo** (pathways_mc.py). The Reference, the Moderate and Ambitious Pathways and the '
           'Theoretical Limit are run on the same draws (paired), so their differences are draw by draw. The importance '

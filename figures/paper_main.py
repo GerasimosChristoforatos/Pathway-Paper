@@ -222,8 +222,8 @@ def fig1():
                f"{_month(ob.get('consents_observed_to'))}); the part above modelled need fades from "
                f"{max(pipe) + 1} (ρ = {ob['rho']:.2f}) and is absorbed by {ob['absorption_end']}. 2026 population: "
                f"Stats NZ ERP nowcast. Six display bands (data/bands_display_map.csv); market balance = unexplained "
-               f"building + retirement villages (out of scope) + overbuild / pipeline excess + overbuild absorbed + "
-               f"surplus kept vacant. Negative bands drawn down from zero: "
+               f"building + retirement villages (out of scope) + overbuild / pipeline excess + surplus absorbed (the "
+               f"starting surplus and the overbuild) + surplus kept vacant. Negative bands drawn down from zero: "
                f"{', '.join(P.band_label(b) for b in neg)}. Black line: floor area built (in scope), annual "
                f"1992-2050 (straight segments between year centres; history 1992-2025 from consents, projection from "
                f"2026); grey caps: census-interval means of the history columns (the mean of the annual values over "
@@ -303,7 +303,25 @@ def fig2():
     c = float(total.sum())
     bsum = band.sum()
     msum = mat.sum()
-    P.bars_cumulative(d, [0.0], [(b, bsum[b]) for b in band.columns if abs(bsum[b]) > 1e-12], 1.0, net=c)
+    # the demand column as panels a-c: positive bands stacked up from zero, negative bands (the absorption of the
+    # starting surplus and the overbuild in Market balance, ...) solid, stacked down from zero; the net total a black
+    # marker at its value
+    up_, dn_ = 0.0, 0.0
+    for b in band.columns:
+        v = float(bsum[b])
+        if abs(v) <= 1e-12:
+            continue
+        if v > 0:
+            d.bar([0.0], [v], bottom=[up_], width=1.0, gid='band_segment', **P.band_style(b))
+            up_ += v
+        else:
+            d.bar([0.0], [v], bottom=[dn_], width=1.0, gid='band_segment', **P.band_style(b))
+            dn_ += v
+    if not np.isclose(up_ + dn_, c, rtol=1e-9):
+        raise SystemExit('STOP: Fig2d: the demand bands do not add up to the cumulative carbon.')
+    d.plot([-0.42, 0.42], [c, c], color=S.INK, lw=S.LW_BOLD, solid_capstyle='butt', zorder=7, gid=P.NET_GID)
+    if dn_ < 0:
+        d.axhline(0, color=S.INK, lw=S.LW_THIN, zorder=6)
     bot = 0.0
     for code, _, colour in S.MATERIAL:                                  # the material order of panel b
         if code in msum.index:
@@ -329,8 +347,11 @@ def fig2():
     P.panel(d, 'd', 'Cumulative')
     fig.subplots_adjust(left=0.07, right=0.99, bottom=FIG2_BOTTOM, top=0.94)
     _save(fig, 'Fig2_reference_carbon', note=f'2026-2050: {c:,.0f} kt CO₂e; (d) the demand column: positive bands '
-                                              f'stacked to {sum(v for v in bsum if v > 0):,.0f} kt, negative bands '
-                                              'outlined, hanging down to the total.')
+                                              f'stacked up from zero to {sum(v for v in bsum if v > 0):,.0f} kt, '
+                                              f'negative bands ({sum(v for v in bsum if v < 0):,.0f} kt: the '
+                                              'absorption of the starting surplus and the 2026 overbuild in Market '
+                                              'balance) solid below zero, as in panels a-c; the black marker is the '
+                                              'net total.')
 
 
 # ---------------------------------------------------------------------------
@@ -338,6 +359,9 @@ def fig2():
 # ---------------------------------------------------------------------------
 # the 90% interval (5th-95th percentile of the draws), as every spread of draws in the suite
 FIG3_INTERVAL = (5.0, 95.0)
+FIG3A_YTOP = 1700                   # kt: the legend overlaps the 90% band only (checked)
+FIG3B_HATCH = {'column': '////', 'b2b4': 'xxx', 'c1c4': '...'}
+FIG3B_HATCH_LW = 0.4                # faint hatch lines (pt)
 
 
 def mc_cumulative_interval():
@@ -396,31 +420,51 @@ def fig3():
     zones = S.zone_handles()
     ax.legend(handles=ax.get_legend_handles_labels()[0] + zones, loc='upper right', fontsize=S.FONT_MIN, ncol=2,
               columnspacing=1.0, frameon=False)
-    ax.set_ylim(0, 1540)
+    # the y-axis top: the smallest of FIG3A_YTOP, +100 kt, ... at which the legend lies above the 50% band and every
+    # line in the years it spans (it may overlap the 90% band only)
+    lg3 = ax.get_legend()
+    tops = [q[75], q[50]] + [pa[pa['run'] == r_].set_index('year').loc[years.astype(int), 'carbon_kt'].values
+                             for r_ in (f'{N.PATHWAY}-moderate', f'{N.PATHWAY}-ambitious', 'TL')]
+    for ytop in range(FIG3A_YTOP, 3 * FIG3A_YTOP, 100):
+        ax.set_ylim(0, ytop)
+        fig.canvas.draw()
+        lb = lg3.get_window_extent().transformed(ax.transData.inverted())
+        under = (years >= lb.x0) & (years <= lb.x1)
+        worst = max(float(np.max(np.asarray(t_, float)[under])) for t_ in tops)
+        if worst < lb.y0:
+            break
+    else:
+        raise SystemExit('STOP: Fig3a: no y-axis top keeps the legend clear of the 50% band and the lines.')
     b = fig.add_subplot(gs[1])
     c = float(proj['carbon_kt'])
     lo90, hi90 = mc_cumulative_interval()
     lo50, hi50 = mc_cumulative_interval50()
     com = proj['committed']
     wd = 0.55
-    whisk = dict(color=S.INK, lw=S.LW, capsize=3.0, capthick=S.LW, zorder=6)
-    b.bar([0], [c], width=wd, **S.fill(S.CUMULATIVE_FIG3B))     # palette.toml [cumulative]
-    # a thin white halo keeps the whisker and the budget lines visible where they cross the near-black column
+    # the 2026-2050 column: a light (white) fill with a faint hatch in the column colour (palette.toml [cumulative])
+    col_st = dict(facecolor=S.NEUTRALS['white'], edgecolor=S.CUMULATIVE_FIG3B, lw=S.LW_THIN, hatch=FIG3B_HATCH['column'])
+    b.bar([0], [c], width=wd, hatch_linewidth=FIG3B_HATCH_LW, **col_st)
+    # the Monte Carlo intervals as the Fig3a fans: the Reference grey at the fan opacities over a white underlay (so
+    # the hatch does not show through): 90% the lighter, wider box; 50% the darker, narrower box on top of it
     import matplotlib.patheffects as pe
     halo = [pe.withStroke(linewidth=S.LW + 1.2, foreground='white')]
-    eb = b.errorbar([0], [c], yerr=[[c - lo90], [hi90 - c]], fmt='none', **whisk)
-    for art in list(eb.lines[1]) + list(eb.lines[2]):
-        art.set_path_effects(halo)
-    b.bar([0], [hi50 - lo50], bottom=[lo50], width=wd * 0.35, facecolor='white', alpha=S.FIXED_FADES['interval_box'], edgecolor=S.INK,
-          lw=S.LW_THIN, zorder=7)                                   # the 50% interval, lighter, narrower
+    for (lo_i, hi_i), w_i, alphas in (((lo90, hi90), wd * 0.62, (S.OPACITY['mc_band_90'],)),
+                                      ((lo50, hi50), wd * 0.36, (S.OPACITY['mc_band_90'], S.OPACITY['mc_band_50']))):
+        b.bar([0], [hi_i - lo_i], bottom=[lo_i], width=w_i, facecolor=S.NEUTRALS['white'], lw=0, zorder=6)
+        for al in alphas:
+            b.bar([0], [hi_i - lo_i], bottom=[lo_i], width=w_i, facecolor=S.REFERENCE, alpha=al, lw=0, zorder=6)
+    b.plot([-wd * 0.31, wd * 0.31], [c, c], color=S.INK, lw=S.LW, zorder=7)        # the deterministic total
     bar_, batp = float(a['B_AR_kgCO2e'].sum()) / M, float(a['B_AtP_kgCO2e'].sum()) / M
     for v, key in ((bar_, 'AR'), (batp, 'AtP')):
         st = {k: val for k, val in S.BOUNDARY[key].items() if k != 'label'}
         b.plot([-0.36, 0.36], [v, v], gid='boundary', path_effects=halo, **st)
         b.text(-0.38, v, f'{key} budget', ha='right', va='center', fontsize=S.FONT_MIN, color=S.INK)
     cc, bl, bu = float(com['C_kt']), float(com['B_lower_kt']), float(com['B_upper_kt'])
-    b.bar([1], [cc], width=wd, **S.fill(S.COMPONENT['committed'][0]))
-    b.bar([1], [bl], bottom=[cc], width=wd, **S.fill(S.COMPONENT['maintenance'][0]))
+    # committed after 2050: two stacked hatched segments, no fill, hatches unlike the 2026-2050 column
+    com_st = {k: dict(facecolor='none', edgecolor=S.COMPONENT[key][0], lw=S.LW_THIN, hatch=FIG3B_HATCH[k])
+              for k, key in (('c1c4', 'committed'), ('b2b4', 'maintenance'))}
+    b.bar([1], [cc], width=wd, hatch_linewidth=2 * FIG3B_HATCH_LW, **com_st['c1c4'])
+    b.bar([1], [bl], bottom=[cc], width=wd, hatch_linewidth=2 * FIG3B_HATCH_LW, **com_st['b2b4'])
     b.set_xlim(-1.04, 1.36)                                           # tight
     b.set_xticks([0, 1])
     b.set_xticklabels(['2026–2050', 'Committed\nafter 2050'], fontsize=S.FONT_MIN + 0.5)
@@ -428,11 +472,12 @@ def fig3():
     b.set_ylabel('Cumulative carbon (kt CO₂e)')
     P.thousands(b.yaxis)
     b.grid(axis='x', visible=False)
-    hb = [Patch(label='Cumulative carbon 2026–2050', **S.fill(S.CUMULATIVE_FIG3B)),
-          Line2D([0], [0], color=S.INK, lw=S.LW, marker='_', markersize=8, label='90% interval (5th–95th percentile)'),
-          Patch(label='50% interval (25th–75th percentile)', facecolor=S.NEUTRALS['interval_box_legend'], edgecolor=S.INK, lw=S.LW_THIN),
-          Patch(label='Committed after 2050: B2/B4', **S.fill(S.COMPONENT['maintenance'][0])),
-          Patch(label='Committed after 2050: C1–C4', **S.fill(S.COMPONENT['committed'][0]))]
+    hb = [Patch(label='Cumulative carbon 2026–2050', **col_st),
+          Patch(label='Monte Carlo 90% interval', facecolor=S.REFERENCE, alpha=S.OPACITY['mc_band_90'], lw=0),
+          Patch(label='Monte Carlo 50% interval', facecolor=S.REFERENCE,
+                alpha=1 - (1 - S.OPACITY['mc_band_90']) * (1 - S.OPACITY['mc_band_50']), lw=0),
+          Patch(label='Committed after 2050: B2/B4', **com_st['b2b4']),
+          Patch(label='Committed after 2050: C1–C4', **com_st['c1c4'])]
     b.legend(handles=hb, loc='upper left', fontsize=S.FONT_MIN, handlelength=1.6, frameon=False,
              borderaxespad=0.2)
     P.panel(b, 'b', 'Cumulative')
@@ -441,7 +486,8 @@ def fig3():
                f'{lo90:,.0f}-{hi90:,.0f} kt ({FIG3_INTERVAL[0]:g}th-{FIG3_INTERVAL[1]:g}th percentile of the cumulative '
                f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt; committed after 2050 (drawn at the lower '
                f'bound): C1-C4 {cc:,.0f} kt (2025 factors) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held; '
-               f'{bu:,.0f} kt with 2025 factors). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are '
+               f'{bu:,.0f} kt with 2025 factors); no Monte Carlo interval on the committed column (the committed '
+               f'emissions are not computed per draw). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are '
                f'shape-preserving (PCHIP) interpolation through the annual values, not smoothed across the observed '
                f'-> modelled join after {int(brk[0])}; bands: ' + ', '.join(f'{k} {v}' for k, v in methods.items()) + '.')
 
@@ -572,6 +618,7 @@ def reduction_by_band():
 # ---------------------------------------------------------------------------
 FIG5_LIM = (-0.05, 0.90)        # both axes from -5% to 90%
 FIG5_N = 381                   # grid points per axis (0.25% steps)
+FIG5_LEVELS = (1, 2, 3, 4, 5)  # contour levels of the LoE of AR (1 = the AR line)
 FIG5_MARKER_MARGIN = 0.03      # every marker at least this far inside the square (a marker on the edge is clipped)
 
 
@@ -673,8 +720,11 @@ def fig5():
     ax.axhline(0, color=S.INK, lw=S.LW_THIN * 0.7, zorder=2)
     ax.axvline(0, color=S.INK, lw=S.LW_THIN * 0.7, zorder=2)
     zmin, zmax = float(Z.min()), float(Z.max())
-    levels = [v for v in (1.25, 1.5, 2, 2.5, 3, 4, 5, 6, 8) if zmin < v < zmax]
-    cs = ax.contour(100 * X, 100 * Y, Z, levels=levels, colors=S.MUTED, linewidths=S.LW_THIN * 0.7)
+    # contours at LoE of AR 2, 3, 4, 5 (grey); level 1 is the AR line (drawn exactly above): its contour is drawn
+    # invisibly here only so that it carries the same label as the others
+    levels = [v for v in FIG5_LEVELS if zmin < v < zmax]
+    cs = ax.contour(100 * X, 100 * Y, Z, levels=levels, colors=S.MUTED,
+                    linewidths=[0.0 if v == 1 else S.LW_THIN * 0.7 for v in levels])
     # labels where each contour crosses the diagonal x = y: (1 - x)^2 = k
     diag = {v: 1.0 - np.sqrt(fig5_k(bc, v)) for v in levels if fig5_k(bc, v) > 0}
     lab_levels = [v for v, d in diag.items() if 0.02 <= d <= 0.98]      # crossings inside the square only
@@ -693,7 +743,13 @@ def fig5():
                 pick = (d + s, d - s)
                 break
         pos.append(pick)
-    ax.clabel(cs, levels=lab_levels, fmt=lambda v: f'LoE of AR {v:g}', fontsize=S.FONT_MIN, manual=pos)
+    for t_ in ax.clabel(cs, levels=lab_levels, fmt=lambda v: f'LoE of AR {v:g}', fontsize=S.FONT_MIN, manual=pos):
+        if t_.get_text() == 'LoE of AR 1':        # beside the AR line (which is not broken under it): 5 pt off the
+            th = np.deg2rad(t_.get_rotation())    # line, perpendicular to it, on the side of the origin
+            nrm = min(((-np.sin(th), np.cos(th)), (np.sin(th), -np.cos(th))), key=lambda v: v[0] + v[1])
+            import matplotlib.transforms as mtrans
+            t_.set_transform(mtrans.offset_copy(t_.get_transform(), fig=fig, x=5 * nrm[0], y=5 * nrm[1],
+                                                units='points'))
     for m in bc['solution_space_markers']:
         run = m['run']
         if not all(lo + FIG5_MARKER_MARGIN <= v <= hi - FIG5_MARKER_MARGIN
@@ -877,9 +933,10 @@ def tornado_rows():
              v('Replacement half-life (5 / 15 yr)', 'high'), {}),
             ('completion_rate', v('Completion rate (0.93 / 0.96)', 'low'),
              v('Completion rate (0.93 / 0.96)', 'high'), {}),
-            ('completion_lag', v('Completion lag (15 / 19 months)', 'low'),
+            # the lag from its shortest case (0 months, MODEL v3.3; the low end) to 19 months, 15 months a tick
+            ('completion_lag_0_19', v('Completion lag 0 months (one-sided)', 'high'),
              v('Completion lag (15 / 19 months)', 'high'),
-             {'0 mo': v('Completion lag 0 months (one-sided)', 'high')}),
+             {'15 mo': v('Completion lag (15 / 19 months)', 'low')}),
             ('hh_pace', None, None, {},
              v('Household size: 2018-2023 census pace (one-sided)', 'high')),
             ('hh_propensity', None, None, {}, v('Living arrangements: Stats NZ B (one-sided)', 'high')),
@@ -902,6 +959,7 @@ def tornado_rows():
     return rows, float(t['central_LoE_AR'].iloc[0])
 
 
+FIG7A_BAR = 0.6                     # bar height (rows 1 apart): a visible gap between rows
 # Fig7a carbon-factor rows: (input id, sensitivity/tornado.csv input, AR-base rule row)
 FIG7_CARBON_FACTOR_ROWS = (('jackknife', 'Case-study carbon factors (jackknife)', 'Case studies: jackknife low / high'),
                            ('soil_order', 'Soil order (Raw / Organic)', 'Soil order: lowest (Raw) / highest (Organic)'))
@@ -941,10 +999,11 @@ def fig7():
     for k, (lab, lo, hi, mid, one) in enumerate(rows):
         bars = ((one, SINGLE_CASE),) if one is not None else ((lo, LOW_END), (hi, HIGH_END))
         for val, col in bars:
-            a.barh(k, val - c0, left=c0, height=0.62, **S.fill(col))
+            a.barh(k, val - c0, left=c0, height=FIG7A_BAR, **S.fill(col))
         for name, val in mid.items():
-            a.plot([val, val], [k - 0.31, k + 0.31], color=S.INK, lw=S.LW_THIN, path_effects=P.TICK_HALO)
-            a.text(val, k + 0.33, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
+            a.plot([val, val], [k - FIG7A_BAR / 2, k + FIG7A_BAR / 2], color=S.INK, lw=S.LW_THIN,
+                   path_effects=P.TICK_HALO)
+            a.text(val, k + FIG7A_BAR / 2 + 0.02, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
     a.axvline(c0, color=S.INK, lw=S.LW_THIN)
     a.set_yticks(np.arange(len(rows)))
     a.set_yticklabels([N.INPUT_LABEL.get(r[0], r[0]) for r in rows], fontsize=S.FONT_SMALL)   # naming.INPUT_LABEL
@@ -1004,7 +1063,7 @@ def fig7():
     for h in lg.legend_handles:
         if hasattr(h, 'set_alpha'):
             h.set_alpha(S.FIXED_FADES['legend_markers'])
-    P.panel(b, 'b', f"Reference, the Pathways and the {N.TL['TL']} vs the 2050 population")
+    P.panel(b, 'b', 'Monte Carlo draws vs 2050 population')
     for t in fig.findobj(matplotlib.text.Text):                     # slightly larger fonts
         if t.get_text():
             t.set_fontsize(t.get_fontsize() * 1.1)

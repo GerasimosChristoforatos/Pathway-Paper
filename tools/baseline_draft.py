@@ -309,8 +309,13 @@ def register():
          '2030 / by 2045, redevelopment booking and gap-vs-2026 as sensitivities'),
         ('Population 2026', 'observed' if B.NOWCAST_POPULATION else 'projected median',
          'DATA: Stats NZ ERP (see README)'),
-        ('Household-size shape', f'Stats NZ {B.HH_SIZE_VARIANT}, anchored {B.S_ANCHOR_YEAR}, tail {B.S_TAIL}',
-         'DATA (2018-base projections; N4 open)'),
+        ('Household-size shape', f'Stats NZ {B.HH_SIZE_VARIANT} {B.HH_PROPENSITY}, anchored {B.S_ANCHOR_YEAR}, '
+         f'tail {B.S_TAIL}; the 5th / 95th population paths take Low / High {B.HH_PROPENSITY}',
+         'DATA: Stats NZ 2023-base national family and household projections (POPPR_FHH_008, POPPR_FHH_010); '
+         'propensity A (living arrangements held at 2023) adopted, B as a sensitivity; N4 resolved'),
+        ('Starting surplus (F1)', starting_surplus_sentence(),
+         'RULE fixed in advance of the data (applied, not tuned): carried if the 2024-2025 residual exceeds the '
+         '1992-2023 census-interval mean + 2 SD; none / minus 2 SD as sensitivities'),
         ('Vacancy-rate parameter', _cap(vs) if vs else 'The vacancy-rate parameter is held at its published 2023 '
          'census value (outputs/data/baseline/overbuild_2026.json missing: series values not shown)',
          'DATA: census 2023 (2018 empty count unrated, F1)'),
@@ -382,23 +387,37 @@ def timber_end_of_life():
             'replacement or repaint event, so it affects the committed emissions after 2050, not the 2026-2050 total.')
 
 
+def starting_surplus_sentence():
+    """The F1 starting surplus, from outputs/data/baseline/projection.json."""
+    s = (load('baseline/projection.json') or {}).get('starting_surplus')
+    if not s:
+        return 'starting surplus (baseline/projection.json missing: values not shown)'
+    y = s['after_years']
+    return (f"{s['dwellings']:,.0f} vacant dwellings at the start of 2026 ({s['mode']}): the {y[0]}-{y[-1]} stock-identity "
+            f"residual {s['r_after']:,.0f} dwellings a year against the 1992-2023 census-interval mean {s['m']:,.0f} and "
+            f"SD {s['s']:,.0f} (time-weighted), (residual - mean) x {len(y)} years, absorbed with the overbuild by "
+            f"{s['absorbed_by']}")
+
+
 def households_2019_2023():
     """The 2019-2023 household estimates: the rebase factor k read from the figure source (D02)."""
     d = load('figure_source/D02_households.json')
     k = f"k = {d['hh_rebase_k']:.3f}" if d else 'one factor k'
     return ('Households 2019-2023: the Stats NZ household estimates between the 2018 and 2023 censuses are '
             f'consent-derived increments, rescaled by one factor ({k}) so that June 2023 matches the 2023 census, as '
-            'Stats NZ benchmarks each base; the consent-driven shape is kept. Stats NZ\'s 2023-rebased estimates will '
-            'replace them when published.')
+            'Stats NZ benchmarks each base; the consent-driven shape is kept. The household estimates in hand (Dwelling '
+            'and household estimates, March 2026 quarter) still have their last base at 2018; Stats NZ\'s '
+            '2023-rebased household estimates will replace the rescaling when published.')
 
 
 LIMITATIONS = [
     'No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so '
     'the implied replacement rates cannot be tested against a count.',
-    'N4 (open): the Low/High household-size variants (deterministic) are paired with stochastic population '
-    'percentiles through one draw z, and the total vs private-household population question is unresolved '
-    'until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ\'s '
-    '2023-base release (late 2026) to be adopted in a later version.',
+    'Household size is the Stats NZ 2023-base ratio of people in households to households, applied as a shape '
+    'rebased on the observed 2023 household size of the total population: the share of the population outside '
+    'private dwellings is held at its 2023 level.',
+    'The living-arrangement propensities are held at 2023 (Stats NZ projection A); their change modelled on the '
+    '2001-2023 censuses (B) is a one-at-a-time row, not sampled in the Monte Carlo.',
     timber_end_of_life(),
     households_2019_2023(),
     'With the typology mix held in every variant (internal to the model: it weights the case-study factors), '
@@ -761,7 +780,8 @@ def lines():
     # ---- assumptions (short) ----
     import projection as BB
     A = [('DATA', 'Population: Stats NZ 2024-base projection percentiles; observed 2026 growth (DPE ERP)'),
-         ('DATA', 'Household-size shape: Stats NZ 2018-base household projections, rebased on observed households'),
+         ('DATA', 'Household-size shape: Stats NZ 2023-base family and household projections (Medium A), rebased on '
+                  'observed households'),
          ('DATA', 'Long-run net replacement: census private-dwelling counts and consents, 1991-2023'),
          ('DATA', (f'2026-2027 building: {BB.COMPLETION_RATE:.3f} x consents lagged {BB.COMPLETION_LAG_MONTHS} months '
                    '(dwellings and floor area; the observed typology mix weights the case-study factors inside the '
@@ -783,8 +803,11 @@ def lines():
                        'theory fixes the direction, not the speed; never / 2030 / 2045 as sensitivities)'),
          ('DECISION', 'Typology mix held in every variant (Low replacement, Reference, High replacement); internal to '
                       'the model (it weights the case-study factors) and not reported'),
-         ('JUDGEMENT', 'Household size: interpolation through all published Stats NZ values (2018-2043), held '
-                       'constant beyond 2043 with zero slope imposed at 2043'),
+         ('JUDGEMENT', 'Household size: interpolation through all published Stats NZ values (2023-2048), held '
+                       'constant beyond 2048 with zero slope imposed at 2048'),
+         ('RULE', 'Starting surplus: the 2024-2025 building beyond the stock identity, if above the 1992-2023 '
+                  'census-interval mean + 2 SD, carried as vacant dwellings at the start of 2026 and absorbed with the '
+                  'overbuild by 2035'),
          ('JUDGEMENT', f'Completion lag: consents become completions {BB.COMPLETION_LAG_MONTHS} months later (monthly), '
                        f'at a completion rate of {BB.COMPLETION_RATE:.3f}')]
     pb = (m or {}).get('aesa')

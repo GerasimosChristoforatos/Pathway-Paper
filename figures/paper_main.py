@@ -570,8 +570,9 @@ def reduction_by_band():
 # ---------------------------------------------------------------------------
 # Fig5: the solution space against AR and AtP
 # ---------------------------------------------------------------------------
-FIG5_LIM = (-0.05, 0.85)        # both axes from -5% to 100% (to 110%)
-FIG5_N = 421                   # grid points per axis (0.25% steps)
+FIG5_LIM = (-0.05, 0.90)        # both axes from -5% to 90%
+FIG5_N = 381                   # grid points per axis (0.25% steps)
+FIG5_MARKER_MARGIN = 0.03      # every marker at least this far inside the square (a marker on the edge is clipped)
 
 
 def fig5_loe(bc, x, y):
@@ -677,10 +678,28 @@ def fig5():
     # labels where each contour crosses the diagonal x = y: (1 - x)^2 = k
     diag = {v: 1.0 - np.sqrt(fig5_k(bc, v)) for v in levels if fig5_k(bc, v) > 0}
     lab_levels = [v for v, d in diag.items() if 0.02 <= d <= 0.98]      # crossings inside the square only
-    ax.clabel(cs, levels=lab_levels, fmt=lambda v: f'LoE of AR {v:g}', fontsize=S.FONT_MIN,
-              manual=[(100 * diag[v], 100 * diag[v]) for v in lab_levels])
+    # each label sits where its contour crosses the diagonal unless its text (about 14 percentage points long)
+    # would cover a marker; then the first position along the contour, either side of the diagonal, that clears
+    # every marker and the square's edges (clabel takes the nearest contour point to the position given)
+    mk = [(100 * m['demand_reduction'], 100 * m['intensity_reduction']) for m in bc['solution_space_markers']]
+    clear = lambda p: (all(np.hypot(p[0] - a, p[1] - b) >= (14.0 if s == 0 else 10.0) for a, b in mk)
+                       and 100 * lo + 8.0 <= min(p) and max(p) <= 100 * hi - 8.0)
+    pos = []
+    for v in lab_levels:
+        d = 100 * diag[v]
+        pick = (d, d)
+        for s in sorted(range(-40, 41, 2), key=abs):
+            if clear((d + s, d - s)):
+                pick = (d + s, d - s)
+                break
+        pos.append(pick)
+    ax.clabel(cs, levels=lab_levels, fmt=lambda v: f'LoE of AR {v:g}', fontsize=S.FONT_MIN, manual=pos)
     for m in bc['solution_space_markers']:
         run = m['run']
+        if not all(lo + FIG5_MARKER_MARGIN <= v <= hi - FIG5_MARKER_MARGIN
+                   for v in (m['demand_reduction'], m['intensity_reduction'])):
+            raise SystemExit(f"STOP: Fig5: the {run} marker ({m['demand_reduction']:.3f}, {m['intensity_reduction']:.3f}) "
+                             f'is not inside the plotted square {FIG5_LIM} with margin {FIG5_MARKER_MARGIN}')
         xm, ym = 100 * m['demand_reduction'], 100 * m['intensity_reduction']
         if run == 'TL':
             ax.plot(xm, ym, color=S.TL, ls='none', **S.TL_MARKER, zorder=6)
@@ -842,18 +861,15 @@ def tornado_rows():
     """The rows of the Fig7a tornado on the cumulative LoE AR 2026-2050, each input at its low and high
     end as defined by its row (sensitivity/tornado.csv; the AR base window from sensitivity/planetary_boundary.csv):
     [(label, LoE at the input's low end, LoE at its high end, {label: LoE} of intermediate cases[, LoE of a single
-    alternative case])]. The colour follows the input, not the outcome (the Stats NZ Low household-size variant, the
-    input's low end, gives the higher LoE). rows with one alternative case and no low / high end (the
-    household-size census pace, No 2026 data) carry it as a fifth element and are drawn in the muted grey."""
+    alternative case])]. The colour follows the input, not the outcome. Rows with one alternative case and no low /
+    high end (the household-size census pace, the Stats NZ B living arrangements, No 2026 data) carry it as a fifth
+    element and are drawn in the muted grey."""
     t = D.csv('sensitivity/tornado.csv').set_index(['input', 'side'])
     pb = D.csv('sensitivity/planetary_boundary.csv')
     v = lambda inp, side: float(t.loc[(inp, side), 'LoE_AR'])
     rows = [('population',
              v('Population (Stats NZ 5th / 95th percentile)', 'low'),
              v('Population (Stats NZ 5th / 95th percentile)', 'high'), {}),
-            ('hh_variant',                                            # low variant: smaller households, more of them
-             v('Household size (Stats NZ High / Low variant)', 'high'),
-             v('Household size (Stats NZ High / Low variant)', 'low'), {}),
             ('replacement',
              v('Replacement (Low / High)', 'low'), v('Replacement: Very High (trend continues; one-sided)', 'high'),
              {'High': v('Replacement (Low / High)', 'high')}),
@@ -866,6 +882,7 @@ def tornado_rows():
              {'0 mo': v('Completion lag 0 months (one-sided)', 'high')}),
             ('hh_pace', None, None, {},
              v('Household size: 2018-2023 census pace (one-sided)', 'high')),
+            ('hh_propensity', None, None, {}, v('Living arrangements: Stats NZ B (one-sided)', 'high')),
             ('no_2026', None, None, {}, v('No 2026 data (one-sided)', 'high')),
             ('jackknife', v('Case-study carbon factors (jackknife)', 'low'),
              v('Case-study carbon factors (jackknife)', 'high'), {}),
@@ -885,6 +902,11 @@ def tornado_rows():
     return rows, float(t['central_LoE_AR'].iloc[0])
 
 
+# Fig7a carbon-factor rows: (input id, sensitivity/tornado.csv input, AR-base rule row)
+FIG7_CARBON_FACTOR_ROWS = (('jackknife', 'Case-study carbon factors (jackknife)', 'Case studies: jackknife low / high'),
+                           ('soil_order', 'Soil order (Raw / Organic)', 'Soil order: lowest (Raw) / highest (Organic)'))
+
+
 def fig7():
     """(a) tornado on the cumulative LoE AR: each input at its low end (pale blue) and high
     end (dark blue) as defined in its label, sorted by range, intermediate cases as ticks; (b) TL cumulative LoE AR
@@ -896,7 +918,23 @@ def fig7():
     span = lambda r: abs(r[4] - c0) if r[4] is not None else abs(r[2] - r[1])
     rows = sorted(rows, key=span)
     k_cr = [r[0] for r in rows].index('completion_rate')               # Completion rate and above
+    below = rows[:k_cr]                                                 # under the row filter (named in the note)
     rows = rows[k_cr:]                                                  # Completion rate and every larger row
+    # F6: the carbon-factor rows under the filter, with their ranges from sensitivity/tornado.csv
+    tor = D.csv('sensitivity/tornado.csv').set_index(['input', 'side'])
+    oat = D.js('aesa/results.json')['one_at_a_time_ar_base']
+    cf_below, cf_rules = [], set()
+    for rid, inp, row in FIG7_CARBON_FACTOR_ROWS:
+        if rid in [r[0] for r in below]:
+            lo_, hi_ = (tor.loc[(inp, s)] for s in ('low', 'high'))
+            cf_rules.add(oat[row]['rule'])
+            cf_below.append(f"{N.INPUT_LABEL[rid].replace(chr(10), ' ')}, LoE AR {lo_['LoE_AR']:.3f}–{hi_['LoE_AR']:.3f} "
+                            f"against carbon {P.minus(format(lo_['change_carbon_pct'], '+.1f'))}% / "
+                            f"{P.minus(format(hi_['change_carbon_pct'], '+.1f'))}%")
+    cf_note = ((' The carbon-factor rows (' + '; '.join(cf_below) + ') are not shown: their LoE range falls below '
+                'the row filter (the completion-rate row)'
+                + (' because the AR base co-varies with the factors, so the AR budget moves with the carbon.'
+                   if cf_rules == {'recompute'} else '.')) if cf_below else '')
     has_single = any(r[4] is not None for r in rows)
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 77), gridspec_kw={'width_ratios': [1.25, 1]})
     a = ax[0]
@@ -981,7 +1019,7 @@ def fig7():
     _save(fig, 'Fig7_uncertainty',
           note='(b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build '
                'years); its carbon floor is the 2026-27 pipeline plus maintenance. ' + f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "
-               f"moves the AR budget only; one-at-a-time ranges are not additive. (b) P(TL within AR) = "
+               f"moves the AR budget only; one-at-a-time ranges are not additive.{cf_note} (b) P(TL within AR) = "
                f"{j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-{j['wilson_95'][1]:.3f}; n = {j['n']:,}); "
                + 'P(LoE AR <= 1) on the same paired draws: ' + ', '.join(
                    f'{k} {p_:.4f} (Wilson {w[0]:.4f}-{w[1]:.4f})' for k, (p_, w) in pin.items()) + '; '

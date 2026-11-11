@@ -10,7 +10,8 @@ Writes outputs/data/sensitivity/:
   replacement_variants.csv the Reference, the Moderate / Ambitious Pathway and TL under Low / Reference / High / Very
                            High replacement (ED3)
   household_size.csv       the Reference, the Moderate / Ambitious Pathway and TL under the household-size
-                           sensitivities (Stats NZ Low / High variant; 2018-2023 census pace, linear from 2023)
+                           sensitivities (Stats NZ Medium B: living-arrangement propensities change; 2018-2023
+                           census pace, linear from 2023)
   tornado.csv              Fig7a: the inputs of the Reference tornado (low / high), cumulative carbon and the
                            cumulative LoE AR and AtP (the budgets move only with the population path)
 
@@ -54,19 +55,19 @@ REF_ROWS = [
      'DATA: Stats NZ 2024-base stochastic projection; exact engine path'),
     ('Demographics', 'Population: Stats NZ 5th / 95th percentile', 'high', 'Population: Stats NZ 95th percentile (engine path)',
      'DATA: Stats NZ 2024-base stochastic projection; exact engine path'),
-    ('Demographics', 'Household size: Stats NZ High / Low variant', 'low', 'Household size: Stats NZ High variant',
-     'DATA: Stats NZ household projections (the High household-size variant gives fewer households)'),
-    ('Demographics', 'Household size: Stats NZ High / Low variant', 'high', 'Household size: Stats NZ Low variant',
-     'DATA: Stats NZ household projections'),
+    ('Demographics', 'Living arrangements: propensities change (Stats NZ B)', 'single',
+     'Living arrangements: propensities change (Stats NZ Medium B)',
+     'DATA: Stats NZ 2023-base family and household projections, propensity B (change modelled on the 2001-2023 '
+     'censuses) instead of A (held at 2023)'),
     ('Demographics', 'Household size: 2018-2023 census pace', 'single',
      'Household size: 2018-2023 census pace, linear from 2023',
      'DATA: census-benchmarked households 2018 and 2023; linear continuation (JUDGEMENT)'),
-    ('Demographics', 'Household size after 2043: flat', 'single', 'Household size after 2043: flat (kink at 2043)',
-     'JUDGEMENT: post-2043 tail (the Stats NZ series ends in 2043)'),
-    ('Demographics', 'Household size after 2043: secant-slope taper', 'single',
-     'Household size after 2043: secant-slope taper', 'JUDGEMENT: post-2043 tail'),
-    ('Demographics', 'Household size after 2043: taper from the PCHIP end slope', 'single',
-     'Household size after 2043: taper from the PCHIP end slope', 'JUDGEMENT: post-2043 tail'),
+    ('Demographics', 'Household size after 2048: flat', 'single', 'Household size after 2048: flat (kink at 2048)',
+     'JUDGEMENT: post-2048 tail (the Stats NZ series ends in 2048)'),
+    ('Demographics', 'Household size after 2048: secant-slope taper', 'single',
+     'Household size after 2048: secant-slope taper', 'JUDGEMENT: post-2048 tail'),
+    ('Demographics', 'Household size after 2048: taper from the PCHIP end slope', 'single',
+     'Household size after 2048: taper from the PCHIP end slope', 'JUDGEMENT: post-2048 tail'),
     ('Housing stock & calibration', 'Completion rate 0.93 / 0.96', 'low', 'Completion rate 0.93',
      'LITERATURE: Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025 (Policy Quarterly 21(1)); 93% final inspection / >95% first inspection'),
     ('Housing stock & calibration', 'Completion rate 0.93 / 0.96', 'high', 'Completion rate 0.96',
@@ -91,6 +92,11 @@ REF_ROWS = [
      'Gabriel & Nothaft 2001) fixes the direction, not the speed; speed bracketed'),
     ('Housing stock & calibration', '2026 overbuild absorbed by 2030 / by 2045', 'high', 'Overbuild absorbed by 2045',
      'THEORY: as above; adopted 2035 (the common RECC window)'),
+    ('Housing stock & calibration', 'No starting surplus', 'single', 'No starting surplus',
+     'RULE (fixed in advance, F1): the 2024-2025 stock-identity residual exceeds the 1992-2023 census-interval mean + '
+     '2 SD, so the excess is carried (adopted); this row carries none'),
+    ('Housing stock & calibration', 'Starting surplus minus 2 SD', 'single', 'Starting surplus minus 2 SD',
+     'RULE (F1): only the excess above the mean + 2 SD band carried'),
     ('Housing stock & calibration', '2026 overbuild never absorbed (MODEL v2.1 Reference)', 'single',
      'Overbuild never absorbed (MODEL v2.1 Reference)', 'DECISION: the permanent-surplus bound'),
     ('Housing stock & calibration', 'Vacancy parameter: 1986-2023 census mean (one definition)', 'single',
@@ -170,7 +176,8 @@ def percentile_context(PW, B, pct, bounds):
     growth = df[f'PopGrowth_{pct}'].clip(lower=0).values
     hh = B['households_forecast'][pct]
     fi = ctx['fwd_inputs']
-    E = engine.forward(pop, hh, growth, join=ji['join'], join_redev=ji['redev'], **fi)
+    E = engine.forward(pop, hh, growth, join=ji['join'], join_redev=ji['redev'],
+                       stock_start=float(ji.get('start_surplus', 0.0)), **fi)
     ref = B['engine_out'][pct]
     for k in ('carbon', 'total'):
         if not np.allclose(np.asarray(E[k], float)[1:], np.asarray(ref[k], float)[1:], rtol=1e-12, atol=0):
@@ -250,12 +257,12 @@ def pathway_table():
 
 # ---- 2b. Household-size sensitivities of the Reference, the Pathways and TL ---------------------
 HH_VARIANTS = [   # (row, side, projection settings)
-    ('Household size: Stats NZ High / Low variant', 'low', dict(HH_SIZE_VARIANT='High')),
-    ('Household size: Stats NZ High / Low variant', 'high', dict(HH_SIZE_VARIANT='Low')),
+    ('Living arrangements: propensities change (Stats NZ B)', 'single', dict(HH_PROPENSITY='B')),
     ('Household size: 2018-2023 census pace', 'single', dict(HH_SIZE_PATH='census_pace')),
 ]
-HH_BASIS = {'Household size: Stats NZ High / Low variant': 'DATA: Stats NZ 2018-base household projections, rebased on '
-                                                          'the 2023 census (the High variant gives fewer households)',
+HH_BASIS = {'Living arrangements: propensities change (Stats NZ B)': 'DATA: Stats NZ 2023-base family and household '
+                                                                    'projections, Medium B (living-arrangement '
+                                                                    'propensities change) instead of Medium A',
             'Household size: 2018-2023 census pace': 'DATA: census-benchmarked households 2018 and 2023; linear '
                                                      'continuation from 2023 (JUDGEMENT)'}
 
@@ -383,7 +390,7 @@ def replacement_variants():
 # ---- 5. Fig8a tornado: inputs of the Reference ------------------------------------------------
 TORNADO = [   # (input, low case, high case) in reference_table() rows
     ('Population (Stats NZ 5th / 95th percentile)', 'Population: Stats NZ 5th / 95th percentile'),
-    ('Household size (Stats NZ High / Low variant)', 'Household size: Stats NZ High / Low variant'),
+    ('Living arrangements: Stats NZ B (one-sided)', 'Living arrangements: propensities change (Stats NZ B)'),
     ('Replacement (Low / High)', 'Low / High replacement'),
     ('Replacement: Very High (trend continues; one-sided)', 'Very High replacement (trend continues)'),
     ('Replacement half-life (5 / 15 yr)', 'Replacement half-life 5 / 15 yr'),

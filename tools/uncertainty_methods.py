@@ -48,7 +48,7 @@ def lines():
     full, light = runprofile.PROFILES['full'], runprofile.PROFILES['light']
     draws = pd.read_csv(layout.montecarlo('draws', 'REF'))
     q = pd.read_csv(data('montecarlo/input_distributions_REF.csv')).set_index('input')
-    sob = pd.read_csv(data('montecarlo/sobol_REF.csv'))
+    sob = pd.read_csv(data('montecarlo/sobol_REF.csv')) if runprofile.get('sobol') else None   # full profile only
     imp = pd.read_csv(data('pathways/montecarlo_importance.csv'))
     ct = js('pathways/montecarlo_conditional_tl.json')
     r = js('aesa/results.json')
@@ -64,14 +64,16 @@ def lines():
     rows = [
         ('z_pop (population and household size)', 'standard normal; one rank in every year (comonotone)',
          f'Stats NZ 2024-base stochastic population projection: the published level spread at the {knots} '
-         'percentiles, linear in z; household size by the same z through the Stats NZ Low / Medium / '
-         f'High household-size variants placed at z = {MC.VARIANT_Z["Low"]:.3f} / 0 / {MC.VARIANT_Z["High"]:.3f}',
+         'percentiles, linear in z; household size by the same z through the Stats NZ 2023-base Low / Medium / '
+         f'High {MC.projection.HH_PROPENSITY} household projections placed at z = {MC.VARIANT_Z["Low"]:.3f} / 0 / '
+         f'{MC.VARIANT_Z["High"]:.3f}',
          pct('z_pop', '.2f')),
         ('size (dwelling size)', f'lognormal multiplier, σ = {size_sigma:.4f}',
          f'RMS log deviation of annual typology dwelling sizes {w.group(1)}-{w.group(2)} from the adopted reference', pct('size', '.3f')),
         ('complete (completion rate)', f'uniform({band[0]:g}, {band[1]:g})',
          'completion milestones of Auckland consents (Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow '
-         '2025); the stock calibration and the census replacement rates are redone in each draw', pct('complete', '.3f')),
+         '2025); the stock calibration, the census replacement rates, the 2024-2025 starting surplus and the '
+         'acquired-rights base are redone in each draw', pct('complete', '.3f')),
         ('carbon (case-study carbon factors)', f'uniform index into {MC.N_BOOT:,} bootstrap replicates',
          'stratified bootstrap of the case studies within sub-type (duplicates removed, re-pooled as Building_factors); '
          'the apartments (one independent case) take a mean-preserving lognormal multiplier with the pooled '
@@ -88,23 +90,30 @@ def lines():
          'checked against the projection to 1e-9.', '',
          '| input | distribution | basis | 5th / 50th / 95th percentile of the draws |', '|---|---|---|---|']
     L += [f'| {a} | {b} | {c} | {e} |' for a, b, c, e in rows]
-    L += ['', 'Population and household size share one draw because the Stats NZ household-size variants differ only '
-          'in their fertility, mortality and migration assumptions, so low population and small households come '
-          'together (an older age structure); this pairing is to be confirmed with the documentation of the 2023-base '
-          'projections. Not sampled: the net replacement level (the variants are run separately; within the '
+    L += ['', 'Population and household size share one draw because, within one living-arrangement propensity, the '
+          'Stats NZ 2023-base Low / Medium / High household projections differ only through their population '
+          'projections (the 5th / 50th / 95th percentiles of the stochastic population projection), so the household '
+          'size moves with the population percentile (N4, resolved). Not sampled: the living-arrangement propensity '
+          '(A, held at 2023; B, the change modelled on the 2001-2023 censuses, is a one-at-a-time row), the net replacement level (the variants are run separately; within the '
           'Reference the half-life is sampled), the typology mix, the census rebase of households, the pre-2013 empty '
           'share, the future vacancy and the retirement-village share (total Sobol indices about zero in a '
           'full-input run), the demolition rate (it trades one-for-one with the calibrated residual), the observed '
           'consents and population (data) and the soil order (a bounding scenario, not a probability).', '']
     rb = r['mc']['REF']
     L += [f'In every draw the acquired-rights base Ī_sec,base is recomputed from that draw\'s carbon-factor replicate '
-          'on the observed history (boundaries.mc_runs, boundaries.base_with_factors): the carbon factors are a shared '
-          'parameter of the base and the projection and are sampled once (the shared-parameter rule of Part 2). '
+          'on the 2016-2025 built floor area at that draw\'s completion rate (boundaries.mc_runs, '
+          'boundaries.history_at_completion, boundaries.base_with_factors): the carbon factors and the completion rate '
+          'are shared parameters of the base and the projection and are sampled once (the shared-parameter rule of '
+          'Part 2). Each draw also recomputes the 2024-2025 stock-identity residual and its starting surplus at its own '
+          'completion rate. '
           f"Ī_sec,base over the draws: {rb['I_sec_base_kt_p5']:,.1f} / {rb['I_sec_base_kt_p50']:,.1f} / "
           f"{rb['I_sec_base_kt_p95']:,.1f} kt/yr (5th / 50th / 95th percentile).", '']
-    sc = sob[sob['output'] == 'carbon_kt'].sort_values('ST', ascending=False)
-    top = ', '.join(f"{N.MC_INPUT.get(x.input, x.input)} {x.ST:.2f} ({x.ST_lo:.2f}-{x.ST_hi:.2f})"
-                    for x in sc.head(3).itertuples())
+    if sob is None:                                    # the light profile computes no Sobol indices
+        top = 'not computed in this (light) profile run; see the full-profile outputs'
+    else:
+        sc = sob[sob['output'] == 'carbon_kt'].sort_values('ST', ascending=False)
+        top = ', '.join(f"{N.MC_INPUT.get(x.input, x.input)} {x.ST:.2f} ({x.ST_lo:.2f}-{x.ST_hi:.2f})"
+                        for x in sc.head(3).itertuples())
     L += [f'**Variance-based sensitivity.** First-order and total Sobol indices of the Reference (full profile): base '
           f'sample N = {MC.N_SOBOL:,} ({MC.N_SOBOL * (d + 2):,} model evaluations), the estimators of Saltelli et al. '
           f"(2010) and Jansen (1999) as implemented in scipy.stats.sobol_indices (scipy "

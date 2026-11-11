@@ -1,6 +1,6 @@
 {
  "figure": "SF8_prcc",
- "producer": "redraw.py",
+ "producer": "../../../tmp/claude-0/venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "Floor area, cumulative",

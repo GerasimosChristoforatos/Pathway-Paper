@@ -156,6 +156,7 @@ def base_context(B, scenario, bounds):
         a13_2025={t: float(B['MAT_STAGE']['A1-A3'][t].sum()) for t in typ}, red13=B['RED13_TOT'],
         a45_2025={t: float(B['MAT_STAGE']['A4-A5'][t].sum()) for t in typ}, red45=B['RED45_TOT'],
         excess=np.asarray(ji['excess'], float).copy(), absorb_w=absorption_weights(fy, B['absorption_start']),
+        start_surplus=float(ji.get('start_surplus', 0.0)),
         **observed_window(ji),
         join_reference=np.asarray(ji['join'], float), profile=prof, committed_factors=fac,
         c14={t: float(B['stage_int'].loc['C1-C4', t]) for t in typ}, soil=B['SOIL_INTENSITY'],
@@ -313,16 +314,20 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     for k in range(2, len(ob) + 1):                   # observed building in every run (2026: no lever acts)
         excess[k] = ob[k - 1] - need[k]
     pool_ob = tl_family and TL_SURPLUS_POOLING and ctx['absorb_w'] is not None
+    s0 = float(ctx.get('start_surplus', 0.0))         # F1 starting surplus (vacant at the start; never built)
     exc_pos = np.maximum(excess, 0.0) if pool_ob else zeros
     exc_abs = excess - exc_pos                        # the part absorbed along the Reference's logistic
     if ctx['absorb_w'] is None:                       # overbuild never absorbed (legacy Reference)
-        ab = dict(paid=zeros, carry=zeros, cap_binds=np.zeros(n, bool), built=need + excess, U=np.cumsum(excess))
+        ab = dict(paid=zeros, carry=zeros, cap_binds=np.zeros(n, bool), built=need + excess,
+                  U=s0 + np.cumsum(excess))
     else:
-        _, ab = engine.absorb_overbuild(exc_abs, ctx['absorb_w'], need)
+        _, ab = engine.absorb_overbuild(exc_abs, ctx['absorb_w'], need, start=0.0 if pool_ob else s0)
         ab['built'] = ab['built'] + exc_pos
     gross0 = ab['built']                              # need + excess - payback
     gross, negclip, neg_used, neg_carry = carry_negative(years, gross0, late)
     rel_ob = pooled(exc_pos)
+    if pool_ob:                                       # TL: the starting surplus joins the re-occupation pool
+        rel_ob[i_first] += s0
     if tl_family:
         pool_in = pooled(rel3) + pooled(rel_v) + rel_ob
         ro = reoccupation(years, gross, pool_in, reocc_rule, start=first)
@@ -336,7 +341,7 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
         reocc, pool_rem = zeros, 0.0
     built = ro['built'] - used_v
     join = excess - ab['paid'] + (rel_v - used_v) - reocc + (negclip - neg_used)
-    E = engine.forward(ctx['pop'], hh, ctx['growth'], join=join, join_redev=zeros, **fi)
+    E = engine.forward(ctx['pop'], hh, ctx['growth'], join=join, join_redev=zeros, stock_start=s0, **fi)
     R_tot = ro['R']
     s3 = float(rel3.sum() / R_tot) if R_tot > 0 else 0.0
     s_ob = float(rel_ob.sum() / R_tot) if R_tot > 0 else 0.0
@@ -670,14 +675,15 @@ def boss_state(scenario):
 
 def household_size_variants(B_ref):
     """{variant: dict(S, pop)} of the Stats NZ household-size variants: the Reference projection with
-    projection.HH_SIZE_VARIANT changed (the Reference itself for its own variant)."""
+    projection.HH_SIZE_VARIANT changed (the Reference itself for its own variant), with the Reference run's own
+    household-size settings (path, propensity, tail: B_ref['hh_settings'])."""
     out = {}
     for v in LV.L1_VARIANTS:
         if v == validation.projection.HH_SIZE_VARIANT:
             B = B_ref
         else:
             with contextlib.redirect_stdout(io.StringIO()):
-                B = validation.run_boss(**dict(SCENARIOS[REFERENCE][1], HH_SIZE_VARIANT=v))
+                B = validation.run_boss(**dict(SCENARIOS[REFERENCE][1], HH_SIZE_VARIANT=v, **B_ref['hh_settings']))
         out[v] = dict(S=LV.household_size(B), pop=np.asarray(B['df_forecast']['PopTotal_50th'].values, float))
     return out
 

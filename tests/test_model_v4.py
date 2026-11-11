@@ -19,7 +19,8 @@ import pytest
 from conftest import ROOT
 
 FIXTURE = os.path.join(ROOT, 'tests', 'v3_3_runs_fixture.json')
-V33 = dict(COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95)        # projection settings of MODEL v3.3
+V33 = dict(COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95,        # projection settings of MODEL v3.3
+           HH_SIZE_PATH='statsnz_2018', STARTING_SURPLUS='none')   # its household size (2018-base); no F1
 RTOL = 1e-9
 
 
@@ -169,7 +170,10 @@ def test_building_nonnegative_and_positive_in_tl_years():
 def test_household_size_sensitivity_table():
     t = pd.read_csv(_data('sensitivity/household_size.csv'))
     assert set(t['run']) == {'Reference', 'pathway-moderate', 'pathway-ambitious', 'TL'}
-    assert len(t) == 12
+    import sys
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import sensitivity_tables as T
+    assert len(t) == 4 * len(T.HH_VARIANTS)          # each household-size row for the four runs
     runs = pd.read_csv(_data('pathways/runs.csv'))
     ref = runs[runs['scenario'] == 'REF'].set_index('run')
     for _, r in t.iterrows():
@@ -188,3 +192,22 @@ def test_gap_2026_reports_pre_pipeline_dwelling_requirement(B):
     assert gap_2026.requirement_2026(B) == pytest.approx(expected, rel=1e-12)
     # The final path includes the pipeline join; removing it recovers R26.
     assert float(engine.requirement(E)[i26] - E['join'][i26]) == pytest.approx(expected, rel=1e-12)
+
+
+def test_ar_base_at_completion_rate_reproduces_the_run():
+    """F5: the Monte Carlo's base at a completion rate (boundaries.history_at_completion) is the base of a projection
+    run at that rate; at the run's own rate it reproduces the run."""
+    import boundaries as BD
+    from conftest import run_boss
+    B = run_boss()
+    typ = list(B['typ_names'])
+    up, age = BD.reference_factors(B, typ)
+    base = lambda h: BD.base_with_factors(h, typ, up, BD.AR_BASE_WINDOW, age)
+    h0 = BD.historical_emissions(B, range(BD.HIST_START, 2026))
+    assert base(BD.historical_emissions(BD.history_at_completion(B, float(B['built_factor'])),
+                                        range(BD.HIST_START, 2026), with_events=False)) == pytest.approx(base(h0),
+                                                                                                         rel=1e-12)
+    B93 = run_boss(COMPLETION_RATE=0.93)
+    h93 = BD.historical_emissions(BD.history_at_completion(B, 0.93), range(BD.HIST_START, 2026), with_events=False)
+    assert base(h93) == pytest.approx(BD.window_base(B93, BD.AR_BASE_WINDOW)[0], rel=1e-12)
+    assert base(h93) < base(h0)

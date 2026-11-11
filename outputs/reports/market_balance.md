@@ -9,12 +9,12 @@ Controlled comparison: same source files, population path, household-size path, 
 | Cumulative floor area, 2026–2050 (Mm2) | Zero lag, net replacement held at the 17-month calibration | Zero lag, recalibrated | 17-month lag |
 |---|---:|---:|---:|
 | Population growth | 40.76 | 40.76 | 40.59 |
-| Household-size change | 1.89 | 1.89 | 1.89 |
-| Net replacement | 8.68 | 14.66 | 8.95 |
-| Other demand / balance | 27.88 | 27.88 | 30.28 |
-| Gross market excess | 4.33 | 3.64 | 4.54 |
-| Overbuild absorbed | -4.35 | -3.66 | -4.71 |
-| **Total built** | 79.19 | 85.17 | 81.53 |
+| Household-size change | 14.00 | 14.00 | 13.94 |
+| Net replacement | 9.01 | 15.22 | 9.29 |
+| Other demand / balance | 39.67 | 39.67 | 42.87 |
+| Gross market excess | 2.50 | 1.80 | 2.02 |
+| Overbuild absorbed | -3.34 | -2.64 | -4.78 |
+| **Total built** | 102.60 | 108.81 | 103.94 |
 
 ### Observed consent periods
 
@@ -40,6 +40,6 @@ For the projection, population growth, household-size change and net replacement
 
 Consents are monthly and are shifted month by month by the completion lag. Demographic demand remains annual. Quarterly population and dwelling or household estimates are not interpolated into pseudo-monthly observations: that would impose an unobserved within-quarter pattern rather than add information. A quarterly demand engine would require its own stock-flow calibration and validation and is not introduced here.
 
-Household-size settings are deliberately unchanged pending the Stats NZ 2023-base family and household projection release. The new national household projection, its census anchor, and the household-estimate series should be reconciled together before replacing the current 2018-base projection shape.
+Household size follows the Stats NZ 2023-base family and household projections (Medium A), rebased on the 2023 census; the household estimates of 2019-2025 are still the census-pinned rescaling of the latest Stats NZ release (last household base 2018) and the ERP / S bridge.
 
 Full annual values are in diagnostics/lag_comparison_annual.csv; the historical and forecast coarse classification is in diagnostics/market_balance_history_projection.csv; the machine-readable cohort comparison is in diagnostics/lag_comparison_summary.json.

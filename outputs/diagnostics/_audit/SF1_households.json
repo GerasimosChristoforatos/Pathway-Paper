@@ -1,6 +1,6 @@
 {
  "figure": "SF1_households",
- "producer": "redraw.py",
+ "producer": "../../../tmp/claude-0/venv/lib/python3.11/site-packages/pytest/__main__.py",
  "axes": [
   {
    "title": "Households",
@@ -46,6 +46,7 @@
   "$\\mathdefault{2040}$",
   "$\\mathdefault{2050}$",
   "$\\mathdefault{20}$",
+  "$\\mathdefault{3.0}$",
   "$\\mathdefault{40}$",
   "$\\mathdefault{60}$",
   "$\\mathdefault{80}$",

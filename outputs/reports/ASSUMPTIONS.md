@@ -14,7 +14,8 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | 2026 overbuild rule | market_excess: building observed in the pipeline years (consents lagged 17 months) | DATA (observed consents); method stated |
 | Overbuild after the observed years | gap vs the next year's requirement, fading at rho; booked as surplus, absorbed by 2035 (normalised logistic from the last observed year) | THEORY: reversion to the equilibrium vacancy (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, not the speed; 2035 the common RECC window; never / by 2030 / by 2045, redevelopment booking and gap-vs-2026 as sensitivities |
 | Population 2026 | observed | DATA: Stats NZ ERP (see README) |
-| Household-size shape | Stats NZ Medium, anchored 2023, tail hermite_clamped | DATA (2018-base projections; N4 open) |
+| Household-size shape | Stats NZ Medium A, anchored 2023, tail hermite_clamped; the 5th / 95th population paths take Low / High A | DATA: Stats NZ 2023-base national family and household projections (POPPR_FHH_008, POPPR_FHH_010); propensity A (living arrangements held at 2023) adopted, B as a sensitivity; N4 resolved |
+| Starting surplus (F1) | 18,966 vacant dwellings at the start of 2026 (carry): the 2024-2025 stock-identity residual 9,020 dwellings a year against the 1992-2023 census-interval mean -463 and SD 3,038 (time-weighted), (residual - mean) x 2 years, absorbed with the overbuild by 2035 | RULE fixed in advance of the data (applied, not tuned): carried if the 2024-2025 residual exceeds the 1992-2023 census-interval mean + 2 SD; none / minus 2 SD as sensitivities |
 | Vacancy-rate parameter | The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050) | DATA: census 2023 (2018 empty count unrated, F1) |
 | Typology mix | shares held at the 2022-2026 consented average in every variant (2026: the observed consented mix) | DECISION (author): internal to the model (it weights the case-study factors) and not reported; a change of mix is a pathway question for later work |
 | Dwelling size reference | 2023-2025 | DATA: consents |
@@ -51,7 +52,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 
 ### Limitation of the 2026 overbuild rule
 
-- The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). The 2026 overbuild (market excess ≈34,200 dwellings over 2026-2050, of which ≈30,300 in 2026-2028) is absorbed by 2035 along the normalised logistic of the levers (≈34,200 dwellings built less; implied vacancy peaks at 6.63% in 2028). Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, reversion of vacancy to its equilibrium rate, not the speed; 2035 is the common RECC adoption window of the model and the speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). The persistence rho = 0.43 describes how the flow deviation fades, not the payback of the stock.
+- The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the 2026 overbuild raises implied stock vacancy temporarily and is absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). The 2026 overbuild (market excess ≈15,700 dwellings over 2026-2050, of which ≈14,100 in 2026-2028) is absorbed by 2035 along the normalised logistic of the levers (≈34,700 dwellings built less; implied vacancy peaks at 6.72% in 2028). Stock-flow theory of the housing market (Rosen & Smith 1983; Wheaton 1990; DiPasquale & Wheaton 1992; Gabriel & Nothaft 2001) fixes the direction, reversion of vacancy to its equilibrium rate, not the speed; 2035 is the common RECC adoption window of the model and the speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). The persistence rho = 0.43 describes how the flow deviation fades, not the payback of the stock.
 
 ### Limitations of the material decarbonisation
 
@@ -74,9 +75,10 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 ### Other limitations of the projection
 
 - No national demolition data: demolition of detached buildings up to three storeys is consent-exempt, so the implied replacement rates cannot be tested against a count.
-- N4 (open): the Low/High household-size variants (deterministic) are paired with stochastic population percentiles through one draw z, and the total vs private-household population question is unresolved until the living-arrangement table (E2); the household projections are 2018-base, with Stats NZ's 2023-base release (late 2026) to be adopted in a later version.
+- Household size is the Stats NZ 2023-base ratio of people in households to households, applied as a shape rebased on the observed 2023 household size of the total population: the share of the population outside private dwellings is held at its 2023 level.
+- The living-arrangement propensities are held at 2023 (Stats NZ projection A); their change modelled on the 2001-2023 censuses (B) is a one-at-a-time row, not sampled in the Monte Carlo.
 - Timber C1-C4 includes landfill methane (biogenic CO2 excluded), with decay as in the underlying EPD data: the 247 sawn-timber lines of the LCAQuick results carry C1-C4 of 1.1-4.5 times their A1-A3 (median 4.3), each with a module D credit for landfill-gas recovery. Timber is 31% of the case studies' C1-C4. No timber line carries a replacement or repaint event, so it affects the committed emissions after 2050, not the 2026-2050 total.
-- Households 2019-2023: the Stats NZ household estimates between the 2018 and 2023 censuses are consent-derived increments, rescaled by one factor (k = 0.824) so that June 2023 matches the 2023 census, as Stats NZ benchmarks each base; the consent-driven shape is kept. Stats NZ's 2023-rebased estimates will replace them when published.
+- Households 2019-2023: the Stats NZ household estimates between the 2018 and 2023 censuses are consent-derived increments, rescaled by one factor (k = 0.824) so that June 2023 matches the 2023 census, as Stats NZ benchmarks each base; the consent-driven shape is kept. The household estimates in hand (Dwelling and household estimates, March 2026 quarter) still have their last base at 2018; Stats NZ's 2023-rebased household estimates will replace the rescaling when published.
 - With the typology mix held in every variant (internal to the model: it weights the case-study factors), neither the variants nor the Monte Carlo carry typology-mix uncertainty; a change of mix is a pathway question for later work, not a baseline uncertainty.
 - The soil factor was derived for Auckland's future urban zones and is applied nationally.
 - The case-study carbon factor for apartments rests on one independent case study (A_1 and A_2 are one design at two scales).
@@ -107,14 +109,16 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `DEMOLITION_RATE` | `0.00135` |
 | `DWELLING_SIZE_REF` | `(2023, 2025)` |
 | `EVENT_TIMING` | `'n+1'` |
+| `F1_SD_MULTIPLE` | `2.0` |
 | `HH_BRIDGE` | `'erp_S'` |
+| `HH_PROPENSITY` | `'A'` |
 | `HH_REBASE_BASE` | `'2018-06-30'` |
 | `HH_REBASE_CENSUS` | `'2023-06-30'` |
 | `HH_SIZE_PACE_WINDOW` | `(2018, 2023)` |
-| `HH_SIZE_PATH` | `'statsnz'` |
+| `HH_SIZE_PATH` | `'statsnz_2023'` |
 | `HH_SIZE_VARIANT` | `'Medium'` |
 | `HOUSEHOLD_SHEET_HIST` | `'Table 2'` |
-| `HOUSEHOLD_SHEET_PROJ` | `'Table 1'` |
+| `HOUSEHOLD_SHEET_PROJ_2018` | `'Table 1'` |
 | `MIX_HELD_WINDOW` | `(2022, 2026)` |
 | `NET_REPLACEMENT_HELD` | `None` |
 | `NET_REPLACEMENT_WINDOW` | `(1991, 2023)` |
@@ -129,12 +133,13 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 | `OVERBUILD_RULE` | `'market_excess'` |
 | `POP_SHEET_HIST` | `'Table 1'` |
 | `POP_SHEET_PROJ` | `'Table 1'` |
-| `POP_SIZE_PAIR_SHEET` | `'Table 1'` |
+| `POP_SIZE_PAIR_SHEET_2018` | `'Table 1'` |
 | `RECENT_INTERVAL` | `(2018, 2023)` |
 | `REPLACEMENT_HALF_LIFE` | `10.0` |
 | `REPLACEMENT_VARIANT` | `'REF'` |
 | `RV_SHARE_REF` | `(2016, 2025)` |
 | `SOIL_ON_REPLACEMENT` | `False` |
+| `STARTING_SURPLUS` | `'carry'` |
 | `START_MODE` | `'observed'` |
 | `S_ANCHOR_YEAR` | `2023` |
 | `S_TAIL` | `'hermite_clamped'` |
@@ -174,7 +179,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 - I_glob 5.58E+13 equals the EF 3.0 global factor (8.10E+03 kg CO2e per person, 2010; Andreasi Bassi et al. 2023, Table 10), whose climate-change total sums the fossil, biogenic and land-use-change sub-indicators; the EF 3.1 value is a sensitivity (7.55E+03 kg CO2e per person x 6,895,889,018 persons = 5.206E+13, 6.7% lower, mainly through the lower characterisation factor of methane in EF 3.1; acquired rights only).
 - Ability-to-pay sector share: s_sec uses the consented value of new residential building over national final consumption expenditure, following the FCE upscaling of Hjalsted et al. (2021) as a proxy of the priority households give to housing. In the national accounts residential construction is gross fixed capital formation, not final consumption; treating it as consumed follows the endogenisation of capital in consumption-based accounting (Södersten, Wood & Hertwich 2018).
 - Ability to pay: Hjalsted et al. (2021) state GDP as "USD/cap (2017)", World Bank (2019), without naming the series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in outputs/data/aesa/results.json).
-- Monte Carlo: I_sec,base is recomputed in every draw with that draw's case-study carbon factors (2025 technology), so the factor uncertainty is treated alike in the base and the projection; it does not co-vary with the draw's completion rate or dwelling size (historical floor area is observed).
+- Monte Carlo: I_sec,base is recomputed in every draw with that draw's case-study carbon factors (2025 technology) and on the 2016-2025 built floor area at that draw's completion rate (consents x completion rate; the census-measured net replacement behind the soil convention recomputed at that rate), so the factor and completion uncertainty are treated alike in the base and the projection (shared-parameter rule); the completion-rate and completion-lag one-at-a-time rows recompute the base from their own runs. It does not co-vary with the draw's dwelling size (the historical floor area is observed consents).
 - The numerical results in Hjalsted et al.'s SI (Tables S4-S9) are reproduced only with α = 1; we apply α as specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS. The authors have been contacted.
 
 ### All settings in boundaries.py
@@ -216,18 +221,18 @@ Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Tab
 
 | setting | value | basis |
 |---|---|---|
-| L1 Household size (S1 Avoid Strategies) | sub-rule C: Stats NZ High - Medium household size gap (2050: +0.0415); Moderate S 2050 = 2.6725; Ambitious S 2050 = 2.6933 (Reference 2.6518); TL S = 2.7905 (1991) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| L1 Household size (S1 Avoid Strategies) | sub-rule C: Stats NZ High - Medium household size gap (2050: +0.0730); Moderate S 2050 = 2.5095; Ambitious S 2050 = 2.5460 (Reference 2.4730); TL S = 2.7905 (1991) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
 | L2 Vacancy rate (S1 Avoid Strategies) | sub-rule B: 4.01% (1996 census minimum, one definition); Moderate 4.70%; Ambitious 4.01%; TL v = 0 | B: best value ever observed in NZ (no structural trend) |
 | L3 Building lifetime (S1 Avoid Strategies) | sub-rule C: -40% demolition (Pellan et al. 2024); Moderate d = 0.20; Ambitious d = 0.40; TL no demolition, no surge | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
-| L4 Extra space (S1 Avoid Strategies) | sub-rule B: Detached 148.8 m2 (1990), Townhouses 105.8 m2 (1990), Apartments 91.0 m2 (1998); Moderate f = Detached 0.213, Townhouses 0.055, Apartments 0.058; Ambitious f = Detached 0.427, Townhouses 0.109, Apartments 0.115; TL f = 1 (size = occupied area) | B: best value ever observed in NZ (no structural trend) |
+| L4 Extra space (S1 Avoid Strategies) | sub-rule B: Detached 148.8 m2 (1990), Townhouses 105.8 m2 (1990), Apartments 91.0 m2 (1998); Moderate f = Detached 0.206, Townhouses 0.047, Apartments 0.055; Ambitious f = Detached 0.412, Townhouses 0.095, Apartments 0.110; TL f = 1 (size = occupied area) | B: best value ever observed in NZ (no structural trend) |
 | L5 Occupancy density (S1 Avoid Strategies) | sub-rule A: HD q0.15 of the 16 case-study design ratios = 0.8194; Moderate r = 0.9097; Ambitious r = 0.8194 (95% CI 0.732-0.960, n = 16); TL r = Detached 0.710, Townhouses 0.819, Apartments 0.819 | A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios |
-| L6 Brownfield-first development (S2 Switch Strategies) | sub-rule C: 59% of new floor area on previously developed land (England 2018-21, DLUHC 2022); Moderate s = 0.350 (s_ref 0.110); Ambitious s = 0.59; TL s = 1 | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| L6 Brownfield-first development (S2 Switch Strategies) | sub-rule C: 59% of new floor area on previously developed land (England 2018-21, DLUHC 2022); Moderate s = 0.340 (s_ref 0.089); Ambitious s = 0.59; TL s = 1 | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
 | L7 Soil-aware planning (S2 Switch Strategies) | sub-rule C: -14.6% soil carbon loss (SOC-aware allocation; Christoforatos, Pickering & Schipper 2026); Moderate x = 0.073; Ambitious x = 0.146; TL Detached 22.9, Townhouses 13.8, Apartments 2.5 kg CO2e/m2 (lowest soil order) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
 | L8 Material carbon efficiency (S2 Switch Strategies) | sub-rule A: HD q0.15 of the 14 case ratios = 0.8270; Moderate r = 0.9135; Ambitious r = 0.8270 (95% CI 0.607-0.950, n = 14); TL r = Detached 0.530, Townhouses 0.827, Apartments 0.827 | A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios |
 | L9 Construction-stage carbon (S3 Improve Strategy) | sub-rule C: A4-A5 linear to zero by 2050 (Zero Carbon Act s. 5Q; Oslo 2025); Moderate factor 2050 = 0.389; Ambitious factor 2050 = 0 (linear from 2025); TL A4-A5 = 0 | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
-| TL4 vs Ambitious | f = 1 vs {'Detached': 0.4268, 'Townhouses': 0.1091, 'Apartments': 0.1153} | asserted at least as strong: True |
+| TL4 vs Ambitious | f = 1 vs {'Detached': 0.4117, 'Townhouses': 0.0949, 'Apartments': 0.1102} | asserted at least as strong: True |
 | TL5 vs Ambitious | {'Detached': 0.7095, 'Townhouses': 0.8194, 'Apartments': 0.8194} vs r = 0.8194 | asserted at least as strong: True |
-| TL1 vs Ambitious | S = 2.7905 vs S_amb max 2.6933 | asserted at least as strong: True |
+| TL1 vs Ambitious | S = 2.7905 vs S_amb max 2.6718 | asserted at least as strong: True |
 | TL2 vs Ambitious | v = 0 vs v = 0.0401 | asserted at least as strong: True |
 | TL3 vs Ambitious | d = 1 (demolition and surge) vs d = 0.4 | asserted at least as strong: True |
 | TL8 vs Ambitious | {'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827} vs r = 0.8270 | asserted at least as strong: True |
@@ -248,7 +253,7 @@ Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Tab
 | `HD_CI` | `0.95` |
 | `HD_Q` | `0.15` |
 | `L1_AMBITIOUS_VARIANT` | `'High'` |
-| `L1_GAP_HELD_AFTER` | `2043` |
+| `L1_GAP_HELD_AFTER` | `2048` |
 | `L1_REFERENCE_VARIANT` | `'Medium'` |
 | `L1_VARIANTS` | `('Low', 'Medium', 'High')` |
 | `L2_VACANCY_FLOOR` | `0.04` |

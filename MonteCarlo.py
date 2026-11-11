@@ -174,9 +174,15 @@ def build_setup(settings=None):
               near_absorption=projection.OVERBUILD_ABSORPTION,
               # logistic absorption of the overbuild (None: never absorbed, the legacy Reference)
               near_absorb_w=(None if projection.OVERBUILD_ABSORPTION_END is None
-                             or projection.OVERBUILD_BOOKING != 'surplus' else
-                             engine.logistic_weights(fy, B['absorption_start'],
-                                                     projection.OVERBUILD_ABSORPTION_END)),
+                             or (projection.OVERBUILD_BOOKING != 'surplus' and projection.STARTING_SURPLUS == 'none')
+                             else engine.logistic_weights(fy, B['absorption_start'],
+                                                          projection.OVERBUILD_ABSORPTION_END)),
+              # F1 starting surplus: recomputed in every draw from its own completion rate (the 2024-2025
+              # completions), on the projection's vacancy definition and census years
+              f1_knots=engine.vacancy_knots(B['census'], float(B['empty_share_measured']), float(B['_cs'])),
+              f1_census_years=list(B['f1_census_years']), f1_years=(int(B['years_hist'].min()) + 1,
+                                                                    int(B['years_hist'].max())),
+              f1_mode=projection.STARTING_SURPLUS,
               # observed floor area (fixed in every draw): the pipeline years or the 2026 nowcast
               gfa_fixed=B['gfa_fixed'])
 
@@ -342,6 +348,12 @@ def project(su, p, full=False):
     # census dwelling-count identity, recomputed for this draw's completion rate
     rates = engine.census_interval_rates(su['census_stock'], su['consents_monthly'], c, su['lag_census'],
                                          uc=su['census_uc'])
+    s0 = 0.0
+    if su['join_mode'] == 'market_excess':            # F1: this draw's starting surplus
+        cal_f1 = engine.calibrate_stock(yh, su['hist_hh'], su['f1_knots'], su['units_all'], su['rv_units'], c,
+                                        su['demol_rate'], su['calib_start'], su['calib_end'])
+        s0 = engine.starting_surplus(engine.identity_residuals(cal_f1, rates, su['f1_census_years'], *su['f1_years']),
+                                     su['f1_mode'])
     unc_long = engine.census_window_rate(rates, *su['nr_window']) - su['demol_rate']
     unc_recent = engine.census_window_rate(rates, *su['recent']) - su['demol_rate']
     if su['scenario'] == 'VHIGH':                     # the census trend, refitted for this draw's completion rate
@@ -377,11 +389,11 @@ def project(su, p, full=False):
         I = {t: base[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
         U = {t: upf[j] - red[j] + su['soc'][j] for j, t in enumerate(typ)}
 
-    fwd = lambda join=None, redev=None: engine.forward(
+    fwd = lambda join=None, redev=None, s=0.0: engine.forward(
         pop, hh, np.insert(np.diff(pop), 0, 0).clip(min=0), v, su['demol_rate'], unc,
         dev, dv['rho'], su['rv_share'], shares, size, su['olf'], I, U,
         join=join, join_redev=redev, soil={t: su['soc'][j] for j, t in enumerate(typ)},
-        gfa_fixed=su['gfa_fixed'], soil_on_replacement=su['soil_on_repl'], events=events)
+        gfa_fixed=su['gfa_fixed'], soil_on_replacement=su['soil_on_repl'], events=events, stock_start=s)
     E = fwd()
     E_nojoin, join, ji = E, None, None
     if su['join_mode'] == 'market_excess':
@@ -389,8 +401,8 @@ def project(su, p, full=False):
                c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
                     + su['lag_w'] * float(su['units_all_raw'].loc[2025])))
         join, ji = engine.market_excess(E, b26, dv['rho'], su['near_gap_ref'], su['near_mode'],
-                                        su['near_absorption'], absorb_w=su['near_absorb_w'])
-        E = fwd(join, ji['redev'])
+                                        su['near_absorption'], absorb_w=su['near_absorb_w'], start_surplus=s0)
+        E = fwd(join, ji['redev'], s0)
     out = dict(gfa=E['total'], carbon=E['carbon'], upfront=E['upfront'], rv_units=E['rv_units'],
                hh=hh, S=S, extra_clip=E['extra_clip'], gfa_t=E['gfa_t'],
                I=np.array([I[t] for t in typ]), U=np.array([U[t] for t in typ]))
@@ -402,7 +414,7 @@ def project(su, p, full=False):
                             rv_share=su['rv_share'], shares=shares, size=size, olf=su['olf'], intensity=I,
                             intensity_upfront=U, soil={t: su['soc'][j] for j, t in enumerate(typ)},
                             gfa_fixed=su['gfa_fixed'], soil_on_replacement=su['soil_on_repl'], events=events),
-            E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']))
+            E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']), start_surplus=float(s0))
     return out
 
 

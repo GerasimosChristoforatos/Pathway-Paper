@@ -67,7 +67,7 @@ def test_reference_base_rows_use_the_reference_budget(BD):
             # the Reference budget (to 1e-14: carbon_kt is read back from the CSV, one rounding unit)
             assert x.carbon_kt / x.LoE_AR == pytest.approx(bar, rel=1e-14, abs=0), x.input
             n += 1
-        elif rule == BD.RECOMPUTE:
+        elif rule == BD.RECOMPUTE and x.case != 'central':    # a one-sided row's low end is the Reference
             assert x.carbon_kt / x.LoE_AR != pytest.approx(bar, rel=1e-6), x.input
     assert n > 0
 

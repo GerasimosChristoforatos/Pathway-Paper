@@ -49,11 +49,12 @@ CASES = [
     ('Replacement variant', N.SCENARIOS['REF_HL15'], dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=15.0)),
     ('Replacement variant', 'High replacement: 2018-2023 rate persists', dict(REPLACEMENT_VARIANT='HIGH')),
     ('Replacement variant', 'Very High replacement: 1991-2023 census trend continues', dict(REPLACEMENT_VARIANT='VHIGH')),
-    ('Household size', 'Household size: Stats NZ Low variant', dict(HH_SIZE_VARIANT='Low')),
-    ('Household size', 'Household size: Stats NZ High variant', dict(HH_SIZE_VARIANT='High')),
-    ('Household size', 'Household size after 2043: flat (kink at 2043)', dict(S_TAIL='flat')),
-    ('Household size', 'Household size after 2043: secant-slope taper', dict(S_TAIL='taper_secant')),
-    ('Household size', 'Household size after 2043: taper from the PCHIP end slope', dict(S_TAIL='taper')),
+    # the Stats NZ Low / High household projections move with the population percentile (projection.HH_SIZE_PAIRED):
+    # they are part of the population rows, not a row of their own
+    ('Household size', 'Living arrangements: propensities change (Stats NZ Medium B)', dict(HH_PROPENSITY='B')),
+    ('Household size', 'Household size after 2048: flat (kink at 2048)', dict(S_TAIL='flat')),
+    ('Household size', 'Household size after 2048: secant-slope taper', dict(S_TAIL='taper_secant')),
+    ('Household size', 'Household size after 2048: taper from the PCHIP end slope', dict(S_TAIL='taper')),
     ('Dwelling size', 'Dwelling size: 2016-2025 reference', dict(DWELLING_SIZE_REF=(2016, 2025))),
     ('Household size', 'Household size: 2018-2023 census pace, linear from 2023', dict(HH_SIZE_PATH='census_pace')),
     ('Stock', 'Completion rate 0.93', dict(COMPLETION_RATE=0.93)),
@@ -74,6 +75,9 @@ CASES = [
     ('2026 overbuild: how it is booked', 'Booked as redevelopment, stock-neutral',
      dict(OVERBUILD_BOOKING='redevelopment')),
     ('Stock', 'Vacancy parameter: 1986-2023 census mean, one definition', dict(VACANCY_PARAMETER='consistent_mean')),
+    # F1: the starting surplus of 2024-2025 (projection.STARTING_SURPLUS; the adopted 'carry')
+    ('Starting surplus', 'No starting surplus', dict(STARTING_SURPLUS='none')),
+    ('Starting surplus', 'Starting surplus minus 2 SD', dict(STARTING_SURPLUS='carry_minus_2sd')),
     ('2026 overbuild: rule variant', 'Gap measured against the 2026 requirement', dict(OVERBUILD_GAP_REF='2026')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
 ]

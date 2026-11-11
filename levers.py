@@ -29,8 +29,8 @@ Sensitivities: by 2030, by 2045 (the Pathways) and the instant TL (full strength
 
 LEVERS (grouped by the PAS 2080:2023 hierarchy, naming.STRATEGY_LEVERS; sub-rule naming.LEVER_SUBRULE;
 the earlier lever numbers are in the git history, tag model-v4.3.3)
-  S1 Avoid    L1 Household size [C]    S = S_ref + gap, gap = Stats NZ High - Medium household size (held at its 2043
-                                       value after 2043)
+  S1 Avoid    L1 Household size [C]    S = S_ref + gap, gap = Stats NZ High A - Medium A household size (held at its
+                                       2048 value after 2048)
               L2 Vacancy rate [B]      vacancy parameter -> the 1996 census minimum (one definition)
               L3 Building lifetime [C] demolition and the recent-surge component x (1 - d), d = 0.40
               L4 Extra space [B]       share f of the extra-space margin (size - occupied area) removed, applied
@@ -126,7 +126,7 @@ L5_TYPOLOGIES = ('Detached', 'Townhouses', 'Apartments')
 L1_VARIANTS = ('Low', 'Medium', 'High')
 L1_REFERENCE_VARIANT = 'Medium'
 L1_AMBITIOUS_VARIANT = 'High'
-L1_GAP_HELD_AFTER = 2043          # the last published Stats NZ knot
+L1_GAP_HELD_AFTER = 2048          # the last published Stats NZ knot (2023-base family and household projections)
 # TL1 speed limit: the TL household size cannot rise faster than the fastest change observed between
 # consecutive censuses 1991-2023 (census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - 2026), TL1
 # level), and never below the Ambitious path (S_ref + w gap). The other TL items keep the logistic window; the instant
@@ -158,8 +158,10 @@ SOURCES = {
     'StatsNZConsents': 'Stats NZ building consents by typology, floor area and number (data/derived/consents_monthly.csv)',
     'ChristoforatosPickering2025': 'Christoforatos G, Pickering K (2025) Smart and Sustainable Built '
                                    'Environment, doi:10.1108/SASBE-06-2025-0304 (16 NZ case studies)',
-    'StatsNZHousehold': 'Stats NZ (2021) Family and household projections: 2018(base)-2043, Low / Medium / High '
-                        'variants (data/Householddata.xlsx)',
+    'StatsNZHousehold': 'Stats NZ, National family and household projections: 2023(base)-2048, Low / Medium / High '
+                        'A (POPPR_FHH_008, POPPR_FHH_010; DataInfo+ https://datainfoplus.stats.govt.nz/item/nz.govt.'
+                        'stats/e7475c01-9e55-491d-a8fe-74efa8fba757; accessed 2026-11-11; '
+                        'data/derived/households_proj_2023base.csv)',
     'StatsNZCensus': 'Stats NZ census dwelling counts 1986-2023 (data/derived/census_dwellings.csv, occ-unocc-2013.xlsx)',
     'Pellan2024': 'Pellan M, et al. (2024) Building and Environment 256, 111505 (Table 2: demolition 150,000 -> 90,000 '
                   'a year)',

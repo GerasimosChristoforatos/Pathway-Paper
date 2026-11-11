@@ -130,8 +130,11 @@ record and must be checked before submission; no DOI or page number has been add
   L4 Extra space.)
 - Stats NZ. Census dwelling counts 1986–2023 (occupied, empty, residents away, under construction). (Stock, net
   replacement, vacancy; L2 Vacancy rate.)
-- Stats NZ (2021). Family and household projections: 2018(base)–2043, Low / Medium / High variants. (Household size;
-  L1 Household size.)
+- Stats NZ. National family and household projections: 2023(base)–2048 (tables POPPR_FHH_008, people in households
+  by living arrangement type, age and sex, and POPPR_FHH_010, households by household type; Low / Medium / High x
+  living-arrangement propensity A / B). DataInfo+:
+  https://datainfoplus.stats.govt.nz/item/nz.govt.stats/e7475c01-9e55-491d-a8fe-74efa8fba757 (accessed 11 November
+  2026). (Household size; L1 Household size.)
 - Stats NZ (2022). *Experimental building indicators: March 2022 quarter*, Table 1 (dwelling-weighted median time
   from consent to final inspection 455 days for December 2020 quarter consents). (Consistency check of the lag.)
 - Stats NZ (2024). National population projections: 2024(base)–2078, stochastic percentiles. (Population and its

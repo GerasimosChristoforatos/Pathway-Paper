@@ -436,10 +436,9 @@ def main():
         "pattern rather than add information. A quarterly demand engine would require its own "
         "stock-flow calibration and validation and is not introduced here.",
         "",
-        "Household-size settings are deliberately unchanged pending the Stats NZ 2023-base family "
-        "and household projection release. The new national household projection, its census anchor, "
-        "and the household-estimate series should be reconciled together before replacing the current "
-        "2018-base projection shape.",
+        "Household size follows the Stats NZ 2023-base family and household projections (Medium A), "
+        "rebased on the 2023 census; the household estimates of 2019-2025 are still the census-pinned "
+        "rescaling of the latest Stats NZ release (last household base 2018) and the ERP / S bridge.",
         "",
         "Full annual values are in diagnostics/lag_comparison_annual.csv; the historical and forecast "
         "coarse classification is in diagnostics/market_balance_history_projection.csv; the "

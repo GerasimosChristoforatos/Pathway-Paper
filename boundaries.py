@@ -39,6 +39,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT_DIR)
 sys.path.insert(0, os.path.join(ROOT_DIR, 'tools'))
 import aesa  # noqa: E402
+import engine  # noqa: E402
 import figsource  # noqa: E402
 import layout  # noqa: E402
 import projection  # noqa: E402
@@ -123,22 +124,24 @@ AR_BASE_RULE = {
     # one-at-a-time rows of the Reference (sensitivity/reference_carbon.csv; Fig7a, ED4)
     'Population: Stats NZ 5th / 95th percentile': (
         REFERENCE_BASE, 'the base history is observed; both budgets move with the population path (Horup Eq. 1)'),
-    'Household size: Stats NZ High / Low variant': (REFERENCE_BASE, 'future household size only'),
+    'Living arrangements: propensities change (Stats NZ B)': (REFERENCE_BASE, 'future household size only'),
     'Household size: 2018-2023 census pace': (REFERENCE_BASE, 'future household size only'),
-    'Household size after 2043: flat': (REFERENCE_BASE, 'future household size only'),
-    'Household size after 2043: secant-slope taper': (REFERENCE_BASE, 'future household size only'),
-    'Household size after 2043: taper from the PCHIP end slope': (REFERENCE_BASE, 'future household size only'),
+    'Household size after 2048: flat': (REFERENCE_BASE, 'future household size only'),
+    'Household size after 2048: secant-slope taper': (REFERENCE_BASE, 'future household size only'),
+    'Household size after 2048: taper from the PCHIP end slope': (REFERENCE_BASE, 'future household size only'),
     'Completion rate 0.93 / 0.96': (
-        REFERENCE_BASE, 'the base keeps the observed floor area of the Reference, as in the Monte Carlo, which samples '
-                        'the completion rate with a fixed base'),
-    'Completion rate 0.95 (MODEL v3.3)': (REFERENCE_BASE, 'as the completion-rate row'),
+        RECOMPUTE, 'the completion rate turns the 2016-2025 consents into the built floor area behind the base, as '
+                   'in the Monte Carlo (F5)'),
+    'Completion rate 0.95 (MODEL v3.3)': (RECOMPUTE, 'as the completion-rate row'),
     'Completion lag 15 / 19 months': (
-        REFERENCE_BASE, 'the base keeps the observed floor area of the Reference, as in the Monte Carlo'),
-    'Completion lag 0 months (MODEL v3.3)': (REFERENCE_BASE, 'as the completion-lag row'),
+        RECOMPUTE, 'the completion lag times the 2016-2025 completions behind the base (F5)'),
+    'Completion lag 0 months (MODEL v3.3)': (RECOMPUTE, 'as the completion-lag row'),
     'No 2026 data': (REFERENCE_BASE, 'the 2026 data only'),
     'No census under-construction correction': (REFERENCE_BASE, 'calibration of future net replacement only'),
     'Dwelling-size window 2016-2025': (REFERENCE_BASE, 'future dwelling size only'),
     '2026 overbuild absorbed by 2030 / by 2045': (REFERENCE_BASE, 'future building only'),
+    'No starting surplus': (REFERENCE_BASE, 'future building only (the surplus is absorbed from 2026)'),
+    'Starting surplus minus 2 SD': (REFERENCE_BASE, 'future building only (the surplus is absorbed from 2026)'),
     '2026 overbuild never absorbed (MODEL v2.1 Reference)': (REFERENCE_BASE, 'future building only'),
     'Vacancy parameter: 1986-2023 census mean (one definition)': (REFERENCE_BASE, 'future vacancy only'),
     '2026 overbuild booked as stock-neutral redevelopment': (REFERENCE_BASE, 'future building only'),
@@ -243,7 +246,22 @@ def nz_population_alt(source, years):
     raise ValueError(f'Unknown NZ population source {source!r}.')
 
 
-def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_from=None):
+def history_at_completion(B, c):
+    """The projection state B with its history at completion rate c (F5: the base co-varies with the completion
+    rate): the built floor area and dwellings (consents x completion rate, timed by the run's lag) scaled by
+    c / B's rate, and the census dwelling-count identity recomputed at c (as each Monte Carlo draw does); the
+    household stock calibration does not depend on c. At B's own rate it reproduces B exactly (checked)."""
+    c0 = float(B['built_factor'])
+    rates = engine.census_interval_rates(B['census']['total_private'], B['consents_monthly'], c, B['lag_census'],
+                                         uc=B['census_uc'])
+    if c == c0 and not np.allclose(rates['rate'], B['census_rates']['rate'], rtol=1e-12, atol=0):
+        raise SystemExit('history_at_completion: the census rates at the run\'s own completion rate are not reproduced.')
+    k = c / c0
+    return dict(B, hist_built_typ_gfa=B['hist_built_typ_gfa'] * k, hist_built_units=B['hist_built_units'] * k,
+                census_rates=rates, built_factor=c)
+
+
+def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_from=None, with_events=True):
     """Sector emissions in past years (kg CO2e) at the case-study factors (2025
     technology; roughly contemporaneous with the base window, not back-cast), with the same scope, accounting and soil convention as the
     projection: built floor area by typology (consents x completion rate) x
@@ -282,7 +300,7 @@ def historical_emissions(B, years, after=HIST_RATE_AFTER_LAST_CENSUS, events_fro
     soil = sum(g[t] * B['SOIL_INTENSITY'][t] for t in typ) * soil_share
     soil_all = sum(g[t] * B['SOIL_INTENSITY'][t] for t in typ)
     b = pd.Series(0.0, index=list(years))
-    if tr:
+    if tr and with_events:                         # (base_with_factors recomputes the events from the gfa columns)
         ef = int(years[0]) if events_from is None else int(events_from)
         gh = B['hist_built_typ_gfa'][typ]
         for t in typ:
@@ -365,10 +383,40 @@ def one_at_a_time_bases(B, hist, i_base, window=AR_BASE_WINDOW):
         if not np.isclose(v, window_base(Bn, window)[0], rtol=1e-12, atol=0):
             raise SystemExit('one_at_a_time_bases: the event-timing row does not reproduce window_base.')
         out['Event timing L / n'] = dict(single=v)
+    # F5: the completion-rate and completion-lag rows: the base of a projection run with the row's settings (central
+    # factors). The completion-rate rows must equal the Monte Carlo's per-draw base (history_at_completion).
+    import Sensitivity as SE
+    cases = {lab: kw for _, lab, kw in SE.CASES}
+    for row, sides in COMPLETION_BASE_ROWS.items():
+        out[row] = {}
+        for side, case in sides.items():
+            if case not in cases:
+                raise SystemExit(f'one_at_a_time_bases: {case!r} is not a case of Sensitivity.py.')
+            with contextlib.redirect_stdout(io.StringIO()):
+                Br = validation.run_boss(**cases[case])
+            v = window_base(Br, window)[0]
+            if set(cases[case]) == {'COMPLETION_RATE'}:
+                hc = historical_emissions(history_at_completion(B, cases[case]['COMPLETION_RATE']),
+                                          range(HIST_START, 2026), with_events=False)
+                if not np.isclose(base_with_factors(hc, typ, up, window, age), v, rtol=1e-12, atol=0):
+                    raise SystemExit(f'one_at_a_time_bases: {case!r}: the Monte Carlo base at this completion rate '
+                                     f'does not reproduce the run\'s base.')
+            out[row][side] = v
+        importlib.reload(projection)
     for k in out:
         if ar_base_rule(k)[0] != RECOMPUTE:
             raise SystemExit(f'one_at_a_time_bases: {k!r} is not classified {RECOMPUTE!r}.')
     return out
+
+
+# F5: the one-at-a-time rows whose AR base is recomputed from the row's own projection run: {row: {side: case of
+# Sensitivity.CASES}}
+COMPLETION_BASE_ROWS = {
+    'Completion rate 0.93 / 0.96': {'low': 'Completion rate 0.93', 'high': 'Completion rate 0.96'},
+    'Completion rate 0.95 (MODEL v3.3)': {'single': 'Completion rate 0.95 (MODEL v3.3)'},
+    'Completion lag 15 / 19 months': {'low': 'Completion lag 15 months', 'high': 'Completion lag 19 months'},
+    'Completion lag 0 months (MODEL v3.3)': {'single': 'Completion lag 0 months (same calendar year, MODEL v3.3)'},
+}
 
 
 def legacy_events(B):
@@ -499,7 +547,8 @@ def mc_runs(fy, hist):
     each draw must reproduce its saved outputs to MC_REL_TOL. Returns, per
     scenario, the annual carbon (draws x years), NZ population (draws x years)
     and the AR base Ī_sec,base of each draw, recomputed from the draw's
-    case-study carbon factors (2025 technology) on the observed history."""
+    case-study carbon factors (2025 technology) on the history at the draw's completion rate (F5:
+    history_at_completion; the draws share the completion lag)."""
     out = {}
     for name, settings in MC.MC_SCENARIOS:
         with contextlib.redirect_stdout(io.StringIO()):
@@ -513,6 +562,7 @@ def mc_runs(fy, hist):
         ibase = np.empty(len(d))
         ibase20 = np.empty(len(d))
         kcar = MC.PARAMS.index('carbon')
+        kcom = MC.PARAMS.index('complete')
         worst = 0.0
         for j in range(len(d)):
             o = MC.project(su, dict(zip(MC.PARAMS, X[j])))
@@ -524,8 +574,10 @@ def mc_runs(fy, hist):
                 fac, age = su['boot_up'][kc], su['boot_age'][kc]
             else:
                 fac, age = su['boot_emb'][kc], None
-            ibase[j] = base_with_factors(hist, su['typ'], fac, AR_BASE_WINDOW, age)
-            ibase20[j] = base_with_factors(hist, su['typ'], fac, AR_BASE_WINDOW_20, age)
+            hj = historical_emissions(history_at_completion(su['B'], float(X[j, kcom])), range(HIST_START, 2026),
+                                      with_events=False)
+            ibase[j] = base_with_factors(hj, su['typ'], fac, AR_BASE_WINDOW, age)
+            ibase20[j] = base_with_factors(hj, su['typ'], fac, AR_BASE_WINDOW_20, age)
             pop[j] = su['pop50'] + MC.interp_z(X[j, 0], MC.Z_KNOTS, su['spreads'])
             # the population path is the one the draw used: hh x S = pop
             if not np.allclose(o['hh'] * o['S'], pop[j], rtol=1e-12, atol=0):
@@ -967,8 +1019,11 @@ LIMITATIONS = [
     'series; current US$ is the sensitivity. The GDP coverage excludes economies without the measure (listed in '
     'outputs/data/aesa/results.json).',
     'Monte Carlo: I_sec,base is recomputed in every draw with that draw\'s case-study carbon factors (2025 '
-    'technology), so the factor uncertainty is treated alike in the base and the projection; it does not '
-    'co-vary with the draw\'s completion rate or dwelling size (historical floor area is observed).',
+    'technology) and on the 2016-2025 built floor area at that draw\'s completion rate (consents x completion rate; '
+    'the census-measured net replacement behind the soil convention recomputed at that rate), so the factor and '
+    'completion uncertainty are treated alike in the base and the projection (shared-parameter rule); the '
+    'completion-rate and completion-lag one-at-a-time rows recompute the base from their own runs. It does not '
+    'co-vary with the draw\'s dwelling size (the historical floor area is observed consents).',
     'The numerical results in Hjalsted et al.\'s SI (Tables S4-S9) are reproduced only with α = 1; we apply α as '
     'specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS. The authors have '
     'been contacted.',

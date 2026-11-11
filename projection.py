@@ -245,8 +245,9 @@ COL_CONSENT_COUNTS = {
 # figure source written by export_figure_sources(), never from here.
 
 # Typology mix (author's decision): the typology floor-area shares are held at
-#   their MIX_HELD_WINDOW average (ratio of sums of consented floor area over the window, 2026 =
-#   the observed months, January-July) in every variant. The typology mix is internal to the model
+#   their MIX_HELD_WINDOW average (ratio of sums of consented floor area over the window, on the lagged
+#   consents: at L = 17 the window's 2026 is consents August 2024 - July 2025, all observed; at L = 0 it is
+#   the observed 2026 months) in every variant. The typology mix is internal to the model
 #   (it weights the case-study factors) and is not reported.
 MIX_HELD_WINDOW = (2022, 2026)
 # 2026 in-scope floor area (market-excess rule): the observed consented GFA by
@@ -400,8 +401,9 @@ OVERBUILD_ABSORPTION_END = 2035
 STARTING_SURPLUS = 'carry'
 F1_SD_MULTIPLE = 2.0
 # NOWCAST_METHOD: 'last_12_months' -- 2026 = the latest 12 OBSERVED months
-#   (August 2025 - July 2026), no seasonal estimation. It is the year to July
-#   2026, not calendar 2026: replace it with calendar 2026 when published.
+#   (with the MODEL v4.6.0 data freeze, consents to September 2026: October 2025 -
+#   September 2026), no seasonal estimation. It is not calendar 2026: replace it
+#   with calendar 2026 when published. Used only at a zero completion lag.
 NOWCAST_METHOD = 'last_12_months'
 NOWCAST_SEASONAL_YEARS = (2010, 2025)
 # NOWCAST_POPULATION: 2026 population growth is OBSERVED: the latest
@@ -525,7 +527,7 @@ COMPLETION_LAG = 0
 #   with the Stats NZ Experimental building indicators (dwelling-weighted median days from consent to final inspection
 #   455 for December 2020 quarter consents, March 2022 quarter release, Table 1; 533 for September 2022 quarter
 #   consents, December 2023 quarter release, Table 1). Projection years whose 12 lagged months are all observed are
-#   PIPELINE years (L = 17, consents to July 2026: 2026 and 2027): their building is observed, not modelled (the
+#   PIPELINE years (L = 17, consents to September 2026: 2026 and 2027): their building is observed, not modelled (the
 #   market excess over the requirement, engine.market_excess with n observed years; their floor area fixed in every
 #   run). 0: same-calendar-year consents, 2026 from the last-12-months nowcast. Not combined
 #   with COMPLETION_LAG (the two-point W) != 0.

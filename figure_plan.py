@@ -26,7 +26,7 @@ PAPER_MAIN = [
          title='Embodied carbon of the Reference',
          caption='Annual embodied carbon of the Reference 2026-2050 by (a) demand band, (b) material and (c) life-cycle '
                  'stage; (d) cumulative 2026-2050 as three attached columns of the same total by demand band, material '
-                 'and stage (negative demand bands outlined, hanging down to the total). Materials and stages are never '
+                 'and stage (negative demand bands solid below zero; the net total a black marker). Materials and stages are never '
                  'negative.',
          source=['baseline/bands_annual.csv', 'baseline/annual_by_material.csv', 'baseline/annual_by_stage.csv']),
     dict(id='Fig3', file='Fig3_reference_boundaries', width='double', module='figures.paper_main',
@@ -83,7 +83,8 @@ PAPER_EXTENDED = [
          source=['figure_source/projection_paths.json', 'figure_source/D02_households.json']),
     dict(id='ED2', file='ED2_household_formation_size', module='figures.paper_extended',
          title='Household formation and household size', source=['baseline/household_formation_history.csv',
-                                                                 'figure_source/D03_household_size.json']),
+                                                                 'figure_source/D03_household_size.json',
+                                                                 'figure_source/D04_household_formation.json']),
     dict(id='ED3', file='ED3_replacement_variants', module='figures.paper_extended',
          title='Low, High and Very High replacement: the Reference, the Pathways and TL',
          source=['sensitivity/replacement_variants.csv', 'pathways/annual.csv']),

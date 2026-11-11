@@ -31,7 +31,8 @@ WHOLE_LIFE = dict(ACCOUNTING='whole_life_at_construction', DECARB_A45='held')
 # the Reference of the captured anchors: the 2026 overbuild never absorbed
 LEGACY = dict(OVERBUILD_ABSORPTION_END=None, COMPLETION_LAG_MONTHS=0, COMPLETION_RATE=0.95,   # v2.1 timing
               HH_SIZE_PATH='statsnz_2018', STARTING_SURPLUS='none',   # the household size of v2.1 - v4.3.7, no F1
-              S_TAIL='hermite_clamped')
+              S_TAIL='hermite_clamped',
+              CONSENT_DATA_END='2026-07-01')     # the consent data of those versions (to July 2026; no revisions since)
 
 
 @pytest.fixture(scope='module')

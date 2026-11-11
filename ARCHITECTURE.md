@@ -258,7 +258,7 @@ censuses on one definition is a sensitivity row). The implied stock vacancy
 `overbuild_absorption_log.csv`).
 
 2026 building is observed: 0.95 × consents over the latest 12 observed months
-(the year to July 2026). Its excess over the 2026 requirement is booked in
+(at L = 0; at the adopted L = 17, the lagged consents of 2026). Its excess over the 2026 requirement is booked in
 2026; from 2027 building stays above the requirement by gap_ref × ρ^(t−2026),
 with gap_ref = building 2026 − requirement 2027 and ρ the estimated persistence
 of departures from the calibrated identity (`OVERBUILD_RULE = 'market_excess'`,

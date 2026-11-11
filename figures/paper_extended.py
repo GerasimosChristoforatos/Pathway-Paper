@@ -93,23 +93,37 @@ def ed3():
     x = (h['year_start'] + h['year_end']) / 2
     w = h['year_end'] - h['year_start'] + 0.7
     a, b = h['from_population_growth_per_year'] / 1e3, h['from_household_size_change_per_year'] / 1e3
-    ax[0].bar(x, a, width=w, color=S.GROWTH, label='From population growth')
-    ax[0].bar(x, np.clip(b, 0, None), bottom=a, width=w, color=S.BAND['smaller_households'][0],
-              label='From household-size change')
-    neg = np.clip(b, None, 0)
-    ax[0].bar(x, -neg, bottom=a + neg, width=w, facecolor='none', edgecolor=S.BAND['smaller_households'][0],
-              lw=S.LW_OUTLINE, gid=P.NEG_BAR_GID)
-    P.line(ax[0], d['forecast_years'][1:], np.asarray(d['household_formation_50th'])[1:] / 1e3, color=S.INK,
-               label='Projection (median)')
+    c_pop, c_size = S.GROWTH, S.BAND['smaller_households'][0]
+    # history: census-interval columns; the household-size part above the population part when positive, below
+    # zero (solid) when negative (households consolidating)
+    ax[0].bar(x, a, width=w, color=c_pop, lw=0, label='From population growth')
+    ax[0].bar(x, np.clip(b, 0, None), bottom=a, width=w, color=c_size, lw=0, label='From household-size change')
+    ax[0].bar(x, np.clip(b, None, 0), width=w, color=c_size, lw=0)
+    # projection: the same split annually (D04: dP / S and the rest of the change in households), stacked areas
+    f = D.src('D04_household_formation')
+    yf = np.asarray(f['projection_years'], float)
+    pa, sa = np.asarray(f['from_population_growth'], float) / 1e3, np.asarray(f['from_household_size_change'],
+                                                                                 float) / 1e3
+    med_y = np.asarray(d['forecast_years'][1:], float)
+    med = np.asarray(d['household_formation_50th'])[1:] / 1e3
+    if not (np.array_equal(yf, med_y) and np.allclose(pa + sa, med, rtol=1e-9, atol=1e-9)):
+        raise SystemExit('STOP: ED2a: the projection split does not sum to the projected household formation.')
+    if (pa < 0).any():
+        raise SystemExit('STOP: ED2a: negative population-growth part in the projection (the stack assumes >= 0).')
+    xs, top_p = P.pchip(yf, pa)
+    _, top_s = P.pchip(yf, pa + np.clip(sa, 0, None))
+    _, neg_s = P.pchip(yf, np.clip(sa, None, 0))
+    ax[0].fill_between(xs, 0, top_p, color=c_pop, lw=0)
+    ax[0].fill_between(xs, top_p, np.maximum(top_s, top_p), color=c_size, lw=0)
+    ax[0].fill_between(xs, np.minimum(neg_s, 0), 0, color=c_size, lw=0)
+    P.line(ax[0], med_y, med, color=S.INK, label='Projection (median), net new households')
+    ax[0].axhline(0, color=S.INK, lw=S.LW_THIN)
+    ax[0].set_ylim(top=max(float((a + np.clip(b, 0, None)).max()), float(top_s.max()), float(med.max())) * 1.06)
     ax[0].set_ylabel('New households per year (thousand)')
-    h0, _ = ax[0].get_legend_handles_labels()         # the negative part in the legend
-    h0.append(Patch(facecolor='none', edgecolor=S.BAND['smaller_households'][0], lw=S.LW_OUTLINE,
-                    label='From household-size change, negative (households consolidating; outline)'))
-    ax[0].legend(handles=h0, fontsize=S.FONT_MIN, loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2,
-                 frameon=False)
+    ax[0].legend(fontsize=S.FONT_MIN, loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=False)
     P.panel(ax[0], 'a', 'Household formation by source')
     hs = d['household_size_hist']
-    P.line(ax[1], hs.index, hs.values, color=S.INK, label='History')
+    ax[1].plot(hs.index, hs.values, color=S.INK, lw=S.LW, label='History')      # straight segments between years
     P.line(ax[1], d['projection_years'], d['projection_household_size'], color=S.REFERENCE, lw=S.LW_BOLD, ls='--',
                label='Reference projection')
     ax[1].set_ylabel('Household size (persons per household)')

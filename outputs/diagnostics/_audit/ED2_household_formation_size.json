@@ -1,6 +1,6 @@
 {
  "figure": "ED2_household_formation_size",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Household formation by source",

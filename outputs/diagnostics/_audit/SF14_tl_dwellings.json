@@ -1,6 +1,6 @@
 {
  "figure": "SF14_tl_dwellings",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Theoretical Limit",

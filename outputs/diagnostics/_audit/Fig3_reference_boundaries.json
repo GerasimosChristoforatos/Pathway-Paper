@@ -1,6 +1,6 @@
 {
  "figure": "Fig3_reference_boundaries",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Annual: the Reference against AR and AtP",

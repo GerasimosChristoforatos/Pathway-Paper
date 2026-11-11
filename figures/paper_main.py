@@ -570,8 +570,9 @@ def reduction_by_band():
 # ---------------------------------------------------------------------------
 # Fig5: the solution space against AR and AtP
 # ---------------------------------------------------------------------------
-FIG5_LIM = (-0.05, 0.85)        # both axes from -5% to 100% (to 110%)
-FIG5_N = 421                   # grid points per axis (0.25% steps)
+FIG5_LIM = (-0.05, 0.90)        # both axes from -5% to 90%
+FIG5_N = 381                   # grid points per axis (0.25% steps)
+FIG5_MARKER_MARGIN = 0.03      # every marker at least this far inside the square (a marker on the edge is clipped)
 
 
 def fig5_loe(bc, x, y):
@@ -677,10 +678,28 @@ def fig5():
     # labels where each contour crosses the diagonal x = y: (1 - x)^2 = k
     diag = {v: 1.0 - np.sqrt(fig5_k(bc, v)) for v in levels if fig5_k(bc, v) > 0}
     lab_levels = [v for v, d in diag.items() if 0.02 <= d <= 0.98]      # crossings inside the square only
-    ax.clabel(cs, levels=lab_levels, fmt=lambda v: f'LoE of AR {v:g}', fontsize=S.FONT_MIN,
-              manual=[(100 * diag[v], 100 * diag[v]) for v in lab_levels])
+    # each label sits where its contour crosses the diagonal unless its text (about 14 percentage points long)
+    # would cover a marker; then the first position along the contour, either side of the diagonal, that clears
+    # every marker and the square's edges (clabel takes the nearest contour point to the position given)
+    mk = [(100 * m['demand_reduction'], 100 * m['intensity_reduction']) for m in bc['solution_space_markers']]
+    clear = lambda p: (all(np.hypot(p[0] - a, p[1] - b) >= (14.0 if s == 0 else 10.0) for a, b in mk)
+                       and 100 * lo + 8.0 <= min(p) and max(p) <= 100 * hi - 8.0)
+    pos = []
+    for v in lab_levels:
+        d = 100 * diag[v]
+        pick = (d, d)
+        for s in sorted(range(-40, 41, 2), key=abs):
+            if clear((d + s, d - s)):
+                pick = (d + s, d - s)
+                break
+        pos.append(pick)
+    ax.clabel(cs, levels=lab_levels, fmt=lambda v: f'LoE of AR {v:g}', fontsize=S.FONT_MIN, manual=pos)
     for m in bc['solution_space_markers']:
         run = m['run']
+        if not all(lo + FIG5_MARKER_MARGIN <= v <= hi - FIG5_MARKER_MARGIN
+                   for v in (m['demand_reduction'], m['intensity_reduction'])):
+            raise SystemExit(f"STOP: Fig5: the {run} marker ({m['demand_reduction']:.3f}, {m['intensity_reduction']:.3f}) "
+                             f'is not inside the plotted square {FIG5_LIM} with margin {FIG5_MARKER_MARGIN}')
         xm, ym = 100 * m['demand_reduction'], 100 * m['intensity_reduction']
         if run == 'TL':
             ax.plot(xm, ym, color=S.TL, ls='none', **S.TL_MARKER, zorder=6)

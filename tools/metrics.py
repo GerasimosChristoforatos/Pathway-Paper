@@ -153,8 +153,50 @@ def mc_metrics():
     return m
 
 
+PATHWAY_RUNS = {'reference': 'REF', 'moderate': 'pathway-moderate', 'ambitious': 'pathway-ambitious', 'tl': 'TL',
+                 'tl_tl1_age_standardised': 'TL-TL1-age-standardised'}
+PATHWAY_MC_RUNS = {'reference': 'REF', 'moderate': 'pathway_moderate', 'ambitious': 'pathway_ambitious', 'tl': 'TL',
+                   'tl_tl1_age_standardised': 'TL_TL1_age_standardised'}
+
+
+def pathway_metrics():
+    """The headline runs (pathways/runs.csv: carbon, LoE AR / AtP) with P(LoE AR <= 1) over the pathway Monte Carlo
+    draws (pathways/montecarlo_summary.csv), the TL population threshold and the committed emissions after 2050 of the
+    Reference (central and the Monte Carlo 90% interval)."""
+    runs = pd.read_csv(layout.data('pathways/runs.csv'))
+    runs = runs[runs['scenario'] == 'REF'].set_index('run')
+    s = layout.data('pathways/montecarlo_summary.csv')
+    s = pd.read_csv(s) if os.path.exists(s) else None
+    out = {}
+    for k, r in PATHWAY_RUNS.items():
+        if r not in runs.index:
+            continue
+        x = runs.loc[r]
+        e = dict(carbon_kt=float(x['carbon_kt']), LoE_AR=float(x['LoE_AR']), LoE_AtP=float(x['LoE_AtP']))
+        if s is not None:
+            q = s[(s['run'] == PATHWAY_MC_RUNS[k]) & (s['quantity'] == 'LoE_AR')]
+            if len(q):
+                e['P_LoE_AR_at_most_1'] = float(q['probability_LoE_at_most_1'].iloc[0])
+        out[k] = e
+    c = layout.data('pathways/montecarlo_conditional_tl.json')
+    if os.path.exists(c):
+        with open(c) as f:
+            out['tl_threshold_P_NZ_2050'] = json.load(f)['population_threshold']['adopted']['threshold_P_NZ_2050']
+    with open(layout.data('baseline/projection.json')) as f:
+        com = json.load(f)['committed']
+    out['committed_lower_kt'] = float(com['lower_kt'])
+    if s is not None:
+        q = s[(s['run'] == 'REF') & (s['quantity'] == 'committed_lower_kt')]
+        if len(q):
+            out['committed_lower_kt_mc_p5'] = float(q['p5'].iloc[0])
+            out['committed_lower_kt_mc_p95'] = float(q['p95'].iloc[0])
+    return out
+
+
 def collect():
     m = {'projection': projection_metrics()}
+    if os.path.exists(layout.data('pathways/runs.csv')):
+        m['pathways'] = pathway_metrics()
     if os.path.exists(layout.montecarlo('summary', 'REF')):
         m['mc'] = mc_metrics()
     if os.path.exists(layout.data('aesa/results.json')):

@@ -219,7 +219,8 @@ def row_notes_ed4(r):
     _same(F, 'propensity row', kw('Living arrangements: propensities change (Stats NZ B)', 'single'),
           dict(HH_PROPENSITY='B'))
     n['hh_propensity'] = ('Stats NZ Medium B household projection (living-arrangement propensities change, modelled on '
-                          'the 2001–2023 censuses) instead of Medium A (propensities held at 2023)')
+                          'the 2001–2023 censuses) instead of Medium A (propensities held at 2023): what if B happens '
+                          'anyway (the same path is L1 Ambitious, what if policy delivers it)')
     k = kw('Household size: 2018-2023 census pace', 'single')
     _same(F, 'census-pace path', k, dict(HH_SIZE_PATH='census_pace'))
     a, b = PR.HH_SIZE_PACE_WINDOW

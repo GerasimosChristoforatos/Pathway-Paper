@@ -1164,7 +1164,7 @@ def main():
     # the lag of the census dwelling-count identity in years (continuous time, monthly resolution); the annual
     # series are already lagged (df_lag)
     lag_census = lag_months / 12.0
-    lag_w = 0.0                      # the two-point lag W of MODEL v2-v3 (removed); kept as an output key in v4.7 stage 1
+
     hist_units_all_c = hist_units_all              # all categories
     hist_rv_units_c = hist_rv_units
     hist_total_units_c = hist_total_units          # in scope
@@ -2051,7 +2051,7 @@ def export_results(B, path):
     out = dict(
         settings=dict(scenario=B['_scenario'], replacement_half_life=REPLACEMENT_HALF_LIFE, overbuild_rule=B['_join_mode'],
                       nowcast_method=NOWCAST_METHOD, overbuild_booking=OVERBUILD_BOOKING,
-                      completion_rate=COMPLETION_RATE, lag_w=float(B['lag_w'])),
+                      completion_rate=COMPLETION_RATE, completion_lag_months=int(B['lag_months'])),
         gfa_Mm2=float(R['50th']['total'][f].sum() / 1e6), carbon_kt=float(B['tot_carbon_median']),
         upfront_kt=float(B['_upfront'] + B['_soil'] / 1e6), soil_kt=float(B['_soil'] / 1e6),
         stages_kt=stages,
@@ -2245,7 +2245,7 @@ def export_figure_sources(B):
     figsource.write('D08_dwelling_space', years_hist=yh, realised_dwelling_size=B['blended_dwelling_size'],
                     occupied_area_per_dwelling=B['occupied_area_per_dwelling'], utilisation=B['utilisation'])
     figsource.write('D09_cumulative_floor_area', years_hist=yh, forecast_years=fy, cumulative_floor_area_hist=B['hist_cum'],
-                    built_factor=float(B['built_factor']), lag_w=float(B['lag_w']),
+                    built_factor=float(B['built_factor']),
                     lag_months=int(B['lag_months']),
                     cumulative_floor_area_5th=df['Cum_GFA_Total_5th'].to_numpy(float),
                     cumulative_floor_area_50th=df['Cum_GFA_Total_50th'].to_numpy(float),

@@ -29,8 +29,9 @@ Sensitivities: by 2030, by 2045 (the Pathways) and the instant TL (full strength
 
 LEVERS (grouped by the PAS 2080:2023 hierarchy, naming.STRATEGY_LEVERS; sub-rule naming.LEVER_SUBRULE;
 the earlier lever numbers are in the git history, tag model-v4.3.3)
-  S1 Avoid    L1 Household size [C]    S = S_ref + gap, gap = Stats NZ High A - Medium A household size (held at its
-                                       2048 value after 2048)
+  S1 Avoid    L1 Household size [C]    S = S_ref + gap, gap = Stats NZ Medium B - Medium A household size (the
+                                       propensity-B path: living arrangements change as modelled on the 2001-2023
+                                       censuses; both rebased on the observed 2023 S, the same post-2048 tail)
               L2 Vacancy rate [B]      vacancy parameter -> the 1996 census minimum (one definition)
               L3 Building lifetime [C] demolition and the recent-surge component x (1 - d), d = 0.40
               L4 Extra space [B]       share f of the extra-space margin (size - occupied area) removed, applied
@@ -123,11 +124,17 @@ L4_FULL_STRENGTH_YEAR = 2035      # occ_ref = S_ref(2035) x OLF_t: the size at f
 L4_REPORT_YEARS = (2035, 2050)
 L5_N_CASES = 16
 L5_TYPOLOGIES = ('Detached', 'Townhouses', 'Apartments')
-L1_VARIANTS = ('Low', 'Medium', 'High')
-L1_REFERENCE_VARIANT = 'Medium'
-L1_AMBITIOUS_VARIANT = 'High'
-# L1: after the last Stats NZ knot (2048) each variant follows its own tail (projection.S_TAIL, the same rule for
-# every variant), so the High - Medium gap is taken in every year (MODEL v4.5.0; MODEL v4.4 held it at 2048)
+# L1 (MODEL v4.7.0): the Ambitious household size is the Stats NZ propensity-B path (living-arrangement propensities
+# change, modelled on the 2001-2023 censuses; Stats NZ DataInfo+, POPPR_FHH), the Reference the propensity-A path
+# (propensities held at 2023), both Medium, rebased on the observed 2023 S with the same post-2048 tail
+# (projection.S_TAIL). Within one propensity the Low / Medium / High variants differ only through their population
+# projections (age structure), so the earlier High - Medium gap was not a behavioural lever.
+L1_VARIANTS = ('A', 'B')                 # HH_PROPENSITY of the Reference and of the Ambitious path (Medium variant)
+L1_REFERENCE_VARIANT = 'A'
+L1_AMBITIOUS_VARIANT = 'B'
+L1_PROPENSITY_SOURCE = ('Stats NZ, National family and household projections: 2023(base)-2048, propensity B '
+                        '(living-arrangement type propensities change, based on modelling of 2001-2023 Census data); '
+                        'DataInfo+ POPPR_FHH')
 # TL1 speed limit: the TL household size cannot rise faster than the fastest change observed between
 # consecutive censuses 1991-2023 (census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - 2026), TL1
 # level), and never below the Ambitious path (S_ref + w gap). The other TL items keep the logistic window; the instant
@@ -297,9 +304,15 @@ def a45_reference(years):
 
 
 def a45_ambitious(years):
-    """L9 Ambitious: linear to zero in 2050, 1 - (y - 2025) / 25 (Zero Carbon Act s. 5Q; Oslo 2025)."""
-    t = np.clip(np.asarray(years, float) - 2025.0, 0.0, None)
-    return np.clip(1.0 - t / (L9_ZERO_YEAR - 2025.0), 0.0, None)
+    """L9 Ambitious: from the Reference factor of the last observed year (2026) linearly to zero in 2050 (Zero Carbon
+    Act s. 5Q; Oslo 2025); the Reference before it. This path is the phase-in itself: L9 Ambitious and Moderate are
+    applied without the logistic adoption weight (MODEL v4.7.0: phased once; v4.6 multiplied a path linear from 2025
+    by the 2026 -> 2035 logistic)."""
+    y = np.asarray(years, float)
+    ref = a45_reference(years)
+    r0 = float(a45_reference(np.array([OBSERVED_YEAR], float))[0])
+    lin = r0 * np.clip((L9_ZERO_YEAR - y) / (L9_ZERO_YEAR - OBSERVED_YEAR), 0.0, None)
+    return np.where(y <= OBSERVED_YEAR, ref, lin)
 
 
 def a45_target(years, lam):
@@ -391,22 +404,27 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     # ---- L1 Household size [C] ----
     if not all(np.array_equal(np.asarray(B['df_forecast']['PopTotal_50th']), np.asarray(p['pop'])) for p in S_variants.values()):
         raise SystemExit('STOP (L1): the household-size variants do not share the Reference population path.')
-    S_med = np.asarray(S_variants[L1_REFERENCE_VARIANT]['S'], float)
-    S_high = np.asarray(S_variants[L1_AMBITIOUS_VARIANT]['S'], float)
-    if not np.allclose(S_med, S, rtol=1e-12, atol=0):
-        raise SystemExit('STOP (L1): the Reference household size is not the Medium variant.')
-    gap = S_high - S_med                     # every year: each variant on its own post-2048 tail (projection.S_TAIL)
-    if np.any(S_high < S_med):
-        bad = [int(y) for y, h, m in zip(years, S_high, S_med) if h < m]
-        raise SystemExit(f'STOP (L1): High household size below Medium in {bad}.')
+    S_a = np.asarray(S_variants[L1_REFERENCE_VARIANT]['S'], float)
+    S_b = np.asarray(S_variants[L1_AMBITIOUS_VARIANT]['S'], float)
+    if not np.allclose(S_a, S, rtol=1e-12, atol=0):
+        raise SystemExit('STOP (L1): the Reference household size is not the Medium A path.')
+    gap = S_b - S_a                          # every year: each path on its own post-2048 tail (projection.S_TAIL)
+    if np.any(gap < -1e-12):
+        bad = [int(y) for y, g in zip(years, gap) if g < -1e-12]
+        raise SystemExit(f'STOP (L1): the propensity-B household size is below the A path in {bad}.')
+    gap = np.maximum(gap, 0.0)                # exact zeros where the two rebased paths coincide (2023-2025)
     hS = B['hist_S'].dropna()
     S_tl = float(hS.max())
     S_amb = S + gap
     out['L1'] = dict(subrule='C', variants={v: yy(S_variants[v]['S']) for v in S_variants}, gap=yy(gap),
                      tail=settings.S_TAIL, S_ref=yy(S),
                      S={'reference': yy(S), 'moderate': yy(S + gap / 2.0), 'ambitious': yy(S_amb)},
-                     tl=S_tl, tl_year=int(hS.idxmax()), high_ge_medium_every_year=True,
-                     anchor=f'Stats NZ High - Medium household size gap (2050: +{gap[-1]:.4f})')
+                     tl=S_tl, tl_year=int(hS.idxmax()), b_ge_a_every_year=True, source=L1_PROPENSITY_SOURCE,
+                     # TL1 held regardless of age structure: the fall in households per person at every age, against
+                     # the 2023 living-arrangement rates on the 2050 population (= the Reference S 2050, propensity A)
+                     tl_households_per_person_fall=float(1.0 - S[-1] / S_tl),
+                     anchor=f'Stats NZ Medium B household size, rebased on 2023 (2050: S = {S_amb[-1]:.4f}, '
+                            f'+{gap[-1]:.4f} on the Reference)')
     # TL1 speed limit: the fastest |dS| per year between consecutive censuses (census-benchmarked households)
     cy = [int(y) for y in B['census'].index
           if TL1_SPEED_CENSUS_WINDOW[0] <= int(y) <= TL1_SPEED_CENSUS_WINDOW[1] and int(y) in hS.index]
@@ -417,7 +435,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     reached = TL1_SPEED_START + (S_tl - float(S[i0])) / fastest['rate']
     out['L1']['tl_speed'] = dict(rate=fastest['rate'], interval=[fastest['y0'], fastest['y1']], start=TL1_SPEED_START,
                                  S_start=float(S[i0]), level=S_tl, level_reached=float(reached),
-                                 census_years=cy, intervals=intervals, on=True,
+                                 census_years=cy, intervals=intervals,
                                  path=yy(tl1_path(S, gap, w, years, S_tl, fastest['rate'])),
                                  basis='fastest change of household size between consecutive censuses 1991-2023')
 
@@ -694,7 +712,8 @@ def inputs(base, p, levels, ramp_name=None):
     w = ramp_named(years, ramp_name)
     hh, S = base['hh'], np.asarray(base['pop'], float) / np.asarray(base['hh'], float)
     info = dict(w=w, l4_held=None, levels=dict(lv), tl=tuple(L for L in LEVERS if lv.get(L) == 'tl'))
-    # L1 household size (the draw's own Reference S plus the published gap; TL1: the historical maximum)
+    # L1 household size (the Reference S plus the gap to the propensity-B path, the draw's own gap in the pathway Monte
+    # Carlo; TL1: the historical maximum)
     if 'L1' in lv:
         gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
         if lv['L1'] == 'tl' and ramp_name != TL_FROM2027:
@@ -736,9 +755,13 @@ def inputs(base, p, levels, ramp_name=None):
             fi[k] = l8_intensity(fi[k], base['a13_2025'], base['red13'], r6, w)
     # L9 construction-stage carbon
     target45 = None
+    w9 = w
     if 'L9' in lv:
         target45 = native(p, 'L9', lv['L9'], years)
-        d45 = l9_delta(base['a45_2025'], years, target45, w)
+        # phased once: Ambitious / Moderate follow their own path (which starts at the Reference in 2026); the TL9
+        # bound (zero, a constant) takes the common logistic adoption like every TL item
+        w9 = w if lv['L9'] == 'tl' else (np.asarray(years) > OBSERVED_YEAR).astype(float)
+        d45 = l9_delta(base['a45_2025'], years, target45, w9)
         for k in ('intensity', 'intensity_upfront'):
             fi[k] = _add(fi[k], d45)
     # L7 soil-aware planning: soil factor by year
@@ -757,7 +780,7 @@ def inputs(base, p, levels, ramp_name=None):
     if info['tl']:
         fi['clip_soil_share'] = True                  # zero-building years possible in TL-family runs
     info.update(hh=hh, S=S, r6=r6, a13=a13_path(base['a13_2025'], base['red13'], r6, w),
-                a45=a45_path(base['a45_2025'], years, target45, w), soil_path=soil_path)
+                a45=a45_path(base['a45_2025'], years, target45, w9), soil_path=soil_path)
     return fi, info
 
 
@@ -823,6 +846,30 @@ def pct(x, nd=1):
     return f'{100 * x:.{nd}f}%'
 
 
+# The level rule (MODEL v4.7.0; Table 1 'rule' column): Reference = current practice held (2023 / 2025);
+# Moderate = the exact midpoint of Reference and Ambitious; Ambitious = a documented frontier (achieved somewhere or
+# projected by an authority, cited); TL = the logical bound where the lever has one, otherwise the best value observed.
+LEVEL_RULE = {
+    'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'projected by an authority: Stats NZ propensity B',
+           'best observed: the national household size of 1991 (no logical bound)'),
+    'L2': ('2023 census vacancy', 'achieved in NZ: the 1996 census minimum', 'logical bound: zero vacancy'),
+    'L3': ('current demolition and surge', 'peer-reviewed scenario: -40% demolition (Pellan et al. 2024)',
+           'logical bound: no demolition'),
+    'L4': ('2023-2025 dwelling sizes', 'achieved in NZ: the smallest annual mean consented size',
+           'logical bound: zero space beyond the occupied area'),
+    'L5': ('case-study typology medians', 'achieved: the top-15% case-study design density (HD q0.15)',
+           'best observed: the densest case-study design'),
+    'L6': ('the Reference share on previously developed land', 'achieved abroad: England 2018-21 (DLUHC 2022)',
+           'logical bound: 100% brownfield'),
+    'L7': ('area-weighted soil orders', 'peer-reviewed scenario: SOC-aware allocation (-14.6%)',
+           'logical bound: the lowest soil order'),
+    'L8': ('pooled case-study A1-A3', 'achieved: the top-15% case-study A1-A3 (HD q0.15)',
+           'best observed: the lowest-carbon NZ case study'),
+    'L9': ('business-as-usual A4-A5 (Resch: -1%/yr)', 'legislated target: linear to zero by 2050 (Zero Carbon Act)',
+           'theoretical bound: zero A4-A5 (construction waste cannot strictly reach zero; LCAQuick does not split '
+           'A4 from A5)')}
+
+
 def lever_table(p):
     """Table 1 of the paper: one row per lever with its sub-rule and anchor, and the native parameter at Moderate,
     Ambitious and TL (LEVERS_TABLE.md)."""
@@ -847,7 +894,7 @@ def lever_table(p):
             mod, amb, tl = f"d = {q['d']['moderate']:.2f}", f"d = {q['d']['ambitious']:.2f}", 'no demolition, no surge'
         elif L == 'L9':
             mod = f"factor 2050 = {by_year(q['target']['moderate'], 2050):.3f}"
-            amb, tl = 'factor 2050 = 0 (linear from 2025)', 'A4-A5 = 0'
+            amb, tl = 'factor 2050 = 0 (linear from the 2026 Reference value)', 'A4-A5 = 0 (theoretical bound)'
         elif L == 'L7':
             mod, amb = f"x = {q['x']['moderate']:.3f}", f"x = {q['x']['ambitious']:.3f}"
             tl = ', '.join(f'{t} {v:.1f}' for t, v in q['tl'].items()) + ' kg CO2e/m2 (lowest soil order)'
@@ -856,5 +903,6 @@ def lever_table(p):
             amb, tl = f"s = {q['s']['ambitious']:.2f}", 's = 1'
         rows.append(dict(item=f'{L} {LEVER_NAMES[L]}', strategy=f'{LEVER_STRATEGY[L]} {STRATEGY_NAMES[LEVER_STRATEGY[L]]}',
                          subrule=q['subrule'], anchor=q['anchor'], parameter=LEVER_PARAMETER[L], band=BAND_TARGET[L],
-                         moderate=mod, ambitious=amb, tl=tl))
+                         moderate=mod, ambitious=amb, tl=tl,
+                         rule='Reference: {}; Ambitious: {}; TL: {}'.format(*LEVEL_RULE[L])))
     return rows

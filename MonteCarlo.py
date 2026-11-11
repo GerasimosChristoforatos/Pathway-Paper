@@ -150,6 +150,12 @@ def build_setup(settings=None):
         projection.household_size(*projection.statsnz_size_shape(v, fy, tail=projection.S_TAIL)[1:], B['hist_S'], B['hist_pop'],
                             fy, 0.0, anchor_year=projection.S_ANCHOR_YEAR)['S_matched']
         for v in VARIANT_Z])
+    # the propensity-B paths of the same variants (L1 Ambitious of the pathway Monte Carlo: the draw's own B path at
+    # the draw's z; levers.L1_AMBITIOUS_VARIANT)
+    su['S_variants_B'] = np.array([
+        projection.household_size(*projection.statsnz_size_shape(v, fy, tail=projection.S_TAIL, propensity='B')[1:],
+                                  B['hist_S'], B['hist_pop'], fy, 0.0, anchor_year=projection.S_ANCHOR_YEAR)['S_matched']
+        for v in VARIANT_Z])
 
     # ---- typology mix (fixed in every draw): projection's held mix, 2026 the observed mix ----
     su['shares'] = B['evolving_gfa_shares'].copy()
@@ -409,7 +415,8 @@ def project(su, p, full=False):
                             rv_share=su['rv_share'], shares=shares, size=size, olf=su['olf'], intensity=I,
                             intensity_upfront=U, soil={t: su['soc'][j] for j, t in enumerate(typ)},
                             gfa_fixed=su['gfa_fixed'], soil_on_replacement=su['soil_on_repl'], events=events),
-            E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']), start_surplus=float(s0))
+            E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']), start_surplus=float(s0),
+            S_B=interp_z(p['z_pop'], np.array(list(VARIANT_Z.values())), su['S_variants_B']))
     return out
 
 

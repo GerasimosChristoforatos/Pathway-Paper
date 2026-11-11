@@ -99,9 +99,12 @@ def lines():
           "scales every typology's OLF and dwelling size; TL5 per typology = min(own densest design ratio, r_Ambitious): "
           + ', '.join(f'{k} {v:.4f}' for k, v in q['tl'].items()) + '.', '']
     q = p['L1']
+    if q['tail'] != 'pchip_secant':
+        raise SystemExit(f"pathways_methods: L1 tail {q['tail']!r} is not the one described; rewrite the L1 text.")
     B['L1'] = ['**L1 Household size (sub-rule C).** S_Ambitious(t) = S_Ref(t) + [S_High(t) - S_Medium(t)], the gap between '
           'the Stats NZ High and Medium household-size variants (same living-arrangement assumption; projection runs '
-          f"rebased on the 2023 census), held at its {q['gap_held_after']} value after {q['gap_held_after']}; High >= "
+          'rebased on the 2023 census), in every year: after 2048 each variant follows its own tail (end slope at '
+          '2048 = its 2043-2048 secant slope, continued linearly; the same rule as the Reference); High >= '
           f"Medium in every year (asserted). 2050: Reference {LV.by_year(q['S_ref'], 2050):.4f}, Moderate "
           f"{LV.by_year(q['S']['moderate'], 2050):.4f}, Ambitious {LV.by_year(q['S']['ambitious'], 2050):.4f}; TL1 S = "
           f"{q['tl']:.4f} (the {q['tl_year']} maximum of the model history).", '']

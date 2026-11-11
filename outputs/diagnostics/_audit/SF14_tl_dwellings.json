@@ -1,6 +1,6 @@
 {
  "figure": "SF14_tl_dwellings",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Theoretical Limit",
@@ -40,10 +40,9 @@
   "$\\mathdefault{70}$",
   "Dwellings built",
   "Dwellings per year (thousand)",
-  "Entering the pool (TL1 + TL2 + overbuild)",
-  "Need after the overbuild payback",
+  "Entering the pool (TL1 + TL2 + starting surplus + overbuild)",
+  "Need after the surplus payback",
   "Re-occupied (released dwellings)",
-  "Release constraint binds",
   "Theoretical Limit",
   "Theoretical Limit from 2027 (instant; sensitivity)",
   "a",

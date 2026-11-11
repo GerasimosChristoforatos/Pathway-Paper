@@ -9,12 +9,12 @@ Controlled comparison: same source files, population path, household-size path, 
 | Cumulative floor area, 2026–2050 (Mm2) | Zero lag, net replacement held at the 17-month calibration | Zero lag, recalibrated | 17-month lag |
 |---|---:|---:|---:|
 | Population growth | 40.76 | 40.76 | 40.59 |
-| Household-size change | 14.00 | 14.00 | 13.94 |
+| Household-size change | 14.82 | 14.82 | 14.76 |
 | Net replacement | 9.01 | 15.22 | 9.29 |
-| Other demand / balance | 39.67 | 39.67 | 42.87 |
+| Other demand / balance | 40.31 | 40.31 | 43.56 |
 | Gross market excess | 2.50 | 1.80 | 2.02 |
 | Overbuild absorbed | -3.34 | -2.64 | -4.78 |
-| **Total built** | 102.60 | 108.81 | 103.94 |
+| **Total built** | 104.06 | 110.26 | 105.44 |
 
 ### Observed consent periods
 

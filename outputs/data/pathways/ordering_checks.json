@@ -10,7 +10,7 @@
         2032,
         2033
       ],
-      "max_kt": 178.77586313576043
+      "max_kt": 182.76328409554208
     },
     {
       "lever": "L3",
@@ -39,7 +39,7 @@
         2032,
         2033
       ],
-      "max_kt": 144.19728467654585
+      "max_kt": 145.2539364781896
     },
     {
       "lever": "L4",
@@ -65,7 +65,7 @@
         2030,
         2031
       ],
-      "max_kt": 4.231554476554155
+      "max_kt": 4.983761654989362
     },
     {
       "lever": "L5",
@@ -94,7 +94,7 @@
         2032,
         2033
       ],
-      "max_kt": 136.7954558036982
+      "max_kt": 137.54888299725306
     },
     {
       "lever": "L6",
@@ -106,7 +106,7 @@
         2032,
         2033
       ],
-      "max_kt": 138.82752833030665
+      "max_kt": 139.61956762211585
     },
     {
       "lever": "L7",
@@ -118,7 +118,7 @@
         2032,
         2033
       ],
-      "max_kt": 153.01523281237496
+      "max_kt": 153.84653023074972
     },
     {
       "lever": "L8",
@@ -130,7 +130,7 @@
         2032,
         2033
       ],
-      "max_kt": 105.94513148836076
+      "max_kt": 106.7028871034416
     },
     {
       "lever": "L9",
@@ -142,197 +142,197 @@
         2032,
         2033
       ],
-      "max_kt": 107.68744550083304
+      "max_kt": 108.48522173500788
     }
   ],
   "cumulative": [
     {
       "lever": "L1",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 25175.722277183235,
-      "carbon_b_kt": 23785.28624454917,
+      "carbon_a_kt": 25502.820795312804,
+      "carbon_b_kt": 24010.909784015395,
       "ok": true
     },
     {
       "lever": "L1",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 23785.28624454917,
-      "carbon_b_kt": 22433.43416032659,
+      "carbon_a_kt": 24010.909784015395,
+      "carbon_b_kt": 22563.437551341067,
       "ok": true
     },
     {
       "lever": "L1",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 22433.43416032659,
+      "carbon_a_kt": 22563.437551341067,
       "carbon_b_kt": 14160.673673582563,
       "ok": true
     },
     {
       "lever": "L2",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 25175.722277183235,
-      "carbon_b_kt": 24443.173436558478,
+      "carbon_a_kt": 25502.820795312804,
+      "carbon_b_kt": 24767.9136022941,
       "ok": true
     },
     {
       "lever": "L2",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 24443.173436558478,
-      "carbon_b_kt": 23720.990330955417,
+      "carbon_a_kt": 24767.9136022941,
+      "carbon_b_kt": 24043.40590790326,
       "ok": true
     },
     {
       "lever": "L2",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 23720.990330955417,
-      "carbon_b_kt": 20096.04430177388,
+      "carbon_a_kt": 24043.40590790326,
+      "carbon_b_kt": 20413.80495867064,
       "ok": true
     },
     {
       "lever": "L3",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 25175.722277183235,
-      "carbon_b_kt": 24688.58019662412,
+      "carbon_a_kt": 25502.820795312804,
+      "carbon_b_kt": 25015.721815854347,
       "ok": true
     },
     {
       "lever": "L3",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 24688.58019662412,
-      "carbon_b_kt": 24201.438116065,
+      "carbon_a_kt": 25015.721815854347,
+      "carbon_b_kt": 24528.62283639589,
       "ok": true
     },
     {
       "lever": "L3",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 24201.438116065,
-      "carbon_b_kt": 22617.62576517946,
+      "carbon_a_kt": 24528.62283639589,
+      "carbon_b_kt": 22947.129006602136,
       "ok": true
     },
     {
       "lever": "L4",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 25175.722277183235,
-      "carbon_b_kt": 24015.001292515117,
+      "carbon_a_kt": 25502.820795312804,
+      "carbon_b_kt": 24321.571935749675,
       "ok": true
     },
     {
       "lever": "L4",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 24015.001292515117,
-      "carbon_b_kt": 22762.863022712998,
+      "carbon_a_kt": 24321.571935749675,
+      "carbon_b_kt": 23047.165583883707,
       "ok": true
     },
     {
       "lever": "L4",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 22762.863022712998,
-      "carbon_b_kt": 17473.152671990894,
+      "carbon_a_kt": 23047.165583883707,
+      "carbon_b_kt": 17662.23684885095,
       "ok": true
     },
     {
       "lever": "L5",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 25175.722277183235,
-      "carbon_b_kt": 23448.60202528036,
+      "carbon_a_kt": 25502.820795312804,
+      "carbon_b_kt": 23746.1606730274,
       "ok": true
     },
     {
       "lever": "L5",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 23448.60202528036,
-      "carbon_b_kt": 21721.481773377487,
+      "carbon_a_kt": 23746.1606730274,
+      "carbon_b_kt": 21989.50055074199,
       "ok": true
     },
     {
       "lever": "L5",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 21721.481773377487,
-      "carbon_b_kt": 20733.006424058065,
+      "carbon_a_kt": 21989.50055074199,
+      "carbon_b_kt": 20983.96811486285,
       "ok": true
     },
     {
       "lever": "L6",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 25175.722277183235,
-      "carbon_b_kt": 24316.502289867258,
+      "carbon_a_kt": 25502.820795312804,
+      "carbon_b_kt": 24624.57094038979,
       "ok": true
     },
     {
       "lever": "L6",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 24316.502289867258,
-      "carbon_b_kt": 23467.54837524143,
+      "carbon_a_kt": 24624.57094038979,
+      "carbon_b_kt": 23757.774771211814,
       "ok": true
     },
     {
       "lever": "L6",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 23467.54837524143,
-      "carbon_b_kt": 22200.4642439008,
+      "carbon_a_kt": 23757.774771211814,
+      "carbon_b_kt": 22467.361189299652,
       "ok": true
     },
     {
       "lever": "L7",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 25175.722277183235,
-      "carbon_b_kt": 24949.507696996512,
+      "carbon_a_kt": 25502.820795312804,
+      "carbon_b_kt": 25272.04538514078,
       "ok": true
     },
     {
       "lever": "L7",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 24949.507696996512,
-      "carbon_b_kt": 24723.293116809786,
+      "carbon_a_kt": 25272.04538514078,
+      "carbon_b_kt": 25041.269974968764,
       "ok": true
     },
     {
       "lever": "L7",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 24723.293116809786,
-      "carbon_b_kt": 23598.99425128105,
+      "carbon_a_kt": 25041.269974968764,
+      "carbon_b_kt": 23894.26251950209,
       "ok": true
     },
     {
       "lever": "L8",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 25175.722277183235,
-      "carbon_b_kt": 24055.191268554398,
+      "carbon_a_kt": 25502.820795312804,
+      "carbon_b_kt": 24363.544264593573,
       "ok": true
     },
     {
       "lever": "L8",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 24055.191268554398,
-      "carbon_b_kt": 22934.66025992556,
+      "carbon_a_kt": 24363.544264593573,
+      "carbon_b_kt": 23224.267733874352,
       "ok": true
     },
     {
       "lever": "L8",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 22934.66025992556,
-      "carbon_b_kt": 20954.378635910096,
+      "carbon_a_kt": 23224.267733874352,
+      "carbon_b_kt": 21210.70498736444,
       "ok": true
     },
     {
       "lever": "L9",
       "pair": "reference>=moderate",
-      "carbon_a_kt": 25175.722277183235,
-      "carbon_b_kt": 24398.77096053042,
+      "carbon_a_kt": 25502.820795312804,
+      "carbon_b_kt": 24701.314583796182,
       "ok": true
     },
     {
       "lever": "L9",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 24398.77096053042,
-      "carbon_b_kt": 23621.8196438776,
+      "carbon_a_kt": 24701.314583796182,
+      "carbon_b_kt": 23899.80837227956,
       "ok": true
     },
     {
       "lever": "L9",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 23621.8196438776,
-      "carbon_b_kt": 22387.47229820415,
+      "carbon_a_kt": 23899.80837227956,
+      "carbon_b_kt": 22668.568821486955,
       "ok": true
     }
   ]

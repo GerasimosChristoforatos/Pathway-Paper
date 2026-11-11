@@ -565,7 +565,7 @@ def _input_label(rid):
 
 ED4_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
 ED5_H = 165                       # mm
-NOTES_TOP = 0.265                 # the notes block occupies the figure below this fraction of its height (ED4)
+NOTES_TOP = 0.30                 # the notes block occupies the figure below this fraction of its height (ED4)
 NOTES_TOP_ED5 = 0.22
 
 

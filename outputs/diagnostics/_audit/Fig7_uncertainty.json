@@ -1,6 +1,6 @@
 {
  "figure": "Fig7_uncertainty",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "One at a time (Reference 5.69)",

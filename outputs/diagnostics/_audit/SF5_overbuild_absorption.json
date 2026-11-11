@@ -1,6 +1,6 @@
 {
  "figure": "SF5_overbuild_absorption",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Reference: absorbed by 2035",

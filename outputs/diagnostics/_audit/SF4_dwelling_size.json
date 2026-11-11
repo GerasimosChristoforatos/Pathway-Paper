@@ -1,6 +1,6 @@
 {
  "figure": "SF4_dwelling_size",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Realised and occupied floor area",

@@ -2,6 +2,84 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.4.0: Stats NZ 2023-base household projections, starting surplus, AR base with completion
+
+One full run (`run_all.py --profile full`), then the light profile. Every number below is read from the outputs of
+v4.3.7 (5ae8bf5) and of this run.
+
+* **Household size: Stats NZ 2023-base family and household projections.**
+  * Inputs: POPPR_FHH_008 (people in households) and POPPR_FHH_010 (households), 2023(base)-2048, Low / Medium /
+    High x propensity A / B, in `data/raw/` (MANIFEST rows).
+  * `data/build_households_2023.py` writes `data/derived/households_proj_2023base.csv`, with
+    S = people in households / households. The published AHS is not used. A STOP fires unless
+    FHH + OPH + OMH = HH within 100.
+  * Knots, Medium A: 2.741, 2.689, 2.633, 2.584, 2.548, 2.524 (2023-2048). Medium B ends at 2.648.
+  * The Reference uses Medium A (`HH_PROPENSITY = 'A'`), rebased on the observed 2023 household size (2.686).
+    This holds the share of the population outside private dwellings at its 2023 level.
+  * S 2048 / 2049 / 2050 = 2.473 / 2.473 / 2.473: zero slope imposed at 2048, held after it.
+  * N4 resolved. The 5th / 95th population paths take Low A / High A (`HH_SIZE_PAIRED`). The Monte Carlo pairs them
+    through one z, as before.
+  * Rows:
+    * The S-only "Stats NZ High / Low variant" row is removed; its variation is now part of the population row.
+    * New row "Living arrangements: propensities change (Stats NZ B)" (Medium B): Reference -18.1%.
+    * The tail rows now act "after 2048". The secant and end-slope tapers move carbon by +1.04% and +0.78%, above the
+      0.1% rule, so they stay shown. The flat row (-0.008%) stays in the not-shown list.
+  * The 2018-base files and loader are no longer used by any reported run. They are kept only as
+    `HH_SIZE_PATH = 'statsnz_2018'`, with which tests/test_events.py and tests/test_model_v4.py reproduce the
+    anchors of earlier versions.
+* **F2: households 2019-2023.** `data/raw` holds no Stats NZ household estimates rebased on the 2023 census: the
+  March 2026 quarter release still has its last household base at 2018. The census-pinned rescaling (k = 0.824) is
+  kept and nothing was fetched.
+* **F1: starting surplus (rule fixed in advance).**
+  * Stock-identity residual, 1992-2023 census intervals: time-weighted mean -463 and SD 3,038 dwellings a year.
+  * 2024-2025: 9,020 a year, above mean + 2 SD (5,614), so the surplus is carried.
+  * Starting surplus: (9,020 + 463) x 2 = 18,966 vacant dwellings at 1 January 2026. It is absorbed with the
+    overbuild by 2035, in every run and Monte Carlo draw, recomputed from each run's own completion rate and lag.
+    TL runs pool it for re-occupation.
+  * Rows: no starting surplus +2.71%; minus 2 SD (6,812 dwellings) +1.73%.
+  * The decision does not depend on the SD definition: with the unweighted SD (3,437), mean + 2 SD = 6,412.
+* **F5: the AR base co-varies with the completion rate and lag.**
+  * Each Monte Carlo draw rebuilds its 2016-2025 history at its own completion rate
+    (`boundaries.history_at_completion`).
+  * The completion-rate and completion-lag rows recompute the base from their own runs (class 'recompute'). The
+    Monte Carlo base at 0.93 equals the base of the 0.93 run to 1e-12.
+* **F6:** the Fig7a note states that the carbon-factor (jackknife) row falls below the row filter: LoE AR
+  5.660-5.697 against carbon -3.4% / +3.2%, because the AR base co-varies with the factors.
+* **Old -> new** (v4.3.7 -> v4.4.0):
+
+  | quantity | v4.3.7 | v4.4.0 | change |
+  |---|---|---|---|
+  | Reference cumulative carbon 2026-2050 (kt CO2e) | 19,761 | 25,176 | +27.4% |
+  | Reference floor area 2026-2050 (Mm2) | 81.53 | 103.94 | +27.5% |
+  | Household size 2050 | 2.652 | 2.473 | -6.7% |
+  | Demand band carbon (kt): population growth | 9,776 | 9,776 | 0.0% |
+  | household-size change | 487 | 3,421 | x7.0 |
+  | extra space | 6,364 | 9,070 | +42.5% |
+  | vacancy | 947 | 1,268 | +33.9% |
+  | net replacement | 1,804 | 1,870 | +3.7% |
+  | market balance (incl. the starting-surplus payback) | 24 | -668 | |
+  | (maintenance) | 359 | 438 | +22.0% |
+  | Reference LoE AR / AtP | 4.464 / 17.76 | 5.687 / 22.62 | +27.4% |
+  | Moderate Pathway carbon (kt) / LoE AR / AtP | 14,302 / 3.231 / 12.85 | 17,818 / 4.025 / 16.01 | +24.6% |
+  | Ambitious Pathway carbon (kt) / LoE AR / AtP | 10,267 / 2.319 / 9.22 | 12,486 / 2.821 / 11.22 | +21.6% |
+  | Theoretical Limit carbon (kt) / LoE AR / AtP | 4,423 / 0.999 / 3.97 | 4,079 / 0.921 / 3.67 | -7.8% |
+  | P(LoE AR <= 1): Reference / Moderate / Ambitious / TL | 0 / 0 / 0.0002 / 0.499 | 0 / 0 / 0 / 0.640 | |
+  | TL threshold 2050 population, P = 50% (M) | 6.614 | 6.715 | +1.5% |
+  | Sobol total indices, carbon (top 3) | z_pop 0.846, size 0.108, carbon 0.044 | z_pop 0.670, size 0.234, carbon 0.089 | |
+
+  * TL falls while the Reference rises. With the starting surplus at zero, TL would be 4,279 kt (LoE AR 0.967), so
+    199 kt of the 344 kt fall is the surplus pooled for re-occupation. The rest comes with the 2023-base household
+    path; it is not decomposed further here.
+* **Figures:**
+  * Fig5 axes to 90% (the TL marker had moved outside) and contour labels clear of the markers.
+  * ED3 and ED9 legends moved below the panels.
+  * ED4 at 247 mm.
+  * SF2 legend and note name the starting surplus.
+* **Checks.**
+  * Full test suite (full profile): 259 passed, 2 skipped (the local AESA workbook).
+  * Regression lock re-captured: 33 of 34 deterministic files and all Monte Carlo files changed; the light and full
+    deterministic files are identical.
+
 ## model-v4.3.7: Inter, ED10 reality checks, one net-replacement band
 
 Figures only: no model, Monte Carlo or Sobol run. Every figure is redrawn from the committed outputs (`redraw.py`).

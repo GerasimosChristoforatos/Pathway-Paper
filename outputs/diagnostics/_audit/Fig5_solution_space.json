@@ -1,6 +1,6 @@
 {
  "figure": "Fig5_solution_space",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "",
@@ -20,16 +20,10 @@
  "texts": [
   "$\\mathdefault{0}$",
   "$\\mathdefault{100}$",
-  "$\\mathdefault{10}$",
   "$\\mathdefault{20}$",
-  "$\\mathdefault{30}$",
   "$\\mathdefault{40}$",
-  "$\\mathdefault{50}$",
   "$\\mathdefault{60}$",
-  "$\\mathdefault{70}$",
   "$\\mathdefault{80}$",
-  "$\\mathdefault{90}$",
-  "$\\mathdefault{\u221210}$",
   "$\\mathdefault{\u221220}$",
   "AR",
   "Ability to pay (AtP)",
@@ -58,7 +52,7 @@
   "Theoretical\nLimit",
   "Theoretical Limit"
  ],
- "note": "LoE AR = [1,207 + 23,969 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.4% at x = 0). Axes -5% to 85%.",
+ "note": "LoE AR = [1,207 + 23,969 (1 - x)(1 - y)] / 4,427 kt; C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = 0.273 (the lowest LoE AR at x or y = 100%); AtP = B_AtP / B_AR = 0.251 lies below the floor, so the AtP contour is outside the plotted square (y = 100.4% at x = 0). Axes -5% to 90%.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,

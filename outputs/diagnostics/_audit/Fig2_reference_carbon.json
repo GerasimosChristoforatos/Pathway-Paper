@@ -1,6 +1,6 @@
 {
  "figure": "Fig2_reference_carbon",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "By demand band",

@@ -382,7 +382,7 @@ def check_2026(B, consents=None, B_full=None):
     consent file when not given. With the completion lag (B['lag_months'] > 0): 2026 completions are
     observed even without 2026 data, so the out-of-sample check moves to the first year the run without 2026 data
     MODELS (its first unobserved year, 2027 at L = 17): its building (requirement + the fading excess) against the
-    observed pipeline building of that year in the full-data run B_full (consents to July 2026, lagged)."""
+    observed pipeline building of that year in the full-data run B_full (every observed consent month, lagged)."""
     if int(B.get('lag_months', 0) or 0) > 0:
         pipe0 = (B['pipe'] or {}).get('years', [])
         ty = (max(pipe0) + 1) if pipe0 else 2026

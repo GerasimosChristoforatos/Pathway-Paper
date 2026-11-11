@@ -14,30 +14,30 @@
     "recent_net_replacement_rate_used": 0.0030135688870628883,
     "timing": "Consent-timed proxy (zero lag)",
     "completion_rate": 0.945,
-    "observed_to": "2026-07-01",
+    "observed_to": "2026-09-01",
     "pipeline_years": [],
     "observed_cohorts": [
       {
         "completion_or_proxy_year": 2026,
-        "consent_period": "Aug 2025\u2013Jul 2026",
-        "all_category_consents": 40908.0,
-        "building_equivalent_dwellings": 38658.06,
+        "consent_period": "Oct 2025\u2013Sep 2026",
+        "all_category_consents": 41091.0,
+        "building_equivalent_dwellings": 38830.994999999995,
         "pre_pipeline_requirement_dwellings": 28370.03629226481,
-        "gross_excess_dwellings": 10288.023707735189
+        "gross_excess_dwellings": 10460.958707735186
       }
     ],
-    "gross_market_excess_dwellings_2026_2050": 13676.792612445666,
-    "payback_dwellings_2026_2050": 19793.042917385304,
+    "gross_market_excess_dwellings_2026_2050": 14033.798508933141,
+    "payback_dwellings_2026_2050": 20150.04881387278,
     "cumulative_categories_Mm2_2026_2050": {
-      "population_growth": 40.755045693966956,
-      "household_size_change": 14.81674500657988,
-      "net_replacement": 15.220247445538634,
-      "other": 40.30897047033676,
-      "market_excess": 1.8010009296410436,
-      "overbuild_absorbed": -2.6394787135471454,
-      "underlying_requirement": 111.10100861642223,
-      "net_market_effect": -0.8384777839061017,
-      "total_built": 110.26253083251613
+      "population_growth": 40.76895954526414,
+      "household_size_change": 14.822755491150346,
+      "net_replacement": 15.235032179194516,
+      "other": 40.372383443383384,
+      "market_excess": 1.8213118790964995,
+      "overbuild_absorbed": -2.6890418590316196,
+      "underlying_requirement": 111.19913065899239,
+      "net_market_effect": -0.8677299799351201,
+      "total_built": 110.33140067905727
     }
   },
   "lag_0_held": {
@@ -51,30 +51,30 @@
     "recent_net_replacement_rate_used": 0.0017333229974961432,
     "timing": "Consent-timed proxy (zero lag)",
     "completion_rate": 0.945,
-    "observed_to": "2026-07-01",
+    "observed_to": "2026-09-01",
     "pipeline_years": [],
     "observed_cohorts": [
       {
         "completion_or_proxy_year": 2026,
-        "consent_period": "Aug 2025\u2013Jul 2026",
-        "all_category_consents": 40908.0,
-        "building_equivalent_dwellings": 38658.06,
+        "consent_period": "Oct 2025\u2013Sep 2026",
+        "all_category_consents": 41091.0,
+        "building_equivalent_dwellings": 38830.994999999995,
         "pre_pipeline_requirement_dwellings": 25790.980013443695,
-        "gross_excess_dwellings": 12867.079986556302
+        "gross_excess_dwellings": 13040.0149865563
       }
     ],
-    "gross_market_excess_dwellings_2026_2050": 18895.599702088908,
-    "payback_dwellings_2026_2050": 25011.850007028544,
+    "gross_market_excess_dwellings_2026_2050": 19252.605598576385,
+    "payback_dwellings_2026_2050": 25368.855903516036,
     "cumulative_categories_Mm2_2026_2050": {
-      "population_growth": 40.755045693966956,
-      "household_size_change": 14.81674500657988,
-      "net_replacement": 9.013452415945553,
-      "other": 40.30897047033676,
-      "market_excess": 2.4984995105675547,
-      "overbuild_absorbed": -3.3354267939265902,
-      "underlying_requirement": 104.89421358682915,
-      "net_market_effect": -0.8369272833590355,
-      "total_built": 104.05728630347012
+      "population_growth": 40.76895954526414,
+      "household_size_change": 14.822755491150346,
+      "net_replacement": 9.022149613568592,
+      "other": 40.372383443383384,
+      "market_excess": 2.5208896245666588,
+      "overbuild_absorbed": -3.3854962869037712,
+      "underlying_requirement": 104.98624809336646,
+      "net_market_effect": -0.8646066623371125,
+      "total_built": 104.12164143102935
     }
   },
   "lag_17": {
@@ -88,7 +88,7 @@
     "recent_net_replacement_rate_used": 0.0017333229974961432,
     "timing": "Completion-timed pipeline (17-month lag)",
     "completion_rate": 0.945,
-    "observed_to": "2026-07-01",
+    "observed_to": "2026-09-01",
     "pipeline_years": [
       2026,
       2027

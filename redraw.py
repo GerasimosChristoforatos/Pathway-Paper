@@ -43,13 +43,11 @@ SHARED = {'Fig2 (demand bands, materials, life-cycle stages)': {
               'demand_bands': None, 'materials': None,
               'life_cycle_stages': ('a1_a3', 'a4_a5', 'soil_carbon_loss', 'maintenance')},   # committed_*: Fig3b only
           'Fig4-Fig6 (runs, strategies)': {'runs': None, 'strategies': None},
-          'Fig3 (runs, boundaries, zones, cumulative)': {'runs': None, 'boundaries': None, 'boundary_zones': None,
-                                                         'cumulative': None},
+          'Fig3 (runs, boundaries, zones)': {'runs': None, 'boundaries': None, 'boundary_zones': None},
           'Fig7a/ED4/ED5 (one at a time)': {'one_at_a_time': None},
           # the groups added with the palette coverage
           'SF2b (components and the demand-band parts)': {
-              'components': ('new_households', 'retirement_villages',
-                             'overbuild_absorbed', 'unexplained_building'),
+              'components': ('new_households', 'retirement_villages'),
               'demand_bands': ('vacancy', 'net_replacement', 'market_balance')},
           'ED3/SF3/SF6/ED10 (replacement variants, Reference)': {'replacement_variants': None, 'runs': ('reference',)},
           'ED6/SF4/SF10 (typologies)': {'typologies': None},
@@ -61,7 +59,6 @@ SHARED = {'Fig2 (demand bands, materials, life-cycle stages)': {
 # the material and in the stage panels (the same quantity, the same solid colour)
 _MAINT = (('demand_bands', 'maintenance'), ('life_cycle_stages', 'maintenance'), ('life_cycle_stages', 'committed_b2_b4'))
 SAME_QUANTITY = {frozenset(p) for p in itertools.combinations(_MAINT, 2)} | {
-    frozenset({('runs', 'reference'), ('cumulative', 'fig3b_cumulative_carbon')}),
     frozenset({('materials', 'soil_carbon_loss'), ('life_cycle_stages', 'soil_carbon_loss')})}
 CLOSE = 10.0                     # CAM02-UCS distance (tools/palette_check.THRESHOLD)
 # the colour-vision report compares the keys of a group that are drawn together; these groups' keys are

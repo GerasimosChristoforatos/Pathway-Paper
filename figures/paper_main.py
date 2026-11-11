@@ -361,8 +361,14 @@ def fig2():
 # the 90% interval (5th-95th percentile of the draws), as every spread of draws in the suite
 FIG3_INTERVAL = (5.0, 95.0)
 FIG3A_YTOP = 1700                   # kt: the legend overlaps the 90% band only (checked)
-FIG3B_HATCH = {'column': '////', 'b2b4': 'xxx', 'c1c4': '...'}
-FIG3B_HATCH_LW = 0.4                # faint hatch lines (pt)
+FIG3B_HATCH = {'b2b4': 'xxxxxxxx', 'c1c4': '........'}   # committed segments: dense, so the legend swatches read
+FIG3B_HATCH_LW = 0.6                # hatch lines (pt), the column and its legend swatches alike
+# Fig3b Monte Carlo intervals: capped error bars (no boxes); 50% bold ink, 90% muted grey, thinner, longer caps;
+# both at FIG3B_EB_ALPHA so both stay visible where they overlap; the Monte Carlo median a short ink tick
+FIG3B_EB = {'50': dict(color='ink', lw=1.6, capsize=3.0, capthick=1.6),
+            '90': dict(color='muted', lw=0.8, capsize=6.0, capthick=0.8)}
+FIG3B_EB_ALPHA = S.OPACITY['fig3b_interval_bars']      # palette.toml [opacity]
+FIG3B_MEDIAN_HALF = 0.07            # half-width of the median tick (x units; the column is 0.55 wide)
 
 
 def mc_cumulative_interval():
@@ -376,6 +382,36 @@ def mc_cumulative_interval50():
     """The 50% interval (25th-75th percentile) of the same per-draw totals."""
     d = D.csv('montecarlo/draws_REF.csv')['carbon_kt'].to_numpy(float)
     return tuple(float(v) for v in np.percentile(d, (25.0, 75.0)))
+
+
+def mc_cumulative_median():
+    """The median of the same per-draw totals."""
+    return float(np.percentile(D.csv('montecarlo/draws_REF.csv')['carbon_kt'].to_numpy(float), 50.0))
+
+
+def mc_committed():
+    """Committed after 2050 at the lower bound (the height of the Fig3b committed column) over the Reference draws
+    (pathways_mc.py: pathways.committed on each draw's floor area, central repair and end-of-life factors):
+    {'p5', 'p25', 'p50', 'p75', 'p95'} in kt."""
+    s = D.csv('pathways/montecarlo_summary.csv')
+    r = s[(s['run'] == 'REF') & (s['quantity'] == 'committed_lower_kt')]
+    if len(r) != 1:
+        raise SystemExit('STOP: Fig3b: no committed_lower_kt row in pathways/montecarlo_summary.csv.')
+    return {k: float(r.iloc[0][k]) for k in ('p5', 'p25', 'p50', 'p75', 'p95')}
+
+
+def fig3b_intervals(ax, x, q, wd):
+    """The Fig3b Monte Carlo intervals at x: 90% and 50% capped error bars (FIG3B_EB) about the median, the median a
+    short ink tick. q: {'p5', 'p25', 'p50', 'p75', 'p95'}. Returns the legend handles (90%, 50%, median)."""
+    h = {}
+    for key, (lo_, hi_), z in (('90', ('p5', 'p95'), 6), ('50', ('p25', 'p75'), 7)):
+        st = FIG3B_EB[key]
+        h[key] = ax.errorbar([x], [q['p50']], yerr=[[q['p50'] - q[lo_]], [q[hi_] - q['p50']]], fmt='none',
+                             ecolor=S.NEUTRALS[st['color']], elinewidth=st['lw'], capsize=st['capsize'],
+                             capthick=st['capthick'], alpha=FIG3B_EB_ALPHA, zorder=z)
+    h['median'] = ax.plot([x - FIG3B_MEDIAN_HALF, x + FIG3B_MEDIAN_HALF], [q['p50'], q['p50']], color=S.INK,
+                          lw=S.LW, solid_capstyle='butt', zorder=8)[0]
+    return h
 
 
 def fig3():
@@ -443,21 +479,16 @@ def fig3():
     c = float(proj['carbon_kt'])
     lo90, hi90 = mc_cumulative_interval()
     lo50, hi50 = mc_cumulative_interval50()
+    qc = dict(p5=lo90, p25=lo50, p50=mc_cumulative_median(), p75=hi50, p95=hi90)
+    qk = mc_committed()
     com = proj['committed']
     wd = 0.55
-    # the 2026-2050 column: a light (white) fill with a faint hatch in the column colour (palette.toml [cumulative])
-    col_st = dict(facecolor=S.NEUTRALS['white'], edgecolor=S.CUMULATIVE_FIG3B, lw=S.LW_THIN, hatch=FIG3B_HATCH['column'])
-    b.bar([0], [c], width=wd, hatch_linewidth=FIG3B_HATCH_LW, **col_st)
-    # the Monte Carlo intervals as the Fig3a fans: the Reference grey at the fan opacities over a white underlay (so
-    # the hatch does not show through): 90% the lighter, wider box; 50% the darker, narrower box on top of it
+    # the 2026-2050 column: the deterministic Reference, filled in the Reference colour of Fig3a, no hatch
+    col_st = dict(facecolor=S.REFERENCE, lw=0)
+    b.bar([0], [c], width=wd, **col_st)
+    eb = fig3b_intervals(b, 0, qc, wd)
     import matplotlib.patheffects as pe
     halo = [pe.withStroke(linewidth=S.LW + 1.2, foreground='white')]
-    for (lo_i, hi_i), w_i, alphas in (((lo90, hi90), wd * 0.62, (S.OPACITY['mc_band_90'],)),
-                                      ((lo50, hi50), wd * 0.36, (S.OPACITY['mc_band_90'], S.OPACITY['mc_band_50']))):
-        b.bar([0], [hi_i - lo_i], bottom=[lo_i], width=w_i, facecolor=S.NEUTRALS['white'], lw=0, zorder=6)
-        for al in alphas:
-            b.bar([0], [hi_i - lo_i], bottom=[lo_i], width=w_i, facecolor=S.REFERENCE, alpha=al, lw=0, zorder=6)
-    b.plot([-wd * 0.31, wd * 0.31], [c, c], color=S.INK, lw=S.LW, zorder=7)        # the deterministic total
     bar_, batp = float(a['B_AR_kgCO2e'].sum()) / M, float(a['B_AtP_kgCO2e'].sum()) / M
     for v, key in ((bar_, 'AR'), (batp, 'AtP')):
         st = {k: val for k, val in S.BOUNDARY[key].items() if k != 'label'}
@@ -467,31 +498,45 @@ def fig3():
     # committed after 2050: two stacked hatched segments, no fill, hatches unlike the 2026-2050 column
     com_st = {k: dict(facecolor='none', edgecolor=S.COMPONENT[key][0], lw=S.LW_THIN, hatch=FIG3B_HATCH[k])
               for k, key in (('c1c4', 'committed'), ('b2b4', 'maintenance'))}
-    b.bar([1], [cc], width=wd, hatch_linewidth=2 * FIG3B_HATCH_LW, **com_st['c1c4'])
-    b.bar([1], [bl], bottom=[cc], width=wd, hatch_linewidth=2 * FIG3B_HATCH_LW, **com_st['b2b4'])
+    b.bar([1], [cc], width=wd, hatch_linewidth=FIG3B_HATCH_LW, **com_st['c1c4'])
+    b.bar([1], [bl], bottom=[cc], width=wd, hatch_linewidth=FIG3B_HATCH_LW, **com_st['b2b4'])
+    if not qk['p5'] < cc + bl < qk['p95']:
+        raise SystemExit(f'STOP: Fig3b: the committed column ({cc + bl:,.0f} kt) is outside its Monte Carlo 90% interval.')
+    fig3b_intervals(b, 1, qk, wd)
     b.set_xlim(-1.04, 1.36)                                           # tight
     b.set_xticks([0, 1])
     b.set_xticklabels(['2026–2050', 'Committed\nafter 2050'], fontsize=S.FONT_MIN + 0.5)
-    b.set_ylim(0, max(hi90, bar_, cc + bl) * 1.48)
+    b.set_ylim(0, max(hi90, bar_, qk['p95']) * 1.48)
     b.set_ylabel('Cumulative carbon (kt CO₂e)')
     P.thousands(b.yaxis)
     b.grid(axis='x', visible=False)
-    hb = [Patch(label='Cumulative carbon 2026–2050', **col_st),
-          Patch(label='Monte Carlo 90% interval', facecolor=S.REFERENCE, alpha=S.OPACITY['mc_band_90'], lw=0),
-          mc50_handle(),
-          Patch(label='Committed after 2050: B2/B4', **com_st['b2b4']),
-          Patch(label='Committed after 2050: C1–C4', **com_st['c1c4'])]
-    lb_ = [h_.get_label() if not isinstance(h_, tuple) else 'Monte Carlo 50% interval' for h_ in hb]
-    b.legend(handles=hb, labels=lb_, loc='upper left', fontsize=S.FONT_MIN, handlelength=1.6, frameon=False,
-             borderaxespad=0.2, handler_map={tuple: HandlerTuple(ndivide=1, pad=0)})
+    hb = [(Patch(**col_st), 'Cumulative carbon 2026–2050'),
+          (eb['90'], 'Monte Carlo 90% interval'), (eb['50'], 'Monte Carlo 50% interval'),
+          (eb['median'], 'Monte Carlo median'),
+          (Patch(hatch_linewidth=FIG3B_HATCH_LW, **com_st['b2b4']), 'Committed after 2050: B2/B4'),
+          (Patch(hatch_linewidth=FIG3B_HATCH_LW, **com_st['c1c4']), 'Committed after 2050: C1–C4')]
+    lgb = b.legend(handles=[h_ for h_, _ in hb], labels=[l_ for _, l_ in hb], loc='upper left', fontsize=S.FONT_MIN,
+                   handlelength=2.0, handleheight=1.1, frameon=False, borderaxespad=0.2)
+    # the y top: raised in 5% steps until the legend lies above every interval top (no overlap with the bars)
+    top_ = max(hi90, bar_, qk['p95'])
+    for f_ in np.arange(1.48, 3.0, 0.05):
+        b.set_ylim(0, top_ * f_)
+        fig.canvas.draw()
+        if lgb.get_window_extent().transformed(b.transData.inverted()).y0 > top_ * 1.02:
+            break
+    else:
+        raise SystemExit('STOP: Fig3b: no y top keeps the legend clear of the Monte Carlo intervals.')
     P.panel(b, 'b', 'Cumulative')
     _save(fig, 'Fig3_reference_boundaries',
           note=f'Cumulative 2026-2050 {c:,.0f} kt (LoE AR {c / bar_:.2f}, AtP {c / batp:.1f}); Monte Carlo 90% interval '
                f'{lo90:,.0f}-{hi90:,.0f} kt ({FIG3_INTERVAL[0]:g}th-{FIG3_INTERVAL[1]:g}th percentile of the cumulative '
-               f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt; committed after 2050 (drawn at the lower '
+               f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt, median {qc["p50"]:,.0f} kt (capped bars; the '
+               f'column is the deterministic Reference); committed after 2050 (drawn at the lower '
                f'bound): C1-C4 {cc:,.0f} kt (2025 factors) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held; '
-               f'{bu:,.0f} kt with 2025 factors); no Monte Carlo interval on the committed column (the committed '
-               f'emissions are not computed per draw). Moderate / Ambitious Pathway and TL: deterministic runs. Lines are '
+               f'{bu:,.0f} kt with 2025 factors); Monte Carlo median {qk["p50"]:,.0f} kt, 50% interval '
+               f'{qk["p25"]:,.0f}-{qk["p75"]:,.0f}, 90% interval {qk["p5"]:,.0f}-{qk["p95"]:,.0f} kt. Committed range '
+               f'from the Monte Carlo floor-area uncertainty (population, household size, dwelling size, completion '
+               f'rate); repair and end-of-life factors held at their central values. Moderate / Ambitious Pathway and TL: deterministic runs. Lines are '
                f'shape-preserving (PCHIP) interpolation through the annual values, not smoothed across the observed '
                f'-> modelled join after {int(brk[0])}; bands: ' + ', '.join(f'{k} {v}' for k, v in methods.items()) + '.')
 
@@ -937,11 +982,9 @@ def tornado_rows():
              v('Replacement half-life (5 / 15 yr)', 'high'), {}),
             ('completion_rate', v('Completion rate (0.93 / 0.96)', 'low'),
              v('Completion rate (0.93 / 0.96)', 'high'), {}),
-            # the lag from its shortest case (0 months, MODEL v3.3; the low end) to 19 months, 15 months a tick
-            ('completion_lag_0_19', v('Completion lag 0 months (one-sided)', 'high'),
-             v('Completion lag (15 / 19 months)', 'high'),
-             {'0 mo': v('Completion lag 0 months (one-sided)', 'high'),        # labels the bar end (no tick)
-              '15 mo': v('Completion lag (15 / 19 months)', 'low')}),
+            # 15 / 19 months (the low / high end); zero lag is the SF7 counterfactual, not a row here
+            ('completion_lag', v('Completion lag (15 / 19 months)', 'low'),
+             v('Completion lag (15 / 19 months)', 'high'), {}),
             ('hh_pace', None, None, {},
              v('Household size: 2018-2023 census pace (one-sided)', 'high')),
             ('hh_propensity', None, None, {}, v('Living arrangements: Stats NZ B (one-sided)', 'high')),
@@ -1013,18 +1056,13 @@ def fig7():
         for val, col in bars:
             a.barh(k, val - c0, left=c0, height=FIG7A_BAR, **S.fill(col))
         for name, val in mid.items():
-            if val in (lo, hi):                       # a named bar end: the label beside the end, no tick
-                right = val > c0
-                a.annotate(name, (val, k), xytext=(2 if right else -2, 0), textcoords='offset points',
-                           ha='left' if right else 'right', va='center', fontsize=S.FONT_MIN, color=S.INK)
-                continue
             a.plot([val, val], [k - FIG7A_BAR / 2, k + FIG7A_BAR / 2], color=S.INK, lw=S.LW_THIN,
                    path_effects=P.TICK_HALO)
             a.text(val, k + FIG7A_BAR / 2 + 0.02, name, ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK,
                    path_effects=P.LABEL_HALO)
     a.axvline(c0, color=S.INK, lw=S.LW_THIN)
     a.set_yticks(np.arange(len(rows)))
-    a.set_yticklabels([N.INPUT_LABEL.get(r[0], r[0]) for r in rows], fontsize=S.FONT_SMALL)   # naming.INPUT_LABEL
+    a.set_yticklabels([])                     # naming.INPUT_LABEL, drawn below as stacked labels (P.stacked_ticklabels)
     a.set_xlabel(f'{N.LOE_AR} 2026–2050, Reference')
     a.grid(axis='y', visible=False)
     a.legend(handles=[Patch(label='Input at low end', **S.fill(LOW_END)),
@@ -1085,8 +1123,9 @@ def fig7():
     for t in fig.findobj(matplotlib.text.Text):                     # slightly larger fonts
         if t.get_text():
             t.set_fontsize(t.get_fontsize() * 1.1)
-    a.tick_params(axis='y', labelsize=S.FONT_SMALL * 1.1)
-    P.centre_ticklabels(fig, a)                                       # one centre axis
+    # y labels: the name at the label size, its parenthesised part one font step smaller (one centre axis)
+    P.stacked_ticklabels(fig, a, [N.INPUT_LABEL.get(r[0], r[0]) for r in rows], S.FONT_SMALL * 1.1,
+                         S.FONT_MIN * 1.1)
     fig.tight_layout()
     if thr['estimable']:                                              # the 50% line stops 3 pt below the legend
         fig.canvas.draw()

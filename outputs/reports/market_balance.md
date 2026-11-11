@@ -8,17 +8,17 @@ Controlled comparison: same source files, population path, household-size path, 
 
 | Cumulative floor area, 2026–2050 (Mm2) | Zero lag, net replacement held at the 17-month calibration | Zero lag, recalibrated | 17-month lag |
 |---|---:|---:|---:|
-| Population growth | 40.76 | 40.76 | 40.59 |
+| Population growth | 40.77 | 40.77 | 40.59 |
 | Household-size change | 14.82 | 14.82 | 14.76 |
-| Net replacement | 9.01 | 15.22 | 9.29 |
-| Other demand / balance | 40.31 | 40.31 | 43.56 |
-| Gross market excess | 2.50 | 1.80 | 2.02 |
-| Overbuild absorbed | -3.34 | -2.64 | -4.78 |
-| **Total built** | 104.06 | 110.26 | 105.44 |
+| Net replacement | 9.02 | 15.24 | 9.29 |
+| Other demand / balance | 40.37 | 40.37 | 43.56 |
+| Gross market excess | 2.52 | 1.82 | 2.02 |
+| Overbuild absorbed | -3.39 | -2.69 | -4.78 |
+| **Total built** | 104.12 | 110.33 | 105.44 |
 
 ### Observed consent periods
 
-- Zero lag: Aug 2025–Jul 2026 is a rolling 12-month consent proxy used for 2026, not observed completed dwellings in calendar 2026.
+- Zero lag: Oct 2025–Sep 2026 is a rolling 12-month consent proxy used for 2026, not observed completed dwellings in calendar 2026.
 - 17-month lag: completion cohort 2026 uses Aug 2024–Jul 2025 consents; this is a complete 12-month observed cohort.
 - 17-month lag: completion cohort 2027 uses Aug 2025–Jul 2026 consents; this is a complete 12-month observed cohort.
 

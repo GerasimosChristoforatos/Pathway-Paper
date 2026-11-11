@@ -61,7 +61,7 @@ def groups():
         'Life-cycle stages (Fig3a)': {N.STAGES[k]: S.STAGE[k][0] for k in S.STAGE},
         'History bands (Fig1)': {(N.BANDS.get(b) or N.BAND_DETAIL[b]): S.HISTORY_BAND[b][0] for b in S.HISTORY_BAND},
         # the new palette groups
-        'Fig3 (runs, boundaries, zones on white, cumulative column)': dict(
+        'Fig3 (runs, boundaries, zones on white)': dict(
             {'Reference': S.REFERENCE, N.PATHWAY_RUNS['pathway-moderate']: S.PATHWAY_SETTING['moderate'],
              N.PATHWAY_RUNS['pathway-ambitious']: S.PATHWAY_SETTING['ambitious'], N.TL['TL']: S.TL,
              'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
@@ -209,17 +209,18 @@ def main():
          f"Net replacement {S.REPLACEMENT} (demolition replacement, the recent surge and unconsented additions drawn "
          f"as one band: the census measures only the net), Released dwellings (TL) "
          f"{S.BAND['released_tl'][0]}. The only untargeted band, Population growth, is a solid deep violet ({S.GROWTH}). "
-         f"Unexplained building of the history: {S.UNEXPLAINED[0]}.",
+         "Market balance (the history stock-identity residual, the 2026-27 overbuild and its absorption) one band in "
+         f"the demand-band colour ({S.DISPLAY_BAND['market_balance']}), as in Fig1 and SF2b.",
          '* **Signs**: the data keep the sign of every band and the figures never flip it. Time series: '
          'positive bands stacked up from zero, negative bands down from zero (fixed order), the net a black line. '
-         'Cumulative bars: positives stacked; each negative band an unfilled, unhatched segment outlined in its band '
-         'colour, hanging from the top of the positive stack, so the bar ends at its net total, marked by a net tick; '
+         'Cumulative bars: positives stacked up from zero, negatives solid below zero, the net total a black marker; '
          'one legend entry per band. Materials and stages are never negative (a STOP if they were).',
          f"* **Maintenance** (B2, B4) neutral grey ({S.BAND['maintenance'][0]}); committed C1-C4 after 2050 "
          f"({S.COMPONENT['committed'][0]}). Carbon stages (palette.toml [life_cycle_stages]): "
          f"A1-A3 {S.STAGE['a1a3'][0]}, A4-A5 {S.STAGE['a4a5'][0]}, soil carbon loss {S.STAGE['soil'][0]}.",
         f"* **Reference** mid grey ({S.REFERENCE}); Low and High replacement greys with dashed and dotted lines. "
-        f"The Fig3b 2026-2050 column (palette.toml [cumulative]): {S.CUMULATIVE_FIG3B}.",
+        "The Fig3b 2026-2050 column is the Reference colour; its Monte Carlo intervals capped error bars at "
+        f"opacity {S.OPACITY['fig3b_interval_bars']:g} (palette.toml [opacity]).",
          f"* **One at a time** (palette.toml [one_at_a_time]; Fig7a, ED4, ED5): input at its low end {S.TORNADO_LOW}, "
          f"at its high end {S.TORNADO_HIGH}, a single alternative case {S.TORNADO_SINGLE}.",
          f"* **Stacked bars and areas** are drawn seamless: each segment's edge is its own face colour at "

@@ -11,6 +11,8 @@ villages, or any band negative in a run) an unfilled, unhatched segment outlined
 from the running total (the top of the positive stack), so the last step ends at the net total, drawn as the
 black 'Total, in scope' bar. No band is hatched.
 """
+import calendar
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MaxNLocator
@@ -80,8 +82,10 @@ def sf6_hindcast():
         a.set_ylim(0, a.get_ylim()[1] * 1.15)
         a.text(0.5, 0.97, f"ratio {c['ratio_observed_to_model']:.2f}", transform=a.transAxes, ha='center', va='top',
                fontsize=S.FONT_SMALL)
+    ytd_months = (f"January–{calendar.month_name[int(str(c['data_end'])[5:7])]} {str(c['data_end'])[:4]}"
+                  if c.get('data_end') else 'the observed 2026 months')
     a.set_ylabel(f"Dwellings completed, {c['target_year']}" if pipeline_mode else
-                 'Dwellings consented, January–July 2026')
+                 f'Dwellings consented, {ytd_months}')
     P.thousands(a.yaxis)
     a.grid(axis='x', visible=False)
     P.panel(a, 'd', f"{c['target_year']} check" if pipeline_mode else '2026 check')
@@ -95,7 +99,7 @@ def sf6_hindcast():
                        'interval rates (3, 4 and 5 intervals at the 2006, 2013 and 2018 origins). d: '
                        + ('building of the first year the run without 2026 data models, observed in the pipeline '
                           '(consents lagged), against that run.' if pipeline_mode else
-                          'consents observed January–July 2026 against the model, which uses no 2026 data.'),
+                          f'consents observed {ytd_months} against the model, which uses no 2026 data.'),
                   source=['figure_source/D14_hindcast.json', 'baseline/validation.json'])
 
 

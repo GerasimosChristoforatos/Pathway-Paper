@@ -27,6 +27,11 @@ STOP: the central draw must reproduce the deterministic Moderate / Ambitious Pat
 TL <= Ambitious Pathway <= Moderate Pathway (cumulative carbon), dwellings built >= 0, and the cumulative re-occupied
 never exceeds the cumulative released.
 
+Committed after 2050 (MODEL v4.6.0): for every Reference draw, pathways.committed(ctx, gfa_t) on that draw's floor
+area by typology (later B2/B4 events at both decarbonisation bounds, and C1-C4), with the central repair and
+end-of-life factors (the carbon-factor draw is not applied to them): the committed range from the Monte Carlo
+floor-area uncertainty only. STOP unless the central draw reproduces baseline/projection.json 'committed' to 1e-9.
+
 Writes outputs/data/pathways/montecarlo_draws.csv (per draw), montecarlo_summary.csv, montecarlo_annual.csv,
 montecarlo_draw_rules.json and the insight files.
 
@@ -58,6 +63,10 @@ MP, AP = 'pathway_moderate', 'pathway_ambitious'  # the Moderate / Ambitious Pat
 RUNS = ('REF', MP, 'TL')                          # the insight analyses
 INSTANT = 'TL_from2027'                          # the instant TL sensitivity (summary and annual percentiles only)
 SUMMARY_RUNS = ('REF', MP, AP, 'TL', INSTANT)
+# committed after 2050 per Reference draw: pathways.committed keys -> draw-file columns (REF_<column>)
+COMMITTED_COLUMNS = {'lower_kt': 'committed_lower_kt', 'upper_kt': 'committed_upper_kt',
+                     'B_lower_kt': 'committed_b2b4_lower_kt', 'B_upper_kt': 'committed_b2b4_upper_kt',
+                     'C_kt': 'committed_c1c4_kt'}
 WINDOW = slice(1, None)                          # 2026-2050 (index 0 = 2025)
 
 
@@ -364,6 +373,16 @@ def main():
     oc = MC.project(su, MC.central(su), full=True)
     gfa_c = np.asarray(oc['gfa_t'], float)
     I_c = np.broadcast_to(np.asarray(oc['I'], float).reshape(len(su['typ']), -1), gfa_c.shape)
+    if list(su['typ']) != list(ctx['typ']) or list(su['fy']) != [int(y) for y in ctx['years']]:
+        raise SystemExit('pathways_mc: the Monte Carlo typologies / years differ from the pathway context.')
+    com_c = PW.committed(ctx, gfa_c)
+    with open(layout.data('baseline/projection.json', frozen=False)) as f:
+        com_det = __import__('json').load(f)['committed']
+    w_com = max(abs(com_c[k] / com_det[k] - 1.0) for k in COMMITTED_COLUMNS)
+    print(f'[check] committed after 2050, central draw vs baseline/projection.json: max relative difference '
+          f'{w_com:.1e} ({"OK" if w_com < CENTRAL_TOL else "FAIL"})')
+    if w_com >= CENTRAL_TOL:
+        raise SystemExit(f'STOP: the central draw does not reproduce the committed emissions: {com_c} vs {com_det}.')
     draws = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))
     X = draws[[N.identifier(c) for c in MC.PARAMS]].to_numpy(float)
     budgets = pd.read_csv(layout.data('aesa/montecarlo_draw_budgets.csv', frozen=False))
@@ -377,6 +396,7 @@ def main():
     rows, stops = [], []
     for j in range(n):
         o = MC.project(su, dict(zip(MC.PARAMS, X[j])), full=True)
+        com = PW.committed(ctx, np.asarray(o['gfa_t'], float))      # central repair / end-of-life factors
         cd = draw_context(ctx, su, o['draw'], a13, red13, a45)
         runs = runs_for_draw(cd, params)
         S_d = np.asarray(cd['pop'], float) / np.asarray(cd['hh'], float)
@@ -405,6 +425,7 @@ def main():
                    B_AR_kt_2026_2050=float(b['B_AR_kt_2026_2050']), B_AtP_kt_2026_2050=float(b['B_AtP_kt_2026_2050']),
                    TL1_draw_max_binds=bool(np.any((S_d + gap)[late] > params['L1']['tl'])),
                    overbuild_cap_binding_years=int(runs[MP]['info']['payback_cap_binds'].sum()),
+                   **{f'REF_{c}': float(com[k]) for k, c in COMMITTED_COLUMNS.items()},
                    **reo)
         for r, E in [('REF', o)] + [(k, R['E']) for k, R in runs.items()]:
             carbon = np.asarray(E['carbon'], float)
@@ -429,6 +450,10 @@ def main():
             if q.startswith('LoE'):
                 e['probability_LoE_at_most_1'] = float(np.mean(v <= 1.0))
             summ.append(e)
+    for c in COMMITTED_COLUMNS.values():              # the Reference only; central = baseline/projection.json
+        v = df[f'REF_{c}'].to_numpy()
+        summ.append(dict(run='REF', quantity=c, mean=float(v.mean()), **{f'p{p}': float(np.percentile(v, p))
+                                                                          for p in PCT}))
     ann = []
     for r in SUMMARY_RUNS:
         for i, y in enumerate(years):

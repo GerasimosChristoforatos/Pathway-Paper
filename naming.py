@@ -202,7 +202,6 @@ INPUT_LABEL = {
     'overbuild_redev': '2026 overbuild booked as\nstock-neutral redevelopment',
     'overbuild_gap': '2026 overbuild measured\nagainst the 2026 need',
     'completion_lag': 'Completion lag\n(15–19 months)',
-    'completion_lag_0_19': 'Completion lag\n(0–19 months)',          # Fig7a: 0 months (MODEL v3.3) the low end
     'no_2026': 'No 2026 data\n(consents to Dec 2025)',
     'replacement': 'Replacement\n(Low–Very High)',
     'half_life': 'Replacement half-life\n(5–15 yr)',

@@ -407,19 +407,9 @@ def row_notes_ed5(r):
     return n
 
 
-SUPERSCRIPT = str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹')
-
-
-def sup(n):
-    """A row number as Unicode superscript digits (captions, FIGURES.md, the audit note)."""
-    return str(n).translate(SUPERSCRIPT)
-
-
-# The figures draw each row number as its own text at style.FONT_MIN (5 pt), at the top of the line it marks: a
-# Unicode superscript digit is smaller than its font size (and the fallback Liberation Sans has no superscript zero, which 10 and
-# 20 need), and a mathtext superscript is set at 0.7 x the font size.
-SUP_GAP = '\u2009'                # thin space between a row label and its number
-SUP_DIGIT = '\u2007'              # figure space: room for one digit of the number at the end of the label
+def tag(n):
+    """A row number as drawn: '[n]' (the end of the row label, the start of its note; captions and FIGURES.md)."""
+    return f'[{n}]'
 
 
 def note_lines(order, notes, label, fig):
@@ -437,44 +427,18 @@ def note_lines(order, notes, label, fig):
 
 
 def caption_lines(numbered):
-    """'¹ <note>.' per numbered row (the text of the captions, FIGURES.md and the audit note)."""
-    return [f'{sup(n)} {t}.' for n, _, t in numbered]
+    """'[1] <note>.' per numbered row (the text of the captions, FIGURES.md and the audit note)."""
+    return [f'{tag(n)} {t}.' for n, _, t in numbered]
 
 
 def numbered_label(numbered):
-    """The y tick label of a row with room for its number at the end of the last line (a thin space and one figure
-    space per digit; label_numbers draws the number there)."""
+    """The y tick label of a row, ending with its number ' [n]' (rows without a note: the label alone)."""
     num = {rid: n for n, rid, _ in numbered}
-    return lambda rid: _input_label(rid).replace('$', r'\$') + (
-        SUP_GAP + SUP_DIGIT * len(str(num[rid])) if rid in num else '')
+    return lambda rid: _input_label(rid).replace('$', r'\$') + (f' {tag(num[rid])}' if rid in num else '')
 
 
-def label_numbers(fig, ax, numbered, ys):
-    """Draw each row number at style.FONT_MIN at the right end of the last line of its y tick label, its top at the
-    top of that line (call after the layout is final). ys: the tick positions of the numbered rows (draw.tornado), in
-    the order of numbered."""
-    fig.canvas.draw()
-    r = fig.canvas.get_renderer()
-    to_fig = fig.transFigure.inverted()
-    labels = {round(float(t.get_position()[1]), 9): t for t in ax.get_yticklabels() if t.get_text()}
-    for (n, _, _), y in zip(numbered, ys):
-        t = labels[round(float(y), 9)]
-        bb = t.get_window_extent(r)
-        lines = t.get_text().split('\n')
-        tmp = fig.text(0, 0, lines[-1], fontsize=t.get_fontsize(), fontfamily=t.get_fontfamily())
-        w_last = tmp.get_window_extent(r).width
-        tmp.remove()
-        x_right = bb.x0 + bb.width / 2 + w_last / 2           # every line is centred (draw.centre_ticklabels)
-        y_top = bb.y0 + bb.height / len(lines)
-        fx, fy = to_fig.transform((x_right, y_top))
-        fig.text(fx, fy, str(n), ha='right', va='top', fontsize=S.FONT_MIN, fontweight='bold', color=S.INK)
-
-
-# the row numbers (labels and notes) at style.FONT_MIN, bold, their top at the top of the line: smaller than the text
-# they mark, which is half a point (notes) or one point (row labels) larger, so they read as superscripts
-ROW_LABEL_SIZE = S.FONT_MIN + 1.0
-NOTE_TEXT_SIZE = S.FONT_MIN + 0.5
-NOTE_NUMBER_GAP_MM = 1.0         # the note text starts this far right of the widest note number (measured)
+NOTE_TEXT_SIZE = S.FONT_MIN + 0.5      # the row notes (pt)
+NOTE_NUMBER_GAP_MM = 1.0         # the note text starts this far right of the widest '[n]' (measured)
 
 
 def note_metrics(fig):
@@ -517,15 +481,14 @@ def wrap_measured(text, width_in, avail_in):
 
 
 def draw_notes(fig, numbered, title, top_frac, ncol=2):
-    """The row notes as a compact numbered list below the axes, the numbers those of the y labels: each number its own
-    text at FONT_MIN, aligned with the first line of its note (FONT_MIN) beside it; ncol columns filled top to bottom,
-    a note never split. Each note is wrapped by its rendered width (the column width less the indent and a gutter) and
+    """The row notes as a compact list below the axes, '[1] ...', '[2] ...' (the numbers those of the y labels), the
+    note text indented past the widest '[n]'; ncol columns filled top to bottom, a note never split. Each note is wrapped by its rendered width (the column width less the indent and a gutter) and
     the notes are stacked at the measured line pitch, so no note overlaps the next. Returns the height used (mm)."""
     if ncol != 2:
         raise ValueError('draw_notes: two columns')
     pitch_in, width_in, tw = note_metrics(fig)
     W = fig.get_figwidth()
-    num_in = max(width_in(str(n)) for n, _, _ in numbered)          # the numbers are right-aligned in this width
+    num_in = max(width_in(tag(n)) for n, _, _ in numbered)          # the '[n]' are right-aligned in this width
     indent_in = num_in + NOTE_NUMBER_GAP_MM * S.MM
     avail = (0.5 - 0.01) * W - indent_in - NOTE_GUTTER_MM * S.MM
     wrapped = [[x.replace('$', r'\$') for x in wrap_measured(f'{t}.', width_in, avail)]   # a literal dollar
@@ -539,8 +502,7 @@ def draw_notes(fig, numbered, title, top_frac, ncol=2):
     for c, items in enumerate((list(zip(numbered, wrapped))[:k], list(zip(numbered, wrapped))[k:])):
         x0, y = 0.01 + c / ncol, top_frac - line
         for (n, _, _), w in items:
-            fig.text(x0 + num_in / W, y, str(n), ha='right', va='top', fontsize=S.FONT_MIN, fontweight='bold',
-                     color=S.INK)
+            fig.text(x0 + num_in / W, y, tag(n), ha='right', va='top', fontsize=NOTE_TEXT_SIZE, color=S.INK)
             fig.text(x0 + indent_in / W, y, '\n'.join(w),
                      ha='left', va='top', fontsize=NOTE_TEXT_SIZE, color=S.INK, linespacing=NOTE_LINESPACING)
             y -= len(w) * line
@@ -602,8 +564,8 @@ def ed4_one_at_a_time():
     r, c0, order, numbered = ed4_rows()
     lines = caption_lines(numbered)
     fig, ax = plt.subplots(figsize=S.figsize('double', ED4_H))
-    ys = P.tornado(ax, order, c0, numbered_label(numbered))
-    ax.tick_params(axis='y', labelsize=ROW_LABEL_SIZE)
+    P.tornado(ax, order, c0, numbered_label(numbered))
+    ax.tick_params(axis='y', labelsize=S.FONT_SMALL)
     ax.text(c0, 1.0, f' Reference {c0:,.0f} kt', transform=ax.get_xaxis_transform(), ha='left', va='bottom',
             fontsize=S.FONT_SMALL, color=S.INK)
     ax.set_xlabel('Cumulative embodied carbon 2026–2050 (kt CO₂e)')
@@ -612,7 +574,6 @@ def ed4_one_at_a_time():
     P.centre_ticklabels(fig, ax)
     notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP)
     fig.tight_layout(rect=(0, NOTES_TOP + 0.01, 1, 1))
-    label_numbers(fig, ax, numbered, ys)
     if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP:
         raise SystemExit(f'STOP: ED4: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED4_H')
     S.save_figure(fig, 'ED4_one_at_a_time',
@@ -668,19 +629,16 @@ def ed5_boundary_sensitivity():
     lines = caption_lines(numbered)
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', ED5_H), sharey=True)
     for a, q, xl, letter in ((ax[0], 'LoE_AR', N.LOE_AR, 'a'), (ax[1], 'LoE_AtP', N.LOE_ATP, 'b')):
-        ys_q = P.tornado(a, orders[q], c[q], numbered_label(numbered), headers=(q == 'LoE_AR'))
-        if q == 'LoE_AR':
-            ys = ys_q
+        P.tornado(a, orders[q], c[q], numbered_label(numbered), headers=(q == 'LoE_AR'))
         a.text(c[q], 1.0, f' Reference {c[q]:.2f}', transform=a.get_xaxis_transform(), ha='left', va='bottom',
                fontsize=S.FONT_SMALL, color=S.INK)
         a.set_xlabel(f'{xl} 2026–2050')
         P.panel(a, letter, '')
-    ax[0].tick_params(axis='y', labelsize=ROW_LABEL_SIZE)
+    ax[0].tick_params(axis='y', labelsize=S.FONT_SMALL)
     ax[1].legend(handles=P.tornado_legend(), loc='lower right', fontsize=S.FONT_SMALL, frameon=False)
     P.centre_ticklabels(fig, ax[0])
     notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP_ED5)
     fig.tight_layout(rect=(0, NOTES_TOP_ED5 + 0.01, 1, 1))
-    label_numbers(fig, ax[0], numbered, ys)
     if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP_ED5:
         raise SystemExit(f'STOP: ED5: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED5_H')
     S.save_figure(fig, 'ED5_boundary_sensitivity',
@@ -693,7 +651,7 @@ def ed5_boundary_sensitivity():
 
 
 def row_note_caption(fid):
-    """The row notes of ED4 or ED5 as caption text ('¹ <note>. ² ...'), from the same list the figure draws (the
+    """The row notes of ED4 or ED5 as caption text ('[1] <note>. [2] ...'), from the same list the figure draws (the
     captions of FIGURES.md take them from here)."""
     numbered = {'ED4': lambda: ed4_rows()[3], 'ED5': lambda: ed5_rows()[4]}[fid]()
     return ' '.join(caption_lines(numbered))

@@ -160,6 +160,48 @@ def centre_ticklabels(fig, ax):
         t.set_multialignment('center')
 
 
+def split_paren(line):
+    """One label line -> (text before the parenthesised part, the parenthesised part or None):
+    'change (Stats NZ B)' -> ('change ', '(Stats NZ B)'); '(5th–95th pct.)' -> ('', '(5th–95th pct.)')."""
+    i = line.find('(')
+    return (line, None) if i < 0 else (line[:i], line[i:])
+
+
+def stacked_ticklabels(fig, ax, labels, size, small):
+    """y tick labels with the parenthesised part one font step smaller: every line of a label keeps its place; on a
+    line with a parenthesised part that part is set at `small` after the rest at `size`, on one baseline. Every label
+    is centred (line by line) on one vertical axis at the centre of the widest, with the tick pad as the gap to the
+    axis (as centre_ticklabels). Replaces the tick labels; call after the fonts are final and before the layout is
+    fixed."""
+    from matplotlib.offsetbox import AnnotationBbox, HPacker, TextArea, VPacker
+    if small < S.FONT_MIN:
+        raise SystemExit(f'stacked_ticklabels: {small} pt is below the {S.FONT_MIN} pt minimum.')
+    ax.set_yticklabels([])
+    t0 = ax.yaxis.get_major_ticks()[0]
+    pad = t0.get_pad() + t0.tick1line.get_markersize()          # points: the gap plus the tick length
+    tp = dict(color=S.INK, ha='center', multialignment='center')
+    boxes = []
+    for y, lab in zip(ax.get_yticks(), labels):
+        rows_ = []
+        for line in lab.split('\n'):
+            pre, par = split_paren(line)
+            parts = ([TextArea(pre.rstrip(), textprops=dict(fontsize=size, **tp))] if pre.strip() else []) + \
+                    ([TextArea(par, textprops=dict(fontsize=small, **tp))] if par else [])
+            rows_.append(parts[0] if len(parts) == 1 else
+                         HPacker(children=parts, align='baseline', pad=0, sep=size * 0.28))   # a word space
+        ab = AnnotationBbox(VPacker(children=rows_, align='center', pad=0, sep=0.6), (0, y),
+                            xycoords=('axes fraction', 'data'), xybox=(-pad, 0), boxcoords='offset points',
+                            box_alignment=(0.5, 0.5), frameon=False, annotation_clip=False)
+        ax.add_artist(ab)
+        boxes.append(ab)
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    w = max(b.get_window_extent(r).width for b in boxes) * 72.0 / fig.dpi
+    for b in boxes:
+        b.xybox = (-(pad + w / 2), 0)
+    return boxes
+
+
 # ---------------------------------------------------------------------------
 # panels and axes
 # ---------------------------------------------------------------------------

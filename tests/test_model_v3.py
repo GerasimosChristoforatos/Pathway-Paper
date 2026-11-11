@@ -99,9 +99,13 @@ def test_moderate_is_the_exact_midpoint(params, lever):
 def test_lever_data_stop_conditions(params):
     assert params['L5']['n'] == 16 and set(params['L5']['typologies']) == {'Detached', 'Townhouses', 'Apartments'}
     assert all(0.0 <= f <= 1.0 for f in params['L4']['f']['ambitious'].values())
-    assert params['L1']['high_ge_medium_every_year']
+    # L1 Ambitious = the Stats NZ propensity-B path (MODEL v4.7.0): B >= A every year, Ambitious = Reference + (B - A)
+    assert params['L1']['b_ge_a_every_year']
     v = params['L1']['variants']
-    assert all(v['High'][y] >= v['Medium'][y] for y in v['High'])
+    assert all(v['B'][y] >= v['A'][y] - 1e-12 for y in v['B'])
+    S = params['L1']['S']
+    assert all(S['ambitious'][y] == pytest.approx(v['B'][y], rel=1e-12) for y in v['B'])
+    assert all(S['moderate'][y] == pytest.approx((S['reference'][y] + S['ambitious'][y]) / 2, rel=1e-12) for y in v['B'])
     import projection
     assert params['L1']['tail'] == projection.S_TAIL
     assert all(r['ok'] for r in params['tl_strength'])
@@ -213,3 +217,27 @@ def test_run_meta():
     import runprofile
     assert m['profile'] == runprofile.name() and m['n_draws'] == runprofile.get('n_draws')
     assert {'seeds', 'git_hash', 'input_hash', 'timestamp'} <= set(m)
+
+
+def test_l9_phased_once():
+    """L9 (MODEL v4.7.0): Ambitious follows its own path, from the 2026 Reference value linearly to zero in 2050, with
+    no logistic weight; Moderate is the per-year midpoint; 2025-2026 are the Reference."""
+    import levers as LV
+    years = np.arange(2025, 2051)
+    ref, amb = LV.a45_reference(years), LV.a45_ambitious(years)
+    assert np.array_equal(amb[:2], ref[:2]) and amb[-1] == 0.0
+    assert np.allclose(np.diff(amb[1:]), -ref[1] / (2050 - 2026), rtol=1e-12)
+    assert np.allclose(LV.a45_target(years, 0.5), (ref + amb) / 2, rtol=1e-12)
+
+
+def test_tl1_age_standardised_row():
+    """The TL1 age-standardised sensitivity row exists, is never stronger than TL and its summary is consistent."""
+    import pathways as PW
+    with open(layout.data('pathways/theoretical_limit.json')) as f:
+        a = json.load(f)['tl1_age_standardised']
+    runs = pd.read_csv(layout.data('pathways/runs.csv'))
+    r = runs[(runs['scenario'] == 'REF')].set_index('run')
+    assert r.loc[PW.TL_AGE_STANDARDISED, 'carbon_kt'] >= r.loc['TL', 'carbon_kt']
+    assert a['carbon_kt'] == pytest.approx(r.loc[PW.TL_AGE_STANDARDISED, 'carbon_kt'], rel=1e-12)
+    assert 0.0 < a['tl1_households_per_person_fall_at_every_age'] < 1.0
+

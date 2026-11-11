@@ -369,6 +369,19 @@ Every TL is asserted at least as strong as Ambitious.
   k = ln(81)/6).
 - Sensitivities: by 2030, by 2045, and the instant TL (from 2027).
 - 2026 is observed and never changed.
+- Two documented exceptions:
+  - L9 Ambitious and Moderate follow their own path, linear from the 2026 Reference value to zero in 2050, with no
+    logistic weight (phased once);
+  - TL1 rises at the fastest observed inter-census change of household size and reaches its level in 2037.5.
+
+**L1 Household size.** Ambitious is the Stats NZ propensity-B household size (living arrangements change, modelled
+on the 2001–2023 censuses), rebased on 2023 like the Reference propensity-A path, with the same tail. In the pathway
+Monte Carlo, each draw uses its own B path at its population rank. TL1 is 2.79 (1991), held regardless of age
+structure.
+
+**TL1 age-standardised (sensitivity, `household_headship.py`).** Headship rates by age group (2023, or Stats NZ
+Medium B where lower) are applied to the projected population to give an alternative TL1 level. It is reported as
+the `TL-TL1-age-standardised` row, with its own P(LoE AR ≤ 1) from the pathway Monte Carlo.
 
 **Levers.** Grouped by the PAS 2080:2023 hierarchy:
 

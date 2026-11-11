@@ -144,7 +144,7 @@ def main():
                              residual_vacancy_pp=100 * resid / stock25,
                              residual_S_fall=S26 - S26 * float(E['hh'][1]) / (float(E['hh'][1]) + resid * (1 - v26))))
     boom = boom_2018_2023(B)
-    res = dict(completion_rate=c, lag_w=0.0, completion_lag_months=lag,
+    res = dict(completion_rate=c, completion_lag_months=lag,
                completion_period_2026=('Jan-Dec 2026; consents Aug 2024-Jul 2025 shifted 17 months' if lag > 0
                                        else 'calendar 2026 consent estimate'),
                population_period_2026='year ended June 2026 (June-quarter mean ERP, 12 months)',

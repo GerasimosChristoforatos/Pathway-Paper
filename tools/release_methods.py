@@ -23,6 +23,29 @@ def _js(rel):
         return json.load(f)
 
 
+def tl1_age_standardised_lines(ref, tl):
+    """The TL1 age-standardised sensitivity (household_headship.py; pathways.TL_AGE_STANDARDISED; pathways_mc.TLAS),
+    from theoretical_limit.json, runs.csv and the pathway Monte Carlo summary."""
+    a = _js('pathways/theoretical_limit.json')['tl1_age_standardised']
+    r = ref.loc[PW.TL_AGE_STANDARDISED]
+    s = pd.read_csv(layout.data('pathways/montecarlo_summary.csv'))
+    m = s[(s['run'] == 'TL_TL1_age_standardised') & (s['quantity'] == 'LoE_AR')]
+    mc = (f" In the pathway Monte Carlo (each draw's own household size and population variant) P(LoE AR <= 1) = "
+          f"{100 * float(m['probability_LoE_at_most_1'].iloc[0]):.1f}% (TL: "
+          f"{100 * float(s[(s['run'] == 'TL') & (s['quantity'] == 'LoE_AR')]['probability_LoE_at_most_1'].iloc[0]):.1f}%)."
+          if len(m) else ' (deterministic only: the pathway Monte Carlo summary has no such row)')
+    return [f"TL1 age-standardised (deterministic sensitivity row): TL1 at the household size given by the lower of the "
+            "2023 and Stats NZ Medium B living-arrangement (headship) rates by age group (0-14, 15-39, 40-64, 65+; "
+            "POPPR_FHH_008 / POPPR_FHH_010), applied to the projected population (household_headship.py; the 2023 "
+            "rates are the only observed ones by age in the repository, so the highest observed propensity of living "
+            "with others is the 2023 one; the 2023-rate path reproduces the Stats NZ Medium A household size to within "
+            f"{a['statsnz_check_max_abs']:.3f}). Its 2050 level is {a['level_2050']:.4f} against the L1 Ambitious "
+            f"{a['ambitious_2050']:.4f}" + ('; below it, so the TL rule (never weaker than Ambitious) holds TL1 at the '
+                                           'Ambitious path' if a['floored_at_ambitious_2050'] else '') +
+            f": TL {r['carbon_kt']:,.1f} kt, LoE AR {r['LoE_AR']:.3f}, LoE AtP {r['LoE_AtP']:.2f} (TL: "
+            f"{tl['carbon_kt']:,.1f} kt, LoE AR {tl['LoE_AR']:.3f}).{mc}", '']
+
+
 def lines():
     sc = _js('baseline/scenarios.json')['meta']
     tr = _js('baseline/projection.json')['replacement_trend']
@@ -154,6 +177,7 @@ def lines():
          '### Check and sensitivity rows', '',
          f"TL with re-occupation as fast as demand allows (deterministic sensitivity row): {fast['carbon_kt']:,.1f} kt, "
          f"LoE AR {fast['LoE_AR']:.3f} (TL: {tl['carbon_kt']:,.1f} kt, LoE AR {tl['LoE_AR']:.3f}).", '',
+         ] + tl1_age_standardised_lines(ref, tl) + [
          f"L8 with the apartment case A_1 (n = {lv['L8']['check_with_A_1']['n']}): r = "
          f"{lv['L8']['check_with_A_1']['r']:.3f} against the adopted {lv['L8']['check_with_A_1']['adopted_r']:.3f} "
          f"(n = {lv['L8']['check_with_A_1']['adopted_n']}); report only (A_1's ratio to its pooled value is "

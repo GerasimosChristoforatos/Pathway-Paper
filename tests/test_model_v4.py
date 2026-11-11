@@ -70,7 +70,7 @@ def test_tl1_speed_limit():
     with open(_data('pathways/levers.json')) as f:
         lv = json.load(f)
     sp = lv['L1']['tl_speed']
-    assert sp['on'] and sp['interval'] == [1996, 2001] and sp['start'] == 2026
+    assert sp['interval'] == [1996, 2001] and sp['start'] == 2026
     rates = [r['rate'] for r in sp['intervals']]
     assert sp['rate'] == max(rates) and sp['census_years'][0] == 1991 and sp['census_years'][-1] == 2023
     path = {int(y): v for y, v in sp['path'].items()}

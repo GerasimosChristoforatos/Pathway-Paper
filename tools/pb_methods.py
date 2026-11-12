@@ -59,12 +59,12 @@ def ar_base_rule_lines(r):
 def lines():
     """The AESA part as Markdown lines, without the title line (section headings at '##')."""
     import boundaries
-    with open(layout.data('aesa/results.json', frozen=False)) as f:
+    with open(layout.data('aesa/results.json')) as f:
         r = json.load(f)
-    with open(layout.data('metrics.json', frozen=False)) as f:
+    with open(layout.data('metrics.json')) as f:
         mm = json.load(f)
     m, run_mode = mm.get('aesa', {}), mm.get('run_mode', 'full')
-    sens = pd.read_csv(layout.data('aesa/sensitivity.csv', frozen=False))
+    sens = pd.read_csv(layout.data('aesa/sensitivity.csv'))
     c, s, ss = r['components'], r['settings'], r['components']['s_sec_parts']
     b = c['base_year_b']
     cov = r['coverage']
@@ -73,8 +73,8 @@ def lines():
     w0, w1 = s['AR_BASE_WINDOW']
     L = []
     if run_mode != 'full':
-        L += ['> **' + run_mode + '** (run_all.py --quick: fewer Monte Carlo draws, no frozen-technology '
-              'Monte Carlo).', '']
+        L += ['> **' + run_mode + '** (run_all.py --profile light: fewer Monte Carlo draws, '
+              'no Sobol indices).', '']
     L += [
          'The planetary-boundary layer is an absolute environmental sustainability assessment (AESA) of New '
          f'Zealand new residential construction, climate change only, {y0}-{y1}. Static carrying capacity; two '

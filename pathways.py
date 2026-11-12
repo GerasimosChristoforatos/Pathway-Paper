@@ -65,10 +65,10 @@ import runprofile  # noqa: E402
 import validation  # noqa: E402
 
 RAMP_ADOPTED = LV.ADOPTION_ADOPTED
-OUT = layout.data('pathways', frozen=False)
-FILE_PB_ANNUAL = layout.data('aesa/annual.csv', frozen=False)
-FILE_PB_RESULTS = layout.data('aesa/results.json', frozen=False)
-FILE_BOSS_RESULTS = layout.data('baseline/projection.json', frozen=False)
+OUT = layout.data('pathways')
+FILE_PB_ANNUAL = layout.data('aesa/annual.csv')
+FILE_PB_RESULTS = layout.data('aesa/results.json')
+FILE_BOSS_RESULTS = layout.data('baseline/projection.json')
 RUN_MODE = runprofile.name()
 
 WINDOW = (2026, 2050)
@@ -84,13 +84,11 @@ BRENTQ_XTOL = 1e-15
 M6 = 1e6
 REOCCUPATION_YEARS = (2027, 2050)   # the window starts at the first unobserved year (observed_window)
 FIRST_LEVER_YEAR = 2027             # no vacancy-rate fall before it (2026 observed; levers.OBSERVED_YEAR + 1)
-# TL_SURPLUS_POOLING: in a theoretical-limit-family run the Reference's overbuild surplus (the positive
+# TL surplus pooling: in a theoretical-limit-family run the Reference's overbuild surplus (the positive
 #   market excess: the pipeline years and the fading gap) enters the re-occupation pool with the TL1 / TL2 releases
 #   (constant share of each year's positive need, availability constraint, carry-forward) instead of the logistic
 #   payback; the re-occupied overbuild stays in the band 'Overbuild absorbed'. A negative excess (an under-build) is
-#   made good along the Reference's logistic. Non-TL runs are unaffected. False switches the pooling off
-#   (tests/test_model_v4.py checks that this reproduces the MODEL v3.3 runs).
-TL_SURPLUS_POOLING = True
+#   made good along the Reference's logistic. Non-TL runs are unaffected.
 REOCCUPATION_TOL = 1e-9         # relative tolerance of the re-occupation identities
 T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a zero-building year
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
@@ -98,6 +96,7 @@ SHAPLEY_METRICS = ('carbon_kt', 'LoE_AR', 'LoE_AtP')
 ORDER_RTOL = 1e-12
 TL_GAME = 'tl_from_moderate_pathway'            # TL1-TL9 from the Moderate Pathway (tl_from_p5_moderate)
 TL_REOCCUPATION_FAST = 'TL-reoccupation-fast'   # A4 sensitivity row (reoccupation rule 'fast')
+TL_AGE_STANDARDISED = 'TL-TL1-age-standardised'   # TL with TL1 from age-specific living arrangements (sensitivity)
 
 
 # ============================================================
@@ -313,7 +312,7 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     ob = np.asarray(ctx.get('observed_building', []), float)
     for k in range(2, len(ob) + 1):                   # observed building in every run (2026: no lever acts)
         excess[k] = ob[k - 1] - need[k]
-    pool_ob = tl_family and TL_SURPLUS_POOLING and ctx['absorb_w'] is not None
+    pool_ob = tl_family and ctx['absorb_w'] is not None
     s0 = float(ctx.get('start_surplus', 0.0))         # F1 starting surplus (vacant at the start; never built)
     exc_pos = np.maximum(excess, 0.0) if pool_ob else zeros
     exc_abs = excess - exc_pos                        # the part absorbed along the Reference's logistic
@@ -674,16 +673,16 @@ def boss_state(scenario):
 
 
 def household_size_variants(B_ref):
-    """{variant: dict(S, pop)} of the Stats NZ household-size variants: the Reference projection with
-    projection.HH_SIZE_VARIANT changed (the Reference itself for its own variant), with the Reference run's own
-    household-size settings (path, propensity, tail: B_ref['hh_settings'])."""
+    """{propensity: dict(S, pop)} of the L1 household-size paths: the Reference projection with
+    projection.HH_PROPENSITY changed (the Reference itself for its own propensity), the Medium variant, with the
+    Reference run's other household-size settings (path, tail: B_ref['hh_settings'])."""
     out = {}
     for v in LV.L1_VARIANTS:
-        if v == validation.projection.HH_SIZE_VARIANT:
+        if v == B_ref['hh_settings']['HH_PROPENSITY']:
             B = B_ref
         else:
             with contextlib.redirect_stdout(io.StringIO()):
-                B = validation.run_boss(**dict(SCENARIOS[REFERENCE][1], HH_SIZE_VARIANT=v, **B_ref['hh_settings']))
+                B = validation.run_boss(**dict(SCENARIOS[REFERENCE][1], **dict(B_ref['hh_settings'], HH_PROPENSITY=v)))
         out[v] = dict(S=LV.household_size(B), pop=np.asarray(B['df_forecast']['PopTotal_50th'].values, float))
     return out
 
@@ -693,6 +692,22 @@ def resolve_params(B_ref):
     return LV.resolve(B_ref, load_factors_building(), BF.load_characteristics(),
                       pd.read_csv(validation.projection.FILE_FACTORS_TYPOLOGY), validation.projection,
                       household_size_variants(B_ref), runprofile.get('bootstrap'))
+
+
+def tl1_age_standardised_level(params, years, variant='Medium', S_ref=None):
+    """The age-standardised TL1 household-size path: the Reference S (or the draw's own S_ref) x the ratio of the
+    lower-headship path (2023 or propensity B, by age group) to the 2023-rate path (household_headship.py)."""
+    import household_headship as HH
+    S = (np.array([LV.by_year(params['L1']['S_ref'], int(y)) for y in years]) if S_ref is None
+         else np.asarray(S_ref, float))
+    return S * HH.ratio_path(years, variant)
+
+
+def tl1_age_standardised_params(params, years, level=None):
+    """The lever parameters with TL1 at the age-standardised level (the same speed limit and never below
+    Ambitious); every other lever as resolved."""
+    lvl = tl1_age_standardised_level(params, years) if level is None else level
+    return dict(params, L1=dict(params['L1'], tl=np.asarray(lvl, float)))
 
 
 def run_name(what, setting, ramp_name=None):
@@ -757,6 +772,11 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
     R_fast = run(ref, params, TL_ALL, reocc_rule='fast')
     rows.append(metrics(ref, R_fast, TL_REOCCUPATION_FAST, 'tl'))
     annual += annual_rows(ref, R_fast, TL_REOCCUPATION_FAST)
+    # TL with the age-standardised TL1 (sensitivity row; household_headship.py): TL1 at the household size of the lower
+    # of the 2023 and Stats NZ propensity-B headship rates by age group on the projected population, same rate limit
+    R_as = run(ref, tl1_age_standardised_params(params, ref['years']), TL_ALL)
+    rows.append(metrics(ref, R_as, TL_AGE_STANDARDISED, 'tl'))
+    annual += annual_rows(ref, R_as, TL_AGE_STANDARDISED)
     runs_df = pd.DataFrame(rows)
     p0 = runs_df[runs_df['run'] == runs_df['scenario']].set_index('scenario')
     for col in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'gfa_Mm2', 'committed_lower_kt', 'committed_upper_kt'):
@@ -864,7 +884,7 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
                sequential_vs_shapley=seq_vs_shap,
                lever_annual=pd.DataFrame(lever_annual),
                reoccupation_log=pd.DataFrame(reocc_log), ctxs=ctxs, states=states, cache=cache, get=get,
-               tl_levels=TL_ALL, seconds=time.time() - t0)
+               tl_levels=TL_ALL, tl_age_standardised=R_as, seconds=time.time() - t0)
     out['ordering'] = ordering(out)
     if verbose:
         print(f'pathways: {len(cache)} engine runs in {out["seconds"]:.1f} s')
@@ -1168,11 +1188,42 @@ def tl_summary(res):
     return dict(run_mode=RUN_MODE, disclaimer=LV.TL_DISCLAIMER, bau=LV.TL_BAU_NOTE,
                 definition=dict(levels='every lever at Level 4', adoption='normalised logistic 2026 -> 2035 (as every '
                                 'level); MODEL v4.0.0: TL1 at the census speed limit (levers.json L1 tl_speed)',
-                                surplus_pooling=TL_SURPLUS_POOLING, tl1_speed=res['params']['L1'].get('tl_speed'),
+                                tl1_speed=res['params']['L1'].get('tl_speed'),
                                 sensitivity=f'{LV.TL_INSTANT_LABEL}: every limit at full strength from 2027',
                                 components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS},
                                 note='TL6 = 100% brownfield makes TL7 zero within TL'),
-                strength=res['params']['tl_strength'], zero_building=out.pop('zero_building'), runs=out)
+                strength=res['params']['tl_strength'], zero_building=out.pop('zero_building'), runs=out,
+                tl1_age_standardised=tl1_age_standardised_summary(res))
+
+
+def tl1_age_standardised_summary(res):
+    """The TL1 implication and the age-standardised TL sensitivity (household_headship.py): the fall in households
+    per person at every age that TL1 needs, against the 2023 living-arrangement rates on the 2050 population; and the
+    TL run with TL1 at the household size of the lower of the 2023 and propensity-B headship rates by age group."""
+    import household_headship as HH
+    ref = res['ctxs'][REFERENCE]
+    yy = np.asarray(ref['years'])
+    p = res['params']['L1']
+    S_ref = np.array([LV.by_year(p['S_ref'], int(y)) for y in yy])
+    lvl = tl1_age_standardised_level(res['params'], yy)
+    R = res['tl_age_standardised']
+    q = quick(ref, R)
+    t = HH.paths('Medium')
+    return dict(
+        method='headship rates by age group (0-14, 15-39, 40-64, 65+) from Stats NZ POPPR_FHH_008 / POPPR_FHH_010; '
+               'the 2023 rates are the only observed ones in the repository; the alternative takes, by age group, the '
+               'lower headship of 2023 and of the Stats NZ Medium B projection; applied to the Medium A age '
+               'structure; the ratio to the 2023-rate path scales the Reference household size',
+        S_2050_2023_rates_on_2050_population=float(S_ref[-1]),
+        tl1_level=float(p['tl']),
+        tl1_households_per_person_fall_at_every_age=HH.households_per_person_fall(p['tl'], S_ref[-1]),
+        statsnz_check_max_abs=float((t['S_2023'] - t['S_statsnz_A']).abs().max()),
+        level_by_year={int(y): float(v) for y, v in zip(yy, lvl) if y >= 2026},
+        level_2050=float(lvl[-1]), ambitious_2050=float(LV.by_year(p['S']['ambitious'], int(yy[-1]))),
+        floored_at_ambitious_2050=bool(lvl[-1] < LV.by_year(p['S']['ambitious'], int(yy[-1]))),
+        knots=t.reset_index().to_dict(orient='list'),
+        carbon_kt=q['carbon_kt'], LoE_AR=q['LoE_AR'], LoE_AtP=q['LoE_AtP'], floor_area_Mm2=q['gfa_Mm2'],
+        household_size_2050=float((R['E']['pop'] / R['E']['hh'])[-1]))
 
 
 def write(res, identity):
@@ -1192,7 +1243,7 @@ def write(res, identity):
     _json(res['backcast'], 'backcast.json')
     _json(res['ordering'], 'ordering_checks.json')
     _json(tl_summary(res), 'theoretical_limit.json')
-    pd.DataFrame(BANDS.display_map()).to_csv(layout.writing(layout.data('bands_display_map.csv', frozen=False)),
+    pd.DataFrame(BANDS.display_map()).to_csv(layout.writing(layout.data('bands_display_map.csv')),
                                             index=False)         # the six display bands
     FP.write_ed_number_map()                                      # Extended Data numbering old -> new
     FP.write_sf_number_map()                                      # Supplementary numbering old -> new

@@ -37,7 +37,6 @@ SCENARIO_DEFINITIONS = {
 }
 SCENARIO_LEGACY = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH', 'S3-5': 'REF_HL5', 'S3-15': 'REF_HL15',
                    'S1-noUC': 'LOW_NOUC', 'S3-10-noUC': 'REF_NOUC', 'S2-noUC': 'HIGH_NOUC'}
-FROZEN = 'Frozen technology (2025 carbon factors held; check run)'
 
 # nine rule-based levers grouped by the PAS 2080:2023 carbon reduction hierarchy (BSI 2023, Clause 4.3,
 # Fig. 5: Avoid - Switch - Improve). Avoid = levers that reduce the floor area needed to house the population, system
@@ -364,6 +363,17 @@ _ID_RULES = [
     (r'^central_pct$', 'reference_percentile'),
 ]
 
+
+
+def month_year(iso, missing=None):
+    """'2026-09-01' -> 'September 2026' (the one month formatter of the figures and reports). A missing date returns
+    `missing` when given, else stops."""
+    import calendar
+    if not iso:
+        if missing is None:
+            raise SystemExit('naming.month_year: no date.')
+        return missing
+    return f'{calendar.month_name[int(str(iso)[5:7])]} {str(iso)[:4]}'
 
 def identifier(name):
     """Release name of a v3.1 column name or JSON key (generic rules)."""

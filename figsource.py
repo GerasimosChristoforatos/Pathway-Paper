@@ -69,7 +69,7 @@ def from_jsonable(o):
 
 
 def path(fid):
-    return layout.data(f'{DIR}/{fid}.json', frozen=False)
+    return layout.data(f'{DIR}/{fid}.json')
 
 
 def write(fid, **data):

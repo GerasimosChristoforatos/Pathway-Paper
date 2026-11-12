@@ -9,12 +9,12 @@ import layout
 
 def csv(rel, **kw):
     """outputs/data/<rel> as a DataFrame."""
-    return pd.read_csv(layout.data(rel, frozen=False), **kw)
+    return pd.read_csv(layout.data(rel), **kw)
 
 
 def js(rel):
     """outputs/data/<rel> (JSON)."""
-    with open(layout.data(rel, frozen=False)) as f:
+    with open(layout.data(rel)) as f:
         return json.load(f)
 
 

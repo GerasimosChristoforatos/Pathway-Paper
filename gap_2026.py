@@ -6,10 +6,10 @@ EVIDENCE ONLY. Nothing here sets or tunes a model parameter.
 Unit: dwellings COMPLETED in calendar 2026, all categories (in scope +
 retirement villages), the model's own unit.
 
-  Observed-implied  O = c x [(1 - W) C26 + W C25]
-      C25 = all dwellings consented in 2025 (observed); C26 = 2026 consents,
-      estimated two ways: Jan-Jul 2026 / the 2010-2025 seasonal share of those
-      months, and the latest 12 months. c, W = the model's completion rate and lag.
+  Observed-implied  O = c x C26
+      C26 = the consents completed in 2026: with the completion lag L (adopted 17 months) the consents lagged L
+      months, all observed; at L = 0 the calendar-2026 estimate (observed months / their seasonal share, and the
+      latest 12 months). c = the model's completion rate.
   Model             M = the 2026 requirement of the model WITHOUT observed 2026
                     inputs (validation.NO_2026_DATA: no consents nowcast, projected
                     population; the pre-A1 model), Low replacement (long-run rate).
@@ -24,9 +24,8 @@ Sequential decomposition of O - M (the order is a choice and is stated):
         ended June and is applied by the model to calendar years (half-year
         offset; see projection.NOWCAST_POPULATION, POPULATION CONVENTION).
   With M' = M + (ii) + (iii):
-  (i)   pipeline: W x (c C25 - M'), completions in 2026 from 2025 consents
-        above the requirement;
-  (iv)  residual: (1 - W) x (c C26 - M'), completions from 2026 consents above
+  (i)   pipeline: O - M' with the lag (the 2026 completions are all observed); 0 at L = 0;
+  (iv)  residual: c C26 - M' at L = 0 (0 with the lag), completions from 2026 consents above
         the requirement, expressed as the rise in vacancy, or fall in household
         size, it would imply if built and not offset.
 Also reported: where the 2018-23 excess building went, from census counts.
@@ -77,7 +76,7 @@ def projected_growth_ye_june_2026():
 
 def boom_2018_2023(B):
     """Where 2018-23 completions went (census counts, private dwellings).
-    Completions are lagged W behind consents, so dwellings under construction
+    Completions are lagged behind consents, so dwellings under construction
     at each census are already outside them: net removals = completions -
     change in stock. The change in dwellings under construction is reported
     for information only; subtracting it as well would count the pipeline twice."""
@@ -96,7 +95,7 @@ def boom_2018_2023(B):
 
 def main():
     B = run(REPLACEMENT_VARIANT='LOW')              # the decomposition is stated on Low and High replacement
-    c, W = projection.COMPLETION_RATE, B['lag_w']
+    c = projection.COMPLETION_RATE
     C25 = float(B['hist_units_all'].loc[2025])
     lag = int(B.get('lag_months', 0) or 0)
     if lag > 0:
@@ -132,22 +131,22 @@ def main():
 
     rows = []
     for lab, C in C26.items():
-        O = c * C if lag > 0 else c * ((1 - W) * C + W * C25)
+        O = c * C
         for scen, add_S2 in ((f"{N.SCENARIOS['LOW']} (long-run rate)", 0.0),
                              (f"{N.SCENARIOS['REF']} (2018-2023 rate fading, half-life 10 yr)", d_S3),
                              (f"{N.SCENARIOS['HIGH']} (2018-2023 rate persists)", d_S2)):
             Mp = M + add_S2 + d_pop
-            pipe = (O - Mp) if lag > 0 else W * (c * C25 - Mp)
-            resid = 0.0 if lag > 0 else (1 - W) * (c * C - Mp)
+            pipe = (O - Mp) if lag > 0 else 0.0
+            resid = 0.0 if lag > 0 else c * C - Mp
             rows.append(dict(C26_estimate=lab, C26=C, scenario=scen, observed_implied=O, model=M,
                              scenario_adds=add_S2, population=d_pop, pipeline=pipe, residual=resid,
                              gap=O - M, check=O - M - (add_S2 + d_pop + pipe + resid),
                              residual_vacancy_pp=100 * resid / stock25,
                              residual_S_fall=S26 - S26 * float(E['hh'][1]) / (float(E['hh'][1]) + resid * (1 - v26))))
     boom = boom_2018_2023(B)
-    res = dict(completion_rate=c, lag_w=W, completion_lag_months=lag,
+    res = dict(completion_rate=c, completion_lag_months=lag,
                completion_period_2026=('Jan-Dec 2026; consents Aug 2024-Jul 2025 shifted 17 months' if lag > 0
-                                       else 'calendar 2026 consent estimate with lag W'),
+                                       else 'calendar 2026 consent estimate'),
                population_period_2026='year ended June 2026 (June-quarter mean ERP, 12 months)',
                model_requirement_2026_basis='unjoined engine.market_excess R26, before observed pipeline',
                consents_2025=C25, model_requirement_2026=M,
@@ -162,7 +161,7 @@ def main():
     L = ['# 2026 gap decomposition (A1 evidence; nothing here is used to set a parameter)', '',
          f"Dwellings completed in 2026, all categories. Completion rate {c:.3f}, "
          + (f"completion lag {lag} months (2026 completions = consents lagged {lag} months, all observed; "
-            f"(i) is O - M' and (iv) is zero); " if lag > 0 else f"lag W = {W:.3f} yr; ") +
+            f"(i) is O - M' and (iv) is zero); " if lag > 0 else "no completion lag; ") +
          f"2025 consents {C25:,.0f}; model 2026 requirement {M:,.0f} (pre-pipeline; High replacement: {M_S2:,.0f}). The requirement "
          f"already includes {dev_in_M:+,.0f} of the carried 2025 deviation (other_dev_2025 x rho). "
          f"High replacement adds {d_S2:+,.0f}: {s2_rate:+,.0f} from the higher replacement rate and {s2_dev:+,.0f} because "

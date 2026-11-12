@@ -18,16 +18,16 @@ import layout  # noqa: E402
 STORYLINE = re.compile(r'storyline|S2-held|S3-10-trend|damped mix trend|intensification continues|horup_material|'
                        r'horup_class|mix effect only|compare-modes|DECARB_MODES|decarb_modes', re.I)
 # every pathway and v3 output must exist after a run
-PATHWAYS_OUTPUTS = [layout.data(f'pathways/{f}', frozen=False) for f in (
+PATHWAYS_OUTPUTS = [layout.data(f'pathways/{f}') for f in (
     'runs.csv', 'annual.csv', 'bands.csv', 'bands_annual.csv', 'shapley.csv', 'shapley_subsets.csv', 'backcast.json',
     'solution_space.csv', 'levers.json', 'theoretical_limit.json', 'lambda_sweep.csv', 'waterfall.csv', 'waterfall_tl_from_reference.csv',
     'lever_annual.csv', 'reoccupation_log.csv', 'ordering_checks.json', 'montecarlo_draws.csv',
     'montecarlo_summary.csv', 'montecarlo_annual.csv', 'montecarlo_draw_rules.json', 'montecarlo_importance.csv',
     'montecarlo_fits.csv', 'montecarlo_conditional_tl.csv', 'montecarlo_conditional_tl.json')] + [
-    layout.data(f'sensitivity/{f}.csv', frozen=False) for f in (
+    layout.data(f'sensitivity/{f}.csv') for f in (
         'reference_carbon', 'pathway_carbon', 'planetary_boundary', 'replacement_variants', 'tornado')] + [
-    layout.data('baseline/overbuild_absorption_log.csv', frozen=False)] + [
-    layout.report(f, frozen=False) for f in ('METHODS_DRAFT.md', 'LEVERS_TABLE.md')]
+    layout.data('baseline/overbuild_absorption_log.csv')] + [
+    layout.report(f) for f in ('METHODS_DRAFT.md', 'LEVERS_TABLE.md')]
 
 
 def generated_files():

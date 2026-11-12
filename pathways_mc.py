@@ -8,8 +8,9 @@ engine inputs) and then through the pathway layer (pathways.run, the same functi
 the Moderate Pathway, the Ambitious Pathway, TL and the instant TL (sensitivity; summary only).
 
   * every lever level is applied to the draw's own inputs as in the deterministic runs: the ratios (L5 design
-    density, L8 material carbon) to the draw's own OLF, dwelling sizes and A1-A3; L1 adds the published Stats NZ
-    High - Medium gap to the draw's own household size; L2 moves the vacancy parameter to the same Ambitious
+    density, L8 material carbon) to the draw's own OLF, dwelling sizes and A1-A3; L1 moves the draw's own household
+    size (propensity A at the draw's z) towards the draw's own propensity-B path (Low / Medium / High B at the same z);
+    L2 moves the vacancy parameter to the same Ambitious
     value; the overbuild excess is the draw's own Reference excess (MonteCarlo.project), held fixed in the draw's
     lever runs and absorbed on the Reference weights;
   * TL1 (the historical maximum household size) is taken as max(2.7905, the draw's Ambitious path) so that TL1 is
@@ -62,7 +63,8 @@ CENTRAL_TOL = 1e-9
 MP, AP = 'pathway_moderate', 'pathway_ambitious'  # the Moderate / Ambitious Pathway (P5, P5A)
 RUNS = ('REF', MP, 'TL')                          # the insight analyses
 INSTANT = 'TL_from2027'                          # the instant TL sensitivity (summary and annual percentiles only)
-SUMMARY_RUNS = ('REF', MP, AP, 'TL', INSTANT)
+TLAS = 'TL_TL1_age_standardised'                 # TL with the age-standardised TL1 (pathways.TL_AGE_STANDARDISED)
+SUMMARY_RUNS = ('REF', MP, AP, 'TL', INSTANT, TLAS)
 # committed after 2050 per Reference draw: pathways.committed keys -> draw-file columns (REF_<column>)
 COMMITTED_COLUMNS = {'lower_kt': 'committed_lower_kt', 'upper_kt': 'committed_upper_kt',
                      'B_lower_kt': 'committed_b2b4_lower_kt', 'B_upper_kt': 'committed_b2b4_upper_kt',
@@ -102,12 +104,12 @@ def write_carbon_factors(su, a13):
     technology), from the saved draws' carbon-factor parameter and the saved setup's bootstrap replicates
     (MonteCarlo.carbon_bootstrap, same seed and indices; nothing is resampled). Writes
     outputs/data/montecarlo/carbon_factors_REF.csv."""
-    draws = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))
+    draws = pd.read_csv(layout.montecarlo('draws', 'REF'))
     u = draws[N.identifier('carbon')].to_numpy(float)
     kc = np.minimum((u * MC.N_BOOT).astype(int), MC.N_BOOT - 1)
     rows = [dict(draw=int(j), typology=t, a1a3_kg_per_m2=float(a13[kc[j], i]))
             for j in range(len(draws)) for i, t in enumerate(su['typ'])]
-    pd.DataFrame(rows).to_csv(layout.writing(layout.data('montecarlo/carbon_factors_REF.csv', frozen=False)), index=False)
+    pd.DataFrame(rows).to_csv(layout.writing(layout.data('montecarlo/carbon_factors_REF.csv')), index=False)
 
 
 def draw_context(ctx, su, d, a13, red13, a45):
@@ -129,11 +131,37 @@ def draw_context(ctx, su, d, a13, red13, a45):
     return c
 
 
-def runs_for_draw(ctx_d, params):
+def draw_params(params, ctx_d, d):
+    """The lever parameters of one draw: L1's gap to the draw's own propensity-B household-size path (S_B - S at the
+    draw's z); every other lever as resolved."""
+    S = np.asarray(ctx_d['pop'], float) / np.asarray(ctx_d['hh'], float)
+    gap = np.maximum(np.asarray(d['S_B'], float) - S, 0.0)
+    years = [int(y) for y in ctx_d['years']]
+    L1 = dict(params['L1'], gap={y: float(g) for y, g in zip(years, gap)})
+    return dict(params, L1=L1), gap
+
+
+def tl_age_level(ctx_d, z, ratios):
+    """The age-standardised TL1 household-size path of a draw: its own S x the ratio of the lower-headship path to the
+    2023-rate path (household_headship.py) of its population variant, linear in z between Low / Medium / High."""
+    S = np.asarray(ctx_d['pop'], float) / np.asarray(ctx_d['hh'], float)
+    return S * MC.interp_z(z, np.array(list(MC.VARIANT_Z.values())), ratios)
+
+
+def runs_for_draw(ctx_d, params, tl_level=None):
     TL = LV.tl_levels(LV.TL_COMPONENTS)
-    return {MP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'moderate')),
-            AP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'ambitious')),
-            'TL': PW.run(ctx_d, params, TL), INSTANT: PW.run(ctx_d, params, TL, LV.TL_FROM2027)}
+    out = {MP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'moderate')),
+           AP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'ambitious')),
+           'TL': PW.run(ctx_d, params, TL), INSTANT: PW.run(ctx_d, params, TL, LV.TL_FROM2027)}
+    if tl_level is not None:
+        out[TLAS] = PW.run(ctx_d, PW.tl1_age_standardised_params(params, ctx_d['years'], tl_level), TL)
+    return out
+
+
+def headship_ratios(years):
+    """The lower-headship / 2023-rate ratio paths of the Low, Medium and High variants (MC.VARIANT_Z order)."""
+    import household_headship as HH
+    return np.array([HH.ratio_path(years, v) for v in MC.VARIANT_Z])
 
 
 def deterministic():
@@ -141,14 +169,16 @@ def deterministic():
     B = PW.boss_state(PW.REFERENCE)
     ctx = PW.base_context(B, PW.REFERENCE, PW.boundaries())
     params = PW.resolve_params(B)
-    return ctx, params, {k: R['E'] for k, R in runs_for_draw(ctx, params).items()}
+    lvl = PW.tl1_age_standardised_level(params, ctx['years'])
+    return ctx, params, {k: R['E'] for k, R in runs_for_draw(ctx, params, lvl).items()}
 
 
 def check_central(su, ctx, params, det):
     """STOP unless the central draw reproduces the deterministic Moderate / Ambitious Pathway, TL and instant TL runs to 1e-9."""
     o = MC.project(su, MC.central(su), full=True)
     cd = draw_context(ctx, su, o['draw'], None, None, None)
-    runs = runs_for_draw(cd, params)
+    runs = runs_for_draw(cd, draw_params(params, cd, o['draw'])[0],
+                         tl_age_level(cd, 0.0, headship_ratios(np.asarray(ctx['years']))))
     worst = {}
     for name, R in runs.items():
         a, b = R['E'], det[name]
@@ -376,21 +406,22 @@ def main():
     if list(su['typ']) != list(ctx['typ']) or list(su['fy']) != [int(y) for y in ctx['years']]:
         raise SystemExit('pathways_mc: the Monte Carlo typologies / years differ from the pathway context.')
     com_c = PW.committed(ctx, gfa_c)
-    with open(layout.data('baseline/projection.json', frozen=False)) as f:
+    with open(layout.data('baseline/projection.json')) as f:
         com_det = __import__('json').load(f)['committed']
     w_com = max(abs(com_c[k] / com_det[k] - 1.0) for k in COMMITTED_COLUMNS)
     print(f'[check] committed after 2050, central draw vs baseline/projection.json: max relative difference '
           f'{w_com:.1e} ({"OK" if w_com < CENTRAL_TOL else "FAIL"})')
     if w_com >= CENTRAL_TOL:
         raise SystemExit(f'STOP: the central draw does not reproduce the committed emissions: {com_c} vs {com_det}.')
-    draws = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))
+    draws = pd.read_csv(layout.montecarlo('draws', 'REF'))
     X = draws[[N.identifier(c) for c in MC.PARAMS]].to_numpy(float)
-    budgets = pd.read_csv(layout.data('aesa/montecarlo_draw_budgets.csv', frozen=False))
+    budgets = pd.read_csv(layout.data('aesa/montecarlo_draw_budgets.csv'))
     if len(budgets) != len(draws):
         raise SystemExit('pathways_mc: the AESA draw budgets do not match the saved draws (re-run boundaries.py).')
     years = np.asarray(ctx['years'])
     late = years >= LV.OBSERVED_YEAR + 1
-    gap = np.array([LV.by_year(params['L1']['gap'], int(y)) for y in years])
+    ratios = headship_ratios(years)
+    iz = MC.PARAMS.index('z_pop')
     n = len(draws)
     annual = {r: np.empty((n, len(years))) for r in SUMMARY_RUNS}
     rows, stops = [], []
@@ -398,7 +429,8 @@ def main():
         o = MC.project(su, dict(zip(MC.PARAMS, X[j])), full=True)
         com = PW.committed(ctx, np.asarray(o['gfa_t'], float))      # central repair / end-of-life factors
         cd = draw_context(ctx, su, o['draw'], a13, red13, a45)
-        runs = runs_for_draw(cd, params)
+        params_d, gap = draw_params(params, cd, o['draw'])
+        runs = runs_for_draw(cd, params_d, tl_age_level(cd, X[j, iz], ratios))
         S_d = np.asarray(cd['pop'], float) / np.asarray(cd['hh'], float)
         b = budgets.iloc[j]
         c_ref = float(o['carbon'][WINDOW].sum()) / M6
@@ -467,13 +499,13 @@ def main():
                  overbuild_cap_binds_draws_moderate_pathway=int((df['overbuild_cap_binding_years'] > 0).sum()),
                  tl_le_pathway_every_draw=True, reoccupation=reoccupation_counts(df))
     import json
-    with open(layout.writing(layout.data('pathways/montecarlo_draw_rules.json', frozen=False)), 'w') as f:
+    with open(layout.writing(layout.data('pathways/montecarlo_draw_rules.json')), 'w') as f:
         json.dump(rules, f, indent=1)
-    N.columns(df).to_csv(layout.writing(layout.data('pathways/montecarlo_draws.csv', frozen=False)), index=False)
+    N.columns(df).to_csv(layout.writing(layout.data('pathways/montecarlo_draws.csv')), index=False)
     summary = pd.DataFrame(summ)
     summary['central_draw_max_rel_diff'] = max(central.values())
-    N.columns(summary).to_csv(layout.writing(layout.data('pathways/montecarlo_summary.csv', frozen=False)), index=False)
-    N.columns(pd.DataFrame(ann)).to_csv(layout.writing(layout.data('pathways/montecarlo_annual.csv', frozen=False)),
+    N.columns(summary).to_csv(layout.writing(layout.data('pathways/montecarlo_summary.csv')), index=False)
+    N.columns(pd.DataFrame(ann)).to_csv(layout.writing(layout.data('pathways/montecarlo_annual.csv')),
                                         index=False)
     print(summary[['run', 'quantity', 'p5', 'p50', 'p95', 'probability_LoE_at_most_1']].to_string(index=False))
     print(rules)
@@ -485,12 +517,12 @@ def run_insights():
     """The insight analyses from the saved per-draw file (also: python pathways_mc.py --insights)."""
     import json
     t1 = time.time()
-    df = pd.read_csv(layout.data('pathways/montecarlo_draws.csv', frozen=False))
+    df = pd.read_csv(layout.data('pathways/montecarlo_draws.csv'))
     imp, fits, cond, cond_summary = insights(df)
-    imp.to_csv(layout.writing(layout.data('pathways/montecarlo_importance.csv', frozen=False)), index=False)
-    fits.to_csv(layout.writing(layout.data('pathways/montecarlo_fits.csv', frozen=False)), index=False)
-    cond.to_csv(layout.writing(layout.data('pathways/montecarlo_conditional_tl.csv', frozen=False)), index=False)
-    with open(layout.writing(layout.data('pathways/montecarlo_conditional_tl.json', frozen=False)), 'w') as f:
+    imp.to_csv(layout.writing(layout.data('pathways/montecarlo_importance.csv')), index=False)
+    fits.to_csv(layout.writing(layout.data('pathways/montecarlo_fits.csv')), index=False)
+    cond.to_csv(layout.writing(layout.data('pathways/montecarlo_conditional_tl.csv')), index=False)
+    with open(layout.writing(layout.data('pathways/montecarlo_conditional_tl.json')), 'w') as f:
         json.dump(cond_summary, f, indent=1)
     print(imp[imp['output'] == 'LoE_AR'][['run', 'input', 'src', 'src_r2', 'prcc', 'prcc_lo', 'prcc_hi']].to_string(index=False))
     print(cond.reindex(columns=['model', 'term', 'odds_ratio_per_sd', 'or_lo', 'or_hi', 'mle_exists',

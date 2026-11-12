@@ -9,9 +9,9 @@ import pandas as pd
 
 def test_committed_per_draw_identities_and_central():
     import layout
-    d = pd.read_csv(layout.data('pathways/montecarlo_draws.csv', frozen=False))
-    s = pd.read_csv(layout.data('pathways/montecarlo_summary.csv', frozen=False))
-    with open(layout.data('baseline/projection.json', frozen=False)) as f:
+    d = pd.read_csv(layout.data('pathways/montecarlo_draws.csv'))
+    s = pd.read_csv(layout.data('pathways/montecarlo_summary.csv'))
+    with open(layout.data('baseline/projection.json')) as f:
         com = json.load(f)['committed']
     lo, up = d['REF_committed_lower_kt'], d['REF_committed_upper_kt']
     np.testing.assert_allclose(lo, d['REF_committed_b2b4_lower_kt'] + d['REF_committed_c1c4_kt'], rtol=1e-12)

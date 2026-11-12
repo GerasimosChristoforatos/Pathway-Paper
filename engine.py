@@ -135,7 +135,7 @@ def window_rate(cal, start, end):
 CENSUS_DAY_OF_YEAR = 64          # census nights fell on 4-7 March, 1986-2023; 5 March used
 
 
-def census_interval_rates(stock, consents, completion, lag_w, day_of_year=CENSUS_DAY_OF_YEAR, uc=None):
+def census_interval_rates(stock, consents, completion, lag, day_of_year=CENSUS_DAY_OF_YEAR, uc=None):
     """Net replacement from census DWELLING counts, per intercensal interval
     (no household data, no empty/away split):
 
@@ -144,13 +144,13 @@ def census_interval_rates(stock, consents, completion, lag_w, day_of_year=CENSUS
     stock    : census private dwellings (occupied + unoccupied), by census year
     consents : monthly consents, all categories (index = first of month)
     Dwellings completed in (census_0, census_1] = completion x consents whose
-    mid-month falls in (census_0 - W, census_1 - W]: the same two-point lag as
-    the model's completions series, in continuous time. Intervals without full
+    mid-month falls in (census_0 - lag, census_1 - lag], lag the completion lag in years (the model's
+    COMPLETION_LAG_MONTHS / 12), in continuous time. Intervals without full
     consent coverage are skipped.
     uc : census dwellings under construction (private), by census year. When
     given, dwellings completed = completion x consents - change in UC: the census
     stock excludes dwellings under construction, so consents still in progress
-    at census night are not yet built. Use only with lag_w = 0 (a lag already
+    at census night are not yet built. Use only with lag = 0 (a lag already
     removes the pipeline). Intervals with a missing UC count are not corrected
     (uc_corrected = False)."""
     years = sorted(int(y) for y in stock.index)
@@ -159,7 +159,7 @@ def census_interval_rates(stock, consents, completion, lag_w, day_of_year=CENSUS
     tm = idx.year + (idx.dayofyear - 1 + idx.days_in_month / 2.0) / 365.25
     rows = []
     for y0, y1 in zip(years[:-1], years[1:]):
-        lo, hi = t[y0] - lag_w, t[y1] - lag_w
+        lo, hi = t[y0] - lag, t[y1] - lag
         if tm.min() > lo:
             continue
         m = (tm > lo) & (tm <= hi)

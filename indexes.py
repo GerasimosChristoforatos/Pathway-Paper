@@ -128,14 +128,12 @@ FILES = [
     # data: factors, metrics, frozen technology
     ('data/factors/factors_*.csv', 'Case-study carbon factors (materials, buildings, typologies, events, '
      'decarbonisation)', 'Building_factors.py'),
-    ('data/metrics.json', 'The headline metrics of the run and the run mode', 'tools/metrics.py'),
-    (f'data/{L.FROZEN}/*', 'The frozen-technology check run (2025 factors held): the same files as above',
-     'run_all.py (frozen_* steps)'),
+    ('data/metrics.json', 'The headline metrics of the run', 'tools/metrics.py'),
     # reports
     ('reports/RESULTS.md', 'Results summary', 'tools/results.py'),
     ('reports/ASSUMPTIONS.md', 'Every assumption and setting with its source', 'tools/assumptions.py'),
     ('reports/METHODS_DRAFT.md', 'Methods draft in three parts: baseline projection, planetary-boundary layer '
-     '(AESA), pathways and the theoretical limit', 'tools/methods_draft.py'),
+     '(AESA), pathways and the theoretical limit', 'tools/methods.py'),
     ('reports/LEVERS_TABLE.md', 'The pathway levers, their settings and sources', 'tools/pathways_methods.py'),
     ('reports/validation.md', 'Validation report', 'validation.py'),
     ('reports/gap_2026.md', 'The 2026 gap', 'gap_2026.py'),
@@ -145,8 +143,6 @@ FILES = [
     ('reports/reality_checks.md', 'Reality checks: the projection against the 1991-2025 range',
      'tools/figures_report.py'),
     ('reports/reconciliation.md', 'Reconciliation of the totals', 'tools/reconciliation.py'),
-    (f'reports/{L.FROZEN}_*.md', 'Report of the frozen-technology check run (2025 factors held)',
-     'run_all.py (frozen_* steps)'),
     # audit and the index itself
     ('diagnostics/_audit/*.json', 'Audit record of a figure (paper, Extended Data and diagnostics): axes, year ranges, '
      'texts, note, drawing script, whether maintenance and the boundary styling are drawn (figaudit.py; read by the '

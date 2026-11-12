@@ -1,6 +1,6 @@
 {
  "figure": "ED9_rollout_timing",
- "producer": "../../../tmp/claude-0/venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Moderate Pathway",
@@ -64,7 +64,7 @@
   "b",
   "c"
  ],
- "note": "(c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 17,289, Moderate Pathway 17,971, Moderate Pathway, full roll-out by 2045 (sensitivity) 19,410, Ambitious Pathway, full roll-out by 2030 (sensitivity) 11,434, Ambitious Pathway 12,542, Ambitious Pathway, full roll-out by 2045 (sensitivity) 14,937; Reference 25,503.",
+ "note": "(c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 16,594, Moderate Pathway 17,236, Moderate Pathway, full roll-out by 2045 (sensitivity) 18,569, Ambitious Pathway, full roll-out by 2030 (sensitivity) 10,456, Ambitious Pathway 11,459, Ambitious Pathway, full roll-out by 2045 (sensitivity) 13,634; Reference 25,503.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,

@@ -56,9 +56,8 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
   CENTRING: the deterministic projection run uses the MEDIAN of every sampled input.
   Inputs are independent. Seeds are fixed, so runs are reproducible.
 NOT SAMPLED (held at the projection value in every draw)
-  net replacement level: the MC is run separately within each projection variant of
-    MC_SCENARIOS (the Reference; Low, High and Very High replacement); within the Reference the
-    half-life is sampled (above). Variant differences are reported separately (Sensitivity.py).
+  net replacement level: the Monte Carlo runs the Reference only (its half-life is sampled, above);
+    the replacement variants are reported deterministically (ED3, Sensitivity.py).
   typology mix, the census rebase of households, the pre-2013 empty share,
     future vacancy and the retirement-village share: their total Sobol indices
     were about 0 in a full-input run, so they are fixed.
@@ -151,6 +150,12 @@ def build_setup(settings=None):
         projection.household_size(*projection.statsnz_size_shape(v, fy, tail=projection.S_TAIL)[1:], B['hist_S'], B['hist_pop'],
                             fy, 0.0, anchor_year=projection.S_ANCHOR_YEAR)['S_matched']
         for v in VARIANT_Z])
+    # the propensity-B paths of the same variants (L1 Ambitious of the pathway Monte Carlo: the draw's own B path at
+    # the draw's z; levers.L1_AMBITIOUS_VARIANT)
+    su['S_variants_B'] = np.array([
+        projection.household_size(*projection.statsnz_size_shape(v, fy, tail=projection.S_TAIL, propensity='B')[1:],
+                                  B['hist_S'], B['hist_pop'], fy, 0.0, anchor_year=projection.S_ANCHOR_YEAR)['S_matched']
+        for v in VARIANT_Z])
 
     # ---- typology mix (fixed in every draw): projection's held mix, 2026 the observed mix ----
     su['shares'] = B['evolving_gfa_shares'].copy()
@@ -163,13 +168,13 @@ def build_setup(settings=None):
               completion=projection.COMPLETION_RATE, olf=dict(B['OLF_USED']), rv_share=float(B['rv_share']),
               nr_window=tuple(projection.NET_REPLACEMENT_WINDOW),
               census_stock=B['census']['total_private'], consents_monthly=B['consents_monthly'],
-              lag_w=B['lag_w'], lag_census=B['lag_census'], census_uc=B['census_uc'],
+              lag_census=B['lag_census'], census_uc=B['census_uc'],
               # the observed (pipeline) years' consents (all categories), timed as completions
               pipeline_consents=([B['pipe']['consents_all'][y] for y in B['pipe']['years']] if B['pipe'] else None),
               # replacement scenario and near-term market excess, as in the projection run
               scenario=B['_scenario'], s3_half_life=projection.REPLACEMENT_HALF_LIFE,
               recent=tuple(projection.RECENT_INTERVAL), join_mode=B['_join_mode'],
-              nowcast=B['nowcast'], units_all_raw=B['hist_units_all'],
+              nowcast=B['nowcast'],
               near_gap_ref=projection.OVERBUILD_GAP_REF, near_mode=projection.OVERBUILD_BOOKING,
               near_absorption=projection.OVERBUILD_ABSORPTION,
               # logistic absorption of the overbuild (None: never absorbed, the legacy Reference)
@@ -304,13 +309,10 @@ def carbon_bootstrap(bf, typ, red=None, extras=None):
 # ============================================================
 PARAMS = ['z_pop', 'size', 'complete', 'carbon', 'half_life']
 HALF_LIFE_RANGE = (5.0, 15.0)    # replacement half-life ~ U(5, 15) yr (Reference variant)
-# The net replacement level is NOT sampled: the MC runs separately within each projection variant
-# (MC_SCENARIOS, naming.SCENARIOS); within the Reference the half-life is sampled. The first entry is the
-# Reference (its files carry the Sobol indices and figures).
-MC_SCENARIOS = [('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0)),
-                ('LOW', dict(REPLACEMENT_VARIANT='LOW')),
-                ('HIGH', dict(REPLACEMENT_VARIANT='HIGH')),
-                ('VHIGH', dict(REPLACEMENT_VARIANT='VHIGH'))]
+# The net replacement level is NOT sampled: the Monte Carlo runs the Reference only (its half-life is sampled);
+# replacement-level uncertainty is reported by the variants of ED3 and the one-at-a-time rows (MODEL v4.7.0: the
+# separate Low / High / Very High Monte Carlo runs were dropped).
+MC_SCENARIOS = [('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0))]
 
 
 def central(su):
@@ -398,8 +400,7 @@ def project(su, p, full=False):
     E_nojoin, join, ji = E, None, None
     if su['join_mode'] == 'market_excess':
         b26 = (c * np.asarray(su['pipeline_consents'], float) if su['pipeline_consents'] is not None else
-               c * ((1.0 - su['lag_w']) * float(su['nowcast']['total'])
-                    + su['lag_w'] * float(su['units_all_raw'].loc[2025])))
+               c * float(su['nowcast']['total']))
         join, ji = engine.market_excess(E, b26, dv['rho'], su['near_gap_ref'], su['near_mode'],
                                         su['near_absorption'], absorb_w=su['near_absorb_w'], start_surplus=s0)
         E = fwd(join, ji['redev'], s0)
@@ -414,7 +415,8 @@ def project(su, p, full=False):
                             rv_share=su['rv_share'], shares=shares, size=size, olf=su['olf'], intensity=I,
                             intensity_upfront=U, soil={t: su['soc'][j] for j, t in enumerate(typ)},
                             gfa_fixed=su['gfa_fixed'], soil_on_replacement=su['soil_on_repl'], events=events),
-            E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']), start_surplus=float(s0))
+            E_nojoin=E_nojoin, E=E, join=join, join_info=ji, rho=float(dv['rho']), start_surplus=float(s0),
+            S_B=interp_z(p['z_pop'], np.array(list(VARIANT_Z.values())), su['S_variants_B']))
     return out
 
 
@@ -575,7 +577,7 @@ def main():
     for i, (name, settings) in enumerate(MC_SCENARIOS):
         run_scenario(name, settings, reference=(i == 0))
     importlib.reload(projection)                       # restore module defaults
-    print(f"\nWritten: summary_<variant>.csv, draws_<variant>.csv, annual_<variant>.csv, sobol_REF.csv in "
+    print(f"\nWritten: summary_REF.csv, draws_REF.csv, annual_REF.csv, sobol_REF.csv in "
           f"{os.path.dirname(layout.montecarlo('summary', 'REF'))}/  ({time.time() - t0:,.0f} s)")
 
 

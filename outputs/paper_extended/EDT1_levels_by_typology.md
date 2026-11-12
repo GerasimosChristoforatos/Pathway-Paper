@@ -2,9 +2,9 @@
 
 | Lever | Sub-rule | Typology | Parameter | Moderate | Ambitious | TL |
 |---|---|---|---|---|---|---|
-| L1 Household size | C | Detached | household size 2050 (all typologies) | 2.503 | 2.542 | 2.79 |
-| L1 Household size | C | Townhouses | household size 2050 (all typologies) | 2.503 | 2.542 | 2.79 |
-| L1 Household size | C | Apartments | household size 2050 (all typologies) | 2.503 | 2.542 | 2.79 |
+| L1 Household size | C | Detached | household size 2050 (all typologies) | 2.528 | 2.592 | 2.79 |
+| L1 Household size | C | Townhouses | household size 2050 (all typologies) | 2.528 | 2.592 | 2.79 |
+| L1 Household size | C | Apartments | household size 2050 (all typologies) | 2.528 | 2.592 | 2.79 |
 | L2 Vacancy rate | B | Detached | vacancy rate (all typologies) | 0.047 | 0.04013 | 0 |
 | L2 Vacancy rate | B | Townhouses | vacancy rate (all typologies) | 0.047 | 0.04013 | 0 |
 | L2 Vacancy rate | B | Apartments | vacancy rate (all typologies) | 0.047 | 0.04013 | 0 |

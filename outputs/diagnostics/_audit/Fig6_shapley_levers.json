@@ -1,6 +1,6 @@
 {
  "figure": "Fig6_shapley_levers",
- "producer": "../../../tmp/claude-0/venv/lib/python3.11/site-packages/pytest/__main__.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Each lever alone",
@@ -55,7 +55,7 @@
   "a",
   "b"
  ],
- "note": "(a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 512 subsets per game); the TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): moderate 7,531 kt, ambitious 12,961 kt, tl 21,424 kt.",
+ "note": "(a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 512 subsets per game); the TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): moderate 8,267 kt, ambitious 14,044 kt, tl 21,424 kt.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

@@ -18,10 +18,9 @@ projection.py.
 Inputs (outputs/data/): baseline/projection.json, metrics.json, baseline/scenarios.json,
 baseline/validation.json, baseline/gap_2026.json, baseline/overbuild_2026.json,
 baseline/reality_checks.json, baseline/reconciliation.json, baseline/sensitivity_one_at_a_time.csv,
-aesa/results.json, factors/factors_a13_item_coverage.csv, montecarlo/summary_<variant>.csv
+aesa/results.json, factors/factors_a13_item_coverage.csv, montecarlo/summary_REF.csv
 (LOW, REF, HIGH; when present).
 """
-import calendar
 import json
 import os
 import sys
@@ -34,19 +33,12 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import layout  # noqa: E402
 import naming as N  # noqa: E402
 
-SENSITIVITY = layout.data('baseline/sensitivity_one_at_a_time.csv', frozen=False)
-
-
-def _month_name(iso):
-    """'2026-09-01' -> 'September 2026' (the last observed consent month)."""
-    if not iso:
-        raise SystemExit('baseline_draft: the last observed consent month is missing from the outputs.')
-    return f'{calendar.month_name[int(str(iso)[5:7])]} {str(iso)[:4]}'
+SENSITIVITY = layout.data('baseline/sensitivity_one_at_a_time.csv')
 
 
 def load(name):
     """A JSON file of outputs/data/ (relative path), or None if it does not exist."""
-    p = layout.data(name, frozen=False)
+    p = layout.data(name)
     if not os.path.exists(p):
         return None
     with open(p) as f:
@@ -473,7 +465,7 @@ def data_freeze_lines():
     yq = q.iloc[-1]
     qmonth = {1: 'March', 2: 'June', 3: 'September', 4: 'December'}[int(yq.iloc[1])]
     return ['## Data freeze and scope', '',
-            f"Data freeze: building consents to {_month_name(c['Date'].max())} (Stats NZ BLD468601); population "
+            f"Data freeze: building consents to {N.month_year(c['Date'].max())} (Stats NZ BLD468601); population "
             f"estimates to the {qmonth} {int(yq.iloc[0])} quarter (Stats NZ estimated resident population); household "
             f"projections 2023-base (Stats NZ National family and household projections, released "
             f"{HH_PROJECTIONS_RELEASED}). Later releases are not used.", '',
@@ -498,8 +490,8 @@ def lines():
     L = [f"Every result below is read from the run outputs (outputs/data/; settings from projection.py). Adopted "
          f"run: {run}; 2026 overbuild rule `{st['overbuild_rule']}`.", '']
     if (m or {}).get('run_mode', 'full') != 'full':
-        L[0:0] = ['> **' + m['run_mode'] + '** (run_all.py --quick: fewer Monte Carlo draws, no frozen-technology '
-                  'Monte Carlo).', '']
+        L[0:0] = ['> **' + m['run_mode'] + '** (run_all.py --profile light: fewer Monte Carlo draws, '
+                  'no Sobol indices).', '']
 
     # ---- summary ----
     rows = sc['scenarios'] if sc else {}
@@ -526,7 +518,7 @@ def lines():
                 + (f", and {N.SCENARIOS['VHIGH']} (the weighted linear trend of the census-interval rates "
                    f"1991-2023 continues) {rows['VHIGH']['floor_area_Mm2']:.1f} million m²" if 'VHIGH' in rows else '')
                 + ".")
-    ref_mc = layout.montecarlo('summary', 'REF', frozen=False)
+    ref_mc = layout.montecarlo('summary', 'REF')
     if os.path.exists(ref_mc):
         r = pd.read_csv(ref_mc, index_col=0).loc['floor_area_Mm2']
         txt += (f" Within the Reference, joint uncertainty in the inputs gives a 90% interval of "
@@ -567,11 +559,13 @@ def lines():
             so = r.get('soil_carbon_loss_kt')
             sol = (f"{so:,.0f} | {r['carbon_kt'] - so:,.0f}") if so is not None else 'n/a | n/a'
             L.append(f"| {lab} | {r['floor_area_Mm2']:.2f} | {pct(r['floor_area_Mm2'], base)} | {r['carbon_kt']:,.0f} | {sol} | {up} |")
-    mcs = [layout.montecarlo('summary', k, frozen=False) for k in ('LOW', 'REF', 'HIGH', 'VHIGH')]
+    mcs = [layout.montecarlo('summary', 'REF')]
     mcs = [p for p in mcs if os.path.exists(p)]
     if mcs:
-        L += ['', 'Monte Carlo within each variant (joint input uncertainty; mean, median and 90% interval):', '',
-              '| variant | output | mean | median | 5th | 95th |', '|---|---|---|---|---|---|']
+        L += ['', 'Monte Carlo of the Reference (joint input uncertainty; mean, median and 90% interval). The '
+              'replacement variants are not run through the Monte Carlo: their uncertainty is the deterministic '
+              'variant table above (ED3) and the one-at-a-time rows.', '',
+              '| run | output | mean | median | 5th | 95th |', '|---|---|---|---|---|---|']
         for p in mcs:
             s = pd.read_csv(p, index_col=0)
             name = N.SCENARIOS[os.path.basename(p)[len('summary_'):-4]]
@@ -583,7 +577,7 @@ def lines():
                     L.append(f"| {name} | {lab} | {r.get('mean', float('nan')):,.1f} | {r['p50']:,.1f} | "
                              f"{r['p5']:,.1f} | {r['p95']:,.1f} |")
     else:
-        L += ['', '*Monte Carlo summaries not found (outputs/data/montecarlo/summary_<variant>.csv): run '
+        L += ['', '*Monte Carlo summary not found (outputs/data/montecarlo/summary_REF.csv): run '
               'run_all.py.*']
 
     # ---- decomposition ----
@@ -607,7 +601,7 @@ def lines():
                f"{nj['rho']:.2f} (the estimated persistence of departures from the calibrated identity). "
                if _py else
                f"2026 building is observed, not modelled: {nj['O26']:,.0f} dwellings = {nj.get('completion_rate', 0.95):.3f} "
-               f"x consents over the latest 12 observed months (the year to {_month_name(nj.get('consents_observed_to'))}; "
+               f"x consents over the latest 12 observed months (the year to {N.month_year(nj.get('consents_observed_to'))}; "
                f"to be replaced by calendar 2026 "
                f"when published). It exceeds the 2026 requirement by {nj['e26']:+,.0f}. From 2027 building stays above "
                f"the requirement by gap_ref x rho^(t-2026), with gap_ref = building 2026 - requirement 2027 = "
@@ -764,7 +758,7 @@ def lines():
                f"Reference requirement of {req3:,.0f} (gap {r3['observed_implied'] - req3:+,.0f})[^low], all of it "
                f"pipeline; {c['target_year']} pipeline building is {c.get('ratio_observed_to_model', float('nan')):.2f} "
                f"times what the Reference run without 2026 data implies. " if c.get('status') == 'pipeline' else
-               f"Consents for January-{_month_name(c.get('data_end'))} ({c['observed_ytd']:,.0f}) are {c['ratio_observed_to_model']:.2f} "
+               f"Consents for January-{N.month_year(c.get('data_end'))} ({c['observed_ytd']:,.0f}) are {c['ratio_observed_to_model']:.2f} "
               f"times what the Reference, run without any 2026 data, implies for those months. In "
               f"completions, observed-implied 2026 building is {r3['observed_implied']:,.0f} dwellings against a "
               f"Reference requirement of {req3:,.0f} (gap {r3['observed_implied'] - req3:+,.0f})[^low]. ")

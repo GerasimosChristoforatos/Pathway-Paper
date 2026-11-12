@@ -13,7 +13,7 @@ Earlier source (MODEL v4.0-v4.5, kept for provenance; read by extract()): Stats 
   Series_title_3 = 'New', Series_title_5 = 'Actual', Series_title_2 in the building types below, Series_title_4 in
   Number / Floor area / Value.
 
-Written to data/derived/consents_monthly.csv with the column names the model uses (consentdata.xlsx layout, plus the
+Written to data/derived/consents_monthly.csv with the column names the model uses (the layout of the workbook supplied before MODEL v4.0, plus the
 retirement-village columns): Dwellings = Dwelling units, New, Number; Detached = Houses; Townhouses = Townhouses,
 flats, units, and other dwellings; Apartments; RetirementVillage = Retirement village units; 'Consents - Consents'
 (and GFA, Value) = the sum of Detached, Townhouses and Apartments (the model scope).

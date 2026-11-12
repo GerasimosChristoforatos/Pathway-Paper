@@ -18,12 +18,12 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import layout  # noqa: E402
 
-OUT_MD = layout.report('ASSUMPTIONS.md', frozen=False)
+OUT_MD = layout.report('ASSUMPTIONS.md')
 
 
 # display and run-time switches: not model settings, and their value depends on how
 # the tool is launched (run_all.py sets PATHWAY_SAVE_FIGURES=1)
-RUNTIME_ONLY = ('SAVE_FIGURES', 'SHOW_PLOTS', 'FROZEN_RUN', 'QUICK_RUN')
+RUNTIME_ONLY = ('SAVE_FIGURES', 'SHOW_PLOTS')
 
 
 PATHWAYS_MARK = '## Pathways (levers.py, pathways.py)'
@@ -38,14 +38,14 @@ def pathways_section():
     levers.py. Empty when levers.json does not exist yet."""
     import json
     import levers as LV
-    lv_path = layout.data('pathways/levers.json', frozen=False)
+    lv_path = layout.data('pathways/levers.json')
     if not os.path.exists(lv_path):
         return []
     with open(lv_path) as f:
         lv = json.load(f)
     L = ['', PATHWAYS_MARK, '',
          'Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Table 1 of the paper: '
-         'docs/LEVERS_TABLE.md; methods as implemented: docs/METHODS_DRAFT.md (3. Pathways and the theoretical limit).',
+         'outputs/reports/LEVERS_TABLE.md; methods as implemented: outputs/reports/METHODS_DRAFT.md (3. Pathways and the theoretical limit).',
          '',
          '| setting | value | basis |', '|---|---|---|']
     for r in LV.lever_table(lv):

@@ -373,8 +373,8 @@ def seasonal_shares(consents):
 
 
 def _bridge_label():
-    """The household source after the last census (projection.HH_BRIDGE)."""
-    return 'erp_S' if projection.HH_BRIDGE == 'erp_S' else 'consents'
+    """The household source after the last census: ERP / the model's household-size path."""
+    return 'erp_S'
 
 
 def check_2026(B, consents=None, B_full=None):
@@ -406,10 +406,7 @@ def check_2026(B, consents=None, B_full=None):
     last = s.index.max()
     E = B['engine_out']['50th']
     built_all_2026 = float(E['dwell_in_scope'][1] + E['rv_units'][1])
-    # completions_2026 = c x [(1 - W) consents_2026 + W consents_2025]  ->  consents_2026
-    W = B['lag_w']
-    cons_2025 = float(B['hist_units_all'].loc[2025])
-    model_consents_2026 = (built_all_2026 / projection.COMPLETION_RATE - W * cons_2025) / (1.0 - W)
+    model_consents_2026 = built_all_2026 / projection.COMPLETION_RATE      # completions_2026 = c x consents_2026
     out = dict(data_end=str(last.date()), model_built_all_2026=built_all_2026,
                model_consent_equivalent_2026=model_consents_2026)
     ytd = s.loc['2026-01-01':]

@@ -25,6 +25,7 @@ sys.path.insert(0, ROOT)
 from figures import style as S  # noqa: E402
 
 DOCS = os.path.join(ROOT, 'docs')
+PREVIEW_DPI = 100                 # docs/palette_preview.png: a reference image, not a print figure
 VISION = ('normal', 'deuteranomaly', 'protanomaly', 'tritanomaly')
 THRESHOLD = 10.0
 
@@ -182,11 +183,12 @@ def preview(G, path):
     fig.subplots_adjust(top=0.985, bottom=0.005, left=0.01, right=0.99)
     fig.suptitle('Release palette: normal vision, simulated colour-vision deficiency (full severity; '
                  'Machado et al. 2009) and greyscale', fontsize=S.FONT_SIZE)
-    S.save(fig, path)
+    import matplotlib.pyplot as plt
+    fig.savefig(path + '.png', dpi=PREVIEW_DPI, metadata={'Software': None})   # a small preview (< 500 KB)
+    plt.close(fig)
 
 
 def main():
-    import naming as N
     G = groups()
     os.makedirs(DOCS, exist_ok=True)
     preview(G, os.path.join(DOCS, 'palette_preview'))

@@ -35,22 +35,13 @@ New Zealand is projected to build 105.4 million m² of new residential floor are
 | High replacement | 110.90 | +5.2% | 26,562 | 3,994 | 22,568 | 26,111 |
 | Very High replacement (trend continues) | 116.67 | +10.7% | 27,658 | 3,994 | 23,664 | 27,198 |
 
-Monte Carlo within each variant (joint input uncertainty; mean, median and 90% interval):
+Monte Carlo of the Reference (joint input uncertainty; mean, median and 90% interval). The replacement variants are not run through the Monte Carlo: their uncertainty is the deterministic variant table above (ED3) and the one-at-a-time rows.
 
-| variant | output | mean | median | 5th | 95th |
+| run | output | mean | median | 5th | 95th |
 |---|---|---|---|---|---|
-| Low replacement | floor area (Mm²) | 101.8 | 101.3 | 84.7 | 120.4 |
-| Low replacement | carbon 2026–2050 (kt) | 24,775.5 | 24,654.1 | 20,392.4 | 29,610.6 |
-| Low replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 24,355.2 | 24,243.1 | 20,043.4 | 29,107.7 |
 | Reference | floor area (Mm²) | 106.0 | 105.4 | 88.5 | 124.9 |
 | Reference | carbon 2026–2050 (kt) | 25,642.5 | 25,521.0 | 21,196.9 | 30,568.7 |
 | Reference | materials and construction (A1–A5) + soil carbon loss (kt) | 25,201.2 | 25,083.2 | 20,830.0 | 30,045.6 |
-| High replacement | floor area (Mm²) | 111.6 | 111.1 | 93.8 | 131.0 |
-| High replacement | carbon 2026–2050 (kt) | 26,730.0 | 26,615.0 | 22,169.4 | 31,774.9 |
-| High replacement | materials and construction (A1–A5) + soil carbon loss (kt) | 26,275.4 | 26,167.7 | 21,800.9 | 31,219.9 |
-| Very High replacement (trend continues) | floor area (Mm²) | 117.4 | 116.9 | 99.1 | 137.2 |
-| Very High replacement (trend continues) | carbon 2026–2050 (kt) | 27,829.2 | 27,716.6 | 23,170.9 | 32,990.5 |
-| Very High replacement (trend continues) | materials and construction (A1–A5) + soil carbon loss (kt) | 27,365.5 | 27,249.9 | 22,787.2 | 32,451.8 |
 
 ### Why the floor area is built (Reference, median demographics)
 
@@ -480,9 +471,6 @@ Lower bound: maintenance events (B2, B4) after 2050 with the 2050 factors held; 
 | variant | cumulative LoE AR p5 / p50 / p95 (20-yr base) | adopted base |
 |---|---|---|
 | Reference | 5.97 / 6.89 / 7.90 | 5.00 / 5.77 / 6.62 |
-| Low replacement | 5.75 / 6.66 / 7.65 | 4.81 / 5.57 / 6.41 |
-| High replacement | 6.25 / 7.18 / 8.21 | 5.24 / 6.02 / 6.87 |
-| Very High replacement (trend continues) | 6.52 / 7.48 / 8.52 | 5.47 / 6.26 / 7.13 |
 
 ### Assumption register
 
@@ -529,7 +517,7 @@ Lower bound: maintenance events (B2, B4) after 2050 with the 2050 factors held; 
 
 ### The lever rule
 
-Ambition levels follow the 2050 Pathways Calculator (DECC 2010; DESNZ 2023) and EUCalc (D2.5, 2020): Reference = Level 1, Moderate = Level 2, Ambitious = Level 3, theoretical limit (TL) = Level 4. Ambitious is the best value already achieved, by the first applicable sub-rule: A, a case-study distribution exists: the Harrell-Davis q0.15 quantile of the pooled scale-free case ratios (the top-15% convention of the EU Taxonomy, Delegated Regulation 2021/2139, Annex I s. 7.7), with a percentile bootstrap interval; B, an NZ record with no structural trend exists: the best value ever observed in NZ; C, otherwise: a published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value). Moderate is the exact midpoint between the Reference and Ambitious in the lever's native parameter (per year for the path levers L1 and L9). TL is the definitional zero or full where one exists, else the best single observation, and is asserted at least as strong as Ambitious. Every level moves from the Reference along the normalised logistic 2026 -> 2035 (midpoint 2030.5, k = ln(81)/6).
+Ambition levels follow the 2050 Pathways Calculator (DECC 2010; DESNZ 2023) and EUCalc (D2.5, 2020): Reference = Level 1, Moderate = Level 2, Ambitious = Level 3, theoretical limit (TL) = Level 4. One rule for every lever (the 'rule' column): the Reference is current practice held (2023 / 2025 values; business-as-usual technology change applies in every run); Moderate is the midpoint of the Reference and Ambitious (exact for every lever); Ambitious is a documented frontier, achieved somewhere or projected by an authority, and cited; the theoretical limit is the logical bound where the lever has one (zero vacancy, zero space beyond the occupied area, no demolition, 100% brownfield, zero A4–A5), otherwise the best value observed (TL1 household size; the lowest-carbon NZ case study for materials). TL A4–A5 = 0 is a theoretical bound: construction waste cannot strictly reach zero, and LCAQuick does not split A4 from A5. Ambitious takes the first applicable sub-rule: A, a case-study distribution exists: the Harrell-Davis q0.15 quantile of the pooled scale-free case ratios (the top-15% convention of the EU Taxonomy, Delegated Regulation 2021/2139, Annex I s. 7.7), with a percentile bootstrap interval; B, an NZ record with no structural trend exists: the best value ever observed in NZ; C, otherwise: a published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value). Moderate is the exact midpoint between the Reference and Ambitious in the lever's native parameter (per year for the path levers L1 and L9). TL is the definitional zero or full where one exists, else the best single observation, and is asserted at least as strong as Ambitious. Every level moves from the Reference along the normalised logistic 2026 -> 2035 (midpoint 2030.5, k = ln(81)/6), with two documented exceptions: L9 Ambitious and Moderate follow their own path (linear from the 2026 Reference value to zero in 2050, which is the phase-in itself); TL1 rises at the fastest observed inter-census change of household size (the behavioural speed limit) and reaches its level after 2035.
 
 Levels between the Reference and Ambitious are indexed by lambda in [0, 1]: x(lambda) = x_ref + lambda (x_amb - x_ref), so Moderate is lambda = 0.5 exactly (tested for every lever); the lambda-sweep of each lever is in the Extended Data.
 
@@ -539,7 +527,7 @@ The nine levers are grouped by the carbon reduction hierarchy of PAS 2080:2023 (
 
 #### S1 Avoid Strategies
 
-**L1 Household size (sub-rule C).** S_Ambitious(t) = S_Ref(t) + [S_High(t) - S_Medium(t)], the gap between the Stats NZ High and Medium household-size variants (same living-arrangement assumption; projection runs rebased on the 2023 census), in every year: after 2048 each variant follows its own tail (end slope at 2048 = its 2043–2048 secant slope, continued linearly; the same rule as the Reference); High >= Medium in every year (asserted). 2050: Reference 2.4635, Moderate 2.5027, Ambitious 2.5420; TL1 S = 2.7905 (the 1991 maximum of the model history).
+**L1 Household size (sub-rule C).** S_Ambitious(t) = the Stats NZ propensity-B household size (Medium; living-arrangement propensities change, based on modelling of 2001–2023 Census data; Stats NZ DataInfo+, POPPR_FHH), rebased on the observed 2023 S exactly as the Reference propensity-A path, with the same post-2048 tail (end slope at 2048 = the 2043–2048 secant slope, continued linearly). Within one propensity the Stats NZ Low / Medium / High variants differ only through their population projections (age structure), so the earlier anchor (High - Medium) was not a behavioural change and is not used. In the pathway Monte Carlo each draw moves towards its own propensity-B path (Low / Medium / High B at the draw's population rank). B >= A in every year (asserted). The one-at-a-time row "Living arrangements: propensities change (Stats NZ B)" asks what happens if B happens anyway; L1 Ambitious asks what happens if policy delivers it. 2050: Reference 2.4635, Moderate 2.5275, Ambitious 2.5916. TL1: S = 2.7905, the highest observed national household size (1991), held regardless of age structure; with the 2050 population this requires about 11.7% fewer households per person than in 2023 at every age, living arrangements more shared than observed at any age. TL1 rises at the fastest observed inter-census change (0.0118 a year, 1996–2001), the behavioural speed limit, and reaches its level in 2037.5: the only TL whose phase-in ends after 2035.
 
 **L2 Vacancy rate (sub-rule B).** Ambitious 4.01%, the 1996 census minimum on one definition (the pooled 2018/2023 empty share of unoccupied private dwellings applied to every census); Moderate (v_ref + v_min)/2 = 4.70%; TL2 v = 0. Reference = the published 2023 census value 5.39%; on the consistent definition 2023 is 5.38%.
 
@@ -559,7 +547,7 @@ The nine levers are grouped by the carbon reduction hierarchy of PAS 2080:2023 (
 
 #### S3 Improve Strategy
 
-**L9 Construction-stage carbon (sub-rule C).** Ambitious: A4–A5 linear to zero by 2050 (Zero Carbon Act s. 5Q; City of Oslo 2025); Moderate: the per-year midpoint of the Reference path e^(-0.01 (t - 2025)) and Ambitious (2050 factor 0.389); TL9 A4–A5 = 0. A5 treated as energy: site waste assumed eliminated (upper bound).
+**L9 Construction-stage carbon (sub-rule C).** Ambitious: A4–A5 from the 2026 Reference value linearly to zero by 2050 (Zero Carbon Act s. 5Q; City of Oslo 2025); Moderate: the per-year midpoint of the Reference path e^(-0.01 (t - 2025)) and Ambitious (2050 factor 0.389). L9 is phased once: Ambitious and Moderate follow their own path, which starts at the Reference in 2026, without the logistic adoption weight (MODEL v4.6 multiplied a path linear from 2025 by the logistic). TL9 A4–A5 = 0 is a theoretical bound (construction waste cannot strictly reach zero; LCAQuick does not split A4 from A5), adopted on the common logistic. A5 treated as energy: site waste assumed eliminated (upper bound).
 
 ### One run: payback and re-occupation
 
@@ -572,14 +560,14 @@ TL: R1 = 0, R2 = 117,834, G+ = 315,033, s = 0.542; the release constraint binds 
 | Run | Floor area 2026–2050 (Mm²) | Carbon (kt CO₂e) | LoE AR | LoE AtP | vs Reference |
 |---|---|---|---|---|---|
 | Reference | 105.44 | 25,503 | 5.761 | 22.91 | +0.0% |
-| S1 Avoid Strategies, Moderate | 83.35 | 20,306 | 4.587 | 18.24 | -20.4% |
+| S1 Avoid Strategies, Moderate | 80.05 | 19,482 | 4.401 | 17.50 | -23.6% |
 | S2 Switch Strategies, Moderate | 105.44 | 23,315 | 5.267 | 20.95 | -8.6% |
-| S3 Improve Strategy, Moderate | 105.44 | 24,701 | 5.580 | 22.19 | -3.1% |
-| Moderate Pathway | 83.35 | 17,971 | 4.060 | 16.15 | -29.5% |
-| S1 Avoid Strategies, Ambitious | 64.85 | 15,937 | 3.600 | 14.32 | -37.5% |
+| S3 Improve Strategy, Moderate | 105.44 | 24,689 | 5.577 | 22.18 | -3.2% |
+| Moderate Pathway | 80.05 | 17,236 | 3.894 | 15.49 | -32.4% |
+| S1 Avoid Strategies, Ambitious | 59.43 | 14,575 | 3.292 | 13.10 | -42.9% |
 | S2 Switch Strategies, Ambitious | 105.44 | 21,259 | 4.803 | 19.10 | -16.6% |
-| S3 Improve Strategy, Ambitious | 105.44 | 23,900 | 5.399 | 21.47 | -6.3% |
-| Ambitious Pathway | 64.85 | 12,542 | 2.833 | 11.27 | -50.8% |
+| S3 Improve Strategy, Ambitious | 105.44 | 23,876 | 5.394 | 21.45 | -6.4% |
+| Ambitious Pathway | 59.43 | 11,459 | 2.589 | 10.30 | -55.1% |
 | Theoretical Limit | 20.43 | 4,079 | 0.921 | 3.67 | -84.0% |
 | TL, all limits from 1 January 2027 (instant) | 17.91 | 2,828 | 0.639 | 2.54 | -88.9% |
 
@@ -587,24 +575,24 @@ TL: R1 = 0, R2 = 117,834, G+ = 315,033, s = 0.542; the release constraint binds 
 
 | Strategy | Levers | Moderate | Ambitious |
 |---|---|---|---|
-| S1 Avoid Strategies | L1, L2, L3, L4, L5 | 4,870 (64.7%) | 8,340 (64.3%) |
-| S2 Switch Strategies | L6, L7, L8 | 1,955 (26.0%) | 3,364 (26.0%) |
-| S3 Improve Strategy | L9 | 707 (9.4%) | 1,257 (9.7%) |
+| S1 Avoid Strategies | L1, L2, L3, L4, L5 | 5,644 (68.3%) | 9,551 (68.0%) |
+| S2 Switch Strategies | L6, L7, L8 | 1,915 (23.2%) | 3,246 (23.1%) |
+| S3 Improve Strategy | L9 | 708 (8.6%) | 1,247 (8.9%) |
 
 #### Shapley values (exact, 512 subsets per game; reduction of cumulative carbon, kt CO₂e)
 
 | Lever | Moderate | Ambitious | TL (from the Reference) |
 |---|---|---|---|
-| L1 Household size | 1,285 | 2,193 | 6,639 |
-| L2 Vacancy rate | 663 | 1,196 | 2,883 |
-| L3 Building lifetime | 453 | 771 | 1,477 |
-| L4 Extra space | 984 | 1,708 | 3,346 |
-| L5 Occupancy density | 1,492 | 2,531 | 1,905 |
-| L6 Brownfield-first development | 773 | 1,304 | 1,219 |
-| L7 Soil-aware planning | 178 | 273 | 538 |
-| L8 Material carbon efficiency | 999 | 1,749 | 2,053 |
-| L9 Construction-stage carbon | 704 | 1,235 | 1,366 |
-| Sum (= Reference - run) | 7,531 | 12,961 | 21,424 |
+| L1 Household size | 2,119 | 3,611 | 6,639 |
+| L2 Vacancy rate | 659 | 1,184 | 2,883 |
+| L3 Building lifetime | 451 | 766 | 1,477 |
+| L4 Extra space | 961 | 1,632 | 3,346 |
+| L5 Occupancy density | 1,463 | 2,434 | 1,905 |
+| L6 Brownfield-first development | 755 | 1,251 | 1,219 |
+| L7 Soil-aware planning | 174 | 264 | 538 |
+| L8 Material carbon efficiency | 980 | 1,682 | 2,053 |
+| L9 Construction-stage carbon | 704 | 1,220 | 1,366 |
+| Sum (= Reference - run) | 8,267 | 14,044 | 21,424 |
 
 Shapley (1953); Albrecht, Francois & Schoors (2002). Efficiency holds exactly (rational arithmetic on the run values).
 
@@ -653,11 +641,13 @@ Household size follows the Stats NZ 2023-base national family and household proj
 
 TL with re-occupation as fast as demand allows (deterministic sensitivity row): 3,550.7 kt, LoE AR 0.802 (TL: 4,079.1 kt, LoE AR 0.921).
 
+TL1 age-standardised (deterministic sensitivity row): TL1 at the household size given by the lower of the 2023 and Stats NZ Medium B living-arrangement (headship) rates by age group (0–14, 15–39, 40–64, 65+; POPPR_FHH_008 / POPPR_FHH_010), applied to the projected population (household_headship.py; the 2023 rates are the only observed ones by age in the repository, so the highest observed propensity of living with others is the 2023 one; the 2023-rate path reproduces the Stats NZ Medium A household size to within 0.022). Its 2050 level is 2.5669 against the L1 Ambitious 2.5916; below the L1 Ambitious path in 2040–2050, where the TL rule (never weaker than Ambitious) holds TL1 at Ambitious (the age-standardised level itself in 2026–2039): TL 5,946.4 kt, LoE AR 1.343, LoE AtP 5.34 (TL: 4,079.1 kt, LoE AR 0.921). In the pathway Monte Carlo (each draw's own household size and population variant) P(LoE AR <= 1) = 0.1% (TL: 64.0%).
+
 L8 with the apartment case A_1 (n = 15): r = 0.841 against the adopted 0.827 (n = 14); report only (A_1's ratio to its pooled value is 1.0000 by construction).
 
 ## 5. Uncertainty analysis
 
-Joint uncertainty is propagated by Latin hypercube sampling (McKay, Beckman & Conover 1979): 5,000 draws in the full profile (seed 20260924) and 1,000 in the light profile (seed 20261014) of the 5 inputs below, within each replacement variant (Reference, Low replacement, High replacement, Very High replacement (trend continues)) with the same seed (common random numbers). The reported results are those of the full profile (5,000 draws in montecarlo/draws_REF.csv). Each draw runs the same forward functions as the deterministic projection (engine.py), which uses the median of every sampled input; the central draw is checked against the projection to 1e-9.
+Joint uncertainty is propagated by Latin hypercube sampling (McKay, Beckman & Conover 1979): 5,000 draws in the full profile (seed 20260924) and 1,000 in the light profile (seed 20261014) of the 5 inputs below, for the Reference only (replacement-level uncertainty is reported by the variants of ED3 and the one-at-a-time rows). The reported results are those of the full profile (5,000 draws in montecarlo/draws_REF.csv). Each draw runs the same forward functions as the deterministic projection (engine.py), which uses the median of every sampled input; the central draw is checked against the projection to 1e-9.
 
 | input | distribution | basis | 5th / 50th / 95th percentile of the draws |
 |---|---|---|---|
@@ -667,7 +657,7 @@ Joint uncertainty is propagated by Latin hypercube sampling (McKay, Beckman & Co
 | carbon (case-study carbon factors) | uniform index into 4,000 bootstrap replicates | stratified bootstrap of the case studies within sub-type (duplicates removed, re-pooled as Building_factors); the apartments (one independent case) take a mean-preserving lognormal multiplier with the pooled between-building log-SD of the other sub-types | 0.05 / 0.50 / 0.95 |
 | half_life (replacement half-life) | uniform(5, 15) yr | not identifiable from the census record; the Reference variant only | 5.5 / 10.0 / 14.5 |
 
-Population and household size share one draw because, within one living-arrangement propensity, the Stats NZ 2023-base Low / Medium / High household projections differ only through their population projections (the 5th / 50th / 95th percentiles of the stochastic population projection), so the household size moves with the population percentile (N4, resolved). Not sampled: the living-arrangement propensity (A, held at 2023; B, the change modelled on the 2001–2023 censuses, is a one-at-a-time row), the net replacement level (the variants are run separately; within the Reference the half-life is sampled), the typology mix, the census rebase of households, the pre-2013 empty share, the future vacancy and the retirement-village share (total Sobol indices about zero in a full-input run), the demolition rate (it trades one-for-one with the calibrated residual), the observed consents and population (data) and the soil order (a bounding scenario, not a probability).
+Population and household size share one draw because, within one living-arrangement propensity, the Stats NZ 2023-base Low / Medium / High household projections differ only through their population projections (the 5th / 50th / 95th percentiles of the stochastic population projection), so the household size moves with the population percentile (N4, resolved). Not sampled: the living-arrangement propensity (A, held at 2023; B, the change modelled on the 2001–2023 censuses, is a one-at-a-time row), the net replacement level (the Reference only; its half-life is sampled; the variants are reported deterministically in ED3 and the one-at-a-time rows), the typology mix, the census rebase of households, the pre-2013 empty share, the future vacancy and the retirement-village share (total Sobol indices about zero in a full-input run), the demolition rate (it trades one-for-one with the calibrated residual), the observed consents and population (data) and the soil order (a bounding scenario, not a probability).
 
 In every draw the acquired-rights base Ī_sec,base is recomputed from that draw's carbon-factor replicate on the 2016–2025 built floor area at that draw's completion rate (boundaries.mc_runs, boundaries.history_at_completion, boundaries.base_with_factors): the carbon factors and the completion rate are shared parameters of the base and the projection and are sampled once (the shared-parameter rule of Part 2). Each draw also recomputes the 2024–2025 stock-identity residual and its starting surplus at its own completion rate. Ī_sec,base over the draws: 1,330.9 / 1,413.4 / 1,501.3 kt/yr (5th / 50th / 95th percentile).
 

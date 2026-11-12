@@ -45,7 +45,7 @@ M6 = 1e6
 
 
 def data(rel):
-    return layout.data(rel, frozen=False)
+    return layout.data(rel)
 
 
 # ---- 1. Reference carbon -----------------------------------------------------------------------

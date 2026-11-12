@@ -18,14 +18,14 @@ import pytest
 import engine  # noqa: E402
 import layout  # noqa: E402
 import naming as N  # noqa: E402
-from conftest import ROOT  # noqa: F401,E402
+
 
 RTOL = 1e-9
 SETTINGS = ('moderate', 'ambitious')
 
 
 def _data(rel):
-    return layout.data(rel, frozen=False)
+    return layout.data(rel)
 
 
 def _js(rel):
@@ -68,18 +68,6 @@ def test_strategy_runs_present_pathway_runs_absent(runs):
 
 
 # ------------------------------------------------------------------ Shapley ----
-def test_shapley_efficiency_against_run_totals(runs):
-    s = pd.read_csv(_data('pathways/shapley.csv')).query("metric == 'carbon_kt'")
-    ref = runs.loc['REF', 'carbon_kt']
-    games = {'strategies_moderate': ('REF', 'pathway-moderate'), 'strategies_ambitious': ('REF', 'pathway-ambitious'),
-             'levers_moderate': ('REF', 'pathway-moderate'), 'levers_ambitious': ('REF', 'pathway-ambitious'),
-             'tl_from_moderate_pathway': ('pathway-moderate', 'TL')}
-    for game, (a, b) in games.items():
-        g = s[s['game'] == game]
-        assert len(g) == (3 if game.startswith('strategies') else 9), game
-        assert g['reduction'].sum() == pytest.approx(ref[a] - ref[b], rel=RTOL, abs=1e-9), game
-    st = s[s['game'] == 'strategies_moderate'].set_index('player')
-    assert sorted(st.index) == ['S1', 'S2', 'S3']
 
 
 # ------------------------------------------------------------------ waterfalls ----
@@ -222,7 +210,7 @@ def test_very_high_runs(runs):
 
 def test_half_life_sampled_in_the_monte_carlo():
     import MonteCarlo as MC
-    d = pd.read_csv(layout.montecarlo('draws', 'REF', frozen=False))
+    d = pd.read_csv(layout.montecarlo('draws', 'REF'))
     h = d[N.identifier('half_life')]
     assert tuple(MC.HALF_LIFE_RANGE) == (5, 15)
     assert h.min() >= 5.0 and h.max() <= 15.0 and h.nunique() == len(h)

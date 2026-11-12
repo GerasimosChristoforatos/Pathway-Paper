@@ -46,7 +46,7 @@
   "a",
   "b"
  ],
- "note": "P(within AR) = 0.640 (Wilson 0.627-0.653); (b) threshold 6.72 M (95% CI 6.71-6.72 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).",
+ "note": "P(within AR) = 0.640 (Wilson 0.627-0.653); (b) threshold 6.72 M (95% CI 6.71-6.72 M; Firth penalised likelihood (MLE does not exist), 2000 resamples). TL1 holds household size at 2.79 (1991, the highest observed) regardless of age structure: with the 2050 population this requires about 11.7% fewer households per person than in 2023 at every age. With an age-standardised TL1 (the lower of the 2023 and Stats NZ Medium B living-arrangement rates by age group; never below L1 Ambitious, which binds from 2040) TL is 5,946 kt, LoE AR 1.34, P(LoE AR \u2264 1) = 0.1% over the draws (the sensitivity row TL-TL1-age-standardised).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
@@ -55,7 +55,10 @@
  "white_segment_edges": 0,
  "source": [
   "pathways/montecarlo_conditional_tl.csv",
-  "pathways/montecarlo_conditional_tl.json"
+  "pathways/montecarlo_conditional_tl.json",
+  "pathways/theoretical_limit.json",
+  "pathways/montecarlo_summary.csv",
+  "pathways/levers.json"
  ],
  "atp_linestyles": [],
  "negative_band_segments": 0,

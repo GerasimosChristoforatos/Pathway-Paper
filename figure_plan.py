@@ -155,7 +155,7 @@ def write_sf_number_map():
 def _write_number_map(name, rows):
     import csv
     import layout
-    path = layout.writing(layout.data(name, frozen=False))
+    path = layout.writing(layout.data(name))
     with open(path, 'w', newline='') as f:
         w = csv.writer(f)
         w.writerow(['old_id', 'old_file', 'new_id', 'new_file', 'status'])
@@ -210,7 +210,8 @@ SUPPLEMENTARY = [
          source=['pathways/montecarlo_annual.csv', 'pathways/montecarlo_summary.csv']),
     dict(id='SF13', file='SF13_conditional_tl', folder='montecarlo', module='figures.paper_extended',
          title='When does TL stay within AR? By population quintile and the population threshold',
-         source=['pathways/montecarlo_conditional_tl.csv', 'pathways/montecarlo_conditional_tl.json']),
+         source=['pathways/montecarlo_conditional_tl.csv', 'pathways/montecarlo_conditional_tl.json',
+                 'pathways/theoretical_limit.json', 'pathways/montecarlo_summary.csv', 'pathways/levers.json']),
     dict(id='SF14', file='SF14_tl_dwellings', folder='pathways', module='figures.pathways',
          title='The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year',
          source=['pathways/reoccupation_log.csv']),

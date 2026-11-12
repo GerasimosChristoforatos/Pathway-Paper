@@ -1,8 +1,8 @@
 # References
 
-One list of every source cited in the methods draft (`docs/METHODS_DRAFT.md`), the assumption register
+One list of every source cited in the methods draft (`outputs/reports/METHODS_DRAFT.md`), the assumption register
 (`outputs/reports/ASSUMPTIONS.md`), the figure captions and notes (`outputs/FIGURES.md`) and the palette record
-(`docs/PALETTE.md`), alphabetical. Lever numbers are those of Table 1 (`docs/LEVERS_TABLE.md`). Entries marked
+(`docs/PALETTE.md`), alphabetical. Lever numbers are those of Table 1 (`outputs/reports/LEVERS_TABLE.md`). Entries marked
 **[verify]** keep a detail (title, volume, issue, pages, DOI or URL) that has not been checked against the publisher's
 record and must be checked before submission; no DOI or page number has been added without a check.
 

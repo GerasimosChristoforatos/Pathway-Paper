@@ -1,65 +1,65 @@
 {
  "figure": "ED8_lever_annual",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "",
+   "title": "L1 Household size",
    "xlabel": "",
    "ylabel": "kt CO\u2082e per year",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "L2 Vacancy rate",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "L3 Building lifetime",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "L4 Extra space",
    "xlabel": "",
    "ylabel": "kt CO\u2082e per year",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "L5 Occupancy density",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "L6 Brownfield-first development",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "L7 Soil-aware planning",
    "xlabel": "",
    "ylabel": "kt CO\u2082e per year",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "L8 Material carbon efficiency",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "L9 Construction-stage carbon",
    "xlabel": "",
    "ylabel": "",
    "year_min": 2026.0,
@@ -94,6 +94,15 @@
   "Moderate",
   "Reference",
   "Theoretical Limit",
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
   "kt CO\u2082e per year"
  ],
  "note": "Each panel: one lever alone; the other levers at the Reference. Lines: PCHIP display interpolation through the annual values.",

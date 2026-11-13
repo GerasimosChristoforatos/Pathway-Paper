@@ -234,6 +234,7 @@ MC_INPUT = {'z_pop': 'Population and household size',     # MODEL v4.3.1 (B4): o
             'size': 'Dwelling size', 'complete': 'Completion rate', 'carbon': 'Carbon factors',
             'half_life': 'Replacement half-life'}
 LOE_AR = 'Cumulative LoE of AR'
+TL_AGE_STANDARDISED = 'Theoretical Limit, TL1 age-standardised (sensitivity)'   # pathways.TL_AGE_STANDARDISED
 LOE_ATP = 'Cumulative LoE of AtP'
 
 def run_label(run, scenario='REF'):
@@ -245,6 +246,8 @@ def run_label(run, scenario='REF'):
         return TL['TL']
     if run == 'TL-from2027':
         return TL_INSTANT
+    if run == 'TL-TL1-age-standardised':
+        return TL_AGE_STANDARDISED
     parts = run.split('-')
     head, setting = parts[0], parts[1] if len(parts) > 1 else None
     if head == PATHWAY:

@@ -1,16 +1,16 @@
 {
  "figure": "SF13_conditional_tl",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "By population quintile (Wilson 95%)",
+   "title": "By population quintile",
    "xlabel": "Population-rank quintile (Q1 lowest)",
    "ylabel": "P(cumulative LoE of AR \u2264 1), Theoretical Limit",
    "year_min": null,
    "year_max": null
   },
   {
-   "title": "Population threshold (P = 50%)",
+   "title": "Population threshold",
    "xlabel": "New Zealand population 2050 (million), Monte Carlo draws",
    "ylabel": "P(cumulative LoE of AR \u2264 1), Theoretical Limit",
    "year_min": null,
@@ -33,10 +33,10 @@
   "$\\mathdefault{7.5}$",
   "$\\mathdefault{8.0}$",
   "$\\mathdefault{\u22120.2}$",
-  "By population quintile (Wilson 95%)",
+  "By population quintile",
   "New Zealand population 2050 (million), Monte Carlo draws",
   "P(cumulative LoE of AR \u2264 1), Theoretical Limit",
-  "Population threshold (P = 50%)",
+  "Population threshold",
   "Population-rank quintile (Q1 lowest)",
   "Q1",
   "Q2",

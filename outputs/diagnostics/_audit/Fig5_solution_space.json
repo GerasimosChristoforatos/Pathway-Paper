@@ -1,6 +1,6 @@
 {
  "figure": "Fig5_solution_space",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "",
@@ -10,7 +10,7 @@
    "year_max": null
   },
   {
-   "title": "Cumulative\nLoE of AR",
+   "title": "",
    "xlabel": "",
    "ylabel": "",
    "year_min": null,
@@ -33,7 +33,6 @@
   "Ambitious Pathway",
   "AtP",
   "Avoid Strategies",
-  "Cumulative\nLoE of AR",
   "Efficiency: Carbon reduction per m\u00b2 (%)",
   "Improve Strategy",
   "LoE of AR 1",

@@ -36,7 +36,7 @@ def sf8_prcc():
     y = np.arange(len(inputs))
     have = [r for r in MC_RUNS if r[0] in set(imp['run'])]
     for a, out, letter, title in zip(ax, ('floor_area_Mm2', 'carbon_kt', 'LoE_AR'), 'abc',
-                                     ('Floor area, cumulative', 'Embodied carbon, cumulative', N.LOE_AR)):
+                                     ('Cumulative floor area', 'Cumulative embodied carbon', N.LOE_AR)):
         for j, (run, lab, col) in enumerate(have):
             t = imp[(imp['run'] == run) & (imp['output'] == out)].set_index('input').loc[inputs]
             off = (j - (len(have) - 1) / 2) * 0.22
@@ -620,6 +620,9 @@ def ed5_rows():
     return r, st, c, orders, note_lines(orders['LoE_AR'], row_notes_ed5(r), _input_label, 'ED5')
 
 
+ED5_TITLES = {'LoE_AR': 'Acquired rights', 'LoE_AtP': 'Ability to pay'}
+
+
 def ed5_boundary_sensitivity():
     """ED5 (data D42): the boundary-definition and AESA rows on the cumulative LoE of AR (a) and of AtP
     (b), paired tornados with shared y labels (sensitivity/planetary_boundary.csv). the rows of
@@ -632,7 +635,7 @@ def ed5_boundary_sensitivity():
         a.text(c[q], 1.0, f' Reference {c[q]:.2f}', transform=a.get_xaxis_transform(), ha='left', va='bottom',
                fontsize=S.FONT_SMALL, color=S.INK)
         a.set_xlabel(f'{xl} 2026–2050')
-        P.panel(a, letter, '')
+        P.panel(a, letter, ED5_TITLES[q], above_label=True)
     ax[0].tick_params(axis='y', labelsize=S.FONT_SMALL)
     ax[1].legend(handles=P.tornado_legend(), loc='lower right', fontsize=S.FONT_SMALL, frameon=False)
     P.centre_ticklabels(fig, ax[0])

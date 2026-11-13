@@ -24,7 +24,7 @@ PAPER_MAIN = [
                  'baseline/overbuild_2026.json']),
     dict(id='Fig2', file='Fig2_reference_carbon', width='double', module='figures.paper_main',
          title='Embodied carbon of the Reference',
-         caption='Annual embodied carbon of the Reference 2026-2050 by (a) demand band, (b) material and (c) life-cycle '
+         caption='Annual embodied carbon of the Reference 2026-2050 by (a) demand type (the demand bands), (b) material and (c) life-cycle '
                  'stage; (d) cumulative 2026-2050 as three attached columns of the same total by demand band, material '
                  'and stage (negative demand bands solid below zero; the net total a black marker). Materials and stages are never '
                  'negative.',
@@ -49,10 +49,10 @@ PAPER_MAIN = [
     dict(id='Fig5', file='Fig5_solution_space', width='double', module='figures.paper_main',
          title='The solution space',
          caption='Cumulative level of exceedance of AR over uniform cuts of 2027-2050 floor area (x) and of carbon per m2 '
-                 '(y) (after Horup et al. 2025), axes -5% to 100%, with S1-S3 (Moderate filled, Ambitious hollow), the '
+                 '(y) (after Horup et al. 2025), with S1-S3 (Moderate filled, Ambitious hollow), the '
                  'Moderate / Ambitious Pathway and the Theoretical Limit; analytic LoE AR contours and the exact AR line. '
-                 'Right: the LoE AR ruler (log) with the Reference, the Pathways, TL, AR = 1, the plane floor (the 2026 '
-                 'observed cohort alone) and AtP.',
+                 'Right: the cumulative LoE AR ruler (log) with the Reference, the Pathways, TL, AR = 1 and AtP; the same '
+                 'marker size per run in the plane, the ruler and the legend.',
          source=['pathways/solution_space.csv', 'pathways/backcast.json', 'pathways/runs.csv']),
     dict(id='Fig6', file='Fig6_shapley_levers', width='double', module='figures.paper_main',
          title='What each lever removes',
@@ -67,24 +67,27 @@ PAPER_MAIN = [
          title='Uncertainty',
          caption='(a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high '
                  'end per its definition (population rows move the budgets with the path; AR base-window rows move the '
-                 'AR budget only); rows are shown from the completion-rate row up (the rows with a smaller range are '
-                 'named, with their ranges, in the note); not additive, not a joint interval. (b) The Reference, the Moderate and Ambitious '
+                 'AR budget only); rows are shown from the completion-rate range up, without the completion-rate and '
+                 'no-2026-data rows (both in Extended Data Fig. 4; the rows with a smaller range are named, with '
+                 'their ranges, in the note); not additive, not a joint interval. (b) The Reference, the Moderate and Ambitious '
                  'Pathways and the Theoretical Limit: cumulative LoE AR against the 2050 New Zealand population on the '
                  'same paired Monte Carlo draws, P(LoE AR <= 1) of each with its Wilson 95% interval, LoE = 1, and the '
                  'population at which the Theoretical Limit has P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).',
          source=['sensitivity/tornado.csv', 'sensitivity/planetary_boundary.csv', 'pathways/montecarlo_draws.csv',
+                 'pathways/annual.csv',
                  'pathways/montecarlo_conditional_tl.json', 'baseline/scenarios.json', 'aesa/results.json']),
 ]
 
 PAPER_EXTENDED = [
     # nine items in this order (outputs/data/ed_number_map.csv, ED_NUMBER_MAP below)
     dict(id='ED1', file='ED1_population_households_floor_area', module='figures.paper_extended',
-         title='Population, households and floor area: history and projection (Monte Carlo 5th-95th)',
+         title='Population, households and floor area: history and projection (Stats NZ population 5th-95th)',
          source=['figure_source/projection_paths.json', 'figure_source/D02_households.json']),
     dict(id='ED2', file='ED2_household_formation_size', module='figures.paper_extended',
          title='Household formation and household size', source=['baseline/household_formation_history.csv',
                                                                  'figure_source/D03_household_size.json',
-                                                                 'figure_source/D04_household_formation.json']),
+                                                                 'figure_source/D04_household_formation.json',
+                                                                 'pathways/levers.json', 'pathways/annual.csv']),
     dict(id='ED3', file='ED3_replacement_variants', module='figures.paper_extended',
          title='Low, High and Very High replacement: the Reference, the Pathways and TL',
          source=['sensitivity/replacement_variants.csv', 'pathways/annual.csv']),
@@ -173,7 +176,7 @@ def _write_number_map(name, rows):
 # boundary method -> sensitivity -> Monte Carlo -> the TL dwellings); 'folder' only organises outputs/supplementary/
 SUPPLEMENTARY = [
     dict(id='SF1', file='SF1_households', folder='calibration', module='figures.calibration',
-         title='Households: the published and census-benchmarked series, and household size against arrivals',
+         title='Households: the published and census-benchmarked series, and household size against population growth',
          source=['figure_source/D02_households.json',
                                                  'figure_source/D04_household_formation.json']),
     dict(id='SF2', file='SF2_stock_vacancy', folder='calibration', module='figures.calibration',

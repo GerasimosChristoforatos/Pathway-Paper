@@ -1,6 +1,6 @@
 {
  "figure": "SF7_completion_lag",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Population growth",

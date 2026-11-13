@@ -1,9 +1,9 @@
 {
  "figure": "ED6_mc_input_distributions",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "Population and household size",
+   "title": "Population and\nhousehold size",
    "xlabel": "2050 population (million)",
    "ylabel": "Number of draws",
    "year_min": null,
@@ -24,8 +24,8 @@
    "year_max": null
   },
   {
-   "title": "Replacement half-life",
-   "xlabel": "Years",
+   "title": "Replacement\nhalf-life",
+   "xlabel": "Half-life (years)",
    "ylabel": "",
    "year_min": null,
    "year_max": null
@@ -86,12 +86,17 @@
   "Completion rate",
   "Detached",
   "Dwelling size",
+  "Half-life (years)",
   "Multiplier on the central future size",
   "Number of draws",
-  "Population and household size",
-  "Replacement half-life",
+  "Population and\nhousehold size",
+  "Replacement\nhalf-life",
   "Townhouses",
-  "Years"
+  "a",
+  "b",
+  "c",
+  "d",
+  "e"
  ],
  "note": "5,000 Latin hypercube draws. Population: the 2050 New Zealand population of each draw (the sampled standard-normal score mapped through the Stats NZ percentiles); carbon factors: the pooled A1-A3 factor of each draw by typology. A1\u2013A3 only (whole embodied A1\u2013C4 is higher: apartments 610 kg/m\u00b2). Apartments rest on one independent case study (444 kg/m\u00b2 A1\u2013A3) with a mean-preserving lognormal spread, so their median (434 kg/m\u00b2) lies slightly below the case value.",
  "maintenance_drawn": false,

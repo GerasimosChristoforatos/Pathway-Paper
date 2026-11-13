@@ -1,16 +1,16 @@
 {
  "figure": "Fig3_reference_boundaries",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "Annual: the Reference against AR and AtP",
+   "title": "Annual carbon per pathway against PBs",
    "xlabel": "",
    "ylabel": "Embodied carbon (kt CO\u2082e per year)",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "Cumulative",
+   "title": "Cumulative carbon",
    "xlabel": "",
    "ylabel": "Cumulative carbon (kt CO\u2082e)",
    "year_min": null,
@@ -45,12 +45,12 @@
   "Ability to pay (AtP)",
   "Acquired rights (AR)",
   "Ambitious Pathway",
-  "Annual: the Reference against AR and AtP",
+  "Annual carbon per pathway against PBs",
   "AtP budget",
   "Committed\nafter 2050",
   "Committed after 2050: B2/B4",
   "Committed after 2050: C1\u2013C4",
-  "Cumulative",
+  "Cumulative carbon",
   "Cumulative carbon (kt CO\u2082e)",
   "Cumulative carbon 2026\u20132050",
   "Embodied carbon (kt CO\u2082e per year)",

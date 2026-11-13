@@ -1,9 +1,9 @@
 {
  "figure": "Fig7_uncertainty",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "One at a time (Reference 5.76)",
+   "title": "One-at-a-time sensitivity analysis",
    "xlabel": "Cumulative LoE of AR 2026\u20132050, Reference",
    "ylabel": "",
    "year_min": null,
@@ -19,6 +19,7 @@
  ],
  "texts": [
   " 6.72 M (95% CI 6.71\u20136.72 M)",
+  " Reference 5.76",
   "$\\mathdefault{4.5}$",
   "$\\mathdefault{5.0}$",
   "$\\mathdefault{5.5}$",
@@ -27,7 +28,6 @@
   "$\\mathdefault{7.0}$",
   "$\\mathdefault{7.5}$",
   "$\\mathdefault{8.0}$",
-  "(0.93\u20130.96)",
   "(15\u201319 months)",
   "(2018\u201323 pace)",
   "(5th\u201395th pct.)",
@@ -36,7 +36,6 @@
   "(Low\u2013Very High)",
   "(Raw\u2013Organic)",
   "(Stats NZ B)",
-  "(consents to Dec 2025)",
   "0.6",
   "0.8",
   "1",
@@ -53,7 +52,6 @@
   "AR base window",
   "Ambitious Pathway: P(LoE of AR \u2264 1) = 0.0% (0 of 5,000)",
   "Completion lag",
-  "Completion rate",
   "Cumulative LoE of AR 2026\u20132050 (log scale)",
   "Cumulative LoE of AR 2026\u20132050, Reference",
   "High",
@@ -64,8 +62,7 @@
   "Moderate Pathway: P(LoE of AR \u2264 1) = 0.0% (0 of 5,000)",
   "Monte Carlo draws vs 2050 population",
   "New Zealand population 2050 (million)",
-  "No 2026 data",
-  "One at a time (Reference 5.76)",
+  "One-at-a-time sensitivity analysis",
   "Population",
   "Reference: P(LoE of AR \u2264 1) = 0.0% (0 of 5,000)",
   "Replacement",
@@ -78,7 +75,7 @@
   "b",
   "change"
  ],
- "note": "(b) The flat left tail: the lowest-population draws, where re-used dwellings meet all need (zero-build years); its carbon floor is the 2026-27 pipeline plus maintenance. (a) Reference LoE AR 5.761; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. The carbon-factor rows (Carbon factors (jackknife), LoE AR 5.734\u20135.771 against carbon \u22123.4% / +3.2%) are not shown: their LoE range falls below the row filter (the completion-rate row) because the AR base co-varies with the factors, so the AR budget moves with the carbon. (b) P(TL within AR) = 0.640 (Wilson 0.627-0.653; n = 5,000); P(LoE AR <= 1) on the same paired draws: REF 0.0000 (Wilson 0.0000-0.0008), pathway_moderate 0.0000 (Wilson 0.0000-0.0008), pathway_ambitious 0.0000 (Wilson 0.0000-0.0008), TL 0.6400 (Wilson 0.6266-0.6532); threshold 6.715 M (95% CI 6.713-6.718 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).",
+ "note": "(b) Below about 6.2 M (every draw below 6.03 M; 434 draws in all) the Theoretical Limit LoE AR flattens at about 0.6 (median 0.61, range 0.58\u20130.65): the dwellings released by TL1 (household merging) and TL2 (zero vacancy) plus the starting surplus cover all positive need after the pipeline, so TL builds no new dwellings after 2027 and its carbon is that of the observed 2026\u201327 pipeline (9.48 Mm\u00b2), which does not fall with population (correlation \u22120.02 over these draws; a year with negative need builds nothing and nothing is demolished). (a) Reference LoE AR 5.761; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. Rows in Extended Data Fig. 4 only: Completion rate (0.93\u20130.96); No 2026 data (consents to Dec 2025). The carbon-factor rows (Carbon factors (jackknife), LoE AR 5.734\u20135.771 against carbon \u22123.4% / +3.2%) are not shown: their LoE range falls below the row filter (the range of the completion-rate row) because the AR base co-varies with the factors, so the AR budget moves with the carbon. (b) P(TL within AR) = 0.640 (Wilson 0.627-0.653; n = 5,000); P(LoE AR <= 1) on the same paired draws: Reference 0.0000 (Wilson 0.0000-0.0008), Moderate Pathway 0.0000 (Wilson 0.0000-0.0008), Ambitious Pathway 0.0000 (Wilson 0.0000-0.0008), Theoretical Limit 0.6400 (Wilson 0.6266-0.6532); threshold 6.715 M (95% CI 6.713-6.718 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,
@@ -89,6 +86,7 @@
   "sensitivity/tornado.csv",
   "sensitivity/planetary_boundary.csv",
   "pathways/montecarlo_draws.csv",
+  "pathways/annual.csv",
   "pathways/montecarlo_conditional_tl.json",
   "baseline/scenarios.json",
   "aesa/results.json"

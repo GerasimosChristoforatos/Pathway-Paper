@@ -1,6 +1,6 @@
 {
  "figure": "ED9_rollout_timing",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Moderate Pathway",
@@ -17,7 +17,7 @@
    "year_max": 2050.0
   },
   {
-   "title": "Cumulative",
+   "title": "Cumulative carbon",
    "xlabel": "",
    "ylabel": "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
    "year_min": 2026.0,
@@ -51,7 +51,7 @@
   "Acquired rights (AR)",
   "Ambitious\nPathway",
   "Ambitious Pathway",
-  "Cumulative",
+  "Cumulative carbon",
   "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
   "Embodied carbon (kt CO\u2082e per year)",
   "Moderate\nPathway",

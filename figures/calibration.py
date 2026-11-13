@@ -311,7 +311,7 @@ def sf2_stock_vacancy():
     a.set_ylim(0, None)
     a.set_ylabel('Vacancy rate (% of private dwellings)')
     a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09), fontsize=S.FONT_MIN, ncol=2)
-    P.panel(a, 'a', 'Vacancy: empty homes only')
+    P.panel(a, 'a', 'Vacancy rate of empty homes')
 
     # (c; data D06): the unconsented additions each vacancy definition requires
     a = fig.add_subplot(gs[1, 3])
@@ -325,7 +325,7 @@ def sf2_stock_vacancy():
     a.set_xticks([0, 1])
     a.set_xticklabels(['Empty\nonly\n(used)', "With 'away'\n(rejected)"], fontsize=S.FONT_MIN)
     a.axhline(0, color=S.INK, lw=S.LW_THIN)
-    a.set_ylabel(f"Unconsented additions required\n1992–{int(d6['calib_end'])} (per year)", fontsize=S.FONT_SMALL)
+    a.set_ylabel(f"Unconsented additions required\n1992–{int(d6['calib_end'])} (dwellings per year)", fontsize=S.FONT_SMALL)
     P.thousands(a.yaxis)
     a.grid(axis='x', visible=False)
     P.panel(a, 'c', 'Vacancy definition')                # d -> c
@@ -356,7 +356,7 @@ def sf2_stock_vacancy():
     a.set_ylabel('Dwellings (thousand per year)')
     _y0, _y1 = a.get_ylim()
     a.set_ylim(_y0 - 0.06 * (_y1 - _y0), _y1 + 0.10 * (_y1 - _y0))   # room for the row of market-balance values
-    P.panel(a, 'b', 'Dwellings per year by component (top row: market balance, thousand per year)')
+    P.panel(a, 'b', 'Dwellings per year by component')
     shown = [c for c in SF2B_LEGEND if c in b['present']]
     seen, handles = set(), []
     for c in shown:                                   # one entry per label (net replacement: history and projection)
@@ -389,7 +389,7 @@ def sf2_stock_vacancy():
         f'b: {hist_note} History: net replacement is census-measured, the '
         'rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the '
         f"previous year's stock, the quantity the model uses ({census_y[-1] + 1}–{int(YH[-1])}: the latest rate "
-        'carried). Market balance: building above (+) or below (−) what household growth, vacancy and net replacement '
+        'carried). Top row: the market balance per census interval (thousand dwellings per year). Market balance: building above (+) or below (−) what household growth, vacancy and net replacement '
         'require. History: the residual of the census stock identity (includes measurement error). '
         f"{ss['after_years'][0]}–{str(ss['after_years'][-1])[2:]}: carried into 2026 as starting surplus "
         f"({ss['dwellings']:,.0f} vacant dwellings: the residual above the census-interval mean x "

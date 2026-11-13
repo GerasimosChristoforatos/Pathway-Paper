@@ -1,16 +1,16 @@
 {
  "figure": "SF5_overbuild_absorption",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "Reference: absorbed by 2035",
+   "title": "Reference absorption",
    "xlabel": "",
    "ylabel": "Dwellings (thousand)",
    "year_min": 2025.0,
    "year_max": 2050.0
   },
   {
-   "title": "Absorption timing (2026\u20132050 totals)",
+   "title": "Absorption timing",
    "xlabel": "",
    "ylabel": "Embodied carbon (kt CO\u2082e per year)",
    "year_min": 2026.0,
@@ -58,13 +58,13 @@
   "$\\mathdefault{800}$",
   "$\\mathdefault{900}$",
   "$\\mathdefault{\u221210}$",
-  "Absorption timing (2026\u20132050 totals)",
+  "Absorption timing",
   "Dwellings (thousand)",
   "Embodied carbon (kt CO\u2082e per year)",
   "Implied vacancy (%)",
   "Implied vacancy (right)",
   "Payback (built less), per year",
-  "Reference: absorbed by 2035",
+  "Reference absorption",
   "Starting surplus + cumulative excess C(t)",
   "Surplus still vacant U(t)",
   "a",

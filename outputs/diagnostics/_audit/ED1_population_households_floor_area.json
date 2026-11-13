@@ -1,23 +1,23 @@
 {
  "figure": "ED1_population_households_floor_area",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "",
+   "title": "Population",
    "xlabel": "",
    "ylabel": "Population (million)",
    "year_min": 1991.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "Households",
    "xlabel": "",
    "ylabel": "Households (million)",
    "year_min": 1991.0,
    "year_max": 2050.0
   },
   {
-   "title": "",
+   "title": "Cumulative floor area built",
    "xlabel": "Year",
    "ylabel": "Floor area built, cumulative from 1991 (Mm\u00b2)",
    "year_min": 1991.0,
@@ -62,10 +62,13 @@
   "$\\mathdefault{7.0}$",
   "$\\mathdefault{7.5}$",
   "$\\mathdefault{\u221250}$",
+  "Cumulative floor area built",
   "Floor area built, cumulative from 1991 (Mm\u00b2)",
   "History",
   "History rebased on the 2023 census (occupied + residents-away private dwellings): Stats NZ household increments after 2018 \u00d7 0.824",
+  "Households",
   "Households (million)",
+  "Population",
   "Population (million)",
   "Reference projection (median)",
   "Stats NZ population 5th\u201395th percentile",

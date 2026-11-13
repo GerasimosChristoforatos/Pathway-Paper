@@ -1,16 +1,16 @@
 {
  "figure": "ED5_boundary_sensitivity",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "",
+   "title": "Acquired rights",
    "xlabel": "Cumulative LoE of AR 2026\u20132050",
    "ylabel": "",
    "year_min": null,
    "year_max": null
   },
   {
-   "title": "",
+   "title": "Ability to pay",
    "xlabel": "Cumulative LoE of AtP 2026\u20132050",
    "ylabel": "",
    "year_min": null,
@@ -41,6 +41,8 @@
   "20 yr",
   "AR base window",
   "AR base window\n(5\u201334 yr) [3]",
+  "Ability to pay",
+  "Acquired rights",
   "Carrying capacity",
   "Carrying capacity:\n1 W/m\u00b2 boundary (not 2 \u00b0C) [1]",
   "Cumulative LoE of AR 2026\u20132050",

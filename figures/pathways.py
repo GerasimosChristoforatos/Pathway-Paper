@@ -28,8 +28,7 @@ def ed8_lever_annual():
             r = la[(la['lever'] == L) & (la['level'] == lev)].sort_values('year')
             b.plot(*P.pchip(r['year'].to_numpy(float), r['carbon_kt'].to_numpy(float), brk),
                    label=lab, zorder=3 if lev != 'reference' else 2, **st)
-        b.text(0.0, 1.07, f'{L} {N.LEVERS[L]}', transform=b.transAxes, ha='left', va='center',
-               fontsize=S.FONT_SIZE, color=S.INK)
+        P.panel(b, 'abcdefghi'[k], f'{L} {N.LEVERS[L]}')
         b.set_xlim(2026, 2050)
         b.set_ylim(0, None)
         P.thousands(b.yaxis)
@@ -64,11 +63,14 @@ def sf14_tl_dwellings():
             b.plot(bind['year'], bind['built'] / 1e3, 'v', color=S.RELEASE_BINDS, ms=4, label='Release constraint binds')
         b.axhline(0, color=S.INK, lw=S.LW_THIN)
         b.set_xlim(2025.5, 2050.5)
-        P.panel(b, letter, N.TL['TL'] if run == 'TL' else f"{N.TL['TL']} from 2027 (instant; sensitivity)")
-    ax[0].set_ylabel('Dwellings per year (thousand)')
+        P.panel(b, letter, N.TL['TL'] if run == 'TL' else f"{N.TL['TL']}, instant start")
+    for b in ax:                                       # own y scales: each panel labelled
+        b.set_ylabel('Dwellings per year (thousand)')
     ax[0].legend(fontsize=S.FONT_MIN)
     fig.tight_layout()
-    S.save_figure(fig, 'SF14_tl_dwellings', source=['pathways/reoccupation_log.csv'])
+    S.save_figure(fig, 'SF14_tl_dwellings', note=f"(b) The {N.TL['TL']} at full strength from 2027 "
+                                                 '(no phase-in; sensitivity).',
+                  source=['pathways/reoccupation_log.csv'])
 
 
 FIGURES = {'ED8_lever_annual': ed8_lever_annual, 'SF14_tl_dwellings': sf14_tl_dwellings}

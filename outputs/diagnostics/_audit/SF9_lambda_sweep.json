@@ -1,6 +1,6 @@
 {
  "figure": "SF9_lambda_sweep",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "",

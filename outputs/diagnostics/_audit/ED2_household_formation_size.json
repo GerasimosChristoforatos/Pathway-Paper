@@ -1,6 +1,6 @@
 {
  "figure": "ED2_household_formation_size",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Household formation by source",
@@ -56,11 +56,13 @@
   "Household size (persons per household)",
   "New households per year (thousand)",
   "Projection (median), net new households",
-  "Reference projection",
+  "Reference (Stats NZ Medium A)",
+  "Stats NZ Medium B (L1 Ambitious)",
+  "Theoretical Limit (TL1)",
   "a",
   "b"
  ],
- "note": null,
+ "note": "(b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious path and Extended Data Fig. 4 row 1 (2025-2050, 2.59 in 2050; the pathways phase it in by 2035); Theoretical Limit (TL1) is the household size of the TL run, rising at the rate limit from the Reference in 2026 to 2.79 (the 1991 level) at mid-2037 (the Methods' 2037.5), held from 2038.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
@@ -70,13 +72,15 @@
  "source": [
   "baseline/household_formation_history.csv",
   "figure_source/D03_household_size.json",
-  "figure_source/D04_household_formation.json"
+  "figure_source/D04_household_formation.json",
+  "pathways/levers.json",
+  "pathways/annual.csv"
  ],
  "atp_linestyles": [],
  "negative_band_segments": 0,
  "net_total_ticks": 0,
  "band_rectangles_below_zero": 0,
- "tl_colour_used": false,
+ "tl_colour_used": true,
  "retired_colours": [],
  "negative_bar_segments": 0,
  "negative_bar_segments_filled": 0

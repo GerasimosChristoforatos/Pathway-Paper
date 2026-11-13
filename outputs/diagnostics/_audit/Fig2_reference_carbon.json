@@ -1,9 +1,9 @@
 {
  "figure": "Fig2_reference_carbon",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "By demand band",
+   "title": "By demand type",
    "xlabel": "",
    "ylabel": "Embodied carbon (kt CO\u2082e per year)",
    "year_min": 2026.0,
@@ -24,7 +24,7 @@
    "year_max": 2050.0
   },
   {
-   "title": "Cumulative",
+   "title": "Cumulative carbon",
    "xlabel": "",
    "ylabel": "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
    "year_min": null,
@@ -55,13 +55,13 @@
   "By\ndemand",
   "By\nmaterial",
   "By\nstage",
-  "By demand band",
+  "By demand type",
   "By life-cycle stage",
   "By material",
   "Carbon (in scope)",
   "Concrete",
   "Construction (A4\u2013A5)",
-  "Cumulative",
+  "Cumulative carbon",
   "Cumulative carbon 2026\u20132050 (kt CO\u2082e)",
   "Embodied carbon (kt CO\u2082e per year)",
   "Extra space",

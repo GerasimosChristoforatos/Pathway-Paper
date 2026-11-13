@@ -2,6 +2,59 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.7.1: panel titles, Fig5 / Fig7 tidy, ED2b paths, Supplementary pass (cosmetics; no model run)
+
+No model, Monte Carlo or Sobol run: every figure was redrawn from the committed v4.7.0 outputs (`redraw.py --final`).
+**Numbers unchanged:** SHA-256 of all 115 files under `outputs/data/` and `outputs/reports/`, before and after, are
+identical. Tests: 258 passed (`tests/test_figure_integrity.py` 32 passed); palette coverage: 0 findings. Font: Inter
+(no font file added).
+
+* **Panel-title rule** (all figures): a single-panel figure has no title; a multi-panel figure has a bold letter and one
+  short sentence-case title per panel, with no colon, no "the" and no numbers. Values move to labels (Fig7a "Reference
+  5.76" at the top of the reference line, as in ED4 / ED5) or to the note. Kept as panel identity: the lever ids (L1-L9),
+  and the hindcast origin years of SF6 a-c. `figures/draw.panel(..., above_label=True)` lifts a title and its letter
+  clear of a reference-line label (Fig7, ED5).
+* **Fig5:** the "Cumulative LoE of AR" title above the side strip is removed. One marker size per run in the plane, the
+  strip and the legend (the strip sizes): Theoretical Limit 6 (was 8 in the plane and the legend), Pathways 5 (was 6.5
+  in the plane), levers 5, Reference 4; Ambitious hollow everywhere.
+* **Fig7a:** the Completion rate and No 2026 data rows are removed (both stay in ED4 [9] and [14]; the note names them);
+  the other rows are unchanged and keep their order.
+* **Fig7b note:** a new sentence on the Theoretical Limit floor at low population, read from the draws and checked in
+  code (STOP otherwise). In 434 draws (every draw below 6.03 M, none above 6.25 M), TL builds nothing after 2027:
+  the floor area equals the 2026-27 pipeline, 9.48 Mm², and the reoccupation share is 1. The LoE AR flattens at
+  median 0.61 (0.58-0.65); the carbon is independent of population (r = -0.02) and follows the carbon factors
+  (r = 0.985).
+* **ED2b:** two paths added, read from the outputs already written (`pathways/levers.json`, `pathways/annual.csv`; no
+  figure-source change):
+  * Stats NZ Medium B (L1 Ambitious), in palette `ambitious`;
+  * the TL run's household size, Theoretical Limit (TL1), in palette `theoretical_limit`, rising at the rate limit
+    to 2.79 at mid-2037 and held from 2038.
+
+  The Reference is relabelled "Reference (Stats NZ Medium A)"; a caption line is added.
+* **ED4 / ED5:** every Fig7a row and the two rows removed from it are present with their notes:
+  * Living arrangements ED4 [1]; Population ED4 [2]; Household size ED4 [3]; Completion rate ED4 [9];
+  * Completion lag ED4 [13]; No 2026 data ED4 [14]; Replacement ED4 [15]; Replacement half-life ED4 [16];
+  * Soil order ED4 [17]; AR base window ED5 [3].
+
+  No row was missing.
+* **Supplementary pass:**
+  * SF2b's top-row explanation moved to the note; SF2c y label "(dwellings per year)".
+  * SF10: n and B moved to the note.
+  * SF12: legend in two columns above the bands; the note uses the run names.
+  * SF14b: y label added; SF14 note added.
+  * SF8 titles made consistent ("Cumulative …").
+  * ED6 x label "Half-life (years)".
+  * ED10 b / g / h shortened, with their qualifiers moved to the note.
+* **Captions:**
+  * Fig5: the ruler has no plane floor; the stale axis range is removed.
+  * Fig7: the row rule.
+  * ED1 title: the band is the Stats NZ population 5th-95th percentile, not the Monte Carlo.
+  * SF1 title: "population growth", not "arrivals".
+  * Fig2: (a) demand type.
+  * Fig7 note: run names.
+  * The ED2 and Fig7 data sources are listed.
+* **Other:** `naming.TL_AGE_STANDARDISED` added (`run_label` of the age-standardised TL run).
+
 ## model-v4.7.0: publication cleanup, one rule for the pathway levels, TL1 age-standardised sensitivity
 
 The cleanup implements the decisions in the v4.7 audit (draft PR 29, closed without merging; README does not link to it).

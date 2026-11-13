@@ -29,6 +29,12 @@ def sf11_mc_convergence():
                   source=['montecarlo/convergence_REF.csv'])
 
 
+def _ed6_title(a, letter, title):
+    """ED6 panel letter and input name: five narrow panels, so the name at the small size, on two lines when long."""
+    P.panel(a, letter, P.two_lines(title) if len(title) > 18 else title)
+    a.title.set_fontsize(S.FONT_SMALL)
+
+
 def ed6_mc_input_distributions():
     """ED6 (data D38): the Monte Carlo input distributions, y = number of draws, panel titles the input
     names of naming.MC_INPUT (as ED7 and ED4). Population in physical units: the 2050 New Zealand population of each
@@ -49,13 +55,13 @@ def ed6_mc_input_distributions():
               ('size', dr['size'], [q.loc['size', k] for k in ('q05', 'q50', 'q95')],
                'Multiplier on the central future size'),
               ('complete', dr['complete'], [q.loc['complete', k] for k in ('q05', 'q50', 'q95')], 'Completion rate'),
-              ('half_life', dr['half_life'], [q.loc['half_life', k] for k in ('q05', 'q50', 'q95')], 'Years')]
+              ('half_life', dr['half_life'], [q.loc['half_life', k] for k in ('q05', 'q50', 'q95')], 'Half-life (years)')]
     fig, ax = plt.subplots(1, 5, figsize=S.figsize('double', 62))
     for a, (c, v, qs, xl) in zip(ax, panels):
         a.hist(v, bins=30, color=S.NEUTRAL_DARK, alpha=S.FIXED_FADES['neutral_histogram'], lw=0)
         for k, x in enumerate(qs):
             a.axvline(x, color=S.INK, lw=S.LW_THIN, ls='-' if k == 1 else ':')
-        a.set_title(N.MC_INPUT[c], fontsize=S.FONT_SMALL, loc='left')
+        _ed6_title(a, 'abcd'[ax.tolist().index(a)], N.MC_INPUT[c])
         a.set_xlabel(xl, fontsize=S.FONT_MIN + 0.5)
     a = ax[-1]
     for t, g in cf.groupby('typology', sort=False):
@@ -63,7 +69,7 @@ def ed6_mc_input_distributions():
         a.hist(v, bins=30, color=S.TYPOLOGY[t], alpha=S.OPACITY['typology_histograms'], lw=0, label=t)
         for k, x in enumerate(np.percentile(v, [5, 50, 95])):
             a.axvline(x, color=S.TYPOLOGY[t], lw=S.LW_THIN, ls='-' if k == 1 else ':')
-    a.set_title(N.MC_INPUT['carbon'], fontsize=S.FONT_SMALL, loc='left')
+    _ed6_title(a, 'e', N.MC_INPUT['carbon'])
     a.set_xlabel('A1–A3 materials factor (kg CO₂e per m², 2025)', fontsize=S.FONT_MIN + 0.5)
     a.legend(fontsize=S.FONT_MIN, frameon=False, loc='upper right')
     for a in ax:
@@ -102,7 +108,7 @@ def ed7_sobol():
     sob = D.csv('montecarlo/sobol_REF.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 66))
     for a, o, letter, title in zip(ax, ['carbon_kt', 'floor_area_Mm2'], 'ab',
-                                   ['Embodied carbon, cumulative 2026–2050', 'Floor area built, cumulative 2026–2050']):
+                                   ['Cumulative embodied carbon', 'Cumulative floor area built']):
         t = sob[(sob.output == o) & np.isfinite(sob.ST_lo)].sort_values('ST')
         y = np.arange(len(t))
         a.barh(y + 0.2, t.ST, 0.4, color=S.SOBOL['total'], xerr=[t.ST - t.ST_lo, t.ST_hi - t.ST], ecolor=S.INK,
@@ -119,12 +125,15 @@ def ed7_sobol():
     for a in ax:
         P.centre_ticklabels(fig, a)
     fig.tight_layout(rect=(0, 0.09, 1, 1))
-    S.save_figure(fig, 'ED7_sobol', note='Reference; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% '
+    S.save_figure(fig, 'ED7_sobol', note='Reference, cumulative 2026–2050; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% '
                                          'intervals by bootstrap of the Sobol samples; full profile only. Population '
                                          'and household size are one grouped input: both are drawn from one '
                                          'standard-normal score z (perfectly dependent), so their indices are grouped '
                                          'Sobol indices (Jacques, Lavergne & Devictor 2006).',
                   source=['montecarlo/sobol_REF.csv'])
+
+
+SF12_HEADROOM = 1.25            # SF12: y top x this, so the legend sits above the 5th-95th bands
 
 
 def sf12_pathway_mc():
@@ -143,13 +152,13 @@ def sf12_pathway_mc():
         ax.fill_between(xf, lo, hi, color=col, alpha=S.OPACITY['mc_band'], lw=0)
         P.line(ax, yr, t['carbon_kt_p50'], color=col, lw=S.LW_BOLD, label=f'{lab} (median, 5th–95th percentile)')
     ax.set_xlim(2026, 2050)
-    ax.set_ylim(0, None)
+    ax.set_ylim(0, ax.get_ylim()[1] * SF12_HEADROOM)                 # the legend above the bands (no overlap)
     ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
-    ax.legend(fontsize=S.FONT_SMALL, frameon=False)
+    ax.legend(fontsize=S.FONT_SMALL, frameon=False, loc='upper right', ncol=2)
     fig.tight_layout()
     p = s[(s['quantity'] == 'LoE_AR')].set_index('run')['probability_LoE_at_most_1']
     S.save_figure(fig, 'SF12_pathway_mc', note='P(cumulative LoE of AR <= 1): ' + ', '.join(
-        f'{k} {v:.3f}' for k, v in p.items()) + '.', source=['pathways/montecarlo_annual.csv',
+        f"{N.run_label(k.replace('_', '-'))} {v:.3f}" for k, v in p.items()) + '.', source=['pathways/montecarlo_annual.csv',
                                                             'pathways/montecarlo_summary.csv'])
 
 

@@ -1,16 +1,16 @@
 {
  "figure": "ED3_replacement_variants",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "Annual",
+   "title": "Annual carbon per pathway and replacement rate",
    "xlabel": "",
    "ylabel": "Embodied carbon (kt CO\u2082e per year)",
    "year_min": 2026.0,
    "year_max": 2050.0
   },
   {
-   "title": "Cumulative",
+   "title": "Cumulative carbon",
    "xlabel": "",
    "ylabel": "Cumulative LoE of AR 2026\u20132050",
    "year_min": null,
@@ -42,9 +42,9 @@
   "$\\mathdefault{800}$",
   "Ambitious\nPathway",
   "Ambitious Pathway",
-  "Annual",
-  "Cumulative",
+  "Annual carbon per pathway and replacement rate",
   "Cumulative LoE of AR 2026\u20132050",
+  "Cumulative carbon",
   "Embodied carbon (kt CO\u2082e per year)",
   "High replacement",
   "Low replacement",

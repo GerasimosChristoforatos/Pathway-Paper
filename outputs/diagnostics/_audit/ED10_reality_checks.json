@@ -1,6 +1,6 @@
 {
  "figure": "ED10_reality_checks",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Dwellings completed",
@@ -10,7 +10,7 @@
    "year_max": 2050.0
   },
   {
-   "title": "Implied net removals\n(net replacement rate \u00d7 stock)",
+   "title": "Implied net removals",
    "xlabel": "",
    "ylabel": "Dwellings (thousand per year)",
    "year_min": 1991.0,
@@ -45,14 +45,14 @@
    "year_max": 2050.0
   },
   {
-   "title": "Vacancy rate (effective)",
+   "title": "Effective vacancy rate",
    "xlabel": "",
    "ylabel": "Vacancy rate (% of private dwellings)",
    "year_min": 1991.0,
    "year_max": 2050.0
   },
   {
-   "title": "Floor area built (consented, in scope)",
+   "title": "Floor area built",
    "xlabel": "",
    "ylabel": "Floor area (Mm\u00b2 per year)",
    "year_min": 1991.0,
@@ -130,15 +130,16 @@
   "Average new-dwelling size",
   "Dwellings (thousand per year)",
   "Dwellings completed",
+  "Effective vacancy rate",
   "Floor area (Mm\u00b2 per year)",
-  "Floor area built (consented, in scope)",
+  "Floor area built",
   "Floor area per dwelling (m\u00b2)",
   "Floor area per person (m\u00b2)",
   "High replacement",
   "History",
   "Household size",
   "Household size (persons per household)",
-  "Implied net removals\n(net replacement rate \u00d7 stock)",
+  "Implied net removals",
   "Low replacement",
   "New floor area per additional resident",
   "Off scale: 2021, 1,335 m\u00b2 per person\n(near-zero population growth)",
@@ -147,7 +148,6 @@
   "Reference",
   "Removals 2026\u20132050,\n% of the 2025 stock:\nLow: 3.9%\nReference: 5.4%\nHigh: 7.3%\nVery High: 9.3%",
   "Vacancy rate (% of private dwellings)",
-  "Vacancy rate (effective)",
   "Very High replacement (trend continues)",
   "a",
   "b",
@@ -158,7 +158,7 @@
   "g",
   "h"
  ],
- "note": "Projection 2026\u20132050 against the 1991\u20132025 range (grey band); a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. b: Low and High hold a constant rate (Low: the 1991\u20132023 long-run rate; High: the 2018\u20132023 rate); removals rise because the stock grows. The Reference rate fades from the 2018\u20132023 rate to the long-run rate (half-life 10 yr); Very High continues the census trend. History lines: straight segments between annual values (not smoothed; largest difference from the source data 0); b: census-interval rates, constant within each interval. Handover: the 2027 \u2192 2028 step of the Reference floor area (2027 observed, 2028 the first model year) is \u22128.2%, against year-to-year changes of \u221239.8% to +27.8% (median +3.0%) in consented floor area, 1992\u20132025.",
+ "note": "Projection 2026\u20132050 against the 1991\u20132025 range (grey band); b: implied net removals = net replacement rate \u00d7 stock; h: consented floor area, in scope; a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. b: Low and High hold a constant rate (Low: the 1991\u20132023 long-run rate; High: the 2018\u20132023 rate); removals rise because the stock grows. The Reference rate fades from the 2018\u20132023 rate to the long-run rate (half-life 10 yr); Very High continues the census trend. History lines: straight segments between annual values (not smoothed; largest difference from the source data 0); b: census-interval rates, constant within each interval. Handover: the 2027 \u2192 2028 step of the Reference floor area (2027 observed, 2028 the first model year) is \u22128.2%, against year-to-year changes of \u221239.8% to +27.8% (median +3.0%) in consented floor area, 1992\u20132025.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

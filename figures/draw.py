@@ -205,17 +205,25 @@ def stacked_ticklabels(fig, ax, labels, size, small):
 # ---------------------------------------------------------------------------
 # panels and axes
 # ---------------------------------------------------------------------------
-def panel_label(ax, letter, x=-0.02, y=1.02):
-    """Bold panel letter at the top left, outside the axes."""
-    ax.text(x, y, letter, transform=ax.transAxes, fontsize=S.FONT_SIZE + 1, fontweight='bold', va='bottom',
-            ha='right')
+def panel_label(ax, letter, x=-0.02, y=1.02, raise_pt=0.0):
+    """Bold panel letter at the top left, outside the axes (raise_pt points higher, as panel())."""
+    import matplotlib.transforms as mtrans
+    tr = mtrans.offset_copy(ax.transAxes, fig=ax.figure, y=raise_pt, units='points') if raise_pt else ax.transAxes
+    ax.text(x, y, letter, transform=tr, fontsize=S.FONT_SIZE + 1, fontweight='bold', va='bottom', ha='right')
 
 
-def panel(ax, letter, title=None):
-    """Panel letter and, for the diagnostics, a short panel title next to it."""
-    panel_label(ax, letter)
+# points by which panel(..., above_label=True) lifts the title and letter: room for a one-line label drawn at the top
+# of a reference line (va='bottom' at the axes top, FONT_SMALL), as Fig7a, ED4 and ED5
+ABOVE_LABEL_PT = S.FONT_SMALL * 1.35
+
+
+def panel(ax, letter, title=None, above_label=False):
+    """Panel letter and a short panel title next to it (sentence case, no colon, no numbers). above_label: both
+    lifted by ABOVE_LABEL_PT, clear of a reference-line label at the top of the axes."""
+    lift = ABOVE_LABEL_PT if above_label else 0.0
+    panel_label(ax, letter, raise_pt=lift)
     if title:
-        ax.set_title(title, loc='left', fontsize=S.FONT_SIZE, fontweight='normal', pad=4)
+        ax.set_title(title, loc='left', fontsize=S.FONT_SIZE, fontweight='normal', pad=4 + lift)
 
 
 def split(ax, x=HISTORY_SPLIT):

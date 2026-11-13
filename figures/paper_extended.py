@@ -50,6 +50,9 @@ def ed2():
 PROJECTION_LINE = S.REFERENCE
 
 
+ED1_TITLES = ('Population', 'Households', 'Cumulative floor area built')
+
+
 def ed1():
     """3 x 1: population, households and cumulative floor area: history (black),
     the Reference projection (median, dark red) and the band of the Stats NZ population 5th-95th percentile paths (the
@@ -64,7 +67,7 @@ def ed1():
     panels = [('Population (million)', d['population_hist'], 'PopTotal', 1e6),
               ('Households (million)', d['households_hist'], 'households', 1e6),
               ('Floor area built, cumulative from 1991 (Mm²)', d['cumulative_floor_area_hist'], 'Cum_GFA_Total', 1e6)]
-    for a, (lab, hist, key, sc), letter in zip(ax, panels, 'abc'):
+    for a, (lab, hist, key, sc), letter, title in zip(ax, panels, 'abc', ED1_TITLES):
         P.line(a, hist.index, hist.values / sc, color=S.INK, lw=S.LW, label='History')
         get = ((lambda p: np.asarray(d[f'households_{p}'])) if key == 'households'
                else (lambda p, key=key: np.asarray(f[f'{key}_{p}'])))
@@ -74,7 +77,7 @@ def ed1():
         P.line(a, fy, get('50th') / sc, color=PROJECTION_LINE, lw=S.LW_BOLD, label='Reference projection (median)')
         P.split(a)
         a.set_ylabel(lab, fontsize=S.FONT_SMALL)
-        P.panel(a, letter)
+        P.panel(a, letter, title)
     ax[1].text(0.01, 0.97, f"History rebased on the {hh['S_ANCHOR_YEAR']} census (occupied + residents-away private "
                f"dwellings): Stats NZ household increments after 2018 × {hh['hh_rebase_k']:.3f}",
                transform=ax[1].transAxes, ha='left', va='top', fontsize=S.FONT_MIN, color=S.MUTED)
@@ -125,12 +128,27 @@ def ed3():
     hs = d['household_size_hist']
     ax[1].plot(hs.index, hs.values, color=S.INK, lw=S.LW, label='History')      # straight segments between years
     P.line(ax[1], d['projection_years'], d['projection_household_size'], color=S.REFERENCE, lw=S.LW_BOLD, ls='--',
-               label='Reference projection')
+               label='Reference (Stats NZ Medium A)')
+    # the propensity-change path (Stats NZ Medium B rebased on 2023: L1 Ambitious, ED4 row 1) as the levers resolve it
+    # (pathways/levers.json), and the household size the TL run uses, with its rate limit (pathways/annual.csv)
+    l1 = D.js('pathways/levers.json')['L1']
+    sb = pd.Series(l1['S']['ambitious']).rename(index=int).sort_index()
+    pa = D.csv('pathways/annual.csv')
+    stl = pa[(pa['run'] == 'TL') & (pa['scenario'] == 'REF')].set_index('year')['household_size']
+    P.line(ax[1], sb.index, sb.values, color=S.PATHWAY_SETTING['ambitious'], lw=S.LW_BOLD,
+           label='Stats NZ Medium B (L1 Ambitious)')
+    ax[1].plot(stl.index, stl.values, color=S.TL, lw=S.LW_BOLD, label=f"{N.TL['TL']} (TL1)")   # kink kept (rate limit)
     ax[1].set_ylabel('Household size (persons per household)')
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Household size')
     fig.tight_layout()
-    _save(fig, 'ED2_household_formation_size')
+    reach = int(stl.index[np.argmax(stl.values >= l1['tl'] - 1e-9)])
+    _save(fig, 'ED2_household_formation_size',
+          note=f"(b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious "
+               f"path and Extended Data Fig. 4 row 1 ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
+               f"pathways phase it in by 2035); {N.TL['TL']} (TL1) is the household size of the TL run, rising at the "
+               f"rate limit from the Reference in {int(stl.index[0])} to {l1['tl']:.2f} (the {l1['tl_year']} level) "
+               f"at mid-{reach - 1} (the Methods' {reach - 1}.5), held from {reach}.")
 
 
 def sf2():
@@ -152,7 +170,7 @@ def sf2():
     ax[0].set_xlabel('Population-rank quintile (Q1 lowest)')
     ax[0].set_ylabel('P(cumulative LoE of AR ≤ 1), Theoretical Limit')
     ax[0].set_ylim(-0.02, 1.02)
-    P.panel(ax[0], 'a', 'By population quintile (Wilson 95%)')
+    P.panel(ax[0], 'a', 'By population quintile')
     pop = d['P_NZ_2050'].to_numpy(float) / 1e6
     if thr['estimable']:
         cv = thr['curve']
@@ -168,14 +186,14 @@ def sf2():
         ax[1].set_ylim(-0.06, 1.06)
         note_b = (f"threshold {thr['threshold_P_NZ_2050'] / 1e6:.2f} M (95% CI {lo / 1e6:.2f}-{hi / 1e6:.2f} M; "
                   f"{thr['method']}, {thr['bootstrap_resamples']} resamples)")
-        P.panel(ax[1], 'b', 'Population threshold (P = 50%)')
+        P.panel(ax[1], 'b', 'Population threshold')
     else:
         ax[1].scatter(pop, d['TL_LoE_AR'], s=3, color=S.TL, alpha=S.OPACITY['scatter_tl'], lw=0)
         ax[1].axhline(1.0, **{k: val for k, val in S.BOUNDARY['AR'].items() if k != 'label'}, gid='boundary')
         ax[1].set_ylabel(f'{N.LOE_AR} 2026–2050, Theoretical Limit')
         ax[1].set_ylim(bottom=0)
         note_b = thr['note']
-        P.panel(ax[1], 'b', 'TL LoE against the 2050 population (no threshold)')
+        P.panel(ax[1], 'b', 'TL LoE against population')
     ax[1].set_xlabel('New Zealand population 2050 (million), Monte Carlo draws')
     fig.tight_layout()
     # the TL1 age-standardised sensitivity (pathways.TL_AGE_STANDARDISED; pathways_mc.TLAS)
@@ -252,7 +270,7 @@ def ed10():
     c.set_ylim(0, None)
     c.set_ylabel('Cumulative carbon 2026–2050 (kt CO₂e)')
     P.thousands(c.yaxis)
-    P.panel(c, 'c', 'Cumulative')
+    P.panel(c, 'c', 'Cumulative carbon')
     fig.subplots_adjust(left=0.07, right=0.91, bottom=0.25, top=0.92)
     _save(fig, 'ED9_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
         f'{N.run_label(r_)} {v:,.0f}' for r_, v in ends) + f'; Reference {cref[-1]:,.0f}.')
@@ -298,6 +316,7 @@ def sf3():
 def sf4():
     p = D.js('pathways/levers.json')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 70))
+    sizes = []
     for a, L, key, letter in ((ax[0], 'L5', 'ratio', 'a'), (ax[1], 'L8', 'ratio', 'b')):
         q = p[L]
         cases = pd.DataFrame(q['cases']).sort_values(key)
@@ -315,11 +334,12 @@ def sf4():
         h_ = a.get_legend_handles_labels()[0] + [                  # the typology colours explained
             Line2D([0], [0], ls='none', marker='o', ms=4, color=S.TYPOLOGY[t], label=t) for t in S.TYPOLOGY]
         a.legend(handles=h_, fontsize=S.FONT_MIN, loc='lower right')
-        P.panel(a, letter, f"{L} {N.LEVERS[L]} (n = {q['n']}, B = {e['bootstrap']['B']})")
+        P.panel(a, letter, f'{L} {N.LEVERS[L]}')
+        sizes.append(f"{L}: n = {q['n']} cases, B = {e['bootstrap']['B']} bootstrap resamples")
     fig.tight_layout()
     c15 = p['L8'].get('check_with_A_1')
     _save(fig, 'SF10_hd_estimators',
-          note=('L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
+          note=('; '.join(sizes) + '. L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
                 'its ratio to the apartment pooled value is ~1 by construction'
                 + (f" ({c15['A_1_ratio']:.4f}); with A_1 (n = {c15['n']}) r = {c15['r']:.3f} (95% CI "
                    f"{c15['ci_lo']:.3f}-{c15['ci_hi']:.3f}) against the adopted r = {c15['adopted_r']:.3f} "
@@ -358,7 +378,7 @@ def ed9():
                  [Line2D([0], [0], color=S.MUTED, ls=ls, label=_variant_label(k)) for k, ls in VARIANT_LS],
                fontsize=S.FONT_SMALL, loc='lower left', bbox_to_anchor=(0.06, 0.0, 0.93, 0.1), mode='expand', ncol=4,
                frameon=False)                  # one step above the minimum, across the width under both panels
-    P.panel(ax[0], 'a', 'Annual')
+    P.panel(ax[0], 'a', 'Annual carbon per pathway and replacement rate')
     piv = v.pivot(index='run', columns='scenario', values='LoE_AR').loc[['Reference', 'pathway-moderate',
                                                                         'pathway-ambitious', 'TL']]
     x = np.arange(len(piv))
@@ -373,7 +393,7 @@ def ed9():
                           fontsize=S.FONT_MIN + 0.5, multialignment='center')     # two lines, centred
     ax[1].set_ylabel(f'{N.LOE_AR} 2026–2050')
     ax[1].legend(fontsize=S.FONT_MIN)
-    P.panel(ax[1], 'b', 'Cumulative')
+    P.panel(ax[1], 'b', 'Cumulative carbon')
     fig.tight_layout(rect=(0, 0.12, 1, 1))
     _save(fig, 'ED3_replacement_variants')                          # ED8 -> ED3
 
@@ -397,7 +417,7 @@ def ed4():
     ax[0].set_ylabel('Dwellings (thousand)')
     h = ax[0].get_legend_handles_labels()[0] + b2.get_legend_handles_labels()[0]
     ax[0].legend(handles=h, fontsize=S.FONT_MIN, loc='center right')
-    P.panel(ax[0], 'a', 'Reference: absorbed by 2035')
+    P.panel(ax[0], 'a', 'Reference absorption')
     cases = [('Reference (adopted settings)', S.REFERENCE, '-', 'by 2035 (adopted)'),
              ('Overbuild absorbed by 2030', S.P2_ANCHOR, ':', 'by 2030'),
              ('Overbuild absorbed by 2045', S.P2_ANCHOR, '--', 'by 2045'),
@@ -408,7 +428,7 @@ def ed4():
     ax[1].set_xlim(2026, 2050)
     ax[1].set_ylabel('Embodied carbon (kt CO₂e per year)')
     ax[1].legend(fontsize=S.FONT_MIN)
-    P.panel(ax[1], 'b', 'Absorption timing (2026–2050 totals)')
+    P.panel(ax[1], 'b', 'Absorption timing')
     fig.tight_layout()
     ss = D.js('baseline/projection.json')['starting_surplus']
     u0 = float(lg.loc[lg['year'] == lg['year'].min(), 'surplus_vacant'].iloc[0])

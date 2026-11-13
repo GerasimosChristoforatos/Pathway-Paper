@@ -1,16 +1,16 @@
 {
  "figure": "SF10_hd_estimators",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "L5 Occupancy density (n = 16, B = 2000)",
+   "title": "L5 Occupancy density",
    "xlabel": "Case ratio (scale-free)",
    "ylabel": "",
    "year_min": null,
    "year_max": null
   },
   {
-   "title": "L8 Material carbon efficiency (n = 14, B = 2000)",
+   "title": "L8 Material carbon efficiency",
    "xlabel": "Case ratio (scale-free)",
    "ylabel": "",
    "year_min": null,
@@ -41,8 +41,8 @@
   "DD_3",
   "DD_4",
   "Detached",
-  "L5 Occupancy density (n = 16, B = 2000)",
-  "L8 Material carbon efficiency (n = 14, B = 2000)",
+  "L5 Occupancy density",
+  "L8 Material carbon efficiency",
   "Moderate r = 0.910",
   "Moderate r = 0.913",
   "SD_1",
@@ -59,7 +59,7 @@
   "a",
   "b"
  ],
- "note": "L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).",
+ "note": "L5: n = 16 cases, B = 2000 bootstrap resamples; L8: n = 14 cases, B = 2000 bootstrap resamples. L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

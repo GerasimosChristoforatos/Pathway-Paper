@@ -1,16 +1,16 @@
 {
  "figure": "SF8_prcc",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
-   "title": "Floor area, cumulative",
+   "title": "Cumulative floor area",
    "xlabel": "PRCC (95% bootstrap interval)",
    "ylabel": "",
    "year_min": null,
    "year_max": null
   },
   {
-   "title": "Embodied carbon, cumulative",
+   "title": "Cumulative embodied carbon",
    "xlabel": "PRCC (95% bootstrap interval)",
    "ylabel": "",
    "year_min": null,
@@ -33,9 +33,9 @@
   "Carbon factors",
   "Completion rate",
   "Cumulative LoE of AR",
+  "Cumulative embodied carbon",
+  "Cumulative floor area",
   "Dwelling size",
-  "Embodied carbon, cumulative",
-  "Floor area, cumulative",
   "Moderate Pathway",
   "PRCC (95% bootstrap interval)",
   "Population and household size",

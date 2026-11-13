@@ -85,7 +85,7 @@ def sf6_hindcast():
                  f'Dwellings consented, {ytd_months}')
     P.thousands(a.yaxis)
     a.grid(axis='x', visible=False)
-    P.panel(a, 'd', f"{c['target_year']} check" if pipeline_mode else '2026 check')
+    P.panel(a, 'd', 'Pipeline-year check' if pipeline_mode else 'Year-to-date check')   # the year: the y label
     fig.tight_layout(rect=(0, 0.07, 1, 1))
     S.save_figure(fig, fid,
                   note='Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the '
@@ -129,7 +129,7 @@ def ed10_reality_checks():
     labels = d['labels']
     fig, ax = plt.subplots(3, 3, figsize=S.figsize('double', 165))
     ax = ax.ravel()
-    titles = {'removals_net': 'Implied net removals\n(net replacement rate × stock)'}
+    titles = {'removals_net': 'Implied net removals', 'vacancy': 'Effective vacancy rate'}   # D15 titles otherwise
     errs = {}
     for i, key in enumerate(d['order']):
         p = d['panels'][key]
@@ -173,7 +173,7 @@ def ed10_reality_checks():
     a.set_xlim(1991, 2050)
     a.set_ylim(0, None)
     a.set_ylabel('Floor area (Mm² per year)')
-    P.panel(a, 'h', 'Floor area built (consented, in scope)')
+    P.panel(a, 'h', 'Floor area built')
     ax[8].axis('off')
     h_, l_ = ax[0].get_legend_handles_labels()
     ax[8].legend(h_, l_, loc='center', frameon=False)
@@ -186,7 +186,8 @@ def ed10_reality_checks():
                          'covers drawn data')
     h = d['handover']
     S.save_figure(fig, fid,
-                  note='Projection 2026–2050 against the 1991–2025 range (grey band); a: in scope and retirement '
+                  note='Projection 2026–2050 against the 1991–2025 range (grey band); b: implied net removals = net '
+                       'replacement rate × stock; h: consented floor area, in scope; a: in scope and retirement '
                        'villages; the exceedances are tabulated in outputs/reports/reality_checks.md. b: Low and High '
                        'hold a constant rate (Low: the 1991–2023 long-run rate; High: the 2018–2023 rate); removals '
                        'rise because the stock grows. The Reference rate fades from the 2018–2023 rate to the long-run '

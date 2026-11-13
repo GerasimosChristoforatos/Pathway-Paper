@@ -1,6 +1,6 @@
 {
  "figure": "Fig4_pathways",
- "producer": "figures/__main__.py",
+ "producer": "redraw.py",
  "axes": [
   {
    "title": "Moderate Pathway",

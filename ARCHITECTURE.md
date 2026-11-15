@@ -352,7 +352,7 @@ A layer on top of the Reference. `pathways.py` takes the Reference state from `v
 - With every lever off, the run reproduces the Reference to 1e-9.
 - Which input each lever changes: `levers.LEVER_PARAMETER`.
 
-**Levels.** Every lever has four levels (after DECC 2010, DESNZ 2023, EUCalc 2020). The rule and the values per
+**Levels.** Every lever has four levels (after DECC 2010, DESNZ 2023, Kockat et al. 2019). The rule and the values per
 lever are in Table 1 (`outputs/reports/LEVERS_TABLE.md`, generated from `pathways/levers.json`).
 
 | level | definition |
@@ -397,14 +397,24 @@ the `TL-TL1-age-standardised` row, with its own P(LoE AR ≤ 1) from the pathway
 **One run** (`pathways.run`). Every run, the Reference included, follows the same order each year:
 1. The lever inputs and the requirement without any join.
 2. The need, plus the dwellings released by zero vacancy (TL2).
-3. The Reference's market excess and starting surplus, absorbed on the Reference weights with the run's own need.
-4. Re-occupation (TL runs).
+3. The Reference's market excess, absorbed on the Reference weights with the run's own need (payback capped at
+   max(gross_t, 0), shortfall carried; `engine.absorb_overbuild`).
+4. Re-occupation (TL-family runs only).
 5. `engine.forward` with the stock-adding join.
 
+**No pool outside the TL family.** In the Reference, the Moderate and Ambitious Pathways and every non-TL run, the
+starting surplus (18,966 dwellings) and the 2026–27 overbuild are absorbed along the logistic by 2035, and a
+vacancy-rate fall is used in the year it occurs (`use_in_year`).
+
 **Theoretical limit.** A thought experiment, not a pathway: every lever at its TL.
-- The dwellings released by TL1 (household decline) and TL2 (zero vacancy), and the Reference surplus, enter a
-  pool.
-- The pool meets a constant share of each year's need.
+- TL-family runs (TL, the TL waterfall steps, every TL Shapley subset) pool R = R1 (TL1 household decline) + R2
+  (TL2 zero vacancy) + the positive overbuild (pipeline years and fading gap) + the starting surplus.
+- A negative excess is still made good along the logistic; the re-occupied overbuild is booked in "Overbuild
+  absorbed".
+- The pool meets a constant share of each year's need over `first`–2050, `first` = the first unobserved year (2028
+  with the 17-month lag); the releases of 2026–27 enter the pool in 2028.
+- In TL, R1 = 0: at the rate limit households never fall in absolute terms, so TL1 acts through fewer new
+  households.
 - The cumulative re-occupied never exceeds the cumulative released.
 - Records: `reoccupation_log.csv` and `theoretical_limit.json`.
 

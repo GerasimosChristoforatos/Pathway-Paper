@@ -241,3 +241,6 @@ outputs/_light/
 
 # MODEL v4.3.1: redraw.py palette previews (never versioned)
 outputs/_palette_preview/
+
+# MODEL v4.7.2: the author's LCAQuick root tables are not redistributed (data/build_lca_events.py; MANIFEST.csv)
+data/raw/Analytical_LCA_Results_Database.xlsx

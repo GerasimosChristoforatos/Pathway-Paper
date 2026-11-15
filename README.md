@@ -21,8 +21,9 @@ levers reduce it? The model answers in three layers.
   * S3 Improve: L9 Construction-stage carbon.
 
   Each lever has four levels: Reference, Moderate (the exact midpoint), Ambitious (one of three documented sub-rules)
-  and the theoretical limit (TL1–TL9). All are adopted on the same logistic path, 2026 → 2035, and every lever
-  together forms the Moderate and the Ambitious Pathway. The theoretical limit is a thought experiment, not a pathway.
+  and the theoretical limit (TL1–TL9). The levels are adopted on the same logistic path, 2026 → 2035, except L9
+  (Ambitious: its own linear path from the 2026 Reference value to zero in 2050; Moderate the midpoint) and TL1 (no faster than the fastest observed
+  change); every lever together forms the Moderate and the Ambitious Pathway. The theoretical limit is a thought experiment, not a pathway.
   * Attribution: exact Shapley values over the strategies and over 2⁹ lever subsets.
   * Two sequential waterfalls, the back-cast to the AR budget and a λ-sweep of each lever.
   * The pathway Monte Carlo (`pathways_mc.py`, `mcstats.py`).
@@ -168,6 +169,20 @@ Carlo or Sobol run is needed. The suite covers:
 | `data/` | inputs only, and the scripts that build `data/derived/` from `data/raw/` |
 | `docs/` | references, palette (the methods draft and Table 1 are generated into `outputs/reports/`) |
 
+## Manuscript numbering
+
+The repository keeps its ids; the manuscript numbers them as below (the same table heads `outputs/FIGURES.md`;
+`figure_plan.MANUSCRIPT_IDS`).
+
+| repository id | manuscript id |
+|---|---|
+| Fig1-Fig7 | Figures 1-7 |
+| ED1-ED10 | Extended Data Figs. 1-10 |
+| LEVERS_TABLE_MAIN (outputs/reports/) | Table 1 |
+| ST1 (budget construction) | Supplementary Table 4 |
+| EDT1 (numeric lever table; outputs/reports/LEVERS_TABLE.md) | Supplementary Table 5 |
+| SF1-SF14 | Supplementary Figs. 1-14 |
+
 ## Data freeze
 
 The reported results use: building consents to **September 2026** (Stats NZ BLD468601, released 3 November 2026); population estimates to the **June 2026** quarter (Stats NZ, *National population estimates: At 30 June 2026*); household projections **2023-base** (Stats NZ, *National family and household projections: 2023(base)–2048*, released 11 November 2026). Later releases are not used.
@@ -193,7 +208,7 @@ the file itself states, and it has not yet been rebuilt from a recorded download
 | `data/occ-unocc-2013.xlsx` | Stats NZ, *2013 Census QuickStats about housing* (corrected 30 April 2014, stated in the file) | Table 1: occupied, unoccupied and under-construction dwellings, 1981–2013 Censuses (Tables 2–5 not used) | not recorded (supplied with the project; no MANIFEST row) | Supplied |
 | `data/derived/census_dwellings.csv` (2018, 2023 census occupancy, private dwellings) | Stats NZ Aotearoa Data Explorer, `STATSNZ:CEN23_HOU_018(1.0)` "Dwelling occupancy status and dwelling type for dwellings, (RC, TALB, SA2, Health), 2013, 2018, and 2023 Censuses" (table last updated 2024-07-24), xlsx filtered to the Total – New Zealand rows; cross-check `STATSNZ:CEN23_TBT_001(1.0)` (unfiltered SDMX-CSV, last updated 2024-09-05) | occupancy status × dwelling type | downloaded by the author 2026-09-29 (see MANIFEST) | Raw → script (`data/build_census.py`); 21 cross-checks within ±3 (random rounding). Private dwellings only: the all-dwelling-type totals include unoccupied non-private dwellings, counted from 2018 |
 | `data/derived/population_quarterly.csv` (quarterly ERP, total of both sexes, 1991Q1-2026Q2; the 2026 population nowcast, `projection.NOWCAST_POPULATION`) | Stats NZ Infoshare, Population Estimates - DPE, "Estimated Resident Population (Mean Quarter Ended) by Sex (1991+) (Qrtly-Mar/Jun/Sep/Dec)" | series DPE059AA (total); table last updated 18 August 2026 | exported by the author 2026-09-30 (see `data/raw/MANIFEST.csv`) | Raw → script (`data/build_population_quarterly.py`). MEAN-quarter values (average over the quarter), dated at the quarter's centre; not point estimates at quarter end. Convention: history = 31 December ERP; projection growth = years ended June applied to calendar years; 2026 nowcast = June quarter 2026 minus June quarter 2025 |
-| `data/building_data.xlsx` | 16 New Zealand case-study LCAs: Christoforatos G, Pickering K (2025), "Embodied impacts of residential stocks; multi-level assessment of materials, buildings, typologies and functional units to support policymaking towards sustainable housing", *Smart and Sustainable Built Environment* (ahead of print), <https://doi.org/10.1108/SASBE-06-2025-0304> (source and benchmarking). Soil sheet: 58.77 kg CO₂e/m² footprint, area-weighted over the 10 soil orders of Auckland land zoned for urbanisation to ~2050: Christoforatos G, Pickering K, Schipper LA (2026), *Journal of Environmental Management* 415, 130603, <https://doi.org/10.1016/j.jenvman.2026.130603> | sheets 1–3 | n/a | Supplied |
+| `data/building_data.xlsx` | 16 New Zealand case-study LCAs: Christoforatos G, Pickering K (2026), "Embodied impacts of residential stocks; multi-level assessment of materials, buildings, typologies and functional units to support policymaking towards sustainable housing", *Smart and Sustainable Built Environment*, advance online publication, <https://doi.org/10.1108/SASBE-06-2025-0304> (source and benchmarking). Soil sheet: 58.77 kg CO₂e/m² footprint, area-weighted over the 10 soil orders of Auckland land zoned for urbanisation to ~2050: Christoforatos G, Pickering K, Schipper LA (2026), *Journal of Environmental Management* 415, 130603, <https://doi.org/10.1016/j.jenvman.2026.130603> | sheets 1–3 | n/a | Supplied |
 
 **Planetary-boundary layer (AESA; boundaries.py) inputs.**
 
@@ -203,14 +218,14 @@ the file itself states, and it has not yet been rebuilt from a recorded download
 | `data/derived/wpp2024_population_median.csv` (World and New Zealand, 1 July, persons) | United Nations, DESA, Population Division (2024), *World Population Prospects 2024*, Probabilistic Population Projections, <https://population.un.org/wpp/> | file PPP/POPTOT (POP/DB/WPP/Rev.2024/PPP/POPTOT), sheet "Median"; `data/raw/UN_PPP2024_Output_PopTot.xlsx` | supplied by the author 2026-10-04 | Raw → script (`data/build_wpp.py`) |
 | `data/derived/wdi_economies.csv`, `wdi_world_aggregate.csv` (population, GDP per capita PPP constant 2021 int-$ and current US$, by economy; WLD aggregate for coverage only) | World Bank, *World Development Indicators*, bulk CSV, release "Last Updated Date 2026-07-13" (stated in the files) | SP.POP.TOTL, NY.GDP.PCAP.PP.KD, NY.GDP.PCAP.CD; `data/raw/API_*_DS2_en_csv_v2_*.zip`; aggregates dropped with each archive's Metadata_Country file | supplied by the author 2026-10-04 | Raw → script (`data/build_wdi.py`) |
 | `data/raw/Absolute_Analysis.xlsm` | the author's earlier-manuscript AESA workbook (under review) | sheets 1.Acquired Rights, 2.Equalitarian, 6, 7 | supplied 2026-10-04 | Supplied; **local only (git-ignored)**; no longer read by the model or the tests (the reproduction tests were removed in MODEL v4.7.0); kept in the MANIFEST as the record of the earlier manuscript |
-| `data/derived/lca_events.csv` (replacement and repaint event counts and building lifespan per item line; time-resolved maintenance B2/B4) | LCAQuick v3.6 root tables of the 16 case studies (Christoforatos & Pickering 2025); built by `data/build_lca_events.py`, which matches every line to the item table (16 lines without B2/B4 excluded: `data/derived/lca_excluded_lines.csv`) | file `data/raw/Analytical_LCA_Results_Database.xlsx`, one sheet per building | supplied 2026-10-07 | Supplied |
-| `data/derived/material_items.csv` (case-study A1–A3 etc. by building and EPD item; `projection.DECARB_MODE = 'horup_item'`) | the 16 case-study LCAs of Christoforatos & Pickering (2025) (as `data/building_data.xlsx`) at item resolution; built by `data/build_material_items.py`, which checks it against `building_data.xlsx` | file `data/raw/epd-level_materials.xlsx`, sheet "ROOOOOT" | supplied 2026-10-05 | Supplied |
+| `data/derived/lca_events.csv` (replacement and repaint event counts and building lifespan per item line; time-resolved maintenance B2/B4) | LCAQuick v3.6 root tables of the 16 case studies (Christoforatos & Pickering 2026); built by `data/build_lca_events.py`, which matches every line to the item table (16 lines without B2/B4 excluded: `data/derived/lca_excluded_lines.csv`) | the author's LCAQuick v3.6 root tables (one sheet per building), **not redistributed** (beyond the published case data, not needed to run the model; removed from the tree in MODEL v4.7.2; `data/build_lca_events.py` stops without them) | supplied 2026-10-07 | Derived counts kept |
+| `data/derived/material_items.csv` (case-study A1–A3 etc. by building and EPD item; `projection.DECARB_MODE = 'horup_item'`) | the 16 case-study LCAs of Christoforatos & Pickering (2026) (as `data/building_data.xlsx`) at item resolution; built by `data/build_material_items.py`, which checks it against `building_data.xlsx` | file `data/raw/epd-level_materials.xlsx`, sheet "ROOOOOT" | supplied 2026-10-05 | Supplied |
 | `data/derived/horup2025_table_s4.csv` (relative GWP of material production 2025/2030/2040/2050; `projection.DECARB_MODE`) | Horup et al. (2025), *Sci. Total Environ.* 966, 178780, supplementary material mmc1.xlsx, <https://doi.org/10.1016/j.scitotenv.2025.178780> | sheet "Table S4" (average of 9 premise scenarios relative to ecoinvent 3.9.1), column C; checked against column E | supplied by the author 2026-10-05 (SHA-256 in MANIFEST) | Raw → script (`data/build_horup.py`); the workbook is kept in `refs/` (not versioned) |
 | SOS, I_glob (constants in `boundaries.py`) | Bjørn & Hauschild (2015), *Int J Life Cycle Assess* 20:1005-1018, Table 1 and ESM1/ESM2 | see the source check in `outputs/reports/METHODS_DRAFT.md` (part 2) | n/a | Literature |
 
 The reference papers behind the planetary-boundary layer (Bjørn & Hauschild 2015 with ESM1/ESM2;
 Sala et al. 2020 and corrigendum; Hjalsted et al. 2021 with SI; Horup et al. 2025; Andreasi Bassi
-et al. 2023; Clausen et al. 2025; the EC-JRC table of ILCD normalisation factors; the author's
+et al. 2023; Clausen et al. 2025; Laurent et al. 2013, PROSUITE D5.2; the author's
 manuscript) are kept in `refs/`, which is git-ignored: the papers are copyrighted and are not
 distributed. The same folder holds Resch et al. 2021 (A4–A5 path, timing of replacement
 emissions) and Habert et al. 2020 (time-resolved accounting of embodied emissions).
@@ -232,6 +247,31 @@ interim 2026 population figure used before the quarterly ERP series; it is kept 
 MANIFEST entry but no longer read.
 
 Earlier versions and their outputs are preserved in the git history and at the tag `model-v4.3.3` (CHANGELOG.md).
+
+## Data availability
+
+All input data are public: Stats NZ (population estimates and projections, family and household projections, census dwelling counts, building consents, national accounts); the United Nations World Population Prospects 2024; and the World Bank World Development Indicators. The case-study results are those of Christoforatos & Pickering (2026; item-level results in their Supplementary file 1), computed with LCAQuick v3.6 (BRANZ 2023). The item results by life-cycle stage are archived with the code. The derived data and the source data of every figure are archived with the code at Zenodo, doi:[ZENODO-DOI]. Supplementary Table 1 lists the sources and access dates.
+
+The case-study results are those of Christoforatos & Pickering (2026; item-level results in their Supplementary
+file 1), computed with LCAQuick v3.6 (BRANZ 2023). The item results by life-cycle stage are archived here
+(`data/raw/epd-level_materials.xlsx`, `data/building_data.xlsx`).
+
+## Code availability
+
+The model (Python) is available at https://github.com/GerasimosChristoforatos/pathway-paper and archived at Zenodo, doi:[ZENODO-DOI] (version 5.0.0), under the MIT licence. `python run_all.py --profile full` reproduces every number and figure.
+
+## Third-party data
+
+Generated with the statements above by `tools/availability.py` (`outputs/reports/AVAILABILITY.md`).
+
+| source | in the repository | licence / terms | redistributed |
+|---|---|---|---|
+| Stats NZ: building consents (Infoshare BLD468601), population estimates (DPE404001), census dwelling tables (CEN23_HOU_018, CEN23_TBT_001, DataInfo+ pages), family and household projections (POPPR_FHH_008, POPPR_FHH_010), national accounts (SNE022AA), earlier releases (popdata, histpopdata, oldhouseholddata, occ-unocc-2013) | data/raw/, data/*.xlsx, data/derived/ | CC BY 4.0 (Stats NZ) | yes |
+| United Nations, DESA, Population Division (2024), World Population Prospects 2024 | data/raw/UN_PPP2024_Output_PopTot.xlsx | CC BY 3.0 IGO | yes |
+| World Bank, World Development Indicators (release 2026-07-13) | data/raw/API_*.zip | CC BY 4.0 | yes |
+| Case-study LCA results, Christoforatos & Pickering (2026; Supplementary file 1), computed with LCAQuick v3.6 (BRANZ 2023) | data/building_data.xlsx, data/raw/epd-level_materials.xlsx (item results by stage) | the published case data (Supplementary file 1), at that level | yes |
+| The author's LCAQuick v3.6 root tables (explicit quantities, LCAQuick item codes, building metadata) | data/derived/lca_events.csv (derived event counts only) | beyond the published case data | no |
+| Horup et al. (2025), supplementary material mmc1.xlsx (Table S4, the A1-A3 item paths) | data/derived/horup2025_table_s4.csv (the Table S4 values only) | the terms of the article's supplementary material | the extract only (the source file is not stored) |
 
 ## Citation
 

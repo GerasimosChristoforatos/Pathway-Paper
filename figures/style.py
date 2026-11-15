@@ -407,6 +407,37 @@ def save(fig, path):
     plt.close(fig)
 
 
+# MODEL v4.7.2: legends and annotations of the Extended Data and Supplementary figures at least LEGEND_MIN pt at final
+# size (Nature minimum 5 pt; target 6 pt for legends and annotations); tick and axis labels keep their sizes
+LEGEND_MIN = FONT_SMALL
+LEGEND_MIN_PREFIXES = ('ED', 'SF')
+# the row notes of ED4 / ED5 (figure texts) are laid out to their measured line heights: they keep their size
+LEGEND_MIN_KEEP_FIGURE_TEXTS = ('ED4_one_at_a_time', 'ED5_boundary_sensitivity')
+
+
+def raise_small_text(fig, name):
+    """Legend texts (entries and titles) and free annotations (axes and figure texts) below LEGEND_MIN raised to it,
+    for the ED / SF figures; the main figures set their sizes themselves. Returns the number of texts raised."""
+    if not name.startswith(LEGEND_MIN_PREFIXES):
+        return 0
+    texts = []
+    for a in fig.get_axes():
+        lg = a.get_legend()
+        if lg is not None:
+            texts += list(lg.get_texts()) + [lg.get_title()]
+        texts += list(a.texts)
+    for lg in fig.legends:
+        texts += list(lg.get_texts()) + [lg.get_title()]
+    if name not in LEGEND_MIN_KEEP_FIGURE_TEXTS:
+        texts += list(fig.texts)
+    n = 0
+    for t in texts:
+        if t.get_text().strip() and t.get_fontsize() < LEGEND_MIN - 1e-9:
+            t.set_fontsize(LEGEND_MIN)
+            n += 1
+    return n
+
+
 def save_figure(fig, name, note=None, source=None):
     """Save a planned figure (figure_plan.py file id, e.g. 'D22_boundaries') to its place in outputs/
     (layout.figure). The audit record (axes, year ranges, every text, the note, boundary and band styling) is
@@ -415,6 +446,7 @@ def save_figure(fig, name, note=None, source=None):
     import layout
     from figures import audit
     path = layout.figure(name)
+    raise_small_text(fig, name)
     audit.record(fig, name, note=note, source=source)
     save(fig, path)
 

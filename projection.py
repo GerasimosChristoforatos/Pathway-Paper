@@ -315,7 +315,7 @@ CENSUS_UC_CORRECTION = True    # census years; (2013, 2023) is a sensitivity
 #           trend of the census-interval rates 1991-2023 extrapolated 2026-2050 (engine.replacement_trend).
 # Author's decision: Low and High bound the Reference (JUDGEMENT: the half-life is
 # not identifiable from the census record; it is sampled U(5, 15) yr in the Monte Carlo). Very High is
-# a sensitivity variant, not the Reference: six interval rates (seven censuses), one negative, a definition break in
+# a sensitivity variant, not the Reference: six interval rates (seven censuses), two negative (1996-2001, 2001-2006), a definition break in
 # 2013-2018 and the unbounded extrapolation of a policy-driven wave.
 REPLACEMENT_VARIANT = 'REF'
 REPLACEMENT_HALF_LIFE = 10.0

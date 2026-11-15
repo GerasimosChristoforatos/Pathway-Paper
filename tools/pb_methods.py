@@ -122,7 +122,7 @@ def lines():
          'and t+1.', '',
          '## Constants and sources', '', '| quantity | value | source |', '|---|---|---|',
          f"| SOS | {c['SOS_kg']:.3g} kg CO2-eq/yr | {c['pair_label']}; ESM2 (see source check) |",
-         f"| I_glob | {c['I_glob_kg']:.3g} kg CO2-eq/yr | Bjørn & Hauschild 2015 ESM2 B30 (Laurent et al. 2013, 2010); "
+         f"| I_glob | {c['I_glob_kg']:.3g} kg CO2-eq/yr | Bjørn & Hauschild 2015 ESM2 B30 = Laurent et al. 2013, Table 4 pp. 10-11 (2010); "
          f"equal to the EF 3.0 global factor ({boundaries.I_GLOB_EF30_PER_PERSON:.2E} kg CO2e per person, 2010; "
          'Andreasi Bassi et al. 2023, Table 10) |',
          f"| Ī_sec,base {w0}-{w1} | {c['I_sec_base_kg'] / 1e6:,.1f} kt/yr | this model, history on the projection's "
@@ -229,7 +229,9 @@ def lines():
               for k, v in ordered(r['mc_base_20yr'])]
     L += ['', '## Assumption register', '', '| setting | value | basis |', '|---|---|---|']
     L += [f'| {a} | {v} | {bb} |' for a, v, bb in boundaries.assumption_register()]
-    L += ['', '## Limitations', ''] + [f'- {x}' for x in boundaries.LIMITATIONS]
+    from baseline_draft import is_acknowledged          # the acknowledged ones are listed once, in Section 1
+    L += ['', '## Notes on the planetary-boundary layer', '', 'Acknowledged limitations: Section 1.', ''] + [
+        f'- {x}' for x in boundaries.LIMITATIONS if not is_acknowledged(x)]
     L += ['', '## Notes', ''] + [f'- {v}' for v in r['notes'].values()]
     return L
 

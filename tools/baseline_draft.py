@@ -111,7 +111,7 @@ def item_register():
          'data/build_material_items.py from the supplied data/raw/epd-level_materials.xlsx); item and class names '
          'stripped of leading/trailing whitespace (5 item names, 34 source rows); rows of the same building, class '
          'and item summed; reproduces data/building_data.xlsx sheet 1 for every building x class x stage',
-         'DATA: Christoforatos & Pickering 2025 case studies at item resolution'),
+         'DATA: Christoforatos & Pickering 2026 case studies at item resolution'),
         ('Material mapping, item-level (horup_item; EPD item -> S4 row)',
          f"data/material_item_map.csv: each item to exactly one S4 row or held, with its basis; {n.get('direct', 0)} "
          f"direct, {n.get('sec31', 0)} by Horup p. 6, {n.get('proxy', 0)} proxy, {n.get('held', 0)} held. Pooled per "
@@ -210,12 +210,12 @@ def timing_register():
          'building replacements: Resch, Andresen, Cherubini & Brattebø 2021, Building and Environment 187, 107399, '
          'Section 2.2. Whole life at construction is a sensitivity'),
         ('Event table (B2, B4)', f"{len(ev)} case-study lines matched to the item table (data/derived/lca_events.csv, "
-         'built by data/build_lca_events.py from data/raw/Analytical_LCA_Results_Database.xlsx, LCAQuick root '
-         f"tables): number of replacement and repaint events (maintenance, B2 and B4) and building lifespan ({', '.join(str(int(v)) for v in sorted(ev['lifespan'].unique()))} "
+         'built by data/build_lca_events.py from the author\'s LCAQuick v3.6 root tables, not redistributed; the '
+         f"derived counts are archived): number of replacement and repaint events (maintenance, B2 and B4) and building lifespan ({', '.join(str(int(v)) for v in sorted(ev['lifespan'].unique()))} "
          f"yr) per line; {len(ne)} lines carry events ({nrep} replacement, {nrp} repaint lines). Stage totals stay "
          'those of data/building_data.xlsx and the item table (the stage totals of earlier versions of the model '
          'are reproduced)',
-         'DATA: Christoforatos & Pickering 2025 case studies, LCAQuick root tables'),
+         'DATA: Christoforatos & Pickering 2026 case studies, LCAQuick root tables'),
         ('Lines not used from the event workbook', f"{len(ex)} lines, none with B2/B4 (data/derived/"
          f"lca_excluded_lines.csv): {site} sand / granular-fill lines (site works, outside the case-study scope); "
          f"{len(unl)} unlabelled lines, including the A_1 unlabelled row ({a1:,.0f} t A1-A3; excluded, as in "
@@ -348,7 +348,7 @@ def register():
          'and construction (A1-A5) and soil carbon loss of the construction in the period, plus the maintenance '
          '(B2, B4) events in the period of the cohorts built in it). Historical carbon appears only for the AR base '
          'window and the base-window rows',
-         'DATA: the case-study factors (BRANZ LCAQuick 3.6, built from EPD and BRANZ data) are roughly '
+         'DATA: the case-study factors (computed with LCAQuick v3.6; BRANZ 2023) are roughly '
          'contemporaneous with the base window; the vintages of the underlying EPDs are not tabulated'),
     ]
 
@@ -369,7 +369,7 @@ DECARB_LIMITATIONS = [
 
 def timber_end_of_life():
     """The timber end-of-life limitation, with its numbers read from the LCAQuick line data (data/derived/lca_events.csv,
-    built by data/build_lca_events.py from data/raw/Analytical_LCA_Results_Database.xlsx) and the item table
+    built by data/build_lca_events.py from the author's LCAQuick root tables, not redistributed) and the item table
     (data/derived/material_items.csv): the timber share of C1-C4, the C1-C4 / A1-A3 range of the solid-wood (sawn)
     lines, their module D sign and whether any timber line carries a replacement or repaint event."""
     d = pd.read_csv(os.path.join(ROOT, 'data', 'derived', 'lca_events.csv'))
@@ -697,7 +697,7 @@ def lines():
           'Pickering & Schipper 2026, Journal of Environmental Management 415, 130603, '
           'https://doi.org/10.1016/j.jenvman.2026.130603). The Raw and Organic soil-order extremes are the '
           'bounding sensitivity. Carbon factors for materials come from 16 New Zealand case studies '
-          '(Christoforatos & Pickering 2025, Smart and Sustainable Built Environment, '
+          '(Christoforatos & Pickering 2026, Smart and Sustainable Built Environment, '
           'https://doi.org/10.1108/SASBE-06-2025-0304).']
 
     # ---- validation ----
@@ -827,7 +827,7 @@ def lines():
          ('LITERATURE', f'Completion rate {BB.COMPLETION_RATE:.3f} and lag {BB.COMPLETION_LAG_MONTHS} months '
                         '(Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025)'),
          ('LITERATURE', 'Demolition split 0.135%/yr (BRANZ SR214); total net replacement from census counts'),
-         ('LITERATURE', 'Material carbon factors: 16 NZ case studies (Christoforatos & Pickering 2025)'),
+         ('LITERATURE', 'Material carbon factors: 16 NZ case studies (Christoforatos & Pickering 2026)'),
          ('LITERATURE', f"Soil carbon loss 58.77 kg CO2e/m2 footprint, zero on the {N.BANDS['replacement']} and {N.BANDS['redevelopment']} bands "
                         '(Christoforatos, Pickering & Schipper 2026)'),
          ('JUDGEMENT', f'Net replacement: in the Reference it fades from the 2018-2023 rate to the long-run '
@@ -837,8 +837,10 @@ def lines():
                        'theory fixes the direction, not the speed; never / 2030 / 2045 as sensitivities)'),
          ('DECISION', 'Typology mix held in every variant (Low replacement, Reference, High replacement); internal to '
                       'the model (it weights the case-study factors) and not reported'),
-         ('JUDGEMENT', 'Household size: interpolation through all published Stats NZ values (2023-2048), held '
-                       'constant beyond 2048 with zero slope imposed at 2048'),
+         ('JUDGEMENT', 'Household size: the Stats NZ shape through 2048 (PCHIP through the published values '
+                       '2023-2048, rebased on the 2023 census), then the 2043-2048 secant slope continued linearly to '
+                       "2050 (S_TAIL = 'pchip_secant'); the zero-slope and PCHIP-end-slope tails are one-at-a-time "
+                       'rows (Extended Data Fig. 4 rows 4 and 5)'),
          ('RULE', 'Starting surplus: the 2024-2025 building beyond the stock identity, if above the 1992-2023 '
                   'census-interval mean + 2 SD, carried as vacant dwellings at the start of 2026 and absorbed with the '
                   'overbuild by 2035'),
@@ -871,15 +873,67 @@ def lines():
           '|---|---|---|']
     for a, val, basis in register():
         L.append(f'| {a} | {val} | {basis} |')
-    L += ['', '## Open limitations and data needs', ''] + [
+    L += ['', '## Acknowledged limitations', ''] + [f'- {x}' for x in acknowledged_limitations()]
+    L += ['', '## Method notes and data needs', ''] + [
         f'- {x}' for x in LIMITATIONS + overbuild_limitations() + decarb_limitations(BB.DECARB_MODE)
-        + TIMING_LIMITATIONS]
+        + TIMING_LIMITATIONS if not is_acknowledged(x)]
 
-    L += ['', '## Figures', '', 'The figures of the paper: outputs/paper/PAPER.md; Extended Data: outputs/extended_data/EXTENDED_DATA.md; '
-          'every other figure: '
-          'outputs/diagnostics/DIAGNOSTICS.md. Where the projection leaves the 1991-2025 range: '
-          'outputs/reports/reality_checks.md.']
+    L += ['', '## Figures', '', 'Every figure, its caption and its source data: outputs/FIGURES.md (main, Extended Data '
+          'and Supplementary). Where the projection leaves the 1991-2025 range: outputs/reports/reality_checks.md.']
     return L
+
+
+# The acknowledged limitations of the study (one list, in this order; MODEL v4.7.2). Ten reuse the wording of the
+# detailed lists below (matched by their opening words, so each text has one source); the theoretical-limit item is
+# written here from the run outputs. The detailed lists keep every other item as method notes.
+ACKNOWLEDGED_PREFIXES = (
+    'Static carrying capacity',                                  # boundaries.LIMITATIONS
+    'Decarbonisation paths are relative changes',                # decarb_limitations: NZ follows Horup et al.
+    "The soil factor was derived for Auckland",                  # LIMITATIONS
+    'The case-study carbon factor for apartments',               # LIMITATIONS
+    'Event timing is deterministic',                             # TIMING_LIMITATIONS
+    'No national demolition data',                               # LIMITATIONS
+    'With the typology mix held',                                # LIMITATIONS
+    'The regional analysis of the recent replacement surge',     # LIMITATIONS
+    'The 2018 census empty-dwelling count',                      # LIMITATIONS
+    'Households 2019-2023',                                      # LIMITATIONS (F2)
+)
+
+
+def is_acknowledged(text):
+    """True for an item of a detailed list that the acknowledged-limitations list carries."""
+    return text.startswith(ACKNOWLEDGED_PREFIXES)
+
+
+def tl_limitation():
+    """The theoretical limit as a thought experiment (TL1 regardless of age structure), from the run outputs."""
+    lv = load('pathways/levers.json') or {}
+    tl = load('pathways/theoretical_limit.json') or {}
+    l1, a = lv.get('L1', {}), tl.get('tl1_age_standardised', {})
+    if not (l1 and a):
+        return ('The theoretical limit is a thought experiment, not a target: TL1 returns to the 1991 household size '
+                'regardless of age structure; the age-standardised TL1 is reported as a sensitivity.')
+    return (f"The theoretical limit is a thought experiment, not a target: TL1 returns household size to "
+            f"{l1['tl']:.2f} (the {l1['tl_year']} census level) regardless of age structure, which with the 2050 "
+            f"population requires about {100 * a['tl1_households_per_person_fall_at_every_age']:.1f}% fewer "
+            'households per person than in 2023 at every age; the age-standardised TL1 (the lower of the 2023 and '
+            f"Stats NZ Medium B headship rates by age group) is reported as a sensitivity (TL {a['carbon_kt']:,.0f} "
+            f"kt CO2e, cumulative LoE of AR {a['LoE_AR']:.2f}).")
+
+
+def acknowledged_limitations():
+    """The acknowledged limitations, in ACKNOWLEDGED_PREFIXES order, then the theoretical limit; STOP if an
+    expected item is missing from the detailed lists (its wording changed)."""
+    import boundaries
+    import projection as BBp
+    pool = LIMITATIONS + TIMING_LIMITATIONS + decarb_limitations(BBp.DECARB_MODE) + list(boundaries.LIMITATIONS)
+    out = []
+    for p_ in ACKNOWLEDGED_PREFIXES:
+        hit = [x for x in pool if x.startswith(p_)]
+        if len(hit) != 1:
+            raise SystemExit(f'STOP: acknowledged limitation {p_!r}: {len(hit)} matching items.')
+        out.append(hit[0])
+    return out + [tl_limitation()]
 
 
 def main():

@@ -67,6 +67,8 @@ def main():
     with open(path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(L).rstrip('\n') + '\n')
     pathways_methods.main()
+    import availability                               # outputs/reports/AVAILABILITY.md
+    availability.main()
     print(f'methods: {os.path.relpath(path, ROOT)} ({len(L)} lines) and LEVERS_TABLE.md')
 
 

@@ -53,6 +53,10 @@ PROJECTION_LINE = S.REFERENCE
 ED1_TITLES = ('Population', 'Households', 'Cumulative floor area built')
 
 
+ED3B_HEADROOM = 1.45          # ED3b: y top / the largest bar (the legend sits above the bars)
+SF10_XPAD = 0.25              # SF10: extra x range on the right, as a share of the axis span (legend room)
+
+
 def ed1():
     """3 x 1: population, households and cumulative floor area: history (black),
     the Reference projection (median, dark red) and the band of the Stats NZ population 5th-95th percentile paths (the
@@ -334,6 +338,8 @@ def sf4():
         h_ = a.get_legend_handles_labels()[0] + [                  # the typology colours explained
             Line2D([0], [0], ls='none', marker='o', ms=4, color=S.TYPOLOGY[t], label=t) for t in S.TYPOLOGY]
         a.legend(handles=h_, fontsize=S.FONT_MIN, loc='lower right')
+        lo_, hi_ = a.get_xlim()                       # room on the right: the 6-pt legend clear of the case points
+        a.set_xlim(lo_, hi_ + SF10_XPAD * (hi_ - lo_))
         P.panel(a, letter, f'{L} {N.LEVERS[L]}')
         sizes.append(f"{L}: n = {q['n']} cases, B = {e['bootstrap']['B']} bootstrap resamples")
     fig.tight_layout()
@@ -392,7 +398,8 @@ def ed9():
     ax[1].set_xticklabels([P.two_lines(r if r == 'Reference' else N.run_label(r)) for r in piv.index],
                           fontsize=S.FONT_MIN + 0.5, multialignment='center')     # two lines, centred
     ax[1].set_ylabel(f'{N.LOE_AR} 2026–2050')
-    ax[1].legend(fontsize=S.FONT_MIN)
+    ax[1].set_ylim(0, float(piv.values.max()) * ED3B_HEADROOM)        # the legend above the bars (6 pt, v4.7.2)
+    ax[1].legend(fontsize=S.FONT_MIN, loc='upper right')
     P.panel(ax[1], 'b', 'Cumulative carbon')
     fig.tight_layout(rect=(0, 0.12, 1, 1))
     _save(fig, 'ED3_replacement_variants')                          # ED8 -> ED3

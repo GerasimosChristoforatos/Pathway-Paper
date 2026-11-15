@@ -1130,7 +1130,7 @@
     },
     "tl": 0.0,
     "reference_check_max_abs": 1.7763568394002505e-15,
-    "anchor": "A4-A5 linear to zero by 2050 (Zero Carbon Act s. 5Q; Oslo 2025)",
+    "anchor": "A4-A5 linear to zero by 2050 (end year: NZ 2050 target, Climate Change Response Act s 5Q; zero site emissions: City of Oslo 2025)",
     "assumption": "A5 treated as energy: site waste assumed eliminated (upper bound)"
   },
   "L7": {
@@ -1179,7 +1179,7 @@
       "ambitious": 0.59
     },
     "tl": 1.0,
-    "s_ref_basis": "the v3 Reference: replacement (soil-free) floor area / total, ratio of sums 2026-2050",
+    "s_ref_basis": "the Reference of this run: replacement (soil-free) floor area / total floor area built, ratio of sums 2026-2050",
     "context": {
       "us_epa_2014_infill": 0.21,
       "england_2020_21": 0.66,
@@ -1299,27 +1299,26 @@
     "overbuild_excess_max_abs_diff_between_runs": 0.0
   },
   "sources": {
-    "DECC2010": "DECC (2010) 2050 Pathways Analysis. Department of Energy and Climate Change, London (ambition levels 1-4)",
-    "DESNZ2023": "DESNZ (2023) 2050 Calculator (MacKay Carbon Calculator), user guide and methodology. Department for Energy Security and Net Zero, London (levels 1-4)",
-    "EUCalc2020": "EUCalc (2020) D2.5: Ambition levels and the lever logic of the European Calculator. EUCalc project, Horizon 2020 grant 730459",
+    "DECC2010": "DECC (2010) 2050 Pathways Analysis. Department of Energy and Climate Change, London, July 2010 (ambition levels 1-4)",
+    "DESNZ2023": "DESNZ (2023) How to build a 2050 Calculator (guide). Department for Energy Security and Net Zero, London (levels 1-4)",
+    "Kockat2019": "Kockat J, Wallerand AS, Jankovic I, Wang X (2019) Identification of levers and levels for the building stock. EUCalc Deliverable D2.5 (updated July 2019), Horizon 2020 grant 730459 (Table 2: Levels 1-4)",
     "EUTaxonomy2021": "Commission Delegated Regulation (EU) 2021/2139 (Climate Delegated Act), Annex I, Section 7.7 (top 15% of the national or regional building stock)",
     "HarrellDavis1982": "Harrell FE, Davis CE (1982) A new distribution-free quantile estimator. Biometrika 69(3), 635-640",
     "EfronTibshirani1993": "Efron B, Tibshirani RJ (1993) An Introduction to the Bootstrap. Chapman & Hall (percentile interval)",
     "StatsNZConsents": "Stats NZ building consents by typology, floor area and number (data/derived/consents_monthly.csv)",
-    "ChristoforatosPickering2025": "Christoforatos G, Pickering K (2025) Smart and Sustainable Built Environment, doi:10.1108/SASBE-06-2025-0304 (16 NZ case studies)",
+    "ChristoforatosPickering2026": "Christoforatos G, Pickering K (2026) Embodied impacts of residential stocks. Smart and Sustainable Built Environment, advance online publication, doi:10.1108/SASBE-06-2025-0304 (16 NZ case studies)",
     "StatsNZHousehold": "Stats NZ, National family and household projections: 2023(base)-2048, Low / Medium / High A (POPPR_FHH_008, POPPR_FHH_010; DataInfo+ https://datainfoplus.stats.govt.nz/item/nz.govt.stats/e7475c01-9e55-491d-a8fe-74efa8fba757; accessed 2026-11-11; data/derived/households_proj_2023base.csv)",
     "StatsNZCensus": "Stats NZ census dwelling counts 1986-2023 (data/derived/census_dwellings.csv, occ-unocc-2013.xlsx)",
-    "Pellan2024": "Pellan M, et al. (2024) Building and Environment 256, 111505 (Table 2: demolition 150,000 -> 90,000 a year)",
-    "Napiontek2025": "Napiontek et al. (2025) Resources, Conservation and Recycling 215, 108117",
-    "Horup2025": "Horup LH, et al. (2025) Science of the Total Environment 966, 178780 (Fig. 6)",
-    "Resch2021": "Resch E, et al. (2021) Impact of urban density and building height on energy use in cities (A4-A5 e^(-0.01 (t - 2025)), the adopted path of the model)",
-    "ZeroCarbonAct2019": "Climate Change Response (Zero Carbon) Amendment Act 2019 (NZ), s. 5Q: net zero emissions of long-lived greenhouse gases by 2050",
-    "Oslo2025": "City of Oslo (2025) Climate and environmental requirements for the City of Oslo's construction sites (emission-free construction sites)",
+    "Pellan2024": "Pellan M, Almeida D, Louerat M, Habert G (2024) From limit values to carbon budgets: assessing comprehensive building stock decarbonisation strategies. Building and Environment 256, 111505 (Table 2: demolition 150,000 -> 90,000 a year)",
+    "Horup2025": "Horup L, Bruhn S, Hoxha E, Birgisdottir H, Secher AQ, Ohms P, Hauschild M (2025) Absolute sustainability assessment of the Danish building sector through prospective LCA. Science of the Total Environment 966, 178780 (Fig. 6)",
+    "Resch2021": "Resch E, Andresen I, Cherubini F, Brattebo H (2021) Estimating dynamic climate change effects of material use in buildings - timing, uncertainty, and emission sources. Building and Environment 187, 107399 (Table 1: A4-A5 e^(-0.01 (t - 2025)), the adopted path of the model)",
+    "CCRA2002": "Climate Change Response Act 2002 (NZ), s 5Q (2050 target; inserted by the Climate Change Response (Zero Carbon) Amendment Act 2019, amended 2025): an economy-wide target, used for the end year 2050 only",
+    "Oslo2025": "City of Oslo (2025) Revised standard climate and environmental requirements for City of Oslo construction sites. City Government Proposition 1014/25 (emission-free site machinery from 2027; emission-free construction aimed for by 2030; it does not require total A4-A5 to reach zero)",
     "ChristoforatosPickeringSchipper2026": "Christoforatos G, Pickering K, Schipper LA (2026) Integrating soil organic carbon loss into building life cycle assessment and urban planning. Journal of Environmental Management 415, 130603, doi:10.1016/j.jenvman.2026.130603 (SOC-aware scenario: same developed area, inverse-SOC allocation, 14.6% less SOC loss than BAU)",
     "DLUHC2022": "UK Department for Levelling Up, Housing and Communities (2022) Land use change statistics in England: new residential addresses 2020 to 2021 (66% on previously developed land in 2020-21; 59% three-year average; regions 41% North East - 89% London)",
-    "USEPA2014": "US EPA (2014) Residential Construction Trends in America's Metropolitan Regions, 2012 edition (infill share of new residential construction, about 21% nationally)",
-    "Pauliuk2024": "Pauliuk S, et al. (2024) Journal of Industrial Ecology 28, 1699",
+    "USEPA2012": "US EPA (2012) Residential Construction Trends in America's Metropolitan Regions, 2012 edition (infill share of new residential construction, about 21% nationally)",
+    "Pauliuk2024": "Pauliuk S, Carrer F, Heeren N, Hertwich EG (2024) Scenario analysis of supply- and demand-side solutions for circular economy and climate change mitigation in the global building sector. Journal of Industrial Ecology 28(6), 1699-1715",
     "Shapley1953": "Shapley LS (1953) A value for n-person games. In: Kuhn HW, Tucker AW (eds) Contributions to the Theory of Games II. Annals of Mathematics Studies 28, 307-317",
-    "Albrecht2002": "Albrecht J, Francois D, Schoors K (2002) A Shapley decomposition of carbon emissions without residuals. Energy Policy 30, 727-736"
+    "Albrecht2002": "Albrecht J, Francois D, Schoors K (2002) A Shapley decomposition of carbon emissions without residuals. Energy Policy 30(9), 727-736"
   }
 }

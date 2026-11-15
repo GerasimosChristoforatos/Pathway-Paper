@@ -37,7 +37,8 @@ def write():
          f"Run profile: **{runprofile.name()}** ({runprofile.get('n_draws'):,} Monte Carlo draws; formats "
          f"{', '.join(runprofile.get('formats'))} at {runprofile.get('dpi')} dpi). Every figure is drawn by the "
          'figures/ package from the data files listed (compute / draw separation).', '',
-         '## Main paper (paper_main/)', '']
+         'Manuscript numbering (the repository keeps its ids):', ''] + FP.manuscript_map_lines() + [
+         '', '## Main paper (paper_main/)', '']
     for h in FP.PAPER_MAIN:
         L += _entry(h['file'], f"{h['id']} {h['title']}", h['caption'], h['source'], os.path.join(layout.PAPER_MAIN, h['file']))
     L += ['## Extended Data (paper_extended/)', '']

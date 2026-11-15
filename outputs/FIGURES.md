@@ -2,6 +2,17 @@
 
 Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every figure is drawn by the figures/ package from the data files listed (compute / draw separation).
 
+Manuscript numbering (the repository keeps its ids):
+
+| repository id | manuscript id |
+|---|---|
+| Fig1-Fig7 | Figures 1-7 |
+| ED1-ED10 | Extended Data Figs. 1-10 |
+| LEVERS_TABLE_MAIN (outputs/reports/) | Table 1 |
+| ST1 (budget construction) | Supplementary Table 4 |
+| EDT1 (numeric lever table; outputs/reports/LEVERS_TABLE.md) | Supplementary Table 5 |
+| SF1-SF14 | Supplementary Figs. 1-14 |
+
 ## Main paper (paper_main/)
 
 ### Fig1_floor_area
@@ -26,7 +37,7 @@ Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every f
 
 - Files: `paper_main/Fig3_reference_boundaries.png`
 - Data: `data/aesa/annual.csv`, `data/montecarlo/annual_REF.csv`, `data/montecarlo/draws_REF.csv`, `data/baseline/projection.json`
-- This run: Cumulative 2026-2050 25,503 kt (LoE AR 5.76, AtP 22.9); Monte Carlo 90% interval 21,197-30,569 kt (5th-95th percentile of the cumulative carbon of the draws), 50% interval 23,649-27,459 kt, median 25,521 kt (capped bars; the column is the deterministic Reference); committed after 2050 (drawn at the lower bound): C1-C4 5,702 kt (2025 factors) and B2/B4 after 2050 4,026 kt (2050 factors held; 4,960 kt with 2025 factors); Monte Carlo median 9,726 kt, 50% interval 9,069-10,456, 90% interval 8,160-11,519 kt. Committed range from the Monte Carlo floor-area uncertainty (population, household size, dwelling size, completion rate); repair and end-of-life factors held at their central values. Moderate / Ambitious Pathway and TL: deterministic runs. Lines are shape-preserving (PCHIP) interpolation through the annual values, not smoothed across the observed -> modelled join after 2027; bands: Monte Carlo 90% band pchip, Monte Carlo 50% band pchip.
+- This run: Cumulative 2026-2050 25,503 kt (LoE AR 5.76, AtP 22.9); Monte Carlo 90% interval 21,197-30,569 kt (5th-95th percentile of the cumulative carbon of the draws), 50% interval 23,649-27,459 kt, median 25,521 kt (capped bars, no median mark; the column is the deterministic Reference); committed after 2050 (drawn at the lower bound): C1-C4 5,702 kt (2025 factors) and B2/B4 after 2050 4,026 kt (2050 factors held; 4,960 kt with 2025 factors); Monte Carlo median 9,726 kt, 50% interval 9,069-10,456, 90% interval 8,160-11,519 kt. Committed range from the Monte Carlo floor-area uncertainty (population, household size, dwelling size, completion rate); repair and end-of-life factors held at their central values. Moderate / Ambitious Pathway and TL: deterministic runs. Lines are shape-preserving (PCHIP) interpolation through the annual values, not smoothed across the observed -> modelled join after 2027; bands: Monte Carlo 90% band pchip, Monte Carlo 50% band pchip.
 
 ### Fig4_pathways
 

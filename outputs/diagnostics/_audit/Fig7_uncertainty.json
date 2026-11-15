@@ -18,8 +18,8 @@
   }
  ],
  "texts": [
-  " 6.72 M (95% CI 6.71\u20136.72 M)",
   " Reference 5.76",
+  " TL: P(within AR) = 50%\n at 6.72 M (95% CI 6.71\u20136.72 M)",
   "$\\mathdefault{4.5}$",
   "$\\mathdefault{5.0}$",
   "$\\mathdefault{5.5}$",
@@ -69,7 +69,6 @@
   "Replacement half-life",
   "Single alternative case",
   "Soil order",
-  "Theoretical Limit: P(LoE of AR \u2264 1) = 50%",
   "Theoretical Limit: P(LoE of AR \u2264 1) = 64.0% (3,200 of 5,000)",
   "a",
   "b",

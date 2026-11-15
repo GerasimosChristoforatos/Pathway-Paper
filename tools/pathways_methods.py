@@ -41,7 +41,8 @@ TABLE1_HEADER = (
     'Level 1, Moderate = Level 2, Ambitious = Level 3, theoretical limit (TL) = Level 4. One rule for every lever (the '
     "'rule' column): the Reference is current practice held (2023 / 2025 values; business-as-usual technology change "
     'applies in every run); Moderate is the midpoint of the Reference and Ambitious (exact for every lever); Ambitious '
-    'is a documented frontier, achieved somewhere or projected by an authority, and cited; the theoretical limit is '
+    'is a documented frontier: a value achieved in New Zealand or elsewhere, an official projection, a peer-reviewed '
+    'scenario or a documented requirement, and is cited; the theoretical limit is '
     'the logical bound where the lever has one (zero vacancy, zero space beyond the occupied area, no demolition, 100% '
     'brownfield, zero A4-A5), otherwise the best value observed (TL1 household size; the lowest-carbon NZ case study '
     'for materials). TL A4-A5 = 0 is a theoretical bound: construction waste cannot strictly reach zero, and LCAQuick '
@@ -163,7 +164,8 @@ def lines():
           f"Moderate (1 + r)/2 = {q['r']['moderate']:.4f}; TL8 " + ', '.join(f'{k} {v:.3f}' for k, v in q['tl'].items())
           + ' (detached: the best case, SD_2).', '']
     B['L9'] = ["**L9 Construction-stage carbon (sub-rule C).** Ambitious: A4-A5 from the 2026 Reference value linearly to "
-          "zero by 2050 (the end year is the New Zealand 2050 target, Climate Change Response Act 2002 s 5Q, an "
+          "zero by 2050 (the end year is the New Zealand 2050 target, Climate Change Response Act 2002, s 5Q (as "
+          "amended 2025), an "
           "economy-wide target; zero construction-site emissions is a documented municipal requirement, City of Oslo "
           "2025, which requires emission-free site machinery from 2027 but does not require total A4-A5 to reach "
           "zero); Moderate: the per-year midpoint of the Reference "
@@ -258,7 +260,8 @@ TABLE1_MAIN = {
     'L2': ('L2 Vacancy', 'Avoid', 'Share of dwellings left empty', '2023 census rate',
            'Lowest rate observed in NZ (1996 census)', 'Zero vacancy', 'Stats NZ censuses'),
     'L3': ('L3 Building lifetime', 'Avoid', 'Demolition and replacement', 'Current demolition and replacement',
-           '40% fewer demolitions (national scenario)', 'No demolition', 'Pellan et al. 2024'),
+           '40% fewer demolitions and rebuilds (national scenario)', 'No demolition and no rebuild wave',
+           'Pellan et al. 2024'),
     'L4': ('L4 Extra space', 'Avoid', 'Floor area beyond what occupants need', 'Current new-dwelling size',
            'Smallest new-dwelling size consented in NZ since 1990', 'No space beyond the occupied area',
            'Stats NZ consents'),
@@ -276,12 +279,13 @@ TABLE1_MAIN = {
     'L9': ('L9 Construction stage', 'Improve', 'Transport and site carbon (A4–A5) per m²',
            'Generic 1% per year decline', 'Linear to zero by 2050',
            'Zero (theoretical; site waste cannot strictly reach zero)',
-           'NZ Climate Change Response Act s 5Q; City of Oslo 2025; Resch et al. 2021'),
+           'Climate Change Response Act 2002, s 5Q (as amended 2025); City of Oslo 2025; Resch et al. 2021'),
 }
 TABLE1_MAIN_NOTE = (
     'The four levels follow the ambition levels of the UK 2050 Calculator and EUCalc (DECC 2010; Kockat et al. 2019). '
     'The Reference holds current practice; business-as-usual technology change applies in every run. Ambitious is a '
-    'value achieved somewhere or projected by an authority; for levers with NZ case studies it is the top-15% value of '
+    'documented frontier: a value achieved in New Zealand or elsewhere, an official projection, a peer-reviewed '
+    'scenario or a documented requirement, and is cited; for levers with NZ case studies it is the top-15% value of '
     'the case distribution (Harrell–Davis quantile; the top-15% convention of the EU Taxonomy). Moderate is the '
     'midpoint of the Reference and Ambitious. The Theoretical Limit is the logical bound where one exists, otherwise '
     'the best value observed; it is a thought experiment, not a target. Levels phase in from 2026 to 2035; L9 follows '

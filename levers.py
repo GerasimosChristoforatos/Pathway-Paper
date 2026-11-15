@@ -180,8 +180,10 @@ SOURCES = {
     'Resch2021': 'Resch E, Andresen I, Cherubini F, Brattebo H (2021) Estimating dynamic climate change effects of '
                  'material use in buildings - timing, uncertainty, and emission sources. Building and Environment 187, '
                  '107399 (Table 1: A4-A5 e^(-0.01 (t - 2025)), the adopted path of the model)',
-    'CCRA2002': 'Climate Change Response Act 2002 (NZ), s 5Q (2050 target; inserted by the Climate Change Response '
-                '(Zero Carbon) Amendment Act 2019, amended 2025): an economy-wide target, used for the end year 2050 only',
+    'CCRA2002': 'Climate Change Response Act 2002 (NZ), s 5Q (as amended 2025): the 2050 target, net zero for all '
+                'greenhouse gases other than biogenic methane by 2050 (s 5Q(1)(a), unchanged by the Climate Change '
+                'Response (2050 Target and Other Matters) Amendment Act 2025); an economy-wide target, used for the '
+                'end year 2050 only',
     'Oslo2025': 'City of Oslo (2025) Revised standard climate and environmental requirements for City of Oslo '
                 'construction sites. City Government Proposition 1014/25 (emission-free site machinery from 2027; '
                 'emission-free construction aimed for by 2030; it does not require total A4-A5 to reach zero)',
@@ -313,7 +315,7 @@ def a45_reference(years):
 
 def a45_ambitious(years):
     """L9 Ambitious: from the Reference factor of the last observed year (2026) linearly to zero in 2050 (the end
-    year is the NZ 2050 target, Climate Change Response Act 2002 s 5Q; zero site emissions is a documented municipal
+    year is the NZ 2050 target, Climate Change Response Act 2002, s 5Q (as amended 2025); zero site emissions is a documented municipal
     requirement, City of Oslo 2025); the Reference before it. This path is the phase-in itself: L9 Ambitious and Moderate are
     applied without the logistic adoption weight (MODEL v4.7.0: phased once; v4.6 multiplied a path linear from 2025
     by the 2026 -> 2035 logistic)."""
@@ -511,7 +513,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     out['L9'] = dict(subrule='C', a45_2025=a45, target={lv: yy(a45_target(years, LAMBDA[lv])) for lv in LAMBDA},
                      tl=0.0, reference_check_max_abs=chk,
                      anchor='A4-A5 linear to zero by 2050 (end year: NZ 2050 target, Climate Change Response Act '
-                            's 5Q; zero site emissions: City of Oslo 2025)',
+                            '2002, s 5Q (as amended 2025); zero site emissions: City of Oslo 2025)',
                      assumption='A5 treated as energy: site waste assumed eliminated (upper bound)')
 
     # ---- L7 Soil-aware planning [C] ----
@@ -857,10 +859,10 @@ def pct(x, nd=1):
 
 
 # The level rule (MODEL v4.7.0; Table 1 'rule' column): Reference = current practice held (2023 / 2025);
-# Moderate = the exact midpoint of Reference and Ambitious; Ambitious = a documented frontier (achieved somewhere or
-# projected by an authority, cited); TL = the logical bound where the lever has one, otherwise the best value observed.
+# Moderate = the exact midpoint of Reference and Ambitious; Ambitious = a documented frontier (a value achieved in New
+# Zealand or elsewhere, an official projection, a peer-reviewed scenario or a documented requirement, cited); TL = the logical bound where the lever has one, otherwise the best value observed.
 LEVEL_RULE = {
-    'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'projected by an authority: Stats NZ propensity B',
+    'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'official projection: Stats NZ propensity B',
            'best observed: the national household size of 1991 (no logical bound)'),
     'L2': ('2023 census vacancy', 'achieved in NZ: the 1996 census minimum', 'logical bound: zero vacancy'),
     'L3': ('current demolition and surge', 'peer-reviewed scenario: -40% demolition (Pellan et al. 2024)',
@@ -876,7 +878,7 @@ LEVEL_RULE = {
     'L8': ('pooled case-study A1-A3', 'achieved: the top-15% case-study A1-A3 (HD q0.15)',
            'best observed: the lowest-carbon NZ case study'),
     'L9': ('business-as-usual A4-A5 (Resch: -1%/yr)', 'documented requirement: linear to zero by 2050 (end year: NZ 2050 '
-           'target, CCRA s 5Q; zero site emissions: City of Oslo 2025)',
+           'target, CCRA s 5Q (as amended 2025); zero site emissions: City of Oslo 2025)',
            'theoretical bound: zero A4-A5 (construction waste cannot strictly reach zero; LCAQuick does not split '
            'A4 from A5)')}
 

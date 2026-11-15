@@ -75,6 +75,21 @@ Their two entries in `tests/regression_model_v4.json` are updated; no other lock
   * The MANIFEST rows are reworded.
   * No test needed it (skip count unchanged at 0).
 
+### Follow-up (same PR)
+* **Table 1, L3:**
+  * Ambitious: "40% fewer demolitions and rebuilds (national scenario)".
+  * TL: "No demolition and no rebuild wave".
+  * Both now cover the recent-surge component that L3 also removes.
+* **The four-level rule:** Ambitious is "a documented frontier: a value achieved in New Zealand or elsewhere, an
+  official projection, a peer-reviewed scenario or a documented requirement, and is cited". The same wording is in
+  the Table 1 note, the Methods / Supplementary Table 5 header and the `levers.LEVEL_RULE` comment; the L1 rule now
+  reads "official projection".
+* **s 5Q (checked by the author):** the 2025 Amendment Act changes only s 5Q(1)(b)(ii) and (3) and adds s 5QA; the
+  net-zero target of s 5Q(1)(a) is unchanged.
+  * Cited as "Climate Change Response Act 2002, s 5Q (as amended 2025)".
+  * The 2025 Act is added to `docs/REFERENCES.md`.
+  * `levers.json` gets the new L9 anchor and sources strings (text only; lock entry updated).
+
 ### 5. Figures (redraw only)
 * **Fig2:** legend +0.5 pt and every other text +0.5 pt, except the panel d column labels (they collide at +0.5 pt).
 * **Fig3b:** no Monte Carlo median mark or legend entry (median in the note).

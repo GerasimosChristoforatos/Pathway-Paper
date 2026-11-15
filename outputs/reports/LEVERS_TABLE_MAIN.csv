@@ -1,10 +1,10 @@
 Lever,PAS 2080,What it changes,Reference (current practice held),Ambitious (documented frontier),Theoretical Limit (logical bound or best observed),Sources
 L1 Household size,Avoid,"People per dwelling, hence households needed",Living arrangements of 2023 held,Living arrangements keep changing as 2001–2023 (official projection),"The 1991 household size, approached no faster than any census interval",Stats NZ 2026
 L2 Vacancy,Avoid,Share of dwellings left empty,2023 census rate,Lowest rate observed in NZ (1996 census),Zero vacancy,Stats NZ censuses
-L3 Building lifetime,Avoid,Demolition and replacement,Current demolition and replacement,40% fewer demolitions (national scenario),No demolition,Pellan et al. 2024
+L3 Building lifetime,Avoid,Demolition and replacement,Current demolition and replacement,40% fewer demolitions and rebuilds (national scenario),No demolition and no rebuild wave,Pellan et al. 2024
 L4 Extra space,Avoid,Floor area beyond what occupants need,Current new-dwelling size,Smallest new-dwelling size consented in NZ since 1990,No space beyond the occupied area,Stats NZ consents
 L5 Occupancy density,Avoid,Floor area per occupant in the design,Median NZ design,Top 15% densest NZ designs,Densest NZ design per typology,Christoforatos & Pickering 2026; EU 2021/2139
 L6 Brownfield first,Switch,Share built on previously developed land,Rebuilt sites only,Share achieved in England,All new floor area on previously developed land,DLUHC 2022
 L7 Soil-aware planning,Switch,Soil carbon lost per m² of new footprint,Soil mix of land zoned for growth,Soil-aware allocation of growth,Lowest-carbon soil order,"Christoforatos, Pickering & Schipper 2026"
 L8 Material efficiency,Switch,Material carbon (A1–A3) per m²,Pooled NZ typology factor,Top 15% NZ case studies,Lowest-carbon NZ case study,Christoforatos & Pickering 2026; EU 2021/2139
-L9 Construction stage,Improve,Transport and site carbon (A4–A5) per m²,Generic 1% per year decline,Linear to zero by 2050,Zero (theoretical; site waste cannot strictly reach zero),NZ Climate Change Response Act s 5Q; City of Oslo 2025; Resch et al. 2021
+L9 Construction stage,Improve,Transport and site carbon (A4–A5) per m²,Generic 1% per year decline,Linear to zero by 2050,Zero (theoretical; site waste cannot strictly reach zero),"Climate Change Response Act 2002, s 5Q (as amended 2025); City of Oslo 2025; Resch et al. 2021"

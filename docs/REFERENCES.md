@@ -136,11 +136,13 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   (Emission-free site activities: machinery emission-free or on biogas from 1 January 2027; emission-free construction
   aimed for by 2030. It does not require total A4–A5 to reach zero; cited for L9 as a documented municipal requirement
   of zero construction-site emissions.)
-- Climate Change Response Act 2002 (New Zealand), s 5Q (2050 target), as in force: inserted by the Climate Change
-  Response (Zero Carbon) Amendment Act 2019 and amended by the Climate Change Response (2050 Target and Other Matters)
-  Amendment Act 2025. https://legislation.govt.nz/act/public/2002/40/en/latest/ ;
-  https://www.legislation.govt.nz/act/public/2025/80/en/latest/ (The economy-wide 2050 target: the end year of L9
-  Ambitious only.)
+- Climate Change Response Act 2002 (New Zealand), s 5Q (as amended 2025). Section 5Q (2050 target) was inserted by the
+  Climate Change Response (Zero Carbon) Amendment Act 2019. https://legislation.govt.nz/act/public/2002/40/en/latest/
+  (s 5Q(1)(a): net accounting emissions of greenhouse gases other than biogenic methane zero by 2050, the economy-wide
+  target; used as the end year of L9 Ambitious only.)
+- Climate Change Response (2050 Target and Other Matters) Amendment Act 2025 (New Zealand).
+  https://www.legislation.govt.nz/act/public/2025/80/en/latest/ (Amends s 5Q only in (1)(b)(ii), the biogenic methane
+  reduction 24–47% -> 14–24%, and (3), and inserts s 5QA; the net-zero target of s 5Q(1)(a) is unchanged.)
 - Commission Delegated Regulation (EU) 2021/2139 of 4 June 2021 (Climate Delegated Act), Annex I, Section 7.7
   "Acquisition and ownership of buildings": top 15% of the national or regional building stock. *Official Journal of
   the European Union* L 442, 9.12.2021. (The q0.15 convention of sub-rule A.)

@@ -1130,7 +1130,7 @@
     },
     "tl": 0.0,
     "reference_check_max_abs": 1.7763568394002505e-15,
-    "anchor": "A4-A5 linear to zero by 2050 (end year: NZ 2050 target, Climate Change Response Act s 5Q; zero site emissions: City of Oslo 2025)",
+    "anchor": "A4-A5 linear to zero by 2050 (end year: NZ 2050 target, Climate Change Response Act 2002, s 5Q (as amended 2025); zero site emissions: City of Oslo 2025)",
     "assumption": "A5 treated as energy: site waste assumed eliminated (upper bound)"
   },
   "L7": {
@@ -1312,7 +1312,7 @@
     "Pellan2024": "Pellan M, Almeida D, Louerat M, Habert G (2024) From limit values to carbon budgets: assessing comprehensive building stock decarbonisation strategies. Building and Environment 256, 111505 (Table 2: demolition 150,000 -> 90,000 a year)",
     "Horup2025": "Horup L, Bruhn S, Hoxha E, Birgisdottir H, Secher AQ, Ohms P, Hauschild M (2025) Absolute sustainability assessment of the Danish building sector through prospective LCA. Science of the Total Environment 966, 178780 (Fig. 6)",
     "Resch2021": "Resch E, Andresen I, Cherubini F, Brattebo H (2021) Estimating dynamic climate change effects of material use in buildings - timing, uncertainty, and emission sources. Building and Environment 187, 107399 (Table 1: A4-A5 e^(-0.01 (t - 2025)), the adopted path of the model)",
-    "CCRA2002": "Climate Change Response Act 2002 (NZ), s 5Q (2050 target; inserted by the Climate Change Response (Zero Carbon) Amendment Act 2019, amended 2025): an economy-wide target, used for the end year 2050 only",
+    "CCRA2002": "Climate Change Response Act 2002 (NZ), s 5Q (as amended 2025): the 2050 target, net zero for all greenhouse gases other than biogenic methane by 2050 (s 5Q(1)(a), unchanged by the Climate Change Response (2050 Target and Other Matters) Amendment Act 2025); an economy-wide target, used for the end year 2050 only",
     "Oslo2025": "City of Oslo (2025) Revised standard climate and environmental requirements for City of Oslo construction sites. City Government Proposition 1014/25 (emission-free site machinery from 2027; emission-free construction aimed for by 2030; it does not require total A4-A5 to reach zero)",
     "ChristoforatosPickeringSchipper2026": "Christoforatos G, Pickering K, Schipper LA (2026) Integrating soil organic carbon loss into building life cycle assessment and urban planning. Journal of Environmental Management 415, 130603, doi:10.1016/j.jenvman.2026.130603 (SOC-aware scenario: same developed area, inverse-SOC allocation, 14.6% less SOC loss than BAU)",
     "DLUHC2022": "UK Department for Levelling Up, Housing and Communities (2022) Land use change statistics in England: new residential addresses 2020 to 2021 (66% on previously developed land in 2020-21; 59% three-year average; regions 41% North East - 89% London)",

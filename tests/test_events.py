@@ -79,7 +79,7 @@ def test_event_timing_first_event():
 
 
 def test_within_window_plus_committed_equals_whole_life(tr_frozen):
-    """At 2025 factors: upfront + in-window B + committed B (upper) + C1-C4 = whole life (both on the v3 Reference)."""
+    """At 2025 factors: upfront + in-window B + committed B (upper) + C1-C4 = whole life (both on the Reference)."""
     whole = run_boss(DECARB_MODE='none', **WHOLE_LIFE)['tot_carbon_median']
     c = tr_frozen['COMMITTED']
     up = tr_frozen['_upfront'] + tr_frozen['_soil'] / 1e6

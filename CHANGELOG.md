@@ -2,6 +2,106 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.7.2: documentation consistent with the locked method, references checked, main-paper lever table, figure tidy (no model run)
+
+**No model, Monte Carlo or Sobol run; the methodology is locked.** Reports and figures were regenerated from the
+v4.7.1 outputs (`tools/methods.py`, `tools/assumptions.py`, `tools/sensitivity_tables.py`, `redraw.py --final`).
+
+**Numbers unchanged.** Every number in `outputs/data/` is identical. Two files differ only in text fields, reported here:
+* `pathways/levers.json`: the L6 `s_ref_basis`, the L9 `anchor` and the `sources` dict. The new strings come from the
+  code; the file was patched in place and checked equal to the old one in every other field. It is written only by a
+  full `pathways.py` run.
+* `sensitivity/reference_carbon.csv`: the citation year in the "basis" column of two rows (Christoforatos &
+  Pickering 2025 -> 2026), rewritten by `tools/sensitivity_tables.py`.
+
+Their two entries in `tests/regression_model_v4.json` are updated; no other lock entry changed. Tests: 258 passed,
+0 skipped. Palette coverage and figure integrity pass.
+
+### 1. Code-vs-text contradictions (the code is the truth; text fixed)
+* **Re-occupation pool** (`tools/pathways_methods.py`, the `pathways.py` module docstring step 4, `reoccupation()`, the
+  `REOCCUPATION_YEARS` comment, ARCHITECTURE).
+  * The Reference, the Pathways and every non-TL run have no pool: the starting surplus and the 2026-27 overbuild
+    are absorbed on the logistic by 2035, and a vacancy-rate fall is used in its year.
+  * TL-family runs pool R = R1 + R2 + the positive overbuild + the starting surplus.
+  * The window is first = observed_end + 1 = 2028 (not 2027).
+  * TL numbers: R1 = 0; R2 = 117,834; overbuild pooled 33,984; starting surplus 18,966; R = 170,785.
+    G+ (2028-2050) = 315,033 (G+ over 2027-2050 would be 353,692); s = 0.542.
+  * R1 = 0 because, at the TL1 rate limit, households never fall in absolute terms. In the instant TL (no rate
+    limit) R1 = 78,964: households fall from 2.026 M to 1.947 M in 2027.
+* **Household size after 2048** (assumption table): the Stats NZ shape through 2048, then the 2043-2048 secant slope
+  continued linearly to 2050. The zero-slope and PCHIP tails are ED4 rows [4] and [5].
+* **Very High replacement:** two negative interval rates, 1996-2001 (-0.105%/yr) and 2001-2006 (-0.039%/yr), not one
+  (D07).
+* **L6 basis:** "the Reference of this run: replacement (soil-free) floor area / total floor area built, ratio of
+  sums 2026-2050" (0.088). The test docstring is fixed too.
+
+### 2. Documentation sweep
+* **Stale terms:** fixed where they described the current model; the hits left are justified in the PR.
+  * README: L9 and TL1 are exceptions to the common logistic.
+  * The ARCHITECTURE pool text.
+  * Methods figure paths now point to `outputs/FIGURES.md`.
+  * "authors contacted" removed (Hjalsted α).
+* **Acknowledged limitations:** one generated list (`baseline_draft.acknowledged_limitations`, in METHODS_DRAFT and
+  ASSUMPTIONS) holding exactly the eleven acknowledged limitations, the TL one new and data-driven. The other items
+  stay as "method notes" without duplicates.
+* **Manuscript numbering** (`figure_plan.MANUSCRIPT_IDS`), in the `outputs/FIGURES.md` header and the README:
+  * EDT1 -> Supplementary Table 5;
+  * ST1 -> Supplementary Table 4;
+  * LEVERS_TABLE_MAIN -> Table 1.
+
+### 3. Main-paper Table 1
+* `outputs/reports/LEVERS_TABLE_MAIN.md` / `.csv`, from the `TABLE1_MAIN` dict in `tools/pathways_methods.py`.
+  Eleven structural facts are checked against `levers.json`; the writer stops on a mismatch.
+* `LEVERS_TABLE.md` is retitled Supplementary Table 5.
+
+### 4. References, availability, case-study data
+* **`docs/REFERENCES.md`:** rewritten with the checked entries.
+  * Benini et al. 2015 deleted; Laurent et al. 2013 Table 4 (pp. 10-11) is now the cited source of I_glob.
+  * PAS 2080 cited in full, with the methods sentence on L3 under Avoid.
+  * Kockat et al. 2019 replaces EUCalc 2020; US EPA 2012 (was 2014); Stats NZ projections 2025.
+  * Christoforatos & Pickering 2026 everywhere (MANIFEST and CITATION included).
+  * `grep "[verify"` over docs/, outputs/reports/, *.py and tools/: empty.
+* **Wording fixes:**
+  * The L9 sources no longer claim more than they state: s 5Q is an economy-wide target, used for the end year only;
+    Oslo requires emission-free site machinery, not zero A4-A5.
+  * Resch et al. 2021 title corrected in `levers.SOURCES`.
+  * Napiontek et al. 2025 dropped from `levers.SOURCES`: it supported no value and is not in REFERENCES.
+* **Availability:** `outputs/reports/AVAILABILITY.md` (`tools/availability.py`) and the README carry the data and code
+  availability statements (Zenodo DOI placeholder) and a third-party data table.
+* **Licence:** `LICENSE` (MIT) added, and `license: MIT` set in CITATION.cff, to match the stated code licence.
+* **Case-study data:** `data/raw/Analytical_LCA_Results_Database.xlsx` (the author's LCAQuick root tables) is removed
+  from the tree (git rm + .gitignore; no history rewrite).
+  * `data/build_lca_events.py` stops with a clear message without it.
+  * The MANIFEST rows are reworded.
+  * No test needed it (skip count unchanged at 0).
+
+### Follow-up (same PR)
+* **Table 1, L3:**
+  * Ambitious: "40% fewer demolitions and rebuilds (national scenario)".
+  * TL: "No demolition and no rebuild wave".
+  * Both now cover the recent-surge component that L3 also removes.
+* **The four-level rule:** Ambitious is "a documented frontier: a value achieved in New Zealand or elsewhere, an
+  official projection, a peer-reviewed scenario or a documented requirement, and is cited". The same wording is in
+  the Table 1 note, the Methods / Supplementary Table 5 header and the `levers.LEVEL_RULE` comment; the L1 rule now
+  reads "official projection".
+* **s 5Q (checked by the author):** the 2025 Amendment Act changes only s 5Q(1)(b)(ii) and (3) and adds s 5QA; the
+  net-zero target of s 5Q(1)(a) is unchanged.
+  * Cited as "Climate Change Response Act 2002, s 5Q (as amended 2025)".
+  * The 2025 Act is added to `docs/REFERENCES.md`.
+  * `levers.json` gets the new L9 anchor and sources strings (text only; lock entry updated).
+
+### 5. Figures (redraw only)
+* **Fig2:** legend +0.5 pt and every other text +0.5 pt, except the panel d column labels (they collide at +0.5 pt).
+* **Fig3b:** no Monte Carlo median mark or legend entry (median in the note).
+* **Fig5:** AtP out of the legend (kept on the strip); 3 x 3 grid with AR below the Theoretical Limit; centred on the
+  square plot.
+* **Fig6, Fig7a:** legends +0.5 pt.
+* **Fig7b:** the 50% line's legend entry merged into its two-line label.
+* **ED / SF:** legends and annotations at least 6 pt (`style.raise_small_text`).
+  * The ED4 / ED5 row notes keep their measured layout.
+  * Layout fixes: ED3b headroom, SF1a label wrapped, SF10 x room, SF14a legend placed upper right.
+  * Font audit (smallest text per figure) in the PR; nothing below 5 pt.
+
 ## model-v4.7.1: panel titles, Fig5 / Fig7 tidy, ED2b paths, Supplementary pass (cosmetics; no model run)
 
 No model, Monte Carlo or Sobol run: every figure was redrawn from the committed v4.7.0 outputs (`redraw.py --final`).

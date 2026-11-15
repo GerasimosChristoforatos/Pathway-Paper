@@ -226,6 +226,8 @@ def fig1():
 # Fig2: Reference carbon by demand band, material and stage (annual) and cumulative (three attached columns)
 # ---------------------------------------------------------------------------
 FIG2_H, FIG2_BOTTOM, FIG2_LEG_Y = 108, 0.36, -0.10    # height (mm), axes bottom, legend top (axes)
+FIG2_TEXT_BUMP = 0.5                  # MODEL v4.7.2: +0.5 pt on every Fig2 text outside the legends, except the
+                                      # panel d column labels ('By demand' / 'By material' collide at +0.5 pt)
 
 
 def fig2():
@@ -268,7 +270,7 @@ def fig2():
     ax[0].set_yticks(ticks)                                           # ticks only over the data range
     ax[0].set_ylabel('Embodied carbon (kt CO₂e per year)')
     # no legend inside the panels; one legend row below a-d, each block under its own panel
-    LEG = dict(loc='upper center', bbox_to_anchor=(0.5, FIG2_LEG_Y), fontsize=S.FONT_MIN + 0.75, frameon=False,
+    LEG = dict(loc='upper center', bbox_to_anchor=(0.5, FIG2_LEG_Y), fontsize=S.FONT_MIN + 1.25, frameon=False,
                borderaxespad=0.0, labelspacing=0.3, columnspacing=0.8, handlelength=1.4)
     hs_ = ax[2].get_legend_handles_labels()
     ax[2].legend(*hs_, ncol=1, **LEG)
@@ -337,6 +339,14 @@ def fig2():
     P.thousands(d.yaxis)
     d.grid(axis='x', visible=False)
     P.panel(d, 'd', 'Cumulative carbon')
+    legend_texts = {t for a_ in ax for t in a_.get_legend().get_texts()}
+    for t in fig.findobj(matplotlib.text.Text):       # MODEL v4.7.2: every other text +FIG2_TEXT_BUMP pt (fits)
+        if t.get_text() and t not in legend_texts:
+            t.set_fontsize(t.get_fontsize() + FIG2_TEXT_BUMP)
+    for a_ in list(ax) + [d]:                         # tick labels are created lazily
+        a_.tick_params(labelsize=S.FONT_SIZE + FIG2_TEXT_BUMP)
+    for t in d.get_xticklabels():                     # the three column labels keep their size: +0.5 pt collides
+        t.set_fontsize(S.FONT_MIN + 0.5)
     fig.subplots_adjust(left=0.07, right=0.99, bottom=FIG2_BOTTOM, top=0.94)
     _save(fig, 'Fig2_reference_carbon', note=f'2026-2050: {c:,.0f} kt CO₂e; (d) the demand column: positive bands '
                                               f'stacked up from zero to {sum(v for v in bsum if v > 0):,.0f} kt, '
@@ -355,11 +365,10 @@ FIG3A_YTOP = 1700                   # kt: the legend overlaps the 90% band only 
 FIG3B_HATCH = {'b2b4': 'xxxxxxxx', 'c1c4': '........'}   # committed segments: dense, so the legend swatches read
 FIG3B_HATCH_LW = 0.6                # hatch lines (pt), the column and its legend swatches alike
 # Fig3b Monte Carlo intervals: capped error bars (no boxes); 50% bold ink, 90% muted grey, thinner, longer caps;
-# both at FIG3B_EB_ALPHA so both stay visible where they overlap; the Monte Carlo median a short ink tick
+# both at FIG3B_EB_ALPHA so both stay visible where they overlap; no median mark (MODEL v4.7.2)
 FIG3B_EB = {'50': dict(color='ink', lw=1.6, capsize=3.0, capthick=1.6),
             '90': dict(color='muted', lw=0.8, capsize=6.0, capthick=0.8)}
 FIG3B_EB_ALPHA = S.OPACITY['fig3b_interval_bars']      # palette.toml [opacity]
-FIG3B_MEDIAN_HALF = 0.07            # half-width of the median tick (x units; the column is 0.55 wide)
 
 
 def mc_cumulative_interval():
@@ -392,16 +401,14 @@ def mc_committed():
 
 
 def fig3b_intervals(ax, x, q, wd):
-    """The Fig3b Monte Carlo intervals at x: 90% and 50% capped error bars (FIG3B_EB) about the median, the median a
-    short ink tick. q: {'p5', 'p25', 'p50', 'p75', 'p95'}. Returns the legend handles (90%, 50%, median)."""
+    """The Fig3b Monte Carlo intervals at x: 90% and 50% capped error bars (FIG3B_EB); no median tick (MODEL v4.7.2:
+    the median is in the note). q: {'p5', 'p25', 'p50', 'p75', 'p95'}. Returns the legend handles (90%, 50%)."""
     h = {}
     for key, (lo_, hi_), z in (('90', ('p5', 'p95'), 6), ('50', ('p25', 'p75'), 7)):
         st = FIG3B_EB[key]
         h[key] = ax.errorbar([x], [q['p50']], yerr=[[q['p50'] - q[lo_]], [q[hi_] - q['p50']]], fmt='none',
                              ecolor=S.NEUTRALS[st['color']], elinewidth=st['lw'], capsize=st['capsize'],
                              capthick=st['capthick'], alpha=FIG3B_EB_ALPHA, zorder=z)
-    h['median'] = ax.plot([x - FIG3B_MEDIAN_HALF, x + FIG3B_MEDIAN_HALF], [q['p50'], q['p50']], color=S.INK,
-                          lw=S.LW, solid_capstyle='butt', zorder=8)[0]
     return h
 
 
@@ -503,7 +510,6 @@ def fig3():
     b.grid(axis='x', visible=False)
     hb = [(Patch(**col_st), 'Cumulative carbon 2026–2050'),
           (eb['90'], 'Monte Carlo 90% interval'), (eb['50'], 'Monte Carlo 50% interval'),
-          (eb['median'], 'Monte Carlo median'),
           (Patch(hatch_linewidth=FIG3B_HATCH_LW, **com_st['b2b4']), 'Committed after 2050: B2/B4'),
           (Patch(hatch_linewidth=FIG3B_HATCH_LW, **com_st['c1c4']), 'Committed after 2050: C1–C4')]
     lgb = b.legend(handles=[h_ for h_, _ in hb], labels=[l_ for _, l_ in hb], loc='upper left', fontsize=S.FONT_MIN,
@@ -521,7 +527,7 @@ def fig3():
     _save(fig, 'Fig3_reference_boundaries',
           note=f'Cumulative 2026-2050 {c:,.0f} kt (LoE AR {c / bar_:.2f}, AtP {c / batp:.1f}); Monte Carlo 90% interval '
                f'{lo90:,.0f}-{hi90:,.0f} kt ({FIG3_INTERVAL[0]:g}th-{FIG3_INTERVAL[1]:g}th percentile of the cumulative '
-               f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt, median {qc["p50"]:,.0f} kt (capped bars; the '
+               f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt, median {qc["p50"]:,.0f} kt (capped bars, no median mark; the '
                f'column is the deterministic Reference); committed after 2050 (drawn at the lower '
                f'bound): C1-C4 {cc:,.0f} kt (2025 factors) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held; '
                f'{bu:,.0f} kt with 2025 factors); Monte Carlo median {qk["p50"]:,.0f} kt, 50% interval '
@@ -860,10 +866,18 @@ def fig5():
           Line2D([0], [0], ls='none', color=S.TL, marker='o', ms=ms_['tl'], label=N.TL['TL']),
           Line2D([0], [0], ls='none', color=S.REFERENCE, marker='s', ms=4, label=f"{N.SCENARIOS['REF']} (ruler)")]
     h += S.boundary_handles() + S.zone_handles()
-    drop = {S.ZONE[k]['label'] for k in S.ZONE} | {f"{N.SCENARIOS['REF']} (ruler)"}
-    h = [x for x in h if x.get_label() not in drop]
-    leg5 = fig.legend(handles=h, loc='lower left', bbox_to_anchor=(0.02, 0.0, 0.96, 0.1), mode='expand', ncol=4,
-                      frameon=False, fontsize=S.FONT_MIN + 1.0)         # legend a bit larger
+    # MODEL v4.7.2: no AtP entry (AtP stays on the side strip); a 3 x 3 grid filled by column, Acquired rights (AR) in
+    # the third column below the Theoretical Limit; centred on the square plot (ax), not on the figure
+    by = {x.get_label(): x for x in h}
+    ar_lab = S.BOUNDARY['AR']['label']
+    order = [GROUP_LABEL[P_] for P_ in RUN_GROUPS if P_ != N.PATHWAY] + [
+        'Moderate', 'Ambitious', N.PATHWAY_RUNS['pathway-moderate'],
+        N.PATHWAY_RUNS['pathway-ambitious'], N.TL['TL'], ar_lab]
+    if len(order) != 9 or any(k not in by for k in order):
+        raise SystemExit(f'STOP: Fig5 legend: expected nine entries, got {order} of {list(by)}')
+    h = [by[k] for k in order]
+    leg5 = fig.legend(handles=h, loc='upper center', bbox_to_anchor=(0.5, -0.1), bbox_transform=ax.transAxes,
+                      ncol=3, frameon=False, fontsize=S.FONT_MIN + 1.0, columnspacing=1.6)   # legend a bit larger
     for ln in fig.findobj(Line2D):                                  # every marker x FIG5_MS (plane,
         if ln.get_marker() not in (None, 'None', '', ' '):            # ruler, legend; relative sizes kept)
             ln.set_markersize(ln.get_markersize() * FIG5_MS)
@@ -872,11 +886,10 @@ def fig5():
             t.set_fontsize(t.get_fontsize() * FIG5_FONT)
     for a_ in (ax, ru):                                             # tick labels (created lazily)
         a_.tick_params(labelsize=S.FONT_SIZE * FIG5_FONT)
-    fig.canvas.draw()                                               # the legend at least 4 pt below the x-label
-    gap_pt = (ax.xaxis.label.get_window_extent().y0 - leg5.get_window_extent().y1) * 72 / fig.dpi
-    if gap_pt < 4:
-        dy = (4 - gap_pt) / 72 * fig.dpi / fig.bbox.height
-        leg5.set_bbox_to_anchor((0.02, -dy, 0.96, 0.1), transform=fig.transFigure)
+    fig.canvas.draw()                                               # the legend top 4 pt below the x-label
+    y_lab = ax.transAxes.inverted().transform((0, ax.xaxis.label.get_window_extent().y0))[1]
+    y_top = y_lab - 4 / 72 * fig.dpi / ax.get_window_extent().height
+    leg5.set_bbox_to_anchor((0.5, y_top), transform=ax.transAxes)
     note = (f"LoE AR = [{c26:,.0f} + {r['carbon_2027_2050_cohorts_kt']:,.0f} (1 - x)(1 - y)] / {bc['B_AR_kt']:,.0f} kt; "
             f"C_2026 = the 2026 cohort's emissions in the window; plane floor C_2026 / B_AR = {floor:.3f} (the lowest "
             f"LoE AR at x or y = 100%); AtP = B_AtP / B_AR = {atp_level:.3f} lies below the floor, so the AtP contour is "
@@ -935,7 +948,7 @@ def fig6():
                               label=S.SETTING['ambitious']['label']),
                         Line2D([0], [0], ls='none', color=S.TL, label=N.TL['TL'], marker='o',
                                ms=5)],
-               loc='lower center', ncol=3, fontsize=S.FONT_SMALL, frameon=False, bbox_to_anchor=(0.5, 0.0))
+               loc='lower center', ncol=3, fontsize=S.FONT_SMALL + 0.5, frameon=False, bbox_to_anchor=(0.5, 0.0))
     P.centre_ticklabels(fig, ax[0])
     fig.tight_layout(rect=(0, 0.07, 0.95, 1))
     tot = {k: v.sum() for k, v in g.items()}
@@ -1092,7 +1105,7 @@ def fig7():
     a.legend(handles=[Patch(label='Input at low end', **S.fill(LOW_END)),
                       Patch(label='Input at high end', **S.fill(HIGH_END))]
              + ([Patch(label='Single alternative case', **S.fill(SINGLE_CASE))] if has_single else []),
-             loc='lower right', fontsize=S.FONT_MIN)
+             loc='lower right', fontsize=S.FONT_MIN + 0.5)
     a.text(c0, 1.0, f' Reference {c0:.2f}', transform=a.get_xaxis_transform(), ha='left', va='bottom',
            fontsize=S.FONT_SMALL, color=S.INK)            # as ED4 / ED5: the Reference value at the top of its line
     P.panel(a, 'a', 'One-at-a-time sensitivity analysis', above_label=True)
@@ -1135,10 +1148,10 @@ def fig7():
         x50 = thr['threshold_P_NZ_2050'] / 1e6
         y0_, y1_ = b.get_ylim()                                     # the line stops above the data (legend clear)
         top = (np.log(vmax * 1.15) - np.log(y0_)) / (np.log(y1_) - np.log(y0_))
-        vl = b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3,
-                       label=f"{N.TL['TL']}: P(LoE of AR ≤ 1) = 50%")
-        b.text(x50, 0.03, f' {x50:.2f} M (95% CI {lo / 1e6:.2f}–{hi / 1e6:.2f} M)', transform=b.get_xaxis_transform(),
-               ha='left', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
+        vl = b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3)   # not in the legend (v4.7.2):
+        b.text(x50, 0.03, f" TL: P(within AR) = 50%\n at {x50:.2f} M (95% CI {lo / 1e6:.2f}–{hi / 1e6:.2f} M)",
+               transform=b.get_xaxis_transform(), ha='left', va='bottom', fontsize=S.FONT_MIN,   # the line's label
+               color=S.INK, linespacing=1.15)
     hb = b.get_legend_handles_labels()[0]
     hb.append(Line2D([0], [0], **dict(S.BOUNDARY['AR'], label='AR (LoE = 1)')))
     lg = b.legend(handles=hb, loc='upper left', fontsize=S.FONT_MIN, markerscale=3, frameon=False)

@@ -68,7 +68,8 @@ FILE_GDP = os.path.join(DATA_DIR, 'derived', 'nz_gdp_quarterly.csv')            
 #     to three figures as 6.81E12 is; '3.6 Gt' in ESM1 and Hjalsted et al. p. 10.
 #   5.58E13 kg CO2-eq/yr: ESM2 'Climate change2degree' B30 ('Background
 #     interventions_Global', typed input), global impact 2010 from Laurent et
-#     al. (2013) PROSUITE D5.2 (8.1 t/person, ESM1); it equals the EF 3.0 global
+#     al. (2013) PROSUITE D5.2, Table 4 pp. 10-11 (5.58E+01 Gt CO2-eq, 8.10E+03 kg
+#     per person, IPCC AR4 GWPs, p. 9); it equals the EF 3.0 global
 #     normalisation factor for climate change (8.10E+03 kg CO2e per person, 2010;
 #     Andreasi Bassi et al. 2023, Table 10), whose total sums the fossil, biogenic
 #     and land-use-change sub-indicators.
@@ -967,8 +968,9 @@ SOURCE_CHECK = [
      'Hjalsted et al. 2021 p. 10 and SI Table S1', 'as above', 'as above', 'n/a (capacity)'),
     ('5.58E13', 'global impact ("background interventions", global)',
      'Bjørn & Hauschild 2015 ESM2 sheet "Climate change2degree" B30 (typed input); ESM1: 8.1 t/person from '
-     'Laurent et al. 2013 (PROSUITE D5.2). EC-JRC "Normalization factors for testing" sheet 1.3: 5.589E13, '
-     '8,100/person, "2010 or 2000"', '2010 (ESM1)', 'not stated; Laurent et al. 2013 not in hand',
+     'Laurent et al. 2013 (PROSUITE D5.2), Table 4, pp. 10-11: midpoint climate change total 5.58E+01 Gt CO2-eq, '
+     '2010, population 6.90E+09, 8.10E+03 kg CO2-eq per person', '2010 (Laurent et al. 2013, Table 4)',
+     'IPCC AR4 GWPs (Forster et al. 2007; Laurent et al. 2013, p. 9)',
      f'equals the EF 3.0 global factor ({I_GLOB_EF30_PER_PERSON:.2E} kg CO2e per person, 2010; Andreasi Bassi et '
      'al. 2023, Table 10), whose climate-change total sums the fossil, biogenic and land-use-change sub-indicators'),
     ('5.21E13', 'EF 3.1 normalisation factor x population (7.55E3 kg/person x 6,895,889,018)',
@@ -989,7 +991,7 @@ LIMITATIONS = [
      if projection.ACCOUNTING == 'time_resolved' else
      'B2, B4 and C1-C4 are booked in the construction year, so the impact of 2026-2050 includes future '
      'maintenance and end-of-life emissions of the buildings built in those years.'),
-    f'Carbon factors and the AR base: the case-study factors (BRANZ LCAQuick 3.6, built from EPD and BRANZ data) '
+    f'Carbon factors and the AR base: the case-study factors (computed with LCAQuick v3.6; BRANZ 2023) '
     f'are roughly contemporaneous with the {AR_BASE_WINDOW[0]}-{AR_BASE_WINDOW[1]} base window, so the base uses them '
     'without back-casting; the vintages of the underlying EPDs are not tabulated. The base follows the '
     'projection\'s accounting rule (materials and construction and soil carbon loss of the base window\'s '
@@ -1024,8 +1026,9 @@ LIMITATIONS = [
     'completion-rate and completion-lag one-at-a-time rows recompute the base from their own runs. It does not '
     'co-vary with the draw\'s dwelling size (the historical floor area is observed consents).',
     'The numerical results in Hjalsted et al.\'s SI (Tables S4-S9) are reproduced only with α = 1; we apply α as '
-    'specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS. The authors have '
-    'been contacted.',
+    'specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS; the case α = 1 '
+    'is the sensitivity row (xiv) of the boundary sensitivities (aesa/sensitivity.csv; listed as not shown in Extended '
+    'Data Fig. 5, since it moves AtP only).',
 ]
 
 

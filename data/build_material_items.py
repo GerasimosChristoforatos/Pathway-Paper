@@ -5,7 +5,7 @@ typed by hand.
 
 Source (provenance in data/raw/MANIFEST.csv):
   data/raw/epd-level_materials.xlsx, sheet 'ROOOOOT' (header in row 2), supplied
-  by the author: the 16 case-study LCAs of Christoforatos & Pickering (2025),
+  by the author: the 16 case-study LCAs of Christoforatos & Pickering (2026),
   Smart and Sustainable Built Environment, https://doi.org/10.1108/SASBE-06-2025-0304,
   one row per building element and EPD item, absolute kg CO2e per building,
   by life-cycle stage. data/building_data.xlsx (sheet 1) is the same data

@@ -3,8 +3,9 @@ Build the replacement / repaint event table (time-resolved B2, B4) from the
 LCAQuick root tables of the 16 case studies. No values typed by hand.
 
 Source (provenance in data/raw/MANIFEST.csv):
-  data/raw/Analytical_LCA_Results_Database.xlsx, supplied by the author: LCAQuick
-  v3.6 root tables of the case studies of Christoforatos & Pickering (2025), one
+  data/raw/Analytical_LCA_Results_Database.xlsx (NOT REDISTRIBUTED since MODEL v4.7.2: removed from the tree, its
+  output data/derived/lca_events.csv is kept; without it this script stops with a message), the author's LCAQuick
+  v3.6 root tables of the case studies of Christoforatos & Pickering (2026), one
   sheet per building (sheets T1_H, T2_W, T3_P are the model's T_1, T_2, T_3).
   Per line: no_of_full_replacements, no_of_repaints and GWP by stage (kg CO2e per
   building); per sheet: 'Building Lifespan' and 'GFA Approx.'.
@@ -102,7 +103,14 @@ def read_sheet(ws):
     return out, meta
 
 
+NOT_REDISTRIBUTED = ("data/raw/Analytical_LCA_Results_Database.xlsx is absent: the author's LCAQuick root tables, not "
+                     'redistributed (beyond the published case data, not needed to run the model); derived counts in '
+                     'data/derived/lca_events.csv.')
+
+
 def main():
+    if not os.path.exists(SRC):
+        raise SystemExit(f'STOP: build_lca_events: {NOT_REDISTRIBUTED}')
     wb = openpyxl.load_workbook(SRC, read_only=True, data_only=True)
     lines, meta = [], {}
     for ws in wb.worksheets:

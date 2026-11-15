@@ -220,6 +220,24 @@ SUPPLEMENTARY = [
          source=['pathways/reoccupation_log.csv']),
 ]
 # Supplementary Tables (Markdown + CSV, outputs/supplementary/<folder>/)
+# Repository id -> manuscript id (MODEL v4.7.2). The repository keeps its ids; the manuscript numbers its tables
+# separately. Table 1 (main paper) is outputs/reports/LEVERS_TABLE_MAIN.md (tools/pathways_methods.py).
+MANUSCRIPT_IDS = (
+    ('Fig1-Fig7', 'Figures 1-7'),
+    ('ED1-ED10', 'Extended Data Figs. 1-10'),
+    ('LEVERS_TABLE_MAIN (outputs/reports/)', 'Table 1'),
+    ('ST1 (budget construction)', 'Supplementary Table 4'),
+    ('EDT1 (numeric lever table; outputs/reports/LEVERS_TABLE.md)', 'Supplementary Table 5'),
+    ('SF1-SF14', 'Supplementary Figs. 1-14'),
+)
+
+
+def manuscript_map_lines():
+    """The repository-to-manuscript numbering as a Markdown table."""
+    return (['| repository id | manuscript id |', '|---|---|']
+            + [f'| {a} | {b} |' for a, b in MANUSCRIPT_IDS])
+
+
 SUPPLEMENTARY_TABLES = [dict(id='ST1', file='ST1_budget_construction', folder='boundaries', module='figures.boundaries',
                              title='The AR and AtP budgets: components, the budgets in 2025 and 2050 and the 2050 '
                                    'population modifier', source=['aesa/results.json',

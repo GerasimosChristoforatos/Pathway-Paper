@@ -14,9 +14,14 @@ ONE RUN (run()): every run, the Reference included, follows the same order per y
   3. the 2026 overbuild: the market excess of the REFERENCE (computed once, held fixed in every run) is absorbed
      along the Reference's logistic weights, the payback capped at max(gross_t, 0) with the shortfall carried
      (engine.absorb_overbuild);
-  4. re-occupation (TL-family runs with TL1 and / or TL2 only): the dwellings released by TL1 (household decline:
-     -min(d households, 0) / (1 - v)) and TL2 to 2050, R = R1 + R2, meet a constant share of each year's need
-     after the payback (reoccupation());
+  4. re-occupation (TL-family runs only: TL, the TL waterfall steps, every TL Shapley subset): the pool
+     R = R1 (TL1, household decline: -min(d households, 0) / (1 - v)) + R2 (TL2, zero vacancy) + the positive
+     overbuild (the pipeline years and the fading gap) + the starting surplus meets a constant share of each year's
+     need after the payback over first..2050, first = observed_end + 1 (2028 with the 17-month lag; the releases of
+     the observed years enter the pool in `first`) (reoccupation()); a negative excess is still made good along the
+     logistic and the re-occupied overbuild is booked in 'Overbuild absorbed'. Every other run (the Reference, the
+     Moderate and Ambitious Pathways) has no pool: the starting surplus and the overbuild are absorbed along the
+     logistic (step 3) and a vacancy-rate fall is used in the year it occurs (use_in_year);
   5. engine.forward with the stock-adding join = excess - payback + TL2 release - re-occupied, so the stock identity
      holds and the released dwellings stay vacant until re-occupied.
 
@@ -82,7 +87,8 @@ GRID = np.round(np.arange(0.0, 1.0 + 1e-9, 0.05), 2)     # solution space: 0-100
 LAMBDA_GRID = np.round(np.arange(0.0, 1.0 + 1e-9, 0.1), 1)
 BRENTQ_XTOL = 1e-15
 M6 = 1e6
-REOCCUPATION_YEARS = (2027, 2050)   # the window starts at the first unobserved year (observed_window)
+REOCCUPATION_YEARS = (2027, 2050)   # (default start, end): the default start applies only when no projection year is
+                                    # observed; run() passes start = observed_end + 1 (2028 with the 17-month lag)
 FIRST_LEVER_YEAR = 2027             # no vacancy-rate fall before it (2026 observed; levers.OBSERVED_YEAR + 1)
 # TL surplus pooling: in a theoretical-limit-family run the Reference's overbuild surplus (the positive
 #   market excess: the pipeline years and the fading gap) enters the re-occupation pool with the TL1 / TL2 releases
@@ -169,15 +175,18 @@ REOCCUPATION_RULES = ('constant_share', 'fast')   # adopted; 'fast' = as fast as
 
 
 def reoccupation(years, gross, released, rule='constant_share', start=REOCCUPATION_YEARS[0]):
-    """Constant-share re-occupation. The dwellings released in 2027-2050 by TL1 and TL2 (R in total)
-    meet a constant share of each year's need after the overbuild payback:
+    """Constant-share re-occupation. The pool released over start..2050 (R in total: TL1, TL2, and in run() the
+    positive overbuild and the starting surplus; releases of the observed years are entered at `start`) meets a
+    constant share of each year's need after the overbuild payback:
 
-        target_t = max(gross_t, 0) x s,   s = min(R, G+) / G+,   G+ = sum over 2027-2050 of max(gross_t, 0)
+        target_t = max(gross_t, 0) x s,   s = min(R, G+) / G+,   G+ = sum over start-2050 of max(gross_t, 0)
+
+    run() passes start = observed_end + 1 (2028 with the 17-month completion lag: 2026-2027 are observed).
 
     The dwellings re-occupied up to year t never exceed those released up to t. Where that binds, the shortfall is
     BUILT (not carried) and the share is recomputed from the remaining pool for the remaining years:
     s = min(R - re-occupied so far, remaining G+) / remaining G+. built_t = max(gross_t, 0) - re-occupied_t >= 0.
-    Where R > G+, s = 1 and the surplus R - G+ stays vacant in 2050. 2025 and 2026 pass through (2026 observed).
+    Where R > G+, s = 1 and the surplus R - G+ stays vacant in 2050. Years before start pass through (observed).
 
     rule 'fast' (A4 sensitivity row): re-occupation as fast as demand allows,
     reoccupied_t = min(max(gross_t, 0), cumulative released to t - cumulative re-occupied to t-1)."""

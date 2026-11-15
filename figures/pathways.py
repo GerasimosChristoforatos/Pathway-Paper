@@ -66,7 +66,7 @@ def sf14_tl_dwellings():
         P.panel(b, letter, N.TL['TL'] if run == 'TL' else f"{N.TL['TL']}, instant start")
     for b in ax:                                       # own y scales: each panel labelled
         b.set_ylabel('Dwellings per year (thousand)')
-    ax[0].legend(fontsize=S.FONT_MIN)
+    ax[0].legend(fontsize=S.FONT_MIN, loc='upper right')    # the empty corner (the 6-pt legend clears the pool peak)
     fig.tight_layout()
     S.save_figure(fig, 'SF14_tl_dwellings', note=f"(b) The {N.TL['TL']} at full strength from 2027 "
                                                  '(no phase-in; sensitivity).',

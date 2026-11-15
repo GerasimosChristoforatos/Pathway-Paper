@@ -6,7 +6,7 @@ households path; LEVER_PARAMETER) and nothing else. No function reads module glo
 written and no argument is modified: every function returns new objects (or, for a lever that is off, the input
 object itself, so that the identity run is the reference call of projection.main()).
 
-AMBITION LEVELS (the 2050 Pathways Calculator, DECC 2010 and DESNZ 2023; EUCalc D2.5, 2020)
+AMBITION LEVELS (the 2050 Pathways Calculator, DECC 2010 and DESNZ 2023; EUCalc D2.5, Kockat et al. 2019)
   Reference  = Level 1   the lever's native parameter at its Reference value (the lever is off)
   Moderate   = Level 2   the exact midpoint between Reference and Ambitious in the native parameter (per year for the
                          path levers L1 and L9)
@@ -152,33 +152,41 @@ L6_S_AMBITIOUS = 0.59             # DLUHC 2022: England, three-year average 2018
 L6_CONTEXT = dict(us_epa_2014_infill=0.21, england_2020_21=0.66, england_3yr=0.59, north_east=0.41, london=0.89)
 
 SOURCES = {
-    'DECC2010': 'DECC (2010) 2050 Pathways Analysis. Department of Energy and Climate Change, London (ambition levels 1-4)',
-    'DESNZ2023': 'DESNZ (2023) 2050 Calculator (MacKay Carbon Calculator), user guide and methodology. Department for '
-                 'Energy Security and Net Zero, London (levels 1-4)',
-    'EUCalc2020': 'EUCalc (2020) D2.5: Ambition levels and the lever logic of the European Calculator. EUCalc project, '
-                  'Horizon 2020 grant 730459',
+    'DECC2010': 'DECC (2010) 2050 Pathways Analysis. Department of Energy and Climate Change, London, July 2010 '
+                '(ambition levels 1-4)',
+    'DESNZ2023': 'DESNZ (2023) How to build a 2050 Calculator (guide). Department for Energy Security and Net Zero, '
+                 'London (levels 1-4)',
+    'Kockat2019': 'Kockat J, Wallerand AS, Jankovic I, Wang X (2019) Identification of levers and levels for the building '
+                  'stock. EUCalc Deliverable D2.5 (updated July 2019), Horizon 2020 grant 730459 (Table 2: Levels 1-4)',
     'EUTaxonomy2021': 'Commission Delegated Regulation (EU) 2021/2139 (Climate Delegated Act), Annex I, Section 7.7 '
                       '(top 15% of the national or regional building stock)',
     'HarrellDavis1982': 'Harrell FE, Davis CE (1982) A new distribution-free quantile estimator. Biometrika 69(3), 635-640',
     'EfronTibshirani1993': 'Efron B, Tibshirani RJ (1993) An Introduction to the Bootstrap. Chapman & Hall (percentile interval)',
     'StatsNZConsents': 'Stats NZ building consents by typology, floor area and number (data/derived/consents_monthly.csv)',
-    'ChristoforatosPickering2025': 'Christoforatos G, Pickering K (2025) Smart and Sustainable Built '
-                                   'Environment, doi:10.1108/SASBE-06-2025-0304 (16 NZ case studies)',
+    'ChristoforatosPickering2026': 'Christoforatos G, Pickering K (2026) Embodied impacts of residential stocks. '
+                                   'Smart and Sustainable Built Environment, advance online publication, '
+                                   'doi:10.1108/SASBE-06-2025-0304 (16 NZ case studies)',
     'StatsNZHousehold': 'Stats NZ, National family and household projections: 2023(base)-2048, Low / Medium / High '
                         'A (POPPR_FHH_008, POPPR_FHH_010; DataInfo+ https://datainfoplus.stats.govt.nz/item/nz.govt.'
                         'stats/e7475c01-9e55-491d-a8fe-74efa8fba757; accessed 2026-11-11; '
                         'data/derived/households_proj_2023base.csv)',
     'StatsNZCensus': 'Stats NZ census dwelling counts 1986-2023 (data/derived/census_dwellings.csv, occ-unocc-2013.xlsx)',
-    'Pellan2024': 'Pellan M, et al. (2024) Building and Environment 256, 111505 (Table 2: demolition 150,000 -> 90,000 '
-                  'a year)',
-    'Napiontek2025': 'Napiontek et al. (2025) Resources, Conservation and Recycling 215, 108117',
-    'Horup2025': 'Horup LH, et al. (2025) Science of the Total Environment 966, 178780 (Fig. 6)',
-    'Resch2021': 'Resch E, et al. (2021) Impact of urban density and building height on energy use in cities '
-                 '(A4-A5 e^(-0.01 (t - 2025)), the adopted path of the model)',
-    'ZeroCarbonAct2019': 'Climate Change Response (Zero Carbon) Amendment Act 2019 (NZ), s. 5Q: net zero emissions '
-                         'of long-lived greenhouse gases by 2050',
-    'Oslo2025': 'City of Oslo (2025) Climate and environmental requirements for the City of Oslo\'s construction '
-                'sites (emission-free construction sites)',
+    'Pellan2024': 'Pellan M, Almeida D, Louerat M, Habert G (2024) From limit values to carbon budgets: assessing '
+                  'comprehensive building stock decarbonisation strategies. Building and Environment 256, 111505 '
+                  '(Table 2: demolition 150,000 -> 90,000 a year)',
+    'Horup2025': 'Horup L, Bruhn S, Hoxha E, Birgisdottir H, Secher AQ, Ohms P, Hauschild M (2025) Absolute '
+                 'sustainability assessment of the Danish building sector through prospective LCA. Science of the '
+                 'Total Environment 966, 178780 (Fig. 6)',
+    'Resch2021': 'Resch E, Andresen I, Cherubini F, Brattebo H (2021) Estimating dynamic climate change effects of '
+                 'material use in buildings - timing, uncertainty, and emission sources. Building and Environment 187, '
+                 '107399 (Table 1: A4-A5 e^(-0.01 (t - 2025)), the adopted path of the model)',
+    'CCRA2002': 'Climate Change Response Act 2002 (NZ), s 5Q (as amended 2025): the 2050 target, net zero for all '
+                'greenhouse gases other than biogenic methane by 2050 (s 5Q(1)(a), unchanged by the Climate Change '
+                'Response (2050 Target and Other Matters) Amendment Act 2025); an economy-wide target, used for the '
+                'end year 2050 only',
+    'Oslo2025': 'City of Oslo (2025) Revised standard climate and environmental requirements for City of Oslo '
+                'construction sites. City Government Proposition 1014/25 (emission-free site machinery from 2027; '
+                'emission-free construction aimed for by 2030; it does not require total A4-A5 to reach zero)',
     'ChristoforatosPickeringSchipper2026': 'Christoforatos G, Pickering K, Schipper LA (2026) Integrating soil '
                                            'organic carbon loss into building life cycle assessment and urban '
                                            'planning. Journal of Environmental Management 415, 130603, '
@@ -187,13 +195,15 @@ SOURCES = {
     'DLUHC2022': 'UK Department for Levelling Up, Housing and Communities (2022) Land use change statistics in '
                  'England: new residential addresses 2020 to 2021 (66% on previously developed land in 2020-21; 59% '
                  'three-year average; regions 41% North East - 89% London)',
-    'USEPA2014': 'US EPA (2014) Residential Construction Trends in America\'s Metropolitan Regions, 2012 edition '
+    'USEPA2012': 'US EPA (2012) Residential Construction Trends in America\'s Metropolitan Regions, 2012 edition '
                  '(infill share of new residential construction, about 21% nationally)',
-    'Pauliuk2024': 'Pauliuk S, et al. (2024) Journal of Industrial Ecology 28, 1699',
+    'Pauliuk2024': 'Pauliuk S, Carrer F, Heeren N, Hertwich EG (2024) Scenario analysis of supply- and demand-side '
+                   'solutions for circular economy and climate change mitigation in the global building sector. '
+                   'Journal of Industrial Ecology 28(6), 1699-1715',
     'Shapley1953': 'Shapley LS (1953) A value for n-person games. In: Kuhn HW, Tucker AW (eds) Contributions to the '
                    'Theory of Games II. Annals of Mathematics Studies 28, 307-317',
     'Albrecht2002': 'Albrecht J, Francois D, Schoors K (2002) A Shapley decomposition of carbon emissions without '
-                    'residuals. Energy Policy 30, 727-736',
+                    'residuals. Energy Policy 30(9), 727-736',
 }
 
 
@@ -304,8 +314,9 @@ def a45_reference(years):
 
 
 def a45_ambitious(years):
-    """L9 Ambitious: from the Reference factor of the last observed year (2026) linearly to zero in 2050 (Zero Carbon
-    Act s. 5Q; Oslo 2025); the Reference before it. This path is the phase-in itself: L9 Ambitious and Moderate are
+    """L9 Ambitious: from the Reference factor of the last observed year (2026) linearly to zero in 2050 (the end
+    year is the NZ 2050 target, Climate Change Response Act 2002, s 5Q (as amended 2025); zero site emissions is a documented municipal
+    requirement, City of Oslo 2025); the Reference before it. This path is the phase-in itself: L9 Ambitious and Moderate are
     applied without the logistic adoption weight (MODEL v4.7.0: phased once; v4.6 multiplied a path linear from 2025
     by the 2026 -> 2035 logistic)."""
     y = np.asarray(years, float)
@@ -501,7 +512,8 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
         raise SystemExit(f'L9: the model A4-A5 path is not a45_2025 x e^(-0.01 (y - 2025)) (max abs diff {chk:.2e}).')
     out['L9'] = dict(subrule='C', a45_2025=a45, target={lv: yy(a45_target(years, LAMBDA[lv])) for lv in LAMBDA},
                      tl=0.0, reference_check_max_abs=chk,
-                     anchor='A4-A5 linear to zero by 2050 (Zero Carbon Act s. 5Q; Oslo 2025)',
+                     anchor='A4-A5 linear to zero by 2050 (end year: NZ 2050 target, Climate Change Response Act '
+                            '2002, s 5Q (as amended 2025); zero site emissions: City of Oslo 2025)',
                      assumption='A5 treated as energy: site waste assumed eliminated (upper bound)')
 
     # ---- L7 Soil-aware planning [C] ----
@@ -517,8 +529,8 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     E0 = B['engine_out']['50th']
     s_ref = float(np.sum(E0['soil_free_gfa'][1:]) / np.sum(E0['total'][1:]))
     out['L6'] = dict(subrule='C', s={'reference': s_ref, 'moderate': (s_ref + L6_S_AMBITIOUS) / 2.0,
-                                     'ambitious': L6_S_AMBITIOUS}, tl=1.0, s_ref_basis='the v3 Reference: replacement '
-                     '(soil-free) floor area / total, ratio of sums 2026-2050', context=dict(L6_CONTEXT),
+                                     'ambitious': L6_S_AMBITIOUS}, tl=1.0, s_ref_basis='the Reference of this run: '
+                     'replacement (soil-free) floor area / total floor area built, ratio of sums 2026-2050', context=dict(L6_CONTEXT),
                      anchor='59% of new floor area on previously developed land (England 2018-21, DLUHC 2022)',
                      note='lambda = 0 is the lever off (the Reference); a constant s = s_ref would act in the years whose '
                           'own replacement share is below s_ref')
@@ -847,10 +859,10 @@ def pct(x, nd=1):
 
 
 # The level rule (MODEL v4.7.0; Table 1 'rule' column): Reference = current practice held (2023 / 2025);
-# Moderate = the exact midpoint of Reference and Ambitious; Ambitious = a documented frontier (achieved somewhere or
-# projected by an authority, cited); TL = the logical bound where the lever has one, otherwise the best value observed.
+# Moderate = the exact midpoint of Reference and Ambitious; Ambitious = a documented frontier (a value achieved in New
+# Zealand or elsewhere, an official projection, a peer-reviewed scenario or a documented requirement, cited); TL = the logical bound where the lever has one, otherwise the best value observed.
 LEVEL_RULE = {
-    'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'projected by an authority: Stats NZ propensity B',
+    'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'official projection: Stats NZ propensity B',
            'best observed: the national household size of 1991 (no logical bound)'),
     'L2': ('2023 census vacancy', 'achieved in NZ: the 1996 census minimum', 'logical bound: zero vacancy'),
     'L3': ('current demolition and surge', 'peer-reviewed scenario: -40% demolition (Pellan et al. 2024)',
@@ -865,7 +877,8 @@ LEVEL_RULE = {
            'logical bound: the lowest soil order'),
     'L8': ('pooled case-study A1-A3', 'achieved: the top-15% case-study A1-A3 (HD q0.15)',
            'best observed: the lowest-carbon NZ case study'),
-    'L9': ('business-as-usual A4-A5 (Resch: -1%/yr)', 'legislated target: linear to zero by 2050 (Zero Carbon Act)',
+    'L9': ('business-as-usual A4-A5 (Resch: -1%/yr)', 'documented requirement: linear to zero by 2050 (end year: NZ 2050 '
+           'target, CCRA s 5Q (as amended 2025); zero site emissions: City of Oslo 2025)',
            'theoretical bound: zero A4-A5 (construction waste cannot strictly reach zero; LCAQuick does not split '
            'A4 from A5)')}
 

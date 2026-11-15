@@ -77,7 +77,7 @@ def sf1_households():
     P.history_estimated(a, d2['households_hist'], anchor, M6, label='History (31 Dec)', k=k, straight=True)
     lo, hi = d2['households_5th'] / M6, d2['households_95th'] / M6
     xf, lof, hif, _ = P.pchip_band(fy, lo, (lo + hi) / 2, hi, P.series_breaks(), name='SF1a households 5-95')
-    a.fill_between(xf, lof, hif, label='5th–95th population percentile with Low A – High A household size '
+    a.fill_between(xf, lof, hif, label='5th–95th population percentile with Low A – High A household size\n'
                                        '(household size moves with population)', **S.MC_BAND)
     P.line(a, d2['projection_years'], d2['projection_households'] / M6,
            label='Projection: population / household size, median', **_ref())

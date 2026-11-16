@@ -68,8 +68,8 @@ same tree under `outputs/_light/`.
 |---|---|
 | Every figure and table, with its title, caption, data sources and run note; one row per item in the manifest | [outputs/FIGURES.md](outputs/FIGURES.md), [outputs/figure_manifest.csv](outputs/figure_manifest.csv) |
 | **Main figures**: Fig1–Fig7 | [outputs/paper_main/](outputs/paper_main/) |
-| **Extended Data**: ED1–ED10 and the table EDT1 | [outputs/paper_extended/](outputs/paper_extended/) |
-| **Supplementary**: SF1–SF14 in topic folders and the table ST1 | [outputs/supplementary/](outputs/supplementary/) |
+| **Extended Data**: ED1–SF6 and the table EDT1 | [outputs/paper_extended/](outputs/paper_extended/) |
+| **Supplementary**: SF1–SF15 in topic folders and the table ST1 | [outputs/supplementary/](outputs/supplementary/) |
 | Figure audit records (one JSON per figure) | [outputs/diagnostics/_audit/](outputs/diagnostics/_audit/) |
 | Results summary; every assumption with its basis; validation, reconciliation and market-balance reports | [outputs/reports/](outputs/reports/) |
 | Methods draft and the levers table (Table 1) | [outputs/reports/METHODS_DRAFT.md](outputs/reports/METHODS_DRAFT.md), [outputs/reports/LEVERS_TABLE.md](outputs/reports/LEVERS_TABLE.md) |
@@ -177,11 +177,11 @@ The repository keeps its ids; the manuscript numbers them as below (the same tab
 | repository id | manuscript id |
 |---|---|
 | Fig1-Fig7 | Figures 1-7 |
-| ED1-ED10 | Extended Data Figs. 1-10 |
+| ED1-ED9 | Extended Data Figs. 1-9 |
+| EDT1: the numeric lever table (outputs/reports/LEVERS_TABLE.md) with its per-typology values (paper_extended/EDT1_levels_by_typology) | Extended Data Table 1 |
 | LEVERS_TABLE_MAIN (outputs/reports/) | Table 1 |
 | ST1 (budget construction) | Supplementary Table 4 |
-| EDT1 (numeric lever table; outputs/reports/LEVERS_TABLE.md) | Supplementary Table 5 |
-| SF1-SF14 | Supplementary Figs. 1-14 |
+| SF1-SF15 | Supplementary Figs. 1-15 |
 
 ## Data freeze
 

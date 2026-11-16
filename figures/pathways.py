@@ -15,7 +15,7 @@ ED8_RUNS = (('reference', N.SCENARIOS['REF'], dict(color=S.REFERENCE, lw=S.LW_BO
 
 
 def ed8_lever_annual():
-    """ED8 (data D31): annual embodied carbon of each lever alone (3 x 3, shared y), the Reference and
+    """ED7 (data D31): annual embodied carbon of each lever alone (3 x 3, shared y), the Reference and
     the lever at Moderate, at Ambitious and at its Theoretical Limit, in the run colours of Fig3 / Fig4 (palette.toml
     [runs]); panel titles the lever names (no strategy-colour square, no lever-specific colour); PCHIP display interpolation through every annual value, not
     across the observed pipeline years -> modelled join (pathways/lever_annual.csv)."""
@@ -38,7 +38,7 @@ def ed8_lever_annual():
     fig.legend(h, l_, loc='lower center', ncol=4, frameon=False, fontsize=S.FONT_SMALL, bbox_to_anchor=(0.5, 0.0),
                title='Embodied carbon per year: the Reference and each lever alone at', title_fontsize=S.FONT_SMALL)
     fig.tight_layout(rect=(0, 0.08, 1, 1), h_pad=1.6)
-    S.save_figure(fig, 'ED8_lever_annual', note='Each panel: one lever alone; the other levers at the Reference. '
+    S.save_figure(fig, 'ED7_lever_annual', note='Each panel: one lever alone; the other levers at the Reference. '
                                                 'Lines: PCHIP display interpolation through the annual values.',
                   source=['pathways/lever_annual.csv', 'baseline/overbuild_2026.json'])
 
@@ -68,9 +68,9 @@ def sf14_tl_dwellings():
         b.set_ylabel('Dwellings per year (thousand)')
     ax[0].legend(fontsize=S.FONT_MIN, loc='upper right')    # the empty corner (the 6-pt legend clears the pool peak)
     fig.tight_layout()
-    S.save_figure(fig, 'SF14_tl_dwellings', note=f"(b) The {N.TL['TL']} at full strength from 2027 "
+    S.save_figure(fig, 'SF15_tl_dwellings', note=f"(b) The {N.TL['TL']} at full strength from 2027 "
                                                  '(no phase-in; sensitivity).',
                   source=['pathways/reoccupation_log.csv'])
 
 
-FIGURES = {'ED8_lever_annual': ed8_lever_annual, 'SF14_tl_dwellings': sf14_tl_dwellings}
+FIGURES = {'ED7_lever_annual': ed8_lever_annual, 'SF15_tl_dwellings': sf14_tl_dwellings}

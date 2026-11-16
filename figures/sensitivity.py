@@ -103,6 +103,7 @@ REF_ROWS = {
     ("A4-A5 on each item's own path / held at 2025", 'low'): ('a4a5', 'low'),
     ("A4-A5 on each item's own path / held at 2025", 'high'): ('a4a5', 'high'),
     ('Soil carbon loss on all floor area, including replacement', 'single'): ('soil_all', 'single'),
+    ('Module D credit, booked at construction (not netted)', 'single'): ('module_d', 'single'),
     ('Event timing L / n', 'single'): ('event_timing', 'single'),
 }
 REF_DROPPED = ('Completion rate 0.95 (MODEL v3.3)', 'Completion lag 0 months (MODEL v3.3)',
@@ -333,6 +334,10 @@ def row_notes_ed4(r):
     _same(F, 'soil row', kw('Soil carbon loss on all floor area, including replacement', 'single'),
           dict(SOIL_ON_REPLACEMENT=True))
     n['soil_all'] = 'soil carbon loss also on replacement floor area instead of none on rebuilt footprints'
+    n['module_d'] = ('the Module D credit (benefits beyond the system boundary, EN 15978) of the 2026–2050 cohorts at '
+                     '2025 factors (the largest credit), booked in the construction year and subtracted; carbon only; '
+                     'not converted to LoE, because a consistent LoE would need Module D in the historical sector base '
+                     'as well')
     return n
 
 

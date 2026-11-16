@@ -42,7 +42,7 @@ def ed2():
     ax.set_ylabel('Net replacement (% of stock per year)')
     ax.legend(fontsize=S.FONT_MIN, ncol=2, loc='upper left')
     fig.tight_layout()
-    _save(fig, 'SF3_census_replacement_rates', note='Bars: census-interval rates from dwelling counts (net of '
+    _save(fig, 'SF2_census_replacement_rates', note='Bars: census-interval rates from dwelling counts (net of '
                                                     'unconsented additions); lines: the projection variants.')
 
 
@@ -214,12 +214,12 @@ def sf2():
                 f"living-arrangement rates by age group{floor_txt}) TL is {a['carbon_kt']:,.0f} kt, LoE AR {a['LoE_AR']:.2f}"
                 + (f", P(LoE AR \u2264 1) = {100 * float(m['probability_LoE_at_most_1'].iloc[0]):.1f}% over the draws"
                    if len(m) else '') + ' (the sensitivity row TL-TL1-age-standardised).')
-    _save(fig, 'SF13_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
+    _save(fig, 'SF14_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
                                           f"{j['wilson_95'][1]:.3f}); (b) {note_b}.{age_note}")
 
 
 def ed10():
-    """Roll-out timing (ED9): (a, b) annual carbon of the Moderate / Ambitious Pathway
+    """Roll-out timing (ED8): (a, b) annual carbon of the Moderate / Ambitious Pathway
     with full roll-out by 2030, 2035 (adopted) and 2045; (c) their cumulative carbon 2026-2050 as the
     running sum (same colours and line styles), the Reference cumulative a grey line (pathways/annual.csv; the 2050
     end values equal runs.csv carbon_kt, checked)."""
@@ -276,7 +276,7 @@ def ed10():
     P.thousands(c.yaxis)
     P.panel(c, 'c', 'Cumulative carbon')
     fig.subplots_adjust(left=0.07, right=0.91, bottom=0.25, top=0.92)
-    _save(fig, 'ED9_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
+    _save(fig, 'ED8_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
         f'{N.run_label(r_)} {v:,.0f}' for r_, v in ends) + f'; Reference {cref[-1]:,.0f}.')
 
 
@@ -402,7 +402,7 @@ def ed9():
     ax[1].legend(fontsize=S.FONT_MIN, loc='upper right')
     P.panel(ax[1], 'b', 'Cumulative carbon')
     fig.tight_layout(rect=(0, 0.12, 1, 1))
-    _save(fig, 'ED3_replacement_variants')                          # ED8 -> ED3
+    _save(fig, 'ED3_replacement_variants')                          # ED7 -> ED3
 
 
 def ed4():
@@ -440,9 +440,9 @@ def ed4():
     ss = D.js('baseline/projection.json')['starting_surplus']
     u0 = float(lg.loc[lg['year'] == lg['year'].min(), 'surplus_vacant'].iloc[0])
     if not np.isclose(u0, ss['dwellings'], rtol=1e-9):
-        raise SystemExit(f'STOP: SF5: the surplus still vacant at {int(lg["year"].min())} ({u0:,.1f}) is not the '
+        raise SystemExit(f'STOP: SF4: the surplus still vacant at {int(lg["year"].min())} ({u0:,.1f}) is not the '
                          f"starting surplus ({ss['dwellings']:,.1f}).")
-    _save(fig, 'SF5_overbuild_absorption', note=f"The surplus still vacant U(t) starts with the starting surplus of "
+    _save(fig, 'SF4_overbuild_absorption', note=f"The surplus still vacant U(t) starts with the starting surplus of "
                                                  f"{ss['dwellings']:,.0f} dwellings (the {ss['after_years'][0]}–"
                                                  f"{ss['after_years'][-1]} building beyond the stock identity, carried "
                                                  f'into 2026), to which the 2026 overbuild adds; both are paid back '
@@ -499,7 +499,7 @@ def edt1():
 
 
 FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_household_formation_size': ed3,
-           'ED3_replacement_variants': ed9, 'ED9_rollout_timing': ed10,      # ED8 dropped, ED10 -> ED9
-           'SF3_census_replacement_rates': ed2, 'SF5_overbuild_absorption': ed4, 'SF9_lambda_sweep': sf3,
-           'SF10_hd_estimators': sf4, 'SF13_conditional_tl': sf2}
+           'ED3_replacement_variants': ed9, 'ED8_rollout_timing': ed10,      # ED7 dropped, SF6 -> ED8
+           'SF2_census_replacement_rates': ed2, 'SF4_overbuild_absorption': ed4, 'SF9_lambda_sweep': sf3,
+           'SF10_hd_estimators': sf4, 'SF14_conditional_tl': sf2}
 TABLES = {'EDT1_levels_by_typology': edt1}

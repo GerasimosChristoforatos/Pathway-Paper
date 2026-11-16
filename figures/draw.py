@@ -209,7 +209,8 @@ def panel_label(ax, letter, x=-0.02, y=1.02, raise_pt=0.0):
     """Bold panel letter at the top left, outside the axes (raise_pt points higher, as panel())."""
     import matplotlib.transforms as mtrans
     tr = mtrans.offset_copy(ax.transAxes, fig=ax.figure, y=raise_pt, units='points') if raise_pt else ax.transAxes
-    ax.text(x, y, letter, transform=tr, fontsize=S.FONT_SIZE + 1, fontweight='bold', va='bottom', ha='right')
+    ax.text(x, y, letter + S.PANEL_SUFFIX, transform=tr, fontsize=S.FONT_SIZE + 1, fontweight='bold', va='bottom',
+            ha='right')
 
 
 # points by which panel(..., above_label=True) lifts the title and letter: room for a one-line label drawn at the top
@@ -342,7 +343,7 @@ def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', s
     order), the net a black line. parts: [(band id, values)]; net: the run's total to check against (1e-9).
     smooth (annual series only): each band PCHIP-interpolated separately, then stacked (the net check
     runs on the annual values). styles: {part id: patch style} for parts that are not demand bands (the
-    SF2b components); the others take band_style. Returns (up, down) at the annual values, with down <= 0."""
+    ED9b components); the others take band_style. Returns (up, down) at the annual values, with down <= 0."""
     x = np.asarray(x, float)
     if smooth:
         a_up = np.sum([np.clip(np.asarray(v, float), 0, None) for _, v in parts], axis=0)
@@ -394,7 +395,7 @@ def bars_cumulative(ax, x, parts, width, net=None, tick=True, styles=None):
     for bid, v in parts:
         neg = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), None, 0)
         if np.any(neg < 0):
-            # the outline in the caller's own face colour when it gives one (SF2c components that are not
+            # the outline in the caller's own face colour when it gives one (ED9c components that are not
             # demand bands had fallen back to the replacement colour)
             nst = (dict(facecolor='none', edgecolor=styles[bid]['facecolor'], linewidth=S.LW_OUTLINE, hatch=None)
                    if styles and bid in styles else negative_bar_style(bid))

@@ -9,9 +9,11 @@
     means; the ED4 / ED5 notes stop when the code and the outputs disagree;
   * the palette file: a missing key, an unknown key, a value that is not "#RRGGBB" (and an opacity
     outside [0, 1]) are rejected;
-  * SF2b: up + down = net for every column and year; the census-interval means of the annual line = the column nets;
-    the projection's net replacement is one band, equal to the sum of its three parts;
-  * ED10: an Extended Data item; every drawn history line equals its source data (not smoothed).
+  * ED9b (stock and vacancy, SF2b before MODEL v4.8.0): up + down = net for every column and year; the census-interval
+    means of the annual line = the column nets; the projection's net replacement is one band, equal to the sum of its
+    three parts;
+  * Extended Data: nine figures (with Extended Data Table 1, ten items); SF6 (reality checks, ED10 before MODEL
+    v4.8.0): every drawn history line equals its source data (not smoothed).
 """
 import hashlib
 import json
@@ -115,8 +117,8 @@ def test_figures_leave_the_data_byte_identical():
     import importlib
     before = hashes()
     # one figure of every drawing module (main, Extended Data, Supplementary)
-    for fid in ('Fig4_pathways', 'Fig6_shapley_levers', 'ED4_one_at_a_time', 'ED8_lever_annual', 'ED9_rollout_timing',
-                'ED10_reality_checks', 'SF1_households', 'SF6_hindcast', 'SF7_completion_lag', 'SF8_prcc', 'SF11_mc_convergence'):
+    for fid in ('Fig4_pathways', 'Fig6_shapley_levers', 'ED4_one_at_a_time', 'ED7_lever_annual', 'ED8_rollout_timing',
+                'SF6_reality_checks', 'SF1_households', 'SF5_hindcast', 'SF7_completion_lag', 'SF8_prcc', 'SF12_mc_convergence'):
         mod = next(m for _, f, m in FP.all_figures() if f == fid)
         importlib.import_module(mod).FIGURES[fid]()
     assert hashes() == before
@@ -296,14 +298,16 @@ def test_sf2b_net_replacement_is_one_band(sf2b):
     assert not set(C.NET_REPLACEMENT_PARTS) & set(C.SF2B_LEGEND)
 
 
-def test_ed10_history_lines_equal_their_source():
-    """ED10 is an Extended Data item (at most ten); every drawn history line is the source data, unsmoothed."""
+def test_reality_checks_history_lines_equal_their_source():
+    """Nine Extended Data figures (ED9 the stock and vacancy figure; with Extended Data Table 1 ten items, the limit);
+    SF6 (reality checks) is Supplementary; every drawn history line is the source data, unsmoothed."""
     import matplotlib.pyplot as plt
     from figures import data as D
     from figures import validation as V
     ids = [h['id'] for h in FP.PAPER_EXTENDED]
-    assert ids[-1] == 'ED10' and len(ids) <= 10
-    assert not any(h['file'].endswith('reality_checks') for h in FP.SUPPLEMENTARY)
+    assert ids == [f'ED{k}' for k in range(1, 10)] and len(ids) + len(FP.EXTENDED_TABLES) <= 10
+    assert FP.PAPER_EXTENDED[-1]['file'] == 'ED9_stock_vacancy'
+    assert [h['id'] for h in FP.SUPPLEMENTARY if h['file'].endswith('reality_checks')] == ['SF6']
     fig, ax = plt.subplots()
     d = D.src('D15_reality_checks')
     for key in d['order']:

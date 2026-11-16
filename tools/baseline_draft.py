@@ -169,7 +169,12 @@ def decarb_limitations(mode):
     """Limitations of the material decarbonisation for a DECARB_MODE."""
     if mode == 'none':
         return []
-    return DECARB_LIMITATIONS + [
+    pj = load('baseline/projection.json') or {}
+    share = (pj.get('committed') or {}).get('C_held_share')
+    eol = ('The end of life of carbon-bearing materials ('
+           + (f'{100 * share:.0f}% of committed C1-C4' if share is not None else 'most of committed C1-C4')
+           + ') is held at 2025; landfill-gas capture or diversion of timber and plasterboard would lower it.')
+    return DECARB_LIMITATIONS + [eol] + [
         'Several items are made in New Zealand with electricity-intensive production (aluminium, Pink '
         'Batts glass wool, Pacific Steel rebar, WPMA Radiata timber, Nelson Pine LVL); the aluminium items '
         'are stated in their EPD names to use mainly renewables-generated electricity. Where their 2025 '
@@ -249,8 +254,9 @@ def timing_register():
          'year for future (B, C) emissions; here y counts calendar years from 2025 (adaptation). Sensitivities: '
          'held at 2025; item S4 paths'),
         ('Committed after 2050 (later B2/B4 and C1-C4)', 'upper: events after 2050 at 2025 factors; lower: the 2050 '
-         'factors held after 2050 (no extrapolation beyond the last source year); C1-C4 at 2025 in both. Expressed '
-         'in years of the 2050 AR boundary', 'DECISION (author): the source paths end in 2050'),
+         'factors held after 2050 (no extrapolation beyond the last source year); C1-C4 by material chemistry (Building_factors.C14_HELD_CLASSES): the carbon-bearing classes (timber, plasterboard, plastics, paint, SIP), whose end of life is the release of their own carbon at disposal, held at 2025 in both bounds; the energy part of the other classes (demolition, processing, transport) at 2025 factors in the upper bound and at the generic construction-stage factor e^(-0.01 (t - 2025)) (Resch et al. 2021) of 2050, held after it, in the lower bound. Expressed '
+         'in years of the 2050 AR boundary', 'DECISION (author): the source paths end in 2050; the C1-C4 modules are '
+         'aggregated in the LCAQuick results, so the split is by material class (MODEL v4.8.0)'),
         ('Scope of B events', 'events of the cohorts built in the accounting period only (projection: the 2026-2050 '
          'cohorts; AR base: the cohorts of the base window); wider scope (events of all cohorts built since '
          f"{B.B_SCOPE_START}, in the base and the projection alike) is a sensitivity",
@@ -360,8 +366,6 @@ DECARB_LIMITATIONS = [
     'Items without a counterpart in Horup et al. follow a labelled proxy path (polymers, paint and SIP at EPS, the '
     'smallest reduction in the set; gypsum plasterboard at clay brick) or are held at 2025 (the lift); the proxies '
     'are a judgement, bracketed by holding them at 2025 (sensitivity).',
-    'C1-C4 (end of life) is held at 2025 factors (no source for end-of-life decarbonisation); future end-of-life '
-    'technology would lower the committed emissions (conservative).',
     'Horup et al. (2025) SI Table S4 gives the average of the 9 premise scenarios only; the scenario range is shown '
     'graphically in their Fig. 2, so no low/high decarbonisation path is implemented.',
 ]
@@ -655,12 +659,30 @@ def lines():
               f"| **carbon 2026-2050** | **{b['carbon_kt']:,.0f}** |",
               f"| committed B2, B4 after 2050 (lower: 2050 factors held / upper: 2025 factors) | "
               f"{cm['B_lower_kt']:,.0f} / {cm['B_upper_kt']:,.0f} |",
-              f"| committed C1-C4 (2025 factors) | {cm['C_kt']:,.0f} |",
+              f"| committed C1-C4 (lower: carbon-bearing classes at 2025 factors, energy part at the 2050 generic "
+              f"factor / upper: 2025 factors) | {cm['C_lower_kt']:,.0f} / {cm['C_upper_kt']:,.0f} |",
               f"| **committed after 2050 (later B2/B4 and C1-C4)** | **{cm['lower_kt']:,.0f}-{cm['upper_kt']:,.0f}** |",
               '', 'Time-resolved accounting: materials and construction (A1-A5) and soil carbon loss in the '
                   'construction year, maintenance (B2, B4) in the year it occurs. Emissions committed after 2050 are '
                   'reported as a range and are not added to the 2026-2050 total. Reconciliation with whole life at '
-                  'construction (the static convention): outputs/reports/reconciliation.md.']
+                  'construction (the static convention): outputs/reports/reconciliation.md.', '',
+              'End of life (C1-C4) in the committed range (MODEL v4.8.0). The LCAQuick results give C1-C4 '
+              'aggregated, so the modules cannot be separated; the split is by material chemistry, not by a ratio '
+              'threshold. Classes whose end of life is dominated by the release of their own material carbon at '
+              'disposal (timber, plasterboard, plastics, paint, SIP) are held at 2025 in both bounds: that depends on '
+              'waste management, not on energy or transport decarbonisation. All other classes are the energy part '
+              '(demolition, processing, transport): 2025 factors in the upper bound, and in the lower bound the '
+              'generic construction-stage factor e^(-0.01 (t - 2025)) (Resch et al. 2021, as A4-A5) at 2050, held '
+              'after it (x 0.779; the no-extrapolation rule of the B2/B4 lower bound). Concrete is in the energy part: '
+              'its floor-area-weighted C1-C4 / A1-A3 of 0.12-0.13 reflects the low A1-A3 of unreinforced low-strength '
+              'in-situ concrete (the 17.5-20 MPa items: 0.131-0.136), not material carbon (concrete releases none at '
+              f"disposal). The carbon-bearing classes are {100 * cm['C_held_share']:.1f}% of the committed C1-C4 of "
+              f"the Reference cohorts (the classes' ratios: outputs/reports/reconciliation.md), so the committed "
+              f"C1-C4 is {cm['C_lower_kt']:,.0f}-{cm['C_upper_kt']:,.0f} kt. The replacement and repaint events "
+              '(B2, B4) keep their own C1-C4 share at 2025 factors (unchanged; it is part of the in-window '
+              'maintenance). The B2/B4 events of the 2026-2050 cohorts that fall within the window are '
+              'unaffected: the 2026-2050 results do not change.', '',
+              'Module D is excluded (EN 15978) and shown as a carbon-only sensitivity (Extended Data Fig. 4).']
         rc = load('baseline/reconciliation.json')
         if rc:
             f0, f1 = rc['frozen_2025_factors'], rc['adopted']
@@ -670,7 +692,8 @@ def lines():
                   f"| maintenance (B2, B4), 2026-2050 | {f0['maintenance_kt']:,.0f} | {f1['maintenance_kt']:,.0f} |",
                   f"| committed after 2050: B2, B4 (upper) | {f0['b_committed_upper_kt']:,.0f} | "
                   f"{f1['b_committed_upper_kt']:,.0f} |",
-                  f"| committed after 2050: C1-C4 | {f0['c_committed_kt']:,.0f} | {f1['c_committed_kt']:,.0f} |",
+                  f"| committed after 2050: C1-C4 (upper) | {f0['c_committed_upper_kt']:,.0f} | "
+                  f"{f1['c_committed_upper_kt']:,.0f} |",
                   f"| sum | {rc['sum_2025_factors_kt']:,.0f} | {rc['sum_adopted_upper_kt']:,.0f} |",
                   f"| whole life at construction, A4-A5 held (static convention) | "
                   f"{rc['whole_life_2025_factors_kt']:,.0f} | {rc['whole_life_a45_held_kt']:,.0f} |",

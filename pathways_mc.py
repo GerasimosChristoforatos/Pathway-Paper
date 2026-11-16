@@ -68,8 +68,10 @@ SUMMARY_RUNS = ('REF', MP, AP, 'TL', INSTANT, TLAS)
 # committed after 2050 per Reference draw: pathways.committed keys -> draw-file columns (REF_<column>)
 COMMITTED_COLUMNS = {'lower_kt': 'committed_lower_kt', 'upper_kt': 'committed_upper_kt',
                      'B_lower_kt': 'committed_b2b4_lower_kt', 'B_upper_kt': 'committed_b2b4_upper_kt',
-                     'C_kt': 'committed_c1c4_kt'}
+                     'C_upper_kt': 'committed_c1c4_upper_kt', 'C_lower_kt': 'committed_c1c4_lower_kt'}
 WINDOW = slice(1, None)                          # 2026-2050 (index 0 = 2025)
+# committed after 2050 per draw also for these runs (pathways.committed on the run's floor area; MODEL v4.8.0)
+COMMITTED_RUNS = (MP, AP, 'TL')
 
 
 def bootstrap_factors(su):
@@ -317,7 +319,7 @@ THRESHOLD_POINTS = 101
 
 
 def population_threshold(df, col):
-    """(Fig7b, SF13) The 2050 New Zealand population at which P(TL LoE AR <= 1) = 50%, from a univariate
+    """(Fig7b, SF14) The 2050 New Zealand population at which P(TL LoE AR <= 1) = 50%, from a univariate
     logistic regression of the outcome on the draw's 2050 population (maximum likelihood; Firth's penalised
     likelihood where the MLE does not exist), with a percentile bootstrap 95% interval (resampled draws; the
     insight bootstrap's stream). If no draw (or every draw) has TL within AR the threshold is not estimable and that
@@ -458,6 +460,9 @@ def main():
                    TL1_draw_max_binds=bool(np.any((S_d + gap)[late] > params['L1']['tl'])),
                    overbuild_cap_binding_years=int(runs[MP]['info']['payback_cap_binds'].sum()),
                    **{f'REF_{c}': float(com[k]) for k, c in COMMITTED_COLUMNS.items()},
+                   **{f'{r}_{c}': float(PW.committed(ctx, np.asarray(runs[r]['E']['gfa_t'], float))[k])
+                      for r in COMMITTED_RUNS for k, c in (('lower_kt', 'committed_lower_kt'),
+                                                           ('upper_kt', 'committed_upper_kt'))},
                    **reo)
         for r, E in [('REF', o)] + [(k, R['E']) for k, R in runs.items()]:
             carbon = np.asarray(E['carbon'], float)
@@ -482,9 +487,14 @@ def main():
             if q.startswith('LoE'):
                 e['probability_LoE_at_most_1'] = float(np.mean(v <= 1.0))
             summ.append(e)
-    for c in COMMITTED_COLUMNS.values():              # the Reference only; central = baseline/projection.json
+    for c in COMMITTED_COLUMNS.values():              # the Reference; central = baseline/projection.json
         v = df[f'REF_{c}'].to_numpy()
         summ.append(dict(run='REF', quantity=c, mean=float(v.mean()), **{f'p{p}': float(np.percentile(v, p))
+                                                                          for p in PCT}))
+    for r in COMMITTED_RUNS:                          # the Pathways and TL (MODEL v4.8.0): central = pathways/runs.csv
+        for c in ('committed_lower_kt', 'committed_upper_kt'):
+            v = df[f'{r}_{c}'].to_numpy()
+            summ.append(dict(run=r, quantity=c, mean=float(v.mean()), **{f'p{p}': float(np.percentile(v, p))
                                                                           for p in PCT}))
     ann = []
     for r in SUMMARY_RUNS:

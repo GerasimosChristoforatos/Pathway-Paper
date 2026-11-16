@@ -2,7 +2,7 @@
 
 One list of every source cited in the methods draft (`outputs/reports/METHODS_DRAFT.md`), the assumption register
 (`outputs/reports/ASSUMPTIONS.md`), the lever tables (`outputs/reports/LEVERS_TABLE_MAIN.md`, main-paper Table 1;
-`outputs/reports/LEVERS_TABLE.md`, Supplementary Table 5), the figure captions and notes (`outputs/FIGURES.md`) and
+`outputs/reports/LEVERS_TABLE.md`, Extended Data Table 1), the figure captions and notes (`outputs/FIGURES.md`) and
 the palette record (`docs/PALETTE.md`), alphabetical. The bibliographic details were checked by the author against the
 publisher's or catalogue record (Mendeley catalogue or the official page) or against the document itself
 (MODEL v4.7.2, November 2026). In-text citations in the generators use the author-year form of this list.
@@ -68,7 +68,7 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   Table S4; the solution space, Fig. 6.)
 - Jacques, J., Lavergne, C., & Devictor, N. (2006). Sensitivity analysis in presence of model uncertainty and
   correlated inputs. *Reliability Engineering & System Safety*, 91(10–11), 1126–1134.
-  doi:10.1016/j.ress.2005.11.047. (Grouped Sobol indices of dependent inputs: population and household size, ED7.)
+  doi:10.1016/j.ress.2005.11.047. (Grouped Sobol indices of dependent inputs: population and household size, ED6.)
 - Jansen, M. J. W. (1999). Analysis of variance designs for model output. *Computer Physics Communications*, 117(1),
   35–43. doi:10.1016/S0010-4655(98)00154-4. (Sobol total-index estimator.)
 - Jones, J. A., Greenaway-McGrevy, R., & Crow, C. (2025). Using council valuation records to estimate Auckland's

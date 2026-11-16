@@ -164,7 +164,7 @@ def base_context(B, scenario, bounds):
         start_surplus=float(ji.get('start_surplus', 0.0)),
         **observed_window(ji),
         join_reference=np.asarray(ji['join'], float), profile=prof, committed_factors=fac,
-        c14={t: float(B['stage_int'].loc['C1-C4', t]) for t in typ}, soil=B['SOIL_INTENSITY'],
+        c14=B['C14_SPLIT'], soil=B['SOIL_INTENSITY'],
         events=fi['events'], b_ar=b_ar, b_atp=b_atp)
 
 
@@ -378,14 +378,21 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
 
 def committed(ctx, gfa_t):
     """Committed after 2050 (kt): the 2026-2050 cohorts' later replacements and repaints (events.committed; upper:
-    2025 factors, lower: 2050 factors held) and all their C1-C4 (2025 factors), with this run's floor area."""
+    2025 factors, lower: 2050 factors held) and all their C1-C4 (events.c14_committed: the carbon-bearing classes held
+    at 2025 in both bounds, the energy part at 2025 / at the generic path's 2050 value), with this run's floor area."""
     b = {'upper': 0.0, 'lower': 0.0}
     for k, t in enumerate(ctx['typ']):
         for key in b:
             b[key] += EV.committed(gfa_t[k], ctx['years'], ctx['profile'][t], ctx['committed_factors'][(t, key)])
-    c = sum(gfa_t[k][1:].sum() * ctx['c14'][t] for k, t in enumerate(ctx['typ']))
-    return dict(B_upper_kt=b['upper'] / M6, B_lower_kt=b['lower'] / M6, C_kt=c / M6,
-                upper_kt=(b['upper'] + c) / M6, lower_kt=(b['lower'] + c) / M6)
+    sp = ctx['c14']
+    c = {key: [EV.c14_committed(gfa_t[k][1:], sp['held'][t], sp['energy'][t], hold, sp['a45'])
+               for k, t in enumerate(ctx['typ'])]
+         for key, hold in (('upper', '2025'), ('lower', '2050'))}
+    cu, cl = (sum(x[0] for x in c[key]) for key in ('upper', 'lower'))
+    ch = sum(x[1] for x in c['upper'])
+    return dict(B_upper_kt=b['upper'] / M6, B_lower_kt=b['lower'] / M6, C_upper_kt=cu / M6, C_lower_kt=cl / M6,
+                C_held_kt=ch / M6, C_held_share=ch / cu if cu else 0.0,
+                upper_kt=(b['upper'] + cu) / M6, lower_kt=(b['lower'] + cl) / M6)
 
 
 def implied_vacancy(E):
@@ -444,7 +451,8 @@ def metrics(ctx, R, label, setting):
                 carbon_excl_soil_kt=(I.sum() - st['soil'][f].sum()) / M6,
                 committed_lower_kt=com['lower_kt'], committed_upper_kt=com['upper_kt'],
                 committed_B_lower_kt=com['B_lower_kt'], committed_B_upper_kt=com['B_upper_kt'],
-                committed_C_kt=com['C_kt'],
+                committed_C_upper_kt=com['C_upper_kt'], committed_C_lower_kt=com['C_lower_kt'],
+                committed_C_held_share=com['C_held_share'],
                 B_AR_kt=ctx['b_ar'].sum() / M6, B_AtP_kt=ctx['b_atp'].sum() / M6,
                 LoE_AR=loe_ar, LoE_AtP=loe_atp,
                 remaining_reduction_AR=1.0 - 1.0 / loe_ar, remaining_reduction_AtP=1.0 - 1.0 / loe_atp,
@@ -1052,7 +1060,7 @@ def checks(res):
     r0 = res['runs'][(res['runs']['run'] == REFERENCE) & (res['runs']['scenario'] == REFERENCE)].iloc[0]
     for k in ('carbon_kt', 'upfront_kt', 'soil_kt', 'b_inwindow_kt', 'gfa_Mm2'):
         rep[k] = abs(r0[k] / bres[ident(k)] - 1)
-    for k in ('lower_kt', 'upper_kt', 'B_lower_kt', 'B_upper_kt', 'C_kt'):
+    for k in ('lower_kt', 'upper_kt', 'B_lower_kt', 'B_upper_kt', 'C_upper_kt', 'C_lower_kt'):
         rep[f'committed_{k}'] = abs(r0[f'committed_{k}'] / bres['committed'][ident(k)] - 1)
     bd = res['bands']
     b0 = bd[(bd['run'] == REFERENCE) & (bd['scenario'] == REFERENCE) & (bd['definition'] == 'in_scope')].set_index('band')

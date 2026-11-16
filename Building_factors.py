@@ -86,6 +86,21 @@ OUT_ITEM_COVERAGE = os.path.join(OUT_DIR, 'factors_a13_item_coverage.csv')
 OUT_EVENTS = os.path.join(OUT_DIR, 'factors_events.csv')            # B2/B4 events by age (projection.ACCOUNTING)
 OUT_EVENTS_BLD = os.path.join(OUT_DIR, 'factors_building_events.csv')   # the same per case study (MonteCarlo.py)
 OUT_A45_ITEM = os.path.join(OUT_DIR, 'factors_a45_item.csv')        # A4-A5 on item paths (sensitivity)
+OUT_CLASS = os.path.join(OUT_DIR, 'factors_material_class.csv')     # A1-A3, C1-C4, D by item class (MODEL v4.8.0)
+
+# ---------------------------------------------------------------------------
+# END OF LIFE (C1-C4) IN THE COMMITTED RANGE (MODEL v4.8.0; projection COMMITTED, pathways.committed)
+# ---------------------------------------------------------------------------
+# The LCAQuick results give C1-C4 aggregated (data/derived/material_items.csv), so the modules cannot be separated.
+# The split is by material chemistry, not by a ratio threshold (author decision). Classes whose end of life is
+# dominated by the release of their own material carbon at disposal (degradation or combustion, C3-C4) are held at
+# 2025 in both bounds: it depends on waste management, not on energy or transport decarbonisation. All other classes
+# are the energy part (demolition, processing, transport, C1-C3): upper bound 2025 factors, lower bound the generic
+# construction-stage path e^(-0.01 (t - 2025)) (Resch et al. 2021, as A4-A5) evaluated at 2050 and held after it
+# (x e^(-0.25) = 0.779; the no-extrapolation rule of the B2/B4 lower bound). CONCRETE is in the energy part: its
+# floor-area-weighted C1-C4 / A1-A3 of 0.12-0.13 reflects the low A1-A3 of unreinforced low-strength in-situ concrete
+# (the 17.5-20 MPa items: 0.131-0.136), not material carbon (concrete releases none at disposal).
+C14_HELD_CLASSES = ('TIMBER', 'PLASTERBOARD', 'PLASTICS', 'PAINT', 'SIP')
 
 # ---------------------------------------------------------------------------
 # MATERIAL DECARBONISATION OF A1-A3 (projection.DECARB_MODE)
@@ -95,7 +110,8 @@ OUT_A45_ITEM = os.path.join(OUT_DIR, 'factors_a45_item.csv')        # A4-A5 on i
 # (average of the 9 premise scenarios; 2025, 2030, 2040, 2050), built by
 # data/build_horup.py. Applied to A1-A3 (Horup's scope), of construction and of
 # the A1-A3 share of replacement / repaint events; A4-A5 follows the generic
-# path below; C1-C4 and soil are never changed (author decision). Between Horup's years the
+# path below; soil is never changed and the C1-C4 of the 2026-2050 window is not booked (time-resolved accounting;
+# the committed end of life after 2050 follows C14_HELD_CLASSES below) (author decision). Between Horup's years the
 # path is interpolated linearly (author decision; Horup state 'interpolated'
 # without naming the method, p. 3).
 FILE_HORUP = os.path.join(DATA_DIR, 'derived', 'horup2025_table_s4.csv')
@@ -357,6 +373,27 @@ def decarb_paths(path=FILE_HORUP, years=DECARB_YEARS):
 # ============================================================
 # POOLING
 # ============================================================
+def class_factors(chars, path=FILE_ITEMS, stages=('A1-A3', 'C1-C4', 'D')):
+    """kg CO2e per m2 GFA by typology and item class (material_items.csv), pooled exactly as the material factors
+    (pool(): equal weight per sub-type, then per building); long table Typology, Class, Stage, kgCO2e_per_m2."""
+    it = pd.read_csv(path)
+    gfa = chars['Total GFA'].astype(float)
+    if it['id'].map(gfa).isna().any():
+        raise ValueError(f'{path}: case studies without floor area.')
+    for s in stages:
+        it[s] = it[s] / it['id'].map(gfa)
+    bc = it.groupby(['id', 'class'])[list(stages)].sum()
+    grid = pd.MultiIndex.from_product([chars.index, sorted(it['class'].unique())], names=['id', 'class'])
+    bc = bc.reindex(grid).fillna(0.0).reset_index()
+    bc['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in bc['id']]
+    bc['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in bc['id']]
+    rows = []
+    for c in sorted(bc['class'].unique()):
+        p = pool(bc[bc['class'] == c], list(stages))
+        rows += [dict(Typology=t, Class=c, Stage=s, kgCO2e_per_m2=float(p.loc[t, s])) for t in TYP_ORDER for s in stages]
+    return pd.DataFrame(rows)
+
+
 def pool(frame, value_cols):
     """Pool building-level intensities to one row per typology: equal weight
     per sub-type within a typology, equal weight per building within a sub-type."""
@@ -649,6 +686,17 @@ def main():
     ev_pooled.to_csv(OUT_EVENTS, index=False)
     ev_bld.to_csv(OUT_EVENTS_BLD, index=False)
     a45_item.to_csv(OUT_A45_ITEM, index=False)
+    # item classes (C1-C4 split of the committed range; Module D row): they pool back to the material factors
+    cls = class_factors(load_characteristics())
+    for stg in ('A1-A3', 'C1-C4', 'D'):
+        a = cls[cls['Stage'] == stg].groupby('Typology')['kgCO2e_per_m2'].sum()
+        b = mat_factors[mat_factors['Stage'] == stg].groupby('Typology')['kgCO2e_per_m2'].sum()
+        if not np.allclose(a.reindex(TYP_ORDER).values, b.reindex(TYP_ORDER).values, rtol=1e-9, atol=1e-9):
+            raise SystemExit(f'STOP: item classes do not pool back to the material factors in {stg}: {a} vs {b}')
+    unknown = set(C14_HELD_CLASSES) - set(cls['Class'])
+    if unknown:
+        raise SystemExit(f'STOP: held end-of-life classes absent from the items: {sorted(unknown)}')
+    cls.to_csv(OUT_CLASS, index=False)
 
     # ==================================================================
     # SUMMARY

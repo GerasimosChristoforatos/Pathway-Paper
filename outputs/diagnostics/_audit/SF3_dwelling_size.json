@@ -1,6 +1,6 @@
 {
- "figure": "SF4_dwelling_size",
- "producer": "redraw.py",
+ "figure": "SF3_dwelling_size",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Realised and occupied floor area",
@@ -50,8 +50,8 @@
   "Realised new-dwelling size (floor area / consents)",
   "Space above occupancy (under-utilisation)",
   "Townhouses (min 106 m\u00b2, 1990)",
-  "a",
-  "b"
+  "a)",
+  "b)"
  ],
  "note": "b: dotted, the Reference size (2023-2025 mean); dots, the smallest annual mean (the L4 minima). 1990 is the first year of the series and a recession year.",
  "maintenance_drawn": false,

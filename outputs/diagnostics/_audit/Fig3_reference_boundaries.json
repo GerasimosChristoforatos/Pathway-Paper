@@ -1,6 +1,6 @@
 {
  "figure": "Fig3_reference_boundaries",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Annual carbon per pathway against PBs",
@@ -61,12 +61,12 @@
   "Monte Carlo 90% interval",
   "Monte Carlo median",
   "Theoretical Limit",
-  "Within AR only (between AtP and AR)",
-  "Within both budgets (below AtP)",
-  "a",
-  "b"
+  "Within AR budget",
+  "Within both budgets",
+  "a)",
+  "b)"
  ],
- "note": "Cumulative 2026-2050 25,503 kt (LoE AR 5.76, AtP 22.9); Monte Carlo 90% interval 21,197-30,569 kt (5th-95th percentile of the cumulative carbon of the draws), 50% interval 23,649-27,459 kt, median 25,521 kt (capped bars, no median mark; the column is the deterministic Reference); committed after 2050 (drawn at the lower bound): C1-C4 5,702 kt (2025 factors) and B2/B4 after 2050 4,026 kt (2050 factors held; 4,960 kt with 2025 factors); Monte Carlo median 9,726 kt, 50% interval 9,069-10,456, 90% interval 8,160-11,519 kt. Committed range from the Monte Carlo floor-area uncertainty (population, household size, dwelling size, completion rate); repair and end-of-life factors held at their central values. Moderate / Ambitious Pathway and TL: deterministic runs. Lines are shape-preserving (PCHIP) interpolation through the annual values, not smoothed across the observed -> modelled join after 2027; bands: Monte Carlo 90% band pchip, Monte Carlo 50% band pchip.",
+ "note": "Cumulative 2026-2050 25,503 kt (LoE AR 5.76, AtP 22.9); Monte Carlo 90% interval 21,197-30,569 kt (5th-95th percentile of the cumulative carbon of the draws), 50% interval 23,649-27,459 kt, median 25,521 kt (capped bars, no median mark; the column is the deterministic Reference); committed after 2050 (drawn at the lower bound): C1-C4 5,529 kt (5,702 kt with 2025 factors; the carbon-bearing materials, 86% of it, held at 2025 in both bounds, the energy part at the 2050 generic factor in the lower) and B2/B4 after 2050 4,026 kt (2050 factors held; 4,960 kt with 2025 factors); Monte Carlo median 9,553 kt, 50% interval 8,907-10,269, 90% interval 8,014-11,314 kt. Committed range from the Monte Carlo floor-area uncertainty (population, household size, dwelling size, completion rate); repair and end-of-life factors held at their central values. Moderate / Ambitious Pathway and TL: deterministic runs. Lines are shape-preserving (PCHIP) interpolation through the annual values, not smoothed across the observed -> modelled join after 2027; bands: Monte Carlo 90% band pchip, Monte Carlo 50% band pchip.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,

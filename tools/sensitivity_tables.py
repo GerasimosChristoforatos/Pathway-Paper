@@ -144,6 +144,10 @@ REF_ROWS = [
      'credit); carbon only, not converted to LoE (MODEL v4.8.0)'),
     ('Accounting', 'Event timing L / n', 'single', 'Event timing: interval L / n', 'DECISION: maintenance timing'),
 ]
+# rows reported in carbon only (ED4), never converted to a level of exceedance: they need no AR-base rule
+# (boundaries.AR_BASE_RULE) and must not enter TORNADO. Module D: a consistent LoE would need Module D in the
+# historical sector base as well (MODEL v4.8.0).
+CARBON_ONLY_ROWS = ('Module D credit, booked at construction (not netted)',)
 
 
 def reference_table():
@@ -420,6 +424,8 @@ def tornado(ref):
     oat = r['one_at_a_time_ar_base']
     c0 = float(ref['central_carbon_kt'].iloc[0])
     rows = []
+    if any(row in CARBON_ONLY_ROWS for _, row in TORNADO):
+        raise SystemExit('sensitivity_tables: a carbon-only row (CARBON_ONLY_ROWS) is in TORNADO.')
     for name, row in TORNADO:
         rule = BD.ar_base_rule(row)[0]
         if oat[row]['rule'] != rule:

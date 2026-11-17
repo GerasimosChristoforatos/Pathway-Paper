@@ -2,6 +2,171 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.8.0: end-of-life decarbonisation in the committed range, ED/SF reallocation, figure tidy (full run)
+
+**One full run** (`run_all.py --profile full`), then `--profile light`, the lock re-captured
+(`tests/capture_regression_model_v3.py`). Tests: 258 passed in both profiles. Palette coverage: 0 findings. Figure
+integrity passes. `check_outputs`: no stale terms.
+
+**The 2026-2050 window is unchanged.** Checked against the v4.7.2 outputs:
+* `pathways/runs.csv`: all 62 non-committed columns identical; new columns `committed_c1c4_upper_kt`,
+  `committed_c1c4_lower_kt` and `committed_c1c4_held_share`.
+* `pathways/montecarlo_draws.csv`: all 54 non-committed columns identical.
+* `pathways/montecarlo_summary.csv`: the 24 window rows identical (NaN = NaN).
+* `sensitivity/reference_carbon.csv`: all 41 existing rows identical; one row added (Module D, below).
+* Byte-identical: `pathways/annual.csv`, the bands, Shapley, `baseline/annual`, `aesa/annual`, `montecarlo/draws_REF`.
+
+Only committed quantities changed. The committed upper bound differs by 1.8e-12 kt, from the summation order.
+
+Lock entries changed (9 files; all of them committed quantities, new keys or the Module D row):
+* `baseline/projection.json`;
+* `baseline/sensitivity_one_at_a_time.csv` and `baseline/sensitivity_annual_carbon.csv` (the Module D case);
+* `pathways/runs.csv` and `pathways/levers.json` (the identity check `committed_c1c4_kt` -> `_upper_kt` / `_lower_kt`);
+* `pathways/montecarlo_draws.csv` and `pathways/montecarlo_summary.csv`;
+* `sensitivity/reference_carbon.csv`;
+* `sensitivity/replacement_variants.csv` (`committed_lower_kt` only).
+
+### 1. End of life (C1-C4) in the committed range
+**Rule** (`Building_factors.C14_HELD_CLASSES`, Methods). The split is by material chemistry, not by a ratio
+threshold.
+* **Held at 2025 in both bounds:** the classes whose end of life is dominated by the release of their own material
+  carbon at disposal (TIMBER, PLASTERBOARD, PLASTICS, PAINT, SIP).
+* **The energy part:** all other classes (demolition, processing, transport). That includes CONCRETE: its weighted
+  C1-C4 / A1-A3 of 0.12-0.13 reflects the low A1-A3 of unreinforced low-strength in-situ concrete (the 17.5-20 MPa
+  items: 0.131-0.136). It is not material carbon, because concrete releases none at disposal.
+  * Upper bound: 2025 factors.
+  * Lower bound: the generic construction-stage factor e^(-0.01 (t - 2025)) (Resch et al. 2021) at 2050, held after
+    it (x 0.779).
+* The v4.7.2 rule held all C1-C4 at 2025.
+* The B2/B4 events keep their own C1-C4 share at 2025 factors (in the window and after it). Changing it would move
+  the 2026-2050 results.
+
+**Code.**
+* `Building_factors.class_factors`: pools the A1-A3, C1-C4 and D factors per class, the same way as the typology
+  factors. It writes `factors/factors_material_class.csv` and STOPs unless the classes pool back to the typology
+  factors.
+* `events.c14_split` and `events.c14_committed`: the split and the committed C1-C4.
+* `projection.COMMITTED` and `pathways.committed()`: new keys `C_upper_kt`, `C_lower_kt`, `C_held_kt` and
+  `C_held_share`, with upper = B_upper + C_upper and lower = B_lower + C_lower.
+* `pathways_mc`: committed lower and upper per draw for the Moderate and Ambitious Pathways and the TL as well, plus
+  their summary rows.
+
+**Fig. 3b** keeps the lower bound. The note gives the C1-C4 range and the held share.
+
+**Whole life and reconciliation.** The whole-life row is unchanged: whole life at construction, at 2025 C1-C4. It
+reconciles with the committed upper bound (identity holds, `outputs/reports/reconciliation.md`). The reconciliation
+now has separate C1-C4 upper and lower rows, and two new identities:
+* 2025 factors: committed C1-C4 upper = lower;
+* decarbonised: committed C1-C4 upper unchanged.
+
+**Class table** (`outputs/reports/reconciliation.md`). Items: the case-study items. Weighted: the pooled class factors,
+weighted by the Reference 2026-2050 cohort floor area by typology.
+
+| class | end of life | C1-C4 / A1-A3, items | weighted | D / A1-A3, items | weighted |
+|---|---|---|---|---|---|
+| STEEL | energy | 0.038 | 0.026 | -0.369 | -0.368 |
+| REINFORCED CONCRETE | energy | 0.066 | 0.078 | -0.043 | -0.038 |
+| CONCRETE | energy | 0.094 | 0.122 | -0.012 | -0.006 |
+| OTHERS | energy | 0.023 | 0.067 | -0.001 | -0.003 |
+| PLASTERBOARD | held | 0.792 | 0.872 | 0.000 | 0.000 |
+| GLASS | energy | 0.007 | 0.008 | 0.000 | 0.000 |
+| ALUMINIUM | energy | 0.023 | 0.023 | -0.643 | -0.640 |
+| PLASTICS | held | 0.283 | 0.144 | -0.005 | -0.014 |
+| TIMBER | held | 2.153 | 1.530 | -0.460 | -0.343 |
+| PAINT | held | 0.018 | 0.019 | -0.009 | -0.008 |
+| FIBRE CEMENT | energy | 0.029 | 0.030 | -0.048 | -0.047 |
+| GLASS WOOL | energy | 0.009 | 0.009 | -0.050 | -0.050 |
+| BRICKS | energy | 0.050 | 0.050 | -0.050 | -0.050 |
+| SIP | held | 0.000 | 0.000 | 0.000 | 0.000 |
+| PLASTER | energy | 0.032 | 0.032 | 0.000 | 0.000 |
+| all classes | | 0.112 | 0.279 | -0.181 | -0.192 |
+
+**Held share of committed C1-C4:**
+* items: 57.2%;
+* Reference cohorts: 86.3%;
+* Moderate: 86.3%; Ambitious: 86.3%; TL: 86.4%.
+
+**Committed after 2050, deterministic (kt CO2e):**
+
+| run | lower, v4.7.2 -> v4.8.0 | change | upper (unchanged) | C1-C4 lower-upper |
+|---|---|---|---|---|
+| Reference | 9,727.8 -> 9,554.5 | -1.8% | 10,662.0 | 5,528.6-5,701.9 |
+| Moderate Pathway | 7,373.6 -> 7,242.1 | -1.8% | 8,080.7 | 4,199-4,330 |
+| Ambitious Pathway | 5,462.3 -> 5,364.7 | -1.8% | 5,985.1 | 3,118-3,216 |
+| Theoretical Limit | 1,832.2 -> 1,798.8 | -1.8% | 2,002.2 | 1,076-1,109 |
+
+**Committed after 2050, Monte Carlo p5-p50-p95 (kt CO2e):**
+* REF lower: 8,160-9,726-11,519 -> 8,014-9,553-11,314.
+* REF upper: unchanged, 8,944-10,660-12,624.
+* New, per pathway:
+  * Moderate: lower 6,017-7,243-8,675, upper 6,713-8,082-9,679;
+  * Ambitious: lower 4,380-5,365-6,536, upper 4,886-5,985-7,291;
+  * TL: lower 804-1,801-3,027, upper 892-2,005-3,373.
+
+**Texts.** Every "C1-C4 held at 2025" text is updated, now qualified as in-window: Methods, ASSUMPTIONS, RESULTS
+(new table "Committed after 2050 by run"), the Fig. 3 caption, `boundaries.factor_note` and the register.
+
+New limitation: "The end of life of carbon-bearing materials (86% of committed C1-C4) is held at 2025; landfill-gas
+capture or diversion of timber and plasterboard would lower it."
+
+### 1b. Module D (carbon only)
+* **New ED4 row**, one-sided: "Module D credit, booked at construction (not netted)". It is the D of the 2026-2050
+  cohorts at 2025 factors (the largest credit).
+* **Result:** 21,584 kt vs 25,503 kt, **-15.4%**. D / A1-A3 by class is in the table above.
+* **Carbon only.** No LoE, no Fig. 7a row, no ED5 row. A consistent LoE would need Module D in the historical sector
+  base as well.
+* **Guard.** `tools/sensitivity_tables.CARBON_ONLY_ROWS` records this. Such a row needs no AR-base rule, and the code
+  and the tests stop if it ever enters the LoE tornado.
+* **Methods:** "Module D is excluded (EN 15978) and shown as a carbon-only sensitivity (Extended Data Fig. 4)."
+
+### 2. ED / SF reallocation (`figure_plan.py`; `ed_number_map.csv`, `sf_number_map.csv`)
+* **Extended Data:** ED1-ED5 unchanged; ED6 Sobol; ED7 lever alone; ED8 roll-out timing; ED9 stock & vacancy.
+* **Extended Data Table 1** = LEVERS_TABLE.md, retitled from "Supplementary Table 5". The Table 1 note now reads
+  "Values and sources in Extended Data Table 1".
+* **Supplementary:** the SFs are renumbered so the MC input distributions sit next to MC convergence, and the reality
+  checks next to the hindcast.
+
+| v4.7.2 | v4.8.0 |
+|---|---|
+| ED6 MC input distributions | SF11 |
+| ED7 Sobol | ED6 |
+| ED8 lever alone | ED7 |
+| ED9 roll-out timing | ED8 |
+| ED10 reality checks | SF6 |
+| SF2 stock & vacancy | ED9 |
+| SF3 census replacement rates | SF2 |
+| SF4 dwelling size | SF3 |
+| SF5 overbuild absorption | SF4 |
+| SF6 hindcast | SF5 |
+| SF11 MC convergence | SF12 |
+| SF12 pathway MC | SF13 |
+| SF13 conditional TL | SF14 |
+| SF14 TL dwellings | SF15 |
+| SF1, SF7-SF10 | unchanged |
+
+Cross-references updated in: the README, ARCHITECTURE, FIGURES.md, palette.toml / docs/PALETTE.md, the reports, the
+tests and the figure modules.
+
+### 3. Figures
+* **Panel letters "a)":** `style.PANEL_SUFFIX = ')'`. The letter now sits a fixed 6 pt left of the axes
+  (`draw.PANEL_LABEL_GAP_PT`) instead of 2% of the axes width, so it clears the title on narrow panels (ED9c).
+* **Fig. 3:**
+  * zone labels "Within both budgets" / "Within AR budget";
+  * legend in the upper right of panel a;
+  * Fig. 3b uses the new committed keys.
+* **Fig. 4a:** "Acquired-rights budget" / "Ability-to-pay budget" placed above the lines.
+* **Fig. 6:** labels L6 "Brownfield development" and L9 "Construction stage carbon"; tighter left margin.
+* **Fig. 7a:** "Household size (Stats NZ B)"; tighter margin.
+* **ED4:**
+  * the Module D row;
+  * `NOTES_TOP` 0.30 -> 0.33, because the 25 row notes did not fit below the axes and ED4_H is already at the
+    247 mm page maximum.
+* **ED9a:** compact legend (5 columns, short labels, key in the note).
+
+### Notes
+* **EDT1:** the per-typology lever values (`EDT1_levels_by_typology`) are filed as part of Extended Data Table 1.
+* **CITATION:** 4.8.0.
+
 ## model-v4.7.2: documentation consistent with the locked method, references checked, main-paper lever table, figure tidy (no model run)
 
 **No model, Monte Carlo or Sobol run; the methodology is locked.** Reports and figures were regenerated from the

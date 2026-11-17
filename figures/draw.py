@@ -205,10 +205,16 @@ def stacked_ticklabels(fig, ax, labels, size, small):
 # ---------------------------------------------------------------------------
 # panels and axes
 # ---------------------------------------------------------------------------
-def panel_label(ax, letter, x=-0.02, y=1.02, raise_pt=0.0):
-    """Bold panel letter at the top left, outside the axes (raise_pt points higher, as panel())."""
+# gap in points between the panel letter (right-aligned) and the axes left edge: a fixed gap, not a fraction of the
+# axes width, so the letter clears the title on narrow panels too (ED9c)
+PANEL_LABEL_GAP_PT = 6.0
+
+
+def panel_label(ax, letter, x=0.0, y=1.02, raise_pt=0.0):
+    """Bold panel letter at the top left, outside the axes, PANEL_LABEL_GAP_PT left of x (raise_pt points higher,
+    as panel())."""
     import matplotlib.transforms as mtrans
-    tr = mtrans.offset_copy(ax.transAxes, fig=ax.figure, y=raise_pt, units='points') if raise_pt else ax.transAxes
+    tr = mtrans.offset_copy(ax.transAxes, fig=ax.figure, x=-PANEL_LABEL_GAP_PT, y=raise_pt, units='points')
     ax.text(x, y, letter + S.PANEL_SUFFIX, transform=tr, fontsize=S.FONT_SIZE + 1, fontweight='bold', va='bottom',
             ha='right')
 

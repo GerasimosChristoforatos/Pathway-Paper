@@ -1,6 +1,6 @@
 {
  "figure": "Fig1_floor_area",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "",

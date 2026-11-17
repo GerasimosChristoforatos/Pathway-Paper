@@ -1,6 +1,6 @@
 {
- "figure": "ED9_rollout_timing",
- "producer": "redraw.py",
+ "figure": "ED8_rollout_timing",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Moderate Pathway",
@@ -60,9 +60,9 @@
   "Pathway, full roll-out by 2035 (adopted)",
   "Pathway, full roll-out by 2045",
   "Reference",
-  "a",
-  "b",
-  "c"
+  "a)",
+  "b)",
+  "c)"
  ],
  "note": "(c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 16,594, Moderate Pathway 17,236, Moderate Pathway, full roll-out by 2045 (sensitivity) 18,569, Ambitious Pathway, full roll-out by 2030 (sensitivity) 10,456, Ambitious Pathway 11,459, Ambitious Pathway, full roll-out by 2045 (sensitivity) 13,634; Reference 25,503.",
  "maintenance_drawn": false,

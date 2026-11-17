@@ -1,18 +1,18 @@
 old_id,old_file,new_id,new_file,status
 SF1,SF1_households,SF1,SF1_households,same number
-SF2,SF2_stock_vacancy,SF2,SF2_stock_vacancy,same number
-SF3,SF3_census_replacement_rates,SF3,SF3_census_replacement_rates,same number
-SF4,SF4_dwelling_size,SF4,SF4_dwelling_size,same number
-SF5,SF5_overbuild_absorption,SF5,SF5_overbuild_absorption,same number
-SF6,SF6_hindcast,SF6,SF6_hindcast,same number
+SF2,SF2_stock_vacancy,ED9,ED9_stock_vacancy,moved to Extended Data
+SF3,SF3_census_replacement_rates,SF2,SF2_census_replacement_rates,renumbered
+SF4,SF4_dwelling_size,SF3,SF3_dwelling_size,renumbered
+SF5,SF5_overbuild_absorption,SF4,SF4_overbuild_absorption,renumbered
+SF6,SF6_hindcast,SF5,SF5_hindcast,renumbered
+ED10,ED10_reality_checks,SF6,SF6_reality_checks,moved to Supplementary
 SF7,SF7_completion_lag,SF7,SF7_completion_lag,same number
-SF8,SF8_reality_checks,ED10,ED10_reality_checks,moved to Extended Data
-SF9,SF9_budget_construction,ST1,ST1_budget_construction,figure -> table
-SF10,SF10_prcc,SF8,SF8_prcc,renumbered
-SF11,SF11_pathway_sensitivity,,,no longer rendered
-SF12,SF12_lambda_sweep,SF9,SF9_lambda_sweep,renumbered
-SF13,SF13_hd_estimators,SF10,SF10_hd_estimators,renumbered
-SF14,SF14_mc_convergence,SF11,SF11_mc_convergence,renumbered
-SF15,SF15_pathway_mc,SF12,SF12_pathway_mc,renumbered
-SF16,SF16_conditional_tl,SF13,SF13_conditional_tl,renumbered
-SF17,SF17_tl_dwellings,SF14,SF14_tl_dwellings,renumbered
+SF8,SF8_prcc,SF8,SF8_prcc,same number
+SF9,SF9_lambda_sweep,SF9,SF9_lambda_sweep,same number
+SF10,SF10_hd_estimators,SF10,SF10_hd_estimators,same number
+ED6,ED6_mc_input_distributions,SF11,SF11_mc_input_distributions,moved to Supplementary
+SF11,SF11_mc_convergence,SF12,SF12_mc_convergence,renumbered
+SF12,SF12_pathway_mc,SF13,SF13_pathway_mc,renumbered
+SF13,SF13_conditional_tl,SF14,SF14_conditional_tl,renumbered
+SF14,SF14_tl_dwellings,SF15,SF15_tl_dwellings,renumbered
+ST1,ST1_budget_construction,ST1,ST1_budget_construction,figure -> table

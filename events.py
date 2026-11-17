@@ -40,6 +40,32 @@ def load_profile(timing='n+1', path=None):
     return d
 
 
+def c14_split(path=None):
+    """End-of-life (C1-C4) factors per typology (kg CO2e per m2 at 2025), split by material chemistry
+    (Building_factors.C14_HELD_CLASSES): {'held': {typology: kg/m2}, 'energy': {typology: kg/m2}}, from the pooled
+    item-class factors (outputs/data/factors/factors_material_class.csv)."""
+    cls = pd.read_csv(path or BF.OUT_CLASS)
+    c = cls[cls['Stage'] == 'C1-C4']
+    held = c[c['Class'].isin(BF.C14_HELD_CLASSES)].groupby('Typology')['kgCO2e_per_m2'].sum()
+    tot = c.groupby('Typology')['kgCO2e_per_m2'].sum()
+    return dict(held={t: float(held.get(t, 0.0)) for t in tot.index},
+                energy={t: float(tot[t] - held.get(t, 0.0)) for t in tot.index})
+
+
+def c14_committed(gfa_cohorts, held, energy, hold='2050', a45='resch'):
+    """Committed end of life (kg) of cohorts of floor area gfa_cohorts (m2; all of it after 2050): the held part
+    (material carbon released at disposal) at 2025 factors in both bounds; the energy part at 2025 factors (hold='2025',
+    upper bound) or at the generic construction-stage path e^(-0.01 (t - 2025)) at LAST_FACTOR_YEAR, held after it
+    (hold='2050', lower bound; the rule of row_factors). The energy part follows the A4-A5 path, so with
+    a45 = 'held' (A4-A5 not decarbonised; the 2025-factor runs) it is held as well. Returns (total, held part, energy
+    part)."""
+    if hold not in ('2025', '2050'):
+        raise ValueError(f"c14_committed: hold {hold!r} (one of '2025', '2050').")
+    f = 1.0 if (hold == '2025' or a45 == 'held') else float(BF.generic_path([LAST_FACTOR_YEAR])[0])
+    a = float(np.sum(gfa_cohorts))
+    return a * (held + f * energy), a * held, a * f * energy
+
+
 def row_factors(prof, years, decarb_mode, item_case='central', a45='resch', hold='2050'):
     """Factor of each profile row in each calendar year (rows x years). Years after
     LAST_FACTOR_YEAR take the LAST_FACTOR_YEAR factor (hold='2050', lower bound of

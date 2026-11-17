@@ -77,7 +77,7 @@ flowchart LR
     SENS & BND & PW --> ST[tools/sensitivity_tables.py]
     PROJ & DIAG & SENS & MC & VAL & BND & PW & PMC & ST --> DATA[("outputs/data/")]
     DATA --> REP[tools/: reports, methods draft, metrics]
-    DATA --> FIG["python -m figures<br/>Fig1-Fig7, ED1-ED10, SF1-SF14"]
+    DATA --> FIG["python -m figures<br/>Fig1-Fig7, ED1-ED9, SF1-SF15"]
 ```
 
 **Compute, then draw.**
@@ -259,7 +259,7 @@ floor area                      = in-scope dwellings x blended dwelling size
 ## 5. Diagnostics, sensitivity and Monte Carlo
 
 **`Diagnostics.py`** writes the figure source data of household formation, the stock and vacancy, and the vacancy
-definition (SF1, SF2).
+definition (SF1, ED9).
 - The histories are one bar per census interval (interval means): between censuses, annual detail is not identified.
 - Interval values: `validation.stock_identity_history` and `validation.household_formation_history`.
 
@@ -472,7 +472,7 @@ The deterministic results do not depend on the profile (`tests/test_profiles.py`
 
 | folder | content |
 |---|---|
-| `paper_main/`, `paper_extended/`, `supplementary/` | Fig1–Fig7; ED1–ED10 and EDT1; SF1–SF14 and ST1 |
+| `paper_main/`, `paper_extended/`, `supplementary/` | Fig1–Fig7; ED1–ED9 and EDT1; SF1–SF15 and ST1 |
 | `data/baseline/`, `montecarlo/`, `aesa/`, `pathways/`, `sensitivity/`, `factors/`, `figure_source/` | every number the model reports |
 | `data/metrics.json` | the headline metrics |
 | `reports/` | RESULTS, ASSUMPTIONS, METHODS_DRAFT, LEVERS_TABLE and the diagnostic reports |

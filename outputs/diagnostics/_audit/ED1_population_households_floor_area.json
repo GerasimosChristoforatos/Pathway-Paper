@@ -1,6 +1,6 @@
 {
  "figure": "ED1_population_households_floor_area",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Population",
@@ -73,9 +73,9 @@
   "Reference projection (median)",
   "Stats NZ population 5th\u201395th percentile",
   "Year",
-  "a",
-  "b",
-  "c"
+  "a)",
+  "b)",
+  "c)"
  ],
  "note": "Band: the Stats NZ population 5th-95th percentile paths run through the model (not the Monte Carlo). Households rebased on the 2023 census (k = 0.8244).",
  "maintenance_drawn": false,

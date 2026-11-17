@@ -194,6 +194,12 @@ def main():
     rows.append(('Carbon factors', 'Soil carbon: highest soil order (Organic)', g0, carbon_with(emb0, tf['SOC_high'])))
     annual[('Carbon factors', 'Soil carbon: lowest soil order (Raw)')] = carbon_with_annual(emb0, tf['SOC_low'])
     annual[('Carbon factors', 'Soil carbon: highest soil order (Organic)')] = carbon_with_annual(emb0, tf['SOC_high'])
+    # Module D (benefits beyond the system boundary, EN 15978; excluded from the model): the D of the 2026-2050
+    # cohorts at 2025 factors (the largest credit), booked in the construction year and subtracted (D < 0); the
+    # pooled typology factor (Building_factors: the item classes pool back to it). Carbon only (MODEL v4.8.0)
+    d_y = sum(base['evol_typ_total'][t].values * float(tf.loc[t, 'module_D']) for t in typ)
+    rows.append(('Carbon factors', 'Module D credit at 2025 factors, booked at construction (not netted)', g0, c0 + float(d_y[1:].sum()) / 1e6))
+    annual[('Carbon factors', 'Module D credit at 2025 factors, booked at construction (not netted)')] = base['carbon_total_typ'].sum(axis=1).values + d_y
 
     out = pd.DataFrame(rows, columns=['group', 'case', 'GFA_Mm2', 'carbon_kt'])
     out['GFA_change_pct'] = 100 * (out['GFA_Mm2'] / g0 - 1)

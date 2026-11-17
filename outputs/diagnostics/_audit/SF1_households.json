@@ -1,6 +1,6 @@
 {
  "figure": "SF1_households",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Households",
@@ -70,8 +70,8 @@
   "Population growth (thousand per year)",
   "Projection: population / household size, median",
   "Stats NZ household estimates as published (2018 Census base)",
-  "a",
-  "b",
+  "a)",
+  "b)",
   "r = +0.73, p = 2e-06"
  ],
  "note": "a: projection from the 2023 census point; 2019\u201323 Stats NZ estimates scaled to the 2023 census (\u00d70.824); 2024\u20132025: households = population / household size (model), on the projection line. The band: the 5th / 95th population percentile paths with the Stats NZ Low A / High A household size (households computed per path). b: between censuses households are consent-derived, so the relationship is partly mechanical (housing supply meets migration); 2024-25 are the model household-size path (ERP / S), not observations.",

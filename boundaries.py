@@ -1051,7 +1051,7 @@ def write_figure_sources(B, hist, runs, mc_annual, b_ar, b_atp, res, sens_df, gf
            else 'whole life booked at construction')
     factor_note = (acc + '; ' + ('case-study factors held at 2025' if B['DECARB'] is None else
                    'A1–A3 of the case-study items decarbonised after Horup et al. 2025 (item-level mapping), A4–A5 '
-                   'e^(−0.01 (t − 2025)) after Resch et al. 2021, C1–C4 and soil at 2025'))
+                   'e^(−0.01 (t − 2025)) after Resch et al. 2021, soil at 2025'))
     fy = np.asarray(B['forecast_years'])
     py = fy[fy >= PB_YEARS[0]]
     bar_, batp_ = b_ar.loc[py].values, b_atp.loc[py].values

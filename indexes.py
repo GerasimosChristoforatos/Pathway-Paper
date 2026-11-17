@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # paper Fig1-Fig7, Extended Data ED1-ED10 (+ EDT1), supplementary SF1-SF14 (+ ST1) in folders (figure_plan.py)
+    # paper Fig1-Fig7, Extended Data ED1-ED9 (+ EDT1), supplementary SF1-SF15 (+ ST1) in folders (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -75,7 +75,7 @@ FILES = [
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
      'AR and AtP (D42; the AR base-window rows in Fig7a)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/replacement_variants.csv', 'The Reference, the Moderate / Ambitious Pathway and TL under Low / Reference '
-     '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED9)',
+     '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED3)',
      'tools/sensitivity_tables.py'),
     ('data/baseline/annual_by_stage.csv', 'Annual carbon of the Reference 2026-2050 by life-cycle stage (A1-A3, '
      'A4-A5, maintenance B2/B4, soil carbon loss) (Fig2c, d)', 'projection.py'),
@@ -134,7 +134,7 @@ FILES = [
     ('reports/ASSUMPTIONS.md', 'Every assumption and setting with its source', 'tools/assumptions.py'),
     ('reports/METHODS_DRAFT.md', 'Methods draft in three parts: baseline projection, planetary-boundary layer '
      '(AESA), pathways and the theoretical limit', 'tools/methods.py'),
-    ('reports/LEVERS_TABLE.md', 'Supplementary Table 5: the pathway levers, their values and sources',
+    ('reports/LEVERS_TABLE.md', 'Extended Data Table 1: the pathway levers, their values and sources',
      'tools/pathways_methods.py'),
     ('reports/LEVERS_TABLE_MAIN.md', 'Table 1 (main paper): the nine levers, their levels and sources (qualitative)',
      'tools/pathways_methods.py'),
@@ -164,7 +164,7 @@ FILES = [
      'figures/ (module named in figure_manifest.csv)'),
     ('supplementary/*/SF*.png', 'Supplementary figure (in its folder), PNG (FIGURES.md)',
      'figures/ (module named in figure_manifest.csv)'),
-    ('paper_extended/EDT1_levels_by_typology.*', 'Extended Data table: lever levels by typology (Moderate, Ambitious, '
+    ('paper_extended/EDT1_levels_by_typology.*', 'Extended Data Table 1, per-typology values: lever levels by typology (Moderate, Ambitious, '
      'TL)', 'figures/paper_extended.py'),
     ('supplementary/boundaries/ST1_budget_construction.*', 'Supplementary Table ST1, how the AR and '
      'AtP budgets are built (Markdown and CSV)', 'figures/boundaries.py'),

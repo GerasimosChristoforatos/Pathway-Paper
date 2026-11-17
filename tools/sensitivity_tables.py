@@ -139,8 +139,15 @@ REF_ROWS = [
      'A4-A5 held at 2025 (no generic 1%/yr)', 'LITERATURE: Resch et al. 2021 (adopted generic path) vs held'),
     ('Carbon factors & technology', 'Soil carbon loss on all floor area, including replacement', 'single',
      'Soil on all floor area, incl. replacement', 'DECISION (author): no soil loss on rebuilt footprints (adopted)'),
+    ('Carbon factors & technology', 'Module D credit, booked at construction (not netted)', 'single', 'Module D credit at 2025 factors, booked at construction (not netted)',
+     'EN 15978 Module D (benefits beyond the system boundary), excluded from the model; the 2025 factors (the largest '
+     'credit); carbon only, not converted to LoE (MODEL v4.8.0)'),
     ('Accounting', 'Event timing L / n', 'single', 'Event timing: interval L / n', 'DECISION: maintenance timing'),
 ]
+# rows reported in carbon only (ED4), never converted to a level of exceedance: they need no AR-base rule
+# (boundaries.AR_BASE_RULE) and must not enter TORNADO. Module D: a consistent LoE would need Module D in the
+# historical sector base as well (MODEL v4.8.0).
+CARBON_ONLY_ROWS = ('Module D credit, booked at construction (not netted)',)
 
 
 def reference_table():
@@ -349,7 +356,7 @@ def pb_table():
     return pd.DataFrame(rows)
 
 
-# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED9) --------------------------
+# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED3) --------------------------
 def replacement_variants():
     """The Reference, the Moderate / Ambitious Pathway and TL under the Low, Reference, High and Very High replacement
     variants:
@@ -417,6 +424,8 @@ def tornado(ref):
     oat = r['one_at_a_time_ar_base']
     c0 = float(ref['central_carbon_kt'].iloc[0])
     rows = []
+    if any(row in CARBON_ONLY_ROWS for _, row in TORNADO):
+        raise SystemExit('sensitivity_tables: a carbon-only row (CARBON_ONLY_ROWS) is in TORNADO.')
     for name, row in TORNADO:
         rule = BD.ar_base_rule(row)[0]
         if oat[row]['rule'] != rule:

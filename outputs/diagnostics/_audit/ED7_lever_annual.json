@@ -1,6 +1,6 @@
 {
- "figure": "ED8_lever_annual",
- "producer": "redraw.py",
+ "figure": "ED7_lever_annual",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "L1 Household size",
@@ -94,15 +94,15 @@
   "Moderate",
   "Reference",
   "Theoretical Limit",
-  "a",
-  "b",
-  "c",
-  "d",
-  "e",
-  "f",
-  "g",
-  "h",
-  "i",
+  "a)",
+  "b)",
+  "c)",
+  "d)",
+  "e)",
+  "f)",
+  "g)",
+  "h)",
+  "i)",
   "kt CO\u2082e per year"
  ],
  "note": "Each panel: one lever alone; the other levers at the Reference. Lines: PCHIP display interpolation through the annual values.",

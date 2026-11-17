@@ -1,6 +1,6 @@
 {
- "figure": "SF11_mc_convergence",
- "producer": "redraw.py",
+ "figure": "SF12_mc_convergence",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Embodied carbon",
@@ -49,8 +49,8 @@
   "Mean",
   "Median (50th)",
   "Number of Latin hypercube draws",
-  "a",
-  "b"
+  "a)",
+  "b)"
  ],
  "note": "Percentiles over the first n draws (largest n = 5,000).",
  "maintenance_drawn": false,

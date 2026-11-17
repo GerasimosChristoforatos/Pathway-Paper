@@ -242,7 +242,8 @@ def timing_register():
          'proxy)', 'DECISION (author): the emission is recoating, not new steel'),
         ('Event decarbonisation paths', 'A1-A3: replacements on the item\'s own S4 path (same item rules and '
          'sensitivities as construction); repaints and recoating on the paint path (EPS proxy). A4-A5: the A4-A5 '
-         'path below. C1-C4: held at 2025', 'DECISION (author); no source for end-of-life decarbonisation'),
+         'path below. C1-C4 of the events: held at 2025 (in the window and after it)', 'DECISION (author); no source for '
+         'end-of-life decarbonisation; changing it would move the 2026-2050 results'),
         ('A4-A5 decarbonisation (DECARB_A45)',
          {'resch': f"resch: e^(-0.01 (t - 2025)), {100 * (g - 1):+.1f}% by 2050, for construction A4-A5 and the "
                    'A4-A5 share of events',
@@ -340,7 +341,8 @@ def register():
          'DECISION (author); LITERATURE: Horup et al. 2025, Sci. Total Environ. 966, 178780, Fig. 2 and SI '
          'Table S4 (average of 9 premise scenarios, relative to 2025)'),
         ('Decarbonised life-cycle stages', 'A1-A3 item paths (construction and events); A4-A5 as below; C1-C4 '
-         'held at 2025; soil carbon loss never', 'DECISION (author): Horup\'s scope is material production '
+         'held at 2025 within 2026-2050, its energy part decarbonised in the committed lower bound (see Committed after '
+         '2050); soil carbon loss never', 'DECISION (author): Horup\'s scope is material production '
          '(A1-A3); soil carbon loss is not material production'),
         ('Interpolation between 2025, 2030, 2040, 2050', 'linear',
          'DECISION (author): Horup et al. state "interpolated" without naming the method (p. 3)'),

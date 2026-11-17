@@ -1,6 +1,6 @@
 {
  "figure": "Fig2_reference_carbon",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "By demand type",
@@ -77,10 +77,10 @@
   "Steel",
   "Timber",
   "Vacancy",
-  "a",
-  "b",
-  "c",
-  "d",
+  "a)",
+  "b)",
+  "c)",
+  "d)",
   "\u2212200",
   "\u22125,000"
  ],

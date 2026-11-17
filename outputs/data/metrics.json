@@ -98,9 +98,9 @@
       "P_LoE_AR_at_most_1": 0.0,
       "carbon_kt": 11459.244589019734
     },
-    "committed_lower_kt": 9727.760438095811,
-    "committed_lower_kt_mc_p5": 8159.770380556567,
-    "committed_lower_kt_mc_p95": 11518.948982671194,
+    "committed_lower_kt": 9554.479046631566,
+    "committed_lower_kt_mc_p5": 8014.437392459104,
+    "committed_lower_kt_mc_p95": 11313.687441172737,
     "moderate": {
       "LoE_AR": 3.8937296220803934,
       "LoE_AtP": 15.486664498210876,

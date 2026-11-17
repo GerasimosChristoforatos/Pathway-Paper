@@ -1992,9 +1992,12 @@ def main():
           f"[check] sum {_st_tot + _soil / 1e6:,.0f} vs {tot_carbon_median:,.0f}")
 
     # committed after 2050 (time-resolved): the 2026-2050 cohorts' later replacements and
-    # repaints, and all their end of life (C1-C4, held at 2025). Range: upper = 2025
-    # factors throughout; lower = 2050 factors held after 2050 (no extrapolation).
+    # repaints, and all their end of life (C1-C4). Range: upper = 2025 factors throughout;
+    # lower = 2050 factors held after 2050 (no extrapolation). C1-C4 (MODEL v4.8.0): the
+    # carbon-bearing classes (Building_factors.C14_HELD_CLASSES) held at 2025 in both bounds,
+    # the energy part at the generic path's 2050 value in the lower bound (events.c14_committed).
     COMMITTED = None
+    C14_SPLIT = None
     if TIME_RESOLVED:
         _after = np.arange(forecast_years[-1] + 1, forecast_years[-1] + int(EV_PROFILE['Age'].max()) + 1)
         _b = {'upper': 0.0, 'lower': 0.0}
@@ -2003,12 +2006,23 @@ def main():
             for k, hold in (('upper', '2025'), ('lower', '2050')):
                 _f = EV.row_factors(_p, _after, DECARB_MODE, DECARB_ITEM_CASE, DECARB_A45, hold=hold)
                 _b[k] += EV.committed(evol_typ_total[t].values, forecast_years, _p, _f)
-        _c = sum(evol_typ_total[t].values[1:].sum() * stage_int.loc['C1-C4', t] for t in typ_names)
-        COMMITTED = dict(B_upper_kt=_b['upper'] / 1e6, B_lower_kt=_b['lower'] / 1e6, C_kt=_c / 1e6,
-                         upper_kt=(_b['upper'] + _c) / 1e6, lower_kt=(_b['lower'] + _c) / 1e6,
+        C14_SPLIT = dict(EV.c14_split(), a45=DECARB_A45)   # also read by pathways (B["C14_SPLIT"])
+        for t in typ_names:                           # the class split pools back to the C1-C4 factor
+            if abs(C14_SPLIT['held'][t] + C14_SPLIT['energy'][t] - stage_int.loc['C1-C4', t]) > 1e-9:
+                raise SystemExit(f'STOP: committed C1-C4: the class split of {t} does not sum to its C1-C4 factor.')
+        _c = {k: [EV.c14_committed(evol_typ_total[t].values[1:], C14_SPLIT['held'][t], C14_SPLIT['energy'][t], hold,
+                                   C14_SPLIT['a45'])
+                  for t in typ_names] for k, hold in (('upper', '2025'), ('lower', '2050'))}
+        _cu, _cl = (sum(x[0] for x in _c[k]) for k in ('upper', 'lower'))
+        _ch = sum(x[1] for x in _c['upper'])
+        COMMITTED = dict(B_upper_kt=_b['upper'] / 1e6, B_lower_kt=_b['lower'] / 1e6,
+                         C_upper_kt=_cu / 1e6, C_lower_kt=_cl / 1e6, C_held_kt=_ch / 1e6,
+                         C_held_share=_ch / _cu,
+                         upper_kt=(_b['upper'] + _cu) / 1e6, lower_kt=(_b['lower'] + _cl) / 1e6,
                          B_inwindow_kt=_b_inwin / 1e6)
         print(f"   in-window replacements & repaints {_b_inwin / 1e6:,.0f} kt | committed after 2050: "
-              f"B {_b['lower'] / 1e6:,.0f}-{_b['upper'] / 1e6:,.0f} kt + C1-C4 {_c / 1e6:,.0f} kt (2025 factors)")
+              f"B {_b['lower'] / 1e6:,.0f}-{_b['upper'] / 1e6:,.0f} kt + C1-C4 {_cl / 1e6:,.0f}-{_cu / 1e6:,.0f} kt "
+              f"(carbon-bearing classes {100 * _ch / _cu:.1f}%, held at 2025)")
 
     print("\n BY DEMAND TYPE AND MATERIAL  [kt CO2e, 2026-2050]")
     dm = (dem_mat / 1e6).round(1)

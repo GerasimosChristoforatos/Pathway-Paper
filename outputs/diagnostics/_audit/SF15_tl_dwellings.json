@@ -1,6 +1,6 @@
 {
- "figure": "SF14_tl_dwellings",
- "producer": "redraw.py",
+ "figure": "SF15_tl_dwellings",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Theoretical Limit",
@@ -45,8 +45,8 @@
   "Re-occupied (released dwellings)",
   "Theoretical Limit",
   "Theoretical Limit, instant start",
-  "a",
-  "b"
+  "a)",
+  "b)"
  ],
  "note": "(b) The Theoretical Limit at full strength from 2027 (no phase-in; sensitivity).",
  "maintenance_drawn": false,

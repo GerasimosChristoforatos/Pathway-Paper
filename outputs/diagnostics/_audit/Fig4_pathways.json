@@ -1,6 +1,6 @@
 {
  "figure": "Fig4_pathways",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Moderate Pathway",
@@ -36,6 +36,8 @@
   "30,000",
   "4,079",
   "5,000",
+  "Ability-to-pay budget",
+  "Acquired-rights budget",
   "Ambitious\nPathway",
   "Ambitious Pathway",
   "Avoid Strategies",
@@ -65,9 +67,9 @@
   "TL9",
   "Theoretical\nLimit",
   "Theoretical Limit",
-  "a",
-  "b",
-  "c",
+  "a)",
+  "b)",
+  "c)",
   "\u22121,164",
   "\u22121,391",
   "\u22121,403",

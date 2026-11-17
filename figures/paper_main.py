@@ -456,7 +456,10 @@ def fig3():
     hs, ls = ax.get_legend_handles_labels()
     # the 50% band is drawn over the 90% band: its swatch overlays the two palette opacities (what the plot shows)
     hs = [mc50_handle() if lab_ == 'Monte Carlo 50% band' else h_ for h_, lab_ in zip(hs, ls)]
-    ax.legend(handles=hs + zones, labels=ls + [z.get_label() for z in zones], loc='upper right', fontsize=S.FONT_MIN,
+    zone_lab = {S.ZONE['within_both']['label']: 'Within both budgets',                  # Fig3 only (v4.8.0)
+                S.ZONE['within_ar']['label']: 'Within AR budget'}
+    ax.legend(handles=hs + zones, labels=ls + [zone_lab.get(z.get_label(), z.get_label()) for z in zones],
+              loc='upper right', fontsize=S.FONT_MIN,
               ncol=2, columnspacing=1.0, frameon=False, handler_map={tuple: HandlerTuple(ndivide=1, pad=0)})
     # the y-axis top: the smallest of FIG3A_YTOP, +100 kt, ... at which the legend lies above the 50% band and every
     # line in the years it spans (it may overlap the 90% band only)
@@ -492,7 +495,8 @@ def fig3():
         st = {k: val for k, val in S.BOUNDARY[key].items() if k != 'label'}
         b.plot([-0.36, 0.36], [v, v], gid='boundary', path_effects=halo, **st)
         b.text(-0.38, v, f'{key} budget', ha='right', va='center', fontsize=S.FONT_MIN, color=S.INK)
-    cc, bl, bu = float(com['C_kt']), float(com['B_lower_kt']), float(com['B_upper_kt'])
+    cc, bl, bu = float(com['C_lower_kt']), float(com['B_lower_kt']), float(com['B_upper_kt'])
+    cu, ch = float(com['C_upper_kt']), float(com['C_held_share'])
     # committed after 2050: two stacked hatched segments, no fill, hatches unlike the 2026-2050 column
     com_st = {k: dict(facecolor='none', edgecolor=S.COMPONENT[key][0], lw=S.LW_THIN, hatch=FIG3B_HATCH[k])
               for k, key in (('c1c4', 'committed'), ('b2b4', 'maintenance'))}
@@ -529,7 +533,9 @@ def fig3():
                f'{lo90:,.0f}-{hi90:,.0f} kt ({FIG3_INTERVAL[0]:g}th-{FIG3_INTERVAL[1]:g}th percentile of the cumulative '
                f'carbon of the draws), 50% interval {lo50:,.0f}-{hi50:,.0f} kt, median {qc["p50"]:,.0f} kt (capped bars, no median mark; the '
                f'column is the deterministic Reference); committed after 2050 (drawn at the lower '
-               f'bound): C1-C4 {cc:,.0f} kt (2025 factors) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held; '
+               f'bound): C1-C4 {cc:,.0f} kt ({cu:,.0f} kt with 2025 factors; the carbon-bearing materials, '
+               f'{100 * ch:.0f}% of it, held at 2025 in both bounds, the energy part at the 2050 generic factor in '
+               f'the lower) and B2/B4 after 2050 {bl:,.0f} kt (2050 factors held; '
                f'{bu:,.0f} kt with 2025 factors); Monte Carlo median {qk["p50"]:,.0f} kt, 50% interval '
                f'{qk["p25"]:,.0f}-{qk["p75"]:,.0f}, 90% interval {qk["p5"]:,.0f}-{qk["p95"]:,.0f} kt. Committed range '
                f'from the Monte Carlo floor-area uncertainty (population, household size, dwelling size, completion '
@@ -598,6 +604,9 @@ def _net_waterfall_panel(ax, steps, end_lab, end_col):
     return ups
 
 
+FIG4A_BUDGET_LABEL_X = 0.5        # Fig4a: x (axes fraction) of the budget labels, between the Reference and the end bar
+
+
 def fig4():
     """The three net waterfalls (a-c) from the Reference in PAS 2080 lever order to the Moderate Pathway,
     the Ambitious Pathway and (TL1 ... TL9 cumulative) the Theoretical Limit (the pathway lines are in Fig3a)."""
@@ -614,6 +623,12 @@ def fig4():
     for b in ax[1:]:
         plt.setp(b.get_yticklabels(), visible=False)
     ax[0].set_ylim(0, max(paths[0][3][0][1], bar_) * 1.17)           # room for the TL1 label
+    import matplotlib.transforms as mtrans                            # panel a only: the two budgets named just
+    tr = mtrans.offset_copy(mtrans.blended_transform_factory(ax[0].transAxes, ax[0].transData), fig=fig, y=1.2,
+                            units='points')                           # above their lines (v4.8.0)
+    for v, lab in ((bar_, 'Acquired-rights budget'), (batp, 'Ability-to-pay budget')):
+        ax[0].text(FIG4A_BUDGET_LABEL_X, v, lab, transform=tr, ha='center', va='bottom', fontsize=S.FONT_MIN + 0.5,
+                   color=S.INK, zorder=6)
     ax[0].set_ylabel('Cumulative carbon 2026–2050 (kt CO₂e)')
     P.thousands(ax[0].yaxis)
     hs = [Patch(label=N.STRATEGIES[St], **S.fill(S.STRATEGY[St])) for St in N.STRATEGIES]
@@ -901,6 +916,10 @@ def fig5():
 # ---------------------------------------------------------------------------
 # Fig6: Shapley value of each lever (Moderate hollow, Ambitious filled, TL dot)
 # ---------------------------------------------------------------------------
+FIG6_LEVER_LABEL = {'L6': 'Brownfield development', 'L9': 'Construction stage carbon'}   # plot labels only (v4.8.0)
+FIG6_TICK_PAD = 1.5                 # pt between the Fig6 lever labels and the axis (tighter left margin)
+
+
 def fig6():
     """Two panels, levers grouped by PAS 2080 strategy, bars in the strategy colours (Moderate
     filled, Ambitious hollow, as style.SETTING everywhere; TL dot): (a) standalone reduction of cumulative carbon 2026-2050 vs the Reference, each lever
@@ -941,7 +960,8 @@ def fig6():
                    fontsize=S.FONT_MIN + 0.5, color=S.INK, fontweight='bold')
     P.thousands(ax[0].xaxis)
     ax[0].set_yticks(y)
-    ax[0].set_yticklabels([P.two_lines(f'{L} {N.LEVERS[L]}') for L in order])   # two lines, centred
+    ax[0].set_yticklabels([P.two_lines(f'{L} {FIG6_LEVER_LABEL.get(L, N.LEVERS[L])}') for L in order])   # centred
+    ax[0].tick_params(axis='y', pad=FIG6_TICK_PAD)                    # the label column close to the axis
     ax[0].set_ylim(-0.6, len(order) - 0.4)
     fig.legend(handles=[Patch(facecolor=S.MUTED, edgecolor=S.MUTED, label=S.SETTING['moderate']['label']),
                         Patch(facecolor='none', edgecolor=S.MUTED, lw=S.LW_OUTLINE * 1.2,
@@ -1024,6 +1044,8 @@ def mc50_handle():
 
 
 FIG7A_BAR = 0.6                     # bar height (rows 1 apart): a visible gap between rows
+FIG7A_LABEL = {'hh_propensity': 'Household size\n(Stats NZ B)'}   # plot label only (v4.8.0); naming.INPUT_LABEL kept
+FIG7A_TICK_PAD = 1.5                # pt between the Fig7a row labels and the axis (tighter left margin)
 FIG7A_ED4_ONLY = ('completion_rate', 'no_2026')   # rows above the filter drawn in Extended Data Fig. 4 only (v4.7.1)
 # Fig7a carbon-factor rows: (input id, sensitivity/tornado.csv input, AR-base rule row)
 FIG7_CARBON_FACTOR_ROWS = (('jackknife', 'Case-study carbon factors (jackknife)', 'Case studies: jackknife low / high'),
@@ -1149,7 +1171,7 @@ def fig7():
         y0_, y1_ = b.get_ylim()                                     # the line stops above the data (legend clear)
         top = (np.log(vmax * 1.15) - np.log(y0_)) / (np.log(y1_) - np.log(y0_))
         vl = b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3)   # not in the legend (v4.7.2):
-        b.text(x50, 0.03, f" TL: P(within AR) = 50%\n at {x50:.2f} M (95% CI {lo / 1e6:.2f}–{hi / 1e6:.2f} M)",
+        b.text(x50, 0.03, f" TL: P(within AR) = 50%\n at {x50:.2f} M (95% CI {lo / 1e6:.2f}–{hi / 1e6:.2f})",
                transform=b.get_xaxis_transform(), ha='left', va='bottom', fontsize=S.FONT_MIN,   # the line's label
                color=S.INK, linespacing=1.15)
     hb = b.get_legend_handles_labels()[0]
@@ -1163,8 +1185,9 @@ def fig7():
         if t.get_text():
             t.set_fontsize(t.get_fontsize() * 1.1)
     # y labels: the name at the label size, its parenthesised part one font step smaller (one centre axis)
-    P.stacked_ticklabels(fig, a, [N.INPUT_LABEL.get(r[0], r[0]) for r in rows], S.FONT_SMALL * 1.1,
-                         S.FONT_MIN * 1.1)
+    a.tick_params(axis='y', pad=FIG7A_TICK_PAD)                       # the label column close to the axis
+    P.stacked_ticklabels(fig, a, [FIG7A_LABEL.get(r[0], N.INPUT_LABEL.get(r[0], r[0])) for r in rows],
+                         S.FONT_SMALL * 1.1, S.FONT_MIN * 1.1)
     fig.tight_layout()
     if thr['estimable']:                                              # the 50% line stops 3 pt below the legend
         fig.canvas.draw()

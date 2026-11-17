@@ -83,7 +83,7 @@ def test_within_window_plus_committed_equals_whole_life(tr_frozen):
     whole = run_boss(DECARB_MODE='none', **WHOLE_LIFE)['tot_carbon_median']
     c = tr_frozen['COMMITTED']
     up = tr_frozen['_upfront'] + tr_frozen['_soil'] / 1e6
-    assert up + c['B_inwindow_kt'] + c['B_upper_kt'] + c['C_kt'] == pytest.approx(whole, rel=1e-12)
+    assert up + c['B_inwindow_kt'] + c['B_upper_kt'] + c['C_upper_kt'] == pytest.approx(whole, rel=1e-12)
     assert c['B_upper_kt'] == c['B_lower_kt']                    # nothing to decarbonise
 
 
@@ -103,7 +103,7 @@ def test_a45_generic_path():
 def test_committed_range_ordered():
     c = run_boss()['COMMITTED']
     assert c['B_lower_kt'] < c['B_upper_kt'] and c['lower_kt'] < c['upper_kt']
-    assert c['C_kt'] > 0 and c['B_inwindow_kt'] > 0
+    assert c['C_upper_kt'] >= c['C_lower_kt'] > 0 and c['B_inwindow_kt'] > 0
 
 
 def test_every_figure_is_planned():

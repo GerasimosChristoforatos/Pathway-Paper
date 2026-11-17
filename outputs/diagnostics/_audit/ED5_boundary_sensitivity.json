@@ -1,6 +1,6 @@
 {
  "figure": "ED5_boundary_sensitivity",
- "producer": "redraw.py",
+ "producer": "figures/__main__.py",
  "axes": [
   {
    "title": "Acquired rights",
@@ -76,10 +76,10 @@
   "[7]",
   "[8]",
   "[9]",
-  "a",
+  "a)",
   "as in Extended Data Fig. 4 (carbon only).",
   "as in Extended Data Fig. 4 (carbon only; the budgets are unchanged).",
-  "b",
+  "b)",
   "global impact (I_glob) from the EF 3.1 normalisation factor (Andreasi Bassi et al. 2023,\nTable 10; 7.55 \u00d7 10\u00b3 kg CO\u2082e per person, 2010) instead of 5.58 \u00d7 10\u00b9\u00b3 (Bj\u00f8rn & Hauschild\n2015; equal to the EF 3.0 factor, 8.10 \u00d7 10\u00b3 per person). The 6.7% difference is mainly the\nlower characterisation factor of methane in EF 3.1. Acquired rights only.",
   "mean sector emissions over 5 / 20 / 34 years (2021\u20132025, 2006\u20132025, 1992\u20132025)\ninstead of 10 years (2016\u20132025); AR only."
  ],

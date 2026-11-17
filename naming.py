@@ -184,7 +184,7 @@ def vacancy_wording(v0, vmax, vmin, ymin, v2050):
 
 
 # display names of the sensitivity inputs, one source for the Fig7a tornado, ED4 (one at a time, carbon),
-# ED5 (boundary definitions, LoE), ED6 (Monte Carlo inputs) and ED7 (Sobol). Two lines where long (centred on one
+# ED5 (boundary definitions, LoE), SF11 (Monte Carlo inputs) and ED6 (Sobol). Two lines where long (centred on one
 # axis by figures.draw.centre_ticklabels). The same input carries the same label everywhere.
 INPUT_LABEL = {
     'population': 'Population\n(5th–95th pct.)',
@@ -213,6 +213,7 @@ INPUT_LABEL = {
     'soil_order': 'Soil order\n(Raw–Organic)',
     'a4a5': 'A4–A5 decarbonisation\n(own path–held at 2025)',
     'soil_all': 'Soil carbon loss on all\nfloor area, incl. replacement',
+    'module_d': 'Module D credit, booked at\nconstruction (not netted)',
     'event_timing': 'B2/B4 event spacing\n(L/n, not L/(n+1))',
     'carrying_capacity': 'Carrying capacity:\n1 W/m² boundary (not 2 °C)',
     'global_impact_ef31': 'Global impact:\nEF 3.1',
@@ -230,7 +231,7 @@ AR_WINDOW_LABEL = 'AR base window\n({short}–{long} yr)'
 SENSITIVITY_GROUPS = ('Demographics', 'Housing stock & calibration', 'Completion lag', 'Replacement',
                       'Carbon factors & technology', 'Accounting')
 BOUNDARY_SENSITIVITY_GROUPS = ('Carrying capacity', 'Global impact', 'AR base window', 'Economic allocation', 'Population', 'Replacement')
-# Monte Carlo inputs (ED6 panel titles, ED7 rows): the same input names as the tornado rows, without their ranges
+# Monte Carlo inputs (SF11 panel titles, ED6 rows): the same input names as the tornado rows, without their ranges
 MC_INPUT = {'z_pop': 'Population and household size',     # MODEL v4.3.1 (B4): one z draws both (Stats NZ variants)
             'size': 'Dwelling size', 'complete': 'Completion rate', 'carbon': 'Carbon factors',
             'half_life': 'Replacement half-life'}

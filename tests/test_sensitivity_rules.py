@@ -43,7 +43,8 @@ def test_every_loe_row_is_classified(BD):
     pc = pd.read_csv(_data('sensitivity/pathway_carbon.csv'))
     keys += [g if g in BD.AR_BASE_RULE else r for g, r in zip(pc['group'], pc['row'])]
     keys += list(pd.read_csv(_data('sensitivity/household_size.csv'))['row'].unique())
-    keys += [r[1] for r in T.REF_ROWS]
+    keys += [r[1] for r in T.REF_ROWS if r[1] not in T.CARBON_ONLY_ROWS]   # carbon-only rows report no LoE
+    assert not {row for _, row in T.TORNADO} & set(T.CARBON_ONLY_ROWS)
     missing = sorted({k for k in keys if k not in BD.AR_BASE_RULE})
     assert not missing, f'unclassified one-at-a-time rows: {missing}'
     assert {r for r, _ in BD.AR_BASE_RULE.values()} == {BD.RECOMPUTE, BD.REFERENCE_BASE}

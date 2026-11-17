@@ -202,7 +202,7 @@ def lines():
     if cm:
         L += ['', '### Committed after 2050 (later B2/B4 and C1-C4; deterministic)', '',
               'Lower bound: maintenance events (B2, B4) after 2050 with the 2050 factors held; upper bound: at 2025 '
-              'factors; C1-C4 at 2025 factors in both. Years of the 2050 AR boundary = committed / B_AR(2050). Not '
+              'factors; C1-C4 by material chemistry (Building_factors.C14_HELD_CLASSES): the carbon-bearing classes (timber, plasterboard, plastics, paint, SIP), whose end of life is the release of their own carbon at disposal, held at 2025 in both bounds; the energy part of the other classes (demolition, processing, transport) at 2025 factors in the upper bound and at the generic construction-stage factor e^(-0.01 (t - 2025)) (Resch et al. 2021) of 2050, held after it, in the lower bound. Years of the 2050 AR boundary = committed / B_AR(2050). Not '
               'part of the cumulative LoE.', '',
               '| variant | maintenance (B2, B4) 2026-2050 (kt) | share of carbon 2026-2050 | committed after 2050 (kt) '
               '| years of B_AR(2050) |',

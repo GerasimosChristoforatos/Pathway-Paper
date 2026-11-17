@@ -2,7 +2,7 @@
 D11_floor_area_bridge_split, D12_conversion_chain, D14_hindcast, D15_reality_checks, D19_variants.
 
 Each figure reads its figure source data (outputs/data/figure_source/<file id>.json, written by
-tools/figures_report.py); ED10 panel h also reads baseline/annual.csv and baseline/variants_annual.csv. Nothing is
+tools/figures_report.py); SF6 panel h also reads baseline/annual.csv and baseline/variants_annual.csv. Nothing is
 recomputed here.
 
 Sign rules (figures/draw.py): the floor-area bridges (D10, D11) are waterfalls of cumulative values: a positive band
@@ -43,7 +43,7 @@ HINDCAST_SHORT = {'LOW': 'Low', 'REF': 'Reference', 'HIGH': 'High', 'VHIGH': 'Ve
 
 
 def sf6_hindcast():
-    fid = 'SF6_hindcast'
+    fid = 'SF5_hindcast'
     v = D.src('D14_hindcast')
     fig, ax = plt.subplots(1, 4, figsize=S.figsize('double', 74), gridspec_kw=dict(width_ratios=[1, 1, 1, 0.75]))
     # Actual and the four replacement variants (ED3 styles), each defined from the census intervals
@@ -101,7 +101,7 @@ def sf6_hindcast():
 
 
 # ---------------------------------------------------------------------------
-# ED10 (D15) reality checks
+# SF6 (D15) reality checks
 # ---------------------------------------------------------------------------
 HISTORY_ATOL = 1e-12          # every drawn history vertex equals its source value (observed data are not smoothed)
 
@@ -114,17 +114,17 @@ def _history_line(a, x, y):
     dx, dy = (np.asarray(v, float) for v in ln.get_data())
     err = float(np.max(np.abs(dy - y[ok]))) if len(dy) else 0.0
     if len(dx) != int(ok.sum()) or err > HISTORY_ATOL:
-        raise SystemExit(f'STOP: ED10: a drawn history line differs from its source data ({err:.3g}).')
+        raise SystemExit(f'STOP: SF6: a drawn history line differs from its source data ({err:.3g}).')
     return err
 
 
 def ed10_reality_checks():
-    """ED10 (data D15, baseline/annual.csv, baseline/variants_annual.csv): the projection of each replacement variant
+    """SF6 (data D15, baseline/annual.csv, baseline/variants_annual.csv): the projection of each replacement variant
     against the 1991-2025 range (grey band) for eight quantities. History: straight segments between annual values
     (observed data are not smoothed); census-interval rates (b) are constant within each interval. Projections: PCHIP
     display interpolation as every projection line. The largest difference between a drawn history and its source is
     returned in the note (it must be 0)."""
-    fid = 'ED10_reality_checks'
+    fid = 'SF6_reality_checks'
     d = D.src('D15_reality_checks')
     labels = d['labels']
     fig, ax = plt.subplots(3, 3, figsize=S.figsize('double', 165))
@@ -167,7 +167,7 @@ def ed10_reality_checks():
     for k in VARS:
         y = va[va['variant'] == k].set_index('year')['floor_area_Mm2']
         if k == 'REF' and not np.allclose(y.values, ref.reindex(y.index).values, rtol=1e-12, atol=0):
-            raise SystemExit('STOP: ED10: the Reference of variants_annual.csv differs from annual.csv.')
+            raise SystemExit('STOP: SF6: the Reference of variants_annual.csv differs from annual.csv.')
         P.line(a, y.index, y, label=labels[k], **_scen_line(k))
     P.split(a)
     a.set_xlim(1991, 2050)
@@ -182,7 +182,7 @@ def ed10_reality_checks():
     bb = tb.get_bbox_patch().get_window_extent().transformed(ax[1].transData.inverted())
     hb = d['panels'][d['order'][1]]['history']
     if not (bb.x1 < P.HISTORY_SPLIT and bb.y0 > float(np.nanmax(hb.values))):
-        raise SystemExit(f'STOP: ED10 b: the removals text box (x {bb.x0:.1f}-{bb.x1:.1f}, y {bb.y0:.2f}-{bb.y1:.2f}) '
+        raise SystemExit(f'STOP: SF6 b: the removals text box (x {bb.x0:.1f}-{bb.x1:.1f}, y {bb.y0:.2f}-{bb.y1:.2f}) '
                          'covers drawn data')
     h = d['handover']
     S.save_figure(fig, fid,
@@ -203,4 +203,4 @@ def ed10_reality_checks():
                   source=['figure_source/D15_reality_checks.json', 'baseline/annual.csv', 'baseline/variants_annual.csv'])
 
 
-FIGURES = {'SF6_hindcast': sf6_hindcast, 'ED10_reality_checks': ed10_reality_checks}
+FIGURES = {'SF5_hindcast': sf6_hindcast, 'SF6_reality_checks': ed10_reality_checks}

@@ -94,11 +94,22 @@ Monte Carlo (the Reference only; replacement uncertainty: the deterministic vari
 
 ## Maintenance 2026-2050 and committed after 2050 (deterministic, kt CO2e)
 
-Committed after 2050: later maintenance events (B2, B4; lower bound: 2050 factors held; upper bound: 2025 factors) and all C1-C4 (2025 factors) of the 2026-2050 cohorts; also in years of the 2050 AR boundary. Reconciliation with whole life at construction: outputs/reports/reconciliation.md.
+Committed after 2050: later maintenance events (B2, B4; lower bound: 2050 factors held; upper bound: 2025 factors) and all C1-C4 of the 2026-2050 cohorts (C1-C4 by material chemistry (Building_factors.C14_HELD_CLASSES): the carbon-bearing classes (timber, plasterboard, plastics, paint, SIP), whose end of life is the release of their own carbon at disposal, held at 2025 in both bounds; the energy part of the other classes (demolition, processing, transport) at 2025 factors in the upper bound and at the generic construction-stage factor e^(-0.01 (t - 2025)) (Resch et al. 2021) of 2050, held after it, in the lower bound); also in years of the 2050 AR boundary. Reconciliation with whole life at construction: outputs/reports/reconciliation.md.
 
 | variant | maintenance (B2, B4) 2026-2050 | share of carbon 2026-2050 | committed B2/B4 | committed C1-C4 | committed total | years of the 2050 AR boundary |
 |---|---|---|---|---|---|---|
-| Low replacement | 416 | 1.7% | 3,866-4,762 | 5,470 | 9,336-10,233 | 51.2-56.1 |
-| Reference | 438 | 1.7% | 4,026-4,960 | 5,702 | 9,728-10,662 | 53.3-58.4 |
-| High replacement | 451 | 1.7% | 4,245-5,229 | 5,997 | 10,241-11,226 | 56.1-61.5 |
-| Very High replacement (trend continues) | 460 | 1.7% | 4,480-5,518 | 6,309 | 10,789-11,827 | 59.1-64.8 |
+| Low replacement | 416 | 1.7% | 3,866-4,762 | 5,304-5,470 | 9,170-10,233 | 50.3-56.1 |
+| Reference | 438 | 1.7% | 4,026-4,960 | 5,529-5,702 | 9,554-10,662 | 52.4-58.4 |
+| High replacement | 451 | 1.7% | 4,245-5,229 | 5,815-5,997 | 10,059-11,226 | 55.1-61.5 |
+| Very High replacement (trend continues) | 460 | 1.7% | 4,480-5,518 | 6,117-6,309 | 10,597-11,827 | 58.1-64.8 |
+
+## Committed after 2050 by run (kt CO2e)
+
+Lower bound: B2/B4 events after 2050 at the 2050 factors held; C1-C4 with the carbon-bearing classes (timber, plasterboard, plastics, paint, SIP) held at 2025 and the energy part at the 2050 generic construction-stage factor. Upper bound: 2025 factors. Monte Carlo: the 90% interval of the lower bound over the draws.
+
+| run | committed (lower-upper) | C1-C4 (lower-upper) | carbon-bearing share of C1-C4 | Monte Carlo 90% interval, lower bound |
+|---|---|---|---|---|
+| Reference | 9,554-10,662 | 5,529-5,702 | 86.3% | 8,014-11,314 |
+| Moderate Pathway | 7,242-8,081 | 4,199-4,330 | 86.3% | 6,017-8,675 |
+| Ambitious Pathway | 5,365-5,985 | 3,118-3,216 | 86.3% | 4,380-6,536 |
+| Theoretical Limit | 1,799-2,002 | 1,076-1,109 | 86.4% | 804-3,027 |

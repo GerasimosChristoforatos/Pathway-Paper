@@ -87,6 +87,23 @@ OUT_EVENTS = os.path.join(OUT_DIR, 'factors_events.csv')            # B2/B4 even
 OUT_EVENTS_BLD = os.path.join(OUT_DIR, 'factors_building_events.csv')   # the same per case study (MonteCarlo.py)
 OUT_A45_ITEM = os.path.join(OUT_DIR, 'factors_a45_item.csv')        # A4-A5 on item paths (sensitivity)
 OUT_CLASS = os.path.join(OUT_DIR, 'factors_material_class.csv')     # A1-A3, C1-C4, D by item class (MODEL v4.8.0)
+# the item-level production chain of lever L10 (MODEL v4.10.0): A1-A3 by item class on the S4 item paths, pooled by
+# typology and per case study, and the A1-A3 component of the replacement / repaint events by item class
+OUT_A13_CLASS = os.path.join(OUT_DIR, 'factors_a13_class_paths.csv')
+OUT_A13_CLASS_BLD = os.path.join(OUT_DIR, 'factors_building_a13_class_paths.csv')
+OUT_EVENTS_CLASS = os.path.join(OUT_DIR, 'factors_events_a13_class.csv')
+OUT_EVENTS_CLASS_BLD = os.path.join(OUT_DIR, 'factors_building_events_a13_class.csv')
+# production class of an item in the chain files (MODEL v4.10.0, author decision): the item class, except the imported
+# OTIS elevator (class OTHERS, apartments A_1 / A_2), an assembled product dominated by steel, kept apart so that L10
+# at TL can treat the whole item as steel (an upper bound of the reduction). Every other OTHERS item stays OTHERS.
+ELEVATOR_ITEM_PREFIX = 'Elevator (12 floors) - OTIS'
+ELEVATOR_CLASS = 'ELEVATOR (assembled, steel-dominated)'
+
+
+def production_class(cls, item):
+    """The class of an item in the production chain files (classes of material_items.csv; the elevator apart)."""
+    return np.where((np.asarray(cls) == 'OTHERS') & pd.Series(item).astype(str).str.startswith(ELEVATOR_ITEM_PREFIX)
+                    .to_numpy(), ELEVATOR_CLASS, np.asarray(cls))
 
 # ---------------------------------------------------------------------------
 # END OF LIFE (C1-C4) IN THE COMMITTED RANGE (MODEL v4.8.0; projection COMMITTED, pathways.committed)
@@ -217,8 +234,8 @@ def event_rows(timing='n+1'):
                     continue
                 for c in EVENT_COMPONENTS:
                     rows.append((r.id, lookup.get(r.cls, OTHERS_LABEL), age, c, r.s4_row, r.label, r.nz,
-                                 per * shares[c] * w))
-    out = pd.DataFrame(rows, columns=['id', 'Material', 'Age', 'Component', 'S4', 'label', 'nz', 'kg'])
+                                 per * shares[c] * w, production_class([r.cls], [r.item])[0]))
+    out = pd.DataFrame(rows, columns=['id', 'Material', 'Age', 'Component', 'S4', 'label', 'nz', 'kg', 'Class'])
     chk = out.groupby('id')['kg'].sum() - ev.groupby('id')['b'].sum()
     if chk.abs().max() > 1e-6:
         raise ValueError(f'Events do not add up to line B2/B4 (max {chk.abs().max():g} kg).')
@@ -594,6 +611,11 @@ def main():
     worst = (cls_items.reindex(cls_lca.index).fillna(0.0) - cls_lca).abs().max()
     if set(cls_items.index) != set(cls_lca.index) or worst > 1e-9:
         raise ValueError(f'Item A1-A3 does not reproduce the class A1-A3 of {FILE_LCA} (max {worst:g}).')
+    items['pclass'] = production_class(items['class'], items['item'])
+    if (items['pclass'] == ELEVATOR_CLASS).sum() != 2:
+        raise ValueError('The OTIS elevator item is not found once in each of A_1 and A_2.')
+    classes = sorted(items['pclass'].unique())
+    cls_rows, cls_bld_rows = [], []
     for case in ITEM_CASES:
         variant = decarb_variant('horup_item', item_case=case)
         row = item_s4_row(items, case)
@@ -611,6 +633,17 @@ def main():
                 for typ in TYP_ORDER:
                     dec_rows.append(dict(Variant=variant, Typology=typ, Material=mat, Year=y,
                                          A13_kgCO2e_per_m2=float(pooled.loc[typ])))
+            gc = (a13.groupby([items['id'], items['pclass']]).sum()
+                  .reindex(pd.MultiIndex.from_product([ids, classes])).fillna(0.0).rename('a13').reset_index())
+            gc.columns = ['id', 'Class', 'a13']
+            cls_bld_rows += [dict(Variant=variant, id=r_.id, Class=r_.Class, Year=y, A13_kgCO2e_per_m2=float(r_.a13))
+                             for r_ in gc.itertuples(index=False)]
+            gc['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in gc['id']]
+            gc['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in gc['id']]
+            for c_ in classes:
+                pooled = pool(gc[gc['Class'] == c_], ['a13'])['a13']
+                cls_rows += [dict(Variant=variant, Typology=typ, Class=c_, Year=y, A13_kgCO2e_per_m2=float(pooled.loc[typ]))
+                             for typ in TYP_ORDER]
             red = (items['a13'] - a13).groupby(items['id']).sum().reindex(ids).fillna(0.0)
             red_rows += [dict(Variant=variant, id=i, Year=y, A13_reduction_kgCO2e_per_m2=float(red.loc[i]))
                          for i in ids]
@@ -640,7 +673,7 @@ def main():
 
     # ---- replacement / repaint events by age (time-resolved B2, B4) ---------
     keys = ['Material', 'Age', 'Component', 'S4', 'label', 'nz']
-    ev_pooled, ev_bld = [], []
+    ev_pooled, ev_bld, evc_pooled, evc_bld = [], [], [], []
     for timing in EVENT_TIMINGS:
         er = event_rows(timing)
         er['kg_m2'] = er['kg'] / er['id'].map(gfa)
@@ -659,7 +692,27 @@ def main():
                 v = float(pooled.loc[t, j])
                 if v != 0:
                     ev_pooled.append(dict(Timing=timing, Typology=t, **dict(zip(keys, key)), kg_per_m2=v))
+        if True:                                      # the A1-A3 component by item class (L10, MODEL v4.10.0)
+            kc = ['Class', 'Age', 'S4', 'label', 'nz']
+            a = er[er['Component'] == EVENT_COMPONENTS[0]]
+            wc = a.pivot_table(index='id', columns=kc, values='kg_m2', aggfunc='sum').reindex(ids).fillna(0.0)
+            bc_ = wc.stack(kc, future_stack=True).rename('kg_per_m2').reset_index()
+            bc_ = bc_[bc_['kg_per_m2'] != 0]
+            bc_.insert(0, 'Timing', timing)
+            evc_bld.append(bc_)
+            cc = list(wc.columns)
+            fc = pd.DataFrame(wc.values, index=ids, columns=range(len(cc)))
+            fc['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in fc.index]
+            fc['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in fc.index]
+            pc = pool(fc, list(range(len(cc))))
+            evc_pooled += [dict(Timing=timing, Typology=t, **dict(zip(kc, key)), kg_per_m2=float(pc.loc[t, j]))
+                           for t in TYP_ORDER for j, key in enumerate(cc) if float(pc.loc[t, j]) != 0]
     ev_pooled, ev_bld = pd.DataFrame(ev_pooled), pd.concat(ev_bld, ignore_index=True)
+    evc_pooled, evc_bld = pd.DataFrame(evc_pooled), pd.concat(evc_bld, ignore_index=True)
+    a13_ev = ev_pooled[ev_pooled['Component'] == EVENT_COMPONENTS[0]].groupby(['Timing', 'Typology'])['kg_per_m2'].sum()
+    worst = float((evc_pooled.groupby(['Timing', 'Typology'])['kg_per_m2'].sum() - a13_ev).abs().max())
+    if worst > 1e-9:
+        raise ValueError(f'Pooled A1-A3 events by class do not add up to the A1-A3 events ({worst:g} kg/m2).')
     b_fac = mat_factors[mat_factors.Stage == 'B2,B4'].groupby('Typology')['kgCO2e_per_m2'].sum()
     for timing, g in ev_pooled.groupby('Timing'):
         worst = float((g.groupby('Typology')['kg_per_m2'].sum() - b_fac).abs().max())
@@ -686,6 +739,15 @@ def main():
     ev_pooled.to_csv(OUT_EVENTS, index=False)
     ev_bld.to_csv(OUT_EVENTS_BLD, index=False)
     a45_item.to_csv(OUT_A45_ITEM, index=False)
+    cls_paths = pd.DataFrame(cls_rows)                # the class paths pool back to the decarbonised typology A1-A3
+    tot = dec.groupby(['Variant', 'Typology', 'Year'])['A13_kgCO2e_per_m2'].sum()
+    worst = float((cls_paths.groupby(['Variant', 'Typology', 'Year'])['A13_kgCO2e_per_m2'].sum() - tot).abs().max())
+    if worst > 1e-9:
+        raise ValueError(f'A1-A3 class paths do not pool back to the decarbonised A1-A3 ({worst:g} kg/m2).')
+    cls_paths.to_csv(OUT_A13_CLASS, index=False)
+    pd.DataFrame(cls_bld_rows).to_csv(OUT_A13_CLASS_BLD, index=False)
+    evc_pooled.to_csv(OUT_EVENTS_CLASS, index=False)
+    evc_bld.to_csv(OUT_EVENTS_CLASS_BLD, index=False)
     # item classes (C1-C4 split of the committed range; Module D row): they pool back to the material factors
     cls = class_factors(load_characteristics())
     for stg in ('A1-A3', 'C1-C4', 'D'):

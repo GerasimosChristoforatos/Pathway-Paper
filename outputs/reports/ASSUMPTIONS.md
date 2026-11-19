@@ -62,7 +62,7 @@ Basis labels: DATA (measured), LITERATURE (cited), DECISION (author), JUDGEMENT 
 - The regional analysis of the recent replacement surge (replacement half-life by territorial authority) is deferred.
 - The 2018 census empty-dwelling count has no quality rating (DataInfo+); the vacancy terms rely on it.
 - Households 2019-2023: the Stats NZ Dwelling and household estimates remain on the 2018 Census base; Stats NZ has not yet rebased them on the 2023 Census. Their increments after the 2018 base are therefore rescaled by one factor (k = 0.824) so that June 2023 matches the 2023 census, as Stats NZ benchmarks each base; the consent-driven shape is kept. Both census endpoints are fixed, so only the timing of household growth within 2019-2023 depends on the rescaling. Stats NZ's 2023-rebased household estimates will replace it when published.
-- The theoretical limit is a thought experiment, not a target: TL1 returns household size to 2.79 (the 1991 census level) regardless of age structure, which with the 2050 population requires about 11.7% fewer households per person than in 2023 at every age; the age-standardised TL1 (the lower of the 2023 and Stats NZ Medium B headship rates by age group) is reported as a sensitivity (TL 5,755 kt CO2e, cumulative LoE of AR 1.30).
+- The theoretical limit is a thought experiment, not a target: L1 at TL returns household size to 2.79 (the 1991 census level) regardless of age structure, which with the 2050 population requires about 11.7% fewer households per person than in 2023 at every age; the age-standardised L1 at TL (the lower of the 2023 and Stats NZ Medium B headship rates by age group) is reported as a sensitivity (TL 5,951 kt CO2e, cumulative LoE of AR 1.34).
 
 ### Notes on the 2026 overbuild rule
 
@@ -221,25 +221,25 @@ Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Tab
 | setting | value | basis |
 |---|---|---|
 | L1 Household size (S1 Avoid Strategies) | sub-rule C: Stats NZ Medium B household size, rebased on 2023 (2050: S = 2.5916, +0.1280 on the Reference); Moderate S 2050 = 2.5275; Ambitious S 2050 = 2.5916 (Reference 2.4635); TL S = 2.7905 (1991) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
-| L2 Vacancy rate (S1 Avoid Strategies) | sub-rule B: 4.01% (1996 census minimum, one definition); Moderate 4.70%; Ambitious 4.01%; TL v = 0 | B: best value ever observed in NZ (no structural trend) |
+| L2 Vacancy rate (S1 Avoid Strategies) | sub-rule B: 4.01% (1996 census minimum, one definition); Moderate 4.70%; Ambitious 4.01%; TL 1.31% (Switzerland 2022; OECD HM1.1, sheet HM1.1.2, cell P27, panel B) | B: best value ever observed in NZ (no structural trend) |
 | L3 Building lifetime (S1 Avoid Strategies) | sub-rule C: -40% demolition (Pellan et al. 2024); Moderate d = 0.20; Ambitious d = 0.40; TL no demolition, no surge | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
 | L4 Extra space (S1 Avoid Strategies) | sub-rule B: Detached 148.8 m2 (1990), Townhouses 105.8 m2 (1990), Apartments 91.0 m2 (1998); Moderate f = Detached 0.206, Townhouses 0.047, Apartments 0.055; Ambitious f = Detached 0.412, Townhouses 0.095, Apartments 0.110; TL f = 1 (size = occupied area) | B: best value ever observed in NZ (no structural trend) |
 | L5 Occupancy density (S1 Avoid Strategies) | sub-rule A: HD q0.15 of the 16 case-study design ratios = 0.8194; Moderate r = 0.9097; Ambitious r = 0.8194 (95% CI 0.732-0.960, n = 16); TL r = Detached 0.710, Townhouses 0.819, Apartments 0.819 | A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios |
-| L6 Brownfield-first development (S2 Switch Strategies) | sub-rule C: 59% of new floor area on previously developed land (England 2018-21, DLUHC 2022); Moderate s = 0.339 (s_ref 0.088); Ambitious s = 0.59; TL s = 1 | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| L6 Brownfield-first development (S2 Switch Strategies) | sub-rule C: 59% of new floor area on previously developed land (England 2018-21, DLUHC 2022); Moderate s = 0.339 (s_ref 0.088); Ambitious s = 0.59; TL s = 0.80 (England 2009, DCLG 2010) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
 | L7 Soil-aware planning (S2 Switch Strategies) | sub-rule C: -14.6% soil carbon loss (SOC-aware allocation; Christoforatos, Pickering & Schipper 2026); Moderate x = 0.073; Ambitious x = 0.146; TL Detached 22.9, Townhouses 13.8, Apartments 2.5 kg CO2e/m2 (lowest soil order) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
 | L8 Material carbon efficiency (S2 Switch Strategies) | sub-rule A: HD q0.15 of the 14 case ratios = 0.8270 (2025), 0.8275 (2050); Moderate r(y): 2025 0.9135, 2030 0.9136, 2040 0.9140, 2050 0.9137; Ambitious r(y): 2025 0.8270, 2030 0.8272, 2040 0.8279, 2050 0.8275 (2025: 95% CI 0.607-0.950, n = 14); TL Detached 2025 0.530, 2050 0.511; Townhouses 2025 0.827, 2050 0.827; Apartments 2025 0.827, 2050 0.827 | A: case-study distribution, Harrell-Davis q0.15 of the pooled scale-free case ratios |
-| L9 Construction-stage carbon (S3 Improve Strategies) | sub-rule C: A4-A5 linear to zero by 2050 (end year: NZ 2050 target, Climate Change Response Act 2002, s 5Q (as amended 2025); zero site emissions: City of Oslo 2025); Moderate factor 2050 = 0.389; Ambitious factor 2050 = 0 (linear from the 2026 Reference value); TL A4-A5 = 0 (theoretical bound) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
-| L10 Production decarbonisation (S3 Improve Strategies) | sub-rule C: documented scenario: lower envelope of 9 prospective backgrounds (Horup et al. 2025, Table S3); m(2050) = MIN / AVG relative to 2025: Detached 0.914, Townhouses 0.914, Apartments 0.866; Moderate m(y): Detached 2030 0.983, 2040 0.968, 2050 0.957; Townhouses 2030 0.983, 2040 0.968, 2050 0.957; Apartments 2030 0.978, 2040 0.951, 2050 0.933; Ambitious m(y): Detached 2030 0.967, 2040 0.937, 2050 0.914; Townhouses 2030 0.967, 2040 0.937, 2050 0.914; Apartments 2030 0.956, 2040 0.903, 2050 0.866; TL = Ambitious | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| L9 Construction-stage carbon (S3 Improve Strategies) | sub-rule C: site energy -85% (zero-emission site machinery, City of Oslo 2025); A4-A5 split by the medians of Kanafani et al. (2023); Moderate site energy -42.5%; transport / site energy / waste = 0.24 / 0.34 / 0.42 of A4-A5, each -1%/yr; Ambitious site energy -85%; transport / site energy / waste = 0.24 / 0.34 / 0.42 of A4-A5, each -1%/yr; TL transport and site energy zero, waste as the Reference; transport / site energy / waste = 0.24 / 0.34 / 0.42 of A4-A5, each -1%/yr | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
+| L10 Production decarbonisation (S3 Improve Strategies) | sub-rule C: documented scenario: lower envelope of 9 prospective backgrounds (Horup et al. 2025, Table S3); m(2050) = MIN / AVG relative to 2025: Detached 0.914, Townhouses 0.914, Apartments 0.866; Moderate m(y): Detached 2030 0.983, 2040 0.968, 2050 0.957; Townhouses 2030 0.983, 2040 0.968, 2050 0.957; Apartments 2030 0.978, 2040 0.951, 2050 0.933; Ambitious m(y): Detached 2030 0.967, 2040 0.937, 2050 0.914; Townhouses 2030 0.967, 2040 0.937, 2050 0.914; Apartments 2030 0.956, 2040 0.903, 2050 0.866; TL m(y) as Ambitious x [(1 - s) + s k] on cement-based classes (k = 0.147: CONCRETE, REINFORCED CONCRETE, FIBRE CEMENT, PLASTER) and steel (k = 0.136: STEEL and the elevator, assembled product dominated by steel; whole item treated as steel at TL (upper bound of the reduction; ~2.4% of A1-A3, apartments only)); s = 2022 0.00, 2030 0.08, 2050 0.93 (linear; 0 through 2026) | C: published reference value (official projection > legislated target > peer-reviewed scenario > peer-country value) |
 | TL4 vs Ambitious | f = 1 vs {'Detached': 0.4117, 'Townhouses': 0.0949, 'Apartments': 0.1102} | asserted at least as strong: True |
 | TL5 vs Ambitious | {'Detached': 0.7095, 'Townhouses': 0.8194, 'Apartments': 0.8194} vs r = 0.8194 | asserted at least as strong: True |
 | TL1 vs Ambitious | S = 2.7905 vs S_amb max 2.6803 | asserted at least as strong: True |
-| TL2 vs Ambitious | v = 0 vs v = 0.0401 | asserted at least as strong: True |
+| TL2 vs Ambitious | v = 0.0131 vs v = 0.0401 | asserted at least as strong: True |
 | TL3 vs Ambitious | d = 1 (demolition and surge) vs d = 0.4 | asserted at least as strong: True |
 | TL8 vs Ambitious | by year: {'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827} (2025) vs r(y), 0.8270 (2025) | asserted at least as strong: True |
-| TL9 vs Ambitious | A4-A5 = 0 vs linear to zero in 2050 | asserted at least as strong: True |
-| TL10 vs Ambitious | = Ambitious (lower envelope of the 9 backgrounds) vs m(2050) Detached 0.914, Townhouses 0.914, Apartments 0.866 | asserted at least as strong: True |
+| TL9 vs Ambitious | A4 and site energy zero, waste as the Reference vs site energy -85% | asserted at least as strong: True |
+| TL10 vs Ambitious | Ambitious envelope x near-zero cement and steel (class factors <= 1) vs m(2050) Detached 0.914, Townhouses 0.914, Apartments 0.866 | asserted at least as strong: True |
 | TL7 vs Ambitious | {'Detached': 22.93, 'Townhouses': 13.84, 'Apartments': 2.52} vs x = 0.146 | asserted at least as strong: True |
-| TL6 vs Ambitious | s = 1 vs s = 0.59 | asserted at least as strong: True |
+| TL6 vs Ambitious | s = 0.80 vs s = 0.59 | asserted at least as strong: True |
 
 ### All settings in levers.py
 
@@ -251,16 +251,26 @@ Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Tab
 | `ADOPTION_BY2045` | `{'name': 'by2045', 'mid': 2035.5, 'end': 2045, 'k': 0.34693019642150835}` |
 | `ADOPTION_SENSITIVITIES` | `({'name': 'by2030', 'mid': 2028.0, 'end': 2030, 'k': 1.6479184330021648}, {'name': 'by2045', 'mid': 2035.5, 'end': 2045, 'k': 0.34693019642150835})` |
 | `FILE_L10` | `'data/derived/horup2025_table_s3_archetypes.csv'` |
+| `FILE_OECD_VACANCY` | `'data/derived/oecd_hm112_vacancy.csv'` |
 | `HD_BOOTSTRAP_SEED` | `20261008` |
 | `HD_CI` | `0.95` |
 | `HD_Q` | `0.15` |
 | `L10_ARCHETYPE` | `{'Detached': 'Single family houses', 'Townhouses': 'Single family houses', 'Apartments': 'Multi dwellings'}` |
+| `L10_CLASS_REVIEW` | `{'CONCRETE': 'cement-based', 'REINFORCED CONCRETE': 'cement-based (steel reinforcement included in the item)', 'FIBRE CEMENT': 'cement-based', 'PLASTER': 'cement-based (the only item is "Plaster, cement")', 'STEEL': 'steel', 'ELEVATOR (assembled, steel-dominated)': 'steel (assembled product dominated by steel; whole item treated as steel at TL (upper bound of the reduction; ~2.4% of A1-A3, apartments only))', 'OTHERS': 'neither (after the elevator: MDF doors, ceramic tiles and sanitary ware, particleboard, glazing)', 'BRICKS': 'neither (clay brick)', 'TIMBER': 'neither', 'PLASTICS': 'neither', 'ALUMINIUM': 'neither (aluminium)', 'PLASTERBOARD': 'neither (gypsum)', 'SIP': 'neither (timber-foam panel)', 'GLASS': 'neither', 'GLASS WOOL': 'neither', 'PAINT': 'neither'}` |
+| `L10_ELEVATOR_CLASS` | `'ELEVATOR (assembled, steel-dominated)'` |
+| `L10_ELEVATOR_NOTE` | `'assembled product dominated by steel; whole item treated as steel at TL (upper bound of the reduction; ~2.4% of A1-A3, apartments only)'` |
 | `L10_EVIDENCE` | `'documented scenario: lower envelope of 9 prospective backgrounds (Horup et al. 2025, Table S3)'` |
+| `L10_K_CEMENT` | `0.14705882352941177` |
+| `L10_K_STEEL` | `0.13582342954159593` |
 | `L10_REPORT_YEARS` | `(2030, 2040, 2050)` |
+| `L10_S_MILESTONES` | `{2022: 0.0, 2030: 0.08, 2050: 0.93}` |
+| `L10_TL_CLASSES` | `{'CONCRETE': 0.14705882352941177, 'REINFORCED CONCRETE': 0.14705882352941177, 'FIBRE CEMENT': 0.14705882352941177, 'PLASTER': 0.14705882352941177, 'STEEL': 0.13582342954159593, 'ELEVATOR (assembled, steel-dominated)': 0.13582342954159593}` |
 | `L1_AMBITIOUS_VARIANT` | `'B'` |
 | `L1_PROPENSITY_SOURCE` | `'Stats NZ, National family and household projections: 2023(base)-2048, propensity B (living-arrangement type propensities change, based on modelling of 2001-2023 Census data); DataInfo+ POPPR_FHH'` |
 | `L1_REFERENCE_VARIANT` | `'A'` |
 | `L1_VARIANTS` | `('A', 'B')` |
+| `L2_TL_COUNTRY` | `'Switzerland'` |
+| `L2_TL_NOTE` | `"At the Theoretical Limit every non-market empty dwelling (holiday homes, dwellings held empty) is occupied, a choice, and only frictional market vacancy remains, at the lowest nationwide rate in the OECD cross-country table: Switzerland 1.31% (2022; the Federal Statistical Office's count of empty dwellings on 1 June across the whole stock, single-family homes included). Sweden (0.25%, 2021) is excluded: its national count (6,794 vacant units in a 4.6 M stock; OECD 'Vacant' sheet) cannot be an all-tenure market count. One vintage (OECD 2024 table) is used for all countries; national releases after it are not."` |
 | `L2_VACANCY_FLOOR` | `0.04` |
 | `L3_D_AMBITIOUS` | `0.4` |
 | `L4_CONSENT_YEARS` | `(1990, 2025)` |
@@ -270,15 +280,20 @@ Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Tab
 | `L5_TYPOLOGIES` | `('Detached', 'Townhouses', 'Apartments')` |
 | `L6_CONTEXT` | `{'us_epa_2014_infill': 0.21, 'england_2020_21': 0.66, 'england_3yr': 0.59, 'north_east': 0.41, 'london': 0.89}` |
 | `L6_S_AMBITIOUS` | `0.59` |
+| `L6_S_TL` | `0.8` |
 | `L7_X_AMBITIOUS` | `0.146` |
 | `L8_MIN_CASES` | `10` |
 | `L8_REPORT_YEARS` | `(2025, 2030, 2040, 2050)` |
 | `L8_SAMPLE_TYPOLOGIES` | `('Detached', 'Townhouses')` |
+| `L9_CUT` | `{'ambitious': {'transport': 0.0, 'site_energy': 0.85, 'waste': 0.0}, 'tl': {'transport': 1.0, 'site_energy': 1.0, 'waste': 0.0}}` |
+| `L9_MEDIANS` | `{'transport (A4)': ('transport', 0.28), 'site electricity': ('site_energy', 0.19), 'site heat': ('site_energy', 0.12), 'site fuel': ('site_energy', 0.08), 'site waste': ('waste', 0.49)}` |
+| `L9_PARTS` | `('transport', 'site_energy', 'waste')` |
 | `L9_REF_RATE` | `0.01` |
-| `L9_ZERO_YEAR` | `2050` |
+| `L9_SHARES` | `{'transport': 0.24137931034482757, 'site_energy': 0.3362068965517241, 'waste': 0.42241379310344823}` |
+| `L9_SITE_ENERGY_CUT_AMBITIOUS` | `0.85` |
 | `LAMBDA` | `{'reference': 0.0, 'moderate': 0.5, 'ambitious': 1.0}` |
 | `LEVELS` | `('reference', 'moderate', 'ambitious', 'tl')` |
-| `LEVEL_RULE` | `{'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'official projection: Stats NZ propensity B', 'best observed: the national household size of 1991 (no logical bound)'), 'L2': ('2023 census vacancy', 'achieved in NZ: the 1996 census minimum', 'logical bound: zero vacancy'), 'L3': ('current demolition and surge', 'peer-reviewed scenario: -40% demolition (Pellan et al. 2024)', 'logical bound: no demolition'), 'L4': ('2023-2025 dwelling sizes', 'achieved in NZ: the smallest annual mean consented size', 'logical bound: zero space beyond the occupied area'), 'L5': ('case-study typology medians', 'achieved: the top-15% case-study design density (HD q0.15)', 'best observed: the densest case-study design'), 'L6': ('the Reference share on previously developed land', 'achieved abroad: England 2018-21 (DLUHC 2022)', 'logical bound: 100% brownfield'), 'L7': ('area-weighted soil orders', 'peer-reviewed scenario: SOC-aware allocation (-14.6%)', 'logical bound: the lowest soil order'), 'L8': ('pooled case-study A1-A3', 'achieved: the top-15% case-study A1-A3 (HD q0.15)', 'best observed: the lowest-carbon NZ case study'), 'L9': ('business-as-usual A4-A5 (Resch: -1%/yr)', 'documented requirement: linear to zero by 2050 (end year: NZ 2050 target, CCRA s 5Q (as amended 2025); zero site emissions: City of Oslo 2025)', 'theoretical bound: zero A4-A5 (construction waste cannot strictly reach zero; LCAQuick does not split A4 from A5)'), 'L10': ('the Horup et al. (2025) nine-scenario average production paths (S4 item paths)', 'documented scenario: the lowest of the 9 prospective backgrounds by year (Horup et al. 2025, Table S3)', '= Ambitious: no documented value beyond the lower envelope of the 9 backgrounds')}` |
+| `LEVEL_RULE` | `{'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'official projection: Stats NZ propensity B', 'best observed: the national household size of 1991 (no logical bound)'), 'L2': ('2023 census vacancy', 'achieved in NZ: the 1996 census minimum', 'best observed internationally: lowest nationwide rate in the OECD table, Switzerland 1.31% (2022)'), 'L3': ('current demolition and surge', 'peer-reviewed scenario: -40% demolition (Pellan et al. 2024)', 'logical bound: no demolition'), 'L4': ('2023-2025 dwelling sizes', 'achieved in NZ: the smallest annual mean consented size', 'logical bound: zero space beyond the occupied area'), 'L5': ('case-study typology medians', 'achieved: the top-15% case-study design density (HD q0.15)', 'best observed: the densest case-study design'), 'L6': ('the Reference share on previously developed land', 'achieved abroad: England 2018-21 (DLUHC 2022)', "best observed internationally: England's peak share, 80% (2008-2009; DCLG 2010)"), 'L7': ('area-weighted soil orders', 'peer-reviewed scenario: SOC-aware allocation (-14.6%)', 'logical bound: the lowest soil order'), 'L8': ('pooled case-study A1-A3', 'achieved: the top-15% case-study A1-A3 (HD q0.15)', 'best observed: the lowest-carbon NZ case study'), 'L9': ('business-as-usual A4-A5, every part -1%/yr (Resch et al. 2021)', 'achieved: zero-emission site machinery, site energy -85% (City of Oslo 2025)', 'physically attainable: zero-emission transport and site energy; site waste as the Reference'), 'L10': ('the Horup et al. (2025) nine-scenario average production paths (S4 item paths)', 'documented scenario: the lowest of the 9 prospective backgrounds by year (Horup et al. 2025, Table S3)', 'documented scenario bound: the Ambitious envelope with near-zero emissions cement and steel (IEA 2022 definitions; near-zero share 8% in 2030, 93% in 2050)')}` |
 | `LEVERS` | `('L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9', 'L10')` |
 | `OBSERVED_YEAR` | `2026` |
 | `PATHWAY` | `'pathway'` |
@@ -297,3 +312,4 @@ Resolved values from data/pathways/levers.json (the lever rule: Levels 1-4); Tab
 | `TL_INSTANT_LABEL` | `'TL-from2027'` |
 | `TL_LEVER` | `{'TL1': 'L1', 'TL2': 'L2', 'TL3': 'L3', 'TL4': 'L4', 'TL5': 'L5', 'TL6': 'L6', 'TL7': 'L7', 'TL8': 'L8', 'TL9': 'L9', 'TL10': 'L10'}` |
 | `TL_RELEASE_ITEMS` | `('TL1', 'TL2')` |
+| `TL_RULE` | `'Theoretical Limit = the best value observed, internationally where a comparable measure exists, otherwise in New Zealand, or a documented scenario bound; a logical bound only where physically attainable by choice or design.'` |

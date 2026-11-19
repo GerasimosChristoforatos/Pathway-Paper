@@ -31,7 +31,7 @@ Native parameter (levers.native) in its carbon direction, and the quantity each 
 | L6 | 5.6e-17 | scalar (or per typology) midpoint |
 | L7 | 3.6e-15 | scalar (or per typology) midpoint |
 | L8 | 0.0e+00 | per year and typology: (1 + r(y)) / 2 |
-| L9 | 0.0e+00 | per year: the midpoint of the Reference and Ambitious A4-A5 factor paths (lambda = 0.5) |
+| L9 | 1.1e-16 | per year: the midpoint of the Reference and Ambitious A4-A5 factor paths (lambda = 0.5) |
 | L10 | 0.0e+00 | per year and typology: (1 + m_Amb(y)) / 2 |
 
 ## 3. The same level means the same parameter across runs; the common adoption window
@@ -42,7 +42,7 @@ Native parameter (levers.native) in its carbon direction, and the quantity each 
 | Ambitious Pathway | L1:ambitious+L2:ambitious+L3:ambitious+L4:ambitious+L5:ambitious+L6:ambitious+L7:ambitious+L8:ambitious+L9:ambitious+L10:ambitious | yes |
 | Theoretical Limit | L1:tl+L2:tl+L3:tl+L4:tl+L5:tl+L6:tl+L7:tl+L8:tl+L9:tl+L10:tl | yes |
 
-Adoption window: each lever at Ambitious under the adopted window (by 2035) and under by 2045; a lever on the common window changes with it, L9 and L10 (own paths) do not.
+Adoption window: each lever at Ambitious under the adopted window (by 2035) and under by 2045; a lever on the common window changes with it, L10 (own path) does not.
 
 | lever | applied quantity differs between by 2035 and by 2045 | expected |
 |---|---|---|
@@ -54,25 +54,25 @@ Adoption window: each lever at Ambitious under the adopted window (by 2035) and 
 | L6 | yes | yes |
 | L7 | yes | yes |
 | L8 | yes | yes |
-| L9 | no | no (own path) |
+| L9 | yes | yes |
 | L10 | no | no (own path) |
 
-Stated exceptions: L9 and L10 follow their own paths (no logistic weight); TL1 under the speed limit (levers.tl1_path); the instant TL sensitivity (full strength from 2027).
+Stated exceptions: L10 follows its own path (no logistic weight); L1 at TL under the speed limit (levers.tl1_path); the instant TL sensitivity (full strength from 2027).
 
 ## 4. Each lever alone: cumulative carbon 2026-2050 (kt CO2e)
 
 | lever | Reference | Moderate | Ambitious | TL | Reference >= Moderate >= Ambitious >= TL |
 |---|---|---|---|---|---|
 | L1 | 25,502.8 | 23,058.5 | 20,731.1 | 14,160.7 | yes |
-| L2 | 25,502.8 | 24,767.9 | 24,043.4 | 20,413.8 | yes |
+| L2 | 25,502.8 | 24,767.9 | 24,043.4 | 21,622.2 | yes |
 | L3 | 25,502.8 | 25,015.7 | 24,528.6 | 22,865.3 | yes |
 | L4 | 25,502.8 | 24,321.6 | 23,047.2 | 17,488.4 | yes |
 | L5 | 25,502.8 | 23,746.2 | 21,989.5 | 20,856.7 | yes |
-| L6 | 25,502.8 | 24,624.6 | 23,757.8 | 22,341.5 | yes |
+| L6 | 25,502.8 | 24,624.6 | 23,757.8 | 23,032.4 | yes |
 | L7 | 25,502.8 | 25,272.0 | 25,041.3 | 23,787.3 | yes |
 | L8 | 25,502.8 | 24,368.8 | 23,234.8 | 21,000.2 | yes |
-| L9 | 25,502.8 | 24,689.4 | 23,876.0 | 22,557.4 | yes |
-| L10 | 25,502.8 | 25,025.7 | 24,548.6 | 24,548.6 | yes |
+| L9 | 25,502.8 | 25,081.9 | 24,661.1 | 23,801.6 | yes |
+| L10 | 25,502.8 | 25,025.7 | 24,548.6 | 21,712.8 | yes |
 
 ## 5. Each lever changes only its own inputs and stage (Ambitious, alone)
 
@@ -88,7 +88,7 @@ Changed engine inputs (levers.inputs) against the Reference run, and the change 
 | L6 | brownfield_share, brownfield_w | brownfield_share, brownfield_w | +0.000 | +0.0 | +0.0 | -1,745.0 | +0.0 | yes |
 | L7 | intensity, intensity_upfront, soil | intensity, intensity_upfront, soil | +0.000 | +0.0 | +0.0 | -461.6 | +0.0 | yes |
 | L8 | intensity, intensity_upfront | intensity, intensity_upfront | +0.000 | -2,268.0 | +0.0 | +0.0 | +0.0 | yes |
-| L9 | intensity, intensity_upfront | intensity, intensity_upfront | +0.000 | +0.0 | -1,626.8 | +0.0 | +0.0 | yes |
+| L9 | intensity, intensity_upfront | intensity, intensity_upfront | +0.000 | +0.0 | -841.7 | +0.0 | +0.0 | yes |
 | L10 | events, intensity, intensity_upfront | events, intensity, intensity_upfront | +0.000 | -923.8 | +0.0 | +0.0 | -30.5 | yes |
 
 Exact terms (max abs difference, kg/m2): L8 intensity change - a13 change 5.7e-14; L10 intensity change - a13 change 5.7e-14; L9 intensity change - a45 change 2.8e-14; L10 event change - A1-A3 kernel x (m - 1) 8.9e-16; L8 + L10: A1-A3 - r8 x m10 x (A1-A3_2025 - red13) 5.7e-14.
@@ -99,20 +99,20 @@ L10 moves maintenance by design: it scales the A1-A3 component of the in-window 
 
 | item | TL | Ambitious | ok |
 |---|---|---|---|
-| TL4 | f = 1 | {'Detached': 0.4117, 'Townhouses': 0.0949, 'Apartments': 0.1102} | yes |
-| TL5 | {'Detached': 0.7095, 'Townhouses': 0.8194, 'Apartments': 0.8194} | r = 0.8194 | yes |
-| TL1 | S = 2.7905 | S_amb max 2.6803 | yes |
-| TL2 | v = 0 | v = 0.0401 | yes |
-| TL3 | d = 1 (demolition and surge) | d = 0.4 | yes |
-| TL8 | by year: {'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827} (2025) | r(y), 0.8270 (2025) | yes |
-| TL9 | A4-A5 = 0 | linear to zero in 2050 | yes |
-| TL10 | = Ambitious (lower envelope of the 9 backgrounds) | m(2050) Detached 0.914, Townhouses 0.914, Apartments 0.866 | yes |
-| TL7 | {'Detached': 22.93, 'Townhouses': 13.84, 'Apartments': 2.52} | x = 0.146 | yes |
-| TL6 | s = 1 | s = 0.59 | yes |
+| L4 at TL | f = 1 | {'Detached': 0.4117, 'Townhouses': 0.0949, 'Apartments': 0.1102} | yes |
+| L5 at TL | {'Detached': 0.7095, 'Townhouses': 0.8194, 'Apartments': 0.8194} | r = 0.8194 | yes |
+| L1 at TL | S = 2.7905 | S_amb max 2.6803 | yes |
+| L2 at TL | v = 0.0131 | v = 0.0401 | yes |
+| L3 at TL | d = 1 (demolition and surge) | d = 0.4 | yes |
+| L8 at TL | by year: {'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827} (2025) | r(y), 0.8270 (2025) | yes |
+| L9 at TL | A4 and site energy zero, waste as the Reference | site energy -85% | yes |
+| L10 at TL | Ambitious envelope x near-zero cement and steel (class factors <= 1) | m(2050) Detached 0.914, Townhouses 0.914, Apartments 0.866 | yes |
+| L7 at TL | {'Detached': 22.93, 'Townhouses': 13.84, 'Apartments': 2.52} | x = 0.146 | yes |
+| L6 at TL | s = 0.80 | s = 0.59 | yes |
 
 ## 7. The re-occupation pool accounting only in runs that release dwellings
 
-pathways.releases_dwellings(levels) is true if and only if TL1 or TL2 is at TL; it alone chooses the pool (pathways.run), the zero-building soil clip and the checks of release runs. A dummy lever at TL whose TL parameter is its Reference value (L10 with m = 1) must reproduce the Reference run exactly.
+pathways.releases_dwellings(levels) is true if and only if L1 or L2 is at TL; it alone chooses the pool (pathways.run), the zero-building soil clip and the checks of release runs. A dummy lever at TL whose TL parameter is its Reference value (L7 at TL with the 2025 soil factor) must reproduce the Reference run exactly.
 
 Dummy lever at TL: max |carbon - Reference| = 0.0e+00 kg, max |floor area - Reference| = 0.0e+00 m2, pool used: False -> pass.
 
@@ -130,8 +130,22 @@ Dummy lever at TL: max |carbon - Reference| = 0.0e+00 kg, max |floor area - Refe
 | L10 alone at TL | no | no |
 | Moderate Pathway | no | no |
 | Ambitious Pathway | no | no |
-| TL3-TL10 from the Moderate Pathway | no | no |
+| L3-L10 at TL from the Moderate Pathway | no | no |
 | Theoretical Limit | yes | yes |
+
+## 8. The L8 ratios at L10 Reference, Moderate and Ambitious
+
+The case ratios x_i(y) recomputed on the case paths times the L10 archetype multiplier of each level; the multiplier is uniform over the L8 sample (both typologies use the single-family archetype), so the ratios must not change. At L10 at TL the class factors (near-zero cement and steel) change them by design (levers.json L8 at_l10_tl).
+
+| L10 level | max abs change of r(y) | max abs change of a case ratio |
+|---|---|---|
+| reference | 0.0e+00 | 0.0e+00 |
+| moderate | 2.2e-16 | 4.4e-16 |
+| ambitious | 2.2e-16 | 2.2e-16 |
+
+## 9. The L9 parts sum to the A4-A5 total in every run
+
+Transport / site energy / waste shares 0.2414, 0.3362, 0.4224 (Kanafani et al. 2023 medians, normalised); over the 46 runs of this audit the largest relative difference between the sum of the parts and the A4-A5 total is 6.1e-16.
 
 ## Result
 

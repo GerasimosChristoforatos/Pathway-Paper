@@ -109,6 +109,27 @@ def bootstrap_factors(su):
             k13_i, kr_i = projection.EV.component_kernels(q, fy, f, PW.BF_A13)
             K13[i], KR[i] = k13_i.ravel(), kr_i.ravel()
         extras.update(k13=pd.DataFrame.from_dict(K13, orient='index'), krest=pd.DataFrame.from_dict(KR, orient='index'))
+    classes = sorted(LV.L10_TL_CLASSES)               # the L10 class factors (MODEL v4.10.0): per-case class inputs
+    if classes:
+        variant = projection.BF.decarb_variant(projection.DECARB_MODE, projection.DECARB_ITEM_CASE)
+        cp = pd.read_csv(projection.BF.OUT_A13_CLASS_BLD)
+        cp = cp[cp['Variant'] == (variant or 'horup_item')]
+        evc = pd.read_csv(projection.BF.OUT_EVENTS_CLASS_BLD)
+        evc = evc[evc['Timing'] == projection.EVENT_TIMING]
+        for k in classes:
+            g = cp[cp['Class'] == k].pivot(index='id', columns='Year', values='A13_kgCO2e_per_m2')
+            g = (g.reindex(index=bf['id'], columns=list(fy)) if variant else
+                 pd.DataFrame(np.repeat(g.reindex(index=bf['id'])[fy[0]].to_numpy()[:, None], n, axis=1),
+                              index=bf['id'], columns=list(fy)))
+            extras[f'a13c_{k}'] = g.fillna(0.0)
+            KC = {}
+            for i in bf['id']:
+                q = evc[(evc['id'] == i) & (evc['Class'] == k)].reset_index(drop=True).assign(
+                    Component=projection.BF.EVENT_COMPONENTS[0], Material=k)
+                f = projection.EV.row_factors(q, fy, projection.DECARB_MODE, projection.DECARB_ITEM_CASE,
+                                              projection.DECARB_A45) if len(q) else None
+                KC[i] = projection.EV.kernel(q, fy, f).ravel() if len(q) else np.zeros(n * n)
+            extras[f'kc_{k}'] = pd.DataFrame.from_dict(KC, orient='index')
     emb, upf, _, dec, ext = MC.carbon_bootstrap(bf, typ, red if su['decarb'] else None, extras)
     if not (np.array_equal(emb, su['boot_emb']) and np.array_equal(upf, su['boot_up'])
             and (not su['decarb'] or np.array_equal(dec, su['boot_red']))):
@@ -119,7 +140,8 @@ def bootstrap_factors(su):
         tot = k13 + ext['krest'].reshape(MC.N_BOOT, len(typ), n, n)
         if not np.allclose(tot, su['boot_K'], rtol=1e-10, atol=1e-12):
             raise SystemExit('pathways_mc: the A1-A3 + other event kernels do not reproduce the bootstrap kernels.')
-    return ext['a13'][:, :, 0], ext['red13'], ext['a45'][:, :, 0], k13
+    cls = {k: (ext[f'a13c_{k}'], ext[f'kc_{k}'].reshape(MC.N_BOOT, len(typ), n, n)) for k in classes}
+    return ext['a13'][:, :, 0], ext['red13'], ext['a45'][:, :, 0], (k13, cls)
 
 
 def write_carbon_factors(su, a13):
@@ -151,8 +173,13 @@ def draw_context(ctx, su, d, a13, red13, a45, k13=None):
         c.update(a13_2025={t: float(a13[d['kc'], j]) for j, t in enumerate(typ)},
                  red13={t: np.asarray(red13[d['kc'], j], float) for j, t in enumerate(typ)},
                  a45_2025={t: float(a45[d['kc'], j]) for j, t in enumerate(typ)})
-        if k13 is not None:                          # the draw's A1-A3 event kernel (L10)
-            c.update(events_a13={t: k13[d['kc'], j] for j, t in enumerate(typ)})
+        if k13 is not None:                          # the draw's A1-A3 event kernel and class inputs (L10)
+            k13_, cls = k13
+            if k13_ is not None:
+                c.update(events_a13={t: k13_[d['kc'], j] for j, t in enumerate(typ)})
+            if cls:
+                c.update(a13_class={t: {k: v[0][d['kc'], j] for k, v in cls.items()} for j, t in enumerate(typ)},
+                         events_a13_class={t: {k: v[1][d['kc'], j] for k, v in cls.items()} for j, t in enumerate(typ)})
     return c
 
 
@@ -484,7 +511,7 @@ def main():
                    overbuild_cap_binding_years=int(runs[MP]['info']['payback_cap_binds'].sum()),
                    **{f'REF_{c}': float(com[k]) for k, c in COMMITTED_COLUMNS.items()},
                    **{f'{r}_{c}': float(PW.committed(ctx, np.asarray(runs[r]['E']['gfa_t'], float),
-                                                     runs[r]['info'].get('m10_2050'))[k])
+                                                     runs[r]['info'].get('prod2050'))[k])
                       for r in COMMITTED_RUNS for k, c in (('lower_kt', 'committed_lower_kt'),
                                                            ('upper_kt', 'committed_upper_kt'))},
                    **reo)

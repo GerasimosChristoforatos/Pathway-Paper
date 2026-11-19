@@ -46,7 +46,7 @@
   "a)",
   "b)"
  ],
- "note": "P(within AR) = 0.685 (Wilson 0.672-0.698); (b) threshold 6.75 M (95% CI 6.75-6.75 M; Firth penalised likelihood (MLE does not exist), 2000 resamples). TL1 holds household size at 2.79 (1991, the highest observed) regardless of age structure: with the 2050 population this requires about 11.7% fewer households per person than in 2023 at every age. With an age-standardised TL1 (the lower of the 2023 and Stats NZ Medium B living-arrangement rates by age group; never below L1 Ambitious, which binds from 2040) TL is 5,755 kt, LoE AR 1.30, P(LoE AR \u2264 1) = 0.2% over the draws (the sensitivity row TL-TL1-age-standardised).",
+ "note": "P(within AR) = 0.611 (Wilson 0.598-0.625); (b) threshold 6.69 M (95% CI 6.69-6.70 M; Firth penalised likelihood (MLE does not exist), 2000 resamples). L1 at TL holds household size at 2.79 (1991, the highest observed) regardless of age structure: with the 2050 population this requires about 11.7% fewer households per person than in 2023 at every age. With an age-standardised L1 at TL (the lower of the 2023 and Stats NZ Medium B living-arrangement rates by age group; never below L1 Ambitious, which binds from 2040) TL is 5,951 kt, LoE AR 1.34, P(LoE AR \u2264 1) = 0.0% over the draws (the sensitivity row: L1 at TL age-standardised).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

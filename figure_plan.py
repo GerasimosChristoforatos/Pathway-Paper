@@ -65,8 +65,8 @@ PAPER_MAIN = [
          title='The Pathways: the sequential waterfalls',
          # the caption follows the figure (a-c; the annual pathways are in Fig3a)
          caption='Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 '
-                 'order: (a) L1 ... L10 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) TL1 '
-                 '... TL10 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
+                 'order: (a) L1 ... L10 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) L1 at '
+                 'TL ... L10 at TL cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
                  'AR (solid) and AtP (dotted) budgets with their zones; order-free Shapley values in Fig6.',
          source=['pathways/annual.csv', 'pathways/waterfall.csv', 'pathways/waterfall_tl_from_reference.csv']),
     dict(id='Fig5', file='Fig5_solution_space', width='double', module='figures.paper_main',

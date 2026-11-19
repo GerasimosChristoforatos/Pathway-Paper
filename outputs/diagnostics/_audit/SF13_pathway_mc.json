@@ -32,7 +32,7 @@
   "Reference (median, 5th\u201395th percentile)",
   "Theoretical Limit (median, 5th\u201395th percentile)"
  ],
- "note": "P(cumulative LoE of AR <= 1): Reference 0.000, Moderate Pathway 0.000, Ambitious Pathway 0.000, Theoretical Limit 0.685, TL, all limits from 1 January 2027 (instant) 0.996, Theoretical Limit, TL1 age-standardised (sensitivity) 0.002.",
+ "note": "P(cumulative LoE of AR <= 1): Reference 0.000, Moderate Pathway 0.000, Ambitious Pathway 0.000, Theoretical Limit 0.611, TL, all limits from 1 January 2027 (instant) 0.986, Theoretical Limit, L1 at TL age-standardised (sensitivity) 0.000.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

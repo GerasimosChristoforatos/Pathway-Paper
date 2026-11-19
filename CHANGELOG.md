@@ -2,6 +2,154 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.10.0: material-level chain, final lever set (L2/L6/L9/L10 re-anchored), single TL rule (full run)
+
+**Runs and checks**
+- One full run (`run_all.py --profile full`), then `--profile light`; regression lock re-captured.
+- Tests: 263 passed in both profiles.
+- Palette coverage: 0 findings. Figure integrity and `check_outputs` pass.
+- `lever_audit.md`: all nine checks pass.
+- No "TLn" id remains in Methods, the tables, FIGURES.md or the audit; they read "Lx at TL".
+
+**The Reference is unchanged.** These files are byte-identical to v4.9.0:
+- `baseline/projection.json`, `baseline/annual.csv`;
+- `aesa/annual.csv`, `montecarlo/draws_REF.csv`;
+- `sensitivity/reference_carbon.csv`, `baseline/sensitivity_one_at_a_time.csv`.
+
+### Step A: one item-level A1-A3 chain (committed separately)
+- **The chain.** A13_i(y) = A13_i,2025 × p_i(y) × q_i(y), with q_i = m_a(y) × c_k(y) (`levers.l10_chain`).
+- **New class-level files** (`Building_factors`):
+  - A1-A3 class paths, pooled and per case;
+  - the A1-A3 event rows by class.
+- **What the chain serves:**
+  - construction;
+  - the in-window events (class kernels);
+  - the committed lower bound (`pathways.committed`, prod2050);
+  - the pathway Monte Carlo (per-draw class inputs; the bootstrap's random numbers are unchanged).
+- **Aggregation is exact.** Pooling is linear and m_a is uniform within a typology, so the typology factor m × C_t is the item chain aggregated, not a separate multiplier.
+- **L8 ratios** are computed on the case paths of the run's L10 level.
+- **Gate:** with no class factor, every file in `outputs/data` (light profile) is byte-identical to v4.9.0.
+
+### Step B: the new levels
+**TL rule** (written in `levers.TL_RULE`, Methods and Extended Data Table 1): "Theoretical Limit = the best value observed, internationally where a comparable measure exists, otherwise in New Zealand, or a documented scenario bound; a logical bound only where physically attainable by choice or design."
+
+**L2 at TL: 0% → 1.3117%.**
+- Source: OECD (2024) Affordable Housing Database HM1.1, sheet `HM1.1.2`, panel B, cell P27 (Switzerland, 2022).
+- Read by `data/build_oecd_vacancy.py`; the workbook is in `refs/`, with its SHA-256 in MANIFEST.
+- The evidence note is the author's text; Sweden is excluded.
+
+**L6 at TL: 1.00 → 0.80.** England's peak share (DCLG 2010).
+
+**L9, all levels.** A4-A5 is split into transport, site energy and waste:
+
+| part | median (kg CO2e/m²·yr) | share |
+|---|---|---|
+| transport (A4) | 0.28 | 0.2414 |
+| site energy | 0.19 + 0.12 + 0.08 | 0.3362 |
+| waste | 0.49 | 0.4224 |
+
+- Source: Kanafani et al. (2023); the medians are normalised because they do not add. Hasselsteen et al. (2025) support waste as the main A5 contributor.
+- Reference: every part −1%/yr.
+- Ambitious: site energy −85% (Oslo). The scope-1 caveat is in the Methods.
+- Moderate: the midpoint.
+- At TL: A4 and site energy zero.
+- Every level now uses the common 2026–2035 window (the own-path exception is removed).
+
+**L10 at TL.** q_i = m_a(y) × [(1 − s(y)) + s(y)·k].
+- Cement-based classes, k = 125/850 = 0.147: CONCRETE, REINFORCED CONCRETE, FIBRE CEMENT, PLASTER.
+- Steel, k = 400/2945 = 0.136: STEEL, and the OTIS elevator (OTHERS, A_1/A_2) treated as a whole item as steel: "assembled product dominated by steel; whole item treated as steel at TL (upper bound of the reduction; ~2.4% of A1-A3, apartments only)".
+- s = 0 (2022), 0.08 (2030), 0.93 (2050), linear, 0 through 2026.
+- Sources:
+  - near-zero thresholds: IEA (2022) Definitions, p. 17;
+  - 850 and 2,945: footnote 8 on pp. 22–23, where the IEA gives them as **BAT reference values** from IEA (2022) *Achieving Net Zero Heavy Industry Sectors in G7 Members*, not as conventional values;
+  - s milestones: as supplied by the author (the IEA cement tracking page cannot be reached from this build environment).
+- Every production class is reviewed; an unreviewed class STOPs the run.
+
+**Class shares of Reference A1-A3 2026–2050:**
+
+| STEEL | REINFORCED CONCRETE | CONCRETE | FIBRE CEMENT | elevator | PLASTER |
+|---|---|---|---|---|---|
+| 21.32% | 14.97% | 11.83% | 3.16% | ~2.4% | 0.03% |
+
+No other class is cement- or steel-dominated (clay bricks, aluminium, gypsum, timber, glass and plastics).
+
+**Class effects:**
+
+| | L10 at TL alone | within the full TL |
+|---|---|---|
+| PLASTER | −1.6 kt | −0.2 kt |
+| elevator | −53.3 kt | −10.0 kt |
+
+**L8 on the L10-at-TL case paths:** r = 0.8270 / 0.8280 / 0.7837 / 0.6673 in 2025 / 2030 / 2040 / 2050. It is unchanged at L10 Reference, Moderate and Ambitious (max 2.2e-16; check 8).
+
+### Step C: audit, tables, documents
+- **Audit:**
+  - check 8: L8 ratios at the L10 levels;
+  - check 9: the L9 parts sum to A4-A5 in every run (max relative difference 6e-16);
+  - check 7's dummy lever is now L7 at TL with the 2025 soil factor (L10 at TL is no longer neutral).
+- **Main Table 1:** the L2, L6, L9 and L10 cells; footnotes ⁸–¹³; the note.
+- **Extended Data Table 1 and EDT1:**
+  - new values for L2, L6 and L9 (three parts, all levels);
+  - for L10: k, the s milestones and the classes;
+  - a STOP on any empty cell;
+  - the TL rule in the header.
+- **Methods:**
+  - the lever paragraphs and the four-level rule;
+  - the material-level chain sentence.
+- **REFERENCES:** OECD 2024, DCLG 2010, Kanafani et al. 2023, Hasselsteen et al. 2025 (authors and titles from Crossref), IEA 2022 (×2), IEA Cement tracking, the Swiss FSO empty dwellings survey, and the City of Oslo Climate Agency 2025 (document to be confirmed).
+- **Captions:** Fig4 and Fig4 panel (c) labels "L1 at TL … L10 at TL".
+
+### Step D: results, v4.9.0 → v4.10.0 (kt CO2e, 2026–2050)
+**Main runs:**
+
+| run | carbon | LoE AR | LoE AtP | committed lower / upper |
+|---|---|---|---|---|
+| Moderate Pathway | 16,913.4 → 17,209.3 | 3.821 → 3.888 | 15.20 → 15.46 | 7,121.3 / 8,080.7 (unchanged) |
+| Ambitious Pathway | 11,034.1 → 11,470.5 | 2.493 → 2.591 | 9.91 → 10.31 | 5,186.5 / 5,985.1 (unchanged) |
+| Theoretical Limit | 3,977.6 → 4,171.3 | 0.899 → 0.942 | 3.574 → 3.748 | 1,741.9 → 1,750.6 / 2,002.2 → 2,240.8 |
+| TL instant (from 2027) | 2,750.0 → 3,028.8 | 0.621 → 0.684 | 2.471 → 2.721 | 1,521.6 → 1,531.8 / 1,748.2 → 1,959.0 |
+
+- **P(LoE AR ≤ 1):**
+  - Reference and both pathways: 0%;
+  - TL 68.5% → **61.1%**;
+  - instant TL 99.6% → 98.6%;
+  - L1 at TL age-standardised 0.16% → 0.04%.
+- **TL 50% population threshold:** 6.750 M (6.748–6.753) → **6.694 M** (6.692–6.697).
+- **Monte Carlo p5/p50/p95, carbon:**
+  - Moderate 13,943/16,913/20,466 → 14,194/17,209/20,818;
+  - Ambitious 8,978/11,038/13,558 → 9,333/11,475/14,070;
+  - TL 2,565/3,974/5,803 → 2,607/4,173/5,956.
+- **Monte Carlo committed (TL):**
+  - lower 780/1,744/2,929 → 707/1,754/2,825;
+  - upper 892/2,005/3,373 → 892/2,244/3,628.
+
+**Changed levers alone (Moderate / Ambitious / TL; Reference 25,502.8):**
+
+| lever | v4.9.0 | v4.10.0 |
+|---|---|---|
+| L2 | 24,767.9 / 24,043.4 / 20,413.8 | 24,767.9 / 24,043.4 / **21,622.2** |
+| L6 | 24,624.6 / 23,757.8 / 22,341.5 | 24,624.6 / 23,757.8 / **23,032.4** |
+| L9 | 24,689.4 / 23,876.0 / 22,557.4 | **25,081.9 / 24,661.1 / 23,801.6** |
+| L10 | 25,025.7 / 24,548.6 / 24,548.6 | 25,025.7 / 24,548.6 / **21,712.8** |
+
+**Shapley shares (v4.9.0 → v4.10.0):**
+
+| lever | Moderate | Ambitious | TL from the Reference |
+|---|---|---|---|
+| L1 | 24.43 → 25.48% | 24.50 → 25.62% | 30.01 → 30.18% |
+| L2 | 7.62 → 7.91% | 8.07 → 8.35% | 12.84 → 9.65% |
+| L3 | 5.19 → 5.44% | 5.17 → 5.46% | 6.74 → 6.67% |
+| L4 | 11.07 → 11.59% | 11.04 → 11.64% | 15.39 → 15.69% |
+| L5 | 16.85 → 17.63% | 16.47 → 17.36% | 8.76 → 8.95% |
+| L6 | 8.79 → 9.10% | 8.65 → 8.92% | 5.75 → 4.68% |
+| L7 | 2.03 → 2.10% | 1.82 → 1.88% | 2.56 → 2.92% |
+| L8 | 11.18 → 11.58% | 11.24 → 11.58% | 9.60 → 9.42% |
+| L9 | 8.20 → 4.36% | 8.43 → 4.43% | 6.42 → 3.86% |
+| L10 | 4.64 → 4.80% | 4.61 → 4.75% | 1.94 → 7.98% |
+
+- S3 Improve: 12.90 → 9.21% (Moderate) and 13.32 → 9.38% (Ambitious).
+- TL from the Moderate Pathway: L2 at TL 14.44 → 10.09%; L6 at TL 5.04 → 3.60%; L9 at TL 6.02 → 3.76%; L10 at TL 1.22 → 9.06%.
+
 ## model-v4.9.0: L10 Production decarbonisation, L8 on own paths, lever audit (full run)
 
 **One full run** (`run_all.py --profile full`), then `--profile light`, and the lock re-captured

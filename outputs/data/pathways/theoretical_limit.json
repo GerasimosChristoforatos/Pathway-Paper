@@ -108,7 +108,8 @@
       "TL6": "All brownfield",
       "TL7": "Lowest-carbon soils",
       "TL8": "Best-practice materials",
-      "TL9": "Zero-emission construction"
+      "TL9": "Zero-emission construction",
+      "TL10": "Lowest-carbon production"
     },
     "note": "TL6 = 100% brownfield makes TL7 zero within TL"
   },
@@ -145,14 +146,20 @@
     },
     {
       "item": "TL8",
-      "tl": "{'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827}",
-      "ambitious": "r = 0.8270",
+      "tl": "by year: {'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827} (2025)",
+      "ambitious": "r(y), 0.8270 (2025)",
       "ok": true
     },
     {
       "item": "TL9",
       "tl": "A4-A5 = 0",
       "ambitious": "linear to zero in 2050",
+      "ok": true
+    },
+    {
+      "item": "TL10",
+      "tl": "= Ambitious (lower envelope of the 9 backgrounds)",
+      "ambitious": "m(2050) Detached 0.914, Townhouses 0.914, Apartments 0.866",
       "ok": true
     },
     {
@@ -170,7 +177,7 @@
   ],
   "zero_building": {
     "adopted_tl_family_runs_with_zero_years": [],
-    "tl_family_runs": 1033,
+    "tl_family_runs": 1548,
     "min_annual_dwellings_tl_family": 3548.0744098362065,
     "note": "the greedy re-occupation row (TL-reoccupation-fast) is a sensitivity outside this check"
   },
@@ -574,9 +581,9 @@
         1.041962927306858
       ]
     },
-    "carbon_kt": 5946.350998278187,
-    "LoE_AR": 1.3433123020706788,
-    "LoE_AtP": 5.342802135134583,
+    "carbon_kt": 5754.542326758132,
+    "LoE_AR": 1.2999817034949588,
+    "LoE_AtP": 5.170461857873551,
     "floor_area_Mm2": 33.256004623714546,
     "household_size_2050": 2.591550808804594
   }

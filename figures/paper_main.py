@@ -192,7 +192,7 @@ def fig1():
     """Fig1 with the six display bands (_fig1_draw)."""
     fig, ax = plt.subplots(figsize=(170 * S.MM, 72 * S.MM))      # lower, slightly narrower
     handles, neg, pipe, total, ob = _fig1_draw(ax, six=True)
-    P.absorption_span(ax, pad=0.5)                    # behind every element (MODEL v4.9.0)
+    P.absorption_span(ax, pad=0.5, label_y=0.02, va='bottom')   # behind every element; label clear of the headers
     for h in handles:                                             # filled patches, no outline
         h.set_edgecolor(h.get_facecolor())
     ax.legend(handles=[Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built, annual (in scope)'),

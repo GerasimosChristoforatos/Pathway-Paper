@@ -14,17 +14,20 @@ levers reduce it? The model answers in three layers.
   (AESA) for climate change. It compares the carbon of 2026–2050 with the sector's share of a global carrying
   capacity under two allocation principles, acquired rights (AR) and ability to pay (AtP). The two are reported side
   by side and never averaged.
-* **Pathways** (`levers.py`, `pathways.py`). Nine rule-based levers, grouped by the carbon reduction hierarchy of
+* **Pathways** (`levers.py`, `pathways.py`). Ten rule-based levers, grouped by the carbon reduction hierarchy of
   PAS 2080:2023:
   * S1 Avoid: L1 Household size, L2 Vacancy rate, L3 Building lifetime, L4 Extra space, L5 Occupancy density;
   * S2 Switch: L6 Brownfield-first development, L7 Soil-aware planning, L8 Material carbon efficiency;
-  * S3 Improve: L9 Construction-stage carbon.
+  * S3 Improve: L9 Construction-stage carbon, L10 Production decarbonisation.
 
   Each lever has four levels: Reference, Moderate (the exact midpoint), Ambitious (one of three documented sub-rules)
-  and the theoretical limit (TL1–TL9). The levels are adopted on the same logistic path, 2026 → 2035, except L9
-  (Ambitious: its own linear path from the 2026 Reference value to zero in 2050; Moderate the midpoint) and TL1 (no faster than the fastest observed
+  and the theoretical limit (TL1–TL10). The levels are adopted on the same logistic path, 2026 → 2035, except L9
+  (Ambitious: its own linear path from the 2026 Reference value to zero in 2050; Moderate the midpoint), L10 (the
+  lower envelope of the 9 prospective backgrounds of Horup et al. 2025, its own scenario path) and TL1 (no faster than the fastest observed
   change); every lever together forms the Moderate and the Ambitious Pathway. The theoretical limit is a thought experiment, not a pathway.
-  * Attribution: exact Shapley values over the strategies and over 2⁹ lever subsets.
+  * Attribution: exact Shapley values over the strategies and over 2¹⁰ = 1,024 lever subsets.
+  * Vacant and released dwellings are re-occupied through a common pool only in runs that release dwellings (TL1,
+    TL2); all other runs absorb the starting surplus and overbuild by 2035 (`pathways.releases_dwellings`).
   * Two sequential waterfalls, the back-cast to the AR budget and a λ-sweep of each lever.
   * The pathway Monte Carlo (`pathways_mc.py`, `mcstats.py`).
 

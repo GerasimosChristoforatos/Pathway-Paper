@@ -1,7 +1,7 @@
 {
  "TL1_draw_max_binds_draws": 0,
  "n_draws": 5000,
- "probability_TL_LoE_AR_at_most_1": 0.64,
+ "probability_TL_LoE_AR_at_most_1": 0.6852,
  "overbuild_cap_binds_draws_moderate_pathway": 0,
  "tl_le_pathway_every_draw": true,
  "reoccupation": {

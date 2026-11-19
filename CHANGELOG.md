@@ -2,6 +2,206 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.9.0: L10 Production decarbonisation, L8 on own paths, lever audit (full run)
+
+**One full run** (`run_all.py --profile full`), then `--profile light`, and the lock re-captured
+(`tests/capture_regression_model_v3.py`).
+
+Checks:
+* Tests: 262 passed in both profiles.
+* Palette coverage: 0 findings.
+* Figure integrity passes; `check_outputs` passes.
+* `outputs/reports/lever_audit.md`: all seven checks pass. `run_all.py` now runs the audit after pathways and stops
+  on a failure.
+
+**The Reference is unchanged except for the new Extended Data Fig. 4 (ED4) row.**
+* Byte-identical: `baseline/projection.json`, `baseline/annual.csv`, `aesa/annual.csv`, `montecarlo/draws_REF.csv`.
+* The Reference Monte Carlo summary and committed emissions are unchanged.
+* The 42 existing rows of `sensitivity/reference_carbon.csv` are identical (max difference 0.0).
+
+### 0. Source: Horup et al. (2025) Table S3
+* `data/build_horup.py` also writes `data/derived/horup2025_table_s3_archetypes.csv`: Single family houses and
+  Multi dwellings; average, minimum and maximum over the 9 backgrounds; 2025-2050; with the source cell of each value.
+* It asserts:
+  * the sheet title, the block headers, the unit row and the 2025-2050 year header;
+  * min ≤ average ≤ max in every year;
+  * the 2050 values relative to 2025 (tolerance 5e-4):
+
+| archetype | average | MIN | MAX |
+|---|---|---|---|
+| Single family houses | 0.7539 | 0.6895 | 0.9533 |
+| Multi dwellings | 0.7738 | 0.6698 | 0.9520 |
+
+* The Table S1 scenario list (SSP1/2/5 × None/RCP2.6/RCP1.9) is checked against the sheet and written into the CSV
+  provenance note, MANIFEST.csv, the README and AVAILABILITY.
+* Table S4 output: unchanged. Source file: the same SHA-256 as in MANIFEST.
+
+### 1. L10 Production decarbonisation (S3 Improve)
+* **Formula:** A1-A3_t(y) = r8_t(y) × [A13_2025,t − red13_t(y)] × m10_t(y).
+* **Levels of m10:**
+  * Ambitious: [MIN_a(y)/MIN_a(2025)] / [AVG_a(y)/AVG_a(2025)];
+  * Moderate: the midpoint;
+  * TL10 = Ambitious (subrule C).
+* **Archetype a (author decision):** single-family for Detached and Townhouses, multi-dwelling for Apartments.
+* **Timing:** no logistic weight, so m = 1 in 2025-2026 and there is a step in 2027 (Detached 0.9875, Apartments
+  0.9833).
+
+| m10 | 2030 | 2040 | 2050 |
+|---|---|---|---|
+| Detached, Townhouses: Moderate / Ambitious = TL | 0.983 / 0.967 | 0.969 / 0.937 | 0.957 / 0.914 |
+| Apartments: Moderate / Ambitious = TL | 0.978 / 0.956 | 0.951 / 0.903 | 0.933 / 0.866 |
+
+**Where L10 applies:**
+* the A1-A3 of construction;
+* the A1-A3 component of the in-window replacement and repaint events (`events.component_kernels`; per draw in the
+  pathway Monte Carlo, through an extra bootstrap column that consumes no random numbers and is checked to rebuild the
+  kernels);
+* the committed lower bound: the A1-A3 factors of B2/B4 events after 2050 × m10(2050) (`pathways.committed`). The
+  upper bound (2025 factors) and C1-C4 are not changed.
+
+It does not apply to A4-A5, soil, C1-C4 or Module D.
+
+**L10 alone (kt CO2e, 2026-2050):**
+
+| level | carbon | change | committed lower |
+|---|---|---|---|
+| Moderate | 25,025.7 | −477.1 | 9,394.6 |
+| Ambitious | 24,548.6 | −954.2 | 9,234.8 |
+| TL | 24,548.6 | −954.2 | 9,234.8 |
+
+**Solution space (Fig5):**
+* L10 changes the 2026 cohort's in-window events (production after 2026).
+* That change (−1.3 kt Moderate, −2.7 kt Ambitious and TL) is counted in the carbon-per-m² coordinate y, so the plane
+  keeps the Reference fixed part and reproduces each run's LoE.
+* It is reported per marker in `backcast.json`.
+
+**ED4 row (carbon only):** "Production decarbonisation: no-climate-policy backgrounds (Horup MAX)" = the Reference
+with m(y) = [MAX(y)/MAX(2025)] / [AVG(y)/AVG(2025)]: 28,007.6 kt, **+9.82%**. It is not converted to LoE
+(`CARBON_ONLY_ROWS`).
+
+### 2. L8 on each case's own path
+* r(y) = HD q0.15 of x_i(y) = (A13_i,2025 − red13_i(y)) / pooled(y).
+* The case-table pooled path equals the model's typology path (max relative difference 2.2e-16).
+* The bootstrap interval is computed at 2025 only.
+
+| | 2025 | 2030 | 2040 | 2050 |
+|---|---|---|---|---|
+| r (Ambitious; Townhouses and Apartments TL8) | 0.8270 | 0.8272 | 0.8279 | 0.8275 |
+| TL8 Detached (SD_2) | 0.530 | 0.524 | 0.516 | 0.511 |
+
+* The `check_with_A_1` report uses the same per-year rule.
+* Effect on L8 alone (kt):
+  * Moderate 24,363.5 → 24,368.8 (+5.3) and Ambitious 23,224.3 → 23,234.8 (+10.5): r(y) is slightly above the 2025 r
+    in later years, so Ambitious is practically unchanged.
+  * TL 21,210.7 → 21,000.2. Of that, −83.9 kt is the per-year rule (21,126.8 with the v4.8 accounting: TL8 detached
+    falls to 0.511) and −126.6 kt is the pool rule of §3.
+
+### 3. Re-occupation pool only in runs that release dwellings (signed off)
+* The rule is one predicate, `levers.releases_dwellings` (`pathways.releases_dwellings`): TL1 or TL2 at TL.
+* It alone chooses:
+  * the pool accounting;
+  * the zero-building soil clip;
+  * the release-run checks.
+* Every other run absorbs the starting surplus and the overbuild by the logistic to 2035.
+* Methods: "Vacant and released dwellings are re-occupied through a common pool only in runs that release dwellings
+  (TL1, TL2); all other runs absorb the starting surplus and overbuild by 2035."
+* **Unchanged (byte-identical totals):** the full TL (3,977.6 kt), both pathways and the Reference. L1 and L2 alone
+  at TL are also unchanged.
+
+**Single-lever TL, before → after the rule (kt):**
+
+| L3 | L4 | L5 | L6 | L7 | L8 | L9 | L10 |
+|---|---|---|---|---|---|---|---|
+| 22,947.1 → 22,865.3 | 17,662.2 → 17,488.4 | 20,984.0 → 20,856.7 | 22,467.4 → 22,341.5 | 23,894.3 → 23,787.3 | 21,126.8 → 21,000.2 | 22,668.6 → 22,557.4 | 24,644.9 → 24,548.6 |
+
+* The shifts range from −81.8 to −173.8 kt, not a uniform −84.6.
+* The pool re-occupies a constant share of each year's need, so its timing effect depends on each lever's own
+  building path. The −84.6 kt is that effect with the Reference's building path (lever audit check 7, dummy lever).
+
+**Reference → TL Shapley game (shares of 21,525.2 kt), before → after the rule, same L10 and L8:**
+* L1 30.30 → 30.01%; L2 13.13 → 12.84% (each −61.6 kt).
+* L3 6.71 → 6.74%; L4 15.26 → 15.39%; L5 8.69 → 8.76%; L6 5.67 → 5.75%; L7 2.50 → 2.56%; L8 9.52 → 9.60%;
+  L9 6.35 → 6.42%; L10 1.89 → 1.94%.
+* TL from the Moderate Pathway (12,935.8 kt): TL1 and TL2 −110.7 kt each; TL3-TL10 +19.9 to +37.4 kt.
+
+### 4. Lever audit (`tools/lever_audit.py`, `outputs/reports/lever_audit.md`)
+Seven checks for L1-L10:
+1. native and applied levels are monotone in every year and typology;
+2. Moderate is exactly the midpoint (max deviation 3.6e-15);
+3. the same level means the same parameter in every run, and the common adoption window applies except to L9 and L10;
+4. each lever alone is monotone in cumulative carbon;
+5. no double counting, by inputs and by stage totals:
+   * L8, L9 and L10 intensity changes equal their own terms to 6e-14;
+   * L10 changes the events only by the A1-A3 kernel × (m − 1);
+   * with L8 and L10 together, A1-A3 = r8 × m10 × the decarbonised path;
+6. `tl_strength`, including TL8 by year and TL10;
+7. the pool rule: the dummy lever gives an exact 0.0 difference, and the predicate gives the expected answer for
+   every run.
+
+L10 moves in-window maintenance by design (−30.5 kt at Ambitious); L8 does not.
+
+### 5. Results old (v4.8.0) → new (kt CO2e, 2026-2050; deterministic; Monte Carlo p5/p50/p95)
+
+| run | carbon | LoE AR | LoE AtP | committed lower (upper unchanged) |
+|---|---|---|---|---|
+| Moderate Pathway | 17,236.1 → 16,913.4 | 3.894 → 3.821 | 15.49 → 15.20 | 7,242.1 → 7,121.3 (8,080.7) |
+| Ambitious Pathway | 11,459.2 → 11,034.1 | 2.589 → 2.493 | 10.30 → 9.91 | 5,364.7 → 5,186.5 (5,985.1) |
+| Theoretical Limit | 4,079.1 → 3,977.6 | 0.921 → 0.899 | 3.665 → 3.574 | 1,798.8 → 1,741.9 (2,002.2) |
+| TL instant (from 2027) | 2,828.3 → 2,750.0 | 0.639 → 0.621 | 2.541 → 2.471 | 1,570.9 → 1,521.6 (1,748.2) |
+
+**Monte Carlo:**
+* Moderate carbon: 14,203/17,232/20,855 → 13,943/16,913/20,466.
+* Ambitious carbon: 9,312/11,462/14,082 → 8,978/11,038/13,558.
+* TL carbon: 2,584/4,078/6,003 → 2,565/3,974/5,803.
+* Committed lower:
+  * Moderate 6,017/7,243/8,675 → 5,916/7,122/8,530;
+  * Ambitious 4,380/5,365/6,536 → 4,234/5,187/6,319;
+  * TL 804/1,801/3,027 → 780/1,744/2,929.
+* P(LoE AR ≤ 1):
+  * Reference, Moderate and Ambitious: 0% (unchanged);
+  * TL 64.0% → **68.5%** (3,426 of 5,000);
+  * instant TL 98.9% → 99.6%;
+  * TL1 age-standardised 0.06% → 0.16%.
+* TL 50% population threshold: 6.715 M (95% CI 6.713-6.718) → **6.750 M** (6.748-6.753).
+
+**Shapley shares, Moderate / Ambitious game:**
+
+| | L1 | L2 | L3 | L4 | L5 | L6 | L7 | L8 | L9 | L10 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Moderate | 24.43% | 7.62% | 5.19% | 11.07% | 16.85% | 8.79% | 2.03% | 11.18% | 8.20% | 4.64% |
+| Ambitious | 24.50% | 8.07% | 5.17% | 11.04% | 16.47% | 8.65% | 1.82% | 11.24% | 8.43% | 4.61% |
+
+* Strategies, Moderate: S1 65.0%, S2 22.1%, S3 12.9% (S3 was 8.6%).
+* Strategies, Ambitious: S1 64.6%, S2 22.0%, S3 13.3% (S3 was 8.9%).
+
+**Runtime:** pathways 18.6 s (4,198 engine runs; 2¹⁰ = 1,024 subsets per game); pathway Monte Carlo 1,343 s
+(full).
+
+### 6. Tables, documentation and figures
+* **Extended Data Table 1 and EDT1:**
+  * new L10 row: m by year and archetype, subrule C, evidence "documented scenario: lower envelope of 9 prospective
+    backgrounds (Horup et al. 2025, Table S3)";
+  * L8 row now gives r and TL8 by year.
+* **Main Table 1:** the L10 row with footnote ⁸; the note now reads "L6–L8 (Switch) and L9–L10 (Improve) reduce
+  carbon per m²".
+* **Methods:**
+  * the L10 paragraph;
+  * L8 by year;
+  * the L1 vs L5 sentence;
+  * the pool sentence.
+* **Updated elsewhere:** README and ARCHITECTURE (ten levers; 2¹⁰), indexes (lever_audit.md), and the captions of
+  Fig4, Fig6 and ED7 ("ten", "1,024").
+* **Names:** S3 is now "Improve Strategies"; the L10 name is in sentence case.
+* **Fig1 and Fig3a:**
+  * a very light grey span 2028-2035 behind every element, labelled "Surplus absorbed 2028–35";
+  * a caption sentence filled from the data (`figure_plan.render_caption`): absorption by 2030 or 2045 changes
+    cumulative carbon by −0.2%/+0.3%.
+* **Layout for ten levers:**
+  * ED7 on a 4 × 3 grid, with the legend in the empty cells;
+  * Fig6 ten rows (80 mm);
+  * Fig4 and Fig5 unchanged in layout;
+  * ED4 notes area 0.33 → 0.345, for the new row (ED4_H is at the 247 mm page maximum).
+
 ## model-v4.8.0: end-of-life decarbonisation in the committed range, ED/SF reallocation, figure tidy (full run)
 
 **One full run** (`run_all.py --profile full`), then `--profile light`, the lock re-captured

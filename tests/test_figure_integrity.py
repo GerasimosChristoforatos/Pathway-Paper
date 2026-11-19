@@ -27,6 +27,7 @@ import pytest
 from conftest import ROOT
 import figure_plan as FP
 import layout
+import levers as LV
 import runprofile
 from figures import draw as P
 from figures import style as S
@@ -141,8 +142,8 @@ def test_fig5_waterfall_panels_sum_to_totals(ref_runs):
     for key, _, _, steps in paths:
         ids = [s for s, _ in steps]
         tot = np.array([t for _, t in steps])
-        assert ids[0] == 'REF' and len(ids) == 10
-        assert ids[1:] == ([f'TL{i}' for i in range(1, 10)] if key == 'tl' else [f'L{i}' for i in range(1, 10)])
+        assert ids[0] == 'REF' and len(ids) == len(LV.LEVERS) + 1
+        assert ids[1:] == ([f'TL{i}' for i in range(1, 11)] if key == 'tl' else [f'L{i}' for i in range(1, 11)])
         assert tot[0] == pytest.approx(ref_runs['REF'], rel=1e-12)
         assert tot[-1] == pytest.approx(ref_runs[ends[key]], rel=1e-12)
         assert np.diff(tot).sum() == pytest.approx(tot[-1] - tot[0], rel=RTOL)

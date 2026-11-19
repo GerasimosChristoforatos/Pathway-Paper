@@ -192,6 +192,7 @@ def fig1():
     """Fig1 with the six display bands (_fig1_draw)."""
     fig, ax = plt.subplots(figsize=(170 * S.MM, 72 * S.MM))      # lower, slightly narrower
     handles, neg, pipe, total, ob = _fig1_draw(ax, six=True)
+    P.absorption_span(ax, pad=0.5)                    # behind every element (MODEL v4.9.0)
     for h in handles:                                             # filled patches, no outline
         h.set_edgecolor(h.get_facecolor())
     ax.legend(handles=[Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built, annual (in scope)'),
@@ -432,6 +433,7 @@ def fig3():
     xf, arf = P.pchip(years, ar)
     _, atpf = P.pchip(years, atp)
     S.boundary_zones(ax, xf, arf, atpf)
+    P.absorption_span(ax)                             # behind every element (MODEL v4.9.0)
     q = {p: mc.loc[years.astype(int), f'carbon_{p}'].values / M for p in (5, 25, 50, 75, 95)}
     methods = {}
     for (lo_, hi_), alpha, lab in (((5, 95), S.OPACITY['mc_band_90'], 'Monte Carlo 90% band'),
@@ -554,8 +556,8 @@ def _step_strategy(step_id):
 
 def waterfall_paths():
     """The three sequential paths from the Reference, [(panel key, end label, end colour,
-    [(step id, total kt)])]: Reference -> L1 ... L9 at Moderate and at Ambitious (pathways/waterfall.csv, the lever
-    steps) and Reference -> TL1 ... TL9 cumulative (pathways/waterfall_tl_from_reference.csv)."""
+    [(step id, total kt)])]: Reference -> L1 ... L10 at Moderate and at Ambitious (pathways/waterfall.csv, the lever
+    steps) and Reference -> TL1 ... TL10 cumulative (pathways/waterfall_tl_from_reference.csv)."""
     w = D.csv('pathways/waterfall.csv')
     wt = D.csv('pathways/waterfall_tl_from_reference.csv')
     out = []
@@ -609,7 +611,7 @@ FIG4A_BUDGET_LABEL_X = 0.5        # Fig4a: x (axes fraction) of the budget label
 
 def fig4():
     """The three net waterfalls (a-c) from the Reference in PAS 2080 lever order to the Moderate Pathway,
-    the Ambitious Pathway and (TL1 ... TL9 cumulative) the Theoretical Limit (the pathway lines are in Fig3a)."""
+    the Ambitious Pathway and (TL1 ... TL10 cumulative) the Theoretical Limit (the pathway lines are in Fig3a)."""
     paths, bar_, batp = waterfall_paths()
     fig = plt.figure(figsize=S.figsize('double', 79))
     gs = fig.add_gridspec(1, 3, wspace=0.08)
@@ -933,9 +935,9 @@ def fig6():
     r = D.csv('pathways/runs.csv')
     r = r[r['scenario'] == 'REF'].set_index('run')['carbon_kt']
     alone = {k: {L: float(r['REF'] - r[f'{L}-{k}']) for L in N.LEVERS} for k in ('moderate', 'ambitious', 'tl')}
-    order = list(N.LEVERS)                                     # top to bottom: L1 .. L9
+    order = list(N.LEVERS)                                     # top to bottom: L1 .. L10
     y = np.arange(len(order))[::-1]
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 72), sharey=True)
+    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 80), sharey=True)
     for a, val, xlab, letter, title in (
             (ax[0], alone, 'Reduction of cumulative carbon 2026–2050 vs the Reference (kt CO₂e)', 'a',
              'Carbon reduction per lever'),
@@ -974,7 +976,8 @@ def fig6():
     tot = {k: v.sum() for k, v in g.items()}
     _save(fig, 'Fig6_shapley_levers',
           note='(a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each '
-               'combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 512 subsets per game); the '
+               f'combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; {2 ** len(order):,} subsets '
+               'per game); the '
                'TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): '
                + ', '.join(f'{k} {v:,.0f} kt' for k, v in tot.items()) + '.')
 

@@ -17,7 +17,7 @@ Writes outputs/data/sensitivity/:
 
 Every row has its group, the row label, its side (low / high / single), the value, the change vs the
 central case and its basis. Rows are read from existing outputs; the only new runs are the Moderate Pathway rows
-with one lever (L1-L9) at Ambitious (the others Moderate) and the Pathway on the Stats NZ 5th / 95th population
+with one lever (L1-L10) at Ambitious (the others Moderate) and the Pathway on the Stats NZ 5th / 95th population
 paths (exact engine path: the projection's own percentile run, reproduced to 1e-12 before the levers
 are applied; the AR and AtP budgets move with the path, data/aesa/results.json population_paths), and
 TL under the replacement variants (every other run of that table reproduces runs.csv to 1e-12).

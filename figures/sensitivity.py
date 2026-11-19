@@ -339,10 +339,8 @@ def row_notes_ed4(r):
                      '2025 factors (the largest credit), booked in the construction year and subtracted; carbon only; '
                      'not converted to LoE, because a consistent LoE would need Module D in the historical sector base '
                      'as well')
-    n['l10_max'] = ('the A1-A3 of construction and of the in-window replacement events x m(y) = [MAX(y) / MAX(2025)] / '
-                    '[AVG(y) / AVG(2025)] of the 9 prospective backgrounds (Horup et al. 2025, Table S3; single-family '
-                    'archetype for detached and townhouses, multi-dwelling for apartments), from 2027, instead of the '
-                    'nine-scenario average paths; the no-climate-policy end of lever L10; carbon only')
+    n['l10_max'] = ('A1-A3 of construction and in-window events x [MAX(y)/MAX(2025)] / [AVG(y)/AVG(2025)] of the 9 '
+                    'backgrounds (Horup et al. 2025, Table S3) from 2027: the no-climate-policy end of L10; carbon only')
     return n
 
 
@@ -536,7 +534,7 @@ def _input_label(rid):
 
 ED4_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
 ED5_H = 165                       # mm
-NOTES_TOP = 0.33                 # the notes block occupies the figure below this fraction of its height (ED4)
+NOTES_TOP = 0.345                # the notes block occupies the figure below this fraction of its height (ED4)
 NOTES_TOP_ED5 = 0.22
 
 

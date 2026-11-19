@@ -174,7 +174,7 @@ NEUTRALS = {'ink': '#1A1A1A', 'muted': '#6E6E6E', 'grid': '#E0E0E0', 'white': '#
 FIXED_FADES = {'definition_break_span': 0.10, 'census_range_span': 0.12, 'history_range_span': 0.12,
                'ci_span': 0.15, 'threshold_ci_span': 0.12, 'rug': 0.4,
                'neutral_histogram': 0.6, 'neutral_bars': 0.5, 'label_box': 0.85,
-               'legend_markers': 0.9}
+               'legend_markers': 0.9, 'absorption_span': 0.07}
 
 # ---------------------------------------------------------------------------
 # Colours (hex; checked by tools/palette_check.py)

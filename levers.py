@@ -648,8 +648,8 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                       table_s3_rel={f'{a} {st}': yy(v) for (a, st), v in rel.items()},
                       cells={f'{a} {st}': {'2025': c[2025], '2050': c[2050]} for (a, st), c in cells.items()},
                       weight='none (scenario path is the timing): m = 1 in 2025-2026, the path from 2027',
-                      anchor='lower envelope of the 9 prospective backgrounds / their average (Horup et al. 2025, '
-                             'Table S3); 2050: ' + ', '.join(f'{t} {m_amb[t][-1]:.3f}' for t in typ),
+                      anchor=L10_EVIDENCE + '; m(2050) = MIN / AVG relative to 2025: '
+                             + ', '.join(f'{t} {m_amb[t][-1]:.3f}' for t in typ),
                       archetype_note='author decision: Single family houses for Detached and Townhouses, Multi '
                                      'dwellings for Apartments; the extra decarbonisation is spread evenly across '
                                      'materials (the envelope is reported by archetype only)',

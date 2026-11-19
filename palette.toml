@@ -55,7 +55,7 @@ theoretical_limit     = "#A7BB95"   # Theoretical Limit
 [strategies]                        # PAS 2080 strategies: Fig4 waterfall steps, Fig5, Fig6, ED (lever figures)
 avoid                 = "#C16131"   # Avoid Strategies (L1-L5)
 switch                = "#8E5B7E"   # Switch Strategies (L6-L8)
-improve               = "#8197BC"   # Improve Strategy (L9)
+improve               = "#8197BC"   # Improve Strategies (L9, L10)
 
 [boundaries]                        # every planetary-boundary figure (lines; AR solid, AtP dotted: styles fixed)
 acquired_rights       = "#C9483F"   # Acquired rights (AR)

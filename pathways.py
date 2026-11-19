@@ -627,8 +627,9 @@ def carbon_parts(ctx, R):
     soil = np.asarray(E['soil'], float)
     mat = np.asarray(E['upfront'], float) - soil
     ev = np.zeros((len(ctx['years']), len(ctx['years'])))
+    K = R['inputs'].get('events') or ctx['events']    # the run's own kernel (L10 scales its A1-A3 component)
     for k, t in enumerate(ctx['typ']):
-        ev += E['gfa_t'][k][:, None] * ctx['events'][t]
+        ev += E['gfa_t'][k][:, None] * K[t]
     if not np.allclose(mat + soil + ev.sum(axis=0), E['carbon'], rtol=1e-12, atol=1e-6):
         raise SystemExit('carbon_parts: the cohort split does not reproduce the annual carbon.')
     return dict(mat=mat, soil=soil, ev=ev)
@@ -648,7 +649,9 @@ def linear_split(ctx, R):
     f = slice(1, None)
     if not np.allclose((fixed + later)[f], R['E']['carbon'][f], rtol=1e-12, atol=1e-6):
         raise SystemExit('linear_split does not reproduce the annual carbon.')
-    return dict(fixed=fixed[f], later=later[f], later_soil=later_soil[f], gfa_later=R['E']['gfa_t'][:, 2:].sum())
+    fixed_up = np.where(idx == 1, p['mat'] + p['soil'], 0.0)
+    return dict(fixed=fixed[f], fixed_upfront=fixed_up[f], fixed_events=p['ev'][1][f], later=later[f],
+                later_soil=later_soil[f], gfa_later=R['E']['gfa_t'][:, 2:].sum())
 
 
 def scaled_carbon(split, k_demand, k_intensity=1.0):
@@ -689,12 +692,18 @@ def effective_coordinates(split, split0):
     """Fig6 coordinates of a run against the Reference: x = cut in 2027-2050 floor area,
     1 - GFA_P / GFA_0; y = cut in 2027-2050 total carbon per m2 (A1-A5, soil and events of the 2027-2050 cohorts
     within the window), 1 - (C_P / GFA_P) / (C_0 / GFA_0). With the fixed part identical in every run,
-    LoE_AR(x, y) = [fixed + C_0 (1 - x)(1 - y)] / B_AR reproduces the run's LoE exactly (tests)."""
-    if not np.allclose(split['fixed'], split0['fixed'], rtol=1e-9, atol=1e-3):
-        raise SystemExit('effective_coordinates: the fixed part (the 2026 cohort) differs from the Reference.')
+    LoE_AR(x, y) = [fixed + C_0 (1 - x)(1 - y)] / B_AR reproduces the run's LoE exactly (tests).
+    The 2026 cohort's construction-year emissions (A1-A5, soil) are identical in every run (2026 observed; STOP
+    otherwise). Its in-window events (2027-2050) change only through L10 (production in the calendar year of the event,
+    MODEL v4.9.0): that change is a carbon-per-m2 effect of a lever after 2026 and is counted in y, so the plane
+    keeps the Reference's fixed part and still reproduces the run's LoE. Returns (x, y, the moved change in kg)."""
+    if not np.allclose(split['fixed_upfront'], split0['fixed_upfront'], rtol=1e-9, atol=1e-3):
+        raise SystemExit('effective_coordinates: the 2026 cohort\'s construction-year emissions differ from the '
+                         'Reference.')
+    moved = float(np.sum(split['fixed']) - np.sum(split0['fixed']))     # the 2026 cohort's events (L10 only)
     d = 1.0 - split['gfa_later'] / split0['gfa_later']
-    c, c0 = split['later'].sum(), split0['later'].sum()
-    return float(d), float(1.0 - (c / split['gfa_later']) / (c0 / split0['gfa_later']))
+    c, c0 = split['later'].sum() + moved, split0['later'].sum()
+    return float(d), float(1.0 - (c / split['gfa_later']) / (c0 / split0['gfa_later'])), moved
 
 
 # ============================================================
@@ -876,9 +885,10 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
     for nm, levels in ([(run_name(P, s), LV.pathway_levers(P, s)) for P in tuple(LV.STRATEGIES) + (LV.PATHWAY,)
                         for s in LV.SETTINGS] + [('TL', TL_ALL)]):
         Rp = get(REFERENCE, levels)
-        d, i = effective_coordinates(linear_split(ref, Rp), split0)
+        d, i, moved = effective_coordinates(linear_split(ref, Rp), split0)
         I = Rp['E']['carbon'][1:].sum()
         markers.append(dict(run=nm, demand_reduction=d, intensity_reduction=i, LoE_AR_run=I / bar,
+                            cohort_2026_events_change_kt=moved / M6,
                             LoE_AR_on_grid_at_coordinates=scaled_carbon(split0, 1.0 - d, 1.0 - i).sum() / bar,
                             LoE_AtP_run=I / batp))
     backcast_out = dict(run_mode=RUN_MODE, method='uniform factor k on the floor area by typology of every 2027-2050 '

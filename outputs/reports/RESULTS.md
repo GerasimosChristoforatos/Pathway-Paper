@@ -110,6 +110,6 @@ Lower bound: B2/B4 events after 2050 at the 2050 factors held; C1-C4 with the ca
 | run | committed (lower-upper) | C1-C4 (lower-upper) | carbon-bearing share of C1-C4 | Monte Carlo 90% interval, lower bound |
 |---|---|---|---|---|
 | Reference | 9,554-10,662 | 5,529-5,702 | 86.3% | 8,014-11,314 |
-| Moderate Pathway | 7,242-8,081 | 4,199-4,330 | 86.3% | 6,017-8,675 |
-| Ambitious Pathway | 5,365-5,985 | 3,118-3,216 | 86.3% | 4,380-6,536 |
-| Theoretical Limit | 1,799-2,002 | 1,076-1,109 | 86.4% | 804-3,027 |
+| Moderate Pathway | 7,121-8,081 | 4,199-4,330 | 86.3% | 5,916-8,530 |
+| Ambitious Pathway | 5,186-5,985 | 3,118-3,216 | 86.3% | 4,234-6,319 |
+| Theoretical Limit | 1,742-2,002 | 1,076-1,109 | 86.4% | 780-2,929 |

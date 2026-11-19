@@ -15,29 +15,37 @@ ED8_RUNS = (('reference', N.SCENARIOS['REF'], dict(color=S.REFERENCE, lw=S.LW_BO
 
 
 def ed8_lever_annual():
-    """ED7 (data D31): annual embodied carbon of each lever alone (3 x 3, shared y), the Reference and
+    """ED7 (data D31): annual embodied carbon of each lever alone (4 x 3 grid, ten panels, shared y; the legend in the
+    two empty cells), the Reference and
     the lever at Moderate, at Ambitious and at its Theoretical Limit, in the run colours of Fig3 / Fig4 (palette.toml
     [runs]); panel titles the lever names (no strategy-colour square, no lever-specific colour); PCHIP display interpolation through every annual value, not
     across the observed pipeline years -> modelled join (pathways/lever_annual.csv)."""
     la = D.csv('pathways/lever_annual.csv')
     brk = P.pipeline_breaks()
-    fig, ax = plt.subplots(3, 3, figsize=S.figsize('double', 130), sharex=True, sharey=True)
+    nrow = -(-len(LV.LEVERS) // 3)
+    fig, ax = plt.subplots(nrow, 3, figsize=S.figsize('double', 43 * nrow + 2), sharex=True, sharey=True)
+    for b in ax.ravel()[len(LV.LEVERS):]:              # the empty cells hold the legend
+        b.set_visible(False)
     for k, L in enumerate(LV.LEVERS):
         b = ax.ravel()[k]
         for lev, lab, st in ED8_RUNS:
             r = la[(la['lever'] == L) & (la['level'] == lev)].sort_values('year')
             b.plot(*P.pchip(r['year'].to_numpy(float), r['carbon_kt'].to_numpy(float), brk),
                    label=lab, zorder=3 if lev != 'reference' else 2, **st)
-        P.panel(b, 'abcdefghi'[k], f'{L} {N.LEVERS[L]}')
+        P.panel(b, 'abcdefghijkl'[k], f'{L} {N.LEVERS[L]}')
         b.set_xlim(2026, 2050)
         b.set_ylim(0, None)
         P.thousands(b.yaxis)
     for b in ax[:, 0]:
         b.set_ylabel('kt CO₂e per year')
+    for b in ax.ravel()[len(LV.LEVERS) - 3:len(LV.LEVERS)]:   # x tick labels on the last panel of each column
+        b.xaxis.set_tick_params(labelbottom=True)
     h, l_ = ax[0, 0].get_legend_handles_labels()
-    fig.legend(h, l_, loc='lower center', ncol=4, frameon=False, fontsize=S.FONT_SMALL, bbox_to_anchor=(0.5, 0.0),
-               title='Embodied carbon per year: the Reference and each lever alone at', title_fontsize=S.FONT_SMALL)
-    fig.tight_layout(rect=(0, 0.08, 1, 1), h_pad=1.6)
+    fig.tight_layout(h_pad=1.6)
+    e0, e1 = ax.ravel()[len(LV.LEVERS)].get_position(), ax.ravel()[-1].get_position()
+    fig.legend(h, l_, loc='center', ncol=2, frameon=False, fontsize=S.FONT_SMALL,
+               bbox_to_anchor=((e0.x0 + e1.x1) / 2, (e0.y0 + e0.y1) / 2),
+               title='Embodied carbon per year: the Reference\nand each lever alone at', title_fontsize=S.FONT_SMALL)
     S.save_figure(fig, 'ED7_lever_annual', note='Each panel: one lever alone; the other levers at the Reference. '
                                                 'Lines: PCHIP display interpolation through the annual values.',
                   source=['pathways/lever_annual.csv', 'baseline/overbuild_2026.json'])

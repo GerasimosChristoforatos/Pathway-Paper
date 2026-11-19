@@ -20,9 +20,27 @@ L6 Brownfield-first development,C,Apartments,"s, brownfield share (all typologie
 L7 Soil-aware planning,C,Detached,soil carbon loss (kg CO2e/m2 floor area),46.47459568767808,42.81478394528272,22.92770192553271
 L7 Soil-aware planning,C,Townhouses,soil carbon loss (kg CO2e/m2 floor area),28.057709194579207,25.84820242952604,13.84194490791772
 L7 Soil-aware planning,C,Apartments,soil carbon loss (kg CO2e/m2 floor area),5.110292042427761,4.707863434987386,2.5211032170909298
-L8 Material carbon efficiency,A,Detached,r (ratio to the Reference),0.9134832610100198,0.8269665220200395,0.529875123903523
-L8 Material carbon efficiency,A,Townhouses,r (ratio to the Reference),0.9134832610100198,0.8269665220200395,0.8269665220200395
-L8 Material carbon efficiency,A,Apartments,r (ratio to the Reference),0.9134832610100198,0.8269665220200395,0.8269665220200395
+L8 Material carbon efficiency,A,Detached,"r 2025 (ratio to the Reference, each case on its own path)",0.9134832610100198,0.8269665220200395,0.529875123903523
+L8 Material carbon efficiency,A,Detached,"r 2030 (ratio to the Reference, each case on its own path)",0.9135928077597053,0.8271856155194105,0.5238854735391784
+L8 Material carbon efficiency,A,Detached,"r 2040 (ratio to the Reference, each case on its own path)",0.9139692492048364,0.8279384984096727,0.5164729084894419
+L8 Material carbon efficiency,A,Detached,"r 2050 (ratio to the Reference, each case on its own path)",0.9137415765196596,0.8274831530393192,0.5114045539792245
+L8 Material carbon efficiency,A,Townhouses,"r 2025 (ratio to the Reference, each case on its own path)",0.9134832610100198,0.8269665220200395,0.8269665220200395
+L8 Material carbon efficiency,A,Townhouses,"r 2030 (ratio to the Reference, each case on its own path)",0.9135928077597053,0.8271856155194105,0.8271856155194105
+L8 Material carbon efficiency,A,Townhouses,"r 2040 (ratio to the Reference, each case on its own path)",0.9139692492048364,0.8279384984096727,0.8279384984096727
+L8 Material carbon efficiency,A,Townhouses,"r 2050 (ratio to the Reference, each case on its own path)",0.9137415765196596,0.8274831530393192,0.8274831530393192
+L8 Material carbon efficiency,A,Apartments,"r 2025 (ratio to the Reference, each case on its own path)",0.9134832610100198,0.8269665220200395,0.8269665220200395
+L8 Material carbon efficiency,A,Apartments,"r 2030 (ratio to the Reference, each case on its own path)",0.9135928077597053,0.8271856155194105,0.8271856155194105
+L8 Material carbon efficiency,A,Apartments,"r 2040 (ratio to the Reference, each case on its own path)",0.9139692492048364,0.8279384984096727,0.8279384984096727
+L8 Material carbon efficiency,A,Apartments,"r 2050 (ratio to the Reference, each case on its own path)",0.9137415765196596,0.8274831530393192,0.8274831530393192
 L9 Construction-stage carbon,C,Detached,A4-A5 factor 2050 (all typologies),0.38940039153570244,0.0,0.0
 L9 Construction-stage carbon,C,Townhouses,A4-A5 factor 2050 (all typologies),0.38940039153570244,0.0,0.0
 L9 Construction-stage carbon,C,Apartments,A4-A5 factor 2050 (all typologies),0.38940039153570244,0.0,0.0
+L10 Production decarbonisation,C,Detached,m 2030 (A1-A3 production multiplier; archetype Single family houses),0.9832882487899335,0.9665764975798671,0.9665764975798671
+L10 Production decarbonisation,C,Detached,m 2040 (A1-A3 production multiplier; archetype Single family houses),0.968452552193804,0.936905104387608,0.936905104387608
+L10 Production decarbonisation,C,Detached,m 2050 (A1-A3 production multiplier; archetype Single family houses),0.9572455227100878,0.9144910454201756,0.9144910454201756
+L10 Production decarbonisation,C,Townhouses,m 2030 (A1-A3 production multiplier; archetype Single family houses),0.9832882487899335,0.9665764975798671,0.9665764975798671
+L10 Production decarbonisation,C,Townhouses,m 2040 (A1-A3 production multiplier; archetype Single family houses),0.968452552193804,0.936905104387608,0.936905104387608
+L10 Production decarbonisation,C,Townhouses,m 2050 (A1-A3 production multiplier; archetype Single family houses),0.9572455227100878,0.9144910454201756,0.9144910454201756
+L10 Production decarbonisation,C,Apartments,m 2030 (A1-A3 production multiplier; archetype Multi dwellings),0.978086174672916,0.9561723493458321,0.9561723493458321
+L10 Production decarbonisation,C,Apartments,m 2040 (A1-A3 production multiplier; archetype Multi dwellings),0.951424863998314,0.9028497279966281,0.9028497279966281
+L10 Production decarbonisation,C,Apartments,m 2050 (A1-A3 production multiplier; archetype Multi dwellings),0.9327981835309336,0.865596367061867,0.865596367061867

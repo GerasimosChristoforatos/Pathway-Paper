@@ -14,14 +14,16 @@ ONE RUN (run()): every run, the Reference included, follows the same order per y
   3. the 2026 overbuild: the market excess of the REFERENCE (computed once, held fixed in every run) is absorbed
      along the Reference's logistic weights, the payback capped at max(gross_t, 0) with the shortfall carried
      (engine.absorb_overbuild);
-  4. re-occupation (TL-family runs only: TL, the TL waterfall steps, every TL Shapley subset): the pool
+  4. re-occupation (only in runs that release dwellings, releases_dwellings(levels): TL1 or TL2 at TL, in any single-
+     lever run, Shapley subset, waterfall step or the full TL; MODEL v4.9.0): the pool
      R = R1 (TL1, household decline: -min(d households, 0) / (1 - v)) + R2 (TL2, zero vacancy) + the positive
      overbuild (the pipeline years and the fading gap) + the starting surplus meets a constant share of each year's
      need after the payback over first..2050, first = observed_end + 1 (2028 with the 17-month lag; the releases of
      the observed years enter the pool in `first`) (reoccupation()); a negative excess is still made good along the
      logistic and the re-occupied overbuild is booked in 'Overbuild absorbed'. Every other run (the Reference, the
      Moderate and Ambitious Pathways) has no pool: the starting surplus and the overbuild are absorbed along the
-     logistic (step 3) and a vacancy-rate fall is used in the year it occurs (use_in_year);
+     logistic (step 3) and a vacancy-rate fall is used in the year it occurs (use_in_year); so does a run with
+     other levers at TL (TL3-TL10), which releases no dwelling;
   5. engine.forward with the stock-adding join = excess - payback + TL2 release - re-occupied, so the stock identity
      holds and the released dwellings stay vacant until re-occupied.
 
@@ -30,12 +32,12 @@ Moderate, Ambitious and TL; the PAS 2080 strategies S1 Avoid, S2 Switch, S3 Impr
 and the Moderate / Ambitious Pathway (every lever) at Moderate and Ambitious; TL (every lever at Level 4); the
 lambda-sweep of each lever; the Pathways adopted by 2030 / 2045; the instant TL (sensitivity row).
 ATTRIBUTION: exact Shapley values (rational arithmetic) over every subset: the three strategies (8 subsets) and the
-nine levers (512 subsets) at Moderate and Ambitious (Reference -> Moderate / Ambitious Pathway), the nine levers at
-TL from the Reference (512), and TL1-TL9 from the Moderate Pathway (512; the TL waterfall's game). Every run is cached
+ten levers (1,024 subsets) at Moderate and Ambitious (Reference -> Moderate / Ambitious Pathway), the ten levers at
+TL from the Reference (1,024), and TL1-TL10 from the Moderate Pathway (1,024; the TL waterfall's game). Every run is cached
 by its lever setting (levers.key) and reused across strategies, games and variants.
-WATERFALLS (sequential, PAS 2080 hierarchy order): (a) Reference -> +L1 ... +L9 at a setting (= the Moderate /
-Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL9 (= TL), by demand band, at Moderate and Ambitious; and
-Reference -> TL1 ... TL9 cumulative (waterfall_tl_from_reference). Fig4 draws the net waterfalls (a) and
+WATERFALLS (sequential, PAS 2080 hierarchy order): (a) Reference -> +L1 ... +L10 at a setting (= the Moderate /
+Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL10 (= TL), by demand band, at Moderate and Ambitious; and
+Reference -> TL1 ... TL10 cumulative (waterfall_tl_from_reference). Fig4 draws the net waterfalls (a) and
 Reference -> TL; (b) is written as data only.
 Each step is credited with what remains after the higher-priority measures; sequential_vs_shapley.csv compares the
 steps with the order-free Shapley values. No timing step: TL is adopted on the same logistic as every level.
@@ -70,6 +72,8 @@ import runprofile  # noqa: E402
 import validation  # noqa: E402
 
 RAMP_ADOPTED = LV.ADOPTION_ADOPTED
+releases_dwellings = LV.releases_dwellings      # the one predicate of the re-occupation pool accounting (MODEL v4.9.0)
+BF_A13 = EV.COMPONENTS[0]                        # 'A1-A3' (Building_factors.EVENT_COMPONENTS)
 OUT = layout.data('pathways')
 FILE_PB_ANNUAL = layout.data('aesa/annual.csv')
 FILE_PB_RESULTS = layout.data('aesa/results.json')
@@ -90,17 +94,17 @@ M6 = 1e6
 REOCCUPATION_YEARS = (2027, 2050)   # (default start, end): the default start applies only when no projection year is
                                     # observed; run() passes start = observed_end + 1 (2028 with the 17-month lag)
 FIRST_LEVER_YEAR = 2027             # no vacancy-rate fall before it (2026 observed; levers.OBSERVED_YEAR + 1)
-# TL surplus pooling: in a theoretical-limit-family run the Reference's overbuild surplus (the positive
+# TL surplus pooling: in a run that releases dwellings (releases_dwellings) the Reference's overbuild surplus (the positive
 #   market excess: the pipeline years and the fading gap) enters the re-occupation pool with the TL1 / TL2 releases
 #   (constant share of each year's positive need, availability constraint, carry-forward) instead of the logistic
 #   payback; the re-occupied overbuild stays in the band 'Overbuild absorbed'. A negative excess (an under-build) is
-#   made good along the Reference's logistic. Non-TL runs are unaffected.
+#   made good along the Reference's logistic. Runs that release no dwelling are unaffected.
 REOCCUPATION_TOL = 1e-9         # relative tolerance of the re-occupation identities
 T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a zero-building year
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
 SHAPLEY_METRICS = ('carbon_kt', 'LoE_AR', 'LoE_AtP')
 ORDER_RTOL = 1e-12
-TL_GAME = 'tl_from_moderate_pathway'            # TL1-TL9 from the Moderate Pathway (tl_from_p5_moderate)
+TL_GAME = 'tl_from_moderate_pathway'            # TL1-TL10 from the Moderate Pathway (tl_from_p5_moderate)
 TL_REOCCUPATION_FAST = 'TL-reoccupation-fast'   # A4 sensitivity row (reoccupation rule 'fast')
 TL_AGE_STANDARDISED = 'TL-TL1-age-standardised'   # TL with TL1 from age-specific living arrangements (sensitivity)
 
@@ -153,6 +157,15 @@ def base_context(B, scenario, bounds):
     fac = {(t, k): EV.row_factors(prof[t], after, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45,
                                   hold=hold)
            for t in typ for k, hold in (('upper', '2025'), ('lower', '2050'))}
+    events_a13 = None
+    if fi['events'] is not None:                      # the A1-A3 component of the in-window event kernel (L10)
+        events_a13 = {}
+        for t in typ:
+            f_t = EV.row_factors(prof[t], fy, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45)
+            k13, krest = EV.component_kernels(prof[t], fy, f_t, BF_A13)
+            if not np.allclose(k13 + krest, np.asarray(fi['events'][t], float), rtol=1e-12, atol=1e-12):
+                raise SystemExit(f'pathways: {t}: the A1-A3 + other event kernels do not add up to the run\'s kernel.')
+            events_a13[t] = k13
     return dict(
         scenario=scenario, B=B, years=fy, typ=typ, pop=pop, growth=growth, hh=hh,
         fwd_inputs=fi, size_ref=B['size_ref'], olf=B['OLF_USED'], v0=float(B['v_forward']),
@@ -165,7 +178,7 @@ def base_context(B, scenario, bounds):
         **observed_window(ji),
         join_reference=np.asarray(ji['join'], float), profile=prof, committed_factors=fac,
         c14=B['C14_SPLIT'], soil=B['SOIL_INTENSITY'],
-        events=fi['events'], b_ar=b_ar, b_atp=b_atp)
+        events=fi['events'], events_a13=events_a13, b_ar=b_ar, b_atp=b_atp)
 
 
 # ============================================================
@@ -279,7 +292,8 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
 
     Release accounting (bands.py): the payback is taken on the GROSS need (the requirement with
     the dwellings released by a vacancy-rate fall added back); a negative gross year builds nothing and carries the
-    unusable dwellings forward (carry_negative). In a theoretical-limit-family run (any lever at 'tl') every release
+    unusable dwellings forward (carry_negative). In a run that releases dwellings (releases_dwellings: TL1 or TL2 at
+    'tl') every release
     present in the run, the vacancy-rate fall at any level and the household-size fall, enters the re-occupation pool
     (reoccupation(): constant share of each year's need, availability constraint, attribution in proportion to the
     release of each source). In any other run the vacancy release is used in the year it occurs, capped at the gross
@@ -300,7 +314,7 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     obs = (years >= WINDOW[0]) & (years <= obs_end)
     i_first = int(np.flatnonzero(late)[0])
     v = np.broadcast_to(np.asarray(E1['v'], float), (n,))
-    tl_family = bool(info['tl'])
+    tl_family = bool(info['releases'])               # releases_dwellings(levels): TL1 or TL2 at TL
     chg = np.asarray(E1['change'], float)
     if np.any(chg[years < FIRST_LEVER_YEAR] < 0.0):
         raise SystemExit(f'run: a vacancy-rate fall before {FIRST_LEVER_YEAR} (2026 is observed).')
@@ -376,14 +390,20 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
                 scenario=ctx['scenario'])
 
 
-def committed(ctx, gfa_t):
+def committed(ctx, gfa_t, m10_2050=None):
     """Committed after 2050 (kt): the 2026-2050 cohorts' later replacements and repaints (events.committed; upper:
     2025 factors, lower: 2050 factors held) and all their C1-C4 (events.c14_committed: the carbon-bearing classes held
-    at 2025 in both bounds, the energy part at 2025 / at the generic path's 2050 value), with this run's floor area."""
+    at 2025 in both bounds, the energy part at 2025 / at the generic path's 2050 value), with this run's floor area.
+    m10_2050 ({typology: m}, runs with L10): the lower bound's A1-A3 event factors x m10(2050) (the 2050 production
+    multiplier held, as the 2050 factors); the upper bound (2025 factors) and C1-C4 are not changed."""
     b = {'upper': 0.0, 'lower': 0.0}
     for k, t in enumerate(ctx['typ']):
         for key in b:
-            b[key] += EV.committed(gfa_t[k], ctx['years'], ctx['profile'][t], ctx['committed_factors'][(t, key)])
+            fac = ctx['committed_factors'][(t, key)]
+            if key == 'lower' and m10_2050 is not None:
+                fac = fac.copy()
+                fac[(ctx['profile'][t]['Component'] == BF_A13).to_numpy()] *= float(m10_2050[t])
+            b[key] += EV.committed(gfa_t[k], ctx['years'], ctx['profile'][t], fac)
     sp = ctx['c14']
     c = {key: [EV.c14_committed(gfa_t[k][1:], sp['held'][t], sp['energy'][t], hold, sp['a45'])
                for k, t in enumerate(ctx['typ'])]
@@ -431,7 +451,7 @@ def metrics(ctx, R, label, setting):
     up = E['upfront'][f].sum()
     if not math.isclose(st['a13'][f].sum() + st['a45'][f].sum() + st['soil'][f].sum(), up, rel_tol=1e-12):
         raise SystemExit(f'{label}: A1-A3 + A4-A5 + soil does not equal upfront.')
-    com = committed(ctx, gfa_t)
+    com = committed(ctx, gfa_t, info.get('m10_2050'))
     v_impl = implied_vacancy(E)
     dwell = E['dwell_in_scope'][f]
     built_all = engine.requirement(E)[f]
@@ -607,8 +627,9 @@ def carbon_parts(ctx, R):
     soil = np.asarray(E['soil'], float)
     mat = np.asarray(E['upfront'], float) - soil
     ev = np.zeros((len(ctx['years']), len(ctx['years'])))
+    K = R['inputs'].get('events') or ctx['events']    # the run's own kernel (L10 scales its A1-A3 component)
     for k, t in enumerate(ctx['typ']):
-        ev += E['gfa_t'][k][:, None] * ctx['events'][t]
+        ev += E['gfa_t'][k][:, None] * K[t]
     if not np.allclose(mat + soil + ev.sum(axis=0), E['carbon'], rtol=1e-12, atol=1e-6):
         raise SystemExit('carbon_parts: the cohort split does not reproduce the annual carbon.')
     return dict(mat=mat, soil=soil, ev=ev)
@@ -628,7 +649,9 @@ def linear_split(ctx, R):
     f = slice(1, None)
     if not np.allclose((fixed + later)[f], R['E']['carbon'][f], rtol=1e-12, atol=1e-6):
         raise SystemExit('linear_split does not reproduce the annual carbon.')
-    return dict(fixed=fixed[f], later=later[f], later_soil=later_soil[f], gfa_later=R['E']['gfa_t'][:, 2:].sum())
+    fixed_up = np.where(idx == 1, p['mat'] + p['soil'], 0.0)
+    return dict(fixed=fixed[f], fixed_upfront=fixed_up[f], fixed_events=p['ev'][1][f], later=later[f],
+                later_soil=later_soil[f], gfa_later=R['E']['gfa_t'][:, 2:].sum())
 
 
 def scaled_carbon(split, k_demand, k_intensity=1.0):
@@ -669,12 +692,18 @@ def effective_coordinates(split, split0):
     """Fig6 coordinates of a run against the Reference: x = cut in 2027-2050 floor area,
     1 - GFA_P / GFA_0; y = cut in 2027-2050 total carbon per m2 (A1-A5, soil and events of the 2027-2050 cohorts
     within the window), 1 - (C_P / GFA_P) / (C_0 / GFA_0). With the fixed part identical in every run,
-    LoE_AR(x, y) = [fixed + C_0 (1 - x)(1 - y)] / B_AR reproduces the run's LoE exactly (tests)."""
-    if not np.allclose(split['fixed'], split0['fixed'], rtol=1e-9, atol=1e-3):
-        raise SystemExit('effective_coordinates: the fixed part (the 2026 cohort) differs from the Reference.')
+    LoE_AR(x, y) = [fixed + C_0 (1 - x)(1 - y)] / B_AR reproduces the run's LoE exactly (tests).
+    The 2026 cohort's construction-year emissions (A1-A5, soil) are identical in every run (2026 observed; STOP
+    otherwise). Its in-window events (2027-2050) change only through L10 (production in the calendar year of the event,
+    MODEL v4.9.0): that change is a carbon-per-m2 effect of a lever after 2026 and is counted in y, so the plane
+    keeps the Reference's fixed part and still reproduces the run's LoE. Returns (x, y, the moved change in kg)."""
+    if not np.allclose(split['fixed_upfront'], split0['fixed_upfront'], rtol=1e-9, atol=1e-3):
+        raise SystemExit('effective_coordinates: the 2026 cohort\'s construction-year emissions differ from the '
+                         'Reference.')
+    moved = float(np.sum(split['fixed']) - np.sum(split0['fixed']))     # the 2026 cohort's events (L10 only)
     d = 1.0 - split['gfa_later'] / split0['gfa_later']
-    c, c0 = split['later'].sum(), split0['later'].sum()
-    return float(d), float(1.0 - (c / split['gfa_later']) / (c0 / split0['gfa_later']))
+    c, c0 = split['later'].sum() + moved, split0['later'].sum()
+    return float(d), float(1.0 - (c / split['gfa_later']) / (c0 / split0['gfa_later'])), moved
 
 
 # ============================================================
@@ -856,9 +885,10 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
     for nm, levels in ([(run_name(P, s), LV.pathway_levers(P, s)) for P in tuple(LV.STRATEGIES) + (LV.PATHWAY,)
                         for s in LV.SETTINGS] + [('TL', TL_ALL)]):
         Rp = get(REFERENCE, levels)
-        d, i = effective_coordinates(linear_split(ref, Rp), split0)
+        d, i, moved = effective_coordinates(linear_split(ref, Rp), split0)
         I = Rp['E']['carbon'][1:].sum()
         markers.append(dict(run=nm, demand_reduction=d, intensity_reduction=i, LoE_AR_run=I / bar,
+                            cohort_2026_events_change_kt=moved / M6,
                             LoE_AR_on_grid_at_coordinates=scaled_carbon(split0, 1.0 - d, 1.0 - i).sum() / bar,
                             LoE_AtP_run=I / batp))
     backcast_out = dict(run_mode=RUN_MODE, method='uniform factor k on the floor area by typology of every 2027-2050 '
@@ -909,8 +939,8 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
 
 
 def waterfall(ctx, get, setting):
-    """The sequential path in PAS 2080 hierarchy order: (a) Reference -> +L1 -> ... -> +L9 at `setting`
-    (= the Moderate / Ambitious Pathway), (b) -> +TL1 ... +TL9 (= TL); every step a cached run, each step's change
+    """The sequential path in PAS 2080 hierarchy order: (a) Reference -> +L1 -> ... -> +L10 at `setting`
+    (= the Moderate / Ambitious Pathway), (b) -> +TL1 ... +TL10 (= TL); every step a cached run, each step's change
     split exactly into the in-scope demand bands; each step is credited with what remains after the higher-priority
     measures (order-dependent; the order-free values are the Shapley values)."""
     steps = [('REF', N.SCENARIOS['REF'], {})]
@@ -927,7 +957,7 @@ def waterfall(ctx, get, setting):
 
 
 def waterfall_tl_from_reference(ctx, get):
-    """The sequential path Reference -> +TL1 -> ... -> +TL9 (= TL), every limit added
+    """The sequential path Reference -> +TL1 -> ... -> +TL10 (= TL), every limit added
     cumulatively from the Reference in PAS 2080 order (the other levers off: levers.tl_levels(.., 'reference')); each
     step a cached run, split exactly into the in-scope demand bands as in waterfall(). The step runs are the prefix
     subsets of the levers_tl Shapley game."""
@@ -991,7 +1021,7 @@ def sequential_vs_shapley(wf, shap):
 def ordering(res):
     """Reference >= Moderate >= Ambitious >= TL per lever, typology and year, on each lever's native quantity as it
     enters the engine (single-lever runs): L4 dwelling size; L5 OLF; L1 households; L2 vacancy rate; L3 demolition
-    and residual rates; L8 A1-A3 per m2; L9 A4-A5 per m2; L7 soil factor; L6 soil-bearing share. Also reported (not a
+    and residual rates; L8 and L10 A1-A3 per m2; L9 A4-A5 per m2; L7 soil factor; L6 soil-bearing share. Also reported (not a
     STOP): the annual carbon of the single-lever runs by year, and asserted: their cumulative carbon."""
     ref = res['ctxs'][REFERENCE]
     get = res['get']
@@ -1012,7 +1042,7 @@ def ordering(res):
             return {'all': bt(fi['v'])}
         if L == 'L3':
             return {'demolition': bt(fi['rate_demol']), 'residual': bt(fi['rate_unc'])}
-        if L == 'L8':
+        if L in ('L8', 'L10'):
             return {t: bt(info['a13'][t]) for t in typ}
         if L == 'L9':
             return {t: bt(info['a45'][t]) for t in typ}
@@ -1098,7 +1128,7 @@ def checks(res):
         rel_ = ro.get('released_pool', ro['released_tl1'] + ro['released_tl2'])   # as it enters the pool
         if (np.cumsum(ro['reoccupied']) > np.cumsum(rel_) + REOCCUPATION_TOL * max(ro['R'], 1.0)).any():
             stops.append(f'cumulative re-occupied > released: {lab}')
-        if not info['tl']:
+        if not info['releases']:
             v = implied_vacancy(E)[1:]
             if (v < LV.L2_VACANCY_FLOOR).any():
                 stops.append(f'implied vacancy below {LV.L2_VACANCY_FLOOR:.1%}: {lab}')
@@ -1160,12 +1190,13 @@ def _json(obj, name):
 
 
 def zero_building(res):
-    """The theoretical-limit-family runs (TL, its waterfall steps, every TL Shapley subset, the instant
+    """The runs that release dwellings (releases_dwellings: TL, its waterfall steps and TL Shapley subsets with TL1 or
+    TL2, the instant
     TL; every scenario) with a year 2026-2050 that builds no dwelling (all categories <= T_ZERO_TOL_DWELLINGS), and
     the minimum annual building over them."""
     bad, mins = [], []
     for k, R in res['cache'].items():
-        if not R['info']['tl']:
+        if not R['info']['releases']:
             continue
         b = np.asarray(engine.requirement(R['E']), float)[1:]
         mins.append(float(b.min()))

@@ -104,7 +104,7 @@ FILES = [
      'pathways.py'),
     ('data/pathways/annual.csv', 'Annual carbon and boundaries of every pathway run', 'pathways.py'),
     ('data/pathways/bands.csv', 'Floor area and carbon by demand band of every pathway run', 'pathways.py'),
-    ('data/pathways/shapley*.csv', 'Exact Shapley values of every game (PAS 2080 strategies S1-S3 and levers at Moderate / Ambitious, levers at TL, TL1-TL9 from the Moderate Pathway) and every subset run',
+    ('data/pathways/shapley*.csv', 'Exact Shapley values of every game (PAS 2080 strategies S1-S3 and levers at Moderate / Ambitious, levers at TL, TL1-TL10 from the Moderate Pathway) and every subset run',
      'pathways.py'),
     ('data/pathways/montecarlo_draws.csv', 'Pathway Monte Carlo: each saved Reference draw through the Moderate / Ambitious Pathway '
      '(Moderate) and TL: inputs, carbon, floor area, budgets and levels of exceedance', 'pathways_mc.py'),
@@ -134,9 +134,11 @@ FILES = [
     ('reports/ASSUMPTIONS.md', 'Every assumption and setting with its source', 'tools/assumptions.py'),
     ('reports/METHODS_DRAFT.md', 'Methods draft in three parts: baseline projection, planetary-boundary layer '
      '(AESA), pathways and the theoretical limit', 'tools/methods.py'),
+    ('reports/lever_audit.md', 'Lever consistency audit: the seven checks of the ten levers (STOP on a failure)',
+     'tools/lever_audit.py'),
     ('reports/LEVERS_TABLE.md', 'Extended Data Table 1: the pathway levers, their values and sources',
      'tools/pathways_methods.py'),
-    ('reports/LEVERS_TABLE_MAIN.md', 'Table 1 (main paper): the nine levers, their levels and sources (qualitative)',
+    ('reports/LEVERS_TABLE_MAIN.md', 'Table 1 (main paper): the ten levers, their levels and sources (qualitative)',
      'tools/pathways_methods.py'),
     ('reports/LEVERS_TABLE_MAIN.csv', 'Table 1 (main paper) as CSV', 'tools/pathways_methods.py'),
     ('reports/AVAILABILITY.md', 'Data and code availability statements and the third-party data table',

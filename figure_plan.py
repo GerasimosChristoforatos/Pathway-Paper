@@ -11,6 +11,27 @@ Every figure is drawn by a module of figures/ from the data files of outputs/dat
 separation); `module` names it, `source` lists the data files it reads (relative to outputs/data/).
 Figures are PNG only (runprofile.py: 600 dpi full, 200 dpi light).
 """
+# caption sentence filled from the data when FIGURES.md is written (render_caption; MODEL v4.9.0): no value typed here
+SURPLUS_TOKEN = '<<surplus_absorption>>'
+
+
+def render_caption(cap):
+    """A caption with its data tokens filled: the absorption window (baseline/overbuild_2026.json) and the ED4 row
+    'absorbed by 2030 / by 2045' (sensitivity/reference_carbon.csv)."""
+    if not cap or SURPLUS_TOKEN not in cap:
+        return cap
+    import json
+    import pandas as pd
+    import layout
+    ob = json.load(open(layout.data('baseline/overbuild_2026.json')))
+    a, b = int(max(ob['pipeline_years'])) + 1, int(ob['absorption_end'])
+    r = pd.read_csv(layout.data('sensitivity/reference_carbon.csv'))
+    r = r[r['row'] == '2026 overbuild absorbed by 2030 / by 2045'].set_index('side')['change_pct']
+    sentence = (f'Building runs below need in {a}-{b} while the 2024-{str(a - 1)[-2:]} surplus is absorbed (absorption '
+                f"by 2030 or 2045 changes cumulative carbon by {r['low']:+.1f}%/{r['high']:+.1f}%, Extended Data Fig. 4).")
+    return cap.replace(SURPLUS_TOKEN, sentence.replace('-0.', '−0.').replace('+-', '−'))
+
+
 PAPER_MAIN = [
     dict(id='Fig1', file='Fig1_floor_area', width='double', module='figures.paper_main',
          title='Floor area: history and projection by demand band',
@@ -19,7 +40,8 @@ PAPER_MAIN = [
                  '(the starting surplus and the overbuild absorbed, unconsented additions) down from zero. The black line is the floor area built '
                  '(in scope), annual 1992-2050 (history from consents, projection from 2026); the grey caps on the '
                  'history columns are the census-interval means. 2026 overbuild: observed 2026 building above need, fading from 2027; '
-                 'it is absorbed by 2035 together with the starting surplus (the 2024-25 building beyond the stock identity, carried into 2026).',
+                 'it is absorbed by 2035 together with the starting surplus (the 2024-25 building beyond the stock identity, carried into 2026). '
+                 + SURPLUS_TOKEN,
          source=['baseline/bands_history.csv', 'baseline/bands_annual.csv', 'baseline/annual.csv',
                  'baseline/overbuild_2026.json']),
     dict(id='Fig2', file='Fig2_reference_carbon', width='double', module='figures.paper_main',
@@ -37,14 +59,14 @@ PAPER_MAIN = [
                  'AtP budgets, and the '
                  'committed emissions after 2050: C1-C4 and B2/B4 after 2050, each a range (lower = 2050 factors '
                  'held, the carbon-bearing materials of C1-C4 at 2025 in both bounds; upper = 2025 factors), drawn at '
-                 'the lower bound.',
+                 'the lower bound. ' + SURPLUS_TOKEN,
          source=['aesa/annual.csv', 'montecarlo/annual_REF.csv', 'montecarlo/draws_REF.csv', 'baseline/projection.json']),
     dict(id='Fig4', file='Fig4_pathways', width='double', module='figures.paper_main',
          title='The Pathways: the sequential waterfalls',
          # the caption follows the figure (a-c; the annual pathways are in Fig3a)
          caption='Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 '
-                 'order: (a) L1 ... L9 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) TL1 '
-                 '... TL9 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
+                 'order: (a) L1 ... L10 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) TL1 '
+                 '... TL10 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; '
                  'AR (solid) and AtP (dotted) budgets with their zones; order-free Shapley values in Fig6.',
          source=['pathways/annual.csv', 'pathways/waterfall.csv', 'pathways/waterfall_tl_from_reference.csv']),
     dict(id='Fig5', file='Fig5_solution_space', width='double', module='figures.paper_main',
@@ -58,9 +80,10 @@ PAPER_MAIN = [
     dict(id='Fig6', file='Fig6_shapley_levers', width='double', module='figures.paper_main',
          title='What each lever removes',
          caption='Shapley values within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; '
-                 'exact, 512 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 '
-                 'Switch, S3 Improve) in the lever order and coloured by strategy; filled bar Moderate, hollow bar '
-                 'Ambitious, large dot TL. The TL dots are Shapley values within the TL game (all nine '
+                 'exact, 1,024 subsets) on cumulative carbon 2026-2050: rows grouped by PAS 2080 strategy (S1 Avoid, S2 '
+                 'Switch, S3 Improve: L9 construction-stage carbon and L10 production decarbonisation) in the lever order '
+                 'and coloured by strategy; filled bar Moderate, hollow bar '
+                 'Ambitious, large dot TL. The TL dots are Shapley values within the TL game (all ten '
                  'levers at their limit), so they include each lever\'s interactions at the limit; L5 (occupancy '
                  'density) interacts with L4 (extra space): both act on the floor area per dwelling.',
          source=['pathways/shapley.csv']),

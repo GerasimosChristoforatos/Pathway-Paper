@@ -1,6 +1,6 @@
 """PAS 2080 restructure, Very High replacement, half-life in the MC.
 
-  * strategies: S1-S3 partition L1-L9 in PAS 2080 order; the strategy runs exist, P1-P4 do not;
+  * strategies: S1-S3 partition L1-L10 in PAS 2080 order; the strategy runs exist, P1-P4 do not;
   * Shapley efficiency of the strategy, lever and TL games against the run totals (1e-9);
   * the two sequential waterfalls: steps add up to their totals, end at the Pathway and at TL, the deltas add up to
     Reference - Pathway and Pathway - TL, and sequential_vs_shapley.csv carries the same values;
@@ -48,7 +48,7 @@ def _close(a, b, atol):
 # ------------------------------------------------------------------ strategies ----
 def test_strategies_partition_the_levers_in_order():
     flat = [lv for st in ('S1', 'S2', 'S3') for lv in N.STRATEGY_LEVERS[st]]
-    assert flat == [f'L{i}' for i in range(1, 10)]
+    assert flat == [f'L{i}' for i in range(1, 11)]
     assert all(N.LEVER_STRATEGY[lv] == st for st, ls in N.STRATEGY_LEVERS.items() for lv in ls)
     import levers as LV
     assert {r['item'].split()[0]: r['strategy'].split()[0] for r in LV.lever_table(_js('pathways/levers.json'))} \
@@ -79,14 +79,14 @@ def test_two_sequential_waterfalls(runs):
         tot = g.groupby('step').agg(c=('carbon_kt', 'sum'), t=('total_carbon_kt', 'first'), sid=('step_id', 'first'))
         assert _close(tot.c.values, tot.t.values, 1e-9)
         sid = list(tot.sid)
-        assert sid == ['REF'] + [f'L{i}' for i in range(1, 10)] + [f'TL{i}' for i in range(1, 10)]
+        assert sid == ['REF'] + [f'L{i}' for i in range(1, 11)] + [f'TL{i}' for i in range(1, 11)]
         t = tot.set_index('sid')['t']
         assert t['REF'] == pytest.approx(ref['REF'], rel=1e-12)
-        assert t['L9'] == pytest.approx(ref[f'pathway-{s}'], rel=1e-12)
-        assert t['TL9'] == pytest.approx(ref['TL'], rel=1e-12)
+        assert t['L10'] == pytest.approx(ref[f'pathway-{s}'], rel=1e-12)
+        assert t['TL10'] == pytest.approx(ref['TL'], rel=1e-12)
         d = -np.diff(t.values)                              # the step reductions
-        assert d[:9].sum() == pytest.approx(ref['REF'] - ref[f'pathway-{s}'], rel=1e-9)
-        assert d[9:].sum() == pytest.approx(ref[f'pathway-{s}'] - ref['TL'], rel=1e-9)
+        assert d[:10].sum() == pytest.approx(ref['REF'] - ref[f'pathway-{s}'], rel=1e-9)
+        assert d[10:].sum() == pytest.approx(ref[f'pathway-{s}'] - ref['TL'], rel=1e-9)
         q = sv[sv['setting'] == s].set_index('player')
         for i, p in enumerate(sid[1:]):
             if p in q.index:
@@ -95,8 +95,8 @@ def test_two_sequential_waterfalls(runs):
                     continue
                 assert q.loc[p, 'sequential_minus_shapley_kt'] == pytest.approx(
                     q.loc[p, 'sequential_reduction_kt'] - q.loc[p, 'shapley_reduction_kt'], abs=1e-9)
-    assert set(sv[sv['setting'] == 'moderate']['player']) == {f'L{i}' for i in range(1, 10)} | \
-        {f'TL{i}' for i in range(1, 10)}
+    assert set(sv[sv['setting'] == 'moderate']['player']) == {f'L{i}' for i in range(1, 11)} | \
+        {f'TL{i}' for i in range(1, 11)}
 
 
 # ------------------------------------------------------------------ bands ----

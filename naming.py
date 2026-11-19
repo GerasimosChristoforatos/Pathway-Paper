@@ -71,11 +71,16 @@ LEVER_SUBRULE = {'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C
 DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.1)'
 
 # Theoretical limit: TLn is Level 4 of Ln
-TL = {'TL': 'Theoretical Limit', 'TL1': 'Historical maximum household size', 'TL2': 'No vacancy',
-      'TL3': 'No demolition', 'TL4': 'No extra space', 'TL5': 'Densest design', 'TL6': 'All brownfield',
-      'TL7': 'Lowest-carbon soils', 'TL8': 'Best-practice materials', 'TL9': 'Zero-emission construction',
-      'TL10': 'Lowest-carbon production'}
+TL = {'TL': 'Theoretical Limit', 'TL1': 'Historical maximum household size', 'TL2': 'Lowest vacancy (Switzerland)',
+      'TL3': 'No demolition', 'TL4': 'No extra space', 'TL5': 'Densest design', 'TL6': "England's peak brownfield share",
+      'TL7': 'Lowest-carbon soils', 'TL8': 'Best-practice materials', 'TL9': 'Zero-emission sites and transport',
+      'TL10': 'Near-zero cement and steel'}
 TL_LIMIT_OF = {f'TL{k}': f'L{k}' for k in range(1, 11)}
+
+
+def at_tl(x):
+    """User-facing name of a theoretical-limit item (MODEL v4.10.0): 'TL3' -> 'L3 at TL'; any other id unchanged."""
+    return f'{TL_LIMIT_OF[x]} at TL' if x in TL_LIMIT_OF else x
 TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pathway'
 
 # adoption paths of the levers (ADOPTION_LEGACY: the earlier 'ramp' names)
@@ -143,7 +148,7 @@ BAND_DEFINITIONS = {
     'replacement': 'demolition replacement at the fixed BRANZ SR214 rate (0.135% of the stock a year)',
     'unconsented': 'unconsented additions: the calibrated long-run residual of the census dwelling-count identity '
                    '(negative: dwellings that appear without a new-dwelling consent)',
-    'released_tl': 'existing dwellings released by TL3 (household size) and TL4 (zero vacancy) and re-occupied '
+    'released_tl': 'existing dwellings released by L1 at TL (household size) and L2 at TL (vacancy) and re-occupied '
                    '(negative; theoretical limit only)',
     'redevelopment': 'the scenario rate above that long-run rate: the 2018–2023 knock-down-and-rebuild wave, fading '
                      'in the Reference',
@@ -241,7 +246,7 @@ MC_INPUT = {'z_pop': 'Population and household size',     # MODEL v4.3.1 (B4): o
             'size': 'Dwelling size', 'complete': 'Completion rate', 'carbon': 'Carbon factors',
             'half_life': 'Replacement half-life'}
 LOE_AR = 'Cumulative LoE of AR'
-TL_AGE_STANDARDISED = 'Theoretical Limit, TL1 age-standardised (sensitivity)'   # pathways.TL_AGE_STANDARDISED
+TL_AGE_STANDARDISED = 'Theoretical Limit, L1 at TL age-standardised (sensitivity)'   # pathways.TL_AGE_STANDARDISED
 LOE_ATP = 'Cumulative LoE of AtP'
 
 def run_label(run, scenario='REF'):

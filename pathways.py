@@ -198,6 +198,10 @@ def l10_class_inputs(B, typ, fy, after, prof):
         return a13c, evc, comc
     variant = BF.decarb_variant(projection.DECARB_MODE, projection.DECARB_ITEM_CASE)
     d = pd.read_csv(BF.OUT_A13_CLASS)
+    present = set(d['Class'])                         # the class review (MODEL v4.10.0): every production class reviewed
+    if present != set(LV.L10_CLASS_REVIEW) or not set(classes) <= present or BF.ELEVATOR_CLASS != LV.L10_ELEVATOR_CLASS:
+        raise SystemExit(f'STOP (L10): production classes {sorted(present)} differ from the reviewed classes '
+                         f'{sorted(LV.L10_CLASS_REVIEW)} (or a class factor has no class).')
     d = d[d['Variant'] == (variant or 'horup_item')]
     for t in typ:
         for k in classes:
@@ -446,7 +450,9 @@ def committed(ctx, gfa_t, prod2050=None):
             if key == 'lower' and prod2050 is not None:
                 for cl, c in prod2050['c'].items():   # class factors (exact zero when c = 1)
                     pc, fc = ctx['committed_class'][(t, cl)]
-                    b[key] += float(prod2050['m'][t]) * (c - 1.0) * EV.committed(gfa_t[k], ctx['years'], pc, fc)
+                    if len(pc):                       # the factor columns run to the base profile's last age
+                        b[key] += float(prod2050['m'][t]) * (c - 1.0) * EV.committed(
+                            gfa_t[k], ctx['years'], pc, fc, end_year=int(ctx['years'][-1]) + fc.shape[1])
     sp = ctx['c14']
     c = {key: [EV.c14_committed(gfa_t[k][1:], sp['held'][t], sp['energy'][t], hold, sp['a45'])
                for k, t in enumerate(ctx['typ'])]

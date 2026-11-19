@@ -1,0 +1,115 @@
+Timing,Typology,Class,Age,S4,label,nz,kg_per_m2
+n+1,Detached,GLASS,25,Glass,direct,no,5.639550323890993
+n+1,Detached,OTHERS,25,Ceramic tile,direct,no,0.4444852347314585
+n+1,Detached,OTHERS,25,Glass,direct,no,0.0022838487258635782
+n+1,Detached,PAINT,7,EPS,proxy,no,1.7888922815025603
+n+1,Detached,PAINT,8,EPS,proxy,no,0.29814871358376094
+n+1,Detached,PAINT,14,EPS,proxy,no,1.4907435679187993
+n+1,Detached,PAINT,15,EPS,proxy,no,0.5962974271675219
+n+1,Detached,PAINT,21,EPS,proxy,no,1.1925948543350438
+n+1,Detached,PAINT,22,EPS,proxy,no,0.8944461407512774
+n+1,Detached,PAINT,28,EPS,proxy,no,0.8944461407512774
+n+1,Detached,PAINT,29,EPS,proxy,no,1.1925948543350438
+n+1,Detached,PAINT,35,EPS,proxy,no,0.5962974271675181
+n+1,Detached,PAINT,36,EPS,proxy,no,1.490743567918803
+n+1,Detached,PAINT,42,EPS,proxy,no,0.2981487135837665
+n+1,Detached,PAINT,43,EPS,proxy,no,1.7888922815025547
+n+1,Detached,PLASTICS,25,EPS,proxy,no,8.147765774634294
+n+1,Detached,STEEL,16,Steel profile,direct,no,1.1794145225184256
+n+1,Detached,STEEL,17,Steel profile,direct,no,2.358829045036863
+n+1,Detached,STEEL,25,Steel profile,direct,no,20.09861209617506
+n+1,Detached,STEEL,33,Steel profile,direct,no,2.358829045036851
+n+1,Detached,STEEL,34,Steel profile,direct,no,1.1794145225184383
+n+1,Townhouses,GLASS,25,Glass,direct,no,0.7317804537767757
+n+1,Townhouses,OTHERS,25,Ceramic tile,direct,no,0.17365839909808342
+n+1,Townhouses,PAINT,7,EPS,proxy,no,1.94550785168851
+n+1,Townhouses,PAINT,8,EPS,proxy,no,0.3242513086147527
+n+1,Townhouses,PAINT,14,EPS,proxy,no,1.6212565430737576
+n+1,Townhouses,PAINT,15,EPS,proxy,no,0.6485026172295054
+n+1,Townhouses,PAINT,21,EPS,proxy,no,1.2970052344590108
+n+1,Townhouses,PAINT,22,EPS,proxy,no,0.972753925844252
+n+1,Townhouses,PAINT,28,EPS,proxy,no,0.972753925844252
+n+1,Townhouses,PAINT,29,EPS,proxy,no,1.2970052344590108
+n+1,Townhouses,PAINT,35,EPS,proxy,no,0.6485026172295014
+n+1,Townhouses,PAINT,36,EPS,proxy,no,1.6212565430737613
+n+1,Townhouses,PAINT,42,EPS,proxy,no,0.3242513086147587
+n+1,Townhouses,PAINT,43,EPS,proxy,no,1.945507851688504
+n+1,Townhouses,PLASTICS,25,EPS,proxy,no,7.19324549852273
+n+1,Townhouses,STEEL,12,EPS,proxy,no,0.20159923813458452
+n+1,Townhouses,STEEL,13,EPS,proxy,no,0.20159923813458452
+n+1,Townhouses,STEEL,25,EPS,proxy,no,0.40319847626916905
+n+1,Townhouses,STEEL,25,Steel profile,direct,no,2.6078410422650657
+n+1,Townhouses,STEEL,37,EPS,proxy,no,0.20159923813458452
+n+1,Townhouses,STEEL,38,EPS,proxy,no,0.20159923813458452
+n+1,Apartments,"ELEVATOR (assembled, steel-dominated)",16,HELD,held,no,6.085657897188373
+n+1,Apartments,"ELEVATOR (assembled, steel-dominated)",17,HELD,held,no,12.17131579437681
+n+1,Apartments,"ELEVATOR (assembled, steel-dominated)",33,HELD,held,no,12.171315794376746
+n+1,Apartments,"ELEVATOR (assembled, steel-dominated)",34,HELD,held,no,6.085657897188438
+n+1,Apartments,PAINT,7,EPS,proxy,no,1.9273224548611196
+n+1,Apartments,PAINT,8,EPS,proxy,no,0.32122040914352096
+n+1,Apartments,PAINT,14,EPS,proxy,no,1.6061020457175987
+n+1,Apartments,PAINT,15,EPS,proxy,no,0.6424408182870419
+n+1,Apartments,PAINT,21,EPS,proxy,no,1.2848816365740838
+n+1,Apartments,PAINT,22,EPS,proxy,no,0.9636612274305569
+n+1,Apartments,PAINT,28,EPS,proxy,no,0.9636612274305569
+n+1,Apartments,PAINT,29,EPS,proxy,no,1.2848816365740838
+n+1,Apartments,PAINT,35,EPS,proxy,no,0.6424408182870379
+n+1,Apartments,PAINT,36,EPS,proxy,no,1.606102045717603
+n+1,Apartments,PAINT,42,EPS,proxy,no,0.32122040914352695
+n+1,Apartments,PAINT,43,EPS,proxy,no,1.9273224548611139
+n+1,Apartments,PLASTICS,25,EPS,proxy,no,7.4441049869451295
+n+1,Apartments,STEEL,16,Steel profile,direct,no,2.43759176104237
+n+1,Apartments,STEEL,17,Steel profile,direct,no,4.875183522084765
+n+1,Apartments,STEEL,25,Steel profile,direct,no,2.8467090150533845
+n+1,Apartments,STEEL,33,Steel profile,direct,no,4.87518352208474
+n+1,Apartments,STEEL,34,Steel profile,direct,no,2.4375917610423956
+n,Detached,GLASS,50,Glass,direct,no,5.639550323890993
+n,Detached,OTHERS,50,Ceramic tile,direct,no,0.4444852347314585
+n,Detached,OTHERS,50,Glass,direct,no,0.0022838487258635782
+n,Detached,PAINT,8,EPS,proxy,no,1.3913606633908797
+n,Detached,PAINT,9,EPS,proxy,no,0.6956803316954416
+n,Detached,PAINT,16,EPS,proxy,no,0.6956803316954379
+n,Detached,PAINT,17,EPS,proxy,no,1.3913606633908833
+n,Detached,PAINT,25,EPS,proxy,no,2.087040995086321
+n,Detached,PAINT,33,EPS,proxy,no,1.3913606633908757
+n,Detached,PAINT,34,EPS,proxy,no,0.6956803316954453
+n,Detached,PAINT,41,EPS,proxy,no,0.6956803316954453
+n,Detached,PAINT,42,EPS,proxy,no,1.3913606633908757
+n,Detached,PAINT,50,EPS,proxy,no,2.087040995086321
+n,Detached,PLASTICS,50,EPS,proxy,no,8.147765774634294
+n,Detached,STEEL,25,Steel profile,direct,no,3.5382435675552895
+n,Detached,STEEL,50,Steel profile,direct,no,23.63685566373035
+n,Townhouses,GLASS,50,Glass,direct,no,0.7317804537767757
+n,Townhouses,OTHERS,50,Ceramic tile,direct,no,0.17365839909808342
+n,Townhouses,PAINT,8,EPS,proxy,no,1.5131727735355072
+n,Townhouses,PAINT,9,EPS,proxy,no,0.7565863867677556
+n,Townhouses,PAINT,16,EPS,proxy,no,0.7565863867677516
+n,Townhouses,PAINT,17,EPS,proxy,no,1.5131727735355112
+n,Townhouses,PAINT,25,EPS,proxy,no,2.2697591603032627
+n,Townhouses,PAINT,33,EPS,proxy,no,1.5131727735355032
+n,Townhouses,PAINT,34,EPS,proxy,no,0.7565863867677596
+n,Townhouses,PAINT,41,EPS,proxy,no,0.7565863867677596
+n,Townhouses,PAINT,42,EPS,proxy,no,1.5131727735355032
+n,Townhouses,PAINT,50,EPS,proxy,no,2.2697591603032627
+n,Townhouses,PLASTICS,50,EPS,proxy,no,7.19324549852273
+n,Townhouses,STEEL,16,EPS,proxy,no,0.13439949208972254
+n,Townhouses,STEEL,17,EPS,proxy,no,0.26879898417944653
+n,Townhouses,STEEL,33,EPS,proxy,no,0.2687989841794451
+n,Townhouses,STEEL,34,EPS,proxy,no,0.134399492089724
+n,Townhouses,STEEL,50,EPS,proxy,no,0.40319847626916905
+n,Townhouses,STEEL,50,Steel profile,direct,no,2.6078410422650657
+n,Apartments,"ELEVATOR (assembled, steel-dominated)",25,HELD,held,no,18.256973691565182
+n,Apartments,"ELEVATOR (assembled, steel-dominated)",50,HELD,held,no,18.256973691565182
+n,Apartments,PAINT,8,EPS,proxy,no,1.4990285760030924
+n,Apartments,PAINT,9,EPS,proxy,no,0.7495142880015482
+n,Apartments,PAINT,16,EPS,proxy,no,0.7495142880015442
+n,Apartments,PAINT,17,EPS,proxy,no,1.4990285760030964
+n,Apartments,PAINT,25,EPS,proxy,no,2.2485428640046408
+n,Apartments,PAINT,33,EPS,proxy,no,1.4990285760030884
+n,Apartments,PAINT,34,EPS,proxy,no,0.7495142880015522
+n,Apartments,PAINT,41,EPS,proxy,no,0.7495142880015522
+n,Apartments,PAINT,42,EPS,proxy,no,1.4990285760030884
+n,Apartments,PAINT,50,EPS,proxy,no,2.2485428640046408
+n,Apartments,PLASTICS,50,EPS,proxy,no,7.4441049869451295
+n,Apartments,STEEL,25,Steel profile,direct,no,7.312775283127134
+n,Apartments,STEEL,50,Steel profile,direct,no,10.15948429818052

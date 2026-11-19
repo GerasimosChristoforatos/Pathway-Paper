@@ -5,12 +5,13 @@
       "lever": "L2",
       "pair": "ambitious>=tl",
       "years": [
+        2029,
         2030,
         2031,
         2032,
         2033
       ],
-      "max_kt": 182.76328409554208
+      "max_kt": 240.87390164636648
     },
     {
       "lever": "L3",
@@ -125,7 +126,7 @@
       "lever": "L2",
       "pair": "ambitious>=tl",
       "carbon_a_kt": 24043.40590790326,
-      "carbon_b_kt": 20413.80495867064,
+      "carbon_b_kt": 21622.163864933234,
       "ok": true
     },
     {
@@ -209,7 +210,7 @@
       "lever": "L6",
       "pair": "ambitious>=tl",
       "carbon_a_kt": 23757.774771211814,
-      "carbon_b_kt": 22341.513806655003,
+      "carbon_b_kt": 23032.372813755886,
       "ok": true
     },
     {
@@ -258,21 +259,21 @@
       "lever": "L9",
       "pair": "reference>=moderate",
       "carbon_a_kt": 25502.820795312804,
-      "carbon_b_kt": 24689.40177769346,
+      "carbon_b_kt": 25081.949621062286,
       "ok": true
     },
     {
       "lever": "L9",
       "pair": "moderate>=ambitious",
-      "carbon_a_kt": 24689.40177769346,
-      "carbon_b_kt": 23875.982760074123,
+      "carbon_a_kt": 25081.949621062286,
+      "carbon_b_kt": 24661.078446811767,
       "ok": true
     },
     {
       "lever": "L9",
       "pair": "ambitious>=tl",
-      "carbon_a_kt": 23875.982760074123,
-      "carbon_b_kt": 22557.357373710405,
+      "carbon_a_kt": 24661.078446811767,
+      "carbon_b_kt": 23801.56175007693,
       "ok": true
     },
     {
@@ -293,7 +294,7 @@
       "lever": "L10",
       "pair": "ambitious>=tl",
       "carbon_a_kt": 24548.57904451283,
-      "carbon_b_kt": 24548.57904451283,
+      "carbon_b_kt": 21712.817396327893,
       "ok": true
     }
   ]

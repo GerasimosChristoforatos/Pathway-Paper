@@ -41,11 +41,11 @@ Manuscript numbering (the repository keeps its ids):
 
 ### Fig4_pathways
 
-**Fig4 The Pathways: the sequential waterfalls** — Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 order: (a) L1 ... L10 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) TL1 ... TL10 cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; AR (solid) and AtP (dotted) budgets with their zones; order-free Shapley values in Fig6.
+**Fig4 The Pathways: the sequential waterfalls** — Sequential waterfalls of cumulative carbon 2026-2050 from the Reference, levers added in PAS 2080 order: (a) L1 ... L10 at Moderate -> Moderate Pathway; (b) at Ambitious -> Ambitious Pathway; (c) L1 at TL ... L10 at TL cumulative -> Theoretical Limit. Each step is one bar coloured by strategy with its net change; AR (solid) and AtP (dotted) budgets with their zones; order-free Shapley values in Fig6.
 
 - Files: `paper_main/Fig4_pathways.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/waterfall.csv`, `data/pathways/waterfall_tl_from_reference.csv`
-- This run: Cumulative LoE AR: REF 5.76, pathway-moderate 3.82, pathway-ambitious 2.49, TL 0.90. (a-c) Reference 25,503 kt -> Moderate Pathway 16,913 kt, Ambitious Pathway 11,034 kt, Theoretical Limit 3,978 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig6. Net-positive steps: none.
+- This run: Cumulative LoE AR: REF 5.76, pathway-moderate 3.89, pathway-ambitious 2.59, TL 0.94. (a-c) Reference 25,503 kt -> Moderate Pathway 17,209 kt, Ambitious Pathway 11,471 kt, Theoretical Limit 4,171 kt; budgets AR 4,427 kt, AtP 1,113 kt. Steps in PAS 2080 order; each step is credited with what remains after the higher-priority measures; order-free Shapley values in Fig6. Net-positive steps: none.
 
 ### Fig5_solution_space
 
@@ -61,7 +61,7 @@ Manuscript numbering (the repository keeps its ids):
 
 - Files: `paper_main/Fig6_shapley_levers.png`
 - Data: `data/pathways/shapley.csv`
-- This run: (a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 1,024 subsets per game); the TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): moderate 8,589 kt, ambitious 14,469 kt, tl 21,525 kt.
+- This run: (a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 1,024 subsets per game); the TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): moderate 8,294 kt, ambitious 14,032 kt, tl 21,331 kt.
 
 ### Fig7_uncertainty
 
@@ -69,7 +69,7 @@ Manuscript numbering (the repository keeps its ids):
 
 - Files: `paper_main/Fig7_uncertainty.png`
 - Data: `data/sensitivity/tornado.csv`, `data/sensitivity/planetary_boundary.csv`, `data/pathways/montecarlo_draws.csv`, `data/pathways/annual.csv`, `data/pathways/montecarlo_conditional_tl.json`, `data/baseline/scenarios.json`, `data/aesa/results.json`
-- This run: (b) Below about 6.2 M (every draw below 6.03 M; 434 draws in all) the Theoretical Limit LoE AR flattens at about 0.6 (median 0.61, range 0.58–0.65): the dwellings released by TL1 (household merging) and TL2 (zero vacancy) plus the starting surplus cover all positive need after the pipeline, so TL builds no new dwellings after 2027 and its carbon is that of the observed 2026–27 pipeline (9.48 Mm²), which does not fall with population (correlation −0.02 over these draws; a year with negative need builds nothing and nothing is demolished). (a) Reference LoE AR 5.761; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. Rows in Extended Data Fig. 4 only: Completion rate (0.93–0.96); No 2026 data (consents to Dec 2025). The carbon-factor rows (Carbon factors (jackknife), LoE AR 5.734–5.771 against carbon −3.4% / +3.2%) are not shown: their LoE range falls below the row filter (the range of the completion-rate row) because the AR base co-varies with the factors, so the AR budget moves with the carbon. (b) P(TL within AR) = 0.685 (Wilson 0.672-0.698; n = 5,000); P(LoE AR <= 1) on the same paired draws: Reference 0.0000 (Wilson 0.0000-0.0008), Moderate Pathway 0.0000 (Wilson 0.0000-0.0008), Ambitious Pathway 0.0000 (Wilson 0.0000-0.0008), Theoretical Limit 0.6852 (Wilson 0.6722-0.6979); threshold 6.750 M (95% CI 6.748-6.753 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
+- This run: (b) Below about 6.2 M (every draw below 6.03 M; 257 draws in all) the Theoretical Limit LoE AR flattens at about 0.6 (median 0.60, range 0.58–0.64): the dwellings released by L1 at TL (household merging) and L2 at TL (the vacancy fall to 1.31%) plus the starting surplus cover all positive need after the pipeline, so TL builds no new dwellings after 2027 and its carbon is that of the observed 2026–27 pipeline (9.48 Mm²), which does not fall with population (correlation 0.01 over these draws; a year with negative need builds nothing and nothing is demolished). (a) Reference LoE AR 5.761; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. Rows in Extended Data Fig. 4 only: Completion rate (0.93–0.96); No 2026 data (consents to Dec 2025). The carbon-factor rows (Carbon factors (jackknife), LoE AR 5.734–5.771 against carbon −3.4% / +3.2%) are not shown: their LoE range falls below the row filter (the range of the completion-rate row) because the AR base co-varies with the factors, so the AR budget moves with the carbon. (b) P(TL within AR) = 0.611 (Wilson 0.598-0.625; n = 5,000); P(LoE AR <= 1) on the same paired draws: Reference 0.0000 (Wilson 0.0000-0.0008), Moderate Pathway 0.0000 (Wilson 0.0000-0.0008), Ambitious Pathway 0.0000 (Wilson 0.0000-0.0008), Theoretical Limit 0.6114 (Wilson 0.5978-0.6248); threshold 6.694 M (95% CI 6.692-6.697 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
 ## Extended Data (paper_extended/)
 
@@ -87,7 +87,7 @@ Manuscript numbering (the repository keeps its ids):
 
 - Files: `paper_extended/ED2_household_formation_size.png`
 - Data: `data/baseline/household_formation_history.csv`, `data/figure_source/D03_household_size.json`, `data/figure_source/D04_household_formation.json`, `data/pathways/levers.json`, `data/pathways/annual.csv`
-- This run: (b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious path and Extended Data Fig. 4 row 1 (2025-2050, 2.59 in 2050; the pathways phase it in by 2035); Theoretical Limit (TL1) is the household size of the TL run, rising at the rate limit from the Reference in 2026 to 2.79 (the 1991 level) at mid-2037 (the Methods' 2037.5), held from 2038.
+- This run: (b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious path and Extended Data Fig. 4 row 1 (2025-2050, 2.59 in 2050; the pathways phase it in by 2035); Theoretical Limit (L1 at TL) is the household size of the TL run, rising at the rate limit from the Reference in 2026 to 2.79 (the 1991 level) at mid-2037 (the Methods' 2037.5), held from 2038.
 
 ### ED3_replacement_variants
 
@@ -134,7 +134,7 @@ Manuscript numbering (the repository keeps its ids):
 
 - Files: `paper_extended/ED8_rollout_timing.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
-- This run: (c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 16,274, Moderate Pathway 16,913, Moderate Pathway, full roll-out by 2045 (sensitivity) 18,231, Ambitious Pathway, full roll-out by 2030 (sensitivity) 10,040, Ambitious Pathway 11,034, Ambitious Pathway, full roll-out by 2045 (sensitivity) 13,163; Reference 25,503.
+- This run: (c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 16,531, Moderate Pathway 17,209, Moderate Pathway, full roll-out by 2045 (sensitivity) 18,608, Ambitious Pathway, full roll-out by 2030 (sensitivity) 10,432, Ambitious Pathway 11,471, Ambitious Pathway, full roll-out by 2045 (sensitivity) 13,708; Reference 25,503.
 
 ### ED9_stock_vacancy
 
@@ -255,7 +255,7 @@ Manuscript numbering (the repository keeps its ids):
 
 - Files: `supplementary/montecarlo/SF13_pathway_mc.png`
 - Data: `data/pathways/montecarlo_annual.csv`, `data/pathways/montecarlo_summary.csv`
-- This run: P(cumulative LoE of AR <= 1): Reference 0.000, Moderate Pathway 0.000, Ambitious Pathway 0.000, Theoretical Limit 0.685, TL, all limits from 1 January 2027 (instant) 0.996, Theoretical Limit, TL1 age-standardised (sensitivity) 0.002.
+- This run: P(cumulative LoE of AR <= 1): Reference 0.000, Moderate Pathway 0.000, Ambitious Pathway 0.000, Theoretical Limit 0.611, TL, all limits from 1 January 2027 (instant) 0.986, Theoretical Limit, L1 at TL age-standardised (sensitivity) 0.000.
 
 ### SF14_conditional_tl
 
@@ -263,7 +263,7 @@ Manuscript numbering (the repository keeps its ids):
 
 - Files: `supplementary/montecarlo/SF14_conditional_tl.png`
 - Data: `data/pathways/montecarlo_conditional_tl.csv`, `data/pathways/montecarlo_conditional_tl.json`, `data/pathways/theoretical_limit.json`, `data/pathways/montecarlo_summary.csv`, `data/pathways/levers.json`
-- This run: P(within AR) = 0.685 (Wilson 0.672-0.698); (b) threshold 6.75 M (95% CI 6.75-6.75 M; Firth penalised likelihood (MLE does not exist), 2000 resamples). TL1 holds household size at 2.79 (1991, the highest observed) regardless of age structure: with the 2050 population this requires about 11.7% fewer households per person than in 2023 at every age. With an age-standardised TL1 (the lower of the 2023 and Stats NZ Medium B living-arrangement rates by age group; never below L1 Ambitious, which binds from 2040) TL is 5,755 kt, LoE AR 1.30, P(LoE AR ≤ 1) = 0.2% over the draws (the sensitivity row TL-TL1-age-standardised).
+- This run: P(within AR) = 0.611 (Wilson 0.598-0.625); (b) threshold 6.69 M (95% CI 6.69-6.70 M; Firth penalised likelihood (MLE does not exist), 2000 resamples). L1 at TL holds household size at 2.79 (1991, the highest observed) regardless of age structure: with the 2050 population this requires about 11.7% fewer households per person than in 2023 at every age. With an age-standardised L1 at TL (the lower of the 2023 and Stats NZ Medium B living-arrangement rates by age group; never below L1 Ambitious, which binds from 2040) TL is 5,951 kt, LoE AR 1.34, P(LoE AR ≤ 1) = 0.0% over the draws (the sensitivity row: L1 at TL age-standardised).
 
 ### SF15_tl_dwellings
 

@@ -14,14 +14,16 @@ ONE RUN (run()): every run, the Reference included, follows the same order per y
   3. the 2026 overbuild: the market excess of the REFERENCE (computed once, held fixed in every run) is absorbed
      along the Reference's logistic weights, the payback capped at max(gross_t, 0) with the shortfall carried
      (engine.absorb_overbuild);
-  4. re-occupation (TL-family runs only: TL, the TL waterfall steps, every TL Shapley subset): the pool
+  4. re-occupation (only in runs that release dwellings, releases_dwellings(levels): TL1 or TL2 at TL, in any single-
+     lever run, Shapley subset, waterfall step or the full TL; MODEL v4.9.0): the pool
      R = R1 (TL1, household decline: -min(d households, 0) / (1 - v)) + R2 (TL2, zero vacancy) + the positive
      overbuild (the pipeline years and the fading gap) + the starting surplus meets a constant share of each year's
      need after the payback over first..2050, first = observed_end + 1 (2028 with the 17-month lag; the releases of
      the observed years enter the pool in `first`) (reoccupation()); a negative excess is still made good along the
      logistic and the re-occupied overbuild is booked in 'Overbuild absorbed'. Every other run (the Reference, the
      Moderate and Ambitious Pathways) has no pool: the starting surplus and the overbuild are absorbed along the
-     logistic (step 3) and a vacancy-rate fall is used in the year it occurs (use_in_year);
+     logistic (step 3) and a vacancy-rate fall is used in the year it occurs (use_in_year); so does a run with
+     other levers at TL (TL3-TL10), which releases no dwelling;
   5. engine.forward with the stock-adding join = excess - payback + TL2 release - re-occupied, so the stock identity
      holds and the released dwellings stay vacant until re-occupied.
 
@@ -70,6 +72,7 @@ import runprofile  # noqa: E402
 import validation  # noqa: E402
 
 RAMP_ADOPTED = LV.ADOPTION_ADOPTED
+releases_dwellings = LV.releases_dwellings      # the one predicate of the re-occupation pool accounting (MODEL v4.9.0)
 BF_A13 = EV.COMPONENTS[0]                        # 'A1-A3' (Building_factors.EVENT_COMPONENTS)
 OUT = layout.data('pathways')
 FILE_PB_ANNUAL = layout.data('aesa/annual.csv')
@@ -91,11 +94,11 @@ M6 = 1e6
 REOCCUPATION_YEARS = (2027, 2050)   # (default start, end): the default start applies only when no projection year is
                                     # observed; run() passes start = observed_end + 1 (2028 with the 17-month lag)
 FIRST_LEVER_YEAR = 2027             # no vacancy-rate fall before it (2026 observed; levers.OBSERVED_YEAR + 1)
-# TL surplus pooling: in a theoretical-limit-family run the Reference's overbuild surplus (the positive
+# TL surplus pooling: in a run that releases dwellings (releases_dwellings) the Reference's overbuild surplus (the positive
 #   market excess: the pipeline years and the fading gap) enters the re-occupation pool with the TL1 / TL2 releases
 #   (constant share of each year's positive need, availability constraint, carry-forward) instead of the logistic
 #   payback; the re-occupied overbuild stays in the band 'Overbuild absorbed'. A negative excess (an under-build) is
-#   made good along the Reference's logistic. Non-TL runs are unaffected.
+#   made good along the Reference's logistic. Runs that release no dwelling are unaffected.
 REOCCUPATION_TOL = 1e-9         # relative tolerance of the re-occupation identities
 T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a zero-building year
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
@@ -289,7 +292,8 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
 
     Release accounting (bands.py): the payback is taken on the GROSS need (the requirement with
     the dwellings released by a vacancy-rate fall added back); a negative gross year builds nothing and carries the
-    unusable dwellings forward (carry_negative). In a theoretical-limit-family run (any lever at 'tl') every release
+    unusable dwellings forward (carry_negative). In a run that releases dwellings (releases_dwellings: TL1 or TL2 at
+    'tl') every release
     present in the run, the vacancy-rate fall at any level and the household-size fall, enters the re-occupation pool
     (reoccupation(): constant share of each year's need, availability constraint, attribution in proportion to the
     release of each source). In any other run the vacancy release is used in the year it occurs, capped at the gross
@@ -310,7 +314,7 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     obs = (years >= WINDOW[0]) & (years <= obs_end)
     i_first = int(np.flatnonzero(late)[0])
     v = np.broadcast_to(np.asarray(E1['v'], float), (n,))
-    tl_family = bool(info['tl'])
+    tl_family = bool(info['releases'])               # releases_dwellings(levels): TL1 or TL2 at TL
     chg = np.asarray(E1['change'], float)
     if np.any(chg[years < FIRST_LEVER_YEAR] < 0.0):
         raise SystemExit(f'run: a vacancy-rate fall before {FIRST_LEVER_YEAR} (2026 is observed).')
@@ -1114,7 +1118,7 @@ def checks(res):
         rel_ = ro.get('released_pool', ro['released_tl1'] + ro['released_tl2'])   # as it enters the pool
         if (np.cumsum(ro['reoccupied']) > np.cumsum(rel_) + REOCCUPATION_TOL * max(ro['R'], 1.0)).any():
             stops.append(f'cumulative re-occupied > released: {lab}')
-        if not info['tl']:
+        if not info['releases']:
             v = implied_vacancy(E)[1:]
             if (v < LV.L2_VACANCY_FLOOR).any():
                 stops.append(f'implied vacancy below {LV.L2_VACANCY_FLOOR:.1%}: {lab}')
@@ -1176,12 +1180,13 @@ def _json(obj, name):
 
 
 def zero_building(res):
-    """The theoretical-limit-family runs (TL, its waterfall steps, every TL Shapley subset, the instant
+    """The runs that release dwellings (releases_dwellings: TL, its waterfall steps and TL Shapley subsets with TL1 or
+    TL2, the instant
     TL; every scenario) with a year 2026-2050 that builds no dwelling (all categories <= T_ZERO_TOL_DWELLINGS), and
     the minimum annual building over them."""
     bad, mins = [], []
     for k, R in res['cache'].items():
-        if not R['info']['tl']:
+        if not R['info']['releases']:
             continue
         b = np.asarray(engine.requirement(R['E']), float)[1:]
         mins.append(float(b.min()))

@@ -891,7 +891,8 @@ def inputs(base, p, levels, ramp_name=None):
     typ = list(base['typ'])
     w = ramp_named(years, ramp_name)
     hh, S = base['hh'], np.asarray(base['pop'], float) / np.asarray(base['hh'], float)
-    info = dict(w=w, l4_held=None, levels=dict(lv), tl=tuple(L for L in LEVERS if lv.get(L) == 'tl'))
+    info = dict(w=w, l4_held=None, levels=dict(lv), tl=tuple(L for L in LEVERS if lv.get(L) == 'tl'),
+                releases=releases_dwellings(levels))
     # L1 household size (the Reference S plus the gap to the propensity-B path, the draw's own gap in the pathway Monte
     # Carlo; TL1: the historical maximum)
     if 'L1' in lv:
@@ -970,8 +971,8 @@ def inputs(base, p, levels, ramp_name=None):
     if 'L6' in lv:
         fi['brownfield_share'] = np.full(len(years), float(native(p, 'L6', lv['L6'], years)))
         fi['brownfield_w'] = w
-    if info['tl']:
-        fi['clip_soil_share'] = True                  # zero-building years possible in TL-family runs
+    if releases_dwellings(levels):
+        fi['clip_soil_share'] = True                  # zero-building years possible in runs that release dwellings
     info.update(hh=hh, S=S, r6=r6, m10=m10, m10_2050=None if m10 is None else {t: float(v[-1]) for t, v in m10.items()},
                 a13=a13_path(base['a13_2025'], base['red13'], r6, w, m10),
                 a45=a45_path(base['a45_2025'], years, target45, w9), soil_path=soil_path)
@@ -1006,6 +1007,15 @@ TL_COMPONENTS = tuple(f'TL{k}' for k in range(1, 11))
 TL_NAMES = {k: N.TL[k] for k in TL_COMPONENTS}
 TL_LEVER = {f'TL{k}': f'L{k}' for k in range(1, 11)}
 TL_RELEASE_ITEMS = ('TL1', 'TL2')       # their released dwellings are re-occupied (pathways.reoccupation)
+
+
+def releases_dwellings(levels):
+    """True if and only if the run releases dwellings: TL1 or TL2 (TL_RELEASE_ITEMS) at 'tl' (MODEL v4.9.0). The one
+    predicate that chooses the re-occupation pool accounting (pathways.run), the zero-building soil clip and the
+    checks of release runs; a run that releases nothing (the Reference, the Pathways, any other lever at TL) absorbs
+    the starting surplus and the overbuild along the logistic to 2035. Until v4.8 any lever at 'tl' chose the pool,
+    which shifted the timing of building (+84.6 kt with an otherwise neutral TL item; lever_audit.md check 7)."""
+    return any(lam_of(levels[TL_LEVER[c]]) == 'tl' for c in TL_RELEASE_ITEMS if TL_LEVER[c] in levels)
 TL_INSTANT_LABEL = 'TL-from2027'
 TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at '
                  'Level 4 (the definitional zero or full, or the best single observation), adopted by 2035, combining '

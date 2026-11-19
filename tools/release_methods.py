@@ -14,6 +14,7 @@ sys.path.insert(0, ROOT)
 import engine  # noqa: E402
 import MonteCarlo as MC  # noqa: E402
 import layout  # noqa: E402
+import levers as LV  # noqa: E402
 import pathways as PW  # noqa: E402
 import projection  # noqa: E402
 
@@ -33,13 +34,13 @@ def tl1_age_standardised_lines(ref, tl):
     amb = _js('pathways/levers.json')['L1']['S']['ambitious']
     floored = [int(y) for y, v in a['level_by_year'].items() if float(v) < float(amb[str(y)])]
     floor_txt = (f'; below the L1 Ambitious path in {floored[0]}-{floored[-1]}, where the TL rule (never weaker than '
-                 f'Ambitious) holds TL1 at Ambitious (the age-standardised level itself in {int(min(a["level_by_year"], key=int))}-'
+                 f'Ambitious) holds L1 at TL at Ambitious (the age-standardised level itself in {int(min(a["level_by_year"], key=int))}-'
                  f'{floored[0] - 1})' if floored else '')
     mc = (f" In the pathway Monte Carlo (each draw's own household size and population variant) P(LoE AR <= 1) = "
           f"{100 * float(m['probability_LoE_at_most_1'].iloc[0]):.1f}% (TL: "
           f"{100 * float(s[(s['run'] == 'TL') & (s['quantity'] == 'LoE_AR')]['probability_LoE_at_most_1'].iloc[0]):.1f}%)."
           if len(m) else ' (deterministic only: the pathway Monte Carlo summary has no such row)')
-    return [f"TL1 age-standardised (deterministic sensitivity row): TL1 at the household size given by the lower of the "
+    return [f"L1 at TL age-standardised (deterministic sensitivity row): L1 at TL at the household size given by the lower of the "
             "2023 and Stats NZ Medium B living-arrangement (headship) rates by age group (0-14, 15-39, 40-64, 65+; "
             "POPPR_FHH_008 / POPPR_FHH_010), applied to the projected population (household_headship.py; the 2023 "
             "rates are the only observed ones by age in the repository, so the highest observed propensity of living "
@@ -152,8 +153,8 @@ def lines():
          'evidence applied nationally. The rolling-origin hindcast of the census dwelling-count identity is not worse '
          'at L = 17 than at L = 0 (outputs/data/baseline/completion_lag_hindcast.csv).', '',
          '### Theoretical limit: constraints at Level 4', '',
-         f"Level 4 is the definitional limit of each lever, reached along the common adoption window, except household "
-         f"size (TL1): its level ({lv['L1']['tl']:.4f}, the {lv['L1']['tl_year']} census maximum) is approached no "
+         f"Level 4 follows one rule ({LV.TL_RULE}) and is reached along the common adoption window, except household "
+         f"size (L1 at TL): its level ({lv['L1']['tl']:.4f}, the {lv['L1']['tl_year']} census maximum) is approached no "
          f"faster than the fastest change of household size observed between consecutive censuses 1991-2023 "
          f"({lv['L1']['tl_speed']['rate']:.5f} per year, {lv['L1']['tl_speed']['interval'][0]}-"
          f"{lv['L1']['tl_speed']['interval'][1]}; census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - "
@@ -162,7 +163,7 @@ def lines():
          'structure, partnering and housing costs; the speed limit keeps the theoretical limit within changes the New '
          'Zealand census record has shown. The instant-TL row keeps its definition (every level from 2027). In every '
          "theoretical-limit-family run the Reference's overbuild surplus (the positive market excess of the pipeline "
-         'years and of the fading gap) enters the re-occupation pool with the TL1 / TL2 releases (constant share of '
+         'years and of the fading gap) enters the re-occupation pool with the releases of L1 and L2 at TL (constant share of '
          "each year's positive need, availability constraint, carry-forward); the re-occupied overbuild is booked in "
          "'Overbuild absorbed'. Releases of an observed (pipeline) year enter the pool in the first unobserved year.", '',
          '### Household-size projection', '',

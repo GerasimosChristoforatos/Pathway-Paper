@@ -55,6 +55,9 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   emissions.)
 - Harrell, F. E., & Davis, C. E. (1982). A new distribution-free quantile estimator. *Biometrika*, 69(3), 635–640.
   (Sub-rule A: the q0.15 estimator.)
+- Hasselsteen, L., Damgaard, A., Otovic, A. P., Birgisdóttir, H., & Kanafani, K. (2025). Tracing resource flows and
+  reducing environmental impacts during construction: assessment framework for on-site waste efficiency. *Journal of
+  Cleaner Production*, 521, 146243. doi:10.1016/j.jclepro.2025.146243. (Waste as the main A5 contributor; L9.)
 - Heinze, G., & Schemper, M. (2002). A solution to the problem of separation in logistic regression. *Statistics in
   Medicine*, 21(16), 2409–2419. doi:10.1002/sim.1047. (The TL population threshold.)
 - Hjalsted, A. W., Laurent, A., Andersen, M. M., Olsen, K. H., Ryberg, M., & Hauschild, M. (2021). Sharing the safe
@@ -74,6 +77,9 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
 - Jones, J. A., Greenaway-McGrevy, R., & Crow, C. (2025). Using council valuation records to estimate Auckland's
   housing stock. *Policy Quarterly*, 21(1), 63–68. https://ojs.victoria.ac.nz/pq/article/view/9727 (p. 68 and
   footnote 12 quote the completion figures of Greenaway-McGrevy & Jones 2023: the completion rate and lag.)
+- Kanafani, K., Magnes, J., Lindhard, S. M., & Balouktsi, M. (2023). Carbon emissions during the building
+  construction phase: a comprehensive case study of construction sites in Denmark. *Sustainability*, 15(14), 10992.
+  doi:10.3390/su151410992. (Medians of 61 Danish sites: the A4-A5 split into transport, site energy and waste; L9.)
 - Kim, A., Mutel, C., & Hellweg, S. (2025). Global sensitivity analysis of correlated uncertainties in life cycle
   assessment. *Journal of Industrial Ecology*, 29(4), 1090–1104. doi:10.1111/jiec.70036. (The shared-parameter rule.)
 - Luo, M. R., Cui, G., & Li, C. (2006). Uniform colour spaces based on CIECAM02 colour appearance model. *Color
@@ -136,6 +142,9 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   (Emission-free site activities: machinery emission-free or on biogas from 1 January 2027; emission-free construction
   aimed for by 2030. It does not require total A4–A5 to reach zero; cited for L9 as a documented municipal requirement
   of zero construction-site emissions.)
+- City of Oslo Climate Agency (2025). Share of municipal construction site work carried out with zero-emission
+  machinery in 2024, about 85% (as specified by the author; the document behind this figure is to be confirmed against
+  the City of Oslo Climate Agency release). (L9 Ambitious.)
 - Climate Change Response Act 2002 (New Zealand), s 5Q (as amended 2025). Section 5Q (2050 target) was inserted by the
   Climate Change Response (Zero Carbon) Amendment Act 2019. https://legislation.govt.nz/act/public/2002/40/en/latest/
   (s 5Q(1)(a): net accounting emissions of greenhouse gases other than biogenic methane zero by 2050, the economy-wide
@@ -146,6 +155,10 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
 - Commission Delegated Regulation (EU) 2021/2139 of 4 June 2021 (Climate Delegated Act), Annex I, Section 7.7
   "Acquisition and ownership of buildings": top 15% of the national or regional building stock. *Official Journal of
   the European Union* L 442, 9.12.2021. (The q0.15 convention of sub-rule A.)
+- DCLG, Department for Communities and Local Government (2010). *Land use change statistics (England): provisional
+  estimates for 2009*. Statistical release, July 2010.
+  https://www.gov.uk/government/statistics/land-use-change-statistics-england-provisional-estimates-for-2009-published-july-2010
+  ("80% of dwellings (including conversions) were built on previously developed land, unchanged from 2008"; L6 at TL.)
 - DECC (2010). *2050 Pathways Analysis*. Department of Energy and Climate Change, London, July 2010.
   https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/68816/216-2050-pathways-analysis-report.pdf
   (Ambition levels 1–4.)
@@ -160,6 +173,17 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   Auckland*. Economic Policy Centre, University of Auckland, Working Paper No. 012.
   https://www.auckland.ac.nz/assets/business/012WP.pdf (Primary source of the 1.27–1.53 yr median completion time and
   the completion milestones: the completion lag and rate.)
+- IEA (2022). *Achieving Net Zero Heavy Industry Sectors in G7 Members*. International Energy Agency, Paris. (The
+  BAT reference values 850 kg CO2-eq/t cement and 2,945 kg CO2-eq/t crude steel, as cited in IEA 2022, Definitions,
+  p. 22-23, note 8; L10 at TL.)
+- IEA (2022). *Definitions for near-zero and low-emissions steel and cement, and underlying emissions measurement
+  methodologies: summary of emerging understandings*. International Energy Agency, Paris. CC BY 4.0.
+  https://iea.blob.core.windows.net/assets/0910c4ff-4008-48f5-a3ec-c52996ed694d/Definitionsfornear-zeroandlow-emissionssteelandcementandunderlyingemissionsmeasurementmethodologies.pdf
+  (p. 17: near-zero thresholds 125 kg CO2-eq/t cement at 100% clinker and 400 kg CO2-eq/t crude steel at 100% iron;
+  L10 at TL.)
+- IEA (n.d.). *Cement* (Tracking Clean Energy Progress; Net Zero Emissions by 2050 milestones).
+  https://www.iea.org/reports/cement-3 (the near-zero share of cement production 0 in 2022, 8% in 2030, 93% in 2050, as
+  specified by the author; the page could not be read from the build environment; L10 at TL.)
 - Kockat, J., Wallerand, A. S., Jankovic, I., & Wang, X. (2019). *Identification of levers and levels for the building
   stock*. EUCalc Deliverable D2.5 (updated July 2019), Horizon 2020 grant 730459.
   https://www.european-calculator.eu/wp-content/uploads/2020/04/EUCalc_D2.5_Lever-levels-buildings.pdf (Table 2:
@@ -169,6 +193,10 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   227078). DTU, Lyngby, 27 September 2013. (Table 4, pp. 10–11: midpoint climate change total 5.58E+01 Gt CO2-eq,
   reference year 2010, population 6.90E+09, 8.10E+03 kg CO2-eq per person; characterisation: IPCC AR4 GWPs, p. 9.
   This is I_glob = 5.58E13 kg CO2-eq; cross-check: the EF 3.0 factor, Andreasi Bassi et al. 2023, Table 10.)
+- OECD (2024). *Affordable Housing Database*, indicator HM1.1 Housing stock and construction, Figure HM1.1.2
+  (vacant dwellings and seasonal/holiday homes), workbook HM1-1-Housing-stock-and-construction.xlsx.
+  https://webfs.oecd.org/els-com/Affordable_Housing_Database/HM1-1-Housing-stock-and-construction.xlsx (panel B,
+  Switzerland 2022, 1.31%, cell P27; L2 at TL.)
 - Okabe, M., & Ito, K. (2008). Color Universal Design (CUD): how to make figures and presentations that are friendly
   to colorblind people. https://jfly.uni-koeln.de/color/ (The categorical palette.)
 - Smith, N. J., & van der Walt, S. *colorspacious* 1.1.2 (Python package). https://github.com/njsmith/colorspacious
@@ -193,6 +221,8 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   quarter consents). (Consistency check of the lag.)
 - Stats NZ. National accounts SNE022AA (GDP and final consumption expenditure, quarterly) and estimated resident
   population. (Sector share s_sec; population history.)
+- Swiss Federal Statistical Office (FSO). *Empty dwellings survey* (Leerwohnungszählung).
+  https://statistik.admin.ch/en/asset/18664834 (the Swiss source of the OECD value; L2 at TL.)
 - United Nations, Department of Economic and Social Affairs, Population Division (2024). *World Population Prospects
   2024: Summary of Results*. UN DESA/POP/2024/TR/NO. 9. https://population.un.org/wpp/ (World population; the WPP
   population-source sensitivity.)

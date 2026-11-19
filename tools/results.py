@@ -62,7 +62,7 @@ def readme_block(m):
          '| run | carbon 2026–2050 (kt CO₂e) | cumulative LoE of AR | cumulative LoE of AtP | P(LoE of AR ≤ 1), Monte Carlo |',
          '|---|---|---|---|---|']
     names = {'reference': 'Reference', 'moderate': 'Moderate Pathway', 'ambitious': 'Ambitious Pathway',
-             'tl': 'Theoretical Limit', 'tl_tl1_age_standardised': 'Theoretical Limit, TL1 age-standardised (sensitivity)'}
+             'tl': 'Theoretical Limit', 'tl_tl1_age_standardised': 'Theoretical Limit, L1 at TL age-standardised (sensitivity)'}
     for k, nm in names.items():
         if k in p:
             r = p[k]

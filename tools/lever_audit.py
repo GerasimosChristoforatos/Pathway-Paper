@@ -7,13 +7,15 @@ Reference, pathways.run):
   2. Moderate is exactly the midpoint of Reference and Ambitious in the native parameter, every year, every lever;
   3. the same level is the same parameter across pathways (Moderate / Ambitious Pathway = every lever at that level,
      TL = every lever at TL), and every lever follows the common adoption window except the stated exceptions (L9 and
-     L10 on their own paths; the TL1 speed limit);
+     L10 on its own path; L1 at TL under the speed limit);
   4. each lever alone is monotone in cumulative carbon 2026-2050: Reference >= Moderate >= Ambitious >= TL;
   5. no double counting: each lever changes only its own engine inputs and stage (L1-L5 floor area; L6, L7 soil;
      L8, L10 the A1-A3 term; L9 the A4-A5 term), checked on the inputs and on the stage totals;
-  6. levers.tl_strength (TL at least as strong as Ambitious), TL8 by year and TL10 included;
+  6. levers.tl_strength (TL at least as strong as Ambitious), L8 at TL by year and L10 at TL included;
   7. the re-occupation pool accounting applies if and only if the run releases dwellings (pathways.releases_dwellings:
-     TL1 or TL2 at TL): a dummy lever at TL whose TL parameter is its Reference value changes nothing (MODEL v4.9.0).
+     L1 or L2 at TL): a dummy lever at TL whose TL parameter is its Reference value changes nothing (MODEL v4.9.0);
+  8. the L8 ratios are unchanged at L10 Reference, Moderate and Ambitious (MODEL v4.10.0);
+  9. the L9 parts (transport, site energy, waste) sum to the A4-A5 total in every run (MODEL v4.10.0).
 
     python tools/lever_audit.py          (run_all.py runs it after pathways)
 """
@@ -42,7 +44,7 @@ OWN_INPUTS = {'L1': set(), 'L2': {'v'}, 'L3': {'rate_demol', 'rate_unc'}, 'L4': 
               'L8': {'intensity', 'intensity_upfront'}, 'L9': {'intensity', 'intensity_upfront'},
               'L10': {'intensity', 'intensity_upfront', 'events'}}
 FLOOR_AREA_LEVERS = ('L1', 'L2', 'L3', 'L4', 'L5')
-OWN_WINDOW = ('L9', 'L10')            # stated exceptions: own path, no logistic adoption weight
+OWN_WINDOW = ('L10',)                 # stated exception: own path, no logistic weight (v4.10.0: L9 on the common window)
 
 
 def flat(x):
@@ -175,7 +177,7 @@ def main():
         if not ok:
             fails.append(f'3 {k}: {LV.label(got)}')
     L += ['', 'Adoption window: each lever at Ambitious under the adopted window (by 2035) and under by 2045; a lever on '
-          'the common window changes with it, L9 and L10 (own paths) do not.', '',
+          'the common window changes with it, L10 (own path) does not.', '',
           '| lever | applied quantity differs between by 2035 and by 2045 | expected |', '|---|---|---|']
     for lv in LV.LEVERS:
         a = applied(lv, get({lv: 'ambitious'}), ctx['soil'], years)
@@ -185,7 +187,7 @@ def main():
         L.append(f"| {lv} | {'yes' if differs else 'no'} | {'yes' if exp else 'no (own path)'} |")
         if differs != exp:
             fails.append(f'3 {lv}: adoption window {"followed" if differs else "not followed"}')
-    L += ['', 'Stated exceptions: L9 and L10 follow their own paths (no logistic weight); TL1 under the speed limit '
+    L += ['', 'Stated exceptions: L10 follows its own path (no logistic weight); L1 at TL under the speed limit '
           '(levers.tl1_path); the instant TL sensitivity (full strength from 2027).']
 
     # ---- 4. each lever alone monotone in cumulative carbon ----
@@ -249,10 +251,10 @@ def main():
     R8 = get({'L8': 'ambitious', 'L10': 'ambitious'})
     r8 = {t: 1.0 - R8['info']['w'] * (1.0 - np.asarray(R8['info']['r6'][t], float)) for t in ctx['typ']}
     dev_mul = max(float(np.max(np.abs(np.asarray(R8['info']['a13'][t])
-                                      - r8[t] * R8['info']['m10'][t] * (ctx['a13_2025'][t] - np.asarray(ctx['red13'][t])))))
+                                      - r8[t] * R8['info']['q10'][t] * (ctx['a13_2025'][t] - np.asarray(ctx['red13'][t])))))
                   for t in ctx['typ'])
     if dev_mul > 1e-9:
-        fails.append(f'5 L8 x L10: A1-A3 is not r8 x m10 x the decarbonised path ({dev_mul:.2e})')
+        fails.append(f'5 L8 x L10: A1-A3 is not r8 x q10 x the decarbonised path ({dev_mul:.2e})')
     L += ['', 'Exact terms (max abs difference, kg/m2): ' + '; '.join(f'{lv} intensity change - {t} change {d:.1e}'
                                                                    for lv, t, d in exact)
           + f'; L10 event change - A1-A3 kernel x (m - 1) {dev_ev:.1e}; L8 + L10: A1-A3 - r8 x m10 x (A1-A3_2025 - '
@@ -264,20 +266,20 @@ def main():
     L += ['', '## 6. TL at least as strong as Ambitious (levers.tl_strength)', '', '| item | TL | Ambitious | ok |',
           '|---|---|---|---|']
     for r in p['tl_strength']:
-        L.append(f"| {r['item']} | {r['tl']} | {r['ambitious']} | {'yes' if r['ok'] else 'NO'} |")
+        L.append(f"| {N.at_tl(r['item'])} | {r['tl']} | {r['ambitious']} | {'yes' if r['ok'] else 'NO'} |")
         if not r['ok']:
-            fails.append(f"6 {r['item']}")
+            fails.append(f"6 {N.at_tl(r['item'])}")
     items = {r['item'] for r in p['tl_strength']}
     if items != set(LV.TL_COMPONENTS):
         fails.append(f'6 tl_strength covers {sorted(items)}')
 
     # ---- 7. the re-occupation pool only in runs that release dwellings ----
     L += ['', '## 7. The re-occupation pool accounting only in runs that release dwellings', '',
-          'pathways.releases_dwellings(levels) is true if and only if TL1 or TL2 is at TL; it alone chooses the pool '
+          'pathways.releases_dwellings(levels) is true if and only if L1 or L2 is at TL; it alone chooses the pool '
           '(pathways.run), the zero-building soil clip and the checks of release runs. A dummy lever at TL whose TL '
-          'parameter is its Reference value (L10 with m = 1) must reproduce the Reference run exactly.', '']
-    p0 = dict(p, L10=dict(p['L10'], tl={t: {y: 1.0 for y in v} for t, v in p['L10']['tl'].items()}))
-    Rn = PW.run(ctx, p0, {'L10': 'tl'})
+          'parameter is its Reference value (L7 at TL with the 2025 soil factor) must reproduce the Reference run exactly.', '']
+    p0 = dict(p, L7=dict(p['L7'], tl=dict(p['L7']['soil_factor_2025'])))   # L7 at TL = the 2025 soil factor
+    Rn = PW.run(ctx, p0, {'L7': 'tl'})
     d_carbon = float(np.max(np.abs(np.asarray(Rn['E']['carbon']) - np.asarray(R0['E']['carbon']))))
     d_gfa = float(np.max(np.abs(np.asarray(Rn['E']['gfa_t']) - np.asarray(R0['E']['gfa_t']))))
     ok7 = d_carbon == 0.0 and d_gfa == 0.0 and not Rn['info']['releases']
@@ -289,13 +291,53 @@ def main():
     cases7 = [(f'{x} alone at TL', {x: 'tl'}, x in ('L1', 'L2')) for x in LV.LEVERS]
     cases7 += [('Moderate Pathway', LV.pathway_levers(LV.PATHWAY, 'moderate'), False),
                ('Ambitious Pathway', LV.pathway_levers(LV.PATHWAY, 'ambitious'), False),
-               ('TL3-TL10 from the Moderate Pathway', LV.tl_levels(LV.TL_COMPONENTS[2:]), False),
+               ('L3-L10 at TL from the Moderate Pathway', LV.tl_levels(LV.TL_COMPONENTS[2:]), False),
                ('Theoretical Limit', LV.tl_levels(LV.TL_COMPONENTS), True)]
     for nm, lvls, exp in cases7:
         got = get(lvls)['info']['releases']
         L.append(f"| {nm} | {'yes' if got else 'no'} | {'yes' if exp else 'no'} |")
         if got != exp or PW.releases_dwellings(lvls) != exp:
             fails.append(f'7 {nm}: releases_dwellings {got}, expected {exp}')
+
+    # ---- 8. L8 ratios at the L10 levels ----
+    L += ['', '## 8. The L8 ratios at L10 Reference, Moderate and Ambitious', '',
+          'The case ratios x_i(y) recomputed on the case paths times the L10 archetype multiplier of each level; the '
+          'multiplier is uniform over the L8 sample (both typologies use the single-family archetype), so the ratios '
+          'must not change. At L10 at TL the class factors (near-zero cement and steel) change them by design '
+          '(levers.json L8 at_l10_tl).', '', '| L10 level | max abs change of r(y) | max abs change of a case ratio |',
+          '|---|---|---|']
+    fb = PW.load_factors_building()
+    red = LV.case_reductions(PW.validation.projection, fb, years)
+    base_y, _ = LV.case_paths(fb, red)
+    r_base = np.array([LV.hd_quantile(base_y[int(y)]['ratio'].values, LV.HD_Q) for y in years])
+    a13 = fb.set_index('id')['A1-A3']
+    typ_of = fb.set_index('id')['Typology']
+    for lv10 in ('reference', 'moderate', 'ambitious'):
+        m = LV.native(p, 'L10', lv10, years)
+        red_m = red.copy()
+        for i in red.index:
+            red_m.loc[i] = a13[i] - (a13[i] - red.loc[i].to_numpy()) * m[typ_of[i]]
+        lev_y, _ = LV.case_paths(fb, red_m)
+        r_lev = np.array([LV.hd_quantile(lev_y[int(y)]['ratio'].values, LV.HD_Q) for y in years])
+        d_r = float(np.max(np.abs(r_lev - r_base)))
+        d_x = max(float(np.max(np.abs(lev_y[int(y)]['ratio'].values - base_y[int(y)]['ratio'].values))) for y in years)
+        L.append(f'| {lv10} | {d_r:.1e} | {d_x:.1e} |')
+        if d_r > 1e-12 or d_x > 1e-12:
+            fails.append(f'8 L10 {lv10}: the L8 ratios change (r {d_r:.2e}, case {d_x:.2e})')
+
+    # ---- 9. the L9 parts sum to A4-A5 ----
+    dev9 = 0.0
+    for R_ in cache.values():
+        for t in ctx['typ']:
+            tot = sum(R_['info']['a45_parts'][t].values())
+            a = np.asarray(R_['info']['a45'][t], float)
+            dev9 = max(dev9, float(np.max(np.abs(tot - a) / np.maximum(np.abs(a), 1e-12))))
+    L += ['', '## 9. The L9 parts sum to the A4-A5 total in every run', '',
+          'Transport / site energy / waste shares ' + ', '.join(f'{v:.4f}' for v in LV.L9_SHARES.values())
+          + f' (Kanafani et al. 2023 medians, normalised); over the {len(cache)} runs of this audit the largest relative '
+          f'difference between the sum of the parts and the A4-A5 total is {dev9:.1e}.']
+    if dev9 > 1e-12:
+        fails.append(f'9 the L9 parts do not sum to A4-A5 ({dev9:.2e})')
 
     L += ['', '## Result', '', 'ALL CHECKS PASS.' if not fails else 'FAILED (STOP):', '']
     L += [f'- {f}' for f in fails]

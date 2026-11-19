@@ -596,7 +596,7 @@ def _net_waterfall_panel(ax, steps, end_lab, end_col):
     ax.plot([x[-2] + wd / 2, x[-1] - wd / 2], [tot[-1], tot[-1]], color=S.MUTED, lw=S.LW_THIN * 0.7, zorder=4)
     ax.bar(x[-1], tot[-1], width=wd, gid='band_segment', **S.fill(end_col))
     ax.text(x[-1], tot[-1] * 1.01 + 0.004 * tot[0], f'{tot[-1]:,.0f}', ha='center', va='bottom', fontsize=S.FONT_MIN)
-    labels = [N.SCENARIOS['REF']] + [sid for sid, _ in steps[1:]] + [end_lab.replace(' ', '\n', 1)]
+    labels = [N.SCENARIOS['REF']] + [N.at_tl(sid) for sid, _ in steps[1:]] + [end_lab.replace(' ', '\n', 1)]
     ax.set_xticks(x)
     ax.set_xticklabels(labels, fontsize=S.FONT_MIN, rotation=90)
     for t in ax.get_xticklabels():                                   # black type (the bars carry the strategy colour)
@@ -611,7 +611,7 @@ FIG4A_BUDGET_LABEL_X = 0.5        # Fig4a: x (axes fraction) of the budget label
 
 def fig4():
     """The three net waterfalls (a-c) from the Reference in PAS 2080 lever order to the Moderate Pathway,
-    the Ambitious Pathway and (TL1 ... TL10 cumulative) the Theoretical Limit (the pathway lines are in Fig3a)."""
+    the Ambitious Pathway and (L1 at TL ... L10 at TL cumulative) the Theoretical Limit (the pathway lines are in Fig3a)."""
     paths, bar_, batp = waterfall_paths()
     fig = plt.figure(figsize=S.figsize('double', 79))
     gs = fig.add_gridspec(1, 3, wspace=0.08)
@@ -1073,7 +1073,7 @@ def tl_floor_sentence(d):
     r = float(np.corrcoef(d['TL_carbon_kt'].to_numpy(float)[fl], pop[fl])[0, 1])
     return (f"(b) Below about {pop[fl].max():.1f} M (every draw below {pop[~fl].min():.2f} M; {fl.sum():,} draws in all) "
             f"the Theoretical Limit LoE AR flattens at about {np.median(v):.1f} (median {np.median(v):.2f}, range "
-            f"{v.min():.2f}–{v.max():.2f}): the dwellings released by TL1 (household merging) and TL2 (zero vacancy) "
+            f"{v.min():.2f}–{v.max():.2f}): the dwellings released by L1 at TL (household merging) and L2 at TL (the vacancy fall to 1.31%) "
             f"plus the starting surplus cover all positive need after the pipeline, so TL builds no new dwellings after "
             f"2027 and its carbon is that of the observed 2026–27 pipeline ({pipeline:.2f} Mm²), which does not fall "
             f"with population (correlation {P.minus(format(r, '.2f'))} over these draws; a year with negative need "

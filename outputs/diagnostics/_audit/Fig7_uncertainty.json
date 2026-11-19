@@ -19,7 +19,7 @@
  ],
  "texts": [
   " Reference 5.76",
-  " TL: P(within AR) = 50%\n at 6.75 M (95% CI 6.75\u20136.75)",
+  " TL: P(within AR) = 50%\n at 6.69 M (95% CI 6.69\u20136.70)",
   "$\\mathdefault{4.5}$",
   "$\\mathdefault{5.0}$",
   "$\\mathdefault{5.5}$",
@@ -68,11 +68,11 @@
   "Replacement half-life",
   "Single alternative case",
   "Soil order",
-  "Theoretical Limit: P(LoE of AR \u2264 1) = 68.5% (3,426 of 5,000)",
+  "Theoretical Limit: P(LoE of AR \u2264 1) = 61.1% (3,057 of 5,000)",
   "a)",
   "b)"
  ],
- "note": "(b) Below about 6.2 M (every draw below 6.03 M; 434 draws in all) the Theoretical Limit LoE AR flattens at about 0.6 (median 0.61, range 0.58\u20130.65): the dwellings released by TL1 (household merging) and TL2 (zero vacancy) plus the starting surplus cover all positive need after the pipeline, so TL builds no new dwellings after 2027 and its carbon is that of the observed 2026\u201327 pipeline (9.48 Mm\u00b2), which does not fall with population (correlation \u22120.02 over these draws; a year with negative need builds nothing and nothing is demolished). (a) Reference LoE AR 5.761; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. Rows in Extended Data Fig. 4 only: Completion rate (0.93\u20130.96); No 2026 data (consents to Dec 2025). The carbon-factor rows (Carbon factors (jackknife), LoE AR 5.734\u20135.771 against carbon \u22123.4% / +3.2%) are not shown: their LoE range falls below the row filter (the range of the completion-rate row) because the AR base co-varies with the factors, so the AR budget moves with the carbon. (b) P(TL within AR) = 0.685 (Wilson 0.672-0.698; n = 5,000); P(LoE AR <= 1) on the same paired draws: Reference 0.0000 (Wilson 0.0000-0.0008), Moderate Pathway 0.0000 (Wilson 0.0000-0.0008), Ambitious Pathway 0.0000 (Wilson 0.0000-0.0008), Theoretical Limit 0.6852 (Wilson 0.6722-0.6979); threshold 6.750 M (95% CI 6.748-6.753 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).",
+ "note": "(b) Below about 6.2 M (every draw below 6.03 M; 257 draws in all) the Theoretical Limit LoE AR flattens at about 0.6 (median 0.60, range 0.58\u20130.64): the dwellings released by L1 at TL (household merging) and L2 at TL (the vacancy fall to 1.31%) plus the starting surplus cover all positive need after the pipeline, so TL builds no new dwellings after 2027 and its carbon is that of the observed 2026\u201327 pipeline (9.48 Mm\u00b2), which does not fall with population (correlation 0.01 over these draws; a year with negative need builds nothing and nothing is demolished). (a) Reference LoE AR 5.761; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. Rows in Extended Data Fig. 4 only: Completion rate (0.93\u20130.96); No 2026 data (consents to Dec 2025). The carbon-factor rows (Carbon factors (jackknife), LoE AR 5.734\u20135.771 against carbon \u22123.4% / +3.2%) are not shown: their LoE range falls below the row filter (the range of the completion-rate row) because the AR base co-varies with the factors, so the AR budget moves with the carbon. (b) P(TL within AR) = 0.611 (Wilson 0.598-0.625; n = 5,000); P(LoE AR <= 1) on the same paired draws: Reference 0.0000 (Wilson 0.0000-0.0008), Moderate Pathway 0.0000 (Wilson 0.0000-0.0008), Ambitious Pathway 0.0000 (Wilson 0.0000-0.0008), Theoretical Limit 0.6114 (Wilson 0.5978-0.6248); threshold 6.694 M (95% CI 6.692-6.697 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": true,

@@ -166,6 +166,7 @@ def base_context(B, scenario, bounds):
             if not np.allclose(k13 + krest, np.asarray(fi['events'][t], float), rtol=1e-12, atol=1e-12):
                 raise SystemExit(f'pathways: {t}: the A1-A3 + other event kernels do not add up to the run\'s kernel.')
             events_a13[t] = k13
+    a13_class, events_a13_class, committed_class = l10_class_inputs(B, typ, fy, after, prof)
     return dict(
         scenario=scenario, B=B, years=fy, typ=typ, pop=pop, growth=growth, hh=hh,
         fwd_inputs=fi, size_ref=B['size_ref'], olf=B['OLF_USED'], v0=float(B['v_forward']),
@@ -178,7 +179,44 @@ def base_context(B, scenario, bounds):
         **observed_window(ji),
         join_reference=np.asarray(ji['join'], float), profile=prof, committed_factors=fac,
         c14=B['C14_SPLIT'], soil=B['SOIL_INTENSITY'],
-        events=fi['events'], events_a13=events_a13, b_ar=b_ar, b_atp=b_atp)
+        events=fi['events'], events_a13=events_a13, a13_class=a13_class, events_a13_class=events_a13_class,
+        committed_class=committed_class, b_ar=b_ar, b_atp=b_atp)
+
+
+def l10_class_inputs(B, typ, fy, after, prof):
+    """The item-class inputs of the L10 chain for the classes with a factor (levers.L10_TL_CLASSES; none: empty):
+    the pooled class A1-A3 path by typology on the projection's decarbonisation setting
+    (factors_a13_class_paths.csv; 'none': the 2025 values), the class A1-A3 event kernels and their committed
+    profiles and lower-bound factors (factors_events_a13_class.csv)."""
+    import Building_factors as BF
+    projection = validation.projection
+    classes = sorted(LV.L10_TL_CLASSES)
+    a13c = {t: {} for t in typ}
+    evc = {t: {} for t in typ}
+    comc = {}
+    if not classes:
+        return a13c, evc, comc
+    variant = BF.decarb_variant(projection.DECARB_MODE, projection.DECARB_ITEM_CASE)
+    d = pd.read_csv(BF.OUT_A13_CLASS)
+    d = d[d['Variant'] == (variant or 'horup_item')]
+    for t in typ:
+        for k in classes:
+            g = d[(d['Typology'] == t) & (d['Class'] == k)].set_index('Year')['A13_kgCO2e_per_m2']
+            v = g.reindex(fy).to_numpy(float) if variant else np.full(len(fy), float(g.loc[fy[0]]))
+            if np.isnan(v).any():
+                raise SystemExit(f'pathways: no A1-A3 class path for {t} / {k}.')
+            a13c[t][k] = v
+    e = pd.read_csv(BF.OUT_EVENTS_CLASS)
+    e = e[e['Timing'] == projection.EVENT_TIMING]
+    for t in typ:
+        for k in classes:
+            pc = e[(e['Typology'] == t) & (e['Class'] == k)].reset_index(drop=True).assign(
+                Component=BF.EVENT_COMPONENTS[0], Material=k)
+            f_in = EV.row_factors(pc, fy, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45)
+            evc[t][k] = EV.kernel(pc, fy, f_in) if len(pc) else np.zeros((len(fy), len(fy)))
+            comc[(t, k)] = (pc, EV.row_factors(pc, after, projection.DECARB_MODE, projection.DECARB_ITEM_CASE,
+                                               projection.DECARB_A45, hold='2050'))
+    return a13c, evc, comc
 
 
 # ============================================================
@@ -390,20 +428,25 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
                 scenario=ctx['scenario'])
 
 
-def committed(ctx, gfa_t, m10_2050=None):
+def committed(ctx, gfa_t, prod2050=None):
     """Committed after 2050 (kt): the 2026-2050 cohorts' later replacements and repaints (events.committed; upper:
     2025 factors, lower: 2050 factors held) and all their C1-C4 (events.c14_committed: the carbon-bearing classes held
     at 2025 in both bounds, the energy part at 2025 / at the generic path's 2050 value), with this run's floor area.
-    m10_2050 ({typology: m}, runs with L10): the lower bound's A1-A3 event factors x m10(2050) (the 2050 production
-    multiplier held, as the 2050 factors); the upper bound (2025 factors) and C1-C4 are not changed."""
+    prod2050 (runs with L10, levers.inputs info['prod2050']): the lower bound's A1-A3 event factors x the 2050
+    production chain held, m(2050) and, per class with a factor, m(2050) (c_k(2050) - 1) on that class's A1-A3 events
+    (the item-level chain, MODEL v4.10.0); the upper bound (2025 factors) and C1-C4 are not changed."""
     b = {'upper': 0.0, 'lower': 0.0}
     for k, t in enumerate(ctx['typ']):
         for key in b:
             fac = ctx['committed_factors'][(t, key)]
-            if key == 'lower' and m10_2050 is not None:
+            if key == 'lower' and prod2050 is not None:
                 fac = fac.copy()
-                fac[(ctx['profile'][t]['Component'] == BF_A13).to_numpy()] *= float(m10_2050[t])
+                fac[(ctx['profile'][t]['Component'] == BF_A13).to_numpy()] *= float(prod2050['m'][t])
             b[key] += EV.committed(gfa_t[k], ctx['years'], ctx['profile'][t], fac)
+            if key == 'lower' and prod2050 is not None:
+                for cl, c in prod2050['c'].items():   # class factors (exact zero when c = 1)
+                    pc, fc = ctx['committed_class'][(t, cl)]
+                    b[key] += float(prod2050['m'][t]) * (c - 1.0) * EV.committed(gfa_t[k], ctx['years'], pc, fc)
     sp = ctx['c14']
     c = {key: [EV.c14_committed(gfa_t[k][1:], sp['held'][t], sp['energy'][t], hold, sp['a45'])
                for k, t in enumerate(ctx['typ'])]
@@ -451,7 +494,7 @@ def metrics(ctx, R, label, setting):
     up = E['upfront'][f].sum()
     if not math.isclose(st['a13'][f].sum() + st['a45'][f].sum() + st['soil'][f].sum(), up, rel_tol=1e-12):
         raise SystemExit(f'{label}: A1-A3 + A4-A5 + soil does not equal upfront.')
-    com = committed(ctx, gfa_t, info.get('m10_2050'))
+    com = committed(ctx, gfa_t, info.get('prod2050'))
     v_impl = implied_vacancy(E)
     dwell = E['dwell_in_scope'][f]
     built_all = engine.requirement(E)[f]

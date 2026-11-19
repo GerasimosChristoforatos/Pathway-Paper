@@ -371,6 +371,42 @@ def l10_multiplier(years, stat='min', path=None):
     return {t: rel[(a, stat)] / rel[(a, 'avg')] for t, a in L10_ARCHETYPE.items()}
 
 
+# Item-level production chain (MODEL v4.10.0): for every case-study item i, A13_i(y) = A13_i,2025 x p_i(y) x q_i(y),
+# p_i the Horup S4 path of the item (unmapped items held), q_i the L10 multiplier at the run's level:
+# q_i = m_a(y) x c_k(y), m_a the archetype multiplier (uniform over a case's items: Horup et al. report the envelope by
+# archetype only) and c_k a factor of the item's class k (1 unless the class is in L10_TL_CLASSES and L10 is at TL).
+# Items aggregate to case studies (per m2) and typologies by the same pooling (Building_factors.pool). Pooling is
+# linear and m_a is uniform within a typology, so the typology A1-A3 is exactly m_a(y) x C_t(y) x the decarbonised
+# path, C_t(y) = 1 - sum_k P_tk(y) (1 - c_k(y)) / P_t(y) with P_tk the pooled class paths
+# (factors_a13_class_paths.csv); the same chain gives the A1-A3 component of the in-window events (class kernels)
+# and of the committed lower bound. With every c_k = 1 the correction terms are exact zeros (l10_chain).
+L10_TL_CLASSES = {}             # {item class: k} of the classes with a class factor at TL (set in MODEL v4.10.0 step B)
+
+
+def l10_class_factor(level, years):
+    """{item class: c_k(y)} at an L10 level: empty unless L10 is at TL and L10_TL_CLASSES is set."""
+    if level != 'tl' or not L10_TL_CLASSES:
+        return {}
+    raise NotImplementedError('L10 class factors: MODEL v4.10.0 step B')
+
+
+def l10_chain(base, m_eff, cls_eff, typ):
+    """The item-level chain aggregated per typology: q_t(y) = m_t(y) x C_t(y) (construction A1-A3) and, per class with
+    a factor, (m_t(y) (c_k(y) - 1)) the multiplier of its pooled path / event kernel. cls_eff {class: c_k(y)} (empty:
+    C_t = 1 exactly). Returns (q, corr): q {typology: array}; corr {typology: {class: array}}."""
+    q, corr = {}, {}
+    for t in typ:
+        m = np.asarray(m_eff[t], float)
+        if not cls_eff:
+            q[t], corr[t] = m, {}
+            continue
+        P = float(base['a13_2025'][t]) - np.asarray(base['red13'][t], float)
+        d = sum(np.asarray(base['a13_class'][t][k], float) * (1.0 - c) for k, c in cls_eff.items())
+        q[t] = m * (1.0 - d / P)
+        corr[t] = {k: m * (c - 1.0) for k, c in cls_eff.items()}
+    return q, corr
+
+
 def l10_weight(years):
     """L10 is applied without the logistic adoption weight (the scenario path is the timing, as L9): 1 after the
     observed year 2026, 0 up to it (m = 1 in 2025-2026)."""
@@ -936,17 +972,23 @@ def inputs(base, p, levels, ramp_name=None):
             fi[k] = l8_intensity(fi[k], base['a13_2025'], base['red13'], r6, w)
     # L10 production decarbonisation: the A1-A3 term after L8 x m(y) (no logistic weight: the scenario path is the
     # timing; m = 1 up to 2026), on construction and on the A1-A3 component of the in-window events
-    m10 = None
+    m10, q10, prod2050 = None, None, None
     if 'L10' in lv:
         w10 = l10_weight(years)
         m10 = {t: 1.0 - w10 * (1.0 - v) for t, v in native(p, 'L10', lv['L10'], years).items()}
+        cls_eff = {k: 1.0 - w10 * (1.0 - c) for k, c in l10_class_factor(lv['L10'], years).items()}
+        q10, corr = l10_chain(base, m10, cls_eff, typ)
         r8_eff = {t: 1.0 - w * (1.0 - np.asarray(r6[t], float)) for t in typ}
         for k in ('intensity', 'intensity_upfront'):
-            fi[k] = l10_intensity(fi[k], base['a13_2025'], base['red13'], r8_eff, m10)
+            fi[k] = l10_intensity(fi[k], base['a13_2025'], base['red13'], r8_eff, q10)
         if fi.get('events') is not None:
             if base.get('events_a13') is None:
                 raise SystemExit('L10: the context has no A1-A3 event kernel (events_a13).')
             fi['events'] = l10_events(fi['events'], base['events_a13'], m10)
+            for t in typ:                             # the class factors on the class kernels (exact zeros at c = 1)
+                for k, f in corr[t].items():
+                    fi['events'][t] = fi['events'][t] + np.asarray(base['events_a13_class'][t][k], float) * f[None, :]
+        prod2050 = dict(m={t: float(v[-1]) for t, v in m10.items()}, c={k: float(c[-1]) for k, c in cls_eff.items()})
     # L9 construction-stage carbon
     target45 = None
     w9 = w
@@ -973,8 +1015,8 @@ def inputs(base, p, levels, ramp_name=None):
         fi['brownfield_w'] = w
     if releases_dwellings(levels):
         fi['clip_soil_share'] = True                  # zero-building years possible in runs that release dwellings
-    info.update(hh=hh, S=S, r6=r6, m10=m10, m10_2050=None if m10 is None else {t: float(v[-1]) for t, v in m10.items()},
-                a13=a13_path(base['a13_2025'], base['red13'], r6, w, m10),
+    info.update(hh=hh, S=S, r6=r6, m10=m10, q10=q10, prod2050=prod2050,
+                a13=a13_path(base['a13_2025'], base['red13'], r6, w, q10),
                 a45=a45_path(base['a45_2025'], years, target45, w9), soil_path=soil_path)
     return fi, info
 

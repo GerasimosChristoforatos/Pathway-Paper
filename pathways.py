@@ -30,12 +30,12 @@ Moderate, Ambitious and TL; the PAS 2080 strategies S1 Avoid, S2 Switch, S3 Impr
 and the Moderate / Ambitious Pathway (every lever) at Moderate and Ambitious; TL (every lever at Level 4); the
 lambda-sweep of each lever; the Pathways adopted by 2030 / 2045; the instant TL (sensitivity row).
 ATTRIBUTION: exact Shapley values (rational arithmetic) over every subset: the three strategies (8 subsets) and the
-nine levers (512 subsets) at Moderate and Ambitious (Reference -> Moderate / Ambitious Pathway), the nine levers at
-TL from the Reference (512), and TL1-TL9 from the Moderate Pathway (512; the TL waterfall's game). Every run is cached
+ten levers (1,024 subsets) at Moderate and Ambitious (Reference -> Moderate / Ambitious Pathway), the ten levers at
+TL from the Reference (1,024), and TL1-TL10 from the Moderate Pathway (1,024; the TL waterfall's game). Every run is cached
 by its lever setting (levers.key) and reused across strategies, games and variants.
-WATERFALLS (sequential, PAS 2080 hierarchy order): (a) Reference -> +L1 ... +L9 at a setting (= the Moderate /
-Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL9 (= TL), by demand band, at Moderate and Ambitious; and
-Reference -> TL1 ... TL9 cumulative (waterfall_tl_from_reference). Fig4 draws the net waterfalls (a) and
+WATERFALLS (sequential, PAS 2080 hierarchy order): (a) Reference -> +L1 ... +L10 at a setting (= the Moderate /
+Ambitious Pathway), (b) that Pathway -> +TL1 ... +TL10 (= TL), by demand band, at Moderate and Ambitious; and
+Reference -> TL1 ... TL10 cumulative (waterfall_tl_from_reference). Fig4 draws the net waterfalls (a) and
 Reference -> TL; (b) is written as data only.
 Each step is credited with what remains after the higher-priority measures; sequential_vs_shapley.csv compares the
 steps with the order-free Shapley values. No timing step: TL is adopted on the same logistic as every level.
@@ -70,6 +70,7 @@ import runprofile  # noqa: E402
 import validation  # noqa: E402
 
 RAMP_ADOPTED = LV.ADOPTION_ADOPTED
+BF_A13 = EV.COMPONENTS[0]                        # 'A1-A3' (Building_factors.EVENT_COMPONENTS)
 OUT = layout.data('pathways')
 FILE_PB_ANNUAL = layout.data('aesa/annual.csv')
 FILE_PB_RESULTS = layout.data('aesa/results.json')
@@ -100,7 +101,7 @@ T_ZERO_TOL_DWELLINGS = 1e-6     # floating-point noise of dwellings built in a z
 T_ZERO_TOL_M2 = engine.SOIL_ZERO_TOL_M2
 SHAPLEY_METRICS = ('carbon_kt', 'LoE_AR', 'LoE_AtP')
 ORDER_RTOL = 1e-12
-TL_GAME = 'tl_from_moderate_pathway'            # TL1-TL9 from the Moderate Pathway (tl_from_p5_moderate)
+TL_GAME = 'tl_from_moderate_pathway'            # TL1-TL10 from the Moderate Pathway (tl_from_p5_moderate)
 TL_REOCCUPATION_FAST = 'TL-reoccupation-fast'   # A4 sensitivity row (reoccupation rule 'fast')
 TL_AGE_STANDARDISED = 'TL-TL1-age-standardised'   # TL with TL1 from age-specific living arrangements (sensitivity)
 
@@ -153,6 +154,15 @@ def base_context(B, scenario, bounds):
     fac = {(t, k): EV.row_factors(prof[t], after, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45,
                                   hold=hold)
            for t in typ for k, hold in (('upper', '2025'), ('lower', '2050'))}
+    events_a13 = None
+    if fi['events'] is not None:                      # the A1-A3 component of the in-window event kernel (L10)
+        events_a13 = {}
+        for t in typ:
+            f_t = EV.row_factors(prof[t], fy, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45)
+            k13, krest = EV.component_kernels(prof[t], fy, f_t, BF_A13)
+            if not np.allclose(k13 + krest, np.asarray(fi['events'][t], float), rtol=1e-12, atol=1e-12):
+                raise SystemExit(f'pathways: {t}: the A1-A3 + other event kernels do not add up to the run\'s kernel.')
+            events_a13[t] = k13
     return dict(
         scenario=scenario, B=B, years=fy, typ=typ, pop=pop, growth=growth, hh=hh,
         fwd_inputs=fi, size_ref=B['size_ref'], olf=B['OLF_USED'], v0=float(B['v_forward']),
@@ -165,7 +175,7 @@ def base_context(B, scenario, bounds):
         **observed_window(ji),
         join_reference=np.asarray(ji['join'], float), profile=prof, committed_factors=fac,
         c14=B['C14_SPLIT'], soil=B['SOIL_INTENSITY'],
-        events=fi['events'], b_ar=b_ar, b_atp=b_atp)
+        events=fi['events'], events_a13=events_a13, b_ar=b_ar, b_atp=b_atp)
 
 
 # ============================================================
@@ -376,14 +386,20 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
                 scenario=ctx['scenario'])
 
 
-def committed(ctx, gfa_t):
+def committed(ctx, gfa_t, m10_2050=None):
     """Committed after 2050 (kt): the 2026-2050 cohorts' later replacements and repaints (events.committed; upper:
     2025 factors, lower: 2050 factors held) and all their C1-C4 (events.c14_committed: the carbon-bearing classes held
-    at 2025 in both bounds, the energy part at 2025 / at the generic path's 2050 value), with this run's floor area."""
+    at 2025 in both bounds, the energy part at 2025 / at the generic path's 2050 value), with this run's floor area.
+    m10_2050 ({typology: m}, runs with L10): the lower bound's A1-A3 event factors x m10(2050) (the 2050 production
+    multiplier held, as the 2050 factors); the upper bound (2025 factors) and C1-C4 are not changed."""
     b = {'upper': 0.0, 'lower': 0.0}
     for k, t in enumerate(ctx['typ']):
         for key in b:
-            b[key] += EV.committed(gfa_t[k], ctx['years'], ctx['profile'][t], ctx['committed_factors'][(t, key)])
+            fac = ctx['committed_factors'][(t, key)]
+            if key == 'lower' and m10_2050 is not None:
+                fac = fac.copy()
+                fac[(ctx['profile'][t]['Component'] == BF_A13).to_numpy()] *= float(m10_2050[t])
+            b[key] += EV.committed(gfa_t[k], ctx['years'], ctx['profile'][t], fac)
     sp = ctx['c14']
     c = {key: [EV.c14_committed(gfa_t[k][1:], sp['held'][t], sp['energy'][t], hold, sp['a45'])
                for k, t in enumerate(ctx['typ'])]
@@ -431,7 +447,7 @@ def metrics(ctx, R, label, setting):
     up = E['upfront'][f].sum()
     if not math.isclose(st['a13'][f].sum() + st['a45'][f].sum() + st['soil'][f].sum(), up, rel_tol=1e-12):
         raise SystemExit(f'{label}: A1-A3 + A4-A5 + soil does not equal upfront.')
-    com = committed(ctx, gfa_t)
+    com = committed(ctx, gfa_t, info.get('m10_2050'))
     v_impl = implied_vacancy(E)
     dwell = E['dwell_in_scope'][f]
     built_all = engine.requirement(E)[f]
@@ -909,8 +925,8 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
 
 
 def waterfall(ctx, get, setting):
-    """The sequential path in PAS 2080 hierarchy order: (a) Reference -> +L1 -> ... -> +L9 at `setting`
-    (= the Moderate / Ambitious Pathway), (b) -> +TL1 ... +TL9 (= TL); every step a cached run, each step's change
+    """The sequential path in PAS 2080 hierarchy order: (a) Reference -> +L1 -> ... -> +L10 at `setting`
+    (= the Moderate / Ambitious Pathway), (b) -> +TL1 ... +TL10 (= TL); every step a cached run, each step's change
     split exactly into the in-scope demand bands; each step is credited with what remains after the higher-priority
     measures (order-dependent; the order-free values are the Shapley values)."""
     steps = [('REF', N.SCENARIOS['REF'], {})]
@@ -927,7 +943,7 @@ def waterfall(ctx, get, setting):
 
 
 def waterfall_tl_from_reference(ctx, get):
-    """The sequential path Reference -> +TL1 -> ... -> +TL9 (= TL), every limit added
+    """The sequential path Reference -> +TL1 -> ... -> +TL10 (= TL), every limit added
     cumulatively from the Reference in PAS 2080 order (the other levers off: levers.tl_levels(.., 'reference')); each
     step a cached run, split exactly into the in-scope demand bands as in waterfall(). The step runs are the prefix
     subsets of the levers_tl Shapley game."""
@@ -991,7 +1007,7 @@ def sequential_vs_shapley(wf, shap):
 def ordering(res):
     """Reference >= Moderate >= Ambitious >= TL per lever, typology and year, on each lever's native quantity as it
     enters the engine (single-lever runs): L4 dwelling size; L5 OLF; L1 households; L2 vacancy rate; L3 demolition
-    and residual rates; L8 A1-A3 per m2; L9 A4-A5 per m2; L7 soil factor; L6 soil-bearing share. Also reported (not a
+    and residual rates; L8 and L10 A1-A3 per m2; L9 A4-A5 per m2; L7 soil factor; L6 soil-bearing share. Also reported (not a
     STOP): the annual carbon of the single-lever runs by year, and asserted: their cumulative carbon."""
     ref = res['ctxs'][REFERENCE]
     get = res['get']
@@ -1012,7 +1028,7 @@ def ordering(res):
             return {'all': bt(fi['v'])}
         if L == 'L3':
             return {'demolition': bt(fi['rate_demol']), 'residual': bt(fi['rate_unc'])}
-        if L == 'L8':
+        if L in ('L8', 'L10'):
             return {t: bt(info['a13'][t]) for t in typ}
         if L == 'L9':
             return {t: bt(info['a45'][t]) for t in typ}

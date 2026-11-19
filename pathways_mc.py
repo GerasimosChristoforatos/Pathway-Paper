@@ -94,11 +94,32 @@ def bootstrap_factors(su):
         red = red + pd.DataFrame(np.outer(bf['A4-A5'].values, 1.0 - g), index=bf['id'], columns=list(fy))
     extras = dict(a13=pd.DataFrame({'a13': bf['A1-A3'].values}, index=bf['id']),
                   a45=pd.DataFrame({'a45': bf['A4-A5'].values}, index=bf['id']), red13=red13)
+    n = len(fy)
+    if su['tr']:                    # L10 (MODEL v4.9.0): the A1-A3 and the other components of each case's event kernel
+        ev = pd.read_csv(projection.BF.OUT_EVENTS_BLD)
+        ev = ev[ev['Timing'] == projection.EVENT_TIMING]
+        K13, KR = {}, {}
+        for i in bf['id']:
+            q = ev[ev['id'] == i].reset_index(drop=True)
+            if q.empty:
+                K13[i], KR[i] = np.zeros(n * n), np.zeros(n * n)
+                continue
+            f = projection.EV.row_factors(q, fy, projection.DECARB_MODE, projection.DECARB_ITEM_CASE,
+                                          projection.DECARB_A45)
+            k13_i, kr_i = projection.EV.component_kernels(q, fy, f, PW.BF_A13)
+            K13[i], KR[i] = k13_i.ravel(), kr_i.ravel()
+        extras.update(k13=pd.DataFrame.from_dict(K13, orient='index'), krest=pd.DataFrame.from_dict(KR, orient='index'))
     emb, upf, _, dec, ext = MC.carbon_bootstrap(bf, typ, red if su['decarb'] else None, extras)
     if not (np.array_equal(emb, su['boot_emb']) and np.array_equal(upf, su['boot_up'])
             and (not su['decarb'] or np.array_equal(dec, su['boot_red']))):
         raise SystemExit('pathways_mc: the carbon-factor bootstrap is not reproduced (seed or data changed).')
-    return ext['a13'][:, :, 0], ext['red13'], ext['a45'][:, :, 0]
+    k13 = None
+    if su['tr']:
+        k13 = ext['k13'].reshape(MC.N_BOOT, len(typ), n, n)
+        tot = k13 + ext['krest'].reshape(MC.N_BOOT, len(typ), n, n)
+        if not np.allclose(tot, su['boot_K'], rtol=1e-10, atol=1e-12):
+            raise SystemExit('pathways_mc: the A1-A3 + other event kernels do not reproduce the bootstrap kernels.')
+    return ext['a13'][:, :, 0], ext['red13'], ext['a45'][:, :, 0], k13
 
 
 def write_carbon_factors(su, a13):
@@ -114,7 +135,7 @@ def write_carbon_factors(su, a13):
     pd.DataFrame(rows).to_csv(layout.writing(layout.data('montecarlo/carbon_factors_REF.csv')), index=False)
 
 
-def draw_context(ctx, su, d, a13, red13, a45):
+def draw_context(ctx, su, d, a13, red13, a45, k13=None):
     """The pathway context of one draw: the deterministic Reference context with the draw's inputs."""
     typ = su['typ']
     fi = dict(d['fwd_inputs'])
@@ -130,6 +151,8 @@ def draw_context(ctx, su, d, a13, red13, a45):
         c.update(a13_2025={t: float(a13[d['kc'], j]) for j, t in enumerate(typ)},
                  red13={t: np.asarray(red13[d['kc'], j], float) for j, t in enumerate(typ)},
                  a45_2025={t: float(a45[d['kc'], j]) for j, t in enumerate(typ)})
+        if k13 is not None:                          # the draw's A1-A3 event kernel (L10)
+            c.update(events_a13={t: k13[d['kc'], j] for j, t in enumerate(typ)})
     return c
 
 
@@ -400,7 +423,7 @@ def main():
     with contextlib.redirect_stdout(io.StringIO()):
         su = MC.build_setup(settings)
     central = check_central(su, ctx, params, det)
-    a13, red13, a45 = bootstrap_factors(su)
+    a13, red13, a45, k13 = bootstrap_factors(su)
     write_carbon_factors(su, a13)
     oc = MC.project(su, MC.central(su), full=True)
     gfa_c = np.asarray(oc['gfa_t'], float)
@@ -430,7 +453,7 @@ def main():
     for j in range(n):
         o = MC.project(su, dict(zip(MC.PARAMS, X[j])), full=True)
         com = PW.committed(ctx, np.asarray(o['gfa_t'], float))      # central repair / end-of-life factors
-        cd = draw_context(ctx, su, o['draw'], a13, red13, a45)
+        cd = draw_context(ctx, su, o['draw'], a13, red13, a45, k13)
         params_d, gap = draw_params(params, cd, o['draw'])
         runs = runs_for_draw(cd, params_d, tl_age_level(cd, X[j, iz], ratios))
         S_d = np.asarray(cd['pop'], float) / np.asarray(cd['hh'], float)
@@ -460,7 +483,8 @@ def main():
                    TL1_draw_max_binds=bool(np.any((S_d + gap)[late] > params['L1']['tl'])),
                    overbuild_cap_binding_years=int(runs[MP]['info']['payback_cap_binds'].sum()),
                    **{f'REF_{c}': float(com[k]) for k, c in COMMITTED_COLUMNS.items()},
-                   **{f'{r}_{c}': float(PW.committed(ctx, np.asarray(runs[r]['E']['gfa_t'], float))[k])
+                   **{f'{r}_{c}': float(PW.committed(ctx, np.asarray(runs[r]['E']['gfa_t'], float),
+                                                     runs[r]['info'].get('m10_2050'))[k])
                       for r in COMMITTED_RUNS for k, c in (('lower_kt', 'committed_lower_kt'),
                                                            ('upper_kt', 'committed_upper_kt'))},
                    **reo)

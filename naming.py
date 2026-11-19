@@ -3,7 +3,7 @@
 * The vocabulary (SCENARIOS, STRATEGIES, SETTINGS, LEVERS, TL, ADOPTION, BANDS,
   COMPONENTS, METRICS) is the only source of reader-facing labels: figures, tables, data
   files and generated documents take their labels from here. Internal code uses the short
-  IDs (REF, LOW, HIGH, VHIGH; S1-S3; pathway-moderate / pathway-ambitious; L1-L9; TL, TL1-TL9; band and
+  IDs (REF, LOW, HIGH, VHIGH; S1-S3; pathway-moderate / pathway-ambitious; L1-L10; TL, TL1-TL10; band and
   component ids).
 * identifier() gives every CSV column and JSON key its release name (columns(), keys()).
 """
@@ -38,15 +38,16 @@ SCENARIO_DEFINITIONS = {
 SCENARIO_LEGACY = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH', 'S3-5': 'REF_HL5', 'S3-15': 'REF_HL15',
                    'S1-noUC': 'LOW_NOUC', 'S3-10-noUC': 'REF_NOUC', 'S2-noUC': 'HIGH_NOUC'}
 
-# nine rule-based levers grouped by the PAS 2080:2023 carbon reduction hierarchy (BSI 2023, Clause 4.3,
+# ten rule-based levers grouped by the PAS 2080:2023 carbon reduction hierarchy (BSI 2023, Clause 4.3,
 # Fig. 5: Avoid - Switch - Improve). Avoid = levers that reduce the floor area needed to house the population, system
 # level (number of dwellings) before asset level (floor area per dwelling); Switch = alternative site and materials
-# for the floor area that is built (carbon per m2); Improve = construction efficiencies. Order within a strategy
+# for the floor area that is built (carbon per m2); Improve = construction efficiencies and cleaner production of the
+# same materials. Order within a strategy
 # follows the decision sequence (system before asset; site before materials). Ambition levels follow the 2050
 # Pathways Calculator (DECC 2010; DESNZ 2023) and EUCalc (Kockat et al. 2019): Reference = Level 1, Moderate = Level 2,
 # Ambitious = Level 3, theoretical limit = Level 4. Every lever at a setting = the Moderate / Ambitious Pathway.
-STRATEGIES = {'S1': 'Avoid Strategies', 'S2': 'Switch Strategies', 'S3': 'Improve Strategy'}   # S3 has one lever
-STRATEGY_LEVERS = {'S1': ('L1', 'L2', 'L3', 'L4', 'L5'), 'S2': ('L6', 'L7', 'L8'), 'S3': ('L9',)}
+STRATEGIES = {'S1': 'Avoid Strategies', 'S2': 'Switch Strategies', 'S3': 'Improve Strategies'}
+STRATEGY_LEVERS = {'S1': ('L1', 'L2', 'L3', 'L4', 'L5'), 'S2': ('L6', 'L7', 'L8'), 'S3': ('L9', 'L10')}
 LEVER_STRATEGY = {L: S for S, ls in STRATEGY_LEVERS.items() for L in ls}
 PATHWAY = 'pathway'                                   # run id prefix of the Moderate / Ambitious Pathway (every lever)
 PATHWAY_RUNS = {'pathway-moderate': 'Moderate Pathway', 'pathway-ambitious': 'Ambitious Pathway'}
@@ -59,10 +60,12 @@ LEVELS = {'reference': 'Reference (Level 1)', 'moderate': 'Moderate (Level 2)', 
 
 LEVERS = {'L1': 'Household size', 'L2': 'Vacancy rate', 'L3': 'Building lifetime', 'L4': 'Extra space',
           'L5': 'Occupancy density', 'L6': 'Brownfield-first development', 'L7': 'Soil-aware planning',
-          'L8': 'Material carbon efficiency', 'L9': 'Construction-stage carbon'}
+          'L8': 'Material carbon efficiency', 'L9': 'Construction-stage carbon',
+          'L10': 'Production decarbonisation'}
 # The rule sub-rule each lever's Ambitious level follows (METHODS_DRAFT.md): A case-study distribution (Harrell-Davis
 # q0.15), B best value ever observed in NZ, C published reference value
-LEVER_SUBRULE = {'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C', 'L7': 'C', 'L8': 'A', 'L9': 'C'}
+LEVER_SUBRULE = {'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C', 'L7': 'C', 'L8': 'A', 'L9': 'C',
+                 'L10': 'C'}
 # The denser-typology-mix lever of pathways_v2 (numbered L4 in that version) was removed in
 # v3.1; it is never given a lever number in the release.
 DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.1)'
@@ -70,8 +73,9 @@ DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.
 # Theoretical limit: TLn is Level 4 of Ln
 TL = {'TL': 'Theoretical Limit', 'TL1': 'Historical maximum household size', 'TL2': 'No vacancy',
       'TL3': 'No demolition', 'TL4': 'No extra space', 'TL5': 'Densest design', 'TL6': 'All brownfield',
-      'TL7': 'Lowest-carbon soils', 'TL8': 'Best-practice materials', 'TL9': 'Zero-emission construction'}
-TL_LIMIT_OF = {f'TL{k}': f'L{k}' for k in range(1, 10)}
+      'TL7': 'Lowest-carbon soils', 'TL8': 'Best-practice materials', 'TL9': 'Zero-emission construction',
+      'TL10': 'Lowest-carbon production'}
+TL_LIMIT_OF = {f'TL{k}': f'L{k}' for k in range(1, 11)}
 TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pathway'
 
 # adoption paths of the levers (ADOPTION_LEGACY: the earlier 'ramp' names)
@@ -214,6 +218,7 @@ INPUT_LABEL = {
     'a4a5': 'A4–A5 decarbonisation\n(own path–held at 2025)',
     'soil_all': 'Soil carbon loss on all\nfloor area, incl. replacement',
     'module_d': 'Module D credit, booked at\nconstruction (not netted)',
+    'l10_max': 'Production decarbonisation:\nno-policy backgrounds (Horup MAX)',
     'event_timing': 'B2/B4 event spacing\n(L/n, not L/(n+1))',
     'carrying_capacity': 'Carrying capacity:\n1 W/m² boundary (not 2 °C)',
     'global_impact_ef31': 'Global impact:\nEF 3.1',

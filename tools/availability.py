@@ -40,8 +40,9 @@ THIRD_PARTY = [
      'the published case data (Supplementary file 1), at that level', 'yes'),
     ("The author's LCAQuick v3.6 root tables (explicit quantities, LCAQuick item codes, building metadata)",
      'data/derived/lca_events.csv (derived event counts only)', 'beyond the published case data', 'no'),
-    ('Horup et al. (2025), supplementary material mmc1.xlsx (Table S4, the A1-A3 item paths)',
-     'data/derived/horup2025_table_s4.csv (the Table S4 values only)',
+    ('Horup et al. (2025), supplementary material mmc1.xlsx (Table S4, the A1-A3 item paths; Table S3, the archetype '
+     'envelope of L10)',
+     'data/derived/horup2025_table_s4.csv and horup2025_table_s3_archetypes.csv (the Table S4 and S3 values only)',
      "the terms of the article's supplementary material", 'the extract only (the source file is not stored)'),
 ]
 

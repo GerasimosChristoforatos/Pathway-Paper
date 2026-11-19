@@ -104,6 +104,7 @@ REF_ROWS = {
     ("A4-A5 on each item's own path / held at 2025", 'high'): ('a4a5', 'high'),
     ('Soil carbon loss on all floor area, including replacement', 'single'): ('soil_all', 'single'),
     ('Module D credit, booked at construction (not netted)', 'single'): ('module_d', 'single'),
+    ('Production decarbonisation: no-climate-policy backgrounds (Horup MAX)', 'single'): ('l10_max', 'single'),
     ('Event timing L / n', 'single'): ('event_timing', 'single'),
 }
 REF_DROPPED = ('Completion rate 0.95 (MODEL v3.3)', 'Completion lag 0 months (MODEL v3.3)',
@@ -338,6 +339,10 @@ def row_notes_ed4(r):
                      '2025 factors (the largest credit), booked in the construction year and subtracted; carbon only; '
                      'not converted to LoE, because a consistent LoE would need Module D in the historical sector base '
                      'as well')
+    n['l10_max'] = ('the A1-A3 of construction and of the in-window replacement events x m(y) = [MAX(y) / MAX(2025)] / '
+                    '[AVG(y) / AVG(2025)] of the 9 prospective backgrounds (Horup et al. 2025, Table S3; single-family '
+                    'archetype for detached and townhouses, multi-dwelling for apartments), from 2027, instead of the '
+                    'nine-scenario average paths; the no-climate-policy end of lever L10; carbon only')
     return n
 
 

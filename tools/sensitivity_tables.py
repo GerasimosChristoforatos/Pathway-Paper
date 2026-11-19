@@ -142,12 +142,19 @@ REF_ROWS = [
     ('Carbon factors & technology', 'Module D credit, booked at construction (not netted)', 'single', 'Module D credit at 2025 factors, booked at construction (not netted)',
      'EN 15978 Module D (benefits beyond the system boundary), excluded from the model; the 2025 factors (the largest '
      'credit); carbon only, not converted to LoE (MODEL v4.8.0)'),
+    ('Carbon factors & technology', 'Production decarbonisation: no-climate-policy backgrounds (Horup MAX)', 'single',
+     'Production decarbonisation: no-climate-policy backgrounds (Horup MAX), A1-A3 x MAX / average path',
+     'LITERATURE: Horup et al. 2025 Table S3, the maximum of the 9 prospective backgrounds (no climate policy) '
+     'relative to their average, applied to the A1-A3 of construction and of the in-window events as lever L10; '
+     'carbon only, not converted to LoE (MODEL v4.9.0)'),
     ('Accounting', 'Event timing L / n', 'single', 'Event timing: interval L / n', 'DECISION: maintenance timing'),
 ]
 # rows reported in carbon only (ED4), never converted to a level of exceedance: they need no AR-base rule
 # (boundaries.AR_BASE_RULE) and must not enter TORNADO. Module D: a consistent LoE would need Module D in the
-# historical sector base as well (MODEL v4.8.0).
-CARBON_ONLY_ROWS = ('Module D credit, booked at construction (not netted)',)
+# historical sector base as well (MODEL v4.8.0). Production decarbonisation (Horup MAX): a carbon-factor path, shown as
+# the carbon range of lever L10's evidence (MODEL v4.9.0).
+CARBON_ONLY_ROWS = ('Module D credit, booked at construction (not netted)',
+                    'Production decarbonisation: no-climate-policy backgrounds (Horup MAX)')
 
 
 def reference_table():

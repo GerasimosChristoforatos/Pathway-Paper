@@ -92,7 +92,7 @@ def absorption_window():
     return int(max(ob['pipeline_years'])) + 1, int(ob['absorption_end'])
 
 
-def absorption_span(ax, label_fontsize=None, pad=0.0):
+def absorption_span(ax, label_fontsize=None, pad=0.0, label_y=0.985, va='top'):
     """A very light grey span behind every element over the absorption window, and a small label at its top
     (MODEL v4.9.0): building runs below need while the surplus is absorbed. pad: half a year for annual columns
     centred on the year (Fig1), 0 for annual points (Fig3a)."""
@@ -100,7 +100,7 @@ def absorption_span(ax, label_fontsize=None, pad=0.0):
     a, b = absorption_window()
     ax.axvspan(a - pad, b + pad, color=S.MUTED, alpha=S.FIXED_FADES['absorption_span'], lw=0, zorder=0)
     tr = mtrans.blended_transform_factory(ax.transData, ax.transAxes)
-    ax.text((a + b) / 2.0, 0.985, f'Surplus absorbed {a}–{str(b)[-2:]}', transform=tr, ha='center', va='top',
+    ax.text((a + b) / 2.0, label_y, f'Surplus absorbed {a}–{str(b)[-2:]}', transform=tr, ha='center', va=va,
             fontsize=label_fontsize or S.FONT_MIN, color=S.NEUTRALS['note_text'], zorder=1)
 
 

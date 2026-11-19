@@ -249,10 +249,10 @@ def main():
     R8 = get({'L8': 'ambitious', 'L10': 'ambitious'})
     r8 = {t: 1.0 - R8['info']['w'] * (1.0 - np.asarray(R8['info']['r6'][t], float)) for t in ctx['typ']}
     dev_mul = max(float(np.max(np.abs(np.asarray(R8['info']['a13'][t])
-                                      - r8[t] * R8['info']['m10'][t] * (ctx['a13_2025'][t] - np.asarray(ctx['red13'][t])))))
+                                      - r8[t] * R8['info']['q10'][t] * (ctx['a13_2025'][t] - np.asarray(ctx['red13'][t])))))
                   for t in ctx['typ'])
     if dev_mul > 1e-9:
-        fails.append(f'5 L8 x L10: A1-A3 is not r8 x m10 x the decarbonised path ({dev_mul:.2e})')
+        fails.append(f'5 L8 x L10: A1-A3 is not r8 x q10 x the decarbonised path ({dev_mul:.2e})')
     L += ['', 'Exact terms (max abs difference, kg/m2): ' + '; '.join(f'{lv} intensity change - {t} change {d:.1e}'
                                                                    for lv, t, d in exact)
           + f'; L10 event change - A1-A3 kernel x (m - 1) {dev_ev:.1e}; L8 + L10: A1-A3 - r8 x m10 x (A1-A3_2025 - '

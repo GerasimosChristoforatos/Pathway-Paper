@@ -41,7 +41,7 @@ lever parameters. No result is reported by typology.
 2. **Planetary-boundary layer (AESA, climate change):** compares carbon 2026–2050 with the sector's share of a
    global carrying capacity under acquired rights (AR) and ability to pay (AtP). The two principles are reported
    side by side, never averaged.
-3. **Pathways:** nine levers at four ambition levels, the Moderate and Ambitious Pathways and the theoretical limit
+3. **Pathways:** ten levers at four ambition levels, the Moderate and Ambitious Pathways and the theoretical limit
    (TL), with exact Shapley attribution.
 
 ---
@@ -369,9 +369,11 @@ Every TL is asserted at least as strong as Ambitious.
   k = ln(81)/6).
 - Sensitivities: by 2030, by 2045, and the instant TL (from 2027).
 - 2026 is observed and never changed.
-- Two documented exceptions:
+- Three documented exceptions:
   - L9 Ambitious and Moderate follow their own path, linear from the 2026 Reference value to zero in 2050, with no
     logistic weight (phased once);
+  - L10 follows its source's scenario path (the lower envelope of the 9 prospective backgrounds of Horup et al.
+    2025, Table S3, relative to their average), m = 1 up to the observed 2026, no logistic weight;
   - TL1 rises at the fastest observed inter-census change of household size and reaches its level in 2037.5.
 
 **L1 Household size.** Ambitious is the Stats NZ propensity-B household size (living arrangements change, modelled
@@ -389,7 +391,7 @@ the `TL-TL1-age-standardised` row, with its own P(LoE AR ≤ 1) from the pathway
 |---|---|
 | S1 Avoid | L1 Household size, L2 Vacancy rate, L3 Building lifetime, L4 Extra space, L5 Occupancy density |
 | S2 Switch | L6 Brownfield-first development, L7 Soil-aware planning, L8 Material carbon efficiency |
-| S3 Improve | L9 Construction-stage carbon |
+| S3 Improve | L9 Construction-stage carbon, L10 Production decarbonisation |
 
 - All levers together form the Moderate or the Ambitious Pathway.
 - Business-as-usual decarbonisation applies in every run.
@@ -399,15 +401,17 @@ the `TL-TL1-age-standardised` row, with its own P(LoE AR ≤ 1) from the pathway
 2. The need, plus the dwellings released by zero vacancy (TL2).
 3. The Reference's market excess, absorbed on the Reference weights with the run's own need (payback capped at
    max(gross_t, 0), shortfall carried; `engine.absorb_overbuild`).
-4. Re-occupation (TL-family runs only).
+4. Re-occupation (only in runs that release dwellings: `pathways.releases_dwellings`, TL1 or TL2 at TL).
 5. `engine.forward` with the stock-adding join.
 
-**No pool outside the TL family.** In the Reference, the Moderate and Ambitious Pathways and every non-TL run, the
+**No pool unless the run releases dwellings** (MODEL v4.9.0). In the Reference, the Moderate and Ambitious Pathways and every run
+without TL1 or TL2 at TL (including a single-lever TL3–TL10 run), the
 starting surplus (18,966 dwellings) and the 2026–27 overbuild are absorbed along the logistic by 2035, and a
 vacancy-rate fall is used in the year it occurs (`use_in_year`).
 
 **Theoretical limit.** A thought experiment, not a pathway: every lever at its TL.
-- TL-family runs (TL, the TL waterfall steps, every TL Shapley subset) pool R = R1 (TL1 household decline) + R2
+- Runs that release dwellings (TL1 or TL2 at TL: the TL, and the waterfall steps, Shapley subsets and single-lever
+  runs that include TL1 or TL2) pool R = R1 (TL1 household decline) + R2
   (TL2 zero vacancy) + the positive overbuild (pipeline years and fading gap) + the starting surplus.
 - A negative excess is still made good along the logistic; the re-occupied overbuild is booked in "Overbuild
   absorbed".
@@ -420,9 +424,9 @@ vacancy-rate fall is used in the year it occurs (`use_in_year`).
 
 **Attribution and diagnostics.**
 - Exact Shapley values over:
-  - the strategies (2³ subsets) and the levers (2⁹) at Moderate and Ambitious;
+  - the strategies (2³ subsets) and the levers (2¹⁰) at Moderate and Ambitious;
   - the levers at TL;
-  - TL1–TL9 from the Moderate Pathway.
+  - TL1–TL10 from the Moderate Pathway.
 - Sequential waterfalls in PAS 2080 order.
 - The λ-sweep of each lever.
 - The back-cast to the AR budget.
@@ -517,5 +521,5 @@ The deterministic results do not depend on the profile (`tests/test_profiles.py`
 | AESA, SOS | absolute environmental sustainability assessment, safe operating space |
 | AR / AtP | acquired rights / ability to pay |
 | LoE | level of exceedance = impact / boundary |
-| S1–S3, L1–L9, TL1–TL9 | the PAS 2080 strategies, the levers and their theoretical limits |
+| S1–S3, L1–L10, TL1–TL10 | the PAS 2080 strategies, the levers and their theoretical limits |
 | λ | position of a level between Reference (0) and Ambitious (1); Moderate λ = 0.5 |

@@ -33,6 +33,7 @@ import numpy as np
 import pandas as pd
 
 import projection
+import events as EV
 import layout
 import naming as N
 
@@ -41,6 +42,7 @@ OUT_CSV = layout.data('baseline/sensitivity_one_at_a_time.csv')
 # rows also from the exact engine paths of the projection (carbon and floor area of the 5th / 95th paths)
 OUT_ANNUAL = layout.data('baseline/sensitivity_annual_carbon.csv')
 POP_ENGINE = 'Population: Stats NZ {p} percentile (engine path)'
+L10_MAX_CASE = 'Production decarbonisation: no-climate-policy backgrounds (Horup MAX), A1-A3 x MAX / average path'
 
 # (group, label, {projection setting: value})
 CASES = [
@@ -200,6 +202,28 @@ def main():
     d_y = sum(base['evol_typ_total'][t].values * float(tf.loc[t, 'module_D']) for t in typ)
     rows.append(('Carbon factors', 'Module D credit at 2025 factors, booked at construction (not netted)', g0, c0 + float(d_y[1:].sum()) / 1e6))
     annual[('Carbon factors', 'Module D credit at 2025 factors, booked at construction (not netted)')] = base['carbon_total_typ'].sum(axis=1).values + d_y
+
+    # Production decarbonisation, no-climate-policy backgrounds (MODEL v4.9.0): the Reference with the A1-A3 term of
+    # construction and of the in-window events x m(y) = [MAX(y) / MAX(2025)] / [AVG(y) / AVG(2025)] of Horup et al.
+    # (2025) Table S3 (levers.l10_multiplier 'max'; the archetype and weight of lever L10). The floor area is not
+    # changed by a carbon factor, so the change is exact on the Reference floor area. Carbon only.
+    if base['TIME_RESOLVED'] and base['DECARB'] is not None:
+        import levers as LV
+        w10 = LV.l10_weight(years)
+        m = {t: 1.0 - w10 * (1.0 - v) for t, v in LV.l10_multiplier(years, 'max').items()}
+        dl = np.zeros(len(years))
+        for t in typ:
+            a13_y = float(base['MAT_STAGE']['A1-A3'][t].sum()) - np.asarray(base['RED13_TOT'][t], float)
+            g_t = base['evol_typ_total'][t].values
+            prof = base['EV_PROFILE'][base['EV_PROFILE']['Typology'] == t].reset_index(drop=True)
+            f_t = EV.row_factors(prof, years, projection.DECARB_MODE, projection.DECARB_ITEM_CASE, projection.DECARB_A45)
+            k13, krest = EV.component_kernels(prof, years, f_t)
+            if not np.allclose(k13 + krest, base['EVENTS'][t], rtol=1e-12, atol=1e-12):
+                raise SystemExit(f'Sensitivity: {t}: the A1-A3 + other event kernels do not add up to EVENTS.')
+            dl += g_t * a13_y * (m[t] - 1.0) + (g_t @ k13) * (m[t] - 1.0)
+        lab = L10_MAX_CASE
+        rows.append(('Carbon factors', lab, g0, c0 + float(dl[1:].sum()) / 1e6))
+        annual[('Carbon factors', lab)] = base['carbon_total_typ'].sum(axis=1).values + dl
 
     out = pd.DataFrame(rows, columns=['group', 'case', 'GFA_Mm2', 'carbon_kt'])
     out['GFA_change_pct'] = 100 * (out['GFA_Mm2'] / g0 - 1)

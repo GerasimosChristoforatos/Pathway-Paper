@@ -14,17 +14,20 @@ levers reduce it? The model answers in three layers.
   (AESA) for climate change. It compares the carbon of 2026–2050 with the sector's share of a global carrying
   capacity under two allocation principles, acquired rights (AR) and ability to pay (AtP). The two are reported side
   by side and never averaged.
-* **Pathways** (`levers.py`, `pathways.py`). Nine rule-based levers, grouped by the carbon reduction hierarchy of
+* **Pathways** (`levers.py`, `pathways.py`). Ten rule-based levers, grouped by the carbon reduction hierarchy of
   PAS 2080:2023:
   * S1 Avoid: L1 Household size, L2 Vacancy rate, L3 Building lifetime, L4 Extra space, L5 Occupancy density;
   * S2 Switch: L6 Brownfield-first development, L7 Soil-aware planning, L8 Material carbon efficiency;
-  * S3 Improve: L9 Construction-stage carbon.
+  * S3 Improve: L9 Construction-stage carbon, L10 Production decarbonisation.
 
   Each lever has four levels: Reference, Moderate (the exact midpoint), Ambitious (one of three documented sub-rules)
-  and the theoretical limit (TL1–TL9). The levels are adopted on the same logistic path, 2026 → 2035, except L9
-  (Ambitious: its own linear path from the 2026 Reference value to zero in 2050; Moderate the midpoint) and TL1 (no faster than the fastest observed
+  and the theoretical limit (TL1–TL10). The levels are adopted on the same logistic path, 2026 → 2035, except L9
+  (Ambitious: its own linear path from the 2026 Reference value to zero in 2050; Moderate the midpoint), L10 (the
+  lower envelope of the 9 prospective backgrounds of Horup et al. 2025, its own scenario path) and TL1 (no faster than the fastest observed
   change); every lever together forms the Moderate and the Ambitious Pathway. The theoretical limit is a thought experiment, not a pathway.
-  * Attribution: exact Shapley values over the strategies and over 2⁹ lever subsets.
+  * Attribution: exact Shapley values over the strategies and over 2¹⁰ = 1,024 lever subsets.
+  * Vacant and released dwellings are re-occupied through a common pool only in runs that release dwellings (TL1,
+    TL2); all other runs absorb the starting surplus and overbuild by 2035 (`pathways.releases_dwellings`).
   * Two sequential waterfalls, the back-cast to the AR budget and a λ-sweep of each lever.
   * The pathway Monte Carlo (`pathways_mc.py`, `mcstats.py`).
 
@@ -40,12 +43,12 @@ Reference 2026–2050: 105.4 Mm² of new residential floor area and 25,503 kt CO
 | run | carbon 2026–2050 (kt CO₂e) | cumulative LoE of AR | cumulative LoE of AtP | P(LoE of AR ≤ 1), Monte Carlo |
 |---|---|---|---|---|
 | Reference | 25,503 | 5.76 | 22.9 | 0.0% |
-| Moderate Pathway | 17,236 | 3.89 | 15.5 | 0.0% |
-| Ambitious Pathway | 11,459 | 2.59 | 10.3 | 0.0% |
-| Theoretical Limit | 4,079 | 0.92 | 3.7 | 64.0% |
-| Theoretical Limit, TL1 age-standardised (sensitivity) | 5,946 | 1.34 | 5.3 | 0.1% |
+| Moderate Pathway | 16,913 | 3.82 | 15.2 | 0.0% |
+| Ambitious Pathway | 11,034 | 2.49 | 9.9 | 0.0% |
+| Theoretical Limit | 3,978 | 0.90 | 3.6 | 68.5% |
+| Theoretical Limit, TL1 age-standardised (sensitivity) | 5,755 | 1.30 | 5.2 | 0.2% |
 
-The Theoretical Limit stays within the AR budget in half of the draws when the 2050 population is 6.72 million. LoE > 1: the budget is exceeded (AR = acquired rights, AtP = ability to pay; 2 °C carrying capacity (Bjørn & Hauschild 2015)).
+The Theoretical Limit stays within the AR budget in half of the draws when the 2050 population is 6.75 million. LoE > 1: the budget is exceeded (AR = acquired rights, AtP = ability to pay; 2 °C carrying capacity (Bjørn & Hauschild 2015)).
 
 <!-- results:end -->
 
@@ -221,6 +224,7 @@ the file itself states, and it has not yet been rebuilt from a recorded download
 | `data/derived/lca_events.csv` (replacement and repaint event counts and building lifespan per item line; time-resolved maintenance B2/B4) | LCAQuick v3.6 root tables of the 16 case studies (Christoforatos & Pickering 2026); built by `data/build_lca_events.py`, which matches every line to the item table (16 lines without B2/B4 excluded: `data/derived/lca_excluded_lines.csv`) | the author's LCAQuick v3.6 root tables (one sheet per building), **not redistributed** (beyond the published case data, not needed to run the model; removed from the tree in MODEL v4.7.2; `data/build_lca_events.py` stops without them) | supplied 2026-10-07 | Derived counts kept |
 | `data/derived/material_items.csv` (case-study A1–A3 etc. by building and EPD item; `projection.DECARB_MODE = 'horup_item'`) | the 16 case-study LCAs of Christoforatos & Pickering (2026) (as `data/building_data.xlsx`) at item resolution; built by `data/build_material_items.py`, which checks it against `building_data.xlsx` | file `data/raw/epd-level_materials.xlsx`, sheet "ROOOOOT" | supplied 2026-10-05 | Supplied |
 | `data/derived/horup2025_table_s4.csv` (relative GWP of material production 2025/2030/2040/2050; `projection.DECARB_MODE`) | Horup et al. (2025), *Sci. Total Environ.* 966, 178780, supplementary material mmc1.xlsx, <https://doi.org/10.1016/j.scitotenv.2025.178780> | sheet "Table S4" (average of 9 premise scenarios relative to ecoinvent 3.9.1), column C; checked against column E | supplied by the author 2026-10-05 (SHA-256 in MANIFEST) | Raw → script (`data/build_horup.py`); the workbook is kept in `refs/` (not versioned) |
+| `data/derived/horup2025_table_s3_archetypes.csv` (GWP per m2 of the Danish single-family and multi-dwelling archetypes 2025-2050: average, minimum and maximum over the 9 prospective backgrounds; lever L10) | Horup et al. (2025), supplementary material mmc1.xlsx | sheet "Table S3" (blocks AVERAGE / MIN / MAX GWP per sqm); scenarios of sheet "Table S1" (SSP1/2/5 x no policy / RCP2.6 / RCP1.9) | supplied by the author 2026-10-05 (SHA-256 in MANIFEST) | Raw → script (`data/build_horup.py`); the workbook is kept in `refs/` (not versioned) |
 | SOS, I_glob (constants in `boundaries.py`) | Bjørn & Hauschild (2015), *Int J Life Cycle Assess* 20:1005-1018, Table 1 and ESM1/ESM2 | see the source check in `outputs/reports/METHODS_DRAFT.md` (part 2) | n/a | Literature |
 
 The reference papers behind the planetary-boundary layer (Bjørn & Hauschild 2015 with ESM1/ESM2;
@@ -271,7 +275,7 @@ Generated with the statements above by `tools/availability.py` (`outputs/reports
 | World Bank, World Development Indicators (release 2026-07-13) | data/raw/API_*.zip | CC BY 4.0 | yes |
 | Case-study LCA results, Christoforatos & Pickering (2026; Supplementary file 1), computed with LCAQuick v3.6 (BRANZ 2023) | data/building_data.xlsx, data/raw/epd-level_materials.xlsx (item results by stage) | the published case data (Supplementary file 1), at that level | yes |
 | The author's LCAQuick v3.6 root tables (explicit quantities, LCAQuick item codes, building metadata) | data/derived/lca_events.csv (derived event counts only) | beyond the published case data | no |
-| Horup et al. (2025), supplementary material mmc1.xlsx (Table S4, the A1-A3 item paths) | data/derived/horup2025_table_s4.csv (the Table S4 values only) | the terms of the article's supplementary material | the extract only (the source file is not stored) |
+| Horup et al. (2025), supplementary material mmc1.xlsx (Table S4, the A1-A3 item paths; Table S3, the archetype envelope of L10) | data/derived/horup2025_table_s4.csv and horup2025_table_s3_archetypes.csv (the Table S4 and S3 values only) | the terms of the article's supplementary material | the extract only (the source file is not stored) |
 
 ## Citation
 

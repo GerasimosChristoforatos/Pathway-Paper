@@ -40,7 +40,8 @@ def write():
          'Manuscript numbering (the repository keeps its ids):', ''] + FP.manuscript_map_lines() + [
          '', '## Main paper (paper_main/)', '']
     for h in FP.PAPER_MAIN:
-        L += _entry(h['file'], f"{h['id']} {h['title']}", h['caption'], h['source'], os.path.join(layout.PAPER_MAIN, h['file']))
+        L += _entry(h['file'], f"{h['id']} {h['title']}", FP.render_caption(h['caption']), h['source'],
+                    os.path.join(layout.PAPER_MAIN, h['file']))
     L += ['## Extended Data (paper_extended/)', '']
     for h in FP.PAPER_EXTENDED:
         cap = h.get('caption')

@@ -330,7 +330,8 @@ def sf4():
         e = q['estimator']
         a.axvspan(e['ci_lo'], e['ci_hi'], color=S.MUTED, alpha=S.FIXED_FADES['ci_span'], lw=0, label='95% bootstrap interval')
         a.axvline(e['r'], color=S.INK, lw=S.LW, label=f"Ambitious r = {e['r']:.3f} (HD q0.15)")
-        a.axvline(q['r']['moderate'], color=S.INK, lw=S.LW_THIN, ls='--', label=f"Moderate r = {q['r']['moderate']:.3f}")
+        r_mod = q['r_2025']['moderate'] if L == 'L8' else q['r']['moderate']     # L8: the 2025 ratios (by year since v4.9)
+        a.axvline(r_mod, color=S.INK, lw=S.LW_THIN, ls='--', label=f"Moderate r = {r_mod:.3f}")
         a.axvline(1.0, color=S.MUTED, lw=S.LW_THIN, ls=':')
         a.set_yticks(y)
         a.set_yticklabels(cases['id'], fontsize=S.FONT_MIN)
@@ -462,9 +463,22 @@ def edt1():
             if L == 'L4':
                 v = [q['f']['moderate'][t], q['f']['ambitious'][t], q['tl'][t]]
                 par = 'f (share of the extra-space margin removed)'
-            elif L in ('L5', 'L8'):
+            elif L == 'L5':
                 v = [q['r']['moderate'], q['r']['ambitious'], q['tl'][t]]
                 par = 'r (ratio to the Reference)'
+            elif L in ('L8', 'L10'):                  # by year (MODEL v4.9.0): one row per report year
+                yrs = (2025, 2030, 2040, 2050) if L == 'L8' else LV.L10_REPORT_YEARS
+                for y in yrs:
+                    if L == 'L8':
+                        amb = LV.by_year(q['r']['ambitious'], y)
+                        v = [(1 + amb) / 2, amb, LV.by_year(q['tl'][t], y)]
+                        par = f'r {y} (ratio to the Reference, each case on its own path)'
+                    else:
+                        v = [LV.by_year(q['m'][lv][t], y) for lv in ('moderate', 'ambitious')] + [LV.by_year(q['tl'][t], y)]
+                        par = f"m {y} (A1-A3 production multiplier; archetype {q['archetype'][t]})"
+                    rows.append(dict(lever=f'{L} {N.LEVERS[L]}', subrule=q['subrule'], typology=t, parameter=par,
+                                     moderate=v[0], ambitious=v[1], tl=v[2]))
+                continue
             elif L == 'L7':
                 s0 = q['soil_factor_2025'][t]
                 v = [s0 * (1 - q['x']['moderate']), s0 * (1 - q['x']['ambitious']), q['tl'][t]]

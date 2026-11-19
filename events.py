@@ -122,6 +122,14 @@ def kernel(prof_t, years, factors, by_material=False):
     return out if by_material else out[None]
 
 
+def component_kernels(prof_t, years, factors, component='A1-A3'):
+    """(K of the rows of `component`, K of the other rows) of one typology's profile (kernel()); their sum is the
+    kernel of all rows. Used by lever L10 (MODEL v4.9.0), which scales the A1-A3 component of the in-window events."""
+    a = (prof_t['Component'] == component).to_numpy()
+    return (kernel(prof_t[a].reset_index(drop=True), years, factors[a]),
+            kernel(prof_t[~a].reset_index(drop=True), years, factors[~a]))
+
+
 def committed(gfa, years, prof_t, factors_after, end_year=None):
     """Events after the window of the cohorts built in years[1:]: kg per cohort sum.
     gfa: floor area by cohort (array over years); factors_after: row_factors over the

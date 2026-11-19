@@ -64,6 +64,27 @@
    "ylabel": "",
    "year_min": 2026.0,
    "year_max": 2050.0
+  },
+  {
+   "title": "L10 Production decarbonisation",
+   "xlabel": "",
+   "ylabel": "kt CO\u2082e per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
+  },
+  {
+   "title": "",
+   "xlabel": "",
+   "ylabel": "",
+   "year_min": null,
+   "year_max": null
   }
  ],
  "texts": [
@@ -81,8 +102,9 @@
   "500",
   "750",
   "Ambitious",
-  "Embodied carbon per year: the Reference and each lever alone at",
+  "Embodied carbon per year: the Reference\nand each lever alone at",
   "L1 Household size",
+  "L10 Production decarbonisation",
   "L2 Vacancy rate",
   "L3 Building lifetime",
   "L4 Extra space",
@@ -103,6 +125,7 @@
   "g)",
   "h)",
   "i)",
+  "j)",
   "kt CO\u2082e per year"
  ],
  "note": "Each panel: one lever alone; the other levers at the Reference. Lines: PCHIP display interpolation through the annual values.",

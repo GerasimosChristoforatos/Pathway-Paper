@@ -29,11 +29,11 @@ One palette for every figure; `figures/style.py` is the only place colours are d
 | Runs and boundaries (Fig4, ED5, D28) | Theoretical Limit | `#A7BB95` | 76 |
 | Runs and boundaries (Fig4, ED5, D28) | S1 Avoid Strategies | `#C16131` | 57 |
 | Runs and boundaries (Fig4, ED5, D28) | S2 Switch Strategies | `#8E5B7E` | 49 |
-| Runs and boundaries (Fig4, ED5, D28) | S3 Improve Strategy | `#8197BC` | 64 |
+| Runs and boundaries (Fig4, ED5, D28) | S3 Improve Strategies | `#8197BC` | 64 |
 | Runs and boundaries (Fig4, ED5, D28) | Moderate / Ambitious Pathway | `#F2D883` | 89 |
 | Strategies (Fig4-Fig6, SF9) | Avoid Strategies | `#C16131` | 57 |
 | Strategies (Fig4-Fig6, SF9) | Switch Strategies | `#8E5B7E` | 49 |
-| Strategies (Fig4-Fig6, SF9) | Improve Strategy | `#8197BC` | 64 |
+| Strategies (Fig4-Fig6, SF9) | Improve Strategies | `#8197BC` | 64 |
 | Boundary zones on white (every boundary figure) | Within both budgets (below AtP) | `#DCEAF1` | 93 |
 | Boundary zones on white (every boundary figure) | Within AR only (between AtP and AR) | `#EEF5F8` | 97 |
 | Demand bands (Fig1, Fig2, Fig5, SF11, D25, D26, D36) | Population growth | `#3D2B56` | 24 |
@@ -48,7 +48,7 @@ One palette for every figure; `figures/style.py` is the only place colours are d
 | Demand bands (Fig1, Fig2, Fig5, SF11, D25, D26, D36) | Maintenance (B2, B4), 2026–2050 | `#A6A6A6` | 71 |
 | The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Avoid Strategies | `#C16131` | 57 |
 | The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Switch Strategies | `#8E5B7E` | 49 |
-| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Improve Strategy | `#8197BC` | 64 |
+| The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Improve Strategies | `#8197BC` | 64 |
 | The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Moderate / Ambitious Pathway | `#F2D883` | 89 |
 | The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Theoretical Limit | `#A7BB95` | 76 |
 | The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | Population growth | `#3D2B56` | 24 |
@@ -130,7 +130,7 @@ Minimum pairwise distance within each group (CAM02-UCS, Luo, Cui & Li 2006) afte
 | group | normal | deuteranomaly | protanomaly | tritanomaly | passes |
 |---|---|---|---|---|---|
 | Runs and boundaries (Fig4, ED5, D28) | 10.6 (Acquired rights (AR) / S1 Avoid Strategies) | 4.1 (Acquired rights (AR) / S1 Avoid Strategies) | 8.8 (Acquired rights (AR) / S1 Avoid Strategies) | 7.0 (Acquired rights (AR) / S1 Avoid Strategies) | no |
-| Strategies (Fig4-Fig6, SF9) | 27.2 (Avoid Strategies / Switch Strategies) | 17.2 (Switch Strategies / Improve Strategy) | 20.6 (Switch Strategies / Improve Strategy) | 18.0 (Avoid Strategies / Switch Strategies) | yes |
+| Strategies (Fig4-Fig6, SF9) | 27.2 (Avoid Strategies / Switch Strategies) | 17.2 (Switch Strategies / Improve Strategies) | 20.6 (Switch Strategies / Improve Strategies) | 18.0 (Avoid Strategies / Switch Strategies) | yes |
 | Boundary zones on white (every boundary figure) | 4.7 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | 4.6 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | 4.0 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | 4.9 (Within both budgets (below AtP) / Within AR only (between AtP and AR)) | no |
 | Demand bands (Fig1, Fig2, Fig5, SF11, D25, D26, D36) | 8.1 (Population growth / Vacancy released) | 7.6 (Population growth / Vacancy released) | 7.1 (Population growth / Vacancy released) | 5.7 (Population growth / Vacancy released) | no |
 | The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones | 16.6 (Theoretical Limit / Reference) | 14.8 (Theoretical Limit / Reference) | 15.3 (Moderate / Ambitious Pathway / Theoretical Limit) | 12.2 (Theoretical Limit / Reference) | yes |

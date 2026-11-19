@@ -84,6 +84,26 @@ def pipeline_breaks():
     return [float(max(D.js('baseline/overbuild_2026.json')['pipeline_years']))]
 
 
+def absorption_window():
+    """(first, last) year in which the starting surplus and the 2026-27 overbuild are absorbed along the logistic: the
+    year after the last observed pipeline year to the absorption end (baseline/overbuild_2026.json)."""
+    from figures import data as D
+    ob = D.js('baseline/overbuild_2026.json')
+    return int(max(ob['pipeline_years'])) + 1, int(ob['absorption_end'])
+
+
+def absorption_span(ax, label_fontsize=None, pad=0.0, label_y=0.985, va='top'):
+    """A very light grey span behind every element over the absorption window, and a small label at its top
+    (MODEL v4.9.0): building runs below need while the surplus is absorbed. pad: half a year for annual columns
+    centred on the year (Fig1), 0 for annual points (Fig3a)."""
+    import matplotlib.transforms as mtrans
+    a, b = absorption_window()
+    ax.axvspan(a - pad, b + pad, color=S.MUTED, alpha=S.FIXED_FADES['absorption_span'], lw=0, zorder=0)
+    tr = mtrans.blended_transform_factory(ax.transData, ax.transAxes)
+    ax.text((a + b) / 2.0, label_y, f'Surplus absorbed {a}–{str(b)[-2:]}', transform=tr, ha='center', va=va,
+            fontsize=label_fontsize or S.FONT_MIN, color=S.NEUTRALS['note_text'], zorder=1)
+
+
 HISTORY_END = 2025.0               # last history year: annual lines are not interpolated across it
 
 

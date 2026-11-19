@@ -11,6 +11,7 @@
     cumulative released; Shapley efficiency; waterfall sums; material and stage values never negative.
 """
 import json
+import os
 
 import numpy as np
 import pandas as pd
@@ -21,6 +22,7 @@ import layout
 import levers as LV
 
 D = lambda rel: layout.data(rel)
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def js(rel):
@@ -206,7 +208,7 @@ def test_waterfall_sums():
         tot = g.groupby('step')['carbon_kt'].sum()
         assert np.allclose(tot.values, g.groupby('step')['total_carbon_kt'].first().values, rtol=1e-9)
         last = g[g['step'] == g['step'].max()]['total_carbon_kt'].iloc[0]
-        pw = g[g['step_id'] == 'L9']['total_carbon_kt'].iloc[0]
+        pw = g[g['step_id'] == 'L10']['total_carbon_kt'].iloc[0]
         assert pw == pytest.approx(r.loc[f'pathway-{s}', 'carbon_kt'], rel=1e-12)
         assert last == pytest.approx(r.loc['TL', 'carbon_kt'], rel=1e-12)
 
@@ -241,3 +243,39 @@ def test_tl1_age_standardised_row():
     assert a['carbon_kt'] == pytest.approx(r.loc[PW.TL_AGE_STANDARDISED, 'carbon_kt'], rel=1e-12)
     assert 0.0 < a['tl1_households_per_person_fall_at_every_age'] < 1.0
 
+
+
+def test_l10_production_multiplier():
+    """L10 (MODEL v4.9.0): m = [MIN(y)/MIN(2025)] / [AVG(y)/AVG(2025)] of Horup et al. (2025) Table S3 by archetype,
+    1 in 2025, in (0, 1]; Moderate the per-year midpoint, TL = Ambitious; the no-policy MAX path >= 1."""
+    import levers as LV
+    years = np.arange(2025, 2051)
+    d = pd.read_csv(os.path.join(ROOT, LV.FILE_L10), comment='#')
+    m, mx = LV.l10_multiplier(years, 'min'), LV.l10_multiplier(years, 'max')
+    for t, a in LV.L10_ARCHETYPE.items():
+        g = d[d['archetype'] == a].pivot(index='year', columns='stat', values='rel_to_2025').loc[years]
+        assert np.allclose(m[t], g['min'] / g['avg'], rtol=1e-12) and m[t][0] == 1.0
+        assert (m[t] > 0).all() and (m[t] <= 1.0 + 1e-12).all() and (mx[t] >= 1.0 - 1e-12).all()
+    with open(layout.data('pathways/levers.json')) as f:
+        q = json.load(f)['L10']
+    for t in q['tl']:
+        assert q['tl'][t] == q['m']['ambitious'][t]
+        for y, v in q['m']['moderate'][t].items():
+            assert v == pytest.approx((1 + q['m']['ambitious'][t][y]) / 2, abs=1e-15)
+
+
+def test_releases_dwellings_predicate():
+    """The re-occupation pool accounting (MODEL v4.9.0) applies iff TL1 or TL2 is at TL."""
+    import levers as LV
+    assert LV.releases_dwellings({'L1': 'tl'}) and LV.releases_dwellings({'L2': 'tl', 'L5': 'moderate'})
+    assert LV.releases_dwellings(LV.tl_levels(LV.TL_COMPONENTS))
+    assert not LV.releases_dwellings({})
+    assert not any(LV.releases_dwellings({L: 'tl'}) for L in LV.LEVERS if L not in ('L1', 'L2'))
+    assert not LV.releases_dwellings(LV.tl_levels(LV.TL_COMPONENTS[2:]))
+    assert not LV.releases_dwellings({'L1': 'ambitious', 'L2': 1.0})
+
+
+def test_lever_audit_passes():
+    with open(layout.report('lever_audit.md')) as f:
+        txt = f.read()
+    assert 'ALL CHECKS PASS.' in txt and 'FAILED' not in txt

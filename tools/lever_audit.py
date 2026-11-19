@@ -11,7 +11,9 @@ Reference, pathways.run):
   4. each lever alone is monotone in cumulative carbon 2026-2050: Reference >= Moderate >= Ambitious >= TL;
   5. no double counting: each lever changes only its own engine inputs and stage (L1-L5 floor area; L6, L7 soil;
      L8, L10 the A1-A3 term; L9 the A4-A5 term), checked on the inputs and on the stage totals;
-  6. levers.tl_strength (TL at least as strong as Ambitious), TL8 by year and TL10 included.
+  6. levers.tl_strength (TL at least as strong as Ambitious), TL8 by year and TL10 included;
+  7. the re-occupation pool accounting applies if and only if the run releases dwellings (pathways.releases_dwellings:
+     TL1 or TL2 at TL): a dummy lever at TL whose TL parameter is its Reference value changes nothing (MODEL v4.9.0).
 
     python tools/lever_audit.py          (run_all.py runs it after pathways)
 """
@@ -199,16 +201,6 @@ def main():
                  f"{'yes' if ok else 'NO'} |")
         if not ok:
             fails.append(f'4 {lv}: ' + ', '.join(f'{s} {c[s]:.1f}' for s in LEVELS))
-    # diagnostic: the TL-family release accounting alone (any lever at 'tl' pools the starting surplus and the
-    # overbuild into re-occupation, pathways.run), measured with a lever whose TL equals its Reference
-    p0 = dict(p, L10=dict(p['L10'], tl={t: {y: 1.0 for y in v} for t, v in p['L10']['tl'].items()}))
-    Rn = PW.run(ctx, p0, {'L10': 'tl'})
-    Sn = stages(ctx, Rn)
-    L += ['', f"Diagnostic: the TL-family release accounting alone (a run with one lever at 'tl' whose TL parameter is "
-              f"its Reference value): cumulative carbon {Sn['carbon_kt']:,.1f} kt, {Sn['carbon_kt'] - S0['carbon_kt']:+,.1f} kt "
-              f"on the Reference; floor area {Sn['gfa_Mm2']:.3f} Mm2 ({Sn['gfa_Mm2'] - S0['gfa_Mm2']:+.3f}). Any lever "
-              "at 'tl' carries this effect on top of its parameter."]
-
     # ---- 5. no double counting ----
     L += ['', '## 5. Each lever changes only its own inputs and stage (Ambitious, alone)', '',
           'Changed engine inputs (levers.inputs) against the Reference run, and the change of each stage total '
@@ -278,6 +270,32 @@ def main():
     items = {r['item'] for r in p['tl_strength']}
     if items != set(LV.TL_COMPONENTS):
         fails.append(f'6 tl_strength covers {sorted(items)}')
+
+    # ---- 7. the re-occupation pool only in runs that release dwellings ----
+    L += ['', '## 7. The re-occupation pool accounting only in runs that release dwellings', '',
+          'pathways.releases_dwellings(levels) is true if and only if TL1 or TL2 is at TL; it alone chooses the pool '
+          '(pathways.run), the zero-building soil clip and the checks of release runs. A dummy lever at TL whose TL '
+          'parameter is its Reference value (L10 with m = 1) must reproduce the Reference run exactly.', '']
+    p0 = dict(p, L10=dict(p['L10'], tl={t: {y: 1.0 for y in v} for t, v in p['L10']['tl'].items()}))
+    Rn = PW.run(ctx, p0, {'L10': 'tl'})
+    d_carbon = float(np.max(np.abs(np.asarray(Rn['E']['carbon']) - np.asarray(R0['E']['carbon']))))
+    d_gfa = float(np.max(np.abs(np.asarray(Rn['E']['gfa_t']) - np.asarray(R0['E']['gfa_t']))))
+    ok7 = d_carbon == 0.0 and d_gfa == 0.0 and not Rn['info']['releases']
+    L.append(f"Dummy lever at TL: max |carbon - Reference| = {d_carbon:.1e} kg, max |floor area - Reference| = "
+             f"{d_gfa:.1e} m2, pool used: {Rn['info']['releases']} -> {'pass' if ok7 else 'FAIL'}.")
+    if not ok7:
+        fails.append(f'7 dummy TL lever changes the run (carbon {d_carbon:.2e}, floor area {d_gfa:.2e})')
+    L += ['', '| run | releases dwellings | expected |', '|---|---|---|']
+    cases7 = [(f'{x} alone at TL', {x: 'tl'}, x in ('L1', 'L2')) for x in LV.LEVERS]
+    cases7 += [('Moderate Pathway', LV.pathway_levers(LV.PATHWAY, 'moderate'), False),
+               ('Ambitious Pathway', LV.pathway_levers(LV.PATHWAY, 'ambitious'), False),
+               ('TL3-TL10 from the Moderate Pathway', LV.tl_levels(LV.TL_COMPONENTS[2:]), False),
+               ('Theoretical Limit', LV.tl_levels(LV.TL_COMPONENTS), True)]
+    for nm, lvls, exp in cases7:
+        got = get(lvls)['info']['releases']
+        L.append(f"| {nm} | {'yes' if got else 'no'} | {'yes' if exp else 'no'} |")
+        if got != exp or PW.releases_dwellings(lvls) != exp:
+            fails.append(f'7 {nm}: releases_dwellings {got}, expected {exp}')
 
     L += ['', '## Result', '', 'ALL CHECKS PASS.' if not fails else 'FAILED (STOP):', '']
     L += [f'- {f}' for f in fails]

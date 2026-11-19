@@ -93,6 +93,17 @@ OUT_A13_CLASS = os.path.join(OUT_DIR, 'factors_a13_class_paths.csv')
 OUT_A13_CLASS_BLD = os.path.join(OUT_DIR, 'factors_building_a13_class_paths.csv')
 OUT_EVENTS_CLASS = os.path.join(OUT_DIR, 'factors_events_a13_class.csv')
 OUT_EVENTS_CLASS_BLD = os.path.join(OUT_DIR, 'factors_building_events_a13_class.csv')
+# production class of an item in the chain files (MODEL v4.10.0, author decision): the item class, except the imported
+# OTIS elevator (class OTHERS, apartments A_1 / A_2), an assembled product dominated by steel, kept apart so that L10
+# at TL can treat the whole item as steel (an upper bound of the reduction). Every other OTHERS item stays OTHERS.
+ELEVATOR_ITEM_PREFIX = 'Elevator (12 floors) - OTIS'
+ELEVATOR_CLASS = 'ELEVATOR (assembled, steel-dominated)'
+
+
+def production_class(cls, item):
+    """The class of an item in the production chain files (classes of material_items.csv; the elevator apart)."""
+    return np.where((np.asarray(cls) == 'OTHERS') & pd.Series(item).astype(str).str.startswith(ELEVATOR_ITEM_PREFIX)
+                    .to_numpy(), ELEVATOR_CLASS, np.asarray(cls))
 
 # ---------------------------------------------------------------------------
 # END OF LIFE (C1-C4) IN THE COMMITTED RANGE (MODEL v4.8.0; projection COMMITTED, pathways.committed)
@@ -223,7 +234,7 @@ def event_rows(timing='n+1'):
                     continue
                 for c in EVENT_COMPONENTS:
                     rows.append((r.id, lookup.get(r.cls, OTHERS_LABEL), age, c, r.s4_row, r.label, r.nz,
-                                 per * shares[c] * w, r.cls))
+                                 per * shares[c] * w, production_class([r.cls], [r.item])[0]))
     out = pd.DataFrame(rows, columns=['id', 'Material', 'Age', 'Component', 'S4', 'label', 'nz', 'kg', 'Class'])
     chk = out.groupby('id')['kg'].sum() - ev.groupby('id')['b'].sum()
     if chk.abs().max() > 1e-6:
@@ -600,7 +611,10 @@ def main():
     worst = (cls_items.reindex(cls_lca.index).fillna(0.0) - cls_lca).abs().max()
     if set(cls_items.index) != set(cls_lca.index) or worst > 1e-9:
         raise ValueError(f'Item A1-A3 does not reproduce the class A1-A3 of {FILE_LCA} (max {worst:g}).')
-    classes = sorted(items['class'].unique())
+    items['pclass'] = production_class(items['class'], items['item'])
+    if (items['pclass'] == ELEVATOR_CLASS).sum() != 2:
+        raise ValueError('The OTIS elevator item is not found once in each of A_1 and A_2.')
+    classes = sorted(items['pclass'].unique())
     cls_rows, cls_bld_rows = [], []
     for case in ITEM_CASES:
         variant = decarb_variant('horup_item', item_case=case)
@@ -619,7 +633,7 @@ def main():
                 for typ in TYP_ORDER:
                     dec_rows.append(dict(Variant=variant, Typology=typ, Material=mat, Year=y,
                                          A13_kgCO2e_per_m2=float(pooled.loc[typ])))
-            gc = (a13.groupby([items['id'], items['class']]).sum()
+            gc = (a13.groupby([items['id'], items['pclass']]).sum()
                   .reindex(pd.MultiIndex.from_product([ids, classes])).fillna(0.0).rename('a13').reset_index())
             gc.columns = ['id', 'Class', 'a13']
             cls_bld_rows += [dict(Variant=variant, id=r_.id, Class=r_.Class, Year=y, A13_kgCO2e_per_m2=float(r_.a13))

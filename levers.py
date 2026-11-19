@@ -154,7 +154,39 @@ L3_D_AMBITIOUS = 0.40             # Pellan et al. 2024: demolition 150,000 -> 90
 L8_SAMPLE_TYPOLOGIES = ('Detached', 'Townhouses')
 L8_MIN_CASES = 10
 L9_REF_RATE = 0.01
-L9_ZERO_YEAR = 2050
+# L9 (MODEL v4.10.0): A4-A5 split into transport (A4), site energy and site waste by the medians of Kanafani et al.
+# (2023) Sustainability 15(14), 10992 (61 Danish construction sites, kg CO2e per m2 per year): A4 0.28; site energy =
+# electricity 0.19 + heat 0.12 + fuel 0.08; waste 0.49 (the main A5 contributor, as Hasselsteen et al. 2025 J. Clean.
+# Prod. 521, 146243). The medians do not add, so the shares are the medians normalised. Reference: every part -1%/yr
+# (Resch et al. 2021; the total unchanged). Ambitious: site energy -85% (City of Oslo Climate Agency 2025: ~85% of
+# municipal site work with zero-emission machinery in 2024), A4 and waste as the Reference; Moderate the midpoint; at
+# TL A4 and site energy zero (electric machinery and freight exist), waste as the Reference (its material carbon
+# belongs to L8 / L10). Every level on the common 2026-2035 logistic adoption (MODEL v4.10.0: no own path).
+L9_MEDIANS = {'transport (A4)': ('transport', 0.28), 'site electricity': ('site_energy', 0.19),
+              'site heat': ('site_energy', 0.12), 'site fuel': ('site_energy', 0.08), 'site waste': ('waste', 0.49)}
+L9_PARTS = ('transport', 'site_energy', 'waste')
+L9_SHARES = {q: sum(v for g, v in L9_MEDIANS.values() if g == q) / sum(v for _, v in L9_MEDIANS.values())
+             for q in L9_PARTS}
+L9_SITE_ENERGY_CUT_AMBITIOUS = 0.85
+L9_CUT = {'ambitious': {'transport': 0.0, 'site_energy': L9_SITE_ENERGY_CUT_AMBITIOUS, 'waste': 0.0},
+          'tl': {'transport': 1.0, 'site_energy': 1.0, 'waste': 0.0}}
+# One rule for the Theoretical Limit (MODEL v4.10.0), written once here, in METHODS_DRAFT and the Extended Data Table 1
+TL_RULE = ('Theoretical Limit = the best value observed, internationally where a comparable measure exists, otherwise '
+           'in New Zealand, or a documented scenario bound; a logical bound only where physically attainable by choice '
+           'or design.')
+# L2 at TL (MODEL v4.10.0): OECD (2024) Affordable Housing Database HM1.1, Figure HM1.1.2 panel B, Switzerland 2022
+FILE_OECD_VACANCY = 'data/derived/oecd_hm112_vacancy.csv'
+L2_TL_COUNTRY = 'Switzerland'
+L2_TL_NOTE = ('At the Theoretical Limit every non-market empty dwelling (holiday homes, dwellings held empty) is '
+              'occupied, a choice, and only frictional market vacancy remains, at the lowest nationwide rate in the OECD '
+              'cross-country table: Switzerland 1.31% (2022; the Federal Statistical Office\'s count of empty dwellings '
+              'on 1 June across the whole stock, single-family homes included). Sweden (0.25%, 2021) is excluded: its '
+              'national count (6,794 vacant units in a 4.6 M stock; OECD \'Vacant\' sheet) cannot be an all-tenure '
+              'market count. One vintage (OECD 2024 table) is used for all countries; national releases after it are '
+              'not.')
+# L6 at TL (MODEL v4.10.0): DCLG (2010) Land use change statistics England, provisional estimates for 2009: "80% of
+# dwellings (including conversions) were built on previously developed land, unchanged from 2008" (England's peak)
+L6_S_TL = 0.80
 L8_REPORT_YEARS = (2025, 2030, 2040, 2050)
 # L10 Production decarbonisation (MODEL v4.9.0): the same materials and quantities made with lower-carbon production.
 # Source: Horup et al. (2025) Table S3, GWP per m2 of the Danish archetypes 2025-2050, average / minimum / maximum over
@@ -380,14 +412,49 @@ def l10_multiplier(years, stat='min', path=None):
 # path, C_t(y) = 1 - sum_k P_tk(y) (1 - c_k(y)) / P_t(y) with P_tk the pooled class paths
 # (factors_a13_class_paths.csv); the same chain gives the A1-A3 component of the in-window events (class kernels)
 # and of the committed lower bound. With every c_k = 1 the correction terms are exact zeros (l10_chain).
-L10_TL_CLASSES = {}             # {item class: k} of the classes with a class factor at TL (set in MODEL v4.10.0 step B)
+# L10 at TL (MODEL v4.10.0): near-zero emissions cement and steel (IEA 2022, Definitions for near-zero and low-emissions
+# steel and cement, and underlying emissions measurement methodologies, p. 17: 125 kg CO2-eq/t cement at 100% clinker,
+# 400 kg CO2-eq/t crude steel at 100% iron), relative to the BAT reference values of IEA (2022) Achieving Net Zero
+# Heavy Industry Sectors in G7 Members (cited ibid. p. 22-23, footnote 8: 850 kg CO2-eq/t cement at 100% clinker,
+# 2,945 kg CO2-eq/t crude steel, BF-BOF with 100% iron). The near-zero share s(y) of production: 0 (2022), 0.08
+# (2030), 0.93 (2050), linear, 0 through the observed 2026 (IEA Cement tracking, NZE milestones, as supplied by the
+# author; steel takes the same s, a stated assumption). q_i = m_a(y) x [(1 - s(y)) + s(y) k], whatever the item's S4
+# mapping. Classes: cement-based CONCRETE, REINFORCED CONCRETE, FIBRE CEMENT and PLASTER (cement plaster), STEEL, and
+# the OTIS elevator (OTHERS, apartments A_1 / A_2; Building_factors.ELEVATOR_CLASS), an assembled product dominated by
+# steel: the whole item treated as steel at TL (an upper bound of the reduction; author decision).
+L10_K_CEMENT = 125.0 / 850.0
+L10_K_STEEL = 400.0 / 2945.0
+L10_S_MILESTONES = {2022: 0.0, 2030: 0.08, 2050: 0.93}
+L10_ELEVATOR_CLASS = 'ELEVATOR (assembled, steel-dominated)'
+L10_ELEVATOR_NOTE = ('assembled product dominated by steel; whole item treated as steel at TL (upper bound of the '
+                     'reduction; ~2.4% of A1-A3, apartments only)')
+L10_TL_CLASSES = {'CONCRETE': L10_K_CEMENT, 'REINFORCED CONCRETE': L10_K_CEMENT, 'FIBRE CEMENT': L10_K_CEMENT,
+                  'PLASTER': L10_K_CEMENT, 'STEEL': L10_K_STEEL, L10_ELEVATOR_CLASS: L10_K_STEEL}
+# every production class reviewed for cement- or steel-dominance (a class not listed stops the run)
+L10_CLASS_REVIEW = {
+    'CONCRETE': 'cement-based', 'REINFORCED CONCRETE': 'cement-based (steel reinforcement included in the item)',
+    'FIBRE CEMENT': 'cement-based', 'PLASTER': 'cement-based (the only item is "Plaster, cement")', 'STEEL': 'steel',
+    L10_ELEVATOR_CLASS: 'steel (' + L10_ELEVATOR_NOTE + ')',
+    'OTHERS': 'neither (after the elevator: MDF doors, ceramic tiles and sanitary ware, particleboard, glazing)',
+    'BRICKS': 'neither (clay brick)', 'TIMBER': 'neither', 'PLASTICS': 'neither', 'ALUMINIUM': 'neither (aluminium)',
+    'PLASTERBOARD': 'neither (gypsum)', 'SIP': 'neither (timber-foam panel)', 'GLASS': 'neither',
+    'GLASS WOOL': 'neither', 'PAINT': 'neither'}
+
+
+def l10_near_zero_share(years):
+    """s(y): the near-zero share of cement and steel production, linear between L10_S_MILESTONES, 0 through 2026."""
+    y = np.asarray(years, float)
+    k = sorted(L10_S_MILESTONES)
+    s = np.interp(y, k, [L10_S_MILESTONES[x] for x in k])
+    return np.where(y <= OBSERVED_YEAR, 0.0, s)
 
 
 def l10_class_factor(level, years):
-    """{item class: c_k(y)} at an L10 level: empty unless L10 is at TL and L10_TL_CLASSES is set."""
+    """{item class: c_k(y)} at an L10 level: c_k = (1 - s(y)) + s(y) k at TL for L10_TL_CLASSES, none otherwise."""
     if level != 'tl' or not L10_TL_CLASSES:
         return {}
-    raise NotImplementedError('L10 class factors: MODEL v4.10.0 step B')
+    s = l10_near_zero_share(years)
+    return {k: (1.0 - s) + s * kk for k, kk in L10_TL_CLASSES.items()}
 
 
 def l10_chain(base, m_eff, cls_eff, typ):
@@ -433,26 +500,28 @@ def a45_reference(years):
     return np.exp(-L9_REF_RATE * np.clip(t - 2025.0, 0.0, None))
 
 
-def a45_ambitious(years):
-    """L9 Ambitious: from the Reference factor of the last observed year (2026) linearly to zero in 2050 (the end
-    year is the NZ 2050 target, Climate Change Response Act 2002, s 5Q (as amended 2025); zero site emissions is a documented municipal
-    requirement, City of Oslo 2025); the Reference before it. This path is the phase-in itself: L9 Ambitious and Moderate are
-    applied without the logistic adoption weight (MODEL v4.7.0: phased once; v4.6 multiplied a path linear from 2025
-    by the 2026 -> 2035 logistic)."""
-    y = np.asarray(years, float)
-    ref = a45_reference(years)
-    r0 = float(a45_reference(np.array([OBSERVED_YEAR], float))[0])
-    lin = r0 * np.clip((L9_ZERO_YEAR - y) / (L9_ZERO_YEAR - OBSERVED_YEAR), 0.0, None)
-    return np.where(y <= OBSERVED_YEAR, ref, lin)
+def l9_cut(lam):
+    """{part: cut at full strength} of L9 at level lambda (0..1) or 'tl': lambda x the Ambitious cuts (Moderate = the
+    midpoint), or the TL cuts."""
+    if lam == 'tl':
+        return dict(L9_CUT['tl'])
+    return {q: float(lam) * c for q, c in L9_CUT['ambitious'].items()}
 
 
 def a45_target(years, lam):
-    """L9 target factor path at level lambda (per-year interpolation; 0.5 = Moderate = the per-year midpoint);
-    lam 'tl': zero."""
-    if lam == 'tl':
-        return np.zeros(len(np.asarray(years)))
+    """L9 target A4-A5 factor path at full strength (before the adoption weight), relative to 2025:
+    ref(y) x (1 - sum_part share x cut), ref = e^(-0.01 (y - 2025)) (MODEL v4.10.0)."""
     ref = a45_reference(years)
-    return ref + float(lam) * (a45_ambitious(years) - ref)
+    cut = l9_cut(lam)
+    return ref * (1.0 - sum(L9_SHARES[q] * cut[q] for q in L9_PARTS))
+
+
+def l9_parts(a45_2025, years, lam, w):
+    """{typology: {part: A4-A5 kg/m2 by year}}: a45_2025 x share x ref(y) x (1 - w(y) cut) (lam None: the Reference)."""
+    ref = a45_reference(years)
+    cut = l9_cut(0.0 if lam is None else lam)
+    return {t: {q: float(a45_2025[t]) * L9_SHARES[q] * ref * (1.0 - np.asarray(w, float) * cut[q]) for q in L9_PARTS}
+            for t in a45_2025}
 
 
 # ============================================================
@@ -574,7 +643,18 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     v0 = float(B['v_forward'])
     vc = B['vacancy_consistent']
     v_min, y_min = float(vc.min()), int(vc.idxmin())
-    out['L2'] = dict(subrule='B', v={'reference': v0, 'moderate': (v0 + v_min) / 2.0, 'ambitious': v_min}, tl=0.0,
+    import os
+    oe = pd.read_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), FILE_OECD_VACANCY), comment='#')
+    sw = oe[oe['country'] == L2_TL_COUNTRY].iloc[0]
+    v_tl = float(sw['vacant_incl_seasonal_pct']) / 100.0
+    if not 0.0 < v_tl < v_min:
+        raise SystemExit(f'STOP (L2): the TL vacancy {v_tl:.4f} is not below the Ambitious {v_min:.4f}.')
+    out['L2'] = dict(subrule='B', v={'reference': v0, 'moderate': (v0 + v_min) / 2.0, 'ambitious': v_min}, tl=v_tl,
+                     tl_source=dict(file=FILE_OECD_VACANCY, workbook='OECD (2024) Affordable Housing Database, HM1.1',
+                                    sheet='HM1.1.2', cell=str(sw['cell_panel_b']), panel='B (vacant dwellings and '
+                                    'seasonal/holiday homes)', country=L2_TL_COUNTRY, year=int(sw['year']),
+                                    value_pct=float(sw['vacant_incl_seasonal_pct'])),
+                     tl_note=L2_TL_NOTE,
                      census_consistent={int(k): float(v) for k, v in vc.items()}, census_consistent_min_year=y_min,
                      census_consistent_2023=float(vc.loc[2023]), floor=L2_VACANCY_FLOOR,
                      anchor=f'{100 * v_min:.2f}% ({y_min} census minimum, one definition)',
@@ -649,6 +729,37 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                                                  for y in L8_REPORT_YEARS},
                                        A_1_ratio=float(cases15.loc[cases15['id'] == 'A_1', 'ratio'].iloc[0]),
                                        note='report only; the adopted estimate keeps n = 14 (Detached, Townhouses)')
+    # L8 on the case paths of the run's L10 level (MODEL v4.10.0): the archetype multiplier m is uniform over the
+    # sample (Detached and Townhouses share the single-family archetype) and cancels exactly in the ratios, so the
+    # ratios differ only where the L10 class factors act (L10 at TL): x_i(y) = [path_i(y) - sum_k P_ik(y) (1 - c_k(y))]
+    # / the same pooled
+    cf = l10_class_factor('tl', years)
+    if cf:
+        import Building_factors as BF
+        cp = pd.read_csv(BF.OUT_A13_CLASS_BLD)
+        variant = BF.decarb_variant(settings.DECARB_MODE, settings.DECARB_ITEM_CASE)
+        cp = cp[cp['Variant'] == (variant or 'horup_item')]
+        w10 = l10_weight(years)
+        red_tl = pd.DataFrame(0.0, index=factors_building['id'], columns=[int(y) for y in years])
+        for k, c in cf.items():
+            g = cp[cp['Class'] == k].pivot(index='id', columns='Year', values='A13_kgCO2e_per_m2')
+            g = (g.reindex(index=factors_building['id'], columns=[int(y) for y in years]) if variant else
+                 pd.DataFrame(np.repeat(g.reindex(index=factors_building['id'])[int(years[0])].to_numpy()[:, None],
+                                        len(years), axis=1), index=factors_building['id'], columns=[int(y) for y in years]))
+            red_tl = red_tl + g.fillna(0.0) * (w10 * (1.0 - c))[None, :]
+        by_t, _ = case_paths(factors_building, red_case + red_tl)
+        by_t_all, _ = case_paths(factors_building, red_case + red_tl, typologies=tuple(typ))
+        r_tl = np.array([hd_quantile(by_t[int(y)]['ratio'].values, HD_Q) for y in years])
+        tl_t = {}
+        for t in typ:
+            ind = factors_building[(factors_building['Typology'] == t) & (factors_building['duplicate_of'].fillna('') == '')]
+            own = np.array([float(by_t_all[int(y)][by_t_all[int(y)]['typology'] == t]['ratio'].min()) for y in years])
+            tl_t[t] = np.minimum(own, r_tl) if len(ind) >= 2 else r_tl.copy()
+        out['L8']['at_l10_tl'] = dict(
+            r={'reference': yy(np.ones(len(years))), 'moderate': yy((1.0 + r_tl) / 2.0), 'ambitious': yy(r_tl)},
+            tl={t: yy(v) for t, v in tl_t.items()},
+            r_report={int(y): float(r_tl[list(years).index(y)]) for y in L8_REPORT_YEARS},
+            basis='the case paths with the L10 class factors at TL (near-zero cement and steel)')
 
     # ---- L9 Construction-stage carbon [C] ----
     a45 = {t: float(B['MAT_STAGE']['A4-A5'][t].sum()) for t in typ}
@@ -658,10 +769,15 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     if chk > 1e-9:
         raise SystemExit(f'L9: the model A4-A5 path is not a45_2025 x e^(-0.01 (y - 2025)) (max abs diff {chk:.2e}).')
     out['L9'] = dict(subrule='C', a45_2025=a45, target={lv: yy(a45_target(years, LAMBDA[lv])) for lv in LAMBDA},
-                     tl=0.0, reference_check_max_abs=chk,
-                     anchor='A4-A5 linear to zero by 2050 (end year: NZ 2050 target, Climate Change Response Act '
-                            '2002, s 5Q (as amended 2025); zero site emissions: City of Oslo 2025)',
-                     assumption='A5 treated as energy: site waste assumed eliminated (upper bound)')
+                     tl=yy(a45_target(years, 'tl')), reference_check_max_abs=chk,
+                     medians_kg_per_m2_yr={k: v for k, (_, v) in L9_MEDIANS.items()},
+                     shares=dict(L9_SHARES), cut={lv: l9_cut(LAMBDA[lv]) for lv in LAMBDA} | {'tl': l9_cut('tl')},
+                     anchor='site energy -85% (zero-emission site machinery, City of Oslo 2025); A4-A5 split by the '
+                            'medians of Kanafani et al. (2023)',
+                     caveat='Oslo\'s definition covers machinery inside the site fence (scope 1); applying it to all '
+                            'site energy assumes the electricity and heat used on site are decarbonised too',
+                     tl_note='A4 and site energy zero (physically attainable: electric machinery and freight exist); '
+                             'site waste persists, its material carbon belongs to L8 / L10')
 
     # ---- L10 Production decarbonisation [C] ----
     if [int(y) for y in years] != list(range(2025, 2051)):
@@ -689,8 +805,20 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                       archetype_note='author decision: Single family houses for Detached and Townhouses, Multi '
                                      'dwellings for Apartments; the extra decarbonisation is spread evenly across '
                                      'materials (the envelope is reported by archetype only)',
-                      tl_note='TL10 = Ambitious: no documented value lies beyond the lower envelope of the 9 '
-                              'backgrounds (as TL8 = Ambitious for townhouses and apartments)')
+                      tl_note='L10 at TL: the Ambitious envelope m(y) x [(1 - s(y)) + s(y) k] on the cement-based and '
+                              'steel classes (near-zero emissions cement and steel), m(y) on every other class',
+                      tl_classes={k: dict(k=v, review=L10_CLASS_REVIEW[k]) for k, v in L10_TL_CLASSES.items()},
+                      class_review=dict(L10_CLASS_REVIEW), elevator_note=L10_ELEVATOR_NOTE,
+                      k=dict(cement=L10_K_CEMENT, steel=L10_K_STEEL,
+                             source='IEA (2022) Definitions for near-zero and low-emissions steel and cement, and '
+                                    'underlying emissions measurement methodologies: thresholds p. 17 (125 kg CO2-eq/t '
+                                    'cement, 100% clinker; 400 kg CO2-eq/t crude steel, 100% iron); BAT reference values '
+                                    'p. 22-23 footnote 8, citing IEA (2022) Achieving Net Zero Heavy Industry Sectors in '
+                                    'G7 Members (850 kg CO2-eq/t cement; 2,945 kg CO2-eq/t crude steel)'),
+                      near_zero_share=dict(milestones={str(k): v for k, v in L10_S_MILESTONES.items()},
+                                           path=yy(l10_near_zero_share(years)),
+                                           source='IEA Cement tracking, NZE milestones (as supplied by the author; not '
+                                                  'verified in this session); steel takes the same s (assumption)'))
 
     # ---- L7 Soil-aware planning [C] ----
     soil = {t: float(B['SOIL_INTENSITY'][t]) for t in typ}
@@ -705,11 +833,14 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     E0 = B['engine_out']['50th']
     s_ref = float(np.sum(E0['soil_free_gfa'][1:]) / np.sum(E0['total'][1:]))
     out['L6'] = dict(subrule='C', s={'reference': s_ref, 'moderate': (s_ref + L6_S_AMBITIOUS) / 2.0,
-                                     'ambitious': L6_S_AMBITIOUS}, tl=1.0, s_ref_basis='the Reference of this run: '
+                                     'ambitious': L6_S_AMBITIOUS}, tl=L6_S_TL, s_ref_basis='the Reference of this run: '
                      'replacement (soil-free) floor area / total floor area built, ratio of sums 2026-2050', context=dict(L6_CONTEXT),
                      anchor='59% of new floor area on previously developed land (England 2018-21, DLUHC 2022)',
                      note='lambda = 0 is the lever off (the Reference); a constant s = s_ref would act in the years whose '
-                          'own replacement share is below s_ref')
+                          'own replacement share is below s_ref',
+                     tl_source='DCLG (2010) Land use change statistics England, provisional estimates for 2009: 80% of '
+                               'dwellings (including conversions) built on previously developed land, unchanged from 2008 '
+                               '(England\'s peak share)')
     out['tl_strength'] = tl_strength(out, years)
     return out
 
@@ -727,22 +858,25 @@ def tl_strength(p, years):
              ok=all(v <= p['L5']['r']['ambitious'] for v in p['L5']['tl'].values())),
         dict(item='TL1', tl=f"S = {p['L1']['tl']:.4f}", ambitious=f'S_amb max {amb3.max():.4f}',
              ok=bool(np.all(p['L1']['tl'] >= amb3))),
-        dict(item='TL2', tl='v = 0', ambitious=f"v = {p['L2']['v']['ambitious']:.4f}", ok=0.0 <= p['L2']['v']['ambitious']),
+        dict(item='TL2', tl=f"v = {p['L2']['tl']:.4f}", ambitious=f"v = {p['L2']['v']['ambitious']:.4f}",
+             ok=p['L2']['tl'] <= p['L2']['v']['ambitious']),
         dict(item='TL3', tl='d = 1 (demolition and surge)', ambitious=f"d = {p['L3']['d']['ambitious']}",
              ok=min(p['L3']['tl'].values()) >= p['L3']['d']['ambitious']),
         dict(item='TL8', tl='by year: ' + str({t: round(v, 4) for t, v in p['L8']['tl_2025'].items()}) + ' (2025)',
              ambitious=f"r(y), {p['L8']['r_2025']['ambitious']:.4f} (2025)",
              ok=all(by_year(p['L8']['tl'][t], y) <= by_year(p['L8']['r']['ambitious'], y) + 1e-15
                     for t in p['L8']['tl'] for y in yrs)),
-        dict(item='TL9', tl='A4-A5 = 0', ambitious='linear to zero in 2050', ok=bool(np.all(a45_ambitious(years) >= 0.0))),
-        dict(item='TL10', tl='= Ambitious (lower envelope of the 9 backgrounds)',
+        dict(item='TL9', tl='A4 and site energy zero, waste as the Reference', ambitious='site energy -85%',
+             ok=all(by_year(p['L9']['tl'], y) <= by_year(p['L9']['target']['ambitious'], y) + 1e-15 for y in yrs)),
+        dict(item='TL10', tl='Ambitious envelope x near-zero cement and steel (class factors <= 1)',
              ambitious='m(2050) ' + ', '.join(f"{t} {by_year(v, 2050):.3f}" for t, v in p['L10']['m']['ambitious'].items()),
              ok=all(by_year(p['L10']['tl'][t], y) <= by_year(p['L10']['m']['ambitious'][t], y) + 1e-15
                     for t in p['L10']['tl'] for y in yrs)),
         dict(item='TL7', tl=str({t: round(v, 2) for t, v in p['L7']['tl'].items()}),
              ambitious=f"x = {p['L7']['x']['ambitious']}",
              ok=all(p['L7']['tl'][t] <= soil[t] * (1 - p['L7']['x']['ambitious']) for t in soil)),
-        dict(item='TL6', tl='s = 1', ambitious=f"s = {p['L6']['s']['ambitious']}", ok=1.0 >= p['L6']['s']['ambitious'])]
+        dict(item='TL6', tl=f"s = {p['L6']['tl']:.2f}", ambitious=f"s = {p['L6']['s']['ambitious']}",
+             ok=p['L6']['tl'] >= p['L6']['s']['ambitious'])]
 
 
 def stop_checks(p):
@@ -770,7 +904,7 @@ def lam_of(level):
     return lam
 
 
-def native(p, lever, level, years):
+def native(p, lever, level, years, l10_tl=False):
     """The native parameter of `lever` at `level` (by typology for L4, L5, L7; by year for L1, L9; by typology and
     year for L8, L10; scalars otherwise). Moderate is the exact midpoint of Reference and Ambitious (lambda = 0.5)."""
     lam = lam_of(level)
@@ -790,10 +924,11 @@ def native(p, lever, level, years):
         return dict(p['L3']['tl']) if tl else dict(d_demolition=lam * p['L3']['d']['ambitious'],
                                                     d_surge=lam * p['L3']['d']['ambitious'])
     if lever == 'L8':
+        q = p['L8']['at_l10_tl'] if (l10_tl and 'at_l10_tl' in p['L8']) else p['L8']
         if tl:
-            return {t: np.array([by_year(v, int(y)) for y in years]) for t, v in p['L8']['tl'].items()}
-        amb = np.array([by_year(p['L8']['r']['ambitious'], int(y)) for y in years])
-        return {t: interp(1.0, amb) for t in p['L8']['tl']}
+            return {t: np.array([by_year(v, int(y)) for y in years]) for t, v in q['tl'].items()}
+        amb = np.array([by_year(q['r']['ambitious'], int(y)) for y in years])
+        return {t: interp(1.0, amb) for t in q['tl']}
     if lever == 'L10':
         src = p['L10']['tl'] if tl else p['L10']['m']['ambitious']
         m = {t: np.array([by_year(v, int(y)) for y in years]) for t, v in src.items()}
@@ -967,7 +1102,7 @@ def inputs(base, p, levels, ramp_name=None):
     # L8 material carbon
     r6 = {t: 1.0 for t in typ}
     if 'L8' in lv:
-        r6 = native(p, 'L8', lv['L8'], years)
+        r6 = native(p, 'L8', lv['L8'], years, l10_tl=lv.get('L10') == 'tl')   # L8 on the L10 level's case paths
         for k in ('intensity', 'intensity_upfront'):
             fi[k] = l8_intensity(fi[k], base['a13_2025'], base['red13'], r6, w)
     # L10 production decarbonisation: the A1-A3 term after L8 x m(y) (no logistic weight: the scenario path is the
@@ -994,10 +1129,7 @@ def inputs(base, p, levels, ramp_name=None):
     w9 = w
     if 'L9' in lv:
         target45 = native(p, 'L9', lv['L9'], years)
-        # phased once: Ambitious / Moderate follow their own path (which starts at the Reference in 2026); the TL9
-        # bound (zero, a constant) takes the common logistic adoption like every TL item
-        w9 = w if lv['L9'] == 'tl' else (np.asarray(years) > OBSERVED_YEAR).astype(float)
-        d45 = l9_delta(base['a45_2025'], years, target45, w9)
+        d45 = l9_delta(base['a45_2025'], years, target45, w9)   # the common adoption window (MODEL v4.10.0)
         for k in ('intensity', 'intensity_upfront'):
             fi[k] = _add(fi[k], d45)
     # L7 soil-aware planning: soil factor by year
@@ -1017,7 +1149,8 @@ def inputs(base, p, levels, ramp_name=None):
         fi['clip_soil_share'] = True                  # zero-building years possible in runs that release dwellings
     info.update(hh=hh, S=S, r6=r6, m10=m10, q10=q10, prod2050=prod2050,
                 a13=a13_path(base['a13_2025'], base['red13'], r6, w, q10),
-                a45=a45_path(base['a45_2025'], years, target45, w9), soil_path=soil_path)
+                a45=a45_path(base['a45_2025'], years, target45, w9), soil_path=soil_path,
+                a45_parts=l9_parts(base['a45_2025'], years, lv.get('L9'), w9))
     return fi, info
 
 
@@ -1098,7 +1231,8 @@ def pct(x, nd=1):
 LEVEL_RULE = {
     'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'official projection: Stats NZ propensity B',
            'best observed: the national household size of 1991 (no logical bound)'),
-    'L2': ('2023 census vacancy', 'achieved in NZ: the 1996 census minimum', 'logical bound: zero vacancy'),
+    'L2': ('2023 census vacancy', 'achieved in NZ: the 1996 census minimum',
+           'best observed internationally: lowest nationwide rate in the OECD table, Switzerland 1.31% (2022)'),
     'L3': ('current demolition and surge', 'peer-reviewed scenario: -40% demolition (Pellan et al. 2024)',
            'logical bound: no demolition'),
     'L4': ('2023-2025 dwelling sizes', 'achieved in NZ: the smallest annual mean consented size',
@@ -1106,18 +1240,18 @@ LEVEL_RULE = {
     'L5': ('case-study typology medians', 'achieved: the top-15% case-study design density (HD q0.15)',
            'best observed: the densest case-study design'),
     'L6': ('the Reference share on previously developed land', 'achieved abroad: England 2018-21 (DLUHC 2022)',
-           'logical bound: 100% brownfield'),
+           'best observed internationally: England\'s peak share, 80% (2008-2009; DCLG 2010)'),
     'L7': ('area-weighted soil orders', 'peer-reviewed scenario: SOC-aware allocation (-14.6%)',
            'logical bound: the lowest soil order'),
     'L8': ('pooled case-study A1-A3', 'achieved: the top-15% case-study A1-A3 (HD q0.15)',
            'best observed: the lowest-carbon NZ case study'),
-    'L9': ('business-as-usual A4-A5 (Resch: -1%/yr)', 'documented requirement: linear to zero by 2050 (end year: NZ 2050 '
-           'target, CCRA s 5Q (as amended 2025); zero site emissions: City of Oslo 2025)',
-           'theoretical bound: zero A4-A5 (construction waste cannot strictly reach zero; LCAQuick does not split '
-           'A4 from A5)'),
+    'L9': ('business-as-usual A4-A5, every part -1%/yr (Resch et al. 2021)',
+           'achieved: zero-emission site machinery, site energy -85% (City of Oslo 2025)',
+           'physically attainable: zero-emission transport and site energy; site waste as the Reference'),
     'L10': ('the Horup et al. (2025) nine-scenario average production paths (S4 item paths)',
             'documented scenario: the lowest of the 9 prospective backgrounds by year (Horup et al. 2025, Table S3)',
-            '= Ambitious: no documented value beyond the lower envelope of the 9 backgrounds')}
+            'documented scenario bound: the Ambitious envelope with near-zero emissions cement and steel (IEA 2022 '
+            'definitions; near-zero share 8% in 2030, 93% in 2050)')}
 
 
 def lever_table(p):
@@ -1141,7 +1275,11 @@ def lever_table(p):
             rep_ = q['report']
             fmt = lambda d: '; '.join(f"{t} " + ', '.join(f"{y} {by_year(v, y):.3f}" for y in L10_REPORT_YEARS)
                                       for t, v in d.items())
-            mod, amb, tl = 'm(y): ' + fmt(rep_['moderate']), 'm(y): ' + fmt(rep_['ambitious']), '= Ambitious'
+            mod, amb = 'm(y): ' + fmt(rep_['moderate']), 'm(y): ' + fmt(rep_['ambitious'])
+            tl = (f"m(y) as Ambitious x [(1 - s) + s k] on cement-based classes (k = {L10_K_CEMENT:.3f}: CONCRETE, "
+                  f"REINFORCED CONCRETE, FIBRE CEMENT, PLASTER) and steel (k = {L10_K_STEEL:.3f}: STEEL and the "
+                  f"elevator, {L10_ELEVATOR_NOTE}); s = " + ', '.join(f'{k} {v:.2f}' for k, v in L10_S_MILESTONES.items())
+                  + ' (linear; 0 through 2026)')
         elif L == 'L5':
             e = q['estimator']
             mod = f"r = {q['r']['moderate']:.4f}"
@@ -1152,20 +1290,30 @@ def lever_table(p):
             amb = f"S 2050 = {by_year(q['S']['ambitious'], 2050):.4f} (Reference {by_year(q['S_ref'], 2050):.4f})"
             tl = f"S = {q['tl']:.4f} ({q['tl_year']})"
         elif L == 'L2':
-            mod, amb, tl = pct(q['v']['moderate'], 2), pct(q['v']['ambitious'], 2), 'v = 0'
+            src = q['tl_source']
+            mod, amb = pct(q['v']['moderate'], 2), pct(q['v']['ambitious'], 2)
+            tl = (f"{pct(q['tl'], 2)} ({src['country']} {src['year']}; OECD HM1.1, sheet {src['sheet']}, cell "
+                  f"{src['cell']}, panel B)")
         elif L == 'L3':
             mod, amb, tl = f"d = {q['d']['moderate']:.2f}", f"d = {q['d']['ambitious']:.2f}", 'no demolition, no surge'
         elif L == 'L9':
-            mod = f"factor 2050 = {by_year(q['target']['moderate'], 2050):.3f}"
-            amb, tl = 'factor 2050 = 0 (linear from the 2026 Reference value)', 'A4-A5 = 0 (theoretical bound)'
+            sh = q['shares']
+            parts = (f"transport / site energy / waste = {sh['transport']:.2f} / {sh['site_energy']:.2f} / "
+                     f"{sh['waste']:.2f} of A4-A5, each -1%/yr")
+            mod = f"site energy -{100 * q['cut']['moderate']['site_energy']:.1f}%; " + parts
+            amb = f"site energy -{100 * q['cut']['ambitious']['site_energy']:.0f}%; " + parts
+            tl = 'transport and site energy zero, waste as the Reference; ' + parts
         elif L == 'L7':
             mod, amb = f"x = {q['x']['moderate']:.3f}", f"x = {q['x']['ambitious']:.3f}"
             tl = ', '.join(f'{t} {v:.1f}' for t, v in q['tl'].items()) + ' kg CO2e/m2 (lowest soil order)'
         else:
             mod = f"s = {q['s']['moderate']:.3f} (s_ref {q['s']['reference']:.3f})"
-            amb, tl = f"s = {q['s']['ambitious']:.2f}", 's = 1'
+            amb, tl = f"s = {q['s']['ambitious']:.2f}", f"s = {q['tl']:.2f} (England 2009, DCLG 2010)"
         rows.append(dict(item=f'{L} {LEVER_NAMES[L]}', strategy=f'{LEVER_STRATEGY[L]} {STRATEGY_NAMES[LEVER_STRATEGY[L]]}',
                          subrule=q['subrule'], anchor=q['anchor'], parameter=LEVER_PARAMETER[L], band=BAND_TARGET[L],
                          moderate=mod, ambitious=amb, tl=tl,
                          rule='Reference: {}; Ambitious: {}; TL: {}'.format(*LEVEL_RULE[L])))
+    empty = [(r['item'], k) for r in rows for k, v in r.items() if not str(v).strip()]
+    if empty:
+        raise SystemExit(f'STOP: Extended Data Table 1 has empty cells: {empty}')
     return rows

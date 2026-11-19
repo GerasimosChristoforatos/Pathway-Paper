@@ -141,7 +141,7 @@ def ed3():
     stl = pa[(pa['run'] == 'TL') & (pa['scenario'] == 'REF')].set_index('year')['household_size']
     P.line(ax[1], sb.index, sb.values, color=S.PATHWAY_SETTING['ambitious'], lw=S.LW_BOLD,
            label='Stats NZ Medium B (L1 Ambitious)')
-    ax[1].plot(stl.index, stl.values, color=S.TL, lw=S.LW_BOLD, label=f"{N.TL['TL']} (TL1)")   # kink kept (rate limit)
+    ax[1].plot(stl.index, stl.values, color=S.TL, lw=S.LW_BOLD, label=f"{N.TL['TL']} (L1 at TL)")   # kink kept (rate limit)
     ax[1].set_ylabel('Household size (persons per household)')
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Household size')
@@ -150,7 +150,7 @@ def ed3():
     _save(fig, 'ED2_household_formation_size',
           note=f"(b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious "
                f"path and Extended Data Fig. 4 row 1 ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
-               f"pathways phase it in by 2035); {N.TL['TL']} (TL1) is the household size of the TL run, rising at the "
+               f"pathways phase it in by 2035); {N.TL['TL']} (L1 at TL) is the household size of the TL run, rising at the "
                f"rate limit from the Reference in {int(stl.index[0])} to {l1['tl']:.2f} (the {l1['tl_year']} level) "
                f"at mid-{reach - 1} (the Methods' {reach - 1}.5), held from {reach}.")
 
@@ -207,13 +207,13 @@ def sf2():
     tl1 = D.js('pathways/levers.json')['L1']
     floored = [int(y) for y, v in a['level_by_year'].items() if float(v) < float(tl1['S']['ambitious'][str(y)])]
     floor_txt = f'; never below L1 Ambitious, which binds from {floored[0]}' if floored else ''
-    age_note = (f" TL1 holds household size at {tl1['tl']:.2f} ({tl1['tl_year']}, the highest observed) regardless of "
+    age_note = (f" L1 at TL holds household size at {tl1['tl']:.2f} ({tl1['tl_year']}, the highest observed) regardless of "
                 f"age structure: with the 2050 population this requires about "
                 f"{100 * a['tl1_households_per_person_fall_at_every_age']:.1f}% fewer households per person than in "
-                f"2023 at every age. With an age-standardised TL1 (the lower of the 2023 and Stats NZ Medium B "
+                f"2023 at every age. With an age-standardised L1 at TL (the lower of the 2023 and Stats NZ Medium B "
                 f"living-arrangement rates by age group{floor_txt}) TL is {a['carbon_kt']:,.0f} kt, LoE AR {a['LoE_AR']:.2f}"
                 + (f", P(LoE AR \u2264 1) = {100 * float(m['probability_LoE_at_most_1'].iloc[0]):.1f}% over the draws"
-                   if len(m) else '') + ' (the sensitivity row TL-TL1-age-standardised).')
+                   if len(m) else '') + ' (the sensitivity row: L1 at TL age-standardised).')
     _save(fig, 'SF14_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
                                           f"{j['wilson_95'][1]:.3f}); (b) {note_b}.{age_note}")
 
@@ -478,6 +478,13 @@ def edt1():
                         par = f"m {y} (A1-A3 production multiplier; archetype {q['archetype'][t]})"
                     rows.append(dict(lever=f'{L} {N.LEVERS[L]}', subrule=q['subrule'], typology=t, parameter=par,
                                      moderate=v[0], ambitious=v[1], tl=v[2]))
+                if L == 'L10':                        # the near-zero cement and steel factors at TL (MODEL v4.10.0)
+                    for grp, k in (('cement-based', LV.L10_K_CEMENT), ('steel', LV.L10_K_STEEL)):
+                        for y in yrs:
+                            sy = LV.by_year(q['near_zero_share']['path'], y)
+                            rows.append(dict(lever=f'{L} {N.LEVERS[L]}', subrule=q['subrule'], typology=t,
+                                             parameter=f'class factor c {y}, {grp} classes (k = {k:.3f}, s = {sy:.2f})',
+                                             moderate=1.0, ambitious=1.0, tl=(1 - sy) + sy * k))
                 continue
             elif L == 'L7':
                 s0 = q['soil_factor_2025'][t]
@@ -493,8 +500,9 @@ def edt1():
                 v = [q['d']['moderate'], q['d']['ambitious'], 1.0]
                 par = 'd, reduction of demolition and surge (all typologies)'
             elif L == 'L9':
-                v = [q['target']['moderate']['2050'], q['target']['ambitious']['2050'], 0.0]
-                par = 'A4-A5 factor 2050 (all typologies)'
+                v = [q['target']['moderate']['2050'], q['target']['ambitious']['2050'], LV.by_year(q['tl'], 2050)]
+                par = ('A4-A5 factor 2050 relative to 2025 (all typologies; transport / site energy / waste '
+                       + ' / '.join(f"{x:.2f}" for x in q['shares'].values()) + ')')
             else:
                 v = [q['s']['moderate'], q['s']['ambitious'], q['tl']]
                 par = 's, brownfield share (all typologies)'

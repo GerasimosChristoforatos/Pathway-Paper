@@ -221,15 +221,34 @@ def test_run_meta():
     assert {'seeds', 'git_hash', 'input_hash', 'timestamp'} <= set(m)
 
 
-def test_l9_phased_once():
-    """L9 (MODEL v4.7.0): Ambitious follows its own path, from the 2026 Reference value linearly to zero in 2050, with
-    no logistic weight; Moderate is the per-year midpoint; 2025-2026 are the Reference."""
+def test_l9_three_parts():
+    """L9 (MODEL v4.10.0): A4-A5 split into transport / site energy / waste by the Kanafani et al. (2023) medians;
+    Ambitious site energy -85%, Moderate the midpoint, TL transport and site energy zero; the parts sum to the total."""
     import levers as LV
     years = np.arange(2025, 2051)
-    ref, amb = LV.a45_reference(years), LV.a45_ambitious(years)
-    assert np.array_equal(amb[:2], ref[:2]) and amb[-1] == 0.0
-    assert np.allclose(np.diff(amb[1:]), -ref[1] / (2050 - 2026), rtol=1e-12)
-    assert np.allclose(LV.a45_target(years, 0.5), (ref + amb) / 2, rtol=1e-12)
+    sh = LV.L9_SHARES
+    assert sh['transport'] == pytest.approx(0.28 / 1.16) and sh['site_energy'] == pytest.approx(0.39 / 1.16)
+    assert sum(sh.values()) == pytest.approx(1.0, abs=1e-15)
+    ref = LV.a45_reference(years)
+    assert np.allclose(LV.a45_target(years, 1.0), ref * (1 - 0.85 * sh['site_energy']), rtol=1e-14)
+    assert np.allclose(LV.a45_target(years, 0.5), (ref + LV.a45_target(years, 1.0)) / 2, rtol=1e-14)
+    assert np.allclose(LV.a45_target(years, 'tl'), ref * sh['waste'], rtol=1e-14)
+    w = LV.ramp(years)
+    parts = LV.l9_parts({'x': 10.0}, years, 'tl', w)['x']
+    assert np.allclose(sum(parts.values()), 10.0 * (ref + w * (LV.a45_target(years, 'tl') - ref)), rtol=1e-14)
+
+
+def test_l10_class_factors():
+    """L10 at TL (MODEL v4.10.0): near-zero cement and steel, c = (1 - s) + s k, s = 0 through 2026, 0.08 (2030),
+    0.93 (2050); no class factor below TL."""
+    import levers as LV
+    years = np.arange(2025, 2051)
+    s_ = LV.l10_near_zero_share(years)
+    assert (s_[years <= 2026] == 0).all() and s_[years == 2030][0] == pytest.approx(0.08) and s_[-1] == pytest.approx(0.93)
+    c = LV.l10_class_factor('tl', years)
+    assert c['STEEL'][-1] == pytest.approx(1 - 0.93 + 0.93 * 400 / 2945)
+    assert c['CONCRETE'][-1] == pytest.approx(1 - 0.93 + 0.93 * 125 / 850)
+    assert LV.l10_class_factor('ambitious', years) == {} and LV.l10_class_factor(0.5, years) == {}
 
 
 def test_tl1_age_standardised_row():

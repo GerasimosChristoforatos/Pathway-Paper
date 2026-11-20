@@ -173,7 +173,7 @@ Writes `outputs/data/factors/`.
 | High | the 2018–2023 rate persists |
 | Very High | the interval-length-weighted trend of the census rates continues |
 
-The variants are deterministic runs (ED3); they are not run through the Monte Carlo.
+The variants are deterministic runs (ED7); they are not run through the Monte Carlo.
 
 ### 4.5 Population projection
 
@@ -259,7 +259,7 @@ floor area                      = in-scope dwellings x blended dwelling size
 ## 5. Diagnostics, sensitivity and Monte Carlo
 
 **`Diagnostics.py`** writes the figure source data of household formation, the stock and vacancy, and the vacancy
-definition (SF1, ED9).
+definition (SF1, ED3).
 - The histories are one bar per census interval (interval means): between censuses, annual detail is not identified.
 - Interval values: `validation.stock_identity_history` and `validation.household_formation_history`.
 
@@ -275,7 +275,7 @@ definition (SF1, ED9).
   timing).
 
 Population rows reuse the projection's 5th / 95th paths. Carbon-factor and soil-order rows re-weight the Reference
-floor area. One-at-a-time ranges are not additive (ED4, Fig7a).
+floor area. One-at-a-time ranges are not additive (ED6, Fig7a).
 
 **`MonteCarlo.py`** samples the Reference only, by Latin hypercube (5,000 draws in the full profile, 1,000 in the
 light; `runprofile.py`).
@@ -287,7 +287,7 @@ light; `runprofile.py`).
   - a stratified bootstrap of the carbon factors.
 - Each draw runs the same engine chain. The central draw is checked against the projection to 1e-9.
 - **Sobol indices** (full profile only) are grouped for population and household size (one z).
-- Replacement-level uncertainty is not sampled: it is reported by the deterministic variants (ED3) and the
+- Replacement-level uncertainty is not sampled: it is reported by the deterministic variants (ED7) and the
   one-at-a-time rows.
 - **Writes** `outputs/data/montecarlo/`: draws, summary, annual percentiles, convergence, input distributions,
   Sobol.
@@ -303,7 +303,7 @@ light; `runprofile.py`).
 - **`gap_2026.py`:** decomposition of the 2026 gap.
 - **`tools/`:**
   - `overbuild_2026.py`: overbuild report;
-  - `demand_balance.py`: completion-lag comparison, SF7;
+  - `demand_balance.py`: completion-lag comparison, SF2;
   - `replacement_scenarios.py`: variant table;
   - `reconciliation.py`: reconciliation;
   - `figures_report.py`: reality checks and validation figure data;
@@ -453,7 +453,7 @@ TL and the instant TL.
 - Insight statistics (`mcstats.py`): SRC / PRCC with bootstrap intervals, LOWESS fits, and the Firth logistic for
   P(TL LoE AR ≤ 1) against the 2050 population.
 
-**`tools/sensitivity_tables.py`.** Groups the one-at-a-time rows into the tables of ED3, ED4, ED5 and the Fig7a
+**`tools/sensitivity_tables.py`.** Groups the one-at-a-time rows into the tables of ED7, ED6, ED5 and the Fig7a
 tornado, asserting that every run an existing file holds reproduces it.
 
 ---
@@ -476,7 +476,7 @@ The deterministic results do not depend on the profile (`tests/test_profiles.py`
 
 | folder | content |
 |---|---|
-| `paper_main/`, `paper_extended/`, `supplementary/` | Fig1–Fig7; ED1–ED9 and EDT1; SF1–SF15 and ST1 |
+| `paper_main/`, `paper_extended/`, `supplementary/` | Fig1–Fig7; ED1–ED9 and EDT1; SF1–SF15 and ST8 |
 | `data/baseline/`, `montecarlo/`, `aesa/`, `pathways/`, `sensitivity/`, `factors/`, `figure_source/` | every number the model reports |
 | `data/metrics.json` | the headline metrics |
 | `reports/` | RESULTS, ASSUMPTIONS, METHODS_DRAFT, LEVERS_TABLE and the diagnostic reports |

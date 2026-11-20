@@ -226,7 +226,7 @@ def stacked_ticklabels(fig, ax, labels, size, small):
 # panels and axes
 # ---------------------------------------------------------------------------
 # gap in points between the panel letter (right-aligned) and the axes left edge: a fixed gap, not a fraction of the
-# axes width, so the letter clears the title on narrow panels too (ED9c)
+# axes width, so the letter clears the title on narrow panels too (ED3c)
 PANEL_LABEL_GAP_PT = 6.0
 
 
@@ -240,7 +240,7 @@ def panel_label(ax, letter, x=0.0, y=1.02, raise_pt=0.0):
 
 
 # points by which panel(..., above_label=True) lifts the title and letter: room for a one-line label drawn at the top
-# of a reference line (va='bottom' at the axes top, FONT_SMALL), as Fig7a, ED4 and ED5
+# of a reference line (va='bottom' at the axes top, FONT_SMALL), as Fig7a, ED6 and ED5
 ABOVE_LABEL_PT = S.FONT_SMALL * 1.35
 
 
@@ -369,7 +369,7 @@ def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', s
     order), the net a black line. parts: [(band id, values)]; net: the run's total to check against (1e-9).
     smooth (annual series only): each band PCHIP-interpolated separately, then stacked (the net check
     runs on the annual values). styles: {part id: patch style} for parts that are not demand bands (the
-    ED9b components); the others take band_style. Returns (up, down) at the annual values, with down <= 0."""
+    ED3b components); the others take band_style. Returns (up, down) at the annual values, with down <= 0."""
     x = np.asarray(x, float)
     if smooth:
         a_up = np.sum([np.clip(np.asarray(v, float), 0, None) for _, v in parts], axis=0)
@@ -421,7 +421,7 @@ def bars_cumulative(ax, x, parts, width, net=None, tick=True, styles=None):
     for bid, v in parts:
         neg = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), None, 0)
         if np.any(neg < 0):
-            # the outline in the caller's own face colour when it gives one (ED9c components that are not
+            # the outline in the caller's own face colour when it gives one (ED3c components that are not
             # demand bands had fallen back to the replacement colour)
             nst = (dict(facecolor='none', edgecolor=styles[bid]['facecolor'], linewidth=S.LW_OUTLINE, hatch=None)
                    if styles and bid in styles else negative_bar_style(bid))
@@ -518,7 +518,7 @@ def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History
 
 
 # ---------------------------------------------------------------------------
-# paired tornado grouped by category (ED4, ED5; the Fig7a colour rule)
+# paired tornado grouped by category (ED6, ED5; the Fig7a colour rule)
 # ---------------------------------------------------------------------------
 TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = S.TORNADO_LOW, S.TORNADO_HIGH, S.TORNADO_SINGLE   # palette [one_at_a_time]
 NO_EFFECT_RTOL = 1e-4             # |change| below 0.01% of the central value: marked 'no effect'

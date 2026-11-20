@@ -158,8 +158,9 @@ L9_REF_RATE = 0.01
 # (2023) Sustainability 15(14), 10992 (61 Danish construction sites, kg CO2e per m2 per year): A4 0.28; site energy =
 # electricity 0.19 + heat 0.12 + fuel 0.08; waste 0.49 (the main A5 contributor, as Hasselsteen et al. 2025 J. Clean.
 # Prod. 521, 146243). The medians do not add, so the shares are the medians normalised. Reference: every part -1%/yr
-# (Resch et al. 2021; the total unchanged). Ambitious: site energy -85% (City of Oslo Climate Agency 2025: ~85% of
-# municipal site work with zero-emission machinery in 2024), A4 and waste as the Reference; Moderate the midpoint; at
+# (Resch et al. 2021; the total unchanged). Ambitious: site energy -85% (City of Oslo Climate Agency 2025, Barriers and
+# key success factors for zero emission construction in Oslo, v0.1: "roughly 85 percent of work at municipal
+# construction sites" with zero-emission machinery in 2024), A4 and waste as the Reference; Moderate the midpoint; at
 # TL A4 and site energy zero (electric machinery and freight exist), waste as the Reference (its material carbon
 # belongs to L8 / L10). Every level on the common 2026-2035 logistic adoption (MODEL v4.10.0: no own path).
 L9_MEDIANS = {'transport (A4)': ('transport', 0.28), 'site electricity': ('site_energy', 0.19),
@@ -179,8 +180,10 @@ FILE_OECD_VACANCY = 'data/derived/oecd_hm112_vacancy.csv'
 L2_TL_COUNTRY = 'Switzerland'
 L2_TL_NOTE = ('At the Theoretical Limit every non-market empty dwelling (holiday homes, dwellings held empty) is '
               'occupied, a choice, and only frictional market vacancy remains, at the lowest nationwide rate in the OECD '
-              'cross-country table: Switzerland 1.31% (2022; the Federal Statistical Office\'s count of empty dwellings '
-              'on 1 June across the whole stock, single-family homes included). Sweden (0.25%, 2021) is excluded: its '
+              'cross-country table: Switzerland 1.31% (2022): 61,496 empty dwellings on 1 June 2022, a share of the '
+              'total dwelling stock including single-family homes (Swiss Federal Statistical Office, empty dwellings '
+              'survey; admin.ch media release https://www.admin.ch/gov/en/start/documentation/media-releases.msg-id-'
+              '90300.html). Sweden (0.25%, 2021) is excluded: its '
               'national count (6,794 vacant units in a 4.6 M stock; OECD \'Vacant\' sheet) cannot be an all-tenure '
               'market count. One vintage (OECD 2024 table) is used for all countries; national releases after it are '
               'not.')
@@ -398,7 +401,7 @@ def l10_paths(years, path=None):
 
 def l10_multiplier(years, stat='min', path=None):
     """{typology: m(y)} = [stat_a(y) / stat_a(2025)] / [AVG_a(y) / AVG_a(2025)] with the archetype a of the typology
-    (L10_ARCHETYPE); stat 'min' = L10 Ambitious (= TL10), 'max' = the no-climate-policy sensitivity (ED4)."""
+    (L10_ARCHETYPE); stat 'min' = L10 Ambitious (= TL10), 'max' = the no-climate-policy sensitivity (ED6)."""
     rel, _ = l10_paths(years, path)
     return {t: rel[(a, stat)] / rel[(a, 'avg')] for t, a in L10_ARCHETYPE.items()}
 
@@ -772,7 +775,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                      tl=yy(a45_target(years, 'tl')), reference_check_max_abs=chk,
                      medians_kg_per_m2_yr={k: v for k, (_, v) in L9_MEDIANS.items()},
                      shares=dict(L9_SHARES), cut={lv: l9_cut(LAMBDA[lv]) for lv in LAMBDA} | {'tl': l9_cut('tl')},
-                     anchor='site energy -85% (zero-emission site machinery, City of Oslo 2025); A4-A5 split by the '
+                     anchor='site energy -85% (zero-emission site machinery, City of Oslo Climate Agency 2025); A4-A5 split by the '
                             'medians of Kanafani et al. (2023)',
                      caveat='Oslo\'s definition covers machinery inside the site fence (scope 1); applying it to all '
                             'site energy assumes the electricity and heat used on site are decarbonised too',
@@ -1246,7 +1249,7 @@ LEVEL_RULE = {
     'L8': ('pooled case-study A1-A3', 'achieved: the top-15% case-study A1-A3 (HD q0.15)',
            'best observed: the lowest-carbon NZ case study'),
     'L9': ('business-as-usual A4-A5, every part -1%/yr (Resch et al. 2021)',
-           'achieved: zero-emission site machinery, site energy -85% (City of Oslo 2025)',
+           'achieved: zero-emission site machinery, site energy -85% (City of Oslo Climate Agency 2025)',
            'physically attainable: zero-emission transport and site energy; site waste as the Reference'),
     'L10': ('the Horup et al. (2025) nine-scenario average production paths (S4 item paths)',
             'documented scenario: the lowest of the 9 prospective backgrounds by year (Horup et al. 2025, Table S3)',
@@ -1292,8 +1295,9 @@ def lever_table(p):
         elif L == 'L2':
             src = q['tl_source']
             mod, amb = pct(q['v']['moderate'], 2), pct(q['v']['ambitious'], 2)
-            tl = (f"{pct(q['tl'], 2)} ({src['country']} {src['year']}; OECD HM1.1, sheet {src['sheet']}, cell "
-                  f"{src['cell']}, panel B)")
+            tl = (f"{pct(q['tl'], 2)} ({src['country']} {src['year']}: 61,496 empty dwellings on 1 June 2022, share of "
+                  f"the total stock incl. single-family homes; OECD HM1.1, sheet {src['sheet']}, cell {src['cell']}, "
+                  f"panel B)")
         elif L == 'L3':
             mod, amb, tl = f"d = {q['d']['moderate']:.2f}", f"d = {q['d']['ambitious']:.2f}", 'no demolition, no surge'
         elif L == 'L9':

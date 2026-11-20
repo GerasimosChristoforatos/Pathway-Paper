@@ -1,13 +1,11 @@
 old_id,old_file,new_id,new_file,status
 ED1,ED1_population_households_floor_area,ED1,ED1_population_households_floor_area,same number
 ED2,ED2_household_formation_size,ED2,ED2_household_formation_size,same number
-ED3,ED3_replacement_variants,ED3,ED3_replacement_variants,same number
-ED4,ED4_one_at_a_time,ED4,ED4_one_at_a_time,same number
+ED3,ED3_replacement_variants,ED7,ED7_replacement_variants,renumbered
+ED4,ED4_one_at_a_time,ED6,ED6_one_at_a_time,renumbered
 ED5,ED5_boundary_sensitivity,ED5,ED5_boundary_sensitivity,same number
-ED6,ED6_mc_input_distributions,SF11,SF11_mc_input_distributions,moved to Supplementary
-ED7,ED7_sobol,ED6,ED6_sobol,renumbered
-ED8,ED8_lever_annual,ED7,ED7_lever_annual,renumbered
-ED9,ED9_rollout_timing,ED8,ED8_rollout_timing,renumbered
-ED10,ED10_reality_checks,SF6,SF6_reality_checks,moved to Supplementary
-SF2,SF2_stock_vacancy,ED9,ED9_stock_vacancy,moved to Extended Data
+ED6,ED6_sobol,ED9,ED9_sobol,renumbered
+ED7,ED7_lever_annual,ED8,ED8_lever_annual,renumbered
+ED8,ED8_rollout_timing,ED4,ED4_rollout_timing,renumbered
+ED9,ED9_stock_vacancy,ED3,ED3_stock_vacancy,renumbered
 EDT1,EDT1_levels_by_typology,EDT1,EDT1_levels_by_typology,same number

@@ -71,8 +71,8 @@ same tree under `outputs/_light/`.
 |---|---|
 | Every figure and table, with its title, caption, data sources and run note; one row per item in the manifest | [outputs/FIGURES.md](outputs/FIGURES.md), [outputs/figure_manifest.csv](outputs/figure_manifest.csv) |
 | **Main figures**: Fig1–Fig7 | [outputs/paper_main/](outputs/paper_main/) |
-| **Extended Data**: ED1–SF6 and the table EDT1 | [outputs/paper_extended/](outputs/paper_extended/) |
-| **Supplementary**: SF1–SF15 in topic folders and the table ST1 | [outputs/supplementary/](outputs/supplementary/) |
+| **Extended Data**: ED1–ED9 and the table EDT1 | [outputs/paper_extended/](outputs/paper_extended/) |
+| **Supplementary**: SF1–SF15 in topic folders and the table ST8 | [outputs/supplementary/](outputs/supplementary/) |
 | Figure audit records (one JSON per figure) | [outputs/diagnostics/_audit/](outputs/diagnostics/_audit/) |
 | Results summary; every assumption with its basis; validation, reconciliation and market-balance reports | [outputs/reports/](outputs/reports/) |
 | Methods draft and the levers table (Table 1) | [outputs/reports/METHODS_DRAFT.md](outputs/reports/METHODS_DRAFT.md), [outputs/reports/LEVERS_TABLE.md](outputs/reports/LEVERS_TABLE.md) |
@@ -130,7 +130,7 @@ to 1).
 ```
 # edit palette.toml: one "#RRGGBB" value per colour key (or copy it and pass --palette my_colours.toml)
 python redraw.py                              # every figure, 200 dpi preview
-python redraw.py --only main                  # main | extended | supplementary | figure ids (e.g. Fig2 ED4)
+python redraw.py --only main                  # main | extended | supplementary | figure ids (e.g. Fig2 ED6)
 python redraw.py --palette my_colours.toml --dpi 600
 python redraw.py --final                      # write the release figures (outputs/, 600 dpi, FIGURES.md)
 ```
@@ -174,17 +174,11 @@ Carlo or Sobol run is needed. The suite covers:
 
 ## Manuscript numbering
 
-The repository keeps its ids; the manuscript numbers them as below (the same table heads `outputs/FIGURES.md`;
-`figure_plan.MANUSCRIPT_IDS`).
-
-| repository id | manuscript id |
-|---|---|
-| Fig1-Fig7 | Figures 1-7 |
-| ED1-ED9 | Extended Data Figs. 1-9 |
-| EDT1: the numeric lever table (outputs/reports/LEVERS_TABLE.md) with its per-typology values (paper_extended/EDT1_levels_by_typology) | Extended Data Table 1 |
-| LEVERS_TABLE_MAIN (outputs/reports/) | Table 1 |
-| ST1 (budget construction) | Supplementary Table 4 |
-| SF1-SF15 | Supplementary Figs. 1-15 |
+Repository numbers = manuscript numbers (from v4.10.1): Extended Data figures in order of first citation in the
+manuscript, Supplementary figures and tables in order of first citation in the SI. The renumbering of each version is
+in [outputs/data/ed_number_map.csv](outputs/data/ed_number_map.csv),
+[outputs/data/sf_number_map.csv](outputs/data/sf_number_map.csv) and
+[outputs/data/st_number_map.csv](outputs/data/st_number_map.csv) (single source: `figure_plan.RENUMBER`).
 
 ## Data freeze
 

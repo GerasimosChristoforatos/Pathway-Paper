@@ -1,11 +1,11 @@
-"""The rules of the one-at-a-time sensitivities and the SF7 comparison:
+"""The rules of the one-at-a-time sensitivities and the SF2 comparison:
 
   * every row that reports a level of exceedance is classified in boundaries.AR_BASE_RULE;
   * a 'reference_base' row of the Fig7a tornado uses the Reference AR budget (to the rounding of the CSV);
   * a 'recompute' row's I_sec,base is the Monte Carlo base function (boundaries.base_with_factors) at the row's factors,
     and the central factors of boundaries.reference_factors are those of the Monte Carlo set-up;
   * the global-impact sensitivity (EF 3.1) scales the cumulative LoE of AR by I_glob(A) / I_glob(EF 3.1) and leaves AtP;
-  * the like-for-like zero-lag run of SF7 uses the adopted (17-month) net replacement calibration.
+  * the like-for-like zero-lag run of SF2 uses the adopted (17-month) net replacement calibration.
 """
 import json
 import os

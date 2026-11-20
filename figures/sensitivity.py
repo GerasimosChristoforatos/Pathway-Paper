@@ -1,6 +1,6 @@
-"""Sensitivity figures (ED4, ED5, SF8), from the data files only.
+"""Sensitivity figures (ED6, ED5, SF14), from the data files only.
 
-ED4 and ED5 carry row notes under the axes (row_notes_ed4 / row_notes_ed5): one line per shown row,
+ED6 and ED5 carry row notes under the axes (row_notes_ed4 / row_notes_ed5): one line per shown row,
 saying only what changes compared with the Reference. Every value is read from the model code (projection.py,
 Building_factors.py, boundaries.py, Sensitivity.py: the settings each row changes) and the committed outputs
 (baseline/projection.json and overbuild_2026.json settings, aesa/results.json settings, the case and basis columns);
@@ -18,7 +18,7 @@ from figures import style as S
 
 
 # ---------------------------------------------------------------------------
-# SF8 (data D40): partial rank correlation of each Monte Carlo input
+# SF14 (data D40): partial rank correlation of each Monte Carlo input
 # ---------------------------------------------------------------------------
 MC_IMPORTANCE_INPUT = {'carbon_index': 'carbon'}          # importance-table input id -> naming.MC_INPUT id
 MC_RUNS = (('REF', N.SCENARIOS['REF'], S.REFERENCE), ('pathway_moderate', N.PATHWAY_RUNS['pathway-moderate'],
@@ -54,17 +54,17 @@ def sf8_prcc():
                fontsize=S.FONT_SMALL, bbox_to_anchor=(0.5, 0.0))
     P.centre_ticklabels(fig, ax[0])
     fig.tight_layout(rect=(0, 0.08, 1, 1))
-    S.save_figure(fig, 'SF8_prcc', note=f"Bootstrap resamples: {int(imp['bootstrap_resamples'].iloc[0])}; SRC and R² "
+    S.save_figure(fig, 'SF14_prcc', note=f"Bootstrap resamples: {int(imp['bootstrap_resamples'].iloc[0])}; SRC and R² "
                                          'in the data file.', source=['pathways/montecarlo_importance.csv'])
 
 
 # ---------------------------------------------------------------------------
-# ED4 (one at a time, carbon) and ED5 (boundary definitions, LoE): paired tornados
+# ED6 (one at a time, carbon) and ED5 (boundary definitions, LoE): paired tornados
 # ---------------------------------------------------------------------------
 # data row (sensitivity/reference_carbon.csv: row, side) -> (input id of naming.INPUT_LABEL, role); role 'low' / 'high'
 # = the input at its low / high end, 'single' = one alternative case, ('tick', name) = an intermediate case. The rows that only compare with superseded
 # model settings (REF_DROPPED: the MODEL v3.3 completion rate and lag, the MODEL v2.1 never-absorbed overbuild) are
-# not shown; the note under ED4 names them with their values.
+# not shown; the note under ED6 names them with their values.
 REF_ROWS = {
     ('Population: Stats NZ 5th / 95th percentile', 'low'): ('population', 'low'),
     ('Population: Stats NZ 5th / 95th percentile', 'high'): ('population', 'high'),
@@ -109,7 +109,7 @@ REF_ROWS = {
 }
 REF_DROPPED = ('Completion rate 0.95 (MODEL v3.3)', 'Completion lag 0 months (MODEL v3.3)',
                '2026 overbuild never absorbed (MODEL v2.1 Reference)')
-# rows kept in the data file but not shown in ED4 (display only), with the reason given in the note; the change of
+# rows kept in the data file but not shown in ED6 (display only), with the reason given in the note; the change of
 # each row (data: change_pct) is quoted in the figure note.
 REF_NOT_SHOWN = {'2026 overbuild gap vs the 2026 requirement': 'the overbuild gap measured against the 2026 '
                                                                'requirement',
@@ -119,7 +119,7 @@ GROUP_RENAME = {'Replacement scenario': 'Replacement'}
 
 
 def ref_not_shown(r):
-    """{row: reason} of the ED4 rows kept in the data file but not shown (REF_NOT_SHOWN)."""
+    """{row: reason} of the ED6 rows kept in the data file but not shown (REF_NOT_SHOWN)."""
     return dict(REF_NOT_SHOWN)
 # rows kept in the data file but not shown in ED5 (display only); any other unmapped row still stops
 PB_DROPPED = {'α = 1 (Hjalsted et al. SI tables)': 'α = 1 (Hjalsted et al. SI tables)',
@@ -145,7 +145,7 @@ PB_ROWS = {
 
 
 # ---------------------------------------------------------------------------
-# row notes of ED4 and ED5 (what each shown row changes compared with the Reference)
+# row notes of ED6 and ED5 (what each shown row changes compared with the Reference)
 # ---------------------------------------------------------------------------
 NOTE_LINESPACING = 1.2           # line spacing of the notes (matplotlib linespacing; the pitch is measured, not assumed)
 NOTE_GUTTER_MM = 3.0              # clear space between the right end of a note column and the next column
@@ -192,8 +192,8 @@ def _yrs(a, b):
 
 
 def row_notes_ed4(r):
-    """{input id: note} for every row of ED4 (sensitivity/reference_carbon.csv as r), from the code and outputs."""
-    F = 'ED4 notes'
+    """{input id: note} for every row of ED6 (sensitivity/reference_carbon.csv as r), from the code and outputs."""
+    F = 'ED6 notes'
     PR, BF, BD, cases = _model()
     pj = D.js('baseline/projection.json')
     ob = D.js('baseline/overbuild_2026.json')
@@ -409,8 +409,8 @@ def row_notes_ed5(r):
                            'only')
     n['population'] = ('Stats NZ 2024-base 5th / 95th percentile path instead of the median; carbon and both budgets '
                        'move together')
-    n['replacement'] = 'as in Extended Data Fig. 4 (carbon only; the budgets are unchanged)'
-    n['half_life'] = 'as in Extended Data Fig. 4 (carbon only)'
+    n['replacement'] = 'as in Extended Data Fig. 6 (carbon only; the budgets are unchanged)'
+    n['half_life'] = 'as in Extended Data Fig. 6 (carbon only)'
     return n
 
 
@@ -532,14 +532,14 @@ def _input_label(rid):
     return N.INPUT_LABEL.get(rid, rid)
 
 
-ED4_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
+ED6_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
 ED5_H = 165                       # mm
-NOTES_TOP = 0.345                # the notes block occupies the figure below this fraction of its height (ED4)
+NOTES_TOP = 0.345                # the notes block occupies the figure below this fraction of its height (ED6)
 NOTES_TOP_ED5 = 0.22
 
 
 def ed4_rows():
-    """(data, Reference carbon, display order, row-note lines) of ED4 (shared with the caption test)."""
+    """(data, Reference carbon, display order, row-note lines) of ED6 (shared with the caption test)."""
     r = D.csv('sensitivity/reference_carbon.csv')
     c0 = float(r['central_carbon_kt'].iloc[0])
     items, unmapped = [], []
@@ -554,23 +554,23 @@ def ed4_rows():
         rid, role = REF_ROWS[key]
         items.append((rid, role, GROUP_RENAME.get(x['group'], x['group']), float(x['carbon_kt'])))
     if unmapped:
-        raise SystemExit(f'STOP: ED4: rows without a display name: {unmapped}')
+        raise SystemExit(f'STOP: ED6: rows without a display name: {unmapped}')
     missing = [k for k in REF_NOT_SHOWN if k not in set(r['row'])]
     if missing:
-        raise SystemExit(f'STOP: ED4: rows listed as not shown are not in the data: {missing}')
+        raise SystemExit(f'STOP: ED6: rows listed as not shown are not in the data: {missing}')
     rows = _collect(items)
     order = P.tornado_rows(N.SENSITIVITY_GROUPS, rows, c0)
-    return r, c0, order, note_lines(order, row_notes_ed4(r), _input_label, 'ED4')
+    return r, c0, order, note_lines(order, row_notes_ed4(r), _input_label, 'ED6')
 
 
 
 def ed4_one_at_a_time():
-    """ED4 (data D16): every one-at-a-time row of the Reference on the cumulative embodied carbon
+    """ED6 (data D16): every one-at-a-time row of the Reference on the cumulative embodied carbon
     2026-2050 (kt CO2e) as a paired tornado grouped by category (sensitivity/reference_carbon.csv). the
     rows of REF_NOT_SHOWN dropped from the display; the row notes below the axes."""
     r, c0, order, numbered = ed4_rows()
     lines = caption_lines(numbered)
-    fig, ax = plt.subplots(figsize=S.figsize('double', ED4_H))
+    fig, ax = plt.subplots(figsize=S.figsize('double', ED6_H))
     P.tornado(ax, order, c0, numbered_label(numbered))
     ax.tick_params(axis='y', labelsize=S.FONT_SMALL)
     ax.text(c0, 1.0, f' Reference {c0:,.0f} kt', transform=ax.get_xaxis_transform(), ha='left', va='bottom',
@@ -582,8 +582,8 @@ def ed4_one_at_a_time():
     notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP)
     fig.tight_layout(rect=(0, NOTES_TOP + 0.01, 1, 1))
     if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP:
-        raise SystemExit(f'STOP: ED4: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED4_H')
-    S.save_figure(fig, 'ED4_one_at_a_time',
+        raise SystemExit(f'STOP: ED6: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED6_H')
+    S.save_figure(fig, 'ED6_one_at_a_time',
                   note=f'Reference {c0:,.0f} kt. One at a time: not additive, not a joint interval. "No effect": every '
                        f'case within {100 * P.NO_EFFECT_RTOL:.2f}% of the Reference. Not shown: the superseded-setting '
                        'rows (completion rate 0.95 and lag 0 months of MODEL v3.3; the never-absorbed overbuild of '
@@ -661,11 +661,11 @@ def ed5_boundary_sensitivity():
 
 
 def row_note_caption(fid):
-    """The row notes of ED4 or ED5 as caption text ('[1] <note>. [2] ...'), from the same list the figure draws (the
+    """The row notes of ED6 or ED5 as caption text ('[1] <note>. [2] ...'), from the same list the figure draws (the
     captions of FIGURES.md take them from here)."""
-    numbered = {'ED4': lambda: ed4_rows()[3], 'ED5': lambda: ed5_rows()[4]}[fid]()
+    numbered = {'ED6': lambda: ed4_rows()[3], 'ED5': lambda: ed5_rows()[4]}[fid]()
     return ' '.join(caption_lines(numbered))
 
 
-FIGURES = {'ED4_one_at_a_time': ed4_one_at_a_time, 'ED5_boundary_sensitivity': ed5_boundary_sensitivity,
-           'SF8_prcc': sf8_prcc}
+FIGURES = {'ED6_one_at_a_time': ed4_one_at_a_time, 'ED5_boundary_sensitivity': ed5_boundary_sensitivity,
+           'SF14_prcc': sf8_prcc}

@@ -2,22 +2,15 @@
 
 Run profile: **full** (5,000 Monte Carlo draws; formats png at 600 dpi). Every figure is drawn by the figures/ package from the data files listed (compute / draw separation).
 
-Manuscript numbering (the repository keeps its ids):
+Manuscript numbering:
 
-| repository id | manuscript id |
-|---|---|
-| Fig1-Fig7 | Figures 1-7 |
-| ED1-ED9 | Extended Data Figs. 1-9 |
-| EDT1: the numeric lever table (outputs/reports/LEVERS_TABLE.md) with its per-typology values (paper_extended/EDT1_levels_by_typology) | Extended Data Table 1 |
-| LEVERS_TABLE_MAIN (outputs/reports/) | Table 1 |
-| ST1 (budget construction) | Supplementary Table 4 |
-| SF1-SF15 | Supplementary Figs. 1-15 |
+Repository numbers = manuscript numbers (from v4.10.1); the renumbering of each version is in data/ed_number_map.csv, data/sf_number_map.csv and data/st_number_map.csv.
 
 ## Main paper (paper_main/)
 
 ### Fig1_floor_area
 
-**Fig1 Floor area: history and projection by demand band** — Floor area built per year by demand band: history as census-interval means (columns), the Reference projection annually from 2026 (2026 observed). Positive bands stacked up from zero, negative bands (the starting surplus and the overbuild absorbed, unconsented additions) down from zero. The black line is the floor area built (in scope), annual 1992-2050 (history from consents, projection from 2026); the grey caps on the history columns are the census-interval means. 2026 overbuild: observed 2026 building above need, fading from 2027; it is absorbed by 2035 together with the starting surplus (the 2024-25 building beyond the stock identity, carried into 2026). Building runs below need in 2028-2035 while the 2024-27 surplus is absorbed (absorption by 2030 or 2045 changes cumulative carbon by −0.2%/+0.3%, Extended Data Fig. 4).
+**Fig1 Floor area: history and projection by demand band** — Floor area built per year by demand band: history as census-interval means (columns), the Reference projection annually from 2026 (2026 observed). Positive bands stacked up from zero, negative bands (the starting surplus and the overbuild absorbed, unconsented additions) down from zero. The black line is the floor area built (in scope), annual 1992-2050 (history from consents, projection from 2026); the grey caps on the history columns are the census-interval means. 2026 overbuild: observed 2026 building above need, fading from 2027; it is absorbed by 2035 together with the starting surplus (the 2024-25 building beyond the stock identity, carried into 2026). Building runs below need in 2028-2035 while the 2024-27 surplus is absorbed (absorption by 2030 or 2045 changes cumulative carbon by −0.2%/+0.3%, Extended Data Fig. 6).
 
 - Files: `paper_main/Fig1_floor_area.png`
 - Data: `data/baseline/bands_history.csv`, `data/baseline/bands_annual.csv`, `data/baseline/annual.csv`, `data/baseline/overbuild_2026.json`
@@ -33,7 +26,7 @@ Manuscript numbering (the repository keeps its ids):
 
 ### Fig3_reference_boundaries
 
-**Fig3 The Reference against the planetary boundaries** — (a) Annual carbon, Monte Carlo median with 50% and 90% bands, against the acquired-rights (AR) and ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with its Monte Carlo 90% interval (5th-95th percentile of the cumulative carbon) and 50% interval (25th-75th), the AR and AtP budgets, and the committed emissions after 2050: C1-C4 and B2/B4 after 2050, each a range (lower = 2050 factors held, the carbon-bearing materials of C1-C4 at 2025 in both bounds; upper = 2025 factors), drawn at the lower bound. Building runs below need in 2028-2035 while the 2024-27 surplus is absorbed (absorption by 2030 or 2045 changes cumulative carbon by −0.2%/+0.3%, Extended Data Fig. 4).
+**Fig3 The Reference against the planetary boundaries** — (a) Annual carbon, Monte Carlo median with 50% and 90% bands, against the acquired-rights (AR) and ability-to-pay (AtP) boundaries and their zones; (b) cumulative carbon 2026-2050 with its Monte Carlo 90% interval (5th-95th percentile of the cumulative carbon) and 50% interval (25th-75th), the AR and AtP budgets, and the committed emissions after 2050: C1-C4 and B2/B4 after 2050, each a range (lower = 2050 factors held, the carbon-bearing materials of C1-C4 at 2025 in both bounds; upper = 2025 factors), drawn at the lower bound. Building runs below need in 2028-2035 while the 2024-27 surplus is absorbed (absorption by 2030 or 2045 changes cumulative carbon by −0.2%/+0.3%, Extended Data Fig. 6).
 
 - Files: `paper_main/Fig3_reference_boundaries.png`
 - Data: `data/aesa/annual.csv`, `data/montecarlo/annual_REF.csv`, `data/montecarlo/draws_REF.csv`, `data/baseline/projection.json`
@@ -65,11 +58,11 @@ Manuscript numbering (the repository keeps its ids):
 
 ### Fig7_uncertainty
 
-**Fig7 Uncertainty** — (a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high end per its definition (population rows move the budgets with the path; AR base-window rows move the AR budget only); rows are shown from the completion-rate range up, without the completion-rate and no-2026-data rows (both in Extended Data Fig. 4; the rows with a smaller range are named, with their ranges, in the note); not additive, not a joint interval. (b) The Reference, the Moderate and Ambitious Pathways and the Theoretical Limit: cumulative LoE AR against the 2050 New Zealand population on the same paired Monte Carlo draws, P(LoE AR <= 1) of each with its Wilson 95% interval, LoE = 1, and the population at which the Theoretical Limit has P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).
+**Fig7 Uncertainty** — (a) One-at-a-time ranges of the Reference cumulative LoE AR 2026-2050, each input at its low and high end per its definition (population rows move the budgets with the path; AR base-window rows move the AR budget only); rows are shown from the completion-rate range up, without the completion-rate and no-2026-data rows (both in Extended Data Fig. 6; the rows with a smaller range are named, with their ranges, in the note); not additive, not a joint interval. (b) The Reference, the Moderate and Ambitious Pathways and the Theoretical Limit: cumulative LoE AR against the 2050 New Zealand population on the same paired Monte Carlo draws, P(LoE AR <= 1) of each with its Wilson 95% interval, LoE = 1, and the population at which the Theoretical Limit has P(LoE AR <= 1) = 50% (Firth logistic; bootstrap 95% CI).
 
 - Files: `paper_main/Fig7_uncertainty.png`
 - Data: `data/sensitivity/tornado.csv`, `data/sensitivity/planetary_boundary.csv`, `data/pathways/montecarlo_draws.csv`, `data/pathways/annual.csv`, `data/pathways/montecarlo_conditional_tl.json`, `data/baseline/scenarios.json`, `data/aesa/results.json`
-- This run: (b) Below about 6.2 M (every draw below 6.03 M; 257 draws in all) the Theoretical Limit LoE AR flattens at about 0.6 (median 0.60, range 0.58–0.64): the dwellings released by L1 at TL (household merging) and L2 at TL (the vacancy fall to 1.31%) plus the starting surplus cover all positive need after the pipeline, so TL builds no new dwellings after 2027 and its carbon is that of the observed 2026–27 pipeline (9.48 Mm²), which does not fall with population (correlation 0.01 over these draws; a year with negative need builds nothing and nothing is demolished). (a) Reference LoE AR 5.761; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. Rows in Extended Data Fig. 4 only: Completion rate (0.93–0.96); No 2026 data (consents to Dec 2025). The carbon-factor rows (Carbon factors (jackknife), LoE AR 5.734–5.771 against carbon −3.4% / +3.2%) are not shown: their LoE range falls below the row filter (the range of the completion-rate row) because the AR base co-varies with the factors, so the AR budget moves with the carbon. (b) P(TL within AR) = 0.611 (Wilson 0.598-0.625; n = 5,000); P(LoE AR <= 1) on the same paired draws: Reference 0.0000 (Wilson 0.0000-0.0008), Moderate Pathway 0.0000 (Wilson 0.0000-0.0008), Ambitious Pathway 0.0000 (Wilson 0.0000-0.0008), Theoretical Limit 0.6114 (Wilson 0.5978-0.6248); threshold 6.694 M (95% CI 6.692-6.697 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
+- This run: (b) Below about 6.2 M (every draw below 6.03 M; 257 draws in all) the Theoretical Limit LoE AR flattens at about 0.6 (median 0.60, range 0.58–0.64): the dwellings released by L1 at TL (household merging) and L2 at TL (the vacancy fall to 1.31%) plus the starting surplus cover all positive need after the pipeline, so TL builds no new dwellings after 2027 and its carbon is that of the observed 2026–27 pipeline (9.48 Mm²), which does not fall with population (correlation 0.01 over these draws; a year with negative need builds nothing and nothing is demolished). (a) Reference LoE AR 5.761; population rows move the budgets with the path; the AR base-window row moves the AR budget only; one-at-a-time ranges are not additive. Rows in Extended Data Fig. 6 only: Completion rate (0.93–0.96); No 2026 data (consents to Dec 2025). The carbon-factor rows (Carbon factors (jackknife), LoE AR 5.734–5.771 against carbon −3.4% / +3.2%) are not shown: their LoE range falls below the row filter (the range of the completion-rate row) because the AR base co-varies with the factors, so the AR budget moves with the carbon. (b) P(TL within AR) = 0.611 (Wilson 0.598-0.625; n = 5,000); P(LoE AR <= 1) on the same paired draws: Reference 0.0000 (Wilson 0.0000-0.0008), Moderate Pathway 0.0000 (Wilson 0.0000-0.0008), Ambitious Pathway 0.0000 (Wilson 0.0000-0.0008), Theoretical Limit 0.6114 (Wilson 0.5978-0.6248); threshold 6.694 M (95% CI 6.692-6.697 M; Firth penalised likelihood (MLE does not exist), 2000 resamples).
 
 ## Extended Data (paper_extended/)
 
@@ -87,62 +80,62 @@ Manuscript numbering (the repository keeps its ids):
 
 - Files: `paper_extended/ED2_household_formation_size.png`
 - Data: `data/baseline/household_formation_history.csv`, `data/figure_source/D03_household_size.json`, `data/figure_source/D04_household_formation.json`, `data/pathways/levers.json`, `data/pathways/annual.csv`
-- This run: (b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious path and Extended Data Fig. 4 row 1 (2025-2050, 2.59 in 2050; the pathways phase it in by 2035); Theoretical Limit (L1 at TL) is the household size of the TL run, rising at the rate limit from the Reference in 2026 to 2.79 (the 1991 level) at mid-2037 (the Methods' 2037.5), held from 2038.
+- This run: (b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious path and Extended Data Fig. 6 row 1 (2025-2050, 2.59 in 2050; the pathways phase it in by 2035); Theoretical Limit (L1 at TL) is the household size of the TL run, rising at the rate limit from the Reference in 2026 to 2.79 (the 1991 level) at mid-2037 (the Methods' 2037.5), held from 2038.
 
-### ED3_replacement_variants
+### ED3_stock_vacancy
 
-**ED3 Low, High and Very High replacement: the Reference, the Pathways and TL**
+**ED3 Vacancy, dwellings per year by component and the vacancy definition**
 
-- Files: `paper_extended/ED3_replacement_variants.png`
-- Data: `data/sensitivity/replacement_variants.csv`, `data/pathways/annual.csv`
+- Files: `paper_extended/ED3_stock_vacancy.png`
+- Data: `data/figure_source/D05_stock_and_vacancy.json`, `data/figure_source/D06_vacancy_definition.json`, `data/baseline/scenarios.json`, `data/baseline/projection.json`
+- This run: a: Census range, one definition = the census 1986–2023 range on one definition; Definition break = the 2013 → 2018 empty / away definition break; History (census empty) = the Reference history, census empty / private dwellings (before 2013: unoccupied × the 2013 empty share), linear between censuses; One definition (sensitivity) = one definition, the pooled 2018/2023 empty share, not used by the Reference; Held at 2023 = the Reference projection held at the 2023 census value; Implied = implied by the held rate + the unabsorbed starting surplus and 2026 overbuild / stock; Census empty, 2013 split = the 2013 split applied; All unoccupied (rejected) = empty + residents away. The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the starting surplus and the 2026 overbuild raise implied stock vacancy temporarily and are absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). c: the unconsented additions each vacancy definition requires to close the stock identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. b: History: one column per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. The 2024–2025 column (marked †): households are population / household size (model), not census-benchmarked; its market balance (9,020 dwellings a year) is the F1 residual, carried into 2026 as the starting surplus (18,966 dwellings). Pipeline years 2026, 2027: annual columns; projection from 2028: annual stacked areas. In the pipeline years the line is the sum of the components (the stock-identity count: observed building less the modelled retirement-village share); the in-scope floor area divided by the dwelling size held at its 2023–2025 mean gives 2026: 30,045 (−51); 2027: 35,540 (−801) (the pipeline floor area is observed, the dwelling size held). History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the previous year's stock, the quantity the model uses (2024–2025: the latest rate carried). Top row: the market balance per census interval (thousand dwellings per year). Market balance: building above (+) or below (−) what household growth, vacancy and net replacement require. History: the residual of the census stock identity (includes measurement error). 2024–25: carried into 2026 as starting surplus (18,966 vacant dwellings: the residual above the census-interval mean x 2 years). 2026–27: the observed pipeline above need. From 2028: the surplus absorbed by 2035. The same band as Fig1's market balance (checked in 32 intervals and years: the same sign everywhere, and Fig1 = the dwellings x the in-scope floor area per dwelling after the pipeline; Fig1 also counts the retirement villages, drawn here on their own). Projection: net replacement, retirement villages (negative) and the market balance. Net replacement = demolition − unconsented additions (+ the recent surge in the Reference); the census measures only the net. The projection's split (demolition at the BRANZ rate, 0.135%/yr; the calibrated residual as unconsented additions, −0.076%/yr; the surge) is not identified from data and is not drawn. Positive parts are stacked up from zero and negative parts down from zero, all solid (no outlines, hatching or fades); up + down = the net of every column and year (checked). The line is the annual dwellings built (in scope), straight between annual values; the grey caps are its census-interval means (equal to the column nets, checked). The row at the top: the market balance of each census interval (thousand dwellings per year).
 
-### ED4_one_at_a_time
+### ED4_rollout_timing
 
-**ED4 One at a time: cumulative embodied carbon 2026-2050 of the Reference** — One-at-a-time ranges of the Reference cumulative embodied carbon 2026-2050, grouped by category; each input at its low (pale blue) and high (dark blue) end, a single alternative case grey, intermediate cases as ticks; not additive, not a joint interval. Not shown (kept in the data file): the overbuild gap against the 2026 requirement, no census under-construction correction, the maintenance event timing L / n, and the rows that compare with superseded settings (their changes are in the note). What each row changes compared with the Reference (numbered as the row labels): [1] Stats NZ Medium B household projection (living-arrangement propensities change, modelled on the 2001–2023 censuses) instead of Medium A (propensities held at 2023): what if B happens anyway (the same path is L1 Ambitious, what if policy delivers it). [2] Stats NZ 2024-base stochastic projection, 5th / 95th percentile path instead of the median, with the household size of the Stats NZ Low / High A household projection (the same percentiles). [3] household size continues linearly from 2023 at the 2018–2023 census-interval pace instead of the Stats NZ household-size path rebased on 2023. [4] a zero slope imposed at 2048 and household size held constant after it instead of the 2043–2048 secant slope at 2048, continued linearly in 2049–2050. [5] the shape-preserving (PCHIP) end derivative at 2048, continued linearly, instead of the 2043–2048 secant slope at 2048, continued linearly in 2049–2050. [6] new-dwelling size held at its 2016–2025 mean per typology instead of the 2023–2025 mean. [7] no starting surplus instead of 18,966 vacant dwellings at the start of 2026, absorbed by 2035: (the 2024–2025 building beyond the stock identity, 9,020 dwellings a year, minus the 1992–2023 census-interval mean, −463) × 2 years; carried because it exceeds the mean + 2 SD (SD 3,038). [8] the 2026 overbuild (building above need in 2026–2027 and its continuation, fading at ρ = 0.43) replaces existing dwellings instead of adding to the stock: no surplus, so no absorption payback and no soil carbon loss on it. [9] 0.93 / 0.96 of consented dwellings completed instead of 0.945. [10] a starting surplus of 6,812 dwellings (only the excess above the mean + 2 SD) instead of 18,966. [11] the mean of the 1986–2023 censuses on one definition instead of the 2023 census value (5.39%). [12] the starting surplus and the 2026 overbuild absorbed by 2030 / 2045 instead of 2035. [13] consents lagged 15 / 19 months instead of 17. [14] consents to December 2025 and the projected 2026 population instead of consents to September 2026 and the observed 2026 population growth. [15] Low: the 1991–2023 long-run net rate throughout; High (tick): the 2018–2023 rate persists; Very High: the 1991–2023 census-interval trend continues; instead of the 2018–2023 rate fading to the long-run rate with a 10-year half-life. [16] 5 / 15 years instead of 10. [17] the soil carbon loss of the lowest (Raw) / highest (Organic) soil order on every new footprint instead of the area-weighted mean over the soil orders of the Auckland land zoned for urbanisation. [18] the materials factor of the lowest / highest single case study of each typology instead of the pooled typology factor. [19] the Module D credit (benefits beyond the system boundary, EN 15978) of the 2026–2050 cohorts at 2025 factors (the largest credit), booked in the construction year and subtracted; carbon only; not converted to LoE, because a consistent LoE would need Module D in the historical sector base as well. [20] every factor held at 2025 instead of A1–A3 on the item paths of Horup et al. (2025) and A4–A5 falling 1% per year. [21] A1-A3 of construction and in-window events x [MAX(y)/MAX(2025)] / [AVG(y)/AVG(2025)] of the 9 backgrounds (Horup et al. 2025, Table S3) from 2027: the no-climate-policy end of L10; carbon only. [22] the lowest / highest pooled materials factor when each case study is left out in turn, instead of the pooled factor (a spread, not a confidence interval). [23] items made in New Zealand with electricity-intensive production held at 2025 instead of following their Horup et al. (2025) path. [24] A4–A5 on each item's own Horup et al. (2025) path / held at 2025 instead of the generic 1% per year decline (Resch et al. 2021). [25] soil carbon loss also on replacement floor area instead of none on rebuilt footprints. [26] items mapped to a proxy material held at 2025 instead of following the proxy's path.
+**ED4 Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon**
 
-- Files: `paper_extended/ED4_one_at_a_time.png`
-- Data: `data/sensitivity/reference_carbon.csv`
-- This run: Reference 25,503 kt. One at a time: not additive, not a joint interval. "No effect": every case within 0.01% of the Reference. Not shown: the superseded-setting rows (completion rate 0.95 and lag 0 months of MODEL v3.3; the never-absorbed overbuild of MODEL v2.1) and the overbuild gap measured against the 2026 requirement (+0.0028%); no census under-construction correction (+0.0000%); maintenance event timing L / n (-0.6961%) (in the data file). Row notes: [1] Stats NZ Medium B household projection (living-arrangement propensities change, modelled on the 2001–2023 censuses) instead of Medium A (propensities held at 2023): what if B happens anyway (the same path is L1 Ambitious, what if policy delivers it). [2] Stats NZ 2024-base stochastic projection, 5th / 95th percentile path instead of the median, with the household size of the Stats NZ Low / High A household projection (the same percentiles). [3] household size continues linearly from 2023 at the 2018–2023 census-interval pace instead of the Stats NZ household-size path rebased on 2023. [4] a zero slope imposed at 2048 and household size held constant after it instead of the 2043–2048 secant slope at 2048, continued linearly in 2049–2050. [5] the shape-preserving (PCHIP) end derivative at 2048, continued linearly, instead of the 2043–2048 secant slope at 2048, continued linearly in 2049–2050. [6] new-dwelling size held at its 2016–2025 mean per typology instead of the 2023–2025 mean. [7] no starting surplus instead of 18,966 vacant dwellings at the start of 2026, absorbed by 2035: (the 2024–2025 building beyond the stock identity, 9,020 dwellings a year, minus the 1992–2023 census-interval mean, −463) × 2 years; carried because it exceeds the mean + 2 SD (SD 3,038). [8] the 2026 overbuild (building above need in 2026–2027 and its continuation, fading at ρ = 0.43) replaces existing dwellings instead of adding to the stock: no surplus, so no absorption payback and no soil carbon loss on it. [9] 0.93 / 0.96 of consented dwellings completed instead of 0.945. [10] a starting surplus of 6,812 dwellings (only the excess above the mean + 2 SD) instead of 18,966. [11] the mean of the 1986–2023 censuses on one definition instead of the 2023 census value (5.39%). [12] the starting surplus and the 2026 overbuild absorbed by 2030 / 2045 instead of 2035. [13] consents lagged 15 / 19 months instead of 17. [14] consents to December 2025 and the projected 2026 population instead of consents to September 2026 and the observed 2026 population growth. [15] Low: the 1991–2023 long-run net rate throughout; High (tick): the 2018–2023 rate persists; Very High: the 1991–2023 census-interval trend continues; instead of the 2018–2023 rate fading to the long-run rate with a 10-year half-life. [16] 5 / 15 years instead of 10. [17] the soil carbon loss of the lowest (Raw) / highest (Organic) soil order on every new footprint instead of the area-weighted mean over the soil orders of the Auckland land zoned for urbanisation. [18] the materials factor of the lowest / highest single case study of each typology instead of the pooled typology factor. [19] the Module D credit (benefits beyond the system boundary, EN 15978) of the 2026–2050 cohorts at 2025 factors (the largest credit), booked in the construction year and subtracted; carbon only; not converted to LoE, because a consistent LoE would need Module D in the historical sector base as well. [20] every factor held at 2025 instead of A1–A3 on the item paths of Horup et al. (2025) and A4–A5 falling 1% per year. [21] A1-A3 of construction and in-window events x [MAX(y)/MAX(2025)] / [AVG(y)/AVG(2025)] of the 9 backgrounds (Horup et al. 2025, Table S3) from 2027: the no-climate-policy end of L10; carbon only. [22] the lowest / highest pooled materials factor when each case study is left out in turn, instead of the pooled factor (a spread, not a confidence interval). [23] items made in New Zealand with electricity-intensive production held at 2025 instead of following their Horup et al. (2025) path. [24] A4–A5 on each item's own Horup et al. (2025) path / held at 2025 instead of the generic 1% per year decline (Resch et al. 2021). [25] soil carbon loss also on replacement floor area instead of none on rebuilt footprints. [26] items mapped to a proxy material held at 2025 instead of following the proxy's path.
-
-### ED5_boundary_sensitivity
-
-**ED5 Boundary definitions and allocation: cumulative LoE of AR and of AtP** — One-at-a-time ranges of the Reference cumulative level of exceedance 2026-2050 of (a) acquired rights (AR) and (b) ability to pay (AtP): boundary definitions (carrying capacity, global impact, AR base window), allocation, population and replacement. Not shown (kept in the data file): α = 1 (Hjalsted et al. SI tables) and the raw Stats NZ 2024-base median population. What each row changes compared with the Reference (numbered as the row labels): [1] 1 W/m² planetary boundary (Bjørn & Hauschild 2015), safe operating space 3.61 × 10¹² kg CO₂e per year, instead of the 2 °C carrying capacity (Bjørn & Hauschild 2015), 6.81 × 10¹² (the same global impact); both budgets move. [2] global impact (I_glob) from the EF 3.1 normalisation factor (Andreasi Bassi et al. 2023, Table 10; 7.55 × 10³ kg CO₂e per person, 2010) instead of 5.58 × 10¹³ (Bjørn & Hauschild 2015; equal to the EF 3.0 factor, 8.10 × 10³ per person). The 6.7% difference is mainly the lower characterisation factor of methane in EF 3.1. Acquired rights only. [3] mean sector emissions over 5 / 20 / 34 years (2021–2025, 2006–2025, 1992–2025) instead of 10 years (2016–2025); AR only. [4] GDP per capita in current US$ instead of GDP per capita at purchasing-power parity, constant 2021 international $ (World Bank WDI); AtP only. [5] FCE share of GDP in the sector share: the ratio of the summed FCE to the summed GDP of the 40 quarters 2016–2025 instead of the mean of the 40 quarterly FCE/GDP ratios 2016–2025; AtP only. [6] Stats NZ 2024-base 5th / 95th percentile path instead of the median; carbon and both budgets move together. [7] UN WPP 2024 median for New Zealand instead of the model's population path (the Stats NZ 2024-base median from the observed 2025 level, with the observed 2026 growth); budgets only. [8] as in Extended Data Fig. 4 (carbon only; the budgets are unchanged). [9] as in Extended Data Fig. 4 (carbon only).
-
-- Files: `paper_extended/ED5_boundary_sensitivity.png`
-- Data: `data/sensitivity/planetary_boundary.csv`, `data/aesa/results.json`
-- This run: Reference cumulative LoE of AR 5.76, of AtP 22.91; AR base window central 2016-2025. 'No effect': within 0.01% of the Reference (the economic-allocation rows move AtP only, the AR base window moves AR only). Not shown: α = 1 (Hjalsted et al. SI tables); the raw Stats NZ 2024-base median population (in the data file). Row notes: [1] 1 W/m² planetary boundary (Bjørn & Hauschild 2015), safe operating space 3.61 × 10¹² kg CO₂e per year, instead of the 2 °C carrying capacity (Bjørn & Hauschild 2015), 6.81 × 10¹² (the same global impact); both budgets move. [2] global impact (I_glob) from the EF 3.1 normalisation factor (Andreasi Bassi et al. 2023, Table 10; 7.55 × 10³ kg CO₂e per person, 2010) instead of 5.58 × 10¹³ (Bjørn & Hauschild 2015; equal to the EF 3.0 factor, 8.10 × 10³ per person). The 6.7% difference is mainly the lower characterisation factor of methane in EF 3.1. Acquired rights only. [3] mean sector emissions over 5 / 20 / 34 years (2021–2025, 2006–2025, 1992–2025) instead of 10 years (2016–2025); AR only. [4] GDP per capita in current US$ instead of GDP per capita at purchasing-power parity, constant 2021 international $ (World Bank WDI); AtP only. [5] FCE share of GDP in the sector share: the ratio of the summed FCE to the summed GDP of the 40 quarters 2016–2025 instead of the mean of the 40 quarterly FCE/GDP ratios 2016–2025; AtP only. [6] Stats NZ 2024-base 5th / 95th percentile path instead of the median; carbon and both budgets move together. [7] UN WPP 2024 median for New Zealand instead of the model's population path (the Stats NZ 2024-base median from the observed 2025 level, with the observed 2026 growth); budgets only. [8] as in Extended Data Fig. 4 (carbon only; the budgets are unchanged). [9] as in Extended Data Fig. 4 (carbon only).
-
-### ED6_sobol
-
-**ED6 Sobol indices of the Reference: embodied carbon and floor area 2026-2050**
-
-- Files: `paper_extended/ED6_sobol.png`
-- Data: `data/montecarlo/sobol_REF.csv`
-- This run: Reference, cumulative 2026–2050; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% intervals by bootstrap of the Sobol samples; full profile only. Population and household size are one grouped input: both are drawn from one standard-normal score z (perfectly dependent), so their indices are grouped Sobol indices (Jacques, Lavergne & Devictor 2006).
-
-### ED7_lever_annual
-
-**ED7 Each lever alone: annual embodied carbon at Moderate, Ambitious and the Theoretical Limit**
-
-- Files: `paper_extended/ED7_lever_annual.png`
-- Data: `data/pathways/lever_annual.csv`, `data/pathways/annual.csv`
-- This run: Each panel: one lever alone; the other levers at the Reference. Lines: PCHIP display interpolation through the annual values.
-
-### ED8_rollout_timing
-
-**ED8 Roll-out timing (the Pathways by 2030, 2035, 2045): annual and cumulative carbon**
-
-- Files: `paper_extended/ED8_rollout_timing.png`
+- Files: `paper_extended/ED4_rollout_timing.png`
 - Data: `data/pathways/annual.csv`, `data/pathways/runs.csv`
 - This run: (c) Cumulative 2026-2050 (kt): Moderate Pathway, full roll-out by 2030 (sensitivity) 16,531, Moderate Pathway 17,209, Moderate Pathway, full roll-out by 2045 (sensitivity) 18,608, Ambitious Pathway, full roll-out by 2030 (sensitivity) 10,432, Ambitious Pathway 11,471, Ambitious Pathway, full roll-out by 2045 (sensitivity) 13,708; Reference 25,503.
 
-### ED9_stock_vacancy
+### ED5_boundary_sensitivity
 
-**ED9 Vacancy, dwellings per year by component and the vacancy definition**
+**ED5 Boundary definitions and allocation: cumulative LoE of AR and of AtP** — One-at-a-time ranges of the Reference cumulative level of exceedance 2026-2050 of (a) acquired rights (AR) and (b) ability to pay (AtP): boundary definitions (carrying capacity, global impact, AR base window), allocation, population and replacement. Not shown (kept in the data file): α = 1 (Hjalsted et al. SI tables) and the raw Stats NZ 2024-base median population. What each row changes compared with the Reference (numbered as the row labels): [1] 1 W/m² planetary boundary (Bjørn & Hauschild 2015), safe operating space 3.61 × 10¹² kg CO₂e per year, instead of the 2 °C carrying capacity (Bjørn & Hauschild 2015), 6.81 × 10¹² (the same global impact); both budgets move. [2] global impact (I_glob) from the EF 3.1 normalisation factor (Andreasi Bassi et al. 2023, Table 10; 7.55 × 10³ kg CO₂e per person, 2010) instead of 5.58 × 10¹³ (Bjørn & Hauschild 2015; equal to the EF 3.0 factor, 8.10 × 10³ per person). The 6.7% difference is mainly the lower characterisation factor of methane in EF 3.1. Acquired rights only. [3] mean sector emissions over 5 / 20 / 34 years (2021–2025, 2006–2025, 1992–2025) instead of 10 years (2016–2025); AR only. [4] GDP per capita in current US$ instead of GDP per capita at purchasing-power parity, constant 2021 international $ (World Bank WDI); AtP only. [5] FCE share of GDP in the sector share: the ratio of the summed FCE to the summed GDP of the 40 quarters 2016–2025 instead of the mean of the 40 quarterly FCE/GDP ratios 2016–2025; AtP only. [6] Stats NZ 2024-base 5th / 95th percentile path instead of the median; carbon and both budgets move together. [7] UN WPP 2024 median for New Zealand instead of the model's population path (the Stats NZ 2024-base median from the observed 2025 level, with the observed 2026 growth); budgets only. [8] as in Extended Data Fig. 6 (carbon only; the budgets are unchanged). [9] as in Extended Data Fig. 6 (carbon only).
 
-- Files: `paper_extended/ED9_stock_vacancy.png`
-- Data: `data/figure_source/D05_stock_and_vacancy.json`, `data/figure_source/D06_vacancy_definition.json`, `data/baseline/scenarios.json`, `data/baseline/projection.json`
-- This run: a: Census range, one definition = the census 1986–2023 range on one definition; Definition break = the 2013 → 2018 empty / away definition break; History (census empty) = the Reference history, census empty / private dwellings (before 2013: unoccupied × the 2013 empty share), linear between censuses; One definition (sensitivity) = one definition, the pooled 2018/2023 empty share, not used by the Reference; Held at 2023 = the Reference projection held at the 2023 census value; Implied = implied by the held rate + the unabsorbed starting surplus and 2026 overbuild / stock; Census empty, 2013 split = the 2013 split applied; All unoccupied (rejected) = empty + residents away. The vacancy-rate parameter is held at its published 2023 census value (5.39%; on the consistent definition 2023 is the series maximum, 5.38%, minimum 4.01% in 1996); the starting surplus and the 2026 overbuild raise implied stock vacancy temporarily and are absorbed by 2035, so implied vacancy returns to the parameter (5.39% in 2050). c: the unconsented additions each vacancy definition requires to close the stock identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. b: History: one column per census interval (interval means; vacancy on one definition, the pooled 2018/2023 empty share, 49.2% of unoccupied dwellings); between censuses annual detail is not identified. The 2024–2025 column (marked †): households are population / household size (model), not census-benchmarked; its market balance (9,020 dwellings a year) is the F1 residual, carried into 2026 as the starting surplus (18,966 dwellings). Pipeline years 2026, 2027: annual columns; projection from 2028: annual stacked areas. In the pipeline years the line is the sum of the components (the stock-identity count: observed building less the modelled retirement-village share); the in-scope floor area divided by the dwelling size held at its 2023–2025 mean gives 2026: 30,045 (−51); 2027: 35,540 (−801) (the pipeline floor area is observed, the dwelling size held). History: net replacement is census-measured, the rate of the census dwelling-count identity of each interval (SF2; under-construction corrected) x the previous year's stock, the quantity the model uses (2024–2025: the latest rate carried). Top row: the market balance per census interval (thousand dwellings per year). Market balance: building above (+) or below (−) what household growth, vacancy and net replacement require. History: the residual of the census stock identity (includes measurement error). 2024–25: carried into 2026 as starting surplus (18,966 vacant dwellings: the residual above the census-interval mean x 2 years). 2026–27: the observed pipeline above need. From 2028: the surplus absorbed by 2035. The same band as Fig1's market balance (checked in 32 intervals and years: the same sign everywhere, and Fig1 = the dwellings x the in-scope floor area per dwelling after the pipeline; Fig1 also counts the retirement villages, drawn here on their own). Projection: net replacement, retirement villages (negative) and the market balance. Net replacement = demolition − unconsented additions (+ the recent surge in the Reference); the census measures only the net. The projection's split (demolition at the BRANZ rate, 0.135%/yr; the calibrated residual as unconsented additions, −0.076%/yr; the surge) is not identified from data and is not drawn. Positive parts are stacked up from zero and negative parts down from zero, all solid (no outlines, hatching or fades); up + down = the net of every column and year (checked). The line is the annual dwellings built (in scope), straight between annual values; the grey caps are its census-interval means (equal to the column nets, checked). The row at the top: the market balance of each census interval (thousand dwellings per year).
+- Files: `paper_extended/ED5_boundary_sensitivity.png`
+- Data: `data/sensitivity/planetary_boundary.csv`, `data/aesa/results.json`
+- This run: Reference cumulative LoE of AR 5.76, of AtP 22.91; AR base window central 2016-2025. 'No effect': within 0.01% of the Reference (the economic-allocation rows move AtP only, the AR base window moves AR only). Not shown: α = 1 (Hjalsted et al. SI tables); the raw Stats NZ 2024-base median population (in the data file). Row notes: [1] 1 W/m² planetary boundary (Bjørn & Hauschild 2015), safe operating space 3.61 × 10¹² kg CO₂e per year, instead of the 2 °C carrying capacity (Bjørn & Hauschild 2015), 6.81 × 10¹² (the same global impact); both budgets move. [2] global impact (I_glob) from the EF 3.1 normalisation factor (Andreasi Bassi et al. 2023, Table 10; 7.55 × 10³ kg CO₂e per person, 2010) instead of 5.58 × 10¹³ (Bjørn & Hauschild 2015; equal to the EF 3.0 factor, 8.10 × 10³ per person). The 6.7% difference is mainly the lower characterisation factor of methane in EF 3.1. Acquired rights only. [3] mean sector emissions over 5 / 20 / 34 years (2021–2025, 2006–2025, 1992–2025) instead of 10 years (2016–2025); AR only. [4] GDP per capita in current US$ instead of GDP per capita at purchasing-power parity, constant 2021 international $ (World Bank WDI); AtP only. [5] FCE share of GDP in the sector share: the ratio of the summed FCE to the summed GDP of the 40 quarters 2016–2025 instead of the mean of the 40 quarterly FCE/GDP ratios 2016–2025; AtP only. [6] Stats NZ 2024-base 5th / 95th percentile path instead of the median; carbon and both budgets move together. [7] UN WPP 2024 median for New Zealand instead of the model's population path (the Stats NZ 2024-base median from the observed 2025 level, with the observed 2026 growth); budgets only. [8] as in Extended Data Fig. 6 (carbon only; the budgets are unchanged). [9] as in Extended Data Fig. 6 (carbon only).
+
+### ED6_one_at_a_time
+
+**ED6 One at a time: cumulative embodied carbon 2026-2050 of the Reference** — One-at-a-time ranges of the Reference cumulative embodied carbon 2026-2050, grouped by category; each input at its low (pale blue) and high (dark blue) end, a single alternative case grey, intermediate cases as ticks; not additive, not a joint interval. Not shown (kept in the data file): the overbuild gap against the 2026 requirement, no census under-construction correction, the maintenance event timing L / n, and the rows that compare with superseded settings (their changes are in the note). What each row changes compared with the Reference (numbered as the row labels): [1] Stats NZ Medium B household projection (living-arrangement propensities change, modelled on the 2001–2023 censuses) instead of Medium A (propensities held at 2023): what if B happens anyway (the same path is L1 Ambitious, what if policy delivers it). [2] Stats NZ 2024-base stochastic projection, 5th / 95th percentile path instead of the median, with the household size of the Stats NZ Low / High A household projection (the same percentiles). [3] household size continues linearly from 2023 at the 2018–2023 census-interval pace instead of the Stats NZ household-size path rebased on 2023. [4] a zero slope imposed at 2048 and household size held constant after it instead of the 2043–2048 secant slope at 2048, continued linearly in 2049–2050. [5] the shape-preserving (PCHIP) end derivative at 2048, continued linearly, instead of the 2043–2048 secant slope at 2048, continued linearly in 2049–2050. [6] new-dwelling size held at its 2016–2025 mean per typology instead of the 2023–2025 mean. [7] no starting surplus instead of 18,966 vacant dwellings at the start of 2026, absorbed by 2035: (the 2024–2025 building beyond the stock identity, 9,020 dwellings a year, minus the 1992–2023 census-interval mean, −463) × 2 years; carried because it exceeds the mean + 2 SD (SD 3,038). [8] the 2026 overbuild (building above need in 2026–2027 and its continuation, fading at ρ = 0.43) replaces existing dwellings instead of adding to the stock: no surplus, so no absorption payback and no soil carbon loss on it. [9] 0.93 / 0.96 of consented dwellings completed instead of 0.945. [10] a starting surplus of 6,812 dwellings (only the excess above the mean + 2 SD) instead of 18,966. [11] the mean of the 1986–2023 censuses on one definition instead of the 2023 census value (5.39%). [12] the starting surplus and the 2026 overbuild absorbed by 2030 / 2045 instead of 2035. [13] consents lagged 15 / 19 months instead of 17. [14] consents to December 2025 and the projected 2026 population instead of consents to September 2026 and the observed 2026 population growth. [15] Low: the 1991–2023 long-run net rate throughout; High (tick): the 2018–2023 rate persists; Very High: the 1991–2023 census-interval trend continues; instead of the 2018–2023 rate fading to the long-run rate with a 10-year half-life. [16] 5 / 15 years instead of 10. [17] the soil carbon loss of the lowest (Raw) / highest (Organic) soil order on every new footprint instead of the area-weighted mean over the soil orders of the Auckland land zoned for urbanisation. [18] the materials factor of the lowest / highest single case study of each typology instead of the pooled typology factor. [19] the Module D credit (benefits beyond the system boundary, EN 15978) of the 2026–2050 cohorts at 2025 factors (the largest credit), booked in the construction year and subtracted; carbon only; not converted to LoE, because a consistent LoE would need Module D in the historical sector base as well. [20] every factor held at 2025 instead of A1–A3 on the item paths of Horup et al. (2025) and A4–A5 falling 1% per year. [21] A1-A3 of construction and in-window events x [MAX(y)/MAX(2025)] / [AVG(y)/AVG(2025)] of the 9 backgrounds (Horup et al. 2025, Table S3) from 2027: the no-climate-policy end of L10; carbon only. [22] the lowest / highest pooled materials factor when each case study is left out in turn, instead of the pooled factor (a spread, not a confidence interval). [23] items made in New Zealand with electricity-intensive production held at 2025 instead of following their Horup et al. (2025) path. [24] A4–A5 on each item's own Horup et al. (2025) path / held at 2025 instead of the generic 1% per year decline (Resch et al. 2021). [25] soil carbon loss also on replacement floor area instead of none on rebuilt footprints. [26] items mapped to a proxy material held at 2025 instead of following the proxy's path.
+
+- Files: `paper_extended/ED6_one_at_a_time.png`
+- Data: `data/sensitivity/reference_carbon.csv`
+- This run: Reference 25,503 kt. One at a time: not additive, not a joint interval. "No effect": every case within 0.01% of the Reference. Not shown: the superseded-setting rows (completion rate 0.95 and lag 0 months of MODEL v3.3; the never-absorbed overbuild of MODEL v2.1) and the overbuild gap measured against the 2026 requirement (+0.0028%); no census under-construction correction (+0.0000%); maintenance event timing L / n (-0.6961%) (in the data file). Row notes: [1] Stats NZ Medium B household projection (living-arrangement propensities change, modelled on the 2001–2023 censuses) instead of Medium A (propensities held at 2023): what if B happens anyway (the same path is L1 Ambitious, what if policy delivers it). [2] Stats NZ 2024-base stochastic projection, 5th / 95th percentile path instead of the median, with the household size of the Stats NZ Low / High A household projection (the same percentiles). [3] household size continues linearly from 2023 at the 2018–2023 census-interval pace instead of the Stats NZ household-size path rebased on 2023. [4] a zero slope imposed at 2048 and household size held constant after it instead of the 2043–2048 secant slope at 2048, continued linearly in 2049–2050. [5] the shape-preserving (PCHIP) end derivative at 2048, continued linearly, instead of the 2043–2048 secant slope at 2048, continued linearly in 2049–2050. [6] new-dwelling size held at its 2016–2025 mean per typology instead of the 2023–2025 mean. [7] no starting surplus instead of 18,966 vacant dwellings at the start of 2026, absorbed by 2035: (the 2024–2025 building beyond the stock identity, 9,020 dwellings a year, minus the 1992–2023 census-interval mean, −463) × 2 years; carried because it exceeds the mean + 2 SD (SD 3,038). [8] the 2026 overbuild (building above need in 2026–2027 and its continuation, fading at ρ = 0.43) replaces existing dwellings instead of adding to the stock: no surplus, so no absorption payback and no soil carbon loss on it. [9] 0.93 / 0.96 of consented dwellings completed instead of 0.945. [10] a starting surplus of 6,812 dwellings (only the excess above the mean + 2 SD) instead of 18,966. [11] the mean of the 1986–2023 censuses on one definition instead of the 2023 census value (5.39%). [12] the starting surplus and the 2026 overbuild absorbed by 2030 / 2045 instead of 2035. [13] consents lagged 15 / 19 months instead of 17. [14] consents to December 2025 and the projected 2026 population instead of consents to September 2026 and the observed 2026 population growth. [15] Low: the 1991–2023 long-run net rate throughout; High (tick): the 2018–2023 rate persists; Very High: the 1991–2023 census-interval trend continues; instead of the 2018–2023 rate fading to the long-run rate with a 10-year half-life. [16] 5 / 15 years instead of 10. [17] the soil carbon loss of the lowest (Raw) / highest (Organic) soil order on every new footprint instead of the area-weighted mean over the soil orders of the Auckland land zoned for urbanisation. [18] the materials factor of the lowest / highest single case study of each typology instead of the pooled typology factor. [19] the Module D credit (benefits beyond the system boundary, EN 15978) of the 2026–2050 cohorts at 2025 factors (the largest credit), booked in the construction year and subtracted; carbon only; not converted to LoE, because a consistent LoE would need Module D in the historical sector base as well. [20] every factor held at 2025 instead of A1–A3 on the item paths of Horup et al. (2025) and A4–A5 falling 1% per year. [21] A1-A3 of construction and in-window events x [MAX(y)/MAX(2025)] / [AVG(y)/AVG(2025)] of the 9 backgrounds (Horup et al. 2025, Table S3) from 2027: the no-climate-policy end of L10; carbon only. [22] the lowest / highest pooled materials factor when each case study is left out in turn, instead of the pooled factor (a spread, not a confidence interval). [23] items made in New Zealand with electricity-intensive production held at 2025 instead of following their Horup et al. (2025) path. [24] A4–A5 on each item's own Horup et al. (2025) path / held at 2025 instead of the generic 1% per year decline (Resch et al. 2021). [25] soil carbon loss also on replacement floor area instead of none on rebuilt footprints. [26] items mapped to a proxy material held at 2025 instead of following the proxy's path.
+
+### ED7_replacement_variants
+
+**ED7 Low, High and Very High replacement: the Reference, the Pathways and TL**
+
+- Files: `paper_extended/ED7_replacement_variants.png`
+- Data: `data/sensitivity/replacement_variants.csv`, `data/pathways/annual.csv`
+
+### ED8_lever_annual
+
+**ED8 Each lever alone: annual embodied carbon at Moderate, Ambitious and the Theoretical Limit**
+
+- Files: `paper_extended/ED8_lever_annual.png`
+- Data: `data/pathways/lever_annual.csv`, `data/pathways/annual.csv`
+- This run: Each panel: one lever alone; the other levers at the Reference. Lines: PCHIP display interpolation through the annual values.
+
+### ED9_sobol
+
+**ED9 Sobol indices of the Reference: embodied carbon and floor area 2026-2050**
+
+- Files: `paper_extended/ED9_sobol.png`
+- Data: `data/montecarlo/sobol_REF.csv`
+- This run: Reference, cumulative 2026–2050; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% intervals by bootstrap of the Sobol samples; full profile only. Population and household size are one grouped input: both are drawn from one standard-normal score z (perfectly dependent), so their indices are grouped Sobol indices (Jacques, Lavergne & Devictor 2006).
 
 ### EDT1_levels_by_typology
 
@@ -161,77 +154,77 @@ Manuscript numbering (the repository keeps its ids):
 - Data: `data/figure_source/D02_households.json`, `data/figure_source/D04_household_formation.json`
 - This run: a: projection from the 2023 census point; 2019–23 Stats NZ estimates scaled to the 2023 census (×0.824); 2024–2025: households = population / household size (model), on the projection line. The band: the 5th / 95th population percentile paths with the Stats NZ Low A / High A household size (households computed per path). b: between censuses households are consent-derived, so the relationship is partly mechanical (housing supply meets migration); 2024-25 are the model household-size path (ERP / S), not observations.
 
-### SF2_census_replacement_rates
+### SF2_completion_lag
 
-**SF2 Net replacement rates from census dwelling counts and the four variants**
+**SF2 Annual floor area by demand group: 17-month and like-for-like zero completion lag**
 
-- Files: `supplementary/calibration/SF2_census_replacement_rates.png`
-- Data: `data/baseline/stock_identity_history.csv`, `data/figure_source/D07_net_replacement_rate.json`
-- This run: Bars: census-interval rates from dwelling counts (net of unconsented additions); lines: the projection variants.
-
-### SF3_dwelling_size
-
-**SF3 New-dwelling size: realised and occupied floor area, and consented size by typology**
-
-- Files: `supplementary/calibration/SF3_dwelling_size.png`
-- Data: `data/figure_source/D08_dwelling_space.json`, `data/pathways/levers.json`
-- This run: b: dotted, the Reference size (2023-2025 mean); dots, the smallest annual mean (the L4 minima). 1990 is the first year of the series and a recession year.
-
-### SF4_overbuild_absorption
-
-**SF4 The starting surplus and the 2026 overbuild: absorption in the Reference and its timing sensitivity**
-
-- Files: `supplementary/calibration/SF4_overbuild_absorption.png`
-- Data: `data/baseline/overbuild_absorption_log.csv`, `data/baseline/sensitivity_annual_carbon.csv`
-- This run: The surplus still vacant U(t) starts with the starting surplus of 18,966 dwellings (the 2024–2025 building beyond the stock identity, carried into 2026), to which the 2026 overbuild adds; both are paid back along the same logistic by 2035. Theory fixes the direction (reversion to the equilibrium vacancy), not the speed; 2035 is the common RECC window; speed bracketed.
-
-### SF5_hindcast
-
-**SF5 Rolling-origin hindcast of dwellings built and the 2027 out-of-sample check**
-
-- Files: `supplementary/validation/SF5_hindcast.png`
-- Data: `data/figure_source/D14_hindcast.json`, `data/baseline/validation.json`
-- This run: Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the information available then; errors at the end of each window, vacancy on the consistent definition. The four replacement variants use only the census intervals ending at or before the origin: Low the long-run dwelling-count rate, Reference the last intercensal rate fading to it (10-year half-life), High the last rate held, Very High the weighted linear trend of the interval rates (3, 4 and 5 intervals at the 2006, 2013 and 2018 origins). d: building of the first year the run without 2026 data models, observed in the pipeline (consents lagged), against that run.
-
-### SF6_reality_checks
-
-**SF6 Reality checks: the projection against the 1991-2025 range**
-
-- Files: `supplementary/validation/SF6_reality_checks.png`
-- Data: `data/figure_source/D15_reality_checks.json`, `data/baseline/annual.csv`, `data/baseline/variants_annual.csv`
-- This run: Projection 2026–2050 against the 1991–2025 range (grey band); b: implied net removals = net replacement rate × stock; h: consented floor area, in scope; a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. b: Low and High hold a constant rate (Low: the 1991–2023 long-run rate; High: the 2018–2023 rate); removals rise because the stock grows. The Reference rate fades from the 2018–2023 rate to the long-run rate (half-life 10 yr); Very High continues the census trend. History lines: straight segments between annual values (not smoothed; largest difference from the source data 0); b: census-interval rates, constant within each interval. Handover: the 2027 → 2028 step of the Reference floor area (2027 observed, 2028 the first model year) is −8.2%, against year-to-year changes of −39.8% to +27.8% (median +3.0%) in consented floor area, 1992–2025.
-
-### SF7_completion_lag
-
-**SF7 Annual floor area by demand group: 17-month and like-for-like zero completion lag**
-
-- Files: `supplementary/validation/SF7_completion_lag.png`
+- Files: `supplementary/validation/SF2_completion_lag.png`
 - Data: `data/diagnostics/lag_comparison_annual.csv`, `data/diagnostics/lag_comparison_summary.json`
 - This run: All runs use identical source files and demographic paths. The like-for-like zero-lag run holds the forward net replacement at the 17-month calibration (2018-2023 rate 0.173%/yr), so it differs from the 17-month run only in the timing of building. The recalibrated zero-lag run (grey, context) re-estimates net replacement from the census counts with zero-lag timing (0.301%/yr with the census under-construction correction); its higher net replacement in panel c is that recalibration, not the timing of building. Cumulative net replacement 2026-2050: 9.02 Mm² (zero lag, held), 9.29 Mm² (17 months), 15.24 Mm² (zero lag, recalibrated). Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; the 17-month run uses complete observed consent cohorts for 2026 and 2027.
 
-### SF8_prcc
+### SF3_census_replacement_rates
 
-**SF8 Monte Carlo sensitivity: partial rank correlation of each input, Reference, Moderate Pathway and TL**
+**SF3 Net replacement rates from census dwelling counts and the four variants**
 
-- Files: `supplementary/sensitivity/SF8_prcc.png`
-- Data: `data/pathways/montecarlo_importance.csv`
-- This run: Bootstrap resamples: 2000; SRC and R² in the data file.
+- Files: `supplementary/calibration/SF3_census_replacement_rates.png`
+- Data: `data/baseline/stock_identity_history.csv`, `data/figure_source/D07_net_replacement_rate.json`
+- This run: Bars: census-interval rates from dwelling counts (net of unconsented additions); lines: the projection variants.
 
-### SF9_lambda_sweep
+### SF4_dwelling_size
 
-**SF9 Each lever from the Reference to Ambitious (lambda sweep) and its Theoretical Limit**
+**SF4 New-dwelling size: realised and occupied floor area, and consented size by typology**
 
-- Files: `supplementary/sensitivity/SF9_lambda_sweep.png`
+- Files: `supplementary/calibration/SF4_dwelling_size.png`
+- Data: `data/figure_source/D08_dwelling_space.json`, `data/pathways/levers.json`
+- This run: b: dotted, the Reference size (2023-2025 mean); dots, the smallest annual mean (the L4 minima). 1990 is the first year of the series and a recession year.
+
+### SF5_overbuild_absorption
+
+**SF5 The starting surplus and the 2026 overbuild: absorption in the Reference and its timing sensitivity**
+
+- Files: `supplementary/calibration/SF5_overbuild_absorption.png`
+- Data: `data/baseline/overbuild_absorption_log.csv`, `data/baseline/sensitivity_annual_carbon.csv`
+- This run: The surplus still vacant U(t) starts with the starting surplus of 18,966 dwellings (the 2024–2025 building beyond the stock identity, carried into 2026), to which the 2026 overbuild adds; both are paid back along the same logistic by 2035. Theory fixes the direction (reversion to the equilibrium vacancy), not the speed; 2035 is the common RECC window; speed bracketed.
+
+### SF6_hindcast
+
+**SF6 Rolling-origin hindcast of dwellings built and the 2027 out-of-sample check**
+
+- Files: `supplementary/validation/SF6_hindcast.png`
+- Data: `data/figure_source/D14_hindcast.json`, `data/baseline/validation.json`
+- This run: Rolling-origin hindcast of dwellings built (cumulative), each origin projected with the information available then; errors at the end of each window, vacancy on the consistent definition. The four replacement variants use only the census intervals ending at or before the origin: Low the long-run dwelling-count rate, Reference the last intercensal rate fading to it (10-year half-life), High the last rate held, Very High the weighted linear trend of the interval rates (3, 4 and 5 intervals at the 2006, 2013 and 2018 origins). d: building of the first year the run without 2026 data models, observed in the pipeline (consents lagged), against that run.
+
+### SF7_reality_checks
+
+**SF7 Reality checks: the projection against the 1991-2025 range**
+
+- Files: `supplementary/validation/SF7_reality_checks.png`
+- Data: `data/figure_source/D15_reality_checks.json`, `data/baseline/annual.csv`, `data/baseline/variants_annual.csv`
+- This run: Projection 2026–2050 against the 1991–2025 range (grey band); b: implied net removals = net replacement rate × stock; h: consented floor area, in scope; a: in scope and retirement villages; the exceedances are tabulated in outputs/reports/reality_checks.md. b: Low and High hold a constant rate (Low: the 1991–2023 long-run rate; High: the 2018–2023 rate); removals rise because the stock grows. The Reference rate fades from the 2018–2023 rate to the long-run rate (half-life 10 yr); Very High continues the census trend. History lines: straight segments between annual values (not smoothed; largest difference from the source data 0); b: census-interval rates, constant within each interval. Handover: the 2027 → 2028 step of the Reference floor area (2027 observed, 2028 the first model year) is −8.2%, against year-to-year changes of −39.8% to +27.8% (median +3.0%) in consented floor area, 1992–2025.
+
+### SF8_lambda_sweep
+
+**SF8 Each lever from the Reference to Ambitious (lambda sweep) and its Theoretical Limit**
+
+- Files: `supplementary/sensitivity/SF8_lambda_sweep.png`
 - Data: `data/pathways/lambda_sweep.csv`
 - This run: L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant s_ref against the year-varying replacement share.
 
-### SF10_hd_estimators
+### SF9_hd_estimators
 
-**SF10 Harrell-Davis estimators of L5 and L8 with bootstrap intervals**
+**SF9 Harrell-Davis estimators of L5 and L8 with bootstrap intervals**
 
-- Files: `supplementary/sensitivity/SF10_hd_estimators.png`
+- Files: `supplementary/sensitivity/SF9_hd_estimators.png`
 - Data: `data/pathways/levers.json`
 - This run: L5: n = 16 cases, B = 2000 bootstrap resamples; L8: n = 14 cases, B = 2000 bootstrap resamples. L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so its ratio to the apartment pooled value is ~1 by construction (1.0000); with A_1 (n = 15) r = 0.841 (95% CI 0.619-0.955) against the adopted r = 0.827 (n = 14; check only).
+
+### SF10_tl_dwellings
+
+**SF10 The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year**
+
+- Files: `supplementary/pathways/SF10_tl_dwellings.png`
+- Data: `data/pathways/reoccupation_log.csv`
+- This run: (b) The Theoretical Limit at full strength from 2027 (no phase-in; sensitivity).
 
 ### SF11_mc_input_distributions
 
@@ -241,41 +234,41 @@ Manuscript numbering (the repository keeps its ids):
 - Data: `data/montecarlo/draws_REF.csv`, `data/montecarlo/input_distributions_REF.csv`, `data/montecarlo/carbon_factors_REF.csv`, `data/pathways/montecarlo_draws.csv`, `data/factors/factors_typology.csv`, `data/factors/factors_building.csv`
 - This run: 5,000 Latin hypercube draws. Population: the 2050 New Zealand population of each draw (the sampled standard-normal score mapped through the Stats NZ percentiles); carbon factors: the pooled A1-A3 factor of each draw by typology. A1–A3 only (whole embodied A1–C4 is higher: apartments 610 kg/m²). Apartments rest on one independent case study (444 kg/m² A1–A3) with a mean-preserving lognormal spread, so their median (434 kg/m²) lies slightly below the case value.
 
-### SF12_mc_convergence
+### SF12_pathway_mc
 
-**SF12 Monte Carlo convergence of the 2026-2050 percentiles**
+**SF12 Monte Carlo: annual carbon of the Reference, the Pathways and TL (median, 5th-95th)**
 
-- Files: `supplementary/montecarlo/SF12_mc_convergence.png`
-- Data: `data/montecarlo/convergence_REF.csv`
-- This run: Percentiles over the first n draws (largest n = 5,000).
-
-### SF13_pathway_mc
-
-**SF13 Monte Carlo: annual carbon of the Reference, the Pathways and TL (median, 5th-95th)**
-
-- Files: `supplementary/montecarlo/SF13_pathway_mc.png`
+- Files: `supplementary/montecarlo/SF12_pathway_mc.png`
 - Data: `data/pathways/montecarlo_annual.csv`, `data/pathways/montecarlo_summary.csv`
 - This run: P(cumulative LoE of AR <= 1): Reference 0.000, Moderate Pathway 0.000, Ambitious Pathway 0.000, Theoretical Limit 0.611, TL, all limits from 1 January 2027 (instant) 0.986, Theoretical Limit, L1 at TL age-standardised (sensitivity) 0.000.
 
-### SF14_conditional_tl
+### SF13_conditional_tl
 
-**SF14 When does TL stay within AR? By population quintile and the population threshold**
+**SF13 When does TL stay within AR? By population quintile and the population threshold**
 
-- Files: `supplementary/montecarlo/SF14_conditional_tl.png`
+- Files: `supplementary/montecarlo/SF13_conditional_tl.png`
 - Data: `data/pathways/montecarlo_conditional_tl.csv`, `data/pathways/montecarlo_conditional_tl.json`, `data/pathways/theoretical_limit.json`, `data/pathways/montecarlo_summary.csv`, `data/pathways/levers.json`
 - This run: P(within AR) = 0.611 (Wilson 0.598-0.625); (b) threshold 6.69 M (95% CI 6.69-6.70 M; Firth penalised likelihood (MLE does not exist), 2000 resamples). L1 at TL holds household size at 2.79 (1991, the highest observed) regardless of age structure: with the 2050 population this requires about 11.7% fewer households per person than in 2023 at every age. With an age-standardised L1 at TL (the lower of the 2023 and Stats NZ Medium B living-arrangement rates by age group; never below L1 Ambitious, which binds from 2040) TL is 5,951 kt, LoE AR 1.34, P(LoE AR ≤ 1) = 0.0% over the draws (the sensitivity row: L1 at TL age-standardised).
 
-### SF15_tl_dwellings
+### SF14_prcc
 
-**SF15 The Theoretical Limit: need, released dwellings, re-occupation and dwellings built per year**
+**SF14 Monte Carlo sensitivity: partial rank correlation of each input, Reference, Moderate Pathway and TL**
 
-- Files: `supplementary/pathways/SF15_tl_dwellings.png`
-- Data: `data/pathways/reoccupation_log.csv`
-- This run: (b) The Theoretical Limit at full strength from 2027 (no phase-in; sensitivity).
+- Files: `supplementary/sensitivity/SF14_prcc.png`
+- Data: `data/pathways/montecarlo_importance.csv`
+- This run: Bootstrap resamples: 2000; SRC and R² in the data file.
 
-### ST1_budget_construction
+### SF15_mc_convergence
 
-**ST1 The AR and AtP budgets: components, the budgets in 2025 and 2050 and the 2050 population modifier** (table)
+**SF15 Monte Carlo convergence of the 2026-2050 percentiles**
 
-- Files: `supplementary/boundaries/ST1_budget_construction.md`, `supplementary/boundaries/ST1_budget_construction.csv`
+- Files: `supplementary/montecarlo/SF15_mc_convergence.png`
+- Data: `data/montecarlo/convergence_REF.csv`
+- This run: Percentiles over the first n draws (largest n = 5,000).
+
+### ST8_budget_construction
+
+**ST8 The AR and AtP budgets: components, the budgets in 2025 and 2050 and the 2050 population modifier** (table)
+
+- Files: `supplementary/boundaries/ST8_budget_construction.md`, `supplementary/boundaries/ST8_budget_construction.csv`
 - Data: `data/aesa/results.json`, `data/figure_source/D22_boundaries.json`

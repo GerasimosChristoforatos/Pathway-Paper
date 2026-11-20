@@ -5,7 +5,7 @@ by the figures/ package exactly as in the pipeline. Only the colours of palette.
 
     python redraw.py                                   # every figure, palette.toml, 200 dpi preview
     python redraw.py --palette my_colours.toml         # another palette file
-    python redraw.py --only main                       # main | extended | supplementary | figure ids (Fig2 ED4 ...)
+    python redraw.py --only main                       # main | extended | supplementary | figure ids (Fig2 ED6 ...)
     python redraw.py --dpi 600 --out somewhere/        # resolution and output folder of a preview
     python redraw.py --final                           # the release figures: outputs/ at 600 dpi (+ FIGURES.md)
 
@@ -16,7 +16,7 @@ palette groups) to the same folder.
 On loading, the palette is validated (every group and key present, "#RRGGBB" values; style.load_palette). Then:
   * a warning (not an error) for two keys that share a figure and are identical or very close: the demand bands,
     materials and life-cycle stages (all in Fig2), the runs and strategies (Fig4-Fig6), the runs, boundaries, zones
-    and cumulative column of Fig3, and the one-at-a-time colours (Fig7a, ED4, ED5). "Very close" is a CAM02-UCS
+    and cumulative column of Fig3, and the one-at-a-time colours (Fig7a, ED6, ED5). "Very close" is a CAM02-UCS
     distance below 10 in normal vision, the convention of tools/palette_check.py. The zones are compared as they show
     on white, at their fixed opacities, with every other key of the figure; they are pale by design (data are drawn
     over them), so zone against zone is checked by their lightness order instead (next item);
@@ -44,16 +44,16 @@ SHARED = {'Fig2 (demand bands, materials, life-cycle stages)': {
               'life_cycle_stages': ('a1_a3', 'a4_a5', 'soil_carbon_loss', 'maintenance')},   # committed_*: Fig3b only
           'Fig4-Fig6 (runs, strategies)': {'runs': None, 'strategies': None},
           'Fig3 (runs, boundaries, zones)': {'runs': None, 'boundaries': None, 'boundary_zones': None},
-          'Fig7a/ED4/ED5 (one at a time)': {'one_at_a_time': None},
+          'Fig7a/ED6/ED5 (one at a time)': {'one_at_a_time': None},
           # the groups added with the palette coverage
-          'ED9b (components and the demand-band parts)': {
+          'ED3b (components and the demand-band parts)': {
               'components': ('new_households', 'retirement_villages'),
               'demand_bands': ('vacancy', 'net_replacement', 'market_balance')},
-          'ED3/SF2/SF5/SF6 (replacement variants, Reference)': {'replacement_variants': None, 'runs': ('reference',)},
-          'SF11/SF3/SF10 (typologies)': {'typologies': None},
-          'ED6 (Sobol indices)': {'sensitivity_indices': None},
-          'SF7 (lag variants)': {'lag_variants': None},
-          'SF15 (released dwellings, release binds)': {'components': ('released_tl',), 'highlights': ('release_binds',)}}
+          'ED7/SF3/SF6/SF7 (replacement variants, Reference)': {'replacement_variants': None, 'runs': ('reference',)},
+          'SF11/SF4/SF9 (typologies)': {'typologies': None},
+          'ED9 (Sobol indices)': {'sensitivity_indices': None},
+          'SF2 (lag variants)': {'lag_variants': None},
+          'SF10 (released dwellings, release binds)': {'components': ('released_tl',), 'highlights': ('release_binds',)}}
 # pairs of keys that denote the same quantity (identical by design, not a clash): maintenance B2/B4 as a demand band
 # and as a stage, and before / after 2050; the Fig3b column is the Reference's cumulative carbon; soil carbon loss in
 # the material and in the stage panels (the same quantity, the same solid colour)
@@ -62,8 +62,8 @@ SAME_QUANTITY = {frozenset(p) for p in itertools.combinations(_MAINT, 2)} | {
     frozenset({('materials', 'soil_carbon_loss'), ('life_cycle_stages', 'soil_carbon_loss')})}
 CLOSE = 10.0                     # CAM02-UCS distance (tools/palette_check.THRESHOLD)
 # the colour-vision report compares the keys of a group that are drawn together; these groups' keys are
-# each in a different figure (no pair is ever seen together), and released_tl (SF15) never shares ED9b with the other
-# components (the SF15 pairing is in SHARED)
+# each in a different figure (no pair is ever seen together), and released_tl (SF10) never shares ED3b with the other
+# components (the SF10 pairing is in SHARED)
 REPORT_NOT_TOGETHER = {'census_markers', 'validation', 'highlights'}
 REPORT_ALONE = {('components', 'released_tl')}
 

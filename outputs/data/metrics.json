@@ -101,6 +101,36 @@
     "committed_lower_kt": 9554.479046631566,
     "committed_lower_kt_mc_p5": 8014.437392459104,
     "committed_lower_kt_mc_p95": 11313.687441172737,
+    "loe_2028_2050": {
+      "B_AR_kt": 4081.5020812852526,
+      "B_AtP_kt": 1026.1903432026402,
+      "ambitious": {
+        "LoE_AR": 2.1989639456380536,
+        "LoE_AtP": 8.74601479174186,
+        "carbon_kt": 8975.075920792948
+      },
+      "moderate": {
+        "LoE_AR": 3.6018971504015673,
+        "LoE_AtP": 14.325949189951015,
+        "carbon_kt": 14701.150715939417
+      },
+      "reference": {
+        "LoE_AR": 5.630749842830884,
+        "LoE_AtP": 22.395374654361426,
+        "carbon_kt": 22981.91720271086
+      },
+      "tl": {
+        "LoE_AR": 0.41864707830673564,
+        "LoE_AtP": 1.6650993967651435,
+        "carbon_kt": 1708.7089214329317
+      },
+      "tl_tl1_age_standardised": {
+        "LoE_AR": 0.8546266477786092,
+        "LoE_AtP": 3.3991359056683605,
+        "carbon_kt": 3488.160441630232
+      },
+      "years": "2028-2050"
+    },
     "moderate": {
       "LoE_AR": 3.8876755275394257,
       "LoE_AtP": 15.462585340155128,
@@ -112,6 +142,23 @@
       "LoE_AtP": 22.91430920182917,
       "P_LoE_AR_at_most_1": 0.0,
       "carbon_kt": 25502.820795312804
+    },
+    "single_lever_overlap": {
+      "ambitious": {
+        "combined_reduction_kt": 14032.287062235131,
+        "overlap_pct": 27.835654102342232,
+        "sum_single_lever_reductions_kt": 19444.903002565115
+      },
+      "moderate": {
+        "combined_reduction_kt": 8293.506759752509,
+        "overlap_pct": 14.896492085236734,
+        "sum_single_lever_reductions_kt": 9745.19965505887
+      },
+      "tl": {
+        "combined_reduction_kt": 21331.497958801243,
+        "overlap_pct": 52.27937811574027,
+        "sum_single_lever_reductions_kt": 44700.79625227447
+      }
     },
     "tl": {
       "LoE_AR": 0.942324004051702,

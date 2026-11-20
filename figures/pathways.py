@@ -8,14 +8,14 @@ from figures import draw as P
 from figures import style as S
 
 
-ED8_RUNS = (('reference', N.SCENARIOS['REF'], dict(color=S.REFERENCE, lw=S.LW_BOLD)),
+ED4_RUNS = (('reference', N.SCENARIOS['REF'], dict(color=S.REFERENCE, lw=S.LW_BOLD)),
             ('moderate', 'Moderate', dict(color=S.PATHWAY_SETTING['moderate'], lw=S.LW)),
             ('ambitious', 'Ambitious', dict(color=S.PATHWAY_SETTING['ambitious'], lw=S.LW)),
             ('tl', N.TL['TL'], dict(color=S.TL, lw=S.LW)))
 
 
 def ed8_lever_annual():
-    """ED7 (data D31): annual embodied carbon of each lever alone (4 x 3 grid, ten panels, shared y; the legend in the
+    """ED8 (data D31): annual embodied carbon of each lever alone (4 x 3 grid, ten panels, shared y; the legend in the
     two empty cells), the Reference and
     the lever at Moderate, at Ambitious and at its Theoretical Limit, in the run colours of Fig3 / Fig4 (palette.toml
     [runs]); panel titles the lever names (no strategy-colour square, no lever-specific colour); PCHIP display interpolation through every annual value, not
@@ -28,7 +28,7 @@ def ed8_lever_annual():
         b.set_visible(False)
     for k, L in enumerate(LV.LEVERS):
         b = ax.ravel()[k]
-        for lev, lab, st in ED8_RUNS:
+        for lev, lab, st in ED4_RUNS:
             r = la[(la['lever'] == L) & (la['level'] == lev)].sort_values('year')
             b.plot(*P.pchip(r['year'].to_numpy(float), r['carbon_kt'].to_numpy(float), brk),
                    label=lab, zorder=3 if lev != 'reference' else 2, **st)
@@ -46,7 +46,7 @@ def ed8_lever_annual():
     fig.legend(h, l_, loc='center', ncol=2, frameon=False, fontsize=S.FONT_SMALL,
                bbox_to_anchor=((e0.x0 + e1.x1) / 2, (e0.y0 + e0.y1) / 2),
                title='Embodied carbon per year: the Reference\nand each lever alone at', title_fontsize=S.FONT_SMALL)
-    S.save_figure(fig, 'ED7_lever_annual', note='Each panel: one lever alone; the other levers at the Reference. '
+    S.save_figure(fig, 'ED8_lever_annual', note='Each panel: one lever alone; the other levers at the Reference. '
                                                 'Lines: PCHIP display interpolation through the annual values.',
                   source=['pathways/lever_annual.csv', 'baseline/overbuild_2026.json'])
 
@@ -76,9 +76,9 @@ def sf14_tl_dwellings():
         b.set_ylabel('Dwellings per year (thousand)')
     ax[0].legend(fontsize=S.FONT_MIN, loc='upper right')    # the empty corner (the 6-pt legend clears the pool peak)
     fig.tight_layout()
-    S.save_figure(fig, 'SF15_tl_dwellings', note=f"(b) The {N.TL['TL']} at full strength from 2027 "
+    S.save_figure(fig, 'SF10_tl_dwellings', note=f"(b) The {N.TL['TL']} at full strength from 2027 "
                                                  '(no phase-in; sensitivity).',
                   source=['pathways/reoccupation_log.csv'])
 
 
-FIGURES = {'ED7_lever_annual': ed8_lever_annual, 'SF15_tl_dwellings': sf14_tl_dwellings}
+FIGURES = {'ED8_lever_annual': ed8_lever_annual, 'SF10_tl_dwellings': sf14_tl_dwellings}

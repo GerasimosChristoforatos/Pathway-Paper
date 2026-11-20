@@ -57,7 +57,7 @@ INPUTS AND DISTRIBUTIONS (each is a stated assumption)
   Inputs are independent. Seeds are fixed, so runs are reproducible.
 NOT SAMPLED (held at the projection value in every draw)
   net replacement level: the Monte Carlo runs the Reference only (its half-life is sampled, above);
-    the replacement variants are reported deterministically (ED3, Sensitivity.py).
+    the replacement variants are reported deterministically (ED7, Sensitivity.py).
   typology mix, the census rebase of households, the pre-2013 empty share,
     future vacancy and the retirement-village share: their total Sobol indices
     were about 0 in a full-input run, so they are fixed.
@@ -310,7 +310,7 @@ def carbon_bootstrap(bf, typ, red=None, extras=None):
 PARAMS = ['z_pop', 'size', 'complete', 'carbon', 'half_life']
 HALF_LIFE_RANGE = (5.0, 15.0)    # replacement half-life ~ U(5, 15) yr (Reference variant)
 # The net replacement level is NOT sampled: the Monte Carlo runs the Reference only (its half-life is sampled);
-# replacement-level uncertainty is reported by the variants of ED3 and the one-at-a-time rows (MODEL v4.7.0: the
+# replacement-level uncertainty is reported by the variants of ED7 and the one-at-a-time rows (MODEL v4.7.0: the
 # separate Low / High / Very High Monte Carlo runs were dropped).
 MC_SCENARIOS = [('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0))]
 

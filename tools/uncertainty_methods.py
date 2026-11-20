@@ -83,7 +83,7 @@ def lines():
     L = [f'Joint uncertainty is propagated by Latin hypercube sampling (McKay, Beckman & Conover 1979): '
          f"{full['n_draws']:,} draws in the full profile (seed {full['mc_seed']}) and {light['n_draws']:,} in the light "
          f"profile (seed {light['mc_seed']}) of the {d} inputs below, for the Reference "
-         'only (replacement-level uncertainty is reported by the variants of ED3 and the one-at-a-time rows). '
+         'only (replacement-level uncertainty is reported by the variants of ED7 and the one-at-a-time rows). '
          'The reported results are those of the full profile '
          f'({len(draws):,} draws in montecarlo/draws_REF.csv). Each draw runs the same forward functions as the '
          'deterministic projection (engine.py), which uses the median of every sampled input; the central draw is '
@@ -95,7 +95,7 @@ def lines():
           'projections (the 5th / 50th / 95th percentiles of the stochastic population projection), so the household '
           'size moves with the population percentile (N4, resolved). Not sampled: the living-arrangement propensity '
           '(A, held at 2023; B, the change modelled on the 2001-2023 censuses, is a one-at-a-time row), the net replacement level (the Reference only; its half-life is sampled; '
-          'the variants are reported deterministically in ED3 and the one-at-a-time rows), the typology mix, the census rebase of households, the pre-2013 empty '
+          'the variants are reported deterministically in ED7 and the one-at-a-time rows), the typology mix, the census rebase of households, the pre-2013 empty '
           'share, the future vacancy and the retirement-village share (total Sobol indices about zero in a '
           'full-input run), the demolition rate (it trades one-for-one with the calibrated residual), the observed '
           'consents and population (data) and the soil order (a bounding scenario, not a probability).', '']

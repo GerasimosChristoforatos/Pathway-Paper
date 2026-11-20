@@ -122,7 +122,7 @@ HIST_RATE_AFTER_LAST_CENSUS = 'recent'
 # or group of sensitivity/pathway_carbon.csv); ar_base_rule() stops on an unclassified row.
 RECOMPUTE, REFERENCE_BASE = 'recompute', 'reference_base'
 AR_BASE_RULE = {
-    # one-at-a-time rows of the Reference (sensitivity/reference_carbon.csv; Fig7a, ED4)
+    # one-at-a-time rows of the Reference (sensitivity/reference_carbon.csv; Fig7a, ED6)
     'Population: Stats NZ 5th / 95th percentile': (
         REFERENCE_BASE, 'the base history is observed; both budgets move with the population path (Horup Eq. 1)'),
     'Living arrangements: propensities change (Stats NZ B)': (REFERENCE_BASE, 'future household size only'),
@@ -663,7 +663,7 @@ def main():
     cum_det = {k: dict(label=r['label'], I_kt=float(r['I'].loc[slice(*PB_YEARS)].sum() / M6),
                        LoE_AR=cum(r['I'], b_ar), LoE_AtP=cum(r['I'], b_atp)) for k, r in runs.items()}
 
-    # ---- population paths (the population rows of ED1, ED4 and ED5) ------------
+    # ---- population paths (the population rows of ED1, ED6 and ED5) ------------
     # The Stats NZ 5th / 95th percentile paths move both the embodied carbon (the projection's own
     # engine run of that path, every other input at the Reference) and the boundaries (population
     # modifier of AR, Horup et al. 2025 Eq. 1; per-capita AtP), with I_sec,base unchanged. The

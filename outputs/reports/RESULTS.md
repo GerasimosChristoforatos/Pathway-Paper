@@ -86,7 +86,7 @@ Acquired rights (AR, Horup et al. 2025 Eq. 1) and ability to pay (AtP, Hjalsted 
 | Reference, no census under-construction correction | 5.76 | 22.9 |
 | Very High replacement (trend continues) | 6.25 | 24.9 |
 
-Monte Carlo (the Reference only; replacement uncertainty: the deterministic variants above, ED3 and the one-at-a-time rows):
+Monte Carlo (the Reference only; replacement uncertainty: the deterministic variants above, ED7 and the one-at-a-time rows):
 
 | run (Monte Carlo) | cumulative LoE AR p5 / p50 / p95 | cumulative LoE AtP p5 / p50 / p95 |
 |---|---|---|
@@ -113,3 +113,24 @@ Lower bound: B2/B4 events after 2050 at the 2050 factors held; C1-C4 with the ca
 | Moderate Pathway | 7,121-8,081 | 4,199-4,330 | 86.3% | 5,916-8,530 |
 | Ambitious Pathway | 5,186-5,985 | 3,118-3,216 | 86.3% | 4,234-6,319 |
 | Theoretical Limit | 1,751-2,241 | 1,199-1,236 | 86.4% | 707-2,825 |
+
+## Cumulative level of exceedance over 2028-2050 (after the observed building years 2026-2027)
+
+Sum of carbon over the sum of the budgets, 2028-2050 (pathways/annual.csv, scenario REF): AR budget 4,082 kt, AtP budget 1,026 kt.
+
+| run | carbon (kt) | LoE AR | LoE AtP |
+|---|---|---|---|
+| Reference | 22,982 | 5.631 | 22.395 |
+| Moderate Pathway | 14,701 | 3.602 | 14.326 |
+| Ambitious Pathway | 8,975 | 2.199 | 8.746 |
+| Theoretical Limit | 1,709 | 0.419 | 1.665 |
+
+## Single-lever reductions against the combined reduction (2026-2050)
+
+The sum of the ten levers alone (Reference - Ln run) against the reduction of all ten together (Reference - Pathway or TL; pathways/runs.csv); overlap = 1 - combined / sum: the levers act on the same floor area and the same carbon per m2, so their effects are not additive.
+
+| level | sum of single-lever reductions (kt) | combined reduction (kt) | overlap |
+|---|---|---|---|
+| Ambitious | 19,445 | 14,032 | 27.8% |
+| Moderate | 9,745 | 8,294 | 14.9% |
+| TL | 44,701 | 21,331 | 52.3% |

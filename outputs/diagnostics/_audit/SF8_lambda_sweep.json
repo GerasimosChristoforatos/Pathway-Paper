@@ -1,5 +1,5 @@
 {
- "figure": "SF9_lambda_sweep",
+ "figure": "SF8_lambda_sweep",
  "producer": "figures/__main__.py",
  "axes": [
   {

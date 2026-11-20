@@ -323,7 +323,7 @@ RECENT_INTERVAL = (2018, 2023)
 # NET_REPLACEMENT_HELD (diagnostic only; None in every reported run): the census-interval net replacement rates
 #   (another run's B['census_rates']) on which the FORWARD net replacement is calibrated (the long-run and recent rates
 #   and the Very High trend); the history keeps the run's own rates. Used by tools/demand_balance.py for the
-#   like-for-like zero-lag run of SF7, whose replacement is held at the adopted 17-month calibration so that the
+#   like-for-like zero-lag run of SF2, whose replacement is held at the adopted 17-month calibration so that the
 #   comparison isolates the timing of building.
 NET_REPLACEMENT_HELD = None
 
@@ -2233,7 +2233,7 @@ def export_stage_material(B, path_stage, path_material):
 
 def export_figure_sources(B):
     """Compute / draw separation: write the exact arrays of D01-D03, D08, D09 and D13 (drawn by
-    figures/calibration.py) and of the Extended Data paths (projection_paths, ED3) as figure source JSON
+    figures/calibration.py) and of the Extended Data paths (projection_paths, ED7) as figure source JSON
     (figsource.write, outputs/data/figure_source/<id>.json). Units are the model's (persons, households, m2,
     kg CO2e); the figures only rescale for display. Called by the script run only (main() writes nothing)."""
     yh, fy = np.asarray(B['years_hist'], int), np.asarray(B['forecast_years'], int)

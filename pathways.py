@@ -1344,6 +1344,7 @@ def write(res, identity):
                                             index=False)         # the six display bands
     FP.write_ed_number_map()                                      # Extended Data numbering old -> new
     FP.write_sf_number_map()                                      # Supplementary numbering old -> new
+    FP.write_st_number_map()                                      # Supplementary Tables of the SI
     _json(dict(res['params'], run_mode=RUN_MODE, identity_max_rel_diff=max(identity.values()),
                identity_checks=identity, sources=LV.SOURCES), 'levers.json')
 

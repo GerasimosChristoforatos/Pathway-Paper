@@ -1,0 +1,13 @@
+old_id,old_file,new_id,new_file,status,content,repository_source
+,,ST1,,numbered (new in the SI list),data sources,SI text table (README Data availability; outputs/reports/AVAILABILITY.md)
+,,ST2,,numbered (new in the SI list),assumption register,outputs/reports/ASSUMPTIONS.md
+,,ST3,,numbered (new in the SI list),net replacement variants,outputs/data/sensitivity/replacement_variants.csv
+,,ST4,,numbered (new in the SI list),demand bands of the Reference 2026-2050,outputs/data/baseline/bands_annual.csv
+,,ST5,,numbered (new in the SI list),hindcast errors,outputs/data/baseline/validation.json
+,,ST6,,numbered (new in the SI list),item mapping to the decarbonisation paths,data/material_item_map.csv
+,,ST7,,numbered (new in the SI list),"embodied carbon by term, 2025 vs decarbonised factors",outputs/reports/reconciliation.md and METHODS_DRAFT.md
+ST1,ST1_budget_construction,ST8,ST8_budget_construction,renumbered,budget construction,outputs/supplementary/boundaries/ST8_budget_construction
+,,ST9,,numbered (new in the SI list),deterministic AESA sensitivities,outputs/data/sensitivity/planetary_boundary.csv
+,,ST10,,numbered (new in the SI list),"strategies, Pathways and TL runs",outputs/data/pathways/runs.csv
+,,ST11,,numbered (new in the SI list),Monte Carlo inputs,SI text table
+,,ST12,,numbered (new in the SI list),limitations register,SI text table

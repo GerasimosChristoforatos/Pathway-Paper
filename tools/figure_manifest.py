@@ -26,7 +26,7 @@ def rows():
             out.append(dict(id=h['id'], file=os.path.relpath(path, layout.OUT).replace(os.sep, '/'),
                             section=section, source_script=h['module'].replace('.', '/') + '.py',
                             source_data='; '.join(f'data/{s}' for s in h['source']), caption_stub=h['title']))
-    # the tables (Extended Data EDT1, Supplementary ST1), Markdown + CSV
+    # the tables (Extended Data EDT1, Supplementary ST8), Markdown + CSV
     for section, base, items in (('ED table', layout.PAPER_EXTENDED, FP.EXTENDED_TABLES),
                                  ('Supp table', layout.SUPPLEMENTARY, FP.SUPPLEMENTARY_TABLES)):
         mods = {'ED table': 'figures.paper_extended', 'Supp table': None}

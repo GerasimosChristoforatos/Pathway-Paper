@@ -3,12 +3,12 @@
     python tools/sensitivity_tables.py         (run_all.py runs it after the pathway Monte Carlo)
 
 Writes outputs/data/sensitivity/:
-  reference_carbon.csv     Reference carbon 2026-2050, rows grouped by type of change (D16; ED4)
+  reference_carbon.csv     Reference carbon 2026-2050, rows grouped by type of change (D16; ED6)
   pathway_carbon.csv       the Moderate Pathway (every lever at Moderate)
                            carbon 2026-2050 and its levels of exceedance, pathway design rows (D41)
   planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42; ED5)
   replacement_variants.csv the Reference, the Moderate / Ambitious Pathway and TL under Low / Reference / High / Very
-                           High replacement (ED3)
+                           High replacement (ED7)
   household_size.csv       the Reference, the Moderate / Ambitious Pathway and TL under the household-size
                            sensitivities (Stats NZ Medium B: living-arrangement propensities change; 2018-2023
                            census pace, linear from 2023)
@@ -149,7 +149,7 @@ REF_ROWS = [
      'carbon only, not converted to LoE (MODEL v4.9.0)'),
     ('Accounting', 'Event timing L / n', 'single', 'Event timing: interval L / n', 'DECISION: maintenance timing'),
 ]
-# rows reported in carbon only (ED4), never converted to a level of exceedance: they need no AR-base rule
+# rows reported in carbon only (ED6), never converted to a level of exceedance: they need no AR-base rule
 # (boundaries.AR_BASE_RULE) and must not enter TORNADO. Module D: a consistent LoE would need Module D in the
 # historical sector base as well (MODEL v4.8.0). Production decarbonisation (Horup MAX): a carbon-factor path, shown as
 # the carbon range of lever L10's evidence (MODEL v4.9.0).
@@ -363,7 +363,7 @@ def pb_table():
     return pd.DataFrame(rows)
 
 
-# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED3) --------------------------
+# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED7) --------------------------
 def replacement_variants():
     """The Reference, the Moderate / Ambitious Pathway and TL under the Low, Reference, High and Very High replacement
     variants:

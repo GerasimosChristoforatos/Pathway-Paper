@@ -182,6 +182,7 @@ def pathway_metrics():
     if os.path.exists(c):
         with open(c) as f:
             out['tl_threshold_P_NZ_2050'] = json.load(f)['population_threshold']['adopted']['threshold_P_NZ_2050']
+    out.update(late_window_and_overlap(runs))
     with open(layout.data('baseline/projection.json')) as f:
         com = json.load(f)['committed']
     out['committed_lower_kt'] = float(com['lower_kt'])
@@ -191,6 +192,37 @@ def pathway_metrics():
             out['committed_lower_kt_mc_p5'] = float(q['p5'].iloc[0])
             out['committed_lower_kt_mc_p95'] = float(q['p95'].iloc[0])
     return out
+
+
+LATE_WINDOW = (2028, 2050)            # the years every lever can act on (2026-2027 observed; MODEL v4.10.1)
+OVERLAP_LEVELS = {'moderate': 'pathway-moderate', 'ambitious': 'pathway-ambitious', 'tl': 'TL'}
+
+
+def late_window_and_overlap(runs):
+    """(MODEL v4.10.1; from existing outputs, no model run) (a) the cumulative LoE AR and AtP over 2028-2050 of the
+    Reference, both Pathways and TL: the sum of carbon_kt over the sum of B_AR_kt / B_AtP_kt (pathways/annual.csv,
+    scenario REF), and the two budgets; (b) the sum of the ten single-lever reductions against the combined reduction
+    at Moderate, Ambitious and TL (pathways/runs.csv): overlap = 1 - combined / sum."""
+    import levers as LV
+    a = pd.read_csv(layout.data('pathways/annual.csv'))
+    a = a[(a['scenario'] == 'REF') & (a['year'] >= LATE_WINDOW[0]) & (a['year'] <= LATE_WINDOW[1])]
+    late = {}
+    for k, r in PATHWAY_RUNS.items():
+        g = a[a['run'] == r]
+        if len(g):
+            late[k] = dict(LoE_AR=float(g['carbon_kt'].sum() / g['B_AR_kt'].sum()),
+                           LoE_AtP=float(g['carbon_kt'].sum() / g['B_AtP_kt'].sum()), carbon_kt=float(g['carbon_kt'].sum()))
+    g = a[a['run'] == PATHWAY_RUNS['reference']]
+    late.update(B_AR_kt=float(g['B_AR_kt'].sum()), B_AtP_kt=float(g['B_AtP_kt'].sum()),
+                years=f'{LATE_WINDOW[0]}-{LATE_WINDOW[1]}')
+    c = runs['carbon_kt']
+    ov = {}
+    for lv, end in OVERLAP_LEVELS.items():
+        single = float(sum(c['REF'] - c[f'{L}-{lv}'] for L in LV.LEVERS))
+        comb = float(c['REF'] - c[end])
+        ov[lv] = dict(sum_single_lever_reductions_kt=single, combined_reduction_kt=comb,
+                      overlap_pct=100.0 * (1.0 - comb / single))
+    return {'loe_2028_2050': late, 'single_lever_overlap': ov}
 
 
 def collect():

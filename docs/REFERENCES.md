@@ -71,7 +71,7 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   Table S4; the solution space, Fig. 6.)
 - Jacques, J., Lavergne, C., & Devictor, N. (2006). Sensitivity analysis in presence of model uncertainty and
   correlated inputs. *Reliability Engineering & System Safety*, 91(10–11), 1126–1134.
-  doi:10.1016/j.ress.2005.11.047. (Grouped Sobol indices of dependent inputs: population and household size, ED6.)
+  doi:10.1016/j.ress.2005.11.047. (Grouped Sobol indices of dependent inputs: population and household size, ED9.)
 - Jansen, M. J. W. (1999). Analysis of variance designs for model output. *Computer Physics Communications*, 117(1),
   35–43. doi:10.1016/S0010-4655(98)00154-4. (Sobol total-index estimator.)
 - Jones, J. A., Greenaway-McGrevy, R., & Crow, C. (2025). Using council valuation records to estimate Auckland's
@@ -142,9 +142,10 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   (Emission-free site activities: machinery emission-free or on biogas from 1 January 2027; emission-free construction
   aimed for by 2030. It does not require total A4–A5 to reach zero; cited for L9 as a documented municipal requirement
   of zero construction-site emissions.)
-- City of Oslo Climate Agency (2025). Share of municipal construction site work carried out with zero-emission
-  machinery in 2024, about 85% (as specified by the author; the document behind this figure is to be confirmed against
-  the City of Oslo Climate Agency release). (L9 Ambitious.)
+- City of Oslo Climate Agency (2025). *Barriers and key success factors for zero emission construction in Oslo*
+  (Version 0.1, April 2025). Giske, Christiansen, Mortensen & Huseby.
+  https://www.klimaoslo.no/wp-content/uploads/sites/2/2025/04/Barriers-and-key-success-factors-for-zero-emission-construction-in-Oslo.pdf
+  ("roughly 85 percent of work at municipal construction sites" with zero-emission machinery in 2024; L9 Ambitious.)
 - Climate Change Response Act 2002 (New Zealand), s 5Q (as amended 2025). Section 5Q (2050 target) was inserted by the
   Climate Change Response (Zero Carbon) Amendment Act 2019. https://legislation.govt.nz/act/public/2002/40/en/latest/
   (s 5Q(1)(a): net accounting emissions of greenhouse gases other than biogenic methane zero by 2050, the economy-wide
@@ -222,7 +223,9 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
 - Stats NZ. National accounts SNE022AA (GDP and final consumption expenditure, quarterly) and estimated resident
   population. (Sector share s_sec; population history.)
 - Swiss Federal Statistical Office (FSO). *Empty dwellings survey* (Leerwohnungszählung).
-  https://statistik.admin.ch/en/asset/18664834 (the Swiss source of the OECD value; L2 at TL.)
+  https://statistik.admin.ch/en/asset/18664834 (the Swiss source of the OECD value: 61,496 empty dwellings on 1 June
+  2022, 1.31% of the total stock including single-family homes; admin.ch media release
+  https://www.admin.ch/gov/en/start/documentation/media-releases.msg-id-90300.html; L2 at TL.)
 - United Nations, Department of Economic and Social Affairs, Population Division (2024). *World Population Prospects
   2024: Summary of Results*. UN DESA/POP/2024/TR/NO. 9. https://population.un.org/wpp/ (World population; the WPP
   population-source sensitivity.)

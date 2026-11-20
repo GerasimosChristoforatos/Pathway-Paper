@@ -42,7 +42,7 @@ def ed2():
     ax.set_ylabel('Net replacement (% of stock per year)')
     ax.legend(fontsize=S.FONT_MIN, ncol=2, loc='upper left')
     fig.tight_layout()
-    _save(fig, 'SF2_census_replacement_rates', note='Bars: census-interval rates from dwelling counts (net of '
+    _save(fig, 'SF3_census_replacement_rates', note='Bars: census-interval rates from dwelling counts (net of '
                                                     'unconsented additions); lines: the projection variants.')
 
 
@@ -53,8 +53,8 @@ PROJECTION_LINE = S.REFERENCE
 ED1_TITLES = ('Population', 'Households', 'Cumulative floor area built')
 
 
-ED3B_HEADROOM = 1.45          # ED3b: y top / the largest bar (the legend sits above the bars)
-SF10_XPAD = 0.25              # SF10: extra x range on the right, as a share of the axis span (legend room)
+ED7B_HEADROOM = 1.45          # ED7b: y top / the largest bar (the legend sits above the bars)
+SF9_XPAD = 0.25              # SF9: extra x range on the right, as a share of the axis span (legend room)
 
 
 def ed1():
@@ -133,7 +133,7 @@ def ed3():
     ax[1].plot(hs.index, hs.values, color=S.INK, lw=S.LW, label='History')      # straight segments between years
     P.line(ax[1], d['projection_years'], d['projection_household_size'], color=S.REFERENCE, lw=S.LW_BOLD, ls='--',
                label='Reference (Stats NZ Medium A)')
-    # the propensity-change path (Stats NZ Medium B rebased on 2023: L1 Ambitious, ED4 row 1) as the levers resolve it
+    # the propensity-change path (Stats NZ Medium B rebased on 2023: L1 Ambitious, ED6 row 1) as the levers resolve it
     # (pathways/levers.json), and the household size the TL run uses, with its rate limit (pathways/annual.csv)
     l1 = D.js('pathways/levers.json')['L1']
     sb = pd.Series(l1['S']['ambitious']).rename(index=int).sort_index()
@@ -149,7 +149,7 @@ def ed3():
     reach = int(stl.index[np.argmax(stl.values >= l1['tl'] - 1e-9)])
     _save(fig, 'ED2_household_formation_size',
           note=f"(b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious "
-               f"path and Extended Data Fig. 4 row 1 ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
+               f"path and Extended Data Fig. 6 row 1 ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
                f"pathways phase it in by 2035); {N.TL['TL']} (L1 at TL) is the household size of the TL run, rising at the "
                f"rate limit from the Reference in {int(stl.index[0])} to {l1['tl']:.2f} (the {l1['tl_year']} level) "
                f"at mid-{reach - 1} (the Methods' {reach - 1}.5), held from {reach}.")
@@ -214,12 +214,12 @@ def sf2():
                 f"living-arrangement rates by age group{floor_txt}) TL is {a['carbon_kt']:,.0f} kt, LoE AR {a['LoE_AR']:.2f}"
                 + (f", P(LoE AR \u2264 1) = {100 * float(m['probability_LoE_at_most_1'].iloc[0]):.1f}% over the draws"
                    if len(m) else '') + ' (the sensitivity row: L1 at TL age-standardised).')
-    _save(fig, 'SF14_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
+    _save(fig, 'SF13_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
                                           f"{j['wilson_95'][1]:.3f}); (b) {note_b}.{age_note}")
 
 
 def ed10():
-    """Roll-out timing (ED8): (a, b) annual carbon of the Moderate / Ambitious Pathway
+    """Roll-out timing (ED4): (a, b) annual carbon of the Moderate / Ambitious Pathway
     with full roll-out by 2030, 2035 (adopted) and 2045; (c) their cumulative carbon 2026-2050 as the
     running sum (same colours and line styles), the Reference cumulative a grey line (pathways/annual.csv; the 2050
     end values equal runs.csv carbon_kt, checked)."""
@@ -276,7 +276,7 @@ def ed10():
     P.thousands(c.yaxis)
     P.panel(c, 'c', 'Cumulative carbon')
     fig.subplots_adjust(left=0.07, right=0.91, bottom=0.25, top=0.92)
-    _save(fig, 'ED8_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
+    _save(fig, 'ED4_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
         f'{N.run_label(r_)} {v:,.0f}' for r_, v in ends) + f'; Reference {cref[-1]:,.0f}.')
 
 
@@ -313,7 +313,7 @@ def sf3():
         if t_.get_text() in N.STRATEGIES.values():
             t_.set_fontweight('bold')
     fig.tight_layout()
-    _save(fig, 'SF9_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
+    _save(fig, 'SF8_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
                                          's_ref against the year-varying replacement share.')
 
 
@@ -340,12 +340,12 @@ def sf4():
             Line2D([0], [0], ls='none', marker='o', ms=4, color=S.TYPOLOGY[t], label=t) for t in S.TYPOLOGY]
         a.legend(handles=h_, fontsize=S.FONT_MIN, loc='lower right')
         lo_, hi_ = a.get_xlim()                       # room on the right: the 6-pt legend clear of the case points
-        a.set_xlim(lo_, hi_ + SF10_XPAD * (hi_ - lo_))
+        a.set_xlim(lo_, hi_ + SF9_XPAD * (hi_ - lo_))
         P.panel(a, letter, f'{L} {N.LEVERS[L]}')
         sizes.append(f"{L}: n = {q['n']} cases, B = {e['bootstrap']['B']} bootstrap resamples")
     fig.tight_layout()
     c15 = p['L8'].get('check_with_A_1')
-    _save(fig, 'SF10_hd_estimators',
+    _save(fig, 'SF9_hd_estimators',
           note=('; '.join(sizes) + '. L8 excludes the apartment case A_1: it is the one independent apartment case (A_2 its duplicate), so '
                 'its ratio to the apartment pooled value is ~1 by construction'
                 + (f" ({c15['A_1_ratio']:.4f}); with A_1 (n = {c15['n']}) r = {c15['r']:.3f} (95% CI "
@@ -357,7 +357,7 @@ VARIANT_LS = (('LOW', '--'), ('REF', '-'), ('HIGH', ':'), ('VHIGH', '-.'))     #
 
 
 def _variant_label(k):
-    # the Reference replacement variant is named apart from the Reference run (legend of ED3a)
+    # the Reference replacement variant is named apart from the Reference run (legend of ED7a)
     return 'Reference replacement' if k == 'REF' else N.SCENARIOS[k]
 
 
@@ -399,11 +399,11 @@ def ed9():
     ax[1].set_xticklabels([P.two_lines(r if r == 'Reference' else N.run_label(r)) for r in piv.index],
                           fontsize=S.FONT_MIN + 0.5, multialignment='center')     # two lines, centred
     ax[1].set_ylabel(f'{N.LOE_AR} 2026–2050')
-    ax[1].set_ylim(0, float(piv.values.max()) * ED3B_HEADROOM)        # the legend above the bars (6 pt, v4.7.2)
+    ax[1].set_ylim(0, float(piv.values.max()) * ED7B_HEADROOM)        # the legend above the bars (6 pt, v4.7.2)
     ax[1].legend(fontsize=S.FONT_MIN, loc='upper right')
     P.panel(ax[1], 'b', 'Cumulative carbon')
     fig.tight_layout(rect=(0, 0.12, 1, 1))
-    _save(fig, 'ED3_replacement_variants')                          # ED7 -> ED3
+    _save(fig, 'ED7_replacement_variants')
 
 
 def ed4():
@@ -441,9 +441,9 @@ def ed4():
     ss = D.js('baseline/projection.json')['starting_surplus']
     u0 = float(lg.loc[lg['year'] == lg['year'].min(), 'surplus_vacant'].iloc[0])
     if not np.isclose(u0, ss['dwellings'], rtol=1e-9):
-        raise SystemExit(f'STOP: SF4: the surplus still vacant at {int(lg["year"].min())} ({u0:,.1f}) is not the '
+        raise SystemExit(f'STOP: SF5: the surplus still vacant at {int(lg["year"].min())} ({u0:,.1f}) is not the '
                          f"starting surplus ({ss['dwellings']:,.1f}).")
-    _save(fig, 'SF4_overbuild_absorption', note=f"The surplus still vacant U(t) starts with the starting surplus of "
+    _save(fig, 'SF5_overbuild_absorption', note=f"The surplus still vacant U(t) starts with the starting surplus of "
                                                  f"{ss['dwellings']:,.0f} dwellings (the {ss['after_years'][0]}–"
                                                  f"{ss['after_years'][-1]} building beyond the stock identity, carried "
                                                  f'into 2026), to which the 2026 overbuild adds; both are paid back '
@@ -521,7 +521,7 @@ def edt1():
 
 
 FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_household_formation_size': ed3,
-           'ED3_replacement_variants': ed9, 'ED8_rollout_timing': ed10,      # ED7 dropped, SF6 -> ED8
-           'SF2_census_replacement_rates': ed2, 'SF4_overbuild_absorption': ed4, 'SF9_lambda_sweep': sf3,
-           'SF10_hd_estimators': sf4, 'SF14_conditional_tl': sf2}
+           'ED7_replacement_variants': ed9, 'ED4_rollout_timing': ed10,
+           'SF3_census_replacement_rates': ed2, 'SF5_overbuild_absorption': ed4, 'SF8_lambda_sweep': sf3,
+           'SF9_hd_estimators': sf4, 'SF13_conditional_tl': sf2}
 TABLES = {'EDT1_levels_by_typology': edt1}

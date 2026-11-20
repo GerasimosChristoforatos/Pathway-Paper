@@ -214,7 +214,7 @@ def lines():
           'L9). L10 applies to the A1-A3 of construction, to the A1-A3 component of the replacement and repaint events '
           'within 2026-2050 (production is in the calendar year of the event; L8, a design choice of the new building, '
           'does not) and, held at 2050, to the A1-A3 event factors of the committed lower bound; not to A4-A5 '
-          '(L9), soil (L6, L7), the end of life (C1-C4) or Module D. Sensitivity (Extended Data Fig. 4, carbon only): '
+          '(L9), soil (L6, L7), the end of life (C1-C4) or Module D. Sensitivity (Extended Data Fig. 6, carbon only): '
           'the no-climate-policy end, m(y) = [MAX(y)/MAX(2025)] / [AVG(y)/AVG(2025)] on the Reference.', '']
     q = p['L7']
     B['L7'] = [f"**L7 Soil-aware planning (sub-rule C).** Soil carbon loss per m² x (1 - x), x = {q['x']['ambitious']:.3f} "
@@ -325,7 +325,7 @@ TABLE1_MAIN = {
            'Christoforatos & Pickering 2026; EU 2021/2139'),
     'L9': ('L9 Construction stage', 'Improve', 'Transport and site carbon (A4–A5) per m²',
            'Generic 1% per year decline¹¹', 'Zero-emission site machinery (Oslo)¹²', 'Zero-emission sites and transport',
-           'Kanafani et al. 2023; City of Oslo 2025; Resch et al. 2021'),
+           'Kanafani et al. 2023; City of Oslo Climate Agency 2025; Resch et al. 2021'),
     'L10': ('L10 Production decarbonisation', 'Improve', 'Material production carbon (A1–A3) per m²',
             'Horup average path⁸', 'Lowest of 9 scenarios⁸', 'Near-zero cement and steel¹³', 'Horup et al. 2025; IEA 2022'),
 }

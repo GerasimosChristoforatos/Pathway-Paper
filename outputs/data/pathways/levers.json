@@ -820,7 +820,7 @@
       "year": 2022,
       "value_pct": 1.3116941621333844
     },
-    "tl_note": "At the Theoretical Limit every non-market empty dwelling (holiday homes, dwellings held empty) is occupied, a choice, and only frictional market vacancy remains, at the lowest nationwide rate in the OECD cross-country table: Switzerland 1.31% (2022; the Federal Statistical Office's count of empty dwellings on 1 June across the whole stock, single-family homes included). Sweden (0.25%, 2021) is excluded: its national count (6,794 vacant units in a 4.6 M stock; OECD 'Vacant' sheet) cannot be an all-tenure market count. One vintage (OECD 2024 table) is used for all countries; national releases after it are not.",
+    "tl_note": "At the Theoretical Limit every non-market empty dwelling (holiday homes, dwellings held empty) is occupied, a choice, and only frictional market vacancy remains, at the lowest nationwide rate in the OECD cross-country table: Switzerland 1.31% (2022): 61,496 empty dwellings on 1 June 2022, a share of the total dwelling stock including single-family homes (Swiss Federal Statistical Office, empty dwellings survey; admin.ch media release https://www.admin.ch/gov/en/start/documentation/media-releases.msg-id-90300.html). Sweden (0.25%, 2021) is excluded: its national count (6,794 vacant units in a 4.6 M stock; OECD 'Vacant' sheet) cannot be an all-tenure market count. One vintage (OECD 2024 table) is used for all countries; national releases after it are not.",
     "census_consistent": {
       "1986": 0.04421960198496479,
       "1991": 0.046416698373295526,
@@ -1654,7 +1654,7 @@
         "waste": 0.0
       }
     },
-    "anchor": "site energy -85% (zero-emission site machinery, City of Oslo 2025); A4-A5 split by the medians of Kanafani et al. (2023)",
+    "anchor": "site energy -85% (zero-emission site machinery, City of Oslo Climate Agency 2025); A4-A5 split by the medians of Kanafani et al. (2023)",
     "caveat": "Oslo's definition covers machinery inside the site fence (scope 1); applying it to all site energy assumes the electricity and heat used on site are decarbonised too",
     "tl_note": "A4 and site energy zero (physically attainable: electric machinery and freight exist); site waste persists, its material carbon belongs to L8 / L10"
   },

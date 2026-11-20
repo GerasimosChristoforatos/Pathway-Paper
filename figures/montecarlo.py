@@ -25,7 +25,7 @@ def sf11_mc_convergence():
     h, lab = ax[0].get_legend_handles_labels()                 # one legend below, clear of the lines
     fig.legend(h, lab, loc='lower center', ncol=4, fontsize=S.FONT_SMALL, frameon=False)
     fig.tight_layout(rect=(0, 0.08, 1, 1))
-    S.save_figure(fig, 'SF12_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
+    S.save_figure(fig, 'SF15_mc_convergence', note=f"Percentiles over the first n draws (largest n = {c['n'].max():,}).",
                   source=['montecarlo/convergence_REF.csv'])
 
 
@@ -37,7 +37,7 @@ def _ed6_title(a, letter, title):
 
 def ed6_mc_input_distributions():
     """SF11 (data D38): the Monte Carlo input distributions, y = number of draws, panel titles the input
-    names of naming.MC_INPUT (as ED6 and ED4). Population in physical units: the 2050 New Zealand population of each
+    names of naming.MC_INPUT (as ED9 and ED6). Population in physical units: the 2050 New Zealand population of each
     draw (pathways/montecarlo_draws.csv P_NZ_2050; the same draws as the Reference Monte Carlo, checked on every
     input column); dwelling size as the multiplier on the central future size; carbon factors: the resulting pooled
     A1-A3 factor of each draw by typology (typology colours). Lines: central value (solid), 5th / 95th percentile
@@ -103,7 +103,7 @@ def ed6_mc_input_distributions():
 
 
 def ed7_sobol():
-    """ED6 (data D20): Sobol indices of the Reference (full profile only), input names of naming.MC_INPUT
+    """ED9 (data D20): Sobol indices of the Reference (full profile only), input names of naming.MC_INPUT
     (as SF11), both panels x 0-1, y labels centred; total effect with its 95% interval and first-order effect."""
     sob = D.csv('montecarlo/sobol_REF.csv')
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 66))
@@ -125,7 +125,7 @@ def ed7_sobol():
     for a in ax:
         P.centre_ticklabels(fig, a)
     fig.tight_layout(rect=(0, 0.09, 1, 1))
-    S.save_figure(fig, 'ED6_sobol', note='Reference, cumulative 2026–2050; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% '
+    S.save_figure(fig, 'ED9_sobol', note='Reference, cumulative 2026–2050; Saltelli / Jansen estimators (scipy.stats.sobol_indices); 95% '
                                          'intervals by bootstrap of the Sobol samples; full profile only. Population '
                                          'and household size are one grouped input: both are drawn from one '
                                          'standard-normal score z (perfectly dependent), so their indices are grouped '
@@ -133,7 +133,7 @@ def ed7_sobol():
                   source=['montecarlo/sobol_REF.csv'])
 
 
-SF12_HEADROOM = 1.25            # SF13: y top x this, so the legend sits above the 5th-95th bands
+SF15_HEADROOM = 1.25            # SF12: y top x this, so the legend sits above the 5th-95th bands
 
 
 def sf12_pathway_mc():
@@ -148,19 +148,19 @@ def sf12_pathway_mc():
         t = a[a['run'] == r]
         yr = t['year'].to_numpy(float)
         xf, lo, hi, _ = P.pchip_band(yr, t['carbon_kt_p5'].to_numpy(float), t['carbon_kt_p50'].to_numpy(float),
-                                     t['carbon_kt_p95'].to_numpy(float), P.series_breaks(), name=f'SF15 {r}')
+                                     t['carbon_kt_p95'].to_numpy(float), P.series_breaks(), name=f'SF10 {r}')
         ax.fill_between(xf, lo, hi, color=col, alpha=S.OPACITY['mc_band'], lw=0)
         P.line(ax, yr, t['carbon_kt_p50'], color=col, lw=S.LW_BOLD, label=f'{lab} (median, 5th–95th percentile)')
     ax.set_xlim(2026, 2050)
-    ax.set_ylim(0, ax.get_ylim()[1] * SF12_HEADROOM)                 # the legend above the bands (no overlap)
+    ax.set_ylim(0, ax.get_ylim()[1] * SF15_HEADROOM)                 # the legend above the bands (no overlap)
     ax.set_ylabel('Embodied carbon (kt CO₂e per year)')
     ax.legend(fontsize=S.FONT_SMALL, frameon=False, loc='upper right', ncol=2)
     fig.tight_layout()
     p = s[(s['quantity'] == 'LoE_AR')].set_index('run')['probability_LoE_at_most_1']
-    S.save_figure(fig, 'SF13_pathway_mc', note='P(cumulative LoE of AR <= 1): ' + ', '.join(
+    S.save_figure(fig, 'SF12_pathway_mc', note='P(cumulative LoE of AR <= 1): ' + ', '.join(
         f"{N.run_label(k.replace('_', '-'))} {v:.3f}" for k, v in p.items()) + '.', source=['pathways/montecarlo_annual.csv',
                                                             'pathways/montecarlo_summary.csv'])
 
 
-FIGURES = {'SF11_mc_input_distributions': ed6_mc_input_distributions, 'ED6_sobol': ed7_sobol,
-           'SF12_mc_convergence': sf11_mc_convergence, 'SF13_pathway_mc': sf12_pathway_mc}
+FIGURES = {'SF11_mc_input_distributions': ed6_mc_input_distributions, 'ED9_sobol': ed7_sobol,
+           'SF15_mc_convergence': sf11_mc_convergence, 'SF12_pathway_mc': sf12_pathway_mc}

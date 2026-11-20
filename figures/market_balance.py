@@ -1,4 +1,4 @@
-"""Secondary market-balance figures (SF7).
+"""Secondary market-balance figures (SF2).
 
 They show a coarser classification than the demand bands, for interpretation, and the controlled lag comparison.
 """
@@ -21,7 +21,7 @@ def sf7_completion_lag():
     """Annual GFA by broad category: the 17-month lag against the like-for-like zero-lag run (forward net replacement
     held at the 17-month calibration, so only the timing of building differs); the recalibrated zero-lag run as a thin
     grey context line."""
-    fid = "SF7_completion_lag"
+    fid = "SF2_completion_lag"
     d = D.csv("diagnostics/lag_comparison_annual.csv")
     sm = D.js("diagnostics/lag_comparison_summary.json")
     colours = dict(S.LAG_VARIANT)          # palette.toml [lag_variants]
@@ -85,4 +85,4 @@ def sf7_completion_lag():
     )
 
 
-FIGURES = {"SF7_completion_lag": sf7_completion_lag}
+FIGURES = {"SF2_completion_lag": sf7_completion_lag}

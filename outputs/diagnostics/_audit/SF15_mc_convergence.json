@@ -1,5 +1,5 @@
 {
- "figure": "SF12_mc_convergence",
+ "figure": "SF15_mc_convergence",
  "producer": "figures/__main__.py",
  "axes": [
   {

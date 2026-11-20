@@ -1,5 +1,5 @@
 {
- "figure": "SF2_census_replacement_rates",
+ "figure": "SF3_census_replacement_rates",
  "producer": "figures/__main__.py",
  "axes": [
   {

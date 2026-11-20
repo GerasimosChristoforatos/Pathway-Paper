@@ -1,7 +1,7 @@
 """
 DIAGNOSTICS -- sanity checks of projection.py, past and future together
 ======================================================================
-Three diagnostics (figure source D04-D06; Supplementary figures SF1, ED9), read
+Three diagnostics (figure source D04-D06; Supplementary figures SF1, ED3), read
 from ONE run of projection.py, so the two scripts can never disagree:
 
   D04  household formation      people arriving vs household size changing

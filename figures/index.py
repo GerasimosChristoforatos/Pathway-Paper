@@ -37,7 +37,7 @@ def write():
          f"Run profile: **{runprofile.name()}** ({runprofile.get('n_draws'):,} Monte Carlo draws; formats "
          f"{', '.join(runprofile.get('formats'))} at {runprofile.get('dpi')} dpi). Every figure is drawn by the "
          'figures/ package from the data files listed (compute / draw separation).', '',
-         'Manuscript numbering (the repository keeps its ids):', ''] + FP.manuscript_map_lines() + [
+         'Manuscript numbering:', ''] + FP.manuscript_map_lines() + [
          '', '## Main paper (paper_main/)', '']
     for h in FP.PAPER_MAIN:
         L += _entry(h['file'], f"{h['id']} {h['title']}", FP.render_caption(h['caption']), h['source'],
@@ -45,7 +45,7 @@ def write():
     L += ['## Extended Data (paper_extended/)', '']
     for h in FP.PAPER_EXTENDED:
         cap = h.get('caption')
-        if h.get('row_notes'):                     # ED4 / ED5: the row notes the figure draws (one source)
+        if h.get('row_notes'):                     # ED6 / ED5: the row notes the figure draws (one source)
             from figures import sensitivity
             cap += sensitivity.row_note_caption(h['row_notes'])
         L += _entry(h['file'], f"{h['id']} {h['title']}", cap, h['source'], layout.figure(h['file']))

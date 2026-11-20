@@ -1,4 +1,4 @@
-"""Supplementary Table ST1 (data D22): how the
+"""Supplementary Table ST8 (data D22): how the
 planetary-boundary budgets AR and AtP are built. The components with their units, the two budgets in 2025 and 2050 and
 the 2050 population modifier, as Markdown and CSV in outputs/supplementary/boundaries/.
 
@@ -12,7 +12,7 @@ import figure_plan as FP
 import layout
 from figures import data as D
 
-ST1 = next(t for t in FP.SUPPLEMENTARY_TABLES if t['id'] == 'ST1')
+ST8 = next(t for t in FP.SUPPLEMENTARY_TABLES if t['id'] == 'ST8')
 
 
 def _sig(v, n=3):
@@ -25,7 +25,7 @@ def _sig(v, n=3):
 
 
 def st1_rows():
-    """[(quantity, value, unit, note)] of ST1."""
+    """[(quantity, value, unit, note)] of ST8."""
     r = D.js('aesa/results.json')
     c, st = r['components'], r['settings']
     d = D.src('D22_boundaries')
@@ -61,13 +61,13 @@ def st1_rows():
 
 def st1_budget_construction():
     rows = st1_rows()
-    base = os.path.join(layout.SUPPLEMENTARY, ST1['folder'], ST1['file'])
+    base = os.path.join(layout.SUPPLEMENTARY, ST8['folder'], ST8['file'])
     os.makedirs(os.path.dirname(base), exist_ok=True)
     head = ('Quantity', 'Value', 'Unit', 'Note')
-    md = [f"# {ST1['id']} {ST1['title']}", '', '| ' + ' | '.join(head) + ' |', '|---|---:|---|---|']
+    md = [f"# {ST8['id']} {ST8['title']}", '', '| ' + ' | '.join(head) + ' |', '|---|---:|---|---|']
     md += ['| ' + ' | '.join(r) + ' |' for r in rows]
     md += ['', 'Three significant figures (four for the population modifier). Sources: '
-           + ', '.join(f'`data/{s}`' for s in ST1['source']) + '.']
+           + ', '.join(f'`data/{s}`' for s in ST8['source']) + '.']
     with open(base + '.md', 'w') as f:
         f.write('\n'.join(md) + '\n')
     import csv
@@ -79,4 +79,4 @@ def st1_budget_construction():
 
 
 FIGURES = {}
-TABLES = {'ST1_budget_construction': st1_budget_construction}
+TABLES = {'ST8_budget_construction': st1_budget_construction}

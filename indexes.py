@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # paper Fig1-Fig7, Extended Data ED1-ED9 (+ EDT1), supplementary SF1-SF15 (+ ST1) in folders (figure_plan.py)
+    # paper Fig1-Fig7, Extended Data ED1-ED9 (+ EDT1), supplementary SF1-SF15 (+ ST8) in folders (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -45,10 +45,12 @@ FILES = [
     ('data/baseline/gap_2026.json', 'The 2026 gap between observed building and the requirement',
      'gap_2026.py'),
     ('data/baseline/overbuild_2026.json', 'The 2026 overbuild and how it is absorbed', 'tools/overbuild_2026.py'),
-    ('data/ed_number_map.csv', 'Extended Data numbering, MODEL v4.3.0 -> current (figure_plan.ED_NUMBER_MAP)',
+    ('data/ed_number_map.csv', 'Extended Data numbering, MODEL v4.10.0 -> v4.10.1 (figure_plan.RENUMBER)',
      'figure_plan.py'),
-    ('data/sf_number_map.csv', 'Supplementary numbering, MODEL v4.3.0 -> current (figure_plan.SF_NUMBER_MAP)',
+    ('data/sf_number_map.csv', 'Supplementary Figures numbering, MODEL v4.10.0 -> v4.10.1 (figure_plan.RENUMBER)',
      'figure_plan.py'),
+    ('data/st_number_map.csv', 'Supplementary Tables of the SI (ST1-ST12) and their repository sources; ST8 was ST1 '
+     '(figure_plan.SI_TABLES)', 'figure_plan.py'),
     ('data/bands_display_map.csv', 'Detailed demand band -> the six display bands of the figures',
      'pathways.py'),
     ('data/diagnostics/lag_comparison_annual.csv', 'Annual floor area by broad demand group: the 17-month lag, the like-for-like zero lag (net replacement held at the 17-month calibration) and the recalibrated zero lag (run column)', 'tools/demand_balance.py'),
@@ -75,7 +77,7 @@ FILES = [
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
      'AR and AtP (D42; the AR base-window rows in Fig7a)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/replacement_variants.csv', 'The Reference, the Moderate / Ambitious Pathway and TL under Low / Reference '
-     '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED3)',
+     '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED7)',
      'tools/sensitivity_tables.py'),
     ('data/baseline/annual_by_stage.csv', 'Annual carbon of the Reference 2026-2050 by life-cycle stage (A1-A3, '
      'A4-A5, maintenance B2/B4, soil carbon loss) (Fig2c, d)', 'projection.py'),
@@ -168,7 +170,7 @@ FILES = [
      'figures/ (module named in figure_manifest.csv)'),
     ('paper_extended/EDT1_levels_by_typology.*', 'Extended Data Table 1, per-typology values: lever levels by typology (Moderate, Ambitious, '
      'TL)', 'figures/paper_extended.py'),
-    ('supplementary/boundaries/ST1_budget_construction.*', 'Supplementary Table ST1, how the AR and '
+    ('supplementary/boundaries/ST8_budget_construction.*', 'Supplementary Table ST8, how the AR and '
      'AtP budgets are built (Markdown and CSV)', 'figures/boundaries.py'),
     ('palette_swatches.png', 'The colours of palette.toml by group (redraw.py --final)', 'redraw.py'),
     ('diagnostics/*/D*.png', 'Diagnostic figure, PNG (FIGURES.md)', 'figures/ (module named in FIGURES.md)'),

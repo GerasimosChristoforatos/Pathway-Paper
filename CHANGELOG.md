@@ -2,6 +2,132 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.10.1: manuscript numbering
+
+**Numbers unchanged.** No model run was made.
+
+Every file under `outputs/data/` is byte-identical to v4.10.0, except these:
+* the number maps `ed_number_map.csv` and `sf_number_map.csv` (v4.10.0 → v4.10.1) and the new `st_number_map.csv`;
+* `metrics.json`: the two new metric blocks only; everything else is identical;
+* `pathways/levers.json`: two text fields only, `L2/tl_note` and `L9/anchor` (§4). The same keys and every value are
+  identical.
+
+Figures changed only in their file names, and in one in-figure text: the ED5 row notes now read "as in Extended Data
+Fig. 6" (they read "Fig. 4"). Every other PNG is byte-identical to its v4.10.0 file.
+
+**Checks:**
+* Tests: 263 passed in both profiles.
+* Palette coverage: 0 findings. Figure integrity and `check_outputs` pass.
+* `lever_audit.md`: all checks pass.
+* The regression lock was re-captured. It changed in `pathways/levers.json` (the two text fields) and its commit
+  stamp only; the lock covers data files, not figure names.
+
+### Numbering: repository = manuscript
+* Extended Data figures are numbered by first citation in the manuscript.
+* Supplementary figures and tables are numbered by first citation in the SI.
+* The single source is `figure_plan.RENUMBER`, with `figure_plan.SI_TABLES` for the SI tables. The lists, the file
+  names and the three maps derive from it.
+* `figure_plan.PAPER_EXTENDED` and `figure_plan.SUPPLEMENTARY` are now in number order.
+* The repository-to-manuscript tables (FIGURES.md header, README) are replaced by the line "Repository numbers =
+  manuscript numbers (from v4.10.1)" and a pointer to the maps.
+
+**Extended Data figures (v4.10.0 → v4.10.1):**
+
+| content | old | new |
+|---|---|---|
+| population, households, floor area | ED1 | ED1 |
+| household formation and size | ED2 | ED2 |
+| stock and vacancy | ED9 | ED3 |
+| roll-out timing | ED8 | ED4 |
+| boundary sensitivity | ED5 | ED5 |
+| one at a time | ED4 | ED6 |
+| replacement variants | ED3 | ED7 |
+| lever annual | ED7 | ED8 |
+| Sobol | ED6 | ED9 |
+
+EDT1 is unchanged.
+
+**Supplementary figures (v4.10.0 → v4.10.1):**
+
+| content | old | new |
+|---|---|---|
+| households | SF1 | SF1 |
+| completion lag | SF7 | SF2 |
+| census replacement rates | SF2 | SF3 |
+| dwelling size | SF3 | SF4 |
+| overbuild absorption | SF4 | SF5 |
+| hindcast | SF5 | SF6 |
+| reality checks | SF6 | SF7 |
+| λ sweep | SF9 | SF8 |
+| HD estimators | SF10 | SF9 |
+| TL dwellings | SF15 | SF10 |
+| MC inputs | SF11 | SF11 |
+| pathway MC | SF13 | SF12 |
+| conditional TL | SF14 | SF13 |
+| PRCC | SF8 | SF14 |
+| MC convergence | SF12 | SF15 |
+
+**Supplementary tables of the SI:**
+
+| id | content | source |
+|---|---|---|
+| ST1 | data sources | SI text |
+| ST2 | assumption register | `outputs/reports/ASSUMPTIONS.md` |
+| ST3 | net replacement variants | `sensitivity/replacement_variants.csv` |
+| ST4 | demand bands of the Reference 2026–2050 | `baseline/bands_annual.csv` |
+| ST5 | hindcast errors | `baseline/validation.json` |
+| ST6 | item mapping | `data/material_item_map.csv` |
+| ST7 | embodied carbon by term | `reconciliation.md`, `METHODS_DRAFT.md` |
+| ST8 | budget construction | was ST1 (`ST8_budget_construction.{md,csv}`) |
+| ST9 | deterministic AESA sensitivities | `sensitivity/planetary_boundary.csv` |
+| ST10 | strategies, Pathways and TL runs | `pathways/runs.csv` |
+| ST11 | Monte Carlo inputs | SI text |
+| ST12 | limitations register | SI text |
+
+The optional generated ST3–ST10 tables were not written in this version.
+
+### Cross-references
+* Every id and manuscript reference is renumbered in one simultaneous pass, so no id is rewritten twice. Covered:
+  * the code: figures, `figure_plan`, `redraw`, `palette.toml`, tools and tests;
+  * the documents: README, ARCHITECTURE, PALETTE, REFERENCES and the tests README.
+* "Extended Data Fig. 4" (one at a time) now reads Fig. 6 throughout:
+  * the ED5 row notes (in the figure);
+  * the ED2 note;
+  * the Fig7 note;
+  * the Fig1/Fig3 caption sentence;
+  * the Methods.
+* Row numbers inside ED6 are unchanged.
+* "ED1–SF6" in the README (a leftover from v4.8.0) is corrected to "ED1–ED9".
+* `outputs/` files under the old names were removed.
+
+### Two new metrics (from existing outputs; `metrics.json` pathways; RESULTS.md)
+
+**Cumulative LoE over 2028–2050:** the sum of carbon_kt over the sum of the budgets (pathways/annual.csv, scenario REF;
+AR 4,082 kt, AtP 1,026 kt).
+
+| run | LoE AR | LoE AtP |
+|---|---|---|
+| Reference | 5.631 | 22.395 |
+| Moderate | 3.602 | 14.326 |
+| Ambitious | 2.199 | 8.746 |
+| TL | 0.419 | 1.665 |
+
+**Single-lever reductions against the combined reduction** (pathways/runs.csv):
+
+| level | sum of single-lever reductions (kt) | combined reduction (kt) | overlap |
+|---|---|---|---|
+| Moderate | 9,745 | 8,294 | 14.9% |
+| Ambitious | 19,445 | 14,032 | 27.8% |
+| TL | 44,701 | 21,331 | 52.3% |
+
+### Text-only additions (no number changes)
+* **REFERENCES and L9:** City of Oslo Climate Agency (2025), *Barriers and key success factors for zero emission
+  construction in Oslo* (v0.1, April 2025), replaces the "to be confirmed" entry.
+* **L2 evidence** (levers.json, Extended Data Table 1, Methods): Switzerland 1.31% = 61,496 empty dwellings on
+  1 June 2022, a share of the total stock including single-family homes (FSO; admin.ch media release).
+* The IEA s(y) milestones are unchanged.
+* CITATION 4.10.1.
+
 ## model-v4.10.0: material-level chain, final lever set (L2/L6/L9/L10 re-anchored), single TL rule (full run)
 
 **Runs and checks**

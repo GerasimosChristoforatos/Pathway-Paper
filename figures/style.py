@@ -210,18 +210,18 @@ ZONE_GID = 'boundary_zone'
 ACCENT_ORANGE = '#C2571A'      # not drawn in a final figure (each meaning has its palette key below)
 ACCENT_BLUE = '#1F5FA8'
 # the meanings the accent colours carried, each its own palette key
-CENSUS_EMPTY = _CEN['census_empty']             # ED9a census empty points
+CENSUS_EMPTY = _CEN['census_empty']             # ED3a census empty points
 OBSERVED_TOTAL = _CEN['observed_total']         # Fig1 observed totals without a band split (drawn when such years exist)
 MODEL_PATH_YEARS = _HL['model_path_years']      # SF1b 2024-25: the model's household-size path, not observed
-LAG_VARIANT = {0: _LAG['zero_lag'], 17: _LAG['lag_17_months']}           # SF7
-VALIDATION = {'model_check': _VAL['model_check']}                    # SF5 2027 check
-NEW_HOUSEHOLDS = _CMP['new_households']         # ED9b
-RETIREMENT_VILLAGES = _CMP['retirement_villages']   # ED9b (out of scope)
+LAG_VARIANT = {0: _LAG['zero_lag'], 17: _LAG['lag_17_months']}           # SF2
+VALIDATION = {'model_check': _VAL['model_check']}                    # SF6 2027 check
+NEW_HOUSEHOLDS = _CMP['new_households']         # ED3b
+RETIREMENT_VILLAGES = _CMP['retirement_villages']   # ED3b (out of scope)
 
 # runs (palette.toml [runs])
 REFERENCE = _RUN['reference']
-NEUTRAL_DARK = NEUTRALS['neutral_dark']   # a dark neutral grey (not the Reference): SF11 histograms, SF15 bars
-# the 'release constraint binds' markers of SF15 (not a boundary; were S.AR): a fixed literal
+NEUTRAL_DARK = NEUTRALS['neutral_dark']   # a dark neutral grey (not the Reference): SF11 histograms, SF10 bars
+# the 'release constraint binds' markers of SF10 (not a boundary; were S.AR): a fixed literal
 RELEASE_BINDS = _HL['release_binds']     # palette.toml [highlights]
 # TL a pale sage green, >= 10 (CAM02-UCS) from the other runs under every simulated deficiency (tools/palette_check.py)
 TL = _RUN['theoretical_limit']
@@ -237,8 +237,8 @@ MC_BAND = dict(color=REFERENCE, alpha=OPACITY['mc_band'], lw=0)          # Monte
 # Every group shown together keeps a minimum CAM02-UCS distance of 10 under every simulated deficiency, the boundary
 # zones excepted (tools/palette_check.py; docs/PALETTE.md). The strategies: S1 Avoid burnt orange, S2 Switch plum,
 # S3 Improve steel blue; the deep magenta P2_ANCHOR is the 2026 overbuild band. A lever is drawn in its strategy colour (palette.toml [strategies]) and told apart by marker (LEVER_MARKER).
-LEVER_MARKER = ('o', 's', '^', 'D', 'v')          # the k-th lever within its strategy (SF9 lambda sweep)
-P2_ANCHOR = _DB['market_balance']       # the detailed band '2026 overbuild' (ED9b, SF4); the market-balance key
+LEVER_MARKER = ('o', 's', '^', 'D', 'v')          # the k-th lever within its strategy (SF8 lambda sweep)
+P2_ANCHOR = _DB['market_balance']       # the detailed band '2026 overbuild' (ED3b, SF5); the market-balance key
 # the typology colours
 TYPOLOGY = {'Detached': _TYP['detached'], 'Townhouses': _TYP['townhouses'],
             'Apartments': _TYP['apartments']}                     # palette.toml [typologies]
@@ -246,7 +246,7 @@ TYPOLOGY = {'Detached': _TYP['detached'], 'Townhouses': _TYP['townhouses'],
 STRATEGY = {'S1': _SG['avoid'], 'S2': _SG['switch'], 'S3': _SG['improve']}
 # the Moderate / Ambitious Pathway (pale yellow, orange); palette.toml [runs]
 PATHWAY_SETTING = {'moderate': _RUN['moderate'], 'ambitious': _RUN['ambitious']}
-PATHWAY = dict(STRATEGY, pathway=PATHWAY_SETTING['moderate'])     # 'pathway': the Moderate Pathway (Fig5, ED3)
+PATHWAY = dict(STRATEGY, pathway=PATHWAY_SETTING['moderate'])     # 'pathway': the Moderate Pathway (Fig5, ED7)
 # Moderate filled marker, Ambitious hollow (the solution-space convention, used everywhere)
 SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
            'ambitious': dict(ls='--', marker_fill='none', label='Ambitious')}
@@ -256,12 +256,12 @@ SETTING = {'moderate': dict(ls='-', marker_fill='full', label='Moderate'),
 # demolition replacement, the recent replacement surge and unconsented additions are drawn as one band, Net replacement
 # (the census measures only the net; the projection's split is not identified from data): they take its colour
 # the seven display bands of the figures (bands.DISPLAY) take palette.toml [demand_bands]; the detailed
-# sub-bands drawn on their own in ED9c / SF4 (2026 overbuild, overbuild absorbed, demolition replacement, unconsented
+# sub-bands drawn on their own in ED3c / SF5 (2026 overbuild, overbuild absorbed, demolition replacement, unconsented
 # additions, surge, ...) keep fixed literals. growth, household size, extra space, vacancy and maintenance are both a
 # detailed and a display band and follow the palette.
 UNTARGETED_HATCH = None
 GROWTH = _DB['population_growth']
-REPLACEMENT = _DB['net_replacement']    # demolition replacement (ED9b); the net-replacement key
+REPLACEMENT = _DB['net_replacement']    # demolition replacement (ED3b); the net-replacement key
 HATCH_LIGHT = '#FFFFFF'                 # a light hatch colour (Fig1 pipeline years)
 DISPLAY_BAND = {'growth': _DB['population_growth'], 'smaller_households': _DB['household_size_change'],
                 'extra_space': _DB['extra_space'], 'vacancy': _DB['vacancy'],
@@ -276,7 +276,7 @@ BAND = {'growth': (GROWTH, None),
         'replacement': (REPLACEMENT, None),
         'unconsented': (REPLACEMENT, None),          # a part of Net replacement (not drawn on its own)
         'redevelopment': (REPLACEMENT, None),        # a part of Net replacement (not drawn on its own)
-        'released_tl': (_CMP['released_tl'], None),   # palette.toml [components]; SF15 re-occupation
+        'released_tl': (_CMP['released_tl'], None),   # palette.toml [components]; SF10 re-occupation
         # 'Vacancy released' (negative, outline; the L2 vacancy family, darker). 'Surplus kept vacant (2050)' has no
         # colour here (TL only, never drawn in a final figure)
         'vacancy_released': ('#481870', None),
@@ -307,7 +307,7 @@ COMPONENT = {'materials_construction': STAGE['a1a3'], 'soil': STAGE['soil'],
              'maintenance': (_ST['committed_b2_b4'], None),     # committed after 2050: B2, B4
              'committed': (_ST['committed_c1_c4'], None)}       # committed after 2050: C1-C4
 
-# unexplained building of the history (Fig1, ED9): a faded reddish face, no hatch (face, hatch,
+# unexplained building of the history (Fig1, ED3): a faded reddish face, no hatch (face, hatch,
 # hatch colour); may be negative
 # the history bands of Fig1 (census intervals): household formation and vacancy as the projection
 # bands, the census-measured net replacement the replacement face, the retirement-village units a neutral outline
@@ -345,9 +345,9 @@ def fill(face, hatch=None, hatchcolor=None, alpha=1.0):
 # categorical groups in the diagnostics (sensitivity groups, the cases of D17): the Okabe-Ito
 # palette (Okabe & Ito 2008, Color Universal Design), distinguishable under the common colour-vision
 # deficiencies; one colour per group, always with a label
-# the tornado colours: palette.toml [one_at_a_time] (Fig7a, ED4, ED5: every draw.tornado)
+# the tornado colours: palette.toml [one_at_a_time] (Fig7a, ED6, ED5: every draw.tornado)
 TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = _OAT['low_end'], _OAT['high_end'], _OAT['single_alternative']
-# the Sobol bars (ED6) take palette.toml [sensitivity_indices]; QUALITATIVE is not drawn in a final
+# the Sobol bars (ED9) take palette.toml [sensitivity_indices]; QUALITATIVE is not drawn in a final
 # figure
 SOBOL = {'total': _SI['total_effect'], 'first_order': _SI['first_order_effect']}
 QUALITATIVE = ['#000000', '#E69F00', '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7']
@@ -412,8 +412,8 @@ def save(fig, path):
 # size (Nature minimum 5 pt; target 6 pt for legends and annotations); tick and axis labels keep their sizes
 LEGEND_MIN = FONT_SMALL
 LEGEND_MIN_PREFIXES = ('ED', 'SF')
-# the row notes of ED4 / ED5 (figure texts) are laid out to their measured line heights: they keep their size
-LEGEND_MIN_KEEP_FIGURE_TEXTS = ('ED4_one_at_a_time', 'ED5_boundary_sensitivity')
+# the row notes of ED6 / ED5 (figure texts) are laid out to their measured line heights: they keep their size
+LEGEND_MIN_KEEP_FIGURE_TEXTS = ('ED6_one_at_a_time', 'ED5_boundary_sensitivity')
 
 
 def raise_small_text(fig, name):

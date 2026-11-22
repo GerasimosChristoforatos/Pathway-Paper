@@ -23,7 +23,7 @@ README_END = '<!-- results:end -->'
 
 
 def late_window_and_overlap(m):
-    """(MODEL v4.10.1) The cumulative LoE over 2028-2050 and the single-lever overlap (metrics.json pathways)."""
+    """ The cumulative LoE over 2028-2050 and the single-lever overlap (metrics.json pathways)."""
     p = m.get('pathways') or {}
     lw, ov = p.get('loe_2028_2050'), p.get('single_lever_overlap')
     if not lw or not ov:
@@ -47,7 +47,7 @@ def late_window_and_overlap(m):
 
 
 def committed_by_run():
-    """Committed after 2050 by run (MODEL v4.8.0): the deterministic range, its C1-C4 part and the share of committed
+    """Committed after 2050 by run: the deterministic range, its C1-C4 part and the share of committed
     C1-C4 in the carbon-bearing classes (held at 2025), and the Monte Carlo 90% interval of the lower bound
     (pathways/runs.csv, pathways/montecarlo_summary.csv)."""
     import pandas as pd

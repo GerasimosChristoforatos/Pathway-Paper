@@ -47,7 +47,7 @@ def main():
                    consistent_years=f'{int(v_cons.index.min())}-{int(v_cons.index.max())}')
         j = np.asarray(ji['join'])
         i28 = fy.index(2028)
-        surplus_total, surplus_26_28 = float(j[1:].sum()), float(j[1:i28 + 1].sum())
+        surplus_26_28 = float(j[1:i28 + 1].sum())
         wording = N.vacancy_wording(vac['v_forward'], vac['consistent_max'], vac['consistent_min'],
                                     min(vac['consistent'], key=vac['consistent'].get), vac['v_2050'])
         ab = ji.get('absorption')
@@ -63,7 +63,7 @@ def main():
                          'speed is bracketed by sensitivity rows (never absorbed, by 2030, by 2045). The persistence '
                          f"rho = {ji['rho']:.2f} describes how the flow deviation fades, not the payback of the stock."
                          if end is not None else
-                         'is not absorbed (the legacy Reference of MODEL v2.1), so the implied vacancy stays above the '
+                         'is not absorbed (the permanent-surplus bound), so the implied vacancy stays above the '
                          'parameter.'))
         if ab is not None and bool(np.any(ab['cap_binds'])):
             limitation += ' The payback cap binds in ' + ', '.join(str(fy[i]) for i in np.flatnonzero(ab['cap_binds'])) + '.'

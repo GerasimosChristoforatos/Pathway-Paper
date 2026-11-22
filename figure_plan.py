@@ -11,7 +11,7 @@ Every figure is drawn by a module of figures/ from the data files of outputs/dat
 separation); `module` names it, `source` lists the data files it reads (relative to outputs/data/).
 Figures are PNG only (runprofile.py: 600 dpi full, 200 dpi light).
 """
-# caption sentence filled from the data when FIGURES.md is written (render_caption; MODEL v4.9.0): no value typed here
+# caption sentence filled from the data when FIGURES.md is written (render_caption): no value typed here
 SURPLUS_TOKEN = '<<surplus_absorption>>'
 
 
@@ -103,7 +103,7 @@ PAPER_MAIN = [
 ]
 
 PAPER_EXTENDED = [
-    # nine figures in this order, with Extended Data Table 1 (EDT1) the tenth item (MODEL v4.8.0; ED_NUMBER_MAP below)
+    # nine figures in this order, with Extended Data Table 1 (EDT1) the tenth item (ED_NUMBER_MAP below)
     dict(id='ED1', file='ED1_population_households_floor_area', module='figures.paper_extended',
          title='Population, households and floor area: history and projection (Stats NZ population 5th-95th)',
          source=['figure_source/projection_paths.json', 'figure_source/D02_households.json']),
@@ -132,7 +132,7 @@ PAPER_EXTENDED = [
          caption='One-at-a-time ranges of the Reference cumulative embodied carbon 2026-2050, grouped by category; each '
                  'input at its low (pale blue) and high (dark blue) end, a single alternative case grey, intermediate cases as '
                  'ticks; not additive, not a joint interval. Not shown (kept in the data file): '
-                 'the overbuild gap against the 2026 requirement, no census under-construction correction, the '
+                 'the overbuild gap against the same-year requirement, no census under-construction correction, the '
                  'maintenance event timing L / n, and the rows that compare with superseded settings (their changes are in the note). '
                  'What each row changes compared with the Reference (numbered as the row labels): ',
          row_notes='ED6',
@@ -147,17 +147,6 @@ PAPER_EXTENDED = [
          title='Sobol indices of the Reference: embodied carbon and floor area 2026-2050',
          source=['montecarlo/sobol_REF.csv']),
 ]
-
-def write_ed_number_map():
-    """outputs/data/ed_number_map.csv from ED_NUMBER_MAP (old id, old file, new id, new file, status). Written by
-    pathways.py with the deterministic outputs (with the Supplementary map, write_sf_number_map)."""
-    return _write_number_map('ed_number_map.csv', ED_NUMBER_MAP)
-
-
-def write_sf_number_map():
-    """outputs/data/sf_number_map.csv from SF_NUMBER_MAP (Supplementary Figures and Tables)."""
-    return _write_number_map('sf_number_map.csv', SF_NUMBER_MAP)
-
 
 def _write_number_map(name, rows):
     import csv
@@ -250,7 +239,6 @@ TABLE_MODULES = ('figures.paper_extended', 'figures.boundaries')      # the modu
 EXTENDED_TABLES = [dict(id='EDT1', file='EDT1_levels_by_typology', title='Lever levels by typology: Moderate, '
                         'Ambitious and TL', source=['pathways/levers.json'])]
 
-_d = lambda file, title, module, source: dict(file=file, title=title, module=module, source=source)
 # no separate diagnostic figures; every figure is a main, Extended Data or Supplementary figure
 DIAGNOSTICS = {}
 # figures drawn only in the full profile (their data exist only there)
@@ -276,7 +264,7 @@ def all_figures(profile_full=True):
 
 
 # ============================================================
-# NUMBER MAPS (MODEL v4.10.1): the single source of the renumbering v4.10.0 -> v4.10.1 (manuscript order); the
+# NUMBER MAPS: the single source of the renumbering v4.10.0 -> v4.10.1 (manuscript order); the
 # maps below and outputs/data/{ed,sf,st}_number_map.csv are derived from it and from the lists above. Earlier maps
 # (v4.3.0 -> v4.10.0) are in the git history and the CHANGELOG.
 # ============================================================

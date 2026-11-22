@@ -60,16 +60,16 @@ CASES = [
     ('Household size', 'Household size: 2018-2023 census pace, linear from 2023', dict(HH_SIZE_PATH='census_pace')),
     ('Stock', 'Completion rate 0.93', dict(COMPLETION_RATE=0.93)),
     ('Stock', 'Completion rate 0.96', dict(COMPLETION_RATE=0.96)),
-    ('Stock', 'Completion rate 0.95 (MODEL v3.3)', dict(COMPLETION_RATE=0.95)),
+    ('Stock', 'Completion rate 0.95', dict(COMPLETION_RATE=0.95)),
     # the consent-to-completion lag (adopted 17 months) and the out-of-sample 'No 2026 data' run
-    ('Completion lag', 'Completion lag 0 months (same calendar year, MODEL v3.3)', dict(COMPLETION_LAG_MONTHS=0)),
+    ('Completion lag', 'Completion lag 0 months (same calendar year)', dict(COMPLETION_LAG_MONTHS=0)),
     ('Completion lag', 'Completion lag 15 months', dict(COMPLETION_LAG_MONTHS=15)),
     ('Completion lag', 'Completion lag 19 months', dict(COMPLETION_LAG_MONTHS=19)),
     ('Completion lag', 'No 2026 data (consents to December 2025, projected 2026 population)',
      dict(CONSENT_DATA_END='2025-12-01', NOWCAST_POPULATION=False)),
     ('Stock', 'No census under-construction correction', dict(CENSUS_UC_CORRECTION=False)),
     # the Reference absorbs the overbuild by 2035 (logistic); the speed is bracketed here
-    ('2026 overbuild: absorption', 'Overbuild never absorbed (MODEL v2.1 Reference)',
+    ('2026 overbuild: absorption', 'Overbuild never absorbed',
      dict(OVERBUILD_ABSORPTION_END=None)),
     ('2026 overbuild: absorption', 'Overbuild absorbed by 2030', dict(OVERBUILD_ABSORPTION_END=2030)),
     ('2026 overbuild: absorption', 'Overbuild absorbed by 2045', dict(OVERBUILD_ABSORPTION_END=2045)),
@@ -79,11 +79,11 @@ CASES = [
     # F1: the starting surplus of 2024-2025 (projection.STARTING_SURPLUS; the adopted 'carry')
     ('Starting surplus', 'No starting surplus', dict(STARTING_SURPLUS='none')),
     ('Starting surplus', 'Starting surplus minus 2 SD', dict(STARTING_SURPLUS='carry_minus_2sd')),
-    ('2026 overbuild: rule variant', 'Gap measured against the 2026 requirement', dict(OVERBUILD_GAP_REF='2026')),
+    ('2026 overbuild: rule variant', 'Gap measured against the same-year requirement', dict(OVERBUILD_GAP_REF='2026')),
     ('Carbon factors', 'Soil on all floor area, incl. replacement', dict(SOIL_ON_REPLACEMENT=True)),
 ]
 # Carbon-factor and accounting rows of the adopted item-level, time-resolved run
-# (none for the frozen check run, so the table of baseline v2 keeps its rows):
+# (none for the frozen-technology check run):
 # frozen technology; the item-level decarbonisation sensitivities; A4-A5 held or on
 # item paths; event timing L / n. (Whole life at construction is an accounting
 # convention, not a parameter: it is a PB sensitivity row, pb_sensitivity.csv.)
@@ -198,12 +198,12 @@ def main():
     annual[('Carbon factors', 'Soil carbon: highest soil order (Organic)')] = carbon_with_annual(emb0, tf['SOC_high'])
     # Module D (benefits beyond the system boundary, EN 15978; excluded from the model): the D of the 2026-2050
     # cohorts at 2025 factors (the largest credit), booked in the construction year and subtracted (D < 0); the
-    # pooled typology factor (Building_factors: the item classes pool back to it). Carbon only (MODEL v4.8.0)
+    # pooled typology factor (Building_factors: the item classes pool back to it). Carbon only
     d_y = sum(base['evol_typ_total'][t].values * float(tf.loc[t, 'module_D']) for t in typ)
     rows.append(('Carbon factors', 'Module D credit at 2025 factors, booked at construction (not netted)', g0, c0 + float(d_y[1:].sum()) / 1e6))
     annual[('Carbon factors', 'Module D credit at 2025 factors, booked at construction (not netted)')] = base['carbon_total_typ'].sum(axis=1).values + d_y
 
-    # Production decarbonisation, no-climate-policy backgrounds (MODEL v4.9.0): the Reference with the A1-A3 term of
+    # Production decarbonisation, no-climate-policy backgrounds: the Reference with the A1-A3 term of
     # construction and of the in-window events x m(y) = [MAX(y) / MAX(2025)] / [AVG(y) / AVG(2025)] of Horup et al.
     # (2025) Table S3 (levers.l10_multiplier 'max'; the archetype and weight of lever L10). The floor area is not
     # changed by a carbon factor, so the change is exact on the Reference floor area. Carbon only.

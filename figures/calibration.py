@@ -38,7 +38,7 @@ def _band(ax, x, lo, hi, label):
 # ---------------------------------------------------------------------------
 # component id -> (label, colour). A component that IS a demand band takes the [demand_bands] key (vacancy; net
 # replacement; market balance); the others palette.toml [components]. Every part is a solid fill: no hatch, no fade.
-# Market balance (MODEL v4.6.0): one band for the history stock-identity residual (the 'unexplained building', the
+# Market balance: one band for the history stock-identity residual (the 'unexplained building', the
 # 2024-25 column's residual being the surplus carried into 2026), the 2026-27 overbuild and its absorption, as in Fig1.
 COMP = {'new_households': ('New households', S.NEW_HOUSEHOLDS),
         'vacancy': ('Vacancy (allowance and change)', S.BAND['vacancy'][0]),
@@ -166,7 +166,7 @@ def check_market_balance_vs_fig1(b):
     return len(b['history']) + len(b['annual'])
 
 
-def sf2b_columns():
+def ed3b_columns():
     """The ED3b columns and line from the committed figure source (D05), in the Fig1 layout (the same gap
     rule, paper_main.FIG1_GAP): one column per census interval, the pipeline years as annual columns, the projection
     from the year after as annual areas. Each column / year carries its signed parts, its net (the sum of the parts),
@@ -243,7 +243,7 @@ def _yrs(a_, b_):
     return f'{a_}–{b_}'
 
 
-def sf2b_draw(a, b):
+def ed3b_draw(a, b):
     """Draw the ED3b columns, areas, caps and line (values in thousand dwellings per year)."""
     k = 1e3
     for c in b['history']:                          # census intervals: one column each
@@ -283,7 +283,7 @@ def sf2_stock_vacancy():
     fid = 'ED3_stock_vacancy'
     d = D.src('D05_stock_and_vacancy')
     d6 = D.src('D06_vacancy_definition')
-    FY, PF, YH = d['forecast_years'], d['projection_years'], d['years_hist_flows']
+    FY, YH = d['forecast_years'], d['years_hist_flows']
     census_y = [int(y) for y in d['census_years']]
     fig = plt.figure(figsize=S.figsize('double', 185))
     gs = fig.add_gridspec(2, 4, height_ratios=[1, 1.1], width_ratios=[1, 1, 1, 0.85], hspace=ED3_HSPACE, wspace=0.75)
@@ -319,7 +319,7 @@ def sf2_stock_vacancy():
     a.set_ylim(0, None)
     a.set_ylabel('Vacancy rate (% of private dwellings)')
     a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09), fontsize=S.FONT_SMALL, ncol=ED3A_LEGEND_NCOL,
-             columnspacing=1.2, handlelength=1.6)               # compact: two rows (v4.8.0); full key in the note
+             columnspacing=1.2, handlelength=1.6)               # compact: two rows; full key in the note
     P.panel(a, 'a', 'Vacancy rate of empty homes')
 
     # (c; data D06): the unconsented additions each vacancy definition requires
@@ -340,9 +340,9 @@ def sf2_stock_vacancy():
     P.panel(a, 'c', 'Vacancy definition')                # d -> c
 
     a = fig.add_subplot(gs[1, :3])
-    b = sf2b_columns()
+    b = ed3b_columns()
     n_mb = check_market_balance_vs_fig1(b)
-    sf2b_draw(a, b)
+    ed3b_draw(a, b)
     a.axhline(0, color=S.INK, lw=S.LW_THIN)
     # the market balance of each census interval (the stock-identity residual) as one row of values at the top of
     # the panel (thousand dwellings per year), above every column, so no label sits on a column

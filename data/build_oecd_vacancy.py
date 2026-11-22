@@ -1,6 +1,6 @@
 """
 Vacant dwellings by country from the OECD Affordable Housing Database, indicator HM1.1 (Housing stock and
-construction), Figure HM1.1.2 (lever L2 at the Theoretical Limit, MODEL v4.10.0). No values typed by hand.
+construction), Figure HM1.1.2 (lever L2 at the Theoretical Limit). No values typed by hand.
 
 Source (provenance in data/raw/MANIFEST.csv; the file itself is kept in refs/, which is git-ignored):
   refs/OECD_AHD_HM1-1_housing_stock.xlsx

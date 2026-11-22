@@ -63,21 +63,21 @@ REF_ROWS = [
      'Household size: 2018-2023 census pace, linear from 2023',
      'DATA: census-benchmarked households 2018 and 2023; linear continuation (JUDGEMENT)'),
     ('Demographics', 'After 2048: held flat (zero slope)', 'single', 'Household size after 2048: held flat (zero slope)',
-     'JUDGEMENT: post-2048 tail (the Stats NZ series ends in 2048); the rule of MODEL v4.4'),
+     'JUDGEMENT: post-2048 tail (the Stats NZ series ends in 2048); the end-slope rule'),
     ('Demographics', 'After 2048: PCHIP end slope', 'single', 'Household size after 2048: PCHIP end slope',
      'JUDGEMENT: post-2048 tail'),
     ('Housing stock & calibration', 'Completion rate 0.93 / 0.96', 'low', 'Completion rate 0.93',
      'LITERATURE: Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025 (Policy Quarterly 21(1)); 93% final inspection / >95% first inspection'),
     ('Housing stock & calibration', 'Completion rate 0.93 / 0.96', 'high', 'Completion rate 0.96',
      'LITERATURE: Greenaway-McGrevy & Jones 2023; Jones, Greenaway-McGrevy & Crow 2025 (Policy Quarterly 21(1)); 93% final inspection / >95% first inspection'),
-    ('Housing stock & calibration', 'Completion rate 0.95 (MODEL v3.3)', 'single', 'Completion rate 0.95 (MODEL v3.3)',
-     'DECISION: the MODEL v3.3 central value (the authors\' own assumption)'),
+    ('Housing stock & calibration', 'Completion rate 0.95', 'single', 'Completion rate 0.95',
+     'DECISION: a rounded completion rate (the authors\' own assumption; central 0.945)'),
     ('Completion lag', 'Completion lag 15 / 19 months', 'low', 'Completion lag 15 months',
      'LITERATURE: median consent-to-completion time 1.27-1.53 yr (Jones, Greenaway-McGrevy & Crow 2025, citing Greenaway-McGrevy & Jones 2023)'),
     ('Completion lag', 'Completion lag 15 / 19 months', 'high', 'Completion lag 19 months',
      'LITERATURE: median consent-to-completion time 1.27-1.53 yr (Jones, Greenaway-McGrevy & Crow 2025, citing Greenaway-McGrevy & Jones 2023)'),
-    ('Completion lag', 'Completion lag 0 months (MODEL v3.3)', 'single',
-     'Completion lag 0 months (same calendar year, MODEL v3.3)', 'DECISION: the MODEL v3.3 timing'),
+    ('Completion lag', 'Completion lag 0 months', 'single',
+     'Completion lag 0 months (same calendar year)', 'DECISION: the same-year timing bound'),
     ('Completion lag', 'No 2026 data', 'single',
      'No 2026 data (consents to December 2025, projected 2026 population)',
      'CHECK: out-of-sample run without 2026 consents or the 2026 population nowcast'),
@@ -95,14 +95,14 @@ REF_ROWS = [
      '2 SD, so the excess is carried (adopted); this row carries none'),
     ('Housing stock & calibration', 'Starting surplus minus 2 SD', 'single', 'Starting surplus minus 2 SD',
      'RULE (F1): only the excess above the mean + 2 SD band carried'),
-    ('Housing stock & calibration', '2026 overbuild never absorbed (MODEL v2.1 Reference)', 'single',
-     'Overbuild never absorbed (MODEL v2.1 Reference)', 'DECISION: the permanent-surplus bound'),
+    ('Housing stock & calibration', '2026 overbuild never absorbed', 'single',
+     'Overbuild never absorbed', 'DECISION: the permanent-surplus bound'),
     ('Housing stock & calibration', 'Vacancy parameter: 1986-2023 census mean (one definition)', 'single',
      'Vacancy parameter: 1986-2023 census mean, one definition', 'DATA: Stats NZ censuses 1986-2023'),
     ('Housing stock & calibration', '2026 overbuild booked as stock-neutral redevelopment', 'single',
      'Booked as redevelopment, stock-neutral', 'DECISION (author): booking of observed 2026 building'),
     ('Housing stock & calibration', '2026 overbuild gap vs the 2026 requirement', 'single',
-     'Gap measured against the 2026 requirement', 'DECISION (author): rule variant'),
+     'Gap measured against the same-year requirement', 'DECISION (author): rule variant'),
     ('Replacement scenario', 'Low / High replacement', 'low', 'Low replacement: long-run rate',
      'DATA: 1991-2023 long-run rate'),
     ('Replacement scenario', 'Low / High replacement', 'high', 'High replacement: 2018-2023 rate persists',
@@ -141,18 +141,18 @@ REF_ROWS = [
      'Soil on all floor area, incl. replacement', 'DECISION (author): no soil loss on rebuilt footprints (adopted)'),
     ('Carbon factors & technology', 'Module D credit, booked at construction (not netted)', 'single', 'Module D credit at 2025 factors, booked at construction (not netted)',
      'EN 15978 Module D (benefits beyond the system boundary), excluded from the model; the 2025 factors (the largest '
-     'credit); carbon only, not converted to LoE (MODEL v4.8.0)'),
+     'credit); carbon only, not converted to LoE'),
     ('Carbon factors & technology', 'Production decarbonisation: no-climate-policy backgrounds (Horup MAX)', 'single',
      'Production decarbonisation: no-climate-policy backgrounds (Horup MAX), A1-A3 x MAX / average path',
      'LITERATURE: Horup et al. 2025 Table S3, the maximum of the 9 prospective backgrounds (no climate policy) '
      'relative to their average, applied to the A1-A3 of construction and of the in-window events as lever L10; '
-     'carbon only, not converted to LoE (MODEL v4.9.0)'),
+     'carbon only, not converted to LoE'),
     ('Accounting', 'Event timing L / n', 'single', 'Event timing: interval L / n', 'DECISION: maintenance timing'),
 ]
 # rows reported in carbon only (ED6), never converted to a level of exceedance: they need no AR-base rule
 # (boundaries.AR_BASE_RULE) and must not enter TORNADO. Module D: a consistent LoE would need Module D in the
-# historical sector base as well (MODEL v4.8.0). Production decarbonisation (Horup MAX): a carbon-factor path, shown as
-# the carbon range of lever L10's evidence (MODEL v4.9.0).
+# historical sector base as well. Production decarbonisation (Horup MAX): a carbon-factor path, shown as
+# the carbon range of lever L10's evidence.
 CARBON_ONLY_ROWS = ('Module D credit, booked at construction (not netted)',
                     'Production decarbonisation: no-climate-policy backgrounds (Horup MAX)')
 
@@ -244,7 +244,7 @@ def pathway_table():
         'data/pathways/runs.csv', 'DECISION (author): every lever at Ambitious')
     for side, nm in (('low', f'{PM_}-by2030'), ('high', f'{PM_}-by2045')):
         add('Roll-out timing', 'Full roll-out by 2030 / by 2045', side, *run_row('REF', nm), 'data/pathways/runs.csv',
-            'LITERATURE: RECC (Pauliuk et al. 2024) adopted 2035; window rule of MODEL v1.1.0')
+            'LITERATURE: RECC (Pauliuk et al. 2024) adopted 2035; the adoption-window rule')
     add('Theoretical limit', 'TL (every lever at Level 4)', 'single', *run_row('REF', 'TL'), 'data/pathways/runs.csv',
         'DECISION (author): Level 4 of every lever')
     for side, sc in (('low', 'LOW'), ('high', 'HIGH')):
@@ -409,7 +409,7 @@ TORNADO = [   # (input, low case, high case) in reference_table() rows
     ('Household size: 2018-2023 census pace (one-sided)', 'Household size: 2018-2023 census pace'),
     ('Completion rate (0.93 / 0.96)', 'Completion rate 0.93 / 0.96'),
     ('Completion lag (15 / 19 months)', 'Completion lag 15 / 19 months'),
-    ('Completion lag 0 months (one-sided)', 'Completion lag 0 months (MODEL v3.3)'),
+    ('Completion lag 0 months (one-sided)', 'Completion lag 0 months'),
     ('No 2026 data (one-sided)', 'No 2026 data'),
     ('Case-study carbon factors (jackknife)', 'Case studies: jackknife low / high'),
     ('Soil order (Raw / Organic)', 'Soil order: lowest (Raw) / highest (Organic)'),

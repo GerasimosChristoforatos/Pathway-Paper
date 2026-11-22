@@ -4,16 +4,16 @@
     audited (smoke);
   * the sign rules of the drawing helpers: cumulative bars end at their net, stacked series up + down = net, materials
     and stages never negative;
-  * the Fig4 waterfalls and the band reductions of the Pathways and TL add up to the run totals; the TL steps from the Reference;
+  * the Fig4 waterfalls add up to the run totals; the TL steps from the Reference;
     the net-positive steps reported; Fig3b's interval from the draws; Fig1's annual line against the census-interval
     means; the ED6 / ED5 notes stop when the code and the outputs disagree;
   * the palette file: a missing key, an unknown key, a value that is not "#RRGGBB" (and an opacity
     outside [0, 1]) are rejected;
-  * ED3b (stock and vacancy; SF2b before MODEL v4.8.0, ED9b in v4.8.0-v4.10.0): up + down = net for every column and year; the census-interval
+  * ED3b (stock and vacancy): up + down = net for every column and year; the census-interval
     means of the annual line = the column nets; the projection's net replacement is one band, equal to the sum of its
     three parts;
-  * Extended Data: nine figures (with Extended Data Table 1, ten items); SF7 (reality checks; SF6 in v4.8.0-v4.10.0, ED10 before MODEL
-    v4.8.0): every drawn history line equals its source data (not smoothed).
+  * Extended Data: nine figures (with Extended Data Table 1, ten items); SF7 (reality checks): every drawn history line
+    equals its source data (not smoothed).
 """
 import hashlib
 import json
@@ -105,9 +105,13 @@ def test_every_planned_figure_is_drawn_and_audited():
     assert all(fid in text for _, fid, _ in FP.all_figures(profile_full=True))
 
 
-def test_figures_leave_the_data_byte_identical():
-    """--figures-only: drawing reads data only. A sample of figures from every module is redrawn in process and every
-    file of outputs/data is hashed before and after."""
+def test_figures_leave_the_data_byte_identical(tmp_path):
+    """--figures-only: drawing reads data only. A sample of figures from every module is redrawn in a subprocess that
+    writes its figures and audit records to a temporary folder (PATHWAY_FIG_OUT), and every file of outputs/data is
+    hashed before and after."""
+    import subprocess
+    import sys
+
     def hashes():
         out = {}
         for d, _, fs in os.walk(layout.DATA):
@@ -115,14 +119,21 @@ def test_figures_leave_the_data_byte_identical():
                 p = os.path.join(d, f)
                 out[p] = hashlib.sha256(open(p, 'rb').read()).hexdigest()
         return out
-    import importlib
-    before = hashes()
     # one figure of every drawing module (main, Extended Data, Supplementary)
-    for fid in ('Fig4_pathways', 'Fig6_shapley_levers', 'ED6_one_at_a_time', 'ED8_lever_annual', 'ED4_rollout_timing',
-                'SF7_reality_checks', 'SF1_households', 'SF6_hindcast', 'SF2_completion_lag', 'SF14_prcc', 'SF15_mc_convergence'):
-        mod = next(m for _, f, m in FP.all_figures() if f == fid)
-        importlib.import_module(mod).FIGURES[fid]()
+    fids = ('Fig4_pathways', 'Fig6_shapley_levers', 'ED6_one_at_a_time', 'ED8_lever_annual', 'ED4_rollout_timing',
+            'SF7_reality_checks', 'SF1_households', 'SF6_hindcast', 'SF2_completion_lag', 'SF14_prcc',
+            'SF15_mc_convergence')
+    code = ('import importlib, sys\n'
+            'import figure_plan as FP\n'
+            'for fid in sys.argv[1:]:\n'
+            '    mod = next(m for _, f, m in FP.all_figures() if f == fid)\n'
+            '    importlib.import_module(mod).FIGURES[fid]()\n')
+    before = hashes()
+    env = dict(os.environ, PATHWAY_FIG_OUT=str(tmp_path), MPLBACKEND='Agg')
+    subprocess.run([sys.executable, '-c', code, *fids], cwd=ROOT, env=env, check=True, capture_output=True)
     assert hashes() == before
+    drawn = {os.path.splitext(f)[0] for _, _, fs in os.walk(tmp_path) for f in fs if f.endswith('.png')}
+    assert set(fids) <= drawn, sorted(set(fids) - drawn)
 
 
 # ---------------------------------------------------------------------------
@@ -134,7 +145,7 @@ def ref_runs():
     return r[r['scenario'] == 'REF'].set_index('run')['carbon_kt']
 
 
-def test_fig5_waterfall_panels_sum_to_totals(ref_runs):
+def test_fig4_waterfall_panels_sum_to_totals(ref_runs):
     from figures import paper_main as PM
     paths, _, _ = PM.waterfall_paths()
     ends = {'moderate': 'pathway-moderate', 'ambitious': 'pathway-ambitious', 'tl': 'TL'}
@@ -160,7 +171,7 @@ def test_tl_steps_from_the_reference():
         assert t == pytest.approx(sub[key], rel=1e-12), key
 
 
-def test_fig5_net_positive_steps_reported():
+def test_fig4_net_positive_steps_reported():
     from figures import paper_main as PM
     paths, _, _ = PM.waterfall_paths()
     ups = [(k, s) for k, _, _, steps in paths for (s, t), (_, p) in zip(steps[1:], steps[:-1]) if t > p]
@@ -172,18 +183,8 @@ def test_fig5_net_positive_steps_reported():
 
 
 # ---------------------------------------------------------------------------
-# band reductions, Fig3b interval, Fig1 line
+# Fig3b interval, Fig1 line
 # ---------------------------------------------------------------------------
-def test_fig5_column_totals_are_reference_minus_run():
-    from figures import paper_main as PM
-    red, tot = PM.reduction_by_band()
-    r = pd.read_csv(_data('pathways/runs.csv')).query("scenario == 'REF'").set_index('run')['carbon_kt']
-    assert set(tot) == set(PM.REDUCTION_RUNS) == {'pathway-moderate', 'pathway-ambitious', 'TL'}
-    for run in PM.REDUCTION_RUNS:
-        assert tot[run] == pytest.approx(r['REF'] - r[run], rel=RTOL, abs=1e-9), run
-        assert sum(red[run].values()) == pytest.approx(tot[run], rel=RTOL, abs=1e-9), run
-
-
 def test_fig3_interval_from_the_draws():
     from figures import paper_main as PM
     d = pd.read_csv(layout.montecarlo('draws', 'REF'))['carbon_kt'].to_numpy(float)
@@ -251,15 +252,15 @@ def test_load_palette_rejects_opacity(tmp_path, value):
 
 
 @pytest.fixture(scope='module')
-def sf2b():
+def ed3b():
     from figures import calibration as C
-    return C.sf2b_columns()
+    return C.ed3b_columns()
 
 
-def test_sf2b_up_plus_down_is_net(sf2b):
+def test_ed3b_up_plus_down_is_net(ed3b):
     from figures import calibration as C
-    cols = sf2b['history'] + sf2b['annual']
-    assert len(sf2b['history']) == 7 and len(sf2b['annual']) == 25
+    cols = ed3b['history'] + ed3b['annual']
+    assert len(ed3b['history']) == 7 and len(ed3b['annual']) == 25
     for c in cols:
         parts = np.array(list(c['parts'].values()))
         assert c['up'] == pytest.approx(parts[parts > 0].sum(), rel=0, abs=1e-9)
@@ -268,29 +269,29 @@ def test_sf2b_up_plus_down_is_net(sf2b):
     from figures import data as D
     hist_net = {(r.year_start, r.year_end): r.dwellings_built_per_year
                 for r in D.src('D05_stock_and_vacancy')['stock_identity_history'].itertuples()}
-    for c in sf2b['history']:                               # the column net is the stock identity of the interval
+    for c in ed3b['history']:                               # the column net is the stock identity of the interval
         assert c['net'] == pytest.approx(hist_net[c['years']], rel=RTOL)
-    for c in sf2b['annual']:                                # the line equals the net in every projection year
+    for c in ed3b['annual']:                                # the line equals the net in every projection year
         assert c['line'] == pytest.approx(c['net'], rel=RTOL)
     # the drawn stacks: every column and year of the drawing helper checks up + down = net (draw._check_net); a
     # column whose parts do not add up to its net stops the figure
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots()
-    C.sf2b_draw(ax, sf2b)
-    bad = dict(sf2b, history=[dict(sf2b['history'][0], net=sf2b['history'][0]['net'] + 1.0)] + sf2b['history'][1:])
+    C.ed3b_draw(ax, ed3b)
+    bad = dict(ed3b, history=[dict(ed3b['history'][0], net=ed3b['history'][0]['net'] + 1.0)] + ed3b['history'][1:])
     with pytest.raises(SystemExit):
-        C.sf2b_draw(ax, bad)
+        C.ed3b_draw(ax, bad)
     plt.close(fig)
 
 
-def test_sf2b_net_replacement_is_one_band(sf2b):
+def test_ed3b_net_replacement_is_one_band(ed3b):
     """The projection's demolition replacement, recent surge and unconsented additions are one band, Net replacement,
     in every year equal to the sum of the three D05 parts; the history's census-measured net replacement has the same
     label and colour."""
     from figures import calibration as C
     from figures import data as D
     pc = D.src('D05_stock_and_vacancy')['projection_components']
-    for k, c in enumerate(sf2b['annual']):
+    for k, c in enumerate(ed3b['annual']):
         assert set(c['parts']) == set(C.FUT_IDS)
         assert c['parts']['net_replacement'] == pytest.approx(sum(float(pc[p][k]) for p in C.NET_REPLACEMENT_PARTS),
                                                               rel=1e-12, abs=1e-9)
@@ -307,7 +308,7 @@ def test_reality_checks_history_lines_equal_their_source():
     from figures import validation as V
     ids = [h['id'] for h in FP.PAPER_EXTENDED]
     assert ids == [f'ED{k}' for k in range(1, 10)] and len(ids) + len(FP.EXTENDED_TABLES) <= 10
-    assert [h['file'] for h in FP.PAPER_EXTENDED if h['id'] == 'ED3'] == ['ED3_stock_vacancy']   # manuscript order (v4.10.1)
+    assert [h['file'] for h in FP.PAPER_EXTENDED if h['id'] == 'ED3'] == ['ED3_stock_vacancy']   # manuscript order
     assert [h['id'] for h in FP.SUPPLEMENTARY if h['file'].endswith('reality_checks')] == ['SF7']
     fig, ax = plt.subplots()
     d = D.src('D15_reality_checks')
@@ -323,10 +324,10 @@ def test_reality_checks_history_lines_equal_their_source():
     plt.close(fig)
 
 
-def test_sf2b_line_means_equal_column_nets(sf2b):
-    years, vals = sf2b['line']
+def test_ed3b_line_means_equal_column_nets(ed3b):
+    years, vals = ed3b['line']
     assert years[0] == 1992 and years[-1] == 2050 and np.all(np.diff(years) == 1)
     line = pd.Series(vals, index=years.astype(int))
-    for c in sf2b['history']:
+    for c in ed3b['history']:
         y0, y1 = c['years']
         assert line.loc[y0:y1].mean() == pytest.approx(c['net'], rel=RTOL)

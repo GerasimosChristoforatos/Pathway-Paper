@@ -17,18 +17,21 @@ AMBITION LEVELS (the 2050 Pathways Calculator, DECC 2010 and DESNZ 2023; EUCalc 
                  B  an NZ record with no structural trend exists -> the best value ever observed in NZ;
                  C  otherwise -> a published reference value (official projection > legislated target >
                     peer-reviewed scenario > peer-country value)
-  TL         = Level 4   the definitional zero / full where one exists, else the best single observation; every TLn
-                         is asserted at least as strong as Ambitious (tl_strength)
+  TL         = Level 4   the Theoretical Limit (TL_RULE): the best value observed, internationally where a comparable
+                         measure exists, otherwise in New Zealand, or a documented scenario bound; a logical bound
+                         only where physically attainable by choice or design; every lever at TL is asserted at
+                         least as strong as Ambitious (tl_strength)
 Levels between Reference and Ambitious are indexed by lambda in [0, 1] (the native parameter
 x(lambda) = x_ref + lambda (x_amb - x_ref)); Moderate is lambda = 0.5 exactly (the lambda-sweep of the Extended Data).
 
 ADOPTION. Every level, TL included, moves from the Reference along the normalised logistic 2026 -> 2035 (midpoint
 2030.5, k = ln(81) / 6; RECC full roll-out by 2035, Pauliuk et al. 2024): x(y) = x_ref + w(y) (x_level - x_ref).
+Stated exceptions: L10 follows its own scenario path (no logistic weight), and L1 at TL is limited to the fastest
+observed census-interval change of household size (tl_speed).
 Sensitivities: by 2030, by 2045 (the Pathways) and the instant TL (full strength from 2027). Years: model index 0 = 2025,
 1 = 2026 (observed; no lever touches it).
 
-LEVERS (grouped by the PAS 2080:2023 hierarchy, naming.STRATEGY_LEVERS; sub-rule naming.LEVER_SUBRULE;
-the earlier lever numbers are in the git history, tag model-v4.3.3)
+LEVERS (grouped by the PAS 2080:2023 hierarchy, naming.STRATEGY_LEVERS; sub-rule naming.LEVER_SUBRULE)
   S1 Avoid    L1 Household size [C]    S = S_ref + gap, gap = Stats NZ Medium B - Medium A household size (the
                                        propensity-B path: living arrangements change as modelled on the 2001-2023
                                        censuses; both rebased on the observed 2023 S, the same post-2048 tail)
@@ -43,8 +46,9 @@ the earlier lever numbers are in the git history, tag model-v4.3.3)
               L7 Soil-aware planning [C] soil carbon loss per m2 x (1 - x), x = 0.146
               L8 Material carbon efficiency [A] A1-A3 x r(y), r(y) = HD q0.15 of the case ratios
                                        x_i(y) = (A1-A3_i,2025 - red13_i(y)) / pooled(y): each case on its own
-                                       decarbonisation path, every year (MODEL v4.9.0)
-  S3 Improve  L9 Construction-stage carbon [C]  A4-A5 linear to zero by 2050
+                                       decarbonisation path, every year
+  S3 Improve  L9 Construction-stage carbon [C]  A4-A5 split into transport, site energy and waste (L9_SHARES);
+                                       Ambitious: site energy -85%, transport and waste as the Reference
               L10 Production decarbonisation [C] A1-A3 x m(y), m = the lower envelope of the 9 prospective backgrounds
                                        of Horup et al. (2025) Table S3 relative to their average, by archetype
                                        (A1-A3_t(y) = r8_t(y) x [A13_2025,t - red13_t(y)] x m10_t(y))
@@ -129,10 +133,9 @@ HD_CI = 0.95
 HD_BOOTSTRAP_SEED = 20261008      # L8; L5 uses seed + 1
 L4_CONSENT_YEARS = (1990, 2025)
 L4_FULL_STRENGTH_YEAR = 2035      # occ_ref = S_ref(2035) x OLF_t: the size at full strength equals size_min
-L4_REPORT_YEARS = (2035, 2050)
 L5_N_CASES = 16
 L5_TYPOLOGIES = ('Detached', 'Townhouses', 'Apartments')
-# L1 (MODEL v4.7.0): the Ambitious household size is the Stats NZ propensity-B path (living-arrangement propensities
+# L1: the Ambitious household size is the Stats NZ propensity-B path (living-arrangement propensities
 # change, modelled on the 2001-2023 censuses; Stats NZ DataInfo+, POPPR_FHH), the Reference the propensity-A path
 # (propensities held at 2023), both Medium, rebased on the observed 2023 S with the same post-2048 tail
 # (projection.S_TAIL). Within one propensity the Low / Medium / High variants differ only through their population
@@ -154,7 +157,7 @@ L3_D_AMBITIOUS = 0.40             # Pellan et al. 2024: demolition 150,000 -> 90
 L8_SAMPLE_TYPOLOGIES = ('Detached', 'Townhouses')
 L8_MIN_CASES = 10
 L9_REF_RATE = 0.01
-# L9 (MODEL v4.10.0): A4-A5 split into transport (A4), site energy and site waste by the medians of Kanafani et al.
+# L9: A4-A5 split into transport (A4), site energy and site waste by the medians of Kanafani et al.
 # (2023) Sustainability 15(14), 10992 (61 Danish construction sites, kg CO2e per m2 per year): A4 0.28; site energy =
 # electricity 0.19 + heat 0.12 + fuel 0.08; waste 0.49 (the main A5 contributor, as Hasselsteen et al. 2025 J. Clean.
 # Prod. 521, 146243). The medians do not add, so the shares are the medians normalised. Reference: every part -1%/yr
@@ -162,7 +165,7 @@ L9_REF_RATE = 0.01
 # key success factors for zero emission construction in Oslo, v0.1: "roughly 85 percent of work at municipal
 # construction sites" with zero-emission machinery in 2024), A4 and waste as the Reference; Moderate the midpoint; at
 # TL A4 and site energy zero (electric machinery and freight exist), waste as the Reference (its material carbon
-# belongs to L8 / L10). Every level on the common 2026-2035 logistic adoption (MODEL v4.10.0: no own path).
+# belongs to L8 / L10). Every level on the common 2026-2035 logistic adoption (no own path).
 L9_MEDIANS = {'transport (A4)': ('transport', 0.28), 'site electricity': ('site_energy', 0.19),
               'site heat': ('site_energy', 0.12), 'site fuel': ('site_energy', 0.08), 'site waste': ('waste', 0.49)}
 L9_PARTS = ('transport', 'site_energy', 'waste')
@@ -171,11 +174,11 @@ L9_SHARES = {q: sum(v for g, v in L9_MEDIANS.values() if g == q) / sum(v for _, 
 L9_SITE_ENERGY_CUT_AMBITIOUS = 0.85
 L9_CUT = {'ambitious': {'transport': 0.0, 'site_energy': L9_SITE_ENERGY_CUT_AMBITIOUS, 'waste': 0.0},
           'tl': {'transport': 1.0, 'site_energy': 1.0, 'waste': 0.0}}
-# One rule for the Theoretical Limit (MODEL v4.10.0), written once here, in METHODS_DRAFT and the Extended Data Table 1
+# One rule for the Theoretical Limit, written once here, in METHODS_DRAFT and the Extended Data Table 1
 TL_RULE = ('Theoretical Limit = the best value observed, internationally where a comparable measure exists, otherwise '
            'in New Zealand, or a documented scenario bound; a logical bound only where physically attainable by choice '
            'or design.')
-# L2 at TL (MODEL v4.10.0): OECD (2024) Affordable Housing Database HM1.1, Figure HM1.1.2 panel B, Switzerland 2022
+# L2 at TL: OECD (2024) Affordable Housing Database HM1.1, Figure HM1.1.2 panel B, Switzerland 2022
 FILE_OECD_VACANCY = 'data/derived/oecd_hm112_vacancy.csv'
 L2_TL_COUNTRY = 'Switzerland'
 L2_TL_NOTE = ('At the Theoretical Limit every non-market empty dwelling (holiday homes, dwellings held empty) is '
@@ -187,11 +190,11 @@ L2_TL_NOTE = ('At the Theoretical Limit every non-market empty dwelling (holiday
               'national count (6,794 vacant units in a 4.6 M stock; OECD \'Vacant\' sheet) cannot be an all-tenure '
               'market count. One vintage (OECD 2024 table) is used for all countries; national releases after it are '
               'not.')
-# L6 at TL (MODEL v4.10.0): DCLG (2010) Land use change statistics England, provisional estimates for 2009: "80% of
+# L6 at TL: DCLG (2010) Land use change statistics England, provisional estimates for 2009: "80% of
 # dwellings (including conversions) were built on previously developed land, unchanged from 2008" (England's peak)
 L6_S_TL = 0.80
 L8_REPORT_YEARS = (2025, 2030, 2040, 2050)
-# L10 Production decarbonisation (MODEL v4.9.0): the same materials and quantities made with lower-carbon production.
+# L10 Production decarbonisation: the same materials and quantities made with lower-carbon production.
 # Source: Horup et al. (2025) Table S3, GWP per m2 of the Danish archetypes 2025-2050, average / minimum / maximum over
 # the 9 prospective backgrounds of Table S1 (SSP1/2/5 x no climate policy / RCP2.6 / RCP1.9), extracted by
 # data/build_horup.py. m10_Amb,t(y) = [MIN_a(y) / MIN_a(2025)] / [AVG_a(y) / AVG_a(2025)]: the extra decarbonisation of
@@ -352,7 +355,7 @@ def case_ratios(fb, typologies=L8_SAMPLE_TYPOLOGIES):
 
 
 def case_paths(fb, red, typologies=L8_SAMPLE_TYPOLOGIES):
-    """L8 by year (MODEL v4.9.0): x_i(y) = (A1-A3_i,2025 - red13_i(y)) / pooled(y), each case on its own
+    """L8 by year: x_i(y) = (A1-A3_i,2025 - red13_i(y)) / pooled(y), each case on its own
     decarbonisation path, pooled(y) pooled as case_ratios (equal weight per sub-type, every case of the typology).
     red: A1-A3 reduction per case (rows = id) and year (columns; factors_building_a13_reduction.csv). Returns
     ({year: DataFrame of the independent cases (id, typology, ratio)}, {typology: {year: pooled}})."""
@@ -383,7 +386,7 @@ def case_reductions(settings, fb, years):
 
 
 def l10_paths(years, path=None):
-    """L10 (MODEL v4.9.0): Horup et al. (2025) Table S3 archetype paths relative to their own 2025 value, by archetype
+    """L10: Horup et al. (2025) Table S3 archetype paths relative to their own 2025 value, by archetype
     and statistic (avg | min | max), as arrays over `years` (2025-2050 required); and the source cells."""
     import os
     d = pd.read_csv(path or os.path.join(os.path.dirname(os.path.abspath(__file__)), FILE_L10), comment='#')
@@ -406,7 +409,7 @@ def l10_multiplier(years, stat='min', path=None):
     return {t: rel[(a, stat)] / rel[(a, 'avg')] for t, a in L10_ARCHETYPE.items()}
 
 
-# Item-level production chain (MODEL v4.10.0): for every case-study item i, A13_i(y) = A13_i,2025 x p_i(y) x q_i(y),
+# Item-level production chain: for every case-study item i, A13_i(y) = A13_i,2025 x p_i(y) x q_i(y),
 # p_i the Horup S4 path of the item (unmapped items held), q_i the L10 multiplier at the run's level:
 # q_i = m_a(y) x c_k(y), m_a the archetype multiplier (uniform over a case's items: Horup et al. report the envelope by
 # archetype only) and c_k a factor of the item's class k (1 unless the class is in L10_TL_CLASSES and L10 is at TL).
@@ -415,7 +418,7 @@ def l10_multiplier(years, stat='min', path=None):
 # path, C_t(y) = 1 - sum_k P_tk(y) (1 - c_k(y)) / P_t(y) with P_tk the pooled class paths
 # (factors_a13_class_paths.csv); the same chain gives the A1-A3 component of the in-window events (class kernels)
 # and of the committed lower bound. With every c_k = 1 the correction terms are exact zeros (l10_chain).
-# L10 at TL (MODEL v4.10.0): near-zero emissions cement and steel (IEA 2022, Definitions for near-zero and low-emissions
+# L10 at TL: near-zero emissions cement and steel (IEA 2022, Definitions for near-zero and low-emissions
 # steel and cement, and underlying emissions measurement methodologies, p. 17: 125 kg CO2-eq/t cement at 100% clinker,
 # 400 kg CO2-eq/t crude steel at 100% iron), relative to the BAT reference values of IEA (2022) Achieving Net Zero
 # Heavy Industry Sectors in G7 Members (cited ibid. p. 22-23, footnote 8: 850 kg CO2-eq/t cement at 100% clinker,
@@ -513,7 +516,7 @@ def l9_cut(lam):
 
 def a45_target(years, lam):
     """L9 target A4-A5 factor path at full strength (before the adoption weight), relative to 2025:
-    ref(y) x (1 - sum_part share x cut), ref = e^(-0.01 (y - 2025)) (MODEL v4.10.0)."""
+    ref(y) x (1 - sum_part share x cut), ref = e^(-0.01 (y - 2025))."""
     ref = a45_reference(years)
     cut = l9_cut(lam)
     return ref * (1.0 - sum(L9_SHARES[q] * cut[q] for q in L9_PARTS))
@@ -673,7 +676,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
 
     # ---- L8 Material carbon [A] ----
     # the Ambitious r is the HD q0.15 of the case ratios in every year, each case on its own decarbonisation path
-    # (MODEL v4.9.0; v4.8 scaled the pooled path by the 2025 r, so the best cases decarbonised at the pooled mix's
+    # (scaling the pooled path by the 2025 r instead would decarbonise the best cases at the pooled mix's
     # rate); the bootstrap interval is computed at 2025 only (estimator)
     cases6, pooled6 = case_ratios(factors_building)
     est6 = hd_estimate(cases6['ratio'].values, HD_Q, bootstrap_B, HD_BOOTSTRAP_SEED)
@@ -732,7 +735,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                                                  for y in L8_REPORT_YEARS},
                                        A_1_ratio=float(cases15.loc[cases15['id'] == 'A_1', 'ratio'].iloc[0]),
                                        note='report only; the adopted estimate keeps n = 14 (Detached, Townhouses)')
-    # L8 on the case paths of the run's L10 level (MODEL v4.10.0): the archetype multiplier m is uniform over the
+    # L8 on the case paths of the run's L10 level: the archetype multiplier m is uniform over the
     # sample (Detached and Townhouses share the single-family archetype) and cancels exactly in the ratios, so the
     # ratios differ only where the L10 class factors act (L10 at TL): x_i(y) = [path_i(y) - sum_k P_ik(y) (1 - c_k(y))]
     # / the same pooled
@@ -1132,7 +1135,7 @@ def inputs(base, p, levels, ramp_name=None):
     w9 = w
     if 'L9' in lv:
         target45 = native(p, 'L9', lv['L9'], years)
-        d45 = l9_delta(base['a45_2025'], years, target45, w9)   # the common adoption window (MODEL v4.10.0)
+        d45 = l9_delta(base['a45_2025'], years, target45, w9)   # the common adoption window
         for k in ('intensity', 'intensity_upfront'):
             fi[k] = _add(fi[k], d45)
     # L7 soil-aware planning: soil factor by year
@@ -1188,20 +1191,20 @@ TL_RELEASE_ITEMS = ('TL1', 'TL2')       # their released dwellings are re-occupi
 
 
 def releases_dwellings(levels):
-    """True if and only if the run releases dwellings: TL1 or TL2 (TL_RELEASE_ITEMS) at 'tl' (MODEL v4.9.0). The one
+    """True if and only if the run releases dwellings: TL1 or TL2 (TL_RELEASE_ITEMS) at 'tl'. The one
     predicate that chooses the re-occupation pool accounting (pathways.run), the zero-building soil clip and the
     checks of release runs; a run that releases nothing (the Reference, the Pathways, any other lever at TL) absorbs
-    the starting surplus and the overbuild along the logistic to 2035. Until v4.8 any lever at 'tl' chose the pool,
-    which shifted the timing of building (+84.6 kt with an otherwise neutral TL item; lever_audit.md check 7)."""
+    the starting surplus and the overbuild along the logistic to 2035. Choosing the pool for any lever at 'tl' would
+    shift the timing of building (+84.6 kt with an otherwise neutral TL item; lever_audit.md check 7)."""
     return any(lam_of(levels[TL_LEVER[c]]) == 'tl' for c in TL_RELEASE_ITEMS if TL_LEVER[c] in levels)
 TL_INSTANT_LABEL = 'TL-from2027'
-TL_DISCLAIMER = ('TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at '
-                 'Level 4 (the definitional zero or full, or the best single observation), adopted by 2035, combining '
-                 'best observed attributes of different buildings and places; not a proposal or a feasible pathway '
-                 '(potentials hierarchy: theoretical > technical > realisable).')
+TL_DISCLAIMER = ('TL is the Theoretical Limit, a thought experiment, not a pathway: every lever at Level 4 ('
+                 + TL_RULE.split(' = ', 1)[1].rstrip('.') + '), adopted by 2035 (L10 on its own scenario path, L1 at '
+                 'the census speed limit), combining best observed attributes of different '
+                 'buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > '
+                 'technical > realisable).')
 TL_BAU_NOTE = ('The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 '
-               'e^(-0.01 (t - 2025)) until TL9 sets A4-A5 to zero).')
-tl_caption = N.tl_caption
+               'e^(-0.01 (t - 2025)); L9 at TL sets transport and site energy to zero).')
 
 
 def tl_levels(comps, base_setting='moderate'):
@@ -1214,21 +1217,13 @@ def tl_levels(comps, base_setting='moderate'):
     return out
 
 
-OMITTED = [
-    ('Lightweighting', 'the case studies give A1-A3 per m2 by material and item, not structural mass by design '
-     'alternative; a mass reduction cannot be separated from the material choice already covered by L8'),
-    ('Bio-based archetypes', 'no typology has a bio-based archetype among the 16 case studies, and the model\'s '
-     'biogenic-carbon convention (timber C1-C4 excludes biogenic CO2) would need extending; overlaps L8'),
-    ('Renovation carbon of retained buildings', 'not modelled: L3 is an upper bound of the effect of building '
-     'lifetime extension (Napiontek et al. 2025)'),
-]
 
 
 def pct(x, nd=1):
     return f'{100 * x:.{nd}f}%'
 
 
-# The level rule (MODEL v4.7.0; Table 1 'rule' column): Reference = current practice held (2023 / 2025);
+# The level rule (Table 1 'rule' column): Reference = current practice held (2023 / 2025);
 # Moderate = the exact midpoint of Reference and Ambitious; Ambitious = a documented frontier (a value achieved in New
 # Zealand or elsewhere, an official projection, a peer-reviewed scenario or a documented requirement, cited); TL = the logical bound where the lever has one, otherwise the best value observed.
 LEVEL_RULE = {

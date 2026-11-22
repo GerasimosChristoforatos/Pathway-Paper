@@ -351,7 +351,8 @@ def market_excess(E, building_2026, rho, gap_ref='2027', mode='redevelopment', a
       gap_ref     = building_last - requirement_(last+1) (gap_ref='2027': the requirement of the year after the last
                     observed year; '2026' = sensitivity: of the last observed year)
       excess_t    = gap_ref x rho^(t - last),             t > last
-    n = 1: one observed year (gap_ref = building_2026 - requirement_2027, rho^(t - 2026)).
+    n = 2 in the central run (2026, 2027: gap_ref = building_2027 - requirement_2028, rho^(t - 2027)); n = 1 at a
+    zero completion lag (gap_ref = building_2026 - requirement_2027, rho^(t - 2026)).
     mode 'redevelopment': the excess is stock-neutral extra replacement
       of existing stock (returned as redev = join; no soil, no absorption, no payback);
     mode 'surplus': the excess adds to the stock;

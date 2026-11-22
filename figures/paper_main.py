@@ -227,7 +227,7 @@ def fig1():
 # Fig2: Reference carbon by demand band, material and stage (annual) and cumulative (three attached columns)
 # ---------------------------------------------------------------------------
 FIG2_H, FIG2_BOTTOM, FIG2_LEG_Y = 108, 0.36, -0.10    # height (mm), axes bottom, legend top (axes)
-FIG2_TEXT_BUMP = 0.5                  # MODEL v4.7.2: +0.5 pt on every Fig2 text outside the legends, except the
+FIG2_TEXT_BUMP = 0.5                  # +0.5 pt on every Fig2 text outside the legends, except the
                                       # panel d column labels ('By demand' / 'By material' collide at +0.5 pt)
 
 
@@ -341,7 +341,7 @@ def fig2():
     d.grid(axis='x', visible=False)
     P.panel(d, 'd', 'Cumulative carbon')
     legend_texts = {t for a_ in ax for t in a_.get_legend().get_texts()}
-    for t in fig.findobj(matplotlib.text.Text):       # MODEL v4.7.2: every other text +FIG2_TEXT_BUMP pt (fits)
+    for t in fig.findobj(matplotlib.text.Text):       # every other text +FIG2_TEXT_BUMP pt (fits)
         if t.get_text() and t not in legend_texts:
             t.set_fontsize(t.get_fontsize() + FIG2_TEXT_BUMP)
     for a_ in list(ax) + [d]:                         # tick labels are created lazily
@@ -366,7 +366,7 @@ FIG3A_YTOP = 1700                   # kt: the legend overlaps the 90% band only 
 FIG3B_HATCH = {'b2b4': 'xxxxxxxx', 'c1c4': '........'}   # committed segments: dense, so the legend swatches read
 FIG3B_HATCH_LW = 0.6                # hatch lines (pt), the column and its legend swatches alike
 # Fig3b Monte Carlo intervals: capped error bars (no boxes); 50% bold ink, 90% muted grey, thinner, longer caps;
-# both at FIG3B_EB_ALPHA so both stay visible where they overlap; no median mark (MODEL v4.7.2)
+# both at FIG3B_EB_ALPHA so both stay visible where they overlap; no median mark
 FIG3B_EB = {'50': dict(color='ink', lw=1.6, capsize=3.0, capthick=1.6),
             '90': dict(color='muted', lw=0.8, capsize=6.0, capthick=0.8)}
 FIG3B_EB_ALPHA = S.OPACITY['fig3b_interval_bars']      # palette.toml [opacity]
@@ -402,8 +402,8 @@ def mc_committed():
 
 
 def fig3b_intervals(ax, x, q, wd):
-    """The Fig3b Monte Carlo intervals at x: 90% and 50% capped error bars (FIG3B_EB); no median tick (MODEL v4.7.2:
-    the median is in the note). q: {'p5', 'p25', 'p50', 'p75', 'p95'}. Returns the legend handles (90%, 50%)."""
+    """The Fig3b Monte Carlo intervals at x: 90% and 50% capped error bars (FIG3B_EB); no median tick (the
+    median is in the note). q: {'p5', 'p25', 'p50', 'p75', 'p95'}. Returns the legend handles (90%, 50%)."""
     h = {}
     for key, (lo_, hi_), z in (('90', ('p5', 'p95'), 6), ('50', ('p25', 'p75'), 7)):
         st = FIG3B_EB[key]
@@ -433,7 +433,7 @@ def fig3():
     xf, arf = P.pchip(years, ar)
     _, atpf = P.pchip(years, atp)
     S.boundary_zones(ax, xf, arf, atpf)
-    P.absorption_span(ax)                             # behind every element (MODEL v4.9.0)
+    P.absorption_span(ax)                             # behind every element
     q = {p: mc.loc[years.astype(int), f'carbon_{p}'].values / M for p in (5, 25, 50, 75, 95)}
     methods = {}
     for (lo_, hi_), alpha, lab in (((5, 95), S.OPACITY['mc_band_90'], 'Monte Carlo 90% band'),
@@ -458,7 +458,7 @@ def fig3():
     hs, ls = ax.get_legend_handles_labels()
     # the 50% band is drawn over the 90% band: its swatch overlays the two palette opacities (what the plot shows)
     hs = [mc50_handle() if lab_ == 'Monte Carlo 50% band' else h_ for h_, lab_ in zip(hs, ls)]
-    zone_lab = {S.ZONE['within_both']['label']: 'Within both budgets',                  # Fig3 only (v4.8.0)
+    zone_lab = {S.ZONE['within_both']['label']: 'Within both budgets',                  # Fig3 only
                 S.ZONE['within_ar']['label']: 'Within AR budget'}
     ax.legend(handles=hs + zones, labels=ls + [zone_lab.get(z.get_label(), z.get_label()) for z in zones],
               loc='upper right', fontsize=S.FONT_MIN,
@@ -627,7 +627,7 @@ def fig4():
     ax[0].set_ylim(0, max(paths[0][3][0][1], bar_) * 1.17)           # room for the TL1 label
     import matplotlib.transforms as mtrans                            # panel a only: the two budgets named just
     tr = mtrans.offset_copy(mtrans.blended_transform_factory(ax[0].transAxes, ax[0].transData), fig=fig, y=1.2,
-                            units='points')                           # above their lines (v4.8.0)
+                            units='points')                           # above their lines
     for v, lab in ((bar_, 'Acquired-rights budget'), (batp, 'Ability-to-pay budget')):
         ax[0].text(FIG4A_BUDGET_LABEL_X, v, lab, transform=tr, ha='center', va='bottom', fontsize=S.FONT_MIN + 0.5,
                    color=S.INK, zorder=6)
@@ -650,30 +650,6 @@ def fig4():
                + f'; budgets AR {bar_:,.0f} kt, AtP {batp:,.0f} kt. Steps in PAS 2080 order; each step is credited with '
                'what remains after the higher-priority measures; order-free Shapley values in Fig6. Net-positive steps: '
                + (up_txt if up_txt else 'none') + '.')
-
-
-# ---------------------------------------------------------------------------
-# the reduction against the Reference by demand band: no figure draws it; tests/test_figure_integrity.py checks it
-# against pathways/runs.csv
-# ---------------------------------------------------------------------------
-REDUCTION_RUNS = ('pathway-moderate', 'pathway-ambitious', 'TL')
-
-
-def reduction_by_band():
-    """{run: {band id: Reference - run (kt, cumulative 2026-2050, in scope)}} for REDUCTION_RUNS, from
-    pathways/bands.csv (the in-scope bands add up to each run's carbon, pathways.py), and the column totals
-    {run: Reference - run} from pathways/runs.csv."""
-    bd = D.csv('pathways/bands.csv')
-    bd = bd[(bd['scenario'] == 'REF') & (bd['definition'] == 'in_scope')]
-    piv = bd.pivot(index='band', columns='run', values='carbon_kt')
-    piv.index = [P.band_id(b) for b in piv.index]
-    r = D.csv('pathways/runs.csv')
-    r = r[r['scenario'] == 'REF'].set_index('run')['carbon_kt']
-    piv = piv.groupby(lambda b: BANDS_MOD.DISPLAY[b]).sum()             # the six display bands (+ TL)
-    order = [b for b in BANDS_MOD.DISPLAY_ORDER if b in piv.index]
-    red = {run: {b: float(piv.loc[b, 'REF'] - piv.loc[b, run]) for b in order} for run in REDUCTION_RUNS}
-    tot = {run: float(r['REF'] - r[run]) for run in REDUCTION_RUNS}
-    return red, tot
 
 
 # ---------------------------------------------------------------------------
@@ -883,7 +859,7 @@ def fig5():
           Line2D([0], [0], ls='none', color=S.TL, marker='o', ms=ms_['tl'], label=N.TL['TL']),
           Line2D([0], [0], ls='none', color=S.REFERENCE, marker='s', ms=4, label=f"{N.SCENARIOS['REF']} (ruler)")]
     h += S.boundary_handles() + S.zone_handles()
-    # MODEL v4.7.2: no AtP entry (AtP stays on the side strip); a 3 x 3 grid filled by column, Acquired rights (AR) in
+    # no AtP entry (AtP stays on the side strip); a 3 x 3 grid filled by column, Acquired rights (AR) in
     # the third column below the Theoretical Limit; centred on the square plot (ax), not on the figure
     by = {x.get_label(): x for x in h}
     ar_lab = S.BOUNDARY['AR']['label']
@@ -918,7 +894,7 @@ def fig5():
 # ---------------------------------------------------------------------------
 # Fig6: Shapley value of each lever (Moderate hollow, Ambitious filled, TL dot)
 # ---------------------------------------------------------------------------
-FIG6_LEVER_LABEL = {'L6': 'Brownfield development', 'L9': 'Construction stage carbon'}   # plot labels only (v4.8.0)
+FIG6_LEVER_LABEL = {'L6': 'Brownfield development', 'L9': 'Construction stage carbon'}   # plot labels only
 FIG6_TICK_PAD = 1.5                 # pt between the Fig6 lever labels and the axis (tighter left margin)
 
 
@@ -1047,9 +1023,9 @@ def mc50_handle():
 
 
 FIG7A_BAR = 0.6                     # bar height (rows 1 apart): a visible gap between rows
-FIG7A_LABEL = {'hh_propensity': 'Household size\n(Stats NZ B)'}   # plot label only (v4.8.0); naming.INPUT_LABEL kept
+FIG7A_LABEL = {'hh_propensity': 'Household size\n(Stats NZ B)'}   # plot label only; naming.INPUT_LABEL kept
 FIG7A_TICK_PAD = 1.5                # pt between the Fig7a row labels and the axis (tighter left margin)
-FIG7A_ED6_ONLY = ('completion_rate', 'no_2026')   # rows above the filter drawn in Extended Data Fig. 6 only (v4.7.1)
+FIG7A_ED6_ONLY = ('completion_rate', 'no_2026')   # rows above the filter drawn in Extended Data Fig. 6 only
 # Fig7a carbon-factor rows: (input id, sensitivity/tornado.csv input, AR-base rule row)
 FIG7_CARBON_FACTOR_ROWS = (('jackknife', 'Case-study carbon factors (jackknife)', 'Case studies: jackknife low / high'),
                            ('soil_order', 'Soil order (Raw / Organic)', 'Soil order: lowest (Raw) / highest (Organic)'))
@@ -1173,7 +1149,7 @@ def fig7():
         x50 = thr['threshold_P_NZ_2050'] / 1e6
         y0_, y1_ = b.get_ylim()                                     # the line stops above the data (legend clear)
         top = (np.log(vmax * 1.15) - np.log(y0_)) / (np.log(y1_) - np.log(y0_))
-        vl = b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3)   # not in the legend (v4.7.2):
+        vl = b.axvline(x50, ymax=top, color=S.INK, lw=S.LW_THIN, ls='--', zorder=3)   # not in the legend:
         b.text(x50, 0.03, f" TL: P(within AR) = 50%\n at {x50:.2f} M (95% CI {lo / 1e6:.2f}–{hi / 1e6:.2f})",
                transform=b.get_xaxis_transform(), ha='left', va='bottom', fontsize=S.FONT_MIN,   # the line's label
                color=S.INK, linespacing=1.15)

@@ -39,8 +39,8 @@ def test_pipeline_years_and_observed_building(B):
     df = projection.load_consents()
     assert projection.pipeline_years(df, 0) == []
     assert projection.pipeline_years(df, 17) == [2026, 2027]
-    # consents to September 2026 (MODEL v4.6.0): at L = 15, 2027 is observed too (October 2025 - September 2026);
-    # with the data of MODEL v4.0-v4.5 (to July 2026) it was not
+    # consents to September 2026: at L = 15, 2027 is observed too (October 2025 - September 2026);
+    # with consents only to July 2026 it is not
     assert projection.pipeline_years(df, 15) == [2026, 2027]
     assert projection.pipeline_years(df[df['Date'] <= '2026-07-01'], 15) == [2026]
     assert projection.pipeline_years(df, 19) == [2026, 2027]

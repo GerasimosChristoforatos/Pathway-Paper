@@ -160,7 +160,7 @@ def styling(fig):
     from matplotlib.colors import to_hex
     atp, neg, ticks, down, tl, old = [], 0, 0, 0, False, set()
     tlhex = S.TL.upper()
-    retired = {'#0DB2C7', '#00ACC1', '#102A2E'}       # TL and Population growth of model-v2.1.1
+    retired = {'#0DB2C7', '#00ACC1', '#102A2E'}       # retired colours of TL and Population growth
     from matplotlib.collections import Collection
     from matplotlib.patches import Patch
     for ax in fig.get_axes():

@@ -37,7 +37,6 @@ PAPER_MAIN = os.path.join(FIG_OUT, 'paper_main')
 PAPER_EXTENDED = os.path.join(FIG_OUT, 'paper_extended')
 SUPPLEMENTARY = os.path.join(FIG_OUT, 'supplementary')   # the Supplementary figures and tables
 DIAGNOSTICS = os.path.join(FIG_OUT, 'diagnostics')
-DIAGNOSTIC_GROUPS = ('calibration', 'validation', 'boundaries', 'pathways', 'montecarlo', 'sensitivity')
 FIGURES_INDEX = os.path.join(OUT, 'FIGURES.md')
 RUN_META = os.path.join(OUT, 'run_meta.json')
 FIGURE_AUDIT = os.path.join(DIAGNOSTICS, '_audit')

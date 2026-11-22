@@ -9,14 +9,14 @@ and writes data only (CSV / JSON); the figures are drawn by the figures/ package
 ONE RUN (run()): every run, the Reference included, follows the same order per year
     gross_t -> overbuild payback -> re-occupation -> built_t
   1. the lever inputs (levers.inputs) and the requirement without any join, E1 (engine.forward, join = 0);
-  2. need_t = requirement_t + the dwellings released by TL2 (zero vacancy: -min(vacancy change, 0)), so that the
+  2. need_t = requirement_t + the dwellings released by L2 at TL (lower vacancy: -min(vacancy change, 0)), so that the
      release is re-occupied by the rule below instead of netted at once;
   3. the 2026 overbuild: the market excess of the REFERENCE (computed once, held fixed in every run) is absorbed
      along the Reference's logistic weights, the payback capped at max(gross_t, 0) with the shortfall carried
      (engine.absorb_overbuild);
   4. re-occupation (only in runs that release dwellings, releases_dwellings(levels): TL1 or TL2 at TL, in any single-
-     lever run, Shapley subset, waterfall step or the full TL; MODEL v4.9.0): the pool
-     R = R1 (TL1, household decline: -min(d households, 0) / (1 - v)) + R2 (TL2, zero vacancy) + the positive
+     lever run, Shapley subset, waterfall step or the full TL): the pool
+     R = R1 (TL1, household decline: -min(d households, 0) / (1 - v)) + R2 (L2 at TL, lower vacancy) + the positive
      overbuild (the pipeline years and the fading gap) + the starting surplus meets a constant share of each year's
      need after the payback over first..2050, first = observed_end + 1 (2028 with the 17-month lag; the releases of
      the observed years enter the pool in `first`) (reoccupation()); a negative excess is still made good along the
@@ -72,7 +72,7 @@ import runprofile  # noqa: E402
 import validation  # noqa: E402
 
 RAMP_ADOPTED = LV.ADOPTION_ADOPTED
-releases_dwellings = LV.releases_dwellings      # the one predicate of the re-occupation pool accounting (MODEL v4.9.0)
+releases_dwellings = LV.releases_dwellings      # the one predicate of the re-occupation pool accounting
 BF_A13 = EV.COMPONENTS[0]                        # 'A1-A3' (Building_factors.EVENT_COMPONENTS)
 OUT = layout.data('pathways')
 FILE_PB_ANNUAL = layout.data('aesa/annual.csv')
@@ -198,7 +198,7 @@ def l10_class_inputs(B, typ, fy, after, prof):
         return a13c, evc, comc
     variant = BF.decarb_variant(projection.DECARB_MODE, projection.DECARB_ITEM_CASE)
     d = pd.read_csv(BF.OUT_A13_CLASS)
-    present = set(d['Class'])                         # the class review (MODEL v4.10.0): every production class reviewed
+    present = set(d['Class'])                         # the class review: every production class reviewed
     if present != set(LV.L10_CLASS_REVIEW) or not set(classes) <= present or BF.ELEVATOR_CLASS != LV.L10_ELEVATOR_CLASS:
         raise SystemExit(f'STOP (L10): production classes {sorted(present)} differ from the reviewed classes '
                          f'{sorted(LV.L10_CLASS_REVIEW)} (or a class factor has no class).')
@@ -381,7 +381,7 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     s0 = float(ctx.get('start_surplus', 0.0))         # F1 starting surplus (vacant at the start; never built)
     exc_pos = np.maximum(excess, 0.0) if pool_ob else zeros
     exc_abs = excess - exc_pos                        # the part absorbed along the Reference's logistic
-    if ctx['absorb_w'] is None:                       # overbuild never absorbed (legacy Reference)
+    if ctx['absorb_w'] is None:                       # overbuild never absorbed (permanent-surplus bound)
         ab = dict(paid=zeros, carry=zeros, cap_binds=np.zeros(n, bool), built=need + excess,
                   U=s0 + np.cumsum(excess))
     else:
@@ -438,7 +438,7 @@ def committed(ctx, gfa_t, prod2050=None):
     at 2025 in both bounds, the energy part at 2025 / at the generic path's 2050 value), with this run's floor area.
     prod2050 (runs with L10, levers.inputs info['prod2050']): the lower bound's A1-A3 event factors x the 2050
     production chain held, m(2050) and, per class with a factor, m(2050) (c_k(2050) - 1) on that class's A1-A3 events
-    (the item-level chain, MODEL v4.10.0); the upper bound (2025 factors) and C1-C4 are not changed."""
+    (the item-level chain); the upper bound (2025 factors) and C1-C4 are not changed."""
     b = {'upper': 0.0, 'lower': 0.0}
     for k, t in enumerate(ctx['typ']):
         for key in b:
@@ -592,8 +592,6 @@ def annual_rows(ctx, R, label):
 # ============================================================
 # DEMAND BANDS (projection bookkeeping; naming.BANDS_*_TL)
 # ============================================================
-BAND_ORDER_IN_SCOPE = [N.band_data_label(b) for b in BANDS.IN_SCOPE]
-BAND_ORDER_RV = BAND_ORDER_IN_SCOPE[:-2] + [N.band_data_label('retirement_villages')] + BAND_ORDER_IN_SCOPE[-2:]
 
 
 def band_set(ctx, R):
@@ -743,8 +741,8 @@ def effective_coordinates(split, split0):
     within the window), 1 - (C_P / GFA_P) / (C_0 / GFA_0). With the fixed part identical in every run,
     LoE_AR(x, y) = [fixed + C_0 (1 - x)(1 - y)] / B_AR reproduces the run's LoE exactly (tests).
     The 2026 cohort's construction-year emissions (A1-A5, soil) are identical in every run (2026 observed; STOP
-    otherwise). Its in-window events (2027-2050) change only through L10 (production in the calendar year of the event,
-    MODEL v4.9.0): that change is a carbon-per-m2 effect of a lever after 2026 and is counted in y, so the plane
+    otherwise). Its in-window events (2027-2050) change only through L10 (production in the calendar year of the
+    event): that change is a carbon-per-m2 effect of a lever after 2026 and is counted in y, so the plane
     keeps the Reference's fixed part and still reproduces the run's LoE. Returns (x, y, the moved change in kg)."""
     if not np.allclose(split['fixed_upfront'], split0['fixed_upfront'], rtol=1e-9, atol=1e-3):
         raise SystemExit('effective_coordinates: the 2026 cohort\'s construction-year emissions differ from the '
@@ -1000,20 +998,20 @@ def waterfall(ctx, get, setting):
                                                      if L == LV.LEVERS[-1] else ''), dict(acc)))
     for k in range(1, len(LV.TL_COMPONENTS) + 1):
         t = LV.TL_COMPONENTS[k - 1]
-        steps.append((t, f'+ {t} {N.TL[t]}' + (' (= TL)' if k == len(LV.TL_COMPONENTS) else ''),
+        steps.append((t, f'+ {N.at_tl(t)}: {N.TL[t]}' + (' (= TL)' if k == len(LV.TL_COMPONENTS) else ''),
                       LV.tl_levels(LV.TL_COMPONENTS[:k], setting)))
     return waterfall_rows(ctx, get, setting, steps)
 
 
 def waterfall_tl_from_reference(ctx, get):
-    """The sequential path Reference -> +TL1 -> ... -> +TL10 (= TL), every limit added
+    """The sequential path Reference -> + L1 at TL -> ... -> + L10 at TL (= TL), every limit added
     cumulatively from the Reference in PAS 2080 order (the other levers off: levers.tl_levels(.., 'reference')); each
     step a cached run, split exactly into the in-scope demand bands as in waterfall(). The step runs are the prefix
     subsets of the levers_tl Shapley game."""
     steps = [('REF', N.SCENARIOS['REF'], {})]
     for k in range(1, len(LV.TL_COMPONENTS) + 1):
         t = LV.TL_COMPONENTS[k - 1]
-        steps.append((t, f'+ {t} {N.TL[t]}' + (' (= TL)' if k == len(LV.TL_COMPONENTS) else ''),
+        steps.append((t, f'+ {N.at_tl(t)}: {N.TL[t]}' + (' (= TL)' if k == len(LV.TL_COMPONENTS) else ''),
                       LV.tl_levels(LV.TL_COMPONENTS[:k], 'reference')))
     return waterfall_rows(ctx, get, 'tl', steps)
 
@@ -1284,11 +1282,11 @@ def tl_summary(res):
             dwellings_built={int(y): float(x) for y, x in zip(yy, engine.requirement(E)) if y >= 2026})
     return dict(run_mode=RUN_MODE, disclaimer=LV.TL_DISCLAIMER, bau=LV.TL_BAU_NOTE,
                 definition=dict(levels='every lever at Level 4', adoption='normalised logistic 2026 -> 2035 (as every '
-                                'level); MODEL v4.0.0: TL1 at the census speed limit (levers.json L1 tl_speed)',
+                                'level); L1 at TL at the census speed limit (levers.json L1 tl_speed)',
                                 tl1_speed=res['params']['L1'].get('tl_speed'),
                                 sensitivity=f'{LV.TL_INSTANT_LABEL}: every limit at full strength from 2027',
                                 components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS},
-                                note='TL6 = 100% brownfield makes TL7 zero within TL'),
+                                note='L6 at TL (100% brownfield) makes L7 at TL zero within TL'),
                 strength=res['params']['tl_strength'], zero_building=out.pop('zero_building'), runs=out,
                 tl1_age_standardised=tl1_age_standardised_summary(res))
 

@@ -114,7 +114,7 @@ The resolved value of every lever and level, with its source, is in `outputs/dat
 
 ### Data freeze
 
-DATA_FREEZE_PLACEHOLDER
+Data frozen on 22 November 2026: building consents to September 2026 (Stats NZ BLD468601); population estimates to the June 2026 quarter (Stats NZ estimated resident population); Stats NZ 2023-base household projections (National family and household projections, released 11 November 2026); Stats NZ Dwelling and household estimates to the March 2026 quarter (on the 2018 Census base; see the limitation "Households 2019-2023"). Later releases are not used.
 
 ### Data provenance
 

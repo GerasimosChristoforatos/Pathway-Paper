@@ -240,11 +240,12 @@ def test_l9_three_parts():
 
 def test_l10_class_factors():
     """L10 at TL: near-zero cement and steel, c = (1 - s) + s k, s = 0 through 2026, 0.08 (2030),
-    0.93 (2050); no class factor below TL."""
+    0.27 (2035), 0.93 (2050), linear between them; no class factor below TL."""
     import levers as LV
     years = np.arange(2025, 2051)
     s_ = LV.l10_near_zero_share(years)
     assert (s_[years <= 2026] == 0).all() and s_[years == 2030][0] == pytest.approx(0.08) and s_[-1] == pytest.approx(0.93)
+    assert s_[years == 2035][0] == pytest.approx(0.27) and s_[years == 2040][0] == pytest.approx(0.27 + (0.93 - 0.27) / 3)
     c = LV.l10_class_factor('tl', years)
     assert c['STEEL'][-1] == pytest.approx(1 - 0.93 + 0.93 * 400 / 2945)
     assert c['CONCRETE'][-1] == pytest.approx(1 - 0.93 + 0.93 * 125 / 850)

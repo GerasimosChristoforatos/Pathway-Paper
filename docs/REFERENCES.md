@@ -182,9 +182,10 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   https://iea.blob.core.windows.net/assets/0910c4ff-4008-48f5-a3ec-c52996ed694d/Definitionsfornear-zeroandlow-emissionssteelandcementandunderlyingemissionsmeasurementmethodologies.pdf
   (p. 17: near-zero thresholds 125 kg CO2-eq/t cement at 100% clinker and 400 kg CO2-eq/t crude steel at 100% iron;
   L10 at TL.)
-- IEA (n.d.). *Cement* (Tracking Clean Energy Progress; Net Zero Emissions by 2050 milestones).
-  https://www.iea.org/reports/cement-3 (the near-zero share of cement production 0 in 2022, 8% in 2030, 93% in 2050, as
-  specified by the author; the page could not be read from the build environment; L10 at TL.)
+- IEA (2023). *Net Zero Roadmap: A Global Pathway to Keep the 1.5 °C Goal in Reach*, 2023 update. International
+  Energy Agency, Paris. https://www.iea.org/reports/net-zero-roadmap-a-global-pathway-to-keep-the-15-0c-goal-in-reach
+  (Cement: near-zero emission clinker production share 0% in 2022, 8% in 2030, 27% in 2035 and 93% in 2050, verified by
+  the author; the near-zero share s(y) of L10 at TL, applied to steel as well, a stated assumption.)
 - Kockat, J., Wallerand, A. S., Jankovic, I., & Wang, X. (2019). *Identification of levers and levels for the building
   stock*. EUCalc Deliverable D2.5 (updated July 2019), Horizon 2020 grant 730459.
   https://www.european-calculator.eu/wp-content/uploads/2020/04/EUCalc_D2.5_Lever-levels-buildings.pdf (Table 2:

@@ -204,8 +204,9 @@ def lines():
           f"cement, cement plaster; k = 125/850 = {LV.L10_K_CEMENT:.3f}) and steel (k = 400/2,945 = {LV.L10_K_STEEL:.3f}) "
           'q_i = m_a(y) x [(1 - s(y)) + s(y) k], whatever the item\'s S4 mapping; k is the IEA (2022) near-zero '
           'threshold at 100% clinker / 100% iron over the BAT reference value (IEA 2022, p. 17 and p. 22-23 note 8); '
-          's(y), the near-zero share of production, is 0 (2022), 0.08 (2030) and 0.93 (2050), linear, 0 through the '
-          'observed 2026 (IEA Cement tracking, NZE milestones); steel takes the same s (an assumption). The imported '
+          's(y), the near-zero share of production, is ' + ', '.join(f'{v:.2f} ({k})' for k, v in LV.L10_S_MILESTONES.items())
+          + ', linear between the milestones, 0 through the observed 2026 (' + LV.L10_S_SOURCE + '); steel takes the '
+          'same s (an assumption). The imported '
           'elevator of the apartment cases: ' + LV.L10_ELEVATOR_NOTE + '. '
           'm10: ' + '; '.join(f"{t} " + ', '.join(f"{y} {LV.by_year(v, y):.3f}" for y in LV.L10_REPORT_YEARS)
                              for t, v in q['report']['ambitious'].items())
@@ -336,7 +337,7 @@ TABLE1_MAIN_FOOTNOTES = ('⁸ Prospective backgrounds SSP1/2/5 × none/RCP2.6/RC
                          '¹¹ A4–A5 split into transport, site energy and waste by 61 Danish sites (Kanafani et al. 2023).',
                          '¹² About 85% of Oslo\'s municipal site work with zero-emission machinery in 2024 (City of Oslo '
                          '2025).',
-                         '¹³ IEA (2022) near-zero thresholds for cement and steel; near-zero share 8% (2030), 93% (2050).')
+                         '¹³ IEA (2022) near-zero thresholds for cement and steel; near-zero share ' + LV.L10_S_TEXT + ' (IEA 2023).')
 TABLE1_MAIN_NOTE = (
     'The four levels follow the ambition levels of the UK 2050 Calculator and EUCalc (DECC 2010; Kockat et al. 2019). '
     'The Reference holds current practice; business-as-usual technology change applies in every run. Ambitious is a '

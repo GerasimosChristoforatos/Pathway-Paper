@@ -200,9 +200,9 @@ L8_REPORT_YEARS = (2025, 2030, 2040, 2050)
 # data/build_horup.py. m10_Amb,t(y) = [MIN_a(y) / MIN_a(2025)] / [AVG_a(y) / AVG_a(2025)]: the extra decarbonisation of
 # the lower envelope over the nine-scenario average, which the Reference already follows (the S4 item paths). Author
 # decision: archetype a = 'Single family houses' for Detached and Townhouses, 'Multi dwellings' for Apartments; the
-# extra decarbonisation is spread evenly across materials (Horup report the envelope by archetype only). TL10 =
-# Ambitious: no documented value lies beyond the lower envelope of the 9 backgrounds (as TL8 = Ambitious for townhouses
-# and apartments). No logistic ramp: the scenario path is the timing (as L9); m = 1 up to the observed year 2026.
+# extra decarbonisation is spread evenly across materials (Horup report the envelope by archetype only). L10 at TL
+# adds near-zero emissions cement and steel to this envelope (below). No logistic ramp: the scenario path is the
+# timing; m = 1 up to the observed year 2026.
 FILE_L10 = 'data/derived/horup2025_table_s3_archetypes.csv'
 L10_ARCHETYPE = {'Detached': 'Single family houses', 'Townhouses': 'Single family houses',
                  'Apartments': 'Multi dwellings'}
@@ -423,14 +423,20 @@ def l10_multiplier(years, stat='min', path=None):
 # 400 kg CO2-eq/t crude steel at 100% iron), relative to the BAT reference values of IEA (2022) Achieving Net Zero
 # Heavy Industry Sectors in G7 Members (cited ibid. p. 22-23, footnote 8: 850 kg CO2-eq/t cement at 100% clinker,
 # 2,945 kg CO2-eq/t crude steel, BF-BOF with 100% iron). The near-zero share s(y) of production: 0 (2022), 0.08
-# (2030), 0.93 (2050), linear, 0 through the observed 2026 (IEA Cement tracking, NZE milestones, as supplied by the
-# author; steel takes the same s, a stated assumption). q_i = m_a(y) x [(1 - s(y)) + s(y) k], whatever the item's S4
+# (2030), 0.27 (2035), 0.93 (2050), linear between the milestones, 0 through the observed 2026 (IEA 2023, Net Zero
+# Roadmap: A Global Pathway to Keep the 1.5 °C Goal in Reach, 2023 update, Cement: near-zero emission clinker
+# production share 0% / 8% / 27% / 93% in 2022 / 2030 / 2035 / 2050; verified; steel takes the same s, a stated
+# assumption). q_i = m_a(y) x [(1 - s(y)) + s(y) k], whatever the item's S4
 # mapping. Classes: cement-based CONCRETE, REINFORCED CONCRETE, FIBRE CEMENT and PLASTER (cement plaster), STEEL, and
 # the OTIS elevator (OTHERS, apartments A_1 / A_2; Building_factors.ELEVATOR_CLASS), an assembled product dominated by
 # steel: the whole item treated as steel at TL (an upper bound of the reduction; author decision).
 L10_K_CEMENT = 125.0 / 850.0
 L10_K_STEEL = 400.0 / 2945.0
-L10_S_MILESTONES = {2022: 0.0, 2030: 0.08, 2050: 0.93}
+L10_S_MILESTONES = {2022: 0.0, 2030: 0.08, 2035: 0.27, 2050: 0.93}
+L10_S_SOURCE = ('IEA (2023) Net Zero Roadmap: A Global Pathway to Keep the 1.5 °C Goal in Reach, 2023 update, Cement: '
+                'near-zero emission clinker production share (verified)')
+L10_S_TEXT = ', '.join(f'{100 * v:.0f}% in {k}' for k, v in L10_S_MILESTONES.items() if v > 0)
+L10_S_TEXT = ' and '.join(L10_S_TEXT.rsplit(', ', 1))      # '8% in 2030, 27% in 2035 and 93% in 2050'
 L10_ELEVATOR_CLASS = 'ELEVATOR (assembled, steel-dominated)'
 L10_ELEVATOR_NOTE = ('assembled product dominated by steel; whole item treated as steel at TL (upper bound of the '
                      'reduction; ~2.4% of A1-A3, apartments only)')
@@ -823,8 +829,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                                     'G7 Members (850 kg CO2-eq/t cement; 2,945 kg CO2-eq/t crude steel)'),
                       near_zero_share=dict(milestones={str(k): v for k, v in L10_S_MILESTONES.items()},
                                            path=yy(l10_near_zero_share(years)),
-                                           source='IEA Cement tracking, NZE milestones (as supplied by the author; not '
-                                                  'verified in this session); steel takes the same s (assumption)'))
+                                           source=L10_S_SOURCE + '; steel takes the same s (assumption)'))
 
     # ---- L7 Soil-aware planning [C] ----
     soil = {t: float(B['SOIL_INTENSITY'][t]) for t in typ}
@@ -1249,7 +1254,7 @@ LEVEL_RULE = {
     'L10': ('the Horup et al. (2025) nine-scenario average production paths (S4 item paths)',
             'documented scenario: the lowest of the 9 prospective backgrounds by year (Horup et al. 2025, Table S3)',
             'documented scenario bound: the Ambitious envelope with near-zero emissions cement and steel (IEA 2022 '
-            'definitions; near-zero share 8% in 2030, 93% in 2050)')}
+            'definitions; near-zero share ' + L10_S_TEXT + ')')}
 
 
 def lever_table(p):

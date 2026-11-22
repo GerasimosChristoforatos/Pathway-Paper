@@ -38,3 +38,12 @@ def test_derived_consents_rebuilt_exactly_from_raw():
 def test_no_revisions_against_the_july_2026_release():
     rev = pd.read_csv(os.path.join(ROOT, 'data', 'derived', 'consents_revisions.csv'))
     assert list(rev.columns) == ['month', 'column', 'old', 'new', 'rel'] and len(rev) == 0
+
+
+def test_readme_carries_the_generated_freeze_statement():
+    """README.md (section Data freeze) states the data freeze in the words of tools/baseline_draft.freeze_statement(),
+    which reads the last consent month and population quarter from the data files."""
+    import sys
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import baseline_draft as BD
+    assert BD.freeze_statement() in open(os.path.join(ROOT, 'README.md'), encoding='utf-8').read()

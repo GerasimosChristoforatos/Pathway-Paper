@@ -458,9 +458,15 @@ HH_PROJECTIONS_RELEASED = '11 November 2026'
 ALTERED_SHARE_TEXT = 'about 12% of residential consent value in 2025 (Stats NZ BLD468601, 2025)'
 
 
-def data_freeze_lines():
-    """The data freeze and the new-build scope, read from the data files (consents and population: last month /
-    quarter present; household projections: the adopted path)."""
+DATA_FROZEN_ON = '22 November 2026'
+HH_ESTIMATES_TEXT = ('Stats NZ Dwelling and household estimates to the March 2026 quarter (on the 2018 Census base; '
+                     'see the limitation "Households 2019-2023")')
+
+
+def freeze_statement():
+    """The one data-freeze sentence (README, section Data freeze, carries the same sentence; tests check it), read from
+    the data files: consents and population, the last month / quarter present; household projections, the adopted
+    path."""
     sys.path.insert(0, ROOT)
     import projection
     c = pd.read_csv(os.path.join(ROOT, 'data', 'derived', 'consents_monthly.csv'), usecols=['Date'])
@@ -469,11 +475,15 @@ def data_freeze_lines():
         raise SystemExit(f'baseline_draft: HH_SIZE_PATH {projection.HH_SIZE_PATH!r}: rewrite the data-freeze text.')
     yq = q.iloc[-1]
     qmonth = {1: 'March', 2: 'June', 3: 'September', 4: 'December'}[int(yq.iloc[1])]
-    return ['## Data freeze and scope', '',
-            f"Data freeze: building consents to {N.month_year(c['Date'].max())} (Stats NZ BLD468601); population "
-            f"estimates to the {qmonth} {int(yq.iloc[0])} quarter (Stats NZ estimated resident population); household "
-            f"projections 2023-base (Stats NZ National family and household projections, released "
-            f"{HH_PROJECTIONS_RELEASED}). Later releases are not used.", '',
+    return (f"Data frozen on {DATA_FROZEN_ON}: building consents to {N.month_year(c['Date'].max())} (Stats NZ "
+            f"BLD468601); population estimates to the {qmonth} {int(yq.iloc[0])} quarter (Stats NZ estimated resident "
+            f"population); Stats NZ 2023-base household projections (National family and household projections, "
+            f"released {HH_PROJECTIONS_RELEASED}); {HH_ESTIMATES_TEXT}. Later releases are not used.")
+
+
+def data_freeze_lines():
+    """The data freeze and the new-build scope."""
+    return ['## Data freeze and scope', '', freeze_statement(), '',
             'Scope: the model covers new dwellings. Consents to alter existing dwellings (no floor area published) are '
             f'outside scope, {ALTERED_SHARE_TEXT}. Both budgets use the same new-build scope (the acquired-rights base '
             'from the new-build history; the ability-to-pay share from new-build consent value), so the exclusion is '

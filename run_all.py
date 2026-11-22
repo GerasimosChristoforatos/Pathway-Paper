@@ -137,7 +137,7 @@ def pipeline(profile):
                     ('figures_report', 'figures_report')):
         step(name, [py, tool(t)], env)
     step('pathways', [py, script('pathways')], env)
-    step('lever_audit', [py, tool('lever_audit')], env)         # STOPs on a failed lever check (MODEL v4.9.0)
+    step('lever_audit', [py, tool('lever_audit')], env)         # STOPs on a failed lever check
     step('pathways_mc', [py, script('pathways_mc')], env)
     for t in ('sensitivity_tables', 'metrics', 'results', 'assumptions', 'methods'):
         step(t, [py, tool(t)], env)

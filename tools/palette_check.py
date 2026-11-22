@@ -71,7 +71,7 @@ def groups():
                                             'Single alternative case': S.TORNADO_SINGLE},
         # the palette-coverage groups
         'ED3b (components and the demand-band parts)': dict(
-            {lab: col for c, (lab, col) in _sf2b().items()}),
+            {lab: col for c, (lab, col) in _ed3b().items()}),
         'Replacement variants and the Reference (ED7, SF3, SF6, SF7)': {S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                                         for k in S.SCENARIO},
         'Typologies (SF11, SF4, SF9)': dict(S.TYPOLOGY),
@@ -83,7 +83,7 @@ def groups():
     }
 
 
-def _sf2b():
+def _ed3b():
     """The ED3b parts as drawn (figures/calibration.COMP; the net-replacement pair shares one colour and one label)."""
     from figures import calibration as C
     return {c: v for c, v in C.COMP.items() if c != 'net_replacement'}

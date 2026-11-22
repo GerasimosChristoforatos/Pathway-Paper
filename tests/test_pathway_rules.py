@@ -101,7 +101,7 @@ def test_moderate_is_the_exact_midpoint(params, lever):
 def test_lever_data_stop_conditions(params):
     assert params['L5']['n'] == 16 and set(params['L5']['typologies']) == {'Detached', 'Townhouses', 'Apartments'}
     assert all(0.0 <= f <= 1.0 for f in params['L4']['f']['ambitious'].values())
-    # L1 Ambitious = the Stats NZ propensity-B path (MODEL v4.7.0): B >= A every year, Ambitious = Reference + (B - A)
+    # L1 Ambitious = the Stats NZ propensity-B path: B >= A every year, Ambitious = Reference + (B - A)
     assert params['L1']['b_ge_a_every_year']
     v = params['L1']['variants']
     assert all(v['B'][y] >= v['A'][y] - 1e-12 for y in v['B'])
@@ -222,7 +222,7 @@ def test_run_meta():
 
 
 def test_l9_three_parts():
-    """L9 (MODEL v4.10.0): A4-A5 split into transport / site energy / waste by the Kanafani et al. (2023) medians;
+    """L9: A4-A5 split into transport / site energy / waste by the Kanafani et al. (2023) medians;
     Ambitious site energy -85%, Moderate the midpoint, TL transport and site energy zero; the parts sum to the total."""
     import levers as LV
     years = np.arange(2025, 2051)
@@ -239,7 +239,7 @@ def test_l9_three_parts():
 
 
 def test_l10_class_factors():
-    """L10 at TL (MODEL v4.10.0): near-zero cement and steel, c = (1 - s) + s k, s = 0 through 2026, 0.08 (2030),
+    """L10 at TL: near-zero cement and steel, c = (1 - s) + s k, s = 0 through 2026, 0.08 (2030),
     0.93 (2050); no class factor below TL."""
     import levers as LV
     years = np.arange(2025, 2051)
@@ -265,7 +265,7 @@ def test_tl1_age_standardised_row():
 
 
 def test_l10_production_multiplier():
-    """L10 (MODEL v4.9.0): m = [MIN(y)/MIN(2025)] / [AVG(y)/AVG(2025)] of Horup et al. (2025) Table S3 by archetype,
+    """L10: m = [MIN(y)/MIN(2025)] / [AVG(y)/AVG(2025)] of Horup et al. (2025) Table S3 by archetype,
     1 in 2025, in (0, 1]; Moderate the per-year midpoint, TL = Ambitious; the no-policy MAX path >= 1."""
     import levers as LV
     years = np.arange(2025, 2051)
@@ -284,7 +284,7 @@ def test_l10_production_multiplier():
 
 
 def test_releases_dwellings_predicate():
-    """The re-occupation pool accounting (MODEL v4.9.0) applies iff TL1 or TL2 is at TL."""
+    """The re-occupation pool accounting applies iff TL1 or TL2 is at TL."""
     import levers as LV
     assert LV.releases_dwellings({'L1': 'tl'}) and LV.releases_dwellings({'L2': 'tl', 'L5': 'moderate'})
     assert LV.releases_dwellings(LV.tl_levels(LV.TL_COMPONENTS))

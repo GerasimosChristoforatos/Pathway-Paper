@@ -94,7 +94,7 @@ def absorption_window():
 
 def absorption_span(ax, label_fontsize=None, pad=0.0, label_y=0.985, va='top'):
     """A very light grey span behind every element over the absorption window, and a small label at its top
-    (MODEL v4.9.0): building runs below need while the surplus is absorbed. pad: half a year for annual columns
+   : building runs below need while the surplus is absorbed. pad: half a year for annual columns
     centred on the year (Fig1), 0 for annual points (Fig3a)."""
     import matplotlib.transforms as mtrans
     a, b = absorption_window()

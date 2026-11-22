@@ -17,6 +17,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import layout  # noqa: E402
+import naming as N  # noqa: E402
 
 OUT_MD = layout.report('ASSUMPTIONS.md')
 
@@ -28,7 +29,7 @@ RUNTIME_ONLY = ('SAVE_FIGURES', 'SHOW_PLOTS')
 
 PATHWAYS_MARK = '## Pathways (levers.py, pathways.py)'
 PATHWAYS_EXCLUDED = ('SOURCES', 'LEVER_NAMES', 'STRATEGIES', 'STRATEGY_NAMES', 'LEVER_STRATEGY', 'SETTING_NAMES',
-                     'BAND_TARGET', 'LEVER_PARAMETER', 'TL_NAMES', 'TL_DISCLAIMER', 'DENSER_MIX_V2_NOTE')
+                     'BAND_TARGET', 'LEVER_PARAMETER', 'TL_NAMES', 'TL_DISCLAIMER')
 
 
 def pathways_section():
@@ -52,7 +53,7 @@ def pathways_section():
         L.append(f"| {r['item']} ({r['strategy']}) | sub-rule {r['subrule']}: {r['anchor']}; Moderate {r['moderate']}; "
                  f"Ambitious {r['ambitious']}; TL {r['tl']} | {LV.SUBRULE_TEXT[r['subrule']]} |")
     for r in lv.get('tl_strength', []):
-        L.append(f"| {r['item']} vs Ambitious | {r['tl']} vs {r['ambitious']} | asserted at least as strong: {r['ok']} |")
+        L.append(f"| {N.at_tl(r['item'])} vs Ambitious | {r['tl']} vs {r['ambitious']} | asserted at least as strong: {r['ok']} |")
     L += ['', '### All settings in levers.py', '', '| setting | value |', '|---|---|']
     for k in sorted(vars(LV)):
         v = getattr(LV, k)

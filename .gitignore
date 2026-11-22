@@ -218,7 +218,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Console logs of run_all.py steps (every other output, figures included, is versioned so that
-# the release is byte-reproducible: tests/regression_model_v4.json)
+# the release is byte-reproducible: tests/regression_lock.json)
 outputs/logs/
 # figure folder of an earlier layout (not written)
 outputs/figures/
@@ -235,12 +235,12 @@ data/raw/Absolute_Analysis.xlsm
 # release), so they are versioned despite the *.zip rule above.
 !data/raw/API_*_DS2_en_csv_v2_*.zip
 
-# MODEL v3.0.0: light-profile and legacy-Reference outputs are reproducible working copies (run_all.py); the
+# light-profile outputs are reproducible working copies (run_all.py); the
 # committed outputs are those of the full profile
 outputs/_light/
 
-# MODEL v4.3.1: redraw.py palette previews (never versioned)
+# redraw.py palette previews (never versioned)
 outputs/_palette_preview/
 
-# MODEL v4.7.2: the author's LCAQuick root tables are not redistributed (data/build_lca_events.py; MANIFEST.csv)
+# the author's LCAQuick root tables are not redistributed (data/build_lca_events.py; MANIFEST.csv)
 data/raw/Analytical_LCA_Results_Database.xlsx

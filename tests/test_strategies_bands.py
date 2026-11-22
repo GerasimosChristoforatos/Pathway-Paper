@@ -42,9 +42,6 @@ def _close(a, b, atol):
     return np.allclose(a, b, rtol=RTOL, atol=atol)
 
 
-# equality with MODEL v3.3 under the v3.3 settings is tests/test_model_v4.py
-
-
 # ------------------------------------------------------------------ strategies ----
 def test_strategies_partition_the_levers_in_order():
     flat = [lv for st in ('S1', 'S2', 'S3') for lv in N.STRATEGY_LEVERS[st]]
@@ -163,7 +160,7 @@ def test_zero_year_guard():
 
 
 # ------------------------------------------------------------------ solution space (Fig5) ----
-def test_fig6_markers_on_the_analytic_plane(runs):
+def test_fig5_markers_on_the_analytic_plane(runs):
     from figures import paper_main as PM
     bc = _js('pathways/backcast.json')
     ref = runs.loc['REF']
@@ -174,7 +171,7 @@ def test_fig6_markers_on_the_analytic_plane(runs):
         assert np.isclose(z, ref.loc[m['run'], 'LoE_AR'], rtol=RTOL, atol=0), m['run']
 
 
-def test_fig6_exact_budget_curves():
+def test_fig5_exact_budget_curves():
     from figures import paper_main as PM
     bc = _js('pathways/backcast.json')
     x = np.linspace(0.0, 0.95, 96)

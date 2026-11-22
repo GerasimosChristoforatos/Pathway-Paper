@@ -3,12 +3,12 @@
   * in process: the lever parameters resolved under both profiles agree in every field except the bootstrap
     intervals (whose replicate count is the profile's);
   * on the outputs: when both outputs/_light/data and outputs/data exist, every deterministic data file is identical
-    (tests/regression_v3.py: bytes, JSON without the profile fields)."""
+    (tests/regression.py: bytes, JSON without the profile fields)."""
 import os
 
 import pytest
 
-import regression_v3 as R
+import regression as R
 
 LIGHT = os.path.join(R.ROOT, 'outputs', '_light', 'data')
 FULL = os.path.join(R.ROOT, 'outputs', 'data')

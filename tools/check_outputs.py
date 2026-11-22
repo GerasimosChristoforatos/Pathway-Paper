@@ -17,7 +17,7 @@ import layout  # noqa: E402
 
 STORYLINE = re.compile(r'storyline|S2-held|S3-10-trend|damped mix trend|intensification continues|horup_material|'
                        r'horup_class|mix effect only|compare-modes|DECARB_MODES|decarb_modes', re.I)
-# every pathway and v3 output must exist after a run
+# every pathway and scenario output must exist after a run
 PATHWAYS_OUTPUTS = [layout.data(f'pathways/{f}') for f in (
     'runs.csv', 'annual.csv', 'bands.csv', 'bands_annual.csv', 'shapley.csv', 'shapley_subsets.csv', 'backcast.json',
     'solution_space.csv', 'levers.json', 'theoretical_limit.json', 'lambda_sweep.csv', 'waterfall.csv', 'waterfall_tl_from_reference.csv',
@@ -76,7 +76,7 @@ def main():
         sys.exit(1)
     pdfs = pdf_files()
     if pdfs:
-        print(f'check_outputs: PDF files present (PNG only since MODEL v3.3.1): {pdfs[:10]}')
+        print(f'check_outputs: PDF files present (the figures are PNG only): {pdfs[:10]}')
         sys.exit(1)
     extra = unplanned_figures()
     if extra:

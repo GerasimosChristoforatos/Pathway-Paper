@@ -5,7 +5,7 @@ One list of every source cited in the methods draft (`outputs/reports/METHODS_DR
 `outputs/reports/LEVERS_TABLE.md`, Extended Data Table 1), the figure captions and notes (`outputs/FIGURES.md`) and
 the palette record (`docs/PALETTE.md`), alphabetical. The bibliographic details were checked by the author against the
 publisher's or catalogue record (Mendeley catalogue or the official page) or against the document itself
-(MODEL v4.7.2, November 2026). In-text citations in the generators use the author-year form of this list.
+(November 2026). In-text citations in the generators use the author-year form of this list.
 
 ## Peer-reviewed literature and books
 
@@ -26,7 +26,7 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
 - Christoforatos, G., Pickering, K., & Schipper, L. A. (2026). Integrating soil organic carbon loss into building life
   cycle assessment and urban planning: implications for urban sustainability practice. *Journal of Environmental
   Management*, 415, 130603. doi:10.1016/j.jenvman.2026.130603. (The soil carbon loss factor; L7 Soil-aware planning
-  and TL7.)
+  and L7 at TL.)
 - Clausen, C. A., Hauschild, M. Z., & Bjørn, A. (2025). Absolute environmental sustainability assessments of
   long-lived systems: a review of challenges with the representation of time and future research directions.
   *Sustainable Production and Consumption*, 58, 140–150. doi:10.1016/j.spc.2025.06.006. (pp. 143 and 148: static

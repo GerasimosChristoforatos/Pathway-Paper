@@ -27,16 +27,6 @@ SCENARIOS = {
     'REF_NOUC': 'Reference, no census under-construction correction',
     'HIGH_NOUC': 'High replacement, no census under-construction correction',
 }
-SCENARIO_DEFINITIONS = {
-    'REF': 'the adopted projection with no interventions: net replacement fades from the 2018–2023 census-interval '
-           'rate to the 1991–2023 long-run rate with a 10-year half-life',
-    'LOW': 'sensitivity variant of the Reference: the 1991–2023 long-run net replacement rate throughout',
-    'HIGH': 'sensitivity variant of the Reference: the 2018–2023 census-interval rate persists',
-    'VHIGH': 'sensitivity variant of the Reference (MODEL v3.3.0): the weighted linear trend of the census-interval '
-             'net replacement rates 1991–2023 continues (OLS weighted by interval length, extrapolated 2026–2050)',
-}
-SCENARIO_LEGACY = {'S3-10': 'REF', 'S1': 'LOW', 'S2': 'HIGH', 'S3-5': 'REF_HL5', 'S3-15': 'REF_HL15',
-                   'S1-noUC': 'LOW_NOUC', 'S3-10-noUC': 'REF_NOUC', 'S2-noUC': 'HIGH_NOUC'}
 
 # ten rule-based levers grouped by the PAS 2080:2023 carbon reduction hierarchy (BSI 2023, Clause 4.3,
 # Fig. 5: Avoid - Switch - Improve). Avoid = levers that reduce the floor area needed to house the population, system
@@ -51,9 +41,6 @@ STRATEGY_LEVERS = {'S1': ('L1', 'L2', 'L3', 'L4', 'L5'), 'S2': ('L6', 'L7', 'L8'
 LEVER_STRATEGY = {L: S for S, ls in STRATEGY_LEVERS.items() for L in ls}
 PATHWAY = 'pathway'                                   # run id prefix of the Moderate / Ambitious Pathway (every lever)
 PATHWAY_RUNS = {'pathway-moderate': 'Moderate Pathway', 'pathway-ambitious': 'Ambitious Pathway'}
-PAS2080 = ('BSI (2023) PAS 2080:2023 Carbon management in buildings and infrastructure, 2nd edn. BSI Standards '
-           'Limited, London (ISBN 978 0 539 18034 3); Clause 4.3 and Figure 5, p. 16 (carbon reduction hierarchy: '
-           'Avoid - Switch - Improve)')
 SETTINGS = {'moderate': 'Moderate', 'ambitious': 'Ambitious'}
 LEVELS = {'reference': 'Reference (Level 1)', 'moderate': 'Moderate (Level 2)', 'ambitious': 'Ambitious (Level 3)',
           'tl': 'Theoretical limit (Level 4)'}
@@ -66,9 +53,6 @@ LEVERS = {'L1': 'Household size', 'L2': 'Vacancy rate', 'L3': 'Building lifetime
 # q0.15), B best value ever observed in NZ, C published reference value
 LEVER_SUBRULE = {'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C', 'L7': 'C', 'L8': 'A', 'L9': 'C',
                  'L10': 'C'}
-# The denser-typology-mix lever of pathways_v2 (numbered L4 in that version) was removed in
-# v3.1; it is never given a lever number in the release.
-DENSER_MIX = 'denser typology mix (lever of pathways_v2, removed in pathways_v3.1)'
 
 # Theoretical limit: TLn is Level 4 of Ln
 TL = {'TL': 'Theoretical Limit', 'TL1': 'Historical maximum household size', 'TL2': 'Lowest vacancy (Switzerland)',
@@ -79,24 +63,16 @@ TL_LIMIT_OF = {f'TL{k}': f'L{k}' for k in range(1, 11)}
 
 
 def at_tl(x):
-    """User-facing name of a theoretical-limit item (MODEL v4.10.0): 'TL3' -> 'L3 at TL'; any other id unchanged."""
+    """User-facing name of a theoretical-limit item: 'TL3' -> 'L3 at TL'; any other id unchanged."""
     return f'{TL_LIMIT_OF[x]} at TL' if x in TL_LIMIT_OF else x
-TL_CAPTION = 'hyper-optimistic theoretical limit; a thought experiment, not a pathway'
 
-# adoption paths of the levers (ADOPTION_LEGACY: the earlier 'ramp' names)
+# adoption paths of the levers
 ADOPTION = {'by2035': 'full roll-out by 2035 (adopted)', 'by2030': 'full roll-out by 2030 (sensitivity)',
             'by2045': 'full roll-out by 2045 (sensitivity)', 'from2027': 'full strength from 2027'}
 # TL is adopted on the same 2026 -> 2035 logistic as every level; its instant variant (every limit
 # from 1 January 2027) is one sensitivity row
 TL_INSTANT = 'TL, all limits from 1 January 2027 (instant)'
-TL_REOCCUPATION_LINE = 'released dwellings re-occupied at a constant share of each year\'s need'
 
-
-def tl_caption(share):
-    """The TL caption with the constant share s of each year's need (share 0-1)."""
-    return ('TL: every lever at Level 4, adopted by 2035; dwellings released by TL3 (household size) and TL4 (zero '
-            f'vacancy) are re-occupied gradually, meeting a constant share (~{100 * share:.0f}%) of each year\'s '
-            'need; 2026 observed.')
 
 # Demand bands (why floor area is built), bottom to top. Retirement villages are a
 # bookkeeping row (out of scope), never a band in figures.
@@ -132,47 +108,18 @@ BAND_DETAIL['unexplained'] = 'Unexplained building'
 # the retirement-village units (negative, out of scope) and the unexplained remainder (may be negative); the bands add
 # up to the observed in-scope floor area built in every census interval
 BANDS_HISTORY = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'replacement_census', 'retirement_villages',
-                 'unexplained')
-NEGATIVE_BANDS_HISTORY = ('retirement_villages',)       # negative by construction; census replacement and the
-                                                        # unexplained remainder may be negative in an interval
-BAND_DEFINITIONS = {
-    'growth': 'population growth at the occupied area per person, net of consolidation (untargeted)',
-    'smaller_households': 'additional households from falling household size (targeted by L1 Household size, S1 Avoid)',
-    'extra_space': 'new-dwelling size above the occupied area (household size x floor area per design occupant)',
-    'vacancy': 'the vacancy allowance on new households and the change in the vacancy rate',
-    'overbuild_2026': 'observed 2026 building above the requirement, continuing above it in 2027-2050 at the '
-                      'persistence rho (the market excess)',
-    'overbuild_absorbed': 'the starting surplus (2024-2025, carried into 2026) and the cumulative overbuild absorbed '
-                          'by building less, logistic 2026 -> 2035 (negative; MODEL v3.0.0 Reference, the starting '
-                          'surplus from MODEL v4.4)',
-    'replacement': 'demolition replacement at the fixed BRANZ SR214 rate (0.135% of the stock a year)',
-    'unconsented': 'unconsented additions: the calibrated long-run residual of the census dwelling-count identity '
-                   '(negative: dwellings that appear without a new-dwelling consent)',
-    'released_tl': 'existing dwellings released by L1 at TL (household size) and L2 at TL (vacancy) and re-occupied '
-                   '(negative; theoretical limit only)',
-    'redevelopment': 'the scenario rate above that long-run rate: the 2018–2023 knock-down-and-rebuild wave, fading '
-                     'in the Reference',
-    'maintenance': 'replacement and repaint events (B2, B4) of the new buildings within 2026–2050 (carbon only)',
-    'vacancy_released': 'existing dwellings released by a fall in the vacancy rate (a run without any lever at its '
-                        'theoretical limit), used in the year they occur up to the gross need, the rest carried '
-                        '(negative; MODEL v3.1.0/v3.2.0)',
-    'surplus_vacant': 'released dwellings still unusable in 2050, kept vacant (booked in 2050 against the release '
-                      'bands, so the bands add up to the total every year)',
-}
+                 'unexplained')          # the unexplained remainder may be negative in an interval
 UNTARGETED = ('growth',)          # smaller households are targeted by L1 Household size (S1 Avoid)
 
 COMPONENTS = {'materials_construction': 'Materials and construction (A1–A5)',
               'soil': 'Soil carbon loss',
               'maintenance': 'Maintenance (B2, B4), 2026–2050',
               'committed': 'Committed after 2050 (later B2/B4 and C1–C4)'}
-UPFRONT = 'Upfront (A1–A5 and soil carbon loss)'
 # life-cycle stages of the carbon (Fig3a)
 STAGES = {'a1a3': 'Materials (A1–A3)', 'a4a5': 'Construction (A4–A5)',
           'maintenance': 'Maintenance (B2, B4)',
           'soil': 'Soil carbon loss'}
 UNTARGETED_GROUP = 'Untargeted: population growth'
-UNEXPLAINED = 'Unexplained building (history; may be negative)'
-REPLACEMENT_CENSUS = 'Net replacement, census-measured (history)'
 
 METRICS = {'AR': 'Acquired rights (AR)', 'AtP': 'Ability to pay (AtP)', 'LoE': 'Level of exceedance (LoE)',
            'cumulative_LoE': 'Cumulative level of exceedance, 2026–2050'}
@@ -242,7 +189,7 @@ SENSITIVITY_GROUPS = ('Demographics', 'Housing stock & calibration', 'Completion
                       'Carbon factors & technology', 'Accounting')
 BOUNDARY_SENSITIVITY_GROUPS = ('Carrying capacity', 'Global impact', 'AR base window', 'Economic allocation', 'Population', 'Replacement')
 # Monte Carlo inputs (SF11 panel titles, ED9 rows): the same input names as the tornado rows, without their ranges
-MC_INPUT = {'z_pop': 'Population and household size',     # MODEL v4.3.1 (B4): one z draws both (Stats NZ variants)
+MC_INPUT = {'z_pop': 'Population and household size',     # one z draws both (Stats NZ variants)
             'size': 'Dwelling size', 'complete': 'Completion rate', 'carbon': 'Carbon factors',
             'half_life': 'Replacement half-life'}
 LOE_AR = 'Cumulative LoE of AR'
@@ -289,9 +236,7 @@ BANDS_WITH_RETIREMENT_VILLAGES = ('growth', 'smaller_households', 'extra_space',
 BANDS_IN_SCOPE = ('growth', 'smaller_households', 'extra_space', 'vacancy', 'overbuild_2026', 'replacement',
                   'redevelopment', 'overbuild_absorbed', 'unconsented', 'vacancy_released', 'released_tl',
                   'surplus_vacant', 'maintenance')
-BANDS_WITH_RETIREMENT_VILLAGES_TL = BANDS_WITH_RETIREMENT_VILLAGES[:-1] + ('released_tl', 'retirement_villages')
 BANDS_IN_SCOPE_TL = BANDS_IN_SCOPE
-BAND_DEFINITION_IDS = ('with_retirement_villages', 'in_scope')
 
 
 def band_data_label(band_id):
@@ -391,7 +336,7 @@ def month_year(iso, missing=None):
     return f'{calendar.month_name[int(str(iso)[5:7])]} {str(iso)[:4]}'
 
 def identifier(name):
-    """Release name of a v3.1 column name or JSON key (generic rules)."""
+    """Release name of an internal column name or JSON key (generic rules)."""
     out = str(name)
     for pat, rep in _ID_RULES:
         out = re.sub(pat, rep, out)

@@ -64,8 +64,8 @@ def sf14_tl_dwellings():
         pooled = 'released_pool' in r and (r['released_overbuild'] != 0).any()
         P.line(b, yr, (r['released_pool'] if 'released_pool' in r else r['released_tl1'] + r['released_tl2']) / 1e3,
                color=S.BAND['released_tl'][0], ls='--', lw=S.LW,
-               label='Entering the pool (TL1 + TL2 + starting surplus + overbuild)' if pooled
-               else 'Released (TL1 + TL2)')
+               label='Entering the pool (L1 and L2 at TL, starting surplus, overbuild)' if pooled
+               else 'Released (L1 and L2 at TL)')
         bind = r[r['release_binds']]
         if len(bind):                                  # a legend entry only where a marker is drawn
             b.plot(bind['year'], bind['built'] / 1e3, 'v', color=S.RELEASE_BINDS, ms=4, label='Release constraint binds')

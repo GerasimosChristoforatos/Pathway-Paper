@@ -1,4 +1,4 @@
-"""MODEL v4.6.0 data freeze: data/derived/consents_monthly.csv is rebuilt exactly from the unmodified Infoshare export
+"""The data freeze: data/derived/consents_monthly.csv is rebuilt exactly from the unmodified Infoshare export
 in data/raw (data/build_consents.py read_infoshare), the export matches its MANIFEST checksum, and the 1965-04..2026-07
 months carry no Stats NZ revision against the earlier (July 2026 release) file."""
 import csv

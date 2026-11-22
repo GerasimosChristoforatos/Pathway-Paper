@@ -177,7 +177,7 @@ def build_setup(settings=None):
               nowcast=B['nowcast'],
               near_gap_ref=projection.OVERBUILD_GAP_REF, near_mode=projection.OVERBUILD_BOOKING,
               near_absorption=projection.OVERBUILD_ABSORPTION,
-              # logistic absorption of the overbuild (None: never absorbed, the legacy Reference)
+              # logistic absorption of the overbuild (None: never absorbed, the permanent-surplus bound)
               near_absorb_w=(None if projection.OVERBUILD_ABSORPTION_END is None
                              or (projection.OVERBUILD_BOOKING != 'surplus' and projection.STARTING_SURPLUS == 'none')
                              else engine.logistic_weights(fy, B['absorption_start'],
@@ -310,8 +310,8 @@ def carbon_bootstrap(bf, typ, red=None, extras=None):
 PARAMS = ['z_pop', 'size', 'complete', 'carbon', 'half_life']
 HALF_LIFE_RANGE = (5.0, 15.0)    # replacement half-life ~ U(5, 15) yr (Reference variant)
 # The net replacement level is NOT sampled: the Monte Carlo runs the Reference only (its half-life is sampled);
-# replacement-level uncertainty is reported by the variants of ED7 and the one-at-a-time rows (MODEL v4.7.0: the
-# separate Low / High / Very High Monte Carlo runs were dropped).
+# replacement-level uncertainty is reported by the variants of ED7 and the one-at-a-time rows (no separate
+# Low / High / Very High Monte Carlo runs).
 MC_SCENARIOS = [('REF', dict(REPLACEMENT_VARIANT='REF', REPLACEMENT_HALF_LIFE=10.0))]
 
 

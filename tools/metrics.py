@@ -35,7 +35,7 @@ FIELDS = [
     ('projection.retirement_village_floor_area_Mm2_out_of_scope',
      'Retirement-village floor area 2026-2050, out of scope (Mm2)', '{:.2f}'),
     ('projection.overbuild_2026_excess', '2026 overbuild: 2026 building above requirement (dwellings)', '{:+,.0f}'),
-    ('projection.overbuild_2026_gap_ref', '2026 overbuild: gap_ref (building 2026 - requirement 2027)', '{:+,.0f}'),
+    ('projection.overbuild_2026_gap_ref', '2026 overbuild: gap_ref (building 2027 - requirement 2028, the last observed year and the next)', '{:+,.0f}'),
     ('projection.overbuild_2026_net_dwellings', '2026 overbuild: net dwellings added 2026-2050', '{:+,.0f}'),
     ('mc.floor_area_p5', 'MC floor area p5 (Mm2)', '{:.2f}'),
     ('mc.floor_area_p50', 'MC floor area p50 (Mm2)', '{:.2f}'),
@@ -194,12 +194,12 @@ def pathway_metrics():
     return out
 
 
-LATE_WINDOW = (2028, 2050)            # the years every lever can act on (2026-2027 observed; MODEL v4.10.1)
+LATE_WINDOW = (2028, 2050)            # the years every lever can act on (2026-2027 observed)
 OVERLAP_LEVELS = {'moderate': 'pathway-moderate', 'ambitious': 'pathway-ambitious', 'tl': 'TL'}
 
 
 def late_window_and_overlap(runs):
-    """(MODEL v4.10.1; from existing outputs, no model run) (a) the cumulative LoE AR and AtP over 2028-2050 of the
+    """(from existing outputs, no model run) (a) the cumulative LoE AR and AtP over 2028-2050 of the
     Reference, both Pathways and TL: the sum of carbon_kt over the sum of B_AR_kt / B_AtP_kt (pathways/annual.csv,
     scenario REF), and the two budgets; (b) the sum of the ten single-lever reductions against the combined reduction
     at Moderate, Ambitious and TL (pathways/runs.csv): overlap = 1 - combined / sum."""

@@ -129,4 +129,4 @@ def test_mc_percentiles_ordered():
     m = pd.read_csv(layout.data('aesa/montecarlo_annual.csv'))
     for k in ('LoE_AR', 'LoE_AtP', 'B_AR_kgCO2e', 'I_sec_kgCO2e'):
         assert (m[f'{k}_p5'] <= m[f'{k}_p50']).all() and (m[f'{k}_p50'] <= m[f'{k}_p95']).all()
-    assert set(m['scenario']) == {'REF'}                  # the Monte Carlo runs the Reference only (MODEL v4.7.0)
+    assert set(m['scenario']) == {'REF'}                  # the Monte Carlo runs the Reference only

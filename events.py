@@ -124,7 +124,7 @@ def kernel(prof_t, years, factors, by_material=False):
 
 def component_kernels(prof_t, years, factors, component='A1-A3'):
     """(K of the rows of `component`, K of the other rows) of one typology's profile (kernel()); their sum is the
-    kernel of all rows. Used by lever L10 (MODEL v4.9.0), which scales the A1-A3 component of the in-window events."""
+    kernel of all rows. Used by lever L10, which scales the A1-A3 component of the in-window events."""
     a = (prof_t['Component'] == component).to_numpy()
     return (kernel(prof_t[a].reset_index(drop=True), years, factors[a]),
             kernel(prof_t[~a].reset_index(drop=True), years, factors[~a]))

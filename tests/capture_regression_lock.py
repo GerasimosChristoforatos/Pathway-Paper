@@ -1,5 +1,5 @@
-"""Capture the v4 regression lock (tests/regression_model_v4.json) from the outputs of a light and (if present) a full run:
-    python tests/capture_regression_model_v3.py
+"""Capture the regression lock (tests/regression_lock.json) from the outputs of a light and (if present) a full run:
+    python tests/capture_regression_lock.py
 The deterministic hashes are taken from the light outputs and must equal the full ones (else it stops)."""
 import json
 import os
@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import regression_v3 as R  # noqa: E402
+import regression as R  # noqa: E402
 
 DIRS = {'light': os.path.join(R.ROOT, 'outputs', '_light', 'data'), 'full': os.path.join(R.ROOT, 'outputs', 'data')}
 

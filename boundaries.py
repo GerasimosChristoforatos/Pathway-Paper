@@ -132,17 +132,17 @@ AR_BASE_RULE = {
     'Completion rate 0.93 / 0.96': (
         RECOMPUTE, 'the completion rate turns the 2016-2025 consents into the built floor area behind the base, as '
                    'in the Monte Carlo (F5)'),
-    'Completion rate 0.95 (MODEL v3.3)': (RECOMPUTE, 'as the completion-rate row'),
+    'Completion rate 0.95': (RECOMPUTE, 'as the completion-rate row'),
     'Completion lag 15 / 19 months': (
         RECOMPUTE, 'the completion lag times the 2016-2025 completions behind the base (F5)'),
-    'Completion lag 0 months (MODEL v3.3)': (RECOMPUTE, 'as the completion-lag row'),
+    'Completion lag 0 months': (RECOMPUTE, 'as the completion-lag row'),
     'No 2026 data': (REFERENCE_BASE, 'the 2026 data only'),
     'No census under-construction correction': (REFERENCE_BASE, 'calibration of future net replacement only'),
     'Dwelling-size window 2016-2025': (REFERENCE_BASE, 'future dwelling size only'),
     '2026 overbuild absorbed by 2030 / by 2045': (REFERENCE_BASE, 'future building only'),
     'No starting surplus': (REFERENCE_BASE, 'future building only (the surplus is absorbed from 2026)'),
     'Starting surplus minus 2 SD': (REFERENCE_BASE, 'future building only (the surplus is absorbed from 2026)'),
-    '2026 overbuild never absorbed (MODEL v2.1 Reference)': (REFERENCE_BASE, 'future building only'),
+    '2026 overbuild never absorbed': (REFERENCE_BASE, 'future building only'),
     'Vacancy parameter: 1986-2023 census mean (one definition)': (REFERENCE_BASE, 'future vacancy only'),
     '2026 overbuild booked as stock-neutral redevelopment': (REFERENCE_BASE, 'future building only'),
     '2026 overbuild gap vs the 2026 requirement': (REFERENCE_BASE, 'future building only'),
@@ -413,13 +413,13 @@ def one_at_a_time_bases(B, hist, i_base, window=AR_BASE_WINDOW):
 # Sensitivity.CASES}}
 COMPLETION_BASE_ROWS = {
     'Completion rate 0.93 / 0.96': {'low': 'Completion rate 0.93', 'high': 'Completion rate 0.96'},
-    'Completion rate 0.95 (MODEL v3.3)': {'single': 'Completion rate 0.95 (MODEL v3.3)'},
+    'Completion rate 0.95': {'single': 'Completion rate 0.95'},
     'Completion lag 15 / 19 months': {'low': 'Completion lag 15 months', 'high': 'Completion lag 19 months'},
-    'Completion lag 0 months (MODEL v3.3)': {'single': 'Completion lag 0 months (same calendar year, MODEL v3.3)'},
+    'Completion lag 0 months': {'single': 'Completion lag 0 months (same calendar year)'},
 }
 
 
-def legacy_events(B):
+def window_events(B):
     """Replacement / repaint emissions in 2026-2050 (kg by year) of the cohorts built
     1992-2025 (wider-scope sensitivity), on the run's decarbonisation paths."""
     fy = np.asarray(B['forecast_years'])
@@ -793,7 +793,7 @@ def main():
                  *cum_I(base=base_w, ACCOUNTING='whole_life_at_construction')),
                 ('xiii_wider_scope', f'(xiii) Wider scope: base and projection include the maintenance (B2, B4) of '
                  f'every cohort since {projection.B_SCOPE_START}',
-                 *cum_I(base=i_base_wide, add=legacy_events(B)))]
+                 *cum_I(base=i_base_wide, add=window_events(B)))]
     sens.append(('xiv_alpha_1', "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",
                  *cum_pair(cp=dict(comp, alpha=1.0))))
     sens.append(('note_soil_long_run', 'Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate',

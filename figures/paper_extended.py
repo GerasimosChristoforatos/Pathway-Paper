@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-from matplotlib.patches import Patch
 
 import figure_plan as FP
 import layout
@@ -330,7 +329,7 @@ def sf4():
         e = q['estimator']
         a.axvspan(e['ci_lo'], e['ci_hi'], color=S.MUTED, alpha=S.FIXED_FADES['ci_span'], lw=0, label='95% bootstrap interval')
         a.axvline(e['r'], color=S.INK, lw=S.LW, label=f"Ambitious r = {e['r']:.3f} (HD q0.15)")
-        r_mod = q['r_2025']['moderate'] if L == 'L8' else q['r']['moderate']     # L8: the 2025 ratios (by year since v4.9)
+        r_mod = q['r_2025']['moderate'] if L == 'L8' else q['r']['moderate']     # L8: the 2025 ratios (by year)
         a.axvline(r_mod, color=S.INK, lw=S.LW_THIN, ls='--', label=f"Moderate r = {r_mod:.3f}")
         a.axvline(1.0, color=S.MUTED, lw=S.LW_THIN, ls=':')
         a.set_yticks(y)
@@ -399,7 +398,7 @@ def ed9():
     ax[1].set_xticklabels([P.two_lines(r if r == 'Reference' else N.run_label(r)) for r in piv.index],
                           fontsize=S.FONT_MIN + 0.5, multialignment='center')     # two lines, centred
     ax[1].set_ylabel(f'{N.LOE_AR} 2026–2050')
-    ax[1].set_ylim(0, float(piv.values.max()) * ED7B_HEADROOM)        # the legend above the bars (6 pt, v4.7.2)
+    ax[1].set_ylim(0, float(piv.values.max()) * ED7B_HEADROOM)        # the legend above the bars (6 pt)
     ax[1].legend(fontsize=S.FONT_MIN, loc='upper right')
     P.panel(ax[1], 'b', 'Cumulative carbon')
     fig.tight_layout(rect=(0, 0.12, 1, 1))
@@ -429,7 +428,7 @@ def ed4():
     cases = [('Reference (adopted settings)', S.REFERENCE, '-', 'by 2035 (adopted)'),
              ('Overbuild absorbed by 2030', S.P2_ANCHOR, ':', 'by 2030'),
              ('Overbuild absorbed by 2045', S.P2_ANCHOR, '--', 'by 2045'),
-             ('Overbuild never absorbed (MODEL v2.1 Reference)', S.MUTED, '-.', 'never absorbed')]   # dash-dot
+             ('Overbuild never absorbed', S.MUTED, '-.', 'never absorbed')]   # dash-dot
     for case, col, ls, lab in cases:
         t = sa[sa['case'] == case]
         P.line(ax[1], t['year'], t['carbon_kt'], color=col, ls=ls, lw=S.LW, label=f'{lab}: {t["carbon_kt"].sum():,.0f} kt')
@@ -466,7 +465,7 @@ def edt1():
             elif L == 'L5':
                 v = [q['r']['moderate'], q['r']['ambitious'], q['tl'][t]]
                 par = 'r (ratio to the Reference)'
-            elif L in ('L8', 'L10'):                  # by year (MODEL v4.9.0): one row per report year
+            elif L in ('L8', 'L10'):                  # by year: one row per report year
                 yrs = (2025, 2030, 2040, 2050) if L == 'L8' else LV.L10_REPORT_YEARS
                 for y in yrs:
                     if L == 'L8':
@@ -478,7 +477,7 @@ def edt1():
                         par = f"m {y} (A1-A3 production multiplier; archetype {q['archetype'][t]})"
                     rows.append(dict(lever=f'{L} {N.LEVERS[L]}', subrule=q['subrule'], typology=t, parameter=par,
                                      moderate=v[0], ambitious=v[1], tl=v[2]))
-                if L == 'L10':                        # the near-zero cement and steel factors at TL (MODEL v4.10.0)
+                if L == 'L10':                        # the near-zero cement and steel factors at TL
                     for grp, k in (('cement-based', LV.L10_K_CEMENT), ('steel', LV.L10_K_STEEL)):
                         for y in yrs:
                             sy = LV.by_year(q['near_zero_share']['path'], y)

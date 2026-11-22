@@ -3,7 +3,7 @@ Build the replacement / repaint event table (time-resolved B2, B4) from the
 LCAQuick root tables of the 16 case studies. No values typed by hand.
 
 Source (provenance in data/raw/MANIFEST.csv):
-  data/raw/Analytical_LCA_Results_Database.xlsx (NOT REDISTRIBUTED since MODEL v4.7.2: removed from the tree, its
+  data/raw/Analytical_LCA_Results_Database.xlsx (NOT REDISTRIBUTED: not in the tree, its
   output data/derived/lca_events.csv is kept; without it this script stops with a message), the author's LCAQuick
   v3.6 root tables of the case studies of Christoforatos & Pickering (2026), one
   sheet per building (sheets T1_H, T2_W, T3_P are the model's T_1, T_2, T_3).
@@ -20,7 +20,7 @@ item table gives its material class.
 Excluded (16 lines, none carries B2/B4; listed in data/derived/lca_excluded_lines.csv):
   * 'Sand' and 'Granular fill' lines (12): site works, outside the case-study scope;
   * three unlabelled lines (no family, type, code or item): A_1 (A1-A3 ≈ 408 t, as
-    in v2 and in the sheet's own summary) and DD_2 (0.96 and 733.44 kg A1-A3);
+    in the sheet's own summary) and DD_2 (0.96 and 733.44 kg A1-A3);
   * the T_1 aluminium window-frame line, whose A1-A3 (5,241.24 kg) differs by 10 kg
     from the item table (5,231.24 kg; the item table is kept); its counts are
     informational (no B2/B4).

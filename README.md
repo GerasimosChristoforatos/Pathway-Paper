@@ -39,7 +39,8 @@ python run_all.py --profile light
 * `python redraw.py` redraws the figures from the committed outputs with the colours of `palette.toml` (no model run;
   previews in `outputs/_palette_preview/`, `--final` writes the release figures). The palette is validated on loading,
   and `tools/palette_coverage.py` confirms that every meaning colour comes from it.
-* Tests: `python -m pytest tests` (`PATHWAY_PROFILE=full` for the full outputs). They need no Monte Carlo run, write
+* Tests: `python -m pytest tests` runs on the outputs of the active profile: after a light run, or with
+  `PATHWAY_PROFILE=full` on the committed full outputs (a fresh clone holds only these). They need no Monte Carlo run, write
   only to temporary folders, and include the regression lock (`tests/regression_lock.json`: the SHA-256 of every
   deterministic data file and of the Monte Carlo draw files). `python tests/capture_regression_lock.py` re-captures the
   lock after both profiles have run. [tests/README.md](tests/README.md) says what each file protects.

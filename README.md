@@ -1,40 +1,51 @@
 # New Zealand new residential floor area and embodied carbon, 2026–2050
 
-How much new residential floor area will New Zealand build in 2026–2050, how much embodied carbon will it carry, how
-does that compare with the sector's share of a global climate boundary, and how far can demand-side and supply-side
-levers reduce it? The model answers in three layers.
+## What the model does
 
-* **Reference projection** (`projection.py`, `engine.py`). It runs from people to households, to dwellings required,
-  to floor area by reason for building (the demand bands), to carbon by life-cycle stage: materials A1–A3,
-  construction A4–A5, maintenance B2/B4, soil carbon loss, and the emissions committed after 2050.
-  * The observed 2026 overbuild is absorbed by 2035 on a logistic path.
-  * Uncertainty and checks: replacement variants, one-at-a-time sensitivities, Monte Carlo (Latin hypercube; Sobol
-    indices in the full profile) and validation against the census record.
-* **Planetary-boundary layer** (`boundaries.py`, `aesa.py`). An absolute environmental sustainability assessment
-  (AESA) for climate change. It compares the carbon of 2026–2050 with the sector's share of a global carrying
-  capacity under two allocation principles, acquired rights (AR) and ability to pay (AtP). The two are reported side
-  by side and never averaged.
-* **Pathways** (`levers.py`, `pathways.py`). Ten rule-based levers, grouped by the carbon reduction hierarchy of
-  PAS 2080:2023:
-  * S1 Avoid: L1 Household size, L2 Vacancy rate, L3 Building lifetime, L4 Extra space, L5 Occupancy density;
-  * S2 Switch: L6 Brownfield-first development, L7 Soil-aware planning, L8 Material carbon efficiency;
-  * S3 Improve: L9 Construction-stage carbon, L10 Production decarbonisation.
+The model projects the new residential floor area New Zealand builds in 2026–2050 and its embodied carbon. It follows
+people to households, dwellings and floor area by reason for building, then carbon by life-cycle stage (A1–A5, B2/B4,
+soil carbon loss, and the emissions committed after 2050). It compares the result with the sector's share of a global
+climate boundary (an absolute environmental sustainability assessment, AESA; acquired rights, AR, and ability to pay,
+AtP, side by side). Ten rule-based levers in four levels give the Moderate and Ambitious Pathways and the Theoretical
+Limit (TL). Uncertainty comes from replacement variants, one-at-a-time sensitivities, a Monte Carlo with Sobol indices,
+and validation against the census record. How it works, module by module: [ARCHITECTURE.md](ARCHITECTURE.md).
 
-  Each lever has four levels: Reference, Moderate (the exact midpoint), Ambitious (one of three documented sub-rules)
-  and the theoretical limit (TL1–TL10). The levels are adopted on the same logistic path, 2026 → 2035, except L9
-  (Ambitious: its own linear path from the 2026 Reference value to zero in 2050; Moderate the midpoint), L10 (the
-  lower envelope of the 9 prospective backgrounds of Horup et al. 2025, its own scenario path) and TL1 (no faster than the fastest observed
-  change); every lever together forms the Moderate and the Ambitious Pathway. The theoretical limit is a thought experiment, not a pathway.
-  * Attribution: exact Shapley values over the strategies and over 2¹⁰ = 1,024 lever subsets.
-  * Vacant and released dwellings are re-occupied through a common pool only in runs that release dwellings (TL1,
-    TL2); all other runs absorb the starting surplus and overbuild by 2035 (`pathways.releases_dwellings`).
-  * Two sequential waterfalls, the back-cast to the AR budget and a λ-sweep of each lever.
-  * The pathway Monte Carlo (`pathways_mc.py`, `mcstats.py`).
+## How to run
 
-How the model works, script by script and equation by equation: [ARCHITECTURE.md](ARCHITECTURE.md). Release history:
-[CHANGELOG.md](CHANGELOG.md). Cite with [CITATION.cff](CITATION.cff).
+Python 3.11 (release run: 3.11.17), with the pinned packages of `requirements.txt`:
 
-## Results
+```bash
+python3.11 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+```
+
+```bash
+python run_all.py --profile full
+```
+
+```bash
+python run_all.py --profile light
+```
+
+| profile | outputs | Monte Carlo | Sobol | bootstrap | figures | wall time |
+|---|---|---|---|---|---|---|
+| full (the reported results) | `outputs/` | 5,000 draws, seed 20260924 | on | 2,000 | PNG 600 dpi | about 35 min |
+| light (default) | `outputs/_light/` (not versioned) | 1,000 draws, seed 20261014 | off | 500 | PNG 200 dpi, footer "LIGHT RUN — n=1000" | about 8 min |
+
+* The deterministic results (the Reference and every lever, pathway and TL run) do not depend on the profile
+  (`tests/test_profiles.py`).
+* Each step runs in its own process and the run stops at the first failure, naming the log to read
+  (`<outputs>/logs/<step>.log`).
+* `python run_all.py --figures-only` redraws every figure from the data; the data stay byte-identical.
+* `python redraw.py` redraws the figures from the committed outputs with the colours of `palette.toml` (no model run;
+  previews in `outputs/_palette_preview/`, `--final` writes the release figures). The palette is validated on loading,
+  and `tools/palette_coverage.py` confirms that every meaning colour comes from it.
+* Tests: `python -m pytest tests` runs on the outputs of the active profile: after a light run, or with
+  `PATHWAY_PROFILE=full` on the committed full outputs (a fresh clone holds only these). They need no Monte Carlo run, write
+  only to temporary folders, and include the regression lock (`tests/regression_lock.json`: the SHA-256 of every
+  deterministic data file and of the Monte Carlo draw files). `python tests/capture_regression_lock.py` re-captures the
+  lock after both profiles have run. [tests/README.md](tests/README.md) says what each file protects.
+
+## Where the outputs are
 
 <!-- results:start (generated by tools/results.py from outputs/data/metrics.json; do not edit) -->
 
@@ -45,159 +56,77 @@ Reference 2026–2050: 105.4 Mm² of new residential floor area and 25,503 kt CO
 | Reference | 25,503 | 5.76 | 22.9 | 0.0% |
 | Moderate Pathway | 17,209 | 3.89 | 15.5 | 0.0% |
 | Ambitious Pathway | 11,471 | 2.59 | 10.3 | 0.0% |
-| Theoretical Limit | 4,171 | 0.94 | 3.7 | 61.1% |
-| Theoretical Limit, L1 at TL age-standardised (sensitivity) | 5,951 | 1.34 | 5.3 | 0.0% |
+| Theoretical Limit | 4,177 | 0.94 | 3.8 | 60.9% |
+| Theoretical Limit, L1 at TL age-standardised (sensitivity) | 5,963 | 1.35 | 5.4 | 0.0% |
 
 The Theoretical Limit stays within the AR budget in half of the draws when the 2050 population is 6.69 million. LoE > 1: the budget is exceeded (AR = acquired rights, AtP = ability to pay; 2 °C carrying capacity (Bjørn & Hauschild 2015)).
 
 <!-- results:end -->
 
-**Headline results.** Every headline number is generated, not typed (the block above too):
-* [outputs/reports/RESULTS.md](outputs/reports/RESULTS.md) is written from `outputs/data/metrics.json` by
-  `tools/results.py`;
-* the runs (Reference, Pathways, TL: carbon, floor area, cumulative LoE of AR and of AtP) are in
-  [outputs/data/pathways/runs.csv](outputs/data/pathways/runs.csv).
-
-To print the headline figures from the committed full-profile outputs:
-
-```
-python -c "import json,pandas as p; m=json.load(open('outputs/data/metrics.json')); print(m['projection']['carbon_kt'], m['mc']['carbon_p5'], m['mc']['carbon_p95']); r=p.read_csv('outputs/data/pathways/runs.csv'); print(r[(r.scenario=='REF')&r.run.isin(['REF','pathway-moderate','pathway-ambitious','TL'])][['run','carbon_kt','LoE_AR','LoE_AtP']].to_string(index=False))"
-```
-
-Paths below are those of the full profile (`outputs/`, the basis for reported results). The light profile writes the
-same tree under `outputs/_light/`.
+Every number in the documents and figures is read from `outputs/data/`, which the pipeline writes; nothing is typed by
+hand. Paths are those of the full profile; the light profile writes the same tree under `outputs/_light/`.
 
 | what | where |
 |---|---|
-| Every figure and table, with its title, caption, data sources and run note; one row per item in the manifest | [outputs/FIGURES.md](outputs/FIGURES.md), [outputs/figure_manifest.csv](outputs/figure_manifest.csv) |
-| **Main figures**: Fig1–Fig7 | [outputs/paper_main/](outputs/paper_main/) |
-| **Extended Data**: ED1–ED9 and the table EDT1 | [outputs/paper_extended/](outputs/paper_extended/) |
-| **Supplementary**: SF1–SF15 in topic folders and the table ST8 | [outputs/supplementary/](outputs/supplementary/) |
-| Figure audit records (one JSON per figure) | [outputs/diagnostics/_audit/](outputs/diagnostics/_audit/) |
-| Results summary; every assumption with its basis; validation, reconciliation and market-balance reports | [outputs/reports/](outputs/reports/) |
-| Methods draft and the levers table (Table 1) | [outputs/reports/METHODS_DRAFT.md](outputs/reports/METHODS_DRAFT.md), [outputs/reports/LEVERS_TABLE.md](outputs/reports/LEVERS_TABLE.md) |
-| References, with their verification status | [docs/REFERENCES.md](docs/REFERENCES.md) |
-| The palette and its colour-vision check | [docs/PALETTE.md](docs/PALETTE.md) |
-| Every number (CSV, JSON) | [outputs/data/](outputs/data/) |
-| Every output file, what it holds and the script that writes it | [outputs/INDEX.md](outputs/INDEX.md) |
+| **Main figures** Fig1–Fig7 | [outputs/paper_main/](outputs/paper_main/) |
+| **Extended Data** ED1–ED9 and Extended Data Table 1 (EDT1) | [outputs/paper_extended/](outputs/paper_extended/) |
+| **Supplementary Figures** SF1–SF15, in topic folders | [outputs/supplementary/](outputs/supplementary/) |
+| **Supplementary Tables** ST1–ST12 (generated tables and reports; ST8 is drawn) | [outputs/data/st_number_map.csv](outputs/data/st_number_map.csv) lists each table and its file |
+| Every figure and table with its title, caption, sources and run note | [outputs/FIGURES.md](outputs/FIGURES.md), [outputs/figure_manifest.csv](outputs/figure_manifest.csv) |
+| Results summary, assumptions, methods draft, levers table (Table 1), validation and lever audit | [outputs/reports/](outputs/reports/) |
+| Every number (CSV, JSON) and every output file with the script that writes it | [outputs/data/](outputs/data/), [outputs/INDEX.md](outputs/INDEX.md) |
 | Run profile, draws, seeds, git and input hashes, step timings | [outputs/run_meta.json](outputs/run_meta.json) |
+| Figure audit records (one JSON per figure) | [outputs/diagnostics/_audit/](outputs/diagnostics/_audit/) |
+| References; the palette and its colour-vision check | [docs/REFERENCES.md](docs/REFERENCES.md), [docs/PALETTE.md](docs/PALETTE.md) |
 
-Every number in the documents and figures is read from `outputs/data/`, which the pipeline writes. Nothing is typed by
-hand.
+**Numbering.** Repository numbers are manuscript numbers: Extended Data in order of first citation in the manuscript,
+Supplementary Figures and Tables in order of first citation in the SI. The number maps
+[ed_number_map.csv](outputs/data/ed_number_map.csv), [sf_number_map.csv](outputs/data/sf_number_map.csv) and
+[st_number_map.csv](outputs/data/st_number_map.csv) give the earlier and the current id of every item (single source:
+`figure_plan.RENUMBER`).
 
-## How to run
+## Levers and the Theoretical Limit
 
-```
-python -m venv .venv && . .venv/bin/activate
-pip install -r requirements.txt               # pinned; Python 3.11
-python run_all.py --profile full              # full profile: outputs/ (the basis for reported results), ~35 min
-python run_all.py                             # light profile (default): outputs/_light/, ~6 min
-python run_all.py --figures-only              # redraw every figure from the data; the data must stay byte-identical
-python redraw.py --final                      # redraw the release figures from the committed outputs (no model run)
-python tests/capture_regression_model_v3.py   # (re)capture the regression lock after both profiles have run
-```
+Ten levers, grouped by the carbon reduction hierarchy of PAS 2080:2023:
 
-| profile | Monte Carlo | Sobol | bootstrap | figures | outputs |
-|---|---|---|---|---|---|
-| light (default) | 1,000 draws, seed 20261014 | off | 500 | PNG 200 dpi, footer "LIGHT RUN — n=1000" | `outputs/_light/` |
-| full | 5,000 draws, seed 20260924 | on | 2,000 | PNG 600 dpi | `outputs/` |
+* **S1 Avoid:** L1 Household size, L2 Vacancy rate, L3 Building lifetime, L4 Extra space, L5 Occupancy density;
+* **S2 Switch:** L6 Brownfield-first development, L7 Soil-aware planning, L8 Material carbon efficiency;
+* **S3 Improve:** L9 Construction-stage carbon, L10 Production decarbonisation.
 
-* **Profiles.** The deterministic results (the Reference, every lever, pathway and TL run) do not depend on the
-  profile; `tests/test_profiles.py` checks this.
-* **Pipeline.** It computes first and draws last, each step in its own process (the order: the `run_all.py`
-  docstring; the data flow: ARCHITECTURE.md, section 2).
-* **Failures.** A failed step prints its name and the log to read (`<outputs>/logs/<step>.log`), and the run stops
-  (exit code 1).
-* **Spyder.** Open `run_all.py` and Run, or type `runfile('run_all.py', args='--profile full')`. To draw one figure
-  interactively, call `FIGURES['<file id>']()` of its module in `figures/` (`figure_plan.py` lists the module of each
-  figure).
+Each lever has four levels: Reference (off), Moderate (the exact midpoint), Ambitious (the best value already achieved,
+by one of three documented sub-rules) and the Theoretical Limit ("L*x* at TL"). Every lever together forms the Moderate
+and the Ambitious Pathway; every lever at TL forms the TL, a thought experiment, not a pathway.
 
-## Recolour the figures
+* **TL rule** (`levers.TL_RULE`): the best value observed, internationally where a comparable measure exists, otherwise
+  in New Zealand, or a documented scenario bound; a logical bound only where physically attainable by choice or design.
+* **Adoption:** every level, TL included, follows the common normalised logistic 2026 → 2035. Two stated exceptions:
+  L10 follows its own scenario path, and L1 at TL rises no faster than the fastest observed census-interval change of
+  household size.
+* **Attribution:** exact Shapley values over the three strategies and the 2¹⁰ = 1,024 lever subsets; two sequential
+  waterfalls; a λ-sweep of each lever.
+* **Re-occupation:** vacant and released dwellings are re-occupied through a common pool only in runs that release
+  dwellings (L1 or L2 at TL, `levers.releases_dwellings`); every other run absorbs the starting surplus and the
+  overbuild by 2035.
 
-Every meaning colour and every meaningful fade of the final figures is set in `palette.toml` at the repository root:
-the demand bands, materials, life-cycle stages, runs, strategies (a lever is drawn in its strategy colour),
-boundaries and their zones, the Fig3b column, the one-at-a-time colours, the components, typologies, replacement
-variants, Sobol indices, census markers, lag variants, validation and highlight marks, and `[opacity]` (numbers from 0
-to 1).
+The resolved value of every lever and level, with its source, is in `outputs/data/pathways/levers.json` and
+[outputs/reports/LEVERS_TABLE.md](outputs/reports/LEVERS_TABLE.md).
 
-* **One key, one meaning.** Each colour key colours exactly one meaning in every figure that shows it.
-* **What stays fixed.** Only neutrals (ink, greys, grid, white) and context fades (definition-break and interval spans,
-  rugs, label boxes) are fixed in `figures/style.py`; the header of `palette.toml` lists them.
-* **Coverage check.** `tools/palette_coverage.py` confirms that nothing else is drawn.
+## Data and licences
 
-`redraw.py` redraws the figures from the committed results in `outputs/data/`. It runs no model and no Monte Carlo:
+### Data freeze
 
-```
-# edit palette.toml: one "#RRGGBB" value per colour key (or copy it and pass --palette my_colours.toml)
-python redraw.py                              # every figure, 200 dpi preview
-python redraw.py --only main                  # main | extended | supplementary | figure ids (e.g. Fig2 ED6)
-python redraw.py --palette my_colours.toml --dpi 600
-python redraw.py --final                      # write the release figures (outputs/, 600 dpi, FIGURES.md)
-```
+Data frozen on 22 November 2026: building consents to September 2026 (Stats NZ BLD468601); population estimates to the June 2026 quarter (Stats NZ estimated resident population); Stats NZ 2023-base household projections (National family and household projections, released 11 November 2026); Stats NZ Dwelling and household estimates to the March 2026 quarter (on the 2018 Census base; see the limitation "Households 2019-2023"). Later releases are not used.
 
-* **Previews.** They go to `outputs/_palette_preview/<palette file name>/` (or `--out DIR`), with a swatch sheet, and
-  never overwrite the release figures.
-* **Validation.** On loading, the palette is validated: a missing or misspelt key, a colour that is not `#RRGGBB` or an
-  opacity outside [0, 1] stops the run.
-* **Warnings.** These do not stop the run:
-  * keys drawn in the same figure that are identical or very close (CAM02-UCS distance below 10);
-  * boundary zones that lose their lightness order on white.
-* **Colour-vision report.** It lists the closest pair of each group under normal vision and simulated deficiencies.
+### Data provenance
 
-## Tests
-
-`python -m pytest tests` (`PATHWAY_PROFILE=full` for the full outputs) runs the suite on the committed outputs. No Monte
-Carlo or Sobol run is needed. The suite covers:
-* the regression lock (`tests/regression_model_v4.json`, every deterministic data file and the Monte Carlo files);
-* the model rules and accounting identities;
-* the figure integrity checks.
-
-[tests/README.md](tests/README.md) says what each file protects and which checks are run by hand
-(`tools/check_figure_text.py`, `tools/palette_check.py`, `tools/palette_coverage.py`).
-
-## Layout
-
-| path | what |
-|---|---|
-| `projection.py`, `engine.py` | the Reference projection and the forward model (pure functions shared by the projection, Monte Carlo and pathways) |
-| `Building_factors.py`, `events.py` | case-study carbon factors; time-resolved maintenance (B2, B4) and committed emissions |
-| `Diagnostics.py`, `Sensitivity.py`, `MonteCarlo.py`, `validation.py`, `gap_2026.py` | diagnostics data, one-at-a-time sensitivities, Monte Carlo and Sobol indices, rolling-origin hindcast, 2026 gap |
-| `aesa.py`, `boundaries.py` | planetary-boundary layer (AESA) |
-| `levers.py`, `pathways.py`, `pathways_mc.py`, `mcstats.py` | the levers, pathways, theoretical limit, attribution and the pathway Monte Carlo |
-| `figures/` | every figure, from the data files only (`style.py` reads `palette.toml`) |
-| `figure_plan.py`, `layout.py`, `runprofile.py`, `figsource.py`, `naming.py`, `bands.py` | figure registry; output layout; run profiles; figure source data; vocabulary; display bands |
-| `run_all.py`, `redraw.py`, `indexes.py` | the pipeline; redraw from the committed outputs; outputs/INDEX.md |
-| `tools/` | pipeline reports (overbuild, variants, reconciliation, reality checks, metrics, results, assumptions, methods), sensitivity tables, output and figure checks; developer tools (palette checks, `check_figure_text.py`, `ast_equivalence.py`) |
-| `tests/` | the tests (tests/README.md) |
-| `data/` | inputs only, and the scripts that build `data/derived/` from `data/raw/` |
-| `docs/` | references, palette (the methods draft and Table 1 are generated into `outputs/reports/`) |
-
-## Manuscript numbering
-
-Repository numbers = manuscript numbers (from v4.10.1): Extended Data figures in order of first citation in the
-manuscript, Supplementary figures and tables in order of first citation in the SI. The renumbering of each version is
-in [outputs/data/ed_number_map.csv](outputs/data/ed_number_map.csv),
-[outputs/data/sf_number_map.csv](outputs/data/sf_number_map.csv) and
-[outputs/data/st_number_map.csv](outputs/data/st_number_map.csv) (single source: `figure_plan.RENUMBER`).
-
-## Data freeze
-
-The reported results use: building consents to **September 2026** (Stats NZ BLD468601, released 3 November 2026); population estimates to the **June 2026** quarter (Stats NZ, *National population estimates: At 30 June 2026*); household projections **2023-base** (Stats NZ, *National family and household projections: 2023(base)–2048*, released 11 November 2026). Later releases are not used.
-
-## Data provenance
-
-`data/raw/MANIFEST.csv` records the URL, SHA-256 and download date (UTC) of every file
-fetched by `data/fetch_sources.py`. Large archives (`*.zip`) are not versioned; re-download
-them and check them against the manifest. Inputs rebuilt from raw downloads are produced by the
-scripts in `data/`, never edited by hand.
-
-**Status key.** *Raw → script* = the model input is built by a script from the unmodified
-download. *Supplied* = the workbook was supplied with the project; its provenance is only what
-the file itself states, and it has not yet been rebuilt from a recorded download.
+`data/raw/MANIFEST.csv` records the URL, SHA-256 and download date (UTC) of every raw file (`data/fetch_sources.py`
+fetches the downloadable ones). Inputs rebuilt from raw files are produced by the scripts in `data/`, never edited by
+hand. Status key: *Raw → script* = the model input is built by a script from the unmodified download; *Supplied* = the
+workbook was supplied with the project, and its provenance is what the file itself states.
 
 | model input | source | table / series | download date | status |
 |---|---|---|---|---|
-| `data/derived/consents_monthly.csv` (monthly new dwellings, floor area and value by type) | Stats NZ Infoshare, Building consents – BLD, "Building consents by region (Monthly)" (BLD468601), CSV export `data/raw/BLD468601_20261111_075751_49.csv` (unmodified; "Last updated: 03 November 2026", the September 2026 release) | New Zealand / New / Actual: Dwelling units (Number, Value, Floor area; from 1965M04) and Houses / Apartments / Retirement village units / Townhouses, flats, units, and other dwellings (Number, Value, Floor area; from 1990M04), 1965M04–2026M09 | 2026-11-11 (supplied) | Raw → script (`data/build_consents.py`, `read_infoshare`). Every month 1965-04..2026-07 equals the MODEL v4.0–v4.5 file (built from *Building consents issued: July 2026*, CSV zip, downloaded 2026-09-29) exactly: no Stats NZ revisions (`data/derived/consents_revisions.csv`, empty) |
+| `data/derived/consents_monthly.csv` (monthly new dwellings, floor area and value by type) | Stats NZ Infoshare, Building consents – BLD, "Building consents by region (Monthly)" (BLD468601), CSV export `data/raw/BLD468601_20261111_075751_49.csv` (unmodified; "Last updated: 03 November 2026", the September 2026 release) | New Zealand / New / Actual: Dwelling units (Number, Value, Floor area; from 1965M04) and Houses / Apartments / Retirement village units / Townhouses, flats, units, and other dwellings (Number, Value, Floor area; from 1990M04), 1965M04–2026M09 | 2026-11-11 (supplied) | Raw → script (`data/build_consents.py`, `read_infoshare`). Every month 1965-04..2026-07 equals the earlier release (*Building consents issued: July 2026*, CSV zip, downloaded 2026-09-29) exactly: no Stats NZ revisions (`data/derived/consents_revisions.csv`, empty) |
 | `data/histpopdata.xlsx` | Stats NZ, "Population summary figures", New Zealand, 1991–2025 (estimated resident population at 31 December; title stated in the file) | Table 1 (sheet "Table 1") | not recorded (supplied with the project; no MANIFEST row) | Supplied |
 | `data/popdata.xlsx` | Stats NZ, *National population projections: 2024(base)–2078*, published 4 June 2025 (stated in the file), Table 1 | Table 1 (sheets "Table 1", "Population_Sheet") | not recorded (supplied with the project; no MANIFEST row) | Supplied |
 | `data/derived/households_proj_2023base.csv` (people in households, households and S = people / households at 2023, 2028, ..., 2048; Low / Medium / High x propensity A / B) | Stats NZ, *National family and household projections, population by living arrangement type, age, and sex, 2023(base)–2048* (`STATSNZ:POPPR_FHH_008(1.0)`, people in households) and *National household projections, by household type, 2023(base)–2048* (`STATSNZ:POPPR_FHH_010(1.0)`), Aotearoa Data Explorer CSV; DataInfo+ <https://datainfoplus.stats.govt.nz/item/nz.govt.stats/e7475c01-9e55-491d-a8fe-74efa8fba757> | FHH_008: living arrangement `LAT` (total people), sex 3, age `TOTALALLAGES`; FHH_010: measure `HH` (total households; the published AHS, rounded to 0.1, is not used) | supplied by the author 2026-11-11 (see MANIFEST) | Raw → script (`data/build_households_2023.py`); STOP unless family + one-person + other multi-person households = total within 100 (Stats NZ rounding) |
@@ -214,8 +143,7 @@ the file itself states, and it has not yet been rebuilt from a recorded download
 | `data/derived/nz_gdp_quarterly.csv` (GDP and final consumption expenditure, quarterly, NZD million, nominal) | Stats NZ Infoshare, *GDP(E), Nominal, Actual, Total (Qrtly-Mar/Jun/Sep/Dec)*, last updated 19 March 2026 (stated in the file) | table SNE022AA; file `data/raw/GDP_Data.xlsx` | supplied by the author 2026-10-04 (see MANIFEST) | Raw → script (`data/build_gdp.py`) |
 | `data/derived/wpp2024_population_median.csv` (World and New Zealand, 1 July, persons) | United Nations, DESA, Population Division (2024), *World Population Prospects 2024*, Probabilistic Population Projections, <https://population.un.org/wpp/> | file PPP/POPTOT (POP/DB/WPP/Rev.2024/PPP/POPTOT), sheet "Median"; `data/raw/UN_PPP2024_Output_PopTot.xlsx` | supplied by the author 2026-10-04 | Raw → script (`data/build_wpp.py`) |
 | `data/derived/wdi_economies.csv`, `wdi_world_aggregate.csv` (population, GDP per capita PPP constant 2021 int-$ and current US$, by economy; WLD aggregate for coverage only) | World Bank, *World Development Indicators*, bulk CSV, release "Last Updated Date 2026-07-13" (stated in the files) | SP.POP.TOTL, NY.GDP.PCAP.PP.KD, NY.GDP.PCAP.CD; `data/raw/API_*_DS2_en_csv_v2_*.zip`; aggregates dropped with each archive's Metadata_Country file | supplied by the author 2026-10-04 | Raw → script (`data/build_wdi.py`) |
-| `data/raw/Absolute_Analysis.xlsm` | the author's earlier-manuscript AESA workbook (under review) | sheets 1.Acquired Rights, 2.Equalitarian, 6, 7 | supplied 2026-10-04 | Supplied; **local only (git-ignored)**; no longer read by the model or the tests (the reproduction tests were removed in MODEL v4.7.0); kept in the MANIFEST as the record of the earlier manuscript |
-| `data/derived/lca_events.csv` (replacement and repaint event counts and building lifespan per item line; time-resolved maintenance B2/B4) | LCAQuick v3.6 root tables of the 16 case studies (Christoforatos & Pickering 2026); built by `data/build_lca_events.py`, which matches every line to the item table (16 lines without B2/B4 excluded: `data/derived/lca_excluded_lines.csv`) | the author's LCAQuick v3.6 root tables (one sheet per building), **not redistributed** (beyond the published case data, not needed to run the model; removed from the tree in MODEL v4.7.2; `data/build_lca_events.py` stops without them) | supplied 2026-10-07 | Derived counts kept |
+| `data/derived/lca_events.csv` (replacement and repaint event counts and building lifespan per item line; time-resolved maintenance B2/B4) | LCAQuick v3.6 root tables of the 16 case studies (Christoforatos & Pickering 2026); built by `data/build_lca_events.py`, which matches every line to the item table (16 lines without B2/B4 excluded: `data/derived/lca_excluded_lines.csv`) | the author's LCAQuick v3.6 root tables (one sheet per building), **not redistributed** (beyond the published case data, not needed to run the model; `data/build_lca_events.py` stops without them) | supplied 2026-10-07 | Derived counts kept |
 | `data/derived/material_items.csv` (case-study A1–A3 etc. by building and EPD item; `projection.DECARB_MODE = 'horup_item'`) | the 16 case-study LCAs of Christoforatos & Pickering (2026) (as `data/building_data.xlsx`) at item resolution; built by `data/build_material_items.py`, which checks it against `building_data.xlsx` | file `data/raw/epd-level_materials.xlsx`, sheet "ROOOOOT" | supplied 2026-10-05 | Supplied |
 | `data/derived/horup2025_table_s4.csv` (relative GWP of material production 2025/2030/2040/2050; `projection.DECARB_MODE`) | Horup et al. (2025), *Sci. Total Environ.* 966, 178780, supplementary material mmc1.xlsx, <https://doi.org/10.1016/j.scitotenv.2025.178780> | sheet "Table S4" (average of 9 premise scenarios relative to ecoinvent 3.9.1), column C; checked against column E | supplied by the author 2026-10-05 (SHA-256 in MANIFEST) | Raw → script (`data/build_horup.py`); the workbook is kept in `refs/` (not versioned) |
 | `data/derived/horup2025_table_s3_archetypes.csv` (GWP per m2 of the Danish single-family and multi-dwelling archetypes 2025-2050: average, minimum and maximum over the 9 prospective backgrounds; lever L10) | Horup et al. (2025), supplementary material mmc1.xlsx | sheet "Table S3" (blocks AVERAGE / MIN / MAX GWP per sqm); scenarios of sheet "Table S1" (SSP1/2/5 x no policy / RCP2.6 / RCP1.9) | supplied by the author 2026-10-05 (SHA-256 in MANIFEST) | Raw → script (`data/build_horup.py`); the workbook is kept in `refs/` (not versioned) |
@@ -240,25 +168,22 @@ The page is saved as `data/raw/datainfo_dwelling_occupancy_status.html` and was 
   response was usually occupied may have contributed to the increase in 'Unoccupied - residents
   away' dwellings for 2018".
 
-Note: `data/raw/national_population_estimates_june_2026.html` is the release text behind the
-interim 2026 population figure used before the quarterly ERP series; it is kept with its
-MANIFEST entry but no longer read.
+`data/raw/national_population_estimates_june_2026.html` is the release text of the June 2026 population
+estimates; it is kept with its MANIFEST entry and is not read by the model.
 
-Earlier versions and their outputs are preserved in the git history and at the tag `model-v4.3.3` (CHANGELOG.md).
+### Data availability
 
-## Data availability
-
-All input data are public: Stats NZ (population estimates and projections, family and household projections, census dwelling counts, building consents, national accounts); the United Nations World Population Prospects 2024; and the World Bank World Development Indicators. The case-study results are those of Christoforatos & Pickering (2026; item-level results in their Supplementary file 1), computed with LCAQuick v3.6 (BRANZ 2023). The item results by life-cycle stage are archived with the code. The derived data and the source data of every figure are archived with the code at Zenodo, doi:[ZENODO-DOI]. Supplementary Table 1 lists the sources and access dates.
+All input data are public: Stats NZ (population estimates and projections, family and household projections, census dwelling counts, building consents, national accounts); the United Nations World Population Prospects 2024; the World Bank World Development Indicators; and the OECD Affordable Housing Database. The case-study results are those of Christoforatos & Pickering (2026; item-level results in their Supplementary file 1), computed with LCAQuick v3.6 (BRANZ 2023). The item results by life-cycle stage are archived with the code. The derived data and the source data of every figure are archived with the code at Zenodo, doi:[ZENODO-DOI]. Supplementary Table 1 lists the sources and access dates.
 
 The case-study results are those of Christoforatos & Pickering (2026; item-level results in their Supplementary
 file 1), computed with LCAQuick v3.6 (BRANZ 2023). The item results by life-cycle stage are archived here
 (`data/raw/epd-level_materials.xlsx`, `data/building_data.xlsx`).
 
-## Code availability
+### Code availability
 
-The model (Python) is available at https://github.com/GerasimosChristoforatos/pathway-paper and archived at Zenodo, doi:[ZENODO-DOI] (version 5.0.0), under the MIT licence. `python run_all.py --profile full` reproduces every number and figure.
+The model (Python) is available at https://github.com/GerasimosChristoforatos/pathway-paper and archived at Zenodo, doi:[ZENODO-DOI] (version 5.0.0), under the MIT licence; its generated outputs and derived data are under CC BY 4.0. `python run_all.py --profile full` reproduces every number and figure.
 
-## Third-party data
+### Third-party data
 
 Generated with the statements above by `tools/availability.py` (`outputs/reports/AVAILABILITY.md`).
 
@@ -267,11 +192,18 @@ Generated with the statements above by `tools/availability.py` (`outputs/reports
 | Stats NZ: building consents (Infoshare BLD468601), population estimates (DPE404001), census dwelling tables (CEN23_HOU_018, CEN23_TBT_001, DataInfo+ pages), family and household projections (POPPR_FHH_008, POPPR_FHH_010), national accounts (SNE022AA), earlier releases (popdata, histpopdata, oldhouseholddata, occ-unocc-2013) | data/raw/, data/*.xlsx, data/derived/ | CC BY 4.0 (Stats NZ) | yes |
 | United Nations, DESA, Population Division (2024), World Population Prospects 2024 | data/raw/UN_PPP2024_Output_PopTot.xlsx | CC BY 3.0 IGO | yes |
 | World Bank, World Development Indicators (release 2026-07-13) | data/raw/API_*.zip | CC BY 4.0 | yes |
+| OECD (2024), Affordable Housing Database, indicator HM1.1 (Figure HM1.1.2: vacant dwellings by country; lever L2 at TL) | data/derived/oecd_hm112_vacancy.csv (the country values only) | the OECD terms and conditions | the extract only (the source file is not stored) |
 | Case-study LCA results, Christoforatos & Pickering (2026; Supplementary file 1), computed with LCAQuick v3.6 (BRANZ 2023) | data/building_data.xlsx, data/raw/epd-level_materials.xlsx (item results by stage) | the published case data (Supplementary file 1), at that level | yes |
 | The author's LCAQuick v3.6 root tables (explicit quantities, LCAQuick item codes, building metadata) | data/derived/lca_events.csv (derived event counts only) | beyond the published case data | no |
 | Horup et al. (2025), supplementary material mmc1.xlsx (Table S4, the A1-A3 item paths; Table S3, the archetype envelope of L10) | data/derived/horup2025_table_s4.csv and horup2025_table_s3_archetypes.csv (the Table S4 and S3 values only) | the terms of the article's supplementary material | the extract only (the source file is not stored) |
 
-## Citation
+### Licences
 
-Cite the model with [CITATION.cff](CITATION.cff) (version and release date there); the release history is in
-[CHANGELOG.md](CHANGELOG.md).
+* Code: MIT ([LICENSE](LICENSE)).
+* Generated outputs (`outputs/`) and derived data (`data/derived/`): CC BY 4.0 ([LICENSE-DATA](LICENSE-DATA)).
+* Third-party inputs keep their own terms (table above).
+
+## How to cite
+
+Cite the model with [CITATION.cff](CITATION.cff) (version, release date and ORCID there); the archived release and its
+DOI are described in `.zenodo.json`. The release history is in [CHANGELOG.md](CHANGELOG.md).

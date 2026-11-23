@@ -86,14 +86,14 @@ OUT_ITEM_COVERAGE = os.path.join(OUT_DIR, 'factors_a13_item_coverage.csv')
 OUT_EVENTS = os.path.join(OUT_DIR, 'factors_events.csv')            # B2/B4 events by age (projection.ACCOUNTING)
 OUT_EVENTS_BLD = os.path.join(OUT_DIR, 'factors_building_events.csv')   # the same per case study (MonteCarlo.py)
 OUT_A45_ITEM = os.path.join(OUT_DIR, 'factors_a45_item.csv')        # A4-A5 on item paths (sensitivity)
-OUT_CLASS = os.path.join(OUT_DIR, 'factors_material_class.csv')     # A1-A3, C1-C4, D by item class (MODEL v4.8.0)
-# the item-level production chain of lever L10 (MODEL v4.10.0): A1-A3 by item class on the S4 item paths, pooled by
+OUT_CLASS = os.path.join(OUT_DIR, 'factors_material_class.csv')     # A1-A3, C1-C4, D by item class
+# the item-level production chain of lever L10: A1-A3 by item class on the S4 item paths, pooled by
 # typology and per case study, and the A1-A3 component of the replacement / repaint events by item class
 OUT_A13_CLASS = os.path.join(OUT_DIR, 'factors_a13_class_paths.csv')
 OUT_A13_CLASS_BLD = os.path.join(OUT_DIR, 'factors_building_a13_class_paths.csv')
 OUT_EVENTS_CLASS = os.path.join(OUT_DIR, 'factors_events_a13_class.csv')
 OUT_EVENTS_CLASS_BLD = os.path.join(OUT_DIR, 'factors_building_events_a13_class.csv')
-# production class of an item in the chain files (MODEL v4.10.0, author decision): the item class, except the imported
+# production class of an item in the chain files (author decision): the item class, except the imported
 # OTIS elevator (class OTHERS, apartments A_1 / A_2), an assembled product dominated by steel, kept apart so that L10
 # at TL can treat the whole item as steel (an upper bound of the reduction). Every other OTHERS item stays OTHERS.
 ELEVATOR_ITEM_PREFIX = 'Elevator (12 floors) - OTIS'
@@ -106,7 +106,7 @@ def production_class(cls, item):
                     .to_numpy(), ELEVATOR_CLASS, np.asarray(cls))
 
 # ---------------------------------------------------------------------------
-# END OF LIFE (C1-C4) IN THE COMMITTED RANGE (MODEL v4.8.0; projection COMMITTED, pathways.committed)
+# END OF LIFE (C1-C4) IN THE COMMITTED RANGE (projection COMMITTED, pathways.committed)
 # ---------------------------------------------------------------------------
 # The LCAQuick results give C1-C4 aggregated (data/derived/material_items.csv), so the modules cannot be separated.
 # The split is by material chemistry, not by a ratio threshold (author decision). Classes whose end of life is
@@ -692,7 +692,7 @@ def main():
                 v = float(pooled.loc[t, j])
                 if v != 0:
                     ev_pooled.append(dict(Timing=timing, Typology=t, **dict(zip(keys, key)), kg_per_m2=v))
-        if True:                                      # the A1-A3 component by item class (L10, MODEL v4.10.0)
+        if True:                                      # the A1-A3 component by item class (L10)
             kc = ['Class', 'Age', 'S4', 'label', 'nz']
             a = er[er['Component'] == EVENT_COMPONENTS[0]]
             wc = a.pivot_table(index='id', columns=kc, values='kg_m2', aggfunc='sum').reindex(ids).fillna(0.0)

@@ -28,7 +28,7 @@ STOP: the central draw must reproduce the deterministic Moderate / Ambitious Pat
 TL <= Ambitious Pathway <= Moderate Pathway (cumulative carbon), dwellings built >= 0, and the cumulative re-occupied
 never exceeds the cumulative released.
 
-Committed after 2050 (MODEL v4.6.0): for every Reference draw, pathways.committed(ctx, gfa_t) on that draw's floor
+Committed after 2050: for every Reference draw, pathways.committed(ctx, gfa_t) on that draw's floor
 area by typology (later B2/B4 events at both decarbonisation bounds, and C1-C4), with the central repair and
 end-of-life factors (the carbon-factor draw is not applied to them): the committed range from the Monte Carlo
 floor-area uncertainty only. STOP unless the central draw reproduces baseline/projection.json 'committed' to 1e-9.
@@ -70,7 +70,7 @@ COMMITTED_COLUMNS = {'lower_kt': 'committed_lower_kt', 'upper_kt': 'committed_up
                      'B_lower_kt': 'committed_b2b4_lower_kt', 'B_upper_kt': 'committed_b2b4_upper_kt',
                      'C_upper_kt': 'committed_c1c4_upper_kt', 'C_lower_kt': 'committed_c1c4_lower_kt'}
 WINDOW = slice(1, None)                          # 2026-2050 (index 0 = 2025)
-# committed after 2050 per draw also for these runs (pathways.committed on the run's floor area; MODEL v4.8.0)
+# committed after 2050 per draw also for these runs (pathways.committed on the run's floor area)
 COMMITTED_RUNS = (MP, AP, 'TL')
 
 
@@ -95,7 +95,7 @@ def bootstrap_factors(su):
     extras = dict(a13=pd.DataFrame({'a13': bf['A1-A3'].values}, index=bf['id']),
                   a45=pd.DataFrame({'a45': bf['A4-A5'].values}, index=bf['id']), red13=red13)
     n = len(fy)
-    if su['tr']:                    # L10 (MODEL v4.9.0): the A1-A3 and the other components of each case's event kernel
+    if su['tr']:                    # L10: the A1-A3 and the other components of each case's event kernel
         ev = pd.read_csv(projection.BF.OUT_EVENTS_BLD)
         ev = ev[ev['Timing'] == projection.EVENT_TIMING]
         K13, KR = {}, {}
@@ -109,7 +109,7 @@ def bootstrap_factors(su):
             k13_i, kr_i = projection.EV.component_kernels(q, fy, f, PW.BF_A13)
             K13[i], KR[i] = k13_i.ravel(), kr_i.ravel()
         extras.update(k13=pd.DataFrame.from_dict(K13, orient='index'), krest=pd.DataFrame.from_dict(KR, orient='index'))
-    classes = sorted(LV.L10_TL_CLASSES)               # the L10 class factors (MODEL v4.10.0): per-case class inputs
+    classes = sorted(LV.L10_TL_CLASSES)               # the L10 class factors: per-case class inputs
     if classes:
         variant = projection.BF.decarb_variant(projection.DECARB_MODE, projection.DECARB_ITEM_CASE)
         cp = pd.read_csv(projection.BF.OUT_A13_CLASS_BLD)
@@ -253,9 +253,6 @@ def check_central(su, ctx, params, det):
 
 
 INPUTS = ('z_pop', 'size', 'complete', 'carbon_index', 'half_life')     # + replacement half-life
-INPUT_LABELS = {'z_pop': 'Population rank (z-score)', 'size': 'Dwelling-size multiplier',
-                'complete': 'Completion rate', 'carbon_index': 'Carbon-factor index',
-                'half_life': 'Replacement half-life (yr)'}
 OUTPUTS = ('floor_area_Mm2', 'carbon_kt', 'LoE_AR')
 BOOT_B = runprofile.get('bootstrap')
 BOOT_SEED = MC.SEED + 2101                      # the insight bootstrap's own stream (the draws are not touched)
@@ -422,7 +419,7 @@ def reoccupation_counts(df):
     pc = lambda v: {f'p{p}': float(np.percentile(v, p)) for p in (0, 5, 25, 50, 75, 95, 100)}
     out = dict(rule='constant share s = min(R, G+) / G+ of each year\'s need after the overbuild payback; re-occupied '
                     'never ahead of the cumulative release (shortfall built, share recomputed from the remaining pool); '
-                    'R = TL1 + TL2 releases (pathways.reoccupation)')
+                    'R = the releases of L1 and L2 at TL (pathways.reoccupation)')
     for lab_ in ('TL', INSTANT):
         sur = df[f'{lab_}_surplus_vacant_2050']
         exceed = df[f'{lab_}_released_R'] > df[f'{lab_}_need_G_plus']
@@ -542,7 +539,7 @@ def main():
         v = df[f'REF_{c}'].to_numpy()
         summ.append(dict(run='REF', quantity=c, mean=float(v.mean()), **{f'p{p}': float(np.percentile(v, p))
                                                                           for p in PCT}))
-    for r in COMMITTED_RUNS:                          # the Pathways and TL (MODEL v4.8.0): central = pathways/runs.csv
+    for r in COMMITTED_RUNS:                          # the Pathways and TL: central = pathways/runs.csv
         for c in ('committed_lower_kt', 'committed_upper_kt'):
             v = df[f'{r}_{c}'].to_numpy()
             summ.append(dict(run=r, quantity=c, mean=float(v.mean()), **{f'p{p}': float(np.percentile(v, p))

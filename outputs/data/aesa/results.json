@@ -676,7 +676,7 @@
         }
       }
     },
-    "Completion rate 0.95 (MODEL v3.3)": {
+    "Completion rate 0.95": {
       "rule": "recompute",
       "reason": "as the completion-rate row",
       "sides": {
@@ -700,7 +700,7 @@
         }
       }
     },
-    "Completion lag 0 months (MODEL v3.3)": {
+    "Completion lag 0 months": {
       "rule": "recompute",
       "reason": "as the completion-lag row",
       "sides": {
@@ -734,7 +734,7 @@
       "rule": "reference_base",
       "reason": "future building only (the surplus is absorbed from 2026)"
     },
-    "2026 overbuild never absorbed (MODEL v2.1 Reference)": {
+    "2026 overbuild never absorbed": {
       "rule": "reference_base",
       "reason": "future building only"
     },

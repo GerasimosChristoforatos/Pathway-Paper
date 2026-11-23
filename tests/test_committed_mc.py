@@ -1,5 +1,5 @@
-"""MODEL v4.6.0: committed after-2050 emissions per Reference Monte Carlo draw (pathways_mc.py): every draw satisfies
-the identities of pathways.committed (total = B2/B4 + C1-C4 at each bound, C1-C4 a range since MODEL v4.8.0; the lower
+"""Committed after-2050 emissions per Reference Monte Carlo draw (pathways_mc.py): every draw satisfies
+the identities of pathways.committed (total = B2/B4 + C1-C4 at each bound, C1-C4 a range; the lower
 bound below the upper), and the
 deterministic central value lies inside the 5th-95th percentile range of the draws."""
 import json
@@ -18,7 +18,7 @@ def test_committed_per_draw_identities_and_central():
     np.testing.assert_allclose(lo, d['REF_committed_b2b4_lower_kt'] + d['REF_committed_c1c4_lower_kt'], rtol=1e-12)
     np.testing.assert_allclose(up, d['REF_committed_b2b4_upper_kt'] + d['REF_committed_c1c4_upper_kt'], rtol=1e-12)
     assert (lo <= up).all() and (lo > 0).all()
-    assert (d['REF_committed_c1c4_lower_kt'] < d['REF_committed_c1c4_upper_kt']).all()    # MODEL v4.8.0 energy part
+    assert (d['REF_committed_c1c4_lower_kt'] < d['REF_committed_c1c4_upper_kt']).all()    # the C1-C4 energy part
     q = s[s['run'] == 'REF'].set_index('quantity')
     for col, key in (('committed_lower_kt', 'lower_kt'), ('committed_upper_kt', 'upper_kt'),
                      ('committed_c1c4_upper_kt', 'C_upper_kt'), ('committed_c1c4_lower_kt', 'C_lower_kt')):

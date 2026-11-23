@@ -1,6 +1,6 @@
-"""Data and code availability statements and the third-party data table (MODEL v4.7.2):
+"""Data and code availability statements and the third-party data table:
 outputs/reports/AVAILABILITY.md. The same text is in README.md (sections Data availability, Code availability and
-Third-party data). The Zenodo DOI is a placeholder that MODEL v5.0.0 fills in.
+Third-party data). The Zenodo DOI is a placeholder until the archived release has one.
 
     python tools/availability.py      (tools/methods.py calls it)
 """
@@ -11,20 +11,20 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import layout  # noqa: E402
 
-ZENODO_DOI = '[ZENODO-DOI]'           # filled in by MODEL v5.0.0
+ZENODO_DOI = '[ZENODO-DOI]'           # placeholder until the archived release has a DOI
 REPO_URL = 'https://github.com/GerasimosChristoforatos/pathway-paper'
 
 DATA_AVAILABILITY = (
     'All input data are public: Stats NZ (population estimates and projections, family and household projections, '
     'census dwelling counts, building consents, national accounts); the United Nations World Population Prospects '
-    '2024; and the World Bank World Development Indicators. The case-study results are those of Christoforatos & '
+    '2024; the World Bank World Development Indicators; and the OECD Affordable Housing Database. The case-study results are those of Christoforatos & '
     'Pickering (2026; item-level results in their Supplementary file 1), computed with LCAQuick v3.6 (BRANZ 2023). The '
     'item results by life-cycle stage are archived with the code. The derived data and the source data of every '
     f'figure are archived with the code at Zenodo, doi:{ZENODO_DOI}. Supplementary Table 1 lists the sources and '
     'access dates.')
 CODE_AVAILABILITY = (
     f'The model (Python) is available at {REPO_URL} and archived at Zenodo, doi:{ZENODO_DOI} (version 5.0.0), under '
-    'the MIT licence. `python run_all.py --profile full` reproduces every number and figure.')
+    'the MIT licence; its generated outputs and derived data are under CC BY 4.0. `python run_all.py --profile full` reproduces every number and figure.')
 
 # (source, files in the repository, licence or terms, redistributed here)
 THIRD_PARTY = [
@@ -35,6 +35,9 @@ THIRD_PARTY = [
     ('United Nations, DESA, Population Division (2024), World Population Prospects 2024',
      'data/raw/UN_PPP2024_Output_PopTot.xlsx', 'CC BY 3.0 IGO', 'yes'),
     ('World Bank, World Development Indicators (release 2026-07-13)', 'data/raw/API_*.zip', 'CC BY 4.0', 'yes'),
+    ('OECD (2024), Affordable Housing Database, indicator HM1.1 (Figure HM1.1.2: vacant dwellings by country; lever '
+     'L2 at TL)', 'data/derived/oecd_hm112_vacancy.csv (the country values only)', 'the OECD terms and conditions',
+     'the extract only (the source file is not stored)'),
     ('Case-study LCA results, Christoforatos & Pickering (2026; Supplementary file 1), computed with LCAQuick v3.6 '
      '(BRANZ 2023)', 'data/building_data.xlsx, data/raw/epd-level_materials.xlsx (item results by stage)',
      'the published case data (Supplementary file 1), at that level', 'yes'),

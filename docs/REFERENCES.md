@@ -5,7 +5,7 @@ One list of every source cited in the methods draft (`outputs/reports/METHODS_DR
 `outputs/reports/LEVERS_TABLE.md`, Extended Data Table 1), the figure captions and notes (`outputs/FIGURES.md`) and
 the palette record (`docs/PALETTE.md`), alphabetical. The bibliographic details were checked by the author against the
 publisher's or catalogue record (Mendeley catalogue or the official page) or against the document itself
-(MODEL v4.7.2, November 2026). In-text citations in the generators use the author-year form of this list.
+(November 2026). In-text citations in the generators use the author-year form of this list.
 
 ## Peer-reviewed literature and books
 
@@ -26,7 +26,7 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
 - Christoforatos, G., Pickering, K., & Schipper, L. A. (2026). Integrating soil organic carbon loss into building life
   cycle assessment and urban planning: implications for urban sustainability practice. *Journal of Environmental
   Management*, 415, 130603. doi:10.1016/j.jenvman.2026.130603. (The soil carbon loss factor; L7 Soil-aware planning
-  and TL7.)
+  and L7 at TL.)
 - Clausen, C. A., Hauschild, M. Z., & Bjørn, A. (2025). Absolute environmental sustainability assessments of
   long-lived systems: a review of challenges with the representation of time and future research directions.
   *Sustainable Production and Consumption*, 58, 140–150. doi:10.1016/j.spc.2025.06.006. (pp. 143 and 148: static
@@ -182,9 +182,10 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   https://iea.blob.core.windows.net/assets/0910c4ff-4008-48f5-a3ec-c52996ed694d/Definitionsfornear-zeroandlow-emissionssteelandcementandunderlyingemissionsmeasurementmethodologies.pdf
   (p. 17: near-zero thresholds 125 kg CO2-eq/t cement at 100% clinker and 400 kg CO2-eq/t crude steel at 100% iron;
   L10 at TL.)
-- IEA (n.d.). *Cement* (Tracking Clean Energy Progress; Net Zero Emissions by 2050 milestones).
-  https://www.iea.org/reports/cement-3 (the near-zero share of cement production 0 in 2022, 8% in 2030, 93% in 2050, as
-  specified by the author; the page could not be read from the build environment; L10 at TL.)
+- IEA (2023). *Net Zero Roadmap: A Global Pathway to Keep the 1.5 °C Goal in Reach*, 2023 update. International
+  Energy Agency, Paris. https://www.iea.org/reports/net-zero-roadmap-a-global-pathway-to-keep-the-15-0c-goal-in-reach
+  (Cement: near-zero emission clinker production share 0% in 2022, 8% in 2030, 27% in 2035 and 93% in 2050, verified by
+  the author; the near-zero share s(y) of L10 at TL, applied to steel as well, a stated assumption.)
 - Kockat, J., Wallerand, A. S., Jankovic, I., & Wang, X. (2019). *Identification of levers and levels for the building
   stock*. EUCalc Deliverable D2.5 (updated July 2019), Horizon 2020 grant 730459.
   https://www.european-calculator.eu/wp-content/uploads/2020/04/EUCalc_D2.5_Lever-levels-buildings.pdf (Table 2:

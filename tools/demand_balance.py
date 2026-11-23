@@ -36,17 +36,6 @@ BROAD_GROUPS = {
     "market_excess": ("overbuild_2026",),
     "overbuild_absorbed": ("overbuild_absorbed",),
 }
-GROUP_LABELS = {
-    "population_growth": "Population growth",
-    "household_size_change": "Household-size change",
-    "net_replacement": "Net replacement",
-    "other": "Other demand / balance",
-    "market_excess": "Gross market excess",
-    "overbuild_absorbed": "Overbuild absorbed",
-    "underlying_requirement": "Underlying requirement",
-    "net_market_effect": "Net market-excess effect",
-    "total_built": "Total floor area built",
-}
 
 
 def projection_components(B, lag_months, run=None):
@@ -152,7 +141,7 @@ def historical_market_balance(history):
         basis = (
             "Census-benchmarked household counts"
             if households_from == "census"
-            else ("ERP / household-size path after the 2023 census (MODEL v4.2)" if households_from == "erp_S"
+            else ("ERP / household-size path after the 2023 census" if households_from == "erp_S"
                   else "Consent-derived household estimates; not independent of consents")
         )
         common = dict(

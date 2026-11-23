@@ -207,7 +207,7 @@ def timing_register():
                            'year it occurs, 2026-2050; events after 2050 and all C1-C4 of the 2026-2050 cohorts '
                            'reported as committed after 2050 (range below), not added to the 2026-2050 total',
           'whole_life_at_construction': 'whole_life_at_construction: all stages A1-C4 booked in the construction '
-                                        'year (the static convention of earlier versions of the model)'}[B.ACCOUNTING],
+                                        'year (the static convention; a sensitivity)'}[B.ACCOUNTING],
          'DECISION (author); LITERATURE: Habert et al. 2020, Buildings and Cities 1, 429-452, Section 5.1 (p. '
          '442): embodied emissions "occur mainly in the first year of the building life time and (approximately '
          '30 years later) when deep renovation are done", and spreading them over the building life '
@@ -218,13 +218,12 @@ def timing_register():
          'built by data/build_lca_events.py from the author\'s LCAQuick v3.6 root tables, not redistributed; the '
          f"derived counts are archived): number of replacement and repaint events (maintenance, B2 and B4) and building lifespan ({', '.join(str(int(v)) for v in sorted(ev['lifespan'].unique()))} "
          f"yr) per line; {len(ne)} lines carry events ({nrep} replacement, {nrp} repaint lines). Stage totals stay "
-         'those of data/building_data.xlsx and the item table (the stage totals of earlier versions of the model '
-         'are reproduced)',
+         'those of data/building_data.xlsx and the item table',
          'DATA: Christoforatos & Pickering 2026 case studies, LCAQuick root tables'),
         ('Lines not used from the event workbook', f"{len(ex)} lines, none with B2/B4 (data/derived/"
          f"lca_excluded_lines.csv): {site} sand / granular-fill lines (site works, outside the case-study scope); "
          f"{len(unl)} unlabelled lines, including the A_1 unlabelled row ({a1:,.0f} t A1-A3; excluded, as in "
-         'earlier versions of the model and the sheet summary); one T_1 aluminium line whose A1-A3 differs from '
+         'the sheet summary); one T_1 aluminium line whose A1-A3 differs from '
          'the item table by 10 kg (item table kept). Several sheet summary blocks do not equal their own line '
          'sums; line-level data are used', 'DECISION (author)'),
         ('Events per line', 'per-event impact = line B2/B4 / n; split into A1-A3 : A4-A5 : C1-C4 in proportion to '
@@ -257,7 +256,7 @@ def timing_register():
         ('Committed after 2050 (later B2/B4 and C1-C4)', 'upper: events after 2050 at 2025 factors; lower: the 2050 '
          'factors held after 2050 (no extrapolation beyond the last source year); C1-C4 by material chemistry (Building_factors.C14_HELD_CLASSES): the carbon-bearing classes (timber, plasterboard, plastics, paint, SIP), whose end of life is the release of their own carbon at disposal, held at 2025 in both bounds; the energy part of the other classes (demolition, processing, transport) at 2025 factors in the upper bound and at the generic construction-stage factor e^(-0.01 (t - 2025)) (Resch et al. 2021) of 2050, held after it, in the lower bound. Expressed '
          'in years of the 2050 AR boundary', 'DECISION (author): the source paths end in 2050; the C1-C4 modules are '
-         'aggregated in the LCAQuick results, so the split is by material class (MODEL v4.8.0)'),
+         'aggregated in the LCAQuick results, so the split is by material class'),
         ('Scope of B events', 'events of the cohorts built in the accounting period only (projection: the 2026-2050 '
          'cohorts; AR base: the cohorts of the base window); wider scope (events of all cohorts built since '
          f"{B.B_SCOPE_START}, in the base and the projection alike) is a sensitivity",
@@ -448,20 +447,26 @@ def _payback():
     if not os.path.exists(p):
         return None
     s = pd.read_csv(p).set_index('case')['floor_area_change_pct']
-    k = 'Overbuild never absorbed (MODEL v2.1 Reference)'
+    k = 'Overbuild never absorbed'
     return float(s[k]) if k in s else None
 
 
-# Data freeze (MODEL v4.6.0). The release date of the household projections and the alteration share are stated by
+# Data freeze. The release date of the household projections and the alteration share are stated by
 # the author (not in the data files): the BLD468601 export in data/raw holds the 'New' series only, so the share of
 # residential consent value that is alterations cannot be recomputed here.
 HH_PROJECTIONS_RELEASED = '11 November 2026'
 ALTERED_SHARE_TEXT = 'about 12% of residential consent value in 2025 (Stats NZ BLD468601, 2025)'
 
 
-def data_freeze_lines():
-    """The data freeze and the new-build scope, read from the data files (consents and population: last month /
-    quarter present; household projections: the adopted path)."""
+DATA_FROZEN_ON = '22 November 2026'
+HH_ESTIMATES_TEXT = ('Stats NZ Dwelling and household estimates to the March 2026 quarter (on the 2018 Census base; '
+                     'see the limitation "Households 2019-2023")')
+
+
+def freeze_statement():
+    """The one data-freeze sentence (README, section Data freeze, carries the same sentence; tests check it), read from
+    the data files: consents and population, the last month / quarter present; household projections, the adopted
+    path."""
     sys.path.insert(0, ROOT)
     import projection
     c = pd.read_csv(os.path.join(ROOT, 'data', 'derived', 'consents_monthly.csv'), usecols=['Date'])
@@ -470,11 +475,15 @@ def data_freeze_lines():
         raise SystemExit(f'baseline_draft: HH_SIZE_PATH {projection.HH_SIZE_PATH!r}: rewrite the data-freeze text.')
     yq = q.iloc[-1]
     qmonth = {1: 'March', 2: 'June', 3: 'September', 4: 'December'}[int(yq.iloc[1])]
-    return ['## Data freeze and scope', '',
-            f"Data freeze: building consents to {N.month_year(c['Date'].max())} (Stats NZ BLD468601); population "
-            f"estimates to the {qmonth} {int(yq.iloc[0])} quarter (Stats NZ estimated resident population); household "
-            f"projections 2023-base (Stats NZ National family and household projections, released "
-            f"{HH_PROJECTIONS_RELEASED}). Later releases are not used.", '',
+    return (f"Data frozen on {DATA_FROZEN_ON}: building consents to {N.month_year(c['Date'].max())} (Stats NZ "
+            f"BLD468601); population estimates to the {qmonth} {int(yq.iloc[0])} quarter (Stats NZ estimated resident "
+            f"population); Stats NZ 2023-base household projections (National family and household projections, "
+            f"released {HH_PROJECTIONS_RELEASED}); {HH_ESTIMATES_TEXT}. Later releases are not used.")
+
+
+def data_freeze_lines():
+    """The data freeze and the new-build scope."""
+    return ['## Data freeze and scope', '', freeze_statement(), '',
             'Scope: the model covers new dwellings. Consents to alter existing dwellings (no floor area published) are '
             f'outside scope, {ALTERED_SHARE_TEXT}. Both budgets use the same new-build scope (the acquired-rights base '
             'from the new-build history; the ability-to-pay share from new-build consent value), so the exclusion is '
@@ -596,6 +605,8 @@ def lines():
     if nj and nj.get('mode') == 'market_excess':
         vs = vacancy_sentence(nj)
         _py = nj.get('pipeline_years') or []
+        if not _py:     # the central run observes at least one projection year (completion lag > 0)
+            raise SystemExit('STOP: the central run has no observed pipeline year; the overbuild text needs one')
         L += ['', '### The 2026 overbuild rule', '',
               (f"Building in the pipeline years {', '.join(map(str, _py))} is observed, not modelled: completions = "
                f"{nj['completion_rate']:.3f} x consents lagged {nj['completion_lag_months']} months (consents observed "
@@ -605,15 +616,7 @@ def lines():
                + f". From {_py[-1] + 1} building stays above the requirement by gap_ref x rho^(t-{_py[-1]}), with "
                f"gap_ref = building {_py[-1]} - requirement {_py[-1] + 1} = {nj['gap_ref']:+,.0f} and rho = "
                f"{nj['rho']:.2f} (the estimated persistence of departures from the calibrated identity). "
-               if _py else
-               f"2026 building is observed, not modelled: {nj['O26']:,.0f} dwellings = {nj.get('completion_rate', 0.95):.3f} "
-               f"x consents over the latest 12 observed months (the year to {N.month_year(nj.get('consents_observed_to'))}; "
-               f"to be replaced by calendar 2026 "
-               f"when published). It exceeds the 2026 requirement by {nj['e26']:+,.0f}. From 2027 building stays above "
-               f"the requirement by gap_ref x rho^(t-2026), with gap_ref = building 2026 - requirement 2027 = "
-               f"{nj['gap_ref']:+,.0f} and rho = {nj['rho']:.2f} (the estimated persistence of departures from the "
-               f"calibrated identity). The 2027 requirement is used because the 2026 requirement is depressed by the "
-               f"one-off 2026 population shortfall. ")
+               )
               + f"The 2026 overbuild is STOCK-ADDING: the extra dwellings join the stock as additional vacant "
               f"dwellings, soil carbon loss applies (new footprints) and removals stay on the path of the replacement "
               f"variant. The surplus is absorbed by {nj.get('absorption_end')}: the remaining surplus U(t) = C(t) "
@@ -644,8 +647,8 @@ def lines():
                   'stock-neutral redevelopment'
                   + (f" (implied net removals then peak at {nj['redevelopment_sensitivity']['peak_removals']:,.0f} in "
                      f"{nj['redevelopment_sensitivity']['peak_year']})" if 'redevelopment_sensitivity' in nj else '')
-                  + ', absorption never, by 2030 or by 2045, and the gap measured against the 2026 '
-                  'requirement.']
+                  + ', absorption never, by 2030 or by 2045, and the gap measured against the requirement of the '
+                  'last observed year (not the next).']
 
     # ---- material / stages (no by-typology reporting: typology is internal to the model) ----
     L += ['', '## By material (kt CO₂e, 2026-2050)', '', '| material | kt | share |', '|---|---|---|']
@@ -668,7 +671,7 @@ def lines():
                   'construction year, maintenance (B2, B4) in the year it occurs. Emissions committed after 2050 are '
                   'reported as a range and are not added to the 2026-2050 total. Reconciliation with whole life at '
                   'construction (the static convention): outputs/reports/reconciliation.md.', '',
-              'End of life (C1-C4) in the committed range (MODEL v4.8.0). The LCAQuick results give C1-C4 '
+              'End of life (C1-C4) in the committed range. The LCAQuick results give C1-C4 '
               'aggregated, so the modules cannot be separated; the split is by material chemistry, not by a ratio '
               'threshold. Classes whose end of life is dominated by the release of their own material carbon at '
               'disposal (timber, plasterboard, plastics, paint, SIP) are held at 2025 in both bounds: that depends on '
@@ -908,7 +911,7 @@ def lines():
     return L
 
 
-# The acknowledged limitations of the study (one list, in this order; MODEL v4.7.2). Ten reuse the wording of the
+# The acknowledged limitations of the study (one list, in this order). Ten reuse the wording of the
 # detailed lists below (matched by their opening words, so each text has one source); the theoretical-limit item is
 # written here from the run outputs. The detailed lists keep every other item as method notes.
 ACKNOWLEDGED_PREFIXES = (

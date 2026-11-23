@@ -56,7 +56,7 @@
   "a)",
   "b)"
  ],
- "note": "(a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 1,024 subsets per game); the TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): moderate 8,294 kt, ambitious 14,032 kt, tl 21,331 kt.",
+ "note": "(a) Standalone: each lever alone vs the Reference (not additive). (b) Shapley shares within each combined game (Reference -> Moderate Pathway, -> Ambitious Pathway, -> TL; 1,024 subsets per game); the TL shares include interactions at the limit (L5 with L4). Game totals (= Reference - Pathway / TL): moderate 8,294 kt, ambitious 14,032 kt, tl 21,326 kt.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

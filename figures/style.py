@@ -1,4 +1,4 @@
-"""One style for every figure of the model (moved into the figures/ package).
+"""One style for every figure of the model.
 
 Every module of figures/ imports this file and nothing else for colours, line styles,
 typeface, sizes and saving, so a figure cannot drift from the palette of
@@ -63,7 +63,7 @@ MAX_HEIGHT = 247 * MM                           # full page depth
 FONT_SIZE = 7.0                                 # body text, tick labels
 FONT_SMALL = 6.0                                # legends, annotations
 FONT_MIN = 5.0                                  # never smaller (Nature: 5 pt minimum)
-PANEL_SUFFIX = ')'                              # panel letters 'a)', 'b)' (MODEL v4.8.0); '' reverts to 'a', 'b'
+PANEL_SUFFIX = ')'                              # panel letters 'a)', 'b)'; '' reverts to 'a', 'b'
 LW = 1.0                                        # data lines, pt
 LW_THIN = 0.5                                   # grid, edges, reference lines
 LW_BOLD = 1.5                                   # the Reference / emphasised line
@@ -207,8 +207,6 @@ ZONE = {'within_both': dict(color=_ZN['within_both'], alpha=ZONE_ALPHA['within_b
 # above AR no fill is drawn (the area beyond the AR line is the exceedance; the AR line marks it)
 ZONE_GID = 'boundary_zone'
 # two accent colours for lines that are not boundaries (household formation, floor area)
-ACCENT_ORANGE = '#C2571A'      # not drawn in a final figure (each meaning has its palette key below)
-ACCENT_BLUE = '#1F5FA8'
 # the meanings the accent colours carried, each its own palette key
 CENSUS_EMPTY = _CEN['census_empty']             # ED3a census empty points
 OBSERVED_TOTAL = _CEN['observed_total']         # Fig1 observed totals without a band split (drawn when such years exist)
@@ -225,7 +223,6 @@ NEUTRAL_DARK = NEUTRALS['neutral_dark']   # a dark neutral grey (not the Referen
 RELEASE_BINDS = _HL['release_binds']     # palette.toml [highlights]
 # TL a pale sage green, >= 10 (CAM02-UCS) from the other runs under every simulated deficiency (tools/palette_check.py)
 TL = _RUN['theoretical_limit']
-TL_MARKER = dict(marker='o', ms=8)             # TL on point plots: a larger circle (no star)
 # the replacement variants from palette.toml [replacement_variants] (the Reference: [runs])
 SCENARIO = {'REF': dict(color=REFERENCE, ls='-', lw=LW_BOLD, label='Reference'),    # the Reference run itself
             'LOW': dict(color=_RV['low'], ls='--', lw=LW, label='Low replacement'),
@@ -408,7 +405,7 @@ def save(fig, path):
     plt.close(fig)
 
 
-# MODEL v4.7.2: legends and annotations of the Extended Data and Supplementary figures at least LEGEND_MIN pt at final
+# legends and annotations of the Extended Data and Supplementary figures at least LEGEND_MIN pt at final
 # size (Nature minimum 5 pt; target 6 pt for legends and annotations); tick and axis labels keep their sizes
 LEGEND_MIN = FONT_SMALL
 LEGEND_MIN_PREFIXES = ('ED', 'SF')

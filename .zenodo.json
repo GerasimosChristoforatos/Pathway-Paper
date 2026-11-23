@@ -1,0 +1,33 @@
+{
+  "title": "New Zealand new residential floor area and embodied carbon, 2026–2050: projection, planetary-boundary layer (AESA) and pathways",
+  "upload_type": "software",
+  "version": "4.10.2",
+  "creators": [
+    {
+      "name": "Christoforatos, Gerasimos",
+      "affiliation": "University of Waikato, New Zealand",
+      "orcid": "0009-0003-9351-7497"
+    }
+  ],
+  "description": "<p>A bottom-up, demand-driven projection of the new residential floor area New Zealand builds in 2026–2050 and its embodied carbon (A1–A5, soil carbon loss, maintenance B2/B4 and the emissions committed after 2050), compared with the sector's share of a global climate boundary (absolute environmental sustainability assessment under acquired rights and ability to pay). Ten levers grouped by the PAS 2080 hierarchy (Avoid L1–L5, Switch L6–L8, Improve L9–L10) give the Moderate and Ambitious Pathways and the Theoretical Limit, with exact Shapley attribution and Monte Carlo and Sobol uncertainty analysis. The archive holds the code, the derived data and every generated output; <code>python run_all.py --profile full</code> reproduces every number and figure.</p>",
+  "license": "MIT",
+  "keywords": [
+    "embodied carbon",
+    "residential construction",
+    "floor area projection",
+    "absolute environmental sustainability assessment",
+    "planetary boundaries",
+    "PAS 2080",
+    "Shapley value",
+    "New Zealand"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "[PAPER-DOI]",
+      "relation": "isSupplementTo",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    }
+  ],
+  "notes": "Placeholder: replace [PAPER-DOI] with the DOI of the paper before the release that Zenodo archives (Zenodo rejects an identifier that is not a DOI). Generated outputs (outputs/) and derived data (data/derived/) are licensed CC BY 4.0 (LICENSE-DATA); third-party inputs keep their own terms (README, Third-party data)."
+}

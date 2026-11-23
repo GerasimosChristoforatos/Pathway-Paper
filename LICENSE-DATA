@@ -1,0 +1,17 @@
+Data licence
+
+Copyright (c) 2026 Gerasimos Christoforatos
+
+The generated outputs of the model (everything under outputs/) and the derived data (everything under data/derived/)
+are licensed under the Creative Commons Attribution 4.0 International licence (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+You may share and adapt them for any purpose, provided you give appropriate credit (cite the model as in
+CITATION.cff), provide a link to the licence and indicate if changes were made.
+
+Third-party inputs keep their own terms: the Stats NZ, United Nations, World Bank, OECD, case-study LCA and Horup et
+al. (2025) data listed in README.md, section "Third-party data". Where a file under data/derived/ is an extract of a
+third-party source, the terms of that source apply to the extracted values, and CC BY 4.0 applies to the
+transformation.
+
+The code is licensed under the MIT licence (LICENSE).

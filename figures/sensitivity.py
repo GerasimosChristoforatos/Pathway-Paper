@@ -63,7 +63,7 @@ def sf8_prcc():
 # ---------------------------------------------------------------------------
 # data row (sensitivity/reference_carbon.csv: row, side) -> (input id of naming.INPUT_LABEL, role); role 'low' / 'high'
 # = the input at its low / high end, 'single' = one alternative case, ('tick', name) = an intermediate case. The rows that only compare with superseded
-# model settings (REF_DROPPED: the MODEL v3.3 completion rate and lag, the MODEL v2.1 never-absorbed overbuild) are
+# model settings (REF_DROPPED: completion rate 0.95, completion lag 0 months, the never-absorbed overbuild) are
 # not shown; the note under ED6 names them with their values.
 REF_ROWS = {
     ('Population: Stats NZ 5th / 95th percentile', 'low'): ('population', 'low'),
@@ -107,8 +107,8 @@ REF_ROWS = {
     ('Production decarbonisation: no-climate-policy backgrounds (Horup MAX)', 'single'): ('l10_max', 'single'),
     ('Event timing L / n', 'single'): ('event_timing', 'single'),
 }
-REF_DROPPED = ('Completion rate 0.95 (MODEL v3.3)', 'Completion lag 0 months (MODEL v3.3)',
-               '2026 overbuild never absorbed (MODEL v2.1 Reference)')
+REF_DROPPED = ('Completion rate 0.95', 'Completion lag 0 months',
+               '2026 overbuild never absorbed')
 # rows kept in the data file but not shown in ED6 (display only), with the reason given in the note; the change of
 # each row (data: change_pct) is quoted in the figure note.
 REF_NOT_SHOWN = {'2026 overbuild gap vs the 2026 requirement': 'the overbuild gap measured against the 2026 '
@@ -586,8 +586,7 @@ def ed4_one_at_a_time():
     S.save_figure(fig, 'ED6_one_at_a_time',
                   note=f'Reference {c0:,.0f} kt. One at a time: not additive, not a joint interval. "No effect": every '
                        f'case within {100 * P.NO_EFFECT_RTOL:.2f}% of the Reference. Not shown: the superseded-setting '
-                       'rows (completion rate 0.95 and lag 0 months of MODEL v3.3; the never-absorbed overbuild of '
-                       'MODEL v2.1) and ' + '; '.join(f"{t} ({float(r.loc[r['row'] == k, 'change_pct'].iloc[0]):+.4f}%)"
+                       'rows (completion rate 0.95, completion lag 0 months and the never-absorbed overbuild) and ' + '; '.join(f"{t} ({float(r.loc[r['row'] == k, 'change_pct'].iloc[0]):+.4f}%)"
                                                      for k, t in ref_not_shown(r).items()) + ' (in the data file). Row notes: '
                        + ' '.join(lines), source=['sensitivity/reference_carbon.csv'])
 

@@ -20,7 +20,7 @@ column E for every material.
 Output: data/derived/horup2025_table_s4.csv
   material, year, premise_rel_ecoinvent, rel_to_2025, cell
 
-Second output (MODEL v4.9.0, lever L10): the archetype sensitivity of sheet 'Table S3' (in-sheet title 'Table S3:
+Second output (lever L10): the archetype sensitivity of sheet 'Table S3' (in-sheet title 'Table S3:
 Sensitivity of archetypes used of GWP'): GWP per m2 of each Danish archetype by year 2025-2050 in three blocks,
 'AVERAGE GWP per sqm', 'MIN GWP per sqm' and 'MAX GWP per sqm', over the 9 prospective backgrounds of 'Table S1'
 (SSP1 / SSP2 / SSP5 x no climate policy / RCP2.6 / RCP1.9). Only 'Single family houses ' and 'Multi dwellings ' are
@@ -40,7 +40,7 @@ OUT = os.path.join(HERE, 'derived', 'horup2025_table_s4.csv')
 SHEET = 'Table S4'
 YEARS = (2025, 2030, 2040, 2050)
 
-# ---- Table S3 (archetypes; MODEL v4.9.0, L10) ----
+# ---- Table S3 (archetypes; L10) ----
 OUT_S3 = os.path.join(HERE, 'derived', 'horup2025_table_s3_archetypes.csv')
 SHEET_S3 = 'Table S3'
 S3_TITLE = 'Table S3: Sensitivity of archetypes used of GWP'

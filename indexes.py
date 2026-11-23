@@ -45,9 +45,9 @@ FILES = [
     ('data/baseline/gap_2026.json', 'The 2026 gap between observed building and the requirement',
      'gap_2026.py'),
     ('data/baseline/overbuild_2026.json', 'The 2026 overbuild and how it is absorbed', 'tools/overbuild_2026.py'),
-    ('data/ed_number_map.csv', 'Extended Data numbering, MODEL v4.10.0 -> v4.10.1 (figure_plan.RENUMBER)',
+    ('data/ed_number_map.csv', 'Extended Data numbering, v4.10.0 -> v4.10.1 (figure_plan.RENUMBER)',
      'figure_plan.py'),
-    ('data/sf_number_map.csv', 'Supplementary Figures numbering, MODEL v4.10.0 -> v4.10.1 (figure_plan.RENUMBER)',
+    ('data/sf_number_map.csv', 'Supplementary Figures numbering, v4.10.0 -> v4.10.1 (figure_plan.RENUMBER)',
      'figure_plan.py'),
     ('data/st_number_map.csv', 'Supplementary Tables of the SI (ST1-ST12) and their repository sources; ST8 was ST1 '
      '(figure_plan.SI_TABLES)', 'figure_plan.py'),
@@ -106,7 +106,7 @@ FILES = [
      'pathways.py'),
     ('data/pathways/annual.csv', 'Annual carbon and boundaries of every pathway run', 'pathways.py'),
     ('data/pathways/bands.csv', 'Floor area and carbon by demand band of every pathway run', 'pathways.py'),
-    ('data/pathways/shapley*.csv', 'Exact Shapley values of every game (PAS 2080 strategies S1-S3 and levers at Moderate / Ambitious, levers at TL, TL1-TL10 from the Moderate Pathway) and every subset run',
+    ('data/pathways/shapley*.csv', 'Exact Shapley values of every game (PAS 2080 strategies S1-S3 and levers at Moderate / Ambitious, levers at TL, L1-L10 at TL from the Moderate Pathway) and every subset run',
      'pathways.py'),
     ('data/pathways/montecarlo_draws.csv', 'Pathway Monte Carlo: each saved Reference draw through the Moderate / Ambitious Pathway '
      '(Moderate) and TL: inputs, carbon, floor area, budgets and levels of exceedance', 'pathways_mc.py'),
@@ -114,7 +114,7 @@ FILES = [
      'of exceedance of the Reference, the Pathways and TL; P(LoE <= 1)', 'pathways_mc.py'),
     ('data/pathways/montecarlo_annual.csv', 'Pathway Monte Carlo: percentiles of annual carbon of the Reference, the Pathways '
      'and TL', 'pathways_mc.py'),
-    ('data/pathways/montecarlo_draw_rules.json', 'Pathway Monte Carlo: draws where the L5 floor or the TL8 cap binds; '
+    ('data/pathways/montecarlo_draw_rules.json', 'Pathway Monte Carlo: draws where the L5 floor or the L8 at TL cap binds; '
      'the L5 target against the Monte Carlo High variant', 'pathways_mc.py'),
     ('data/pathways/montecarlo_importance.csv', 'Monte Carlo insight: SRC and PRCC of floor area, carbon and LoE AR of '
      'the Reference, the Pathways and TL, with bootstrap 95% intervals', 'pathways_mc.py'),
@@ -136,7 +136,7 @@ FILES = [
     ('reports/ASSUMPTIONS.md', 'Every assumption and setting with its source', 'tools/assumptions.py'),
     ('reports/METHODS_DRAFT.md', 'Methods draft in three parts: baseline projection, planetary-boundary layer '
      '(AESA), pathways and the theoretical limit', 'tools/methods.py'),
-    ('reports/lever_audit.md', 'Lever consistency audit: the seven checks of the ten levers (STOP on a failure)',
+    ('reports/lever_audit.md', 'Lever consistency audit: the nine checks of the ten levers (STOP on a failure)',
      'tools/lever_audit.py'),
     ('reports/LEVERS_TABLE.md', 'Extended Data Table 1: the pathway levers, their values and sources',
      'tools/pathways_methods.py'),
@@ -182,21 +182,21 @@ FILES = [
     ('data/montecarlo/convergence_*.csv', 'Monte Carlo convergence: percentiles over the first n draws', 'MonteCarlo.py'),
     ('data/montecarlo/input_distributions_*.csv', 'Monte Carlo input distributions: quantiles and sample moments',
      'MonteCarlo.py'),
-    ('data/pathways/waterfall.csv', 'Sequential waterfall in PAS 2080 order, Reference -> L1 ... L9 (= the Pathway) -> TL1 ... TL9 (= TL) by demand '
+    ('data/pathways/waterfall.csv', 'Sequential waterfall in PAS 2080 order, Reference -> L1 ... L10 (= the Pathway) -> L1 ... L10 at TL (= TL) by demand '
      'band, Moderate and Ambitious', 'pathways.py'),
     ('data/pathways/bands_annual.csv', 'In-scope demand bands by year of every Reference-variant run', 'pathways.py'),
     ('data/pathways/lambda_sweep.csv', 'Lambda-sweep of each lever (Reference 0, Moderate 0.5, Ambitious 1) and TL',
      'pathways.py'),
     ('data/pathways/lever_annual.csv', 'Annual carbon of each lever alone at Reference, Moderate, Ambitious and TL',
      'pathways.py'),
-    ('data/pathways/reoccupation_log.csv', 'TL and instant TL by year: need, releases (TL1, TL2), share, re-occupied, '
+    ('data/pathways/reoccupation_log.csv', 'TL and instant TL by year: need, releases (L1 and L2 at TL), share, re-occupied, '
      'binding years, built', 'pathways.py'),
     ('data/pathways/ordering_checks.json', 'Ordering Reference >= Moderate >= Ambitious >= TL per lever, typology and '
      'year (violations, annual-carbon reversals, cumulative ordering)', 'pathways.py'),
     ('data/sensitivity/tornado.csv', 'Fig7a: the inputs of the Reference tornado (low / high): carbon, LoE AR and AtP',
      'tools/sensitivity_tables.py'),
-    ('data/pathways/waterfall_tl_from_reference.csv', 'Sequential waterfall Reference -> TL1 ... '
-     'TL9 (cumulative from the Reference, PAS 2080 order; = TL) by demand band', 'pathways.py'),
+    ('data/pathways/waterfall_tl_from_reference.csv', 'Sequential waterfall Reference -> L1 at TL ... '
+     'L10 at TL (cumulative from the Reference, PAS 2080 order; = TL) by demand band', 'pathways.py'),
     ('data/pathways/sequential_vs_shapley.csv', 'Each lever step of the sequential waterfalls (PAS 2080 '
      'order; Moderate, Ambitious) and each TL step (from the Moderate Pathway) against its order-free Shapley value',
      'pathways.py'),
@@ -246,7 +246,7 @@ def index_md():
              '_Generated by indexes.py (do not edit by hand): every file under outputs/ with what it holds and the '
              'script that writes it. Console logs (outputs/logs/) are not versioned. Data files use the release '
              'names of naming.py; the deterministic numbers and the Monte Carlo draw files are locked by '
-             'tests/test_regression_model_v3.py (tests/regression_model_v4.json)._', '',
+             'tests/test_regression_model.py (tests/regression_lock.json)._', '',
              '| file | content | written by |', '|---|---|---|']
     lines += [f'| `{r}` | {c} | {w} |' for r, c, w in rows]
     path = L.writing(os.path.join(L.OUT, 'INDEX.md'))

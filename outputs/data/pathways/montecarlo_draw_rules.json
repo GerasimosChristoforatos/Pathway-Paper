@@ -1,11 +1,11 @@
 {
  "TL1_draw_max_binds_draws": 0,
  "n_draws": 5000,
- "probability_TL_LoE_AR_at_most_1": 0.6114,
+ "probability_TL_LoE_AR_at_most_1": 0.6092,
  "overbuild_cap_binds_draws_moderate_pathway": 0,
  "tl_le_pathway_every_draw": true,
  "reoccupation": {
-  "rule": "constant share s = min(R, G+) / G+ of each year's need after the overbuild payback; re-occupied never ahead of the cumulative release (shortfall built, share recomputed from the remaining pool); R = TL1 + TL2 releases (pathways.reoccupation)",
+  "rule": "constant share s = min(R, G+) / G+ of each year's need after the overbuild payback; re-occupied never ahead of the cumulative release (shortfall built, share recomputed from the remaining pool); R = the releases of L1 and L2 at TL (pathways.reoccupation)",
   "TL": {
    "share_percentiles": {
     "p0": 0.1631365609113877,

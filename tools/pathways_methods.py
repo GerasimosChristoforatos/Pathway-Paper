@@ -165,8 +165,8 @@ def lines():
     rr = q['r']['ambitious']
     B['L8'] = [f"**L8 Material carbon efficiency (sub-rule A).** r(y) = HD q0.15 of the {q['n']} independent detached and "
           'townhouse case ratios x_i(y) = (A1-A3_i,2025 - red13_i(y)) / pooled(y), each case on its own Horup et al. '
-          '(2025) decarbonisation path, every year (MODEL v4.9.0; until v4.8 the pooled path was scaled by the 2025 r, '
-          'so the best cases decarbonised at the pooled mix\'s rate): '
+          '(2025) decarbonisation path, every year (scaling the pooled path by the 2025 r instead would decarbonise the best cases at the '
+          'pooled mix\'s rate): '
           + ', '.join(f"{y} {LV.by_year(rr, y):.4f}" for y in LV.L8_REPORT_YEARS)
           + f" (2025: 95% bootstrap interval {e['ci_lo']:.3f}-{e['ci_hi']:.3f}, computed at 2025 only); Moderate "
           '(1 + r(y))/2; L8 at TL per typology and year = min(own best independent case, r(y)): '
@@ -189,8 +189,7 @@ def lines():
           'definition covers machinery inside the site fence (scope 1); applying it to all site energy assumes that the '
           'electricity and heat used on site are decarbonised too. Moderate: the midpoint (site energy -42.5%). L9 at TL: '
           'A4 and site energy zero, physically attainable (electric machinery and freight exist); site waste persists and '
-          'its material carbon belongs to L8 and L10. Every level on the common 2026-2035 logistic adoption (until v4.9 '
-          'L9 had its own path).', '']
+          'its material carbon belongs to L8 and L10. Every level on the common 2026-2035 logistic adoption.', '']
     q = p['L10']
     B['L10'] = ['**L10 Production decarbonisation (sub-rule C).** The same materials and quantities, made with lower-carbon '
           'production (the supply chain). It multiplies the decarbonised A1-A3 path, with L8: A1-A3_t(y) = r8_t(y) x '
@@ -205,8 +204,9 @@ def lines():
           f"cement, cement plaster; k = 125/850 = {LV.L10_K_CEMENT:.3f}) and steel (k = 400/2,945 = {LV.L10_K_STEEL:.3f}) "
           'q_i = m_a(y) x [(1 - s(y)) + s(y) k], whatever the item\'s S4 mapping; k is the IEA (2022) near-zero '
           'threshold at 100% clinker / 100% iron over the BAT reference value (IEA 2022, p. 17 and p. 22-23 note 8); '
-          's(y), the near-zero share of production, is 0 (2022), 0.08 (2030) and 0.93 (2050), linear, 0 through the '
-          'observed 2026 (IEA Cement tracking, NZE milestones); steel takes the same s (an assumption). The imported '
+          's(y), the near-zero share of production, is ' + ', '.join(f'{v:.2f} ({k})' for k, v in LV.L10_S_MILESTONES.items())
+          + ', linear between the milestones, 0 through the observed 2026 (' + LV.L10_S_SOURCE + '); steel takes the '
+          'same s (an assumption). The imported '
           'elevator of the apartment cases: ' + LV.L10_ELEVATOR_NOTE + '. '
           'm10: ' + '; '.join(f"{t} " + ', '.join(f"{y} {LV.by_year(v, y):.3f}" for y in LV.L10_REPORT_YEARS)
                              for t, v in q['report']['ambitious'].items())
@@ -235,8 +235,8 @@ def lines():
           '2026 overbuild of the Reference (the market excess) is computed once and held fixed in every run '
           f"(the largest difference between runs is {p.get('identity_checks', {}).get('overbuild_excess_max_abs_diff_between_runs', 0.0)} "
           'dwellings). Vacant and released dwellings are re-occupied through a common pool only in runs that release '
-          'dwellings (L1 or L2 at TL); all other runs absorb the starting surplus and overbuild by 2035 (MODEL v4.9.0; until '
-          'v4.8 any lever at its theoretical limit chose the pool, which shifted the timing of building: +84.6 kt with a '
+          'dwellings (L1 or L2 at TL); all other runs absorb the starting surplus and overbuild by 2035 (choosing '
+          'the pool for any lever at its theoretical limit would shift the timing of building: +84.6 kt with a '
           'neutral TL item). In the Reference, the Moderate and Ambitious Pathways and every run without L1 or L2 at TL '
           f"there is no re-occupation pool: the starting surplus ({s0:,.0f} dwellings) and the {obs[0]}-{obs[-1]} "
           f"overbuild are absorbed along the Reference's logistic weights by {absorbed_by} "
@@ -293,7 +293,7 @@ def lines():
 
 
 # ============================================================
-# TABLE 1 (main paper): the ten levers, qualitative (no numbers; MODEL v4.7.2). The text is the author's, one dict;
+# TABLE 1 (main paper): the ten levers, qualitative (no numbers). The text is the author's, one dict;
 # the values are Extended Data Table 1 (LEVERS_TABLE.md, levers_table()).
 # ============================================================
 TABLE1_MAIN_TITLE = 'Table 1 | The ten levers, their levels and sources.'
@@ -337,7 +337,7 @@ TABLE1_MAIN_FOOTNOTES = ('⁸ Prospective backgrounds SSP1/2/5 × none/RCP2.6/RC
                          '¹¹ A4–A5 split into transport, site energy and waste by 61 Danish sites (Kanafani et al. 2023).',
                          '¹² About 85% of Oslo\'s municipal site work with zero-emission machinery in 2024 (City of Oslo '
                          '2025).',
-                         '¹³ IEA (2022) near-zero thresholds for cement and steel; near-zero share 8% (2030), 93% (2050).')
+                         '¹³ IEA (2022) near-zero thresholds for cement and steel; near-zero share ' + LV.L10_S_TEXT + ' (IEA 2023).')
 TABLE1_MAIN_NOTE = (
     'The four levels follow the ambition levels of the UK 2050 Calculator and EUCalc (DECC 2010; Kockat et al. 2019). '
     'The Reference holds current practice; business-as-usual technology change applies in every run. Ambitious is a '

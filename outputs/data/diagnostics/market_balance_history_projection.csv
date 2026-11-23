@@ -41,13 +41,13 @@ history,2018-2023,2019,2023,2021.0,5.761797299999999,Census-benchmarked househol
 history,2018-2023,2019,2023,2021.0,5.761797299999999,Census-benchmarked household counts,False,market_excess,
 history,2018-2023,2019,2023,2021.0,5.761797299999999,Census-benchmarked household counts,False,overbuild_absorbed,
 history,2018-2023,2019,2023,2021.0,5.761797299999999,Census-benchmarked household counts,False,total_built,5.761797299999999
-history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census (MODEL v4.2),False,population_growth,1.3774080625517071
-history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census (MODEL v4.2),False,household_size_change,0.6713338588270505
-history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census (MODEL v4.2),False,net_replacement,0.5112320398013249
-history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census (MODEL v4.2),False,other,2.301830381319917
-history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census (MODEL v4.2),False,market_excess,
-history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census (MODEL v4.2),False,overbuild_absorbed,
-history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census (MODEL v4.2),False,total_built,4.861804342499999
+history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census,False,population_growth,1.3774080625517071
+history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census,False,household_size_change,0.6713338588270505
+history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census,False,net_replacement,0.5112320398013249
+history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census,False,other,2.301830381319917
+history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census,False,market_excess,
+history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census,False,overbuild_absorbed,
+history,2023-2025,2024,2025,2024.5,4.861804342499999,ERP / household-size path after the 2023 census,False,total_built,4.861804342499999
 projection,2026,2026,2026,2026.0,4.334324715,Observed completion pipeline (consents lagged 17 months),,population_growth,1.132499949823877
 projection,2026,2026,2026,2026.0,4.334324715,Observed completion pipeline (consents lagged 17 months),,household_size_change,0.6583631978778416
 projection,2026,2026,2026,2026.0,4.334324715,Observed completion pipeline (consents lagged 17 months),,net_replacement,0.4760700080168867

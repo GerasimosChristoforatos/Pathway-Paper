@@ -1,10 +1,10 @@
 {
   "run_mode": "full",
-  "disclaimer": "TL is a hyper-optimistic theoretical limit; a thought experiment, not a pathway: every lever at Level 4 (the definitional zero or full, or the best single observation), adopted by 2035, combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
-  "bau": "The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 e^(-0.01 (t - 2025)) until TL9 sets A4-A5 to zero).",
+  "disclaimer": "TL is the Theoretical Limit, a thought experiment, not a pathway: every lever at Level 4 (the best value observed, internationally where a comparable measure exists, otherwise in New Zealand, or a documented scenario bound; a logical bound only where physically attainable by choice or design), adopted by 2035 (L10 on its own scenario path, L1 at the census speed limit), combining best observed attributes of different buildings and places; not a proposal or a feasible pathway (potentials hierarchy: theoretical > technical > realisable).",
+  "bau": "The adopted decarbonisation applies in TL as in every run (A1-A3 item paths of Horup et al. 2025; A4-A5 e^(-0.01 (t - 2025)); L9 at TL sets transport and site energy to zero).",
   "definition": {
     "levels": "every lever at Level 4",
-    "adoption": "normalised logistic 2026 -> 2035 (as every level); MODEL v4.0.0: TL1 at the census speed limit (levers.json L1 tl_speed)",
+    "adoption": "normalised logistic 2026 -> 2035 (as every level); L1 at TL at the census speed limit (levers.json L1 tl_speed)",
     "tl1_speed": {
       "rate": 0.011757363709404878,
       "interval": [
@@ -111,7 +111,7 @@
       "TL9": "Zero-emission sites and transport",
       "TL10": "Near-zero cement and steel"
     },
-    "note": "TL6 = 100% brownfield makes TL7 zero within TL"
+    "note": "L6 at TL (100% brownfield) makes L7 at TL zero within TL"
   },
   "strength": [
     {
@@ -581,9 +581,9 @@
         1.041962927306858
       ]
     },
-    "carbon_kt": 5950.774356708862,
-    "LoE_AR": 1.3443115622553052,
-    "LoE_AtP": 5.346776526971648,
+    "carbon_kt": 5963.236894801921,
+    "LoE_AR": 1.3471269158629677,
+    "LoE_AtP": 5.357974129526908,
     "floor_area_Mm2": 35.6873494586367,
     "household_size_2050": 2.591550808804594
   }

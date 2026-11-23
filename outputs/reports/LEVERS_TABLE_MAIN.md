@@ -22,4 +22,4 @@ The four levels follow the ambition levels of the UK 2050 Calculator and EUCalc 
 ¹⁰ England 2008–2009: 80% of new dwellings on previously developed land (DCLG 2010).
 ¹¹ A4–A5 split into transport, site energy and waste by 61 Danish sites (Kanafani et al. 2023).
 ¹² About 85% of Oslo's municipal site work with zero-emission machinery in 2024 (City of Oslo 2025).
-¹³ IEA (2022) near-zero thresholds for cement and steel; near-zero share 8% (2030), 93% (2050).
+¹³ IEA (2022) near-zero thresholds for cement and steel; near-zero share 8% in 2030, 27% in 2035 and 93% in 2050 (IEA 2023).

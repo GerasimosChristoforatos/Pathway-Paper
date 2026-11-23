@@ -55,8 +55,8 @@ Reference 2026–2050: 105.4 Mm² of new residential floor area and 25,503 kt CO
 | Reference | 25,503 | 5.76 | 22.9 | 0.0% |
 | Moderate Pathway | 17,209 | 3.89 | 15.5 | 0.0% |
 | Ambitious Pathway | 11,471 | 2.59 | 10.3 | 0.0% |
-| Theoretical Limit | 4,171 | 0.94 | 3.7 | 61.1% |
-| Theoretical Limit, L1 at TL age-standardised (sensitivity) | 5,951 | 1.34 | 5.3 | 0.0% |
+| Theoretical Limit | 4,177 | 0.94 | 3.8 | 60.9% |
+| Theoretical Limit, L1 at TL age-standardised (sensitivity) | 5,963 | 1.35 | 5.4 | 0.0% |
 
 The Theoretical Limit stays within the AR budget in half of the draws when the 2050 population is 6.69 million. LoE > 1: the budget is exceeded (AR = acquired rights, AtP = ability to pay; 2 °C carrying capacity (Bjørn & Hauschild 2015)).
 

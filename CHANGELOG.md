@@ -2,6 +2,66 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
+## model-v4.10.2: data freeze, IEA 2035 milestone, clean code and docs, publication metadata
+
+The release candidate for model-v5.0.0.
+
+**Numbers.** Only L10 at TL, the TL runs and the games and summaries that contain them change, through the IEA 2035
+milestone (Step B). The Reference, the Moderate and Ambitious Pathways, every other lever and every Reference Monte
+Carlo value are unchanged to the printed digit.
+
+| full profile | v4.10.1 | v4.10.2 |
+|---|---|---|
+| Reference carbon 2026–2050 (kt); LoE AR / AtP | 25,502.8; 5.761 / 22.914 | unchanged |
+| Moderate Pathway | 17,209.3; 3.888 / 15.463 | unchanged |
+| Ambitious Pathway | 11,470.5; 2.591 / 10.306 | unchanged |
+| TL | 4,171.3; 0.942 / 3.748 | 4,177.0; 0.944 / 3.753 |
+| P(LoE AR ≤ 1), TL (Monte Carlo) | 61.14% | 60.92% |
+| TL: 2050 population at which P = 50% | 6.694 M | 6.693 M |
+| Committed after 2050, TL (kt) | 1,750.6–2,240.8 | unchanged (s(2050) unchanged) |
+| L10 at TL alone (kt) | 21,712.8 | 21,778.1 |
+| LoE 2028–2050, TL (AR / AtP) | 0.419 / 1.665 | 0.420 / 1.671 |
+| Single-lever overlap, TL | 52.28% (44,700.8 vs 21,331.5 kt) | 52.22% (44,635.5 vs 21,325.8 kt) |
+| Shapley share of L10, levers at TL | 7.98% | 7.85% |
+| Shapley share of L10 at TL, TL from the Moderate Pathway | 9.06% | 8.90% |
+
+The Moderate and Ambitious overlap (14.90%, 27.84%) and the 2028–2050 LoE of the Reference and the Pathways are
+unchanged.
+
+### Step A: clean code, tests and documentation (numbers byte-identical)
+* Gate A: every file of `outputs/data/` byte-identical to v4.10.1 except text-only fields: the sensitivity row
+  labels "Completion rate 0.95", "Completion lag 0 months (same calendar year)", "Overbuild never absorbed" and
+  "2026 overbuild never absorbed" (without their version notes) and "Gap measured against the same-year requirement"
+  (it read "...the 2026 requirement", wrong at the 17-month lag: the variant uses the requirement of the last observed
+  year, 2027); the TL waterfall step labels ("+ L1 at TL: ..."); the TL disclaimer and notes of
+  `pathways/theoretical_limit.json`; basis texts of `sensitivity/reference_carbon.csv` and `pathway_carbon.csv`; one
+  data-basis label of `diagnostics/market_balance_history_projection.csv`; three keys of
+  `aesa/results.json/one_at_a_time_ar_base` renamed with the rows (values identical).
+* Removed: unused constants and functions in 13 modules, the release-zip reader of `data/build_consents.py` (no zip
+  source exists), `figures/paper_main.reduction_by_band` (drawn by no figure) and the 2026-based overbuild sentence of
+  the methods draft (no reported run uses it). Version history in comments is replaced by present-tense statements.
+* The overbuild gap label: building 2027 − requirement 2028 (`tools/metrics.py`).
+* User-facing names "Lx at TL" (assumption register, waterfall labels, SF10 legend, INDEX.md). The TL disclaimer
+  states the TL rule.
+* Tests: the regression lock is `tests/test_regression_model.py` (`tests/regression_lock.json`); the version-named
+  test files are renamed by topic; the figure-redraw test draws into a temporary folder, so `git status` stays clean
+  after `pytest` in both profiles. 263 tests (one removed with `reduction_by_band`, one added for the freeze).
+* README in six sections; ARCHITECTURE is the module map and data flow; the OECD vacancy data are listed with the
+  third-party data.
+* `.zenodo.json` (software, 4.10.2, ORCID, affiliation, MIT; the paper DOI a placeholder), `LICENSE-DATA` (CC BY 4.0
+  for `outputs/` and `data/derived/`), CITATION.cff 4.10.2 with ORCID and affiliation.
+
+### Step B: data freeze and the IEA 2035 milestone
+* `L10_S_MILESTONES = {2022: 0, 2030: 0.08, 2035: 0.27, 2050: 0.93}`: IEA (2023) Net Zero Roadmap, 2023 update,
+  Cement, near-zero emission clinker production share (verified). The 2035 value lies below the former straight line
+  2030–2050 (0.2925), so s(y) is lower in 2031–2049 and L10 at TL reduces slightly less.
+* One data-freeze sentence, generated from the data files, in METHODS and README: data frozen on 22 November 2026;
+  consents to September 2026; population estimates to the June 2026 quarter; Stats NZ 2023-base household
+  projections; Dwelling and household estimates to the March 2026 quarter on the 2018 Census base (limitation kept).
+
+**Checks:** full run 30 min 53 s; 263 tests pass in both profiles; palette coverage 0 findings; figure integrity,
+`check_outputs` and `lever_audit.md` (all checks) pass; the regression lock re-captured from both profiles.
+
 ## model-v4.10.1: manuscript numbering
 
 **Numbers unchanged.** No model run was made.

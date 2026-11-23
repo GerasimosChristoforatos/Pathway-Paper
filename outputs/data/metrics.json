@@ -120,14 +120,14 @@
         "carbon_kt": 22981.91720271086
       },
       "tl": {
-        "LoE_AR": 0.41864707830673564,
-        "LoE_AtP": 1.6650993967651435,
-        "carbon_kt": 1708.7089214329317
+        "LoE_AR": 0.42004104297783784,
+        "LoE_AtP": 1.6706436603065302,
+        "carbon_kt": 1714.3983911392734
       },
       "tl_tl1_age_standardised": {
-        "LoE_AR": 0.8546266477786092,
-        "LoE_AtP": 3.3991359056683605,
-        "carbon_kt": 3488.160441630232
+        "LoE_AR": 0.8576800672905588,
+        "LoE_AtP": 3.4112803759175785,
+        "carbon_kt": 3500.6229797232913
       },
       "years": "2028-2050"
     },
@@ -155,23 +155,23 @@
         "sum_single_lever_reductions_kt": 9745.19965505887
       },
       "tl": {
-        "combined_reduction_kt": 21331.497958801243,
-        "overlap_pct": 52.27937811574027,
-        "sum_single_lever_reductions_kt": 44700.79625227447
+        "combined_reduction_kt": 21325.808489094903,
+        "overlap_pct": 52.222344030614586,
+        "sum_single_lever_reductions_kt": 44635.52691400325
       }
     },
     "tl": {
-      "LoE_AR": 0.942324004051702,
-      "LoE_AtP": 3.747937611436469,
-      "P_LoE_AR_at_most_1": 0.6114,
-      "carbon_kt": 4171.32283651156
+      "LoE_AR": 0.9436092855043108,
+      "LoE_AtP": 3.7530496054818303,
+      "P_LoE_AR_at_most_1": 0.6092,
+      "carbon_kt": 4177.012306217902
     },
-    "tl_threshold_P_NZ_2050": 6694313.947971166,
+    "tl_threshold_P_NZ_2050": 6692709.704573074,
     "tl_tl1_age_standardised": {
-      "LoE_AR": 1.3443115622553052,
-      "LoE_AtP": 5.346776526971648,
+      "LoE_AR": 1.3471269158629675,
+      "LoE_AtP": 5.357974129526908,
       "P_LoE_AR_at_most_1": 0.0004,
-      "carbon_kt": 5950.774356708862
+      "carbon_kt": 5963.236894801921
     }
   },
   "projection": {

@@ -39,26 +39,26 @@ L10 Production decarbonisation,C,Detached,m 2030 (A1-A3 production multiplier; a
 L10 Production decarbonisation,C,Detached,m 2040 (A1-A3 production multiplier; archetype Single family houses),0.968452552193804,0.936905104387608,0.936905104387608
 L10 Production decarbonisation,C,Detached,m 2050 (A1-A3 production multiplier; archetype Single family houses),0.9572455227100878,0.9144910454201756,0.9144910454201756
 L10 Production decarbonisation,C,Detached,"class factor c 2030, cement-based classes (k = 0.147, s = 0.08)",1.0,1.0,0.9317647058823529
-L10 Production decarbonisation,C,Detached,"class factor c 2040, cement-based classes (k = 0.147, s = 0.51)",1.0,1.0,0.5692647058823529
+L10 Production decarbonisation,C,Detached,"class factor c 2040, cement-based classes (k = 0.147, s = 0.49)",1.0,1.0,0.5820588235294117
 L10 Production decarbonisation,C,Detached,"class factor c 2050, cement-based classes (k = 0.147, s = 0.93)",1.0,1.0,0.2067647058823529
 L10 Production decarbonisation,C,Detached,"class factor c 2030, steel classes (k = 0.136, s = 0.08)",1.0,1.0,0.9308658743633277
-L10 Production decarbonisation,C,Detached,"class factor c 2040, steel classes (k = 0.136, s = 0.51)",1.0,1.0,0.5635908319185059
+L10 Production decarbonisation,C,Detached,"class factor c 2040, steel classes (k = 0.136, s = 0.49)",1.0,1.0,0.576553480475382
 L10 Production decarbonisation,C,Detached,"class factor c 2050, steel classes (k = 0.136, s = 0.93)",1.0,1.0,0.19631578947368417
 L10 Production decarbonisation,C,Townhouses,m 2030 (A1-A3 production multiplier; archetype Single family houses),0.9832882487899335,0.9665764975798671,0.9665764975798671
 L10 Production decarbonisation,C,Townhouses,m 2040 (A1-A3 production multiplier; archetype Single family houses),0.968452552193804,0.936905104387608,0.936905104387608
 L10 Production decarbonisation,C,Townhouses,m 2050 (A1-A3 production multiplier; archetype Single family houses),0.9572455227100878,0.9144910454201756,0.9144910454201756
 L10 Production decarbonisation,C,Townhouses,"class factor c 2030, cement-based classes (k = 0.147, s = 0.08)",1.0,1.0,0.9317647058823529
-L10 Production decarbonisation,C,Townhouses,"class factor c 2040, cement-based classes (k = 0.147, s = 0.51)",1.0,1.0,0.5692647058823529
+L10 Production decarbonisation,C,Townhouses,"class factor c 2040, cement-based classes (k = 0.147, s = 0.49)",1.0,1.0,0.5820588235294117
 L10 Production decarbonisation,C,Townhouses,"class factor c 2050, cement-based classes (k = 0.147, s = 0.93)",1.0,1.0,0.2067647058823529
 L10 Production decarbonisation,C,Townhouses,"class factor c 2030, steel classes (k = 0.136, s = 0.08)",1.0,1.0,0.9308658743633277
-L10 Production decarbonisation,C,Townhouses,"class factor c 2040, steel classes (k = 0.136, s = 0.51)",1.0,1.0,0.5635908319185059
+L10 Production decarbonisation,C,Townhouses,"class factor c 2040, steel classes (k = 0.136, s = 0.49)",1.0,1.0,0.576553480475382
 L10 Production decarbonisation,C,Townhouses,"class factor c 2050, steel classes (k = 0.136, s = 0.93)",1.0,1.0,0.19631578947368417
 L10 Production decarbonisation,C,Apartments,m 2030 (A1-A3 production multiplier; archetype Multi dwellings),0.978086174672916,0.9561723493458321,0.9561723493458321
 L10 Production decarbonisation,C,Apartments,m 2040 (A1-A3 production multiplier; archetype Multi dwellings),0.951424863998314,0.9028497279966281,0.9028497279966281
 L10 Production decarbonisation,C,Apartments,m 2050 (A1-A3 production multiplier; archetype Multi dwellings),0.9327981835309336,0.865596367061867,0.865596367061867
 L10 Production decarbonisation,C,Apartments,"class factor c 2030, cement-based classes (k = 0.147, s = 0.08)",1.0,1.0,0.9317647058823529
-L10 Production decarbonisation,C,Apartments,"class factor c 2040, cement-based classes (k = 0.147, s = 0.51)",1.0,1.0,0.5692647058823529
+L10 Production decarbonisation,C,Apartments,"class factor c 2040, cement-based classes (k = 0.147, s = 0.49)",1.0,1.0,0.5820588235294117
 L10 Production decarbonisation,C,Apartments,"class factor c 2050, cement-based classes (k = 0.147, s = 0.93)",1.0,1.0,0.2067647058823529
 L10 Production decarbonisation,C,Apartments,"class factor c 2030, steel classes (k = 0.136, s = 0.08)",1.0,1.0,0.9308658743633277
-L10 Production decarbonisation,C,Apartments,"class factor c 2040, steel classes (k = 0.136, s = 0.51)",1.0,1.0,0.5635908319185059
+L10 Production decarbonisation,C,Apartments,"class factor c 2040, steel classes (k = 0.136, s = 0.49)",1.0,1.0,0.576553480475382
 L10 Production decarbonisation,C,Apartments,"class factor c 2050, steel classes (k = 0.136, s = 0.93)",1.0,1.0,0.19631578947368417

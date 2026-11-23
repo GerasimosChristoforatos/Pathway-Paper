@@ -118,7 +118,7 @@
     ],
     "rate_2026": 0.0016448000314531752,
     "rate_2050": 0.0031022110317664997,
-    "method": "weighted least squares of the census-interval net replacement rates on the mean of each interval's model years (y0+1 .. y1), weights = interval length; Very High replacement = a + b year (MODEL v3.3.0)"
+    "method": "weighted least squares of the census-interval net replacement rates on the mean of each interval's model years (y0+1 .. y1), weights = interval length; Very High replacement = a + b year"
   },
   "bands_in_scope": [
     {

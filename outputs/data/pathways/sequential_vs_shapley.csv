@@ -9,16 +9,16 @@ moderate,levers from the Reference,L7,Soil-aware planning,S2,levers_moderate,123
 moderate,levers from the Reference,L8,Material carbon efficiency,S2,levers_moderate,826.3979724793244,960.1180223180028,-133.7200498386784,8
 moderate,levers from the Reference,L9,Construction-stage carbon,S3,levers_moderate,306.7155488868557,361.8679491138053,-55.152400226949624,9
 moderate,levers from the Reference,L10,Production decarbonisation,S3,levers_moderate,326.5927135319216,398.2834378181743,-71.6907242862527,10
-moderate,TL from the Pathway,TL1,Historical maximum household size,,tl_from_moderate_pathway,6593.169273628597,4243.445855618546,2349.7234180100504,11
-moderate,TL from the Pathway,TL2,Lowest vacancy (Switzerland),,tl_from_moderate_pathway,2133.688793065752,1315.213236252413,818.4755568133392,12
-moderate,TL from the Pathway,TL3,No demolition,,tl_from_moderate_pathway,1529.0117780467244,979.1048857140344,549.9068923326901,13
-moderate,TL from the Pathway,TL4,No extra space,,tl_from_moderate_pathway,1135.3202221243664,2011.708525883266,-876.3883037588996,14
-moderate,TL from the Pathway,TL5,Densest design,,tl_from_moderate_pathway,435.7170259412942,892.7537162698558,-457.0366903285616,15
-moderate,TL from the Pathway,TL6,England's peak brownfield share,,tl_from_moderate_pathway,193.7721779750509,469.9468716732384,-276.17469369818747,16
-moderate,TL from the Pathway,TL7,Lowest-carbon soils,,tl_from_moderate_pathway,54.49598034403698,321.5192503847289,-267.0232700406919,17
-moderate,TL from the Pathway,TL8,Best-practice materials,,tl_from_moderate_pathway,424.5349963589597,1132.2622494677087,-707.727253108749,18
+moderate,TL from the Pathway,TL1,Historical maximum household size,,tl_from_moderate_pathway,6593.169273628597,4249.573489198322,2343.5957844302748,11
+moderate,TL from the Pathway,TL2,Lowest vacancy (Switzerland),,tl_from_moderate_pathway,2133.688793065752,1317.3276959198372,816.361097145915,12
+moderate,TL from the Pathway,TL3,No demolition,,tl_from_moderate_pathway,1529.0117780467244,980.7816402069245,548.2301378397999,13
+moderate,TL from the Pathway,TL4,No extra space,,tl_from_moderate_pathway,1135.3202221243664,2014.8594965650796,-879.5392744407131,14
+moderate,TL from the Pathway,TL5,Densest design,,tl_from_moderate_pathway,435.7170259412942,894.1270071460355,-458.40998120474126,15
+moderate,TL from the Pathway,TL6,England's peak brownfield share,,tl_from_moderate_pathway,193.7721779750509,469.94687167323855,-276.17469369818764,16
+moderate,TL from the Pathway,TL7,Lowest-carbon soils,,tl_from_moderate_pathway,54.49598034403698,321.5192503847288,-267.02327004069184,17
+moderate,TL from the Pathway,TL8,Best-practice materials,,tl_from_moderate_pathway,424.5349963589597,1134.5320434654523,-709.9970471064926,18
 moderate,TL from the Pathway,TL9,Zero-emission sites and transport,,tl_from_moderate_pathway,166.4310310147439,490.2541714849016,-323.8231404701577,19
-moderate,TL from the Pathway,TL10,Near-zero cement and steel,,tl_from_moderate_pathway,371.84992054920986,1181.782436300042,-809.9325157508322,20
+moderate,TL from the Pathway,TL10,Near-zero cement and steel,,tl_from_moderate_pathway,366.16045084286816,1159.380063297874,-793.2196124550057,20
 ambitious,levers from the Reference,L1,Household size,S1,levers_ambitious,4771.747025709938,3594.856878410334,1176.8901472996035,1
 ambitious,levers from the Reference,L2,Vacancy rate,S1,levers_ambitious,1391.385492985024,1172.131166400385,219.2543265846391,2
 ambitious,levers from the Reference,L3,Building lifetime,S1,levers_ambitious,931.3262139188955,766.5539639560928,164.77224996280268,3
@@ -38,4 +38,4 @@ ambitious,TL from the Pathway,TL6,England's peak brownfield share,,,81.975361134
 ambitious,TL from the Pathway,TL7,Lowest-carbon soils,,,46.02585979263222,,,17
 ambitious,TL from the Pathway,TL8,Best-practice materials,,,272.89556227275534,,,18
 ambitious,TL from the Pathway,TL9,Zero-emission sites and transport,,,111.72415269904104,,,19
-ambitious,TL from the Pathway,TL10,Near-zero cement and steel,,,317.75075451554494,,,20
+ambitious,TL from the Pathway,TL10,Near-zero cement and steel,,,312.06128480920324,,,20

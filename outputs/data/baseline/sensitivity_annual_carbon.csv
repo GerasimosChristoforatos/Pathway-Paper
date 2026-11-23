@@ -424,56 +424,56 @@ Stock,Completion rate 0.96,2047,897.2166603743666
 Stock,Completion rate 0.96,2048,898.5704307368343
 Stock,Completion rate 0.96,2049,895.3913575882304
 Stock,Completion rate 0.96,2050,886.4684004895678
-Stock,Completion rate 0.95 (MODEL v3.3),2026,1168.7439069875502
-Stock,Completion rate 0.95 (MODEL v3.3),2027,1363.4642428108452
-Stock,Completion rate 0.95 (MODEL v3.3),2028,1237.5244883257872
-Stock,Completion rate 0.95 (MODEL v3.3),2029,1132.1779253008108
-Stock,Completion rate 0.95 (MODEL v3.3),2030,1031.5013428484579
-Stock,Completion rate 0.95 (MODEL v3.3),2031,955.2214161950604
-Stock,Completion rate 0.95 (MODEL v3.3),2032,943.6818880566714
-Stock,Completion rate 0.95 (MODEL v3.3),2033,1000.9381751197366
-Stock,Completion rate 0.95 (MODEL v3.3),2034,1064.8039175402666
-Stock,Completion rate 0.95 (MODEL v3.3),2035,1103.5292217633234
-Stock,Completion rate 0.95 (MODEL v3.3),2036,1134.6938597473095
-Stock,Completion rate 0.95 (MODEL v3.3),2037,1106.4886699074818
-Stock,Completion rate 0.95 (MODEL v3.3),2038,1073.5428529020833
-Stock,Completion rate 0.95 (MODEL v3.3),2039,1045.7114416435345
-Stock,Completion rate 0.95 (MODEL v3.3),2040,1031.356357337841
-Stock,Completion rate 0.95 (MODEL v3.3),2041,1013.6385761938227
-Stock,Completion rate 0.95 (MODEL v3.3),2042,992.2223293839942
-Stock,Completion rate 0.95 (MODEL v3.3),2043,971.2708372007758
-Stock,Completion rate 0.95 (MODEL v3.3),2044,940.3838409810901
-Stock,Completion rate 0.95 (MODEL v3.3),2045,913.0667218683802
-Stock,Completion rate 0.95 (MODEL v3.3),2046,892.3984118831255
-Stock,Completion rate 0.95 (MODEL v3.3),2047,885.817484177808
-Stock,Completion rate 0.95 (MODEL v3.3),2048,887.1510489269909
-Stock,Completion rate 0.95 (MODEL v3.3),2049,883.9914923626294
-Stock,Completion rate 0.95 (MODEL v3.3),2050,875.0969388592767
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2026,1360.3869803904138
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2027,1278.0914552368492
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2028,1224.3798483043402
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2029,1167.782228057613
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2030,1119.2242506013204
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2031,1095.7232772097807
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2032,1098.4050135582872
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2033,1123.1445501445737
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2034,1138.6747120215139
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2035,1145.1748579699322
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2036,1147.8515376995258
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2037,1119.1310842082157
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2038,1085.9902246893737
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2039,1057.5417729844858
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2040,1043.4108677833872
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2041,1023.3119717668947
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2042,1001.0698706530902
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2043,980.3091219751606
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2044,948.873149087305
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2045,921.1153364362826
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2046,900.7860690280423
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2047,895.0601099764236
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2048,894.9602649279203
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2049,889.9719207731288
-Completion lag,"Completion lag 0 months (same calendar year, MODEL v3.3)",2050,880.3582190736747
+Stock,Completion rate 0.95,2026,1168.7439069875502
+Stock,Completion rate 0.95,2027,1363.4642428108452
+Stock,Completion rate 0.95,2028,1237.5244883257872
+Stock,Completion rate 0.95,2029,1132.1779253008108
+Stock,Completion rate 0.95,2030,1031.5013428484579
+Stock,Completion rate 0.95,2031,955.2214161950604
+Stock,Completion rate 0.95,2032,943.6818880566714
+Stock,Completion rate 0.95,2033,1000.9381751197366
+Stock,Completion rate 0.95,2034,1064.8039175402666
+Stock,Completion rate 0.95,2035,1103.5292217633234
+Stock,Completion rate 0.95,2036,1134.6938597473095
+Stock,Completion rate 0.95,2037,1106.4886699074818
+Stock,Completion rate 0.95,2038,1073.5428529020833
+Stock,Completion rate 0.95,2039,1045.7114416435345
+Stock,Completion rate 0.95,2040,1031.356357337841
+Stock,Completion rate 0.95,2041,1013.6385761938227
+Stock,Completion rate 0.95,2042,992.2223293839942
+Stock,Completion rate 0.95,2043,971.2708372007758
+Stock,Completion rate 0.95,2044,940.3838409810901
+Stock,Completion rate 0.95,2045,913.0667218683802
+Stock,Completion rate 0.95,2046,892.3984118831255
+Stock,Completion rate 0.95,2047,885.817484177808
+Stock,Completion rate 0.95,2048,887.1510489269909
+Stock,Completion rate 0.95,2049,883.9914923626294
+Stock,Completion rate 0.95,2050,875.0969388592767
+Completion lag,Completion lag 0 months (same calendar year),2026,1360.3869803904138
+Completion lag,Completion lag 0 months (same calendar year),2027,1278.0914552368492
+Completion lag,Completion lag 0 months (same calendar year),2028,1224.3798483043402
+Completion lag,Completion lag 0 months (same calendar year),2029,1167.782228057613
+Completion lag,Completion lag 0 months (same calendar year),2030,1119.2242506013204
+Completion lag,Completion lag 0 months (same calendar year),2031,1095.7232772097807
+Completion lag,Completion lag 0 months (same calendar year),2032,1098.4050135582872
+Completion lag,Completion lag 0 months (same calendar year),2033,1123.1445501445737
+Completion lag,Completion lag 0 months (same calendar year),2034,1138.6747120215139
+Completion lag,Completion lag 0 months (same calendar year),2035,1145.1748579699322
+Completion lag,Completion lag 0 months (same calendar year),2036,1147.8515376995258
+Completion lag,Completion lag 0 months (same calendar year),2037,1119.1310842082157
+Completion lag,Completion lag 0 months (same calendar year),2038,1085.9902246893737
+Completion lag,Completion lag 0 months (same calendar year),2039,1057.5417729844858
+Completion lag,Completion lag 0 months (same calendar year),2040,1043.4108677833872
+Completion lag,Completion lag 0 months (same calendar year),2041,1023.3119717668947
+Completion lag,Completion lag 0 months (same calendar year),2042,1001.0698706530902
+Completion lag,Completion lag 0 months (same calendar year),2043,980.3091219751606
+Completion lag,Completion lag 0 months (same calendar year),2044,948.873149087305
+Completion lag,Completion lag 0 months (same calendar year),2045,921.1153364362826
+Completion lag,Completion lag 0 months (same calendar year),2046,900.7860690280423
+Completion lag,Completion lag 0 months (same calendar year),2047,895.0601099764236
+Completion lag,Completion lag 0 months (same calendar year),2048,894.9602649279203
+Completion lag,Completion lag 0 months (same calendar year),2049,889.9719207731288
+Completion lag,Completion lag 0 months (same calendar year),2050,880.3582190736747
 Completion lag,Completion lag 15 months,2026,1214.6245108774758
 Completion lag,Completion lag 15 months,2027,1350.9069213044236
 Completion lag,Completion lag 15 months,2028,1257.717002391334
@@ -574,31 +574,31 @@ Stock,No census under-construction correction,2047,880.1178240157296
 Stock,No census under-construction correction,2048,881.4412244338972
 Stock,No census under-construction correction,2049,878.2914995758533
 Stock,No census under-construction correction,2050,869.411242641489
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2026,1163.5983692521309
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2027,1357.3052233498079
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2028,1285.4098049881782
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2029,1236.7877852962165
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2030,1214.7166523223027
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2031,1204.8830318595071
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2032,1191.359858814332
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2033,1180.037215211748
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2034,1165.6770909023605
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2035,1151.5023886827066
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2036,1129.9664430556702
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2037,1102.4557350312764
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2038,1070.167749204985
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2039,1042.4442708333172
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2040,1027.5452091717025
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2041,1009.1230739118525
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2042,987.5359596386402
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2043,966.5891160560643
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2044,936.5245496279423
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2045,910.4599366535239
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2046,890.6627738942641
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2047,884.4206744311871
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2048,885.5016478503935
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2049,881.7791596828382
-2026 overbuild: absorption,Overbuild never absorbed (MODEL v2.1 Reference),2050,872.0956149850189
+2026 overbuild: absorption,Overbuild never absorbed,2026,1163.5983692521309
+2026 overbuild: absorption,Overbuild never absorbed,2027,1357.3052233498079
+2026 overbuild: absorption,Overbuild never absorbed,2028,1285.4098049881782
+2026 overbuild: absorption,Overbuild never absorbed,2029,1236.7877852962165
+2026 overbuild: absorption,Overbuild never absorbed,2030,1214.7166523223027
+2026 overbuild: absorption,Overbuild never absorbed,2031,1204.8830318595071
+2026 overbuild: absorption,Overbuild never absorbed,2032,1191.359858814332
+2026 overbuild: absorption,Overbuild never absorbed,2033,1180.037215211748
+2026 overbuild: absorption,Overbuild never absorbed,2034,1165.6770909023605
+2026 overbuild: absorption,Overbuild never absorbed,2035,1151.5023886827066
+2026 overbuild: absorption,Overbuild never absorbed,2036,1129.9664430556702
+2026 overbuild: absorption,Overbuild never absorbed,2037,1102.4557350312764
+2026 overbuild: absorption,Overbuild never absorbed,2038,1070.167749204985
+2026 overbuild: absorption,Overbuild never absorbed,2039,1042.4442708333172
+2026 overbuild: absorption,Overbuild never absorbed,2040,1027.5452091717025
+2026 overbuild: absorption,Overbuild never absorbed,2041,1009.1230739118525
+2026 overbuild: absorption,Overbuild never absorbed,2042,987.5359596386402
+2026 overbuild: absorption,Overbuild never absorbed,2043,966.5891160560643
+2026 overbuild: absorption,Overbuild never absorbed,2044,936.5245496279423
+2026 overbuild: absorption,Overbuild never absorbed,2045,910.4599366535239
+2026 overbuild: absorption,Overbuild never absorbed,2046,890.6627738942641
+2026 overbuild: absorption,Overbuild never absorbed,2047,884.4206744311871
+2026 overbuild: absorption,Overbuild never absorbed,2048,885.5016478503935
+2026 overbuild: absorption,Overbuild never absorbed,2049,881.7791596828382
+2026 overbuild: absorption,Overbuild never absorbed,2050,872.0956149850189
 2026 overbuild: absorption,Overbuild absorbed by 2030,2026,1163.5983692521309
 2026 overbuild: absorption,Overbuild absorbed by 2030,2027,1357.3052233498079
 2026 overbuild: absorption,Overbuild absorbed by 2030,2028,1007.8747020279985
@@ -749,31 +749,31 @@ Starting surplus,Starting surplus minus 2 SD,2047,881.6209779552755
 Starting surplus,Starting surplus minus 2 SD,2048,882.8587860019655
 Starting surplus,Starting surplus minus 2 SD,2049,879.5140482768347
 Starting surplus,Starting surplus minus 2 SD,2050,870.3539905864844
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2026,1163.5983692521309
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2027,1357.3052233498079
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2028,1240.6482223585647
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2029,1128.5981190430011
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2030,1024.4349964444739
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2031,946.246232533563
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2032,934.3868208629253
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2033,992.4863706817896
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2034,1057.4580965453822
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2035,1097.0450891282696
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2036,1128.9648961553391
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2037,1100.754526820137
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2038,1067.818384507848
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2039,1040.0113810146886
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2040,1025.6577251613041
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2041,1007.9432198285243
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2042,986.5826604153674
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2043,965.5896008078839
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2044,934.7042887582229
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2045,907.416734179031
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2046,886.6961444755311
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2047,880.073370780395
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2048,881.3893461375941
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2049,878.2969595541504
-2026 overbuild: rule variant,Gap measured against the 2026 requirement,2050,869.4362134253045
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2026,1163.5983692521309
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2027,1357.3052233498079
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2028,1240.6482223585647
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2029,1128.5981190430011
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2030,1024.4349964444739
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2031,946.246232533563
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2032,934.3868208629253
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2033,992.4863706817896
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2034,1057.4580965453822
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2035,1097.0450891282696
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2036,1128.9648961553391
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2037,1100.754526820137
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2038,1067.818384507848
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2039,1040.0113810146886
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2040,1025.6577251613041
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2041,1007.9432198285243
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2042,986.5826604153674
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2043,965.5896008078839
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2044,934.7042887582229
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2045,907.416734179031
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2046,886.6961444755311
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2047,880.073370780395
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2048,881.3893461375941
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2049,878.2969595541504
+2026 overbuild: rule variant,Gap measured against the same-year requirement,2050,869.4362134253045
 Carbon factors,"Soil on all floor area, incl. replacement",2026,1183.1879140578164
 Carbon factors,"Soil on all floor area, incl. replacement",2027,1376.4611641618692
 Carbon factors,"Soil on all floor area, incl. replacement",2028,1249.697666889961

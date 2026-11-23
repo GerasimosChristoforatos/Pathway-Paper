@@ -13,7 +13,7 @@ Reference: net replacement fading from the 2018-2023 rate to the long-run rate (
 | Household size 2050, Reference | 2.464 |
 | Retirement-village floor area 2026-2050, out of scope (Mm2) | 5.73 |
 | 2026 overbuild: 2026 building above requirement (dwellings) | +6,225 |
-| 2026 overbuild: gap_ref (building 2026 - requirement 2027) | +5,013 |
+| 2026 overbuild: gap_ref (building 2027 - requirement 2028, the last observed year and the next) | +5,013 |
 | 2026 overbuild: net dwellings added 2026-2050 | -18,966 |
 | MC floor area p5 (Mm2) | 88.47 |
 | MC floor area p50 (Mm2) | 105.43 |
@@ -123,7 +123,7 @@ Sum of carbon over the sum of the budgets, 2028-2050 (pathways/annual.csv, scena
 | Reference | 22,982 | 5.631 | 22.395 |
 | Moderate Pathway | 14,701 | 3.602 | 14.326 |
 | Ambitious Pathway | 8,975 | 2.199 | 8.746 |
-| Theoretical Limit | 1,709 | 0.419 | 1.665 |
+| Theoretical Limit | 1,714 | 0.420 | 1.671 |
 
 ## Single-lever reductions against the combined reduction (2026-2050)
 
@@ -133,4 +133,4 @@ The sum of the ten levers alone (Reference - Ln run) against the reduction of al
 |---|---|---|---|
 | Ambitious | 19,445 | 14,032 | 27.8% |
 | Moderate | 9,745 | 8,294 | 14.9% |
-| TL | 44,701 | 21,331 | 52.3% |
+| TL | 44,636 | 21,326 | 52.2% |

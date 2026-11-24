@@ -99,6 +99,10 @@ and the Ambitious Pathway; every lever at TL forms the TL, a thought experiment,
 
 * **TL rule** (`levers.TL_RULE`): the best value observed, internationally where a comparable measure exists, otherwise
   in New Zealand, or a documented scenario bound; a logical bound only where physically attainable by choice or design.
+* **L1 at TL** (household size): the lowest observed census household formation (households per person) of each age
+  group, 2013-2023 Censuses (CEN23_FHH_036, CEN23_FHH_041), or the Stats NZ propensity-B rate where lower, on the
+  projected age structure, as a ratio to the 2023 census rates (`household_headship.py`). L1 at TL releases no
+  dwellings (households never fall), so the re-occupation pool applies only in runs where L2 at TL releases them.
 * **Adoption:** every level, TL included, follows the common normalised logistic 2026 → 2035. Two stated exceptions:
   L10 follows its own scenario path, and L1 at TL rises no faster than the fastest observed census-interval change of
   household size.
@@ -130,6 +134,7 @@ workbook was supplied with the project, and its provenance is what the file itse
 | `data/histpopdata.xlsx` | Stats NZ, "Population summary figures", New Zealand, 1991–2025 (estimated resident population at 31 December; title stated in the file) | Table 1 (sheet "Table 1") | not recorded (supplied with the project; no MANIFEST row) | Supplied |
 | `data/popdata.xlsx` | Stats NZ, *National population projections: 2024(base)–2078*, published 4 June 2025 (stated in the file), Table 1 | Table 1 (sheets "Table 1", "Population_Sheet") | not recorded (supplied with the project; no MANIFEST row) | Supplied |
 | `data/derived/households_proj_2023base.csv` (people in households, households and S = people / households at 2023, 2028, ..., 2048; Low / Medium / High x propensity A / B) | Stats NZ, *National family and household projections, population by living arrangement type, age, and sex, 2023(base)–2048* (`STATSNZ:POPPR_FHH_008(1.0)`, people in households) and *National household projections, by household type, 2023(base)–2048* (`STATSNZ:POPPR_FHH_010(1.0)`), Aotearoa Data Explorer CSV; DataInfo+ <https://datainfoplus.stats.govt.nz/item/nz.govt.stats/e7475c01-9e55-491d-a8fe-74efa8fba757> | FHH_008: living arrangement `LAT` (total people), sex 3, age `TOTALALLAGES`; FHH_010: measure `HH` (total households; the published AHS, rounded to 0.1, is not used) | supplied by the author 2026-11-11 (see MANIFEST) | Raw → script (`data/build_households_2023.py`); STOP unless family + one-person + other multi-person households = total within 100 (Stats NZ rounding) |
+| `data/derived/census_living_arrangements.csv`, `census_household_targets.csv`, `census_one_person_share.csv`, `erp_age_groups.csv` (L1 at TL: census living arrangements by age and stated households, 2013/2018/2023; ERP age shares 1991-2025) | Stats NZ Aotearoa Data Explorer: CEN23_FHH_036 (role in family nucleus by age), CEN23_FHH_018 (people by household composition and age), CEN23_FHH_041 (households by composition), CEN13_FHH_026/030/031 (2001-2013); Stats NZ Infoshare DPE058AA (ERP by single year of age, 31 December) | national rows; data/raw/census_living_arrangements/, data/raw/DPE058AA.csv | supplied by the author 2026-11-24 (see MANIFEST) | Raw → script (`data/build_census_headship.py`); STOP unless the national geographies agree and every subtotal adds up |
 | `data/oldhouseholddata.xlsx` | Stats NZ, *Dwelling and household estimates: March 2026 quarter*, published 7 April 2026 (stated in the file) | Tables 1–2: private dwelling and household estimates by tenure (Infoshare group DDE, stated in the file) | not recorded (supplied with the project; no MANIFEST row) | Supplied |
 | `data/occ-unocc-2013.xlsx` | Stats NZ, *2013 Census QuickStats about housing* (corrected 30 April 2014, stated in the file) | Table 1: occupied, unoccupied and under-construction dwellings, 1981–2013 Censuses (Tables 2–5 not used) | not recorded (supplied with the project; no MANIFEST row) | Supplied |
 | `data/derived/census_dwellings.csv` (2018, 2023 census occupancy, private dwellings) | Stats NZ Aotearoa Data Explorer, `STATSNZ:CEN23_HOU_018(1.0)` "Dwelling occupancy status and dwelling type for dwellings, (RC, TALB, SA2, Health), 2013, 2018, and 2023 Censuses" (table last updated 2024-07-24), xlsx filtered to the Total – New Zealand rows; cross-check `STATSNZ:CEN23_TBT_001(1.0)` (unfiltered SDMX-CSV, last updated 2024-09-05) | occupancy status × dwelling type | downloaded by the author 2026-09-29 (see MANIFEST) | Raw → script (`data/build_census.py`); 21 cross-checks within ±3 (random rounding). Private dwellings only: the all-dwelling-type totals include unoccupied non-private dwellings, counted from 2018 |
@@ -189,7 +194,7 @@ Generated with the statements above by `tools/availability.py` (`outputs/reports
 
 | source | in the repository | licence / terms | redistributed |
 |---|---|---|---|
-| Stats NZ: building consents (Infoshare BLD468601), population estimates (DPE404001), census dwelling tables (CEN23_HOU_018, CEN23_TBT_001, DataInfo+ pages), family and household projections (POPPR_FHH_008, POPPR_FHH_010), national accounts (SNE022AA), earlier releases (popdata, histpopdata, oldhouseholddata, occ-unocc-2013) | data/raw/, data/*.xlsx, data/derived/ | CC BY 4.0 (Stats NZ) | yes |
+| Stats NZ: building consents (Infoshare BLD468601), population estimates (DPE404001), census dwelling tables (CEN23_HOU_018, CEN23_TBT_001, DataInfo+ pages), census living arrangements and households (CEN23_FHH_036, CEN23_FHH_018, CEN23_FHH_041, CEN13_FHH_026, CEN13_FHH_030, CEN13_FHH_031), ERP by age (DPE058AA), family and household projections (POPPR_FHH_008, POPPR_FHH_010), national accounts (SNE022AA), earlier releases (popdata, histpopdata, oldhouseholddata, occ-unocc-2013) | data/raw/, data/*.xlsx, data/derived/ | CC BY 4.0 (Stats NZ) | yes |
 | United Nations, DESA, Population Division (2024), World Population Prospects 2024 | data/raw/UN_PPP2024_Output_PopTot.xlsx | CC BY 3.0 IGO | yes |
 | World Bank, World Development Indicators (release 2026-07-13) | data/raw/API_*.zip | CC BY 4.0 | yes |
 | OECD (2024), Affordable Housing Database, indicator HM1.1 (Figure HM1.1.2: vacant dwellings by country; lever L2 at TL) | data/derived/oecd_hm112_vacancy.csv (the country values only) | the OECD terms and conditions | the extract only (the source file is not stored) |
@@ -205,5 +210,5 @@ Generated with the statements above by `tools/availability.py` (`outputs/reports
 
 ## How to cite
 
-Cite the model with [CITATION.cff](CITATION.cff) (version, release date and ORCID there); the archived release and its
-DOI are described in `.zenodo.json`. The release history is in [CHANGELOG.md](CHANGELOG.md).
+Model version 5.0.0. Cite the model with [CITATION.cff](CITATION.cff) (version, release date and ORCID there); the
+archived release and its DOI are described in `.zenodo.json`. The release history is in [CHANGELOG.md](CHANGELOG.md).

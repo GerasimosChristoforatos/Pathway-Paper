@@ -29,8 +29,9 @@ CODE_AVAILABILITY = (
 # (source, files in the repository, licence or terms, redistributed here)
 THIRD_PARTY = [
     ('Stats NZ: building consents (Infoshare BLD468601), population estimates (DPE404001), census dwelling tables '
-     '(CEN23_HOU_018, CEN23_TBT_001, DataInfo+ pages), family and household projections (POPPR_FHH_008, '
-     'POPPR_FHH_010), national accounts (SNE022AA), earlier releases (popdata, histpopdata, oldhouseholddata, '
+     '(CEN23_HOU_018, CEN23_TBT_001, DataInfo+ pages), census living arrangements and households (CEN23_FHH_036, '
+     'CEN23_FHH_018, CEN23_FHH_041, CEN13_FHH_026, CEN13_FHH_030, CEN13_FHH_031), ERP by age (DPE058AA), family and '
+     'household projections (POPPR_FHH_008, POPPR_FHH_010), national accounts (SNE022AA), earlier releases (popdata, histpopdata, oldhouseholddata, '
      'occ-unocc-2013)', 'data/raw/, data/*.xlsx, data/derived/', 'CC BY 4.0 (Stats NZ)', 'yes'),
     ('United Nations, DESA, Population Division (2024), World Population Prospects 2024',
      'data/raw/UN_PPP2024_Output_PopTot.xlsx', 'CC BY 3.0 IGO', 'yes'),

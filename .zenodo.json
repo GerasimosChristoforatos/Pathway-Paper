@@ -1,7 +1,7 @@
 {
   "title": "New Zealand new residential floor area and embodied carbon, 2026–2050: projection, planetary-boundary layer (AESA) and pathways",
   "upload_type": "software",
-  "version": "4.10.2",
+  "version": "5.0.0",
   "creators": [
     {
       "name": "Christoforatos, Gerasimos",
@@ -21,13 +21,5 @@
     "Shapley value",
     "New Zealand"
   ],
-  "related_identifiers": [
-    {
-      "identifier": "[PAPER-DOI]",
-      "relation": "isSupplementTo",
-      "resource_type": "publication-article",
-      "scheme": "doi"
-    }
-  ],
-  "notes": "Placeholder: replace [PAPER-DOI] with the DOI of the paper before the release that Zenodo archives (Zenodo rejects an identifier that is not a DOI). Generated outputs (outputs/) and derived data (data/derived/) are licensed CC BY 4.0 (LICENSE-DATA); third-party inputs keep their own terms (README, Third-party data)."
+  "notes": "Generated outputs (outputs/) and derived data (data/derived/) are licensed CC BY 4.0 (LICENSE-DATA); third-party inputs keep their own terms (README, Third-party data)."
 }

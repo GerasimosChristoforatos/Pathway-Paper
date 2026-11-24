@@ -101,7 +101,7 @@ def write_run_meta(env, mode):
                                 capture_output=True, text=True).stdout.strip())
     p = runprofile.PROFILES[env['PATHWAY_PROFILE']]
     import levers
-    meta = dict(profile=p['name'], mode=mode, n_draws=p['n_draws'], sobol=p['sobol'], bootstrap=p['bootstrap'],
+    meta = dict(model_version=runprofile.MODEL_VERSION, profile=p['name'], mode=mode, n_draws=p['n_draws'], sobol=p['sobol'], bootstrap=p['bootstrap'],
                 seeds=dict(montecarlo=p['mc_seed'], hd_bootstrap_L6=levers.HD_BOOTSTRAP_SEED,
                            hd_bootstrap_L2=levers.HD_BOOTSTRAP_SEED + 1, insight_bootstrap=p['mc_seed'] + 2101,
                            sobol=p['mc_seed'] + 2 if p['sobol'] else None),

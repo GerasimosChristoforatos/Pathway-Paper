@@ -14,6 +14,8 @@ applies to the percentile intervals of the Harrell-Davis estimators (levers.hd_e
 SRC / PRCC importance (pathways_mc); the carbon-factor bootstrap that defines the Monte Carlo input distribution
 (MonteCarlo.N_BOOT) is part of the Monte Carlo design and is the same in both profiles.
 """
+
+MODEL_VERSION = '5.0.0'          # the model version (run_meta.json, CITATION.cff, .zenodo.json)
 import os
 
 DEFAULT = 'light'

@@ -1,7 +1,9 @@
 # model-v5.0.0 report: L1 at TL from age-specific headship
 
-Branch `release/model-v5.0.0` from main a8add58. One full run (PATHWAY_PROFILE=full, 5,000 draws, Sobol). No tag or
-release. All numbers below are read from the committed outputs (`outputs/data/`); "v4.10.2" values come from the
+Branch `release/model-v5.0.0` from main a8add58. The committed outputs come from one complete full run
+(PATHWAY_PROFILE=full, 5,000 draws, Sobol). Two earlier full runs did not complete: one was stopped so that run_meta
+would carry the version, and one stopped in `pathways_mc` when the population-threshold bootstrap failed under
+separation (fixed, then the threshold rule of §2 adopted). No tag or release. All numbers below are read from the committed outputs (`outputs/data/`); "v4.10.2" values come from the
 saved v4.10.2 full outputs.
 
 **Headline.** Under the age-specific rule the Theoretical Limit no longer stays within the acquired-rights budget:

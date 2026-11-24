@@ -1,0 +1,101 @@
+{
+"bands": [
+"growth",
+"smaller_households",
+"extra_space",
+"vacancy",
+"overbuild_2026",
+"replacement",
+"redevelopment",
+"overbuild_absorbed",
+"unconsented",
+"retirement_villages"
+],
+"bridge": {
+"HIGH": {
+"total_in_scope": 110.89809496089487,
+"values": {
+"extra_space": 40.66850450876832,
+"growth": 43.17717172993055,
+"overbuild_2026": 2.035979076891811,
+"overbuild_absorbed": -4.959591948285246,
+"redevelopment": 10.359482849212132,
+"replacement": 12.222102061410915,
+"retirement_villages": -7.081133132894833,
+"smaller_households": 15.69652243995721,
+"unconsented": -6.889102998927819,
+"vacancy": 5.668160374831838
+}
+},
+"LOW": {
+"total_in_scope": 101.15100692022843,
+"values": {
+"extra_space": 40.66850450876832,
+"growth": 43.17717172993055,
+"overbuild_2026": 3.0195093685055574,
+"overbuild_absorbed": -5.952412631701981,
+"redevelopment": 0.0,
+"replacement": 12.222102061410915,
+"retirement_villages": -6.459447932546165,
+"smaller_households": 15.69652243995721,
+"unconsented": -6.889102998927821,
+"vacancy": 5.668160374831838
+}
+},
+"REF": {
+"total_in_scope": 105.43841696221159,
+"values": {
+"extra_space": 40.66850450876832,
+"growth": 43.17717172993055,
+"overbuild_2026": 2.1576902517016836,
+"overbuild_absorbed": -5.082169051077047,
+"redevelopment": 4.552443595552199,
+"replacement": 12.222102061410915,
+"retirement_villages": -6.732905949936244,
+"smaller_households": 15.69652243995721,
+"unconsented": -6.889102998927821,
+"vacancy": 5.668160374831838
+}
+},
+"VHIGH": {
+"total_in_scope": 116.672216963504,
+"values": {
+"extra_space": 40.66850450876832,
+"growth": 43.17717172993055,
+"overbuild_2026": 2.063643018493278,
+"overbuild_absorbed": -4.987767563858731,
+"redevelopment": 16.502399461071278,
+"replacement": 12.222102061410915,
+"retirement_villages": -7.449416068172831,
+"smaller_households": 15.69652243995721,
+"unconsented": -6.889102998927819,
+"vacancy": 5.668160374831838
+}
+}
+},
+"labels": {
+"HIGH": "High replacement",
+"LOW": "Low replacement",
+"REF": "Reference",
+"VHIGH": "Very High replacement (trend continues)"
+},
+"results_keys": {
+"extra_space": "extra",
+"growth": "growth",
+"overbuild_2026": "join",
+"overbuild_absorbed": "absorbed",
+"redevelopment": "wave",
+"replacement": "repl",
+"retirement_villages": "rv",
+"smaller_households": "hs_pos",
+"unconsented": "unc",
+"vacancy": "vac"
+},
+"unit": "Mm2, 2026-2050 (median population)",
+"variants": [
+"LOW",
+"REF",
+"HIGH",
+"VHIGH"
+]
+}

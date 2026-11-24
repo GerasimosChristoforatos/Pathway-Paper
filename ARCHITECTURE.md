@@ -69,6 +69,7 @@ files, so the figures can be redrawn without the model (`run_all.py --figures-on
 | `data/build_population_quarterly.py` | quarterly estimated resident population (mean quarter) |
 | `data/build_households_2023.py` | household-size knots of the Stats NZ 2023-base household projections |
 | `data/build_census.py` | census dwelling occupancy, 2018 and 2023, with cross-checks |
+| `data/build_census_headship.py` | census living arrangements by age and role (2013, 2018, 2023), stated household targets, one-person shares and ERP age groups (L1 at TL) |
 | `data/build_material_items.py` | item-level case-study LCA table, checked against `building_data.xlsx` |
 | `data/build_lca_events.py` | replacement and repaint event counts per item line (needs the non-redistributed root tables) |
 | `data/build_horup.py` | the Horup et al. (2025) Table S4 material paths and the Table S3 archetype envelope (L10) |
@@ -84,7 +85,7 @@ files, so the figures can be redrawn without the model (`run_all.py --figures-on
 | `engine.py` | the forward model as pure functions: stock identity, replacement path, overbuild absorption, forward run |
 | `events.py` | time-resolved B2/B4 events and the committed emissions after 2050 |
 | `bands.py` | the demand-band accounting of every run and the display bands |
-| `household_headship.py` | age-standardised household size from living-arrangement rates (the L1 at TL sensitivity) |
+| `household_headship.py` | census headship by age group (2013, 2018, 2023; calibrated f and g), the TL headship rates and the L1 at TL household-size ratio path |
 | `gap_2026.py` | decomposition of the observed 2026 building against the model |
 
 ### AESA

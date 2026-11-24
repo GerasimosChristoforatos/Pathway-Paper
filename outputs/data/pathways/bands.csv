@@ -1,0 +1,1540 @@
+run,scenario,definition,band,floor_area_Mm2,carbon_kt,delta_floor_area_Mm2_vs_reference,delta_carbon_kt_vs_reference
+REF,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+REF,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+REF,REF,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+REF,REF,with_retirement_villages,Vacancy,5.668160374831838,1367.5517430045377,0.0,0.0
+REF,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,578.5719636080365,0.0,0.0
+REF,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+REF,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,934.8081253613711,0.0,0.0
+REF,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1286.619073993244,0.0,0.0
+REF,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+REF,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+REF,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+REF,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+REF,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1600.7837284625475,0.0,0.0
+REF,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+REF,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+REF,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+REF,REF,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+REF,REF,in_scope,Vacancy,5.328311934102438,1285.556828121655,0.0,0.0
+REF,REF,in_scope,2026 overbuild,2.0209211514993064,541.9018245514786,0.0,0.0
+REF,REF,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+REF,REF,in_scope,Recent replacement surge,4.279490687528163,878.7594141788368,0.0,0.0
+REF,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1209.4766755440328,0.0,0.0
+REF,REF,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+REF,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+REF,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+REF,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+REF,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L1-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185146,0.0,-1.8189894035458565e-12
+L1-moderate,REF,with_retirement_villages,Smaller households,10.574298975348531,2587.022302082401,-5.122223464608679,-1239.7804520881446
+L1-moderate,REF,with_retirement_villages,Extra space,35.82899995332658,8633.015928242283,-4.839504555441742,-1156.9681932028288
+L1-moderate,REF,with_retirement_villages,Vacancy,5.100916805997459,1231.075395485572,-0.5672435688343791,-136.47634751896567
+L1-moderate,REF,with_retirement_villages,2026 overbuild,2.222007491484305,595.7642760837831,0.06431723978262127,17.192312475746576
+L1-moderate,REF,with_retirement_villages,Demolition replacement,12.047066657539741,2384.4135258202887,-0.1750354038711741,-33.115956292972896
+L1-moderate,REF,with_retirement_villages,Recent replacement surge,4.505705525597144,925.7936799919249,-0.046738069955054584,-9.014445369446207
+L1-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.147193132725775,-1303.0831318621495,-0.06502408164872797,-16.464057868905456
+L1-moderate,REF,with_retirement_villages,Unconsented additions,-6.790442644132169,-1343.9971527709808,0.09866035479565216,18.666120824714426
+L1-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L1-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L1-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L1-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.094191736117627,-1447.5348241543456,0.6387142138186173,153.24890430820187
+L1-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,396.4108396126386,0.0,-41.56170586363828
+L1-moderate,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L1-moderate,REF,in_scope,Smaller households,9.940290976115572,2431.911042457717,-4.815108008729139,-1165.4463779571797
+L1-moderate,REF,in_scope,Extra space,33.68078448978776,8115.402309715786,-4.549340204345988,-1087.5993309209189
+L1-moderate,REF,in_scope,Vacancy,4.795078843030495,1157.2632543482434,-0.5332330910719429,-128.29357377341148
+L1-moderate,REF,in_scope,2026 overbuild,2.081382093610959,558.063329816237,0.06046094211165265,16.161505264758375
+L1-moderate,REF,in_scope,Demolition replacement,11.324755264039428,2241.450171712977,-0.16454072744279102,-31.130408008312315
+L1-moderate,REF,in_scope,Recent replacement surge,4.235554913052865,870.285451964463,-0.043935774475298395,-8.473962214373728
+L1-moderate,REF,in_scope,Overbuild absorbed,-4.838580559225361,-1224.9535904909294,-0.06112540354210516,-15.476914946896613
+L1-moderate,REF,in_scope,Unconsented additions,-6.383305020659543,-1263.414511047912,0.09274493153275376,17.54694782373258
+L1-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L1-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L1-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L1-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,396.4108396126386,0.0,-41.56170586363828
+L2-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185146,0.0,-1.8189894035458565e-12
+L2-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+L2-moderate,REF,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+L2-moderate,REF,with_retirement_villages,Vacancy,5.061872415931778,1224.5013116130276,-0.6062879589000598,-143.05043139151007
+L2-moderate,REF,with_retirement_villages,2026 overbuild,2.1588912407501883,578.8929938492538,0.0012009890485047414,0.3210302412172723
+L2-moderate,REF,with_retirement_villages,Demolition replacement,12.152680659334429,2404.2137409015627,-0.06942140207648606,-13.315741211698878
+L2-moderate,REF,with_retirement_villages,Recent replacement surge,4.5318602659567775,930.7748707894817,-0.020583329595421418,-4.033254571889415
+L2-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.083383238909317,-1286.9265056128431,-0.0012141878322697863,-0.3074316195991287
+L2-moderate,REF,with_retirement_villages,Unconsented additions,-6.849972971471669,-1355.1577305840642,0.03913002745615213,7.505543011631062
+L2-moderate,REF,with_retirement_villages,Vacancy released,-2.390904291248653,-608.2662256205699,-2.390904291248653,-608.2662256205699
+L2-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L2-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L2-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.55015083738416,-1555.1473247831889,0.18275511255208432,45.63640367935864
+L2-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,418.57545994063105,0.0,-19.39708553564583
+L2-moderate,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L2-moderate,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+L2-moderate,REF,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+L2-moderate,REF,in_scope,Vacancy,4.758375455019373,1151.0833357790007,-0.569936479083065,-134.47349234265425
+L2-moderate,REF,in_scope,2026 overbuild,2.022050132307311,542.2036066381468,0.0011289808080046093,0.30178208666814044
+L2-moderate,REF,in_scope,Demolition replacement,11.424036919630844,2260.063216393894,-0.0652590718513757,-12.517363327395287
+L2-moderate,REF,in_scope,Recent replacement surge,4.260141481882212,874.9679832651852,-0.019349205645950995,-3.7914309136515385
+L2-moderate,REF,in_scope,Overbuild absorbed,-4.77859654390961,-1209.7656743477544,-0.0011413882263546782,-0.28899880372159714
+L2-moderate,REF,in_scope,Unconsented additions,-6.439266061390238,-1273.9059290778218,0.03678389080205946,7.055529793822643
+L2-moderate,REF,in_scope,Vacancy released,-2.247551767399468,-571.7961339761285,-2.247551767399468,-571.7961339761285
+L2-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L2-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L2-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,418.57545994063105,0.0,-19.39708553564583
+L3-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+L3-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+L3-moderate,REF,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+L3-moderate,REF,with_retirement_villages,Vacancy,5.668160374831838,1367.5517430045377,0.0,0.0
+L3-moderate,REF,with_retirement_villages,2026 overbuild,2.163305283000287,580.0728889116248,0.005615031298603412,1.5009253035882466
+L3-moderate,REF,with_retirement_villages,Demolition replacement,10.207593332903798,2029.2494711271345,-2.014508728507117,-388.2800109861271
+L3-moderate,REF,with_retirement_villages,Recent replacement surge,3.9315361537041196,812.2576408470567,-0.6209074418480793,-122.55048451431446
+L3-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.087845791168111,-1288.05642112674,-0.005676740091064225,-1.437347133495905
+L3-moderate,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+L3-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L3-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L3-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L3-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.574889417485585,-1570.159446693521,0.1580165324506586,30.62428176902654
+L3-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,431.0162015791432,0.0,-6.9563438971336495
+L3-moderate,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L3-moderate,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+L3-moderate,REF,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+L3-moderate,REF,in_scope,Vacancy,5.328311934102438,1285.556828121655,0.0,0.0
+L3-moderate,REF,in_scope,2026 overbuild,2.026199519841098,543.3127582016301,0.005278368341791406,1.4109336501514917
+L3-moderate,REF,in_scope,Demolition replacement,9.595572068793027,1907.5808479746051,-1.8937239226891922,-364.9997317466841
+L3-moderate,REF,in_scope,Recent replacement surge,3.6958112724109986,763.5567441790433,-0.5836794151171647,-115.20266999979344
+L3-moderate,REF,in_scope,Overbuild absorbed,-4.782791532915685,-1210.827843009029,-0.005336377232429967,-1.3511674649962515
+L3-moderate,REF,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+L3-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L3-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L3-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L3-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,431.0162015791432,0.0,-6.9563438971336495
+L4-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+L4-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+L4-moderate,REF,with_retirement_villages,Extra space,35.839804508506894,8652.058563418503,-4.828700000261428,-1137.925558026609
+L4-moderate,REF,with_retirement_villages,Vacancy,5.393203157021249,1302.7556601056995,-0.2749572178105888,-64.79608289883822
+L4-moderate,REF,with_retirement_villages,2026 overbuild,2.1597595514053096,579.1879131284628,0.0020692997036260152,0.6159495204262839
+L4-moderate,REF,with_retirement_villages,Demolition replacement,11.608456233332438,2299.415079666146,-0.6136458280784769,-118.11440244711548
+L4-moderate,REF,with_retirement_villages,Recent replacement surge,4.365196866186341,897.907899707124,-0.1872467293658575,-36.90022565424715
+L4-moderate,REF,with_retirement_villages,Overbuild absorbed,-4.890035472492334,-1238.3196800992387,0.1921335785847127,48.299393894005334
+L4-moderate,REF,with_retirement_villages,Unconsented additions,-6.543215745388802,-1296.0869776339625,0.3458872535390185,66.57629596173274
+L4-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L4-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L4-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L4-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.4106211175704,-1526.1293597617077,0.3222848323658436,74.65436870083977
+L4-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,424.3139468629588,0.0,-13.658598613318077
+L4-moderate,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L4-moderate,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+L4-moderate,REF,in_scope,Extra space,33.690941231394,8133.303197050723,-4.53918346273975,-1069.6984435859822
+L4-moderate,REF,in_scope,Vacancy,5.069840449856329,1224.6457531058543,-0.2584714842461091,-60.911075015800634
+L4-moderate,REF,in_scope,2026 overbuild,2.023511894226554,542.6533920770466,0.0025907427272477968,0.7515675255680208
+L4-moderate,REF,in_scope,Demolition replacement,10.912442802292112,2161.5480156211574,-0.576853189190107,-111.03256410013182
+L4-moderate,REF,in_scope,Recent replacement surge,4.103470794525162,844.0716319492398,-0.17601989300300147,-34.68778222959702
+L4-moderate,REF,in_scope,Overbuild absorbed,-4.596841416477772,-1164.0731901313645,0.18061373920548363,45.40348541266826
+L4-moderate,REF,in_scope,Unconsented additions,-6.150901216269218,-1218.3769078281748,0.32514873592307936,62.58455104346967
+L4-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L4-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L4-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L4-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,424.3139468629588,0.0,-13.658598613318077
+L5-moderate,REF,with_retirement_villages,Population growth,40.04769001714433,9662.511293363883,-3.129481712786216,-737.1548428212645
+L5-moderate,REF,with_retirement_villages,Smaller households,14.618043802196384,3570.3153200593656,-1.078478637760826,-256.48743411117994
+L5-moderate,REF,with_retirement_villages,Extra space,37.69458981439649,9089.163287844975,-2.9739146943718353,-700.8208336001371
+L5-moderate,REF,with_retirement_villages,Vacancy,5.259207989944128,1271.0651394612457,-0.40895238488770946,-96.48660354329195
+L5-moderate,REF,with_retirement_villages,2026 overbuild,2.1620336967276947,579.8316723694646,0.004343445026011139,1.2597087614281008
+L5-moderate,REF,with_retirement_villages,Demolition replacement,11.312462863641635,2242.2039981849753,-0.9096391977692804,-175.3254839282863
+L5-moderate,REF,with_retirement_villages,Recent replacement surge,4.2720766061720035,879.4711973836753,-0.28036698938019544,-55.33692797769584
+L5-moderate,REF,with_retirement_villages,Overbuild absorbed,-4.785537832377831,-1212.0342706072802,0.2966312186992157,74.58480338596382
+L5-moderate,REF,with_retirement_villages,Unconsented additions,-6.376376293340873,-1263.8394124423544,0.5127267055869478,98.82386115334089
+L5-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L5-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L5-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L5-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.254117359267711,-1489.7517469154916,0.4787885906685334,111.03198154705592
+L5-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,417.22419432494,0.0,-20.748351151336863
+L5-moderate,REF,in_scope,Population growth,37.64653265618228,9083.171758236958,-2.941845970314276,-692.9569183903823
+L5-moderate,REF,in_scope,Smaller households,13.741583175791137,3356.248318740537,-1.0138158090535736,-241.10910167435986
+L5-moderate,REF,in_scope,Extra space,35.43451834054779,8544.20023693612,-2.79560635358596,-658.8014037005851
+L5-moderate,REF,in_scope,Vacancy,4.943879291273151,1194.8553152598236,-0.384432642829287,-90.70151286183136
+L5-moderate,REF,in_scope,2026 overbuild,2.0261038340853395,543.3799487317169,0.005182682586033049,1.4781241802382965
+L5-moderate,REF,in_scope,Demolition replacement,10.63419644018464,2107.7671646818303,-0.8550995512975792,-164.81341503945896
+L5-moderate,REF,in_scope,Recent replacement surge,4.015933787819378,826.7403472785161,-0.26355689970878515,-52.019066900320695
+L5-moderate,REF,in_scope,Overbuild absorbed,-4.498609188367223,-1139.3637867576238,0.2788459673160322,70.11288878640903
+L5-moderate,REF,in_scope,Unconsented additions,-5.994065032280251,-1188.0628244054221,0.48198491991204584,92.89863446622235
+L5-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L5-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L5-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L5-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,417.22419432494,0.0,-20.748351151336863
+L6-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,10000.141858187655,0.0,-399.5242779974924
+L6-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3689.5557539666506,0.0,-137.2470002038949
+L6-moderate,REF,with_retirement_villages,Extra space,40.66850450876832,9410.30620009257,0.0,-379.6779213525424
+L6-moderate,REF,with_retirement_villages,Vacancy,5.668160374831838,1315.3670303157294,0.0,-52.184712688808304
+L6-moderate,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,576.9082997273327,0.0,-1.6636638807037798
+L6-moderate,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+L6-moderate,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,934.8081253613711,0.0,0.0
+L6-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1250.590802068061,0.0,36.028271925182935
+L6-moderate,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+L6-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L6-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L6-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L6-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1544.7642791873031,0.0,56.01944927524437
+L6-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L6-moderate,REF,in_scope,Population growth,40.58837862649656,9400.558855443367,0.0,-375.56982118397354
+L6-moderate,REF,in_scope,Smaller households,14.75539898484471,3468.339400326172,0.0,-129.01802008872482
+L6-moderate,REF,in_scope,Extra space,38.23012469413375,8846.088239166837,0.0,-356.9134014698684
+L6-moderate,REF,in_scope,Vacancy,5.328311934102438,1236.5009777205037,0.0,-49.05585040115125
+L6-moderate,REF,in_scope,2026 overbuild,2.0209211514993064,540.3409541497782,0.0,-1.560870401700413
+L6-moderate,REF,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+L6-moderate,REF,in_scope,Recent replacement surge,4.279490687528163,878.7594141788368,0.0,0.0
+L6-moderate,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1175.6085669216234,0.0,33.86810862240941
+L6-moderate,REF,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+L6-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L6-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L6-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L6-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L7-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,10294.535226933176,0.0,-105.13090925197139
+L7-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3790.572686719831,0.0,-36.230067450714614
+L7-moderate,REF,with_retirement_villages,Extra space,40.66850450876832,9690.079215925267,0.0,-99.90490551984476
+L7-moderate,REF,with_retirement_villages,Vacancy,5.668160374831838,1353.8135120676532,0.0,-13.73823093688452
+L7-moderate,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,578.1155661030057,0.0,-0.45639750503084997
+L7-moderate,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+L7-moderate,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,934.808125361371,0.0,-1.1368683772161603e-13
+L7-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1276.6540694499138,0.0,9.965004543330224
+L7-moderate,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+L7-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L7-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L7-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L7-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1586.0636325134499,0.0,14.72009594909764
+L7-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L7-moderate,REF,in_scope,Population growth,40.58837862649656,9677.3011485818,0.0,-98.82752804554002
+L7-moderate,REF,in_scope,Smaller households,14.75539898484471,3563.299615412034,0.0,-34.05780500286255
+L7-moderate,REF,in_scope,Extra space,38.23012469413375,9109.086778467235,0.0,-93.91486216946942
+L7-moderate,REF,in_scope,Vacancy,5.328311934102438,1272.642306475533,0.0,-12.914521646122012
+L7-moderate,REF,in_scope,2026 overbuild,2.0209211514993064,541.4736029590788,0.0,-0.4282215923998365
+L7-moderate,REF,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+L7-moderate,REF,in_scope,Recent replacement surge,4.279490687528163,878.7594141788368,0.0,0.0
+L7-moderate,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1200.109147259658,0.0,9.367528284374885
+L7-moderate,REF,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+L7-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L7-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L7-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L7-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L8-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,9926.550332738265,0.0,-473.11580344688264
+L8-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3661.848604844213,0.0,-164.95414932633275
+L8-moderate,REF,with_retirement_villages,Extra space,40.66850450876832,9340.154872303989,0.0,-449.829249141123
+L8-moderate,REF,with_retirement_villages,Vacancy,5.668160374831838,1305.6042751973569,0.0,-61.94746780718083
+L8-moderate,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,576.2461715833202,0.0,-2.325792024716293
+L8-moderate,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2280.8975186585003,0.0,-136.63196345476126
+L8-moderate,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,891.6780155098078,0.0,-43.13010985156336
+L8-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1238.0243006832595,0.0,48.594773309984475
+L8-moderate,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1285.6493798762592,0.0,77.01389371943606
+L8-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L8-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L8-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L8-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1528.451225830787,0.0,72.33250263176046
+L8-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L8-moderate,REF,in_scope,Population growth,40.58837862649656,9331.37969018158,0.0,-444.74898644576024
+L8-moderate,REF,in_scope,Smaller households,14.75539898484471,3442.293501204374,0.0,-155.06391921052273
+L8-moderate,REF,in_scope,Extra space,38.23012469413375,8780.143006087555,0.0,-422.85863454914943
+L8-moderate,REF,in_scope,Vacancy,5.328311934102438,1227.323572501357,0.0,-58.233255620297996
+L8-moderate,REF,in_scope,2026 overbuild,2.0209211514993064,539.7197611282393,0.0,-2.182063423239356
+L8-moderate,REF,in_scope,Demolition replacement,11.48929599148222,2144.1407203467293,0.0,-128.43985937456
+L8-moderate,REF,in_scope,Recent replacement surge,4.279490687528163,838.215275720501,0.0,-40.54413845833574
+L8-moderate,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1163.7955209118697,0.0,45.68115463216304
+L8-moderate,REF,in_scope,Unconsented additions,-6.476049952192297,-1208.5651218133194,0.0,72.39633705832512
+L8-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L8-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L8-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L8-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L9-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,10224.100375615366,0.0,-175.56576056978156
+L9-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3765.569737621662,0.0,-61.23301654888337
+L9-moderate,REF,with_retirement_villages,Extra space,40.66850450876832,9623.045521248268,0.0,-166.93860019684325
+L9-moderate,REF,with_retirement_villages,Vacancy,5.668160374831838,1344.562013680536,0.0,-22.9897293240017
+L9-moderate,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,577.718629877433,0.0,-0.8533337306034809
+L9-moderate,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2366.8356899572914,0.0,-50.693792155970186
+L9-moderate,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,918.8017136087061,0.0,-16.00641175266503
+L9-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1268.6291764540563,0.0,17.989897539187723
+L9-moderate,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1334.089239946331,0.0,28.57403364936431
+L9-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L9-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L9-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L9-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1573.9381896228665,0.0,26.845538839681012
+L9-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L9-moderate,REF,in_scope,Population growth,40.58837862649656,9611.089391321044,0.0,-165.03928530629673
+L9-moderate,REF,in_scope,Smaller households,14.75539898484471,3539.7957793774926,0.0,-57.561641037404115
+L9-moderate,REF,in_scope,Extra space,38.23012469413375,9046.072253168977,0.0,-156.9293874677278
+L9-moderate,REF,in_scope,Vacancy,5.328311934102438,1263.9455043378784,0.0,-21.61132378377647
+L9-moderate,REF,in_scope,2026 overbuild,2.0209211514993064,541.1012410569112,0.0,-0.8005834945673769
+L9-moderate,REF,in_scope,Demolition replacement,11.48929599148222,2224.926258060079,0.0,-47.65432166121036
+L9-moderate,REF,in_scope,Recent replacement surge,4.279490687528163,863.7127060541725,0.0,-15.046708124664292
+L9-moderate,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1192.5654063821792,0.0,16.911269161853625
+L9-moderate,REF,in_scope,Unconsented additions,-6.476049952192297,-1254.1006514083645,0.0,26.860807463280025
+L9-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L9-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L9-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L9-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L10-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,10207.306806727578,0.0,-192.3593294575694
+L10-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3761.7513253407296,0.0,-65.0514288298159
+L10-moderate,REF,with_retirement_villages,Extra space,40.66850450876832,9608.045382252481,0.0,-181.93873919263024
+L10-moderate,REF,with_retirement_villages,Vacancy,5.668160374831838,1342.5341781388292,0.0,-25.017564865708437
+L10-moderate,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,576.4743691300388,0.0,-2.0975944779977453
+L10-moderate,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2361.281101856419,0.0,-56.248380256842665
+L10-moderate,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,917.6040657076904,0.0,-17.2040596536807
+L10-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1269.761431204324,0.0,16.857642788919975
+L10-moderate,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1330.9583440209608,0.0,31.70492957473448
+L10-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L10-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L10-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L10-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1571.3150769519766,0.0,29.468651510570908
+L10-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,422.7375429363098,0.0,-15.23500253996707
+L10-moderate,REF,in_scope,Population growth,40.58837862649656,9595.302721995611,0.0,-180.82595463172947
+L10-moderate,REF,in_scope,Smaller households,14.75539898484471,3536.206309358939,0.0,-61.1511110559577
+L10-moderate,REF,in_scope,Extra space,38.23012469413375,9031.971484252957,0.0,-171.03015638374745
+L10-moderate,REF,in_scope,Vacancy,5.328311934102438,1262.0392526437222,0.0,-23.517575477932724
+L10-moderate,REF,in_scope,2026 overbuild,2.0209211514993064,539.938283805494,0.0,-1.9635407459845737
+L10-moderate,REF,in_scope,Demolition replacement,11.48929599148222,2219.704708896029,0.0,-52.875870825260336
+L10-moderate,REF,in_scope,Recent replacement surge,4.279490687528163,862.5868660669748,0.0,-16.172548111861943
+L10-moderate,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1193.6297740251775,0.0,15.846901518855248
+L10-moderate,REF,in_scope,Unconsented additions,-6.476049952192297,-1251.1574760180458,0.0,29.803982853598654
+L10-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L10-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L10-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L10-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,422.7375429363098,0.0,-15.23500253996707
+L1-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+L1-ambitious,REF,with_retirement_villages,Smaller households,5.577134573446722,1376.5713815451315,-10.119387866510488,-2450.231372625414
+L1-ambitious,REF,with_retirement_villages,Extra space,31.35665582086484,7562.163767757219,-9.311848687903481,-2227.8203536878927
+L1-ambitious,REF,with_retirement_villages,Vacancy,4.561701340033269,1101.1727823377955,-1.1064590347985686,-266.37896066674216
+L1-ambitious,REF,with_retirement_villages,2026 overbuild,2.286298433589273,612.9495590617911,0.12860818188758927,34.377595453754566
+L1-ambitious,REF,with_retirement_villages,Demolition replacement,11.878570494520178,2352.5196724662437,-0.3435315668907375,-65.00980964701785
+L1-ambitious,REF,with_retirement_villages,Recent replacement surge,4.460546555185539,917.0788818897058,-0.09189704036665969,-17.729243471665313
+L1-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.212190627687252,-1319.5404579980363,-0.13002157661020508,-32.921384004792344
+L1-ambitious,REF,with_retirement_villages,Unconsented additions,-6.69546819406348,-1326.0198817839841,0.19363480486434081,36.643391811711126
+L1-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L1-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L1-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L1-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-5.48693601580353,-1301.6518065390555,1.245969934132714,299.131921923492
+L1-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,356.1637346809069,0.0,-81.80881079537
+L1-ambitious,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L1-ambitious,REF,in_scope,Smaller households,5.242743807627904,1294.0356721378782,-9.512655177216807,-2303.3217482770187
+L1-ambitious,REF,in_scope,Extra space,29.476590705818488,7108.755713810103,-8.753533988315262,-2094.245926826602
+L1-ambitious,REF,in_scope,Vacancy,4.288193361259908,1035.1492705979292,-1.0401185728425304,-250.4075575237257
+L1-ambitious,REF,in_scope,2026 overbuild,2.1418183147866436,574.2182270540137,0.12089716328733724,32.316402502535084
+L1-ambitious,REF,in_scope,Demolition replacement,11.166361701243629,2211.4685924680684,-0.32293429023859055,-61.11198725322083
+L1-ambitious,REF,in_scope,Recent replacement surge,4.193103559339523,862.0931709313553,-0.08638712818864036,-16.666243247481475
+L1-ambitious,REF,in_scope,Overbuild absorbed,-4.899680970150178,-1240.4241773223514,-0.1222258144669226,-30.94750177831861
+L1-ambitious,REF,in_scope,Unconsented additions,-6.294024996406379,-1246.5151113823813,0.18202495578591815,34.44634748926319
+L1-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L1-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L1-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L1-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,356.1637346809069,0.0,-81.80881079537
+L2-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185146,0.0,-1.8189894035458565e-12
+L2-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+L2-ambitious,REF,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+L2-ambitious,REF,with_retirement_villages,Vacancy,4.463742477124747,1083.3653574856119,-1.2044178977070912,-284.1863855189258
+L2-ambitious,REF,with_retirement_villages,2026 overbuild,2.1600915573630473,579.213844345137,0.0024013056613636508,0.6418807371004505
+L2-ambitious,REF,with_retirement_villages,Demolition replacement,12.084201843510549,2391.077786565383,-0.13790021790036633,-26.451695547878444
+L2-ambitious,REF,with_retirement_villages,Recent replacement surge,4.511543784887116,926.7934576415386,-0.04089981066508308,-8.014667719832573
+L2-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.084596746915921,-1287.2337651009975,-0.002427695838873589,-0.6146911077535151
+L2-ambitious,REF,with_retirement_villages,Unconsented additions,-6.811374241639032,-1347.7535261389974,0.07772875728878859,14.909747456697914
+L2-ambitious,REF,with_retirement_villages,Vacancy released,-4.747056795203096,-1207.7895115943252,-4.747056795203096,-1207.7895115943252
+L2-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L2-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L2-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.370009147268831,-1510.1577240261074,0.36289680266741264,90.6260044364401
+L2-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,399.4369769252146,0.0,-38.53556855106228
+L2-ambitious,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L2-ambitious,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+L2-ambitious,REF,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+L2-ambitious,REF,in_scope,Vacancy,4.196107861949724,1018.4095335261219,-1.1322040721527147,-267.147294595533
+L2-ambitious,REF,in_scope,2026 overbuild,2.023178480997195,542.5052197565526,0.002257329497888705,0.6033952050739799
+L2-ambitious,REF,in_scope,Demolition replacement,11.359663918964221,2247.7148603794667,-0.1296320725179978,-24.86571934182257
+L2-ambitious,REF,in_scope,Recent replacement surge,4.241043125204954,871.2252854959099,-0.038447562323209006,-7.534128682926848
+L2-ambitious,REF,in_scope,Overbuild absorbed,-4.779737293070912,-1210.054511340594,-0.002282137387656924,-0.5778357965612031
+L2-ambitious,REF,in_scope,Unconsented additions,-6.402981612961144,-1266.9456618485524,0.07306833923115352,14.015797023092091
+L2-ambitious,REF,in_scope,Vacancy released,-4.462435376044409,-1135.373532669799,-4.462435376044409,-1135.373532669799
+L2-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L2-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L2-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,399.4369769252146,0.0,-38.53556855106228
+L3-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185146,0.0,-1.8189894035458565e-12
+L3-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+L3-ambitious,REF,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+L3-ambitious,REF,with_retirement_villages,Vacancy,5.668160374831838,1367.5517430045377,0.0,0.0
+L3-ambitious,REF,with_retirement_villages,2026 overbuild,2.1689203142988918,581.5738142152132,0.011230062597208157,3.0018506071767206
+L3-ambitious,REF,with_retirement_villages,Demolition replacement,8.193084604396681,1640.9694601410079,-4.029017457014234,-776.5600219722537
+L3-ambitious,REF,with_retirement_villages,Recent replacement surge,3.3106287118560402,689.7071563327422,-1.2418148836961587,-245.10096902862892
+L3-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.093522531259175,-1289.493768260236,-0.01135348018212845,-2.8746942669920372
+L3-ambitious,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+L3-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L3-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L3-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L3-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.416872885034925,-1539.5351649244942,0.316033064901319,61.248563538053304
+L3-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,424.0598576820096,0.0,-13.912687794267299
+L3-ambitious,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L3-ambitious,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+L3-ambitious,REF,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+L3-ambitious,REF,in_scope,Vacancy,5.328311934102438,1285.556828121655,0.0,0.0
+L3-ambitious,REF,in_scope,2026 overbuild,2.03147788818289,544.723691851782,0.0105567366835837,2.8218673003033246
+L3-ambitious,REF,in_scope,Demolition replacement,7.70184814610383,1542.581116227921,-3.787447845378389,-729.9994634933682
+L3-ambitious,REF,in_scope,Recent replacement surge,3.112131857293834,648.3540741792499,-1.1673588302343294,-230.4053399995869
+L3-ambitious,REF,in_scope,Overbuild absorbed,-4.788127910148115,-1212.1790104740255,-0.010672754464859935,-2.7023349299927304
+L3-ambitious,REF,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+L3-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L3-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L3-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L3-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,424.0598576820096,0.0,-13.912687794267299
+L4-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+L4-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+L4-ambitious,REF,with_retirement_villages,Extra space,30.631171295500295,7425.118406634725,-10.037333213268028,-2364.8657148103866
+L4-ambitious,REF,with_retirement_villages,Vacancy,5.096611673440452,1232.890882440677,-0.5715487013913858,-134.66086056386075
+L4-ambitious,REF,with_retirement_villages,2026 overbuild,2.1616578611001023,579.7606440001225,0.00396760939841867,1.1886803920859847
+L4-ambitious,REF,with_retirement_villages,Demolition replacement,10.945867848114213,2171.9381879961156,-1.2762342132967017,-245.59129411714594
+L4-ambitious,REF,with_retirement_villages,Recent replacement surge,4.163746685860266,858.2351654262359,-0.3886969096919328,-76.57295993513526
+L4-ambitious,REF,with_retirement_villages,Overbuild absorbed,-4.686309160070644,-1187.1180382092518,0.3958598910064026,99.50103578399217
+L4-ambitious,REF,with_retirement_villages,Unconsented additions,-6.169741558319655,-1224.2334263965888,0.7193614406081661,138.42984719910646
+L4-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L4-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L4-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L4-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.062810219029385,-1445.5937384713889,0.6700957309068594,155.18998999115865
+L4-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,409.6986101073667,0.0,-28.2739353689102
+L4-ambitious,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L4-ambitious,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+L4-ambitious,REF,in_scope,Extra space,28.794604382412594,6979.927243037693,-9.435520311721156,-2223.0743975990117
+L4-ambitious,REF,in_scope,Vacancy,4.791031835242351,1158.9698893355044,-0.5372800988600872,-126.58693878615054
+L4-ambitious,REF,in_scope,2026 overbuild,2.0259437905446105,543.364837834261,0.005022639045304089,1.4630132827824127
+L4-ambitious,REF,in_scope,Demolition replacement,10.289581526871576,2041.714313275031,-1.1997144646106435,-230.86626644625835
+L4-ambitious,REF,in_scope,Recent replacement surge,3.9140990532588695,806.7775736396064,-0.3653916342692938,-71.98184053923035
+L4-ambitious,REF,in_scope,Overbuild absorbed,-4.405330014191561,-1115.9414681110343,0.3721251414916944,93.5352074329985
+L4-ambitious,REF,in_scope,Unconsented additions,-5.799819588996313,-1150.8315122769598,0.6762303631959838,130.12994659468472
+L4-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L4-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L4-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L4-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,409.6986101073667,0.0,-28.2739353689102
+L5-ambitious,REF,with_retirement_villages,Population growth,36.91820830435812,8925.356450542622,-6.258963425572432,-1474.3096856425254
+L5-ambitious,REF,with_retirement_villages,Smaller households,13.53956516443556,3313.8278859481866,-2.15695727552165,-512.974868222359
+L5-ambitious,REF,with_retirement_villages,Extra space,34.72067512002465,8388.342454244834,-5.947829388743671,-1401.6416672002779
+L5-ambitious,REF,with_retirement_villages,Vacancy,4.850255605056417,1174.578535917954,-0.8179047697754207,-192.97320708658367
+L5-ambitious,REF,with_retirement_villages,2026 overbuild,2.1663771417537028,581.0913811308922,0.00868689005201917,2.5194175228556333
+L5-ambitious,REF,with_retirement_villages,Demolition replacement,10.40282366587235,2066.8785142566876,-1.8192783955385643,-350.65096785657397
+L5-ambitious,REF,with_retirement_villages,Recent replacement surge,3.99170961679181,824.1342694059795,-0.5607339787603891,-110.67385595539167
+L5-ambitious,REF,with_retirement_villages,Overbuild absorbed,-4.488906613678614,-1137.4494672213161,0.5932624373984332,149.16960677192787
+L5-ambitious,REF,with_retirement_villages,Unconsented additions,-5.863649587753925,-1165.0155512890137,1.0254534111738955,197.64772230668154
+L5-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L5-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L5-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L5-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-5.7753287685991745,-1378.7197653684354,0.9575771813370695,222.06396309411207
+L5-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,396.47584317360315,0.0,-41.496702302673725
+L5-ambitious,REF,in_scope,Population growth,34.704686685868005,8390.214839846576,-5.883691940628552,-1385.9138367807645
+L5-ambitious,REF,in_scope,Smaller households,12.727767366737563,3115.139217066176,-2.027631618107147,-482.21820334872064
+L5-ambitious,REF,in_scope,Extra space,32.63891198696184,7885.398833235536,-5.591212707171913,-1317.6028074011692
+L5-ambitious,REF,in_scope,Vacancy,4.559446648443864,1104.1538023979922,-0.768865285658574,-181.40302572366272
+L5-ambitious,REF,in_scope,2026 overbuild,2.03128651667137,544.8580729119547,0.010365365172063434,2.9562483604760246
+L5-ambitious,REF,in_scope,Demolition replacement,9.779096888887059,1942.9537496423707,-1.7101991025951602,-329.6268300789186
+L5-ambitious,REF,in_scope,Recent replacement surge,3.7523768881105943,774.7212803781955,-0.527113799417569,-104.03813380064128
+L5-ambitious,REF,in_scope,Overbuild absorbed,-4.219763221051191,-1069.2508979712147,0.5576919346320643,140.22577757281806
+L5-ambitious,REF,in_scope,Unconsented additions,-5.512080112368205,-1095.1641899392,0.9639698398240926,185.79726893244447
+L5-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L5-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L5-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L5-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,396.47584317360315,0.0,-41.496702302673725
+L6-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,9605.053232409193,0.0,-794.6129037759547
+L6-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3553.2351387473545,0.0,-273.567615423191
+L6-ambitious,REF,with_retirement_villages,Extra space,40.66850450876832,9034.862463755235,0.0,-755.1216576898769
+L6-ambitious,REF,with_retirement_villages,Vacancy,5.668160374831838,1263.728748459783,0.0,-103.82299454475469
+L6-ambitious,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,575.1662627090932,0.0,-3.405700898943337
+L6-ambitious,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+L6-ambitious,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,934.8081253613711,0.0,0.0
+L6-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1212.442610931614,0.0,74.1764630616301
+L6-ambitious,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+L6-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L6-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L6-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L6-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1489.475343292445,0.0,111.30838517010261
+L6-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L6-ambitious,REF,in_scope,Population growth,40.58837862649656,9029.15873608348,0.0,-746.9699405438605
+L6-ambitious,REF,in_scope,Smaller households,14.75539898484471,3340.1922215409013,0.0,-257.16519887399545
+L6-ambitious,REF,in_scope,Extra space,38.23012469413375,8493.155151776982,0.0,-709.8464888597227
+L6-ambitious,REF,in_scope,Vacancy,5.328311934102438,1187.9587955530226,0.0,-97.59803256863233
+L6-ambitious,REF,in_scope,2026 overbuild,2.0209211514993064,538.7064297901599,0.0,-3.1953947613187665
+L6-ambitious,REF,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+L6-ambitious,REF,in_scope,Recent replacement surge,4.279490687528163,878.7594141788368,0.0,0.0
+L6-ambitious,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1139.747644037489,0.0,69.72903150654383
+L6-ambitious,REF,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+L6-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L6-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L6-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L6-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L7-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,10189.404317681205,0.0,-210.26181850394278
+L7-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3754.342619269117,0.0,-72.46013490142832
+L7-ambitious,REF,with_retirement_villages,Extra space,40.66850450876832,9590.174310405419,0.0,-199.80981103969316
+L7-ambitious,REF,with_retirement_villages,Vacancy,5.668160374831838,1340.0752811307693,0.0,-27.476461873768358
+L7-ambitious,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,577.659168597975,0.0,-0.9127950100614726
+L7-ambitious,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+L7-ambitious,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,934.8081253613711,0.0,0.0
+L7-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1266.689064906584,0.0,19.930009086659993
+L7-ambitious,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+L7-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L7-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L7-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L7-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1571.3435365643525,0.0,29.440191898195053
+L7-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L7-ambitious,REF,in_scope,Population growth,40.58837862649656,9578.47362053626,0.0,-197.65505609108004
+L7-ambitious,REF,in_scope,Smaller households,14.75539898484471,3529.241810409171,0.0,-68.11561000572556
+L7-ambitious,REF,in_scope,Extra space,38.23012469413375,9015.171916297768,0.0,-187.829724338937
+L7-ambitious,REF,in_scope,Vacancy,5.328311934102438,1259.7277848294113,0.0,-25.82904329224357
+L7-ambitious,REF,in_scope,2026 overbuild,2.0209211514993064,541.0453813666788,0.0,-0.8564431847997866
+L7-ambitious,REF,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+L7-ambitious,REF,in_scope,Recent replacement surge,4.279490687528163,878.7594141788368,0.0,0.0
+L7-ambitious,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1190.741618975283,0.0,18.73505656874977
+L7-ambitious,REF,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+L7-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L7-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L7-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L7-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L8-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,9453.434529291382,0.0,-946.2316068937653
+L8-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3496.8944555178805,0.0,-329.90829865266505
+L8-ambitious,REF,with_retirement_villages,Extra space,40.66850450876832,8890.325623162867,0.0,-899.6584982822442
+L8-ambitious,REF,with_retirement_villages,Vacancy,5.668160374831838,1243.6568073901763,0.0,-123.89493561436143
+L8-ambitious,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,573.9203795586043,0.0,-4.651584049432245
+L8-ambitious,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2144.265555203738,0.0,-273.26392690952343
+L8-ambitious,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,848.5479056582445,0.0,-86.26021970312661
+L8-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1189.429527373275,0.0,97.18954661996895
+L8-ambitious,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1208.6354861568238,0.0,154.02778743887143
+L8-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L8-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L8-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L8-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1456.1187231990266,0.0,144.66500526352092
+L8-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L8-ambitious,REF,in_scope,Population growth,40.58837862649656,8886.630703735818,0.0,-889.4979728915223
+L8-ambitious,REF,in_scope,Smaller households,14.75539898484471,3287.2295819938513,0.0,-310.12783842104545
+L8-ambitious,REF,in_scope,Extra space,38.23012469413375,8357.284371538406,0.0,-845.7172690982989
+L8-ambitious,REF,in_scope,Vacancy,5.328311934102438,1169.0903168810585,0.0,-116.46651124059645
+L8-ambitious,REF,in_scope,2026 overbuild,2.0209211514993064,537.537697705,0.0,-4.364126846478598
+L8-ambitious,REF,in_scope,Demolition replacement,11.48929599148222,2015.7008609721693,0.0,-256.87971874912
+L8-ambitious,REF,in_scope,Recent replacement surge,4.279490687528163,797.6711372621653,0.0,-81.08827691667148
+L8-ambitious,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1118.1143662797065,0.0,91.36230926432631
+L8-ambitious,REF,in_scope,Unconsented additions,-6.476049952192297,-1136.1687847549952,0.0,144.79267411664932
+L8-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L8-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L8-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L8-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L9-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,10048.534615045586,0.0,-351.1315211395613
+L9-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3704.336721072779,0.0,-122.46603309776674
+L9-ambitious,REF,with_retirement_villages,Extra space,40.66850450876832,9456.106921051423,0.0,-333.8772003936883
+L9-ambitious,REF,with_retirement_villages,Vacancy,5.668160374831838,1321.5722843565345,0.0,-45.979458648003174
+L9-ambitious,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,576.8652961468296,0.0,-1.7066674612069619
+L9-ambitious,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2316.1418978013226,0.0,-101.38758431193901
+L9-ambitious,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,902.7953018560411,0.0,-32.01282350533006
+L9-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1250.639278914869,0.0,35.97979507837499
+L9-ambitious,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1305.5152062969676,0.0,57.14806729872771
+L9-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L9-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L9-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L9-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1547.092650783185,0.0,53.69107767936248
+L9-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L9-ambitious,REF,in_scope,Population growth,40.58837862649656,9446.050106014744,0.0,-330.0785706125971
+L9-ambitious,REF,in_scope,Smaller households,14.75539898484471,3482.234138340089,0.0,-115.12328207480778
+L9-ambitious,REF,in_scope,Extra space,38.23012469413375,8889.142865701251,0.0,-313.85877493545377
+L9-ambitious,REF,in_scope,Vacancy,5.328311934102438,1242.3341805541022,0.0,-43.22264756755271
+L9-ambitious,REF,in_scope,2026 overbuild,2.0209211514993064,540.3006575623439,0.0,-1.6011669891347537
+L9-ambitious,REF,in_scope,Demolition replacement,11.48929599148222,2177.271936398869,0.0,-95.30864332242027
+L9-ambitious,REF,in_scope,Recent replacement surge,4.279490687528163,848.6659979295082,0.0,-30.093416249328584
+L9-ambitious,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1175.654137220326,0.0,33.822538323706794
+L9-ambitious,REF,in_scope,Unconsented additions,-6.476049952192297,-1227.2398439450849,0.0,53.721614926559596
+L9-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L9-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L9-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L9-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L10-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,10014.947477270009,0.0,-384.7186589151388
+L10-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3696.6998965109133,0.0,-130.10285765963226
+L10-ambitious,REF,with_retirement_villages,Extra space,40.66850450876832,9426.10664305985,0.0,-363.8774783852623
+L10-ambitious,REF,with_retirement_villages,Vacancy,5.668160374831838,1317.5166132731208,0.0,-50.03512973141687
+L10-ambitious,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,574.376774652041,0.0,-4.195188955995491
+L10-ambitious,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2305.0327215995767,0.0,-112.49676051368488
+L10-ambitious,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,900.4000060540099,0.0,-34.40811930736129
+L10-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1252.9037884154038,0.0,33.71528557784018
+L10-ambitious,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1299.2534144462265,0.0,63.40985914946873
+L10-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L10-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L10-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L10-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1541.8464254414055,0.0,58.93730302114204
+L10-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,407.50254039634274,0.0,-30.47000507993414
+L10-ambitious,REF,in_scope,Population growth,40.58837862649656,9414.476767363883,0.0,-361.6519092634571
+L10-ambitious,REF,in_scope,Smaller households,14.75539898484471,3475.055198302981,0.0,-122.30222211191585
+L10-ambitious,REF,in_scope,Extra space,38.23012469413375,8860.941327869212,0.0,-342.0603127674931
+L10-ambitious,REF,in_scope,Vacancy,5.328311934102438,1238.521677165789,0.0,-47.0351509558659
+L10-ambitious,REF,in_scope,2026 overbuild,2.0209211514993064,537.9747430595096,0.0,-3.9270814919690338
+L10-ambitious,REF,in_scope,Demolition replacement,11.48929599148222,2166.828838070769,0.0,-105.75174165052022
+L10-ambitious,REF,in_scope,Recent replacement surge,4.279490687528163,846.4143179551129,0.0,-32.345096223723885
+L10-ambitious,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1177.7828725063218,0.0,31.69380303771095
+L10-ambitious,REF,in_scope,Unconsented additions,-6.476049952192297,-1221.3534931644476,0.0,59.607965707196854
+L10-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L10-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L10-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L10-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,407.50254039634274,0.0,-30.47000507993414
+L1-tl,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+L1-tl,REF,with_retirement_villages,Smaller households,5.749361539756473,1366.072415277343,-9.947160900200737,-2460.7303388932023
+L1-tl,REF,with_retirement_villages,Extra space,31.210265342647887,7491.166045226274,-9.458239166120435,-2298.8180762188376
+L1-tl,REF,with_retirement_villages,Vacancy,4.563172528734908,1096.5321745527472,-1.1049878460969298,-271.0195684517905
+L1-tl,REF,with_retirement_villages,2026 overbuild,4.771089559457445,1277.1463687705102,2.613399307755761,698.5744051624737
+L1-tl,REF,with_retirement_villages,Demolition replacement,11.833233405678454,2342.982057070085,-0.38886865573246077,-74.54742504317664
+L1-tl,REF,with_retirement_villages,Recent replacement surge,4.436684565357906,912.0251364020849,-0.11575903019429301,-22.782988959286286
+L1-tl,REF,with_retirement_villages,Overbuild absorbed,-7.724289430349862,-1955.6023447752557,-2.642120379272815,-668.9832707820117
+L1-tl,REF,with_retirement_villages,Unconsented additions,-6.669913516714784,-1320.6439149905348,0.2191894822130367,42.019358605160505
+L1-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L1-tl,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L1-tl,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L1-tl,REF,with_retirement_villages,Retirement villages (out of scope),-5.484319208805398,-1297.6216006087382,1.248586741130846,303.16212785380935
+L1-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,341.35387185755553,0.0,-96.61867361872135
+L1-tl,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L1-tl,REF,in_scope,Smaller households,5.404644484263176,1284.166197112296,-9.350754500581534,-2313.1912233026005
+L1-tl,REF,in_scope,Extra space,29.338977427340023,7042.014833658675,-8.891147266793727,-2160.9868069780296
+L1-tl,REF,in_scope,Vacancy,4.289576341238927,1030.7869018208646,-1.0387355928635111,-254.7699263007903
+L1-tl,REF,in_scope,2026 overbuild,4.477627701638724,1198.5914899345175,2.4567065501394176,656.6896653830389
+L1-tl,REF,in_scope,Demolition replacement,11.123742908626987,2202.502828167559,-0.36555308285523225,-70.0777515537302
+L1-tl,REF,in_scope,Recent replacement surge,4.170672273567412,857.3424351347512,-0.10881841396075131,-21.416979044085565
+L1-tl,REF,in_scope,Overbuild absorbed,-7.261160735138082,-1838.3494154986477,-2.483705579454827,-628.8727399546149
+L1-tl,REF,in_scope,Unconsented additions,-6.270002512340156,-1241.4614738476944,0.20604743985214125,39.4999850239501
+L1-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L1-tl,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L1-tl,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L1-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,341.35387185755553,0.0,-96.61867361872135
+L2-tl,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185146,0.0,-1.8189894035458565e-12
+L2-tl,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.802754170545,0.0,-4.547473508864641e-13
+L2-tl,REF,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+L2-tl,REF,with_retirement_villages,Vacancy,2.1879421233883547,546.2670455148697,-3.480218251443483,-821.284697489668
+L2-tl,REF,with_retirement_villages,2026 overbuild,2.1648044655303047,580.4736277275528,0.0071142138286210965,1.9016641195162265
+L2-tl,REF,with_retirement_villages,Demolition replacement,11.823727767061774,2341.1029803249785,-0.39837429434914107,-76.42650178828308
+L2-tl,REF,with_retirement_villages,Recent replacement surge,4.434148839234011,911.622262646439,-0.1182947563181882,-23.185862714932114
+L2-tl,REF,with_retirement_villages,Overbuild absorbed,-5.089361449606932,-1218.2823722189034,-0.007192398529885402,68.33670177434055
+L2-tl,REF,with_retirement_villages,Unconsented additions,-6.664555573934414,-1319.5847556761316,0.22454742499340696,43.07851791956364
+L2-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L2-tl,REF,with_retirement_villages,Released dwellings (TL),-13.688084900885874,-3276.629634052212,-13.688084900885874,-3276.629634052212
+L2-tl,REF,with_retirement_villages,Surplus kept vacant (2050),2.1316320555369085e-15,4.655508790003287e-13,2.1316320555369085e-15,4.655508790003287e-13
+L2-tl,REF,with_retirement_villages,Retirement villages (out of scope),-5.68601872130834,-1355.9049239633312,1.046887228627904,244.87880449921636
+L2-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,396.6466228291701,0.0,-41.32592264710678
+L2-tl,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L2-tl,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+L2-tl,REF,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+L2-tl,REF,in_scope,Vacancy,2.056758693515525,513.5142665948498,-3.2715532405869134,-772.0425615268051
+L2-tl,REF,in_scope,2026 overbuild,2.0276088152099376,543.6894697401477,0.006687663710631231,1.787645188669103
+L2-tl,REF,in_scope,Demolition replacement,11.114807203859808,2200.736416071934,-0.3744887876224112,-71.84416364935532
+L2-tl,REF,in_scope,Recent replacement surge,4.168288583115117,856.9637166620566,-0.11120210441304668,-21.795697516780137
+L2-tl,REF,in_scope,Overbuild absorbed,-4.784216316339853,-1145.237268130967,-0.006761160656597376,64.23940741306569
+L2-tl,REF,in_scope,Unconsented additions,-6.26496581814469,-1240.4658190246391,0.21108413404760729,40.49563984700535
+L2-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L2-tl,REF,in_scope,Released dwellings (TL),-12.867382238555908,-3080.171277488258,-12.867382238555908,-3080.171277488258
+L2-tl,REF,in_scope,Surplus kept vacant (2050),2.0038248337265136e-15,4.37637635576415e-13,2.0038248337265136e-15,4.37637635576415e-13
+L2-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,396.6466228291701,0.0,-41.32592264710678
+L3-tl,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+L3-tl,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+L3-tl,REF,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+L3-tl,REF,with_retirement_villages,Vacancy,5.668160374831838,1367.5517430045377,0.0,0.0
+L3-tl,REF,with_retirement_villages,2026 overbuild,2.1857654081947024,586.0765901259781,0.028075156493018838,7.504626517941574
+L3-tl,REF,with_retirement_villages,Demolition replacement,2.14955841887533,483.3392880237848,-10.072543642535585,-1934.1901940894768
+L3-tl,REF,with_retirement_villages,Recent replacement surge,1.4479063863118034,325.69333094670696,-3.1045372092403953,-609.1147944146642
+L3-tl,REF,with_retirement_villages,Overbuild absorbed,-5.110552751532367,-1293.8058096607242,-0.028383700455320238,-7.186735667480207
+L3-tl,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1588.4116320605485,0.0,-225.74835846485325
+L3-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L3-tl,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L3-tl,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L3-tl,REF,with_retirement_villages,Retirement villages (out of scope),-5.942823287682947,-1434.77741153966,0.7900826622532966,166.00631692288744
+L3-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,403.1908259906088,0.0,-34.78171948566808
+L3-tl,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L3-tl,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+L3-tl,REF,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+L3-tl,REF,in_scope,Vacancy,5.328311934102438,1285.556828121655,0.0,0.0
+L3-tl,REF,in_scope,2026 overbuild,2.047312993208264,548.9564928022364,0.026391841708957475,7.0546682507578
+L3-tl,REF,in_scope,Demolition replacement,2.0206763780362493,454.35949696008976,-9.46861961344597,-1818.2210827611996
+L3-tl,REF,in_scope,Recent replacement surge,1.3610936119423405,306.16558942942737,-2.9183970755858226,-572.5938247494094
+L3-tl,REF,in_scope,Overbuild absorbed,-4.804137041845405,-1216.232512869015,-0.026681886162149837,-6.755837324982167
+L3-tl,REF,in_scope,Unconsented additions,-6.476049952192297,-1493.1745214824566,0.0,-212.21306261081213
+L3-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L3-tl,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L3-tl,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L3-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,403.1908259906088,0.0,-34.78171948566808
+L4-tl,REF,with_retirement_villages,Population growth,43.17717172993055,10399.666136185146,0.0,-1.8189894035458565e-12
+L4-tl,REF,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+L4-tl,REF,with_retirement_villages,Extra space,7.910438114613861,2073.7426793624927,-32.75806639415446,-7716.241442082619
+L4-tl,REF,with_retirement_villages,Vacancy,3.802841179996031,928.1713137471909,-1.865319194835807,-439.3804292573468
+L4-tl,REF,with_retirement_villages,2026 overbuild,2.1709393382650037,582.5270206581429,0.013249086563320134,3.9550570501063476
+L4-tl,REF,with_retirement_villages,Demolition replacement,8.05416973692233,1615.6899741267036,-4.167932324488586,-801.8395079865579
+L4-tl,REF,with_retirement_villages,Recent replacement surge,3.28554713515431,685.3062366153177,-1.2668964603978887,-249.5018887460534
+L4-tl,REF,with_retirement_villages,Overbuild absorbed,-3.8010785871220323,-964.6259137779255,1.2810904639550147,321.99316021531854
+L4-tl,REF,with_retirement_villages,Unconsented additions,-4.539808668730755,-910.6988789790034,2.3492943301970657,451.96439461669183
+L4-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L4-tl,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L4-tl,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L4-tl,REF,with_retirement_villages,Retirement villages (out of scope),-4.545379946258789,-1094.2765000642453,2.187526003677455,506.50722839830223
+L4-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,346.10024748989576,0.0,-91.87229798638111
+L4-tl,REF,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+L4-tl,REF,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+L4-tl,REF,in_scope,Extra space,7.436148419023217,1949.4063569139137,-30.79397627511053,-7253.5952837227915
+L4-tl,REF,in_scope,Vacancy,3.574832521119376,872.5205288633741,-1.7534794129830624,-413.0362992582808
+L4-tl,REF,in_scope,2026 overbuild,2.037576480980308,546.7425938846251,0.01665532948100168,4.840769333146454
+L4-tl,REF,in_scope,Demolition replacement,7.571262259812671,1518.8173237254923,-3.9180337316695484,-753.763255995797
+L4-tl,REF,in_scope,Recent replacement surge,3.0885541079663197,644.2170223845437,-1.1909365795618436,-234.54239179429305
+L4-tl,REF,in_scope,Overbuild absorbed,-3.573175608819014,-906.7894040453783,1.2042795468642415,302.68727149865447
+L4-tl,REF,in_scope,Unconsented additions,-4.267613318696445,-856.0956967244418,2.208436633495852,424.86576214720264
+L4-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L4-tl,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L4-tl,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L4-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,346.10024748989576,0.0,-91.87229798638111
+L5-tl,REF,with_retirement_villages,Population growth,34.54053985966197,8365.469749447124,-8.63663187026858,-2034.1963867380236
+L5-tl,REF,with_retirement_villages,Smaller households,12.72094179435121,3119.207530013777,-2.9755806456059997,-707.5952241567684
+L5-tl,REF,with_retirement_villages,Extra space,33.286867192529584,8050.876892754998,-7.381637316238738,-1739.1072286901135
+L5-tl,REF,with_retirement_villages,Vacancy,4.586607139992798,1112.3991184562608,-1.0815532348390402,-255.1526245482769
+L5-tl,REF,with_retirement_villages,2026 overbuild,2.168427875340149,581.7011064683486,0.010737623638465532,3.129142860312072
+L5-tl,REF,with_retirement_villages,Demolition replacement,9.815853541008611,1953.7930283187115,-2.406248520402304,-463.73645379455
+L5-tl,REF,with_retirement_villages,Recent replacement surge,3.8114075714292603,788.5701196416328,-0.7410360241229386,-146.23800571973834
+L5-tl,REF,with_retirement_villages,Overbuild absorbed,-4.300586414856089,-1090.108498204127,0.7815826362209579,196.51057578911696
+L5-tl,REF,with_retirement_villages,Unconsented additions,-5.532798345703911,-1101.2738515064323,1.3563046532239094,261.389422089263
+L5-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L5-tl,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L5-tl,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L5-tl,REF,with_retirement_villages,Retirement villages (out of scope),-5.466525111571095,-1307.1342952374669,1.2663808383651487,293.64943322508066
+L5-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,383.19421524084566,0.0,-54.77833023543121
+L5-tl,REF,in_scope,Population growth,32.46957717741675,7863.897517485901,-8.118801449079804,-1912.23115914144
+L5-tl,REF,in_scope,Smaller households,11.958226566211964,2932.1878013389273,-2.797172418632746,-665.1696190759694
+L5-tl,REF,in_scope,Extra space,31.29107152620047,7568.166846183968,-6.939053167933281,-1634.8347944527368
+L5-tl,REF,in_scope,Vacancy,4.3116058729704045,1045.7025042329317,-1.0167060611320338,-239.85432388872323
+L5-tl,REF,in_scope,2026 overbuild,2.0338487581504636,545.600836173972,0.01292760665115722,3.6990116224933445
+L5-tl,REF,in_scope,Demolition replacement,9.227319995777208,1836.6485810425909,-2.2619759957050114,-435.9319986786984
+L5-tl,REF,in_scope,Recent replacement surge,3.58288529356889,741.2894663354962,-0.6966053939592731,-137.4699478433406
+L5-tl,REF,in_scope,Overbuild absorbed,-4.0427342210825055,-1024.7483727239917,0.7347209346007499,184.7283028200411
+L5-tl,REF,in_scope,Unconsented additions,-5.2010658670311525,-1035.2442799169683,1.2749840851611447,245.71717895467623
+L5-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L5-tl,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L5-tl,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L5-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,383.19421524084566,0.0,-54.77833023543121
+L6-tl,REF,with_retirement_villages,Population growth,43.17717172993055,9274.412566587995,0.0,-1125.2535695971528
+L6-tl,REF,with_retirement_villages,Smaller households,15.69652243995721,3439.151522970126,0.0,-387.6512312004197
+L6-tl,REF,with_retirement_villages,Extra space,40.66850450876832,8720.66215814942,0.0,-1069.3219632956916
+L6-tl,REF,with_retirement_villages,Vacancy,5.668160374831838,1220.5138473446937,0.0,-147.03789565984403
+L6-tl,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,573.708391634063,0.0,-4.863571973973535
+L6-tl,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+L6-tl,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,934.8081253613711,0.0,0.0
+L6-tl,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1180.5172592655756,0.0,106.1018147276684
+L6-tl,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+L6-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L6-tl,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L6-tl,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L6-tl,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1443.2052930200484,0.0,157.57843544249909
+L6-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L6-tl,REF,in_scope,Population growth,40.58837862649656,8718.342441361592,0.0,-1057.7862352657485
+L6-tl,REF,in_scope,Smaller households,14.75539898484471,3232.948768421528,0.0,-364.40865199336895
+L6-tl,REF,in_scope,Extra space,38.23012469413375,8197.793495199337,0.0,-1005.2081454373674
+L6-tl,REF,in_scope,Vacancy,5.328311934102438,1147.3349496990813,0.0,-138.22187842257358
+L6-tl,REF,in_scope,2026 overbuild,2.0209211514993064,537.3385336086378,0.0,-4.563290942840808
+L6-tl,REF,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+L6-tl,REF,in_scope,Recent replacement surge,4.279490687528163,878.7594141788368,0.0,0.0
+L6-tl,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1109.736455039045,0.0,99.74022050498775
+L6-tl,REF,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+L6-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L6-tl,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L6-tl,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L6-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L7-tl,REF,with_retirement_villages,Population growth,43.17717172993055,9618.132579606385,0.0,-781.5335565787627
+L7-tl,REF,with_retirement_villages,Smaller households,15.69652243995721,3557.4717489379973,0.0,-269.33100523254825
+L7-tl,REF,with_retirement_villages,Extra space,40.66850450876832,9047.300198266472,0.0,-742.6839231786398
+L7-tl,REF,with_retirement_villages,Vacancy,5.668160374831838,1265.4229917020054,0.0,-102.12875130253224
+L7-tl,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,575.179146330432,0.0,-3.3928172776045358
+L7-tl,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+L7-tl,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,934.8081253613711,0.0,0.0
+L7-tl,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1212.5401423309434,0.0,74.07893166230065
+L7-tl,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+L7-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L7-tl,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L7-tl,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L7-tl,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1491.3558825308976,0.0,109.42784593164993
+L7-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L7-tl,REF,in_scope,Population growth,40.58837862649656,9041.453878978611,0.0,-734.6747976487295
+L7-tl,REF,in_scope,Smaller households,14.75539898484471,3344.1748153890167,0.0,-253.1826050258801
+L7-tl,REF,in_scope,Extra space,38.23012469413375,8504.84715144652,0.0,-698.1544891901849
+L7-tl,REF,in_scope,Vacancy,5.328311934102438,1189.551456291221,0.0,-96.00537183043389
+L7-tl,REF,in_scope,2026 overbuild,2.0209211514993064,538.7184644293857,0.0,-3.1833601220929495
+L7-tl,REF,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+L7-tl,REF,in_scope,Recent replacement surge,4.279490687528163,878.7594141788368,0.0,0.0
+L7-tl,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1139.8393277028463,0.0,69.63734784118651
+L7-tl,REF,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+L7-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L7-tl,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L7-tl,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L7-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L8-tl,REF,with_retirement_villages,Population growth,43.17717172993055,8521.303523188772,0.0,-1878.362612996376
+L8-tl,REF,with_retirement_villages,Smaller households,15.69652243995721,3172.861757173966,0.0,-653.9409969965795
+L8-tl,REF,with_retirement_villages,Extra space,40.66850450876832,8004.172110922775,0.0,-1785.812010522337
+L8-tl,REF,with_retirement_villages,Vacancy,5.668160374831838,1121.668367119298,0.0,-245.88337588523973
+L8-tl,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,569.5080893518443,0.0,-9.063874256192207
+L8-tl,REF,with_retirement_villages,Demolition replacement,12.222102061410915,1874.6270569892606,0.0,-542.902425124001
+L8-tl,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,763.9567827334104,0.0,-170.85134262796078
+L8-tl,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1095.685637170342,0.0,190.93343682290197
+L8-tl,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1056.6512057652628,0.0,306.01206783043244
+L8-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L8-tl,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L8-tl,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L8-tl,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1313.578828739019,0.0,287.20489972352857
+L8-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L8-tl,REF,in_scope,Population growth,40.58837862649656,8010.387895572367,0.0,-1765.740781054974
+L8-tl,REF,in_scope,Smaller households,14.75539898484471,2982.6250578714157,0.0,-614.732362543481
+L8-tl,REF,in_scope,Extra space,38.23012469413375,7524.262363960549,0.0,-1678.739276676156
+L8-tl,REF,in_scope,Vacancy,5.328311934102438,1054.41599238523,0.0,-231.14083573642483
+L8-tl,REF,in_scope,2026 overbuild,2.0209211514993064,533.397839093769,0.0,-8.503985457709632
+L8-tl,REF,in_scope,Demolition replacement,11.48929599148222,1762.2291994593656,0.0,-510.3513802619236
+L8-tl,REF,in_scope,Recent replacement surge,4.279490687528163,718.1518823376092,0.0,-160.60753184122757
+L8-tl,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1029.9911206610084,0.0,179.4855548830244
+L8-tl,REF,in_scope,Unconsented additions,-6.476049952192297,-993.2970942145962,0.0,287.6643646570483
+L8-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L8-tl,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L8-tl,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L8-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L9-tl,REF,with_retirement_villages,Population growth,43.17717172993055,9689.98855198151,0.0,-709.6775842036368
+L9-tl,REF,with_retirement_villages,Smaller households,15.69652243995721,3579.2846782263414,0.0,-247.51807594420416
+L9-tl,REF,with_retirement_villages,Extra space,40.66850450876832,9115.179523364353,0.0,-674.8045980807583
+L9-tl,REF,with_retirement_villages,Vacancy,5.668160374831838,1274.621917079463,0.0,-92.92982592507474
+L9-tl,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,575.122590458689,0.0,-3.4493731493474797
+L9-tl,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2212.6133991901866,0.0,-204.916082923075
+L9-tl,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,870.1064911273709,0.0,-64.70163423400027
+L9-tl,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1213.8997294909477,0.0,72.71934450229628
+L9-tl,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1247.1603924791114,0.0,115.50288111658392
+L9-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L9-tl,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L9-tl,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L9-tl,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1492.267824857199,0.0,108.51590360534851
+L9-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L9-tl,REF,in_scope,Population growth,40.58837862649656,9109.001550502331,0.0,-667.1271261250095
+L9-tl,REF,in_scope,Smaller households,14.75539898484471,3364.679897066115,0.0,-232.67752334878196
+L9-tl,REF,in_scope,Extra space,38.23012469413375,8568.656605322212,0.0,-634.3450353144926
+L9-tl,REF,in_scope,Vacancy,5.328311934102438,1198.1988375627998,0.0,-87.35799055885514
+L9-tl,REF,in_scope,2026 overbuild,2.0209211514993064,538.6656801088836,0.0,-3.2361444425949912
+L9-tl,REF,in_scope,Demolition replacement,11.48929599148222,2079.95074253872,0.0,-192.6298371825692
+L9-tl,REF,in_scope,Recent replacement surge,4.279490687528163,817.9371249268002,0.0,-60.822289252036626
+L9-tl,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1141.1173974840522,0.0,68.35927805998062
+L9-tl,REF,in_scope,Unconsented additions,-6.476049952192297,-1172.383835943153,0.0,108.57762292849156
+L9-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L9-tl,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L9-tl,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L9-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+L10-tl,REF,with_retirement_villages,Population growth,43.17717172993055,8888.878073146254,0.0,-1510.7880630388936
+L10-tl,REF,with_retirement_villages,Smaller households,15.69652243995721,3338.3106710167817,0.0,-488.4920831537638
+L10-tl,REF,with_retirement_villages,Extra space,40.66850450876832,8362.298094421112,0.0,-1427.6860270239995
+L10-tl,REF,with_retirement_villages,Vacancy,5.668160374831838,1172.4124540721864,0.0,-195.1392889323513
+L10-tl,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,568.2630780670511,0.0,-10.308885540985443
+L10-tl,REF,with_retirement_villages,Demolition replacement,12.222102061410915,1964.794679043054,0.0,-452.7348030702076
+L10-tl,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,809.418088280598,0.0,-125.39003708077314
+L10-tl,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1199.029938635009,0.0,87.5891353582349
+L10-tl,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1107.4750356085945,0.0,255.18823798710082
+L10-tl,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+L10-tl,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+L10-tl,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L10-tl,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1368.8374322288369,0.0,231.94629623371065
+L10-tl,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,349.0540030245253,0.0,-88.91854245175159
+L10-tl,REF,in_scope,Population growth,40.58837862649656,8355.923612929144,0.0,-1420.2050636981967
+L10-tl,REF,in_scope,Smaller households,14.75539898484471,3138.154076779797,0.0,-459.2033436350998
+L10-tl,REF,in_scope,Extra space,38.23012469413375,7860.916026806669,0.0,-1342.085613830036
+L10-tl,REF,in_scope,Vacancy,5.328311934102438,1102.1175932956012,0.0,-183.43923482605373
+L10-tl,REF,in_scope,2026 overbuild,2.0209211514993064,532.2561951747546,0.0,-9.64562937672406
+L10-tl,REF,in_scope,Demolition replacement,11.48929599148222,1846.9906008466933,0.0,-425.589978874596
+L10-tl,REF,in_scope,Recent replacement surge,4.279490687528163,760.8874439428407,0.0,-117.87197023599606
+L10-tl,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1127.1391613658382,0.0,82.33751417819462
+L10-tl,REF,in_scope,Unconsented additions,-6.476049952192297,-1041.073656835065,0.0,239.8878020365794
+L10-tl,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+L10-tl,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+L10-tl,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+L10-tl,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,349.0540030245253,0.0,-88.91854245175159
+S1-moderate,REF,with_retirement_villages,Population growth,40.04769001714433,9662.511293363883,-3.129481712786216,-737.1548428212645
+S1-moderate,REF,with_retirement_villages,Smaller households,9.88311648335941,2423.1774098526107,-5.8134059565978,-1403.6253443179348
+S1-moderate,REF,with_retirement_villages,Extra space,29.37724065145094,7113.227459115776,-11.291263857317382,-2676.756662329336
+S1-moderate,REF,with_retirement_villages,Vacancy,4.0485804880670315,982.9667964287189,-1.6195798867648064,-384.5849465758188
+S1-moderate,REF,with_retirement_villages,2026 overbuild,2.235051984418062,599.4093813756954,0.07736173271637847,20.83741776765885
+S1-moderate,REF,with_retirement_villages,Demolition replacement,8.85880169165272,1769.4530263104627,-3.3633003697581945,-648.0764558027988
+S1-moderate,REF,with_retirement_villages,Recent replacement surge,3.517454413832032,730.5454916731276,-1.0349891817201669,-204.26263368824357
+S1-moderate,REF,with_retirement_villages,Overbuild absorbed,-4.673550443472305,-1183.9975018043597,0.4086186076047422,102.62157218888433
+S1-moderate,REF,with_retirement_villages,Unconsented additions,-5.949432538561744,-1181.8982498599034,0.9396704603660764,180.76502373579183
+S1-moderate,REF,with_retirement_villages,Vacancy released,-2.1816720648911465,-555.5603125278848,-2.1816720648911465,-555.5603125278848
+S1-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+S1-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S1-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-5.111829865581725,-1222.2383651559335,1.6210760843545193,378.54536330661404
+S1-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,344.0543624791225,0.0,-93.91818299715436
+S1-moderate,REF,in_scope,Population growth,37.64653265618228,9083.171758236958,-2.941845970314276,-692.9569183903823
+S1-moderate,REF,in_scope,Smaller households,9.290550023643393,2277.8898721171345,-5.464848961201318,-1319.4675482977623
+S1-moderate,REF,in_scope,Extra space,27.615856221917372,6686.736481325513,-10.614268472216377,-2516.2651593111923
+S1-moderate,REF,in_scope,Vacancy,3.8058379269802924,924.0306141466527,-1.5224740071221459,-361.5262139750022
+S1-moderate,REF,in_scope,2026 overbuild,2.095387222139371,561.955729514821,0.07446607064006461,20.053904963342347
+S1-moderate,REF,in_scope,Demolition replacement,8.32765053456704,1663.3611354377792,-3.1616454569151795,-609.21944428351
+S1-moderate,REF,in_scope,Recent replacement surge,3.3065568176409528,686.7438470814515,-0.9729338698872105,-192.01556709738531
+S1-moderate,REF,in_scope,Overbuild absorbed,-4.3933362777022715,-1113.0080311107654,0.3841188779809839,96.4686444332674
+S1-moderate,REF,in_scope,Unconsented additions,-5.592719736215366,-1111.034644959237,0.8833302159769314,169.9268139124074
+S1-moderate,REF,in_scope,Vacancy released,-2.05086457173546,-522.2503330181146,-2.05086457173546,-522.2503330181146
+S1-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+S1-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S1-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,344.0543624791225,0.0,-93.91818299715436
+S2-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,9449.443600225972,0.0,-950.2225359591757
+S2-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3497.6928729832707,0.0,-329.1098811872748
+S2-moderate,REF,with_retirement_villages,Extra space,40.66850450876832,8886.778595795671,0.0,-903.2055256494405
+S2-moderate,REF,with_retirement_villages,Vacancy,5.668160374831838,1243.2730426328603,0.0,-124.27870037167736
+S2-moderate,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,574.1623651808086,0.0,-4.409598427227934
+S2-moderate,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2280.8975186585003,0.0,-136.63196345476126
+S2-moderate,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,891.6780155098078,0.0,-43.13010985156336
+S2-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1194.001588769811,0.0,92.61748522343305
+S2-moderate,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1285.6493798762597,0.0,77.0138937194356
+S2-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+S2-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+S2-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S2-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1461.5929592832078,0.0,139.19076917933967
+S2-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+S2-moderate,REF,in_scope,Population growth,40.58837862649656,8882.879060599218,0.0,-893.2496160281225
+S2-moderate,REF,in_scope,Smaller households,14.75539898484471,3287.980128384197,0.0,-309.37729203069966
+S2-moderate,REF,in_scope,Extra space,38.23012469413375,8353.950014886266,0.0,-849.0516257504387
+S2-moderate,REF,in_scope,Vacancy,5.328311934102438,1168.7295616798872,0.0,-116.82726644176773
+S2-moderate,REF,in_scope,2026 overbuild,2.0209211514993064,537.7647417890338,0.0,-4.137082762444834
+S2-moderate,REF,in_scope,Demolition replacement,11.48929599148222,2144.1407203467293,0.0,-128.43985937456
+S2-moderate,REF,in_scope,Recent replacement surge,4.279490687528163,838.2152757205012,0.0,-40.544138458335624
+S2-moderate,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1122.4122985349015,0.0,87.06437700913125
+S2-moderate,REF,in_scope,Unconsented additions,-6.476049952192297,-1208.5651218133194,0.0,72.39633705832512
+S2-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+S2-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+S2-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S2-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+S3-moderate,REF,with_retirement_villages,Population growth,43.17717172993055,10031.741046157797,0.0,-367.92509002735096
+S3-moderate,REF,with_retirement_villages,Smaller households,15.69652243995721,3700.5183087918463,0.0,-126.28444537869927
+S3-moderate,REF,with_retirement_villages,Extra space,40.66850450876832,9441.106782055638,0.0,-348.8773393894735
+S3-moderate,REF,with_retirement_villages,Vacancy,5.668160374831838,1319.5444488148275,0.0,-48.00729418971014
+S3-moderate,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,575.6210353994354,0.0,-2.9509282086011126
+S3-moderate,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2310.587309700449,0.0,-106.9421724128124
+S3-moderate,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,901.5976539550254,0.0,-33.21047140634573
+S3-moderate,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1251.7715336651363,0.0,34.8475403281077
+S3-moderate,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1302.384310371597,0.0,60.278963224098334
+S3-moderate,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+S3-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+S3-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S3-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1544.4695381122951,0.0,56.314190350252375
+S3-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,422.7375429363098,0.0,-15.23500253996707
+S3-moderate,REF,in_scope,Population growth,40.58837862649656,9430.263436689313,0.0,-345.865239938028
+S3-moderate,REF,in_scope,Smaller households,14.75539898484471,3478.6446683215345,0.0,-118.71275209336227
+S3-moderate,REF,in_scope,Extra space,38.23012469413375,8875.042096785231,0.0,-327.9595438514734
+S3-moderate,REF,in_scope,Vacancy,5.328311934102438,1240.4279288599455,0.0,-45.12889926170942
+S3-moderate,REF,in_scope,2026 overbuild,2.0209211514993064,539.1377003109268,0.0,-2.764124240551837
+S3-moderate,REF,in_scope,Demolition replacement,11.48929599148222,2172.050387234819,0.0,-100.53019248647024
+S3-moderate,REF,in_scope,Recent replacement surge,4.279490687528163,847.5401579423105,0.0,-31.219256236526235
+S3-moderate,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1176.718504863324,0.0,32.75817068070887
+S3-moderate,REF,in_scope,Unconsented additions,-6.476049952192297,-1224.2966685547663,0.0,56.664790316878225
+S3-moderate,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+S3-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+S3-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S3-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,422.7375429363098,0.0,-15.23500253996707
+pathway-moderate,REF,with_retirement_villages,Population growth,40.04769001714433,8453.963678101321,-3.129481712786216,-1945.702458083826
+pathway-moderate,REF,with_retirement_villages,Smaller households,9.88311648335941,2154.9103008509746,-5.8134059565978,-1671.892453319571
+pathway-moderate,REF,with_retirement_villages,Extra space,29.37724065145094,6250.965870254336,-11.291263857317382,-3539.018251190776
+pathway-moderate,REF,with_retirement_villages,Vacancy,4.0485804880670315,866.3611295367209,-1.6195798867648064,-501.1906134678168
+pathway-moderate,REF,with_retirement_villages,2026 overbuild,2.235051984418062,592.1422677734488,0.07736173271637847,13.570304165412267
+pathway-moderate,REF,with_retirement_villages,Demolition replacement,8.85880169165272,1605.4653622258302,-3.3633003697581945,-812.0641198874314
+pathway-moderate,REF,with_retirement_villages,Recent replacement surge,3.517454413832032,677.686833603453,-1.0349891817201669,-257.12129175791813
+pathway-moderate,REF,with_retirement_villages,Overbuild absorbed,-4.673550443472305,-1070.2929321045438,0.4086186076047422,216.32614188870025
+pathway-moderate,REF,with_retirement_villages,Unconsented additions,-5.949432538561744,-1068.1962598177429,0.9396704603660764,294.4670137779524
+pathway-moderate,REF,with_retirement_villages,Vacancy released,-2.1816720648911465,-507.85905240040574,-2.1816720648911465,-507.85905240040574
+pathway-moderate,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate,REF,with_retirement_villages,Retirement villages (out of scope),-5.111829865581725,-1078.0459491084855,1.6210760843545193,522.737779354062
+pathway-moderate,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,332.21278664538914,0.0,-105.75975883088773
+pathway-moderate,REF,in_scope,Population growth,37.64653265618228,7947.0855758615,-2.941845970314276,-1829.0431007658408
+pathway-moderate,REF,in_scope,Smaller households,9.290550023643393,2025.7073748173846,-5.464848961201318,-1571.6500455975122
+pathway-moderate,REF,in_scope,Extra space,27.615856221917372,5876.173898331406,-10.614268472216377,-3326.8277423052987
+pathway-moderate,REF,in_scope,Vacancy,3.8058379269802924,814.4163256654382,-1.5224740071221459,-471.1405024562167
+pathway-moderate,REF,in_scope,2026 overbuild,2.095387222139371,555.137813913303,0.07446607064006461,13.235989361824409
+pathway-moderate,REF,in_scope,Demolition replacement,8.32765053456704,1509.205753478663,-3.1616454569151795,-763.3748262426263
+pathway-moderate,REF,in_scope,Recent replacement surge,3.3065568176409528,637.0544593457274,-0.9729338698872105,-241.70495483310935
+pathway-moderate,REF,in_scope,Overbuild absorbed,-4.3933362777022715,-1006.1208974326743,0.3841188779809839,203.35577811135852
+pathway-moderate,REF,in_scope,Unconsented additions,-5.592719736215366,-1004.1499362691071,0.8833302159769314,276.81152260253737
+pathway-moderate,REF,in_scope,Vacancy released,-2.05086457173546,-477.4091187967348,-2.05086457173546,-477.4091187967348
+pathway-moderate,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,332.21278664538914,0.0,-105.75975883088773
+S1-ambitious,REF,with_retirement_villages,Population growth,36.91820830435812,8925.356450542622,-6.258963425572432,-1474.3096856425254
+S1-ambitious,REF,with_retirement_villages,Smaller households,4.9476292065330405,1229.0854974151416,-10.74889323342417,-2597.717256755404
+S1-ambitious,REF,with_retirement_villages,Extra space,20.573498212930353,5024.154184974644,-20.09500629583797,-4765.829936470468
+S1-ambitious,REF,with_retirement_villages,Vacancy,2.8551366782438206,699.1449915097073,-2.8130236965880173,-668.4067514948304
+S1-ambitious,REF,with_retirement_villages,2026 overbuild,2.311865399248892,620.0959737904881,0.15417514754720818,41.52401018245155
+S1-ambitious,REF,with_retirement_villages,Demolition replacement,6.2286231793425495,1261.5671979472468,-5.9934788820683655,-1155.9622841660148
+S1-ambitious,REF,with_retirement_villages,Recent replacement surge,2.6947336601937457,567.7110725445623,-1.8577099353584532,-367.09705281680885
+S1-ambitious,REF,with_retirement_villages,Overbuild absorbed,-4.271729490314454,-1083.0631019855439,0.8104395607625934,203.55597200770012
+S1-ambitious,REF,with_retirement_villages,Unconsented additions,-5.099388884197276,-1018.1824142872586,1.789714114730545,344.4808593084367
+S1-ambitious,REF,with_retirement_villages,Vacancy released,-3.938442153537257,-1004.0557907261906,-3.938442153537257,-1004.0557907261906
+S1-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+S1-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S1-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-3.794434973080183,-913.7106923335919,2.938470976856061,687.0730361289557
+S1-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,266.4589677327965,0.0,-171.51357774348037
+S1-ambitious,REF,in_scope,Population growth,34.704686685868005,8390.214839846576,-5.883691940628552,-1385.9138367807645
+S1-ambitious,REF,in_scope,Smaller households,4.650981977105031,1155.3926654913364,-10.104417007739679,-2441.9647549235606
+S1-ambitious,REF,in_scope,Extra space,19.339963728080686,4722.918712998716,-18.890160966053063,-4480.082927637989
+S1-ambitious,REF,in_scope,Vacancy,2.683949964388839,657.2260408280424,-2.644361969713599,-628.3307872936125
+S1-ambitious,REF,in_scope,2026 overbuild,2.1693348856367014,581.867059670023,0.148413734137395,39.96523511854434
+S1-ambitious,REF,in_scope,Demolition replacement,5.855170818186772,1185.9268460966782,-5.634125173295447,-1086.653733624611
+S1-ambitious,REF,in_scope,Recent replacement surge,2.5331643022298684,533.6725644519241,-1.7463263852982949,-345.08684972691265
+S1-ambitious,REF,in_scope,Overbuild absorbed,-4.015607484143406,-1018.1254004950046,0.761847671539849,191.35127504902823
+S1-ambitious,REF,in_scope,Unconsented additions,-4.793642531524837,-957.1347933677663,1.6824074206674604,323.8266655038782
+S1-ambitious,REF,in_scope,Vacancy released,-3.7023032061063126,-943.8551661287005,-3.7023032061063126,-943.8551661287005
+S1-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+S1-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S1-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,266.4589677327965,0.0,-171.51357774348037
+S2-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,8557.892242836671,0.0,-1841.7738933484761
+S2-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3187.923394968444,0.0,-638.8793592021016
+S2-ambitious,REF,with_retirement_villages,Extra space,40.66850450876832,8039.401060157801,0.0,-1750.5830612873106
+S2-ambitious,REF,with_retirement_villages,Vacancy,5.668160374831838,1126.615473472569,0.0,-240.93626953196872
+S2-ambitious,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,569.7514272125866,0.0,-8.820536395449949
+S2-ambitious,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2144.265555203738,0.0,-273.26392690952343
+S2-ambitious,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,848.5479056582445,0.0,-86.26021970312661
+S2-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1103.414589761191,0.0,183.2044842320529
+S2-ambitious,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1208.6354861568238,0.0,154.02778743887143
+S2-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+S2-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+S2-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S2-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1330.761987131074,0.0,270.02174133147355
+S2-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+S2-ambitious,REF,in_scope,Population growth,40.58837862649656,8044.782848901334,0.0,-1731.345827726007
+S2-ambitious,REF,in_scope,Smaller households,14.75539898484471,2996.783638274995,0.0,-600.5737821399016
+S2-ambitious,REF,in_scope,Extra space,38.23012469413375,7557.379075242816,0.0,-1645.622565393889
+S2-ambitious,REF,in_scope,Vacancy,5.328311934102438,1059.0664828580213,0.0,-226.49034526363357
+S2-ambitious,REF,in_scope,2026 overbuild,2.0209211514993064,533.6264026698968,0.0,-8.275421881581792
+S2-ambitious,REF,in_scope,Demolition replacement,11.48929599148222,2015.7008609721693,0.0,-256.87971874912
+S2-ambitious,REF,in_scope,Recent replacement surge,4.279490687528163,797.6711372621653,0.0,-81.08827691667148
+S2-ambitious,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1037.2566649654348,0.0,172.22001057859802
+S2-ambitious,REF,in_scope,Unconsented additions,-6.476049952192297,-1136.1687847549952,0.0,144.79267411664932
+S2-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+S2-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+S2-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S2-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,437.9725454762769,0.0,0.0
+S3-ambitious,REF,with_retirement_villages,Population growth,43.17717172993055,9663.815956130447,0.0,-735.8501800547001
+S3-ambitious,REF,with_retirement_villages,Smaller households,15.69652243995721,3574.233863413147,0.0,-252.56889075739855
+S3-ambitious,REF,with_retirement_villages,Extra space,40.66850450876832,9092.229442666161,0.0,-697.7546787789506
+S3-ambitious,REF,with_retirement_villages,Vacancy,5.668160374831838,1271.5371546251176,0.0,-96.01458837942005
+S3-ambitious,REF,with_retirement_villages,2026 overbuild,2.1576902517016836,572.6701071908343,0.0,-5.901856417202225
+S3-ambitious,REF,with_retirement_villages,Demolition replacement,12.222102061410915,2203.6451372876368,0.0,-213.8843448256248
+S3-ambitious,REF,with_retirement_villages,Recent replacement surge,4.552443595552199,868.3871825486798,0.0,-66.42094281269135
+S3-ambitious,REF,with_retirement_villages,Overbuild absorbed,-5.082169051077047,-1216.923993337029,0.0,69.69508065621494
+S3-ambitious,REF,with_retirement_villages,Unconsented additions,-6.889102998927821,-1242.1053471474988,0.0,120.55792644819644
+S3-ambitious,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+S3-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+S3-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S3-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-6.732905949936244,-1488.155347762043,0.0,112.62838070050452
+S3-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,407.50254039634274,0.0,-30.47000507993414
+S3-ambitious,REF,in_scope,Population growth,40.58837862649656,9084.398196751283,0.0,-691.7304798760579
+S3-ambitious,REF,in_scope,Smaller households,14.75539898484471,3359.9319162281727,0.0,-237.42550418672408
+S3-ambitious,REF,in_scope,Extra space,38.23012469413375,8547.082552933756,0.0,-655.9190877029487
+S3-ambitious,REF,in_scope,Vacancy,5.328311934102438,1195.2990295982363,0.0,-90.25779852341861
+S3-ambitious,REF,in_scope,2026 overbuild,2.0209211514993064,536.373576070375,0.0,-5.528248481103674
+S3-ambitious,REF,in_scope,Demolition replacement,11.48929599148222,2071.5201947483483,0.0,-201.06038497294094
+S3-ambitious,REF,in_scope,Recent replacement surge,4.279490687528163,816.3209017057844,0.0,-62.438512473052356
+S3-ambitious,REF,in_scope,Overbuild absorbed,-4.777455155683255,-1143.960334182615,0.0,65.51634136141774
+S3-ambitious,REF,in_scope,Unconsented additions,-6.476049952192297,-1167.6318782378878,0.0,113.32958063375668
+S3-ambitious,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+S3-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+S3-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+S3-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,407.50254039634274,0.0,-30.47000507993414
+pathway-ambitious,REF,with_retirement_villages,Population growth,36.91820830435812,6817.1194701432905,-6.258963425572432,-3582.546666041857
+pathway-ambitious,REF,with_retirement_villages,Smaller households,4.9476292065330405,1015.739869679665,-10.74889323342417,-2811.0628844908806
+pathway-ambitious,REF,with_retirement_villages,Extra space,20.573498212930353,3949.0107485235744,-20.09500629583797,-5840.973372921537
+pathway-ambitious,REF,with_retirement_villages,Vacancy,2.8551366782438206,553.2196516673592,-2.8130236965880173,-814.3320913371784
+pathway-ambitious,REF,with_retirement_villages,2026 overbuild,2.311865399248892,605.6378724505256,0.15417514754720818,27.06590884248908
+pathway-ambitious,REF,with_retirement_villages,Demolition replacement,6.2286231793425495,1054.0903581944524,-5.9934788820683655,-1363.4391239188092
+pathway-ambitious,REF,with_retirement_villages,Recent replacement surge,2.6947336601937457,498.00470390176326,-1.8577099353584532,-436.8034214596079
+pathway-ambitious,REF,with_retirement_villages,Overbuild absorbed,-4.271729490314454,-882.4418024704821,0.8104395607625934,404.1772715227619
+pathway-ambitious,REF,with_retirement_villages,Unconsented additions,-5.099388884197276,-832.2815678744998,1.789714114730545,530.3817057211954
+pathway-ambitious,REF,with_retirement_villages,Vacancy released,-3.938442153537257,-839.0723207288315,-3.938442153537257,-839.0723207288315
+pathway-ambitious,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious,REF,with_retirement_villages,Retirement villages (out of scope),-3.794434973080183,-716.8652194110817,2.938470976856061,883.9185090514658
+pathway-ambitious,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,248.37196900193373,0.0,-189.60057647434314
+pathway-ambitious,REF,in_scope,Population growth,34.704686685868005,6408.382372216177,-5.883691940628552,-3367.7463044111637
+pathway-ambitious,REF,in_scope,Smaller households,4.650981977105031,954.8386975056932,-10.104417007739679,-2642.5187229092035
+pathway-ambitious,REF,in_scope,Extra space,19.339963728080686,3712.2381350900323,-18.890160966053063,-5490.763505546673
+pathway-ambitious,REF,in_scope,Vacancy,2.683949964388839,520.0500122134665,-2.644361969713599,-765.5068159081884
+pathway-ambitious,REF,in_scope,2026 overbuild,2.1693348856367014,568.2937609226192,0.148413734137395,26.39193637114056
+pathway-ambitious,REF,in_scope,Demolition replacement,5.855170818186772,990.8897885332756,-5.634125173295447,-1281.6907911880137
+pathway-ambitious,REF,in_scope,Recent replacement surge,2.5331643022298684,468.1456119028108,-1.7463263852982949,-410.613802276026
+pathway-ambitious,REF,in_scope,Overbuild absorbed,-4.015607484143406,-829.5328424601663,0.761847671539849,379.9438330838665
+pathway-ambitious,REF,in_scope,Unconsented additions,-4.793642531524837,-782.3800876083632,1.6824074206674604,498.5813712632813
+pathway-ambitious,REF,in_scope,Vacancy released,-3.7023032061063126,-788.7636842398098,-3.7023032061063126,-788.7636842398098
+pathway-ambitious,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,248.37196900193373,0.0,-189.60057647434314
+TL,REF,with_retirement_villages,Population growth,34.54053985966197,4507.472683615038,-8.63663187026858,-5892.19345257011
+TL,REF,with_retirement_villages,Smaller households,4.306328397363473,410.3323700651837,-11.390194042593738,-3416.470384105362
+TL,REF,with_retirement_villages,Extra space,4.968843393772201,1104.694842753826,-35.69966111499612,-8685.289278691285
+TL,REF,with_retirement_villages,Vacancy,1.0861240746524459,195.30965767586832,-4.582036300179392,-1172.2420853286694
+TL,REF,with_retirement_villages,2026 overbuild,4.771543480807229,1220.4619668630564,2.6138532291055454,641.8900032550199
+TL,REF,with_retirement_villages,Demolition replacement,1.8495884620802898,371.3954015782798,-10.372513599330626,-2046.1340805349819
+TL,REF,with_retirement_villages,Recent replacement surge,1.2728569981883724,259.66924950588,-3.2795865973638265,-675.1388758554912
+TL,REF,with_retirement_villages,Overbuild absorbed,-4.123868109861444,-528.1774734708195,0.9583009412156027,758.4416005224246
+TL,REF,with_retirement_villages,Unconsented additions,-3.57810025689242,-462.2656081326554,3.311002742035401,900.3976654630399
+TL,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+TL,REF,with_retirement_villages,Released dwellings (TL),-7.131118132514524,-913.3405477363865,-7.131118132514524,-913.3405477363865
+TL,REF,with_retirement_villages,Surplus kept vacant (2050),1.923936583130579e-15,1.211921334833987e-13,1.923936583130579e-15,1.211921334833987e-13
+TL,REF,with_retirement_villages,Retirement villages (out of scope),-2.2766144145997433,-369.79748541742435,4.456291535336501,1230.986243045123
+TL,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,166.96969562675568,0.0,-271.0028498495212
+TL,REF,in_scope,Population growth,32.46957717741675,4237.216116782737,-8.118801449079804,-5538.9125598446035
+TL,REF,in_scope,Smaller households,4.048131928962361,385.7298876148545,-10.70726705588235,-3211.6275328000424
+TL,REF,in_scope,Extra space,4.67092421577926,1038.4601572536233,-33.55920047835449,-8164.541483383082
+TL,REF,in_scope,Vacancy,1.0210028450471091,183.59938869419614,-4.307309089055329,-1101.9574394274587
+TL,REF,in_scope,2026 overbuild,4.4849884530629165,1147.1595010523356,2.46406730156361,605.257676500857
+TL,REF,in_scope,Demolition replacement,1.738691854845932,349.1274804586004,-9.750604136636287,-1923.4530992626887
+TL,REF,in_scope,Recent replacement surge,1.1965397387073973,244.1001435324865,-3.0829509488207663,-634.6592706463503
+TL,REF,in_scope,Overbuild absorbed,-3.8766114949757573,-496.5092991572483,0.9008436607074981,712.9673763867845
+TL,REF,in_scope,Unconsented additions,-3.3635664906147804,-434.5493411716361,3.1124834615775168,846.4121177000084
+TL,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+TL,REF,in_scope,Released dwellings (TL),-6.7035544755733385,-858.5789777601037,-6.7035544755733385,-858.5789777601037
+TL,REF,in_scope,Surplus kept vacant (2050),1.8085822521659094e-15,1.1392576223252802e-13,1.8085822521659094e-15,1.1392576223252802e-13
+TL,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,166.96969562675568,0.0,-271.0028498495212
+TL-from2027,REF,with_retirement_villages,Population growth,32.70918822481366,3494.3042593917603,-10.46798350511689,-6905.361876793388
+TL-from2027,REF,with_retirement_villages,Smaller households,4.485675143020969,533.8203461214639,-11.21084729693624,-3292.9824080490816
+TL-from2027,REF,with_retirement_villages,Extra space,1.1359751180725868,310.09952385948196,-39.532529390695736,-9479.88459758563
+TL-from2027,REF,with_retirement_villages,Vacancy,0.6422114345112759,93.8975308760382,-5.025948940320562,-1273.6542121284995
+TL-from2027,REF,with_retirement_villages,2026 overbuild,6.390886954049458,1012.6409346117822,4.233196702347774,434.0689710037457
+TL-from2027,REF,with_retirement_villages,Demolition replacement,0.4126810126274628,95.67285358779937,-11.809421048783452,-2321.8566285254624
+TL-from2027,REF,with_retirement_villages,Recent replacement surge,0.3263650598865435,75.66201408661749,-4.226078535665655,-859.1461112747536
+TL-from2027,REF,with_retirement_villages,Overbuild absorbed,-4.469322807307529,-445.57120581316633,0.6128462437695177,841.0478681800777
+TL-from2027,REF,with_retirement_villages,Unconsented additions,-3.061281937394726,-331.58954987137827,3.8278210615330948,1031.073723724317
+TL-from2027,REF,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+TL-from2027,REF,with_retirement_villages,Released dwellings (TL),-5.928839091860615,-591.0783573102507,-5.928839091860615,-591.0783573102507
+TL-from2027,REF,with_retirement_villages,Surplus kept vacant (2050),1.923936583130579e-15,1.211921334833987e-13,1.923936583130579e-15,1.211921334833987e-13
+TL-from2027,REF,with_retirement_villages,Retirement villages (out of scope),-1.7990927722254713,-232.57444891056144,4.933813177710773,1368.2092795519861
+TL-from2027,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,139.23451047404458,0.0,-298.7380350022323
+TL-from2027,REF,in_scope,Population growth,30.748028716150817,3284.7946874217505,-9.84034991034574,-6491.33398920559
+TL-from2027,REF,in_scope,Smaller households,4.216725501133053,501.81383955461496,-10.538673483711658,-3095.543580860282
+TL-from2027,REF,in_scope,Extra space,1.0678649470374528,291.50674724671705,-37.1622597470963,-8911.494893389989
+TL-from2027,REF,in_scope,Vacancy,0.6037060747112327,88.26767438886903,-4.724605859391206,-1197.289153732786
+TL-from2027,REF,in_scope,2026 overbuild,6.1658362537401725,974.0418712188941,4.144915102240866,432.1400466674155
+TL-from2027,REF,in_scope,Demolition replacement,0.38793771155877455,89.93655327838718,-11.101358279923446,-2182.644026442902
+TL-from2027,REF,in_scope,Recent replacement surge,0.30679704321512224,71.12551268063076,-3.972693644313041,-807.633901498206
+TL-from2027,REF,in_scope,Overbuild absorbed,-4.201353609766102,-418.85589263997196,0.5761015459171537,790.6207829040609
+TL-from2027,REF,in_scope,Unconsented additions,-2.877735279527351,-311.708286104332,3.598314672664946,969.2531727673124
+TL-from2027,REF,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+TL-from2027,REF,in_scope,Released dwellings (TL),-5.573361020059564,-555.6388064159726,-5.573361020059564,-555.6388064159726
+TL-from2027,REF,in_scope,Surplus kept vacant (2050),1.8085822521659094e-15,1.1392576223252802e-13,1.8085822521659094e-15,1.1392576223252802e-13
+TL-from2027,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,139.23451047404458,0.0,-298.7380350022323
+pathway-moderate-by2030,REF,with_retirement_villages,Population growth,39.63353869136284,8207.772062486036,-3.5436330385677124,-2191.8940736991117
+pathway-moderate-by2030,REF,with_retirement_villages,Smaller households,9.777526546508353,2066.6407512228916,-5.918995893448857,-1760.162002947654
+pathway-moderate-by2030,REF,with_retirement_villages,Extra space,28.46698115358501,5914.578854835702,-12.201523355183312,-3875.4052666094094
+pathway-moderate-by2030,REF,with_retirement_villages,Vacancy,3.9040174426663157,814.9028283280583,-1.7641429321655222,-552.6489146764794
+pathway-moderate-by2030,REF,with_retirement_villages,2026 overbuild,2.4328641380053213,633.5691683705417,0.2751738863036377,54.997204762505135
+pathway-moderate-by2030,REF,with_retirement_villages,Demolition replacement,8.511162822040847,1517.6476662194152,-3.7109392393700684,-899.8818158938464
+pathway-moderate-by2030,REF,with_retirement_villages,Recent replacement surge,3.305908444822097,623.9265791566005,-1.246535150730102,-310.88154620477064
+pathway-moderate-by2030,REF,with_retirement_villages,Overbuild absorbed,-4.595869832015651,-999.2184664685708,0.4862992190613964,287.4006075246732
+pathway-moderate-by2030,REF,with_retirement_villages,Unconsented additions,-5.853303622357623,-1037.390784983503,1.035799376570198,325.2724886121923
+pathway-moderate-by2030,REF,with_retirement_villages,Vacancy released,-2.07148486456197,-489.7418050424637,-2.07148486456197,-489.7418050424637
+pathway-moderate-by2030,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate-by2030,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate-by2030,REF,with_retirement_villages,Retirement villages (out of scope),-5.008424244855781,-1034.7711780853413,1.7244817050804633,566.0125503772063
+pathway-moderate-by2030,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,313.4648291276335,0.0,-124.50771634864338
+pathway-moderate-by2030,REF,in_scope,Population growth,37.2572127876965,7715.654981663147,-3.331165838800054,-2060.473694964194
+pathway-moderate-by2030,REF,in_scope,Smaller households,9.19129099012296,1942.730242273721,-5.56410799472175,-1654.6271781411758
+pathway-moderate-by2030,REF,in_scope,Extra space,26.76017356213501,5559.9557904791955,-11.46995113199874,-3643.0458501575094
+pathway-moderate-by2030,REF,in_scope,Vacancy,3.669942513106848,766.0433329646291,-1.6583694209955904,-519.5134951570258
+pathway-moderate-by2030,REF,in_scope,2026 overbuild,2.285698588906204,595.2379034677047,0.2647774374068974,53.33607891622603
+pathway-moderate-by2030,REF,in_scope,Demolition replacement,8.000855205003734,1426.6533825658616,-3.4884407864784848,-845.9271971554276
+pathway-moderate-by2030,REF,in_scope,Recent replacement surge,3.1076946054332852,586.5175326522856,-1.171796082094878,-292.2418815265512
+pathway-moderate-by2030,REF,in_scope,Overbuild absorbed,-4.3203131976019415,-939.3078754970793,0.45714195808131386,270.1688000469535
+pathway-moderate-by2030,REF,in_scope,Unconsented additions,-5.502354464672048,-975.1914791436162,0.9736954875202493,305.76997972802826
+pathway-moderate-by2030,REF,in_scope,Vacancy released,-1.9472839149307901,-460.37813538648277,-1.9472839149307901,-460.37813538648277
+pathway-moderate-by2030,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate-by2030,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate-by2030,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,313.4648291276335,0.0,-124.50771634864338
+pathway-ambitious-by2030,REF,with_retirement_villages,Population growth,36.08990565279513,6389.487435479466,-7.087266077135418,-4010.178700705682
+pathway-ambitious-by2030,REF,with_retirement_villages,Smaller households,4.799993414834325,884.3697962924244,-10.896529025122884,-2942.432957878121
+pathway-ambitious-by2030,REF,with_retirement_villages,Extra space,18.969604942196966,3427.143019409606,-21.698899566571356,-6362.841102035505
+pathway-ambitious-by2030,REF,with_retirement_villages,Vacancy,2.6147147376334954,476.21642292172584,-3.0534456371983425,-891.3353200828119
+pathway-ambitious-by2030,REF,with_retirement_villages,2026 overbuild,2.699368124210414,687.2815590415124,0.5416778725087306,108.7095954334759
+pathway-ambitious-by2030,REF,with_retirement_villages,Demolition replacement,5.629048588234032,914.3091714044712,-6.593053473176883,-1503.2203107087903
+pathway-ambitious-by2030,REF,with_retirement_villages,Recent replacement surge,2.327458365563134,411.5764870858002,-2.224985229989065,-523.231638275571
+pathway-ambitious-by2030,REF,with_retirement_villages,Overbuild absorbed,-4.081233570501487,-753.5180653583662,1.00093548057556,533.1010086348778
+pathway-ambitious-by2030,REF,with_retirement_villages,Unconsented additions,-4.916701769922462,-777.9081371356637,1.9724012290053583,584.7551364600316
+pathway-ambitious-by2030,REF,with_retirement_villages,Vacancy released,-3.6638068417689795,-794.5018668731349,-3.6638068417689795,-794.5018668731349
+pathway-ambitious-by2030,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious-by2030,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious-by2030,REF,with_retirement_villages,Retirement villages (out of scope),-3.620759777235142,-650.1961090484608,3.112146172701102,950.5876194140867
+pathway-ambitious-by2030,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,217.5605565707106,0.0,-220.4119889055663
+pathway-ambitious-by2030,REF,in_scope,Population growth,33.92604694889643,6006.39006377318,-6.662331677600129,-3769.7386128541602
+pathway-ambitious-by2030,REF,in_scope,Smaller households,4.512198050965281,831.3452386894518,-10.243200933879429,-2766.012181725445
+pathway-ambitious-by2030,REF,in_scope,Extra space,17.83223580749784,3221.6602641095574,-20.397888886635908,-5981.341376527147
+pathway-ambitious-by2030,REF,in_scope,Vacancy,2.4579431101963856,447.66370068431337,-2.8703688239060527,-837.8931274373415
+pathway-ambitious-by2030,REF,in_scope,2026 overbuild,2.5422892722099983,647.2828642628374,0.5213681207106919,105.38103971135877
+pathway-ambitious-by2030,REF,in_scope,Demolition replacement,5.291545190483378,859.489525223303,-6.197750800998842,-1413.0910544979863
+pathway-ambitious-by2030,REF,in_scope,Recent replacement surge,2.1879098976137437,386.89941055175046,-2.0915807899144196,-491.8600036270863
+pathway-ambitious-by2030,REF,in_scope,Overbuild absorbed,-3.8365332138661894,-708.3390438348139,0.940921941817066,501.1376317092189
+pathway-ambitious-by2030,REF,in_scope,Unconsented additions,-4.621908870720277,-731.2667491096392,1.8541410814720205,549.6947097620052
+pathway-ambitious-by2030,REF,in_scope,Vacancy released,-3.4441343272371663,-746.8655611305608,-3.4441343272371663,-746.8655611305608
+pathway-ambitious-by2030,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious-by2030,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious-by2030,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,217.5605565707106,0.0,-220.4119889055663
+pathway-moderate-by2045,REF,with_retirement_villages,Population growth,40.865272363439374,8921.645764871717,-2.3118993664911756,-1478.0203713134306
+pathway-moderate-by2045,REF,with_retirement_villages,Smaller households,10.053124628537505,2321.9963416547616,-5.643397811419705,-1504.806412515784
+pathway-moderate-by2045,REF,with_retirement_villages,Extra space,31.284096325523947,6925.6162225741555,-9.384408183244375,-2864.367898870956
+pathway-moderate-by2045,REF,with_retirement_villages,Vacancy,4.34046090601434,966.3284923310946,-1.3276994688174977,-401.2232506734431
+pathway-moderate-by2045,REF,with_retirement_villages,2026 overbuild,2.190051389775326,583.5241291887546,0.032361138073642604,4.952165580718088
+pathway-moderate-by2045,REF,with_retirement_villages,Demolition replacement,9.60439164276769,1782.5430953769596,-2.6177104186432256,-634.9863867363019
+pathway-moderate-by2045,REF,with_retirement_villages,Recent replacement surge,3.8563302312273473,759.4368689693102,-0.6961133643248516,-175.3712563920609
+pathway-moderate-by2045,REF,with_retirement_villages,Overbuild absorbed,-4.964718230437758,-1208.5623196213503,0.1174508206392888,78.0567543718937
+pathway-moderate-by2045,REF,with_retirement_villages,Unconsented additions,-6.159610819788569,-1130.8872884378477,0.7294921791392515,231.77598515784757
+pathway-moderate-by2045,REF,with_retirement_villages,Vacancy released,-2.333084528311701,-517.0148640598035,-2.333084528311701,-517.0148640598035
+pathway-moderate-by2045,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate-by2045,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate-by2045,REF,with_retirement_villages,Retirement villages (out of scope),-5.3271173923585895,-1165.2382951715797,1.4057885575776545,435.5454332909678
+pathway-moderate-by2045,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,369.0293158002415,0.0,-68.9432296760354
+pathway-moderate-by2045,REF,in_scope,Population growth,38.41509485005011,8386.726637425245,-2.1732837764464463,-1389.4020392020957
+pathway-moderate-by2045,REF,in_scope,Smaller households,9.450364914003465,2182.775362729275,-5.305034070841245,-1414.5820576856217
+pathway-moderate-by2045,REF,in_scope,Extra space,29.40838169277185,6510.373936067418,-8.821743001361899,-2692.627704569287
+pathway-moderate-by2045,REF,in_scope,Vacancy,4.0802179394416696,908.3899003305361,-1.2480939946607688,-377.16692779111884
+pathway-moderate-by2045,REF,in_scope,2026 overbuild,2.052027181623368,546.7511298311238,0.031106030124061768,4.849305279645137
+pathway-moderate-by2045,REF,in_scope,Demolition replacement,9.02853681366965,1675.6663573462736,-2.4607591778125695,-596.9142223750157
+pathway-moderate-by2045,REF,in_scope,Recent replacement surge,3.625114505250444,713.9029710757993,-0.6543761822777192,-164.85644310303746
+pathway-moderate-by2045,REF,in_scope,Overbuild absorbed,-4.6670463867180665,-1136.100005098394,0.11040876896518892,73.37667044563887
+pathway-moderate-by2045,REF,in_scope,Unconsented additions,-5.790296263711423,-1063.082170692268,0.6857536884808741,217.87928817937654
+pathway-moderate-by2045,REF,in_scope,Vacancy released,-2.1931987299921456,-486.0159713388367,-2.1931987299921456,-486.0159713388367
+pathway-moderate-by2045,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate-by2045,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate-by2045,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,369.0293158002415,0.0,-68.9432296760354
+pathway-ambitious-by2045,REF,with_retirement_villages,Population growth,38.55337299694822,7653.86788084591,-4.62379873298233,-2745.7982553392376
+pathway-ambitious-by2045,REF,with_retirement_villages,Smaller households,5.192810420945376,1268.3964502698577,-10.503712019011834,-2558.406303900688
+pathway-ambitious-by2045,REF,with_retirement_villages,Extra space,23.94998198570167,5006.681021294698,-16.718522523066653,-4783.303100150413
+pathway-ambitious-by2045,REF,with_retirement_villages,Vacancy,3.345001633979773,704.9940211112481,-2.323158740852065,-662.5577218932896
+pathway-ambitious-by2045,REF,with_retirement_villages,2026 overbuild,2.2223039501700765,588.3821771350098,0.06461369846839293,9.810213526973257
+pathway-ambitious-by2045,REF,with_retirement_villages,Demolition replacement,7.505053206177847,1332.4866931673703,-4.717048855233068,-1085.0427889458913
+pathway-ambitious-by2045,REF,with_retirement_villages,Recent replacement surge,3.2834129808596932,629.3857135112853,-1.2690306146925057,-305.42241185008584
+pathway-ambitious-by2045,REF,with_retirement_villages,Overbuild absorbed,-4.847671362092196,-1133.8635818931398,0.23449768898485068,152.75549210010422
+pathway-ambitious-by2045,REF,with_retirement_villages,Unconsented additions,-5.495283906273717,-941.4564526120761,1.3938190926541036,421.2068209836192
+pathway-ambitious-by2045,REF,with_retirement_villages,Vacancy released,-4.220239178370688,-855.4021715142825,-4.220239178370688,-855.4021715142825
+pathway-ambitious-by2045,REF,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious-by2045,REF,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious-by2045,REF,with_retirement_villages,Retirement villages (out of scope),-4.172397384869218,-856.1966563368038,2.5605085650670256,744.5870721257437
+pathway-ambitious-by2045,REF,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,310.86236804688053,0.0,-127.11017742939634
+pathway-ambitious-by2045,REF,in_scope,Population growth,36.24181107360364,7194.961482148346,-4.346567552892914,-2581.167194478995
+pathway-ambitious-by2045,REF,in_scope,Smaller households,4.8814627511797655,1192.3466338664703,-9.873936233664946,-2405.0107865484265
+pathway-ambitious-by2045,REF,in_scope,Extra space,22.51400214478557,4706.493195651717,-15.716122549348178,-4496.508444984988
+pathway-ambitious-by2045,REF,in_scope,Vacancy,3.144443866667297,662.7243775312859,-2.1838680674351414,-622.832450590369
+pathway-ambitious-by2045,REF,in_scope,2026 overbuild,2.0830306867684003,551.5094419832569,0.06210953526909391,9.607617431778294
+pathway-ambitious-by2045,REF,in_scope,Demolition replacement,7.055069355855617,1252.594189247341,-4.434226635626603,-1019.9863904739482
+pathway-ambitious-by2045,REF,in_scope,Recent replacement surge,3.0865479121205364,591.649351233336,-1.192942775407627,-287.1100629455008
+pathway-ambitious-by2045,REF,in_scope,Overbuild absorbed,-4.557017350097259,-1065.8800131823357,0.22043780558599657,143.5966623616971
+pathway-ambitious-by2045,REF,in_scope,Unconsented additions,-5.165800697717203,-885.0091246826263,1.310249254475094,395.9523341890182
+pathway-ambitious-by2045,REF,in_scope,Vacancy released,-3.967204399989535,-804.1144388177114,-3.967204399989535,-804.1144388177114
+pathway-ambitious-by2045,REF,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious-by2045,REF,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious-by2045,REF,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,310.86236804688053,0.0,-127.11017742939634
+LOW,LOW,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+LOW,LOW,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+LOW,LOW,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+LOW,LOW,with_retirement_villages,Vacancy,5.668160374831838,1367.5517430045377,0.0,0.0
+LOW,LOW,with_retirement_villages,2026 overbuild,3.0195093685055574,809.4870907667023,0.0,0.0
+LOW,LOW,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+LOW,LOW,with_retirement_villages,Recent replacement surge,0.0,0.0,0.0,0.0
+LOW,LOW,with_retirement_villages,Overbuild absorbed,-5.952412631701981,-1506.8905465125117,0.0,0.0
+LOW,LOW,with_retirement_villages,Unconsented additions,-6.889102998927821,-1362.6632735956953,0.0,0.0
+LOW,LOW,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+LOW,LOW,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+LOW,LOW,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+LOW,LOW,with_retirement_villages,Retirement villages (out of scope),-6.459447932546165,-1545.3731836679872,0.0,0.0
+LOW,LOW,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,416.43271297632043,0.0,0.0
+LOW,LOW,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+LOW,LOW,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+LOW,LOW,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+LOW,LOW,in_scope,Vacancy,5.328311934102438,1285.556828121655,0.0,0.0
+LOW,LOW,in_scope,2026 overbuild,2.8310677919319946,758.9718695818831,0.0,0.0
+LOW,LOW,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+LOW,LOW,in_scope,Recent replacement surge,0.0,0.0,0.0,0.0
+LOW,LOW,in_scope,Overbuild absorbed,-5.59552115057096,-1416.5412323230125,0.0,0.0
+LOW,LOW,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716445,0.0,0.0
+LOW,LOW,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+LOW,LOW,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+LOW,LOW,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+LOW,LOW,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,416.43271297632043,0.0,0.0
+pathway-moderate,LOW,with_retirement_villages,Population growth,40.04769001714433,8423.13562010876,-3.129481712786216,-1976.5305160763874
+pathway-moderate,LOW,with_retirement_villages,Smaller households,9.88311648335941,2147.9537860148394,-5.8134059565978,-1678.8489681557062
+pathway-moderate,LOW,with_retirement_villages,Extra space,29.37724065145094,6228.95516797952,-11.291263857317382,-3561.0289534655913
+pathway-moderate,LOW,with_retirement_villages,Vacancy,4.0485804880670315,863.3508354032273,-1.6195798867648064,-504.2009076013104
+pathway-moderate,LOW,with_retirement_villages,2026 overbuild,3.085590420780336,816.8150435517041,0.06608105227477878,7.3279527850017985
+pathway-moderate,LOW,with_retirement_villages,Demolition replacement,8.85880169165272,1605.4653622258302,-3.3633003697581945,-812.0641198874314
+pathway-moderate,LOW,with_retirement_villages,Recent replacement surge,0.0,0.0,0.0,0.0
+pathway-moderate,LOW,with_retirement_villages,Overbuild absorbed,-5.460167916318437,-1243.6800552737807,0.49224471538354386,263.21049123873104
+pathway-moderate,LOW,with_retirement_villages,Unconsented additions,-5.949432538561744,-1068.1962598177429,0.9396704603660764,294.4670137779524
+pathway-moderate,LOW,with_retirement_villages,Vacancy released,-2.1816720648911465,-505.47415392015915,-2.1816720648911465,-505.47415392015915
+pathway-moderate,LOW,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate,LOW,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate,LOW,with_retirement_villages,Retirement villages (out of scope),-4.90476480734729,-1036.865515869179,1.554683125198875,508.50766779880814
+pathway-moderate,LOW,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,315.31884782704424,0.0,-101.1138651492762
+pathway-moderate,LOW,in_scope,Population growth,37.64653265618228,7918.105889606268,-2.941845970314276,-1858.0227870210729
+pathway-moderate,LOW,in_scope,Smaller households,9.290550023643393,2019.1679548698246,-5.464848961201318,-1578.1894655450722
+pathway-moderate,LOW,in_scope,Extra space,27.615856221917372,5855.482901631732,-10.614268472216377,-3347.518739004973
+pathway-moderate,LOW,in_scope,Vacancy,3.8058379269802924,811.5865210911229,-1.5224740071221459,-473.970307030532
+pathway-moderate,LOW,in_scope,2026 overbuild,2.8949295429609445,766.340129622593,0.06386175102894986,7.36826004070997
+pathway-moderate,LOW,in_scope,Demolition replacement,8.32765053456704,1509.205753478663,-3.1616454569151795,-763.3748262426263
+pathway-moderate,LOW,in_scope,Recent replacement surge,0.0,0.0,0.0,0.0
+pathway-moderate,LOW,in_scope,Overbuild absorbed,-5.132790172964347,-1169.1121708808505,0.4627309776066131,247.42906144216204
+pathway-moderate,LOW,in_scope,Unconsented additions,-5.592719736215366,-1004.1499362691071,0.8833302159769314,276.81152260253737
+pathway-moderate,LOW,in_scope,Vacancy released,-2.05086457173546,-475.16721274722613,-2.05086457173546,-475.16721274722613
+pathway-moderate,LOW,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate,LOW,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate,LOW,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,315.31884782704424,0.0,-101.1138651492762
+pathway-ambitious,LOW,with_retirement_villages,Population growth,36.91820830435812,6799.11863863025,-6.258963425572432,-3600.5474975548977
+pathway-ambitious,LOW,with_retirement_villages,Smaller households,4.9476292065330405,1014.8178610500973,-10.74889323342417,-2811.9848931204483
+pathway-ambitious,LOW,with_retirement_villages,Extra space,20.573498212930353,3939.8828334276473,-20.09500629583797,-5850.101288017464
+pathway-ambitious,LOW,with_retirement_villages,Vacancy,2.8551366782438206,551.9646521586776,-2.8130236965880173,-815.5870908458601
+pathway-ambitious,LOW,with_retirement_villages,2026 overbuild,3.15128898501404,824.8742949653525,0.1317796165084828,15.387204198650238
+pathway-ambitious,LOW,with_retirement_villages,Demolition replacement,6.2286231793425495,1054.0903581944524,-5.9934788820683655,-1363.4391239188092
+pathway-ambitious,LOW,with_retirement_villages,Recent replacement surge,0.0,0.0,0.0,0.0
+pathway-ambitious,LOW,with_retirement_villages,Overbuild absorbed,-4.978534139669986,-1022.7971300447566,0.9738784920319956,484.0934164677551
+pathway-ambitious,LOW,with_retirement_villages,Unconsented additions,-5.099388884197276,-832.2815678744998,1.789714114730545,530.3817057211954
+pathway-ambitious,LOW,with_retirement_villages,Vacancy released,-3.938442153537257,-835.2347176405551,-3.938442153537257,-835.2347176405551
+pathway-ambitious,LOW,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious,LOW,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious,LOW,with_retirement_villages,Retirement villages (out of scope),-3.6408171083291867,-690.2084906688877,2.818630824216978,855.1646929990994
+pathway-ambitious,LOW,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,235.24157463846433,0.0,-181.1911383378561
+pathway-ambitious,LOW,in_scope,Population growth,34.704686685868005,6391.460824653658,-5.883691940628552,-3384.6678519736824
+pathway-ambitious,LOW,in_scope,Smaller households,4.650981977105031,953.9719701621824,-10.104417007739679,-2643.3854502527142
+pathway-ambitious,LOW,in_scope,Extra space,19.339963728080686,3703.6575065045986,-18.890160966053063,-5499.344134132107
+pathway-ambitious,LOW,in_scope,Vacancy,2.683949964388839,518.8702592747364,-2.644361969713599,-766.6865688469185
+pathway-ambitious,LOW,in_scope,2026 overbuild,2.958428773957071,774.3854672606881,0.12736098202507629,15.41359767880499
+pathway-ambitious,LOW,in_scope,Demolition replacement,5.855170818186772,990.8897885332756,-5.634125173295447,-1281.6907911880137
+pathway-ambitious,LOW,in_scope,Recent replacement surge,0.0,0.0,0.0,0.0
+pathway-ambitious,LOW,in_scope,Overbuild absorbed,-4.680033929267041,-961.4728225372211,0.9154872213039189,455.06840978579146
+pathway-ambitious,LOW,in_scope,Unconsented additions,-4.793642531524837,-782.380087608363,1.6824074206674604,498.5813712632814
+pathway-ambitious,LOW,in_scope,Vacancy released,-3.7023032061063126,-785.1561740457782,-3.7023032061063126,-785.1561740457782
+pathway-ambitious,LOW,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious,LOW,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious,LOW,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,235.24157463846433,0.0,-181.1911383378561
+TL,LOW,with_retirement_villages,Population growth,34.54053985966197,4506.614090872856,-8.63663187026858,-5893.052045312292
+TL,LOW,with_retirement_villages,Smaller households,4.306328397363473,410.34992035748905,-11.390194042593738,-3416.4528338130567
+TL,LOW,with_retirement_villages,Extra space,4.968843393772201,1104.3189070532455,-35.69966111499612,-8685.665214391865
+TL,LOW,with_retirement_villages,Vacancy,1.0861240746524459,195.25585475807097,-4.582036300179392,-1172.2958882464668
+TL,LOW,with_retirement_villages,2026 overbuild,5.586762063123045,1428.537189900461,2.5672526946174874,619.0500991337587
+TL,LOW,with_retirement_villages,Demolition replacement,1.8495884620802898,373.09241978665807,-10.372513599330626,-2044.4370623266036
+TL,LOW,with_retirement_villages,Recent replacement surge,0.0,0.0,0.0,0.0
+TL,LOW,with_retirement_villages,Overbuild absorbed,-4.5624854194661655,-580.0101145965353,1.3899272122358157,926.8804319159764
+TL,LOW,with_retirement_villages,Unconsented additions,-3.57810025689242,-464.6421421711943,3.311002742035401,898.0211314245009
+TL,LOW,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+TL,LOW,with_retirement_villages,Released dwellings (TL),-7.103538010510969,-903.0437396990933,-7.103538010510969,-903.0437396990933
+TL,LOW,with_retirement_villages,Surplus kept vacant (2050),1.923936583130579e-15,1.211921334833987e-13,1.923936583130579e-15,1.211921334833987e-13
+TL,LOW,with_retirement_villages,Retirement villages (out of scope),-2.224530840773734,-364.09672131047813,4.234917091772431,1181.276462357509
+TL,LOW,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,163.22040681896036,0.0,-253.21230615736008
+TL,LOW,in_scope,Population growth,32.46957717741675,4236.409003071733,-8.118801449079804,-5539.719673555607
+TL,LOW,in_scope,Smaller households,4.048131928962361,385.7463856363912,-10.70726705588235,-3211.6110347785057
+TL,LOW,in_scope,Extra space,4.67092421577926,1038.106761698912,-33.55920047835449,-8164.894878937793
+TL,LOW,in_scope,Vacancy,1.0210028450471091,183.54881166213787,-4.307309089055329,-1102.008016459517
+TL,LOW,in_scope,2026 overbuild,5.2513286082114545,1342.7590647707018,2.42026081627946,583.7871951888187
+TL,LOW,in_scope,Demolition replacement,1.738691854845932,350.72274978306075,-9.750604136636287,-1921.8578299382284
+TL,LOW,in_scope,Recent replacement surge,0.0,0.0,0.0,0.0
+TL,LOW,in_scope,Overbuild absorbed,-4.288930429289621,-545.2341873083523,1.3065907212813386,871.3070450146603
+TL,LOW,in_scope,Unconsented additions,-3.3635664906147804,-436.78338429003014,3.1124834615775168,844.1780745816143
+TL,LOW,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+TL,LOW,in_scope,Released dwellings (TL),-6.677627987348331,-848.8995400730748,-6.677627987348331,-848.8995400730748
+TL,LOW,in_scope,Surplus kept vacant (2050),1.8085822521659094e-15,1.1392576223252802e-13,1.8085822521659094e-15,1.1392576223252802e-13
+TL,LOW,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,163.22040681896036,0.0,-253.21230615736008
+HIGH,HIGH,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Vacancy,5.668160374831838,1367.5517430045377,0.0,0.0
+HIGH,HIGH,with_retirement_villages,2026 overbuild,2.035979076891811,546.2068407994434,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Recent replacement surge,10.359482849212132,2049.1037533134386,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Overbuild absorbed,-4.959591948285246,-1255.5996551080877,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Unconsented additions,-6.889102998927819,-1362.6632735956948,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+HIGH,HIGH,with_retirement_villages,Retirement villages (out of scope),-7.081133132894832,-1667.5133675832924,0.0,0.0
+HIGH,HIGH,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,450.6832637435483,0.0,0.0
+HIGH,HIGH,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+HIGH,HIGH,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+HIGH,HIGH,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+HIGH,HIGH,in_scope,Vacancy,5.328311934102438,1285.556828121655,0.0,0.0
+HIGH,HIGH,in_scope,2026 overbuild,1.906507468334543,511.4772319666517,0.0,0.0
+HIGH,HIGH,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+HIGH,HIGH,in_scope,Recent replacement surge,9.73835467706295,1926.2447180348202,0.0,0.0
+HIGH,HIGH,in_scope,Overbuild absorbed,-4.662227463370009,-1180.3171019073034,0.0,0.0
+HIGH,HIGH,in_scope,Unconsented additions,-6.476049952192296,-1280.9614588716443,0.0,0.0
+HIGH,HIGH,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+HIGH,HIGH,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+HIGH,HIGH,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+HIGH,HIGH,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,450.6832637435483,0.0,0.0
+pathway-moderate,HIGH,with_retirement_villages,Population growth,40.04769001714433,8502.695375797135,-3.129481712786216,-1896.9707603880124
+pathway-moderate,HIGH,with_retirement_villages,Smaller households,9.88311648335941,2165.0789256937337,-5.8134059565978,-1661.7238284768118
+pathway-moderate,HIGH,with_retirement_villages,Extra space,29.37724065145094,6285.469545513085,-11.291263857317382,-3504.5145759320267
+pathway-moderate,HIGH,with_retirement_villages,Vacancy,4.0485804880670315,870.9962435616447,-1.6195798867648064,-496.55549944289294
+pathway-moderate,HIGH,with_retirement_villages,2026 overbuild,2.1156121457721375,561.063064389539,0.07963306888032662,14.856223590095624
+pathway-moderate,HIGH,with_retirement_villages,Demolition replacement,8.85880169165272,1605.4653622258302,-3.3633003697581945,-812.0641198874314
+pathway-moderate,HIGH,with_retirement_villages,Recent replacement surge,7.508741436467238,1360.7962690390646,-2.8507414127448936,-688.307484274374
+pathway-moderate,HIGH,with_retirement_villages,Overbuild absorbed,-4.562817265075748,-1048.4188075130448,0.3967746832094985,207.1808475950429
+pathway-moderate,HIGH,with_retirement_villages,Unconsented additions,-5.949432538561744,-1068.1962598177429,0.9396704603660746,294.46701377795193
+pathway-moderate,HIGH,with_retirement_villages,Vacancy released,-2.1816720648911465,-509.2902955065831,-2.1816720648911465,-509.2902955065831
+pathway-moderate,HIGH,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate,HIGH,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate,HIGH,with_retirement_villages,Retirement villages (out of scope),-5.350615227450834,-1124.243952311599,1.7305179054439987,543.2694152716933
+pathway-moderate,HIGH,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,341.23990736994057,0.0,-109.44335637360774
+pathway-moderate,HIGH,in_scope,Population growth,37.64653265618228,7992.8954452425105,-2.941845970314276,-1783.23323138483
+pathway-moderate,HIGH,in_scope,Smaller households,9.290550023643393,2035.2663148473216,-5.464848961201318,-1562.0911055675751
+pathway-moderate,HIGH,in_scope,Extra space,27.615856221917372,5908.608821215366,-10.614268472216377,-3294.3928194213386
+pathway-moderate,HIGH,in_scope,Vacancy,3.8058379269802924,818.7735300742248,-1.5224740071221459,-466.7832980474301
+pathway-moderate,HIGH,in_scope,2026 overbuild,1.9831086916146896,525.9219851182772,0.07660122328014651,14.444753151625548
+pathway-moderate,HIGH,in_scope,Demolition replacement,8.32765053456704,1509.205753478663,-3.1616454569151795,-763.3748262426263
+pathway-moderate,HIGH,in_scope,Recent replacement surge,7.058536449262843,1279.2063951468615,-2.6798182278001077,-647.0383228879587
+pathway-moderate,HIGH,in_scope,Overbuild absorbed,-4.28924237828275,-985.5582895667338,0.3729850850872589,194.75881234056953
+pathway-moderate,HIGH,in_scope,Unconsented additions,-5.592719736215366,-1004.1499362691071,0.8833302159769305,276.81152260253714
+pathway-moderate,HIGH,in_scope,Vacancy released,-2.05086457173546,-478.75454821632354,-2.05086457173546,-478.75454821632354
+pathway-moderate,HIGH,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate,HIGH,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate,HIGH,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,341.23990736994057,0.0,-109.44335637360774
+pathway-ambitious,HIGH,with_retirement_villages,Population growth,36.91820830435812,6840.3861928373435,-6.258963425572432,-3559.279943347804
+pathway-ambitious,HIGH,with_retirement_villages,Smaller households,4.9476292065330405,1017.5847471391452,-10.74889323342417,-2809.2180070314002
+pathway-ambitious,HIGH,with_retirement_villages,Extra space,20.573498212930353,3960.636642714894,-20.09500629583797,-5829.3474787302175
+pathway-ambitious,HIGH,with_retirement_villages,Vacancy,2.8551366782438206,554.7935481252115,-2.8130236965880173,-812.7581948793262
+pathway-ambitious,HIGH,with_retirement_villages,2026 overbuild,2.1946609718277355,575.6664721158637,0.15868189493592455,29.459631316420314
+pathway-ambitious,HIGH,with_retirement_villages,Demolition replacement,6.2286231793425495,1054.0903581944524,-5.9934788820683655,-1363.4391239188092
+pathway-ambitious,HIGH,with_retirement_villages,Recent replacement surge,5.279395858125855,893.4495009424522,-5.080086991086277,-1155.6542523709863
+pathway-ambitious,HIGH,with_retirement_villages,Overbuild absorbed,-4.172297171875251,-864.6779316372496,0.7872947764099951,390.9217234708382
+pathway-ambitious,HIGH,with_retirement_villages,Unconsented additions,-5.099388884197276,-832.2815678744998,1.7897141147305433,530.381705721195
+pathway-ambitious,HIGH,with_retirement_villages,Vacancy released,-3.938442153537257,-841.2795492089408,-3.938442153537257,-841.2795492089408
+pathway-ambitious,HIGH,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious,HIGH,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious,HIGH,with_retirement_villages,Retirement villages (out of scope),-3.9483391565480592,-742.0078844767644,3.132793976346773,925.505483106528
+pathway-ambitious,HIGH,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,254.57255296020324,0.0,-196.11071078334507
+pathway-ambitious,HIGH,in_scope,Population growth,34.704686685868005,6430.254081553943,-5.883691940628552,-3345.8745950733974
+pathway-ambitious,HIGH,in_scope,Smaller households,4.650981977105031,956.5729608176407,-10.104417007739679,-2640.784459597256
+pathway-ambitious,HIGH,in_scope,Extra space,19.339963728080686,3723.1669703148227,-18.890160966053063,-5479.834670321882
+pathway-ambitious,HIGH,in_scope,Vacancy,2.683949964388839,521.5295418535685,-2.644361969713599,-764.0272862680864
+pathway-ambitious,HIGH,in_scope,2026 overbuild,2.0591577367806546,540.1193469513379,0.15265026844611151,28.642114984686202
+pathway-ambitious,HIGH,in_scope,Demolition replacement,5.855170818186772,990.8897885332756,-5.634125173295447,-1281.6907911880137
+pathway-ambitious,HIGH,in_scope,Recent replacement surge,4.96285674636324,839.8805474043722,-4.775497930699711,-1086.364170630448
+pathway-ambitious,HIGH,in_scope,Overbuild absorbed,-3.9221368739384523,-812.8340480194083,0.7400905894315564,367.48305388789504
+pathway-ambitious,HIGH,in_scope,Unconsented additions,-4.793642531524837,-782.3800876083632,1.6824074206674595,498.5813712632811
+pathway-ambitious,HIGH,in_scope,Vacancy released,-3.7023032061063126,-790.8385729292827,-3.7023032061063126,-790.8385729292827
+pathway-ambitious,HIGH,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious,HIGH,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious,HIGH,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,254.57255296020324,0.0,-196.11071078334507
+TL,HIGH,with_retirement_villages,Population growth,34.54053985966197,4507.840791850056,-8.63663187026858,-5891.825344335091
+TL,HIGH,with_retirement_villages,Smaller households,4.306328397363473,410.3519320324152,-11.390194042593738,-3416.45082213813
+TL,HIGH,with_retirement_villages,Extra space,4.968843393772201,1104.8470002774166,-35.69966111499612,-8685.137121167696
+TL,HIGH,with_retirement_villages,Vacancy,1.0861240746524459,195.33138559136918,-4.582036300179392,-1172.2203574131686
+TL,HIGH,with_retirement_villages,2026 overbuild,4.659082910193541,1192.678251365454,2.62310383330173,646.4714105660105
+TL,HIGH,with_retirement_villages,Demolition replacement,1.8495884620802898,371.3954015782798,-10.372513599330626,-2046.1340805349819
+TL,HIGH,with_retirement_villages,Recent replacement surge,1.5677155905544358,314.7956279201854,-8.791767258657696,-1734.3081253932532
+TL,HIGH,with_retirement_villages,Overbuild absorbed,-4.065021324465485,-521.9417305997342,0.894570623819761,733.6579245083535
+TL,HIGH,with_retirement_villages,Unconsented additions,-3.57810025689242,-462.2656081326554,3.311002742035399,900.3976654630394
+TL,HIGH,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+TL,HIGH,with_retirement_villages,Released dwellings (TL),-7.140566773225014,-916.8364644606349,-7.140566773225014,-916.8364644606349
+TL,HIGH,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+TL,HIGH,with_retirement_villages,Retirement villages (out of scope),-2.290512321596295,-371.63482425173476,4.790620811298537,1295.8785433315577
+TL,HIGH,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,168.05465023114022,0.0,-282.6286135124081
+TL,HIGH,in_scope,Population growth,32.46957717741675,4237.5621541867595,-8.118801449079804,-5538.566522440581
+TL,HIGH,in_scope,Smaller households,4.048131928962361,385.7482766964191,-10.70726705588235,-3211.6091437184778
+TL,HIGH,in_scope,Extra space,4.67092421577926,1038.6031918001422,-33.55920047835449,-8164.398448836562
+TL,HIGH,in_scope,Vacancy,1.0210028450471091,183.61981385929565,-4.307309089055329,-1101.9370142623593
+TL,HIGH,in_scope,2026 overbuild,4.379270731458284,1121.0416262155359,2.472763263123741,609.5643942488841
+TL,HIGH,in_scope,Demolition replacement,1.738691854845932,349.1274804586004,-9.750604136636287,-1923.4530992626887
+TL,HIGH,in_scope,Recent replacement surge,1.4737193618445343,295.92128488427915,-8.264635315218417,-1630.323433150541
+TL,HIGH,in_scope,Overbuild absorbed,-3.8212930127568847,-490.64743552587856,0.840934450613124,689.6696663814248
+TL,HIGH,in_scope,Unconsented additions,-3.3635664906147804,-434.5493411716361,3.112483461577516,846.4121177000081
+TL,HIGH,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+TL,HIGH,in_scope,Released dwellings (TL),-6.712436599883425,-861.8652882331016,-6.712436599883425,-861.8652882331016
+TL,HIGH,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+TL,HIGH,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,168.05465023114022,0.0,-282.6286135124081
+VHIGH,VHIGH,with_retirement_villages,Population growth,43.17717172993055,10399.666136185147,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Smaller households,15.69652243995721,3826.8027541705455,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Extra space,40.66850450876832,9789.984121445112,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Vacancy,5.668160374831838,1367.5517430045377,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,2026 overbuild,2.063643018493278,553.8014056278445,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Demolition replacement,12.222102061410915,2417.5294821132616,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Recent replacement surge,16.502399461071278,3204.9021609084566,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Overbuild absorbed,-4.987767563858731,-1262.7363138704288,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Unconsented additions,-6.889102998927819,-1362.6632735956953,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,Retirement villages (out of scope),-7.449416068172831,-1736.8395473833655,0.0,0.0
+VHIGH,VHIGH,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,459.6278829424557,0.0,0.0
+VHIGH,VHIGH,in_scope,Population growth,40.58837862649656,9776.12867662734,0.0,0.0
+VHIGH,VHIGH,in_scope,Smaller households,14.75539898484471,3597.3574204148968,0.0,0.0
+VHIGH,VHIGH,in_scope,Extra space,38.23012469413375,9203.001640636705,0.0,0.0
+VHIGH,VHIGH,in_scope,Vacancy,5.328311934102438,1285.556828121655,0.0,0.0
+VHIGH,VHIGH,in_scope,2026 overbuild,1.9325127505481363,518.616446056141,0.0,0.0
+VHIGH,VHIGH,in_scope,Demolition replacement,11.48929599148222,2272.5805797212893,0.0,0.0
+VHIGH,VHIGH,in_scope,Recent replacement surge,15.512957674977649,3012.7444007097015,0.0,0.0
+VHIGH,VHIGH,in_scope,Overbuild absorbed,-4.688713740889165,-1187.0258648106687,0.0,0.0
+VHIGH,VHIGH,in_scope,Unconsented additions,-6.476049952192297,-1280.9614588716443,0.0,0.0
+VHIGH,VHIGH,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+VHIGH,VHIGH,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+VHIGH,VHIGH,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+VHIGH,VHIGH,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,459.6278829424557,0.0,0.0
+pathway-moderate,VHIGH,with_retirement_villages,Population growth,40.04769001714433,8555.842169166905,-3.129481712786216,-1843.823967018243
+pathway-moderate,VHIGH,with_retirement_villages,Smaller households,9.88311648335941,2175.763316158924,-5.8134059565978,-1651.0394380116213
+pathway-moderate,VHIGH,with_retirement_villages,Extra space,29.37724065145094,6322.989575773383,-11.291263857317382,-3466.9945456717287
+pathway-moderate,VHIGH,with_retirement_villages,Vacancy,4.0485804880670315,876.0102929459485,-1.6195798867648064,-491.54145005858913
+pathway-moderate,VHIGH,with_retirement_villages,2026 overbuild,2.143417532227363,568.7807428056968,0.07977451373408506,14.979337177852358
+pathway-moderate,VHIGH,with_retirement_villages,Demolition replacement,8.85880169165272,1605.4653622258302,-3.3633003697581945,-812.0641198874314
+pathway-moderate,VHIGH,with_retirement_villages,Recent replacement surge,11.627709648911349,2041.9915213402764,-4.874689812159929,-1162.9106395681802
+pathway-moderate,VHIGH,with_retirement_villages,Overbuild absorbed,-4.58833095518676,-1056.5571988883898,0.39943660867197117,206.17911498203898
+pathway-moderate,VHIGH,with_retirement_villages,Unconsented additions,-5.949432538561744,-1068.1962598177429,0.9396704603660746,294.4670137779524
+pathway-moderate,VHIGH,with_retirement_villages,Vacancy released,-2.1816720648911465,-510.20773929335024,-2.1816720648911465,-510.20773929335024
+pathway-moderate,VHIGH,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate,VHIGH,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate,VHIGH,with_retirement_villages,Retirement villages (out of scope),-5.597715461251797,-1171.3838294458933,1.8517006069210344,565.4557179374722
+pathway-moderate,VHIGH,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,347.2473613037944,0.0,-112.38052163866132
+pathway-moderate,VHIGH,in_scope,Population growth,37.64653265618228,8042.855692420563,-2.941845970314276,-1733.2729842067774
+pathway-moderate,VHIGH,in_scope,Smaller households,9.290550023643393,2045.3100965083115,-5.464848961201318,-1552.0473239065852
+pathway-moderate,VHIGH,in_scope,Extra space,27.615856221917372,5943.879246147506,-10.614268472216377,-3259.122394489199
+pathway-moderate,VHIGH,in_scope,Vacancy,3.8058379269802924,823.4869498446312,-1.5224740071221459,-462.0698782770237
+pathway-moderate,VHIGH,in_scope,2026 overbuild,2.0092469380093325,533.1769416520581,0.0767341874611962,14.560495595917132
+pathway-moderate,VHIGH,in_scope,Demolition replacement,8.32765053456704,1509.205753478663,-3.1616454569151795,-763.3748262426263
+pathway-moderate,VHIGH,in_scope,Recent replacement surge,10.930541832174342,1919.5589173526491,-4.582415842803307,-1093.1854833570524
+pathway-moderate,VHIGH,in_scope,Overbuild absorbed,-4.313226332601531,-993.2087237503174,0.3754874082876336,193.81714106035133
+pathway-moderate,VHIGH,in_scope,Unconsented additions,-5.592719736215366,-1004.1499362691071,0.8833302159769314,276.81152260253714
+pathway-moderate,VHIGH,in_scope,Vacancy released,-2.05086457173546,-479.6169844133665,-2.05086457173546,-479.6169844133665
+pathway-moderate,VHIGH,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-moderate,VHIGH,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-moderate,VHIGH,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,347.2473613037944,0.0,-112.38052163866132
+pathway-ambitious,VHIGH,with_retirement_villages,Population growth,36.91820830435812,6864.524728122493,-6.258963425572432,-3535.1414080626546
+pathway-ambitious,VHIGH,with_retirement_villages,Smaller households,4.9476292065330405,1019.6572813994237,-10.74889323342417,-2807.1454727711216
+pathway-ambitious,VHIGH,with_retirement_villages,Extra space,20.573498212930353,3972.6608509324483,-20.09500629583797,-5817.323270512663
+pathway-ambitious,VHIGH,with_retirement_villages,Vacancy,2.8551366782438206,556.4133422651635,-2.8130236965880173,-811.1384007393742
+pathway-ambitious,VHIGH,with_retirement_villages,2026 overbuild,2.2226037761125554,583.4578133532356,0.15896075761927753,29.65640772539109
+pathway-ambitious,VHIGH,with_retirement_villages,Demolition replacement,6.2286231793425495,1054.0903581944524,-5.9934788820683655,-1363.4391239188092
+pathway-ambitious,VHIGH,with_retirement_villages,Recent replacement surge,7.83934747462601,1261.347761485046,-8.663051986445268,-1943.5543994234106
+pathway-ambitious,VHIGH,with_retirement_villages,Overbuild absorbed,-4.1952685405192325,-871.2637846832832,0.7924990233394986,391.4725291871456
+pathway-ambitious,VHIGH,with_retirement_villages,Unconsented additions,-5.099388884197276,-832.2815678744998,1.7897141147305433,530.3817057211954
+pathway-ambitious,VHIGH,with_retirement_villages,Vacancy released,-3.938442153537257,-842.7127564113882,-3.938442153537257,-842.7127564113882
+pathway-ambitious,VHIGH,with_retirement_villages,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious,VHIGH,with_retirement_villages,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious,VHIGH,with_retirement_villages,Retirement villages (out of scope),-4.102125401505334,-766.4420767295962,3.3472906666674973,970.3974706537692
+pathway-ambitious,VHIGH,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,258.37300089840056,0.0,-201.25488204405514
+pathway-ambitious,VHIGH,in_scope,Population growth,34.704686685868005,6452.9453318232045,-5.883691940628552,-3323.183344804136
+pathway-ambitious,VHIGH,in_scope,Smaller households,4.650981977105031,958.5212312091969,-10.104417007739679,-2638.8361892057
+pathway-ambitious,VHIGH,in_scope,Extra space,19.339963728080686,3734.4702376726427,-18.890160966053063,-5468.531402964062
+pathway-ambitious,VHIGH,in_scope,Vacancy,2.683949964388839,523.052217267803,-2.644361969713599,-762.5046108538519
+pathway-ambitious,VHIGH,in_scope,2026 overbuild,2.085425161782283,547.4435434660564,0.15291241123414667,28.827097409915496
+pathway-ambitious,VHIGH,in_scope,Demolition replacement,5.855170818186772,990.8897885332756,-5.634125173295447,-1281.6907911880137
+pathway-ambitious,VHIGH,in_scope,Recent replacement surge,7.369320192508634,1185.7205664851283,-8.143637482469014,-1827.0238342245732
+pathway-ambitious,VHIGH,in_scope,Overbuild absorbed,-3.943730937901758,-819.0250301125124,0.744982802987407,368.0008346981564
+pathway-ambitious,VHIGH,in_scope,Unconsented additions,-4.793642531524837,-782.3800876083632,1.6824074206674604,498.5813712632811
+pathway-ambitious,VHIGH,in_scope,Vacancy released,-3.7023032061063126,-792.1858486829382,-3.7023032061063126,-792.1858486829382
+pathway-ambitious,VHIGH,in_scope,Released dwellings (TL),0.0,0.0,0.0,0.0
+pathway-ambitious,VHIGH,in_scope,Surplus kept vacant (2050),0.0,0.0,0.0,0.0
+pathway-ambitious,VHIGH,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,258.37300089840056,0.0,-201.25488204405514
+TL,VHIGH,with_retirement_villages,Population growth,34.54053985966197,4507.988879732959,-8.63663187026858,-5891.677256452189
+TL,VHIGH,with_retirement_villages,Smaller households,4.306328397363473,410.3692656926446,-11.390194042593738,-3416.433488477901
+TL,VHIGH,with_retirement_villages,Extra space,4.968843393772201,1104.9070324215677,-35.69966111499612,-8685.077089023544
+TL,VHIGH,with_retirement_villages,Vacancy,1.0861240746524459,195.3399247444162,-4.582036300179392,-1172.2118182601214
+TL,VHIGH,with_retirement_villages,2026 overbuild,4.687229535332053,1200.5500745228655,2.623586516838775,646.7486688950211
+TL,VHIGH,with_retirement_villages,Demolition replacement,1.8495884620802898,371.3954015782798,-10.372513599330626,-2046.1340805349819
+TL,VHIGH,with_retirement_villages,Recent replacement surge,1.6223505391420274,321.7283311290068,-14.88004892192925,-2883.17382977945
+TL,VHIGH,with_retirement_villages,Overbuild absorbed,-4.0819033206382676,-524.5936173203445,0.9058642432204635,738.1426965500843
+TL,VHIGH,with_retirement_villages,Unconsented additions,-3.57810025689242,-462.2656081326554,3.311002742035399,900.3976654630399
+TL,VHIGH,with_retirement_villages,Vacancy released,0.0,0.0,0.0,0.0
+TL,VHIGH,with_retirement_villages,Released dwellings (TL),-7.144170828772736,-918.146786787285,-7.144170828772736,-918.146786787285
+TL,VHIGH,with_retirement_villages,Surplus kept vacant (2050),1.923936583130579e-15,1.211921334833987e-13,1.923936583130579e-15,1.211921334833987e-13
+TL,VHIGH,with_retirement_villages,Retirement villages (out of scope),-2.2942474022252823,-372.2989315491175,5.155168665947549,1364.540615834248
+TL,VHIGH,with_retirement_villages,"Maintenance (B2, B4), 2026-2050",0.0,168.38763375135585,0.0,-291.24024919109985
+TL,VHIGH,in_scope,Population growth,32.46957717741675,4237.701363097869,-8.118801449079804,-5538.427313529472
+TL,VHIGH,in_scope,Smaller households,4.048131928962361,385.7645710745867,-10.70726705588235,-3211.59284934031
+TL,VHIGH,in_scope,Extra space,4.67092421577926,1038.6596245700287,-33.55920047835449,-8164.3420160666765
+TL,VHIGH,in_scope,Vacancy,1.0210028450471091,183.62784102650312,-4.307309089055329,-1101.9289870951518
+TL,VHIGH,in_scope,2026 overbuild,4.405729756735015,1128.4414749438877,2.4732170061868786,609.8250288877467
+TL,VHIGH,in_scope,Demolition replacement,1.738691854845932,349.1274804586004,-9.750604136636287,-1923.4530992626887
+TL,VHIGH,in_scope,Recent replacement surge,1.5250785382487437,302.43832088897216,-13.987879136728905,-2710.3060798207293
+TL,VHIGH,in_scope,Overbuild absorbed,-3.837162807492813,-493.140321881751,0.8515509333963522,693.8855429289177
+TL,VHIGH,in_scope,Unconsented additions,-3.3635664906147804,-434.5493411716361,3.1124834615775168,846.4121177000081
+TL,VHIGH,in_scope,Vacancy released,0.0,0.0,0.0,0.0
+TL,VHIGH,in_scope,Released dwellings (TL),-6.7158245654518245,-863.0970469747227,-6.7158245654518245,-863.0970469747227
+TL,VHIGH,in_scope,Surplus kept vacant (2050),1.8085822521659094e-15,1.1392576223252802e-13,1.8085822521659094e-15,1.1392576223252802e-13
+TL,VHIGH,in_scope,"Maintenance (B2, B4), 2026-2050",0.0,168.38763375135585,0.0,-291.24024919109985

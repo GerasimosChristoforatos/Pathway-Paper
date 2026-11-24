@@ -1,0 +1,1273 @@
+{
+  "settings": {
+    "SOURCE_PAIR": "A",
+    "T0": 2025,
+    "PB_YEARS": [
+      2026,
+      2050
+    ],
+    "AR_BASE_WINDOW": [
+      2016,
+      2025
+    ],
+    "AR_BASE_WINDOW_SENS": [
+      2021,
+      2025
+    ],
+    "HIST_RATE_AFTER_LAST_CENSUS": "recent",
+    "GDP_MEASURE": "NY.GDP.PCAP.PP.KD",
+    "GDP_MEASURE_SENS": "NY.GDP.PCAP.CD",
+    "WDI_COVERAGE_MIN": 0.98,
+    "SSEC_WINDOW": [
+      2016,
+      2025
+    ],
+    "SSEC_FCE_SHARE": "mean_of_ratios",
+    "POP_NZ_SOURCE": "model",
+    "DECARB_MODE": "horup_item",
+    "DECARB_ITEM_CASE": "central"
+  },
+  "source_pairs": {
+    "A": {
+      "label": "2 \u00b0C carrying capacity (Bj\u00f8rn & Hauschild 2015)",
+      "sos": 6810000000000.0,
+      "i_glob": 55800000000000.0
+    },
+    "C": {
+      "label": "1 W/m\u00b2 planetary boundary (Bj\u00f8rn & Hauschild 2015)",
+      "sos": 3610000000000.0,
+      "i_glob": 55800000000000.0
+    },
+    "EF31": {
+      "label": "EF 3.1 normalisation factor (Andreasi Bassi et al. 2023)",
+      "sos": 6810000000000.0,
+      "i_glob": 52063962085900.0
+    }
+  },
+  "components": {
+    "SOS_kg": 6810000000000.0,
+    "I_glob_kg": 55800000000000.0,
+    "pair_label": "2 \u00b0C carrying capacity (Bj\u00f8rn & Hauschild 2015)",
+    "I_sec_base_kg": 1415160165.2394671,
+    "I_sec_base_window": [
+      2016,
+      2025
+    ],
+    "I_sec_base_b_share": 0.0022680539698675456,
+    "I_sec_base_wider_scope_kg": 1559411643.418576,
+    "accounting": "time_resolved",
+    "decarb_a45": "resch",
+    "event_timing": "n+1",
+    "I_sec_base_5yr_kg": 1537760586.134503,
+    "I_sec_base_long_run_2024_25_kg": 1417748767.3382626,
+    "I_sec_base_20yr_kg": 1185447066.711881,
+    "I_sec_base_full_kg": 1133692602.780036,
+    "I_sec_base_20yr_window": [
+      2006,
+      2025
+    ],
+    "I_sec_base_full_window": [
+      1992,
+      2025
+    ],
+    "I_sec_base_soil_on_all_kg": 1433232431.3944051,
+    "LoE_AR_base_identity": 8.193832599118943,
+    "base_year_b": 2024,
+    "alpha": 0.4219591072190145,
+    "g_W": 21495.07332678265,
+    "g_NZ": 48325.3650985684,
+    "g_W_over_g_NZ": 0.44479898461066,
+    "s_sec": 0.0525461766938767,
+    "s_sec_parts": {
+      "window": [
+        2016,
+        2025
+      ],
+      "consented_value_nzd_per_yr": 14289850911.5,
+      "gdp_nzd_per_yr": 352304300000.0,
+      "fce_share_mean_of_ratios": 0.7719134921292377,
+      "fce_share_ratio_of_sums": 0.7737089782895071,
+      "s_sec_mean_of_ratios": 0.0525461766938767,
+      "s_sec_ratio_of_sums": 0.052424236874543714
+    },
+    "P_NZ_t0": 5344500.0,
+    "P_W_t0": 8266145733.0
+  },
+  "coverage": {
+    "NY.GDP.PCAP.PP.KD": {
+      "measure": "NY.GDP.PCAP.PP.KD",
+      "year": 2024,
+      "alpha": 0.4219591072190145,
+      "g_W": 21495.07332678265,
+      "g_NZ": 48325.3650985684,
+      "n_economies": 195,
+      "n_all": 217,
+      "population_covered": 7969400788.0,
+      "population_share": 0.9817574232832942,
+      "gdp_share_of_wdi_world": 0.9835962803194391,
+      "excluded": [
+        {
+          "code": "YEM",
+          "name": "Yemen, Rep.",
+          "population": 40583164.0
+        },
+        {
+          "code": "VEN",
+          "name": "Venezuela, RB",
+          "population": 28405543.0
+        },
+        {
+          "code": "PRK",
+          "name": "Korea, Dem. People's Rep.",
+          "population": 26498823.0
+        },
+        {
+          "code": "SYR",
+          "name": "Syrian Arab Republic",
+          "population": 24672760.0
+        },
+        {
+          "code": "SSD",
+          "name": "South Sudan",
+          "population": 11943408.0
+        },
+        {
+          "code": "CUB",
+          "name": "Cuba",
+          "population": 10979783.0
+        },
+        {
+          "code": "ERI",
+          "name": "Eritrea",
+          "population": 3535603.0
+        },
+        {
+          "code": "NCL",
+          "name": "New Caledonia",
+          "population": 292639.0
+        },
+        {
+          "code": "PYF",
+          "name": "French Polynesia",
+          "population": 281807.0
+        },
+        {
+          "code": "CHI",
+          "name": "Channel Islands",
+          "population": 168126.0
+        },
+        {
+          "code": "GUM",
+          "name": "Guam",
+          "population": 167777.0
+        },
+        {
+          "code": "VIR",
+          "name": "Virgin Islands (U.S.)",
+          "population": 104377.0
+        },
+        {
+          "code": "IMN",
+          "name": "Isle of Man",
+          "population": 84160.0
+        },
+        {
+          "code": "GRL",
+          "name": "Greenland",
+          "population": 56836.0
+        },
+        {
+          "code": "ASM",
+          "name": "American Samoa",
+          "population": 46765.0
+        },
+        {
+          "code": "MNP",
+          "name": "Northern Mariana Islands",
+          "population": 44278.0
+        },
+        {
+          "code": "LIE",
+          "name": "Liechtenstein",
+          "population": 40450.0
+        },
+        {
+          "code": "VGB",
+          "name": "British Virgin Islands",
+          "population": 39471.0
+        },
+        {
+          "code": "GIB",
+          "name": "Gibraltar",
+          "population": 39329.0
+        },
+        {
+          "code": "MCO",
+          "name": "Monaco",
+          "population": 38631.0
+        },
+        {
+          "code": "SMR",
+          "name": "San Marino",
+          "population": 33977.0
+        },
+        {
+          "code": "MAF",
+          "name": "St. Martin (French part)",
+          "population": 26129.0
+        }
+      ]
+    },
+    "NY.GDP.PCAP.CD": {
+      "measure": "NY.GDP.PCAP.CD",
+      "year": 2024,
+      "alpha": 0.21805234387004377,
+      "g_W": 13829.178113363072,
+      "g_NZ": 49432.3626396797,
+      "n_economies": 200,
+      "n_all": 217,
+      "population_covered": 7998459858.0,
+      "population_share": 0.9853372354228928,
+      "gdp_share_of_wdi_world": 0.9905318216428205,
+      "excluded": [
+        {
+          "code": "YEM",
+          "name": "Yemen, Rep.",
+          "population": 40583164.0
+        },
+        {
+          "code": "PRK",
+          "name": "Korea, Dem. People's Rep.",
+          "population": 26498823.0
+        },
+        {
+          "code": "SYR",
+          "name": "Syrian Arab Republic",
+          "population": 24672760.0
+        },
+        {
+          "code": "SSD",
+          "name": "South Sudan",
+          "population": 11943408.0
+        },
+        {
+          "code": "CUB",
+          "name": "Cuba",
+          "population": 10979783.0
+        },
+        {
+          "code": "ERI",
+          "name": "Eritrea",
+          "population": 3535603.0
+        },
+        {
+          "code": "CHI",
+          "name": "Channel Islands",
+          "population": 168126.0
+        },
+        {
+          "code": "GUM",
+          "name": "Guam",
+          "population": 167777.0
+        },
+        {
+          "code": "VIR",
+          "name": "Virgin Islands (U.S.)",
+          "population": 104377.0
+        },
+        {
+          "code": "IMN",
+          "name": "Isle of Man",
+          "population": 84160.0
+        },
+        {
+          "code": "GRL",
+          "name": "Greenland",
+          "population": 56836.0
+        },
+        {
+          "code": "ASM",
+          "name": "American Samoa",
+          "population": 46765.0
+        },
+        {
+          "code": "MNP",
+          "name": "Northern Mariana Islands",
+          "population": 44278.0
+        },
+        {
+          "code": "VGB",
+          "name": "British Virgin Islands",
+          "population": 39471.0
+        },
+        {
+          "code": "GIB",
+          "name": "Gibraltar",
+          "population": 39329.0
+        },
+        {
+          "code": "SMR",
+          "name": "San Marino",
+          "population": 33977.0
+        },
+        {
+          "code": "MAF",
+          "name": "St. Martin (French part)",
+          "population": 26129.0
+        }
+      ]
+    }
+  },
+  "alpha_check": {
+    "year": 2017,
+    "hjalsted_alpha": 0.243,
+    "hjalsted_g_W_usd": 10700.0,
+    "NY.GDP.PCAP.CD": {
+      "alpha": 0.23877244684334165,
+      "g_W": 10791.20995350169,
+      "n": 211,
+      "population_share": 0.9948182124980871
+    },
+    "NY.GDP.PCAP.PP.KD": {
+      "alpha": 0.44461239537948033,
+      "g_W": 18771.54996847407,
+      "n": 199,
+      "population_share": 0.9847979302372657
+    }
+  },
+  "history": {
+    "2016": {
+      "I_kt": 1115.0652033846009,
+      "soil_share": 0.9902732085756618,
+      "rate_pct": 0.012850307587149699,
+      "rate_source": "2013-2018"
+    },
+    "2017": {
+      "I_kt": 1253.000474697691,
+      "soil_share": 0.9913069167337618,
+      "rate_pct": 0.012850307587149699,
+      "rate_source": "2013-2018"
+    },
+    "2018": {
+      "I_kt": 1297.46176935326,
+      "soil_share": 0.8863630721605938,
+      "rate_pct": 0.1733322997496143,
+      "rate_source": "2018-2023"
+    },
+    "2019": {
+      "I_kt": 1356.2091221290632,
+      "soil_share": 0.893710124833857,
+      "rate_pct": 0.1733322997496143,
+      "rate_source": "2018-2023"
+    },
+    "2020": {
+      "I_kt": 1408.9655558498466,
+      "soil_share": 0.9001853486350678,
+      "rate_pct": 0.1733322997496143,
+      "rate_source": "2018-2023"
+    },
+    "2021": {
+      "I_kt": 1438.7963034206862,
+      "soil_share": 0.9043215874608553,
+      "rate_pct": 0.1733322997496143,
+      "rate_source": "2018-2023"
+    },
+    "2022": {
+      "I_kt": 1717.5111810729713,
+      "soil_share": 0.9190844633170058,
+      "rate_pct": 0.1733322997496143,
+      "rate_source": "2018-2023"
+    },
+    "2023": {
+      "I_kt": 1866.0481094699678,
+      "soil_share": 0.92638015626339,
+      "rate_pct": 0.1733322997496143,
+      "rate_source": "2018-2023"
+    },
+    "2024": {
+      "I_kt": 1529.4820669941257,
+      "soil_share": 0.9126447852552404,
+      "rate_pct": 0.1733322997496143,
+      "rate_source": "2018-2023 carried"
+    },
+    "2025": {
+      "I_kt": 1169.0618660224616,
+      "soil_share": 0.8866397776311411,
+      "rate_pct": 0.1733322997496143,
+      "rate_source": "2018-2023 carried"
+    }
+  },
+  "boundaries": {
+    "2025": {
+      "B_AR_kt": 172.71040726309627,
+      "B_AtP_kt": 43.4236583920041,
+      "P_NZ": 5344500.0,
+      "P_W": 8266145733.0
+    },
+    "2026": {
+      "B_AR_kt": 172.42054134206305,
+      "B_AtP_kt": 43.35077894638239,
+      "P_NZ": 5379900.0,
+      "P_W": 8334886370.0
+    },
+    "2027": {
+      "B_AR_kt": 172.71069943193507,
+      "B_AtP_kt": 43.42373185046007,
+      "P_NZ": 5432900.0,
+      "P_W": 8402856615.5
+    },
+    "2028": {
+      "B_AR_kt": 173.0456056229857,
+      "B_AtP_kt": 43.50793553143105,
+      "P_NZ": 5486900.0,
+      "P_W": 8469952105.0
+    },
+    "2029": {
+      "B_AR_kt": 173.39235874005377,
+      "B_AtP_kt": 43.59511782195157,
+      "P_NZ": 5540900.0,
+      "P_W": 8536205117.0
+    },
+    "2030": {
+      "B_AR_kt": 173.75065621880458,
+      "B_AtP_kt": 43.68520264988142,
+      "P_NZ": 5594900.0,
+      "P_W": 8601622122.0
+    },
+    "2031": {
+      "B_AR_kt": 174.12091389782879,
+      "B_AtP_kt": 43.778294567304044,
+      "P_NZ": 5648900.0,
+      "P_W": 8666174572.5
+    },
+    "2032": {
+      "B_AR_kt": 174.50343665721454,
+      "B_AtP_kt": 43.87447022859716,
+      "P_NZ": 5702900.0,
+      "P_W": 8729839446.5
+    },
+    "2033": {
+      "B_AR_kt": 174.89806892221,
+      "B_AtP_kt": 43.973690518429045,
+      "P_NZ": 5756900.0,
+      "P_W": 8792616995.0
+    },
+    "2034": {
+      "B_AR_kt": 175.3005190449493,
+      "B_AtP_kt": 44.074876410620426,
+      "P_NZ": 5810756.0,
+      "P_W": 8854497545.0
+    },
+    "2035": {
+      "B_AR_kt": 175.70467865713013,
+      "B_AtP_kt": 44.17649211064277,
+      "P_NZ": 5864244.0,
+      "P_W": 8915448398.0
+    },
+    "2036": {
+      "B_AR_kt": 176.1078087948387,
+      "B_AtP_kt": 44.27784897537827,
+      "P_NZ": 5917236.0,
+      "P_W": 8975419619.5
+    },
+    "2037": {
+      "B_AR_kt": 176.51006122790204,
+      "B_AtP_kt": 44.37898516350668,
+      "P_NZ": 5969700.0,
+      "P_W": 9034362775.0
+    },
+    "2038": {
+      "B_AR_kt": 176.91399922196572,
+      "B_AtP_kt": 44.48054514326548,
+      "P_NZ": 6021700.0,
+      "P_W": 9092250653.0
+    },
+    "2039": {
+      "B_AR_kt": 177.32206357552917,
+      "B_AtP_kt": 44.583142591629425,
+      "P_NZ": 6073300.0,
+      "P_W": 9149059291.5
+    },
+    "2040": {
+      "B_AR_kt": 177.73534096769518,
+      "B_AtP_kt": 44.687050726541166,
+      "P_NZ": 6124500.0,
+      "P_W": 9204735889.0
+    },
+    "2041": {
+      "B_AR_kt": 178.1555142559894,
+      "B_AtP_kt": 44.79269265991082,
+      "P_NZ": 6175300.0,
+      "P_W": 9259195973.0
+    },
+    "2042": {
+      "B_AR_kt": 178.58365694076582,
+      "B_AtP_kt": 44.900338296218344,
+      "P_NZ": 6225700.0,
+      "P_W": 9312385842.5
+    },
+    "2043": {
+      "B_AR_kt": 179.02053378160167,
+      "B_AtP_kt": 45.01017991489355,
+      "P_NZ": 6275700.0,
+      "P_W": 9364267504.0
+    },
+    "2044": {
+      "B_AR_kt": 179.46778899818565,
+      "B_AtP_kt": 45.122630913340906,
+      "P_NZ": 6325300.0,
+      "P_W": 9414756681.0
+    },
+    "2045": {
+      "B_AR_kt": 179.92714099051318,
+      "B_AtP_kt": 45.238123339724524,
+      "P_NZ": 6374500.0,
+      "P_W": 9463764636.0
+    },
+    "2046": {
+      "B_AR_kt": 180.40001293593568,
+      "B_AtP_kt": 45.357015015950545,
+      "P_NZ": 6423300.0,
+      "P_W": 9511217790.5
+    },
+    "2047": {
+      "B_AR_kt": 180.887856306819,
+      "B_AtP_kt": 45.47967087799001,
+      "P_NZ": 6471700.0,
+      "P_W": 9557041010.0
+    },
+    "2048": {
+      "B_AR_kt": 181.3917302874087,
+      "B_AtP_kt": 45.606357230899924,
+      "P_NZ": 6519700.0,
+      "P_W": 9601180035.5
+    },
+    "2049": {
+      "B_AR_kt": 181.9123118034129,
+      "B_AtP_kt": 45.737244270507894,
+      "P_NZ": 6567300.0,
+      "P_W": 9643601307.5
+    },
+    "2050": {
+      "B_AR_kt": 182.45002343551272,
+      "B_AtP_kt": 45.87243824402532,
+      "P_NZ": 6614500.0,
+      "P_W": 9684285445.5
+    }
+  },
+  "B_AtP_over_B_AR": {
+    "min": 0.2514246771814693,
+    "max": 0.25142467718146955
+  },
+  "deterministic": {
+    "LOW": {
+      "label": "Low replacement",
+      "I_kt": 24612.527036885433,
+      "LoE_AR": 5.5601007009624634,
+      "LoE_AtP": 22.11437939701272
+    },
+    "REF_HL5": {
+      "label": "Reference, replacement half-life 5 yr",
+      "I_kt": 25115.37952794628,
+      "LoE_AR": 5.673697751921028,
+      "LoE_AtP": 22.566192847593683
+    },
+    "REF": {
+      "label": "Reference",
+      "I_kt": 25502.820795312804,
+      "LoE_AR": 5.761222793906274,
+      "LoE_AtP": 22.914309201829166
+    },
+    "REF_HL15": {
+      "label": "Reference, replacement half-life 15 yr",
+      "I_kt": 25738.690413519107,
+      "LoE_AR": 5.814506994572025,
+      "LoE_AtP": 23.1262382823915
+    },
+    "HIGH": {
+      "label": "High replacement",
+      "I_kt": 26561.75179848796,
+      "LoE_AR": 6.000440936935692,
+      "LoE_AtP": 23.865759734494098
+    },
+    "VHIGH": {
+      "label": "Very High replacement (trend continues)",
+      "I_kt": 27657.62655154787,
+      "LoE_AR": 6.248004869461758,
+      "LoE_AtP": 24.85040426223623
+    },
+    "LOW_NOUC": {
+      "label": "Low replacement, no census under-construction correction",
+      "I_kt": 24612.527036885433,
+      "LoE_AR": 5.5601007009624634,
+      "LoE_AtP": 22.11437939701272
+    },
+    "REF_NOUC": {
+      "label": "Reference, no census under-construction correction",
+      "I_kt": 25502.820795312804,
+      "LoE_AR": 5.761222793906274,
+      "LoE_AtP": 22.914309201829166
+    },
+    "HIGH_NOUC": {
+      "label": "High replacement, no census under-construction correction",
+      "I_kt": 26561.75179848796,
+      "LoE_AR": 6.000440936935692,
+      "LoE_AtP": 23.865759734494098
+    }
+  },
+  "population_paths": {
+    "5th": {
+      "I_kt": 21982.20657554564,
+      "B_AR_kt": 4242.142610828151,
+      "B_AtP_kt": 1066.579336485224,
+      "LoE_AR": 5.181864117306106,
+      "LoE_AtP": 20.610006047918755,
+      "P_NZ_2050": 6140088.442776736
+    },
+    "50th": {
+      "I_kt": 25502.820795312804,
+      "B_AR_kt": 4426.63332205925,
+      "B_AtP_kt": 1112.9648539994828,
+      "LoE_AR": 5.761222793906274,
+      "LoE_AtP": 22.914309201829166,
+      "P_NZ_2050": 6614500.0
+    },
+    "95th": {
+      "I_kt": 29603.427408687316,
+      "B_AR_kt": 4628.108184158374,
+      "B_AtP_kt": 1163.620606162936,
+      "LoE_AR": 6.396442397353062,
+      "LoE_AtP": 25.44078993780048,
+      "P_NZ_2050": 7099034.644995723
+    }
+  },
+  "one_at_a_time_ar_base": {
+    "Population: Stats NZ 5th / 95th percentile": {
+      "rule": "reference_base",
+      "reason": "the base history is observed; both budgets move with the population path (Horup Eq. 1)"
+    },
+    "Living arrangements: propensities change (Stats NZ B)": {
+      "rule": "reference_base",
+      "reason": "future household size only"
+    },
+    "Household size: 2018-2023 census pace": {
+      "rule": "reference_base",
+      "reason": "future household size only"
+    },
+    "After 2048: held flat (zero slope)": {
+      "rule": "reference_base",
+      "reason": "future household size only"
+    },
+    "After 2048: PCHIP end slope": {
+      "rule": "reference_base",
+      "reason": "future household size only"
+    },
+    "Completion rate 0.93 / 0.96": {
+      "rule": "recompute",
+      "reason": "the completion rate turns the 2016-2025 consents into the built floor area behind the base, as in the Monte Carlo (F5)",
+      "sides": {
+        "low": {
+          "I_sec_base_kg": 1395717836.5897214,
+          "B_AR_kt_2026_2050": 4365.817548711909
+        },
+        "high": {
+          "I_sec_base_kg": 1434411480.001371,
+          "B_AR_kt_2026_2050": 4486.851602301808
+        }
+      }
+    },
+    "Completion rate 0.95": {
+      "rule": "recompute",
+      "reason": "as the completion-rate row",
+      "sides": {
+        "single": {
+          "I_sec_base_kg": 1421577270.1601021,
+          "B_AR_kt_2026_2050": 4446.706082140104
+        }
+      }
+    },
+    "Completion lag 15 / 19 months": {
+      "rule": "recompute",
+      "reason": "the completion lag times the 2016-2025 completions behind the base (F5)",
+      "sides": {
+        "low": {
+          "I_sec_base_kg": 1413311979.4298694,
+          "B_AR_kt_2026_2050": 4420.852180750246
+        },
+        "high": {
+          "I_sec_base_kg": 1419048939.9670959,
+          "B_AR_kt_2026_2050": 4438.797443276152
+        }
+      }
+    },
+    "Completion lag 0 months": {
+      "rule": "recompute",
+      "reason": "as the completion-lag row",
+      "sides": {
+        "single": {
+          "I_sec_base_kg": 1416553994.6386223,
+          "B_AR_kt_2026_2050": 4430.993232559219
+        }
+      }
+    },
+    "No 2026 data": {
+      "rule": "reference_base",
+      "reason": "the 2026 data only"
+    },
+    "No census under-construction correction": {
+      "rule": "reference_base",
+      "reason": "calibration of future net replacement only"
+    },
+    "Dwelling-size window 2016-2025": {
+      "rule": "reference_base",
+      "reason": "future dwelling size only"
+    },
+    "2026 overbuild absorbed by 2030 / by 2045": {
+      "rule": "reference_base",
+      "reason": "future building only"
+    },
+    "No starting surplus": {
+      "rule": "reference_base",
+      "reason": "future building only (the surplus is absorbed from 2026)"
+    },
+    "Starting surplus minus 2 SD": {
+      "rule": "reference_base",
+      "reason": "future building only (the surplus is absorbed from 2026)"
+    },
+    "2026 overbuild never absorbed": {
+      "rule": "reference_base",
+      "reason": "future building only"
+    },
+    "Vacancy parameter: 1986-2023 census mean (one definition)": {
+      "rule": "reference_base",
+      "reason": "future vacancy only"
+    },
+    "2026 overbuild booked as stock-neutral redevelopment": {
+      "rule": "reference_base",
+      "reason": "future building only"
+    },
+    "2026 overbuild gap vs the 2026 requirement": {
+      "rule": "reference_base",
+      "reason": "future building only"
+    },
+    "Low / High replacement": {
+      "rule": "reference_base",
+      "reason": "future net replacement only; the base uses the census rates"
+    },
+    "Very High replacement (trend continues)": {
+      "rule": "reference_base",
+      "reason": "future net replacement only"
+    },
+    "Replacement half-life 5 / 15 yr": {
+      "rule": "reference_base",
+      "reason": "future net replacement only"
+    },
+    "Single case study: lowest / highest": {
+      "rule": "recompute",
+      "reason": "the level of the present-day carbon factors",
+      "sides": {
+        "low": {
+          "I_sec_base_kg": 1092915343.1311545,
+          "B_AR_kt_2026_2050": 3418.648711946703
+        },
+        "high": {
+          "I_sec_base_kg": 1696933937.8219342,
+          "B_AR_kt_2026_2050": 5308.024136776559
+        }
+      }
+    },
+    "Case studies: jackknife low / high": {
+      "rule": "recompute",
+      "reason": "the level of the present-day carbon factors",
+      "sides": {
+        "low": {
+          "I_sec_base_kg": 1373021848.4990885,
+          "B_AR_kt_2026_2050": 4294.824300296061
+        },
+        "high": {
+          "I_sec_base_kg": 1458114787.8980002,
+          "B_AR_kt_2026_2050": 4560.995755843958
+        }
+      }
+    },
+    "Frozen technology (2025 factors held)": {
+      "rule": "reference_base",
+      "reason": "future technology only (the base is at 2025 factors)"
+    },
+    "Decarbonisation: proxy-mapped items held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "Decarbonisation: NZ-made electricity-intensive items held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "Soil order: lowest (Raw) / highest (Organic)": {
+      "rule": "reference_base",
+      "reason": "where future building happens (siting)"
+    },
+    "A4-A5 on each item's own path / held at 2025": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "Soil carbon loss on all floor area, including replacement": {
+      "rule": "recompute",
+      "reason": "an accounting convention that applies to past and future building alike",
+      "sides": {
+        "single": {
+          "I_sec_base_kg": 1433232431.3944054,
+          "B_AR_kt_2026_2050": 4483.163527990418
+        }
+      }
+    },
+    "Event timing L / n": {
+      "rule": "recompute",
+      "reason": "an accounting convention that applies to past and future cohorts alike",
+      "sides": {
+        "single": {
+          "I_sec_base_kg": 1413741828.6895494,
+          "B_AR_kt_2026_2050": 4422.196752978253
+        }
+      }
+    },
+    "i_source_pair": {
+      "rule": "reference_base",
+      "reason": "the carrying capacity only"
+    },
+    "i_glob_ef31": {
+      "rule": "reference_base",
+      "reason": "the global impact only"
+    },
+    "ii_gdp_measure": {
+      "rule": "reference_base",
+      "reason": "ability to pay only"
+    },
+    "iii_base_window": {
+      "rule": "recompute",
+      "reason": "the base window itself"
+    },
+    "iii_base_window_20": {
+      "rule": "recompute",
+      "reason": "the base window itself"
+    },
+    "iii_base_window_full": {
+      "rule": "recompute",
+      "reason": "the base window itself"
+    },
+    "iv_pop_statsnz": {
+      "rule": "reference_base",
+      "reason": "the population source of the boundaries only"
+    },
+    "iv_pop_wpp": {
+      "rule": "reference_base",
+      "reason": "the population source of the boundaries only"
+    },
+    "v_ssec": {
+      "rule": "reference_base",
+      "reason": "ability to pay only"
+    },
+    "vi_frozen": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "vii_proxies_held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "viii_nz_elec_held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "ix_a45_held": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "x_a45_item": {
+      "rule": "reference_base",
+      "reason": "future technology only"
+    },
+    "xi_event_timing": {
+      "rule": "recompute",
+      "reason": "an accounting convention that applies to past and future cohorts alike"
+    },
+    "xii_whole_life": {
+      "rule": "recompute",
+      "reason": "an accounting convention (whole life at construction)"
+    },
+    "window_2028_2050": {
+      "rule": "reference_base",
+      "reason": "the summation window only (carbon and budget both 2028-2050)"
+    },
+    "xiii_wider_scope": {
+      "rule": "recompute",
+      "reason": "a scope convention (maintenance of every cohort since 1992)"
+    },
+    "xiv_alpha_1": {
+      "rule": "reference_base",
+      "reason": "ability to pay only"
+    },
+    "note_soil_long_run": {
+      "rule": "recompute",
+      "reason": "the history convention after the last census"
+    },
+    "Ambition of one lever": {
+      "rule": "reference_base",
+      "reason": "a lever changes future building only"
+    },
+    "Ambition of all": {
+      "rule": "reference_base",
+      "reason": "the levers change future building only"
+    },
+    "Roll-out timing": {
+      "rule": "reference_base",
+      "reason": "future roll-out only"
+    },
+    "Theoretical limit": {
+      "rule": "reference_base",
+      "reason": "the limits change future building only"
+    }
+  },
+  "mc": {
+    "REF": {
+      "LoE_AR_p5": 5.0030702740236,
+      "LoE_AR_p50": 5.774958242775569,
+      "LoE_AR_p95": 6.61976202996712,
+      "LoE_AtP_p5": 19.63794869567281,
+      "LoE_AtP_p50": 22.908450735392357,
+      "LoE_AtP_p95": 26.602051159814202,
+      "n_draws": 5000,
+      "I_sec_base_kt_p5": 1330.8886004682997,
+      "I_sec_base_kt_p50": 1413.3726458128433,
+      "I_sec_base_kt_p95": 1501.3155229209285
+    }
+  },
+  "mc_base_fixed": {
+    "REF": {
+      "LoE_AR_p5": 4.9374649113157965,
+      "LoE_AR_p50": 5.759749830873618,
+      "LoE_AR_p95": 6.688412125221222,
+      "LoE_AtP_p5": 19.63794869567281,
+      "LoE_AtP_p50": 22.908450735392357,
+      "LoE_AtP_p95": 26.602051159814202
+    }
+  },
+  "mc_base_20yr": {
+    "REF": {
+      "LoE_AR_p5": 5.965050867615351,
+      "LoE_AR_p50": 6.886659096485803,
+      "LoE_AR_p95": 7.904529536570282,
+      "I_sec_base_kt_p5": 1112.133947451178,
+      "I_sec_base_kt_p50": 1184.3878527375357,
+      "I_sec_base_kt_p95": 1258.5259397818224
+    }
+  },
+  "committed": {
+    "LOW": {
+      "B_upper_kt": 4762.470087401046,
+      "B_lower_kt": 3865.5228854652355,
+      "C_upper_kt": 5470.238815301748,
+      "C_lower_kt": 5304.010795508605,
+      "C_held_kt": 4718.753244506062,
+      "C_held_share": 0.8626228952393128,
+      "upper_kt": 10232.708902702792,
+      "lower_kt": 9169.53368097384,
+      "maintenance_kt": 416.4327129763205,
+      "maintenance_kt_sum_of_annual": 416.43271297632043,
+      "maintenance_share": 0.016919543139647376,
+      "years_of_B_AR_2050_upper": 56.08499637337433,
+      "years_of_B_AR_2050_lower": 50.25778297153702
+    },
+    "REF_HL5": {
+      "B_upper_kt": 4867.645540974777,
+      "B_lower_kt": 3950.753407804268,
+      "C_upper_kt": 5597.397200683747,
+      "C_lower_kt": 5427.296971586379,
+      "C_held_kt": 4828.40610089935,
+      "C_held_share": 0.8626163067915815,
+      "upper_kt": 10465.042741658524,
+      "lower_kt": 9378.050379390648,
+      "maintenance_kt": 431.1254574449993,
+      "maintenance_kt_sum_of_annual": 431.12545744499926,
+      "maintenance_share": 0.01716579504463706,
+      "years_of_B_AR_2050_upper": 57.35840722079935,
+      "years_of_B_AR_2050_lower": 51.400653191504446
+    },
+    "REF": {
+      "B_upper_kt": 4960.16614654747,
+      "B_lower_kt": 4025.8979468171838,
+      "C_upper_kt": 5701.862491278626,
+      "C_lower_kt": 5528.5810998143825,
+      "C_held_kt": 4918.4899555603815,
+      "C_held_share": 0.8626111140146813,
+      "upper_kt": 10662.028637826095,
+      "lower_kt": 9554.479046631566,
+      "maintenance_kt": 437.9725454762769,
+      "maintenance_kt_sum_of_annual": 437.9725454762769,
+      "maintenance_share": 0.017173494218207123,
+      "years_of_B_AR_2050_upper": 58.43807765579492,
+      "years_of_B_AR_2050_lower": 52.367650421314494
+    },
+    "REF_HL15": {
+      "B_upper_kt": 5018.650711376511,
+      "B_lower_kt": 4073.4454919755535,
+      "C_upper_kt": 5766.727797766563,
+      "C_lower_kt": 5591.471137093376,
+      "C_held_kt": 4974.425441968619,
+      "C_held_share": 0.8626079843572988,
+      "upper_kt": 10785.378509143075,
+      "lower_kt": 9664.916629068928,
+      "maintenance_kt": 441.32197141819273,
+      "maintenance_kt_sum_of_annual": 441.3219714181927,
+      "maintenance_share": 0.017146248092963997,
+      "years_of_B_AR_2050_upper": 59.11415250080899,
+      "years_of_B_AR_2050_lower": 52.97295361809043
+    },
+    "HIGH": {
+      "B_upper_kt": 5228.974365706246,
+      "B_lower_kt": 4244.590061837356,
+      "C_upper_kt": 5996.816945208152,
+      "C_lower_kt": 5814.553642111442,
+      "C_held_kt": 5172.838878615154,
+      "C_held_share": 0.8625974289157833,
+      "upper_kt": 11225.791310914397,
+      "lower_kt": 10059.1437039488,
+      "maintenance_kt": 450.68326374354837,
+      "maintenance_kt_sum_of_annual": 450.6832637435483,
+      "maintenance_share": 0.016967377270997754,
+      "years_of_B_AR_2050_upper": 61.52803435995268,
+      "years_of_B_AR_2050_lower": 55.133693679706326
+    },
+    "VHIGH": {
+      "B_upper_kt": 5518.404540626505,
+      "B_lower_kt": 4480.309808630559,
+      "C_upper_kt": 6308.758968641177,
+      "C_lower_kt": 6116.996450829786,
+      "C_held_kt": 5441.836741365426,
+      "C_held_share": 0.8625843479541787,
+      "upper_kt": 11827.16350926768,
+      "lower_kt": 10597.306259460347,
+      "maintenance_kt": 459.6278829424557,
+      "maintenance_kt_sum_of_annual": 459.6278829424557,
+      "maintenance_share": 0.016618486119400307,
+      "years_of_B_AR_2050_upper": 64.82412710376008,
+      "years_of_B_AR_2050_lower": 58.0833373430943
+    },
+    "LOW_NOUC": {
+      "B_upper_kt": 4762.470087401046,
+      "B_lower_kt": 3865.5228854652355,
+      "C_upper_kt": 5470.238815301748,
+      "C_lower_kt": 5304.010795508605,
+      "C_held_kt": 4718.753244506062,
+      "C_held_share": 0.8626228952393128,
+      "upper_kt": 10232.708902702792,
+      "lower_kt": 9169.53368097384,
+      "maintenance_kt": 416.4327129763205,
+      "maintenance_kt_sum_of_annual": 416.43271297632043,
+      "maintenance_share": 0.016919543139647376,
+      "years_of_B_AR_2050_upper": 56.08499637337433,
+      "years_of_B_AR_2050_lower": 50.25778297153702
+    },
+    "REF_NOUC": {
+      "B_upper_kt": 4960.16614654747,
+      "B_lower_kt": 4025.8979468171838,
+      "C_upper_kt": 5701.862491278626,
+      "C_lower_kt": 5528.5810998143825,
+      "C_held_kt": 4918.4899555603815,
+      "C_held_share": 0.8626111140146813,
+      "upper_kt": 10662.028637826095,
+      "lower_kt": 9554.479046631566,
+      "maintenance_kt": 437.9725454762769,
+      "maintenance_kt_sum_of_annual": 437.9725454762769,
+      "maintenance_share": 0.017173494218207123,
+      "years_of_B_AR_2050_upper": 58.43807765579492,
+      "years_of_B_AR_2050_lower": 52.367650421314494
+    },
+    "HIGH_NOUC": {
+      "B_upper_kt": 5228.974365706246,
+      "B_lower_kt": 4244.590061837356,
+      "C_upper_kt": 5996.816945208152,
+      "C_lower_kt": 5814.553642111442,
+      "C_held_kt": 5172.838878615154,
+      "C_held_share": 0.8625974289157833,
+      "upper_kt": 11225.791310914397,
+      "lower_kt": 10059.1437039488,
+      "maintenance_kt": 450.68326374354837,
+      "maintenance_kt_sum_of_annual": 450.6832637435483,
+      "maintenance_share": 0.016967377270997754,
+      "years_of_B_AR_2050_upper": 61.52803435995268,
+      "years_of_B_AR_2050_lower": 55.133693679706326
+    }
+  },
+  "reference_2026_2050": {
+    "I_kt": 25502.820795312804,
+    "B_AR_kt": 4426.63332205925,
+    "B_AtP_kt": 1112.9648539994828,
+    "floor_area_Mm2": 105.43841696221159
+  },
+  "sensitivity": [
+    {
+      "case": "reference",
+      "label": "Reference: carrying-capacity pair A, PPP 2021 int-$, base 2016-2025, model population, mean of ratios",
+      "cum_LoE_AR": 5.761222793906274,
+      "cum_LoE_AtP": 22.914309201829166,
+      "AR_vs_ref_pct": 0.0,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "i_source_pair",
+      "label": "(i) SOS/I_glob pair C: 1 W/m\u00b2 planetary boundary (Bj\u00f8rn & Hauschild 2015)",
+      "cum_LoE_AR": 10.868123885457539,
+      "cum_LoE_AtP": 43.226162233921514,
+      "AR_vs_ref_pct": 88.64265927977834,
+      "AtP_vs_ref_pct": 88.64265927977843
+    },
+    {
+      "case": "i_glob_ef31",
+      "label": "(i) Global impact: EF 3.1 normalisation factor (Andreasi Bassi et al. 2023)",
+      "cum_LoE_AR": 5.375485396242995,
+      "cum_LoE_AtP": 22.914309201829166,
+      "AR_vs_ref_pct": -6.695408448207885,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "ii_gdp_measure",
+      "label": "(ii) GDP per capita, current US$ (NY.GDP.PCAP.CD), b = 2024",
+      "cum_LoE_AR": 5.761222793906274,
+      "cum_LoE_AtP": 70.50098094703687,
+      "AR_vs_ref_pct": 0.0,
+      "AtP_vs_ref_pct": 207.67229474851038
+    },
+    {
+      "case": "iii_base_window",
+      "label": "(iii) AR base window 2021-2025 (5 yr, as Horup)",
+      "cum_LoE_AR": 5.301900097140782,
+      "cum_LoE_AtP": 22.914309201829166,
+      "AR_vs_ref_pct": -7.972659853587394,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "iii_base_window_20",
+      "label": "(iii) AR base window 2006-2025 (20 yr)",
+      "cum_LoE_AR": 6.877618773498016,
+      "cum_LoE_AtP": 22.914309201829166,
+      "AR_vs_ref_pct": 19.377760929026543,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "iii_base_window_full",
+      "label": "(iii) AR base window 1992-2025 (full consistent history)",
+      "cum_LoE_AR": 7.191590543162148,
+      "cum_LoE_AtP": 22.914309201829166,
+      "AR_vs_ref_pct": 24.827502778903,
+      "AtP_vs_ref_pct": 0.0
+    },
+    {
+      "case": "iv_pop_statsnz",
+      "label": "(iv) NZ population: raw Stats NZ 2024-base median (no 2025 observation, no nowcast)",
+      "cum_LoE_AR": 5.747535380743804,
+      "cum_LoE_AtP": 22.78313735352443,
+      "AR_vs_ref_pct": -0.23757826510281133,
+      "AtP_vs_ref_pct": -0.5724451352618787
+    },
+    {
+      "case": "iv_pop_wpp",
+      "label": "(iv) NZ population: WPP 2024 probabilistic median, New Zealand",
+      "cum_LoE_AR": 6.118888337425345,
+      "cum_LoE_AtP": 24.682362299692922,
+      "AR_vs_ref_pct": 6.208153309005482,
+      "AtP_vs_ref_pct": 7.7159345380685584
+    },
+    {
+      "case": "v_ssec",
+      "label": "(v) s_sec with FCE share as ratio of sums",
+      "cum_LoE_AR": 5.761222793906274,
+      "cum_LoE_AtP": 22.96760834151713,
+      "AR_vs_ref_pct": 0.0,
+      "AtP_vs_ref_pct": 0.232601992137349
+    },
+    {
+      "case": "vi_frozen",
+      "label": "(vi) Frozen technology: 2025 factors held (A1-A3 and A4-A5 not decarbonised)",
+      "cum_LoE_AR": 6.617249162081997,
+      "cum_LoE_AtP": 26.319012263485572,
+      "AR_vs_ref_pct": 14.858414590061564,
+      "AtP_vs_ref_pct": 14.858414590061564
+    },
+    {
+      "case": "vii_proxies_held",
+      "label": "(vii) Proxy-mapped items held at 2025 (A1-A3)",
+      "cum_LoE_AR": 5.78631416779357,
+      "cum_LoE_AtP": 23.01410598458166,
+      "AR_vs_ref_pct": 0.43552167282674414,
+      "AtP_vs_ref_pct": 0.43552167282672194
+    },
+    {
+      "case": "viii_nz_elec_held",
+      "label": "(viii) NZ-made, electricity-intensive items held at 2025 (A1-A3)",
+      "cum_LoE_AR": 5.908180336287839,
+      "cum_LoE_AtP": 23.498808480217406,
+      "AR_vs_ref_pct": 2.55080471001754,
+      "AtP_vs_ref_pct": 2.55080471001754
+    },
+    {
+      "case": "ix_a45_held",
+      "label": "(ix) A4-A5 held at 2025 (no generic 1%/yr)",
+      "cum_LoE_AR": 5.877578536846806,
+      "cum_LoE_AtP": 23.37709489273631,
+      "AR_vs_ref_pct": 2.0196362318013916,
+      "AtP_vs_ref_pct": 2.0196362318013916
+    },
+    {
+      "case": "x_a45_item",
+      "label": "(x) A4-A5 on each item's own Horup S4 path",
+      "cum_LoE_AR": 5.692243419685413,
+      "cum_LoE_AtP": 22.63995516866847,
+      "AR_vs_ref_pct": -1.1973044037425828,
+      "AtP_vs_ref_pct": -1.197304403742594
+    },
+    {
+      "case": "xi_event_timing",
+      "label": "(xi) Event timing: interval L / n (instead of L / (n + 1); base on the same rule)",
+      "cum_LoE_AR": 5.726858059810615,
+      "cum_LoE_AtP": 22.7548004106818,
+      "AR_vs_ref_pct": -0.5964833391273627,
+      "AtP_vs_ref_pct": -0.6961099710334429
+    },
+    {
+      "case": "xii_whole_life",
+      "label": "(xii) Accounting: whole life at construction (base on the same rule)",
+      "cum_LoE_AR": 5.8586025616498185,
+      "cum_LoE_AtP": 32.54153852097373,
+      "AR_vs_ref_pct": 1.690262140991039,
+      "AtP_vs_ref_pct": 42.01404997352509
+    },
+    {
+      "case": "xiii_wider_scope",
+      "label": "(xiii) Wider scope: base and projection include the maintenance (B2, B4) of every cohort since 1992",
+      "cum_LoE_AR": 6.202807246106624,
+      "cum_LoE_AtP": 27.185389618542494,
+      "AR_vs_ref_pct": 7.664769580989295,
+      "AtP_vs_ref_pct": 18.63935927150875
+    },
+    {
+      "case": "xiv_alpha_1",
+      "label": "(xiv) AtP with alpha = 1, as computed in Hjalsted et al.'s SI tables",
+      "cum_LoE_AR": 5.761222793906274,
+      "cum_LoE_AtP": 9.668901453344283,
+      "AR_vs_ref_pct": 0.0,
+      "AtP_vs_ref_pct": -57.804089278098544
+    },
+    {
+      "case": "note_soil_long_run",
+      "label": "Note (not drawn in D18 or H11): history 2024-25 at the long-run net replacement rate",
+      "cum_LoE_AR": 5.7507036428694285,
+      "cum_LoE_AtP": 22.914309201829166,
+      "AR_vs_ref_pct": -0.18258538878190844,
+      "AtP_vs_ref_pct": 0.0
+    }
+  ],
+  "notes": {
+    "wpp_manuscript_values": "The manuscript world population 2025 (8,231,613,070) equals the WPP 2024 Median sheet x 1000; its 2026-2028 values differ from it by +/-0.5 person, consistent with a source at a higher precision than the 3-decimal thousands in this file; they are not a dating convention (the mean of 1 July t and t+1 differs by ~34 M).",
+    "mc_base": "In the Monte Carlo the AR boundary varies with each draw's NZ population path and with I_sec,base recomputed from the draw's case-study carbon factors (2025 technology) on the observed history; the AtP boundary varies with population only. mc_base_fixed gives the bands with I_sec,base held at its deterministic value."
+  }
+}

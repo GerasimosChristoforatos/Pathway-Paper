@@ -1,0 +1,113 @@
+{
+ "figure": "SF2_completion_lag",
+ "producer": "figures/__main__.py",
+ "axes": [
+  {
+   "title": "Population growth",
+   "xlabel": "",
+   "ylabel": "Mm\u00b2 per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Household-size change",
+   "xlabel": "",
+   "ylabel": "Mm\u00b2 per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Net replacement",
+   "xlabel": "",
+   "ylabel": "Mm\u00b2 per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Other demand / balance",
+   "xlabel": "",
+   "ylabel": "Mm\u00b2 per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Gross excess and payback",
+   "xlabel": "Year",
+   "ylabel": "Mm\u00b2 per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  },
+  {
+   "title": "Total floor area built",
+   "xlabel": "Year",
+   "ylabel": "Mm\u00b2 per year",
+   "year_min": 2026.0,
+   "year_max": 2050.0
+  }
+ ],
+ "texts": [
+  "$\\mathdefault{0.00}$",
+  "$\\mathdefault{0.0}$",
+  "$\\mathdefault{0.25}$",
+  "$\\mathdefault{0.50}$",
+  "$\\mathdefault{0.5}$",
+  "$\\mathdefault{0.75}$",
+  "$\\mathdefault{0}$",
+  "$\\mathdefault{1.00}$",
+  "$\\mathdefault{1.0}$",
+  "$\\mathdefault{1.5}$",
+  "$\\mathdefault{1}$",
+  "$\\mathdefault{2.0}$",
+  "$\\mathdefault{2025}$",
+  "$\\mathdefault{2030}$",
+  "$\\mathdefault{2035}$",
+  "$\\mathdefault{2040}$",
+  "$\\mathdefault{2045}$",
+  "$\\mathdefault{2050}$",
+  "$\\mathdefault{2}$",
+  "$\\mathdefault{4}$",
+  "$\\mathdefault{6}$",
+  "$\\mathdefault{\u22120.25}$",
+  "$\\mathdefault{\u22120.5}$",
+  "$\\mathdefault{\u22121}$",
+  "$\\mathdefault{\u22122}$",
+  "17-month lag (completion-timed)",
+  "17-month lag \u2013 absorbed",
+  "Gross excess and payback",
+  "Household-size change",
+  "Mm\u00b2 per year",
+  "Net replacement",
+  "Other demand / balance",
+  "Population growth",
+  "Total floor area built",
+  "Year",
+  "Zero lag (held) \u2013 absorbed",
+  "Zero lag, net replacement held at the 17-month calibration",
+  "Zero lag, recalibrated (context)",
+  "a)",
+  "b)",
+  "c)",
+  "d)",
+  "e)",
+  "f)"
+ ],
+ "note": "All runs use identical source files and demographic paths. The like-for-like zero-lag run holds the forward net replacement at the 17-month calibration (2018-2023 rate 0.173%/yr), so it differs from the 17-month run only in the timing of building. The recalibrated zero-lag run (grey, context) re-estimates net replacement from the census counts with zero-lag timing (0.301%/yr with the census under-construction correction); its higher net replacement in panel c is that recalibration, not the timing of building. Cumulative net replacement 2026-2050: 9.02 Mm\u00b2 (zero lag, held), 9.29 Mm\u00b2 (17 months), 15.24 Mm\u00b2 (zero lag, recalibrated). Zero lag treats a rolling 12-month consent estimate as the 2026 build proxy; the 17-month run uses complete observed consent cohorts for 2026 and 2027.",
+ "maintenance_drawn": false,
+ "maintenance_where": [],
+ "boundary_drawn": false,
+ "boundary_outside": false,
+ "boundary_zones": false,
+ "white_segment_edges": 0,
+ "source": [
+  "diagnostics/lag_comparison_annual.csv",
+  "diagnostics/lag_comparison_summary.json"
+ ],
+ "atp_linestyles": [],
+ "negative_band_segments": 0,
+ "net_total_ticks": 0,
+ "band_rectangles_below_zero": 0,
+ "tl_colour_used": false,
+ "retired_colours": [],
+ "negative_bar_segments": 0,
+ "negative_bar_segments_filled": 0
+}

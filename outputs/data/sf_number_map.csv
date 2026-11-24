@@ -1,0 +1,17 @@
+old_id,old_file,new_id,new_file,status
+ED3,ED3_stock_vacancy (panel c),SF3,SF3_vacancy_definition,moved to Supplementary
+ED8,ED8_lever_annual,SF8,SF8_lever_annual,moved to Supplementary
+SF1,SF1_households,SF1,SF1_households,same number
+SF2,SF2_completion_lag,SF2,SF2_completion_lag,same number
+SF5,SF5_overbuild_absorption,SF4,SF4_overbuild_absorption,renumbered
+SF6,SF6_hindcast,SF5,SF5_hindcast,renumbered
+SF7,SF7_reality_checks,SF6,SF6_reality_checks,renumbered
+SF8,SF8_lambda_sweep,SF7,SF7_lambda_sweep,renumbered
+SF9,SF9_hd_estimators,SF9,SF9_hd_estimators,same number
+SF10,SF10_tl_dwellings,SF10,SF10_tl_dwellings,same number
+SF11,SF11_mc_input_distributions,SF11,SF11_mc_input_distributions,same number
+SF12,SF12_pathway_mc,SF12,SF12_pathway_mc,same number
+SF13,SF13_conditional_tl,SF13,SF13_conditional_tl,same number
+SF14,SF14_prcc,SF14,SF14_prcc,same number
+SF15,SF15_mc_convergence,SF15,SF15_mc_convergence,same number
+,,SF16,SF16_headship_by_census,added

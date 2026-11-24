@@ -1,0 +1,153 @@
+{
+  "run_mode": "full",
+  "method": "uniform factor k on the floor area by typology of every 2027-2050 cohort (2026 and its events fixed); scipy.optimize.brentq on [0, 1], xtol 1e-15",
+  "B_AR_kt": 4426.63332205925,
+  "B_AtP_kt": 1112.9648539994828,
+  "solution_space_markers": [
+    {
+      "run": "S1-moderate",
+      "demand_reduction": 0.25109731545504443,
+      "intensity_reduction": -0.004368529244379138,
+      "LoE_AR_run": 4.401008480681779,
+      "cohort_2026_events_change_kt": 0.0,
+      "LoE_AR_on_grid_at_coordinates": 4.401008480681777,
+      "LoE_AtP_run": 17.504282117483978
+    },
+    {
+      "run": "S1-ambitious",
+      "demand_reduction": 0.45510242760484576,
+      "intensity_reduction": -0.009736793850869452,
+      "LoE_AR_run": 3.292471112187038,
+      "cohort_2026_events_change_kt": 0.0,
+      "LoE_AR_on_grid_at_coordinates": 3.292471112187038,
+      "LoE_AtP_run": 13.095258385518967
+    },
+    {
+      "run": "S2-moderate",
+      "demand_reduction": 0.0,
+      "intensity_reduction": 0.08981591351921248,
+      "LoE_AR_run": 5.268259856157507,
+      "cohort_2026_events_change_kt": 0.0,
+      "LoE_AR_on_grid_at_coordinates": 5.268259856157507,
+      "LoE_AtP_run": 20.95363078603085
+    },
+    {
+      "run": "S2-ambitious",
+      "demand_reduction": 0.0,
+      "intensity_reduction": 0.17423714658287126,
+      "LoE_AR_run": 4.804906120401846,
+      "cohort_2026_events_change_kt": 0.0,
+      "LoE_AR_on_grid_at_coordinates": 4.804906120401846,
+      "LoE_AtP_run": 19.11071806580797
+    },
+    {
+      "run": "S3-moderate",
+      "demand_reduction": 0.0,
+      "intensity_reduction": 0.0369605108447828,
+      "LoE_AR_run": 5.55836161605006,
+      "cohort_2026_events_change_kt": -1.3418980603864192,
+      "LoE_AR_on_grid_at_coordinates": 5.55836161605006,
+      "LoE_AtP_run": 22.10746247488758
+    },
+    {
+      "run": "S3-ambitious",
+      "demand_reduction": 0.0,
+      "intensity_reduction": 0.0739210216895656,
+      "LoE_AR_run": 5.355500438193848,
+      "cohort_2026_events_change_kt": -2.683796120772362,
+      "LoE_AR_on_grid_at_coordinates": 5.355500438193846,
+      "LoE_AtP_run": 21.300615747945994
+    },
+    {
+      "run": "pathway-moderate",
+      "demand_reduction": 0.25109731545504443,
+      "intensity_reduction": 0.1205171900204498,
+      "LoE_AR_run": 3.8876755275394257,
+      "cohort_2026_events_change_kt": -1.3418980603864192,
+      "LoE_AR_on_grid_at_coordinates": 3.8876755275394257,
+      "LoE_AtP_run": 15.462585340155128
+    },
+    {
+      "run": "pathway-ambitious",
+      "demand_reduction": 0.45510242760484576,
+      "intensity_reduction": 0.22472728455730495,
+      "LoE_AR_run": 2.591254549121234,
+      "cohort_2026_events_change_kt": -2.683796120772362,
+      "LoE_AR_on_grid_at_coordinates": 2.591254549121234,
+      "LoE_AtP_run": 10.306285676369615
+    },
+    {
+      "run": "TL",
+      "demand_reduction": 0.689905736347457,
+      "intensity_reduction": 0.36874689474838007,
+      "LoE_AR_run": 1.3470112202907216,
+      "cohort_2026_events_change_kt": -8.12572896956253,
+      "LoE_AR_on_grid_at_coordinates": 1.3470112202907216,
+      "LoE_AtP_run": 5.3575139695555665
+    }
+  ],
+  "REF": {
+    "run": "REF",
+    "LoE_AR_at_k1": 5.761222793906273,
+    "LoE_AtP_at_k1": 22.91430920182916,
+    "LoE_AR_min_k0": 0.2726304227635202,
+    "LoE_AtP_min_k0": 1.0843423398998544,
+    "carbon_fixed_2026_cohort_kt": 1206.834914012099,
+    "carbon_2027_2050_cohorts_kt": 24295.985881300705,
+    "floor_area_2027_2050_Mm2": 101.10409224721161,
+    "k_AR": 0.1325238837303266,
+    "k_AR_closed_form": 0.13252388373032659,
+    "cut_AR": 0.8674761162696734,
+    "LoE_AR_at_k": 1.0000000000000002,
+    "floor_area_2027_2050_at_k_Mm2": 13.398706965629687,
+    "AtP_attainable": false
+  },
+  "pathway-moderate": {
+    "run": "pathway-moderate",
+    "LoE_AR_at_k1": 3.887675527539425,
+    "LoE_AtP_at_k1": 15.462585340155124,
+    "LoE_AR_min_k0": 0.2723272808579778,
+    "LoE_AtP_min_k0": 1.0831366431920344,
+    "carbon_fixed_2026_cohort_kt": 1205.4930159517126,
+    "carbon_2027_2050_cohorts_kt": 16003.821019608582,
+    "floor_area_2027_2050_Mm2": 75.71712610241761,
+    "k_AR": 0.20127320232842247,
+    "k_AR_closed_form": 0.20127320232842238,
+    "cut_AR": 0.7987267976715775,
+    "LoE_AR_at_k": 1.0000000000000004,
+    "floor_area_2027_2050_at_k_Mm2": 15.239828441738576,
+    "AtP_attainable": false
+  },
+  "pathway-ambitious": {
+    "run": "pathway-ambitious",
+    "LoE_AR_at_k1": 2.591254549121234,
+    "LoE_AtP_at_k1": 10.306285676369615,
+    "LoE_AR_min_k0": 0.27202413895243555,
+    "LoE_AtP_min_k0": 1.081930946484215,
+    "carbon_fixed_2026_cohort_kt": 1204.1511178913267,
+    "carbon_2027_2050_cohorts_kt": 10266.382615186345,
+    "floor_area_2027_2050_Mm2": 55.09137442472134,
+    "k_AR": 0.3138868211867663,
+    "k_AR_closed_form": 0.31388682118676636,
+    "cut_AR": 0.6861131788132337,
+    "LoE_AR_at_k": 0.9999999999999996,
+    "floor_area_2027_2050_at_k_Mm2": 17.2924563929857,
+    "AtP_attainable": false
+  },
+  "TL": {
+    "run": "TL",
+    "LoE_AR_at_k1": 1.3470112202907216,
+    "LoE_AtP_at_k1": 5.3575139695555665,
+    "LoE_AR_min_k0": 0.27079477739188534,
+    "LoE_AtP_min_k0": 1.0770413645452757,
+    "carbon_fixed_2026_cohort_kt": 1198.7091850425365,
+    "carbon_2027_2050_cohorts_kt": 4764.015567884065,
+    "floor_area_2027_2050_Mm2": 31.351799037657855,
+    "k_AR": 0.677563725605203,
+    "k_AR_closed_form": 0.6775637256052028,
+    "cut_AR": 0.32243627439479705,
+    "LoE_AR_at_k": 1.0,
+    "floor_area_2027_2050_at_k_Mm2": 21.242841760381072,
+    "AtP_attainable": false
+  }
+}

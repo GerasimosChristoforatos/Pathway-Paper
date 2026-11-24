@@ -1,0 +1,12 @@
+old_id,old_file,new_id,new_file,status
+ED1,ED1_population_households_floor_area,ED1,ED1_population_households_floor_area,same number
+ED2,ED2_household_formation_size,ED2,ED2_household_formation_size,same number
+ED3,ED3_stock_vacancy,ED4,ED4_stock_vacancy,renumbered
+ED4,ED4_rollout_timing,ED6,ED6_rollout_timing,renumbered
+ED5,ED5_boundary_sensitivity,ED7,ED7_boundary_sensitivity,renumbered
+ED6,ED6_one_at_a_time,ED8,ED8_one_at_a_time,renumbered
+ED7,ED7_replacement_variants,ED5,ED5_replacement_variants,renumbered
+ED9,ED9_sobol,ED9,ED9_sobol,same number
+EDT1,EDT1_levels_by_typology,EDT1,EDT1_levels_by_typology,same number
+SF3,SF3_census_replacement_rates (as panel a),ED5,ED5_replacement_variants,moved to Extended Data
+SF4,SF4_dwelling_size,ED3,ED3_dwelling_size,moved to Extended Data

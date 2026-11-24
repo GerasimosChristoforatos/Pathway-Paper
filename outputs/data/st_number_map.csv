@@ -1,0 +1,13 @@
+old_id,old_file,new_id,new_file,status,content,repository_source
+,,ST1,,same number,data sources,SI text table (README Data availability; outputs/reports/AVAILABILITY.md)
+,,ST2,,same number,assumption register,outputs/reports/ASSUMPTIONS.md
+,,ST3,,same number,net replacement variants,outputs/data/sensitivity/replacement_variants.csv
+,,ST4,,same number,demand bands of the Reference 2026-2050,outputs/data/baseline/bands_annual.csv
+,,ST5,,same number,hindcast errors,outputs/data/baseline/validation.json
+,,ST6,,same number,item mapping to the decarbonisation paths,data/material_item_map.csv
+,,ST7,,same number,"embodied carbon by term, 2025 vs decarbonised factors",outputs/reports/reconciliation.md and METHODS_DRAFT.md
+,,ST8,ST8_budget_construction,same number,budget construction,outputs/supplementary/boundaries/ST8_budget_construction
+,,ST9,,same number,deterministic AESA sensitivities,outputs/data/sensitivity/planetary_boundary.csv
+,,ST10,,same number,"strategies, Pathways and TL runs (with the 2028-2050 LoE)",outputs/data/pathways/runs.csv and outputs/data/loe_2028_2050.csv
+,,ST11,,same number,Monte Carlo inputs,SI text table
+,,ST12,,same number,limitations register,SI text table

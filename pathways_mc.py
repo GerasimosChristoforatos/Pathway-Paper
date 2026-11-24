@@ -391,7 +391,7 @@ def population_threshold(df, col):
             b = mcstats.logistic(z, yy)['beta']
             how = 'maximum likelihood'
         except mcstats.Separation:
-            b = mcstats.firth(z, yy)['beta']
+            b = mcstats.firth(z, yy, intervals=False)['beta']   # the threshold uses the coefficients only
             how = 'Firth penalised likelihood (MLE does not exist)'
         return b, how
 

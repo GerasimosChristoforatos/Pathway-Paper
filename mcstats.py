@@ -284,9 +284,11 @@ def _firth_fit(A, y, beta0, free, max_iter=200, tol=1e-10):
     return beta, lstar, it
 
 
-def firth(X, y, level=0.95):
+def firth(X, y, level=0.95, intervals=True):
     """Firth penalised-likelihood logistic regression of the 0/1 outcome y on X (intercept added), with profile
-    penalised-likelihood intervals. Returns a dict as logistic() (ci_* and or_* from the profile)."""
+    penalised-likelihood intervals. Returns a dict as logistic() (ci_* and or_* from the profile). With
+    intervals=False only the point estimate is computed (ci_* and or_* are NaN): for callers that use the
+    coefficients alone, e.g. a bootstrap of a function of the coefficients."""
     X, y = np.asarray(X, float), np.asarray(y, float)
     A = np.column_stack([np.ones(len(y)), X])
     k = A.shape[1]
@@ -295,6 +297,10 @@ def firth(X, y, level=0.95):
     p = special.expit(A @ beta)
     se = np.sqrt(np.diag(np.linalg.inv((A * (p * (1 - p))[:, None]).T @ A)))
     crit = float(stats.chi2.ppf(level, 1))
+    if not intervals:
+        nan = np.full(k, np.nan)
+        return dict(beta=beta, se=se, ci_lo=nan, ci_hi=nan, odds_ratio=np.exp(beta), or_lo=nan, or_hi=nan,
+                    penalised_loglik=lstar, iterations=it, n=int(len(y)), events=int(y.sum()), interval='none')
 
     def dev(j, bj):
         b0 = beta.copy()

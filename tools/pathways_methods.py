@@ -144,12 +144,15 @@ def lines():
           'propensities change (Stats NZ B)" asks what happens if B happens anyway; L1 Ambitious asks what happens if '
           f"policy delivers it. 2050: Reference {LV.by_year(q['S_ref'], 2050):.4f}, Moderate "
           f"{LV.by_year(q['S']['moderate'], 2050):.4f}, Ambitious {LV.by_year(q['S']['ambitious'], 2050):.4f}. L1 at TL: "
-          f"S = {q['tl']:.4f}, the highest observed national household size ({q['tl_year']}), held regardless of age "
-          f"structure; with the 2050 population this requires about {100 * q['tl_households_per_person_fall']:.1f}% "
-          'fewer households per person than in 2023 at every age, living arrangements more shared than observed at '
-          f"any age. L1 at TL rises at the fastest observed inter-census change ({sp['rate']:.4f} a year, "
-          f"{sp['interval'][0]}-{sp['interval'][1]}), the behavioural speed limit, and reaches its level in "
-          f"{sp['level_reached']:.1f}: the only TL whose phase-in ends after 2035.", '']
+          'the lowest observed census headship of each age group (2013, 2018, 2023 Censuses), or the Stats NZ '
+          'propensity-B rate of that year where lower, on the projected age structure, as a ratio to the 2023 census '
+          f"rates (S 2050 = {LV.by_year(q['tl'], 2050):.4f}; {100 * q['tl_households_per_person_fall']:.1f}% fewer "
+          'households per person than the 2023 rates in 2050). L1 at TL rises no faster than the fastest observed '
+          f"inter-census change ({sp['rate']:.4f} a year, {sp['interval'][0]}-{sp['interval'][1]}), the behavioural "
+          'speed limit, which binds ' + (f"until {sp['binds_until']}" if sp['binds_until'] else 'in no year')
+          + '. The v4.10 setting, the national 1991 household size regardless of age '
+          f"({q['tl_v410']:.4f}; {100 * q['tl_v410_households_per_person_fall']:.1f}% fewer households per person "
+          'at every age), is a sensitivity row.', '']
     q = p['L2']
     B['L2'] = [f"**L2 Vacancy rate (sub-rule B).** Ambitious {100 * q['v']['ambitious']:.2f}%, the "
           f"{q['census_consistent_min_year']} census minimum on one definition (the pooled 2018/2023 empty share of "
@@ -303,7 +306,8 @@ TABLE1_MAIN = {
     'L1': ('L1 Household size', 'Avoid', 'People per dwelling, hence households needed',
            'Living arrangements of 2023 held',
            'Living arrangements keep changing as 2001–2023 (official projection)',
-           'The 1991 household size, approached no faster than any census interval', 'Stats NZ 2026'),
+           'Lowest observed household formation at each age (censuses 2013–2023), approached no faster than any '
+           'census interval', 'Stats NZ 2026; Stats NZ censuses'),
     'L2': ('L2 Vacancy', 'Avoid', 'Share of dwellings left empty', '2023 census rate',
            'Lowest rate observed in NZ (1996 census)', 'Lowest internationally (Switzerland)⁹', 'Stats NZ censuses; OECD 2024'),
     'L3': ('L3 Building lifetime', 'Avoid', 'Demolition and replacement', 'Current demolition and replacement',
@@ -362,7 +366,7 @@ def table1_main_check(p=None):
     checks = {
         'strategy (PAS 2080) as naming.STRATEGY_LEVERS': not bad,
         'L1 Reference A, Ambitious B': list(p['L1']['variants']) == ['A', 'B'] and 'propensity B' in p['L1']['source'],
-        'L1 TL = the 1991 household size': int(p['L1']['tl_year']) == 1991,
+        'L1 TL = age-specific headship (census minima or B)': p['L1']['tl_variant'] == 'Medium' and 'headship' in p['L1'],
         'L2 Ambitious = the 1996 census minimum': '1996' in p['L2']['anchor'],
         'L2 at TL = the Switzerland OECD value': p['L2']['tl_source']['country'] == 'Switzerland'
         and abs(float(p['L2']['tl']) - p['L2']['tl_source']['value_pct'] / 100) < 1e-15,

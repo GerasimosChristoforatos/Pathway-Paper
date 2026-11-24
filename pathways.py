@@ -106,7 +106,7 @@ SHAPLEY_METRICS = ('carbon_kt', 'LoE_AR', 'LoE_AtP')
 ORDER_RTOL = 1e-12
 TL_GAME = 'tl_from_moderate_pathway'            # TL1-TL10 from the Moderate Pathway (tl_from_p5_moderate)
 TL_REOCCUPATION_FAST = 'TL-reoccupation-fast'   # A4 sensitivity row (reoccupation rule 'fast')
-TL_AGE_STANDARDISED = 'TL-TL1-age-standardised'   # TL with TL1 from age-specific living arrangements (sensitivity)
+TL_L1_V410 = 'TL-L1-national-1991'             # TL with L1 at TL at the national 1991 household size (v4.10; sensitivity)
 
 
 # ============================================================
@@ -787,20 +787,11 @@ def resolve_params(B_ref):
                       household_size_variants(B_ref), runprofile.get('bootstrap'))
 
 
-def tl1_age_standardised_level(params, years, variant='Medium', S_ref=None):
-    """The age-standardised TL1 household-size path: the Reference S (or the draw's own S_ref) x the ratio of the
-    lower-headship path (2023 or propensity B, by age group) to the 2023-rate path (household_headship.py)."""
-    import household_headship as HH
-    S = (np.array([LV.by_year(params['L1']['S_ref'], int(y)) for y in years]) if S_ref is None
-         else np.asarray(S_ref, float))
-    return S * HH.ratio_path(years, variant)
-
-
-def tl1_age_standardised_params(params, years, level=None):
-    """The lever parameters with TL1 at the age-standardised level (the same speed limit and never below
-    Ambitious); every other lever as resolved."""
-    lvl = tl1_age_standardised_level(params, years) if level is None else level
-    return dict(params, L1=dict(params['L1'], tl=np.asarray(lvl, float)))
+def tl1_params(params, level):
+    """The lever parameters with L1 at TL at `level` (an array by model year: a Monte Carlo draw's own age-specific
+    path; or a number: the v4.10 national 1991 household size), the same speed limit and never below Ambitious;
+    every other lever as resolved."""
+    return dict(params, L1=dict(params['L1'], tl=(np.asarray(level, float) if np.ndim(level) else float(level))))
 
 
 def run_name(what, setting, ramp_name=None):
@@ -865,11 +856,11 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
     R_fast = run(ref, params, TL_ALL, reocc_rule='fast')
     rows.append(metrics(ref, R_fast, TL_REOCCUPATION_FAST, 'tl'))
     annual += annual_rows(ref, R_fast, TL_REOCCUPATION_FAST)
-    # TL with the age-standardised TL1 (sensitivity row; household_headship.py): TL1 at the household size of the lower
-    # of the 2023 and Stats NZ propensity-B headship rates by age group on the projected population, same rate limit
-    R_as = run(ref, tl1_age_standardised_params(params, ref['years']), TL_ALL)
-    rows.append(metrics(ref, R_as, TL_AGE_STANDARDISED, 'tl'))
-    annual += annual_rows(ref, R_as, TL_AGE_STANDARDISED)
+    # TL with L1 at TL at the national 1991 household size regardless of age (the v4.10 setting; sensitivity row),
+    # the same speed limit and never below Ambitious
+    R_v410 = run(ref, tl1_params(params, params['L1']['tl_v410']), TL_ALL)
+    rows.append(metrics(ref, R_v410, TL_L1_V410, 'tl'))
+    annual += annual_rows(ref, R_v410, TL_L1_V410)
     runs_df = pd.DataFrame(rows)
     p0 = runs_df[runs_df['run'] == runs_df['scenario']].set_index('scenario')
     for col in ('carbon_kt', 'LoE_AR', 'LoE_AtP', 'gfa_Mm2', 'committed_lower_kt', 'committed_upper_kt'):
@@ -978,7 +969,7 @@ def compute(scenarios=tuple(SCENARIOS), verbose=True):
                sequential_vs_shapley=seq_vs_shap,
                lever_annual=pd.DataFrame(lever_annual),
                reoccupation_log=pd.DataFrame(reocc_log), ctxs=ctxs, states=states, cache=cache, get=get,
-               tl_levels=TL_ALL, tl_age_standardised=R_as, seconds=time.time() - t0)
+               tl_levels=TL_ALL, tl_v410=R_v410, seconds=time.time() - t0)
     out['ordering'] = ordering(out)
     if verbose:
         print(f'pathways: {len(cache)} engine runs in {out["seconds"]:.1f} s')
@@ -1288,37 +1279,34 @@ def tl_summary(res):
                                 components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS},
                                 note='L6 at TL (100% brownfield) makes L7 at TL zero within TL'),
                 strength=res['params']['tl_strength'], zero_building=out.pop('zero_building'), runs=out,
-                tl1_age_standardised=tl1_age_standardised_summary(res))
+                tl1=tl1_summary(res))
 
 
-def tl1_age_standardised_summary(res):
-    """The TL1 implication and the age-standardised TL sensitivity (household_headship.py): the fall in households
-    per person at every age that TL1 needs, against the 2023 living-arrangement rates on the 2050 population; and the
-    TL run with TL1 at the household size of the lower of the 2023 and propensity-B headship rates by age group."""
-    import household_headship as HH
+def tl1_summary(res):
+    """L1 at TL (household_headship.py): the age-specific path against the v4.10 setting and L1 Ambitious, the fall in
+    households per person at every age, the speed limit, and the v4.10 sensitivity row."""
     ref = res['ctxs'][REFERENCE]
-    yy = np.asarray(ref['years'])
     p = res['params']['L1']
-    S_ref = np.array([LV.by_year(p['S_ref'], int(y)) for y in yy])
-    lvl = tl1_age_standardised_level(res['params'], yy)
-    R = res['tl_age_standardised']
-    q = quick(ref, R)
-    t = HH.paths('Medium')
+    R_tl = res['get'](REFERENCE, res['tl_levels'])
+    R_v = res['tl_v410']
+    q, qv = quick(ref, R_tl), quick(ref, R_v)
+    by = lambda d, ys=(2030, 2035, 2040, 2050): {y: float(LV.by_year(d, y)) for y in ys}
     return dict(
-        method='headship rates by age group (0-14, 15-39, 40-64, 65+) from Stats NZ POPPR_FHH_008 / POPPR_FHH_010; '
-               'the 2023 rates are the only observed ones in the repository; the alternative takes, by age group, the '
-               'lower headship of 2023 and of the Stats NZ Medium B projection; applied to the Medium A age '
-               'structure; the ratio to the 2023-rate path scales the Reference household size',
-        S_2050_2023_rates_on_2050_population=float(S_ref[-1]),
-        tl1_level=float(p['tl']),
-        tl1_households_per_person_fall_at_every_age=HH.households_per_person_fall(p['tl'], S_ref[-1]),
-        statsnz_check_max_abs=float((t['S_2023'] - t['S_statsnz_A']).abs().max()),
-        level_by_year={int(y): float(v) for y, v in zip(yy, lvl) if y >= 2026},
-        level_2050=float(lvl[-1]), ambitious_2050=float(LV.by_year(p['S']['ambitious'], int(yy[-1]))),
-        floored_at_ambitious_2050=bool(lvl[-1] < LV.by_year(p['S']['ambitious'], int(yy[-1]))),
-        knots=t.reset_index().to_dict(orient='list'),
-        carbon_kt=q['carbon_kt'], LoE_AR=q['LoE_AR'], LoE_AtP=q['LoE_AtP'], floor_area_Mm2=q['gfa_Mm2'],
-        household_size_2050=float((R['E']['pop'] / R['E']['hh'])[-1]))
+        method='the lowest observed census headship of each age group (0-14, 15-39, 40-64, 65+; censuses 2013, 2018, '
+               '2023, CEN23_FHH_036 / CEN23_FHH_041), or the Stats NZ propensity-B rate of that year where lower, on '
+               'the projected Medium age structure, as a ratio to the 2023 census rates; the ratio scales the Reference '
+               'household size; speed limit and never below L1 Ambitious (household_headship.py)',
+        S_tl_speed_limited=by(p['tl_speed']['path']), S_tl_level=by(p['tl']), S_v410=by(p['tl_speed']['v410_path']),
+        S_ambitious=by(p['S']['ambitious']), S_reference=by(p['S_ref']),
+        speed_limit_binds_until=p['tl_speed']['binds_until'],
+        households_per_person_fall_2050=p['tl_households_per_person_fall'],
+        v410_households_per_person_fall_2050=p['tl_v410_households_per_person_fall'],
+        household_size_2050=float((R_tl['E']['pop'] / R_tl['E']['hh'])[-1]),
+        v410=dict(run=TL_L1_V410, level=float(p['tl_v410']), level_year=int(p['tl_v410_year']),
+                  carbon_kt=qv['carbon_kt'], LoE_AR=qv['LoE_AR'], LoE_AtP=qv['LoE_AtP'], floor_area_Mm2=qv['gfa_Mm2'],
+                  household_size_2050=float((R_v['E']['pop'] / R_v['E']['hh'])[-1])),
+        tl=dict(carbon_kt=q['carbon_kt'], LoE_AR=q['LoE_AR'], LoE_AtP=q['LoE_AtP'], floor_area_Mm2=q['gfa_Mm2']),
+        back_check=p['headship']['back_check'], tl_source=p['headship']['tl_source'])
 
 
 def write(res, identity):

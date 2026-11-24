@@ -78,12 +78,16 @@ def test_tl1_speed_limit():
     gap = {int(y): v for y, v in lv['L1']['gap'].items()}
     w = {int(y): v for y, v in lv['adoption']['w'].items()}
     amb = {y: S[y] + w[y] * gap[y] for y in S}                    # the Ambitious path on the adoption window
+    level = {int(y): v for y, v in lv['L1']['tl'].items()}           # the age-specific L1 at TL path
     years = sorted(y for y in path if y >= 2026)
     for y in years:
-        cap = min(sp['S_start'] + sp['rate'] * (y - 2026), sp['level'])
+        cap = min(sp['S_start'] + sp['rate'] * (y - 2026), level[y])
         assert path[y] == pytest.approx(max(cap, amb[y]), rel=1e-12)
-    assert path[2026] == pytest.approx(sp['S_start'], rel=1e-15) and max(path.values()) <= sp['level'] + 1e-12
-    assert np.isclose(sp['level_reached'], 2026 + (sp['level'] - sp['S_start']) / sp['rate'], rtol=1e-12)
+    assert path[2026] == pytest.approx(sp['S_start'], rel=1e-15)
+    assert all(path[y] <= max(level[y], amb[y]) + 1e-12 for y in years)
+    binds = [y for y in years if sp['S_start'] + sp['rate'] * (y - 2026) < level[y] - 1e-12
+             and abs(path[y] - (sp['S_start'] + sp['rate'] * (y - 2026))) < 1e-12]
+    assert binds == sp['binding_years'] and sp['binds_until'] == (max(binds) if binds else None)
 
 
 def test_building_nonnegative_and_positive_in_tl_years():

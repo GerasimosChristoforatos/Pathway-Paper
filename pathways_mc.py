@@ -13,8 +13,10 @@ the Moderate Pathway, the Ambitious Pathway, TL and the instant TL (sensitivity;
     L2 moves the vacancy parameter to the same Ambitious
     value; the overbuild excess is the draw's own Reference excess (MonteCarlo.project), held fixed in the draw's
     lever runs and absorbed on the Reference weights;
-  * TL1 (the historical maximum household size) is taken as max(2.7905, the draw's Ambitious path) so that TL1 is
-    never weaker than Ambitious in a draw (counted); every other TLn is a ratio or an absolute zero / full.
+  * L1 at TL is the draw's own household size x the age-specific headship ratio path (household_headship.py) of
+    its population variant, linear in z between Low / Medium / High, under the speed limit and never below the draw's
+    Ambitious path (counted); every other lever at TL is a ratio or an absolute zero / full. The v4.10 setting (the
+    national 1991 household size regardless of age) is the sensitivity run TL_L1_national_1991.
 
 The level of exceedance of every draw uses that draw's cumulative AR and AtP budgets
 (outputs/data/aesa/montecarlo_draw_budgets.csv, boundaries.py, the same draws).
@@ -63,8 +65,8 @@ CENTRAL_TOL = 1e-9
 MP, AP = 'pathway_moderate', 'pathway_ambitious'  # the Moderate / Ambitious Pathway (P5, P5A)
 RUNS = ('REF', MP, 'TL')                          # the insight analyses
 INSTANT = 'TL_from2027'                          # the instant TL sensitivity (summary and annual percentiles only)
-TLAS = 'TL_TL1_age_standardised'                 # TL with the age-standardised TL1 (pathways.TL_AGE_STANDARDISED)
-SUMMARY_RUNS = ('REF', MP, AP, 'TL', INSTANT, TLAS)
+TLV410 = 'TL_L1_national_1991'                   # TL with L1 at TL at the 1991 household size (pathways.TL_L1_V410)
+SUMMARY_RUNS = ('REF', MP, AP, 'TL', INSTANT, TLV410)
 # committed after 2050 per Reference draw: pathways.committed keys -> draw-file columns (REF_<column>)
 COMMITTED_COLUMNS = {'lower_kt': 'committed_lower_kt', 'upper_kt': 'committed_upper_kt',
                      'B_lower_kt': 'committed_b2b4_lower_kt', 'B_upper_kt': 'committed_b2b4_upper_kt',
@@ -194,26 +196,28 @@ def draw_params(params, ctx_d, d):
 
 
 def tl_age_level(ctx_d, z, ratios):
-    """The age-standardised TL1 household-size path of a draw: its own S x the ratio of the lower-headship path to the
-    2023-rate path (household_headship.py) of its population variant, linear in z between Low / Medium / High."""
+    """The L1 at TL household-size level of a draw: its own S x the age-specific headship ratio path
+    (household_headship.tl_ratio_path) of its population variant, linear in z between Low / Medium / High."""
     S = np.asarray(ctx_d['pop'], float) / np.asarray(ctx_d['hh'], float)
     return S * MC.interp_z(z, np.array(list(MC.VARIANT_Z.values())), ratios)
 
 
-def runs_for_draw(ctx_d, params, tl_level=None):
+def runs_for_draw(ctx_d, params, tl_level):
+    """The Moderate / Ambitious Pathway, TL and instant TL of a draw (L1 at TL at the draw's own level), and the TL with
+    the v4.10 L1 at TL (the national 1991 household size)."""
     TL = LV.tl_levels(LV.TL_COMPONENTS)
-    out = {MP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'moderate')),
-           AP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'ambitious')),
-           'TL': PW.run(ctx_d, params, TL), INSTANT: PW.run(ctx_d, params, TL, LV.TL_FROM2027)}
-    if tl_level is not None:
-        out[TLAS] = PW.run(ctx_d, PW.tl1_age_standardised_params(params, ctx_d['years'], tl_level), TL)
-    return out
+    p_tl = PW.tl1_params(params, tl_level)
+    return {MP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'moderate')),
+            AP: PW.run(ctx_d, params, LV.pathway_levers(LV.PATHWAY, 'ambitious')),
+            'TL': PW.run(ctx_d, p_tl, TL), INSTANT: PW.run(ctx_d, p_tl, TL, LV.TL_FROM2027),
+            TLV410: PW.run(ctx_d, PW.tl1_params(params, params['L1']['tl_v410']), TL)}
 
 
 def headship_ratios(years):
-    """The lower-headship / 2023-rate ratio paths of the Low, Medium and High variants (MC.VARIANT_Z order)."""
+    """The L1 at TL ratio paths (household_headship.tl_ratio_path) of the Low, Medium and High variants (MC.VARIANT_Z
+    order)."""
     import household_headship as HH
-    return np.array([HH.ratio_path(years, v) for v in MC.VARIANT_Z])
+    return np.array([HH.tl_ratio_path(years, v) for v in MC.VARIANT_Z])
 
 
 def deterministic():
@@ -221,7 +225,7 @@ def deterministic():
     B = PW.boss_state(PW.REFERENCE)
     ctx = PW.base_context(B, PW.REFERENCE, PW.boundaries())
     params = PW.resolve_params(B)
-    lvl = PW.tl1_age_standardised_level(params, ctx['years'])
+    lvl = LV.tl1_level(params, ctx['years'])
     return ctx, params, {k: R['E'] for k, R in runs_for_draw(ctx, params, lvl).items()}
 
 
@@ -393,6 +397,14 @@ def population_threshold(df, col):
 
     b, how = fit(x, y)
     thr = mu + sd * (-b[0] / b[1])
+    if not x.min() <= thr <= x.max():               # no extrapolation of the curve beyond the sampled populations
+        grid = np.linspace(x.min(), x.max(), THRESHOLD_POINTS)
+        p = 1.0 / (1.0 + np.exp(-(b[0] + b[1] * (grid - mu) / sd)))
+        return dict(base, estimable=False, method=how, beta_per_sd=[float(v) for v in b],
+                    population_range=[float(x.min()), float(x.max())],
+                    curve=dict(P_NZ_2050=[float(v) for v in grid], probability=[float(v) for v in p]),
+                    note=(f'P(TL LoE AR <= 1) = 50% is not reached within the sampled range (min population '
+                          f'{x.min() / 1e6:.2f} M, max {x.max() / 1e6:.2f} M); the curve is not extrapolated'))
     rng = np.random.default_rng(BOOT_SEED + 7)
     boots, skipped = [], 0
     for _ in range(BOOT_B):
@@ -479,7 +491,8 @@ def main():
         com = PW.committed(ctx, np.asarray(o['gfa_t'], float))      # central repair / end-of-life factors
         cd = draw_context(ctx, su, o['draw'], a13, red13, a45, k13)
         params_d, gap = draw_params(params, cd, o['draw'])
-        runs = runs_for_draw(cd, params_d, tl_age_level(cd, X[j, iz], ratios))
+        tl_lvl = tl_age_level(cd, X[j, iz], ratios)
+        runs = runs_for_draw(cd, params_d, tl_lvl)
         S_d = np.asarray(cd['pop'], float) / np.asarray(cd['hh'], float)
         b = budgets.iloc[j]
         c_ref = float(o['carbon'][WINDOW].sum()) / M6
@@ -504,7 +517,7 @@ def main():
                    P_NZ_2050=float(np.asarray(cd['pop'], float)[-1]),
                    carbon_index=carbon_index(o, I_c, gfa_c),
                    B_AR_kt_2026_2050=float(b['B_AR_kt_2026_2050']), B_AtP_kt_2026_2050=float(b['B_AtP_kt_2026_2050']),
-                   TL1_draw_max_binds=bool(np.any((S_d + gap)[late] > params['L1']['tl'])),
+                   TL1_draw_max_binds=bool(np.any((S_d + gap)[late] > np.asarray(tl_lvl, float)[late])),
                    overbuild_cap_binding_years=int(runs[MP]['info']['payback_cap_binds'].sum()),
                    **{f'REF_{c}': float(com[k]) for k, c in COMMITTED_COLUMNS.items()},
                    **{f'{r}_{c}': float(PW.committed(ctx, np.asarray(runs[r]['E']['gfa_t'], float),

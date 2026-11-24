@@ -154,9 +154,9 @@ def mc_metrics():
 
 
 PATHWAY_RUNS = {'reference': 'REF', 'moderate': 'pathway-moderate', 'ambitious': 'pathway-ambitious', 'tl': 'TL',
-                 'tl_tl1_age_standardised': 'TL-TL1-age-standardised'}
+                 'tl_l1_national_1991': 'TL-L1-national-1991'}
 PATHWAY_MC_RUNS = {'reference': 'REF', 'moderate': 'pathway_moderate', 'ambitious': 'pathway_ambitious', 'tl': 'TL',
-                   'tl_tl1_age_standardised': 'TL_TL1_age_standardised'}
+                   'tl_l1_national_1991': 'TL_L1_national_1991'}
 
 
 def pathway_metrics():
@@ -181,7 +181,9 @@ def pathway_metrics():
     c = layout.data('pathways/montecarlo_conditional_tl.json')
     if os.path.exists(c):
         with open(c) as f:
-            out['tl_threshold_P_NZ_2050'] = json.load(f)['population_threshold']['adopted']['threshold_P_NZ_2050']
+            th = json.load(f)['population_threshold']['adopted']
+        out['tl_threshold_P_NZ_2050'] = th.get('threshold_P_NZ_2050')          # None: not reached in the range
+        out['tl_threshold_note'] = th.get('note')
     out.update(late_window_and_overlap(runs))
     with open(layout.data('baseline/projection.json')) as f:
         com = json.load(f)['committed']

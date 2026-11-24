@@ -86,14 +86,16 @@ def readme_block(m):
          '| run | carbon 2026–2050 (kt CO₂e) | cumulative LoE of AR | cumulative LoE of AtP | P(LoE of AR ≤ 1), Monte Carlo |',
          '|---|---|---|---|---|']
     names = {'reference': 'Reference', 'moderate': 'Moderate Pathway', 'ambitious': 'Ambitious Pathway',
-             'tl': 'Theoretical Limit', 'tl_tl1_age_standardised': 'Theoretical Limit, L1 at TL age-standardised (sensitivity)'}
+             'tl': 'Theoretical Limit', 'tl_l1_national_1991': 'Theoretical Limit, L1 at TL: national 1991 household size regardless of age (v4.10; sensitivity)'}
     for k, nm in names.items():
         if k in p:
             r = p[k]
             pp = f"{100 * r['P_LoE_AR_at_most_1']:.1f}%" if 'P_LoE_AR_at_most_1' in r else 'n/a'
             L.append(f"| {nm} | {r['carbon_kt']:,.0f} | {r['LoE_AR']:.2f} | {r['LoE_AtP']:.1f} | {pp} |")
-    L += ['', f"The Theoretical Limit stays within the AR budget in half of the draws when the 2050 population is "
-              f"{p['tl_threshold_P_NZ_2050'] / 1e6:.2f} million. LoE > 1: the budget is exceeded "
+    thr = (f"The Theoretical Limit stays within the AR budget in half of the draws when the 2050 population is "
+           f"{p['tl_threshold_P_NZ_2050'] / 1e6:.2f} million. " if p.get('tl_threshold_P_NZ_2050') else
+           f"Theoretical Limit: {p.get('tl_threshold_note') or 'no population threshold'}. ")
+    L += ['', thr + f"LoE > 1: the budget is exceeded "
               f"(AR = acquired rights, AtP = ability to pay; {a.get('source_pair_label', '')}).", '', README_END]
     return L
 

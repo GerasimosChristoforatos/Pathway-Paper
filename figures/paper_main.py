@@ -1035,15 +1035,15 @@ def tl_floor_sentence(d):
     """The Fig7b note on the TL floor at low population, read from the pathway Monte Carlo draws
     (pathways/montecarlo_draws.csv): the draws whose TL floor area equals the minimum over the draws, which must be the
     2026-2027 pipeline (pathways/annual.csv) with every positive need after it met by re-occupied dwellings
-    (reoccupation share 1); STOP otherwise (the sentence would not describe the mechanism)."""
+    (reoccupation share 1). If the run shows no such floor, the sentence is dropped (empty string)."""
     a = D.csv('pathways/annual.csv')
     a = a[(a['run'] == 'TL') & (a['scenario'] == 'REF')].set_index('year')['floor_area_Mm2']
     pipeline = float(a.loc[2026] + a.loc[2027])
     fa = d['TL_floor_area_Mm2'].to_numpy(float)
     fl = np.abs(fa - fa.min()) < 1e-6
-    if abs(fa.min() - pipeline) > 1e-6 or not np.all(d['TL_reoccupation_share'].to_numpy(float)[fl] >= 1 - 1e-9):
-        raise SystemExit('STOP: Fig7b: the lowest TL floor area over the draws is not the 2026-2027 pipeline with all '
-                         'need re-occupied; the TL-floor sentence does not hold.')
+    if abs(fa.min() - pipeline) > 1e-6 or not np.all(d['TL_reoccupation_share'].to_numpy(float)[fl] >= 1 - 1e-9) \
+            or fl.all():
+        return ''                                 # no floor in this run: the flattening statement does not apply
     pop = d['P_NZ_2050'].to_numpy(float) / 1e6
     v = d['TL_LoE_AR'].to_numpy(float)[fl]
     r = float(np.corrcoef(d['TL_carbon_kt'].to_numpy(float)[fl], pop[fl])[0, 1])
@@ -1176,7 +1176,7 @@ def fig7():
     ed4_only = ('' if not shown_elsewhere else ' Rows in Extended Data Fig. 6 only: ' + '; '.join(
         N.INPUT_LABEL[k].replace('\n', ' ') for k in shown_elsewhere) + '.')
     _save(fig, 'Fig7_uncertainty',
-          note=tl_floor_sentence(d) + ' ' + f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "
+          note=(tl_floor_sentence(d) + ' ' if tl_floor_sentence(d) else '') + f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "
                f"moves the AR budget only; one-at-a-time ranges are not additive.{ed4_only}{cf_note} (b) P(TL within AR) = "
                f"{j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-{j['wilson_95'][1]:.3f}; n = {j['n']:,}); "
                + 'P(LoE AR <= 1) on the same paired draws: ' + ', '.join(

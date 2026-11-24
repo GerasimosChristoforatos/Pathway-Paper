@@ -141,12 +141,18 @@ def lines():
           f"{cq['p50']:,.0f} kt, 50% interval {cq['p25']:,.0f}-{cq['p75']:,.0f}, 90% interval {cq['p5']:,.0f}-"
           f"{cq['p95']:,.0f} kt (pathways/montecarlo_summary.csv; per draw in pathways/montecarlo_draws.csv).", '']
     th = ct['population_threshold']['adopted']
-    L += [f"The share of draws in which TL stays within the AR budget is {100 * ct['p_within_AR']:.1f}% "
-          f"({ct['within_AR']:,} of {ct['n']:,}; Wilson 95% interval {100 * ct['wilson_95'][0]:.1f}-"
-          f"{100 * ct['wilson_95'][1]:.1f}%, Wilson 1927). The 2050 population at which P(TL LoE AR ≤ 1) = 50% is "
-          f"{th['threshold_P_NZ_2050'] / 1e6:.2f} million (95% interval {th['ci95'][0] / 1e6:.2f}-"
-          f"{th['ci95'][1] / 1e6:.2f}), from a univariate logistic regression on the draw's 2050 population fitted by "
-          "Firth's penalised likelihood where the maximum-likelihood estimate does not exist (Firth 1993; Heinze & "
-          f"Schemper 2002), with a percentile bootstrap of {th['bootstrap_resamples']:,} resamples (seed "
-          f'{PMC.BOOT_SEED} in the full profile).']
+    share = (f"The share of draws in which TL stays within the AR budget is {100 * ct['p_within_AR']:.1f}% "
+             f"({ct['within_AR']:,} of {ct['n']:,}; Wilson 95% interval {100 * ct['wilson_95'][0]:.1f}-"
+             f"{100 * ct['wilson_95'][1]:.1f}%, Wilson 1927). ")
+    model = ("a univariate logistic regression on the draw's 2050 population fitted by Firth's penalised likelihood "
+             "where the maximum-likelihood estimate does not exist (Firth 1993; Heinze & Schemper 2002)")
+    if th.get('estimable'):
+        share += (f"The 2050 population at which P(TL LoE AR ≤ 1) = 50% is {th['threshold_P_NZ_2050'] / 1e6:.2f} "
+                  f"million (95% interval {th['ci95'][0] / 1e6:.2f}-{th['ci95'][1] / 1e6:.2f}), from {model}, with a "
+                  f"percentile bootstrap of {th['bootstrap_resamples']:,} resamples (seed {PMC.BOOT_SEED} in the full "
+                  'profile).')
+    else:
+        share += (f"{th.get('note', 'No population threshold exists in the sampled range')}"
+                  + (f" ({model})." if 'method' in th else '.'))
+    L += [share]
     return L

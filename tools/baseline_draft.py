@@ -934,19 +934,20 @@ def is_acknowledged(text):
 
 
 def tl_limitation():
-    """The theoretical limit as a thought experiment (TL1 regardless of age structure), from the run outputs."""
-    lv = load('pathways/levers.json') or {}
+    """The theoretical limit as a thought experiment (L1 at TL from age-specific headship), from the run outputs."""
     tl = load('pathways/theoretical_limit.json') or {}
-    l1, a = lv.get('L1', {}), tl.get('tl1_age_standardised', {})
-    if not (l1 and a):
-        return ('The theoretical limit is a thought experiment, not a target: L1 at TL returns to the 1991 household size '
-                'regardless of age structure; the age-standardised L1 at TL is reported as a sensitivity.')
-    return (f"The theoretical limit is a thought experiment, not a target: L1 at TL returns household size to "
-            f"{l1['tl']:.2f} (the {l1['tl_year']} census level) regardless of age structure, which with the 2050 "
-            f"population requires about {100 * a['tl1_households_per_person_fall_at_every_age']:.1f}% fewer "
-            'households per person than in 2023 at every age; the age-standardised L1 at TL (the lower of the 2023 and '
-            f"Stats NZ Medium B headship rates by age group) is reported as a sensitivity (TL {a['carbon_kt']:,.0f} "
-            f"kt CO2e, cumulative LoE of AR {a['LoE_AR']:.2f}).")
+    a = tl.get('tl1', {})
+    if not a:
+        return ('The theoretical limit is a thought experiment, not a target: L1 at TL combines the lowest observed '
+                'census headship of each age group, which may come from different census years.')
+    v = a['v410']
+    return ('The theoretical limit is a thought experiment, not a target: L1 at TL combines the lowest observed census '
+            'headship of each age group (or the Stats NZ propensity-B rate where lower), which may come from different '
+            'census years; census family coding changed in 2018 (new methodology) and 2023 (administrative data added '
+            f"people to families). With the 2050 population it implies {100 * a['households_per_person_fall_2050']:.1f}% "
+            'fewer households per person than the 2023 rates; the v4.10 setting (the national 1991 household size '
+            f"regardless of age, {100 * a['v410_households_per_person_fall_2050']:.1f}% fewer) is reported as a "
+            f"sensitivity (TL {v['carbon_kt']:,.0f} kt CO2e, cumulative LoE of AR {v['LoE_AR']:.2f}).")
 
 
 def acknowledged_limitations():

@@ -152,6 +152,7 @@ L1_PROPENSITY_SOURCE = ('Stats NZ, National family and household projections: 20
 # TL row (TL_FROM2027) keeps its definition (the level from 2027).
 TL1_SPEED_CENSUS_WINDOW = (1991, 2023)
 TL1_SPEED_START = OBSERVED_YEAR
+L1_TL_VARIANT = 'Medium'          # the population variant of the deterministic L1 at TL ratio path
 L2_VACANCY_FLOOR = 0.040          # implied vacancy must never fall below this in a non-TL run (check)
 L3_D_AMBITIOUS = 0.40             # Pellan et al. 2024: demolition 150,000 -> 90,000 a year
 L8_SAMPLE_TYPOLOGIES = ('Detached', 'Townhouses')
@@ -626,15 +627,23 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
         raise SystemExit(f'STOP (L1): the propensity-B household size is below the A path in {bad}.')
     gap = np.maximum(gap, 0.0)                # exact zeros where the two rebased paths coincide (2023-2025)
     hS = B['hist_S'].dropna()
-    S_tl = float(hS.max())
     S_amb = S + gap
+    # L1 at TL: the lowest observed census headship of each age group, or propensity B where lower, on the projected
+    # age structure (household_headship.py), as a ratio to the 2023 census rates; the speed limit applies below
+    import household_headship as HH
+    tl_ratio = HH.tl_ratio_path(years, L1_TL_VARIANT)
+    S_tl = S * tl_ratio
+    S_v410 = float(hS.max())                  # the v4.10 setting (sensitivity): the national 1991 household size
     out['L1'] = dict(subrule='C', variants={v: yy(S_variants[v]['S']) for v in S_variants}, gap=yy(gap),
                      tail=settings.S_TAIL, S_ref=yy(S),
                      S={'reference': yy(S), 'moderate': yy(S + gap / 2.0), 'ambitious': yy(S_amb)},
-                     tl=S_tl, tl_year=int(hS.idxmax()), b_ge_a_every_year=True, source=L1_PROPENSITY_SOURCE,
-                     # TL1 held regardless of age structure: the fall in households per person at every age, against
-                     # the 2023 living-arrangement rates on the 2050 population (= the Reference S 2050, propensity A)
-                     tl_households_per_person_fall=float(1.0 - S[-1] / S_tl),
+                     tl=yy(S_tl), tl_ratio=yy(tl_ratio), tl_variant=L1_TL_VARIANT,
+                     tl_v410=S_v410, tl_v410_year=int(hS.idxmax()),
+                     b_ge_a_every_year=True, source=L1_PROPENSITY_SOURCE,
+                     # the fall in households per person at every age against the 2023 census rates, 2050
+                     tl_households_per_person_fall=float(1.0 - 1.0 / tl_ratio[-1]),
+                     tl_v410_households_per_person_fall=float(1.0 - S[-1] / S_v410),
+                     headship=headship_evidence(HH, hS),
                      anchor=f'Stats NZ Medium B household size, rebased on 2023 (2050: S = {S_amb[-1]:.4f}, '
                             f'+{gap[-1]:.4f} on the Reference)')
     # TL1 speed limit: the fastest |dS| per year between consecutive censuses (census-benchmarked households)
@@ -644,11 +653,17 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                       rate=abs(float(hS.loc[b] - hS.loc[a])) / (b - a)) for a, b in zip(cy[:-1], cy[1:])]
     fastest = max(intervals, key=lambda r: r['rate'])
     i0 = int(np.where(years == TL1_SPEED_START)[0][0])
-    reached = TL1_SPEED_START + (S_tl - float(S[i0])) / fastest['rate']
+    path = tl1_path(S, gap, w, years, S_tl, fastest['rate'])
+    fast = float(S[i0]) + fastest['rate'] * (years - TL1_SPEED_START)
+    binds = [int(y) for y, f_, l_, p_ in zip(years, fast, S_tl, path)
+             if y >= TL1_SPEED_START and f_ < l_ - 1e-12 and abs(p_ - f_) < 1e-12]
+    v410_reached = TL1_SPEED_START + (S_v410 - float(S[i0])) / fastest['rate']
     out['L1']['tl_speed'] = dict(rate=fastest['rate'], interval=[fastest['y0'], fastest['y1']], start=TL1_SPEED_START,
-                                 S_start=float(S[i0]), level=S_tl, level_reached=float(reached),
-                                 census_years=cy, intervals=intervals,
-                                 path=yy(tl1_path(S, gap, w, years, S_tl, fastest['rate'])),
+                                 S_start=float(S[i0]), binding_years=binds,
+                                 binds_until=(max(binds) if binds else None),
+                                 v410_level_reached=float(v410_reached),
+                                 census_years=cy, intervals=intervals, path=yy(path),
+                                 v410_path=yy(tl1_path(S, gap, w, years, S_v410, fastest['rate'])),
                                  basis='fastest change of household size between consecutive censuses 1991-2023')
 
     # ---- L2 Vacancy [B] ----
@@ -859,7 +874,6 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
 def tl_strength(p, years):
     """Every TLn against the Ambitious level of Ln (at least as strong in every typology and year)."""
     yrs = [int(y) for y in years]
-    amb3 = np.array([by_year(p['L1']['S']['ambitious'], y) for y in yrs])
     soil = p['L7']['soil_factor_2025']
     return [
         dict(item='TL4', tl='f = 1', ambitious=str({t: round(v, 4) for t, v in p['L4']['f']['ambitious'].items()}),
@@ -867,8 +881,12 @@ def tl_strength(p, years):
         dict(item='TL5', tl=str({t: round(v, 4) for t, v in p['L5']['tl'].items()}),
              ambitious=f"r = {p['L5']['r']['ambitious']:.4f}",
              ok=all(v <= p['L5']['r']['ambitious'] for v in p['L5']['tl'].values())),
-        dict(item='TL1', tl=f"S = {p['L1']['tl']:.4f}", ambitious=f'S_amb max {amb3.max():.4f}',
-             ok=bool(np.all(p['L1']['tl'] >= amb3))),
+        dict(item='TL1', tl=f"S 2050 = {by_year(p['L1']['tl_speed']['path'], 2050):.4f} (age-specific headship)",
+             ambitious=f"S 2050 = {by_year(p['L1']['S']['ambitious'], 2050):.4f}",
+             # against Ambitious on the adoption window, S_ref + w gap (the bound tl1_path applies)
+             ok=all(by_year(p['L1']['tl_speed']['path'], y) >= by_year(p['L1']['S_ref'], y)
+                    + by_year(p['adoption']['w'], y) * by_year(p['L1']['gap'], y) - 1e-12
+                    for y in yrs if y >= TL1_SPEED_START)),
         dict(item='TL2', tl=f"v = {p['L2']['tl']:.4f}", ambitious=f"v = {p['L2']['v']['ambitious']:.4f}",
              ok=p['L2']['tl'] <= p['L2']['v']['ambitious']),
         dict(item='TL3', tl='d = 1 (demolition and surge)', ambitious=f"d = {p['L3']['d']['ambitious']}",
@@ -928,7 +946,7 @@ def native(p, lever, level, years, l10_tl=False):
     if lever == 'L1':
         S = np.array([by_year(p['L1']['S_ref'], int(y)) for y in years])
         gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
-        return np.full(len(years), p['L1']['tl']) if tl else S + lam * gap
+        return tl1_level(p, years) if tl else S + lam * gap
     if lever == 'L2':
         return p['L2']['tl'] if tl else interp(p['L2']['v']['reference'], p['L2']['v']['ambitious'])
     if lever == 'L3':
@@ -970,6 +988,42 @@ def l4_size(size_base, olf_y, S, f, w):
         size[t] = np.where(h, ref, occ + (1.0 - float(f[t]) * w) * (ref - occ))
         held[t] = h
     return size, held
+
+
+def tl1_level(p, years):
+    """The L1 at TL household-size level by model year: p['L1']['tl'] as a by-year dict (the resolved path), an array
+    (a Monte Carlo draw's own path) or a number (the v4.10 sensitivity, held)."""
+    v = p['L1']['tl']
+    if isinstance(v, dict):
+        return np.array([by_year(v, int(y)) for y in years], float)
+    v = np.asarray(v, float)
+    return np.full(len(years), float(v)) if v.ndim == 0 else v
+
+
+def headship_evidence(HH, hist_S):
+    """The census headship evidence of L1 at TL for levers.json (household_headship.py): calibration, rates by census,
+    TL rates and their sources by knot, the common-basis check, the back-check, the share comparison."""
+    cal = HH.census_calibration()
+    rates = HH.census_rates()
+    R, src, hb = HH.tl_rates(L1_TL_VARIANT)
+    cb = HH.common_basis_check()
+    bc, more, scale = HH.back_check(hist_S)
+    w1, fell = HH.one_person_direction()
+    paths = {v: HH.tl_paths(v) for v in ('Low', 'Medium', 'High')}
+    tbl = lambda df: {str(c): {str(i): float(df.loc[i, c]) for i in df.index} for c in df.columns}
+    return dict(calibration={str(c): v for c, v in cal.items()}, rates=tbl(rates),
+                tl_rates=tbl(R), tl_source={str(c): {str(i): str(src.loc[i, c]) for i in src.index} for c in src.columns},
+                b_adjusted=tbl(hb), common_basis=dict(normalised=tbl(cb['normalised']),
+                                                       people_per_household=cb['people_per_household'],
+                                                       f_projection=cb['f_projection'], g_projection=cb['g_projection']),
+                share_diff_pp=tbl(cb['share_diff_pp']),
+                back_check=dict(table=tbl(bc.drop(columns=['more_shared']).astype(float)),
+                                more_shared_year=more, matching_scale=scale,
+                                best_observed_since_1991=more is None),
+                one_person_share_fell_every_age_15plus=fell,
+                paths={v: tbl(t) for v, t in paths.items()},
+                direction={a: ('fell' if rates.loc[a, 2023] < rates.loc[a, 2013] else 'rose')
+                           for a in rates.index if a != '0-14'})
 
 
 def tl1_path(S_ref, gap, w, years, level, rate, start=TL1_SPEED_START):
@@ -1076,16 +1130,16 @@ def inputs(base, p, levels, ramp_name=None):
     info = dict(w=w, l4_held=None, levels=dict(lv), tl=tuple(L for L in LEVERS if lv.get(L) == 'tl'),
                 releases=releases_dwellings(levels))
     # L1 household size (the Reference S plus the gap to the propensity-B path, the draw's own gap in the pathway Monte
-    # Carlo; TL1: the historical maximum)
+    # Carlo; L1 at TL: the age-specific headship path, a Monte Carlo draw's own)
     if 'L1' in lv:
         gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
         if lv['L1'] == 'tl' and ramp_name != TL_FROM2027:
             # the speed limit replaces the window (the path is the target, at full weight)
-            target = tl1_path(S, gap, w, years, p['L1']['tl'], p['L1']['tl_speed']['rate'])
+            target = tl1_path(S, gap, w, years, tl1_level(p, years), p['L1']['tl_speed']['rate'])
             hh, S = l1_households(base['hh'], S, target, np.ones(len(years)))
         else:
             if lv['L1'] == 'tl':                      # never weaker than Ambitious (a Monte Carlo draw's own S)
-                target = np.maximum(p['L1']['tl'], S + gap)
+                target = np.maximum(tl1_level(p, years), S + gap)
             else:
                 target = S + lv['L1'] * gap
             hh, S = l1_households(base['hh'], S, target, w)
@@ -1233,7 +1287,8 @@ def pct(x, nd=1):
 # Zealand or elsewhere, an official projection, a peer-reviewed scenario or a documented requirement, cited); TL = the logical bound where the lever has one, otherwise the best value observed.
 LEVEL_RULE = {
     'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'official projection: Stats NZ propensity B',
-           'best observed: the national household size of 1991 (no logical bound)'),
+           'best observed: the lowest census headship of each age group (2013-2023), or propensity B where lower, '
+           'on the projected age structure'),
     'L2': ('2023 census vacancy', 'achieved in NZ: the 1996 census minimum',
            'best observed internationally: lowest nationwide rate in the OECD table, Switzerland 1.31% (2022)'),
     'L3': ('current demolition and surge', 'peer-reviewed scenario: -40% demolition (Pellan et al. 2024)',
@@ -1291,7 +1346,8 @@ def lever_table(p):
         elif L == 'L1':
             mod = f"S 2050 = {by_year(q['S']['moderate'], 2050):.4f}"
             amb = f"S 2050 = {by_year(q['S']['ambitious'], 2050):.4f} (Reference {by_year(q['S_ref'], 2050):.4f})"
-            tl = f"S = {q['tl']:.4f} ({q['tl_year']})"
+            tl = (f"S 2050 = {by_year(q['tl_speed']['path'], 2050):.4f} (lowest observed headship by age group, or "
+                  f"propensity B where lower; speed-limited)")
         elif L == 'L2':
             src = q['tl_source']
             mod, amb = pct(q['v']['moderate'], 2), pct(q['v']['ambitious'], 2)

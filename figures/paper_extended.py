@@ -145,13 +145,20 @@ def ed3():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Household size')
     fig.tight_layout()
-    reach = int(stl.index[np.argmax(stl.values >= l1['tl'] - 1e-9)])
+    sp = l1['tl_speed']
+    bind = (f"at the rate limit from the Reference in {int(stl.index[0])} until {sp['binds_until']}, then on"
+            if sp['binds_until'] else 'on')
     _save(fig, 'ED2_household_formation_size',
           note=f"(b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious "
                f"path and Extended Data Fig. 6 row 1 ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
-               f"pathways phase it in by 2035); {N.TL['TL']} (L1 at TL) is the household size of the TL run, rising at the "
-               f"rate limit from the Reference in {int(stl.index[0])} to {l1['tl']:.2f} (the {l1['tl_year']} level) "
-               f"at mid-{reach - 1} (the Methods' {reach - 1}.5), held from {reach}.")
+               f"pathways phase it in by 2035); {N.TL['TL']} (L1 at TL) is the household size of the TL run, rising "
+               f"{bind} the age-specific path (the lowest observed census headship of each age group, or propensity B "
+               f"where lower, on the projected age structure; {LV_by_year(l1['tl'], 2050):.2f} in 2050).")
+
+
+def LV_by_year(d, y):
+    """A by-year dict of levers.json at year y."""
+    return float(d[str(y)])
 
 
 def sf2():
@@ -199,20 +206,18 @@ def sf2():
         P.panel(ax[1], 'b', 'TL LoE against population')
     ax[1].set_xlabel('New Zealand population 2050 (million), Monte Carlo draws')
     fig.tight_layout()
-    # the TL1 age-standardised sensitivity (pathways.TL_AGE_STANDARDISED; pathways_mc.TLAS)
-    a = D.js('pathways/theoretical_limit.json')['tl1_age_standardised']
+    # the v4.10 L1 at TL sensitivity (pathways.TL_L1_V410; pathways_mc.TLV410)
+    a = D.js('pathways/theoretical_limit.json')['tl1']
     s = D.csv('pathways/montecarlo_summary.csv')
-    m = s[(s['run'] == 'TL_TL1_age_standardised') & (s['quantity'] == 'LoE_AR')]
-    tl1 = D.js('pathways/levers.json')['L1']
-    floored = [int(y) for y, v in a['level_by_year'].items() if float(v) < float(tl1['S']['ambitious'][str(y)])]
-    floor_txt = f'; never below L1 Ambitious, which binds from {floored[0]}' if floored else ''
-    age_note = (f" L1 at TL holds household size at {tl1['tl']:.2f} ({tl1['tl_year']}, the highest observed) regardless of "
-                f"age structure: with the 2050 population this requires about "
-                f"{100 * a['tl1_households_per_person_fall_at_every_age']:.1f}% fewer households per person than in "
-                f"2023 at every age. With an age-standardised L1 at TL (the lower of the 2023 and Stats NZ Medium B "
-                f"living-arrangement rates by age group{floor_txt}) TL is {a['carbon_kt']:,.0f} kt, LoE AR {a['LoE_AR']:.2f}"
+    m = s[(s['run'] == 'TL_L1_national_1991') & (s['quantity'] == 'LoE_AR')]
+    v = a['v410']
+    age_note = (f" L1 at TL combines the lowest observed census headship of each age group (or propensity B where "
+                f"lower): {100 * a['households_per_person_fall_2050']:.1f}% fewer households per person than the 2023 "
+                f"rates in 2050. With the v4.10 setting (the national {v['level_year']} household size {v['level']:.2f} "
+                f"regardless of age, {100 * a['v410_households_per_person_fall_2050']:.1f}% fewer households per person "
+                f"at every age) TL is {v['carbon_kt']:,.0f} kt, LoE AR {v['LoE_AR']:.2f}"
                 + (f", P(LoE AR \u2264 1) = {100 * float(m['probability_LoE_at_most_1'].iloc[0]):.1f}% over the draws"
-                   if len(m) else '') + ' (the sensitivity row: L1 at TL age-standardised).')
+                   if len(m) else '') + ' (sensitivity row).')
     _save(fig, 'SF13_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
                                           f"{j['wilson_95'][1]:.3f}); (b) {note_b}.{age_note}")
 

@@ -252,16 +252,23 @@ def test_l10_class_factors():
     assert LV.l10_class_factor('ambitious', years) == {} and LV.l10_class_factor(0.5, years) == {}
 
 
-def test_tl1_age_standardised_row():
-    """The TL1 age-standardised sensitivity row exists, is never stronger than TL and its summary is consistent."""
+def test_tl1_v410_sensitivity_row():
+    """L1 at TL: the v4.10 setting (the national 1991 household size) is a sensitivity row, its summary matches
+    runs.csv, and the age-specific path is never below L1 Ambitious."""
     import pathways as PW
     with open(layout.data('pathways/theoretical_limit.json')) as f:
-        a = json.load(f)['tl1_age_standardised']
+        a = json.load(f)['tl1']
+    with open(layout.data('pathways/levers.json')) as f:
+        l1 = json.load(f)['L1']
     runs = pd.read_csv(layout.data('pathways/runs.csv'))
     r = runs[(runs['scenario'] == 'REF')].set_index('run')
-    assert r.loc[PW.TL_AGE_STANDARDISED, 'carbon_kt'] >= r.loc['TL', 'carbon_kt']
-    assert a['carbon_kt'] == pytest.approx(r.loc[PW.TL_AGE_STANDARDISED, 'carbon_kt'], rel=1e-12)
-    assert 0.0 < a['tl1_households_per_person_fall_at_every_age'] < 1.0
+    assert a['v410']['carbon_kt'] == pytest.approx(r.loc[PW.TL_L1_V410, 'carbon_kt'], rel=1e-12)
+    assert a['tl']['carbon_kt'] == pytest.approx(r.loc['TL', 'carbon_kt'], rel=1e-12)
+    assert 0.0 < a['households_per_person_fall_2050'] < 1.0 and 0.0 < a['v410_households_per_person_fall_2050'] < 1.0
+    for y, v in l1['tl_speed']['path'].items():
+        if int(y) >= 2026:
+            assert v >= l1['S']['ambitious'][y] - 1e-12, y
+    assert l1['headship']['back_check']['best_observed_since_1991'] in (True, False)
 
 
 

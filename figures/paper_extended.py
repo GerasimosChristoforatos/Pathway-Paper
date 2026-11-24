@@ -498,7 +498,7 @@ def edt1():
                 v = [s0 * (1 - q['x']['moderate']), s0 * (1 - q['x']['ambitious']), q['tl'][t]]
                 par = 'soil carbon loss (kg CO2e/m2 floor area)'
             elif L == 'L1':
-                v = [q['S']['moderate']['2050'], q['S']['ambitious']['2050'], q['tl']]
+                v = [q['S']['moderate']['2050'], q['S']['ambitious']['2050'], q['tl_speed']['path']['2050']]
                 par = 'household size 2050 (all typologies)'
             elif L == 'L2':
                 v = [q['v']['moderate'], q['v']['ambitious'], q['tl']]

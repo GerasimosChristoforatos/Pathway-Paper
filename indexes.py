@@ -74,6 +74,12 @@ FILES = [
     ('data/sensitivity/household_size.csv', 'The Reference, the Moderate / Ambitious Pathway and TL '
      'under the household-size sensitivities (Stats NZ Low / High variant; 2018-2023 census pace)',
      'tools/sensitivity_tables.py'),
+    ('data/loe_2028_2050.csv', 'Cumulative LoE of AR and AtP over 2028-2050 (carbon and budget both summed over the '
+     'window; the pipeline years excluded) of the Reference, the Pathways and TL (Supplementary Table 10)',
+     'tools/sensitivity_tables.py'),
+    ('data/pathways/headship_by_census.csv', 'Households per person (headship) by age group at the 2013, 2018 and '
+     '2023 Censuses, the propensity-B rate on the census basis and the L1 at TL rate by projection year, with its '
+     'source', 'pathways.py'),
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
      'AR and AtP (D42; the AR base-window rows in Fig7a)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/replacement_variants.csv', 'The Reference, the Moderate / Ambitious Pathway and TL under Low / Reference '

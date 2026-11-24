@@ -960,7 +960,7 @@ def native(p, lever, level, years, l10_tl=False):
     if lever == 'L1':
         S = np.array([by_year(p['L1']['S_ref'], int(y)) for y in years])
         gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
-        return tl1_level(p, years) if tl else S + lam * gap
+        return np.maximum(tl1_level(p, years), S + gap) if tl else S + lam * gap   # TL: never below Ambitious
     if lever == 'L2':
         return p['L2']['tl'] if tl else interp(p['L2']['v']['reference'], p['L2']['v']['ambitious'])
     if lever == 'L3':

@@ -540,7 +540,7 @@ def _input_label(rid):
 
 
 ED8_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
-ED7_H = 165                       # mm
+ED7_H = 200                       # mm (two rows more: the window and whole-life rows)
 NOTES_TOP = 0.345                # the notes block occupies the figure below this fraction of its height (ED8)
 NOTES_TOP_ED7 = 0.22
 
@@ -628,6 +628,9 @@ def ed5_rows():
             role = 'low' if k == 0 else ('high' if k == len(bw) - 1 else ('tick', f"{int(x['n'])} yr"))
             items.append((ar_id, role, 'AR base window', float(x[q])))
         orders[q] = P.tornado_rows(N.BOUNDARY_SENSITIVITY_GROUPS, _collect(items), c[q])
+    # the panels share their y labels: panel b takes the row order of panel a (AR)
+    rank = {(k, i if k == 'header' else i['id']): n for n, (k, i) in enumerate(orders['LoE_AR'])}
+    orders['LoE_AtP'] = sorted(orders['LoE_AtP'], key=lambda t: rank[(t[0], t[1] if t[0] == 'header' else t[1]['id'])])
     shared = [[(k, i if k == 'header' else i['id']) for k, i in orders[q]] for q in orders]
     if shared[0] != shared[1]:                        # the panels share their y labels and numbers
         raise SystemExit('STOP: ED7: panels a and b order their rows differently; the shared y labels would be wrong.')

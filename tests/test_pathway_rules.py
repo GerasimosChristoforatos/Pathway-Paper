@@ -265,9 +265,11 @@ def test_tl1_v410_sensitivity_row():
     assert a['v410']['carbon_kt'] == pytest.approx(r.loc[PW.TL_L1_V410, 'carbon_kt'], rel=1e-12)
     assert a['tl']['carbon_kt'] == pytest.approx(r.loc['TL', 'carbon_kt'], rel=1e-12)
     assert 0.0 < a['households_per_person_fall_2050'] < 1.0 and 0.0 < a['v410_households_per_person_fall_2050'] < 1.0
-    for y, v in l1['tl_speed']['path'].items():
+    with open(layout.data('pathways/levers.json')) as f:
+        w = json.load(f)['adoption']['w']
+    for y, v in l1['tl_speed']['path'].items():          # never below Ambitious on the adoption window
         if int(y) >= 2026:
-            assert v >= l1['S']['ambitious'][y] - 1e-12, y
+            assert v >= l1['S_ref'][y] + w[y] * l1['gap'][y] - 1e-12, y
     assert l1['headship']['back_check']['best_observed_since_1991'] in (True, False)
 
 

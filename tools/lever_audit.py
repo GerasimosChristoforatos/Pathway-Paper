@@ -12,8 +12,9 @@ Reference, pathways.run):
   5. no double counting: each lever changes only its own engine inputs and stage (L1-L5 floor area; L6, L7 soil;
      L8, L10 the A1-A3 term; L9 the A4-A5 term), checked on the inputs and on the stage totals;
   6. levers.tl_strength (TL at least as strong as Ambitious), L8 at TL by year and L10 at TL included;
-  7. the re-occupation pool accounting applies if and only if the run releases dwellings (pathways.releases_dwellings:
-     L1 or L2 at TL): a dummy lever at TL whose TL parameter is its Reference value changes nothing;
+  7. the re-occupation pool accounting applies if and only if the run actually releases dwellings (L1 at TL with
+     households falling, or L2 at TL with the vacancy rate falling, by 2050): a dummy lever at TL whose TL parameter is
+     its Reference value changes nothing, and L1 at TL alone (no release) uses no pool;
   8. the L8 ratios are unchanged at L10 Reference, Moderate and Ambitious;
   9. the L9 parts (transport, site energy, waste) sum to the A4-A5 total in every run.
 
@@ -274,8 +275,9 @@ def main():
 
     # ---- 7. the re-occupation pool only in runs that release dwellings ----
     L += ['', '## 7. The re-occupation pool accounting only in runs that release dwellings', '',
-          'pathways.releases_dwellings(levels) is true if and only if L1 or L2 is at TL; it alone chooses the pool '
-          '(pathways.run), the zero-building soil clip and the checks of release runs. A dummy lever at TL whose TL '
+          'The pool applies if and only if the run actually releases dwellings: L1 at TL with households falling, or '
+          'L2 at TL with the vacancy rate falling, cumulatively by 2050 (pathways.run, info["releases"]); '
+          'pathways.releases_dwellings(levels), L1 or L2 at TL, is the candidate test. A dummy lever at TL whose TL '
           'parameter is its Reference value (L7 at TL with the 2025 soil factor) must reproduce the Reference run exactly.', '']
     p0 = dict(p, L7=dict(p['L7'], tl=dict(p['L7']['soil_factor_2025'])))   # L7 at TL = the 2025 soil factor
     Rn = PW.run(ctx, p0, {'L7': 'tl'})
@@ -287,7 +289,8 @@ def main():
     if not ok7:
         fails.append(f'7 dummy TL lever changes the run (carbon {d_carbon:.2e}, floor area {d_gfa:.2e})')
     L += ['', '| run | releases dwellings | expected |', '|---|---|---|']
-    cases7 = [(f'{x} alone at TL', {x: 'tl'}, x in ('L1', 'L2')) for x in LV.LEVERS]
+    # L1 at TL alone releases none under the age-specific rule (households never fall): no pool
+    cases7 = [(f'{x} alone at TL', {x: 'tl'}, x == 'L2') for x in LV.LEVERS]
     cases7 += [('Moderate Pathway', LV.pathway_levers(LV.PATHWAY, 'moderate'), False),
                ('Ambitious Pathway', LV.pathway_levers(LV.PATHWAY, 'ambitious'), False),
                ('L3-L10 at TL from the Moderate Pathway', LV.tl_levels(LV.TL_COMPONENTS[2:]), False),
@@ -295,7 +298,7 @@ def main():
     for nm, lvls, exp in cases7:
         got = get(lvls)['info']['releases']
         L.append(f"| {nm} | {'yes' if got else 'no'} | {'yes' if exp else 'no'} |")
-        if got != exp or PW.releases_dwellings(lvls) != exp:
+        if got != exp or (exp and not PW.releases_dwellings(lvls)):
             fails.append(f'7 {nm}: releases_dwellings {got}, expected {exp}')
 
     # ---- 8. L8 ratios at the L10 levels ----

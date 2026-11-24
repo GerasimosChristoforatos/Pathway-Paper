@@ -14,9 +14,10 @@ ONE RUN (run()): every run, the Reference included, follows the same order per y
   3. the 2026 overbuild: the market excess of the REFERENCE (computed once, held fixed in every run) is absorbed
      along the Reference's logistic weights, the payback capped at max(gross_t, 0) with the shortfall carried
      (engine.absorb_overbuild);
-  4. re-occupation (only in runs that release dwellings, releases_dwellings(levels): TL1 or TL2 at TL, in any single-
-     lever run, Shapley subset, waterfall step or the full TL): the pool
-     R = R1 (TL1, household decline: -min(d households, 0) / (1 - v)) + R2 (L2 at TL, lower vacancy) + the positive
+  4. re-occupation (only in runs that actually release dwellings: L1 at TL with households falling or L2 at TL with
+     the vacancy rate falling, cumulatively by 2050, in any single-lever run, Shapley subset, waterfall step or the
+     full TL; releases_dwellings(levels), L1 or L2 at TL, is the candidate test): the pool
+     R = R1 (L1 at TL, household decline: -min(d households, 0) / (1 - v)) + R2 (L2 at TL, lower vacancy) + the positive
      overbuild (the pipeline years and the fading gap) + the starting surplus meets a constant share of each year's
      need after the payback over first..2050, first = observed_end + 1 (2028 with the 17-month lag; the releases of
      the observed years enter the pool in `first`) (reoccupation()); a negative excess is still made good along the
@@ -356,14 +357,20 @@ def run(ctx, p, levels, ramp_name=None, reocc_rule='constant_share'):
     obs = (years >= WINDOW[0]) & (years <= obs_end)
     i_first = int(np.flatnonzero(late)[0])
     v = np.broadcast_to(np.asarray(E1['v'], float), (n,))
-    tl_family = bool(info['releases'])               # releases_dwellings(levels): TL1 or TL2 at TL
     chg = np.asarray(E1['change'], float)
     if np.any(chg[years < FIRST_LEVER_YEAR] < 0.0):
         raise SystemExit(f'run: a vacancy-rate fall before {FIRST_LEVER_YEAR} (2026 is observed).')
     on = years >= FIRST_LEVER_YEAR
     rel_v = np.where(on, -np.minimum(chg, 0.0), 0.0)                                   # vacancy-rate fall
-    rel3 = (np.where(on, -np.minimum(np.asarray(E1['d_hh_raw'], float), 0.0) / (1.0 - v), 0.0)
-            if tl_family else zeros)                                                      # household-size fall
+    rel3_all = np.where(on, -np.minimum(np.asarray(E1['d_hh_raw'], float), 0.0) / (1.0 - v), 0.0)   # household fall
+    # the pool predicate on actual releases: the run releases dwellings if L1 at TL releases any (households fall in
+    # absolute terms) or L2 at TL releases any (the vacancy rate falls), cumulatively by 2050; a candidate run
+    # (releases_dwellings: L1 or L2 at TL) that releases none keeps the logistic absorption of every other run
+    at_tl = set(info['tl'])
+    tl_family = bool(info['releases']) and (('L1' in at_tl and float(rel3_all.sum()) > 0.0)
+                                            or ('L2' in at_tl and float(rel_v.sum()) > 0.0))
+    info['releases'] = tl_family
+    rel3 = rel3_all if tl_family else zeros                                               # household-size fall
 
     def pooled(x):                                    # an observed year's release enters at the window's first year
         x = np.where(obs | late, x, 0.0)

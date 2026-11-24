@@ -1250,11 +1250,13 @@ TL_RELEASE_ITEMS = ('TL1', 'TL2')       # their released dwellings are re-occupi
 
 
 def releases_dwellings(levels):
-    """True if and only if the run releases dwellings: TL1 or TL2 (TL_RELEASE_ITEMS) at 'tl'. The one
-    predicate that chooses the re-occupation pool accounting (pathways.run), the zero-building soil clip and the
-    checks of release runs; a run that releases nothing (the Reference, the Pathways, any other lever at TL) absorbs
-    the starting surplus and the overbuild along the logistic to 2035. Choosing the pool for any lever at 'tl' would
-    shift the timing of building (+84.6 kt with an otherwise neutral TL item; lever_audit.md check 7)."""
+    """True if the run can release dwellings: L1 or L2 (TL_RELEASE_ITEMS) at 'tl' (the candidate test). pathways.run
+    applies the re-occupation pool only if such a run actually releases dwellings, cumulatively by 2050 (households
+    fall under L1 at TL, or the vacancy rate falls under L2 at TL), and records that in info['releases'], which the
+    checks of release runs read; every other run absorbs the starting surplus and the overbuild along the logistic to
+    2035. Choosing the pool in a run that releases nothing shifts the timing of building (+84.6 kt with an otherwise
+    neutral TL item; lever_audit.md check 7). The zero-building soil clip uses this candidate test (it changes nothing
+    in a year that builds)."""
     return any(lam_of(levels[TL_LEVER[c]]) == 'tl' for c in TL_RELEASE_ITEMS if TL_LEVER[c] in levels)
 TL_INSTANT_LABEL = 'TL-from2027'
 TL_DISCLAIMER = ('TL is the Theoretical Limit, a thought experiment, not a pathway: every lever at Level 4 ('

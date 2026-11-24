@@ -62,8 +62,9 @@ def tl1_lines(ref, tl):
         f"per stated household in the census, usual residence; {cb['people_per_household']['projection']:.3f} in the "
         'projection base, ERP). Back-check (ratio form, ERP age shares 1991-2006, assuming a stable share of each age '
         'group outside private dwellings): '
-        + ('the TL rates imply at least as many households relative to 2023 as observed at every earlier census, so '
-           'no earlier census shared more at given ages: "best observed since 1991" holds. ' if bc['best_observed_since_1991']
+        + ('at every earlier census the TL rates imply a household size relative to 2023 at least as large as '
+           'observed (no more households per person than observed), so no earlier census shared more at given ages: '
+           '"best observed since 1991" holds. ' if bc['best_observed_since_1991']
            else f"the {bc['more_shared_year']} census shared more at given ages; the sensitivity row matches it. ")
         + 'The minima may come from different census years; census family coding changed in 2018 (new methodology) and '
         '2023 (administrative data added people to families).',

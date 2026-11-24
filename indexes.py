@@ -45,9 +45,9 @@ FILES = [
     ('data/baseline/gap_2026.json', 'The 2026 gap between observed building and the requirement',
      'gap_2026.py'),
     ('data/baseline/overbuild_2026.json', 'The 2026 overbuild and how it is absorbed', 'tools/overbuild_2026.py'),
-    ('data/ed_number_map.csv', 'Extended Data numbering, v4.10.0 -> v4.10.1 (figure_plan.RENUMBER)',
+    ('data/ed_number_map.csv', 'Extended Data numbering, v4.10.2 -> v5.0.0 (figure_plan.RENUMBER)',
      'figure_plan.py'),
-    ('data/sf_number_map.csv', 'Supplementary Figures numbering, v4.10.0 -> v4.10.1 (figure_plan.RENUMBER)',
+    ('data/sf_number_map.csv', 'Supplementary Figures numbering, v4.10.2 -> v5.0.0 (figure_plan.RENUMBER)',
      'figure_plan.py'),
     ('data/st_number_map.csv', 'Supplementary Tables of the SI (ST1-ST12) and their repository sources; ST8 was ST1 '
      '(figure_plan.SI_TABLES)', 'figure_plan.py'),
@@ -77,7 +77,7 @@ FILES = [
     ('data/sensitivity/planetary_boundary.csv', 'Grouped one-at-a-time sensitivity of the Reference cumulative LoE '
      'AR and AtP (D42; the AR base-window rows in Fig7a)', 'tools/sensitivity_tables.py'),
     ('data/sensitivity/replacement_variants.csv', 'The Reference, the Moderate / Ambitious Pathway and TL under Low / Reference '
-     '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED7)',
+     '/ High / Very High replacement: floor area, carbon, committed after 2050, cumulative LoE AR and AtP (ED5)',
      'tools/sensitivity_tables.py'),
     ('data/baseline/annual_by_stage.csv', 'Annual carbon of the Reference 2026-2050 by life-cycle stage (A1-A3, '
      'A4-A5, maintenance B2/B4, soil carbon loss) (Fig2c, d)', 'projection.py'),

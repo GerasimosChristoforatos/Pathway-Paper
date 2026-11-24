@@ -192,7 +192,6 @@ def fig1():
     """Fig1 with the six display bands (_fig1_draw)."""
     fig, ax = plt.subplots(figsize=(170 * S.MM, 72 * S.MM))      # lower, slightly narrower
     handles, neg, pipe, total, ob = _fig1_draw(ax, six=True)
-    P.absorption_span(ax, pad=0.5, label_y=0.02, va='bottom')   # behind every element; label clear of the headers
     for h in handles:                                             # filled patches, no outline
         h.set_edgecolor(h.get_facecolor())
     ax.legend(handles=[Line2D([0], [0], color=S.INK, lw=S.LW, label='Floor area built, annual (in scope)'),
@@ -433,7 +432,6 @@ def fig3():
     xf, arf = P.pchip(years, ar)
     _, atpf = P.pchip(years, atp)
     S.boundary_zones(ax, xf, arf, atpf)
-    P.absorption_span(ax)                             # behind every element
     q = {p: mc.loc[years.astype(int), f'carbon_{p}'].values / M for p in (5, 25, 50, 75, 95)}
     methods = {}
     for (lo_, hi_), alpha, lab in (((5, 95), S.OPACITY['mc_band_90'], 'Monte Carlo 90% band'),
@@ -1025,7 +1023,7 @@ def mc50_handle():
 FIG7A_BAR = 0.6                     # bar height (rows 1 apart): a visible gap between rows
 FIG7A_LABEL = {'hh_propensity': 'Household size\n(Stats NZ B)'}   # plot label only; naming.INPUT_LABEL kept
 FIG7A_TICK_PAD = 1.5                # pt between the Fig7a row labels and the axis (tighter left margin)
-FIG7A_ED6_ONLY = ('completion_rate', 'no_2026')   # rows above the filter drawn in Extended Data Fig. 6 only
+FIG7A_ED8_ONLY = ('completion_rate', 'no_2026')   # rows above the filter drawn in Extended Data Fig. 8 only
 # Fig7a carbon-factor rows: (input id, sensitivity/tornado.csv input, AR-base rule row)
 FIG7_CARBON_FACTOR_ROWS = (('jackknife', 'Case-study carbon factors (jackknife)', 'Case studies: jackknife low / high'),
                            ('soil_order', 'Soil order (Raw / Organic)', 'Soil order: lowest (Raw) / highest (Organic)'))
@@ -1069,8 +1067,8 @@ def fig7():
     k_cr = [r[0] for r in rows].index('completion_rate')               # Completion rate and above
     below = rows[:k_cr]                                                 # under the row filter (named in the note)
     rows = rows[k_cr:]                                                  # Completion rate and every larger row
-    shown_elsewhere = [r[0] for r in rows if r[0] in FIG7A_ED6_ONLY]
-    rows = [r for r in rows if r[0] not in FIG7A_ED6_ONLY]             # in Extended Data Fig. 6 only
+    shown_elsewhere = [r[0] for r in rows if r[0] in FIG7A_ED8_ONLY]
+    rows = [r for r in rows if r[0] not in FIG7A_ED8_ONLY]             # in Extended Data Fig. 8 only
     # F6: the carbon-factor rows under the filter, with their ranges from sensitivity/tornado.csv
     tor = D.csv('sensitivity/tornado.csv').set_index(['input', 'side'])
     oat = D.js('aesa/results.json')['one_at_a_time_ar_base']
@@ -1108,7 +1106,7 @@ def fig7():
              + ([Patch(label='Single alternative case', **S.fill(SINGLE_CASE))] if has_single else []),
              loc='lower right', fontsize=S.FONT_MIN + 0.5)
     a.text(c0, 1.0, f' Reference {c0:.2f}', transform=a.get_xaxis_transform(), ha='left', va='bottom',
-           fontsize=S.FONT_SMALL, color=S.INK)            # as ED6 / ED5: the Reference value at the top of its line
+           fontsize=S.FONT_SMALL, color=S.INK)            # as ED8 / ED7: the Reference value at the top of its line
     P.panel(a, 'a', 'One-at-a-time sensitivity analysis', above_label=True)
     # (b) TL against the 2050 population
     j = D.js('pathways/montecarlo_conditional_tl.json')
@@ -1173,7 +1171,7 @@ def fig7():
         lb = lg.get_window_extent().transformed(b.transAxes.inverted()).y0
         gap = 3 / 72 * fig.dpi / b.get_window_extent().height
         vl.set_ydata([0, min(top, lb - gap)])
-    ed4_only = ('' if not shown_elsewhere else ' Rows in Extended Data Fig. 6 only: ' + '; '.join(
+    ed4_only = ('' if not shown_elsewhere else ' Rows in Extended Data Fig. 8 only: ' + '; '.join(
         N.INPUT_LABEL[k].replace('\n', ' ') for k in shown_elsewhere) + '.')
     _save(fig, 'Fig7_uncertainty',
           note=(tl_floor_sentence(d) + ' ' if tl_floor_sentence(d) else '') + f"(a) Reference LoE AR {c0:.3f}; population rows move the budgets with the path; the AR base-window row "

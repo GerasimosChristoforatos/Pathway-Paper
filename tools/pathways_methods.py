@@ -217,7 +217,7 @@ def lines():
           'L9). L10 applies to the A1-A3 of construction, to the A1-A3 component of the replacement and repaint events '
           'within 2026-2050 (production is in the calendar year of the event; L8, a design choice of the new building, '
           'does not) and, held at 2050, to the A1-A3 event factors of the committed lower bound; not to A4-A5 '
-          '(L9), soil (L6, L7), the end of life (C1-C4) or Module D. Sensitivity (Extended Data Fig. 6, carbon only): '
+          '(L9), soil (L6, L7), the end of life (C1-C4) or Module D. Sensitivity (Extended Data Fig. 8, carbon only): '
           'the no-climate-policy end, m(y) = [MAX(y)/MAX(2025)] / [AVG(y)/AVG(2025)] on the Reference.', '']
     q = p['L7']
     B['L7'] = [f"**L7 Soil-aware planning (sub-rule C).** Soil carbon loss per m² x (1 - x), x = {q['x']['ambitious']:.3f} "
@@ -411,7 +411,7 @@ def table1_main():
 def main():
     path = layout.writing(layout.report('LEVERS_TABLE.md'))
     with open(path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(levers_table()) + '\n')
+        f.write('\n'.join(levers_table() + [''] + [f'{i}. {t}' for i, t in enumerate(LV.EDT1_FOOTNOTES, start=1)]) + '\n')
     md = table1_main()
     print(f'pathways_methods: {os.path.relpath(path, ROOT)}, {os.path.relpath(md, ROOT)} (+ .csv)')
 

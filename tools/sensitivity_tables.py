@@ -3,12 +3,12 @@
     python tools/sensitivity_tables.py         (run_all.py runs it after the pathway Monte Carlo)
 
 Writes outputs/data/sensitivity/:
-  reference_carbon.csv     Reference carbon 2026-2050, rows grouped by type of change (D16; ED6)
+  reference_carbon.csv     Reference carbon 2026-2050, rows grouped by type of change (D16; ED8)
   pathway_carbon.csv       the Moderate Pathway (every lever at Moderate)
                            carbon 2026-2050 and its levels of exceedance, pathway design rows (D41)
-  planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42; ED5)
+  planetary_boundary.csv   cumulative LoE AR and AtP of the Reference (D42; ED7)
   replacement_variants.csv the Reference, the Moderate / Ambitious Pathway and TL under Low / Reference / High / Very
-                           High replacement (ED7)
+                           High replacement (ED5)
   household_size.csv       the Reference, the Moderate / Ambitious Pathway and TL under the household-size
                            sensitivities (Stats NZ Medium B: living-arrangement propensities change; 2018-2023
                            census pace, linear from 2023)
@@ -149,7 +149,7 @@ REF_ROWS = [
      'carbon only, not converted to LoE'),
     ('Accounting', 'Event timing L / n', 'single', 'Event timing: interval L / n', 'DECISION: maintenance timing'),
 ]
-# rows reported in carbon only (ED6), never converted to a level of exceedance: they need no AR-base rule
+# rows reported in carbon only (ED8), never converted to a level of exceedance: they need no AR-base rule
 # (boundaries.AR_BASE_RULE) and must not enter TORNADO. Module D: a consistent LoE would need Module D in the
 # historical sector base as well. Production decarbonisation (Horup MAX): a carbon-factor path, shown as
 # the carbon range of lever L10's evidence.
@@ -330,6 +330,27 @@ PB_ROWS = [
 ]
 
 
+LATE_WINDOW = (2028, 2050)
+LATE_RUNS = (('Reference', 'REF'), ('Moderate Pathway', 'pathway-moderate'), ('Ambitious Pathway', 'pathway-ambitious'),
+             ('Theoretical Limit', 'TL'))
+
+
+def loe_2028_2050():
+    """loe_2028_2050.csv: the cumulative LoE of AR and AtP over 2028-2050 (carbon and budget both summed over the
+    window; pipeline years 2026-2027 excluded; the AR base unchanged) of the Reference, the Pathways and TL
+    (pathways/annual.csv, scenario REF). Supplementary Table 10, with the runs table."""
+    a = pd.read_csv(data('pathways/annual.csv'))
+    a = a[(a['scenario'] == 'REF') & (a['year'] >= LATE_WINDOW[0]) & (a['year'] <= LATE_WINDOW[1])]
+    rows = []
+    for name, run in LATE_RUNS:
+        g = a[a['run'] == run]
+        rows.append(dict(run=name, run_id=run, years=f'{LATE_WINDOW[0]}-{LATE_WINDOW[1]}',
+                         carbon_kt=float(g['carbon_kt'].sum()), B_AR_kt=float(g['B_AR_kt'].sum()),
+                         B_AtP_kt=float(g['B_AtP_kt'].sum()), LoE_AR=float(g['carbon_kt'].sum() / g['B_AR_kt'].sum()),
+                         LoE_AtP=float(g['carbon_kt'].sum() / g['B_AtP_kt'].sum())))
+    return pd.DataFrame(rows)
+
+
 def pb_table():
     s = pd.read_csv(data('aesa/sensitivity.csv')).set_index('case')
     with open(data('aesa/results.json')) as f:
@@ -357,13 +378,24 @@ def pb_table():
             d = r['deterministic'][k]
             add('Replacement scenario', lab, side, d['LoE_AR'], d['LoE_AtP'], f'data/aesa/results.json deterministic ({k})',
                 'DATA / JUDGEMENT (replacement variants)')
+    # the summation window: carbon and budget both summed over 2028-2050 (the pipeline years excluded), the AR base
+    # unchanged; and whole-life accounting (committed emissions after 2050 counted at construction, base recomputed)
+    lt = loe_2028_2050()
+    ref28 = lt[lt['run'] == 'Reference'].iloc[0]
+    add('Summation window', '2028-2050 only (pipeline years excluded)', 'single', float(ref28['LoE_AR']),
+        float(ref28['LoE_AtP']), 'data/loe_2028_2050.csv (Reference)', 'DECISION (author): the window without the '
+        'observed pipeline years 2026-2027', key='window_2028_2050')
+    add('Accounting', 'Whole-life accounting (committed emissions at construction)', 'single',
+        float(s.loc['xii_whole_life', 'cum_LoE_AR']), float(s.loc['xii_whole_life', 'cum_LoE_AtP']),
+        'data/aesa/sensitivity.csv (xii_whole_life)', 'DECISION (author): the static convention, base recomputed',
+        key='xii_whole_life')
     d = r['deterministic']['VHIGH']
     add('Replacement scenario', N.SCENARIOS['VHIGH'], 'single', d['LoE_AR'], d['LoE_AtP'],
         'data/aesa/results.json deterministic (VHIGH)', 'DATA / JUDGEMENT: the 1991-2023 census trend continues')
     return pd.DataFrame(rows)
 
 
-# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED7) --------------------------
+# ---- 4. Replacement variants of the Reference, the Pathways and TL (ED5) --------------------------
 def replacement_variants():
     """The Reference, the Moderate / Ambitious Pathway and TL under the Low, Reference, High and Very High replacement
     variants:
@@ -465,7 +497,7 @@ def main():
     out = {'sensitivity/reference_carbon.csv': ref, 'sensitivity/tornado.csv': tornado(ref),
            'sensitivity/household_size.csv': HH_TABLE['t'],
            'sensitivity/pathway_carbon.csv': pathway_table(),
-           'sensitivity/planetary_boundary.csv': pb_table(),
+           'sensitivity/planetary_boundary.csv': pb_table(), 'loe_2028_2050.csv': loe_2028_2050(),
            'sensitivity/replacement_variants.csv': replacement_variants()}
     for rel, df in out.items():
         N.columns(df).to_csv(layout.writing(data(rel)), index=False)

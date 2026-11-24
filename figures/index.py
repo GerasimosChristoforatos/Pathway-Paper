@@ -45,7 +45,7 @@ def write():
     L += ['## Extended Data (paper_extended/)', '']
     for h in FP.PAPER_EXTENDED:
         cap = h.get('caption')
-        if h.get('row_notes'):                     # ED6 / ED5: the row notes the figure draws (one source)
+        if h.get('row_notes'):                     # ED8 / ED7: the row notes the figure draws (one source)
             from figures import sensitivity
             cap += sensitivity.row_note_caption(h['row_notes'])
         L += _entry(h['file'], f"{h['id']} {h['title']}", cap, h['source'], layout.figure(h['file']))

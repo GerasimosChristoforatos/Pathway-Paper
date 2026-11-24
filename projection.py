@@ -2224,7 +2224,7 @@ def export_stage_material(B, path_stage, path_material):
 
 def export_figure_sources(B):
     """Compute / draw separation: write the exact arrays of D01-D03, D08, D09 and D13 (drawn by
-    figures/calibration.py) and of the Extended Data paths (projection_paths, ED7) as figure source JSON
+    figures/calibration.py) and of the Extended Data paths (projection_paths, ED5) as figure source JSON
     (figsource.write, outputs/data/figure_source/<id>.json). Units are the model's (persons, households, m2,
     kg CO2e); the figures only rescale for display. Called by the script run only (main() writes nothing)."""
     yh, fy = np.asarray(B['years_hist'], int), np.asarray(B['forecast_years'], int)

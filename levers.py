@@ -155,6 +155,20 @@ TL1_SPEED_START = OBSERVED_YEAR
 L1_TL_VARIANT = 'Medium'          # the population variant of the deterministic L1 at TL ratio path
 L2_VACANCY_FLOOR = 0.040          # implied vacancy must never fall below this in a non-TL run (check)
 L3_D_AMBITIOUS = 0.40             # Pellan et al. 2024: demolition 150,000 -> 90,000 a year
+# Extended Data Table 1 footnotes (EDT1 and LEVERS_TABLE.md). L3: d applies to the demolition rate and to the surge
+# component of the residual path, not to the long-run unconsented additions (l3_rates). L10: the nine backgrounds of
+# Horup et al. (2025) Table S1, from the integrated assessment model REMIND (Sacchi et al. 2023): SSP1 / SSP2 / SSP5
+# x no climate policy / RCP2.6 / RCP1.9.
+EDT1_FOOTNOTES = (
+    'L3: 40% fewer demolitions, including the recent redevelopment surge (France, 150,000 to 90,000 demolitions a '
+    'year; Pellan et al. 2024). The surge is the part of net replacement above the long-run rate, i.e. '
+    'demolition-and-rebuild.',
+    'L10: the nine background scenarios of Horup et al. (2025, Table S1; integrated assessment model REMIND, Sacchi et '
+    'al. 2023). SSPs (Shared Socioeconomic Pathways) describe how the world develops (SSP1 sustainable, SSP2 middle of '
+    'the road, SSP5 fossil-fuelled growth); RCPs (Representative Concentration Pathways) describe climate policy, named '
+    'by the radiative forcing reached in 2100 in W m⁻² (RCP2.6 ≈ 2 °C, RCP1.9 ≈ 1.5 °C of warming); \'no climate '
+    'policy\' is the baseline. Three SSPs × three climate settings = nine futures for how electricity and industry '
+    'decarbonise, which set how much cleaner each material becomes.')
 L8_SAMPLE_TYPOLOGIES = ('Detached', 'Townhouses')
 L8_MIN_CASES = 10
 L9_REF_RATE = 0.01
@@ -405,7 +419,7 @@ def l10_paths(years, path=None):
 
 def l10_multiplier(years, stat='min', path=None):
     """{typology: m(y)} = [stat_a(y) / stat_a(2025)] / [AVG_a(y) / AVG_a(2025)] with the archetype a of the typology
-    (L10_ARCHETYPE); stat 'min' = L10 Ambitious (= TL10), 'max' = the no-climate-policy sensitivity (ED6)."""
+    (L10_ARCHETYPE); stat 'min' = L10 Ambitious (= TL10), 'max' = the no-climate-policy sensitivity (ED8)."""
     rel, _ = l10_paths(years, path)
     return {t: rel[(a, stat)] / rel[(a, 'avg')] for t, a in L10_ARCHETYPE.items()}
 

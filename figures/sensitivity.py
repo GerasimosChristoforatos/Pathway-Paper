@@ -1,6 +1,6 @@
-"""Sensitivity figures (ED6, ED5, SF14), from the data files only.
+"""Sensitivity figures (ED8, ED7, SF14), from the data files only.
 
-ED6 and ED5 carry row notes under the axes (row_notes_ed4 / row_notes_ed5): one line per shown row,
+ED8 and ED7 carry row notes under the axes (row_notes_ed4 / row_notes_ed5): one line per shown row,
 saying only what changes compared with the Reference. Every value is read from the model code (projection.py,
 Building_factors.py, boundaries.py, Sensitivity.py: the settings each row changes) and the committed outputs
 (baseline/projection.json and overbuild_2026.json settings, aesa/results.json settings, the case and basis columns);
@@ -59,12 +59,12 @@ def sf8_prcc():
 
 
 # ---------------------------------------------------------------------------
-# ED6 (one at a time, carbon) and ED5 (boundary definitions, LoE): paired tornados
+# ED8 (one at a time, carbon) and ED7 (boundary definitions, LoE): paired tornados
 # ---------------------------------------------------------------------------
 # data row (sensitivity/reference_carbon.csv: row, side) -> (input id of naming.INPUT_LABEL, role); role 'low' / 'high'
 # = the input at its low / high end, 'single' = one alternative case, ('tick', name) = an intermediate case. The rows that only compare with superseded
 # model settings (REF_DROPPED: completion rate 0.95, completion lag 0 months, the never-absorbed overbuild) are
-# not shown; the note under ED6 names them with their values.
+# not shown; the note under ED8 names them with their values.
 REF_ROWS = {
     ('Population: Stats NZ 5th / 95th percentile', 'low'): ('population', 'low'),
     ('Population: Stats NZ 5th / 95th percentile', 'high'): ('population', 'high'),
@@ -109,7 +109,7 @@ REF_ROWS = {
 }
 REF_DROPPED = ('Completion rate 0.95', 'Completion lag 0 months',
                '2026 overbuild never absorbed')
-# rows kept in the data file but not shown in ED6 (display only), with the reason given in the note; the change of
+# rows kept in the data file but not shown in ED8 (display only), with the reason given in the note; the change of
 # each row (data: change_pct) is quoted in the figure note.
 REF_NOT_SHOWN = {'2026 overbuild gap vs the 2026 requirement': 'the overbuild gap measured against the 2026 '
                                                                'requirement',
@@ -119,9 +119,9 @@ GROUP_RENAME = {'Replacement scenario': 'Replacement'}
 
 
 def ref_not_shown(r):
-    """{row: reason} of the ED6 rows kept in the data file but not shown (REF_NOT_SHOWN)."""
+    """{row: reason} of the ED8 rows kept in the data file but not shown (REF_NOT_SHOWN)."""
     return dict(REF_NOT_SHOWN)
-# rows kept in the data file but not shown in ED5 (display only); any other unmapped row still stops
+# rows kept in the data file but not shown in ED7 (display only); any other unmapped row still stops
 PB_DROPPED = {'α = 1 (Hjalsted et al. SI tables)': 'α = 1 (Hjalsted et al. SI tables)',
               'NZ population: raw Stats NZ 2024-base median': 'the raw Stats NZ 2024-base median population'}
 # sensitivity/planetary_boundary.csv rows -> (input id, role, group); the AR base-window rows are one row (shortest
@@ -141,11 +141,14 @@ PB_ROWS = {
     ('Very High replacement (trend continues)', 'single'): ('replacement', 'high', 'Replacement'),
     ('Replacement half-life 5 / 15 yr', 'low'): ('half_life', 'low', 'Replacement'),
     ('Replacement half-life 5 / 15 yr', 'high'): ('half_life', 'high', 'Replacement'),
+    ('2028-2050 only (pipeline years excluded)', 'single'): ('window_2028_2050', 'single', 'Window and accounting'),
+    ('Whole-life accounting (committed emissions at construction)', 'single'): ('whole_life', 'single',
+                                                                                 'Window and accounting'),
 }
 
 
 # ---------------------------------------------------------------------------
-# row notes of ED6 and ED5 (what each shown row changes compared with the Reference)
+# row notes of ED8 and ED7 (what each shown row changes compared with the Reference)
 # ---------------------------------------------------------------------------
 NOTE_LINESPACING = 1.2           # line spacing of the notes (matplotlib linespacing; the pitch is measured, not assumed)
 NOTE_GUTTER_MM = 3.0              # clear space between the right end of a note column and the next column
@@ -192,8 +195,8 @@ def _yrs(a, b):
 
 
 def row_notes_ed4(r):
-    """{input id: note} for every row of ED6 (sensitivity/reference_carbon.csv as r), from the code and outputs."""
-    F = 'ED6 notes'
+    """{input id: note} for every row of ED8 (sensitivity/reference_carbon.csv as r), from the code and outputs."""
+    F = 'ED8 notes'
     PR, BF, BD, cases = _model()
     pj = D.js('baseline/projection.json')
     ob = D.js('baseline/overbuild_2026.json')
@@ -345,8 +348,8 @@ def row_notes_ed4(r):
 
 
 def row_notes_ed5(r):
-    """{input id: note} for every row of ED5 (sensitivity/planetary_boundary.csv as r), from the code and outputs."""
-    F = 'ED5 notes'
+    """{input id: note} for every row of ED7 (sensitivity/planetary_boundary.csv as r), from the code and outputs."""
+    F = 'ED7 notes'
     PR, BF, BD, cases = _model()
     st = D.js('aesa/results.json')['settings']
     for k in ('SOURCE_PAIR', 'AR_BASE_WINDOW', 'GDP_MEASURE', 'GDP_MEASURE_SENS', 'SSEC_FCE_SHARE', 'SSEC_WINDOW',
@@ -409,8 +412,12 @@ def row_notes_ed5(r):
                            'only')
     n['population'] = ('Stats NZ 2024-base 5th / 95th percentile path instead of the median; carbon and both budgets '
                        'move together')
-    n['replacement'] = 'as in Extended Data Fig. 6 (carbon only; the budgets are unchanged)'
-    n['half_life'] = 'as in Extended Data Fig. 6 (carbon only)'
+    n['replacement'] = 'as in Extended Data Fig. 8 (carbon only; the budgets are unchanged)'
+    n['half_life'] = 'as in Extended Data Fig. 8 (carbon only)'
+    n['window_2028_2050'] = ('carbon and both budgets summed over 2028–2050 instead of 2026–2050 (the observed '
+                             'pipeline years excluded); the AR base unchanged')
+    n['whole_life'] = ('every life-cycle stage, including the emissions committed after 2050, counted in the '
+                       'construction year; the AR base recomputed on the same convention')
     return n
 
 
@@ -532,14 +539,14 @@ def _input_label(rid):
     return N.INPUT_LABEL.get(rid, rid)
 
 
-ED6_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
-ED5_H = 165                       # mm
-NOTES_TOP = 0.345                # the notes block occupies the figure below this fraction of its height (ED6)
-NOTES_TOP_ED5 = 0.22
+ED8_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
+ED7_H = 165                       # mm
+NOTES_TOP = 0.345                # the notes block occupies the figure below this fraction of its height (ED8)
+NOTES_TOP_ED7 = 0.22
 
 
 def ed4_rows():
-    """(data, Reference carbon, display order, row-note lines) of ED6 (shared with the caption test)."""
+    """(data, Reference carbon, display order, row-note lines) of ED8 (shared with the caption test)."""
     r = D.csv('sensitivity/reference_carbon.csv')
     c0 = float(r['central_carbon_kt'].iloc[0])
     items, unmapped = [], []
@@ -554,23 +561,23 @@ def ed4_rows():
         rid, role = REF_ROWS[key]
         items.append((rid, role, GROUP_RENAME.get(x['group'], x['group']), float(x['carbon_kt'])))
     if unmapped:
-        raise SystemExit(f'STOP: ED6: rows without a display name: {unmapped}')
+        raise SystemExit(f'STOP: ED8: rows without a display name: {unmapped}')
     missing = [k for k in REF_NOT_SHOWN if k not in set(r['row'])]
     if missing:
-        raise SystemExit(f'STOP: ED6: rows listed as not shown are not in the data: {missing}')
+        raise SystemExit(f'STOP: ED8: rows listed as not shown are not in the data: {missing}')
     rows = _collect(items)
     order = P.tornado_rows(N.SENSITIVITY_GROUPS, rows, c0)
-    return r, c0, order, note_lines(order, row_notes_ed4(r), _input_label, 'ED6')
+    return r, c0, order, note_lines(order, row_notes_ed4(r), _input_label, 'ED8')
 
 
 
 def ed4_one_at_a_time():
-    """ED6 (data D16): every one-at-a-time row of the Reference on the cumulative embodied carbon
+    """ED8 (data D16): every one-at-a-time row of the Reference on the cumulative embodied carbon
     2026-2050 (kt CO2e) as a paired tornado grouped by category (sensitivity/reference_carbon.csv). the
     rows of REF_NOT_SHOWN dropped from the display; the row notes below the axes."""
     r, c0, order, numbered = ed4_rows()
     lines = caption_lines(numbered)
-    fig, ax = plt.subplots(figsize=S.figsize('double', ED6_H))
+    fig, ax = plt.subplots(figsize=S.figsize('double', ED8_H))
     P.tornado(ax, order, c0, numbered_label(numbered))
     ax.tick_params(axis='y', labelsize=S.FONT_SMALL)
     ax.text(c0, 1.0, f' Reference {c0:,.0f} kt', transform=ax.get_xaxis_transform(), ha='left', va='bottom',
@@ -582,8 +589,8 @@ def ed4_one_at_a_time():
     notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP)
     fig.tight_layout(rect=(0, NOTES_TOP + 0.01, 1, 1))
     if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP:
-        raise SystemExit(f'STOP: ED6: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED6_H')
-    S.save_figure(fig, 'ED6_one_at_a_time',
+        raise SystemExit(f'STOP: ED8: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED8_H')
+    S.save_figure(fig, 'ED8_one_at_a_time',
                   note=f'Reference {c0:,.0f} kt. One at a time: not additive, not a joint interval. "No effect": every '
                        f'case within {100 * P.NO_EFFECT_RTOL:.2f}% of the Reference. Not shown: the superseded-setting '
                        'rows (completion rate 0.95, completion lag 0 months and the never-absorbed overbuild) and ' + '; '.join(f"{t} ({float(r.loc[r['row'] == k, 'change_pct'].iloc[0]):+.4f}%)"
@@ -592,7 +599,7 @@ def ed4_one_at_a_time():
 
 
 def ed5_rows():
-    """(data, settings, {quantity: Reference value}, {quantity: display order}, row-note lines) of ED5 (shared with the caption test). The row notes follow the order of panel a (the rows are shared)."""
+    """(data, settings, {quantity: Reference value}, {quantity: display order}, row-note lines) of ED7 (shared with the caption test). The row notes follow the order of panel a (the rows are shared)."""
     r = D.csv('sensitivity/planetary_boundary.csv')
     st = D.js('aesa/results.json')['settings']
     c = {'LoE_AR': float(r['central_LoE_AR'].iloc[0]), 'LoE_AtP': float(r['central_LoE_AtP'].iloc[0])}
@@ -602,7 +609,7 @@ def ed5_rows():
     ar_id = N.AR_WINDOW_LABEL.format(short=int(bw['n'].iloc[0]), long=int(bw['n'].iloc[-1]))
     missing = [k for k in PB_DROPPED if k not in set(r['row'])]
     if missing:
-        raise SystemExit(f'STOP: ED5: rows listed as not shown are not in the data: {missing}')
+        raise SystemExit(f'STOP: ED7: rows listed as not shown are not in the data: {missing}')
     orders = {}
     for q in ('LoE_AR', 'LoE_AtP'):
         items, unmapped = [], []
@@ -616,41 +623,41 @@ def ed5_rows():
             rid, role, g = PB_ROWS[key]
             items.append((rid, role, g, float(x[q])))
         if unmapped:
-            raise SystemExit(f'STOP: ED5: rows without a display name: {unmapped}')
+            raise SystemExit(f'STOP: ED7: rows without a display name: {unmapped}')
         for k, (_, x) in enumerate(bw.iterrows()):
             role = 'low' if k == 0 else ('high' if k == len(bw) - 1 else ('tick', f"{int(x['n'])} yr"))
             items.append((ar_id, role, 'AR base window', float(x[q])))
         orders[q] = P.tornado_rows(N.BOUNDARY_SENSITIVITY_GROUPS, _collect(items), c[q])
     shared = [[(k, i if k == 'header' else i['id']) for k, i in orders[q]] for q in orders]
     if shared[0] != shared[1]:                        # the panels share their y labels and numbers
-        raise SystemExit('STOP: ED5: panels a and b order their rows differently; the shared y labels would be wrong.')
-    return r, st, c, orders, note_lines(orders['LoE_AR'], row_notes_ed5(r), _input_label, 'ED5')
+        raise SystemExit('STOP: ED7: panels a and b order their rows differently; the shared y labels would be wrong.')
+    return r, st, c, orders, note_lines(orders['LoE_AR'], row_notes_ed5(r), _input_label, 'ED7')
 
 
-ED5_TITLES = {'LoE_AR': 'Acquired rights', 'LoE_AtP': 'Ability to pay'}
+ED7_TITLES = {'LoE_AR': 'Acquired rights', 'LoE_AtP': 'Ability to pay'}
 
 
 def ed5_boundary_sensitivity():
-    """ED5 (data D42): the boundary-definition and AESA rows on the cumulative LoE of AR (a) and of AtP
+    """ED7 (data D42): the boundary-definition and AESA rows on the cumulative LoE of AR (a) and of AtP
     (b), paired tornados with shared y labels (sensitivity/planetary_boundary.csv). the rows of
     PB_DROPPED dropped from the display; the row notes below the axes."""
     r, st, c, orders, numbered = ed5_rows()
     lines = caption_lines(numbered)
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', ED5_H), sharey=True)
+    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', ED7_H), sharey=True)
     for a, q, xl, letter in ((ax[0], 'LoE_AR', N.LOE_AR, 'a'), (ax[1], 'LoE_AtP', N.LOE_ATP, 'b')):
         P.tornado(a, orders[q], c[q], numbered_label(numbered), headers=(q == 'LoE_AR'))
         a.text(c[q], 1.0, f' Reference {c[q]:.2f}', transform=a.get_xaxis_transform(), ha='left', va='bottom',
                fontsize=S.FONT_SMALL, color=S.INK)
         a.set_xlabel(f'{xl} 2026–2050')
-        P.panel(a, letter, ED5_TITLES[q], above_label=True)
+        P.panel(a, letter, ED7_TITLES[q], above_label=True)
     ax[0].tick_params(axis='y', labelsize=S.FONT_SMALL)
     ax[1].legend(handles=P.tornado_legend(), loc='lower right', fontsize=S.FONT_SMALL, frameon=False)
     P.centre_ticklabels(fig, ax[0])
-    notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP_ED5)
-    fig.tight_layout(rect=(0, NOTES_TOP_ED5 + 0.01, 1, 1))
-    if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP_ED5:
-        raise SystemExit(f'STOP: ED5: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED5_H')
-    S.save_figure(fig, 'ED5_boundary_sensitivity',
+    notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP_ED7)
+    fig.tight_layout(rect=(0, NOTES_TOP_ED7 + 0.01, 1, 1))
+    if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP_ED7:
+        raise SystemExit(f'STOP: ED7: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED7_H')
+    S.save_figure(fig, 'ED7_boundary_sensitivity',
                   note=f"Reference cumulative LoE of AR {c['LoE_AR']:.2f}, of AtP {c['LoE_AtP']:.2f}; AR base window "
                        f"central {st['AR_BASE_WINDOW'][0]}-{st['AR_BASE_WINDOW'][1]}. 'No effect': within "
                        f'{100 * P.NO_EFFECT_RTOL:.2f}% of the Reference (the economic-allocation rows move AtP only, '
@@ -660,11 +667,11 @@ def ed5_boundary_sensitivity():
 
 
 def row_note_caption(fid):
-    """The row notes of ED6 or ED5 as caption text ('[1] <note>. [2] ...'), from the same list the figure draws (the
+    """The row notes of ED8 or ED7 as caption text ('[1] <note>. [2] ...'), from the same list the figure draws (the
     captions of FIGURES.md take them from here)."""
-    numbered = {'ED6': lambda: ed4_rows()[3], 'ED5': lambda: ed5_rows()[4]}[fid]()
+    numbered = {'ED8': lambda: ed4_rows()[3], 'ED7': lambda: ed5_rows()[4]}[fid]()
     return ' '.join(caption_lines(numbered))
 
 
-FIGURES = {'ED6_one_at_a_time': ed4_one_at_a_time, 'ED5_boundary_sensitivity': ed5_boundary_sensitivity,
+FIGURES = {'ED8_one_at_a_time': ed4_one_at_a_time, 'ED7_boundary_sensitivity': ed5_boundary_sensitivity,
            'SF14_prcc': sf8_prcc}

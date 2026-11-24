@@ -12,7 +12,7 @@
 #     #595959, the dark neutral grey #4D4D4D of histograms and bars that are not a run (SF15, SF10), the legend swatch
 #     #E6E6E6 of the Fig3b 50% interval box;
 #   * context fades (style.FIXED_FADES): the 2013 -> 2018 definition-break span (0.10) and the census range span
-#     (0.12) of ED4a, the 1991-2025 range spans of SF6 (0.12), bootstrap / confidence-interval spans of SF9 (0.15)
+#     (0.12) of ED6a, the 1991-2025 range spans of SF5 (0.12), bootstrap / confidence-interval spans of SF9 (0.15)
 #     and SF10 (0.12), the SF10 rugs (0.4), the dashed 2024-25 "estimates not used" line of SF1 (0.35), neutral
 #     histograms (0.6) and bars (0.5), the white Fig3b 50% interval box (0.55), white label boxes (0.85), legend
 #     markers of Fig7b (0.9).
@@ -20,7 +20,7 @@
 # (style.ACCENT_*), the 'vacancy released' band.
 # Format: colours "#RRGGBB"; [opacity] numbers from 0 to 1.
 
-[demand_bands]                      # Fig1, Fig2a and Fig2d (by demand); ED2a; ED4; ED3; SF3
+[demand_bands]                      # Fig1, Fig2a and Fig2d (by demand); ED2a; ED6; ED4; ED5
 population_growth     = "#3D2B56"   # Population growth (untargeted)
 household_size_change = "#F5D25C"   # Household-size change (signed: drawn below zero when households consolidate)
 extra_space           = "#E8873A"   # Extra space (new-dwelling size above the occupied area)
@@ -69,29 +69,29 @@ ability_to_pay        = "#6E2323"   # Ability to pay (AtP)
 within_both           = "#B9D5E3"   # Within both budgets (below AtP)
 within_ar_only        = "#DDEBF1"   # Within AR only (between AtP and AR)
 
-[one_at_a_time]                     # one-at-a-time sensitivity (tornado): Fig7a, ED6, ED5
+[one_at_a_time]                     # one-at-a-time sensitivity (tornado): Fig7a, ED8, ED7
 low_end               = "#9CC3E6"   # Input at its low end
 high_end              = "#1F3A68"   # Input at its high end
 single_alternative    = "#707070"   # A row with a single alternative case
 
 # ---- the rest of the meaning colours of the final figures ----
-# Parts of ED4b / SF4 / SF10 that are not demand bands. Defaults: the author's colours, the CAM02-UCS lightness of some
-# adjusted (hue and chroma kept) so that every ED4b pair is >= 10 apart in normal vision and the three simulated
+# Parts of ED6b / ED3 / SF10 that are not demand bands. Defaults: the author's colours, the CAM02-UCS lightness of some
+# adjusted (hue and chroma kept) so that every ED6b pair is >= 10 apart in normal vision and the three simulated
 # deficiencies. Parts that ARE a demand band take its [demand_bands] key:
 # vacancy -> vacancy; net replacement (census history) and demolition replacement -> net_replacement; the 2026
-# overbuild (ED4b, SF4 lines) -> market_balance.
+# overbuild (ED6b, ED3 lines) -> market_balance.
 [components]
-new_households        = "#97AEB1"   # New households (ED4b)
-retirement_villages   = "#DCDCDC"   # Retirement villages, out of scope (ED4b, negative)
-overbuild_absorbed    = "#431E25"   # Overbuild absorbed (ED4b, SF4; negative payback)
+new_households        = "#97AEB1"   # New households (ED6b)
+retirement_villages   = "#DCDCDC"   # Retirement villages, out of scope (ED6b, negative)
+overbuild_absorbed    = "#431E25"   # Overbuild absorbed (ED6b, ED3; negative payback)
 released_tl           = "#95C283"   # Released dwellings re-occupied, and the pool line (SF10)
 
-[typologies]                        # SF15 (carbon-factor histograms), SF3b, SF9
+[typologies]                        # SF15 (carbon-factor histograms), ED5b, SF9
 detached              = "#DFA538"
 townhouses            = "#4A6192"
 apartments            = "#AA7C9D"
 
-[replacement_variants]              # ED7, ED3, SF5, SF6 (the Reference itself: [runs] reference)
+[replacement_variants]              # ED5, ED4, SF4, SF5 (the Reference itself: [runs] reference)
 low                   = "#B5B5B5"   # Low replacement
 high                  = "#6E6E6E"   # High replacement
 very_high             = "#1F1F1F"   # Very High replacement (trend continues)
@@ -101,7 +101,7 @@ total_effect          = "#4D4D4D"   # Total effect (with interactions)
 first_order_effect    = "#B3B3B3"   # First-order effect
 
 [census_markers]
-census_empty          = "#C2571A"   # ED4a census empty points (published / 2013 split applied)
+census_empty          = "#C2571A"   # ED6a census empty points (published / 2013 split applied)
 observed_total        = "#BDBDBD"   # Fig1 observed totals without a band split (drawn only when such years exist)
 
 [lag_variants]                      # SF2
@@ -109,7 +109,7 @@ zero_lag              = "#C2571A"   # Zero lag (consent-timed proxy)
 lag_17_months         = "#1F5FA8"   # 17-month lag (completion-timed)
 
 [validation]
-model_check           = "#BDBDBD"   # SF5 2027 check: the model bar (observed in ink)
+model_check           = "#BDBDBD"   # SF4 2027 check: the model bar (observed in ink)
 
 [highlights]
 model_path_years      = "#C2571A"   # SF1b: 2024-25, the model's household-size path (not observed)
@@ -128,6 +128,6 @@ scatter_moderate      = 0.18        # Fig7b points: Moderate Pathway
 scatter_ambitious     = 0.20        # Fig7b points: Ambitious Pathway
 scatter_tl            = 0.30        # Fig7b points: Theoretical Limit (also SF10b when no threshold is estimable)
 typology_histograms   = 0.55        # SF15 overlapping carbon-factor histograms by typology
-space_above_occupancy = 0.25        # SF3a space above occupancy (extra-space colour)
-rollout_reference_cumulative = 0.55 # ED8c Reference cumulative line
+space_above_occupancy = 0.25        # ED5a space above occupancy (extra-space colour)
+rollout_reference_cumulative = 0.55 # SF8c Reference cumulative line
 fig3b_interval_bars   = 0.7         # Fig3b Monte Carlo 50% / 90% capped error bars (both visible where they overlap)

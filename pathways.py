@@ -1316,8 +1316,25 @@ def tl1_summary(res):
         back_check=p['headship']['back_check'], tl_source=p['headship']['tl_source'])
 
 
+def headship_table(params):
+    """pathways/headship_by_census.csv: households per person (headship) by age group at the 2013, 2018 and 2023
+    Censuses, the propensity-B rate on the census basis and the L1 at TL rate by projection knot, and the source of each
+    TL rate (levers.json L1 headship; household_headship.py)."""
+    h = params['L1']['headship']
+    rows = []
+    for g in h['rates']['2013']:
+        r = dict(age_group=g, **{f'census_{c}': h['rates'][c][g] for c in ('2013', '2018', '2023')})
+        for y in h['tl_rates']:
+            r[f'B_adjusted_{y}'] = h['b_adjusted'][y][g]
+            r[f'TL_{y}'] = h['tl_rates'][y][g]
+            r[f'TL_source_{y}'] = h['tl_source'][y][g]
+        rows.append(r)
+    return pd.DataFrame(rows)
+
+
 def write(res, identity):
     _csv(res['runs'], 'runs.csv')
+    _csv(headship_table(res['params']), 'headship_by_census.csv')
     _csv(res['annual'], 'annual.csv')
     _csv(res['bands'], 'bands.csv')
     _csv(res['bands_annual'], 'bands_annual.csv')

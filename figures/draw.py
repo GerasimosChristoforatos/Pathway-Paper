@@ -92,18 +92,6 @@ def absorption_window():
     return int(max(ob['pipeline_years'])) + 1, int(ob['absorption_end'])
 
 
-def absorption_span(ax, label_fontsize=None, pad=0.0, label_y=0.985, va='top'):
-    """A very light grey span behind every element over the absorption window, and a small label at its top
-   : building runs below need while the surplus is absorbed. pad: half a year for annual columns
-    centred on the year (Fig1), 0 for annual points (Fig3a)."""
-    import matplotlib.transforms as mtrans
-    a, b = absorption_window()
-    ax.axvspan(a - pad, b + pad, color=S.MUTED, alpha=S.FIXED_FADES['absorption_span'], lw=0, zorder=0)
-    tr = mtrans.blended_transform_factory(ax.transData, ax.transAxes)
-    ax.text((a + b) / 2.0, label_y, f'Surplus absorbed {a}–{str(b)[-2:]}', transform=tr, ha='center', va=va,
-            fontsize=label_fontsize or S.FONT_MIN, color=S.NEUTRALS['note_text'], zorder=1)
-
-
 HISTORY_END = 2025.0               # last history year: annual lines are not interpolated across it
 
 
@@ -226,7 +214,7 @@ def stacked_ticklabels(fig, ax, labels, size, small):
 # panels and axes
 # ---------------------------------------------------------------------------
 # gap in points between the panel letter (right-aligned) and the axes left edge: a fixed gap, not a fraction of the
-# axes width, so the letter clears the title on narrow panels too (ED3c)
+# axes width, so the letter clears the title on narrow panels too (ED4c)
 PANEL_LABEL_GAP_PT = 6.0
 
 
@@ -240,7 +228,7 @@ def panel_label(ax, letter, x=0.0, y=1.02, raise_pt=0.0):
 
 
 # points by which panel(..., above_label=True) lifts the title and letter: room for a one-line label drawn at the top
-# of a reference line (va='bottom' at the axes top, FONT_SMALL), as Fig7a, ED6 and ED5
+# of a reference line (va='bottom' at the axes top, FONT_SMALL), as Fig7a, ED8 and ED7
 ABOVE_LABEL_PT = S.FONT_SMALL * 1.35
 
 
@@ -369,7 +357,7 @@ def stack_series(ax, x, parts, net=None, net_line=True, net_label='Net total', s
     order), the net a black line. parts: [(band id, values)]; net: the run's total to check against (1e-9).
     smooth (annual series only): each band PCHIP-interpolated separately, then stacked (the net check
     runs on the annual values). styles: {part id: patch style} for parts that are not demand bands (the
-    ED3b components); the others take band_style. Returns (up, down) at the annual values, with down <= 0."""
+    ED4b components); the others take band_style. Returns (up, down) at the annual values, with down <= 0."""
     x = np.asarray(x, float)
     if smooth:
         a_up = np.sum([np.clip(np.asarray(v, float), 0, None) for _, v in parts], axis=0)
@@ -421,7 +409,7 @@ def bars_cumulative(ax, x, parts, width, net=None, tick=True, styles=None):
     for bid, v in parts:
         neg = np.clip(np.broadcast_to(np.asarray(v, float), x.shape), None, 0)
         if np.any(neg < 0):
-            # the outline in the caller's own face colour when it gives one (ED3c components that are not
+            # the outline in the caller's own face colour when it gives one (ED4c components that are not
             # demand bands had fallen back to the replacement colour)
             nst = (dict(facecolor='none', edgecolor=styles[bid]['facecolor'], linewidth=S.LW_OUTLINE, hatch=None)
                    if styles and bid in styles else negative_bar_style(bid))
@@ -518,7 +506,7 @@ def history_estimated(ax, series, anchor, scale=1.0, color=S.INK, label='History
 
 
 # ---------------------------------------------------------------------------
-# paired tornado grouped by category (ED6, ED5; the Fig7a colour rule)
+# paired tornado grouped by category (ED8, ED7; the Fig7a colour rule)
 # ---------------------------------------------------------------------------
 TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = S.TORNADO_LOW, S.TORNADO_HIGH, S.TORNADO_SINGLE   # palette [one_at_a_time]
 NO_EFFECT_RTOL = 1e-4             # |change| below 0.01% of the central value: marked 'no effect'

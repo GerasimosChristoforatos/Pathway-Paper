@@ -579,7 +579,7 @@ def lines():
     if mcs:
         L += ['', 'Monte Carlo of the Reference (joint input uncertainty; mean, median and 90% interval). The '
               'replacement variants are not run through the Monte Carlo: their uncertainty is the deterministic '
-              'variant table above (ED7) and the one-at-a-time rows.', '',
+              'variant table above (ED5) and the one-at-a-time rows.', '',
               '| run | output | mean | median | 5th | 95th |', '|---|---|---|---|---|---|']
         for p in mcs:
             s = pd.read_csv(p, index_col=0)
@@ -687,7 +687,7 @@ def lines():
               '(B2, B4) keep their own C1-C4 share at 2025 factors (unchanged; it is part of the in-window '
               'maintenance). The B2/B4 events of the 2026-2050 cohorts that fall within the window are '
               'unaffected: the 2026-2050 results do not change.', '',
-              'Module D is excluded (EN 15978) and shown as a carbon-only sensitivity (Extended Data Fig. 6).']
+              'Module D is excluded (EN 15978) and shown as a carbon-only sensitivity (Extended Data Fig. 8).']
         rc = load('baseline/reconciliation.json')
         if rc:
             f0, f1 = rc['frozen_2025_factors'], rc['adopted']
@@ -868,7 +868,7 @@ def lines():
          ('JUDGEMENT', 'Household size: the Stats NZ shape through 2048 (PCHIP through the published values '
                        '2023-2048, rebased on the 2023 census), then the 2043-2048 secant slope continued linearly to '
                        "2050 (S_TAIL = 'pchip_secant'); the zero-slope and PCHIP-end-slope tails are one-at-a-time "
-                       'rows (Extended Data Fig. 6 rows 4 and 5)'),
+                       'rows (Extended Data Fig. 8 rows 4 and 5)'),
          ('RULE', 'Starting surplus: the 2024-2025 building beyond the stock identity, if above the 1992-2023 '
                   'census-interval mean + 2 SD, carried as vacant dwellings at the start of 2026 and absorbed with the '
                   'overbuild by 2035'),

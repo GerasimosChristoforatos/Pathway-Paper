@@ -162,7 +162,7 @@ def main():
         L += ['', '| variant (deterministic) | cumulative LoE AR | cumulative LoE AtP |', '|---|---|---|']
         for k, v in pb['cum_LoE_by_scenario'].items():
             L.append(f"| {SCEN_NAME.get(k, k)} | {v['AR']:.2f} | {v['AtP']:.1f} |")
-        L += ['', 'Monte Carlo (the Reference only; replacement uncertainty: the deterministic variants above, ED7 and '
+        L += ['', 'Monte Carlo (the Reference only; replacement uncertainty: the deterministic variants above, ED5 and '
               'the one-at-a-time rows):', '',
               '| run (Monte Carlo) | cumulative LoE AR p5 / p50 / p95 | cumulative LoE AtP p5 / p50 / p95 |',
               '|---|---|---|']

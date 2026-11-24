@@ -8,14 +8,14 @@ from figures import draw as P
 from figures import style as S
 
 
-ED4_RUNS = (('reference', N.SCENARIOS['REF'], dict(color=S.REFERENCE, lw=S.LW_BOLD)),
+ED6_RUNS = (('reference', N.SCENARIOS['REF'], dict(color=S.REFERENCE, lw=S.LW_BOLD)),
             ('moderate', 'Moderate', dict(color=S.PATHWAY_SETTING['moderate'], lw=S.LW)),
             ('ambitious', 'Ambitious', dict(color=S.PATHWAY_SETTING['ambitious'], lw=S.LW)),
             ('tl', N.TL['TL'], dict(color=S.TL, lw=S.LW)))
 
 
 def ed8_lever_annual():
-    """ED8 (data D31): annual embodied carbon of each lever alone (4 x 3 grid, ten panels, shared y; the legend in the
+    """SF8 (data D31): annual embodied carbon of each lever alone (4 x 3 grid, ten panels, shared y; the legend in the
     two empty cells), the Reference and
     the lever at Moderate, at Ambitious and at its Theoretical Limit, in the run colours of Fig3 / Fig4 (palette.toml
     [runs]); panel titles the lever names (no strategy-colour square, no lever-specific colour); PCHIP display interpolation through every annual value, not
@@ -28,7 +28,7 @@ def ed8_lever_annual():
         b.set_visible(False)
     for k, L in enumerate(LV.LEVERS):
         b = ax.ravel()[k]
-        for lev, lab, st in ED4_RUNS:
+        for lev, lab, st in ED6_RUNS:
             r = la[(la['lever'] == L) & (la['level'] == lev)].sort_values('year')
             b.plot(*P.pchip(r['year'].to_numpy(float), r['carbon_kt'].to_numpy(float), brk),
                    label=lab, zorder=3 if lev != 'reference' else 2, **st)
@@ -46,7 +46,7 @@ def ed8_lever_annual():
     fig.legend(h, l_, loc='center', ncol=2, frameon=False, fontsize=S.FONT_SMALL,
                bbox_to_anchor=((e0.x0 + e1.x1) / 2, (e0.y0 + e0.y1) / 2),
                title='Embodied carbon per year: the Reference\nand each lever alone at', title_fontsize=S.FONT_SMALL)
-    S.save_figure(fig, 'ED8_lever_annual', note='Each panel: one lever alone; the other levers at the Reference. '
+    S.save_figure(fig, 'SF8_lever_annual', note='Each panel: one lever alone; the other levers at the Reference. '
                                                 'Lines: PCHIP display interpolation through the annual values.',
                   source=['pathways/lever_annual.csv', 'baseline/overbuild_2026.json'])
 
@@ -81,4 +81,31 @@ def sf14_tl_dwellings():
                   source=['pathways/reoccupation_log.csv'])
 
 
-FIGURES = {'ED8_lever_annual': ed8_lever_annual, 'SF10_tl_dwellings': sf14_tl_dwellings}
+def sf16_headship():
+    """SF16: households per person (headship) by adult age group at the 2013, 2018 and 2023 Censuses (points) and the
+    L1 at TL rate by projection year (line: the lowest census rate of the group, or propensity B where lower), from
+    pathways/levers.json (household_headship.py)."""
+    h = D.js('pathways/levers.json')['L1']['headship']
+    groups = ('15-39', '40-64', '65+')
+    fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 62), sharey=False)
+    for a, g in zip(ax, groups):
+        cy = [int(c) for c in h['rates']]
+        a.plot(cy, [h['rates'][str(c)][g] for c in cy], 'o', color=S.INK, ms=3.5, label='Census')
+        ty = sorted(int(y) for y in h['tl_rates'])
+        a.plot(ty, [h['tl_rates'][str(y)][g] for y in ty], color=S.TL, lw=S.LW, label='L1 at TL rate')
+        a.plot(ty, [h['b_adjusted'][str(y)][g] for y in ty], color=S.PATHWAY_SETTING['ambitious'], lw=S.LW_THIN,
+               ls='--', label='Propensity B (census basis)')
+        a.set_xlim(2011, 2050)
+        a.set_ylabel('Households per person' if g == groups[0] else '')
+        P.panel(a, 'abc'[groups.index(g)], f'Age {g}')
+    ax[0].legend(fontsize=S.FONT_MIN, loc='lower left')
+    fig.tight_layout()
+    S.save_figure(fig, 'SF16_headship_by_census', source=['pathways/levers.json'],
+                  note='Headship = households per person with a stated role in family nucleus (CEN23_FHH_036), '
+                       'households per family unit and per other person calibrated to each census (CEN23_FHH_041). '
+                       'The L1 at TL rate is the lowest census rate of the group or the propensity-B rate where lower; '
+                       'the minima may come from different census years (family coding changed in 2018 and 2023).')
+
+
+FIGURES = {'SF8_lever_annual': ed8_lever_annual, 'SF10_tl_dwellings': sf14_tl_dwellings,
+           'SF16_headship_by_census': sf16_headship}

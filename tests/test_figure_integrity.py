@@ -6,13 +6,13 @@
     and stages never negative;
   * the Fig4 waterfalls add up to the run totals; the TL steps from the Reference;
     the net-positive steps reported; Fig3b's interval from the draws; Fig1's annual line against the census-interval
-    means; the ED6 / ED5 notes stop when the code and the outputs disagree;
+    means; the ED8 / ED7 notes stop when the code and the outputs disagree;
   * the palette file: a missing key, an unknown key, a value that is not "#RRGGBB" (and an opacity
     outside [0, 1]) are rejected;
-  * ED3b (stock and vacancy): up + down = net for every column and year; the census-interval
+  * ED4b (stock and vacancy): up + down = net for every column and year; the census-interval
     means of the annual line = the column nets; the projection's net replacement is one band, equal to the sum of its
     three parts;
-  * Extended Data: nine figures (with Extended Data Table 1, ten items); SF7 (reality checks): every drawn history line
+  * Extended Data: nine figures (with Extended Data Table 1, ten items); SF6 (reality checks): every drawn history line
     equals its source data (not smoothed).
 """
 import hashlib
@@ -120,8 +120,8 @@ def test_figures_leave_the_data_byte_identical(tmp_path):
                 out[p] = hashlib.sha256(open(p, 'rb').read()).hexdigest()
         return out
     # one figure of every drawing module (main, Extended Data, Supplementary)
-    fids = ('Fig4_pathways', 'Fig6_shapley_levers', 'ED6_one_at_a_time', 'ED8_lever_annual', 'ED4_rollout_timing',
-            'SF7_reality_checks', 'SF1_households', 'SF6_hindcast', 'SF2_completion_lag', 'SF14_prcc',
+    fids = ('Fig4_pathways', 'Fig6_shapley_levers', 'ED8_one_at_a_time', 'SF8_lever_annual', 'ED6_rollout_timing',
+            'SF6_reality_checks', 'SF1_households', 'SF5_hindcast', 'SF2_completion_lag', 'SF14_prcc',
             'SF15_mc_convergence')
     code = ('import importlib, sys\n'
             'import figure_plan as FP\n'
@@ -198,7 +198,7 @@ def test_fig3_interval_from_the_draws():
 
 
 # ---------------------------------------------------------------------------
-# ED6 / ED5 notes
+# ED8 / ED7 notes
 # ---------------------------------------------------------------------------
 def test_fig1_annual_line_matches_census_interval_means():
     a = pd.read_csv(_data('baseline/annual.csv'))
@@ -239,7 +239,7 @@ def test_load_palette_rejects(tmp_path, bad, msg):
 
 
 # ---------------------------------------------------------------------------
-# palette file and SF3b
+# palette file and ED5b
 # ---------------------------------------------------------------------------
 @pytest.mark.parametrize('value', ['1.2', '-0.1', 'true', '"0.5"'])
 def test_load_palette_rejects_opacity(tmp_path, value):
@@ -297,19 +297,19 @@ def test_ed3b_net_replacement_is_one_band(ed3b):
                                                               rel=1e-12, abs=1e-9)
     assert C.COMP['net_replacement'] == C.COMP['net_replacement_census'] == ('Net replacement',
                                                                               C.S.DISPLAY_BAND['net_replacement'])
-    assert not set(C.NET_REPLACEMENT_PARTS) & set(C.SF3B_LEGEND)
+    assert not set(C.NET_REPLACEMENT_PARTS) & set(C.ED5B_LEGEND)
 
 
 def test_reality_checks_history_lines_equal_their_source():
-    """Nine Extended Data figures in manuscript order (ED3 the stock and vacancy figure; with Extended Data Table 1 ten items, the limit);
-    SF7 (reality checks) is Supplementary; every drawn history line is the source data, unsmoothed."""
+    """Nine Extended Data figures in manuscript order (ED4 the stock and vacancy figure; with Extended Data Table 1 ten items, the limit);
+    SF6 (reality checks) is Supplementary; every drawn history line is the source data, unsmoothed."""
     import matplotlib.pyplot as plt
     from figures import data as D
     from figures import validation as V
     ids = [h['id'] for h in FP.PAPER_EXTENDED]
     assert ids == [f'ED{k}' for k in range(1, 10)] and len(ids) + len(FP.EXTENDED_TABLES) <= 10
-    assert [h['file'] for h in FP.PAPER_EXTENDED if h['id'] == 'ED3'] == ['ED3_stock_vacancy']   # manuscript order
-    assert [h['id'] for h in FP.SUPPLEMENTARY if h['file'].endswith('reality_checks')] == ['SF7']
+    assert [h['file'] for h in FP.PAPER_EXTENDED if h['id'] == 'ED4'] == ['ED4_stock_vacancy']   # manuscript order
+    assert [h['id'] for h in FP.SUPPLEMENTARY if h['file'].endswith('reality_checks')] == ['SF6']
     fig, ax = plt.subplots()
     d = D.src('D15_reality_checks')
     for key in d['order']:

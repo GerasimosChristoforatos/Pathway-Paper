@@ -18,7 +18,7 @@ decarbonisation rows of DECARB_CASES for the adopted mode are added.
 One-at-a-time ranges show which assumptions matter. They are not a joint
 uncertainty interval and must not be added in quadrature or summed.
 
-This module writes data only (compute / draw separation): ED6 is drawn by figures/sensitivity.py and the Fig7a
+This module writes data only (compute / draw separation): ED8 is drawn by figures/sensitivity.py and the Fig7a
 tornado by figures/paper_main.py, from the grouped tables of tools/sensitivity_tables.py. The rows include the
 overbuild-absorption timing (never / by 2030 / by 2045), the vacancy parameter (1986-2023 census mean), the completion
 lag (0 / 15 / 19 months, No 2026 data), the household-size census pace and the completion rate 0.93 / 0.96 (and 0.95).

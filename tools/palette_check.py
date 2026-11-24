@@ -34,13 +34,13 @@ def groups():
     """Colours that appear together in one figure (name -> {label: hex})."""
     import naming as N
     return {
-        'Runs and boundaries (Fig4, ED5, D28)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
+        'Runs and boundaries (Fig4, ED7, D28)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
                                                 'Reference': S.REFERENCE, N.TL['TL']: S.TL},
                                                **{(f'{p} {N.STRATEGIES[p]}' if p in N.STRATEGIES else
                                                    'Moderate / Ambitious Pathway'): c for p, c in S.PATHWAY.items()}),
-        # a lever is drawn in its strategy colour (SF8, told apart by
+        # a lever is drawn in its strategy colour (SF7, told apart by
         # marker), so the strategies are the lever group
-        'Strategies (Fig4-Fig6, SF8)': {N.STRATEGIES[k]: c for k, c in S.STRATEGY.items()},
+        'Strategies (Fig4-Fig6, SF7)': {N.STRATEGIES[k]: c for k, c in S.STRATEGY.items()},
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
         # demolition replacement, the recent surge and unconsented additions are parts of Net replacement and share
         # its colour (one band in every figure), so only 'replacement' stands for them
@@ -54,7 +54,7 @@ def groups():
                'Reference': S.REFERENCE, 'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
             **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
         'Carbon components (Fig3c, diagnostics)': {N.COMPONENTS[c]: S.COMPONENT[c][0] for c in S.COMPONENT},
-        'Projection variants and boundaries (ED2, ED4)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
+        'Projection variants and boundaries (ED2, ED6)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                              for k in S.SCENARIO},
                                                             **{'Acquired rights (AR)': S.AR,
                                                                'Ability to pay (AtP)': S.ATP}),
@@ -67,14 +67,14 @@ def groups():
              N.PATHWAY_RUNS['pathway-ambitious']: S.PATHWAY_SETTING['ambitious'], N.TL['TL']: S.TL,
              'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
             **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
-        'One at a time (Fig7a, ED6, ED5)': {'Input at low end': S.TORNADO_LOW, 'Input at high end': S.TORNADO_HIGH,
+        'One at a time (Fig7a, ED8, ED7)': {'Input at low end': S.TORNADO_LOW, 'Input at high end': S.TORNADO_HIGH,
                                             'Single alternative case': S.TORNADO_SINGLE},
         # the palette-coverage groups
-        'ED3b (components and the demand-band parts)': dict(
+        'ED4b (components and the demand-band parts)': dict(
             {lab: col for c, (lab, col) in _ed3b().items()}),
-        'Replacement variants and the Reference (ED7, SF3, SF6, SF7)': {S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
+        'Replacement variants and the Reference (ED5, ED5, SF5, SF6)': {S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                                         for k in S.SCENARIO},
-        'Typologies (SF11, SF4, SF9)': dict(S.TYPOLOGY),
+        'Typologies (SF11, ED3, SF9)': dict(S.TYPOLOGY),
         'Sobol indices (ED9)': {'Total effect': S.SOBOL['total'], 'First-order effect': S.SOBOL['first_order']},
         'Lag variants (SF2)': {'Zero lag': S.LAG_VARIANT[0], '17-month lag': S.LAG_VARIANT[17]},
         'Re-occupation (SF10)': {'Released dwellings (TL)': S.BAND['released_tl'][0],
@@ -84,7 +84,7 @@ def groups():
 
 
 def _ed3b():
-    """The ED3b parts as drawn (figures/calibration.COMP; the net-replacement pair shares one colour and one label)."""
+    """The ED4b parts as drawn (figures/calibration.COMP; the net-replacement pair shares one colour and one label)."""
     from figures import calibration as C
     return {c: v for c, v in C.COMP.items() if c != 'net_replacement'}
 
@@ -203,7 +203,7 @@ def main():
          'fills, never by text.',
          f"* **Strategies** (palette.toml [strategies]): S1 Avoid {S.STRATEGY['S1']}, S2 Switch {S.STRATEGY['S2']}, "
          f"S3 Improve {S.STRATEGY['S3']}. A lever is drawn in its "
-         f"strategy colour and told apart by marker ({', '.join(S.LEVER_MARKER)} within a strategy; SF8). The "
+         f"strategy colour and told apart by marker ({', '.join(S.LEVER_MARKER)} within a strategy; SF7). The "
          f"Moderate Pathway pale yellow ({S.PATHWAY_SETTING['moderate']}), Ambitious Pathway orange "
          f"({S.PATHWAY_SETTING['ambitious']}) and TL a pale sage green ({S.TL}; a larger circle on point plots).",
          '* **Demand bands** (palette.toml [demand_bands]; detailed parts in [components]): '
@@ -212,7 +212,7 @@ def main():
          f"as one band: the census measures only the net), Released dwellings (TL) "
          f"{S.BAND['released_tl'][0]}. The only untargeted band, Population growth, is a solid deep violet ({S.GROWTH}). "
          "Market balance (the history stock-identity residual, the 2026-27 overbuild and its absorption) one band in "
-         f"the demand-band colour ({S.DISPLAY_BAND['market_balance']}), as in Fig1 and ED3b.",
+         f"the demand-band colour ({S.DISPLAY_BAND['market_balance']}), as in Fig1 and ED4b.",
          '* **Signs**: the data keep the sign of every band and the figures never flip it. Time series: '
          'positive bands stacked up from zero, negative bands down from zero (fixed order), the net a black line. '
          'Cumulative bars: positives stacked up from zero, negatives solid below zero, the net total a black marker; '
@@ -223,7 +223,7 @@ def main():
         f"* **Reference** mid grey ({S.REFERENCE}); Low and High replacement greys with dashed and dotted lines. "
         "The Fig3b 2026-2050 column is the Reference colour; its Monte Carlo intervals capped error bars at "
         f"opacity {S.OPACITY['fig3b_interval_bars']:g} (palette.toml [opacity]).",
-         f"* **One at a time** (palette.toml [one_at_a_time]; Fig7a, ED6, ED5): input at its low end {S.TORNADO_LOW}, "
+         f"* **One at a time** (palette.toml [one_at_a_time]; Fig7a, ED8, ED7): input at its low end {S.TORNADO_LOW}, "
          f"at its high end {S.TORNADO_HIGH}, a single alternative case {S.TORNADO_SINGLE}.",
          f"* **Stacked bars and areas** are drawn seamless: each segment's edge is its own face colour at "
          f"{S.LW_SEAM:g} pt (no white borders, no anti-aliasing gaps); a hatch is drawn in a thin hatch colour only "

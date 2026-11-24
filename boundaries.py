@@ -122,7 +122,7 @@ HIST_RATE_AFTER_LAST_CENSUS = 'recent'
 # or group of sensitivity/pathway_carbon.csv); ar_base_rule() stops on an unclassified row.
 RECOMPUTE, REFERENCE_BASE = 'recompute', 'reference_base'
 AR_BASE_RULE = {
-    # one-at-a-time rows of the Reference (sensitivity/reference_carbon.csv; Fig7a, ED6)
+    # one-at-a-time rows of the Reference (sensitivity/reference_carbon.csv; Fig7a, ED8)
     'Population: Stats NZ 5th / 95th percentile': (
         REFERENCE_BASE, 'the base history is observed; both budgets move with the population path (Horup Eq. 1)'),
     'Living arrangements: propensities change (Stats NZ B)': (REFERENCE_BASE, 'future household size only'),
@@ -159,7 +159,7 @@ AR_BASE_RULE = {
     'Soil carbon loss on all floor area, including replacement': (
         RECOMPUTE, 'an accounting convention that applies to past and future building alike'),
     'Event timing L / n': (RECOMPUTE, 'an accounting convention that applies to past and future cohorts alike'),
-    # boundary-definition and accounting rows of the AESA layer (aesa/sensitivity.csv; ED5)
+    # boundary-definition and accounting rows of the AESA layer (aesa/sensitivity.csv; ED7)
     'i_source_pair': (REFERENCE_BASE, 'the carrying capacity only'),
     'i_glob_ef31': (REFERENCE_BASE, 'the global impact only'),
     'ii_gdp_measure': (REFERENCE_BASE, 'ability to pay only'),
@@ -176,6 +176,7 @@ AR_BASE_RULE = {
     'x_a45_item': (REFERENCE_BASE, 'future technology only'),
     'xi_event_timing': (RECOMPUTE, 'an accounting convention that applies to past and future cohorts alike'),
     'xii_whole_life': (RECOMPUTE, 'an accounting convention (whole life at construction)'),
+    'window_2028_2050': (REFERENCE_BASE, 'the summation window only (carbon and budget both 2028-2050)'),
     'xiii_wider_scope': (RECOMPUTE, 'a scope convention (maintenance of every cohort since 1992)'),
     'xiv_alpha_1': (REFERENCE_BASE, 'ability to pay only'),
     'note_soil_long_run': (RECOMPUTE, 'the history convention after the last census'),
@@ -663,7 +664,7 @@ def main():
     cum_det = {k: dict(label=r['label'], I_kt=float(r['I'].loc[slice(*PB_YEARS)].sum() / M6),
                        LoE_AR=cum(r['I'], b_ar), LoE_AtP=cum(r['I'], b_atp)) for k, r in runs.items()}
 
-    # ---- population paths (the population rows of ED1, ED6 and ED5) ------------
+    # ---- population paths (the population rows of ED1, ED8 and ED7) ------------
     # The Stats NZ 5th / 95th percentile paths move both the embodied carbon (the projection's own
     # engine run of that path, every other input at the Reference) and the boundaries (population
     # modifier of AR, Horup et al. 2025 Eq. 1; per-capita AtP), with I_sec,base unchanged. The

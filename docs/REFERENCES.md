@@ -14,7 +14,7 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
 - Andreasi Bassi, S., Biganzoli, F., Ferrara, N., Amadei, A., Valente, A., Sala, S., & Ardente, F. (2023). *Updated
   characterisation and normalisation factors for the Environmental Footprint 3.1 method*. EUR 31414 EN, JRC130796.
   Publications Office of the European Union. doi:10.2760/798894. (Table 10: the EF 3.0 and EF 3.1 global
-  normalisation factors for climate change; the cross-check of I_glob and the global-impact sensitivity of ED5.)
+  normalisation factors for climate change; the cross-check of I_glob and the global-impact sensitivity of ED7.)
 - Bjørn, A., & Hauschild, M. Z. (2015). Introducing carrying capacity-based normalisation in LCA: framework and
   development of references at midpoint level. *The International Journal of Life Cycle Assessment*, 20(7),
   1005–1018. doi:10.1007/s11367-015-0899-2. (The safe operating space and I_glob; ESM1 and ESM2.)

@@ -37,7 +37,7 @@ def _ed6_title(a, letter, title):
 
 def ed6_mc_input_distributions():
     """SF11 (data D38): the Monte Carlo input distributions, y = number of draws, panel titles the input
-    names of naming.MC_INPUT (as ED9 and ED6). Population in physical units: the 2050 New Zealand population of each
+    names of naming.MC_INPUT (as ED9 and ED8). Population in physical units: the 2050 New Zealand population of each
     draw (pathways/montecarlo_draws.csv P_NZ_2050; the same draws as the Reference Monte Carlo, checked on every
     input column); dwelling size as the multiplier on the central future size; carbon factors: the resulting pooled
     A1-A3 factor of each draw by typology (typology colours). Lines: central value (solid), 5th / 95th percentile

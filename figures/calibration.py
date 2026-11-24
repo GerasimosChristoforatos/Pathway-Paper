@@ -1,8 +1,8 @@
-"""Calibration figures (Supplementary SF1, ED3, SF4; outputs/supplementary/calibration/).
+"""Calibration figures (Supplementary SF1, ED4, ED3; outputs/supplementary/calibration/).
 
 Drawn from data files only (compute / draw separation): the figure source written by projection.py
 (D01-D03, D08, D09, D13; export_figure_sources) and Diagnostics.py (D04-D06), and baseline/overbuild_absorption_log.csv
-(D35). ED3b in the Fig1 layout: positive components stacked up from zero and negative components
+(D35). ED4b in the Fig1 layout: positive components stacked up from zero and negative components
 stacked down from zero, every part a solid fill (no outlines, hatching or fades), checked against its net.
 """
 import matplotlib.pyplot as plt
@@ -34,7 +34,7 @@ def _band(ax, x, lo, hi, label):
 
 
 # ---------------------------------------------------------------------------
-# components of ED3b (D05)
+# components of ED4b (D05)
 # ---------------------------------------------------------------------------
 # component id -> (label, colour). A component that IS a demand band takes the [demand_bands] key (vacancy; net
 # replacement; market balance); the others palette.toml [components]. Every part is a solid fill: no hatch, no fade.
@@ -118,22 +118,22 @@ def sf1_households():
 
 
 # ---------------------------------------------------------------------------
-# ED3 (D05 + D06 as panel d): stock and vacancy
+# ED4 (D05 + D06 as panel d): stock and vacancy
 # ---------------------------------------------------------------------------
 HIST_IDS = ('new_households', 'vacancy', 'net_replacement_census', 'retirement_villages', 'market_balance')
 FUT_IDS = ('new_households', 'vacancy', 'net_replacement', 'retirement_villages', 'market_balance')
 NET_REPLACEMENT_PARTS = ('replacement', 'redevelopment', 'unconsented')   # merged into 'net_replacement' (D05 parts)
-SF3B_LEGEND = ('new_households', 'vacancy', 'net_replacement_census', 'net_replacement', 'market_balance',
+ED5B_LEGEND = ('new_households', 'vacancy', 'net_replacement_census', 'net_replacement', 'market_balance',
                'retirement_villages')
-SF3B_RTOL = 1e-9
+ED5B_RTOL = 1e-9
 
 
 def check_market_balance_vs_fig1(b):
-    """STOP unless the ED3b market balance (dwellings) matches Fig1's market-balance band (floor area) wherever both
+    """STOP unless the ED4b market balance (dwellings) matches Fig1's market-balance band (floor area) wherever both
     exist. Fig1's band (data/bands_display_map.csv: every detailed band mapped to market_balance) also holds the
-    retirement villages, which ED3b draws as their own component, so they are left out of the comparison. Every
+    retirement villages, which ED4b draws as their own component, so they are left out of the comparison. Every
     census interval and projection year: the same sign (zero in the same years). Projection years after the pipeline:
-    Fig1 = ED3b x the in-scope floor area per in-scope dwelling of that year (rtol 1e-9); in the pipeline years the
+    Fig1 = ED4b x the in-scope floor area per in-scope dwelling of that year (rtol 1e-9); in the pipeline years the
     floor area is observed and in the history each year is converted at its own dwelling size, so there only the
     sign is compared. Returns the number of intervals / years compared."""
     dm = D.csv('bands_display_map.csv')
@@ -147,27 +147,27 @@ def check_market_balance_vs_fig1(b):
         iv = f"{c['years'][0] - 1}-{c['years'][1]}"
         f1 = float(bh[(bh['interval'] == iv) & bh['band'].isin(mb_labels)]['floor_area_Mm2_per_year'].sum()) * 1e6
         if sgn(f1, 1e-6) != sgn(c['parts']['market_balance'], 1e-9):
-            bad.append(f"{iv}: Fig1 {f1:,.0f} m2, ED3b {c['parts']['market_balance']:,.1f} dwellings")
+            bad.append(f"{iv}: Fig1 {f1:,.0f} m2, ED4b {c['parts']['market_balance']:,.1f} dwellings")
     for c in b['annual']:
         y = c['year']
         g = ba[ba['year'] == y]
         f1 = float(g[g['band'].isin(mb_labels)]['floor_area_Mm2'].sum()) * 1e6
         mb = c['parts']['market_balance']
         if sgn(f1, 1e-6) != sgn(mb, 1e-9):
-            bad.append(f'{y}: Fig1 {f1:,.0f} m2, ED3b {mb:,.1f} dwellings (sign)')
+            bad.append(f'{y}: Fig1 {f1:,.0f} m2, ED4b {mb:,.1f} dwellings (sign)')
         elif y not in b['pipeline'] and abs(mb) > 1e-9:
             inscope = g[~g['band'].isin([N.BANDS['maintenance'].replace('–', '-'), N.BANDS['maintenance'],
                                          N.BANDS['released_tl']])]['floor_area_Mm2'].sum() * 1e6
             size = inscope / (c['net'] - c['parts']['retirement_villages'])
-            if not np.isclose(f1, mb * size, rtol=SF3B_RTOL, atol=0.0):
-                bad.append(f'{y}: Fig1 {f1:,.1f} m2 vs ED3b {mb:,.3f} x {size:.4f} m2 per dwelling')
+            if not np.isclose(f1, mb * size, rtol=ED5B_RTOL, atol=0.0):
+                bad.append(f'{y}: Fig1 {f1:,.1f} m2 vs ED4b {mb:,.3f} x {size:.4f} m2 per dwelling')
     if bad:
-        raise SystemExit('STOP: ED3b market balance differs from Fig1: ' + '; '.join(bad))
+        raise SystemExit('STOP: ED4b market balance differs from Fig1: ' + '; '.join(bad))
     return len(b['history']) + len(b['annual'])
 
 
 def ed3b_columns():
-    """The ED3b columns and line from the committed figure source (D05), in the Fig1 layout (the same gap
+    """The ED4b columns and line from the committed figure source (D05), in the Fig1 layout (the same gap
     rule, paper_main.FIG1_GAP): one column per census interval, the pipeline years as annual columns, the projection
     from the year after as annual areas. Each column / year carries its signed parts, its net (the sum of the parts),
     and up / down (the positive and negative sums). The line is the annual dwellings built (in scope), observed
@@ -193,11 +193,11 @@ def ed3b_columns():
     for k in range(parts.shape[1]):                   # per year: the merged band is the sum of its three parts
         s = sum(float(pc[c][k]) for c in NET_REPLACEMENT_PARTS)
         if not np.isclose(fut['net_replacement'][k], s, rtol=1e-12, atol=1e-9):
-            raise SystemExit(f'STOP: ED3b: the merged net replacement of {int(PF[k])} ({fut["net_replacement"][k]!r}) '
+            raise SystemExit(f'STOP: ED4b: the merged net replacement of {int(PF[k])} ({fut["net_replacement"][k]!r}) '
                              f'differs from the sum of its parts ({s!r}).')
     known = set(FUT_IDS) | set(NET_REPLACEMENT_PARTS) | set(MARKET_BALANCE_FUT)
     if set(pc) - known:
-        raise SystemExit(f'STOP: ED3b: projection components not drawn: {sorted(set(pc) - known)}')
+        raise SystemExit(f'STOP: ED4b: projection components not drawn: {sorted(set(pc) - known)}')
     line_f = pd.Series(np.asarray(d['dwellings_built_projection'], float), index=PF)
     hist = []
     for r in SIH.itertuples():
@@ -208,8 +208,8 @@ def ed3b_columns():
         parts['market_balance'] = sum(float(getattr(r, f'{c}_per_year')) for c in MARKET_BALANCE_HIST)
         net = float(sum(parts.values()))
         mean = float(line_h.loc[y0:y1].mean())
-        if not np.isclose(mean, net, rtol=SF3B_RTOL, atol=0.0):
-            raise SystemExit(f'STOP: ED3b: the mean of the annual dwellings built {y0}-{y1} ({mean!r}) differs from '
+        if not np.isclose(mean, net, rtol=ED5B_RTOL, atol=0.0):
+            raise SystemExit(f'STOP: ED4b: the mean of the annual dwellings built {y0}-{y1} ({mean!r}) differs from '
                              f'the column net ({net!r}).')
         hist.append(dict(x=(a_ + FIG1_GAP / 2 * w, b_ - FIG1_GAP / 2 * w), centre=(y0 + y1) / 2, years=(y0, y1),
                          parts=parts, net=net, line_mean=mean, up=sum(v for v in parts.values() if v > 0),
@@ -226,14 +226,14 @@ def ed3b_columns():
         annual.append(dict(year=int(y), parts=parts, net=net, line=float(line_f.loc[y]),
                            up=sum(v for v in parts.values() if v > 0), down=sum(v for v in parts.values() if v < 0)))
     bad = [(c['year'], c['line'], c['net']) for c in annual
-           if not np.isclose(c['line'], c['net'], rtol=SF3B_RTOL, atol=0.0)]
+           if not np.isclose(c['line'], c['net'], rtol=ED5B_RTOL, atol=0.0)]
     if bad:
-        raise SystemExit('STOP: ED3b: the dwellings built differ from the sum of the components in '
+        raise SystemExit('STOP: ED4b: the dwellings built differ from the sum of the components in '
                          + '; '.join(f'{y} (line {l_:,.1f}, components {n:,.1f})' for y, l_, n in bad))
     present = {c for col in hist + annual for c, v in col['parts'].items() if abs(v) > 1e-9}
     years_line = np.concatenate([line_h.index.values, PF]).astype(float)
     if not np.array_equal(years_line, np.arange(years_line[0], years_line[-1] + 1)):
-        raise SystemExit('STOP: ED3b: the annual dwellings built are not one continuous series of years.')
+        raise SystemExit('STOP: ED4b: the annual dwellings built are not one continuous series of years.')
     return dict(history=hist, pipeline=pipe, annual=annual, present=present, gap=g, pipeline_floor_count=floor_count,
                 line=(years_line, np.concatenate([line_h.values, line_f.values]).astype(float)),
                 xlim=(hist[0]['x'][0], float(PF[-1]) + 0.5))
@@ -244,7 +244,7 @@ def _yrs(a_, b_):
 
 
 def ed3b_draw(a, b):
-    """Draw the ED3b columns, areas, caps and line (values in thousand dwellings per year)."""
+    """Draw the ED4b columns, areas, caps and line (values in thousand dwellings per year)."""
     k = 1e3
     for c in b['history']:                          # census intervals: one column each
         x = list(c['x'])
@@ -268,9 +268,9 @@ def ed3b_draw(a, b):
     a.plot(ly, lv / k, color=S.INK, lw=S.LW, gid=P.NET_GID, zorder=7)
 
 
-ED3_HSPACE = 0.42            # ED3: vertical gap a -> b (the compact two-row legend of a needs less than 0.66)
-ED3A_LEGEND_NCOL = 5         # ED3a legend: two rows of short labels below the panel (the full key is in the note)
-ED3A_KEY = ('a: Census range, one definition = the census 1986–2023 range on one definition; Definition break = the '
+ED4_HSPACE = 0.42            # ED4: vertical gap a -> b (the compact two-row legend of a needs less than 0.66)
+ED4A_LEGEND_NCOL = 5         # ED4a legend: two rows of short labels below the panel (the full key is in the note)
+ED4A_KEY = ('a: Census range, one definition = the census 1986–2023 range on one definition; Definition break = the '
             '2013 → 2018 empty / away definition break; History (census empty) = the Reference history, census empty / '
             'private dwellings (before 2013: unoccupied × the 2013 empty share), linear between censuses; One '
             'definition (sensitivity) = one definition, the pooled 2018/2023 empty share, not used by the Reference; '
@@ -280,13 +280,12 @@ ED3A_KEY = ('a: Census range, one definition = the census 1986–2023 range on o
 
 
 def sf2_stock_vacancy():
-    fid = 'ED3_stock_vacancy'
+    fid = 'ED4_stock_vacancy'
     d = D.src('D05_stock_and_vacancy')
-    d6 = D.src('D06_vacancy_definition')
     FY, YH = d['forecast_years'], d['years_hist_flows']
     census_y = [int(y) for y in d['census_years']]
     fig = plt.figure(figsize=S.figsize('double', 185))
-    gs = fig.add_gridspec(2, 4, height_ratios=[1, 1.1], width_ratios=[1, 1, 1, 0.85], hspace=ED3_HSPACE, wspace=0.75)
+    gs = fig.add_gridspec(2, 1, height_ratios=[1, 1.1], hspace=ED4_HSPACE)
 
     a = fig.add_subplot(gs[0, :])                   # the stock panel (b) dropped; vacancy the full width
     vc = d['vacancy_consistent_knots']
@@ -318,28 +317,11 @@ def sf2_stock_vacancy():
     a.set_xlim(1985, 2050)
     a.set_ylim(0, None)
     a.set_ylabel('Vacancy rate (% of private dwellings)')
-    a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09), fontsize=S.FONT_SMALL, ncol=ED3A_LEGEND_NCOL,
+    a.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09), fontsize=S.FONT_SMALL, ncol=ED4A_LEGEND_NCOL,
              columnspacing=1.2, handlelength=1.6)               # compact: two rows; full key in the note
     P.panel(a, 'a', 'Vacancy rate of empty homes')
 
-    # (c; data D06): the unconsented additions each vacancy definition requires
-    a = fig.add_subplot(gs[1, 3])
-    vals = [d6['unconsented_empty_only'], d6['unconsented_including_away']]
-    nb = d6['mean_dwellings_built']
-    bb_ = a.bar([0, 1], vals, color=[S.BAND['vacancy'][0], S.MUTED], width=0.6)
-    a.set_ylim(min(vals) * 1.25, 0)
-    for bb, v in zip(bb_, vals):
-        a.text(bb.get_x() + bb.get_width() / 2, v, P.minus(f'{v:,.0f}\n({100 * v / nb:+.0f}%)'), ha='center', va='top',
-               fontsize=S.FONT_MIN, color=S.INK)
-    a.set_xticks([0, 1])
-    a.set_xticklabels(['Empty\nonly\n(used)', "With 'away'\n(rejected)"], fontsize=S.FONT_MIN)
-    a.axhline(0, color=S.INK, lw=S.LW_THIN)
-    a.set_ylabel(f"Unconsented additions required\n1992–{int(d6['calib_end'])} (dwellings per year)", fontsize=S.FONT_SMALL)
-    P.thousands(a.yaxis)
-    a.grid(axis='x', visible=False)
-    P.panel(a, 'c', 'Vacancy definition')                # d -> c
-
-    a = fig.add_subplot(gs[1, :3])
+    a = fig.add_subplot(gs[1, 0])
     b = ed3b_columns()
     n_mb = check_market_balance_vs_fig1(b)
     ed3b_draw(a, b)
@@ -354,7 +336,7 @@ def sf2_stock_vacancy():
     last = b['history'][-1]
     ss = D.js('baseline/projection.json')['starting_surplus']    # F1 starting surplus
     if not np.isclose(last['parts']['market_balance'], ss['r_after'], rtol=1e-9):
-        raise SystemExit(f"STOP: ED3b: the {_yrs(*last['years'])} market balance "
+        raise SystemExit(f"STOP: ED4b: the {_yrs(*last['years'])} market balance "
                          f"({last['parts']['market_balance']:,.1f}) is not the F1 residual ({ss['r_after']:,.1f}).")
     a.text(last['centre'], last['up'] / 1e3, '†', ha='center', va='bottom', fontsize=S.FONT_SMALL, color=S.INK)
     a.annotate(f"1986–91 not covered (calibration starts 1991)\n† {_yrs(*last['years'])}: households = population /\n"
@@ -366,7 +348,7 @@ def sf2_stock_vacancy():
     _y0, _y1 = a.get_ylim()
     a.set_ylim(_y0 - 0.06 * (_y1 - _y0), _y1 + 0.10 * (_y1 - _y0))   # room for the row of market-balance values
     P.panel(a, 'b', 'Dwellings per year by component')
-    shown = [c for c in SF3B_LEGEND if c in b['present']]
+    shown = [c for c in ED5B_LEGEND if c in b['present']]
     seen, handles = set(), []
     for c in shown:                                   # one entry per label (net replacement: history and projection)
         if COMP[c][0] in seen:
@@ -391,12 +373,10 @@ def sf2_stock_vacancy():
                      f"{y}: {v:,.0f} ({P.minus(format(v - c['net'], '+,.0f'))})" for y, v in
                      b['pipeline_floor_count'].items() for c in b['annual'] if c['year'] == y)
                  + ' (the pipeline floor area is observed, the dwelling size held).')
-    S.save_figure(fig, fid, source=['figure_source/D05_stock_and_vacancy.json',
-                                    'figure_source/D06_vacancy_definition.json', 'baseline/scenarios.json', 'baseline/projection.json'], note=(
-        ED3A_KEY + f'{V[0].upper() + V[1:]}. c: the unconsented additions each vacancy definition requires to close the stock '
-        'identity (BRANZ demolition rate); counting residents-away dwellings as vacant requires implausibly many. '
-        f'b: {hist_note} History: net replacement is census-measured, the '
-        'rate of the census dwelling-count identity of each interval (SF3; under-construction corrected) x the '
+    S.save_figure(fig, fid, source=['figure_source/D05_stock_and_vacancy.json', 'baseline/scenarios.json',
+                                    'baseline/projection.json'], note=(
+        ED4A_KEY + f'{V[0].upper() + V[1:]}. b: {hist_note} History: net replacement is census-measured, the '
+        'rate of the census dwelling-count identity of each interval (ED5; under-construction corrected) x the '
         f"previous year's stock, the quantity the model uses ({census_y[-1] + 1}–{int(YH[-1])}: the latest rate "
         'carried). Top row: the market balance per census interval (thousand dwellings per year). Market balance: building above (+) or below (−) what household growth, vacancy and net replacement '
         'require. History: the residual of the census stock identity (includes measurement error). '
@@ -418,8 +398,33 @@ def sf2_stock_vacancy():
         '(thousand dwellings per year).'))
 
 
+def sf3_vacancy_definition():
+    """SF3 (data D06): the unconsented additions each vacancy definition requires to close the census stock identity
+    (BRANZ demolition rate): empty only (used) and with residents-away dwellings (rejected)."""
+    d6 = D.src('D06_vacancy_definition')
+    fig, a = plt.subplots(figsize=S.figsize('single', 70))
+    vals = [d6['unconsented_empty_only'], d6['unconsented_including_away']]
+    nb = d6['mean_dwellings_built']
+    bb_ = a.bar([0, 1], vals, color=[S.BAND['vacancy'][0], S.MUTED], width=0.6)
+    a.set_ylim(min(vals) * 1.25, 0)
+    for bb, v in zip(bb_, vals):
+        a.text(bb.get_x() + bb.get_width() / 2, v, P.minus(f'{v:,.0f}\n({100 * v / nb:+.0f}%)'), ha='center', va='top',
+               fontsize=S.FONT_MIN, color=S.INK)
+    a.set_xticks([0, 1])
+    a.set_xticklabels(['Empty\nonly\n(used)', "With 'away'\n(rejected)"], fontsize=S.FONT_MIN)
+    a.axhline(0, color=S.INK, lw=S.LW_THIN)
+    a.set_ylabel(f"Unconsented additions required\n1992–{int(d6['calib_end'])} (dwellings per year)", fontsize=S.FONT_SMALL)
+    P.thousands(a.yaxis)
+    a.grid(axis='x', visible=False)
+
+    fig.tight_layout()
+    S.save_figure(fig, 'SF3_vacancy_definition', source=['figure_source/D06_vacancy_definition.json'],
+                  note='The unconsented additions each vacancy definition requires to close the stock identity (BRANZ '
+                       'demolition rate); counting residents-away dwellings as vacant requires implausibly many.')
+
+
 # ---------------------------------------------------------------------------
-# SF4 (D08 + the consent sizes of the former SF6): new-dwelling size
+# ED3 (D08 + the consent sizes of the former SF5): new-dwelling size
 # ---------------------------------------------------------------------------
 def sf4_dwelling_size():
     """(a) realised and occupied floor area per new dwelling; (b) mean consented new-dwelling size by typology 1990-2025
@@ -428,7 +433,7 @@ def sf4_dwelling_size():
     p = D.js('pathways/levers.json')['L4']
     yh = d['years_hist']
     real, occ = (d[k].values for k in ('realised_dwelling_size', 'occupied_area_per_dwelling'))
-    fig, (a, c) = plt.subplots(1, 2, figsize=S.figsize('double', 72))
+    fig, (a, c, o) = plt.subplots(1, 3, figsize=S.figsize('double', 72), gridspec_kw={'width_ratios': [1.2, 1.2, 0.8]})
     P.line(a, yh, real, color=S.INK, label='Realised new-dwelling size (floor area / consents)')
     P.line(a, yh, occ, color=S.MUTED, ls='-.', label='Occupied area per dwelling (household size × occupant load factor)')
     xf, rf = P.pchip(np.asarray(yh, float), np.asarray(real, float))
@@ -451,11 +456,28 @@ def sf4_dwelling_size():
     c.legend(fontsize=S.FONT_MIN, loc='upper center', ncol=1, frameon=False)
     c.set_ylim(78, 275)
     P.panel(c, 'b', 'Consented size by typology')
+    # (c) occupied floor area per person (OLF) by typology, from the case studies (pathways/levers.json)
+    olf, cases = p['olf'], D.js('pathways/levers.json')['L5']['cases']
+    typ = list(olf)
+    n_cases = {t: sum(1 for r in cases if r['Typology'] == t) for t in typ}
+    bars = o.bar(range(len(typ)), [olf[t] for t in typ], color=[S.TYPOLOGY[t] for t in typ], width=0.65)
+    for bb, t in zip(bars, typ):
+        xc = bb.get_x() + bb.get_width() / 2
+        o.text(xc, bb.get_height(), f'{olf[t]:.1f}', ha='center', va='bottom', fontsize=S.FONT_MIN, color=S.INK)
+        o.text(xc, 0.6, f'n = {n_cases[t]}', ha='center', va='bottom', fontsize=S.FONT_MIN, color='white')
+    o.set_xticks(range(len(typ)))
+    o.set_xticklabels(typ, fontsize=S.FONT_MIN)
+    o.set_ylabel('Occupied floor area per person, OLF (m²)')
+    o.set_ylim(0, max(olf.values()) * 1.18)
+    o.grid(axis='x', visible=False)
+    P.panel(o, 'c', 'Floor area per occupant')
     fig.tight_layout()
-    S.save_figure(fig, 'SF4_dwelling_size', source=['figure_source/D08_dwelling_space.json', 'pathways/levers.json'],
+    S.save_figure(fig, 'ED3_dwelling_size', source=['figure_source/D08_dwelling_space.json', 'pathways/levers.json'],
                   note='b: dotted, the Reference size (2023-2025 mean); dots, the smallest annual mean (the L4 minima). '
-                       '1990 is the first year of the series and a recession year.')
+                       '1990 is the first year of the series and a recession year. c: OLF = design floor area per '
+                       'design occupant, design occupants = bedrooms + 1, from the case studies by typology (n = number '
+                       'of case studies).')
 
 
-FIGURES = {'SF1_households': sf1_households, 'ED3_stock_vacancy': sf2_stock_vacancy,
-           'SF4_dwelling_size': sf4_dwelling_size}
+FIGURES = {'SF1_households': sf1_households, 'ED4_stock_vacancy': sf2_stock_vacancy,
+           'ED3_dwelling_size': sf4_dwelling_size, 'SF3_vacancy_definition': sf3_vacancy_definition}

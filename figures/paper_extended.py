@@ -24,11 +24,11 @@ def _save(fig, name, note=None):
     S.save_figure(fig, name, note=note, source=SRC[name])
 
 
-def ed2():
+def census_rates_panel(ax):
+    """ED5a (data D07): the net replacement rates of the census intervals from dwelling counts (bars) and the projection
+    variants (lines), the BRANZ demolition rate and the long-run net rate."""
     d = D.src('D07_net_replacement_rate')
-    c = d['census']
-    fig, ax = plt.subplots(figsize=S.figsize('double', 70))
-    for _, r in c.iterrows():
+    for _, r in d['census'].iterrows():
         ax.bar((r['y0'] + r['y1']) / 2, 100 * r['rate'], width=r['y1'] - r['y0'] - 0.3,
                color=S.DISPLAY_BAND['net_replacement'], edgecolor=S.DISPLAY_BAND['net_replacement'], lw=S.LW_SEAM)
     for k, st in S.SCENARIO.items():
@@ -39,10 +39,8 @@ def ed2():
     ax.axhline(100 * d['long_rate'], color=S.INK, lw=S.LW_THIN, ls=':', label='Long-run net rate 1991–2023')
     ax.axhline(0, color=S.INK, lw=S.LW_THIN)
     ax.set_ylabel('Net replacement (% of stock per year)')
-    ax.legend(fontsize=S.FONT_MIN, ncol=2, loc='upper left')
-    fig.tight_layout()
-    _save(fig, 'SF3_census_replacement_rates', note='Bars: census-interval rates from dwelling counts (net of '
-                                                    'unconsented additions); lines: the projection variants.')
+    ax.legend(fontsize=S.FONT_MIN, ncol=3, loc='upper left')
+    P.panel(ax, 'a', 'Census-interval net replacement rates and the variants')
 
 
 # the projection in the Reference colour (a boundary colour is never used for a run)
@@ -52,7 +50,7 @@ PROJECTION_LINE = S.REFERENCE
 ED1_TITLES = ('Population', 'Households', 'Cumulative floor area built')
 
 
-ED7B_HEADROOM = 1.45          # ED7b: y top / the largest bar (the legend sits above the bars)
+ED5B_HEADROOM = 1.45          # ED5b: y top / the largest bar (the legend sits above the bars)
 SF9_XPAD = 0.25              # SF9: extra x range on the right, as a share of the axis span (legend room)
 
 
@@ -132,7 +130,7 @@ def ed3():
     ax[1].plot(hs.index, hs.values, color=S.INK, lw=S.LW, label='History')      # straight segments between years
     P.line(ax[1], d['projection_years'], d['projection_household_size'], color=S.REFERENCE, lw=S.LW_BOLD, ls='--',
                label='Reference (Stats NZ Medium A)')
-    # the propensity-change path (Stats NZ Medium B rebased on 2023: L1 Ambitious, ED6 row 1) as the levers resolve it
+    # the propensity-change path (Stats NZ Medium B rebased on 2023: L1 Ambitious, ED8 row 1) as the levers resolve it
     # (pathways/levers.json), and the household size the TL run uses, with its rate limit (pathways/annual.csv)
     l1 = D.js('pathways/levers.json')['L1']
     sb = pd.Series(l1['S']['ambitious']).rename(index=int).sort_index()
@@ -150,7 +148,7 @@ def ed3():
             if sp['binds_until'] else 'on')
     _save(fig, 'ED2_household_formation_size',
           note=f"(b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious "
-               f"path and Extended Data Fig. 6 row 1 ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
+               f"path and Extended Data Fig. 8 row 1 ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
                f"pathways phase it in by 2035); {N.TL['TL']} (L1 at TL) is the household size of the TL run, rising "
                f"{bind} the age-specific path (the lowest observed census headship of each age group, or propensity B "
                f"where lower, on the projected age structure; {LV_by_year(l1['tl'], 2050):.2f} in 2050).")
@@ -223,7 +221,7 @@ def sf2():
 
 
 def ed10():
-    """Roll-out timing (ED4): (a, b) annual carbon of the Moderate / Ambitious Pathway
+    """Roll-out timing (ED6): (a, b) annual carbon of the Moderate / Ambitious Pathway
     with full roll-out by 2030, 2035 (adopted) and 2045; (c) their cumulative carbon 2026-2050 as the
     running sum (same colours and line styles), the Reference cumulative a grey line (pathways/annual.csv; the 2050
     end values equal runs.csv carbon_kt, checked)."""
@@ -280,7 +278,7 @@ def ed10():
     P.thousands(c.yaxis)
     P.panel(c, 'c', 'Cumulative carbon')
     fig.subplots_adjust(left=0.07, right=0.91, bottom=0.25, top=0.92)
-    _save(fig, 'ED4_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
+    _save(fig, 'ED6_rollout_timing', note='(c) Cumulative 2026-2050 (kt): ' + ', '.join(
         f'{N.run_label(r_)} {v:,.0f}' for r_, v in ends) + f'; Reference {cref[-1]:,.0f}.')
 
 
@@ -317,7 +315,7 @@ def sf3():
         if t_.get_text() in N.STRATEGIES.values():
             t_.set_fontweight('bold')
     fig.tight_layout()
-    _save(fig, 'SF8_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
+    _save(fig, 'SF7_lambda_sweep', note='L6 at λ = 0 is the lever off; a small step to λ > 0 reflects the constant '
                                          's_ref against the year-varying replacement share.')
 
 
@@ -361,7 +359,7 @@ VARIANT_LS = (('LOW', '--'), ('REF', '-'), ('HIGH', ':'), ('VHIGH', '-.'))     #
 
 
 def _variant_label(k):
-    # the Reference replacement variant is named apart from the Reference run (legend of ED7a)
+    # the Reference replacement variant is named apart from the Reference run (legend of ED5a)
     return 'Reference replacement' if k == 'REF' else N.SCENARIOS[k]
 
 
@@ -370,7 +368,10 @@ def ed9():
     v = D.csv('sensitivity/replacement_variants.csv')
     ref = a[(a['scenario'] == 'REF') & (a['run'] == 'REF')].set_index('year')
     yrs = ref.index.values.astype(float)
-    fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', 75), gridspec_kw={'width_ratios': [1.6, 1]})
+    fig = plt.figure(figsize=S.figsize('double', 140))
+    gs = fig.add_gridspec(2, 2, height_ratios=[0.85, 1], width_ratios=[1.6, 1])
+    census_rates_panel(fig.add_subplot(gs[0, :]))
+    ax = [fig.add_subplot(gs[1, 0]), fig.add_subplot(gs[1, 1])]
     S.boundary_zones(ax[0], yrs, ref['B_AR_kt'].values, ref['B_AtP_kt'].values)
     for scen, ls in VARIANT_LS:
         for run, col in ((scen, S.REFERENCE), ('pathway-moderate', S.PATHWAY_SETTING['moderate']),
@@ -389,7 +390,7 @@ def ed9():
                  [Line2D([0], [0], color=S.MUTED, ls=ls, label=_variant_label(k)) for k, ls in VARIANT_LS],
                fontsize=S.FONT_SMALL, loc='lower left', bbox_to_anchor=(0.06, 0.0, 0.93, 0.1), mode='expand', ncol=4,
                frameon=False)                  # one step above the minimum, across the width under both panels
-    P.panel(ax[0], 'a', 'Annual carbon per pathway and replacement rate')
+    P.panel(ax[0], 'b', 'Annual carbon per pathway and replacement rate')
     piv = v.pivot(index='run', columns='scenario', values='LoE_AR').loc[['Reference', 'pathway-moderate',
                                                                         'pathway-ambitious', 'TL']]
     x = np.arange(len(piv))
@@ -403,11 +404,13 @@ def ed9():
     ax[1].set_xticklabels([P.two_lines(r if r == 'Reference' else N.run_label(r)) for r in piv.index],
                           fontsize=S.FONT_MIN + 0.5, multialignment='center')     # two lines, centred
     ax[1].set_ylabel(f'{N.LOE_AR} 2026–2050')
-    ax[1].set_ylim(0, float(piv.values.max()) * ED7B_HEADROOM)        # the legend above the bars (6 pt)
+    ax[1].set_ylim(0, float(piv.values.max()) * ED5B_HEADROOM)        # the legend above the bars (6 pt)
     ax[1].legend(fontsize=S.FONT_MIN, loc='upper right')
-    P.panel(ax[1], 'b', 'Cumulative carbon')
-    fig.tight_layout(rect=(0, 0.12, 1, 1))
-    _save(fig, 'ED7_replacement_variants')
+    P.panel(ax[1], 'c', 'Cumulative carbon')
+    fig.tight_layout(rect=(0, 0.07, 1, 1))
+    _save(fig, 'ED5_replacement_variants',
+          note='(a) Bars: census-interval rates from dwelling counts (net of unconsented additions); lines: the '
+               'projection variants.')
 
 
 def ed4():
@@ -445,9 +448,9 @@ def ed4():
     ss = D.js('baseline/projection.json')['starting_surplus']
     u0 = float(lg.loc[lg['year'] == lg['year'].min(), 'surplus_vacant'].iloc[0])
     if not np.isclose(u0, ss['dwellings'], rtol=1e-9):
-        raise SystemExit(f'STOP: SF5: the surplus still vacant at {int(lg["year"].min())} ({u0:,.1f}) is not the '
+        raise SystemExit(f'STOP: SF4: the surplus still vacant at {int(lg["year"].min())} ({u0:,.1f}) is not the '
                          f"starting surplus ({ss['dwellings']:,.1f}).")
-    _save(fig, 'SF5_overbuild_absorption', note=f"The surplus still vacant U(t) starts with the starting surplus of "
+    _save(fig, 'SF4_overbuild_absorption', note=f"The surplus still vacant U(t) starts with the starting surplus of "
                                                  f"{ss['dwellings']:,.0f} dwellings (the {ss['after_years'][0]}–"
                                                  f"{ss['after_years'][-1]} building beyond the stock identity, carried "
                                                  f'into 2026), to which the 2026 overbuild adds; both are paid back '
@@ -520,12 +523,13 @@ def edt1():
           '| Lever | Sub-rule | Typology | Parameter | Moderate | Ambitious | TL |', '|---|---|---|---|---|---|---|']
     L_ += [f"| {r.lever} | {r.subrule} | {r.typology} | {r.parameter} | {r.moderate:.4g} | {r.ambitious:.4g} | "
            f"{r.tl:.4g} |" for r in df.itertuples()]
+    L_ += [''] + [f'{i}. {t}' for i, t in enumerate(LV.EDT1_FOOTNOTES, start=1)]
     with open(out + '.md', 'w') as f:
         f.write('\n'.join(L_) + '\n')
 
 
 FIGURES = {'ED1_population_households_floor_area': ed1, 'ED2_household_formation_size': ed3,
-           'ED7_replacement_variants': ed9, 'ED4_rollout_timing': ed10,
-           'SF3_census_replacement_rates': ed2, 'SF5_overbuild_absorption': ed4, 'SF8_lambda_sweep': sf3,
+           'ED5_replacement_variants': ed9, 'ED6_rollout_timing': ed10,
+           'SF4_overbuild_absorption': ed4, 'SF7_lambda_sweep': sf3,
            'SF9_hd_estimators': sf4, 'SF13_conditional_tl': sf2}
 TABLES = {'EDT1_levels_by_typology': edt1}

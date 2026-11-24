@@ -167,8 +167,11 @@ both rules let age structure, not the national 1991 level, set the limit.)
 * Lever audit (`outputs/reports/lever_audit.md`): all 9 checks pass (check 7 now on actual releases).
 * `check_outputs`: pass. Figures: all drawn.
 * Tests: 269 passed in the light and the full profile after re-capturing `tests/regression_lock.json`.
-* Clean clone: see the PR description (fresh clone, Python 3.11 venv, `pip install -r requirements.txt`, pytest,
-  light run, `git status`).
+* Clean clone (fresh clone of the branch, new Python 3.11 venv): `pip install -r requirements.txt` succeeded (20 s);
+  `pytest` 235 passed, 34 skipped (55 s; the skips are `test_profiles.py` light-vs-full comparisons, which need light
+  outputs); `python run_all.py --profile light` completed without a failed step (7 min 58 s), after which `pytest`
+  gives 269 passed; `git status` clean (light outputs do not overwrite the committed full outputs). Full run here:
+  29 min 26 s.
 * CLAUDE.md and `.claude/`: absent from main and the branch. No Co-Authored-By / Claude-Session / "Generated with"
   lines in `git log origin/main -20` or in the PR's commits; all commits authored and committed as Gerras.
 * Note: the release-metadata commit (54b3384) had removed 163 output files, because it was made while the

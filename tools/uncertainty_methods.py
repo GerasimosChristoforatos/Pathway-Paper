@@ -141,9 +141,10 @@ def lines():
           f"{cq['p50']:,.0f} kt, 50% interval {cq['p25']:,.0f}-{cq['p75']:,.0f}, 90% interval {cq['p5']:,.0f}-"
           f"{cq['p95']:,.0f} kt (pathways/montecarlo_summary.csv; per draw in pathways/montecarlo_draws.csv).", '']
     th = ct['population_threshold']['adopted']
-    share = (f"The share of draws in which TL stays within the AR budget is {100 * ct['p_within_AR']:.1f}% "
-             f"({ct['within_AR']:,} of {ct['n']:,}; Wilson 95% interval {100 * ct['wilson_95'][0]:.1f}-"
-             f"{100 * ct['wilson_95'][1]:.1f}%, Wilson 1927). ")
+    dp = 1 if ct['p_within_AR'] >= 0.01 else 2                     # two decimals for a share below 1%
+    share = (f"The share of draws in which TL stays within the AR budget is {100 * ct['p_within_AR']:.{dp}f}% "
+             f"({ct['within_AR']:,} of {ct['n']:,}; Wilson 95% interval {100 * ct['wilson_95'][0]:.{dp}f}-"
+             f"{100 * ct['wilson_95'][1]:.{dp}f}%, Wilson 1927). ")
     model = ("a univariate logistic regression on the draw's 2050 population fitted by Firth's penalised likelihood "
              "where the maximum-likelihood estimate does not exist (Firth 1993; Heinze & Schemper 2002)")
     if th.get('estimable'):
@@ -152,7 +153,8 @@ def lines():
                   f"percentile bootstrap of {th['bootstrap_resamples']:,} resamples (seed {PMC.BOOT_SEED} in the full "
                   'profile).')
     else:
-        share += (f"{th.get('note', 'No population threshold exists in the sampled range')}"
+        note = th.get('note') or 'no population threshold exists in the sampled range'
+        share += (note[0].upper() + note[1:]
                   + (f" ({model})." if 'method' in th else '.'))
     L += [share]
     return L

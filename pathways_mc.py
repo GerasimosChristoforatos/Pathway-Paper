@@ -367,22 +367,27 @@ def insights(df):
 
 
 THRESHOLD_POINTS = 101
+THRESHOLD_MIN_EVENTS = 10   # fewest draws in the rarer outcome class for a threshold (10 events per variable;
+                            # Peduzzi et al. 1996, J Clin Epidemiol 49, 1373); below it the threshold is not estimable
 
 
 def population_threshold(df, col):
     """(Fig7b, SF13) The 2050 New Zealand population at which P(TL LoE AR <= 1) = 50%, from a univariate
     logistic regression of the outcome on the draw's 2050 population (maximum likelihood; Firth's penalised
     likelihood where the MLE does not exist), with a percentile bootstrap 95% interval (resampled draws; the
-    insight bootstrap's stream). If no draw (or every draw) has TL within AR the threshold is not estimable and that
-    is reported instead."""
+    insight bootstrap's stream). If fewer than THRESHOLD_MIN_EVENTS draws fall in the rarer outcome class (within AR
+    or not), the threshold is not estimable and that is reported instead (no curve is fitted)."""
     x = df['P_NZ_2050'].to_numpy(float)
     y = (df[col].to_numpy(float) <= 1.0).astype(float)
     k, n = int(y.sum()), len(y)
     base = dict(outcome=f'{col} <= 1', n=n, within_AR=k, p_within_AR=k / n)
-    if k == 0 or k == n:
-        return dict(base, estimable=False, note=('no draw has TL within AR' if k == 0 else
-                                                 'every draw has TL within AR') + ': no population threshold exists in '
-                    'the sampled range; the LoE distribution against the 2050 population is shown instead')
+    if min(k, n - k) < THRESHOLD_MIN_EVENTS:
+        what = ('no draw has TL within AR' if k == 0 else 'every draw has TL within AR' if k == n else
+                f'{min(k, n - k):,} of {n:,} draws have TL {"within" if k < n - k else "outside"} AR, fewer than '
+                f'{THRESHOLD_MIN_EVENTS} (10 events per variable; Peduzzi et al. 1996)')
+        return dict(base, estimable=False, min_events=THRESHOLD_MIN_EVENTS,
+                    note=what + ': the population threshold is not estimable; the LoE distribution against the 2050 '
+                                'population is shown instead')
     mu, sd = float(x.mean()), float(x.std(ddof=1))
 
     def fit(xx, yy):

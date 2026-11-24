@@ -151,3 +151,9 @@ def test_wilson_interval():
     c = (ph + z * z / (2 * n)) / (1 + z * z / n)
     hw = z * np.sqrt(ph * (1 - ph) / n + z * z / (4 * n * n)) / (1 + z * z / n)
     assert abs(lo - (c - hw)) < 1e-12 and abs(hi - (c + hw)) < 1e-12 and hi <= 1.0
+
+
+def test_firth_point_estimate_without_intervals():
+    _, _, X, yy = ref_data()
+    a, b = M.firth(X, yy), M.firth(X, yy, intervals=False)
+    assert np.array_equal(a['beta'], b['beta']) and np.all(np.isnan(b['ci_lo'])) and b['interval'] == 'none'

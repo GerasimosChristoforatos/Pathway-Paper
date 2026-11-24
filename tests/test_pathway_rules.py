@@ -308,3 +308,15 @@ def test_lever_audit_passes():
     with open(layout.report('lever_audit.md')) as f:
         txt = f.read()
     assert 'ALL CHECKS PASS.' in txt and 'FAILED' not in txt
+
+
+def test_population_threshold_minimum_events():
+    """Fewer than pathways_mc.THRESHOLD_MIN_EVENTS draws in the rarer class: not estimable, no curve fitted."""
+    import pathways_mc as PMC
+    rng = np.random.default_rng(0)
+    pop = rng.normal(6.6e6, 3e5, 2000)
+    for k in (0, 2, PMC.THRESHOLD_MIN_EVENTS - 1):
+        loe = np.full(2000, 1.3)
+        loe[np.argsort(pop)[:k]] = 0.9                  # the k smallest populations within AR
+        r = PMC.population_threshold(pd.DataFrame(dict(P_NZ_2050=pop, TL_LoE_AR=loe)), 'TL_LoE_AR')
+        assert r['estimable'] is False and r['within_AR'] == k and 'curve' not in r and 'not estimable' in r['note']

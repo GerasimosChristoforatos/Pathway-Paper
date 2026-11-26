@@ -103,8 +103,11 @@ Efficiency holds in every game and metric (largest |sum - (v(0) - v(N))| 3.6e-12
 ## 6. Checks
 
 * Lever audit: all 9 checks pass. `check_outputs`: pass. Every figure drawn.
-* Tests: see the CHANGELOG commit; 271 tests (two added: the L10 sensitivities, the EDT1 footnote milestones).
-* Clean clone: see section 10.
+* Tests: 271 pass in the light and the full profile after re-capturing `tests/regression_lock.json` (two added: the
+  L10 sensitivities, the EDT1 footnote milestones).
+* Clean clone (commit e663d32; new Python 3.11 venv): `pip install -r requirements.txt` 19 s; `PATHWAY_PROFILE=full
+  pytest` 237 passed, 34 skipped (the light-vs-full comparisons, which need light outputs) in 52 s; `python run_all.py`
+  (light) completed in 6 min 50 s, then 271 passed; `git status` clean.
 
 ## 7. Number maps
 

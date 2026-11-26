@@ -11,6 +11,7 @@ sys.path.insert(0, ROOT)
 import layout  # noqa: E402
 
 ZENODO_DOI = '[ZENODO-DOI]'           # placeholder until the archived release has a DOI
+PAPER_TITLE = '[paper title]'         # placeholder until publication (README.md and CITATION.cff carry the same)
 REPO_URL = 'https://github.com/GerasimosChristoforatos/pathway-paper'
 
 DATA_AVAILABILITY = (
@@ -22,14 +23,14 @@ DATA_AVAILABILITY = (
     f'figure are archived with the code at Zenodo, doi:{ZENODO_DOI}. Supplementary Table 1 lists the sources and '
     'access dates.')
 CODE_AVAILABILITY = (
-    f'The model (Python) is available at {REPO_URL} and archived at Zenodo, doi:{ZENODO_DOI} (version 5.0.0), under '
+    f'The model (Python) behind {PAPER_TITLE} is available at {REPO_URL} and archived at Zenodo, doi:{ZENODO_DOI} (version 5.0.0), under '
     'the MIT licence; its generated outputs and derived data are under CC BY 4.0. `python run_all.py --profile full` reproduces every number and figure.')
 
 # (source, files in the repository, licence or terms, redistributed here)
 THIRD_PARTY = [
     ('Stats NZ: building consents (Infoshare BLD468601), population estimates (DPE404001), census dwelling tables '
      '(CEN23_HOU_018, CEN23_TBT_001, DataInfo+ pages), census living arrangements and households (CEN23_FHH_036, '
-     'CEN23_FHH_018, CEN23_FHH_041, CEN13_FHH_026, CEN13_FHH_030, CEN13_FHH_031), ERP by age (DPE058AA), family and '
+     'CEN23_FHH_018, CEN23_FHH_041, CEN13_FHH_026), ERP by age (DPE058AA), family and '
      'household projections (POPPR_FHH_008, POPPR_FHH_010), national accounts (SNE022AA), earlier releases (popdata, histpopdata, oldhouseholddata, '
      'occ-unocc-2013)', 'data/raw/, data/*.xlsx, data/derived/', 'CC BY 4.0 (Stats NZ)', 'yes'),
     ('United Nations, DESA, Population Division (2024), World Population Prospects 2024',

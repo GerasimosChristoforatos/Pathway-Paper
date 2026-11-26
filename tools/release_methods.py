@@ -122,10 +122,12 @@ def lines():
          'in a year, nothing is built and the unusable amount is carried forward against the next years: released '
          'dwellings remain available later, as they do in the theoretical-limit re-occupation pool. Whatever is still '
          "unusable in 2050 is booked in 2050 against its release band and as 'Surplus kept vacant (2050)', so the bands "
-         'add up to the total in every year (checked to 1e-9). In every theoretical-limit-family run (TL, the TL steps '
-         'of both waterfalls, every TL Shapley subset) the re-occupation pool holds every dwelling release present in '
-         'the run (a vacancy-rate fall at any level, a household-size fall), with the constant-share rule, the '
-         'availability constraint and attribution in proportion to the release of each source.', '',
+         'add up to the total in every year (checked to 1e-9). Only runs that actually release dwellings use the '
+         're-occupation pool: L1 at TL with households falling or L2 at TL with the vacancy rate falling, cumulatively '
+         'by 2050, in any single-lever run, Shapley subset, waterfall step or the full TL. There the pool holds every '
+         'dwelling release of the run, with the constant-share rule, the availability constraint and attribution in '
+         'proportion to the release of each source; every other run absorbs the starting surplus and the overbuild '
+         'along the logistic to 2035.', '',
          '### Zero-year guard (engine.forward)', '',
          f'A year whose built floor area is below {engine.BUILT_ZERO_TOL_M2:g} m2 is a year in which nothing is built: '
          'its floor area, soil-bearing share and soil carbon are set to 0. The soil-bearing share is clipped to [0, 1] '
@@ -193,9 +195,10 @@ def lines():
          f"2026), level), never below the Ambitious path. The level is reached in "
          f"{lv['L1']['tl_speed']['level_reached']:.1f}. Household size is a population-level outcome of age "
          'structure, partnering and housing costs; the speed limit keeps the theoretical limit within changes the New '
-         'Zealand census record has shown. The instant-TL row keeps its definition (every level from 2027). In every '
-         "theoretical-limit-family run the Reference's overbuild surplus (the positive market excess of the pipeline "
-         'years and of the fading gap) enters the re-occupation pool with the releases of L1 and L2 at TL (constant share of '
+         'Zealand census record has shown. The instant-TL row keeps its definition (every level from 2027). In every run '
+         'that actually releases dwellings (L1 at TL with households falling or L2 at TL with the vacancy rate falling, '
+         "cumulatively by 2050) the Reference's overbuild surplus (the positive market excess of the pipeline "
+         'years and of the fading gap) enters the re-occupation pool with those releases (constant share of '
          "each year's positive need, availability constraint, carry-forward); the re-occupied overbuild is booked in "
          "'Overbuild absorbed'. Releases of an observed (pipeline) year enter the pool in the first unobserved year.", '',
          '### Household-size projection', '',

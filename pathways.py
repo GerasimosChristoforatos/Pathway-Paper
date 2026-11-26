@@ -1295,7 +1295,7 @@ def tl_summary(res):
                                 tl1_speed=res['params']['L1'].get('tl_speed'),
                                 sensitivity=f'{LV.TL_INSTANT_LABEL}: every limit at full strength from 2027',
                                 components={k: LV.TL_NAMES[k] for k in LV.TL_COMPONENTS},
-                                note='L6 at TL (100% brownfield) makes L7 at TL zero within TL'),
+                                note=f'L7 at TL applies to the floor area still built on new land under L6 at TL ({100 * LV.L6_S_TL:.0f}%)'),
                 strength=res['params']['tl_strength'], zero_building=out.pop('zero_building'), runs=out,
                 tl1=tl1_summary(res))
 

@@ -43,7 +43,7 @@ maximum over all runs) moves at the 1e-14 level.
 * L10 at TL, every other lever at TL (deterministic and Monte Carlo; `levers.L10_TL_VARIANTS`): the cement near-zero
   factor (125/850) on every class without a documented near-zero definition, steel keeping its own (an upper bound on
   L10, not a documented scenario); the near-zero share 100% by 2050. Extended Data Fig. 8 panel b and Supplementary
-  Table 13 (`outputs/data/sensitivity/tl_sensitivity.csv`, new).
+  Table 12 (`outputs/data/sensitivity/tl_sensitivity.csv`, new; the limitations register moves to ST13).
 * ED7 rows "2028-2050 only (pipeline years excluded)" and "Whole-life accounting"; `outputs/data/loe_2028_2050.csv`.
 
 ### Method rules
@@ -56,7 +56,7 @@ maximum over all runs) moves at the 1e-14 level.
 ### Figures, tables and documentation
 * Extended Data renumbered (`outputs/data/ed_number_map.csv`): ED3 = old SF4 + OLF panel, ED4 = old ED3 a-b, ED5 =
   old SF3a + ED7, ED6 = old ED4, ED7 = old ED5 + two rows, ED8 = old ED6 + panel b; old ED3c and ED8 are SF3 and SF8;
-  SF16 (headship by census) and ST13 are new (`sf_number_map.csv`, `st_number_map.csv`).
+  SF16 (headship by census) and ST12 (TL sensitivities) are new, the limitations register is ST13 (`sf_number_map.csv`, `st_number_map.csv`).
 * No notes, markers or row numbers are drawn on the Extended Data figures: they are legend text (FIGURES.md). Full
   legends for every Extended Data figure; EDT1 footnotes for L3 and L10. Absorption shading removed.
 * README rewritten as a short overview; data provenance in `docs/DATA.md`; earlier CHANGELOG entries condensed.

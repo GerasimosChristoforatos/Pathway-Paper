@@ -113,6 +113,11 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
 - Rosen, K. T., & Smith, L. B. (1983). The price-adjustment process for rental housing and the natural vacancy rate.
   *American Economic Review*, 73(4), 779–786. RePEc: aea:aecrev:v:73:y:1983:i:4:p:779-86. (Absorption of the 2026
   overbuild.)
+- Sacchi, R., Terlouw, T., Siala, K., Dirnaichner, A., Bauer, C., Cox, B., Mutel, C., Daioglou, V., & Luderer, G.
+  (2022). PRospective EnvironMental Impact asSEment (premise): a streamlined approach to producing databases for
+  prospective life cycle assessment using integrated assessment models. *Renewable and Sustainable Energy Reviews*,
+  160, 112311. doi:10.1016/j.rser.2022.112311. (The REMIND background scenarios of Horup et al. 2025, Table S1, which
+  cites it as Sacchi et al. 2023; the EDT1 L10 footnote.)
 - Sala, S., Crenna, E., Secchi, M., & Sanyé-Mengual, E. (2020). Environmental sustainability of European production
   and consumption assessed against planetary boundaries. *Journal of Environmental Management*, 269, 110686.
   doi:10.1016/j.jenvman.2020.110686. (Table 3, p. 7: the 6.81E+12 carrying capacity labelled as radiative forcing.)
@@ -206,6 +211,10 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   to colorblind people. https://jfly.uni-koeln.de/color/ (The categorical palette.)
 - Smith, N. J., & van der Walt, S. *colorspacious* 1.1.2 (Python package). https://github.com/njsmith/colorspacious
   (Palette check.)
+- Statistics Sweden (SCB). Vacant rental dwellings in multi-dwelling buildings, 2021 and 2024. (Rental flats in
+  multi-dwelling buildings vacant for immediate letting, excluding owner-occupied and tenant-owned dwellings, houses
+  and units under repair: 0.8% of rental dwellings in 2021 and 1.3% in 2024; the reason the OECD value for Sweden,
+  0.25% of the whole stock, is excluded from L2 at TL.)
 - Stats NZ. Building consents by typology (floor area and number), monthly, 1990–2026 (Infoshare BLD468601). (Consents,
   completions and L4 Extra space.)
 - Stats NZ. *2023 Census population, dwelling, and housing highlights*.
@@ -226,7 +235,7 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
   quarter consents). (Consistency check of the lag.)
 - Stats NZ. National accounts SNE022AA (GDP and final consumption expenditure, quarterly) and estimated resident
   population. (Sector share s_sec; population history.)
-- Swiss Federal Statistical Office (FSO). *Empty dwellings survey* (Leerwohnungszählung).
+- Swiss Federal Statistical Office (FSO) (2022). *Empty dwellings survey* (Leerwohnungszählung).
   https://statistik.admin.ch/en/asset/18664834 (the Swiss source of the OECD value: 61,496 empty dwellings on 1 June
   2022, 1.31% of the total stock including single-family homes; admin.ch media release
   https://www.admin.ch/gov/en/start/documentation/media-releases.msg-id-90300.html; L2 at TL.)

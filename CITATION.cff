@@ -1,6 +1,7 @@
 cff-version: 1.2.0
 message: >-
-  If you use this model or its outputs, please cite it as below. The numbers
+  If you use this model or its outputs, please cite it as below, together with
+  the paper [paper title] (the DOI is added at publication). The numbers
   of a release are those of its full run (python run_all.py --profile full),
   committed under outputs/ and locked by tests/test_regression_model.py
   (tests/regression_lock.json).
@@ -28,9 +29,10 @@ abstract: >-
   carbon reduction hierarchy (Avoid L1–L5, Switch L6–L8, Improve L9–L10), are
   set at Moderate and Ambitious levels and combined into the Moderate and
   Ambitious Pathways, with exact Shapley attribution, a back-cast and a pathway
-  Monte Carlo. The Theoretical Limit sets every lever at the best value
-  observed internationally or in New Zealand, or at a documented scenario
-  bound; a logical bound only where physically attainable. It is a thought
+  Monte Carlo. The Theoretical Limit sets every lever at the most extreme
+  value physically attainable while the housing system keeps functioning: a
+  bound the system itself defines where one exists, otherwise the best value
+  observed or the most stringent documented scenario. It is a thought
   experiment, not a pathway.
 keywords:
   - embodied carbon

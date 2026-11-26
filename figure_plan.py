@@ -3,7 +3,7 @@
 
     outputs/paper_main/       Fig1-Fig7 (PAPER_MAIN)
     outputs/paper_extended/   the Extended Data ED1-ED9 (PAPER_EXTENDED) and the per-typology level table EDT1 (Extended Data Table 1)
-    outputs/supplementary/    the Supplementary figures SF1-SF15 and table ST8 (SUPPLEMENTARY; at most ten Extended
+    outputs/supplementary/    the Supplementary figures SF1-SF16 and table ST8 (SUPPLEMENTARY; at most ten Extended
                               Data items)
     outputs/diagnostics/      the figure audit records (DIAGNOSTICS is empty)
 
@@ -118,8 +118,8 @@ PAPER_EXTENDED = [
          caption='(a) Household formation by census interval, split into population growth and the change in household '
                  'size. (b) Household size: history, the Reference (Stats NZ 2023-base, living arrangements of 2023 '
                  'held), L1 Ambitious (Stats NZ propensity B, living arrangements keep changing as in 2001-2023) and '
-                 'L1 at the Theoretical Limit (the lowest observed census household formation of each age group, or '
-                 'propensity B where lower, rising no faster than the fastest change between censuses). The paths are '
+                 'L1 at the Theoretical Limit, returning to the 1991 maximum of 2.79 no faster than the fastest change '
+                 'between censuses (reached in mid-2037). The paths are '
                  'rebased on the observed 2023 household size.',
          source=['baseline/household_formation_history.csv', 'figure_source/D03_household_size.json',
                  'figure_source/D04_household_formation.json', 'pathways/levers.json', 'pathways/annual.csv']),
@@ -186,7 +186,7 @@ PAPER_EXTENDED = [
                  'every material class without a documented near-zero definition, steel keeping its own (an upper '
                  'bound on L10, not a documented scenario: no documented near-zero definition exists outside steel and '
                  'cement), and the near-zero share of cement and steel production 100% by 2050 instead of 93%; values '
-                 'and P(cumulative LoE of AR ≤ 1) over the Monte Carlo draws in Supplementary Table 13. What each row '
+                 'and P(cumulative LoE of AR ≤ 1) over the Monte Carlo draws in Supplementary Table 12. What each row '
                  'of (a) changes compared with the Reference: ',
          row_notes='ED8',
          source=['sensitivity/reference_carbon.csv', 'sensitivity/tl_sensitivity.csv']),
@@ -266,7 +266,7 @@ SUPPLEMENTARY = [
     dict(id='SF15', file='SF15_mc_convergence', folder='montecarlo', module='figures.montecarlo',
          title='Monte Carlo convergence of the 2026-2050 percentiles', source=['montecarlo/convergence_REF.csv']),
     dict(id='SF16', file='SF16_headship_by_census', folder='pathways', module='figures.pathways',
-         title='Household formation (headship) by age group across censuses, with the L1 at TL rate',
+         title='Household formation (headship) by age group across censuses and the by-age limit (sensitivity)',
          source=['pathways/levers.json']),
 ]
 # Supplementary Tables (Markdown + CSV, outputs/supplementary/<folder>/)
@@ -342,10 +342,12 @@ SI_TABLES = [
     ('ST10', 'strategies, Pathways and TL runs (with the 2028-2050 LoE)', None,
      'outputs/data/pathways/runs.csv and outputs/data/loe_2028_2050.csv'),
     ('ST11', 'Monte Carlo inputs', None, 'SI text table'),
-    ('ST12', 'limitations register', None, 'SI text table'),
-    ('ST13', 'Theoretical Limit sensitivities (deterministic and Monte Carlo)', None,
+    ('ST12', 'Theoretical Limit sensitivities (deterministic and Monte Carlo)', None,
      'outputs/data/sensitivity/tl_sensitivity.csv'),
+    ('ST13', 'limitations register', None, 'SI text table'),
 ]
+# v4.10.2 -> v5.0.0: the limitations register moves from ST12 to ST13; ST12 (TL sensitivities) is new
+ST_PREVIOUS = {'ST12': 'new', 'ST13': 'ST12'}
 
 
 # old files where the old id plus the new suffix is not the old file name (a split panel, a merged source)
@@ -380,7 +382,8 @@ def write_sf_number_map():
 
 def write_st_number_map():
     """outputs/data/st_number_map.csv (v4.10.2 -> v5.0.0, Supplementary Tables of the SI): every SI table with its
-    content and repository source; ST8 was ST1 (budget construction), the others are numbered for the first time."""
+    content and repository source, and its v4.10.2 number where it changed (ST_PREVIOUS: the limitations register
+    moves from ST12 to ST13; ST12 is new)."""
     import csv
     import layout
     path = layout.writing(layout.data('st_number_map.csv'))
@@ -388,8 +391,9 @@ def write_st_number_map():
         w = csv.writer(f)
         w.writerow(['old_id', 'old_file', 'new_id', 'new_file', 'status', 'content', 'repository_source'])
         for nid, content, nfile, src in SI_TABLES:
-            old = _PREVIOUS.get(nid)
-            w.writerow([old or '', (old + nfile[len(nid):]) if (old and nfile) else '', nid, nfile or '',
-                        'renumbered' if old else 'same number', content, src])
+            old = ST_PREVIOUS.get(nid)
+            w.writerow(['' if old in (None, 'new') else old,
+                        (old + nfile[len(nid):]) if (old not in (None, 'new') and nfile) else '', nid, nfile or '',
+                        'added' if old == 'new' else 'renumbered' if old else 'same number', content, src])
     return path
 

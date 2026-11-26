@@ -22,7 +22,7 @@ import layout as L  # noqa: E402
 
 # (pattern relative to outputs/, what it holds, the script that writes it)
 FILES = [
-    # paper Fig1-Fig7, Extended Data ED1-ED9 (+ EDT1), supplementary SF1-SF15 (+ ST8) in folders (figure_plan.py)
+    # paper Fig1-Fig7, Extended Data ED1-ED9 (+ EDT1), supplementary SF1-SF16 (+ ST8) in folders (figure_plan.py)
     ('data/baseline/projection.json', 'The Reference projection: floor area, carbon (by stage, material, demand '
      'band), committed emissions after 2050, settings', 'projection.py'),
     ('data/baseline/annual.csv', 'History 1991-2025 and the Reference 2026-2050 by year: floor area, carbon and its '
@@ -49,7 +49,7 @@ FILES = [
      'figure_plan.py'),
     ('data/sf_number_map.csv', 'Supplementary Figures numbering, v4.10.2 -> v5.0.0 (figure_plan.RENUMBER)',
      'figure_plan.py'),
-    ('data/st_number_map.csv', 'Supplementary Tables of the SI (ST1-ST12) and their repository sources; ST8 was ST1 '
+    ('data/st_number_map.csv', 'Supplementary Tables of the SI (ST1-ST13) and their repository sources; ST8 was ST1 '
      '(figure_plan.SI_TABLES)', 'figure_plan.py'),
     ('data/bands_display_map.csv', 'Detailed demand band -> the six display bands of the figures',
      'pathways.py'),
@@ -75,7 +75,7 @@ FILES = [
      'under the household-size sensitivities (Stats NZ Low / High variant; 2018-2023 census pace)',
      'tools/sensitivity_tables.py'),
     ('data/sensitivity/tl_sensitivity.csv', 'The Theoretical Limit sensitivities (every other lever at TL): '
-     'deterministic and P(LoE AR <= 1) over the pathway Monte Carlo (Supplementary Table 13; the L10 rows in ED8 b)',
+     'deterministic and P(LoE AR <= 1) over the pathway Monte Carlo (Supplementary Table 12; the L10 rows in ED8 b)',
      'tools/sensitivity_tables.py'),
     ('data/loe_2028_2050.csv', 'Cumulative LoE of AR and AtP over 2028-2050 (carbon and budget both summed over the '
      'window; the pipeline years excluded) of the Reference, the Pathways and TL (Supplementary Table 10)',

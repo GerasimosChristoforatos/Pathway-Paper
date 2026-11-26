@@ -1,6 +1,6 @@
 # New Zealand new residential floor area and embodied carbon, 2026–2050
 
-Code, data and outputs of the paper **[PAPER TITLE]** (manuscript in preparation; the DOI is added at publication).
+Code, data and outputs of the paper **[paper title]** (manuscript in preparation; the DOI is added at publication).
 
 The model projects the new residential floor area New Zealand builds in 2026–2050 and its embodied carbon, compares it
 with New Zealand's share of a global climate boundary, and tests ten levers that reduce it. Model version 5.0.0.

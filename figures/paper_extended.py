@@ -128,7 +128,7 @@ def ed3():
     ax[1].plot(hs.index, hs.values, color=S.INK, lw=S.LW, label='History')      # straight segments between years
     P.line(ax[1], d['projection_years'], d['projection_household_size'], color=S.REFERENCE, lw=S.LW_BOLD, ls='--',
                label='Reference (Stats NZ Medium A)')
-    # the propensity-change path (Stats NZ Medium B rebased on 2023: L1 Ambitious, ED8 row 1) as the levers resolve it
+    # the propensity-change path (Stats NZ Medium B rebased on 2023: L1 Ambitious, an ED8 row) as the levers resolve it
     # (pathways/levers.json), and the household size the TL run uses, with its rate limit (pathways/annual.csv)
     l1 = D.js('pathways/levers.json')['L1']
     sb = pd.Series(l1['S']['ambitious']).rename(index=int).sort_index()
@@ -144,7 +144,7 @@ def ed3():
     reach = int(stl.index[np.argmax(stl.values >= l1['tl'] - 1e-9)])
     _save(fig, 'ED2_household_formation_size',
           note=f"(b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious "
-               f"path and Extended Data Fig. 8 row 1 ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
+               f"path and the Extended Data Fig. 8 row 'Living arrangements: propensities change' ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
                f"pathways phase it in by 2035); {N.TL['TL']} (L1 at TL) is the household size of the TL run, rising at the "
                f"rate limit from the Reference in {int(stl.index[0])} to {l1['tl']:.2f} (the {l1['tl_year']} level) "
                f"at mid-{reach - 1} (the Methods' {reach - 1}.5), held from {reach}.")

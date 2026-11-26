@@ -12,7 +12,7 @@ Writes outputs/data/sensitivity/:
   household_size.csv       the Reference, the Moderate / Ambitious Pathway and TL under the household-size
                            sensitivities (Stats NZ Medium B: living-arrangement propensities change; 2018-2023
                            census pace, linear from 2023)
-  tl_sensitivity.csv       the Theoretical Limit sensitivities (every other lever at TL; Supplementary Table 13; the L10
+  tl_sensitivity.csv       the Theoretical Limit sensitivities (every other lever at TL; Supplementary Table 12; the L10
                            rows also in ED8 panel b), deterministic and with the pathway Monte Carlo P(LoE AR <= 1)
   tornado.csv              Fig7a: the inputs of the Reference tornado (low / high), cumulative carbon and the
                            cumulative LoE AR and AtP (the budgets move only with the population path)
@@ -353,7 +353,7 @@ def loe_2028_2050():
     return pd.DataFrame(rows)
 
 
-# ---- 3b. Theoretical Limit sensitivities (Supplementary Table 13; ED8 b) -----------------------------
+# ---- 3b. Theoretical Limit sensitivities (Supplementary Table 12; ED8 b) -----------------------------
 # (run id in runs.csv, Monte Carlo run in montecarlo_draws.csv or None, row label, shown in the Extended Data, basis)
 TL_ROWS = [
     ('TL', 'TL', 'Theoretical Limit (central)', True, 'every lever at Level 4 (levers.TL_RULE)'),

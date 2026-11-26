@@ -868,7 +868,7 @@ def lines():
          ('JUDGEMENT', 'Household size: the Stats NZ shape through 2048 (PCHIP through the published values '
                        '2023-2048, rebased on the 2023 census), then the 2043-2048 secant slope continued linearly to '
                        "2050 (S_TAIL = 'pchip_secant'); the zero-slope and PCHIP-end-slope tails are one-at-a-time "
-                       'rows (Extended Data Fig. 8 rows 4 and 5)'),
+                       "rows (Extended Data Fig. 8: 'After 2048: held flat' and 'After 2048: PCHIP end slope')"),
          ('RULE', 'Starting surplus: the 2024-2025 building beyond the stock identity, if above the 1992-2023 '
                   'census-interval mean + 2 SD, carried as vacant dwellings at the start of 2026 and absorbed with the '
                   'overbuild by 2035'),

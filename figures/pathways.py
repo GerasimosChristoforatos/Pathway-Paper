@@ -83,8 +83,8 @@ def sf14_tl_dwellings():
 
 def sf16_headship():
     """SF16: households per person (headship) by adult age group at the 2013, 2018 and 2023 Censuses (points) and the
-    by-age L1 at TL rate (sensitivity) by projection year (line: the lowest census rate of the group, or propensity B where lower), from
-    pathways/levers.json (household_headship.py)."""
+    by-age limit (sensitivity) by projection year (line: the lowest census rate of the group, or propensity B where
+    lower), from pathways/levers.json (household_headship.py)."""
     h = D.js('pathways/levers.json')['L1']['by_age']['headship']
     groups = ('15-39', '40-64', '65+')
     fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 62), sharey=False)
@@ -103,7 +103,7 @@ def sf16_headship():
     S.save_figure(fig, 'SF16_headship_by_census', source=['pathways/levers.json'],
                   note='Headship = households per person with a stated role in family nucleus (CEN23_FHH_036), '
                        'households per family unit and per other person calibrated to each census (CEN23_FHH_041). '
-                       'The L1 at TL rate is the lowest census rate of the group or the propensity-B rate where lower; '
+                       'The by-age limit (sensitivity) is the lowest census rate of the group or the propensity-B rate where lower; '
                        'the minima may come from different census years (family coding changed in 2018 and 2023).')
 
 

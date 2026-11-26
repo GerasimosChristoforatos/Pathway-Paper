@@ -157,14 +157,14 @@ L2_VACANCY_FLOOR = 0.040          # implied vacancy must never fall below this i
 L3_D_AMBITIOUS = 0.40             # Pellan et al. 2024: demolition 150,000 -> 90,000 a year
 # Extended Data Table 1 footnotes (EDT1 and LEVERS_TABLE.md). L3: d applies to the demolition rate and to the surge
 # component of the residual path, not to the long-run unconsented additions (l3_rates). L10: the nine backgrounds of
-# Horup et al. (2025) Table S1, from the integrated assessment model REMIND (Sacchi et al. 2023): SSP1 / SSP2 / SSP5
+# Horup et al. (2025) Table S1, from the integrated assessment model REMIND (Sacchi et al. 2022): SSP1 / SSP2 / SSP5
 # x no climate policy / RCP2.6 / RCP1.9.
 EDT1_FOOTNOTES = (
     'L3: 40% fewer demolitions, including the recent redevelopment surge (France, 150,000 to 90,000 demolitions a '
     'year; Pellan et al. 2024). The surge is the part of net replacement above the long-run rate, i.e. '
     'demolition-and-rebuild.',
     'L10: the nine background scenarios of Horup et al. (2025, Table S1, "Scenarios represented in the background '
-    'system (using IAM model: REMIND)"; Sacchi et al. 2023). SSPs (Shared Socioeconomic Pathways) describe how the '
+    'system (using IAM model: REMIND)"; Sacchi et al. 2022). SSPs (Shared Socioeconomic Pathways) describe how the '
     'world develops (SSP1 sustainable, SSP2 middle of the road, SSP5 fossil-fuelled growth); RCPs (Representative '
     'Concentration Pathways) describe climate policy, named by the radiative forcing reached in 2100 in W m⁻². Table '
     'S1 gives the "GMST increase by 2100": about 1.6-1.8 °C for RCP2.6 and 1.0-1.4 °C for RCP1.9 (the Paris Agreement '

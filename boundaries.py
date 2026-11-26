@@ -1029,7 +1029,7 @@ LIMITATIONS = [
     'The numerical results in Hjalsted et al.\'s SI (Tables S4-S9) are reproduced only with α = 1; we apply α as '
     'specified in their Eq. 5 and SI Eq. S1, which ensures national shares sum to the global SOS; the case α = 1 '
     'is the sensitivity row (xiv) of the boundary sensitivities (aesa/sensitivity.csv; listed as not shown in Extended '
-    'Data Fig. 5, since it moves AtP only).',
+    'Data Fig. 7, since it moves AtP only).',
 ]
 
 
